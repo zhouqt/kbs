@@ -128,7 +128,9 @@ print_recipient_status (smtp_recipient_t recipient,
   const smtp_status_t *status;
 
   status = smtp_recipient_status (recipient);
+#ifdef BBSMAIN
   prints("mail to %s: %d %s\n", mailbox, status->code, status->text);
+#endif
 }
 
 int
@@ -161,7 +163,9 @@ int isuu, isbig5, noansi;
 
     if ((fin = fopen (isuu?uname:fname, "r")) == NULL)
     {
+#ifdef BBSMAIN
       prints("can't open %s: %s\n", isuu?uname:fname, strerror (errno));
+#endif
       return -1;
     }
     
@@ -201,7 +205,7 @@ int isuu, isbig5, noansi;
     smtp_set_header_option (message, "Subject", Hdr_OVERRIDE, 1);
     smtp_set_header_option (message, "Content-transfer-encoding", Hdr_OVERRIDE, 1);
     smtp_set_header_option (message, "Content-type", Hdr_OVERRIDE, 1);
-    smtp_8bitmime_set_body(message, E8bitmime_8BITMIME);
+    /*smtp_8bitmime_set_body(message, E8bitmime_8BITMIME);*/
 
     mo.isbig5=isbig5;
     mo.noansi=noansi;
@@ -216,7 +220,9 @@ int isuu, isbig5, noansi;
         message. */
     smtp_start_session (session);
     status = smtp_message_transfer_status (message);
+#ifdef BBSMAIN
     prints("return code:%d(%s)\n", status->code, status->text);
+#endif
     smtp_enumerate_recipients (message, print_recipient_status, NULL);
     
     /* Free resources consumed by the program.
