@@ -95,7 +95,7 @@ int add_room(struct room_struct * r)
     return 0;
 }
 
-int del_room(char)
+int del_room(struct room_struct * r)
 {
     int fd, i, j;
     struct flock ldata;
