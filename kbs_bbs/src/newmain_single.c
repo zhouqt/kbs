@@ -351,7 +351,7 @@ multi_user_check()
 
     if (HAS_PERM(PERM_MULTILOG)) 
         return;  /* don't check sysops */
-    curr_login_num = num_active_users(); /* add by alex , 4/15/97 */
+    curr_login_num = get_utmp_number();
     /* Leeward: 97.12.22 BMs may open 2 windows at any time */
     /* Bigman: 2000.8.17 智囊团能够开2个窗口 */
     if ((HAS_PERM(PERM_BOARDS) || HAS_PERM(PERM_CHATOP) || HAS_PERM(PERM_CHATCLOAK)) && count_user() < 2)
@@ -596,7 +596,7 @@ login_query()
     char fname[STRLEN], tmpstr[30];
     FILE *fn;   
     char buf[256];
-    curr_login_num = num_active_users();
+    curr_login_num = get_utmp_number();;
     if( curr_login_num >= MAXACTIVE ) {
         ansimore( "etc/loginfull", NA );
         oflush();

@@ -440,6 +440,7 @@ count_visible_active(struct user_info *uentp,char* arg,int pos)
     return 1 ;
 }
 
+
 int
 alcounter(struct user_info *uentp ,char* arg,int pos)
 {
@@ -472,7 +473,7 @@ int
 num_alcounter()
 {
     alcounter(NULL,0,0) ;
-    apply_ulist( alcounter,0 ) ;
+    apply_ulist_addr( alcounter,0 ) ;
     alcounter(NULL,0,0) ;
     return;
 }
@@ -485,13 +486,6 @@ num_useshell()
     return count_useshell(NULL,0,0) ;
 }
 
-int
-num_active_users()
-{
-    count_active(NULL,0,0) ;
-    apply_ulist( count_active ,0) ;
-    return count_active(NULL,0,0) ;
-}
 int
 num_user_logins(uid)
 char *uid;

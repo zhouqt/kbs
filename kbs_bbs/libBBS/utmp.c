@@ -315,4 +315,7 @@ void clear_utmp(int uent)
     utmp_unlock(lockfd);
 }
 
-
+int get_utmp_number()
+{
+	return utmpshm->number;
+}
