@@ -37,8 +37,7 @@ function main() {
 	global $currentuser;
 ?>
 <br>
-<form action="usermailoperations.php" method=post id="oForm">
-<input type="hidden" name="boxname" value="<?php echo $boxName; ?>">
+<form action="" method=post id="oForm">
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
 <tr>
 <th valign=middle width=30 height=25>ÐòºÅ</th>
