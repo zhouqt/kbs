@@ -30,24 +30,24 @@ const char *surfix_bless[23] = {
 	" ",
     "  \x1b[1;34m◆  ",
     "\x1b[1;32m┏\x1b[0;32m┴\x1b[1m┓",
-    "\x1b[32m┤\x1b[1m深\x1b[0;32m├",
-    "\x1b[32m┤\x1b[1m情\x1b[0;32m├",
+    "\x1b[0;32m│\x1b[1m深\x1b[0;32m│",
+    "\x1b[0;32m│\x1b[1m情\x1b[0;32m│",
     "\x1b[1;32m┗\x1b[0;32m┬\x1b[1m┛",
-    "  \x1b[32m│  ",
+    "  \x1b[0;32m│  ",
     "\x1b[1;32m┏\x1b[0;32m┴\x1b[1m┓",
-    "\x1b[32m┤\x1b[1m祝\x1b[0;32m├",
-    "\x1b[32m┤\x1b[1m福\x1b[0;32m├",
+    "\x1b[0;32m│\x1b[1m祝\x1b[0;32m│",
+    "\x1b[0;32m│\x1b[1m福\x1b[0;32m│",
     "\x1b[1;32m┗\x1b[0;32m┬\x1b[1m┛",
     "  \x1b[1;34m◆  ",
     "  \x1b[1;34m◆  ",
     "\x1b[1;32m┏\x1b[0;32m┴\x1b[1m┓",
-    "\x1b[32m┤\x1b[1m校\x1b[0;32m├",
-    "\x1b[32m┤\x1b[1m内\x1b[0;32m├",
+    "\x1b[0;32m│\x1b[1m校\x1b[0;32m│",
+    "\x1b[0;32m│\x1b[1m内\x1b[0;32m│",
     "\x1b[1;32m┗\x1b[0;32m┬\x1b[1m┛",
     "  \x1b[32m│  ",
     "\x1b[1;32m┏\x1b[0;32m┴\x1b[1m┓",
-    "\x1b[32m┤\x1b[1m热\x1b[0;32m├",
-    "\x1b[32m┤\x1b[1m门\x1b[0;32m├",
+    "\x1b[0;32m│\x1b[1m热\x1b[0;32m│",
+    "\x1b[0;32m│\x1b[1m门\x1b[0;32m│",
     "\x1b[1;32m┗\x1b[0;32m┬\x1b[1m┛",
     "  \x1b[1;34m◆  "
 };
@@ -303,7 +303,7 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
             real++;
 
             fprintf(fp,
-                        "        %-20.20s                %s \x1b[1;31m%4d\x1b[0;37m人      %s\x1b[m\n"
+                        "        \x1b[33m%-20.20s\x1b[m                %s \x1b[1;31m%4d\x1b[0;37m人      %s\x1b[m\n"
                         "\x1b[1m第\x1b[31m%2d \x1b[37m名 \x1b[4%dm %-51.51s\x1b[m \x1b[1;33m%-12s%s\x1b[m\n",
                         top[i].board, p, top[i].number, surfix_bless[(real + 5) * 2 + 1], real, (real - 1) / 2 + 1, fh.title, fh.owner, surfix_bless[(real + 6) * 2 ]);
 
