@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <assert.h>
+#include "mysql.h"
 #include "bbs.h"
 
 #ifdef SMS_SUPPORT
@@ -15,6 +16,7 @@ int sockfd;
 int sn=0;
 struct header h;
 int running;
+MYSQL mysql_s;
 
 void do_exit_sig(int sig)
 {
@@ -106,13 +108,13 @@ int sendtouser(struct GWSendSMS * h, char* buf)
 
     if(uin == NULL){
 		hh.topid = -1;
-		save_smsmsg(uident, &hh, buf, 0);
+		save_smsmsg_nomysqlconnect(&mysql_s, uident, &hh, buf, 0);
         return -1;
 	}
 
     hh.topid = uin->pid;
     save_msgtext(uident, &hh, buf);
-	save_smsmsg(uident, &hh, buf, 1);
+	save_smsmsg_nomysqlconnect(&mysql_s, uident, &hh, buf, 1);
     kill(uin->pid, SIGUSR2);
     return 0;
 }
@@ -294,6 +296,15 @@ void processbbs()
     head->sem=0;
 }
 
+int sms_init_mysql(){
+	mysql_init(&mysql_s);
+	if (! my_connect_mysql(&mysql_s) ){
+		printf("%s\n",mysql_error(&mysql_s));
+		mysql_close(&mysql_s);
+		exit(0);
+	}
+}
+
 int main()
 {
     struct sockaddr_in addr;
@@ -303,6 +314,7 @@ int main()
     struct sigaction act;
 
     start_daemon();
+	sms_init_mysql();
     load_sysconf();
     resolve_ucache();
     resolve_utmp();
@@ -372,6 +384,7 @@ int main()
     
     close(sockfd);
         }
+	mysql_close(&mysql_s);
     shmdt(head);
     buf=NULL;
     return 0;
