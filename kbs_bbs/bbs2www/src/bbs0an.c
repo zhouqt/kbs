@@ -36,6 +36,7 @@ int ann_load_directory(MENU *pm)
 	snprintf(buf, sizeof(buf), "%s/.Names", pm->path); /*.Names记录菜单信息*/
 	if ( (fn = fopen( buf, "r" )) == NULL )
 		return -1;
+	bzero(&litem, sizeof(litem));
 	hostname[0]='\0';
 	while ( fgets( buf, sizeof(buf), fn ) != NULL )
 	{
@@ -200,6 +201,7 @@ int ann_get_path(char *board, char* path, size_t len)
 int ann_traverse_check(char *path)
 {
 	char *ptr;
+	char *ptr2;
 	size_t i = 0;
 	char filename[256];
 	char buf[256];
@@ -229,40 +231,42 @@ int ann_traverse_check(char *path)
 			return -1;
 		while(fgets(buf, sizeof(buf), fp) != NULL)
 		{
+			if ((ptr2 = strrchr(buf, '\n')) != NULL)
+				*ptr2 = '\0';
 			if ( strncmp( buf, "Name=", 5 ) == 0 )
 			{
 				strncpy( title, buf + 5, sizeof(title)-1 );
 				title[sizeof(title)-1] = '\0';
+				continue;
 			}
+			if ( strncmp( buf, "Path=~/", 7 ) == 0 )
+				snprintf(currpath, sizeof(currpath), "%s/%s", 
+						 pathbuf, buf+7);
 			else if ( strncmp( buf, "Path=", 5 ) == 0 )
+				snprintf(currpath, sizeof(currpath), "%s/%s", 
+						 pathbuf, buf+5);
+			else
+				continue;
+			if(strncmp(currpath, path, strlen(currpath)) != 0)
+				continue;
+			if ((!strstr(title,"(BM: BMS)")||HAS_PERM(currentuser,PERM_BOARDS))&&
+				(!strstr(title,"(BM: SYSOPS)")||HAS_PERM(currentuser,PERM_SYSOP))&&
+				(!strstr(title,"(BM: ZIXIAs)")||HAS_PERM(currentuser,PERM_SECANC)))
 			{
-				if ( strncmp( buf, "Path=~/", 7 ) == 0 )
-					snprintf(currpath, sizeof(currpath), "%s/%s", 
-							 pathbuf, buf+7);
-				else
-					snprintf(currpath, sizeof(currpath), "%s/%s", 
-							 pathbuf, buf+5);
-				/*litem.fname[sizeof(litem.fname)-1] = '\0';*/
-				if(strncmp(currpath, path, strlen(currpath)) != 0)
-				{
-					/* directory or file is not existed */
-					fclose(fp);
-					return -1;
-				}
-				if ((!strstr(title,"(BM: BMS)")||HAS_PERM(currentuser,PERM_BOARDS))&&
-					(!strstr(title,"(BM: SYSOPS)")||HAS_PERM(currentuser,PERM_SYSOP))&&
-					(!strstr(title,"(BM: ZIXIAs)")||HAS_PERM(currentuser,PERM_SECANC)))
-				{
-					/* directory can be accessed */
-					break;
-				}
-				else
-				{
-					/* diretory cannot be accessed */
-					fclose(fp);
-					return -1;
-				}
+				/* directory can be accessed */
+				break;
 			}
+			else
+			{
+				/* diretory cannot be accessed */
+				fclose(fp);
+				return -1;
+			}
+		}
+		if (feof(fp))
+		{
+			fclose(fp);
+			return -1;
 		}
 		fclose(fp);
 		if (i < sizeof(pathbuf))
@@ -306,12 +310,12 @@ void ann_show_item(MENU *pm, ITEM *it)
 	else if (file_isdir(buf))
 	{
 		printf("<td>[目录] </td><td><a href=\"bbs0an?path=%s/%s\">%s</a></td>",
-			   ptr, it->fname, nohtml(title));
+			   ptr == NULL ? "" : ptr, it->fname, nohtml(title));
 	}
 	else
 	{
 		printf("<td>[文件] </td><td><a href=\"bbsanc?path=%s/%s\">%s</a></td>",
-			   ptr, it->fname, nohtml(title));
+			   ptr == NULL ? "" : ptr, it->fname, nohtml(title));
 	}
 	if (id[0])
 	{
@@ -336,15 +340,20 @@ void ann_display(char *path)
 	
 	if (strstr(path, "..") || strstr(path, "SYSHome")) /* SYSHome? */
 		http_fatal("此目录不存在");
-	len = strlen(path);
-	if (path[len-1] == '/')
-		path[len-1] = '\0';
-	if (path[0] == '/')
-		snprintf(pathbuf, sizeof(pathbuf), "0Announce%s", path);
+	if (path[0] != '\0')
+	{
+		len = strlen(path);
+		if (path[len-1] == '/')
+			path[len-1] = '\0';
+		if (path[0] == '/')
+			snprintf(pathbuf, sizeof(pathbuf), "0Announce%s", path);
+		else
+			snprintf(pathbuf, sizeof(pathbuf), "0Announce/%s", path);
+		if (ann_traverse_check(pathbuf) < 0)
+			http_fatal("此目录不存在");
+	}
 	else
-		snprintf(pathbuf, sizeof(pathbuf), "0Announce/%s", path);
-	if (ann_traverse_check(pathbuf) < 0)
-		http_fatal("此目录不存在");
+		strcpy(pathbuf, "0Announce");
 	if ((its = ann_alloc_items(MAXITEMS)) == NULL)
 		http_fatal("分配内存失败");
 	ann_set_items(&me, its, MAXITEMS);
@@ -386,32 +395,7 @@ int main()
 
 	init_all();
 	strsncpy(path, getparm("path"), 511);
+	ann_display(path);
 	http_quit();
 }
 
-int get_count(char *path)
-{
-	FILE *fp;
-	char buf[256];
-	int counts=0;
-
-	sprintf(buf, "0Announce%s/.counts", path);
-	if (!file_exist(buf))
-	{
-		fp=fopen(buf, "w+");
-	}
-	else
-	{
-		fp=fopen(buf, "r+");
-	}
-	if (fp == NULL)
-		return 0;
-	flock(fileno(fp), LOCK_EX);
-	fscanf(fp, "%d", &counts);
-	counts++;
-	fseek(fp, 0, SEEK_SET);
-	fprintf(fp, "%d\n", counts);
-	flock(fileno(fp), LOCK_UN);
-	fclose(fp);
-	return counts;
-}
