@@ -12,7 +12,7 @@ define("ANNOUNCENUMBER",5);
 
 define("ARTICLESPERPAGE",20); //目录列表下每页显示的主题数
 
-define("THREADSPERPAGE",5); //文章阅读时每页显示的文章数
+define("THREADSPERPAGE",10); //文章阅读时每页显示的文章数
 
 $SiteName="大话西游论坛";
 

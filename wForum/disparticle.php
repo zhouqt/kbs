@@ -256,7 +256,7 @@ function showArticle($boardName,$boardID,$num, $threadID,$thread,$type){
 	 if ($loginok) {
 		 bbs_brcaddread($boardName, $thread['ID']);
 	 };
-	 echo dvbcode(bbs_printansifile($filename,1,'bbscon?bid='.$boardID.'&id='.$thread['ID']),0,$fgstyle);
+	 echo dvbcode(bbs_printansifile($filename,1,'bbscon.php?bid='.$boardID.'&id='.$thread['ID']),0,$fgstyle);
 
 ?> </blockquote></td></tr></table>
 </td>

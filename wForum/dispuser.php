@@ -75,7 +75,14 @@ if ($user['userdefine'] & $flag) {
   <tr> 
     <th colspan=2 align=left>基本资料</th>
     <td rowspan=9 align=center class=tablebody1 width=40% valign=top>
-<font color=gray>无</font>
+<?php
+	$photo_url=htmlspecialchars(trim($user['photo_url']),ENT_QUOTES);
+	if ($photo_url!='') {
+		echo "<img src='".$photo_url."'>"; 
+	} else {
+		echo  "<font color=gray>无</font>";
+	}
+?>
     </td>
   </tr>   
   <tr> 
