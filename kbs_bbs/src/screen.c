@@ -254,7 +254,7 @@ void refresh()
             if(k<scr_cols-3&&(bp[j].data[k]==0||bp[j].data[k]==32)&&(bp[j].data[k+1]==0||bp[j].data[k+1]==32)) {
                 int p=1;
                 for(ii=k+1;ii<scr_cols;ii++)
-                    p&&=(bp[j].data[ii]==0||bp[j].data[ii]==32)&&bp[j].color[ii]/16==bp[j].color[k]/16&&(bp[j].mode[ii]&~SCREEN_MODIFIED==bp[j].mode[k]&~SCREEN_MODIFIED);
+                    p=p&&((bp[j].data[ii]==0||bp[j].data[ii]==32)&&bp[j].color[ii]/16==bp[j].color[k]/16&&(bp[j].mode[ii]&~SCREEN_MODIFIED==bp[j].mode[k]&~SCREEN_MODIFIED));
                 if(p) {
                     for(ii=k;ii<scr_cols;ii++)
                         bp[j].mode[ii]&=~SCREEN_MODIFIED;
