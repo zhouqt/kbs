@@ -2298,6 +2298,14 @@ int post_article(char *q_file, struct fileheader *re_file)
 
 	if( ! use_tmpl )
 	    aborted = vedit(filepath, true, &eff_size, NULL);    /* ½øÈë±à¼­×´Ì¬ */
+	else{
+    	struct stat st;
+		if(stat(filepath, &st)!=-1)
+			eff_size = st.st_size;
+		else
+			eff_size = 0;
+	}
+
 
     post_file.eff_size = eff_size;
 
