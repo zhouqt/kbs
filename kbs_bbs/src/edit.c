@@ -26,7 +26,6 @@ static int marknum;
 static int moveln = 0;
 static int ismsgline;
 static struct textline *top_of_win = NULL;
-static int top_of_line = 0;
 static int curr_window_line, currln;
 static int insert_character = 1;
 /* for copy/paste */
@@ -1989,11 +1988,13 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,
         ret=read_file(filename,NULL);
     if (ret<0) return -1;
     top_of_win = firstline;
-    top_of_line = 0;
-    for (newch = 0; newch < headlines; newch++)
-        if (top_of_win->next)
-            top_of_win = top_of_win->next;
-    /* 跳过headlines 指定行数的头部信息 Luzi 1999/1/8 */
+    if (headlines > 0) { /* 20050207 atppp */
+        /* 跳过headlines 指定行数的头部信息 Luzi 1999/1/8 */
+        for (newch = 0; newch < headlines; newch++)
+            if (top_of_win->next)
+                top_of_win = top_of_win->next;
+        if (top_of_win == firstline) headlines = 0;
+    }
     currline = top_of_win;
     st_tmp2 = firstline;
     st_tmp = currline->prev;    /* 保存链表指针，并修改编辑第一行的的指针 */
