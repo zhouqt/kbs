@@ -108,7 +108,7 @@ int do_del(char *board, int id)
     printf("<tr><td></td><td></td><td>文件不存在.</td></tr>\n");
 }
 
-int bbsman_import(char *board,struct fileheader *f)
+int bbsman_import(int ent,char *board,struct fileheader *f,char *dirdir)
 {
 	MENU pm;
 	char buf[PATHLEN],bname[PATHLEN];
@@ -134,6 +134,14 @@ int bbsman_import(char *board,struct fileheader *f)
 
 	for(i=0;i<pm.num;i++)
 		free(pm.item[i]);
+
+	if(ret){
+		if(change_post_flag("", currentuser, 0, board, ent, f, dirdir, FILE_IMPORT_FLAG, 0)!=DONOTHING)
+			ret = 1;
+		else
+			ret = 0;
+	}
+
 	return ret;
 }
 
@@ -151,7 +159,7 @@ int do_import(char *board, int id)
 		http_fatal("打开文件错误");
 	if(get_records_from_id(fd,id,&f,1,&ent)){
 		close(fd);
-		if(bbsman_import(board,&f))
+		if(bbsman_import(ent,board,&f,dir))
             printf("<tr><td>%s  </td><td>标题:%s </td><td>收录成功.</td></tr>\n", f.owner, nohtml(f.title));
 		else
             printf("<tr><td>%s  </td><td>标题:%s </td><td>收录不成功.</td></tr>\n", f.owner, nohtml(f.title));
