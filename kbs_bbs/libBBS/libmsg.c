@@ -1608,9 +1608,9 @@ static struct csv_list * read_csv_line(char *ptr, size_t size, size_t *dlength)
 	char *p = ptr;
 	size_t sz=0;
 	int i,have_quota;
-	*dlength=0;
 	int clnum = 0;
 
+	*dlength=0;
 	for( ; sz < size ; sz++, p++ ){
 		if( *p == '\n' || *p == '\r' || *p == 0 ){
 			if( cl ){
