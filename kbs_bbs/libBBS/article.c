@@ -821,7 +821,7 @@ int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)
     return ret;
 }
 
-int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, void *arg)
+int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, void *arg, int * index)
 {
     struct fileheader *data;
     size_t filesize;
@@ -847,6 +847,8 @@ int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, voi
                 ret = (*func) (fd, data, mid + 1, total, true, arg);
                 end_mmapfile((void *) data, filesize, -1);
                 flock(fd, LOCK_UN);
+                if (index)
+                    *index = mid+1;
                 BBS_RETURN(ret);
             } else if (comp < 0)
                 high = mid - 1;
@@ -854,6 +856,8 @@ int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, voi
                 low = mid + 1;
         }
         ret = (*func) (fd, data, low + 1, total, false, arg);
+        if (index)
+             *index = low+1;
     }
     BBS_CATCH {
     }
@@ -893,7 +897,7 @@ static int get_dir_records(int fd, fileheader_t * base, int ent, int total, bool
     return 0;
 }
 
-int get_records_from_id(int fd, int id, fileheader_t * buf, int num)
+int get_records_from_id(int fd, int id, fileheader_t * buf, int num, int * index)
 {
     struct dir_record_set rs;
     fileheader_t key;
@@ -903,7 +907,7 @@ int get_records_from_id(int fd, int id, fileheader_t * buf, int num)
     bzero(&key, sizeof(key));
     key.id = id;
 
-    return mmap_dir_search(fd, &key, get_dir_records, &rs);
+    return mmap_dir_search(fd, &key, get_dir_records, &rs, index);
 }
 
 //土鳖两分法，    by yuhuan

@@ -11,16 +11,16 @@ int main()
     char buf[512], board[80], dir[80], filename[80], *ptr;
     char buf2[512], buf3[512];
     fileheader_t records[RECORDS_NUM];
-    int num, tmp, total;
+    int tmp, total;
     struct userec *user = NULL;
     struct boardheader *bp;
     int rid;
     int fd;
+    int num;
 
     init_all();
     strsncpy(board, getparm("board"), 32);
     rid = atoi(getparm("id"));
-    num = atoi(getparm("num"));
     printf("<center>\n");
     bp = getbcache(board);
     if (!check_read_perm(currentuser, bp))
@@ -34,7 +34,7 @@ int main()
     if (total <= 0)
         http_fatal("此讨论区不存在或者为空");
     fd = open(dir, O_RDWR, 0644);
-    if (get_records_from_id(fd, rid, &records, RECORDS_NUM) == 0)
+    if (get_records_from_id(fd, rid, &records, RECORDS_NUM, &num) == 0)
         http_fatal("本文不存在");
     printf("<table width=\"610\" border=\"1\">\n");
     printf("<tr><td>\n<pre>");

@@ -244,10 +244,11 @@ extern "C" {
      * 调用的时候
      * match=true,完全匹配
      * match=false,找到该插入的前一条记录。
+     * 同时利用index 返回记录的编号。
      */
     typedef int (*DIR_APPLY_FUNC) (int fd, struct fileheader * start, int ent, int total, struct fileheader * data, bool match);
     typedef int (*search_handler_t) (int fd, fileheader_t * base, int ent, int total, bool match, void *arg);
-    int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, void *arg);
+    int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, void *arg, int *index);
 /**
  * Get some records from article id. If this function is successfully
  * returned, the article record with the id is put at the center of 
@@ -262,11 +263,12 @@ extern "C" {
  * @param id The article id to be searched in the .DIR file
  * @param buf The user provided buffer to hold the matched records
  * @param num The number of records that the buffer can hold
+ * @param index return the record index
  * @return >0 The number of matched records
  *          0 No record matched or execution failed
  * @author flyriver
  */
-    int get_records_from_id(int fd, int id, fileheader_t * buf, int num);
+    int get_records_from_id(int fd, int id, fileheader_t * buf, int num, int *index);
 
     int Origin2(char text[256]);
 /*加入edit mark*/

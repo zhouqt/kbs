@@ -136,19 +136,13 @@ function display_navigation_bar($brdarr, $articles, $num)
 			html_error_quit("错误的文章号");
 		}
 		settype($id, "integer");
-		if (isset($_GET["num"]))
-			$num = $_GET["num"];
-		else {
-			html_init("gb2312");
-			html_error_quit("错误的文章号");
-		}
-		settype($num, "integer");
-		$articles = bbs_get_records_from_id($brdarr["NAME"], $id, 
-				$dir_modes["NORMAL"]);
-		if ($articles == FALSE)
+		$articles = array ();
+		$num = bbs_get_records_from_id($brdarr["NAME"], $id, 
+				$dir_modes["NORMAL"], $articles);
+		if ($num == 0)
 		{
 			html_init("gb2312");
-			html_error_quit("bbs_get_records_from_id failed.");
+			html_error_quit("错误的文章号.");
 		}
 		else
 		{

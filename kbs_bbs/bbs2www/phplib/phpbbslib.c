@@ -961,10 +961,10 @@ static ZEND_FUNCTION(bbs_countarticles)
 /**
  * Get some article records from the article id.
  * prototype:
- * bool bbs_get_records_from_id(string board, long id, long mode);
+ * int bbs_get_records_from_id(string board, long id, long mode, arrary articles);
  *
- * @return Records on success,
- *       FALSE on failure.
+ * @return Record index on success,
+ *       0 on failure.
  * @author flyriver
  */
 static ZEND_FUNCTION(bbs_get_records_from_id)
@@ -980,16 +980,17 @@ static ZEND_FUNCTION(bbs_get_records_from_id)
 	fileheader_t articles[record_cnt];
 	struct boardheader *bp;
 	int i;
-	zval *element;
+	zval *element,articlearray;
 	int is_bm;
 	char flags[3]; /* flags[0]: flag character
 					* flags[1]: imported flag
 					* flags[2]: no reply flag
 					*/
     int ac = ZEND_NUM_ARGS();
+    int retnum;
 
     if (ac != 3
-        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sll", &board, &blen, &id, &mode) == FAILURE)
+        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "slla", &board, &blen, &id, &mode, & articlearray) == FAILURE)
     {
         WRONG_PARAM_COUNT;
     }
@@ -997,27 +998,27 @@ static ZEND_FUNCTION(bbs_get_records_from_id)
     /* check for parameter being passed by reference */
 	if (currentuser == NULL)
 	{
-		RETURN_FALSE;
+		RETURN_LONG(0);
 	}
 	if ((bp = getbcache(board)) == NULL)
 	{
-		RETURN_FALSE;
+		RETURN_LONG(0);
 	}
 	if (array_init(return_value) == FAILURE)
 	{
-		RETURN_FALSE;
+		RETURN_LONG(0);
 	}
 	setbdir(mode, dirpath, board);
 	if ((fd = open(dirpath, O_RDWR, 0644)) < 0)
 	{
-		RETURN_FALSE;
+		RETURN_LONG(0);
 	}
-	if (get_records_from_id(fd, id, articles, record_cnt) == 0)
+	if ((retnum=get_records_from_id(fd, id, articles, record_cnt, &num)) == 0)
 	{
 		close(fd);
-		RETURN_FALSE;
+		RETURN_LONG(0);
 	}
-	for (i = 0; i < record_cnt; i++)
+	for (i = 0; i < retnum; i++)
 	{
 		MAKE_STD_ZVAL(element);
 		array_init(element);
@@ -1031,10 +1032,11 @@ static ZEND_FUNCTION(bbs_get_records_from_id)
 		else
 			flags[2] = 'n';
 		bbs_make_article_array(element, articles + i, flags, sizeof(flags));
-		zend_hash_index_update(Z_ARRVAL_P(return_value), i,
+		zend_hash_index_update(Z_ARRVAL_P(articlearray), i,
 				(void*) &element, sizeof(zval*), NULL);
 	}
 	close(fd);
+	RETURN_LONG(num);
 }
 
 /**
