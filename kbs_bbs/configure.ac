@@ -129,7 +129,7 @@ AC_CONFIG_FILES([Makefile
                  libsystem/Makefile
                  rzsz/Makefile
                  daemon/Makefile
+                 local_utl/Makefile
                  src/bbsconfig.h
                  src/Makefile])
-#                 local_utl/Makefile
 AC_OUTPUT
