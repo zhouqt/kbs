@@ -55,6 +55,63 @@ int get_edit_post(char *userid, char *board, char *file, struct fileheader *x)
     return 0;
 }
 
+int get_file_attach( char *infile, long *attach_pt, long * attach_length){
+    int ch;
+    char attachpad[10];
+    int matched;
+    char* ptr;
+    long size;
+	long ret=0;
+	int fd;
+
+	if((fd = open(infile, O_RDONLY)) < 0)
+		return 0;
+
+	*attach_length=0;
+    matched=0;
+
+        if (safe_mmapfile_handle(fd, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & size) == 1) {
+            char* data;
+            long not;
+            data=ptr;
+            for (not=0;not<size;not++,data++) {
+                if (*data==0) {
+                    matched++;
+                    if (matched==ATTACHMENT_SIZE) {
+                        int d, size;
+						char *sstart = data;
+                        data++; not++;
+						if(ret == 0)
+							ret = data - ptr - ATTACHMENT_SIZE + 1;
+                        while(*data){
+							data++;
+							not++;
+						}
+                        data++;
+                        not++;
+                        memcpy(&d, data, 4);
+                        size = htonl(d);
+                        data+=4+size-1;
+                        not+=4+size-1;
+                        matched = 0;
+						*attach_length += data - sstart + ATTACHMENT_SIZE;
+                    }
+                    continue;
+                }
+            }
+        }else{
+			close(fd);
+			return 0;
+		}
+
+		end_mmapfile( (void *)ptr, size ,-1);
+
+		*attach_pt = ret;
+		close(fd);
+		if( ret <= 0) return 0;
+		return 1;
+}
+
 int update_form(char *board, char *file)
 {
     FILE *fin;
@@ -63,6 +120,7 @@ int update_form(char *board, char *file)
     char infile[80], outfile[80];
     char buf2[256];
     int i;
+	long attach_pt,attach_size;
 
     setbfile(infile, board, file);
     sprintf(outfile, "tmp/%s.%d.editpost", getcurruserid(), getpid());
@@ -93,6 +151,34 @@ int update_form(char *board, char *file)
     }
     else {
 #endif
+		if( get_file_attach( infile, &attach_pt, &attach_size) ){
+				{char cmd[256];sprintf(cmd,"echo %d %d >> /home/bbs/stiger.test",attach_pt, attach_size);system(cmd);}
+				{char cmd[256];sprintf(cmd,"cp %s %s.bak",infile, infile);system(cmd);}
+			int fsrc,fdst;
+			if( (fsrc = open(infile, O_RDONLY) ) >= 0){
+				if((fdst = open( outfile, O_WRONLY| O_CREAT | O_APPEND ,0644) ) >=0){
+					char *src = (char *)malloc(10240);
+					long ret;
+					long lsize = attach_size;
+					long ndread;
+					lseek(fsrc, attach_pt-1, SEEK_SET);
+					do{
+						if( lsize > 10240 )
+							ndread = 10240;
+						else
+							ndread = lsize;
+				{char cmd[256];sprintf(cmd,"echo i%d %d >> /home/bbs/stiger.test",ndread, lsize);system(cmd);}
+						ret = read(fsrc, src,ndread);
+						if(ret <= 0)
+							break;
+						lsize -= ret;
+				{char cmd[256];sprintf(cmd,"echo ii%d %d >> /home/bbs/stiger.test",ret, lsize);system(cmd);}
+					}while( write(fdst, src, ret) > 0 && lsize > 0);
+					close(fdst);
+					free(src);
+				}close(fsrc);
+			}
+		}
         f_mv(outfile, infile);
         printf("修改文章成功.<br><a href=\"/bbsdoc.php?board=%s\">返回本讨论区</a>", board);
 #ifdef FILTER
