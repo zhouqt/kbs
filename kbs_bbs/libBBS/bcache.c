@@ -40,7 +40,7 @@ static int bcache_lock()
     return lockfd;
 }
 
-static int bcache_unlock(int fd)
+static void bcache_unlock(int fd)
 {
     flock(fd,LOCK_UN);
     bcache_setreadonly(1);
@@ -70,7 +70,7 @@ getlastpost(char *board, int *lastpost, int *total)
 	struct fileheader fh;
 	struct stat st;
 	char filename[STRLEN * 2];
-	int fd, atotal, ftime;
+	int fd, atotal;
 
 	sprintf(filename, "boards/%s/" DOT_DIR, board);
 	if ((fd = open(filename, O_RDWR)) < 0)
@@ -105,7 +105,6 @@ int updatelastpost(char *board)
 void resolve_boards()
 {
 	int boardfd;
-	struct stat st;
 	int iscreate;
 	
     if( brdshm == NULL ) {
@@ -274,14 +273,15 @@ int delete_board(char* boardname,char* title)
     bid = getbnum(boardname) ;
     if (bid==0) return -1; /* maybe delete by other people */
     bid--;
-	if (brdshm->numboards==bid+1)
-		if (bid==0) brdshm->numboards=0;
-		else
-			for (i=bid-1;i>=0;i--)
-				if (!bcache[i].filename[0]) {
-					brdshm->numboards=i+1;
-					break;
-				}
+    if (brdshm->numboards==bid+1) {
+	if (bid==0) brdshm->numboards=0;
+	else
+		for (i=bid-1;i>=0;i--)
+			if (!bcache[i].filename[0]) {
+				brdshm->numboards=i+1;
+				break;
+			}
+    }
     memset( &bcache[bid], 0, sizeof( struct boardheader ) );
     strcpy( bcache[bid].title, buf );
     bcache[bid].level = PERM_SYSOP;
@@ -311,6 +311,7 @@ int add_board(struct boardheader* newboard)
 int set_board(int bid,struct boardheader* board)
 {
     memcpy(&bcache[bid-1], board, sizeof(struct boardheader));
+    return 0;
 }
 
 int board_setreadonly(char* board,int readonly)
@@ -325,5 +326,6 @@ int board_setreadonly(char* board,int readonly)
     else
        bh->flag&=!BOARD_READONLY;
     bcache_unlock(fd);
+    return 0;
 }
 
