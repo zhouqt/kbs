@@ -334,7 +334,7 @@ char cid[IDLEN];
     strcpy(lookupuser->address, "");
     strcpy(lookupuser->username, "");
     strcpy(lookupuser->realname, "");
-/*    lookupuser->userid[0] = '\0' ;
+/*    lookupuser->userid[0] = '\0' ; */
     move(2,0) ;
     prints("%s 已经已经和本家庭失去联络....\n",lookupuser->userid) ;
     pressreturn() ;
@@ -344,8 +344,7 @@ char cid[IDLEN];
 }
 
 /* to be Continue fix kick user problem */
-int
-kick_user(struct user_info *userinfo)
+int kick_user(struct user_info *userinfo)
 {
     int id, ind ;
     struct user_info uin;

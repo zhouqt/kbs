@@ -306,6 +306,7 @@ int getuserid(char * userid, int uid)
 void
 setuserid( int     num,const char    *userid) /* 设置user num的id为user id*/
 {
+    int lockfd;
     if( num > 0 && num <= MAXUSERS ) {
     	int oldkey,newkey,find;
         if( num > uidshm->number )
@@ -313,7 +314,7 @@ setuserid( int     num,const char    *userid) /* 设置user num的id为user id*/
         oldkey=ucache_hash((char*)passwd[ num - 1 ].userid);
         newkey=ucache_hash(userid);
 /*        if (oldkey!=newkey) { disable,为了加强兼容性*/
-		int lockfd = ucache_lock();
+		lockfd = ucache_lock();
 	        find=uidshm->hashhead[oldkey];
 
 	        if (find==num) uidshm->hashhead[oldkey]=uidshm->next[find-1];
