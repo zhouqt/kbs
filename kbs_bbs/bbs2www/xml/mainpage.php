@@ -92,7 +92,9 @@ function gen_sec_hot_subjects_html($secid)
 {
 	# load xml doc
 	$boardrank_file = BBS_HOME . sprintf("/xml/day_sec%d.xml", $secid);
-	$doc = domxml_open_file($boardrank_file) or die("What boards?");
+	$doc = domxml_open_file($boardrank_file);
+	if (!$doc)
+		return;
 
 
 	$root = $doc->document_element();
