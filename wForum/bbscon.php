@@ -46,6 +46,8 @@ function get_mimetype($name)
 		return "application/xhtml+xml";
 	if (strcasecmp($dot, ".xml") == 0)
 		return "text/xml";
+	if (strcasecmp($dot, ".swf") == 0)
+		return "application/x-shockwave-flash";
 	return "application/octet-stream";
 }
 
@@ -131,6 +133,7 @@ function get_mimetype($name)
 		$array=unpack('Nsize',$str);
 		$attachsize=$array["size"];
 		Header("Content-type: " . get_mimetype($attachname));
+		
 		Header("Accept-Ranges: bytes");
 		Header("Accept-Length: " . $attachsize);
 		Header("Content-Disposition: filename=" . $attachname);
