@@ -234,15 +234,16 @@ struct room_struct * myroom;
 void refreshit()
 {
     int i,j;
+    clear();
     for(i=0;i<myroom->people;i++) {
         move(i+2,0);
         prints(inrooms.peoples[i].id);
     }
-    for(i=2;i<=t_lines-2;i++) 
-    if(msgst-1-(t_lines-2-i)>=0)
+    for(i=2;i<=t_lines-3;i++) 
+    if(msgst-1-(t_lines-3-i)>=0)
     {
         move(i,20);
-        prints(msgs[msgst-1-(t_lines-2-i)]);
+        prints(msgs[msgst-1-(t_lines-3-i)]);
     }
 }
 
@@ -277,7 +278,7 @@ void join_room(struct room_struct * r)
 
     room_refresh(0);
     while(1){
-        getdata(24, 0, "ÊäÈë:", buf, 75, 1, NULL, 1);
+        getdata(t_lines-1, 0, "ÊäÈë:", buf, 75, 1, NULL, 1);
         if(!buf[0]) break;
         for(i=0;i<myroom->people;i++) {
             send_msg(inrooms.peoples[i].id, buf);
@@ -294,8 +295,9 @@ static int room_list_refresh(struct _select_def *conf)
     docmdtitle("[ÓÎÏ·ÊÒÑ¡µ¥]",
               "  ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ½øÈë[\x1b[1;32mEnter\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ı\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ¼ÓÈë[\x1b[1;32mJ\x1b[0;37m] \x1b[m");
     move(2, 0);
-    prints("[0;1;37;44m    %4s %-40s %-12s %4s %4s[m", "±àºÅ", "ÓÎÏ·ÊÒÃû³Æ", "´´½¨Õß", "ÈËÊı", "ÀàĞÍ");
+    prints("[0;1;37;44m    %4s %-40s %-12s %4s %4s", "±àºÅ", "ÓÎÏ·ÊÒÃû³Æ", "´´½¨Õß", "ÈËÊı", "ÀàĞÍ");
     clrtoeol();
+    resetcolor();
     update_endline();
     return SHOW_CONTINUE;
 }
