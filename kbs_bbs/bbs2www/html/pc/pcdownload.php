@@ -25,8 +25,9 @@
     }
     pc_db_close($link);
 	
-    if (cache_header("public",$f->filetime,86400))
-        return;
+    if ($f->access == 0)
+        if (cache_header("public",$f->filetime,86400))
+            return;
         
     if (!($file = fopen($f->filepath, "rb")))
         html_error_quit("文件不存在");
