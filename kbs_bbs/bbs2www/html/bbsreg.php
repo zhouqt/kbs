@@ -101,14 +101,12 @@ style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-f
 style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">密码：" . $password . "</SPAN></FONT></P>
 <P class=MsoNormal><FONT size=2><SPAN lang=EN-US>email</SPAN><SPAN 
 style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">：" . $reg_email . "</SPAN></FONT></P>
-<P class=MsoNormal><FONT size=2><A 
-href=\"http://www.smth.edu.cn/bbsact.php?userid=".$userid."&acode=".$activation."<SPAN 
-style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">点击这里激活您在" . BBS_FULL_NAME . "的新帐号</SPAN>
-<br /></P>
-<P class=MsoNormal><FONT size=2>或者<A 
-href=\"http://proxy.smth.org/bbsact.php?userid=".$userid."&acode=".$activation."<SPAN 
-style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">国外用户点击此处(使用http://proxy.smth.org)</SPAN>
-<br /><br /></P>
+<P class=MsoNormal><FONT size=2><A href=\"http://www.smth.org/bbsact.php?userid=".$userid."&acode=".$activation."\"><SPAN 
+style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">点击这里激活您在" . BBS_FULL_NAME . "的新帐号</SPAN></A>
+<br /></p>
+<P class=MsoNormal><FONT size=2>或者 <A href=\"http://proxy.smth.org/bbsact.php?userid=".$userid."&acode=".$activation."\"><SPAN 
+style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">国外用户点击此处(使用http://proxy.smth.org)</SPAN></A>
+<br /><br /></p>
 <P class=MsoNormal><FONT size=2><SPAN 
 style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\"></SPAN></FONT></P>
 </body>
