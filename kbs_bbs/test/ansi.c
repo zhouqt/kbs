@@ -4,11 +4,10 @@
 #include <fcntl.h>
 #include <stdio.h>
 
-#define STATE_ESC_PRESET    0x01
-#define STATE_ESC_SET 0x02
-#define STATE_FONT_SET    0x04
-#define STATE_NEW_LINE 0x08
-#define STATE_QUOTE_LINE 0x10
+#define STATE_ESC_SET 0x01
+#define STATE_FONT_SET    0x02
+#define STATE_NEW_LINE 0x04
+#define STATE_QUOTE_LINE 0x08
 #define STATE_NONE   0x00
 
 #define STATE_SET(s, b) (s |= b)
@@ -227,55 +226,29 @@ void print_ansi(char *buf, size_t buflen, buffered_output_t *output)
 			else
 				STATE_CLR(ansi_state, STATE_QUOTE_LINE);
 		}
-		if (buf[i] == 0x1b)
+		if (i < (buflen - 1) && (buf[i] == 0x1b && buf[i+1] == '['))
 		{
-			if (STATE_ISSET(ansi_state, STATE_ESC_PRESET)
-				|| STATE_ISSET(ansi_state, STATE_ESC_SET))
+			if (STATE_ISSET(ansi_state, STATE_ESC_SET))
 			{
-				/* ** or *[13;24* */
+				/* *[*[ or *[13;24*[ */
 				size_t len;
 				ansi_end = &buf[i - 1];
 				len = ansi_end - ansi_begin + 1;
 				print_raw_ansi(ansi_begin, len, output);
-				STATE_CLR(ansi_state, STATE_ESC_SET);
 			}
-			STATE_SET(ansi_state, STATE_ESC_PRESET);
-			ansi_begin = &buf[i];
-		}
-		else if (buf[i] == '[')
-		{
-			if (!STATE_ISSET(ansi_state, STATE_ESC_PRESET))
-			{
-				/* abcd[efg */
-				output->output(&buf[i], 1, output);
-				continue;
-			}
-			if (STATE_ISSET(ansi_state, STATE_ESC_SET))
-			{
-				/* *[0;13[ */
-				size_t len;
-				ansi_end = &buf[i];
-				len = ansi_end - ansi_begin + 1;
-				print_raw_ansi(ansi_begin, len, output);
-				STATE_CLR(ansi_state, STATE_ESC_PRESET);
-				STATE_CLR(ansi_state, STATE_ESC_SET);
-				continue;
-			}
-			STATE_CLR(ansi_state, STATE_ESC_PRESET);
-			//STATE_SET(ansi_state, STATE_FONT_SET);
 			STATE_SET(ansi_state, STATE_ESC_SET);
+			ansi_begin = &buf[i];
+			i++; /* skip the next '[' character */
 		}
 		else if (buf[i] == '\n')
 		{
-			if (STATE_ISSET(ansi_state, STATE_ESC_PRESET)
-				|| STATE_ISSET(ansi_state, STATE_ESC_SET))
+			if (STATE_ISSET(ansi_state, STATE_ESC_SET))
 			{
-				/* *\n or *[13;24\n */
+				/* *[\n or *[13;24\n */
 				size_t len;
 				ansi_end = &buf[i - 1];
 				len = ansi_end - ansi_begin + 1;
 				print_raw_ansi(ansi_begin, len, output);
-				STATE_CLR(ansi_state, STATE_ESC_PRESET);
 				STATE_CLR(ansi_state, STATE_ESC_SET);
 			}
 			if (STATE_ISSET(ansi_state, STATE_QUOTE_LINE))
@@ -341,7 +314,7 @@ void print_ansi(char *buf, size_t buflen, buffered_output_t *output)
 				}
 				else
 				{
-					/* *[1;32/XXXX */
+					/* *[1;32/XXXX or *[* or *[[ */
 					/* not a valid ANSI string, just output it */
 					size_t len;
 					
@@ -355,23 +328,8 @@ void print_ansi(char *buf, size_t buflen, buffered_output_t *output)
 				}
 				
 			}
-			else if (STATE_ISSET(ansi_state, STATE_ESC_PRESET))
-			{
-				/* *XXXX */
-				size_t len;
-
-				ansi_end = &buf[i];
-				len = ansi_end - ansi_begin + 1;
-				print_raw_ansi(ansi_begin, len, output);
-				STATE_CLR(ansi_state, STATE_ESC_PRESET);
-				/* clear ansi_val[] array */
-				bzero(ansi_val, sizeof(ansi_val));
-				ival = 0;
-			}
 			else
-			{
-				html_output(&buf[i], 1, output);
-			}
+				print_raw_ansi(&buf[i], 1, output);
 		}
 	}
 	if (STATE_ISSET(ansi_state, STATE_FONT_SET))
