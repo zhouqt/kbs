@@ -183,6 +183,13 @@ void a_additem(pm, title, fname, host, port)    /* 产生ITEM object,并初始化 */
     }
 }
 
+void a_freenames(MENU* pm)
+{
+    int i;
+    for (i=0;i<pm->num;i++)
+    	free(pm->item[i]);
+}
+
 int a_loadnames(pm)             /* 装入 .Names */
     MENU *pm;
 {
@@ -191,10 +198,8 @@ int a_loadnames(pm)             /* 装入 .Names */
     char buf[PATHLEN], *ptr;
     char hostname[STRLEN];
     struct stat st;
-    int i;
 
-    for (i=0;i<pm->num;i++)
-    	free(pm->item[i]);
+    a_freenames(pm);
     pm->num = 0;
     sprintf(buf, "%s/.Names", pm->path);        /*.Names记录菜单信息 */
     if ((fn = fopen(buf, "r")) == NULL)
@@ -454,6 +459,7 @@ int a_Import(path, key, fileinfo, nomsg, direct, ent)
 			fclose(fn);
 		}
 
+		bzero(&pm,sizeof(pm));
 		if (netty_path[0] != '\0') {
 			/* 直接加入到精华区内，不用确认 Life */
 			pm.path = netty_path;
@@ -470,7 +476,6 @@ int a_Import(path, key, fileinfo, nomsg, direct, ent)
 				return 1;
 			}
 		}
-		strcpy(pm.mtitle, "");
 		a_loadnames(&pm);
 		ann_get_postfilename(fname, fileinfo, &pm);
 		sprintf(bname, "%s/%s", pm.path, fname);
@@ -1122,6 +1127,7 @@ void a_menu(maintitle, path, lastlevel, lastbmonly)
     int bmonly;
     int number = 0;
 
+    bzero(&me,sizeof(me));
     modify_user_mode(CSIE_ANNOUNCE);
     me.path = path;
     strcpy(me.mtitle, maintitle);
@@ -1392,8 +1398,8 @@ int linkto(char *path, char *fname, char *title)
         char buf[80],ans[40];
         sprintf(buf, "整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
         a_prompt(-1, buf, ans);
-        a_loadnames(&pm);
     }
+    a_freenames(&pm);
     return 0;
 }
 
@@ -1465,6 +1471,7 @@ int del_grp(bname, title)
     int i, n;
     MENU pm;
 
+    bzero(&pm,sizeof(pm));
 	/* 获取该版在精华区中的路径 */
 	if (ann_get_path(bname, gpath, sizeof(gpath)) < 0)
 		return 0;
@@ -1498,6 +1505,7 @@ int del_grp(bname, title)
             break;
         }
     }
+    a_freenames(&pm);
     return 0;  /* FIXME: return value */
 }
 
@@ -1510,6 +1518,7 @@ int edit_grp(char bname[STRLEN], char title[STRLEN], char newtitle[100])
     int i;
     MENU pm;
 
+    bzero(&pm,sizeof(pm));
 	/* 获取该版在精华区中的路径 */
 	if (ann_get_path(bname, gpath, sizeof(gpath)) < 0)
 		return 0;
@@ -1547,6 +1556,7 @@ int edit_grp(char bname[STRLEN], char title[STRLEN], char newtitle[100])
         a_loadnames(&pm);
     }
 
+    a_freenames(&pm);
     return 0;  /* FIXME: return value */
 }
 
