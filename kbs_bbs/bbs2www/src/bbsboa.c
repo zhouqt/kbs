@@ -5,7 +5,6 @@
 
 extern int     brdnum;
 extern int yank_flag;
-extern char    *boardprefix;
 
 /*static int cmp_board(struct boardheader *b1, struct boardheader *b2)
 {
@@ -69,6 +68,7 @@ int brd_show_boards(int sec, char *cgi, int yank)
 	struct newpostdata  *ptr;
 	char *ptr2;
 	int i;
+	char* boardprefix;
 
 	sprintf( buf, "EGROUP%d", sec);
 	boardprefix = sysconf_str( buf );

@@ -32,7 +32,6 @@ struct newpostdata *nbrd; /*每个版的信息*/
 int     *zapbuf;
 int	zapbuf_changed=0;
 int     brdnum, yank_flag = 0;
-char    *boardprefix;
 
 void load_favboard(int dohelp)
 {
@@ -175,7 +174,7 @@ save_zapbuf() /*保存Zap信息*/
 #endif
 
 int
-load_boards()
+load_boards(char* boardprefix)
 {
     struct boardheader  *bptr;
     struct newpostdata  *ptr;

@@ -9,7 +9,6 @@ extern int     *zapbuf;
 extern int	zapbuf_changed;
 extern int     brdnum;
 extern int yank_flag;
-extern char    *boardprefix;
 static int choose_board(int  newflag ); /* 选择 版， readnew或readboard */
 static int check_newpost( struct newpostdata *ptr);
 
@@ -18,10 +17,11 @@ EGroup( cmd )
 char *cmd;
 {
     char        buf[ STRLEN ];
+	char* boardprefix;
 
     sprintf( buf, "EGROUP%c", *cmd );
     boardprefix = sysconf_str( buf );
-    choose_board( DEFINE(currentuser,DEF_NEWPOST)?1:0 );
+    choose_board( DEFINE(currentuser,DEF_NEWPOST)?1:0 , boardprefix);
 }
 
 static int clear_all_board_read_flag_func(struct boardheader *bh)
@@ -49,15 +49,13 @@ int clear_all_board_read_flag()
 void
 Boards()
 {
-    boardprefix = NULL;
-    choose_board( 0 );
+    choose_board( 0 ,NULL);
 }
 
 void
 New()
 {
-    boardprefix = NULL;
-    choose_board( 1 );
+    choose_board( 1 ,NULL);
 }
 
 int
@@ -366,7 +364,7 @@ int     page, clsflag, newflag;
 }
 
 
-static int choose_board(int  newflag ) /* 选择 版， readnew或readboard */
+static int choose_board(int  newflag ,char* boardprefix) /* 选择 版， readnew或readboard */
 {
     static int  num;
     struct newpostdata newpost_buffer[ MAXBOARD ];
@@ -384,7 +382,7 @@ static int choose_board(int  newflag ) /* 选择 版， readnew或readboard */
     /* show_brdlist( 0, 1, newflag );*/ /*board list显示 的 2次显示问题解决! 96.9.5 alex*/
     while( 1 ) {
         if( brdnum <= 0 ) { /*初始化*/
-            if(load_boards()==-1)
+            if(load_boards(boardprefix)==-1)
                 continue;
             qsort( nbrd, brdnum, sizeof( nbrd[0] ), (int (*)(const void *, const void *))cmpboard );
             page = -1;
@@ -730,9 +728,8 @@ void FavBoard()
     /*    if(heavyload()) ifnew = 0; */ /* no heavyload() in FB2.6x */
     yanksav = yank_flag;
     yank_flag = 2;
-    boardprefix = NULL;
     if(!getfavnum()) load_favboard(1);
-    choose_board(ifnew);
+    choose_board(ifnew,NULL);
     yank_flag = yanksav;
 }
 
