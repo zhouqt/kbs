@@ -17,6 +17,9 @@ the password is valid for the user.
 /*
  * $Id$
  * $Log$
+ * Revision 1.7  2003/06/20 07:07:05  bad
+ * 这样对了
+ *
  * Revision 1.6  2003/06/20 06:14:08  bad
  * ssh ipacl不对
  *
@@ -182,7 +185,7 @@ int auth_password(const char *server_user, const char *password)
 
 
     sinlen = sizeof(struct sockaddr_in);
-    proxy_getpeername(0, (struct sockaddr *) &sin, (void *) &sinlen);
+    getpeername(packet_get_connection_in(), (struct sockaddr *) &sin, (void *) &sinlen);
     host = (char *) inet_ntoa(sin.sin_addr);
     if(check_ip_acl(currentuser->userid, host)) {
     	return 0;
