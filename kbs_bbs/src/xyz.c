@@ -798,3 +798,60 @@ int zsend_file(char *filename, char *title)
     bbs_zsendfile(filename, buf1);
     return FULLUPDATE;
 }
+
+int search_ip()
+{
+    char ip[17];
+    FILE* fn;
+    fn=fopen("etc/ip_arrange.txt", "rt");
+    if (fn==NULL) {
+          prints("没找到ip_arrange.txt");
+          pressanykey();
+          return 1;
+    }
+    clear();
+    while (1) {
+        char linebuf[256];
+        struct in_addr queryip;
+        linebuf[255]=0;
+        getdata(t_lines/2,0,"输入查询的IP(直接回车退出):",ip,16,DOECHO,NULL,true);
+        if (ip[0]==0) return;
+        if (inet_aton(ip,&queryip)==-1) {
+	  outs("错误的ip");
+          pressanykey();
+          continue;
+        }
+        while (fgets(linebuf,254,fn)) {
+           char* p1,*p2;
+           struct in_addr host,mask;
+           
+           p2=p1=linebuf;
+           while ((*p2)&&(*p2!=' ')&&*p2!='\t')
+                     p2++;
+           if (!(*p2)) continue;
+           *p2=0;
+           if (inet_aton(p1,&host)==-1)
+		continue;
+           p1=p2+1;
+           while ((*p1)&&(*p1==' ')&&*p1=='\t')
+                     p1++;
+           if (!(*p1)) continue;
+           p2=p1;
+
+           while ((*p2)&&(*p2!=' ')&&*p2!='\t')
+                     p2++;
+           if (!(*p2)) continue;
+           *p2=0;
+           if (inet_aton(p1,&mask)==-1)
+		continue;
+           p1=p2+1;
+           while ((*p1)&&(*p1==' ')&&*p1=='\t')
+                     p1++;
+           if (!(*p1)) continue;
+
+	   if (queryip.s_addr&mask.s_addr==host.s_addr)
+               prints("%s\n",p1);
+        }
+    }
+}
+
