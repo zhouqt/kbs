@@ -285,16 +285,16 @@ char q_id[IDLEN];
     }
     prints("\nÉÏ´ÎÔÚ  [%s] ´Ó [%s] µ½±¾Õ¾Ò»ÓÎ¡£\nÀëÏßÊ±¼ä[%s] ", Ctime(lookupuser->lastlogin), ((lookupuser->lasthost[0] == '\0') /*|| DEFINE(currentuser,DEF_HIDEIP) */ ? "(²»Ïê)" : lookupuser->lasthost),    /*Haohmaru.99.12.18. hide ip */
            exittime);
-    /*
-     * SNOW CHANGE AT 10.20 (CHANGE THIS MSG)
-     * prints("ÐÅÏä£º[[5m%2s[m]£¬¾­ÑéÖµ£º[%d](%s) ±íÏÖÖµ£º[%d](%s) ÉúÃüÁ¦£º[%d]%s\n"
-     * ,(check_query_mail(qry_mail_dir)==1)? "ÐÅ":"  ",exp,cexp(exp),perf,
-     * cperf(perf),compute_user_value(lookupuser),
-     * (lookupuser->userlevel & PERM_SUICIDE)?" (×ÔÉ±ÖÐ)":" ");
-     */
+#ifdef NINE_BUILD
+     prints("ÐÅÏä£º[[5m%2s[m]£¬¾­ÑéÖµ£º[%d](%s) ±íÏÖÖµ£º[%d](%s) ÉúÃüÁ¦£º[%d]%s\n"
+       ,(check_query_mail(qry_mail_dir)==1)? "ÐÅ":"  ",exp,cexp(exp),perf,
+       cperf(perf),compute_user_value(lookupuser),
+       (lookupuser->userlevel & PERM_SUICIDE)?" (×ÔÉ±ÖÐ)":" ");
+#else
     uleveltochar(permstr, lookupuser);
-    prints("ÐÅÏä£º[[5m%2s[m] ÉúÃüÁ¦£º[%d] Éí·Ý: [%s]%s\n",
+    prints("\nÐÅÏä£º[[5m%2s[m] ÉúÃüÁ¦£º[%d] Éí·Ý: [%s]%s\n",
            (check_query_mail(qry_mail_dir) == 1) ? "ÐÅ" : "  ", compute_user_value(lookupuser), permstr, (lookupuser->userlevel & PERM_SUICIDE) ? " (×ÔÉ±ÖÐ)" : "¡£");
+#endif
 #if defined(QUERY_REALNAMES)
     if (HAS_PERM(currentuser, PERM_BASIC))
         prints("Real Name: %s \n", lookupuser->realname);

@@ -39,7 +39,7 @@ int real;
     
 struct stat st;
     
-int num, diff;
+int num, diff, exp;
 
     
 
@@ -87,11 +87,12 @@ if (real)
            u->numposts, post_in_tin( u->userid ));
            }  removed by stephen 2000-11-02 */ 
         /*    } */ 
-        /* move these things, alex , 97.6
+#ifdef NINE_BUILD
            exp=countexp(u);
            prints("经验值       : %d(%s)\n",exp,cexp(exp));
            exp=countperf(u);
-           prints("表现值       : %d(%s)\n",exp,cperf(exp));  */ 
+           prints("表现值       : %d(%s)\n",exp,cperf(exp));
+#endif
         prints("上站总时数   : %d 小时 %d 分钟\n", u->stay / 3600, (u->stay / 60) % 60);
     
 setmailfile(genbuf, u->userid, DOT_DIR);
