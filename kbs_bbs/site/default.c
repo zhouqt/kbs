@@ -356,6 +356,13 @@ int multilogin_user(struct userec *user, int usernum)
 #endif
 
 #ifdef USE_DEFAULT_USER_LIFE
+#define LIFE_DAY_USER		120
+#define LIFE_DAY_YEAR          365
+#define LIFE_DAY_LONG		666
+#define LIFE_DAY_SYSOP		120
+#define LIFE_DAY_NODIE		999
+#define LIFE_DAY_NEW		15
+#define LIFE_DAY_SUICIDE	15
 int compute_user_value(struct userec *urec)
 {
     int value;

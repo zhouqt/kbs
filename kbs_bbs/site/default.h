@@ -173,7 +173,6 @@
 #define       LENGTH_ACBOARD_LINE     300
 #endif
 
-
 #ifndef DAY_DELETED_CLEAN /*版面垃圾箱和回收站的清除天数*/
 #define DAY_DELETED_CLEAN	97
 #endif
