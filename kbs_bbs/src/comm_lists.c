@@ -234,7 +234,8 @@ static int domenu_screen(struct smenuitem *dopm,char*     cmdprompt)
 
     int n;
 
-    if(!DEFINE(currentuser,DEF_NORMALSCR))
+/*    if(!DEFINE(currentuser,DEF_NORMALSCR))
+ */
         clear();
     help = (currentuser->flags[0] & CURSOR_FLAG);
     line = 3;
