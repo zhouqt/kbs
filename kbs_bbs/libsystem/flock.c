@@ -41,26 +41,38 @@ int flock(int fd, int operation)
 {
 	struct flock fl;
 	int ret;
+	int cmd;
 
+	if (operation & LOCK_NB)
+		cmd = F_SETLK;
+	else
+		cmd = F_SETLKW;
 	fl.l_whence = SEEK_SET;
 	fl.l_start = 0;
 	fl.l_len = 0;
-	switch (operation)
+	switch (operation & (~LOCK_NB))
 	{
 	case LOCK_SH:
 		fl.l_type = F_RDLCK;
-		ret = fcntl(fd, F_SETLKW, &fl);
+		ret = fcntl(fd, cmd, &fl);
 		break;
 	case LOCK_EX:
 		fl.l_type = F_WRLCK;
-		ret = fcntl(fd, F_SETLKW, &fl);
+		ret = fcntl(fd, cmd, &fl);
 		break;
 	case LOCK_UN:
 		fl.l_type = F_UNLCK;
-		ret = fcntl(fd, F_SETLKW, &fl);
+		ret = fcntl(fd, cmd, &fl);
 		break;
 	default:
 		ret = -1;
+		errno = EINVAL;
+		return ret;
+	}
+	if (ret == -1)
+	{
+		if (errno == EAGAIN || errno == EACCES)
+			errno = EWOULDBLOCK;
 	}
 	return ret;
 }
