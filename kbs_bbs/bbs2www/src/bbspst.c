@@ -20,11 +20,11 @@ int main()
     strsncpy(title, getparm("title"), 50);
     strsncpy(oldfilename, getparm("refilename"), 80);
     strsncpy(buf, getparm("attach"), 3);
+	strsncpy(userid, getparm("userid"), 40);
     if (atoi(buf)!=0)
         attach=true;
     if (title[0] && strncmp(title, "Re: ", 4))
         sprintf(title, "Re: %s", getparm("title"));
-    strsncpy(userid, getparm("userid"), 40);
     if (file[0]&&(VALID_FILENAME(file) < 0))
         http_fatal("错误的文件名");
     if (!haspostperm(currentuser, board))
@@ -65,10 +65,23 @@ int main()
     if (file[0]) {
         int lines = 0;
 
-        printf("【 在 %s 的大作中提到: 】\n", userid);
-        sprintf(path, "boards/%s/%s", board, file);
+		setbfile(path, board, file);
         fp = fopen(path, "r");
         if (fp) {
+			char *ptr;
+			char *quser;
+
+			quser = userid;
+            fgets(buf, 256, fp);       /* 取出第一行中 被引用文章的 作者信息 */
+            if ((ptr = strrchr(buf, ')')) != NULL) {    /* 第一个':'到最后一个 ')' 中的字符串 */
+                ptr[1] = '\0';
+                if ((ptr = strchr(buf, ':')) != NULL) {
+                    quser = ptr + 1;
+                    while (*quser == ' ')
+                        quser++;
+                }
+            }
+			printf("\n【 在 %s 的大作中提到: 】\n", quser);
             for (i = 0; i < 3; i++) {
                 if (fgets(buf, 500, fp) == 0)
                     break;
