@@ -127,7 +127,7 @@
 #define PERM_BOARDS     002000
 #define PERM_ACCOUNTS   004000
 #define PERM_CHATCLOAK  010000
-#define PERM_OVOTE      020000
+#define PERM_DENYRELAX  020000
 #define PERM_SYSOP      040000
 #define PERM_POSTMASK  0100000
 #define PERM_ANNOUNCE  0200000
@@ -156,7 +156,7 @@
    too. For example, anyone with PERM_SYSOP or PERM_BOARDS or both has
    PERM_SEEBLEVELS. */
 
-#define PERM_ADMINMENU  (PERM_ACCOUNTS | PERM_OVOTE | PERM_SYSOP|PERM_OBOARDS|PERM_WELCOME)
+#define PERM_ADMINMENU  (PERM_ACCOUNTS | PERM_SYSOP|PERM_OBOARDS|PERM_WELCOME)
 #define PERM_MULTILOG   (PERM_SYSOP | PERM_ANNOUNCE | PERM_OBOARDS)
 #define PERM_LOGINCLOAK (PERM_SYSOP | PERM_ACCOUNTS | PERM_BOARDS | PERM_OBOARDS | PERM_WELCOME)
 #define PERM_SEEULEVELS (PERM_SYSOP | PERM_BOARDS)
@@ -242,7 +242,7 @@ const char *permstrings[] = {
         "板主",                 /* PERM_BOARDS */
         "帐号管理员",           /* PERM_ACCOUNTS */
         "HAPPY 智囊团",       /* PERM_CHATCLOAK */
-        "投票管理员",           /* PERM_OVOTE */
+        "封禁娱乐权限",           /* PERM_DENYRELAX */
         "系统维护管理员",       /* PERM_SYSOP */
         "Read/Post 限制",       /* PERM_POSTMASK */
         "精华区总管",           /* PERM_ANNOUNCE*/

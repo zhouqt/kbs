@@ -88,7 +88,7 @@ uleveltochar( char *buf, struct userec *lookupuser ) /* 取用户权限中文说明 Bigma
     else if (lvl & (PERM_LOGINOK)) {
         if (lookupuser->flags[0] & GIVEUP_FLAG)
             strcpy(buf, "戒网");
-        else if (!(lvl & (PERM_CHAT)) || !(lvl & (PERM_PAGE)) || !(lvl & (PERM_POST)) || (lvl & (PERM_DENYMAIL)))
+        else if (!(lvl & (PERM_CHAT)) || !(lvl & (PERM_PAGE)) || !(lvl & (PERM_POST)) || (lvl & (PERM_DENYMAIL)) || (lvl & (PERM_DENYRELAX)))
             strcpy(buf, "受限");
         else
             strcpy(buf, "用户");
