@@ -331,15 +331,15 @@ void start_game()
             total++;
     if(total<6) {
         send_msg(inrooms.peoples+me, "\x1b[31;1m至少6人参加才能开始游戏\x1b[m");
-        kill(inrooms.peoples[me].pid, SIGUSR1);
         end_change_inroom();
+        kill(inrooms.peoples[me].pid, SIGUSR1);
         return;
     }
-    if(totalk==0) totalk=((double)total*3/10+0.5);
+    if(totalk==0) totalk=((double)total/6+0.5);
     if(totalk>total) {
         send_msg(inrooms.peoples+me, "\x1b[31;1m总人数少于要求的坏人人数,无法开始游戏\x1b[m");
-        kill(inrooms.peoples[me].pid, SIGUSR1);
         end_change_inroom();
+        kill(inrooms.peoples[me].pid, SIGUSR1);
         return;
     }
     inrooms.status = INROOM_NIGHT;
@@ -360,9 +360,9 @@ void start_game()
         if(!(inrooms.peoples[i].flag&PEOPLE_KILLER))
             send_msg(inrooms.peoples+i, "现在是晚上...");
     }
+    end_change_inroom();
     for(i=0;i<myroom->people;i++)
         kill(inrooms.peoples[i].pid, SIGUSR1);
-    end_change_inroom();
 }
 
 #define menust 8
