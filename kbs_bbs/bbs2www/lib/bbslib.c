@@ -835,7 +835,9 @@ int sig_append(FILE * fp, char *id, int sig)
 		{
 			if (fgets(buf, sizeof(buf), fp2) == NULL)
 				break;
-			fprintf(fp, "%s", unix_string(buf));
+			unix_string(buf);
+			if (buf[0] != '\n')
+				fprintf(fp, "%s", buf);
 		}
 		/* 读入签名档成功，设置默认签名档为当前使用的签名档 */
 		if (i > skip_lines)
