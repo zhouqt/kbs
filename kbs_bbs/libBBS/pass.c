@@ -25,7 +25,24 @@
 #include <sys/param.h>
 #include <sys/resource.h>
 #include "md5.h"
+/*
+#include "w_md5.h"
 
+
+void w_igenpass(const char *passwd,const char *userid,unsigned char md5passwd[])
+{
+    static const char passmagic[]="wwj&kcn4SMTHBBS MD5 p9w2d gen2rat8, //grin~~, 2001/5/7";
+    w_MD5_CTX md5;
+    w_MD5Init(&md5);
+    
+    w_MD5Update(&md5,(unsigned char *)passmagic,strlen(passmagic));
+    w_MD5Update(&md5,(unsigned char *)passwd,strlen(passwd));
+    w_MD5Update(&md5,(unsigned char *)passmagic,strlen(passmagic));
+    w_MD5Update(&md5,(unsigned char *)userid,strlen(userid));
+    
+    w_MD5Final(&md5,md5passwd);
+}
+*/
 
 void igenpass(const char *passwd,const char *userid,unsigned char md5passwd[])
 {
@@ -39,7 +56,7 @@ void igenpass(const char *passwd,const char *userid,unsigned char md5passwd[])
     MD5Update(&md5,(unsigned char *)passmagic,strlen(passmagic));
     MD5Update(&md5,(unsigned char *)userid,strlen(userid));
     
-    MD5Final(&md5,md5passwd);
+    MD5Final(md5passwd,&md5);
 }
 
 int setpasswd(const char *passwd,struct userec *user)
@@ -56,7 +73,17 @@ int checkpasswd2(const char * passwd,const struct userec *user)
     } else {
         unsigned char md5passwd[MD5_DIGEST_LENGTH];
         igenpass(passwd,user->userid,md5passwd);
-        return !memcmp(md5passwd,user->md5passwd,MD5_DIGEST_LENGTH);
+/*
+        if (memcmp(md5passwd,user->md5passwd,MD5_DIGEST_LENGTH)) {
+            unsigned char w_md5passwd[MD5_DIGEST_LENGTH];
+            w_igenpass(passwd,user->userid,w_md5passwd);
+            if (memcmp(w_md5passwd,user->md5passwd,MD5_DIGEST_LENGTH)) return 0;
+            memcpy(user->md5passwd,md5passwd,MD5_DIGEST_LENGTH);
+            log("5system","Convert %s password.",user->userid);
+        }
+	return 1;
+*/
+        return !(memcmp(md5passwd,user->md5passwd,MD5_DIGEST_LENGTH));
     }
 }
 

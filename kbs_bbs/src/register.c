@@ -279,7 +279,7 @@ check_register_info()
 
     /*    if( sysconf_str( "IDENTFILE" ) != NULL ) {  commented out by netty to save time */
     while ( strlen( currentuser->username ) < 2 ) {
-        getdata( 2, 0, "ÇëÊäÈëÄúµÄêÇ³Æ:(ÀýÈç,Íú²Æ) << ", buf, NAMELEN,DOECHO,NULL ,YEA);
+        getdata( 2, 0, "ÇëÊäÈëÄúµÄêÇ³Æ:(ÀýÈç," DEFAULT_NICK ") << ", buf, NAMELEN,DOECHO,NULL ,YEA);
         strcpy(currentuser->username,buf);
         strcpy(uinfo.username,buf);
         UPDATE_UTMP_STR(username,uinfo);

@@ -59,7 +59,44 @@
 #define CHAT_SYSTEM		"系统"
 #define	CHAT_PARTY		"大家"
 
+#define DEFAULT_NICK		"每天爱你多一些"
+#ifndef EXTERN
+extern char *permstrings[];
+#else
+char *permstrings[] = {
+        "基本权力",             /* PERM_BASIC */
+        "进入聊天室",           /* PERM_CHAT */
+        "呼叫他人聊天",         /* PERM_PAGE */
+        "发表文章",             /* PERM_POST */
+        "使用者资料正确",       /* PERM_LOGINOK */
+        "禁止发表文章",         /* PERM_DENYPOST */
+        "可隐身",               /* PERM_CLOAK */
+        "可见隐身",             /* PERM_SEECLOAK */
+        "长期帐号",         /* PERM_XEMPT */
+        "编辑系统档案",         /* PERM_WELCOME */
+        "板主",                 /* PERM_BOARDS */
+        "帐号管理员",           /* PERM_ACCOUNTS */
+        "水木清华智囊团",       /* PERM_CHATCLOAK */
+        "投票管理员",           /* PERM_OVOTE */
+        "系统维护管理员",       /* PERM_SYSOP */
+        "Read/Post 限制",       /* PERM_POSTMASK */
+        "精华区总管",           /* PERM_ANNOUNCE*/
+        "讨论区总管",           /* PERM_OBOARDS*/
+        "活动看版总管",         /* PERM_ACBOARD*/
+        "不能 ZAP(讨论区专用)", /* PERM_NOZAP*/
+        "聊天室OP(元老院专用)", /* PERM_CHATOP */
+        "系统总管理员",         /* PERM_ADMIN */
+        "特殊权限 4",           /* PERM_UNUSE?*/
+        "特殊权限 5",           /* PERM_UNUSE?*/
+        "特殊权限 6",           /* PERM_UNUSE?*/
+        "特殊权限 7",           /* PERM_UNUSE?*/
+        "自杀进行中",           /* PERM_UNUSE?*/
+        "特殊权限 9",           /* PERM_UNUSE?*/
+        "看系统讨论版",           /* PERM_UNUSE?*/
+        "封禁Mail",           /* PERM_DENYMAIL*/
 
+};
+#endif
 
     static char    *explain[] = {
         "本站系统",

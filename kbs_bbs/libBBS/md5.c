@@ -283,7 +283,7 @@ static void md5_block(MD5_CTX *c, register ULONG *X)
 	c->D+=D&0xffffffffL;
 }
 
-void MD5Final(MD5_CTX *c,unsigned char *md)
+void MD5Final(unsigned char* md,MD5_CTX *c)
 {
 	register int i,j;
 	register ULONG l;

@@ -78,48 +78,7 @@
 #define DEFINE(x)     ((x)?currentuser->userdefine&(x):1)
 
 
-#ifndef EXTERN
-extern char *permstrings[];
-#else
-
 /*#define NUMPERMS (30)*//*Define in bbs.h*/
-
-/* You might want to put more descriptive strings for SPECIAL1 and SPECIAL2
-   depending on how/if you use them. */
-char *permstrings[] = {
-        "基本权力",             /* PERM_BASIC */
-        "进入聊天室",           /* PERM_CHAT */
-        "呼叫他人聊天",         /* PERM_PAGE */
-        "发表文章",             /* PERM_POST */
-        "使用者资料正确",       /* PERM_LOGINOK */
-        "禁止发表文章",         /* PERM_DENYPOST */
-        "可隐身",               /* PERM_CLOAK */
-        "可见隐身",             /* PERM_SEECLOAK */
-        "长期帐号",         /* PERM_XEMPT */
-        "编辑系统档案",         /* PERM_WELCOME */
-        "板主",                 /* PERM_BOARDS */
-        "帐号管理员",           /* PERM_ACCOUNTS */
-        NAME_BBS_CHINESE "智囊团",       /* PERM_CHATCLOAK */
-        "投票管理员",           /* PERM_OVOTE */
-        "系统维护管理员",       /* PERM_SYSOP */
-        "Read/Post 限制",       /* PERM_POSTMASK */
-        "精华区总管",           /* PERM_ANNOUNCE*/
-        "讨论区总管",           /* PERM_OBOARDS*/
-        "活动看版总管",         /* PERM_ACBOARD*/
-        "不能 ZAP(讨论区专用)", /* PERM_NOZAP*/
-        "聊天室OP(元老院专用)", /* PERM_CHATOP */
-        "系统总管理员",         /* PERM_ADMIN */
-        "荣誉帐号",          	/* PERM_HORNOR*/
-        "看秘密精华区",         /* PERM_SECANC*/
-        "看Girl版",           /* PERM_GIRL*/
-        "看Sexy版",           /* PERM_SEXY*/
-        "自杀进行中",           /* PERM_SUICIDE?*/
-        "观音姐姐",           /* PERM_MM*/
-        "看系统讨论版",           /* PERM_DISS*/
-        "封禁Mail",           /* PERM_DENYMAIL*/
-
-};
-#endif
 
 #define DEF_ACBOARD      000001
 #define DEF_COLOR        000002
