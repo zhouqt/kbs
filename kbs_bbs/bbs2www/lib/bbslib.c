@@ -1322,8 +1322,8 @@ if( oldidx != 0 && fromhostn->s_addr == wwwguest_shm->guest_entry[oldidx].fromip
 							*idx = i*32+j;
 							break;
 						}
-					} else
-						map = map >> 1;
+					}
+					map = map >> 1;
 				}
         	}
 			if( num == -1 )
