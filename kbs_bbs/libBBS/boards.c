@@ -810,7 +810,6 @@ int haspostperm(struct userec *user, char *bname)
         return 0;
     if (bcache[i-1].flag&BOARD_GROUP) //目录先不能写
         return 0;
-    if (bcache[i-1].title_level&&(bcache[i-1].title_level!=user->title)) return 0;
 
     if (!HAS_PERM(user, PERM_POST)) {
         if(!strcasecmp(user->userid, "guest"))
@@ -839,6 +838,7 @@ int haspostperm(struct userec *user, char *bname)
         return 1;
     } else
         return 0;
+    if (bcache[i-1].title_level&&(bcache[i-1].title_level!=user->title)) return 0;
 }
 
 int chk_BM_instr(const char BMstr[STRLEN - 1], const char bmname[IDLEN + 2])
