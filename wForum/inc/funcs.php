@@ -715,21 +715,26 @@ function decodesessionchar($ch)
 /* µÇÂ¼Ïà¹Ø´úÂë */
 $loginok=0;
 
-@$fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
-  if ($fullfromhost=="") {
-	  @$fullfromhost=$_SERVER["REMOTE_ADDR"];
-	  $fromhost=$fullfromhost;
-  }
-  else {
-	$str = strrchr($fullfromhost, ",");
-	if ($str!=FALSE)
-		$fromhost=substr($str,1);
-		else
-		$fromhost=$fullfromhost;
-  }
-
-//sometimes,fromhost has strang space
-bbs_setfromhost(trim($fromhost),trim($fullfromhost));
+function setfromhost() {
+    global $fullfromhost;
+    global $fromhost;
+    @$fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
+      if ($fullfromhost=="") {
+    	  @$fullfromhost=$_SERVER["REMOTE_ADDR"];
+    	  $fromhost=$fullfromhost;
+      }
+      else {
+    	$str = strrchr($fullfromhost, ",");
+    	if ($str!=FALSE)
+    		$fromhost=substr($str,1);
+    		else
+    		$fromhost=$fullfromhost;
+      }
+    
+    //sometimes,fromhost has strang space
+    bbs_setfromhost(trim($fromhost),trim($fullfromhost));
+}
+setfromhost();
 
 $compat_telnet=0;
 @$sessionid = $_GET["sid"];

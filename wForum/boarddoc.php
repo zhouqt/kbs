@@ -11,6 +11,10 @@ global $page;
 global $ftype;
 global $sorted;
 global $readmode;
+global $conphp;
+
+if (isset($_GET["google"])) $conphp = "bbscon.php";
+else $conphp = "boardcon.php";
 
 preprocess();
 
@@ -89,6 +93,7 @@ function preprocess(){
 
 function showBoardContents($boardID,$boardName,$page,$ftype,$sorted){
 	global $dir_modes;
+	global $conphp;
 	$total = bbs_countarticles($boardID, $ftype);
 	if ($total<=0) {
 ?>
@@ -130,7 +135,7 @@ function showBoardContents($boardID,$boardName,$page,$ftype,$sorted){
 			$title = htmlspecialchars($article["TITLE"]);
 			if (strncmp($title, "Re: ", 4) != 0)
 				$title = "¡ñ&nbsp;&nbsp;" . $title;
-			$url = "boardcon.php?bid=$boardID&amp;id=".$article["ID"]."&amp;ftype=$ftype";
+			$url = "$conphp?bid=$boardID&amp;id=".$article["ID"]."&amp;ftype=$ftype";
 			if (!$sorted) {
 				$url .= "&amp;num=$cur";
 			}

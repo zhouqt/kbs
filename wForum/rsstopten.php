@@ -18,7 +18,6 @@ if (cache_header("public",$modifytime,300)) {
 
 $channel = get_channel($modifytime);
 $items = get_items($filename);
-header("Content-Type: text/xml; charset=$HTMLCharset");
 header("Content-Disposition: inline;filename=rsstopten.xml");
 echo generate_rss($channel, $items);
 

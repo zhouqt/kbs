@@ -31,8 +31,8 @@ define('SHOW_REGISTER_TIME', false); // «∑Ò÷ß≥÷œ‘ æ’Ê µ”√ªß–≈œ¢£®∞¸¿®”√ªß◊¢≤· ±º
 define("TREEVIEW_MAXITEM", 201);
 
 /* ∏Ωº˛œ‡πÿ */
-define("ATTACHMAXSIZE", "10485760");
-define("ATTACHMAXTOTALSIZE", "10485760");
+define("ATTACHMAXSIZE", "4194304");
+define("ATTACHMAXTOTALSIZE", "4194304");
 define("ATTACHMAXCOUNT", "20");
 
 /* ◊‘∂®“ÂÕ∑œÒœ‡πÿ */
