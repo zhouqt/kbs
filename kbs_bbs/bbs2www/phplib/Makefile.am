@@ -4,6 +4,6 @@ lib_LTLIBRARIES = libphpbbslib.la
 phpdir=@PHPBBSLIBPATH@
 php_DATA=funcs.php
 libphpbbslib_la_SOURCES = phpbbslib.c
-libphpbbslib_la_LIBADD = -L../../libBBS -lBBS -L../../libsystem -lsystem ../lib/.libs/libbbslib.a
+libphpbbslib_la_LIBADD = -L../../libBBS -lBBS -L../../libsystem -lsystem -L../lib -lbbslib
 AM_CFLAGS  = -I$(top_builddir)/include -I../../src -I@PHPBASE@ -I@PHPBASE@/main -I@PHPBASE@/Zend -I@PHPBASE@/TSRM -DSMTH
 CLEANFILES=@EXTRA_CLEAN@
