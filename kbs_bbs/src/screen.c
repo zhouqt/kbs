@@ -312,7 +312,7 @@ void refresh()
         p=ii+1;
 
         for (k = 0; k < scr_cols; k++)
-        if(!ndiff(j,k)&&(isprint2(bp[j].data[k]))||(k>=p&&count>=5)) {
+        if(!ndiff(j,k)&&(isprint2(bp[j].data[k]))||(k>=p&&count>=3)) {
             stackt=0;
             rel_move(tc_col, tc_line, k, i);
             s = bp[j].mode[k];
@@ -370,7 +370,7 @@ void refresh()
                 output(buf, pos);
                 stackt=0; 
             }
-            if(k>=p&&p<=scr_cols-5) {
+            if(k>=p&&p<=scr_cols-4) {
                 memcpy(bp[j].ldata+k, bp[j].data+k, scr_cols-k);
                 memcpy(bp[j].lmode+k, bp[j].mode+k, scr_cols-k);
                 memcpy(bp[j].lcolor+k, bp[j].color+k, scr_cols-k);
