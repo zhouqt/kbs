@@ -23,7 +23,7 @@ if (!mysql_query($query)) {
 	html_error_quit("插入过滤表出错");
 }
 
-$query = "UPDATE nodes SET `body` = '@ 本文已被管理员删除 @' where `nid` = " . $nid . ";";
+$query = "UPDATE nodes SET `body` = '@ @ 本文已被管理员删除 @ @' where `nid` = " . $nid . ";";
 if (!mysql_query($query)) {
 	html_error_quit("修改原文出错");
 }
