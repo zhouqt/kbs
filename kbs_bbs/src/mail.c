@@ -1033,6 +1033,7 @@ char *direct;
             delete_it = true;
         default:
             done = true;
+            
         }
     }
     if (delete_it)
@@ -1046,7 +1047,7 @@ char *direct;
         return READ_NEXT;
 
     /* read prev mail  .  binxun 2003.5*/
-    if(readprev = true)
+    if(readprev == true)
 	return READ_PREV;
     
     return FULLUPDATE;
