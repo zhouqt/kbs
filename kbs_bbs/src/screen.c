@@ -238,7 +238,7 @@ void refresh()
         return;
     }
 
-    if (icurrchar!=ibufsize)
+    if (num_in_buf() != 0)
         return;
     if (scrollcnt < 0) {
         char buf[10];

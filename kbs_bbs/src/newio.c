@@ -206,15 +206,7 @@ void set_alarm(int set_timeout, int set_timeoutusec,void (*timeout_func) (void *
 
 int num_in_buf()
 {
-    /*---   Modified according to zhch@dii	period	2000-11-21	---*/
-    /*
-     * return icurrchar - ibufsize ; 
-     */
-    int n;
-
-    if ((n = icurrchar - ibufsize) < 0)
-        n = 0;
-    return n;
+    return icurrchar - ibufsize ; 
 }
 
 int telnet_state = 0;
