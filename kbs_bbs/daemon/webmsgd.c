@@ -101,7 +101,8 @@ msglist_t *search_msglist(int utmpnum, char *userid)
 /*
  * 用于把消息字符串保存到用户的消息列表中
  */
-int save_msg(int destutmp, char *destid, int srcutmp, char *srcid, char *msg)
+int save_msg(int destutmp, char *destid, int srcutmp, char *srcid, 
+			 time_t sndtime, char *msg)
 {
     msglist_t *ml;
 
@@ -113,6 +114,7 @@ int save_msg(int destutmp, char *destid, int srcutmp, char *srcid, char *msg)
         strncpy(ml->msgs[0].srcid, srcid, IDLEN);
         ml->msgs[0].srcid[IDLEN] = '\0';
         ml->msgs[0].srcutmp = srcutmp;
+		ml->msgs[0].sndtime = sndtime;
         strncpy(ml->msgs[0].msg, msg, MSG_LEN);
         ml->msgs[0].msg[MSG_LEN] = '\0';
         ml->msgnum++;
@@ -127,6 +129,7 @@ int save_msg(int destutmp, char *destid, int srcutmp, char *srcid, char *msg)
         strncpy(ml->msgs[i].srcid, srcid, IDLEN);
         ml->msgs[i].srcid[IDLEN] = '\0';
         ml->msgs[i].srcutmp = srcutmp;
+		ml->msgs[i].sndtime = sndtime;
         strncpy(ml->msgs[i].msg, msg, MSG_LEN);
         ml->msgs[i].msg[MSG_LEN] = '\0';
         ml->msgnum++;
@@ -138,7 +141,8 @@ int save_msg(int destutmp, char *destid, int srcutmp, char *srcid, char *msg)
 /*
  * 从用户的消息列表中取出一条消息
  */
-int get_msg(int destutmp, char *destid, int *srcutmp, char *srcid, char *msg)
+int get_msg(int destutmp, char *destid, int *srcutmp, char *srcid, 
+			time_t *sndtime, char *msg)
 {
     msglist_t *ml;
     int i;
@@ -152,6 +156,7 @@ int get_msg(int destutmp, char *destid, int *srcutmp, char *srcid, char *msg)
         i = MSG_NUM;
     --i;
     *srcutmp = ml->msgs[i].srcutmp;
+	*sndtime = ml->msgs[i].sndtime;
     strncpy(srcid, ml->msgs[i].srcid, IDLEN);
     srcid[IDLEN] = '\0';
     strncpy(msg, ml->msgs[i].msg, MSG_LEN);
@@ -293,11 +298,12 @@ int read_msg(bbsmsg_t * msgbuf)
     char destid[IDLEN + 1];
     int srcutmp;
     char srcid[IDLEN + 1];
+	time_t sndtime;
 
     assert(msgbuf != NULL);
     if (msgbuf->type != MSGD_SND)
         return -1;
-    /* rawdata should be "SND destid destutmp srcid srcutmp\n" */
+    /* rawdata should be "SND destid destutmp srcid srcutmp sndtime\n" */
     if ((ptr = strchr(msgbuf->rawdata, ' ')) == NULL)
         return -1;
     *ptr++ = '\0';
@@ -316,9 +322,14 @@ int read_msg(bbsmsg_t * msgbuf)
     strncpy(srcid, ptr, sizeof(srcid) - 1);
     srcid[sizeof(srcid) - 1] = '\0';
     srcutmp = atoi(ptr2);
+    if ((ptr = strchr(ptr2, ' ')) == NULL)
+        return -1;
+    *ptr++ = '\0';
+	sndtime = atoi(ptr);
     /* 检查 srcid 能否发消息给 destid */
     /*
-     * 后面补上
+     * The webmsgd program doesn't check whether destid can send message to
+	 * srcid or not. The sendmsgfunc() function does the checking.
      */
     msgbuf->type = MSGD_OK;
     snprintf(msgbuf->rawdata, sizeof(msgbuf->rawdata), "OK Ready to receive %s(%d)'s message\n", destid, destutmp);
@@ -334,7 +345,7 @@ int read_msg(bbsmsg_t * msgbuf)
     *ptr++ = '\0';
     if ((ptr2 = strrchr(ptr, '\n')) != NULL)
         *ptr2 = '\0';
-    if (save_msg(destutmp, destid, srcutmp, srcid, ptr) < 0) {
+    if (save_msg(destutmp, destid, srcutmp, srcid, sndtime, ptr) < 0) {
         msgbuf->type = MSGD_ERR;
         snprintf(msgbuf->rawdata, sizeof(msgbuf->rawdata), "ERR Saving %s(%d)'s message failed\n", destid, destutmp);
         write_response(msgbuf);
@@ -361,6 +372,7 @@ int write_msg(bbsmsg_t * msgbuf)
     int srcutmp;
     char srcid[IDLEN + 1];
     char buf[MSG_LEN + 1];
+	time_t sndtime;
 
     assert(msgbuf != NULL);
     if (msgbuf->type != MSGD_RCV)
@@ -375,14 +387,16 @@ int write_msg(bbsmsg_t * msgbuf)
     strncpy(destid, ptr, sizeof(destid) - 1);
     destid[sizeof(destid) - 1] = '\0';
     destutmp = atoi(ptr2);
-    if (get_msg(destutmp, destid, &srcutmp, srcid, buf) < 0) {
+    if (get_msg(destutmp, destid, &srcutmp, srcid, &sndtime, buf) < 0) {
         msgbuf->type = MSGD_ERR;
-        snprintf(msgbuf->rawdata, sizeof(msgbuf->rawdata), "ERR Geting %s(%d)'s message failed\n", destid, destutmp);
+        snprintf(msgbuf->rawdata, sizeof(msgbuf->rawdata), 
+				 "ERR Geting %s(%d)'s message failed\n", destid, destutmp);
         write_response(msgbuf);
         return -1;
     }
     msgbuf->type = MSGD_FRM;
-    snprintf(msgbuf->rawdata, sizeof(msgbuf->rawdata), "FRM %s %d\n", srcid, srcutmp);
+    snprintf(msgbuf->rawdata, sizeof(msgbuf->rawdata), "FRM %s %d %d\n", 
+			 srcid, srcutmp, sndtime);
     write_response(msgbuf);
     if (read_request(msgbuf->sockfd, msgbuf) < 0)
         return -1;
