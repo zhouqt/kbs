@@ -237,11 +237,11 @@ struct room_struct * find_room(char * s)
 }
 
 struct room_struct * myroom;
-int selected = 0;
+int selected = 0, ipage=0;
 
 void refreshit()
 {
-    int i,j;
+    int i,j,me;
     for(i=0;i<t_lines-1;i++) {
         move(i, 0);
         clrtoeol();
@@ -258,15 +258,40 @@ void refreshit()
     prints("系〞〞〞〞〞〞〞究系〞〞〞〞〞〞〞〞〞〞〞〞〞〞〞〞〞〞〞〞〞〞〞〞〞〞〞〞〞究");
     for(i=2;i<=t_lines-3;i++) {
         move(i,0); prints("岫");
-        move(i,14); prints("岫");
         move(i,16); prints("岫");
+        move(i,18); prints("岫");
         move(i,78); prints("岫");
     }
-    resetcolor();
-    for(i=0;i<myroom->people;i++) {
-        move(i+2,0);
-        prints(inrooms.peoples[i].id);
+    for(me=0;me<myroom->people;me++)
+        if(inrooms.peoples[me].pid == uinfo.pid) break;
+    for(i=2;i<=t_lines-3;i++) 
+    if(ipage+i>=0&&ipage+i<myroom->people) {
+        if(inrooms.peoples[i].flag&PEOPLE_KILLER && (inrooms.peoples[me].flag&PEOPLE_KILLER ||
+            inrooms.peoples[me].flag&PEOPLE_SPECTATOR ||
+            !(inrooms.peoples[i].flag&PEOPLE_ALIVE))) {
+            resetcolor();
+            move(i,2);
+            setfcolor(RED, 1);
+            prints("*");
+        }
+        if(!inrooms.peoples[i].flag&PEOPLE_ALIVE) {
+            resetcolor();
+            move(i,3);
+            setfcolor(BLUE, 1);
+            prints("X");
+        }
+        resetcolor();
+        move(i,4);
+        if(ipage+i==selected) {
+            setbcolor(GREEN);
+            setfcolor(YELLOW, 1);
+        }
+        if(inrooms.peoples[i].nick[0])
+            prints(inrooms.peoples[i].nick);
+        else
+            prints(inrooms.peoples[i].id);
     }
+    resetcolor();
     for(i=2;i<=t_lines-3;i++) 
     if(msgst-1-(t_lines-3-i)>=0)
     {
