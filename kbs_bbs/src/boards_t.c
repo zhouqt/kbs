@@ -10,6 +10,7 @@ extern int	zapbuf_changed;
 extern int     brdnum;
 extern int yank_flag;
 extern char    *boardprefix;
+static int choose_board(int  newflag ); /* 选择 版， readnew或readboard */
 
 void
 EGroup( cmd )
@@ -343,9 +344,7 @@ int     page, clsflag, newflag;
 }
 
 
-int
-choose_board( newflag ) /* 选择 版， readnew或readboard */
-int     newflag;
+static int choose_board(int  newflag ) /* 选择 版， readnew或readboard */
 {
     static int  num;
     struct newpostdata newpost_buffer[ MAXBOARD ];

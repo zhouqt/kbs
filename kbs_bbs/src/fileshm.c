@@ -210,8 +210,7 @@ show_welcomeshm()
 }
 
 
-void
-show_issue()
+void show_issue()
 {
     int issues=issueshm[0].max;
 

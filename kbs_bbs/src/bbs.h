@@ -309,7 +309,9 @@ typedef size_t socklen_t;
 #include "system.h"
 #include "vars.h"
 #include "func.h"
+#ifdef BBSMAIN
 #include "defines_t.h"
+#endif
 
 #define system my_system
 #ifndef MAXPATH

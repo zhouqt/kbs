@@ -95,7 +95,7 @@ struct user_info *uin;
 }
 
 void
-wait_alarm_clock()/*Haohmaru.98.11.3*/
+wait_alarm_clock(int signo)/*Haohmaru.98.11.3*/
 {
     if(i_domode == INPUT_IDLE) {
         clear();
@@ -260,22 +260,8 @@ char *userid ;
     return usernum = 0;
 }
 
-/*int started = 0;*/
-/*
 void
-ntalk_request()
-{
-    signal(SIGUSR2,ntalk_request) ;
-    ntalkrequest = YEA ;
-    bell(); bell(); bell();
-    sleep( 1 );
-    bell(); bell(); bell(); bell(); bell();
-    return ;
-}
-*/
-
-void
-talk_request()
+talk_request(int signo)
 {
     signal(SIGUSR1,talk_request) ;
     talkrequest = YEA ;

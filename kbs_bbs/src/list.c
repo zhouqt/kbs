@@ -669,9 +669,10 @@ Show_Users()
     return 0;
 }
 
-setlistrange(i)
-int i;
-{range=i;}
+void setlistrange( int i)
+{
+	range=i;
+}
 
 
 do_query(star,curr)

@@ -372,8 +372,7 @@ alcounter(struct user_info *uentp ,char* arg,int pos)
     return 1 ;
 }
 
-int
-num_alcounter()
+int num_alcounter()
 {
 	count_friends=0;
 	count_users=0;

@@ -34,6 +34,9 @@ unsigned int result[33];
 int vnum;
 int voted_flag;
 FILE *sug;
+static int mk_result( int num);
+static int dele_vote( int num);
+static int Show_Votes();
 
 int
 cmpvuid(userid, uv)
@@ -337,9 +340,7 @@ get_result_title()
     b_suckinfile( sug, buf );
 }
 
-int
-mk_result(num)
-int num;
+static int mk_result( int num)
 {
     char fname[255],nname[255];
     char sugname[255];
@@ -728,10 +729,7 @@ char    *bname;
     return FULLUPDATE;
 }
 
-int
-vote_flag( bname, val , mode)
-char    *bname, val;
-int mode;
+int vote_flag( char* bname,char val ,int mode)
 {
     char        buf[ STRLEN ], flag;
     int         fd, num, size;
@@ -923,7 +921,7 @@ int num;
     move(t_lines-2,0);
     get_record(controlfile,&currvote,sizeof(struct votebal),num);
     sprintf(fname,"vote/%s/flag.%d",currboard,currvote.opendate);
-    if ((pos = search_record(fname, &uservote, sizeof(uservote), cmpvuid,
+    if ((pos = search_record(fname, &uservote, sizeof(uservote), (RECORD_FUNC_ARG)cmpvuid,
                              currentuser->userid)) <= 0)
     {
         (void)memset(&uservote, 0, sizeof(uservote));
@@ -981,7 +979,7 @@ case VOTE_SINGLE: case VOTE_MULTI: case VOTE_YN:
     {
         if(currvote.type!=VOTE_ASKING)
             getsug(&uservote);
-        pos = search_record(fname, &tmpbal, sizeof(tmpbal), cmpvuid,
+        pos = search_record(fname, &tmpbal, sizeof(tmpbal), (RECORD_FUNC_ARG)cmpvuid,
                             currentuser->userid);
         if (pos)
         {
@@ -1028,7 +1026,7 @@ printvote(struct  votebal *ent,int *i)
         return 0;
     sprintf(buf,"flag.%d",ent->opendate);
     setvfile(flagname,currboard,buf);
-    if (search_record(flagname, &uservote, sizeof(uservote), cmpvuid,
+    if (search_record(flagname, &uservote, sizeof(uservote), (RECORD_FUNC_ARG)cmpvuid,
                       currentuser->userid)<= 0)
     {
         voted_flag=NA;
@@ -1048,9 +1046,7 @@ printvote(struct  votebal *ent,int *i)
     return 0;
 }
 
-int
-dele_vote(num)
-int num;
+static int dele_vote( int num)
 {
     char    buf[STRLEN];
 
@@ -1094,13 +1090,13 @@ b_vote_maintain()
     return vote_maintain( currboard );
 }
 
-void
-vote_title()
+int vote_title()
 {
 
     docmdtitle("[Í¶Æ±ÏäÁĞ±í]",
                "[¡û,e] Àë¿ª [h] ÇóÖú [¡ú,r <cr>] ½øĞĞÍ¶Æ± [¡ü,¡ı] ÉÏ,ÏÂÑ¡Ôñ [1m¸ßÁÁ¶È[m±íÊ¾ÉĞÎ´Í¶Æ±");
     update_endline();
+    return 0;
 }
 
 int
@@ -1206,7 +1202,7 @@ case 'D': case 'd':
     return 1;
 }
 
-Show_Votes()
+static int Show_Votes()
 {
     int i ;
     move(3,0);

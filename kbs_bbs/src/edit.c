@@ -887,7 +887,7 @@ int saveheader ;
     return aborted;
 }
 
-keep_fail_post()
+void keep_fail_post()
 {
     char filename[STRLEN];
     char buf[STRLEN];

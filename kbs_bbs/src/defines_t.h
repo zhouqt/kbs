@@ -119,6 +119,7 @@ int del_grp(char grp[STRLEN],char bname[STRLEN],char title[STRLEN]);
 int securityreport(char* str,struct userec* lookupuser,char fdata[7][STRLEN]);
 
 /* talk.c */
+int num_alcounter();
 int ttt_talk( struct user_info *userinfo );
 int servicepage(int     line,char    *mesg);
 int addtooverride(char* uident);
@@ -149,6 +150,7 @@ int show_allmsgs();
 int do_sendmsg(struct user_info *uentp,const char msgstr[256],int mode);
 
 /* list.c */
+void setlistrange( int i);
 int t_friends();
 int fill_userlist();
 int choose(int update,int defaultn,int (*title_show)(), int (*key_deal)(), int (*list_show)(),
@@ -158,6 +160,7 @@ int choose(int update,int defaultn,int (*title_show)(), int (*key_deal)(), int (
 int Origin2(char text[256]);
 int vedit(char *filename,int saveheader);
 int vedit_post(char *filename,int saveheader );
+void keep_fail_post();
 
 /* Announce.c */
 void a_prompt(int bot,char* pmt,char* buf);
@@ -188,6 +191,7 @@ void new_register();
 void show_help(char * fname);
 
 /* fileshm.c */
+void show_issue();
 int show_statshm(char *fh,int mode);
 int fill_shmfile(int mode,char* shmkey,char* fname);
 void show_goodbyeshm();
