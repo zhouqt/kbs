@@ -1005,7 +1005,11 @@ int init_all() {
 	loginok=user_init(&currentuser, &u_info);
 	if (loginok < 0)
 	{
+		/*
 		http_redirect(NOLOGIN_PAGE);
+		exit(0);
+		*/
+		printf("<script>window.location=%s</SCRIPT>",NOLOGIN_PAGE);
 		exit(0);
 	}
 	html_init();
