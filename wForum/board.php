@@ -15,9 +15,9 @@ global $isGroup;
 
 preprocess();
 
-setStat($isGroup ? "版面列表" : "文章列表");
+setStat($isGroup ? "版面列表" : htmlspecialchars($boardArr["DESC"])." 文章列表");
 
-show_nav($boardName);
+show_nav($boardName, false, $isGroup ? "" : getBoardRSS($boardName, $boardArr['DESC']));
 
 showUserMailBoxOrBR();
 board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);

@@ -23,19 +23,23 @@
 			echo 4;
 			exit(0);
 		}
-	}
-	$isnormalboard=bbs_normalboard($board);
-	if (($loginok != 1) && !$isnormalboard) {
+	} else {
 		echo 5;
 		exit(0);
 	}
-	bbs_set_onboard($brcnum,1);
-	if($loginok == 1)
-		$usernum = $currentuser["index"];
-	if (!$isnormalboard && bbs_checkreadperm($usernum, $brdnum) == 0) {
-		echo 6;
-		exit(0);
+	if (!bbs_normalboard($board)) {
+		if($loginok == 1) {
+			$usernum = $currentuser["index"];
+			if (bbs_checkreadperm($usernum, $brdnum) == 0) {
+				echo 6;
+				exit(0);
+			}
+		} else {
+			echo 7;
+			exit(0);
+		}
 	}
+
 	if (isset($_GET["id"])) {
 		$id = $_GET["id"];
 	} else {

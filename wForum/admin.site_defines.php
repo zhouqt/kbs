@@ -1,5 +1,7 @@
 <?php
 
+exit(); //disabled by default - atppp
+
 require("inc/funcs.php");
 require("inc/user.inc.php");
 
