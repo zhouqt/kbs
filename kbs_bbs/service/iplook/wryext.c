@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <stdlib.h>
-
 char *ip2str(unsigned int v)
 {
 	static char buf[255];
@@ -17,7 +16,6 @@ char *ip2str(unsigned int v)
 }	
 void dumpcallback(unsigned int start, unsigned int end, char *location, char *area)
 {
-	struct in_addr sin,ein;
 	char sbuf[20], ebuf[20];
 	strcpy(sbuf,ip2str(ntohl(start)));
 	strcpy(ebuf,ip2str(ntohl(end)));
