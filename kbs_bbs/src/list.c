@@ -409,6 +409,7 @@ int allnum, pagenum;
     char buf[STRLEN], genbuf[5];
     static int msgflag;
     extern bool enableESC;
+    int i, buflen;
 
     if (msgflag == true) {
         show_message(NULL);
@@ -553,6 +554,22 @@ int allnum, pagenum;
         }
         msgflag = true;
         break;
+    case '/':
+        strcpy(buf, "输入所要查找的ID: ");
+        move(BBS_PAGESIZE + 3, 0);
+        clrtoeol();
+        getdata(BBS_PAGESIZE + 3, 0, buf, genbuf, IDLEN+2, DOECHO, NULL, true);
+        move(BBS_PAGESIZE + 3, 0);
+        clrtoeol();
+        buflen = strlen(genbuf);
+        if (buflen>0)
+        	for (i=0; i<range; i++)
+        		if (strncasecmp(genbuf, user_record[i]->userid, buflen) == 0) {
+        			num = i;
+        			update_time = 0;
+        			break;
+        		}
+    	break;
     default:
         return 0;
     }
