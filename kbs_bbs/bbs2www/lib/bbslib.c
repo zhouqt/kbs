@@ -1954,7 +1954,7 @@ int www_user_login(struct userec* user,int useridx,int kick_multi,char* fromhost
 
 		if(!HAS_PERM(user, PERM_BASIC))
 			return 3;
-		if(check_ban_IP(fromhost,buf))
+		if(check_ban_IP(fromhost,buf) > 0)
 			return 4;
 		t=user->lastlogin;
 		if(abs(t-time(0))<5)
