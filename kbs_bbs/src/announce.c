@@ -1097,8 +1097,10 @@ int     ch;
         case 'n':  a_newname( pm );
             pm->page = 9999;     break;
         case 'c':  a_copypaste( pm,0);  break;
+/*  do not support thread read in announce: COMMAN 2002.7
         case '=':  t_search_down();     break;
         case '+':  t_search_up();       break;
+*/
         }
 }
 
