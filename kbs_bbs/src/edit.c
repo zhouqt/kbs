@@ -709,7 +709,7 @@ long read_file(char *filename,long *attach_length)
     if ((fp = fopen(filename, "r+b")) == NULL) {
         if ((fp = fopen(filename, "w+")) != NULL) {
             fclose(fp);
-            return -1;
+            return 0;
         }
         indigestion(4);
         abort_bbs(0);
