@@ -9,6 +9,7 @@
 
 #include "bbs.h"
 #include "bbslib.h"
+#include "vote.h"
 
 static unsigned char third_arg_force_ref_1111[] = { 4, BYREF_FORCE, BYREF_FORCE, BYREF_FORCE, BYREF_FORCE };
 static unsigned char third_arg_force_ref_011[] = { 3, BYREF_NONE, BYREF_FORCE, BYREF_FORCE };
@@ -66,6 +67,7 @@ static PHP_FUNCTION(bbs_add_import_path);
 static PHP_FUNCTION(bbs_get_import_path);
 static PHP_FUNCTION(bbs_new_board);
 static PHP_FUNCTION(bbs_set_onboard);
+static PHP_FUNCTION(bbs_get_votes);
 
 
 /*
@@ -124,6 +126,7 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_get_import_path,NULL)
 		PHP_FE(bbs_new_board,NULL)
 		PHP_FE(bbs_set_onboard,NULL)
+		PHP_FE(bbs_get_votes,NULL)
         {NULL, NULL, NULL}
 };
 
@@ -1011,7 +1014,7 @@ static PHP_FUNCTION(bbs_countarticles)
     setbdir(mode, dirpath, bp->filename);
     total = get_num_records(dirpath, sizeof(struct fileheader));
     /* add by stiger */
-    sprintf(dirpath,"boards/%s/" DING_DIR,bp->filename);
+    sprintf(dirpath,"boards/%s/%s",bp->filename, DING_DIR);
     total += get_num_records(dirpath, sizeof(struct fileheader));
     /* add end */
     RETURN_LONG(total);
@@ -2751,5 +2754,67 @@ static PHP_FUNCTION(bbs_set_onboard)
             currentuinfo->currentboard = 0;
     }
     RETURN_TRUE;
+}
+
+static void bbs_make_vote_array(zval * array, struct votebal *vbal)
+{
+    add_assoc_string(array, "USERID", vbal->userid, 1);
+    add_assoc_string(array, "TITLE", vbal->title, 1);
+    add_assoc_long(array, "DATE", vbal->opendate);
+    if(vbal->type < 5 && vbal->type >= 1) add_assoc_string(array, "TYPE", vote_type[vbal->type-1], 1);
+    add_assoc_long(array, "MAXDAY", vbal->maxdays);
+}
+
+static PHP_FUNCTION(bbs_get_votes)
+{
+	int ac = ZEND_NUM_ARGS();
+	char *bname;
+	int bname_len;
+	struct votebal vbal;
+	char controlfile[STRLEN];
+	struct boardheader *bp=NULL;
+	FILE *fp;
+	int vnum,i;
+	zval *element,*retarray;
+
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sa", &bname, &bname_len, &retarray) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	if((bp=getbcache(bname))==NULL)
+		RETURN_LONG(-2);
+
+	if( ! HAS_PERM(currentuser, PERM_LOGINOK) )
+		RETURN_LONG(-1);
+
+	sprintf(controlfile,"vote/%s/control",bname);
+
+	if(array_init(retarray) != SUCCESS)
+	{
+                RETURN_LONG(-5);
+	}
+
+	vnum = get_num_records(controlfile,sizeof(struct votebal));
+
+	if(vnum <= 0)
+		RETURN_LONG(-4);
+
+	if((fp=fopen(controlfile,"r"))==NULL)
+		RETURN_LONG(-3);
+
+	for(i=0; i < vnum; i++){
+		if(fread(&vbal, sizeof(vbal), 1, fp) < 1)
+			break;
+		MAKE_STD_ZVAL(element);
+		array_init(element);
+
+		bbs_make_vote_array(element, &vbal);
+		zend_hash_index_update(Z_ARRVAL_P(retarray), i,
+				(void*) &element, sizeof(zval*), NULL);
+	}
+
+	fclose(fp);
+
+	RETURN_LONG(i);
 }
 
