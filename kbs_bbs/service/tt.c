@@ -72,7 +72,7 @@ int tt_main()
 	chdir(BBSHOME);
 	userid = getCurrentUser()->userid;
 	from = getSession()->fromhost;
-	modify_user_mode(BBSNET);
+	modify_user_mode(TETRIS);
 	
 	tt_game();
 	return 0;
