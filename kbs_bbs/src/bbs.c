@@ -1436,7 +1436,7 @@ int mode;
             local_article=YEA;
 
     modify_user_mode( POSTING );
-    strcpy(quote_board,currboard);
+/*    strcpy(quote_board,currboard);*/
     getcross( filepath ,quote_file, currentuser, in_mail,quote_board,quote_title,Anony,mode); /*根据fname完成 文件复制 */
 
     /* Changed by KCN,disable color title
