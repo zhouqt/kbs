@@ -56,8 +56,6 @@ extern int errno;
 #endif
 #endif
 
-unsigned Baudrate = 2400;
-
 FILE *fout;
 
 
@@ -65,7 +63,6 @@ int Lastrx;
 int Crcflg;
 int Firstsec;
 int errors;
-int Restricted = 1;             /* restricted; no /.. or ../ in filenames */
 int Readnum = HOWMANY;          /* Number of bytes to ask for in read() from modem */
 int skip_if_not_found;
 
@@ -73,7 +70,6 @@ char *Pathname;
 const char *program_name;       /* the name by which we were called */
 
 int MakeLCPathname = TRUE;      /* make received pathname lower case */
-int Quiet = 0;                  /* overrides logic that would otherwise set verbose */
 int Nflag = 0;                  /* Don't really transfer files */
 int Rxclob = FALSE;             /* Clobber existing file */
 int Rxbinary = FALSE;           /* receive all files in bin mode */
@@ -81,7 +77,6 @@ int Rxascii = FALSE;            /* receive files in ascii (translate) mode */
 int Thisbinary;                 /* current file is to be received in bin mode */
 int try_resume = FALSE;
 int junk_path = FALSE;
-int no_timeout = FALSE;
 enum zm_type_enum protocol;
 int zmodem_requested = FALSE;
 
@@ -125,21 +120,10 @@ char zconv;                     /* ZMODEM file conversion request */
 char zmanag;                    /* ZMODEM file management request */
 char ztrans;                    /* ZMODEM file transport request */
 int Zctlesc;                    /* Encode control characters */
-int Zrwindow = 1400;            /* RX window size (controls garbage count) */
 
 int tryzhdrtype = ZRINIT;       /* Header type to send corresponding to Last rx close */
 time_t stop_time;
 
-
-/* called by signal interrupt or terminate to clean things up */
-void bibi(int n)
-{
-    if (zmodem_requested)
-        zmputs(Attn);
-    canit(0);
-    io_mode(0, 0);
-    zmodem_error(128 + n, 0, "caught signal %d; exiting", n);
-}
 
 
 /*int main(int argc, char *argv[])
