@@ -298,6 +298,7 @@ function html_init($charset="",$title="",$otherheader="")
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>"/>
 <title><?php echo $title; ?></title>
+<link rel="stylesheet" type="text/css" href="css/ansi.css"/>
 <link rel="stylesheet" type="text/css" href="css/<?php echo $css_style; ?>.css"/>
 <script src="inc/funcs.js"  language="javascript"></script>
 <?php echo($otherheader); ?>
@@ -609,10 +610,10 @@ function head_var($Title, $URL='',$showWelcome=1)
 	  $URL=$_SERVER['PHP_SELF'];
   }
 ?>
-<BR>
 <?php
   if ($showWelcome==1) {
 ?>
+<br>
 <table cellspacing=1 cellpadding=3 align=center border=0 width="97%">
 <tr>
 <td height=25>
@@ -620,11 +621,7 @@ function head_var($Title, $URL='',$showWelcome=1)
 </td></tr>
 </table>
 <?php
-  } else {
-?>
-<BR>
-<?php
-	}
+  } 
 ?>
 <table cellspacing=1 cellpadding=3 align=center class=tableBorder2>
 <tr><td height=25 valign=middle>
@@ -658,6 +655,8 @@ function show_footer()
  , 页面执行时间：<?php  printf(number_format(($endtime-$StartTime)*1000,3)); ?>毫秒
 </td></tr>
 </table>
+<br>
+<br>
 </body>
 </html>
 <?php 

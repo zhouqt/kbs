@@ -3,9 +3,21 @@ require("inc/funcs.php");
 
 require("inc/usermanage.inc.php");
 
+require("inc/user.inc.php");
+
 setStat("用户邮件服务");
 
 show_nav();
+
+if ($loginok==1) {
+?>
+<table border="0" width="97%">
+<?php
+	showUserMailbox();
+?>
+</table>
+<?php
+}
 
 head_var($userid."的控制面板","usermanagemenu.php",0);
 
@@ -37,49 +49,46 @@ function main() {
 	if ($boxName=='inbox') {
 		showUserManageMenu();
 		showmailBoxes();
-		showmailBox('.DIR','收件箱', $startNum);
+		showmailBox('inbox','.DIR','收件箱', $startNum);
 		return true;
 	}
 	if ($boxName=='sendbox') {
 		showUserManageMenu();
 		showmailBoxes();
-		showmailBox('.SENT','发件箱',$startNum );
+		showmailBox('sendbox','.SENT','发件箱',$startNum );
 		return true;
 	}
 	if ($boxName=='deleted') {
 		showUserManageMenu();
 		showmailBoxes();
-		showmailBox('.DELETED','垃圾箱',$startNum);
+		showmailBox('deleted','.DELETED','垃圾箱',$startNum);
 		return true;
 	}
 	foundErr("您指定了错误的邮箱名称！");
 	return false;
 }
 
-function showmailBoxes() {
-?>
-<TABLE cellpadding=6 cellspacing=1 align=center class=tableborder1><TBODY><TR>
-<TD align=center class=tablebody1><a href="usermailbox.php?boxname=inbox"><img src=pic/m_inbox.gif border=0 alt=收件箱></a> &nbsp; <a href="usermailbox.php?boxname=sendbox"><img src=pic/m_outbox.gif border=0 alt=发件箱></a> &nbsp; <a href="usermailbox.php?boxname=deleted"><img src=pic/m_recycle.gif border=0 alt=废件箱></a>&nbsp; <a href="friendlist.php"><img src=pic/m_address.gif border=0 alt=地址簿></a>&nbsp;<a href=JavaScript:openScript('messanger.php?action=new',500,400)><img src=pic/m_write.gif border=0 alt=发送消息></a></td></tr></TBODY></TABLE>
-<?php
-}
 
-function showmailBox($path, $desc, $startNum){
+
+function showmailBox($boxName, $path, $desc, $startNum){
 	global $currentuser;
 ?>
 <br>
+<form action="delusermail.php" method=post id="oForm">
+<input type="hidden" name="targetbox" value="<?php echo $boxName; ?>">
 <table cellpadding=3 cellspacing=1 align=center class=tableborder1>
 <tr>
 <th valign=middle width=30 height=25>已读</th>
 <th valign=middle width=100>
 <?php   if ($Desc=="发件箱")
-    echo "发件人";  
+    echo "收件人";  
   else
-    echo "收件人";?>
+    echo "发件人";?>
 </th>
-<th valign=middle width=300>主题</th>
-<th valign=middle width=150>日期</th>
+<th valign=middle width=380>主题</th>
+<th valign=middle width=120>日期</th>
 <th valign=middle width=50>大小</th>
-<th valign=middle width=30>操作</th>
+<th valign=middle width=30>删除</th>
 </tr>
 <?php
 	$mail_fullpath = bbs_setmailfile($currentuser["userid"],$path);
@@ -98,7 +107,7 @@ function showmailBox($path, $desc, $startNum){
 	return false;
 	}
 	$num=ARTICLESPERPAGE;
-	if ($startNum > $mail_num - $num + 1) $startNum = $mail_num - $num + 1;
+	if ($startNum > $mail_num - $num ) $startNum = $mail_num - $num ;
 	if ($startNum < 0)
 	{
 		$startNum = 0;
@@ -114,47 +123,67 @@ function showmailBox($path, $desc, $startNum){
 <tr>
 <td class=tablebody1 align=center valign=middle>
 <?php 
-         if ($$maildata[$i]["FLAGS"]=='Y')
-		print "<img src=\"pic/m_news.gif\">";
-          else
-         	 print "<img src=\"".$Forum_info[7]."m_olds.gif\">";
-          break;
-        case "outbox":
-          print "<img src=\"".$Forum_info[7]."m_issend_2.gif\">";
-          break;
-        case "issend":
-          print "<img src=\"".$Forum_info[7]."m_issend_1.gif\">";
-          break;
-        case "recycle":
-          if ($rs["flag"]==0)
-		print "<img src=\"".$Forum_info[7]."m_news.gif\">";
-            else
-          	print "<img src=\"".$Forum_info[7]."m_olds.gif\">";
-          break;
-      } 
+         if ($maildata[$i]["FLAGS"]=='Y')
+			echo  '<img src="pic/m_news.gif">';
+         else
+			echo  '<img src="pic/m_olds.gif">';
 ?>
 </td>
-<td class=<?php       echo $tablebody; ?> align=center valign=middle style="<?php       echo $newstyle; ?>">
-<?php       if ($smstype=="inbox" || $smstype=="recycle")
-      {
-?>
-<a href="dispuser.php?name=<?php         echo HTMLEncode($rs["sender"]); ?>" target=_blank><?php         echo HTMLEncode($rs["sender"]); ?></a>
-<?php       }
-        else
-      {
-?>
-<a href="dispuser.php?name=<?php         echo HTMLEncode($rs["incept"]); ?>" target=_blank><?php         echo HTMLEncode($rs["incept"]); ?></a>
-<?php       } ?>
+<td class=tablebody1 align=center valign=middle style="font-weight:normal">
+<a href="userinfo.php?id=<?php echo $maildata[$i]['OWNER'] ; ?>" target=_blank><?php echo $maildata[$i]['OWNER'] ; ?></a>
 </td>
-<td class=<?php       echo $tablebody; ?> align=left style="<?php       echo $newstyle; ?>"><a href="JavaScript:openScript('messanger.php?action=<?php       echo $readaction; ?>&id=<?php       echo $rs["id"]; ?>&sender=<?php       echo $rs["sender"]; ?>',500,400)"><?php       echo HTMLEncode($rs["title"]); ?></a>	</td>
-<td class=<?php       echo $tablebody; ?> style="<?php       echo $newstyle; ?>"><?php       echo $rs["sendtime"]; ?></td>
-<td class=<?php       echo $tablebody; ?> style="<?php       echo $newstyle; ?>"><?php       echo mb_strlen($rs["content"],"EUC-JP"); ?>Byte</td>
-<td align=center valign=middle width=30 class=<?php       echo $tablebody; ?>><input type=checkbox name=id value=<?php       echo $rs["id"]; ?>></td>
+<td class=tablebody1 align=left style="font-weight:normal"><a href="usermail.php?boxname=<?php echo $boxName; ?>&num=<?php echo $i+$startNum; ?>" > <?php       echo $maildata[$i]['TITLE']; ?></a>	</td>
+<td class=tablebody1 style="font-weight:normal"><?php echo strftime("%Y-%m-%d %H:%M:%S", $maildata[$i]['POSTTIME']); ?></td>
+<td class=tablebody1 style="font-weight:normal"> N/A Byte</td>
+<td align=center valign=middle width=30 class=tablebody1><input type=checkbox name=num value=<?php echo $i+$startNum; ?>></td>
 </tr>
 <?php
 	}
 ?>
+<tr> 
+<td align=right valign=middle colspan=6 class=tablebody2>您现在已使用了<?php echo bbs_getmailusedspace() ;?>K邮箱空间，共有<?php echo $mail_num; ?>封信&nbsp;
+<?php
+			
+		if ($startNum > 0)
+		{
+			$i = $startNum - ARTICLESPERPAGE;
+			if ($i < 0) $i = 0;
+			echo ' [<a href=usermailbox.php?boxname='.$boxName.'&start=0>第一页</a>] ';
+			echo ' [<a href=usermailbox.php?boxname='.$boxName.'&start='.$i.'>上一页</a>] ';
+		} else {
+?>
+<font color=gray>[第一页]</font>
+<font color=gray>[上一页]</font>
+<?php 
+		}
+		if ($startNum < $mail_num - ARTICLESPERPAGE)
+		{
+			$i = $startNum + ARTICLESPERPAGE;
+			if ($i > $mail_num -1) $i = $mail_num -1;
+			echo ' [<a href=usermailbox.php?boxname='.$boxName.'&start='.$i.'>下一页</a>] ';
+			echo ' [<a href=usermailbox.php?boxname='.$boxName.'>最后一页</a>] ';
+		} else {
+?>
+<font color=gray>[下一页]</font>
+<font color=gray>[最后一页]</font>
+<?php
+		}
+?>
+<br>
+<input type="hidden" name="action" id="oAction">
+<script >
+function doDelete($desc,$action) {
+	if(confirm($desc))	{
+		oForm.oAction.value=$action;
+		return oForm.submit()
+	}
+	return false;
+}
+</script>
+<input type=checkbox name=chkall value=on onclick="CheckAll(this.form)">选中所有显示信件&nbsp;<input type=button onclick="doDelete('确定删除选定的纪录吗?','delete');" value="删除信件">&nbsp;<input type=button onclick="doDelete('确定清除<?php echo $desc; ?>所有的纪录吗?','deleteAll');" value="清空<?php   echo $desc; ?>"></td>
+</tr>
 </table>
+</form>
 <?php
 }
 
