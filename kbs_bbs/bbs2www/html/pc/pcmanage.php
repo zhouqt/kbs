@@ -7,12 +7,34 @@
 	**	对收藏夹的剪切、复制操作需要 session 支持 windinsn nov 25,2003
 	*/
 	require("pcfuncs.php");
+	function pc_save_posts($subject,$body) {
+?>
+<center>
+<table cellspacing="0" cellpadding="5" border="0" class="t1">
+<tr><td class="t2">请重新登录后再发表</td></tr>
+<tr><td class="t3">主题</td></tr>
+<tr><td class="t5"><input type="text" class="f1" value="<?php echo $subject; ?>" size="100" /></td></tr>
+<tr><td class="t3">内容</td></tr>
+<tr><td class="t5"><textarea class="f1" cols="120" rows="30"><?php echo $body; ?></textarea></td></tr>
+</table>
+</center>	    
+<?php	    
+	}
+	
 						
-	if ($loginok != 1)
-		html_nologin();
+	if ($loginok != 1) {
+		html_init("gb2312");
+		if ($_GET['act'] == 'post')
+		    if ($_POST['subject'] || $_POST['blogbody'])
+		        pc_save_posts($_POST['subject'],$_POST['blogbody']);
+		html_error_quit("请先登录!");	
+	}
 	elseif(!strcmp($currentuser["userid"],"guest"))
 	{
 		html_init("gb2312");
+		if ($_GET['act'] == 'post')
+		    if ($_POST['subject'] || $_POST['blogbody'])
+		        pc_save_posts($_POST['subject'],$_POST['blogbody']);
 		html_error_quit("guest 没有Blog!");
 	}
 	else
@@ -254,30 +276,6 @@
 					}
 				}
 				
-				if($pc["TMPSAVE"]) //启用发文暂存档
-				{
-?>
-<script language="javascript">
-var init = 0;
-function pc_client_tmpsave_import() 
-{
-	if (init == 0) 
-		init = 1;
-	else 
-	{
-		document.postform.action = "pctmpsave.php?userid=<?php echo $pc["USER"]; ?>&<?php echo "tag=".$tag."&pid=".$pid; ?>";
-		document.postform.target = "tmpsave";
-		document.postform.submit();
-		document.postform.action = "pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=post&<?php echo "tag=".$tag."&pid=".$pid; ?>";
-		document.postform.target = "_self;
-	}
-	setTimeout('pc_client_tmpsave_import()',<?php echo $pcconfig["TMPSAVETIME"]; ?>);	
-}
-pc_client_tmpsave_import();
-</script>
-<?php					
-				}
-				
 ?>
 <br><center>
 <form name="postform" id="postform" target="_self" action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=post&<?php echo "tag=".$tag."&pid=".$pid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
@@ -288,7 +286,7 @@ pc_client_tmpsave_import();
 </tr>
 <tr>
 	<td class="t8">主题
-	<input type="text" size="100" maxlength="200" name="subject" class="f1">
+	<input type="text" size="100" maxlength="200" name="subject" class="f1" value="<?php echo $_POST['subject']; ?>">
 	</td>
 </tr>
 <tr>
