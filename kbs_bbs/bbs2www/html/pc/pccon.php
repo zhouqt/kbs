@@ -3,7 +3,6 @@
 	** this file display article  in personal corp.
 	** @id:windinsn  Nov 19,2003
 	*/
-	@session_start();
 	require("pcfuncs.php");
 	
 	function pc_add_new_comment($pc,$nid,$alert)

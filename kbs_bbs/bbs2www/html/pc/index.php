@@ -2,7 +2,6 @@
 	/*
 	** @id:windinsn dec 3,2003
 	*/
-	@session_start();
 	require("pcfuncs.php");
 
 	function pc_get_archfile($pc,$wrap=FALSE)

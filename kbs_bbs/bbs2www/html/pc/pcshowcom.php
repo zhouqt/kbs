@@ -3,7 +3,6 @@
 	** this file display single comment
 	** @id:windinsn nov 27,2003
 	*/
-	@session_start();
 	require("pcfuncs.php");
 	function pc_add_new_comment($nid,$alert)
 	{

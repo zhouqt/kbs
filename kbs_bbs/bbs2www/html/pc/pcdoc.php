@@ -3,7 +3,6 @@
 	** this file display article list in personal corp.
 	** @id:windinsn  Nov 19,2003
 	*/
-	@session_start();
 	require("pcfuncs.php");
 	
 	function display_blog_menu($link,$pc,$tag,$tid=0)
