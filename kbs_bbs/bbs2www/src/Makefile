@@ -41,12 +41,13 @@ all: $(CGI)
 $(CGI): % : %.o
 	$(LD) $^ -o $* -lbbslib $(LDFLAGS) $(EXECLDFLAGS) -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' $(DEFINES) 
 
-
-install:
+install: $(patsubst %,$(CGIPATH)/%,$(CGI))
 	$(INSTALL) -d $(CGIPATH)
-	$(INSTALL) -m04771 $(CGI) $(CGIPATH)
 #	chmod +s $(CGIPATH)/*
 #	cp html/* $(HTMPATH)
+
+$(patsubst %,$(CGIPATH)/%,$(CGI)): $(CGIPATH)/%: %
+	$(INSTALL) -m04771 $^ $(CGIPATH)
 
 clean:
 	rm -f *.o core *.core libbbslib.a $(CGI)

@@ -48,7 +48,8 @@ install: all
 	#rm -rf $(CGIPATH)/bbslogin
 	#cp -f $(CGI) $(CGIPATH)
 	#chmod +s $(CGIPATH)/*
-	cp html/* $(HTMPATH)
+	cp -r html/* $(HTMPATH)
+	rm -rf $(HTMPATH)/CVS
 
 clean:
 	@echo "== cleanning junks, object files, and binaries .. =="

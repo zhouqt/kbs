@@ -526,6 +526,7 @@ static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown)
 static ZEND_RINIT_FUNCTION(bbs_request_init)
 {
 	getcwd(old_pwd,1023);
+	chdir(BBSHOME);
 	old_pwd[1023]=0;
 	return SUCCESS;
 }
