@@ -102,10 +102,12 @@ int brd_show_boards(int sec, char *cgi, int yank)
 		ptr = &nbrd[i];
 		check_newpost( ptr );
 		printf("<tr><td>%d</td><td>%s</td>", i+1, ptr->unread ? "¡ô" : "¡ó");
+		encode_url(buf, ptr->name, sizeof(buf));
 		printf("<td>%c<a href=\"%s?board=%s\">%s</a></td>",
-			   ptr->zap ? '*' : ' ', cgi, ptr->name, ptr->name);
+			   ptr->zap ? '*' : ' ', cgi, buf, ptr->name);
 		printf("<td>%6.6s</td>", ptr->title+1);
-		printf("<td><a href=\"%s?board=%s\">%s</a></td>", cgi, ptr->name, ptr->title+7);
+		printf("<td><a href=\"%s?board=%s\">%s</a></td>",
+				cgi, buf, ptr->title+7);
 		strncpy(buf, ptr->BM, sizeof(buf)-1);
 		buf[sizeof(buf)-1] = '\0';
 		if (buf[0] <= ' ')

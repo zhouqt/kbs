@@ -8,6 +8,7 @@ void ann_show_item(MENU *pm, ITEM *it)
 	char title[STRLEN];
 	char *id;
 	char buf[256];
+	char pathbuf[256];
 	char *ptr;
 	
 	strncpy(title, it->title, sizeof(title)-1);
@@ -46,13 +47,17 @@ void ann_show_item(MENU *pm, ITEM *it)
 	}
 	else if (file_isdir(buf))
 	{
+		snprintf(pathbuf, sizeof(pathbuf), "%s/%s", 
+				ptr == NULL ? "" : ptr, it->fname);
 		printf("<td>[目录] </td><td><a href=\"bbs0an?path=%s/%s\">%s</a></td>",
-			   ptr == NULL ? "" : ptr, it->fname, nohtml(title));
+			   http_encode_string(pathbuf, sizeof(pathbuf)), nohtml(title));
 	}
 	else
 	{
-		printf("<td>[文件] </td><td><a href=\"bbsanc?path=%s/%s\">%s</a></td>",
-			   ptr == NULL ? "" : ptr, it->fname, nohtml(title));
+		snprintf(pathbuf, sizeof(pathbuf), "%s/%s", 
+				ptr == NULL ? "" : ptr, it->fname);
+		printf("<td>[文件] </td><td><a href=\"bbsanc?path=%s\">%s</a></td>",
+			   http_encode_string(pathbuf, sizeof(pathbuf)), nohtml(title));
 	}
 	if (id[0])
 	{
@@ -120,7 +125,8 @@ void ann_show_directory(char *path)
 		}
 		printf("</table><br>[<a href=\"javascript:history.go(-1)\">返回上一页</a>] ");
 		if (board[0])
-			printf("[<a href=\"bbsdoc?board=%s\">本讨论区</a>]\n", board);
+			printf("[<a href=\"bbsdoc?board=%s\">本讨论区</a>]\n",
+					encode_url(buf, board, sizeof(buf)));
 		printf("</center>\n");
 	}
 	ann_free_items(its, MAXITEMS);

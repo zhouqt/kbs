@@ -3,47 +3,6 @@
  */
 #include "bbslib.h"
 
-char *encode_html(char *buf, const char* str, size_t buflen)
-{
-    int i, j;
-    int len;
-
-    bzero(buf, buflen);
-    len = strlen(str);
-    for (i = 0, j = 0; i < len && j < buflen; i++)
-    {
-        switch (str[i])
-        {
-        case '\"':
-            snprintf(&buf[j], buflen-j, "&quot;");
-            j = strlen(buf);
-            break;
-        case '&':
-            snprintf(&buf[j], buflen-j, "&amp;");
-            j = strlen(buf);
-            break;
-        /*case ' ':
-            snprintf(&buf[j], buflen-j, "&nbsp;");
-            j = strlen(buf);
-            break;*/
-        case '>':
-            snprintf(&buf[j], buflen-j, "&gt;");
-            j = strlen(buf);
-            break;
-        case '<':
-            snprintf(&buf[j], buflen-j, "&lt;");
-            j = strlen(buf);
-            break;
-        default:
-            buf[j] = str[i];
-            j++;
-        }
-    }
-    buf[buflen - 1] = '\0';
-
-    return buf;
-}
-
 int main()
 {
    	FILE *fp;
@@ -69,7 +28,7 @@ int main()
 		http_fatal("您不能回复本文");
    	printf("<center>\n");
 	printf("%s -- 发表文章 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser->userid);
-   	printf("<form method=\"post\" action=\"bbssnd?board=%s\">\n<table border=\"1\">\n",board);
+   	printf("<form method=\"post\" action=\"bbssnd?board=%s\">\n<table border=\"1\">\n",encode_url(buf, board, sizeof(buf)));
 	printf("<tr><td>");
 	printf("<font color=\"green\">发文注意事项: <br>\n");
 	printf("发文时应慎重考虑文章内容是否适合公开场合发表，请勿肆意灌水。谢谢您的合作。<br></font></td></tr>\n");

@@ -29,12 +29,6 @@ int main()
 		read_submit();
 		http_quit();
 	}
-   	/*setuserfile(path, currentuser->userid,"favboard");
-	fp=fopen(path, "r");
-   	if(fp) {
-		mybrdnum=fread(mybrd, sizeof(mybrd[0]), 30, fp);
-   		fclose(fp);
-	}*/
 	load_favboard(0);
    	printf("<center>\n");
 	printf("<style type=\"text/css\">A {color: 000080} </style>\n");
@@ -59,23 +53,18 @@ int main()
 		if(IsFavBoard(getbnum(data[i].filename)-1))
 			buf3=" checked";
 		if(i%3==0)
-			printf("\n<tr>");
-		printf("<td><input type=\"checkbox\" name=\"%s\" %s><a href=\"bbsdoc?board=%s\">%s(%s)</a>", 
+			printf("<tr>");
+		printf("<td><input type=\"checkbox\" name=\"%s\" %s><a href=\"bbsdoc?board=%s\">%s(%s)</a></td>\n", 
 			data[i].filename, buf3,data[i].filename,
 			data[i].filename, data[i].title+13);
+		if(i%3==0)
+			printf("</tr>\n");
 	}
 	printf("</table><hr>\n");
 	printf("<input type=\"submit\" value=\"确认预定\"> <input type=\"reset\" value=\"复原\">\n");
 	printf("</form>\n");
 	http_quit();
 }
-
-/*int ismyboard(char *board) {
-	int i;
-	for(i=0; i<mybrdnum; i++)
-		if(!strcasecmp(board, mybrd[i])) return 1;
-	return 0;
-}*/
 
 int read_submit()
 {
@@ -103,6 +92,6 @@ int read_submit()
 		}
 	}
 	save_favboard();
-	printf("<script>top.f2.location='bbsleft'</script>修改预定讨论区成功，您现在一共预定了%d个讨论区:<hr>\n", mybrdnum);
+	printf("<script>top.f2.location='bbsleft'</script>修改预定讨论区成功，您现在一共预定了%d个讨论区.<hr>\n", mybrdnum);
 	printf("[<a href=\"javascript:history.go(-2)\">返回</a>]");
 }

@@ -3,13 +3,14 @@
  */
 #include "bbslib.h"
 
-int no_re=0;
+/*int no_re=0;*/
 /*	bbscon?board=xx&file=xx&start=xx 	*/
 
 int main()
 {
 	FILE *fp;
-	char title[256], userid[80], buf[512], board[80], dir[80], file[80], filename[80], *ptr;
+	char title[256], userid[80], board[80], dir[80], file[80], *ptr;
+	char brdencode[STRLEN];
 	struct fileheader x;
 	int i, num=0, found=0;
 
@@ -22,16 +23,10 @@ int main()
 	strcpy(board, getbcache(board)->filename);
 	if(loginok)
 		brc_initial(currentuser->userid, board);
-	printf("%s -- 主题文章阅读 [讨论区: %s]<hr color=\"green\">", BBSNAME, board);
-	/*if(strncmp(file, "M.", 2) && strncmp(file, "G.", 2))
-		http_fatal("错误的参数1");
-	if(strstr(file, "..") || strstr(file, "/"))
-		http_fatal("错误的参数2");*/
+	printf("%s -- 主题文章阅读 [讨论区: %s]<hr class=\"class\">", BBSNAME, board);
 	if (valid_filename(file) < 0)
 		http_fatal("错误的参数");
 	sprintf(dir, "boards/%s/.DIR", board);
-	/*if(!strcmp(board, "noticeboard"))
-		no_re=1;*/
 	fp = fopen(dir, "r+");
 	if(fp==0)
 		http_fatal("目录错误");
@@ -46,9 +41,6 @@ int main()
 			if(!strncmp(ptr, "Re:", 3))
 				ptr+=4;
 			strsncpy(title, ptr, 40);
-			/*(*(int*)(x.title+73))++;
-			fseek(fp, -1*sizeof(x), SEEK_CUR);
-			fwrite(&x, sizeof(x), 1, fp);*/
 			found=1;
 			strcpy(userid, x.owner);
 			show_file(board, &x, num-1);
@@ -62,15 +54,19 @@ int main()
 		}
 	}
 	fclose(fp);
-	if(found==0) http_fatal("错误的文件名");
-   	if(!no_re) printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=%s\">回文章</a>] ",
-		board, file, x.owner, title);
+	if(found==0)
+		http_fatal("错误的文件名");
+	encode_url(brdencode, board, sizeof(brdencode));
+   	if(!can_reply_post(board,file))
+		printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=%s\">回文章</a>] ",
+			brdencode, file, x.owner, http_encode_string(title, sizeof(title)));
 	printf("[<a href=\"javascript:history.go(-1)\">返回上一页</a>]");
-	printf("[<a href=\"bbsdoc?board=%s\">本讨论区</a>]", board);
+	printf("[<a href=\"bbsdoc?board=%s\">本讨论区</a>]", brdencode);
      	ptr=x.title;
      	if(!strncmp(ptr, "Re: ", 4)) ptr+=4;
    	printf("</center>\n"); 
-	if(loginok) brc_update(currentuser->userid);
+	if(loginok)
+		brc_update(currentuser->userid);
 	http_quit();
 }
 
@@ -85,10 +81,13 @@ int show_file(char *board, struct fileheader *x, int n)
 	fp=fopen(path, "r");
 	if(fp==0)
 		return;
+	encode_url(buf, board, sizeof(buf));
 	printf("<table width=\"610\"><pre>\n");
-	printf("[<a href=\"bbscon?board=%s&file=%s&num=%d\">本篇全文</a>] ", board, x->filename, n);
-	printf("[<a href=\"bbspst?board=%s&file=%s&title=%s&userid=%s\">回复本文</a>] ", 
-		board, x->filename, x->title, x->owner);
+	printf("[<a href=\"bbscon?board=%s&file=%s&num=%d\">本篇全文</a>] ",
+		   buf, x->filename, n);
+	printf("[<a href=\"bbspst?board=%s&file=%s&title=%s&userid=%s\">回复本文</a>] ",
+		encode_url(buf, board, sizeof(buf)), x->filename,
+		encode_url(buf, x->title, sizeof(buf)), x->owner);
 	printf("[本篇作者: %s]\n", userid_str(x->owner));
 	/*printf("[本篇人气: %d]\n", *(int*)(x->title+73));*/
 	while(1)
@@ -102,5 +101,5 @@ int show_file(char *board, struct fileheader *x, int n)
 		hhprintf("%s", buf);
 	}
 	fclose(fp);
-	printf("</pre></table><hr color=\"green\">");
+	printf("</pre></table><hr class=\"default\">");
 }

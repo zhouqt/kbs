@@ -14,7 +14,7 @@ void printdiv(int n, char *str, char *imgurl)
 
 int main()
 {
-	char buf[1024], *ptr;
+	char buf[256], *ptr;
 	int i;
 
   	init_all();
@@ -23,26 +23,13 @@ int main()
 	"<body class=\"dark\" leftmargin=\"5\" topmargin=\"1\" MARGINHEIGHT=\"1\" MARGINWIDTH=\"1\">");
 	printf("<table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n");
 	printf("<tr><td>");
-	/*if(!loginok)
-	{
-		printf( "<form action=\"/bbslogin.jsp\" method=\"post\" target=\"_top\"><br>\n"
-NAME_BBS_CHINESE "用户登录<br>\n"
-"帐号 <input class=\"default\" type=\"text\" name=\"id\" maxlength=\"12\" size=\"8\"><br>\n"
-"密码 <input class=\"default\" type=\"password\" name=\"passwd\" maxlength=\"39\" size=\"8\"><br>\n"
-"<input class=\"button\" type=\"submit\" value=\"登录进站\">\n"
-"</form>\n");
-	}
-	else*/
-	{
-        char buf[256]="未注册用户";
-		if (currentuser==NULL)
-			http_fatal("hehe:%d",loginok);
-		printf("用户: <a href=\"bbsqry?userid=%s\" target=\"f3\">%s</a><br>", 
-				getcurruserid(), getcurruserid());
-		uleveltochar(buf, getcurrusr());
-        printf("身份: %s<br>\n", buf);
-        printf("<a href=\"/bbslogout.jsp\" target=\"_top\">注销本次登录</a><br>\n");
-	}
+	if (currentuser==NULL)
+		http_fatal("hehe:%d",loginok);
+	printf("用户: <a href=\"bbsqry?userid=%s\" target=\"f3\">%s</a><br>", 
+			getcurruserid(), getcurruserid());
+	uleveltochar(buf, getcurrusr());
+	printf("身份: %s<br>\n", buf);
+	printf("<a href=\"/bbslogout.jsp\" target=\"_top\">注销本次登录</a><br>\n");
 	printf("</td></tr><tr><td>\n");
 	printf("<hr style=\"color:2020f0; height=1px\" width=\"84px\" align=\"center\">\n");
 	printf("</td></tr></table>");
@@ -63,8 +50,8 @@ NAME_BBS_CHINESE "用户登录<br>\n"
 			if (bptr == NULL)
 				continue;
      		printf("<img src=\"/images/link.gif\">"
-					" <a target=\"f3\" href=\"bbsdoc?board=%s\">%s</a><br>\n",
-					bptr->filename, bptr->filename);
+				" <a target=\"f3\" href=\"bbsdoc?board=%s\">%s</a><br>\n",
+				encode_url(buf, bptr->filename, sizeof(buf)), bptr->filename);
 		}
 		printf("<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsmybrd\">"
 				"预定管理</a><br>\n");

@@ -3,131 +3,11 @@
  */
 #include "bbslib.h"
 
-char *encode_url(char *buf, const char* str, size_t buflen)
-{
-	int i, j;
-	int len;
-
-	bzero(buf, buflen);
-	len = strlen(str);
-	for (i = 0, j = 0; i < len && j < buflen; i++)
-	{
-		/*if (str[i] == '\"')
-		{
-			snprintf(&buf[j], buflen-j, "%%22");
-			j = strlen(buf);
-		}
-		else if (str[i] == '&')
-		{
-			snprintf(&buf[j], buflen-j, "%%26");
-			j = strlen(buf);
-		}
-		else if (str[i] == '%')
-		{
-			snprintf(&buf[j], buflen-j, "%%25");
-			j = strlen(buf);
-		}
-		else if (str[i] == ' ')
-		{
-			snprintf(&buf[j], buflen-j, "%%20");
-			j = strlen(buf);
-		}*/
-        if (!isalnum(str[i]))
-		{
-			snprintf(&buf[j], buflen-j, "%%%02x", (unsigned char)str[i]);
-			j = strlen(buf);
-		}
-		else
-		{
-			buf[j] = str[i];
-			j++;
-		}
-	}
-	buf[buflen - 1] = '\0';
-
-	return buf;
-}
-
-char *encode_html(char *buf, const char* str, size_t buflen)
-{
-    int i, j;
-    int len;
-
-    bzero(buf, buflen);
-    len = strlen(str);
-    for (i = 0, j = 0; i < len && j < buflen; i++)
-    {
-        switch (str[i])
-        {
-        case '\"':
-            snprintf(&buf[j], buflen-j, "&quot;");
-            j = strlen(buf);
-            break;
-        case '&':
-            snprintf(&buf[j], buflen-j, "&amp;");
-            j = strlen(buf);
-            break;
-        /*case ' ':
-            snprintf(&buf[j], buflen-j, "&nbsp;");
-            j = strlen(buf);
-            break;*/
-        case '>':
-            snprintf(&buf[j], buflen-j, "&gt;");
-            j = strlen(buf);
-            break;
-        case '<':
-            snprintf(&buf[j], buflen-j, "&lt;");
-            j = strlen(buf);
-            break;
-        default:
-            buf[j] = str[i];
-            j++;
-        }
-    }
-    buf[buflen - 1] = '\0';
-
-    return buf;
-}
-
-int is_BM(struct boardheader *board, struct userec *user)
-{
-	char BM[STRLEN];
-
-	strncpy(BM, board->BM, sizeof(BM)-1);
-	BM[sizeof(BM)-1] = '\0';
-	return chk_currBM(BM, user);
-}
-
-int is_owner(struct fileheader *fh, struct userec *user)
-{
-	if (!strcmp(fh->owner, user->userid))
-		return 1;
-	else
-		return 0;
-}
-
-int can_delete_post(struct boardheader *board, struct fileheader *fh, 
-		struct userec *user)
-{
-	if (is_BM(board, user) || is_owner(fh, user))
-		return 1;
-	else
-		return 0;
-}
-
-int can_edit_post(struct boardheader *board, struct fileheader *fh, 
-		struct userec *user)
-{
-	if (is_BM(board, user) || is_owner(fh, user))
-		return 1;
-	else
-		return 0;
-}
-
 int main()
 {
 	FILE *fp;
 	char buf[512], board[80], dir[80], file[80], filename[80], *ptr;
+	char buf2[512];
 	struct fileheader x;
 	struct fileheader oldx;
 	int num, tmp, total;
@@ -181,7 +61,7 @@ int main()
 		}
 		if(!strncmp(buf, ": ", 2))
 			printf("<font color=\"#008080\"><i>");
-		hhprintf("%s", void1(buf));
+		hhprintf("%s", encode_html(buf2, buf, sizeof(buf2)));
 		if(!strncmp(buf, ": ", 2))
 			printf("</i></font>");
 	}
@@ -190,15 +70,17 @@ int main()
 	brc_initial(currentuser->userid, board);
 	brc_add_read(x.filename);
 	brc_update(currentuser->userid);
+	encode_url(buf2, board, sizeof(buf2));
 	printf("</pre></td></tr>\n</table><hr>\n");
-	printf("[<a href=\"bbsfwd?board=%s&file=%s\">转寄/推荐</a>]", board, file);
-	printf("[<a href=\"bbsccc?board=%s&file=%s\">转贴</a>]", board, file);
+	printf("[<a href=\"bbsfwd?board=%s&file=%s\">转寄/推荐</a>]",
+			buf2, file);
+	printf("[<a href=\"bbsccc?board=%s&file=%s\">转贴</a>]", buf2, file);
 	if (can_delete_post(bp, &x, getcurrusr()))
-		printf("[<a onclick=\"return confirm('你真的要删除本文吗?')\" href=\"bbsdel?board=%s&file=%s\">删除文章</a>]", board, file);
+		printf("[<a onclick=\"return confirm('你真的要删除本文吗?')\" href=\"bbsdel?board=%s&file=%s\">删除文章</a>]", buf2, file);
 	if (can_edit_post(bp, &x, getcurrusr()))
 	{
 		printf("[<a href=\"bbsedit?board=%s&file=%s\">修改文章</a>]",
-				board, file);
+				buf2, file);
 	}
 	/*
 	 * TODO: 下面需要两次读操作，应该减为一个。
@@ -211,33 +93,25 @@ int main()
 		fseek(fp, sizeof(x)*(num-1), SEEK_SET);
 		fread(&x, sizeof(x), 1, fp);
 		printf("[<a href=\"bbscon?board=%s&file=%s&num=%d\">上一篇</a>]",
-				board, x.filename, num-1);
+				buf2, x.filename, num-1);
 	}
-	printf("[<a href=\"bbsdoc?board=%s\">本讨论区</a>]", board);
+	printf("[<a href=\"bbsdoc?board=%s\">本讨论区</a>]", buf2);
 	if(num<total-1)
 	{
 		fseek(fp, sizeof(x)*(num+1), SEEK_SET);
 		fread(&x, sizeof(x), 1, fp);
 		printf("[<a href=\"bbscon?board=%s&file=%s&num=%d\">下一篇</a>]",
-				board, x.filename, num+1);
+				buf2, x.filename, num+1);
 	}
-	//if(num>0 && num<=total) {
-	//	fseek(fp, sizeof(x)*num, SEEK_SET);
-	//	fread(&x, sizeof(x), 1, fp);
-    //    /* 去掉人气值功能 */
-	//	brc_initial(currentuser->userid, board);
-	//	brc_add_read(x.filename);
-	//	brc_update(currentuser->userid);
-	//}
 	fclose(fp);
      	ptr=oldx.title;
      	if(!strncmp(ptr, "Re: ", 4)) ptr+=4;
 	ptr[60]=0;
 	if ((oldx.accessed[1] & FILE_READ) == 0)
         printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=Re: %s\">回文章</a>]",
-			board, file, oldx.owner, encode_url(buf, void1(ptr), sizeof(buf)));
+			buf2, file, oldx.owner, encode_url(buf, void1(ptr), sizeof(buf)));
     printf("[<a href=\"bbstfind?board=%s&title=%s\">同主题阅读</a>]",
-			board, encode_url(buf, void1(ptr), sizeof(buf)));
+			buf2, encode_url(buf, void1(ptr), sizeof(buf)));
 	printf("[<a href=\"javascript:history.go(-1)\">快速返回</a>]\n");
    	printf("</center>\n"); 
 	http_quit();

@@ -8,7 +8,7 @@ int main()
 {
 	FILE *fp;
 	int n;
-	char s1[256], s2[256], s3[256], s4[256],s5;
+	char s1[256], buf[256], buf2[256];
 	char brd[256], id[256], title[256], num[100];
 
 	init_all();
@@ -30,8 +30,10 @@ int main()
 		if(fgets(s1, 255, fp) == NULL)
 		       	break;
 		strsncpy(title, s1+27, 60);
+		encode_url(buf, brd, sizeof(buf));
 		printf("<tr><td>µÚ %d Ãû<td><a href=\"bbsdoc?board=%s\">%s</a></td><td><a href=\"bbstfind?board=%s&title=%s\">%42.42s</a></td><td><a href=\"bbsqry?userid=%s\">%12s</a></td><td>%s</td></tr>\n",
-   n, brd, brd, brd, nohtml(title), nohtml(title), id, id, num);
+			n, buf, brd, buf, encode_url(buf2, title, sizeof(buf2)),
+			encode_html(buf2, title, sizeof(buf2)), id, id, num);
 	}
 	printf("</table><center>");
 	http_quit();

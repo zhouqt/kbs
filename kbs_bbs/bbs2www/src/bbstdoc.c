@@ -8,6 +8,7 @@ int main()
 {
 	FILE *fp;
 	char board[80], dir[80], *ptr;
+	char brdencode[256], buf[256];
 	bcache_t *x1;
 	struct fileheader *data;
 	int i, start, total2=0, total, sum=0;
@@ -37,6 +38,7 @@ int main()
 		start=total2-19;
   	if(start<0)
 		start=0;
+	encode_url(brdencode, board, sizeof(brdencode));
 	printf("<nobr><center>\n");
 	printf("%s -- 主题阅读: [讨论区: %s] 版主[%s] 文章%d, 主题%d个<hr color=\"green\">\n", 
 		BBSNAME, board, userid_str(x1->BM), total, total2);
@@ -57,21 +59,23 @@ int main()
 			sum+1, flag_str(data[i].accessed[0]), userid_str(data[i].owner));
 		printf("<td>%6.6s</td>", wwwCTime(atoi(data[i].filename+2))+4);
 		printf("<td><a href=\"bbstcon?board=%s&file=%s\">○ %38.38s </a></td><td>%s</td></tr>",
-			board, data[i].filename, nohtml(data[i].title), stat1(data, i, total));
+			brdencode, data[i].filename, nohtml(data[i].title), stat1(data, i, total));
 	}
 	printf("</table><hr>\n");
 	if(start>0)
-		printf("<a href=\"bbstdoc?board=%s&start=%d\">上一页</a> ", board, start-19);
+		printf("<a href=\"bbstdoc?board=%s&start=%d\">上一页</a> ", brdencode, start-19);
 	if(start<total2-19)
-		printf("<a href=\"bbstdoc?board=%s&start=%d\">下一页</a> ", board, start+19);
-	printf("<a href=\"bbsnot?board=%s\">进版画面</a> ", board);
-	printf("<a href=\"bbsdoc?board=%s\">一般模式</a> ", board);
-	printf("<a href=\"bbsgdoc?board=%s\">文摘区</a> ", board);
-	printf("<a href=\"bbs0an?path=%s\">精华区</a> ", anno_path_of(board));
+		printf("<a href=\"bbstdoc?board=%s&start=%d\">下一页</a> ", brdencode, start+19);
+	printf("<a href=\"bbsnot?board=%s\">进版画面</a> ", brdencode);
+	printf("<a href=\"bbsdoc?board=%s\">一般模式</a> ", brdencode);
+	printf("<a href=\"bbsgdoc?board=%s\">文摘区</a> ", brdencode);
+	ann_get_path(board, buf, sizeof(buf));
+	printf("<a href=\"bbs0an?path=%s\">精华区</a> ",
+		   http_encode_string(buf, sizeof(buf)));
 	/*printf("<a href=/an/%s.tgz>下载精华区</a> ", board);*/
-	printf("<a href=\"bbspst?board=%s\">发表文章</a> <br>\n", board);
+	printf("<a href=\"bbspst?board=%s\">发表文章</a> <br>\n", brdencode);
 	free(data);
-	printf("<form action=\"bbstdoc?board=%s\" method=\"post\">\n", board);
+	printf("<form action=\"bbstdoc?board=%s\" method=\"post\">\n", brdencode);
  	printf("<input type=\"submit\" value=\"跳转到\"> 第 <input type=\"text\" name=\"start\" size=\"4\"> 篇");
  	printf("</form>\n");
 	http_quit();
