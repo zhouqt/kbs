@@ -1204,7 +1204,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
         case 2:
             break;
         case 3:
-            if (brc_unread(FILENAME2POSTTIME(SR_fptr.filename)))
+            if (brc_unread(SR_fptr.id))
                 return -1;
             else
                 break;

@@ -419,109 +419,76 @@ int a_Import(path, key, fileinfo, nomsg, direct, ent)
 {
 
     FILE *fn;
-    char fname[STRLEN], *ip, bname[PATHLEN];
+    char fname[STRLEN], bname[PATHLEN];
     char buf[PATHLEN], *ptr;
-    int len, ch;
+    int ch;
     MENU pm;
     char ans[STRLEN];
 	char Importname[STRLEN];
 
     modify_user_mode(CSIE_ANNOUNCE);
-    len = strlen(key);
-    sprintf(buf, "%s/.Search", path);
-    if ((fn = fopen(buf, "r")) != NULL) {
-        while (fgets(buf, sizeof(buf), fn) != NULL) {
-            if (strncmp(buf, key, len) == 0 && buf[len] == ':' && (ptr = strtok(&buf[len + 1], " \t\n")) != NULL) {
-                sprintf(Importname, "%s/%s", path, ptr);
-                fclose(fn);
+    if (ann_get_path(key, buf, sizeof(buf)) == 0)
+	{
+		snprintf(Importname, sizeof(Importname), "%s/%s", path, buf);
 
-                /* Leeward: 97.12.17: 对版主的多个窗口同步丝路 */
+		/* Leeward: 97.12.17: 对版主的多个窗口同步丝路 */
+		sprintf(buf, "%s", Importname);
+		ptr = strstr(buf, ".faq/");
+		if (ptr) {
+			if ((ptr = strchr(ptr + 5, '/')) != NULL)
+				strcpy(ptr + 1, ".BMpath");
+			else
+				strcat(buf, "/.BMpath");
+			fn = fopen(buf, "rt");
+			if (fn) {
+				fgets(netty_path, 256, fn);
+				fclose(fn);
+			}
+		}
 
-                /* by zixia: 相对路经 sprintf(genbuf, "%s/%s", BBSHOME, Importname); */
-                sprintf(genbuf, "%s", Importname);
-                ptr = strstr(genbuf, ".faq/");
-                if (ptr) {
-                    if ((ptr = strchr(ptr + 5, '/')) != NULL)
-                        strcpy(ptr + 1, ".BMpath");
-                    else
-                        strcat(genbuf, "/.BMpath");
-                    fn = fopen(genbuf, "rt");
-                    if (fn) {
-                        fgets(netty_path, 256, fn);
-                        fclose(fn);
-                    }
-                }
+		if (netty_path[0] != '\0') {
+			/* 直接加入到精华区内，不用确认 Life */
+			pm.path = netty_path;
+		}
+		else {
+			sprintf(buf, "将该文章放进 %s,确定吗?(Y/N) [N]: ", Importname);
+			if (!nomsg)
+				a_prompt(-1, buf, ans);
+			if (ans[0] == 'Y' || ans[0] == 'y' || nomsg) {
+				pm.path = Importname;
+			} else {
+				sprintf(buf, "你改变心意了?? ,请按任何键以结束 << ");
+				a_prompt(-1, buf, ans);
+				return 1;
+			}
+		}
+		strcpy(pm.mtitle, "");
+		a_loadnames(&pm);
+		ann_get_postfilename(fname, fileinfo, &pm);
+		sprintf(bname, "%s/%s", pm.path, fname);
+		sprintf(buf, "%-38.38s %s ", fileinfo->title, currentuser->userid);
+		a_additem(&pm, buf, fname, NULL, 0);
+		a_savenames(&pm);
+		/*
+		   sprintf( buf, "/bin/cp -r boards/%s/%s %s", key , fileinfo->filename , bname );
+		 */
+		sprintf(buf, "boards/%s/%s", key, fileinfo->filename);
+		f_cp(buf, bname, 0);
 
-                if (netty_path[0] != '\0') {
-                    /* 直接加入到精华区内，不用确认 Life */
-                    pm.path = netty_path;
-                }
-                /* 当然就注掉了啦～～～～废话 ^_&
-                   sprintf ( genbuf, "将该文章放进 %s,确定吗?(Y/N) [N]: " , netty_path );
-                   if(!nomsg)
-                   a_prompt( -1, genbuf, ans );
-                   if( ans[0] == 'Y' || ans[0] == 'y' || nomsg) {
-                   pm.path=netty_path;
-                   }
-                   else {
-                   sprintf( genbuf, "你可以到精华区设定别的当前路径 ,请按任何键以结束 ..");
-                   a_prompt( -1, genbuf, ans );
-                   return 1;
-                   }
-                   }  
-                 */
-                else {
-                    sprintf(genbuf, "将该文章放进 %s,确定吗?(Y/N) [N]: ", Importname);
-                    if (!nomsg)
-                        a_prompt(-1, genbuf, ans);
-                    if (ans[0] == 'Y' || ans[0] == 'y' || nomsg) {
-                        pm.path = Importname;
-                    } else {
-                        sprintf(genbuf, "你改变心意了?? ,请按任何键以结束 << ");
-                        a_prompt(-1, genbuf, ans);
-                        return 1;
-                    }
-                }
-                strcpy(pm.mtitle, "");
-                a_loadnames(&pm);
-                strcpy(fname, fileinfo->filename);
-                sprintf(bname, "%s/%s", pm.path, fname);
-                ip = &fname[strlen(fname) - 1];
-                while (dashf(bname)) {
-                    if (*ip == 'Z')
-                        ip++, *ip = 'A', *(ip + 1) = '\0';
-                    else
-                        (*ip)++;
-                    sprintf(bname, "%s/%s", pm.path, fname);
-                }
-                sprintf(genbuf, "%-38.38s %s ", fileinfo->title, currentuser->userid);
-                a_additem(&pm, genbuf, fname, NULL, 0);
-                a_savenames(&pm);
-                /*
-                   sprintf( genbuf, "/bin/cp -r boards/%s/%s %s", key , fileinfo->filename , bname );
-                 */
-                sprintf(genbuf, "boards/%s/%s", key, fileinfo->filename);
-                f_cp(genbuf, bname, 0);
+		/* Leeward 98.04.15 */
+		sprintf(buf, "将 boards/%s/%s 收入目录 %s", key, fileinfo->filename, pm.path + 17);
+		a_report(buf);
+		sprintf(buf, " 收入精华区目录 %s, 请按 Enter 继续 << ", /*fileinfo->title, */ pm.path);
+		if (!nomsg)
+			a_prompt(-1, buf, ans);
 
-                /* Leeward 98.04.15 */
-                sprintf(genbuf, "将 boards/%s/%s 收入目录 %s", key, fileinfo->filename, pm.path + 17);
-                a_report(genbuf);
-                sprintf(genbuf, " 收入精华区目录 %s, 请按 Enter 继续 << ", /*fileinfo->title, */ pm.path);
-                if (!nomsg)
-                    a_prompt(-1, genbuf, ans);
+		/* Leeward 98.04.15 add below FILE_IMPORTED */
+		change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_IMPORT_FLAG, 0);
+		bmlog(currentuser->userid, currboard, 12, 1);
 
-                /* Leeward 98.04.15 add below FILE_IMPORTED */
-                change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_IMPORT_FLAG, 0);
-                bmlog(currentuser->userid, currboard, 12, 1);
-
-                for (ch = 0; ch < pm.num; ch++)
-                    free(pm.item[ch]);
-                return 1;
-            }
-        }
-        /*---	added by period	2000-09-21	---*/
-        fclose(fn);
-        /*---	---*/
+		for (ch = 0; ch < pm.num; ch++)
+			free(pm.item[ch]);
+		return 1;
     }
     return 0;
 }

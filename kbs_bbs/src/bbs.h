@@ -114,7 +114,7 @@ extern long ti;
 #endif                          /* BBSIRC */
 
 #define MAXFRIENDS (400)
-#define NUMPERMS (31)
+/*#define NUMPERMS (31)*/
 
 /*#define FILE_BUFSIZE      160    max. length of a file in SHM*/
 #define FILE_BUFSIZE      LENGTH_FILE_BUFFER    /* max. length of a file in SHM */

@@ -823,7 +823,7 @@ char *maildoent(char *buf, int num, struct fileheader *ent)
     char c2[8];
     int same = false;
 
-    filetime = atoi(ent->filename + 2); /* 由文件名取得时间 */
+    filetime = get_posttime(ent); /* 由文件名取得时间 */
     if (filetime > 740000000)
         date = ctime(&filetime) + 4;    /* 时间 -> 英文 */
     else

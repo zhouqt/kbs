@@ -193,6 +193,7 @@ int UndeleteArticle(int ent, struct fileheader *fileinfo, char *direct)
     UFile.id = fileinfo->id;
     UFile.groupid = fileinfo->groupid;
     UFile.reid = fileinfo->reid;
+	set_posttime2(&UFile, fileinfo);
 
     sprintf(buf, "boards/%s/.DIR", currboard);
     if ((fd = open(buf, O_RDWR | O_CREAT, 0644)) != -1) {
@@ -564,16 +565,16 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
             typesufix = "\x1b[m";
         }
     }
-    filetime = atoi(ent->filename + 2); /* ÓÉÎÄ¼şÃûÈ¡µÃÊ±¼ä */
+	filetime = get_posttime(ent);
     if (filetime > 740000000) {
-#ifdef NINE_BUILD
+#ifdef HAVE_COLOR_DATE
         char* datestr = ctime( &filetime ) + 4;
 #else
         strncpy(date, ctime(&filetime) + 4, 6);
 	date[6]=0;
 #endif
         
-#ifdef NINE_BUILD
+#ifdef HAVE_COLOR_DATE
 	    strcpy(date,"[1;30m      [m");
 	    strncpy(date+7,datestr,6);
 		date[5]='1'+(atoi(datestr+4)%7);
@@ -1097,7 +1098,7 @@ int generate_title()
         int index, data;
     } *hashtable;
     int *index, *next;
-    struct stat buf;
+	size_t f_size;
 
     digestmode = 0;
     setbdir(digestmode, olddirect, currboard);
@@ -1141,7 +1142,7 @@ int generate_title()
     hashtable = NULL;
     next = NULL;
     BBS_TRY {
-        if (safe_mmapfile_handle(fd2, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & buf.st_size) == 0) {
+        if (safe_mmapfile_handle(fd2, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &f_size) == 0) {
             ldata2.l_type = F_UNLCK;
             fcntl(fd2, F_SETLKW, &ldata2);
             close(fd2);
@@ -1150,11 +1151,26 @@ int generate_title()
             close(fd);
             BBS_RETURN(-1);
         }
-        total = buf.st_size / size;
+        total = f_size / size;
         hasht = total * 8 / 5;
         hashtable = (struct hashstruct *) malloc(sizeof(*hashtable) * hasht);
+        if (hashtable == NULL)
+		{
+			BBS_RETURN(-1);
+		}
         index = (int *) malloc(sizeof(int) * total);
+        if (index == NULL)
+		{
+			free(hashtable);
+			BBS_RETURN(-1);
+		}
         next = (int *) malloc(sizeof(int) * total);
+        if (next == NULL)
+		{
+			free(hashtable);
+			free(index);
+			BBS_RETURN(-1);
+		}
         memset(hashtable, 0xFF, sizeof(*hashtable) * hasht);
         memset(index, 0, sizeof(int) * total);
         ptr1 = (struct fileheader *) ptr;
@@ -1229,7 +1245,7 @@ int generate_title()
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
-        end_mmapfile((void *) ptr, buf.st_size, -1);
+        end_mmapfile((void *) ptr, f_size, -1);
         if (index)
             free(index);
         if (next)
@@ -1957,13 +1973,12 @@ int post_article(char *q_file, struct fileheader *re_file)
     if (currentuser->signature > numofsig)      /*Ç©ÃûµµNo.¼ì²é */
         currentuser->signature = 1;
     anonyboard = anonymousboard(currboard);     /* ÊÇ·ñÎªÄäÃû°æ */
-    /*
-     * by zixia: ÄäÃû°æÈ±Ê¡²»Ê¹ÓÃÄäÃû 
-     */
     if (!strcmp(currboard, "Announce"))
         Anony = 1;
-    else
-        Anony = 0;
+    else if (anonyboard)
+        Anony = ANONYMOUS_DEFAULT;
+	else
+		Anony = 0;
 
     while (1) {                 /* ·¢±íÇ°ĞŞ¸Ä²ÎÊı£¬ ¿ÉÒÔ¿¼ÂÇÌí¼Ó'ÏÔÊ¾Ç©Ãûµµ' */
         sprintf(buf3, "ÒıÑÔÄ£Ê½ [%c]", include_mode);
@@ -2052,7 +2067,7 @@ int post_article(char *q_file, struct fileheader *re_file)
     }                           /* ÊäÈë½áÊø */
 
     setbfile(filepath, currboard, "");
-    if ((aborted = get_postfilename(post_file.filename, filepath)) != 0) {
+    if ((aborted = GET_POSTFILENAME(post_file.filename, filepath)) != 0) {
         move(3, 0);
         clrtobot();
         prints("\n\nÎŞ·¨´´½¨ÎÄ¼ş:%d...\n", aborted);

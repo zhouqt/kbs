@@ -31,7 +31,14 @@ struct userec {                 /* Structure used to hold information in */
     int noteline;
     int notemode;
     time_t exittime;
+#ifdef HAVE_BIRTHDAY
+	char            gender;
+	unsigned char   birthyear;
+	unsigned char   birthmonth;
+	unsigned char   birthday;
+#else
     int unuse2;                 /* no use */
+#endif
 };
 struct user_info {              /* Structure used in UTMP file */
     int active;                 /* When allocated this field is true */
@@ -63,9 +70,6 @@ struct friends_info {
     char exp[15];
 };
 
-#define BM_LEN 60
-#define FILENAME_LEN 20
-#define OWNER_LEN 30
 struct boardheader {            /* This structure is used to hold data in */
     char filename[STRLEN];      /* the BOARDS files */
     char owner[STRLEN - BM_LEN];
@@ -76,17 +80,9 @@ struct boardheader {            /* This structure is used to hold data in */
     unsigned int nowid;
     unsigned char unused[8];
 };
-typedef struct fileheader {     /* This structure is used to hold data in */
-    char filename[FILENAME_LEN];      /* the DIR files */
-    unsigned int id, groupid, reid;
-    char unused1[46];
-    char innflag[2];
-    char owner[OWNER_LEN];
-    char unused2[50];
-    char title[STRLEN];
-    unsigned level;
-    unsigned char accessed[12]; /* struct size = 256 bytes */
-} fileheader;
+
+/* XXX: struct fileheader moved to site.h */
+
 struct one_key {                /* Used to pass commands to the readmenu */
     int key;
     int (*fptr) ();

@@ -411,6 +411,7 @@ int m_newbrd()
         clear();
         return -1;
     }
+	build_board_structure(newboard.filename);
     group = chgrp();
     if (group != NULL) {
         if (newboard.BM[0] != '\0')

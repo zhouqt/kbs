@@ -394,9 +394,9 @@ int allnum, pagenum;
         msgflag = false;
     }
     switch (ch) {
-#ifdef NINE_BUILD
-    case 'f':
-    case 'F':
+#ifdef HAVE_TEMPORARY_NICK
+    case UL_CHANGE_NICK_LOWER:
+    case UL_CHANGE_NICK_UPPER:
        buf[0] = '\0';
        getdata( BBS_PAGESIZE+3, 0, "±ä»»êÇ³Æ: ",buf,NAMELEN,DOECHO,NULL,false);
        if(buf[0]!='\0')
@@ -404,7 +404,7 @@ int allnum, pagenum;
 	    strncpy(uinfo.username,buf,NAMELEN);
 	    UPDATE_UTMP_STR(username,uinfo);
        }	    
-    break;	    
+		break;	    
 #endif
     case 'k':
     case 'K':
@@ -456,13 +456,8 @@ int allnum, pagenum;
             return 1;
         m_send(user_record[allnum]->userid);
         break;
-#ifdef NINE_BUILD
-    case 'c':
-    case 'C':
-#else
-    case 'f':
-    case 'F':
-#endif
+    case UL_SWITCH_FRIEND_LOWER:
+    case UL_SWITCH_FRIEND_UPPER:
         if (friendmode)
             friendmode = false;
 

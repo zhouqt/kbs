@@ -136,6 +136,7 @@ extern "C" {
     int simplepasswd(char *str);
     void logattempt(char *uid, char *frm);
     int check_ban_IP(char *IP, char *buf);
+	int is_valid_date(int year, int month, int day);
 
 #define time(x) bbstime(x)
 
@@ -166,6 +167,7 @@ extern "C" {
     int getboardnum(char *bname, struct boardheader *bh);       /* board name --> board No. & not check level */
 
     int add_board(struct boardheader *newboard);
+	void build_board_structure(const char *board);
     int apply_boards(int (*func) ());   /* 对所有版 应用 func函数 */
     int delete_board(char *boardname, char *title);     /* delete board entry */
     struct boardheader const *getboard(int num);
@@ -217,6 +219,7 @@ extern "C" {
     int chk_currBM(const char BMstr[STRLEN - 1], struct userec *user);  /* 根据输入的版主名单 判断user是否有版主 权限 */
     int deldeny(struct userec *user, char *board, char *uident, int notice_only);       /* 删除 禁止POST用户 */
     int check_read_perm(struct userec *user, int num);
+	int is_outgo_board(char *board);
 
 /* define in article.c */
     /* mmap_search_dir_apply
@@ -229,7 +232,7 @@ extern "C" {
      */
     typedef int (*DIR_APPLY_FUNC)(int fd,struct fileheader* start,int ent,int total,struct fileheader* data,bool match);
 
-    int get_postfilename(char *filename, char *direct);
+    int get_postfilename(char *filename, char *direct, int use_subdir);
     int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink);
     int isowner(struct userec *user, struct fileheader *fileinfo);
     int do_del_post(struct userec *user, int ent, struct fileheader *fileinfo, char *direct, char *board, int digestmode, int decpost);
@@ -272,6 +275,8 @@ extern "C" {
  * @author flyriver
  */
     char get_article_flag(struct fileheader *ent, struct userec *user, int is_bm);
+	time_t get_posttime(const struct fileheader *fileinfo);
+	void set_posttime(struct fileheader *fileinfo);
 
 /* define in record.c */
     int safewrite(int fd, char *buf, int size);
@@ -347,6 +352,9 @@ extern "C" {
   return >0 need some extra permission to access it
 */
     int ann_traverse_check(char *path, struct userec *user);
+	/* in site.c */
+	int ann_get_postfilename(char *filename, struct fileheader *fileinfo,
+						MENU *pm);
 
 
 /* zmodem */

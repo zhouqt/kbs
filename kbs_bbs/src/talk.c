@@ -520,6 +520,7 @@ int ttt_talk(struct user_info *userinfo)
             perror("socket err\n");
             return -1;
         }
+		bzero(&server, sizeof(server));
         server.sin_family = AF_INET;
 /*        server.sin_addr.s_addr = INADDR_ANY ;
 我想应该用INADDR_LOOPBACK比较好 KCN
