@@ -415,6 +415,7 @@ int clean_cachedata(char* userid,int unum);
     void ann_set_items(MENU * pm, ITEM * it, size_t num);
     int ann_get_board(char *path, char *board, size_t len);
     int ann_get_path(char *board, char *path, size_t len);
+	int valid_fname(char *str);
     void a_additem(MENU* pm,char* title,char* fname,char* host,int port,long attachpos);    /* 产生ITEM object,并初始化 */
     int a_loadnames(MENU* pm);             /* 装入 .Names */
     int a_savenames(MENU* pm);             /*保存当前MENU到 .Names */
