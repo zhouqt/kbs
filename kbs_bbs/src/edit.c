@@ -695,7 +695,7 @@ long insert_from_fp(FILE *fp, long * attach_length)
     }
     BBS_END end_mmapfile((void *) ptr, size, -1);
 
-	if(ret <= 0) return 0;
+    if(ret <= 0) return 0;
     return ret;
 }
 
@@ -709,7 +709,7 @@ long read_file(char *filename,long *attach_length)
     if ((fp = fopen(filename, "r+b")) == NULL) {
         if ((fp = fopen(filename, "w+")) != NULL) {
             fclose(fp);
-            return;
+            return -1;
         }
         indigestion(4);
         abort_bbs(0);
@@ -1957,13 +1957,16 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,
 {
     int newch, ch = 0, foo, shift;
     struct textline *st_tmp, *st_tmp2;
-	long attach_length;
+    long attach_length;
+    long ret;
 
     if (pattachpos != NULL && *pattachpos!=0) {
-        *pattachpos=read_file(filename,&attach_length);
+        ret=read_file(filename,&attach_length);
+	*pattachpos=ret;
     } else
         // TODO: add zmodem upload
-        read_file(filename,NULL);
+        ret=read_file(filename,NULL);
+    if (ret<0) return -1;
     top_of_win = firstline;
     top_of_line = 0;
     for (newch = 0; newch < headlines; newch++)
