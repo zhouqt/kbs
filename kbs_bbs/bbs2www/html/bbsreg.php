@@ -3,21 +3,31 @@
 	 * This file registry a new id, work with bbsreg.html
 	 * by binxun 2003.5
 	 */
-    $needlogin=false;
-    require("funcs.php");
-    html_init("gb2312");
+	$needlogin=false;
+	require("funcs.php");
+	html_init("gb2312");
 
 	@$userid=$_POST["userid"];
 	@$pass1=$_POST["pass1"];
-    @$pass2=$_POST["pass2"];
+	@$pass2=$_POST["pass2"];
 	@$nickname=$_POST["username"];
 
-	if(strcmp($pass1,$pass2))
-        html_error_quit("两次密码输入不一样");
-    else if(strlen($pass1) < 5 || !strcmp($pass1,$userid))
-        html_error_quit("密码长度太短或者和用户名相同!");
+	@$realname=$_POST["realname"];
+	@$dept=$_POST["dept"];
+       @$address=$_POST["address"];
+	@$year=$_POST["year"];
+	@$month=$_POST["month"];
+	@$day=$_POST["day"];
+	@$email=$_POST["email"];
+	@$phone=$_POST["phone"];
 
-    $ret=bbs_createnewid($userid,$pass1,$username);
+
+	if(strcmp($pass1,$pass2))
+		html_error_quit("两次密码输入不一样");
+	else if(strlen($pass1) < 5 || !strcmp($pass1,$userid))
+       	html_error_quit("密码长度太短或者和用户名相同!");
+
+	$ret=bbs_createnewid($userid,$pass1,$username);
 	switch($ret)
 	{
 	case 0:
@@ -48,8 +58,18 @@
 			break;
 	}
 ?>
+
+	$ret=bbs_createregform($realname,$dept,$address,$year,$month,$day,$email,$phone,TRUE);//自动生成注册单
+	switch($ret)
+	{
+	case 0:
+		break;
+	default:
+		html_error_quit("未知的错误!");
+		break;
+	}
 <body>
-申请BBS水木清华ID成功,你现在还没有通过身份认证,只有最基本的权限,不能发文,发信,聊天等,请两天后到个人工具箱中填写注册单.<br>
+申请BBS水木清华ID成功,你现在还没有通过身份认证,只有最基本的权限,不能发文,发信,聊天等,两天后系统会自动生成注册单.<br>
 注册单通过审核后,你将获得合法用户权限！<br/><a href="http://www.smth.edu.cn">现在登录进站</a>
 </body>
 </html>
