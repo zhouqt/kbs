@@ -893,11 +893,6 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
         break;
     case KEY_REFRESH:
         break;
-    case KEY_RIGHT:
-#ifdef NINE_BUILD
-        sread(0, 0, ent, 0, fileinfo);
-        break;
-#endif
     case ' ':
     case 'j':
     case KEY_DOWN:
@@ -954,6 +949,7 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
         sread(0, 0, ent, 0, fileinfo);
         break;
     case Ctrl('X'):            /* Leeward 98.10.03 */
+    case KEY_RIGHT:
         sread(-1003, 0, ent, 0, fileinfo);
         break;
     case Ctrl('Q'):            /*Haohmaru.98.12.05,系统管理员直接查作者资料 */
