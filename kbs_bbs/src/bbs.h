@@ -202,6 +202,7 @@ O MaxMessageSize=32000
 #define BOARD_CLUB_WRITE  0x80  /*限制写的俱乐部*/
 #define BOARD_CLUB_HIDE  0x100  /*隐藏俱乐部*/
 #define BOARD_ATTACH        0x200 /*可以使用附件的版面*/
+/* boardheader.flag 的最高八位留给用户自定义用途: 0xXX000000 */
 
 #define ZAPPED  0x1             /* For boards...tells if board is Zapped */
 
