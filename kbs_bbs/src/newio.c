@@ -864,7 +864,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 
         if(ch == KEY_ESC&&!enableESC) {
             strncpy(buf, save, Min(len,STRLEN));
-            buf[Min(len,STRLEN)]=0;
+            buf[Min(len,STRLEN-1)]=0;
             curr = strlen(buf);
             clen = curr;
             init=true;
@@ -1086,7 +1086,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
             case KEY_ESC:
                 init=true;
                 strncpy(buf, tmp, Min(len,STRLEN));
-                buf[Min(len,STRLEN)]=0;
+                buf[Min(len,1024-1)]=0;
                 now=strlen(buf);
                 break;
             case Ctrl('Q'):
