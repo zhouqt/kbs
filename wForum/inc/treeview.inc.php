@@ -72,20 +72,17 @@ function showTree($boardName, $groupID, $articles, $displayFN, $maxthread = 51, 
 			}
 		}
 	} else {
-		/* 产生回复树结构 */
+		/* 产生回复树结构, optimized by roy */
 		$treenodes = array();
-		for($i=0; $i < $threadNum; $i++) {
-			$treenodes[$i] = new TreeNode($articles[$i], $i);
-		}
-		for($i=1; $i < $threadNum; $i++) {
-			for ($j=0; $j < $i; $j++) {
-				if ($articles[$i]['REID'] == $articles[$j]['ID']) {
-					$treenodes[$j]->addChild($treenodes[$i]);
-					break;
-				}
+		$treenodeIndexes = array();
+		for($i = 0; $i < $threadNum; $i++) {
+			$treenodeIndexes[$articles[$i]['ID']] = $i;
+			$treenodes[$i] = new TreeNode($articles[$i],$i);
+			if ( ($i > 0) && ( isset($treenodeIndexes[$articles[$i]['REID']]) ) ) {
+				$treenodes[$treenodeIndexes[$articles[$i]['REID']]]->addChild($treenodes[$i]);
 			}
 		}
-		
+
 		showTreeRecursively($boardName, $groupID, $treenodes, 0, 0, $lastflag, $displayFN);
 		for($i=0; $i < $threadNum; $i++) { // 可怜的孩子，没有爹的帖子
 			if (!$treenodes[$i]->showed) {
