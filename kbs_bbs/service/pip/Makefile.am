@@ -1,4 +1,5 @@
 lib_LTLIBRARIES = libpip.la
+noinst_HEADERS = pip.h
 libpip_la_SOURCES = pip_file.c      pip_menu.c      pip_practice.c \
 pip_basic.c     pip_for_fb.c    pip_other.c     pip_special.c \
 pip_ending.c    pip_job.c       pip_pic.c       pip_store.c   \
