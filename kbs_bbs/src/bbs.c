@@ -2439,11 +2439,6 @@ int del_range(int ent, struct fileheader *fileinfo, char *direct, int mailmode)
             return DONOTHING;
         }
 
-    if (digestmode == 2)
-        return DONOTHING;
-    if (digestmode == 4 || digestmode == 5) {
-        return DONOTHING;
-    }
     if (digestmode >= 2)
     	return DONOTHING; // disabled by bad 2002.8.16
     clear();
@@ -2553,7 +2548,7 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct)
         || !strcmp(currboard, "deleted"))       /* Leeward : 98.01.22 */
         return DONOTHING;
 
-    if (digestmode == 2 || digestmode == 3 || digestmode == 4 || digestmode == 5 || digestmode == 6 || digestmode == 7)
+    if ((digestmode != 0) &&(digestmode != 1))
         return DONOTHING;
     keep = sysconf_eval("KEEP_DELETED_HEADER"); /*是否保持被删除的POST的 title */
     if (fileinfo->owner[0] == '-' && keep > 0 && !SR_BMDELFLAG) {
