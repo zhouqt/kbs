@@ -262,7 +262,7 @@ static int read_key(struct _select_def *conf, int command)
                 arg->board=currboard;
                 arg->bid=getboardnum(currboard->filename, NULL);
                 arg->boardstatus=getbstatus(arg->bid);
-                read_getdata(conf,1,conf->item_per_page);
+                read_getdata(conf,-1,conf->item_per_page);
                 lastpos=getPos(arg->newmode,arg->direct,currboard);
                 if ((lastpos!=0)&&(lastpos<arg->filecount))
                     conf->pos = lastpos;
@@ -412,7 +412,7 @@ static int read_getdata(struct _select_def *conf, int pos, int len)
 	    newbbslog(BBSLOG_DEBUG,"%s pos %d count %d",arg->board->filename,pos,count+dingcount);
             return SHOW_SELCHANGE;
 	}
-	if (pos<=count) {
+	if ((pos!=-1)&&(pos<=count)) {
           if (lseek(arg->fd, arg->ssize * (pos - 1), SEEK_SET) != -1) {
             if ((n = read(arg->fd, arg->data, arg->ssize * len)) != -1) {
                 entry=(n / arg->ssize);
@@ -421,7 +421,7 @@ static int read_getdata(struct _select_def *conf, int pos, int len)
 	}
         
         /* 获得置顶的数据*/
-        if (dingcount) {
+        if (dingcount&&pos!=-1) {
             if (entry!=len) { //需要读入.DING
                 n=0;
                 if (pos>count) {
@@ -659,7 +659,7 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct 
         read_conf.on_size= read_onsize;
         read_conf.key_table = (struct key_translate *)ktab;
 
-        read_getdata(&read_conf,1,read_conf.item_per_page);
+        read_getdata(&read_conf,-1,read_conf.item_per_page);
         if (TDEFINE(TDEF_SPLITSCREEN))
             read_conf.on_selchange= read_showcontent;
         if ((lastpos!=0)&&(lastpos<arg.filecount))
