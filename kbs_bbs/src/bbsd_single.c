@@ -380,6 +380,75 @@ static void getremotehost(int sockfd, char *rhost, int buf_len)
 }
 #endif /* HAVE_REVERSE_DNS */
 
+#define MAXLIST 1000
+#define CON_THRESHOLD 1000.0/60/60
+#define CON_THRESHOLD2 1.0
+
+struct ip_struct{
+    unsigned char ip[4];
+    time_t first,last;
+    int t;
+} ips[MAXLIST];
+bool initIP=false;
+
+int check_IP_lists(unsigned int IP)
+{
+    int i,j,k;
+    FILE* fp;
+    int ip[4];
+    int found=0,min=0,ret=0;
+    time_t now;
+    now = time(0);
+    ip[0]=IP&0xff;
+    ip[1]=(IP&0xff00)>>8;
+    ip[2]=(IP&0xff0000)>>16;
+    ip[3]=(IP&0xff000000)>>24;
+    if(ip[0]==0) return 0;
+    if(!initIP) {
+        memset(ips, 0, sizeof(struct ip_struct)*MAXLIST);
+        initIP=true;
+    }
+    for(i=0;i<MAXLIST;i++) {
+        if((double)(now-ips[i].last)>60*60) {
+            ips[i].ip[0]=0;
+        }
+        if(ip[0]==ips[i].ip[0]&&ip[1]==ips[i].ip[1]&&ip[2]==ips[i].ip[2]&&ip[3]==ips[i].ip[3]){
+            if((double)(now-ips[i].last)<=CON_THRESHOLD2) {
+                fp=fopen(".IPdenys", "a");
+                if(fp){
+                    fprintf(fp, "0 %ld %d.%d.%d.%d\n", (unsigned int)now, ip[0],ip[1],ip[2],ip[3]);
+                    fclose(fp);
+                }
+                ret = 1;
+            }
+            found=1;
+            ips[i].last = now;
+            ips[i].t++;
+            if(ips[i].t/(double)(ips[i].last-ips[i].first)>=CON_THRESHOLD) {
+                fp=fopen(".IPdenys", "a");
+                if(fp){
+                    fprintf(fp, "1 %ld %d.%d.%d.%d\n", (unsigned int)now, ip[0],ip[1],ip[2],ip[3]);
+                    fclose(fp);
+                }
+                ret = 1;
+            }
+            break;
+        }
+        if(ips[i].last<ips[min].last) min = i;
+    }
+    if(!found) {
+        ips[min].ip[0]=ip[0];
+        ips[min].ip[1]=ip[1];
+        ips[min].ip[2]=ip[2];
+        ips[min].ip[3]=ip[3];
+        ips[min].first = now;
+        ips[min].last = now;
+        ips[min].t = 1;
+    }
+
+    return ret;
+}
+
 int bbs_main(argv)
     char *argv;
 {
@@ -540,11 +609,6 @@ static int bbs_standalone_main(char* argv)
       continue;
     }
     /* COMMAN :do not fork in debugging mode */
-    if (fork()) {
-      close(csock);
-      continue;
-    }
-    /* sanshao@10.24: why next line is originally sizeof(sin) not &value */
     proxy_getpeername(csock, (struct sockaddr *) &sin, (socklen_t *) & value);
 #ifdef SMTH
     if (sin.sin_addr.s_addr==0xea086fa6) { //166.111.8.234
@@ -555,6 +619,17 @@ static int bbs_standalone_main(char* argv)
         }
     }
 #endif
+
+    if (check_IP_lists(sin.sin_addr.s_addr)) {
+        close(csock);
+        continue;
+    }
+
+    if (fork()) {
+      close(csock);
+      continue;
+    }
+    /* sanshao@10.24: why next line is originally sizeof(sin) not &value */
 
     bbslog("0connect", "connect from %s(%d) in port %d", inet_ntoa(sin.sin_addr), htons(sin.sin_port), mport);
     setsid();

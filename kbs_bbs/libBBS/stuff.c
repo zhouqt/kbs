@@ -1165,91 +1165,6 @@ char *uid, *frm;
     }
 }
 
-#define IPListName ".IPlists"
-#define MAXLIST 1000
-#define CON_THRESHOLD 1000.0/60/60
-#define CON_THRESHOLD2 1.0
-
-int check_IP_lists(char *IP)
-{
-    int fd;
-    int i,j,k;
-    FILE* fp;
-    struct stat st;
-    struct flock ldata;
-    struct ip_struct{
-        unsigned char ip[4];
-        time_t first,last;
-        int t;
-    } ips[MAXLIST];
-    int ip[4];
-    int found=0,min=0,ret=0;
-    time_t now;
-    now = time(0);
-    sscanf(IP, "%d.%d.%d.%d", &(ip[0]), &(ip[1]), &(ip[2]), &(ip[3]));
-    if(ip[0]==0) return 0;
-    if(stat(IPListName, &st)<0) {
-        fd = open(IPListName, O_WRONLY|O_CREAT, 0600);
-        memset(ips, 0, sizeof(struct ip_struct)*MAXLIST);
-        close(fd);
-    }
-    fd = open(IPListName, O_RDWR, 0600);
-    read(fd, ips, sizeof(struct ip_struct)*MAXLIST);
-    ldata.l_type = F_WRLCK;
-    ldata.l_whence = 0;
-    ldata.l_len = 0;
-    ldata.l_start = 0;
-    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-        bbslog("user", "%s", "reclock err");
-        close(fd);
-        return -1;              /* lock error*/
-    }
-    for(i=0;i<MAXLIST;i++) {
-        if((double)(now-ips[i].last)>60*60) {
-            ips[i].ip[0]=0;
-        }
-        if(ip[0]==ips[i].ip[0]&&ip[1]==ips[i].ip[1]&&ip[2]==ips[i].ip[2]&&ip[3]==ips[i].ip[3]){
-            if((double)(now-ips[i].last)<=CON_THRESHOLD2) {
-                fp=fopen(".IPdenys", "a");
-                if(fp){
-                    fprintf(fp, "0 %ld %d.%d.%d.%d\n", (unsigned int)now, ip[0],ip[1],ip[2],ip[3]);
-                    fclose(fp);
-                }
-                ret = 1;
-            }
-            found=1;
-            ips[i].last = now;
-            ips[i].t++;
-            if(ips[i].t/(double)(ips[i].last-ips[i].first)>=CON_THRESHOLD) {
-                fp=fopen(".IPdenys", "a");
-                if(fp){
-                    fprintf(fp, "1 %ld %d.%d.%d.%d\n", (unsigned int)now, ip[0],ip[1],ip[2],ip[3]);
-                    fclose(fp);
-                }
-                ret = 1;
-            }
-            break;
-        }
-        if(ips[i].last<ips[min].last) min = i;
-    }
-    if(!found) {
-        ips[min].ip[0]=ip[0];
-        ips[min].ip[1]=ip[1];
-        ips[min].ip[2]=ip[2];
-        ips[min].ip[3]=ip[3];
-        ips[min].first = now;
-        ips[min].last = now;
-        ips[min].t = 1;
-    }
-
-    lseek(fd, 0, SEEK_SET);
-    write(fd, ips, sizeof(struct ip_struct)*MAXLIST);
-    ldata.l_type = F_UNLCK;
-    fcntl(fd, F_SETLKW, &ldata);
-    close(fd);
-    return ret;
-}
-
 int check_ban_IP(char *IP, char *buf)
 {                               /* Leeward 98.07.31
                                  * RETURN:
@@ -1262,12 +1177,6 @@ int check_ban_IP(char *IP, char *buf)
     int IPX = -1;
     char *ptr;
 
-#ifdef SMTH==1
-    if (check_IP_lists(IP)) {
-        strcpy(buf, "太多来自该IP的访问。请过一会儿再访问本站");
-        return 1;
-    }
-#endif
     Ban = fopen(".badIP", "r");
     if (!Ban)
         return IPX;
