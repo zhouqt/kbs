@@ -2758,9 +2758,11 @@ int del_range(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     getdata(4, 0, "确定删除 (Y/N)? [N]: ", num1, 10, DOECHO, NULL, true);
     if (*num1 == 'Y' || *num1 == 'y') {
         struct write_dir_arg dirarg;
-        bmlog(currentuser->userid, currboard->filename, 5, 1);
+	if (!mailmode)
+            bmlog(currentuser->userid, currboard->filename, 5, 1);
         malloc_write_dir_arg(&dirarg);
         dirarg.fd=arg->fd;
+        dirarg.filename=arg->direct;
         result = delete_range(&dirarg, inum1, inum2, idel_mode,arg->mode);
         /* todo 修正conf的pos
         if (inum1 != 0)

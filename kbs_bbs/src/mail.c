@@ -1377,7 +1377,7 @@ int mail_del_range(struct _select_def* conf,struct fileheader *fileinfo,void* ex
     struct read_arg* arg=conf->arg;
 
     ret = del_range(conf, fileinfo, NULL,DIR_MODE_MAIL);
-    if (!strcmp(arg->direct, ".DELETED"))
+    if (!strstr(arg->direct, ".DELETED"))
         get_mailusedspace(currentuser, 1);
     return ret;
 }

@@ -1,6 +1,5 @@
 #include "bbs.h"
 #include <utime.h>
-#define DEBUG
 
 void cancelpost(char *board, char *userid, struct fileheader *fh, int owned, int autoappend);
 int outgo_post(struct fileheader *fh, char *board, char *title)
