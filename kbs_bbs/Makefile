@@ -110,9 +110,12 @@ endif
 
 libsystem.a:
 	cd lib; make
+
+libzmodem.a:
+	cd rzsz; make
 	
-$(PROGNAME): $(COBJS) $(OTHERS) libsystem.a
-	$(LD) -o bbsd_single $(EXECLDFLAGS) $(LDFLAGS) $(COBJS) $(LIBS) libsystem.a
+$(PROGNAME): $(COBJS) $(OTHERS) libsystem.a libzmodem.a
+	$(LD) -o bbsd_single $(EXECLDFLAGS) $(LDFLAGS) $(COBJS) $(LIBS) libsystem.a libzmodem.a
 
 lint: $(LNFILES)
 	lint -abh $(LNFILES)
