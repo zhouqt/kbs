@@ -89,6 +89,7 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 [<a href="/bbsedittitle.php?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[1]["ID"]; ?>">修改标题</a>]
 [<a onclick="return confirm('你真的要删除本文吗?')" href="bbsdel.php?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">删除文章</a>]
 [<a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $articles[1]["GROUPID"]; ?>">同主题阅读</a>]
+[<a href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[1]["GROUPID"]; ?>">同主题第一篇</a>]
 [<a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $articles[1]["GROUPID"]; ?>&start=<?php echo $articles[1]["ID"]; ?>">从此处展开</a>]
 [<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>&page=<?php echo intval(($num + $PAGE_SIZE - 1) / $PAGE_SIZE); ?>">返回版面</a>]
 [<a href="javascript:history.go(-1)">快速返回</a>]
