@@ -6631,9 +6631,9 @@ static PHP_FUNCTION(bbs_send_sms)
     if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ss", &dest, &dest_len, &msgstr, &msgstr_len) == FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
-/*
+
 	ret = web_send_sms( dest, msgstr );
-*/
+
 	RETURN_LONG(ret);
 }
 
