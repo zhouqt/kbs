@@ -870,7 +870,7 @@ static int write_file(char* filename,int saveheader,long* effsize,long* pattachp
 #endif
         domsg();
         return KEEP_EDITING;
-    } else if (abort[0] == 't' || abort[0] == 'T') {
+    } else if ( (abort[0] == 't' || abort[0] == 'T') && uinfo.mode == POSTING) {
         char buf[STRLEN];
 
         buf[0] = 0;             /* Leeward 98.08.14 */
