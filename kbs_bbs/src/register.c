@@ -289,13 +289,13 @@ void check_register_info()
 		    getdata(8,0,"您的联系电话或者Email:",phone,40,DOECHO,NULL,true);
 		}while(strlen(phone) < 6);
 
+             unlink(buf);   
         sprintf(buf,"%s$%s@SYSOP", career,phone);
 		if(strlen(buf) >= STRLEN - 16)sprintf(buf,"%s@SYSOP",phone);
 		strncpy(curruserdata.realemail,buf,STRLEN-16);
 		curruserdata.realemail[STRLEN-16-1]='\0';
 		write_userdata(currentuser->userid,&curruserdata);
 		
-             unlink(buf);   
 	}
 
 
