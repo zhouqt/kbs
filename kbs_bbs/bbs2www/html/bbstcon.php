@@ -106,13 +106,13 @@
 	/*
         ** Cache只判断了同主题的最后一篇文章，没有顾及前面文章的修改  windinsn jan 26 , 2004
         */ 
-        /*if ($isnormalboard)
+        if ($isnormalboard)
 	{
        		$lastfilename = bbs_get_board_filename($board , $articles[$endnum - 1]["FILENAME"]);
 		if (cache_header("public",filemtime($lastfilename),300))
         	return;
         }
-        */
+        
         html_init("gb2312","","",1);
 ?>
 <a name="top">
