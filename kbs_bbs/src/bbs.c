@@ -598,7 +598,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
     char attachch;
 
    /* typesufix = typeprefix = "";*/
-   typesufix = typeprefix = NULL; 
+   typesufix = typeprefix = ""; 
 
     manager = chk_currBM(currBM, currentuser);
 
