@@ -741,6 +741,8 @@ int igetkey()
     return ret;
 }
 
+bool enableESC=false;
+
 int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void *nouse, int clearlabel)
 {
     int ch, clen = 0, curr = 0, x, y;
@@ -751,21 +753,15 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
     if (clearlabel == true) {
         buf[0] = 0;
     }
-    if (scrint)
-    move(line, col);
-    if (prompt)
-        prints("%s", prompt);
-/*    y = line;*/
-    if (scrint)
-    getyx(&y, &x);
-/*    col += (prompt == NULL) ? 0 : num_noans_chr(prompt);
-//    x = col;*/
+    if (scrint) move(line, col);
+    if (prompt) prints("%s", prompt);
+    if (scrint) getyx(&y, &x);
     clen = strlen(buf);
     curr = (clen >= len) ? len - 1 : clen;
     buf[curr] = '\0';
-    prints("%s", buf);
 
     if (!scrint) {
+        prints("%s", buf);
         while ((ch = igetkey()) != '\r') {
             /*
              * TODO: add KEY_REFRESH support 
@@ -773,9 +769,8 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 	    if (ch == '\n')
                 break;
             if (ch == '\177' || ch == Ctrl('H')) {
-                if (clen == 0) {
+                if (clen == 0)
                     continue;
-                }
                 clen--;
                 ochar(Ctrl('H'));
                 ochar(' ');
@@ -783,57 +778,30 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
                 oflush();
                 continue;
             }
-            if (!isprint2(ch)) {
+            if (!isprint2(ch))
                 continue;
-            }
-            if (clen >= len - 1) {
+            if (clen >= len - 1)
                 continue;
-            }
             buf[clen++] = ch;
-            /*
-             * move(line, col + clen);  Leeward 98.02.23  -- removed by wwj 2001/5/8 
-             */
-            if (echo)
-                ochar(ch);
-            else
-                ochar('*');
+            if (echo) ochar(ch);
+            else ochar('*');
         }
         buf[clen] = '\0';
         prints("\n");
         oflush();
         return clen;
     }
-    if (!echo) {
-        clrtoeol();
-        while ((ch = igetkey()) != '\r') {
-	    if (ch == '\n')
-                break;
-            if (ch == '\177' || ch == Ctrl('H')) {
-                int y,x;
-                if (clen == 0)
-                    continue;
-                clen--;
-                getyx(&y,&x);
-                move(y,x-1);
-                outc(' ');
-                move(y,x-1);
-                continue;
-            }
-            if (!isprint2(ch)||clen>=len-1)
-                continue;
-            buf[clen++] = ch;
-            outc('*');
-        }
-        buf[clen] = '\0';
-        prints("\n");
-        return clen;
-    }
     clrtoeol();
     while (1) {
+        int i;
+        move(y, x);
+        for(i=0;i<clen;i++)
+            if(!echo||buf[i]==KEY_ESC||!isprint2(buf[i])) outc('*');
+            else outc(buf[i]);
+        clrtoeol();
+        move(y, x+curr);
+
         ch = igetkey();
-        /*
-         * TODO: add KEY_REFRESH support ???
-         */
 
         if(kicked) return 0;
         if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch))
@@ -847,8 +815,8 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             break;
 #ifdef CHINESE_CHARACTER
         if (ch == Ctrl('R')) {
-			currentuser->userdefine = currentuser->userdefine ^ DEF_CHCHAR;
-        	continue;
+            currentuser->userdefine = currentuser->userdefine ^ DEF_CHCHAR;
+            continue;
         }
 #endif        	
         if (ch == '\177' || ch == Ctrl('H')) {
@@ -858,27 +826,23 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             strcpy(tmp, &buf[curr]);
             buf[--curr] = '\0';
 #ifdef CHINESE_CHARACTER
-			if (DEFINE(currentuser, DEF_CHCHAR)) {
-				int i,j=0;
-				for(i=0;i<curr;i++)
-					if(j) j=0;
-					else if(buf[i]<0) j=1;
-				if(j) {
-					buf[--curr] = '\0';
-					clen--;
-				}
-			}
+            if (DEFINE(currentuser, DEF_CHCHAR)) {
+                int i,j=0;
+                for(i=0;i<curr;i++)
+                    if(j) j=0;
+                    else if(buf[i]<0) j=1;
+                if(j) {
+                    buf[--curr] = '\0';
+                    clen--;
+                }
+            }
 #endif
             (void) strcat(buf, tmp);
             clen--;
-            move(y, x);
-            prints("%s", buf);
-            clrtoeol();
-            move(y, x + curr);
             continue;
         }
 
-        if(ch == KEY_ESC) {
+        if(ch == KEY_ESC&&!enableESC) {
             curr = 0;
             clen = 0;
             buf[0] = 0;
@@ -894,24 +858,20 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             }
             strcpy(tmp, &buf[curr + 1]);
 #ifdef CHINESE_CHARACTER
-			if (DEFINE(currentuser, DEF_CHCHAR)) {
-				int i,j=0;
-				for(i=0;i<curr+1;i++)
-					if(j) j=0;
-					else if(buf[i]<0) j=1;
-				if(j) {
-		            strcpy(tmp, &buf[curr + 2]);
-					clen--;
-				}
-			}
+            if (DEFINE(currentuser, DEF_CHCHAR)) {
+                int i,j=0;
+                for(i=0;i<curr+1;i++)
+                    if(j) j=0;
+                    else if(buf[i]<0) j=1;
+                if(j) {
+                    strcpy(tmp, &buf[curr + 2]);
+                    clen--;
+                }
+            }
 #endif
             buf[curr] = '\0';
             (void) strcat(buf, tmp);
             clen--;
-            move(y, x);
-            prints("%s", buf);
-            clrtoeol();
-            move(y, x + curr);
             continue;
         }
         if (ch == KEY_LEFT) {
@@ -920,15 +880,13 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             }
             curr--;
 #ifdef CHINESE_CHARACTER
-			if (DEFINE(currentuser, DEF_CHCHAR)) {
-				int i,j=0;
-				for(i=0;i<curr;i++)
-					if(j) j=0;
-					else if(buf[i]<0) j=1;
-				if(j) {
-					curr--;
-				}
-			}
+            if (DEFINE(currentuser, DEF_CHCHAR)) {
+                int i,j=0;
+                for(i=0;i<curr;i++)
+                    if(j) j=0;
+                    else if(buf[i]<0) j=1;
+                if(j) curr--;
+            }
 #endif
             move(y, x + curr);
             continue;
@@ -950,61 +908,34 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             }
             curr++;
 #ifdef CHINESE_CHARACTER
-			if (DEFINE(currentuser, DEF_CHCHAR)) {
-				int i,j=0;
-				for(i=0;i<curr;i++)
-					if(j) j=0;
-					else if(buf[i]<0) j=1;
-				if(j) {
-					curr++;
-				}
-			}
+            if (DEFINE(currentuser, DEF_CHCHAR)) {
+                int i,j=0;
+                for(i=0;i<curr;i++)
+                    if(j) j=0;
+                    else if(buf[i]<0) j=1;
+                if(j) curr++;
+            }
 #endif
             move(y, x + curr);
             continue;
         }
-        if (!isprint2(ch)) {
-            continue;
-        }
-
-        if (x + clen >= scr_cols || clen >= len - 1) {
-            continue;
-        }
+        if (!isprint2(ch)&&(ch!=KEY_ESC||!enableESC)) continue;
+        if (x + clen >= scr_cols || clen >= len - 1) continue;
 
         if (!buf[curr]) {
             buf[curr + 1] = '\0';
             buf[curr] = ch;
-            outc(ch);
         } else {
-            /*
-             * strncpy(tmp, &buf[curr], len);
-             * buf[curr] = ch;
-             * buf[curr + 1] = '\0';
-             * strncat(buf, tmp, len - curr);
-             */
             int i;
-
             for (i = len - 2; i >= curr; i--)
                 buf[i + 1] = buf[i];
             buf[curr] = ch;
-            move(y, x + curr);
-            outs(buf + curr);
-            move(y, x + curr + 1);
         }
         curr++;
         clen++;
-        /*
-         * move(y, x);
-         * prints("%s", buf);
-         * move(y, x + curr);
-         */
     }
     buf[clen] = '\0';
-    if (echo) {
-        move(y, x);
-        prints("%s", buf);
-    }
-    prints("\n");
+    outc('\n');
     return clen;
 }
 

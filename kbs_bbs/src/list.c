@@ -205,7 +205,9 @@ int do_userlist()
 {
     int i;
     char user_info_str[256 /*STRLEN*2 */ ], pagec;
+    char tbuf[80];
     int override;
+    extern bool disable_move;
     char fexp[30];
     struct user_info uentp;
 #ifdef NINE_BUILD
@@ -285,16 +287,27 @@ int do_userlist()
             return 0;
         }
         pagec = pagerchar(usernum,&uentp, uentp.pager, &isfriend);
+        strncpy(tbuf, (real_user_names) ? uentp.realname : (showexplain && override) ? fexp : uentp.username, 80);
+        tbuf[80]=0;
+        while(num_noans_chr(tbuf)<16) {
+            int i=strlen(tbuf);
+            tbuf[i+1]=0;
+            tbuf[i]=32;
+        }
+        while(num_noans_chr(tbuf)>16) {
+            int i=strlen(tbuf);
+            tbuf[i-1]=0;
+        }
         sprintf(user_info_str,
                  /*---	modified by period	2000-10-21	‘⁄œﬂ”√ªß ˝ø…“‘¥Û”⁄1000µƒ
                          " %3d%2s%s%-12.12s%s%s %-16.16s%s %-16.16s %c %c %s%-17.17s[m%5.5s\n",
                  ---*/
-                " %4d%2s%s%-12.12s%s%s %-16.16s%s %-16.16s %c %c %s%-16.16s[m%5.5s\n", i + 1 + page, (override) ? (uentp.invisible ? "££" : FRIENDSIG) : (uentp.invisible ? "£™" : ""), (override) ? "[1;32m" : "", uentp.userid, (override) ? "[m" : "", (override && showexplain) ? "[1;31m" : "", (real_user_names) ? uentp.realname : (showexplain && override) ? fexp : uentp.username, (override && showexplain) ? "[m" : "", (( /* !DEFINE(currentuser,DEF_HIDEIP) && */ (pagec == ' ' || pagec == 'O')) || HAS_PERM(currentuser, PERM_SYSOP)) ? uentp.from : FROMSTR,       /*Haohmaru.99.12.18 */
-                pagec,
-                /*
-                 * (uentp.invisible ? '#' : ' ') 
-                 */ msgchar(&uentp, &isfriend), (uentp.invisible == true)
-                ? "[34m" : "", modestring(uentp.mode, uentp.destuid, 0,        /* 1->0 ≤ªœ‘ æ¡ƒÃÏ∂‘œÛµ» modified by dong 1996.10.26 */
+                " %4d%2s%s%-12.12s%s%s %s%s %-16.16s %c %c %s%-16.16s[m%5.5s\n", i + 1 + page, (override) ? (uentp.invisible ? "££" : FRIENDSIG) : (uentp.invisible ? "£™" : ""), 
+                (override) ? "[1;32m" : "", uentp.userid, (override) ? "[m" : "", 
+                (override && showexplain) ? "[1;31m" : "", tbuf, "[m", 
+                (((pagec == ' ' || pagec == 'O')) || HAS_PERM(currentuser, PERM_SYSOP)) ? uentp.from : FROMSTR,
+                pagec, msgchar(&uentp, &isfriend), 
+                (uentp.invisible == true)? "[34m" : "", modestring(uentp.mode, uentp.destuid, 0,        /* 1->0 ≤ªœ‘ æ¡ƒÃÏ∂‘œÛµ» modified by dong 1996.10.26 */
                                            (uentp.in_chat ? uentp.chatid : NULL)),
 #ifdef SHOW_IDLE_TIME
                 idle_str(&uentp));
@@ -304,7 +317,9 @@ int do_userlist()
 
 #endif                          /*  */
         clrtoeol();
+        disable_move = false;
         prints("%s", user_info_str);
+        disable_move = true;
     }
 #undef FROMSTR    
 #undef FRIENDSIG    
@@ -366,6 +381,7 @@ int allnum, pagenum;
 {
     char buf[STRLEN], genbuf[5];
     static int msgflag;
+    extern bool enableESC;
 
     if (msgflag == true) {
         show_message(NULL);
@@ -376,7 +392,9 @@ int allnum, pagenum;
     case UL_CHANGE_NICK_LOWER:
     case UL_CHANGE_NICK_UPPER:
        buf[0] = '\0';
+       enableESC = true;
        getdata( BBS_PAGESIZE+3, 0, "±‰ªªÍ«≥∆: ",buf,NAMELEN,DOECHO,NULL,false);
+       enableESC = false;
        if(buf[0]!='\0')
        {	       
 	    strncpy(uinfo.username,buf,NAMELEN);
