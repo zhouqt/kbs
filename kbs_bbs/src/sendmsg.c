@@ -531,7 +531,7 @@ void r_msg()
                         i = do_sendmsg(uin, buf, 4);
                         buf[0]=0;
                         if(i==1) strcpy(buf, "[1m∞Ôƒ„ÀÕ≥ˆ—∂œ¢¡À[m");
-                        else if(i==-2) strcpy(buf, "[1m∂‘∑Ω“—æ≠¿Îœﬂ¡À...[m");
+                        else if(i==-1) strcpy(buf, "[1m∂‘∑Ω“—æ≠¿Îœﬂ¡À...[m");
                         if(buf[0]) {
                             good_move(0,0);
                             clrtoeol();

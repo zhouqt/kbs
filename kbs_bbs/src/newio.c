@@ -904,7 +904,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
             break;
         for(i=starty;i<=y;i++)
             norefresh_saveline(i, 1, savebuffer[i]);
-        if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch) && (starty == y))
+        if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch) && (!buf[0]))
             return -ch;
 #ifdef CHINESE_CHARACTER
         if (ch == Ctrl('R')) {
