@@ -650,7 +650,7 @@ Powered By <A HREF="http://dev.smth.org" TARGET="_blank">SmthBBS</A>
 function bbs_add_super_fav ($title, $url='', $type=0) {
     global $currentuser;
     if (!$url) $url = $_SERVER['REQUEST_URI'];
-    echo '<a href="/bbssfav.php?userid='.$currentuser['userid'].'&act=choose&title='.rawurlencode ($title).'&url='.rawurlencode ($url).'&type='.intval ($type).'">Ìí¼Óµ½'.FAVORITE_NAME.'</a>';
+    echo '<a href="/bbssfav.php?userid='.$currentuser['userid'].'&act=choose&title='.rawurlencode ($title).'&url='.rawurlencode ($url).'&type='.intval ($type).'">'.FAVORITE_NAME.'</a>';
 }
 
 } // !define ('_BBS_FUNCS_PHP_')
