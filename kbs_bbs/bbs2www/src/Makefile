@@ -32,7 +32,7 @@ CGI	= bbsusr bbstop10 bbssec bbsdoc bbscon bbsbrdadd bbsboa bbsall bbsanc bbs0an
 
 #DIRS = lib src
 
-.c.o:   ;   $(CC) -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' $(CFLAGS) $(DEFINES) -c $*.c
+.c.o:   ;   $(CC) -I$(BBSINCLUDE) -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' $(CFLAGS) $(DEFINES) -c $*.c
 
 #MAKEFLAG = $(CFLAGS) $(DEFINES)
 

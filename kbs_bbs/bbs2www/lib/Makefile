@@ -9,7 +9,7 @@ ifeq (../../Makefile.spec ,$(wildcard ../../Makefile.spec))
 include	../../Makefile.spec
 endif
 DEFINES = $(OS_DEF) $(SITE_DEF)
-.c.o:   ;   $(CC) -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' -I../include -I../.. $(CFLAGS) $(DEFINES) -c $*.c
+.c.o:   ;   $(CC) -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' -I../include -I$(BBSINCLUDE)  $(CFLAGS) $(DEFINES) -c $*.c
 
 all: $(BBSLIBRARY)
 

@@ -16,11 +16,11 @@ ifeq (../../Makefile.spec ,$(wildcard ../../Makefile.spec))
 include	../../Makefile.spec
 endif
 DEFINES = $(OS_DEF) $(SITE_DEF)
-.c.o:   ;   $(CC) -DCOMPILE_DL=1 -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' -I../include -I../.. $(CFLAGS) $(DEFINES) $(INC) -c $*.c
+.c.o:   ;   $(CC) -DCOMPILE_DL=1 -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' -I../include -I$(BBSINCLUDE) $(CFLAGS) $(DEFINES) $(INC) -c $*.c
 
 # complier and linker
-$(TARGET): $(OBJ) ../../libBBS.a ../../libsystem.a
-	$(LD) -shared $(LDFLAGS) -o $(TARGET) $(OBJ) -lBBS ../../libsystem.a ../lib/libbbslib.a -lesmtp
+$(TARGET): $(OBJ) ../../libBBS/libBBS.a ../../libsystem/libsystem.a
+	$(LD) -shared $(LDFLAGS) -o $(TARGET) $(OBJ) ../lib/libbbslib.a -lesmtp
 
 install: $(TARGET)
 	@mkdir -p $(PHPBBSLIBDIR)
