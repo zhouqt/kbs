@@ -1715,7 +1715,8 @@ int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
         pressreturn();
         return FULLUPDATE;
     }
-    if (!(st.st_mode & S_IFDIR)) {
+    bid = getbnum(bname);
+    if (!(st.st_mode & S_IFDIR) || (bid == 0)) {
         move(2, 0);
         prints("不正确的讨论区.");
         clrtoeol();
@@ -1724,13 +1725,11 @@ int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     }
 
     board_setcurrentuser(uinfo.currentboard, -1);
-    uinfo.currentboard = getbnum(bname);
+    uinfo.currentboard = bid;
     UPDATE_UTMP(currentboard,uinfo);
     board_setcurrentuser(uinfo.currentboard, 1);
     
     selboard = 1;
-
-    bid = getbnum(bname);
 
     currboardent=bid;
     currboard=(struct boardheader*)getboard(bid);
