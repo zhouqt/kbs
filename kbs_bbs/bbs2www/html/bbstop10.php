@@ -15,19 +15,23 @@
                 }
                 $modifytime=filemtime($top_file);
 	session_cache_limiter("public");
-	$oldmidofied=$_SERVER["HTTP_IF_MODIFIED_SINCE"];
-	if ($oldmidofied!="") {
+	$oldmodified=$_SERVER["HTTP_IF_MODIFIED_SINCE"];
+	if ($oldmodified!="") {
+/*
 		list($dayobweek,$day,$month,$year,$hour,$minute,$second)=
-			sscanf($oldmidofied,"%s, %d %d %d %d:%d:%d");
+			sscanf($oldmidofied,"%s, %d %s %d %d:%d:%d");
 		$oldtime=gmmktime($hour,$minute,$second,$month,$day,$year);
+*/
+                $oldtime=strtotime($oldmodified);
 	} else $oldtime=0;
-	if ($oldtime==$modifytime) {
+	if ($oldtime>=$modifytime) {
 		header("HTTP/1.1 304 Not Modified");
+	        header("Cache-Control: max-age=300");
 		return;
 	}
 	header("Last-Modified: " . gmdate("D, d M Y H:i:s", $modifytime) . "GMT");
 	header("Expires: " . gmdate("D, d M Y H:i:s", $modifytime+300) . "GMT");
-	header("Cache-Control: max-age=300, must-revalidate");
+	header("Cache-Control: max-age=300");
 	html_init("gb2312");
 ?>
 <body>
