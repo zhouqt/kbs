@@ -2835,13 +2835,13 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
 #ifdef HAVE_WFORUM
 //#define GENERATE_WEBTHREAD_USE_AVLTREE
 
+#ifndef GENERATE_WEBTHREAD_USE_AVLTREE
 //以后改成更有效率的算法吧……
 typedef struct _wwwthreadheader_list{
 	struct wwwthreadheader content;
 	struct _wwwthreadheader_list *previous;
 } wwwthreadheader_list, *pwwwthreadheader_list;
 
-#ifndef GENERATE_WEBTHREAD_USE_AVLTREE
 static pwwwthreadheader_list foundInWWWThreadList(unsigned int groupid, pwwwthreadheader_list p){
 	while (p!=NULL) {
 		if (p->content.origin.groupid==groupid)	{
@@ -2851,7 +2851,6 @@ static pwwwthreadheader_list foundInWWWThreadList(unsigned int groupid, pwwwthre
 	}
 	return NULL;
 }
-#endif
 
 static pwwwthreadheader_list CreateNewWWWThreadListNode(pwwwthreadheader_list p){
 	pwwwthreadheader_list q;
@@ -2871,16 +2870,16 @@ static void clearWWWThreadList(pwwwthreadheader_list p){
 	}
 }
 
-#ifdef GENERATE_WEBTHREAD_USE_AVLTREE
+#else
 
 // balance is LH (left heavy), EH (even), RH (right heavy)
 enum balance { LH, EH, RH };
 typedef struct _wwwthread_treenode {
-    int groupid;
-    pwwwthreadheader_list pointer;
+    struct wwwthreadheader content;
     enum balance bf;            // bf is the balance factor
     struct _wwwthread_treenode *Lchild;
     struct _wwwthread_treenode *Rchild;
+    struct _wwwthread_treenode *previous;
 } wwwthread_treenode;
 
 static wwwthread_treenode *AVL_RotateLeft(wwwthread_treenode * p)
@@ -2974,7 +2973,8 @@ static wwwthread_treenode *AVL_LeftBalance(wwwthread_treenode * r)
     return r;
 }
 
-static bool AVL_Insert(wwwthread_treenode ** proot, int groupid, pwwwthreadheader_list** pointer, bool *iscreate)
+/* previous returns the newly created node if newly created */
+static bool AVL_Insert(wwwthread_treenode ** proot, struct fileheader *fh, int flags, wwwthread_treenode** previous)
 {
     bool tallersubtree;
     bool taller;
@@ -2984,18 +2984,28 @@ static bool AVL_Insert(wwwthread_treenode ** proot, int groupid, pwwwthreadheade
     root = *proot;
     if (root == NULL) {
         root = (wwwthread_treenode *) malloc(sizeof(wwwthread_treenode));
-        if (root == NULL) return false; //ToDo: error handling. But I guess this is probably good enough... - atppp
-        root->groupid = groupid;
-        *pointer = &(root->pointer);
+        if (root == NULL) {
+            *previous = NULL;
+            return false;
+        }
+        root->content.lastreply = *fh;
+        if (fh->id == fh->groupid)
+            root->content.origin = *fh;
+        else
+            root->content.origin.groupid = fh->groupid + 1;
+        root->content.flags = flags;
+        root->content.articlecount = 1;
+        root->content.unused = 0;
+        root->previous = *previous;
+        *previous = root;
         root->Lchild = NULL;
         root->Rchild = NULL;
         root->bf = EH;
         taller = true;
-        *iscreate = true;
     } else {
-        cmp = groupid - root->groupid;
+        cmp = fh->groupid - root->content.lastreply.groupid;
         if (cmp < 0) {
-            tallersubtree = AVL_Insert(&(root->Lchild), groupid, pointer, iscreate);
+            tallersubtree = AVL_Insert(&(root->Lchild), fh, flags, previous);
             if (tallersubtree)
                 switch (root->bf) {
                 case LH:
@@ -3015,7 +3025,7 @@ static bool AVL_Insert(wwwthread_treenode ** proot, int groupid, pwwwthreadheade
             else
                 taller = false;
         } else if (cmp > 0) {
-            tallersubtree = AVL_Insert(&(root->Rchild), groupid, pointer, iscreate);
+            tallersubtree = AVL_Insert(&(root->Rchild), fh, flags, previous);
             if (tallersubtree)
                 switch (root->bf) {
                 case LH:
@@ -3034,7 +3044,14 @@ static bool AVL_Insert(wwwthread_treenode ** proot, int groupid, pwwwthreadheade
             else
                 taller = false;
         } else {  // cmp == 0
-            *pointer = &(root->pointer);
+			if (root->content.lastreply.groupid == root->content.lastreply.id) { //ZhiDing
+				root->content.lastreply = *fh;
+			} else {
+				root->content.articlecount++;
+			}
+            if ((fh->groupid == fh->id) && (root->content.flags != FILE_ON_TOP)) {
+                root->content.origin =*fh;
+            }
             taller = false;
         }
     }
@@ -3042,19 +3059,13 @@ static bool AVL_Insert(wwwthread_treenode ** proot, int groupid, pwwwthreadheade
     return taller;
 }                               // end insert
 
-static void AVL_PostTW(wwwthread_treenode * root, void (*fptr) (wwwthread_treenode *, void *), void *arg)
-{                               /* postorder tree walk, note root must not be null */
-    if (root->Lchild != NULL)
-        AVL_PostTW(root->Lchild, fptr, arg);
-    if (root->Rchild != NULL)
-        AVL_PostTW(root->Rchild, fptr, arg);
-    if (fptr != NULL)
-        fptr(root, arg);
-}
-
-static void wwwthread_freenode(wwwthread_treenode * node, void *arg)
-{
-    free(node);
+static void clearWWWThreadList(wwwthread_treenode *p){
+	wwwthread_treenode *q;
+	while (p!=NULL) {
+		q=p->previous;
+		free(p);
+		p=q;
+	}
 }
 
 #endif //ifndef GENERATE_WEBTHREAD_USE_AVLTREE
@@ -3069,13 +3080,13 @@ int www_generateOriginIndex(const char* board)
 	char currdirect[PATHLEN];
     char *ptr;
     struct stat buf;
-    pwwwthreadheader_list tail,temp;
 #ifndef GENERATE_WEBTHREAD_USE_AVLTREE
+    pwwwthreadheader_list tail,temp;
 	int found;
 #else
     wwwthread_treenode *root = NULL;
-    pwwwthreadheader_list *pointer;
-    bool iscreate;
+    wwwthread_treenode *tail = NULL;
+    wwwthread_treenode *temp = NULL;
 #endif
     int bid;
     struct BoardStatus* bs;
@@ -3142,19 +3153,23 @@ int www_generateOriginIndex(const char* board)
 
 	size=sizeof(struct wwwthreadheader);
 
+#ifndef GENERATE_WEBTHREAD_USE_AVLTREE
 	tail=temp=NULL;
+#endif
 
     bid = getbnum(board);
     bs = getbstatus(bid);
     for (i=bs->toptitle-1;i>=0;i--) {
         if (bs->topfh[i].groupid!=bs->topfh[i].id) continue;
 #ifdef GENERATE_WEBTHREAD_USE_AVLTREE
-        iscreate = false;
-        AVL_Insert(&root, bs->topfh[i].groupid, &pointer, &iscreate);
-        if (!iscreate) continue;
+        AVL_Insert(&root, &(bs->topfh[i]), FILE_ON_TOP, &temp);
+        if (temp == NULL) {
+            clearWWWThreadList(tail);
+            return -5;
+        }
+        tail = temp;
 #else
         if (foundInWWWThreadList(bs->topfh[i].groupid,tail)!=NULL) continue;
-#endif
         temp=CreateNewWWWThreadListNode(tail);
         if (temp==NULL) {
             clearWWWThreadList(tail);
@@ -3166,8 +3181,6 @@ int www_generateOriginIndex(const char* board)
         temp->content.flags=FILE_ON_TOP;
         temp->content.unused=0;
         tail=temp;
-#ifdef GENERATE_WEBTHREAD_USE_AVLTREE
-        *pointer = temp;
 #endif
     }
 
@@ -3175,48 +3188,35 @@ int www_generateOriginIndex(const char* board)
     ptr1 = (struct fileheader *) ptr;
 	for (i=total-1;i>=0;i--) {
 #ifdef GENERATE_WEBTHREAD_USE_AVLTREE
-        iscreate = false;
-        AVL_Insert(&root, ptr1[i].groupid, &pointer, &iscreate);
-        if (iscreate) temp = NULL;
-        else temp = *pointer;
+        AVL_Insert(&root, &(ptr1[i]), 0, &temp);
+        if (temp == NULL) {
+				clearWWWThreadList(tail);
+				return -5;
+        }
+        tail = temp;
 #else
 		temp=foundInWWWThreadList(ptr1[i].groupid,tail);
-#endif
 		if (temp==NULL)	{
-#ifndef GENERATE_WEBTHREAD_USE_AVLTREE
 			if ((found=Search_Bin((struct fileheader *)ptr,ptr1[i].groupid,0,total-1))<0) continue;
-#endif
 			temp=CreateNewWWWThreadListNode(tail);
 			if (temp==NULL) {
 				clearWWWThreadList(tail);
 				return -5;
 			}
-#ifndef GENERATE_WEBTHREAD_USE_AVLTREE
 			temp->content.origin=ptr1[found];
-#else
-            if (ptr1[i].groupid == ptr1[i].id) temp->content.origin = ptr1[i];
-            else temp->content.origin.groupid=ptr1[i].groupid + 1;
-#endif
 			temp->content.lastreply=ptr1[i];
 			temp->content.articlecount=1;
 			temp->content.flags=0;
 			temp->content.unused=0;
 			tail=temp;
-#ifdef GENERATE_WEBTHREAD_USE_AVLTREE
-            *pointer = temp;
-#endif
 		} else {
 			if (temp->content.lastreply.groupid==temp->content.lastreply.id) { //ZhiDing
 				temp->content.lastreply=ptr1[i];
 			} else {
 				temp->content.articlecount++;
 			}
-#ifdef GENERATE_WEBTHREAD_USE_AVLTREE
-            if ((ptr1[i].groupid == ptr1[i].id) && (temp->content.flags != FILE_ON_TOP)) {
-                temp->content.origin = ptr1[i];
-            }
-#endif
 		}
+#endif
 	}
 	while (tail!=NULL) {
 		temp=tail->previous;
@@ -3227,9 +3227,6 @@ int www_generateOriginIndex(const char* board)
 		free(tail);
 		tail=temp;
 	}
-#ifdef GENERATE_WEBTHREAD_USE_AVLTREE
-    AVL_PostTW(root, wwwthread_freenode, NULL);
-#endif
     end_mmapfile((void *) ptr, buf.st_size, -1);
     ldata2.l_type = F_UNLCK;
     fcntl(fd2, F_SETLKW, &ldata2);
