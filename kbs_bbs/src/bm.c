@@ -195,7 +195,7 @@ int addtodeny(char *uident)
     }
     if (denymsg[0] == '*')
         return 0;
-    autofree = askyn("¸Ã·â½ûÊÇ·ñ×Ô¶¯½â·â£¿", true);
+    autofree = askyn("¸Ã·â½ûÊÇ·ñ×Ô¶¯½â·â£¿(Ñ¡ [1;31mY[m ±íÊ¾½øĞĞ×Ô¶¯½â·â)", true);
     sprintf(filebuf, "ÊäÈëÌìÊı(×î³¤%dÌì)", maxdeny);
     denyday = 0;
     while (!denyday) {
@@ -211,7 +211,7 @@ int addtodeny(char *uident)
             break;
     }
 
-    if (denyday && autofree) {
+    if (denyday && (autofree == 0)) {
         struct tm *tmtime;
         time_t undenytime = now + denyday * 24 * 60 * 60;
 
