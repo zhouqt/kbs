@@ -242,7 +242,7 @@ static void parse_sysconf(char *fname)
                     sysconf_addkey(key, NULL, val);
                 }
             } else {
-                report(ptr);
+                bbslog("user","%s",ptr);
             }
         }
     }

@@ -291,7 +291,7 @@ int x_level()
         char secu[STRLEN];
 
         sprintf(secu, "修改 %s 的权限XPERM%d %d", lookupuser->userid, lookupuser->userlevel, newlevel);
-        securitybbslog("user","%s",secu, lookupuser, NULL);
+        securityreport(secu, lookupuser, NULL);
         lookupuser->userlevel = newlevel;
         /*
          * Leeward: 1997.12.02 : Modification stops 
@@ -649,7 +649,7 @@ void a_edits()
             char secu[STRLEN];
 
             sprintf(secu, "删除系统档案：%s", explain_file[ch]);
-            securitybbslog("user","%s",secu, NULL, NULL);
+            securityreport(secu, NULL, NULL);
         }
         unlink(genbuf);
         move(5, 0);
@@ -671,7 +671,7 @@ void a_edits()
             char secu[STRLEN];
 
             sprintf(secu, "修改系统档案：%s", explain_file[ch]);
-            securitybbslog("user","%s",secu, NULL, NULL);
+            securityreport(secu, NULL, NULL);
         }
 
         if (!strcmp(e_file[ch], "../Welcome")) {

@@ -93,7 +93,7 @@ void new_register()
                     && (lnow - lst.st_ctime < SEC_DELETED_OLDHOME /* 3600*24*30 */ )) {
                     prints("目前无法注册帐号%s，请与系统管理人员联系。\n", newuser.userid);
                     sprintf(genbuf, "IP %s new id %s failed[home changed in past 30 days]", fromhost, newuser.userid);
-                    report(genbuf);
+                    bbslog("user","%s",genbuf);
                 } else
                 /*---	---*/
                     break;

@@ -53,13 +53,13 @@ int setvoteflag(char *bname, int flag)
     return 0;
 }
 
-void b_report(str)
+void b_bbslog("user","%s",str)
 char *str;
 {
     char buf[STRLEN];
 
     sprintf(buf, "%s %s", currboard, str);
-    report(buf);
+    bbslog("user","%s",buf);
 }
 
 void makevdir(bname)
@@ -624,7 +624,7 @@ char *bname;
     sprintf(limitfile, "vote/%s/limit.%lu", currboard, ball->opendate);
     if (append_record(limitfile, v_limit, sizeof(struct votelimit)) == -1) {
         prints("发生严重的错误，无法写入限制文件，请通告站长");
-        b_report("Append limit file Error!!");
+        b_bbslog("user","%s","Append limit file Error!!");
     }
     /*Haohmaru.99.10.26.add below 8 lines */
     getdata(1, 0, "确定开启投票?[Y] :", buf, 3, DOECHO, NULL, true);
@@ -638,12 +638,12 @@ char *bname;
     strcpy(ball->userid, currentuser->userid);
     if (append_record(controlfile, ball, sizeof(*ball)) == -1) {
         prints("发生严重的错误，无法开启投票，请通告站长");
-        b_report("Append Control file Error!!");
+        b_bbslog("user","%s","Append Control file Error!!");
     } else {
         char votename[STRLEN];
         int i;
 
-        b_report("OPEN VOTE");
+        b_bbslog("user","%s","OPEN VOTE");
         prints("投票箱已经开启了！\n");
         range++;
         sprintf(votename, "tmp/votetmp.%d", getpid());
@@ -694,7 +694,7 @@ int vote_flag(char *bname, char val, int mode)
         char buf[STRLEN];
 
         sprintf(buf, "%s Flag file open Error.", bname);
-        report(buf);
+        bbslog("user","%s",buf);
         return -1;
     }
     flock(fd, LOCK_EX);
@@ -1091,7 +1091,7 @@ int allnum, pagenum;
         mk_result(allnum + 1);
         sprintf(buf, "提早结束投票 %s", currvote.title);
         securityreport(buf, NULL, NULL);
-        report(buf);
+        bbslog("user","%s",buf);
         break;
     case '@':
         if (!HAS_PERM(currentuser, PERM_SYSOP))
@@ -1124,7 +1124,7 @@ int allnum, pagenum;
         }
         sprintf(buf, "强制关闭投票 %s", currvote.title);
         securityreport(buf, NULL, NULL);
-        report(buf);
+        bbslog("user","%s",buf);
         dele_vote(allnum + 1);
         break;
     default:

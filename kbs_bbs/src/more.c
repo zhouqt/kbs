@@ -106,7 +106,7 @@ int NNread_init()
     movieshm->movielines = xxxline;
     movieshm->update = time(0);
     sprintf(buf, "%d 行 活动看板 更新", xxxline);
-    report(buf);
+    bbslog("user","%s",buf);
     fclose(fffd);
     return 1;
 }

@@ -322,7 +322,7 @@ void multi_user_check()
                         kill(uin.pid, 9);
                 }
                 sprintf(buffer, "kicked (multi-login)");
-                report(buffer);
+                bbslog("user","%s",buffer);
 
                 clear_utmp(num, usernum, uin.pid);
                 continue;
@@ -648,7 +648,7 @@ void notepad_init()
         fprintf(check, "%lu", lastnote);
         fclose(check);
         sprintf(tmp, "留言板在 %s Login 开启，内定开启时间时间为 %s", currentuser->userid, Ctime(lastnote));
-        report(tmp);
+        bbslog("user","%s",tmp);
     }
     if ((time(NULL) - lastnote) >= maxsec) {
         move(t_lines - 1, 0);
@@ -671,7 +671,7 @@ void notepad_init()
                     if (dashf(fname)) {
                         post_file(currentuser, "", fname, bname, notetitle, 0, 1);
                         sprintf(tmp, "%s 自动张贴", ntitle);
-                        report(tmp);
+                        bbslog("user","%s",tmp);
                     }
                 }
             }
@@ -712,7 +712,7 @@ void user_login()
     u_enter();
     sprintf(genbuf, "Enter from %-16s", fromhost);      /* Leeward: 97.12.02 */
 
-    report(genbuf);
+    bbslog("user","%s",genbuf);
 /*---	period	2000-10-19	4 debug	---*/
     bbslog("1system", "ALLOC: [%d %d]", utmpent, usernum);
 /*---	---*/

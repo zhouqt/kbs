@@ -421,7 +421,7 @@ int m_newbrd()
     }
     prints("\n新讨论区成立\n");
     sprintf(genbuf, "add brd %s", newboard.filename);
-    report(genbuf);
+    bbslog("user","%s",genbuf);
     {
         char secu[STRLEN];
 
@@ -616,7 +616,7 @@ int m_editbrd()
             }
             set_board(pos, &newfh);
             sprintf(genbuf, "更改讨论区 %s 的资料 --> %s", fh.filename, newfh.filename);
-            report(genbuf);
+            bbslog("user","%s",genbuf);
         }
     }
     clear();
@@ -660,7 +660,7 @@ int searchtrace()
     sprintf(buf, "查询用户 %s 的发文情况", tmp_id);
     securityreport(buf, lookupuser, NULL);    /*写入syssecurity版, stephen 2000.12.21 */
     sprintf(buf, "Search the posts by %s in the trace", tmp_id);
-    report(buf);                /*写入trace, stephen 2000.12.21 */
+    bbslog("user","%s",buf);                /*写入trace, stephen 2000.12.21 */
 
     move(3, 0);
     prints("查询结果已经寄到您的信箱！ \n");
@@ -839,7 +839,7 @@ int m_trace()
         move(t_lines - 2, 0);
         if (msg) {
             prints("%s\n", msg);
-            report(msg);
+            bbslog("user","%s",msg);
         }
     }
     clear();

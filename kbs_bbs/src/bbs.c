@@ -2358,7 +2358,7 @@ int del_range(int ent, struct fileheader *fileinfo, char *direct, int mailmode)
         if (uinfo.mode != RMAIL) {
             updatelastpost(currboard);
             sprintf(genbuf, "del %d-%d on %s", inum1, inum2, currboard);
-            report(genbuf);     /*bbslog */
+            bbslog("user","%s",genbuf);     /*bbslog */
         }
         prints("删除%s\n", result ? "失败！" : "完成"); /* Leeward: 97.12.15 */
         if (result) {           /* prints("错误代码: %d;%s 请报告站长，谢谢！", result,direct);

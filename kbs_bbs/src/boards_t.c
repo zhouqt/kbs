@@ -472,7 +472,7 @@ static int choose_board(int newflag, char *boardprefix)
                     sprintf(genbuf, "只读讨论区 %s ", nbrd[num].name);
                     securityreport(genbuf, NULL, NULL);
                     sprintf(genbuf, " readonly board %s", nbrd[num].name);
-                    report(genbuf);
+                    bbslog("user","%s",genbuf);
 
                     show_brdlist(page, 0, newflag);
                 }
@@ -491,7 +491,7 @@ static int choose_board(int newflag, char *boardprefix)
                 sprintf(genbuf, "解开只读讨论区 %s ", nbrd[num].name);
                 securityreport(genbuf, NULL, NULL);
                 sprintf(genbuf, " readable board %s", nbrd[num].name);
-                report(genbuf);
+                bbslog("user","%s",genbuf);
 
                 show_brdlist(page, 0, newflag);
                 break;

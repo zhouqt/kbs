@@ -71,7 +71,7 @@ int do_del_post(struct userec *user, int ent, struct fileheader *fileinfo, char 
     if ((t = strrchr(buf, '/')) != NULL)
         *t = '\0';
 /* .post.X not use???! KCN
-postreport(fileinfo->title, -1, currboard); added by alex, 96.9.12 */
+postbbslog("user","%s",fileinfo->title, -1, currboard); added by alex, 96.9.12 */
 /*    if( keep <= 0 ) {*/
     if (fileinfo->id == fileinfo->groupid)
         setboardorigin(board, 1);

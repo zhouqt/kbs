@@ -915,7 +915,7 @@ int write_file(filename, saveheader)
 #ifndef VEDITOR
     if (abort[0] == 'l' || abort[0] == 'L' || local_article == 1) {
         sprintf(genbuf, "local_article = %u", local_article);
-        report(genbuf);
+        bbslog("user","%s",genbuf);
         local_article = 0;
         if (aborted != -1)
             aborted = 1;        /* aborted = 1 means local save */

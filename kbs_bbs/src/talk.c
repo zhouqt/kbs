@@ -510,7 +510,7 @@ int ttt_talk(struct user_info *userinfo)
             return 0;
         }
         sprintf(buf, "Talk to '%s'", uident);
-        report(buf);
+        bbslog("user","%s",buf);
         sock = socket(AF_INET, SOCK_STREAM, 0);
         if (sock < 0) {
             perror("socket err\n");

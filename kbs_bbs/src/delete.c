@@ -79,7 +79,7 @@ int d_board()
         if (seek_in_file("0Announce/.Search", bname))
             del_from_file("0Announce/.Search", bname);
         sprintf(genbuf, "deleted board %s", bname);
-        report(genbuf);
+        bbslog("user","%s",genbuf);
         /*
            sprintf(genbuf,"/bin/rm -fr boards/%s",bname) ;
            sprintf(genbuf,"/bin/rm -fr vote/%s",bname) ;
@@ -456,7 +456,7 @@ int d_user(cid)
         securityreport(secu, lookupuser, NULL);
     }
     sprintf(genbuf, "%s deleted user %s", currentuser->userid, lookupuser->userid);
-    report(genbuf);
+    bbslog("user","%s",genbuf);
     /*Haohmaru.99.12.23.被删ID一个月内不得注册 */
     if ((fd = open(".badname", O_WRONLY | O_CREAT, 0644)) != -1) {
         char buf[STRLEN];
