@@ -24,11 +24,13 @@ int do_userlist(struct user_info *uentp, char *arg, int t)
     return COUNT;
 }
 
-void main(argc, argv)
+int main(argc, argv)
     int argc;
     char *argv[];
 {
     resolve_utmp();
     printf(" 序号  用户ID       昵称             来源                 状态     发呆时间 进程号\n");
-    apply_ulist_addr(do_userlist, NULL);
+    apply_ulist_addr((APPLY_UTMP_FUNC)do_userlist, NULL);
+
+	return 0;
 }

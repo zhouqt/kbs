@@ -119,7 +119,7 @@ main()
 	wwwguestonline = getwwwguestcount();
 	totalonline =  get_utmp_number() + wwwguestonline;
 
-    apply_ulist_addr(do_userlist, NULL);
+    apply_ulist_addr((APPLY_UTMP_FUNC)do_userlist, NULL);
 	show_wwwguest();
 
 	/*格式: 时间 totalonline wwwguestonline wwwnotguestonline telnetonline wwwguestschool wwwnotguestschool telnetschool */

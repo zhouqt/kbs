@@ -89,7 +89,7 @@ main()
 	fprintf(fp, "%d\n", get_utmp_number());
 	fprintf(fp1, "%d\n", getwwwguestcount());
     //fprintf(fp," 序号  用户ID       昵称             来源                 状态     发呆时间 进程号\n");
-    apply_ulist_addr(do_userlist, NULL);
+    apply_ulist_addr((APPLY_UTMP_FUNC)do_userlist, NULL);
 	show_wwwguest();
 
     fclose(fp);
