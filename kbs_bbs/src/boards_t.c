@@ -1451,6 +1451,8 @@ int choose_board(int newflag, char *boardprefix,int favmode)
         else
             favboard_conf.get_data = boards_getdata;
         (*favboard_conf.get_data)(&favboard_conf, favboard_conf.page_pos, BBS_PAGESIZE);
+        if (favboard_conf.item_count==0)
+            break;
         fav_gotonextnew(&favboard_conf);
         favboard_conf.on_select = fav_onselect;
         favboard_conf.show_data = fav_show;
