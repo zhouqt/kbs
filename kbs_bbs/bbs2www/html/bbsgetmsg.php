@@ -3,13 +3,16 @@
 	 * This file lists articles to user.
 	 * $Id$
 	 */
-	require("funcs.php");
-	if ($loginok != 1)
-		html_nologin();
-	else
-	{
-		html_init("gb2312");
-		$ret=bbs_getwebmsg($srcid,$msgbuf,$srcutmpnum);
+    require("funcs.php");
+    if ($loginok != 1)
+	html_nologin();
+    else
+    {
+        html_init("gb2312");
+        if ($currentuser["userid"]=="guest")
+            $ret=0;
+        else
+            $ret=bbs_getwebmsg($srcid,$msgbuf,$srcutmpnum);
 ?>
 <meta http-equiv="pragma" content="no-cache"><style type="text/css">
 A {color: #0000FF}
