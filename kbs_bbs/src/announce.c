@@ -34,7 +34,6 @@
 #define ADDMAIL         2
 #define ADDGOPHER       3
 
-#define ANNPATH_NUM	40
 int bmonly = 0;
 int a_fmode = 1;
 char *email_domain();
@@ -94,114 +93,6 @@ char *s;
     }
 */
 }
-
-static void free_import_path()
-{
-    int i;
-
-    for (i = 0; i < ANNPATH_NUM; i++) {
-        if (import_path[i] != NULL) {
-            free(import_path[i]);
-            import_path[i] = NULL;
-        }
-        if (import_title[i] != NULL) {
-            free(import_title[i]);
-            import_title[i] = NULL;
-        }
-    }
-    import_path_time = 0;
-}
-static int save_import_path()
-{
-    FILE *fn;
-    int i;
-    char buf[MAXPATH];
-
-    sethomefile(buf, currentuser->userid, "BMpath");
-    fn = fopen(buf, "wt");
-    if (fn) {
-        struct stat st;
-
-        for (i = 0; i < ANNPATH_NUM; i++) {
-            fputs(import_path[i], fn);
-            fputs("\n", fn);
-            fputs(import_title[i], fn);
-            fputs("\n", fn);
-        }
-        fstat(fileno(fn), &st);
-        fclose(fn);
-        import_path_time = st.st_mtime;
-        return 0;
-    }
-    return -1;
-}
-
-static void load_import_path()
-{
-    FILE *fn;
-    char buf[MAXPATH];
-    int i;
-    struct stat st;
-
-    sethomefile(buf, currentuser->userid, "BMpath");
-    if (stat(buf, &st) != -1)
-        if (st.st_mtime == import_path_time)
-            return;
-    if (import_path_select != 0)
-        free_import_path();
-    fn = fopen(buf, "rt");
-    if (fn) {
-        import_path_time = st.st_mtime;
-        for (i = 0; i < ANNPATH_NUM; i++) {
-            if (!feof(fn)) {
-                fgets(buf, MAXPATH - 1, fn);
-                if (buf[strlen(buf) - 1] == '\n')
-                    buf[strlen(buf) - 1] = 0;
-            } else
-                buf[0] = 0;
-            /*
-             * TODO: access check need complete!
-             * if (buf[0]!=0&&(ann_traverse_check(buf, currentuser)!=0))
-             * buf[0]=0;  can't access 
-             */
-
-            import_path[i] = (char *) malloc(strlen(buf) + 1);
-            strcpy(import_path[i], buf);
-            if (!feof(fn)) {
-                fgets(buf, MAXPATH - 1, fn);
-                if (buf[strlen(buf) - 1] == '\n')
-                    buf[strlen(buf) - 1] = 0;
-            } else {            //get the title of pm
-                buf[0] = 0;
-                if (import_path[i][0]) {
-                    MENU pm;
-
-                    bzero(&pm, sizeof(pm));
-                    pm.path = import_path[i];
-                    a_loadnames(&pm);
-                    strncpy(buf, pm.mtitle, MAXPATH - 1);
-                    buf[MAXPATH - 1] = 0;
-                    a_freenames(&pm);
-                }
-            }
-            if (import_path[i][0] == 0) /* if invalid path,then let the title empty */
-                buf[0] = 0;
-            import_title[i] = (char *) malloc(strlen(buf) + 1);
-            strcpy(import_title[i], buf);
-        }
-        fclose(fn);
-    } else {
-        for (i = 0; i < ANNPATH_NUM; i++) {
-            import_path[i] = (char *) malloc(1);
-            import_path[i][0] = 0;
-            import_title[i] = (char *) malloc(1);
-            import_title[i][0] = 0;
-        }
-        save_import_path();
-    }
-    import_path_select = 1;
-}
-
 
 typedef struct {
     bool save_mode;             /* in save mode,path need valid */
@@ -295,8 +186,8 @@ static int a_select_path_key(struct _select_def *conf, int key)
         return SHOW_REFRESH;
     case 'R':
     case 'r':
-        free_import_path();
-        load_import_path();
+        free_import_path(import_path,import_title,&import_path_time);
+        load_import_path(import_path,import_title,&import_path_time,&import_path_select);
         return SHOW_DIRCHANGE;
     case 'a':
     case 'A':
@@ -314,7 +205,7 @@ static int a_select_path_key(struct _select_def *conf, int key)
                 new_title[STRLEN - 1] = 0;
                 import_title[conf->pos - 1] = (char *) malloc(strlen(new_title) + 1);
                 strcpy(import_title[conf->pos - 1], new_title);
-                save_import_path();
+        		save_import_path(import_path,import_title,&import_path_time);
                 return SHOW_DIRCHANGE;
             }
             return SHOW_REFRESH;
@@ -330,7 +221,7 @@ static int a_select_path_key(struct _select_def *conf, int key)
                 free(import_title[conf->pos - 1]);
                 import_title[conf->pos - 1] = (char *) malloc(1);
                 import_title[conf->pos - 1][0] = 0;
-                save_import_path();
+        		save_import_path(import_path,import_title,&import_path_time);
                 return SHOW_DIRCHANGE;
             }
             return SHOW_REFRESH;
@@ -355,7 +246,7 @@ static int a_select_path_key(struct _select_def *conf, int key)
                     tmp = import_path[conf->pos - 1];
                     import_path[conf->pos - 1] = import_path[new_pos - 1];
                     import_path[new_pos - 1] = tmp;
-                    save_import_path();
+        			save_import_path(import_path,import_title,&import_path_time);
                     conf->pos = new_pos;
                     return SHOW_DIRCHANGE;
                 }
@@ -416,7 +307,7 @@ static int a_select_path(bool save_mode)
     a_select_path_arg arg;
 
     clear();
-    load_import_path();
+    load_import_path(import_path,import_title,&import_path_time,&import_path_select);
     arg.save_mode = save_mode;
     arg.show_path = false;
     arg.tmpnum = 0;
@@ -1477,7 +1368,7 @@ void a_manager(MENU *pm,int ch)
             getdata(t_lines - 2, 0, "设定丝路名:", ans, STRLEN - 1, DOECHO, NULL, false);
             import_title[i] = malloc(strlen(ans) + 1);
             strcpy(import_title[i], ans);
-            save_import_path();
+        	save_import_path(import_path,import_title,&import_path_time);
         }
         break;
 	/* add by stiger,20030502 */
