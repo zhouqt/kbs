@@ -635,7 +635,7 @@ int n;
                             if(y>=0&&y<scr_lns&&x>=0&&x<scr_cols) {
                                 good_move(y,x);
                             }
-                            str+=i+1;
+                            str+=i;
                             continue;
                         }
                      }
