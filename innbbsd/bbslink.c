@@ -724,6 +724,11 @@ char   *textline;
 		fprintf(NNTPwfp, "Date: %s\r\n", sover->date);
 		fprintf(NNTPwfp, "Organization: %s\r\n", MYSITE);
 		fprintf(NNTPwfp, "Message-ID: <%s>\r\n", sover->msgid);
+		/* add support for tin & OE */
+		fprintf(NNTPwfp, "Mime-Version: 1.0\r\n");
+		fprintf(NNTPwfp, "Content-Type: text/plain; charset=\"gb2312\"\r\n");
+		fprintf(NNTPwfp, "Content-Transfer-Encoding: 8bit\r\n");
+		/* end */
 		fprintf(NNTPwfp, "X-Filename: %s/%s\r\n", sover->board, sover->filename);
 	}
 	if (NNTPHOST && *NNTPHOST && USEIHAVE)
