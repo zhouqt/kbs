@@ -523,9 +523,9 @@ register int ch ;
     { /* Leeward 98.07.28 */
         int ich, lln;
 
-        if ((((unsigned char)*s) > 127) { /* 避免在汉字中间折行 */
+        if (((unsigned char)*s) > 127) { /* 避免在汉字中间折行 */
             for (ich = 0, lln = s - p->data + 1; lln > 0; lln --)
-                    if ((((unsigned char)p->data[lln - 1]) < 128) break; else ich ++;
+                    if (((unsigned char)p->data[lln - 1]) < 128) break; else ich ++;
             if (ich % 2) s --;
         }
     }
@@ -712,7 +712,6 @@ int saveheader ;
     FILE        *fp ;
     char        abort[6];
     int         aborted = 0;
-    char buf[256];
     int temp;
     extern char quote_title[120],quote_board[120];
     extern int Anony;

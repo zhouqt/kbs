@@ -89,7 +89,7 @@ void ochar( char c)
     }
     outbuf[obufsize++] = c ;
     /* need to change IAC to IAC IAC */
-    if (c==IAC) {
+    if (((unsigned char)c)==IAC) {
         if(obufsize > OBUFSIZE-1) {  /* doin a oflush */
             oflush();
         }
