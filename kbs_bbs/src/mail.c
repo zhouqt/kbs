@@ -905,7 +905,7 @@ char *maildoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
     time_t filetime;
     char *date;
     char b2[512];
-    char status, reply_status;
+    char status, reply_status, attach;
     char *t;
     char c1[8];
     char c2[8];
@@ -958,6 +958,8 @@ char *maildoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
         else
             reply_status = ' ';
     }
+    if (ent->attachment > 0) attach = '@';
+    else attach = ' ';
     /*
      * if (ent->accessed[0] & FILE_REPLIED)
      * reply_status = 'R';
@@ -970,20 +972,20 @@ char *maildoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
   if (!gShowSize) {
 #endif
     if (!strncmp("Re:", ent->title, 3)) {
-        sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s  %s%.50s\033[m", same ? c1 : "", num, reply_status, status, b2, date, same ? c1 : "", ent->title);
+        sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s %c%s%.50s\033[m", same ? c1 : "", num, reply_status, status, b2, date, attach, same ? c1 : "", ent->title);
     } /* modified by dong, 1998.9.19 */
     else {
-        sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s  бя %s%.47s\033[m", same ? c2 : "", num, reply_status, status, b2, date, same ? c2 : "", ent->title);
+        sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s %cбя %s%.47s\033[m", same ? c2 : "", num, reply_status, status, b2, date, attach, same ? c2 : "", ent->title);
     }                           /* modified by dong, 1998.9.19 */
 #ifdef ZIXIA
   } else {
     int size = 0;
     if (ent->eff_size > 0) size = (ent->eff_size-1) / 1024 + 1;
     if (!strncmp("Re:", ent->title, 3)) {
-        sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s  %s%-45.45s%4dK\033[m", same ? c1 : "", num, reply_status, status, b2, date, same ? c1 : "", ent->title, size);
+        sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s %c%s%-45.45s%4dK\033[m", same ? c1 : "", num, reply_status, status, b2, date, attach, same ? c1 : "", ent->title, size);
     } /* modified by dong, 1998.9.19 */
     else {
-        sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s  бя %s%-42.42s%4dK\033[m", same ? c2 : "", num, reply_status, status, b2, date, same ? c2 : "", ent->title, size);
+        sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s %cбя %s%-42.42s%4dK\033[m", same ? c2 : "", num, reply_status, status, b2, date, attach, same ? c2 : "", ent->title, size);
     }                           /* modified by dong, 1998.9.19 */
   }
 #endif
