@@ -14,12 +14,17 @@ global $boardArr;
 global $boardID;
 global $parent;
 global $file;
+global $cacheit;
 
 preprocess();
 
 if ($file !== false) {
 	@$attachpos=$_GET["ap"];
 	if ($attachpos!=0) {
+		if ($cacheit) {
+			if (cache_header('public',filemtime($file),300))
+				return;
+		}
 		output_attachment($file, $attachpos);
 		exit;
 	}
@@ -74,6 +79,7 @@ function preprocess(){
 	global $parent;
 	global $currentuser;
 	global $file;
+	global $cacheit;
 	
 	$file = false;
 	
@@ -109,8 +115,11 @@ function preprocess(){
 		        foundErr('无法加载目录文件');
 		        return false;
 		    case -3:
+		        /* 其实所有的信息都有返回，只不过 $articles 没东西而已，可以继续处理. See Also bbs_read_ann_dir() in phpbbslib.c.
 		        foundErr('该目录尚无文章');
 		        return false;
+		        */
+		        break;
 		    case -9:
 		        foundErr('系统错误');
 		        return false;
@@ -127,6 +136,7 @@ function preprocess(){
 	
 	$up_dirs = array();
 	$up_cnt = bbs_ann_updirs($path,$boardName,$up_dirs);
+	$cacheit = true;
 	if ($up_cnt >= 2)
     	$parent = $up_dirs[$up_cnt - 2];
 	if ($boardName) {
@@ -141,23 +151,13 @@ function preprocess(){
 	    		return false;
 	    	}
 	        bbs_set_onboard($boardID,1);
-/*
-	        if (bbs_normalboard($board)) {
-	            $dotnames = BBS_HOME . '/' . $path . '/.Names';
-	            if (cache_header('public, must-revalidate',filemtime($dotnames),10))
-	                return;
-	        } */
+	        if (!bbs_normalboard($board)) $cacheit = false;
 	    }
 	    else {
 	        $boardName = '';
 	    }
 	}
 	else {
-/*
-	    $dotnames = BBS_HOME . '/' . $path . '/.Names';
-	    if (cache_header('public, must-revalidate',filemtime($dotnames),10))
-	        return;
-*/
 	    $boardID = 0;
 	}
 	return true;
@@ -208,42 +208,46 @@ function ann_display_folder($articles, $parent) {
 <tr>
 	<td height="27" align="center" class="TableBody1">0</td>
 	<td align="center" class="TableBody2"><img src="pic/istop.gif" alt="目录" border="0" /></td>
-	<td class="TableBody1"><a href="elite.php?path=<?php echo rawurlencode($parent); ?>">&nbsp;上级目录</a></td>
+	<td class="TableBody1">&nbsp;<a href="elite.php?path=<?php echo rawurlencode($parent); ?>">上级目录</a></td>
 	<td align="center" class="TableBody2">&nbsp;</td>
 	<td align="center" class="TableBody1">&nbsp;</td>
 </tr>
 <?php
 	}
-    $i = 1;
-    foreach ($articles as $article) {
-        echo '<tr><td height="27" align="center" class="TableBody1">'.$i.'</td><td align="center" class="TableBody2">';
-        switch($article['FLAG']) {
-            case 0:
-                continue;
-            case 1:
-                $img = 'pic/ifolder.gif';
-                $alt = '目录';
-                $url = 'elite.php?path='.rawurlencode($article['PATH']);
-                break;
-            case 2:
-            case 3:
-            default:
-                $img = 'pic/folder.gif';
-                $alt = '文件';
-                $url = 'elite.php?file='.rawurlencode($article['PATH']);
-        }
-        echo '<img src="'.$img.'" alt="'.$alt.'" border="0" />';
-        echo '</td><td class="TableBody1">';
-        if ($article['FLAG']==3)
-            echo '<font color="red">@</font>';
-        else
-            echo '&nbsp;';
-        $title = htmlformat(trim($article['TITLE']))." ";
-        echo '<a href="'.$url.'">'.$title.'</a>';
-        $bm = explode(' ',$article['BM']);
-        $bm = $bm[0];
-        echo '</td><td align="center" class="TableBody2">'.($bm?'<a target="_blank" href="dispuser.php?id='.$bm.'">'.$bm.'</a>':'&nbsp;').'</td><td align="center" class="TableBody1">'.date('Y-m-d',$article['TIME']).'</td></tr>';
-        $i ++;
+	if (count($articles) == 0) {
+		echo '<tr><td height="27" align="center" colspan="5" class="TableBody1">该目录尚无文章</td></tr>';
+	} else {
+	    $i = 1;
+	    foreach ($articles as $article) {
+	        echo '<tr><td height="27" align="center" class="TableBody1">'.$i.'</td><td align="center" class="TableBody2">';
+	        switch($article['FLAG']) {
+	            case 0:
+	                continue;
+	            case 1:
+	                $img = 'pic/ifolder.gif';
+	                $alt = '目录';
+	                $url = 'elite.php?path='.rawurlencode($article['PATH']);
+	                break;
+	            case 2:
+	            case 3:
+	            default:
+	                $img = 'pic/folder.gif';
+	                $alt = '文件';
+	                $url = 'elite.php?file='.rawurlencode($article['PATH']);
+	        }
+	        echo '<img src="'.$img.'" alt="'.$alt.'" border="0" />';
+	        echo '</td><td class="TableBody1">';
+	        if ($article['FLAG']==3)
+	            echo '<font color="red">@</font>';
+	        else
+	            echo '&nbsp;';
+	        $title = htmlformat(trim($article['TITLE']))." ";
+	        echo '<a href="'.$url.'">'.$title.'</a>';
+	        $bm = explode(' ',$article['BM']);
+	        $bm = $bm[0];
+	        echo '</td><td align="center" class="TableBody2">'.($bm?'<a target="_blank" href="dispuser.php?id='.$bm.'">'.$bm.'</a>':'&nbsp;').'</td><td align="center" class="TableBody1">'.date('Y-m-d',$article['TIME']).'</td></tr>';
+	        $i ++;
+	    }
     }
 ?>
 </table>
