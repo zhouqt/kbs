@@ -1,0 +1,3 @@
+BBSHOME=/home/bbs
+BBSSITE=smth
+BBSUID=9999

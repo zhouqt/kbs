@@ -20,7 +20,6 @@
 BBSHOME=/home/system/bbs
 # The uid for the user 'bbs'
 BBSUID=9999
-# by zixia: remove to sysname.h
 
 OS_DEF   = -DAIX -DSYSV -DOS_LACK_SOCKLEN
 #OS_DEF   = -DLINUX -DSYSV 
@@ -68,7 +67,8 @@ COBJS    = bbs.o record.o delete.o stuff.o mail.o register.o \
 	   newmain_single.o newio.o newterm.o convcode.o bbs_sendmail.o crypt.o \
 	   ucache.o utmp.o log.o md5.o smth.o 
 
-BBSLIBOBJS = record.o log.o ucache.o stuff.o md5.o crypt.o pass.o bcache.o utmp.o
+BBSLIBFILES = record.c log.c ucache.c stuff.c md5.c crypt.c pass.c cache.c utmp.c
+BBSLIBOBJS = librecord.o liblog.o libucache.o libstuff.o libmd5.o libcrypt.o libpass.o libbcache.o libutmp.o
 
 OTHERS   = bbs.h edit.h
 
@@ -97,20 +97,18 @@ dep:
 	rm -f .depend
 	ls *.c | xargs gcc $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL  -M  >>.depend
 
-
 $(PROGNAME): $(COBJS) $(OTHERS) bbsd_single.o
 	$(CC) -o bbsd_single $(CFLAGS) $(COBJS) $(LIBS) bbsd_single.o -g
-#	cp -f bbsnew ../bin/bbsnew
 
 bbsd_single.o:	bbsd_single.c
 	$(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -c bbsd_single.c
 
-bbstest: $(COBJS) $(OTHERS) newmain_single.o newio.o newterm.o convcode.o
-	$(CC) -o bbstest $(CFLAGS) $(COBJS) $(LIBS) newmain_single.o newio.o newterm.o convcode.o
+bbstest: $(BBSLIB) $(OTHERS) newmain_single.o newio.o newterm.o convcode.o
+	$(CC) -o bbstest $(CFLAGS) $(BBSLIB) $(LIBS) newmain_single.o newio.o newterm.o convcode.o
 	cp -f bbstest ../bin/bbstest
 
-bbspost: bbspost.o $(COBJS)
-	gcc -DDONT_HAVE_TM_GMTOFF $(OS_DEF) -DLEEWARD_X_RECORD -o bbspost bbspost.o $(COBJS) $(LIBS)
+bbspost: bbspost.o $(BBSLIB) smth.o 
+	gcc -DDONT_HAVE_TM_GMTOFF $(OS_DEF) -DLEEWARD_X_RECORD -o bbspost bbspost.o smth.o $(BBSLIB) $(LIBS)
 	#cp -f bbspost $(BBSHOME)/bin
 	#chmod 6755 $(BBSHOME)/bin/bbspost
 
@@ -119,8 +117,9 @@ lint: $(LNFILES)
 
 newpop3.o: newpop3.c
 	gcc -g $(SITE_DEF) $(DEFINES)  -c newpop3.c
-newpop3d: newpop3.o $(COBJS)
-	$(CC) $(CFLAGS) -o newpop3d $(SITE_DEF) $(DEFINES) newpop3.o $(COBJS) $(LIBS)
+	
+newpop3d: newpop3.o $(BBSLIB) smth.o
+	$(CC) $(CFLAGS) -o newpop3d $(SITE_DEF) $(DEFINES) newpop3.o smth.o $(BBSLIB) $(LIBS)
 	#cp -f newpop3d $(BBSHOME)/bin
 #	$(CC) $(CFLAGS) -o pop3d $(SITE_DEF) -D_BSD pop3d.c
 
@@ -130,6 +129,8 @@ thread: thread.c record.c
 #$(patsubst %.o,%_use.o,$(BBSLIBOBJS)):$(patsubst %_use.o,%.c,$@)
 #%_use.o: %.c
 #	$(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL -c $^ -o $@
+lib%.o: %.c
+	$(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL -UBBSMAIN -c $^ -o $@
 	
 $(BBSLIB) : $(BBSLIBOBJS)
 	ar cru $@ $^
