@@ -189,10 +189,15 @@ int UndeleteArticle(int ent, struct fileheader *fileinfo, char *direct)
     strcpy(UFile.owner, fileinfo->owner);
     strcpy(UFile.title, UTitle);
     strcpy(UFile.filename, fileinfo->filename);
+    UFile.filename[0]='M';
     UFile.id = fileinfo->id;
     UFile.groupid = fileinfo->groupid;
     UFile.reid = fileinfo->reid;
 	set_posttime2(&UFile, fileinfo);
+
+    setbfile(genbuf,fileinfo.filename);
+    setbfile(buf,UFile.filename);
+    f_mv(genbuf,buf);
 
     sprintf(buf, "boards/%s/.DIR", currboard);
     if ((fd = open(buf, O_RDWR | O_CREAT, 0644)) != -1) {

@@ -151,7 +151,8 @@ int owned;
 int autoappend;
 {
     struct fileheader postfile;
-    char oldpath[sizeof(genbuf)];
+    char oldpath[50];
+    char newpath[50];
     struct fileheader *ph;
     time_t now;
 
@@ -170,25 +171,6 @@ int autoappend;
     sprintf(oldpath, "/board/%s/%s.html", board, fh->filename);
     ca_expire_file(oldpath);*/
 
-    if (autoappend) {
-        bzero(&postfile, sizeof(postfile));
-        strcpy(postfile.filename, fh->filename);
-        strncpy(postfile.owner, fh->owner, OWNER_LEN-1);
-        postfile.owner[OWNER_LEN-1] = 0;
-        postfile.id = fh->id;
-        postfile.groupid = fh->groupid;
-        postfile.reid = fh->reid;
-		set_posttime2(&postfile, fh);
-    };
-    now = time(NULL);
-    sprintf(oldpath, "%-32.32s - %s", fh->title, userid);
-    strncpy(ph->title, oldpath, STRLEN);
-    ph->title[STRLEN - 1] = 0;
-    ph->accessed[11] = now / (3600 * 24) % 100; /*localtime(&now)->tm_mday; */
-    if (autoappend) {
-        setbdir((owned) ? 5 : 4, oldpath, board);
-        append_record(oldpath, &postfile, sizeof(postfile));
-    }
     if ((fh->innflag[1] == 'S')
         && (fh->innflag[0] == 'S')
         && (get_posttime(fh) > now - 14 * 86400)) {
@@ -226,6 +208,31 @@ int autoappend;
             fputs(buf, fp);
             fclose(fp);
         }
+    }
+    
+    strcpy(postfile.filename, fh->filename);
+    fh->filename[0]='D';
+    setbfile(oldpath,postfile.filename);
+    setbfile(newpath,fh->filename);
+    f_mv(oldpath,newpath);
+    if (autoappend) {
+        bzero(&postfile, sizeof(postfile));
+        strcpy(postfile.filename, fh->filename);
+        strncpy(postfile.owner, fh->owner, OWNER_LEN-1);
+        postfile.owner[OWNER_LEN-1] = 0;
+        postfile.id = fh->id;
+        postfile.groupid = fh->groupid;
+        postfile.reid = fh->reid;
+		set_posttime2(&postfile, fh);
+    };
+    now = time(NULL);
+    sprintf(oldpath, "%-32.32s - %s", fh->title, userid);
+    strncpy(ph->title, oldpath, STRLEN);
+    ph->title[STRLEN - 1] = 0;
+    ph->accessed[11] = now / (3600 * 24) % 100; /*localtime(&now)->tm_mday; */
+    if (autoappend) {
+        setbdir((owned) ? 5 : 4, oldpath, board);
+        append_record(oldpath, &postfile, sizeof(postfile));
     }
 }
 
