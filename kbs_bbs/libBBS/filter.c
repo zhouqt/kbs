@@ -84,17 +84,24 @@ int check_badword(char *checkfile)
     int size,retv;
     void* pattern_img_ptr;
     int pattern_img_size;
+    int retrycount=0;
 
+retry:
     default_setting();
     CurrentFileName = checkfile;
     BBS_TRY {
         if (safe_mmapfile(checkfile, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)
             BBS_RETURN(0);
-        if (check_badwordimg()!=0)
+        if (check_badwordimg(0)!=0)
             BBS_RETURN(0);
         retv = mgrep_str(ptr, size,badword_img);
     }
     BBS_CATCH {
+        if (check_badwordimg(1)!=0)
+            BBS_RETURN(0);
+	retrycount++;
+	if (retrycount==0)
+	  goto retry;
     	retv=-2;
     }
     BBS_END end_mmapfile((void *) ptr, size, -1);
@@ -104,15 +111,22 @@ int check_badword(char *checkfile)
 int check_badword_str(char *string,int str_len)
 {
     int retv;
+    int retrycount=0;
 
     default_setting();
     CurrentFileName = "";
+retry:
     BBS_TRY {
-        if (check_badwordimg()!=0)
+        if (check_badwordimg(0)!=0)
             BBS_RETURN(0);
         retv = mgrep_str(string, str_len,badword_img);
     }
     BBS_CATCH {
+        if (check_badwordimg(1)!=0)
+            BBS_RETURN(0);
+	retrycount++;
+	if (retrycount==0)
+	  goto retry;
     	retv=-2;
     }
     BBS_END
