@@ -5,7 +5,7 @@
 
 /*int no_re=0;*/
 
-int show_file(char *board, struct boardheader* bh, struct fileheader *x, char* brdencode);
+int show_file(char *board, int bid, struct boardheader* bh, struct fileheader *x, char* brdencode);
 
 #define MAX_THREADS_NUM 512
 
@@ -19,6 +19,7 @@ int main()
 	int haveprev=0, havenext=0;
     struct boardheader bh;
 	int gid; /* group id */
+	int bid;
 
     init_all();
     strsncpy(board, getparm("board"), 32);
@@ -31,7 +32,7 @@ int main()
 	/*
     strsncpy(file, getparm("file"), 32);
 	*/
-    if (getboardnum(board,&bh)==0||!check_read_perm(currentuser, &bh))
+    if ((bid = getboardnum(board,&bh))==0||!check_read_perm(currentuser, &bh))
         http_fatal("错误的讨论区");
     strcpy(board, getbcache(board)->filename);
     encode_url(brdencode, board, sizeof(brdencode));
@@ -67,7 +68,7 @@ int main()
 		printf("</center>\n");
 
 	for (i = 0; i < num ; i++){
-            show_file(board, &bh, fh + i, brdencode);
+            show_file(board, bid, &bh, fh + i, brdencode);
 	}
 
 	free(fh);
@@ -120,7 +121,7 @@ int show_article(char *filename,char *www_url)
 				close(fd);
 				BBS_RETURN(0);
 			}
-			output_ansi_text(ptr, filesize, out, www_url);
+			output_ansi_javascript(ptr, filesize, out, www_url);
 		}
 		BBS_CATCH
 		{
@@ -133,8 +134,8 @@ int show_article(char *filename,char *www_url)
     }
 }
 
-int show_file(char *board, struct boardheader* bh, struct fileheader *x, 
-		char* brdencode)
+int show_file(char *board, int bid, struct boardheader* bh, 
+		struct fileheader *x, char* brdencode)
 {
     char path[80], buf[512], board_url[80];
 	char www_url[200];
@@ -159,7 +160,9 @@ int show_file(char *board, struct boardheader* bh, struct fileheader *x,
 	printf("[<a href=\"/bbspstmail.php?board=%s&file=%s&userid=%s&title=Re: %s\">回信给作者</a>]",
 		   brdencode, x->filename, x->owner, encode_url(buf, title, sizeof(buf)));
     printf("[本篇作者: %s]<br />\n", userid_str(x->owner));
-	show_article(path,www_url);
+	printf("<script language=\"Javascript\" src=\"/jscon.php?bid=%d&id=%d\"></script>\n",
+			bid, x->id);
+	//show_article(path,www_url);
     /*printf("[本篇人气: %d]\n", *(int*)(x->title+73)); */
 	printf("</td></tr></table>\n");
 }
