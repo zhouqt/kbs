@@ -320,7 +320,7 @@ void check_register_info()
         prints("Ёин╙" NAME_BBS_NICK"╨о╥╗" NAME_USER_SHORT "╣д╥╫╥╗хГобё╨\n\n");
         prints("дЗ╣дуй╨етз╣зр╩╢н╣гб╪╨С╣д " REGISTER_WAIT_TIME_NAME "дзё╗[1m[33m╡╩йгж╦ио BBS " REGISTER_WAIT_TIME_NAME "[mё╘ё╛\n");
         prints("╢╕сзпбйжиоб╥фз╪Д, ╡╩дэв╒╡АЁин╙╨о╥╗" NAME_USER_SHORT "ё╛гКкд╢╕╡н╧шя╖о╟ё╛мф╪Жтд╤а BBSHELP╟Фё╛\nя╖о╟╠╬у╬й╧сц╥╫╥╗╨м╦ВжжюЯрг║ё\n");
-        prints("\n    " REGISTER_WAIT_TIME_NAME "╨С, дЗ╬м©ирт\033[33;1mлНп╢в╒╡А╣╔\033[mакё╛в╒╡А╣╔м╗╧Щу╬нЯхож╓рт╨Сё╛дЗ╬мс╣сп╠╬у╬╨о╥╗сц╩╖\n╣д╩Ы╠╬х╗оч║ёв╒╡А╣╔лНп╢б╥╬╤хГоб: \n\n");
+        prints("\n" REGISTER_WAIT_TIME_NAME "╨С, дЗ╬м©ирт\033[33;1mлНп╢в╒╡А╣╔\033[mакё╛в╒╡А╣╔м╗╧Щу╬нЯхож╓рт╨Сё╛дЗ╬мс╣сп╠╬у╬╨о╥╗сц╩╖\n╣д╩Ы╠╬х╗оч║ёв╒╡А╣╔лНп╢б╥╬╤хГоб: \n\n");
         prints("I) ╦Жхк╧╓╬ъоД --> F) лНп╢в╒╡А╣╔\n\n");
         //prints("    " NAME_SYSOP_GROUP "╩А╬║©Л╪Л╡И╡╒х╥ходЦ╣дв╒╡А╣╔║ё\n\n");
         /* Leeward adds below 98.04.26 */
