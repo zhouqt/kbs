@@ -1910,6 +1910,10 @@ int lastlevel, lastbmonly;
         }
         if (me.level & PERM_BOARDS)
             a_manager(&me, ch);
+#ifdef ANN_GUESTBOOK
+		else if(ch=='a' && strstr(me.mtitle,"<guestbook>"))
+			a_newitem(&me, ADDITEM);
+#endif
     }
     for (ch = 0; ch < me.num; ch++)
         free(me.item[ch]);
