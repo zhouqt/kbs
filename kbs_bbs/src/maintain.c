@@ -2106,7 +2106,7 @@ int set_BM()
 						if(normal_board(newfh.filename)){
 #if HAVE_MYSQL_SMTH == 1
 #ifdef BMSLOG
-							bms_add(lookupuser->userid, newfh.filename, time(0), 3 , NULL );
+							bms_add(lookupuser->userid, newfh.filename, time(0), 2 , NULL );
 #endif
 #endif
 						}
