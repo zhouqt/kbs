@@ -5,6 +5,7 @@
 /* Operations for the `flock' call.  */
 #define LOCK_SH 1       /* Shared lock.  */
 #define LOCK_EX 2       /* Exclusive lock.  */
+#define LOCK_NB 4		/* Nonblocking */
 #define LOCK_UN 8       /* Unlock.  */
 
 int flock(int fd, int operation);
