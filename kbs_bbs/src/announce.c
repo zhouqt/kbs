@@ -346,21 +346,6 @@ static int a_select_path(bool save_mode)
         return 0;
 }
 
-int valid_fname(str)
-char *str;
-{
-    char ch;
-
-    while ((ch = *str++) != '\0') {
-        if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || strchr("0123456789@[]-._", ch) != NULL) {
-            ;
-        } else {
-            return 0;
-        }
-    }
-    return 1;
-}
-
 void a_showmenu(pm)             /* 精华区 菜单 状态 */
 MENU *pm;
 {
