@@ -1826,8 +1826,8 @@ int set_BM()
     		 	else
     		 	sprintf(vbuf, "%-38.38s", newfh.title + 13);
 
-			if (flag ==1 ) sprintf(genbuf, "任命 %s 的版主为 %s 的权限XPERM%d %d", newfh.filename, lookupuser->userid, lookupuser->userlevel, newlevel);
-			else if (flag ==2 ) sprintf(genbuf, "免去 %s 的版主 %s 的权限XPERM%d %d", newfh.filename, lookupuser->userid, lookupuser->userlevel, newlevel);
+			if (flag ==1 ) sprintf(genbuf, "任命 %s 的版主为 %s", newfh.filename, lookupuser->userid);
+			else if (flag ==2 ) sprintf(genbuf, "免去 %s 的版主 %s ", newfh.filename, lookupuser->userid);
         		securityreport(genbuf, lookupuser, NULL);
         		lookupuser->userlevel = newlevel;
 
