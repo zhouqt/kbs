@@ -455,7 +455,7 @@ int ttt_talk(struct user_info *userinfo)
     /*
      * check if pager on/off       --gtv 
      */
-    if (!canpage(can_override(uin.userid, currentuser->userid), uin.pager)) {
+    if (!canpage(hisfriend(usernum,uin), uin.pager)) {
         move(2, 0);
         prints("对方呼叫器已关闭.\n");
         pressreturn();

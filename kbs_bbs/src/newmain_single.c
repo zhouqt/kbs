@@ -83,7 +83,7 @@ int canbemsged(uin)             /*Haohmaru.99.5.29 */
     if (uinfo.pager & ALLMSG_PAGER)
         return true;
     if (uinfo.pager & FRIENDMSG_PAGER) {
-        if (can_override(currentuser->userid, uin->userid))
+        if (hisfriend(usernum, uin))
             return true;
     }
     return false;

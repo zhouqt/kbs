@@ -730,4 +730,17 @@ int myfriend(int uid, char *fexp)
     return found;
 }
 
-
+bool hisfriend(int uid,struct * him)
+{
+    int i, found = false;
+    if (him->friendsnum<= 0) {
+        return false;
+    }
+    for (i = 0; i < him->friendsnum; i++) {
+        if (him->friends_uid[i] == uid) {
+            found = true;
+            break;
+        }
+    }
+    return found;
+}

@@ -171,12 +171,12 @@ int fill_userlist()
     }} range = i2;
     return i2 == 0 ? -1 : 1;
 }
-char pagerchar(char *userid1, char *userid2, int pager, int *isfriend)
+char pagerchar(int usernum, struct user_info *user, int pager, int *isfriend)
 {
     if (pager & ALL_PAGER)
         return ' ';
     if (*isfriend == -1)
-        *isfriend = can_override(userid1, userid2);
+        *isfriend = hisfriend(usernum, user);
     if (*isfriend) {
         if (pager & FRIEND_PAGER)
             return 'O';
@@ -191,7 +191,7 @@ char msgchar(struct user_info *uin, int *isfriend)
     if ((uin->pager & ALLMSG_PAGER))
         return ' ';
     if (*isfriend == -1)
-        *isfriend = can_override(uin->userid, currentuser->userid);
+        *isfriend = hisfriend(usernum, uin);
     if (*isfriend) {
         if ((uin->pager & FRIENDMSG_PAGER))
             return 'O';
@@ -285,7 +285,7 @@ int do_userlist()
         if (readplan == true) {
             return 0;
         }
-        pagec = pagerchar(uentp.userid, currentuser->userid, uentp.pager, &isfriend);
+        pagec = pagerchar(usernum,uentp, uentp.pager, &isfriend);
         sprintf(user_info_str,
                  /*---	modified by period	2000-10-21	ÔÚÏßÓÃ»§Êı¿ÉÒÔ´óÓÚ1000µÄ
                          " %3d%2s%s%-12.12s%s%s %-16.16s%s %-16.16s %c %c %s%-17.17s[m%5.5s\n",
@@ -738,15 +738,13 @@ int t_friends()
 
     modify_user_mode(FRIEND);
     friendmode = true;
-    sethomefile(genbuf, currentuser->userid, "friends");
-    if ((fp = fopen(genbuf, "r")) == NULL) {
+    if (get_utmpent(utmpent)->friendsnum==0) {
         move(1, 0);
         clrtobot();
         prints("ÄãÉĞÎ´ÀûÓÃ Talk -> Override Éè¶¨ºÃÓÑÃûµ¥£¬ËùÒÔ...\n");
         pressanykey();
         return 0;
     }
-    fclose(fp);
     num_alcounter();
     range = count_friends;
     if (range == 0) {
