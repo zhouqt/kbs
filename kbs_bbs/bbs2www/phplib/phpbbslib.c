@@ -4901,6 +4901,17 @@ PHP_RSHUTDOWN_FUNCTION(smth_bbs)
 #ifdef DEBUG
     zend_error(E_WARNING, "request shutdown");
 #endif
+
+#ifdef HAVE_BRC_CONTROL
+#if USE_TMPFS==1
+
+	if( strcmp( currentuser->userid ,"guest") ){
+		if (brc_cache_entry)
+			munmap(brc_cache_entry,BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
+	}
+#endif
+#endif
+
     chdir(old_pwd);
     currentuser = NULL;
     return SUCCESS;
