@@ -367,8 +367,6 @@ void system_abort()
 }
 
 #define MAXLIST 1000
-#define CON_THRESHOLD 20.0/60/60
-#define CON_THRESHOLD2 30.0
 
 int check_ID_lists(char * id)
 {
@@ -414,7 +412,7 @@ int check_ID_lists(char * id)
             ids[i].id[0]=0;
         }
         if(!strncmp(ids[i].id, id, IDLEN)){
-            if((double)(now-ids[i].last)<=CON_THRESHOLD2) {
+            if((double)(now-ids[i].last)<=ID_CONNECT_CON_THRESHOLD2) {
                 fp=fopen(".IDdenys", "a");
                 if(fp){
                     fprintf(fp, "0 %ld %s %d\n", (unsigned int)now, id, ids[i].t);
@@ -427,7 +425,7 @@ int check_ID_lists(char * id)
             ids[i].last = now;
             ids[i].t++;
             if(ret==0)
-            if(ids[i].t>=10&&(ids[i].t/(double)(ids[i].last-ids[i].first)>=CON_THRESHOLD)) {
+            if(ids[i].t>=10&&(ids[i].t/(double)(ids[i].last-ids[i].first)>=ID_CONNECT_CON_THRESHOLD)) {
                 fp=fopen(".IDdenys", "a");
                 if(fp){
                     fprintf(fp, "1 %ld %s %d\n", (unsigned int)now, id, ids[i].t);

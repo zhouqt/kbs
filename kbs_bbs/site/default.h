@@ -655,11 +655,8 @@ attach define
 #define WWW_PAGE_SIZE 20
 #endif
 
-#ifndef CHECK_IP_LINK
-#define CHECK_IP_LINK 0
-#else
+#if CHECK_IP_LINK==0
 #undef CHECK_IP_LINK
-#define CHECK_IP_LINK 1
 #endif
 
 #endif

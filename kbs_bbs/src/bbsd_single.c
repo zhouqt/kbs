@@ -663,7 +663,7 @@ static int bbs_standalone_main(char* argv)
     }
 #endif
 
-#ifdef CHECK_IP_LINK==1
+#ifdef CHECK_IP_LINK
     if (check_IP_lists(sin.sin_addr.s_addr)) {
         close(csock);
         continue;
