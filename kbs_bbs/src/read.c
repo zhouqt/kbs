@@ -1115,7 +1115,7 @@ static int search_title(struct keeploc *locmem, int offset)
     char ans[STRLEN], pmt[STRLEN];
 
     strncpy(ans, title, STRLEN);
-    snprintf(pmt, STRLEN, "%s搜寻标题 [%s]: ", offset > 0 ? "往後" : "往前", ans);
+    snprintf(pmt, STRLEN, "%s搜寻标题 [%s]: ", offset > 0 ? "往后" : "往前", ans);
     move(t_lines - 1, 0);
     clrtoeol();
     getdata(t_lines - 1, 0, pmt, ans, STRLEN - 1, DOECHO, NULL, true);
