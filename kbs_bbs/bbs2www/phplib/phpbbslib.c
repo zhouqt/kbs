@@ -497,10 +497,10 @@ static ZEND_FUNCTION(bbs_setonlineuser)
 	int idx;
 	struct userec* user;
 
-        if (zend_parse_parameters(4 TSRMLS_CC, "slla" , &userid, &userid_len,
+    if (zend_parse_parameters(4 TSRMLS_CC, "slla" , &userid, &userid_len,
 				&utmpnum, &utmpkey, &user_array) != SUCCESS) {
                 WRONG_PARAM_COUNT;
-        }
+    }
 	if (userid_len>IDLEN) RETURN_LONG(1);
 	if(utmpnum<1 || utmpnum>=MAXACTIVE)
 		RETURN_LONG(2);
@@ -513,8 +513,8 @@ static ZEND_FUNCTION(bbs_setonlineuser)
 			RETURN_LONG(4);
 		if (strcmp(pui->userid,userid))
 			RETURN_LONG(5);
-	}
-	setcurrentuinfo(pui,utmpnum);
+		setcurrentuinfo(pui,utmpnum);
+	};
 	idx=getuser(pui->userid,&user);
 	if (user==NULL)
 		RETURN_LONG(6);
@@ -733,6 +733,8 @@ static ZEND_MINIT_FUNCTION(bbs_module_init)
 #else
 	REGISTER_MAIN_LONG_CONSTANT("SETTING_SQUID_ACCL", 0, CONST_CS | CONST_PERSISTENT);
 #endif
+	REGISTER_MAIN_LONG_CONSTANT("BBS_PERM_POSTMASK", 0100000, CONST_CS | CONST_PERSISTENT);
+	REGISTER_MAIN_LONG_CONSTANT("BBS_PERM_NOZAP", 02000000, CONST_CS | CONST_PERSISTENT);
 	chdir(old_pwd);
 #ifdef DEBUG
 	zend_error(E_WARNING,"module init");

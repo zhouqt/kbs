@@ -42,12 +42,27 @@ if ($utmpkey!="") {
     $currentuinfo_num=bbs_getcurrentuinfo();
     $currentuser_num=bbs_getcurrentuser($currentuser);
   }
-} 
+}
 
-function valid_filename($fn)
+global function valid_filename($fn)
 {
 	if ((strstr($fn,"..")!=FALSE)||(strstr($fn,"/")))
 		return 0;
 	return 1;
+}
+
+function getboardfilename($boardname,$filename)
+{
+	return "board/" . $boardname . "/" $filename;
+}
+
+function error_alert($msg)
+{
+?>
+<SCRIPT language="javascript">
+window.alert(<? echo "\"$msg\""; ?>);
+history.go(-1);
+</SCRIPT>
+<?
 }
 ?>

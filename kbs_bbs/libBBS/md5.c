@@ -21,6 +21,7 @@
 #include "includes.h"
 #endif
 #include "md5.h"
+#include <string.h>
 
 /*
  * Start MD5 accumulation.  Set bit count to 0 and buffer to mysterious

@@ -192,7 +192,7 @@ int     mode;
 
 int multilogin_user(struct userec* user,int usernum)
 {
-    int unum,logincount;
+    int logincount;
     int curr_login_num;
 
     logincount=apply_utmpuid( NULL , usernum,0);
