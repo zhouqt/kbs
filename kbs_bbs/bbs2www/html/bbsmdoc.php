@@ -166,6 +166,7 @@ else echo "box";
 -->
 </script>
 </form>
+<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&start=1">第一页</a>
 <?php
 		if ($start > 0)
 		{
@@ -180,6 +181,7 @@ else echo "box";
 <?php
 		}
 ?>
+<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&start=0">最后一页</a>
 <a href=bbsdoc.php?board=<?php echo $brd_encode; ?>>一般模式</a> <a href=/cgi-bin/bbs/bbsdenyall?board=<?php echo $brd_encode; ?>>封人名单</a> <a href=bbsmnote.php?board=<?php echo $brd_encode; ?>>编辑进版画面</a>
 <form action=bbsmdoc.php?board=<?php echo $brd_encode; ?> method=post>
 <input type=submit value=跳转到> 第 <input type=text name=start size=4> 篇</form>
