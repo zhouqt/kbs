@@ -78,7 +78,7 @@ function preprocess(){
 
 function doSearch($boardID,$boardName){
 	global $title,$title2,$title3,$author;
-	$result=bbs_searchTitle($boardName,$title,$title2,$title3,$author,intval($_REQUEST['dt']),isset($_REQUEST['mg']),isset($_REQUEST['ag']),isset($_REQUEST['og']));
+	$result=bbs_searchtitle($boardName,$title,$title2,$title3,$author,intval($_REQUEST['dt']),isset($_REQUEST['mg']),isset($_REQUEST['ag']),isset($_REQUEST['og']));
 	$num=count($result);
 	if ($num==0) {
 		foundErr("<font color=#ff0000>没有找到您要的结果</font>");
@@ -100,7 +100,7 @@ function doSearch($boardID,$boardName){
 ?>
   <TR><TD align=middle class=TableBody2 width=32><img src=pic/blue/folder.gif alt=开放主题或回帖>
   </TD>
-  <TD  class=TableBody1 width=*><a href='disparticle.php?boardName=<?php echo $boardName; ?>&ID=<?php echo $result[$i]['threadsnum']; ?>' target=_blank><img src='face/face1.gif' border=0 alt="开新窗口浏览此主题"></a> <a href='disparticle.php?boardName=<?php echo $boardName; ?>&ID=<?php echo $result[$i]['threadsnum']; ?>'>
+  <TD  class=TableBody1 width=*><a href='disparticle.php?boardName=<?php echo $boardName; ?>&ID=<?php echo $result[$i]['ID']; ?>' target=_blank><img src='face/face1.gif' border=0 alt="开新窗口浏览此主题"></a> <a href='disparticle.php?boardName=<?php echo $boardName; ?>&ID=<?php echo $result[$i]['ID']; ?>'>
 <?php echo $result[$i]['TITLE']; ?>
 </a>    </TD> 
     <TD align=middle  class=TableBody2  width=80><a href="dispuser.php?id=<?php echo $result[$i]['OWNER']; ?>"><?php echo $result[$i]['OWNER']; ?></a></TD> 

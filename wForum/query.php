@@ -69,7 +69,7 @@ function showSearchMenu(){
 	global $sectionCount;
 	global $section_nums;
 ?>
-	<form action=queryresult.php method=post>
+	<form action=queryresult.php method=get>
     <table cellpadding=5 cellspacing=1 align=center class=TableBorder1>
     	<tr>
 	<th valign=middle colspan=2 >бшлЁкякВ</th></tr>

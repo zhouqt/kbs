@@ -312,7 +312,7 @@ function boardSearchAndJump($boardName, $boardID){
 ?>
 <table border=0 cellpadding=0 cellspacing=3 width=97% align=center>
 <tr>
-<FORM METHOD=POST ACTION="queryresult.php">
+<FORM METHOD=GET ACTION="queryresult.php">
 <input type="hidden" name="boardName" value="<?php echo $boardName; ?>">
 <td width=50% valign=middle nowrap height=40>©ЛкыкякВё╨<input type=text name=title>&nbsp;<input type=submit name=submit value=кякВ></td>
 </FORM>
