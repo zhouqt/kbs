@@ -10,6 +10,7 @@ struct bbs_msgbuf *rcvlog(int msqid)
     int retv;
 
     retv = msgrcv(msqid, msgp, sizeof(buf) - sizeof(msgp->mtype) - 2, 0, MSG_NOERROR);
+    retv-=((char*)msgp->mtext-(char*)&msgp->msgtime);
     while (retv > 0 && msgp->mtext[retv - 1] == 0)
         retv--;
     if (retv <= 0)
@@ -18,7 +19,7 @@ struct bbs_msgbuf *rcvlog(int msqid)
         msgp->mtext[retv] = '\n';
         retv++;
     }
-    msgp->mtext[retv-((char*)msgp->mtext-(char*)msgp->msgtime)] = 0;
+    msgp->mtext[retv]=0;
     return msgp;
 }
 
