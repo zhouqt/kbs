@@ -254,29 +254,39 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 ?>
 <tr><td class=<?php echo $bgstyle ;?> valign=top width=175 >
 <table width=100% cellpadding=4 cellspacing=0 >
-<tr><td width=* valign=middle style="filter:glow(color=#9898BA,strength=2)" >&nbsp;<a name=1><font color=#990000><B><?php echo $thread['OWNER']; ?></B></font></a></td>
+<tr><td width=* valign=middle style="filter:glow(color=#9898BA,strength=2)" >&nbsp;<a href="dispuser.php?id=<?php echo $thread['OWNER']; ?>" target=_blank title="查看<?php echo $thread['OWNER']; ?>的个人资料" style="TEXT-DECORATION: none;"><font color=#990000><B><?php echo $thread['OWNER']; ?></B></font></a></td>
 <td width=25 valign=middle>
 <?php 
 	$is_online = bbs_isonline($thread['OWNER']);
-	if ( chr($user['gender'])=='M' ){
-		$c = "帅哥";
-		if ($is_online) {
-			$img = "pic/Male.gif";
+	$show_detail = ($user['userdefine0'] & BBS_DEF_SHOWDETAILUSERDATA);
+	if ($show_detail) {
+		if ( chr($user['gender'])=='M' ){
+			$c = "帅哥哟";
+			if ($is_online) {
+				$img = "pic/Male.gif";
+			} else {
+				$img = "pic/ofmale.gif";
+			}
 		} else {
-			$img = "pic/ofmale.gif";
+			$c = "美女哟";
+			if ($is_online) {
+				$img = "pic/Female.gif";
+			} else {
+				$img = "pic/offemale.gif";
+			}
 		}
 	} else {
-		$c = "美女";
+		$c = "性别保密哟";
 		if ($is_online) {
-			$img = "pic/Female.gif";
+			$img = "pic/online1.gif";
 		} else {
-			$img = "pic/offemale.gif";
+			$img = "pic/offline1.gif";
 		}
 	}
 	if ($loginok && $is_online) {
-		echo '<a href="javascript:replyMsg(\''.$thread['OWNER'].'\')"><img src="'.$img.'" border=0 alt="'.$c.'哟，在线，有人找我吗？"/></a>';
+		echo '<a href="javascript:replyMsg(\''.$thread['OWNER'].'\')"><img src="'.$img.'" border=0 alt="'.$c.'，在线，有人找我吗？"/></a>';
 	} else {
-		echo '<img src="'.$img.'" border=0 alt="'.$c.'哟"/>';
+		echo '<img src="'.$img.'" border=0 alt="'.$c.'，离线"/>';
 	}
 ?>
 </td>
@@ -292,7 +302,7 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 &nbsp;&nbsp;注册：<?php echo strftime('%Y-%m-%d',$user['firstlogin']); ?><BR>
 <?php
 	}
-	if ($user['userdefine0'] & BBS_DEF_SHOWDETAILUSERDATA) {
+	if ($show_detail) {
 ?>
 &nbsp;&nbsp;星座：<?php echo get_astro($user['birthmonth'],$user['birthday']); ?>
 <?php
@@ -311,7 +321,7 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 	}*/
 ?>
 <a href="friendlist.php?addfriend=<?php echo $thread['OWNER']; ?>" target=_blank><img src="pic/friend.gif" border=0 alt="把<?php echo $thread['OWNER']; ?>加入好友"></a>&nbsp;
-<a href="dispuser.php?id=<?php echo $thread['OWNER']; ?>" target=_blank><img src="pic/profile.gif" border=0 alt="查看<?php echo $thread['OWNER']; ?>的个人资料"></a>&nbsp;
+<!--<a href="dispuser.php?id=<?php echo $thread['OWNER']; ?>" target=_blank><img src="pic/profile.gif" border=0 alt="查看<?php echo $thread['OWNER']; ?>的个人资料"></a>&nbsp;-->
 <a href="queryresult.php?userid=<?php echo $thread['OWNER']; ?>&boardNames=<?php echo $boardName; ?>"><img src="pic/find.gif" border=0 alt="搜索<?php echo $thread['OWNER']; ?>在本版的所有贴子"></a>&nbsp;
 <a href="sendmail.php?board=<?php echo $boardName; ?>&reID=<?php echo $thread['ID']; ?>"><IMG alt="点击这里发送电邮给<?php echo $thread['OWNER']; ?>" border=0 src=pic/email.gif></A>&nbsp;
 <a href="editarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $thread['ID']; ?>"><img src="pic/edit.gif" border=0 alt=编辑></a>&nbsp;
