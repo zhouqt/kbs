@@ -29,6 +29,29 @@ void printmenu(char* s)
     printmenuend();
 }
 
+int show_fav_all(int f)
+{
+    char * s;
+    int i=0,j,k;
+    prints("<div>\n");
+    do{
+        favnow = f;
+        s = get_favboard(i);
+        j = get_favboard_type(i);
+        k = get_favboard_id(i);
+        if(s!=NULL) {
+            if(j==0)
+                printf("<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"/bbsdoc.php?board=%s\">\n", s);
+            else {
+            	printf("<img src=\"/images/folder.gif\">" "<a target=\"f3\">%s</a><br>\n", s);
+            }
+        }
+        i++;
+        
+    } while(s==NULL);
+    prints("</div>\n");
+}
+
 int main()
 {
     char buf[256], *ptr;
@@ -61,6 +84,7 @@ int main()
         char *name;
 
         printf("<img src=\"/images/folder.gif\">" "<a target=\"f3\" href=\"bbsfav?select=-1\">个人定制区</a><br>\n");
+        show_fav_all(-1);
 /*		printdiv(1,"个人定制区","/images/folder.gif");
 		load_favboard(0);
 		mybrdnum = getfavnum();
