@@ -5,7 +5,7 @@
 int main(int argc, char **argv)
 {
     FILE* fin,*fout1,*fout2;
-	char genbuf[8][256];;
+	char genbuf[8][256];
 	int i;
 	struct userec * uc;
 	int now;
