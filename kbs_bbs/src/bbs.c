@@ -682,6 +682,10 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     int ch;
     int cou;
 
+    /* czz 2003.3.4 forbid reading cancelled post */
+    if (fileinfo->owner[0] == '-')
+	    return FULLUPDATE;
+
     clear();
     strcpy(buf, direct);
     if ((t = strrchr(buf, '/')) != NULL)
