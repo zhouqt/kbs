@@ -1,50 +1,334 @@
 <?php
 	/**
-	 * This file lists original articles to user.
+	 * This file lists articles to user.
 	 * $Id$
 	 */
 	require("funcs.php");
+	$visitedboard = $_COOKIE["BBSVISITEDBRD"];
+	
+	function display_navigation_bar($brdarr,$brdnum,$start,$total,$page,$order=FALSE)
+	{
+		global $section_names;
+		$brd_encode = urlencode($brdarr["NAME"]);
+	?>		
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="b1">		
+<form name="form1" action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="get">
+<input type="hidden" name="board" value="<?php echo $brdarr["NAME"]; ?>"/>
+<tr>
+<td>
+    	<?php
+    		if (strcmp($currentuser["userid"], "guest") != 0)
+		{
+    	?>
+<a href="bbspst.php?board=<?php echo $brd_encode; ?>"><img src="images/postnew.gif" border="0" alt="发表话题"></a>
+    	<?php
+    		}
+    	?>
+</td>
+<td align="right">
+ 	<?php
+		      if($order)
+		      {
+		   	if ($start <= $total - 20)
+			{
+		    ?>
+[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>"><font class="b1"><u>第一页</u></font></a>]
+[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page + 1; ?>"><font class="b1"><u>上一页</u></font></a>]
+		    <?php
+			}
+			else
+			{
+		    ?>
+[第一页] 
+[上一页]
+		    <?php
+			}
+			if ($page > 1)
+			{
+		?>
+[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page - 1; ?>"><font class="b1"><u>下一页</u></font></a>]
+[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=1"><font class="b1"><u>最后一页</u></font></a>]
+		    <?php
+			}
+			else
+			{
+		    ?>
+[下一页] 
+[最后一页]
+		    <?php
+			}
+		     }
+		     else
+		     {	
+		     	if ($page > 1)
+			{
+		?>
+[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=1"><font class="b1"><u>第一页</u></font></a>]
+[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page - 1; ?>"><font class="b1"><u>上一页</u></font></a>]
+		    <?php
+			}
+			else
+			{
+		    ?>
+[第一页] 
+[上一页]
+		    <?php
+			}
+			if ($start <= $total - 20)
+			{
+		    ?>
+[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page + 1; ?>"><font class="b1"><u>下一页</u></font></a>]
+[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>"><font class="b1"><u>最后一页</u></font></a>]
+		    <?php
+			}
+			else
+			{
+		    ?>
+[下一页] 
+[最后一页]
+		    <?php
+			}
+		    }
+	?>
+<input type="submit" class="b5" value="跳转到"/> 第 <input type="text" name="start" size="3"  onmouseover=this.focus() onfocus=this.select() class="b5"> 篇 
+</td></tr></form></table>
+	<?php
+	}
+
+
+	function display_articles($brdarr,$articles,$start,$order=FALSE)
+	{
+		global $dir_modes;
+		global $default_dir_mode;
+		$brd_encode = urlencode($brdarr["NAME"]);
+?>
+<table width="100%" border="0" cellspacing="0" cellpadding="3" class="t1">
+<tr><td class="t2" width="40">序号</td><td class="t2" width="30">标记</td><td class="t2" width="85">作者</td><td class="t2" width="50">日期</td><td class="t2">标题</td></tr>
+<?php
+		$ding_cnt = 0;
+		foreach ($articles as $article)
+		{
+			$flags = $article["FLAGS"];
+			if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1))
+				$ding_cnt++;
+		}
+		$i = 0;
+		if ($order) {
+			$articles = array_reverse($articles);
+			$i = count($articles) - $ding_cnt - 1;
+		}
+		foreach ($articles as $article)
+		{
+			$title = $article["TITLE"];
+			if (strncmp($title, "Re: ", 4) != 0)
+				$title = "● " . $title;
+
+			$flags = $article["FLAGS"];
+?>
+<tr>
+<?php
+			if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1)) {
+?>
+<td colspan="2" align="center" class="t6"><img src="images/istop.gif" alt="提示" align="absmiddle"> 提示</td>
+<?php
+
+			} else {
+?>
+<td class="t3"><?php echo $start+$i; ?></td>
+<td class="t4">
+<?php
+			if ($flags[1] == 'y')
+			{
+				if ($flags[0] == ' ')
+					echo "&nbsp;";
+				else
+					echo $flags[0];
+			}
+                         elseif ($flags[0] == 'N' || $flags[0] == '*'){
+                                 if ($flags[0] == ' ') 
+                                         echo "&nbsp;"; 
+                                 else
+                                         echo $flags[0];
+                         }else{
+                                 if ($flags[0] == ' ')
+                                         echo "&nbsp;"; 
+                                 else
+                                         echo $flags[0];
+                         }   
+                         echo $flags[3]; 
+ ?> 
+</td>
+<?php
+	}//置顶
+?>
+<td class="t3"><a class="ts1" href="/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
+<td class="t4"><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
+<td class="t5"><strong>
+<?php
+	switch ($default_dir_mode)
+	{
+	case $dir_modes["ORIGIN"]:
+		if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1))
+		{
+?>
+<a href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?>&ftype=<?php echo $dir_modes["ZHIDING"]; ?>"><?php echo htmlspecialchars($title); ?>
+
+</a></strong>
+<?php
+		}
+		else
+		{
+?>
+<a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $article["GROUPID"]; ?>"><?php echo htmlspecialchars($title); ?>
+
+</a></strong>
+<?php
+		}
+		break;
+	case $dir_modes["NORMAL"]:
+	default:
+?>
+<a href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?><?php if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1)) echo "&ftype=" . $dir_modes["ZHIDING"]; ?>"><?php echo htmlspecialchars($title); ?></a></strong><font class="<?php if($article["EFFSIZE"] >= 1000) echo "mb2"; else echo "b1";?>">(<?php if($article["EFFSIZE"] < 1000) echo $article["EFFSIZE"]; else { printf("%.1f",$article["EFFSIZE"]/1000.0); echo "k";} ?>)</font>
+
+<?php
+	}
+?>
+</td>
+</tr>
+<?php
+			if ($order)
+				$i--;
+			else
+				$i++;
+		}
+?>
+</table>
+<?php
+	}
+
 	if ($loginok != 1)
 		html_nologin();
 	else
 	{
-		html_init("gb2312");
+		$board_list_error=FALSE;
 		if (isset($_GET["board"]))
 			$board = $_GET["board"];
-		else
+		else{
+		        html_init("gb2312","","",1);
 			html_error_quit("错误的讨论区");
+			$board_list_error=TRUE;
+			}
 		// 检查用户能否阅读该版
 		$brdarr = array();
 		$brdnum = bbs_getboard($board, $brdarr);
-		if ($brdnum == 0)
+		if ($brdnum == 0){
+		        html_init("gb2312","","",1);
 			html_error_quit("错误的讨论区");
+			$board_list_error=TRUE;
+			}
 		$usernum = $currentuser["index"];
-		if (bbs_checkreadperm($usernum, $brdnum) == 0)
+		if (bbs_checkreadperm($usernum, $brdnum) == 0){
+		        html_init("gb2312","","",1);
 			html_error_quit("错误的讨论区");
-		bbs_set_onboard($brcnum,1);
+			$board_list_error=TRUE;
+			}
+		if ($brdarr["FLAG"]&BBS_BOARD_GROUP) {
+			for ($i=0;$i<sizeof($section_nums);$i++)
+				if (!strcmp($section_nums[$i],$brdarr["SECNUM"])) {
+			         Header("Location: bbsboa.php?group=" . $i . "&group2=" . $brdnum);
+			         return;
+                                }
+		        html_init("gb2312","","",1);
+			html_error_quit("错误的讨论区");
+			$board_list_error=TRUE;
+		}
+		
+		$brd_encode = urlencode($brdarr["NAME"]);
+		$ann_path = bbs_getannpath($brdarr["NAME"]);
+		
+		/* BBS Board Envelop Code START
+		** add by windinsn , Mar 13 ,2004 */
+		if( defined("HAVE_BRDENV") && !isset($_GET["env"]))
+		{
+			if( bbs_board_have_envelop($board))
+			{
+				if( !stristr($visitedboard,"|".$board."|") )
+				{
+					setcookie("BBSVISITEDBRD" , $visitedboard.$board."|");
+					header("Location: /bbsenv.php?board=".$brd_encode);
+				}
+			}
+		}	
+		/* BBS Board Envelop Code END */
 
-		$total = bbs_countarticles($brdnum, $dir_modes["ORIGIN"]);
+		if (!isset($default_dir_mode))
+			$default_dir_mode = $dir_modes["ORIGIN"];
+                $isnormalboard=bbs_normalboard($board);
+
+        	bbs_set_onboard($brdnum,1);
+		if ($isnormalboard&&($default_dir_mode == $dir_modes["NORMAL"])) {
+                        $dotdirname=BBS_HOME . "/boards/" . $brdarr["NAME"] . "/.DIR";
+       			if (cache_header("public, must-revalidate",filemtime($dotdirname),10))
+               			return;
+               	}
+		html_init("gb2312","","",1);
+		$total = bbs_countarticles($brdnum, $default_dir_mode);
 		if ($total <= 0)
+		    if (strcmp($currentuser["userid"], "guest") != 0){
+			html_error_quit("本讨论区目前没有文章<br /><a href=\"bbspst.php?board=" . $board . "\">发表文章</a>");
+			$board_list_error=TRUE;
+			}
+                    else{
 			html_error_quit("本讨论区目前没有文章");
-		if (isset($_GET["start"]))
-			$start = $_GET["start"];
-		elseif (isset($_POST["start"]))
-			$start = $_POST["start"];
+			$board_list_error=TRUE;
+			}
+
+		$artcnt = 20;
+		if (isset($_GET["page"]))
+			$page = $_GET["page"];
+		elseif (isset($_POST["page"]))
+			$page = $_POST["page"];
+		else
+		{
+			if (isset($_GET["start"]))
+			{
+				$start = $_GET["start"];
+				settype($start, "integer");
+				$page = ($start + $artcnt - 1) / $artcnt;
+			}
+			else
+				$page = 0;
+		}
+		settype($page, "integer");
+		if ($page > 0)
+			$start = ($page - 1) * $artcnt + 1;
 		else
 			$start = 0;
-		settype($start, "integer");
-		$artcnt = 20;
 		/*
 		 * 这里存在一个时间差的问题，可能会导致序号变乱。
 		 * 原因在于两次调用 bbs_countarticles() 和 bbs_getarticles()。
 		 */
 		if ($start == 0 || $start > ($total - $artcnt + 1))
-			$start = ($total - $artcnt + 1);
-		if ($start < 0)
-			$start = 1;
-		$articles = bbs_getarticles($board, $start, $artcnt, $dir_modes["ORIGIN"]);
-		if ($articles == FALSE)
+		{
+			if ($total <= $artcnt)
+			{
+				$start = 1;
+				$page = 1;
+			}
+			else
+			{
+				$start = ($total - $artcnt + 1);
+				$page = ($start + $artcnt - 1) / $artcnt + 1;
+			}
+		}
+		else
+			$page = ($start + $artcnt - 1) / $artcnt;
+		settype($page, "integer");
+		$articles = bbs_getarticles($brdarr["NAME"], $start, $artcnt, $default_dir_mode);
+		if ($articles == FALSE){
 			html_error_quit("读取文章列表失败");
+			$board_list_error=TRUE;
+			}
 		$bms = explode(" ", trim($brdarr["BM"]));
 		$bm_url = "";
 		if (strlen($bms[0]) == 0 || $bms[0][0] <= chr(32))
@@ -57,123 +341,157 @@
 			{
 				foreach ($bms as $bm)
 				{
-					$bm_url .= sprintf("<a href=\"/bbsqry.php?userid=%s\">%s</a> ", $bm, $bm);
+					$bm_url .= sprintf("<a class=\"b3\" href=\"/bbsqry.php?userid=%s\"><font class=\"b3\">%s</font></a> ", $bm, $bm);
 				}
 				$bm_url = trim($bm_url);
 			}
 		}
+		if (!isset($order_articles))
+			$order_articles = FALSE;
+			
+
 ?>
-<body>
-<nobr/>
-<center><?php echo BBS_FULL_NAME; ?> -- [讨论区: <?php echo $brdarr["NAME"]; ?>] 版主[<?php echo $bm_url; ?>] 文章数[<?php echo $total; ?>] <a href="/cgi-bin/bbs/bbsbrdadd?board=<?php echo $brdarr["NAME"]; ?>">预定本版</a>
-<hr class="default"/>
-<table width="613">
-<tr><td>序号</td><td>标记</td><td>作者</td><td>日期</td><td>标题</td></tr>
+<body topmargin="0" leftmargin="0">
 <?php
-		$brd_encode = urlencode($brdarr["NAME"]);
-		$i = 0;
-		foreach ($articles as $article)
+	if($board_list_error==FALSE)
+	{		
+?>
+<a name="listtop"></a>
+<table width="100%" border="0" cellspacing="0" cellpadding="3">
+  <tr> 
+    <td colspan="2" class="b2">
+	    <a href="mainpage.html" class="b2"><font class="b2"><?php echo BBS_FULL_NAME; ?></font></a>
+	    -
+	    <?php
+	    	$sec_index = get_secname_index($brdarr["SECNUM"]);
+		if ($sec_index >= 0)
 		{
-			$title = $article["TITLE"];
-			if (strncmp($title, "Re: ", 4) != 0)
-				$title = "● " . $title;
-			$flags = $article["FLAGS"];
-?>
-<tr>
-<td><?php echo $start + $i; ?></td>
-<td>
-<?php
-			if ($flags[1] == 'y')
-			{
-				if ($flags[0] == ' ')
-				{
-?>
-<font face="Webdings" color="#008000">&lt;</font>
-<?php
-				}
-				else
-				{
-?>
-<font color="#008000"><?php echo $flags[0]; ?></font>
-<?php
-				}
-			}
-			elseif ($flags[0] == 'N' || $flags[0] == '*')
-			{
-?>
-<font color="#909090"><?php echo $flags[0]; ?></font>
-<?php
-			}
-			else
-				echo $flags[0];
-?>
-</td>
-<td><a href="/bbsqry.php?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
-<td><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
-<td>
-<a href="/cgi-bin/bbs/bbstcon?board=<?php echo $brd_encode; ?>&gid=<?php echo $article["GROUPID"]; ?>"><?php echo htmlspecialchars($title); ?></a>
-</td>
-</tr>
-<?php
-			$i++;
+	    ?>
+		<a href="/bbsboa.php?group=<?php echo $sec_index; ?>" class="b2"><font class="b2"><?php echo $section_names[$sec_index][0]; ?></font></a>
+	    <?php
 		}
-?>
-</table>
-<hr class="default"/>
-<a href="bbspst.php?board=<?php echo $brd_encode; ?>">发表文章</a>
-<a href="javascript:location=location">刷新</a>
+	    ?>
+	    -
+	    <?php echo $brdarr["NAME"]; ?>版(<a href="bbsnot.php?board=<?php echo $brd_encode; ?>" class="b2"><font class="b2">进版画面</font></a>
+	    |
+	    <a href="/bbsfav.php?bname=<?php echo $brdarr["NAME"]; ?>&select=-1" class="b2"><font class="b2">添加到收藏夹</font></a>
 <?php
-		if ($start > 0)
-		{
+	if( defined("HAVE_BRDENV") ){
+		if( bbs_board_have_envelop($board) ){
 ?>
-<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&start=<?php echo $start - $artcnt; ?>">上一页</a>
+	    |
+	    <a href="/bbsenv.php?board=<?php echo $brd_encode; ?>" class="b2"><font class="b2">版面导读</font></a>
 <?php
 		}
-		if ($start < $total - 20)
-		{
+	}
 ?>
-<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&start=<?php echo $start + $artcnt; ?>">下一页</a>
-<?php
+	    )
+    </td>
+  </tr>
+  <tr> 
+    <td colspan="2" align="center" class="b4"><?php echo $brdarr["NAME"]."(".$brdarr["DESC"].")"; ?> 版</td>
+  </tr>
+  <tr><td class="b1">
+  <img src="images/bm.gif" alt="版主" align="absmiddle">版主 <?php echo $bm_url; ?>
+  </td></tr>
+  <tr> 
+    <td class="b1">
+    <img src="images/online.gif" alt="本版在线人数" align="absmiddle">在线 <font class="b3"><?php echo $brdarr["CURRENTUSERS"]+1; ?></font> 人
+    <img src="images/postno.gif" alt="本版文章数" align="absmiddle">文章 <font class="b3"><?php echo $total; ?></font> 篇
+    </td>
+    <td align="right" class="b1">
+	    <img src="images/gmode.gif" align="absmiddle" alt="文摘区"><a class="b1" href="bbsgdoc.php?board=<?php echo $brd_encode; ?>"><font class="b1">文摘区</font></a> 
+	    <?php
+  	    	if ($ann_path != FALSE)
+		{
+                    if (!strncmp($ann_path,"0Announce/",10))
+			$ann_path=substr($ann_path,9);
+	    ?>
+	    | 
+  	    <img src="images/soul.gif" align="absmiddle" alt="精华区"><a class="b1" href="/cgi-bin/bbs/bbs0an?path=<?php echo urlencode($ann_path); ?>"><font class="b1">精华区</font></a>
+	    <?php
+		}
+	    ?>
+	    | 
+  	    <img src="images/search.gif" align="absmiddle" alt="版内查询"><a class="b1" href="/bbsbfind.php?board=<?php echo $brd_encode; ?>"><font class="b1">版内查询</font></a>
+	    <?php
+    		if (strcmp($currentuser["userid"], "guest") != 0)
+		{
+    	    ?>
+	    | 
+  	    <img src="images/vote.gif" align="absmiddle" alt="本版投票"><a class="b1" href="/bbsshowvote.php?board=<?php echo $brd_encode; ?>"><font class="b1">本版投票</font></a>
+	    | 
+  	    <img src="images/model.gif" align="absmiddle" alt="发文模板"><a class="b1" href="/bbsshowtmpl.php?board=<?php echo $brd_encode; ?>"><font class="b1">发文模板</font></a>
+    	    <?php
+    		}
+    	    ?>	
+    </td>
+  </tr>
+  <tr> 
+    <td colspan="2" height="9" background="images/dashed.gif"> </td>
+  </tr>
+  <tr><td colspan="2" align="right" class="b1">
+  <?php
+  	display_navigation_bar($brdarr, $brdnum, $start, $total, $page,$order_articles );
+  ?>
+  </td></tr>
+  <tr> 
+    <td colspan="2" align="center">
+    	<?php
+		display_articles($brdarr, $articles, $start, $order_articles );
+	?>	
+    </td>
+  </tr>
+  <tr><td colspan="2" align="right" class="b1">
+  <?php
+  	display_navigation_bar($brdarr, $brdnum, $start, $total, $page,$order_articles);
+  ?>
+  </td></tr>
+  <tr> 
+    <td colspan="2" height="9" background="images/dashed.gif"> </td>
+  </tr>
+  <tr> 
+    <td colspan="2" align="center" class="b1">
+    	[<a href="#listtop">返回顶部</a>]
+    	[<a href="javascript:location=location">刷新</a>]
+    	[<a href="bbstdoc.php?board=<?php echo $brd_encode; ?>">同主题模式</a>]
+    	[<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>">普通模式</a>]
+  	    [<a href="/bbsbfind.php?board=<?php echo $brd_encode; ?>">版内查询</a>]
+    	<?php
+    		if (strcmp($currentuser["userid"], "guest") != 0)
+		{
+    	?>
+    	[<a href="/cgi-bin/bbs/bbsclear?board=<?php echo $brd_encode; ?>&start=<?php echo $start; ?>">清除未读</a>]
+	<?php
 		}
 		if (bbs_is_bm($brdnum, $usernum))
 		{
-?>
-<a href="bbsmdoc.php?board=<?php echo $brd_encode; ?>">管理模式</a>
-<?php
+	?>
+	[<a href="bbsmdoc.php?board=<?php echo $brd_encode; ?>">管理模式</a>]
+	<?php
 		}
-?>
-<a href="bbsnot.php?board=<?php echo $brd_encode; ?>">进版画面</a>
-<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>">普通模式</a>
+	?>
+    </td>
+  </tr>
 <?php
-		$ann_path = bbs_getannpath($brdarr["NAME"]);
-		if ($ann_path != FALSE)
-		{
+$relatefile = $_SERVER["DOCUMENT_ROOT"]."/brelated/".$brdarr["NAME"].".html";
+if( file_exists( $relatefile ) ){
 ?>
-<a href="/cgi-bin/bbs/bbs0an?path=<?php echo urlencode($ann_path); ?>">精华区</a>
+<tr>
+<td colspan="2" align="center" class="b1">
+来这个版的人常去的其他版面：
 <?php
-		}
+include($relatefile);
 ?>
-<a href="/bbsbfind.php?board=<?php echo $brd_encode; ?>">版内查询</a>
+</td>
+</tr>
 <?php
-		if (strcmp($currentuser["userid"], "guest") != 0)
-		{
+}
 ?>
-<a href="/cgi-bin/bbs/bbsclear?board=<?php echo $brd_encode; ?>&start=<?php echo $start; ?>">清除未读</a>
+
+</table>
 <?php
-		}
-		$sec_index = get_secname_index($brdarr["SECNUM"]);
-		if ($sec_index >= 0)
-		{
-?>
-<a href="bbsboa.php?group=<?php echo $sec_index; ?>">返回[<?php echo $section_names[$sec_index][0]; ?>]</a>
-<?php
-		}
-?>
-<form name="form1" action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="get">
-<input type="hidden" name="board" value="<?php echo $brdarr["NAME"]; ?>"/>
-<input type="submit" value="跳转到"/> 第 <input type="text" name="start" size="4"/> 篇
-</form>
-<?php
+	}
 		html_normal_quit();
 	}
 ?>
