@@ -1979,7 +1979,7 @@ int add_attach(char* file1, char* file2, char* filename)
     fp=fopen(file1, "ab");
     fwrite(o,1,8,fp);
     for(i=0;i<strlen(filename);i++)
-        if(!isalnum(filename[i])&&filename[i]!='.') filename[i]='A';
+        if(!isalnum(filename[i])&&filename[i]!='.'&&filename[i]>0) filename[i]='A';
     fwrite(filename, 1, strlen(filename)+1, fp);
     fwrite(&size,1,4,fp);
     while((i=fread(buf,1,1024*16,fp2))) {
