@@ -22,7 +22,10 @@ AC_ARG_ENABLE(ssh,
 	fi
 ])
 
-enable_www=yes
+if [ test -z "$enable_www" ]; then
+	enable_www=yes
+fi
+
 AC_ARG_ENABLE(www,
 [  --enable-www
         enable web support(need bbs2www package)],
