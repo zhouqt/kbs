@@ -31,6 +31,9 @@ select {font-size: 12px;font-weight: lighter;}
 .navigationbar a {color: #ffffff;}
 .navigationbar a:visited {color: #f6f6f6;}
 .navigationbar a:hover {color: #ff0000;text-decoration: none;text-align: center;}
+.table2{border-width: 1px;border-color: #999999; border-top-style: dashed; border-left-style: dashed;border-right-style: none; border-bottom-style: none;}
+.td3{border-width: 1px;border-color: #999999; border-right-style: dashed; border-bottom-style: dashed;border-top-style: none; border-left-style: none;}
+.td4{border-width: 1px;border-color: #999999; border-right-style: none; border-bottom-style: dashed;border-top-style: none; border-left-style: none;}
 -->
 </style>
 </head>
