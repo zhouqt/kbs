@@ -41,7 +41,7 @@ const char *permstrings[] = {
 
 };
 
-char *user_definestr[] = {
+const char *user_definestr[] = {
     "活动看版",                 /* DEF_ACBOARD */
     "使用彩色",                 /* DEF_COLOR */
     "编辑时显示状态栏",         /* DEF_EDITMSG */
@@ -322,11 +322,11 @@ int multilogin_user(struct userec *user, int usernum)
     /* stephen: 2001.10.30 仲裁可以开两个窗口 */
     if (HAS_PERM(user, PERM_SYSOP)) return 0;
     return 1;
-    if ((HAS_PERM(user, PERM_BOARDS) || HAS_PERM(user, PERM_CHATOP) 
-    	|| HAS_PERM(user, PERM_JURY) || HAS_PERM(user, PERM_CHATCLOAK)
-    	|| HAS_PERM(user, PERM_BMAMANGER) )
-        && logincount < 2)
-        return 0;
+//    if ((HAS_PERM(user, PERM_BOARDS) || HAS_PERM(user, PERM_CHATOP) 
+//    	|| HAS_PERM(user, PERM_JURY) || HAS_PERM(user, PERM_CHATCLOAK)
+//    	|| HAS_PERM(user, PERM_BMAMANGER) )
+//        && logincount < 2)
+//        return 0;
     /* allow multiple guest user */
     if (!strcmp("guest", user->userid)) {
         if (logincount > MAX_GUEST_NUM) {
