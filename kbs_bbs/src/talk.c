@@ -473,6 +473,8 @@ int ttt_talk(struct user_info *userinfo)
 
     move(1, 0);
     clrtobot();
+    if (!HAS_PERM(currentuser,PERM_PAGE))
+        return 0;
     if (userinfo == NULL) {
         move(2, 0);
         prints("<输入使用者代号>\n");
@@ -885,7 +887,7 @@ int talkreply()
     a = socket(sin.sin_family, SOCK_STREAM, 0);
     if ((connect(a, (struct sockaddr *) &sin, sizeof sin))) {
         prints("connect err");
-        return -1;
+        return 0;
     }
     if (buf[0] != 'n' && buf[0] != 'N' && buf[0] != 'B' && buf[0] != 'b'
         && buf[0] != 'C' && buf[0] != 'c' && buf[0] != 'D' && buf[0] != 'd' && buf[0] != 'e' && buf[0] != 'E' && buf[0] != 'f' && buf[0] != 'F' && buf[0] != 'm' && buf[0] != 'M')
