@@ -2054,6 +2054,10 @@ int add_attach(char* file1, char* file2, char* filename)
     char buf[1024*16];
     int i;
     stat(file2, &st);
+    if(st.st_size>=1024*1024*10&&!HAS_PERM(currentuser, PERM_SYSOP)) {
+        unlink(file2);
+        return 0;
+    }
     size=htonl(st.st_size);
     fp=fopen(file1, "ab");
     fp2=fopen(file2, "rb");
@@ -2311,14 +2315,14 @@ int post_article(char *q_file, struct fileheader *re_file)
     strcpy(quote_board, currboard);
     aborted = vedit(filepath, true, &eff_size, NULL);    /* 进入编辑状态 */
 
-    add_loginfo(filepath, currentuser, currboard, Anony);       /*添加最后一行 */
-
     if(upload) {
         char sbuf[PATHLEN];
         strcpy(sbuf,"tmp/");
         strcpy(sbuf+strlen(sbuf), upload);
         post_file.attachment = add_attach(filepath, sbuf, upload);
     }
+    
+    add_loginfo(filepath, currentuser, currboard, Anony);       /*添加最后一行 */
 
     strncpy(post_file.title, save_title, STRLEN);
     if (aborted == 1 || !(bp->flag & BOARD_OUTFLAG)) {  /* local save */

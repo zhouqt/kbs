@@ -247,7 +247,7 @@ void add_loginfo(char *filepath, struct userec *user, char *currboard, int Anony
     noidboard = (anonymousboard(currboard) && Anony);   /* etc/anonymous文件中 是匿名版版名 */
     color = (user->numlogins % 7) + 31; /* 颜色随机变化 */
     sethomefile(fname, user->userid, "signatures");
-    fp = fopen(filepath, "a");
+    fp = fopen(filepath, "ab");
     if (!dashf(fname) ||        /* 判断是否已经 存在 签名档 */
         user->signature == 0 || noidboard) {
         fputs("\n--\n", fp);
