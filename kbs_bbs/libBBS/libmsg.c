@@ -632,6 +632,16 @@ int translate_msg(char* src, struct msghead *head, char* dest)
             sprintf(attstr, "[45%sm[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
 //            space=29;
             break;
+        case 6:
+            if(!head->sent) {
+                sprintf(dest, "[44%sm\x1b[36m¶ÌÐÅ%-14.14s[33m(%-16.16s)[37m[K[m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
+                sprintf(attstr, "[44%sm[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
+            }
+            else {
+                sprintf(dest, "\x1b[0;1;32m¶ÌÐÅ=>[37m%-12.12s[33m(%-16.16s)[36m[K[m\n", head->id, time);
+                sprintf(attstr, "[36;1m");
+            }
+            break;
     }
     strcat(dest, attstr);
     len = strlen(dest);
@@ -695,3 +705,179 @@ void mail_msg(struct userec* user)
     unlink(fname);
     clear_msg(user->userid);
 }
+
+#ifdef SMS_SUPPORT
+
+void * buf=NULL;
+int result=0;
+
+inline unsigned int byte2long(byte arg[4]) {
+    unsigned int tmp;
+    tmp=((long)arg[0]<<24)+((long)arg[1]<<16)+((long)arg[2]<<8)+(long)arg[3];
+    return tmp;
+}
+
+inline void long2byte(unsigned int num, byte* arg) {
+    (arg)[0]=num>>24;
+    (arg)[1]=(num<<8)>>24;
+    (arg)[2]=(num<<16)>>24;
+    (arg)[3]=(num<<24)>>24;
+}
+
+
+int init_memory()
+{
+    void * p;
+    int iscreate;
+    if(buf) return 0;
+
+    iscreate = 0;
+    p = attach_shm("SMS_SHMKEY", 8914, SMS_SHM_SIZE+sizeof(struct sms_shm_head), &iscreate);
+    head = (struct sms_shm_head *) p;
+    buf = p+sizeof(struct sms_shm_head);
+}
+
+void sendtosms(void * n, int s)
+{
+    if(head->length+s>=SMS_SHM_SIZE) return;
+    memcpy(buf+head->length, n, s);
+    head->length+=s;
+}
+
+void SMS_request(int signo)
+{
+    char fn[80];
+    struct stat st;
+    sprintf(fn, "tmp/%d.res", uinfo.pid);
+    if(stat(fn, &st)!=-1)
+        result=1;
+}
+
+int wait_for_result()
+{
+    int count;
+    char fn[80];
+    FILE* fp;
+    int i;
+    signal(SIGUSR1, SMS_request);
+    sprintf(fn, "tmp/%d.res", uinfo.pid);
+    unlink(fn);
+    result = 0;
+    head->sem=0;
+
+    count=0;
+    while(!result) {
+        move(t_lines-1, 0);
+        clrtoeol();
+        prints("·¢ËÍÖÐ....%d%%", count*100/30);
+        refresh();
+        sleep(1);
+        count++;
+        if(count>30) {
+            move(t_lines-1, 0);
+            clrtoeol();
+            return -1;
+        }
+    }
+    signal(SIGUSR1, talk_request);
+    
+    move(t_lines-1, 0);
+    clrtoeol();
+    fp=fopen(fn, "r");
+    fscanf(fp, "%d", &i);
+    fclose(fp);
+    if(i==1) return 0;
+    else return -1;
+}
+
+int DoReg(char * n)
+{
+    int count=0;
+    struct header h;
+    struct RegMobileNoPacket h1;
+    h.Type = CMD_REG;
+    long2byte(uinfo.pid, h.pid);
+    long2byte(sizeof(h1), h.BodyLength);
+    strcpy(h1.MobileNo, n);
+    while(head->sem) {
+        sleep(1);
+        count++;
+        if(count>=5) return -1;
+    }
+    head->sem=1;
+    head->total++;
+    sendtosms(&h, sizeof(h));
+    sendtosms(&h1, sizeof(h1));
+    return wait_for_result();
+}
+
+int DoUnReg(char * n)
+{
+    int count=0;
+    struct header h;
+    struct UnRegPacket h1;
+    h.Type = CMD_UNREG;
+    long2byte(uinfo.pid, h.pid);
+    long2byte(sizeof(h1), h.BodyLength);
+    strcpy(h1.MobileNo, n);
+    while(head->sem) {
+        sleep(1);
+        count++;
+        if(count>=5) return -1;
+    }
+    head->sem=1;
+    head->total++;
+    sendtosms(&h, sizeof(h));
+    sendtosms(&h1, sizeof(h1));
+    return wait_for_result();
+}
+
+int DoCheck(char * n, char * c)
+{
+    int count=0;
+    struct header h;
+    struct CheckMobileNoPacket h1;
+    h.Type = CMD_CHECK;
+    long2byte(uinfo.pid, h.pid);
+    long2byte(sizeof(h1), h.BodyLength);
+    strcpy(h1.MobileNo, n);
+    strcpy(h1.ValidateNo, c);
+    while(head->sem) {
+        sleep(1);
+        count++;
+        if(count>=5) return -1;
+    }
+    head->sem=1;
+    head->total++;
+    sendtosms(&h, sizeof(h));
+    sendtosms(&h1, sizeof(h1));
+    return wait_for_result();
+}
+
+int DoSendSMS(char * n, char * d, char * c)
+{
+    int count=0;
+    struct header h;
+    struct BBSSendSMS h1;
+    h.Type = CMD_BBSSEND;
+    long2byte(uinfo.pid, h.pid);
+    long2byte(sizeof(h1)+strlen(c)+1, h.BodyLength);
+    long2byte(strlen(c)+1, h1.MsgTxtLen);
+    long2byte(uinfo.uid, h1.UserID);
+    strcpy(h1.SrcMobileNo, n);
+    strcpy(h1.DstMobileNo, d);
+    while(head->sem) {
+        sleep(1);
+        count++;
+        if(count>=5) return -1;
+    }
+    head->sem=1;
+    head->total++;
+    sendtosms(&h, sizeof(h));
+    sendtosms(&h1, sizeof(h1));
+    sendtosms(c, strlen(c)+1);
+    return wait_for_result();
+}
+
+#endif
+

@@ -1,3 +1,4 @@
+#define SMS_SUPPORT
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -9,74 +10,6 @@
 #undef perror
 #undef printf
 
-#ifndef byte
-typedef unsigned char byte;
-#endif
-
-#define SMS_SHM_SIZE 1024*50
-
-struct header{
-  char Type;
-  byte SerialNo[4];
-  byte pid[4];
-  byte BodyLength[4];   //×ÜPacket³¤¶È
-};
-
-#define CMD_LOGIN 1
-#define CMD_OK 101
-#define CMD_ERR 102
-#define CMD_LOGOUT 2
-#define CMD_REG 3
-#define CMD_CHECK 4
-#define CMD_UNREG 5
-#define CMD_REQUIRE 6
-#define CMD_REPLY 7
-#define CMD_BBSSEND 8
-#define CMD_GWSEND 9
-
-#define USER_LEN 20
-#define PASS_LEN 50
-
-struct LoginPacket { //Type=1
-    char user[USER_LEN];
-    char pass[PASS_LEN];
-};
-struct RegMobileNoPacket { //Type=3
-    char MobileNo[MOBILE_NUMBER_LEN];
-};
-struct CheckMobileNoPacket { //Type=4
-    char MobileNo[MOBILE_NUMBER_LEN];
-    char ValidateNo[MOBILE_NUMBER_LEN];
-};
-struct UnRegPacket { //Type=5
-    char MobileNo[MOBILE_NUMBER_LEN];
-};
-struct RequireBindPacket { //Type = 6
-    byte UserID[4];
-    char MobileNo[MOBILE_NUMBER_LEN];
-    char Bind;
-};
-struct ReplyBindPacket { //Type=7
-    char MobileNo[MOBILE_NUMBER_LEN];
-    char isSucceed;
-};
-struct BBSSendSMS { //Type=8
-    byte UserID[4];
-    char SrcMobileNo[MOBILE_NUMBER_LEN];
-    char DstMobileNo[MOBILE_NUMBER_LEN];
-    byte MsgTxtLen[4];
-};
-struct GWSendSMS { //Type=9
-    byte UserID[4];
-    char SrcMobileNo[MOBILE_NUMBER_LEN];
-    byte MsgTxtLen[4];
-};
-
-struct sms_shm_head {
-    int sem;
-    int total;
-    int length;
-} * head;
 void * buf;
 int sockfd;
 int sn=0;

@@ -483,4 +483,56 @@ struct _brc_cache_entry {
 #define FRIENDSGROUP_SEEME 010
 #define FRIENDSGROUP_UNUSE 020
 
+#ifdef SMS_SUPPORT
+
+#ifndef byte
+typedef unsigned char byte;
+#endif
+
+#define SMS_SHM_SIZE 1024*50
+
+struct header{
+  char Type;
+  byte SerialNo[4];
+  byte pid[4];
+  byte BodyLength[4];   //×ÜPacket³¤¶È
+};
+
+#define CMD_LOGIN 1
+#define CMD_OK 101
+#define CMD_ERR 102
+#define CMD_LOGOUT 2
+#define CMD_REG 3
+#define CMD_CHECK 4
+#define CMD_UNREG 5
+#define CMD_REQUIRE 6
+#define CMD_REPLY 7
+#define CMD_BBSSEND 8
+#define CMD_GWSEND 9
+
+struct RegMobileNoPacket { //Type=3
+    char MobileNo[MOBILE_NUMBER_LEN];
+};
+struct CheckMobileNoPacket { //Type=4
+    char MobileNo[MOBILE_NUMBER_LEN];
+    char ValidateNo[MOBILE_NUMBER_LEN];
+};
+struct UnRegPacket { //Type=5
+    char MobileNo[MOBILE_NUMBER_LEN];
+};
+struct BBSSendSMS { //Type=8
+    byte UserID[4];
+    char SrcMobileNo[MOBILE_NUMBER_LEN];
+    char DstMobileNo[MOBILE_NUMBER_LEN];
+    byte MsgTxtLen[4];
+};
+
+struct sms_shm_head {
+    int sem;
+    int total;
+    int length;
+} * head;
+#endif
+
+
 #endif                          /* of _BBS_H_ */

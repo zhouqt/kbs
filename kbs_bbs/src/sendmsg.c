@@ -654,224 +654,6 @@ int friend_wall()
 
 #ifdef SMS_SUPPORT
 
-#ifndef byte
-typedef unsigned char byte;
-#endif
-
-#define SMS_SHM_SIZE 1024*50
-
-struct header{
-  char Type;
-  byte SerialNo[4];
-  byte pid[4];
-  byte BodyLength[4];   //总Packet长度
-};
-
-#define CMD_LOGIN 1
-#define CMD_OK 101
-#define CMD_ERR 102
-#define CMD_LOGOUT 2
-#define CMD_REG 3
-#define CMD_CHECK 4
-#define CMD_UNREG 5
-#define CMD_REQUIRE 6
-#define CMD_REPLY 7
-#define CMD_BBSSEND 8
-#define CMD_GWSEND 9
-
-struct RegMobileNoPacket { //Type=3
-    char MobileNo[MOBILE_NUMBER_LEN];
-};
-struct CheckMobileNoPacket { //Type=4
-    char MobileNo[MOBILE_NUMBER_LEN];
-    char ValidateNo[MOBILE_NUMBER_LEN];
-};
-struct UnRegPacket { //Type=5
-    char MobileNo[MOBILE_NUMBER_LEN];
-};
-struct BBSSendSMS { //Type=8
-    byte UserID[4];
-    char SrcMobileNo[MOBILE_NUMBER_LEN];
-    char DstMobileNo[MOBILE_NUMBER_LEN];
-    byte MsgTxtLen[4];
-};
-
-struct sms_shm_head {
-    int sem;
-    int total;
-    int length;
-} * head;
-void * buf=NULL;
-int result=0;
-
-inline unsigned int byte2long(byte arg[4]) {
-    unsigned int tmp;
-    tmp=((long)arg[0]<<24)+((long)arg[1]<<16)+((long)arg[2]<<8)+(long)arg[3];
-    return tmp;
-}
-
-inline void long2byte(unsigned int num, byte* arg) {
-    (arg)[0]=num>>24;
-    (arg)[1]=(num<<8)>>24;
-    (arg)[2]=(num<<16)>>24;
-    (arg)[3]=(num<<24)>>24;
-}
-
-
-int init_memory()
-{
-    void * p;
-    int iscreate;
-    if(buf) return 0;
-
-    iscreate = 0;
-    p = attach_shm("SMS_SHMKEY", 8914, SMS_SHM_SIZE+sizeof(struct sms_shm_head), &iscreate);
-    head = (struct sms_shm_head *) p;
-    buf = p+sizeof(struct sms_shm_head);
-}
-
-void sendtosms(void * n, int s)
-{
-    if(head->length+s>=SMS_SHM_SIZE) return;
-    memcpy(buf+head->length, n, s);
-    head->length+=s;
-}
-
-void SMS_request(int signo)
-{
-    char fn[80];
-    struct stat st;
-    sprintf(fn, "tmp/%d.res", uinfo.pid);
-    if(stat(fn, &st)!=-1)
-        result=1;
-}
-
-int wait_for_result()
-{
-    int count;
-    char fn[80];
-    FILE* fp;
-    int i;
-    signal(SIGUSR1, SMS_request);
-    sprintf(fn, "tmp/%d.res", uinfo.pid);
-    unlink(fn);
-    result = 0;
-    head->sem=0;
-
-    count=0;
-    while(!result) {
-        move(t_lines-1, 0);
-        clrtoeol();
-        prints("发送中....%d%%", count*100/30);
-        refresh();
-        sleep(1);
-        count++;
-        if(count>30) {
-            move(t_lines-1, 0);
-            clrtoeol();
-            return -1;
-        }
-    }
-    signal(SIGUSR1, talk_request);
-    
-    move(t_lines-1, 0);
-    clrtoeol();
-    fp=fopen(fn, "r");
-    fscanf(fp, "%d", &i);
-    fclose(fp);
-    if(i==1) return 0;
-    else return -1;
-}
-
-int DoReg(char * n)
-{
-    int count=0;
-    struct header h;
-    struct RegMobileNoPacket h1;
-    h.Type = CMD_REG;
-    long2byte(uinfo.pid, h.pid);
-    long2byte(sizeof(h1), h.BodyLength);
-    strcpy(h1.MobileNo, n);
-    while(head->sem) {
-        sleep(1);
-        count++;
-        if(count>=5) return -1;
-    }
-    head->sem=1;
-    head->total++;
-    sendtosms(&h, sizeof(h));
-    sendtosms(&h1, sizeof(h1));
-    return wait_for_result();
-}
-
-int DoUnReg(char * n)
-{
-    int count=0;
-    struct header h;
-    struct UnRegPacket h1;
-    h.Type = CMD_UNREG;
-    long2byte(uinfo.pid, h.pid);
-    long2byte(sizeof(h1), h.BodyLength);
-    strcpy(h1.MobileNo, n);
-    while(head->sem) {
-        sleep(1);
-        count++;
-        if(count>=5) return -1;
-    }
-    head->sem=1;
-    head->total++;
-    sendtosms(&h, sizeof(h));
-    sendtosms(&h1, sizeof(h1));
-    return wait_for_result();
-}
-
-int DoCheck(char * n, char * c)
-{
-    int count=0;
-    struct header h;
-    struct CheckMobileNoPacket h1;
-    h.Type = CMD_CHECK;
-    long2byte(uinfo.pid, h.pid);
-    long2byte(sizeof(h1), h.BodyLength);
-    strcpy(h1.MobileNo, n);
-    strcpy(h1.ValidateNo, c);
-    while(head->sem) {
-        sleep(1);
-        count++;
-        if(count>=5) return -1;
-    }
-    head->sem=1;
-    head->total++;
-    sendtosms(&h, sizeof(h));
-    sendtosms(&h1, sizeof(h1));
-    return wait_for_result();
-}
-
-int DoSendSMS(char * n, char * d, char * c)
-{
-    int count=0;
-    struct header h;
-    struct BBSSendSMS h1;
-    h.Type = CMD_BBSSEND;
-    long2byte(uinfo.pid, h.pid);
-    long2byte(sizeof(h1)+strlen(c)+1, h.BodyLength);
-    long2byte(strlen(c)+1, h1.MsgTxtLen);
-    long2byte(uinfo.uid, h1.UserID);
-    strcpy(h1.SrcMobileNo, n);
-    strcpy(h1.DstMobileNo, d);
-    while(head->sem) {
-        sleep(1);
-        count++;
-        if(count>=5) return -1;
-    }
-    head->sem=1;
-    head->total++;
-    sendtosms(&h, sizeof(h));
-    sendtosms(&h1, sizeof(h1));
-    sendtosms(c, strlen(c)+1);
-    return wait_for_result();
-}
-
 int register_sms()
 {
     char ans[4];
@@ -979,6 +761,7 @@ int do_send_sms_func(char * dest, char * msgstr)
     int oldmode;
     int result, ret;
     bool cansend=true;
+    struct userec * ur;
 
     if(!curruserdata.mobileregistered) {
         move(1, 0);
@@ -1017,6 +800,8 @@ int do_send_sms_func(char * dest, char * msgstr)
             strcpy(udata.mobilenumber, uident);
     }
     else {
+        getuser(uident, &ur);
+        strcpy(uident, ur->userid);
         if(read_userdata(uident,&udata))
             cansend=false;
         else {
@@ -1053,6 +838,25 @@ int do_send_sms_func(char * dest, char * msgstr)
         clrtoeol();
         prints("发送失败....");
         pressreturn();
+    }
+    else {
+        struct msghead h;
+        h.frompid = uinfo.pid;
+        h.topid = -1;
+        if(!isdigit(uident[0])) {
+            uin = t_search(uident, false);
+            if(uin) h.topid = uin->pid;
+        }
+        h.mode = 6;
+        h.sent = 1;
+        h.time = time(0);
+        strcpy(h.id, uident);
+        save_msgtext(currentuser->userid, &h, buf);
+        if(!isdigit(uident[0])) {
+            h.sent = 0;
+            save_msgtext(uident, &h, buf);
+            if(uin) kill(uin->pid, SIGUSR2);
+        }
     }
 
     modify_user_mode(oldmode);
