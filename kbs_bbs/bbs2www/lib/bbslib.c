@@ -372,6 +372,7 @@ int http_init() {
 	}
 #ifdef SQUID_ACCL
 	strsncpy(fromhost, getsenv("HTTP_X_FORWARDED_FOR"), IPLEN);
+	fromhost[IPLEN]=0;
 	if (!fromhost[0])
 #endif
 		strsncpy(fromhost, getsenv("REMOTE_ADDR"), IPLEN);
