@@ -3658,7 +3658,9 @@ static int set_acl_list_key(struct _select_def *conf, int key)
                     if(buf[0]=='0') acl[len].deny=0;
                     else acl[len].deny=1;
                     acl[len].ip = (ip[0]<<24)+(ip[1]<<16)+(ip[2]<<8)+ip[3];
-                    acl[len].ip = acl[len].ip&(((1<<acl[len].len)-1)<<(32-acl[len].len));
+                    if(acl[len].len<32)
+                        acl[len].ip = acl[len].ip&(((1<<acl[len].len)-1)<<(32-acl[len].len));
+                    return SHOW_DIRCHANGE;
                 }
             }
             return SHOW_REFRESH;
@@ -3708,7 +3710,7 @@ static int set_acl_list_key(struct _select_def *conf, int key)
 static int set_acl_list_refresh(struct _select_def *conf)
 {
     clear();
-    docmdtitle("[×Ô¶¨ÒåÔÊÐíµÇÂ½IPÁÐ±í]",
+    docmdtitle("[µÇÂ½IP¿ØÖÆÁÐ±í]",
                "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ý\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] É¾³ý[\x1b[1;32md\x1b[0;37m]\x1b[m");
     move(2, 0);
     prints("[0;1;37;44m  %4s  %-40s %-31s[m", "±àºÅ", "IPµØÖ··¶Î§", "ÔÊÐí/¾Ü¾ø");
