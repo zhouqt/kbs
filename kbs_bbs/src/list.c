@@ -325,7 +325,7 @@ int do_userlist()
         if(!showcolor)
             disable_color = true;
         disable_move = true;
-        prints(tbuf);
+        prints("%s", tbuf);
         disable_move = false;
         if(!showcolor)
             disable_color = false;
