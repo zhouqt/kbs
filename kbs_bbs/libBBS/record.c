@@ -268,7 +268,7 @@ int search_record_back(
 	char *filename , /* idx file name */
 	int size ,	/* record size */
 	int start ,	/* where to start reverse search */
-	RECORD_FUNC_ARG¡¡fptr ,	/* compare function */
+	RECORD_FUNC_ARG fptr ,	/* compare function */
 	void *farg ,	/* additional param to call fptr() / original record */
 	void *rptr ,	/* record data buffer to be used for reading idx file */
 	int sorted ) /* if records in file are sorted */

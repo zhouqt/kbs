@@ -392,7 +392,7 @@ clrstandout()
 }
 
 void
-outc(const unsigned char c )
+outc(unsigned char c )
 {
     register struct screenline *slp ;
     register unsigned char reg_col;
