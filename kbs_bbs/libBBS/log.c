@@ -57,14 +57,14 @@ typedef struct _logconfig{
 }logconfig;
 
 static logconfig logconf[]= {
-    { 1,  3, NULL,          "error.log", 0 , 1},   /* 错误记录 */
-    { 1,  0, "connect",     "connect.log", 0, 0},      /* 连接记录 */
-    { 1,  0, "user",        "user.log", 0, 0},  /* 所有用户的使用记录，使用缓冲 */
-    { 1,  0, "usermsg",     "msg.log",  0 , 0},    /* 所有用户的message记录 */
-    { 1,  0, "boardusage",  "boardusage.log",0,0}, /* 版面使用记录 */
-    { 1,  0, "chatd",       "trace.chatd",1024, 0},  /* 聊天室使用记录，使用缓冲 */
-    { 1,  0, "system",    "usies", 0 , 0},      /* 最后所有的记录都在这里 */
-    { 1,  0, NULL,    "trace", 0 , 0}      /* 最后所有的记录都在这里 */
+    {1, 3, NULL,"error.log", 0 , 1, 0, NULL, 0},   /* 错误记录 */
+    {1, 0, "connect","connect.log", 0, 0, 0, NULL, 0},     /* 连接记录 */
+    {1, 0, "user","user.log", 0, 0, 0, NULL, 0},/*所有用户的使用记录，使用缓冲*/
+    {1, 0, "usermsg","msg.log", 0 , 0, 0, NULL, 0},/* 所有用户的message记录 */
+    {1, 0, "boardusage", "boardusage.log",0,0, 0, NULL, 0}, /* 版面使用记录 */
+    {1, 0, "chatd","trace.chatd",1024, 0, 0, NULL, 0},  /* 聊天室使用记录，使用缓冲 */
+    {1, 0, "system","usies", 0 , 0, 0, NULL, 0},   /* 最后所有的记录都在这里 */
+    {1, 0, NULL,"trace", 0 , 0, 0, NULL, 0}   /* 最后所有的记录都在这里 */
 };
 
 static int bdoatexit=0;
@@ -95,7 +95,7 @@ static void writelog(logconfig * pconf,const char * from,int prio, const char * 
     getheader(header,from,prio);
     
     if(buf && pconf->buf){
-        if(pconf->bufptr+strlen(header)+strlen(buf)+2<=pconf->bufsize){
+        if((int)(pconf->bufptr+strlen(header)+strlen(buf)+2)<=pconf->bufsize){
              strcpy(&pconf->buf[pconf->bufptr],header);
              pconf->bufptr+=strlen(header);
              strcpy(&pconf->buf[pconf->bufptr],buf);
@@ -126,7 +126,7 @@ static void logatexit()
     logconfig * pconf;
     pconf=logconf;
     
-    while(pconf-logconf<sizeof(logconf)/sizeof(logconfig)){
+    while(pconf-logconf<(int)(sizeof(logconf)/sizeof(logconfig))){
         if(pconf->buf && pconf->bufptr) writelog(pconf,NULL,0,NULL);
         if(pconf->buf)free(pconf->buf);
         if(pconf->fd>0)close(pconf->fd);
@@ -156,7 +156,7 @@ int log(const char * from,const char *fmt,...)
     
     pconf=logconf;
     
-    while(pconf-logconf<sizeof(logconf)/sizeof(logconfig)){
+    while(pconf-logconf<(int)(sizeof(logconf)/sizeof(logconfig))){
         if( (pconf->compare== 1 && prio>=pconf->prio) ||
             (pconf->compare== 0 && prio==pconf->prio) ||
             (pconf->compare==-1 && prio<=pconf->prio) ){

@@ -238,6 +238,7 @@ int apply_ulist_addr( APPLY_UTMP_FUNC fptr,char* arg) /* apply func on user list
 			exit(0);
 		};
 	}
+	return 0;
 /*
     int         i, max;
     int         num;

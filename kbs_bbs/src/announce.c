@@ -1362,7 +1362,7 @@ char group[STRLEN],bname[STRLEN],title[STRLEN],gname[STRLEN];
         mkdir( "0Announce", 0755 );
         chmod( "0Announce", 0755 );
         if( (fn = fopen( "0Announce/.Names", "w" )) == NULL )
-            return;
+            return -1; 
         fprintf( fn, "#\n" );
         fprintf( fn, "# Title=%s 精华区公布栏\n", BoardName );
         fprintf( fn, "#\n" );
@@ -1406,8 +1406,7 @@ char group[STRLEN],bname[STRLEN],title[STRLEN],gname[STRLEN];
         fprintf( fn, "#\n" );
         fclose(fn);
     }
-    return 1;
-
+    return 0;
 }
 
 int
@@ -1447,6 +1446,7 @@ char grp[STRLEN],bname[STRLEN],title[STRLEN];
             break;
         }
     }
+    return 0;
 }
 
 int
@@ -1484,6 +1484,8 @@ char bname[STRLEN],grp[STRLEN],title[STRLEN],newtitle[100];
     a_loadnames(&pm);
     strcpy(pm.mtitle,newtitle);
     a_savenames(&pm);
+
+    return 0;
 }
 
 void

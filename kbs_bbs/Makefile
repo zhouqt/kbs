@@ -21,17 +21,17 @@ BBSHOME=/home/system/bbs
 # The uid for the user 'bbs'
 BBSUID=9999
 
-OS_DEF   = -DAIX -DSYSV -DOS_LACK_SOCKLEN
+#OS_DEF   = -DAIX -DSYSV -DOS_LACK_SOCKLEN
 #OS_DEF   = -DLINUX -DSYSV 
-#OS_DEF	= -DFREEBSD
+OS_DEF	= -DFREEBSD
 
 
 CC       = gcc
 #CC       = cc
 CFLAGS   = -W -g -Ilibesmtp -static 
 #CFLAGS   = -g -O3 -qstrict -qcompact -qarch=ppc
-LIBS     = -L. -L/usr/local/lib -lesmtp -lbsd
-	#-lcrypt -lpthread -lltdl -ldl
+LIBS     = -L. -L/usr/local/lib -lesmtp
+	#-lcrypt -lpthread -lltdl -ldl -lbsd
 
 #CFLAGS   = -O3
 #LIBS     = -ltermcap -lbsd -lcrypt
@@ -171,6 +171,7 @@ $(BBSHOME)/bin/chatd: chatd
 clean: /tmp
 	-rm -fr $(GARBAGE) $(COBJS) $(PROGNAME) $(LNFILES) chatd
 	-rm -rf *.o
+	-rm *.a
 
 dist_clean: clean
 	-rm -f CONFIG/config.log

@@ -100,7 +100,7 @@ static void ucache_hashinit()
             }
         }
         i++;
-        if(i>sizeof(uidshm->hashtable.hash)/36){
+        if(i>(int)sizeof(uidshm->hashtable.hash)/36){
             log("3system","hashline %d exceed",i);
             exit(0);
         }

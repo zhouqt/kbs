@@ -2,7 +2,6 @@
    for SMTH BBS's WWW interface services (1997-1998)
 */
 
-
 /*
  * File: scanboard.c
  */
@@ -172,6 +171,7 @@ char    *brdname;
 }
 
 void search_boards( visit )
+int visit;
 {
     struct dirent       *de;
     DIR                 *dirp;
@@ -205,13 +205,15 @@ struct userec   *record;
     char        realfrom[ MAXLEN ];
     char        genbuf[ MAXLEN ];
 
-    gets( passwd );
+    if (NULL!=fgets(passwd, MAXLEN, stdin))
+	passwd[strlen(passwd)-1]=0;
     
     if( !checkpasswd2(passwd,record) ){
         printf( ":Err: user '%s' password incorrect!!\n", record->userid );
         exit( 0 );
     }
-    gets( realfrom );
+    if (NULL!=fgets(realfrom,MAXLEN, stdin))
+	realfrom[strlen(realfrom)-1]=0;
     strcpy(emailad,realfrom);
     /*    sprintf( genbuf, "tmp/email_%s", record->userid );
         if( (fn = fopen( genbuf, "w" )) != NULL ) {
@@ -338,6 +340,7 @@ char    *name;
 }
 
 static post_article( usermail )
+int usermail;
 {
     struct fileheader   header;
     struct boardheader  brdhdr;
@@ -405,8 +408,11 @@ static post_article( usermail )
         }
         fclose( fidx );
     }
-    gets( userid );
-    gets( subject );
+    if (NULL!=fgets(userid, MAXLEN, stdin))
+	userid[strlen(userid)-1]=0;    
+
+    if (NULL!=fgets(subject, MAXLEN, stdin))
+	subject[strlen(subject)-1]=0;
 
 
     if ('L' == EMode)
@@ -416,7 +422,8 @@ static post_article( usermail )
 
         check_userec( &alluser, userid );
 
-        gets( letter );
+        if (NULL!=fgets(letter, MAXLEN, stdin ))
+		letter[strlen(letter)-1]=0;
         Xuserec2(letter); /* Leeward 98.10.01 Fix a bug */
 
         if (!HAS_PERM(PERM_SYSOP) && !HAS_PERM(PERM_LOGINOK))
@@ -590,7 +597,7 @@ static post_article( usermail )
         /* Leeward 98.07.30 支持自动换行 */
         char *ppt = buf; /* 折行处 */
         char *pp  = ppt; /* 行首 */
-        int  LLL = 78; /* 折行位置 */
+        unsigned int  LLL = 78; /* 折行位置 */
         char *ppx, cc;
         int  ich, lll;
 
@@ -804,6 +811,7 @@ char    *board, *file;
 
 expire_article( brdname, days_str, maxpost, minpost )
 char    *brdname, *days_str;
+int	maxpost, minpost;
 {
     struct fileheader   head;
     struct stat         state;
@@ -875,6 +883,7 @@ char    *brdname, *days_str;
 }
 
 main( argc, argv )
+int argc;
 char    *argv[];
 {
     char        *progmode;

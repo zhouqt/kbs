@@ -75,7 +75,7 @@ int     real;
 
     if( real ) {
         strcpy( genbuf, "bTCPRp#@XWBA$VS!DEM1234567890%" );
-        for( num = 0; num < strlen(genbuf); num++ )
+        for( num = 0; num < (int)strlen(genbuf); num++ )
             if( !(u->userlevel & (1 << num)) )
                 genbuf[num] = '-';
         genbuf[num] = '\0';
@@ -291,7 +291,7 @@ int     real, unum;
                         if((dp=fopen(genbuf,"w"))==NULL)
                         {
                             fclose(dp);
-                            return;
+                            return -1;
                         }
                         fprintf(dp,"%9.9d\n",code);
                         fclose(dp);

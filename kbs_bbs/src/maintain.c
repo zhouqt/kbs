@@ -164,14 +164,14 @@ int securityreport(char *str,struct userec* lookupuser)		/* Leeward: 1997.12.02 
 	            fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n[32mÔ­Òò£º%s[m\n", str);
 
 	            strcpy(XPERM, XPERMSTR);
-	            for (num = 0; num < strlen(XPERM); num++)
+	            for (num = 0; num < (int)strlen(XPERM); num++)
 	                if (!(oldXPERM & (1 << num)))
 	                    XPERM[num] = ' ';
 	            XPERM[num] = '\0';
 	            fprintf(se, "ÒÔÏÂÊÇ±»¸ÄÕßÔ­À´µÄÈ¨ÏÞ\n\033[1m\033[33m%s", XPERM);
 
 	            strcpy(XPERM, XPERMSTR);
-	            for (num = 0; num < strlen(XPERM); num++)
+	            for (num = 0; num < (int)strlen(XPERM); num++)
 	                if (!(newXPERM & (1 << num)))
 	                    XPERM[num] = ' ';
 	            XPERM[num] = '\0';
@@ -264,7 +264,7 @@ int m_info()
     modify_user_mode(ADMIN);
     if (!check_systempasswd())	/* Haohmaru.98.12.19 */
     {
-        return;
+        return -1;
     }
     clear();
     stand_title("ÐÞ¸ÄÊ¹ÓÃÕß´úºÅ");
@@ -394,7 +394,7 @@ int m_newbrd()
     modify_user_mode(ADMIN);
     if (!check_systempasswd())
     {
-        return;
+        return -1;
     }
     clear();
     memset(&newboard, 0, sizeof(newboard));
@@ -488,7 +488,7 @@ int m_editbrd()
     modify_user_mode(ADMIN);
     if (!check_systempasswd())
     {
-        return;
+        return -1;
     }
     clear();
     stand_title("ÐÞ¸ÄÌÖÂÛÇø×ÊÑ¶");
@@ -796,7 +796,7 @@ int m_mclean()
     modify_user_mode(ADMIN);
     if (!check_systempasswd())
     {
-        return;
+        return -1;
     }
     clear();
     stand_title("Çå³ýË½ÈËÐÅ¼þ");
@@ -864,7 +864,7 @@ int m_trace()
     modify_user_mode(ADMIN);
     if (!check_systempasswd())
     {
-        return;
+        return -1;
     }
     clear();
     stand_title("Set Trace Options");
@@ -1178,7 +1178,7 @@ int m_register()
     modify_user_mode(ADMIN);
     if (!check_systempasswd())
     {
-        return;
+        return -1;
     }
     clear();
 

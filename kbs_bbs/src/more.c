@@ -588,7 +588,8 @@ int     numlines;
                             char filepath[256];
                             FILE *fp;
                             time_t now = time(0);
-                            int id, newlevel;
+                            int id; 
+			    unsigned int newlevel;
 
                             memset(&newmessage, 0,sizeof(newmessage)) ;
                             strcpy(newmessage.owner,"站务管理系统");

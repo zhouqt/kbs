@@ -34,7 +34,7 @@ d_board()
     modify_user_mode( ADMIN );
     if(!check_systempasswd())
     {
-        return;
+        return -1;
     }
     clear();
     stand_title( "删除讨论区" );
@@ -126,7 +126,7 @@ suicide()
 
         oldXPERM=currentuser->userlevel;
         strcpy(XPERM, XPERMSTR);
-        for ( num = 0; num < strlen(XPERM); num++ )
+        for ( num = 0; num < (int)strlen(XPERM); num++ )
             if ( !(oldXPERM & (1 << num)) )
                 XPERM[num] = ' ';
         XPERM[num] = '\0';
@@ -238,7 +238,7 @@ char cid[IDLEN];
         modify_user_mode( ADMIN );
         if(!check_systempasswd())
         {
-            return;
+            return 0;
         }
         clear();
         stand_title( "删除使用者帐号" );

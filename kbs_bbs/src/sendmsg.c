@@ -338,6 +338,7 @@ dowall(struct user_info *uin,char* arg)
 
         do_sendmsg(uin,buf2,0); /* 广播时避免被过多的 guest 打断 */
     }
+    return 0;
 }
 
 
@@ -358,6 +359,7 @@ wall()
     }
     prints("\n已经广播完毕....\n");
     pressanykey();
+    return 0;
 }
 
 long f_offset=0;

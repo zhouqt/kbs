@@ -107,8 +107,8 @@ pressreturn()
                return 0 ;
            }
 
-           askyn(str,defa)
-           char str[STRLEN];
+askyn(str,defa)
+char str[STRLEN];
 int defa;
 {
     int x,y;
@@ -118,14 +118,11 @@ int defa;
     sprintf(realstr,"%s (Y/N)? [%c]: ",str,(defa)?'Y':'N');
     getyx(&x,&y);
     getdata( x, y, realstr, ans,3,DOECHO,NULL,YEA);
-    if(ans[0]!='Y' && ans[0]!='y' &&
-            ans[0]!='N' && ans[0]!='n')
-    {
-        return defa;
-    }else if(ans[0]=='Y' || ans[0]=='y')
+    if(ans[0]=='Y' || ans[0]=='y')
         return 1;
     else if(ans[0]=='N' || ans[0]=='n')
         return 0;
+    return defa;
 }
 
 int

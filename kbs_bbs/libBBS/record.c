@@ -466,6 +466,7 @@ char* tmpbuf;  /* temp buffer for use*/
     if (safewrite(fd,rptr,size) != size)
         report("subrec write err");
     close(fd);
+    return 0;
 }
 
 int

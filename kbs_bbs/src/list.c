@@ -125,6 +125,7 @@ int a,b;
 
 void
 sort_user_record(left,right)
+int left, right;
 {
     int i,last;
 
@@ -757,7 +758,7 @@ t_friends()
             update_time=0;
             choose(YEA,0,print_title,deal_key,show_userlist,do_query);
             clear();
-            return;
+            return 0;
         }
     }else
     {
@@ -766,7 +767,7 @@ t_friends()
     }
     clear();
     friendmode=NA;
-    return;
+    return 0;
 }
 
 int
