@@ -199,10 +199,9 @@ function ann_display_folder($articles, $parent) {
 	} else {
 	    $i = 1;
 	    foreach ($articles as $article) {
-	        echo '<tr><td height="27" align="center" class="TableBody1">'.$i.'</td><td align="center" class="TableBody2">';
 	        switch($article['FLAG']) {
 	            case 0:
-	                continue;
+	                continue 2;
 	            case 1:
 	                $img = 'pic/ifolder.gif';
 	                $alt = 'д©б╪';
@@ -215,6 +214,7 @@ function ann_display_folder($articles, $parent) {
 	                $alt = 'нд╪Ч';
 	                $url = 'elite.php?file='.urlencode($article['PATH']);
 	        }
+	        echo '<tr><td height="27" align="center" class="TableBody1">'.$i.'</td><td align="center" class="TableBody2">';
 	        echo '<img src="'.$img.'" alt="'.$alt.'" border="0" />';
 	        echo '</td><td class="TableBody1">';
 	        if ($article['FLAG']==3)
