@@ -53,16 +53,15 @@ extern char msgerr[255];
 
 int do_sendmsg(uentp, msgstr, mode)
 struct user_info *uentp;
-const char msgstr[256];
+const char msgstr[MAX_MSG_SIZE];
 int mode;
 {
     char uident[STRLEN];
     struct user_info *uin;
-    char buf[80], msgbak[256];
+    char buf[80];
     int Gmode = 0;
     int result;
 
-    *msgbak = 0;                /* period 2000-11-20 may be used without init */
     if ((mode == 0) || (mode == 3)) {
         modify_user_mode(MSG);
         move(2, 0);
@@ -273,10 +272,11 @@ void r_msg_sig(int signo)
 
 void r_msg()
 {
-    int y, x, ch, i, ox, oy, tmpansi;
+    int y, x, ch, i, ox, oy, tmpansi, pid;
     char savebuffer[25][256];
-    char buf[MAX_MSG_SIZE+100], outmsg[MAX_MSG_SIZE*2], buf2[STRLEN];
-    int now, count;
+    char buf[MAX_MSG_SIZE+100], outmsg[MAX_MSG_SIZE*2], buf2[STRLEN], uid[14];
+    struct user_info * uin;
+    int now, count, canreply;
 
     getyx(&y, &x);
     tmpansi = showansi;
@@ -318,25 +318,71 @@ void r_msg()
     now = get_unreadmsg(currentuser->userid);
     if(now==-1) now = get_msgcount(currentuser->userid)-1;
     do {
-        load_msgtext(currentuser->userid, now, buf);
-        translate_msg(buf, outmsg);
-        move(0,0);
-        if (DEFINE(currentuser, DEF_SOUNDMSG))
-            bell();
-        if (DEFINE(currentuser, DEF_HIGHCOLOR))
-            prints("\x1b[1m%s", outmsg);
-        else
-            prints("%s", outmsg);
-        getyx(&oy, &ox);
+        while(1){
+            load_msgtext(currentuser->userid, now, buf);
+            translate_msg(buf, outmsg);
+            uid[12] = 0;
+            memcpy(uid, buf+2, 12);
+            i=strlen(uid);
+            while(i>0&&uid[i-1]==' ') i--;
+            uid[i] = 0;
+            buf[29]=0;
+            i=19;
+            while(buf[i]=='0'&&i<28) i++;
+            pid = atoi(buf+i);
+            uin = t_search(uid, pid);
+            if(buf[1]=='3'||uin==NULL) canreply = 0;
+            else canreply = 1;
+            
+            move(0,0);
+            if (DEFINE(currentuser, DEF_SOUNDMSG))
+                bell();
+            if (DEFINE(currentuser, DEF_HIGHCOLOR))
+                prints("\x1b[1m%s", outmsg);
+            else
+                prints("%s", outmsg);
 
-        clrtoeol();
-        prints("  µÚ%3d/%-3dÌõÏûÏ¢, R»Ø¸´", now+1, count);
-        
-        refresh();
-        oflush();
-        ch = igetkey();
-        for(i=0;i<oy;i++)
-            saveline(i, 1, savebuffer[i]);
+            prints("[m  µÚ%3d/%-3dÌõÏûÏ¢, °´¡ü»ò¡ýÇÐ»»Ñ¶Ï¢, »ò°´ Enter ½áÊø, %s", now+1, count, canreply?"»Ø¸´:":(uin?"¸ÃÏûÏ¢ÎÞ·¨»Ø¸´":"ÓÃ»§ÒÑÏÂÕ¾,ÎÞ·¨»Ø¸´"));
+            getyx(&oy, &ox);
+            
+            refresh();
+            oflush();
+            if(canreply)
+                ch = -getdata(oy, ox, "", buf, 1024, DOECHO, NULL, true);
+            else
+                ch = igetkey();
+            for(i=0;i<=oy;i++)
+                saveline(i, 1, savebuffer[i]);
+            switch(ch) {
+                case KEY_UP:
+                    now--;
+                    if(now<0) now=count-1;
+                    break;
+                case KEY_DOWN:
+                    now++;
+                    if(now>=count) now=0;
+                    break;
+                default:
+                    if(canreply) {
+                        if(buf[0]) {
+                            i = do_sendmsg(uin, buf, 4);
+                            buf[0]=0;
+                            if(i==1) strcpy(buf, "[1m°ïÄãËÍ³öÑ¶Ï¢ÁË[m");
+                            else if(i==-2) strcpy(buf, "[1m¶Ô·½ÒÑ¾­ÀëÏßÁË...[m");
+                            if(buf[0]) {
+                                move(0,0);
+                                clrtoeol();
+                                refresh();
+                                prints("%s", buf);
+                                sleep(1);
+                                saveline(0, 1, savebuffer[0]);
+                            }
+                        }
+                    }
+                    break;
+            }
+            if (ch=='\r'||ch=='\n') break;
+        }
 
         now = get_unreadmsg(currentuser->userid);
     } while(now!=-1);

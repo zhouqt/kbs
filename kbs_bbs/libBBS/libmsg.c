@@ -560,13 +560,13 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
 
 int translate_msg(char* src, char* dest)
 {
-    char id[14], time[8], msg[1024];
+    char id[14], time[8], msg[MAX_MSG_SIZE];
     int i,j=0,len,pos,space;
     memcpy(id, src+2, 12);
     id[12] = 0;
     memcpy(time, src+14, 5);
     time[5] = 0;
-    strncpy(msg, src+39, 1024);
+    strncpy(msg, src+39, MAX_MSG_SIZE);
     dest[0] = 0;
     space=22;
     switch(src[1]) {
