@@ -511,12 +511,13 @@ int m_editbrd()
         return -1;
     }
     noidboard = anonymousboard(bname);
-    move(3, 0);
+    move(2, 0);
     memcpy(&newfh, &fh, sizeof(newfh));
     prints("讨论区名称:   %s\n", fh.filename);
     prints("讨论区说明:   %s\n", fh.title);
     prints("讨论区管理员: %s\n", fh.BM);
     prints("匿名讨论区:   %s\n", (noidboard) ? "Yes" : "No");
+    prints("不记文章数:   %s\n", (fh.flag&BOARD_JUNK) ? "Yes" : "No");
     strcpy(oldtitle, fh.title);
     prints("限制 %s 权力: %s", (fh.level & PERM_POSTMASK) ? "POST" : "READ",
            (fh.level & ~PERM_POSTMASK) == 0 ? "不设限" : "有设限");
