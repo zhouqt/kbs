@@ -2992,9 +2992,9 @@ int Goodbye()
     move(top+1,left);
     outs("\x1b[1;47;37m¨U\x1b[44;37m                                \x1b[47;37m¨U\x1b[m");
     move(top+2,left);
-    prints("\x1b[1;47;37m¨U\x1b[44;37m     [\x1b[33m1\x1b[37m] ¼ÄÐÅ¸ø%10s       \x1b[47;37m¨U\x1b[m",NAME_BBS_CHINESE);
+    prints("\x1b[1;47;37m¨U\x1b[44;37m     [\x1b[33m1\x1b[37m] ¼ÄÐÅ¸ø%-10s       \x1b[47;37m¨U\x1b[m",NAME_BBS_CHINESE);
     move(top+3,left);
-    prints("\x1b[1;47;37m¨U\x1b[44;37m     [\x1b[33m2\x1b[37m] \x1b[32m·µ»Ø%10sBBSÕ¾\x1b[37m    \x1b[47;37m¨U\x1b[m",NAME_BBS_CHINESE);
+    prints("\x1b[1;47;37m¨U\x1b[44;37m     [\x1b[33m2\x1b[37m] \x1b[32m·µ»Ø%-15s\x1b[37m    \x1b[47;37m¨U\x1b[m",NAME_BBS_CHINESE "BBSÕ¾");
     move(top+4,left);
     outs("\x1b[1;47;37m¨U\x1b[44;37m     [\x1b[33m3\x1b[37m] Ð´Ð´*ÁôÑÔ°å*           \x1b[47;37m¨U\x1b[m");
     move(top+5,left);
