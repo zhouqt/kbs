@@ -320,7 +320,8 @@ reenter:
                 fn = fopen(fname, "w");
                 count = get_msgcount(0, currentuser->userid);
                 for(i=0;i<count;i++) {
-                    load_msgtext(0, currentuser->userid, i, buf);
+                    load_msghead(0, currentuser->userid, i, &head);
+                    load_msgtext(currentuser->userid, &head, buf);
                     translate_msg(buf, showmsg);
                     fprintf(fn, "%s", showmsg);
                 }
