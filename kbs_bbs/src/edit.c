@@ -776,6 +776,7 @@ static int write_file(char* filename,int saveheader,long* effsize,long* pattachp
     int aborted = 0;
     int temp;
     long sign_size;
+    int ret;
     extern char quote_title[120], quote_board[120];
     extern int Anony;
 #ifdef FILTER
@@ -815,7 +816,7 @@ static int write_file(char* filename,int saveheader,long* effsize,long* pattachp
            Leeward 98.01.17 Prompt whom you are writing to */
         else
             strcpy(p_buf, "(S)´¢´æµµ°¸, (F)×Ô¶¯»»ÐÐ´æ´¢, (A)·ÅÆú±à¼­, (E)¼ÌÐø±à¼­? [S]: ");
-        temp = valid_article(p_buf, abort);
+        ret = valid_article(p_buf, abort);
         if (abort[0] == '\0') {
             if (local_article == 1)
                 abort[0] = 'l';
@@ -1045,10 +1046,10 @@ fsdfa
     }
 #endif
     if ((uinfo.mode == POSTING) && strcmp(currboard, "test")) { /*Haohmaru.99.4.02.ÈÃ°®¹àË®µÄÈË¿ÞÈ¥°É//grin */
-        if (temp)
+        if (ret)
             temp_numposts++;
         if (temp_numposts > 20)
-            sleep((temp_numposts - 20) * 1 + 1);
+            Net_Sleep((temp_numposts - 20) * 1 + 1);
     }
     return aborted;
 }
