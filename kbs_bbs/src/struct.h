@@ -124,5 +124,4 @@ struct smenuitem {
      * 导致执行的程序不一样的情况 
      */
 };
-#endif                          /* 
-                                 */
+#endif
