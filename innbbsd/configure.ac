@@ -1,5 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 AC_INIT(FULL-PACKAGE-NAME, VERSION, BUG-REPORT-ADDRESS)
+AM_INIT_AUTOMAKE([foreign dist-bzip2])
+
 AC_CANONICAL_SYSTEM
 case "${host}" in
   i*86-*-freebsd4*)
