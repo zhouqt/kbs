@@ -212,6 +212,53 @@ int prepare_write_dir(struct write_dir_arg * filearg,struct fileheader* fileinfo
     return ret;
 }
 
+int del_origin(char *board, struct fileheader *fileinfo)
+{
+  	struct write_dir_arg dirarg;
+	char olddirect[PATHLEN];
+    struct fileheader fh;
+
+	if( setboardorigin(board, -1) ){
+		board_regenspecial(board,DIR_MODE_ORIGIN,NULL);
+		return 0;
+	}
+
+   	malloc_write_dir_arg(&dirarg);
+
+    setbdir(DIR_MODE_ORIGIN, olddirect, board);
+    dirarg.filename=olddirect;
+
+ 	if (prepare_write_dir(&dirarg,fileinfo,DIR_MODE_ORIGIN)!=0){
+       	free_write_dir_arg(&dirarg);
+        return-1;
+	}
+
+    BBS_TRY {
+        fh=*(dirarg.fileptr + (dirarg.ent - 1));
+        memcpy(dirarg.fileptr + (dirarg.ent - 1), 
+            dirarg.fileptr + dirarg.ent, 
+            dirarg.size - sizeof(struct fileheader) * dirarg.ent);
+        dirarg.size-=sizeof(struct fileheader);
+#ifdef DEBUG
+#ifdef BBSMAIN
+        newbbslog(BBSLOG_DEBUG,"%s ftruncate %d",
+            dirarg.filename ? dirarg.filename:board,
+            dirarg.size);
+#endif
+#endif      
+        ftruncate(dirarg.fd, dirarg.size);
+    }
+    BBS_CATCH {
+    }
+    BBS_END;
+    if (dirarg.needlock)
+        flock(dirarg.fd,LOCK_UN); /*这个是需要赶紧做的*/
+
+   	free_write_dir_arg(&dirarg);
+
+	return 0;
+}
+
 int do_del_post(struct userec *user, struct write_dir_arg*dirarg,struct fileheader *fileinfo, char *board, int currmode, int decpost)
 {
     int owned;
@@ -239,8 +286,10 @@ int do_del_post(struct userec *user, struct write_dir_arg*dirarg,struct filehead
     BBS_END;
     if (dirarg->needlock)
         flock(dirarg->fd,LOCK_UN); /*这个是需要赶紧做的*/
-    if (fh.id == fh.groupid)
-        setboardorigin(board, 1);
+	
+    if (fh.id == fh.groupid){
+		del_origin(board, fileinfo);
+	}
     setboardtitle(board, 1);
 
     
