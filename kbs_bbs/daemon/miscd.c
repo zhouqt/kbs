@@ -134,7 +134,7 @@ int killauser(struct userec *theuser, char *data)
     if (!theuser || theuser->userid[0] == 0)
         return 0;
     a = compute_user_value(theuser);
-    if (a < 0) {
+    if (a <= 0) {
         newbbslog(BBSLOG_USIES, "kill user %s", theuser->userid);
         a = getuser(theuser->userid, &ft);
         setmailpath(tmpbuf, theuser->userid);
