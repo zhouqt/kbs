@@ -249,6 +249,7 @@ void unlock_sem_check(int lockid);
     int setboardtitle(const char *board, int i);
     int board_setreadonly(const char *board, int readonly);   /* 设置版面只读属性 */
     int get_nextid(char *boardname);    /*生成文章索引号并自动加一 */
+	int get_nextid_bid(int bid);
     void board_update_toptitle(struct boardheader* bh,int increment); /*改变置顶个数*/
 #if HAVE_WWW==1
     int resolve_guest_table(ARG_VOID); /* www guest shm */
