@@ -46,12 +46,6 @@ create table smallpaper_tb(
 );</programlisting>
 				inc/reg_txt.php 是注册用户的时候看到的网站协议，可以换成站点站规。
 			</para>
-			<warning>
-				<para>以后如果需要修改站点配置，可以用 SYSOP 权限的用户登录直接用浏览器请求	admin.site_defines.php 来设置 site.php。这个功能默认是开启的！特别提醒：如果你担心你站上别的管理员会恶意修改 site.php，请在 admin.site_defines.php 最开始加上
-					<programlisting>die("disabled, heihei");</programlisting>
-					或者干脆删除该文件。
-				</para>
-			</warning>
 		</section>
 		<section id="install_uploadface">
 			<title>自定义头像功能</title>
