@@ -78,25 +78,27 @@ $ret=bbs_saveuserdata($currentuser['userid'],$realname,$address,$gender,$year,$m
 	if (isErrFounded() ){
 		return false;
 	}
-	$signature=trim($_POST["Signature"]);
-	if ($signature!='') {
-		$filename=bbs_sethomefile($userid,"signatures");
+//	$signature=trim($_POST["Signature"]);  /* preserve format - atppp */
+	$signature = $_POST["Signature"];
+//	if ($signature!='') { /* allow erase signature - atppp */
+		$filename=bbs_sethomefile($currentuser['userid'],"signatures");
 		$fp=@fopen($filename,"w+");
 		if ($fp!=false) {
 			fwrite($fp,str_replace("\r\n", "\n", $signature));
 			fclose($fp);
 			bbs_recalc_sig();
 		}
-	}
-	$personal=trim($_POST["personal"]);
-	if ($signature!='') {
-		$filename=bbs_sethomefile($userid,"plans");
+//	}
+//	$personal=trim($_POST["personal"]); /* preserve format - atppp */
+	$personal=$_POST["personal"];
+//	if ($personal!='') { /* allow erase - atppp */
+		$filename=bbs_sethomefile($currentuser['userid'],"plans");
 		$fp=@fopen($filename,"w+");
 		if ($fp!=false) {
 			fwrite($fp,str_replace("\r\n", "\n", $personal));
 			fclose($fp);
 		}
-	}
+//	}
 	setSucMsg("您的数据已成功修改！");
 	return html_success_quit('返回控制面板', 'usermanagemenu.php');
 }
