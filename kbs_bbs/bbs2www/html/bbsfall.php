@@ -60,7 +60,7 @@
 		}
 ?>
 <hr color="green">
-[<a href="bbsfadd">添加新的好友</a>]
+[<a href="/cgi-bin/bbs/bbsfadd">添加新的好友</a>]
 <?php
 		if( $start > 0 ){
 ?>
