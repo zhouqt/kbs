@@ -486,13 +486,30 @@ while($board = array_shift($boards))
 <body leftmargin="5" topmargin="0" marginwidth="0" marginheight="0">
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr> 
+<?php
+	if(defined("ENABLE_ABOARDS"))
+	{
+?>
+<td colspan="9" >
+<?php
+		bbs_board_avtiveboards();
+?>
+</td>
+<?php
+	}
+	else
+	{	
+?>   
     <td colspan="2" height="77"><img src="images/logo.gif" width="144" height="71"></td>
     <td colspan="7" >
-    <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0" width="100%" height="100%">
+     <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0" width="100%" height="100%">
       <param name="movie" value="ad.swf">
       <param name="quality" value="high">
       <embed src="ad.swf" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash"></embed>
     </object>
+<?php
+	}
+?>    
     </td>
   </tr>
   <form action="/cgi-bin/bbs/bbssel">

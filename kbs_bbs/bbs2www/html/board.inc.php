@@ -217,6 +217,21 @@ if (bbs_is_bm($brdnum, $usernum))
 <?php	
 }
 
+function bbs_board_avtiveboards()
+{
+?>
+<table width="100%" cellpadding="3" cellspacing="0" border="0" />
+<tr>
+	<td width="150" height="77"><img src="images/logo.gif" width="144" height="71"></td>
+	<td><SPAN ID='aboards'>Active Boards</SPAN></td>
+</tr>
+</table>
+<SCRIPT SRC='abs.js'></SCRIPT>
+<script language='javascript'>
+display_active_boards();
+</script>
+<?php	
+}
 
 
 ?>
