@@ -160,12 +160,16 @@ CREATE TABLE `users` (
   `updatetime` timestamp(14) NOT NULL,
   `userinfor` text NOT NULL,
   `pctype` int(1) NOT NULL default '0',
-  `logtid` int(10) NOT NULL default '0',
+  `tempsave` int(1) NOT NULL default '1',
   `defaulttopic` varchar(100) NOT NULL default '',
+  `userfile` int(10) NOT NULL default '0',
+  `filelimit` int(10) NOT NULL default '0',
   PRIMARY KEY  (`uid`),
   UNIQUE KEY `username` (`username`),
   KEY `corpusname` (`corpusname`,`createtime`)
 ) TYPE=MyISAM COMMENT='用户表' ;
+
+
 
 CREATE TABLE `userstyle` (
   `uid` int(10) unsigned NOT NULL default '0',
@@ -180,4 +184,25 @@ CREATE TABLE `userstyle` (
   KEY `uid` (`uid`),
   KEY `username` (`username`)
 ) TYPE=MyISAM COMMENT='自定义界面';
+
+CREATE TABLE `userfiles` (
+  `fid` int(10) unsigned NOT NULL auto_increment,
+  `uid` int(10) unsigned NOT NULL default '0',
+  `pid` int(10) unsigned NOT NULL default '0',
+  `type` int(1) unsigned NOT NULL default '0',
+  `filename` varchar(200) NOT NULL default '',
+  `filepath` varchar(255) NOT NULL default '',
+  `hostname` varchar(15) NOT NULL default '',
+  `filetime` timestamp(14) NOT NULL,
+  `filesize` int(10) unsigned NOT NULL default '0',
+  `filetype` varchar(50) NOT NULL default '',
+  `access` int(1) unsigned NOT NULL default '0',
+  `remark` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`fid`),
+  KEY `uid` (`uid`),
+  KEY `pid` (`pid`),
+  KEY `type` (`type`),
+  KEY `access` (`access`)
+) TYPE=MyISAM COMMENT='用户文件夹' ;
+
 

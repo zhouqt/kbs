@@ -531,6 +531,7 @@ Blog名
 	
 	function display_pc_settings($pc)
 	{
+	    global $pcconfig;
 ?>
 <form action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=sedit" method="post" onsubmit="if(this.pcname.value==''){alert('请输入Blog名称!');return false;}">	
 <table cellspacing="0" cellpadding="3" border="0" width="99%" class="t1">		
@@ -613,6 +614,18 @@ Blog名
 </tr>
 <?php
 	}
+	if($pcconfig["USERFILES"])
+	    if($pc["FILELIMIT"] && $pc["FILENUMLIMIT"])
+	    {
+?>
+<tr>
+	<td class="t3">我的文件夹</td>
+	<td class="t5">&nbsp;
+	<a href="pcfile.php?userid=<?php echo $pc["USER"]; ?>" target="_blank">管理我的文件夹</a>
+	</td>
+</tr>
+<?php
+	    }
 ?>
 <tr>
 	<td class="t3">HTML编辑器</td>

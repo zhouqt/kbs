@@ -427,6 +427,8 @@ function pc_db_close($link)
 function pc_load_infor($link,$userid=FALSE,$uid=0)
 {
 	global $cssFile;
+	if (!$userid && !$uid)
+		return FALSE;
 	if($userid)
 		$query = "SELECT * FROM users WHERE `username`= '".addslashes($userid)."'  LIMIT 0,1;";
 	else
@@ -465,7 +467,9 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 			"INFOR" => str_replace("<?","&lt;?",stripslashes($rows[userinfor])),
 			"TYPE" => $rows[pctype],
 			"DEFAULTTOPIC" => $rows[defaulttopic],
-			"TMPSAVE" => $rows[tempsave]
+			"TMPSAVE" => $rows[tempsave],
+			"FILELIMIT" => intval($rows[userfile]),
+			"FILENUMLIMIT" => intval($rows[filelimit])
 			);
 	if($pc["CSSFILE"])
 		$cssFile = $pc["CSSFILE"];
@@ -1139,7 +1143,7 @@ function pc_group_logs($link,$pc,$action,$content="")
 	if(!$action)
 		return FALSE;
 	
-	$action = "[".date("Y-m-d H:i:s")."@".$_SERVER["REMOTE_ADDR"]."]".$currentuser["userid"]." ".$action."\n";
+	$action = "[".date("Y-m-d H:i:s")."@".$_SERVER["REMOTE_ADDR"]."]".$currentuser["userid"]." ".$action."#".$pc["UID"]."\n";
 	$pc_groupwokrs_logs = BBS_HOME . "/blog.log";
 	if(!($fn = fopen($pc_groupwokrs_logs,"a")))
 		return FALSE;
@@ -1449,6 +1453,21 @@ function pc_tmpsave_export($link,$pc)
 	$rows   = mysql_fetch_array($result);
 	mysql_free_result($result);
 	return $rows;
+}
+
+function pc_get_userfiles($link,$pc,&$used,&$total)
+{
+	if (!$pc) return FALSE;
+	$used = 0;
+	$total = 0;
+	
+	$query = "SELECT SUM(filesize),COUNT(*) FROM userfiles WHERE uid = '".intval($pc["UID"])."' ;";
+	$result = mysql_query($query,$link);
+	$rows = mysql_fetch_row($result);
+	$used = intval($rows[0]);
+	$total = intval($rows[1])-1;
+	mysql_free_result($result);
+    return true;
 }
 
 ?>

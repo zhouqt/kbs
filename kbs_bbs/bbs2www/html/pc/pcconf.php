@@ -15,6 +15,8 @@ $pcconfig["SECTION"] :Blog分类方式;
 $pcconfig["MINREGTIME"] :申请时要求的最短注册时间;
 $pcconfig["ADMIN"] :管理员ID，设置后所有管理员都可以维护此Blog
 $pcconfig["TMPSAVETIME"] :开启发文暂存功能时，保存的时间间隔， 单位为秒
+$pcconfig["USERFILES"] :支持用户个人空间,若支持需要定义 _USER_FILE_ROOT_
+$pcconfig["USERFILESLIMIT"]:用户个人空间的默认大小,单位是b
 pc_personal_domainname($userid)函数 :用户Blog的域名;
 */
 $pcconfig["LIST"] = 100;
@@ -32,6 +34,8 @@ $pcconfig["ADMIN"] = "SYSOP";
 $pcconfig["MINREGTIME"] = 6;
 $pcconfig["TMPSAVETIME"] = 300;
 $pcconfig["ALLCHARS"] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+$pcconfig["USERFILES"] = true;
+$pcconfig["USERFILESLIMIT"] = 2*1024*1024;
 $pcconfig["SECTION"] = array(
 			"personal" => "个人空间" ,
 			"literature" => "原创文学" ,
@@ -68,5 +72,7 @@ function pc_personal_domainname($userid)
 {
 	return "http://".$userid.".mysmth.net";	
 }
+
+define('_USER_FILE_ROOT_' , BBS_HOME.'/blogs'); //个人空间根目录位置 需要手工建立
 /* personal corp. configure end */
 ?>
