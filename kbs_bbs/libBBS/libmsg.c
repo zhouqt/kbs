@@ -298,11 +298,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
 	}
     }
     if (Gmode == 2)
-<<<<<<< libmsg.c
-        sprintf(msgbuf, "[1;44;33mÕ¾³¤ÓÚ %8.8s Ê±¹ã²¥£º[37m%-59.59s[m\033[%dm\n", timestr, buf, uin->pid + 100);
-=======
-        sprintf(msgbuf, "[44m\x1b[33mÕ¾³¤ì¶ %8.8s Ê±¹ã²¥£º[37m%-59.59s[m\033[%dm\n", timestr, buf, uin->pid + 100);
->>>>>>> 3.20
+        sprintf(msgbuf, "[44m\x1b[33mÕ¾³¤ÓÚ %8.8s Ê±¹ã²¥£º[37m%-59.59s[m\033[%dm\n", timestr, buf, uin->pid + 100);
 #ifdef BBSMAIN
     if (uin->mode == WEBEXPLORE) {
         if (send_webmsg(get_utmpent_num(uin), uident, utmpent, currentuser->userid, msgbuf) < 0) {
