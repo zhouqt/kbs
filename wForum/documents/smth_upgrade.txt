@@ -1,6 +1,8 @@
 smth系统升级安装wforum说明
 roy@zixia.net
 
+0. 如果使用2003.9之后的smth代码，不需要做1,2这两步，直接做第3步。
+
 1. 原smth系统要使用wforum,首先需要在site.h中定义HAVE_WFORUM
 #define HAVE_WFORUM 1
 并增加用户自定义功能:
