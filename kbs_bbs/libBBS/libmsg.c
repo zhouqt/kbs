@@ -516,8 +516,6 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
     struct msghead head, head2;
     int msg_count = 0;
 
-    *msgbak = 0;
-    *msgbuf = 0;
     *msgerr = 0;
     uin = uentp;
     strcpy(uident, uin->userid);
