@@ -5159,8 +5159,7 @@ static PHP_FUNCTION(bbs_setactivation)
 	int   filebody_len;
 	struct userec *uc;
 	FILE *fn;
-	char* afile;
-	char buf[200];
+	char  afile[STRLEN];
 	
 	int ac = ZEND_NUM_ARGS();
 	
@@ -5194,7 +5193,7 @@ static PHP_FUNCTION(bbs_getactivation)
 	FILE* fn;
 	struct userec *uc;
 	char  buf[200];
-	char* afile;
+	char  afile[STRLEN];
 	
 	int ac = ZEND_NUM_ARGS();
 	
