@@ -5,10 +5,10 @@
 #undef NINE_BUILD
 #undef HAVE_BIRTHDAY
 #undef HAPPY_BBS
-#undef HAVE_COLOR_DATE
-#undef HAVE_TEMPORARY_NICK
-#undef HAVE_FRIENDS_NUM
-#undef HAVE_REVERSE_DNS
+#define HAVE_COLOR_DATE
+#define HAVE_TEMPORARY_NICK
+#define HAVE_FRIENDS_NUM
+#define HAVE_REVERSE_DNS
 #define CHINESE_CHARACTER
 
 
@@ -25,19 +25,19 @@
 /* 
  *    These are moot if DOTIMEOUT is commented; leave them defined anyway. 
  *    */
-#define IDLE_TIMEOUT    (60*20) 
-#define MONITOR_TIMEOUT (60*20) 
+#define IDLE_TIMEOUT    (60*60*3) 
+#define MONITOR_TIMEOUT (60*60*3) 
 
 #define BBSUID 			515
 #define BBSGID 			515
 
 /* for bbs2www, by flyriver, 2001.3.9 */
-#define SECNUM 13
+#define SECNUM 9
 #define BBS_PAGE_SIZE 20
 
 #define SQUID_ACCL
 
-#define DEFAULTBOARD    	"test"
+#define DEFAULTBOARD    	"sysop"
 #define FILTER_BOARD        "Filter"
 #define SYSMAIL_BOARD       "sysmail"
 #define BLESS_BOARD "Blessing"
@@ -46,9 +46,9 @@
 #define MAXCLUB			128
 #define MAXBOARD  		600
 #define MAXACTIVE 		256
-#define MAX_GUEST_NUM		800
+#define MAX_GUEST_NUM		256
 
-#define POP3PORT		110
+#define POP3PORT		1100
 #define POP3SPORT		995
 /* ASCIIArt, by czz, 2002.7.5 */
 #define       LENGTH_SCREEN_LINE      255
@@ -68,7 +68,7 @@
 #define SEC_DELETED_OLDHOME	2592000 /* 3600*24*30£¨◊¢≤·–¬”√ªß»Áπ˚¥Ê‘⁄’‚∏ˆ”√ªßµƒƒø¬º£¨±£¡Ù ±º‰ */
 
 #define	REGISTER_WAIT_TIME	(0)
-#define	REGISTER_WAIT_TIME_NAME	"72 –° ±"
+#define	REGISTER_WAIT_TIME_NAME	"1 ∑÷÷”"
 
 #define MAIL_BBSDOMAIN      "bbs.feeling.smth.org"
 #define MAIL_MAILSERVER     "127.0.0.1:25"
@@ -77,11 +77,11 @@
 #define	NAME_BBS_CHINESE	"Œ¬‹∞–°Œ›"
 #define NAME_BBS_NICK		"BBS ’æ"
 
-#define BBS_FULL_NAME "BBS Œ¬‹∞–°Œ›’æ"
+#define BBS_FULL_NAME "Œ¬‹∞–°Œ›"
 
 #define FOOTER_MOVIE		"ª∂  ”≠  Õ∂  ∏Â"
 /*#define ISSUE_LOGIN		"±æ’æ π”√ Ôπ‚π´Àæ Ôπ‚ÃÏ—›∑˛ŒÒ∆˜"*/
-#define ISSUE_LOGIN		"[1;45m±æ  ’æ  ”¿ ∫„ ÷˜ Ã‚  £∫°§º‹’æ°§◊™–≈°§ºº ı°§”È¿÷°§ASCII art°§ÀΩ»À°§              [m\n"
+#define ISSUE_LOGIN		" Ôπ‚PC  µ⁄21ΩÏ¥Û‘Àª·÷∏∂®∑˛ŒÒ∆˜"
 #define ISSUE_LOGOUT		"ªπ «◊ﬂ¡À¬ﬁ"
 
 #define NAME_USER_SHORT		"”√ªß"
