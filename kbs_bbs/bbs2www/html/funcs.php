@@ -35,7 +35,6 @@ $section_names = array(
 $loginok=0;
 header("Cache-Control: no-cache");
 
-if (SQUID_ACCL) {
   $fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
   if ($fullfromhost=="") {
       $fullfromhost=$_SERVER["REMOTE_ADDR"];
@@ -48,11 +47,6 @@ if (SQUID_ACCL) {
         else
 		$fromhost=$fullfromhost;
   }
-}
-else {
-  $fromhost=$_SERVER["REMOTE_ADDR"];
-  $fullfromhost=$fromhost;
-}
 
 bbs_setfromhost($fromhost,$fullfromhost);
 
