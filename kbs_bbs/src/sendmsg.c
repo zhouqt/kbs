@@ -326,7 +326,10 @@ void r_msg(int signo)
             while( fgets(buf,256,fp)!=NULL)
             {
                 ptr=strrchr(buf,'[');
-                send_pid=atoi(ptr+1);
+				if (ptr!=0) 
+                	send_pid=atoi(ptr+1);
+				else
+					send_pid=0;
                 if(send_pid>100)
                     send_pid-=100;
                 if (uinfo.pid==send_pid)
