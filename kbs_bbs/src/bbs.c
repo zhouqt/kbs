@@ -3588,7 +3588,7 @@ static int set_acl_list_show(struct _select_def *conf, int i)
     unsigned int ip,ip2;
     ip = acl[i-1].ip;
     if(ip>0) {
-        ip2=ip+(1<<(32-acl[i-1].len)-1);
+        ip2=ip+((1<<(32-acl[i-1].len))-1);
         sprintf(buf, "%d.%d.%d.%d--%d.%d.%d.%d", ip>>24, (ip>>16)%0x100, (ip>>8)%0x100, ip%0x100, ip2>>24, (ip2>>16)%0x100, (ip2>>8)%0x100, ip2%0x100);
         prints("  %2d  %-40s  %4s", i, buf, acl[i-1].deny?"拒绝":"允许");
     }
@@ -3658,7 +3658,7 @@ static int set_acl_list_key(struct _select_def *conf, int key)
                     if(buf[0]=='0') acl[len].deny=0;
                     else acl[len].deny=1;
                     acl[len].ip = (ip[0]<<24)+(ip[1]<<16)+(ip[2]<<8)+ip[3];
-                    acl[len].ip = acl[len].ip&(((1<acl[len].len)-1)<<(32-acl[len].len));
+                    acl[len].ip = acl[len].ip&(((1<<acl[len].len)-1)<<(32-acl[len].len));
                 }
             }
             return SHOW_REFRESH;
@@ -3719,6 +3719,8 @@ static int set_acl_list_refresh(struct _select_def *conf)
 static int set_acl_list_getdata(struct _select_def *conf, int pos, int len)
 {
     conf->item_count = get_acl_len();
+    if(conf->item_count==0)
+        conf->item_count=1;
 
     return SHOW_CONTINUE;
 }
@@ -3756,6 +3758,8 @@ int set_ip_acl()
     }
     bzero(&grouplist_conf, sizeof(struct _select_def));
     grouplist_conf.item_count = get_acl_len();
+    if(grouplist_conf.item_count==0)
+        grouplist_conf.item_count=1;
     grouplist_conf.item_per_page = BBS_PAGESIZE;
     /*
      * 加上 LF_VSCROLL 才能用 LEFT 键退出 
