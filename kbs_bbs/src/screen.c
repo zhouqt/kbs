@@ -945,9 +945,9 @@ void noscroll()
 int check_ch(int c1, int c2)
 {
     if(c1>=0xb0&&c1<=0xd8&&c2>=0xa1&&c2<=0xfe)
-        return 4;
+        return 11;
     else if(c1>=0xd9&&c1<=0xf7&&c2>=0xa1&&c2<=0xfe)
-        return 3;
+        return 5;
     else if(c1>0x80&&c2>=0x80)
         return 2;
     else if(c1>0x80&&c2>=0x40)
