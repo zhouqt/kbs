@@ -67,7 +67,7 @@ void showall()
 		show(i, order[i]);
 }
 
-int check_BM(struct boardheader *bptr)
+int check_BM(struct boardheader *bptr,void* arg)
 {
     int i, fd, data[DATALEN];
     struct flock ldata;
@@ -134,7 +134,7 @@ int query_BM(struct userec *user, char *arg)
     if (!(user->userlevel & PERM_BOARDS))
         return 0;
     curuserid = user->userid;
-    apply_boards(check_BM);
+    apply_boards(check_BM,NULL);
 }
 
 main(int argc, char ** argv)

@@ -158,7 +158,7 @@ rm_lost(char *path)
 }
 
 int
-find_rm_lost(struct boardheader *bhp)
+find_rm_lost(struct boardheader *bhp,void* arg)
 {
 	char buf[200];
 	int i;
@@ -197,7 +197,7 @@ main()
 	resolve_boards();
 	
 	printf("find_rm_lost is running~\n");
-	apply_boards(find_rm_lost);
+	apply_boards(find_rm_lost,NULL);
 	printf("allfile %d, allref %d, alllost %d\n", allfile, allref, alllost);
 	printf("unknownfn %d, nindexitem %d, nstrangeitem %d\n", unknownfn,
 	       nindexitem, nstrangeitem);

@@ -2,7 +2,7 @@
 
 char *curuserid;
 
-int check_BM(struct boardheader *bptr)
+int check_BM(struct boardheader *bptr,void* arg)
 {
     if ((bptr->level != 0) && !(bptr->level & PERM_POSTMASK))
         return 0;
@@ -17,7 +17,7 @@ int query_BM(struct userec *user, char *arg)
         return 0;
     printf("%s: ", user->userid);
     curuserid = user->userid;
-    apply_boards(check_BM);
+    apply_boards(check_BM,NULL);
     printf("\n");
 }
 

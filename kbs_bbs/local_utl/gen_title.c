@@ -10,7 +10,7 @@ static int simple_digest(char *str, int maxlen)
     return (*(int*)&x[0]);
 }
 
-int generate_board_title(struct boardheader *bh)
+int generate_board_title(struct boardheader *bh,void* arg)
 {
     int fd2, size = sizeof(fileheader), total, i;
     struct boardheader btmp;
@@ -99,7 +99,7 @@ int generate_board_title(struct boardheader *bh)
 
 int generate_all_title()
 {
-	apply_boards(generate_board_title);
+	apply_boards(generate_board_title,NULL);
     return 0;
 }
 
@@ -134,7 +134,7 @@ int main(int argc,char** argv)
             return 0;
         }
     	strncpy(bh.filename,name,STRLEN);
-    	generate_board_title(&bh);
+    	generate_board_title(&bh,NULL);
     }
     if (allflag) {
     	generate_all_title();

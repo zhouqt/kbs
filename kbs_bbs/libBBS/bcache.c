@@ -286,12 +286,12 @@ int delete_board(char *boardname, char *title)
 #ifdef BBSMAIN
     getdata(3, 0, "ÒÆ³ý¾«»ªÇø (Yes, or No) [Y]: ", genbuf, 4, DOECHO, NULL, true);
     if (genbuf[0] != 'N' && genbuf[0] != 'n')
-#endif
     {
             char lookgrp[30];
 
             del_grp(boardname, title + 13);
     }
+#endif
     fd = bcache_lock();
     bid = getbnum(boardname);
     if (bid == 0)

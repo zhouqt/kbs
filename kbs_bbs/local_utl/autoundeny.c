@@ -66,7 +66,7 @@ int sgetline(char *buf, char *linebuf, int *idx, int maxlen)
     return len;
 }
 
-int undenyboard(struct boardheader *bh)
+int undenyboard(struct boardheader *bh,void* arg)
 {
     int d_fd;
     char denyfile[256];
@@ -143,6 +143,6 @@ int main(int argc, char **argv)
     strcpy(deliveruser.username, "自动发信系统");
     currentuser = &deliveruser;
     strcpy(fromhost, "天堂");
-    apply_boards(undenyboard);
+    apply_boards(undenyboard,NULL);
     return 0;
 }

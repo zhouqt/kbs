@@ -391,12 +391,12 @@ int main(int argc, char ** argv)
 	}
 	if (all == 1)
 	{
-		apply_boards(cnv_board_dir, NULL);
+		apply_boards(cnv_board_dir,NULL);
 	}
 	else
 	{
 		if ((bp = getbcache(argv[1])) != NULL)
-			cnv_board_dir(bp);
+			cnv_board_dir(bp,NULL);
 	}
 
 	return 0;
