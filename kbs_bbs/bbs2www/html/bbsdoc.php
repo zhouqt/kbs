@@ -100,13 +100,27 @@
 		if ($page > 1)
 		{
 ?>
+<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=1">第一页</a>
 <a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page - 1; ?>">上一页</a>
+<?php
+		}
+		else
+		{
+?>
+第一页 上一页
 <?php
 		}
 		if ($start <= $total - 20)
 		{
 ?>
 <a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page + 1; ?>">下一页</a>
+<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>">最后一页</a>
+<?php
+		}
+		else
+		{
+?>
+下一页 最后一页
 <?php
 		}
 		if (bbs_is_bm($brdnum, $usernum))
@@ -223,12 +237,26 @@ else
 		{
 ?>
 <a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page - 1; ?>">上一页</a>
+<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page - 1; ?>">上一页</a>
+<?php
+		}
+		else
+		{
+?>
+第一页 上一页
 <?php
 		}
 		if ($start <= $total - 20)
 		{
 ?>
 <a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page + 1; ?>">下一页</a>
+<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>">最后一页</a>
+<?php
+		}
+		else
+		{
+?>
+下一页 最后一页
 <?php
 		}
 		if (bbs_is_bm($brdnum, $usernum))
