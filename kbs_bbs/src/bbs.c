@@ -2528,7 +2528,7 @@ int mark_post(int ent, struct fileheader *fileinfo, char *direct)
 int zhiding_post(int ent, struct fileheader *fileinfo, char *direct)
 {
 	if(POSTFILE_BASENAME(fileinfo->filename)[0]=='Z')
-		return del_post(ent,fileinfo,direct);
+		return del_ding(ent,fileinfo,direct);
     return change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_DING_FLAG, 0);
 }
 
@@ -2546,7 +2546,7 @@ int noreply_post(int ent, struct fileheader *fileinfo, char *direct)
         ans[0] = ans[1];
         ans[1] = 0;
     }
-	if(ans[0]=='2') zhiding_post(ent,fileinfo,direct);
+	if(ans[0]=='2') return zhiding_post(ent,fileinfo,direct);
 	else change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_NOREPLY_FLAG, 1);
 
 	return FULLUPDATE;
@@ -2654,12 +2654,45 @@ int del_range(int ent, struct fileheader *fileinfo, char *direct, int mailmode)
     return FULLUPDATE;
 }
 
+/* add by stiger,delete ÖÃ¶¥ÎÄÕÂ */
+int del_ding(int ent, struct fileheader *fileinfo, char *direct)
+{
+
+	int failed;
+	int tmpname[100];
+
+	if ( digestmode != 0 ) return DONOTHING;
+
+    if (!HAS_PERM(currentuser, PERM_SYSOP) && !chk_currBM(currBM, currentuser))
+            return DONOTHING;
+
+	failed=delete_record(direct, sizeof(struct fileheader), ent, (RECORD_FUNC_ARG) cmpname, fileinfo->filename);
+
+	if(failed){
+        move(2, 0);
+        prints("É¾³ýÊ§°Ü\n");
+        pressreturn();
+        clear();
+		return FULLUPDATE;
+	}else{
+		sprintf(tmpname,"boards/%s/%s",currboard,fileinfo->filename);
+		unlink(tmpname);
+	}
+
+	return DIRCHANGED;
+}
+/* add end */
+
 int del_post(int ent, struct fileheader *fileinfo, char *direct)
 {
     char usrid[STRLEN];
     int owned, keep, olddigestmode = 0;
     struct fileheader mkpost;
     extern int SR_BMDELFLAG;
+
+	/* add by stiger */
+	if(POSTFILE_BASENAME(fileinfo->filename)[0]=='Z')
+		return del_ding(ent,fileinfo,direct);
 
     if (!strcmp(currboard, "syssecurity")
         || !strcmp(currboard, "junk")
