@@ -185,7 +185,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
     
 void refresh()
 {
-    int i, j, k, ii;
+    int i, j, k, ii, p;
     struct screenline *bp = big_picture;
     int count=0;
     int stack[100],stackt=0;
@@ -230,7 +230,6 @@ void refresh()
     }
 
     for (i = 0; i < scr_lns; i++) {
-        int p;
         j = (i + roll)%scr_lns;
 
         ii=scr_cols-1;
@@ -241,8 +240,8 @@ void refresh()
         if((bp[j].mode[k]&SCREEN_MODIFIED)&&(isprint2(bp[j].data[k])||bp[j].data[k]==0)) {
             stackt=0;
             rel_move(tc_col, tc_line, k, i);
-            if(bp[j].mode[k]%2==1) bp[j].mode[k]--;
-            if((SCREEN_ALL-bp[j].mode[k])&tc_mode!=0) {
+            bp[j].mode&=~SCREEN_MODIFIED;
+            if((~bp[j].mode[k])&tc_mode!=0) {
                 tc_mode = 0;
                 tc_color = 7;
                 push(0);
