@@ -36,6 +36,7 @@ int main()
     fd = open(dir, O_RDWR, 0644);
     if (get_records_from_id(fd, rid, &records, RECORDS_NUM, &num) == 0)
         http_fatal("本文不存在");
+    close(fd);
     printf("<table width=\"610\" border=\"1\">\n");
     printf("<tr><td>\n<pre>");
     setbfile(filename, board, records[1].filename);
