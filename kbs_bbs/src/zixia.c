@@ -47,7 +47,7 @@ uleveltochar( char* buf, struct userec *lookupuser )
     	else if( !strcmp(lookupuser->userid,"halen") )
 	    strcpy( buf, "Ð¡Æ¤¿¨Çï" );
     	else if( !strcmp(lookupuser->userid,"cclu") )
-	    strcpy( buf, "Î÷Î÷Â³" );
+	    strcpy( buf, "Á÷Ã¥Ã¨" );
     	else if( !strcmp(lookupuser->userid,"Bison") )
 	    strcpy( buf, "ÒùÔô" );
     	else if( !strcmp(lookupuser->userid,"KCN") )

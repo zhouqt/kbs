@@ -12,7 +12,7 @@
 #define DEFAULTBOARD    	"zixia.net"//test
 #define MAXUSERS  		20000 //150,000
 #define MAXBOARD  		256 //400
-#define MAXACTIVE 		666  //3000
+#define MAXACTIVE 		999  //3000
 #define MAX_GUEST_NUM		99
 
 #define POP3PORT		3110	//110
@@ -28,7 +28,7 @@
 #define LIFE_DAY_NEW		30	//15
 #define LIFE_DAY_SUICIDE	15	//15
 
-#define DAY_DELETED_CLEAN	7	//20
+#define DAY_DELETED_CLEAN	20	//20
 #define SEC_DELETED_OLDHOME	0 	/*  3600*24*30，注册新用户如果存在这个用户的目录，保留时间*/
 
 #define	REGISTER_WAIT_TIME	(30*60) // (72*60*60)
