@@ -489,8 +489,8 @@ void save_msgs(char * s)
 
 void refreshit()
 {
-    int i,j,me,msgst;
-    char buf[80];
+    int i,j,me,msgst,k,i0;
+    char buf[30],buf2[30],buf3[30];
     for(i=0;i<t_lines-1;i++) {
         move(i, 0);
         clrtoeol();
@@ -539,6 +539,13 @@ void refreshit()
             setfcolor(GREEN, 0);
             prints("O");
         }
+        else if((inrooms[myroom].peoples[j].flag&PEOPLE_ALIVE)&&
+            (inrooms[myroom].peoples[j].vote != 0)) {
+            resetcolor();
+            move(i,3);
+            setfcolor(YELLOW, 0);
+            prints("v");
+        }
         resetcolor();
         move(i,4);
         if(ipage+i-2==selected) {
@@ -546,6 +553,20 @@ void refreshit()
         }
         sprintf(buf, "%d %s", j+1, inrooms[myroom].peoples[j].nick);
         buf[12]=0;
+        if(inrooms[myroom].status != INROOM_STOP) {
+            k=0;
+            for(i0=0;i0<MAX_PEOPLE;i0++)
+                if(inrooms[myroom].peoples[i0].style!=-1 && inrooms[myroom].peoples[i0].vote==
+                    inrooms[myroom].peoples[j].pid)
+                    k++;
+            if(k>0) {
+                if(k>=strlen(buf)) k=strlen(buf);
+                strcpy(buf2, buf);
+                buf2[k]=0;
+                strcpy(buf3, buf+k);
+                sprintf(buf, "\x1b[4m%s\x1b[m%s%s", buf2, (ipage+i-2==selected)?"\x1b[31;1m":"", buf3);
+            }
+        }
         prints("%s", buf);
     }
     resetcolor();
