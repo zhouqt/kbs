@@ -922,6 +922,51 @@ void sigbus(int signo)
   siglongjmp(bus_jump,1);
 };
 
+int safe_mmapfile(char* filename,int openflag,int prot,int flag,void** ret_ptr,int* size,int* ret_fd)
+{
+	int fd, retv;
+	struct stat st;
+	fd = open(fn, openflag,0600);
+	if (fd < 0)
+		return 0;
+	if (fstat(fd, &st) < 0) {
+		close(fd);
+		return 0;
+	}
+	if (!S_ISREG(st.st_mode)) {
+		close(fd);
+		return 0;
+	}
+	if (st.st_size <= 0) {
+		close(fd);
+		return 0;
+	}
+	if (!ret_fd)
+		close(fd);
+	else {
+		*ret_fd=fd;
+		flock(ret_fd,LOCK_EX);
+	}
+	*ret_ptr = mmap(NULL, st.st_size, prot, flag, fd, 0);
+	if (*ret_ptr == NULL)
+		return 0;
+    if (!sigsetjmp(bus_jump,1)) {
+        signal(SIGBUS,sigbus);
+		signal(SIGSEGV,sigbus);
+		*size=st.st_size;
+		return 1;
+    }
+    return 2;
+}
+
+void end_mmapfile(void* ptr,int size,int fd)
+{
+ 	munmap(ptr, size);
+    signal(SIGBUS,SIG_IGN);
+    signal(SIGSEGV,SIG_IGN);
+    if (fd!=-1) close(fd);
+}
+
 void
 encodestr( register char *str )
 {

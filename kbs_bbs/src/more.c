@@ -47,9 +47,6 @@ struct ACSHM
     int  movielines;
     time_t  update;
 };
-extern sigjmp_buf bus_jump;
-extern void sigbus(int signo);
-
 struct  ACSHM   *movieshm;
 
 int     nnline = 0, xxxline = 0;
@@ -906,39 +903,17 @@ seek_MemMoreLines(struct MemMoreLines *l, int n)
 int
 mmap_show(char *fn, int row, int numlines)
 {
-	char *ptr;
-	int fd, retv;
-	struct stat st;
-	fd = open(fn, O_RDONLY);
-	if (fd < 0)
-		return 0;
-	if (fstat(fd, &st) < 0) {
-		close(fd);
-		return 0;
-	}
-	if (!S_ISREG(st.st_mode)) {
-		close(fd);
-		return 0;
-	}
-	if (st.st_size <= 0) {
-		close(fd);
-		return 0;
-	}
-	ptr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
-	close(fd);
-	if (ptr == NULL)
-		return -1;
-    if (!sigsetjmp(bus_jump,1)) {
-        signal(SIGBUS,sigbus);
-	signal(SIGSEGV,sigbus);
-	
-	retv = mem_show(ptr, st.st_size, row, numlines, fn);
-    	}
-    
- 	munmap(ptr, st.st_size);
-      signal(SIGBUS,SIG_IGN);
-      signal(SIGSEGV,SIG_IGN);
+	char* ptr;
+	int size,retv;
 
+	switch (safe_mmapfile(fn,O_RDONLY,PROT_READ,MAP_SHARED,&ptr,&size,NULL)) {
+		case 0: //mmap error
+			return 0;
+		case 1:
+			retv = mem_show(ptr, size, row, numlines, fn);
+			break;
+	}
+	end_mmapfile((void*)ptr,size,-1);
 	return retv;
 }
 
@@ -946,37 +921,15 @@ int
 mmap_more(char *fn, int quit, char *keystr)
 {
 	char *ptr;
-	int fd, retv;
-	struct stat st;
-	fd = open(fn, O_RDONLY);
-	if (fd < 0)
-		return -1;
-	if (fstat(fd, &st) < 0) {
-		close(fd);
-		return -1;
-	}
-	if (!S_ISREG(st.st_mode)) {
-		close(fd);
-		return -1;
-	}
-	if (st.st_size <= 0) {
-		close(fd);
-		return -1;
-	}
-	ptr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
-	close(fd);
-	if (ptr == NULL)
-		return -1;
-    if (!sigsetjmp(bus_jump,1)) {
-        signal(SIGBUS,sigbus);
-	signal(SIGSEGV,sigbus);
-
-	retv = mem_more(ptr, st.st_size, quit, keystr, fn);
-    	}
-
-	munmap(ptr, st.st_size);
-       signal(SIGBUS,SIG_IGN);
-       signal(SIGSEGV,SIG_IGN);
+	int size,retv;
+	
+	switch (safe_mmapfile(fn,O_RDONLY,PROT_READ,MAP_SHARED,&ptr,&size,NULL)) {
+		case 0: //mmap error
+			return 0;
+		case 1:
+			retv = mem_more(ptr, size, quit, keystr, fn);
+    }
+	end_mmapfile((void*)ptr,size,-1);
 	return retv;
 }
 

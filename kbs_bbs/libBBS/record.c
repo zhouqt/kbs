@@ -207,41 +207,29 @@ toobigmesg()
 int apply_record(char *filename ,RECORD_FUNC_ARG fptr,int size ,void* arg,int applycopy)
 {
     char *buf,*buf1,*buf2;
-    int fd, i;
-    struct stat stat;
+    int i;
+    int file_size;
+    
     if (applycopy)
     	buf2=malloc(size);
-    if((fd = open(filename,O_RDONLY,0)) == -1)
-        return -1 ;
-    if (fstat(fd,&stat) <0 ) { close(fd); return 0; }
-    
-    buf = (char *) mmap(NULL,stat.st_size,PROT_READ,MAP_SHARED,fd,0);
-    if (buf ==(char *) -1) { close(fd);return 0;}
-    
-    if (!sigsetjmp(bus_jump,1)) {
-        signal(SIGBUS,sigbus);
-		signal(SIGSEGV,sigbus);
-    
-        for (i=0,buf1=buf;i<stat.st_size/size;i++,buf1+=size) {
-        	if (applycopy)
-            	memcpy(buf2,buf1,size);
-        	else
-        		buf2=buf1;
-            if ((*fptr)(buf2,arg) == QUIT) {
-	    		munmap(buf,stat.st_size);
-	    		close(fd);
-	    		signal(SIGBUS,SIG_IGN);
-	    		signal(SIGSEGV,SIG_IGN);
-	    		if (applycopy)
-	    			free(buf2);
-	    		return QUIT;
-            }
-    	}
+    switch (safe_mmapfile(filename,O_RDONLY,PROT_READ,MAP_SHARED,&buf,&file_size,NULL)) {
+    	case 0: return 0;
+    	case 1:
+	        for (i=0,buf1=buf;i<file_size/size;i++,buf1+=size) {
+	        	if (applycopy)
+	            	memcpy(buf2,buf1,size);
+	        	else
+	        		buf2=buf1;
+	            if ((*fptr)(buf2,arg) == QUIT) {
+				    end_mmapfile((void*)buf,file_size,-1);
+		    		if (applycopy)
+		    			free(buf2);
+		    		return QUIT;
+	            }
+	    	}
+	        break;
     }
-    munmap(buf,stat.st_size);
-    close(fd) ;
-    signal(SIGBUS,SIG_IGN);
-    signal(SIGSEGV,SIG_IGN);
+    end_mmapfile((void*)buf,file_size,-1);
 	if (applycopy)
 		free(buf2);
     return 0 ;
@@ -275,29 +263,19 @@ int search_record_back(
 {
     char *buf,*buf1;
     int fd,i;
-    struct stat stat;
-    if((fd = open(filename,O_RDONLY,0)) == -1)
-        return 0 ;
-    if (fstat(fd,&stat)<0) { close(fd);return 0;}
-    if (start > stat.st_size/size) start = stat.st_size/size;
-    buf = (char *) mmap(NULL,start * size,PROT_READ,MAP_SHARED,fd,0);
-    if (buf == (char *)-1) { close(fd); return 0;}
-    if (!sigsetjmp(bus_jump,1)) {
-        signal(SIGBUS,sigbus);
-	signal(SIGSEGV,sigbus);
+    int start,filesize;
+    switch (safe_mmapfile(filename,O_RDONLY,PROT_READ,MAP_SHARED,&buf,&filesize,NULL)) {
+    	case 0: return 0;
+    	case 1:
+    	start=filesize/size;
         for (i = start, buf1 = buf; i>=0; i--, buf1-=size) {
             if ((*fptr)(farg,buf1)) {
-    	        memcpy(rptr,buf1,size);
-    	        munmap(buf,start * size);
-                close(fd);
+            	end_mmapfile((void*)buf,filesize,-1);
     	        return i;
     	    }
         }
     }
-    munmap(buf,start * size);
-    close(fd);
-    signal(SIGBUS,SIG_IGN);
-    signal(SIGSEGV,SIG_IGN);
+    end_mmapfile((void*)buf,filesize,-1);
     return 0;
 }
 
@@ -310,30 +288,18 @@ search_record(char *filename,void *rptr,int size,RECORD_FUNC_ARG fptr,void *farg
 {
     int fd, i;
     char *buf,*buf1;
-	struct stat stat;
-    if((fd = open(filename,O_RDONLY,0)) == -1)
-        return 0 ;
-    if (fstat(fd,&stat)<0) {close(fd); return 0;}
-    
-    buf = (char *)mmap(NULL,stat.st_size,PROT_READ,MAP_SHARED,fd,0);
-    
-    if (buf == (char *)-1) { close (fd); return 0;}
-    if (!sigsetjmp(bus_jump,1)) {
-        signal(SIGBUS,sigbus);
-	signal(SIGSEGV,sigbus);
-        for (i =0,buf1=buf;i<stat.st_size/size;i++,buf1+=size) {
+    int filesize;
+    switch (safe_mmapfile(filename,O_RDONLY,PROT_READ,MAP_SHARED,&buf,&filesize,NULL)) {
+    	case 0: return 0;
+    	case 1:
+        for (i =0,buf1=buf;i<filesize/size;i++,buf1+=size) {
             if ((*fptr)(farg,buf1)) {
-    		memcpy(rptr,buf1,size);
-    		munmap(buf,stat.st_size);
-    		close(fd);
-    		return i+1;
+            	end_mmapfile((void*)buf,filesize,-1);
+    			return i+1;
     	    }
     	}	
     }
-    munmap(buf,stat.st_size);
-    close(fd) ;
-    signal(SIGBUS,SIG_IGN);
-    signal(SIGSEGV,SIG_IGN);
+    end_mmapfile((void*)buf,filesize,-1);
     return 0 ;
 }
 
@@ -522,104 +488,34 @@ char    *filename, *tmpfile, *deleted;
 
 int delete_record(char *filename ,int size,int id,RECORD_FUNC_ARG filecheck,void* arg)
 {
-    int fdr;
+    int fdr,filesize;
     char* ptr;
-    struct stat st;
     int ret;
     if (id<=0) return 0;
-    if((fdr = open(filename,O_RDWR,0)) == -1) {
-        return -2;
-    }
-
-    flock(fdr,LOCK_EX);
-    if (-1==fstat(fdr,&st)) {
-    	close(fdr);
-    	return -2;
-    }
-    if (id*size<=st.st_size) {
-    	ptr = (char*) mmap(NULL, st.st_size,
-    	              PROT_READ|PROT_WRITE,MAP_SHARED,fdr,0);
-    } else {
-        close(fdr);
-        return -3;
-    };
-    if (!sigsetjmp(bus_jump,1)) {
-	signal(SIGBUS,sigbus);
-	signal(SIGSEGV,sigbus);
-	ret = 0;
-	if (filecheck) {
-            if(!(*filecheck)(ptr+(id-1)*size,arg)) {
-       	    for (id=0;id*size<st.st_size;id++)
-       		if((*filecheck)(ptr+(id-1)*size,arg))
-       			break;
-       	    if (id*size>=st.st_size)
-       		ret=-2;
-           }
-       }
-       if (ret==0)
-		memcpy(ptr+(id-1)*size,ptr+id*size,st.st_size-size*id);
-    } else
-    	ret=-3;
-    munmap(ptr,st.st_size);  
-    ftruncate(fdr,st.st_size-size);
-    flock(fdr,LOCK_UN);
-    close(fdr);
-    signal(SIGBUS,SIG_IGN);
-    signal(SIGSEGV,SIG_IGN);
+	switch (safe_mmapfile(filename,O_RDWR,PROT_READ|PROT_WRITE,MAP_SHARED,(void*)&ptr,&filesize,&fdr)) {
+		case 0:
+			return -1;
+		case 1:
+			ret = 0;
+			if (filecheck) {
+				if(!(*filecheck)(ptr+(id-1)*size,arg)) {
+		       	    for (id=0;id*size<filesize;id++)
+			       		if((*filecheck)(ptr+(id-1)*size,arg))
+			       			break;
+		       	    if (id*size>=filesize)
+			       		ret=-2;
+				}
+			}
+		    if (ret==0)
+				memcpy(ptr+(id-1)*size,ptr+id*size,filesize-size*id);
+		    break;
+		case 2:
+		    	ret=-3;
+	}
+    ftruncate(fdr,filesize-size);
+    end_mmapfile(ptr, filesize, fdr);
     return ret;
 }
-/*
-    char        tmpfile[ STRLEN ], deleted[ STRLEN ], lockfile[256];
-    char        abuf[BUFSIZE] ;
-    int         fdr, fdw, fd ;
-    int         count ;
-
-    if( size > BUFSIZE ) {
-        toobigmesg();
-        return -1;
-    }
-    if((fd = open(".dellock",O_RDWR|O_CREAT|O_APPEND, 0644)) == -1)
-        return -1 ;
-    flock(fd,LOCK_EX) ;
-    tmpfilename( filename, tmpfile, deleted );
-
-    if((fdr = open(filename,O_RDONLY,0)) == -1) {
-        report("delrec open err");
-        flock(fd,LOCK_UN) ;
-        close(fd) ;
-        return -1 ;
-    }
-    if((fdw = open(tmpfile,O_WRONLY|O_CREAT|O_EXCL,0644)) == -1) {
-        flock(fd,LOCK_UN) ;
-        report("delrec tmp err");
-        close(fd) ;
-        close(fdr) ;
-        return -1 ;
-    }
-    count = 1 ;
-    while(read(fdr,abuf,size) == size)
-        if(id != count++ && (safewrite(fdw,abuf,size) == -1)) {
-            unlink(tmpfile) ;
-            close(fdr) ;
-            close(fdw) ;
-            report("delrec write err");
-            flock(fd,LOCK_UN) ;
-            close(fd) ;
-            return -1 ;
-        }
-    close(fdr) ;
-    close(fdw) ;
-    if( Rename(filename,deleted) == -1 ||
-            Rename(tmpfile,filename) == -1 ) {
-        flock(fd,LOCK_UN) ;
-        report("delrec Rename err");
-        close(fd) ;
-        return -1 ;
-    }
-    flock(fd,LOCK_UN) ;
-    close(fd) ;
-    return 0 ;
-*/
 
 int
 delete_range(filename,id1,id2,del_mode)
