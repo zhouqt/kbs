@@ -318,9 +318,9 @@ PERM_DENYRELAX娱乐
     move(5, 0);
     prints("(2) - 发表权限");
     move(6, 0);
-    prints("(3) - 聊天权限");
+    prints("(3) - 聊天室权限");
     move(7, 0);
-    prints("(4) - 呼叫权限");
+    prints("(4) - 发送消息和呼叫聊天权限");
     move(8, 0);
     prints("(5) - 发信权限");
     move(9, 0);
