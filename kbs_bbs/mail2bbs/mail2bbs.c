@@ -1,8 +1,7 @@
 #include "bbs.h"
-#define MAILDIR  "/home/bbs/mail"
-#define MYPASSFILE "/home/bbs/.PASSWDS"
+#define MAILDIR  BBSHOME"/mail"
+#define MYPASSFILE BBSHOME"/.PASSWDS"
 #define DOMAIN_NAME "cs.ccu.edu.tw"
-#define BBSHOME         "/home/bbs"
 #define BBSGID          99
 #define BBSUID          9999
 report()
