@@ -281,3 +281,4 @@ typedef size_t socklen_t;
 #endif
 #include "vars.h"
 #include "func.h"
+#define system my_system

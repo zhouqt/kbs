@@ -80,7 +80,12 @@ va_dcl
     fmt = va_arg(args, char *);
     vsprintf(buf, fmt, args);
     va_end(args);
+
+#ifdef SSHBBS
+    ssh_write(0,buf,strlen(buf));
+#else
     write(0,buf,strlen(buf));
+#endif
 }
 
 #ifdef LOAD_LIMIT
@@ -511,7 +516,7 @@ char* argv;
     write(0,"execl failed\r\n",12);
     exit( -1 );
 }
-
+#ifndef SSHBBS
 int
 main(argc, argv)
 int argc;
@@ -591,8 +596,6 @@ char *argv[];
             想想挺有道理的说，不过为什么以前税目没有碰上过呢....
             笨蛋COMMAN:这个当然是因为stderr,stdout都被全部检查过，不会写入，唯一的可能
             发生的情况是在system调用。*/
-            dup2(0,2);
-            dup2(0,1);
             /* COMMAN end */
             close(csock);
             break;
@@ -615,4 +618,30 @@ char *argv[];
     }
     telnet_init();
     bbs_main(hid,argv[0]);
+
+}
+#endif
+void ssh_exit()
+{
+    packet_disconnect("sshd exit");
+}
+
+int bbs_entry(void)
+{
+   /* 本函数供 SSH 使用 */
+   int sinlen;
+   struct sockaddr_in sin;
+   char hid[17];
+   char faint[99];
+   setuid(BBSUID);
+   setgid(BBSGID);
+   main_signals();
+   sinlen = sizeof(struct sockaddr_in);
+   atexit(ssh_exit);
+   getpeername (0,(struct sockaddr *) &sin,(void *) &sinlen);
+   {
+        char*host = (char*)inet_ntoa(sin.sin_addr);
+        strncpy(hid,host,17);
+   } 
+   bbs_main(hid,faint);
 }

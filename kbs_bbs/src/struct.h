@@ -45,6 +45,7 @@ struct user_info {              /* Structure used in UTMP file */
         char    chatid[ 16 ];   /* chat id, if in chat mode */
         char    from[ 60 ];     /* machine name the user called in from */
         time_t	freshtime;
+        unsigned long wwwmagic; /* magic number for www , add by wwj 2001-6-20*/
         char    userid[ 20 ];
         char    realname[ 20 ];
         char    username[ 40 ];

@@ -630,7 +630,7 @@ list:		move(5,0) ;
     }
     else {
         int sock, msgsock;
-        socklen_t length ;
+        int length ;
         struct sockaddr_in server ;
         char c ;
         char buf[512] ;

@@ -62,11 +62,19 @@ oflush()
         if (convcode) {
             char* out;
             out=gb2big(outbuf,&obufsize,0);
+#ifdef SSHBBS
+            if (ssh_write(0,out,obufsize)<0)
+#else
             if (write(0,out,obufsize)<0)
+#endif
                 abort_bbs() ;
         }
         else
+#ifdef SSHBBS
+            if (ssh_write(0,outbuf,obufsize)<0)
+#else
             if (write(0,outbuf,obufsize)<0)
+#endif
                 abort_bbs() ;
     }
     obufsize = 0 ;
@@ -96,9 +104,13 @@ int     len;
 {
     /* need to change IAC to IAC IAC
     if(obufsize+len > OBUFSIZE) {
+#ifdef SSHBBS
+        ssh_write(0,outbuf,obufsize) ;
+#else
         write(0,outbuf,obufsize) ;
+#endif
         obufsize = 0 ;
-}
+    }
     memcpy(outbuf+obufsize, s, len) ;
     obufsize+=len ; */
     int i;
@@ -301,8 +313,11 @@ igetagain:
         }
         if(hasaddio&&(i_newfd && FD_ISSET(i_newfd,&readfds)))
             return I_OTHERDATA ;
-
+#ifdef SSHBBS
+        while((ibufsize = ssh_read(0,inbuffer+1,IBUFSIZE)) <= 0) {
+#else
         while((ibufsize = read(0,inbuffer+1,IBUFSIZE)) <= 0) {
+#endif
             if(ibufsize == 0)
                 longjmp(byebye,-1) ;
             if(ibufsize < 0 && errno != EINTR)
@@ -391,8 +406,11 @@ igetkey()
         /*        if((uinfo.mode==CHAT1||uinfo.mode==TALK||uinfo.mode==PAGE) && RMSG==YEA)
                 {
                         char a;
-
+#ifdef SSHBBS
+                        ssh_read(0,&a,1);
+#else
                         read(0,&a,1);
+#endif
                         ch=(int) a;
                 }
         	else 

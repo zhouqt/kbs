@@ -22,8 +22,8 @@
 #BBSUID=9999
 # by zixia: remove to sysname.h
 
-#OS_DEF   = -DAIX -DSYSV 
-OS_DEF   = -DLINUX -DSYSV 
+OS_DEF   = -DAIX -DSYSV 
+#OS_DEF   = -DLINUX -DSYSV 
 
 CC       = gcc
 #CC       = cc
@@ -37,8 +37,8 @@ INSTALL  = /usr/bin/install -c
 
 BBSLIB = libBBS.a
 
-CSIE_DEF = -DSHOW_IDLE_TIME -D_DETAIL_UINFO_ 
-#CSIE_DEF = -DSHOW_IDLE_TIME -DBBSGID=99 -D_DETAIL_UINFO_
+#CSIE_DEF = -DSHOW_IDLE_TIME -D_DETAIL_UINFO_ 
+CSIE_DEF = -DSHOW_IDLE_TIME -DBBSGID=99 -D_DETAIL_UINFO_
 #-DTALK_LOG
 ifeq (Makefile.spec ,$(wildcard Makefile.spec))
 include	Makefile.spec

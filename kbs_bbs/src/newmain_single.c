@@ -629,7 +629,7 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
 
     if ((curr_http_num != -1) && (curr_http_num != 0)) /* dong 2000.4.18 */ 
       prints("[1m[36m+%d[m", curr_http_num); /* Leeward 99.03.06 */
-
+#ifndef SSHBBS
     attempts = 0;
     while( 1 ) {
         if( attempts++ >= LOGINATTEMPTS ) {
@@ -719,6 +719,9 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
             }
         }
     }
+#else
+   getdata( 0, 0, "\n°´ [RETURN] ¼ÌÐø",genbuf,10,NOECHO,NULL,YEA);
+#endif
 #ifdef DEBUG
     if (!HAS_PERM(PERM_SYSOP)) {
 		prints("±¾¶Ë¿Ú½ö¹©²âÊÔÓÃ£¬ÇëÁ¬½Ó±¾Õ¾µÄÆäËû¿ª·Å¶Ë¿Ú¡£\n");
@@ -1039,6 +1042,7 @@ main_bbs(char *originhost, int convit,char* argv)
      topfriend = NULL;
      big_picture=NULL;
      user_data = NULL;
+    load_sysconf();
      resolve_ucache();
      resolve_utmp();
     resolve_boards();
@@ -1055,7 +1059,6 @@ main_bbs(char *originhost, int convit,char* argv)
 #endif
     initscr() ;
 
-    load_sysconf();
 #if 0
     if( argc < 2 || ((*argv[1] != 'h' )&& ( *argv[1] != 'd') && ( *argv[1] != 'e') )) {
 	/* KCN add 'd' mode for bbsd 1999.9.1 */
