@@ -149,7 +149,7 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 		$id = $_SERVER['argv'][2];
 	else {
 		html_init("gb2312","","",1);
-		html_error_quit("错误的文章号");
+		html_error_quit("错误的文章号.");
 	}
 	settype($id, "integer");
 	// 获取上一篇或下一篇，同主题上一篇或下一篇的指示
@@ -198,7 +198,7 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 	if ($num == 0)
 	{
 		html_init("gb2312","","",1);
-		html_error_quit("错误的文章号.");
+		html_error_quit("错误的文章号,原文可能已经被斑竹删除");
 	}
 	else
 	{
