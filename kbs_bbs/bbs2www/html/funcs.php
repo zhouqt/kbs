@@ -72,7 +72,8 @@ bbs_setfromhost($fromhost,$fullfromhost);
 $compat_telnet=0;
 @$sessionid = $_GET["sid"];
 
-if ($sessionid!='') {
+//TODO: add the check of telnet compat
+if (($sessionid!='')&&($_SERVER['PHP_SELF']=='/bbscon.php')) {
 	$utmpnum=decodesessionchar($sessionid[0])+decodesessionchar($sessionid[1])*36+decodesessionchar($sessionid[2])*36*36;
 	$utmpkey=decodesessionchar($sessionid[3])+decodesessionchar($sessionid[4])*36+decodesessionchar($sessionid[5])*36*36
 		+decodesessionchar($sessionid[6])*36*36*36+decodesessionchar($sessionid[7])*36*36*36*36+decodesessionchar($sessionid[8])*36*36*36*36*36;
