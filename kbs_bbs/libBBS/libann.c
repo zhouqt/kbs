@@ -33,6 +33,7 @@ int ann_load_directory(MENU *pm)
 	snprintf(buf, sizeof(buf), "%s/.Names", pm->path); /*.Names记录菜单信息*/
 	if ( (fn = fopen( buf, "r" )) == NULL )
 		return -1;
+	bzero(&litem, sizeof(litem));
 	hostname[0]='\0';
 	while ( fgets( buf, sizeof(buf), fn ) != NULL )
 	{
@@ -51,8 +52,7 @@ int ann_load_directory(MENU *pm)
 				strncpy( litem.fname, buf + 5, sizeof(litem.fname)-1 );
 			litem.fname[sizeof(litem.fname)-1] = '\0';
 			if ((!strstr(litem.title,"(BM: BMS)")||HAS_PERM(currentuser,PERM_BOARDS))&&
-				(!strstr(litem.title,"(BM: SYSOPS)")||HAS_PERM(currentuser,PERM_SYSOP))&&
-				(!strstr(litem.title,"(BM: ZIXIAs)")||HAS_PERM(currentuser,PERM_SECANC)))
+				(!strstr(litem.title,"(BM: SYSOPS)")||HAS_PERM(currentuser,PERM_SYSOP)))
 			{
 				if (strstr(litem.fname,"!@#$%")) /*取 host & port */
 				{
@@ -147,10 +147,12 @@ int ann_get_board(char *path, char *board, size_t len)
 		return -1;
 	while(fgets(buf, sizeof(buf), fp) != NULL)
 	{
+		if ((ptr2 = strrchr(buf, '\n')) != NULL)
+			*ptr2 = '\0';
 		if ((ptr2 = strchr(buf, ':')) != NULL)
 		{
 			*ptr2 = '\0';
-			if (strncmp(ptr+2, ptr, strlen(ptr+2)) == 0)
+			if (strncmp(ptr2+2, ptr, strlen(ptr2+2)) == 0)
 			{
 				strncpy(board, buf, len-1);
 				board[len-1] = '\0';
@@ -178,6 +180,8 @@ int ann_get_path(char *board, char* path, size_t len)
 		return -1;
 	while(fgets(buf, sizeof(buf), fp) != NULL)
 	{
+		if ((ptr = strrchr(buf, '\n')) != NULL)
+			*ptr = '\0';
 		if ((ptr = strchr(buf, ':')) != NULL)
 		{
 			*ptr = '\0';
@@ -197,6 +201,7 @@ int ann_get_path(char *board, char* path, size_t len)
 int ann_traverse_check(char *path)
 {
 	char *ptr;
+	char *ptr2;
 	size_t i = 0;
 	char filename[256];
 	char buf[256];
@@ -226,40 +231,42 @@ int ann_traverse_check(char *path)
 			return -1;
 		while(fgets(buf, sizeof(buf), fp) != NULL)
 		{
+			if ((ptr2 = strrchr(buf, '\n')) != NULL)
+				*ptr2 = '\0';
 			if ( strncmp( buf, "Name=", 5 ) == 0 )
 			{
 				strncpy( title, buf + 5, sizeof(title)-1 );
 				title[sizeof(title)-1] = '\0';
+				continue;
 			}
+			if ( strncmp( buf, "Path=~/", 7 ) == 0 )
+				snprintf(currpath, sizeof(currpath), "%s/%s", 
+						 pathbuf, buf+7);
 			else if ( strncmp( buf, "Path=", 5 ) == 0 )
+				snprintf(currpath, sizeof(currpath), "%s/%s", 
+						 pathbuf, buf+5);
+			else
+				continue;
+			if(strncmp(currpath, path, strlen(currpath)) != 0)
+				continue;
+			if ((!strstr(title,"(BM: BMS)")||HAS_PERM(currentuser,PERM_BOARDS))&&
+				(!strstr(title,"(BM: SYSOPS)")||HAS_PERM(currentuser,PERM_SYSOP))&&
+				(!strstr(title,"(BM: ZIXIAs)")||HAS_PERM(currentuser,PERM_SECANC)))
 			{
-				if ( strncmp( buf, "Path=~/", 7 ) == 0 )
-					snprintf(currpath, sizeof(currpath), "%s/%s", 
-							 pathbuf, buf+7);
-				else
-					snprintf(currpath, sizeof(currpath), "%s/%s", 
-							 pathbuf, buf+5);
-				/*litem.fname[sizeof(litem.fname)-1] = '\0';*/
-				if(strncmp(currpath, path, strlen(currpath)) != 0)
-				{
-					/* directory or file is not existed */
-					fclose(fp);
-					return -1;
-				}
-				if ((!strstr(title,"(BM: BMS)")||HAS_PERM(currentuser,PERM_BOARDS))&&
-					(!strstr(title,"(BM: SYSOPS)")||HAS_PERM(currentuser,PERM_SYSOP))&&
-					(!strstr(title,"(BM: ZIXIAs)")||HAS_PERM(currentuser,PERM_SECANC)))
-				{
-					/* directory can be accessed */
-					break;
-				}
-				else
-				{
-					/* diretory cannot be accessed */
-					fclose(fp);
-					return -1;
-				}
+				/* directory can be accessed */
+				break;
 			}
+			else
+			{
+				/* diretory cannot be accessed */
+				fclose(fp);
+				return -1;
+			}
+		}
+		if (feof(fp))
+		{
+			fclose(fp);
+			return -1;
 		}
 		fclose(fp);
 		if (i < sizeof(pathbuf))
