@@ -931,7 +931,7 @@ static int write_file(char* filename,int saveheader,long* effsize,long* pattachp
     while (p != NULL) {
         struct textline *v = p->next;
 
-        if (!aborted)
+        if( (!aborted)&&(aborted!=-1)) {
             long_flag = (strlen(p->data) >= WRAPMARGIN -2 );
             if (p->next != NULL || p->data[0] != '\0') {
                 if (!strcmp(p->data,"--"))
@@ -1021,6 +1021,7 @@ fsdfa
 			}
                 } else
                     fprintf(fp, "%s\n", p->data);
+                }
             }
         free(p);
         p = v;
@@ -1034,7 +1035,8 @@ fsdfa
             snprintf(buf,MAXPATH,"%s.attach",filename);
             stat(filename,&st);
             *pattachpos=st.st_size+1;
-            f_catfile(buf,filename);
+            if (aborted!=-1)
+                f_catfile(buf,filename);
             f_rm(buf);
         }
     }
