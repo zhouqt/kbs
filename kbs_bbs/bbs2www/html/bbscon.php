@@ -247,7 +247,34 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 			html_init("gb2312");
 ?>
 <body>
-<center><p><?php echo BBS_FULL_NAME; ?> -- 文章阅读 [讨论区: <?php echo $brdarr["NAME"]; ?>]</a></p></center>
+<table width="100%" border="0" cellspacing="0" cellpadding="3">
+  <tr> 
+    <td colspan="2" class="b1">
+<?php
+			$query_str = urlencode($_SERVER["PHP_SELF"] . "?" . $_SERVER["QUERY_STRING"]);
+			if ($currentuser["userid"] == "guest")
+				$home_url = "/guest-frames.html?mainurl=" . $query_str;
+			else
+				$home_url = "/frames.html?mainurl=" . $query_str;
+?>
+	    <a href="<?php echo $home_url; ?>" target="_top"><?php echo BBS_FULL_NAME; ?></a>
+	    -
+	    <?php
+	    	$sec_index = get_secname_index($brdarr["SECNUM"]);
+		if ($sec_index >= 0)
+		{
+	    ?>
+		<a href="/bbsboa.php?group=<?php echo $sec_index; ?>"><?php echo $section_names[$sec_index][0]; ?></a>
+	    <?php
+		}
+	    ?>
+	    -
+	    <?php echo htmlspecialchars($brdarr["DESC"]); ?> - 阅读文章
+    </td>
+  </tr>
+  <tr> 
+</table>
+<br/>
 <?php
 			display_navigation_bar_in($brdarr, $articles, $num, $brdnum);
 ?>

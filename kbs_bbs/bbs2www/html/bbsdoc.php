@@ -19,7 +19,7 @@
     		if (strcmp($currentuser["userid"], "guest") != 0)
 		{
     	?>
-<input class="b1" type="button" value="发表文章" onclick="window.location.href=href='bbspst.php?board=<?php echo $brd_encode; ?>'">
+<input class="b1" type="button" value="发表文章" onclick="window.location.href='bbspst.php?board=<?php echo $brd_encode; ?>'">
     	<?php
     		}
     	?>
@@ -89,7 +89,7 @@
 			}
 		    }
 	?>
-<input class="b1" type="submit" value="跳转到"> 第 <input class="b1" type="text" name="start" size="3"  onmouseover=this.focus() onfocus=this.select()> 篇 
+<input class="b1" type="submit" value="跳转到"> 第 <input class="b1" type="text" name="start" size="3"  onmouseover="this.focus()" onfocus="this.select()"> 篇 
 </td></tr></form></table>
 	<?php
 	}
@@ -351,7 +351,7 @@
     </td>
   </tr>
   <tr> 
-    <td colspan="2" align="center" height="80"><font size=6><strong><?php echo $brdarr["NAME"]."(".$brdarr["DESC"].")"; ?>版</strong></font></td>
+    <td colspan="2" align="center" height="80"><font size=6><strong><?php echo $brdarr["NAME"]."(".htmlspecialchars($brdarr["DESC"]).")"; ?>版</strong></font></td>
   </tr>
   <tr><td colspan="2" class="b1">
   <img src="images/bm.gif" alt="版主" align="absmiddle">版主 <?php echo $bm_url; ?>

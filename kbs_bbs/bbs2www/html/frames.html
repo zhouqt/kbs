@@ -4,20 +4,25 @@
 <title>»¶Ó­Ý°ÁÙBBSË®Ä¾Çå»ªÕ¾</title>
 </head>
 <script src="/browser.js"></script>
+<script src="/func.js"></script>
 <script language=javascript>
+if (is_ie)
+	mainurl=decodeURIComponent(queryString('mainurl','/bbssec.php'));
+else
+	mainurl='/bbssec.php';
 if(is_ie) document.write(""+
 "  <frameset name=mainframe frameborder=0 border=0 cols=\"170,*\">"+
         "<frame name=menu scrolling=no src=/menu.html>"+
         "<frameset name=viewfrm rows=18,*,20>"+
               "<frame scrolling=no marginwidth=4 marginheight=\"0\" framespacing=\"0\" name=fmsg src=bbsgetmsg.php>"+
-              "<frame framespacing=\"2\" name=\"f3\" src=\"/bbssec.php\">"+
+              "<frame framespacing=\"2\" name=\"f3\" src=\""+mainurl+"\">"+
               "<frame scrolling=no marginwidth=4 marginheight=\"1\" framespacing=\"1\" name=\"f4\" src=\"bbsfoot.php\">");
 else document.write(""+
 "  <frameset cols=\"170,*\" frameborder=0 border=0 >"+
     "<frame name=\"f2\" framespacing=\"2\" src=\"/cgi-bin/bbs/bbsleft\">"+
     "<frameset name=\"viewfrm\" rows=\"18, *, 20\">"+
       "<frame scrolling=\"no\" marginwidth=\"4\" marginheight=\"0\" framespacing=\"0\" name=\"fmsg\" src=\"bbsgetmsg.php\">"+
-      "<frame framespacing=\"2\" name=\"f3\" src=\"/bbssec.php\">"+
+      "<frame framespacing=\"2\" name=\"f3\" src=\""+mainurl+"\">"+
       "<frame scrolling=\"no\" marginwidth=\"4\" marginheight=\"1\" framespacing=\"1\" name=\"f4\" src=\"bbsfoot.php\">");
 </script>
     </frameset>
