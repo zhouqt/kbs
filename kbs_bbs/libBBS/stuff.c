@@ -1393,13 +1393,26 @@ get_mailgroup_name(const char *userid, mailgroup_list_item *item)
 {
 	int i;
 	char groupname[sizeof(item->group_name)];
+	char buf[STRLEN];
 	char filename[STRLEN];
+	struct stat st;
 	int fd;
 
+	sethomefile(buf, userid, "mgroups");
+    if (stat(buf, &st) == -1)
+	{
+        if (mkdir(buf, 0755) == -1)
+            return -1;
+    }
+	else
+	{
+        if (!(st.st_mode & S_IFDIR))
+            return -1;
+    }
 	for (i = 0; i < MAX_MAILGROUP_NUM; i++)
 	{
 		snprintf(groupname, sizeof(groupname), "group%02d", i);
-    	sethomefile(filename, userid, groupname);
+    	snprintf(filename, sizeof(filename), "%s/%s", buf, groupname);
 		if ((fd = open(filename, O_CREAT | O_EXCL | O_WRONLY, 0600)) != -1)
 			break;
 	}
@@ -1431,12 +1444,25 @@ add_mailgroup_item(const char *userid, mailgroup_list_t *mgl,
 }
 
 int 
+add_default_mailgroup_item(const char *userid, mailgroup_list_t *mgl)
+{
+	mailgroup_list_item item;
+
+	bzero(&item, sizeof(item));
+	snprintf(item.group_desc, sizeof(item.group_desc), "预设群体信件组");
+	return add_mailgroup_item(currentuser->userid, mgl, &item);
+}
+
+int 
 delete_mailgroup_item(const char *userid, mailgroup_list_t *mgl, int entry)
 {
 	int i;
+	char buf[STRLEN];
 	char filename[STRLEN];
 
-	sethomefile(filename, userid, mgl->groups[entry].group_name);
+	sethomefile(buf, userid, "mgroups");
+	snprintf(filename, sizeof(filename), "%s/%s", buf,
+			mgl->groups[entry].group_name);
 	for (i = entry; i < mgl->groups_num - 1; i++)
 	{
 		memcpy(&(mgl->groups[i]), &(mgl->groups[i+1]), 
@@ -1461,15 +1487,20 @@ int
 load_mailgroup(const char *userid, const char *group, mailgroup_t *mg, int num)
 {
     char fname[STRLEN];
+	char buf[STRLEN];
     int fd;
+	int ret = 0;
 
-    sethomefile(fname, userid, group);
+    sethomefile(buf, userid, "mgroups");
+	snprintf(fname, sizeof(fname), "%s/%s", buf, group);
     if ((fd = open(fname, O_RDONLY, 0600)) < 0)
 		return -1;
-	read(fd, mg, sizeof(mailgroup_t) * num);
+	if (read(fd, mg, sizeof(mailgroup_t) * num) == sizeof(mailgroup_t) * num)
+		ret = num;
 	close(fd);
 
-	return 0;
+	return ret; /* return zero on failure or no users,
+				 * else return the number of users had been loaded. */
 }
 
 int 
@@ -1477,9 +1508,11 @@ store_mailgroup(const char *userid, const char *group,
 		const mailgroup_t *mg, int num)
 {
     char fname[STRLEN];
+	char buf[STRLEN];
     int fd;
 
-    sethomefile(fname, userid, group);
+    sethomefile(buf, userid, "mgroups");
+	snprintf(fname, sizeof(fname), "%s/%s", buf, group);
     if ((fd = open(fname, O_WRONLY | O_CREAT, 0600)) != -1)
 	{
         write(fd, mg, sizeof(mailgroup_t) * num);
@@ -1488,5 +1521,147 @@ store_mailgroup(const char *userid, const char *group,
     }
 	else
 		return -1;
+}
+
+int 
+import_old_mailgroup(const char *userid, mailgroup_list_t *mgl)
+{
+	char oldgroup[STRLEN];
+	char tmpgroup[STRLEN];
+	char buf[STRLEN];
+	int num = 0;
+	int len;
+	mailgroup_list_item item;
+	mailgroup_t mg;
+	FILE *fp;
+	int fd;
+
+	sethomefile(oldgroup, userid, "maillist");
+	sprintf(buf, "tmpgroup%d", getpid());
+	sethomefile(tmpgroup, userid, buf);
+	if ((fp = fopen(oldgroup, "r")) == NULL)
+		return -1;
+	if ((fd = open(tmpgroup, O_CREAT | O_WRONLY, 0600)) < 0)
+	{
+		fclose(fp);
+		return -1;
+	}
+	while (num < MAX_MAILGROUP_USERS && fgets(buf, sizeof(buf), fp) != NULL)
+	{
+		len = strlen(buf);
+		if (buf[len] == '\n')
+			buf[len] = '\0';
+		strncpy(mg.id, buf, sizeof(mg.id) - 1);
+		mg.id[sizeof(mg.id) - 1] = '\0';
+		mg.exp[0] = '\0';
+		write(fd, &mg, sizeof(mg));
+		num ++;
+	}
+	fclose(fp);
+	close(fd);
+	bzero(&item, sizeof(item));
+	item.users_num = num;
+	snprintf(item.group_desc, sizeof(item.group_desc), "老版本群体信件组");
+	if (add_mailgroup_item(userid, mgl, &item) < 0)
+	{
+		unlink(tmpgroup);
+		return -1;
+	}
+	sethomefile(buf, userid, "mgroups/");
+	strcat(buf, item.group_name);
+	rename(tmpgroup, buf);
+
+	return 0;
+}
+
+int 
+import_friends_mailgroup(const char *userid, mailgroup_list_t *mgl)
+{
+	char oldgroup[STRLEN];
+	char tmpgroup[STRLEN];
+	char buf[STRLEN];
+	int num = 0;
+	mailgroup_list_item item;
+	mailgroup_t mg;
+	struct friends fr;
+	int fd2;
+	int fd;
+
+	sethomefile(oldgroup, userid, "friends");
+	sprintf(buf, "tmpgroup%d", getpid());
+	sethomefile(tmpgroup, userid, buf);
+	if ((fd2 = open(oldgroup, O_RDONLY, 0600)) < 0)
+		return -1;
+	if ((fd = open(tmpgroup, O_CREAT | O_WRONLY, 0600)) < 0)
+	{
+		close(fd2);
+		return -1;
+	}
+	while (num < MAX_MAILGROUP_USERS 
+			&& read(fd2, &fr, sizeof(fr)) == sizeof(fr))
+	{
+		strncpy(mg.id, fr.id, sizeof(mg.id) - 1);
+		mg.id[sizeof(mg.id) - 1] = '\0';
+		strncpy(mg.exp, fr.exp, sizeof(mg.exp) - 1);
+		mg.exp[sizeof(mg.exp) - 1] = '\0';
+		write(fd, &mg, sizeof(mg));
+		num ++;
+	}
+	close(fd2);
+	close(fd);
+	bzero(&item, sizeof(item));
+	item.users_num = num;
+	snprintf(item.group_desc, sizeof(item.group_desc), "好友群体信件组");
+	if (add_mailgroup_item(userid, mgl, &item) < 0)
+	{
+		unlink(tmpgroup);
+		return -1;
+	}
+	sethomefile(buf, userid, "mgroups/");
+	strcat(buf, item.group_name);
+	rename(tmpgroup, buf);
+
+	return 0;
+}
+
+int 
+add_mailgroup_user(mailgroup_list_t *mgl, int entry, 
+					mailgroup_t *users, mailgroup_t *user)
+{
+	int i;
+
+	for (i = 0; i < MAX_MAILGROUP_USERS; i++)
+	{
+		if (users[i].id[0] == '\0')
+		{
+			memcpy(&users[i], user, sizeof(mailgroup_t));
+			mgl->groups[entry].users_num ++;
+			return 0;
+		}
+	}
+	return -1;
+}
+
+int 
+delete_mailgroup_user(mailgroup_list_t *mgl, int entry, 
+					mailgroup_t *users, int pos)
+{
+	int i;
+
+	for (i = pos; i < mgl->groups[entry].users_num - 1; i++)
+	{
+		memcpy(&users[i], &users[i+1], sizeof(mailgroup_t));
+	}
+	bzero(&users[i], sizeof(mailgroup_t));
+	mgl->groups[entry].users_num --;
+	return 0;
+}
+
+int 
+modify_mailgroup_user(mailgroup_t *users, int pos, mailgroup_t *user)
+{
+	memcpy(&users[pos], user, sizeof(mailgroup_t));
+
+	return 0;
 }
 

@@ -128,6 +128,7 @@ int get_mailnum();
 int invalidaddr(char *addr);
 int doforward(char *direct, struct fileheader *fh, int isuu);
 int set_mailbox_prop();
+int set_mailgroup_list();
 
 /* maintain.c */
 int check_systempasswd();

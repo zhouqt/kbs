@@ -2077,7 +2077,7 @@ const static struct command_def mail_cmds[] = {
     {"N) ÀÀÔÄĞÂĞÅ¼ş", 0, m_new, NULL},
     {"R) ÀÀÔÄÈ«²¿ĞÅ¼ş", 0, m_read, NULL},
     {"S) ¼ÄĞÅ", PERM_LOGINOK, m_sendnull, NULL},
-    {"G) ¼Ä¸ø / Éè¶¨¼ÄĞÅÃûµ¥", PERM_LOGINOK, g_send, NULL},
+    {"G) ÈºÌåĞÅ¼şÑ¡µ¥", PERM_LOGINOK, set_mailgroup_list, NULL},
     {"O)©°Éè¶¨ºÃÓÑÃûµ¥", 0, t_override, NULL},
     {"F)©¸¼ÄĞÅ¸øºÃÓÑÃûµ¥", PERM_LOGINOK, ov_send, NULL},
     {"C) Çå¿Õ±¸·İµÄÓÊÏä", 0, m_clean, NULL},
@@ -2555,42 +2555,40 @@ int set_mailbox_prop()
 	return 0;
 }
 
-/**
- * Setting currentuser's mailgroup.
- *
- * @authur flyriver
- */
-int set_mailgroup(mailgroup_list_t *mgl, int entry)
-{
-}
-
 typedef struct
 {
 	int tmpnum;
-	mailgroup_list_t mail_group;
-	mailgroup_t users[MAX_MAILGROUP_USERS];
-}mailgroup_list_arg;
+	mailgroup_list_t *mgl;
+	int entry;
+	mailgroup_t *users;
+}mailgroup_arg;
 
 static int 
-set_mailgroup_list_select(struct _select_def *conf)
+set_mailgroup_select(struct _select_def *conf)
 {
-    mailgroup_list_arg *arg = (mailgroup_list_arg *) conf->arg;
+    mailgroup_arg *arg = (mailgroup_arg *) conf->arg;
+	int oldmode;
 
-    return SHOW_REFRESHSELECT;
+	oldmode = uinfo.mode;
+	t_query(arg->users[conf->pos - 1].id);
+	modify_user_mode(oldmode);
+
+    return SHOW_REFRESH;
 }
 
 static int 
-set_mailgroup_list_show(struct _select_def *conf, int i)
+set_mailgroup_show(struct _select_def *conf, int i)
 {
-    mailgroup_list_arg *arg = (mailgroup_list_arg *) conf->arg;
+    mailgroup_arg *arg = (mailgroup_arg *) conf->arg;
 
+	prints(" %3d  %-12s  %-14s", i, arg->users[i-1].id, arg->users[i-1].exp);
     return SHOW_CONTINUE;
 }
 
 static int 
-set_mailgroup_list_prekey(struct _select_def *conf, int *key)
+set_mailgroup_prekey(struct _select_def *conf, int *key)
 {
-    mailgroup_list_arg *arg = (mailgroup_list_arg *) conf->arg;
+    mailgroup_arg *arg = (mailgroup_arg *) conf->arg;
 
 	if ((*key == '\r' || *key == '\n') && (arg->tmpnum != 0))
 	{
@@ -2598,12 +2596,36 @@ set_mailgroup_list_prekey(struct _select_def *conf, int *key)
 		arg->tmpnum = 0;
 		return SHOW_SELCHANGE;
 	}
+
+	if (!isdigit(*key))
+		arg->tmpnum = 0;
+
+	switch (*key)
+	{
+	case 'e':
+	case 'q':
+		*key = KEY_LEFT;
+		break;
+	case 'p':
+	case 'k':
+		*key = KEY_UP;
+		break;
+	case ' ':
+	case 'N':
+		*key = KEY_PGDN;
+		break;
+	case 'n':
+	case 'j':
+		*key = KEY_DOWN;
+		break;
+	}
+	return SHOW_CONTINUE;
 }
 
 static int 
-set_mailgroup_list_key(struct _select_def *conf, int key)
+set_mailgroup_key(struct _select_def *conf, int key)
 {
-    mailgroup_list_arg *arg = (mailgroup_list_arg *) conf->arg;
+    mailgroup_arg *arg = (mailgroup_arg *) conf->arg;
 	int oldmode;
 	
 	if (key >= '0' && key <= '9')
@@ -2613,48 +2635,93 @@ set_mailgroup_list_key(struct _select_def *conf, int key)
 	}
 	switch (key)
 	{
-	case 'a': /* add new mailgroup */
-	case 'A':
-		if (arg->mail_group.groups_num < MAX_MAILGROUP_NUM)
+	case 'a': /* add new user */
+		if (arg->mgl->groups[arg->entry].users_num < MAX_MAILGROUP_USERS)
 		{
-			mailgroup_list_item item;
+			mailgroup_t user;
 
-			bzero(&item, sizeof(item));
-			getdata(0, 0, "ÇëÊäÈëĞÂÈºÌåĞÅ¼ş×éµÄÃû³Æ: ", item.group_desc, 
-					sizeof(item.group_desc), DOECHO, NULL, true);
-			add_mailgroup_item(currentuser->userid, arg->mail_group, &item);
-			return SHOW_DIRCHANGE;
-		}
-		break;
-	case 'd': /* delete existed mailgroup */
-	case 'D':
-		if (arg->mail_group.groups_num > 0)
-		{
-			char ans[3];
-
-			getdata(t_lines, 0, "È·ÊµÒªÉ¾³ı¸ÃÈºÌåĞÅ¼ş×éÂğ(Y/N)? [N]: ",
-					ans, sizeof(ans), DOECHO, NULL, true);
-			if (ans[0] == 'Y' || ans[0] == 'y')
+			bzero(&user, sizeof(user));
+			clear();
+			move(1, 0);
+			usercomplete("ÇëÊäÈëÒªÔö¼ÓµÄÓÃ»§´úºÅ: ", user.id);
+			if (user.id[0] != '\0')
 			{
-				delete_mailgroup_item(currentuser->userid, arg->mail_group,
-						conf->pos - 1);
+				if (searchuser(user.id) <= 0)
+				{
+					move(2, 0);
+					prints(MSG_ERR_USERID);
+					pressanykey();
+				}
+				else
+				{
+					move(2, 0);
+					getdata(2, 0, "ÇëÊäÈëÓÃ»§ËµÃ÷: ",
+							user.exp, sizeof(user.exp), DOECHO, NULL, true);
+					add_mailgroup_user(arg->mgl, arg->entry, arg->users, &user);
+				}
 			}
 			return SHOW_DIRCHANGE;
 		}
 		break;
-	case 'm': /* modify existed mailgroup */
-	case 'M':
-		if (arg->mail_group.groups_num > 0)
+	case 'd': /* delete existed user */
+		if (arg->mgl->groups[arg->entry].users_num > 0)
 		{
-			mailgroup_list_item item;
+			char ans[3];
 
-			memcpy(&item, &(arg->mail_group.groups[conf->pos - 1]), 
-					sizeof(item));
-			getdata(0, 0, "ÇëÊäÈëĞÂÈºÌåĞÅ¼ş×éµÄÃû³Æ: ", item.group_desc, 
-					sizeof(item.group_desc), DOECHO, NULL, true);
-			modify_mailgroup_item(currentuser->userid, arg->mail_group, 
-					conf->pos - 1, &item);
+			getdata(t_lines-1, 0, "È·ÊµÒª´Ó×éÖĞÉ¾³ı¸ÃÓÃ»§Âğ(Y/N)? [N]: ",
+					ans, sizeof(ans), DOECHO, NULL, true);
+			if (ans[0] == 'Y' || ans[0] == 'y')
+			{
+				delete_mailgroup_user(arg->mgl, arg->entry, 
+						arg->users, conf->pos - 1);
+			}
 			return SHOW_DIRCHANGE;
+		}
+		break;
+	case 'T': /* modify existed user */
+		if (arg->mgl->groups[arg->entry].users_num > 0)
+		{
+			mailgroup_t user;
+
+			memcpy(&user, &(arg->users[conf->pos - 1]), sizeof(user));
+			getdata(0, 0, "ÇëÊäÈëĞÂÓÃ»§ËµÃ÷: ", user.exp, 
+					sizeof(user.exp), DOECHO, NULL, true);
+			if (strlen(user.exp) > 0)
+				modify_mailgroup_user(arg->users, conf->pos - 1, &user);
+			return SHOW_DIRCHANGE;
+		}
+		break;
+	case 'm': /* send mail to a user */
+		if (arg->mgl->groups[arg->entry].users_num > 0)
+		{
+			oldmode = uinfo.mode;
+			modify_user_mode(FRIEND); /* FIXME: A temporary workaround for 
+										 the buggy m_send() function. */
+			m_send(arg->users[conf->pos - 1].id);
+			modify_user_mode(oldmode);
+			return SHOW_REFRESH;
+		}
+		break;
+	case 'z': /* send message to a user */
+		if (arg->mgl->groups[arg->entry].users_num > 0)
+		{
+			struct user_info *uin;
+			extern char MsgDesUid[];
+
+			if (!HAS_PERM(currentuser, PERM_PAGE))
+				break;
+			oldmode = uinfo.mode;
+			clear();
+			uin = (struct user_info *)t_search(arg->users[conf->pos - 1].id, 0);
+			if (!uin || !canmsg(currentuser, uin))
+				do_sendmsg(NULL, NULL, 0);
+			else
+			{
+				strcpy(MsgDesUid, uin->userid);
+				do_sendmsg(uin, NULL, 0);
+			}
+			modify_user_mode(oldmode);
+			return SHOW_REFRESH;
 		}
 		break;
 	case Ctrl('Z'):
@@ -2682,6 +2749,320 @@ set_mailgroup_list_key(struct _select_def *conf, int key)
 		modify_user_mode(QUERY);
 		t_query(NULL);
 		modify_user_mode(oldmode);
+		clear();
+		return SHOW_REFRESH;
+	}
+
+    return SHOW_CONTINUE;
+}
+
+static int 
+set_mailgroup_refresh(struct _select_def *conf)
+{
+	clear();
+    docmdtitle("[ÉèÖÃÈºÌåĞÅ¼ş×é]",
+               "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ½øÈë[\x1b[1;32mEnter\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ı\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ĞŞ¸ÄËµÃ÷[\x1b[1;32mT\x1b[0;37m] É¾³ı[\x1b[1;32md\x1b[0;37m]\x1b[m ·¢ĞÅ[\x1b[1;32mm\x1b[0;37m]\x1b[m");
+	move(2, 0);
+	prints("[0;1;37;44m  %4s  %-12s  %-58s[m", "±àºÅ", "ÓÃ»§´úºÅ", "ÓÃ»§ËµÃ÷");
+    update_endline();
+	return SHOW_CONTINUE;
+}
+
+static int 
+set_mailgroup_getdata(struct _select_def *conf, int pos, int len)
+{
+    mailgroup_arg *arg = (mailgroup_arg *) conf->arg;
+	conf->item_count = arg->mgl->groups[arg->entry].users_num;
+
+	return SHOW_CONTINUE;
+}
+
+static int 
+init_mailgroup(mailgroup_list_t *mgl, int entry, mailgroup_t *users)
+{
+	mailgroup_t user;
+	int ret = 0;
+
+	clear();
+	move(0, 0);
+	prints("³õÊ¼»¯ÈºÌåĞÅ¼ş×éÓÃ»§Ïòµ¼\n");
+	bzero(&user, sizeof(user));
+	move(1, 0);
+	usercomplete("ÇëÊäÈëÒªÔö¼ÓµÄÓÃ»§´úºÅ: ", user.id);
+	if (user.id[0] != '\0')
+	{
+		if (searchuser(user.id) <= 0)
+		{
+			move(2, 0);
+			prints(MSG_ERR_USERID);
+			pressanykey();
+		}
+		else
+		{
+			move(2, 0);
+			getdata(2, 0, "ÇëÊäÈëÓÃ»§ËµÃ÷: ",
+					user.exp, sizeof(user.exp), DOECHO, NULL, true);
+			add_mailgroup_user(mgl, entry, users, &user);
+			move(3,0);
+			prints("³õÊ¼»¯Íê³É!\n");
+			pressanykey();
+			ret = 1;
+		}
+	}
+	return ret;
+}
+
+/**
+ * Setting currentuser's mailgroup.
+ *
+ * @authur flyriver
+ */
+int set_mailgroup(mailgroup_list_t *mgl, int entry, mailgroup_t *users)
+{
+    struct _select_def group_conf;
+    mailgroup_arg arg;
+    POINT *pts;
+    int i;
+
+	arg.mgl = mgl;
+	arg.entry = entry;
+	arg.users = users;
+	arg.tmpnum = 0;
+
+	bzero(&group_conf, sizeof(struct _select_def));
+	group_conf.item_count = load_mailgroup(currentuser->userid, 
+									mgl->groups[entry].group_name, 
+									users, 
+									mgl->groups[entry].users_num);
+	if (group_conf.item_count == 0)
+	{
+		group_conf.item_count = init_mailgroup(mgl, entry, users);
+		if (group_conf.item_count == 0)
+			return -1;
+	}
+
+    clear();
+	pts = (POINT *)malloc(sizeof(POINT) * BBS_PAGESIZE);
+	for (i = 0; i < BBS_PAGESIZE; i++)
+	{
+		pts[i].x = 2;
+		pts[i].y = i + 3;
+	}
+	group_conf.item_per_page = BBS_PAGESIZE;
+	/* ¼ÓÉÏ LF_VSCROLL ²ÅÄÜÓÃ LEFT ¼üÍË³ö */
+	group_conf.flag = LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;
+	group_conf.prompt = "¡ô";
+	group_conf.item_pos = pts;
+	group_conf.arg = &arg;
+	group_conf.title_pos.x = 0;
+	group_conf.title_pos.y = 0;
+	group_conf.pos = 1; /* initialize cursor on the first mailgroup */
+	group_conf.page_pos = 1; /* initialize page to the first one */
+	
+	group_conf.on_select = set_mailgroup_select;
+	group_conf.show_data = set_mailgroup_show;
+	group_conf.pre_key_command = set_mailgroup_prekey;
+	group_conf.key_command = set_mailgroup_key;
+	group_conf.show_title = set_mailgroup_refresh;
+	group_conf.get_data = set_mailgroup_getdata;
+
+	list_select_loop(&group_conf);
+	store_mailgroup(currentuser->userid, mgl->groups[entry].group_name, 
+					users, mgl->groups[entry].users_num);
+	free(pts);
+
+	return 0;
+}
+
+typedef struct
+{
+	int tmpnum;
+	mailgroup_list_t mail_group;
+	mailgroup_t users[MAX_MAILGROUP_USERS];
+}mailgroup_list_arg;
+
+static int 
+set_mailgroup_list_select(struct _select_def *conf)
+{
+    mailgroup_list_arg *arg = (mailgroup_list_arg *) conf->arg;
+
+	bzero(arg->users, sizeof(mailgroup_t) * MAX_MAILGROUP_USERS);
+	set_mailgroup(&(arg->mail_group), conf->pos - 1, arg->users);
+
+    return SHOW_REFRESH;
+}
+
+static int 
+set_mailgroup_list_show(struct _select_def *conf, int i)
+{
+    mailgroup_list_arg *arg = (mailgroup_list_arg *) conf->arg;
+
+	prints("  %2d  %-40s  %3d", i, arg->mail_group.groups[i-1].group_desc, 
+			arg->mail_group.groups[i-1].users_num);
+    return SHOW_CONTINUE;
+}
+
+static int 
+set_mailgroup_list_prekey(struct _select_def *conf, int *key)
+{
+    mailgroup_list_arg *arg = (mailgroup_list_arg *) conf->arg;
+
+	if ((*key == '\r' || *key == '\n') && (arg->tmpnum != 0))
+	{
+		conf->new_pos = arg->tmpnum;
+		arg->tmpnum = 0;
+		return SHOW_SELCHANGE;
+	}
+
+	if (!isdigit(*key))
+		arg->tmpnum = 0;
+
+	switch (*key)
+	{
+	case 'e':
+	case 'q':
+		*key = KEY_LEFT;
+		break;
+	case 'p':
+	case 'k':
+		*key = KEY_UP;
+		break;
+	case ' ':
+	case 'N':
+		*key = KEY_PGDN;
+		break;
+	case 'n':
+	case 'j':
+		*key = KEY_DOWN;
+		break;
+	}
+	return SHOW_CONTINUE;
+}
+
+static int 
+set_mailgroup_list_key(struct _select_def *conf, int key)
+{
+    mailgroup_list_arg *arg = (mailgroup_list_arg *) conf->arg;
+	int oldmode;
+	
+	if (key >= '0' && key <= '9')
+	{
+		arg->tmpnum = arg->tmpnum * 10 + (key - '0');
+		return SHOW_CONTINUE;
+	}
+	switch (key)
+	{
+	case 'a': /* add new mailgroup */
+		if (arg->mail_group.groups_num < MAX_MAILGROUP_NUM)
+		{
+			mailgroup_list_item item;
+
+			bzero(&item, sizeof(item));
+			getdata(0, 0, "ÇëÊäÈëĞÂÈºÌåĞÅ¼ş×éµÄÃû³Æ: ", item.group_desc, 
+					sizeof(item.group_desc), DOECHO, NULL, true);
+			add_mailgroup_item(currentuser->userid, &(arg->mail_group), &item);
+			return SHOW_DIRCHANGE;
+		}
+		break;
+	case 'd': /* delete existed mailgroup */
+		if (arg->mail_group.groups_num > 0)
+		{
+			char ans[3];
+
+			getdata(t_lines-1, 0, "È·ÊµÒªÉ¾³ı¸ÃÈºÌåĞÅ¼ş×éÂğ(Y/N)? [N]: ",
+					ans, sizeof(ans), DOECHO, NULL, true);
+			if (ans[0] == 'Y' || ans[0] == 'y')
+			{
+				delete_mailgroup_item(currentuser->userid, &(arg->mail_group),
+						conf->pos - 1);
+				if (conf->item_count == 0)
+				{
+					add_default_mailgroup_item(currentuser->userid, 
+							&(arg->mail_group));
+				}
+			}
+			return SHOW_DIRCHANGE;
+		}
+		break;
+	case 'T': /* modify existed mailgroup */
+		if (arg->mail_group.groups_num > 0)
+		{
+			mailgroup_list_item item;
+
+			memcpy(&item, &(arg->mail_group.groups[conf->pos - 1]), 
+					sizeof(item));
+			getdata(0, 0, "ÇëÊäÈëĞÂÈºÌåĞÅ¼ş×éµÄÃû³Æ: ", item.group_desc, 
+					sizeof(item.group_desc), DOECHO, NULL, true);
+			if (strlen(item.group_desc) > 0)
+				modify_mailgroup_item(currentuser->userid, &(arg->mail_group), 
+					conf->pos - 1, &item);
+			return SHOW_DIRCHANGE;
+		}
+		break;
+	case 'm':
+		if (arg->mail_group.groups_num > 0
+			&& arg->mail_group.groups[conf->pos - 1].users_num > 0)
+		{
+			char **mg_users;
+			int cnt;
+			int i;
+
+			cnt = arg->mail_group.groups[conf->pos - 1].users_num;
+			mg_users = (char **)malloc(cnt * sizeof(char *));
+			if (mg_users == NULL)
+				break;
+			load_mailgroup(currentuser->userid, 
+					arg->mail_group.groups[conf->pos - 1].group_name,
+					arg->users, cnt);
+			for (i = 0; i < cnt; i++)
+				mg_users[i] = arg->users[i].id;
+			clear();
+			G_SENDMODE = 0;
+			switch (do_gsend(mg_users, NULL, cnt))
+			{
+			case -1:
+				prints("ĞÅ¼şÄ¿Â¼´íÎó\n");
+				break;
+			case -2:
+				prints("È¡Ïû·¢ĞÅ\n");
+				break;
+			case -4:
+				prints("ĞÅÏäÒÑ¾­³¬³öÏŞ¶î\n");
+				break;
+			default:
+				prints("ĞÅ¼şÒÑ¼Ä³ö\n");
+			}
+			free(mg_users);
+			pressreturn();
+			return SHOW_REFRESH;
+		}
+		break;
+	case Ctrl('Z'):
+		oldmode = uinfo.mode;
+		r_lastmsg();
+		modify_user_mode(oldmode);
+		return SHOW_REFRESH;
+	case 'L':
+	case 'l':
+		oldmode = uinfo.mode;
+		show_allmsgs();
+		modify_user_mode(oldmode);
+		return SHOW_REFRESH;
+	case 'W':
+	case 'w':
+		oldmode = uinfo.mode;
+		if (!HAS_PERM(currentuser, PERM_PAGE))
+			break;
+		s_msg();
+		modify_user_mode(oldmode);
+		return SHOW_REFRESH;
+	case 'u':
+		oldmode = uinfo.mode;
+		clear();
+		modify_user_mode(QUERY);
+		t_query(NULL);
+		modify_user_mode(oldmode);
+		clear();
 		return SHOW_REFRESH;
 	}
 
@@ -2691,6 +3072,13 @@ set_mailgroup_list_key(struct _select_def *conf, int key)
 static int 
 set_mailgroup_list_refresh(struct _select_def *conf)
 {
+	clear();
+    docmdtitle("[ÈºÌåĞÅ¼şÑ¡µ¥]",
+               "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ½øÈë[\x1b[1;32mEnter\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ı\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ¸ÄÃû[\x1b[1;32mT\x1b[0;37m] É¾³ı[\x1b[1;32md\x1b[0;37m]\x1b[m ·¢ÈºÌåĞÅ[\x1b[1;32mm\x1b[0;37m]\x1b[m");
+	move(2, 0);
+	prints("[0;1;37;44m  %4s  %-40s %-31s[m", "±àºÅ", "ÈºÌåĞÅ¼ş×éÃû³Æ", "ÈËÊı");
+    update_endline();
+	return SHOW_CONTINUE;
 }
 
 static int 
@@ -2700,6 +3088,60 @@ set_mailgroup_list_getdata(struct _select_def *conf, int pos, int len)
 	conf->item_count = arg->mail_group.groups_num;
 
 	return SHOW_CONTINUE;
+}
+
+static int 
+init_mailgroup_list(mailgroup_list_t *mgl)
+{
+	char filename[STRLEN];
+	char ans[3];
+	int y = 2;
+	int initialized = 0;
+
+	move(0, 0);
+	prints("³õÊ¼»¯ÈºÌåĞÅ¼ş·Ö×éÏòµ¼\n");
+	sethomefile(filename, currentuser->userid, "maillist");
+	if (dashf(filename))
+	{
+		getdata(y, 0, "ÊÇ·ñµ¼ÈëÀÏ°æ±¾µÄÈºÌåĞÅ¼ş×é(Y/N)? [Y]: ",
+				ans, sizeof(ans), DOECHO, NULL, true);
+		if (ans[0] == '\0' || ans[0] == 'Y' || ans[0] == 'y')
+		{
+			y++;
+			move(y, 0);
+			prints("µ¼ÈëÀÏ°æ±¾µÄÈºÌåĞÅ¼ş×é... ");
+			import_old_mailgroup(currentuser->userid, mgl);
+			unlink(filename);
+			initialized ++;
+			prints("[[0;1;32m³É¹¦[m]\n");
+			y++;
+		}
+	}
+	sethomefile(filename, currentuser->userid, "friends");
+	if (dashf(filename))
+	{
+		getdata(y, 0, "ÊÇ·ñµ¼ÈëºÃÓÑÃûµ¥(Y/N)? [Y]: ",
+				ans, sizeof(ans), DOECHO, NULL, true);
+		if (ans[0] == '\0' || ans[0] == 'Y' || ans[0] == 'y')
+		{
+			y++;
+			move(y, 0);
+			prints("µ¼ÈëºÃÓÑÃûµ¥... ");
+			import_friends_mailgroup(currentuser->userid, mgl);
+			initialized ++;
+			prints("[[0;1;32m³É¹¦[m]\n");
+			y++;
+		}
+	}
+	if (initialized == 0)
+	{
+		add_default_mailgroup_item(currentuser->userid, mgl);
+		initialized ++;
+	}
+	move(y, 0);
+	prints("³õÊ¼»¯Íê³É£¡\n");
+	pressanykey();
+	return initialized;
 }
 
 /**
@@ -2713,22 +3155,32 @@ int set_mailgroup_list()
     mailgroup_list_arg *arg;
     POINT *pts;
     int i;
+	int oldmode;
 
     clear();
 	arg = (mailgroup_list_arg *)malloc(sizeof(mailgroup_list_arg));
 	if (arg == NULL)
 		return -1;
+	oldmode = uinfo.mode;
+	modify_user_mode(MAIL);
+	arg->tmpnum = 0;
 	pts = (POINT *)malloc(sizeof(POINT) * BBS_PAGESIZE);
-	for (i = 0; i < BBS_PAGESIZE + 1; i++)
+	for (i = 0; i < BBS_PAGESIZE; i++)
 	{
 		pts[i].x = 2;
-		pts[i].y = i + 2;
+		pts[i].y = i + 3;
 	}
 	bzero(&grouplist_conf, sizeof(struct _select_def));
 	grouplist_conf.item_count = load_mailgroup_list(currentuser->userid, 
 										&(arg->mail_group));
+	if (grouplist_conf.item_count == 0)
+	{
+		grouplist_conf.item_count = init_mailgroup_list(&(arg->mail_group));
+		clear();
+	}
 	grouplist_conf.item_per_page = BBS_PAGESIZE;
-	grouplist_conf.flag = LF_BELL | LF_LOOP | LF_MULTIPAGE;
+	/* ¼ÓÉÏ LF_VSCROLL ²ÅÄÜÓÃ LEFT ¼üÍË³ö */
+	grouplist_conf.flag = LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;
 	grouplist_conf.prompt = "¡ô";
 	grouplist_conf.item_pos = pts;
 	grouplist_conf.arg = arg;
@@ -2742,11 +3194,13 @@ int set_mailgroup_list()
 	grouplist_conf.pre_key_command = set_mailgroup_list_prekey;
 	grouplist_conf.key_command = set_mailgroup_list_key;
 	grouplist_conf.show_title = set_mailgroup_list_refresh;
+	grouplist_conf.get_data = set_mailgroup_list_getdata;
 
 	list_select_loop(&grouplist_conf);
 	store_mailgroup_list(currentuser->userid, &(arg->mail_group));
 	free(arg);
 	free(pts);
+	modify_user_mode(oldmode);
 
 	return 0;
 }
