@@ -2081,7 +2081,7 @@ int post_article(char *q_file, struct fileheader *re_file)
         sprintf(buf3, "ÒıÑÔÄ£Ê½ [%c]", include_mode);
         move(t_lines - 4, 0);
         clrtoeol();
-        prints("[m·¢±íÎÄÕÂÓÚ %s ÌÖÂÛÇø     %s\n", currboard->filename, (anonyboard) ? (Anony == 1 ? "[1mÒª[mÊ¹ÓÃÄäÃû" : "[1m²»[mÊ¹ÓÃÄäÃû") : "");
+        prints("[m·¢±íÎÄÕÂÓÚ %s ÌÖÂÛÇø     %s  %s\n", currboard->filename, (anonyboard) ? (Anony == 1 ? "[1mÒª[mÊ¹ÓÃÄäÃû" : "[1m²»[mÊ¹ÓÃÄäÃû") : "", mailback? "»Ø¸´µ½ĞÅÏä":"");
         clrtoeol();
         prints("Ê¹ÓÃ±êÌâ: %s\n", (buf[0] == '\0') ? "[ÕıÔÚÉè¶¨Ö÷Ìâ]" : buf);
         clrtoeol();
