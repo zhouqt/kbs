@@ -560,7 +560,7 @@ int get_favread()
 	}
     getdata(6, 0, "ÇëÊäÈë¶Ô·½ÃÜÂë:", passwd, PASSLEN, NOECHO, NULL, true);
     if (passwd[0] == '\0' || !checkpasswd2(passwd, destuser)) {
-        logattempt(getCurrentUser()->userid, getSession()->fromhost);
+        logattempt(destuser->userid, getSession()->fromhost);
 		move(8,0);
 		prints("ÃÜÂë´íÎó\n");
 		pressanykey();
