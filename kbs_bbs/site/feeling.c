@@ -12,7 +12,7 @@ const char *permstrings[] = {
         "呼叫他人聊天",         /* PERM_PAGE */
         "发表文章",             /* PERM_POST */
         "使用者资料正确",       /* PERM_LOGINOK */
-        "监理帐号",         /* PERM_BMMANAGER */
+        "实习站务",         /* PERM_BMMANAGER */
         "可隐身",               /* PERM_CLOAK */
         "可见隐身",             /* PERM_SEECLOAK */
         "长期帐号",         /* PERM_XEMPT */
@@ -124,15 +124,15 @@ struct _shmkey {
 };
 
 static const struct _shmkey shmkeys[] = {
-    {"BCACHE_SHMKEY", 6693},
-    {"UCACHE_SHMKEY", 6696},
-    {"UTMP_SHMKEY", 6699},
-    {"ACBOARD_SHMKEY", 9014},
+    {"BCACHE_SHMKEY", 3693},
+    {"UCACHE_SHMKEY", 3696},
+    {"UTMP_SHMKEY", 3699},
+    {"ACBOARD_SHMKEY", 9013},
     {"ISSUE_SHMKEY", 5010},
     {"GOODBYE_SHMKEY", 5020},
-    {"PASSWDCACHE_SHMKEY", 6697},
-    {"STAT_SHMKEY", 5102},
-    {"CONVTABLE_SHMKEY", 5103},
+    {"PASSWDCACHE_SHMKEY", 3697},
+    {"STAT_SHMKEY", 5100},
+    {"CONVTABLE_SHMKEY", 5101},
     {"MSG_SHMKEY", 5200},
     {"", 0}
 };
@@ -175,7 +175,7 @@ int uleveltochar(char *buf, struct userec *lookupuser)
     else if (lvl & PERM_JURY)
         strcpy(buf, "仲裁");    /* stephen :增加中文查询"仲裁" 2001.10.31 */
     else if (lvl & PERM_BMAMANGER)
-        strcpy(buf, "监理");
+        strcpy(buf, "实习站务");
     else if (lvl & PERM_COLLECTIVE)
         strcpy(buf, "专用");
     else if (lvl & PERM_CHATCLOAK)
