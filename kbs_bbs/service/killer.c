@@ -385,8 +385,7 @@ void start_game()
         kill(inrooms.peoples[me].pid, SIGUSR1);
         return;
     }
-    inrooms.status = INROOM_NIGHT;
-    sprintf(buf, "\x1b[31;1m游戏开始啦!\x1b[m");
+    sprintf(buf, "\x1b[31;1m游戏开始啦! 人群中出现了%d个坏人\x1b[m", totalk);
     for(i=0;i<myroom->people;i++)
         send_msg(inrooms.peoples+i, buf);
     for(i=0;i<totalk;i++) {
@@ -404,6 +403,7 @@ void start_game()
         if(!(inrooms.peoples[i].flag&PEOPLE_KILLER))
             send_msg(inrooms.peoples+i, "现在是晚上...");
     }
+    inrooms.status = INROOM_NIGHT;
     end_change_inroom();
     for(i=0;i<myroom->people;i++)
         kill(inrooms.peoples[i].pid, SIGUSR1);
@@ -643,11 +643,11 @@ void join_room(struct room_struct * r)
     r->people++;
     end_change_inroom();
 
-    sprintf(buf, "%s进入房间", currentuser->userid);
+/*    sprintf(buf, "%s进入房间", currentuser->userid);
     for(i=0;i<myroom->people;i++) {
         send_msg(inrooms.peoples+i, buf);
         kill(inrooms.peoples[i].pid, SIGUSR1);
-    }
+    }*/
 
     room_refresh(0);
     while(1){
@@ -956,14 +956,14 @@ quitgame:
     }
     end_change_inroom();
 
-    if(killer)
+/*    if(killer)
         sprintf(buf, "杀手%s潜逃了", buf2);
     else
         sprintf(buf, "%s离开房间", buf2);
     for(i=0;i<myroom->people;i++) {
         send_msg(inrooms.peoples+i, buf);
         kill(inrooms.peoples[i].pid, SIGUSR1);
-    }
+    }*/
 quitgame2:
     kicked=0;
     getdata(t_lines-1, 0, "寄回本次全部信息吗?[y/N]", buf3, 3, 1, 0, 1);
