@@ -547,6 +547,7 @@ static int fav_onselect(struct _select_def *conf)
 
         if (getboardnum(ptr->name, &bh) != 0 && check_read_perm(currentuser, &bh)) {
             int bid;
+	    int returnmode;
             bid = getbnum(ptr->name);
 
             currboardent=bid;
@@ -562,8 +563,15 @@ static int fav_onselect(struct _select_def *conf)
                 page = tmp - t_lines / 2;
                 getkeep(buf, page > 1 ? page : 1, tmp + 1);
             }
-            Read();
-
+            while (1) {
+                returnmode=Read();
+                if (returnmode==CHANGEMODE) { //select another board
+                    if (currboard->flag&BOARD_GROUP) {
+                        arg->tmpnum=-1;
+                        return SHOW_SELECT;
+                    }
+                } else break;
+            }
             (*conf->get_data)(conf, conf->page_pos, conf->item_per_page);
             modify_user_mode(SELECT);
             if (arg->newflag) { /* 如果是readnew的话，则跳到下一个未读版 */
@@ -730,7 +738,7 @@ static int fav_key(struct _select_def *conf, int command)
         currentuser->flags[0] ^= BRDSORT_FLAG;  /*排序方式 */
         return SHOW_DIRCHANGE;
     case 's':                  /* sort/unsort -mfchen */
-        if (do_select(0, NULL, genbuf) == NEWDIRECT) {
+        if (do_select(0, NULL, genbuf) == CHANGEMODE) {
             if (!(currboard->flag&BOARD_GROUP))
                 Read();
             else {
@@ -1166,7 +1174,7 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
             if (favmode) {
                 if (nbrd[favboard_conf.pos - favboard_conf.page_pos].flag!=-1) {
                     //进入版面目录
-                    if (arg->tmpnum==-1) //select进入的
+                    if (arg.tmpnum==-1) //select进入的
                         favlist[favlevel] = currboardent;
                     else
                         favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].pos+1;
@@ -1176,7 +1184,7 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
                     favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].tag;
             }
             else {
-                if (arg->tmpnum==-1) //select进入的
+                if (arg.tmpnum==-1) //select进入的
                     favlist[favlevel] = currboardent;
                 else
                 favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].pos+1;
