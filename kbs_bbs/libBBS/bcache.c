@@ -158,9 +158,12 @@ int normal_board(char *bname)
     return (bcache[i-1].level==0);
 }
 
-struct boardheader* getbcache()
+struct boardheader* getbcache(char* bname)
 {
-	return bcache;
+        int i;
+        i = getbnum(bname);
+        if (i==0) return NULL;
+	return &bcache[i-1];
 }
 
 int get_boardcount()

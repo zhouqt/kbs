@@ -409,6 +409,7 @@ char* argv;
 
     /*    modified by period      2000-11-13      allow localhost anyway  */
     /*    if((fp = fopen("NOLOGIN","r")) != NULL) */
+#ifndef DEBUG
     if(strcmp(hid, "127.0.0.1") && (fp = fopen("NOLOGIN","r")) != NULL)
     {
         while(fgets(buf,256,fp) != NULL)
@@ -420,6 +421,7 @@ char* argv;
         exit(-1);
     }
 
+#endif
 #ifdef LOAD_LIMIT
 
     if ((fp = fopen("NO_LOAD_LIMIT", "r")) == NULL){  /* add by dong , 1999, 9, 10 */
