@@ -15,19 +15,6 @@ int sockfd;
 int sn=0;
 struct header h;
 
-inline unsigned int byte2long(byte arg[4]) {
-    unsigned int tmp;
-    tmp=((long)arg[0]<<24)+((long)arg[1]<<16)+((long)arg[2]<<8)+(long)arg[3];
-    return tmp;
-}
-
-inline void long2byte(unsigned int num, byte* arg) {
-    (arg)[0]=num>>24;
-    (arg)[1]=(num<<8)>>24;
-    (arg)[2]=(num<<16)>>24;
-    (arg)[3]=(num<<24)>>24;
-}
-
 void save_daemon_pid()
 {
     FILE *fp;
