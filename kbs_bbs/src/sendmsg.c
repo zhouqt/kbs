@@ -474,12 +474,6 @@ void r_msg()
         good_move(0,0);
         prints("%s", outmsg);
 
-        strncpy(uid, head.id, IDLEN+2);
-        pid = head.frompid;
-        uin = t_search(uid, pid);
-        if(head.mode==3||uin==NULL) canreply = 0;
-        else canreply = 1;
-        
         if(first) {
             int x,y;
             getyx(&y,&x);
@@ -491,6 +485,12 @@ void r_msg()
             first = 0;
             move(y, x);
         }
+        
+        strncpy(uid, head.id, IDLEN+2);
+        pid = head.frompid;
+        uin = t_search(uid, pid);
+        if(head.mode==3||uin==NULL) canreply = 0;
+        else canreply = 1;
         
         clrtoeol();
         if(canreply)
