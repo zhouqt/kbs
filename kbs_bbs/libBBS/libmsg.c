@@ -347,7 +347,7 @@ int sendmsgfunc( struct user_info *uentp, const char* msgstr, int mode)
     /* 检查所发msg的目的uid是否已经改变  1998.7.5 by dong*/
     uin=t_search(MsgDesUid,uentp->pid);
 
-    if ((uin == NULL) || (uin->active == 0) || (uin->pid == 0) || (kill(uin->pid, 0) !=0) && (uentp->pid != 1))
+    if ((uin == NULL) || (uin->active == 0) || (uin->pid == 0) || ((kill(uin->pid, 0) !=0) && (uentp->pid != 1)))
     { /*
         uin=t_search(MsgDesUid, NA);
             if ((uin == NULL) || (uin->active == 0) || (uin->pid == 0) || (kill(uin->pid, 0) !=0)){ */

@@ -5,12 +5,14 @@ int outgo_post(struct fileheader *fh,char *board,char* title)
 {
     FILE *foo;
 
-    if (foo = fopen("innd/out.bntp", "a"))
+    if ((foo = fopen("innd/out.bntp", "a"))!=NULL)
     {
         fprintf(foo, "%s\t%s\t%s\t%s\t%s\n", board,
                 fh->filename, currentuser->userid, currentuser->username, title);
         fclose(foo);
+        return 0;
     }
+    return -1;
 }
 
 int get_postfilename(char* filename,char* direct)
@@ -24,8 +26,8 @@ int get_postfilename(char* filename,char* direct)
     /* 自动生成 POST 文件名 */
     now = time(NULL);
     for (i=0;i<10;i++) {
-        sprintf(filename,"M.%d.%c%c",now,post_sufix[(pid+i)%62],post_sufix[(pid*i)%62]);
-	sprintf(fname,"%s/%s",direct,filename);
+        sprintf(filename,"M.%lu.%c%c",now,post_sufix[(pid+i)%62],post_sufix[(pid*i)%62]);
+		sprintf(fname,"%s/%s",direct,filename);
     	if ((fp = open(fname,O_CREAT|O_EXCL|O_WRONLY,0644)) != -1) {
 		break;
 	};
@@ -37,7 +39,6 @@ int get_postfilename(char* filename,char* direct)
 
 int isowner(struct userec* user,struct fileheader* fileinfo)
 {
-    char buf[25];
     time_t posttime;
     if (strcmp(fileinfo->owner,user->userid))
         return 0;
@@ -58,7 +59,6 @@ char  name[STRLEN];
 
 int do_del_post(struct userec* user,int ent ,struct fileheader *fileinfo ,char *direct ,char* board,int digestmode,int decpost)
 {
-    FILE        *fn;
     char        buf[512];
     char        usrid[STRLEN];
     char        *t ;
@@ -199,14 +199,13 @@ void addsignature(FILE *fp,struct userec* user,int sig)
     char tmpsig[MAXSIGLINES][256];
     char inbuf[256];
     char fname[STRLEN];
-    char tmp[STRLEN];
 
    if (sig==0) return;
     sethomefile( fname, user->userid,"signatures" );
     if ((sigfile = fopen(fname, "r"))== NULL)
     {return;}
     fputs("\n--\n", fp);
-    for (i=1; i<=(sig-1)*MAXSIGLINES&sig!=1; i++)
+    for (i=1; i<=(sig-1)*MAXSIGLINES&&sig!=1; i++)
     {
         if (!fgets(inbuf, sizeof(inbuf), sigfile)){
             fclose(sigfile);
@@ -233,7 +232,7 @@ int write_posts(char *id, char *board, char *title)
     struct posttop postlog, pl;
 
     if(junkboard(board)||normal_board(board)!=1)
-        return ;
+        return 0;
     now = time(0) ;
     strcpy(postlog.author, id);
     strcpy(postlog.board, board);
@@ -248,7 +247,6 @@ int write_posts(char *id, char *board, char *title)
     TODO: 这个地方有点不妥,每次发文要遍历一次,保存到.Xpost中,
     用来完成十大发文统计针对ID而不是文章.不好
     	KCN*/
-        char buf[STRLEN];
         int  log = 1;
         FILE *fp = fopen(".Xpost", "r");
 
@@ -278,6 +276,7 @@ int write_posts(char *id, char *board, char *title)
     }
 
     append_record(".post.X", &postlog, sizeof(postlog));
+    return 0;
 }
 
 void write_header(FILE *fp,struct userec* user,int in_mail,char* board,char* title,int Anony,int mode)
@@ -411,8 +410,7 @@ int post_cross(struct userec* user,char* toboard,char* fromboard,char* title,cha
 {
     struct fileheader postfile ;
     char        filepath[STRLEN];
-    char        buf[256],buf4[STRLEN],whopost[IDLEN],save_title[STRLEN],save_filename[STRLEN];
-    int         fp,i;
+    char        buf[256],buf4[STRLEN],whopost[IDLEN],save_title[STRLEN];
     int aborted,local_article ;
 
     if (!haspostperm(user,toboard)&&!mode)

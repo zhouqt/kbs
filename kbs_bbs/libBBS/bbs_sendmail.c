@@ -49,9 +49,8 @@ int mail_file(char* fromid,char *tmpfile,char *userid,char *title,int unlink)
 {
     struct fileheader newmessage ;
     struct stat st ;
-    char fname[STRLEN],filepath[STRLEN],*ip;
+    char fname[STRLEN],filepath[STRLEN];
     char buf[255];
-    int fp;
 
     int now; /* added for mail to SYSOP: Bigman 2000.8.11 */
 
@@ -115,7 +114,7 @@ struct mail_option{
     int bfirst;
 };
 
-monitor_cb (const char *buf, int buflen, int writing, void *arg)
+void monitor_cb (const char *buf, int buflen, int writing, void *arg)
 {
   FILE *fp = arg;
 
@@ -165,7 +164,7 @@ bbs_readmailfile (char **buf, int *len, void *arg)
     if (pmo->bfirst) {
 /*	sprintf(pout,"Reply-To: %s.bbs@%s\r\n\r\n", currentuser->userid, email_domain());
 */
-	sprintf(pout,"\r\n\r\n", currentuser->userid, email_domain());
+	sprintf(pout,"\r\n\r\n");
 	pout=*buf+strlen(*buf);
 	pmo->bfirst=0;
     }
@@ -231,7 +230,7 @@ int
 bbs_sendmail(char *fname,char* title,char* receiver,int isuu,int isbig5,int noansi) /* Modified by ming, 96.10.9  KCN,99.12.16*/
 {
     struct mail_option mo;
-    FILE *fin,*fout;
+    FILE *fin;
     char uname[STRLEN];
     int len;
 
