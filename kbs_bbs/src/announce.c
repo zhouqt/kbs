@@ -284,6 +284,13 @@ void a_prompt(bot, pmt, buf)    /* 精华区状态下 输入 */
     getdata(t_lines + bot, 0, pmt, buf, 39, DOECHO, NULL, true);
 }
 
+void a_prompt2(int bot,char* pmt,char* buf)    /* 精华区状态下 输入 ,包含原来的内容*/
+{
+    move(t_lines + bot, 0);
+    clrtoeol();
+    getdata(t_lines + bot, 0, pmt, buf, 39, DOECHO, NULL, false);
+}
+
 /* a_SeSave 用来删除存到暂存档时的文件头和尾 Life 1997.4.6 */
 int a_SeSave(char *path, char *key, struct fileheader *fileinfo, int nomsg)
 {
@@ -1018,9 +1025,17 @@ void a_manager(pm, ch)
             }
             break;
         case 't':
-	    strncpy(changed_T,item->title,83);
-	    changed_T[83]=0;
-            a_prompt(-2, "新标题: ", changed_T);
+	    strncpy(changed_T,item->title,79);
+	    changed_T[79]=0;
+	    {
+                char*p;
+                p=changed_T+strlen(changed_T)-1;
+                for (;p>=changed_T;p--) {
+		    if (*p==' ') *p=0;
+		    else break;
+		};
+            }
+            a_prompt2(-2, "新标题: ", changed_T);
             /* modified by netty to properly handle title change,add bm by SmallPig */
             if (*changed_T) {
                 if (dashf(fpath)) {
