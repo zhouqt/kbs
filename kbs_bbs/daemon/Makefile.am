@@ -1,0 +1,8 @@
+bin_PROGRAMS = miscd newpop3d chatd webmsgd
+EXTRA_PROGRAMS = 
+miscd_SOURCES = miscd.c
+newpop3d_SOURCES = newpop3.c
+chatd_SOURCES = station.c
+webmsgd_SOURCES = webmsgd.c
+LDADD=../libBBS/libBBS.a ../libsystem/libsystem.a ../rzsz/libzmodem.a -lbsd -lesmtp -lltdl -ldl
+AM_CFLAGS=-DINVISIBLE -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME  -I$(top_builddir)/src
