@@ -92,10 +92,10 @@
 <form name="postform" method="post" action="/cgi-bin/bbs/bbssndmail">
 <table>
 <tr>
-<td>
-发信人: <?php echo $currentuser["userid"]; ?><br />
-信件标题: <input type="text" name="title" size="40" maxlength="100" value="<?php echo $title; ?>"><br />
-收信人: <input type="text" name="userid" value="<?php echo $destuserid; ?>"><br />
+<td class="b9">
+寄信人: <?php echo $currentuser["userid"]; ?><br />
+标&nbsp;&nbsp;题: <input class="sb1" type="text" name="title" size="40" maxlength="100" value="<?php echo $title; ?>"><br />
+收信人: <input class="sb1" type="text" name="userid" value="<?php echo $destuserid; ?>"><br />
 使用签名档 <select name="signature">
 <?php
 		if ($currentuser["signum"] == 0)
@@ -128,8 +128,11 @@
 ?>
 </select>
  [<a target="_balnk" href="bbssig.php">查看签名档</a>]
-<input type="checkbox" name="backup">备份<br />
-<textarea name="text"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' rows="20" cols="80" wrap="physical">
+<?php
+    $bBackup = (bbs_is_save2sent() != 0);
+?>
+<input type="checkbox" name="backup"<?php if ($bBackup) echo " checked=\"checked\""; ?>>保存到发件箱<br />
+<textarea class="sb1" name="text"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' rows="20" cols="80" wrap="physical">
 <?php
     if(isset($file)){
 		if(isset($board)){
@@ -179,9 +182,9 @@
 	}
 ?>
 </textarea><br><div align="center">
-<input type="submit" value="发送" />
-<input type="reset" value="清除" />
-<input type="button" value="返回" onclick="window.location.href='bbsmail.php'" />
+<input class="bt1" type="submit" value="发送" />
+<input class="bt1" type="reset" value="清除" />
+<input class="bt1" type="button" value="返回" onclick="window.location.href='bbsmail.php'" />
 </div></table></form>
 
 				</td>

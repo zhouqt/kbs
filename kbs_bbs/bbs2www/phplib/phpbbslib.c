@@ -160,6 +160,7 @@ static PHP_FUNCTION(bbs_getmailnum);
 static PHP_FUNCTION(bbs_getmailnum2);
 static PHP_FUNCTION(bbs_getmails);
 static PHP_FUNCTION(bbs_getmailusedspace);
+static PHP_FUNCTION(bbs_is_save2sent);
 static PHP_FUNCTION(bbs_can_send_mail);
 static PHP_FUNCTION(bbs_loadmaillist);
 static PHP_FUNCTION(bbs_changemaillist);
@@ -301,6 +302,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_getmailnum2, NULL)
         PHP_FE(bbs_getmails, NULL)
         PHP_FE(bbs_getmailusedspace, NULL)
+        PHP_FE(bbs_is_save2sent, NULL)
         PHP_FE(bbs_valid_filename, NULL)
         PHP_FE(bbs_can_send_mail, NULL)
         PHP_FE(bbs_loadmaillist, NULL)
@@ -4270,6 +4272,15 @@ static PHP_FUNCTION(bbs_getmailusedspace)
 }
 
 /**
+ * Whether save to sent box
+ * @author atppp
+ */
+static PHP_FUNCTION(bbs_is_save2sent)
+{
+	RETURN_LONG(HAS_MAILBOX_PROP(u_info, MBP_SAVESENTMAIL));
+}
+
+/**
  * Fetch a list of mails in one user's mail path file into an array.
  * prototype:
  * array bbs_getmails(char *filename,int start,int num);
@@ -4995,7 +5006,7 @@ static PHP_FUNCTION(bbs_postmail){
     snprintf(title2,ARTICLE_TITLE_LEN-1, "{%s} %s", targetID, title);
     title2[ARTICLE_TITLE_LEN-1] = 0;
     
-    if ((ret=post_mail(targetID, title3, filename, currentuser->userid, currentuser->username, fromhost, sig))!=0)
+    if ((ret=post_mail(targetID, title3, filename, currentuser->userid, currentuser->username, fromhost, sig, backup))!=0)
     {
 		RETURN_LONG(ret-1);
 		/*
@@ -5010,8 +5021,6 @@ static PHP_FUNCTION(bbs_postmail){
         }
 		*/
     }
-    if (backup)
-        post_mail(currentuser->userid, title2, filename, currentuser->userid, currentuser->username, fromhost, sig);
     unlink(filename);
 	RETURN_LONG(6);
 }

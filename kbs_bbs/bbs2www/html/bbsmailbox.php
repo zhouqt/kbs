@@ -136,7 +136,7 @@ function bbsconfirm(url,infor){
 		<td class="mt2" width="30">选中</td>
 		<td class="mt2" width="30">序号</td>
 		<td class="mt2" width="30">状态</td>
-		<td class="mt2" width="100">发信人</td>
+		<td class="mt2" width="100"><?php echo ($mail_path==".SENT"?"收信者":"发信者"); ?></td>
 		<td class="mt2">标题</td>
 		<td class="mt2" width="100">时间</td>
 		<td class="mt2" width="40">删除</td>

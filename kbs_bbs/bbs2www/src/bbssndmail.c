@@ -6,7 +6,7 @@
 int main()
 {
     FILE *fp;
-    char userid[80], filename[80], dir[80], title[ARTICLE_TITLE_LEN], title2[80], buf[80], *content;
+    char userid[80], filename[80], dir[80], title[ARTICLE_TITLE_LEN], buf[80], *content;
     int t, i, sig, backup;
     struct fileheader x;
     struct userec *u = NULL;
@@ -38,10 +38,8 @@ int main()
     sprintf(filename, "tmp/%s.%d.tmp", userid, getpid());
     if (f_append(filename, unix_string(content)) < 0)
         http_fatal("发信失败");
-    sprintf(title2, "{%s} %s", userid, title);
-    title2[70] = 0;
     
-    if ((i=post_mail(userid, title, filename, currentuser->userid, currentuser->username, fromhost, sig))!=0)
+    if ((i=post_mail(userid, title, filename, currentuser->userid, currentuser->username, fromhost, sig, backup))!=0)
     {
         switch (i) {
         case -1:
@@ -50,16 +48,17 @@ int main()
         	http_fatal("发信失败:对方拒收你的邮件");
         case -3:
         	http_fatal("发信失败:对方信箱满");
+        case -5:
+        	http_fatal("发信失败:不能添加到.DIR");
+        case -6:
+            printf("发信警告:不能保存到发件箱<br>\n");
+            break;
         default:
         	http_fatal("发信失败");
         }
     }
-    if (backup)
-        post_mail(currentuser->userid, title2, filename, currentuser->userid, currentuser->username, fromhost, sig);
-    unlink(filename);
     printf("信件已寄给%s.<br>\n", userid);
-    if (backup)
-        printf("信件已经备份.<br>\n");
+    unlink(filename);
     printf("<a href=\"javascript:history.go(-2)\">返回</a>");
     http_quit();
 }

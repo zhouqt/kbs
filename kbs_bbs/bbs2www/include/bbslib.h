@@ -145,7 +145,7 @@ int shm_init();
 
 int user_init(struct userec **x, struct user_info **y);
 
-int post_mail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig);
+int post_mail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig, int backup);
 
 int del_mail(int ent, struct fileheader* fh, char* direct);
 

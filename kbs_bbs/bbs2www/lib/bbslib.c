@@ -554,27 +554,17 @@ int del_mail(int ent, struct fileheader *fh, char *direct)
     return 1;
 }
 
-int post_mail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig)
+int post_mail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig, int backup)
+/* @parm backup - whether save this mail to sent box - atppp */
 {
     FILE *fp, *fp2;
-    char buf3[256], dir[256];
+    char buf3[256];
+    char fname[STRLEN], filepath[STRLEN], sent_filepath[STRLEN];
     struct fileheader header;
     struct stat st;
     struct userec *touser;      /*peregrine for updating used space */
     int unum;
-    int t, i;
-
-    bzero(&header, sizeof(header));
-    strcpy(header.owner, id);
-    for (i = 0; i < 100; i++) {
-        t = time(0) + i;
-        sprintf(buf3, "mail/%c/%s/M.%d.A", toupper(userid[0]), userid, i + time(0));
-        if (!file_exist(buf3))
-            break;
-    }
-    if (i >= 99)
-        return -1;
-
+    
     if (false == canIsend2(currentuser, userid)) {
         return -2;
     }
@@ -583,12 +573,27 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
     if (!HAS_PERM(currentuser, PERM_SYSOP) && chkusermail(touser)) {    /*Haohamru.99.4.05 */
         return -3;
     }
-    sprintf(header.filename, "M.%d.A", t);
+
+    bzero(&header, sizeof(header));
+    strcpy(header.owner, id);
     strncpy(header.title, title, ARTICLE_TITLE_LEN - 1);
 	header.title[ARTICLE_TITLE_LEN - 1] = '\0';
-    fp = fopen(buf3, "w");
+    setmailpath(filepath, userid);
+    if (stat(filepath, &st) == -1) {
+        if (mkdir(filepath, 0755) == -1)
+            return -1;
+    } else {
+        if (!(st.st_mode & S_IFDIR))
+            return -1;
+    }
+    if (GET_MAILFILENAME(fname, filepath) < 0)
+        return -1;
+    strcpy(header.filename, fname);
+    setmailfile(filepath, userid, fname);
+
+    fp = fopen(filepath, "w");
     if (fp == NULL)
-        return -4;
+        return -1;
     fp2 = fopen(file, "r");
     fprintf(fp, "寄信人: %s (%s)\n", id, nickname);
     fprintf(fp, "标  题: %s\n", title);
@@ -604,20 +609,36 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
     sig_append(fp, id, sig);
     fprintf(fp, "\n\033[1;%dm※ 来源:．%s %s．[FROM: %.20s]\033[m\n", 31 + rand() % 7, BBSNAME, NAME_BBS_ENGLISH, SHOW_USERIP(currentuser, ip));
     fclose(fp);
-    sprintf(buf3, "mail/%c/%s/%s", toupper(userid[0]), userid, header.filename); /*ft.buf3 have changed.added by binxun.*/
-    if (stat(buf3, &st) != -1)
-        touser->usedspace += st.st_size;
-    sprintf(dir, "mail/%c/%s/.DIR", toupper(userid[0]), userid);
-    fp = fopen(dir, "a");
-    if (fp == NULL)
-        return -5;
-    fwrite(&header, sizeof(header), 1, fp);
-    fclose(fp);
-	setmailcheck(userid);
     
+    if (stat(filepath, &st) != -1)
+        touser->usedspace += st.st_size;
+    setmailfile(buf3, userid, ".DIR");
+    if (append_record(buf3, &header, sizeof(header)) == -1)
+        return -5;
+	setmailcheck(userid);
+	    
    /* 添加Log Bigman: 2003.4.7 */
     newbbslog(BBSLOG_USER, "mailed(www) %s %s", userid,title);
 
+    if (backup) {
+        strcpy(header.owner, userid);
+        setmailpath(sent_filepath, id);
+        if (GET_MAILFILENAME(fname, sent_filepath) < 0) return -6;
+        strcpy(header.filename, fname);
+        setmailfile(sent_filepath, id, fname);
+
+        f_cp(filepath, sent_filepath, 0);
+        if (stat(sent_filepath, &st) != -1) {
+            currentuser->usedspace += st.st_size;
+        } else {
+            return -6;
+        }
+        header.accessed[0] |= FILE_READ;
+        setmailfile(buf3, id, ".SENT");
+        if (append_record(buf3, &header, sizeof(header)) == -1)
+            return -6;
+        newbbslog(BBSLOG_USER, "mailed(www) %s ", id);
+    }
     return 0;
 }
 
@@ -1621,6 +1642,9 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
          */
         ui.freshtime = time(0);
         ui.mode = WEBEXPLORE;
+	    /* Load currentuser's mailbox properties, added by atppp */
+	    ui.mailbox_prop = load_mailbox_prop(user->userid);
+        
         strncpy(ui.userid, user->userid, 20);
         strncpy(ui.realname, ud.realname, 20);
         strncpy(ui.username, user->username, 40);

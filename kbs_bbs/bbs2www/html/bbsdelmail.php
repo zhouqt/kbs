@@ -14,7 +14,7 @@
 	{
 		html_init("gb2312","","",1);
 		$dirname = $_POST["dir"];
-		$title = $_POST["title"];
+		$title = urldecode($_POST["title"]);
 		$dstart = $_POST["dstart"];
 		$dend = $_POST["dend"];
 		$dtype = $_POST["dtype"];
