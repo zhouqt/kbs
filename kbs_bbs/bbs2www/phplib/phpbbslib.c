@@ -1995,26 +1995,6 @@ static PHP_FUNCTION(bbs_mailwebmsgs){
 	RETURN_TRUE;
 }
 
-static unsigned int binarySearchInFileHeader(struct fileheader *start,int total, unsigned int key){
-	unsigned int low, high ,mid, found;
-	int comp;
-	low = 0;
-	high = total - 1;
-	found=-1;
-	while (low <= high) {
-		mid = (high + low) / 2;
-		comp = (key) - (start[mid].id);
-		if (comp == 0) {
-			found=mid;
-			break;
-		} else if (comp < 0)
-			high = mid - 1;
-		else
-			low = mid + 1;
-	}
-	return found;
-}
-
 /**
  * 获取版面精华主题数量
  * prototype:
@@ -2768,7 +2748,6 @@ static PHP_FUNCTION(bbs_getthreadnum)
     int total;
     int ac = ZEND_NUM_ARGS();
 	struct stat normalStat,originStat;
-	char dirpath1[STRLEN];
 
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
@@ -2782,20 +2761,9 @@ static PHP_FUNCTION(bbs_getthreadnum)
     if ((bp = getboard(brdnum)) == NULL) {
         RETURN_LONG(-1);
     }
-    setbdir(DIR_MODE_ORIGIN, dirpath, bp->filename);
-	if (!stat(dirpath,&originStat))	{
-		setbdir(DIR_MODE_NORMAL,dirpath1,bp->filename);
-		if (!stat(dirpath1,&normalStat)){
-			if (normalStat.st_mtime>originStat.st_mtime){
-				www_generateOriginIndex(bp->filename);
-			}
-		} else {
-			www_generateOriginIndex(bp->filename);
-		}
-	} else {
-		www_generateOriginIndex(bp->filename);
-	}
-    total = get_num_records(dirpath, sizeof(struct fileheader));
+	setbdir(DIR_MODE_WEB_THREAD, dirpath, bp->filename);
+	www_generateOriginIndex(bp->filename);
+    total = get_num_records(dirpath, sizeof(struct wwwthreadheader));
     RETURN_LONG(total);
 }
 
