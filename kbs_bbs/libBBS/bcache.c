@@ -303,7 +303,7 @@ int delete_board(char *boardname, char *title)
             brdshm->numboards = 0;
         else
             for (i = bid - 1; i >= 0; i--)
-                if (!bcache[i].filename[0]) {
+                if (bcache[i].filename[0]) {
                     brdshm->numboards = i + 1;
                     break;
                 }
