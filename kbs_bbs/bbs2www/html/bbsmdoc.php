@@ -85,6 +85,13 @@
 if($article["FILENAME"][0]=='Z') echo "boz";
 else echo "box";
 ?><?php echo $article["ID"]; ?>" type="checkbox"></td>
+<?php
+			if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1)) {
+?>
+<TD><strong>[Ã· æ]</strong>
+<?php
+			} else {
+?>
 <td>
 <?php
 			if ($flags[1] == 'y')
@@ -111,6 +118,9 @@ else echo "box";
 			else
 				echo $flags[0];
 			echo $flags[3];
+?>
+<?php
+		}//÷√∂•
 ?>
 </td>
 <td><a href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
