@@ -77,7 +77,7 @@ Blogхуж╬кякВ
 <?php
 
 	$userid = addslashes($_GET["userid"]);
-	$keyword = addslashes(trim($_GET["keyword"]));
+	$keyword = myAddslashes(trim($_GET["keyword"]));
 	$area = addslashes($_GET["area"]);
 	$pno = (int)($_GET["pno"]);
 	

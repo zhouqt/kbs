@@ -39,7 +39,7 @@
 				continue;
 			else
 			{
-				$query .= " OR `".$key."` LIKE '%".addslashes($keyword[$i])."%' ";
+				$query .= " OR `".$key."` LIKE '%".myAddslashes($keyword[$i])."%' ";
 				$keyword1 .= " ".$keyword[$i];
 			}	
 		}

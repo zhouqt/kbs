@@ -799,4 +799,13 @@ function html_format_fix_length($str,$length)
 	return $str;	
 }
 
+function myAddslashes($str)
+{
+    $str = addslashes($str);
+    $str = str_replace("_","\_",$str);
+    $str = str_replace("%","\%",$str);
+    return $str;
+}
+
+
 ?>
