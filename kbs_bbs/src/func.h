@@ -239,7 +239,7 @@ extern "C" {
     /*
      * mmap_search_dir_apply
      * 功能:mmap struct fileheader结构的文件，找到需要的记录,
-     * 找到后调用func,传入start整个文件mmap的开始，ent为记录号
+     * 找到后调用func,传入start整个文件mmap的开始，ent为记录号，基 1 计数，
      * 根据文章ID做二分查找
      * 调用的时候
      * match=true,完全匹配
@@ -248,7 +248,7 @@ extern "C" {
      */
     typedef int (*DIR_APPLY_FUNC) (int fd, struct fileheader * start, int ent, int total, struct fileheader * data, bool match);
     typedef int (*search_handler_t) (int fd, fileheader_t * base, int ent, int total, bool match, void *arg);
-    int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, void *arg, int *index);
+    int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, void *arg);
 /**
  * Get some records from article id. If this function is successfully
  * returned, the article record with the id is put at the center of 
@@ -263,7 +263,7 @@ extern "C" {
  * @param id The article id to be searched in the .DIR file
  * @param buf The user provided buffer to hold the matched records
  * @param num The number of records that the buffer can hold
- * @param index return the record index
+ * @param index The record number of the record corresponding to id
  * @return >0 The number of matched records
  *          0 No record matched or execution failed
  * @author flyriver
