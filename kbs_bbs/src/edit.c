@@ -43,15 +43,18 @@ inline static void CLEAR_MARK() {
 }
 
 int myy=-1, myx, outii, outjj;
-bool show_eof=false;
+bool show_eof=false, auto_newline=true;
 
 void display_buffer()
 {
     struct textline *p;
-    int ii, i, j, ch, y;
+    int ii, i, j, ch, y, shift=0;
 
     clear();
     y = 0; outii = -1;
+    if (!auto_newline) {
+        shift = currpnt/(scr_cols-5)*(scr_cols-5);
+    }
     for (p = top_of_win, ii = 0; ii < t_lines - 1; ii++) {
         if (p) {
             if (editansi)
@@ -65,6 +68,7 @@ void display_buffer()
                     if (p == currline && i == currpnt) {
                         myy = y; myx = j;
                     }
+                    if (auto_newline)
                     if (j >= scr_cols || j >= scr_cols-1 && ch) {
                         outc('\n');
                         y++;
@@ -74,13 +78,15 @@ void display_buffer()
                         outii = ii; outjj = i;
                         break;
                     }
-                    if (p->data[i]==27) {
-                        setfcolor(YELLOW, 0);
-                        outc('*');
-                        resetcolor();
+                    if (i>shift||i==shift&&(p->data[i]>=0||ch)) {
+                        if (p->data[i]==27) {
+                            setfcolor(YELLOW, 0);
+                            outc('*');
+                            resetcolor();
+                        }
+                        else outc(p->data[i]);
+                        j++;
                     }
-                    else outc(p->data[i]);
-                    j++;
                 }
                 if (p == currline && i == currpnt) {
                     myy = y; myx = j;
@@ -165,8 +171,8 @@ void msgline()
     /* Leeward 98.07.30 Change hot key for msgX */
     /*strcat(buf," [31mCtrl-Z[33m Çó¾È         "); */
     strcat(buf, " [31mCtrl-Q[33m Çó¾È         ");
-    sprintf(buf2, " ×´Ì¬ [[32m%s[33m][[32m%d[33m,[32m%d[33m][[32m%c[33m]      Ê±¼ä", insert_character ? "²åÈë" : "Ìæ»»", currln + 1, currpnt + 1,
-        show_eof?'~':' ');
+    sprintf(buf2, " ×´Ì¬ [[32m%s[33m][[32m%d[33m,[32m%d[33m][[32m%c[33m][[32m%c[33m]      Ê±¼ä", insert_character ? "²åÈë" : "Ìæ»»", currln + 1, currpnt + 1,
+        show_eof?'~':' ', auto_newline?' ':'X');
     strcat(buf, buf2);
     sprintf(buf2, "[33m[44m¡¾[32m%.16s[33m¡¿", ctime(&now));
     strcat(buf, buf2);
@@ -1581,6 +1587,9 @@ void vedit_key(int ch)
             /*case Ctrl('Z'):  call help screen */
         case Ctrl('N'):
             show_eof = !show_eof;
+            break;
+        case Ctrl('P'):
+            auto_newline = !auto_newline;
             break;
         case Ctrl('Q'):        /* call help screen */
             show_help("help/edithelp");
