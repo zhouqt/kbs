@@ -49,7 +49,7 @@ function get_mimetype($name)
 	return "application/octet-stream";
 }
 
-function display_navigation_bar($brdarr, $short_filename, $num)
+function display_navigation_bar($brdarr, $num)
 {
 	global $currentuser;
 
@@ -112,7 +112,7 @@ function display_navigation_bar($brdarr, $short_filename, $num)
 				html_error_quit("´íÎóµÄÎÄÕÂºÅ.....");
 			}
 #		}
-                bbs_set_onboard($brcnum,1);
+                bbs_set_onboard($brdnum,1);
 
 		$filename=bbs_get_board_filename($brdarr["NAME"], $short_filename);
 		$test_file = @fopen($filename,"r");
@@ -165,7 +165,7 @@ function display_navigation_bar($brdarr, $short_filename, $num)
 </td></tr></table>
 <hr class="default" />
 <?php
-				display_navigation_bar($brdarr, $articles, $num);
+				display_navigation_bar($brdarr, $num);
 			}
 
 //		if ($currentuser["userid"] != "guest")
