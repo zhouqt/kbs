@@ -441,7 +441,7 @@ int m_editbrd()
     clear();
     stand_title("修改讨论区资讯");
     move(1, 0);
-    make_blist();
+    make_blist(0);
     namecomplete("输入讨论区名称: ", bname);
     if (*bname == '\0') {
         move(2, 0);
@@ -1896,7 +1896,7 @@ int set_BM()
     clear();
     stand_title("任免版主");
     move(1, 0);
-    make_blist();
+    make_blist(0);
     namecomplete("输入讨论区名称: ", bname);
     if (*bname == '\0') {
         move(2, 0);
