@@ -69,6 +69,13 @@ login_init();
 <br>
 [<a href="bbsfriend.php">在线好友</a>]
 <?php
+	$prev = $start - $num;
+	if ($prev <= 0) $prev = 1;
+	if( $prev < $start ){
+?>
+[<a href="bbsuser.php?start=<?php echo $prev;?>">上一页</a>]
+<?php
+	}
 	if( $count >= $num ){
 ?>
 [<a href="bbsuser.php?start=<?php echo $start+$num;?>">下一页</a>]
