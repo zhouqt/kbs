@@ -731,7 +731,6 @@ int m_new()
     mrd = 0;
     idc=0;
     modify_user_mode(RMAIL);
-    read_new_mail(NULL, 0);
     if (apply_record(currmaildir, (RECORD_FUNC_ARG) read_new_mail, sizeof(struct fileheader), &idc, 1,false) == -1) {
         clear();
         move(0, 0);
