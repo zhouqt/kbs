@@ -32,6 +32,12 @@
                         settype($delete_s,"integer");
                         bbs_del_favboard($select,$delete_s);
                 }
+                if (isset($_GET["deldir"]))
+                {
+                        $delete_s=$_GET["deldir"];
+                        settype($delete_s,"integer");
+                        bbs_del_favboarddir($select,$delete_s);
+                }
                 if (isset($_GET["dname"]))
                 {
                         $add_dname=$_GET["dname"];
@@ -84,6 +90,7 @@
                 $brd_unread = $boards["UNREAD"]; // 未读标记
                 $brd_zapped = $boards["ZAPPED"]; // 是否被 z 掉
                 $brd_position= $boards["POSITION"];//位置
+                $brd_npos= $boards["NPOS"];//位置
                 $brd_flag= $boards["FLAG"];//目录标识
                 $brd_bid= $boards["BID"];//目录标识
                 $rows = sizeof($brd_name);
@@ -114,7 +121,7 @@
         </a></td>
         <td class="kt3 c2">[目录]</td>
         <td class="kt3 c2" colspan="3">&nbsp;</td>
-        <td class="kt3 c2"><a class="kts1" href="bbsfav.php?select=<?php echo $select;?>&delete=<?php echo $brd_bid[$i];?>">删除</a></td>
+        <td class="kt3 c2"><a class="kts1" href="bbsfav.php?select=<?php echo $select;?>&deldir=<?php echo $brd_npos[$i];?>">删除</a></td>
         </tr>   
 <?php
                                 continue;
@@ -158,7 +165,7 @@
 </td>
 <td class="kt3 c1"><?php echo $brd_artcnt[$i]; ?></td>
 <td class="kt3 c2">
-<a class="kts1" href="bbsfav.php?select=<?php echo $select;?>&delete=<?php echo bbs_is_favboard($brd_position[$i])-1;?>">
+<a class="kts1" href="bbsfav.php?select=<?php echo $select;?>&delete=<?php echo ($brd_npos[$i]);?>">
 删除</a>
 </td>
 </tr>
