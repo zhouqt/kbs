@@ -68,7 +68,7 @@ int main()
     for (i = 'A'; i <= 'Z'; i++)
         printf("[<a href=\"bbsufind?search=%c\">%c</a>]", i, i);
     printf("<br>\n");
-    printf("[<a href=\"bbsfriend\">在线好友</a>] ");
+    printf("[<a href=\"/bbsfriend.php\">在线好友</a>] ");
     if (start > 0)
         printf("[<a href=\"bbsusr?start=%d\">上一页</a>]", start - 20);
     if (start < total - my_t_lines)

@@ -458,7 +458,7 @@
 					<a href="/bbsqry.php" target="f3">查询网友</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/cgi-bin/bbs/bbsfriend" target="f3">在线好友</a><br>
+					<a href="/bbsfriend.php" target="f3">在线好友</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/bbssendsms.php" target="f3">发送短信</a><br>
