@@ -124,6 +124,9 @@ int full_utmp(struct user_info *uentp, int *count)
 }
 
 #ifdef NINE_BUILD
+
+int SortBy = 0;
+
 void sort_user_record(left, right)
 int left, right;
 {
@@ -133,9 +136,14 @@ int left, right;
         return;
     swap_user_record(left, (left + right) / 2);
     last = left;
-    for (i = left + 1; i <= right; i++)
-        if (strcasecmp(user_record[i]->userid, user_record[left]->userid) < 0)
-            swap_user_record(++last, i);
+    if (SortBy == 0) {
+    	for (i = left + 1; i <= right; i++)
+       	 if (strcasecmp(user_record[i]->userid, user_record[left]->userid) < 0)
+            		swap_user_record(++last, i);
+    } else 
+    	for (i = left + 1; i <= right; i++)
+       	 if (ntohl(inet_addr(user_record[i]->from)) < ntohl(inet_addr(user_record[left]->from)))
+            		swap_user_record(++last, i);
     swap_user_record(left, last);
     sort_user_record(left, last - 1);
     sort_user_record(last + 1, right);
@@ -412,6 +420,11 @@ int allnum, pagenum;
     case Ctrl('T'):
         showcolor = !showcolor;
         break;
+#endif
+#ifdef NINE_BUILD
+	case 'i' : SortBy = 1-SortBy;
+	           update_time = 0;
+	           break;
 #endif
     case 'k':
     case 'K':
