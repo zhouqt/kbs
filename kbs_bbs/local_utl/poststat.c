@@ -209,10 +209,10 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
     if ((fp = fopen(curfile, "w")) != NULL) {
 #ifdef BLESS_BOARD
         if (mytype == 4)
-            fprintf(fp, "              \x1b[1;33m©¤©¤ \x1b[31m¡î\x1b[33m¡î\x1b[32m¡î \x1b[41;32m  \x1b[33m±¾ÈÕÊ®´óÖÔÐÄ×£¸£  \x1b[40m \x1b[32m¡î\x1b[31m¡î\x1b[33m¡î ©¤©¤\x1b[m\n\n");
+            fprintf(fp, "              \x1b[1;33m©¤©¤ \x1b[31m¡î\x1b[33m¡î\x1b[32m¡î \x1b[41;32m  \x1b[33m±¾ÈÕÊ®´óÖÔÐÄ×£¸£  \x1b[m\x1b[1;32m ¡î\x1b[31m¡î\x1b[33m¡î ©¤©¤\x1b[m\n\n");
         else
 #endif
-            fprintf(fp, "                [34m-----[37m=====[41m ±¾%s [40m=====[34m-----[m\n\n", mytitle[mytype]);
+            fprintf(fp, "                [34m-----[37m=====[41m ±¾%s [m=====[34m-----[m\n\n", mytitle[mytype]);
 
         i = mytop[mytype];
 //        if (j > i)
@@ -278,13 +278,13 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
             if (mytype == 4)
                 fprintf(fp,
                         "                                            %s \x1b[1;31m%4d\x1b[0;37mÈË      %s\x1b[m\n"
-                        "\x1b[1mµÚ\x1b[31m%2d \x1b[37mÃû \x1b[4%dm %-51.51s\x1b[40m \x1b[33m%-12s%s\x1b[m\n",
+                        "\x1b[1mµÚ\x1b[31m%2d \x1b[37mÃû \x1b[4%dm %-51.51s\x1b[m \x1b[1;33m%-12s%s\x1b[m\n",
                         p, top[i].number, surfix_bless[(real - 1) * 2], real, (real - 1) / 2 + 1, top[i].title, top[i].author, surfix_bless[(real - 1) * 2 + 1]);
             else
 #endif
                 fprintf(fp,
                         "[37mµÚ[31m%3d[37m Ãû [37mÐÅÇø : [33m%-16s[37m¡¾[32m%s[37m¡¿[36m%4d [37mÈË[35m%16s\n"
-                        "     [37m±êÌâ : [44m[37m%-60.60s[40m\n", !mytype ? real : (i + 1), top[i].board, p, top[i].number, top[i].author, top[i].title);
+                        "     [37m±êÌâ : [44m[37m%-60.60s[m\n", !mytype ? real : (i + 1), top[i].board, p, top[i].number, top[i].author, top[i].title);
         }
 #ifdef BLESS_BOARD
         if (mytype == 4)
