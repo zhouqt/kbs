@@ -102,6 +102,7 @@ static PHP_FUNCTION(bbs_checkorigin);
 static PHP_FUNCTION(bbs_getboard);
 static PHP_FUNCTION(bbs_checkreadperm);
 static PHP_FUNCTION(bbs_getbname);
+static PHP_FUNCTION(bbs_getbdes);
 static PHP_FUNCTION(bbs_checkpostperm);
 static PHP_FUNCTION(bbs_postarticle);
 #ifdef HAVE_BRC_CONTROL
@@ -285,6 +286,7 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_caneditfile,NULL)
         PHP_FE(bbs_checkreadperm, NULL)
         PHP_FE(bbs_getbname, NULL)
+        PHP_FE(bbs_getbdes, NULL)
         PHP_FE(bbs_checkpostperm, NULL)
 		PHP_FE(bbs_updatearticle, NULL)
 #ifdef HAVE_BRC_CONTROL
@@ -3804,6 +3806,22 @@ static PHP_FUNCTION(bbs_is_bm)
         RETURN_LONG(0);
     }
     RETURN_LONG(is_BM(bp, up));
+}
+
+static PHP_FUNCTION(bbs_getbdes)
+{
+	char *board;
+	int board_len;
+	const struct boardheader *bp=NULL;
+    int ac = ZEND_NUM_ARGS();
+
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &board, &board_len) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    if ((bp = getbcache(board) == NULL) {
+        RETURN_LONG(0);
+    }
+	RETURN_STRING(bp->des,1);
 }
 
 static PHP_FUNCTION(bbs_getbname)
