@@ -430,11 +430,15 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct)
     move(1, 0);
     getdata(1, 0, "(S)转信 (L)本站 (A)取消? [A]: ", ispost, 9, DOECHO, NULL, true);
     if (ispost[0] == 's' || ispost[0] == 'S' || ispost[0] == 'L' || ispost[0] == 'l') {
+	int olddigestmode;
+	olddigestmode=digestmode;
+	digestmode=0;
         if (post_cross(currentuser, bname, currboard, quote_title, q_file, Anony, in_mail, ispost[0], 0) == -1) { /* 转贴 */
             pressreturn();
             move(2, 0);
             return FULLUPDATE;
         }
+	digestmode=olddigestmode;
         move(2, 0);
         prints("' %s ' 已转贴到 %s 版 \n", quote_title, bname);
         fileinfo->accessed[0] |= FILE_FORWARDED;        /*added by alex, 96.10.3 */
