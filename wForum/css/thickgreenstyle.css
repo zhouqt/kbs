@@ -1,7 +1,7 @@
-A:link,A:active,A:visited{TEXT-DECORATION:none ;Color:#000000}
-A:hover{TEXT-DECORATION: underline;Color:#44A938}
+a:link,a:active,a:visited{TEXT-DECORATION:none ;Color:#000000}
+a:hover{TEXT-DECORATION: underline;Color:#44A938}
 
-BODY{
+body{
 FONT-SIZE: 12px;
 COLOR: #000000;
 FONT-FAMILY:  ËÎÌו;
@@ -15,7 +15,7 @@ scrollbar-track-color: #f3faf4;
 scrollbar-darkshadow-color: #f3faf4;
 background-image: url(../skin/blue/kabg.gif);
 }
-TD{
+td{
 font-family: ËÎÌו;
 font-size: 12px;
 line-height: 15px;

@@ -1,10 +1,10 @@
-A:link,A:active,A:visited{TEXT-DECORATION:none ;Color:#000000}
-A:hover{TEXT-DECORATION: underline;Color:#4455aa}
+a:link,a:active,a:visited{text-decoration:none ;color:#000000}
+a:hover{TEXT-DECORATION: underline;Color:#4455aa}
 
-BODY{
-FONT-SIZE: 12px;
-COLOR: #000000;
-FONT-FAMILY:  ËÎÌו;
+body{
+font-size: 12px;
+color: #000000;
+font-family:  ËÎÌו;
 background-color: #FFFFFF; 
 scrollbar-face-color: #DEE3E7;
 scrollbar-highlight-color: #FFFFFF;
@@ -14,7 +14,7 @@ scrollbar-arrow-color:  #006699;
 scrollbar-track-color: #EFEFEF;
 scrollbar-darkshadow-color: #98AAB1;
 }
-TD{
+td{
 font-family: ËÎÌו;
 font-size: 12px;
 line-height: 15px;

@@ -1,7 +1,7 @@
-A:link,A:active,A:visited{TEXT-DECORATION:none ;Color:#000000}
-A:hover{TEXT-DECORATION: underline;Color:darkseagreen}
+a:link,a:active,a:visited{TEXT-DECORATION:none ;Color:#000000}
+a:hover{TEXT-DECORATION: underline;Color:darkseagreen}
 
-BODY{
+body{
 FONT-SIZE: 12px;
 COLOR: #000000;
 FONT-FAMILY:  ËÎÌו;
@@ -14,7 +14,7 @@ scrollbar-arrow-color: darkseagreen;
 scrollbar-track-color: #f3faf4;
 scrollbar-darkshadow-color: #f3faf4;
 }
-TD{
+td{
 font-family: ËÎÌו;
 font-size: 12px;
 line-height: 15px;

@@ -1,7 +1,7 @@
-A:link,A:active,A:visited{TEXT-DECORATION:none ;Color:#000000}
-A:hover{TEXT-DECORATION: underline;Color:#4455aa}
+a:link,a:active,a:visited{TEXT-DECORATION:none ;Color:#000000}
+a:hover{TEXT-DECORATION: underline;Color:#4455aa}
 
-BODY{
+body{
 FONT-SIZE: 12px;
 COLOR: #000000;
 FONT-FAMILY:  ËÎÌו;
@@ -15,7 +15,7 @@ scrollbar-track-color: #EFEFEF;
 scrollbar-darkshadow-color: #98AAB1;
 background-image: url(../skin/citye/bihaibg.jpg);
 }
-TD{
+td{
 font-family: ËÎÌו;
 font-size: 12px;
 line-height: 15px;
