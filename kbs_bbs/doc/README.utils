@@ -13,7 +13,51 @@ INSTALL只写了bbsd等主要程序的安装方法
 
  1.) 十大热门话题
   i) 普通方式的十大热门话题统计
+   代码: local_utl/poststat.c
+   系统:  $mkdir $BBSHOME/tmp/Xpost
+   crontab: 
+		59 * * * * $BBSHOME/bin/poststat $BBSHOME
+		59 23 * * * rm -f $BBSHOME/tmp/Xpost/*
+		59 23 * * * rm -f $BBSHOME/.post.X
+	注意: 每天的第一小时只能运行一次，否则新的会覆盖老的
+
   ii)使用MYSQL的十大热门话题统计 
+   代码: local_utl/newpoststat.c
+   define: #define NEWPOSTSTAT
+   需要: #define HAVE_MYSQL_SMTH 1
+   crontab:
+        40 * * * * $BBSHOME/bin/newpoststat
+   mysql:
+        create table `postlog` (
+		 `id` int unsigned NOT NULL auto_increment,
+		 `userid` char(15) NOT NULL default '',
+		 `bname` char(31) NOT NULL default '',
+		 `title` char(81) NOT NULL default '',
+		 `time` timestamp NOT NULL,
+		 `threadid` int unsigned NOT NULL default '0',
+		 PRIMARY KEY (`id`),
+		 KEY userid (`userid`),
+		 KEY bname(`bname`, `threadid`),
+		 KEY timestamp(`time`)
+		) TYPE=MyISAM COMMENT='postlog';
+
+		create table `toplog` (
+		 `id` int unsigned NOT NULL auto_increment,
+		 `userid` char(15) NOT NULL default '',
+		 `bname` char(31) NOT NULL default '',
+		 `title` char(81) NOT NULL default '',
+		 `time` timestamp NOT NULL,
+		 `date` date NOT NULL,
+		 `topth` int NOT NULL default '1',
+		 `count` int NOT NULL default '0',
+		 `threadid` int unsigned NOT NULL default '0',
+		 PRIMARY KEY (`id`),
+		 KEY userid (`userid`),
+		 KEY bname(`bname`, `threadid`),
+		 KEY date(`date`),
+		 UNIQUE top (`date`,`topth`)
+		) TYPE=MyISAM COMMENT='toplog';
+   注意: postlog表过大时可以清空以前的发文记录，不影响
 
 
 【二】    游戏等
