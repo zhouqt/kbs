@@ -315,7 +315,7 @@ int usermenu()
             prints("--空--");
         }
         else {
-            move(7+i, 23-strlen(users[i].userid)/2+7);
+            move(7+i, 23-strlen(users[i].userid)/2);
             setfcolor(GREEN,1);
             prints(users[i].userid);
         }
@@ -328,31 +328,31 @@ int usermenu()
     prints("╰───────╯");
 
     load_users(FRIENDTOP);
-    move(5,53);
+    move(5,53-7);
     setfcolor(WHITE,1);
     prints("===最新加入用户列表===");
-    move(6,55);
+    move(6,55-7);
     setfcolor(RED,1);
     prints("╭───────╮");
     for(i=0;i<10;i++){
-        move(7+i, 55);
+        move(7+i, 55-7);
         setfcolor(RED,1);
         prints("│");
         if (userst-i-1<0) {
-            move(7+i, 60);
+            move(7+i, 60-7);
             setfcolor(GREEN,1);
             prints("--空--");
         }
         else {
-            move(7+i, 63-strlen(users[userst-i-1].userid)/2);
+            move(7+i, 63-strlen(users[userst-i-1].userid)/2-7);
             setfcolor(GREEN,1);
             prints(users[userst-i-1].userid);
         }
-        move(7+i, 71);
+        move(7+i, 71-7);
         setfcolor(RED,1);
         prints("│");
     }
-    move(17,55);
+    move(17,55-7);
     setfcolor(RED,1);
     prints("╰───────╯");
     setfcolor(WHITE,0);
