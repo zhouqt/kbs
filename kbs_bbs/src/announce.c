@@ -1566,6 +1566,9 @@ int lastlevel, lastbmonly;
 {
     MENU me;
     char fname[PATHLEN], tmp[STRLEN];
+#ifdef ANN_SHOW_WELCOME
+	char welcome[PATHLEN+20];
+#endif
     int ch;
     char *bmstr;
     char buf[STRLEN];
@@ -1581,6 +1584,12 @@ int lastlevel, lastbmonly;
 	helpmode = HELP_ANNOUNCE;
 #endif
     me.path = path;
+#ifdef ANN_SHOW_WELCOME
+	strcpy(welcome,path);
+	strcat(welcome,"/welcome");
+	if(dashf(welcome))
+		show_help(welcome);
+#endif
     strcpy(me.mtitle, maintitle);
     me.level = lastlevel;
     bmonly = lastbmonly;
