@@ -185,9 +185,11 @@ int invalid_realmail(userid, email, msize)
     FILE *fn;
     char *emailfile, ans[4], fname[STRLEN];
     char genbuf[STRLEN];
+#ifdef HAVE_TSINGHUA_INFO_REGISTER
     struct userec* uc;
     time_t now;
     int len = strlen(email);
+#endif
 
     if ((emailfile = sysconf_str("EMAILFILE")) == NULL)
         return 0;
