@@ -1,10 +1,59 @@
-    本FAQ由水木清华BBS系统维护组负责维护，
-如有问题，请到水木清华BBS的BBSMan_Dev版讨论。
-一。安装
+              smthbbs 代码系统常见问题及解答 (smthbbs FAQ)
 
-1.第一次注册SYSOP的时候，说
-"抱歉, 由于某些系统原因, 无法注册新的帐号."
+    本 FAQ 由 BBS 水木清华站(http://www.smth.org)系统维护组负责维护，
+如有问题，欢迎来 BBS 水木清华站的 BBSMan_Dev 版参与讨论。
 
+1. ChangeLog
+2003.6.5
+    flyriver v1.1
+    调整 FAQ 文章结构，新增四个 FAQ (2.2, 2.3, 2.4, 3.3)
+2002.9.16
+    KCN v1.0
+
+2. 编译和安装
+
+2.1. make install的时候是否会覆盖原来的bbshome？
+[答复]
+  我们没有做文件存在检查，所以对make install没有做
+对bbshome的拷贝。在一开始安装的时候手动考一次bbshome
+下的文件到你的bbs目录下吧。
+
+2.2. 我启动 bbsd 时出现“can't lock pid file:var/bbsd.2500.pid”，怎么回事？
+[答复]
+  这个问题在比较老的 smthbbs 版本里面会出现，是个 bug，但在最新的 smthbbs
+  snapshot 版本里面已经被修正了。
+  解决办法如下：
+    a) 下载并安装最新的 smthbbs snapshot，我们建议您这么做；
+    b) 如果您确实想用老的 smthbbs 版本，那么可以参照以下步骤：
+         cd ~bbs
+         mkdir var
+       然后再重新启动 bbsd 即可。
+
+2.3. 我的系统已经安装了 libesmtp，configure 是却还是提示出错，说什么
+  “checking for smtp_create_session in -lesmtp... no
+    configure: error: The libesmtp library required”
+  为什么会这样？
+[答复]
+  a) 检查一下您把 libesmtp 安装在 /usr 或 /usr/local 目录里面了，缺省情况下
+     configure 脚本只检查这两个目录。如果您用的是操作系统自带的 libesmtp 包，
+     那么安装目录一般都是在 /usr 或 /usr/local。对于 libesmtp 不是安装在 /usr
+     /usr/local 的情况，可以在 configure 的时候用 --with-libesmtp=DIR 指定
+     libesmtp 的安装目录；
+  b) 如果您的 libesmtp 包是自己编译安装的，您一定要在 configure libesmtp 的
+     加上 --disable-pthreads 参数。这个限制在未来的 smthbbs 版本里会被去除。
+
+2.4. 我用的是 smthbbs-1.0.1，configure 通过，但 make 时出错，提示：
+  “bbs_sendmail.c:5:22: libesmtp.h: No such file or directory”
+  后面还有很多出错信息，看样子都是跟 libesmtp 有关。
+[答复]
+  smthbbs-1.0.1 及更早版本的 configure 脚本有 bug，检查 libesmtp 时没有给出
+  足够的出错信息，这个问题在最新的 smthbbs snapshot 版本已经解决。建议您下载
+  并安装最新的 smthbbs snapshot，或者参考问题 2.3 的答复。
+
+3. 管理维护
+
+3.1. 第一次注册SYSOP的时候，说 "抱歉, 由于某些系统原因, 无法注册新的帐号."
+[答复]
   这个问题有个人问过我，处理如下
     killall miscd
     killall bbslogd
@@ -14,15 +63,11 @@
     bbslogd就好了
   不知道为啥。
 
-2.make install的时候是否会覆盖原来的bbshome
-
-  我们没有做文件存在检查，所以对make install没有做
-对bbshome的拷贝。在一开始安装的时候手动考一次bbshome
-下的文件到你的bbs目录下吧。
-
-3.刚安装完毕，new新版的时候断线
-
-  这个是1.0.1版以前的bug，解决办法
+3.2. 刚安装完毕，建立新版的时候断线，怎么回事？
+[答复]
+  这个是1.0.1版以前的bug，解决办法：
+    a) 下载并安装最新的 smthbbs snapshot，我们建议您这么做；
+    b) 如果您确实想用老的 smthbbs 版本，那么可以参照以下步骤：
 将bcache.c里面的
             ftruncate(boardfd, MAXBOARD * sizeof(struct boardheader));
 这一行，移动到上面几行。
@@ -32,4 +77,15 @@
         ftruncate(boardfd, MAXBOARD * sizeof(struct boardheader));
         /* end */
         close(boardfd);
-这是个bug
+
+3.3. 怎么开新讨论区？中文名有什么格式要求？
+[答复]
+  建立新讨论区在管理菜单里面有；
+  中文名称的格式为:
+      分区代号+[类名]+ 6 个空格+讨论区中文描述
+
+  其中分区代号为 1 个字节，类名为 4 个字节。
+
+  举例:
+  0[站务]      测试用版
+
