@@ -2,7 +2,7 @@
 
 #include "bbs.h"
 
-#define MAXFILE 20000
+#define MAXFILE 30000
 #define MINAGE 50000		//at least 50000 sec old
 #ifdef NUMBUFFER
 #undef NUMBUFFER
