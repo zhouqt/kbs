@@ -549,8 +549,12 @@ void login_query()
     sethomepath(tmpstr, currentuser->userid);
     sprintf(fname, "%s/%s.deadve", tmpstr, currentuser->userid);
     if ((fn = fopen(fname, "r")) != NULL) {
-        mail_file(currentuser->userid, fname, currentuser->userid, "不正常断线所保留的部份...", BBSPOST_MOVE, NULL);
-        fclose(fn);
+	    if(strcasecmp(currentuser->userid,"guest"))
+            mail_file(currentuser->userid, fname, currentuser->userid, "不正常断线所保留的部份...", BBSPOST_MOVE, NULL);
+        else {
+            fclose(fn);
+			unlink(fname);
+        }
     }
     sethomepath(genbuf, currentuser->userid);
     mkdir(genbuf, 0755);
