@@ -83,7 +83,6 @@ struct post_log {
 
 char *strcasestr();
 char *ModeType();
-char *anno_path_of();
 
 int file_has_word(char *file, char *word);
 
@@ -249,8 +248,6 @@ int fprintf2(FILE *fp, char *s);
 
 int get_file_ent(char *board, char *file, struct fileheader *x);
 
-char *getbfroma(char *path);
-
 int set_my_cookie();
 
 int has_fill_form();
@@ -333,5 +330,19 @@ int www_data_init();
 int can_enter_chatroom();
 int can_send_mail();
 int can_reply_post(char *board, char *filename);
+char bin2hex(int val);
+char *encode_url(char *buf, const char* str, size_t buflen);
+char *string_copy(char *buf, const char* str, size_t *buflen);
+char *encode_html(char *buf, const char* str, size_t buflen);
+int is_BM(struct boardheader *board, struct userec *user);
+int is_owner(struct fileheader *fh, struct userec *user);
+int can_delete_post(struct boardheader *board, struct fileheader *fh, 
+		struct userec *user);
+int can_edit_post(struct boardheader *board, struct fileheader *fh, 
+		struct userec *user);
+int can_reply_post(char *board, char *filename);
+int get_seccode_index(char prefix);
+char *http_encode_string(char *str, size_t len);
+
 
 #endif /* BBSLIB_H */
