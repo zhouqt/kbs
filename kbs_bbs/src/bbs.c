@@ -2542,13 +2542,31 @@ int noreply_post(int ent, struct fileheader *fileinfo, char *direct)
 {
 	/* add by stiger ,20030414, 置顶选择*/
 	char ans[4];
+	int mode=0; /* 0x1斑竹, 0x2:推荐版斑竹 */
 
-	if(!chk_currBM(currBM, currentuser)) return DONOTHING;
+#ifdef COMMEND_ARTICLE
+	int bnum;
+	struct boardheader bp;
+
+    bnum = getboardnum(COMMEND_ARTICLE,&bp);
+	if( bnum && chk_currBM(bp.BM, currentuser) )
+		mode |= 0x2 ;
+#endif
+	if(chk_currBM(currBM, currentuser)) mode |= 0x1;
+
+#ifdef COMMEND_ARTICLE
+	if ( ! (mode & 0x1) && !(mode & 0x2) ) return DONOTHING;
+#else
+	if ( ! (mode & 0x1) ) return DONOTHING;
+#endif
 
     move(t_lines - 1, 0);
     clrtoeol();
 #ifdef COMMEND_ARTICLE
-    getdata(t_lines - 1, 0, "切换: 0)取消 1)不可re标记 2)置顶标记 3)推荐 [1]: ", ans, 3, DOECHO, NULL, true);
+	if( mode & 0x1 )
+    	getdata(t_lines - 1, 0, "切换: 0)取消 1)不可re标记 2)置顶标记 3)推荐 [1]: ", ans, 3, DOECHO, NULL, true);
+	else
+    	getdata(t_lines - 1, 0, "3) 推荐 [0]: ", ans, 3, DOECHO, NULL, true);
 #else
     getdata(t_lines - 1, 0, "切换: 0)取消 1)不可re标记 2)置顶标记 [1]: ", ans, 3, DOECHO, NULL, true);
 #endif
@@ -2557,11 +2575,23 @@ int noreply_post(int ent, struct fileheader *fileinfo, char *direct)
         ans[0] = ans[1];
         ans[1] = 0;
     }
-	if(ans[0]=='2') return zhiding_post(ent,fileinfo,direct);
+	if(ans[0]=='2'){
+#ifdef COMMEND_ARTICLE
+		if( !(mode & 0x1) )
+		return FULLUPDATE;
+#endif
+		return zhiding_post(ent,fileinfo,direct);
+	}
 #ifdef COMMEND_ARTICLE
 	else if(ans[0]=='3') return do_commend(ent,fileinfo,direct);
 #endif
-	else change_post_flag(currBM, currentuser, digestmode, currboard->filename, ent, fileinfo, direct, FILE_NOREPLY_FLAG, 1);
+	else{
+#ifdef COMMEND_ARTICLE
+		if( !(mode & 0x1) )
+		return FULLUPDATE;
+#endif
+		change_post_flag(currBM, currentuser, digestmode, currboard->filename, ent, fileinfo, direct, FILE_NOREPLY_FLAG, 1);
+	}
 
 	return FULLUPDATE;
 }
