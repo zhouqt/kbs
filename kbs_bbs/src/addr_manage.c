@@ -441,7 +441,7 @@ static int set_al_key(struct _select_def *conf, int key)
 #ifdef SMS_SUPPORT
 	case 'S':
 	{
-		if( (a_l+conf->pos - conf->page_pos)->mobile[0] ){
+		if( (a_l+conf->pos - conf->page_pos)->mobile[0] && isdigit((a_l+conf->pos - conf->page_pos)->mobile[0]) ){
 			do_send_sms_func((a_l+conf->pos - conf->page_pos)->mobile, NULL);
 			return SHOW_REFRESH;
 		}

@@ -270,6 +270,8 @@ static int set_smsg_key(struct _select_def *conf, int key)
 	}
 	case 'S':
 	{
+		if( ! isdigit(s_m[conf->pos-conf->page_pos].dest[0]) )
+			return SHOW_CONTINUE;
 		clear();
 		do_send_sms_func(s_m[conf->pos-conf->page_pos].dest, NULL);
 		pressanykey();
