@@ -98,7 +98,6 @@ typedef struct {
 
     int  chatline;                  /* Where to display message now */
     int  outputcount;
-    int  outputignore;
     
     int  cmdpos;
     char lastcmd[MAXLASTCMD][128];

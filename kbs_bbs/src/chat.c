@@ -74,7 +74,7 @@ int chat_waitkey(chatcontext *pthis)
 {
     char ch;
 
-    outs("[5;31m¡ô °´¿Õ¸ñ¼ü¼ÌÐø ¡ô[m");
+    outs("           [5;31m¡ô °´¿Õ¸ñ¼ü¼ÌÐø£¬Q¼üÈ¡Ïû ¡ô[m");
     add_io(0, 0);
     ch=igetkey();
     add_io(pthis->cfd, 0);
@@ -90,7 +90,7 @@ void printchatline(chatcontext * pthis, const char *str) /*ÏÔÊ¾Ò»ÐÐ£¬²¢ÏÂÒÆÖ¸Ê¾·
     int len; /* add by KCN for disable long line */
     int inesc;
 
-    if(pthis->outputignore)return; /* by wwj 2001/5/9 */
+    if(pthis->outputcount<0)return; /* by wwj 2001/5/9 */
 
     p = str;
     i = 0;
@@ -170,8 +170,10 @@ void printchatline(chatcontext * pthis, const char *str) /*ÏÔÊ¾Ò»ÐÐ£¬²¢ÏÂÒÆÖ¸Ê¾·
     clrtoeol();
 
     if(pthis->outputcount++==screen_lines-1){
-        if( !chat_waitkey(pthis) )pthis->outputignore=1;
-        pthis->outputcount=1;
+        if( !chat_waitkey(pthis) )
+            pthis->outputcount=-1;
+        else
+            pthis->outputcount=1;
 
         move(pthis->chatline, 0);
         clrtoeol();
@@ -301,9 +303,9 @@ int chat_parse(chatcontext * pthis)
             case 't':
                 move(0, 0);
                 clrtoeol();
-                sprintf(genbuf, "·¿¼ä£º [36m%s", pthis->chatroom);
                 if (bptr[1]=='t') strcpy(pthis->topic,bptr+2);
-                prints("[44m[33m %-21s  [33m»°Ìâ£º[36m%-51s[31m%2s[m", genbuf, pthis->topic ,(pthis->rec)?"Â¼":"  ");
+                prints("[44m[33m ·¿¼ä£º [36m%-14s  [33m»°Ìâ£º[36m%-51s[31m%2s[m", 
+                         pthis->chatroom, pthis->topic ,(pthis->rec)?"Â¼":"  ");
                 break;
             }
         } else {
@@ -498,9 +500,8 @@ int ent_chat(int chatnum)  /* ½øÈëÁÄÌìÊÒ*/
         if(!chat_checkparse(pthis))break;
 
         move(b_lines, currchar + 10);
-        ch = igetkey();
         pthis->outputcount=0;
-        pthis->outputignore=0;
+        ch = igetkey();
 
         if (talkrequest) page_pending = YEA;
         if (page_pending) page_pending = servicepage(0, NULL);
