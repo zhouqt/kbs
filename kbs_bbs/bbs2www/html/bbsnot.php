@@ -7,12 +7,17 @@
 		html_nologin();
 	else
 	{
+                $usernum = $currentuser["index"];
 		if (isset($_GET["board"]))
 			$board = $_GET["board"];
 		else 
 			html_error_quit("错误的讨论区");
-		if (bbs_checkreadperm($usernum,$board)==0)
+                $brdarr = array();
+                $brdnum = bbs_getboard($board, $brdarr);
+                if ($brdnum == 0)
 			html_error_quit("错误的讨论区");
+		if (bbs_checkreadperm($usernum,$brdnum)==0)
+			html_error_quit("错误的讨论区" . $usernum . "," . $board);
 		$top_file="vote/" . $board . "/notes";
 		$fp = fopen($top_file, "r");
 		if ($fp == FALSE) {
@@ -49,7 +54,7 @@
 ?></tr></td>
 </pre></table>
 [<a href=bbsdoc.php?board=<?php echo $board; ?>>本讨论区</a>]<?
-    if (bbs_is_bm($board,$usernum))
+    if (bbs_is_bm($brdnum,$usernum))
 	echo "[<a href=/cgi-bin/bbs/bbsmnote?board=" . $board . ">编辑进版画面</a>]";
 ?> 
 </center>
