@@ -6,7 +6,7 @@
 int main()
 {
     FILE *fp;
-    char filename[80], dir[80], board[80], title[80], buf[80], buf2[80], *content,path[80];
+    char filename[80], dir[80], board[80], title[STRLEN], buf[80], buf2[80], *content,path[80];
     int r, i, sig;
 	int reid;
     struct fileheader x, *oldx;
@@ -18,7 +18,7 @@ int main()
     if (!loginok)
         http_fatal("匆匆过客不能发表文章，请先登录");
     strsncpy(board, getparm("board"), 18);
-    strsncpy(title, getparm("title"), 50);
+    strsncpy(title, getparm("title"), STRLEN);
     /*strsncpy(oldfilename, getparm("refilename"), 80);*/
     brd = getbcache(board);
     if (brd == 0)
