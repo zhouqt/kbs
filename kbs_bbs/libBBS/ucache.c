@@ -885,10 +885,8 @@ void init_cachedata(char* userid,int unum)
         write(brcfdr, brc, BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
         close(brcfdr);
     }
-    if(safe_mmapfile(path1, O_RDWR|O_CREAT, PROT_READ|PROT_WRITE, MAP_SHARED, (void **)&brc_cache_entry, &brcfilesize, &brcfdr)==0) {
-        bbslog("error", "cannot mmap entry");
-        abort_bbs(0);
-    }
+    brcfdr = open(path1, O_RDWR, 0600);
+    brc_cache_entry = mmap(NULL, BRC_CACHE_NUM*sizeof(struct _brc_cache_entry), PROT_READ|PROT_WRITE, MAP_SHARED, brcfdr, 0);
         
     setcachehomefile(path1, userid, -1, "logincount");
     if ((fd = open(path1, O_RDWR, 0664)) != -1) {
