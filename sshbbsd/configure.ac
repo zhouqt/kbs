@@ -230,6 +230,7 @@ Making a local copy of prot.h and patching it.])
   i*86-unknown-bsd*)
     # Assume 386BSD.  pgut01@cs.auckland.ac.nz reported this makes it compile.
     AC_DEFINE(__FreeBSD__)
+	CFLAGS="$CFLAGS -DFREEBSD"
     ;;
   mips-sony-newsos6)
     AC_DEFINE(HAVE_NO_TZ_IN_GETTIMEOFDAY)
@@ -303,6 +304,7 @@ Making a local copy of prot.h and patching it.])
     # From Ollivier Robert: FreeBSD and NetBSD use master.passwd, but set
     # pw_passwd automatically when running as root.
     no_shadow_password_checking=yes
+	CFLAGS="$CFLAGS -DFREEBSD"
     ;;
   *-*-netbsd*|*-*-openbsd*)
     # From Ollivier Robert: FreeBSD and NetBSD use master.passwd, but set
