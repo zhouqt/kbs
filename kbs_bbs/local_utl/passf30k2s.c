@@ -18,16 +18,7 @@ convert_permission(struct olduserec *olduser, struct userec *user)
 
 	oldperm = olduser->userlevel;
 	perm = 0;
-	if (oldperm & MY_PERM_DENYPOST)
-		perm &= ~PERM_UNUSE;
-	if (oldperm & MY_PERM_CHATCLOAK)
-		perm &= ~PERM_CHATCLOAK;	/* drop it */
-	if (oldperm & MY_PERM_FORCEPAGE)
-		perm &= ~MY_PERM_FORCEPAGE;	/* drop it */
-	if (oldperm & MY_PERM_EXT_IDLE)
-		perm &= ~MY_PERM_EXT_IDLE;	/* drop it */
-	if (oldperm & MY_PERM_SPECIAL1)
-		perm &= ~MY_PERM_SPECIAL1;	/* drop it */
+
 	if (oldperm & MY_PERM_BASIC)
 		perm |= PERM_BASIC;
 	if (oldperm & MY_PERM_CHAT)
@@ -50,10 +41,10 @@ convert_permission(struct olduserec *olduser, struct userec *user)
 		perm |= PERM_BOARDS;
 	if (oldperm & MY_PERM_ACCOUNTS)
 		perm |= PERM_ACCOUNTS;
-	if (oldperm & MY_PERM_OVOTE)
-		perm |= PERM_OVOTE;
+	if (oldperm & MY_PERM_CHATCLOAK)
+		perm |= PERM_CHATCLOAK;
 	if (oldperm & MY_PERM_SYSOP)
-		perm |= PERM_ADMIN;			/* convert it */
+		perm |= PERM_ADMIN;	/* convert it */
 	if (oldperm & MY_PERM_POSTMASK)
 		perm |= PERM_POSTMASK;
 	if (oldperm & MY_PERM_ANNOUNCE)
@@ -64,10 +55,6 @@ convert_permission(struct olduserec *olduser, struct userec *user)
 		perm |= PERM_ACBOARD;
 	if (oldperm & MY_PERM_NOZAP)
 		perm |= PERM_NOZAP;
-	if (oldperm & MY_PERM_SPECIAL2)
-		perm |= PERM_CHATOP;	/* convert it */
-	if (oldperm & MY_PERM_SPECIAL4)
-		perm |= PERM_SYSOP;		/* convert it */
 	user->userlevel = perm;
 }
 
@@ -80,6 +67,8 @@ convert_userdefine(struct olduserec *olduser, struct userec *user)
 	oldudef = olduser->userdefine;
 	udef ^= udef;
 	udef = ~udef;
+	if (!(oldudef & MY_DEF_ACBOARD))
+		udef &= ~DEF_ACBOARD;
 	if (!(oldudef & MY_DEF_FRIENDCALL))
 		udef &= ~DEF_FRIENDCALL;
 	if (!(oldudef & MY_DEF_ALLMSG))
@@ -134,30 +123,19 @@ convert_userec(struct olduserec *olduser, struct userec *user)
 	memcpy(user->flags, olduser->flags, 2);
 	memcpy(user->passwd, olduser->passwd, MYPASSLEN);
 	memcpy(user->username, olduser->username, NAMELEN);
-	memcpy(user->ident, olduser->ident, NAMELEN);
 	bzero(user->md5passwd, MD5PASSLEN);
-//	memcpy(user->realemail, olduser->reginfo, STRLEN - 16);
 	convert_permission(olduser, user);
 	user->lastlogin = olduser->lastlogin;
 	user->stay = olduser->stay;
-	memcpy(user->realname, olduser->realname, NAMELEN);
-	memcpy(user->address, olduser->address, STRLEN);
-	memcpy(user->email, olduser->email, STRLEN);
 	user->signature = olduser->signature;
 	convert_userdefine(olduser, user);
 	user->notedate = olduser->notedate;
 	user->noteline = olduser->noteline;
 	user->notemode = olduser->notemode;
 	user->exittime = 0;
-#ifdef HAVE_BIRTHDAY
-	user->gender = olduser->gender;
-	user->birthyear = olduser->birthyear;
-	user->birthmonth = olduser->birthmonth;
-	user->birthday = olduser->birthday;
-#endif
 }
 
-int 
+int
 main()
 {
 	struct olduserec *olduser = NULL;
@@ -174,48 +152,40 @@ main()
 	resolve_utmp();
 
 	chdir(MY_BBSHOME);
-	if ((fd = open(PASSWDS_FILE, O_RDONLY, 0644)) < 0)
-	{
+	if ((fd = open(PASSWDS_FILE, O_RDONLY, 0644)) < 0) {
 		perror("open");
 		return -1;
 	}
 	fstat(fd, &fs);
 	olduser = mmap(NULL, fs.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
 	close(fd);
-	if (olduser == MAP_FAILED)
-	{
+	if (olduser == MAP_FAILED) {
 		perror("mmap");
 		return -1;
 	}
-	records = fs.st_size / sizeof(struct olduserec);
-	for (i = 0; i < records; i++)
-	{
+	records = fs.st_size / sizeof (struct olduserec);
+	for (i = 0; i < records; i++) {
 		ptr = olduser + i;
 		if (ptr->userid[0] == '\0')
 			continue;
-		bzero(&user, sizeof(user));
+		bzero(&user, sizeof (user));
 		convert_userec(ptr, &user);
 		allocid = getnewuserid2(user.userid);
-		if (allocid > MAXUSERS || allocid <= 0)
-		{
+		if (allocid > MAXUSERS || allocid <= 0) {
 			fprintf(stderr, "New user %s failed\n", user.userid);
 			continue;
 		}
 		bbslog("1system", "APPLY: uid %d for %s", allocid, user.userid);
-	    update_user(&user, allocid, 1);
-		if (!searchuser(user.userid))
-		{
+		update_user(&user, allocid, 1);
+		if (!searchuser(user.userid)) {
 			fprintf(stderr, "User failed to create %d-%s\n",
-					allocid, user.userid);
-		}
-		else
-		{
+				allocid, user.userid);
+		} else {
 			printf("Creating user %d-%s successfully\n",
-					allocid, user.userid);
+			       allocid, user.userid);
 		}
 	}
 	munmap(olduser, fs.st_size);
 
 	return 0;
 }
-
