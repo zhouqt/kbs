@@ -4,7 +4,8 @@
 	require("funcs.php");
 	
         $img_subdir = "/images/menuspring/";
-
+        $bbsleft_ad_file = $_SERVER["DOCUMENT_ROOT"] . "/bbsleft.ad.html" ;
+	
 	function display_board_list($section_names,$section_nums)
 	{
 ?>
@@ -652,8 +653,10 @@
 	</td>
 </tr>
 </table>
-<p align="center"><a href="http://www.dawning.com.cn/" target="_blank"><img src="/images/dawning.gif" width="120" height="53" border="0" alt="Êï¹â¹«Ë¾"></a></p>
 <?php
+		if(file_exists($bbsleft_ad_file))
+			include ($bbsleft_ad_file);
+			
 		html_normal_quit();
 		}
 ?>
