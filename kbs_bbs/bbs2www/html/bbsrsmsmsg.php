@@ -26,7 +26,7 @@
 		}else if( $_POST["count"] ){
 			$count = $_POST["count"];
 		}else
-			$count = 10;
+			$count = 20;
 		settype($count,"integer");
 
 		if( $_GET["desc"] ){
@@ -142,8 +142,33 @@ function doRefresh(){
 <option value="2"<?php if( $desc==1 ) { ?> selected="selected"<?php } ?>>µ¹Ðò</option>
 </select>
 
-</center>
-</body>
+<script language="javascript">
+<!--//
+function doCount(){
+	var oSelectType=document.getElementById("oCount");
+	var type=oSelectType.value;
+
+	if(type=="10")
+		window.location="/bbsrsmsmsg.php?start=<?php echo ($startnum);?>&count=10&desc=<?php echo $desc;?>";
+	else if(type == "50")
+		window.location="/bbsrsmsmsg.php?start=<?php echo ($startnum);?>&count=50&desc=<?php echo $desc;?>";
+	else if(type == "30")
+		window.location="/bbsrsmsmsg.php?start=<?php echo ($startnum);?>&count=30&desc=<?php echo $desc;?>";
+	else
+		window.location="/bbsrsmsmsg.php?start=<?php echo ($startnum);?>&count=20&desc=<?php echo $desc;?>";
+
+	return;
+}
+//-->
+</script>
+
+Ã¿Ò³ÏÔÊ¾<select name="type" class="input"  style="WIDTH: 40px" id="oCount" onChange="doCount();">
+<option value="10"<?php if( $count==10 ) { ?> selected="selected"<?php } ?>>10</option>
+<option value="20"<?php if( $count==20 ) { ?> selected="selected"<?php } ?>>20</option>
+<option value="30"<?php if( $count==30 ) { ?> selected="selected"<?php } ?>>30</option>
+<option value="50"<?php if( $count==50 ) { ?> selected="selected"<?php } ?>>50</option>
+</select>¸ö
+
 <?php
 	}
 ?>
