@@ -3786,7 +3786,7 @@ Goodbye()    /*¿Î’æ —°µ•*/
     char        sysoplist[20][STRLEN],syswork[20][STRLEN],spbuf[STRLEN],buf[STRLEN];
     int         i,num_sysop,choose,logouts,mylogout=NA;
     FILE        *sysops;
-    long	Time=180;/*Haohmaru*/
+    long	Time=30;/*Haohmaru*/
 
     /* Add by SmallPig */
     brc_update();
