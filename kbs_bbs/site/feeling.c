@@ -138,9 +138,9 @@ struct _shmkey {
 };
 
 static const struct _shmkey shmkeys[] = {
-    {"BCACHE_SHMKEY", 3693},
-    {"UCACHE_SHMKEY", 3696},
-    {"UTMP_SHMKEY", 3699},
+    {"BCACHE_SHMKEY", 3694},
+    {"UCACHE_SHMKEY", 3697},
+    {"UTMP_SHMKEY", 3700},
     {"ACBOARD_SHMKEY", 9014},
     {"ISSUE_SHMKEY", 5010},
     {"GOODBYE_SHMKEY", 5020},
