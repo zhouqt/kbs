@@ -26,6 +26,7 @@ AC_ARG_WITH(icc,
 			LDFLAGS="$LDFLAGS -ipo -static"
 		fi
 		CONFIG_AR=xiar
+		AR=xiar
 		EXTRA_CLEAN="*.il"
     else
 		AC_MSG_ERROR([can't find intel compiler in $withval!])
