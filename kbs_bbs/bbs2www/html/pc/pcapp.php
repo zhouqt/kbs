@@ -91,7 +91,14 @@ else
 		    "自我介绍：\n".$_POST["appself"];
 	$query = "INSERT INTO `newapply` ( `naid` , `username` , `appname` , `appself` , `appdirect` , `hostname` , `apptime` , `manager` , `management` ) ".
 	 	 "VALUES ('', '".$currentuser["userid"]."', '".addslashes($_POST["appname"])."', '".addslashes($appself)."', '".addslashes($_POST["appdirect"])."', '".addslashes($_SERVER["REMOTE_ADDR"])."', NOW( ) , NULL , '1');";
-	mysql_query($query,$link);
+	if(!mysql_query($query,$link))
+	{
+		pc_db_close($link);
+		html_init("gb2312");
+		html_error_quit("十分抱歉，由于系统原因，您的申请尚未登记入库。请重新填写一次");
+		exit();	
+	}
+	
 	pc_db_close($link);
 	
 	$ret = bbs_postarticle($pcconfig["BOARD"], preg_replace("/\\\(['|\"|\\\])/","$1",$apptitle), preg_replace("/\\\(['|\"|\\\])/","$1",$appbody), 0 , 0 , 0 , 0);

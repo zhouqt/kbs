@@ -74,6 +74,7 @@ function pcmain_annouce()
 	while($rows = mysql_fetch_array($result))
 		echo "<li><a href=\"/pc/pccon.php?id=".$rows[0]."&nid=".$rows[nid]."&s=all\">".html_format($rows[subject])."</a></li>";
 ?>	
+	<li><a href="/pc/index.php?id=<?php echo $pcconfig["ADMIN"]; ?>">&gt;&gt; 更多</a></li>
 	</td></tr>
 </table>
 <?php	
@@ -153,7 +154,7 @@ function  pcmain_blog_most_trackback()
 <?php
 	for($i = 0;$i < $num ;$i ++)
 	{
-		if( $i == 10 ) echo "</td><td align=\"left\" style=\"line-height:16px\" width=\"50%\">";
+		if( $i == intval($num / 2) ) echo "</td><td align=\"left\" style=\"line-height:16px\" width=\"50%\">";
 		$rows = mysql_fetch_array($result);
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
 		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">";
@@ -185,7 +186,7 @@ function  pcmain_blog_most_view()
 <?php
 	for($i = 0;$i < $num ;$i ++)
 	{
-		if( $i == 10 ) echo "</tr><td style=\"line-height:16px \" align=left width=\"50%\">";
+		if( $i == intval( $num / 2 ) ) echo "</tr><td style=\"line-height:16px \" align=left width=\"50%\">";
 		$rows = mysql_fetch_array($result);
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
 		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">";
@@ -242,7 +243,7 @@ function pcmain_blog_new_nodes()
 function  pcmain_blog_recommend_nodes()
 {
 	global $pcconfig,$link;
-	$query = "SELECT nid , subject , uid FROM recommend ORDER BY state DESC, rid DESC LIMIT 0 , 20;";
+	$query = "SELECT nid , subject , uid FROM recommend ORDER BY state DESC, rid DESC LIMIT 0 , 30;";
 	$result = mysql_query($query,$link);
 	$num = mysql_num_rows($result);
 ?>
@@ -251,7 +252,7 @@ function  pcmain_blog_recommend_nodes()
 <?php
 	for($i = 0;$i < $num ;$i ++)
 	{
-		if( $i == 10 ) echo "</td><td align=\"left\" style=\"line-height:16px\" width=\"50%\">";
+		if( $i == intval( $num / 2) ) echo "</td><td align=\"left\" style=\"line-height:16px\" width=\"50%\">";
 		$rows = mysql_fetch_array($result);
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
 		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">";
@@ -485,22 +486,22 @@ pcmain_html_init();
             </td>
           </tr>
           <tr>
-            <td><table width="100%"  border="0" cellpadding="3" cellspacing="0">
-              <tr>
-                <td class="topic">热门话题</td>
-              </tr>
-              <tr>
-                <td><?php pcmain_blog_most_hot(); ?></td>
-              </tr>
-            </table></td>
-          </tr>
-          <tr>
             <td><table width="100%"  border="0" cellspacing="0" cellpadding="3">
               <tr>
                 <td class="topic">水木推荐</td>
                 </tr>
               <tr>
                 <td bgcolor="#ECF5FF"><?php pcmain_blog_recommend_nodes(); ?></td>
+              </tr>
+            </table></td>
+          </tr>
+          <tr>
+            <td><table width="100%"  border="0" cellpadding="3" cellspacing="0">
+              <tr>
+                <td class="topic">热门话题</td>
+              </tr>
+              <tr>
+                <td><?php pcmain_blog_most_hot(); ?></td>
               </tr>
             </table></td>
           </tr>

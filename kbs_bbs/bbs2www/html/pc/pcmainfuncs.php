@@ -103,6 +103,8 @@ function pcmain_navigation_bar()
 {
 	global $pcconfig;
 ?>
+<a href="/pc/pcmain.php">博客首页</a>
+|
 <a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">博客论坛</a>
 |
 <a href="/pc/pc.php">用户列表</a>

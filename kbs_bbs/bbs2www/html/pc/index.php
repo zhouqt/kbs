@@ -10,7 +10,6 @@
 		$startMonth = (int)(($pc["CREATED"]-$startYear*10000000000) / 100000000);	
 		$thisYear = date("Y");
 		$thisMonth = date("m");
-		if($wrap) echo "<ul>";	
 		$i = 0;
 		for($yy=$thisYear ; $yy >= $startYear ; $yy --)
 		{
@@ -24,7 +23,6 @@
 			}
 			$thisMonth = 12;	
 		}
-		if($wrap) echo "</ul>";		
 	}
 	
 	function get_calendar_array($link,$pc,$pur,&$totalnodes)
@@ -40,7 +38,7 @@ var blogNodeUrl = "pccon.php?id=<?php echo $pc["UID"]; ?>&s=all";
 		elseif($pur == 1)
 			$query .= " AND ( `access` = 0 OR `access` = 1 ) ";
 		elseif($pur == 3)
-			$query .= " AND ( `access` = 0 OR `access` = 1 OR `access` = 2 OR `access` = 3 ) ";
+			$query .= " AND ( `access` = 0 OR `access` = 1 OR `access` = 2 ) ";
 		$query .= " ORDER BY `nid` DESC;";
 		$result = mysql_query($query,$link);
 		$totalnodes = mysql_num_rows($result); //所有日志数
@@ -154,16 +152,12 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 	
 	function display_newnodes_list($link,$pc,$nodes)
 	{
-?>
-<ul>
-<?php		
 		for($i=0;$i< count($nodes);$i++)
 		{
 			echo "<li><a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nodes[$i][nid]."&tid=".$nodes[$i][tid]."\">".html_format($nodes[$i][subject])."</a>(".time_format($nodes[$i][created]).")</li>\n";
 		}
 		
 ?>
-</ul>
 <p class="f1" align="right">
 <a href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>">
 更多
@@ -304,18 +298,11 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 	
 	function display_blog_list($pc,$blogs)
 	{
-?>
-			<ul>
-<?php
 		for($i=0;$i<( count($blogs));$i++)
 		{
 			echo "<li><a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=0&tid=".$blogs[$i]["TID"]."\">".html_format($blogs[$i]["NAME"])."</a></li>\n";	
 			
 		}
-		
-?>			
-			</ul>
-<?php		
 	}
 	
 	function display_blog_calendar()
@@ -331,7 +318,6 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	function display_blog_friend_links($pc,$wrap=FALSE)
 	{
 
-			if($wrap) echo "<ul>";
 			for($i = 0 ; $i < count($pc["LINKS"]) ; $i ++)
 			{
 				if($wrap) echo "<li>";
@@ -341,7 +327,6 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 					echo "<a href='http://".htmlspecialchars($pc["LINKS"][$i]["URL"])."'>".htmlspecialchars($pc["LINKS"][$i]["LINK"])."</a>\n";
 				if($wrap) echo "</li>";
 			}
-			if($wrap) echo "</ul>";
 	}
 
 	function display_blog_out_rss($pc)
@@ -362,9 +347,6 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	
 	function display_trackback_links($link,$pc)
 	{
-?>
-<ul>
-<?php
 		$query = "SELECT * FROM trackback WHERE uid = '".$pc["UID"]."' ORDER BY tbid DESC LIMIT 0 , 10;";	
 		$result = mysql_query($query,$link);
 		while($rows = mysql_fetch_array($result))
@@ -373,16 +355,10 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 				."\n(".time_format($rows[time]).")</li>";
 		}
 		mysql_free_result($result);
-?>
-</ul>
-<?php
 	}
 	
 	function display_new_comments($link,$pc,$pur=0)
 	{
-?>
-<ul>
-<?php
 		$query = "SELECT cid , comments.subject , comments.created , comments.username FROM comments, nodes WHERE comments.nid = nodes.nid ";
 		if($pur == 0)
 			$query .= " AND access = 0 ";
@@ -398,9 +374,6 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 			echo "<li>[<a href=\"/bbsqry.php?userid=".$rows[username]."\">".$rows[username]."</a>]<a href=\"pcshowcom.php?cid=".$rows[cid]."\">".html_format($rows[subject])."</a>(".time_format($rows[created]).")</li>";
 		}
 		mysql_free_result($result);
-?>
-</ul>
-<?php		
 	}
 	
 	

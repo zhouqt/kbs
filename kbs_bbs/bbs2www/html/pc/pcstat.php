@@ -169,7 +169,7 @@ function getRecommendBlogs($link,$pno=1,$etemnum=0)
 
 function getNewUsers($link,$userNum=0)
 {
-	if(!$userNum) $userNum = 0;
+	if(!$userNum) $userNum = 10;
 	$query = "SELECT username,corpusname,description FROM users ORDER BY createtime DESC LIMIT 0,".intval($userNum).";";
 	$result = mysql_query($query,$link);
 	$newUsers = array();
@@ -181,7 +181,7 @@ function getNewUsers($link,$userNum=0)
 
 function getMostVstUsers($link,$userNum=0)
 {
-	if(!$userNum) $userNum = 0;
+	if(!$userNum) $userNum = 10;
 	$query = "SELECT username , corpusname , description FROM users ORDER BY visitcount DESC LIMIT 0,".intval($userNum).";";
 	$result = mysql_query($query,$link);
 	$mostVstUsers = array();
@@ -193,7 +193,7 @@ function getMostVstUsers($link,$userNum=0)
 	
 function getLastUpdates($link,$userNum=0)
 {
-	if(!$userNum) $userNum = 0;
+	if(!$userNum) $userNum = 10;
 	$query = "SELECT username , corpusname , description FROM users WHERE createtime != modifytime ORDER BY modifytime DESC LIMIT 0,".intval($userNum).";";
 	$result = mysql_query($query,$link);
 	$lastUpdates = array();
@@ -239,15 +239,18 @@ function getHotUsersByPeriod($link,$period,$num=10)
 	else
 		$queryTime = "";
 	
-	$query = "SELECT COUNT(pri_id) , uid , users.username , corpusname , description ".
-	         "FROM logs , users ".
-	         "WHERE ACTION LIKE '%\'s Blog(www)' ".
-	         "      AND pri_id = users.username ";
 	if($queryTime)
-	$query.= "      AND logtime LIKE '".$queryTime."%' ";
-	$query.= "GROUP BY pri_id ".
-	         "ORDER BY 1 DESC ".
-	         "LIMIT 0 , ".$num." ;";
+	    $query = "SELECT COUNT(pri_id) , uid , users.username , corpusname , description ".
+	             "FROM logs , users ".
+	             "WHERE ACTION LIKE '%\'s Blog(www)' ".
+	             "      AND pri_id = users.username ".
+	             "      AND logtime LIKE '".$queryTime."%' ".
+		     "GROUP BY pri_id ".
+		     "ORDER BY 1 DESC ".
+		     "LIMIT 0 , ".$num." ;";
+	else
+	    $query = "SELECT corpusname , uid , username , description ".
+	    	     "FROM users ORDER BY visitcount DESC LIMIT 0 , ".$num." ;";
 	$result = mysql_query($query,$link);
 	$users = array();
 	while($rows = mysql_fetch_array($result))
@@ -283,6 +286,28 @@ function getHotNodesByPeriod($link,$period,$num=10)
 
 function getHotTopicsByPeriod($link,$period,$num=10)
 {
+	if($period=="day")
+		$queryTime = date("Ymd");
+	elseif($period=="month")
+		$queryTime = date("Ym");
+	else
+		$queryTime = "";
 	
+	$query =  "SELECT COUNT(nid) , topics.tid , topics.uid , topicname , username ".
+	          "FROM topics , nodes , users ".
+		  "WHERE topics.access = 0 ".
+		  "      AND topics.uid = users.uid ".
+		  "      AND topics.tid = nodes.tid ";
+	if($queryTime)
+	$query.=  "      AND nodes.created LIKE '".$queryTime."%' ";
+	$query.=  "GROUP BY nodes.tid ".
+		  "ORDER BY 1 DESC ".
+		  "LIMIT 0 , ".$num." ;";
+        $result = mysql_query( $query , $link );
+        $topics = array();
+        while( $rows = mysql_fetch_array( $result ))
+               $topics[] = $rows;
+        mysql_free_result($result);
+        return $topics;
 }
 ?>

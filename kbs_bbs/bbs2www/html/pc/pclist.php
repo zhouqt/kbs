@@ -21,7 +21,13 @@ function pcmain_hot_nodes($link,$period,$color)
 		echo "<font color=\"".$color."\">".($i+1)."</font>&nbsp;<a href=\"/pc/pccon.php?id=".$nodes[$i][uid]."&nid=".$nodes[$i][nid]."&s=all\" title=\"".htmlspecialchars($nodes[$i][subject])."\">".html_format(html_format_fix_length($nodes[$i][subject],32))."</a><br />";
 }
 
-
+function pcmain_hot_topics($link,$period,$color)
+{
+	$topics = getHotTopicsByPeriod($link,$period,50);
+	for($i = 0;$i < count($topics) ; $i ++)
+		echo "<font color=\"".$color."\">".($i+1)."</font>&nbsp;<a href=\"/pc/pcdoc.php?userid=".$topics[$i][username]."&tid=".$topics[$i][1]."&tag=0\" title=\"".htmlspecialchars($topics[$i][topicname])."\">".html_format(html_format_fix_length($topics[$i][topicname],32))."</a>".
+		     "\n<a href=\"/pc/index.php?id=".$topics[$i][username]."\"><font class=low2>".$topics[$i][username]."</font></a><br />";
+}
 
 $link = pc_db_connect();
 pcmain_html_init();
@@ -50,44 +56,6 @@ pcmain_html_init();
 <tr>
 	<td>
 	<table width="100%" cellpadding="0" cellspacing="0" border="0">
-		<tr>
-		<td width="33%" valign="top">
-			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
-				<tr>
-					<td class="td3" bgcolor="#f75151" align="center"><b><font color="white">本日最热博客</font></b></td>			
-				</tr>
-				<tr>
-					<td align="left" class="td4">
-					<?php pcmain_hot_users($link,"day","#f75151"); ?>
-					</td>			
-				</tr>
-			</table>
-		</td>
-		<td width="33%" valign="top">
-			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
-				<tr>
-					<td class="td3" bgcolor="#00b6ef" align="center"><b><font color="white">本月最热博客</font></b></td>			
-				</tr>
-				<tr>
-					<td align="left" class="td4">
-					<?php pcmain_hot_users($link,"month","#00b6ef"); ?>
-					</td>			
-				</tr>
-			</table>
-		</td>
-		<td width="33%" valign="top">
-			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
-				<tr>
-					<td align="center" class="td3" bgcolor="#4cb81c"><b><font color="white">最热博客</font></b></td>			
-				</tr>
-				<tr>
-					<td align="left" class="td3">
-					<?php pcmain_hot_users($link,"all","#4cb81c"); ?>
-					</td>			
-				</tr>
-			</table>
-		</td>
-		</tr>
 		<tr>
 		<td colspan="3" bgcolor="#999999" height="3"> </td>
 		</tr>
@@ -129,7 +97,6 @@ pcmain_html_init();
 			</table>
 		</td>
 		</tr>
-		<?php /*
 		<tr>
 		<td colspan="3" bgcolor="#999999" height="3"> </td>
 		</tr>
@@ -141,7 +108,7 @@ pcmain_html_init();
 				</tr>
 				<tr>
 					<td align="left" class="td4">
-					ddd
+					<?php pcmain_hot_topics($link,"day","#ffb600"); ?>
 					</td>			
 				</tr>
 			</table>
@@ -153,7 +120,7 @@ pcmain_html_init();
 				</tr>
 				<tr>
 					<td align="left" class="td4">
-					ddd
+					<?php pcmain_hot_topics($link,"month","#00b6ef"); ?>
 					</td>			
 				</tr>
 			</table>
@@ -165,13 +132,50 @@ pcmain_html_init();
 				</tr>
 				<tr>
 					<td align="left" class="td3">
-					ddd
+					<?php pcmain_hot_topics($link,"all","#f75151"); ?>
 					</td>			
 				</tr>
 			</table>
 		</td>
 		</tr>
-		*/ ?>
+		<tr>
+		<td width="33%" valign="top">
+			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
+				<tr>
+					<td class="td3" bgcolor="#f75151" align="center"><b><font color="white">本日最热博客</font></b></td>			
+				</tr>
+				<tr>
+					<td align="left" class="td4">
+					<?php pcmain_hot_users($link,"day","#f75151"); ?>
+					</td>			
+				</tr>
+			</table>
+		</td>
+		<td width="33%" valign="top">
+			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
+				<tr>
+					<td class="td3" bgcolor="#00b6ef" align="center"><b><font color="white">本月最热博客</font></b></td>			
+				</tr>
+				<tr>
+					<td align="left" class="td4">
+					<?php pcmain_hot_users($link,"month","#00b6ef"); ?>
+					</td>			
+				</tr>
+			</table>
+		</td>
+		<td width="33%" valign="top">
+			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
+				<tr>
+					<td align="center" class="td3" bgcolor="#4cb81c"><b><font color="white">最热博客</font></b></td>			
+				</tr>
+				<tr>
+					<td align="left" class="td3">
+					<?php pcmain_hot_users($link,"all","#4cb81c"); ?>
+					</td>			
+				</tr>
+			</table>
+		</td>
+		</tr>
 	</table>
 	</td>
 </tr>
