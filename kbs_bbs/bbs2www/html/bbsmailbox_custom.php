@@ -17,6 +17,7 @@
 			unset($mailboxs[$delete -1]);
 			if(!bbs_changemaillist(FALSE,$currentuser["userid"],"",$delete-1))
 				html_error_quit("存储自定义邮箱数据失败!");
+			$mailboxs = bbs_loadmaillist($currentuser["userid"]);
 		}
 		else
 			$delete = 0;
@@ -24,21 +25,38 @@
 		if (isset($_GET["boxname"]))//add
 		{
 			$boxname = $_GET["boxname"];
-			if(!bbs_changemaillist(TRUE,$currentuser["userid"],$boxname,0))
-				html_error_quit("存储自定义邮箱数据失败!");
+			$ret = bbs_changemaillist(TRUE,$currentuser["userid"],$boxname,0);
+			if (!$ret)html_error_quit("存储自定义邮箱数据失败!");
+			if ($ret > 0)  //数目到上限
+			{
+?>
+<SCRIPT language="javascript">
+	alert("自定义邮箱数已到上限!上限是" + <?php echo "\"$ret\"";?>);
+</SCRIPT>
+<?php
+			}
 			$mailboxs = bbs_loadmaillist($currentuser["userid"]);
 		}
 
 ?>
 <body>
 <center><? echo $BBS_FULL_NAME;?> -- 信件列表 - 自定义邮箱 [使用者: <? echo $currentuser["userid"] ?>]<hr color=green>
+
+<?php
+		if($mailboxs == -1)
+		{
+			echo "无自定义邮箱";
+		}
+		else
+		{
+?>
 <table width="250">
 <tr><td>序号</td><td>邮箱名称</td><td>邮件封数</td></tr>
 <?php
-		$i = 0;
-		foreach ($mailboxs as $mailbox)
-		{
-			$i++;
+			$i = 0;
+			foreach ($mailboxs as $mailbox)
+			{
+				$i++;
 ?>
 <tr><td> <?php echo $i; ?></td>
 <td><a href="bbsreadmail.php?path=<?php echo $mailbox["pathname"];?>&title=<?php echo $mailbox["boxname"];?>"><?php echo $mailbox["boxname"]; ?></a></td>
@@ -48,6 +66,7 @@ echo bbs_getmailnum2(bbs_setmailfile($currentuser["userid"],$mailbox["pathname"]
 <td><a href=bbsmailbox_custom.php?delete=<?php echo $i;?>>删除</a>
 </td></tr>
 <?php
+			}
 		}
 ?>
 </table>

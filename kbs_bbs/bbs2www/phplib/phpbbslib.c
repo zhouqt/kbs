@@ -1213,6 +1213,7 @@ static ZEND_FUNCTION(bbs_getmailnum2)
  * array bbs_getmails(char *filename);
  *
  * @return array of loaded mails on success,
+ *         -1  no mail
  *         FALSE on failure.
  * @author binxun
  */
@@ -1237,6 +1238,7 @@ static ZEND_FUNCTION(bbs_getmails)
 	}
 
 	total = getmailnum(mailpath);
+	if(!total)RETURN_LONG(-1);
 
 	/* fetching mails */
 	if (array_init(return_value) == FAILURE)
@@ -1287,6 +1289,7 @@ static ZEND_FUNCTION(bbs_getmails)
  * array bbs_loadmaillist(char *userid);
  *
  * @return array of loaded mails on success,
+ *         -1 no mailbox
  *         FALSE on failure.
  * @author binxun
  */
@@ -1314,10 +1317,12 @@ static ZEND_FUNCTION(bbs_loadmaillist)
 	if (!getuser(userid,&user))RETURN_FALSE;
 	load_mail_list(user,&maillist);
 
-	if(maillist.mail_list_t <= 0 || maillist.mail_list_t > MAILBOARDNUM)//no custom mail box
+	if(maillist.mail_list_t < 0 || maillist.mail_list_t > MAILBOARDNUM)//no custom mail box
 	{
 		RETURN_FALSE;
 	}
+
+	if(!maillist.mail_list_t)RETURN_LONG(-1);
 
 	if (array_init(return_value) == FAILURE)
 	{
@@ -1341,10 +1346,12 @@ static ZEND_FUNCTION(bbs_loadmaillist)
 /**
  * change mail list and save new for user custom mailboxs.
  * prototype:
- * bool bbs_changemaillist(bool bAdd,char* userid,char* newboxname,int index); index--0 based
+ * int bbs_changemaillist(bool bAdd,char* userid,char* newboxname,int index); index--0 based
  *
  * @return
- *         FALSE on failure.
+ *         0 ---- fail
+ *         -1 ---- success
+ *         >0 --- reach to max number!
  * @author binxun
  */
 static ZEND_FUNCTION(bbs_changemaillist)
@@ -1357,10 +1364,11 @@ static ZEND_FUNCTION(bbs_changemaillist)
 	int index;
 
 	struct _mail_list maillist;
-	char buf[10];
+	char buf[10],path[PATHLEN];
 
 	struct userec* user;
     	int i;
+	struct stat st;
 	zval *element;
 
 	int ac = ZEND_NUM_ARGS();
@@ -1371,21 +1379,29 @@ static ZEND_FUNCTION(bbs_changemaillist)
 	{
 		WRONG_PARAM_COUNT;
 	}
-	if (userid_len > IDLEN)RETURN_FALSE;
+	if (userid_len > IDLEN)RETURN_LONG(0);
 	if (boxname_len > 29)boxname[29]='\0';
 
-	if (!getuser(userid,&user))RETURN_FALSE;
+	if (!getuser(userid,&user))RETURN_LONG(0);
 	load_mail_list(user,&maillist);
 
-	if(maillist.mail_list_t <= 0 || maillist.mail_list_t > MAILBOARDNUM)//no custom mail box
+	if(maillist.mail_list_t < 0 || maillist.mail_list_t > MAILBOARDNUM)//no custom mail box
 	{
-		RETURN_FALSE;
+		RETURN_LONG(0);
 	}
 
 	if(bAdd) //add
 	{
-		if(maillist.mail_list_t == MAILBOARDNUM)RETURN_FALSE;  //最大值了
-		sprintf(buf,"MAILBOX%d",maillist.mail_list_t+1);
+		if(maillist.mail_list_t == MAILBOARDNUM)RETURN_LONG(MAILBOARDNUM);  //最大值了
+		i = 0;
+		while(1)           //search for new mailbox path name
+		{
+			i++;
+			sprintf(buf,".MAILBOX%d",i);
+			setmailfile(path,currentuser->userid,buf);
+			if(stat(path,&st) == -1)break;
+		}
+		sprintf(buf,"MAILBOX%d",i);
 		strcpy(maillist.mail_list[maillist.mail_list_t],boxname);
 		strcpy(maillist.mail_list[maillist.mail_list_t]+30,buf);
 		maillist.mail_list_t +=1;
@@ -1402,7 +1418,7 @@ static ZEND_FUNCTION(bbs_changemaillist)
 		}
 		save_mail_list(&maillist);
 	}
-	RETURN_LONG(maillist.mail_list_t);
+	RETURN_LONG(-1);
 }
 
 /**
