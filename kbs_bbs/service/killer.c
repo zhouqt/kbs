@@ -580,7 +580,10 @@ void join_room(struct room_struct * r)
             else if(!buf[0]) {
                 if(do_com_menu()) goto quitgame;
             }
-        }while(!buf[0]);
+            else {
+                break;
+            }
+        }while(1);
         if(inrooms.status==INROOM_NIGHT) {
             for(me=0;me<myroom->people;me++)
                 if(inrooms.peoples[me].pid == uinfo.pid) break;
