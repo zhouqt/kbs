@@ -337,6 +337,7 @@ typedef size_t socklen_t;
 #define FILE_SIGN_FLAG 2
 #define FILE_DELETE_FLAG 3
 #define FILE_DIGEST_FLAG 4
+#define FILE_TITLE_FLAG 5
 
 #include "system.h"
 #include "vars.h"

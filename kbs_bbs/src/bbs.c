@@ -2366,6 +2366,9 @@ int sign_post(int ent, struct fileheader *fileinfo, char *direct)
 {
     return change_post_flag(ent, fileinfo, direct, FILE_SIGN_FLAG, 1);
 }
+
+int set_be_title(int ent, struct fileheader *fileinfo, char *direct);
+
 int del_range(int ent, struct fileheader *fileinfo, char *direct, int mailmode)
   /*
    * 区域删除 
@@ -2773,6 +2776,7 @@ struct one_key read_comms[] = { /*阅读状态，键定义 */
     {Ctrl('N'), SR_first_new},
     {'n', SR_first_new},
     {'\\', SR_last},
+    {'|', set_be_title},
     {'=', SR_first},
     {Ctrl('S'), SR_read},
     {'p', SR_read},
@@ -3313,6 +3317,8 @@ int change_post_flag(int ent, struct fileheader *fileinfo, char *direct, int fla
      */
     if ((flag <= FILE_DELETE_FLAG) && strstr(direct, "/.THREAD"))
         return DONOTHING;
+    if (flag==FILE_TITLE_FLAG&&digestmode!=0)
+    	return DONOTHING;
 
     strcpy(buf, direct);
     ptr = strrchr(buf, '/') + 1;
@@ -3455,6 +3461,14 @@ int change_post_flag(int ent, struct fileheader *fileinfo, char *direct, int fla
             }
         }
         break;
+      case FILE_TITLE_FLAG:
+      	fileinfo->groupid = fileinfo->id;
+      	fileinfo->reid = fileinfo->id;
+      	if(!strncmp(fileinfo->title, "Re:", 3)) {
+      		strcpy(buf, fileinfo->title+4);
+      		strcpy(fileinfo->title, buf);
+      	}
+      	break;
     }
 
     if (lseek(fd, size * (ent - 1), SEEK_SET) == -1) {
@@ -3478,3 +3492,10 @@ int change_post_flag(int ent, struct fileheader *fileinfo, char *direct, int fla
 
     return newent ? DIRCHANGED : PARTUPDATE;
 }
+
+int set_be_title(int ent, struct fileheader *fileinfo, char *direct)
+{
+    /*设置该文件为标题文件---- added by bad 2002.8.14*/
+    return change_post_flag(ent, fileinfo, direct, FILE_TITLE_FLAG, 0);
+}
+
