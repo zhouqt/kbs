@@ -11,7 +11,7 @@ int main()
     FILE *fp;
     char title[256], userid[80], board[80], dir[80], file[80], *ptr;
     char brdencode[STRLEN];
-    struct fileheader x;
+    struct fileheader x,oldx;
     int i, num = 0, found = 0;
 
     init_all();
@@ -31,17 +31,17 @@ int main()
     if (fp == 0)
         http_fatal("目录错误");
     while (1) {
-        if (fread(&x, sizeof(x), 1, fp) <= 0)
+        if (fread(&oldx, sizeof(x), 1, fp) <= 0)
             break;
         num++;
-        if (!strcmp(x.filename, file)) {
-            ptr = x.title;
+        if (!strcmp(oldx.filename, file)) {
+            ptr = oldx.title;
             if (!strncmp(ptr, "Re:", 3))
                 ptr += 4;
             strsncpy(title, ptr, 40);
             found = 1;
-            strcpy(userid, x.owner);
-            show_file(board, &x, num - 1);
+            strcpy(userid, oldx.owner);
+            show_file(board, &oldx, num - 1);
             while (1) {
                 if (fread(&x, sizeof(x), 1, fp) <= 0)
                     break;
@@ -56,7 +56,8 @@ int main()
         http_fatal("错误的文件名");
     encode_url(brdencode, board, sizeof(brdencode));
     if (!can_reply_post(board, file))
-        printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=%s\">回文章</a>] ", brdencode, file, x.owner, http_encode_string(title, sizeof(title)));
+        printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=Re: %s&refilename=%s\">回文章</a>]", brdencode, file, oldx.owner, encode_url(title, void1(ptr), sizeof(title)), oldx.filename);
+//        printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=%s\">回文章</a>] ", brdencode, file, x.owner, http_encode_string(title, sizeof(title)));
     printf("[<a href=\"javascript:history.go(-1)\">返回上一页</a>]");
     printf("[<a href=\"/bbsdoc.php?board=%s\">本讨论区</a>]", brdencode);
     ptr = x.title;
