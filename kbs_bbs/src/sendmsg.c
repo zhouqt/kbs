@@ -278,7 +278,7 @@ reenter:
                 getdata(23, 0, "ÇëÊäÈë¹Ø¼ü×Ö:", chk, 50, true, NULL, true);
                 if(chk[0]) {
                     int fd, fd2;
-                    char fname, fname2;
+                    char fname[STRLEN], fname2[STRLEN];
                     size_t bm_search[256];
                     struct msghead head;
                     int i, j;
