@@ -568,8 +568,8 @@ void outns(const char*str, int n)
                     slp->color[cur_col]=cur_color;
                 }
                 cur_col++;
-                str++;
             }
+            str++;
             continue;
         }
         else if (!isprint2(*str)) ch=(unsigned char) '*';
