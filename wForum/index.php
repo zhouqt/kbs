@@ -1,13 +1,6 @@
 <?php
 
 
-if ( (!isset($_COOKIE['iscookies'])) || ($_COOKIE['iscookies']==''))
-{
-	setcookie('iscookies','0',time()+3650*24*3600);
-	print '<META http-equiv=Content-Type content=text/html; charset=gb2312><meta HTTP-EQUIV=REFRESH CONTENT=3>正在登陆论坛……<br><br>本系统要求使用COOKIES，假如您的浏览器禁用COOKIES，您将不能登录本系统……';
-	exit();
-} 
-
 $setboard=1;
 
 require("inc/funcs.php");
@@ -43,7 +36,6 @@ showTitle();
 if ($loginok!=1) {
 	FastLogin();
 }
-
 
 
 showAllSecs();

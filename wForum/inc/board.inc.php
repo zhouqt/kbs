@@ -1,10 +1,97 @@
 <?php
 
+/**
+ * Checking whether a board is set with some specific flags or not.
+ * 
+ * @param $board the board object to be checked
+ * @param $flag the flags to check
+ * @return TRUE  the board is set with the flags
+ *         FALSE the board is not set with the flags
+ * @author flyriver
+ */
+function bbs_check_board_flag($board,$flag)
+{
+	if ($board["FLAG"] & $flag)
+		return TRUE;
+	else
+		return FALSE;
+}
+
+/**
+ * Checking whether a board is an anonymous board or not.
+ * 
+ * @param $board the board object to be checked
+ * @return TRUE  the board is an anonymous board
+ *         FALSE the board is not an anonymous board
+ * @author flyriver
+ */
+function bbs_is_anony_board($board)
+{
+	global $BOARD_FLAGS;
+	return bbs_check_board_flag($board, $BOARD_FLAGS["ANONY"]);
+}
+
+/**
+ * Checking whether a board is an outgo board or not.
+ * 
+ * @param $board the board object to be checked
+ * @return TRUE  the board is an outgo board
+ *         FALSE the board is not an outgo board
+ * @author flyriver
+ */
+function bbs_is_outgo_board($board)
+{
+	global $BOARD_FLAGS;
+	return bbs_check_board_flag($board, $BOARD_FLAGS["OUTGO"]);
+}
+
+/**
+ * Checking whether a board is a junk board or not.
+ * 
+ * @param $board the board object to be checked
+ * @return TRUE  the board is a junk board
+ *         FALSE the board is not a junk board
+ * @author flyriver
+ */
+function bbs_is_junk_board($board)
+{
+	global $BOARD_FLAGS;
+	return bbs_check_board_flag($board, $BOARD_FLAGS["JUNK"]);
+}
+
+/**
+ * Checking whether a board is an attachment board or not.
+ * 
+ * @param $board the board object to be checked
+ * @return TRUE  the board is an attachment board
+ *         FALSE the board is not an attachment board
+ * @author flyriver
+ */
+function bbs_is_attach_board($board)
+{
+	global $BOARD_FLAGS;
+	return bbs_check_board_flag($board, $BOARD_FLAGS["ATTACH"]);
+}
+
+/**
+ * Checking whether a board is a readonly board or not.
+ * 
+ * @param $board the board object to be checked
+ * @return TRUE  the board is a readnoly board
+ *         FALSE the board is not a readonly board
+ * @author flyriver
+ */
+function bbs_is_readonly_board($board)
+{
+	global $BOARD_FLAGS;
+	return bbs_check_board_flag($board, $BOARD_FLAGS["READONLY"]);
+}
+
 function showBoardStaticsTop($boardArr){
 ?>
 <TABLE cellpadding=3 cellspacing=1 class=tableborder1 align=center><TR><Th height=25 width=100% align=left id=tabletitlelink style="font-weight:normal">本版当前共有<b><?php echo $boardArr['CURRENTUSERS'];?></b>人在线 </Th></TR></td></tr></TABLE>
 <BR>
-<table cellpadding=0 cellspacing=0 border=0 width=97% align=center valign=middle><tr><td align=center width=2> </td><td align=left style="height:27" valign="center"><a href=announce.php?boardid=2><span class="buttonclass1" border=0 alt=发新帖></span></a>&nbsp;&nbsp;<a href=vote.php?boardid=2><span class="buttonclass2" border=0 alt=发起新投票></span>&nbsp;&nbsp;<a href=smallpaper.php?boardid=2><span class="buttonclass3" border=0 alt=发布小字报></span></a></td><td align=right><img src=pic/team2.gif align=absmiddle>
+<table cellpadding=0 cellspacing=0 border=0 width=97% align=center valign=middle><tr><td align=center width=2> </td><td align=left style="height:27" valign="center"><a href=postarticle.php?board=<?php echo $boardArr['NAME']; ?>><span class="buttonclass1" border=0 alt=发新帖></span></a>&nbsp;&nbsp;<a href=vote.php?boardid=2><span class="buttonclass2" border=0 alt=发起新投票></span>&nbsp;&nbsp;<a href=smallpaper.php?boardid=2><span class="buttonclass3" border=0 alt=发布小字报></span></a></td><td align=right><img src=pic/team2.gif align=absmiddle>
 <?php 
 	$bms=split(' ',$boardArr['BM']);
 	foreach($bms as $bm) {

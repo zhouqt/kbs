@@ -7,6 +7,14 @@ if (!defined('_BBS_FUNCS_PHP_'))
 {
 define('_BBS_FUNCS_PHP_', 1);
 
+if ( (!isset($_COOKIE['iscookies'])) || ($_COOKIE['iscookies']==''))
+{
+	setcookie('iscookies','0',time()+3650*24*3600);
+	print '<META http-equiv=Content-Type content=text/html; charset=gb2312><meta HTTP-EQUIV=REFRESH CONTENT=3>正在登陆论坛……<br><br>本系统要求使用COOKIES，假如您的浏览器禁用COOKIES，您将不能登录本系统……';
+	exit();
+} 
+
+
 function getmicrotime(){ 
    list($usec, $sec) = explode(" ",microtime()); 
    return ((float)$usec + (float)$sec); 
@@ -19,6 +27,8 @@ $StartTime=getmicrotime();
 //       you *MUST* set enable_dl variable to Off in php.ini file.
 if (ini_get("enable_dl") == 1)
 	dl("libphpbbslib.so");
+
+
 global $SQUID_ACCL;
 global $BBS_PERM_POSTMASK;
 global $BBS_PERM_NOZAP;
@@ -230,7 +240,6 @@ if ( ($userid=='guest') && ($utmpkey == "")&&($needlogin!=0)){
 	  }
 	}
 }
-
 
 function valid_filename($fn)
 {

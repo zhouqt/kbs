@@ -269,11 +269,10 @@ echo usersysinfo($_SERVER["HTTP_USER_AGENT"]);
 }
 
 function showOnlineUsers(){
-	$Forum_OnlineNum=bbs_getonlinenumber();
 ?>
 <table cellpadding=5 cellspacing=1 class=tableborder1 align=center style="word-break:break-all;">
 <TR><Th colSpan=2 align=left id=tabletitlelink height=25 style="font-weight:normal"><b>-=> 论坛在线统计</b>&nbsp;[<a href=showOnlineUsers.php?action=show>显示详细列表</a>] [<a href=boardstat.php?reaction=online>查看在线用户位置</a>]</Th></TR>
-<TR><TD width=100% vAlign=top class=tablebody1>  目前论坛上总共有 <b><?php echo $Forum_OnlineNum ; ?></b> 人在线，其中注册会员 <b><?php echo  $OnlineNum ?></b> 人，访客 <b><?php echo  $GuestNum ?></b> 人。<br>
+<TR><TD width=100% vAlign=top class=tablebody1>  目前论坛上总共有 <b><?php echo bbs_getonlinenumber() ; ?></b> 人在线，其中注册用户 <b><?php echo bbs_getonlineusernumber(); ?></b> 人，访客 <b><?php echo bbs_getwwwguestnumber() ; ?></b> 人。<br>
 历史最高在线纪录是 <b><?php echo  $Maxonline ?></b> 人同时在线
 </td></tr>
 </table><br>
