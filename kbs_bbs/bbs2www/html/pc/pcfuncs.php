@@ -292,7 +292,7 @@ function pc_get_members($link,$pc)
 
 function pc_add_member($link,$pc,$userid)
 {
-	global $currentuser;
+	global $currentuser,$pcconfig;
 	if(!$pc || !is_array($pc))
 		return FALSE;
 	if(!pc_is_groupwork($pc))
@@ -309,7 +309,14 @@ function pc_add_member($link,$pc,$userid)
 	
 	$action = "ADD MEMBER: ".$userid; 
 	if(!pc_group_logs($link,$pc,$action))
-		exit("公有BLOG LOG错误");
+		exit("群体BLOG LOG错误");
+	
+	$title = $userid . " 由 " . $currentuser["userid"] . " 授予 " . $pc["USER"] . " 群体BLOG的权利";
+	$content = "    欢迎加入 ".$pc["USER"]."/".$pc["NAME"]." 大家庭";
+	// post announcement
+	bbs_postarticle($pcconfig["APPBOARD"], preg_replace("/\\\(['|\"|\\\])/","$1",$title), preg_replace("/\\\(['|\"|\\\])/","$1",$content), 0 , 0 , 0 , 0);
+	// post mail
+	bbs_postmail($userid,preg_replace("/\\\(['|\"|\\\])/","$1",$title), preg_replace("/\\\(['|\"|\\\])/","$1",$content),0,0);
 	return TRUE;
 }
 
@@ -325,7 +332,17 @@ function pc_del_member($link,$pc,$userid)
 	
 	$action = "DEL MEMBER: ".$userid; 
 	if(!pc_group_logs($link,$pc,$action))
-		exit("公有BLOG LOG错误");
+		exit("群体BLOG LOG错误");
+	$title = $userid . " 由 " . $currentuser["userid"] . " 取消 " . $pc["USER"] . " 群体BLOG的权利";
+	$content = "    欢迎下次再来 ";
+	// post announcement
+	//bbs_postarticle($pcconfig["APPBOARD"], preg_replace("/\\\(['|\"|\\\])/","$1",$title), preg_replace("/\\\(['|\"|\\\])/","$1",$content), 0 , 0 , 0 , 0);
+	// post mail
+	$lookupuser = array();
+	if(bbs_getuser($userid,$lookupuser)!=0) {
+    	$userid = $lookupuser["userid"];
+    	bbs_postmail($userid,preg_replace("/\\\(['|\"|\\\])/","$1",$title), preg_replace("/\\\(['|\"|\\\])/","$1",$content),0,0);
+	}
 	return TRUE;
 }
 
@@ -1211,7 +1228,7 @@ function pc_fav_rootpid($link,$uid)
 	return $rows[nid];
 }
 
-//一个Blog是否为公有Blog
+//一个Blog是否为群体BLOG
 /*
 pctype字段:
 
@@ -1234,7 +1251,7 @@ function pc_is_groupwork($pc)
 	return FALSE;
 }
 
-//公有BLOG的log
+//群体BLOG的log
 function pc_group_logs($link,$pc,$action,$content="")
 {
 	global $currentuser;
@@ -1271,10 +1288,10 @@ function pc_add_topic($link,$pc,$access,$topicname)
 }
 
 /*
-** 把一个BLOG变成公有BLOG
+** 把一个BLOG变成群体BLOG
 ** return 0 : seccess
 **        -1:$pc参数错误
-**        -2:已是公有BLOG
+**        -2:已是群体BLOG
 **        -3:LOG目录初始化错误
 **        -4:系统错误
 **        -5:LOG 错误
