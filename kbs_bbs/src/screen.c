@@ -324,7 +324,7 @@ void clrtoeol()
     ln = (cur_ln + roll)%scr_lns;
     slp = &big_picture[ln];
     for(k=0;k<t_columns;k++) {
-        if((slp->data[k]==32||slp->data[k]==0)&&slp->mode[k]==cur_mode&&slp->color[k]/16==curr_color/16)
+        if((slp->data[k]==32||slp->data[k]==0)&&slp->mode[k]==cur_mode&&slp->color[k]/16==cur_color/16)
             slp->mode[k]=SCREEN_MODIFIED;
         else
             slp->mode[k]=0;
@@ -338,13 +338,13 @@ void
 clrtobot()
 {
     register struct screenline *slp;
-    register int i, j, ln;
+    register int i, k, ln;
 
     for (i = cur_ln; i < scr_lns; i++) {
         ln = (i + roll)%scr_lns;
         slp = &big_picture[ln];
         for(k=0;k<t_columns;k++) {
-            if((slp->data[k]==32||slp->data[k]==0)&&slp->mode[k]==cur_mode&&slp->color[k]/16==curr_color/16)
+            if((slp->data[k]==32||slp->data[k]==0)&&slp->mode[k]==cur_mode&&slp->color[k]/16==cur_color/16)
                 slp->mode[k]=SCREEN_MODIFIED;
             else
                 slp->mode[k]=0;
@@ -393,7 +393,8 @@ void outns(const char*str, int n)
     const char *begin_str = str;
 
     if (!scrint) {
-        for (; *begin_str && (reg_col < n); reg_col++, begin_str++)
+        i=0;
+        for (; *begin_str && (i < n); i++, begin_str++)
             outc(*begin_str);
         return;
     }
@@ -509,7 +510,7 @@ void outns(const char*str, int n)
         }
         if (!isprint2(*str)) ch=(unsigned char) '*';
         else ch=*str;
-        if(ch!=slp->data[cur_col]||cur_mode!=slp->mode[cur_col]||cur_color|=slp->color[cur_col]) {
+        if(ch!=slp->data[cur_col]||cur_mode!=slp->mode[cur_col]||cur_color!=slp->color[cur_col]) {
             slp->data[cur_col]=ch;
             slp->mode[cur_col]=SCREEN_MODIFIED|cur_mode;
             slp->color[cur_col]=cur_color;
