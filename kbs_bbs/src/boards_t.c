@@ -334,8 +334,6 @@ void show_brdlist(page, clsflag, newflag)       /* show board list */
             }
             prints(" %4d%s%s ", ptr->total, ptr->total > 9999 ? " " : "  ", ptr->unread ? "¡ô" : "¡ó"); /*ÊÇ·ñÎ´¶Á */
         }
-        strcpy(tmpBM, ptr->BM);
-
         /* Leeward 98.03.28 Displaying whether a board is READONLY or not */
         if (ptr->flag == -1)
             sprintf(buf, "%s", ptr->title);     // added by bad 2002.8.3
@@ -346,8 +344,10 @@ void show_brdlist(page, clsflag, newflag)       /* show board list */
 
         if (ptr->flag == -1)    // added by bad 2002.8.3
             prints("%-20s\n", buf);
-        else
+        else {
+        	strncpy(tmpBM, ptr->BM,BM_LEN);
             prints("%c%-16s %s%-36s %-12s\n", ((newflag && ptr->zap && !(ptr->flag & BOARD_NOZAPFLAG)) ? '*' : ' '), ptr->name, (ptr->flag & BOARD_VOTEFLAG) ? "[31mV[m" : " ", buf, ptr->BM[0] <= ' ' ? "³ÏÕ÷°åÖ÷ÖÐ" : strtok(tmpBM, " "));  /*µÚÒ»¸ö°æÖ÷ */
+        }
     }
     refresh();
 }
