@@ -331,28 +331,9 @@ struct user_info *urec;
 }
 
 int
-count_multi( struct user_info *uentp,char* arg,int pos)
-{
-    static int  count;
-
-    if( uentp == NULL ) {
-        int     num = count;
-        count = 0;
-        return num;
-    }
-    if( !uentp->active || !uentp->pid )
-        return 0;
-    if( uentp->uid == usernum )
-        count++;
-    return 1;
-}
-
-int
 count_user()
 {
-    count_multi( NULL,0 ,0);
-    apply_ulist( count_multi , 0);
-    return count_multi( NULL,0,0 );
+    return apply_utmpuid( NULL , usernum,0);
 }
 
 void RemoveMsgCountFile()

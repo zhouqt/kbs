@@ -47,7 +47,6 @@ struct ACSHM
 struct  ACSHM   *movieshm;
 
 int     nnline = 0, xxxline = 0;
-char    more_buf[ MORE_BUFSIZE ];
 int     more_size, more_num;
 
 int
@@ -167,9 +166,7 @@ setcalltime()
 }
 
 int
-readln(fd,buf)
-int fd ;
-char *buf ;
+readln(int fd,char* buf,char* more_buf)
 {
     int len, bytes, in_esc, ch;
 
@@ -248,8 +245,7 @@ case '\r': case KEY_DOWN: case 'j':
     }
 }
 
-int seek_nth_line(fd, no)
-int fd, no;
+int seek_nth_line(int fd, int no,char* more_buf)
 {
     int  n_read, line_count, viewed;
     char *p, *end;
@@ -386,6 +382,7 @@ int     numlines;
     int         numbytes ;
     int         curr_row = row;
     int         linesread = 0;
+	char        more_buf[ MORE_BUFSIZE ];
 
     if( (fd = open(filename,O_RDONLY)) == -1 ) {
         return -1;
@@ -401,7 +398,7 @@ int     numlines;
 
     clrtobot();
     i = pos = viewed = 0 ;
-    numbytes = readln(fd,buf) ;  curr_row++; linesread++;
+    numbytes = readln(fd,buf,more_buf) ;  curr_row++; linesread++;
     /*if (numbytes)
       {
         char *lpTmp;
@@ -491,7 +488,7 @@ int     numlines;
                     clear(); i = pos = 0;
                     curr_row -= (ch == KEY_PGUP) ? (2 * t_lines - 2) : (t_lines + 1);
                     if (curr_row < 0) { close( fd ); return ch; }
-                    viewed = seek_nth_line(fd, curr_row);
+                    viewed = seek_nth_line(fd, curr_row,more_buf);
                     numbytes = readln(fd,buf) ;  curr_row++;
                 } else if(ch == 'H')
                 {

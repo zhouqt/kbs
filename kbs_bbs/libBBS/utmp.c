@@ -192,11 +192,14 @@ int apply_utmp(APPLY_UTMP_FUNC fptr,int maxcount,char* userid,char* arg)
 		  (!strcasecmp(utmpshm->uinfo[i-1].userid,userid)))
         {
         	int ret;
-        	ret = (*fptr)(&utmpshm->uinfo[ i-1 ],arg,i);
-        	if (ret==QUIT)
-        	    break;
-        	if (ret==COUNT) num++;
-        	if (maxcount&&(num>maxcount)) break;
+        	if (fptr) {
+                ret = (*fptr)(&utmpshm->uinfo[ i-1 ],arg,i);
+        	    if (ret==QUIT)
+        	        break;
+        	    if (ret==COUNT) num++;
+        	    if (maxcount&&(num>maxcount)) break;
+        	} else
+        		num++;
         }
 		i = utmpshm->next[i-1];
 	}
