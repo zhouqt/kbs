@@ -49,6 +49,14 @@ $dir_modes = array(
 	"WEB_THREAD" => 10,
 	"ZHIDING" => 11
 );
+
+$bbsman_modes = array(
+    "DEL"   => 1,
+    "MARK"  => 2,
+    "DIGEST"=> 3,
+    "NOREPLY" => 4,
+    "ZHIDING" => 5
+    );
 /**
  * Constants of board flags, packed in an array.
  */

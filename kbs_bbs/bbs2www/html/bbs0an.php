@@ -66,7 +66,8 @@ function bbs_ann_foot($parent) {
 
 function bbs_ann_display_articles($articles) {
 ?>
-<table width="100%" border="0" cellspacing="0" cellpadding="3" class="t1">
+<center>
+<table width="98%" border="0" cellspacing="0" cellpadding="3" class="t1">
 <tbody><tr><td class="t2" width="50">序号</td><td class="t2" width="30">类型</td><td class="t2">标题</td><td class="t2" width="80">整理</td><td class="t2" width="80">编辑日期</td></tr>
 </tbody>
 <?php
@@ -107,7 +108,7 @@ function bbs_ann_display_articles($articles) {
         $i ++;
     }
 ?>
-</table>
+</table></center>
 <?php    
 }
 

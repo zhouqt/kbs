@@ -34,7 +34,7 @@ function pc_apply_users($link,$type,$start,$pagesize,$userid="",$appname="")
 
 function pc_add_users($link,$userid,$corpusname,$manual)
 {
-	global $pcconfig , $currentuser;
+	global $pcconfig , $currentuser , $bbsman_modes;
 	if(!$userid || !$corpusname)
 		return FALSE;
 	$lookupuser=array ();
@@ -99,6 +99,8 @@ function pc_add_users($link,$userid,$corpusname,$manual)
 	$ret = bbs_postmail($lookupuser["userid"],preg_replace("/\\\(['|\"|\\\])/","$1",$annTitle), preg_replace("/\\\(['|\"|\\\])/","$1",$annBody),0,0);
 	if($ret < 0)
 		return FALSE;
+	//标记公告
+	bbs_bmmanage($pcconfig["APPBOARD"],$ret,$bbsman_modes["MARK"],0);
 	
 	return TRUE;
 }

@@ -99,7 +99,8 @@ login_init();
 	
 	function display_g_articles($brdarr,$articles,$start,$order=FALSE){
 ?>
-<table width="100%" border="0" cellspacing="0" cellpadding="3" class="t1">
+<center>
+<table width="98%" border="0" cellspacing="0" cellpadding="3" class="t1">
 <tr><td class="t2" width="40">序号</td><td class="t2" width="30">标记</td><td class="t2" width="85">作者</td><td class="t2" width="50">日期</td><td class="t2">标题</td></tr>
 <?php
 		$brd_encode = urlencode($brdarr["NAME"]);
@@ -154,7 +155,7 @@ login_init();
 			$i++;
 		}
 ?>
-</table>
+</table></center>
 <?php		
 		}
 

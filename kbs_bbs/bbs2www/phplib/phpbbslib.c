@@ -125,6 +125,7 @@ static PHP_FUNCTION(bbs_get_tmpls);
 static PHP_FUNCTION(bbs_get_tmpl_from_num);
 static PHP_FUNCTION(bbs_make_tmpl_file);
 static PHP_FUNCTION(bbs_docross);
+static PHP_FUNCTION(bbs_bmmanage);
 
 static PHP_FUNCTION(bbs_delfile);
 static PHP_FUNCTION(bbs_normalboard);
@@ -382,6 +383,7 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_get_tmpl_from_num,NULL)
 		PHP_FE(bbs_make_tmpl_file,NULL)
 		PHP_FE(bbs_docross,NULL)
+		PHP_FE(bbs_bmmanage,NULL)
 #ifdef SMS_SUPPORT
 		PHP_FE(bbs_send_sms,NULL)
 		PHP_FE(bbs_register_sms_sendcheck,NULL)
@@ -8536,6 +8538,123 @@ static PHP_FUNCTION(bbs_docross)
 	setbfile(path, board, f.filename);
 	if (post_cross(u, target, board, f.title, path, 0, 0, ispost[0], 0, getSession()) == -1)
 	    RETURN_LONG(-10);
+    RETURN_LONG(0);
+}
+
+/**
+ * int bbs_bmmanage(string board,int id,int mode,int zhiding)
+ * which is used to switch article's flag
+ * $mode defined in funcs.php
+ * $mode = 0: do nth;
+ *         1: del;
+ *         2: mark;
+ *         3: digest;
+ *         4: noreplay;
+ *         5: zhiding
+ * return 0 : success;
+ *        -1: board is NOT exist
+ *        -2: do NOT have permission
+ *        -3: can NOT load dir file
+ *        -4: can NOT find article
+ *        -9: system error
+ */
+static PHP_FUNCTION(bbs_bmmanage)
+{
+    char *board;
+    int  board_len;
+    int  id,mode,zhiding;
+    struct boardheader* bh;
+    int ret;
+    char dir[STRLEN];
+    int ent;
+    int fd;
+    struct fileheader f;
+    
+    int ac = ZEND_NUM_ARGS();
+    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "slll", &board, &board_len, &id, &mode, &zhiding) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+	
+    bh = getbcache(board);
+    if (!bh) RETURN_LONG(-1);
+    strcpy(board,bh->filename);
+    if (!has_BM_perm(getCurrentUser(), board))
+        RETURN_LONG(-2);
+    
+    if (zhiding) {
+        int find = 0;
+        ent = 1;
+        setbdir(DIR_MODE_ZHIDING, dir, board);
+        fd = open(dir, O_RDWR, 0644);
+        if (fd < 0) 
+            RETURN_LONG(-3);
+        while (1) {
+    	    if (read(fd,&f, sizeof(struct fileheader)) <= 0)
+    		    break;               
+    	    if (f.id==id) {
+    		    find=1;
+    		    break;
+    	    }
+    	    ent++;
+        }
+        close(fd);
+        if (!find)
+            RETURN_LONG(-4);
+    }
+    else {
+        setbdir(DIR_MODE_NORMAL, dir, board);
+        fd = open(dir, O_RDWR, 0644);
+        if ( fd < 0) RETURN_LONG(-3);
+        if (!get_records_from_id( fd, id, &f, 1, &ent)) {
+            close(fd);
+            RETURN_LONG(-4);
+        }
+        close(fd);
+    }
+        
+    if (zhiding) {
+        ret = delete_record(dir, sizeof(struct fileheader), ent,(RECORD_FUNC_ARG) cmpname, f.filename);
+        if (ret == 0) {
+            char buf[128];
+            bcache_t bc;
+            snprintf(buf,100,"boards/%s/%s",board,f.filename);
+            my_unlink(buf);
+            board_update_toptitle(getboardnum(board,&bc), true);
+        }
+    }
+    else if (mode == 1) {
+        ret = del_post(ent, &f, dir, board);
+    }
+    else {
+        struct write_dir_arg dirarg;
+        struct fileheader data;
+        int flag;
+        data.accessed[0] = ~(f.accessed[0]);
+        data.accessed[1] = ~(f.accessed[1]);
+        init_write_dir_arg(&dirarg);
+        if (mode == 2)
+            flag = FILE_MARK_FLAG;
+        else if (mode == 3)
+            flag = FILE_DIGEST_FLAG;
+        else if (mode == 4)
+            flag = FILE_NOREPLY_FLAG;
+        else if (mode == 5)
+            flag = FILE_DING_FLAG;
+        else
+            RETURN_LONG(-3);
+        
+        dirarg.filename = dir;  
+        dirarg.ent = ent;
+        if(change_post_flag(&dirarg,DIR_MODE_NORMAL,bh, &f, flag, &data,true,getSession())!=0)
+            ret = 1;
+        else
+            ret = 0;
+        free_write_dir_arg(&dirarg);
+    }
+    
+    if (ret != 0)
+        RETURN_LONG(-9); 
+
     RETURN_LONG(0);
 }
 
