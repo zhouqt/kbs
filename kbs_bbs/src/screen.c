@@ -43,6 +43,34 @@ struct screenline *big_picture = NULL;
 static const char nullstr[] = "(null)";
 static /*struct screenline old_line; */ char tmpbuffer[256*3];
 
+#define BLACK 0
+#define RED 1
+#define GREEN 2
+#define YELLOW 3
+#define BLUE 4
+#define PINK 5
+#define CYAN 6
+#define WHITE 7
+
+void setfcolor(int i,int j)
+{
+    char buf[30];
+    sprintf(buf, "\033[%d;%dm",i+30,j);
+    prints(buf);
+}
+
+void setbcolor(int i)
+{
+    char buf[30];
+    sprintf(buf, "\033[%d;%dm",i+40);
+    prints(buf);
+}
+
+void resetcolor()
+{
+    prints("\033[37;40;0m");
+}
+
 /* –«ø’’Ω∂∑º¶ added by Czz 020926 */
 void clrnlines(int n)
 {
@@ -386,6 +414,8 @@ void redoscr()
         for (k=0;k < scr_cols; k++)
             bp[j].ldata[k]=255;
     }
+    move(0, 0);
+    do_move(0, 0, ochar);
     refresh();
 }
 
