@@ -134,7 +134,7 @@ void encode_file(char * s)
     char fn;
     int o, i;
     FILE *fp1, *fp2;
-    sprintf(fn, "tmp/%d.cal", rand());
+    sprintf(fn, "tmp/%d.cal", rand()%12345);
     fp1 = fopen(s, "rb");
     fp2 = fopen(fn, "wb");
     while((o=fread(buf, 1, 1024*16, fp1))>0) {
