@@ -128,18 +128,121 @@ int newfile(char * s)
     return 0;
 }
 
+#define IV1         0x12345678
+#define IV2         0xabcdef44
+void tea_encipher(unsigned long* v, unsigned long* k)  
+{              
+    register unsigned long y=v[0],z=v[1], sum=0, delta=0x9e3779b9, n=32;
+    while (n-->0) {                       
+        sum += delta ;
+        y += (z<<4)+k[0] ^ z+sum ^ (z>>5)+k[1];
+        z += (y<<4)+k[2] ^ y+sum ^ (y>>5)+k[3];   
+    } 
+    v[0]=y; 
+    v[1]=z; 
+}
+
+void tea_decipher(unsigned long* v,unsigned long* k)  
+{
+    register unsigned long n=32, sum, y=v[0], z=v[1],delta=0x9e3779b9;
+    sum=delta<<5;
+                       
+    while (n-->0) {
+        z-= (y<<4)+k[2] ^ y+sum ^ (y>>5)+k[3]; 
+        y-= (z<<4)+k[0] ^ z+sum ^ (z>>5)+k[1];
+        sum-=delta;  
+    }
+    v[0]=y; 
+    v[1]=z;  
+}
+
+void encipher(char* buf,size_t len,unsigned long *k)
+{
+    unsigned long l[2];
+    unsigned long iv[2] = {IV1,IV2};
+    if (len % 8) return;
+    len = len / 8;
+    for (unsigned int i=0; i<len; i++) {
+        memcpy(l,buf,8);
+        l[0] ^= iv[0]; l[1] ^= iv[1];
+        tea_encipher(l,k);
+        memcpy(buf,l,8);
+        iv[0] = l[0]; iv[1] = l[1];
+        buf += 8;
+    }
+}
+
+void decipher(char* buf,size_t len,unsigned long *k)
+{
+    unsigned long l[2];
+    unsigned long iv[2];
+    if (len % 8) return;
+    buf += len;
+    for (len=len/8-1; len; --len) {
+        buf -= 8;
+        memcpy(l,buf,8);
+        tea_decipher(l,k);
+        memcpy(iv,buf-8,8);
+        l[0] ^= iv[0]; l[1] ^= iv[1];
+        memcpy(buf,l,8);
+    }
+    buf -= 8;
+    memcpy(l,buf,8);
+    tea_decipher(l,k);
+    l[0] ^= IV1; l[1] ^= IV2;
+    memcpy(buf,l,8);
+}
+
 void encode_file(char * s)
 {
     char buf[1024*16];
     char fn[80];
+    unsigned long k;
     int o, i;
     FILE *fp1, *fp2;
-    sprintf(fn, "tmp/%d.cal", rand());
+    k = sysconf_eval("CALENDAR_KEY", 234251);
+    sprintf(fn, "tmp/%s.%d.cal", currentuser->userid, rand());
     fp1 = fopen(s, "rb");
     fp2 = fopen(fn, "wb");
     while((o=fread(buf, 1, 1024*16, fp1))>0) {
-        for(i=0;i<o;i++)
-            buf[i]=buf[i]^0x1f;
+        if(o%8!=0) {
+            for(i=o;i<(o/8+1)*8;i++)
+                buf[i]=32;
+            o=(o/8+1)*8;
+        }
+        encipher(buf, o, &k);
+        fwrite(buf, 1, o, fp2);
+    }
+    fclose(fp1);
+    fclose(fp2);
+    fp1 = fopen(s, "wb");
+    fp2 = fopen(fn, "rb");
+    while((o=fread(buf, 1, 1024*16, fp2))>0) {
+        fwrite(buf, 1, o, fp1);
+    }
+    fclose(fp1);
+    fclose(fp2);
+    unlink(fn);
+}
+
+void decode_file(char * s)
+{
+    char buf[1024*16];
+    char fn[80];
+    unsigned long k;
+    int o, i;
+    FILE *fp1, *fp2;
+    k = sysconf_eval("CALENDAR_KEY", 234251);
+    sprintf(fn, "tmp/%s.%d.cal", currentuser->userid, rand());
+    fp1 = fopen(s, "rb");
+    fp2 = fopen(fn, "wb");
+    while((o=fread(buf, 1, 1024*16, fp1))>0) {
+        if(o%8!=0) {
+            for(i=o;i<(o/8+1)*8;i++)
+                buf[i]=32;
+            o=(o/8+1)*8;
+        }
+        decipher(buf, o, &k);
         fwrite(buf, 1, o, fp2);
     }
     fclose(fp1);
