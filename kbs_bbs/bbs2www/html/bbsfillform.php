@@ -5,7 +5,7 @@
 	 */
 	require("funcs.php");
     html_init("gb2312");
-	
+
 	if ($loginok != 1)
 		html_nologin();
 	else
@@ -19,6 +19,12 @@
 	    @$email=$_POST["email"];
 		@$phone=$_POST["phone"];
 
+
+	if(!strcmp($currentuser["userid"],"guest"))
+	    html_error_quit("请申请另外的帐号填写注册单!");
+
+	//用户已经通过注册
+	//未满等待时间
 
     $ret=bbs_createregform($realname,$dept,$address,$year,$month,$day,$email,$phone);
 
