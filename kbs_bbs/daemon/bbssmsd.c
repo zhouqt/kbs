@@ -275,7 +275,7 @@ int main()
     resolve_ucache();
     resolve_utmp();
     init_memory();
-    running=0;
+    running=1;
     errno=0;
 
     bzero(&act, sizeof(act));
@@ -286,10 +286,15 @@ int main()
     
     while (running) {
     if((sockfd=socket(AF_INET, SOCK_STREAM, 0))==-1) {
-        printf("Unable to create socket.\n");
+        bbslog("3error","smsd:Unable to create socket.\n");
+        printf("Unable to Unable create socket.\n");
+	sleep(5);
+	continue;
+	/*
         shmdt(head);
         buf=NULL;
         return -1;
+	*/
     }
     memset(&addr, 0, sizeof(addr));
     addr.sin_family=AF_INET;
@@ -297,10 +302,15 @@ int main()
     addr.sin_port=htons(sysconf_eval("SMS_PORT", 4002));
     if(connect(sockfd, (struct sockaddr*)&addr, sizeof(addr))<0) {
         close(sockfd);
+        bbslog("3error","smsd:Unable to connect.\n");
         printf("Unable to connect.\n");
+	sleep(5);
+	continue;
+	/*
         shmdt(head);
         buf=NULL;
         return -1;
+	*/
     }
     loginas(sysconf_str("SMS_USERNAME"),sysconf_str("SMS_PASSWORD"));
 
