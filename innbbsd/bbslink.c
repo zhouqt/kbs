@@ -1613,6 +1613,10 @@ char **argv;
     }
 
     BBSLINK_STAT = (stat_t *) malloc(sizeof(stat_t) * (NLCOUNT + 1));
+    if (BBSLINK_STAT == NULL) {
+        fprintf(stderr, "ft, unable to malloc BBSLINK_STAT.\n");
+        return -1;
+    }
     for (nlcount = 0; nlcount < NLCOUNT; nlcount++) {
         BBSLINK_STAT[nlcount].localsendout = 0;
         BBSLINK_STAT[nlcount].remotesendout = 0;
@@ -1824,8 +1828,15 @@ char **argv;
             NODELIST[nlcount].feedfp = NULL;
         }
     }
-    if (BBSLINK_STAT);
     free(BBSLINK_STAT);
+
+    /*
+     * 这两个释放内存看起来是被漏掉了虽然不是必须的。但是不能释放的太早因为全局变量 BODY 一直要用
+     * 这块内存区域 sigh。在这里释放看起来是没什么问题的。- atppp
+     */
+    if (FD_BUF) free(FD_BUF);
+    if (FD_BUF_FILTER) free(FD_BUF_FILTER);
+
     return 0;
 }
 
