@@ -173,6 +173,7 @@ unsigned int setperms2(unsigned int pbits,unsigned int basic,char *prompt,int nu
 struct _setperm_select {
 	unsigned int pbits;
 	unsigned int basic;
+	unsigned int oldbits;
 };
 int setperm_select(struct _select_def* conf)
 {
@@ -192,14 +193,18 @@ int setperm_show(struct _select_def* conf,int i)
 	}
 	else
 	{
-    if((1<<i==PERM_BASIC||1<<i==PERM_POST||1<<i==PERM_CHAT
-    	||1<<i==PERM_PAGE||1<<i==PERM_DENYMAIL)&&
-    	(arg->basic&(1<<i)))
-        prints( "%c. %-30s [32;1m%3s[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
-                 ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
-    else
-        prints( "%c. %-30s [37;0m%3s[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
-                 ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
+		if (arg->pbits&(1<<i)!=arg->oldbits&(1<<i)) {
+	        prints( "%c. %-30s [31;1m%3s[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
+	                 ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
+		} else
+	    if((1<<i==PERM_BASIC||1<<i==PERM_POST||1<<i==PERM_CHAT
+	    	||1<<i==PERM_PAGE||1<<i==PERM_DENYMAIL)&&
+	    	(arg->basic&(1<<i)))
+	        prints( "%c. %-30s [32;1m%3s[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
+	                 ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
+	    else
+	        prints( "%c. %-30s [37;0m%3s[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
+	                 ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
 	}
 	return SHOW_CONTINUE;
 }
@@ -211,7 +216,7 @@ int setperm_key(struct _select_def *conf,int key)
 	sel=key-'a';
     else
 	sel=key-'A';
-    if (sel>=0&&sel<(conf->item_count-1)) {
+    if (sel>=0&&sel<(conf->item_count)) {
 	conf->new_pos=sel+1;
 	return SHOW_SELCHANGE;
     }
@@ -233,6 +238,7 @@ unsigned int setperms2(unsigned int pbits,unsigned int basic,char *prompt,int nu
 	}
 	arg.pbits=pbits;
 	arg.basic=basic;
+	arg.oldbits=pbits;
 	bzero((char*)&perm_conf,sizeof(struct _select_def ));
 	perm_conf.item_count=numbers+1;
 	perm_conf.item_per_page=numbers+1;
