@@ -8,7 +8,7 @@ awk 'BEGIN { definenum=0;infilter=0; } \
          if (definenum==0) \
          infilter=0; \
       } \
-      if (match($0,"#ifdef")) {\
+      if (match($0,"#if")) {\
          definenum++; \
       } \
     } else \
