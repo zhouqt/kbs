@@ -64,6 +64,7 @@ int     deny_user();
 int     BoardFilter(); /* Leeward 98.04.02 */
 #endif
 int     show_author();
+/*int     b_jury_edit();  stephen 2001.11.1*/
 int     add_author_friend();
 int     show_authorinfo();/*Haohmaru.98.12.05*/
 int	show_authorBM();/* cityhunter 00.10.18 */
@@ -1583,7 +1584,7 @@ deleted_mode()
 {
     extern  char  currdirect[ STRLEN ];
 /* Allow user in file "jury" to see deleted area. Stephen 2001.11.1 */
-  if (!chk_currBM(currBM) && !isJury()) {
+  if (!chk_currBM(currBM) && !(isJury()&&HAS_PERM(PERM_JURY))) {
       return DONOTHING;
   }
   if(digestmode==4)
@@ -3483,6 +3484,7 @@ extern int b_results();
 extern int b_vote();
 extern int b_vote_maintain();
 extern int b_notes_edit();
+extern int b_jury_edit(); /*stephen 2001.11.1*/
 
 struct one_key  read_comms[] = { /*阅读状态，键定义 */
                                    'r',        read_post,
@@ -3520,7 +3522,8 @@ struct one_key  read_comms[] = { /*阅读状态，键定义 */
                                    'M',        b_vote_maintain,
                                    'W',        b_notes_edit,
                                    'h',        mainreadhelp,
-                                   Ctrl('J'),  mainreadhelp,
+                                   'X',		b_jury_edit,
+/*编辑版面的仲裁委员名单,stephen on 2001.11.1 */
                                    KEY_TAB,    show_b_note,
                                    'x',        into_announce,
                                    'a',        auth_search_down,
@@ -3715,6 +3718,46 @@ void record_exit_time()   /* 记录离线时间  Luzi 1998/10/23 */
         fclose(fp);
     }
 }
+/*
+int
+b_jury_edit()*/ /*stephen 2001.11.1: 编辑版面仲裁名单 */
+/*{
+    char        buf[ STRLEN ];
+    char ans[4];
+    int         aborted;
+
+    if(!(HAS_PERM(PERM_JURY) && HAS_PERM(PERM_BOARDS) || HAS_PERM(PERM_SYSOP)))
+    {
+        return 0 ;
+    }
+    clear();
+    makevdir( currboard );
+    setvfile( buf, currboard, "jury" );
+    getdata(1,0,"(E)编辑 (D)删除 本讨论区仲裁委员名单? [E]: ",ans,2,DOECHO,NULL,YEA);
+    if (ans[0] == 'D' || ans[0] == 'd')
+    {
+        move(2,0);
+        if(askyn("真的要删除本讨论区仲裁委员名单",0))
+        {
+            move(3,0);
+            prints("仲裁委员名单已经删除...\n");
+            pressanykey();
+            unlink(buf);
+            aborted=1;
+        }else
+            aborted=-1;
+    }else
+        aborted = vedit( buf, NA );
+    if( aborted ==-1) {
+        pressreturn();
+    } else
+    {
+        setvfile( buf, currboard, "juryrec" );
+        unlink(buf);
+    }
+
+    return FULLUPDATE;
+} */
 
 int
 Goodbye()    /*离站 选单*/
@@ -3725,7 +3768,7 @@ Goodbye()    /*离站 选单*/
     char        sysoplist[20][STRLEN],syswork[20][STRLEN],spbuf[STRLEN],buf[STRLEN];
     int         i,num_sysop,choose,logouts,mylogout=NA;
     FILE        *sysops;
-    long	Time=30;/*Haohmaru*/
+    long	Time=10;/*Haohmaru*/
 
     /* Add by SmallPig */
     brc_update();
@@ -3918,6 +3961,10 @@ Goodbye()    /*离站 选单*/
             mail_file(tmpfile,"surr","自首");
         }
         unlink(tmpfile);
+    }
+    /* stephen on 2001.11.1: 上站不足5分钟不计算上站次数 */
+    if (stay<=300){
+	currentuser->numlogins --;
     }
     if(started) {
         record_exit_time(); /* 记录用户的退出时间 Luzi 1998.10.23*/

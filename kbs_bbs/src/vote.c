@@ -135,6 +135,56 @@ b_notes_edit()
 }
 
 int
+b_jury_edit()   /* stephen 2001.11.1: 编辑版面仲裁名单 */
+{
+    char        buf[ STRLEN ];
+    char ans[4];
+    int         aborted;
+
+    if(!(HAS_PERM(PERM_JURY) && HAS_PERM(PERM_BOARDS) || HAS_PERM(PERM_SYSOP)))
+    {
+        return 0 ;
+    }
+    clear();
+    makevdir( currboard );
+    setvfile( buf, currboard, "jury" );
+    getdata(1,0,"(E)编辑 (D)删除 本讨论区仲裁委员名单? (C)取消 [C]: ",ans,2,DOECHO,NULL,YEA);
+    if (ans[0] == 'D' || ans[0] == 'd')
+    {
+        move(2,0);
+        if(askyn("真的要删除本讨论区仲裁委员名单",0))
+        {
+            move(3,0);
+            prints("仲裁委员名单已经删除...\n");
+            pressanykey();
+            unlink(buf);
+            aborted=1;
+        }else
+            aborted=-1;
+    }
+    else if (ans[0] =='E' || ans[0]=='e')
+        aborted = vedit( buf, NA );
+    else 
+    {    
+	prints("取消");
+	aborted=-1;
+    }
+    if( aborted ==-1) {
+        pressreturn();
+    } else
+    {
+	char secu[STRLEN];
+	sprintf(secu, "修改 %s 版的仲裁委员名单",currboard);
+	securityreport(secu, NULL);
+
+        setvfile( buf, currboard, "juryrec" );
+        unlink(buf);
+    }
+
+    return FULLUPDATE;
+}
+
+int
 b_suckinfile( fp, fname )
 FILE *fp;
 char *fname;
@@ -609,7 +659,7 @@ char    *bname;
     setvoteflag(currboard,1);
     clear();
     /*Haohmaru.99.11.17.根据投票管理员设的限制条件判断是否让该使用者投票*/
-    if(HAS_PERM(PERM_OVOTE)||HAS_PERM(PERM_SYSOP))
+    if(HAS_PERM(PERM_OVOTE)||HAS_PERM(PERM_SYSOP)||HAS_PERM(PERM_JURY))
     {
         getdata(1,0,"是否对投票资格进行限制(Y/N) [Y]:",buf,3,DOECHO,NULL,YEA) ;
         if ( buf[0] != 'N' && buf[0] != 'n' )
