@@ -1,5 +1,6 @@
 <?php
 require("inc/funcs.php");
+if (!USER_FACE) exit;
 html_init();
 ?>
 <body topmargin=0 leftmargin=0>

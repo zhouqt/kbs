@@ -1,6 +1,7 @@
 <?php
 require("inc/funcs.php");
 require("inc/board.inc.php");
+if (!USER_FACE) exit;
 html_init();
 if ($loginok != 1) die("сн©мё©");
 ?>

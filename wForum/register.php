@@ -119,7 +119,11 @@ function do_apply(){
 <Th colSpan=2 height=24 align=left>填写详细资料</TD>
 </TR>
 <TR> 
-<TD width=40%  class=TableBody1><B>头像</B>：<BR>选择的头像将出现在您的资料和发表的帖子中，<br>在注册之后您可以在基本资料修改中上传自定义头像</TD>
+<TD width=40%  class=TableBody1><B>头像</B>：<BR>选择的头像将出现在您的资料和发表的帖子中
+<?php
+	if (USER_FACE) echo "<br>在注册之后您可以在基本资料修改中上传自定义头像";
+?>
+</TD>
 <TD width=60%  class=TableBody1> 
 <select name=face id=face size=1 onChange="document.images['imgmyface'].src='userface/image'+options[selectedIndex].value+'.gif';" style="BACKGROUND-COLOR: #99CCFF; BORDER-BOTTOM: 1px double; BORDER-LEFT: 1px double; BORDER-RIGHT: 1px double; BORDER-TOP: 1px double; COLOR: #000000">
 <?php 

@@ -72,7 +72,13 @@ function main(){
 <TR> 
 <TD width=40% valign=top class=TableBody1><B>自定义头像</B>：<br>如果图像位置中有连接图片将以自定义的为主</TD>
 <TD width=60%  class=TableBody1>
+<?php
+	if (USER_FACE) {
+?>
 <iframe name=ad frameborder=0 width=100% height=24 scrolling=no src="postface.php"></iframe>
+<?php
+	}
+?>
 <table width="100%"><tr><td>
 图像位置： 
 <input type=TEXT name=myface id=myface size=60 maxlength=100 value="<?php echo htmlEncode($currentuser['userface_url']); ?>">
