@@ -191,9 +191,9 @@ int del_room(struct room_struct * r)
 void clear_room()
 {
     int i;
-//    for(i=0;i<MAX_ROOM;i++)
-//        if((rooms[i].style!=-1) && (!strcmp(rooms[i].creator, currentuser->userid)||rooms[i].people==0))
-//            rooms[i].style=-1;
+    for(i=0;i<MAX_ROOM;i++)
+        if((rooms[i].style!=-1) && (!strcmp(rooms[i].creator, currentuser->userid)||rooms[i].people==0))
+            rooms[i].style=-1;
 }
 
 int can_see(struct room_struct * r)
@@ -1188,7 +1188,7 @@ int choose_room()
 int killer_main()
 {
     int i,oldmode;
-    void * shm;
+    void * shm, * shm2;
     shm=attach_shm("GAMEROOM_SHMKEY", 3451, sizeof(struct room_struct)*MAX_ROOM, &i);
     rooms = shm;
     if(i) {
@@ -1197,8 +1197,8 @@ int killer_main()
             rooms[i].w = 0;
         }
     }
-    shm=attach_shm("KILLER_SHMKEY", 9578, sizeof(struct inroom_struct)*MAX_ROOM, &i);
-    inrooms = shm;
+    shm2=attach_shm("KILLER_SHMKEY", 9578, sizeof(struct inroom_struct)*MAX_ROOM, &i);
+    inrooms = shm2;
     if(i) {
         for(i=0;i<MAX_ROOM;i++)
             inrooms[i].w = 0;
@@ -1207,5 +1207,7 @@ int killer_main()
     modify_user_mode(KILLER);
     choose_room();
     modify_user_mode(oldmode);
+    shmdt(shm);
+    shmdt(shm2);
 }
 
