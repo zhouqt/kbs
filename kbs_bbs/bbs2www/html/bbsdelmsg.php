@@ -11,7 +11,10 @@
 		html_init("gb2312");
         if ($currentuser["userid"]=="guest")
 			html_error_quit("匆匆过客不能处理讯息，请先登录");
-		$filename = bbs_sethomefile($currentuser["userid"],"msgfile");
+		$filename = bbs_sethomefile($currentuser["userid"],"msgindex");
+		if (file_exists($filename))
+			unlink($filename);
+		$filename = bbs_sethomefile($currentuser["userid"],"msgindex2");
 		if (file_exists($filename))
 			unlink($filename);
 		$filename = bbs_sethomefile($currentuser["userid"], "msgcount");

@@ -5,27 +5,34 @@
 	else
 	{
 		html_init("gb2312");
-		$filename=bbs_sethomefile($currentuser["userid"],"msgfile");
+		if( $currentuser["userid"]=="guest" )
+				html_error_quit("没有消息");
+
+		$msgs = bbs_getwebmsgs();
+
+		if( $msgs <= 0 )
+				html_error_quit("系统错误");
+
+		$i=0;
 ?>
-<body>
-<pre>
+<html>
+<table border=1>
+<tr><td>序号</td><td>时间</td><td>类型</td><td>对象</td><td>内容</td></tr>
 <?php
-    $fp = @fopen ($filename, "r");
-    if ($fp!=false) {
-        while (!feof ($fp)) {
-            $buffer = fgets($fp, 300);
-            echo ansi_convert($buffer,"#000000","#F0F0FF");
-        }
-        fclose ($fp);
-    } else {
+		foreach( $msgs as $msg ){
+			$i++;
 ?>
-没有任何讯息
+<tr><td><?php echo $i;?></td>
+<td><?php echo date("D M j H:i:s Y", $msg["TIME"]);?></td>
+<td><?php if($msg["SENT"]) echo "发"; else echo "收";?></td>
+<td><?php echo $msg["ID"];?></td>
+<td><?php echo htmlspecialchars($msg["content"]);?></td>
+</tr>
 <?php
-}
+		}
 ?>
-<a onclick="return confirm('你真的要清除所有讯息吗?')" href="/bbsdelmsg.php">清除所有讯息</a> <a href="/bbsmailmsg.php">寄回所有信息</a></pre>
-</pre>
-</body>
+</table>
+<a onclick="return confirm('你真的要清除所有讯息吗?')" href="/bbsdelmsg.php">清除所有讯息</a> <a href="/bbsmailmsg.php">寄回所有信息</a>
 </html>
 <?php
 	}
