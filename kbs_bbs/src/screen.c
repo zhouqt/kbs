@@ -28,13 +28,14 @@
 /*#include <varargs.h>*/
 #include <stdarg.h>
 
-#define o_clear() {output("\x1b[2J",4); cur_mode=0; cur_color=7;  tc_col=0; tc_line=0; }
+#define o_clear() {output("\x1b[2J",4); tc_mode=0; tc_color=7;  tc_col=0; tc_line=0; }
 #define o_cleol() output("\x1b[K",3)
 
 unsigned char scr_lns, scr_cols;
 unsigned char cur_ln = 0, cur_col = 0;
 int roll, scrollcnt;
 int tc_col=0, tc_line=0;
+int tc_mode=0, tc_color = 7;
 int cur_mode=0, cur_color=7;
 struct screenline *big_picture = NULL;
 static const char nullstr[] = "(null)";
@@ -220,33 +221,33 @@ void refresh()
             stackt=0;
             rel_move(tc_col, tc_line, k, i);
             bp[j].mode[k]&=~SCREEN_MODIFIED;
-            if(~(bp[j].mode[k])&cur_mode!=0) {
-                cur_mode = 0;
-                cur_color = 7;
+            if(~(bp[j].mode[k])&tc_mode!=0) {
+                tc_mode = 0;
+                tc_color = 7;
                 push(0);
             }
-            if(!(cur_mode&SCREEN_BRIGHT)&&bp[j].mode[k]&SCREEN_BRIGHT) {
-                cur_mode|=SCREEN_BRIGHT;
+            if(!(tc_mode&SCREEN_BRIGHT)&&bp[j].mode[k]&SCREEN_BRIGHT) {
+                tc_mode|=SCREEN_BRIGHT;
                 push(1);
             }
-            if(!(cur_mode&SCREEN_LINE)&&bp[j].mode[k]&SCREEN_LINE) {
-                cur_mode|=SCREEN_LINE;
+            if(!(tc_mode&SCREEN_LINE)&&bp[j].mode[k]&SCREEN_LINE) {
+                tc_mode|=SCREEN_LINE;
                 push(4);
             }
-            if(!(cur_mode&SCREEN_BLINK)&&bp[j].mode[k]&SCREEN_BLINK) {
-                cur_mode|=SCREEN_BLINK;
+            if(!(tc_mode&SCREEN_BLINK)&&bp[j].mode[k]&SCREEN_BLINK) {
+                tc_mode|=SCREEN_BLINK;
                 push(5);
             }
-            if(!(cur_mode&SCREEN_BACK)&&bp[j].mode[k]&SCREEN_BACK) {
-                cur_mode|=SCREEN_BACK;
+            if(!(tc_mode&SCREEN_BACK)&&bp[j].mode[k]&SCREEN_BACK) {
+                tc_mode|=SCREEN_BACK;
                 push(7);
             }
-            if(cur_color%16!=bp[j].color[k]%16) {
-                cur_color=cur_color/16*16+bp[j].color[k]%16;
+            if(tc_color%16!=bp[j].color[k]%16) {
+                tc_color=tc_color/16*16+bp[j].color[k]%16;
                 push(30+bp[j].color[k]%16);
             }
-            if(cur_color/16!=bp[j].color[k]/16) {
-                cur_color=bp[j].color[k]/16*16+cur_color%16;
+            if(tc_color/16!=bp[j].color[k]/16) {
+                tc_color=bp[j].color[k]/16*16+tc_color%16;
                 push(40+bp[j].color[k]/16);
             }
             outstack();
@@ -313,7 +314,7 @@ void clear_whole_line(int i)
         else
             slp->mode[k]=0;
         slp->data[k]=0;
-        slp->data[k]=0;
+        slp->color[k]=0;
     }
 }
 
