@@ -53,6 +53,7 @@ int chkusermail(struct userec *user)
     else {
         sumlimit = 9999;
         numlimit = 9999;
+        return 0;
     }
 #endif
         /*peregrine*/
