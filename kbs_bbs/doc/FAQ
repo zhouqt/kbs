@@ -4,6 +4,9 @@
 如有问题，欢迎来 BBS 水木清华站的 BBSMan_Dev 版参与讨论。
 
 1. ChangeLog
+2004.4.1
+    flyriver 增加 FAQ 2.7 和 2.8
+             修改 FAQ 2.6
 2004.1.25
     flyriver 增加 FAQ 2.6
 2003.7.17
@@ -46,6 +49,8 @@
   b) 如果您的 libesmtp 包是自己编译安装的，您一定要在 configure libesmtp 的
      加上 --disable-pthreads 参数。这个限制在未来的 smthbbs 版本里会被去除。
 (注：在最新版的 smthbbs 代码中已经没有这个限制了)
+  c) 如果 libesmtp 是用操作系统自带的软件包安装的，请检查一下您是否安装了相关
+     的开发包 (一般会有 libesmtp-devel 或 libesmtp-dev 之类的名字)。
 
 2.4. 我用的是 smthbbs-1.0.1，configure 通过，但 make 时出错，提示：
   “bbs_sendmail.c:5:22: libesmtp.h: No such file or directory”
@@ -70,6 +75,26 @@
      而必须执行 chown -R bbs:bbs $BBSHOME。$BBSHOME 是指安装 bbs 的目录。
   b) 检查 /etc/passwd 和 /etc/group 文件，看看 bbs 用户的 uid 和 gid 是否
      与代码中定义的 BBSUID 和 BBSGID 宏一致(在 site.h 文件中)。
+
+2.7. 我从 cvs 下载的代码，用 aclocal、autoheader、automake 和 autoconf 等
+    命令生成了 configure，但 make 时却出错，提示：
+    “./../depcomp: ./../depcomp: No such file or directory”
+[答复]
+  请执行下面的命令，观察命令输出的版本信息。
+      automake --version
+      autoconf --version
+      libtool --version
+
+  然后对照 INSTALL 文件，看看 automake、autoconf 和 libtool 等程序的版本
+  是否符合要求。如果版本符合要求，但依然出错，可以试试把系统里现有的
+  automake、autoconf 和 libtool 等程序先卸载，再重新安装的办法。如果还不
+  行，请向别人求助。
+
+2.8. 编译 php 出错，说找不到 libxml2 或 freetype 之类的软件包。
+[答复]
+  如果 libxml2 等软件是用操作系统自带的软件包安装的，请检查一下您是否安装了
+  相关的开发包 (一般会有 libxml2-devel 或 libxml2-dev 之类的名字)。自己编译
+  安装的 libxml2 则不存在此问题。
 
 3. 管理维护
 
