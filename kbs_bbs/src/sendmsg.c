@@ -428,7 +428,6 @@ void r_msg()
     if ((uinfo.mode == POSTING || uinfo.mode == SMAIL) && !DEFINE(currentuser, DEF_LOGININFORM)) {      /*Haohmaru.99.12.16.·¢ÎÄÕÂÊ±²»»Ømsg */
         good_move(0, 0);
         clrtoeol();
-        refresh();
         if (get_unreadcount(currentuser->userid)) {
             prints("[1m[33mÄãÓÐÐÂµÄÑ¶Ï¢£¬Çë·¢±íÍêÎÄÕÂºó°´ Ctrl+Z »ØÑ¶Ï¢[m");
             good_move(y, x);
@@ -440,19 +439,16 @@ void r_msg()
             refresh();
             sleep(1);
         }
-        saveline(0, 1, savebuffer[0]);
         goto outhere;
     }
     count = get_msgcount(1, currentuser->userid);
     if (!count) {
         good_move(0, 0);
         clrtoeol();
-        refresh();
         prints("[1mÃ»ÓÐÈÎºÎµÄÑ¶Ï¢´æÔÚ£¡£¡[m");
         good_move(y, x);
         refresh();
         sleep(1);
-        saveline(0, 1, savebuffer[0]);  /* restore line */
         goto outhere;
     }
 
@@ -485,7 +481,6 @@ void r_msg()
 
         if(first) {
             refresh();
-            oflush();
             ch = igetkey();
             first = 0;
         }
@@ -505,7 +500,6 @@ void r_msg()
             ch = -multi_getdata(oy, ox, 78, NULL, buf, 1024, true);
         else {
             refresh();
-            oflush();
             do {
                 ch = igetkey();
             } while(ch!=KEY_UP&&ch!=KEY_DOWN&&ch!='\r'&&ch!='\n');
