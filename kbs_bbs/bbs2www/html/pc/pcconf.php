@@ -31,6 +31,7 @@ $pcconfig["SEARCHNUMBER"] = 10;
 $pcconfig["ADMIN"] = "SYSOP";
 $pcconfig["MINREGTIME"] = 6;
 $pcconfig["TMPSAVETIME"] = 300;
+$pcconfig["ALLCHARS"] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 $pcconfig["SECTION"] = array(
 			"personal" => "个人空间" ,
 			"literature" => "原创文学" ,
@@ -61,6 +62,7 @@ define("_PCMAIN_NEW_NODES_" , 40 );     //新日志数目
 define("_PCMAIN_ANNS_NUM_"  , 6  );     //公告数目
 define("_PCMAIN_RECOMMEND_" , 1   );  //博客推荐
 define("_PCMAIN_RECOMMEND_BLOGGER_" , "SYSOP"); //固定推荐
+define("_PCMAIN_RECOMMEND_QUEUE_" , "smthblogger.php");        //使用推荐队列
 
 function pc_personal_domainname($userid)
 {

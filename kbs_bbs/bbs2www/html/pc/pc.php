@@ -93,7 +93,8 @@
 	
 	function display_char_bar($char=FALSE)
 	{
-		$all = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";	
+		global $pcconfig;
+		$all = $pcconfig["ALLCHARS"];	
 		echo "<p align=\"center\">\n[ ";
 		for($i=0;$i < 26;$i++)
 		{

@@ -2,6 +2,8 @@
 //require_once("pcfuncs.php");
 require_once("pcstat.php");
 require_once("pcmainfuncs.php");
+if(defined("_PCMAIN_RECOMMEND_QUEUE_"))
+	include(_PCMAIN_RECOMMEND_QUEUE_);
 
 if(pc_update_cache_header())
 	return;
@@ -380,6 +382,17 @@ function pcmain_section_top_view()
 <?php
 }
 
+function pcmain_blogger_area()
+{
+	global $pcconfig;
+	$all = $pcconfig["ALLCHARS"];
+	$all_num = strlen($all);
+	echo "<font class=low>[博客区]</font>&nbsp;";
+	for($i = 0 ; $i < $all_num ; $i ++)
+		echo "<a href=\"pc.php?char=".$all[$i]."\"><font class=\"low2\">".$all[$i]."</font></a>&nbsp;";
+	echo "<a href=\"pclist.php\"><font color=red>热门博客</font></a>";
+}
+
 $link = pc_db_connect();
 pcmain_html_init();
 ?>
@@ -497,9 +510,6 @@ pcmain_html_init();
             <td>
                <table cellspacing=0 cellpadding=1 width=100% border=0>
                  <tr>
-                   <td align="center" valign="top">
-                   <?php pcmain_annouce(); ?>
-                   </td>
 <?php
 		if (defined("_PCMAIN_RECOMMEND_")) 
 		{
@@ -512,10 +522,25 @@ pcmain_html_init();
 <?php
 		}
 ?>	
+                 <td align="center" valign="top">
+                   <?php pcmain_annouce(); ?>
+                   </td>
                  </tr>
                </table>
             </td>
           </tr>
+             <form action="pcsearch.php" method="get" onsubmit="if(this.keyword.value==''){alert('请输入关键字');return false;}">
+          <tr>
+            <td align="center" background="images/bg.gif">
+			BLOG搜索
+			<input name="keyword" type="text" class="textinput" size="20"> 
+			<input type="hidden" name="exact" value="0">
+			<input type="radio" name="key" value="u" checked>用户名
+			<input type="radio" name="key" value="c">Blog名
+			<input type="radio" name="key" value="d">Blog描述
+			<input type="submit" class="textinput" value="GO">			</td>
+          </tr>
+	  </form>
           <tr>
             <td><table width="100%"  border="0" cellspacing="0" cellpadding="3">
               <tr>
@@ -525,6 +550,11 @@ pcmain_html_init();
                 <td bgcolor="#ECF5FF"><?php pcmain_blog_recommend_nodes(); ?></td>
               </tr>
             </table></td>
+          </tr>
+          <tr>
+          <td align="center" background="images/bg.gif">
+          <?php pcmain_blogger_area(); ?>
+          </td>
           </tr>
           <tr>
             <td><table width="100%"  border="0" cellpadding="3" cellspacing="0">
@@ -556,19 +586,7 @@ pcmain_html_init();
               </tr>
             </table></td>
           </tr>
-		  <form action="pcsearch.php" method="get" onsubmit="if(this.keyword.value==''){alert('请输入关键字');return false;}">
-          <tr>
-            <td align="center" background="images/bg.gif">
-			BLOG搜索
-			<input name="keyword" type="text" class="textinput" size="20"> 
-			<input type="hidden" name="exact" value="0">
-			<input type="radio" name="key" value="u" checked>用户名
-			<input type="radio" name="key" value="c">Blog名
-			<input type="radio" name="key" value="d">Blog描述
-			<input type="submit" class="textinput" value="GO">			</td>
-          </tr>
-		  </form>
-          <tr>
+	  <tr>
             <td><table width="100%"  border="0" cellspacing="0" cellpadding="3">
               <tr>
                 <td class="topic">分类主题</td>
