@@ -93,7 +93,12 @@ function undo_html_format($str)
 function html_format($str,$multi=FALSE)
 {
 	if($multi)
-		$str = str_replace("<?","&lt;?",stripslashes($str));	
+	{
+		if(strstr($str,"<!--NoWrap-->"))
+			$str = str_replace("<?","&lt;?",stripslashes($str));
+		else
+			$str = nl2br(str_replace(" ","&nbsp;",htmlspecialchars(stripslashes($str))));	
+	}
 	else
 		$str = str_replace(" ","&nbsp;",htmlspecialchars(stripslashes($str)));	
 	return $str;	

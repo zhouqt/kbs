@@ -235,7 +235,9 @@ editor_generate('nodebody');
 	<td class="t11">ÄÚÈİ</td>
 </tr>
 <tr>
-	<td class="t8"><textarea name="nodebody" class="f1" cols="100" rows="20" id="nodebody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical"></textarea></td>
+	<td class="t8"><textarea name="nodebody" class="f1" cols="100" rows="20" id="nodebody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
+	<!--NoWrap-->
+	</textarea></td>
 </tr>
 <!--
 <tr>
@@ -376,6 +378,7 @@ editor_generate('nodebody');
 <tr>
 	<td class="t8">
 	<textarea name="nodebody" class="f1" cols="100" rows="20" id="nodebody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
+	<!--NoWrap-->
 	<?php echo htmlspecialchars(stripslashes($rows[body]." ")); ?>
 	</textarea></td>
 </tr>
