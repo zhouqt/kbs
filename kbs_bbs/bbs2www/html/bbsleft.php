@@ -509,6 +509,7 @@
 				</DIV>
 			</td>
 		</tr>
+<!--
 		<tr>
 			<td width="16">
 				<DIV class="r" id="divstylea">
@@ -517,7 +518,6 @@
 			</td>
 			<td><img src="/images/t7.gif" border="0" alt="界面风格" align="absmiddle"> 界面风格</td>
 		</tr>
-<!--
 		<tr>
 			<td> </td>
 			<td>
