@@ -20,6 +20,9 @@ agent connections.
 /*
  * $Id$
  * $Log$
+ * Revision 1.6  2003/04/18 14:47:22  bad
+ * ssh多行
+ *
  * Revision 1.5  2003/04/18 14:45:45  bad
  * ssh多行
  *
@@ -1423,6 +1426,7 @@ void do_authentication(char *user, int privileged_port, int cipher_type)
     int authentication_type = 0;
     char *password;
     char *client_user;
+    int row, col, xpixel, ypixel;
     int password_attempts = 0;
 
     if (strlen(user) > 255)
