@@ -1380,9 +1380,11 @@ static int search_articles( struct keeploc  *locmem,char *query,int offset,int a
     if( *query == '\0' ) {
         return 0;
     }
+	/*
     move(t_lines-1,0);
     clrtoeol();
     prints("[44m[33mËÑÑ°ÖĞ£¬ÇëÉÔºò....                                                             [m");
+	*/
     now = locmem->crs_line;
 /*    refresh();*/
 

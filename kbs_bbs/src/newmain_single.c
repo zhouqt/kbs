@@ -36,8 +36,9 @@
 #define INPUT_IDLE 1
 #define WAITTIME  150
 
-/* KCN add 1999.11.07 */
-/*#undef LOGINASNEW */
+/* KCN add 1999.11.07 
+#undef LOGINASNEW 
+*/
 
 extern struct screenline *big_picture;
 extern struct userec *user_data;
@@ -513,7 +514,7 @@ login_query()
         signal(SIGALRM, SIG_IGN);
 #endif
 
-        getdata( 0,0, "\n请输入代号：", uid, STRLEN-1, DOECHO, NULL ,YEA);
+        getdata( 0,0, "\n请输入代号: ", uid, STRLEN-1, DOECHO, NULL ,YEA);
 		uid[STRLEN-1]=0;
 		if (uid[strlen(uid)-1]=='.') {
 			convcode=1;
