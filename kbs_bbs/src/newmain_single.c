@@ -919,6 +919,7 @@ void user_login()
     getCurrentUser()->lasthost[15] = '\0';   /* dumb mistake on my part */
     getCurrentUser()->lastlogin = time(NULL);
     getCurrentUser()->numlogins++;
+    getCurrentUser()->flags |= CURSOR_FLAG;
 
     /* Leeward 98.06.20 adds below 3 lines */
     if ((int) getCurrentUser()->numlogins < 1)
@@ -1333,10 +1334,12 @@ void docmdtitle(char *title, char *prompt)
 	}
 
     showtitle(title, middoc);
+	if(prompt){
     move(1, 0);
     clrtoeol();
     prints("%s", prompt);
     clrtoeol();
+	}
 }
 
 /* 2000.9.15 Bigman »Ö¸´ÁÄÌì¼ÇÂ¼ */

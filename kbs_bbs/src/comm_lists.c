@@ -487,7 +487,11 @@ int domenu(menu_name)
 char *menu_name;
 {
     struct smenuitem *pm;
+#ifdef FREE
+	char *cmdprompt = NULL;
+#else
     char *cmdprompt = "目前选择：";
+#endif
     int size, now;
     int cmdplen, cmd, i, base;
 
@@ -513,7 +517,11 @@ char *menu_name;
      * 这个获得base的写法太丑陋了，但是.....
      * 先不管了KCN 
      */
-    cmdplen = strlen(cmdprompt);
+	if(cmdprompt)
+    	cmdplen = strlen(cmdprompt);
+	else
+		cmdplen = 0;
+
     now = 0;
     if (strcmp(menu_name, "TOPMENU") == 0 && chkmail()) {
         for (i = 0; i < size; i++)
@@ -533,8 +541,9 @@ char *menu_name;
     }
     while (1) {
         int (*fptr) ();
-
+#ifndef FREE
         printacbar();
+#endif
         while (pm[now].level < 0 || !HAS_PERM(getCurrentUser(), pm[now].level)) {
             now++;
             if (now >= size)
@@ -542,14 +551,20 @@ char *menu_name;
         }
         if (getCurrentUser()->flags & CURSOR_FLAG) {
             move(menupos[base + now].line, menupos[base + now].col);
+#ifndef FREE
             prints("◆");
+#else
+			prints("> ");
+#endif
         }
+		if(cmdplen){
         move(1, cmdplen);
         clrtoeol();
         prints("[");
         prints("\x1b[7m%-12s\x1b[m", sysconf_relocate(pm[now].name));
         prints("]");
         clrtoeol();
+		}
         cmd = igetkey();
         if (getCurrentUser()->flags & CURSOR_FLAG) {
             move(menupos[base + now].line, menupos[base + now].col);
@@ -591,8 +606,10 @@ char *menu_name;
             }
             fptr = menupos[base + now].fptr;
             if (fptr != NULL) {
+				if(cmdplen){
                 move(1, cmdplen);
                 clrtoeol();
+				}
                 set_alarm(0, 0, NULL, NULL);
                 (*fptr) (sysconf_relocate(pm[now].arg));
                 if (fptr == Select) {
