@@ -594,6 +594,7 @@ void eval(struct var_struct * p, char * s, int l, int r)
             makesize(p, 1, (int)((f2-f1+MINIMUM)/f3)+1);
         else
             makesize(p, 1, (int)((f2-f1-MINIMUM)/f3)+1);
+        makesure(1,0);
         i=0;
         do{
             p->p[0][i]=f1;
