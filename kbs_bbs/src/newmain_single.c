@@ -705,6 +705,10 @@ void user_login()
     /* added end */
     if (dashf("0Announce/systeminfo"))
         ansimore("0Announce/systeminfo", false);
+    move(t_lines - 1 /*1 */ , 0);       /* Leeward: 98.09.24 Alter below message */
+    clrtoeol();
+    prints("[1;36m¡î °´ÈÎÒâ¼ü¼ÌÐø...[33m[m ");
+    igetkey();
     if (dashf("0Announce/hotinfo"))    
         ansimore("0Announce/hotinfo", false);
     move(t_lines - 1 /*1 */ , 0);       /* Leeward: 98.09.24 Alter below message */
