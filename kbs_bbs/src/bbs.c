@@ -3109,7 +3109,7 @@ int clear_all_new_flag(struct _select_def* conf,struct fileheader *fileinfo,void
 #ifdef HAVE_BRC_CONTROL
     brc_clear();
 #endif
-    return PARTUPDATE;
+    return FULLUPDATE;
 }
 
 int range_flag(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
@@ -3191,7 +3191,7 @@ int range_flag(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
     return DIRCHANGED;
 }
 
-int show_t_friends(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
+int show_t_friends()
 {
     if (!HAS_PERM(currentuser, PERM_BASIC))
         return PARTUPDATE;
@@ -5188,7 +5188,7 @@ static struct key_command read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
 #endif
 
 #ifdef NINE_BUILD
-    {'c', (READ_KEY_FUNC)show_t_friends,NULL},
+    {'c', read_callfunc0,show_t_friends},
     {'C', (READ_KEY_FUNC)clear_new_flag,NULL},
 #else
     {'c', (READ_KEY_FUNC)clear_new_flag,NULL},

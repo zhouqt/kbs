@@ -232,7 +232,16 @@ static int read_key(struct _select_def *conf, int command)
             arg->returnvalue=CHANGEMODE;
             ret=SHOW_QUIT;
             break;
-        case FULLUPDATE:
+        case FULLUPDATE:/*要检查一下时间*/
+	    {
+		 struct stat st;
+		 if (fstat(arg->fd,&st)!=-1) {
+		  if (st.st_mtime!=arg->lastupdatetime) {
+			  ret=SHOW_DIRCHANGE;
+		      break;
+		  }
+	         }
+	    }
         case PARTUPDATE:
             clear();
             ret=SHOW_REFRESH;
@@ -381,6 +390,7 @@ static int read_getdata(struct _select_def *conf, int pos, int len)
         int entry=0;
         int dingcount=0;
         int n;
+	arg->lastupdatetime=st.st_mtime;
         count=st.st_size/arg->ssize;
         arg->filecount=count;
         if ((arg->mode==DIR_MODE_NORMAL)||

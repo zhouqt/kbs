@@ -62,6 +62,7 @@ struct read_arg {
     struct key_command *rcmdlist;
     int ssize;
     int oldpos; /*在同主题阅读的时候，保存原始位置*/
+    time_t lastupdatetime; /*上次更新时间*/
 
     struct write_dir_arg* writearg;
 
