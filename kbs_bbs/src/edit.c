@@ -7,43 +7,64 @@
 #include "bbs.h"
 #include "edit.h"
 
-struct textline *firstline = NULL;
-struct textline *lastline = NULL;
+#define MAX_EDIT_LINE 20000
 
 extern int temp_numposts;       /*Haohmaru.99.4.02.ÈÃ°®¹àË®µÄÈË¿ŞÈ¥°É//grin */
-
-void vedit_key();
-struct textline *currline = NULL;
-int first_mark_line;
-int currpnt = 0;
 extern int local_article;
-char searchtext[80];
-char save_title[STRLEN];
+static const int scrollen = 2;
 int in_mail;
 
-int editansi = 0;
-int scrollen = 2;
-int marknum;
-int moveln = 0;
-int shifttmp = 0;
-int ismsgline;
-int tmpline;
-struct textline *top_of_win = NULL;
-int curr_window_line, currln;
-int redraw_everything;
-int insert_character = 1;
-
-#ifdef VEDITOR
-char bkfname[STRLEN];
-char currfname[STRLEN];
-int bkfile = 0;
-#endif
+void vedit_key();
+static struct textline *firstline = NULL;
+static struct textline *lastline = NULL;
+static struct textline *currline = NULL;
+static int first_mark_line;
+static int currpnt = 0;
+static char searchtext[80];
+static char save_title[STRLEN];
+static int editansi = 0;
+static int marknum;
+static int moveln = 0;
+static int shifttmp = 0;
+static int ismsgline;
+static int tmpline;
+static struct textline *top_of_win = NULL;
+static int curr_window_line, currln;
+static int redraw_everything;
+static int insert_character = 1;
 /* for copy/paste */
-#define CLEAR_MARK()  mark_on = 0; mark_begin = mark_end = NULL;
-struct textline *mark_begin, *mark_end;
-int mark_on;
+static struct textline *mark_begin, *mark_end;
+static int mark_on;
 
-/* copy/paste */
+inline static void CLEAR_MARK() {
+	mark_on = 0;
+	mark_begin = mark_end = NULL;
+}
+
+void top_show(char *prompt)
+{
+    if (editansi) {
+        prints(ANSI_RESET);
+        refresh();
+    }
+    move(0, 0);
+    clrtoeol();
+    standout();
+    prints("%s", prompt);
+    standend();
+}
+
+int ask(char *prompt)
+{
+    int ch;
+
+    top_show(prompt);
+    ch = igetkey();
+    move(0, 0);
+    clrtoeol();
+    return (ch);
+}
+
 static int Origin(struct textline *text);
 static int process_ESC_action(int action, int arg);
 
@@ -116,19 +137,15 @@ void domsg()
     return;
 }
 
-void indigestion(i)
-    int i;
+/* ³ö´íÁË*/
+void indigestion(int i)
 {
-    /* change by KCN 1999.09.08
-       fprintf(stderr,"SERIOUS INTERNAL INDIGESTION CLASS %d\n",i) ;
-     */
     prints("SERIOUS INTERNAL INDIGESTION CLASS %d\n", i);
     oflush();
 }
 
-struct textline *back_line(pos, num)
-    struct textline *pos;
-    int num;
+/* ÏòÇ°num ĞĞ,Í¬Ê±¼ÆËãÕæÊµÒÆ¶¯ĞĞÊı·ÅÈëmoveln*/
+struct textline *back_line(struct textline *pos,int num)
 {
     moveln = 0;
     while (num-- > 0)
@@ -140,6 +157,7 @@ struct textline *back_line(pos, num)
     return pos;
 }
 
+/* Ïòºónum ĞĞ,Í¬Ê±¼ÆËãÕæÊµÒÆ¶¯ĞĞÊı·ÅÈëmoveln*/
 struct textline *forward_line(pos, num)
     struct textline *pos;
     int num;
@@ -387,12 +405,17 @@ void split(line, pos)
     register struct textline *line;
     register int pos;
 {
-    register struct textline *p = alloc_line();
+    register struct textline *p;
 
+	if (countline()>MAX_EDIT_LINE) {
+		return;
+	}
+		
     if (pos > line->len) {
         free(p);
         return;
     }
+    p = alloc_line();
 
     p->len = line->len - pos;
     line->len = pos;
@@ -908,27 +931,12 @@ void keep_fail_post()
     struct textline *p = firstline;
     FILE *fp;
 
-#ifndef VEDITOR
     sethomepath(tmpbuf, currentuser->userid);
     sprintf(filename, "%s/%s.deadve", tmpbuf, currentuser->userid);
-#else
-    sprintf(filename, "DEADVE");
-#endif
-#ifndef VEDITOR
     if ((fp = fopen(filename, "w")) == NULL) {
-#else
-    if ((fp = fopen(filename, "a")) == NULL) {
-#endif
         indigestion(5);
         return;
     }
-#ifdef VEDITOR
-    now = time(0);
-    sprintf(buf, "*** Modified files in VE when it aborted on %s", ctime(&now));
-    fprintf(fp, "%s", buf);
-    sprintf(buf, "*** File Name is %s\n\n", currfname);
-    fprintf(fp, "%s", buf);
-#endif
     while (p != NULL) {
         struct textline *v = p->next;
 
@@ -1356,59 +1364,6 @@ static int process_ESC_action(int action, int arg)
     return newch;
 }
 
-#ifdef VEDITOR
-void show_helpmenu(helptext)
-    char *helptext[];
-{
-    char *str;
-    int i;
-
-    showansi = 1;
-    clear();
-    for (i = 0; (str = helptext[i]) != NULL; i++) {
-        if (*str == '\01' || *str == '\02') {
-            prints("[44m");
-            /*          if( *str == '\02' )
-               printdash( str + 1 );
-               else   
-             */ prints("%s\n", str + 1);
-            prints("[m");
-        } else {
-            prints("%s\n", str);
-        }
-    }
-    pressanykey();
-    clear();
-}
-
-static const char *vedithelp[] = {
-    "\01±à¼­¹¦ÄÜÖ¸ÁîËµÃ÷",
-    "",
-    "\01Ò»°ãÃüÁî:",
-    " ^W,^X    ´æµµáá½áÊø±à¼­         ^L,^G    ÖØ»æÆÁÄ»",
-    " ^Q       ÏÔÊ¾¸¨Öú»­Ãæ           ^Z       ÏÔÊ¾¸¨Öú»­Ãæ",
-    "",
-    "\01ÓÎ±êÒÆ¶¯Ö¸Áî:",
-    " ^P,¡ü   ÏòÉÏ    £ü ^N,¡ı   ÏòÏÂ    | ^R,¡û    Ïò×ó   | ^V,¡ú   ÏòÓÒ  ",
-    " ^A,Home ÖÁĞĞÊ×  £ü ^E, End ÖÁĞĞÄ©  | ^B,PgUp  ÉÏÒ»Ò³ | ^F,PgDn ÏÂÒ»Ò³",
-    " ^S      µµ°¸¿ªÍ·£ü ^T      µµ°¸½áÎ²| Esc-s    ËÑÑ°   | Esc-l    ¼ÌĞøËÑÑ°",
-    " Esc-g   Ìøµ½##ĞĞ©¦",
-    "",
-    "\01É¾³ıÃüÁî:",
-    " ^O,Ins ÇĞ»»²åÈë/ÖÃ»»Ä£Ê½ £ü ^H,BS   É¾³ı×ó·½×ÖÔª  £ü ^Y    É¾³ıÒ»ĞĞ  ",
-    " ^D,DEL É¾³ıÄ¿Ç°×ÖÔª      £ü ^K      É¾ÖÁĞĞÄ©      £ü                 ",
-    "",
-    "\01Çø¿é´¦Àí:",
-    " ^U   Çø¿é±ê¶¨    ^C   ¸´ÖÆÇø¿é      Esc-d   Çå³ıÇø¿é    Esc-Q  Çå³ı±ê¶¨",
-    "",
-    "\01ÌØÊâÃüÁî: (ÇëÏÈ°´ ESC, ÔÙÑ¡ÔñÒÔÏÂÏîÄ¿)",
-    " (I)»ãÈëµµ°¸     (E)»ã³öµµ°¸      (C)¹Û¿´²ÊÉ«±à¼­³É¹û",
-    " (B)Éè¶¨±³¾°É«²Ê (F)Éè¶¨Ç°¾°É«²Ê  (R)»¹Ô­É«²Ê      ",
-    " (ESC)²ÊÉ«¿ØÖÆÂë (M)Çø¿é´¦Àí      (L)¿ª»ò¹ØÑ¶Ï¢À¸",
-    NULL
-};
-
-#endif
 void vedit_key(ch)
     int ch;
 {
@@ -1451,8 +1406,8 @@ void vedit_key(ch)
             split(currline, currpnt);
             break;
         case Ctrl('G'):        /* redraw screen */
-            clear();
-            redraw_everything = true;
+	        go();
+	        redraw_everything = true;
             break;
             /* Leeward 98.07.30 Change hot key for msgX */
             /*case Ctrl('Z'):  call help screen */
@@ -1787,10 +1742,7 @@ void vedit_key(ch)
     clrtoeol();
 }
 
-int raw_vedit(filename, saveheader, headlines)
-    char *filename;
-    int saveheader;
-    int headlines;
+int raw_vedit(char *filename,int saveheader,int headlines)
 {
     int newch, ch = 0, foo, shift;
     struct textline *st_tmp, *st_tmp2;
@@ -1890,16 +1842,8 @@ int vedit_post(filename, saveheader)
 
     t = showansi;
     showansi = 0;
-#ifndef VEDITOR
     ismsgline = (DEFINE(currentuser, DEF_EDITMSG)) ? 1 : 0;
-#else
-    ismsgline = 1;
-#endif
     domsg();
-#ifdef VEDITOR
-    sprintf(bkfname, "%s~", filename);
-    sprintf(currfname, "%s", filename);
-#endif
     ans = raw_vedit(filename, saveheader, 4);   /*Haohmaru.99.5.5.Ó¦¸Ã±£ÁôÒ»¸ö¿ÕĞĞ */
     showansi = t;
     return ans;

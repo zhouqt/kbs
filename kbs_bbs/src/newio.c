@@ -540,31 +540,6 @@ int igetkey()
     }
 }
 
-void top_show(prompt)
-    char *prompt;
-{
-    if (editansi) {
-        prints(ANSI_RESET);
-        refresh();
-    }
-    move(0, 0);
-    clrtoeol();
-    standout();
-    prints("%s", prompt);
-    standend();
-}
-
-int ask(char *prompt)
-{
-    int ch;
-
-    top_show(prompt);
-    ch = igetkey();
-    move(0, 0);
-    clrtoeol();
-    return (ch);
-}
-
 int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void *nouse, int clearlabel)
 {
     int ch, clen = 0, curr = 0, x, y;
