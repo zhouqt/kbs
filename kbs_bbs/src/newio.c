@@ -332,7 +332,7 @@ int filter_telnet(char *s, int *len)
     return (*len = newlen);
 }
 
-static bool inremsg = false;
+bool inremsg = false;
 
 struct key_struct *keymem=NULL;
 int keymem_total;

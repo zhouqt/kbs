@@ -65,6 +65,8 @@ int mode;
     int Gmode = 0;
     int result;
 
+    inremsg = true;
+
     if ((mode == 0) || (mode == 3)) {
         modify_user_mode(MSG);
         move(2, 0);
@@ -79,6 +81,7 @@ int mode;
         namecomplete(NULL, uident);
         if (uident[0] == '\0') {
             clear();
+            inremsg = false;
             return 0;
         }
         uin = t_search(uident, false);
@@ -88,6 +91,7 @@ int mode;
             pressreturn();
             move(2, 0);
             clrtoeol();
+            inremsg = false;
             return -1;
         }
         if (!canmsg(currentuser, uin)) {
@@ -96,6 +100,7 @@ int mode;
             pressreturn();
             move(2, 0);
             clrtoeol();
+            inremsg = false;
             return -1;
         }
         /*
@@ -129,6 +134,7 @@ int mode;
             pressreturn();
             clear();
         }
+        inremsg = false;
         return 1;
         break;
     case -1:                   /* failed, reason in msgerr */
@@ -139,6 +145,7 @@ int mode;
             move(2, 0);
             clrtoeol();
         }
+        inremsg = false;
         return -1;
         break;
     case 0:                    /* message presending test ok, get the message and resend */
@@ -150,10 +157,12 @@ int mode;
             clrtoeol();
             move(2, 0);
             clrtoeol();
+            inremsg = false;
             return 0;
         }
         break;
     default:                   /* unknown reason */
+        inremsg = false;
         return result;
         break;
     }
@@ -169,6 +178,7 @@ int mode;
             pressreturn();
             clear();
         }
+        inremsg = false;
         return 1;
         break;
     case -1:                   /* failed, reason in msgerr */
@@ -179,12 +189,15 @@ int mode;
             move(2, 0);
             clrtoeol();
         }
+        inremsg = false;
         return -1;
         break;
     default:                   /* unknown reason */
+        inremsg = false;
         return result;
         break;
     }
+    inremsg = false;
     return 1;
 }
 
