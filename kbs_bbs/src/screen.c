@@ -146,8 +146,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
         return;
     }
     if ((new_col == 0) && (new_ln == was_ln)) {
-        if (was_col != 0)
-            ochar('\r');
+        ochar('\r');
         return;
     }
     if (new_col <= was_col - 1 && new_col>=was_col-5 && new_ln == was_ln) {
@@ -174,6 +173,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
     char buf[200],*p;\
     sprintf(buf, "\x1b[");\
     p=buf+2;\
+    if(stackt!=1||stack[0]!=0)\
     for(ii=0;ii<stackt;ii++) {\
         if(ii==0) sprintf(p, "%d", stack[ii]); \
         else sprintf(p, ";%d", stack[ii]); \
@@ -223,8 +223,8 @@ void refresh()
         for (i=0; i < scr_lns; i++)
             for(j=0;j<scr_cols;j++)
                 if((bp[i].data[j]==0||bp[i].data[j]==32)&&
-                    (bp[i].mode[j]==0||bp[i].mode[j]==1)&&bp[i].color[j]/16==0)
-                    bp[i].mode[j]&=~SCREEN_MODIFIED;
+                    (bp[i].mode[j]<=3)&&bp[i].color[j]/16==0)
+                    bp[i].mode[j]=0;
                 else
                     bp[i].mode[j]|=SCREEN_MODIFIED;
     }
