@@ -37,6 +37,7 @@ int main()
     init_all();
     printf("<style type=\"text/css\">A {color: #000080}</style><br>\n");
     printf("<script src=\"/func.js\"></script>" "<body class=\"dark\" leftmargin=\"5\" topmargin=\"1\" MARGINHEIGHT=\"1\" MARGINWIDTH=\"1\">");
+    printf("<table  cellSpacing=0 cellPadding=0 width=\"100%\" border=0><tr><td>");
     printf("<table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n");
     printf("<tr><td>");
     if (currentuser == NULL)
@@ -48,6 +49,7 @@ int main()
     printf("</td></tr><tr><td>\n");
     printf("<hr style=\"color:#2020f0; height:1px\" width=\"84px\" align=\"center\">\n");
     printf("</td></tr></table>");
+    printf("</td></tr><tr><td>");
     printf("<table border=0 cellspacing=0 cellpadding=0 align=right width=95%>");
     printf("<img src=\"/images/home.gif\"><a href=\"/bbssec.php\" target=\"f3\">讨论区首页</a><br>\n");
     printf("<img src=\"/images/link0.gif\"><a target=\"f3\" href=\"bbs0an\">精华公布栏</a><br>\n");
@@ -155,12 +157,21 @@ int main()
        printf("<a target=\"f3\" href=\"bbsform\">填写注册单</a><br>\n"); */
     if (loginok && can_enter_chatroom())
         printmenu("<br><a href=\"javascript:openchat()\">[" CHAT_SERVER "<font color=\"red\">测试中</font>]</a>");
-    printmenu("</div><script>if(isNS4) arrange();if(isOP)alarrangeO();</script>");
+    printf("<script>if(isNS4) arrange();if(isOP)alarrangeO();</script></p>");
+    printf("</table></td></tr>");
 #ifdef SMTH
-    printmenu("<p>全国网络计算大赛拉开帷幕,大赛奖项高达20万元，其中一等奖奖金高达10万元。详情请见</p>"
-			    "<p><a href=\"http://www.hpc-contest.edu.cn\"  target=\"_blank\">http://www.hpc-contest.edu.cn</a><br></p>");
+    printf("<tr><td>");
+    printf("<TABLE cellSpacing=0 cellPadding=0 width=\"100%\" border=0>");
+    printf("<tr><td>\n");
+    printf("<p>全国网络计算大赛拉开帷幕,大赛奖项高达20万元，其中一等奖奖金高达10万元。详情请见</p>");
+    printf("</tr></td>\n");
+    printf("<tr><td>\n");
+    printmenu("<a href=\"http://www.hpc-contest.edu.cn\"  target=\"_blank\">http://www.hpc-contest.edu.cn</a><br></p>");
+    printf("</tr></td></table>\n");
+    printf("</td></tr>");
 #endif
-    printf("</table></body>");
+    printf("</table>");
+    printf("</body>");
 }
 
 int count_new_mails()
