@@ -359,7 +359,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct)
     if (!HAS_PERM(currentuser, PERM_POST)) {    /* ÅĞ¶ÏÊÇ·ñÓĞPOSTÈ¨ */
         return DONOTHING;
     }
-
+#ifndef NINE_BUILD
     if ((fileinfo->accessed[0] & FILE_FORWARDED) && !HAS_PERM(currentuser, PERM_SYSOP)) {
         clear();
         move(1, 0);
@@ -368,7 +368,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct)
         pressreturn();
         return FULLUPDATE;
     }
-
+#endif
     if (uinfo.mode != RMAIL)
         sprintf(q_file, "boards/%s/%s", currboard, fileinfo->filename);
     else
@@ -376,9 +376,11 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct)
     strcpy(quote_title, fileinfo->title);
 
     clear();
+#ifndef NINE_BUILD    
     move(4, 0);                 /* Leeward 98.02.25 */
     prints
         ("[1m[33mÇë×¢Òâ£º[31m±¾Õ¾Õ¾¹æ¹æ¶¨£ºÍ¬ÑùÄÚÈİµÄÎÄÕÂÑÏ½ûÔÚ 5 (º¬) ¸öÒÔÉÏÌÖÂÛÇøÄÚÖØ¸´ÕÅÌù¡£\n\nÎ¥·´Õß[33m³ıËùÌùÎÄÕÂ»á±»É¾³ıÖ®Íâ£¬»¹½«±»[31m°ş¶á¼ÌĞø·¢±íÎÄÕÂµÄÈ¨Á¦¡£[33mÏêÏ¸¹æ¶¨Çë²ÎÕÕ£º\n\n    Announce °æµÄÕ¾¹æ£º¡°¹ØÓÚ×ªÌùºÍÕÅÌùÎÄÕÂµÄ¹æ¶¨¡±¡£\n\nÇë´ó¼Ò¹²Í¬Î¬»¤ BBS µÄ»·¾³£¬½ÚÊ¡ÏµÍ³×ÊÔ´¡£Ğ»Ğ»ºÏ×÷¡£\n\n[0m");
+#endif
     move(1, 0);
     if (!get_a_boardname(bname, "ÇëÊäÈëÒª×ªÌùµÄÌÖÂÛÇøÃû³Æ: ")) {
         return FULLUPDATE;
@@ -386,6 +388,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct)
     /*
      * if (!strcmp(bname,currboard))Haohmaru,98.10.03 
      */
+#ifndef NINE_BUILD
     if (!strcmp(bname, currboard) && (uinfo.mode != RMAIL)) {
         move(3, 0);
         clrtobot();
@@ -394,6 +397,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct)
         clear();
         return FULLUPDATE;
     }
+#endif    
     {                           /* Leeward 98.01.13 ¼ì²é×ªÌùÕßÔÚÆäÓû×ªµ½µÄ°æÃæÊÇ·ñ±»½ûÖ¹ÁË POST È¨ */
         char szTemp[STRLEN];
 
