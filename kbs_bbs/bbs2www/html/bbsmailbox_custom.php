@@ -32,6 +32,7 @@
 ?>
 <SCRIPT language="javascript">
 	alert("自定义邮箱数已到上限!上限是" + <?php echo "\"$ret\"";?>);
+	history.go(-1);
 </SCRIPT>
 <?php
 			}
