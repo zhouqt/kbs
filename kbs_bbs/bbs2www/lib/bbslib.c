@@ -717,9 +717,9 @@ void add_loginfo2(FILE * fp, char *board, struct userec *user, int anony)
      * ÓÉBigmanÔö¼Ó:2000.8.10 Announce°æÄäÃû·¢ÎÄÎÊÌâ 
      */
     if (!strcmp(board, "Announce"))
-        fprintf(fp, "[m[%2dm¡ù À´Ô´:¡¤%s %s¡¤[FROM: %s][m\n", color, BBS_FULL_NAME, BBS_FULL_NAME);
+        fprintf(fp, "[m[%2dm¡ù À´Ô´:¡¤%s http://%s¡¤[FROM: %s][m\n", color, BBS_FULL_NAME, BBS_FULL_NAME);
     else
-        fprintf(fp, "\n[m[%2dm¡ù À´Ô´:¡¤%s %s¡¤[FROM: %s][m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, (anony) ? NAME_ANONYMOUS_FROM : user->lasthost);
+        fprintf(fp, "\n[m[%2dm¡ù À´Ô´:¡¤%s http://%s¡¤[FROM: %s][m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, (anony) ? NAME_ANONYMOUS_FROM : user->lasthost);
 
     if (fp2)
         fclose(fp2);
