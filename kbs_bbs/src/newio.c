@@ -895,12 +895,12 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
         good_move(cursory, cursorx);
         refresh();
         ch = igetkey();
+        if (ch == '\n' || ch == '\r')
+            break;
         for(i=starty;i<=y;i++)
             norefresh_saveline(i, 1, savebuffer[i]);
         if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch))
             return -ch;
-        if (ch == '\n' || ch == '\r')
-            break;
 #ifdef CHINESE_CHARACTER
         if (ch == Ctrl('R')) {
 		currentuser->userdefine = currentuser->userdefine ^ DEF_CHCHAR;
@@ -931,7 +931,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 }
                 break;
             case KEY_DEL:
-                if(now<strlen(buf)-1) {
+                if(now<strlen(buf)) {
                     for(i=now;i<strlen(buf);i++)
                         buf[i]=buf[i+1];
 #ifdef CHINESE_CHARACTER
