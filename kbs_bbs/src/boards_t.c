@@ -1000,6 +1000,9 @@ int choose_board(int newflag, char *boardprefix,int favmode)
                 if (toupper(ans[0]) != 'Y')
                     break;
 		arg.yank_flag=BOARD_BOARDALL;
+                (*favboard_conf.get_data)(&favboard_conf, favboard_conf.page_pos, BBS_PAGESIZE);
+                if (favboard_conf.item_count==0)
+		    break;
 	    }
         fav_gotonextnew(&favboard_conf);
         favboard_conf.on_select = fav_onselect;

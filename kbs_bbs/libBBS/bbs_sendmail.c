@@ -186,7 +186,7 @@ int mail_file_sent(char *fromid, char *tmpfile, char *userid, char *title, int u
     newmessage.accessed[0] |= FILE_READ;
     if (append_record(buf, &newmessage, sizeof(newmessage)) == -1)
         return -1;
-    newbbslog("1user", "mailed %s ", userid);
+    newbbslog(BBSLOG_USER, "mailed %s ", userid);
     if (!strcasecmp(userid, "SYSOP"))
         updatelastpost(SYSMAIL_BOARD);
     return 0;
@@ -248,7 +248,7 @@ int mail_buf(struct userec*fromuser, char *mail_buf, char *userid, char *title)
 }
 
 /*peregrine*/
-int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink)
+int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlinkmode)
 {
     struct fileheader newmessage;
     struct stat st;
@@ -278,10 +278,11 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
     strcpy(newmessage.filename, fname);
     setmailfile(filepath, userid, fname);
 
-    switch (unlink) {
+    switch (unlinkmode) {
     case 2:
 	unlink(filepath);
-    	if (symlink(tmpfile,filepath)==-1)
+	sprintf(buf,"%s/%s",BBSHOME,tmpfile);
+    	if (symlink(buf,filepath)==-1)
 		bbslog("3bbs","symlink %s to %s:%s",tmpfile,filepath,strerror(errno));
     	break;
     case 1:
@@ -294,7 +295,7 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
     /*
      * peregrine update used space
      */
-    if (unlink!=BBSPOST_LINK&&stat(filepath, &st) != -1)
+    if (unlinkmode!=BBSPOST_LINK&&stat(filepath, &st) != -1)
         touser->usedspace += st.st_size;
 
     setmailfile(buf, userid, DOT_DIR);
