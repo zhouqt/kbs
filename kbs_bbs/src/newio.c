@@ -845,7 +845,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 
 int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len, int maxline, int clearlabel)
 {
-    int ch, clen = 0, curr = 0, x, y, startx, starty, now, i, chk, cursorx, cursory;
+    int ch, clen = 0, curr = 0, x, y, startx, starty, now, i, j, k, chk, cursorx, cursory;
     char savebuffer[25][256];
     char tmp[STRLEN];
     extern int RMSG;
@@ -1051,6 +1051,17 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
             case KEY_END:
             case Ctrl('E'):
                 now = strlen(buf);
+                break;
+            case Ctrl('Y'):
+                i=now;
+                while(i>=0&&buf[i]!='\n') i--;
+                i++;
+                j=now;
+                while(j<strlen(buf)-1&&buf[j]!='\n') j++;
+                j=j-i+1;
+                if(j<0) j=0;
+                for(k=0;k<j+1;k++)
+                    buf[i+k]=buf[i+j+k];
                 break;
             default:
                 if(isprint2(ch)&&strlen(buf)<len-1) {
