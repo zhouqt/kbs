@@ -53,7 +53,7 @@
 <?php		
 	}
 	
-	function display_navigation_bar($link,$pc,$nid,$pid,$tag,$spr,$order,$comment,$tid=0,$pur,$trackback , $subject , $recommend)
+	function display_navigation_bar($link,$pc,$nid,$pid,$tag,$spr,$order,$comment,$tid=0,$pur,$trackback , $subject , $recommend , $nodetype)
 	{
 		global $currentuser,$loginok,$pcconfig;
 		echo " <a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nid."&pid=".$pid."&tag=".$tag."&tid=".$tid."&p=p\">上一篇</a>\n";
@@ -77,6 +77,8 @@
 			echo "<a href=\"pcfwd.php?nid=".$nid."\">转载</a>\n";
 		if($trackback && $tag == 0)
 			echo 	"<a href=\"javascript:openScript('pctb.php?nid=".$nid."&uid=".$pc["UID"]."&subject=".base64_encode($subject)."',460 , 480)\">引用</a>\n";
+		if(pc_is_manager($currentuser) && $nodetype == 0)
+			echo "<a href=\"#\" onclick=\"bbsconfirm('pcadmin_blo.php?nid=".$nid."','确实要屏蔽此文吗(无法恢复)?')\">屏蔽</a>\n";
 		echo 	"<a href=\"";
 		if($pc["EMAIL"])
 			echo "mailto:".$pc["EMAIL"];
@@ -253,7 +255,7 @@
 	$nid = $rows[nid];
 	$tid = $rows[tid];
 	
-	if($pur != 3)
+	if($pur != 3 && $rows[nodetype] == 0)
 	{
 		pc_counter($link);
 		pc_ncounter($link,$nid);
@@ -349,7 +351,7 @@
 	</tr>
 	<tr>
 		<td colspan="2" align="right" class="t8">
-		<?php display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur,$rows[trackback],$rows[subject] , $rows[recommend]); ?>
+		<?php display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur,$rows[trackback],$rows[subject] , $rows[recommend] , $rows[nodetype]); ?>
 		</td>
 	</tr>
 	</table>
@@ -377,7 +379,7 @@
 	<td align="middle" class="f1" height="40" valign="middle">
 	<?php
 		if($re_num != 0 || $tb_num != 0)
-			display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur,$rows[trackback],$rows[subject] , $rows[recommend]); 
+			display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur,$rows[trackback],$rows[subject] , $rows[recommend] , $rows[nodetype]); 
 	?>
 	&nbsp;</td>
 </tr>

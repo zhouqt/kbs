@@ -63,7 +63,7 @@
 		html_error_quit("对不起，您要查看的评论不存在");
 		exit();
 	}
-	$query = "SELECT `access`,`uid`,`subject`,`emote`,`tid`,`pid` FROM nodes WHERE `nid` = '".$comment[nid]."' LIMIT 0 , 1 ;";
+	$query = "SELECT `access`,`uid`,`subject`,`emote`,`tid`,`pid`,`nodetype` FROM nodes WHERE `nid` = '".$comment[nid]."' LIMIT 0 , 1 ;";
 	$result = mysql_query($query,$link);
 	$node = mysql_fetch_array($result);
 	if(!$node)
@@ -93,7 +93,7 @@
 		exit();
 	}
 	
-	if($pur != 3)
+	if($pur != 3 && $node[nodetype]==0)
 	{
 		pc_counter($link);
 		pc_ncounter($link,$comment[nid]);
