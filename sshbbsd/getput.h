@@ -16,8 +16,11 @@ Macros for storing and retrieving data in msb first and lsb first order.
 /*
  * $Id$
  * $Log$
- * Revision 1.1  2002/04/27 05:47:26  kxn
- * Initial revision
+ * Revision 1.2  2002/08/04 11:08:47  kcn
+ * format C
+ *
+ * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
+ * no message
  *
  * Revision 1.1  2001/07/04 06:07:09  bbsdev
  * bbs sshd
@@ -77,5 +80,4 @@ Macros for storing and retrieving data in msb first and lsb first order.
   (cp)[0] = (value); \
   (cp)[1] = (value) >> 8; } while (0)
 
-#endif /* GETPUT_H */
-
+#endif				/* GETPUT_H */

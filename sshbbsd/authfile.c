@@ -17,8 +17,11 @@ for reading the passphrase from the user.
 /*
  * $Id$
  * $Log$
- * Revision 1.1  2002/04/27 05:47:25  kxn
- * Initial revision
+ * Revision 1.2  2002/08/04 11:08:44  kcn
+ * format C
+ *
+ * Revision 1.1.1.1  2002/04/27 05:47:25  kxn
+ * no message
  *
  * Revision 1.1  2001/07/04 06:07:07  bbsdev
  * bbs sshd
@@ -66,127 +69,114 @@ for reading the passphrase from the user.
    This initializes the private key.  The I/O will be done using the given
    uid with userfile. */
 
-int load_private_key(uid_t uid, const char *filename, const char *passphrase,
-		     RSAPrivateKey *prv, char **comment_return)
+int load_private_key(uid_t uid, const char *filename, const char *passphrase, RSAPrivateKey * prv, char **comment_return)
 {
-  int i, check1, check2, cipher_type;
-  int uf;
-  unsigned long len;
-  Buffer buffer, decrypted;
-  char *cp;
-  CipherContext cipher;
+    int i, check1, check2, cipher_type;
+    int uf;
+    unsigned long len;
+    Buffer buffer, decrypted;
+    char *cp;
+    CipherContext cipher;
 
-  /* Read the file into the buffer. */
-  uf = open(filename, O_RDONLY, 0);
-  if (uf < 0)
-    return 0;
+    /* Read the file into the buffer. */
+    uf = open(filename, O_RDONLY, 0);
+    if (uf < 0)
+	return 0;
 
-  len = lseek(uf, (off_t)0L, 2);
-  lseek(uf, (off_t)0L, 0);
-  
-  if (len > 32000)
-    {
-      close(uf);
-      debug("Authentication file too big: %.200s", filename);
-      return 0;
-    }
-  
-  buffer_init(&buffer);
-  buffer_append_space(&buffer, &cp, len);
+    len = lseek(uf, (off_t) 0L, 2);
+    lseek(uf, (off_t) 0L, 0);
 
-  if (read(uf, cp, len) != len)
-    {
-      debug("Read from key file %.200s failed: %.100s", filename,
-	    strerror(errno));
-      buffer_free(&buffer);
-      close(uf);
-      return 0;
-    }
-  close(uf);
-
-  /* Check that it is at least big enought to contain the ID string. */
-  if (len < strlen(AUTHFILE_ID_STRING) + 1)
-    {
-      debug("Bad key file %.200s.", filename);
-      buffer_free(&buffer);
-      return 0;
+    if (len > 32000) {
+	close(uf);
+	debug("Authentication file too big: %.200s", filename);
+	return 0;
     }
 
-  /* Make sure it begins with the id string.  Consume the id string from
-     the buffer. */
-  for (i = 0; i < (unsigned int)strlen(AUTHFILE_ID_STRING) + 1; i++)
-    if (buffer_get_char(&buffer) != (unsigned char)AUTHFILE_ID_STRING[i])
-      {
+    buffer_init(&buffer);
+    buffer_append_space(&buffer, &cp, len);
+
+    if (read(uf, cp, len) != len) {
+	debug("Read from key file %.200s failed: %.100s", filename, strerror(errno));
+	buffer_free(&buffer);
+	close(uf);
+	return 0;
+    }
+    close(uf);
+
+    /* Check that it is at least big enought to contain the ID string. */
+    if (len < strlen(AUTHFILE_ID_STRING) + 1) {
 	debug("Bad key file %.200s.", filename);
 	buffer_free(&buffer);
 	return 0;
-      }
-
-  /* Read cipher type. */
-  cipher_type = buffer_get_char(&buffer);
-  (void)buffer_get_int(&buffer);  /* Reserved data. */
-
-  /* Read the public key from the buffer. */
-  prv->bits = buffer_get_int(&buffer);
-  mpz_init(&prv->n);
-  buffer_get_mp_int(&buffer, &prv->n);
-  mpz_init(&prv->e);
-  buffer_get_mp_int(&buffer, &prv->e);
-  if (comment_return)
-    *comment_return = buffer_get_string(&buffer, NULL);
-  else
-    xfree(buffer_get_string(&buffer, NULL));
-
-  /* Check that it is a supported cipher. */
-  if (cipher_type != SSH_CIPHER_NONE &&
-      (cipher_mask() & (1 << cipher_type)) == 0)
-    {
-      debug("Unsupported cipher %.100s used in key file %.200s.",
-	    cipher_name(cipher_type), filename);
-      buffer_free(&buffer);
-      goto fail;
     }
 
-  /* Initialize space for decrypted data. */
-  buffer_init(&decrypted);
-  buffer_append_space(&decrypted, &cp, buffer_len(&buffer));
-      
-  /* Rest of the buffer is encrypted.  Decrypt it using the passphrase. */
-  cipher_set_key_string(&cipher, cipher_type, passphrase, 0);
-  cipher_decrypt(&cipher, (unsigned char *)cp,
-		 (unsigned char *)buffer_ptr(&buffer),
-		 buffer_len(&buffer));
+    /* Make sure it begins with the id string.  Consume the id string from
+       the buffer. */
+    for (i = 0; i < (unsigned int) strlen(AUTHFILE_ID_STRING) + 1; i++)
+	if (buffer_get_char(&buffer) != (unsigned char) AUTHFILE_ID_STRING[i]) {
+	    debug("Bad key file %.200s.", filename);
+	    buffer_free(&buffer);
+	    return 0;
+	}
 
-  buffer_free(&buffer);
+    /* Read cipher type. */
+    cipher_type = buffer_get_char(&buffer);
+    (void) buffer_get_int(&buffer);	/* Reserved data. */
 
-  check1 = buffer_get_char(&decrypted);
-  check2 = buffer_get_char(&decrypted);
-  if (check1 != buffer_get_char(&decrypted) ||
-      check2 != buffer_get_char(&decrypted))
-    {
-      if (strcmp(passphrase, "") != 0)
-	debug("Bad passphrase supplied for key file %.200s.", filename);
-      /* Bad passphrase. */
-      buffer_free(&decrypted);
-    fail:
-      mpz_clear(&prv->n);
-      mpz_clear(&prv->e);
-      if (comment_return)
-	xfree(*comment_return);
-      return 0;
+    /* Read the public key from the buffer. */
+    prv->bits = buffer_get_int(&buffer);
+    mpz_init(&prv->n);
+    buffer_get_mp_int(&buffer, &prv->n);
+    mpz_init(&prv->e);
+    buffer_get_mp_int(&buffer, &prv->e);
+    if (comment_return)
+	*comment_return = buffer_get_string(&buffer, NULL);
+    else
+	xfree(buffer_get_string(&buffer, NULL));
+
+    /* Check that it is a supported cipher. */
+    if (cipher_type != SSH_CIPHER_NONE && (cipher_mask() & (1 << cipher_type)) == 0) {
+	debug("Unsupported cipher %.100s used in key file %.200s.", cipher_name(cipher_type), filename);
+	buffer_free(&buffer);
+	goto fail;
     }
 
-  /* Read the rest of the private key. */
-  mpz_init(&prv->d);
-  buffer_get_mp_int(&decrypted, &prv->d);
-  mpz_init(&prv->u);
-  buffer_get_mp_int(&decrypted, &prv->u);
-  mpz_init(&prv->p);
-  buffer_get_mp_int(&decrypted, &prv->p);
-  mpz_init(&prv->q);
-  buffer_get_mp_int(&decrypted, &prv->q);
-  
-  buffer_free(&decrypted);
+    /* Initialize space for decrypted data. */
+    buffer_init(&decrypted);
+    buffer_append_space(&decrypted, &cp, buffer_len(&buffer));
 
-  return 1;
+    /* Rest of the buffer is encrypted.  Decrypt it using the passphrase. */
+    cipher_set_key_string(&cipher, cipher_type, passphrase, 0);
+    cipher_decrypt(&cipher, (unsigned char *) cp, (unsigned char *) buffer_ptr(&buffer), buffer_len(&buffer));
+
+    buffer_free(&buffer);
+
+    check1 = buffer_get_char(&decrypted);
+    check2 = buffer_get_char(&decrypted);
+    if (check1 != buffer_get_char(&decrypted) || check2 != buffer_get_char(&decrypted)) {
+	if (strcmp(passphrase, "") != 0)
+	    debug("Bad passphrase supplied for key file %.200s.", filename);
+	/* Bad passphrase. */
+	buffer_free(&decrypted);
+      fail:
+	mpz_clear(&prv->n);
+	mpz_clear(&prv->e);
+	if (comment_return)
+	    xfree(*comment_return);
+	return 0;
+    }
+
+    /* Read the rest of the private key. */
+    mpz_init(&prv->d);
+    buffer_get_mp_int(&decrypted, &prv->d);
+    mpz_init(&prv->u);
+    buffer_get_mp_int(&decrypted, &prv->u);
+    mpz_init(&prv->p);
+    buffer_get_mp_int(&decrypted, &prv->p);
+    mpz_init(&prv->q);
+    buffer_get_mp_int(&decrypted, &prv->q);
+
+    buffer_free(&decrypted);
+
+    return 1;
 }

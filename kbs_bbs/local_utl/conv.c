@@ -5,15 +5,16 @@
 
 main()
 {
-    int filesize,fdr,i;
+    int filesize, fdr, i;
     struct userec *ptr;
     struct boardheader *boards;
+
     chdir(BBSHOME);
-    switch (safe_mmapfile(".PASSWDS",O_RDWR|O_CREAT,PROT_READ|PROT_WRITE,MAP_SHARED,(void**)&ptr,&filesize,&fdr)) {   
-        case 0:
-            return;
-        case 1:
-        	for (i=0;i<MAXUSERS;i++) {
+    switch (safe_mmapfile(".PASSWDS", O_RDWR | O_CREAT, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &ptr, &filesize, &fdr)) {
+    case 0:
+	return;
+    case 1:
+	for (i = 0; i < MAXUSERS; i++) {
 /*
 			char buf[1024];
 			if (ptr[i].userid[0]) {
@@ -24,27 +25,27 @@ main()
 			}
 			continue;
 */
-        		DO_SWAP_DWORD(ptr[i].firstlogin);
-        		DO_SWAP_DWORD(ptr[i].numlogins);
-        		DO_SWAP_DWORD(ptr[i].numposts);
-        		DO_SWAP_DWORD(ptr[i].userlevel);
-        		DO_SWAP_DWORD(ptr[i].lastlogin);
-        		DO_SWAP_DWORD(ptr[i].stay);
-        		DO_SWAP_DWORD(ptr[i].signature);
-        		DO_SWAP_DWORD(ptr[i].userdefine);
-        		DO_SWAP_DWORD(ptr[i].notedate);
-        		DO_SWAP_DWORD(ptr[i].noteline);
-        		DO_SWAP_DWORD(ptr[i].notemode);
-        		DO_SWAP_DWORD(ptr[i].exittime);
-        		DO_SWAP_DWORD(ptr[i].unuse2);
-        	}
+	    DO_SWAP_DWORD(ptr[i].firstlogin);
+	    DO_SWAP_DWORD(ptr[i].numlogins);
+	    DO_SWAP_DWORD(ptr[i].numposts);
+	    DO_SWAP_DWORD(ptr[i].userlevel);
+	    DO_SWAP_DWORD(ptr[i].lastlogin);
+	    DO_SWAP_DWORD(ptr[i].stay);
+	    DO_SWAP_DWORD(ptr[i].signature);
+	    DO_SWAP_DWORD(ptr[i].userdefine);
+	    DO_SWAP_DWORD(ptr[i].notedate);
+	    DO_SWAP_DWORD(ptr[i].noteline);
+	    DO_SWAP_DWORD(ptr[i].notemode);
+	    DO_SWAP_DWORD(ptr[i].exittime);
+	    DO_SWAP_DWORD(ptr[i].unuse2);
+	}
     }
-    end_mmapfile((void*)ptr,filesize,fdr);
-    switch (safe_mmapfile(".BOARDS",O_RDWR|O_CREAT,PROT_READ|PROT_WRITE,MAP_SHARED,(void**)&boards,&filesize,&fdr)) {   
-        case 0:
-            return;
-        case 1:
-        	for (i=0;i<MAXBOARD;i++) {
+    end_mmapfile((void *) ptr, filesize, fdr);
+    switch (safe_mmapfile(".BOARDS", O_RDWR | O_CREAT, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &boards, &filesize, &fdr)) {
+    case 0:
+	return;
+    case 1:
+	for (i = 0; i < MAXBOARD; i++) {
 /*
 			if (boards[i].filename[0]) {
 			char buf[1024];
@@ -52,10 +53,9 @@ main()
 			mkdir(buf,0755);
 			};
 */
-        		DO_SWAP_DWORD(boards[i].level);
-        	}
+	    DO_SWAP_DWORD(boards[i].level);
+	}
     }
-    end_mmapfile((void*)boards,filesize,fdr);
+    end_mmapfile((void *) boards, filesize, fdr);
     return;
 }
-

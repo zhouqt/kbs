@@ -17,8 +17,11 @@ the password is valid for the user.
 /*
  * $Id$
  * $Log$
- * Revision 1.1  2002/04/27 05:47:26  kxn
- * Initial revision
+ * Revision 1.2  2002/08/04 11:08:44  kcn
+ * format C
+ *
+ * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
+ * no message
  *
  * Revision 1.3  2002/04/25 10:47:37  kxn
  * removed libBBS.a
@@ -156,14 +159,16 @@ int auth_password(const char *server_user, const char *password)
     load_sysconf();
     resolve_ucache();
     resolve_utmp();
-   strcpy(useridbuf,server_user);
-   if (password[0] == '\0') return 0;
-   if( *server_user == '\0' || !dosearchuser( useridbuf ) )  return 0;
+    strcpy(useridbuf, server_user);
+    if (password[0] == '\0')
+	return 0;
+    if (*server_user == '\0' || !dosearchuser(useridbuf))
+	return 0;
 
-   if( !checkpasswd2(password, currentuser )) {
-	   logattempt(server_user,get_canonical_hostname());
-	   return 0;
-   } 
-   strcpy (useridbuf, server_user);
-   return 1; 
+    if (!checkpasswd2(password, currentuser)) {
+	logattempt(server_user, get_canonical_hostname());
+	return 0;
+    }
+    strcpy(useridbuf, server_user);
+    return 1;
 }

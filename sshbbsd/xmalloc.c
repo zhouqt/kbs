@@ -17,8 +17,11 @@ failure (they call fatal if they encounter an error).
 /*
  * $Id$
  * $Log$
- * Revision 1.1  2002/04/27 05:47:25  kxn
- * Initial revision
+ * Revision 1.2  2002/08/04 11:08:49  kcn
+ * format C
+ *
+ * Revision 1.1.1.1  2002/04/27 05:47:25  kxn
+ * no message
  *
  * Revision 1.1  2001/07/04 06:07:13  bbsdev
  * bbs sshd
@@ -47,34 +50,36 @@ void free(void *ptr);
 
 void *xmalloc(size_t size)
 {
-  void *ptr = malloc(size);
-  if (ptr == NULL)
-    fatal("xmalloc: out of memory (allocating %d bytes)", (int)size);
-  return ptr;
+    void *ptr = malloc(size);
+
+    if (ptr == NULL)
+	fatal("xmalloc: out of memory (allocating %d bytes)", (int) size);
+    return ptr;
 }
 
 void *xrealloc(void *ptr, size_t new_size)
 {
-  void *new_ptr;
+    void *new_ptr;
 
-  if (ptr == NULL)
-    fatal("xrealloc: NULL pointer given as argument");
-  new_ptr = realloc(ptr, new_size);
-  if (new_ptr == NULL)
-    fatal("xrealloc: out of memory (new_size %d bytes)", (int)new_size);
-  return new_ptr;
+    if (ptr == NULL)
+	fatal("xrealloc: NULL pointer given as argument");
+    new_ptr = realloc(ptr, new_size);
+    if (new_ptr == NULL)
+	fatal("xrealloc: out of memory (new_size %d bytes)", (int) new_size);
+    return new_ptr;
 }
 
 void xfree(void *ptr)
 {
-  if (ptr == NULL)
-    fatal("xfree: NULL pointer given as argument");
-  free(ptr);
+    if (ptr == NULL)
+	fatal("xfree: NULL pointer given as argument");
+    free(ptr);
 }
 
 char *xstrdup(const char *str)
 {
-  char *cp = xmalloc(strlen(str) + 1);
-  strcpy(cp, str);
-  return cp;
+    char *cp = xmalloc(strlen(str) + 1);
+
+    strcpy(cp, str);
+    return cp;
 }

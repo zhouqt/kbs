@@ -14,8 +14,11 @@ Created: Wed Apr 19 16:50:42 1995 ylo
 /*
  * $Id$
  * $Log$
- * Revision 1.1  2002/04/27 05:47:26  kxn
- * Initial revision
+ * Revision 1.2  2002/08/04 11:08:46  kcn
+ * format C
+ *
+ * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
+ * no message
  *
  * Revision 1.1  2001/07/04 06:07:08  bbsdev
  * bbs sshd
@@ -63,57 +66,57 @@ Created: Wed Apr 19 16:50:42 1995 ylo
 
 #ifndef WITHOUT_IDEA
 #include "idea.h"
-#endif /* WITHOUT_IDEA */
+#endif				/* WITHOUT_IDEA */
 #include "des.h"
 #ifdef WITH_ARCFOUR
 #include "arcfour.h"
-#endif /* WITH_ARCFOUR */
+#endif				/* WITH_ARCFOUR */
 #ifdef WITH_BLOWFISH
 #include "blowfish.h"
-#endif /* WITH_BLOWFISH */
+#endif				/* WITH_BLOWFISH */
 
 /* Cipher types.  New types can be added, but old types should not be removed
    for compatibility.  The maximum allowed value is 31. */
-#define SSH_CIPHER_NOT_SET	-1 /* None selected (invalid number). */
-#define SSH_CIPHER_NONE		0 /* no encryption */
-#define SSH_CIPHER_IDEA		1 /* IDEA CFB */
-#define SSH_CIPHER_DES		2 /* DES CBC */
-#define SSH_CIPHER_3DES		3 /* 3DES CBC */
-#define SSH_CIPHER_ARCFOUR	5 /* Arcfour */
-#define SSH_CIPHER_BLOWFISH     6 /* Bruce Schneier's Blowfish */
-#define SSH_CIPHER_RESERVED	7 /* Reserved for 40 bit crippled encryption,
-				     Bernard Perrot <perrot@lal.in2p3.fr> */
+#define SSH_CIPHER_NOT_SET	-1	/* None selected (invalid number). */
+#define SSH_CIPHER_NONE		0	/* no encryption */
+#define SSH_CIPHER_IDEA		1	/* IDEA CFB */
+#define SSH_CIPHER_DES		2	/* DES CBC */
+#define SSH_CIPHER_3DES		3	/* 3DES CBC */
+#define SSH_CIPHER_ARCFOUR	5	/* Arcfour */
+#define SSH_CIPHER_BLOWFISH     6	/* Bruce Schneier's Blowfish */
+#define SSH_CIPHER_RESERVED	7	/* Reserved for 40 bit crippled encryption,
+					   Bernard Perrot <perrot@lal.in2p3.fr> */
 
 typedef struct {
-  unsigned int type;
-  union {
+    unsigned int type;
+    union {
 #ifndef WITHOUT_IDEA
-    struct {
-      IDEAContext key;
-      unsigned char iv[8];
-    } idea;
-#endif /* WITHOUT_IDEA */
+	struct {
+	    IDEAContext key;
+	    unsigned char iv[8];
+	} idea;
+#endif				/* WITHOUT_IDEA */
 #ifdef WITH_DES
-    struct {
-      DESContext key;
-      unsigned char iv[8];
-    } des;
-#endif /* WITH_DES */
-    struct {
-      DESContext key1;
-      unsigned char iv1[8];
-      DESContext key2;
-      unsigned char iv2[8];
-      DESContext key3;
-      unsigned char iv3[8];
-    } des3;
+	struct {
+	    DESContext key;
+	    unsigned char iv[8];
+	} des;
+#endif				/* WITH_DES */
+	struct {
+	    DESContext key1;
+	    unsigned char iv1[8];
+	    DESContext key2;
+	    unsigned char iv2[8];
+	    DESContext key3;
+	    unsigned char iv3[8];
+	} des3;
 #ifdef WITH_ARCFOUR
-    ArcfourContext arcfour;
+	ArcfourContext arcfour;
 #endif
 #ifdef WITH_BLOWFISH
-    BlowfishContext blowfish;
-#endif /* WITH_BLOWFISH */
-  } u;
+	BlowfishContext blowfish;
+#endif				/* WITH_BLOWFISH */
+    } u;
 } CipherContext;
 
 /* Returns a bit mask indicating which ciphers are supported by this
@@ -130,22 +133,18 @@ int cipher_number(const char *name);
 
 /* Selects the cipher to use and sets the key.  If for_encryption is true,
    the key is setup for encryption; otherwise it is setup for decryption. */
-void cipher_set_key(CipherContext *context, int cipher,
-		    const unsigned char *key, int keylen, int for_encryption);
+void cipher_set_key(CipherContext * context, int cipher, const unsigned char *key, int keylen, int for_encryption);
 
 /* Sets key for the cipher by computing the MD5 checksum of the passphrase,
    and using the resulting 16 bytes as the key. */
-void cipher_set_key_string(CipherContext *context, int cipher,
-			   const char *passphrase, int for_encryption);
+void cipher_set_key_string(CipherContext * context, int cipher, const char *passphrase, int for_encryption);
 
 /* Encrypts data using the cipher.  For most ciphers, len should be a
    multiple of 8. */
-void cipher_encrypt(CipherContext *context, unsigned char *dest,
-		    const unsigned char *src, unsigned int len);
+void cipher_encrypt(CipherContext * context, unsigned char *dest, const unsigned char *src, unsigned int len);
 
 /* Decrypts data using the cipher.  For most ciphers, len should be a
    multiple of 8. */
-void cipher_decrypt(CipherContext *context, unsigned char *dest,
-		    const unsigned char *src, unsigned int len);
+void cipher_decrypt(CipherContext * context, unsigned char *dest, const unsigned char *src, unsigned int len);
 
-#endif /* CIPHER_H */
+#endif				/* CIPHER_H */

@@ -22,19 +22,19 @@
 */
 
 #include "bbs.h"
-void
-show_help(fname)
-char *fname;
+void show_help(fname)
+	char *fname;
 {
     /*---	Modified by period	2000-10-26	according to ylsdd's warning	---*/
     static short int cnt;
-    if(cnt >= 2) {
-        refresh();
-        return;
+
+    if (cnt >= 2) {
+	refresh();
+	return;
     }
     ++cnt;
     clear();
-    ansimore(fname,true);
+    ansimore(fname, true);
     clear();
     --cnt;
 }
@@ -48,22 +48,19 @@ char    *mesg;
     prints("[m");
 }*/
 
-int
-mainreadhelp()
+int mainreadhelp()
 {
     show_help("help/mainreadhelp");
-    return FULLUPDATE ;
+    return FULLUPDATE;
 }
 
-int
-mailreadhelp()
+int mailreadhelp()
 {
     show_help("help/mailreadhelp");
-    return FULLUPDATE ;
+    return FULLUPDATE;
 }
 
-void
-Help()
+void Help()
 {
     currentuser->flags[0] ^= CURSOR_FLAG;
     clear();

@@ -41,10 +41,10 @@
 #define BBSNAME NAME_BBS_CHINESE
 #endif
 
-#define WWW_LOG             "bbslog/www.log"   /* "www.bbslog" */
-#define WWW_BADLOGIN        "bbslog/badlogin.www"  /* "badlogin.www" */
+#define WWW_LOG             "bbslog/www.log"	/* "www.bbslog" */
+#define WWW_BADLOGIN        "bbslog/badlogin.www"	/* "badlogin.www" */
 #define SYS_MSGFILE         "msgfile"
-#define SYS_MSGFILELOG      "msgfile.log"   /* "msgfile.me" */
+#define SYS_MSGFILELOG      "msgfile.log"	/* "msgfile.me" */
 
 //typedef int (*APPLY_UTMP_FUNC)(struct user_info*,char*,int pos);
 
@@ -52,11 +52,11 @@
 extern char seccode[SECNUM][5];
 extern char secname[SECNUM][2][20];
 extern int loginok;
-extern struct userec* currentuser;
+extern struct userec *currentuser;
 extern struct user_info *u_info;
 extern struct UTMPFILE *shm_utmp;
 extern struct UCACHE *shm_ucache;
-extern char fromhost[IPLEN+1];
+extern char fromhost[IPLEN + 1];
 extern friends_t fff[200];
 extern int friendnum;
 extern char parm_name[256][80], *parm_val[256];
@@ -71,12 +71,13 @@ extern int friendmode, range;
 int junkboard(char *board);
 
 struct post_log {
-	char	author[IDLEN+1];
-	char	board[18];
-	char	title[66];
-	time_t	date;
-	int	number;
+    char author[IDLEN + 1];
+    char board[18];
+    char title[66];
+    time_t date;
+    int number;
 };
+
 /*struct _shmkey {
 	char key[20];
 	int value;
@@ -119,7 +120,7 @@ char *strright(char *s, int len);
 
 #ifndef FREEBSD
 char *strcasestr(char *s1, char *s2);
-#endif /* not FREEBSD */
+#endif				/* not FREEBSD */
 
 int strsncpy(char *s1, char *s2, int n);
 
@@ -171,13 +172,12 @@ int post_imail(char *userid, char *title, char *file, char *id, char *nickname, 
 #ifndef SMTH
 int post_article(char *board, char *title, char *file, char *id, char *nickname, char *ip, int sig);
 #else
-int post_article(char *board, char *title, char *file, struct userec *user,
-		        char *ip, int sig, int local_save, int anony);
+int post_article(char *board, char *title, char *file, struct userec *user, char *ip, int sig, int local_save, int anony);
 #endif
 
-int sig_append(FILE *fp, char *id, int sig);
+int sig_append(FILE * fp, char *id, int sig);
 
-char* anno_path_of(char *board);
+char *anno_path_of(char *board);
 
 int has_BM_perm(struct userec *user, char *board);
 
@@ -188,11 +188,12 @@ bcache_t *getbcache(char *board);
 int count_mails(char *id, int *total, int *unread);
 
 int findnextutmp(char *id, int from);
+
 #ifndef SMTH
 /*int sethomefile(char *buf, char *id, char *file); define in func.h*/
-#else /* SMTH */
+#else				/* SMTH */
 char *sethomefile(char *buf, char *userid, char *filename);
-#endif /* SMTH */
+#endif				/* SMTH */
 
 int send_msg(char *myuserid, int mypid, char *touserid, int topid, char msg[256]);
 
@@ -200,9 +201,9 @@ char *horoscope(int month, int day);
 
 char *ModeType(int mode);
 
-char   *cexp(int exp);
+char *cexp(int exp);
 
-char   *cperf(int perf);
+char *cperf(int perf);
 
 int count_life_value(struct userec *urec);
 
@@ -246,7 +247,7 @@ char *flag_str2(int access, int has_read);
 
 char *userid_str(char *s);
 
-int fprintf2(FILE *fp, char *s);
+int fprintf2(FILE * fp, char *s);
 
 int get_file_ent(char *board, char *file, struct fileheader *x);
 
@@ -259,26 +260,26 @@ bcache_t *getbcacheaddr();
 char *crypt1(char *buf, char *salt);
 
 struct dir {
-        char board[20];
-        char userid[14];
-        char showname[40];
-        char exp[80];
-        char type[30];
-        int filename;
-        int date;
-        int level;
-        int size;
-        int live;
-        int click;
-        int active;
-	int accessed;
+    char board[20];
+    char userid[14];
+    char showname[40];
+    char exp[80];
+    char type[30];
+    int filename;
+    int date;
+    int level;
+    int size;
+    int live;
+    int click;
+    int active;
+    int accessed;
 };
 
 #ifdef SMTH
-int full_utmp(struct user_info* uentp,int* count);
+int full_utmp(struct user_info *uentp, int *count);
 struct user_info **get_ulist_addr();
 uinfo_t *get_user_info(int utmpnum);
-#endif /* SMTH */
+#endif				/* SMTH */
 
 char *getcurruserid();
 
@@ -302,7 +303,7 @@ void load_favboard(int dohelp);
 
 int IsFavBoard(int idx);
 
-char* get_favboard(int k);
+char *get_favboard(int k);
 
 int get_favboard_id(int k);
 
@@ -311,17 +312,15 @@ int get_favboard_type(int k);
 
 int add_favboard(char *brdname);
 
-struct boardheader const* getboard(int num);
+struct boardheader const *getboard(int num);
 
 int isowner(struct userec *user, struct fileheader *fileinfo);
 
-void write_header2(FILE *fp, char *board, char *title, 
-					char *userid, char *username, int anony);
+void write_header2(FILE * fp, char *board, char *title, char *userid, char *username, int anony);
 
-int outgo_post2(struct fileheader *fh, char *board, 
-				char *userid, char *username, char *title);
+int outgo_post2(struct fileheader *fh, char *board, char *userid, char *username, char *title);
 
-char * setmailpath( char *buf, char *userid );
+char *setmailpath(char *buf, char *userid);
 
 int get_unifile(char *filename, char *key, int mode);
 
@@ -331,28 +330,25 @@ int count_user_online(char *uid);
 
 int get_curr_utmpent();
 
-int www_user_login(struct userec* user,int useridx,int kick_multi,char* fromhost,
-	char* fullfrom,struct user_info** ppuinfo,int* putmpent);
-int www_user_logoff(struct userec* user,int useridx,struct user_info* puinfo,int userinfoidx);
-int www_user_init(int useridx,char* userid,int key,struct userec **x, struct user_info **y);
+int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromhost, char *fullfrom, struct user_info **ppuinfo, int *putmpent);
+int www_user_logoff(struct userec *user, int useridx, struct user_info *puinfo, int userinfoidx);
+int www_user_init(int useridx, char *userid, int key, struct userec **x, struct user_info **y);
 int www_data_init();
 int can_enter_chatroom();
 int can_send_mail();
 int can_reply_post(char *board, char *filename);
 char bin2hex(int val);
-char *encode_url(char *buf, const char* str, size_t buflen);
-char *string_copy(char *buf, const char* str, size_t *buflen);
-char *encode_html(char *buf, const char* str, size_t buflen);
+char *encode_url(char *buf, const char *str, size_t buflen);
+char *string_copy(char *buf, const char *str, size_t * buflen);
+char *encode_html(char *buf, const char *str, size_t buflen);
 int is_BM(struct boardheader *board, struct userec *user);
 int is_owner(struct fileheader *fh, struct userec *user);
-int can_delete_post(struct boardheader *board, struct fileheader *fh, 
-		struct userec *user);
-int can_edit_post(struct boardheader *board, struct fileheader *fh, 
-		struct userec *user);
+int can_delete_post(struct boardheader *board, struct fileheader *fh, struct userec *user);
+int can_edit_post(struct boardheader *board, struct fileheader *fh, struct userec *user);
 int can_reply_post(char *board, char *filename);
 int get_seccode_index(char prefix);
 char *http_encode_string(char *str, size_t len);
 char *unix_string(char *str);
 
 
-#endif /* BBSLIB_H */
+#endif				/* BBSLIB_H */

@@ -23,17 +23,17 @@
 
 /* Lots o' modes! */
 
-#define IDLE            0       /* Modes a user can be in */
-#define ULDL            1       /* see mode in struct user_info in bbs.h */
+#define IDLE            0	/* Modes a user can be in */
+#define ULDL            1	/* see mode in struct user_info in bbs.h */
 #define TALK            2
 #define NEW             3
 #define CHAT1           4
 #define READNEW         5
 #define POSTING         6
 #define MAIL            7
-#define CHAT2           8 
+#define CHAT2           8
 #define CHAT4           9
-#define CHAT3           10 
+#define CHAT3           10
 #define LAUSERS         11
 #define LUSERS          12
 #define SMAIL           13
@@ -84,4 +84,3 @@
 #define EDITSIG         57
 #define EDITPLAN        58
 #define GIVEUPNET	59
-

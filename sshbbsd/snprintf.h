@@ -12,8 +12,11 @@
 /*
  * $Id:
  * $Log$
- * Revision 1.1  2002/04/27 05:47:26  kxn
- * Initial revision
+ * Revision 1.2  2002/08/04 11:08:49  kcn
+ * format C
+ *
+ * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
+ * no message
  *
  * Revision 1.1  2001/07/04 06:07:12  bbsdev
  * bbs sshd
@@ -58,4 +61,4 @@ int snprintf(char *str, size_t size, const char *format, ...);
 
 int vsnprintf(char *str, size_t size, const char *format, va_list ap);
 
-#endif /* SNPRINTF_H */
+#endif				/* SNPRINTF_H */

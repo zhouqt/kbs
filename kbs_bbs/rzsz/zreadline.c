@@ -39,16 +39,15 @@
 static size_t readline_readnum;
 static int readline_fd;
 static char *readline_buffer;
-int readline_left=0;
+int readline_left = 0;
 char *readline_ptr;
 
 jmp_buf zmodemjmp;
 
-static void
-zreadline_alarm_handler(int dummy)
+static void zreadline_alarm_handler(int dummy)
 {
-	/* doesn't need to do anything */
-	 longjmp(zmodemjmp,1);
+    /* doesn't need to do anything */
+    longjmp(zmodemjmp, 1);
 }
 
 /*
@@ -57,66 +56,64 @@ zreadline_alarm_handler(int dummy)
  *
  * timeout is in tenths of seconds
  */
-int 
-readline_internal(unsigned int timeout)
+int readline_internal(unsigned int timeout)
 {
 
-	if (!no_timeout)
-	{
-		unsigned int n;
-		n = timeout/10;
-		if (n < 2 && timeout!=1)
-			n = 3;
-		else if (n==0)
-			n=1;
-		signal(SIGALRM, zreadline_alarm_handler); 
-		alarm(n);
-	}
+    if (!no_timeout) {
+	unsigned int n;
 
-	readline_ptr=readline_buffer;
-	readline_left=raw_read(readline_fd, readline_ptr, readline_readnum);
-	if (!no_timeout)
-		alarm(0);
-	if (readline_left>0 && bytes_per_error) {
-		static long ct=0;
-		static int mod=1;
-		ct+=readline_left;
-		while (ct>bytes_per_error) {
-			readline_ptr[ct % bytes_per_error]^=mod;
-			ct-=bytes_per_error;
-			mod++;
-			if (mod==256)
-				mod=1;
-		}
+	n = timeout / 10;
+	if (n < 2 && timeout != 1)
+	    n = 3;
+	else if (n == 0)
+	    n = 1;
+	signal(SIGALRM, zreadline_alarm_handler);
+	alarm(n);
+    }
+
+    readline_ptr = readline_buffer;
+    readline_left = raw_read(readline_fd, readline_ptr, readline_readnum);
+    if (!no_timeout)
+	alarm(0);
+    if (readline_left > 0 && bytes_per_error) {
+	static long ct = 0;
+	static int mod = 1;
+
+	ct += readline_left;
+	while (ct > bytes_per_error) {
+	    readline_ptr[ct % bytes_per_error] ^= mod;
+	    ct -= bytes_per_error;
+	    mod++;
+	    if (mod == 256)
+		mod = 1;
 	}
-	if (readline_left < 1)
-		return TIMEOUT;
-	--readline_left;
-	return (*readline_ptr++ & 0377);
+    }
+    if (readline_left < 1)
+	return TIMEOUT;
+    --readline_left;
+    return (*readline_ptr++ & 0377);
 }
 
 
 
-void
-readline_setup(int fd, size_t readnum, size_t bufsize)
+void readline_setup(int fd, size_t readnum, size_t bufsize)
 {
-	readline_fd=fd;
-	readline_readnum=readnum;
-	readline_buffer=malloc(bufsize > readnum ? bufsize : readnum);
-	if (!readline_buffer)
-		zmodem_error(1,0,"out of memory");
+    readline_fd = fd;
+    readline_readnum = readnum;
+    readline_buffer = malloc(bufsize > readnum ? bufsize : readnum);
+    if (!readline_buffer)
+	zmodem_error(1, 0, "out of memory");
 }
 
 void readline_clean(void)
 {
-      if (readline_buffer) free(readline_buffer);
-      readline_buffer = NULL;
+    if (readline_buffer)
+	free(readline_buffer);
+    readline_buffer = NULL;
 }
 
-void
-readline_purge(void)
+void readline_purge(void)
 {
-	readline_left=0;
-	return;
+    readline_left = 0;
+    return;
 }
-

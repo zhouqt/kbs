@@ -30,14 +30,12 @@
 #include <errno.h>
 
 /* send cancel string to get the other end to shut up */
-void
-canit (int fd)
+void canit(int fd)
 {
-	static char canistr[] =
-	{
-		24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 0
-	};
-	purgeline(0);
-	raw_write(fd,canistr,strlen(canistr));
-}
+    static char canistr[] = {
+	24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 0
+    };
 
+    purgeline(0);
+    raw_write(fd, canistr, strlen(canistr));
+}

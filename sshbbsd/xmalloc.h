@@ -17,8 +17,11 @@ failure (they call fatal if they encounter an error).
 /*
  * $Id$
  * $Log$
- * Revision 1.1  2002/04/27 05:47:25  kxn
- * Initial revision
+ * Revision 1.2  2002/08/04 11:08:50  kcn
+ * format C
+ *
+ * Revision 1.1.1.1  2002/04/27 05:47:25  kxn
+ * no message
  *
  * Revision 1.1  2001/07/04 06:07:13  bbsdev
  * bbs sshd
@@ -48,4 +51,4 @@ void xfree(void *ptr);
 /* Allocates memory using xmalloc, and copies the string into that memory. */
 char *xstrdup(const char *str);
 
-#endif /* XMALLOC_H */
+#endif				/* XMALLOC_H */

@@ -16,8 +16,11 @@ Simple pattern matching, with '*' and '?' as wildcards.
 /*
  * $Id$
  * $Log$
- * Revision 1.1  2002/04/27 05:47:25  kxn
- * Initial revision
+ * Revision 1.2  2002/08/04 11:08:47  kcn
+ * format C
+ *
+ * Revision 1.1.1.1  2002/04/27 05:47:25  kxn
+ * no message
  *
  * Revision 1.1  2001/07/04 06:07:10  bbsdev
  * bbs sshd
@@ -56,89 +59,81 @@ Simple pattern matching, with '*' and '?' as wildcards.
 
 /* Returns true if the given string matches the pattern (which may contain
    ? and * as wildcards), and zero if it does not match. */
-	  
+
 int match_pattern(const char *s, const char *pattern)
 {
-  while (1)
-    {
-      /* If at end of pattern, accept if also at end of string. */
-      if (!*pattern)
-        return !*s;
+    while (1) {
+	/* If at end of pattern, accept if also at end of string. */
+	if (!*pattern)
+	    return !*s;
 
-      /* Process '*'. */
-      if (*pattern == '*')
-        {
-	  /* Skip the asterisk. */
-	  pattern++;
+	/* Process '*'. */
+	if (*pattern == '*') {
+	    /* Skip the asterisk. */
+	    pattern++;
 
-	  /* If at end of pattern, accept immediately. */
-          if (!*pattern)
-            return 1;
+	    /* If at end of pattern, accept immediately. */
+	    if (!*pattern)
+		return 1;
 
-	  /* If next character in pattern is known, optimize. */
-          if (*pattern != '?' && *pattern != '*')
-            {
-	      /* Look instances of the next character in pattern, and try
-		 to match starting from those. */
-              for (; *s; s++)
-                if (*s == *pattern &&
-                    match_pattern(s + 1, pattern + 1))
-                  return 1;
-	      /* Failed. */
-              return 0;
-            }
+	    /* If next character in pattern is known, optimize. */
+	    if (*pattern != '?' && *pattern != '*') {
+		/* Look instances of the next character in pattern, and try
+		   to match starting from those. */
+		for (; *s; s++)
+		    if (*s == *pattern && match_pattern(s + 1, pattern + 1))
+			return 1;
+		/* Failed. */
+		return 0;
+	    }
 
-	  /* Move ahead one character at a time and try to match at each
-	     position. */
-          for (; *s; s++)
-            if (match_pattern(s, pattern))
-              return 1;
-	  /* Failed. */
-          return 0;
-        }
+	    /* Move ahead one character at a time and try to match at each
+	       position. */
+	    for (; *s; s++)
+		if (match_pattern(s, pattern))
+		    return 1;
+	    /* Failed. */
+	    return 0;
+	}
 
-      /* There must be at least one more character in the string.  If we are
-	 at the end, fail. */
-      if (!*s)
-        return 0;
+	/* There must be at least one more character in the string.  If we are
+	   at the end, fail. */
+	if (!*s)
+	    return 0;
 
-      /* Check if the next character of the string is acceptable. */
-      if (*pattern != '?' && *pattern != *s)
-	return 0;
-      
-      /* Move to the next character, both in string and in pattern. */
-      s++;
-      pattern++;
+	/* Check if the next character of the string is acceptable. */
+	if (*pattern != '?' && *pattern != *s)
+	    return 0;
+
+	/* Move to the next character, both in string and in pattern. */
+	s++;
+	pattern++;
     }
-  /*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
 /* Check that host name matches the pattern. If the pattern only contains
    numbers and periods, and wildcards compare it against the ip address
    otherwise assume it is host name */
 int match_host(const char *host, const char *ip, const char *pattern)
 {
-  int is_ip_pattern;
-  const char *p;
+    int is_ip_pattern;
+    const char *p;
 
-  /* if the pattern does not contain any alpha characters then
-     assume that it is a IP address (with possible wildcards),
-     otherwise assume it is a hostname */
-  if (ip)
-    is_ip_pattern = 1;
-  else
-    is_ip_pattern = 0;
-
-  for(p = pattern; *p; p++)
-    if (!(isdigit(*p) || *p == '.' || *p == '?' || *p == '*'))
-      {
+    /* if the pattern does not contain any alpha characters then
+       assume that it is a IP address (with possible wildcards),
+       otherwise assume it is a hostname */
+    if (ip)
+	is_ip_pattern = 1;
+    else
 	is_ip_pattern = 0;
-	break;
-      }
-  if (is_ip_pattern)
-    {
-      return match_pattern(ip, pattern);
-    } 
-  return match_pattern(host, pattern);
-}
 
+    for (p = pattern; *p; p++)
+	if (!(isdigit(*p) || *p == '.' || *p == '?' || *p == '*')) {
+	    is_ip_pattern = 0;
+	    break;
+	}
+    if (is_ip_pattern) {
+	return match_pattern(ip, pattern);
+    }
+    return match_pattern(host, pattern);
+}

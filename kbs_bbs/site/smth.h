@@ -30,7 +30,7 @@
 #define LIFE_DAY_SUICIDE	15
 
 #define DAY_DELETED_CLEAN	99
-#define SEC_DELETED_OLDHOME	2592000/* 3600*24*30，注册新用户如果存在这个用户的目录，保留时间*/
+#define SEC_DELETED_OLDHOME	2592000	/* 3600*24*30，注册新用户如果存在这个用户的目录，保留时间 */
 
 #define	REGISTER_WAIT_TIME	(72*60*60)
 #define	REGISTER_WAIT_TIME_NAME	"72 小时"
@@ -79,44 +79,44 @@
 
 #ifndef EXTERN
 extern char *permstrings[];
-extern char    *groups[];
-extern char    *explain[];
+extern char *groups[];
+extern char *explain[];
 #else
 const char *permstrings[] = {
-        "基本权力",             /* PERM_BASIC */
-        "进入聊天室",           /* PERM_CHAT */
-        "呼叫他人聊天",         /* PERM_PAGE */
-        "发表文章",             /* PERM_POST */
-        "使用者资料正确",       /* PERM_LOGINOK */
-        "禁止发表文章",         /* PERM_DENYPOST */
-        "可隐身",               /* PERM_CLOAK */
-        "可见隐身",             /* PERM_SEECLOAK */
-        "长期帐号",         /* PERM_XEMPT */
-        "编辑系统档案",         /* PERM_WELCOME */
-        "板主",                 /* PERM_BOARDS */
-        "帐号管理员",           /* PERM_ACCOUNTS */
-        "水木清华智囊团",       /* PERM_CHATCLOAK */
-        "投票管理员",           /* PERM_OVOTE */
-        "系统维护管理员",       /* PERM_SYSOP */
-        "Read/Post 限制",       /* PERM_POSTMASK */
-        "精华区总管",           /* PERM_ANNOUNCE*/
-        "讨论区总管",           /* PERM_OBOARDS*/
-        "活动看版总管",         /* PERM_ACBOARD*/
-        "不能 ZAP(讨论区专用)", /* PERM_NOZAP*/
-        "聊天室OP(元老院专用)", /* PERM_CHATOP */
-        "系统总管理员",         /* PERM_ADMIN */
-        "荣誉帐号",           /* PERM_HONOR*/
-        "特殊权限 5",           /* PERM_UNUSE?*/
-        "仲裁委员",           /* PERM_JURY*/
-        "特殊权限 7",           /* PERM_UNUSE?*/
-        "自杀进行中",        /*PERM_SUICIDE*/
-        "特殊权限 9",           /* PERM_UNUSE?*/
-        "看系统讨论版",           /* PERM_UNUSE?*/
-        "封禁Mail",           /* PERM_DENYMAIL*/
+    "基本权力",			/* PERM_BASIC */
+    "进入聊天室",		/* PERM_CHAT */
+    "呼叫他人聊天",		/* PERM_PAGE */
+    "发表文章",			/* PERM_POST */
+    "使用者资料正确",		/* PERM_LOGINOK */
+    "禁止发表文章",		/* PERM_DENYPOST */
+    "可隐身",			/* PERM_CLOAK */
+    "可见隐身",			/* PERM_SEECLOAK */
+    "长期帐号",			/* PERM_XEMPT */
+    "编辑系统档案",		/* PERM_WELCOME */
+    "板主",			/* PERM_BOARDS */
+    "帐号管理员",		/* PERM_ACCOUNTS */
+    "水木清华智囊团",		/* PERM_CHATCLOAK */
+    "投票管理员",		/* PERM_OVOTE */
+    "系统维护管理员",		/* PERM_SYSOP */
+    "Read/Post 限制",		/* PERM_POSTMASK */
+    "精华区总管",		/* PERM_ANNOUNCE */
+    "讨论区总管",		/* PERM_OBOARDS */
+    "活动看版总管",		/* PERM_ACBOARD */
+    "不能 ZAP(讨论区专用)",	/* PERM_NOZAP */
+    "聊天室OP(元老院专用)",	/* PERM_CHATOP */
+    "系统总管理员",		/* PERM_ADMIN */
+    "荣誉帐号",			/* PERM_HONOR */
+    "特殊权限 5",		/* PERM_UNUSE? */
+    "仲裁委员",			/* PERM_JURY */
+    "特殊权限 7",		/* PERM_UNUSE? */
+    "自杀进行中",		/*PERM_SUICIDE */
+    "特殊权限 9",		/* PERM_UNUSE? */
+    "看系统讨论版",		/* PERM_UNUSE? */
+    "封禁Mail",			/* PERM_DENYMAIL */
 
 };
 
-const char    *explain[] = {
+const char *explain[] = {
     "本站系统",
     "休闲娱乐",
     "电脑技术",
@@ -133,7 +133,7 @@ const char    *explain[] = {
     NULL
 };
 
-const char    *groups[] = {
+const char *groups[] = {
     "system.faq",
     "rec.faq",
     "comp.faq",

@@ -17,8 +17,11 @@ This works by forking a separate process to do the reading.
 
 /*
  * $Log$
- * Revision 1.1  2002/04/27 05:47:26  kxn
- * Initial revision
+ * Revision 1.2  2002/08/04 11:08:49  kcn
+ * format C
+ *
+ * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
+ * no message
  *
  * Revision 1.1  2001/07/04 06:07:13  bbsdev
  * bbs sshd
@@ -65,8 +68,7 @@ typedef struct UserFile *UserFile;
    effective uid).  SIGPIPE should be set to ignored before this call.
    The cleanup callback will be called in the child before switching to the
    user's uid.  The callback may be NULL. */
-void userfile_init(const char *username, uid_t uid, gid_t gid,
-		   void (*cleanup_callback)(void *), void *context);
+void userfile_init(const char *username, uid_t uid, gid_t gid, void (*cleanup_callback) (void *), void *context);
 
 /* Stops reading files as an ordinary user.  It is not an error to call this
    even if userfile_init has not been called. */
@@ -139,4 +141,4 @@ UserFile userfile_encapsulate_fd(int fd);
 /* Get sun des 1 magic phrase, return NULL if not found */
 char *userfile_get_des_1_magic_phrase(uid_t uid);
 
-#endif /* USERFILE_H */
+#endif				/* USERFILE_H */

@@ -16,8 +16,11 @@ Interface for the packet protocol functions.
 /*
  * $Id$
  * $Log$
- * Revision 1.1  2002/04/27 05:47:25  kxn
- * Initial revision
+ * Revision 1.2  2002/08/04 11:08:47  kcn
+ * format C
+ *
+ * Revision 1.1.1.1  2002/04/27 05:47:25  kxn
+ * no message
  *
  * Revision 1.1  2001/07/04 06:07:11  bbsdev
  * bbs sshd
@@ -68,7 +71,7 @@ Interface for the packet protocol functions.
    packet_set_encryption_key is called.  It is permissible that fd_in
    and fd_out are the same descriptor; in that case it is assumed to
    be a socket. */
-void packet_set_connection(int fd_in, int fd_out, RandomState *state);
+void packet_set_connection(int fd_in, int fd_out, RandomState * state);
 
 /* Puts the connection file descriptors into non-blocking mode. */
 void packet_set_nonblocking(void);
@@ -80,15 +83,14 @@ int packet_get_connection_in(void);
 int packet_get_connection_out(void);
 
 /* Closes the connection (both descriptors) and clears and frees
-   internal data structures. */ 
+   internal data structures. */
 void packet_close(void);
 
 /* Causes any further packets to be encrypted using the given key.  The same
    key is used for both sending and reception.  However, both directions
    are encrypted independently of each other.  Cipher types are
    defined in ssh.h. */
-void packet_set_encryption_key(const unsigned char *key, unsigned int keylen,
-			       int cipher_type, int is_client);
+void packet_set_encryption_key(const unsigned char *key, unsigned int keylen, int cipher_type, int is_client);
 
 /* Sets remote side protocol flags for the current connection.  This can
    be called at any time. */
@@ -117,7 +119,7 @@ void packet_put_char(int ch);
 void packet_put_int(unsigned int value);
 
 /* Appends an arbitrary precision integer to packet data. */
-void packet_put_mp_int(MP_INT *value);
+void packet_put_mp_int(MP_INT * value);
 
 /* Appends a string to packet data. */
 void packet_put_string(const char *buf, unsigned int len);
@@ -157,7 +159,7 @@ unsigned int packet_get_int(void);
 
 /* Returns an arbitrary precision integer from the packet data.  The integer
    must have been initialized before this call. */
-void packet_get_mp_int(MP_INT *value);
+void packet_get_mp_int(MP_INT * value);
 
 /* Returns a string from the packet data.  The string is allocated using
    xmalloc; it is the responsibility of the calling program to free it when
@@ -167,7 +169,7 @@ char *packet_get_string(unsigned int *length_ptr);
 
 /* Clears incoming data buffer */
 void packet_get_all(void);
-     
+
 /* Logs the error in syslog using LOG_INFO, constructs and sends a disconnect
    packet, closes the connection, and exits.  This function never returns.
    The error message should not contain a newline.  The total length of the
@@ -207,4 +209,4 @@ unsigned int packet_max_size(void);
 /* Parses tty modes for the fd from the current packet. */
 void tty_parse_modes(int fd);
 
-#endif /* PACKET_H */
+#endif				/* PACKET_H */

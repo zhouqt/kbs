@@ -20,56 +20,51 @@
 int alphasort();
 
 
-int
-dirselect(dir)
-  struct direct *dir;
+int dirselect(dir)
+	struct direct *dir;
 {
-  register char *name = dir->d_name;
-  return (name[0] == 'M' && name[1] == '.');
+    register char *name = dir->d_name;
+
+    return (name[0] == 'M' && name[1] == '.');
 }
 
 
 main(argc, argv)
-  int argc;
-  char **argv;
+	int argc;
+	char **argv;
 {
-  int fdir, filetime, i, j, wrong;
-  struct stat st;
-  char genbuf[512], path[256], *ptr, *name;
-  FILE *fp;
-  int total, count;
-  fileheader fhdr;
-  struct direct **dirlist;
-  struct tm *ptime;
+    int fdir, filetime, i, j, wrong;
+    struct stat st;
+    char genbuf[512], path[256], *ptr, *name;
+    FILE *fp;
+    int total, count;
+    fileheader fhdr;
+    struct direct **dirlist;
+    struct tm *ptime;
 
-  if (argc != 2)
-  {
-    printf("Usage:\t%s <path>\n", argv[0]);
-    exit(-1);
-  }
+    if (argc != 2) {
+	printf("Usage:\t%s <path>\n", argv[0]);
+	exit(-1);
+    }
 
-  ptr = argv[1];
-  sprintf(path, "%s/.DIR", ptr);
-  fdir = open(path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-  if (fdir == -1)
-  {
-    printf(".DIR create error\n");
-    exit(-1);
-  }
+    ptr = argv[1];
+    sprintf(path, "%s/.DIR", ptr);
+    fdir = open(path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (fdir == -1) {
+	printf(".DIR create error\n");
+	exit(-1);
+    }
 
-  total = scandir(ptr, &dirlist, dirselect, alphasort);
-  ptr = strrchr(path, '.');
+    total = scandir(ptr, &dirlist, dirselect, alphasort);
+    ptr = strrchr(path, '.');
 
-  for (count = 0; count < total; count++)
-  {
-    name = dirlist[count]->d_name;
-    strcpy(ptr, name);
-    wrong = 0;
-    if (!stat(path, &st))
-    {
-      wrong = 1;
+    for (count = 0; count < total; count++) {
+	name = dirlist[count]->d_name;
+	strcpy(ptr, name);
+	wrong = 0;
+	if (!stat(path, &st)) {
+	    wrong = 1;
 
-      if (st.st_size && (fp = fopen(path, "r")))
-      {
-        fgets(genbuf, 256, fp);
-        if (!strncmp(genbuf, "
+	    if (st.st_size && (fp = fopen(path, "r"))) {
+		fgets(genbuf, 256, fp);
+		if (!strncmp(genbuf, "

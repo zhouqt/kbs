@@ -44,35 +44,37 @@ void w_igenpass(const char *passwd,const char *userid,unsigned char md5passwd[])
 }
 */
 
-void igenpass(const char *passwd,const char *userid,unsigned char md5passwd[])
+void igenpass(const char *passwd, const char *userid, unsigned char md5passwd[])
 {
-    static const char passmagic[]="wwj&kcn4SMTHBBS MD5 p9w2d gen2rat8, //grin~~, 2001/5/7";
+    static const char passmagic[] = "wwj&kcn4SMTHBBS MD5 p9w2d gen2rat8, //grin~~, 2001/5/7";
     MD5_CTX md5;
+
     MD5Init(&md5);
-    
+
     /* update size > 128 */
-    MD5Update(&md5,(unsigned char *)passmagic,strlen(passmagic));
-    MD5Update(&md5,(unsigned char *)passwd,strlen(passwd));
-    MD5Update(&md5,(unsigned char *)passmagic,strlen(passmagic));
-    MD5Update(&md5,(unsigned char *)userid,strlen(userid));
-    
-    MD5Final(md5passwd,&md5);
+    MD5Update(&md5, (unsigned char *) passmagic, strlen(passmagic));
+    MD5Update(&md5, (unsigned char *) passwd, strlen(passwd));
+    MD5Update(&md5, (unsigned char *) passmagic, strlen(passmagic));
+    MD5Update(&md5, (unsigned char *) userid, strlen(userid));
+
+    MD5Final(md5passwd, &md5);
 }
 
-int setpasswd(const char *passwd,struct userec *user)
+int setpasswd(const char *passwd, struct userec *user)
 {
-    igenpass(passwd,user->userid,user->md5passwd);
-    user->passwd[0]=0;
+    igenpass(passwd, user->userid, user->md5passwd);
+    user->passwd[0] = 0;
     return 1;
 }
 
-int checkpasswd2(const char * passwd,const struct userec *user)
+int checkpasswd2(const char *passwd, const struct userec *user)
 {
-    if(user->passwd[0]){
-        return checkpasswd(user->passwd,passwd);
+    if (user->passwd[0]) {
+	return checkpasswd(user->passwd, passwd);
     } else {
-        unsigned char md5passwd[MD5_DIGEST_LENGTH];
-        igenpass(passwd,user->userid,md5passwd);
+	unsigned char md5passwd[MD5_DIGEST_LENGTH];
+
+	igenpass(passwd, user->userid, md5passwd);
 /*
         if (memcmp(md5passwd,user->md5passwd,MD5_DIGEST_LENGTH)) {
             unsigned char w_md5passwd[MD5_DIGEST_LENGTH];
@@ -83,20 +85,19 @@ int checkpasswd2(const char * passwd,const struct userec *user)
         }
 	return 1;
 */
-        return !(memcmp(md5passwd,user->md5passwd,MD5_DIGEST_LENGTH));
+	return !(memcmp(md5passwd, user->md5passwd, MD5_DIGEST_LENGTH));
     }
 }
 
-int checkpasswd(const char * passwd,const char * test)
+int checkpasswd(const char *passwd, const char *test)
 {
     char *crypt1(char *buf, char *salt);
 
-    static char pwbuf[14] ;
-    char *pw ;
+    static char pwbuf[14];
+    char *pw;
 
 /*    return 1; */
-    strncpy(pwbuf,test,14) ;
-    pw = crypt1(pwbuf, (char *)passwd) ;
-    return (!strcmp(pw, passwd)) ;
+    strncpy(pwbuf, test, 14);
+    pw = crypt1(pwbuf, (char *) passwd);
+    return (!strcmp(pw, passwd));
 }
-

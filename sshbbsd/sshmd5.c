@@ -48,7 +48,7 @@ void MD5Update(struct MD5Context *ctx, unsigned char const *buf, unsigned len)
     /* Update bitcount */
 
     t = ctx->bits[0];
-    if ((ctx->bits[0] = (t + ((md5_uint32)len << 3)) & 0xffffffff) < t)
+    if ((ctx->bits[0] = (t + ((md5_uint32) len << 3)) & 0xffffffff) < t)
 	ctx->bits[1]++;		/* Carry from low to high */
     ctx->bits[1] += len >> 29;
 
@@ -151,9 +151,9 @@ void MD5Transform(md5_uint32 buf[4], const unsigned char inext[64])
 {
     register word32 a, b, c, d, i;
     word32 in[16];
-    
+
     for (i = 0; i < 16; i++)
-      in[i] = GET_32BIT_LSB_FIRST(inext + 4 * i);
+	in[i] = GET_32BIT_LSB_FIRST(inext + 4 * i);
 
     a = buf[0];
     b = buf[1];

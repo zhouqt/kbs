@@ -16,8 +16,11 @@ Generic header file for ssh.
 /*
  * $Id$
  * $Log$
- * Revision 1.1  2002/04/27 05:47:25  kxn
- * Initial revision
+ * Revision 1.2  2002/08/04 11:08:49  kcn
+ * format C
+ *
+ * Revision 1.1.1.1  2002/04/27 05:47:25  kxn
+ * no message
  *
  * Revision 1.1  2001/07/04 06:07:12  bbsdev
  * bbs sshd
@@ -303,7 +306,7 @@ only by root, whereas ssh_config should be world-readable. */
 /* Check that we always have PASSWD_PATH set */
 #ifndef PASSWD_PATH
 #define PASSWD_PATH "/bin/passwd"
-#endif /* PASSWD_PATH */
+#endif				/* PASSWD_PATH */
 
 /* Force host key length and server key length to differ by at least this
    many bits.  This is to make double encryption with rsaref work. */
@@ -317,8 +320,8 @@ only by root, whereas ssh_config should be world-readable. */
 #ifdef KRB5
 #include <krb5.h>
 #define KRB_SERVICE_NAME                "host"
-#endif /* KRB5 */
-#endif /* KERBEROS */
+#endif				/* KRB5 */
+#endif				/* KERBEROS */
 
 /* Authentication methods.  New types can be added, but old types should not
    be removed for compatibility.  The maximum allowed value is 31. */
@@ -344,70 +347,70 @@ only by root, whereas ssh_config should be world-readable. */
    so if someone else adds also new methods you dont use same number. */
 
 /* Protocol flags.  These are bit masks. */
-#define SSH_PROTOFLAG_SCREEN_NUMBER     1 /* X11 forwarding includes screen */
-#define SSH_PROTOFLAG_HOST_IN_FWD_OPEN  2 /* forwarding opens contain host */
+#define SSH_PROTOFLAG_SCREEN_NUMBER     1	/* X11 forwarding includes screen */
+#define SSH_PROTOFLAG_HOST_IN_FWD_OPEN  2	/* forwarding opens contain host */
 
 /* Definition of message types.  New values can be added, but old values
    should not be removed or without careful consideration of the consequences
    for compatibility.  The maximum value is 254; value 255 is reserved
    for future extension. */
-/* Message name */                      /* msg code */  /* arguments */
-#define SSH_MSG_NONE                            0       /* no message */
-#define SSH_MSG_DISCONNECT                      1       /* cause (string) */
-#define SSH_SMSG_PUBLIC_KEY                     2       /* ck,msk,srvk,hostk */
-#define SSH_CMSG_SESSION_KEY                    3       /* key (MP_INT) */
-#define SSH_CMSG_USER                           4       /* user (string) */
-#define SSH_CMSG_AUTH_RHOSTS                    5       /* user (string) */
-#define SSH_CMSG_AUTH_RSA                       6       /* modulus (MP_INT) */
-#define SSH_SMSG_AUTH_RSA_CHALLENGE             7       /* int (MP_INT) */
-#define SSH_CMSG_AUTH_RSA_RESPONSE              8       /* int (MP_INT) */
-#define SSH_CMSG_AUTH_PASSWORD                  9       /* pass (string) */
-#define SSH_CMSG_REQUEST_PTY                    10      /* TERM, tty modes */
-#define SSH_CMSG_WINDOW_SIZE                    11      /* row,col,xpix,ypix */
-#define SSH_CMSG_EXEC_SHELL                     12      /* */
-#define SSH_CMSG_EXEC_CMD                       13      /* cmd (string) */
-#define SSH_SMSG_SUCCESS                        14      /* */
-#define SSH_SMSG_FAILURE                        15      /* */
-#define SSH_CMSG_STDIN_DATA                     16      /* data (string) */
-#define SSH_SMSG_STDOUT_DATA                    17      /* data (string) */
-#define SSH_SMSG_STDERR_DATA                    18      /* data (string) */
-#define SSH_CMSG_EOF                            19      /* */
-#define SSH_SMSG_EXITSTATUS                     20      /* status (int) */
-#define SSH_MSG_CHANNEL_OPEN_CONFIRMATION       21      /* channel (int) */
-#define SSH_MSG_CHANNEL_OPEN_FAILURE            22      /* channel (int) */
-#define SSH_MSG_CHANNEL_DATA                    23      /* ch,data (int,str) */
-#define SSH_MSG_CHANNEL_CLOSE                   24      /* channel (int) */
-#define SSH_MSG_CHANNEL_CLOSE_CONFIRMATION      25      /* channel (int) */
+/* Message name *//* msg code *//* arguments */
+#define SSH_MSG_NONE                            0	/* no message */
+#define SSH_MSG_DISCONNECT                      1	/* cause (string) */
+#define SSH_SMSG_PUBLIC_KEY                     2	/* ck,msk,srvk,hostk */
+#define SSH_CMSG_SESSION_KEY                    3	/* key (MP_INT) */
+#define SSH_CMSG_USER                           4	/* user (string) */
+#define SSH_CMSG_AUTH_RHOSTS                    5	/* user (string) */
+#define SSH_CMSG_AUTH_RSA                       6	/* modulus (MP_INT) */
+#define SSH_SMSG_AUTH_RSA_CHALLENGE             7	/* int (MP_INT) */
+#define SSH_CMSG_AUTH_RSA_RESPONSE              8	/* int (MP_INT) */
+#define SSH_CMSG_AUTH_PASSWORD                  9	/* pass (string) */
+#define SSH_CMSG_REQUEST_PTY                    10	/* TERM, tty modes */
+#define SSH_CMSG_WINDOW_SIZE                    11	/* row,col,xpix,ypix */
+#define SSH_CMSG_EXEC_SHELL                     12	/* */
+#define SSH_CMSG_EXEC_CMD                       13	/* cmd (string) */
+#define SSH_SMSG_SUCCESS                        14	/* */
+#define SSH_SMSG_FAILURE                        15	/* */
+#define SSH_CMSG_STDIN_DATA                     16	/* data (string) */
+#define SSH_SMSG_STDOUT_DATA                    17	/* data (string) */
+#define SSH_SMSG_STDERR_DATA                    18	/* data (string) */
+#define SSH_CMSG_EOF                            19	/* */
+#define SSH_SMSG_EXITSTATUS                     20	/* status (int) */
+#define SSH_MSG_CHANNEL_OPEN_CONFIRMATION       21	/* channel (int) */
+#define SSH_MSG_CHANNEL_OPEN_FAILURE            22	/* channel (int) */
+#define SSH_MSG_CHANNEL_DATA                    23	/* ch,data (int,str) */
+#define SSH_MSG_CHANNEL_CLOSE                   24	/* channel (int) */
+#define SSH_MSG_CHANNEL_CLOSE_CONFIRMATION      25	/* channel (int) */
 
 /* new channel protocol */
 #define SSH_MSG_CHANNEL_INPUT_EOF               24
 #define SSH_MSG_CHANNEL_OUTPUT_CLOSED           25
 
 /*      SSH_CMSG_X11_REQUEST_FORWARDING         26         OBSOLETE */
-#define SSH_SMSG_X11_OPEN                       27      /* channel (int) */
-#define SSH_CMSG_PORT_FORWARD_REQUEST           28      /* p,host,hp (i,s,i) */
-#define SSH_MSG_PORT_OPEN                       29      /* ch,h,p (i,s,i) */
-#define SSH_CMSG_AGENT_REQUEST_FORWARDING       30      /* */
-#define SSH_SMSG_AGENT_OPEN                     31      /* port (int) */
-#define SSH_MSG_IGNORE                          32      /* string */
-#define SSH_CMSG_EXIT_CONFIRMATION              33      /* */
-#define SSH_CMSG_X11_REQUEST_FORWARDING         34      /* proto,data (s,s) */
-#define SSH_CMSG_AUTH_RHOSTS_RSA                35      /* user,mod (s,mpi) */
-#define SSH_MSG_DEBUG                           36      /* string */
-#define SSH_CMSG_REQUEST_COMPRESSION            37      /* level 1-9 (int) */
-#define SSH_CMSG_MAX_PACKET_SIZE                38      /* max_size (int) */
+#define SSH_SMSG_X11_OPEN                       27	/* channel (int) */
+#define SSH_CMSG_PORT_FORWARD_REQUEST           28	/* p,host,hp (i,s,i) */
+#define SSH_MSG_PORT_OPEN                       29	/* ch,h,p (i,s,i) */
+#define SSH_CMSG_AGENT_REQUEST_FORWARDING       30	/* */
+#define SSH_SMSG_AGENT_OPEN                     31	/* port (int) */
+#define SSH_MSG_IGNORE                          32	/* string */
+#define SSH_CMSG_EXIT_CONFIRMATION              33	/* */
+#define SSH_CMSG_X11_REQUEST_FORWARDING         34	/* proto,data (s,s) */
+#define SSH_CMSG_AUTH_RHOSTS_RSA                35	/* user,mod (s,mpi) */
+#define SSH_MSG_DEBUG                           36	/* string */
+#define SSH_CMSG_REQUEST_COMPRESSION            37	/* level 1-9 (int) */
+#define SSH_CMSG_MAX_PACKET_SIZE                38	/* max_size (int) */
 
 /* Support for TIS authentication server
    Contributed by Andre April <Andre.April@cediti.be>. */
-#define SSH_CMSG_AUTH_TIS                       39      /* */
-#define SSH_SMSG_AUTH_TIS_CHALLENGE             40      /* string */
-#define SSH_CMSG_AUTH_TIS_RESPONSE              41      /* pass (string) */
+#define SSH_CMSG_AUTH_TIS                       39	/* */
+#define SSH_SMSG_AUTH_TIS_CHALLENGE             40	/* string */
+#define SSH_CMSG_AUTH_TIS_RESPONSE              41	/* pass (string) */
 
 /* Support for kerberos authentication by Glenn Machin and Dug Song
    <dugsong@umich.edu> */
-#define SSH_CMSG_AUTH_KERBEROS                  42      /* string (KTEXT) */
-#define SSH_SMSG_AUTH_KERBEROS_RESPONSE         43      /* string (KTEXT) */
-#define SSH_CMSG_HAVE_KERBEROS_TGT              44      /* string (credentials) */
+#define SSH_CMSG_AUTH_KERBEROS                  42	/* string (KTEXT) */
+#define SSH_SMSG_AUTH_KERBEROS_RESPONSE         43	/* string (KTEXT) */
+#define SSH_CMSG_HAVE_KERBEROS_TGT              44	/* string (credentials) */
 
 /* Reserved for official extensions, do not use these */
 #define SSH_CMSG_RESERVED_START                 45
@@ -429,8 +432,7 @@ only by root, whereas ssh_config should be world-readable. */
 /* Returns the time when the user last logged in.  Returns 0 if the 
    information is not available.  This must be called before record_login. 
    The host from which the user logged in is stored in buf. */
-unsigned long get_last_login_time(uid_t uid, const char *logname, 
-                                  char *buf, unsigned int bufsize);
+unsigned long get_last_login_time(uid_t uid, const char *logname, char *buf, unsigned int bufsize);
 
 /* Records that the user has logged in.  This does many things normally
    done by login(1). */
@@ -443,17 +445,12 @@ unsigned long get_last_login_time(uid_t uid, const char *logname,
    authentication succeeds.  If ignore_rhosts is non-zero, this will not
    consider .rhosts and .shosts (/etc/hosts.equiv will still be used). 
    If strict_modes is true, checks ownership and modes of .rhosts/.shosts. */
-int auth_rhosts(struct passwd *pw, const char *client_user,
-                int ignore_rhosts, int ignore_root_rhosts,
-                int strict_modes);
+int auth_rhosts(struct passwd *pw, const char *client_user, int ignore_rhosts, int ignore_root_rhosts, int strict_modes);
 
 /* Tries to authenticate the user using the .rhosts file and the host using
    its host key.  Returns true if authentication succeeds. */
-int auth_rhosts_rsa(RandomState *state,
-                    struct passwd *pw, const char *client_user,
-                    unsigned int bits, MP_INT *client_host_key_e,
-                    MP_INT *client_host_key_n, int ignore_rhosts,
-                    int ignore_root_rhosts, int strict_modes);
+int auth_rhosts_rsa(RandomState * state,
+		    struct passwd *pw, const char *client_user, unsigned int bits, MP_INT * client_host_key_e, MP_INT * client_host_key_n, int ignore_rhosts, int ignore_root_rhosts, int strict_modes);
 
 /* Tries to authenticate the user using password.  Returns true if
    authentication succeeds. */
@@ -462,12 +459,11 @@ int auth_password(const char *server_user, const char *password);
 /* Performs the RSA authentication dialog with the client.  This returns
    0 if the client could not be authenticated, and 1 if authentication was
    successful.  This may exit if there is a serious protocol violation. */
-int auth_rsa(struct passwd *pw, MP_INT *client_n, RandomState *state,
-             int strict_modes);
+int auth_rsa(struct passwd *pw, MP_INT * client_n, RandomState * state, int strict_modes);
 
 /* Parses an RSA key (number of bits, e, n) from a string.  Moves the pointer
    over the key.  Skips any whitespace at the beginning and at end. */
-int auth_rsa_read_key(char **cpp, unsigned int *bitsp, MP_INT *e, MP_INT *n);
+int auth_rsa_read_key(char **cpp, unsigned int *bitsp, MP_INT * e, MP_INT * n);
 
 /* Returns the name of the machine at the other end of the socket.  The
    returned string should be freed by the caller. */
@@ -492,8 +488,7 @@ int get_remote_port(void);
    comma-separated sequence of subpatterns (each possibly preceded by ! to 
    indicate negation).  Returns true if there is a positive match; zero
    otherwise. */
-int match_hostname(const char *host, const char *ip,
-                   const char *pattern, unsigned int len);
+int match_hostname(const char *host, const char *ip, const char *pattern, unsigned int len);
 
 /* Checks whether the given host is already in the list of our known hosts.
    Returns HOST_OK if the host is known and has the specified key,
@@ -502,22 +497,17 @@ int match_hostname(const char *host, const char *ip,
    The check (file accesses) will be performed using the given uid with
    userfile. */
 typedef enum { HOST_OK, HOST_NEW, HOST_CHANGED } HostStatus;
-HostStatus check_host_in_hostfile(uid_t uid,
-                                  const char *filename, 
-                                  const char *host, unsigned int bits,
-                                  MP_INT *e, MP_INT *n);
+HostStatus check_host_in_hostfile(uid_t uid, const char *filename, const char *host, unsigned int bits, MP_INT * e, MP_INT * n);
 
 /* Appends an entry to the host file.  Returns false if the entry
    could not be appended.  The operation will be performed with the given
    uid using userfile. */
-int add_host_to_hostfile(uid_t uid, const char *filename, const char *host,
-                         unsigned int bits, MP_INT *e, MP_INT *n);
+int add_host_to_hostfile(uid_t uid, const char *filename, const char *host, unsigned int bits, MP_INT * e, MP_INT * n);
 
 /* Performs the RSA authentication challenge-response dialog with the client,
    and returns true (non-zero) if the client gave the correct answer to
    our challenge; returns zero if the client gives a wrong answer. */
-int auth_rsa_challenge_dialog(RandomState *state, unsigned int bits,
-                              MP_INT *e, MP_INT *n);
+int auth_rsa_challenge_dialog(RandomState * state, unsigned int bits, MP_INT * e, MP_INT * n);
 
 /* Reads a passphrase from /dev/tty with echo turned off.  Returns the 
    passphrase (allocated with xmalloc).  Exits if EOF is encountered. 
@@ -540,41 +530,38 @@ void read_confirmation(const char *prompt);
    This initializes the private key.  The comment of the key is returned
    in comment_return if it is non-NULL; the caller must free the value
    with xfree.  File I/O will be done with the given uid using userfile. */
-int load_private_key(uid_t uid, const char *filename, const char *passphrase,
-                     RSAPrivateKey *private_key, char **comment_return);
+int load_private_key(uid_t uid, const char *filename, const char *passphrase, RSAPrivateKey * private_key, char **comment_return);
 
 /*------------ Definitions for logging. -----------------------*/
 
 /* Supported syslog facilities. */
-typedef enum
-{
-  SYSLOG_FACILITY_DAEMON,
-  SYSLOG_FACILITY_USER,
-  SYSLOG_FACILITY_AUTH,
-  SYSLOG_FACILITY_LOCAL0,
-  SYSLOG_FACILITY_LOCAL1,
-  SYSLOG_FACILITY_LOCAL2,
-  SYSLOG_FACILITY_LOCAL3,
-  SYSLOG_FACILITY_LOCAL4,
-  SYSLOG_FACILITY_LOCAL5,
-  SYSLOG_FACILITY_LOCAL6,
-  SYSLOG_FACILITY_LOCAL7
+typedef enum {
+    SYSLOG_FACILITY_DAEMON,
+    SYSLOG_FACILITY_USER,
+    SYSLOG_FACILITY_AUTH,
+    SYSLOG_FACILITY_LOCAL0,
+    SYSLOG_FACILITY_LOCAL1,
+    SYSLOG_FACILITY_LOCAL2,
+    SYSLOG_FACILITY_LOCAL3,
+    SYSLOG_FACILITY_LOCAL4,
+    SYSLOG_FACILITY_LOCAL5,
+    SYSLOG_FACILITY_LOCAL6,
+    SYSLOG_FACILITY_LOCAL7
 } SyslogFacility;
 
 typedef enum {
-  SYSLOG_SEVERITY_DEBUG,
-  SYSLOG_SEVERITY_INFO,
-  SYSLOG_SEVERITY_NOTICE,
-  SYSLOG_SEVERITY_WARNING,
-  SYSLOG_SEVERITY_ERR,
-  SYSLOG_SEVERITY_CRIT
+    SYSLOG_SEVERITY_DEBUG,
+    SYSLOG_SEVERITY_INFO,
+    SYSLOG_SEVERITY_NOTICE,
+    SYSLOG_SEVERITY_WARNING,
+    SYSLOG_SEVERITY_ERR,
+    SYSLOG_SEVERITY_CRIT
 } SyslogSeverity;
 
 /* Initializes logging.  If debug is non-zero, debug() will output something.
    If quiet is non-zero, none of these will log send anything to syslog
    (but maybe to stderr). */
-void log_init(char *av0, int on_stderr, int debug, int quiet,
-              SyslogFacility facility);
+void log_init(char *av0, int on_stderr, int debug, int quiet, SyslogFacility facility);
 
 /* Outputs a message to syslog or stderr, depending on the implementation. 
    The format must guarantee that the final message does not exceed 1024 
@@ -613,10 +600,10 @@ void fatal_severity(SyslogSeverity severity, const char *fmt, ...);
 /* Registers a cleanup function to be called by fatal() before exiting. 
    It is permissible to call fatal_remove_cleanup for the function itself
    from the function. */
-void fatal_add_cleanup(void (*proc)(void *context), void *context);
+void fatal_add_cleanup(void (*proc) (void *context), void *context);
 
 /* Removes a cleanup frunction to be called at fatal(). */
-void fatal_remove_cleanup(void (*proc)(void *context), void *context);
+void fatal_remove_cleanup(void (*proc) (void *context), void *context);
 
 /*---------------- definitions for x11.c ------------------*/
 
@@ -632,11 +619,11 @@ int channel_allocate(int type, int sock, char *remote_name);
 void channel_free(int channel);
 
 /* Add any bits relevant to channels in select bitmasks. */
-void channel_prepare_select(fd_set *readset, fd_set *writeset);
+void channel_prepare_select(fd_set * readset, fd_set * writeset);
 
 /* After select, perform any appropriate operations for channels which
    have events pending. */
-void channel_after_select(fd_set *readset, fd_set *writeset);
+void channel_after_select(fd_set * readset, fd_set * writeset);
 
 /* If there is data to send to the connection, send some of it now. */
 void channel_output_poll(void);
@@ -683,16 +670,13 @@ char *channel_open_message(void);
 /* Initiate forwarding of connections to local port "port" through the secure
    channel to host:port from remote side.  This never returns if there
    was an error. */
-void channel_request_local_forwarding(int port, const char *host,
-                                      int remote_port,
-                                      int gateway_ports);
+void channel_request_local_forwarding(int port, const char *host, int remote_port, int gateway_ports);
 
 /* Initiate forwarding of connections to port "port" on remote host through
    the secure channel to host:port from local side.  This never returns
    if there was an error.  This registers that open requests for that
    port are permitted. */
-void channel_request_remote_forwarding(int port, const char *host,
-                                       int remote_port);
+void channel_request_remote_forwarding(int port, const char *host, int remote_port);
 
 /* Permits opening to any host/port in SSH_MSG_PORT_OPEN.  This is usually
    called by the server, because the user could connect to any port anyway,
@@ -711,7 +695,7 @@ void channel_permit_all_opens(void);
 
 
 
-#endif /* F_SECURE_COMMERCIAL */
+#endif				/* F_SECURE_COMMERCIAL */
 
 /* This is called after receiving CHANNEL_FORWARDING_REQUEST.  This initates
    listening for the port, and sends back a success reply (or disconnect
@@ -744,8 +728,7 @@ void x11_request_forwarding(void);
 
 /* Requests forwarding for X11 connections, with authentication spoofing.
    This should be called in the client only.  */
-void x11_request_forwarding_with_spoofing(RandomState *state,
-                                          const char *proto, const char *data);
+void x11_request_forwarding_with_spoofing(RandomState * state, const char *proto, const char *data);
 
 /* Sends a message to the server to request authentication fd forwarding. */
 void auth_request_forwarding(void);
@@ -775,10 +758,11 @@ void auth_input_open_request(void);
 /* Returns true if the given string matches the pattern (which may contain
    ? and * as wildcards), and zero if it does not match. */
 int match_pattern(const char *s, const char *pattern);
+
 /* this combines the effect of match_pattern on a username, hostname
    and IP address. */
-int match_user(const char *user, const char *host, const char *ip,
-               const char *pattern);
+int match_user(const char *user, const char *host, const char *ip, const char *pattern);
+
 /* Check that host name matches the pattern. If the pattern only contains
    numbers and periods, and wildcards compare it against the ip address
    otherwise assume it is host name */
@@ -786,7 +770,7 @@ int match_host(const char *host, const char *ip, const char *pattern);
 
 #ifdef F_SECURE_COMMERCIAL
 
-#endif /* F_SECURE_COMMERCIAL */
+#endif				/* F_SECURE_COMMERCIAL */
 
 /* Expands tildes in the file name.  Returns data allocated by xmalloc.
    Warning: this calls getpw*. */
@@ -799,16 +783,15 @@ char *tilde_expand_filename(const char *filename, uid_t my_uid);
    child program).
    This will close fdin, fdout and fderr after releasing pty (if ttyname is non
    NULL) */
-void server_loop(int pid, int fdin, int fdout, int fderr,
-                 void *cleanup_context);
+void server_loop(int pid, int fdin, int fdout, int fderr, void *cleanup_context);
 
 /* Client side main loop for the interactive session. */
 int client_loop(int have_pty, int escape_char);
 
 /* Linked list of custom environment strings (see auth-rsa.c). */
 struct envstring {
-  struct envstring *next;
-  char *s;
+    struct envstring *next;
+    char *s;
 };
 
 
@@ -833,4 +816,4 @@ extern uid_t original_real_uid;
 #define UID_ROOT 0
 #endif
 
-#endif /* SSH_H */
+#endif				/* SSH_H */

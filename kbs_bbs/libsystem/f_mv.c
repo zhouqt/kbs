@@ -2,17 +2,15 @@
 #include "system.h"
 
 
-int
-f_mv(src, dst)
-  char *src, *dst;
+int f_mv(src, dst)
+	char *src, *dst;
 {
-  int ret;
+    int ret;
 
-  if (ret = rename(src, dst))
-  {
-    ret = f_cp(src, dst, O_TRUNC);
-    if (!ret)
-      unlink(src);
-  }
-  return ret;
+    if (ret = rename(src, dst)) {
+	ret = f_cp(src, dst, O_TRUNC);
+	if (!ret)
+	    unlink(src);
+    }
+    return ret;
 }

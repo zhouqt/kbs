@@ -7,16 +7,14 @@
 #include <errno.h>
 #include "system.h"
 
-int
-f_ln(src, dst)
-  char *src, *dst;
+int f_ln(src, dst)
+	char *src, *dst;
 {
-  int ret;
+    int ret;
 
-  if (ret = link(src, dst))
-  {
-    if (errno != EEXIST)
-      ret = f_cp(src, dst, O_EXCL);
-  }
-  return ret;
+    if (ret = link(src, dst)) {
+	if (errno != EEXIST)
+	    ret = f_cp(src, dst, O_EXCL);
+    }
+    return ret;
 }

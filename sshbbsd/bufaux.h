@@ -14,8 +14,11 @@ Created: Wed Mar 29 02:18:23 1995 ylo
 /*
  * $Id$
  * $Log$
- * Revision 1.1  2002/04/27 05:47:26  kxn
- * Initial revision
+ * Revision 1.2  2002/08/04 11:08:45  kcn
+ * format C
+ *
+ * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
+ * no message
  *
  * Revision 1.1  2001/07/04 06:07:08  bbsdev
  * bbs sshd
@@ -37,22 +40,22 @@ Created: Wed Mar 29 02:18:23 1995 ylo
 
 /* Stores an MP_INT in the buffer with a 2-byte msb first bit count, followed
    by (bits+7)/8 bytes of binary data, msb first. */
-void buffer_put_mp_int(Buffer *buffer, MP_INT *value);
+void buffer_put_mp_int(Buffer * buffer, MP_INT * value);
 
 /* Retrieves an MP_INT from the buffer. */
-void buffer_get_mp_int(Buffer *buffer, MP_INT *value);
+void buffer_get_mp_int(Buffer * buffer, MP_INT * value);
 
 /* Returns an integer from the buffer (4 bytes, msb first). */
-unsigned int buffer_get_int(Buffer *buffer);
+unsigned int buffer_get_int(Buffer * buffer);
 
 /* Stores an integer in the buffer in 4 bytes, msb first. */
-void buffer_put_int(Buffer *buffer, unsigned int value);
+void buffer_put_int(Buffer * buffer, unsigned int value);
 
 /* Returns a character from the buffer (0 - 255). */
-int buffer_get_char(Buffer *buffer);
+int buffer_get_char(Buffer * buffer);
 
 /* Stores a character in the buffer. */
-void buffer_put_char(Buffer *buffer, int value);
+void buffer_put_char(Buffer * buffer, int value);
 
 /* Returns an arbitrary binary string from the buffer.  The string cannot
    be longer than 256k.  The returned value points to memory allocated
@@ -60,9 +63,9 @@ void buffer_put_char(Buffer *buffer, int value);
    the data.  If length_ptr is non-NULL, the length of the returned data
    will be stored there.  A null character will be automatically appended
    to the returned string, and is not counted in length. */
-char *buffer_get_string(Buffer *buffer, unsigned int *length_ptr);
+char *buffer_get_string(Buffer * buffer, unsigned int *length_ptr);
 
 /* Stores and arbitrary binary string in the buffer. */
-void buffer_put_string(Buffer *buffer, const void *buf, unsigned int len);
+void buffer_put_string(Buffer * buffer, const void *buf, unsigned int len);
 
-#endif /* BUFAUX_H */
+#endif				/* BUFAUX_H */
