@@ -388,7 +388,7 @@ static int choose_board(int newflag, char *boardprefix)
                 tmp = num;
                 while (num < brdnum) {
                     ptr = &nbrd[num];
-                    if (ptr->total == -1)
+                    if ((ptr->total == -1)&&(ptr->flag != -1))
                         check_newpost(ptr);
                     if (ptr->unread)
                         break;
