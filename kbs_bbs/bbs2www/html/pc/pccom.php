@@ -21,7 +21,7 @@
 		$cid = (int)($_GET["cid"]);
 		
 		$link =	pc_db_connect();
-		$query = "SELECT `access`,`uid` FROM nodes WHERE `nid` = '".$nid."' AND `type` != '1' ;";
+		$query = "SELECT `access`,`uid` FROM nodes WHERE `nid` = '".$nid."' AND `type` != '1' AND `comment` != '0';";
 		$result = mysql_query($query,$link);
 		$rows = mysql_fetch_array($result);
 		mysql_free_result($result);
@@ -33,7 +33,13 @@
 		}
 		
 		$uid = $rows[uid];
-				
+		
+		if($blmanager = pc_in_blacklist($link , $currentuser["userid"] , $uid ))
+		{
+			html_error_quit("对不起，您被".$blmanager."取消了评论权限！");
+			exit();
+		}	
+		
 		if($rows[access] != 0)
 		{
 			$pc = pc_load_infor($link,"",$rows[uid]);

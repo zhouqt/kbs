@@ -70,6 +70,11 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 		mysql_free_result($result);
 	}
 	
+	function pc_user_infor($pc)
+	{
+		if($pc[INFOR]) echo $pc[INFOR];	
+	}
+	
 	function pc_load_nodes($link,$pc,$pur=0)
 	{
 		$query = "SELECT * FROM `nodes` WHERE `uid` = '".$pc["UID"]."' AND type = 0 ";
@@ -410,9 +415,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 <center>
 <table cellspacing=0 cellpadding=5 border=0 width=780>
 	<tr>
-		<td class="bloglists">
-		<?php echo $pc["DESC"]; ?>&nbsp;
-		</td>
+		<td class="bloglists"><?php pc_user_infor($pc); ?></td>
 	</tr>
 </table>
 </center>
@@ -618,6 +621,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 				<tr><td class=t17>
 				&gt;&gt; ∑√Œ »À ˝
 				</td></tr>
+				<tr><td class=t17><?php pc_user_infor($pc); ?></td></tr>
 				<tr><td style="text-align:center;color:#FF6600;font-weight:bolder;background-color:#F6F6F6;font-family: Verdana, Arial, Helvetica, sans-serif;font-size: 14px;font-style: italic;line-height: 22px;">
 				<?php echo $pc["VISIT"]; ?>
 				</td></tr>
@@ -671,6 +675,9 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		<td align="center" class="t11" colspan="2">
 		<?php display_blog_intro(); ?>
 		</td>
+	</tr>
+	<tr>
+		<td class=t11 colspan=2><?php pc_user_infor($pc); ?></td>
 	</tr>
 	<tr>
 		<td align="center" class="t14" width="400" valign="TOP">

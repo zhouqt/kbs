@@ -255,6 +255,32 @@ function pc_is_manager($currentuser)
 	return $ret ;
 }
 
+function pc_in_blacklist($link , $userid , $pcuid = 0)
+{
+	$query = "SELECT * FROM blacklist WHERE userid = '".addslashes($userid)."' AND ( uid = ".intval($pcuid)." OR uid = 0 );";
+	$result = mysql_query( $query , $link);
+	$rows = mysql_fetch_array($result);
+	mysql_free_result($result);
+	if($rows)
+		return $rows[manager];
+	else
+		return FALSE;
+}
+
+function pc_add_blacklist($link , $userid , $pcuid = 0)
+{
+	global $currentuser;
+	$query = "INSERT INTO `blacklist` ( `userid` , `uid` , `manager` , `hostname` , `addtime` ) ".
+		" VALUES ('".addslashes($userid)."', '".intval($pcuid)."', '".addslashes($currentuser["userid"])."', '".addslashes($_SERVER["REMOTE_ADDR"])."', NOW( ));";	
+	mysql_query($query,$link);
+}
+
+function pc_del_blacklist($link , $userid , $pcuid = 0)
+{
+	$query = "DELETE FROM blacklist WHERE userid = '".addslashes($userid)."' AND uid = '".intval($pcuid)."';";
+	mysql_query($query,$link);
+}
+
 function pc_friend_list($uid)
 {
 	$file = pc_friend_file_open($uid,"r");
@@ -352,7 +378,9 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 			"INDEX" => array("nodeNum"=> $rows[indexnodes],"nodeChars" => $rows[indexnodechars]),
 			"CSSFILE" => htmlspecialchars(stripslashes($rows[cssfile])),
 			"EMAIL" => htmlspecialchars(stripslashes($rows[useremail])),
-			"FAVMODE" => (int)($rows[favmode])
+			"FAVMODE" => (int)($rows[favmode]),
+			"UPDATE" => (int)($rows[updatetime]),
+			"INFOR" => str_replace("<?","&lt;?",stripslashes($rows[userinfor]))
 			);
 	if($pc["CSSFILE"])
 		$cssFile = $pc["CSSFILE"];
@@ -600,4 +628,42 @@ function pc_cache( $modifytime )
 		return FALSE;
 }
 
+function pc_main_navigation_bar()
+{
+	global $pcconfig;
+?>
+[<a href="pcmain.php">Blog首页</a>]
+[<a href="pc.php">用户列表</a>]
+[<a href="pcsec.php">分类目录</a>]
+[<a href="pcreclist.php">推荐文章</a>]
+[<a href="pcnew.php">最新文章</a>]
+[<a href="pcnew.php?t=c">最新评论</a>]
+[<a href="pcsearch2.php">Blog搜索</a>]
+[<a href="pcnsearch.php">文章搜索</a>]
+[<a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">Blog论坛</a>]
+<?php	
+}
+
+function pc_update_cache_header($updatetime = 20)
+{
+	global $cachemode;
+	$scope = "public";
+	$modifytime=time();
+	$expiretime=300;
+	session_cache_limiter($scope);
+	$cachemode=$scope;
+	@$oldmodified=$_SERVER["HTTP_IF_MODIFIED_SINCE"];
+	if ($oldmodified!="") {
+                $oldtime=strtotime($oldmodified);
+	} else $oldtime=0;
+	if ($modifytime - $oldtime < 60 * $updatetime ) {
+		header("HTTP/1.1 304 Not Modified");
+	        header("Cache-Control: max-age=" . "$expiretime");
+		return TRUE;
+	}
+	header("Last-Modified: " . gmdate("D, d M Y H:i:s", $modifytime) . "GMT");
+	header("Expires: " . gmdate("D, d M Y H:i:s", $modifytime+$expiretime) . "GMT");
+	header("Cache-Control: max-age=" . "$expiretime");
+	return FALSE;
+}
 ?>

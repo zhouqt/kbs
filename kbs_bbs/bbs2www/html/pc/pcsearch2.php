@@ -25,6 +25,9 @@
 </p>
 </form>
 </center>
+<p align="center">
+<?php pc_main_navigation_bar(); ?>
+</p>
 <?php	
 	html_normal_quit();
 ?>

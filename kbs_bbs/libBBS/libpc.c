@@ -808,6 +808,54 @@ int add_pc_nodes(struct pc_nodes *pn)
 	return 1;
 }
 
+int pc_in_blacklist(char * userid , unsigned long pcuid)
+{
+	MYSQL s;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+	char sql[100];
+
+	if(userid == NULL || *userid == 0 || pcuid == 0)
+		return 0;
+
+	mysql_init (&s);
+
+	if (! my_connect_mysql(&s) ){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		return 0;
+	}
+
+	sprintf(sql, "SELECT * FROM blacklist WHERE userid=\"%s\" AND (uid=\"%lu\" OR uid=\"0\")", userid , pcuid);
+
+	if( mysql_real_query(&s, sql, strlen(sql)) ){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		mysql_close(&s);
+		return 0;
+	}
+	res = mysql_store_result(&s);
+	row = mysql_fetch_row(res);
+
+	if(row != NULL){
+		mysql_free_result(res);
+		mysql_close(&s);
+
+		return 1;
+	}
+
+	mysql_free_result(res);
+	mysql_close(&s);
+
+	return 0;
+}
+
 int add_pc_comments(struct pc_comments *pn)
 {
 	MYSQL s;

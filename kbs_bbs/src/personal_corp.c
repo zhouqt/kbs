@@ -1694,12 +1694,14 @@ struct pc_comments *pc_c = NULL;
 
 //int pc_com_start=0;
 
-static int pc_can_com(int comlevel)
+static int pc_can_com(int comlevel , unsigned long pcuid )
 {
     if (comlevel == 0)
         return 0;
     if (comlevel == 1 && !strcmp(currentuser->userid, "guest"))
         return 0;
+    if (pc_in_blacklist( currentuser->userid , pcuid ) )
+    	return 0;
     return 1;
 }
 
@@ -1846,7 +1848,7 @@ static int pc_com_key(struct _select_def *conf, int key)
 {
     switch (key) {
     case 'a':
-        if (!pc_can_com(pc_n[pc_now_node_ent].comment))
+        if (!pc_can_com(pc_n[pc_now_node_ent].comment , pc_n[pc_now_node_ent].uid))
             return SHOW_CONTINUE;
         if (pc_add_a_com(0))
             return SHOW_DIRCHANGE;
@@ -1981,7 +1983,7 @@ int pc_read_comment()
     if (i == 0) {
         char ans[3];
 
-        if (!pc_can_com(pc_n[pc_now_node_ent].comment)) {
+        if (!pc_can_com(pc_n[pc_now_node_ent].comment , pc_n[pc_now_node_ent].uid)) {
             clear();
             move(7, 0);
             prints("暂时没有评论");

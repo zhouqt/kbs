@@ -625,6 +625,18 @@ Blog名
 	</td>
 </tr>
 <tr>
+	<td class="t3">设定黑名单</td>
+	<td class="t5">
+	<a href="pcblist.php">设定Blog黑名单</a>
+	</td>
+</tr>
+<tr>
+	<td class="t3">首页其他信息(支持HTML语法和JavaScript)</td>
+	<td class="t5">
+	<textarea name="userinfor" id="userinfor" class="f1" rows=10 cols=50><?php echo $pc[INFOR]; ?></textarea>
+	</td>
+</tr>
+<tr>
 	<td class="t4" colspan="2">
 	<input type="submit" value="修改Blog参数" class="b1">
 	<input type="reset" value="恢复原始参数" class="b1">

@@ -161,10 +161,8 @@
 </p>
 <hr size=1>
 <p class="f1">
-[<a href="pcsearch.php?keyword=<?php echo $currentuser["userid"]; ?>&exact=1&key=u">自己的Blog</a>]
-[<a href="pcnew.php">最新文章列表</a>]
-[<a href="pcnew.php?t=c">最新评论列表</a>]
 <?php
+	pc_main_navigation_bar();
 	if(pc_is_manager($currentuser))
 	{
 		echo "[<a href=\"pcadmin_rec.php\">推荐文章管理</a>]\n";		
@@ -180,8 +178,7 @@
 ?>
 <hr size=1>
 <p class="f1">
-[<a href="pcsearch.php?keyword=<?php echo $currentuser["userid"]; ?>&exact=1&key=u">自己的Blog</a>]
-[<a href="pcnew.php">最新文章列表</a>]
+<?php pc_main_navigation_bar(); ?>
 <a href="rssnew.php" target="_blank"><img src="images/xml.gif" border="0" align="absmiddle" alt="XML"></a>
 </p>
 <form action="pcsearch.php" method="get" onsubmit="if(this.keyword.value==''){alert('请输入关键字');return false;}">

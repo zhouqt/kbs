@@ -67,7 +67,7 @@
 		$favlinksnum = count($favlinks) + 1;
 		$favlinks[] = array("URL" => NULL,"LINK" => NULL);
 		
-		pc_html_init("gb2312",stripslashes($pc["NAME"]));
+		pc_html_init("gb2312",$pc["NAME"]);
 ?>
 <br><br><p align=center class=f2>友情链接管理</p>
 <hr size=1>

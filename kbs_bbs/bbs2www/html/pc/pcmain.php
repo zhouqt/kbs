@@ -47,7 +47,7 @@ function pcmain_blog_statistics_list()
 function pcmain_blog_new_user()
 {
 	global $pcconfig,$link;
-	$query = "SELECT username FROM users ORDER BY createtime DESC LIMIT 0,10;";
+	$query = "SELECT username,corpusname FROM users ORDER BY createtime DESC LIMIT 0,10;";
 	$result = mysql_query($query,$link);
 	$num = mysql_num_rows($result);
 ?>
@@ -65,7 +65,7 @@ function pcmain_blog_new_user()
 	for($i = 0;$i<$num;$i++)
 	{
 		$rows = mysql_fetch_array($result);
-		echo "<li><a href=\"index.php?id=".$rows[username]."\">".$rows[username]."</a></li>";	
+		echo "<li><a href=\"index.php?id=".$rows[username]."\">".html_format($rows[corpusname])."</a>&nbsp;&lt;<a href=\"/bbsqry.php?userid=".$rows[username]."\">".$rows[username]."</a>&gt;</li>";	
 	}
 ?>				
 				</ul>
@@ -81,7 +81,7 @@ function pcmain_blog_new_user()
 function pcmain_blog_top_ten()
 {
 	global $pcconfig,$link;
-	$query = "SELECT username FROM users ORDER BY visitcount DESC LIMIT 0,10;";
+	$query = "SELECT username , corpusname FROM users ORDER BY visitcount DESC LIMIT 0,10;";
 	$result = mysql_query($query,$link);
 	$num = mysql_num_rows($result);
 ?>
@@ -99,7 +99,41 @@ function pcmain_blog_top_ten()
 	for($i = 0;$i<$num;$i++)
 	{
 		$rows = mysql_fetch_array($result);
-		echo "<li><a href=\"index.php?id=".$rows[username]."\">".$rows[username]."</a></li>";	
+		echo "<li><a href=\"index.php?id=".$rows[username]."\">".html_format($rows[corpusname])."</a>&nbsp;&lt;<a href=\"/bbsqry.php?userid=".$rows[username]."\">".$rows[username]."</a>&gt;</li>";	
+	}
+?>				
+				</ul>
+				</td>
+			</tr>
+		</table>
+	</td>
+</tr>
+</table>
+<?php
+}
+
+function pcmain_blog_last_update()
+{
+	global $pcconfig,$link;
+	$query = "SELECT username , corpusname FROM users WHERE createtime != modifytime ORDER BY modifytime DESC LIMIT 0,10;";
+	$result = mysql_query($query,$link);
+	$num = mysql_num_rows($result);
+?>
+<table cellspacing=0 cellpadding=3 width=98% class=f1>
+<tr>
+	<td class=t7>&gt;&gt; 最近更新的十个Blog：</td>
+</tr>
+<tr>
+	<td>
+		<table cellspacing=0 cellpadding=10 width=100% class=t1>
+			<tr>
+				<td class=t8 style="line-height=20px">
+				<ul>
+<?php
+	for($i = 0;$i<$num;$i++)
+	{
+		$rows = mysql_fetch_array($result);
+		echo "<li><a href=\"index.php?id=".$rows[username]."\">".html_format($rows[corpusname])."</a>&nbsp;&lt;<a href=\"/bbsqry.php?userid=".$rows[username]."\">".$rows[username]."</a>&gt;</li>";	
 	}
 ?>				
 				</ul>
@@ -177,6 +211,7 @@ function  pcmain_blog_recommend_nodes()
 	}
 ?>				
 				</ul>
+				<p align="right"><a href="pcreclist.php">更多推荐话题</a></p>
 				</td>
 			</tr>
 		</table>
@@ -315,32 +350,9 @@ function  pcmain_blog_most_view()
 <?php		
 }
 
-function pcmain_cache_header()
-{
-	global $cachemode;
-	$scope = "public";
-	$modifytime=time();
-	$expiretime=300;
-	session_cache_limiter($scope);
-	$cachemode=$scope;
-	@$oldmodified=$_SERVER["HTTP_IF_MODIFIED_SINCE"];
-	if ($oldmodified!="") {
-                $oldtime=strtotime($oldmodified);
-	} else $oldtime=0;
-	if ($modifytime - $oldtime < 1200) {
-		header("HTTP/1.1 304 Not Modified");
-	        header("Cache-Control: max-age=" . "$expiretime");
-		return TRUE;
-	}
-	header("Last-Modified: " . gmdate("D, d M Y H:i:s", $modifytime) . "GMT");
-	header("Expires: " . gmdate("D, d M Y H:i:s", $modifytime+$expiretime) . "GMT");
-	header("Cache-Control: max-age=" . "$expiretime");
-	return FALSE;
-}
-
 //20min更新一次
-if(pcmain_cache_header())
-	return;
+//if(pc_update_cache_header())
+//	return;
 
 pc_html_init("gb2312" , $pcconfig["BBSNAME"]."Blog");
 ?>
@@ -348,6 +360,7 @@ pc_html_init("gb2312" , $pcconfig["BBSNAME"]."Blog");
 <tr>
 	<td colspan="2" class=t2>
 	<a class="t2" href="pc.php">用户列表</a>
+	<a class="t2" href="pcreclist.php">推荐话题</a>
 	<a class="t2" href="pcsec.php">分类目录</a>
 	<a class="t2" href="pcnew.php">最新文章</a>
 	<a class="t2" href="pcnew.php?t=c">最新评论</a>
@@ -370,6 +383,7 @@ pcmain_blog_most_trackback();
 pcmain_blog_statistics_list();
 pcmain_blog_new_user();
 pcmain_blog_top_ten();
+pcmain_blog_last_update();
 pcmain_blog_sections();
 ?>	
 	</td>

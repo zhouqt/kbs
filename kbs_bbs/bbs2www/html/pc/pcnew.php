@@ -8,16 +8,7 @@
 	{
 ?>
 <p align=center class=f1>
-[<a href="javascript:location=location">刷新</a>]
-[<a href="pc.php">用户列表</a>]
-<?php
-	if($type == "n")
-		echo "[<a href=\"pcnew.php?t=c\">最新评论列表</a>]";
-	else
-		echo "[<a href=\"pcnew.php\">最新文章列表</a>]";
-?>
-[<a href="pcsearch2.php">Blog搜索</a>]
-[<a href="pcnsearch.php">文章搜索</a>]
+<?php pc_main_navigation_bar(); ?>
 </p>
 <?php
 	}

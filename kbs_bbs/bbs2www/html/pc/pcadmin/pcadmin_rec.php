@@ -12,9 +12,14 @@ if(isset($_GET[sig]) && $_GET[nid])
 	$sig = intval($_GET[sig]);
 	$nid = intval($_GET[nid]);
 	
-	if( $sig != 2 )
+	if( $sig != 2 && $sig != 3 )//撤销推荐
 	{
 		$query = "DELETE FROM recommend WHERE nid = ".$nid." ;";
+		mysql_query($query,$link);
+	}
+	elseif( $sig == 3 )//状态变为已推荐
+	{
+		$query = "UPDATE recommend SET state = 0 WHERE nid = ".$nid." ;";
 		mysql_query($query,$link);
 	}
 	else
@@ -24,8 +29,8 @@ if(isset($_GET[sig]) && $_GET[nid])
 		$rows = mysql_fetch_array($result);
 		if($rows)
 		{
-			$query = "INSERT INTO `recommend` ( `rid` , `nid` , `hostname` , `created` , `uid` , `subject` , `body` , `emote` , `htmltag` , `recuser` ) ".
-			"VALUES ('', '".$rows[nid]."', '".$rows[hostname]."', '".$rows[created]."', '".$rows[uid]."', '".$rows[subject]."', '".$rows[body]."', '".$rows[emote]."', '".$rows[htmltag]."' , '".$currentuser[userid]."');";
+			$query = "INSERT INTO `recommend` ( `rid` , `nid` , `hostname` , `created` , `uid` , `subject` , `body` , `emote` , `htmltag` , `recuser` ,`state` ) ".
+			"VALUES ('', '".$rows[nid]."', '".$rows[hostname]."', '".$rows[created]."', '".$rows[uid]."', '".$rows[subject]."', '".$rows[body]."', '".$rows[emote]."', '".$rows[htmltag]."' , '".$currentuser[userid]."' , 1);";
 			mysql_query($query,$link);
 		}
 		mysql_free_result($result);
@@ -133,7 +138,7 @@ mysql_free_result( $result );
 	if( $pno > 1)
 		echo "<a href=\"pcadmin_rec.php?type=".$type."\">[第一页]</a>\n".
 			"<a href=\"pcadmin_rec.php?type=".$type."&pno=".($pno-1)."\">[上一页]</a>\n";
-	if( $pcconfig["LIST"] == $num ) echo "<a href=\"pcadmin_rec.php?type=".$type."&pno=".($pno-1)."\">[上一页]</a>\n";
+	if( $pcconfig["LIST"] == $num ) echo "<a href=\"pcadmin_rec.php?type=".$type."&pno=".($pno+1)."\">[下一页]</a>\n";
 ?>
 </p>
 <?php

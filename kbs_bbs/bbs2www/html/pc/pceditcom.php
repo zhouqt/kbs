@@ -54,7 +54,7 @@
 		}
 		elseif($act == "edit")
 		{
-			$query = "SELECT `subject`,`body`,`htmltag` FROM comments WHERE `cid` = '".$cid."' AND `username` = '".$currentuser["userid"]."' LIMIT 0 , 1 ;";
+			$query = "SELECT `subject`,`body`,`htmltag`,`uid` FROM comments WHERE `cid` = '".$cid."' AND `username` = '".$currentuser["userid"]."' LIMIT 0 , 1 ;";
 			$result = mysql_query($query);
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);
@@ -64,6 +64,12 @@
 				html_error_quit("所选择的评论不存在!");
 				exit();
 			}
+			if($blmanager = pc_in_blacklist($link , $currentuser["userid"] , $rows[uid] ))
+			{
+				html_error_quit("对不起，您被".$blmanager."取消了评论权限！");
+				exit();
+			}
+		
 			//判定评论文章是否用了编辑器，根据情况调入 windinsn feb 22 , 2004
 			if($rows[htmltag])
 				pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog","","","",TRUE);		

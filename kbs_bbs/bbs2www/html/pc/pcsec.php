@@ -80,12 +80,7 @@
 </font>
 <hr size=1>
 <p align=center class=f1>
-[<a href="pc.php">Blog首页</a>]
-[<a href="pcsearch.php">Blog搜索</a>]
-[<a href="pcnew.php">最新文章</a>]
-[<a href="pcnew.php?t=c">最新评论</a>]
-[<a href="#top">返回顶部</a>]
-[<a href="javascript:history.go(-1)">快速返回</a>]
+<?php pc_main_navigation_bar(); ?>
 </p>
 <?php	
 	html_normal_quit();

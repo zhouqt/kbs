@@ -98,7 +98,7 @@
 </table>
 </center>
 <p align="center">
-<a href="pc.php">·µ»ØBlogÊ×Ò³</a>
+<?php pc_main_navigation_bar(); ?>
 </p>		
 <?php
 		mysql_free_result($result);

@@ -536,6 +536,7 @@ int count_pc_comments( unsigned long nid);
 int get_pc_comments( struct pc_comments * pn, unsigned long nid, int start, int num, int withbody);
 int add_pc_users(struct pc_users *pn);
 int add_pc_nodes(struct pc_nodes *pn);
+int pc_in_blacklist(char * userid , unsigned long pcuid);
 int add_pc_comments(struct pc_comments *pn);
 int del_pc_users(struct pc_users *pn);
 int del_pc_nodes( unsigned long nid , int access , int uid );

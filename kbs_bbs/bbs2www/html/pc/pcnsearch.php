@@ -186,6 +186,9 @@ Blog文章搜索
 (请用空格隔开多个关键字)
 </p>
 </form>
+<p align="center">
+<?php pc_main_navigation_bar(); ?>
+</center>
 <?php
 	html_normal_quit();
 ?>
