@@ -1,5 +1,5 @@
 lib_LTLIBRARIES = libsystem.la
-libsystem_la_SOURCES = f_cat.c f_cp.c f_rm.c f_mv.c f_touch.c f_ln.c
+libsystem_la_SOURCES = f_cat.c f_cp.c f_rm.c f_mv.c f_touch.c f_ln.c bm_strcmp.c
 AM_CFLAGS=-I$(top_builddir)/src
 CLEANFILES=@EXTRA_CLEAN@
 #BBSLIB=`cd $(top_builddir)/.libs; pwd`
