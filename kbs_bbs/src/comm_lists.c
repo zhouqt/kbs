@@ -378,7 +378,7 @@ char    *menu_name;
             domenu_screen( pm, cmdprompt );
             modify_user_mode( MMENU );
             /*Modify to showout ActiveBoard After talking*/
-            if (nettyNN ==1) { R_monitor();}
+            if (nettyNN ==1) { R_monitor(NULL);}
             break;
         case KEY_RIGHT:
             for( i = 0; i < size; i++ ) {
@@ -404,7 +404,7 @@ char    *menu_name;
                 }
                 domenu_screen( pm, cmdprompt );
                 modify_user_mode( MMENU );
-                if (nettyNN ) { R_monitor();}
+                if (nettyNN ) { R_monitor(NULL);}
             }
             break;
       case KEY_LEFT:

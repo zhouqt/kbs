@@ -25,8 +25,6 @@
 #include "screen.h" /* Leeward 98.06.05 */
 
 time_t calltime=0;
-void R_monitor();
-
 static int rawmore(char    *filename, int     promptend, int     row, int     numlines);
 
 
@@ -131,7 +129,7 @@ check_calltime()
 		set_alarm(0,NULL,NULL);
                 showusernote();
                 pressreturn();
-                R_monitor();
+                R_monitor(NULL);
         */
         if(uinfo.mode==TALK)
             line=t_lines/2-1;

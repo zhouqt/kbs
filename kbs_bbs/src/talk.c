@@ -1885,6 +1885,14 @@ getfriendstr()
         nf=(nf>=MAXFRIENDS)?MAXFRIENDS:nf;
     friendsdata=(struct friends *)calloc(sizeof(struct friends),nf);
     get_records(genbuf,friendsdata,sizeof(struct friends),1,nf);
+    for (i=0;i<nf;i++) {
+	    friendsdata[i].id[IDLEN]=0;
+	    friendsdata[i].exp[14]=0;
+	    if (id_invalid(friendsdata[i].id)) {
+		    memcpy(&friendsdata[i],&friendsdata[nf-1],sizeof(struct friends));
+		    nf--;
+	    }
+    }
     
     qsort( friendsdata, nf, sizeof( friendsdata[0] ), (int (*)(const void *, const void *))cmpfuid );/*For Bi_Search*/
     topfriend=(struct friends_info *)calloc(sizeof(struct friends_info),nf);

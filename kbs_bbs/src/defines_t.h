@@ -135,7 +135,7 @@ void getuinfo(FILE *fn,struct userec *ptr_urec);
 int sread(int passonly,int readfirst,int auser,int pnum,struct fileheader *ptitle);
 void fixkeep(char* s,int first,int last);
 typedef char *(*READ_FUNC)(void*,int,void*);
-void i_read( int cmdmode,char *direct ,int (*dotitle)() ,READ_FUNC doentry,struct one_key *rcmdlist,int ssize);
+void i_read( int cmdmode,char *direct ,void (*dotitle)() ,READ_FUNC doentry,struct one_key *rcmdlist,int ssize);
 void u_exit();
 
 /* sendmsg.c */
