@@ -129,7 +129,7 @@ function showSecs($secNum=0,$group,$isFold) {
 		<?php
 							} else {
 		?>
-				主题：<a href="disparticle.php?boardName=<?php echo $brd_name[$i]; ?>&ID=<?php echo $articles[0]['origin']['ID']; ?>"><?php echo htmlspecialchars($articles[0]['origin']['TITLE'],ENT_QUOTES); ?> &nbsp;</a><BR>作者：<a href="userinfo.php?id=<?php echo $articles[0]['OWNER']; ?>" target=_blank><?php echo $articles[0]['origin']['OWNER']; ?> </a><BR>日期：<?php echo strftime('%Y-%m-%d %H:%M:%S', intval($articles[0]['origin']['POSTTIME'])) ; ?>&nbsp;<a href="disparticle.php?boardName=<?php echo $brd_name[$i]; ?>&ID=<?php echo $articles[0]['origin']['ID']; ?>&start=<?php echo $start?>"><IMG border=0 src="pic/lastpost.gif" title="转到：<?php echo htmlspecialchars($articles[0]['origin']['TITLE'],ENT_QUOTES); ?> "> </a>
+				主题：<a href="disparticle.php?boardName=<?php echo $brd_name[$i]; ?>&ID=<?php echo $articles[0]['origin']['ID']; ?>"><?php echo htmlspecialchars($articles[0]['origin']['TITLE'],ENT_QUOTES); ?> &nbsp;</a><BR>作者：<a href="dispuser.php?id=<?php echo $articles[0]['origin']['OWNER']; ?>" target=_blank><?php echo $articles[0]['origin']['OWNER']; ?> </a><BR>日期：<?php echo strftime('%Y-%m-%d %H:%M:%S', intval($articles[0]['origin']['POSTTIME'])) ; ?>&nbsp;<a href="disparticle.php?boardName=<?php echo $brd_name[$i]; ?>&ID=<?php echo $articles[0]['origin']['ID']; ?>&start=<?php echo $start?>"><IMG border=0 src="pic/lastpost.gif" title="转到：<?php echo htmlspecialchars($articles[0]['origin']['TITLE'],ENT_QUOTES); ?> "> </a>
 	<?php
 							}
 						}
