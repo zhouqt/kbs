@@ -1095,11 +1095,7 @@ size_t read_user_memo( char *userid, struct usermemo ** ppum )
 	FILE *fp;
     struct stat st;
 
-#if USE_TMPFS==1
-	setcachehomefile(fn, userid, -1, "usermemo");
-#else
 	sethomefile(fn, userid, "usermemo");
-#endif
 
     logincount = apply_utmp(NULL, 0, userid, 0);
 
