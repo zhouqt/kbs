@@ -221,7 +221,7 @@ function showBoardContents($boardID,$boardName,$page){
 			document.write('Ô­ÌùÒÑÉ¾³ý');
 		}
 		document.write('</TD>');
-		document.write('<TD class=TableBody1 width=64 align="center">' + threadNum + '</TD>');
+		document.write('<TD class=TableBody1 width=64 align="center">' + ((origin_exists?0:1)+threadNum) + '</TD>');
 		document.write('<TD align=left class=TableBody2 width=200><nobr>&nbsp;<a href="disparticle.php?boardName=' + boardName + '&ID=' + origin.ID + '&start=' + threadNum + '">');
 		document.write(lastreply.POSTTIME + '</a>&nbsp;<font color=#FF0000>|</font>&nbsp;<a href=dispuser.php?id=' + lastreply.OWNER + ' target=_blank>');
 		document.write(lastreply.OWNER + '</nobr></a></TD></TR>');
