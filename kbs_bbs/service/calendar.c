@@ -592,8 +592,6 @@ void decode_file(char * s, char * s2)
     fclose(fp2);
 }
 
-extern int incalendar;
-
 int calendar_main()
 {
     int i,j,ch,oldmode,cc;
