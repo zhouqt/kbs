@@ -137,7 +137,7 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
     //sprintf(fname, "tmp/security.%d", getpid());
     if ((se = fopen(fname, "w")) != NULL) {
         if (lookupuser) {
-            if (strstr(str, "让") && strstr(str, "通过身份确认")) {
+            if (strstr(str, "身份确认")) {
                 struct userdata ud;
 
                 read_userdata(lookupuser->userid, &ud);
@@ -153,7 +153,10 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
                 fprintf(se, "您的昵称     : %s\n", lookupuser->username);
                 fprintf(se, "真实姓名     : %s\n", fdata[2]);
                 fprintf(se, "电子邮件信箱 : %s\n", ud.email);
-                fprintf(se, "真实 E-mail  : %s$%s@%s\n", fdata[3], fdata[5], currentuser->userid);
+                if (strstr(str, "自动处理程序"))
+                	fprintf(se, "真实 E-mail  : %s$%s@自动注册\n", fdata[3], fdata[5]);
+		else	
+                	fprintf(se, "真实 E-mail  : %s$%s@%s\n", fdata[3], fdata[5], currentuser->userid);
                 fprintf(se, "服务单位     : %s\n", fdata[3]);
                 fprintf(se, "目前住址     : %s\n", fdata[4]);
                 fprintf(se, "连络电话     : %s\n", fdata[5]);
@@ -163,12 +166,22 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
                 fprintf(se, "上站次数     : %d 次\n", lookupuser->numlogins);
                 fprintf(se, "文章数目     : %d(Board)\n", lookupuser->numposts);
                 fprintf(se, "生    日     : %s\n", fdata[6]);
+                if (strstr(str,"拒绝"))
+                	fprintf(se, "\033[1;32m自动拒绝理由 : %s\033[m\n", fdata[7]);
                 /*
                  * fprintf(se, "\n\033[33m以下是认证者个人资料\033[35m");
                  * getuinfo(se, currentuser);rem by Haohmaru.99.4.16 
                  */
                 fclose(se);
-                post_file(currentuser, "", fname, "Registry", str, 0, 2);
+                if (strstr(str,"拒绝"))
+                	post_file(currentuser, "", fname, "reject_registry", str, 0, 1);     
+                else
+                {
+	                if (strstr(str, "自动处理程序"))
+	                	post_file(currentuser, "", fname, "Registry", str, 0, 1);       
+	                else
+		                post_file(currentuser, "", fname, "Registry", str, 0, 2);
+                }
             } else if (strstr(str, "删除使用者：")) {
                 fprintf(se, "系统安全记录系统\n\033[32m原因：%s\033[m\n", str);
                 fprintf(se, "以下是被删者个人资料");
@@ -1254,8 +1267,9 @@ char *logfile, *regfile;
     };
     struct userec uinfo;
     FILE *fn, *fout, *freg;
-    char fdata[7][STRLEN];
+    char fdata[8][STRLEN];
     char fname[STRLEN], buf[STRLEN], buff;
+    char sender[IDLEN + 2];
 
     /*
      * ^^^^^ Added by Marco 
@@ -1356,7 +1370,6 @@ char *logfile, *regfile;
 {
 struct REGINFO regform;
 int ret;
-int saveret;
 char errorstr[100];
 bzero(&regform,sizeof(regform));
 errorstr[0]=0;
@@ -1367,9 +1380,7 @@ strncpy(regform.addr,fdata[4],99);
 strncpy(regform.phone,fdata[5],99);
 strncpy(regform.birth,fdata[6],99);
 ret=checkreg(regform, errorstr);
-saveret=ret;
-ret=2;
-if (ret==2) {
+if (ret==-2) {
 #endif
 
 /* 添加查询IP, Bigman: 2002.8.20 */
@@ -1411,11 +1422,14 @@ if (ret==2) {
             } else {
 #ifdef AUTO_CHECK_REGISTER_FORM
                 move(t_lines - 2, 0);
+/*
 		prints("%s自动检查注册单:%s %s\x1b[m",
 	saveret==0?"\x1b[1;32m":(saveret==2?"\x1b[1;33m":"\x1b[1;31m"),
 	saveret==0?"我认为可以通过!":
 	(saveret==2?"还是你来看看吧":(saveret==-1?"这个id不太好吧":"应该退回 理由:")),
 	errorstr);
+*/
+		prints("\x1b[1;32m系统建议:%s\x1b[m",errorstr);
                 move(t_lines - 1, 0);
 #endif
                 getdata(t_lines - 1, 0, "是否接受此资料 (Y/N/Q/Del/Skip)? [S]: ", ans, 3, DOECHO, NULL, true);
@@ -1424,8 +1438,8 @@ if (ret==2) {
             clrtobot();
 #ifdef AUTO_CHECK_REGISTER_FORM
 } else { //自动处理
-if (ret==0) ans[0]='y';
-else ans[0]='n';
+	if (ret==-3) ans[0]='y';
+	else ans[0]='n';
 }
 #endif
             switch (ans[0]) {
@@ -1463,16 +1477,21 @@ else ans[0]='n';
                 write_userdata(uinfo.userid, &ud);
 				memcpy(&(um->ud), &ud, sizeof(ud));
 				end_mmapfile(um, sizeof(struct usermemo), -1);
-
-                mail_file(currentuser->userid, "etc/s_fill", uinfo.userid, "恭禧你，你已经完成注册。", 0, NULL);
 #ifdef AUTO_CHECK_REGISTER_FORM
-         if (ret==2)
+         if (ret==-2)
+         {
 #endif
+                strcpy(sender,currentuser->userid);
                 sprintf(genbuf, "%s 让 %s 通过身份确认.", uid, uinfo.userid);
 #ifdef AUTO_CHECK_REGISTER_FORM
+         }
          else
+         {
+                strcpy(sender,"SYSOP");
                 sprintf(genbuf, "自动处理程序 让 %s 通过身份确认.", uinfo.userid);
+	 }
 #endif
+         	mail_file(sender, "etc/s_fill", uinfo.userid, "恭禧你，你已经完成注册。", 0, NULL);
                 securityreport(genbuf, lookupuser, fdata);
                 if ((fout = fopen(logfile, "a")) != NULL) {
                     time_t now;
@@ -1537,7 +1556,7 @@ else ans[0]='n';
 		}
                 move(9, 0);
 #ifdef AUTO_CHECK_REGISTER_FORM
-              if (ret==2) {
+              if (ret==-2) {
 #endif
                 prints("请选择/输入退回申请表原因, 按 <enter> 取消.\n");
                 for (n = 0; reason[n] != NULL; n++)
@@ -1546,6 +1565,9 @@ else ans[0]='n';
 #ifdef AUTO_CHECK_REGISTER_FORM
               } else {
                 buf[0]='!';
+                strncpy(fdata[7],errorstr,STRLEN - 1);
+                sprintf(genbuf, "自动处理程序拒绝 %s 的身份确认.", uinfo.userid);
+                securityreport(genbuf, lookupuser, fdata);
               }
 #endif
 
@@ -1554,13 +1576,20 @@ else ans[0]='n';
                     if (buf[0] >= '0' && buf[0] < '0' + n) {
                         strcpy(buf, reason[buf[0] - '0']);
                     }
+                
 #ifdef AUTO_CHECK_REGISTER_FORM
-                   if (ret==2)
+                   if (ret==-2)
+                   {
 #endif
+                    strcpy(sender,currentuser->userid);
                     sprintf(genbuf, "<注册失败> - %s", buf);
 #ifdef AUTO_CHECK_REGISTER_FORM
+                   }
                    else
+                   {
+                    strcpy(sender,"SYSOP");
                     sprintf(genbuf, "<注册失败> - %s", errorstr);
+                   }
 #endif
                     strncpy(ud.address, genbuf, NAMELEN);
                     write_userdata(uinfo.userid, &ud);
@@ -1571,31 +1600,31 @@ else ans[0]='n';
                      */
                     switch (buff) {
                     case '0':
-                        mail_file(currentuser->userid, "etc/f_fill.realname", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
+                        mail_file(sender, "etc/f_fill.realname", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                         break;
                     case '1':
-                        mail_file(currentuser->userid, "etc/f_fill.unit", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
+                        mail_file(sender, "etc/f_fill.unit", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                         break;
                     case '2':
-                        mail_file(currentuser->userid, "etc/f_fill.address", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
+                        mail_file(sender, "etc/f_fill.address", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                         break;
                     case '3':
-                        mail_file(currentuser->userid, "etc/f_fill.telephone", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
+                        mail_file(sender, "etc/f_fill.telephone", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                         break;
                     case '4':
-                        mail_file(currentuser->userid, "etc/f_fill.real", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
+                        mail_file(sender, "etc/f_fill.real", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                         break;
                     case '5':
-                        mail_file(currentuser->userid, "etc/f_fill.chinese", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
+                        mail_file(sender, "etc/f_fill.chinese", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                         break;
                     case '6':
-                        mail_file(currentuser->userid, "etc/f_fill.proxy", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
+                        mail_file(sender, "etc/f_fill.proxy", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                         break;
                     case '7':
-                        mail_file(currentuser->userid, "etc/f_fill.toomany", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
+                        mail_file(sender, "etc/f_fill.toomany", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                         break;
                     default:
-                        mail_file(currentuser->userid, "etc/f_fill", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
+                        mail_file(sender, "etc/f_fill", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                         break;
                     }
                     /*
