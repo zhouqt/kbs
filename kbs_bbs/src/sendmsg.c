@@ -234,7 +234,8 @@ dowall(struct user_info *uin,char* buf2)
 int
 wall()
 {
-	char buf2[STRLEN];
+    char buf2[STRLEN];
+    if (check_systempasswd()==NA) return 0;
     modify_user_mode( MSG );
     move(2,0) ; clrtobot();
     if (!get_msg("所有使用者",buf2,1) ){
@@ -247,6 +248,8 @@ wall()
         prints( "没有任何使用者上线\n" );
         pressanykey();
     }
+    sprintf(buf2,"%d 对所有用户广播",currentuser->userid);
+    securityreport(buf2,NULL,NULL);
     prints("\n已经广播完毕....\n");
     pressanykey();
     return 0;

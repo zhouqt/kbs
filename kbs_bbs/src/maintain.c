@@ -661,6 +661,7 @@ int searchtrace()
     char tmp_command[80], tmp_id[20];
     char buf[8192];
 
+    if (check_systempasswd()==NA) return -1;
     modify_user_mode(ADMIN);
     clear();
     stand_title("查询使用者发文记录");
