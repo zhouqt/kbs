@@ -20,6 +20,9 @@ agent connections.
 /*
  * $Id$
  * $Log$
+ * Revision 1.7  2003/04/18 14:58:56  bad
+ * ssh多行
+ *
  * Revision 1.6  2003/04/18 14:47:22  bad
  * ssh多行
  *
@@ -1611,6 +1614,12 @@ void do_authenticated(char *pw)
             break;
 
         case SSH_CMSG_REQUEST_PTY:
+            packet_get_string(NULL);
+            row = packet_get_int();
+            col = packet_get_int();
+            xpixel = packet_get_int();
+            ypixel = packet_get_int();
+            do_naws(row, col);
             packet_get_all();
             debug("Allocating a pty not permitted for this authentication.");
             break;
