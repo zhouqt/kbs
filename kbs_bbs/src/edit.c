@@ -233,7 +233,7 @@ struct textline *alloc_line_w(int w)
     }
     p->next = NULL;
     p->prev = NULL;
-    p->maxlen = w/WRAPMARGIN*WRAPMARGIN+5;
+    p->maxlen = (w/WRAPMARGIN+1)*WRAPMARGIN+5;
     if (p->maxlen<WRAPMARGIN) p->maxlen = WRAPMARGIN;
     p->data = malloc(p->maxlen+1);
     p->data[0] = '\0';
@@ -474,7 +474,7 @@ int join(struct textline * line)
     if (line->maxlen<=line->len+line->next->len+5) {
         int ml;
         char *q;
-        ml = ((line->len+line->next->len)/WRAPMARGIN+5)*WRAPMARGIN;
+        ml = ((line->len+line->next->len)/WRAPMARGIN+1)*WRAPMARGIN+5;
         if (ml<WRAPMARGIN) ml = WRAPMARGIN;
         q = (char *) malloc(ml+1);
         memcpy(q, line->data, line->len+1);
