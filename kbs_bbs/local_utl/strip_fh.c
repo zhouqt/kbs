@@ -62,7 +62,7 @@ static void strip_fileheader(const fileheader_v1_2 *oldfh, fileheader *fh,
 	fh->accessed[0] = oldfh->accessed[0];
 	fh->accessed[1] = oldfh->accessed[1];
 	fh->accessed[sizeof(fh->accessed) - 1] = 
-									oldfh->accessed[sizeof(fh->accessed) - 1];
+								oldfh->accessed[sizeof(oldfh->accessed) - 1];
 }
 
 static void strip_mail_fileheader(const fileheader_v1_2 *oldfh, fileheader *fh,
