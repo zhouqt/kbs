@@ -1234,6 +1234,7 @@ static void bbs_make_article_array(zval * array, struct fileheader *fh, char *fl
 /*    add_assoc_long(array, "LEVEL", fh->level);*/
     add_assoc_stringl(array, "FLAGS", flags, flags_len, 1);
     add_assoc_long(array, "ATTACHPOS", fh->attachment);
+    add_assoc_long(array, "EFFSIZE", fh->eff_size);
 }
 
 static PHP_FUNCTION(bbs_search_articles)
@@ -1475,7 +1476,7 @@ static PHP_FUNCTION(bbs_searchtitle)
 
 	for (i=total-1;i>=0;i--) {
 		if (foundInArray(ptr1[i].groupid,IDList2,threads)==-1)	{
-			found=Search_Bin(ptr,ptr1[i].groupid,0,total-1);
+			found=Search_Bin((struct fileheader *)ptr,ptr1[i].groupid,0,total-1);
 			if (found>=0) {
 				IDList2[threads]=ptr1[i].groupid;
 				index[threads]=found;
@@ -2379,7 +2380,7 @@ static PHP_FUNCTION(bbs_getarticles)
 	}
     /* modified by stiger */
 	if(mode == DIR_MODE_NORMAL)
-    	rows = read_get_records(dirpath, dirpath1, articles, sizeof(struct fileheader), start, num);
+    	rows = read_get_records(dirpath, dirpath1, (char *)articles, sizeof(struct fileheader), start, num);
 	else
     	rows = get_records(dirpath, articles, sizeof(struct fileheader), start, num);
     for (i = 0; i < rows; i++) {
@@ -2734,7 +2735,7 @@ static PHP_FUNCTION(bbs_get_article)
 
 	articlesFounded=0;
 
-	if ( (found=Search_Bin(ptr,groupid,0,total-1))>=0) {
+	if ( (found=Search_Bin((struct fileheader *)ptr,groupid,0,total-1))>=0) {
 		MAKE_STD_ZVAL(element);
 		array_init(element);
 		flags[0] = get_article_flag(ptr1+found, currentuser, bp->filename, is_bm);
@@ -7873,7 +7874,7 @@ static PHP_FUNCTION(bbs_get_threads_from_gid)
 		MAKE_STD_ZVAL(element);
 		array_init(element);
 	  if(articles[i].id && currentuser ){
-		flags[0] = get_article_flag(articles + i, currentuser, bp->filename, is_bm);
+		flags[0] = get_article_flag(articles + i, currentuser, (char *)(bp->filename), is_bm);
 		if (is_bm && (articles[i].accessed[0] & FILE_IMPORTED))
 			flags[1] = 'y';
 		else
