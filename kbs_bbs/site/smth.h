@@ -364,7 +364,7 @@ attach define
 #define NEW_HELP
 #define HAVE_DEFAULT_HELPMODE
 
-#define COMMEND_ARTICLE "commend"
+#define COMMEND_ARTICLE "Recommend"
 
 #define NOT_USE_DEFAULT_SMS_FUNCTIONS
 
