@@ -154,7 +154,7 @@ void main()
     fprintf(fp, "%4s %-12s  %8s  %8s\n", "名次", "尊姓大名", "累计积分", "名人等级");
     j=0;
     for(i=0;i<MAXK;i++) {
-        strcpy(buf "");
+        strcpy(buf, "");
         if(statlib[i].score<100) strcpy(buf, "无名小卒");
         else if(statlib[i].score<1000) strcpy(buf, "碌碌无闻");
         else if(statlib[i].score<10000) strcpy(buf, "");
@@ -269,7 +269,7 @@ void main()
     fprintf(fp, "%4s %-12s  %8s  %8s\n", "名次", "尊姓大名", "累计积分", "名人等级");
     j=0;
     for(i=0;i<MAXK;i++) {
-        strcpy(buf "");
+        strcpy(buf, "");
         if(statlib[i].score<100) strcpy(buf, "无名小卒");
         else if(statlib[i].score<1000) strcpy(buf, "碌碌无闻");
         else if(statlib[i].score<10000) strcpy(buf, "");
