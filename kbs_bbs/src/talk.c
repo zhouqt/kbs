@@ -374,9 +374,11 @@ char q_id[IDLEN];
                 break;
             case 'S':
 #ifdef SMS_SUPPORT
+				/*
 		if(ch=='S')
 		    do_send_sms_func(uident, NULL);
 		else
+		*/
 #endif
 		{
 		    if (!((genbuf[0]) && seecount)) break;
