@@ -70,6 +70,187 @@
 			$sqlstr = "DELETE FROM addr WHERE userid=\"".$currentuser["userid"]."\" AND id=".$id;
 			$result = mysql_query($sqlstr) or die(mysql_error());
 
+		}else if(isset($action) && $action=="add"){
+			if( $_GET["submit"] || $_POST["submit"] ){
+				if( $_POST["t_name"] ){
+					$t_name = $_POST["t_name"];
+				}else{
+					html_error_quit("用户名输入错误");
+				}
+				$t_name = substr($t_name,0,12);
+				//$t_name[12]=0;
+
+				if( $_POST["t_group"] ){
+					$t_group = $_POST["t_group"];
+					$t_group = substr($t_group,0,12);
+					//$t_group[12]=0;
+				}else{
+					$t_group="";
+				}
+
+				if( $_POST["t_bbsid"] ){
+					$t_bbsid = $_POST["t_bbsid"];
+					$t_bbsid = substr($t_bbsid,0,12);
+					//$t_bbsid[12]=0;
+				}else{
+					$t_bbsid="";
+				}
+
+				if( $_POST["t_school"] ){
+					$t_school = $_POST["t_school"];
+					$t_school = substr($t_school,0,99);
+					//$t_school[99]=0;
+				}else{
+					$t_school="";
+				}
+
+				if( $_POST["t_zipcode"] ){
+					$t_zipcode = $_POST["t_zipcode"];
+					$t_zipcode = substr($t_zipcode,0,6);
+					//$t_zipcode[6]=0;
+				}else{
+					$t_zipcode="";
+				}
+
+				if( $_POST["t_homeaddr"] ){
+					$t_homeaddr = $_POST["t_homeaddr"];
+					$t_homeaddr = substr($t_homeaddr,0,99);
+					//$t_homeaddr[99]=0;
+				}else{
+					$t_homeaddr="";
+				}
+
+				if( $_POST["t_companyaddr"] ){
+					$t_companyaddr = $_POST["t_companyaddr"];
+					$t_companyaddr = substr($t_companyaddr,0,99);
+					//$t_companyaddr[99]=0;
+				}else{
+					$t_companyaddr="";
+				}
+
+				if( $_POST["t_tel_h"] ){
+					$t_tel_h = $_POST["t_tel_h"];
+					//$t_tel_h[19]=0;
+					$t_tel_h = substr($t_tel_h,0,19);
+				}else{
+					$t_tel_h="";
+				}
+
+				if( $_POST["t_tel_o"] ){
+					$t_tel_o = $_POST["t_tel_o"];
+					$t_tel_o = substr($t_tel_o,0,19);
+					//$t_tel_o[19]=0;
+				}else{
+					$t_tel_o="";
+				}
+
+				if( $_POST["t_mobile"] ){
+					$t_mobile = $_POST["t_mobile"];
+					$t_mobile = substr($t_mobile,0,12);
+					//$t_mobile[12]=0;
+				}else{
+					$t_mobile="";
+				}
+
+				if( $_POST["t_email"] ){
+					$t_email = $_POST["t_email"];
+					$t_email = substr($t_email,0,29);
+					//$t_email[29]=0;
+				}else{
+					$t_email="";
+				}
+
+				if( $_POST["t_qq"] ){
+					$t_qq = $_POST["t_qq"];
+					$t_qq = substr($t_qq,0,9);
+					//$t_qq[9]=0;
+				}else{
+					$t_qq="";
+				}
+
+				if( $_POST["t_birth_year"] ){
+					$t_birth_year = $_POST["t_birth_year"];
+					settype($t_birth_year, "integer");
+					if( $t_birth_year < 1000 || $t_birth_year > 9000 )
+						$t_birth_year=1900;
+				}else{
+					$t_birth_year = 1900;
+				}
+
+				if( $_POST["t_birth_month"] ){
+					$t_birth_month = $_POST["t_birth_month"];
+					settype($t_birth_month, "integer");
+					if( $t_birth_month < 1 || $t_birth_month > 12 )
+						$t_birth_month=1;
+				}else{
+					$t_birth_month = 1;
+				}
+
+				if( $_POST["t_birth_day"] ){
+					$t_birth_day = $_POST["t_birth_day"];
+					settype($t_birth_day, "integer");
+					if( $t_birth_day < 1 || $t_birth_day > 12 )
+						$t_birth_day=1;
+				}else{
+					$t_birth_day = 1;
+				}
+
+				if( $_POST["t_memo"] ){
+					$t_memo = $_POST["t_memo"];
+					$t_memo = substr( $t_memo, 0, 99);
+					//$t_memo{99}=0;
+				}else{
+					$t_memo="";
+				}
+
+				$sqlstr = "INSERT INTO addr VALUES (NULL, '".$currentuser["userid"]."', '".addslashes($t_name)."','".addslashes($t_bbsid)."','".addslashes($t_school)."','".addslashes($t_zipcode)."','".addslashes($t_homeaddr)."','".addslashes($t_companyaddr)."','".addslashes($t_tel_o)."','".addslashes($t_tel_h)."','".addslashes($t_mobile)."','".addslashes($t_email)."','".addslashes($t_qq)."',\"".$t_birth_year."-".$t_birth_month."-".$t_birth_day."\",'".addslashes($t_memo)."','".addslashes($t_group)."' );";
+
+				//echo $sqlstr;
+
+				$result = mysql_query($sqlstr) or die(mysql_error());
+
+				if( !$result ){
+					html_error_quit("失败");
+				}else{
+?>
+<a href="/bbsal.php?start=<?php echo $startnum;?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>">添加成功，返回</a>
+<?php
+					html_normal_quit();
+				}
+			}else{
+?>
+<body>
+<center><p><?php echo BBS_FULL_NAME; ?> -- 通讯录条目增加 [用户: <?php echo $currentuser["userid"]; ?>]</p>
+</center>
+<hr class=default>
+<form action="/bbsal.php?start=<?php echo $startnum;?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>&action=add" method=post>
+<table border="0">
+<tr><td>姓名:</td><td><input name="t_name" maxlength=13 size=13></td></tr>
+<tr><td>分组:</td><td><input name="t_group" maxlength=13 size=13></td></tr>
+<tr><td>bbsid:</td><td><input name="t_bbsid" maxlength=13 size=13></td></tr>
+<tr><td>学校:</td><td><input name="t_school" size=50></td></tr>
+<tr><td>邮政编码:</td><td><input name="t_zipcode" maxlength=6 size=6></td></tr>
+<tr><td>家庭住址:</td><td><input name="t_homeaddr" size=50></td></tr>
+<tr><td>工作地址:</td><td><input name="t_companyaddr" size=50></td></tr>
+<tr><td>家庭电话:</td><td><input name="t_tel_h" maxlength=20 size=20></td></tr>
+<tr><td>工作电话:</td><td><input name="t_tel_o" maxlength=20 size=20></td></tr>
+<tr><td>手机号码:</td><td><input name="t_mobile" maxlength=13 size=13></td></tr>
+<tr><td>email:</td><td><input name="t_email" maxlength=30 size=30></td></tr>
+<tr><td>qq:</td><td><input name="t_qq" maxlength=10 size=10></td></tr>
+<tr><td>生日:</td><td><input name="t_birth_year" maxlength=4 size=4>年<input name="t_birth_month" maxlength=2 size=2>月<input name="t_birth_day" maxlength=2 size=2>日</td></tr>
+<tr><td>备注:</td><td><input name="t_memo" size=50></td></tr>
+</table>
+<center>
+<input type=submit name=submit value="增加">
+<input type=reset name=reset value="重置">
+</center>
+</form>
+</body>
+
+<?php
+
+				html_normal_quit();
+			}
 		}
 
 		$sqlstr = "SELECT * FROM addr WHERE userid=\"".$currentuser["userid"]."\" ORDER BY ".$order." ".$descstr." LIMIT ".$startnum.",".$count;
@@ -128,6 +309,7 @@
 <?php
 		}
 ?>
+<a href="/bbsal.php?start=<?php echo $startnum;?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>&action=add">增加条目</a>
 
 <script language="javascript">
 <!--//
