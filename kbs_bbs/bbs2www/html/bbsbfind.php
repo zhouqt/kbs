@@ -36,9 +36,9 @@ login_init();
 <tr><td>标题不含: <input type="text" maxlength="50" size="20" name="title3">
 <tr><td>作者帐号: <input type="text" maxlength="12" size="12" name="userid"><br>
 <tr><td>时间范围: <input type="text" maxlength="4"  size="4"  name="dt" value="7"> 天以内<br>
-<tr><td><input type="checkbox" name="mg">精华文章<br>
-<tr><td><input type="checkbox" name="ag">带附件文章<br>
-<tr><td><input type="checkbox" name="og">不含跟贴<br><br>
+<tr><td><input type="checkbox" name="mg" id="mg"><label for="mg" style="cursor:hand;">精华文章</label><br>
+<tr><td><input type="checkbox" name="ag" id="ag"><label for="ag" style="cursor:hand;">带附件文章</label><br>
+<tr><td><input type="checkbox" name="og" id="og"><label for="og" style="cursor:hand;">不含跟贴</label><br><br>
 <tr><td><input type="submit" name="submit" value="递交查询结果">
 </form></table>[<a href="/bbsdoc.php?board=<?php echo $brdarr["NAME"];?>">本讨论区</a>]
 </html>
