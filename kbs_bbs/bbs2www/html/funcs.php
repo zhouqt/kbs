@@ -379,6 +379,32 @@ function ansi_convert( $buf , $defaultfg, $defaultbg)
     return $final;
 }
 
+function bbs_is_owner($article, $user)
+{
+	if ($article["OWNER"] == $user["userid"])
+		return 1;
+	else
+		return 0;
+}
+
+function bbs_can_delete_article($board, $article, $user)
+{
+	if (bbs_is_bm($board["NUM"], $user["index"]) 
+			|| bbs_is_owner($article, $user))
+		return 1;
+	else
+		return 0;
+}
+
+function bbs_can_edit_article($board, $article, $user)
+{
+	if (bbs_is_bm($board["NUM"], $user["index"]) 
+			|| bbs_is_owner($article, $user))
+		return 1;
+	else
+		return 0;
+}
+
 if (!isset($needlogin)&&($loginok!=1)&&($_SERVER["PHP_SELF"]!="/bbslogin.php")) {
 	error_nologin();
 	return;
