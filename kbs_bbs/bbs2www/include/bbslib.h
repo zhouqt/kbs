@@ -328,4 +328,13 @@ int www_generateOriginIndex(char* board);
 
 struct WWW_GUEST_S* www_get_guest_entry(int idx);
 
+/*
+#define DEBUG_WAIT \
+do {\
+	struct stat _dw_st; \
+	while (stat("/tmp/start", &_dw_st) < 0) \
+		sleep(1); \
+} while(0)
+*/
+
 #endif                          /* BBSLIB_H */
