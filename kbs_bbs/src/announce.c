@@ -1115,7 +1115,7 @@ int paste;
                         my_unlink(fpath);
                     } else if (dashd(fpath)) {
                         /*f_rm(fpath);*/
-        				my_unlink(fpath);
+        				my_f_rm(fpath);
                     }
 
                     pm2.path = uppath;
@@ -1236,7 +1236,7 @@ MENU *pm;
          * sprintf( genbuf, "/bin/rm -rf %s", fpath ); 
          */
         /*f_rm(fpath);*/
-        my_unlink(fpath);
+        my_f_rm(fpath);
     }
     free(item);
     (pm->num)--;
@@ -1864,7 +1864,7 @@ char bname[STRLEN], title[STRLEN];
     *ptr = '\0';
 
     /*f_rm(bpath);*/
-    my_unlink(bpath);
+    my_f_rm(bpath);
 
     pm.path = gpath;
     a_loadnames(&pm);

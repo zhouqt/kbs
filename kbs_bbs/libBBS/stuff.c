@@ -2103,14 +2103,9 @@ void long2byte(unsigned int num, byte* arg) {
     (arg)[3]=(num<<24)>>24;
 }
 
-int my_unlink(char *fname)
+#ifdef MYUNLINK_BACKUPDIR
+static int backup_mv(char *fname)
 {
-
-#ifndef MYUNLINK_BACKUPDIR
-/*    return f_rm(fname);*/
-    return unlink(fname);
-#else
-
 	char *buf;
 	char *cmd;
 	char *c;
@@ -2157,6 +2152,24 @@ int my_unlink(char *fname)
 	free(cmd);
 
 	return 0;
+}
+#endif
+
+int my_f_rm(char *fname)
+{
+#ifndef MYUNLINK_BACKUPDIR
+    return f_rm(fname);
+#else
+	return backup_mv(fname);
+#endif
+}
+
+int my_unlink(char *fname)
+{
+#ifndef MYUNLINK_BACKUPDIR
+    return unlink(fname);
+#else
+	return backup_mv(fname);
 #endif
 }
 
@@ -2238,4 +2251,125 @@ void unlock_sem_check(int lockid)
 	}
 }
 
+#if HAVE_MYSQL_SMTH == 1
+#ifdef BMSLOG
 
+int bms_add(char *userid, char *boardname, time_t in, time_t out, char *memo )
+{
+	MYSQL s;
+	char sql[700];
+	char newmemo[512];
+	char newts[20];
+	char newtsout[20];
+
+	newmemo[0]=0;
+
+	mysql_init(&s);
+
+	if (! my_connect_mysql(&s) ){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		return 0;
+	}
+
+	if(memo && memo[0])
+		mysql_escape_string(newmemo, memo, strlen(memo));
+
+	sprintf(sql,"INSERT INTO bms VALUES ( '%s', '%s', '%s','%s' ,'%s', '%s');",userid, boardname, tt2timestamp(in,newts), tt2timestamp(out,newtsout) , currentuser->userid, newmemo);
+//		sprintf(sql,"UPDATE users SET description='%s', corpusname='%s', theme='%s', nodelimit=%d, dirlimit=%d, createtime='%s' WHERE uid=%u AND username='%s' ;",newdesc, newcorp, newtheme, pn->nodelimit, pn->dirlimit, tt2timestamp(pn->createtime,newts), pn->uid, pn->username );
+	
+
+	if( mysql_real_query( &s, sql, strlen(sql) )){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		mysql_close(&s);
+		return 0;
+	}
+	
+	mysql_close(&s);
+
+	return 1;
+}
+
+int bms_update(char *userid, char *boardname, time_t in, time_t out, char *memo )
+{
+	MYSQL s;
+	char sql[700];
+	char newmemo[512];
+	char newts[20];
+	char newtsout[20];
+
+	newmemo[0]=0;
+
+	mysql_init(&s);
+
+	if (! my_connect_mysql(&s) ){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		return 0;
+	}
+
+	if(memo[0])
+		mysql_escape_string(newmemo, memo, strlen(memo));
+
+	sprintf(sql,"UPDATE bms SET in='%s', out='%s', memo='%s' WHERE userid='%s' AND board='%s' ;", tt2timestamp(in,newts), tt2timestamp(out,newtsout) , newmemo, userid, boardname);
+	
+	if( mysql_real_query( &s, sql, strlen(sql) )){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		mysql_close(&s);
+		return 0;
+	}
+	
+	mysql_close(&s);
+
+	return 1;
+}
+
+int bms_del(char *userid, char *boardname)
+{
+	MYSQL s;
+	char sql[200];
+
+	mysql_init(&s);
+
+	if (! my_connect_mysql(&s) ){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		return 0;
+	}
+
+	sprintf(sql,"DELETE FROM bms WHERE userid='%s' AND board='%s' ;", userid, boardname);
+	
+	if( mysql_real_query( &s, sql, strlen(sql) )){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		mysql_close(&s);
+		return 0;
+	}
+	
+	mysql_close(&s);
+
+	return 1;
+}
+
+#endif //BMSLOG
+#endif //HAVE_MYSQL_SMTH

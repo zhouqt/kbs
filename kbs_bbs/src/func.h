@@ -129,6 +129,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     int import_old_mailgroup(const char *userid, mailgroup_list_t * mgl);
 
     int my_unlink(char *fname);/*封装unlink,用于定义备份的文件*/
+    int my_f_rm(char *fname);/*封装f_rm,用于定义备份的文件*/
     int gettmpfilename(char *retchar, char *fmt, ...); /*获得临时文件名*/
     int setmailcheck(char *userid); /*设置mail检查标志*/
     void save_maxuser(ARG_VOID);
