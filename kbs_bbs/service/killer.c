@@ -90,6 +90,11 @@ int add_room(struct room_struct * r)
     for(i=0;i<*roomst;i++)
     if(!strcmp(rooms[i].name, r->name))
         return -1;
+    for(i=0;i<*roomst;i++)
+    if(rooms[i].name[0]==0) {
+        memcpy(&(rooms[i]), r, sizeof(struct room_struct));
+        return 0;
+    }
     memcpy(&(rooms[*roomst]), r, sizeof(struct room_struct));
     (*roomst)++;
     return 0;
@@ -100,9 +105,7 @@ int del_room(struct room_struct * r)
     int i, j;
     for(i=0;i<*roomst;i++)
     if(!strcmp(rooms[i].name, r->name)) {
-        (*roomst)--;
-        for(j=i;j<*roomst;j++)
-            memcpy(&(rooms[i]), &(rooms[i+1]), sizeof(struct room_struct));
+        rooms[i].name[0]=0;
         break;
     }
     return 0;
@@ -439,7 +442,7 @@ int do_com_menu()
                     move(t_lines-1, 0);
                     resetcolor();
                     clrtoeol();
-                    getdata(t_lines-1, 0, "请输入名字:", buf, 12, 1, 0, 1);
+                    getdata(t_lines-1, 0, "请输入名字:", buf, 13, 1, 0, 1);
                     if(buf[0]) {
                         for(me=0;me<myroom->people;me++)
                             if(inrooms.peoples[me].pid==uinfo.pid) break;
@@ -478,7 +481,7 @@ int do_com_menu()
                     move(t_lines-1, 0);
                     resetcolor();
                     clrtoeol();
-                    getdata(t_lines-1, 0, "请输入话题:", buf, 30, 1, 0, 1);
+                    getdata(t_lines-1, 0, "请输入话题:", buf, 31, 1, 0, 1);
                     if(buf[0]) {
                         start_change_inroom(myroom);
                         strcpy(inrooms.title, buf);
@@ -494,25 +497,24 @@ int do_com_menu()
                     getdata(t_lines-1, 0, "请输入房间最大人数:", buf, 30, 1, 0, 1);
                     if(buf[0]) {
                         i=atoi(buf);
-                        if(i>0) {
+                        if(i>0)
                             myroom->maxpeople = i;
-                            move(t_lines-1, 0);
-                            clrtoeol();
-                            getdata(t_lines-1, 0, "设置为隐藏房间? [Y/N]", buf, 30, 1, 0, 1);
-                            buf[0]=toupper(buf[0]);
-                            if(buf[0]=='Y'||buf[0]=='N') {
-                                if(buf[0]=='Y') myroom->flag|=ROOM_SECRET;
-                                else myroom->flag&=~ROOM_SECRET;
-                                move(t_lines-1, 0);
-                                clrtoeol();
-                                getdata(t_lines-1, 0, "设置为锁定房间? [Y/N]", buf, 30, 1, 0, 1);
-                                buf[0]=toupper(buf[0]);
-                                if(buf[0]=='Y'||buf[0]=='N') {
-                                    if(buf[0]=='Y') myroom->flag|=ROOM_LOCKED;
-                                    else myroom->flag&=~ROOM_LOCKED;
-                                }
-                            }
-                        }
+                    }
+                    move(t_lines-1, 0);
+                    clrtoeol();
+                    getdata(t_lines-1, 0, "设置为隐藏房间? [Y/N]", buf, 30, 1, 0, 1);
+                    buf[0]=toupper(buf[0]);
+                    if(buf[0]=='Y'||buf[0]=='N') {
+                        if(buf[0]=='Y') myroom->flag|=ROOM_SECRET;
+                        else myroom->flag&=~ROOM_SECRET;
+                    }
+                    move(t_lines-1, 0);
+                    clrtoeol();
+                    getdata(t_lines-1, 0, "设置为锁定房间? [Y/N]", buf, 30, 1, 0, 1);
+                    buf[0]=toupper(buf[0]);
+                    if(buf[0]=='Y'||buf[0]=='N') {
+                        if(buf[0]=='Y') myroom->flag|=ROOM_LOCKED;
+                        else myroom->flag&=~ROOM_LOCKED;
                     }
                     for(i=0;i<myroom->people;i++)
                         kill(inrooms.peoples[i].pid, SIGUSR1);
@@ -570,11 +572,13 @@ void join_room(struct room_struct * r)
                 selected--;
                 if(selected<0) selected = myroom->people-1;
                 if(ipage>selected) ipage=selected;
+                if(selected>ipage+t_lines-5) ipage=selected-(t_lines-5);
                 refreshit();
             }
             else if(ch==KEY_DOWN) {
                 selected++;
                 if(selected>=myroom->people) selected=0;
+                if(ipage>selected) ipage=selected;
                 if(selected>ipage+t_lines-5) ipage=selected-(t_lines-5);
                 refreshit();
             }
