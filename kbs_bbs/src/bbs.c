@@ -2939,6 +2939,8 @@ int show_t_friends()
     return FULLUPDATE;
 }
 
+extern int super_filter(int ent, struct fileheader *fileinfo, char *direct);
+
 struct one_key read_comms[] = { /*阅读状态，键定义 */
     {'r', read_post},
     {'K', skip_post},
@@ -2954,7 +2956,7 @@ struct one_key read_comms[] = { /*阅读状态，键定义 */
     {'@', censor_post},         /* czz: 2002.9.29 审核被过滤文章 */
 #endif
     {'E', edit_post},
-    {Ctrl('G'), change_mode},   /* bad : 2002.8.8 add marked mode */
+    {Ctrl('G'), super_filter},   /* bad : 2002.8.8 add marked mode */
     {'H', read_hot_info},   /* flyriver: 2002.12.21 增加热门信息显示 */
     {'`', digest_mode},
     {'.', deleted_mode},
