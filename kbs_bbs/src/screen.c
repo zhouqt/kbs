@@ -392,8 +392,7 @@ clrstandout()
 }
 
 void
-outc(c)
-register unsigned char c ;
+outc(const unsigned char c )
 {
     register struct screenline *slp ;
     register unsigned char reg_col;
@@ -489,7 +488,7 @@ int n ;
 {
     register int reg_col=0;
     register struct screenline *slp=NULL ;
-    register len=0;
+    register int len=0;
     unsigned char* begin_str=str;
     int begincol=0;
 
@@ -698,13 +697,6 @@ endprint:
 }
 
 void
-addch(ch)
-int     ch;
-{
-    outc(ch) ;
-}
-
-void
 scroll()
 {
     scrollcnt++ ;
@@ -819,9 +811,7 @@ lock_scr() /* Leeward 98.02.22 */
     }
 }
 
-void
-printdash( mesg )       
-char    *mesg;          
+void printdash( char    *mesg)
 {
     char        buf[ 80 ], *ptr;
     int         len;

@@ -68,6 +68,7 @@ struct user_info *t_search();
 const char *msg_seperator = "———————————————————————————————————————";
 const char *msg_shortulist = "\033[33m\033[44m 使用者代号    目前状态  │ 使用者代号    目前状态  │ 使用者代号    目前状态 \033[m";
 
+static int ent_chat(int chatnum);  /* 进入聊天室*/
 
 int chat_waitkey(chatcontext *pthis)
 {
@@ -451,7 +452,7 @@ int ent_chat_conn(chatcontext * pthis, int chatnum)
     return 1;
 }
 
-int ent_chat(int chatnum)  /* 进入聊天室*/
+static int ent_chat(int chatnum)  /* 进入聊天室*/
 {
     chatcontext *pthis;
     

@@ -43,6 +43,9 @@ int friend_edit();
 int friend_help();
 int badlist(); /* Bigman 2000.12.26 */
 
+
+static int do_talk(int fd);
+
 /* Bigman 2000.9.15 Talk的记录 */
 #ifdef TALK_LOG
 void    do_log();
@@ -374,7 +377,7 @@ num_alcounter()
 {
 	count_friends=0;
 	count_users=0;
-    apply_ulist_addr( alcounter,0 ) ;
+    apply_ulist_addr( (APPLY_UTMP_FUNC)alcounter,0 ) ;
     return;
 }
 
@@ -466,7 +469,7 @@ struct user_info *userinfo ;
         }
         genbuf[0]=0;
         ts.count=0;
-        ucount = apply_utmp( talk_showstatus, 20,uident, &ts);
+        ucount = apply_utmp((APPLY_UTMP_FUNC) talk_showstatus, 20,uident, &ts);
         move(3,0);
         prints("目前 %s 的 %d logins 如下: \n", uident, ucount);
         clrtobot() ;
@@ -1090,9 +1093,7 @@ endmsg(void* data)
     return;
 }
 
-int
-do_talk(fd)
-int fd ;
+static int do_talk(int fd)
 {
     struct talk_win     mywin, itswin;
     char        mid_line[ 256 ];
@@ -1594,22 +1595,6 @@ char *fname;
     fclose(fp);
     if (cnt == 0) prints("(none)\n");
     return cnt;
-}
-
-int
-addtofile(filename,str)
-char filename[STRLEN],str[STRLEN];
-{
-    FILE *fp;
-    int rc;
-
-    if ((fp = fopen(filename, "a")) == NULL)
-        return -1;
-    flock(fileno(fp), LOCK_EX);
-    rc = fprintf( fp, "%s\n",str);
-    flock(fileno(fp), LOCK_UN);
-    fclose(fp);
-    return(rc == EOF ? -1 : 1);
 }
 
 int

@@ -264,14 +264,14 @@ int apply_record(char *filename ,RECORD_FUNC_ARG fptr,int size ,void* arg,int ap
 #endif
 
 /* COMMAN : use mmap to speed up searching */ 
-int search_record_back(filename, size, start, fptr, farg, rptr, sorted)
-char *filename ; /* idx file name */
-int size ;	/* record size */
-int start ;	/* where to start reverse search */
-int (*fptr)() ;	/* compare function */
-char *farg ;	/* additional param to call fptr() / original record */
-char *rptr ;	/* record data buffer to be used for reading idx file */
-int sorted ; /* if records in file are sorted */
+int search_record_back(
+	char *filename , /* idx file name */
+	int size ,	/* record size */
+	int start ,	/* where to start reverse search */
+	RECORD_FUNC_ARG¡¡fptr ,	/* compare function */
+	void *farg ,	/* additional param to call fptr() / original record */
+	void *rptr ,	/* record data buffer to be used for reading idx file */
+	int sorted ) /* if records in file are sorted */
 {
     char *buf,*buf1;
     int fd,i;

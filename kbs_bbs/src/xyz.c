@@ -26,7 +26,6 @@ int use_define=0;
 extern int iscolor;
 extern int switch_code(); /* KCN,99.09.05 */
 extern int convcode; /* KCN,99.09.05 */
-
 int
 modify_user_mode( mode )
 int     mode;
@@ -96,12 +95,7 @@ int     pbits, i;
     return YEA;
 }
 
-unsigned int
-setperms(pbits,prompt,numbers,showfunc)
-unsigned int pbits;
-char *prompt;
-int numbers;
-int (*showfunc)();
+unsigned int setperms(unsigned int pbits,char *prompt,int numbers,int (*showfunc)(unsigned int ,int ,int))
 {
     int lastperm = numbers - 1;
     int i, done = NA;

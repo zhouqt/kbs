@@ -271,7 +271,7 @@ char *prompt, *data ;
                 morelist = NULL ;
                 x-- ;
                 move(y,x) ;
-                addch(' ') ;
+                outc(' ') ;
                 move(y,x) ;
                 continue ;
             }
@@ -293,7 +293,7 @@ char *prompt, *data ;
                 cwlist = node ;
                 morelist = NULL ;
                 move(y,x) ;
-                addch(ch) ;
+                outc(ch) ;
                 x++ ;
             }
             else bell();
@@ -456,7 +456,7 @@ char *prompt, *data ;
                 cwnum=0;
                 x--;
                 move( y, x );
-                addch( ' ' );
+                outc( ' ' );
                 move( y, x );
                 continue;
             } else if (isprint2(ch))
@@ -478,7 +478,7 @@ char *prompt, *data ;
                     count++;
                     morenum = 0;
                     move( y, x );
-                    addch( ch );
+                    outc( ch );
                     x++;
             	}
 				else

@@ -132,10 +132,7 @@ static void (*i_timeout_func)(void*);
 static struct timeval i_to, *i_top = NULL ;
 static void *timeout_data;
 
-void
-add_io(fd,timeout)
-int fd ;
-int timeout ;
+void add_io(int fd,int timeout)
 {
     i_newfd = fd ;
     if(timeout) {
@@ -145,9 +142,7 @@ int timeout ;
     } else i_top = NULL ;
 }
 
-void
-add_flush(flushfunc)
-int (*flushfunc)() ;
+void add_flush(int (*flushfunc)() )
 {
     flushf = flushfunc ;
 }

@@ -207,33 +207,6 @@ char *fname;
     return 0;
 }
 
-/*Add by SmallPig*/
-int
-catnotepad( fp, fname )
-FILE *fp;
-char *fname;
-{
-    char inbuf[256];
-    FILE *sfp;
-    int count;
-
-    count=0;
-    if ( ( sfp = fopen( fname, "r" ) ) == NULL )
-    {
-        fprintf(fp,"[31m[41m¡Ñ©Ø¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©Ø¡Ñ[m\n\n");
-        return -1;
-    }
-    while ( fgets( inbuf, sizeof( inbuf ), sfp ) != NULL )
-    {
-        if(count!=0)
-            fputs( inbuf, fp );
-        else
-            count++;
-    }
-    fclose( sfp );
-    return 0;
-}
-
 int
 vote_close()
 {

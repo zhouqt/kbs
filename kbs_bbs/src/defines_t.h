@@ -24,11 +24,13 @@ void standout();
 void redoscr();
 void initscr() ;
 void bell();
-void outc(register const unsigned char c);
+void outc(const unsigned char c);
 void outns(const unsigned char *str, int n);
 void getyx(int *y,int *x);
 void outs(register const char *str);
-
+void printdash(char* mesg);
+void scroll();
+void rscroll();
 
 /* newio.c */
 void oflush();
@@ -36,6 +38,9 @@ int getdata(int line, int col,char* prompt,char* buf,int  len,int  echo,int nous
 void set_alarm(int set_timeout,void (*timeout_func)(void*),void* data);
 int igetkey();
 void check_calltime();
+void add_io(int fd,int timeout);
+void add_flush(int (*flushfunc)() );
+int igetch();
 
 /* xyz.c*/
 int modify_user_mode(int mode);
@@ -59,7 +64,7 @@ void showtitle(char* title,char* mid);
 void abort_bbs();
 int egetch();
 void update_endline();
-
+void set_numofsig();
 /* bbs.c*/
 void record_exit_time();   /* 记录离线时间  Luzi 1998/10/23 */
 void shownotepad();
@@ -84,7 +89,7 @@ int post_reply(int ent,struct fileheader *fileinfo,char *direct );
 int sequential_read2(int ent);
 void setquotefile(char filepath[]);
 void do_quote(char *filepath,char quote_mode);
-
+void setqtitle(char* stitle);
 /*vote.c*/
 void makevdir(char* bname);
 void setvfile(char* buf,char* bname,char* filename);
@@ -96,7 +101,7 @@ int chkmail();
 int getmailnum(char recmaildir[STRLEN]);
 int get_mailnum();
 int invalidaddr(char*addr);
-
+int doforward(char *direct,struct boardheader*fh,int isuu);
 /* maintain.c */
 int check_systempasswd();
 void stand_title(char* title);
@@ -113,6 +118,8 @@ int friend_add(int ent,struct friends * fh,char* direct);
 void talk_request();
 int getfriendstr();
 int num_user_logins(char* uid);
+int listfilecontent(char* fname);
+int m_send(char userid[]);
 
 /* delete.c */
 int kick_user(struct user_info *userinfo);
@@ -154,6 +161,8 @@ int countlogouts(char filename[STRLEN]);
 
 /* userinfo.c */
 void disply_userinfo(struct userec *u ,int real);
+int uinfo_query(struct userec *u,int real,int unum);
+
 
 /* commlist.c */
 int domenu(char* menu_name);
@@ -172,7 +181,11 @@ void show_goodbyeshm();
 
 /* newterm.c */
 int term_init();
+void do_move(int destcol,int destline,int (*outc)(char));
 
+/* xyz.c */
+int do_exec(char* com,char*wd);
+unsigned int setperms(unsigned int pbits,char *prompt,int numbers,int (*showfunc)(unsigned int ,int ,int));
 void  record_exit_time();
 
 #endif

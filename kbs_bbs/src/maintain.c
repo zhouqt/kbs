@@ -445,7 +445,6 @@ int m_newbrd()
         clear();
         return -1;
     }
-    reload_boards();
     getdata(7, 0, "是否加入匿名板 (Y/N)? [N]: ", ans, 4, DOECHO, NULL, YEA);
     if (ans[0] == 'Y' || ans[0] == 'y')
         addtofile("etc/anonymous", newboard.filename);
@@ -644,7 +643,6 @@ enterbname:
                 }
             }
             substitute_record(BOARDS, &newfh, sizeof(newfh), pos);
-            reload_boards();
             if (noidboard == 1 && !seek_in_file("etc/anonymous", newfh.filename))
                 addtofile("etc/anonymous", newfh.filename);
             else

@@ -49,7 +49,7 @@ static int search_post(struct keeploc  *locmem,int  offset);
 static int search_title(struct keeploc  *locmem,int  offset);
 static int i_read_key(struct one_key * rcmdlist, struct keeploc * locmem,int ch, int ssize, char * pnt);
 static int cursor_pos(struct keeploc *locmem,int val,int from_top);
-
+static int search_thread(struct keeploc  *locmem,int offset,char *title);
 /*struct fileheader *files = NULL;*/
 char            currdirect[ 255 ]; /*COMMAN: increased directory length to MAX_PATH */
 int             screen_len;
@@ -1081,11 +1081,7 @@ int             offset;
     return search_articles( locmem, title, offset, 0 );
 }
 
-int
-search_thread( locmem, offset ,title)
-struct keeploc  *locmem;
-int             offset;
-char            *title;
+static int search_thread(struct keeploc  *locmem,int offset,char *title)
 {
 
     if( title[0] == 'R' && (title[1] == 'e'||title[1] == 'E') && title[2] == ':' )

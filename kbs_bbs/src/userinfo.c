@@ -96,10 +96,7 @@ int     real;
 }
 
 
-int
-uinfo_query( u, real, unum )
-struct userec *u ;
-int     real, unum;
+int uinfo_query(struct userec *u,int real,int unum)
 {
     struct userec       newinfo;
     char        ans[3], buf[ STRLEN ],*emailfile,genbuf[STRLEN];

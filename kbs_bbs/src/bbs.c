@@ -49,6 +49,7 @@ struct friends_info *topfriend;
 char replytitle[STRLEN];
 #endif
 
+int outgo_post(struct fileheader* fh,char* board);
 char    *filemargin() ;
 /*For read.c*/
 int     auth_search_down();
@@ -207,8 +208,7 @@ check_stuffmode()
 
 /*Add by SmallPig*/
 void
-setqtitle(stitle)   /* È¡ Reply ÎÄÕÂºóÐÂµÄ ÎÄÕÂtitle */
-char *stitle;
+setqtitle(char* stitle)   /* È¡ Reply ÎÄÕÂºóÐÂµÄ ÎÄÕÂtitle */
 {
     FFLL=1;
     if(strncmp(stitle,"Re: ",4)!=0&&strncmp(stitle,"RE: ",4)!=0)
@@ -2500,7 +2500,7 @@ char *direct ;*/
     sequent_ent = ent ;
     continue_flag = 0;
     setbdir( digestmode,buf, currboard );
-    apply_record( buf,sequent_messages,sizeof(struct fileheader),&continue_flag,1) ;
+    apply_record( buf,(RECORD_FUNC_ARG)sequent_messages,sizeof(struct fileheader),&continue_flag,1) ;
     return FULLUPDATE ;
 }
 
@@ -2641,6 +2641,30 @@ Read()
     return 0 ;
 }
 
+/*Add by SmallPig*/
+static int catnotepad(FILE *fp,char *fname)
+{
+    char inbuf[256];
+    FILE *sfp;
+    int count;
+
+    count=0;
+    if ( ( sfp = fopen( fname, "r" ) ) == NULL )
+    {
+        fprintf(fp,"[31m[41m¡Ñ©Ø¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©Ø¡Ñ[m\n\n");
+        return -1;
+    }
+    while ( fgets( inbuf, sizeof( inbuf ), sfp ) != NULL )
+    {
+        if(count!=0)
+            fputs( inbuf, fp );
+        else
+            count++;
+    }
+    fclose( sfp );
+    return 0;
+}
+
 void
 notepad()
 {
@@ -2707,30 +2731,6 @@ notepad()
     }
     clear();
     return;
-}
-
-time_t get_exit_time(id,exittime) /* »ñÈ¡ÀëÏßÊ±¼ä£¬id:ÓÃ»§ID,
-                                   exittime:±£´æ·µ»ØµÄÊ±¼ä£¬½áÊø·ûÎª\n
-                                            ½¨Òé¶¨ÒåÎª char exittime[40]
-                                   Luzi 1998/10/23 */
-/* Leeward 98.10.26 add return value: time_t */
-char *id;
-char *exittime;
-{
-    char path[80];
-    FILE *fp;
-    time_t now = 1; /* if fopen failed return 1 -- Leeward */
-    sethomefile( path, id , "exit");
-    fp=fopen(path, "rb");
-    if (fp!=NULL)
-    {
-        fread(&now,sizeof(time_t),1,fp);
-        fclose(fp);
-        strcpy(exittime, ctime(&now));
-    }
-    else exittime[0]='\n';
-
-    return now;
 }
 
 void record_exit_time()   /* ¼ÇÂ¼ÀëÏßÊ±¼ä  Luzi 1998/10/23 */
@@ -3125,7 +3125,7 @@ char *direct ;
             pressreturn() ;
             return DIRCHANGED;
     }
-    newent=substitute_record_comp(direct, fileinfo, sizeof(*fileinfo), ent,fileinfo,strcmp,&mkpost);
+    newent=substitute_record_comp(direct, fileinfo, sizeof(*fileinfo), ent,fileinfo,(RECORD_FUNC_ARG)strcmp,&mkpost);
     if (newent)
     {
             move(2,0) ;

@@ -47,10 +47,6 @@ static int bcache_unlock(int fd)
     close(fd);
 }
 
-void
-reload_boards()
-{
-}
 static void bcache_setreadonly(int readonly)
 {
    int boardfd;

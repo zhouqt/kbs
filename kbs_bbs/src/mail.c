@@ -56,6 +56,8 @@ char    currmaildir[ STRLEN ] ;
 #define maxrecp 300
 
 static int mail_reply(int ent ,struct fileheader *fileinfo ,char *direct );
+static int mail_del(int ent,struct fileheader *fileinfo ,char *direct );
+static int do_gsend(char *userid[],char *title,int num);
 
 int chkreceiver(char* userid,struct userec* lookupuser)
 /*Haohmaru.99.4.4.检查收信者信箱是否满,改动下面的数字时请同时改动do_send do_gsend doforward doforward函数*/
@@ -749,9 +751,7 @@ edit_mail_file:
     }
 }
 
-int
-m_send(userid)
-char userid[];
+int m_send(char userid[])
 {
     char uident[STRLEN] ;
 
@@ -1085,11 +1085,7 @@ static int mail_reply(int ent ,struct fileheader *fileinfo ,char *direct )
     return FULLUPDATE ;
 }
 
-int
-mail_del(ent,fileinfo,direct)
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
+static int mail_del(int ent,struct fileheader *fileinfo ,char *direct )
 {
     char buf[512] ;
     char *t ;
@@ -1535,10 +1531,7 @@ case 'I':case 'i':
 
 /*Add by SmallPig*/
 
-int
-do_gsend(userid,title,num)
-char *userid[], *title ;
-int num ;
+static int do_gsend(char *userid[],char *title,int num)
 {
     struct stat st ;
     char        buf2[256],buf3[STRLEN],buf4[STRLEN];

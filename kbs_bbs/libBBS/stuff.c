@@ -968,3 +968,43 @@ encodestr( register char *str )
     *buf = '\0';
 }
 
+int addtofile(filename,str)
+char filename[STRLEN],str[STRLEN];
+{
+    FILE *fp;
+    int rc;
+
+    if ((fp = fopen(filename, "a")) == NULL)
+        return -1;
+    flock(fileno(fp), LOCK_EX);
+    rc = fprintf( fp, "%s\n",str);
+    flock(fileno(fp), LOCK_UN);
+    fclose(fp);
+    return(rc == EOF ? -1 : 1);
+}
+
+time_t get_exit_time(id,exittime) /* 获取离线时间，id:用户ID,
+                                   exittime:保存返回的时间，结束符为\n
+                                            建议定义为 char exittime[40]
+                                   Luzi 1998/10/23 */
+/* Leeward 98.10.26 add return value: time_t */
+char *id;
+char *exittime;
+{
+    char path[80];
+    FILE *fp;
+    time_t now = 1; /* if fopen failed return 1 -- Leeward */
+    sethomefile( path, id , "exit");
+    fp=fopen(path, "rb");
+    if (fp!=NULL)
+    {
+        fread(&now,sizeof(time_t),1,fp);
+        fclose(fp);
+        strcpy(exittime, ctime(&now));
+    }
+    else exittime[0]='\n';
+
+    return now;
+}
+
+
