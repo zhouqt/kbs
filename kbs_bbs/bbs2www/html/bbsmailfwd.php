@@ -28,7 +28,6 @@
 			html_error_quit("´íÎóµÄ²ÎÊı2");
 		}
 		$dir = "mail/".strtoupper($currentuser["userid"]{0})."/".$currentuser["userid"]."/".$dirname ;
-
 		$total = filesize( $dir ) / 256 ;
 		if( $total <= 0 ){
 			html_init("gb2312");
