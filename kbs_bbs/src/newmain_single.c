@@ -469,7 +469,7 @@ int check_ip_acl(char * id, char * sip)
         while(!feof(fp)) {
             if(fscanf(fp, "%d.%d.%d.%d %d %d", &rip[0], &rip[1], &rip[2], &rip[3], &l, &a)<=0) break;
             rips = (rip[0]<<24)+(rip[1]<<16)+(rip[2]<<8)+rip[3];
-            if(((ips>>(32-l))<<(32-l))==((rips>>(32-l))<<(32-l))) {
+            if(((ips>>(32-l))<<(32-l))==((rips>>(32-l))<<(32-l))||l==0) {
                 fclose(fp);
                 return a;
             }
