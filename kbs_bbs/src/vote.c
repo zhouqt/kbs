@@ -423,7 +423,7 @@ static int mk_result(int num)
     fclose(sug);
     sug = NULL;
     sprintf(title, "[公告] %s 版的投票结果", currboard->filename);
-    mail_file(currentuser->userid, nname, currvote.userid, title, 0, NULL);
+    mail_file("deliver", nname, currvote.userid, title, 0, NULL);
 #ifdef NINE_BUILD
     if (1)
 #else
