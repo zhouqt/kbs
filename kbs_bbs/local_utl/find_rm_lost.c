@@ -10,6 +10,12 @@
 #define NUMBUFFER 100
 #define HASHSIZE 50
 
+#define SMTH
+
+#ifdef SMTH
+const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+#endif
+
 char *(spcname[]) = {
 "deny_users", "read_club_users", "write_club_users", NULL};
 
@@ -31,7 +37,7 @@ int
 ispostfilename(char *file)
 {
 	if (strncmp(file, "M.", 2) && strncmp(file, "G.", 2)
-	    &&strncmp(file, "D.", 2) && strncmp(file, "J.", 2))
+	    &&strncmp(file, "D.", 2) && strncmp(file, "J.", 2) && strncmp(file, "Z.", 2))
 		return 0;
 	if (!isdigit(file[3]))
 		return 0;
@@ -56,7 +62,14 @@ countfile(struct fileheader *fhdr, int index, void *farg)
 	int i, h;
 	char *fname = fhdr->filename;
 	nindexitem++;
+#ifndef SMTH
 	h = hash(fname);
+#else
+	if( fname[1] == '/' )
+		h = hash(fname+2);
+	else
+		h = hash(fname);
+#endif
 	for (i = 0; i < nfile[h]; i++) {
 		if (strcmp(allpost[h][i], fname))
 			continue;
@@ -83,7 +96,7 @@ testPOWERJUNK(char *path, char *fn)
 }
 
 int
-getallpost(char *path)
+getallpost(char *path, char prefix)
 {
 	DIR *dirp;
 	struct dirent *direntp;
@@ -96,6 +109,14 @@ getallpost(char *path)
 			testPOWERJUNK(path, direntp->d_name);
 			continue;
 		}
+#ifdef SMTH
+		if( prefix == NULL && strlen(direntp->d_name)==1 && strchr( alphabet, direntp->d_name[0] ) ){
+			char buf[200];
+			sprintf(buf, "%s/%c", path, direntp->d_name[0] );
+			getallpost(buf, direntp->d_name[0]);
+			continue;
+		}
+#endif
 		if (ispostfilename(direntp->d_name)) {
 			h = hash(direntp->d_name);
 			if (nfile[h] >= MAXFILE) {
@@ -103,7 +124,14 @@ getallpost(char *path)
 				exit(0);
 			}
 			refcount[h][nfile[h]] = 0;
+#ifndef SMTH
 			strcpy(allpost[h][nfile[h]++], direntp->d_name);
+#else
+			if( prefix == NULL )
+				strcpy(allpost[h][nfile[h]++], direntp->d_name);
+			else
+				snprintf(allpost[h][nfile[h]++], 20, "%c/%s", prefix, direntp->d_name);
+#endif
 			continue;
 		}
 		if (isspcname(direntp->d_name))
@@ -137,12 +165,20 @@ rm_lost(char *path)
 			totalref += refcount[h][i];
 			if (!refcount[h][i]) {
 				lost++;
+#ifndef SMTH
 				t = atoi(allpost[h][i] + 2);
+#else
+				if(allpost[h][i][1]=='/')
+					t = atoi(allpost[h][i] + 4);
+				else
+					t = atoi(allpost[h][i] + 2);
+#endif
 				if (time(NULL) - t < MINAGE) {
 					//printf("Too young to die, %d %d\n", t, time(NULL));
 					continue;
 				}
 				sprintf(buf, "%s/%s", path, allpost[h][i]);
+				//printf("--%s\n", buf);
 				unlink(buf);
 			}
 		}
@@ -167,7 +203,7 @@ find_rm_lost(struct boardheader *bhp,void* arg)
 	}
 	otherfile[0] = 0;
 	sprintf(buf, "boards/%s", bhp->filename);
-	if (getallpost(buf) < 0)
+	if (getallpost(buf, NULL) < 0)
 		return -1;
 	sprintf(buf, "boards/%s/.DIR", bhp->filename);
 	if (dashf(buf))
@@ -182,6 +218,10 @@ find_rm_lost(struct boardheader *bhp,void* arg)
 		if (useindexfile(buf) < 0)
 			return -1;
 	sprintf(buf, "boards/%s/.JUNK", bhp->filename);
+	if (dashf(buf))
+		if (useindexfile(buf) < 0)
+			return -1;
+	sprintf(buf, "boards/%s/.DINGDIR", bhp->filename);
 	if (dashf(buf))
 		if (useindexfile(buf) < 0)
 			return -1;
