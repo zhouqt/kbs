@@ -802,6 +802,7 @@ int get_userdata(user)
 {
     int uid;
 
+    if (strcmp(user, "guest") == 0) return -1;
     uid = getuser(user, &getCurrentUser());
     if (uid) {
         alluser = *getCurrentUser();
@@ -862,9 +863,14 @@ void User()
     for (ptr = cmd; *ptr != 0; ++ptr)
         *ptr = tolower(*ptr);
     if (get_userdata(cmd) == 1) {
-        strcpy(LowUserid, getCurrentUser()->userid);
-        sprintf(genbuf, "+OK Password required for %s", cmd);
-        outs(genbuf);
+        if (check_ip_acl(getCurrentUser()->userid, getSession()->fromhost)) {
+            sprintf(genbuf, "-ERR Your IP is not welcomed.");
+            outs(genbuf);
+        } else {
+            strcpy(LowUserid, getCurrentUser()->userid);
+            sprintf(genbuf, "+OK Password required for %s", cmd);
+            outs(genbuf);
+        }
     } else {
         sprintf(genbuf, "-ERR Unknown user: \"%s\".", cmd);
         outs(genbuf);
