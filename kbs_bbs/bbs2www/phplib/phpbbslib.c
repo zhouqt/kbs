@@ -2809,7 +2809,7 @@ static void bbs_make_vote_array(zval * array, struct votebal *vbal)
     add_assoc_string(array, "USERID", vbal->userid, 1);
     add_assoc_string(array, "TITLE", vbal->title, 1);
     add_assoc_long(array, "DATE", vbal->opendate);
-    if(vbal->type < 5 && vbal->type >= 1) add_assoc_string(array, "TYPE", vote_type[vbal->type-1], 1);
+    if(vbal->type <= 5 && vbal->type >= 1) add_assoc_string(array, "TYPE", vote_type[vbal->type-1], 1);
     add_assoc_long(array, "MAXDAY", vbal->maxdays);
 }
 
@@ -2874,7 +2874,7 @@ static void bbs_make_detail_vote_array(zval * array, struct votebal *vbal)
     add_assoc_string(array, "USERID", vbal->userid, 1);
     add_assoc_string(array, "TITLE", vbal->title, 1);
     add_assoc_long(array, "DATE", vbal->opendate);
-    if(vbal->type < 5 && vbal->type >= 1) add_assoc_string(array, "TYPE", vote_type[vbal->type-1], 1);
+    if(vbal->type <= 5 && vbal->type >= 1) add_assoc_string(array, "TYPE", vote_type[vbal->type-1], 1);
     add_assoc_long(array, "MAXDAY", vbal->maxdays);
     add_assoc_long(array, "MAXTKT", vbal->maxtkt);
     add_assoc_long(array, "TOTALITEMS", vbal->totalitems);
@@ -2997,6 +2997,8 @@ static PHP_FUNCTION(bbs_vote_num)
 	int ac = ZEND_NUM_ARGS();
 	char *bname;
 	int bname_len;
+	char *msg;
+	int msg_len;
 	int ent;
 	unsigned int votevalue;
 	struct votebal vbal;
@@ -3006,9 +3008,35 @@ static PHP_FUNCTION(bbs_vote_num)
 	struct boardheader *bp=NULL;
 	FILE *fp;
 	int vnum,i,pos;
+	char lmsg[3][STRLEN];
+	char *c,*cc;
+	int llen;
 
-    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sll", &bname, &bname_len, &ent, &votevalue) == FAILURE) {
+    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "slls", &bname, &bname_len, &ent, &votevalue, &msg, &msg_len) == FAILURE) {
 		WRONG_PARAM_COUNT;
+	}
+
+	llen = msg_len+1;
+	lmsg[0][0]='\0';
+	lmsg[1][0]='\0';
+	lmsg[2][0]='\0';
+	strncpy(lmsg[0],msg,(llen > STRLEN)?STRLEN:llen);
+	lmsg[0][STRLEN-1]='\0';
+	if((c=strchr(msg,'\n'))!=NULL){
+		c++;
+		llen -= (c-msg);
+		strncpy(lmsg[1],c,(llen > STRLEN)?STRLEN:llen);
+		lmsg[1][STRLEN-1]='\0';
+		if((cc=strchr(c,'\n'))!=NULL){
+			cc++;
+			llen -= (cc-c);
+			strncpy(lmsg[2],cc,(llen > STRLEN)?STRLEN:llen);
+			lmsg[2][STRLEN-1]='\0';
+		}
+	}
+	for(llen=0;llen<3;llen++){
+		if((c=strchr(lmsg[llen],'\n'))!=NULL)
+			*c = '\0';
 	}
 
 	if((bp=getbcache(bname))==NULL)
@@ -3048,6 +3076,9 @@ static PHP_FUNCTION(bbs_vote_num)
 	bzero( &uservote, sizeof(uservote) );
 	strcpy(uservote.uid,currentuser->userid);
 	uservote.voted = votevalue;
+	strncpy(uservote.msg[0],lmsg[0],STRLEN);
+	strncpy(uservote.msg[1],lmsg[1],STRLEN);
+	strncpy(uservote.msg[2],lmsg[2],STRLEN);
 
 	sprintf(controlfile,"vote/%s/flag.%lu",bname,vbal.opendate);
 	if((pos = search_record(controlfile, &tmpball, sizeof(tmpball),

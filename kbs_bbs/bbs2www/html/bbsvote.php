@@ -40,6 +40,11 @@
 			else
 				html_error_quit("参数错误2");
 
+			if(isset($_GET["msg"]))
+				$msg = $_GET["msg"];
+			else
+				$msg = "";
+
 			$votevalueint = 0;
 
 			if( $votetype == "单选" || $votetype == "是非" ){
@@ -76,15 +81,17 @@
 
 				if( $votevalueint < 0 )
 					html_error_quit("参数错误7");
-			}else
+			}else if( $votetype != "问答" )
 				html_error_quit("参数错误8");
 
-			$retnum = bbs_vote_num($board,$num,$votevalueint);
+			$retnum = bbs_vote_num($board,$num,$votevalueint,$msg);
 			if($retnum <= 0)
 				html_error_quit("投票错误".$retnum);
 			else{
 ?>
 投票成功
+<br>
+<a href="javascript:history.go(-1)">快速返回</a>
 <?php
 				html_normal_quit();
 
@@ -154,13 +161,21 @@
 <?php
 		}else if( $votearr[0]["TYPE"] == "数字" ){
 ?>
-<tr><td>请输入数值，最大<?php echo $votearr[0]["MAXTKT"];?>:</td>
-<td><input type="text" name="ITEM" value="<?php echo $uservotearr[0]["VOTED"];?>"></td>
+<tr><td></td><td></td><td>请输入数值，最大<?php echo $votearr[0]["MAXTKT"];?>:
+<input type="text" name="ITEM" value="<?php echo $uservotearr[0]["VOTED"];?>"></td>
 </tr>
+<input type="hidden" name="type" value="<?php echo $votearr[0]["TYPE"];?>">
+<?php
+		}else{
+?>
 <input type="hidden" name="type" value="<?php echo $votearr[0]["TYPE"];?>">
 <?php
 		}
 ?>
+<tr><td></td><td></td><td>请留下您的建议(限制3行80列)</td></tr>
+<tr><td></td><td></td><td><textarea name="msg" rows="3" cols="79" wrap="physical">
+<?php echo $uservotearr[0]["MSG1"]; echo $uservotearr[0]["MSG2"]; echo $uservotearr[0]["MSG3"];?>
+</textarea></td></tr>
 </table>
 <input type="hidden" name="board" value="<?php echo $board;?>">
 <input type="hidden" name="num" value="<?php echo $num;?>">
