@@ -336,6 +336,7 @@ static bool inremsg = false;
 
 struct key_struct *keymem=NULL;
 int keymem_total;
+int kicked=0;
 
 int igetch()
 {
@@ -374,6 +375,7 @@ int igetch()
                 inremsg = false;
             }
         }
+        if(kicked) return 32;
         sr = select(hifd, &readfds, NULL, NULL, &to);
         if (sr < 0 && errno == EINTR) {
             if (talkrequest)
@@ -439,6 +441,7 @@ int igetch()
                     if (talkrequest)
                         return KEY_TALK;
                 }
+                if(kicked) return 32;
                 if (!inremsg) {
 		      int saveerrno=errno;
                     while (msg_count) {
@@ -605,6 +608,7 @@ int igetkey()
 //        refresh();
     while (1) {
         ch = igetch();
+        if(kicked) return 32;
 
         if(check_calltime()){
 			mode = 0;
@@ -788,6 +792,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
          * TODO: add KEY_REFRESH support ???
          */
 
+        if(kicked) return 0;
         if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch))
             return -ch;         /* Leeward 98.07.30 supporting msgX */
         if (uinfo.mode == KILLER && (!buf[0]) && (ch==KEY_UP||ch==KEY_DOWN||ch==KEY_PGUP||ch==KEY_PGDN||ch==Ctrl('S')))
