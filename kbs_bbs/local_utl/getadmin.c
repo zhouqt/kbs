@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 	getuser(argv[2], &x);
 	if (x == NULL)
 	{
-		fprintf(stderr, "%s not found.\n", argv[1]);
+		fprintf(stderr, "%s not found.\n", argv[2]);
 		exit(-1);
 	}
 	x->userlevel |= PERM_ADMIN | PERM_SYSOP;
