@@ -945,7 +945,7 @@ void noscroll()
 int check_ch(int c1, int c2)
 {
     if(c1>=0xb0&&c1<=0xd8&&c2>=0xa1&&c2<=0xfe)
-        return 5;
+        return 3;
     else if(c1>=0xd9&&c1<=0xf7&&c2>=0xa1&&c2<=0xfe)
         return 2;
     else if(c1>0x80&&c2>=0x40)
@@ -976,7 +976,7 @@ void auto_chinese()
             }
         }
         k=scr_cols-1;
-        while(k>0) {
+        while(k>=0) {
             if(b[k]) k-=2;
             else {
                 k--;
