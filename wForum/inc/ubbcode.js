@@ -548,9 +548,16 @@ document.frmAnnounce.subject.value=revisedTitle;
 document.frmAnnounce.subject.focus(); 
 return; }
 
-function insertsmilie(smilieface){
-
-	document.frmAnnounce.Content.value+=smilieface;
+function insertsmilie(smileface){
+if ((document.selection)&&(document.selection.type == "Text")) {
+var range = document.selection.createRange();
+var ch_text=range.text;
+range.text = ch_text + smileface;
+} 
+else {
+document.frmAnnounce.Content.value+=smileface;
+document.frmAnnounce.Content.focus();
+}
 }
 function gopreview()
 {
