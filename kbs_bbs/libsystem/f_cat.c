@@ -18,7 +18,7 @@ void f_catfile(char* srcpath,char* dstpath)
 {
     int fsrc,fdst;
     if ((fsrc = open(srcpath, O_RDONLY)) != NULL) {
-        if ((fdst = open(dstpath, O_WRONLY , 0600)) >= 0) {
+        if ((fdst = open(dstpath, O_WRONLY | O_CREAT | O_APPEND , 0600)) >= 0) {
             char* src=(char*)malloc(10240);
             long ret;
             do {
