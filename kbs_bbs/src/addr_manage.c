@@ -263,47 +263,6 @@ static int set_al_show(struct _select_def *conf, int i)
 static int set_al_prekey(struct _select_def *conf, int *key)
 {
 	switch (*key) {
-			/*
-	case KEY_PGDN:
-	case KEY_DOWN:
-	{
-		if( *key == KEY_DOWN ){
-			if( conf->pos != BBS_PAGESIZE )
-				break;
-		}
-		if( al_num >= BBS_PAGESIZE ){
-			al_start += al_num - 1;
-			if( *key == KEY_DOWN )
-				conf->pos = 1;
-			return SHOW_DIRCHANGE;
-		}
-		else if( conf->pos != al_num ){
-			conf->new_pos = al_num;
-			return SHOW_SELCHANGE;
-		}
-		break;
-	}
-	case KEY_PGUP:
-	case KEY_UP:
-	{
-		if( *key == KEY_UP ){
-			if( conf->pos != 1)
-				break;
-		}
-		if( al_start > 0 ){
-			al_start -= BBS_PAGESIZE;
-			if(al_start < 0)
-				al_start = 0;
-			if( *key == KEY_UP )
-				conf->pos = BBS_PAGESIZE;
-			return SHOW_DIRCHANGE;
-		}else if( conf->pos != 1){
-			conf->new_pos = 1;
-			return SHOW_SELCHANGE;
-		}
-		break;
-	}
-	*/
 	case 'q':
 		*key = KEY_LEFT;
 		break;
@@ -473,6 +432,16 @@ static int set_al_key(struct _select_def *conf, int key)
 		}
 		return SHOW_REFRESH;
 	}
+#ifdef SMS_SUPPORT
+	case 'S':
+	{
+		if( (a_l+conf->pos - conf->page_pos)->mobile[0] ){
+			do_send_sms_func((a_l+conf->pos - conf->page_pos)->mobile, NULL);
+			return SHOW_REFRESH;
+		}
+		break;
+	}
+#endif
 	case KEY_TAB:
 	{
 		al_order ++;
