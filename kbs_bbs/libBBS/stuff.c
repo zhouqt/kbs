@@ -553,7 +553,7 @@ int countperf(struct userec *udata)
 /*
  * 根据阅读模式 取某版 目录路径 
  */
-char *setbdir(int digestmode, char *buf,const  char *boardname)
+char *setbdir(enum BBS_DIR_MODE digestmode, char *buf,const  char *boardname)
 {
     char dir[STRLEN];
 

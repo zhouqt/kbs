@@ -142,7 +142,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     int dashf(char *fname);
     int dashd(char *fname);
     int seek_in_file(const char* filename, const char* seekstr);
-    char *setbdir(int digestmode, char *buf, const char *boardname);
+	char *setbdir(enum BBS_DIR_MODE digestmode, char *buf,const  char *boardname);
     int my_system(const char *cmdstring);
     char *modestring(char* buf,int mode, int towho, int complete, char *chatid);
     int countexp(struct userec *udata);
