@@ -4233,7 +4233,7 @@ static PHP_FUNCTION(bbs_saveuserdata)
     	}
     
 #ifdef HAVE_BIRTHDAY
-    ud.birthyear=(year > 1900 && year < 2050)?(year-1900):0;
+    ud.birthyear=(year > 1900 && year < 2050)?year:0;
 	ud.birthmonth=(month >=1 && month <=12)?month:0;
 	ud.birthday=(day>=1 && day <=31)?day:0;
 	if(gender==1)ud.gender='M';
@@ -4423,7 +4423,7 @@ static PHP_FUNCTION(bbs_createregform)
     	}
     
 #ifdef HAVE_BIRTHDAY
-    ud.birthyear=(year > 1900 && year < 2050)?(year-1900):0;
+    ud.birthyear=(year > 1900 && year < 2050)?year:0;
 	ud.birthmonth=(month >=1 && month <=12)?month:0;
 	ud.birthday=(day>=1 && day <=31)?day:0;
 	if(gender==1)ud.gender='M';
@@ -4593,7 +4593,7 @@ static PHP_FUNCTION(bbs_createregform)
     	}
     
 #ifdef HAVE_BIRTHDAY
-    ud.birthyear=(year > 1900 && year < 2050)?(year-1900):0;
+    ud.birthyear=(year > 1900 && year < 2050)?year:0;
 	ud.birthmonth=(month >=1 && month <=12)?month:0;
 	ud.birthday=(day>=1 && day <=31)?day:0;
 	if(gender==1)ud.gender='M';
