@@ -23,8 +23,8 @@ function getOptions($var_name, $oldvalue) {
 	$ccc = count($userdefine);
 	$flags = $oldvalue;
 	for ($i = 0; $i < $ccc; $i++) {
-		if (isset($_POST[$var_name.$i])) {
-			if ($_POST[$var_name.$i] == 1) {
+		if (isset($_POST[$var_name."_".$i])) {
+			if ($_POST[$var_name."_".$i] == 1) {
 				$flags |= (1<<$i);
 			} else {
 				$flags &= ~(1<<$i);

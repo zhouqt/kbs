@@ -29,8 +29,8 @@ function showOptions($var_name, $userparam, $isWWW) {
 ?>
 <tr><td width="40%" class=TableBody1><B><?php echo $userdefine[$i][1]; ?></B>£º<BR><?php echo $userdefine[$i][2]; ?></td>   
         <td width="60%" class=TableBody1>    
-			<input type="radio" name="<?php echo $var_name.$i; ?>" value="1" <?php if ($userparam & $flag) echo "checked"; ?> ><?php echo $userdefine[$i][3]; ?>
-			<input type="radio" name="<?php echo $var_name.$i; ?>" value="0" <?php if (!($userparam & $flag)) echo "checked"; ?> ><?php echo $userdefine[$i][4]; ?>
+			<input type="radio" name="<?php echo $var_name."_".$i; ?>" value="1" <?php if ($userparam & $flag) echo "checked"; ?> ><?php echo $userdefine[$i][3]; ?>
+			<input type="radio" name="<?php echo $var_name."_".$i; ?>" value="0" <?php if (!($userparam & $flag)) echo "checked"; ?> ><?php echo $userdefine[$i][4]; ?>
         </td>   
 </tr>
 <?php

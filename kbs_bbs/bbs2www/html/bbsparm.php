@@ -56,8 +56,8 @@ function getOptions($var_name, $oldvalue) {
 	$ccc = count($userdefine);
 	$flags = $oldvalue;
 	for ($i = 0; $i < $ccc; $i++) {
-		if (isset($_POST[$var_name.$i])) {
-			if ($_POST[$var_name.$i] == 1) {
+		if (isset($_POST[$var_name."_".$i])) {
+			if ($_POST[$var_name."_".$i] == 1) {
 				$flags |= (1<<$i);
 			} else {
 				$flags &= ~(1<<$i);
@@ -79,8 +79,8 @@ function showOptions($var_name, $userparam, $isWWW) {
 ?>
 <tr><td align="left" class="t3"><B><?php echo $userdefine[$i][1]; ?></B>£º<BR><?php echo $userdefine[$i][2]; ?></td>   
         <td class="t3">    
-			<input type="radio" name="<?php echo $var_name.$i; ?>" value="1" <?php if ($userparam & $flag) echo "checked"; ?> ><?php echo $userdefine[$i][3]; ?>
-			<input type="radio" name="<?php echo $var_name.$i; ?>" value="0" <?php if (!($userparam & $flag)) echo "checked"; ?> ><?php echo $userdefine[$i][4]; ?>
+			<input type="radio" name="<?php echo $var_name."_".$i; ?>" value="1" <?php if ($userparam & $flag) echo "checked"; ?> ><?php echo $userdefine[$i][3]; ?>
+			<input type="radio" name="<?php echo $var_name."_".$i; ?>" value="0" <?php if (!($userparam & $flag)) echo "checked"; ?> ><?php echo $userdefine[$i][4]; ?>
         </td>   
 </tr>
 <?php
