@@ -64,6 +64,7 @@ static PHP_FUNCTION(bbs_normalboard);
 static PHP_FUNCTION(bbs_setmailreaded);
 static PHP_FUNCTION(bbs_add_import_path);
 static PHP_FUNCTION(bbs_get_import_path);
+static PHP_FUNCTION(bbs_set_onboard);
 
 
 /*
@@ -120,6 +121,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_setmailreaded,NULL)
 		PHP_FE(bbs_add_import_path,NULL)
 		PHP_FE(bbs_get_import_path,NULL)
+		PHP_FE(bbs_set_onboard,NULL)
         {NULL, NULL, NULL}
 };
 
@@ -2604,3 +2606,37 @@ static PHP_FUNCTION(bbs_get_import_path)
 	free_import_path(im_path,im_title,&im_time);
 
 }
+
+static PHP_FUNCTION(bbs_set_onboard)
+{
+	int ac = ZEND_NUM_ARGS();
+	long boardnum,count;
+	int oldboard;
+        struct WWW_GUEST_S *guestinfo;
+
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll", &boardnum, &count) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+    if (currentuser==NULL) RETURN_FALSE;
+    if (currentuinfo==NULL) RETURN_FALSE;
+    if (!strcmp(currentuser->userid,"guest")) {
+        guestinfo=www_get_guest_entry(currentuinfonum);
+        oldboard=guestinfo.currentboard;
+    } else
+        oldboard=currentuinfo.currentboard;
+    if (oldboard)
+        board_setcurrentuser(oldboard, -1);
+    
+    if (!strcmp(currentuser->userid,"guest")) {
+        if (count>0)
+            guestinfo->currentboard = boardnum;
+        else
+            guestinfo->currentboard = 0;
+    else {
+        if (count>0)
+            currentuinfo->currentboard = boardnum;
+        else
+            currentuinfo->currentboard = 0;
+    }
+}
+

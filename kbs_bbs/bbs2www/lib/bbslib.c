@@ -1775,19 +1775,6 @@ static struct user_info www_guest_uinfo;
   guest用户的key被错误的覆盖。这个是个问题
   另: www guest表使用的idx居然是0 base的。
   */
-struct WWW_GUEST_S {
-    int key;
-    time_t freshtime;
-    time_t logintime;
-    int currentboard;
-};
-
-struct WWW_GUEST_TABLE {
-    int use_map[MAX_WWW_MAP_ITEM + 1];
-    time_t uptime;
-    struct WWW_GUEST_S guest_entry[MAX_WWW_GUEST];
-};
-
 static struct WWW_GUEST_TABLE *wwwguest_shm = NULL;
 
 static void longlock(int signo)
