@@ -75,7 +75,7 @@ int get_file_attach( char *infile, long *attach_pt, long * attach_length){
             long not;
             data=ptr;
             for (not=0;not<size;not++,data++) {
-                if (*data==0) {
+                if (data != NULL && *data==0) {
                     matched++;
                     if (matched==ATTACHMENT_SIZE) {
                         int d, size;
