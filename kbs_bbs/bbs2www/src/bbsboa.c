@@ -3,75 +3,128 @@
  */
 #include "bbslib.h"
 
-static int cmp_board(struct boardheader *b1, struct boardheader *b2)
+extern int     brdnum;
+extern int yank_flag;
+extern char    *boardprefix;
+
+/*static int cmp_board(struct boardheader *b1, struct boardheader *b2)
 {
 	return strcasecmp(b1->filename, b2->filename);
+}*/
+
+/*
+ * from boards_t.c
+*/
+int
+cmpboard( brd, tmp ) /*排序用*/
+struct newpostdata      *brd, *tmp;
+{
+	register int        type = 0;
+
+	if ( !(currentuser->flags[0] & BRDSORT_FLAG) )
+	{
+		type = brd->title[0] - tmp->title[0];
+		if (type==0)
+			type=strncasecmp( brd->title+1, tmp->title+1,6);
+
+	}
+	if ( type == 0 )
+		type = strcasecmp( brd->name, tmp->name );
+	return type;
+}
+
+static int check_newpost( struct newpostdata *ptr)
+{
+	struct BoardStatus* bptr;
+	ptr->total = ptr->unread = 0;
+
+	bptr = getbstatus(ptr->pos);
+	if (bptr == NULL)
+		return 0;
+	ptr->total = bptr->total;
+
+	if (!brc_initial(currentuser->userid,ptr->name))
+	{
+		ptr->unread = 1;
+	}
+	else
+	{
+		if (brc_unread(bptr->lastpost))
+		{
+			ptr->unread = 1;
+		}
+	}
+	return 1;
+}
+
+/*
+ * Return value:
+ *     board number loaded for success
+ *     -1                  for error
+*/
+int brd_show_boards(int sec, char *cgi)
+{
+	char        buf[ 256 ];
+	struct newpostdata newpost_buffer[ MAXBOARD ];
+	struct newpostdata  *ptr;
+	char *ptr2;
+	int i;
+
+	sprintf( buf, "EGROUP%c", seccode[sec][0]);
+	boardprefix = sysconf_str( buf );
+	yank_flag = 0;
+	if ( !strcmp( currentuser->userid, "guest" ) )
+		yank_flag = 1;
+	nbrd = newpost_buffer;
+	brdnum = 0;
+	if (load_boards() == -1)
+		return -1;
+	qsort( nbrd, brdnum, sizeof( nbrd[0] ), 
+		   (int (*)(const void *, const void *))cmpboard );
+	printf("<style type=\"text/css\">A {color: #0000f0}</style>");
+	printf("<center>\n");
+	printf("%s -- 分类讨论区 [%s]<hr color=\"green\">", BBSNAME, secname[sec]);
+	printf("<table width=\"610\">\n");
+	printf("<tr><td>序号</td><td>未</td><td>讨论区名称</td><td>类别</td><td>中文描述</td><td>版主</td><td>文章数</td></tr>\n");
+	for (i=0; i<brdnum; i++)
+	{
+		ptr = &nbrd[i];
+		check_newpost( ptr );
+		printf("<tr><td>%d</td><td>%s</td>", i+1, ptr->unread ? "◆" : "◇");
+		printf("<td><a href=\"%s?board=%s\">%s</a></td>", cgi, ptr->name, ptr->name);
+		printf("<td>%6.6s</td>", ptr->title+1);
+		printf("<td><a href=\"%s?board=%s\">%s</a></td>", cgi, ptr->name, ptr->title+7);
+		strncpy(buf, ptr->BM, sizeof(buf)-1);
+		buf[sizeof(buf)-1] = '\0';
+		ptr2 = strchr(buf, ' ');
+		if (ptr2 == NULL)
+		{
+			ptr2 = "诚征板主中";
+			printf("<td>%s</td>", ptr2);
+		}
+		else
+		{
+			*ptr2 = '\0';
+			printf("<td><a href=\"bbsqry?userid=%s\">%s</a></td>", ptr2, ptr2);
+		}
+		printf("<td>%d</td></tr>\n", ptr->total);
+	}
+	printf("</table><hr></center>\n");
+	return brdnum;
 }
 
 int main()
 {
-	bcache_t data[MAXBOARD], *x;
-	int i, total=0, sec1;
-	char *cgi="bbstdoc", *ptr, *my_sec;
-	bcache_t *bc;
+	int sec1;
+	char *cgi="bbstdoc";
 
 	init_all();
-	bc = getbcacheaddr();
-	printf("<style type=\"text/css\">A {color: #0000f0}</style>");
-	sec1=atoi(getsenv("QUERY_STRING"));
-	if(sec1<0 || sec1>=SECNUM) http_fatal("错误的参数");
-	if(atoi(getparm("my_def_mode"))!=0) cgi="bbsdoc";
-	for(i=0; i<MAXBOARD; i++) {
-		x=&(bc[i]);
-		if(x->filename[0]<=32 || x->filename[0]>'z') continue;
-		if(!has_read_perm(currentuser, x->filename)) continue;
-		if(strchr(seccode[sec1], x->title[0]) == NULL) continue;
-		memcpy(&data[total], x, sizeof(struct boardheader));
-		total++;
-	}
-	qsort(data, total, sizeof(struct boardheader), cmp_board);
-	printf("<center>\n");
-	printf("%s -- 分类讨论区 [%s]<hr color=\"green\">", BBSNAME, secname[sec1]);
-	printf("<table width=\"610\">\n");
-	printf("<tr><td>序号</td><td>未</td><td>讨论区名称</td><td>更新时间</td><td>类别</td><td>中文描述</td><td>版主</td><td>文章数</td></tr>\n");
-	for(i=0; i<total; i++) {
-		char buf[100];
-		sprintf(buf, "boards/%s/.DIR", data[i].filename);
-		printf("<tr><td>%d</td><td>%s</td>",
-			i+1, board_read(data[i].filename) ? "◇" : "◆");
-		printf("<td><a href=\"%s?board=%s\">%s</a></td>", cgi, data[i].filename, data[i].filename);
-		printf("<td>%12.12s</td>", 4+wwwCTime(file_time(buf)));
-		printf("<td>%6.6s</td>", data[i].title+1);
-		printf("<td><a href=\"%s?board=%s\">%s</a></td>", cgi, data[i].filename, data[i].title+7);
-		ptr=strtok(data[i].BM, " ,;");
-		if(ptr==0) ptr="诚征版主中";
-		printf("<td><a href=\"bbsqry?userid=%s\">%s</a></td>", ptr, ptr);
-		printf("<td>%d</td></tr>\n", filenum(data[i].filename));
-	}
-   	printf("</table><hr></center>\n");
+	sec1 = atoi(getsenv("QUERY_STRING"));
+	if (sec1<0 || sec1>=SECNUM)
+		http_fatal("错误的参数");
+	if (atoi(getparm("my_def_mode"))!=0)
+		cgi="bbsdoc";
+	brd_show_boards(sec1, cgi);
 	http_quit();
 }
 
-int filenum(char *board) {
-	char file[256];
-	sprintf(file, "boards/%s/.DIR", board);
-	return file_size(file)/sizeof(struct fileheader);
-}
-
-int board_read(char *board) {
-	char buf[256], path[256];
-	FILE *fp;
-	struct fileheader x;
-	int total;
-	if(!loginok) return 1;
-	bzero(&x, sizeof(x));
-	sprintf(buf, "boards/%s/.DIR", board);
-	total=file_size(buf)/sizeof(struct fileheader);
-	if(total<=0) return 1;
-	fp=fopen(buf, "r+");
-	fseek(fp, (total-1)*sizeof(struct fileheader), SEEK_SET);
-	fread(&x, sizeof(x), 1, fp);
-	fclose(fp);
-	brc_initial(currentuser->userid, board);
-	return brc_unread(FILENAME2POSTTIME(x.filename));
-}
