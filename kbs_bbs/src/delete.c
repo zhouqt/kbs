@@ -165,7 +165,7 @@ suicide()
         fprintf(fn,"\n                      [1m ÏµÍ³×Ô¶¯·¢ĞÅÏµÍ³Áô[m\n");
         fclose(fn);
         sprintf(buf,"%s µÄ×ÔÉ±Í¨Öª",currentuser->userid);
-        postfile(filename,"Goodbye",buf,1);
+        post_file(currentuser,"",filename,"Goodbye",buf,0,1);
         unlink(filename);
 
         /*kick_user(&uinfo);
@@ -197,23 +197,6 @@ offline()
             exit(0);
         }
     }
-}
-
-void getuinfo(FILE *fn,struct userec *ptr_urec)
-{
-    fprintf(fn,"\n\nÄúµÄ´úºÅ     : %s\n", ptr_urec->userid);
-    fprintf(fn,"ÄúµÄêÇ³Æ     : %s\n", ptr_urec->username);
-    fprintf(fn,"ÕæÊµĞÕÃû     : %s\n", ptr_urec->realname);
-    fprintf(fn,"¾Ó×¡×¡Ö·     : %s\n", ptr_urec->address);
-    fprintf(fn,"µç×ÓÓÊ¼şĞÅÏä : %s\n", ptr_urec->email);
-    fprintf(fn,"ÕæÊµ E-mail  : %s\n", ptr_urec->realemail);
-    fprintf(fn,"Ident ×ÊÁÏ   : %s\n", ptr_urec->ident);
-    fprintf(fn,"×¢²áÈÕÆÚ     : %s", ctime( &ptr_urec->firstlogin));
-    fprintf(fn,"×î½ü¹âÁÙÈÕÆÚ : %s", ctime( &ptr_urec->lastlogin));
-    fprintf(fn,"×î½ü¹âÁÙ»úÆ÷ : %s\n", ptr_urec->lasthost );
-    fprintf(fn,"ÉÏÕ¾´ÎÊı     : %d ´Î\n", ptr_urec->numlogins);
-    fprintf(fn,"ÎÄÕÂÊıÄ¿     : %d (Board)\n",
-            ptr_urec->numposts);
 }
 
 int kickuser(struct user_info* uentp,char* arg,int count)

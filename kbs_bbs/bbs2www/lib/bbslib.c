@@ -1542,6 +1542,7 @@ int add_favboard(char *brdname)
     return n;
 }*/
 
+/*
 int post_file(char *filename, postinfo_t *pi)
 {
 	FILE *fp;
@@ -1566,7 +1567,7 @@ int post_file(char *filename, postinfo_t *pi)
 	write_file2(fp, fp2);
 	fclose(fp2);
 	fclose(fp);
-    if ( pi->local == 1 ) /* local save */
+    if ( pi->local == 1 )
 	{
 		pf.filename[ STRLEN - 1 ] = 'L';
 		pf.filename[ STRLEN - 2 ] = 'L';
@@ -1590,7 +1591,7 @@ int post_file(char *filename, postinfo_t *pi)
 
 	return 0;
 }
-
+*/
 /*
  * get_unifile() 用于获得一个独一无二的文件.
  *     filename  文件名缓冲区

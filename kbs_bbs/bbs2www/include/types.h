@@ -15,20 +15,5 @@ typedef struct override    friends_t;
 
 #include <time.h>
 
-struct postinfo
-{
-	char *userid;
-	char *username;
-	char *title;
-	time_t posttime;
-	char *board;
-	int local;
-	int anony;
-	int access;
-	int sig;
-	char *from;
-};
-
-typedef struct postinfo postinfo_t;
 
 #endif /* FB_TYPES_H */

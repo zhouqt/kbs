@@ -74,14 +74,11 @@ int check_stuffmode();
 int do_reply(char* title);
 int do_select(int ent,struct fileheader* fileinfo,char* direct );  /* 输入讨论区名 选择讨论区 */
 int do_post();
-int post_cross(char islocal,int mode);
 void make_blist();
-int postfile(char* filename,char* nboard,char* posttile,int mode);
 int digest_post(int ent,struct fileheader *fhdr,char *direct);
 int mark_post(int ent,struct fileheader *fhdr,char *direct);
 int post_article();                         /*用户 POST 文章 */
 int do_send(char* userid,char* title);
-int post_cross(char islocal,int mode);
 int digest_mode();
 int thread_mode();
 int deleted_mode();
@@ -133,7 +130,6 @@ int m_send(char userid[]);
 /* delete.c */
 int kick_user(struct user_info *userinfo);
 int d_user(char cid[IDLEN]);
-void getuinfo(FILE *fn,struct userec *ptr_urec);
 
 /* read.c */
 int sread(int passonly,int readfirst,int auser,int pnum,struct fileheader *ptitle);

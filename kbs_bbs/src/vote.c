@@ -177,13 +177,13 @@ b_jury_edit()   /* stephen 2001.11.1: 编辑版面仲裁名单 */
 	if (aborted==111)
 	{  sprintf(secu, "删除 %s 版的仲裁委员名单",currboard);
 	   securityreport(secu, NULL,NULL);
-	   postfile(buf, "JuryMail", secu, 2);
+	   post_file(currentuser,"",buf, "JuryMail", secu, 0,2);
 	}
 	else 
 	{  sprintf(secu, "修改 %s 版的仲裁委员名单",currboard);
 	   securityreport(secu, NULL,NULL);
-	   postfile(buf, "syssecurity", secu, 2);
-	   postfile(buf, "JuryMail", secu, 2);
+	   post_file(currentuser,"",buf, "syssecurity", secu, 0, 2);
+	   post_file(currentuser,"", buf, "JuryMail", secu, 0,2);
 	}
         setvfile( buf, currboard, "juryrec" );
         unlink(buf);
@@ -424,9 +424,9 @@ int num;
     mail_file(currentuser->userid,nname,currvote.userid,title,0);
     if (strcmp(currboard,"sys_discuss") &&  strcmp(currboard, "Jury"))/*如果是sys_discuss版,投票结果不进vote版,Haohmaru,98.9.4 add Jury by stephen 2001.10.31*/
     {
-        postfile(nname,"vote",title,1);
+        post_file(currentuser,"",nname,"vote",title,0,1);
     }
-    postfile(nname,currboard,title,1);
+    post_file(currentuser,"",nname,currboard,title,0,1);
     dele_vote(num);
     return ;
 }
@@ -717,9 +717,9 @@ char    *bname;
             sug = NULL;
             if(!strcmp(currboard,"sys_discuss") || !strcmp(currboard, "Jury"))/*sys_discuss的投票不进vote版,Haohmaru,98.9.4, add Jury by stephen 2001.10.31*/
             {
-                postfile(votename,currboard,buf,1);}
+                post_file(currentuser,"",votename,currboard,buf,0,1);}
             else{
-                postfile(votename,"vote",buf,1);
+                post_file(currentuser,"",votename,"vote",buf,0,1);
             }
             unlink(votename);
         }

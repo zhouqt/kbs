@@ -138,7 +138,7 @@ int securityreport(char *str,struct userec* lookupuser,char fdata[ 7 ][ STRLEN ]
 	            /*    fprintf(se, "\n[33mÒÔÏÂÊÇÈÏÖ¤Õß¸öÈË×ÊÁÏ[35m");
 	                getuinfo(se, currentuser);rem by Haohmaru.99.4.16*/
 	            fclose(se);
-	            postfile(fname, "Registry", str, 2);
+	            post_file(currentuser,"",fname, "Registry", str, 0, 2);
 	        }
 	        else if (strstr(str, "É¾³ıÊ¹ÓÃÕß£º"))
 	        {
@@ -148,7 +148,7 @@ int securityreport(char *str,struct userec* lookupuser,char fdata[ 7 ][ STRLEN ]
 	            fprintf(se, "\nÒÔÏÂÊÇÉ¾³ıÕß¸öÈË×ÊÁÏ");
 	            getuinfo(se, currentuser);
 	            fclose(se);
-	            postfile(fname, "syssecurity", str, 2);
+	            post_file(currentuser,"", fname, "syssecurity", str, 0, 2);
 	        }
 	        else if (ptr = strstr(str, "µÄÈ¨ÏŞXPERM"))
 	        {
@@ -188,7 +188,7 @@ int securityreport(char *str,struct userec* lookupuser,char fdata[ 7 ][ STRLEN ]
 	            fprintf(se, "\nÒÔÏÂÊÇĞŞ¸ÄÕß¸öÈË×ÊÁÏ");
 	            getuinfo(se, currentuser);
 	            fclose(se);
-	            postfile(fname, "syssecurity", str, 2);
+	            post_file(currentuser,"",fname, "syssecurity", str, 0, 2);
 	        }
                 else    /* Modified for change id by Bigman 2001.5.25 */                
                 {                                                                       
@@ -196,7 +196,7 @@ int securityreport(char *str,struct userec* lookupuser,char fdata[ 7 ][ STRLEN ]
                       fprintf(se, "ÒÔÏÂÊÇ¸öÈË×ÊÁÏ");                                  
                       getuinfo(se, currentuser);                                      
                       fclose(se);                                                     
-                      postfile(fname, "syssecurity", str, 2);                         
+                      post_file(currentuser,"",fname, "syssecurity", str, 0, 2);
                 }                                                                       
     	}
         else
@@ -206,9 +206,9 @@ int securityreport(char *str,struct userec* lookupuser,char fdata[ 7 ][ STRLEN ]
             getuinfo(se, currentuser);
             fclose(se);
             if (strstr(str, "Éè¶¨Ê¹ÓÃÕß×¢²á×ÊÁÏ"))	/* Leeward 98.03.29 */
-                postfile(fname, "Registry", str, 2);
+                post_file(currentuser,"" ,fname, "Registry", str, 0, 2);
             else
-                postfile(fname, "syssecurity", str, 2);
+                post_file(currentuser,"",fname, "syssecurity", str, 0, 2);
         }
         unlink(fname);
         modify_user_mode(savemode);

@@ -648,7 +648,6 @@ char *filename ;
 }
 
 char save_title[STRLEN] ;
-char save_filename[4096] ;
 int in_mail ;
 
 #define KEEP_EDITING -2

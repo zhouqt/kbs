@@ -797,7 +797,7 @@ notepad_init()
                               sprintf(notetitle,"[%.10s] %s",ctime(&now),ntitle);
                               if(dashf(fname))
                               {
-                                 postfile(fname,bname,notetitle,1);
+                                 post_file(currentuser,"",fname,bname,notetitle,0,1);
                                  sprintf(tmp,"%s 自动张贴",ntitle);
                                  report(tmp);
                               }
@@ -808,7 +808,7 @@ notepad_init()
                 sprintf(notetitle,"[%.10s] 留言板记录",ctime(&now));
                 if(dashf("etc/notepad"))
                 {
-                        postfile("etc/notepad","notepad",notetitle,1);
+                        post_file(currentuser,"","etc/notepad","notepad",notetitle,0,1);
                         unlink("etc/notepad");
                 }
                 report("自动发信时间更改");

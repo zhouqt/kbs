@@ -161,7 +161,7 @@ struct BoardStatus* getbstatus(int index)
 	return &brdshm->bstatus[index];
 }
 
-int apply_boards(int (*func)()) /* 对所有版 应用 func函数*/
+int apply_boards(int (*func)(struct boardheader*)) /* 对所有版 应用 func函数*/
 {
     register int i ;
 

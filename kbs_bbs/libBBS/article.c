@@ -1,6 +1,18 @@
 #include "bbs.h"
 
 void cancelpost(char    *board,char *userid,struct fileheader *fh,int     owned,int     autoappend);
+int outgo_post(struct fileheader *fh,char *board)
+{
+    FILE *foo;
+
+    if (foo = fopen("innd/out.bntp", "a"))
+    {
+        fprintf(foo, "%s\t%s\t%s\t%s\t%s\n", board,
+                fh->filename, currentuser->userid, currentuser->username, save_title);
+        fclose(foo);
+    }
+}
+
 int get_postfilename(char* filename,char* direct)
 {
     static const char post_sufix[]="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -338,8 +350,9 @@ void getcross(char* filepath,char* quote_file,struct userec* user,int in_mail,ch
         if(NULL != inf) fclose(inf);
         if(NULL != of ) fclose(of) ;
         /*---	---*/
-
+#ifdef BBSMAIN
         report("Cross Post error");
+#endif
         return ;
     }
     if(mode==0/*转贴*/)
@@ -389,6 +402,146 @@ void getcross(char* filepath,char* quote_file,struct userec* user,int in_mail,ch
     fclose( inf );
     fclose( of);
     *quote_file = '\0';
+}
+
+/* Add by SmallPig */
+int post_cross(struct userec* user,char* toboard,char* fromboard,char* title,char* filename,int Anony,int in_mail,char islocal,int mode)    /* (自动生成文件名) 转贴或自动发信 */
+{
+    struct fileheader postfile ;
+    char        filepath[STRLEN], fname[STRLEN];
+    char        buf[256],buf4[STRLEN],whopost[IDLEN],save_title[STRLEN],save_filename[STRLEN];
+    int         fp,i;
+    int aborted,local_article ;
+
+    if (!haspostperm(user,toboard)&&!mode)
+    {
+#ifdef BBSMAIN
+        move( 1, 0 );
+        prints("您尚无权限在 %s 发表文章.\n",toboard);
+        prints("如果您尚未注册，请在个人工具箱内详细注册身份\n");
+        prints("未通过身份注册认证的用户，没有发表文章的权限。\n");
+        prints("谢谢合作！ :-) \n");
+#endif
+        return -1;
+    }
+
+    memset(&postfile,0,sizeof(postfile)) ;
+    strncpy(save_filename,fname,4096) ;
+
+    if(!mode){
+        if(!strstr(title,"(转载)"))
+            sprintf(buf4,"%s (转载)",title);
+        else
+            strcpy(buf4,title);
+    }else
+        strcpy(buf4,title);
+    strncpy(save_title,buf4,STRLEN) ;
+
+    setbfile( filepath, toboard, "");
+
+    if ((aborted=get_postfilename(postfile.filename,filepath))!=0) {
+#ifdef BBSMAIN
+        move( 3, 0 );
+        clrtobot();
+        prints("\n\n无法创建文件:%d...\n",aborted);
+        pressreturn();
+        clear();
+#endif
+        return FULLUPDATE;
+    }
+
+    if(mode==1)
+        strcpy(whopost,"deliver"); /* mode==1为自动发信 */
+    else
+        strcpy(whopost,user->userid);
+
+    strncpy(postfile.owner,whopost,STRLEN) ;
+    setbfile( filepath, toboard, postfile.filename );
+
+    local_article = 0;
+    if ( !strcmp( postfile.title, buf ) && file[0] != '\0' )
+        if(islocal=='l'||islocal=='L')
+            local_article=YEA;
+
+#ifdef BBSMAIN
+    modify_user_mode( POSTING );
+#endif
+    getcross( filepath ,filename, user, in_mail,fromboard,title,Anony,mode,toboard); /*根据fname完成 文件复制 */
+
+    /* Changed by KCN,disable color title*/
+    if(mode != 1)
+	{
+        int i;
+        for (i=0;(i<strlen(save_title))&&(i<STRLEN-1);i++) 
+          if (save_title[i]==0x1b)
+          	postfile.title[i]=' ';
+          else 
+    		postfile.title[i]=save_title[i];
+        postfile.title[i]=0;
+	}
+    else
+    	strncpy( postfile.title, save_title, STRLEN );
+    if ( local_article == 1 ) /* local save */
+    {
+        postfile.filename[ STRLEN - 1 ] = 'L';
+        postfile.filename[ STRLEN - 2 ] = 'L';
+    }else
+    {
+        postfile.filename[ STRLEN - 1 ] = 'S';
+        postfile.filename[ STRLEN - 2 ] = 'S';
+        outgo_post(&postfile,toboard);
+    }
+    /*   setbdir(digestmode, buf, currboard );Haohmaru.99.11.26.改成下面一行，因为不管是转贴还是自动发文都不会用到文摘模式*/
+    setbfile( buf, toboard, DOT_DIR);
+    if (!strcmp(toboard, "syssecurity")
+            && strstr(title, "修改 ")
+            && strstr(title, " 的权限"))
+        postfile.accessed[0] |= FILE_MARKED; /* Leeward 98.03.29 */
+    if (strstr(title, "发文权限") && mode == 2)
+    {
+        postfile.accessed[0] |= FILE_MARKED;/* Haohmaru 99.11.10*/
+        postfile.accessed[1] |= FILE_READ;
+        postfile.accessed[0] |= FILE_FORWARDED;
+    }
+    if (append_record( buf, &postfile, sizeof(postfile)) == -1) { /* 添加POST信息到当前版.DIR */
+        if(!mode)
+        {
+            bbslog("1user", "cross_posting '%s' on '%s': append_record failed!",
+                    postfile.title, toboard);
+        }else{
+            bbslog("1user", "Posting '%s' on '%s': append_record failed!",
+                    postfile.title, toboard);
+        }
+#ifdef BBSMAIN
+        pressreturn() ;
+        clear() ;
+#endif
+        return 1 ;
+    }
+    /* brc_add_read( postfile.filename ) ;*/
+	updatelastpost(toboard);
+    if(!mode)       /* 用户post还是自动发信*/
+        sprintf(buf,"cross_posted '%s' on '%s'", postfile.title, toboard) ;
+    else
+        sprintf(buf,"自动发表系统 POST '%s' on '%s'", postfile.title, toboard) ;
+    bbslog("1user",buf) ;
+    return 1;
+}
+
+
+int post_file(struct userec* user,char* fromboard,char* filename,char* nboard,char* posttitle,int Anony,int mode)  
+/* 将某文件 POST 在某版 */
+{
+    if(getboardnum(nboard,NULL) <= 0)
+    {  /* 搜索要POST的版 ,判断是否存在该版 */
+#ifdef BBSMAIN
+        sprintf(dbname,"%s 讨论区找不到",nboard);
+        report(dbname);
+#endif
+        return -1;
+    }
+    post_cross(user,nboard,fromboard,posttitle,filename,Anony,NA,'l',mode);  /* post 文件 */
+    return 0;
 }
 
 

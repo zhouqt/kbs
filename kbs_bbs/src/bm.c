@@ -239,7 +239,7 @@ char *uident;
         sprintf(buffer,"%s 解封 %s 在 %s",currentuser->userid,lookupuser->userid,currboard);
       mail_file(currentuser->userid,filename,uident,buffer,0);
     }
-    postfile(filename,"undenypost",buffer,1);
+    post_file(currentuser,"",filename,"undenypost",buffer,0,1);
     unlink(filename);
     return del_from_file(fn,lookupuser?lookupuser->userid:uident);
 }
@@ -379,7 +379,7 @@ Here:
                     }
                     fprintf(fn,"                              %s\n",ctime(&now));
                     fclose(fn);
-                    postfile(filename,currboard,buffer,2);
+                    post_file(currentuser,"",filename,currboard,buffer,0,2);
                     /*	unlink(filename); */
                     currentuser = saveptr;
 
@@ -390,7 +390,7 @@ Here:
                         sprintf(buffer,"%s 封某板"NAME_BM" %s 在 %s",currentuser->userid,uident,currboard);
                     else
                         sprintf(buffer,"%s 封 %s 在 %s",currentuser->userid,uident,currboard);
-                    postfile(filename,"denypost",buffer,8);
+                    post_file(curruser,"",filename,"denypost",buffer,0,8);
                     unlink(filename);
                 }
             }

@@ -24,7 +24,7 @@ DEFINES	=  $(CSIE_DEF) $(OS_DEF)
 CFLAGS += -I.. -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' 
 
 BINFILE= poststat static usage Xclean Xhtml Bhtml refriend chlevel listonline showBM idx0Ann \
-	lazybm fixdir
+	lazybm fixdir autoundeny
 
 .SUFFIXES: .o .c .ln
 

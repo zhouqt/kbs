@@ -610,7 +610,6 @@ edit_mail_file:
         {
             strcpy(newmessage.title, title);
             strncpy(save_title,newmessage.title,STRLEN) ;
-            strncpy(save_filename,fname,4096) ;
             break;
         }
     }
@@ -1626,7 +1625,6 @@ static int do_gsend(char *userid[],char *title,int num)
         }else
         {
             strncpy(save_title,title,STRLEN) ;
-            strncpy(save_filename,fname,4096) ;
             break;
         }
     }

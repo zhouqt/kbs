@@ -45,7 +45,6 @@ extern struct commands dellist[] ;
 extern struct commands maintlist[] ;
 
 extern char save_title[] ;    /* These are used by the editor when inserting */
-extern char save_filename[] ; /* header information */
 extern int in_mail ;
 extern int dumb_term ;
 extern int showansi;

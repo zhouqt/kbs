@@ -1241,7 +1241,7 @@ case KEY_PGDN: case Ctrl( 'F' ): case ' ':
                     sprintf(tmp,"ÄãÈ·¶¨Òª×ªÌùµ½ %s °åÂğ",bname);
                     if(askyn(tmp,0)==1)
                     {
-                        postfile( fname,bname,me.item[ me.now ]->title ,2);
+                        post_file(currentuser,"", fname,bname,me.item[ me.now ]->title ,0,2);
                         move(2,0);
                         sprintf(tmp,"[1mÒÑ¾­°ïÄã×ªÌùÖÁ %s °åÁË[m",bname);
                         prints(tmp);

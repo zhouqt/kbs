@@ -143,6 +143,7 @@ int inform(char *board, char *user)
     	sprintf(buffer,"%s 解封某板板主 %s 在 %s ", usr->userid, user, board); 
     else
         sprintf(buffer,"%s 解封 %s 在 %s", usr->userid, user, board);
+    /*
 	pi.userid = usr->userid;
 	pi.username = usr->username;
 	pi.title = buffer;
@@ -151,6 +152,8 @@ int inform(char *board, char *user)
 	pi.anony = 0;
 	pi.access = 0;
 	post_file(filename, &pi);
+	*/
+	post_file(user,"",filename,board,buffer,0,0);
     unlink(filename);
 
 	printf("系统已经发信通知了%s.<br>\n", user);

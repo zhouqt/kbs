@@ -49,7 +49,6 @@ struct friends_info *topfriend;
 char replytitle[STRLEN];
 #endif
 
-int outgo_post(struct fileheader* fh,char* board);
 char    *filemargin() ;
 /*For read.c*/
 int     auth_search_down();
@@ -314,29 +313,6 @@ Post()  /* 主菜单内的 在当前版 POST 文章 */
 }
 
 int
-postfile(filename,nboard,posttitle,mode)  /* 将某文件 POST 在某版 */
-char *filename,*nboard,*posttitle;
-int mode;
-{
-    char dbname[STRLEN];
-    if(getboardnum(nboard,NULL) <= 0)
-    {  /* 搜索要POST的版 ,判断是否存在该版 */
-        sprintf(dbname,"%s 讨论区找不到",nboard);
-        report(dbname);
-        return -1;
-    }
-    in_mail = NA ;   /* 在quote_board,quote_file,quote_title填入要POST的文章参数，然后POST */
-    strcpy(quote_board,nboard);
-    strcpy(dbname,currboard); /* 保存当前版 */
-    strcpy(currboard,nboard);
-    strcpy(quote_file, filename);
-    strcpy(quote_title,posttitle);
-    post_cross('l',mode);  /* post 文件 */
-    strcpy(currboard,dbname); /* 恢复保存的当前版 */
-    return 0;
-}
-
-int
 get_a_boardname(bname,prompt)  /* 输入一个版名 */
 char *bname,*prompt;
 {
@@ -442,7 +418,7 @@ char *direct;
         strcpy(quote_board,currboard);
         strcpy(dbname,currboard);
         strcpy(currboard,bname);
-        if(post_cross(ispost[0],0)==-1) /* 转贴 */
+        if(post_cross(currentuser,currboard,quote_board,quote_title,quote_file,Anony,in_mail,ispost[0],0)==-1) /* 转贴 */
         {
             pressreturn();
             move(2,0);
@@ -1375,124 +1351,6 @@ char *direct ;
     return FULLUPDATE ;
 }
 
-/* Add by SmallPig */
-int
-post_cross(char islocal,int mode)    /* (自动生成文件名) 转贴或自动发信 */
-{
-    struct fileheader postfile ;
-    char        filepath[STRLEN], fname[STRLEN];
-    char        buf[256],buf4[STRLEN],whopost[IDLEN];
-    int         fp,i;
-    int aborted;
-
-    if (!haspostperm(currentuser,currboard)&&!mode)
-    {
-        move( 1, 0 );
-        prints("您尚无权限在 %s 发表文章.\n",currboard);
-        prints("如果您尚未注册，请在个人工具箱内详细注册身份\n");
-        prints("未通过身份注册认证的用户，没有发表文章的权限。\n");
-        prints("谢谢合作！ :-) \n");
-        return -1;
-    }
-
-    memset(&postfile,0,sizeof(postfile)) ;
-    strncpy(save_filename,fname,4096) ;
-
-    if(!mode){
-        if(!strstr(quote_title,"(转载)"))
-            sprintf(buf4,"%s (转载)",quote_title);
-        else
-            strcpy(buf4,quote_title);
-    }else
-        strcpy(buf4,quote_title);
-    strncpy(save_title,buf4,STRLEN) ;
-
-    setbfile( filepath, currboard, "");
-
-    if ((aborted=get_postfilename(postfile.filename,filepath))!=0) {
-        move( 3, 0 );
-        clrtobot();
-        prints("\n\n无法创建文件:%d...\n",aborted);
-        pressreturn();
-        clear();
-        return FULLUPDATE;
-    }
-
-    if(mode==1)
-        strcpy(whopost,"deliver"); /* mode==1为自动发信 */
-    else
-        strcpy(whopost,currentuser->userid);
-
-    strncpy(postfile.owner,whopost,STRLEN) ;
-    setbfile( filepath, currboard, postfile.filename );
-
-    local_article = 0;
-    if ( !strcmp( postfile.title, buf ) && quote_file[0] != '\0' )
-        if(islocal=='l'||islocal=='L')
-            local_article=YEA;
-
-    modify_user_mode( POSTING );
-/*    strcpy(quote_board,currboard);*/
-    getcross( filepath ,quote_file, currentuser, in_mail,quote_board,quote_title,Anony,mode,currboard); /*根据fname完成 文件复制 */
-
-    /* Changed by KCN,disable color title
-    if(mode != 1)
-{
-        int i;
-        for (i=0;(i<strlen(save_title))&&(i<STRLEN-1);i++) 
-          if (save_title[i]==0x1b) postfile.title[i]=' ';
-          else 
-    	postfile.title[i]=save_title[i];
-        postfile.title[i]=0;
-}changed by Haohmaru,转贴文章则禁掉
-    else*/
-    strncpy( postfile.title, save_title, STRLEN );
-    if ( local_article == 1 ) /* local save */
-    {
-        postfile.filename[ STRLEN - 1 ] = 'L';
-        postfile.filename[ STRLEN - 2 ] = 'L';
-    }else
-    {
-        postfile.filename[ STRLEN - 1 ] = 'S';
-        postfile.filename[ STRLEN - 2 ] = 'S';
-        outgo_post(&postfile,currboard);
-    }
-    /*   setbdir(digestmode, buf, currboard );Haohmaru.99.11.26.改成下面一行，因为不管是转贴还是自动发文都不会用到文摘模式*/
-    sprintf( buf, "boards/%s/%s", currboard, DOT_DIR);
-    if (!strcmp(currboard, "syssecurity")
-            && strstr(quote_title, "修改 ")
-            && strstr(quote_title, " 的权限"))
-        postfile.accessed[0] |= FILE_MARKED; /* Leeward 98.03.29 */
-    if (strstr(quote_title, "发文权限") && mode == 2)
-    {
-        postfile.accessed[0] |= FILE_MARKED;/* Haohmaru 99.11.10*/
-        postfile.accessed[1] |= FILE_READ;
-        postfile.accessed[0] |= FILE_FORWARDED;
-    }
-    if (append_record( buf, &postfile, sizeof(postfile)) == -1) { /* 添加POST信息到当前版.DIR */
-        if(!mode)
-        {
-            bbslog("1user", "cross_posting '%s' on '%s': append_record failed!",
-                    postfile.title, quote_board);
-        }else{
-            bbslog("1user", "Posting '%s' on '%s': append_record failed!",
-                    postfile.title, quote_board);
-        }
-        pressreturn() ;
-        clear() ;
-        return 1 ;
-    }
-    /* brc_add_read( postfile.filename ) ;*/
-	updatelastpost(currboard);
-    if(!mode)       /* 用户post还是自动发信*/
-        sprintf(buf,"cross_posted '%s' on '%s'", postfile.title, currboard) ;
-    else
-        sprintf(buf,"自动发表系统 POST '%s' on '%s'", postfile.title, currboard) ;
-    bbslog("1user",buf) ;
-    return 1;
-}
-
-
 int
 show_board_notes(bname)     /* 显示版主的话 */
 char bname[30];
@@ -1508,21 +1366,6 @@ char bname[30];
         return 1;
     }
     return -1;
-}
-
-int
-outgo_post(fh, board)
-struct fileheader *fh;
-char *board;
-{
-    FILE *foo;
-
-    if (foo = fopen("innd/out.bntp", "a"))
-    {
-        fprintf(foo, "%s\t%s\t%s\t%s\t%s\n", board,
-                fh->filename, currentuser->userid, currentuser->username, save_title);
-        fclose(foo);
-    }
 }
 
 int
@@ -1670,7 +1513,6 @@ post_article()                         /*用户 POST 文章 */
             }
             /*        strcpy(post_file.title, buf); */
             strncpy(save_title,post_file.title,STRLEN) ;
-            strncpy(save_filename,fname,4096) ;
             if( save_title[0] == '\0' )
                 return FULLUPDATE;
             break;

@@ -168,6 +168,7 @@ int inform(bcache_t *bp, char *user, char *exp, int dt)
 		fprintf(fn,"                              "NAME_BM":\x1b[4m%s\x1b[0m\n", usr->userid);
 	fprintf(fn,"                              %s\n",ctime(&now));
 	fclose(fn);
+	/*
 	pi.userid = usr->userid;
 	pi.username = usr->username;
 	pi.title = title;
@@ -175,7 +176,8 @@ int inform(bcache_t *bp, char *user, char *exp, int dt)
 	pi.local = 1;
 	pi.anony = 0;
 	pi.access = (FILE_READ << 8) | (FILE_MARKED | FILE_FORWARDED);
-	post_file(buf, &pi);
+	*/
+	post_file(user,"",buf,board,title,0,0);
 	memcpy(usr, &saveusr, sizeof(saveusr));
 
 	unlink(buf);

@@ -325,8 +325,6 @@ void write_header2(FILE *fp, char *board, char *title,
 int outgo_post2(struct fileheader *fh, char *board, 
 				char *userid, char *username, char *title);
 
-int post_file(char *filename, postinfo_t *pi);
-
 char * setmailpath( char *buf, char *userid );
 
 int get_unifile(char *filename, char *key, int mode);

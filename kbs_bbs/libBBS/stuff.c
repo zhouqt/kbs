@@ -1007,4 +1007,21 @@ char *exittime;
     return now;
 }
 
+void getuinfo(FILE *fn,struct userec *ptr_urec)
+{
+    fprintf(fn,"\n\n您的代号     : %s\n", ptr_urec->userid);
+    fprintf(fn,"您的昵称     : %s\n", ptr_urec->username);
+    fprintf(fn,"真实姓名     : %s\n", ptr_urec->realname);
+    fprintf(fn,"居住住址     : %s\n", ptr_urec->address);
+    fprintf(fn,"电子邮件信箱 : %s\n", ptr_urec->email);
+    fprintf(fn,"真实 E-mail  : %s\n", ptr_urec->realemail);
+    fprintf(fn,"Ident 资料   : %s\n", ptr_urec->ident);
+    fprintf(fn,"注册日期     : %s", ctime( &ptr_urec->firstlogin));
+    fprintf(fn,"最近光临日期 : %s", ctime( &ptr_urec->lastlogin));
+    fprintf(fn,"最近光临机器 : %s\n", ptr_urec->lasthost );
+    fprintf(fn,"上站次数     : %d 次\n", ptr_urec->numlogins);
+    fprintf(fn,"文章数目     : %d (Board)\n",
+            ptr_urec->numposts);
+}
+
 
