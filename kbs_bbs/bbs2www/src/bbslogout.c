@@ -37,18 +37,25 @@ u_exit()
     clear_utmp(get_utmpent_num(ui));
 }
 
-void abort_program() {
+void abort_program()
+{
 	int stay=0;
 	struct userec *x = NULL;
 
-	stay=abs(time(0) - *(int*)(u_info->from+32));
-	if(stay>7200) stay = 7200;
-	getuser(getcurruserid(), &x);
-	if(x) {
-			x->stay+=stay;
-			record_exit_time();
-			u_exit();
-			save_user_data(x);
+	stay = abs(time(0) - *(int*)(u_info->from+32));
+	/* 上站时间超过 2 小时按 2 小时计 */
+	if(stay>7200)
+		stay = 7200;
+	/*getuser(getcurruserid(), &x);*/
+	x = getcurrusr();
+	if(x)
+	{
+		x->stay += stay;
+		record_exit_time();
+		bbslog( "1system", "EXIT: Stay:%3ld (%s)[%d %d]", stay / 60, 
+			x->username, get_curr_utmpent(), getusernum(x->userid));
+		u_exit();
+		/*save_user_data(x);*/
 	}
 }
 
