@@ -50,7 +50,6 @@ extern char secname[SECNUM][2][20];
 extern int loginok;
 extern struct userec *currentuser;
 extern struct user_info *u_info;
-extern struct UTMPFILE *shm_utmp;
 extern struct UCACHE *shm_ucache;
 extern char fromhost[IPLEN + 1];
 extern friends_t fff[200];

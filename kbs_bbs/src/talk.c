@@ -438,7 +438,7 @@ int ttt_talk(struct user_info *userinfo)
                 pressreturn();
                 goto list;
             }
-            uin = utmpshm->uinfo[ts.pos[unum - 1]];
+            uin = utmphead->uinfo[ts.pos[unum - 1]];
         } else
             search_ulist(&uin, t_cmpuids, tuid);
     } else {

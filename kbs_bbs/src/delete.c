@@ -404,7 +404,7 @@ void offline()
 int kickuser(struct user_info *uentp, char *arg, int count)
 {
     kill(uentp->pid, SIGHUP);
-    clear_utmp((uentp - utmpshm->uinfo) + 1, uentp->uid, uentp->pid);
+    clear_utmp((uentp - utmphead->uinfo) + 1, uentp->uid, uentp->pid);
     UNUSED_ARG(arg);
     UNUSED_ARG(count);
     return 0;
@@ -561,7 +561,7 @@ int kick_user(struct user_info *userinfo)
         ind = true;
     }
     if (uin.mode == WEBEXPLORE)
-        clear_utmp((userinfo - utmpshm->uinfo) + 1, uin.uid, uin.pid);
+        clear_utmp((userinfo - utmphead->uinfo) + 1, uin.uid, uin.pid);
     if (!ind || !uin.active || (kill(uin.pid, 0) == -1)) {
         if (uinfo.mode != LUSERS && uinfo.mode != OFFLINE && uinfo.mode != FRIEND) {
             move(3, 0);
@@ -573,7 +573,7 @@ int kick_user(struct user_info *userinfo)
         return 0;
     }
     if (kill(uin.pid, SIGHUP) == -1) {
-        clear_utmp((userinfo - utmpshm->uinfo) + 1, uin.uid, uin.pid);
+        clear_utmp((userinfo - utmphead->uinfo) + 1, uin.uid, uin.pid);
     }
     newbbslog(BBSLOG_USER, "kicked %s", userid);
     /*sprintf( genbuf, "%s (%s)", kuinfo.userid, kuinfo.username );modified by dong, 1998.11.2 */

@@ -435,14 +435,14 @@ void utmpd()
             struct user_info *uentp;
 
             now = time(NULL);
-            if ((now > utmpshm->uptime + 120) || (now < utmpshm->uptime - 120)) {
+            if ((now > utmphead->uptime + 120) || (now < utmphead->uptime - 120)) {
                 int n;
 
-                utmpshm->uptime = now;
+                utmphead->uptime = now;
                 bbslog("1system", "UTMP:Clean user utmp cache");
                 for (n = 0; n < USHM_SIZE; n++) {
-                    utmpshm->uptime = now;
-                    uentp = &(utmpshm->uinfo[n]);
+                    utmphead->uptime = now;
+                    uentp = &(utmphead->uinfo[n]);
                     if (uentp->active && uentp->pid && kill(uentp->pid, 0) == -1) {     /*uentp¼ì²é */
                         char buf[STRLEN];
 

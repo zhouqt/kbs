@@ -21,7 +21,6 @@ int badnum = 0;
 
 struct user_info *u_info;
 
-/*struct UTMPFILE *shm_utmp;*/
 /*struct UCACHE *shm_ucache;*/
 char fromhost[IPLEN + 1];
 char parm_name[256][80], *parm_val[256];
@@ -1393,7 +1392,7 @@ int count_www()
     int i, total = 0;
 
     for (i = 0; i < MAXACTIVE; i++) {
-        if (utmpshm->uinfo[i].mode == WEBEXPLORE)
+        if (utmphead->uinfo[i].mode == WEBEXPLORE)
             total++;
     }
     return total;
@@ -1415,7 +1414,7 @@ uinfo_t *get_user_info(int utmpnum)
 
     if (utmpnum < 1 || utmpnum > USHM_SIZE)
         return NULL;
-    return &(utmpshm->uinfo[utmpnum - 1]);
+    return &(utmphead->uinfo[utmpnum - 1]);
 }
 
 int get_friends_num()

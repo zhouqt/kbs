@@ -56,7 +56,7 @@ int login(struct userec *user)
 		exit(-1);
 	}
     /*u = get_user_info(utmpent);*/
-	u = &(utmpshm->uinfo[utmpent-1]);
+	u = &(utmphead->uinfo[utmpent-1]);
     u->pid = 1;
     tmp = rand() % 100000000;
     u->utmpkey = tmp;
