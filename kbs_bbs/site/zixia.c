@@ -10,7 +10,7 @@ const char seccode[SECNUM][5] = {
 	"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
 };
 
-const char *permstrings[] = {
+const char * const permstrings[] = {
         "基本权力",             /* PERM_BASIC */
         "进入聊天室",           /* PERM_CHAT */
         "呼叫他人聊天",         /* PERM_PAGE */
@@ -47,7 +47,7 @@ const char *permstrings[] = {
 
 /* You might want to put more descriptive strings for SPECIAL1 and SPECIAL2
    depending on how/if you use them. */
-const char *user_definestr[] = {
+const char * const user_definestr[] = {
     "活动看版",                 /* DEF_ACBOARD */
     "使用彩色",                 /* DEF_COLOR */
     "编辑时显示状态栏",         /* DEF_EDITMSG */
@@ -83,7 +83,7 @@ const char *user_definestr[] = {
     "隐藏ip"                    /* DEF_SHOWALLIP */
 };
 
-const char    *explain[] = {
+const char * const explain[] = {
 	"斧 头 帮",
 	"大话西游",
 	"大小分舵",
@@ -97,7 +97,7 @@ const char    *explain[] = {
          NULL
 };
  
-const char    *groups[] = {
+const char * const groups[] = {
 	"AxFaction",
 	"zixia",
 	"Factions",
@@ -112,19 +112,19 @@ const char    *groups[] = {
 };
 
 const char secname[SECNUM][2][20]={
-	"斧 头 帮", "[黑帮/系统]",
-	"大话西游", "[大话/技术]",
-	"大小分舵", "[地盘/校班]",
-	"吃喝玩乐", "[娱乐/体育]",
-	"唧唧歪歪", "[感性/聊天]",
-	"吟风弄月", "[心情/文化]",
-	"西游之路", "[出国/聚会]",
-	"豆腐西施", "[店面/当铺]",
-	"东成西就", "[省份/城市]",
-	"大圣取经", "[专业/申请]",
+	{"斧 头 帮", "[黑帮/系统]"},
+	{"大话西游", "[大话/技术]"},
+	{"大小分舵", "[地盘/校班]"},
+	{"吃喝玩乐", "[娱乐/体育]"},
+	{"唧唧歪歪", "[感性/聊天]"},
+	{"吟风弄月", "[心情/文化]"},
+	{"西游之路", "[出国/聚会]"},
+	{"豆腐西施", "[店面/当铺]"},
+	{"东成西就", "[省份/城市]"},
+	{"大圣取经", "[专业/申请]"},
 };
 
-const char *mailbox_prop_str[] =
+const char * const mailbox_prop_str[] =
 {
 	    "发信时保存信件到发件箱",
 	    "删除信件时不保存到垃圾箱",
