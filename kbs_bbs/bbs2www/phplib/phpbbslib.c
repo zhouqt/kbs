@@ -2223,8 +2223,14 @@ static void bbs_make_favdir_zval(zval * value, char *col_name, struct newpostdat
  * prototype:
  * array bbs_getboards(char *prefix, int group, int flag);
  *
+ * prefix: 分类讨论区代号
+ * group: 当获得目录版面(二级版面)内的版面时这个传入目录版面 bid，否则设置为 0
+ *        prefix = '*', group = 0 的时候返回所有版面
  * flag: bit 0 (LSB): yank
- *           1      : no_brc. set to 1 when you don't need BRC info.
+ *           1      : no_brc. set to 1 when you don't need BRC info. (will speedup)
+ *           2      : all_boards 只在 group = 0 的时候有效，如果设置为 1，就返回
+ *                    所有版面，包括目录版面内的版面。设置成 0 的时候，目录版面
+ *                    内的版面是不返回的。
  *
  * @return array of loaded boards on success,
  *         FALSE on failure.
@@ -2249,7 +2255,7 @@ static PHP_FUNCTION(bbs_getboards)
     int i;
     int j;
     int ac = ZEND_NUM_ARGS();
-    int brdnum, yank, no_brc;
+    int brdnum, yank, no_brc, all_boards;
     int group;
     int total;   
 
@@ -2290,6 +2296,7 @@ static PHP_FUNCTION(bbs_getboards)
     
 	yank = flag & 1;
     no_brc = flag & 2;
+    all_boards = (flag & 4) && (group == 0);
 
     if  (getSession()->zapbuf==NULL)  {
 		char fname[STRLEN];
@@ -2336,7 +2343,7 @@ static PHP_FUNCTION(bbs_getboards)
 			if ( group == -2 ){
 				if( ( tnow - bptr->createtime ) > 86400*30 || ( bptr->flag & BOARD_GROUP ) )
 					continue;
-			}else if (bptr->group!=group)
+			}else if (!all_boards && (bptr->group!=group))
 	            continue;
 	        if (!check_see_perm(getCurrentUser(),bptr)) {
 	            continue;
