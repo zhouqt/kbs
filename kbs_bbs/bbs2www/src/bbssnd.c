@@ -98,7 +98,7 @@ int main()
 		http_fatal("两次发文间隔过密, 请休息几秒后再试");
 	}
 	*(int*)(u_info->from+36)=time(0);
-	sprintf(filename, "tmp/%d.tmp", getpid());
+	sprintf(filename, "tmp/%s.%d.tmp", getcurruserid(), getpid());
 	f_append(filename, content);
 	r = post_article(board, title, filename, currentuser, fromhost, sig, local, anony);
 	if(r<=0)

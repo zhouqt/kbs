@@ -1062,7 +1062,8 @@ int init_no_http() {
 	shm_init();
 }
 
-char *void1(unsigned char *s) {
+char *void1(unsigned char *s)
+{
         int i;
         int flag=0;
         for(i=0; s[i]; i++) {

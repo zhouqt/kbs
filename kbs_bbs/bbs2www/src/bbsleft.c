@@ -127,7 +127,7 @@ int main() {
 	printf("<a href=\"javascript: t(document.all.div4, document.img4)\">特别服务区</a><br>\n");
 	printf("<div id=\"div4\" style=\"display:none\">\n");
 	printf("<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsalluser\">所有使用者</a><br>\n");
-	printf("<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsadl\">下载精华区</a><br>\n");
+	/*printf("<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsadl\">下载精华区</a><br>\n");*/
 	printf("</div>\n");
   	printf("<img src=\"/link0.gif\"><a href=\"bbsfind\" target=\"f3\">文章查询</a><br>\n");
 	printf("<img src=\"/link0.gif\"><a href=\"bbssel\" target=\"f3\">查找讨论区</a><br>\n");
