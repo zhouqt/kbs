@@ -406,9 +406,6 @@ void x_fillform()
         return;
 	}
     
-	/*prints("因转站不接收新注册用户填写注册单; 8 号恢复本服务。请等候。");
-	   pressreturn();
-	   return; */ 
 	if ((fn = fopen("new_register", "r")) != NULL) {
         while (fgets(genbuf, STRLEN, fn) != NULL) {
             if ((ptr = strchr(genbuf, '\n')) != NULL)

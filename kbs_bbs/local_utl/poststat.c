@@ -12,10 +12,14 @@
 #include "bbs.h"
 #define	DELETE
 
-char *myfile[] = { "day", "week", "month", "year" };
+char *myfile[] = { "day", "week", "month", "year","bless" };
 int mycount[4] = { 7, 4, 12 };
-int mytop[] = { 10, 50, 100, 100 };
-char *mytitle[] = { "ÈÕÊ®", "ÖÜÎåÊ®", "ÔÂ°Ù", "Äê¶È°Ù" };
+int mytop[] = { 10, 50, 100, 100,10 };
+char *mytitle[] = { "ÈÕÊ®´óÈÈÃÅ»°Ìâ", 
+	"ÖÜÎåÊ®´óÈÈÃÅ»°Ìâ", 
+	"ÔÂ°Ù´óÈÈÃÅ»°Ìâ", 
+	"Äê¶È°Ù´óÈÈÃÅ»°Ìâ" ,
+	"ÈÕÊ®´óÖÔÐÄ×£¸£"};
 
 
 #define HASHSIZE 1024
@@ -31,7 +35,7 @@ struct postrec {
     time_t date;                /* last post's date */
     int number;                 /* post number */
     struct postrec *next;       /* next rec */
-} *bucket[HASHSIZE];
+} *bucket[HASHSIZE],*blessbucket[HASHSIZE];
 
 
 /* 100 bytes */
@@ -56,15 +60,19 @@ int hash(key)
 /* ---------------------------------- */
 
 
-void search(t)
-    struct posttop *t;
+void search(struct posttop *t)
 {
     struct postrec *p, *q, *s;
     int i, found = 0;
 
     i = hash(t->title);
     q = NULL;
-    p = bucket[i];
+#ifdef BLESS_BOARD
+    if (!strcasecmp(t->board,BLESS_BOARD)) 
+        p = blessbucket[i];
+    else
+#endif
+        p = bucket[i];
     while (p && (!found)) {
         if (!strcmp(p->title, t->title) && !strcmp(p->board, t->board))
             found = 1;
@@ -83,6 +91,11 @@ void search(t)
         memcpy(s, t, sizeof(struct posttop));
         s->next = NULL;
         if (q == NULL)
+#ifdef BLESS_BOARD
+        if (!strcasecmp(t->board,BLESS_BOARD)) 
+            blessbucket[i]=s;
+        else
+#endif
             bucket[i] = s;
         else
             q->next = s;
@@ -124,17 +137,12 @@ void load_stat(fname)
     }
 }
 
-
-void poststat(mytype)
-    int mytype;
+void writestat(int mytype,struct postrec* dobucket)
 {
-    static char *logfile = ".post";
-    static char *oldfile = ".post.old";
-
-    FILE *fp;
-    char buf[40], curfile[40] = "etc/posts/day.0", *p;
     struct postrec *pp;
+    FILE *fp;
     int i, j;
+    char* p,curfile[40];
 
     /*Haohmaru.99.11.20.¼ì²éÊÇ·ñÒÑ±»É¾ */
     FILE *fp1;
@@ -144,52 +152,15 @@ void poststat(mytype)
     /*Bigman.2000.8.28: ÐÞ¸ÄÍ³¼Æ·½Ê½ */
     int m, n;
     char BoardName[10][13];
-
-    if (mytype < 0) {
-        /* --------------------------------------- */
-        /* load .post and statictic processing     */
-        /* --------------------------------------- */
-
-        remove(oldfile);
-        rename(logfile, oldfile);
-        if ((fp = fopen(oldfile, "r")) == NULL)
-            return;
-        mytype = 0;
-        load_stat(curfile);
-
-        while (fread(top, sizeof(struct posttop), 1, fp))
-            search(top);
-        fclose(fp);
-    } else {
-        /* ---------------------------------------------- */
-        /* load previous results and statictic processing */
-        /* ---------------------------------------------- */
-
-        i = mycount[mytype];
-        p = myfile[mytype];
-        while (i) {
-            sprintf(buf, "etc/posts/%s.%d", p, i);
-            sprintf(curfile, "etc/posts/%s.%d", p, --i);
-            load_stat(curfile);
-            rename(curfile, buf);
-        }
-        mytype++;
-    }
-
-    /* ---------------------------------------------- */
+    char buf[40];
+/* ---------------------------------------------- */
     /* sort top 100 issue and save results            */
     /* ---------------------------------------------- */
 
     memset(top, 0, sizeof(top));
     for (i = j = 0; i < HASHSIZE; i++) {
-        for (pp = bucket[i]; pp; pp = pp->next) {
-
-#ifdef  DEBUG
-            printf("Title : %s, Board: %s\nPostNo : %d, Author: %s\n", pp->title, pp->board, pp->number, pp->author);
-#endif
-
+        for (pp = dobucket[i]; pp; pp = pp->next)
             j = sort(pp, j);
-        }
     }
 
     p = myfile[mytype];
@@ -201,9 +172,7 @@ void poststat(mytype)
 
     sprintf(curfile, "etc/posts/%s", p);
     if (fp = fopen(curfile, "w")) {
-        /*fprintf(fp, "\t\t[34m-----[37m=====[41m ±¾%s´óÈÈÃÅ»°Ìâ [40m=====[34m-----[m\n\n", mytitle[mytype]); */
-        fprintf(fp, "                [34m-----[37m=====[41m ±¾%s´óÈÈÃÅ»°Ìâ [40m=====[34m-----[m\n\n", mytitle[mytype]);
-        /* Leeward 98.09.24 replace the \t\t to spaces for SHARE MEM in ../main.c */
+        fprintf(fp, "                [34m-----[37m=====[41m ±¾%s [40m=====[34m-----[m\n\n", mytitle[mytype]);
 
         i = mytop[mytype];
         if (j > i)
@@ -216,7 +185,6 @@ void poststat(mytype)
             strcpy(buf, ctime(&top[i].date));
             buf[20] = NULL;
             p = buf + 4;
-/*      if (!strcmp(top[i].board,"Birthday")) continue; *//*Èõ£¬»¹ÒªÕâÃ´×ö£¬¸Ä¸Ä°æÃæ ¶ÁÈ¨ÏÞ²»¾ÍµÃÁË */
 #ifdef	DELETE
             /*Haohmaru.99.11.20.¼ì²éÊÇ·ñÒÑ±»É¾ */
             if (mytype == 0) {  /*Ö»ÓÐµ±ÈÕÊ®´ó²Å×öÏÂÃæµÄ¼ì²é */
@@ -255,14 +223,73 @@ void poststat(mytype)
         }
         fclose(fp);
     }
+}
+
+void poststat(int mytype)
+{
+    static char *logfile = ".post";
+    static char *oldfile = ".post.old";
+
+    char buf[40], curfile[40] = "etc/posts/day.0";
+    struct postrec *pp;
+    FILE* fp;
+    int i;
+
+    if (mytype < 0) {
+        /* --------------------------------------- */
+        /* load .post and statictic processing     */
+        /* --------------------------------------- */
+
+        remove(oldfile);
+        rename(logfile, oldfile);
+        if ((fp = fopen(oldfile, "r")) == NULL)
+            return;
+        mytype = 0;
+        load_stat(curfile);
+#ifdef BLESS_BOARD
+        load_stat("etc/posts/bless.0");
+#endif
+
+        while (fread(top, sizeof(struct posttop), 1, fp))
+            search(top);
+        fclose(fp);
+    } else {
+        /* ---------------------------------------------- */
+        /* load previous results and statictic processing */
+        /* ---------------------------------------------- */
+
+        char *p;
+        i = mycount[mytype];
+        p = myfile[mytype];
+        while (i) {
+            sprintf(buf, "etc/posts/%s.%d", p, i);
+            sprintf(curfile, "etc/posts/%s.%d", p, --i);
+            load_stat(curfile);
+            rename(curfile, buf);
+        }
+        mytype++;
+    }
+
 
     /* free statistics */
 
+    writestat(mytype,bucket);
+#ifdef BLESS_BOARD
+    if (mytype==0)
+        writestat(4,blessbucket);
+#endif
     for (i = 0; i < HASHSIZE; i++) {
         for (pp = bucket[i]; pp; pp = pp->next)
             free(pp);
         bucket[i] = NULL;
     }
+#ifdef BLESS_BOARD
+    for (i = 0; i < HASHSIZE; i++) {
+        for (pp = blessbucket[i]; pp; pp = pp->next)
+            free(pp);
+        blessbucket[i] = NULL;
+    }
+#endif
 }
 
 

@@ -676,8 +676,12 @@ void user_login()
         }
     }
     /* Leeward 98.09.24 Use SHARE MEM to diaplay statistic data below */
-    if (DEFINE(currentuser, DEF_SHOWSTATISTIC))
+    if (DEFINE(currentuser, DEF_SHOWSTATISTIC)) {
         ansimore("0Announce/bbslists/countlogins", true);
+#ifdef BLESS_BOARD
+        ansimore("0Announce/etc/posts/bless", true);
+#endif
+    }
     if (vote_flag(NULL, '\0', 2 /*¼ì²é¶Á¹ıĞÂµÄWelcome Ã» */ ) == 0) {
         if (dashf("Welcome")) {
             clear();
@@ -693,13 +697,16 @@ void user_login()
                                                  */
         ansimore("etc/posts/day", false);       /* Leeward: disable old code */
     }
+    
     move(t_lines - 2 /*1 */ , 0);       /* Leeward: 98.09.24 Alter below message */
     clrtoeol();
     prints("[1;36m¡î ÕâÊÇÄúµÚ [33m%d[36m ´ÎÉÏÕ¾£¬ÉÏ´ÎÄúÊÇ´Ó [33m%s[36m Á¬Íù±¾Õ¾¡£\n", currentuser->numlogins + 1, currentuser->lasthost);
     prints("¡î ÉÏ´ÎÁ¬ÏßÊ±¼äÎª [33m%s[m ", Ctime(currentuser->lastlogin));
     igetkey();
     /* È«¹úÊ®´óÈÈÃÅ»°Ìâ added by Czz 020128 */
+#ifndef SMTH
     show_help("0Announce/bbslists/newsday");
+#endif
     /* added end */
     ansimore("0Announce/hotinfo", false);
     move(t_lines - 1 /*1 */ , 0);       /* Leeward: 98.09.24 Alter below message */
