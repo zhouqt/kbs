@@ -181,9 +181,9 @@ function showArticleThreads($boardName,$boardID,$articleID,$article,$start,$list
 	} 
 	for($i=0;$i<$num;$i++) {
 		if (($i+$start)==0) {
-			showArticle($boardName,$boardID,intval($article['ID']), $article);
+			showArticle($boardName,$boardID,$i+$start,intval($article['ID']), $article);
 		} else {
-			showArticle($boardName,$boardID,intval($threads[$start+$i-1]['ID']),$threads[$start+$i-1]);
+			showArticle($boardName,$boardID,$i+$start,intval($threads[$start+$i-1]['ID']),$threads[$start+$i-1]);
 		}
 	}
 ?>
@@ -233,7 +233,7 @@ function showArticleThreads($boardName,$boardID,$articleID,$article,$start,$list
 	}
 }
 
-function showArticle($boardName,$boardID,$threadID,$thread){
+function showArticle($boardName,$boardID,$num, $threadID,$thread){
 ?>
 <tr><td class=tablebody1 valign=top width=175>
 <table width=100% cellpadding=4 cellspacing=0>
@@ -243,7 +243,7 @@ function showArticle($boardName,$boardID,$threadID,$thread){
 
 <td class=tablebody1 valign=top width=*>
 
-<table width=100% ><tr><td width=*><a href="javascript:openScript('messanger.asp?action=new&touser=Roy',500,400)"><img src="pic/message.gif" border=0 alt="给Roy发送一个短消息"></a>&nbsp;<a href="friendlist.asp?action=addF&myFriend=Roy" target=_blank><img src="pic/friend.gif" border=0 alt="把Roy加入好友"></a>&nbsp;<a href="dispuser.asp?id=4" target=_blank><img src="pic/profile.gif" border=0 alt="查看Roy的个人资料"></a>&nbsp;<a href="queryResult.asp?stype=1&nSearch=3&keyword=Roy&BoardID=1&SearchDate=ALL" target=_blank><img src="pic/find.gif" border=0 alt="搜索Roy在测试的所有贴子"></a>&nbsp;<A href="mailto:roy@zixia.net"><IMG alt="点击这里发送电邮给Roy" border=0 src=pic/email.gif></A>&nbsp;<a href="postarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $thread['ID']; ?>"><img src="pic/edit.gif" border=0 alt=编辑></a>&nbsp;<a href="postarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $thread['ID']; ?>"><img src="pic/reply_a.gif" border=0 alt=回复这个贴子></a></td><td width=50><b>楼主</b></td></tr><tr><td bgcolor=#D8C0B1 height=1 colspan=2></td></tr>
+<table width=100% ><tr><td width=*><a href="javascript:openScript('messanger.asp?action=new&touser=Roy',500,400)"><img src="pic/message.gif" border=0 alt="给Roy发送一个短消息"></a>&nbsp;<a href="friendlist.asp?action=addF&myFriend=Roy" target=_blank><img src="pic/friend.gif" border=0 alt="把Roy加入好友"></a>&nbsp;<a href="dispuser.asp?id=4" target=_blank><img src="pic/profile.gif" border=0 alt="查看Roy的个人资料"></a>&nbsp;<a href="queryResult.asp?stype=1&nSearch=3&keyword=Roy&BoardID=1&SearchDate=ALL" target=_blank><img src="pic/find.gif" border=0 alt="搜索Roy在测试的所有贴子"></a>&nbsp;<A href="mailto:roy@zixia.net"><IMG alt="点击这里发送电邮给Roy" border=0 src=pic/email.gif></A>&nbsp;<a href="editarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $thread['ID']; ?>"><img src="pic/edit.gif" border=0 alt=编辑></a>&nbsp;<a href="postarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $thread['ID']; ?>"><img src="pic/reply_a.gif" border=0 alt=回复这个贴子></a></td><td width=50><b><?php echo $num==0?'楼主':'第<font color=#ff0000>'.$num.'</font>楼'; ?></b></td></tr><tr><td bgcolor=#D8C0B1 height=1 colspan=2></td></tr>
 </table>
 
 <blockquote><table class=tablebody2 border=0 width=90% style=" table-layout:fixed;word-break:break-all"><tr><td width="100%" style="font-size:9pt;line-height:12pt"><img src=face/face1.gif border=0 alt=发贴心情>&nbsp;<?php echo  $thread['TITLE']; ?><b></b><br><?php 
