@@ -59,7 +59,7 @@ static void getheader(char *header, const char *from, int prio)
     time(&tt);
     pt = localtime(&tt);
 
-    sprintf(header, "[%02u/%02u %02u:%02u:%02u %5d %d.%s] %s ", pt->tm_mon + 1, pt->tm_mday, pt->tm_hour, pt->tm_min, pt->tm_sec, getpid(), prio, from, currentuser->userid);
+    sprintf(header, "[%02u/%02u %02u:%02u:%02u %5d %d.%s] %s ", pt->tm_mon + 1, pt->tm_mday, pt->tm_hour, pt->tm_min, pt->tm_sec, getpid(), prio, from, currentuser == NULL ? "(unknown user)" : currentuser->userid);
 }
 
 /* 写入log, 如果buf==NULL那么flush。否则根据大小决定是否缓存 */
