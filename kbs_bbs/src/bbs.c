@@ -28,12 +28,10 @@
 /*#include "../SMTH2000/cache/cache.h"*/
 
 extern int numofsig;
-int continue_flag;
 int scrint = 0 ;
 int local_article;
 int readpost;
 int digestmode;
-int mailmode;
 int usernum ;
 char currboard[STRLEN-BM_LEN] ;
 char currBM[BM_LEN-1] ;
@@ -43,6 +41,13 @@ char    ReadPost[STRLEN]="";
 char    ReplyPost[STRLEN]="";
 int     FFLL=0;
 int     Anony;
+char genbuf[ 1024 ];
+char quote_title[120],quote_board[120];
+char quote_file[120], quote_user[120];
+struct friends_info *topfriend;
+#ifndef NOREPLY
+char replytitle[STRLEN];
+#endif
 
 char    *filemargin() ;
 void    cancelpost();
@@ -87,13 +92,6 @@ extern int 	B_to_b;
 
 extern struct screenline *big_picture;
 extern struct userec *user_data;
-char genbuf[ 1024 ];
-char quote_title[120],quote_board[120];
-char quote_file[120], quote_user[120];
-struct friends_info *topfriend;
-#ifndef NOREPLY
-char replytitle[STRLEN];
-#endif
 
 int isowner(user,fileinfo)
 struct userec* user;
@@ -833,11 +831,8 @@ readtitle()  /* 版内 显示文章列表 的 title */
 }
 
 char *
-readdoent(num,ent)  /* 在文章列表中 显示 一篇文章标题 */
-int     num;
-struct fileheader *ent ;
+readdoent(char* buf,int num,struct fileheader* ent)  /* 在文章列表中 显示 一篇文章标题 */
 {
-    static char buf[512] ;
     time_t      filetime;
     char        date[20];
     char        *TITLE;
@@ -2688,11 +2683,8 @@ char *direct;
     return PARTUPDATE;
 }
 int
-del_range(ent,fileinfo,direct,mailmode)   /* 区域删除 */
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
-int mailmode;
+del_range(int ent,struct fileheader *fileinfo ,char *direct ,int mailmode)
+  /* 区域删除 */
 {
     char del_mode[11],num1[11],num2[11],temp[2] ;
     char fullpath[STRLEN];
@@ -3045,7 +3037,7 @@ extern int b_jury_edit(); /*stephen 2001.11.1*/
 static int sequent_ent ;
 
 int
-sequent_messages(struct fileheader *fptr,char* arg)
+sequent_messages(struct fileheader *fptr,int* continue_flag)
 {
     static int idc;
 
@@ -3058,7 +3050,7 @@ sequent_messages(struct fileheader *fptr,char* arg)
         if(idc < sequent_ent)
             return 0;
         if( !brc_unread( fptr->filename ) )  return 0; /*已读 则 返回*/
-        if (continue_flag != 0) {
+        if (*continue_flag != 0) {
             genbuf[ 0 ] = 'y';
         } else {
             prints("讨论区: '%s' 标题:\n\"%s\" posted by %s.\n",
@@ -3083,7 +3075,7 @@ sequent_messages(struct fileheader *fptr,char* arg)
         move(t_lines-1, 0);
         clrtoeol();
         prints("\033[1;44;31m[连续读信]  \033[33m回信 R │ 结束 Q,← │下一封 ' ',↓ │^R 回信给作者                \033[m");
-        continue_flag = 0;
+        *continue_flag = 0;
         switch( egetch() ) {
         case Ctrl('Z'): r_lastmsg(); /* Leeward 98.07.30 support msgX */
             break;
@@ -3096,7 +3088,7 @@ sequent_messages(struct fileheader *fptr,char* arg)
             do_reply(fptr->title); /*回信*/
     case ' ': case '\n':
         case KEY_DOWN:
-            continue_flag = 1; break;
+            *continue_flag = 1; break;
         case Ctrl('R'):
                         post_reply( 0, fptr, (char *)NULL );
             break;
@@ -3132,12 +3124,13 @@ int ent ;
 char *direct ;*/
 {
     char        buf[ STRLEN ];
+    int continue_flag;
 
     sequent_messages((struct fileheader *)NULL,0) ;
     sequent_ent = ent ;
     continue_flag = 0;
     setbdir( buf, currboard );
-    apply_record( buf,sequent_messages,sizeof(struct fileheader),0) ;
+    apply_record( buf,sequent_messages,sizeof(struct fileheader),&continue_flag) ;
     return FULLUPDATE ;
 }
 

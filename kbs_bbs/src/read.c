@@ -198,17 +198,19 @@ char            *(*doentry)();
 struct keeploc  *locmem;
 int             num,ssize;
 ---*/
-void draw_entry(char *(*doentry)(), struct keeploc * locmem,
+void draw_entry(char *(*doentry)(char*,int,char*), struct keeploc * locmem,
                 int num, int ssize, char * pnt)
 {
     char        *str;
     int         base, i;
+    char foroutbuf[512];
+
 
     base = locmem->top_line;
     move( 3, 0 );
     clrtobot();
     for( i = 0; i < num; i++ ) {
-        str = (*doentry)( base + i, &pnt[ i *ssize ] );
+        str = (*doentry)(foroutbuf, base + i, &pnt[ i *ssize ] );
         if(!check_stuffmode())
             prints( "%s", str );
         else
@@ -221,14 +223,8 @@ void draw_entry(char *(*doentry)(), struct keeploc * locmem,
 }
 
 
-void
-i_read( cmdmode, direct, dotitle, doentry, rcmdlist,ssize)
-int     cmdmode;
-char    *direct ;
-int     (*dotitle)() ;
-char    *(*doentry)() ;
-struct one_key *rcmdlist ;
-int     ssize;
+void i_read( int     cmdmode,char    *direct ,int (*dotitle)() ,
+	char *(*doentry)(char*,int,char*),struct one_key *rcmdlist,int ssize)
 {
     extern int  talkrequest;
     struct keeploc      *locmem;

@@ -117,18 +117,15 @@ struct newpostdata *ptr;
 
 
 int
-search_board( num )
-int     *num;
+search_board( int *num,int *i,int *find,char* bname)
 {
-    static  int     i = 0,find = YEA;
-    static  char    bname[STRLEN];
     int         n,ch,tmpn=NA;
 
-    if (find == YEA)
+    if (*find == YEA)
     {
         bzero(bname, sizeof(bname));
-        find = NA;
-        i = 0;
+        *find = NA;
+        *i = 0;
     }
     while (1)
     {
@@ -139,10 +136,10 @@ int     *num;
 
         if (isprint2(ch))
         {
-            bname[i++] = ch;
+            bname[*i++] = ch;
             for (n = 0; n < brdnum; n++)
             {
-                if (!strncasecmp(nbrd[n].name, bname, i))
+                if (!strncasecmp(nbrd[n].name, bname, *i))
                 {
                     tmpn=YEA;
                     *num = n;
@@ -152,30 +149,30 @@ int     *num;
             }
             if(tmpn)
                 return 1;
-            if (find == NA)
+            if (*find == NA)
             {
-                bname[--i] = '\0';
+                bname[--*i] = '\0';
             }
             continue;
         }
         else if (ch == Ctrl('H') || ch == KEY_LEFT || ch == KEY_DEL ||
                  ch == '\177')
         {
-            i--;
-            if (i < 0)
+            *i--;
+            if (*i < 0)
             {
-                find = YEA;
+                *find = YEA;
                 break;
             }
             else
             {
-                bname[i] = '\0';
+                bname[*i] = '\0';
                 continue;
             }
         }
         else if (ch == '\t')
         {
-            find = YEA;
+            *find = YEA;
             break;
         }
         else if (Ctrl('Z') == ch)
@@ -185,12 +182,12 @@ int     *num;
         }
         else if (ch == '\n' || ch == '\r' || ch == KEY_RIGHT)
         {
-            find = YEA;
+            *find = YEA;
             break;
         }
         bell(1);
     }
-    if (find)
+    if (*find)
     {
         move(t_lines-1, 0);
         clrtoeol();
@@ -257,7 +254,7 @@ char *direct ;
 int
 query_bm( )
 {
-    struct boardheader *bptr;
+    const struct boardheader *bptr;
     int         n;
     char        tmpBM[BM_LEN-1];
     char        uident[STRLEN];
@@ -388,7 +385,7 @@ int     newflag;
         if( brdnum <= 0 ) { /*≥ı ºªØ*/
             if(load_boards()==-1)
                 continue;
-            qsort( nbrd, brdnum, sizeof( nbrd[0] ), cmpboard );
+            qsort( nbrd, brdnum, sizeof( nbrd[0] ), (int (*)(const void *, const void *))cmpboard );
             page = -1;
             if( brdnum <= 0 )  break;
         }
@@ -568,22 +565,26 @@ case 'n': case 'j': case KEY_DOWN:
             show_help("help/boardreadhelp");
             page = -1;
             break;
-        case '/': /*À—À˜board */
-            move( 3+num-page,0 ); prints( ">", number );
-            tmpnum=num;
-            tmp = search_board( &num );
-            move( 3+tmpnum-page,0 ); prints( " ", number );
-            if(tmp==1)
-                loop_mode=1;
-            else
-            {
-                loop_mode=0;
-                update_endline();
-            }
+        case '/': /*À—À˜board */ 
+        	{
+	    		int     i = 0,find = YEA;
+	    		char    bname[STRLEN];
+	            move( 3+num-page,0 ); prints( ">", number );
+	            tmpnum=num;
+	            tmp = search_board( &num,&i,&find,bname );
+	            move( 3+tmpnum-page,0 ); prints( " ", number );
+	            if(tmp==1)
+	                loop_mode=1;
+	            else
+	            {
+	                loop_mode=0;
+	                update_endline();
+	            }
+        	}
             break;
         case 's':   /* sort/unsort -mfchen */
             currentuser->flags[0] ^= BRDSORT_FLAG; /*≈≈–Ú∑Ω Ω*/
-            qsort( nbrd, brdnum, sizeof( nbrd[0] ), cmpboard );/*≈≈–Ú*/
+            qsort( nbrd, brdnum, sizeof( nbrd[0] ), (int (*)(const void *, const void *))cmpboard );/*≈≈–Ú*/
             page = 999;
             break;
             /*---	added period 2000-09-11	4 FavBoard	---*/

@@ -67,11 +67,8 @@ void
 a_report(s)/* Haohmaru.99.12.06 */
 char *s ;
 {
-    static int disable = NA ;
     int fd ;
 
-    if(disable)
-        return ;
     if((fd = open("a_trace",O_WRONLY|O_CREAT,0644)) != -1 ) {
         char buf[512] ;
         /*char timestr[10], *thetime;*/ /* Leeward 98.04.27 */
@@ -91,8 +88,6 @@ char *s ;
         close(fd) ;
         return ;
     }
-    disable = YEA ;
-    return ;
 }
 
 int
@@ -810,7 +805,8 @@ a_copypaste( pm, paste )
 MENU    *pm;
 int     paste;
 {
-    static char title[ STRLEN ], filename[ STRLEN ], fpath[ PATHLEN ];
+	/* KCN 2002.03.22,下面变量的static应该可以去掉*/
+    char title[ STRLEN ], filename[ STRLEN ], fpath[ PATHLEN ];
     ITEM        *item;
     char        ans[ STRLEN ], newpath[ PATHLEN ];
     FILE        *fn; /* Leeward 98.02.19 */

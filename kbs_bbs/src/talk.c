@@ -1832,12 +1832,8 @@ friend_title()
 }
 
 char *
-friend_doentry(ent,fh)
-int ent;
-struct friends *fh;
+friend_doentry(char* buf,int ent,struct friends *fh)
 {
-    static char buf[STRLEN/2];
-
     sprintf(buf," %4d  %-12.12s  %s",ent,fh->id,fh->exp);
     return buf;
 }

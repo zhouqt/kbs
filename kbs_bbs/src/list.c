@@ -7,7 +7,7 @@ extern char     BoardName[];
 int   (*func_list_show)();
 time_t update_time=0;
 int showexplain=0,freshmode=0;
-int mailmode,numf;
+int numf;
 int friendmode=0;
 int usercounter,real_user_names=0;
 int range,page,readplan,num;
@@ -655,6 +655,7 @@ int
 mailto(struct userec *uentp ,char* arg)
 {
     char filename[STRLEN];
+    int mailmode=(int)arg;
 
     sprintf(filename,"etc/%s.mailtoall",currentuser->userid);
     if((uentp->userlevel==PERM_BASIC&&mailmode==1)||
@@ -671,8 +672,7 @@ int mailtoall(mode)
 int mode;
 {
 
-    mailmode=mode;
-    return apply_users(mailto,0);
+    return apply_users(mailto,mode);
 }
 
 Show_Users()

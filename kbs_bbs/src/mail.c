@@ -920,11 +920,8 @@ mailtitle()
 }
 
 char *
-maildoent(num,ent)
-int     num;
-struct fileheader *ent ;
+maildoent(char* buf,int num,struct fileheader *ent)
 {
-    static char buf[512] ;
     time_t      filetime;
     char        *date;
     char b2[512] ;

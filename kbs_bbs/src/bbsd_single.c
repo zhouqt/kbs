@@ -174,18 +174,18 @@ char *buf;
 static void
 telnet_init()
 {
-    static char svr[] = {
+    int n, len;
+    char *cmd;
+    int rset;
+    struct timeval to;
+    char buf[64];
+    char svr[] = {
         IAC, DO, TELOPT_TTYPE,
         IAC, SB, TELOPT_TTYPE, TELQUAL_SEND, IAC, SE,
         IAC, WILL, TELOPT_ECHO,
         IAC, WILL, TELOPT_SGA
     };
 
-    int n, len;
-    char *cmd;
-    int rset;
-    struct timeval to;
-    char buf[64];
 
     /* --------------------------------------------------- */
     /* init telnet protocol				 */
@@ -352,24 +352,24 @@ int port; /* Thor.981206: 取 0 代表 *没有参数* */
 
 
 static void
-siguser1()
+siguser1(int signo)
 {
     heavy_load=1;
 }
 static void
-siguser2()
+siguser2(int signo)
 {
     heavy_load=0;
 }
 
 static void
-reaper()
+reaper(int signo)
 {
     while (waitpid(-1, NULL, WNOHANG | WUNTRACED) > 0);
 }
 
 static void
-main_term()
+main_term(int signo)
 {
     exit(0);
 }
@@ -600,7 +600,7 @@ char *argv[];
                 continue;
 */
             value = sizeof(sin);
-            csock = accept(0, (struct sockaddr *)&sin, &value);
+            csock = accept(0, (struct sockaddr *)&sin, (socklen_t*)&value);
             if (csock < 0)
             {
 /*                reaper();*/
@@ -614,7 +614,7 @@ char *argv[];
             }
 	    
 	    /* sanshao@10.24: why next line is originally sizeof(sin) not &value */	
-            getpeername(csock,(struct sockaddr*)&sin,&value);
+            getpeername(csock,(struct sockaddr*)&sin,(socklen_t*)&value);
             bbslog("0connect","connect from %s(%d) in port %d",inet_ntoa(sin.sin_addr),htons(sin.sin_port),port);
             setsid();
 
