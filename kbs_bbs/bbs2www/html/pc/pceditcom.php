@@ -88,7 +88,7 @@
 	<td>ÄÚÈÝ</td>
 </tr>
 <tr>
-	<td><textarea name="body" cols="100" rows="20" id="body"><?php echo stripslashes($rows[body]); ?></textarea></td>
+	<td><textarea name="body" cols="100" rows="20" id="body"><?php echo stripslashes($rows[body]." "); ?></textarea></td>
 </tr>
 <tr>
 	<td>
