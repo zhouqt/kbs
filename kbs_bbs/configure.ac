@@ -9,18 +9,18 @@ AM_CONFIG_HEADER(config.h)
 
 AC_PREFIX_DEFAULT(/home/bbs)
 
-AC_ARG_ENABLE(icc,
-[  --enable-icc
+AC_ARG_WITH(icc,
+[  --with-icc=path
                           select intel compiler],
 [
-	if test "$enableval"="yes"; then
-		enableval=/opt/intel/compiler60/ia32
+	if test "$withval" = "yes"; then
+		withval=/opt/intel/compiler60/ia32
 	fi
-    if test -d $enableval; then
+    if test -d $withval; then
 		CC=icc
 		CXX=icc
 		if test -z "$CFLAGS"; then
-			CFLAGS="$CFLAGS -tpp6 -axK -O3 -unroll256 -w1 -ipo -g -I$enableval/include"
+			CFLAGS="$CFLAGS -tpp6 -axK -O3 -unroll256 -w1 -ipo -g -I$withval/include"
 		fi
 		if test -z "$LDFLAGS"; then
 			LDFLAGS="$LDFLAGS -ipo -static"
@@ -28,8 +28,7 @@ AC_ARG_ENABLE(icc,
 		CONFIG_AR=xiar
 		EXTRA_CLEAN="*.il"
     else
-		echo "can't find intel compiler in $enableval!"
-        exit 1
+		AC_MSG_ERROR([can't find intel compiler in $withval!])
     fi
 ],[CONFIG_AR=ar; EXTRA_CLEAN=""])
 
@@ -103,8 +102,8 @@ AC_ARG_ENABLE(site,
 ],[BBSSITE="smth"])
 AC_SUBST(BBSSITE)
 
-AC_ARG_WITH(ssh,
-[  --with-ssh
+AC_ARG_ENABLE(ssh,
+[  --enable-ssh
 		enable ssh bbsd  support(need sshbbsd package)],
 [
 	if test -d sshbbsd; then
