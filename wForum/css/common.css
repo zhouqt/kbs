@@ -26,6 +26,6 @@
 }
 .buttonClass1,.buttonClass2,.buttonClass3,.buttonClass4
 {
-	background-color: lightblue;
+	/* background-color: lightblue; */
 	cursor: hand;
 }
