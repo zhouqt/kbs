@@ -127,7 +127,7 @@ function preprocess(){
 		}
 		$path = $path_tmp;
 	} else {
-		if( bbs_ann_traverse_check($path) < 0 ) {
+		if( bbs_ann_traverse_check($path, $currentuser["userid"]) < 0 ) {
 			foundErr("´íÎóµÄÄ¿Â¼");
 			return false;
 		}
