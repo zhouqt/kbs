@@ -190,7 +190,7 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
 
                 fprintf(se, "系统安全记录系统\0x1b[32m原因：%s\x1b[m\n", str);
                 fprintf(se, "以下是个人资料");
-                getuinfo(se, currentuser);
+                getuinfo(se, lookupuser);
                 fclose(se);
                 post_file(currentuser, "", fname, "syssecurity", str, 0, 2);
             }
