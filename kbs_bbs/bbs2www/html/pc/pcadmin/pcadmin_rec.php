@@ -24,13 +24,13 @@ if(isset($_GET[sig]) && $_GET[nid])
 	}
 	else
 	{
-		$query = "SELECT nid , hostname , created , uid ,subject , body , emote , htmltag , recuser FROM nodes WHERE nid =".$nid." AND access = 0 AND type = 0 AND ( recommend = 1 OR recommend = 3 ) LIMIT 0,1;";
+		$query = "SELECT nid , hostname , created , uid ,subject , body , emote , htmltag , recuser , rectopic FROM nodes WHERE nid =".$nid." AND access = 0 AND type = 0 AND ( recommend = 1 OR recommend = 3 ) LIMIT 0,1;";
 		$result = mysql_query( $query , $link);
 		$rows = mysql_fetch_array($result);
 		if($rows)
 		{
-			$query = "INSERT INTO `recommend` ( `rid` , `nid` , `hostname` , `created` , `uid` , `subject` , `body` , `emote` , `htmltag` , `recuser` ,`state` ) ".
-			"VALUES ('', '".$rows[nid]."', '".addslashes($rows[hostname])."', '".$rows[created]."', '".$rows[uid]."', '".addslashes($rows[subject])."', '".addslashes($rows[body])."', '".$rows[emote]."', '".$rows[htmltag]."' , '".addslashes($rows[recuser])."' , 1);";
+			$query = "INSERT INTO `recommend` ( `rid` , `nid` , `hostname` , `created` , `uid` , `subject` , `body` , `emote` , `htmltag` , `recuser` ,`state`,`topic` ) ".
+			"VALUES ('', '".$rows[nid]."', '".addslashes($rows[hostname])."', '".$rows[created]."', '".$rows[uid]."', '".addslashes($rows[subject])."', '".addslashes($rows[body])."', '".$rows[emote]."', '".$rows[htmltag]."' , '".addslashes($rows[recuser])."' , 1,'".addslashes($rows[rectopic])."');";
 			mysql_query($query,$link);
 		}
 		mysql_free_result($result);
