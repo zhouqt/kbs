@@ -39,7 +39,10 @@
 		
 		$pc = pc_load_infor($link,"",$node[uid]);
 		
-		if( ( $node[access] == 1 && !pc_is_friend($currentuser["userid"],$pc["USER"])) || ( $node[access] > 1 && strtolower($pc["USER"]) != strtolower($currentuser["userid"]) ) )
+		$isadmin = (pc_is_admin($currentuser,$pc) && $loginok == 1)?TRUE:FALSE;
+		$isfriend = pc_is_friend($currentuser["userid"],$pc["USER"]);
+		
+		if( ( $node[access] == 1 && !$isadmin && !$isfriend ) || ( $node[access] > 1 && !$isadmin ) )
 		{
 			html_error_quit("对不起，您不能查看本条记录!");
 			exit();
