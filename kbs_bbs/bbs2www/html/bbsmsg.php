@@ -10,7 +10,7 @@
 <body>
 <pre>
 <?php
-    $fp = fopen ($filename, "r");
+    $fp = @fopen ($filename, "r");
     if ($fp!=false) {
         while (!feof ($fp)) {
             $buffer = fgets($fp, 300);
