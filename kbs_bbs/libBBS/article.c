@@ -1585,6 +1585,35 @@ int add_edit_mark(char *fname, int mode, char *title, session_t* session)
     return 1;
 }
 
+/*
+ * get attachment type. This function might be useful for innbbsd/ code. - atppp
+ */
+int get_attachment_type(char *attachfilename) {
+    char *extension;
+    extension = strrchr(attachfilename, '.');
+    if (extension != NULL)
+    {
+        extension++;
+        if (!strcasecmp(extension, "jpg")
+            || !strcasecmp(extension, "ico")
+            || !strcasecmp(extension, "gif"))
+        {
+            return ATTACH_IMG;
+        }
+        else if (!strcasecmp(extension, "swf"))
+            return ATTACH_FLASH;
+        else if (!strcasecmp(extension, "jpeg")
+            || !strcasecmp(extension, "png")
+            || !strcasecmp(extension, "pcx")
+            || !strcasecmp(extension, "bmp"))
+        {
+            return ATTACH_IMG;
+        }
+    }
+    return ATTACH_OTHERS;
+    
+}
+
 char *checkattach(char *buf, long size, long *len, char **attachptr)
 {
     char *ptr;
