@@ -316,6 +316,7 @@ void utmpd()
     while (1) {
         int sock,id;
         sock = getutmprequest(m_socket);
+#if 0		
 		{ /*kill user*/
 		time_t now;
 		struct user_info    *uentp;
@@ -337,6 +338,7 @@ void utmpd()
 			    }
 			}
 		} 
+#endif
 		/* utmp */
 		switch (utmpreq.command) {
 		case 1: // getnewutmp
