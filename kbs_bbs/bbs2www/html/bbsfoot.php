@@ -1,8 +1,11 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
-<link rel="stylesheet" type="text/css" href="/bbs.css">
-</head><script language="JavaScript">
+<?php
+    require("funcs.php");
+    if ($loginok != 1)
+        html_nologin();
+    else {
+        html_init("gb2312");
+?>
+<script language="JavaScript">
 <!--
 function Init() {
   servertime=new Date()
@@ -37,14 +40,14 @@ A {color: #0000FF}
 </style>
 <body onload="Init()">
 <form name="clock">时间[<input class="readonly" TYPE="text" NAME="myclock" size="18">] 在线[<a href="/cgi-bin/bbs/bbsusr" target="f3"><?php 
-echo bbs_getonlinenumber() ?></a>] 帐号[<a href=<?php
-echo "/cgi-bin/bbs/bbsqry?userid=" . $currentuser["userid"]; ?> target="f3"></a><?php
-echo "/cgi-bin/bbs/bbsqry?userid=" . $currentuser["userid"]; ?>] <?php
+echo bbs_getonlinenumber(); ?></a>] 帐号[<a href=<?php
+echo "\"/cgi-bin/bbs/bbsqry?userid=" . $currentuser["userid"] . "\""; ?> target="f3"><?php
+echo $currentuser["userid"]; ?></a>] <?php
 		if (strcmp($currentuser["userid"], "guest") != 0)
 		{
 		    if (bbs_getmailnum($currentuser["userid"],&$total,&$unread)) {
 			  if ($unread!=0) {
-		        echo "信箱[<a href=\"/cgi-bin/bbs/bbsmail\" target=\"f3\">" . $total . "封(新信" $unread . ")</a>] ";
+		        echo "信箱[<a href=\"/cgi-bin/bbs/bbsmail\" target=\"f3\">" . $total . "封(新信" . $unread . ")</a>] ";
 			  }
 			  else {
 		        echo "信箱[<a href=\"/cgi-bin/bbs/bbsmail\" target=\"f3\">" . $total . "封</a>] ";
@@ -56,5 +59,7 @@ echo "/cgi-bin/bbs/bbsqry?userid=" . $currentuser["userid"]; ?>] <?php
 ?>
 停留[<input class="readonly" TYPE="text" NAME="stay" size="10">]
 </form>
-</body>
-</html>
+<?php
+        html_normal_quit();
+    }
+?>
