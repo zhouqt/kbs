@@ -858,7 +858,11 @@ int normal_board(char *bname)
         return 1;
     if ((i = getboardnum(bname,&bh)) == 0)
         return 0;
+#ifdef NINE_BUILD
+    return (bh.level&~PERM_DEFAULT== 0)&&!(bh.flag&BOARD_CLUB_HIDE)&&!(bh.flag&BOARD_CLUB_READ);
+#else
     return (bh.level == 0)&&!(bh.flag&BOARD_CLUB_HIDE)&&!(bh.flag&BOARD_CLUB_READ);
+#endif
 }
 
 int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,char** input_namelist)
