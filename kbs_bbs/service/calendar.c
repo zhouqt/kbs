@@ -110,13 +110,13 @@ int calendar_main()
                 month++;
                 if(month>12) {
                     year++;
-                    month=0;
+                    month=1;
                 }
                 break;
             case 13:
             case 10:
                 sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, day);
-                raw_vedit(buf, 0, 0, &eff_size, 0);
+                vedit(buf, 0, &eff_size, 0);
                 break;
         }
     }
