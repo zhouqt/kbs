@@ -58,6 +58,8 @@ static int show_item(struct _select_def *conf, int item, bool clear)
 {
     int idx = item - conf->page_pos;
 
+    if ((item<conf->page_pos)||(item>conf->page_pos+conf->item_per_page))
+        return SHOW_CONTINUE;
     if (conf->pos == item) {
         int pre_len = 0;
 

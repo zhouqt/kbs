@@ -332,6 +332,7 @@ int get_pc_a_node( struct pc_nodes * pn, unsigned long nid)
 		pn[i-1].subject[200]=0;
 		pn[i-1].access = atoi(row[12]);
 		pn[i-1].visitcount = atoi(row[13]);
+                pn[i-1].htmltag = atoi(row[16]);
 
 		pn[i-1].body = (char *)malloc( strlen(row[11]) + 1);
 		if( pn[i-1].body ){

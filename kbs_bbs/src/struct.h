@@ -378,6 +378,7 @@ struct pc_nodes {
 	// 4: À¬»ø
 	int access;
 	int visitcount;
+        int htmltag;
 };
 
 struct pc_comments {
