@@ -25,7 +25,7 @@
 			html_error_quit("对不起，您要查看的Blog不存在");
 			exit();
 		}
-		if($pc["TYPE"] != 1)
+		if(!pc_is_groupwork($pc))
 		{
 			pc_db_close($link);
 			html_error_quit("对不起，只有公有BLOG才能编辑成员");
