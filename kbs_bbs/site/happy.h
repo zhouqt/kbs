@@ -1,11 +1,13 @@
 #ifndef __SYSNAME_H_
 #define __SYSNAME_H_
 
+#define CONV_PASS
 #undef NINE_BUILD
-#undef HAVE_BIRTHDAY
-#undef HAPPY_BBS
-#undef HAVE_COLOR_DATE
-#undef HAVE_TEMPORARY_NICK
+#define HAVE_BIRTHDAY
+#define HAPPY_BBS
+#define HAVE_COLOR_DATE
+#define HAVE_TEMPORARY_NICK /* 允许临时改变昵称 */
+
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
  *       Then decide how long to let them stay: MONITOR_TIMEOUT is the time in
@@ -20,18 +22,16 @@
 #define IDLE_TIMEOUT    (60*20) 
 #define MONITOR_TIMEOUT (60*20) 
 
-#define BBSUID 			9999
-#define BBSGID 			99
+#define BBSUID 			501
+#define BBSGID 			501
 
 /* for bbs2www, by flyriver, 2001.3.9 */
 #define SECNUM 9
 
-#define SQUID_ACCL
-
-#define DEFAULTBOARD    	"test"
-#define MAXUSERS  		200000
+#define DEFAULTBOARD    	"sysop"
+#define MAXUSERS  		20000
 #define MAXBOARD  		400
-#define MAXACTIVE 		8000
+#define MAXACTIVE 		512
 #define MAX_GUEST_NUM		800
 
 #define POP3PORT		110
@@ -51,19 +51,19 @@
 #define LIFE_DAY_SUICIDE	15
 
 #define DAY_DELETED_CLEAN	99
-#define SEC_DELETED_OLDHOME	2592000 /* 3600*24*30，注册新用户如果存在这个用户的目录，保留时间 */
+#define SEC_DELETED_OLDHOME	2592000/* 3600*24*30，注册新用户如果存在这个用户的目录，保留时间*/
 
-#define	REGISTER_WAIT_TIME	(72*60*60)
-#define	REGISTER_WAIT_TIME_NAME	"72 小时"
+#define	REGISTER_WAIT_TIME	(1)
+#define	REGISTER_WAIT_TIME_NAME	"1 分钟"
 
-#define MAIL_BBSDOMAIN      "smth.org"
-#define MAIL_MAILSERVER     "166.111.8.236:25"
+#define MAIL_BBSDOMAIN      "happynet.org"
+#define MAIL_MAILSERVER     "127.0.0.1:25"
 
-#define NAME_BBS_ENGLISH	"smth.org"
-#define	NAME_BBS_CHINESE	"水木清华"
+#define NAME_BBS_ENGLISH	"happynet.org"
+#define	NAME_BBS_CHINESE	"HAPPY"
 #define NAME_BBS_NICK		"BBS 站"
 
-#define BBS_FULL_NAME "BBS 水木清华站"
+#define BBS_FULL_NAME "HAPPY"
 
 #define FOOTER_MOVIE		"欢  迎  投  稿"
 /*#define ISSUE_LOGIN		"本站使用曙光公司曙光天演服务器"*/
@@ -71,14 +71,14 @@
 #define ISSUE_LOGOUT		"还是走了罗"
 
 #define NAME_USER_SHORT		"用户"
-#define NAME_USER_LONG		"水木用户"
+#define NAME_USER_LONG		"HAPPY 用户"
 #define NAME_SYSOP		"System Operator"
 #define NAME_BM			"版主"
 #define NAME_POLICE		"警察"
 #define	NAME_SYSOP_GROUP	"站务组"
-#define NAME_ANONYMOUS		"水母青蛙 Today!"
+#define NAME_ANONYMOUS		"我是匿名天使"
 #define NAME_ANONYMOUS_FROM	"匿名天使的家"
-#define ANONYMOUS_DEFAULT 0
+#define ANONYMOUS_DEFAULT 1
 
 #define NAME_MATTER		"站务"
 #define NAME_SYS_MANAGE		"系统维护"
@@ -210,13 +210,12 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_SHOWSTATISTIC 0200000000    /* Haohmaru */
 #define DEF_UNREADMARK 0400000000       /* Luzi 99.01.12 */
 #define DEF_USEGB     01000000000       /* KCN,99.09.05 */
-//#define DEF_SPLITSCREEN 02000000000 /* bad 2002.9.1 */
-/*#define DEF_HIDEIP    02000000000  Haohmaru,99.12.18*/
-
+#define DEF_SHOWHOROSCOPE 02000000000
+#define DEF_RANDSIGN      04000000000
+#define DEF_SPLITSCREEN 010000000000
 /*#define PERM_POSTMASK  0100000  *//* means the rest is a post mask */
 
-#define NUMDEFINES 28
-
+#define NUMDEFINES 30
 
 #define TDEF_SPLITSCREEN 000001
 
@@ -239,7 +238,7 @@ const char *permstrings[] = {
         "编辑系统档案",         /* PERM_WELCOME */
         "板主",                 /* PERM_BOARDS */
         "帐号管理员",           /* PERM_ACCOUNTS */
-        "水木清华智囊团",       /* PERM_CHATCLOAK */
+        "HAPPY 智囊团",       /* PERM_CHATCLOAK */
         "投票管理员",           /* PERM_OVOTE */
         "系统维护管理员",       /* PERM_SYSOP */
         "Read/Post 限制",       /* PERM_POSTMASK */
@@ -291,40 +290,34 @@ char *user_definestr[] = {
     "进站时观看上站人数统计图", /* DEF_SHOWSTATISTIC Haohmaru 98.09.24 */
     "未读标记使用 *",           /* DEF_UNREADMARK Luzi 99.01.12 */
     "使用GB码阅读",             /* DEF_USEGB KCN 99.09.03 */
+	"显示自己的星座",           /* DEF_SHOWHOROSCOPE */
+    "使用随机签名档",           /* DEF_RANDSIGN */
     "阅读方式: 全屏/分屏"  /* DEF_SPLITSCREEN 2002.9.1 */
 };
 
 const char    *explain[] = {
     "本站系统",
-    "休闲娱乐",
+    "快乐聚会",
     "电脑技术",
-    "学术科学",
-    "体育健身",
-    "谈天说地",
-    "校园信息",
+    "电脑游戏",
     "艺术文化",
-    "人文社会",
-    "网络信息",
-    "清华大学",
-    "兄弟院校",
-    "其  他",
+    "转信专区",
+    "体育休闲",
+    "知性感性",
+    "新闻时事",
     NULL
 };
 
 const char    *groups[] = {
-    "system.faq",
-    "rec.faq",
-    "comp.faq",
-    "sci.faq",
-    "sport.faq",
-    "talk.faq",
-    "campus.faq",
-    "literal.faq",
-    "soc.faq",
-    "network.faq",
-    "thu.faq",
-    "univ.faq",
-    "other.faq",
+    "system.faq", /* GROUP_0 */
+    "assoc.faq",  /* GROUP_1 */
+    "comp.faq",   /* GROUP_2 */
+    "game.faq",   /* GROUP_3 */
+    "literal.faq",/* GROUP_4 */
+    "inn.faq",    /* GROUP_5 */
+    "sport.faq",  /* GROUP_6 */
+    "talk.faq",   /* GROUP_7 */
+    "news.faq",   /* GROUP_8 */
     NULL
 };
 #endif
@@ -349,14 +342,15 @@ typedef struct fileheader {     /* This structure is used to hold data in */
     unsigned int id, groupid, reid;
     char unused1[46];
     char innflag[2];
-    char owner[OWNER_LEN];
-    char unused2[50];
+	char owner[OWNER_LEN];
+    char unused2[50-sizeof(time_t)];
+	time_t posttime;
     char title[STRLEN];
     unsigned level;
     unsigned char accessed[12]; /* struct size = 256 bytes */
 } fileheader;
 
-#define GET_POSTFILENAME(x,y) get_postfilename(x,y,0)
+#define GET_POSTFILENAME(x,y) get_postfilename(x,y,1)
 #define GET_MAILFILENAME(x,y) get_postfilename(x,y,0)
 
 #endif

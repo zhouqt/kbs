@@ -2,6 +2,7 @@
 #define __SYSNAME_H_
 
 #undef NINE_BUILD
+#undef SITE_HIGHCOLOR
 #undef HAVE_BIRTHDAY
 #undef HAPPY_BBS
 #undef HAVE_COLOR_DATE
@@ -11,36 +12,32 @@
  *       Then decide how long to let them stay: MONITOR_TIMEOUT is the time in
  *          seconds a user can sit idle in Monitor mode; IDLE_TIMEOUT applies to all
  *             other modes. 
- *             */
+ */
 #define DOTIMEOUT 1
 
 /* 
  *    These are moot if DOTIMEOUT is commented; leave them defined anyway. 
- *    */
+ */
 #define IDLE_TIMEOUT    (60*20) 
 #define MONITOR_TIMEOUT (60*20) 
 
-#define BBSUID 			9999
-#define BBSGID 			99
+#define BBSUID 			501
+#define BBSGID 			501
 
 /* for bbs2www, by flyriver, 2001.3.9 */
 #define SECNUM 9
 
-#define SQUID_ACCL
-
 #define DEFAULTBOARD    	"test"
-#define MAXUSERS  		200000
+#define MAXUSERS  		20000
 #define MAXBOARD  		400
 #define MAXACTIVE 		8000
 #define MAX_GUEST_NUM		800
 
 #define POP3PORT		110
-#define POP3SPORT		995
-/* ASCIIArt, by czz, 2002.7.5 */
-#define       LENGTH_SCREEN_LINE      256
-#define       LENGTH_FILE_BUFFER      256
-#define       LENGTH_ACBOARD_BUFFER   200
-#define       LENGTH_ACBOARD_LINE     300
+#define	LENGTH_SCREEN_LINE	220
+#define	LENGTH_FILE_BUFFER 	160
+#define	LENGTH_ACBOARD_BUFFER	150
+#define	LENGTH_ACBOARD_LINE 	80
 
 #define LIFE_DAY_USER		120
 #define LIFE_DAY_YEAR          365
@@ -50,8 +47,8 @@
 #define LIFE_DAY_NEW		15
 #define LIFE_DAY_SUICIDE	15
 
-#define DAY_DELETED_CLEAN	99
-#define SEC_DELETED_OLDHOME	2592000 /* 3600*24*30，注册新用户如果存在这个用户的目录，保留时间 */
+#define DAY_DELETED_CLEAN	20
+#define SEC_DELETED_OLDHOME	2592000/* 3600*24*30，注册新用户如果存在这个用户的目录，保留时间*/
 
 #define	REGISTER_WAIT_TIME	(72*60*60)
 #define	REGISTER_WAIT_TIME_NAME	"72 小时"

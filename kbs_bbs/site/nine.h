@@ -1,11 +1,14 @@
 #ifndef __SYSNAME_H_
 #define __SYSNAME_H_
 
-#undef NINE_BUILD
+#define CONV_PASS
+#define NINE_BUILD
+#define SITE_HIGHCOLOR
 #undef HAVE_BIRTHDAY
 #undef HAPPY_BBS
-#undef HAVE_COLOR_DATE
-#undef HAVE_TEMPORARY_NICK
+#define HAVE_COLOR_DATE
+#define HAVE_TEMPORARY_NICK /* 允许临时改变昵称 */
+
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
  *       Then decide how long to let them stay: MONITOR_TIMEOUT is the time in
@@ -17,8 +20,8 @@
 /* 
  *    These are moot if DOTIMEOUT is commented; leave them defined anyway. 
  *    */
-#define IDLE_TIMEOUT    (60*20) 
-#define MONITOR_TIMEOUT (60*20) 
+#define IDLE_TIMEOUT    (60*60*2) 
+#define MONITOR_TIMEOUT (60*60*2) 
 
 #define BBSUID 			9999
 #define BBSGID 			99
@@ -26,21 +29,17 @@
 /* for bbs2www, by flyriver, 2001.3.9 */
 #define SECNUM 9
 
-#define SQUID_ACCL
-
-#define DEFAULTBOARD    	"test"
-#define MAXUSERS  		200000
+#define DEFAULTBOARD    	"sysop"
+#define MAXUSERS  		20000
 #define MAXBOARD  		400
 #define MAXACTIVE 		8000
 #define MAX_GUEST_NUM		800
 
 #define POP3PORT		110
-#define POP3SPORT		995
-/* ASCIIArt, by czz, 2002.7.5 */
-#define       LENGTH_SCREEN_LINE      256
-#define       LENGTH_FILE_BUFFER      256
-#define       LENGTH_ACBOARD_BUFFER   200
-#define       LENGTH_ACBOARD_LINE     300
+#define	LENGTH_SCREEN_LINE	220
+#define	LENGTH_FILE_BUFFER 	160
+#define	LENGTH_ACBOARD_BUFFER	150
+#define	LENGTH_ACBOARD_LINE 	80
 
 #define LIFE_DAY_USER		120
 #define LIFE_DAY_YEAR          365
@@ -50,33 +49,33 @@
 #define LIFE_DAY_NEW		15
 #define LIFE_DAY_SUICIDE	15
 
-#define DAY_DELETED_CLEAN	99
-#define SEC_DELETED_OLDHOME	2592000 /* 3600*24*30，注册新用户如果存在这个用户的目录，保留时间 */
+#define DAY_DELETED_CLEAN	20
+#define SEC_DELETED_OLDHOME	2592000/* 3600*24*30，注册新用户如果存在这个用户的目录，保留时间*/
 
-#define	REGISTER_WAIT_TIME	(72*60*60)
+#define	REGISTER_WAIT_TIME	(0)
 #define	REGISTER_WAIT_TIME_NAME	"72 小时"
 
-#define MAIL_BBSDOMAIN      "smth.org"
-#define MAIL_MAILSERVER     "166.111.8.236:25"
+#define MAIL_BBSDOMAIN      "bbs.net9.org"
+#define MAIL_MAILSERVER     "10.9.40.63:25"
 
-#define NAME_BBS_ENGLISH	"smth.org"
-#define	NAME_BBS_CHINESE	"水木清华"
-#define NAME_BBS_NICK		"BBS 站"
+#define NAME_BBS_ENGLISH	"bbs.net9.org"
+#define	NAME_BBS_CHINESE	"酒井"
+#define NAME_BBS_NICK		"9#BBS站"
 
-#define BBS_FULL_NAME "BBS 水木清华站"
+#define BBS_FULL_NAME "酒井BBS"
 
 #define FOOTER_MOVIE		"欢  迎  投  稿"
 /*#define ISSUE_LOGIN		"本站使用曙光公司曙光天演服务器"*/
-#define ISSUE_LOGIN		"曙光PC  第21届大运会指定服务器"
+#define ISSUE_LOGIN		"欢迎光临"
 #define ISSUE_LOGOUT		"还是走了罗"
 
 #define NAME_USER_SHORT		"用户"
-#define NAME_USER_LONG		"水木用户"
+#define NAME_USER_LONG		"酒井用户"
 #define NAME_SYSOP		"System Operator"
 #define NAME_BM			"版主"
 #define NAME_POLICE		"警察"
 #define	NAME_SYSOP_GROUP	"站务组"
-#define NAME_ANONYMOUS		"水母青蛙 Today!"
+#define NAME_ANONYMOUS		"酒井青蛙 Today!"
 #define NAME_ANONYMOUS_FROM	"匿名天使的家"
 #define ANONYMOUS_DEFAULT 0
 
@@ -109,14 +108,14 @@
    default and you can use them to set up restricted boards or chat rooms.
 */
 
-#define NUMPERMS (30)
+#define NUMPERMS (31)
 
 #define PERM_BASIC      000001
 #define PERM_CHAT       000002
 #define PERM_PAGE       000004
 #define PERM_POST       000010
 #define PERM_LOGINOK    000020
-#define PERM_UNUSE		000040
+#define PERM_DCS		000040
 #define PERM_CLOAK      000100
 #define PERM_SEECLOAK   000200
 #define PERM_XEMPT      000400
@@ -141,9 +140,10 @@
 #define PERM_MM 	01000000000
 #define PERM_DISS        02000000000
 #define PERM_DENYMAIL   	04000000000
+#define PERM_MALE		    010000000000
 
 
-#define XPERMSTR "bTCPRp#@XWBA$VS!DEM1234567890%"
+#define XPERMSTR "bTCPRp#@XWBA$VS!DEM1234567890%L"
 /* means the rest is a post mask */
 
 /* This is the default permission granted to all new accounts. */
@@ -232,7 +232,7 @@ const char *permstrings[] = {
         "呼叫他人聊天",         /* PERM_PAGE */
         "发表文章",             /* PERM_POST */
         "使用者资料正确",       /* PERM_LOGINOK */
-        "禁止发表文章",         /* PERM_DENYPOST */
+        "计算机系本科生",       /* PERM_DCS */
         "可隐身",               /* PERM_CLOAK */
         "可见隐身",             /* PERM_SEECLOAK */
         "长期帐号",         /* PERM_XEMPT */
@@ -257,6 +257,7 @@ const char *permstrings[] = {
         "特殊权限 9",           /* PERM_UNUSE?*/
         "看系统讨论版",           /* PERM_UNUSE?*/
         "封禁Mail",           /* PERM_DENYMAIL*/
+        "男人版权限",           /* PERM_MAIL*/
 
 };
 
@@ -294,48 +295,40 @@ char *user_definestr[] = {
     "阅读方式: 全屏/分屏"  /* DEF_SPLITSCREEN 2002.9.1 */
 };
 
-const char    *explain[] = {
-    "本站系统",
-    "休闲娱乐",
-    "电脑技术",
-    "学术科学",
-    "体育健身",
-    "谈天说地",
-    "校园信息",
-    "艺术文化",
-    "人文社会",
-    "网络信息",
-    "清华大学",
-    "兄弟院校",
-    "其  他",
-    NULL
+const char *explain[]={
+        "本站系统", 
+        "同学会",
+        "电脑技术",   
+        "学术科学", 
+        "艺术文化",  
+        "人文社会",
+        "体育休闲", 
+        "知性感性",  
+        "新闻时事",  
+        NULL
 };
 
-const char    *groups[] = {
-    "system.faq",
-    "rec.faq",
-    "comp.faq",
-    "sci.faq",
-    "sport.faq",
-    "talk.faq",
-    "campus.faq",
-    "literal.faq",
-    "soc.faq",
-    "network.faq",
-    "thu.faq",
-    "univ.faq",
-    "other.faq",
-    NULL
+const char *groups[]={
+        "GROUP_0",
+        "GROUP_1",
+        "GROUP_2",
+        "GROUP_3",
+        "GROUP_4",
+        "GROUP_5",
+        "GROUP_6",
+        "GROUP_7",
+        "GROUP_8",
+        NULL
 };
 #endif
 
 /**
  * 看在线用户时的按键处理字符。
  */
-#define UL_CHANGE_NICK_UPPER   'C'
-#define UL_CHANGE_NICK_LOWER   'c'
-#define UL_SWITCH_FRIEND_UPPER 'F'
-#define UL_SWITCH_FRIEND_LOWER 'f'
+#define UL_CHANGE_NICK_UPPER   'F'
+#define UL_CHANGE_NICK_LOWER   'f'
+#define UL_SWITCH_FRIEND_UPPER 'C'
+#define UL_SWITCH_FRIEND_LOWER 'c'
 
 /**
  * 文章相关部分。

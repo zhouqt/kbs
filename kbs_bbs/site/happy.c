@@ -2,55 +2,57 @@
 
 const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-const char seccode[SECNUM][5] = {
-    "0", "1", "3", "4", "5", "6", "7", "8", "9"
+const char seccode[SECNUM][5]={
+	"0", "1", "3", "4", "5", "6", "7", "8", "9"
 };
 
-const char secname[SECNUM][2][20] = {
-    {"BBS 系统", "[站内]"},
-    {"清华大学", "[本校]"},
-    {"电脑技术", "[电脑/系统]"},
-    {"休闲娱乐", "[休闲/音乐]"},
-    {"文化人文", "[文化/人文]"},
-    {"社会信息", "[社会/信息]"},
-    {"学术科学", "[学科/语言]"},
-    {"体育健身", "[运动/健身]"},
-    {"知性感性", "[谈天/感性]"},
+const char secname[SECNUM][2][20]={
+	{"BBS 系统", "[本站]"},
+	{"快乐聚会", "[院系][协会][团体]"},
+	{"电脑技术", "[电脑][系统][网路]"},
+	{"电脑游戏", "[游戏]"},
+	{"艺术文化", "[文艺][艺术][学术]"},
+	{"转信专区", "[转信]"},
+	{"体育休闲", "[体育][星座][音乐]"},
+	{"知性感性", "[闲聊][感性]"},
+	{"新闻时事", "[新闻][特快][信息]"},
 };
 
-struct _shmkey {
-    char key[20];
-    int value;
+struct _shmkey
+{
+	char key[20];
+	int value;
 };
 
-static const struct _shmkey shmkeys[] = {
-    {"BCACHE_SHMKEY", 3693},
-    {"UCACHE_SHMKEY", 3696},
-    {"UTMP_SHMKEY", 3699},
-    {"ACBOARD_SHMKEY", 9013},
-    {"ISSUE_SHMKEY", 5010},
-    {"GOODBYE_SHMKEY", 5020},
-    {"PASSWDCACHE_SHMKEY", 3697},
-    {"STAT_SHMKEY", 5100},
-    {"CONVTABLE_SHMKEY", 5101},
-    {"MSG_SHMKEY", 5200},
-    {"", 0}
+static const struct _shmkey shmkeys[]= {
+{ "BCACHE_SHMKEY",  3693 },
+{ "UCACHE_SHMKEY",  3696 },
+{ "UTMP_SHMKEY",    3699 },
+{ "ACBOARD_SHMKEY", 9013 },
+{ "ISSUE_SHMKEY",   5010 },
+{ "GOODBYE_SHMKEY", 5020 },
+{ "PASSWDCACHE_SHMKEY", 3697 },
+{ "STAT_SHMKEY",    5100 },
+{ "CONVTABLE_SHMKEY",    5101 },
+{ "MSG_SHMKEY",    5200 },
+{    "",   0 }
 };
 
 int get_shmkey(char *s)
 {
-    int n = 0;
-
-    while (shmkeys[n].key != 0) {
-        if (!strcasecmp(shmkeys[n].key, s))
-            return shmkeys[n].value;
-        n++;
-    }
-    return 0;
+	int n=0;
+	while(shmkeys[n].key!=0)
+	{
+		if(!strcasecmp(shmkeys[n].key, s))
+			return shmkeys[n].value;
+		n++;
+	}
+	return 0;
 }
 
-int uleveltochar(char *buf, struct userec *lookupuser)
-{                               /* 取用户权限中文说明 Bigman 2001.6.24 */
+int
+uleveltochar( char *buf, struct userec *lookupuser ) /* 取用户权限中文说明 Bigman 2001.6.24*/
+{
     unsigned lvl;
     char userid[IDLEN + 2];
 
@@ -110,7 +112,6 @@ int uleveltochar(char *buf, struct userec *lookupuser)
 
     return 1;
 }
-
 /*
     Pirate Bulletin Board System
     Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
@@ -139,8 +140,9 @@ int uleveltochar(char *buf, struct userec *lookupuser)
 
 #include "modes.h"
 
-char *ModeType(mode)
-    int mode;
+char *
+ModeType(mode)
+int     mode;
 {
     switch (mode) {
     case IDLE:
@@ -258,7 +260,7 @@ char *ModeType(mode)
     }
 }
 
-int multilogin_user(struct userec *user, int usernum)
+int multilogin_user(struct userec* user,int usernum)
 {
     int logincount;
     int curr_login_num;
@@ -289,55 +291,55 @@ int multilogin_user(struct userec *user, int usernum)
     return 0;
 }
 
-int old_compute_user_value(struct userec *urec)
+int old_compute_user_value( struct userec *urec)
 {
-    int value;
+    int         value;
 
     /* if (urec) has CHATCLOAK permission, don't kick it */
     /* 元老和荣誉帐号 在不自杀的情况下， 生命力999 Bigman 2001.6.23 */
     /* 
-       * zixia 2001-11-20 所有的生命力都使用宏替换，
-       * 在 smth.h/zixia.h 中定义 
-       * */
-
-    if (((urec->userlevel & PERM_HORNOR) || (urec->userlevel & PERM_CHATCLOAK)) && (!(urec->userlevel & PERM_SUICIDE)))
+    * zixia 2001-11-20 所有的生命力都使用宏替换，
+    * 在 smth.h/zixia.h 中定义 
+    * */
+  
+    if( ((urec->userlevel & PERM_HORNOR)||(urec->userlevel & PERM_CHATCLOAK )) && (!(urec->userlevel & PERM_SUICIDE)))
         return LIFE_DAY_NODIE;
 
-    if (urec->userlevel & PERM_SYSOP)
-        return LIFE_DAY_SYSOP;
+    if ( urec->userlevel & PERM_SYSOP)
+    return LIFE_DAY_SYSOP;
     /* 站务人员生命力不变 Bigman 2001.6.23 */
 
 
-    value = (time(0) - urec->lastlogin) / 60;   /* min */
-    if (0 == value)
-        value = 1;              /* Leeward 98.03.30 */
+    value = (time(0) - urec->lastlogin) / 60;    /* min */
+    if (0 == value) value = 1; /* Leeward 98.03.30 */
 
     /* 修改: 将永久帐号转为长期帐号, Bigman 2000.8.11 */
-    if ((urec->userlevel & PERM_XEMPT) && (!(urec->userlevel & PERM_SUICIDE))) {
-        if (urec->lastlogin < 988610030)
-            return LIFE_DAY_LONG;       /* 如果没有登录过的 */
+    if ((urec->userlevel & PERM_XEMPT) && (!(urec->userlevel & PERM_SUICIDE)) )
+    {   
+    	if (urec->lastlogin < 988610030)
+        return LIFE_DAY_LONG; /* 如果没有登录过的 */
         else
-            return (LIFE_DAY_LONG * 24 * 60 - value) / (60 * 24);
+            return (LIFE_DAY_LONG * 24 * 60 - value)/(60*24);
     }
     /* new user should register in 30 mins */
-    if (strcmp(urec->userid, "new") == 0) {
-        return (LIFE_DAY_NEW - value) / 60;     /* *->/ modified by dong, 1998.12.3 */
+    if( strcmp( urec->userid, "new" ) == 0 ) {
+        return (LIFE_DAY_NEW - value) / 60; /* *->/ modified by dong, 1998.12.3 */
     }
 
     /* 自杀功能,Luzi 1998.10.10 */
     if (urec->userlevel & PERM_SUICIDE)
-        return (LIFE_DAY_SUICIDE * 24 * 60 - value) / (60 * 24);
+        return (LIFE_DAY_SUICIDE * 24 * 60 - value)/(60*24);
     /**********************/
-    if (urec->numlogins <= 3)
-        return (LIFE_DAY_SUICIDE * 24 * 60 - value) / (60 * 24);
-    if (!(urec->userlevel & PERM_LOGINOK))
-        return (LIFE_DAY_NEW * 24 * 60 - value) / (60 * 24);
+    if(urec->numlogins <= 3)
+        return (LIFE_DAY_SUICIDE * 24 * 60 - value)/(60*24);
+    if( !(urec->userlevel & PERM_LOGINOK) )
+        return (LIFE_DAY_NEW * 24 * 60 - value)/(60*24);
     /* if (urec->userlevel & PERM_LONGID)
-       return (667 * 24 * 60 - value)/(60*24); */
-    return (LIFE_DAY_USER * 24 * 60 - value) / (60 * 24);
+         return (667 * 24 * 60 - value)/(60*24); */
+    return (LIFE_DAY_USER * 24 * 60 - value)/(60*24);
 }
 
-int compute_user_value(struct userec *urec)
+int compute_user_value( struct userec *urec)
 {
     int value;
     int registeryear;
@@ -395,6 +397,7 @@ int compute_user_value(struct userec *urec)
     return (basiclife * 24 * 60 - value) / (60 * 24);
 }
 
+
 /**
  * 精华区相关函数。
  */
@@ -404,7 +407,10 @@ int ann_get_postfilename(char *filename, struct fileheader *fileinfo,
 	char fname[PATHLEN];
 	char *ip;
 
-	strcpy(filename, fileinfo->filename);
+	if (fileinfo->filename[1] == '/')
+		strcpy(filename, fileinfo->filename + 2);
+	else
+		strcpy(filename, fileinfo->filename);
 	sprintf(fname, "%s/%s", pm->path, filename);
 	ip = &filename[strlen(filename) - 1];
 	while (dashf(fname)) {
@@ -421,17 +427,21 @@ int ann_get_postfilename(char *filename, struct fileheader *fileinfo,
  */
 time_t get_posttime(const struct fileheader *fileinfo)
 {
-	return atoi(fileinfo->filename + 2);
+	if (fileinfo->filename[1] == '/')
+		return fileinfo->posttime;
+	else
+		return atoi(fileinfo->filename + 2);
 }
 
 void set_posttime(struct fileheader *fileinfo)
 {
-	return;
+	if (fileinfo->filename[1] == '/')
+		fileinfo->posttime = atoi(fileinfo->filename + 4);
 }
 
 void set_posttime2(struct fileheader *dest, struct fileheader *src)
 {
-	return;
+	dest->posttime = src->posttime;
 }
 
 /**
@@ -439,6 +449,16 @@ void set_posttime2(struct fileheader *dest, struct fileheader *src)
  */
 void build_board_structure(const char *board)
 {
+	int i;
+	int len;
+	char buf[STRLEN];
+
+	len = strlen(alphabet);
+    for (i = 0; i < len; i++)
+    {
+		snprintf(buf, sizeof(buf), "boards/%s/%c", board, alphabet[i]);
+		mkdir(buf, 0755);
+    }
 	return;
 }
 
