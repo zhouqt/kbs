@@ -5,7 +5,7 @@
 
 struct binfo {
     char boardname[15];
-    char expname[25];
+    char expname[50];
     int times;
     int sum;
 } st[MAXBOARD];
@@ -134,7 +134,8 @@ void gen_board_rank_xml(int brdcount, struct binfo *bi)
         fprintf(fp, "<Board>\n");
         fprintf(fp, "<EnglishName>%s</EnglishName>\n", 
 				encode_xml(xml_buf, bi[i].boardname, sizeof(xml_buf)));
-        fprintf(fp, "<ChineseName>%s</ChineseName>\n", bi[i].expname);
+        fprintf(fp, "<ChineseName>%s</ChineseName>\n", 
+				encode_xml(xml_buf, bi[i].expname, sizeof(xml_buf)));
         fprintf(fp, "<VisitTimes>%ld</VisitTimes>\n", bi[i].times);
         fprintf(fp, "<StayTime>%ld</StayTime>\n", bi[i].sum);
         fprintf(fp, "<SecId>%ld</SecId>\n", sec_id);
