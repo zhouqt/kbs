@@ -805,6 +805,8 @@ void main_bbs(int convit, char *argv)
     extern char currmaildir[STRLEN];
     char notename[STRLEN];
     int currmail;
+	int summail;
+	int nummail;
 
 /* Add by KCN for avoid free_mem core dump */
     topfriend = NULL;
@@ -856,8 +858,13 @@ void main_bbs(int convit, char *argv)
 #endif
 
     currmail = get_num_records(currmaildir, sizeof(struct fileheader));
-    if ((currmail > MAIL_LIMIT) && !HAS_PERM(currentuser, PERM_BOARDS) && !HAS_PERM(currentuser, PERM_SYSOP))   /* Leeward 98.05.20 */
-        prints("你的信件高达 %d 封, 请删除过期信件, 维持在 %d 封以下，否则将不能发信\n", currmail, MAIL_LIMIT);
+	get_mail_limit(currentuser, &summail, &nummail);
+	if (currmail > nummail)
+	{
+		clear();
+        prints("你的信件高达 %d 封, 请删除过期信件, 维持在 %d 封以下，否则将不能发信\n", currmail, nummail);
+		pressanykey();
+	}
 
     if (HAS_PERM(currentuser, PERM_SYSOP) && dashf("new_register"))
         prints("有新使用者正在等您通过注册资料。\n");
