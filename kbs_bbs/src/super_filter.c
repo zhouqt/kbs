@@ -263,16 +263,24 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
 
     clear();
     prints("                  超强文章选择\n\n");
-    move(8,0);
-    prints("变量: no(文章号) m(m文章) g(g文章) b(m&&g) noreply(不可回复) sign(标记) del(删除标记) attach(带附件) unread(未读)\n"
+    move(5,0);
+    prints("变量: no(文章号) m(m文章) g(g文章) b(m&&g) noreply(不可回复) sign(标记)\n"
+           "      del(删除标记) attach(带附件) unread(未读)\n"
            "      title(标题) author(作者)\n"
-           "函数: sub(s1,s2)第一个字符串在第二个中的位置,如果不存在返回0  len(s)字符串长度\n"
-           "举例: 我要查询所有bad写的标记是b的文章:               author=='bad'&&b\n"
-           "      我要查询所有不可回复并且未读的文章:             noreply&&unread\n"
-           "      我要查询所有1000-2000范围内带附件的文章:        (no>=1000)&&(no<=2000)&&attach\n"
-           "      我要查询标题长度在5-10之间的文章:               len(title)>=5&&len(title)<=10\n"
-           "      我要查询标题里含有faint的文章:                  sub('faint',title)\n"
-           "      我要查询标题里包含hehe并且位置在最后的文章:     sub('hehe',title)==len(title)-3\n"
+           "函数: sub(s1,s2)第一个字符串在第二个中的位置,如果不存在返回0\n"
+           "      len(s)字符串长度\n"
+           "举例: 我要查询所有bad写的标记是b的文章:\n"
+           "              author=='bad'&&b\n"
+           "      我要查询所有不可回复并且未读的文章:\n"
+           "              noreply&&unread\n"
+           "      我要查询所有1000-2000范围内带附件的文章:\n"
+           "              (no>=1000)&&(no<=2000)&&attach\n"
+           "      我要查询标题长度在5-10之间的文章:\n"
+           "              len(title)>=5&&len(title)<=10\n"
+           "      我要查询标题里含有faint的文章:\n"
+           "              sub('faint',title)\n"
+           "      我要查询标题里包含hehe并且位置在最后的文章:\n"
+           "              sub('hehe',title)==len(title)-3\n"
            "      我要查询......自己动手查吧,hehe"
 );
     multi_getdata(2, 0, scr_cols-1, "请输入表达式: ", index, 1020, 20, 0);
