@@ -2246,14 +2246,34 @@ int post_article(char *q_file, struct fileheader *re_file)
 		FILE *fp,*fp1;
 		char filepath1[STRLEN];
 		char buff[256];
+		char title_prefix[20];
+		int i;
+
+		title_prefix[0]='\0';
 
 		sprintf(filepath1,"%s.mbak",filepath);
-		aborted =  choose_tmpl( filepath ) ;
+		aborted =  choose_tmpl( title_prefix , filepath ) ;
 		if(aborted != -1){
 			if( (fp=fopen( filepath1,"w"))!=NULL){
 				if((fp1=fopen(filepath,"r"))==NULL){
 					aborted = -1;
 				}else{
+					if( title_prefix[0] ){
+						i = strlen( title_prefix ) + strlen(post_file.title) ;
+						if( i >= STRLEN )
+							i = STRLEN - 1 ;
+						post_file.title[i]='\0';
+
+						for (i-- ; i >= strlen(title_prefix); i--)
+							post_file.title[i] = post_file.title[i-strlen(title_prefix)];
+						for (; i>=0 ; i--)
+                 		    if (title_prefix[i] == 0x1b || title_prefix[i] == '\n')
+                       			post_file.title[i] = ' ';
+                    		else
+                        		post_file.title[i] = title_prefix[i];
+					}
+            		strncpy(save_title, post_file.title, STRLEN);
+
 					write_header(fp, currentuser, 0, currboard->filename, post_file.title, 0, 0);
 					while(fgets(buff,255,fp1))
 						fprintf(fp,"%s",buff);
@@ -2262,6 +2282,7 @@ int post_article(char *q_file, struct fileheader *re_file)
 
 					unlink(filepath);
 					rename(filepath1,filepath);
+
 				}
 			}else{
 				aborted = -1;
@@ -4208,7 +4229,7 @@ int content_add(){
 
 static int tmpl_show(struct _select_def *conf, int i)
 {
-	prints(" %2d   %-50s  %3d", i, ptemplate[i-1].tmpl->title, ptemplate[i-1].tmpl->content_num);
+	prints(" %2d %-40s %-20s %3d", i, ptemplate[i-1].tmpl->title, ptemplate[i-1].tmpl->title_prefix, ptemplate[i-1].tmpl->content_num);
 	return SHOW_CONTINUE;
 }
 
@@ -4222,6 +4243,7 @@ static int tmpl_prekey(struct _select_def *conf, int *key)
 {
     switch (*key) {
     case 'q':
+	case 'e':
         *key = KEY_LEFT;
         break;
     case 'p':
@@ -4246,9 +4268,9 @@ static int tmpl_refresh(struct _select_def *conf)
 {
     clear();
     docmdtitle("[°æÃæÄ£°åÉèÖÃ]",
-               "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ı\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] É¾³ı[\x1b[1;32md\x1b[0;37m]\x1b[m ĞŞ¸Ä±êÌâ[[1;32mt[0;37m]");
+               "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ı\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] É¾³ı[\x1b[1;32md\x1b[0;37m]\x1b[m ĞŞ¸Ä±êÌâ[[1;32mt[0;37m] ĞŞ¸ÄÎÄÕÂ±êÌâÇ°×º[[1;32mz[0;37m]");
     move(2, 0);
-    prints("[0;1;37;44m  %4s    %-50s  %4s", "ĞòºÅ", "Ãû³Æ","Ñ¡Ïî¸öÊı");
+    prints("[0;1;37;44m %4s %-40s %-20s %8s", "ĞòºÅ", "Ãû³Æ","ÎÄÕÂ±êÌâÇ°×º","Ñ¡Ïî¸öÊı");
     clrtoeol();
     update_endline();
     return SHOW_CONTINUE;
@@ -4349,6 +4371,8 @@ static int content_key(struct _select_def *conf, int key)
 	default:
 		break;
 	}
+
+	return SHOW_CONTINUE;
 }
 
 static int tmpl_key(struct _select_def *conf, int key)
@@ -4413,6 +4437,23 @@ static int tmpl_key(struct _select_def *conf, int key)
 			return SHOW_REFRESH;
 		}
 		break;
+	case 'z' :
+		{
+			char newtitle[30];
+
+			strcpy(newtitle, ptemplate[conf->pos-1].tmpl->title_prefix);
+            getdata(t_lines - 1, 0, "ÇëÊäÈë´ËÄ£°åµÄÎÄÕÂ±êÌâÇ°×º: ", newtitle, 20, DOECHO, NULL, false);
+
+			if( newtitle[0] == '\0' || newtitle[0]=='\n' || ! strcmp(newtitle,ptemplate[conf->pos-1].tmpl->title_prefix) )
+				return SHOW_REFRESH;
+
+			strncpy(ptemplate[conf->pos-1].tmpl->title_prefix, newtitle, 20);
+			ptemplate[conf->pos-1].tmpl->title_prefix[19]='\0';
+
+			tmpl_save();
+
+			return SHOW_REFRESH;
+		}
 	default :
 		break;
 	}
@@ -4549,7 +4590,7 @@ static int choose_tmpl_refresh(struct _select_def *conf)
     docmdtitle("[°æÃæÄ£°åÑ¡Ôñ]",
                "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ı\x1b[0;37m] Ê¹ÓÃ[\x1b[1;32mSPACE\x1b[0;37m]");
     move(2, 0);
-    prints("[0;1;37;44m  %4s    %-50s  %-8s", "ĞòºÅ", "Ãû³Æ", "ÊÇ·ñ¿ÉÓÃ");
+    prints("[0;1;37;44m %4s %-40s %-20s %8s", "ĞòºÅ", "Ãû³Æ","ÎÄÕÂ±êÌâÇ°×º","ÊÇ·ñ¿ÉÓÃ");
     clrtoeol();
     update_endline();
     return SHOW_CONTINUE;
@@ -4594,7 +4635,7 @@ static int choose_tmpl_select(struct _select_def *conf)
 	}
 	fclose(fp);
 
-	t_now = 1;
+	t_now = conf->pos;
 
 	return SHOW_QUIT;
 }
@@ -4624,7 +4665,7 @@ static int choose_tmpl_key(struct _select_def *conf, int key)
 	return SHOW_CONTINUE;
 }
 
-int choose_tmpl(char *fname)
+int choose_tmpl(char *title, char *fname)
 {
 	struct s_template tmpl;
 	POINT *pts;
@@ -4672,9 +4713,17 @@ int choose_tmpl(char *fname)
 
     list_select_loop(&grouplist_conf);
 
+	if(t_now > 0){
+		strncpy(title, ptemplate[t_now-1].tmpl->title_prefix, 20);
+		title[19]='\0';
+	}
+
 	free(pts);
 	tmpl_free();
 
-	if( t_now > 0) return 0;
+	if( t_now > 0){
+		t_now = 0;
+		return 0;
+	}
 	return -1;
 }
