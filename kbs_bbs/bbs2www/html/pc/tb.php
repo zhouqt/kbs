@@ -8,12 +8,18 @@
 	*/
 	require("pcfuncs.php");
 	
-	function pc_tb_return_succeed()
+	if ($pcconfig["ENCODINGTBP"]) {
+    	iconv_set_encoding("internal_encoding", "UTF-8");
+        iconv_set_encoding("output_encoding", "UTF-8");
+        iconv_set_encoding("input_encoding", "UTF-8");
+    }
+
+    function pc_tb_return_succeed()
 	{
 		header("Content-Type: text/xml");
 		header("Content-Disposition: inline;filename=rss.xml");
 ?>
-<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <response>
 <error>0</error>
 </response>
@@ -25,7 +31,7 @@
 		header("Content-Type: text/xml");
 		header("Content-Disposition: inline;filename=rss.xml");
 ?>
-<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <response>
 <error>1</error>
 <message><?php echo $err; ?></message>
@@ -76,9 +82,9 @@
 	}
 	
 	if ($pcconfig["ENCODINGTBP"]) {
-	    $title = mb_convert_encoding ($title,$default_encoding,mb_detect_encoding ($title,$support_encodings));
-        $excerpt = mb_convert_encoding ($excerpt,$default_encoding,mb_detect_encoding ($excerpt,$support_encodings));
-	    $blog_name = mb_convert_encoding ($blog_name,$default_encoding,mb_detect_encoding ($blog_name,$support_encodings));
+        $title = iconv(mb_detect_encoding ($title),$default_encoding,$title);
+	    $excerpt = iconv(mb_detect_encoding ($title),$default_encoding,$excerpt);
+	    $blog_name = iconv(mb_detect_encoding ($title),$default_encoding,$blog_name);
 	}
 	
 	$tbarr = array(

@@ -350,7 +350,7 @@
 ?>
 <tr>
 	<td class="t8">
-	引用通告
+	引用通告&nbsp;&nbsp;&nbsp;&nbsp;
 <?php
     if ($pcconfig["ENCODINGTBP"]) { //支持选择不同的发送编码
         echo '使用<select name="tbpencoding" class="f1">';

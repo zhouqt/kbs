@@ -1130,12 +1130,14 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
     		$blogname = undo_html_format($pc["NAME"]);
     		
     		if ($pcconfig["ENCODINGTBP"]) {
-    		    $subject = mb_convert_encoding ($subject,$convert_encoding,$support_encodings);
-    		    $tbbody  = mb_convert_encoding ($tbbody,$convert_encoding,$support_encodings);
-                $blogname = mb_convert_encoding ($blogname,$convert_encoding,$support_encodings);
-    		}
-    		
-    		$tbarr = array(
+                iconv_set_encoding("internal_encoding", $convert_encoding);
+                iconv_set_encoding("output_encoding", $convert_encoding);
+                $subject = iconv ($default_encoding,$convert_encoding,$subject);
+                $tbbody = iconv ($default_encoding,$convert_encoding,$tbbody);
+                $blogname = iconv ($default_encoding,$convert_encoding,$blogname);
+            }
+
+            $tbarr = array(
     				"title" => $subject,
     				"excerpt" => $tbbody,
     				"url" => "http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$pc["UID"]."&tid=".$tid."&nid=".$thisNid."&s=all",
