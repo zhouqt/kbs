@@ -33,14 +33,12 @@ static int utmp_lock()
     if (utmpfd < 0) {
         exit(-1);
     }
-/*
     signal(SIGALRM, longlock);
     alarm(10);
-*/
     if (flock(utmpfd, LOCK_EX) == -1) {
         exit(-1);
     }
-//    signal(SIGALRM, SIG_IGN);
+    signal(SIGALRM, SIG_IGN);
     return utmpfd;
 }
 
@@ -52,12 +50,10 @@ static void utmp_unlock(int fd)
 #else
 static int utmp_lock()
 {
-/*
     signal(SIGALRM, longlock);
     alarm(10);
-*/
     lock_sem(UTMP_SEMLOCK);
-//    signal(SIGALRM, SIG_IGN);
+    signal(SIGALRM, SIG_IGN);
     return 0;
 }
 
@@ -214,7 +210,9 @@ int getnewutmpent(struct user_info *up)
 #endif
 int getnewutmpent(struct user_info *up)
 {
-    int pos, i,ret;
+    struct user_info *uentp;
+    time_t now;
+    int pos, n, i,ret;
     int utmpfd, hashkey;
 
     utmpfd = utmp_lock();
@@ -293,11 +291,30 @@ int getnewutmpent(struct user_info *up)
             save_maxuser();
             setpublicshmreadonly(1);
         }
+        now = time(NULL);
+        if ((now > utmphead->uptime + 120) || (now < utmphead->uptime - 120)) {
+            utmphead->uptime = now;
+            newbbslog(BBSLOG_USIES, "UTMP:Clean user utmp cache");
+            for (n = 0; n < USHM_SIZE; n++) {
+                utmphead->uptime = now;
+                uentp = &(utmpshm->uinfo[n]);
+                if ((uentp->mode == WEBEXPLORE)
+                    && ((now - uentp->freshtime) < IDLE_TIMEOUT)) {
+                    continue;
+                }
+                if (uentp->active && uentp->pid && kill(uentp->pid, 0) == -1) {     /*uentp检查 */
+                    char buf[STRLEN];
+
+                    strncpy(buf, uentp->userid, IDLEN + 2);
+                    clear_utmp2(n + 1);     /* 不需要再lock了 */
+                    RemoveMsgCountFile(buf);
+                }
+            }
+        }
         ret=pos+1;
     }
     utmp_setreadonly(1);
     utmp_unlock(utmpfd);
-    kick_idle_user();
     return ret;
 }
 
@@ -567,7 +584,7 @@ void clear_utmp(int uent)
 }
 #endif
 
-static void clear_utmp2(int uent)
+void clear_utmp2(int uent)
 {
     int hashkey, find;
     struct user_info zeroinfo;
@@ -582,6 +599,7 @@ static void clear_utmp2(int uent)
 #endif
     user=getuserbynum(utmpshm->uinfo[uent-1].uid);
     do_after_logout(user,get_utmpent(uent),uent,0,true);
+    do_after_logout(user,get_utmpent(uent),uent,0,false);
     hashkey = utmp_hash(utmpshm->uinfo[uent - 1].userid);
     find = utmphead->hashhead[hashkey];
 
@@ -631,27 +649,17 @@ static void clear_utmp2(int uent)
 void clear_utmp(int uent, int useridx, int pid)
 {
     int lockfd;
-    int dokickuser=0;
-    struct user_info ui;
 
 /* ulock todo: use user lock
 */
     lockfd = utmp_lock();
     utmp_setreadonly(0);
 
-    if (((useridx == 0) || (utmpshm->uinfo[uent - 1].uid == useridx)) && pid == utmpshm->uinfo[uent - 1].pid) {
-        dokickuser=1;
-        memcpy(&ui,&utmpshm->uinfo[uent - 1],sizeof(struct user_info));
+    if (((useridx == 0) || (utmpshm->uinfo[uent - 1].uid == useridx)) && pid == utmpshm->uinfo[uent - 1].pid)
         clear_utmp2(uent);
-    }
 
     utmp_setreadonly(1);
     utmp_unlock(lockfd);
-    if (dokickuser) {
-        struct userec* user;
-        user=getuserbynum(ui.uid);
-        do_after_logout(user,&ui,uent,0,false);
-    }
 }
 
 int get_utmp_number()
@@ -754,40 +762,4 @@ bool hisfriend(int uid,struct user_info* him)
         }
     }
     return found;
-}
-
-void kick_idle_user()
-{
-    time_t now;
-    struct user_info * uentp;
-    int n;
-
-#define CHECK_IDLE_INTERVAL 120    
-    now = time(NULL);
-    if ((now > utmphead->uptime + CHECK_IDLE_INTERVAL) || (now < utmphead->uptime - CHECK_IDLE_INTERVAL)) {
-        int fd;
-        fd=utmp_lock();
-        if ((now > utmphead->uptime + CHECK_IDLE_INTERVAL) || (now < utmphead->uptime - CHECK_IDLE_INTERVAL)) {
-            utmphead->uptime = now;
-            utmp_unlock(fd);
-            if (fork()==0) { //fork a chile process to do it
-                newbbslog(BBSLOG_USIES, "UTMP:Clean user utmp cache");
-                for (n = 0; n < USHM_SIZE; n++) {
-                    utmphead->uptime = now;
-                    uentp = &(utmpshm->uinfo[n]);
-                    if ((uentp->mode == WEBEXPLORE)
-                        && ((now - uentp->freshtime) < IDLE_TIMEOUT)) {
-                        continue;
-                    }
-                    if (uentp->active && 
-                        ((uentp->mode == WEBEXPLORE)||(uentp->pid && kill(uentp->pid, 0) == -1)))
-                        /*不是WWW的要检查进程是否退出了*/
-                    {     /*uentp检查 */
-                        clear_utmp(n + 1,utmpshm->uinfo[n].uid,utmpshm->uinfo[n].pid);
-                    }
-                }
-               exit(0);
-           } //fork
-        } else utmp_unlock(fd);
-    }
 }

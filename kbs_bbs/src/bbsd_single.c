@@ -643,14 +643,27 @@ static int bbs_standalone_main(char* argv)
   int csock;                  /* socket for Master and Child */
   int value;
   struct sockaddr_in sin;
+  int count;
+  time_t lasttime;
 
 #if 0
   for (; listprocess > 0; listprocess--)
     fork();
 #endif
+  lasttime=time(0);
+  count=0;
   for (;;) {
+    time_t now;
     value = sizeof(sin);
+#ifdef SMTH
+/* login rate limit */
+    now=time(0);
+    if (now!=lasttime) {
+      count=0;
+    } else if (count>5) sleep(1);
+#endif
     csock = accept(0, (struct sockaddr *) &sin, (socklen_t *) & value);
+    count++;
     if (csock < 0) {
       /*                reaper();*/
       continue;
