@@ -97,7 +97,37 @@ int sendtouser(struct GWSendSMS * h, char* buf)
     hh.mode = 6;
     hh.sent = 0;
     hh.time = time(0);
-    strcpy(hh.id, h->SrcMobileNo);
+    strncpy(hh.id, h->SrcMobileNo, IDLEN+2);
+    hh.id[IDLEN+1] = 0;
+    save_msgtext(uident, &hh, buf);
+    kill(uin->pid, SIGUSR2);
+    return 0;
+}
+
+int requiretouser(struct RequireBindPacket * h)
+{
+    int uid;
+    char * uident;
+    char buf[21];
+    struct user_info * uin;
+    struct msghead hh;
+    uid = byte2long(h->UserID);
+    uident = getuserid2(uid);
+    if(uident == NULL)
+        return -1;
+    uin = t_search(uident, NULL);
+    if(uin == NULL)
+        return -1;
+
+    hh.frompid = -1;
+    hh.topid = uin->pid;
+    hh.mode = 6;
+    hh.sent = 0;
+    hh.time = time(0);
+    strncpy(hh.id, h->SrcMobileNo, IDLEN+2);
+    hh.id[IDLEN+1] = 0;
+    if(h->Bind) strcpy(buf, "REQUIRE:BIND");
+    else strcpy(buf, "REQUIRE:UNBIND");
     save_msgtext(uident, &hh, buf);
     kill(uin->pid, SIGUSR2);
     return 0;
@@ -144,6 +174,7 @@ void processremote()
         case CMD_REQUIRE:
 	    printf("get CMD_REQUIRE\n");
             read(sockfd, &h1, sizeof(h1));
+            requiretouser(&h1);
             break;
         case CMD_GWSEND:
 	    printf("get CMD_GWSEND\n");
@@ -173,6 +204,7 @@ void processbbs()
     struct CheckMobileNoPacket h2;
     struct UnRegPacket h3;
     struct BBSSendSMS h4;
+    struct ReplyBindPacket h5;
     if(head->sem) return;
     if(!head->total) return;
     head->sem=1;
@@ -198,6 +230,12 @@ void processbbs()
                 getbuf(&h3, sizeof(h3));
                 write(sockfd, &h, sizeof(h));
                 write(sockfd, &h3, sizeof(h3));
+                break;
+            case CMD_REPLY:
+                printf("send CMD_REPLY\n");
+                getbuf(&h5, sizeof(h5));
+                write(sockfd, &h, sizeof(h));
+                write(sockfd, &h5, sizeof(h5));
                 break;
             case CMD_BBSSEND:
                 printf("send CMD_BBSSEND\n");
