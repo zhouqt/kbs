@@ -297,7 +297,7 @@ static int set_smsg_key(struct _select_def *conf, int key)
 		prints("请输入新的前缀:");
 		multi_getdata(3, 0, 79, NULL, ans, 41, 6, false, 0);
 		if(ans[0]){
-			strncpy(currentmemo->ud.smsprefix, ans, 20);
+			strncpy(currentmemo->ud.smsprefix, ans, 40);
 			currentmemo->ud.smsprefix[40]=0;
 		}else
 			currentmemo->ud.smsprefix[0]=0;
@@ -310,7 +310,7 @@ static int set_smsg_key(struct _select_def *conf, int key)
 		prints("请输入新的后缀:");
 		multi_getdata(11, 0, 79, NULL, ans, 41, 6, false, 0);
 		if(ans[0]){
-			strncpy(currentmemo->ud.smsend, ans, 20);
+			strncpy(currentmemo->ud.smsend, ans, 40);
 			currentmemo->ud.smsend[40]=0;
 		}else
 			currentmemo->ud.smsend[0]=0;
