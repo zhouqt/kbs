@@ -378,11 +378,12 @@ int simple_select_loop(const struct _select_item* item_conf,int flag,int titlex,
     int i;
     int numbers;
 
+    for (numbers = 0; item_conf[numbers].x!=-1; numbers++);
     pts = (POINT *) malloc(sizeof(POINT) * numbers);
 
-    for (numbers = 0; item_conf[numbers].x!=-1; numbers++) {
-        pts[numbers].x = item_conf[numbers].x;
-        pts[numbers].y = item_conf[numbers].y;
+    for (i= 0; i<numbers; i++) {
+        pts[i].x = item_conf[i].x;
+        pts[i].y = item_conf[i].y;
     }
 
     arg.items=item_conf;
