@@ -253,7 +253,7 @@ int     real, unum;
 	                sprintf(secu,"修改 %s 的基本资料或密码。",u->userid);
                 securityreport(secu,&newinfo);
             } else {
-                *currentuser=newinfo; 
+                update_user(&newinfo,usernum,1); 
                 if ( strcmp(newinfo.username,uinfo.username)) {
                     strcpy(uinfo.username,newinfo.username);
                     UPDATE_UTMP_STR(username,uinfo);

@@ -545,9 +545,11 @@ int update_user(struct userec* user,int num,int all)
 		memcpy(tmpuser.userid,passwd[num-1].userid,IDLEN+2);
 		memcpy(tmpuser.passwd,passwd[num-1].passwd,IDLEN+2);
 		memcpy(tmpuser.md5passwd,passwd[num-1].passwd,IDLEN+2);
-		memcpy(&passwd[num-1],&tmpuser,sizeof(struct userec));
-	} else
-		memcpy(&passwd[num-1],user,sizeof(struct userec));
+	} else {
+		tmpuser=*user;
+		memcpy(tmpuser.userid,passwd[num-1].userid,IDLEN+2);
+	}
+	memcpy(&passwd[num-1],&tmpuser,sizeof(struct userec));
 	return 0;
 }
 
