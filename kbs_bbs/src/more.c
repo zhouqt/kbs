@@ -432,8 +432,17 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
                 if (!db) {
                     if(autoline)
                     if ((w >= scr_cols-1&&(i>=size-1||*(p+1)<0) )|| w >= scr_cols) {
-                        *l = i;
-                        *s = i;
+#ifdef TELNET_WORD_WRAP
+                        if (((unsigned char)*p<128) && (lastspace>0) && (lastspace<i)) {
+                            *l = lastspace+1;
+                            *s = lastspace+1;
+                        } else {
+#endif
+                            *l = i;
+                            *s = i;
+#ifdef TELNET_WORD_WRAP
+                        }
+#endif
                         break;
                     }
                     if ((unsigned char) *p >= 128)
@@ -461,7 +470,11 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
                 *ty = LINE_QUOTA;
                 break;
             default:
+#ifdef TELNET_WORD_WRAP
+                if (*l > 1 && (!strncmp(p0, ": " ,2) || !strncmp(p0, "> " ,2)))
+#else
                 if (*l > 2 && (!strncmp(p0, ": " ,2) || !strncmp(p0, "> " ,2)))
+#endif
                     *ty = LINE_QUOTA; //ÒýÎÄ
                 else
                     *ty = LINE_NORMAL;
@@ -476,7 +489,11 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
                 *ty = LINE_QUOTA_NOCF;
                 break;
             default:
+#ifdef TELNET_WORD_WRAP
+                if (*l > 1 && (!strncmp(p0, ": " ,2) || !strncmp(p0, "> " ,2)))
+#else
                 if (*l > 2 && (!strncmp(p0, ": " ,2) || !strncmp(p0, "> " ,2)))
+#endif
                     *ty = LINE_QUOTA_NOCF;
                 else
                     *ty = LINE_NORMAL_NOCF;
