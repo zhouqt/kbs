@@ -99,20 +99,22 @@ void end_change_inroom()
 void send_msg(int u, char* msg)
 {
     int i, j;
+    char buf[80];
     j=MAX_MSG;
     for(i=0;i<MAX_MSG;i++)
         if(inrooms[myroom].msgs[(i+inrooms[myroom].msgi)%MAX_MSG][0]==0) {
             j=(i+inrooms[myroom].msgi)%MAX_MSG;
             break;
         }
-    msg[60]=0;
+    strcpy(buf, msg);
+    buf[54]=0;
     if(j==MAX_MSG) {
-        strcpy(inrooms[myroom].msgs[inrooms[myroom].msgi], msg);
+        strcpy(inrooms[myroom].msgs[inrooms[myroom].msgi], buf);
         inrooms[myroom].msgpid[inrooms[myroom].msgi] = inrooms[myroom].peoples[u].pid;
         inrooms[myroom].msgi = (inrooms[myroom].msgi+1)%MAX_MSG;
     }
     else {
-        strcpy(inrooms[myroom].msgs[j], msg);
+        strcpy(inrooms[myroom].msgs[j], buf);
         if(u==-1)
             inrooms[myroom].msgpid[j] = u;
         else
