@@ -260,6 +260,10 @@ int clean_cachedata(char* userid,int unum);
     int is_emailpost_board(char *board);
 
 /* define in article.c */
+	/* Search_Bin 
+	 * 功能：依据key, 对ptr传入的.DIR索引进行二分查找
+	 */
+	int Search_Bin(char *ptr, int key, int start, int end);
     /*
      * mmap_search_dir_apply
      * 功能:mmap struct fileheader结构的文件，找到需要的记录,
@@ -274,6 +278,7 @@ int clean_cachedata(char* userid,int unum);
     typedef int (*search_handler_t) (int fd, fileheader_t * base, int ent, int total, bool match, void *arg);
     int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, void *arg);
     int get_effsize(char * ffn);
+	
 
 /**
  * Get some records from article id. If this function is successfully
