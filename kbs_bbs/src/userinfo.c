@@ -401,7 +401,8 @@ int uinfo_query(struct userec *u, int real, int unum)
                     }
                 }
             update_user(&newinfo, unum, 1);
-			//memcpy(&(currentmemo->ud), &ud, sizeof(ud));
+			if (!real)
+				memcpy(&(currentmemo->ud), &ud, sizeof(ud));
 			write_userdata(newinfo.userid, &ud);
             if (real)
                  {

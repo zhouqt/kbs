@@ -190,6 +190,9 @@ struct BoardStatus {            /* use this to speed up board list */
     bool updatetitle;
     bool updateorigin;
     int currentusers;
+#ifdef HAVE_WFORUM
+	int todaynum;
+#endif
 };
 struct BCACHE {
     int numboards;
