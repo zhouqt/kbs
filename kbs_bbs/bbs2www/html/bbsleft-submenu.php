@@ -15,10 +15,11 @@ else
 	$group = intval($_GET["group"]);
 	$group2 = intval($_GET["group2"]);
 	$yank = intval($_GET["yank"]);
+	if ($yank) $yank = 1;
 	$subMenu = "submenu_brd_".$group."_".$group2;
 	if($group < 0 || $group > sizeof($section_nums) )
 		exit();
-	$boards = bbs_getboards($section_nums[$group], $group2, $yank);
+	$boards = bbs_getboards($section_nums[$group], $group2, $yank | 2);
 }
 
 $brd_name = $boards["NAME"]; // Ó¢ÎÄÃû
