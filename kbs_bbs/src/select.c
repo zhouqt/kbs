@@ -184,15 +184,18 @@ static int do_select_internal(struct _select_def *conf, int key)
     	}
     }
     if (conf->flag & LF_NUMSEL) { /*处理用数字跳转*/
-        if (key>='0' && key<='9')) {
+        if (key>='0' && key<='9') {
             conf->tmpnum=conf->tmpnum*10+key-'0';
             return SHOW_CONTINUE;
         }
-        conf->tmpnum = 0;
         if ((key == '\r' || key == '\n') && (conf->tmpnum != 0)) {
             /* 直接输入数字跳转*/
-            return select_change(conf,conf->tmpnum);
+            int ret;
+            ret=select_change(conf,conf->tmpnum);
+            conf->tmpnum = 0;
+            return ret;
         }
+        conf->tmpnum = 0;
     }
 
     /* 查转换表*/

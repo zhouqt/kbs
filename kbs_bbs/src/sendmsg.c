@@ -86,6 +86,7 @@ int mode;
         prints("ËÍÑ¶Ï¢¸ø: ");
         creat_list();
 		in_do_sendmsg=true;
+#ifdef SMS_SUPPORT
         if( namecomplete(NULL, uident) == '#' ){
 			in_do_sendmsg=false;
             inremsg = false;
@@ -107,6 +108,7 @@ int mode;
 			}
 			return do_send_sms_func(uident, NULL);
 		}
+#endif
 		in_do_sendmsg=0;
         if (uident[0] == '\0') {
             clear();
