@@ -70,9 +70,11 @@ int main() {
 	init_all();
 	if(!loginok) http_fatal("ÄãÃ»ÓÐµÇÂ¼");
 	abort_program();
+	/*
 	setcookie("UTMPKEY", "");
 	setcookie("UTMPNUM", "");
 	setcookie("UTMPUSERID", "");
+	*/
 	setcookie("my_t_lines", "");
 	setcookie("my_link_mode", "");
 	setcookie("my_def_mode", "");

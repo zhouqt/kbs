@@ -296,18 +296,24 @@ static ZEND_FUNCTION(bbs_wwwlogin)
 		struct user_info ui;
 		int utmpent;
                 time_t t;
-		int ret=1;
-		while (ret!=0) {
+		int multi_ret=1;
+		while (multi_ret!=0) {
 			int lres;
 			int num;
 			struct user_info uin;
-			ret=multilogin_user(getcurrentuser(),getcurrentuser_num());
-			if ((ret!=0)&&(!kick_multi))
+			multi_ret=multilogin_user(getcurrentuser(),getcurrentuser_num());
+			if ((multi_ret!=0)&&(!kick_multi))
 				RETURN_LONG(-1);
 	                if ( !(num=search_ulist( &uin, cmpuids2, getcurrentuser_num()) ))
 	                        continue;  /* user isn't logged in */
-	                if (!uin.active || (kill(uin.pid,0) == -1))
+			if (uin.pid==1) {
+				clear_utmp(num);
+				continue;
+			}
+	                if (!uin.active || (kill(uin.pid,0) == -1)) {
+				clear_utmp(num);
 	                        continue;  /* stale entry in utmp file */
+			}
 	/*---	modified by period	first try SIGHUP	2000-11-08	---*/
 			lres = kill(uin.pid, SIGHUP);
 			sleep(1);
