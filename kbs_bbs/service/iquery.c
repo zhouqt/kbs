@@ -114,11 +114,10 @@ void do_query_all(int w, char * s)
     char buf[256];
     char ip[20], s1[30], s2[30], *pp;
     
-    strcpy(ip, "166.111.3.125");
+    strcpy(ip, sysconf_str("QUERY_SERVER"));
     
     res_total = -2;
-    if(strstr(s, "法轮功")||strstr(s, "kcn")||strstr(s, "KCN")||strstr(s, "毒中之毒")||
-        strstr(s, "江泽民")) {
+    if(strstr(s, "法轮功")) {
         res_total = -1;
         return;
     }
