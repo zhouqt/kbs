@@ -78,7 +78,7 @@ int chkreceiver(char* userid,struct userec* lookupuser)
 	/* Leeward 99.07.28 , Bigman 2002.6.5: Arbitrator can send any mail to user */ 
         return 1;
 
-    if (!( lookupuser->userlevel & PERM_SYSOP ) || !strcmp(lookupuser->userid, "Arbitrator") ) /*Arbitrator's mailbox has no limit, stephen 2001.11.1 */
+    if (!( lookupuser->userlevel & PERM_SYSOP ) || strcmp(lookupuser->userid, "Arbitrator") ) /*Arbitrator's mailbox has no limit, stephen 2001.11.1 */
     {
         if ( lookupuser->userlevel & PERM_CHATCLOAK)
         {
