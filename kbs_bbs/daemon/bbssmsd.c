@@ -297,6 +297,10 @@ int main()
         if(retr) {
             if (FD_ISSET(sockfd, &readset)) {
                 rc = read(sockfd, ((void*)&h)+remain, sizeof(h)-remain);
+				/* add by roy 2003.7.30 */
+				if (rc==0) {
+					break;
+				}
                 if(rc<0) break;
                 remain+=rc;
                 if(remain==sizeof(h)) {
