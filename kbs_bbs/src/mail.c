@@ -2218,6 +2218,7 @@ static int m_clean()
     num = get_num_records(buf, sizeof(struct fileheader));
     if (num && askyn("Çå³ýÀ¬»øÏäÃ´?", 0))
         delete_range(buf, 1, num, 2);
+	/*
     if (user_mail_list.mail_list_t) {
         int i;
 
@@ -2237,6 +2238,7 @@ static int m_clean()
             }
         }
     }
+	*/
 	setmailcheck(currentuser->userid);
     uinfo.mode = savemode;
 }
