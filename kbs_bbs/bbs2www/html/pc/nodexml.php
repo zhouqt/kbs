@@ -145,7 +145,7 @@ if($node[comment])
 	<smthBlog:comment>
 		<smthBlog:id><?php echo $comment[cid]; ?></smthBlog:id>
 		<smthBlog:subject><?php echo htmlspecialchars(stripslashes($comment[subject])); ?></smthBlog:subject>
-		<smthBlog:time><?php echo rss_time_format($comment[created]); ?></smthBlog:time>
+		<smthBlog:time><?php echo time_format($comment[created]); ?></smthBlog:time>
 		<smthBlog:user><?php echo htmlspecialchars(stripslashes($comment[username])); ?></smthBlog:user>
 		<smthBlog:link><?php echo "pcshowcom.php?cid=".$comment[cid]; ?></smthBlog:link>
 		<smthBlog:emote><?php echo $comment[emote]; ?></smthBlog:emote>
@@ -195,7 +195,7 @@ if($node[trackback] && $node[access] == 0)
 	<title><?php echo htmlspecialchars(stripslashes($node[subject])); ?></title>
 	<link>"pccon.php?nid=<?php echo $node[nid]; ?>&amp;id=<?php echo $pc["UID"]; ?>&amp;s=all"</link>
 	<dc:creator><?php echo $pc["USER"]; ?></dc:creator>
-	<dc:date><?php echo rss_time_format($node[created]); ?></dc:date>
+	<dc:date><?php echo time_format($node[created]); ?></dc:date>
 	<description><![CDATA[
 		<?php echo html_format($node[body],TRUE,$node[htmltag]); ?>
 		]]></description>

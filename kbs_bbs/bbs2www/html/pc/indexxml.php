@@ -38,7 +38,7 @@ function pc_load_trackbacks($link,$pc)
 		$trackbacks[] = array(
 					"URL" => htmlspecialchars(stripslashes($rows[url])),
 					"TITLE" => htmlspecialchars(stripslashes($rows[title],0,0,1)),
-					"TIME" => rss_time_format($rows[time])
+					"TIME" => time_format($rows[time])
 					);
 	}
 	mysql_free_result($result);
@@ -64,7 +64,7 @@ function pc_load_comments($link,$pc,$pur=0)
 					"USER" => $rows[username],
 					"CID" => $rows[cid],
 					"SUBJECT" => htmlspecialchars(stripslashes($rows[subject])),
-					"TIME" => rss_time_format($rows[created])
+					"TIME" => time_format($rows[created])
 					);
 	}
 	mysql_free_result($result);
@@ -80,7 +80,7 @@ function pc_load_calendar($link,$pc,$pur)
 		$query .= " AND ( `access` = 0 OR `access` = 1 ) ";
 	elseif($pur == 3)
 		$query .= " AND ( `access` = 0 OR `access` = 1 OR `access` = 2 OR `access` = 3 ) ";
-	$query .= " ORDER BY `nid` DESC;";
+	$query .= " AND created LIKE '".date("Ym")."%' ORDER BY `nid` DESC;";
 	$result = mysql_query($query,$link);
 	$bc = array();
 	while($rows = mysql_fetch_array($result))
@@ -114,7 +114,7 @@ function pc_load_archfile($pc)
 	}
 	return $archfile;
 }
-	
+
 $userid = addslashes($_GET["id"]);
 $uid = (int)($_GET["id"]);
 $pno = (int)($_GET["pno"]);
@@ -210,7 +210,7 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".xml");
 ?>
 	<smthBlog:newNode>
 		<smthBlog:subject><?php echo htmlspecialchars(stripslashes($node[subject])); ?></smthBlog:subject>
-		<smthBlog:time><?php echo rss_time_format($node[created]); ?></smthBlog:time>
+		<smthBlog:time><?php echo time_format($node[created]); ?></smthBlog:time>
 		<smthBlog:link><?php echo "pccon.php?id=".$pc["UID"]."&amp;nid=".$node[nid]."&amp;s=all"; ?></smthBlog:link>
 	</smthBlog:newNode>
 <?php
@@ -263,7 +263,19 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".xml");
 ?>
 </smthBlog:archfiles>
 
-
+<smthBlog:friends>
+<?php
+	for($i = 0 ; $i < count($pc["LINKS"]) ; $i ++)
+	{
+?>
+	<smthBlog:friend>
+		<smthBlog:title><?php echo htmlspecialchars($pc["LINKS"][$i]["LINK"]); ?></smthBlog:title>
+		<smthBlog:link><?php echo htmlspecialchars($pc["LINKS"][$i]["URL"]); ?></smthBlog:link>
+	</smthBlog:friend>
+<?php
+	}
+?>
+</smthBlog:friends>
 
 <smthBlog:formSearch>
 	<![CDATA[
@@ -296,9 +308,9 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".xml");
 ?>
 <item rdf:about="pccon.php?nid=<?php echo $nodes[$i][nid]; ?>&amp;id=<?php echo $pc["UID"]; ?>&amp;s=all">
 	<title><?php echo htmlspecialchars(stripslashes($nodes[$i][subject])); ?></title>
-	<link>"pccon.php?nid=<?php echo $nodes[$i][nid]; ?>&amp;id=<?php echo $pc["UID"]; ?>&amp;s=all"</link>
+	<link>pccon.php?nid=<?php echo $nodes[$i][nid]; ?>&amp;id=<?php echo $pc["UID"]; ?>&amp;s=all</link>
 	<dc:creator><?php echo $pc["USER"]; ?></dc:creator>
-	<dc:date><?php echo rss_time_format($nodes[$i][created]); ?></dc:date>
+	<dc:date><?php echo time_format($nodes[$i][created]); ?></dc:date>
 	<description><![CDATA[
 		<?php echo html_format($nodes[$i][body],TRUE,$nodes[$i][htmltag]); ?>
 		]]></description>
