@@ -172,6 +172,12 @@ function time_format($t)
 	return $t;
 }
 
+function time_format_date($t)
+{
+	$t= "<font class='date'>".$t[0].$t[1].$t[2].$t[3]."-".$t[4].$t[5]."-".$t[6].$t[7]."</font>";
+	return $t;
+}
+
 function rss_time_format($t)
 {
 	$t= $t[0].$t[1].$t[2].$t[3]."-".$t[4].$t[5]."-".$t[6].$t[7]."T".$t[8].$t[9].":".$t[10].$t[11].":".$t[12].$t[13]."+08:00";
@@ -187,7 +193,7 @@ function pc_get_links($linkstr)
 	for($i = 0 ; $i < count($linkarrays) ; $i ++ )
 	{
 		$linkarray = explode("|",$linkarrays[$i]);
-		$links[$i] = array("LINK" => base64_decode($linkarray[0]) , "URL" => base64_decode($linkarray[1]));
+		$links[$i] = array("LINK" => base64_decode($linkarray[0]) , "URL" => base64_decode($linkarray[1]) , "IMAGE" => $linkarray[2]?TRUE:FALSE);
 	}
 	return $links ;
 }

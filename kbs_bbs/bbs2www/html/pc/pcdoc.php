@@ -703,7 +703,6 @@ Blog名
 
 ?>	
 		<td align="left">&nbsp;<?php echo $pc["DESC"]; ?></td>
-		<td align="right">[主题:<?php echo $pc["THEM"]; ?>]&nbsp;</td>
 	</tr>
 	</table>
 	</td>
@@ -801,6 +800,7 @@ Blog名
 	[<a href="#top" class=f1>返回顶部</a>]
 	[<a href='javascript:location=location' class=f1>刷新</a>]
 	[<?php echo "<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\" class=f1>给".$pc["USER"]."写信</a>"; ?>]
+	[<a href="index.php?id=<?php echo $pc["USER"]; ?>" class=f1><?php echo $pc["NAME"]; ?>首页</a>]
 	[<a href="pc.php" class=f1>Blog首页</a>]
 	[<a href="
 <?php

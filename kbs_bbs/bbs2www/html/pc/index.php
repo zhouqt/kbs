@@ -88,9 +88,10 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 					$cellclass=array("t16","t13","t5");
 			}
 			echo "<table cellspacing=0 cellpadding=10 width=\"".$tablewidth."\" class=".$tableclass.">\n".
-			"<tr><td class=\"".$cellclass[0]."\"><img src=\"icon/".$nodes[$i][emote].".gif\" border=0 align=absmiddle>\n".
-			"<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\" class=f2>".html_format($nodes[$i][subject])."</a></td>".
+			"<tr><td class=\"".$cellclass[0]."\">".time_format_date($nodes[$i][created])."</td>".
 			"<td class=\"".$cellclass[1]."\" align=right>[<a href=\"pccom.php?act=pst&nid=".$nodes[$i][nid]."\">评论</a>]\n[<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\">写信问候</a>]</td></tr>\n".
+			"<tr><td class=\"".$cellclass[0]."\" colspan=2><img src=\"icon/".$nodes[$i][emote].".gif\" border=0 align=absmiddle>\n".
+			"<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\" class=f2>".html_format($nodes[$i][subject])."</a></td>".
 			"<tr><td colspan=2 class=\"".$cellclass[1]."\"><font class='".$contentcss."'>";
 			if($pc["INDEX"]["nodeChars"]==0)
 				echo html_format($nodes[$i][body],TRUE,$nodes[$i][htmltag]);//先暂时改成显示全文吧，直接切断问题颇多。windinsn dec 21 , 2003 
@@ -274,7 +275,10 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 			for($i = 0 ; $i < count($pc["LINKS"]) ; $i ++)
 			{
 				if($wrap) echo "<li>";
-				echo "<a href='http://".htmlspecialchars($pc["LINKS"][$i]["URL"])."'>".htmlspecialchars($pc["LINKS"][$i]["LINK"])."</a>\n";
+				if($pc["LINKS"][$i]["IMAGE"])
+					echo "<a href='http://".htmlspecialchars($pc["LINKS"][$i]["URL"])."'><img alt=\"".htmlspecialchars($pc["LINKS"][$i]["URL"])."\" src=\"http://".htmlspecialchars($pc["LINKS"][$i]["LINK"])."\" border=\"0\" align=\"absmiddle\"></a>\n";
+				else
+					echo "<a href='http://".htmlspecialchars($pc["LINKS"][$i]["URL"])."'>".htmlspecialchars($pc["LINKS"][$i]["LINK"])."</a>\n";
 				if($wrap) echo "</li>";
 			}
 			if($wrap) echo "</ul>";
@@ -367,22 +371,22 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 					<td align=middle class=t14><?php display_blog_calendar(); ?></td>
 				</tr>
 				<tr><td class=t17>
-				&gt;&gt; 栏目分类
-				</td></tr>
-				<tr>
-					<td align=middle class=t14>
-					<table cellspacing=0 cellpadding=3 width=100% border=0 style="line-height:20px;font-size:12px"><tr><td>
-					<?php display_blog_list($pc,$blogs); ?>
-					</td></tr></table>
-					</td>
-				</tr>
-				<tr><td class=t17>
 				&gt;&gt; 最近更新文章
 				</td></tr>
 				<tr>
 					<td align=middle class=t14>
 					<table cellspacing=0 cellpadding=3 width=100% border=0 style="line-height:20px;font-size:12px"><tr><td>
 					<?php display_newnodes_list($link,$pc,$nodes); ?>
+					</td></tr></table>
+					</td>
+				</tr>
+				<tr><td class=t17>
+				&gt;&gt; 栏目分类
+				</td></tr>
+				<tr>
+					<td align=middle class=t14>
+					<table cellspacing=0 cellpadding=3 width=100% border=0 style="line-height:20px;font-size:12px"><tr><td>
+					<?php display_blog_list($pc,$blogs); ?>
 					</td></tr></table>
 					</td>
 				</tr>

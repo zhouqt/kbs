@@ -9,9 +9,9 @@
 		foreach($favlinks as $favlink)
 		{
 			if($links == "")
-				$links .= base64_encode($favlink["LINK"])."|".base64_encode($favlink["URL"]);
+				$links .= base64_encode($favlink["LINK"])."|".base64_encode($favlink["URL"])."|".$favlink["IMAGE"];
 			else
-				$links .= "||".base64_encode($favlink["LINK"])."|".base64_encode($favlink["URL"]);
+				$links .= "||".base64_encode($favlink["LINK"])."|".base64_encode($favlink["URL"])."|".$favlink["IMAGE"];
 		}
 			
 		$query = "UPDATE users SET `createtime` = `createtime` , `modifytime` = '".date("YmdHis")."' , `links` = '".addslashes($links)."' WHERE `uid` = '".$uid."' ";
@@ -44,10 +44,10 @@
 			$favlinksnum = count($pc["LINKS"]);
 			for($i = 0;$i < $favlinksnum ; $i ++ )
 			{
-				$favlinks[$i] = array("LINK" => $_POST["link".$i] , "URL" => $_POST["url".$i]);
+				$favlinks[$i] = array("LINK" => $_POST["link".$i] , "URL" => $_POST["url".$i] , "IMAGE" => (int)($_POST["image".$i]));
 			}
 			if($_POST["link".$favlinksnum] && $_POST["url".$favlinksnum])
-				$favlinks[$favlinksnum] =array("LINK" => $_POST["link".$favlinksnum] , "URL" => $_POST["url".$favlinksnum]);
+				$favlinks[$favlinksnum] =array("LINK" => $_POST["link".$favlinksnum] , "URL" => $_POST["url".$favlinksnum] , "IMAGE" => (int)($_POST["image".$favlinksnum]));
 			pc_edit_link($link,$favlinks,$pc["UID"]);
 		}
 		if($_GET["act"] == "del" && $_GET["linkid"])
@@ -56,7 +56,7 @@
 			for($i = 0;$i < count($pc["LINKS"]);$i ++)
 			{
 				if($i != $_GET["linkid"] - 1)
-					$favlinks[] = array("LINK" => $pc["LINKS"][$i]["LINK"] ,"URL" => $pc["LINKS"][$i]["URL"]  );
+					$favlinks[] = array("LINK" => $pc["LINKS"][$i]["LINK"] ,"URL" => $pc["LINKS"][$i]["URL"] , "IMAGE" => $pc["LINKS"][$i]["IMAGE"]?1:0 );
 			}
 			pc_edit_link($link,$favlinks,$pc["UID"]);
 		}
@@ -74,6 +74,7 @@
 		<td class=t2 width=30>编号</td>
 		<td class=t2 width=120>名称</td>
 		<td class=t2>链接</td>
+		<td class=t2 width=30>图片</td>
 		<td class=t2 width=80>删除</td>
 	</tr>
 <?php
@@ -82,19 +83,23 @@
 	{
 		echo "<tr>\n<td class=t3><strong>".($i + 1)."</strong></td>".
 			"<td class=t8><input size=30 name='link".$i."' value='".$favlinks[$i]["LINK"]."' class=f1></td>\n".
-			"<td class=t5><input size=50 name='url".$i."' value='".$favlinks[$i]["URL"]."' class=f1></td>\n";
+			"<td class=t5>http://<input size=50 name='url".$i."' value='".$favlinks[$i]["URL"]."' class=f1></td>\n".
+			"<td class=t3><input type=checkbox name='image".$i."' value=1 ";
+		if($favlinks[$i]["IMAGE"]) echo " checked ";
+		echo "></td>\n";
 		if( $i != $favlinksnum - 1 )
-			echo "<td class=t3><a href='pclinks.php?act=del&linkid=".($i+1)."'>删除</a>\n<a href='http://".$favlinks[$i]["URL"]."'>链接</a></td>";
+			echo "<td class=t4><a href='pclinks.php?act=del&linkid=".($i+1)."'>删除</a>\n<a href='http://".$favlinks[$i]["URL"]."'>链接</a></td>";
 		else
-			echo "<td class=t3>-</td>";
+			echo "<td class=t4>-</td>";
 		echo "</tr>\n";
 	}
 ?>
 <tr>
-	<td class=t4 colspan=4><input type=submit value="修改" class=b1></a>
+	<td class=t4 colspan=5><input type=submit value="修改" class=b1></a>
 </tr>
 </table>
 </form>
+说明：若为图片链接，请在“名称”一栏内填入图片的URL地址。
 </center>
 <hr size=1>
 <p class=f1 align=center>

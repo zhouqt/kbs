@@ -248,7 +248,6 @@
 
 ?>	
 		<td align="left">&nbsp;<?php echo $pc["DESC"]; ?></td>
-		<td align="right">[Ö÷Ìâ:<?php echo $pc["THEM"]; ?>]&nbsp;</td>
 	</tr>
 	</table>
 	</td>
