@@ -1,6 +1,8 @@
 #include "bbslib.h"
 
-struct shortfile data[MAXBOARD];
+//by zixia: shortfile->boardheader
+//struct shortfile data[MAXBOARD];
+struct boardheader data[MAXBOARD];
 //char mybrd[32][80];
 int mybrdnum=0;
 
@@ -47,11 +49,15 @@ int main()
 	{
 		if(has_read_perm(&currentuser, bc[i].filename))
 		{
-			memcpy(&data[total], &(bc[i]), sizeof(struct shortfile));
+			//by zixia 
+			//memcpy(&data[total], &(bc[i]), sizeof(struct shortfile));
+			memcpy(&data[total], &(bc[i]), sizeof(struct boardheader));
 			total++;
 		}
 	}
-	qsort(data, total, sizeof(struct shortfile), cmp_board);
+	//by zixia
+	//qsort(data, total, sizeof(struct shortfile), cmp_board);
+	qsort(data, total, sizeof(struct boardheader), cmp_board);
 	for(i=0; i<total; i++)
 	{
 		char *buf3="";
