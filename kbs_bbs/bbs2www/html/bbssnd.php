@@ -44,7 +44,7 @@ login_init();
 		}
 		
 		//post articles
-		$ret = bbs_postarticle($boardName, preg_replace("/\\\(['|\"|\\\])/","$1",$_POST["title"]), 
+		$ret = bbs_postarticle($boardName, preg_replace("/\\\(['|\"|\\\])/","$1",trim($_POST["title"])), 
 			preg_replace("/\\\(['|\"|\\\])/","$1",$_POST["text"]), intval($_POST["signature"]), $reID, 
 			$outgo, intval($_POST["anony"]));
 		switch ($ret) {
