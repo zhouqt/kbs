@@ -8,7 +8,7 @@ body {margin: 0px; background-color: #F6F6F6; }
 <!--
 var iniCols, noCols, o_mf, o_ms, s;
 function ini() {
-	o_mf = parent.document.getElementsByName("mainframe").item(0);
+	o_mf = parent.document.getElementById("mainframe");
 	o_ms = document.getElementById("menuSwitch");
 	noCols = iniCols = o_mf.cols;
 	if ((pos = noCols.indexOf(",")) != -1) {
