@@ -1951,9 +1951,18 @@ void long2byte(unsigned int num, byte* arg) {
 
 int my_unlink(char *fname)
 {
+
 #ifndef MYUNLINK_BACKUPDIR
-	return unlink(fname);
+    struct stat st;
+    if (stat(fname, &st))
+        return -1;
+
+    if (!S_ISDIR(st.st_mode))
+        return unlink(fname);
+
+    return rm_dir(fname);
 #else
+
 	char *buf;
 	char *cmd;
 	char *c;
