@@ -199,6 +199,9 @@ int isuu, isbig5, noansi;
     }
     smtp_set_header(message,"Content-transfer-encoding","8bit");
     smtp_set_header_option (message, "Subject", Hdr_OVERRIDE, 1);
+    smtp_set_header_option (message, "Content-transfer-encoding", Hdr_OVERRIDE, 1);
+    smtp_set_header_option (message, "Content-type", Hdr_OVERRIDE, 1);
+    smtp_8bitmime_set_body(message, E8bitmime_8BITMIME);
 
     mo.isbig5=isbig5;
     mo.noansi=noansi;
