@@ -22,6 +22,9 @@
 
 		$votearr = array();
 		$retnum = bbs_get_votes($board,$votearr);
+
+		if( $retnum < 0 )
+			$retnum = 0;
 ?>
 <body>
 <center><p><?php echo BBS_FULL_NAME; ?> -- [投票列表] [用户:<?php echo $currentuser["userid"];?>] 
