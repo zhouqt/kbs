@@ -236,6 +236,8 @@ O MaxMessageSize=32000
 #include "struct.h"
 #include "webmsg.h"
 #include "ann.h"
+#include "ansi.h"
+#include "output.h"
 
 /* add by period , header for function prototypes */
 #include "prototype.h"
