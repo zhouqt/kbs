@@ -691,22 +691,22 @@ int star,curr;
 {
 
     clear();
+    if (!user_record[curr]->active) {
+            move(t_lines-1,0);
+	    prints( "[44m¸ÃÓÃ»§ÒÑÀëÏß[m");
+    } else {
     t_query(user_record[curr]->userid);
     move(t_lines-1,0);
     prints( "[44mÁÄÌì[t] ¼ÄĞÅ[m] ËÍÑ¶Ï¢[s] ¼Ó,¼õÅóÓÑ[o,d] Ñ¡ÔñÊ¹ÓÃÕß[¡ü,¡ı] ÇĞ»»Ä£Ê½ [f] Çó¾È[h][m");
+    }
 }
 
 do_query2(star,curr)
 int star,curr;
 {
-    if (!user_data[curr-star].active) {
-    	move(t_lines-1,0);
-	    prints( "[44m¸ÃÓÃ»§ÒÑÀëÏß[m");
-    } else {
-	    t_query(user_data[curr-star].userid);
-	    move(t_lines-1,0);
-	    prints( "[44m           ¼ÄĞÅ[m] ¼Ó,¼õÅóÓÑ[o,d] ¿´ËµÃ÷µµ[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] Çó¾È[h]           [m");
-    }
+    t_query(user_data[curr-star].userid);
+    move(t_lines-1,0);
+    prints( "[44m           ¼ÄĞÅ[m] ¼Ó,¼õÅóÓÑ[o,d] ¿´ËµÃ÷µµ[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] Çó¾È[h]           [m");
 }
 
 Users()
