@@ -590,32 +590,31 @@ int translate_msg(char* src, struct msghead *head, char* dest)
 {
     char id[14], *time;
     int i,j=0,len,pos,space, ret=0;
-    time = ctime(&head->time)+11;
-    time[8] = 0;
+    time = ctime(&head->time)+4;
     dest[0] = 0;
-    space=22;
+    space=29;
     switch(head->mode) {
         case 0:
         case 2:
         case 4:
             if(!head->sent)
-                sprintf(dest, "[44m\x1b[36m%-14.14s[33m(%-5.5s):[37m", head->id, time);
+                sprintf(dest, "[44m\x1b[36m%-14.14s[33m(%-12.12s):[37m", head->id, time);
             else
-                sprintf(dest, "[44m\x1b[0;1;32m=>[37m%-12.12s[33m(%-5.5s):[36m", head->id, time);
+                sprintf(dest, "[44m\x1b[0;1;32m=>[37m%-12.12s[33m(%-12.12s):[36m", head->id, time);
             break;
         case 3:
-            sprintf(dest, "[44m\x1b[33mÕ¾³¤ÓÚ %6.6s Ê±¹ã²¥£º[37m", time);
+            sprintf(dest, "[44m\x1b[33mÕ¾³¤ÓÚ %13.13s Ê±¹ã²¥£º[37m", time);
             break;
         case 1:
             if(!head->sent)
-                sprintf(dest, "[44m\x1b[36m%-12.12s(%-5.5s) ÑûÇëÄã[37m", head->id, time);
+                sprintf(dest, "[44m\x1b[36m%-12.12s(%-12.12s) ÑûÇëÄã[37m", head->id, time);
             else
-                sprintf(dest, "[44m\x1b[37mÄã(%-5.5s) ÑûÇë%-12.12s[36m", time, head->id);
-            space=26;
+                sprintf(dest, "[44m\x1b[37mÄã(%-12.12s) ÑûÇë%-12.12s[36m", time, head->id);
+            space=33;
             break;
         case 5:
-            sprintf(dest, "[45m\x1b[36m%-14.14s\x1b[33m(\x1b[36m%-5.5s\x1b[33m):\x1b[37m", head->id, time);
-            space=22;
+            sprintf(dest, "[45m\x1b[36m%-14.14s\x1b[33m(\x1b[36m%-12.12s\x1b[33m):\x1b[37m", head->id, time);
+            space=29;
             break;
     }
     len = strlen(dest);
