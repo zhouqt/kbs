@@ -17,10 +17,10 @@
  * needed on buffers full of bytes, and then call MD5Final, which
  * will fill a supplied 16-byte array with the digest.
  */
-
+#ifdef SSHBBS
 #include "includes.h"
+#endif
 #include "md5.h"
-#include "getput.h"
 
 /*
  * Start MD5 accumulation.  Set bit count to 0 and buffer to mysterious
@@ -61,10 +61,10 @@ void MD5Update(struct MD5Context *ctx, unsigned char const *buf, unsigned len)
 
 	t = 64 - t;
 	if (len < t) {
-	    memcpy(p, buf, len);
+	    memcpy(p, (void *)buf, len);
 	    return;
 	}
-	memcpy(p, buf, t);
+	memcpy(p, (void *)buf, t);
 	MD5Transform(ctx->buf, ctx->in);
 	buf += t;
 	len -= t;
@@ -72,7 +72,7 @@ void MD5Update(struct MD5Context *ctx, unsigned char const *buf, unsigned len)
     /* Process data in 64-byte chunks */
 
     while (len >= 64) {
-	memcpy(ctx->in, buf, 64);
+	memcpy(ctx->in, (void *)buf, 64);
 	MD5Transform(ctx->buf, ctx->in);
 	buf += 64;
 	len -= 64;
@@ -80,8 +80,27 @@ void MD5Update(struct MD5Context *ctx, unsigned char const *buf, unsigned len)
 
     /* Handle any remaining bytes of data. */
 
-    memcpy(ctx->in, buf, len);
+    memcpy(ctx->in, (void *)buf, len);
 }
+#define GET_32BIT_LSB_FIRST(cp) \
+  (((unsigned long)(unsigned char)(cp)[0]) | \
+     ((unsigned long)(unsigned char)(cp)[1] << 8) | \
+       ((unsigned long)(unsigned char)(cp)[2] << 16) | \
+         ((unsigned long)(unsigned char)(cp)[3] << 24))
+
+#define GET_16BIT_LSB_FIRST(cp) \
+	  (((unsigned long)(unsigned char)(cp)[0]) | \
+	     ((unsigned long)(unsigned char)(cp)[1] << 8))
+
+#define PUT_32BIT_LSB_FIRST(cp, value) do { \
+	  (cp)[0] = (value); \
+		    (cp)[1] = (value) >> 8; \
+		      (cp)[2] = (value) >> 16; \
+		        (cp)[3] = (value) >> 24; } while (0)
+
+#define PUT_16BIT_LSB_FIRST(cp, value) do { \
+	  (cp)[0] = (value); \
+		    (cp)[1] = (value) >> 8; } while (0)
 
 /*
  * Final wrapup - pad to 64-byte boundary with the bit pattern 

@@ -2,7 +2,6 @@
 #define MD5_FAINT_H
 #include <sys/types.h>
 typedef unsigned int md5_uint32;
-
 #define MD5_DIGEST_LENGTH 16
 struct MD5Context {
 	md5_uint32 buf[4];
