@@ -91,7 +91,7 @@ int raw_write(int fd, char *buf, int len)
     static int lastcounter = 0;
     int nowcounter, i;
     static int bufcounter;
-    int retlen;
+    int retlen=0;
 #ifndef NINE_BUILD
     if (ZmodemRateLimit) {
         nowcounter = time(0);
@@ -138,10 +138,29 @@ void raw_ochar(char c)
 
 int raw_read(int fd, char *buf, int len)
 {
+    int i,retlen=0,pp=0;
 #ifdef SSHBBS
     return ssh_read(fd, buf, len);
 #else
-    return read(fd, buf, len);
+    for(i=0;i<len;i++) {
+        int mylen;
+        mylen=read(fd, buf+i, 1);
+        if (mylen <= 0)
+            break;
+        if(i>0&&buf[i-1]==0xff&&buf[i]==0xff&&!pp) {
+            pp=1;
+            i--;
+            continue;
+        }
+        if(i>0&&buf[i-1]==0x0d&&buf[i]==0x00&&!pp) {
+            pp=1;
+            i--;
+            continue;
+        }
+        pp=0;
+        retlen++;
+    }
+    return retlen;
 #endif
 }
 
