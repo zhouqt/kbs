@@ -983,7 +983,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
 
     prints("\n");
     refresh();
-    return clen;
+    return strlen(buf);
 }
 
 int lock_scr()

@@ -504,7 +504,7 @@ void r_msg()
         refresh();
         oflush();
         if(canreply)
-            ch = -multi_getdata(oy, ox, NULL, buf, 1024, DOECHO, NULL, true);
+            ch = -multi_getdata(oy, ox, 78, NULL, buf, 1024, true);
         else {
             do {
                 ch = igetkey();
