@@ -1573,6 +1573,26 @@ static int room_list_key(struct _select_def *conf, int key)
     return SHOW_CONTINUE;
 }
 
+void show_top_board()
+{
+    FILE* fp;
+    char buf[80];
+    int i,j,x,y;
+    for(i=1;i<=6;i++) {
+        sprintf(buf, "service/killer.%d", i);
+        fp=fopen(buf, "r");
+        for(j=0;j<7;j++) {
+            if(feof(fp)) break;
+            y=(i-1)%3*8+j; x=(i-1)/3*40;
+            fgets(buf, 80, fp);
+            move(y, x);
+            prints(buf);
+        }
+        fclose(fp);
+    }
+    pressanykey();
+}
+
 int choose_room()
 {
     struct _select_def grouplist_conf;
@@ -1606,6 +1626,7 @@ int choose_room()
     grouplist_conf.key_command = room_list_key;
     grouplist_conf.show_title = room_list_refresh;
     grouplist_conf.get_data = room_list_getdata;
+    show_top_board();
     list_select_loop(&grouplist_conf);
     free(pts);
 }
