@@ -64,10 +64,14 @@ d_board()
 	        del_from_file("0Announce/.Search",bname);
         sprintf(genbuf, "deleted board %s", bname);
         report(genbuf);
+	/*
         sprintf(genbuf,"/bin/rm -fr boards/%s",bname) ;
-        system(genbuf) ;
         sprintf(genbuf,"/bin/rm -fr vote/%s",bname) ;
-        system(genbuf) ;
+	*/
+        sprintf(genbuf,"boards/%s",bname) ;
+	f_rm(bname);
+        sprintf(genbuf,"vote/%s",bname) ;
+	f_rm(bname);
     }
 
     move(4,0) ;
@@ -303,13 +307,18 @@ char cid[IDLEN];
         printf("´íÎó£¬Çë±¨¸æSYSOP");
         pressanykey();}
     setmailpath(tmpbuf, lookupuser->userid);
+    /*
     sprintf(genbuf,"/bin/rm -fr %s", tmpbuf) ;
-    system(genbuf) ;
+    */
+    f_rm(tmpbuf);
     sethomepath(tmpbuf, lookupuser->userid);
+    /*
     sprintf(genbuf,"/bin/rm -fr %s", tmpbuf) ;
-    system(genbuf) ;
     sprintf(genbuf,"/bin/rm -fr tmp/email/%s", lookupuser->userid) ;
-    system(genbuf) ;
+    */
+    f_rm(tmpbuf);
+    sprintf(genbuf,"tmp/email/%s", lookupuser->userid) ;
+    f_rm(genbuf);
     apply_utmp(kickuser,0,userid,0);
     setuserid( id, "" );
     lookupuser->userlevel = 0;

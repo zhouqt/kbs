@@ -636,8 +636,10 @@ enterbname:
                         sprintf(oldpath, "0Announce/groups/%s/%s", tmp_grp, fh.filename);
                         if (dashd(oldpath))
                         {
+				/*
                             sprintf(genbuf, "/bin/rm -fr %s", newpath);
-                            system(genbuf);
+			    */
+                            f_rm(newpath);
                         }
                         Rename(oldpath, newpath);
                         del_grp(tmp_grp, fh.filename, fh.title + 13);

@@ -656,45 +656,6 @@ int getnewuserid(char* userid)
     time_t system_time;
 
     system_time = time( NULL );
-    /*
-    if( stat( "tmp/killuser", &st )== -1 || st.st_mtime < system_time-3600 ) {
-        if( (fd = open( "tmp/killuser", O_RDWR|O_CREAT, 0600 )) == -1 )
-            return -1;
-        write( fd, ctime( &system_time ), 25 );
-        close( fd );
-        log_usies( "CLEAN", "dated users." );
-        prints( "Ñ°ÕÒÐÂÕÊºÅÖÐ, ÇëÉÔ´ýÆ¬¿Ì...\n\r" );
-        oflush();
-        memset( &zerorec, 0, sizeof( zerorec ) );
-        if( (fd = open( PASSFILE, O_RDWR|O_CREAT, 0600 )) == -1 )
-            return -1;
-        size = sizeof( utmp );
-        for( i = 0; i < MAXUSERS; i++ ) {
-            if( read( fd, &utmp, size ) != size )
-                break;
-            val = compute_user_value( &utmp );
-            if( utmp.userid[0] != '\0' && val <= 0 ) {
-                sprintf( genbuf, "#%d %-12s %15.15s %d %d %d",
-                         i+1, utmp.userid, ctime( &(utmp.lastlogin) )+4,
-                         utmp.numlogins, utmp.numposts, val );
-                log_usies( "KILL ", genbuf );
-                if( !bad_user_id( utmp.userid ) ) {
-                    setmailpath(tmpstr, utmp.userid);
-                    sprintf( genbuf, "/bin/rm -fr %s", tmpstr);
-                    system( genbuf );
-                    sethomepath(tmpstr, utmp.userid);
-                    sprintf( genbuf, "/bin/rm -fr %s", tmpstr);
-                    system( genbuf );
-                    sprintf( genbuf, "/bin/rm -f tmp/email_%s", utmp.userid );
-                    system( genbuf );
-                }
-                lseek( fd, -size, SEEK_CUR );
-                write( fd, &zerorec, sizeof( utmp ) );
-            }
-        }
-        close( fd );
-    }
-*/
 /*
     if( (fd = open( PASSFILE, O_RDWR|O_CREAT, 0600 )) == -1 )
         return -1;

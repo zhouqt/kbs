@@ -169,11 +169,15 @@ int confirm_delete_id()
 	}
 
     sethomepath( buff,genbuf);
+    /*
     sprintf(commd,"rm -rf %s",buff);
-	system(commd);
+    */
+    f_rm(buff);
     setmailpath( buff,genbuf);
+    f_rm(buff);
+    /*
     sprintf(commd,"rm -rf %s",buff);
-        system(commd);
+    */
 
     report("delete confirmly dead id's directory");
 

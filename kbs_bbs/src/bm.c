@@ -498,20 +498,6 @@ BoardFilter()
 
     getdata(num+4,0,"你要编修哪一项系统档案: ",ans,3,DOECHO,NULL,YEA);
     ch=atoi(ans);
-    /*   if (ch==2)added by Haohmaru,98.9.6,清除无法区段删除的错误
-          { FILE* tmp;
-           sprintf(buf,"~bbsroot/boards/%s/.tmpfile",currboard);
-           if((tmp=fopen(buf,"r"))==NULL)
-           {
-            getdata(t_lines-1,0,"                              请按 ◆Enter◆ 继续",buf,2,NOECHO,NULL,YEA);
-           }
-           else
-           { fclose(tmp);
-           sprintf(buf,"del ~bbsroot/boards/%s/.tmpfile",currboard);
-           system(buf);
-           getdata(t_lines-1,0,"                              请按 ◆Enter◆ 继续",buf,2,NOECHO,NULL,YEA);
-           }
-          } */
     if(!isdigit(ans[0])||ch<=0 || ch>num|| ans[0]=='\n'|| ans[0]=='\0')
         return FULLUPDATE;
     ch-=1;

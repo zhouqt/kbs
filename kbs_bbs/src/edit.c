@@ -962,8 +962,10 @@ int saveheader ;
 #ifdef VEDITOR
         if(bkfile==1)
         {
+		/*
             sprintf(buf,"cp %s %s",filename,bkfname);
-            system(buf);
+	    */
+		f_cp(filename,bkfname,0600);
         }
 #endif
     }

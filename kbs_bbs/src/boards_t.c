@@ -439,8 +439,11 @@ int     newflag;
                 if ('y' == restore[0] || 'Y' == restore[0])
                 {
                     sethomefile(fname, currentuser->userid,".boardrc" );
+		    /*
                     sprintf(restore, "/bin/cp %s.bak %s", fname, fname);
-                    system(restore);
+		    */
+                    sprintf(restore, "%s.bak", fname);
+                    f_cp(restore,fname,0600);
 
                     move(t_lines-2, 0);
                     clrtoeol();

@@ -298,6 +298,7 @@ typedef size_t socklen_t;
 #define FAVBOARDNUM     20
 
 
+#include "system.h"
 #include "vars.h"
 #include "func.h"
 

@@ -263,14 +263,16 @@ int     real, unum;
 
                 setmailpath( src, u->userid );
                 setmailpath( dst, newinfo.userid );
+		/*
                 sprintf(genbuf,"mv %s %s",src, dst);
-                system(genbuf);/*
-                       Rename( src, dst );*/
+		*/
+		f_mv(src,dst);
                 sethomepath( src, u->userid );
                 sethomepath( dst, newinfo.userid );
+		/*
                 sprintf(genbuf,"mv %s %s",src ,dst);
-                system(genbuf);/*
-                       Rename( src, dst );*/
+		*/
+		f_mv(src,dst);
                 sprintf(src,"tmp/email/%s",u->userid);
                 unlink(src);
                 setuserid( unum, newinfo.userid );

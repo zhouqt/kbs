@@ -374,19 +374,26 @@ int    nomsg;
         /*if( ans[0] == 'N' || ans[0] == 'n' ||nomsg) {*/
         /* Leeward 98.04.16: fix bugs */
         if( (ans[0] == 'N' || ans[0] == 'n') && (!nomsg) ) {
+		/*
             sprintf( genbuf, "/bin/cp -r %s  tmp/bm.%s", filepath, currentuser->userid );
+	    */
+            sprintf( genbuf, "tmp/bm.%s", filepath, currentuser->userid );
+	    f_cp(filepath,genbuf,0600);
         }
         else if(ans[0] == 'C' || ans[0] == 'c')
             return 1;
         else
         {
             sprintf( genbuf, "/bin/cat %s >> tmp/bm.%s", filepath, currentuser->userid );
+            system( genbuf );
         }
     }
     else {
+	    /*
         sprintf( genbuf, "/bin/cp -r %s  tmp/bm.%s", filepath , currentuser->userid );
+	*/
+	    f_cp(filepath,genbuf,0600);
     }
-    system( genbuf );
     sprintf( genbuf, " 已将该文章存入暂存档, 请按任何键以继续 << " );
     unlink( filepath );
     sprintf(r_genbuf,"将 %s 存入暂存档",filepath);
@@ -415,24 +422,31 @@ a_Save(char    *path,char *key,struct fileheader *fileinfo,int nomsg,
         /*if( ans[0] == 'N' || ans[0] == 'n' ||nomsg) {*/
         /* Leeward 97.11.18: fix bugs */
         if( (ans[0] == 'N' || ans[0] == 'n') && (!nomsg) ) {
+		/*
             sprintf( genbuf, "/bin/cp -r boards/%s/%s  tmp/bm.%s", key , fileinfo->filename , currentuser->userid );
-            /*
-                               sprintf( genbuf, "/bin/cat boards/%s/%s >> tmp/bm.%s", key , fileinfo->filename , currentuser->userid );
-            */
+	    */
+            sprintf( genbuf, "boards/%s/%s", key, fileinfo->filename);
+            sprintf( board, "tmp/bm.%s", currentuser->userid );
+	    f_cp(genbuf,board,0600);
         }
         else if(ans[0] == 'C' || ans[0] == 'c')
             return 1;
         else
         {
             sprintf( genbuf, "/bin/cat boards/%s/%s >> tmp/bm.%s", key , fileinfo->filename , currentuser->userid );
+    	system( genbuf );
             /*                   sprintf( genbuf, "/bin/cp -r boards/%s/%s  tmp/bm.%s", key , fileinfo->filename , currentuser->userid );
             */
         }
     }
     else {
+	    /*
         sprintf( genbuf, "/bin/cp -r boards/%s/%s  tmp/bm.%s", key , fileinfo->filename , currentuser->userid );
+	*/
+        sprintf( genbuf, "boards/%s/%s", key, fileinfo->filename);
+        sprintf( board, "tmp/bm.%s", currentuser->userid );
+	f_cp(genbuf,board,0600);
     }
-    system( genbuf );
     sprintf( genbuf, " 已将该文章存入暂存档, 请按任何键以继续 << " );
     sprintf(r_genbuf,"将 boards/%s/%s 存入暂存档",key,fileinfo->filename);
     fileinfo->accessed[0] |= FILE_IMPORTED;
@@ -536,8 +550,11 @@ int ent;
                 sprintf( genbuf, "%-38.38s %s ", fileinfo->title , currentuser->userid );
                 a_additem( &pm, genbuf , fname ,NULL,0);
                 a_savenames( &pm );
+		/*
                 sprintf( genbuf, "/bin/cp -r boards/%s/%s %s", key , fileinfo->filename , bname );
-                system( genbuf );
+		*/
+                sprintf( genbuf, "boards/%s/%s", key , fileinfo->filename );
+		f_cp(genbuf,bname,0600);
 
                 /* Leeward 98.04.15 */
                 sprintf(genbuf, " 收入精华区目录 %s, 请按 Enter 继续 << " , /*fileinfo->title,*/ pm.path);
@@ -691,28 +708,6 @@ int     mode;
             return;
         }
         mesg = "请输入文件之英文名称(可含数字)：";       break;
-        /*      case ADDGOPHER:
-                {
-                    int gport;
-                    char ghost[STRLEN],gtitle[STRLEN],gfname[STRLEN];
-
-                    a_prompt( -2, "连线的位置：", ghost );
-                    if(ghost[0]=='\0')
-                        return ;
-                    a_prompt( -2, "连线的目录：", gfname );
-                    if(gfname[0]=='\0')
-                        return ;
-                    a_prompt( -2, "连线的Port：", ans );
-                    if(ans[0]=='\0')
-                        return ;
-                    a_prompt( -2, "标题：",gtitle );
-                    if(gtitle[0]=='\0')
-                        return ;
-                    gport=atoi(ans);
-                    a_additem( pm, gtitle, gfname  ,ghost,gport);
-                    a_savenames( pm );
-                    return ;
-                }*/
     }
     a_prompt( -2, mesg, fname );
     if( *fname == '\0' )  return;
@@ -741,8 +736,10 @@ int     mode;
             chmod( fpath, 0755 );
             break;
         case ADDMAIL:
+	    /*
             sprintf( genbuf, "mv -f %s %s",board, fpath );
-            system( genbuf );
+	    */
+	    f_mv(board,fpath);
             break;
         }
         if( mode != ADDGROUP )
@@ -882,12 +879,13 @@ int     paste;
                 if (dashd(fpath))
                 { /* 是目录 */
                     sprintf( genbuf, "/bin/cp -rp %s %s", fpath, newpath );
+                    system( genbuf );
                 }
                 else
-                { /* 是文件 */
-                    sprintf( genbuf, "/bin/cp -p %s %s", fpath, newpath );
+                { /* 是文件 
+                    sprintf( genbuf, "/bin/cp -p %s %s", fpath, newpath );*/
+		    f_cp(fpath,newpath,0600);
                 }
-                system( genbuf );
                 a_additem( pm, title, filename  ,NULL,0);
                 a_savenames( pm );
                 sprintf(r_genbuf,"复制精华区文件或目录: %s",genbuf);
@@ -897,12 +895,13 @@ int     paste;
                 if (dashd(fpath))
                 { /* 是目录 */
                     sprintf( genbuf, "/bin/cp -rp %s %s", fpath, newpath );
+                    system( genbuf );
                 }
                 else
-                { /* 是文件 */
-                    sprintf( genbuf, "/bin/ln %s %s", fpath, newpath );
+                { /* 是文件 
+                    sprintf( genbuf, "/bin/ln %s %s", fpath, newpath );*/
+		    f_ln(fpath,newpath);
                 }
-                system( genbuf );
                 a_additem( pm, title, filename  ,NULL,0);
                 a_savenames( pm );
                 sprintf(r_genbuf,"复制精华区文件或目录: %s",genbuf);
@@ -959,8 +958,9 @@ MENU    *pm;
         a_prompt( -1, "删除整个子目录, 别开玩笑哦, 确定吗?(Y/N) [N]: ", ans );
         if( ans[0] != 'Y' && ans[0] != 'y' )
             return;
-        sprintf( genbuf, "/bin/rm -rf %s", fpath );
-        system( genbuf );
+	/*
+        sprintf( genbuf, "/bin/rm -rf %s", fpath );*/
+	f_rm(fpath);
     }
     free( item );
     (pm->num)--;
@@ -1374,7 +1374,6 @@ char group[STRLEN],bname[STRLEN],title[STRLEN],gname[STRLEN];
     sprintf(searchname,"%s: groups/%s/%s",bname,group,bname);
     sprintf(gpath,"0Announce/groups/%s",group);
     sprintf(bpath,"%s/%s",gpath,bname);
-    sprintf(old_bpath, "0Announce/%s",bname);
     if(!dashd("0Announce"))
     {
         mkdir( "0Announce", 0755 );
@@ -1403,17 +1402,9 @@ char group[STRLEN],bname[STRLEN],title[STRLEN],gname[STRLEN];
     }
     if(!dashd(bpath))
     {
-        if(dashd(old_bpath)) /*检查是否存在以前的palmbbs的精华区，自动mv到合适位置 */
-        {
-            sprintf(genbuf, "mv %s %s", old_bpath, bpath);
-            system(genbuf);
-        }
-        else
-        {
-            mkdir( bpath, 0755 );
-            chmod( bpath, 0755 );
-            linkto(gpath,bname,title);
-        }
+        mkdir( bpath, 0755 );
+        chmod( bpath, 0755 );
+        linkto(gpath,bname,title);
         sprintf( buf, "%s/.Names", bpath );
         if( (fn = fopen( buf, "w" )) == NULL )
         {
@@ -1444,9 +1435,11 @@ char grp[STRLEN],bname[STRLEN],title[STRLEN];
     sprintf( buf, "0Announce/.Search");
     sprintf(gpath,"0Announce/groups/%s",buf3);
     sprintf(bpath,"%s/%s",gpath,bname);
+    /*
     sprintf(genbuf,"/bin/rm -fr %s",bpath) ;
+    */
 
-    system(genbuf) ;
+    f_rm(bpath);
 
     pm.path=gpath;
     a_loadnames(&pm);

@@ -3256,8 +3256,9 @@ Read()
     {
         if(st.st_mtime<(time(NULL)-7*86400))
         {
-            sprintf(genbuf,"touch %s",notename);
-            system(genbuf);
+/*            sprintf(genbuf,"touch %s",notename);
+	    */
+	    f_touch(notename);
             setvfile( genbuf, currboard, "noterec" );
             unlink(genbuf);
         }
@@ -3571,8 +3572,11 @@ Goodbye()    /*ÀëÕ¾ Ñ¡µ¥*/
         sethomefile(fname, currentuser->userid,".boardrc" );
         if (dashf(fname))
         {
+		/*
             sprintf(genbuf, "/bin/cp %s %s.bak", fname, fname);
-            system(genbuf);
+	    */
+            sprintf(genbuf, "%s.bak", fname);
+	    f_cp(fname,genbuf,0600);
         }
     }
 

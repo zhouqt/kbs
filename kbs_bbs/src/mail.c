@@ -128,15 +128,6 @@ char *userid;
         return YEA;
 }
 
-
-void
-system_delete(fname)   /* Added by ming, 96.10.10 */
-char * fname;
-{
-    sprintf( genbuf, "/bin/rm -r -f %s", fname );
-    system( genbuf );
-}
-
 int
 chkmail()
 {
@@ -1164,15 +1155,20 @@ char *direct ;
             a_prompt( -1, genbuf, ans );
             if( ans[0] == 'Y' || ans[0] == 'y' ) {
                 sprintf( genbuf, "/bin/cat %s >> tmp/bm.%s", fname , currentuser->userid );
+        	system( genbuf );
             }
             else {
+		    /*
                 sprintf( genbuf, "/bin/cp -r %s  tmp/bm.%s", fname , currentuser->userid );
+		*/
+                sprintf( genbuf, "tmp/bm.%s", currentuser->userid );
+		f_cp(fname,genbuf,0600);
             }
         }
         else {
-            sprintf( genbuf, "/bin/cp -r %s  tmp/bm.%s", fname , currentuser->userid );
+            sprintf( genbuf, "tmp/bm.%s", currentuser->userid );
+	    f_cp(fname,genbuf,0600);
         }
-        system( genbuf );
         sprintf( genbuf, " 已将该文章存入暂存档, 请按任何键以继续 << " );
         a_prompt( -1, genbuf, ans );
     }
@@ -1848,8 +1844,10 @@ char tmpfile[STRLEN],userid[STRLEN],title[STRLEN];
     strncpy(save_filename,fname,4096) ;
     setmailfile(filepath, userid, fname) ;
 
+    /*
     sprintf(genbuf, "cp %s %s",tmpfile, filepath) ;
-    system(genbuf);
+    */
+    f_cp(tmpfile,filepath,0600);
 
     setmailfile(genbuf, userid, DOT_DIR);
     if(append_record(genbuf,&newmessage,sizeof(newmessage)) == -1)
@@ -2014,9 +2012,12 @@ doforward(char *direct,struct boardheader*fh,int isuu)
         }
 
     sprintf(fname,"tmp/forward/%s.%05d",currentuser->userid,currentuser->userid,getpid());
+    /*
     sprintf( tmp_buf, "cp %s/%s %s",
              direct, fh->filename, fname);
-    system( tmp_buf );
+	     */
+    sprintf( tmp_buf, "%s/%s", direct, fh->filename);
+    f_cp( tmp_buf,fname,0600);
     sprintf(title,"%.50s(转寄)",fh->title);/*Haohmaru.00.05.01,moved here*/
     if(askyn("是否修改文章内容",0)==1)
     {
