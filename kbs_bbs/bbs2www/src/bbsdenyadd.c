@@ -178,7 +178,7 @@ int inform(bcache_t *bp, char *user, char *exp, int dt)
 	pi.anony = 0;
 	pi.access = (FILE_READ << 8) | (FILE_MARKED | FILE_FORWARDED);
 	*/
-	post_file(usr,"",buf,board,title,0,8);
+	post_file(usr,"",buf,board,title,0,2);
 	memcpy(usr, &saveusr, sizeof(saveusr));
 	sprintf(title,"%s ±» %s ·â½û±¾°åPOSTÈ¨",user,usr->userid);
 	getuser(user,&lookupuser);
