@@ -19,6 +19,8 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+	only too int global: bmonly a_fmode
 */
 
 /* 精华区 相关 函数 */
@@ -33,13 +35,12 @@
 #define ADDGOPHER       3
 
 int bmonly = 0;
+int a_fmode = 1;
 char *email_domain();
-char Importname[STRLEN];
 void a_menu();
 void a_report();                /*Haohmaru.99.12.06.板主精华区操作记录，作为考查工作的依据 */
 
 extern void a_prompt();         /* added by netty */
-int a_fmode = 1;
 int t_search_down();
 int t_search_up();
 
@@ -417,6 +418,7 @@ int a_Import(path, key, fileinfo, nomsg, direct, ent)
     int len, ch;
     MENU pm;
     char ans[STRLEN];
+	char Importname[STRLEN];
 
     modify_user_mode(CSIE_ANNOUNCE);
     len = strlen(key);
