@@ -633,10 +633,10 @@ int do_send(char *userid, char *title, char *q_file)
             return -2;
 
         setmailfile(genbuf, userid, DOT_DIR);
-		/*setmailcheck(userid);*/
         if (append_record(genbuf, &newmessage, sizeof(newmessage)) == -1)
             return -1;
 
+		setmailcheck(userid);
         if (stat(filepath, &st) != -1) {
             user->usedspace += st.st_size;
             /*
