@@ -353,5 +353,6 @@ typedef struct fileheader {     /* This structure is used to hold data in */
 
 #define GET_POSTFILENAME(x,y) get_postfilename(x,y,1)
 #define GET_MAILFILENAME(x,y) get_postfilename(x,y,0)
+#define VALID_FILENAME(x) valid_filename(x,1)
 
 #endif
