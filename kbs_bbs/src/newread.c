@@ -428,9 +428,12 @@ static int read_showcontent(struct _select_def* conf,int newpos)
     strcpy(buf, read_getcurrdirect(conf));
     if ((t = strrchr(buf, '/')) != NULL)
         *t = '\0';
+    if ((newpos-conf->page_pos)>=0&&(newpos-conf->page_pos<conf->item_per_page)) {
     h = (struct fileheader*)(arg->data+(newpos-conf->page_pos) * arg->ssize);
     sprintf(genbuf, "%s/%s", buf, h->filename);
     draw_content(genbuf,h);
+    outs("\x1b[m");
+    }
     return SHOW_CONTINUE;
 }
 

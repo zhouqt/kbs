@@ -1119,7 +1119,6 @@ extern int minln;
 
 int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
 {
-    extern int t_lines;
     struct MemMoreLines l;
     int i, j, ch = 0, curr_line, last_line, change;
     bool header = true;
@@ -1129,17 +1128,17 @@ int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
     shownflag = 1;
     init_MemMoreLines(&l, ptr, size);
 
-    move(t_lines / 2, 0);
+    move(BBS_PAGESIZE / 2+3, 0);
 /*    prints("\033[34m——————————————————预览窗口—————————————————");*/
 /*    move(t_lines/2+1, 0);*/
     sprintf(buf, "\033[1;32m\x1b[44m发信人: \033[1;33m%-13.13s\033[1;32m标  题: \033[1;33m%-50.50s\033[1;32m %4.4s\033[m", fh->owner, fh->title, fh->innflag[1] == 'S' ? "[转]" : "");
     outs(buf);
     prints("\n\033[m");
-    for(i=t_lines/2+1;i<t_lines-1;i++) {
+    for(i=BBS_PAGESIZE / 2+4;i<t_lines-1;i++) {
         move(i,0);
         clrtoeol();
     }
-    move(t_lines/2+1,0);
+    move(BBS_PAGESIZE / 2+4,0);
     curr_line = l.curr_line;
     for (i = 0, j = 0;;) {
         if (shownflag) {
@@ -1148,8 +1147,8 @@ int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
         if (!header || (!((i == 0) && ((!strncmp(l.curr, "发信人: ", 8) || (!strncmp(l.curr, "寄信人: ", 8))))) &&
                         !((i == 1) && !strncmp(l.curr, "标  题: ", 8)) && !((i == 2) && !strncmp(l.curr, "发信站: ", 8)) && !((i == 3) && (l.currlen == 0||!strncmp(l.curr, "来  源: ", 8)))&&
                         !((i == 4) && (l.currlen==0)))) {
-            offsetln = t_lines/2+1;
-            minln = t_lines/2+1;
+            offsetln = BBS_PAGESIZE / 2+3;
+            minln = BBS_PAGESIZE / 2+3;
             mem_printline(&l, fn, ptr);
             offsetln = 0;
             minln = 0;
@@ -1157,14 +1156,14 @@ int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
             header = false;
         }
         i++;
-        if (j >= t_lines - t_lines / 2 - 2)
+        if (j >= BBS_PAGESIZE / 2-1)
             break;
         if (next_MemMoreLines(&l) < 0)
             break;
     }
     last_line = l.curr_line;
-    if (l.total && l.total <= t_lines - t_lines / 2 - 2)
-        return 0;
+//    if (l.total && l.total <= t_lines - t_lines / 2 - 2)
+    return 0;
 }
 
 int draw_content(char *fn, struct fileheader *fh)

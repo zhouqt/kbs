@@ -115,6 +115,11 @@ static int select_change(struct _select_def *conf, int new_pos)
     int ret = SHOW_CONTINUE;
     int old_pos;
 
+    if (conf->on_selchange) {
+        ret = (*conf->on_selchange) (conf, new_pos);
+        if (ret != SHOW_CONTINUE)
+            return ret;
+    }
     if (conf->item_count==0)
         return SHOW_CONTINUE;
     if (new_pos <= 0 || new_pos > conf->item_count) {
@@ -126,11 +131,6 @@ static int select_change(struct _select_def *conf, int new_pos)
             select_wrong(conf);
             return SHOW_CONTINUE;
         }
-    }
-    if (conf->on_selchange) {
-        ret = (*conf->on_selchange) (conf, new_pos);
-        if (ret != SHOW_CONTINUE)
-            return ret;
     }
     if (conf->flag & LF_MULTIPAGE) {
         if (new_pos<conf->page_pos || new_pos>=conf->page_pos+conf->item_per_page)
