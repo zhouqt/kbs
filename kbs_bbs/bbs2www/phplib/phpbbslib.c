@@ -4889,6 +4889,7 @@ static PHP_FUNCTION(bbs_changemaillist)
             if (stat(path, &st) == -1)
                 break;
         }
+        f_touch(path);
         sprintf(buf, "MAILBOX%d", i);
         strcpy(maillist.mail_list[maillist.mail_list_t], boxname);
         strcpy(maillist.mail_list[maillist.mail_list_t] + 30, buf);
@@ -4898,12 +4899,14 @@ static PHP_FUNCTION(bbs_changemaillist)
     {
         if (index < 0 || index > maillist.mail_list_t - 1)
             RETURN_LONG(-1);
-        maillist.mail_list_t -= 1;
-        if (index != maillist.mail_list_t - 1)  //it is not the last one
-        {
-            strncpy(maillist.mail_list[index], maillist.mail_list[index + 1], 30);
-            strncpy(maillist.mail_list[index] + 30, maillist.mail_list[index + 1] + 30, 10);
-        }
+        sprintf(buf, ".%s", maillist.mail_list[index] + 30);
+        setmailfile(path, getCurrentUser()->userid, buf);
+        if (get_num_records(path, sizeof(struct fileheader)) != 0)
+            RETURN_LONG(0);
+        f_rm(path);
+        for (i = index; i < maillist.mail_list_t - 1; i++)
+            memcpy(maillist.mail_list[i], maillist.mail_list[i + 1], sizeof(maillist.mail_list[i]));
+        maillist.mail_list_t--;
         save_mail_list(&maillist, getSession());
     }
 	if( currentuinfo )
