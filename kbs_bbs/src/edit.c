@@ -277,7 +277,7 @@ void go()
     int line;
 
     set_alarm(0, 0, NULL, NULL);
-    getdata(23, 0, "请问要跳到第几行: ", tmp, 7, DOECHO, NULL, 0);
+    getdata(23, 0, "请问要跳到第几行: ", tmp, 7, DOECHO, NULL, 1);
     domsg();
     if (tmp[0] == '\0')
         return;

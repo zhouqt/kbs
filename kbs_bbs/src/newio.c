@@ -1010,7 +1010,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
     for(i=0;i<=24;i++)
         saveline(i, 0, savebuffer[i]);
     strncpy(tmp, buf, 1024);
-    tmp[1024]=0;
+    tmp[1023]=0;
 
     while (1) {
         y = starty; x = startx;
