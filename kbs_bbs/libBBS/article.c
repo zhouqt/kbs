@@ -1,4 +1,5 @@
 #include "bbs.h"
+#include <utime.h>
 
 void cancelpost(char    *board,char *userid,struct fileheader *fh,int     owned,int     autoappend);
 int outgo_post(struct fileheader *fh,char *board,char* title)
@@ -109,6 +110,7 @@ postreport(fileinfo->title, -1, currboard); added by alex, 96.9.12 */
                 }
             }
         }
+		utime(fileinfo->filename,0);
     	bbslog("1bbs","Del '%s' on '%s'",fileinfo->title,board) ; /* bbslog*/
         return 0;
     }
