@@ -151,8 +151,8 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_getuserscore, NULL)
 		PHP_FE(bbs_setuserscore, NULL)
 		PHP_FE(bbs_adduserscore, NULL)
-#endif
 		PHP_FE(bbs_saveuserdata, NULL)
+#endif
 		PHP_FE(bbs_getuserparam, NULL)
 		PHP_FE(bbs_setuserparam, NULL)
 
