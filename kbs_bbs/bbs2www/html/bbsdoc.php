@@ -122,6 +122,8 @@
 		$ann_path = bbs_getannpath($brdarr["NAME"]);
 		if ($ann_path != FALSE)
 		{
+                    if (!strncmp($ann_path,"0Announce/",10))
+			$ann_path=substr($ann_path,9);
 ?>
 <a href="/cgi-bin/bbs/bbs0an?path=<?php echo urlencode($ann_path); ?>">精华区</a>
 <?php
@@ -229,6 +231,8 @@
 		$ann_path = bbs_getannpath($brdarr["NAME"]);
 		if ($ann_path != FALSE)
 		{
+                    if (!strncmp($ann_path,"0Announce/",10))
+			$ann_path=substr($ann_path,9);
 ?>
 <a href="/cgi-bin/bbs/bbs0an?path=<?php echo urlencode($ann_path); ?>">精华区</a>
 <?php
