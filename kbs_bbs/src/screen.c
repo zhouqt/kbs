@@ -632,7 +632,7 @@ int n;
                                 }
                              }
                              else if((*(str+i)=='A'||*(str+i)=='B'||*(str+i)=='C'||*(str+i)=='D')&&i<=4) {
-                                register k;
+                                register int k;
                                 char s1[5];
                                 s1[i-2]=0;
                                 memcpy(s1,str+2,i-2);
@@ -660,6 +660,18 @@ int n;
                                 good_move(savey,savex);
                                 str+=i+1;
                                 break;
+                             }
+                             else if(*(str+i)=='m') {
+                                register int j;
+                                for(j=scr_cols-i-1;j>=reg_col;j--)
+                                    slp->data[j+i+1]=slp->data[j];
+                                slp->len+=i+1;
+                                for(j=0;j<=i;j++)
+                                    slp->data[reg_col+j]=*(str+j);
+                                str+=i+1;
+                                reg_col+=i+1;
+                                DO_MODIFY;
+                                continue;
                              }
                       }
                       if(*str == ''&&*(str+1)=='['&&*(str+2)=='s') {
