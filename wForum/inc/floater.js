@@ -38,7 +38,7 @@ function checkFocus(x,y) {
 function grabIt(e) {
 	if(IE) {
 		whichIt = event.srcElement;
-		while (whichIt.id.indexOf("floater") == -1) {
+		while (whichIt.id!=("floater")) {
 			whichIt = whichIt.parentElement;
 			if (whichIt == null) { return true; }
 		}
@@ -57,7 +57,7 @@ function grabIt(e) {
 	return true;
 }
 function moveIt(e) {
-	if (whichIt == null) { return false; }
+	if (whichIt == null) { return true; }
 	if(IE) {
 		newX = (event.clientX + document.body.scrollLeft);
 		newY = (event.clientY + document.body.scrollTop);
@@ -78,7 +78,7 @@ function moveIt(e) {
 		if( (whichIt.top + whichIt.clip.height) >= (window.innerHeight+self.pageYOffset-17)) whichIt.top = ((window.innerHeight+self.pageYOffset)-whichIt.clip.height)-17;
 		return false;
 	}
-	return false;
+	return true;
 }
 function dropIt() {
 	whichIt = null;
@@ -86,6 +86,7 @@ function dropIt() {
 	return true;
 }
 <!-- DRAG DROP CODE -->
+
 if(NS) {
 	window.captureEvents(Event.MOUSEUP|Event.MOUSEDOWN);
 	window.onmousedown = grabIt;
