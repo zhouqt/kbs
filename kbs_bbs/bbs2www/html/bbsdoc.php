@@ -189,7 +189,7 @@
 <td><a href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
 <td><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
 <td>
-<?php if ($brdarr["NAME"]=='testclub') 
+<?php if ($brdarr["NAME"]=='testclub' || $brdarr["NAME"] == 'Water') 
 {
 //for debug
 ?>
