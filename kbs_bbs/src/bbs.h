@@ -140,7 +140,7 @@ extern long ti;
 
 #define MORE_BUFSIZE    4096
 #define MAXnettyLN      5       /* lines of  activity board  */
-/*#define ACBOARD_BUFSIZE      150    max. length of each line for activity board  */
+/*#define ACBOARD_BUFSIZE      300    max. length of each line for activity board  */
 /*#define ACBOARD_MAXLINE      80     max. lines of  activity board  */
 #define ACBOARD_BUFSIZE      LENGTH_ACBOARD_BUFFER      /* max. length of each line for activity board  */
 #define ACBOARD_MAXLINE      LENGTH_ACBOARD_LINE        /* max. lines of  activity board  */
