@@ -96,7 +96,7 @@ function display_navigation_bar($brdarr, $articles, $num)
 	}
 ?>
 [<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>&page=<?php echo intval(($num + $PAGE_SIZE - 1) / $PAGE_SIZE); ?>">本讨论区</a>]
-[<a href="/cgi-bin/bbs/bbspst?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>&userid=<?php echo $articles[1]["OWNER"]; ?>&title=Re: <?php echo urlencode($articles[1]["TITLE"]); ?>&refilename=<?php echo $articles[1]["FILENAME"]; ?>&attach=<?php echo $brdarr["FLAG"]&BBS_BOARD_ATTACH ? 1 : 0; ?>">回文章</a>]
+[<a href="/bbspst.php?board=<?php echo $brd_encode; ?>&reid=<?php echo $articles[1]["ID"];?>">回文章</a>]
 [<a href="/cgi-bin/bbs/bbstfind?board=<?php echo $brd_encode; ?>&title=<?php echo urlencode($articles[1]["TITLE"]); ?>">同主题阅读</a>]
 [<a href="javascript:history.go(-1)">快速返回</a>]
 <?php
