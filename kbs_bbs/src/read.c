@@ -972,20 +972,21 @@ int SR_BMfunc(int ent, struct fileheader *fileinfo, char *direct)
 	if(SR_BMTOTAL == BMch + SR_BMBASE){
         snprintf(buf, 256, "ÊÇ·ñ±£ÁôÒýÎÄ(Y/N/C)? [Y]: ");
         getdata(t_lines - 2, 0, buf, ch, 3, DOECHO, NULL, true);
+       sprintf(filepath,"tmp/bm.%s",currentuser->userid);
 	    switch (ch[0]){
 	    case 'y':
 	    case 'Y':
-		default:
-		    sread(BMch + SR_BMBASE - 3 , 0, ent, 0, fileinfo); //ÇÐ»»³ÉÔÝ´æµµ²Ù×÷
-			sprintf(filepath,"tmp/bm.%s",currentuser->userid);
-			break;
+	    default:
+	    	if(dashf(filepath))unlink(filepath);
+	       sread(BMch + SR_BMBASE - 3 , 0, ent, 0, fileinfo); //ÇÐ»»³ÉÔÝ´æµµ²Ù×÷
+	 	break;
 	    case 'n':
-		case 'N':
-		    sread(-(BMch + SR_BMBASE - 3), 0, ent, 0, fileinfo);
-			sprintf(filepath,"tmp/bm.%s",currentuser->userid);
-			break;
-		case 'c':
-		case 'C':
+	    case 'N':
+	    	if(dashf(filepath))unlink(filepath);
+		sread(-(BMch + SR_BMBASE - 3), 0, ent, 0, fileinfo);
+		break;
+           case 'c':
+	    case 'C':
 		    saveline(t_lines - 2, 1, NULL);
             saveline(t_lines - 3, 1, linebuffer);
             return DONOTHING;
@@ -1097,21 +1098,21 @@ int SR_BMfuncX(int ent, struct fileheader *fileinfo, char *direct)
 	if(SR_BMTOTAL == BMch + SR_BMBASE){
         snprintf(buf, 256, "ÊÇ·ñ±£ÁôÒýÎÄ(Y/N/C)? [Y]: ");
         getdata(t_lines - 2, 0, buf, ch, 3, DOECHO, NULL, true);
+ 	sprintf(filepath,"tmp/bm.%s",currentuser->userid);
 	    switch (ch[0]){
 	    case 'y':
 	    case 'Y':
-		default:
-		    sread(BMch + SR_BMBASE - 3 , 0, ent, 0, fileinfo); //ÇÐ»»³ÉÔÝ´æµµ²Ù×÷
-			sprintf(filepath,"tmp/bm.%s",currentuser->userid);
-			break;
+	    default:
+		if(dashf(filepath))unlink(filepath);
+		sread(BMch + SR_BMBASE - 3 , 0, ent, 0, fileinfo); //ÇÐ»»³ÉÔÝ´æµµ²Ù×÷
+		break;
 	    case 'n':
-		case 'N':
-		    sread(-(BMch + SR_BMBASE - 3), 0, ent, 0, fileinfo);
-			sprintf(filepath,"tmp/bm.%s",currentuser->userid);
-			//sprintf(filepath,"tmp/se.%s",currentuser->userid);
-			break;
-		case 'c':
-		case 'C':
+	    case 'N':
+	    	if(dashf(filepath))unlink(filepath);
+		sread(-(BMch + SR_BMBASE - 3), 0, ent, 0, fileinfo);
+		break;
+           case 'c':
+	    case 'C':
 		    saveline(t_lines - 2, 1, NULL);
             saveline(t_lines - 3, 1, linebuffer);
             return DONOTHING;
