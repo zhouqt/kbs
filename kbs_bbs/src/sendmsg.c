@@ -483,6 +483,7 @@ void r_msg()
         };
     }
     while(1){
+        int reg=0;
         load_msghead(1, currentuser->userid, now, &head);
         load_msgtext(currentuser->userid, &head, buf);
         translate_msg(buf, &head, outmsg);
@@ -490,12 +491,23 @@ void r_msg()
         if (first&&hasnewmsg&&DEFINE(currentuser, DEF_SOUNDMSG))
             bell();
         move(0,0);
+        if(head.mode==6&&(!strcmp(outmsg,"REQUIRE:BIND")||!strcmp(outmsg,"REQUIRE:UNBIND"))) {
+            if(!strcmp(outmsg,"REQUIRE:BIND")) {
+                sprintf(outmsg, "×¢²áÊÖ»úºÅ %s Âð (y/N)\n", head.id);
+                reg=1;
+            }
+            else {
+                sprintf(outmsg, "È¡Ïû×¢²áÊÖ»úºÅ %s Âð (y/N)\n", head.id);
+                reg=2;
+            }
+        }
         prints("%s", outmsg);
 
         if(first) {
             int x,y;
             getyx(&y,&x);
-            prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢", now+1, count);
+            if(!reg)
+                prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢", now+1, count);
             clrtoeol();
             do{
                 ch = igetkey();
@@ -515,6 +527,7 @@ void r_msg()
         else canreply = 1;
         
         clrtoeol();
+        if(!reg)
         if(canreply)
             prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢, »Ø¸´ %-12s\n", now+1, count, uid);
         else
@@ -558,11 +571,29 @@ void r_msg()
                         else {
 #ifdef SMS_SUPPORT
                             if(head.mode==6) {
-                                i = do_send_sms_func(uid, buf);
-                                if(!i) i=1;
+                                if(!reg) {
+                                    i = do_send_sms_func(uid, buf);
+                                    if(!i) i=1;
+                                    else {
+                                        i=0;
+                                        sprintf(msgerr, "ÎÞ·¨¸ø %s ·¢ËÍÊÖ»ú¶ÌÐÅ", uid);
+                                    }
+                                }
                                 else {
-                                    i=0;
-                                    sprintf(msgerr, "ÎÞ·¨¸ø %s ·¢ËÍÊÖ»ú¶ÌÐÅ", uid);
+                                    i = DoReplyCheck(uid, head.frompid, toupper(buf[0])=='Y')
+                                    if(!i) {
+                                        if(reg==1) {
+                                            curruserdata.mobileregistered = 0;
+                                            strcpy(curruserdata.mobilenumber, uid);
+                                        }
+                                        else {
+                                            curruserdata.mobileregistered = 0;
+                                        }
+                                        write_userdata(currentuser->userid, &curruserdata);
+                                        sprintf("%s ³É¹¦", (reg==1)?"×¢²á":"È¡Ïû×¢²á");
+                                    }
+                                    else sprintf("%s Ê§°Ü", (reg==1)?"×¢²á":"È¡Ïû×¢²á");
+                                    i = 0;
                                 }
                             }
                             else

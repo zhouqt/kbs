@@ -104,7 +104,7 @@ int sendtouser(struct GWSendSMS * h, char* buf)
     return 0;
 }
 
-int requiretouser(struct RequireBindPacket * h)
+int requiretouser(struct RequireBindPacket * h, unsigned int sn)
 {
     char uident[IDLEN+2];
     char buf[21];
@@ -116,7 +116,7 @@ int requiretouser(struct RequireBindPacket * h)
     if(uin == NULL)
         return -1;
 
-    hh.frompid = -1;
+    hh.frompid = sn;
     hh.topid = uin->pid;
     hh.mode = 6;
     hh.sent = 0;
@@ -172,7 +172,7 @@ void processremote()
         case CMD_REQUIRE:
 	    printf("get CMD_REQUIRE\n");
             read(sockfd, &h1, sizeof(h1));
-            requiretouser(&h1);
+            requiretouser(&h1, byte2long(h.SerialNo));
             break;
         case CMD_GWSEND:
 	    printf("get CMD_GWSEND\n");
@@ -215,7 +215,8 @@ void processbbs()
     while(head->total) {
         head->total--;
         getbuf(&h, sizeof(h));
-        long2byte(sn++, h.SerialNo);
+        if(h.Type!=CMD_REPLY)
+            long2byte(sn++, h.SerialNo);
         switch(h.Type) {
             case CMD_REG:
                 printf("send CMD_REG\n");

@@ -890,5 +890,28 @@ int DoSendSMS(char * n, char * d, char * c)
     return wait_for_result();
 }
 
+int DoReplyCheck(char * n, unsigned int sn, char isSucceed)
+{
+    int count=0;
+    struct header h;
+    struct ReplyBindPacket h1;
+    h.Type = CMD_REPLY;
+    long2byte(smsuin->pid, h.pid);
+    long2byte(sizeof(h1), h.BodyLength);
+    long2byte(sn, h.SerialNo);
+    strcpy(h1.MobileNo, n);
+    h1.isSucceed = isSucceed;
+    while(head->sem) {
+        sleep(1);
+        count++;
+        if(count>=5) return -1;
+    }
+    head->sem=1;
+    head->total++;
+    sendtosms(&h, sizeof(h));
+    sendtosms(&h1, sizeof(h1));
+    return wait_for_result();
+}
+
 #endif
 
