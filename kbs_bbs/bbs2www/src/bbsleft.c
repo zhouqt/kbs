@@ -19,17 +19,17 @@ int main()
   	init_all();
 	printf("<style type=\"text/css\">A {color: #000080}</style><br>\n");
 	printf("<script src=\"/func.js\"></script>"
-	"<body class=\"dark\" leftmargin=\"1\" topmargin=\"1\" MARGINHEIGHT=\"1\" MARGINWIDTH=\"1\">");
-
+	"<body class=\"dark\" leftmargin=\"5\" topmargin=\"1\" MARGINHEIGHT=\"1\" MARGINWIDTH=\"1\">");
+	printf("<table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n");
+	printf("<tr><td>");
 	if(!loginok)
 	{
-                printf("<center>"
-"               	<form action=\"bbslogin\" method=\"post\" target=\"_top\"><br>"
-"		bbs用户登录<br>"
-"               	帐号 <input class=\"default\" type=\"text\" name=\"id\" maxlength=\"12\" size=\"8\"><br>"
-"               	密码 <input class=\"default\" type=\"password\" name=\"pw\" maxlength=\"39\" size=\"8\"><br>"
-"               	<input class=\"button\" type=\"submit\" value=\"登录进站\">"
-"		</center>");
+		printf( "<form action=\"bbslogin\" method=\"post\" target=\"_top\"><br>\n"
+NAME_BBS_CHINESE "用户登录<br>\n"
+"帐号 <input class=\"default\" type=\"text\" name=\"id\" maxlength=\"12\" size=\"8\"><br>\n"
+"密码 <input class=\"default\" type=\"password\" name=\"pw\" maxlength=\"39\" size=\"8\"><br>\n"
+"<input class=\"button\" type=\"submit\" value=\"登录进站\">\n"
+"</form>\n");
 	}
 	else
 	{
@@ -37,10 +37,13 @@ int main()
 		printf("用户: <a href=\"bbsqry?userid=%s\" target=\"f3\">%s</a><br>", 
 				getcurruserid(), getcurruserid());
 		uleveltochar(buf, getcurrusr());
-        printf("身份: %s<hr style=\"color:2020f0; height:1px\" width=\"84px\" align=\"left\">", buf);
+        printf("身份: %s<br>\n", buf);
         printf("<a href=\"bbslogout\" target=\"_top\">注销本次登录</a><br>\n");
 	}
-  	printf("<hr style=\"color:2020f0; height=1px\" width=\"84px\" align=\"left\"><br><img src=\"/link0.gif\"><a href=\"bbsall\" target=\"f3\">讨论区首页</a><br>\n");
+	printf("</td></tr><tr><td>\n");
+	printf("<hr style=\"color:2020f0; height=1px\" width=\"84px\" align=\"center\">\n");
+	printf("</td></tr></table>");
+  	printf("<img src=\"/link0.gif\"><a href=\"bbsall\" target=\"f3\">讨论区首页</a><br>\n");
         printf("<img src=\"/link0.gif\"><a target=\"f3\" href=\"bbs0an\">精华公布栏</a><br>\n");
    	printf("<img src=\"/link0.gif\"><a target=\"f3\" href=\"bbstop10\">今日十大</a><br>\n");
 	printf("<img src=\"/link0.gif\"><a target=\"f3\" href=\"bbstopb10\">热门讨论区</a><br>\n");
@@ -84,9 +87,10 @@ int main()
 	ptr="";
 	if(loginok&&currentuser->userlevel & PERM_CLOAK)
 		ptr="<img src=\"/link.gif\"> <a target=\"f3\" onclick=\"return confirm('确实切换隐身状态吗?')\" href=\"bbscloak\">切换隐身</a><br>\n";
-	if(loginok) {
-	        printdiv(4,"个人工具箱");
-                printf(
+	if(loginok)
+	{
+		printdiv(4,"个人工具箱");
+			printf(
 "			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsinfo\">个人资料</a><br>\n"
 "			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsplan\">改说明档<a><br>\n"
 "			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbssig\">改签名档<a><br>\n"
@@ -97,18 +101,18 @@ int main()
 /*"		<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsstat\"> 排名统计</a><br>"*/
 "			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsfall\">设定好友</a><br>\n"
 "			%s</div>",ptr);
-	}
-
-	printdiv(5,"处理信件区");
-	printf("			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsnewmail\">阅览新邮件</a><br>\n"
+		printdiv(5,"处理信件区");
+		printf("			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsnewmail\">阅览新邮件</a><br>\n"
 "			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsmail\">所有邮件</a><br>\n"
 "			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbspstmail\">发送邮件</a><br>\n"
 "			</div>");
+	}
+
 	printdiv(6,"特别服务区");
 	printf("<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsalluser\">所有使用者</a><br>\n");
 	/*printf("<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsadl\">下载精华区</a><br>\n");*/
 	printf("</div>\n");
-	printf("<div class=r>");
+	printf("<div class=\"r\">");
   	printf("<img src=\"/link0.gif\"><a href=\"bbsfind\" target=\"f3\">文章查询</a><br>\n");
 	printf("<img src=\"/link0.gif\"><a href=\"bbssel\" target=\"f3\">查找讨论区</a><br>\n");
 	printf("<img src=\"/telnet.gif\"><a href=\"telnet:%s\">Telnet登录</a><br>\n", NAME_BBS_ENGLISH);
