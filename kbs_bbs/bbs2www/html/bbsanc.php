@@ -74,12 +74,10 @@ function get_mimetype($name)
 			html_error_quit("错误的目录");
 		}
 
-		$test_file = @fopen($filename,"r");
-		if(! $test_file ){
+		if(! file_exists($filename)){
 			html_init("gb2312");
 			html_error_quit("错误的文章号...");
 		}
-		fclose($test_file);
 
 			@$attachpos=$_GET["ap"];//pointer to the size after ATTACHMENT PAD
 			if ($attachpos!=0) {
