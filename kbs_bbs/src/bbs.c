@@ -906,7 +906,9 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     case 'y':
     case 'r':
 #ifdef SMTH
-        if ((!strcmp(currboard->filename, "News")) || (!strcmp(currboard->filename, "Original"))) {
+	/* 该三版不许Re文,add AD_Agent board   by   binxun  */
+        if ((!strcmp(currboard->filename,"AD_Agent"))||(!strcmp(currboard->filename, "News")) || (!strcmp(currboard->filename, "Original"))) 
+        {
             clear();
             move(3, 0);
             clrtobot();
