@@ -243,8 +243,11 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
             fclose(se);
             if (strstr(str, "设定使用者注册资料"))      /* Leeward 98.03.29 */
                 post_file(getCurrentUser(), "", fname, "Registry", str, 0, 2, getSession());
-            else
+            else {
+                if((ptr = strchr(str, '\n')) != NULL)
+                    sprintf(ptr, "...");
                 post_file(getCurrentUser(), "", fname, "syssecurity", str, 0, 2, getSession());
+            }
         }
         unlink(fname);
         modify_user_mode(savemode);
@@ -860,7 +863,8 @@ int searchtrace()
     sprintf(tmp_command, "grep -a -w %s user.log | grep posted > %s", tmp_id, buffile);
     system(tmp_command);
 #endif
-    mail_file(getCurrentUser()->userid, buffile, getCurrentUser()->userid, "系统查询结果", BBSPOST_MOVE, NULL);
+    sprintf(tmp_command, "%s 的发文查询结果", tmp_id);
+    mail_file(getCurrentUser()->userid, buffile, getCurrentUser()->userid, tmp_command, BBSPOST_MOVE, NULL);
 
     sprintf(buf, "查询用户 %s 的发文情况", tmp_id);
     securityreport(buf, lookupuser, NULL);      /*写入syssecurity版, stephen 2000.12.21 */
