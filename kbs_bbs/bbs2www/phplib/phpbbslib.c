@@ -4310,7 +4310,7 @@ static PHP_FUNCTION(bbs_fillidinfo)
        RETURN_LONG(-1);
 
     memset(&ud,0,sizeof(ud));
-	if( read_user_memo(userid, &currentmemo) < 0) RETURN_LONG(-2);
+	if( read_user_memo(userid, &currentmemo) <= 0) RETURN_LONG(-2);
 
     if(read_userdata(userid,&ud) < 0)RETURN_LONG(-2);
 
@@ -4419,7 +4419,7 @@ static PHP_FUNCTION(bbs_saveuserdata)
 		userface_img=-1;
 	}
 
-	if( read_user_memo(userid, &currentmemo) < 0) RETURN_LONG(-2);
+	if( read_user_memo(userid, &currentmemo) <= 0) RETURN_LONG(-2);
 	read_userdata(userid, &ud);
     strncpy(ud.realname, realname, NAMELEN);
     strncpy(ud.address, address, STRLEN);
@@ -4606,7 +4606,7 @@ static PHP_FUNCTION(bbs_createregform)
 			fclose(fn);
 		}
     }
-	if( read_user_memo(userid, &currentmemo) < 0) RETURN_LONG(-2);
+	if( read_user_memo(userid, &currentmemo) <= 0) RETURN_LONG(-2);
 	read_userdata(userid, &ud);
     strncpy(ud.realname, realname, NAMELEN);
     strncpy(ud.address, address, STRLEN);
@@ -4799,7 +4799,7 @@ static PHP_FUNCTION(bbs_createregform)
 			fclose(fn);
 		}
     }
-	if( read_user_memo(userid, &currentmemo) < 0) RETURN_LONG(-2);
+	if( read_user_memo(userid, &currentmemo) <= 0) RETURN_LONG(-2);
 	read_userdata(userid, &ud);
     strncpy(ud.realname, realname, NAMELEN);
     strncpy(ud.address, address, STRLEN);
