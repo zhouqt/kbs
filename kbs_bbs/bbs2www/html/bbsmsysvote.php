@@ -10,6 +10,17 @@
 	
 	html_init("gb2312","管理系统投票","",1);
 ?>
+<script language='JavaScript'>
+<!--
+function bbs_confirm(url,infor){
+	if(confirm(infor)){
+		window.location.href=url;
+		return true;
+		}
+	return false;
+}
+-->
+</script>
 <br /><p align=center><?php echo BBS_FULL_NAME; ?>系统投票管理</p>
 <?php
 	if(!sysvote_is_admin($currentuser))
@@ -142,10 +153,10 @@
 				     "<td class=t3>".$vote[timelong]."</td>".
 				     "<td class=t4>";
 				if($vote[active]==1)
-					echo "<a href=\"bbsmsysvote.php?act=end&svid=".$vote[svid]."\">结束</a>";
+					echo "<a href=\"#\" onclick=\"bbs_confirm('bbsmsysvote.php?act=end&svid=".$vote[svid]."','确认要结束投票?')\">结束</a>";
 				else
 					echo "-";
-				echo "</td><td class=t3><a href=\"bbsmsysvote.php?act=del&svid=".$vote[svid]."\">删除</a></td>".
+				echo "</td><td class=t3><a href=\"#\" onclick=\"bbs_confirm('bbsmsysvote.php?act=del&svid=".$vote[svid]."','确认删除投票?')\">删除</a></td>".
 				     "<td class=t4><span title='查看本次投票的系统记录'><a href=\"bbsmsysvote.php?act=log&svid=".$vote[svid]."\">查看</a></span></td></tr>\n";
 				$j ++;
 			}
