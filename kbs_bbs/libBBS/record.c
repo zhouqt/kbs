@@ -28,6 +28,13 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 
+static sigjmp_buf bus_jump;
+
+int sigbus(int signo)
+{
+  siglongjmp(bus_jump,1);
+};
+
 #ifdef SYSV
 int
 flock(fd, op)
@@ -202,7 +209,6 @@ toobigmesg()
         fprintf( stderr, "record size too big!!\n" );
     */
 }
-#if 1
 /* apply_record进行了预读优化,以减少系统调用次数,提高速度. ylsdd 2001.4.24 */
 /* COMMAN : use mmap to speed up searching */
 int
@@ -215,11 +221,16 @@ apply_record(char *filename ,int (*fptr)(char*,char*) ,int size ,char* arg)
     if((fd = open(filename,O_RDONLY,0)) == -1)
         return -1 ;
     if (fstat(fd,&stat) <0 ) { close(fd); return 0; }
+    
     buf = (char *) mmap(NULL,stat.st_size,PROT_READ,MAP_SHARED,fd,0);
     if (buf ==(char *) -1) { close(fd);return 0;}
-    for (i=0,buf1=buf;i<stat.st_size/size;i++,buf1+=size) {
-    	memcpy(buf2,buf1,size);
-    	if ((*fptr)(buf2,arg) == QUIT) {
+    
+    if (!sigsetjmp(bus_jump,1)) {
+        signal(SIGBUS,sigbus);
+    
+        for (i=0,buf1=buf;i<stat.st_size/size;i++,buf1+=size) {
+            memcpy(buf2,buf1,size);
+            if ((*fptr)(buf2,arg) == QUIT) {
     		munmap(buf,stat.st_size);
     		close(fd);
     		return QUIT;
@@ -227,34 +238,10 @@ apply_record(char *filename ,int (*fptr)(char*,char*) ,int size ,char* arg)
     }
     munmap(buf,stat.st_size);
     close(fd) ;
+    signal(SIGBUS,SIGIGN);
     return 0 ;
 }
-#else
-int
-apply_record(char *filename ,int (*fptr)(char*,char*) ,int size ,char* arg)
-{
-    char *buf,*buf1,*buf2;
-    int fd, sizeread, n, i;
-    struct stat stat;
-    buf2=malloc(size);
-    if((fd = open(filename,O_RDONLY,0)) == -1)
-        return -1 ;
-    if (fstat(fd,&stat) <0 ) { close(fd); return 0; }
-    buf = (char *) mmap(NULL,stat.st_size,PROT_READ,MAP_SHARED,fd,0);
-    if (buf ==(char *) -1) { close(fd);return 0;}
-    for (i=0,buf1=buf;i<stat.st_size/size;i++,buf1+=size) {
-    	memcpy(buf2,buf1,size);
-    	if ((*fptr)(buf2,arg) == QUIT) {
-    		munmap(buf,stat.st_size);
-    		close(fd);
-    		return QUIT;
-    	}
-    }
-    munmap(buf,stat.st_size);
-    close(fd) ;
-    return 0 ;
-}
-#endif
+
 /*---   Added by period   2000-10-26  ---*/
 /*---	也可以考虑用一次读入CheckStep个记录的方法.	---*
  *---	就是在内存占用和系统IO之间作个选择		---*/
@@ -282,31 +269,34 @@ char *farg ;	/* additional param to call fptr() / original record */
 char *rptr ;	/* record data buffer to be used for reading idx file */
 int sorted ; /* if records in file are sorted */
 {
-	char *buf,*buf1;
-	int fd,i;
-	struct stat stat;
+    char *buf,*buf1;
+    int fd,i;
+    struct stat stat;
     if((fd = open(filename,O_RDONLY,0)) == -1)
         return 0 ;
-	if (fstat(fd,&stat)<0) { close(fd);return 0;}
-	if (start > stat.st_size/size) start = stat.st_size/size;
-	buf = (char *) mmap(NULL,start * size,PROT_READ,MAP_SHARED,fd,0);
-	if (buf == (char *)-1) { close(fd); return 0;}
-	for (i = start, buf1 = buf; i>=0; i--, buf1-=size) {
-    	if ((*fptr)(farg,buf1)) {
-    		memcpy(rptr,buf1,size);
-    		munmap(buf,start * size);
-    		close(fd);
-    		return i;
-    		}
-		}
-	munmap(buf,start * size);
-	close(fd);
-	return 0;
+    if (fstat(fd,&stat)<0) { close(fd);return 0;}
+    if (start > stat.st_size/size) start = stat.st_size/size;
+    buf = (char *) mmap(NULL,start * size,PROT_READ,MAP_SHARED,fd,0);
+    if (buf == (char *)-1) { close(fd); return 0;}
+    if (!sigsetjmp(bus_jump,1)) {
+        signal(SIGBUS,sigbus);
+        for (i = start, buf1 = buf; i>=0; i--, buf1-=size) {
+            if ((*fptr)(farg,buf1)) {
+    	        memcpy(rptr,buf1,size);
+    	        munmap(buf,start * size);
+                close(fd);
+    	        return i;
+    	    }
+        }
+    }
+    munmap(buf,start * size);
+    close(fd);
+    signal(SIGBUS,SIGIGN);
+    return 0;
 }
 
 /*---   End of Addition     ---*/
 
-#if 1
 /* search_record进行了预读优化,以减少系统调用次数,提高速度. ylsdd, 2001.4.24 */
 /* COMMAN : use mmap to improve search speed */
 int
@@ -328,53 +318,22 @@ char *farg ;
     buf = (char *)mmap(NULL,stat.st_size,PROT_READ,MAP_SHARED,fd,0);
     
     if (buf == (char *)-1) { close (fd); return 0;}
-    for (i =0,buf1=buf;i<stat.st_size/size;i++,buf1+=size) {
-    	if ((*fptr)(farg,buf1)) {
+    if (!sigsetjmp(bus_jump,1)) {
+        signal(SIGBUS,sigbus);
+        for (i =0,buf1=buf;i<stat.st_size/size;i++,buf1+=size) {
+            if ((*fptr)(farg,buf1)) {
     		memcpy(rptr,buf1,size);
     		munmap(buf,stat.st_size);
     		close(fd);
     		return i+1;
-    		}
+    	    }
     	}	
-    	
+    }
     munmap(buf,stat.st_size);
     close(fd) ;
+    signal(SIGBUS,SIGIGN);
     return 0 ;
 }
-#else
-int
-search_record(filename,rptr,size,fptr,farg)
-char *filename ;
-char *rptr ;
-int size ;
-int (*fptr)() ;
-char *farg ;
-{
-    int fd, sizeread, n, i;
-    int id = 1 ;
-    char *buf,*buf1;
-	struct stat stat;
-    if((fd = open(filename,O_RDONLY,0)) == -1)
-        return 0 ;
-    if (fstat(fd,&stat)<0) {close(fd); return 0;}
-    
-    buf = (char *)mmap(NULL,stat.st_size,PROT_READ,MAP_SHARED,fd,0);
-    
-    if (buf == (char *)-1) { close (fd); return 0;}
-    for (i =0,buf1=buf;i<stat.st_size/size;i++,buf1+=size) {
-    	if ((*fptr)(farg,buf1)) {
-    		memcpy(rptr,buf1,size);
-    		munmap(buf,stat.st_size);
-    		close(fd);
-    		return i+1;
-    		}
-    	}	
-    	
-    munmap(buf,stat.st_size);
-    close(fd) ;
-    return 0 ;
-}
-#endif
 
 int
 get_record_handle(fd,rptr,size,id)
