@@ -215,7 +215,6 @@ void draw_entry(READ_FUNC doentry, struct keeploc *locmem, int num, int ssize, c
         prints("\n");
     }
     move(t_lines - 1, 0);
-    clrtoeol();
     update_endline();
 }
 
@@ -364,8 +363,8 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
                                                                                                                                                                                                                                                                                                  * , */ nullbuf,
                          (allstay / 60) % 1000, allstay % 60);
                 move(t_lines - 1, 0);
-                clrtoeol();
                 prints(pntbuf);
+                clrtoeol();
             }
 
             /*---		---*/
@@ -1167,8 +1166,8 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
         else {
             isstart = 0;
             move(t_lines - 1, 0);
-            clrtoeol();
             prints("[1m[44m[31m[%8s] [33mÏÂÒ»·â ' ',<Enter>,¡ı©¦ÉÏÒ»·â ¡ü,U                                  [m", auser ? "ÏàÍ¬×÷Õß" : "Ö÷ÌâÔÄ¶Á");
+            clrtoeol();
             switch (igetkey()) {
                 /*
                  * TODO: add KEY_REFRESH support 
@@ -1323,8 +1322,8 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
             isstart = 0;
           redo:
             move(t_lines - 1, 0);
-            clrtoeol();
             prints("[1m[44m[31m[%8s] [33m»ØĞÅ R ©¦ ½áÊø Q,¡û ©¦ÏÂÒ»·â ¡ı,Enter©¦ÉÏÒ»·â ¡ü,U ©¦ ^R »Ø¸ø×÷Õß   \033[m", auser ? "ÏàÍ¬×÷Õß" : "Ö÷ÌâÔÄ¶Á");
+            clrtoeol();
             /*
              * period 2000-09-11       Ô­ÒòÍ¬ÉÏ 
              */
