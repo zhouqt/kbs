@@ -155,11 +155,11 @@ define('COOKIE_PATH', '/');
 				<listitem><para>mozilla 对 class、ID 等属性是大小写敏感的；而 IE 是大小写不敏感的。在设置和应用样式单时要注意 class 的大小写。</para></listitem>
 				<listitem><para>browser.js 文件主要函数、变量及功能:
 					<glosslist>
-						<glossentry><glossterm>变量: isIE4</glossterm>
-							<glossdef><para>浏览器是否兼容 IE4</para></glossdef>
+						<glossentry><glossterm>变量: isIE</glossterm>
+							<glossdef><para>浏览器是否是 IE</para></glossdef>
 						</glossentry>
 						<glossentry><glossterm>变量: isW3C</glossterm>
-							<glossdef><para>浏览器是否兼容 W3C 标准（mozilla or IE5）。如果浏览器支持 W3C 标准，以下函数将会优先使用 W3C 标准函数以避免 bug。</para></glossdef>
+							<glossdef><para>浏览器是否兼容 W3C 标准。如果浏览器支持 W3C 标准，以下函数将会优先使用 W3C 标准函数。</para></glossdef>
 						</glossentry>
 						<glossentry><glossterm>函数：getRawObject(obj)</glossterm>
 							<glossdef><para>获取ID为obj的对象。例:
@@ -169,8 +169,8 @@ define('COOKIE_PATH', '/');
 .....
 &lt;script language="javascript"&gt;
 ...
-oButton=getRawObject("clickIt");
-oButton.value="I'm new button";
+oButton = getRawObject("clickIt");
+oButton.value = "I'm new button";
 ...
 &lt;/script&gt;
 .....</programlisting>
@@ -192,8 +192,8 @@ oButton.value="I'm new button";
 .....
 &lt;script language="javascript"&gt;
 ...
-oCheckboxs=getObjectCollection("CheckMe");
-for (i=0;i&lt;oCheckboxs.length;i++) {
+oCheckboxs = getObjectCollection("CheckMe");
+for (i = 0; i &lt; oCheckboxs.length; i++) {
 	alert(oCheckbox[i].value);
 }
 ...
@@ -210,8 +210,8 @@ for (i=0;i&lt;oCheckboxs.length;i++) {
 						<glossentry><glossterm>函数: getObjectStyle(obj)</glossterm>
 							<glossdef><para>获取ID为obj的对象的style。例:
 								<programlisting>
-menuDivStyle=getObjectStyle("menuDiv");
-menuDivStyle.visible="hidden";</programlisting>
+menuDivStyle = getObjectStyle("menuDiv");
+menuDivStyle.visible = "hidden";</programlisting>
 							</para></glossdef>
 						</glossentry>
 						<glossentry><glossterm>函数: shiftTo(obj, x, y)</glossterm>

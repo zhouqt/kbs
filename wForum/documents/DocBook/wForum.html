@@ -301,10 +301,10 @@ define('COOKIE_PATH', '/');
 <p>browser.js 文件主要函数、变量及功能:
 					</p>
 <div class="glosslist"><dl>
-<dt>变量: isIE4</dt>
-<dd><p>浏览器是否兼容 IE4</p></dd>
+<dt>变量: isIE</dt>
+<dd><p>浏览器是否是 IE</p></dd>
 <dt>变量: isW3C</dt>
-<dd><p>浏览器是否兼容 W3C 标准（mozilla or IE5）。如果浏览器支持 W3C 标准，以下函数将会优先使用 W3C 标准函数以避免 bug。</p></dd>
+<dd><p>浏览器是否兼容 W3C 标准。如果浏览器支持 W3C 标准，以下函数将会优先使用 W3C 标准函数。</p></dd>
 <dt>函数：getRawObject(obj)</dt>
 <dd>
 <p>获取ID为obj的对象。例:
@@ -315,8 +315,8 @@ define('COOKIE_PATH', '/');
 .....
 &lt;script language=&quot;javascript&quot;&gt;
 ...
-oButton=getRawObject(&quot;clickIt&quot;);
-oButton.value=&quot;I'm new button&quot;;
+oButton = getRawObject(&quot;clickIt&quot;);
+oButton.value = &quot;I'm new button&quot;;
 ...
 &lt;/script&gt;
 .....</pre>
@@ -339,8 +339,8 @@ oButton.value=&quot;I'm new button&quot;;
 .....
 &lt;script language=&quot;javascript&quot;&gt;
 ...
-oCheckboxs=getObjectCollection(&quot;CheckMe&quot;);
-for (i=0;i&lt;oCheckboxs.length;i++) {
+oCheckboxs = getObjectCollection(&quot;CheckMe&quot;);
+for (i = 0; i &lt; oCheckboxs.length; i++) {
 	alert(oCheckbox[i].value);
 }
 ...
@@ -358,8 +358,8 @@ for (i=0;i&lt;oCheckboxs.length;i++) {
 <p>获取ID为obj的对象的style。例:
 								</p>
 <pre class="programlisting">
-menuDivStyle=getObjectStyle(&quot;menuDiv&quot;);
-menuDivStyle.visible=&quot;hidden&quot;;</pre>
+menuDivStyle = getObjectStyle(&quot;menuDiv&quot;);
+menuDivStyle.visible = &quot;hidden&quot;;</pre>
 <p>
 							</p>
 </dd>
