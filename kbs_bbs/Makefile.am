@@ -1,5 +1,5 @@
 EXTRA_DIST = README INSTALL sites/site.c sites/site.h bbshome
-SUBDIRS=libsystem libBBS rzsz src daemon local_utl mail2bbs @subdirs@
+SUBDIRS=libsystem libBBS rzsz src daemon local_utl mail2bbs service @subdirs@
 CLEANFILES=@EXTRA_CLEAN@
 
 dist-hook:

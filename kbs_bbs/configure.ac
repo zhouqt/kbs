@@ -194,6 +194,7 @@ AC_CONFIG_FILES([Makefile
                  daemon/Makefile
                  mail2bbs/Makefile
                  local_utl/Makefile
+                 service/Makefile
                  src/bbsconfig.h
                  src/Makefile])
 AC_OUTPUT

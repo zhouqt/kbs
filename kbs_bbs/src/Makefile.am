@@ -11,5 +11,6 @@ noinst_HEADERS = bbsconfig.h ann.h bbs.h chat.h defines_t.h edit.h func.h ioctl.
            md5.h modes.h permissions.h prototype.h screen.h struct.h system.h \
            systemexp.h uhashgen.h vars.h vote.h webmsg.h
 LDADD=$(top_builddir)/libsystem/.libs/libsystem.a $(top_builddir)/rzsz/.libs/libzmodem.a
+AM_LDFLAGS=-rdynamic
 AM_CFLAGS=-DBBSMAIN -DINVISIBLE -DSAFE_KILL -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME
 CLEANFILES=@EXTRA_CLEAN@
