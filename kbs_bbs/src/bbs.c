@@ -1109,6 +1109,20 @@ int zsend_attach(int ent, struct fileheader *fileinfo, char *direct)
     return 0;
 }
 
+#ifdef ZIXIA
+int showinfo(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
+{
+    char slink[256];      
+    if (fileinfo==NULL) return DONOTHING;
+    board_attach_link(slink,255,-1,fileinfo);
+    clear();
+    move(3,0);
+    prints("全文连接：\n\033[4m%s\033[m\n",slink);
+    pressanykey();
+    return FULLUPDATE;
+}
+#endif
+
 int read_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     char *t;
@@ -5792,6 +5806,9 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
     {'B', (READ_KEY_FUNC)SR_BMFunc,(void*)false},
     {',', (READ_KEY_FUNC)read_splitscreen,NULL},
     {'!', (READ_KEY_FUNC)Goodbye,NULL},
+#ifdef ZIXIA
+    {'~', (READ_KEY_FUNC)showinfo,NULL},
+#endif
     {'\0', NULL},
 };
 

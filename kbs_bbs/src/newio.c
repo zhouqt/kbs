@@ -377,7 +377,7 @@ int igetch()
                 hifd = i_newfd + 1;
         }
 	//TODO: igetkey重入问题
-        if ((uinfo.mode != POSTING && uinfo.mode != SMAIL) || DEFINE(getCurrentUser(), DEF_LOGININFORM))
+        if ((uinfo.mode != POSTING && uinfo.mode != SMAIL && uinfo.mode != EDIT) || DEFINE(getCurrentUser(), DEF_LOGININFORM))
         if (scrint&&!inremsg) {
             while (msg_count) {
                 inremsg = true;
@@ -396,7 +396,7 @@ int igetch()
         if (sr < 0 && errno == EINTR) {
             if (talkrequest)
                 return KEY_TALK;
-            if ((uinfo.mode != POSTING && uinfo.mode != SMAIL) || DEFINE(getCurrentUser(), DEF_LOGININFORM))
+            if ((uinfo.mode != POSTING && uinfo.mode != SMAIL && uinfo.mode != EDIT) || DEFINE(getCurrentUser(), DEF_LOGININFORM))
             if (scrint&&!inremsg) {
                 while (msg_count) {
                     inremsg = true;
@@ -460,7 +460,7 @@ int igetch()
                         return KEY_TALK;
                 }
                 if(kicked) return KEY_TIMEOUT;
-                if ((uinfo.mode != POSTING && uinfo.mode != SMAIL) || DEFINE(getCurrentUser(), DEF_LOGININFORM))
+                if ((uinfo.mode != POSTING && uinfo.mode != SMAIL && uinfo.mode != EDIT) || DEFINE(getCurrentUser(), DEF_LOGININFORM))
                 if (!inremsg) {
 		      int saveerrno=errno;
                     while (msg_count) {
@@ -558,16 +558,19 @@ int igetch()
     c = inbuf[icurrchar];
 
     switch (c) {
+#ifdef ZIXIA
+    case Ctrl('@'):
+#endif
     case Ctrl('L'):
         redoscr();
         icurrchar++;
 #if defined(NINE_BUILD) || defined(ALLOW_CTRL_L_ANTIIDLE) //Ctrl+L 是 CTerm 的默认防发呆字符
-	now = time(0);
-	uinfo.freshtime = now;
-	if (now - old > 60) {
-	   UPDATE_UTMP(freshtime, uinfo);
-	   old = now;
-	}   
+    	now = time(0);
+        uinfo.freshtime = now;
+        if (now - old > 60) {
+           UPDATE_UTMP(freshtime, uinfo);
+           old = now;
+        }   
 #endif
         goto igetagain;
     case Ctrl('Z'):
