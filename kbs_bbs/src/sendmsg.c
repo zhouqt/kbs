@@ -273,9 +273,9 @@ void r_msg_sig(int signo)
 
 void r_msg()
 {
-    int y, x, ch, i, ox, oy;
+    int y, x, ch, i, ox, oy, tmpansi;
     char savebuffer[24][256];
-    char buf[MAX_MSG_SIZE+100], outmsg[MAX_MSG_SIZE*2], ch, buf2[STRLEN];
+    char buf[MAX_MSG_SIZE+100], outmsg[MAX_MSG_SIZE*2], buf2[STRLEN];
     int now, count;
 
     getyx(&y, &x);
@@ -342,7 +342,7 @@ void r_msg()
         now = get_unreadmsg(currentuser->userid);
     } while(now!=-1);
 
-    
+    showansi = tmpansi;
 }
 
 void r_lastmsg()
