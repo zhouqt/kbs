@@ -881,7 +881,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 good_move(y, x);
                 clrtoeol();
             }
-            prints(buf[i]);
+            prints("%c", buf[i]);
             x++;
             if(i==now-1) {
                 cursory = y;
@@ -905,7 +905,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
             case '\177':
             case Ctrl('H'):
                 if(now>0) {
-                    for(i=now-1;i<strlen(buf)-1;i++)
+                    for(i=now-1;i<strlen(buf);i++)
                         buf[i]=buf[i+1];
                     now--;
 #ifdef CHINESE_CHARACTER
@@ -925,7 +925,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 break;
             case KEY_DEL:
                 if(now<strlen(buf)-1) {
-                    for(i=now;i<strlen(buf)-1;i++)
+                    for(i=now;i<strlen(buf);i++)
                         buf[i]=buf[i+1];
 #ifdef CHINESE_CHARACTER
                     if (DEFINE(currentuser, DEF_CHCHAR)) {
@@ -972,8 +972,8 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 }
                 break;
             default:
-                if(isprint2(ch)&&strlen(buf)<len) {
-                    for(i=strlen(buf);i>now;i--)
+                if(isprint2(ch)&&strlen(buf)<len-1) {
+                    for(i=strlen(buf)+1;i>now;i--)
                         buf[i]=buf[i-1];
                     buf[now++]=ch;
                 }
