@@ -427,12 +427,18 @@ int do_com_menu()
                 case 0:
                     return 0;
                 case 1:
+                    for(me=0;me<myroom->people;me++)
+                        if(inrooms.peoples[me].pid==uinfo.pid) break;
+                    if(inrooms.peoples[me].flag&PEOPLE_ALIVE) {
+                        send_msg(inrooms.peoples+me, "你还在游戏,不能退出");
+                        kill(inrooms.peoples[me].pid, SIGUSR1);
+                    }
                     return 1;
                 case 2:
                     move(t_lines-1, 0);
                     resetcolor();
                     clrtoeol();
-                    getdata(t_lines-1, 0, "请输入名字:", buf, 30, 1, 0, 1);
+                    getdata(t_lines-1, 0, "请输入名字:", buf, 12, 1, 0, 1);
                     if(buf[0]) {
                         for(me=0;me<myroom->people;me++)
                             if(inrooms.peoples[me].pid==uinfo.pid) break;
@@ -557,7 +563,7 @@ void join_room(struct room_struct * r)
     while(1){
         do{
             int ch;
-            ch=-getdata(t_lines-1, 0, "输入:", buf, 75, 1, NULL, 1);
+            ch=-getdata(t_lines-1, 0, "输入:", buf, 30, 1, NULL, 1);
             if(kicked) goto quitgame;
             if(ch==KEY_UP) {
                 selected--;
@@ -592,7 +598,7 @@ void join_room(struct room_struct * r)
                     if(inrooms.peoples[selected].flag&PEOPLE_ALIVE && 
                         !(inrooms.peoples[selected].flag&PEOPLE_SPECTATOR) &&
                         selected!=me) {
-                        int i,j;
+                        int i,j,t1,t2,t3;
                         sprintf(buf, "\x1b[32;1m%s投了%s一票\x1b[m", inrooms.peoples[me].nick[0]?inrooms.peoples[me].nick:inrooms.peoples[me].id,
                             inrooms.peoples[selected].nick[0]?inrooms.peoples[selected].nick:inrooms.peoples[selected].id);
                         start_change_inroom(myroom);
@@ -608,13 +614,36 @@ void join_room(struct room_struct * r)
                             for(i=0;i<myroom->people;i++)
                                 send_msg(inrooms.peoples+i, buf);
                         }
-                        j=1;
+                        j=1; t1=0; t2=0; t3=0;
                         for(i=0;i<myroom->people;i++)
                         if(!(inrooms.peoples[i].flag&PEOPLE_SPECTATOR) &&
                             inrooms.peoples[i].flag&PEOPLE_ALIVE &&
                             (inrooms.peoples[i].flag&PEOPLE_KILLER||inrooms.status==INROOM_DAY))
-                            if(inrooms.peoples[i].vote == 0) j=0;
-                        if(j) {
+                            if(inrooms.peoples[i].vote == 0) {
+                                j=0;
+                                t3++;
+                            }
+                        for(i=0;i<myroom->people;i++)
+                            inrooms.peoples[i].vnum = 0;
+                        for(i=0;i<myroom->people;i++)
+                        if(!(inrooms.peoples[i].flag&PEOPLE_SPECTATOR) &&
+                            inrooms.peoples[i].flag&PEOPLE_ALIVE &&
+                            (inrooms.peoples[i].flag&PEOPLE_KILLER||inrooms.status==INROOM_DAY)) {
+                            for(j=0;j<myroom->people;j++)
+                                if(inrooms.peoples[j].pid == inrooms.peoples[i].vote)
+                                    inrooms.peoples[j].vnum++;
+                        }
+                        for(i=0;i<myroom->people;i++)
+                        if(!(inrooms.peoples[i].flag&PEOPLE_SPECTATOR) &&
+                            inrooms.peoples[i].flag&PEOPLE_ALIVE) {
+                            if(inrooms.peoples[i].vnum>t1) {
+                                t2=t1; t1=inrooms.peoples[i].vnum;
+                            }
+                            else if(inrooms.peoples[i].vnum>t2) {
+                                t2=inrooms.peoples[i].vnum;
+                            }
+                        }
+                        if(j || t1-t2>t3) {
                             int max=0, ok=0, maxi, maxpid;
                             for(i=0;i<myroom->people;i++)
                                 inrooms.peoples[i].vnum = 0;
@@ -756,7 +785,7 @@ void join_room(struct room_struct * r)
                     }
                 }
             }
-            else if(!buf[0]) {
+            else if(ch<=0&&!buf[0]) {
                 if(do_com_menu()) goto quitgame;
             }
             else {
