@@ -250,9 +250,9 @@ static int help_select(struct _select_def *conf)
 	move(0,0);
 	prints("Ä£Ê½: [1;33m%s[m\n\n", helpmodestr[ *((int *)conf->arg) - 1]);
 	prints("Ë÷Òý: %s\n", s_help[conf->pos-conf->page_pos].index);
-	prints("¼ò½é: %s\n\n", s_help[conf->pos-conf->page_pos].desc);
+	prints("¼ò½é: %s\n", s_help[conf->pos-conf->page_pos].desc);
 	if(s_help[conf->pos-conf->page_pos].content)
-		prints("¾ßÌå½éÉÜ: %s", s_help[conf->pos-conf->page_pos].content);
+		prints("\x1b[1;31m¾ßÌå½éÉÜ:\x1b[m\n%s", s_help[conf->pos-conf->page_pos].content);
 	pressanykey();
 
 	return SHOW_REFRESH;
