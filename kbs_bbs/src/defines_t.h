@@ -29,8 +29,6 @@ void outns(const unsigned char *str, int n);
 void getyx(int *y,int *x);
 void outs(register const char *str);
 
->>>>>>> 3.13
-
 
 /* newio.c */
 void oflush();
@@ -151,7 +149,7 @@ int a_Import(char *path,char *key,struct fileheader *fileinfo,int nomsg,char *di
 
 /* goodbye.c */
 void showstuff(char buf[256]);
-int user_display(char* filename,int number,int mode);
+void user_display(char* filename,int number,int mode);
 int countlogouts(char filename[STRLEN]);
 
 /* userinfo.c */

@@ -391,7 +391,7 @@ int size, id, number ;
 
 int
 substitute_record_comp(char *filename,void* rptr,int size,int id,void* comptr,
-	RECORD_FUNC_ARG fptr,void tmpbuf)
+	RECORD_FUNC_ARG fptr,void* tmpbuf)
 {
     int fd;
     int newent;
