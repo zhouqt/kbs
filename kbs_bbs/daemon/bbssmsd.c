@@ -200,6 +200,9 @@ int main()
     int rc,remain=0,retr;
 
     start_daemon();
+    load_sysconf();
+    resolve_ucache();
+    resolve_utmp();
     init_memory();
     errno=0;
     if((sockfd=socket(AF_INET, SOCK_STREAM, 0))==-1) {
@@ -210,7 +213,7 @@ int main()
     }
     memset(&addr, 0, sizeof(addr));
     addr.sin_family=AF_INET;
-    addr.sin_addr.s_addr=inet_addr("211.157.100.10");
+    addr.sin_addr.s_addr=inet_addr(sysconf_str("SMS_ADDRESS"));
     addr.sin_port=htons(4002);
     if(connect(sockfd, (struct sockaddr*)&addr, sizeof(addr))<0) {
         close(sockfd);
@@ -219,7 +222,7 @@ int main()
         buf=NULL;
         return -1;
     }
-    loginas("12","bbsbad");
+    loginas(sysconf_str("SMS_USERNAME"),sysconf_str("SMS_PASSWORD"));
 //    loginas("12","bbsbad");
 
     while(1) {
