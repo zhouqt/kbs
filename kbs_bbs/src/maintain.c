@@ -373,7 +373,10 @@ int m_newbrd()
     getdata(8, 0, "是否不记文章数(Y/N)? [N]: ", ans, 4, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y')
         newboard.flag |= BOARD_JUNK;
-    getdata(9, 0, "是否可向外转信(Y/N)? [N]: ", ans, 4, DOECHO, NULL, true);
+    getdata(9, 0, "是否不统计十大(Y/N)? [N]: ", ans, 4, DOECHO, NULL, true);
+    if (ans[0] == 'Y' || ans[0] == 'y')
+        newboard.flag |= BOARD_POSTSTAT;
+    getdata(10, 0, "是否可向外转信(Y/N)? [N]: ", ans, 4, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y')
         newboard.flag |= BOARD_OUTFLAG;
     build_board_structure(newboard.filename);
@@ -456,8 +459,8 @@ int m_editbrd()
     prints("讨论区名称:   %s\n", fh.filename);
     prints("讨论区说明:   %s\n", fh.title);
     prints("讨论区管理员: %s\n", fh.BM);
-    prints("匿名讨论区:   %s 不记文章数:   %s 是否是目录： %s\n", 
-        (noidboard) ? "Yes" : "No", (fh.flag & BOARD_JUNK) ? "Yes" : "No", (fh.flag & BOARD_GROUP) ? "Yes" : "No");
+    prints("匿名讨论区: %s  不记文章数: %s  不统计十大: %s  是否是目录: %s\n", 
+        (noidboard) ? "Yes" : "No", (fh.flag & BOARD_JUNK) ? "Yes" : "No", (fh.flag & BOARD_POSTSTAT) ? "Yes" : "No", (fh.flag & BOARD_GROUP) ? "Yes" : "No");
     if (newfh.group) {
         bh=getboard(newfh.group);
         if (bh) groupname=bh->filename;
@@ -527,6 +530,14 @@ int m_editbrd()
                 newfh.flag |= BOARD_JUNK;
             else
                 newfh.flag &= ~BOARD_JUNK;
+        };
+        sprintf(buf, "不统计十大 (Y/N)? [%c]: ", (newfh.flag & BOARD_POSTSTAT) ? 'Y' : 'N');
+        getdata(line++, 0, buf, genbuf, 4, DOECHO, NULL, true);
+        if (*genbuf == 'y' || *genbuf == 'Y' || *genbuf == 'N' || *genbuf == 'n') {
+            if (*genbuf == 'y' || *genbuf == 'Y')
+                newfh.flag |= BOARD_POSTSTAT;
+            else
+                newfh.flag &= ~BOARD_POSTSTAT;
         };
         sprintf(buf, "可向外转信 (Y/N)? [%c]: ", (newfh.flag & BOARD_OUTFLAG) ? 'Y' : 'N');
         getdata(line++, 0, buf, genbuf, 4, DOECHO, NULL, true);

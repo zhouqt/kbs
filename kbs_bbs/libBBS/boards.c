@@ -724,6 +724,16 @@ void brc_clear_new_flag(unsigned int fid)
 }
 #endif
 
+int poststatboard(char *currboard)
+{                               /* 判断当前版是否统计十大 */
+    struct boardheader *bh = getbcache(currboard);
+
+    if (bh && ! (bh->flag & BOARD_POSTSTAT))
+        return true;
+    else
+        return false;
+}
+
 int junkboard(char *currboard)
 {                               /* 判断当前版是否为 junkboards */
     struct boardheader *bh = getbcache(currboard);

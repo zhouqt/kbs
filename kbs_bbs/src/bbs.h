@@ -244,6 +244,7 @@ O MaxMessageSize=32000
 #define BOARD_ATTACH        0x200 /*可以使用附件的版面*/
 #define BOARD_GROUP 0x400   /*目录*/
 #define BOARD_EMAILPOST 0x800 /* Email 发文 */
+#define BOARD_POSTSTAT 0x1000 /* 不统计十大 */
 /* boardheader.flag 的最高八位留给用户自定义用途: 0xXX000000 */
 
 #define ZAPPED  0x1             /* For boards...tells if board is Zapped */
