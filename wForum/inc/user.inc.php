@@ -119,16 +119,19 @@ function showSecsJS($secNum,$group,$isFold,$isFav,$isHide) {
 					continue;
 				}				
 
-				$isGroup = ((!$isFav) && ($brd_flag[$i] & BBS_BOARD_GROUP)) || ($isFav && ($brd_flag[$i] == -1));
-				$j_isGroup = ($isGroup?"true":"false");
+				$isFavGroup = ($isFav && ($brd_flag[$i] == -1));
+				$isBoardGroup = (($brd_flag[$i] & BBS_BOARD_GROUP) && !$isFavGroup);
+				
+				$j_isBoardGroup = ($isBoardGroup?"true":"false");
+				$j_isFavGroup = ($isFavGroup?"true":"false");
 				$j_boardDesc = "'" . addslashes(htmlspecialchars($brd_desc[$i], ENT_QUOTES)) . "'";
-				if ($isGroup && $isFav) {
+				if ($isFavGroup) {
 					$j_boardName = $j_boardDesc;
 				} else {
 					$j_boardName = "'" . $brd_name[$i] . "'";
 				}
 
-				if ($isGroup) {
+				if ($isFavGroup | $isBoardGroup) {
 					$j_todayNum = $j_nArticles = 0;
 				} else {
 					$j_todayNum = bbs_get_today_article_num($brd_name[$i]);
@@ -158,9 +161,9 @@ function showSecsJS($secNum,$group,$isFold,$isFav,$isHide) {
 						$j_nThreads = $j_nArticles = $j_lastID = $j_lastTitle = $j_lastOwner = $j_lastPosttime = 0;
 					}
 					$j_bm = "'".$brd_bm[$i]."'";
-					echo "boards[boards.length] = new Board($j_isGroup,$j_isUnread,$j_boardName,$j_boardDesc,$j_lastID,$j_lastTitle,$j_lastOwner,$j_lastPosttime,$j_bm,$j_todayNum,$j_nArticles,$j_nThreads,$j_npos,$j_bid,$j_currentusers);\n";
+					echo "boards[boards.length] = new Board($j_isBoardGroup,$j_isFavGroup,$j_isUnread,$j_boardName,$j_boardDesc,$j_lastID,$j_lastTitle,$j_lastOwner,$j_lastPosttime,$j_bm,$j_todayNum,$j_nArticles,$j_nThreads,$j_npos,$j_bid,$j_currentusers);\n";
 				} else {
-					echo "boards[boards.length] = BoardS($j_isGroup,$j_boardName,$j_boardDesc,$j_todayNum,$j_nArticles,$j_npos,$j_bid,$j_currentusers);\n";
+					echo "boards[boards.length] = BoardS($j_isBoardGroup,$j_isFavGroup,$j_boardName,$j_boardDesc,$j_todayNum,$j_nArticles,$j_npos,$j_bid,$j_currentusers);\n";
 				}
 			}
 		}
