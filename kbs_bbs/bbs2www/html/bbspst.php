@@ -59,7 +59,7 @@
 <center>
 <?php echo BBS_FULL_NAME; ?> -- 发表文章 [使用者: <?php echo $currentuser["userid"]; ?>]
 <hr class="default" />
-<form name="postform" method="post" action="/cgi-bin/bbs/bbssnd?board=<?php echo $brd_encode; ?>&reid=<?php echo $reid; ?>">
+<form name="postform" method="post" action="bbssnd.php?board=<?php echo $brd_encode; ?>&reid=<?php echo $reid; ?>">
 <table border="1">
 <tr>
 <td>
