@@ -238,7 +238,7 @@ static int search_author(struct keeploc *locmem, int offset, char *powner)
 void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, struct one_key *rcmdlist, int ssize)
 {
     struct keeploc *locmem;
-    char lbuf[11];
+    char lbuf[11], lastfile[256];
     int lbc, recbase, mode, ch;
     int num, entries;
 
@@ -250,6 +250,8 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
 
     /*---	HERE:	---*/
     screen_len = t_lines - 4;
+    if (!DEFINE(currentuser, DEF_SPLITSCREEN))
+        screen_len = screen_len/2-1;
     modify_user_mode(cmdmode);
     pnt = calloc(screen_len, ssize);
     draw_title(dotitle);
@@ -286,6 +288,17 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
     draw_entry( doentry, locmem, entries ,ssize);
      *---			---*/
     draw_entry(doentry, locmem, entries, ssize, pnt);
+    if (!DEFINE(currentuser, DEF_SPLITSCREEN)){
+        char buf[256], *t;
+        struct fileheader* h;
+        strcpy(buf, currdirect);
+        if ((t = strrchr(buf, '/')) != NULL)
+            *t = '\0';
+        h = &pnt[(locmem->crs_line - locmem->top_line) * ssize];
+        sprintf(genbuf, "%s/%s", buf, h->filename);
+        strcpy(lastfile, genbuf);
+        draw_content(genbuf);
+    }
     PUTCURS(locmem);
     lbc = 0;
     mode = DONOTHING;
@@ -334,7 +347,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
             /*---	---*/
             lbuf[lbc] = '\0';
             lbc = atoi(lbuf);
-            if (cursor_pos(locmem, lbc, 10))
+            if (cursor_pos(locmem, lbc, screen_len/2))
                 mode = PARTUPDATE;
             lbc = 0;
         } else {
@@ -435,10 +448,34 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
                 locmem->crs_line = last_line;
 
             draw_entry(doentry, locmem, entries, ssize, pnt);
+            if (!DEFINE(currentuser, DEF_SPLITSCREEN)){
+                char buf[256], *t;
+                struct fileheader* h;
+                strcpy(buf, currdirect);
+                if ((t = strrchr(buf, '/')) != NULL)
+                    *t = '\0';
+                h = &pnt[(locmem->crs_line - locmem->top_line) * ssize];
+                sprintf(genbuf, "%s/%s", buf, h->filename);
+                draw_content(genbuf);
+                strcpy(lastfile, genbuf);
+            }
             PUTCURS(locmem);
             break;
 
         default:
+            if (!DEFINE(currentuser, DEF_SPLITSCREEN)){ //added by bad 2002.9.2
+                char buf[256], *t;
+                struct fileheader* h;
+                strcpy(buf, currdirect);
+                if ((t = strrchr(buf, '/')) != NULL)
+                    *t = '\0';
+                h = &pnt[(locmem->crs_line - locmem->top_line) * ssize];
+                sprintf(genbuf, "%s/%s", buf, h->filename);
+                if (strcmp(genbuf, lastfile))
+                    draw_content(genbuf);
+                strcpy(lastfile, genbuf);
+                PUTCURS(locmem);
+            }
             break;
         }
         mode = DONOTHING;
@@ -1449,7 +1486,7 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
                     else
                         setmailfile(p_name, currentuser->userid, pFh1->filename);
                     if (searchpattern(p_name, query)) {
-                        match = cursor_pos(locmem, now, 10);
+                        match = cursor_pos(locmem, now, screen_len/2);
                         break;
                     } else
                         continue;
@@ -1466,7 +1503,7 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
                         ptr2 = ptr + 4;
                     }
                     if (!strcmp(ptr2, query)) {
-                        match = cursor_pos(locmem, now, 10);
+                        match = cursor_pos(locmem, now, screen_len/2);
                         break;
                     }
                 } else {
@@ -1475,13 +1512,13 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
                      */
                     if (aflag == 1) {   /* 进行同作者查询 */
                         if (!strcasecmp(ptr, upper_query)) {
-                            match = cursor_pos(locmem, now, 10);
+                            match = cursor_pos(locmem, now, screen_len/2);
                             break;
                         }
                     }
 
                     else if (bm_strcasestr_rp(ptr, upper_query,bm_search,&init) != NULL) {
-                        match = cursor_pos(locmem, now, 10);
+                        match = cursor_pos(locmem, now, screen_len/2);
                         break;
                     }
                 }
@@ -1530,7 +1567,7 @@ static int search_threadid(struct keeploc *locmem, int offset, int groupid)
                 if (now == locmem->crs_line)
                     break;
                 if (pFh1->groupid == groupid) {
-                    match = cursor_pos(locmem, now, 10);
+                    match = cursor_pos(locmem, now, screen_len/2);
                     break;
                 }
             }

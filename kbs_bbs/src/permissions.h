@@ -118,6 +118,7 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_SHOWSTATISTIC 0200000000    /* Haohmaru */
 #define DEF_UNREADMARK 0400000000       /* Luzi 99.01.12 */
 #define DEF_USEGB     01000000000       /* KCN,99.09.05 */
+#define DEF_SPLITSCREEN 02000000000 /* bad 2002.9.1 */
 /*#define DEF_HIDEIP    02000000000  Haohmaru,99.12.18*/
 
 /*#define PERM_POSTMASK  0100000  *//* means the rest is a post mask */
@@ -125,7 +126,7 @@ bigger mailbox. --stephen 2001.10.31*/
 
 /* #define NUMDEFINES 23 */
 /* #define NUMDEFINES 24 */
-#define NUMDEFINES 28           /* Leeward 98.01.12,Haohmaru,98.09.24 KCN,99.09.03,要用DEF_HIDEIP时请改为29 */
+#define NUMDEFINES 29           /* Leeward 98.01.12,Haohmaru,98.09.24 KCN,99.09.03,要用DEF_HIDEIP时请改为29 */
 
 #ifndef EXTERN
 extern char *user_definestr[];
@@ -162,6 +163,6 @@ char *user_definestr[] = {
     "进站时观看上站人数统计图", /* DEF_SHOWSTATISTIC Haohmaru 98.09.24 */
     "未读标记使用 *",           /* DEF_UNREADMARK Luzi 99.01.12 */
     "使用GB码阅读",             /* DEF_USEGB KCN 99.09.03 */
-    "隐藏自己的IP",             /* DEF_HIDEIP Haohmaru 99.12.18 */
+    "阅读方式: 全屏/分屏"  /* DEF_SPLITSCREEN 2002.9.1 */
 };
 #endif

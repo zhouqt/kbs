@@ -931,3 +931,52 @@ int ansimore_withzmodem(char *filename, int promptend, char *title)
     prints("\x1b[0m\x1b[m");
     return ch;
 }
+
+int draw_content_more(char *ptr, int size, char *fn)
+{
+    extern int t_lines;
+    struct MemMoreLines l;
+    int i, ch = 0, curr_line, last_line, change;
+
+    displayflag = 0;
+    shownflag = 1;
+    init_MemMoreLines(&l, ptr, size);
+
+    move(t_lines/2, 0);
+    prints("\033[34m！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！");
+//    move(t_lines/2+1, 0);
+    prints("\n\033[m");
+    curr_line = l.curr_line;
+    for (i = 0;;) {
+        if (shownflag) {
+            displayflag = 0;
+        }
+        mem_printline(l.curr, l.currlen, fn, l.currty);
+        i++;
+        if (i >= t_lines - t_lines/2 - 2)
+            break;
+        if (next_MemMoreLines(&l) < 0)
+            break;
+    }
+    last_line = l.curr_line;
+    if (l.total && l.total <= t_lines - t_lines/2 - 2)
+        return 0;
+}
+
+int draw_content(char* fn)
+{
+    char *ptr;
+    int size, retv;
+
+    BBS_TRY {
+        if (safe_mmapfile(fn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)
+            BBS_RETURN(-1);
+        retv = draw_content_more(ptr, size, fn);
+    }
+    BBS_CATCH {
+    }
+    BBS_END end_mmapfile((void *) ptr, size, -1);
+    return retv;
+}
+
+
