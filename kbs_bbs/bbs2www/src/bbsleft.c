@@ -17,7 +17,7 @@ int main()
 	int i;
 
   	init_all();
-	printf("<style type=\"text/css\">A {color: #000080} BODY {BACKGROUND-COLOR: #b0e0b0; FONT-SIZE: 14px;}</style><br>\n");
+	printf("<style type=\"text/css\">A {color: #000080} BODY {BACKGROUND-COLOR: #b0e0b0; FONT-SIZE: 12px;}</style><br>\n");
 	printf("<script src=\"/func.js\"></script>"
 	"<body leftmargin=\"1\" topmargin=\"1\" MARGINHEIGHT=\"1\" MARGINWIDTH=\"1\">");
 
