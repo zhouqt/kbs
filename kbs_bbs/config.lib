@@ -102,7 +102,7 @@ if test "$PTHREAD_DIR" != "no"; then
     done
   fi
  
-  if "x$PTHREAD_INC" != "x"; then
+  if test "x$PTHREAD_INC" != "x"; then
     SAVE_LIBS=$LIBS
     LIBS="$LIBS -L$PTHREAD_DIR/lib"
     AC_CHECK_LIB([pthread], [pthread_create], [
