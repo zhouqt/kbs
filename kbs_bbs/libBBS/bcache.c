@@ -223,7 +223,7 @@ int fill_super_board(char *searchname, int result[], int max)
         if (bcache[i].filename[0] == '\0')
 			continue;
     	if (check_read_perm(currentuser, &bcache[i])) {
-			if (strstr(bcache[i].filename, searchname) || strstr(bcache[i].des, searchname) || strstr(bcache[i].title, searchname) ){
+			if (strcasestr(bcache[i].filename, searchname) || strcasestr(bcache[i].des, searchname) || strcasestr(bcache[i].title, searchname) ){
 				result[total] = i + 1;
 				total ++;
 			}
