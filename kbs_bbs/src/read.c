@@ -915,11 +915,14 @@ int SR_BMfuncX(int ent, struct fileheader *fileinfo, char *direct)
     BMch = atoi(ch);
     if (BMch <= 0 || BMch > 7) {
         saveline(t_lines - 2, 1, NULL);
-        saveline(t_lines - 2, 1, linebuffer);
+        saveline(t_lines - 3, 1, linebuffer);
         return DONOTHING;
     }
-    if (digestmode == 2 && BMch <= 3)
+    if (digestmode == 2 && BMch <= 3) {
+	saveline(t_lines - 2, 1, NULL);
+	saveline(t_lines - 3, 1, linebuffer);
         return DONOTHING;
+    }
     move(t_lines - 3, 0);
     clrtoeol();
 
