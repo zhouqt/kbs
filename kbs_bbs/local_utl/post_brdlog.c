@@ -97,7 +97,7 @@ int fillbcache(struct boardheader *fptr,int idx,void* arg)
 
 	sprintf(sql,"%s/boards/%s.all",BONLINE_LOGDIR, fptr->filename);
 	if((fp=fopen(sql,"a"))!=NULL){
-		fprintf(fp,"%d_%d_%d\t%d\n", t.tm_year+1900, t.tm_mon+1, t.tm_mday, x[n-1].online);
+		fprintf(fp,"%d-%d-%d\t%d\n", t.tm_year+1900, t.tm_mon+1, t.tm_mday, x[n-1].online);
 		fclose(fp);
 	}
     return 0;
