@@ -1770,20 +1770,6 @@ int headlines ;
             }
             redraw_everything = YEA ;
             break;
-            /*
-                      case Ctrl('Q'):
-            #ifdef VEDITOR
-                           ch = ask("Quit without saving (Y/N)? ");
-                           if( ch == 'y' || ch == 'Y' ) {
-                               ch = ask("Will you continue edit (Y/N)? ");
-                               if( ch == 'n' || ch == 'N' ) {
-                                   clear();
-                                   return 0;
-                               }
-                           }
-                           redraw_everything = YEA ;
-            #endif*/
-            break;
         case KEY_ESC:
             if ( KEY_ESC_arg == KEY_ESC ) insert_char(KEY_ESC);
             else {
