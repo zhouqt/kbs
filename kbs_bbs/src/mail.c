@@ -427,7 +427,8 @@ int do_send(char *userid, char *title, char *q_file)
 /*sprintf(genbuf,"%s (%s)",currentuser->userid,currentuser->username) ;*/
     strcpy(genbuf, currentuser->userid);        /* Leeward 98.04.14 */
 #endif
-    strncpy(newmessage.owner, genbuf, STRLEN);
+    strncpy(newmessage.owner, genbuf, OWNER_LEN);
+	newmessage.owner[OWNER_LEN-1]=0;
 
     setmailfile(filepath, userid, fname);
 
@@ -834,7 +835,8 @@ char *maildoent(char *buf, int num, struct fileheader *ent)
     strcpy(c2, "[36m");
     if (!strcmp(ReadPost, ent->title) || !strcmp(ReplyPost, ent->title))
         same = true;
-    strncpy(b2, ent->owner, STRLEN);
+    strncpy(b2, ent->owner, OWNER_LEN);
+    ent->owner[OWNER_LEN-1]=0;
     if ((t = strchr(b2, ' ')) != NULL)
         *t = '\0';
     if (ent->accessed[0] & FILE_READ) {
@@ -961,7 +963,8 @@ char *direct;
 
     clear();
     modify_user_mode(SMAIL);
-    strncpy(uid, fileinfo->owner, STRLEN);
+    strncpy(uid, fileinfo->owner, OWNER_LEN);
+    uid[OWNER_LEN-1]=0;
     if ((t = strchr(uid, ' ')) != NULL)
         *t = '\0';
     if (toupper(fileinfo->title[0]) != 'R' || fileinfo->title[1] != 'e' || fileinfo->title[2] != ':')

@@ -158,7 +158,8 @@ int main(int argc, char **argv)
                     *p = 0;
                 if (p = strchr(buf1 + 8, '\n'))
                     *p = 0;
-                strncpy(fh.owner, buf1 + 8, STRLEN);
+                strncpy(fh.owner, buf1 + 8, OWNER_LEN);
+                fh.owner[OWNER_LEN-1]=0;
                 fgets(buf2, 256, art);
                 if (buf2 == 0)
                     continue;

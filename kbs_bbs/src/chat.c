@@ -1328,7 +1328,7 @@ void call_mail(chatcontext * pthis, const char *arg)
     printchatline(pthis, "\033[32m【当前新的信件如下】\033[m");
     while (fread(&mailheader, sizeof(fileheader), 1, fpin)) {
         if ((mailheader.accessed[0] & FILE_READ) == 0) {
-            strncpy(b2, mailheader.owner, STRLEN);
+            strcpy(b2, mailheader.owner);
             if ((t = strchr(b2, ' ')) != NULL)
                 *t = '\0';
             sprintf(genbuf, "\033[31m %-20.20s ★ %.46s \033[m", b2,

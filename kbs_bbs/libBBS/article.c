@@ -160,8 +160,8 @@ int autoappend;
     if (autoappend) {
         bzero(&postfile, sizeof(postfile));
         strcpy(postfile.filename, fh->filename);
-        strncpy(postfile.owner, fh->owner, IDLEN + 2);
-        postfile.owner[IDLEN + 1] = 0;
+        strncpy(postfile.owner, fh->owner, OWNER_LEN-1);
+        postfile.owner[OWNER_LEN-1] = 0;
         postfile.id = fh->id;
         postfile.groupid = fh->groupid;
         postfile.reid = fh->reid;
@@ -513,7 +513,8 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
     else
         strcpy(whopost, user->userid);
 
-    strncpy(postfile.owner, whopost, STRLEN);
+    strncpy(postfile.owner, whopost, OWNER_LEN);
+    postfile.owner[OWNER_LEN-1]=1;
     setbfile(filepath, toboard, postfile.filename);
 
     local_article = 0;

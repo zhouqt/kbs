@@ -719,7 +719,8 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
     strcpy(post_file.filename, fname);
 
     anony = anonyboard && anony;
-    strncpy(post_file.owner, anony ? board : getcurruserid(), STRLEN);
+    strncpy(post_file.owner, anony ? board : getcurruserid(), OWNER_LEN);
+    post_file.owner[OWNER_LEN-1]=0;
 
     if ((!strcmp(board, "Announce")) && (!strcmp(post_file.owner, board)))
         strcpy(post_file.owner, "SYSOP");

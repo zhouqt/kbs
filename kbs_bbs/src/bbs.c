@@ -677,8 +677,8 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     strncpy(quote_title, fileinfo->title, 118);
 /*    quote_file[119] = fileinfo->filename[STRLEN - 2];
 */
-    strncpy(quote_user, fileinfo->owner, IDLEN);
-    quote_user[IDLEN] = 0;
+    strncpy(quote_user, fileinfo->owner, OWNER_LEN);
+    quote_user[OWNER_LEN-1] = 0;
 
 #ifndef NOREPLY
     ch = ansimore_withzmodem(genbuf, false, fileinfo->title);   /* ÏÔÊ¾ÎÄÕÂÄÚÈÝ */
@@ -1693,8 +1693,8 @@ int do_post()
      * indicate the quote file/user 
      */
     setbfile(q_file, currboard, fileinfo->filename);
-    strncpy(quote_user, fileinfo->owner, IDLEN);
-    quote_user[IDLEN] = 0;
+    strncpy(quote_user, fileinfo->owner, OWNER_LEN);
+    quote_user[OWNER_LEN-1] = 0;
 
     /*
      * find the author 
@@ -1957,7 +1957,8 @@ int post_article(char *q_file, struct fileheader *re_file)
      * strncpy(post_file.owner,(anonyboard&&Anony)?
      * "Anonymous":currentuser->userid,STRLEN) ;
      */
-    strncpy(post_file.owner, (anonyboard && Anony) ? currboard : currentuser->userid, STRLEN);
+    strncpy(post_file.owner, (anonyboard && Anony) ? currboard : currentuser->userid, OWNER_LEN);
+    post_file.owner[OWNER_LEN-1]=0;
 
     /*
      * if ((!strcmp(currboard,"Announce"))&&(!strcmp(post_file.owner,"Anonymous")))
@@ -2576,8 +2577,8 @@ int sequent_messages(struct fileheader *fptr, int idc, int *continue_flag)
             clear();
             return 0;
         }
-        strncpy(quote_user, fptr->owner, IDLEN);
-        quote_user[IDLEN] = 0;
+        strncpy(quote_user, fptr->owner, OWNER_LEN);
+        quote_user[OWNER_LEN-1] = 0;
         setbfile(genbuf, currboard, fptr->filename);
         ansimore_withzmodem(genbuf, false, fptr->title);
       redo:

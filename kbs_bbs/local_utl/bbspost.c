@@ -441,6 +441,7 @@ static post_article(usermail)
         bzero((void *) &header, sizeof(header));
         strcpy(header.filename, name);
         strncpy(header.owner, userid, IDLEN);
+        header.owner[IDLEN]=0;
         strncpy(header.title, subject, STRLEN);
         sprintf(homepath, "mail/%c/%s/.DIR", toupper(letter[0]), letter);
 
@@ -640,6 +641,7 @@ static post_article(usermail)
     bzero((void *) &header, sizeof(header));
     strcpy(header.filename, name);
     strncpy(header.owner, userid, IDLEN);
+    header.owner[IDLEN]=0;
     strncpy(header.title, subject, STRLEN);
     if (!usermail) {
         header.filename[STRLEN - 1] = 'M';

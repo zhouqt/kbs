@@ -65,6 +65,7 @@ struct friends_info {
 
 #define BM_LEN 60
 #define FILENAME_LEN 20
+#define OWNER_LEN 30
 struct boardheader {            /* This structure is used to hold data in */
     char filename[STRLEN];      /* the BOARDS files */
     char owner[STRLEN - BM_LEN];
@@ -80,7 +81,8 @@ typedef struct fileheader {     /* This structure is used to hold data in */
     unsigned int id, groupid, reid;
     char unused1[46];
     char innflag[2];
-    char owner[STRLEN];
+    char owner[OWNER_LEN];
+    char unused2[50];
     char title[STRLEN];
     unsigned level;
     unsigned char accessed[12]; /* struct size = 256 bytes */

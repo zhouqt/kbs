@@ -74,7 +74,8 @@ append_mail(fin, sender, userid, title)
     close(fp);
     strcpy(newmessage.filename, fname);
     strncpy(newmessage.title, title, STRLEN);
-    strncpy(newmessage.owner, sender, STRLEN);
+    strncpy(newmessage.owner, sender, OWNER_LEN);
+    newmessage.owner[OWNER_LEN-1]=0;
 
     printf("Ok, the file is %s\n", genbuf);
 

@@ -530,11 +530,6 @@ void Login_init()
     close(fd);
 
     for (i = 0; i < totalnum; i++) {
-        if (index(fcache[i].owner, '@') == NULL) {
-            if ((ptr = strchr(fcache[i].owner, ' ')) != NULL)
-                *ptr = '\0';
-            strcat(fcache[i].owner, BBSNAME);
-        }
         sprintf(genbuf, "mail/%c/%s/%s", toupper(*LowUserid), LowUserid, fcache[i].filename);
         if (stat(genbuf, &st) == -1)
             st.st_size = 0;
@@ -885,7 +880,13 @@ void Retr()
        Date: Wed, 21 Jan 1998 17:54:33 +0800     -- RFC wants     */
     sprintf(genbuf, "Date: %3.3s, %2.2s %3.3s %4.4s %8.8s +0800", ptr + 0, ptr + 8, ptr + 4, ptr + 20, ptr + 11);
     outs(genbuf);
-    sprintf(genbuf, "From: %s", fcache[num].owner);
+    if (index(fcache[num].owner, '@') == NULL) {
+        if ((ptr = strchr(fcache[num].owner, ' ')) != NULL)
+            *ptr = '\0';
+        sprintf(genbuf,"From: %s@%s",fcache[num].owner, BBSNAME);
+    }
+    else
+    	sprintf(genbuf, "From: %s", fcache[num].owner);
     outs(genbuf);
     sprintf(genbuf, "To: %s%s", currentuser->userid, BBSNAME);
     outs(genbuf);
@@ -1023,7 +1024,13 @@ void Top()
        Date: Wed, 21 Jan 1998 17:54:33 +0800     -- RFC wants     */
     sprintf(genbuf, "Date: %3.3s, %2.2s %3.3s %4.4s %8.8s +0800", ptr + 0, ptr + 8, ptr + 4, ptr + 20, ptr + 11);
     outs(genbuf);
-    sprintf(genbuf, "From: %s", fcache[num].owner);
+    if (index(fcache[num].owner, '@') == NULL) {
+        if ((ptr = strchr(fcache[num].owner, ' ')) != NULL)
+            *ptr = '\0';
+        sprintf(genbuf,"From: %s@%s",fcache[num].owner, BBSNAME);
+    }
+    else
+        sprintf(genbuf, "From: %s", fcache[num].owner);
     outs(genbuf);
     sprintf(genbuf, "To: %s%s", currentuser->userid, BBSNAME);
     outs(genbuf);

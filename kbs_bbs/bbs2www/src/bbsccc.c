@@ -118,7 +118,8 @@ int post_cross2(char islocal, char *board)
     close(fp);
     strcpy(postfile.filename, fname);
     strcpy(whopost, getcurruserid());
-    strncpy(postfile.owner, whopost, STRLEN);
+    strncpy(postfile.owner, whopost, OWNER_LEN);
+    postfile.owner[OWNER_LEN-1]=0;
     setbfile(filepath, board, postfile.filename);
     local_article = 0;
     if (!strcmp(postfile.title, buf) && quote_file[0] != '\0')

@@ -1114,7 +1114,8 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
         strncpy(title, ptitle->title, STRLEN);
         setqtitle(title);
     } else {
-        strncpy(title, ptitle->owner, STRLEN);
+        strncpy(title, ptitle->owner, OWNER_LEN);
+        title[OWNER_LEN-1]=0;
         setqtitle(ptitle->title);
     }
     memcpy(&ReadPostHeader, ptitle, sizeof(struct fileheader));
