@@ -56,6 +56,10 @@
 #include "config.h"             /* User-configurable stuff */
 #include "permissions.h"
 
+#ifdef AIX
+#define OS_LACK_SOCKLEN
+#endif
+
 /* add by KCN ,disable perror */
 #ifdef BBSMAIN
 #define perror(x) prints(x)
@@ -79,7 +83,9 @@ extern int errno ;
 #define DOECHO (1)     /* Flags to getdata input function */
 #define NOECHO (0)
 
+#ifndef strdup
 char *strdup() ;       /* External function declarations */
+#endif
 char *bfile() ;
 
 extern FILE *ufp ;     /* External variable declarations */
@@ -281,6 +287,20 @@ extern int Net_Sleep(int);
 #ifdef OS_LACK_SOCKLEN
 typedef size_t socklen_t;
 #endif
+
+#ifndef NJU_WWWBBS
 #include "vars.h"
 #include "func.h"
+#endif /* not NJU_WWWBBS */
+
 #define system my_system
+
+#ifdef NJU_WWWBBS
+#define MAXREJECTS (32)
+#define BBSNAME NAME_BBS_CHINESE
+#define BBSHOST NAME_BBS_ENGLISH
+#define WWW_LOG             "log/www.log"   /* "www.log" */
+#define WWW_BADLOGIN        "log/badlogin.www"  /* "badlogin.www" */
+#define SYS_MSGFILE         "msgfile"
+#define SYS_MSGFILELOG      "msgfile.log"   /* "msgfile.me" */
+#endif
