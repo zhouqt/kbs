@@ -1462,7 +1462,15 @@ if (ret==-2) {
                 }
                 strncpy(ud.realname, fdata[2], NAMELEN);
                 strncpy(ud.address, fdata[4], NAMELEN);
+#ifdef AUTO_CHECK_REGISTER_FORM
+         if (ret==-2)
+#endif
                 sprintf(genbuf, "%s$%s@%s", fdata[3], fdata[5], uid);
+#ifdef AUTO_CHECK_REGISTER_FORM
+	else
+		sprintf(genbuf, "%s$%s@×Ô¶¯×¢²á", fdata[3], fdata[5]);
+#endif
+
 		if(strlen(genbuf) >= STRLEN-16)
 			sprintf(genbuf, "%s@%s",fdata[5],uid);
                 strncpy(ud.realemail, genbuf, STRLEN - 16);
