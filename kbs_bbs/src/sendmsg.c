@@ -993,9 +993,7 @@ int do_send_sms_func(char * dest, char * msgstr)
     if (dest == NULL) {
         move(1, 0);
         clrtobot();
-        prints("送讯息给: ");
-        creat_list();
-        namecomplete(NULL, uident);
+        getdata(1, 0, "送讯息给: ", uident, 15, 1, 0, 1);
         if (uident[0] == '\0') {
             clear();
             modify_user_mode(oldmode);
