@@ -321,6 +321,7 @@ int multilogin_user(struct userec *user, int usernum)
     /* Bigman: 2000.8.17 智囊团能够开2个窗口 */
     /* stephen: 2001.10.30 仲裁可以开两个窗口 */
     if (HAS_PERM(user, PERM_SYSOP)) return 0;
+    if(logincount>=1)
     return 1;
 //    if ((HAS_PERM(user, PERM_BOARDS) || HAS_PERM(user, PERM_CHATOP) 
 //    	|| HAS_PERM(user, PERM_JURY) || HAS_PERM(user, PERM_CHATCLOAK)
