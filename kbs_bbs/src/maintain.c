@@ -457,6 +457,9 @@ int m_editbrd()
     struct boardheader fh, newfh;
     int line;
 
+    struct boardheader* bh=NULL;
+    char* groupname="";
+
     modify_user_mode(ADMIN);
     if (!check_systempasswd()) {
         return -1;
@@ -487,8 +490,13 @@ int m_editbrd()
     prints("讨论区名称:   %s\n", fh.filename);
     prints("讨论区说明:   %s\n", fh.title);
     prints("讨论区管理员: %s\n", fh.BM);
-    prints("匿名讨论区:   %s\n", (noidboard) ? "Yes" : "No");
-    prints("不记文章数:   %s\n", (fh.flag & BOARD_JUNK) ? "Yes" : "No");
+    prints("匿名讨论区:   %s 不记文章数:   %s 是否是目录： %s\n", 
+        (noidboard) ? "Yes" : "No", (fh.flag & BOARD_JUNK) ? "Yes" : "No", (fh.flag & BOARD_GROUP) ? "Yes" : "No");
+    if (newfh.group) {
+        bh=getboard(newfh.group);
+        if (bh) groupname=bh->filename;
+    }
+    prints("所属目录：%s\n",bh?"无":groupname);
     prints("可向外转信:   %s    可粘贴附件: %s\n", (fh.flag & BOARD_OUTFLAG) ? "Yes" : "No",(fh.flag & BOARD_ATTACH) ? "Yes" : "No");
     if (fh.flag & BOARD_CLUB_READ || fh.flag & BOARD_CLUB_WRITE)
         prints("俱乐部:   %s %s %s  序号: %d\n", fh.flag & BOARD_CLUB_READ ? "阅读限制" : "", fh.flag & BOARD_CLUB_WRITE ? "发表限制" : "", fh.flag & BOARD_CLUB_HIDE ? "隐藏" : "", fh.clubnum);
@@ -592,12 +600,6 @@ int m_editbrd()
             newfh.flag &= ~BOARD_GROUP;
 
         while(1) {
-            struct boardheader* bh=NULL;
-            char* groupname="";
-            if (newfh.group) {
-                bh=getboard(newfh.group);
-                if (bh) groupname=bh->filename;
-            }
             sprintf(buf, "设定所属目录[%s]", groupname);
             strcpy(genbuf,groupname);
             getdata(line, 0, buf, genbuf, BOARDNAMELEN, DOECHO, NULL, false);
