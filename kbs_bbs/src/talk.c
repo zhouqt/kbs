@@ -373,21 +373,23 @@ char q_id[IDLEN];
                 ttt_talk(uin);
                 break;
             case 'S':
-                if (!((genbuf[0]) && seecount)) break;
-                if (strcmp(uident, "guest") && !HAS_PERM(currentuser, PERM_PAGE))
-                    break;
-                uin = t_search(uident, false);
-                if (!canmsg(currentuser, uin)) {
-                    sprintf(buf, "%s 已经关闭讯息呼叫器", uident);
-                    break;
-                }
-                strcpy(MsgDesUid, uident);
 #ifdef SMS_SUPPORT
 		if(ch=='S')
 		    do_send_sms_func(uident, NULL);
 		else
 #endif
-                do_sendmsg(uin, NULL, 0);
+		{
+		    if (!((genbuf[0]) && seecount)) break;
+		    if (strcmp(uident, "guest") && !HAS_PERM(currentuser, PERM_PAGE))
+	                break;
+		    uin = t_search(uident, false);
+		    if (!canmsg(currentuser, uin)) {
+			sprintf(buf, "%s 已经关闭讯息呼叫器", uident);
+			break;
+		    }
+		    strcpy(MsgDesUid, uident);
+                    do_sendmsg(uin, NULL, 0);
+		}
                 break;
             case 'M':
                 if (HAS_PERM(currentuser, PERM_DENYMAIL)
