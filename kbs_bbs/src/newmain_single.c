@@ -351,7 +351,7 @@ multi_user_check()
         return;
     /* allow multiple guest user */
     if (!strcmp("guest", currentuser->userid)) {
-        if ( count_user() > 24 ) {
+        if ( count_user() > MAX_GUEST_NUM ) {
             prints( "[33m╠╖г╦, д©г╟ряспл╚╤Ю [36mguest, гКит╨Ртыйт║ё[m\n");
             pressreturn();
             oflush();

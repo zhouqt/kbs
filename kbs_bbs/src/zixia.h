@@ -10,6 +10,7 @@
 #define MAXUSERS  		20000 //150,000
 #define MAXBOARD  		256 //400
 #define MAXACTIVE 		666  //3000
+#define MAX_GUEST_NUM		99
 
 #define POP3PORT		3110	//110
 #define	LENGTH_SCREEN_LINE	256	//220
@@ -65,6 +66,8 @@
 #define DEFAULT_NICK		"旺财"
 
 #define MSG_ERR_USERID		"嗯？这个猪头是谁？..."
+
+
 
 #ifndef EXTERN
 extern char *permstrings[];
