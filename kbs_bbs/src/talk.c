@@ -187,7 +187,7 @@ int t_printstatus(struct user_info *uentp, int *arg, int pos)
     p = idle_str(uentp);
     if(p[0]==' '&&p[1]==' '&&p[2]==0) buf2[0]=0;
     else sprintf(buf2, "[%s]", p);
-    sprintf(buf, "%s[1m%s[m%s ", uentp->invisible?("[32m":""), modestring(uentp->mode, uentp->destuid, 0,   /* 1->0 ²»ÏÔÊ¾ÁÄÌì¶ÔÏóµÈ modified by dong 1996.10.26 */
+    sprintf(buf, "%s[1m%s[m%s ", uentp->invisible?"[32m":"", modestring(uentp->mode, uentp->destuid, 0,   /* 1->0 ²»ÏÔÊ¾ÁÄÌì¶ÔÏóµÈ modified by dong 1996.10.26 */
                                           (uentp->in_chat ? uentp->chatid : NULL)), buf2);
     strcat(genbuf, buf);
 
