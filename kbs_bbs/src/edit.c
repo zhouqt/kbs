@@ -208,7 +208,7 @@ char *killsp(s)
 
 struct textline *alloc_line()
 {
-    register struct textline *p;
+    struct textline *p;
 
     p = (struct textline *) malloc(sizeof(*p));
     if (p == NULL) {
@@ -219,6 +219,26 @@ struct textline *alloc_line()
     p->prev = NULL;
     p->data = malloc(WRAPMARGIN+1);
     p->maxlen = WRAPMARGIN;
+    p->data[0] = '\0';
+    p->len = 0;
+    p->attr = 0;                /* for copy/paste */
+    return p;
+}
+
+struct textline *alloc_line_w(int w)
+{
+    struct textline *p;
+
+    p = (struct textline *) malloc(sizeof(*p));
+    if (p == NULL) {
+        indigestion(13);
+        abort_bbs(0);
+    }
+    p->next = NULL;
+    p->prev = NULL;
+    p->maxlen = w/WRAPMARGIN*WRAPMARGIN+1;
+    if (p->maxlen<WRAPMARGIN) p->maxlen = WRAPMARGIN;
+    p->data = malloc(p->maxlen+1);
     p->data[0] = '\0';
     p->len = 0;
     p->attr = 0;                /* for copy/paste */
@@ -405,9 +425,7 @@ void delete_line(line)
   split splits 'line' right before the character pos
  */
 
-void split(line, pos)
-    register struct textline *line;
-    register int pos;
+void split(struct textline * line, int pos)
 {
     register struct textline *p;
 
@@ -419,7 +437,7 @@ void split(line, pos)
     if (pos > line->len) {
         return;
     }
-    p = alloc_line();
+    p = alloc_line_w(line->len - pos);
 
     p->len = line->len - pos;
     line->len = pos;
@@ -448,8 +466,7 @@ void split(line, pos)
   1) Some of the joined line wrapped
  */
 
-int join(line)
-    register struct textline *line;
+int join(struct textline * line)
 {
     register int ovfl;
 
@@ -459,7 +476,7 @@ int join(line)
        return true ; */
 //    ovfl = line->len + line->next->len - WRAPMARGIN;
 //    if (ovfl < 0) {
-    while(line->maxlen<=line->len+line->next->len+1) {
+    if (line->maxlen<=line->len+line->next->len+1) {
         int ml;
         char *q;
         ml = ((line->len+line->next->len)/WRAPMARGIN+1)*WRAPMARGIN;
@@ -502,12 +519,11 @@ int join(line)
     }*/
 }
 
-void insert_char(ch)
-    register int ch;
+void insert_char(int ch)
 {
-    register int i;
-    register char *s;
-    register struct textline *p = currline;
+    int i;
+    char *s;
+    struct textline *p = currline;
     int wordwrap = true;
 
     if (currpnt > p->len) {
@@ -607,7 +623,7 @@ void delete_char()
 
 void vedit_init()
 {
-    register struct textline *p = alloc_line();
+    struct textline *p = alloc_line();
 
     first_mark_line = 0;
     firstline = p;
@@ -623,8 +639,7 @@ void vedit_init()
     CLEAR_MARK();
 }
 
-void insert_to_fp(fp)
-    FILE *fp;
+void insert_to_fp(FILE * fp)
 {
     int ansi = 0;
     struct textline *p;
@@ -639,7 +654,7 @@ void insert_to_fp(fp)
         fprintf(fp, "%s\n", ANSI_RESET);
 }
 
-static void insertch_from_fp(int ch)
+void insertch_from_fp(int ch)
 {
     if (isprint2(ch) || ch == 27) {
         if (currpnt < 254)
@@ -654,7 +669,7 @@ static void insertch_from_fp(int ch)
         split(currline, currpnt);
     }
 }
-static long insert_from_fp(FILE *fp, long * attach_length)
+long insert_from_fp(FILE *fp, long * attach_length)
 {
     int ch;
     char attachpad[10];
@@ -800,7 +815,7 @@ int valid_article(pmt, abort)
 
 }
 
-static int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, long attach_length)
+int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, long attach_length)
 {
     struct textline *p = firstline;
     FILE *fp;
@@ -1198,8 +1213,8 @@ static int Origin(struct textline *text)
 
 void display_buffer()
 {
-    register struct textline *p;
-    register int i;
+    struct textline *p;
+    int i;
     int shift;
     int temp_showansi;
 
