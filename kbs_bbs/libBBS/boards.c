@@ -31,6 +31,9 @@ struct favbrd_struct {
     int father;
 };
 
+static const char DirChar[] = "[DIR]";
+static const char EmptyChar[] = "Пе";
+
 /* added by bad 2002-08-3	FavBoardDir */
 struct favbrd_struct favbrd_list[FAVBOARDNUM];
 int favbrd_list_t = -1, favnow = -1;
@@ -334,9 +337,6 @@ void save_zapbuf()
     }
 }
 #endif
-
-char DirChar[] = "[DIR]";
-char EmptyChar[] = "Пе";
 
 int load_boards(char *boardprefix)
 {
