@@ -137,7 +137,7 @@ new_register()
 		lnow = time(NULL);
 		sethomepath( genbuf, newuser.userid );
 		if(!stat(genbuf, &lst) && S_ISDIR(lst.st_mode)
-			&& (lnow - lst.st_ctime < 2592000/* 3600*24*30 */) ) {
+			&& (lnow - lst.st_ctime < SEC_DELETED_OLDHOME /* 3600*24*30 */) ) {
 			prints("目前无法注册帐号%s，请与系统管理人员联系。\n", newuser.userid);
 			sprintf(genbuf, "IP %s new id %s failed[home changed in past 30 days]",
 					fromhost, newuser.userid);
