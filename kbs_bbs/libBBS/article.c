@@ -755,11 +755,13 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
 			if( re->accessed[1] & FILE_MAILBACK ){
 
 				struct userec *lookupuser;
+				char newtitle[STRLEN];
 
 				if(getuser(re->owner, &lookupuser) != 0){
 					if(( false != canIsend2(currentuser, re->owner)) && !(lookupuser->userlevel & PERM_SUICIDE) && (lookupuser->userlevel & PERM_READMAIL) && !chkusermail(lookupuser)){
 						setbfile(buf, boardname, fh->filename);
-						mail_file(currentuser->userid, buf, re->owner, fh->title, 0, fh);
+						snprintf(newtitle, STRLEN, "[»ØÎÄ×ª¼Ä]%s", fh->title);
+						mail_file(currentuser->userid, buf, re->owner, newtitle, 0, fh);
 					}
 				}
 			}
