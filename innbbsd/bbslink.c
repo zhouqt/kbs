@@ -28,12 +28,6 @@
 #define MAXBUFLEN 256
 #endif
 
-//修改mail格式 added by Czz 020419
-#ifndef MY_MAIL_ADDR
-#define	MY_MAIL_ADDR	"feeling-NOsmthSPAM-org"
-#endif
-//added end
-
 typedef struct Over_t {
     time_t mtime;
     char date[MAXBUFLEN];
@@ -431,8 +425,7 @@ char *board, *filename, *userid, *nickname, *subject;
 #endif
 #endif
             //修改mail格式 modified by Czz 020419
-//      strncpy(FROM_BUF, fileglue("%s.bbs@%s (%s)", userid, MYADDR, nickname), sizeof FROM_BUF);
-            strncpy(FROM_BUF, fileglue("%s@%s (%s)", userid, MY_MAIL_ADDR, nickname), sizeof FROM_BUF);
+            strncpy(FROM_BUF, fileglue("%s@%s-SPAM.no (%s)", userid, MYADDR, nickname), sizeof FROM_BUF);
             //modified end
             FROM = FROM_BUF;
             sover.from = FROM;
@@ -931,8 +924,7 @@ char *board, *filename, *userid, *nickname, *subject;
     }
     mtime = -1;
     //修改mail格式 modified by Czz 020419
-//  strncpy(FROM_BUF, fileglue("%s.bbs@%s (%s)", userid, MYADDR, nickname), sizeof FROM_BUF);
-    strncpy(FROM_BUF, fileglue("%s@%s (%s)", userid, MY_MAIL_ADDR, nickname), sizeof FROM_BUF);
+    strncpy(FROM_BUF, fileglue("%s@%s-SPAM.no (%s)", userid, MYADDR, nickname), sizeof FROM_BUF);
     //modified end
     FROM = FROM_BUF;
     sover.from = FROM;

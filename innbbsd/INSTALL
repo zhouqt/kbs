@@ -27,18 +27,7 @@ F.A.Q.）。本文档是专门针对 smthbbs 系统写的一个安装过程参考。
     加上
 #define CNBBS_TOPIC 1   /*1就是进站显示 cn-bbs 十大，0就是不显示*/
 
-1.3 修改 innbbsd/bbslink.c
-    
-    修改
-#ifndef MY_MAIL_ADDR
-#define MY_MAIL_ADDR    "feeling-NOsmthSPAM-org"
-#endif
-    为
-#ifndef MY_MAIL_ADDR
-#define MY_MAIL_ADDR    "你自己 bbs 的域名"
-#endif
-
-1.4 重新编译安装 smthbbs
+1.3 重新编译安装 smthbbs
     在 smthbbs 源代码根目录 configure 的时候加上 --enable-innbbsd 参数。
 如果要偷懒，可以直接在 innbbsd/ 目录里面运行 ./configure。然后
     make
