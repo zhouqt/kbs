@@ -75,6 +75,10 @@ function Board(isGroup,isUnread,boardName,boardDesc,lastID,lastTitle,lastOwner,l
 	this.bid = bid;
 }
 
+function BoardS(isGroup, boardName, boardDesc, todayNum, nArticles, select, npos, bid) {
+	return new Board(isGroup, 0, boardName, boardDesc, 0,0,0,0,0,todayNum, nArticles, 0, select, npos, bid);
+}
+
 function showSec(isFold, isFav, boards, secNum) {
 	str = '<table cellspacing=1 cellpadding=0 align=center class=TableBorder1 style="width:100%">';
 	if (!isFold && simplestBoardsList) {

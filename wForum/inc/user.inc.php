@@ -71,11 +71,10 @@ function showSecsJS($secNum,$group,$isFold,$isFav) {
 <script language="JavaScript">
 <!--
 	boards = new Array();
-	select = npos = bid = isUnread = lastID = lastTitle = lastOwner = lastPosttime = bm = 0;
 <?php
 	if (!$isFold && (BOARDLISTSTYLE=='simplest') && !$isFav) {
 		// hehe 
-	} else {	
+	} else {
 		if (!$isFav) {
 			$boards = bbs_getboards($section_nums[$secNum], $group, $yank);
 		} else {
@@ -93,9 +92,9 @@ function showSecsJS($secNum,$group,$isFold,$isFav) {
 			$brd_unread = $boards["UNREAD"]; // 未读标记
 			$brd_zapped = $boards["ZAPPED"]; // 是否被 z 掉
 			if ($isFav) {
-                $brd_position= $boards["POSITION"];//位置
-                $brd_npos= $boards["NPOS"];//位置
-            }
+				$brd_position= $boards["POSITION"];//位置
+				$brd_npos= $boards["NPOS"];//位置
+			}
 			$brd_flag = $boards["FLAG"]; //flag
 			$brd_bid = $boards["BID"]; //flag
 			$rows = sizeof($brd_name);
@@ -113,53 +112,46 @@ function showSecsJS($secNum,$group,$isFold,$isFav) {
 				}				
 
 				$isGroup = ((!$isFav) && ($brd_flag[$i] & BBS_BOARD_GROUP)) || ($isFav && ($brd_flag[$i] == -1));
-				echo "isGroup = ".($isGroup?"true":"false").";\n";
-				echo "boardDesc = '".addslashes(htmlspecialchars($brd_desc[$i], ENT_QUOTES))."';\n";
+				$j_isGroup = ($isGroup?"true":"false");
+				$j_boardDesc = "'" . addslashes(htmlspecialchars($brd_desc[$i], ENT_QUOTES)) . "'";
 				if ($isGroup && $isFav) {
-					echo "boardName = boardDesc;\n";
+					$j_boardName = $j_boardDesc;
 				} else {
-					echo "boardName = '".$brd_name[$i]."';\n";
+					$j_boardName = "'" . $brd_name[$i] . "'";
 				}
 
 				if ($isGroup) {
-					echo "todayNum = nThreads = 0;\n";
+					$j_todayNum = $j_nArticles = 0;
 				} else {
-					echo "todayNum = ".bbs_get_today_article_num($brd_name[$i]).";\n";
-					echo "nThreads = ".bbs_getthreadnum($brd_bid[$i]).";\n";
+					$j_todayNum = bbs_get_today_article_num($brd_name[$i]);
+					$j_nArticles = $brd_artcnt[$i];
 				}
-				if ($isGroup) {
-					$nArticles = 0;
-				} else {
-					$nArticles = $brd_artcnt[$i];
-				}
-				echo "nArticles = $nArticles;\n";
 				if ($isFav) {
-					echo "select = ".$select.";\n";
-					echo "npos = ".$brd_npos[$i].";\n";
-					echo "bid = ".$brd_bid[$i].";\n";
+					$j_select = $select;
+					$j_npos = $brd_npos[$i];
+					$j_bid = $brd_bid[$i];
+				} else {
+					$j_select = $j_npos = $j_bid = 0;
 				}
 				if ($isFold) {
-					echo "isUnread = ".($brd_unread[$i] == 1 ? "true" : "false").";\n";
-					if ($nArticles > 0) {
-						bbs_getthreadnum($brd_bid[$i]); //ToDo: this is only dirty fix: 触发必要的 .WEBTHREAD 更新
-						$articles = bbs_getthreads($brd_name[$i], 0, 1,0 ); //$brd_artcnt[$i], 1, $default_dir_mode);
+					$j_isUnread = ($brd_unread[$i] == 1 ? "true" : "false");
+					if ($j_nArticles > 0) {
+						$j_nThreads = bbs_getthreadnum($brd_bid[$i]);
+						$articles = bbs_getthreads($brd_name[$i], 0, 1, 0 ); //$brd_artcnt[$i], 1, $default_dir_mode);
 						if ($articles == FALSE) {
-							$nArticles = 0;
+							$j_nArticles = $j_lastID = $j_lastTitle = $j_lastOwner = $j_lastPosttime = 0;
 						} else {
-							$nArticles = $brd_artcnt[$i];
-							$lastID = $articles[0]['origin']['ID'];
-							$lastTitle = addslashes(htmlspecialchars($articles[0]['origin']['TITLE'],ENT_QUOTES));
-							$lastOwner = $articles[0]['origin']['OWNER'];
-							$lastPosttime = strftime('%Y-%m-%d %H:%M:%S', intval($articles[0]['origin']['POSTTIME']));
+							$j_lastID = $articles[0]['origin']['ID'];
+							$j_lastTitle = "'" . addslashes(htmlspecialchars($articles[0]['origin']['TITLE'],ENT_QUOTES)) . "'";
+							$j_lastOwner = "'" . $articles[0]['origin']['OWNER'] . "'";
+							$j_lastPosttime = "'" . strftime('%Y-%m-%d %H:%M:%S', intval($articles[0]['origin']['POSTTIME'])) . "'";
 						}
-						echo "lastID = $lastID;\n";
-						echo "lastTitle = '$lastTitle ';\n";
-						echo "lastOwner = '$lastOwner';\n";
-						echo "lastPosttime = '$lastPosttime';\n";
 					}
-					echo "bm = '".$brd_bm[$i]."';\n";
+					$j_bm = "'".$brd_bm[$i]."'";
+					echo "boards[boards.length] = new Board($j_isGroup,$j_isUnread,$j_boardName,$j_boardDesc,$j_lastID,$j_lastTitle,$j_lastOwner,$j_lastPosttime,$j_bm,$j_todayNum,$j_nArticles,$j_nThreads,$j_select,$j_npos,$j_bid);\n";
+				} else {
+					echo "boards[boards.length] = BoardS($j_isGroup,$j_boardName,$j_boardDesc,$j_todayNum,$j_nArticles,$j_select,$j_npos,$j_bid);\n";
 				}
-				echo "boards[boards.length] = new Board(isGroup,isUnread,boardName,boardDesc,lastID,lastTitle,lastOwner,lastPosttime,bm,todayNum,nArticles,nThreads,select,npos,bid);\n";
 			}
 		}
 	}
