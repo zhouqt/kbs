@@ -374,7 +374,6 @@ int bbsnet(int n)
 	redoscr();
 	for (;;)
 	{
-	       refresh();
 		FD_ZERO(&readset);
 		FD_SET(0, &readset);
 		FD_SET(sockfd, &readset);
@@ -387,6 +386,7 @@ int bbsnet(int n)
 		{
 			if (errno == EINTR)
 			{
+	                   refresh();
 				while (msg_count)
 				{
 					msg_count--;
@@ -403,7 +403,7 @@ int bbsnet(int n)
 			goto on_error;
 		}
 
-		while (FD_ISSET(sockfd, &readset))
+		if (FD_ISSET(sockfd, &readset))
 		{
 			if ((rc = read(sockfd, buf, BUFSIZ)) < 0)
 			{
@@ -417,7 +417,7 @@ int bbsnet(int n)
 			else
 				outns(buf, rc);
 		}
-		while (FD_ISSET(0, &readset))
+		if (FD_ISSET(0, &readset))
 		{
 			if ((rc = bbsnet_read(0, buf, BUFSIZ)) < 0)
 			{
