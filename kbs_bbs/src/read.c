@@ -1345,10 +1345,15 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
      */
     now = locmem->crs_line;
 /*    refresh();*/
+    memset(&SR_fptr, 0, sizeof(struct fileheader));
+    match = 0;
     switch (safe_mmapfile(currdirect, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &pFh, &size, NULL)) {
     case 0:
         return 0;
     case 1:
+    	last_line=size/sizeof(struct fileheader);
+    	if (now>last_line)
+    		break;
         pFh1 = pFh + now - 1;
         while (1) {
             if (offset > 0) {
@@ -1414,7 +1419,8 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
     case 2:
         memset(&SR_fptr, 0, sizeof(struct fileheader));
         match = 0;
-    } end_mmapfile((void *) pFh, size, -1);
+    } ;
+    end_mmapfile((void *) pFh, size, -1);
     move(t_lines - 1, 0);
     clrtoeol();
     return match;

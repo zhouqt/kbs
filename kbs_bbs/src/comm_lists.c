@@ -52,6 +52,7 @@ int x_fillform();
 int x_vote();
 int ShowWeather();              /* 2001.6.12 */
 int x_results();
+
 #ifdef CAN_EXEC
 int ent_bnet();
 #endif
@@ -73,130 +74,137 @@ int t_query(), t_talk(), t_pager(), t_override(), x_cloak();
 #ifdef IRC
 int t_irc()
 #endif
-    int kick_user();
+int kick_user();
 
 /* add by KCN */
 /* Modified by sanshao, sb KCN */
-    int ent_chat1(), ent_chat2();
-    int switch_code();          /* add by KCN */
+int ent_chat1(), ent_chat2();
+int switch_code();              /* add by KCN */
 
 
-    int x_level(), XCheckLevel(), m_info(), d_user(), m_register(), m_newbrd(), setsystempasswd();
-    int d_board(), m_editbrd(), m_mclean(), m_trace(), m_vote(), wall();
+int x_level(), XCheckLevel(), m_info(), d_user(), m_register(), m_newbrd(), setsystempasswd();
+int d_board(), m_editbrd(), m_mclean(), m_trace(), m_vote(), wall();
 
 /* inserted by cityhunter */
-    int query_bm();
-    int p_level();
+int query_bm();
 
 /* end of insertion */
-    int lock_scr();             /* Leeward 98.02.22 */
-    int FavBoard();             /* period  2000-09-11 */
-    int searchtrace();          /* stephen 2000.12.15 */
-    int badlist();              /* Bigman 2000.12.26 */
-    int giveupnet();            /* bad 2002.7.5 */
-    int m_stoplogin();
-    int inn_start();            /* czz 2002.01.15 */
-    int inn_reload();           /* czz 2002.01.15 */
-    int inn_stop();             /* czz 2002.01.15 */
-    int clear_all_board_read_flag();    /* kcn 2002.07.18 */
+int lock_scr();                 /* Leeward 98.02.22 */
+int FavBoard();                 /* period  2000-09-11 */
+int searchtrace();              /* stephen 2000.12.15 */
+int badlist();                  /* Bigman 2000.12.26 */
+int giveupnet();                /* bad 2002.7.5 */
+int m_stoplogin();
+int inn_start();                /* czz 2002.01.15 */
+int inn_reload();               /* czz 2002.01.15 */
+int inn_stop();                 /* czz 2002.01.15 */
+int clear_all_board_read_flag();        /* kcn 2002.07.18 */
 
 /*Add By Excellent */
-    struct scommandlist {
-        char *name;
-        int (*fptr) ();
-    };
-    static const struct scommandlist sysconf_cmdlist[] = {
-        {"domenu", domenu},
-        {"EGroups", EGroup},
-        {"BoardsAll", Boards},
-        {"BoardsNew", New},
-        {"LeaveBBS", Goodbye},
-        {"Announce", Announce},
-        /*        {"ExecTin",      t_tin},
-           {"ExecGopher",   t_gopher}, */
-        {"SelectBoard", Select},
-        {"ReadBoard", Read},
-        {"PostArticle", Post},
-        {"SetHelp", Help},
-        {"SetAlarm", setcalltime},
-        {"MailAll", mailall},
-        /*{"ExecMJ",       x_excemj},
-           {"ExecBIG2",     x_excebig2},
-           {"ExecCHESS",    x_excechess},
-           {"WWW",          t_www},        */
-        {"OffLine", suicide},
-        {"ReadNewMail", m_new},
-        {"ReadMail", m_read},
-        {"SendMail", m_send},
-        {"GroupSend", g_send},
-        {"OverrideSend", ov_send},
-        {"SendNetMail", m_internet},
-        {"UserDefine", x_userdefine},
-        {"ShowFriends", t_friends},
-        {"ShowLogins", t_users},
-        {"QueryUser", t_query},
-        {"WaitFriend", wait_friend},
-        {"Talk", t_talk},
-        {"SetPager", t_pager},
-        {"SetCloak", x_cloak},
-        {"SendMsg", s_msg},
-        {"ShowMsg", show_allmsgs},
-        {"SetFriends", t_override},
-        {"EnterChat", ent_chat1},
-        {"EnterChat2", ent_chat2},
+struct scommandlist {
+    char *name;
+    int (*fptr) ();
+};
+static const struct scommandlist sysconf_cmdlist[] = {
+    {"domenu", domenu},
+    {"EGroups", EGroup},
+    {"BoardsAll", Boards},
+    {"BoardsNew", New},
+    {"LeaveBBS", Goodbye},
+    {"Announce", Announce},
+    /*
+     * {"ExecTin",      t_tin},
+     * {"ExecGopher",   t_gopher}, 
+     */
+    {"SelectBoard", Select},
+    {"ReadBoard", Read},
+    {"PostArticle", Post},
+    {"SetHelp", Help},
+    {"SetAlarm", setcalltime},
+    {"MailAll", mailall},
+    /*
+     * {"ExecMJ",       x_excemj},
+     * {"ExecBIG2",     x_excebig2},
+     * {"ExecCHESS",    x_excechess},
+     * {"WWW",          t_www},        
+     */
+    {"OffLine", suicide},
+    {"ReadNewMail", m_new},
+    {"ReadMail", m_read},
+    {"SendMail", m_send},
+    {"GroupSend", g_send},
+    {"OverrideSend", ov_send},
+    {"SendNetMail", m_internet},
+    {"UserDefine", x_userdefine},
+    {"ShowFriends", t_friends},
+    {"ShowLogins", t_users},
+    {"QueryUser", t_query},
+    {"WaitFriend", wait_friend},
+    {"Talk", t_talk},
+    {"SetPager", t_pager},
+    {"SetCloak", x_cloak},
+    {"SendMsg", s_msg},
+    {"ShowMsg", show_allmsgs},
+    {"SetFriends", t_override},
+    {"EnterChat", ent_chat1},
+    {"EnterChat2", ent_chat2},
 #ifdef IRC
-        {"ExecIrc", t_irc},
+    {"ExecIrc", t_irc},
 #endif
-        {"ListLogins", t_list},
-        {"Monitor", t_monitor},
-        {"RealLogins", t_rusers},
-        {"FillForm", x_fillform},
-        {"SetInfo", x_info},
-        {"EditUFiles", x_edits},
-        {"ShowLicense", Conditions},
-        {"ShowVersion", Info},
-        {"Notepad", shownotepad},
-        {"ShowDate", x_date},
-        {"DoVote", x_vote},
-        {"VoteResult", x_results},
+    {"ListLogins", t_list},
+    {"Monitor", t_monitor},
+    {"RealLogins", t_rusers},
+    {"FillForm", x_fillform},
+    {"SetInfo", x_info},
+    {"EditUFiles", x_edits},
+    {"ShowLicense", Conditions},
+    {"ShowVersion", Info},
+    {"Notepad", shownotepad},
+    {"ShowDate", x_date},
+    {"DoVote", x_vote},
+    {"VoteResult", x_results},
 #ifdef CAN_EXEC
-        {"ExecBBSNet", ent_bnet},
+    {"ExecBBSNet", ent_bnet},
 #endif
-        {"ShowWelcome", Welcome},
-        {"ReadWeather", ShowWeather},   /*Bigman 2001.6.12 */
-        {"SpecialUser", Users},
-        /*{"ExecViewer",   t_announce}, */
-        {"LockScreen", lock_scr},       /* Leeward 98.02.22 */
-        {"ConvCode", switch_code},      /* KCN 99.09.03 */
-        {"FavBoard", FavBoard}, /* added period 2000-09-11 */
-        {"BadList", badlist},   /* added Bigman 2000.12.26 */
-        {"GiveupNet", giveupnet},       /* added Bad 2002.7.5 */
-        {"ClearAllNew", clear_all_board_read_flag},     /* kcn 2002.07.18 */
-        {"CheckForm", m_register},
-        {"ModifyInfo", m_info},
-        {"ModifyLevel", x_level},
-        {"QueryBUser", query_bm},
-        /* end of addin */
-        {"XCheckLevel", XCheckLevel},
-        {"KickUser", kick_user},
-        {"DelUser", d_user},
-        {"OpenVote", m_vote},
-        {"NewBoard", m_newbrd},
-        {"EditBoard", m_editbrd},
-        {"DelBoard", d_board},
-        {"SetTrace", m_trace},
-        {"CleanMail", m_mclean},
-        {"EditSFiles", a_edits},
-        {"Announceall", wall},
-        {"Setsyspass", setsystempasswd},
-        {"SearchTrace", searchtrace},   /*stephen 2000.12.15 */
-        {"StopLogin", m_stoplogin},     /*stephen 2000.12.15 */
-        {"ConfirmDelete", confirm_delete_id},   /*Bigman 2001.7.14 */
-        {"InnStart", inn_start},        /* czz 2002.01.15 */
-        {"InnReload", inn_reload},      /* czz 2002.01.15 */
-        {"InnStop", inn_stop},  /* czz 2002.01.15 */
-        {NULL, NULL},
-    };
+    {"ShowWelcome", Welcome},
+    {"ReadWeather", ShowWeather},       /*Bigman 2001.6.12 */
+    {"SpecialUser", Users},
+    /*
+     * {"ExecViewer",   t_announce}, 
+     */
+    {"LockScreen", lock_scr},   /* Leeward 98.02.22 */
+    {"ConvCode", switch_code},  /* KCN 99.09.03 */
+    {"FavBoard", FavBoard},     /* added period 2000-09-11 */
+    {"BadList", badlist},       /* added Bigman 2000.12.26 */
+    {"GiveupNet", giveupnet},   /* added Bad 2002.7.5 */
+    {"ClearAllNew", clear_all_board_read_flag}, /* kcn 2002.07.18 */
+    {"CheckForm", m_register},
+    {"ModifyInfo", m_info},
+    {"ModifyLevel", x_level},
+    {"QueryBUser", query_bm},
+    /*
+     * end of addin 
+     */
+    {"XCheckLevel", XCheckLevel},
+    {"KickUser", kick_user},
+    {"DelUser", d_user},
+    {"OpenVote", m_vote},
+    {"NewBoard", m_newbrd},
+    {"EditBoard", m_editbrd},
+    {"DelBoard", d_board},
+    {"SetTrace", m_trace},
+    {"CleanMail", m_mclean},
+    {"EditSFiles", a_edits},
+    {"Announceall", wall},
+    {"Setsyspass", setsystempasswd},
+    {"SearchTrace", searchtrace},       /*stephen 2000.12.15 */
+    {"StopLogin", m_stoplogin}, /*stephen 2000.12.15 */
+    {"ConfirmDelete", confirm_delete_id},       /*Bigman 2001.7.14 */
+    {"InnStart", inn_start},    /* czz 2002.01.15 */
+    {"InnReload", inn_reload},  /* czz 2002.01.15 */
+    {"InnStop", inn_stop},      /* czz 2002.01.15 */
+    {NULL, NULL},
+};
 
 void decodestr(register char *str)
 {
@@ -255,8 +263,10 @@ static int domenu_screen(struct smenuitem *dopm, char *cmdprompt)
     while (1) {
         pm = *dopm;
         n = ((char *) dopm - (char *) menuitem) / sizeof(struct smenuitem);
-        /* 这个获得n的写法太丑陋了，但是.....
-           先不管了KCN */
+        /*
+         * 这个获得n的写法太丑陋了，但是.....
+         * 先不管了KCN 
+         */
 
         switch (pm.level) {
         case -1:
@@ -317,7 +327,7 @@ static void copymenupos()
 }
 
 int domenu(menu_name)
-    char *menu_name;
+char *menu_name;
 {
     extern int refscreen;
     struct smenuitem *pm;
@@ -326,16 +336,17 @@ int domenu(menu_name)
     int cmdplen, cmd, i, base;
 
     /*
-       if( sysconf_menu <= 0 ) {
-       return -1;
-       }
+     * if( sysconf_menu <= 0 ) {
+     * return -1;
+     * }
      */
 
-    /* disable it,因为不知道为何会core dump
-       if (check_sysconf()) {
-       free(menupos);
-       menupos=NULL;
-       }
+    /*
+     * disable it,因为不知道为何会core dump
+     * if (check_sysconf()) {
+     * free(menupos);
+     * menupos=NULL;
+     * }
      */
     if (menupos == NULL) {
         menupos = (struct _menupos *) malloc(sizeof(struct _menupos) * sysconf_menu);
@@ -344,8 +355,10 @@ int domenu(menu_name)
     pm = sysconf_getmenu(menu_name);
     size = domenu_screen(pm, cmdprompt);
     base = ((char *) pm - (char *) menuitem) / sizeof(struct smenuitem);
-    /* 这个获得base的写法太丑陋了，但是.....
-       先不管了KCN */
+    /*
+     * 这个获得base的写法太丑陋了，但是.....
+     * 先不管了KCN 
+     */
     cmdplen = strlen(cmdprompt);
     now = 0;
     if (strcmp(menu_name, "TOPMENU") == 0 && chkmail()) {
@@ -355,7 +368,9 @@ int domenu(menu_name)
 
     }
     modify_user_mode(MMENU);
-    /* added by netty  */
+    /*
+     * added by netty  
+     */
     if (nettyNN == 1) {
         R_monitor(NULL);
     }
@@ -395,7 +410,9 @@ int domenu(menu_name)
             }
             domenu_screen(pm, cmdprompt);
             modify_user_mode(MMENU);
-            /*Modify to showout ActiveBoard After talking */
+            /*
+             * Modify to showout ActiveBoard After talking 
+             */
             if (nettyNN == 1) {
                 R_monitor(NULL);
             }
