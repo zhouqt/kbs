@@ -743,7 +743,7 @@ void domailclean(struct fileheader *fhdrp,char* arg)
 
     if (fhdrp == NULL)
     {
-        log("clean", "new = %d, saved = %d, deleted = %d", newcnt, savecnt, deleted);
+        bbslog("clean", "new = %d, saved = %d, deleted = %d", newcnt, savecnt, deleted);
         newcnt = savecnt = deleted = idc = 0;
         if (delcnt)
         {
@@ -776,10 +776,10 @@ int cleanmail(struct userec  *urec,char* arg)
         return 0;
     setmailfile(genbuf, urec->userid, DOT_DIR);
     if (stat(genbuf, &statb) == -1) {
-        log("clean","%s no mail",urec->userid);
+        bbslog("clean","%s no mail",urec->userid);
     } else {
         if (statb.st_size == 0) {
-            log("clean","%s no mail",urec->userid);
+            bbslog("clean","%s no mail",urec->userid);
         } else {
             strcpy(curruser, urec->userid);
             delcnt = 0;

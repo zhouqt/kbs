@@ -541,7 +541,7 @@ int usermail;
             FILE *temp_inf ;
             search_record(BOARDS, &brdhdr, sizeof(brdhdr), cmpbnames, BoardName);
             /* just for debug
-                    temp_inf = fopen("/home0/bbs/dong/test.log", "wr");
+                    temp_inf = fopen("/home0/bbs/dong/test.bbslog", "wr");
                     fprintf(temp_inf, "BoardName = %s", BoardName);
                     fprintf(temp_inf, "homepath = %s\n", homepath);
                     fprintf(temp_inf, "WWW_DEL = %s\n", WWW_DEL);

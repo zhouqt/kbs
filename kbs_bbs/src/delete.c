@@ -388,7 +388,7 @@ int kick_user(struct user_info *userinfo)
     sprintf(buffer, "kicked %s", userid);
     report(buffer);
     /*sprintf( genbuf, "%s (%s)", kuinfo.userid, kuinfo.username );modified by dong, 1998.11.2 */
-    /*log( "1system", "KICK %s (%s)", uin.userid, uin.username );*/
+    /*bbslog( "1system", "KICK %s (%s)", uin.userid, uin.username );*/
     /*    uin.active = NA;
         uin.pid = 0;
         uin.invisible = YEA;

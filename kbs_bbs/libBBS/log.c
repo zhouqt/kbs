@@ -22,7 +22,7 @@
     
     
     
-    log.c
+    bbslog.c
     Copyright (C) 2001, wwj@j32.org
 */
 
@@ -134,7 +134,7 @@ static void logatexit()
     }
 }
 
-int log(const char * from,const char *fmt,...)
+int bbslog(const char * from,const char *fmt,...)
 {
     logconfig * pconf;
     int  prio;
@@ -147,7 +147,7 @@ int log(const char * from,const char *fmt,...)
         prio=from[0]-'0';
         from++;
     }
-/* temp disable log*/
+/* temp disable bbslog*/
 #ifdef BBSMAIN
     if (prio==0&&strcasecmp(from,"boardusage")) return 0;
 #endif

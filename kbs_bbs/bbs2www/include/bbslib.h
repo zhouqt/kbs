@@ -13,7 +13,7 @@
 #ifdef SMTH
 #define CACHE_ROOT "/backup/www/htdocs"
 #define MAX_CA_PATH_LEN 1024
-#define report(x)        log("user",x)
+#define report(x)        bbslog("user",x)
 #endif
 
 #define FIRST_PAGE	"/index.html"
@@ -35,8 +35,8 @@
 #define BBSNAME NAME_BBS_CHINESE
 #endif
 
-#define WWW_LOG             "log/www.log"   /* "www.log" */
-#define WWW_BADLOGIN        "log/badlogin.www"  /* "badlogin.www" */
+#define WWW_LOG             "bbslog/www.log"   /* "www.bbslog" */
+#define WWW_BADLOGIN        "bbslog/badlogin.www"  /* "badlogin.www" */
 #define SYS_MSGFILE         "msgfile"
 #define SYS_MSGFILELOG      "msgfile.log"   /* "msgfile.me" */
 

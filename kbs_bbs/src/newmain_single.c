@@ -301,7 +301,7 @@ abort_bbs()
         record_exit_time();
         stay = time( 0 ) - login_start_time;
 /*---	period	2000-10-20	4 debug	---*/
-	    log("1system", "AXXED Stay: %3ld (%s)[%d %d]", stay/60, currentuser->username, utmpent, usernum);
+	    bbslog("1system", "AXXED Stay: %3ld (%s)[%d %d]", stay/60, currentuser->username, utmpent, usernum);
         u_exit();
     }
     shutdown(0,2);
@@ -449,7 +449,7 @@ void
 system_abort()
 {
     if( started ) {
-        log( "1ABORT", currentuser->username );
+        bbslog( "1ABORT", currentuser->username );
         u_exit() ;
     }
     clear();
@@ -709,7 +709,7 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
                 }
                 /* passwd ok, covert to md5 --wwj 2001/5/7 */
                 if(currentuser->passwd[0]){
-                    log("covert","for md5passwd");
+                    bbslog("covert","for md5passwd");
                     setpasswd(passbuf,currentuser);
                 }
                 break;
@@ -838,7 +838,7 @@ user_login()
 	} /* ?????后面还有check_register_info */
  
     ruser = getenv( "REMOTEUSERNAME" );
-    log( "1system", "ENTER %s@%s", ruser ? ruser : "?", fromhost );
+    bbslog( "1system", "ENTER %s@%s", ruser ? ruser : "?", fromhost );
     if( ruser ) {
         sprintf( genbuf, "%s@%s", ruser, fromhost );
         if( valid_ident( genbuf ) ) {
@@ -853,7 +853,7 @@ user_login()
 
     report(genbuf) ;
 /*---	period	2000-10-19	4 debug	---*/
-    log( "1system", "ALLOC: [%d %d]", utmpent, usernum);
+    bbslog( "1system", "ALLOC: [%d %d]", utmpent, usernum);
 /*---	---*/
     started = 1 ;
     if( USE_NOTEPAD == 1)

@@ -121,7 +121,7 @@ char    buf[256];
             "realemail",
             "ident",
             "rgtday",
-            "log",   
+            "bbslog",   
             "pst",   
             "lastlogin",
             "lasthost",

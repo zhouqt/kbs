@@ -307,8 +307,8 @@ typedef size_t socklen_t;
 #define MAXREJECTS (32)
 #define BBSNAME NAME_BBS_CHINESE
 #define BBSHOST NAME_BBS_ENGLISH
-#define WWW_LOG             "log/www.log"   /* "www.log" */
-#define WWW_BADLOGIN        "log/badlogin.www"  /* "badlogin.www" */
+#define WWW_LOG             "bbslog/www.log"   /* "www.bbslog" */
+#define WWW_BADLOGIN        "bbslog/badlogin.www"  /* "badlogin.www" */
 #define SYS_MSGFILE         "msgfile"
 #define SYS_MSGFILELOG      "msgfile.log"   /* "msgfile.me" */
 #endif

@@ -71,7 +71,7 @@ int dokilldir(char *board)
      strcat(hehe,"/");
      strcat(hehe,board);
      killed = killdir(hehe,".DELETED") + killdir(hehe,".JUNK");
-     log("1miscdaemon","deleted %d files in %s board",killed,board);
+     bbslog("1miscdaemon","deleted %d files in %s board",killed,board);
      return killed;
 }
 
@@ -116,7 +116,7 @@ int killauser(struct userec *theuser,char *data)
        if (!theuser || theuser->userid[0]==0) return 0;
        a = compute_user_value(theuser);
        if (a<0) {
-       log("1user","kill user %s",theuser->userid); 
+       bbslog("1user","kill user %s",theuser->userid); 
        a = getuser(theuser->userid,&ft);
        setmailpath(tmpbuf,theuser->userid);
        sprintf(genbuf1,"/bin/rm -rf %s",tmpbuf);
@@ -138,9 +138,9 @@ int killauser(struct userec *theuser,char *data)
 int dokilluser()
 {
 /*    if (load_ucache()!=0) return -1;*/
-    log("1user","Started kill users\n");
+    bbslog("1user","Started kill users\n");
     apply_users(killauser,NULL);
-    log("1user","kill users done\n");
+    bbslog("1user","kill users done\n");
 }
 int getnextday4am()
 {
@@ -183,7 +183,7 @@ int getutmprequest(int m_socket)
         len = sizeof(sin);
         for (s = accept(m_socket,&sin,&len);;s = accept(m_socket,&sin,&len)) {
                 if ((s<=0)&&errno!=EINTR){
-    	            log("3system","utmpd:accept %s",strerror(errno));
+    	            bbslog("3system","utmpd:accept %s",strerror(errno));
                     exit(-1);
                 }
                 if (s<=0) continue;
@@ -213,7 +213,7 @@ int getrequest(int m_socket)
 
         for (s = accept(m_socket,&sin,&len);;s = accept(m_socket,&sin,&len)) {
                 if ((s<=0)&&errno!=EINTR){
-    	            log("3system","userd:accept %s",strerror(errno));
+    	            bbslog("3system","userd:accept %s",strerror(errno));
                     exit(-1);
                 }
                 if (s<=0) continue;
@@ -253,7 +253,7 @@ void userd()
     int opt=1;
 	bzero(&sin, sizeof(sin));
     if (( m_socket = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP))<0) {
-    	log("3system","userd:socket %s",strerror(errno));
+    	bbslog("3system","userd:socket %s",strerror(errno));
     	exit(-1);
     }
     setsockopt(m_socket,SOL_SOCKET,SO_REUSEADDR,&opt,4);
@@ -262,11 +262,11 @@ void userd()
     sin.sin_port = htons(60001);
     inet_aton("127.0.0.1",&sin.sin_addr);
     if  (0!=bind(m_socket,(struct sockaddr *)&sin,sizeof(sin))) {
-    	log("3system","userd:bind %s",strerror(errno));
+    	bbslog("3system","userd:bind %s",strerror(errno));
     	exit(-1);
     }
     if (0!=listen(m_socket,5)) {
-    	log("3system","userd:listen %s",strerror(errno));
+    	bbslog("3system","userd:listen %s",strerror(errno));
     	exit(-1);
     }
     while (1) {
@@ -297,7 +297,7 @@ void utmpd()
     int opt=1;
 	bzero(&sin, sizeof(sin));
     if (( m_socket = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP))<0) {
-    	log("3system","utmpd:socket %s",strerror(errno));
+    	bbslog("3system","utmpd:socket %s",strerror(errno));
     	exit(-1);
     }
     setsockopt(m_socket,SOL_SOCKET,SO_REUSEADDR,&opt,4);
@@ -306,11 +306,11 @@ void utmpd()
     sin.sin_port = htons(60002);
     inet_aton("127.0.0.1",&sin.sin_addr);
     if  (0!=bind(m_socket,(struct sockaddr *)&sin,sizeof(sin))) {
-    	log("3system","utmpd:bind %s",strerror(errno));
+    	bbslog("3system","utmpd:bind %s",strerror(errno));
     	exit(-1);
     }
     if (0!=listen(m_socket,5)) {
-    	log("3system","utmpd:listen %s",strerror(errno));
+    	bbslog("3system","utmpd:listen %s",strerror(errno));
     	exit(-1);
     }
     while (1) {
@@ -324,7 +324,7 @@ void utmpd()
 			if(( now > utmpshm->uptime + 120 )||(now < utmpshm->uptime-120)) {
 			    int n;
 			    utmpshm->uptime = now;
-			    log( "1system", "UTMP:Clean user utmp cache");
+			    bbslog( "1system", "UTMP:Clean user utmp cache");
 			    for( n = 0; n < USHM_SIZE; n++ ) {
 			        utmpshm->uptime = now;
 			        uentp = &(utmpshm->uinfo[ n ]);
@@ -375,7 +375,7 @@ void flushd()
     while (1) {
         sleep(2*60*60);
       	 flush_ucache();
-        log("4miscdaemon","flush passwd file");
+        bbslog("4miscdaemon","flush passwd file");
     };
 }
 
@@ -439,7 +439,7 @@ int dodaemon(char* argv1,char* daemon)
 	int ft;
     	 switch(fork()) {
        	     case -1: 
-       	        log("1miscdaemon","fork failed\n");
+       	        bbslog("1miscdaemon","fork failed\n");
        	        break;
        	     case 0 : 
        	        dokilluser();
@@ -451,7 +451,7 @@ int dodaemon(char* argv1,char* daemon)
     	 if (ismonday()) {
 	    switch(fork()) {
        		case -1: 
-       	      	   log("1miscdaemon","fork failed\n");
+       	      	   bbslog("1miscdaemon","fork failed\n");
        	           break;
        	    	case 0 : 
        	       	   dokillalldir();

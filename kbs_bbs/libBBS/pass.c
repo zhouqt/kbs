@@ -79,7 +79,7 @@ int checkpasswd2(const char * passwd,const struct userec *user)
             w_igenpass(passwd,user->userid,w_md5passwd);
             if (memcmp(w_md5passwd,user->md5passwd,MD5_DIGEST_LENGTH)) return 0;
             memcpy(user->md5passwd,md5passwd,MD5_DIGEST_LENGTH);
-            log("5system","Convert %s password.",user->userid);
+            bbslog("5system","Convert %s password.",user->userid);
         }
 	return 1;
 */

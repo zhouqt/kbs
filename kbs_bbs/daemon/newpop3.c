@@ -11,7 +11,7 @@
          5. I added codes to support three functions: 
             (1) Top // extended POP3 function
             (2) nextwordX // enable passwords including space character(s)
-            (3) logattempt // log password error showed when one logins BBS 
+            (3) logattempt // bbslog password error showed when one logins BBS 
             (4) Do not erase mails marked 
          6. While making bbspop3d, you might encounter linker errors
             Try to pass the linker some libraries 

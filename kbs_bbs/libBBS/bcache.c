@@ -32,7 +32,7 @@ static int bcache_lock()
     int lockfd;
     lockfd = creat( "bcache.lock", 0600 );
     if( lockfd < 0 ) {
-        log( "3system", "CACHE:lock bcache:%s", strerror(errno) );
+        bbslog( "3system", "CACHE:lock bcache:%s", strerror(errno) );
         return -1;
     }
     bcache_setreadonly(0);
@@ -56,7 +56,7 @@ static void bcache_setreadonly(int readonly)
    int boardfd;
     munmap(bcache,MAXBOARD*sizeof(struct boardheader));
     if ((boardfd=open(BOARDS,O_RDWR|O_CREAT,0644)) == -1) {
-                log("3system","Can't open " BOARDS "file %s",strerror(errno));
+                bbslog("3system","Can't open " BOARDS "file %s",strerror(errno));
         exit(-1);
         }
     if (readonly)
@@ -117,14 +117,14 @@ void resolve_boards()
     }
     
 	if ((boardfd=open(BOARDS,O_RDWR|O_CREAT,0644)) == -1) {
-		log("3system","Can't open " BOARDS "file %s",strerror(errno));
+		bbslog("3system","Can't open " BOARDS "file %s",strerror(errno));
        	exit(-1);
 	}
    	bcache = (struct boardheader*) mmap(NULL,
    			MAXBOARD*sizeof(struct boardheader),
    			PROT_READ|PROT_WRITE,MAP_SHARED,boardfd,0);
    	if (bcache==(struct boardheader*)-1) {
-		log("4system","Can't map " BOARDS "file %s",strerror(errno));
+		bbslog("4system","Can't map " BOARDS "file %s",strerror(errno));
 		close(boardfd);
        	exit(-1);
    	}

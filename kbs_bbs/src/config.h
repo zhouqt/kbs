@@ -53,7 +53,7 @@
 #define LOGINASNEW 1 
 
 /* 
-   Defined means user may log as as many times as they wish, simultaneously.
+   Defined means user may bbslog as as many times as they wish, simultaneously.
    On a larger bbs with many window-users you probably want this off.
    Comment out to disable.
 #define MULTI_LOGINS 1
@@ -83,7 +83,7 @@ hog or anything, but if you don't want it...
 #endif
 
 /* 
-   Define DOTIMEOUT to set a timer to log out users who sit idle on the system.
+   Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
    Then decide how long to let them stay: MONITOR_TIMEOUT is the time in
    seconds a user can sit idle in Monitor mode; IDLE_TIMEOUT applies to all
    other modes. 

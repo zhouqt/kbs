@@ -709,7 +709,7 @@ edit_mail_file:
                 /* res = bbs_sendmail( tmp_fname, title, userid );  */
                 res = bbs_sendmail(tmp_fname, title, userid, isuu, isbig5,noansi);
 
-        		log("1user", "mailed %s", userid);
+        		bbslog("1user", "mailed %s", userid);
                 break;
             }
         }
@@ -748,7 +748,7 @@ edit_mail_file:
         if(append_record(genbuf,&newmessage,sizeof(newmessage)) == -1)
             return -1 ;
 
-        log("1user", "mailed %s", userid);
+        bbslog("1user", "mailed %s", userid);
         return 0 ;
     }
 }
@@ -1203,7 +1203,7 @@ char *direct ;
         prints("文章转寄完成!\n");
         fileinfo->accessed[0] |= FILE_FORWARDED;  /*added by alex, 96.9.7 */
         /* comment out by jjyang for direct mail delivery */
-        log("1user", "forwarded file to %s", currentuser->email);
+        bbslog("1user", "forwarded file to %s", currentuser->email);
         /* comment out by jjyang for direct mail delivery */
 
         break;
@@ -1239,7 +1239,7 @@ char *direct ;
         prints("文章转寄完成!\n");
         fileinfo->accessed[0] |= FILE_FORWARDED;  /*added by alex, 96.9.7 */
         /* comment out by jjyang for direct mail delivery */
-        log("1user", "forwarded file to %s", currentuser->email);
+        bbslog("1user", "forwarded file to %s", currentuser->email);
         /* comment out by jjyang for direct mail delivery */
 
         break;
@@ -1855,7 +1855,7 @@ char tmpfile[STRLEN],userid[STRLEN],title[STRLEN];
     if(append_record(genbuf,&newmessage,sizeof(newmessage)) == -1)
         return -1 ;
 
-    log("1user","mailed %s ", userid);
+    bbslog("1user","mailed %s ", userid);
     return 0 ;
 }
 
@@ -2022,7 +2022,7 @@ doforward(char *direct,struct boardheader*fh,int isuu)
     {
         vedit(fname,NA);
         y = 2;
-        log("1user","修改被转贴的文章或信件: %s",title);/*Haohmaru.00.05.01*/
+        bbslog("1user","修改被转贴的文章或信件: %s",title);/*Haohmaru.00.05.01*/
         /* clear(); */
     }
 

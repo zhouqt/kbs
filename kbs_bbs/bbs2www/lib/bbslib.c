@@ -750,7 +750,7 @@ post_article(char *board, char *title, char *file, struct userec *user,
     }
 
     sprintf(buf,"posted '%s' on '%s'", post_file.title, board) ;
-    report(buf) ; /* log */
+    report(buf) ; /* bbslog */
     /*      postreport(post_file.title, 1);*/ /*added by alex, 96.9.12*/
     //if ( !junkboard(board) )
     //{

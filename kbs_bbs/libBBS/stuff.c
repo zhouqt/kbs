@@ -461,7 +461,7 @@ attach_err( shmkey, name )
 int     shmkey;
 char    *name;
 {
-    log( "3system", "Attach:Error! %s error! key = %x.msg:%s\n", name, shmkey ,strerror(errno));
+    bbslog( "3system", "Attach:Error! %s error! key = %x.msg:%s\n", name, shmkey ,strerror(errno));
     exit( 1 );
 }
 
@@ -836,7 +836,7 @@ time_t bbstime(time_t* t)
     if (publicshm==NULL) {
         publicshm = attach_shm1( "PUBLIC_SHMKEY", 3700, sizeof( *publicshm) ,&iscreate,1,NULL); /* attach public share memory readonly*/
 	if (iscreate) {
-		log("4bbstime","time daemon not start");
+		bbslog("4bbstime","time daemon not start");
 		exit(1);
 	}
     }

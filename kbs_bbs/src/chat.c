@@ -378,10 +378,10 @@ int ent_chat_conn(chatcontext * pthis, int chatnum)
         switch (ch = fork())
         {
         case -1/*fork failure*/:
-            log("3chatd","fork error");
+            bbslog("3chatd","fork error");
             break;
         case 0/*fork success*/:
-            log("chatd","fork success");
+            bbslog("chatd","fork success");
             prints("开启聊天室...");
             if (chatnum==1)
                 system("bin/chatd");
@@ -389,7 +389,7 @@ int ent_chat_conn(chatcontext * pthis, int chatnum)
                 system("bin/chatd 2");
             exit(1);
         default:
-            log("chatd","fork par-proc");
+            bbslog("chatd","fork par-proc");
             /* The chat daemon forks so we can wait on it here. */
             waitpid(ch, NULL, 0);
         }
@@ -398,7 +398,7 @@ int ent_chat_conn(chatcontext * pthis, int chatnum)
         if ((connect(pthis->cfd, (struct sockaddr *) & sin, sizeof sin)))
         {
             close(pthis->cfd);
-            log("3chatd","connect2 failed %d", errno);
+            bbslog("3chatd","connect2 failed %d", errno);
             return -1;
         }
     }
@@ -1159,7 +1159,7 @@ void set_rec(chatcontext *pthis, const char *arg) /* set recorder */
 	fprintf(pthis->rec, "本段由 %s",currentuser->userid);
         fprintf(pthis->rec,"所录下，时间： %s",ctime(&now));
         
-        log("user","start record room %s", pthis->chatroom);
+        bbslog("user","start record room %s", pthis->chatroom);
     } else {
         move(0, 0);
         clrtoeol();
@@ -1179,7 +1179,7 @@ void set_rec(chatcontext *pthis, const char *arg) /* set recorder */
         mail_file(fname,currentuser->userid,"录音结果");
         unlink(fname);
 
-        log("user","stop record room %s", pthis->chatroom);
+        bbslog("user","stop record room %s", pthis->chatroom);
     }
 }
 
@@ -1219,7 +1219,7 @@ void call_kickoff(chatcontext *pthis, const char *arg) /* kick ID off BBS, by Lu
             {
                 sprintf(msg,"%s 并没有上站",arg);
             } else {
-                log("user","kick %s out of bbs", uin->userid);
+                bbslog("user","kick %s out of bbs", uin->userid);
                 kill(uin->pid,SIGHUP);
                 return;
             }
@@ -1257,12 +1257,12 @@ void call_listen(chatcontext *pthis,const char *arg) /* added by Luzi 1997.11.28
                     printchatline(pthis,"*** 该用户的聊天讯息没有被忽略啊 ***");
                 else if (delete_record( path, IDLEN+1, nIdx)==0)
                 {
-                    log("user","listen %s", uident);
+                    bbslog("user","listen %s", uident);
                     printchatline(pthis,"*** 已恢复对该用户聊天讯息的接收 ***");
                     sprintf(uident,"/listen %s\n",uident);
                     chat_send(pthis,uident);
                 } else {
-                    log("3user","listen %s failed", uident);
+                    bbslog("3user","listen %s failed", uident);
                     printchatline(pthis,"*** system error ***");
                 }
             }
@@ -1332,14 +1332,14 @@ void call_ignore(chatcontext *pthis,const char *arg)             /* added by Luz
                     {
                         printchatline(pthis,"*** 忽略已经设定 ***");
                         
-                        log("user","ignore %s", uident);
+                        bbslog("user","ignore %s", uident);
                         
                         sprintf(buf,"/ignore %s",uident);
                         chat_send(pthis,buf);
                     } else {
                         printchatline(pthis,"*** 系统错误 ***");
                         
-                        log("3user","ignore %s failed", uident);
+                        bbslog("3user","ignore %s failed", uident);
                     }
                 }
             }
@@ -1404,7 +1404,7 @@ void call_alias(chatcontext *pthis,const char *arg)             /* added by Luzi
                 sprintf(buf,"/alias_del %s",emoteid);
                 chat_send(pthis,buf);
             } else {
-                log("3user","delete alias %s fail",emoteid);
+                bbslog("3user","delete alias %s fail",emoteid);
                 printchatline(pthis,"*** system error ***");
             }
         }
@@ -1431,7 +1431,7 @@ void call_alias(chatcontext *pthis,const char *arg)             /* added by Luzi
                 sprintf(buf2,"/alias_add %s",buf);
                 chat_send(pthis,buf2);
             } else {
-                log("3user","add alias %s fail",emoteid);
+                bbslog("3user","add alias %s fail",emoteid);
                 printchatline(pthis,"*** 系统错误 ***");
             }
         }

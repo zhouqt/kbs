@@ -50,7 +50,7 @@ static int ucache_lock()
     int lockfd;
     lockfd = open( ULIST, O_RDWR|O_CREAT, 0600 );
     if( lockfd < 0 ) {
-        log( "3system", "CACHE:lock ucache:%s", strerror(errno) );
+        bbslog( "3system", "CACHE:lock ucache:%s", strerror(errno) );
         return -1;
     }
     flock(lockfd,LOCK_EX);
@@ -73,7 +73,7 @@ static void ucache_hashinit()
 
     fp=fopen("uhashgen.dat","rt");
     if(!fp){
-        log("3system","UCACHE:load uhashgen.dat fail");
+        bbslog("3system","UCACHE:load uhashgen.dat fail");
         exit(0);
     }
     i=0;
@@ -87,13 +87,13 @@ static void ucache_hashinit()
             line[ptr++]=0;
             if(i==0){
                 if(j>=26){
-        			log("3system","UCACHE:hash0>26");
+        			bbslog("3system","UCACHE:hash0>26");
                     exit(0);
                 }
                 uidshm->hashtable.hash0[j++]=atoi(&line[data]);
             } else {
                 if(j>=36){
-        			log("3system","UCACHE:hash0>26");
+        			bbslog("3system","UCACHE:hash0>26");
                     exit(0);
                 }
                 uidshm->hashtable.hash[i-1][j++]=atoi(&line[data]);
@@ -101,13 +101,13 @@ static void ucache_hashinit()
         }
         i++;
         if(i>(int)sizeof(uidshm->hashtable.hash)/36){
-            log("3system","hashline %d exceed",i);
+            bbslog("3system","hashline %d exceed",i);
             exit(0);
         }
     }
     fclose(fp);
 
-    log( "1system","HASH load" );
+    bbslog( "1system","HASH load" );
 }
 
 /*
@@ -227,7 +227,7 @@ fillucache(struct userec *uentp ,int* number)
     	else
 	        hashkey = ucache_hash(uentp->userid);
 	if (hashkey<0||hashkey>UCACHE_HASHSIZE) {
-		log("3system","UCACHE:hash(%s) %d error",uentp->userid, hashkey);
+		bbslog("3system","UCACHE:hash(%s) %d error",uentp->userid, hashkey);
 		exit(0);
 	}
 addempty:
@@ -262,7 +262,7 @@ addempty:
                uentp=&passwd[i-1];
                if (!strcasecmp(passwd[*number].userid,uentp->userid)) {
                    if (passwd[*number].numlogins>uentp->numlogins) {
-                        log("3passwd","deleted %s in %d",uentp->userid,i-1);
+                        bbslog("3passwd","deleted %s in %d",uentp->userid,i-1);
                         if (prev==-1) 
                             uidshm->hashhead[hashkey]=uidshm->next[i-1]; 
                         else
@@ -271,7 +271,7 @@ addempty:
                         uidshm->next[i-1]=0;
                         uidshm->hashhead[0]=i;
                    } else {
-                        log("3passwd","deleted %s in %d",passwd[*number].userid,*number);
+                        bbslog("3passwd","deleted %s in %d",passwd[*number].userid,*number);
                         passwd[*number].userid[0]=0;
                         hashkey=0;
                         goto addempty;
@@ -304,23 +304,23 @@ int load_ucache()
     uidshm = (struct UCACHE*)attach_shm( "UCACHE_SHMKEY", 3696, sizeof( *uidshm ) ,&iscreate); /*attach to user shm */
         
     if (!iscreate) {
-        log("4system","load a exitist ucache shm!");
+        bbslog("4system","load a exitist ucache shm!");
 /*        return -1; */
     }
     
     passwd = (struct userec*)attach_shm( "PASSWDCACHE_SHMKEY", 3697, MAXUSERS*sizeof(struct userec) ,&iscreate); /*attach to user shm */
     if (!iscreate) { /* shouldn't load passwd file in this place */
-        log("4system","load a exitist ucache shm!");
+        bbslog("4system","load a exitist ucache shm!");
         return 0;
     }
         
     if ((passwdfd=open(PASSFILE,O_RDWR|O_CREAT,0644)) == -1) {
-        log("3system","Can't open " PASSFILE "file %s",strerror(errno));
+        bbslog("3system","Can't open " PASSFILE "file %s",strerror(errno));
         exit(-1);
     }
     ftruncate(passwdfd,MAXUSERS*sizeof(struct userec));
     if (get_records(PASSFILE,passwd,sizeof(struct userec),1,MAXUSERS)!=MAXUSERS) {
-        log("4system","PASS file!");
+        bbslog("4system","PASS file!");
         return -1;
     }
 
@@ -332,7 +332,7 @@ int load_ucache()
     for (i=0;i<MAXUSERS;i++)
         fillucache(&passwd[i],&usernumber);
 
-    log("1system", "CACHE:reload ucache for %d users", usernumber);
+    bbslog("1system", "CACHE:reload ucache for %d users", usernumber);
     uidshm->number = usernumber;
     
     return 0;
@@ -348,7 +348,7 @@ resolve_ucache()
         uidshm = (struct UCACHE*)attach_shm1( "UCACHE_SHMKEY", 3696, sizeof( *uidshm ) ,&iscreate , 1, NULL); 
             /*attach to user shm,readonly */
         if (iscreate) { /* shouldn't load passwd file in this place */
-        	log("4system","passwd daemon havn't startup");
+        	bbslog("4system","passwd daemon havn't startup");
         	exit(-1);
         }
     }
@@ -356,7 +356,7 @@ resolve_ucache()
     if (passwd==NULL) { 
         passwd = (struct userec*)attach_shm1( "PASSWDCACHE_SHMKEY", 3697, MAXUSERS*sizeof(struct userec) ,&iscreate, 0, NULL); /*attach to user shm */
         if (iscreate) { /* shouldn't load passwd file in this place */
-        	log("4system","passwd daemon havn't startup");
+        	bbslog("4system","passwd daemon havn't startup");
         	exit(-1);
         }
     }        
@@ -400,13 +400,13 @@ setuserid_internal( int     num,const char    *userid) /* ÉèÖÃuser numµÄidÎªuser
 	      			find=uidshm->next[find-1];
 	      			i++;
 	      			if (i>MAXUSERS) {
-		          	    log("3system","UCACHE:uhash loop???! find %d,%s",num,userid);
+		          	    bbslog("3system","UCACHE:uhash loop???! find %d,%s",num,userid);
 		          	    exit(0);
 	      			}
 	      	  }
 	          if (!uidshm->next[find-1]) {
 			if (oldkey!=0) {
-		          	log("3system","UCACHE:can't find %s in hash table",passwd[ num - 1 ].userid);
+		          	bbslog("3system","UCACHE:can't find %s in hash table",passwd[ num - 1 ].userid);
 /*		          	exit(0);*/
 			}
 	          }
@@ -601,7 +601,7 @@ int getnewuserid2(char * userid)
 {
        int result = getnewuserid3(userid);
 #ifdef BBSMAIN
-       log( "1system", "APPLY: uid %d from %s", result, fromhost );
+       bbslog( "1system", "APPLY: uid %d from %s", result, fromhost );
 #endif
        if (result>=0) return result;
 #ifdef BBSMAIN
@@ -704,7 +704,7 @@ int getnewuserid(char* userid)
 
     i = searchnewuser();
 #ifdef BBSMAIN
-    log( "1system", "APPLY: uid %d from %s", i, fromhost );
+    bbslog( "1system", "APPLY: uid %d from %s", i, fromhost );
 #endif
 
     if( i <= 0 || i > MAXUSERS ) {

@@ -1941,10 +1941,10 @@ int mode;
     if (append_record( buf, &postfile, sizeof(postfile)) == -1) { /* 添加POST信息到当前版.DIR */
         if(!mode)
         {
-            log("1user", "cross_posting '%s' on '%s': append_record failed!",
+            bbslog("1user", "cross_posting '%s' on '%s': append_record failed!",
                     postfile.title, quote_board);
         }else{
-            log("1user", "Posting '%s' on '%s': append_record failed!",
+            bbslog("1user", "Posting '%s' on '%s': append_record failed!",
                     postfile.title, quote_board);
         }
         pressreturn() ;
@@ -1957,7 +1957,7 @@ int mode;
         sprintf(buf,"cross_posted '%s' on '%s'", postfile.title, currboard) ;
     else
         sprintf(buf,"自动发表系统 POST '%s' on '%s'", postfile.title, currboard) ;
-    log("1user",buf) ;
+    bbslog("1user",buf) ;
     return 1;
 }
 
@@ -2260,7 +2260,7 @@ post_article()                         /*用户 POST 文章 */
 	updatelastpost(currboard);
     brc_addlist( post_file.filename ) ;
 
-    log("1user","posted '%s' on '%s'", post_file.title, currboard) ;
+    bbslog("1user","posted '%s' on '%s'", post_file.title, currboard) ;
     /*      postreport(post_file.title, 1, currboard);*/ /*added by alex, 96.9.12*/
     if ( !junkboard(currboard) )
     {
@@ -2420,7 +2420,7 @@ char *direct ;
 add_edit_mark(genbuf,1,/*NULL*/fileinfo->title);
 #endif
     }
-    log("1user","edited post '%s' on %s", fileinfo->title, currboard);
+    bbslog("1user","edited post '%s' on %s", fileinfo->title, currboard);
     return FULLUPDATE ;
 }
 
@@ -2753,7 +2753,7 @@ THERE:
         if(uinfo.mode!=RMAIL) {
 			updatelastpost(currboard);
             sprintf(genbuf, "del %d-%d on %s", inum1, inum2, currboard);
-            report(genbuf); /*log*/
+            report(genbuf); /*bbslog*/
         }
         prints("删除%s\n", result ? "失败！" : "完成") ; /* Leeward: 97.12.15 */
 DO_REPAIR:
@@ -2867,7 +2867,7 @@ char *direct ;
     if( (t = strrchr(buf,'/')) != NULL )
         *t = '\0' ;
     sprintf(genbuf,"Del '%s' on '%s'",fileinfo->title,currboard) ;
-    report(genbuf) ; /* log*/
+    report(genbuf) ; /* bbslog*/
     postreport(fileinfo->title, -1, currboard/* del 1 post*/); /*added by alex, 96.9.12 */
     strncpy(currfile,fileinfo->filename,STRLEN) ;
     if( keep <= 0 ) {
@@ -3604,7 +3604,7 @@ Goodbye()    /*离站 选单*/
         record_exit_time(); /* 记录用户的退出时间 Luzi 1998.10.23*/
         /*---	period	2000-10-19	4 debug	---*/
         /*        sprintf( genbuf, "Stay:%3ld (%s)", stay / 60, currentuser->username );*/
-        log( "1system", "EXIT: Stay:%3ld (%s)[%d %d]", stay / 60, currentuser->username, utmpent, usernum );
+        bbslog( "1system", "EXIT: Stay:%3ld (%s)[%d %d]", stay / 60, currentuser->username, utmpent, usernum );
         u_exit() ;
         started = 0;
     }
