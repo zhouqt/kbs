@@ -45,8 +45,6 @@ if (SECTION_DEF_CLOSE) {
 <!--
 	parent.boards<?php echo $secNum; ?> = boards;
 	parent.loadBoardFollow(<?php echo $secNum ?>, <?php echo ($fav ? "true" : "false"); ?>, false, false, <?php echo ($isFold?"true":"false"); ?>);
-	targetTip = getParentRawObject("followTip<?php echo $secNum; ?>");
-	targetTip.style.display = 'none';
 	parent.foldflag<?php echo $secNum; ?> = <?php echo ($isFold ? 2 : 1); ?>;
 //-->
 </script>

@@ -31,8 +31,8 @@ function setSecCookie(sec, flag, isShow) {
 }
 
 function loadBoardFollow(sec, isFav, isLoading, isHide, isFold){
+	targetTip = getRawObject("followTip" + sec);
 	if (isLoading){
-		targetTip = getRawObject("followTip" + sec);
 		targetTip.style.display = '';
 		str = "loadsec.php?sec=" + sec;
 		if (isFav) str += "&fav=1";
@@ -40,6 +40,8 @@ function loadBoardFollow(sec, isFav, isLoading, isHide, isFold){
 		window.frames["hiddenframe"].document.location.href = str;
 		/* HTML 和 JS 元素的变化等待 loadsec.php 回调本函数，因为那个时候数据和状态才真正到位 - atppp */
 		return;
+	} else {
+		targetTip.style.display = 'none';
 	}
 	targetImg = getRawObject("followImg" + sec);
 	targetDiv = getRawObject("followSpan" + sec);
