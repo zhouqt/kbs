@@ -535,9 +535,11 @@ void board_update_toptitle(int bid,bool needlock)
 void flush_bcache()
 {
     int i;
+	bcache_setreadonly(0);
     for (i = 0; i < MAXBOARD; i++)
 	    bcache[i].idseq=brdshm->bstatus[i].nowid;
     msync(bcache,MAXBOARD * sizeof(struct boardheader),MS_SYNC);
+	bcache_setreadonly(1);
 }
 
 /* add by stiger, 2004,0322 */
