@@ -129,12 +129,12 @@ http://<?php echo $pcconfig["SITE"]; ?>/pc/pccon.php?<?php echo "id=".$rows[uid]
 			$result_i = mysql_query($query_i,$link);
 			$rows_i = mysql_fetch_row($result_i);
 			mysql_free_result($result_i);
-			$totleno = $rows_i[0];
-			$totlepage = (int)(($totleno - 1)/$pcconfig["SEARCHNUMBER"])+1;
-			if($pno < 1 || $pno > $totlepage)
+			$totalno = $rows_i[0];
+			$totalpage = (int)(($totalno - 1)/$pcconfig["SEARCHNUMBER"])+1;
+			if($pno < 1 || $pno > $totalpage)
 				$pno = 1;
 			$searchstartno = ($pno - 1)*$pcconfig["SEARCHNUMBER"];
-			$query .= " ORDER BY `nid` DESC LIMIT ".$searchstartno." , ".$pcconfig["SEARCHNUMBER"]." ; ";
+			$query .= " ORDER BY `nid` DESC LIMIT ".$searchstartno." , ".$pcconfig["SEARCHNUMBER"].";";
 			$result = mysql_query($query,$link);
 			$num_rows = mysql_num_rows($result);
 			
@@ -142,13 +142,13 @@ http://<?php echo $pcconfig["SITE"]; ?>/pc/pccon.php?<?php echo "id=".$rows[uid]
 ?>	
 <hr size="1">
 <p align="left" class="f5"><strong>
-您输入的关键字是 <font class="f4"><?php echo $keyword; ?></font> ，系统共为您找到 <font class="f4"><?php echo $totleno; ?></font> 条记录，
+您输入的关键字是 <font class="f4"><?php echo $keyword; ?></font> ，系统共为您找到 <font class="f4"><?php echo $totalno; ?></font> 条记录，
 这是 <font class="f4"><?php echo $searchstartno + 1; ?> - <?php echo $searchstartno +  $num_rows; ?></font> 条记录：
 </strong></p>		
 <?php			
 			for($i = 0;$i < $num_rows;$i++)
 				pc_search_display_result(mysql_fetch_array($result),$keyword1);
-			pc_search_display_pagetool($totlepage,$pno,$keyword,$area);
+			pc_search_display_pagetool($totalpage,$pno,$keyword,$area);
 ?>
 <br>
 <hr size="1">

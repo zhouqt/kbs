@@ -11,10 +11,10 @@
 	{
 		if($char)
 			$query = "SELECT  `uid` , `username` , `corpusname` , `description` , `theme` , `createtime`,`modifytime`,`nodescount`,`visitcount` ".
-				" FROM users WHERE `username` LIKE '".$char."%' ORDER BY ".$listorder." ".$listorder1." LIMIT ".$startno." , ".$pagesize." ; ";
+				" FROM users WHERE `username` LIKE '".$char."%' ORDER BY ".$listorder." ".$listorder1." LIMIT ".$startno." , ".$pagesize.";";
 		else
 			$query = "SELECT  `uid` , `username` , `corpusname` , `description` , `theme` , `createtime`,`modifytime`,`nodescount`,`visitcount` ".
-				" FROM users ORDER BY ".$listorder." ".$listorder1." LIMIT ".$startno." , ".$pagesize." ; ";
+				" FROM users ORDER BY ".$listorder." ".$listorder1." LIMIT ".$startno." , ".$pagesize.";";
 		$result = mysql_query($query,$link);
 		$list_user_num = mysql_num_rows($result);
 ?>
@@ -51,7 +51,7 @@
 	</td>
 </tr>
 <?php
-		for($i=0 ; $i < $list_user_num ; $i++)
+		for($i=0;$i < $list_user_num;$i++)
 		{
 			$rows = mysql_fetch_array($result);
 			$themekey = urlencode(stripslashes($rows[theme]));
@@ -71,11 +71,11 @@
 		mysql_free_result($result);	
 	}
 	
-	function display_navigation_bar($totle,$page,$char,$order="username",$order1="ASC")
+	function display_navigation_bar($total,$page,$char,$order="username",$order1="ASC")
 	{
 		$listno = 7;
 		$pre = min($listno,$page-1);
-		$next = min($listno,$totle-$page);
+		$next = min($listno,$total-$page);
 		if($char)
 			$url = "pc.php?order=".$order."&order1=".$order1."&char=".$char;
 		else
@@ -83,12 +83,12 @@
 		echo "<p align=\"center\">\n[ ";
 		if($pre < $page - 1)
 			echo "<a href=\"".$url."&pno=".($page - $pre - 1)."\">...</a> ";
-		for($i = $pre ;$i > 0 ; $i--)
+		for($i = $pre ;$i > 0;$i--)
 			echo "<a href=\"".$url."&pno=".($page - $i)."\">".($page - $i)."</a> ";
 		echo $page." ";
-		for($i = 0 ; $i < $next ;$i++)
+		for($i = 0;$i < $next ;$i++)
 			echo "<a href=\"".$url."&pno=".($page + $i + 1)."\">".($page + $i + 1)."</a> ";
-		if($next < $totle - $page)
+		if($next < $total - $page)
 			echo "<a href=\"".$url."&pno=".($page + $next + 1)."\">...</a> ";
 		echo "]\n</p>";
 	}
@@ -97,7 +97,7 @@
 	{
 		$all = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";	
 		echo "<p align=\"center\">\n[ ";
-		for($i=0;$i < 26 ; $i++)
+		for($i=0;$i < 26;$i++)
 		{
 			if($char == $all[$i])
 				echo $char." ";
@@ -144,15 +144,15 @@
 	if($char)
 		$query = "SELECT COUNT(*) FROM users WHERE `username` LIKE '".$char."%';";
 	else
-		$query = "SELECT COUNT(*) FROM users ; ";
+		$query = "SELECT COUNT(*) FROM users;";
 	$result = mysql_query($query);
 	$rows = mysql_fetch_row($result);
 	mysql_free_result($result);
-	$totle = $rows[0];
+	$total = $rows[0];
 	$pagesize = $pcconfig["LIST"];
-	$totlepage = (($totle - 1) / $pagesize) + 1;
-	$totlepage = (int)($totlepage);
-	if( $pageno < 1 || $pageno > $totlepage )
+	$totalpage = (($total - 1) / $pagesize) + 1;
+	$totalpage = (int)($totalpage);
+	if( $pageno < 1 || $pageno > $totalpage )
 		$pageno = 1;
 	$startno = ($pageno - 1)*$pagesize;
 	pc_html_init("gb2312","个人文集");
@@ -163,7 +163,7 @@
 </p>
 <?php
 	display_user_list($link,$listorder,$listorder1,$char,$startno,$pagesize);
-	display_navigation_bar($totlepage,$pageno,$char,$listorder,$listorder1);
+	display_navigation_bar($totalpage,$pageno,$char,$listorder,$listorder1);
 	display_char_bar($char);
 ?>
 <p class="f1">

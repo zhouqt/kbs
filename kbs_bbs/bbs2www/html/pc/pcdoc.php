@@ -123,7 +123,7 @@
 				$query.=" ORDER BY ";
 				
 		}	
-		$query .= "  `created` ASC ; ";
+		$query .= "  `created` ASC ;";
 		
 		$result = mysql_query($query,$link);
 		$i = 0;
@@ -205,7 +205,7 @@
 
 	function display_fav_folder($link,$pc,$pid=0,$pur,$order="")
 	{
-		$query = "SELECT `nid` FROM nodes WHERE `access` = '3' AND  `uid` = '".$pc["UID"]."' AND `pid` = '0' AND `type` = '1' LIMIT 0 , 1 ; ";
+		$query = "SELECT `nid` FROM nodes WHERE `access` = '3' AND  `uid` = '".$pc["UID"]."' AND `pid` = '0' AND `type` = '1' LIMIT 0 , 1 ;";
 		$result = mysql_query($query,$link);
 		if($rows = mysql_fetch_array($result))
 		{
@@ -232,7 +232,7 @@
 			$pid = $rootpid;
 		else
 		{
-			$query = "UPDATE nodes SET `visitcount` = visitcount + 1 WHERE  `access` = '3' AND `nid` = '".$pid."' AND `uid` = '".$pc["UID"]."'; ";
+			$query = "UPDATE nodes SET `visitcount` = visitcount + 1 WHERE  `access` = '3' AND `nid` = '".$pid."' AND `uid` = '".$pc["UID"]."';";
 			mysql_query($query,$link);
 		}
 		
@@ -259,7 +259,7 @@
 				$query.=" ORDER BY ";
 				
 		}	
-		$query .= " `type` ASC ; ";
+		$query .= " `type` ASC ;";
 		
 		$result = mysql_query($query,$link);
 		$i = 0;

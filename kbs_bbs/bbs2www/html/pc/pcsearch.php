@@ -51,7 +51,7 @@
 		$keyword1 = $keyword;
 	}
 	
-	$query .= " ORDER BY `username` ; ";
+	$query .= " ORDER BY `username`;";
 	$link = pc_db_connect();
 	$result = mysql_query($query,$link);
 	$num_rows = mysql_num_rows($result);
