@@ -27,7 +27,6 @@
 #include "bbsconfig.h"             /* User-configurable stuff */
 #ifndef BBSIRC
 
-
 /* Global includes, needed in most every source file... */
 
 #include <stdio.h>
@@ -58,6 +57,20 @@
 #include <arpa/inet.h>
 #include <sys/wait.h>
 #include <stdarg.h>
+
+#ifndef _cplusplus
+#ifndef HAVE_BOOL
+typedef int bool;
+#endif
+
+#ifndef true
+#define true 1
+#endif
+
+#ifndef false
+#define false 0
+#endif
+#endif
 
 /* System names.. by zixia.*/
 #include "site.h"
