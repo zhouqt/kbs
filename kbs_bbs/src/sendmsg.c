@@ -376,6 +376,7 @@ void r_msg()
                 default:
                     if(canreply) {
                         if(buf[0]) {
+                            strcpy(MsgDesUid, uid);
                             i = do_sendmsg(uin, buf, 4);
                             buf[0]=0;
                             if(i==1) strcpy(buf, "[1m∞Ôƒ„ÀÕ≥ˆ—∂œ¢¡À[m");
