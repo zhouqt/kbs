@@ -694,6 +694,7 @@ Blog名
 	<input type="radio" name="htmleditor" value="1" <?php if($pc["EDITOR"]==1) echo "checked"; ?>>HTMLArea编辑器
 	<input type="radio" name="htmleditor" value="2" <?php if($pc["EDITOR"]==2) echo "checked"; ?>>UBB编辑器
 	<input type="radio" name="htmleditor" value="0" <?php if($pc["EDITOR"]==0) echo "checked"; ?>>不使用编辑器
+	<input type="radio" name="htmleditor" value="3" <?php if($pc["EDITOR"]==3) echo "checked"; ?>>HTMLArea编辑器(rc1)
 	</td>
 </tr>
 <tr>
