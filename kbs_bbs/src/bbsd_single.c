@@ -1,6 +1,9 @@
 #include "bbs.h"
 #include <arpa/telnet.h>
 #include <sys/resource.h>
+#ifdef HAVE_REVERSE_DNS
+#include <netdb.h>
+#endif
 
 #define	QLEN		50
 #define	PID_FILE	"reclog/bbs.pid"
@@ -329,6 +332,41 @@ static void main_signals()
 
 }
 
+#ifdef HAVE_REVERSE_DNS
+static void 
+dns_query_timeout(int sig)
+{
+	longjmp(byebye, sig);
+}
+
+static void getremotehost(int sockfd, char *rhost, int buf_len)
+{
+	struct hostent *hp;
+	char *ptr;
+	struct sockaddr_in sin;
+	int value;
+	char buf[STRLEN];
+	
+	value = sizeof(sin);
+	getpeername(csock, (struct sockaddr *) &sin, (socklen_t *) & value);
+	if (setjmp(byebye) == 0)
+	{
+		signal(SIGALRM, dns_query_timeout);
+		alarm(5);
+		hp = gethostbyaddr((char *) &(sin.sin_addr), sizeof(struct in_addr),
+		                   sin.sin_family);
+		alarm(0);
+	}
+	strncpy(buf, hp ? hp->h_name : (char *) inet_ntoa(sin.sin_addr), 
+		sizeof(buf) - 1);
+	buf[sizeof(buf) - 1] = '\0';
+	if ((ptr = strstr(buf, "." NAME_BBS_ENGLISH)) != NULL)
+		*ptr = '\0';
+	strncpy(rhost, buf, buf_len - 1);
+	rhost[buf_len - 1] = '\0';
+}
+#endif /* HAVE_REVERSE_DNS */
+
 int bbs_main(argv)
     char *argv;
 {
@@ -341,7 +379,7 @@ int bbs_main(argv)
 #ifndef DEBUG
     if (strcmp(fromhost, "0.0.0.0") && strcmp(fromhost, "127.0.0.1") && (fp = fopen("NOLOGIN", "r")) != NULL) {
         while (fgets(buf, 256, fp) != NULL)
-            local_prints(buf);
+            local_prints("%s", buf);
         fclose(fp);
         local_Net_Sleep(20);
         shutdown(csock, 2);
@@ -424,6 +462,10 @@ int bbs_main(argv)
 
 
     fromhost[16] = '\0';
+#ifdef HAVE_REVERSE_DNS
+	getremotehost(csock, fromhost, sizeof(fromhost));
+#endif
+
 #if 0
 #ifdef D_TEST
     strcat(bbs_prog_path, "test");

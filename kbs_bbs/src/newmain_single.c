@@ -922,7 +922,7 @@ void update_endline()
         	sprintf(stitle, "[4%dm[33m ±º‰[[36m%12.12s[33m] ∫ÙΩ–∆˜[∫√”—:%3s£∫“ª∞„:%3s]  π”√’ﬂ%-24s Õ£¡Ù[%3d:%2d][m", colour, ctime(&now) + 4,
                 (!(uinfo.pager & FRIEND_PAGER)) ? "NO " : "YES", (uinfo.pager & ALL_PAGER) ? "YES" : "NO ", buf, (allstay / 60) % 1000, allstay % 60);
     } else {
-#ifdef NINE_BUILD
+#ifdef HAVE_FRIENDS_NUM
             num_alcounter();
             sprintf(stitle,"[1;4%dm[33m ±º‰[[36m%12.12s[33m] ◊‹»À ˝/∫√”—[%3d/%3d][%c£∫%c]  π”√’ﬂ%-24s Õ£¡Ù[%3d:%2d][m",colour,
                     ctime(&now)+4,count_users,count_friends,(uinfo.pager&ALL_PAGER)?'Y':'N',(!(uinfo.pager&FRIEND_PAGER))?'N':'Y',buf,(allstay/60)%1000,allstay%60);
