@@ -550,7 +550,7 @@ void r_msg()
                         strcpy(MsgDesUid, uid);
                         pid = head.frompid;
                         uin = t_search(uid, pid);
-                        if(uin==NULL) {
+                        if(uin==NULL&&head.mode!=6) {
                             i=-1;
                             strcpy(msgerr, "对方已经离线....");
                         }
