@@ -1145,7 +1145,7 @@ int fill_friendlist(int* range, uinfo_t** user_record)
 
     ful.count = 0;
     ful.user_record = user_record;
-    u = get_utmpent(getSession()->utmpent);
+    u = u_info;
     for (i = 0; i < u->friendsnum; i++) {
         if (u->friends_uid[i])
             apply_utmpuid((APPLY_UTMP_FUNC) full_utmp_friend, u->friends_uid[i], &ful);
