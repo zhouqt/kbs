@@ -12,7 +12,7 @@ if (!defined('_BBS_BOARDS_PHP_'))
 {
 define('_BBS_BOARDS_PHP_', 1);
 
-require("funcs.php");
+require_once("funcs.php");
 
 /**
  * Checking whether a board is set with some specific flags or not.
