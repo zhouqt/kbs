@@ -350,7 +350,7 @@ function ansi_convert( $buf , $defaultfg, $defaultbg)
     return $final;
 }
 
-if (($loginok!=1)&&($_SERVER["PHP_SELF"]!="/bbslogin.php")) {
+if (!isset($needlogin)&&($loginok!=1)&&($_SERVER["PHP_SELF"]!="/bbslogin.php")) {
 	error_nologin();
 	return;
 }
