@@ -749,8 +749,8 @@ void SMS_request(int signo)
 {
     char fn[80];
     struct stat st;
-	gettmpfilename( fn, "sms.res");
-    //sprintf(fn, "tmp/%d.res", smsuin->pid);
+//	gettmpfilename( fn, "sms.res");
+    sprintf(fn, "tmp/%d.res", smsuin->pid);
     if(stat(fn, &st)!=-1)
         smsresult=1;
 }
