@@ -2692,10 +2692,7 @@ Goodbye()    /*离站 选单*/
         }
     }else
     {
-        if(fill_shmfile(2,"etc/logout","GOODBYE_SHMKEY"))
-        {
-            show_goodbyeshm();
-        }
+        ansimore("etc/logout",NA);
     }
 
     /*if(DEFINE(currentuser,DEF_LOGOUT\*使用自己的离站画面*\)) Leeward: disable the old code

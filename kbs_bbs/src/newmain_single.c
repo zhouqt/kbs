@@ -473,10 +473,13 @@ login_query()
 	*/
 
     /* Leeward 98.09.24 Use SHARE MEM and disable the old code */
+	/*
     if(fill_shmfile(1,"etc/issue","ISSUE_SHMKEY"))
     {
         show_issue();
     }                
+    */
+    ansimore("etc/issue",NA);
     /*strcpy(fname,"etc/issue"); Leeward: disable the old code */
 /*    if(dashf(fname,"r")) This block is disabled for long, not for SHARE MEM
     {
@@ -773,14 +776,7 @@ user_login()
     }
     /* Leeward 98.09.24 Use SHARE MEM to diaplay statistic data below */
     if (DEFINE(currentuser,DEF_SHOWSTATISTIC))
-    {
-    if(show_statshm("0Announce/bbslists/countlogins",0))
-    {
-        move(0,0); clrtoeol(); /* Very strange if no these 2 commands //shake */
-        refresh();
-        pressanykey();
-    }      
-    }
+    	ansimore("0Announce/bbslists/countlogins", YEA);
     if(vote_flag(NULL,'\0',2/*检查读过新的Welcome 没*/)==0)
     {
         if(dashf( "Welcome" ))
@@ -794,9 +790,9 @@ user_login()
     if(DEFINE(currentuser,DEF_SHOWHOT))
     { /* Leeward 98.09.24 Use SHARE MEM and disable old code */
       if (DEFINE(currentuser,DEF_SHOWSTATISTIC)) {
-        show_statshm("etc/posts/day",1);
-        refresh(); 
-      } else ansimore("etc/posts/day",NA); /* Leeward: disable old code */
+    	ansimore("etc/posts/day", YEA);
+      }
+      else ansimore("etc/posts/day",NA);  /* Leeward: disable old code */
     }
     move( t_lines - 2/*1*/, 0 ); /* Leeward: 98.09.24 Alter below message */
     clrtoeol();

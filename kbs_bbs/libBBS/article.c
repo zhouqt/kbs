@@ -166,11 +166,13 @@ int     autoappend;
 		&& (fh->filename[STRLEN - 2] == 'S')
 		&& (atoi(fh->filename + 2) > now - 14 * 86400))
 	{
-		sprintf(genbuf, "%s\t%s\t%s\t%s\t%s\n",
-				board, fh->filename, fh->owner, from, fh->title);
+		FILE* fin;
+		char buf[120];
+		sprintf(buf, "%s\t%s\t%s\t%s\t%s\n",
+				board, fh->filename, fh->owner, email_domain(), fh->title);
 		if ((fin = fopen("innd/cancel.bntp", "a")) != NULL)
 		{
-			fputs(genbuf, fin);
+			fputs(buf, fin);
 			fclose(fin);
 		}
 	}
