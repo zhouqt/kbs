@@ -120,9 +120,8 @@ void filter_report(char* title,char *str)
 	if ((se = fopen(fname, "w")) != NULL) {
 		fprintf(se, "%s", str);
 		fclose(se);
-              post_file(&chatuser, "", fname, FILTER_BOARD, title, 0, 1);
+                post_file(&chatuser, "", fname, FILTER_BOARD, title, 0, 1);
 		unlink(fname);
-		modify_user_mode(savemode);
 	}
 }
 #endif
@@ -348,7 +347,7 @@ void send_to_room(room, str, unum)
     		char content[80];
     		sprintf(title,"%s 在聊天室说坏话",users[unum].userid);
     		sprintf(content,"%s(聊天代号 %s )说:%s",users[unum].userid,
-    			users[unum].chatid.str);
+    			users[unum].chatid,str);
     		filter_report(title, content);
               FD_SET(users[unum].sockfd, &writefds);
               do_send(&writefds, str);
@@ -1086,7 +1085,7 @@ void chat_setroom(unum, msg)
                 sprintf(buf, "过滤器已经关闭");
        	send_to_unum(unum,buf);
        	sprintf(title,"%s:%s",users[unum].userid, buf);
-       	filter_report(title,buf)
+       	filter_report(title,buf);
        	return;
        	}
 #endif
@@ -2068,18 +2067,9 @@ int main(argc, argv)
     struct timeval *tvptr = NULL;
 
     chdir(BBSHOME);
-    /* 以下为Luzi增加，防止被外部bbs连入 disable by KCN
-       char inbuf[80];
-       struct hostent *h;
-       gethostname(inbuf, STRLEN);
-       if (!(h = gethostbyname(inbuf)))
-       {
-       perror("gethostbyname");
-       return -1;
-       }
-       memset(inbuf, 0, 80);
-       memcpy(inbuf, h->h_addr, h->h_length);
-       以上为Luzi增加代码 1998.3.20 */
+#ifdef FILTER
+    resolve_boards();
+#endif
     /* ----------------------------- */
     /* init variable : rooms & users */
     /* ----------------------------- */
