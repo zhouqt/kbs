@@ -32,7 +32,7 @@
 
 struct addresslist * a_l;
 int al_num=0;
-int al_start=0;
+//int al_start=0;
 char al_dest[15];
 int al_order=0;
 char al_group[10];
@@ -220,20 +220,20 @@ static int set_al_select(struct _select_def *conf)
 {
 	clear();
 	move(0,0);
-	prints("ÐÕÃû:     %s\n", a_l[conf->pos-1].name);
-	prints("bbsid:    %s\n", a_l[conf->pos-1].bbsid);
-	prints("Ñ§Ð£:     %s\n", a_l[conf->pos-1].school);
-	prints("ÓÊÕþ±àÂë: %s\n", a_l[conf->pos-1].zipcode);
-	prints("¼ÒÍ¥×¡Ö·: %s\n", a_l[conf->pos-1].homeaddr);
-	prints("¹«Ë¾µØÖ·: %s\n", a_l[conf->pos-1].companyaddr);
-	prints("¼ÒÍ¥µç»°: %s\n", a_l[conf->pos-1].tel_h);
-	prints("¹«Ë¾µç»°: %s\n", a_l[conf->pos-1].tel_o);
-	prints("ÊÖ»ú:     %s\n", a_l[conf->pos-1].mobile);
-	prints("µç×ÓÐÅÏä: %s\n", a_l[conf->pos-1].email);
-	prints("qqºÅ:     %s\n", a_l[conf->pos-1].qq);
-	prints("·Ö×é:     %s\n", a_l[conf->pos-1].group);
-	prints("ÉúÈÕ:     %d-%d-%d\n", a_l[conf->pos-1].birth_year,a_l[conf->pos-1].birth_month,a_l[conf->pos-1].birth_day);
-	prints("±¸×¢:     %s", a_l[conf->pos-1].memo);
+	prints("ÐÕÃû:     %s\n", a_l[conf->pos-conf->page_pos].name);
+	prints("bbsid:    %s\n", a_l[conf->pos-conf->page_pos].bbsid);
+	prints("Ñ§Ð£:     %s\n", a_l[conf->pos-conf->page_pos].school);
+	prints("ÓÊÕþ±àÂë: %s\n", a_l[conf->pos-conf->page_pos].zipcode);
+	prints("¼ÒÍ¥×¡Ö·: %s\n", a_l[conf->pos-conf->page_pos].homeaddr);
+	prints("¹«Ë¾µØÖ·: %s\n", a_l[conf->pos-conf->page_pos].companyaddr);
+	prints("¼ÒÍ¥µç»°: %s\n", a_l[conf->pos-conf->page_pos].tel_h);
+	prints("¹«Ë¾µç»°: %s\n", a_l[conf->pos-conf->page_pos].tel_o);
+	prints("ÊÖ»ú:     %s\n", a_l[conf->pos-conf->page_pos].mobile);
+	prints("µç×ÓÐÅÏä: %s\n", a_l[conf->pos-conf->page_pos].email);
+	prints("qqºÅ:     %s\n", a_l[conf->pos-conf->page_pos].qq);
+	prints("·Ö×é:     %s\n", a_l[conf->pos-conf->page_pos].group);
+	prints("ÉúÈÕ:     %d-%d-%d\n", a_l[conf->pos-conf->page_pos].birth_year,a_l[conf->pos-conf->page_pos].birth_month,a_l[conf->pos-conf->page_pos].birth_day);
+	prints("±¸×¢:     %s", a_l[conf->pos-conf->page_pos].memo);
 	pressanykey();
 	return SHOW_REFRESH;
 }
@@ -243,26 +243,27 @@ static int set_al_show(struct _select_def *conf, int i)
 	char title[41];
 	char *c;
 
-	if(strlen(a_l[i-1].memo) > 40){
-		strncpy(title, a_l[i-1].memo, 37);
+	if(strlen(a_l[i-conf->page_pos].memo) > 40){
+		strncpy(title, a_l[i-conf->page_pos].memo, 37);
 		title[37]='.';
 		title[38]='.';
 		title[39]='.';
 	}else{
-		strcpy(title, a_l[i-1].memo);
+		strcpy(title, a_l[i-conf->page_pos].memo);
 	}
 	title[40]=0;
 
 	if((c = strchr(title, '\n') )!= NULL) *c=0;
 	if((c = strchr(title, '\r') )!= NULL) *c=0;
 
-	prints(" %-3d %-8s %-10s %-10s %-40s",al_start + i, a_l[i-1].name, a_l[i-1].bbsid, a_l[i-1].group, title);
+	prints(" %-3d %-8s %-10s %-10s %-40s", i, a_l[i-conf->page_pos].name, a_l[i-conf->page_pos].bbsid, a_l[i-conf->page_pos].group, title);
 	return SHOW_CONTINUE;
 }
 
 static int set_al_prekey(struct _select_def *conf, int *key)
 {
 	switch (*key) {
+			/*
 	case KEY_PGDN:
 	case KEY_DOWN:
 	{
@@ -302,6 +303,7 @@ static int set_al_prekey(struct _select_def *conf, int *key)
 		}
 		break;
 	}
+	*/
 	case 'q':
 		*key = KEY_LEFT;
 		break;
@@ -339,23 +341,23 @@ static int set_al_getdata(struct _select_def *conf,int pos,int len)
 		if( a_l[i].memo ) free(a_l[i].memo);
 	}
 	bzero( a_l, sizeof(struct addresslist) * BBS_PAGESIZE );
-	al_num = get_sql_al(a_l, currentuser->userid, al_dest, al_group, al_start, BBS_PAGESIZE,al_order, al_msgtxt);
 
-	conf->item_count = al_num;
+	if( conf->item_count - conf->page_pos < BBS_PAGESIZE )
+		conf->item_count = count_sql_al(currentuser->userid, al_dest, al_group, al_msgtxt);
 
-	if( al_num <= 0){
+	i = get_sql_al(a_l, currentuser->userid, al_dest, al_group, conf->page_pos-1, BBS_PAGESIZE,al_order, al_msgtxt);
 
-		al_start = 0;
+	if( i <= 0){
+
+		conf->pos = 1;
 		al_dest[0]=0;
 		al_group[0]=0;
 		//sm_type = -1;
 		al_msgtxt[0]=0;
 		
-		al_num = get_sql_al(a_l, currentuser->userid, al_dest, al_group, al_start, BBS_PAGESIZE,al_order, al_msgtxt);
+		i = get_sql_al(a_l, currentuser->userid, al_dest, al_group, 0, BBS_PAGESIZE,al_order, al_msgtxt);
 
-		conf->item_count = al_num;
-
-		if(al_num <= 0)
+		if(i <= 0)
 			return SHOW_QUIT;
 	}
 
@@ -388,7 +390,7 @@ static int set_al_key(struct _select_def *conf, int key)
 			return SHOW_REFRESH;
 		}
 
-		sprintf(sql,"DELETE FROM addr WHERE id=%d;",a_l[conf->pos-1].id);
+		sprintf(sql,"DELETE FROM addr WHERE id=%d;",a_l[conf->pos-conf->page_pos].id);
 
 		if( mysql_real_query( &s, sql, strlen(sql) ) ){
 			clear();
@@ -413,7 +415,7 @@ static int set_al_key(struct _select_def *conf, int key)
 		prints("[1;31m------------------------------------------------------------------------[m\n");
         getdata(2, 0, "Ñ¡ÔñÈ«²¿Í¨Ñ¶Â¼Çë°´[1;32m1[m,ÊäÈëÌõ¼þÑ¡ÔñÇë°´[1;32m2[m,È¡ÏûÖ±½Ó»Ø³µ(1/2/0) [0]: ", ans, 3, DOECHO, NULL, true);
 		if( ans[0] == '1' ){
-			al_start = 0;
+			conf->pos = 0;
 			al_dest[0]=0;
 			al_group[0]=0;
 			//sm_type = -1;
@@ -432,7 +434,10 @@ static int set_al_key(struct _select_def *conf, int key)
 
 			move(5,0);
 			getdata(5,0,"ÇëÊäÈë¿ªÊ¼ÏÔÊ¾µÄÍ¨Ñ¶Â¼ÐòºÅ [0]:",ans,5, DOECHO,NULL,true);
-			al_start = atoi(ans);
+			conf->page_pos = atoi(ans);
+			if(conf->page_pos<=0)
+				conf->page_pos=1;
+			conf->pos=conf->page_pos;
 
 			move(6,0);
 			getdata(6,0,"ÇëÊäÈëÒªÍ¨Ñ¶Â¼±¸×¢ÄÚÈÝ°üº¬ÎÄ×Ö(»Ø³µÑ¡ÔñËùÓÐ):",ans,21, DOECHO,NULL,true);
@@ -447,7 +452,7 @@ static int set_al_key(struct _select_def *conf, int key)
 	}
 	case 'f':
 	{
-		al_start = 0;
+		conf->pos = 0;
 		al_dest[0]=0;
 		al_group[0]=0;
 		//sm_type = -1;
@@ -463,7 +468,7 @@ static int set_al_key(struct _select_def *conf, int key)
 	}
 	case 'e':
 	{
-		if(add_addresslist(a_l+conf->pos-1)){
+		if(add_addresslist(a_l+conf->pos-conf->page_pos)){
 			return SHOW_DIRCHANGE;
 		}
 		return SHOW_REFRESH;
@@ -550,7 +555,7 @@ int al_read()
         pts[i].y = i + 3;
     }
 	group_conf.item_per_page = BBS_PAGESIZE;
-    group_conf.flag = LF_VSCROLL | LF_BELL;
+    group_conf.flag = LF_VSCROLL | LF_BELL | LF_MULTIPAGE | LF_LOOP;
     group_conf.prompt = "¡ô";
     group_conf.item_pos = pts;
 	group_conf.title_pos.x = 0;
@@ -567,30 +572,29 @@ int al_read()
 
 
 	bzero( a_l, sizeof(struct addresslist) * BBS_PAGESIZE );
-	al_num = get_sql_al(a_l, currentuser->userid, al_dest, al_group, al_start, BBS_PAGESIZE, al_order, NULL);
+	group_conf.item_count = count_sql_al(currentuser->userid, al_dest, al_group, NULL);
+	i = get_sql_al(a_l, currentuser->userid, al_dest, al_group, 0, BBS_PAGESIZE, al_order, NULL);
 	
-	if(al_num < 0){
+	if(i < 0){
 		free(pts);
 		free(a_l);
 		return -1;
 	}
-	if(al_num == 0){
+	if(i == 0){
 		if(!add_addresslist(NULL)){
 			free(pts);
 			free(a_l);
 			return -1;
 		}
-		al_num = get_sql_al(a_l, currentuser->userid, al_dest, al_group, al_start, BBS_PAGESIZE, al_order, NULL);
+		i = get_sql_al(a_l, currentuser->userid, al_dest, al_group, 0, BBS_PAGESIZE, al_order, NULL);
 	}
 
-	if(al_num <= 0){
+	if(i <= 0){
 		free(pts);
 		free(a_l);
 		return -1;
 	}
 
-	group_conf.item_count = al_num;
-		
 	clear();
 	list_select_loop(&group_conf);
 
@@ -601,7 +605,6 @@ int al_read()
 	free(pts);
 	free(a_l);
 	a_l = NULL;
-	al_num = 0;
 
 	return 1;
 }

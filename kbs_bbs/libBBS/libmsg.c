@@ -1256,6 +1256,78 @@ int chk_smsmsg(int force ){
 #endif
 
 #if HAVE_MYSQL == 1
+int count_sql_al( char *userid, char *dest, char *group, char *msgtxt)
+{
+
+	MYSQL s;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+	char sql[600];
+	char qtmp[100];
+	int i;
+
+	if(userid == NULL || *userid == 0 )
+		return -1;
+
+	mysql_init(&s);
+
+	if (! my_connect_mysql(&s) ){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		return -1;
+	}
+
+	sprintf(sql,"SELECT COUNT(*) FROM addr WHERE userid=\"%s\"", userid );
+
+	if(dest && *dest){
+		snprintf(qtmp, 99, " AND name=\"%s\"", dest);
+		strcat(sql, qtmp);
+	}
+
+	if(group && *group){
+		snprintf(qtmp, 99, " AND groupname=\"%s\"", group);
+		strcat(sql, qtmp);
+	}
+
+	if(msgtxt && msgtxt[0]){
+		char newmsgtxt[60];
+		int ii,jj;
+		for(ii=0,jj=0; msgtxt[ii] && jj<60; ii++){
+			if(msgtxt[ii] == '\'' || msgtxt[ii]=='\"')
+				newmsgtxt[jj++]='\\';
+			newmsgtxt[jj++]=msgtxt[ii];
+		}
+		newmsgtxt[jj]=0;
+		snprintf(qtmp, 99, " AND memo LIKE \"%%%s%%\"", newmsgtxt);
+		strcat(sql, qtmp);
+	}
+
+	if( mysql_real_query(&s, sql, strlen(sql)) ){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		mysql_close(&s);
+		return -1;
+	}
+	res = mysql_store_result(&s);
+	row = mysql_fetch_row(res);
+
+	i=0;
+	if(row != NULL){
+		i = atoi(row[0]);
+	}
+	mysql_free_result(res);
+
+	mysql_close(&s);
+	return i;
+}
+
+
 int get_sql_al( struct addresslist * smdata, char *userid, char *dest, char *group, int start, int num, int order, char *msgtxt)
 {
 
@@ -1291,23 +1363,7 @@ int get_sql_al( struct addresslist * smdata, char *userid, char *dest, char *gro
 		snprintf(qtmp, 99, " AND groupname=\"%s\"", group);
 		strcat(sql, qtmp);
 	}
-/*
 
-	if(start_time){
-		snprintf(qtmp, 99, " AND timestamp>FROM_UNIXTIME(%lu)+0", start_time);
-		strcat(sql, qtmp);
-	}
-
-	if(end_time){
-		snprintf(qtmp, 99, " AND timestamp<FROM_UNIXTIME(%lu)+0", end_time);
-		strcat(sql, qtmp);
-	}
-
-	if(type != -1){
-		snprintf(qtmp, 99, " AND type=\"%d\"", type);
-		strcat(sql, qtmp);
-	}
-*/
 	if(msgtxt && msgtxt[0]){
 		char newmsgtxt[60];
 		int ii,jj;
