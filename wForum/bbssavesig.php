@@ -35,32 +35,15 @@ show_footer();
 
 function main(){
 	global $currentuser;
-?>
-<form name=form1 method="post" action="bbssavesig.php">
-<table cellpadding=3 cellspacing=1 class=tableborder1 align=center>
-	<tr>
-    <th width=100% height=25 colspan=2 align=center>编辑显示签名档 [使用者: <?php echo $currentuser["userid"]; ?>]</th>
-    </tr>
-	<tr>
-          <td width=100% class=tablebody1 align="center"><textarea name="text"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.form1.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.form1.submit()' rows="20" cols="100" wrap="physical">
-<?php
 	$filename=bbs_sethomefile($currentuser["userid"],"signatures");
-    $fp = @fopen ($filename, "r");
-    if ($fp!=false) {
-    while (!feof ($fp)) {
-        $buffer = fgets($fp, 300);
-        echo $buffer;
-    }
-    fclose ($fp);
-    }
-
-?>
-</textarea></td></tr>
-	<tr><td width=100% class=tablebody1 align="center">
-	<input type="submit" value="存盘" />&nbsp;&nbsp;&nbsp;&nbsp;<input type="reset" value="复原" />
-	</td></tr>
-</table>
-</form>
-<?php
+	$fp=@fopen($filename,"w+");
+    if ($fp==false) {
+		foundErr("无法存盘，请联系管理员！");
+		return false;
+	}
+	fwrite($fp,str_replace("\r\n", "\n", $_POST["text"]));
+	fclose($fp);
+	setSucMsg("签名档已成功修改！");
+	return html_success_quit();
 }
 ?>
