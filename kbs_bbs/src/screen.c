@@ -162,7 +162,7 @@ void clear()
     char buf[200],*p;\
     sprintf(buf, "\x1b[");\
     p=buf+2;\
-    for(register int ii=0;ii<stackt;ii++) {\
+    for(ii=0;ii<stackt;ii++) {\
         if(ii==0) sprintf(p, "%d", stack[i]); \
         else sprintf(p, ";%d", stack[i]); \
         p=p+strlen(p);\
@@ -172,7 +172,7 @@ void clear()
     
 void refresh()
 {
-    register int i, j, k;
+    register int i, j, k, ii;
     register struct screenline *bp = big_picture;
     int count=0;
     int stack[100],stackt=0;
