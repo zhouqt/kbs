@@ -80,6 +80,15 @@ function pc_html_init($charset,$title="",$otherheader="",$style="",$bkimg="")
 >
 <?php
 }
+function undo_html_format($str)
+{
+	$str = str_replace("&nbsp;"," ",$str);
+	$str = preg_replace("/&gt;/i", ">", $str);
+	$str = preg_replace("/&lt;/i", "<", $str);
+	$str = preg_replace("/&quot;/i", "\"", $str);
+	$str = preg_replace("/&amp;/i", "&", $str);
+	return $str;
+}
 
 function html_format($str,$multi=FALSE)
 {

@@ -18,7 +18,7 @@
 		$result = mysql_query($query,$link);
 		$list_user_num = mysql_num_rows($result);
 ?>
-<table border="0" cellspacing="0" cellpadding="5" width="90%" class="t1">
+<table border="0" cellspacing="0" cellpadding="5" width="99%" class="t1">
 <tr>
 	<td class="t2" width="30">±àºÅ</td>
 	<td class="t2" width="70">

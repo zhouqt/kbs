@@ -540,7 +540,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 		}
 		elseif($act == "sedit" && $_POST["pcname"])
 		{
-			$query = "UPDATE `users` SET `corpusname` = '".addslashes($_POST["pcname"])."',`description` = '".addslashes($_POST["pcdesc"])."',`theme` = '".addslashes($_POST["pcthem"])."' , `backimage` = '".addslashes($_POST["pcbkimg"])."' , `logoimage` = '".addslashes($_POST["pclogo"])."' , `modifytime` = '".date("YmdHis")."' WHERE `uid` = '".$pc["UID"]."' LIMIT 1 ;";	
+			$query = "UPDATE `users` SET `corpusname` = '".addslashes(undo_html_format($_POST["pcname"]))."',`description` = '".addslashes(undo_html_format($_POST["pcdesc"]))."',`theme` = '".addslashes(undo_html_format($_POST["pcthem"]))."' , `backimage` = '".addslashes(undo_html_format($_POST["pcbkimg"]))."' , `logoimage` = '".addslashes(undo_html_format($_POST["pclogo"]))."' , `modifytime` = '".date("YmdHis")."' WHERE `uid` = '".$pc["UID"]."' LIMIT 1 ;";	
 			mysql_query($query,$link);
 			
 ?>
