@@ -819,7 +819,7 @@ int level;
 
     sprintf(bname,"0Announce/groups/%s",fhdr.ann_path);
     a_menu("", bname, level, 0);
-    return 0;
+    return 1;
 }
 
 void a_forward(path, pitem, mode)
