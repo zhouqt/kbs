@@ -2971,7 +2971,7 @@ static PHP_FUNCTION(bbs_get_article)
 	struct flock ldata;
 	struct fileheader *ptr1;
 	char* ptr;
-	unsigned int found;
+	int found;
 
 
     /*
