@@ -165,7 +165,7 @@ static void telnet_init()
     cmd = svr;
 
     for (n = 0; n < 5; n++) {
-        len = (n == 1 ? 6 : 3);
+        len = 3; //(n == 1 ? 6 : 3);
         send(0, cmd, len, 0);
         cmd += len;
         /* KCN !!!!!!!!!! wrong telnet
