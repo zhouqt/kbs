@@ -68,7 +68,7 @@ int main()
     fclose(fp);
 
     brc_initial(currentuser->userid, board);
-    brc_add_read(x.filename);
+    brc_add_read(x.id);
     brc_update(currentuser->userid);
     encode_url(buf2, board, sizeof(buf2));
     printf("</pre></td></tr>\n</table><hr>\n");
