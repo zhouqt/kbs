@@ -78,6 +78,7 @@ $filename_trans = array(" " => "_",
 require("site.php");
 
 define("ENCODESTRING","0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+define("ACTIVATIONLEN",15); //¼¤»îÂë³¤¶È
 function decodesessionchar($ch)
 {
 	return strpos(ENCODESTRING,$ch);
