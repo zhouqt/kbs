@@ -1157,6 +1157,7 @@ void a_menu(maintitle, path, lastlevel, lastbmonly)
             else
                 me.now = 0;
             break;
+        case Ctrl('C'):
         case Ctrl('P'):
             if (!HAS_PERM(currentuser, PERM_POST))
                 break;
@@ -1169,6 +1170,7 @@ void a_menu(maintitle, path, lastlevel, lastbmonly)
                 char bname[30];
 
                 clear();
+		move(1,0);
                 if (get_a_boardname(bname, "请输入要转贴的讨论区名称: ")) {
                     move(1, 0);
                     clrtoeol();
