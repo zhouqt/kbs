@@ -377,6 +377,7 @@ extern "C" {
 /* filter */
 int check_badword(char *checkfile);
 int check_filter(char *patternfile, char *checkfile,int defaultval);
+int check_badword_str(char *string,int str_len);
 
 
 #ifdef __cplusplus
