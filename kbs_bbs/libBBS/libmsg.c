@@ -59,7 +59,7 @@ int mode;
     }
     }
     if (msgstr == NULL) {
-    	// per-sending check only
+    	/* per-sending check only */
     	return 0;
     }
     now=time(0);
@@ -69,8 +69,8 @@ int mode;
     if(mode == 0||mode==2||mode==4)
     {
         sprintf(msgbuf,"[44m[36m%-12.12s[33m(%-5.5s):[37m%-59.59s[m[%dm\033[%dm\n", currentuser->userid,
-                timestr, msgstr,getuinfopid+100,uin->pid+100);
-        sprintf(msgbak,"[44m[0;1;32m=>[37m%-10.10s[33m(%-5.5s):[36m%-59.59s[m[%dm\033[%dm\n", uident,timestr, msgstr,getuinfopid+100,uin->pid+100);
+                timestr, msgstr,getuinfopid()+100,uin->pid+100);
+        sprintf(msgbak,"[44m[0;1;32m=>[37m%-10.10s[33m(%-5.5s):[36m%-59.59s[m[%dm\033[%dm\n", uident,timestr, msgstr,getuinfopid()+100,uin->pid+100);
     }else
     {
         if(mode==3) {
@@ -82,8 +82,8 @@ int mode;
         else if(mode==1)
         {
             sprintf(msgbuf,"[44m[36m%-12.12s(%-5.5s) ÑûÇëÄã[37m%-43.43s(%s)[m[%dm\033[%dm\n",
-                    currentuser->userid, timestr, msgstr,ret_str,getuinfopid+100,uin->pid+100);
-            sprintf(msgbak,"[44m[37mÄã(%-5.5s) ÑûÇë%-12.12s[36m%-43.43s(%s)[m[%dm\033[%dm\n", timestr,uident,msgstr,ret_str,getuinfopid+100,uin->pid+100);
+                    currentuser->userid, timestr, msgstr,ret_str,getuinfopid()+100,uin->pid+100);
+            sprintf(msgbak,"[44m[37mÄã(%-5.5s) ÑûÇë%-12.12s[36m%-43.43s(%s)[m[%dm\033[%dm\n", timestr,uident,msgstr,ret_str,getuinfopid()+100,uin->pid+100);
         }else if(mode==3)
         {
             sprintf(msgbuf,"[44m[32mBBS ÏµÍ³Í¨¸æ(%-5.5s):[37m%-59.59s[31m(%s)[m\033[%dm\n",

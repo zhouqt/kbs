@@ -9,7 +9,7 @@
 #include "screen.h"
 #define MAXMESSAGE 5
 
-struct user_info *getuinfopid(void)
+struct user_info *getuinfopid()
 {
    return uinfo.pid;
 }
@@ -166,17 +166,17 @@ int mode;
         /*   strcpy(MsgDesUid, uin->userid); change by KCN,is wrong*/
     }
     
-    // try to send the msg
+    /* try to send the msg*/
     result = sendmsgfunc(uentp,msgstr,mode);
  
     switch (result) {
-    	 case 1: // success
+    	 case 1: /* success */
           if (mode ==4) return 1;
            prints("\n已送出讯息....\n") ; pressreturn();
            clear() ;
            return 1;     	 
     	 break;
-    	 case -1: // failed, reason in msgerr
+    	 case -1: /* failed, reason in msgerr */
     	    move(2,0) ;
     	    prints(msgerr);
     	    pressreturn() ;
@@ -184,7 +184,7 @@ int mode;
     	    clrtoeol() ;
     	    return -1;
     	 break;
-    	 case 0: // message presending test ok, get the message and resend
+    	 case 0: /* message presending test ok, get the message and resend */
     	     if (mode == 4) return 0;
             Gmode=get_msg(uident,buf,1);
             if (!Gmode){
@@ -193,21 +193,21 @@ int mode;
                return 0;
             }
     	 break;
-    	 default: // unknown reason
+    	 default: /* unknown reason */
    	   return result;
     	 break;
     }	   
-    // resend the message
+    /* resend the message */
     result = sendmsgfunc(uentp,buf,mode);
  
     switch (result) {
-    	 case 1: // success
+    	 case 1: /* success */
           if (mode==4) return 0;
            prints("\n已送出讯息....\n") ; pressreturn();
            clear() ;
            return 1;     	 
     	 break;
-    	 case -1: // failed, reason in msgerr
+    	 case -1: /* failed, reason in msgerr */
     	    move(2,0) ;
     	    prints(msgerr);
     	    pressreturn() ;
@@ -215,7 +215,7 @@ int mode;
     	    clrtoeol() ;
     	    return -1;
     	 break;
-    	 default: // unknown reason
+    	 default: /* unknown reason */
    	   return result;
     	 break;
     }	   
