@@ -7,7 +7,7 @@ function pc_file_navigationbar($pc)
 <center>
 [<a href="index.php?id=<?php echo $pc["USER"]; ?>"><?php echo html_format($pc["NAME"]); ?></a>]
 [<a href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=7">参数设定</a>]
-[<a href="<?php echo MAINPAGE_FILE; ?>"><?php echo BBS_FULL_NAME; ?>首页</a>]
+[<a href="/<?php echo MAINPAGE_FILE; ?>"><?php echo BBS_FULL_NAME; ?>首页</a>]
 [<a href="javascript:history.go(-1);">快速返回</a>]
 </center>
 <?php	
@@ -228,7 +228,7 @@ else
 	
 	$c_dir = new UserFile($pid,$pc["UID"]);
 		
-    if ($_GET['act']=='edit' || $_GET['act']=='edit2' || $_GET['act']=='cp' || $_GET['act']=='mv' || $_GET['act']=='pt') {
+    if ($_GET['act']=='edit' || $_GET['act']=='edit2' || $_GET['act']=='rm' || $_GET['act']=='cp' || $_GET['act']=='mv' || $_GET['act']=='pt') {
         $fid = intval($_GET['fid']);
         if (!$fid)
 	        html_error_quit("错误的参数");
