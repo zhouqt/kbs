@@ -665,7 +665,7 @@ char *direct ;
     if(!HAS_PERM(PERM_PAGE))
         return DONOTHING;
     clear();
-    uin=t_search(fileinfo->owner,NA);
+    uin=(struct user_info*)t_search(fileinfo->owner,NA);
     if( !uin || !canmsg(uin))
         do_sendmsg(NULL,NULL,0);
     else {
@@ -1492,7 +1492,7 @@ int             offset, aflag;
     if ((fd = open(currdirect,O_RDONLY)) < 0) {return 0; }
     if (fstat(fd,&st) < 0) {close(fd); return 0;}
     pFh = mmap(NULL,st.st_size,PROT_READ,MAP_SHARED,fd,0);
-    if (pFh == (char *) -1) {close(fd); return 0;}
+    if (pFh == (struct filehead *) -1) {close(fd); return 0;}
 	pFh1 = pFh + now -1;
 	while (1)
 		{

@@ -602,7 +602,7 @@ va_dcl
             int val = 0 ;
             int len,negi ;
 
-            outns(begin,fmt-begin);
+            if (fmt-begin) outns(begin,fmt-begin);
             fmt++ ;
             while(*fmt == '-') {
                 sgn *= -1 ;
@@ -699,7 +699,7 @@ va_dcl
 
         fmt++ ;
     }
-    outs(begin);
+    if (*begin) outs(begin);
     endprint:
     return ;
 }

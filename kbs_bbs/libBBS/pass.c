@@ -26,7 +26,7 @@
 #include <sys/resource.h>
 #include <pwd.h>
 
-char	*crypt() ;
+char	*crypt1(char*,char*) ;
 
 char *
 genpasswd(pw)

@@ -294,6 +294,7 @@ extern int Net_Sleep(int);
 #endif
 
 #ifdef PROFILE
+#undef memcpy
 #define memcpy(x,y,z) pr_memcpy(x,y,z)
 #endif
 
