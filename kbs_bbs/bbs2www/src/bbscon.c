@@ -75,9 +75,9 @@ int main() {
 		//if(*(int*)(x.title+73)>1000000) (*(int*)(x.title+73))=0;
 		//fseek(fp, sizeof(x)*num, SEEK_SET);
 		//fwrite(&x, sizeof(x), 1, fp);
-		brc_init(currentuser.userid, board);
+		brc_init(currentuser->userid, board);
 		brc_add_read(x.filename);
-		brc_update(currentuser.userid, board);
+		brc_update(currentuser->userid, board);
 	}
 	fclose(fp);
      	ptr=x.title;

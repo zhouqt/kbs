@@ -287,10 +287,10 @@ extern int Net_Sleep(int);
 typedef size_t socklen_t;
 #endif
 
-#ifndef	BBS2WWW
+//#ifndef	BBS2WWW
 #include "vars.h"
 #include "func.h"
-#endif
+//#endif
 
 #define system my_system
 

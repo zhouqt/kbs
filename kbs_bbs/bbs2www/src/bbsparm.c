@@ -33,7 +33,7 @@ int main() {
 	int i, perm=1, type;
 	init_all();
 	type=atoi(getparm("type"));
-	printf("<center>%s -- 修改个人参数 [使用者: %s]<hr color=green>\n", BBSNAME, currentuser.userid);
+	printf("<center>%s -- 修改个人参数 [使用者: %s]<hr color=green>\n", BBSNAME, currentuser->userid);
 	if(!loginok) http_fatal("匆匆过客不能设定参数");
 	if(type) return read_form();
 	printf("<form action=bbsparm?type=1 method=post>\n");
@@ -41,7 +41,7 @@ int main() {
 	for(i=0; defines[i]; i++) {
 		char *ptr="";
 		if(i%2==0) printf("<tr>\n");
-		if(currentuser.userdefine & perm) ptr=" checked";
+		if(currentuser->userdefine & perm) ptr=" checked";
 		printf("<td><input type=checkbox name=perm%d%s><td>%s", i, ptr, defines[i]);
 		perm=perm*2;
 	}
@@ -58,7 +58,7 @@ int read_form() {
 		if(strlen(getparm(var))==2) def+=perm;
 		perm=perm*2;
 	}
-	currentuser.userdefine=def;
+	currentuser->userdefine=def;
 	save_user_data(&currentuser);
 	printf("个人参数设置成功.<br><a href=bbsparm>返回个人参数设置选单</a>");
 }

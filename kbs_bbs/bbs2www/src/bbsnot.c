@@ -5,7 +5,7 @@ int main() {
 	char buf[512], board[80], filename[80];
 	init_all();
 	strsncpy(board, getparm("board"), 32);
-	if(!has_read_perm(&currentuser, board)) http_fatal("错误的版面");
+	if(!has_read_perm(currentuser, board)) http_fatal("错误的版面");
 	printf("<center>\n");
 	printf("%s -- 备忘录 [讨论区: %s]<hr color=green>\n", BBSNAME, board);
    	sprintf(filename, "vote/%s/notes", board);
@@ -24,15 +24,15 @@ int main() {
 			s=strstr(buf, "$userid");
 			if(s==0) break;
 			for(i=0; i<7; i++) s[i]=32;
-			for(i=0; i<strlen(currentuser.userid); i++)
-				s[i]=currentuser.userid[i];
+			for(i=0; i<strlen(currentuser->userid); i++)
+				s[i]=currentuser->userid[i];
 		}
 		hhprintf("%s", buf);
 	}
  	fclose(fp); 
  	printf("</pre></table><hr>\n");
    	printf("[<a href=bbsdoc?board=%s>本讨论区</a>] ", board);
-	if(has_BM_perm(&currentuser, board)) 
+	if(has_BM_perm(currentuser, board)) 
 		printf("[<a href=bbsmnote?board=%s>编辑进版画面</a>]", board);
    	printf("</center>\n"); 
 	http_quit();

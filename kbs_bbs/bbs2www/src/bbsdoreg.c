@@ -74,12 +74,12 @@ int main()
 	x.lastlogin=time(0);
    	x.userdefine=-1;
    	x.flags[0]=CURSOR_FLAG | PAGER_FLAG;
-	if(xz==1) currentuser.userdefine ^= DEF_COLOREDSEX;
-	if(xz==2) currentuser.userdefine ^= DEF_SHOWHOROSCOPE;
+	if(xz==1) currentuser->userdefine ^= DEF_COLOREDSEX;
+	if(xz==2) currentuser->userdefine ^= DEF_SHOWHOROSCOPE;
 	adduser(&x);
    	fp=fopen("new_register", "a");
 	if(fp) {
-      		fprintf(fp, "usernum: %d, %s\n", 	getusernum(x.userid)+1, Ctime(time(0)));
+      		fprintf(fp, "usernum: %d, %s\n", 	getusernum(x.userid)+1, wwwCTime(time(0)));
       		fprintf(fp, "userid: %s\n",    	x.userid);
       		fprintf(fp, "realname: %s\n",  	x.realname);
       		fprintf(fp, "dept: %s\n",    	dept);
@@ -111,7 +111,7 @@ int main()
    	printf("<tr><td>电子邮件: <td>%s<br></table><br>\n", x.email);
    	printf("<center><input type=button onclick='window.close()' value=关闭本窗口></center>\n");
    	newcomer(&x, words);
-   	sprintf(buf, "%s %-12s %d\n", Ctime(time(0))+4, x.userid, getusernum(x.userid));
+   	sprintf(buf, "%s %-12s %d\n", wwwCTime(time(0))+4, x.userid, getusernum(x.userid));
    	f_append("wwwreg.log", buf);
 #endif /* not SMTH */
 	http_quit();

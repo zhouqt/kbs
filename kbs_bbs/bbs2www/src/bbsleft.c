@@ -74,11 +74,11 @@ int main() {
 		//char mybrd[32][80];
 		printf("<img src=\"/folder.gif\" name=\"img0\"><a href=\"javascript: t(document.all.div0, document.img0)\">个人定制区</a><br>\n");
 		printf("<div id=\"div0\" style=\"display:none\">\n");
-   		//sprintf(buf, "home/%c/%s/mybrds", toupper(currentuser.userid[0]), currentuser.userid);
+   		//sprintf(buf, "home/%c/%s/mybrds", toupper(currentuser->userid[0]), currentuser->userid);
    		//fp=fopen(buf, "r");
    		//if(fp) mybrdnum=fread(mybrd, sizeof(mybrd[0]), 30, fp);
    		//if(fp) fclose(fp);
-		load_favboard();
+		load_favboard(0);
 		mybrdnum = get_favboard_count();
   		for(i=0; i<mybrdnum; i++)
 		{
@@ -106,13 +106,13 @@ int main() {
 	}
   	printf("<img src=\"/link.gif\"><a href=\"bbsusr\" target=\"f3\"> 环顾四方</a><br>\n");
   	printf("<img src=\"/link.gif\"><a href=\"bbsqry\" target=\"f3\"> 查询网友</a><br>\n");
-        if(currentuser.userlevel & PERM_PAGE) {
+        if(currentuser->userlevel & PERM_PAGE) {
                 printf("<img src=\"/link.gif\"><a href=\"bbssendmsg\" target=\"f3\"> 发送讯息</a><br>\n");
                 printf("<img src=\"/link.gif\"><a href=\"bbsmsg\" target=\"f3\"> 查看所有讯息</a><br>\n");
 	}
 	printf("</div>\n");
 	ptr="";
-	if(currentuser.userlevel & PERM_CLOAK)
+	if(currentuser->userlevel & PERM_CLOAK)
 		ptr="<img src<img src=\"/link.gif\"><a target=\"f3\" onclick=\"return confirm('确实切换隐身状态吗?')\" href=\"bbscloak\"> 切换隐身</a><br>\n";
 	if(loginok)
                 printf("
@@ -152,7 +152,7 @@ int main() {
 		if(count_new_mails()>0) 
 			printf("<script>alert('您有新信件!')</script>\n");
 	}
-	if(loginok && !(currentuser.userlevel & PERM_LOGINOK) && !has_fill_form()) 
+	if(loginok && !(currentuser->userlevel & PERM_LOGINOK) && !has_fill_form()) 
 		printf("<a target=\"f3\" href=\"bbsform\">填写注册单</a><br>\n");
 	if(loginok) printf("<br><a href=\"javascript:openchat()\">[聊天广场<font color=\"red\">测试中</font>]</a>");
   	printf("</body>");
@@ -163,8 +163,8 @@ int count_new_mails() {
         int n, unread=0;
 	char buf[1024];
         FILE *fp;
-        if(currentuser.userid[0]==0) return 0;
-        sprintf(buf, "%s/mail/%c/%s/.DIR", BBSHOME, toupper(currentuser.userid[0]), currentuser.userid);
+        if(currentuser->userid[0]==0) return 0;
+        sprintf(buf, "%s/mail/%c/%s/.DIR", BBSHOME, toupper(currentuser->userid[0]), currentuser->userid);
         fp=fopen(buf, "r");
         if(fp==0) return;
         while(fread(&x1, sizeof(x1), 1, fp)>0)

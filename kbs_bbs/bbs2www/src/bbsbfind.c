@@ -49,7 +49,7 @@ int main() {
 		printf("<tr><td>%d", num);
 		printf("<td>%s", flag_str(x.accessed[0]));
 		printf("<td>%s", userid_str(x.owner));
-		printf("<td>%12.12s", 4+Ctime(atoi(x.filename+2)));
+		printf("<td>%12.12s", 4+wwwCTime(atoi(x.filename+2)));
 		printf("<td><a href=bbscon?board=%s&file=%s&num=%d>%40.40s </a>\n", board, x.filename, num-1, x.title);
 		if(total>=999) break;
 	}

@@ -206,7 +206,7 @@ int main()
 
 	init_all();
 	if(!loginok) http_fatal("ÇëÏÈµÇÂ¼");
-	id=currentuser.userid;
+	id=currentuser->userid;
 	strsncpy(board, getparm("board"), 60);
 	strsncpy(file, getparm("file"), 20);
 	brd=getbcache(board);

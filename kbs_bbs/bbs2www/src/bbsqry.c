@@ -117,7 +117,7 @@ void display_user(char *userid)
     	    strcpy(exittime,"因在线上或非常断线不详");
 	}
     hprintf( "\n上次在  [%s] 从 [%s] 到本站一游。\n离线时间[%s] ",
-			Ctime(lookupuser->lastlogin),
+			wwwCTime(lookupuser->lastlogin),
             ((lookupuser->lasthost[0] == '\0') ? 
 			 	"(不详)" : lookupuser->lasthost),
             exittime);

@@ -7,8 +7,8 @@ int main()
 
 	init_all();
 	if(!loginok) http_fatal("匆匆过客无法查看讯息, 请先登录");
-	/*sethomefile(path, currentuser.userid, "msgfile.me");*/
-	setmsgfile(path, currentuser.userid);
+	/*sethomefile(path, currentuser->userid, "msgfile.me");*/
+	setmsgfile(path, currentuser->userid);
 	fp=fopen(path, "r");
 	if(fp==0) http_fatal("没有任何讯息");
 	printf("<pre>\n");

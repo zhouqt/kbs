@@ -39,7 +39,7 @@ int main() {
 		if(sum-1>start+19) break;
 		printf("<tr><td>%d<td>%s<td>%s",
 			sum+1, flag_str(data[i].accessed[0]), userid_str(data[i].owner));
-         	printf("<td>%6.6s", Ctime(atoi(data[i].filename+2))+4);
+         	printf("<td>%6.6s", wwwCTime(atoi(data[i].filename+2))+4);
         	printf("<td><a href=bbstcon?board=%s&file=%s>¡ð %38.38s </a><td>%s",
 			board, data[i].filename,
 			nohtml(data[i].title), stat1(data, i, total));

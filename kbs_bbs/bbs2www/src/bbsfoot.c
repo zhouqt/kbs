@@ -8,11 +8,11 @@ int main() {
 	printf("<style type=text/css>\nA {color: #0000FF}\n</style>\n");
   	printf("<body bgcolor=#c0c0f0>\n");
         if(loginok) {
-		id=currentuser.userid;
+		id=currentuser->userid;
 		dt=abs(time(0) - *(int*)(u_info->from+32))/60;
                 set_idle_time(u_info, time(0));
         }
-  	printf("时间[%16.16s </a>] ", Ctime(time(0)));
+  	printf("时间[%16.16s </a>] ", wwwCTime(time(0)));
 	printf("在线[<a href=bbsusr target=f3>%d</a>] ", count_online());
 	printf("帐号[<a href=bbsqry?userid=%s target=f3>%s</a>] ", id, id);
 	if(loginok) {

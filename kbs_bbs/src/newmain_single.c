@@ -475,7 +475,7 @@ char *uid, *frm;
     int         fd, len;
 
     sprintf( genbuf, "%-12.12s  %-30s %s\n",
-                uid, Ctime( &login_start_time ), frm );
+                uid, Ctime( login_start_time ), frm );
     len = strlen( genbuf );
     if( (fd = open( BADLOGINFILE, O_WRONLY|O_CREAT|O_APPEND, 0644 )) > 0 ) {
         write( fd, genbuf, len );
@@ -801,7 +801,7 @@ notepad_init()
                 fprintf(check,"%d",lastnote);
                 fclose(check);
                 sprintf(tmp,"ÁôÑÔ°åÔÚ %s Login ¿ªÆô£¬ÄÚ¶¨¿ªÆôÊ±¼äÊ±¼äÎª %s"
-                ,currentuser->userid,Ctime(&lastnote));
+                ,currentuser->userid,Ctime(lastnote));
                 report(tmp);
         }
         if((time(NULL)-lastnote)>=maxsec)
@@ -934,7 +934,7 @@ user_login()
     move( t_lines - 2/*1*/, 0 ); /* Leeward: 98.09.24 Alter below message */
     clrtoeol();
     prints( "[1;36m¡î ÕâÊÇÄúµÚ [33m%d[36m ´ÎÉÏÕ¾£¬ÉÏ´ÎÄúÊÇ´Ó [33m%s[36m Á¬Íù±¾Õ¾¡£\n", currentuser->numlogins + 1, currentuser->lasthost );
-    prints( "¡î ÉÏ´ÎÁ¬ÏßÊ±¼äÎª [33m%s[m ", Ctime(&(currentuser->lastlogin)) );
+    prints( "¡î ÉÏ´ÎÁ¬ÏßÊ±¼äÎª [33m%s[m ", Ctime(currentuser->lastlogin) );
     igetkey();
     ansimore("0Announce/hotinfo",NA);
     move( t_lines - 1/*1*/, 0 ); /* Leeward: 98.09.24 Alter below message */

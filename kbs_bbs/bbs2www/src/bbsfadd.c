@@ -8,9 +8,9 @@ int main() {
 
 	init_all();
    	if(!loginok) http_fatal("您尚未登录，请先登录");
-   	//sprintf(path, "home/%c/%s/friends", toupper(currentuser.userid[0]), currentuser.userid);
+   	//sprintf(path, "home/%c/%s/friends", toupper(currentuser->userid[0]), currentuser->userid);
 	setuserfile(path, "friends");
-   	printf("<center>%s -- 好友名单 [使用者: %s]<hr color=green>\n", BBSNAME, currentuser.userid);
+   	printf("<center>%s -- 好友名单 [使用者: %s]<hr color=green>\n", BBSNAME, currentuser->userid);
 	strsncpy(userid, getparm("userid"), 13);
 	strsncpy(exp, getparm("exp"), 32);
 	if(userid[0]==0 || exp[0]==0) {

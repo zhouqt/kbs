@@ -9,8 +9,6 @@
 /*#include "crypt.h"*/
 #include "types.h"
 #include "crypt.h"
-#include "../lib/include/smthlib.h"
-#include "../lib/include/boardrc.h"
 
 #ifdef SMTH
 #define CACHE_ROOT "/backup/www/htdocs"
@@ -44,18 +42,18 @@
 #define SYS_MSGFILE         "msgfile"
 #define SYS_MSGFILELOG      "msgfile.log"   /* "msgfile.me" */
 
-typedef int (*APPLY_UTMP_FUNC)(struct user_info*,char*,int pos);
+//typedef int (*APPLY_UTMP_FUNC)(struct user_info*,char*,int pos);
 
 
 extern char seccode[SECNUM][5];
 extern char secname[SECNUM][2][20];
 extern int loginok;
-extern struct userec currentuser;
+extern struct userec* currentuser;
 extern struct user_info *u_info;
 extern struct UTMPFILE *shm_utmp;
 extern struct BCACHE *shm_bcache;
 extern struct UCACHE *shm_ucache;
-extern char fromhost[256];
+extern char fromhost[IPLEN];
 extern friends_t fff[200];
 extern int friendnum;
 extern char parm_name[256][80], *parm_val[256];
@@ -63,9 +61,9 @@ extern int parm_num;
 extern friends_t bbb[MAXREJECTS];
 extern int badnum;
 
-
-
-
+extern struct user_info *user_record[USHM_SIZE];
+extern struct userec *user_data;
+extern int friendmode, range;
 
 int junkboard(char *board);
 
@@ -76,7 +74,10 @@ struct post_log {
 	time_t	date;
 	int	number;
 };
-
+struct _shmkey {
+	char key[20];
+	int value;
+};
 
 char *strcasestr();
 char *ModeType();
@@ -95,6 +96,10 @@ struct stat *f_stat(char *file);
 #define file_isdir(x) ((f_stat(x)->st_mode & S_IFDIR)!=0)
 #define file_isfile(x) ((f_stat(x)->st_mode & S_IFREG)!=0)
 
+#define PERM_BLEVELS    (PERM_SYSOP | PERM_OBOARDS)
+/* PERM_DENYMAIL in SMTH */
+#define PERM_SPECIAL8  04000000000
+
 #ifndef SMTH
 int get_record(void *buf, int size, int num, char *file);
 #else
@@ -105,7 +110,7 @@ int put_record(void *buf, int size, int num, char *file);
 
 int del_record(char *file, int size, int num);
 
-char *Ctime(time_t t);
+char *wwwCTime(time_t t);
 
 char *noansi(char *s);
 
@@ -310,7 +315,7 @@ void save_favboard();
 
 int DelFavBoard(int i);
 
-void load_favboard();
+void load_favboard(int dohelp);
 
 int IsFavBoard(int idx);
 

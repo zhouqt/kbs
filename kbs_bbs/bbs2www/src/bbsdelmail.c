@@ -7,7 +7,7 @@ int main() {
 	int num=0;
 	init_all();
 	if(loginok == 0) http_fatal("ÄúÉĞÎ´µÇÂ¼");
-	id=currentuser.userid;
+	id=currentuser->userid;
 	strsncpy(file, getparm("file"), 20);
 	if(strncmp(file, "M.", 2) || strstr(file, "..")) http_fatal("´íÎóµÄ²ÎÊı");
 	sprintf(path, "mail/%c/%s/.DIR", toupper(id[0]), id);
@@ -33,7 +33,7 @@ int main() {
 	int num=0;
 	init_all();
 	if(loginok == 0) http_fatal("ÄúÉĞÎ´µÇÂ¼");
-	id=currentuser.userid;
+	id=currentuser->userid;
 	strsncpy(file, getparm("file"), 20);
 	if(strncmp(file, "M.", 2) || strstr(file, "..")) http_fatal("´íÎóµÄ²ÎÊı");
 	sprintf(path, "mail/%c/%s/.DIR", toupper(id[0]), id);

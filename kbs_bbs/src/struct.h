@@ -1,3 +1,5 @@
+#ifndef __STRUCT_H__
+#define __STRUCT_H__
 /* Note the protocol field is not inside an #ifdef FILES...
    this is a waste but allows you to add/remove UL/DL support without
    rebuilding the PASSWDS file (and it's only a lil ole int anyway).
@@ -113,5 +115,7 @@ struct UTMPFILE {
     int list_next[USHM_SIZE];  /* sorted list next ptr*/
     time_t              uptime;
 };
-
-
+struct BCACHE {
+	int numboards;
+};
+#endif

@@ -87,12 +87,12 @@ int inform(char *board, char *user, char *exp, int dt) {
 	sprintf(path, "tmp/%d.tmp", getpid());
 	fp=fopen(path, "w");
 	fprintf(fp, "【本公告由自动发信系统自动张贴】\n\n");
-	fprintf(fp, "%s被版务人员[%s]封禁了本版POST权[%d]天.\n", user, currentuser.userid, dt);
+	fprintf(fp, "%s被版务人员[%s]封禁了本版POST权[%d]天.\n", user, currentuser->userid, dt);
 	fprintf(fp, "原因是: %s\n", exp);
 	fclose(fp);
 	// temporary
 	//post_article(board, title, path, "deliver", "自动发信系统", "自动发信系统", -1);
-	post_mail(user, title, path, currentuser.userid, currentuser.username, fromhost, -1);
+	post_mail(user, title, path, currentuser->userid, currentuser->username, fromhost, -1);
 	unlink(path);
 	printf("系统已经发信通知了%s.<br>\n", user);
 }

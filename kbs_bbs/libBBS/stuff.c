@@ -29,7 +29,6 @@
 extern char *getenv();
 extern char fromhost[];
 
-
 int my_system(const char *cmdstring)
 {
         pid_t pid;
@@ -413,20 +412,20 @@ int safe_kill(int x, int y)
 
 
 
-char * Cdate(time_t * clock) /* 时间 --> 英文 */
+char * Cdate(time_t  clock) /* 时间 --> 英文 */
 {
     /* Leeward 2000.01.01 Adjust year display for 20** */
     static char foo[24/*22*/];
-    struct tm *mytm = localtime(clock);
+    struct tm *mytm = localtime(&clock);
 
     strftime(foo, 24/*22*/, "%Y-%m-%d %T %a"/*"%D %T %a"*/, mytm);
     return (foo);
 }
 
-char * Ctime(time_t * clock) /* 时间 转换 成 英文 */
+char * Ctime(time_t  clock) /* 时间 转换 成 英文 */
 {
     char *foo;
-    char *ptr = ctime(clock);
+    char *ptr = ctime(&clock);
 
     if (foo = strchr(ptr, '\n')) *foo = '\0';
     return (ptr);
@@ -477,7 +476,7 @@ void *attach_shm1( char    *shmstr,int     defaultkey, int shmsize,int* iscreate
     int         shmkey=0, shmid;
  
     shmkey = defaultkey;
-
+    shmid = shmget( shmkey, shmsize, 0 );
     if( shmid < 0 ) {
         if (readonly) {
             attach_err( shmkey, "shmget:readonly" );

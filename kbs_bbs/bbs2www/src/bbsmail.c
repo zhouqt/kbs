@@ -11,8 +11,8 @@ int main() {
 	start=atoi(buf);
 	if(buf[0]==0) start=999999;
    	printf("<center>\n");
-   	printf("%s -- 信件列表 [使用者: %s]<hr color=green>\n", BBSNAME, currentuser.userid);
-   	sprintf(dir, "mail/%c/%s/.DIR", toupper(currentuser.userid[0]), currentuser.userid);
+   	printf("%s -- 信件列表 [使用者: %s]<hr color=green>\n", BBSNAME, currentuser->userid);
+   	sprintf(dir, "mail/%c/%s/.DIR", toupper(currentuser->userid[0]), currentuser->userid);
    	total=file_size(dir)/sizeof(struct fileheader);
 	if(total<0 || total>30000) http_fatal("too many mails");
    	data=(struct fileheader *)calloc(total, sizeof(struct fileheader));
@@ -36,7 +36,7 @@ int main() {
 		ptr=nohtml(ptr);
 		printf("<td><a href=bbsqry?userid=%s>%13.13s</a>", ptr, ptr);
 	 	filetime=atoi(data[i].filename+2);
-         	printf("<td>%12.12s", Ctime(filetime)+4);
+         	printf("<td>%12.12s", wwwCTime(filetime)+4);
          	printf("<td><a href=bbsmailcon?file=%s&num=%d>", data[i].filename, i);
 	 	if(strncmp("Re: ", data[i].title, 4)) printf("★ ");
          	hprintf("%42.42s", void1(data[i].title));

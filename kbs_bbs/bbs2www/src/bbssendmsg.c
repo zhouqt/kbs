@@ -36,13 +36,13 @@ int main()
 			if(destpid!=0 && shm_utmp->uinfo[i].pid!=destpid) continue;
 			destpid=shm_utmp->uinfo[i].pid;
 			if(!(shm_utmp->uinfo[i].pager & ALLMSG_PAGER)) continue;
-			if(shm_utmp->uinfo[i].invisible && !(currentuser.userlevel & PERM_SEECLOAK)) continue;
+			if(shm_utmp->uinfo[i].invisible && !(currentuser->userlevel & PERM_SEECLOAK)) continue;
 			mode=shm_utmp->uinfo[i].mode;
 			if(mode==BBSNET || mode==PAGE) continue;*/
-			if(!strcasecmp(destid, currentuser.userid))
+			if(!strcasecmp(destid, currentuser->userid))
 				printf("你不能给自己发讯息！");
 			else {
-				if(send_msg(currentuser.userid, u_info->pid, destid, destpid, msg)==0) 
+				if(send_msg(currentuser->userid, u_info->pid, destid, destpid, msg)==0) 
 					printf("已经帮你送出消息");
 				else
 					printf("发送消息失败, 此人目前不在线或者无法接受消息");

@@ -36,7 +36,7 @@ int main() {
 		printf("<tr><td>%d", start+i+1);
 		printf("<td><input style='height:18px' name=box%s type=checkbox>", x.filename);
 		printf("<td>%s<td>%s", flag_str(x.accessed[0]), userid_str(x.owner));
-         	printf("<td>%12.12s", Ctime(atoi(x.filename+2))+4);
+         	printf("<td>%12.12s", wwwCTime(atoi(x.filename+2))+4);
          	printf("<td><a href=bbscon?board=%s&file=%s&num=%d>%s%36.36s </a>",
 			board, x.filename, start+i,
 			strncmp(x.title, "Re: ", 4) ? "¡ð " : "",

@@ -27,11 +27,6 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
-struct boardheader *bcache;
-struct BCACHE {
-	int numboards;
-}*brdshm;
-
 static int bcache_lock()
 {
     int lockfd;

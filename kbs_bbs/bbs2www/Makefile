@@ -1,4 +1,4 @@
-CGIPATH = /home/www/cgi-bin/bbs
+CGIPATH = /home/www/cgi-bin
 HTMPATH = /home/www/html
 BBSINCLUDE = /home/bbs/smth_bbs
 BBSINCLUDE2 = ../include
@@ -10,8 +10,8 @@ include	../Makefile.spec
 
 MAKE = make
 CC 	= gcc
-CFLAGS = -g -I$(BBSINCLUDE) -I$(BBSINCLUDE2)
-LDFLAGS = -L$(BBSLIBRARY) -lbbslib
+CFLAGS = -g -I$(BBSINCLUDE) -I$(BBSINCLUDE2) -W
+LDFLAGS = -L$(BBSLIBRARY) -L$(BBSINCLUDE)  -lbbslib -lBBS
 OS_DEF = -DLINUX
 SITE_DEF = -DINVISIBLE -DSMTH -DNJU_WWWBBS -DBBS2WWW
 #DEFINES = $(OS_DEF) $(SITE_DEF)

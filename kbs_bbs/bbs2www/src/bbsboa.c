@@ -39,7 +39,7 @@ int main()
 		printf("<tr><td>%d</td><td>%s</td>",
 			i+1, board_read(data[i].filename) ? "¡ó" : "¡ô");
 		printf("<td><a href=\"%s?board=%s\">%s</a></td>", cgi, data[i].filename, data[i].filename);
-		printf("<td>%12.12s</td>", 4+Ctime(file_time(buf)));
+		printf("<td>%12.12s</td>", 4+wwwCTime(file_time(buf)));
 		printf("<td>%6.6s</td>", data[i].title+1);
 		printf("<td><a href=\"%s?board=%s\">%s</a></td>", cgi, data[i].filename, data[i].title+7);
 		ptr=strtok(data[i].BM, " ,;");
@@ -71,6 +71,6 @@ int board_read(char *board) {
 	fseek(fp, (total-1)*sizeof(struct fileheader), SEEK_SET);
 	fread(&x, sizeof(x), 1, fp);
 	fclose(fp);
-	brc_init(currentuser.userid, board);
+	brc_init(currentuser->userid, board);
 	return brc_has_read(x.filename);
 }

@@ -2493,7 +2493,7 @@ post_article()                         /*ÓÃ»§ POST ÎÄÕÂ */
     brc_addlist( post_file.filename ) ;
 
     log("1user","posted '%s' on '%s'", post_file.title, currboard) ;
-    /*      postreport(post_file.title, 1);*/ /*added by alex, 96.9.12*/
+    /*      postreport(post_file.title, 1, currboard);*/ /*added by alex, 96.9.12*/
     if ( !junkboard() )
     {
         currentuser->numposts++;
@@ -3099,7 +3099,7 @@ char *direct ;
         *t = '\0' ;
     sprintf(genbuf,"Del '%s' on '%s'",fileinfo->title,currboard) ;
     report(genbuf) ; /* log*/
-    postreport(fileinfo->title, -1/* del 1 post*/); /*added by alex, 96.9.12 */
+    postreport(fileinfo->title, -1, currboard/* del 1 post*/); /*added by alex, 96.9.12 */
     strncpy(currfile,fileinfo->filename,STRLEN) ;
     if( keep <= 0 ) {
         fail = delete_file(direct,sizeof(struct fileheader),ent,cmpfilename);
@@ -3351,7 +3351,7 @@ show_b_note()
 }
 
 /*added by alex, 96.9.12*/
-void postreport(const char * posttitle, int post_num) 
+void postreport(const char * posttitle, int post_num, char *board) 
 {
     struct posttop
     {
@@ -3368,14 +3368,14 @@ void postreport(const char * posttitle, int post_num)
 
     if(disable)
         return ;
-    if(!strcmp(currboard, "test") || !strcmp(currboard,"junk") || !strcmp(currboard,"WaterWorld"))
+    if(!strcmp(board, "test") || !strcmp(board,"junk") || !strcmp(board,"WaterWorld"))
         return;
     /*if((fd = open(".post",O_WRONLY|O_CREAT,0644)) != -1 ) {*/
-    if((fd = open(".post.X",O_WRONLY|O_CREAT,0644)) != -1 ) {
+    if((fd = open(".post.X",O_WRONLY|O_CREAT,0644)) != -1 ){
         memset(&postlog, 0, sizeof(postlog));
         time(&(postlog.date));
-        strcpy(postlog.author,currentuser->userid);
-        strcpy(postlog.board, currboard);
+        strcpy(postlog.author, currentuser->userid);
+        strcpy(postlog.board, board);
         if( strncasecmp( posttitle, "Re:", 3 ) == 0 )
             strcpy(postlog.title, posttitle+4);
         else
@@ -3390,9 +3390,7 @@ void postreport(const char * posttitle, int post_num)
     }
     disable = YEA ;
     return ;
-
 }
-
 
 int
 into_announce()
@@ -3631,7 +3629,7 @@ notepad()
         {
             sprintf(tmp,"[32m%s[37m£¨%.24s£©",currentuser->userid,currentuser->username);
             fprintf(in,"[31m[40m¡Ñ©Ð¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[37mËáÌð¿àÀ±°å[31m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©Ð¡Ñ[m\n");
-            fprintf(in,"[31m¡õ©È%-43s[33mÔÚ [36m%.19s[33m Àë¿ªÊ±ÁôÏÂµÄ»°[31m©À¡õ\n",tmp,Ctime(&thetime));
+            fprintf(in,"[31m¡õ©È%-43s[33mÔÚ [36m%.19s[33m Àë¿ªÊ±ÁôÏÂµÄ»°[31m©À¡õ\n",tmp,Ctime(thetime));
             if (i>2) i=2;
             for(n=0;n<=i;n++)
             {

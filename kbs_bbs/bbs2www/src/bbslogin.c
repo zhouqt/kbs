@@ -54,9 +54,9 @@ int main()
     strsncpy(pw, getparm("pw"), 13);
 	//strsncpy(id, argv[1], 13);
     //strsncpy(pw, argv[2], 13);
-	if(loginok && strcasecmp(id, currentuser.userid)) {
+	if(loginok && strcasecmp(id, currentuser->userid)) {
 		http_fatal("系统检测到目前你的计算机上已经登录有一个帐号 %s，请先退出.(%s)", 
-			currentuser.userid, "选择正常logout, 或者关闭所有浏览器窗口");
+			currentuser->userid, "选择正常logout, 或者关闭所有浏览器窗口");
 	}
 	getuser(id, &x);
 	if(x==0) http_fatal("错误的使用者帐号");
@@ -66,7 +66,7 @@ int main()
 		if (!checkpasswd2(pw, x))
 		{
 			if(pw[0]!=0) sleep(2);
-			sprintf(buf, "%s %s %s\n", Ctime(time(0))+4, id, fromhost);
+			sprintf(buf, "%s %s %s\n", wwwCTime(time(0))+4, id, fromhost);
 			f_append(WWW_BADLOGIN, buf);
 			http_fatal("密码错误");
 		}
@@ -82,13 +82,13 @@ int main()
 		save_user_data(x);
 		if(abs(t-time(0))<5) http_fatal("两次登录间隔过密!");
 		x->numlogins++;
-		strsncpy(x->lasthost, fromhost, 17);
+		strsncpy(x->lasthost, fromhost, IPLEN);
 		save_user_data(x);
-		currentuser=*x;	/* struct assignment */
+		currentuser=x;	/* struct assignment */
 	}
-	sprintf(buf, "%s %s %s\n", Ctime(time(0)), x->userid, fromhost);
+	sprintf(buf, "%s %s %s\n", wwwCTime(time(0)), x->userid, fromhost);
 	f_append(WWW_LOG, buf);
-	sprintf(buf, "%s ENTER %-12s @%s [www]\n", Ctime(time(0))+4, x->userid, fromhost);
+	sprintf(buf, "%s ENTER %-12s @%s [www]\n", wwwCTime(time(0))+4, x->userid, fromhost);
 	f_append("usies", buf);
 	n=0;
 	if(!loginok && strcasecmp(id, "guest"))	wwwlogin(x);

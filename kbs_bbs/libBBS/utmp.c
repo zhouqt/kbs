@@ -30,7 +30,10 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
-struct UTMPFILE *utmpshm;
+struct UTMPFILE *get_utmpshm_addr()
+{
+	return utmpshm;
+}
 
 static void longlock(int signo)
 {
@@ -183,6 +186,88 @@ int getnewutmpent(struct user_info *up)
             }
         }
     }
+    utmp_unlock(utmpfd);
+    return pos+1 ;
+}
+
+/* same as getnewutmpent() except no updating of utmpshm 
+ * only called in www
+ */
+int 
+getnewutmpent2(struct user_info *up)
+{
+    struct user_info    *uentp;
+    time_t      now;
+    int         pos, n, i,prev;
+    int utmpfd,hashkey;
+
+	utmpfd = utmp_lock();
+	pos = utmpshm->hashhead[0]-1;
+    if( pos==-1 ) {
+    	utmp_unlock(utmpfd);
+        return -1;
+    }
+    /* add to sorted list  */
+
+	if (!utmpshm->listhead) { /* init the list head  */
+		utmpshm->list_prev[pos]=pos+1;
+		utmpshm->list_next[pos]=pos+1;
+		utmpshm->listhead=pos+1;
+	} else {
+		int i;
+		i=utmpshm->listhead;
+		if (strcasecmp(utmpshm->uinfo[i-1].userid,up->userid)>=0) {
+			/* add to head */
+    		utmpshm->list_prev[pos]=utmpshm->list_prev[i-1];
+	    	utmpshm->list_next[pos]=i;
+
+		    utmpshm->list_prev[i-1]=pos+1;
+
+    		utmpshm->list_next[utmpshm->list_prev[pos]-1]=pos+1;
+    		
+			utmpshm->listhead = pos+1;
+		} else {
+		    int count;
+		    count=0;
+			i=utmpshm->list_next[i-1];
+			while ((strcasecmp(utmpshm->uinfo[i-1].userid,up->userid)<0)&&
+				(i!=utmpshm->listhead)) {
+				    i=utmpshm->list_next[i-1];
+				    count++;
+				    if (count>USHM_SIZE) {
+                        log( "3system", "UTMP:maybe loop???");
+                        utmp_unlock(utmpfd);
+                        return -1;
+                }
+            }
+					        
+    		utmpshm->list_prev[pos]=utmpshm->list_prev[i-1];
+	    	utmpshm->list_next[pos]=i;
+
+		    utmpshm->list_prev[i-1]=pos+1;
+
+    		utmpshm->list_next[utmpshm->list_prev[pos]-1]=pos+1;
+		}
+	}
+
+    utmpshm->hashhead[0]=utmpshm->next[pos];
+
+    if (utmpshm->uinfo[pos].active)
+    	if (utmpshm->uinfo[pos].pid) {
+    		log("3system","utmp: alloc a active utmp! old:%s new:%s",
+    			utmpshm->uinfo[pos].userid,
+    			up->userid);
+    		kill(utmpshm->uinfo[pos].pid,SIGHUP);
+    	}
+    utmpshm->uinfo[pos] = *up;
+    hashkey=utmp_hash(up->userid);
+
+    i = utmpshm->hashhead[hashkey];
+    /* not need sort */
+  	utmpshm->next[pos]=i;
+    utmpshm->hashhead[hashkey]=pos+1;
+
+	utmpshm->number++;
     utmp_unlock(utmpfd);
     return pos+1 ;
 }

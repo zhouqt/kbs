@@ -9,7 +9,7 @@ int main() {
 	strsncpy(file, getparm("file"), 32);
 	num=atoi(getparm("num"));
 	printf("<center>\n");
-	id=currentuser.userid;
+	id=currentuser->userid;
 	printf("%s -- 阅读信件 [使用者: %s]<hr>\n", BBSNAME, id);
 	if(strncmp(file, "M.", 2)) http_fatal("错误的参数1");
 	if(strstr(file, "..") || strstr(file, "/")) http_fatal("错误的参数2");

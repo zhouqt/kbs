@@ -8,8 +8,8 @@ int main() {
 
 	init_all();
    	if(!loginok) http_fatal("您尚未登录，请先登录");
-   	sprintf(path, "home/%c/%s/friends", toupper(currentuser.userid[0]), currentuser.userid);
-   	printf("<center>%s -- 好友名单 [使用者: %s]<hr color=green>\n", BBSNAME, currentuser.userid);
+   	sprintf(path, "home/%c/%s/friends", toupper(currentuser->userid[0]), currentuser->userid);
+   	printf("<center>%s -- 好友名单 [使用者: %s]<hr color=green>\n", BBSNAME, currentuser->userid);
 	strsncpy(userid, getparm("userid"), 13);
 	if(userid[0]==0) {
 		printf("<form action=bbsfdel>\n");
@@ -18,7 +18,7 @@ int main() {
 		printf("</form>");
 		http_quit();
 	}
-   	loadfriend(currentuser.userid);
+   	loadfriend(currentuser->userid);
 	if(friendnum<=0) http_fatal("您没有设定任何好友");
    	if(!isfriend(userid)) http_fatal("此人本来就不在你的好友名单里");
    	for(i=0; i<friendnum; i++) {

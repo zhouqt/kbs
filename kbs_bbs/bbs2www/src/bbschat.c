@@ -568,7 +568,7 @@ int agent(int pid) {
 	signal(SIGALRM, abort_chat);
 	alarm(60);
  	sprintf(genbuf, "/! %d %d %s %s %d\n", 
-		u_info->uid, currentuser.userlevel, currentuser.userid, currentuser.userid, 0);
+		u_info->uid, currentuser->userlevel, currentuser->userid, currentuser->userid, 0);
  	write(chat_fd, genbuf, strlen(genbuf));
 	read(chat_fd, genbuf, 2);
 	if(!strcasecmp(genbuf, "OK")) exit(0);

@@ -22,7 +22,7 @@ int main()
 	if(!has_post_perm(&currentuser, board))
 		http_fatal("错误的讨论区或者您无权在此讨论区发表文章");
    	printf("<center>\n");
-	printf("%s -- 发表文章 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser.userid);
+	printf("%s -- 发表文章 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser->userid);
    	printf("<form method=\"post\" action=\"bbssnd?board=%s\">\n<table border=\"1\">\n");
 	printf("<tr><td>");
 	printf("<font color=\"green\">发文注意事项: <br>\n");
@@ -31,15 +31,15 @@ int main()
    	printf("使用标题: <input type=\"text\" name=\"title\" size=\"40\" maxlength=\"100\" value=\"%s\">\n", 
 		void1(title));
 	printf(" 讨论区: [%s]<br>\n",board);
-   	printf("作者：%s", currentuser.userid);
+   	printf("作者：%s", currentuser->userid);
    	printf("  使用签名档 <select name=\"signature\">\n");
-	if (currentuser.signature == 0)
+	if (currentuser->signature == 0)
 		printf("<option value=\"0\" selected>不使用签名档</option>\n");
 	else
 		printf("<option value=\"0\">不使用签名档</option>\n");
 	for (i = 1; i < 6; i++)
 	{
-		if (currentuser.signature == i)
+		if (currentuser->signature == i)
    			printf("<option value=\"%d\" selected>第 %d 个</option>\n", i, i);
 		else
    			printf("<option value=\"%d\">第 %d 个</option>\n", i, i);

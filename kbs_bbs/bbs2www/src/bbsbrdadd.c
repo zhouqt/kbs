@@ -12,7 +12,7 @@ int main()
 	strsncpy(board, getparm("board"), 32);
 	if(!loginok)
 		http_fatal("超时或未登录，请重新login");
-	//sprintf(file, "home/%c/%s/mybrds", toupper(currentuser.userid[0]), currentuser.userid);
+	//sprintf(file, "home/%c/%s/mybrds", toupper(currentuser->userid[0]), currentuser->userid);
 	//fp=fopen(file, "r");
 	//if(fp)
 	//{
@@ -21,7 +21,7 @@ int main()
 	//}
 	if (getboardnum(board, &x) == 0)
 		http_fatal("此讨论区不存在");
-	load_favboard();
+	load_favboard(0);
 	//if(get_favboard_count() >= FAVBOARDNUM)
 	//	http_fatal("您预定讨论区数目已达上限，不能增加预定");
 	//if(IsFavBoard(mybrdnum-1)>0)

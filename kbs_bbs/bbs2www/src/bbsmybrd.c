@@ -27,14 +27,14 @@ int main()
 		read_submit();
 		http_quit();
 	}
-   	//sprintf(path, "home/%c/%s/mybrds", toupper(currentuser.userid[0]), currentuser.userid);
+   	//sprintf(path, "home/%c/%s/mybrds", toupper(currentuser->userid[0]), currentuser->userid);
    	/*setuserfile(path, "favboard");
 	fp=fopen(path, "r");
    	if(fp) {
 		mybrdnum=fread(mybrd, sizeof(mybrd[0]), 30, fp);
    		fclose(fp);
 	}*/
-	load_favboard();
+	load_favboard(0);
    	printf("<center>\n");
 	printf("<style type=\"text/css\">A {color: 000080} </style>\n");
 	printf("个人预定讨论区管理(您目前预定了%d个讨论区，最多可预定%d个)<hr>\n",
@@ -103,7 +103,7 @@ int read_submit()
 		}
 	}
 	//sprintf(buf1, "home/%c/%s/mybrds",
-	//		toupper(currentuser.userid[0]), currentuser.userid);
+	//		toupper(currentuser->userid[0]), currentuser->userid);
 	//fp=fopen(buf1, "w");
 	//fwrite(mybrd, 80, mybrdnum, fp);
 	//fclose(fp);

@@ -1113,7 +1113,7 @@ char           *logfile, *regfile;
                     for (n = 0; field[n] != NULL; n++)
                         fprintf(fout, "%s: %s\n", field[n], fdata[n]);
                     now = time(NULL);
-                    fprintf(fout, "Date: %s\n", Ctime(&now));
+                    fprintf(fout, "Date: %s\n", Ctime(now));
                     fprintf(fout, "Approved: %s\n", uid);
                     fprintf(fout, "----\n");
                     fclose(fout);

@@ -3,7 +3,7 @@
 int main() {
 	init_all();
 	if(!loginok) http_fatal("匆匆过客不能进行此操作, 请先登录");
-	if(!(currentuser.userlevel & PERM_CLOAK)) http_fatal("错误的参数");
+	if(!(currentuser->userlevel & PERM_CLOAK)) http_fatal("错误的参数");
 	if(u_info->invisible) {
 		u_info->invisible=0;
 		printf("隐身状态已经停止了.");

@@ -31,7 +31,7 @@ int main() {
 		if(fread(&x, sizeof(x), 1, fp)<=0) break;
 		printf("<tr><td>%d<td>%s<td>%s",
 			start+i+1, flag_str(x.accessed[0]), userid_str(x.owner));
-         	printf("<td>%12.12s", Ctime(atoi(x.filename+2))+4);
+         	printf("<td>%12.12s", wwwCTime(atoi(x.filename+2))+4);
          	printf("<td><a href=bbsgcon?board=%s&file=%s&num=%d>%s%40.40s</a><td>%d\n",
 			board, x.filename, start+i,
 			strncmp(x.title, "Re: ", 4) ? "¡ñ " : "",

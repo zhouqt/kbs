@@ -29,7 +29,7 @@ int main()
 		if(fread(&x, sizeof(x), 1, fp)<=0) break;
 		printf("<tr><td>%d<td>%s<td><a href=bbsqry?userid=%s>%s</a><td>%s<td>%d<td>%d<td>%s\n",
 			start+i+1, isfriend(x.userid) ? "<font color=green>¡Ì</font>" : " ", x.userid, 
-			x.userid, nohtml(x.username), x.numlogins, x.numposts, Ctime(x.lastlogin)+4);
+			x.userid, nohtml(x.username), x.numlogins, x.numposts, wwwCTime(x.lastlogin)+4);
 	}
 	printf("</table><hr color=green>\n");
 	if(start>0) printf("[<a href=bbsalluser?start=0>µÚÒ»Ò³</a>] ");

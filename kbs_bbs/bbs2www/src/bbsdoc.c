@@ -16,7 +16,7 @@ int main() {
 	x1=getbcache(board);
 	if(x1==0) http_fatal("错误的讨论区");
 	strcpy(board, x1->filename);
-	if(!has_read_perm(&currentuser, board)) http_fatal("错误的讨论区");
+	if(!has_read_perm(currentuser, board)) http_fatal("错误的讨论区");
 	getcwd(dir, sizeof(dir)-1);
 	//printf("%s\n", dir);
 	//printf("BBSHOME=%s\n", BBSHOME);
@@ -31,7 +31,7 @@ int main() {
 	if(my_t_lines<10 || my_t_lines>40) my_t_lines=20;
         if(strlen(getparm("start"))==0 || start>total-my_t_lines) start=total-my_t_lines;
   	if(start<0) start=0;
-	brc_init(currentuser.userid, board);
+	brc_init(currentuser->userid, board);
 	printf("<nobr><center>\n");
 	printf("%s -- [讨论区: %s] 版主[%s] 文章数[%d] <a href=\"bbsbrdadd?board=%s\">预定本版</a><hr color=\"green\">\n", 
 		BBSNAME, board, userid_str(x1->BM), total, board);
@@ -54,8 +54,8 @@ int main() {
 		printf("<tr><td>%d</td><td>%s%s%s</td><td>%s</td>",
 			start+i+1, font1, ptr, font2, userid_str(x.owner));
 			/* 只显示日期 */
-         	printf("<td>%6.6s</td>", Ctime(atoi(x.filename+2))+4);
-         	//printf("<td>%12.12s</td>", Ctime(atoi(x.filename+2))+4);
+         	printf("<td>%6.6s</td>", wwwCTime(atoi(x.filename+2))+4);
+         	//printf("<td>%12.12s</td>", wwwCTime(atoi(x.filename+2))+4);
 			/* 去掉统计字节数的功能, 浪费系统资源 */
          	printf("<td><a href=\"bbscon?board=%s&file=%s&num=%d\">%s%36.36s </a></td>",
          	//printf("<td><a href=\"bbscon?board=%s&file=%s&num=%d\">%s%36.36s </a>%s</td>",
@@ -78,7 +78,7 @@ int main() {
 	if(start<total-20)
 		printf("<a href=\"bbsdoc?board=%s&start=%d\">下一页</a> ", board, start+my_t_lines);
 	printf("<a href=\"bbstdoc?board=%s\">主题模式</a> ", board);
-	if(has_BM_perm(&currentuser, board)) 
+	if(has_BM_perm(currentuser, board)) 
 		printf("<a href=\"bbsmdoc?board=%s\">管理模式</a> ", board);
 	printf("<a href=\"bbsnot?board=%s\">进版画面</a> ", board);
 	printf("<a href=\"bbsgdoc?board=%s\">文摘区</a> ", board);

@@ -16,7 +16,7 @@ int main() {
 		if(!file_exist(buf)) continue;
 		no++;
 		printf("<tr><td>%d<td><a href=/an/%s.tgz>%s.tgz</a><td>%d<td>%s\n", 
-			no, brd, brd, file_size(buf), Ctime(file_time(buf))+4);
+			no, brd, brd, file_size(buf), wwwCTime(file_time(buf))+4);
 	}
 	printf("</table>");
 }

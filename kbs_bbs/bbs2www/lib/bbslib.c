@@ -1,5 +1,71 @@
 #include "types.h"
 #include "bbslib.h"
+#include "boardrc.h"
+
+char    brc_buf[BRC_MAXSIZE];
+int     brc_size;
+char    brc_name[BRC_STRLEN];
+int     brc_list[BRC_MAXNUM], brc_num;
+
+static const struct _shmkey shmkeys[]= {
+{ "BCACHE_SHMKEY",  3693 },
+{ "UCACHE_SHMKEY",  3696 },
+{ "UTMP_SHMKEY",    3699 },
+{ "ACBOARD_SHMKEY", 9013 },
+{ "ISSUE_SHMKEY",   5010 },
+{ "GOODBYE_SHMKEY", 5020 },
+{ "PASSWDCACHE_SHMKEY", 3697 },
+{ "STAT_SHMKEY",    5100 },
+{ "CONVTABLE_SHMKEY",    5101 },
+{    0,   0 }
+};
+
+time_t update_time=0;
+int showexplain=0,freshmode=0;
+int mailmode,numf;
+int friendmode=0;
+int usercounter,real_user_names=0;
+int range,page,readplan,num;
+
+struct user_info *user_record[USHM_SIZE];
+struct userec *user_data;
+
+char seccode[SECNUM][5]={
+	"0", "1", "3", "4", "5", "6", "7", "8", "9"
+};
+
+char secname[SECNUM][2][20]={
+	"BBS 系统", "[站内]",
+	"清华大学", "[本校]",
+	"电脑技术", "[电脑/系统]",
+	"休闲娱乐", "[休闲/音乐]",
+	"文化人文", "[文化/人文]",
+	"社会信息", "[社会/信息]",
+	"学术科学", "[学科/语言]",
+	"体育健身", "[运动/健身]",
+	"知性感性", "[谈天/感性]",
+};
+
+int loginok=0;
+friends_t bbb[MAXREJECTS];
+int badnum=0;
+
+struct user_info *u_info;
+struct UTMPFILE *shm_utmp;
+struct BCACHE *shm_bcache;
+struct UCACHE *shm_ucache;
+char fromhost[IPLEN];
+char parm_name[256][80], *parm_val[256];
+int parm_num=0;
+int     favbrd_list[FAVBOARDNUM+1];
+
+friends_t fff[200];
+
+int friendnum=0;
+int nf;
+struct friends_info *topfriend;
+
+
 
 int seek_in_file(filename,seekstr)
 char filename[STRLEN],seekstr[STRLEN];
@@ -60,7 +126,7 @@ struct stat *f_stat(char *file) {
 	return &buf;
 }
 
-char *Ctime(time_t t) {
+char *wwwCTime(time_t t) {
 	static char s[80];
 	sprintf(s, "%24.24s", ctime(&t));
 	return s;
@@ -369,7 +435,7 @@ int http_init() {
 		}
 		t2=strtok(0, ";");
 	}
-	strsncpy(fromhost, getsenv("REMOTE_ADDR"), 32);
+	strsncpy(fromhost, getsenv("REMOTE_ADDR"), IPLEN);
 }
 
 int __to16(char c) {
@@ -439,7 +505,7 @@ int user_init(struct userec *x, struct user_info **y)
 	/* 这里有问题, (*y)在后面将一直指向&(utmpshm_ptr->uinfo[i]),
 	 * 不管后面的那些判断是否成功 */
 	(*y) = get_user_info(i);
-	if(strncmp((*y)->from, fromhost, 24))
+	if(strncmp((*y)->from, fromhost, IPLEN))
 	{
 		//printf("from is ->%s<-, len = %d\n", (*y)->from, strlen((*y)->from));
 		//printf("fromhost is ->%s<-, len = %d\n", fromhost, strlen(fromhost));
@@ -506,7 +572,7 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
 	fp2=fopen(file, "r");
 	fprintf(fp, "寄信人: %s (%s)\n", id, nickname);
 	fprintf(fp, "标  题: %s\n", title);
-	fprintf(fp, "发信站: %s (%s)\n", BBSNAME, Ctime(time(0)));
+	fprintf(fp, "发信站: %s (%s)\n", BBSNAME, wwwCTime(time(0)));
 	fprintf(fp, "来  源: %s\n\n", ip);
 	if(fp2) {
 		while(1) {
@@ -675,7 +741,7 @@ void write_header2(FILE *fp, char *board, char *title,
 				board) ;
 	fprintf(fp, 
 			"标  题: %s\n发信站: %s (%24.24s)\n\n",
-			title, "BBS "NAME_BBS_CHINESE"站", Ctime(time(0)));
+			title, "BBS "NAME_BBS_CHINESE"站", wwwCTime(time(0)));
 }
 
 // fp 		for destfile
@@ -775,7 +841,7 @@ post_article(char *board, char *title, char *file, struct userec *user,
     /*      postreport(post_file.title, 1);*/ /*added by alex, 96.9.12*/
     //if ( !junkboard(board) )
     //{
-    //    currentuser.numposts++;
+    //    currentuser->numposts++;
     //}
     return now;
 }
@@ -1197,7 +1263,7 @@ int isbad(char *id) {
         static inited=0;
         int n;
         if(!inited) {
-                loadbad(currentuser.userid);
+                loadbad(currentuser->userid);
                 inited=1;
         }
         for(n=0; n<badnum; n++)
@@ -1212,7 +1278,7 @@ int init_all() {
 	/*seteuid(BBSUID);*/
 	/*if(geteuid()!=BBSUID) http_fatal("uid error.");*/
 	shm_init();
-	loginok=user_init(&currentuser, &u_info);
+	loginok=user_init(currentuser, &u_info);
 }
 
 int init_no_http() {
@@ -1424,7 +1490,7 @@ int set_my_cookie() {
 	FILE *fp;
 	char path[256], buf[256], buf1[256], buf2[256];
 	int my_t_lines=20, my_link_mode=0, my_def_mode=0;
-	sprintf(path, "home/%c/%s/.mywww", toupper(currentuser.userid[0]), currentuser.userid);
+	sprintf(path, "home/%c/%s/.mywww", toupper(currentuser->userid[0]), currentuser->userid);
  	fp=fopen(path, "r");
  	if(fp) {
  		while(1) {
@@ -1454,7 +1520,7 @@ int has_fill_form() {
                 if(fgets(buf, 100, fp)==0) break;
                 r=sscanf(buf, "%s %s", tmp, userid);
                 if(r==2) {
-                        if(!strcasecmp(tmp, "userid:") && !strcasecmp(userid, currentuser.userid)) {
+                        if(!strcasecmp(tmp, "userid:") && !strcasecmp(userid, currentuser->userid)) {
                                 fclose(fp);
                                 return 1;
                         }
@@ -1650,35 +1716,35 @@ int brc_has_read(char *file) {
  */
 struct userec *getcurrusr()
 {
-	return &currentuser;
+	return currentuser;
 }
 
 struct userec *setcurrusr(struct userec *user)
 {
 	if (user == NULL)
 		return NULL;
-	currentuser = *user;
-	return &currentuser;
+	currentuser = user;
+	return currentuser;
 }
 
 char *getcurruserid()
 {
-	return currentuser.userid;
+	return currentuser->userid;
 }
 
 unsigned int getcurrulevel()
 {
-	return currentuser.userlevel;
+	return currentuser->userlevel;
 }
 
 int has_perm(unsigned int x)
 {
-	return x ? currentuser.userlevel&x : 1;
+	return x ? currentuser->userlevel&x : 1;
 }
 
 int define(unsigned int x)
 {
-	return x ? currentuser.userdefine&x : 1;
+	return x ? currentuser->userdefine&x : 1;
 }
 
 time_t get_idle_time(struct user_info *uentp)
@@ -1771,4 +1837,398 @@ int chk_currBM(char *BMstr)   /* 根据输入的版主名单 判断当前user是否是版主 */
     }
 }
 
+int count_online() /* ugly */
+{
+	struct UTMPFILE *u;
 
+	u = get_utmpshm_addr();
+	return u == NULL ? 0 : u->number;
+}
+
+int get_ulist_length()
+{
+	return sizeof(user_record)/sizeof(user_record[0]);
+}
+
+struct user_info **get_ulist_addr()
+{
+	return user_record;
+}
+
+uinfo_t *get_user_info(int utmpnum)
+{
+	struct UTMPFILE *utmpshm_ptr;
+
+	if (utmpnum < 1 || utmpnum > USHM_SIZE)
+		return NULL;
+	utmpshm_ptr = get_utmpshm_addr();
+	return &(utmpshm_ptr->uinfo[utmpnum-1]);
+}
+
+int set_friends_num(int num)
+{
+	nf = num;
+	return nf;
+}
+
+int get_friends_num()
+{
+	return nf;
+}
+
+struct friends_info *init_finfo_addr()
+{
+	topfriend = NULL;
+	return topfriend;
+}
+
+struct boardheader *getbcache_addr()
+{
+	return bcache;
+}
+
+/* from talk.c */
+int
+cmpfuid( a,b )
+struct friends   *a,*b;
+{
+    return strcasecmp(a->id,b->id);
+}
+
+int
+getfriendstr()
+{
+    extern int nf;
+    int i;
+    struct friends* friendsdata;
+	char filename[STRLEN];
+
+    if(topfriend!=NULL)
+        free(topfriend);
+    setuserfile( filename, "friends" );
+    nf=get_num_records(filename,sizeof(struct friends));
+    if(nf<=0)
+        return 0;
+    if(!has_perm(PERM_ACCOUNTS) && !has_perm(PERM_SYSOP))/*Haohmaru.98.11.16*/
+        nf=(nf>=MAXFRIENDS)?MAXFRIENDS:nf;
+    friendsdata=(struct friends *)calloc(sizeof(struct friends),nf);
+    get_records(filename,friendsdata,sizeof(struct friends),1,nf);
+    
+    qsort( friendsdata, nf, sizeof( friendsdata[0] ), cmpfuid );/*For Bi_Search*/
+    topfriend=(struct friends_info *)calloc(sizeof(struct friends_info),nf);
+    for (i=0;i<nf;i++) {
+    	topfriend[i].uid=searchuser(friendsdata[i].id);
+    	strcpy(topfriend[i].exp,friendsdata[i].exp);
+    }
+    free(friendsdata);
+    return 0;
+}
+
+/* from bbs.c */
+void 
+record_exit_time()   /* 记录离线时间  Luzi 1998/10/23 */
+{
+    char path[80];
+    FILE *fp;
+    time_t now;
+    sethomefile( path, getcurruserid() , "exit");
+    fp=fopen(path, "wb");
+    if (fp!=NULL)
+    {
+        now=time(NULL);
+        fwrite(&now,sizeof(time_t),1,fp);
+        fclose(fp);
+    }
+}
+
+/* from list.c */
+
+int set_friendmode(int mode)
+{
+	friendmode = mode;
+
+	return friendmode;
+}
+
+int get_friendmode()
+{
+	return friendmode;
+}
+
+int myfriend(int uid,char* fexp)
+{
+    extern int  nf;
+    int i,found=NA;
+    int cmp;
+    /*char buf[IDLEN+3];*/
+
+    if(nf<=0)
+    {
+        return NA;
+    }
+    for (i=0;i<nf;i++) {
+    	if (topfriend[i].uid==uid) {
+    		found=YEA;
+    		break;
+    	}
+    }
+    if((found)&&fexp)
+        strcpy(fexp,topfriend[i].exp);
+    return found;
+}
+
+
+int full_utmp(struct user_info* uentp,int* count)
+{
+    if( !uentp->active || !uentp->pid )
+    {
+        return 0;
+    }
+    if(!has_perm(PERM_SEECLOAK) && uentp->invisible 
+		&& strcmp(uentp->userid,getcurruserid()))/*Haohmaru.99.4.24.让隐身者能看见自己*/
+    {
+        return 0;
+    }
+    if(friendmode&&!myfriend(uentp->uid,NULL))
+    {
+        return 0;
+    }
+    user_record[*count]=uentp;
+    (*count)++;
+    return COUNT;
+}
+
+int
+fill_userlist()
+{
+    static int i,i2;
+
+    i2=0;
+    if(!friendmode)
+    {
+	    apply_ulist_addr((APPLY_UTMP_FUNC)full_utmp,(char*)&i2);
+    }
+	else
+	{
+    	for (i=0;i<nf;i++)
+		{
+		if (topfriend[i].uid)
+			apply_utmpuid((APPLY_UTMP_FUNC)full_utmp,topfriend[i].uid,(char*)&i2);
+    	}
+    }
+    range=i2;
+    return i2==0?-1:1;
+}
+
+int
+countusers(struct userec *uentp ,char* arg)
+{
+    char permstr[10];
+
+    if(uentp->numlogins != 0&&uleveltochar( permstr, uentp ) != 0)
+		return COUNT;
+    return 0;
+}
+
+int
+allusers()
+{
+	int count;
+    if((count=apply_users(countusers,0)) <= 0) {
+        return 0;
+    }
+    return count;
+}
+
+/* from board.c */
+void save_userfile(char * fname, int numblk, char * buf)
+{
+    char        fbuf[ 256 ];
+    int         fd, size;
+
+    setuserfile( fbuf, fname );
+    if( (fd = open( fbuf, O_WRONLY | O_CREAT, 0600 )) != -1 ) {
+        size = numblk * sizeof( int );
+        write( fd, buf, size );
+        close( fd );
+    }
+}
+
+void save_favboard()
+{
+    save_userfile("favboard", (FAVBOARDNUM+1), (char *)favbrd_list);
+}
+
+int DelFavBoard(int i)
+{
+    int lnum;
+    if(i > *favbrd_list)
+		return *favbrd_list;
+    lnum = --(*favbrd_list);
+    for(;i<=lnum;i++)
+		favbrd_list[i] = favbrd_list[i+1];
+    if(!lnum)
+	{
+        *favbrd_list = 1;       /*  favorate board count    */
+        *(favbrd_list+1) = 0;   /*  default sysop board     */
+    }
+    return 0;
+}
+
+void load_favboard(int dohelp)
+{
+    char fname[STRLEN];
+    int  fd, size, idx;
+    setuserfile(fname, "favboard");
+    if( (fd = open( fname, O_RDONLY, 0600 )) != -1 ) {
+        size = (FAVBOARDNUM+1) * sizeof( int );
+        read( fd, favbrd_list, size );
+        close( fd );
+    } /*
+    else if(dohelp) {
+        int savmode;
+        savmode = uinfo.mode;
+        modify_user_mode(CSIE_ANNOUNCE);	// 没合适的mode.就先用"汲取精华"吧. 
+        show_help("help/favboardhelp");
+        modify_user_mode(savmode);
+    }
+	*/
+    if(*favbrd_list<= 0) {
+        *favbrd_list = 1;       /*  favorate board count    */
+        *(favbrd_list+1) = 0;   /*  default sysop board     */
+    }
+    else {
+        int num = *favbrd_list;
+        if(*favbrd_list > FAVBOARDNUM)	/*	maybe file corrupted	*/
+            *favbrd_list = FAVBOARDNUM;
+        idx = 0;
+        while(++idx <= *favbrd_list) {
+        	struct boardheader* bh;
+            fd = favbrd_list[idx];
+            bh = (struct boardheader*) getboard(fd+1);
+            if(fd >= 0 && fd <= get_boardcount() && (
+            			bh &&
+                        bh->filename[0]
+                        && ( (bh->level & PERM_POSTMASK)
+                             || HAS_PERM(bh->level)
+                             || (bh->level&PERM_NOZAP) )
+                    )
+              )
+                continue;
+            DelFavBoard(idx);   /*  error correction    */
+        }
+        if(num != *favbrd_list) save_favboard();
+    }
+}
+
+int IsFavBoard(int idx)
+{
+    int i;
+    for(i=1;i<=*favbrd_list;i++)
+	{
+		if(idx == favbrd_list[i])
+			return i;
+	}
+    return 0;
+}
+
+int get_favboard(int num)
+{
+    if(num > 0 && num <= FAVBOARDNUM)
+		return favbrd_list[num];
+	else
+		return -1;
+}
+
+int get_favboard_count()
+{
+	return favbrd_list[0];
+}
+
+int add_favboard(char *brdname)
+{
+	int i;
+
+	if(brdname != NULL && *brdname)
+		i = getbnum(brdname);
+	else
+		return -3; // err brdname
+	if (*favbrd_list > FAVBOARDNUM)
+		return -2; // favboard had reach max limit
+	if( i > 0 && !IsFavBoard(i-1) )
+	{
+		int llen;
+		llen = ++(*favbrd_list);
+		favbrd_list[llen] = i-1;
+		//save_favboard();
+
+		return llen; //return current favorite boards count
+	}
+
+	return -1; // brdname not found or brdname already in favbrd_list
+}
+
+/* from mail.c */
+int
+check_query_mail(qry_mail_dir)
+char qry_mail_dir[STRLEN];
+{
+    struct fileheader fh ;
+    struct stat st ;
+    int fd ;
+    register int  offset ;
+    register long numfiles ;
+    unsigned char ch ;
+
+    offset = (int)((char *)&(fh.accessed[0]) - (char *)&(fh)) ;
+    if((fd = open(qry_mail_dir,O_RDONLY)) < 0)
+        return 0 ;
+    fstat(fd,&st) ;
+    numfiles = st.st_size ;
+    numfiles = numfiles/sizeof(fh) ;
+    if(numfiles <= 0) {
+        close(fd) ;
+        return 0 ;
+    }
+    lseek(fd,(st.st_size-(sizeof(fh)-offset)),SEEK_SET) ;
+    /*离线查询新信只要查询最後一封是否为新信，其他并不重要*/
+    /*Modify by SmallPig*/
+    read(fd,&ch,1) ;
+    if(!(ch & FILE_READ)) {
+        close(fd) ;
+        return YEA ;
+    }
+    close(fd) ;
+    return NA ;
+}
+
+/* from bbsfadd.c */
+int addtooverride2(char *uident, char *exp)
+{
+    friends_t tmp;
+    int  n;
+    char buf[STRLEN];
+
+    memset(&tmp,0,sizeof(tmp));
+    setuserfile( buf, "friends" );
+    if((!has_perm(PERM_ACCOUNTS) && !has_perm(PERM_SYSOP)) &&
+            (get_num_records(buf,sizeof(struct friends))>=MAXFRIENDS) )
+    {
+        return -1;
+    }
+    if( myfriend( searchuser(uident) , NULL) )
+        return -2;
+	if (exp == NULL || exp[0] == '\0')
+		tmp.exp[0] = '\0';
+	else
+	{
+		strncpy(tmp.exp, exp, sizeof(tmp.exp)-1);
+		tmp.exp[sizeof(tmp.exp)-1] = '\0';
+	}
+    n=append_record(buf,&tmp,sizeof(struct friends));
+    if(n!=-1)
+        getfriendstr();
+    else
+        return -3;
+    return n;
+}

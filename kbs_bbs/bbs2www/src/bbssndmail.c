@@ -27,9 +27,9 @@ int main() {
 	f_append(filename, content);
 	sprintf(title2, "{%s} %s", userid, title);
 	title2[70]=0;
-	post_mail(userid, title, filename, currentuser.userid, currentuser.username, fromhost, sig-1);
+	post_mail(userid, title, filename, currentuser->userid, currentuser->username, fromhost, sig-1);
 	if(backup)
-		post_mail(currentuser.userid, title2, filename, currentuser.userid, currentuser.username, fromhost, sig-1);
+		post_mail(currentuser->userid, title2, filename, currentuser->userid, currentuser->username, fromhost, sig-1);
 	unlink(filename);
 	printf("信件已寄给%s.<br>\n", userid);
 	if(backup) printf("信件已经备份.<br>\n");

@@ -102,21 +102,21 @@ int main()
 	*(int*)(u_info->from+36)=time(0);
 	sprintf(filename, "tmp/%d.tmp", getpid());
 	f_append(filename, content);
-	//r=post_article(board, title, filename, currentuser.userid, currentuser.username, fromhost, sig-1);
+	//r=post_article(board, title, filename, currentuser->userid, currentuser->username, fromhost, sig-1);
 	r = post_article(board, title, filename, &currentuser, fromhost, sig, local, anony);
 	if(r<=0)
 		http_fatal("内部错误，无法发文");
 	sprintf(buf, "M.%d.A", r);
-	brc_init(currentuser.userid, board);
+	brc_init(currentuser->userid, board);
 	brc_add_read(buf);
-	brc_update(currentuser.userid, board);
+	brc_update(currentuser->userid, board);
 	unlink(filename);
 	sprintf(buf, "bbsdoc?board=%s", board);
 	if(!junkboard(board))
 	{
-		currentuser.numposts++;
+		currentuser->numposts++;
 		save_user_data(&currentuser);
-		write_posts(currentuser.userid, board, title);
+		write_posts(currentuser->userid, board, title);
 	}
 	redirect(buf);
 }

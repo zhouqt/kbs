@@ -8,8 +8,8 @@ int main() {
    	init_all();
 	if(!loginok) http_fatal("您尚未登录, 请先登录");
    	printf("<center>\n");
-   	printf("%s -- 新邮件列表 [使用者: %s]<hr color=green>\n", BBSNAME, currentuser.userid);
-   	sprintf(dir, "mail/%c/%s/.DIR", toupper(currentuser.userid[0]), currentuser.userid);
+   	printf("%s -- 新邮件列表 [使用者: %s]<hr color=green>\n", BBSNAME, currentuser->userid);
+   	sprintf(dir, "mail/%c/%s/.DIR", toupper(currentuser->userid[0]), currentuser->userid);
 	fp=fopen(dir, "r");
 	if(fp==0) http_fatal("目前您的信箱没有任何信件");
       	printf("<table width=610 border=1>\n");
@@ -23,7 +23,7 @@ int main() {
 		if(ptr==0) ptr=" ";
 		ptr=nohtml(ptr);
 		printf("<td><a href=bbsqry?userid=%s>%13.13s</a>", ptr, ptr);
-         	printf("<td>%6.6s", Ctime(atoi(x.filename+2))+4);
+         	printf("<td>%6.6s", wwwCTime(atoi(x.filename+2))+4);
          	printf("<td><a href=bbsmailcon?file=%s&num=%d>", x.filename, total-1);
 	 	if(strncmp("Re: ", x.title, 4)) printf("★ ");
          	hprintf("%42.42s", void1(x.title));

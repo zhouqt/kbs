@@ -23,23 +23,23 @@ int main() {
 	/*if(strstr(file, "..") || strstr(file, "/")) http_fatal("错误的参数");*/
 	if(x==0) http_fatal("错误的参数");
 	/* 此处尚未检查站务和斑竹 */
-	if(strcmp(x->owner, currentuser.userid)) http_fatal("你无权修改此文章");
+	if(strcmp(x->owner, currentuser->userid)) http_fatal("你无权修改此文章");
 	/* added by flyriver, 2001.12.10 */
 	/* 同名ID不能修改老ID的文章 */
 #ifdef HAPPY_BBS
-	if (x->posttime < currentuser.firstlogin)
+	if (x->posttime < currentuser->firstlogin)
 		http_fatal("你无权修改此文章");
 #else
-	if (file_time(file) < currentuser.firstlogin)
+	if (file_time(file) < currentuser->firstlogin)
 		http_fatal("你无权修改此文章");
 #endif /* HAPPY_BBS */
-	printf("<center>%s -- 修改文章 [使用者: %s]<hr color=green>\n", BBSNAME, currentuser.userid);
+	printf("<center>%s -- 修改文章 [使用者: %s]<hr color=green>\n", BBSNAME, currentuser->userid);
 	if(type!=0) return update_form(board, file);
    	printf("<table border=1>\n");
 	printf("<tr><td>");
 	printf("<tr><td><form method=post action=bbsedit>\n");
    	printf("使用标题: %s 讨论区: %s<br>\n", nohtml(x->title), board);
-   	printf("本文作者：%s<br>\n", currentuser.userid);
+   	printf("本文作者：%s<br>\n", currentuser->userid);
    	printf("<textarea name=text rows=20 cols=80 wrap=physicle>");
 	sprintf(path, "boards/%s/%s", board, file);
 	fp=fopen(path, "r");
@@ -68,7 +68,7 @@ int update_form(char *board, char *file) {
 	fp=fopen(path, "w");
 	if(fp==0) http_fatal("无法存盘");
 	fprintf(fp, "%s", buf);
-	fprintf(fp, "\n※ 修改:．%s 於 %s 修改本文．[FROM: %s] ", currentuser.userid, Ctime(time(0))+4, fromhost);
+	fprintf(fp, "\n※ 修改:．%s 於 %s 修改本文．[FROM: %s] ", currentuser->userid, wwwCTime(time(0))+4, fromhost);
 	fclose(fp);
 	printf("修改文章成功.<br><a href=bbsdoc?board=%s>返回本讨论区</a>", board);
 }

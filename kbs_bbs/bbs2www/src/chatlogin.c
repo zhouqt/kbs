@@ -8,9 +8,9 @@ int main() {
 	init_all();
 	strsncpy(id, getparm("id"), 13);
         strsncpy(pw, getparm("pw"), 13);
-	if(loginok && strcasecmp(id, currentuser.userid)) {
+	if(loginok && strcasecmp(id, currentuser->userid)) {
 		http_fatal("系统检测到目前你的计算机上已经登录有一个帐号 %s，请先退出.(%s)", 
-			currentuser.userid, "选择正常logout, 或者关闭所有浏览器窗口");
+			currentuser->userid, "选择正常logout, 或者关闭所有浏览器窗口");
 	}
 	getuser(id,&x);
 	if(x==0) http_fatal("错误的使用者帐号");
@@ -19,7 +19,7 @@ int main() {
 		if (!checkpasswd2(pw, getcurrusr()))
 		{
 			if(pw[0]!=0) sleep(2);
-			sprintf(buf, "%s %s %s\n", Ctime(time(0))+4, id, fromhost);
+			sprintf(buf, "%s %s %s\n", wwwCTime(time(0))+4, id, fromhost);
 			f_append("badlogin.www", buf);
 			http_fatal("密码错误");
 		}
@@ -35,11 +35,11 @@ int main() {
 		x->numlogins++;
 		strsncpy(x->lasthost, fromhost, 17);
 		save_user_data(x);
-		currentuser=*x;
+		currentuser=x;
 	}
-	sprintf(buf, "%s %s %s\n", Ctime(time(0)), x->userid, fromhost);
+	sprintf(buf, "%s %s %s\n", wwwCTime(time(0)), x->userid, fromhost);
 	f_append("www.log", buf);
-	sprintf(buf, "%s ENTER %-12s @%s [www]\n", Ctime(time(0))+4, x->userid, fromhost);
+	sprintf(buf, "%s ENTER %-12s @%s [www]\n", wwwCTime(time(0))+4, x->userid, fromhost);
 	f_append("usies", buf);
 	n=0;
 	if(!loginok && strcasecmp(id, "guest"))	wwwlogin(x);
@@ -68,23 +68,23 @@ int wwwlogin(struct userec *user) {
 			u->uid=getusernum(user->userid)+1;
 			u->pid=pid;
 			u->mode=10001;
-        		if(user_perm(&currentuser, PERM_LOGINCLOAK) &&
-			(currentuser.flags[0] & CLOAK_FLAG))
+        		if(user_perm(currentuser, PERM_LOGINCLOAK) &&
+			(currentuser->flags[0] & CLOAK_FLAG))
                 		u->invisible = YEA;
         		u->pager = 0;
-        		if(currentuser.userdefine & DEF_FRIENDCALL)
+        		if(currentuser->userdefine & DEF_FRIENDCALL)
 				u->pager|=FRIEND_PAGER;
-        		if(currentuser.flags[0] & PAGER_FLAG) {
+        		if(currentuser->flags[0] & PAGER_FLAG) {
                 		u->pager|=ALL_PAGER;
                 		u->pager|=FRIEND_PAGER;
 			}
-        		if(currentuser.userdefine & DEF_FRIENDMSG)
+        		if(currentuser->userdefine & DEF_FRIENDMSG)
 				u->pager|=FRIENDMSG_PAGER;
-        		if(currentuser.userdefine & DEF_ALLMSG) {
+        		if(currentuser->userdefine & DEF_ALLMSG) {
                 		u->pager|=ALLMSG_PAGER;
                 		u->pager|=FRIENDMSG_PAGER;
         		}
-			strsncpy(u->from, fromhost, 24);
+			strsncpy(u->from, fromhost, IPLEN);
 			*(int*)(u->from+32)=time(0);
 			set_idle_time(u, time(0));
 			strsncpy(u->username, user->username, 20);
@@ -95,7 +95,7 @@ int wwwlogin(struct userec *user) {
 			setcookie("utmpnum", buf);
 			sprintf(buf, "%d", tmp);
 			setcookie("utmpkey", buf);
-			setcookie("utmpuserid", currentuser.userid);
+			setcookie("utmpuserid", currentuser->userid);
 			set_my_cookie();
 			flock(fileno(fp), LOCK_UN);
 			fclose(fp);
@@ -110,7 +110,7 @@ int wwwlogin(struct userec *user) {
 void add_msg() {
         int i;
         FILE *fp;
-        char buf[129], file[256], *id=currentuser.userid;
+        char buf[129], file[256], *id=currentuser->userid;
         sprintf(file, "touch home/%c/%s/wwwmsg.flush", toupper(id[0]), id);
         system(file);
         /*sprintf(file, "home/%c/%s/msgfile", toupper(id[0]), id);*/
@@ -127,7 +127,7 @@ void abort_program() {
 	int stay;
 	struct userec *x = NULL;
 	f_append("err", "ok");
-	if(strcmp(u_info->userid, currentuser.userid))
+	if(strcmp(u_info->userid, currentuser->userid))
 		bzero(u_info, sizeof(struct user_info));
 	stay=abs(time(0) - *(int*)(u_info->from+32));
         if(stay>7200) stay=7200;

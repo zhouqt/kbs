@@ -31,10 +31,6 @@
 #include "netinet/in.h"
 #include <signal.h>
 
-
-struct userec* currentuser;
-/*static int passwdfd=-1;*/
-
 #include "uhashgen.h"
 
 struct UCACHE {
@@ -349,7 +345,7 @@ resolve_ucache()
 
     iscreate = 0;
     if( uidshm == NULL ) {
-        uidshm = (struct UCACHE*)attach_shm1( "UCACHE_SHMKEY", 3696, sizeof( *uidshm ) ,&iscreate , 0, NULL); 
+        uidshm = (struct UCACHE*)attach_shm1( "UCACHE_SHMKEY", 3696, sizeof( *uidshm ) ,&iscreate , 1, NULL); 
             /*attach to user shm,readonly */
         if (iscreate) { /* shouldn't load passwd file in this place */
         	log("4system","passwd daemon havn't startup");
@@ -358,7 +354,7 @@ resolve_ucache()
     }
 
     if (passwd==NULL) { 
-        passwd = (struct userec*)attach_shm( "PASSWDCACHE_SHMKEY", 3697, MAXUSERS*sizeof(struct userec) ,&iscreate); /*attach to user shm */
+        passwd = (struct userec*)attach_shm1( "PASSWDCACHE_SHMKEY", 3697, MAXUSERS*sizeof(struct userec) ,&iscreate, 1, NULL); /*attach to user shm */
         if (iscreate) { /* shouldn't load passwd file in this place */
         	log("4system","passwd daemon havn't startup");
         	exit(-1);

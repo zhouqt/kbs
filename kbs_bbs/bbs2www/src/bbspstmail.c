@@ -13,11 +13,11 @@ int main()
 	strsncpy(userid, getparm("userid"), 40);
 	if(file[0]!='M' && file[0]) http_fatal("错误的文件名");
    	printf("<center>\n");
-	printf("%s -- 寄语信鸽 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser.userid);
+	printf("%s -- 寄语信鸽 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser->userid);
    	printf("<table border=\"1\"><tr><td>\n");
 	printf("<form method=\"post\" action=\"bbssndmail?userid=%s\">\n", userid);
    	printf("信件标题: <input type=\"text\" name=\"title\" size=\"40\" maxlength=\"100\" value=\"%s\"> ", title);
-   	printf("发信人: &nbsp;%s<br>\n", currentuser.userid);
+   	printf("发信人: &nbsp;%s<br>\n", currentuser->userid);
  	printf("收信人: &nbsp;&nbsp<input type=\"text\" name=\"userid\" value=\"%s\">", nohtml(userid));
  	printf("  使用签名档 ");
    	printf("<input type=\"radio\" name=\"signature\" value=\"1\" checked>1\n");
@@ -32,7 +32,7 @@ int main()
 	if(file[0]) {
 		int lines=0;
 		printf("【 在 %s 的来信中提到: 】\n", userid);
-		sprintf(path, "mail/%c/%s/%s", toupper(currentuser.userid[0]), currentuser.userid, file);
+		sprintf(path, "mail/%c/%s/%s", toupper(currentuser->userid[0]), currentuser->userid, file);
 		fp=fopen(path, "r");
 		if(fp) {
 			for(i=0; i<4; i++)

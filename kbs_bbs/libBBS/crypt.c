@@ -7,7 +7,7 @@ typedef struct des_ks_struct {
 		unsigned long pad[2];
 	} ks;
 #define _	ks._
-} des_key_schedule[16];
+}des_key_schedule[16];;
 
 #define ITERATIONS 	16
 
@@ -392,6 +392,7 @@ static unsigned const char cov_2char[64]= {
                 SPtrans[2][(u>> 8)&0x3f]| \
                 SPtrans[4][(u>>16)&0x3f]| \
                 SPtrans[6][(u>>24)&0x3f]
+
 
 static int body(unsigned long *out0, unsigned long *out1, des_key_schedule ks, unsigned long Eswap0, unsigned long Eswap1) {
         register unsigned long l, r, t, u;

@@ -8,7 +8,7 @@ int main() {
 	type=atoi(getparm("type"));
 	if(type==0) {
 		printf("%s -- 修改密码 [用户: %s]<hr color=green>\n", 
-			BBSNAME, currentuser.userid);
+			BBSNAME, currentuser->userid);
 		printf("<form action=bbspwd?type=1 method=post>\n");
 		printf("你的旧密码: <input maxlength=12 size=12 type=password name=pw1><br>\n");
 		printf("你的新密码: <input maxlength=12 size=12 type=password name=pw2><br>\n");
@@ -22,9 +22,9 @@ int main() {
   	if(strcmp(pw2, pw3)) http_fatal("两次密码不相同");
   	if(strlen(pw2)<2) http_fatal("新密码太短");
   	if(!checkpasswd2(pw1, getcurrusr())) http_fatal("密码不正确");
-  	/*strcpy(currentuser.passwd, crypt1(pw2, pw2));*/
+  	/*strcpy(currentuser->passwd, crypt1(pw2, pw2));*/
 	setpasswd(pw2, getcurrusr());
   	save_user_data(&currentuser);
-  	printf("[%s] 密码修改成功.", currentuser.userid);
+  	printf("[%s] 密码修改成功.", currentuser->userid);
 }
 

@@ -622,7 +622,7 @@ printuent(struct userec *uentp ,char* arg)
            buf,
 #endif
            permstr,
-           Ctime(&uentp->lastlogin) );
+           Ctime(uentp->lastlogin) );
     i++ ;
     usercounter++;
     return 0 ;

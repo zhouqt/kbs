@@ -226,7 +226,7 @@ int main() {
 int do_del(char *board, char *file) {
 	FILE *fp;
 	int num=0;
-	char path[256], buf[256], dir[256], *id=currentuser.userid;
+	char path[256], buf[256], dir[256], *id=currentuser->userid;
 	struct fileheader f;
 	struct userec *u = NULL;
 	bcache_t *brd=getbcache(board);

@@ -72,10 +72,10 @@ int inform(char *board, char *user)
         sprintf(path, "tmp/%d.tmp", getpid());
 	fp=fopen(path, "w");
         fprintf(fp, "【本公告由自动发信系统自动张贴】\n\n");
-        fprintf(fp, "%s被版务人员[%s]恢复了%s版POST权.\n", user, currentuser.userid, board);
+        fprintf(fp, "%s被版务人员[%s]恢复了%s版POST权.\n", user, currentuser->userid, board);
         fclose(fp);
         //post_article(board, title, path, "deliver", "自动发信系统", "自动发信系统", -1);
-        post_mail(user, title, path, currentuser.userid, currentuser.username, fromhost, -1);
+        post_mail(user, title, path, currentuser->userid, currentuser->username, fromhost, -1);
         unlink(path);
         printf("系统已经发信通知了%s.<br>\n", user);
 }

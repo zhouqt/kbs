@@ -2,12 +2,12 @@
 #smth happy: bbslib $(CGI)
 #smth := BBSLIBOBJS = crypt.o boardrc.o bbslib.o $(BBSSITE).o smthlib.o md5.o
 #happy := BBSLIOBJS = crypt.o boardrc.o bbslib.o
-BBSLIBOBJS = crypt.o bbslib.o $(BBSSITE).o smthlib.o md5.o utmp.o record.o
+BBSLIBOBJS = bbslib.o 
 BBSLIBRARY = libbbslib.a
 DEFINES = $(OS_DEF) $(SITE_DEF)
 .c.o:   ;   $(CC) -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' -Iinclude $(CFLAGS) $(DEFINES) -c $*.c
 
-all:$(BBSLIBRARY)
+all: $(BBSLIBRARY)
 
 $(BBSLIBRARY): $(BBSLIBOBJS)
 	ar cru libbbslib.a $(BBSLIBOBJS)

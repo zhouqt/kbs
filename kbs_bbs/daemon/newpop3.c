@@ -43,6 +43,11 @@
 /*#define POP3PORT 110 remote to sysname.h*/
 #define BADLOGINFILE "logins.bad"
 
+#ifdef BBSNAME
+#undef BBSNAME
+#endif
+#define BBSNAME "@"NAME_BBS_ENGLISH
+
 struct fileheader currentmail;
 struct userec alluser;
 

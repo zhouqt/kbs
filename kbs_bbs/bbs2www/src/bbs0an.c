@@ -25,7 +25,7 @@ int main() {
 			sprintf(file[total-1], "%s", trim(buf+6));
 		}
 	}
-	if(strstr(title, "SYSOPS") && !(currentuser.userlevel & PERM_SYSOP)) http_fatal("错误的目录");
+	if(strstr(title, "SYSOPS") && !(currentuser->userlevel & PERM_SYSOP)) http_fatal("错误的目录");
 	buf[0]=0;
 	if(board[0]) sprintf(buf, "%s版", board);
        	printf("%s --%s精华区 [本目录浏览次数: %d]<hr color=green>\n", 
@@ -63,7 +63,7 @@ int main() {
 		} else {
 			printf("<td>");
 		}
-		printf("<td>%6.6s %s", Ctime(file_time(buf))+4, Ctime(file_time(buf))+20);
+		printf("<td>%6.6s %s", wwwCTime(file_time(buf))+4, wwwCTime(file_time(buf))+20);
 	}
 	printf("</table><br>[<a href='javascript:history.go(-1)'>返回上一页</a>] ");
 	if(board[0]) printf("[<a href=bbsdoc?board=%s>本讨论区</a>]", board);

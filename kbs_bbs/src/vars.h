@@ -53,6 +53,8 @@ extern int showansi;
 extern char fromhost[IPLEN];
 extern time_t   login_start_time;
 
+extern struct boardheader *bcache;
+extern struct BCACHE *brdshm;
 #ifdef BBSMAIN
 extern int idle_count;
 #endif

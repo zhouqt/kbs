@@ -4,9 +4,9 @@ int main() {
 	int i; 
 	init_all();
    	if(!loginok) http_fatal("您尚未登录, 请先登录");
-	loadfriend(currentuser.userid);
+	loadfriend(currentuser->userid);
    	printf("<center>\n");
-   	printf("%s -- 好友名单 [使用者: %s]<hr color=green><br>\n", BBSNAME, currentuser.userid);
+   	printf("%s -- 好友名单 [使用者: %s]<hr color=green><br>\n", BBSNAME, currentuser->userid);
    	printf("您共设定了 %d 位好友<br>", friendnum);
    	printf("<table border=1><tr><td>序号<td>好友代号<td>好友说明<td>删除好友");
    	for(i=0; i<friendnum; i++) {

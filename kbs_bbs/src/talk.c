@@ -318,7 +318,7 @@ char q_id[IDLEN];
     	        *newline = '\0';
 	    } else
     	    strcpy(exittime,"ÒòÔÚÏßÉÏ»ò·Ç³£¶ÏÏß²»Ïê");
-    prints( "\nÉÏ´ÎÔÚ  [%s] ´Ó [%s] µ½±¾Õ¾Ò»ÓÎ¡£\nÀëÏßÊ±¼ä[%s] ", Ctime(&(lookupuser->lastlogin)),
+    prints( "\nÉÏ´ÎÔÚ  [%s] ´Ó [%s] µ½±¾Õ¾Ò»ÓÎ¡£\nÀëÏßÊ±¼ä[%s] ", Ctime(lookupuser->lastlogin),
             ((lookupuser->lasthost[0] == '\0') /*|| DEFINE(DEF_HIDEIP)*/ ? "(²»Ïê)" : lookupuser->lasthost),/*Haohmaru.99.12.18. hide ip*/
             exittime);
     /* SNOW CHANGE AT 10.20 (CHANGE THIS MSG)
@@ -1389,7 +1389,7 @@ int fd ;
         do_log(itswords, 2);
 
     now = time(0);
-    sprintf(buf, "\n\033[1;34mÍ¨»°½áÊø, Ê±¼ä: %s \033[m\n", Cdate(&now));
+    sprintf(buf, "\n\033[1;34mÍ¨»°½áÊø, Ê±¼ä: %s \033[m\n", Cdate(now));
     write(talkrec, buf, strlen(buf));
 
     close(talkrec);
@@ -1407,7 +1407,7 @@ int fd ;
             if (genbuf[0] != 'N' || genbuf[0] != 'n')  {
          *---	also '||' used above is wrong...	---*/
         sethomefile(buf, currentuser->userid, "talklog");
-        sprintf(mywords, "¸ú %s µÄÁÄÌì¼ÇÂ¼ [%12.12s]", partner, Ctime(&now) + 6);
+        sprintf(mywords, "¸ú %s µÄÁÄÌì¼ÇÂ¼ [%12.12s]", partner, Ctime(now) + 6);
         mail_file(buf, currentuser->userid, mywords);
     }
     sethomefile(buf, currentuser->userid, "talklog");
@@ -1493,7 +1493,7 @@ char *modestr;
         time_t thetime = time(0);
         move(t_lines-1, 0);
         prints("[44m[33mÄ¿Ç°ÓÐ %3d %6sÉÏÏß, Ê±¼ä: %s , Ä¿Ç°×´Ì¬£º%10s   [m"
-               ,count, friendmode ? "ºÃÅóÓÑ":"Ê¹ÓÃÕß",Ctime(&thetime),friendmode ? "ÄãµÄºÃÅóÓÑ":"ËùÓÐÊ¹ÓÃÕß");
+               ,count, friendmode ? "ºÃÅóÓÑ":"Ê¹ÓÃÕß",Ctime(thetime),friendmode ? "ÄãµÄºÃÅóÓÑ":"ËùÓÐÊ¹ÓÃÕß");
     }
     refresh();
     return 0;
@@ -2343,7 +2343,7 @@ do_log(char *msg, int who)
 
     if (!dashf(buf) || talkrec == -1) {
         talkrec = open(buf, O_RDWR | O_CREAT | O_TRUNC, 0644);
-        sprintf(buf, "\033[1;32mÓë %s µÄÁÄÌì¼ÇÂ¼, ÈÕÆÚ: %s \033[m\n", save_page_requestor, Cdate(&now));
+        sprintf(buf, "\033[1;32mÓë %s µÄÁÄÌì¼ÇÂ¼, ÈÕÆÚ: %s \033[m\n", save_page_requestor, Cdate(now));
         write(talkrec, buf, strlen(buf));
         sprintf(buf, "\tÑÕÉ«·Ö±ð´ú±í: \033[1;33m%s\033[m \033[1;36m%s\033[m \n\n", currentuser->userid, partner);
         write(talkrec, buf, strlen(buf));

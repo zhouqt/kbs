@@ -1099,7 +1099,7 @@ void chat_date(chatcontext *pthis, const char *arg)
     time_t thetime;
 
     time(&thetime);
-    sprintf(genbuf, " %s±ê×¼Ê±¼ä: [32m%s[m", BoardName, Cdate(&thetime));
+    sprintf(genbuf, " %s±ê×¼Ê±¼ä: [32m%s[m", BoardName, Cdate(thetime));
     printchatline(pthis,genbuf);
 }
 

@@ -25,7 +25,7 @@ int main()
 	usr = get_ulist_addr();
 	printf("<center>\n");
 	printf("%s -- 在线好友列表 [使用者: %s]<hr>\n", BBSNAME,
-			currentuser.userid);
+			currentuser->userid);
 	for(i=0; i < USHM_SIZE; i++)
 	{
 		x=usr[i];

@@ -261,7 +261,7 @@ int main()
 	if (found == 0)
 		http_fatal("错误的参数");
 	printf("<center>%s -- 转载文章 [使用者: %s]<hr color=\"green\">\n",
-			BBSNAME, currentuser.userid);
+			BBSNAME, currentuser->userid);
 	if(target[0])
 	{
 		if(!has_post_perm(&currentuser, target))
