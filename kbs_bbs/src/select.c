@@ -373,18 +373,22 @@ int list_select(struct _select_def *conf, int key)
 
 /*      int old_page_num=conf->page_num;*/
     int old_pos = conf->pos;
+    bool getkey=true;
 
 /*      int old_item_count = conf->item_count;*/
-	ret=SHOW_QUIT;
-	while (ret!=SHOW_CONTINUE) {
-	    ret = do_select_internal(conf, key);
-checkret:
+    ret=SHOW_QUIT;
+    while (ret!=SHOW_CONTINUE) {
+            if (getkey)
+                ret = do_select_internal(conf, key);
 	    switch (ret) {
 	    case SHOW_DIRCHANGE:
                 adjust_conf(conf);
 	        if (conf->get_data) {
 	            ret=(*conf->get_data) (conf, conf->page_pos, conf->item_per_page);
-	            if (ret==SHOW_DIRCHANGE) goto checkret; //possible loop.....
+	            if (ret==SHOW_DIRCHANGE) {//possible loop..... 
+                        getkey=false;
+			continue;
+                    }
 	            if (ret==SHOW_QUIT)
 	        	return ret;
 	            if ((ret=check_valid(conf)) == SHOW_QUIT)
@@ -396,7 +400,8 @@ checkret:
 	    case SHOW_SELCHANGE:
 	        ret = select_change(conf, conf->new_pos);
 	        if ((ret!=SHOW_SELECT)&&(ret!=SHOW_QUIT)) {
-	        	goto checkret;
+                    getkey=false;
+                    continue;
 	        }
 	    case SHOW_REFRESHSELECT:
 	        show_item(conf, conf->pos, true);
@@ -409,14 +414,16 @@ checkret:
 	    case SHOW_SELECT:
 	        ret = do_select_internal(conf, KEY_SELECT);
 	        if (ret!=SHOW_SELECT) {
-	            goto checkret;
+                    getkey=false;
+                    continue;
 	        }
 	    case SHOW_QUIT:
 	    	if (conf->quit)
 	    		(*conf->quit)(conf);
 	        return ret;
 	    }
-	    key=ret;
+            key=ret;
+	    getkey=true;
 	}
     return SHOW_CONTINUE;
 }

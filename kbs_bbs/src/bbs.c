@@ -492,7 +492,7 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     getdata(1, 0, "(S)转信 (L)本站 (A)取消? [A]: ", ispost, 9, DOECHO, NULL, true);
     if (ispost[0] == 's' || ispost[0] == 'S' || ispost[0] == 'L' || ispost[0] == 'l') {
 	/*add by stiger*/
-	if(POSTFILE_BASENAME(fileinfo->filename)[0]=='Z'){
+	if(conf->pos>arg->filecount) {
             struct fileheader xfh;
             int i,fd;
             if ((fd = open(arg->dingdirect, O_RDONLY, 0)) != -1) {
@@ -526,7 +526,7 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         move(2, 0);
         prints("' %s ' 已转贴到 %s 版 \n", quote_title, bname);
         fileinfo->accessed[0] |= FILE_FORWARDED;        /*added by alex, 96.10.3 */
-	if(POSTFILE_BASENAME(fileinfo->filename)[0]=='Z')
+	if(conf->pos>arg->filecount)
             substitute_record(arg->dingdirect, fileinfo, sizeof(*fileinfo), conf->pos);
         else
             substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), conf->pos);
@@ -2532,7 +2532,7 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
          * Leeward 99.07.12 added below to fix a big bug
          */
 		/* add by stiger */
-	if (POSTFILE_BASENAME(fileinfo->filename)[0]=='Z') {
+	if(conf->pos>arg->filecount) {
             ent = get_num_records(arg->dingdirect,sizeof(struct fileheader));
             fd = open(arg->dingdirect, O_RDONLY, 0);
 	} else fd=arg->fd;
@@ -2546,7 +2546,7 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
                     }
                 }
             }
-	    if (POSTFILE_BASENAME(fileinfo->filename)[0]=='Z') {
+	    if(conf->pos>arg->filecount) {
                 close(fd);
                 if (i!=0) 
                     substitute_record(arg->dingdirect, fileinfo, sizeof(*fileinfo), ent);
@@ -2644,8 +2644,8 @@ int zhiding_post(struct _select_def* conf,struct fileheader *fileinfo,void* extr
     struct read_arg* arg=(struct read_arg*)conf->arg;
     if (fileinfo==NULL)
         return DONOTHING;
-    if(POSTFILE_BASENAME(fileinfo->filename)[0]=='Z')
-		return del_ding(conf,fileinfo,extraarg);
+    if(conf->pos>arg->filecount)
+        return del_ding(conf,fileinfo,extraarg);
     if (add_top(fileinfo, currboard->filename, 0)!=0)
         return DONOTHING;
     return DIRCHANGED;
@@ -2852,9 +2852,9 @@ int del_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     if (fileinfo==NULL)
         return DONOTHING;
     ent=conf->pos;
-	/* add by stiger */
-	if(POSTFILE_BASENAME(fileinfo->filename)[0]=='Z')
-		return del_ding(conf,fileinfo,extraarg);
+    /* add by stiger */
+    if (ent>arg->filecount)
+        return del_ding(conf,fileinfo,extraarg);
 
     if (!strcmp(currboard->filename, "syssecurity")
         || !strcmp(currboard->filename, "junk")
@@ -3086,9 +3086,11 @@ int sequential_read(struct _select_def* conf,struct fileheader *fileinfo,void* e
 int clear_new_flag(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
 #ifdef HAVE_BRC_CONTROL
-	/* add by stiger */
-	if(POSTFILE_BASENAME(fileinfo->filename)[0]=='Z') brc_clear();
-	else brc_clear_new_flag(fileinfo->id);
+    struct read_arg* arg=conf->arg;
+    /* add by stiger */
+    if (conf->pos>arg->filecount)
+        brc_clear();
+    else brc_clear_new_flag(fileinfo->id);
 #endif
     return PARTUPDATE;
 }

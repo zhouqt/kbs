@@ -390,7 +390,7 @@ static int read_getdata(struct _select_def *conf, int pos, int len)
         }
 
         if (pos>count+dingcount)
-            return DIRCHANGED;
+            return SHOW_DIRCHANGE;
 	if (pos<=count) {
           if (lseek(arg->fd, arg->ssize * (pos - 1), SEEK_SET) != -1) {
             if ((n = read(arg->fd, arg->data, arg->ssize * len)) != -1) {
