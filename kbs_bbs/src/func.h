@@ -419,8 +419,6 @@ extern "C" {
     int check_filter(char *patternfile, char *checkfile, int defaultval);
     int check_badword_str(char *string, int str_len);
 
-int define_key();
-
 
 #ifdef __cplusplus
 }
