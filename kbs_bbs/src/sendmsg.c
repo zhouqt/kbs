@@ -805,7 +805,7 @@ int DoUnReg(char * n)
     int count=0;
     struct header h;
     struct UnRegPacket h1;
-    h.Type = CMD_REG;
+    h.Type = CMD_UNREG;
     long2byte(uinfo.pid, h.pid);
     long2byte(sizeof(h1), h.BodyLength);
     strcpy(h1.MobileNo, n);
@@ -973,7 +973,7 @@ int do_send_sms_func(char * dest, char * msgstr)
     struct userdata udata;
     char buf[MAX_MSG_SIZE];
     int oldmode;
-    int result;
+    int result, ret;
     bool cansend=true;
 
     if(!curruserdata.mobileregistered) {
@@ -1044,7 +1044,12 @@ int do_send_sms_func(char * dest, char * msgstr)
     else
         strcpy(buf, msgstr);
 
-    DoSendSMS(curruserdata.mobilenumber, udata.mobilenumber, buf);
+    ret = DoSendSMS(curruserdata.mobilenumber, udata.mobilenumber, buf);
+    if(ret) {
+        clrtoeol();
+        prints("∑¢ÀÕ ß∞‹....");
+        pressreturn();
+    }
 
     modify_user_mode(oldmode);
     inremsg = false;
