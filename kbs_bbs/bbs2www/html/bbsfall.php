@@ -21,7 +21,7 @@
 		}
 ?>
 <center>
-水母清华 -- 好友名单 [使用者: <?php echo $currentuser["userid"];?>]
+<?php echo BBS_FULL_NAME; ?> -- 好友名单 [使用者: <?php echo $currentuser["userid"];?>]
 <hr color="green"><br>
 <?php
 		if( $total != 0 ){
