@@ -9,12 +9,8 @@
 #undef NINE_BUILD
 #endif
 
-#ifndef SMTH /*水木清华专有代码,缺省使能*/
-#define SMTH 1
-#else
-#if SMTH == 0
+#if SMTH == 0 /*水木清华专有代码,缺省不使能*/
 #undef SMTH
-#endif
 #endif
 
 #if HAPPY_BBS == 0 /* HAPPY BBS专有代码 */
