@@ -1110,9 +1110,9 @@ static PHP_FUNCTION(bbs_printansifile)
 		output_ansi_html(ptr, st.st_size, out, attachlink);
 		free_output(out);
     }
-    munmap(ptr, st.st_size);
     signal(SIGBUS, SIG_IGN);
     signal(SIGSEGV, SIG_IGN);
+    munmap(ptr, st.st_size);
 	RETURN_STRINGL(get_output_buffer(), get_output_buffer_len(),1);
 }
 
@@ -1332,14 +1332,14 @@ static PHP_FUNCTION(bbs_searchtitle)
     }
 	if (currentuser==NULL)
 		RETURN_FALSE;
-    if (!strcmp(board, "syssecurity")
-        || !strcmp(board, "junk")
-        || !strcmp(board, "deleted"))   /* Leeward : 98.01.22 */
+    if (!strcmp(brd->filename, "syssecurity")
+        || !strcmp(brd->filename, "junk")
+        || !strcmp(brd->filename, "deleted"))   /* Leeward : 98.01.22 */
          RETURN_LONG(-2);  //本版不能修改文章
-    if (checkreadonly(board) == true) {
+    if (checkreadonly(brd->filename) == true) {
 		RETURN_LONG(-3); //本版已被设置只读
     }
-    if (get_file_ent(board, filename, &x) == 0) {
+    if (get_file_ent(brd->filename, filename, &x) == 0) {
         RETURN_LONG(-4); //无法取得文件记录
     }
 	setbfile(path, brd->filename, filename);
@@ -1353,7 +1353,7 @@ static PHP_FUNCTION(bbs_searchtitle)
         }
     }
     /* 版主禁止POST 检查 */
-    if (deny_me(currentuser->userid, board) && !HAS_PERM(currentuser, PERM_SYSOP)) {
+    if (deny_me(currentuser->userid, brd->filename) && !HAS_PERM(currentuser, PERM_SYSOP)) {
         RETURN_LONG(-7); //您的POST权被封
     }
     RETURN_LONG(0);
@@ -1373,6 +1373,7 @@ static PHP_FUNCTION(bbs_printoriginfile)
     buffered_output_t *out;
 	int i;
 	int skip;
+	bcache_t* bp;
 
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
@@ -1380,7 +1381,10 @@ static PHP_FUNCTION(bbs_printoriginfile)
     if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(2 TSRMLS_CC, "ss", &board,&boardLen, &filename,&filenameLen) != SUCCESS)) {
 		WRONG_PARAM_COUNT;
     } 
-	setbfile(path, board, filename);
+	if ( (bp=getbcache(board))==0) {
+		RETURN_LONG(-1);
+	}
+	setbfile(path, bp->filename, filename);
     fp = fopen(path, "r");
     if (fp == 0)
         RETURN_LONG(-1); //文件无法读取
@@ -1889,11 +1893,11 @@ static PHP_FUNCTION(bbs_getarticles)
     }
     is_bm = is_BM(bp, currentuser);
 
-    setbdir(mode, dirpath, board);
+    setbdir(mode, dirpath, bp->filename);
     total = get_num_records(dirpath, sizeof(struct fileheader));
     /* add by stiger */
 	if(mode == DIR_MODE_NORMAL){
-    	sprintf(dirpath1,"boards/%s/" DING_DIR,board);
+    	sprintf(dirpath1,"boards/%s/" DING_DIR,bp->filename);
     	total += get_num_records(dirpath1, sizeof(struct fileheader));
 	}
     /* add end */
@@ -1909,7 +1913,7 @@ static PHP_FUNCTION(bbs_getarticles)
         RETURN_FALSE;
     }
 #ifdef HAVE_BRC_CONTROL
-    brc_initial(currentuser->userid, board);
+    brc_initial(currentuser->userid, bp->filename);
 #endif
     articles = emalloc(num * sizeof(struct fileheader));
 	if (articles==NULL) {
@@ -1923,7 +1927,7 @@ static PHP_FUNCTION(bbs_getarticles)
     for (i = 0; i < rows; i++) {
         MAKE_STD_ZVAL(element);
         array_init(element);
-        flags[0] = get_article_flag(articles + i, currentuser, board, is_bm);
+        flags[0] = get_article_flag(articles + i, currentuser, bp->filename, is_bm);
         if (is_bm && (articles[i].accessed[0] & FILE_IMPORTED))
             flags[1] = 'y';
         else
@@ -2097,14 +2101,14 @@ static PHP_FUNCTION(bbs_getthreads)
     if ((bp = getbcache(board)) == NULL) {
         RETURN_FALSE;
     }
-    is_bm = is_BM(bp, currentuser);
 
+    is_bm = is_BM(bp, currentuser);
 
     if (array_init(return_value) == FAILURE) {
         RETURN_FALSE;
     }
 #ifdef HAVE_BRC_CONTROL
-    brc_initial(currentuser->userid, board);
+    brc_initial(currentuser->userid, bp->filename);
 #endif
 
 	IDList	= emalloc((num+start)*sizeof(long int));
@@ -2119,7 +2123,7 @@ static PHP_FUNCTION(bbs_getthreads)
 
 	if (includeTop) {
 
-		setbdir(DIR_MODE_ZHIDING, dirpath, board);
+		setbdir(DIR_MODE_ZHIDING, dirpath, bp->filename);
 
 		total = get_num_records(dirpath, sizeof(struct fileheader));
 
@@ -2141,7 +2145,7 @@ static PHP_FUNCTION(bbs_getthreads)
 				if ((threadsFounded-1)>=start){
 					MAKE_STD_ZVAL(element);
 					array_init(element);
-					flags[0] = get_article_flag(articles+found, currentuser, board, is_bm);
+					flags[0] = get_article_flag(articles+found, currentuser, bp->filename, is_bm);
 					if (is_bm && (articles[found].accessed[0] & FILE_IMPORTED))
 						flags[1] = 'y';
 					else
@@ -2169,7 +2173,7 @@ static PHP_FUNCTION(bbs_getthreads)
 
 	// get normal articles
 
-    setbdir(DIR_MODE_NORMAL, dirpath, board);
+    setbdir(DIR_MODE_NORMAL, dirpath, bp->filename);
 
     if ((fd = open(dirpath, O_RDONLY, 0)) == -1) {
 		efree(IDList);
@@ -2217,7 +2221,7 @@ static PHP_FUNCTION(bbs_getthreads)
 			if ((threadsFounded-1)>=start){
 				MAKE_STD_ZVAL(element);
 				array_init(element);
-				flags[0] = get_article_flag(ptr1+found, currentuser, board, is_bm);
+				flags[0] = get_article_flag(ptr1+found, currentuser, bp->filename, is_bm);
 				if (is_bm && (ptr1[found].accessed[0] & FILE_IMPORTED))
 					flags[1] = 'y';
 				else
@@ -2294,7 +2298,7 @@ static PHP_FUNCTION(bbs_get_article)
         RETURN_LONG(-5);
     }
     is_bm = is_BM(bp, currentuser);
-    setbdir(DIR_MODE_NORMAL, dirpath, board);
+    setbdir(DIR_MODE_NORMAL, dirpath, bp->filename);
 
     if ((fd = open(dirpath, O_RDONLY, 0)) == -1)
         RETURN_LONG(-6);   
@@ -2330,7 +2334,7 @@ static PHP_FUNCTION(bbs_get_article)
         RETURN_LONG(-8);
     }
 #ifdef HAVE_BRC_CONTROL
-    brc_initial(currentuser->userid, board);
+    brc_initial(currentuser->userid, bp->filename);
 #endif
 
 	articlesFounded=0;
@@ -2338,7 +2342,7 @@ static PHP_FUNCTION(bbs_get_article)
 	if ( (found=binarySearchInFileHeader(ptr1,total,groupid))!=-1) {
 		MAKE_STD_ZVAL(element);
 		array_init(element);
-		flags[0] = get_article_flag(ptr1+found, currentuser, board, is_bm);
+		flags[0] = get_article_flag(ptr1+found, currentuser, bp->filename, is_bm);
 		if (is_bm && (ptr1[found].accessed[0] & FILE_IMPORTED))
 			flags[1] = 'y';
 		else
@@ -2424,7 +2428,7 @@ static PHP_FUNCTION(bbs_get_thread_articles)
         RETURN_LONG(-5);
     }
     is_bm = is_BM(bp, currentuser);
-    setbdir(DIR_MODE_NORMAL, dirpath, board);
+    setbdir(DIR_MODE_NORMAL, dirpath, bp->filename);
 
     if ((fd = open(dirpath, O_RDONLY, 0)) == -1)
         RETURN_LONG(-6);   
@@ -2460,7 +2464,7 @@ static PHP_FUNCTION(bbs_get_thread_articles)
         RETURN_LONG(-8);
     }
 #ifdef HAVE_BRC_CONTROL
-    brc_initial(currentuser->userid, board);
+    brc_initial(currentuser->userid, bp->filename);
 #endif
 
 	articlesFounded=0;
@@ -2472,7 +2476,7 @@ static PHP_FUNCTION(bbs_get_thread_articles)
 				if ((articlesFounded-1)>=start){
 					MAKE_STD_ZVAL(element);
 					array_init(element);
-					flags[0] = get_article_flag(ptr1+i, currentuser, board, is_bm);
+					flags[0] = get_article_flag(ptr1+i, currentuser, bp->filename, is_bm);
 					if (is_bm && (ptr1[i].accessed[0] & FILE_IMPORTED))
 						flags[1] = 'y';
 					else
@@ -2541,7 +2545,7 @@ static PHP_FUNCTION(bbs_get_today_article_num){
         RETURN_LONG(-3);
     }
     is_bm = is_BM(bp, currentuser);
-    setbdir(DIR_MODE_NORMAL, dirpath, board);
+    setbdir(DIR_MODE_NORMAL, dirpath, bp->filename);
 
     if ((fd = open(dirpath, O_RDONLY, 0)) == -1)
         RETURN_LONG(-4);   
@@ -2571,7 +2575,7 @@ static PHP_FUNCTION(bbs_get_today_article_num){
     }
     ptr1 = (struct fileheader *) ptr;
 #ifdef HAVE_BRC_CONTROL
-    brc_initial(currentuser->userid, board);
+    brc_initial(currentuser->userid, bp->filename);
 #endif
 
 	articleNums=0;
@@ -2649,7 +2653,7 @@ static PHP_FUNCTION(bbs_get_thread_article_num)
         RETURN_LONG(-3);
     }
     is_bm = is_BM(bp, currentuser);
-    setbdir(DIR_MODE_NORMAL, dirpath, board);
+    setbdir(DIR_MODE_NORMAL, dirpath, bp->filename);
 
     if ((fd = open(dirpath, O_RDONLY, 0)) == -1)
         RETURN_LONG(-4);   
@@ -2685,7 +2689,7 @@ static PHP_FUNCTION(bbs_get_thread_article_num)
         RETURN_LONG(-6);
     }
 #ifdef HAVE_BRC_CONTROL
-    brc_initial(currentuser->userid, board);
+    brc_initial(currentuser->userid, bp->filename);
 #endif
 
 	articleNums=0;
@@ -2829,7 +2833,7 @@ static PHP_FUNCTION(bbs_get_filename_from_num)
 		RETURN_LONG(0);
 	}
 
-	setbdir(mode, dirpath, board);
+	setbdir(mode, dirpath, bp->filename);
 	if ((fp=fopen(dirpath,"r"))==NULL)
 	{
 		RETURN_LONG(0);
@@ -2960,7 +2964,7 @@ static PHP_FUNCTION(bbs_get_records_from_id)
 	{
 		RETURN_LONG(0);
 	}*/
-	setbdir(mode, dirpath, board);
+	setbdir(mode, dirpath, bp->filename);
   if(mode == DIR_MODE_ZHIDING){
 		num = search_record(dirpath, articles+1, sizeof(struct fileheader), (RECORD_FUNC_ARG) cmpfileid, &id);
 		if(num == 0) RETURN_LONG(0);
@@ -2989,7 +2993,7 @@ static PHP_FUNCTION(bbs_get_records_from_id)
 		MAKE_STD_ZVAL(element);
 		array_init(element);
 	  if(articles[i].id && currentuser ){
-		flags[0] = get_article_flag(articles + i, currentuser, board, is_bm);
+		flags[0] = get_article_flag(articles + i, currentuser, bp->filename, is_bm);
 		if (is_bm && (articles[i].accessed[0] & FILE_IMPORTED))
 			flags[1] = 'y';
 		else
@@ -3240,8 +3244,10 @@ static PHP_FUNCTION(bbs_postarticle)
     if (!sigsetjmp(bus_jump, 1)) {
         signal(SIGBUS, sigbus);
         signal(SIGSEGV, sigbus);
-    }
-    f_append(filename, unix_string(content));
+    	f_append(filename, unix_string(content));
+    } else {
+		RETURN_LONG(-9);
+	}
     signal(SIGBUS, SIG_IGN);
     signal(SIGSEGV, SIG_IGN);
 
@@ -3287,8 +3293,10 @@ static PHP_FUNCTION(bbs_postarticle)
         if (!sigsetjmp(bus_jump, 1)) {
             signal(SIGBUS, sigbus);
             signal(SIGSEGV, sigbus);
-        }
-        r = post_article(board, title, filename, currentuser, fromhost, sig, local, anony, oldx,buf);
+        	r = post_article(board, title, filename, currentuser, fromhost, sig, local, anony, oldx,buf);
+        } else {
+			RETURN_LONG(-9);
+		}
 		signal(SIGBUS, SIG_IGN);
     	signal(SIGSEGV, SIG_IGN);
         f_rm(buf);
@@ -3296,8 +3304,10 @@ static PHP_FUNCTION(bbs_postarticle)
         if (!sigsetjmp(bus_jump, 1)) {
             signal(SIGBUS, sigbus);
             signal(SIGSEGV, sigbus);
-        }
-        r = post_article(board, title, filename, currentuser, fromhost, sig, local, anony, oldx,NULL);
+        	r = post_article(board, title, filename, currentuser, fromhost, sig, local, anony, oldx,NULL);
+        } else {
+			RETURN_LONG(-9);
+		}
     
 		signal(SIGBUS, SIG_IGN);
     	signal(SIGSEGV, SIG_IGN);
@@ -3305,14 +3315,7 @@ static PHP_FUNCTION(bbs_postarticle)
     if (r < 0)
         RETURN_LONG(-9) ; //"内部错误，无法发文";
 #ifdef HAVE_BRC_CONTROL
-    if (!sigsetjmp(bus_jump, 1)) {
-        signal(SIGBUS, sigbus);
-        signal(SIGSEGV, sigbus);
-    }
-
     brc_update(currentuser->userid);
-    signal(SIGBUS, SIG_IGN);
-    signal(SIGSEGV, SIG_IGN);
 #endif
     if(oldx)
     	efree(oldx);
@@ -3322,8 +3325,8 @@ static PHP_FUNCTION(bbs_postarticle)
         if (!sigsetjmp(bus_jump, 1)) {
             signal(SIGBUS, sigbus);
             signal(SIGSEGV, sigbus);
+        	write_posts(currentuser->userid, board, title);
         }
-        write_posts(currentuser->userid, board, title);
         signal(SIGBUS, SIG_IGN);
         signal(SIGSEGV, SIG_IGN);
     }
@@ -3344,6 +3347,7 @@ static PHP_FUNCTION(bbs_updatearticle)
     char infile[80], outfile[80];
     char buf2[256];
     int i;
+    bcache_t *bp;
     /*int filtered = 0;*/
 
 	int ac = ZEND_NUM_ARGS();
@@ -3354,9 +3358,12 @@ static PHP_FUNCTION(bbs_updatearticle)
     
 	if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sss/", &boardName, &blen, &filename, &flen, &content, &clen) == FAILURE) {
 		WRONG_PARAM_COUNT;
-	} 
+	}
+   if ( (bp=getbcache(boardName))==0) {
+   		RETURN_LONG(-1);
+	}		
 
-    setbfile(infile, boardName, filename);
+    setbfile(infile, bp->filename, filename);
     sprintf(outfile, "tmp/%s.%d.editpost", getcurruserid(), getpid());
     if ((fin = fopen(infile, "r")) == NULL)
         RETURN_LONG(-10);
@@ -3390,7 +3397,15 @@ static PHP_FUNCTION(bbs_updatearticle)
     }
     else {
 #endif
-       f_mv(outfile, infile);
+        if (!sigsetjmp(bus_jump, 1)) {
+            signal(SIGBUS, sigbus);
+            signal(SIGSEGV, sigbus);
+       		f_mv(outfile, infile);
+        } else {
+			RETURN_LONG(-1);
+		}
+        signal(SIGBUS, SIG_IGN);
+        signal(SIGSEGV, SIG_IGN);
 #ifdef FILTER
     }
 #endif
@@ -3415,13 +3430,17 @@ static PHP_FUNCTION(bbs_brcaddread)
 	char *board;
 	int blen;
     long fid;
+	bcache_t* bp;
 
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
     old_pwd[1023] = 0;
     if (zend_parse_parameters(2 TSRMLS_CC, "sl", &board, &blen, &fid) != SUCCESS)
         WRONG_PARAM_COUNT;
-	brc_initial(currentuser->userid, board);
+	if ((bp=getbcache(board))==0){
+		RETURN_NULL();
+	}
+	brc_initial(currentuser->userid, bp->filename);
 	brc_add_read(fid);
 	brc_update(currentuser->userid);
     /*brc_addreaddirectly(getcurrentuser()->userid, boardnum, fid);*/
@@ -4997,8 +5016,8 @@ static PHP_FUNCTION(bbs_delfile)
     if (!haspostperm(u, board))
         RETURN_LONG(-2);
 
-	setbdir(DIR_MODE_NORMAL, dir, board);
-	setbfile(path, board, file);
+	setbdir(DIR_MODE_NORMAL, dir, brd->filename);
+	setbfile(path, brd->filename, file);
 	/*
 	 * TODO: Improve the following block of codes.
 	 */
@@ -5009,7 +5028,7 @@ static PHP_FUNCTION(bbs_delfile)
 		if (fread(&f, sizeof(struct fileheader), 1, fp) <= 0)
 			break;
 		if (!strcmp(f.filename, file)) {
-			if(del_post(num + 1, &f, dir, board) == DONOTHING)
+			if(del_post(num + 1, &f, dir, brd->filename) == DONOTHING)
 				result = -1;
 			else
 				result = 0;
@@ -6065,7 +6084,7 @@ static PHP_FUNCTION(bbs_start_vote)
 	}
 
 	//setvoteflag
-    pos = getboardnum(board, &fh);
+    pos = getboardnum(bp->filename, &fh);
     if (pos) {
         fh.flag = fh.flag | BOARD_VOTEFLAG;
         set_board(pos, &fh,NULL);
@@ -6073,14 +6092,14 @@ static PHP_FUNCTION(bbs_start_vote)
 
 	strcpy(ball.userid, currentuser->userid);
 
-	sprintf(buf, "vote/%s/control", board);
+	sprintf(buf, "vote/%s/control", bp->filename);
 	if(append_record(buf,&ball,sizeof(ball)) == -1)
 		RETURN_LONG(-7);
 
-	sprintf(buf,"%s OPEN VOTE",board);
+	sprintf(buf,"%s OPEN VOTE",bp->filename);
 	bbslog("user","%s",buf);
 
-	sprintf(buf, "vote/%s/desc.%lu",board, ball.opendate );
+	sprintf(buf, "vote/%s/desc.%lu",bp->filename, ball.opendate );
 	if((fp=fopen(buf,"w"))!=NULL){
 		fputs(desp,fp);
 		fclose(fp);
@@ -6098,20 +6117,20 @@ static PHP_FUNCTION(bbs_start_vote)
 	if(numday < 0) numday = 0;
 	vlimit.day = numday;
 
-	sprintf(buf,"vote/%s/limit.%lu",board, ball.opendate);
+	sprintf(buf,"vote/%s/limit.%lu",bp->filename, ball.opendate);
 	append_record(buf, &vlimit, sizeof(vlimit));
 
 	sprintf(buf,"tmp/votetmp.%d",getpid());
 	if((fp=fopen(buf,"w"))==NULL){
-		sprintf(buff,"[通知] %s 举办投票: %s",board,ball.title);
+		sprintf(buff,"[通知] %s 举办投票: %s",bp->filename,ball.title);
 		fprintf(fp,"%s",buff);
 		fclose(fp);
 #ifdef NINE_BUILD
-		post_file(currentuser, "", buf, board, buff, 0, 1);
+		post_file(currentuser, "", buf, bp->filename, buff, 0, 1);
 		post_file(currentuser, "", buf, "vote", buff, 0, 1);
 #else
-		if( !normal_board(board) ){
-			post_file(currentuser, "", buf, board, buff, 0,1);
+		if( !normal_board(bp->filename) ){
+			post_file(currentuser, "", buf, bp->filename, buff, 0,1);
 		}else{
 			post_file(currentuser, "", buf, "vote", buff, 0,1);
 		}
