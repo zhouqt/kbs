@@ -1347,6 +1347,13 @@ linkto(char *path,char*fname,char *title)
     return 0;
 }
 
+/*
+ * 参数说明:
+ *     group    groups[]中的某项
+ *     bname    看板的英文名
+ *     title    该板精华区的中文名
+ *     gname    与 group 对应的中文名
+ */
 int add_grp( char group[STRLEN],char bname[STRLEN],char title[STRLEN],char gname[STRLEN])
 	/* 精华区 加 目录 */
 {

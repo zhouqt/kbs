@@ -453,7 +453,7 @@ int m_newbrd()
         else
             sprintf(vbuf, "%-38.38s", newboard.title + 13);
 
-        if (add_grp(group, cexplain, newboard.filename, vbuf) == -1)
+        if (add_grp(group, newboard.filename, vbuf, cexplain) == -1)
             prints("\n成立精华区失败....\n");
         else
             prints("已经置入精华区...\n");
@@ -621,7 +621,7 @@ enterbname:
                         else
                             sprintf(vbuf, "%-38.38s", newfh.title + 13);
 
-                        if (add_grp(group, cexplain, newfh.filename, vbuf) == -1)
+                        if (add_grp(group, newfh.filename, vbuf, cexplain) == -1)
                             prints("\n成立精华区失败....\n");
                         else
                             prints("已经置入精华区...\n");
