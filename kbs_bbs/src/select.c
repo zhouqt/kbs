@@ -182,6 +182,8 @@ static int do_select_internal(struct _select_def *conf, int key)
     	}
     }
     switch (key) {
+    case KEY_TIMEOUT:
+        return SHOW_CONTINUE;
     case KEY_REFRESH:
         return refresh_select(conf);
     case KEY_UP:
