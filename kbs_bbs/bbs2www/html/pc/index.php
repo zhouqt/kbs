@@ -8,6 +8,29 @@
 	$needlogin=0;
 	require("pcfuncs.php");
 
+	function pc_get_archfile($pc,$wrap=FALSE)
+	{
+		$startYear = (int)($pc["CREATED"] / 10000000000);
+		$startMonth = (int)(($pc["CREATED"]-$startYear*10000000000) / 100000000);	
+		$thisYear = date("Y");
+		$thisMonth = date("m");
+		if($wrap) echo "<ul>";	
+		$i = 0;
+		for($yy=$thisYear ; $yy >= $startYear ; $yy --)
+		{
+			$firstMonth = ($yy == $startYear)?$startMonth:1;
+			for($mm = $thisMonth ; $mm >= $firstMonth  ; $mm --)
+			{
+				if($wrap && $i==0) echo "<li>";
+				echo "<a href=\"pcarch.php?userid=".$pc["USER"]."&y=".$yy."&m=".$mm."\">".$yy."年".$mm."月</a>\n";
+				if($wrap && $i==0) echo "</li>";
+				$i = 1 - $i ;
+			}
+			$thisMonth = 12;	
+		}
+		if($wrap) echo "</ul>";		
+	}
+	
 	function get_calendar_array($link,$pc,$pur)
 	{
 ?>
@@ -391,6 +414,16 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 					</td>
 				</tr>
 				<tr><td class=t17>
+				&gt;&gt; 每月档案
+				</td></tr>
+				<tr>
+					<td align=middle class=t14>
+					<table cellspacing=0 cellpadding=3 width=100% border=0 style="line-height:20px;font-size:12px"><tr><td>
+					<?php pc_get_archfile($pc,TRUE); ?>
+					</td></tr></table>
+					</td>
+				</tr>
+				<tr><td class=t17>
 				&gt;&gt; 最近收到的评论
 				</td></tr>
 				<tr>
@@ -527,6 +560,13 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		</td></tr>
 		<tr><td class="t8">
 <?php display_trackback_links($link,$pc); ?>
+</td></tr></table>
+</td></tr>
+<tr><td colspan="2" align="center" class="t11">
+<table cellpadding=3 cellspacing=0 width=100% border=0 class=f1>
+<tr><td class=f1>
+<strong>每月档案&gt;&gt;</strong>
+<?php pc_get_archfile($pc); ?>
 </td></tr></table>
 </td></tr>
 <tr><td colspan="2" align="center" class="t11">

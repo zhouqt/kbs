@@ -348,6 +348,7 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 			"THEM" => html_format($rows[theme]),
 			"TIME" => $rows[createtime],
 			"VISIT" => $rows[visitcount],
+			"CREATED" => $rows[createtime],
 			"MODIFY" => $rows[modifytime],
 			"NODES" => $rows[nodescount],
 			"NLIM" => $rows[nodelimit],
@@ -470,4 +471,27 @@ function pc_style_array($i)
 	}
 	return $style;
 }
+
+function get_next_month($yy,$mm)
+{
+	$mm ++;
+	if($mm > 12)
+	{
+		$mm = 1;
+		$yy ++ ;
+	}	
+	return array($yy,$mm);
+}
+
+function get_pre_month($yy,$mm)
+{
+	$mm --;
+	if($mm < 1)
+	{
+		$mm = 12;
+		$yy --;
+	}
+	return array($yy,$mm);
+}
+
 ?>
