@@ -144,3 +144,6 @@ hr.smth {
 td.smth {
 	font-size: 12px;
 }
+li.default{
+margin-bottom: 5px; vertical-align: top
+}

@@ -49,13 +49,15 @@ $boards = $root->child_nodes();
 
 $brdarr = array();
 ?>
-	<table width="600" border="0" cellpadding="0" cellspacing="0" background="images/lan1.gif" class="title">
+	<table width="97%" border="0" cellpadding="0" cellspacing="0" background="images/lan1.gif" class="title">
         <tr> 
 		  <td width="23">&nbsp;</td>
           <td>&gt;&gt;本日热点话题讨论&gt;&gt;</td>
         </tr>
 	</table>
-	<table border="0" cellpadding="0" cellspacing="0" width="600">
+	<table border="0" cellpadding="0" cellspacing="0" width="97%">
+              <tr> 
+                <td class="MainContentText"><ul>
 <?php
 # shift through the array
 while($board = array_shift($boards))
@@ -75,14 +77,53 @@ while($board = array_shift($boards))
 		continue;
 	$brd_encode = urlencode($brdarr["NAME"]);
 ?>
-              <tr height="22"> 
-<td width="15" class="MainContentText"></td>
-                <td class="MainContentText"><li><a href="/cgi-bin/bbs/bbstfind?board=<?php echo $brd_encode; ?>&title=<?php echo urlencode(iconv("UTF-8", "GBK", $hot_title)); ?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $hot_title)); ?></a>&nbsp;&nbsp;[作者: <a href="/cgi-bin/bbs/bbsqry?userid=<?php echo $hot_author; ?>"><?php  echo $hot_author; ?></a>]&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li></td>
-              </tr>
+<li class="default">
+<a href="/cgi-bin/bbs/bbstfind?board=<?php echo $brd_encode; ?>&title=<?php echo urlencode(iconv("UTF-8", "GBK", $hot_title)); ?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $hot_title)); ?></a> &nbsp;&nbsp;[作者: <a href="/cgi-bin/bbs/bbsqry?userid=<?php echo $hot_author; ?>"><?php  echo $hot_author; ?></a>]&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
 <?php
 }
 ?>
+</ul></td>
+              </tr>
 		</table>
+<?php
+}
+
+function gen_sec_hot_subjects_html($secid)
+{
+	# load xml doc
+	$boardrank_file = BBS_HOME . sprintf("/xml/day_sec%d.xml", $secid);
+	$doc = domxml_open_file($boardrank_file) or die("What boards?");
+
+
+	$root = $doc->document_element();
+	$boards = $root->child_nodes();
+?>
+<ul style="margin-top: 10px; margin-left: 20px">
+<?php
+	$brdarr = array();
+	# shift through the array
+	while($board = array_shift($boards))
+	{
+	    if ($board->node_type() == XML_TEXT_NODE)
+		continue;
+
+	    $hot_title = find_content($board, "title");
+	    $hot_author = find_content($board, "author");
+	    $hot_board = find_content($board, "board");
+	    $hot_time = find_content($board, "time");
+	    $hot_number = find_content($board, "number");
+	    $hot_groupid = find_content($board, "groupid");
+
+		$brdnum = bbs_getboard($hot_board, $brdarr);
+		if ($brdnum == 0)
+			continue;
+		$brd_encode = urlencode($brdarr["NAME"]);
+?>
+<li class="default"><a href="/cgi-bin/bbs/bbstfind?board=<?php echo $brd_encode; ?>&title=<?php echo urlencode(iconv("UTF-8", "GBK", $hot_title)); ?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $hot_title)); ?></a>&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
+<?php
+	}
+?>
+</ul>
 <?php
 }
 
@@ -126,57 +167,70 @@ while($board = array_shift($boards))
 	$sec_boards_num[$secid]++;
 }
 ?>
-	<table width="600" border="0" cellpadding="0" cellspacing="0" background="images/lan3.gif" class="title">
+	<table width="97%" border="0" cellpadding="0" cellspacing="0" background="images/lan3.gif" class="title">
         <tr> 
 		  <td width="23">&nbsp;</td>
           <td>&gt;&gt;分类精彩讨论区&gt;&gt;</td>
         </tr>
 	</table>
-		<table border="0" cellpadding="0" cellspacing="0" width="600">
+		<table border="0" cellpadding="0" cellspacing="0" width="97%">
 <?php
-	for ($i = 0; $i < $sec_count; $i += 3)
+	for ($i = 0; $i < $sec_count; $i++)
 	{
 ?>
         <tr> 
+          <td width="50%" valign="top" class="MainContentText"> 
+<strong><?php echo $section_nums[$i]; ?>. [<a href="bbsboa.php?group=<?php echo $i; ?>"><?php echo htmlspecialchars($section_names[$i][0]); ?></a>]</strong><br>
+<div style="margin-left: 20px">
 <?php
-		for ($j = $i; $j < $i + 3; $j++)
+		$brd_count = $sec_boards_num[$i] > 5 ? 5 : $sec_boards_num[$i];
+		for ($k = 0; $k < $brd_count; $k++)
 		{
-			if ($j < $sec_count)
-			{
 ?>
-          <td width="200" height="107" valign="top"  class="MainContentText"> 
-<strong><?php echo $section_nums[$j]; ?>. [<a href="bbsboa.php?group=<?php echo $j; ?>"><?php echo htmlspecialchars($section_names[$j][0]); ?></a>]</strong><br><br>
+<a href="bbsdoc.php?board=<?php echo urlencode($sec_boards[$i][$k]["EnglishName"]); ?>"><?php echo $sec_boards[$i][$k]["ChineseName"]; ?></a>, 
 <?php
-			$brd_count = $sec_boards_num[$j] > 5 ? 5 : $sec_boards_num[$j];
+		}
+?>
+<a href="bbsboa.php?group=<?php echo $i; ?>">更多&gt;&gt;</a></div>
+<?php
+		gen_sec_hot_subjects_html($i);
+?>
+</td>
+<td width="1" bgcolor="FFFFFF"></td>
+<?php
+		$i++;
+		if ($i < $sec_count)
+		{
+?>
+  <td valign="top" class="MainContentText"> 
+<strong><?php echo $section_nums[$i]; ?>. [<a href="bbsboa.php?group=<?php echo $i; ?>"><?php echo htmlspecialchars($section_names[$i][0]); ?></a>]</strong><br>
+<div style="margin-left: 20px">
+<?php
+			$brd_count = $sec_boards_num[$i] > 5 ? 5 : $sec_boards_num[$i];
 			for ($k = 0; $k < $brd_count; $k++)
 			{
 ?>
-&nbsp;&lt;<a href="bbsdoc.php?board=<?php echo urlencode($sec_boards[$j][$k]["EnglishName"]); ?>"><?php echo $sec_boards[$j][$k]["ChineseName"]; ?></a>&gt;<br>
+<a href="bbsdoc.php?board=<?php echo urlencode($sec_boards[$i][$k]["EnglishName"]); ?>"><?php echo $sec_boards[$i][$k]["ChineseName"]; ?></a>, 
 <?php
 			}
 ?>
-<br>
-<div align="right"><a href="bbsboa.php?group=<?php echo $j; ?>">更多版面&gt;&gt;</a>&nbsp;&nbsp;</div>
+<a href="bbsboa.php?group=<?php echo $i; ?>">更多&gt;&gt;</a></div>
+<?php
+			gen_sec_hot_subjects_html($i);
+?>
 </td>
 <?php
-			}
-			else
-			{
+		}
+		else
+		{
 ?>
-<td width="33%" height="107" valign="top"  class="MainContentText">&nbsp;</td>
+<td valign="top"  class="MainContentText">&nbsp;</td>
 <?php
-			}
-			if ($j != $i + 2)
-			{
-?>
-<td width="1" bgcolor="FFFFFF"></td>
-<?php
-			}
 		}
 ?>
         </tr>
 <?php
-		if ($sec_count - $i > 3)
+		if ($sec_count - $i > 1)
 		{
 ?>
         <tr> 
@@ -196,11 +250,22 @@ function gen_recommend_boards_html()
 		"PieBridge",
 		"Movie",
 		"Love",
+		"Emprise",
 		"AdvancedEDU",
+		"Reader",
+		"MilitaryTech",
+		"Beauty",
+		"Travel",
+		"EStar",
+		"PopMusic",
+		"Shopping",
+		"Java",
+		"News",
+		"VisualC",
 		"Game"
 		);
 ?>
-      <table width="150" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
+      <table width="100%" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
         <tr> 
           <td width="16" background="images/lt.gif">&nbsp;</td>
           <td width="66" bgcolor="#0066CC">推荐版面</td>
@@ -208,7 +273,7 @@ function gen_recommend_boards_html()
           <td>&nbsp;</td>
         </tr>
       </table>
-      <table width="150" border="0" cellpadding="0" cellspacing="0" class="helper">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" class="helper">
 <?php
 	$brdarr = array();
 	for ($i = 0; $i < count($rcmd_boards); $i++)
@@ -240,7 +305,7 @@ $root = $doc->document_element();
 $boards = $root->child_nodes();
 
 ?>
-      <table width="150" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
+      <table width="100%" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
         <tr> 
           <td width="16" background="images/lt.gif">&nbsp;</td>
           <td width="66" bgcolor="#0066CC">人气排名</td>
@@ -248,7 +313,7 @@ $boards = $root->child_nodes();
           <td>&nbsp;</td>
         </tr>
       </table>
-      <table width="150" border="0" cellpadding="0" cellspacing="0" class="helper">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" class="helper">
 <?php
 $i = 0;
 # shift through the array
@@ -265,10 +330,53 @@ while($board = array_shift($boards))
               </tr>
 <?php
 	$i++;
-	if ($i == 5)
+	if ($i == 10)
 		break;
 }
 ?>
+      </table>
+	  <br>
+<?php
+}
+
+function gen_blessing_list_html()
+{
+# load xml doc
+$hotsubject_file = BBS_HOME . "/xml/bless.xml";
+$doc = domxml_open_file($hotsubject_file) or die("Can't open hot subject file!");
+
+$root = $doc->document_element();
+$boards = $root->child_nodes();
+
+?>
+      <table width="100%" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
+        <tr> 
+          <td width="16" background="images/lt.gif">&nbsp;</td>
+          <td width="66" bgcolor="#0066CC">今日祝福</td>
+          <td width="16" background="images/rt.gif"></td>
+          <td>&nbsp;</td>
+        </tr>
+      </table>
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" class="helper">
+<tr> 
+<td class="MainContentText">
+<ul style="margin-top: 5px; margin-left: 20px">
+<?php
+# shift through the array
+while($board = array_shift($boards))
+{
+    if ($board->node_type() == XML_TEXT_NODE)
+        continue;
+
+    $hot_title = find_content($board, "title");
+    $hot_board = find_content($board, "board");
+    $hot_groupid = find_content($board, "groupid");
+?>
+<li class="default"><a href="/cgi-bin/bbs/bbstfind?board=<?php echo $hot_board; ?>&title=<?php echo urlencode(iconv("UTF-8", "GBK", $hot_title)); ?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $hot_title)); ?></a></li>
+<?php
+}
+?>
+</ul></td></tr>
       </table>
 	  <br>
 <?php
@@ -281,7 +389,7 @@ while($board = array_shift($boards))
 <link href="mainpage.css" rel="stylesheet" type="text/css">
 </head>
 <body leftmargin="5" topmargin="0" marginwidth="0" marginheight="0">
-<table border="0" cellpadding="0" cellspacing="0" width="800">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr> 
     <td colspan="2" height="77"><img src="images/logo.gif" width="144" height="71"></td>
     <td colspan="6" ></td>
@@ -299,12 +407,12 @@ while($board = array_shift($boards))
     </td>
   </tr>
 </table>
-<table border="0" cellpadding="0" cellspacing="0" width="800">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr>
     <td colspan="5" height="8"></td>
   </tr>
   <tr>
-    <td width="600">
+    <td width="75%">
 <?php
 	gen_hot_subjects_html();
 ?>
@@ -373,7 +481,7 @@ while($board = array_shift($boards))
 </td>
     <td width="1" bgcolor="0066CC"></td>
     <td width="18">&nbsp;</td>
-    <td width="150" align="left" valign="top"> 
+    <td align="left" valign="top"> 
 <!-- 系统公告开始 暂时屏蔽掉
       <table width="150" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
         <tr> 
@@ -407,34 +515,8 @@ while($board = array_shift($boards))
 <?php
 	gen_recommend_boards_html();
 	gen_board_rank_html();
+	gen_blessing_list_html();
 ?>
-      <table width="150" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
-        <tr> 
-          <td width="16" background="images/lt.gif">&nbsp;</td>
-          <td width="66" bgcolor="#0066CC">今日祝福</td>
-          <td width="16" background="images/rt.gif"></td>
-          <td>&nbsp;</td>
-        </tr>
-      </table>
-      <table width="150" border="0" cellpadding="0" cellspacing="0" class="helper">
-              <tr> 
-                <td width="170" height="20" class="MainContentText"><font color="#FF6600"><img src="images/xin.gif" width="9" height="7"> 
-                  祝伟大祖国繁荣富强</font></td>
-              </tr>
-              <tr> 
-                <td height="20" class="MainContentText"><font color="#FF6600"><img src="images/xin.gif" width="9" height="7"> 
-                  祝水木清华蒸蒸日上</font></td>
-              </tr>
-              <tr> 
-                <td height="20" class="MainContentText"><img src="images/xin.gif" width="9" height="7"></td>
-              </tr>
-              <tr> 
-                <td height="20" class="MainContentText"><img src="images/xin.gif" width="9" height="7"></td>
-              </tr>
-              <tr> 
-                <td height="20" class="MainContentText"><img src="images/xin.gif" width="9" height="7"></td>
-              </tr>
-      </table>
 	  </td>
     <td width="10">&nbsp;</td>
   </tr>
