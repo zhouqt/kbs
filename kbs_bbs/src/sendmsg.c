@@ -627,9 +627,9 @@ void r_msg()
                                         }
 //                                        write_userdata(currentuser->userid, &curruserdata);
                                         write_userdata(currentuser->userid, &(currentmemo->ud));
-                                        sprintf("%s 成功", (reg==1)?"注册":"取消注册");
+                                        sprintf(msgerr, "%s 成功", (reg==1)?"注册":"取消注册");
                                     }
-                                    else sprintf("%s 失败", (reg==1)?"注册":"取消注册");
+                                    else sprintf(msgerr, "%s 失败", (reg==1)?"注册":"取消注册");
                                     i = 0;
                                 }
                             }
