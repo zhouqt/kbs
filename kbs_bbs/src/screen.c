@@ -663,9 +663,8 @@ int n;
                              }
                              else if(isalpha(*(str+i))) {
                                 register int j;
-                                for(j=slp->len-1;j>=reg_col;j--)
+                                for(j=scr_cols-i-2;j>=reg_col;j--)
                                     slp->data[j+i+1]=slp->data[j];
-                                slp->len+=i+1;
                                 for(j=0;j<=i;j++)
                                     slp->data[reg_col+j]=*(str+j);
                                 str+=i+1;
@@ -686,9 +685,8 @@ int n;
                         i=reg_col+1;
                         while(!isalpha(slp->data[reg_col+i])&&i<slp->len) i++;
                         if(isalpha(slp->data[reg_col+i])&&reg_col+i<slp->len) {
-                            for(j=reg_col;j<slp->len;j++)
+                            for(j=reg_col;j<scr_cols-i-1;j++)
                                 slp->data[j]=slp->data[j+i+1];
-                            slp->len-=i+1;
                         }
                      }
 			if (*str == '') {
