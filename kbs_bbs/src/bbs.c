@@ -1264,6 +1264,7 @@ int title_mode()
     return NEWDIRECT;
 }
 
+static char search_data[STRLEN];
 int search_mode(int mode, char *index)
 // added by bad 2002.8.8 search mode
 {
@@ -1274,6 +1275,7 @@ int search_mode(int mode, char *index)
     char *ptr, *ptr1;
     struct stat buf;
 
+    strncpy(search_data,index,STRLEN);
     digestmode = 0;
     setbdir(digestmode, olddirect, currboard);
     digestmode = mode;
@@ -2418,7 +2420,7 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct)
         || !strcmp(currboard, "deleted"))       /* Leeward : 98.01.22 */
         return DONOTHING;
 
-    if (digestmode == 4 || digestmode == 5 || digestmode == 6 || digestmode == 7)
+    if (digestmode == 4 || digestmode == 5 )
         return DONOTHING;
     keep = sysconf_eval("KEEP_DELETED_HEADER"); /*是否保持被删除的POST的 title */
     if (fileinfo->owner[0] == '-' && keep > 0 && !SR_BMDELFLAG) {
@@ -2470,11 +2472,16 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct)
     }
     if (olddigestmode) {
         switch (olddigestmode) {
-        case 2:
+        case DIR_MODE_THREAD:
             title_mode();
             break;
-        case 3:
+        case DIR_MODE_MARK:
             marked_mode();
+            break;
+        case DIR_MODE_ORIGIN:
+        case DIR_MODE_AUTHOR:
+        case DIR_MODE_TITLE:
+            search_mode(olddigestmode,search_data);
             break;
         }
     }
