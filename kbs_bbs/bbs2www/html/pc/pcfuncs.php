@@ -489,7 +489,7 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 	else
 		$cssFile = "";
 	
-	if($pc['pctype'] == 9) 
+	if($pc["TYPE"] == 9) 
 	    if (!pc_is_manager($currentuser))
             return false;
 	
