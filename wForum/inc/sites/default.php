@@ -81,6 +81,10 @@ for ($i = 0; $i < $ccc; $i++) {
 /* 还有一些遗留下来的可配置参数，以后看情况要不要放入 site_defines */
 $HTMLCharset = "GB2312"; //这个我觉得肯定是 gb2312 吧，以后要变的话再做成可自定义的参数
 
+if (!defined('COOKIE_PREFIX')) { //cookie名称的前缀
+    define('COOKIE_PREFIX', "W_");
+}
+
 if (!isset($HTMLTitle)) {
 	$HTMLTitle = $SiteName;
 }

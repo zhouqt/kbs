@@ -281,7 +281,7 @@ function showLogon($showBack = 0, $comeurl = "") {
 	<td valign="middle" class="TableBody1"><input name="id" type="text" tabindex="1"/> &nbsp; <a href="register.php">没有注册？</a></td></tr>
 	<tr>
 	<td valign="middle" class="TableBody1">请输入您的密码</td>
-	<td valign="middle" class="TableBody1"><input name="password" type="password" tabindex="2" /> &nbsp; <!--<a href="foundlostpass.php">忘记密码？</a>--></td></tr>
+	<td valign="middle" class="TableBody1"><input name="passwd" type="password" tabindex="2" /> &nbsp; <!--<a href="foundlostpass.php">忘记密码？</a>--></td></tr>
 	<tr>
 	<td class="TableBody1" valign="top" width="30%" ><b>Cookie 选项</b><br/> 请选择你的 Cookie 保存时间，下次访问可以方便输入。</td>
 	<td valign="middle" class="TableBody1">
@@ -700,10 +700,10 @@ if (($sessionid!='')&&($_SERVER['PHP_SELF']=='/bbscon.php')) {
 	$userid='';
 	$compat_telnet=1;
 } else {
-	@$utmpkey = $_COOKIE["W_UTMPKEY"];
-	@$utmpnum = $_COOKIE["W_UTMPNUM"];
-	@$userid = $_COOKIE["W_UTMPUSERID"];
-	@$userpassword=$_COOKIE["W_PASSWORD"];
+	@$utmpkey = $_COOKIE[COOKIE_PREFIX."UTMPKEY"];
+	@$utmpnum = $_COOKIE[COOKIE_PREFIX."UTMPNUM"];
+	@$userid = $_COOKIE[COOKIE_PREFIX."UTMPUSERID"];
+	@$userpassword=$_COOKIE[COOKIE_PREFIX."PASSWORD"];
 }
 if ($userid=='') {
 	$userid='guest';
@@ -760,10 +760,10 @@ if  ( ($loginok || $guestloginok ) && ($setonlined==0) ){
 	bbs_setonlineuser($userid,$currentuinfo_num,$data["utmpkey"],$currentuinfo,$compat_telnet);
 	$currentuser_num=bbs_getcurrentuser($currentuser);
 	$path='';
-	setcookie("W_UTMPUSERID",$data["userid"],time()+360000,$path);
-	setcookie("W_UTMPKEY",$data["utmpkey"],time()+360000,$path);
-	setcookie("W_UTMPNUM",$currentuinfo_num,time()+360000,$path);
-	setcookie("W_LOGINTIME",$data["logintime"],time()+360000,$path);
+	setcookie(COOKIE_PREFIX."UTMPUSERID",$data["userid"],time()+360000,$path);
+	setcookie(COOKIE_PREFIX."UTMPKEY",$data["utmpkey"],time()+360000,$path);
+	setcookie(COOKIE_PREFIX."UTMPNUM",$currentuinfo_num,time()+360000,$path);
+	setcookie(COOKIE_PREFIX."LOGINTIME",$data["logintime"],time()+360000,$path);
 }
 
 

@@ -32,7 +32,7 @@ function doLogon(){
 	}
 	
 	@$id = $_POST["id"];
-	@$passwd = $_POST["password"];
+	@$passwd = $_POST["passwd"];
 	$cookieDate = 0;
 	$cookieDate = intval($_POST['CookieDate']);
 	if ($id=='') {
@@ -84,11 +84,11 @@ function doLogon(){
 		break;
 	}
 	$path='';
-	setcookie("W_UTMPKEY",$data["utmpkey"],time()+360000,$path);
-	setcookie("W_UTMPNUM",$num,time()+360000,$path);
-	setcookie("W_UTMPUSERID",$data["userid"],$time,$path);
-	setcookie("W_LOGINTIME",$data["logintime"],0,$path);
-	setcookie("W_PASSWORD",$passwd,$time,$path);
+	setcookie(COOKIE_PREFIX."UTMPKEY",$data["utmpkey"],time()+360000,$path);
+	setcookie(COOKIE_PREFIX."UTMPNUM",$num,time()+360000,$path);
+	setcookie(COOKIE_PREFIX."UTMPUSERID",$data["userid"],$time,$path);
+	setcookie(COOKIE_PREFIX."LOGINTIME",$data["logintime"],0,$path);
+	if ($time!=0) setcookie(COOKIE_PREFIX."PASSWORD",$passwd,$time,$path);
 
 	show_nav(false);
 	echo "<br>";
