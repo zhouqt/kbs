@@ -1863,7 +1863,9 @@ int set_BM()
     		 				{strncpy(newfh.BM,p,IDLEN+2);
     		 				m++;
     		 				}
-					else if (brd_num==1) newlevel &= ~PERM_BOARDS;
+					else if (brd_num==1) 
+						{newlevel &= ~PERM_BOARDS;
+						newlevel &= ~PERM_CLOAK; }
     		 			}
     		 		/* 如果增加版主数目请修改这里 */	
     		 		for(n=1;n< (BM_LEN - 1)/(IDLEN +2);n++) {
@@ -1899,7 +1901,7 @@ int set_BM()
   			
   			sprintf(genbuf, "更改讨论区 %s 的资料 --> %s", fh.filename, newfh.filename);
             		bbslog("user", "%s", genbuf);
-			strncpy(fh.BM,newfh.BM,IDLEN+2);
+			strncpy(fh.BM,newfh.BM,BM_LEN - 1);
     		 }
     				
     	}	
