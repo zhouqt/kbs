@@ -226,7 +226,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 </tr>
 <tr>
 	<td class="t8"><textarea name="blogbody" class="f1" cols="100" rows="20" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
-	<?php echo $pcconfig["NOWRAPSTR"]."\n".$pcconfig["EDITORALERT"]; ?>
+	<?php echo $pcconfig["EDITORALERT"]."\n".$pcconfig["NOWRAPSTR"]; ?>
 	</textarea></td>
 </tr>
 <!--
@@ -357,7 +357,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 <tr>
 	<td class="t8">
 	<textarea name="blogbody" class="f1" cols="100" rows="20" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
-	<?php echo $pcconfig["NOWRAPSTR"]."\n".$pcconfig["EDITORALERT"]; ?>
+	<?php echo $pcconfig["EDITORALERT"]."\n".$pcconfig["NOWRAPSTR"]; ?>
 	<?php echo htmlspecialchars(stripslashes($rows[body]." ")); ?>
 	</textarea></td>
 </tr>
