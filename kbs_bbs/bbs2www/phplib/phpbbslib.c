@@ -1976,7 +1976,7 @@ char *brd_col_names[BOARD_COLUMNS] = {
 };
 
 /* added by caltary */
-extern struct favbrd_struct favbrd_list[FAVBOARDNUM];
+extern struct favbrd_struct *favbrd_list;
 extern int *favbrd_list_count;
 #define favbrd_list_t (*favbrd_list_count)
 extern int favnow;
