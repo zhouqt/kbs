@@ -260,7 +260,6 @@ main(argc, argv)
     }
     fclose(fp);
     qsort(st, numboards, sizeof(st[0]), brd_cmp);
-	printf("numboards is %d", numboards);
 	for(i = 0;i < 5; i++){
 	    qsort(sec_board[i],sec_board_num[i], sizeof(sec_board[i][0]),brd_cmp);
     }
