@@ -444,14 +444,21 @@ int a_SeSave(char *path, char *key, struct fileheader *fileinfo, int nomsg, char
         fgets(buf, 256, inf);
 	
 	t = strrchr(buf,')');
-	if (t) *(t+1)='\0';
-	memcpy(userinfo,buf+8,STRLEN);
+	if (t) { 
+		*(t+1)='\0';
+	    memcpy(userinfo,buf+8,STRLEN);
+	} else strcpy(userinfo,"未知发信人");
 	fgets(buf, 256, inf);
 	fgets(buf, 256, inf);
 	t = strrchr(buf,')');
-	if (t) *(t+1)='\0';
-	t = strchr(buf,'(');
-	memcpy(posttime,t,STRLEN);
+	if (t) {
+		*(t+1)='\0';
+	    if (NULL!=(t = strchr(buf,'(')))
+			memcpy(posttime,t,STRLEN);
+		else
+			strcpy(posttime,"未知时间");
+	} else 
+			strcpy(posttime,"未知时间");
 										
         fprintf(outf, "\033[0;1;32m☆─────────────────────────────────────☆\033[0;37m\n");
         fprintf(outf, "  \033[0;1;32m %s \033[0;1;37m于 \033[0;1;36m %s \033[0;1;37m 提到:\033[m\n", userinfo,posttime);
