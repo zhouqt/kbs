@@ -204,7 +204,8 @@ int uinfo_query(struct userec *u, int real, int unum)
         getdata(i++, 0, "请设定新密码: ", buf, 39, NOECHO, NULL, true);
         if (buf[0] == '\0') {
             prints("\n\n密码设定取消, 继续使用旧密码\n");
-            fail++;
+            if(ans[0]!='3')
+                fail++;
             break;
         }
         getdata(i++, 0, "请重新输入新密码: ", genbuf, 39, NOECHO, NULL, true);
