@@ -16,8 +16,8 @@
 #define STATE_ISSET(s, b) (s & b)
 #define STATE_ZERO(s) (s = 0)
 
-#define STYLE_SET_FG(s, c) (s |= (c & 0x07))
-#define STYLE_SET_BG(s, c) (s |= ((c & 0x07) << 4))
+#define STYLE_SET_FG(s, c) (s = (s & ~0x07) | (c & 0x07))
+#define STYLE_SET_BG(s, c) (s = (s & ~0x70) | ((c & 0x07) << 4))
 #define STYLE_GET_FG(s) (s & 0x0F)
 #define STYLE_GET_BG(s) ((s & 0x70) >> 4)
 #define STYLE_CLR_FG(s) (s &= ~0x0F)
@@ -42,40 +42,49 @@
 #define FONT_COLOR_WHITE     0x07
 
 #define FONT_STYLE_QUOTE FONT_STYLE_ITALIC
-#define FONT_COLOR_QUOTE FONT_COLOR_GREEN
+#define FONT_COLOR_QUOTE FONT_COLOR_CYAN
 
 #define FONT_BG_SET       0x80
 
 #define STRLEN 80
 
-typedef int (*output_handler_t)(char *buf, size_t buflen);
+typedef int (*output_handler_t)(char *buf, size_t buflen, void *arg);
+
+typedef struct
+{
+	char *buf;
+	size_t buflen;
+	char *outp;
+	output_handler_t output;
+} buffered_output_t;
 
 static char output_buf[4096];
 static char *outp = output_buf;
 
-static void flush_buffer()
+static void flush_buffer(buffered_output_t *output)
 {
-	*outp = '\0'; 
-	printf("%s", output_buf);
-	outp = output_buf;
+	*(output->outp) = '\0'; 
+	printf("%s", output->buf);
+	output->outp = output->buf;
 }
 
-static int buffered_output(char *buf, size_t buflen)
+static int buffered_output(char *buf, size_t buflen, void *arg)
 {
-	if (sizeof(output_buf) < buflen)
+	buffered_output_t *output = (buffered_output_t *)arg;
+	if (output->buflen < buflen)
 	{
 		printf("%s", buf);
 		return 0;
 	}
-	if ((sizeof(output_buf) - (outp - output_buf)) < buflen) 
-		flush_buffer();
-	strncpy(outp, buf, buflen); 
-	outp += buflen;
+	if ((output->buflen - (output->outp - output->buf)) < buflen) 
+		flush_buffer(output);
+	strncpy(output->outp, buf, buflen); 
+	output->outp += buflen;
 
 	return 0;
 }
 
-static void print_font_style(unsigned int style, output_handler_t output)
+static void print_font_style(unsigned int style, buffered_output_t *output)
 {
 	char font_class[8];
 	char font_style[STRLEN];
@@ -101,10 +110,10 @@ static void print_font_style(unsigned int style, output_handler_t output)
 				font_class, font_style);
 	else
 		sprintf(font_str, "<font class=\"%s\">", font_class);
-	output(font_str, strlen(font_str));
+	output->output(font_str, strlen(font_str), output);
 }
 
-static void html_output(char *buf, size_t buflen, output_handler_t output)
+static void html_output(char *buf, size_t buflen, buffered_output_t *output)
 {
 	size_t i;
 	
@@ -113,24 +122,24 @@ static void html_output(char *buf, size_t buflen, output_handler_t output)
 		switch (buf[i])
 		{
 		case '&':
-			output("&amp;", 5);
+			output->output("&amp;", 5, output);
 			break;
 		case '<':
-			output("&lt;", 4);
+			output->output("&lt;", 4, output);
 			break;
 		case '>':
-			output("&gt;", 4);
+			output->output("&gt;", 4, output);
 			break;
 		case ' ':
-			output("&nbsp;", 6);
+			output->output("&nbsp;", 6, output);
 			break;
 		default:
-			output(&buf[i], 1);
+			output->output(&buf[i], 1, output);
 		}
 	}
 }
 
-static void print_raw_ansi(char *buf, size_t buflen, output_handler_t output)
+static void print_raw_ansi(char *buf, size_t buflen, buffered_output_t *output)
 {
 	size_t i;
 	
@@ -179,7 +188,7 @@ static void generate_font_style(unsigned int *style, unsigned int *ansi_val,
 	}
 }
 
-void print_ansi(char *buf, size_t buflen, output_handler_t output)
+void print_ansi(char *buf, size_t buflen, buffered_output_t *output)
 {
 	unsigned int font_style = 0;
 	unsigned int ansi_state;
@@ -203,13 +212,13 @@ void print_ansi(char *buf, size_t buflen, output_handler_t output)
 			{
 				STATE_SET(ansi_state, STATE_QUOTE_LINE);
 				if (STATE_ISSET(ansi_state, STATE_FONT_SET))
-					output("</font>", 7);
+					output->output("</font>", 7, output);
 				/* set quoted line styles */
 				STYLE_SET(font_style, FONT_STYLE_QUOTE);
 				STYLE_SET_FG(font_style, FONT_COLOR_QUOTE);
 				STYLE_CLR_BG(font_style);
 				print_font_style(font_style, output);
-				output(&buf[i], 1);
+				output->output(&buf[i], 1, output);
 				STATE_SET(ansi_state, STATE_FONT_SET);
 				STATE_CLR(ansi_state, STATE_ESC_SET);
 				/* clear ansi_val[] array */
@@ -240,7 +249,7 @@ void print_ansi(char *buf, size_t buflen, output_handler_t output)
 			if (!STATE_ISSET(ansi_state, STATE_ESC_PRESET))
 			{
 				/* abcd[efg */
-				output(&buf[i], 1);
+				output->output(&buf[i], 1, output);
 				continue;
 			}
 			if (STATE_ISSET(ansi_state, STATE_ESC_SET))
@@ -274,11 +283,11 @@ void print_ansi(char *buf, size_t buflen, output_handler_t output)
 			if (STATE_ISSET(ansi_state, STATE_QUOTE_LINE))
 			{
 				/* end of a quoted line */
-				output("</font>", 7);
+				output->output("</font>", 7, output);
 				STYLE_CLR(font_style, FONT_STYLE_QUOTE);
 				STATE_CLR(ansi_state, STATE_FONT_SET);
 			}
-			output("<br />\n", 7);
+			output->output("<br />\n", 7, output);
 			STATE_CLR(ansi_state, STATE_QUOTE_LINE);
 			STATE_SET(ansi_state, STATE_NEW_LINE);
 		}
@@ -291,7 +300,7 @@ void print_ansi(char *buf, size_t buflen, output_handler_t output)
 					/* *[0;1;4;31m */
 					if (STATE_ISSET(ansi_state, STATE_FONT_SET))
 					{
-						output("</font>", 7);
+						output->output("</font>", 7, output);
 						STATE_CLR(ansi_state, STATE_FONT_SET);
 					}
 					if (i < buflen - 1)
@@ -302,7 +311,7 @@ void print_ansi(char *buf, size_t buflen, output_handler_t output)
 						print_font_style(font_style, output);
 						STATE_SET(ansi_state, STATE_FONT_SET);
 						STATE_CLR(ansi_state, STATE_ESC_SET);
-						STYLE_ZERO(font_style);
+						/*STYLE_ZERO(font_style);*/
 						/* clear ansi_val[] array */
 						bzero(ansi_val, sizeof(ansi_val));
 						ival = 0;
@@ -369,10 +378,10 @@ void print_ansi(char *buf, size_t buflen, output_handler_t output)
 	}
 	if (STATE_ISSET(ansi_state, STATE_FONT_SET))
 	{
-		output("</font>", 7);
+		output->output("</font>", 7, output);
 		STATE_CLR(ansi_state, STATE_FONT_SET);
 	}
-	flush_buffer();
+	flush_buffer(output);
 }
 
 int main()
@@ -380,14 +389,21 @@ int main()
 	char *str;
 	int fd;
 	struct stat st;
+	buffered_output_t out;
 
+	if ((out.buf = (char *)malloc(4096)) == NULL)
+		return -1;
+	out.outp = out.buf;
+	out.buflen = 4096;
+	out.output = buffered_output;
 	if ((fd = open("ansi.txt", O_RDONLY, 0644)) < 0)
 		return -1;
 	fstat(fd, &st);
 	str = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
 	close(fd);
-	print_ansi(str, st.st_size, buffered_output);
+	print_ansi(str, st.st_size, &out);
 	munmap(str, st.st_size);
+	free(out.buf);
 	printf("\n");
 	return 0;
 }
