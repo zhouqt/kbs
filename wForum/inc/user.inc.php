@@ -247,7 +247,7 @@ arNews = [<?php
 				} else {
 					$num=count($articles);
 					for ($i=0;$i<$num;$i++) {
-					echo '"<b><a href=\"disparticle.php?boardName='.$brdarr['NAME'].'&ID='.$articles[$i]['origin']['ID'].'\">' .htmlspecialchars($articles[$i]['origin']['TITLE'],ENT_QUOTES) . '</a></b> ('.strftime('%Y-%m-%d %H:%M:%S', intval($articles[$i]['origin']['POSTTIME'])).')","",';
+					echo "'<b><a href=\"disparticle.php?boardName=".$brdarr['NAME']."&ID=".$articles[$i]['origin']['ID']."\">" .htmlspecialchars($articles[$i]['origin']['TITLE'],ENT_QUOTES) . "</a></b> (".strftime('%Y-%m-%d %H:%M:%S', intval($articles[$i]['origin']['POSTTIME'])).")',\"\",";
 					}
 				}
 			}
