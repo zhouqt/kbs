@@ -4874,8 +4874,8 @@ PHP_RSHUTDOWN_FUNCTION(smth_bbs)
     chdir(old_pwd);
 
 #if defined(HAVE_BRC_CONTROL) && USE_TMPFS == 1
-    if (currentuser && currentuser->userid && (currentuser->userid[0]) )
-	free_brc_cache( currentuser->userid );
+    //if (currentuser && currentuser->userid && (currentuser->userid[0]) )
+	//free_brc_cache( currentuser->userid );
 #endif
 
     currentuser = NULL;
