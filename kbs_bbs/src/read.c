@@ -1385,7 +1385,7 @@ static int search_articles( struct keeploc  *locmem,char *query,int offset,int a
     now = locmem->crs_line;
     refresh();
 
-    switch (safe_mmapfile(currdirect,O_RDONLY,PROT_READ,MAP_SHARED,&pFh,&size,NULL)) {
+    switch (safe_mmapfile(currdirect,O_RDONLY,PROT_READ,MAP_SHARED,(void**)&pFh,&size,NULL)) {
     	case 0: return 0;
     	case 1:
 			pFh1 = pFh + now -1;

@@ -924,9 +924,9 @@ void sigbus(int signo)
 
 int safe_mmapfile(char* filename,int openflag,int prot,int flag,void** ret_ptr,int* size,int* ret_fd)
 {
-	int fd, retv;
+	int fd;
 	struct stat st;
-	fd = open(fn, openflag,0600);
+	fd = open(filename, openflag,0600);
 	if (fd < 0)
 		return 0;
 	if (fstat(fd, &st) < 0) {
@@ -945,7 +945,7 @@ int safe_mmapfile(char* filename,int openflag,int prot,int flag,void** ret_ptr,i
 		close(fd);
 	else {
 		*ret_fd=fd;
-		flock(ret_fd,LOCK_EX);
+		flock(fd,LOCK_EX);
 	}
 	*ret_ptr = mmap(NULL, st.st_size, prot, flag, fd, 0);
 	if (*ret_ptr == NULL)

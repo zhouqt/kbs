@@ -212,7 +212,7 @@ int apply_record(char *filename ,RECORD_FUNC_ARG fptr,int size ,void* arg,int ap
     
     if (applycopy)
     	buf2=malloc(size);
-    switch (safe_mmapfile(filename,O_RDONLY,PROT_READ,MAP_SHARED,&buf,&file_size,NULL)) {
+    switch (safe_mmapfile(filename,O_RDONLY,PROT_READ,MAP_SHARED,(void**)&buf,&file_size,NULL)) {
     	case 0: return 0;
     	case 1:
 	        for (i=0,buf1=buf;i<file_size/size;i++,buf1+=size) {
@@ -262,12 +262,12 @@ int search_record_back(
 	int sorted ) /* if records in file are sorted */
 {
     char *buf,*buf1;
-    int fd,i;
-    int start,filesize;
-    switch (safe_mmapfile(filename,O_RDONLY,PROT_READ,MAP_SHARED,&buf,&filesize,NULL)) {
+    int i;
+    int filesize;
+    switch (safe_mmapfile(filename,O_RDONLY,PROT_READ,MAP_SHARED,(void**)&buf,&filesize,NULL)) {
     	case 0: return 0;
     	case 1:
-    	start=filesize/size;
+		if (start > filesize/size) start = filesize/size;
         for (i = start, buf1 = buf; i>=0; i--, buf1-=size) {
             if ((*fptr)(farg,buf1)) {
             	end_mmapfile((void*)buf,filesize,-1);
@@ -286,10 +286,10 @@ int search_record_back(
 int
 search_record(char *filename,void *rptr,int size,RECORD_FUNC_ARG fptr,void *farg)
 {
-    int fd, i;
+    int i;
     char *buf,*buf1;
     int filesize;
-    switch (safe_mmapfile(filename,O_RDONLY,PROT_READ,MAP_SHARED,&buf,&filesize,NULL)) {
+    switch (safe_mmapfile(filename,O_RDONLY,PROT_READ,MAP_SHARED,(void**)&buf,&filesize,NULL)) {
     	case 0: return 0;
     	case 1:
         for (i =0,buf1=buf;i<filesize/size;i++,buf1+=size) {
@@ -492,7 +492,7 @@ int delete_record(char *filename ,int size,int id,RECORD_FUNC_ARG filecheck,void
     char* ptr;
     int ret;
     if (id<=0) return 0;
-	switch (safe_mmapfile(filename,O_RDWR,PROT_READ|PROT_WRITE,MAP_SHARED,(void*)&ptr,&filesize,&fdr)) {
+	switch (safe_mmapfile(filename,O_RDWR,PROT_READ|PROT_WRITE,MAP_SHARED,(void**)&ptr,&filesize,&fdr)) {
 		case 0:
 			return -1;
 		case 1:
