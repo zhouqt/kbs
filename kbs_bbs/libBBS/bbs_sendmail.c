@@ -85,7 +85,7 @@ print_recipient_status (smtp_recipient_t recipient,
   const smtp_status_t *status;
 
   status = smtp_recipient_status (recipient);
-  prints("mail to %s: %d %s", mailbox, status->code, status->text);
+  prints("mail to %s: %d %s\n", mailbox, status->code, status->text);
 }
 
 int
@@ -94,27 +94,57 @@ char *fname, *title, *receiver;
 int isuu, isbig5, noansi;
 {
     struct mail_option mo;
-    FILE *fin;
-    char uname[STRLEN];
+    FILE *fin,*fout;
+    char uname[STRLEN],hname[STRLEN];
 
     smtp_session_t session;
     smtp_message_t message;
     smtp_recipient_t recipient;
     const smtp_status_t *status;
+    
     enum notify_flags notify = Notify_NOTSET;
     char* server;
 
     char newbuf[256];
     
+    if ((fin = fopen (fname, "r")) == NULL)
+    {
+      prints("can't open %s: %s\n", fname, strerror (errno));
+      return -1;
+    }
+
+	/* creat a file include all heads and content */
+	sprintf( hname, "tmp/head%05d", getpid() );
+	
+    if ((fout = fopen (hname, "w+")) == NULL)
+    {
+      prints("can't open %s: %s\n", hname, strerror (errno));
+      return -1;
+    }
+
+    fprintf( fout, "Reply-To: %s.bbs@%s\n", currentuser.userid, email_domain());
+    fprintf( fout, "\n");
+
+    while (fgets( newbuf, 255, fin ) != NULL ) {
+        fputs(newbuf,fout);
+    }
+    fclose(fin);
+    fclose(fout);
+    
     if ( isuu  )
     {
         sprintf( uname, "tmp/uu%05d", getpid() );
         sprintf( genbuf, "uuencode %s thbbs.%05d > %s",
-                 fname, getpid(), uname );
+                 hname, getpid(), uname );
         system( genbuf );
     }
 
-
+    if ((fin = fopen (isuu?uname:hname, "r")) == NULL)
+    {
+      prints("can't open %s: %s\n", isuu?uname:hname, strerror (errno));
+      return -1;
+    }
+    
     session = smtp_create_session ();
     message = smtp_add_message (session);
     
@@ -130,17 +160,13 @@ int isuu, isbig5, noansi;
     smtp_set_header (message, "Subject", title);
     smtp_set_header_option (message, "Subject", Hdr_OVERRIDE, 1);
 
+/*    
     smtp_set_header (message,"Content-Transfer-Encoding", "8bit");
     if (isbig5)
         smtp_set_header (message,"Content-Type","text/plain;\n\tcharset=\"big5\"");
     else
         smtp_set_header (message,"Content-Type","text/plain;\n\tcharset=\"gb2312\"");
-
-    if ((fin = fopen (isuu?uname:fname, "r")) == NULL)
-    {
-      prints("can't open %s: %s\n", isuu?uname:fname, strerror (errno));
-      return -1;
-    }
+*/
 
     mo.isbig5=isbig5;
     mo.noansi=noansi;
@@ -154,13 +180,15 @@ int isuu, isbig5, noansi;
         message. */
     smtp_start_session (session);
     status = smtp_message_transfer_status (message);
-    prints("%d %s", status->code, status->text);
+    prints("return code:%d(%s)\n", status->code, status->text);
     smtp_enumerate_recipients (message, print_recipient_status, NULL);
     
     /* Free resources consumed by the program.
     */
     smtp_destroy_session (session);
     fclose (fin);
+//    unlink(uname);
+//    unlink(hname);
 /*
     char* buf,*p;
     char newbuf[256];
