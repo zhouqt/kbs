@@ -2046,8 +2046,10 @@ static int m_clean()
     if (mail_list_t) {
    	int i;
    	for (i=0;i<mail_list_t;i++) {
+	    char filebuf[20];
     	    move(0,0);
-	    setmailfile(buf,currentuser->userid,mail_list[i]+30);
+	    sprintf(filebuf,".%s",mail_list[i]+30);
+	    setmailfile(buf,currentuser->userid,filebuf);
 	    num = get_num_records(buf, sizeof(struct fileheader));
     	    if (num) {
     			char prompt[80];
@@ -2066,7 +2068,7 @@ const static struct command_def mail_cmds[] = {
     {"G) 寄给 / 设定寄信名单", 0, g_send, NULL},
     {"O)┌设定好友名单", 0, t_override, NULL},
     {"F)└寄信给好友名单", 0, ov_send, NULL},
-    {"C)清空备份的邮箱", 0, m_clean, NULL},
+    {"C) 清空备份的邮箱", 0, m_clean, NULL},
     {"M) 寄信给所有人", PERM_SYSOP, mailall, NULL},
 };
 
