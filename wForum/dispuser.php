@@ -74,7 +74,7 @@ if ($user['userdefine'] & $flag) {
   <col width=20% ><col width=*><col width=40% > 
   <tr> 
     <th colspan=2 align=left height=25>基本资料</th>
-    <td rowspan=9 align=center class=tablebody1 width=40% valign=top>
+    <td rowspan=7 align=center class=tablebody1 width=40% valign=top>
 <?php
 	$photo_url=htmlspecialchars(trim($user['photo_url']),ENT_QUOTES);
 	if ($photo_url!='') {
@@ -90,35 +90,11 @@ if ($user['userdefine'] & $flag) {
     <td class=tablebody1><?php echo chr($user['gender'])=='M'?'男':'女'; ?> </td>
   </tr>
   <tr> 
-    <td class=tablebody2 width=20% align=right>出 生：</td>
-    <td class=tablebody2>
-<?php
-	if ( ($user['birthyear']!=0) && ($user['birthmonth']!=0) && ($user['birthday']!=0)) {
-		echo '19'.$user['birthyear'].'年'.$user['birthmonth'].'月'.$user['birthday'].'日';
-	} else {
-		echo "<font color=gray>未知</font>";
-	}?>
- </td>
-  </tr>
-  <tr> 
     <td class=tablebody1 width=20% align=right>星 座：</td>
     <td class=tablebody1>
 <?php
 	echo get_astro($user['birthmonth'],$user['birthday']);
 ?></td>
-  </tr>
-  <tr> 
-    <td class=tablebody2 width=20% align=right>Ｅｍａｉｌ：</td>
-    <td class=tablebody2>
-	<?php 
-	$reg_email=htmlspecialchars(trim($user['reg_email']),ENT_QUOTES);
-	if ($reg_email!='') {
-		echo '<a href=mailto:'.$reg_email.'>'.$reg_email.'</a>'; 
-	} else {
-		echo "<font color=gray>未知</font>";
-	}
-	?>
-</td>
   </tr>
   <tr> 
     <td class=tablebody1 width=20% align=right>Ｑ Ｑ：</td>
@@ -169,7 +145,7 @@ if ($user['userdefine'] & $flag) {
   <tr> 
     <th colspan=2 align=left height=25>
       用户详细资料</th>
-    <td rowspan=14 class=tablebody1 width=40% valign=top>
+    <td rowspan=16 class=tablebody1 width=40% valign=top>
 <b>性格：</b>
 <br>
 <?php   echo $character[$user['character']]; ?>
@@ -205,6 +181,17 @@ if ($user['userdefine'] & $flag) {
     <td class=tablebody2><?php echo showIt($user['country']); ?> </td>
   </tr>
   <tr> 
+    <td class=tablebody2 width=20% align=right>出 生：</td>
+    <td class=tablebody2>
+<?php
+	if ( ($user['birthyear']!=0) && ($user['birthmonth']!=0) && ($user['birthday']!=0)) {
+		echo '19'.$user['birthyear'].'年'.$user['birthmonth'].'月'.$user['birthday'].'日';
+	} else {
+		echo "<font color=gray>未知</font>";
+	}?>
+ </td>
+  </tr>
+  <tr> 
     <td class=tablebody1 width=20% align=right>省　　份：</td>
     <td class=tablebody1><?php echo showIt($user['province']); ?></td>
   </tr>
@@ -219,6 +206,19 @@ if ($user['userdefine'] & $flag) {
   <tr> 
     <td class=tablebody2 width=20% align=right>通信地址：</td>
     <td class=tablebody2><?php   echo showIt($user['address']); ?></td>
+  </tr>
+  <tr> 
+    <td class=tablebody2 width=20% align=right>Ｅｍａｉｌ：</td>
+    <td class=tablebody2>
+	<?php 
+	$reg_email=htmlspecialchars(trim($user['reg_email']),ENT_QUOTES);
+	if ($reg_email!='') {
+		echo '<a href=mailto:'.$reg_email.'>'.$reg_email.'</a>'; 
+	} else {
+		echo "<font color=gray>未知</font>";
+	}
+	?>
+</td>
   </tr>
 
   <tr> 

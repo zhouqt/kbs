@@ -51,6 +51,7 @@ function preprocess(){
 	$brdArr=array();
 	$boardID= bbs_getboard($boardName,$brdArr);
 	$boardArr=$brdArr;
+	$boardName=$brdArr['NAME'];
 	if ($boardID==0) {
 		$boardName='';
 		return true;

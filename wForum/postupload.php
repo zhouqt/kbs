@@ -10,6 +10,7 @@ $boardName=$_GET['board'];
 $brdArr=array();
 $boardID= bbs_getboard($boardName,$brdArr);
 $boardArr=$brdArr;
+$boardName=$brdArr['NAME'];
 if ($boardID==0) {
 	errorQuit("指定的版面不存在。");
 }

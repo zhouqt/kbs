@@ -63,6 +63,7 @@ function preprocess(){
 	$brdArr=array();
 	$boardID= bbs_getboard($boardName,$brdArr);
 	$boardArr=$brdArr;
+	$boardName=$brdArr['NAME'];
 	if ($boardID==0) {
 		foundErr("指定的版面不存在。");
 		return false;
@@ -245,6 +246,8 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 					if (strncmp($buf, ": : ", 4) == 0)
 						continue;
 					if (strpos($buf, "※ 来源") !== FALSE)
+						break;
+					if (strpos($buf, "※ 修改") !== FALSE)
 						break;
 					if (strncmp($buf, "--\n", 3) == 0)
 						break;

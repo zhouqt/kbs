@@ -86,7 +86,7 @@ function getarticle($boardName,$reID){
 	settype($reID, "integer");
 	$articles = array();
 	if ($reID > 0)	{
-	$num = bbs_get_records_from_id($boardName, $reID,$dir_modes["NORMAL"],$articles);
+	$num = bbs_get_records_from_id($brdArr['NAME'], $reID,$dir_modes["NORMAL"],$articles);
 		if ($num == 0)	{
 			foundErr("错误的文章文编号");
 			return false;
@@ -193,6 +193,8 @@ function main() {
 					if (strncmp($buf, ": : ", 4) == 0)
 						continue;
 					if (strpos($buf, "※ 来源") !== FALSE)
+						break;
+					if (strpos($buf, "※ 修改") !== FALSE)
 						break;
 					if (strncmp($buf, "--\n", 3) == 0)
 						break;

@@ -42,6 +42,7 @@ function preprocess(){
 	$brdArr=array();
 	$boardID= bbs_getboard($boardName,$brdArr);
 	$boardArr=$brdArr;
+	$boardName=$brdArr['NAME'];
 	if ($boardID==0) {
 		foundErr("指定的版面不存在。");
 		return false;
