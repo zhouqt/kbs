@@ -12,6 +12,7 @@
 
 #define TOTALNUM 20
 #define FRIENDTOP ".FRIENDTOP"
+#define BADLIST ".FRIENDBADLIST"
 
 struct usertype {
     char userid[IDLEN+2];
@@ -289,7 +290,7 @@ int usermenu()
     setfcolor(RED,1);
     prints("FRIENDTEST");
     setfcolor(WHITE,0);
-    prints(")测试版0.1");
+    prints(")测试版0.2");
     move(3,40);
     prints("作者: ");
     setfcolor(RED,0);
@@ -357,6 +358,9 @@ int usermenu()
     prints("统计结果["); setfcolor(GREEN,1); prints("s"); setfcolor(WHITE,0); prints("] ");
     prints("管理题["); setfcolor(GREEN,1); prints("m"); setfcolor(WHITE,0); prints("] ");
     prints("注册列表["); setfcolor(GREEN,1); prints("l"); setfcolor(WHITE,0); prints("] ");
+    if(HAS_PERM(currentuser, PERM_SYSOP)) {
+        prints("SYSOP["); setfcolor(GREEN,1); prints("d"); setfcolor(WHITE,0); prints("] ");
+    }
     move(20,22);
     prints("要做别人的题,请输入他的id");
 //    setfcolor(WHITE,1);
@@ -371,6 +375,9 @@ int usermenu()
               return 4;
         if(toupper(buf[0])=='L'&&!buf[1])
               return 5;
+        if(HAS_PERM(currentuser, PERM_SYSOP)&&toupper(buf[0])=='D'&&!buf[1]) {
+              return 6;
+        }
         else if(buf[0]){
             tuid = getuser(buf, &lookuser);
             if(tuid) {
@@ -428,6 +435,15 @@ void new_friendtest()
     char ans[3], buf[122], buf2[10];
     int empty=1;
     new_friendtest_reset();
+    
+    load_users(BADLIST);
+    for(i=0;i<userst;i++)
+    if (!strcmp(users[i].userid,currentuser->userid)&&users[i].tried&1) {
+        prints("\n你已经被封禁了出题权限\n");
+        pressreturn();
+        done();
+        return;
+    }
     
     sethome(direct, currentuser->userid);
     if(stat(direct, &st) != -1) {
@@ -592,7 +608,7 @@ void do_test()
         span = time(0)-users[i].create;
         if (span<3600) {
             move(2,0);
-            prints("你在一小时前刚做过 %s 的友谊测试\n", lookuser->userid);
+            prints("你在一小时内刚做过 %s 的友谊测试\n", lookuser->userid);
             prints("请稍微休息一会儿再接着做\n");
             pressreturn();
             return;
@@ -815,7 +831,7 @@ void admin_stat()
                                 if(quests[j].value[k]>quests[j].value[l])
                                     l=k;
                             }
-                            prints("%d ", l);
+                            prints("%d ", l+1);
                         }
                         k=3;
                     }
@@ -933,6 +949,8 @@ againb:
                 save_quests(direct);
                 break;
             case 'R':
+                getdata(8,0,"一旦重置之后，排行榜将被抹去，确认吗(y/N)",ans,2,true,NULL,true);
+                if(toupper(ans[0])!='Y') break;
                 load_users(FRIENDTOP);
                 j=1;
                 for(i=0;i<userst;i++)
@@ -957,7 +975,7 @@ againb:
                 unlink(direct);
                 sethomestat(direct, currentuser->userid);
                 unlink(direct);
-                move(8,0);
+                move(10,0);
                 prints("题目已经被重置!\n");
                 pressreturn();
                 break;
@@ -1021,12 +1039,197 @@ void sys_list()
     pressreturn();
 }
 
+int admin_menu()
+{
+    char ans[3];
+    int i,j,k,tuid;
+    char direct[PATHLEN], buf[IDLEN+2];
+    
+    if (!HAS_PERM(currentuser, PERM_SYSOP)) return;
+    resetcolor();
+    clear();
+    move(0,0);
+    setfcolor(YELLOW,1);
+    setbcolor(BLUE);
+    prints("   FRIENDTEST      管理模式 %s                                                 ", currentuser->userid);
+    resetcolor();
+    prints("\n");
+
+    getdata(3,0,"选择(0-删题,1-禁止开题,2-允许开题,3-禁止做题,4-允许做题,5-列表,其他-离开) ", ans, 2, true, NULL, true);
+    if(ans[0]>='1'&&ans[0]<='4'){
+        getdata(5,0,"请输入id:",buf,IDLEN+1,true,NULL,true);
+        tuid = getuser(buf, &lookuser);
+        if(!tuid) {
+            move(7,0);
+            clrtoeol();
+            prints("错误的使用者id!");
+      	     return;
+        }
+    }
+    {
+        switch(ans[0]) {
+            case '0':
+                sethome(direct, lookuser->userid);
+                unlink(direct);
+                sethometop(direct, lookuser->userid);
+                unlink(direct);
+                sethomestat(direct, lookuser->userid);
+                unlink(direct);
+                move(7,0);
+                prints("删除成功");
+                break;
+            case '1':
+                load_users(BADLIST);
+                j=1;
+                for(i=0;i<userst;i++) {
+                    if(!strcmp(users[i].userid, lookuser->userid)) {
+                        j=0;
+                        if(users[i].tried&1) j=2;
+                        users[i].tried |= 1;
+                        break;
+                    }
+                }
+                if (j==1) {
+                    if(!userst)
+                        users=(struct usertype*)malloc(sizeof(struct usertype)*(userst+1));
+                    strcpy(users[userst].userid, lookuser->userid);
+                    users[userst].tried = 1;
+                    users[userst].got = 0;
+                    users[userst].create = time(0);
+                    userst++;
+                }
+                save_users(BADLIST);
+                move(7,0);
+                if(j==2)
+                    prints("该用户没有开题权限");
+                else
+                    prints("封禁成功");
+                break;
+            case '2':
+                load_users(BADLIST);
+                j=1;
+                for(i=0;i<userst;i++) {
+                    if(!strcmp(users[i].userid, lookuser->userid)) {
+                        j=0;
+                        if(!(users[i].tried&1)) j=1;
+                        users[i].tried &= ~1;
+                        if(users[i].tried==0) {
+                            for(k=i;k<userst-1;k++)
+                                memcpy(&users[k], &users[k+1], sizeof(users[k]));
+                            userst--;
+                        }
+                        break;
+                    }
+                }
+                save_users(BADLIST);
+                move(7,0);
+                if(j==1)
+                    prints("该用户未被封禁");
+                else
+                    prints("解除成功");
+                break;
+            case '3':
+                load_users(BADLIST);
+                j=1;
+                for(i=0;i<userst;i++) {
+                    if(!strcmp(users[i].userid, lookuser->userid)) {
+                        j=0;
+                        if(users[i].tried&2) j=2;
+                        users[i].tried |= 2;
+                        break;
+                    }
+                }
+                if (j==1) {
+                    if(!userst)
+                        users=(struct usertype*)malloc(sizeof(struct usertype)*(userst+1));
+                    strcpy(users[userst].userid, lookuser->userid);
+                    users[userst].tried = 2;
+                    users[userst].got = 0;
+                    users[userst].create = time(0);
+                    userst++;
+                }
+                save_users(BADLIST);
+                move(7,0);
+                if(j==2)
+                    prints("该用户没有做题权限");
+                else
+                    prints("封禁成功");
+                break;
+            case '4':
+                load_users(BADLIST);
+                j=1;
+                for(i=0;i<userst;i++) {
+                    if(!strcmp(users[i].userid, lookuser->userid)) {
+                        j=0;
+                        if(!(users[i].tried&2)) j=1;
+                        users[i].tried &= ~2;
+                        if(users[i].tried==0) {
+                            for(k=i;k<userst-1;k++)
+                                memcpy(&users[k], &users[k+1], sizeof(users[k]));
+                            userst--;
+                        }
+                        break;
+                    }
+                }
+                save_users(BADLIST);
+                move(7,0);
+                if(j==1)
+                    prints("该用户未被封禁");
+                else
+                    prints("解除成功");
+                break;
+            case '5':
+                load_users(BADLIST);
+                resetcolor();
+                clear();
+                move(0,0);
+                setfcolor(YELLOW,1);
+                setbcolor(BLUE);
+                prints("   FRIENDTEST      管理模式 %s                                                 ", currentuser->userid);
+                resetcolor();
+                move(1,0);
+                prints("用户            出题  做题\n");
+                k=2;
+                for(i=0;i<userst;i++) {
+                    move(k,0);
+                    prints("%-16s %s     %s", users[i].userid, users[i].tried&1?"Y":"N", users[i].tried&2?"Y":"N");
+                    k++;
+                    if(k>20&&i<userst-1) {
+                        getdata(22,0,"按\033[32;1mq\033[m退出:",ans,2,true,NULL,true);
+                        if(toupper(ans[0])=='Q') break;
+                        resetcolor();
+                        clear();
+                        move(0,0);
+                        setfcolor(YELLOW,1);
+                        setbcolor(BLUE);
+                        prints("   FRIENDTEST      管理模式 %s                                                 ", currentuser->userid);
+                        resetcolor();
+                        prints("\n");
+                        move(1,0);
+                        prints("用户            出题  做题\n");
+                        k=2;                       
+                    }
+                }
+                break;
+        }
+    }
+    pressreturn();
+}
+
 int friend_main()
 {
     int i;
     init();
+    load_users(BADLIST);
+    for(i=0;i<userst;i++)
+    if (!strcmp(users[i].userid,currentuser->userid)&&users[i].tried&2) {
+        prints("\n你已经被封禁了该游戏权限\n");
+        pressreturn();
+        done();
+        return;
+    }
 
-	modify_user_mode(FRIENDTEST);
+    modify_user_mode(FRIENDTEST);
     while(i=usermenu()) {
         switch(i){
             case 1:
@@ -1043,6 +1246,9 @@ int friend_main()
                 break;
             case 5:
                 sys_list();
+                break;
+            case 6:
+                admin_menu();
                 break;
         }
     }
