@@ -274,6 +274,9 @@ function gen_recommend_boards_html()
         </tr>
       </table>
       <table width="100%" border="0" cellpadding="0" cellspacing="0" class="helper">
+              <tr> 
+                <td width="100%" class="MainContentText">
+<ul style="margin-top: 5px; margin-left: 20px">
 <?php
 	$brdarr = array();
 	for ($i = 0; $i < count($rcmd_boards); $i++)
@@ -283,12 +286,11 @@ function gen_recommend_boards_html()
 				continue;
 			$brd_encode = urlencode($brdarr["NAME"]);
 ?>
-              <tr> 
-                <td width="170" height="20" class="MainContentText"><li>&lt;<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li></td>
-              </tr>
+<li style="default">&lt;<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
 <?php
 	}
 ?>
+</ul></td></tr>
       </table>
       <br>
 <?php
