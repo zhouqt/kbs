@@ -1599,7 +1599,7 @@ int load_mailgroup(const char *userid, const char *group, mailgroup_t * mg, int 
     if ((fd = open(fname, O_RDONLY, 0600)) < 0)
         return -1;
     if (read(fd, mg, sizeof(mailgroup_t) * num) == sizeof(mailgroup_t) * num) {
-        int i;
+        int i,j;
         int len;
 
         for (i = 0; i < num; i++) {
@@ -1607,6 +1607,14 @@ int load_mailgroup(const char *userid, const char *group, mailgroup_t * mg, int 
             if (mg[i].id[len - 1] == '\n')
                 mg[i].id[len - 1] = '\0';
         }
+
+        for (i = 0; i < num; i++)
+            for (j = i+1; j < num; j++)
+                if (!strncmp(mg[i].id, mg[j].id, 13)) {
+                    bzero(&mg[j], sizeof(mg[j]));
+                    num--;
+                }
+
         ret = num;
     }
     close(fd);
@@ -1727,6 +1735,9 @@ int add_mailgroup_user(mailgroup_list_t * mgl, int entry, mailgroup_t * users, m
 {
     int i;
 
+    for (i = 0; i < MAX_MAILGROUP_USERS; i++)
+        if (!strncmp(user->id, users[i].id, 13)) return -1;
+
     for (i = 0; i < MAX_MAILGROUP_USERS; i++) {
         if (users[i].id[0] == '\0') {
             memcpy(&users[i], user, sizeof(mailgroup_t));
@@ -1751,6 +1762,11 @@ int delete_mailgroup_user(mailgroup_list_t * mgl, int entry, mailgroup_t * users
 
 int modify_mailgroup_user(mailgroup_t * users, int pos, mailgroup_t * user)
 {
+    int i;
+
+    for (i = 0; i < MAX_MAILGROUP_USERS; i++)
+        if (!strncmp(user->id, users[i].id, 13)) return -1;
+
     memcpy(&users[pos], user, sizeof(mailgroup_t));
 
     return 0;
