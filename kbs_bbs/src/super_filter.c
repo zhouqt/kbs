@@ -366,7 +366,6 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
         set_vars(fvars+fget_var("title"), ptr1->title);
         set_vars(fvars+fget_var("author"), ptr1->owner);
         set_vars(fvars+fget_var("file"), ptr1->filename);
-#ifdef 
 #ifdef HAVE_BRC_CONTROL
         set_vard(fvars+fget_var("unread"), brc_unread(ptr1->id));
 #endif
