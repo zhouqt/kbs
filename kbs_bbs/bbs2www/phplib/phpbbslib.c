@@ -6297,7 +6297,7 @@ static PHP_FUNCTION(bbs_createregform)
 			fprintf(fout, "\n\n我是www注册用户~~~\n\n");
 			fclose(fout);
 			sprintf(buf2, "新手上路: %s", uc->username);
-			post_file(uc, "", buf, "newcomers", buf2, 0, 2);
+			post_file(uc, "", buf, "newcomers", buf2, 0, 2, getSession());
 			unlink(buf);
 		}
 	}
