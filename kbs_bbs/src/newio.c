@@ -527,9 +527,6 @@ int igetch()
     idle_count = 0;
     c = inbuf[icurrchar];
 
-    if(keymem_total) {
-    }
-    
     switch (c) {
     case Ctrl('L'):
         redoscr();
@@ -579,11 +576,21 @@ int igetch()
     return c;
 }
 
+int* keybuffer;
+int keybuffer_count=0;
+
 int igetkey()
 {
     int mode;
     int ch, last;
+    int ret=0;
 
+    if(keybuffer_count) {
+        ret = *keybuffer;
+        keybuffer++;
+        keybuffer_count--;
+        return ret;
+    }
     mode = last = 0;
     while (1) {
         ch = igetch();
@@ -616,16 +623,45 @@ int igetkey()
                 return KEY_UP + (ch - 'A');
             else if (ch >= '1' && ch <= '6')
                 mode = 3;
-            else
-                return ch;
+            else {
+                ret = ch;
+                break;
+            }
         } else if (mode == 3) { /* Ins Del Home End PgUp PgDn */
-            if (ch == '~')
-                return KEY_HOME + (last - '1');
-            else
-                return ch;
+            if (ch == '~') {
+                ret = KEY_HOME + (last - '1');
+                break;
+            }
+            else {
+                ret = ch;
+                break;
+            }
         }
         last = ch;
     }
+
+    if(keymem_total) {
+        int i,j,k,p;
+        for(i=0;i<keymem_total;i++) {
+            p=!keymem[i].status[0];
+            j=0;
+            while(keymem[i].status[j]&&j<10) {
+                if(keymem[i].status[j]==uinfo.mode) p=1;
+                j++;
+            }
+            if(p&&ret==keymem[i].key) {
+                j=0;
+                while(keymem[i].mapped[j]&&j<10) j++;
+                if(j=0) continue;
+                ret = keymem[i].mapped[0];
+                keybuffer_count = j-1;
+                keybuffer = keymem[i].mapped+1;
+                break;
+            }
+        }
+    }
+    
+    return ret;
 }
 
 int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void *nouse, int clearlabel)
