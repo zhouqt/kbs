@@ -2965,15 +2965,15 @@ int Goodbye()
     int left=(80-36)/2;
     int top=(scr_lns-11)/2;
     struct _select_item level_conf[]={
-        { left+16,top+2,-1,SIT_SELECT,(void*)""},
-        { left+16,top+3,-1,SIT_SELECT,(void*)""},
-        { left+16,top+4,-1,SIT_SELECT,(void*)""},
-        { left+16,top+5,-1,SIT_SELECT,(void*)""},
+        { left+23,top+2,-1,SIT_SELECT,(void*)""},
+        { left+23,top+3,-1,SIT_SELECT,(void*)""},
+        { left+23,top+4,-1,SIT_SELECT,(void*)""},
+        { left+23,top+5,-1,SIT_SELECT,(void*)""},
         { -1,-1,-1,0 ,NULL}
     };
     if (!iscolor) {
 	for (i=0;i<4;i++)
-		level_conf[i].x=left+4;
+		level_conf[i].x=left+7;
     }
 
 /*---	显示备忘录的关掉该死的活动看板	2001-07-01	---*/
@@ -2998,21 +2998,21 @@ int Goodbye()
     move(top+2,left);
     prints("\x1b[1;47;37m║\x1b[44;37m     [\x1b[33m1\x1b[37m] 寄信给%10s       \x1b[47;37m║\x1b[m",NAME_BBS_CHINESE);
     move(top+3,left);
-    prints("\x1b[1;47;37m║\x1b[44;37m     [\x1b[33m2\x1b[37m] 返回\x1b[32m*%10s BBS*\x1b[37m   \x1b[47;37m║\x1b[m",NAME_BBS_CHINESE);
+    prints("\x1b[1;47;37m║\x1b[44;37m     [\x1b[33m2\x1b[37m] \x1b[32m返回%10sBBS站\x1b[37m    \x1b[47;37m║\x1b[m",NAME_BBS_CHINESE);
     move(top+4,left);
-    prints("\x1b[1;47;37m║\x1b[44;37m     [\x1b[33m3\x1b[37m] 写写*留言板*           \x1b[47;37m║\x1b[m");
+    outs("\x1b[1;47;37m║\x1b[44;37m     [\x1b[33m3\x1b[37m] 写写*留言板*           \x1b[47;37m║\x1b[m");
     move(top+5,left);
-    prints("\x1b[1;47;37m║\x1b[44;37m     [\x1b[33m4\x1b[37m] 离开本BBS站            \x1b[47;37m║\x1b[m");
+    outs("\x1b[1;47;37m║\x1b[44;37m     [\x1b[33m4\x1b[37m] 离开本BBS站            \x1b[47;37m║\x1b[m");
     move(top+6,left);
-    prints("\x1b[1;47;37m║\x1b[0;44;34m________________________________\x1b[1;47;37m║\x1b[m");
+    outs("\x1b[1;47;37m║\x1b[0;44;34m________________________________\x1b[1;47;37m║\x1b[m");
     move(top+7,left);
-    prints("\x1b[1;47;37m║                                ║\x1b[m");
+    outs("\x1b[1;47;37m║                                ║\x1b[m");
     move(top+8,left);
-    prints("\x1b[1;47;37m║        \x1b[42;37m\x1b[33m取消(两下ESC)\x1b[37m\x1b[0;47;30m▃\x1b[1;37m         ║\x1b[m");
+    outs("\x1b[1;47;37m║        \x1b[42;33m  取消(两下ESC) \x1b[0;47;30m▃\x1b[1;37m      ║\x1b[m");
     move(top+9,left);
-    prints("\x1b[1;47;37m║           \x1b[0;40;37m▃▃▃▃▃▃\x1b[1;47;37m         ║\x1b[m");
+    outs("\x1b[1;47;37m║          \x1b[0;40;37m▃▃▃▃▃▃▃▃\x1b[1;47;37m      ║\x1b[m");
     move(top+10,left);
-    prints("\x1b[1;47;37m╚════════════════╝\x1b[m");
+    outs("\x1b[1;47;37m╚════════════════╝\x1b[m");
 
     choose=simple_select_loop(level_conf,SIF_SINGLE|SIF_ESCQUIT|SIF_NUMBERKEY,t_columns,t_lines,NULL);
     if (choose==0) choose=2;
