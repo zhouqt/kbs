@@ -30,6 +30,8 @@ uleveltochar( char* buf, struct userec *lookupuser )
 	    strcpy( buf, "Íú²Æ" );
     	else if( !strcmp(lookupuser->userid,"halen") )
 	    strcpy( buf, "Ð¡Æ¤¿¨Çï" );
+    	else if( !strcmp(lookupuser->userid,"cclu") )
+	    strcpy( buf, "Î÷Î÷Â³" );
     	else if( !strcmp(lookupuser->userid,"Bison") )
 	    strcpy( buf, "ÒùÔô" );
     	else if( !strcmp(lookupuser->userid,"KCN") )
