@@ -805,29 +805,13 @@ char *pathname, *firstpath;
     }
     fclose(fidx);
 
-    now = time(NULL);
-    sprintf(name, "M.%d.A", now);
-    ptr = strrchr(name, 'A');
-    while (1) {
-        sprintf(article, "%s/%s", homepath, name);
-        fh = open(article, O_CREAT | O_EXCL | O_WRONLY, 0644);
-        /*
-         * if( fh != -1 )  break; 
-         */
-        if (fh >= 0)
-            break;
-        if (errno != EEXIST) {
-            innbbsdlog(" Err: can't writable or other errors\n");
-            return NULL;
-        }
-/* to solve client gateway problem, add now instead of add A, */
-        now += 60;
-        sprintf(name, "M.%d.A", now);
-/*
-        if( *ptr < 'Z' )  (*ptr)++;
-        else  ptr++, *ptr = 'A', ptr[1] = '\0';
-*/
-    }
+    if (GET_POSTFILENAME(name, homepath) < 0)
+	{
+		innbbslog(" Err: can't get a postfile name\n");
+		return NULL;
+	}
+	sprintf(article, "%s/%s", homepath, name);
+	fh = open(article, O_WRONLY, 0644);
 
 #ifdef DEBUG
     printf("post to %s\n", article);
@@ -863,6 +847,7 @@ char *pathname, *firstpath;
     strncpy(header.title, conv_buf, STRLEN);
     header.title[STRLEN - 1] = '\0';
     header.innflag[1] = 'M';
+	set_posttime(&header);
     /*
      * if append record record, should return fail message 
      */
