@@ -632,6 +632,7 @@ static int choose_board(int newflag, char *boardprefix)
 		if (nbrd!=newpost_buffer)
 			nbrd=newpost_buffer;
               show_brdlist(page, 1, newflag);     /*  refresh screen */
+	      brdnum = -1;
               modify_user_mode(newflag ? READNEW : READBRD);
 	      /*
             }
@@ -856,6 +857,8 @@ static int choose_board(int newflag, char *boardprefix)
                        if( zapbuf[ ptr->pos ] > 0 ) 
                        zapbuf[ ptr->pos ] = brc_list[0];
                      */
+		    if(nbrd != newpost_buffer)
+			nbrd = newpost_buffer;
                     brdnum  = -1;
                     modify_user_mode(newflag ? READNEW : READBRD);
                 }
