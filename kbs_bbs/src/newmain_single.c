@@ -427,8 +427,8 @@ void login_query()
         signal(SIGALRM, SIG_IGN);
 #endif
 
-        getdata(0, 0, "\n" LOGIN_PROMPT ": ", uid, STRLEN - 1, DOECHO, NULL, true);
-        uid[STRLEN - 1] = 0;
+        getdata(0, 0, "\n" LOGIN_PROMPT ": ", uid, IDLEN + 2, DOECHO, NULL, true);
+        uid[IDLEN + 2] = 0;
         if (uid[strlen(uid) - 1] == '.') {
             convcode = 1;
             uid[strlen(uid) - 1] = 0;
