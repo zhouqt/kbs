@@ -735,6 +735,7 @@ int mode;
     struct fileheader fhdr;
     char fname[PATHLEN], *mesg;
 
+    bzero(&fhdr,sizeof(struct fileheader));/* clear,or have attachment. binxun */
     sprintf(fname, "%s/%s", path, pitem->fname);
     if (dashf(fname)) {
         strncpy(fhdr.title, pitem->title, STRLEN);
