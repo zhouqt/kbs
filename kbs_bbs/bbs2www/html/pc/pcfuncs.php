@@ -1082,7 +1082,7 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
 	    if (bbs_checkbadword($subject) || bbs_checkbadword($body))
 	        $into_filter = true;
 	
-	if (!$into_filter)
+	if (!$into_filter) {
     	if($tbpUrl && pc_tbp_check_url($tbpUrl) && $tbpArt) //若有引用通告的相关文章，加上链接
     	{
     		if($htmlTag)
@@ -1092,7 +1092,10 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
     			$body .= "\n\n[相关文章]\n".$tbpArt;
     		
     	}
-	
+    	if (pc_is_groupwork($pc)) { //群体BLOG文章要加一个头
+    	    $body = pc_groupwork_addhead($pc,$body,$htmlTag);
+    	}
+    }
 	$body = addslashes($body);
 	if (!$address) $address = $_SERVER["REMOTE_ADDR"];
 	//日志入库
@@ -1170,6 +1173,21 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
 	    return -9;
 	else
     	return 0;
+}
+
+//群体blog添加头
+function pc_groupwork_addhead($pc,$body,$htmltag) {
+    global $currentuser;
+    if ($htmltag)
+        $ret = '<p align="right"><a href="/bbsqry.php?userid='.$currentuser['userid'].'"><font class="f2">发布者: '.$currentuser['userid'].'</font></a>&nbsp;&nbsp;&nbsp;&nbsp;</p>';
+    else
+        $ret = '                                 发布者: '.$currentuser['userid'].'   \n';
+    $ret .= $body;
+    if ($htmltag)
+        $ret .= '<p align="center">[<a href="/bbsqry.php?userid='.$currentuser['userid'].'">'.$currentuser['userid'].'</a>@<a href="index.php?id='.$pc['USER'].'">'.html_format($pc['NAME']).'</a>]</p>';
+    else
+        $ret .= '          '.$currentuser['userid'].'@'.$pc['NAME'].'   \n';
+    return $ret;
 }
 
 //获取收藏夹根目录的pid
