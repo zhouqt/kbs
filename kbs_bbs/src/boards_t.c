@@ -268,6 +268,7 @@ struct favboard_proc_arg {
     int father; /*保存父结点，如果是收藏夹，是fav_father,
     如果是版面目录，是group编号*/
     bool reloaddata;
+    bool select_group; //选择了一个目录
 
     char* boardprefix;
     /*用于search_board得时候缓存*/
@@ -548,8 +549,9 @@ static int fav_onselect(struct _select_def *conf)
 
     ptr = &arg->nbrd[conf->pos - conf->page_pos];
 
+    if (arg->select_group) return SHOW_SELECT; //select a group
+    arg->select_group=false;
     if ((ptr->dir == 1)||((arg->favmode==1)&&(ptr->flag&BOARD_GROUP))) {        /* added by bad 2002.8.3*/
-        arg->tmpnum=0;
         return SHOW_SELECT;
     } else {
         struct boardheader bh;
@@ -577,7 +579,7 @@ static int fav_onselect(struct _select_def *conf)
                 returnmode=Read();
                 if (returnmode==CHANGEMODE) { //select another board
                     if (currboard->flag&BOARD_GROUP) {
-                        arg->tmpnum=-1;
+			arg->select_group=true;
                         return SHOW_SELECT;
                     }
                 } else break;
@@ -755,14 +757,14 @@ static int fav_key(struct _select_def *conf, int command)
                     returnmode=Read();
                     if (returnmode==CHANGEMODE) { //select another board
                         if (currboard->flag&BOARD_GROUP) {
-                            arg->tmpnum=-1;
+                            arg->select_group=true;
                             return SHOW_SELECT;
                         }
                     } else break;
                 }
             }
             else {
-                arg->tmpnum=-1;
+		arg->select_group=true;
                 return SHOW_SELECT;
             }
         }
@@ -1105,6 +1107,7 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
     int sellist[FAVBOARDNUM];   /*保存目录递归信息 */
     int oldmode;
     int changelevel=-1; /*保存在那一级的目录转换了mode,就是从收藏夹进入了版面目录*/
+    int selectlevel=-1; /*保存在哪一级进入了s目录*/
 
     oldmode = uinfo.mode;
     modify_user_mode(SELECT);
@@ -1143,6 +1146,7 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
 	 }
         arg.find = true;
         arg.loop_mode = 0;
+	arg.select_group =false;
 
         favboard_conf.item_per_page = BBS_PAGESIZE;
         favboard_conf.flag = LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;     /*|LF_HILIGHTSEL;*/
@@ -1195,16 +1199,19 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
         } else {
             /*选择了一个目录,SHOW_SELECT，注意有个假设，目录的深度
             不会大于FAVBOARDNUM，否则selist会溢出
-            注意，arg->tmpnum被用来表示是select了版面还是用s跳转的。
-            如果是s跳转，tmpnum=-1,否则tmpnum=0;
+            注意，arg->select_group被用来表示是select了版面还是用s跳转的。
+            如果是s跳转，arg->select_group=true,否则arg->select_group=false;
             TODO: 动态增长sellist
             */
             sellist[favlevel] = favboard_conf.pos;
-            favlevel++;
+            if ((selectlevel==-1)||(!arg.select_group))
+                favlevel++;
+	    else
+		favlevel=selectlevel; /*退回到∠一次的目录*/
             if (favmode) {
                 if (nbrd[favboard_conf.pos - favboard_conf.page_pos].flag!=-1) {
                     //进入版面目录
-                    if (arg.tmpnum==-1) //select进入的
+                    if (arg.select_group) //select进入的 
                         favlist[favlevel] = currboardent;
                     else
                         favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].pos+1;
@@ -1214,11 +1221,13 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
                     favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].tag;
             }
             else {
-                if (arg.tmpnum==-1) //select进入的
+                if (arg.select_group) //select进入的
                     favlist[favlevel] = currboardent;
                 else
                 favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].pos+1;
             }
+            if (arg.select_group) //select进入的
+		    selectlevel=favlevel;
             sellist[favlevel] = 1;
         };
         clear();

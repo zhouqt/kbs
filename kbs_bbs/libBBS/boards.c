@@ -1116,7 +1116,7 @@ int load_boards(struct newpostdata *nbrd,char *boardprefix,int group,int pos,int
         if (!check_see_perm(currentuser,bptr)) {
             continue;
         }
-        if (boardprefix != NULL && strchr(boardprefix, bptr->title[0]) == NULL && boardprefix[0] != '*')
+        if ((group==0)&&(boardprefix != NULL && strchr(boardprefix, bptr->title[0]) == NULL && boardprefix[0] != '*'))
             continue;
         if (yank_flag || zapbuf[n] != 0 || (bptr->level & PERM_NOZAP)) {
             int i;
