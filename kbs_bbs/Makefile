@@ -104,10 +104,6 @@ endif
 $(PROGNAME): $(COBJS) $(OTHERS)
 	$(CC) -o bbsd_single $(CFLAGS) $(COBJS) $(LIBS) -g
 
-bbstest: $(BBSLIB) $(OTHERS) newmain_single.o newio.o newterm.o convcode.o
-	$(CC) -o bbstest $(CFLAGS) $(BBSLIB) $(LIBS) newmain_single.o newio.o newterm.o convcode.o
-	cp -f bbstest ../bin/bbstest
-
 lint: $(LNFILES)
 	lint -abh $(LNFILES)
 
@@ -116,8 +112,6 @@ newpop3.o: newpop3.c
 	
 newpop3d: newpop3.o $(BBSLIB) 
 	$(CC) $(CFLAGS) -o newpop3d $(SITE_DEF) $(DEFINES) newpop3.o $(BBSLIB) $(LIBS)
-	cp -f newpop3d $(BBSHOME)/bin
-#	$(CC) $(CFLAGS) -o pop3d $(SITE_DEF) -D_BSD pop3d.c
 
 thread: thread.c record.c
 	$(CC) $(CFLAGS) -o thread $(OS_DEF) record.c thread.c $(LIBS)
@@ -134,7 +128,7 @@ $(BBSLIB) : $(patsubst %.o,lib%.o,$(BBSLIBOBJS))
 	
 chatd: station.c libBBS.a
 	$(CC) -g $(CFLAGS) $(SITE_DEF) $(DEFINES) -o chatd $(OS_DEF) station.c $(LIBS) libBBS.a
-	cp -f chatd $(BBSHOME)/bin
+	$(INSTALL) chatd $(BBSHOME)/bin
 
 
 ve: edit.o term.o screen.o io.o editor.c
@@ -144,25 +138,21 @@ ve: edit.o term.o screen.o io.o editor.c
 #	./Install.sh
 
 installbbs: $(PROGNAME) $(BBSHOME)/bin/bbsd_single
+	$(INSTALL) newpop3d $(BBSHOME)/bin
 
 $(BBSHOME)/bin/bbsd_single: bbsd_single
-	$(INSTALL) bbsd_single $@.new
-	-rm -f $@.old
-	-mv $@ $@.old
-	mv $@.new $@
+	$(INSTALL) $@ $@.old
+	$(INSTALL) bbsd_single $@
 
 installthread: thread $(BBSHOME)/bin/thread
 $(BBSHOME)/bin/thread: thread
-	$(INSTALL) -s thread $@.new
-	-rm -f $@.old
-	-mv $@ $@.old
-	mv $@.new $@
+	$(INSTALL) $@ $@.old
+	$(INSTALL) thread $@
 
 installchatd: chatd $(BBSHOME)/bin/chatd
 $(BBSHOME)/bin/chatd: chatd
-	-rm -f $(BBSHOME)/bin/chatd.old
-	-cp -f $(BBSHOME)/bin/chatd $(BBSHOME)/bin/chatd.old
-	-cp -f chatd $(BBSHOME)/bin/chatd
+	$(INSTALL) $@ $@.old
+	$(INSTALL) chard $@
                                 
 clean: /tmp
 	-rm -fr $(GARBAGE) $(COBJS) $(PROGNAME) $(LNFILES) chatd
