@@ -60,8 +60,6 @@ prints("电子邮件信箱 : %s\n", u->email);
 if (real) {
         
 prints("真实 E-mail  : %s\n", u->realemail);
-        
-prints("Ident 资料   : %s\n", u->ident);
     
 }
     
