@@ -587,7 +587,8 @@ int do_send(char *userid, char *title, char *q_file)
             return -2;
         }
 		/* 加上保存到发件箱的确认，by flyriver, 2002.9.23 */
-		getdata(2, 0, "保存信件到发件箱? [N]: ", buf2, 2, DOECHO, 0, 0);
+		buf2[0] = '\0';
+		getdata(1, 0, "保存信件到发件箱? [N]: ", buf2, 2, DOECHO, 0, 0);
 		if (buf2[0] == 'y' || buf2[0] == 'Y')
 		{
 			/* backup mail to sent folder */
