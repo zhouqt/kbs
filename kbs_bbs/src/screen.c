@@ -51,6 +51,25 @@ struct screenline *big_picture = NULL;
 static const char nullstr[] = "(null)";
 static /*struct screenline old_line; */ char tmpbuffer[256];
 
+/* ĞÇ¿ÕÕ½¶·¼¦ added by Czz 020926 */
+void
+clrnlines(int n)
+{
+	register struct screenline *slp;
+	register int i, k;
+//	if (dumb_term)
+//		return;
+	for (i = cur_ln; i < cur_ln + n; i++) {
+		slp = &big_picture[(i + roll) % scr_lns];
+		slp->mode = 0;
+		slp->oldlen = 255;
+		slp->len = 0;
+		for (k = 0; k < LINELEN; k++)
+			slp->data[k] = 0;
+	}
+}
+/* added end */
+
 int
 num_noans_chr(str)
 char *str;
@@ -641,7 +660,8 @@ register const char *str;
 
 int dec[] =
     { 1000000000, 100000000, 10000000, 1000000, 100000, 10000, 1000, 100, 10,
-    1 };
+	1
+};
 
 void
 prints(char *format, ...)
