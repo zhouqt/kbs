@@ -34,7 +34,7 @@ void uuencode(char *inbuf, int size, char *filename, OUTC_FUNC fn)
         left -= n;
         if ((*fn) (ENCODE(n)) == EOF)
             break;
-        for (p = ptr; n > 2; n -= 3, p += 3) {
+        for (p = ptr, ptr+=n; n > 2; n -= 3, p += 3) {
             ch = *p >> 2;
             ch = ENCODE(ch);
             if ((*fn) (ch) == EOF)
@@ -53,7 +53,7 @@ void uuencode(char *inbuf, int size, char *filename, OUTC_FUNC fn)
         if (n != 0)
             break;
 
-        if ((*fn) (ch) == EOF)
+        if ((*fn) ('\n') == EOF)
             break;
     }
 
