@@ -184,7 +184,7 @@ int prepare_write_dir(struct write_dir_arg *filearg, struct fileheader *fileinfo
                  * 先从当前位置往前找，因为一般都是被删除导致向前了
                  */
                 nowFh = filearg->fileptr + (oldent - 1);
-                for (i = oldent; i >= 0; i--, nowFh--) {
+                for (i = oldent - 1; i >= 0; i--, nowFh--) {
                     if (!strcmp(fileinfo->filename, nowFh->filename)) {
                         filearg->ent = i + 1;
                         break;
@@ -194,7 +194,7 @@ int prepare_write_dir(struct write_dir_arg *filearg, struct fileheader *fileinfo
                  * 再从当前位置往后找
                  */
                 nowFh = filearg->fileptr + oldent;
-                for (i = oldent + 1; i < count; i++, nowFh++) {
+                for (i = oldent; i < count; i++, nowFh++) {
                     if (!strcmp(fileinfo->filename, nowFh->filename)) {
                         filearg->ent = i + 1;
                         break;
@@ -674,7 +674,7 @@ void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail
     while ((asize = -attach_fgets(buf, 256, inf)) != 0) {
         if ((strstr(buf, "【 以下文字转载自 ") && strstr(buf, "讨论区 】")) || (strstr(buf, "【 原文由") && strstr(buf, "所发表 】")))
             continue;           /* 避免引用重复 */
-        else
+        if(asize<0)
             fprintf(of, "%s", buf);
         put_attach(inf, of, asize);
     }
@@ -1742,47 +1742,6 @@ int put_attach(FILE * in, FILE * out, int size)
     return 0;
 }
 
-int get_effsize(char *ffn)
-{
-    char *p, *op, *attach;
-    long attach_len;
-    int j;
-    off_t fsize;
-    int k, abssize = 0, entercount = 0, ignoreline = 0;
-
-    j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize, NULL);
-    op = p;
-    if (j) {
-        k = fsize;
-        while (k) {
-            if (NULL != (checkattach(p, k, &attach_len, &attach))) {
-                k -= (attach - p) + attach_len;
-                p = attach + attach_len;
-                continue;
-            }
-            if (k >= 3 && *p == '\n' && *(p + 1) == '-' && *(p + 2) == '-' && *(p + 3) == '\n')
-                break;
-            if (*p == '\n') {
-                entercount++;
-                ignoreline = 0;
-            }
-            if (k >= 5 && *p == '\n' && *(p + 1) == '\xa1' && *(p + 2) == '\xbe' && *(p + 3) == ' ' && *(p + 4) == '\xd4' && *(p + 5) == '\xda')
-                ignoreline = 1;
-            if (k >= 2 && *p == '\n' && *(p + 1) == ':' && *(p + 2) == ' ')
-                ignoreline = 2;
-            if (k >= 2 && *p == KEY_ESC && *(p + 1) == '[' && *(p + 2) == 'm')
-                ignoreline = 3;
-
-            k--;
-            p++;
-            if (entercount >= 4 && !ignoreline)
-                abssize++;
-        }
-    }
-    end_mmapfile((void *) op, fsize, -1);
-    return abssize;
-}
-
 int get_effsize_attach(char *ffn, unsigned int *att)
 {
     char *p, *op, *attach;
@@ -1793,40 +1752,51 @@ int get_effsize_attach(char *ffn, unsigned int *att)
 
     j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize, NULL);
     op = p;
-    *att = 0;
+    if (att) *att = 0;
     if (j) {
         k = fsize;
         while (k) {
             if (NULL != (checkattach(p, k, &attach_len, &attach))) {
-                if (!*att)
+                if (att && !*att)
                     *att = p - op;
                 k -= (attach - p) + attach_len;
                 p = attach + attach_len;
                 continue;
             }
-            if (k >= 3 && *p == '\n' && *(p + 1) == '-' && *(p + 2) == '-' && *(p + 3) == '\n')
-                break;
-            if (*p == '\n') {
-                entercount++;
-                ignoreline = 0;
+            if (j) { //为了计数和以前一致,姑且用j做判断bool了,想像它是eff_done_flag吧...
+                if (*p == '\n') {
+                    if (k >= 3 && *(p + 1) == '-' && *(p + 2) == '-' && *(p + 3) == '\n') {
+                        if (att) j = 0;
+                        else break; //no need to determine attachment, so we are done.
+                    } else if (k >= 5 && *(p + 1) == '\xa1' && *(p + 2) == '\xbe' && *(p + 3) == ' ' && *(p + 4) == '\xd4' && *(p + 5) == '\xda') {
+                        ignoreline = 1;
+                    } else if (k >= 2 && *(p + 1) == ':' && *(p + 2) == ' ') {
+                        ignoreline = 2;
+                    } else {
+                        entercount++;
+                        ignoreline = 0;
+                    }
+                } else if (k >= 2 && *p == KEY_ESC && *(p + 1) == '[' && *(p + 2) == 'm') {
+                    ignoreline = 3;
+                } else {
+                    if (entercount >= 4 && !ignoreline)
+                        abssize++;
+                }
             }
-            if (k >= 5 && *p == '\n' && *(p + 1) == '\xa1' && *(p + 2) == '\xbe' && *(p + 3) == ' ' && *(p + 4) == '\xd4' && *(p + 5) == '\xda')
-                ignoreline = 1;
-            if (k >= 2 && *p == '\n' && *(p + 1) == ':' && *(p + 2) == ' ')
-                ignoreline = 2;
-            if (k >= 2 && *p == KEY_ESC && *(p + 1) == '[' && *(p + 2) == 'm')
-                ignoreline = 3;
-
             k--;
             p++;
-            if (entercount >= 4 && !ignoreline)
-                abssize++;
         }
     }
     end_mmapfile((void *) op, fsize, -1);
     return abssize;
 }
 
+int get_effsize(char *ffn)
+{
+    return get_effsize_attach(ffn, NULL);
+}
+
+#if 0 /* atppp 20050310 */
 long calc_effsize(char *fname)
 {
     FILE *fp;
@@ -1936,7 +1906,7 @@ long calc_effsize(char *fname)
     fclose(fp);
     return effsize;
 }
-
+#endif
 /*
   dirarg，要操作的dir结构
   id1,id2, 起始编号
