@@ -1,3 +1,7 @@
+/**
+ * This is the original struct.h file for Firebird 3.0K beta6.
+*/
+
 #ifndef BBS_OLDSTRUCT_H
 #define BBS_OLDSTRUCT_H
 
@@ -112,8 +116,7 @@ struct oldboardheader {          /* This structure is used to hold data in */
 
 struct oldfileheader {          /* This structure is used to hold data in */
         char filename[STRLEN];     /* the DIR files */
-		char owner[STRLEN - sizeof(time_t)];
-		time_t posttime;
+	char owner[STRLEN];
         char title[STRLEN];
         unsigned level;
         unsigned char accessed[ 12 ];   /* struct size = 256 bytes */
