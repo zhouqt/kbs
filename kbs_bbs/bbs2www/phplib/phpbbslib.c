@@ -2033,9 +2033,9 @@ PHP_MINFO_FUNCTION(smth_bbs)
 }
 
 /**
- * check ID is valid
+ * Function: Create a new user id
  *  rototype:
- * int bbs_createNewID(string smthid,string passwd);
+ * int bbs_createNewID(string smthid,string passwd,string nickname);
  *
  *  @return the result
  *  	0 -- success, 1 -- specail char or first char not alpha
@@ -2052,6 +2052,8 @@ static PHP_FUNCTION(bbs_createnewid)
 	int userid_len;
 	char* passbuf;
 	int passbuf_len;
+	char* nickname;
+	int nickname_len;
 	char buf[1024];
 	char tmpstr[30];
 	struct stat lst;
@@ -2061,7 +2063,8 @@ static PHP_FUNCTION(bbs_createnewid)
 
     int ac = ZEND_NUM_ARGS();
 
-    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ss", &userid, &userid_len,&passbuf,&passbuf_len) == FAILURE) {
+    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sss", &userid, &userid_len,&passbuf,&passbuf_len,&nickname,&nickname_len) == FAILURE)
+	{
 		WRONG_PARAM_COUNT;
 	}
 	if (userid_len > IDLEN)RETURN_LONG(5);
@@ -2086,6 +2089,9 @@ static PHP_FUNCTION(bbs_createnewid)
 
 	memset(&newuser,0,sizeof(newuser));
 	strncpy(newuser.userid ,userid,IDLEN);
+	strncpy(newuser.username,nickname,NAMELEN-1);
+	newuser.username[NAMELEN-1] = '\0';
+
 	newuser.firstlogin = newuser.lastlogin = time(NULL);
 
 	setpasswd(passbuf,&newuser);
@@ -2108,8 +2114,7 @@ static PHP_FUNCTION(bbs_createnewid)
 
 	if (!getuser(newuser.userid,&currentuser))RETURN_LONG(10);
 
-	bbslog("user","%s","new account from tsinghua www");
-
+	bbslog("user","%s","new account from www");
 
 	//检查是否有前人的信件
 	sethomepath(tmpstr,userid);
@@ -2171,6 +2176,8 @@ static PHP_FUNCTION(bbs_fillidinfo)
     strncpy(ud.realemail,genbuf,STRLEN-16);
 
     if(write_userdata(userid,&ud) < 0)RETURN_LONG(-2);
+
+	bbslog("user","%s","new account from tsinghua www");
 
     RETURN_LONG(0);
 }
