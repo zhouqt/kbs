@@ -20,7 +20,7 @@ global $listType;
 
 preprocess();
 
-setStat(htmlspecialchars($article['TITLE'] ,ENT_QUOTES) . " " );
+setStat(htmlspecialchars($articles[0]['TITLE'] ,ENT_QUOTES) . " " );
 
 show_nav($boardName);
 
