@@ -130,6 +130,7 @@ static PHP_FUNCTION(bbs_normalboard);
 static PHP_FUNCTION(bbs_denyusers);
 static PHP_FUNCTION(bbs_denyadd);
 static PHP_FUNCTION(bbs_denydel);
+static PHP_FUNCTION(bbs_searchboard);
 
 /* favboard operation. by caltary  */
 static PHP_FUNCTION(bbs_load_favboard);
@@ -353,6 +354,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_denyusers,two_arg_force_ref_01)
         PHP_FE(bbs_denyadd,NULL)
         PHP_FE(bbs_denydel,NULL)
+        PHP_FE(bbs_searchboard,third_arg_force_ref_001)
         PHP_FE(bbs_setmailreaded,NULL)
 	PHP_FE(bbs_add_import_path,NULL)
 	PHP_FE(bbs_get_import_path,NULL)
@@ -6795,6 +6797,74 @@ static PHP_FUNCTION(bbs_denydel)
         RETURN_LONG(-3);
 }
 
+/**
+ * search board by keyword
+ * function bbs_searchboard(string keyword,int exact,array boards)
+ * @author: windinsn May 17,2004
+ * return true/false
+ */
+static PHP_FUNCTION(bbs_searchboard)
+{
+    char *keyword;
+    int keyword_len;
+    int exact;
+    zval *element,*boards;
+    bcache_t *bc;
+    int i;
+    char *board1,*title;
+
+    int ac = ZEND_NUM_ARGS();
+    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sla", &keyword, &keyword_len, &exact ,&boards) == FAILURE)
+		WRONG_PARAM_COUNT;
+	
+	strcpy(keyword,trim(keyword));
+	
+	if (!keyword)
+        RETURN_FALSE;
+    
+    if (array_init(boards) != SUCCESS)
+        RETURN_FALSE;
+    
+    bc = getbcacheaddr();
+    if (exact) { //精确查找
+        for (i = 0; i < MAXBOARD; i++) {
+            board1 = bc[i].filename;
+            title = bc[i].title + 13;
+            if (!check_read_perm(getCurrentUser(), &bc[i]))
+                 continue;
+            if (!strcasecmp(keyword, board1)) {
+                MAKE_STD_ZVAL(element);
+                array_init(element);
+                add_assoc_string(element,"NAME",board1,1);
+                add_assoc_string(element,"DESC",bc[i].des,1);
+                add_assoc_string(element,"TITLE",title,1);
+                zend_hash_index_update(Z_ARRVAL_P(boards),0,(void*) &element, sizeof(zval*), NULL);
+                RETURN_TRUE;
+            }
+        }
+        RETURN_FALSE;
+    }
+    else { //模糊查找
+        int total = 0;
+        for (i = 0; i < MAXBOARD; i++) {
+            board1 = bc[i].filename;
+            title = bc[i].title + 13;
+            if (!check_read_perm(getCurrentUser(), &bc[i]))
+                continue;
+            if (strcasestr(board1,keyword) || strcasestr(title,keyword) || strcasestr(bc[i].des,keyword)) {
+                MAKE_STD_ZVAL(element);
+                array_init(element);
+                add_assoc_string(element,"NAME",board1,1);
+                add_assoc_string(element,"DESC",bc[i].des,1);
+                add_assoc_string(element,"TITLE",title,1);
+                zend_hash_index_update(Z_ARRVAL_P(boards),total,(void*) &element, sizeof(zval*), NULL);
+                total ++;
+            }
+        }
+        
+        RETURN_LONG(total);
+   }
+}
 
 /*
  * valid_filename()

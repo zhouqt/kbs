@@ -342,7 +342,7 @@ bbs_auto_reload();
 		</tr>
 		<tr>
 			<td width="16"><img src="/images/open.gif" border="0"></td>
-			<form action="cgi-bin/bbs/bbssel" target="f3">
+			<form action="/bbssel.php" method="get" target="f3">
 			<td><nobr>
 			<img src="<?php echo $img_subdir; ?>m5.gif" border="0" alt="搜索讨论区" align="absmiddle">
 			<input name="board" type="text" class="f2" value="搜索讨论区" size="12" onclick="this.value=''" /> 
