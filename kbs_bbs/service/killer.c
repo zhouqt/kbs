@@ -189,7 +189,6 @@ int choose_room()
 
     bzero(&grouplist_conf, sizeof(struct _select_def));
     grouplist_conf.item_count = room_count();
-    prints("0"); refresh(); sleep(10);
     if (grouplist_conf.item_count == 0) {
         grouplist_conf.item_count = 1;
     }
@@ -223,7 +222,6 @@ int killer_main()
     int i,oldmode;
     void * shm;
     shm=attach_shm("KILLER_SHMKEY", 3451, sizeof(struct room_struct)*1000+4, &i);
-    prints("%d",i); refresh(); sleep(10);
     rooms = shm+4;
     roomst = shm;
     if(i) roomst = 0;
