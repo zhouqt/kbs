@@ -1050,6 +1050,7 @@ static int search_thread(struct keeploc *locmem, int offset, char *title)
 int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *ptitle)
 {
     struct keeploc *locmem;
+    extern struct fileheader ReadPostHeader;
     int istest = 0, isstart = 0, isnext = 1;
     int previous;
     char genbuf[STRLEN], title[STRLEN];
@@ -1103,6 +1104,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
         strncpy(title, ptitle->owner, STRLEN);
         setqtitle(ptitle->title);
     }
+    memcpy(&ReadPostHeader, ptitle, sizeof(struct fileheader));
     if (!strncmp(title, "Re: ", 4) | !strncmp(title, "RE: ", 4)) {
         strcpy(title, title + 4);
     }

@@ -39,6 +39,7 @@ int selboard = 0;
 
 char ReadPost[STRLEN] = "";
 char ReplyPost[STRLEN] = "";
+struct fileheader ReadPostHeader;
 int FFLL = 0;
 int Anony;
 char genbuf[1024];
@@ -625,21 +626,36 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
 
     TITLE = ent->title;         /*ÎÄÕÂ±êÌâTITLE */
 
-    if (FFLL == 0) {
-        if (!strncmp("Re:", ent->title, 3) || !strncmp("RE:", ent->title, 3) || !strncmp("©À ", ent->title, 3) || !strncmp("©¸ ", ent->title, 3))       /*ReµÄÎÄÕÂ */
+    if (uinfo.mode != RMAIL&&digestmode!=1) { // ÐÂ·½·¨±È½Ï
+	if (FFLL == 0) {
+        if (ent->groupid!=ent->id)       /*ReµÄÎÄÕÂ */
             sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  %-47.47s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
         else                    /* ·ÇReµÄÎÄÕÂ */
             sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
     } else {                    /* ÔÊÐí ÏàÍ¬Ö÷Ìâ±êÊ¶ */
-
-        if (!strncmp("Re:", ent->title, 3) || !strncmp("RE:", ent->title, 3)) { /*ReµÄÎÄÕÂ */
-            if (!strcmp(ReplyPost + 3, ent->title + 3)) /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
+        if (ent->groupid!=ent->id) { /*ReµÄÎÄÕÂ */
+            if (ReadPostHeader.groupid==ent->groupid) /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
                 sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %6.6s[36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
             else
                 sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  %-47.47s", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
-        } else if (!strncmp("©À ", ent->title, 3) || !strncmp("©¸ ", ent->title, 3)) {  /* Ö÷ÌâÅÅÁÐµÄÎÄÕÂ */
-            if (strcmp(ReplyPost + 4, ent->title + 3) == 0)     /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
-                sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %6.6s[36m£®%-47.47s[m", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+        } else {
+            if (ReadPostHeader.groupid==ent->groupid)      /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
+                sprintf(buf, " [33m%4d[m %s%c%s %-12.12s %6.6s[33m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+            else
+                sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+        }
+    	
+    }
+    }
+    else if (FFLL == 0) {   // ¾É·½·¨±È½Ï
+        if (!strncmp("Re:", ent->title, 3))       /*ReµÄÎÄÕÂ */
+            sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  %-47.47s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+        else                    /* ·ÇReµÄÎÄÕÂ */
+            sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+    } else {                    /* ÔÊÐí ÏàÍ¬Ö÷Ìâ±êÊ¶ */
+        if (!strncmp("Re:", ent->title, 3)) { /*ReµÄÎÄÕÂ */
+            if (!strcmp(ReplyPost + 3, ent->title + 3)) /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
+                sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %6.6s[36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
             else
                 sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  %-47.47s", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
         } else {
