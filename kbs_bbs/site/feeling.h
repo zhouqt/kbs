@@ -29,8 +29,8 @@
 #define IDLE_TIMEOUT    (60*60*3) 
 #define MONITOR_TIMEOUT (60*60*3) 
 
-#define BBSUID 			515
-#define BBSGID 			515
+#define BBSUID 			9999
+#define BBSGID 			999
 
 /* for bbs2www, by flyriver, 2001.3.9 */
 #define SECNUM 9
