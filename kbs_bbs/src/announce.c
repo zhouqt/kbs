@@ -1201,14 +1201,14 @@ void a_copypaste(pm, paste)
                 }
                 if(iscut) {
 				    ITEM *item;
-				    char uppath[PATHLEN],oldpath[PATHLEN],*pnt;
+				    char uppath[PATHLEN],*pnt;
+				    MENU pm2;
 				    int n,k;
 				    
 			        sprintf(genbuf, "home/%c/%s/.CP", toupper(currentuser->userid[0]), currentuser->userid);
 			        unlink(genbuf);
+			        bzero(&pm2,sizeof(pm2));
 			        
-				    strncpy(oldpath,pm->path,PATHLEN);
-				    
 				    strncpy(uppath,fpath,PATHLEN);
 				    pnt=uppath+strlen(uppath)-1;
 				    while(*pnt!='/') pnt--;
@@ -1221,17 +1221,17 @@ void a_copypaste(pm, paste)
 				        f_rm(fpath);
 				    }
 				    
-				    strncpy(pm->path,uppath,PATHLEN);
-				    a_loadnames(pm);
+				    strncpy(pm2.path,uppath,PATHLEN);
+				    a_loadnames(&pm2);
 				    
-				    for(k=0;k<pm->num;k++)
-				    if(!strcmp(pm->item[k]->fname,filename)) break;
-				    item = pm->item[k];
+				    for(k=0;k<pm2.num;k++)
+				    if(!strcmp(pm2.item[k]->fname,filename)) break;
+				    item = pm2.item[k];
 				    free(item);
-				    (pm->num)--;
-				    for (n = k; n < pm->num; n++)
-				        pm->item[n] = pm->item[n + 1];
-				    if (a_savenames(pm)==0) {
+				    (pm2.num)--;
+				    for (n = k; n < pm2.num; n++)
+				        pm2.item[n] = pm2.item[n + 1];
+				    if (a_savenames(&pm2)==0) {
 					    sprintf(genbuf, "删除文件或目录: %s", fpath + 17);
 					    bmlog(currentuser->userid, currboard, 13, 1);
 					    a_report(genbuf);
@@ -1239,12 +1239,8 @@ void a_copypaste(pm, paste)
 				       char buf[80],ans[40];
 				       sprintf(buf, " 删除失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
 				       a_prompt(-1, buf, ans);
-				       a_loadnames(pm);
 				   }
 
-                	strncpy(pm->path,oldpath,PATHLEN);
-                	a_loadnames(pm);
-                	
             	}
                 a_additem(pm, title, filename, NULL, 0);
                 if (a_savenames(pm)==0) {
