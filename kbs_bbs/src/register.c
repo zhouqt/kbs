@@ -369,6 +369,7 @@ void check_register_info()
         struct tm *tmnow;
         FILE *fout;
         char buf2[STRLEN];
+	clear();
 	sprintf(buf, "tmp/newcomer.%s", currentuser->userid);
 	if ((fout = fopen(buf, "w")) != NULL)
 	{
