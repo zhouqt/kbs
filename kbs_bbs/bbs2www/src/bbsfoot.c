@@ -35,10 +35,10 @@ int main()
 " if (minutes<=9)\n"
 " minutes=\"0\"+minutes\n"
 " var year=Timer.getYear();\n"
-" if (year < 1900)    // Y2K Fix, Isaac Powell\n"
-"	 year = year + 1900; // http://onyx.idbsu.edu/~ipowell\n"
+" if (year < 1900)   \n"
+"	 year = year + 1900; \n"
 
-" myclock=year+\"年\"+(Timer.getMonth()+1)+\"月\"+Timer.getDay()+\"日\"+hours+\":\"+minutes\n"
+" myclock=year+\"年\"+(Timer.getMonth()+1)+\"月\"+Timer.getDate()+\"日\"+hours+\":\"+minutes\n"
 " var staysec=(now.getTime()-localtime.getTime())/60000+staytime;\n"
 " stayclock=parseInt(staysec/60)+\"小时\"+parseInt(staysec%60)+\"分钟\"\n"
 " document.clock.myclock.value=myclock\n"
