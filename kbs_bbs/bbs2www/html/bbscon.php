@@ -78,10 +78,13 @@ function display_navigation_bar($brdarr, $articles, $num)
 [下一篇]
 <?php
 	}
+	if( $articles[1]["ATTACHPOS"] == 0)
+	{
 ?>
 [<a href="/cgi-bin/bbs/bbsfwd?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">转寄</a>]
 [<a href="/cgi-bin/bbs/bbsccc?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">转贴</a>]
 <?php
+	}
 	if (bbs_can_delete_article($brdarr, $articles[1], $currentuser))
 	{
 ?>
