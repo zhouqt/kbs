@@ -1939,7 +1939,7 @@ int post_article(char *q_file, struct fileheader *re_file)
     struct fileheader post_file;
     char filepath[STRLEN];
     char buf[256], buf2[256], buf3[STRLEN], buf4[STRLEN];
-    int aborted, anonyboard;
+    int aborted, anonyboard, olddigestmode=0;
     int replymode = 1;          /* Post New UI */
     char ans[4], include_mode = 'S';
     struct boardheader *bp;
@@ -1953,6 +1953,11 @@ int post_article(char *q_file, struct fileheader *re_file)
 #endif
 
     modify_user_mode(POSTING);
+    if (digestmode==2||digestmode==3) {
+    	olddigestmode=digestmode;
+    	digestmode=0;
+    	setbdir(digestmode, currdirect, currboard);
+    }
     if (!haspostperm(currentuser, currboard)) { /* POST权限检查 */
         move(3, 0);
         clrtobot();
@@ -1988,6 +1993,10 @@ int post_article(char *q_file, struct fileheader *re_file)
          */
         if (strncmp(replytitle, "Re:", 3) == 0)
             strcpy(buf, replytitle);
+        else if (strncmp(replytitle, "├ ", 3)==0)
+            sprintf(buf, "Re: %s", replytitle+3);
+        else if (strncmp(replytitle, "└ ", 3)==0)
+            sprintf(buf, "Re: %s", replytitle+3);
         else
             sprintf(buf, "Re: %s", replytitle);
         buf[50] = '\0';
@@ -2084,8 +2093,13 @@ int post_article(char *q_file, struct fileheader *re_file)
              * strcpy(post_file.title, buf); 
              */
             strncpy(save_title, post_file.title, STRLEN);
-            if (save_title[0] == '\0')
+            if (save_title[0] == '\0') {
+            	  if (olddigestmode) {
+            	  	digestmode = olddigestmode;
+            	  	setbdir(digestmode, currdirect, currboard);
+            	  }
                 return FULLUPDATE;
+            }
             break;
         }
     }                           /* 输入结束 */
@@ -2097,6 +2111,10 @@ int post_article(char *q_file, struct fileheader *re_file)
         prints("\n\n无法创建文件:%d...\n", aborted);
         pressreturn();
         clear();
+        if (olddigestmode) {
+         	digestmode = olddigestmode;
+          	setbdir(digestmode, currdirect, currboard);
+        }
         return FULLUPDATE;
     }
 
@@ -2121,6 +2139,10 @@ int post_article(char *q_file, struct fileheader *re_file)
     if ((bp = getbcache(currboard)) == NULL) {
         unlink(filepath);
         clear();
+        if (olddigestmode) {
+         	digestmode = olddigestmode;
+          	setbdir(digestmode, currdirect, currboard);
+        }
         return FULLUPDATE;
     }
     if (bp->flag & BOARD_OUTFLAG)
@@ -2155,6 +2177,10 @@ int post_article(char *q_file, struct fileheader *re_file)
     if (aborted == -1) {        /* 取消POST */
         unlink(filepath);
         clear();
+        if (olddigestmode) {
+            digestmode = olddigestmode;
+            setbdir(digestmode, currdirect, currboard);
+        }
         return FULLUPDATE;
     }
     setbdir(digestmode, buf, currboard);
@@ -2170,6 +2196,14 @@ int post_article(char *q_file, struct fileheader *re_file)
 
     if (!junkboard(currboard)) {
         currentuser->numposts++;
+    }
+    switch(olddigestmode) {
+    	case 2:
+    		title_mode();
+    		break;
+    	case 3:
+    		marked_mode();
+    		break;
     }
     return FULLUPDATE;
 }
