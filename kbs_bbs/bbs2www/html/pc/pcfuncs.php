@@ -34,6 +34,9 @@ $pcconfig["BRDNUM"] = bbs_getboard($pcconfig["BOARD"], $brdarr);
 if(!$currentuser["userid"])
 		$currentuser["userid"] = "guest";
 
+$pcconfig["NOWRAPSTR"] = "<!--NoWrap-->";
+$pcconfig["EDITORALERT"] = "<!--Loading HTMLArea Editor , Please Wait/ÕýÔÚ¼ÓÔØ HTML±à¼­Æ÷ £¬ ÇëÉÔºò ¡­¡­-->";
+
 function pc_html_init($charset,$title="",$otherheader="",$style="",$bkimg="",$loadhtmlarea=FALSE)
 {
 	global $_COOKIE;
@@ -150,11 +153,21 @@ function undo_html_format($str)
 	return $str;
 }
 
+function html_editorstr_format($str)
+{
+	global $pcconfig;
+	$str = str_replace($pcconfig["EDITORALERT"],"",$str);
+	if(strstr($str,$pcconfig["NOWRAPSTR"]))
+		$str = $pcconfig["NOWRAPSTR"].str_replace($pcconfig["NOWRAPSTR"],"",$str);
+	return $str;
+}
+
 function html_format($str,$multi=FALSE)
 {
+	global $pcconfig;
 	if($multi)
 	{
-		if(strstr($str,"<!--NoWrap-->"))
+		if(strstr($str,$pcconfig["NOWRAPSTR"]))
 			$str = str_replace("<?","&lt;?",stripslashes($str));
 		else
 			$str = nl2br(str_replace(" ","&nbsp;",htmlspecialchars(stripslashes($str))));	

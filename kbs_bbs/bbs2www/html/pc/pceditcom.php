@@ -87,11 +87,7 @@
 </tr>
 <tr>
 	<td class="t8"><textarea name="blogbody" class="f1" cols="100" rows="20" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
-	<!--NoWrap-->
-	<!--
-		Loading HTMLArea Editor , Please Wait ... ...
-		ÕýÔÚ¼ÓÔØ HTML±à¼­Æ÷ £¬ ÇëÉÔºò ¡­¡­
-	-->
+	<?php echo $pcconfig["NOWRAPSTR"]."\n".$pcconfig["EDITORALERT"]; ?>
 	<?php echo htmlspecialchars(stripslashes($rows[body]." ")); ?>
 	</textarea></td>
 </tr>
@@ -109,7 +105,7 @@
 		elseif($act == "edit2")
 		{
 			$emote = (int)($_POST["emote"]);
-			$query = "UPDATE `comments` SET `subject` = '".addslashes($_POST["subject"])."',`changed` = '".date("YmdHis")."',`body` = '".addslashes($_POST["blogbody"])."' , `emote` = '".$emote."' WHERE `cid` = '".$cid."' AND `username` = '".$currentuser["userid"]."' LIMIT 1 ;";
+			$query = "UPDATE `comments` SET `subject` = '".addslashes($_POST["subject"])."',`changed` = '".date("YmdHis")."',`body` = '".addslashes(html_editorstr_format($_POST["blogbody"]))."' , `emote` = '".$emote."' WHERE `cid` = '".$cid."' AND `username` = '".$currentuser["userid"]."' LIMIT 1 ;";
 			mysql_query($query,$link);
 ?>
 <p align="center">

@@ -89,11 +89,7 @@
 </tr>
 <tr>
 	<td class="t8"><textarea name="blogbody" class="f1" cols="100" rows="20" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
-	<!--NoWrap-->
-	<!--
-		Loading HTMLArea Editor , Please Wait ... ...
-		ÕýÔÚ¼ÓÔØ HTML±à¼­Æ÷ £¬ ÇëÉÔºò ¡­¡­
-	-->
+	<?php echo $pcconfig["NOWRAPSTR"]."\n".$pcconfig["EDITORALERT"]; ?>
 	</textarea></td>
 </tr>
 <tr>
@@ -116,7 +112,7 @@
 			}
 			$emote = (int)($_POST["emote"]);
 			$query = "INSERT INTO `comments` ( `cid` , `nid` , `uid` , `emote` , `hostname` , `username` , `subject` , `created` , `changed` , `body` )". 
-				"VALUES ('', '".$nid."', '".$uid."', '".$emote."' , '".$_SERVER["REMOTE_ADDR"]."', '".$currentuser["userid"]."', '".addslashes($_POST["subject"])."', '".date("YmdHis")."' , '".date("YmdHis")."', '".addslashes($_POST["blogbody"])."');";
+				"VALUES ('', '".$nid."', '".$uid."', '".$emote."' , '".$_SERVER["REMOTE_ADDR"]."', '".$currentuser["userid"]."', '".addslashes($_POST["subject"])."', '".date("YmdHis")."' , '".date("YmdHis")."', '".addslashes(html_editorstr_format($_POST["blogbody"]))."');";
 			mysql_query($query,$link);
 			$query = "UPDATE nodes SET commentcount = commentcount + 1 WHERE `nid` = '".$nid."' ; ";
 			mysql_query($query,$link);

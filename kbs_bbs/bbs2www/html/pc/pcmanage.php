@@ -37,9 +37,13 @@
 				"NAME" => $rows[corpusname]
 				);
 		mysql_free_result($result);
-		pc_html_init("gb2312",stripslashes($pc["NAME"]),"","","",TRUE);
 		
 		$act = $_GET["act"]?$_GET["act"]:$_POST["act"];
+		
+		if(($act == "post" || $act == "edit") && !$_POST["subject"])
+			pc_html_init("gb2312",stripslashes($pc["NAME"]),"","","",TRUE);
+		else
+			pc_html_init("gb2312",stripslashes($pc["NAME"]));
 		
 		if($act == "cut" || $act == "copy")
 		{
@@ -168,7 +172,7 @@
 					$c = 1;
 				$emote = (int)($_POST["emote"]);
 				$query = "INSERT INTO `nodes` (  `pid` , `tid` , `type` , `source` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` ) ".
-					"VALUES ( '".$pid."', '".(int)($_POST["tid"])."' , '0', '', '".$emote."' ,  '".$_SERVER["REMOTE_ADDR"]."','".date("YmdHis")."' , '".date("YmdHis")."', '".$pc["UID"]."', '".$c."', '0', '".addslashes($_POST["subject"])."', '".addslashes($_POST["blogbody"])."', '".$tag."', '0');";
+					"VALUES ( '".$pid."', '".(int)($_POST["tid"])."' , '0', '', '".$emote."' ,  '".$_SERVER["REMOTE_ADDR"]."','".date("YmdHis")."' , '".date("YmdHis")."', '".$pc["UID"]."', '".$c."', '0', '".addslashes($_POST["subject"])."', '".addslashes(html_editorstr_format($_POST["blogbody"]))."', '".$tag."', '0');";
 				mysql_query($query,$link);
 				if($tag == 0)
 					pc_update_record($link,$pc["UID"]," + 1");
@@ -222,11 +226,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 </tr>
 <tr>
 	<td class="t8"><textarea name="blogbody" class="f1" cols="100" rows="20" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
-	<!--NoWrap-->
-	<!--
-		Loading HTMLArea Editor , Please Wait ... ...
-		ÕýÔÚ¼ÓÔØ HTML±à¼­Æ÷ £¬ ÇëÉÔºò ¡­¡­
-	-->
+	<?php echo $pcconfig["NOWRAPSTR"]."\n".$pcconfig["EDITORALERT"]; ?>
 	</textarea></td>
 </tr>
 <!--
@@ -272,8 +272,9 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 					$c = 0;
 				else
 					$c = 1;
+				//die(html_editorstr_format($_POST["blogbody"]));
 				$emote = (int)($_POST["emote"]);
-				$query = "UPDATE nodes SET `subject` = '".addslashes($_POST["subject"])."' , `body` = '".addslashes($_POST["blogbody"])."' , `changed` = '".date("YmdHis")."' , `comment` = '".$c."' , `tid` = '".(int)($_POST["tid"])."' , `emote` = '".$emote."' WHERE `nid` = '".$nid."' ; ";
+				$query = "UPDATE nodes SET `subject` = '".addslashes($_POST["subject"])."' , `body` = '".addslashes(html_editorstr_format($_POST["blogbody"]))."' , `changed` = '".date("YmdHis")."' , `comment` = '".$c."' , `tid` = '".(int)($_POST["tid"])."' , `emote` = '".$emote."' WHERE `nid` = '".$nid."' ; ";
 				mysql_query($query,$link);
 				pc_update_record($link,$pc["UID"]);
 ?>
@@ -356,11 +357,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 <tr>
 	<td class="t8">
 	<textarea name="blogbody" class="f1" cols="100" rows="20" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
-	<!--NoWrap-->
-	<!--
-		Loading HTMLArea Editor , Please Wait ... ...
-		ÕýÔÚ¼ÓÔØ HTML±à¼­Æ÷ £¬ ÇëÉÔºò ¡­¡­
-	-->
+	<?php echo $pcconfig["NOWRAPSTR"]."\n".$pcconfig["EDITORALERT"]; ?>
 	<?php echo htmlspecialchars(stripslashes($rows[body]." ")); ?>
 	</textarea></td>
 </tr>
