@@ -195,7 +195,6 @@ int multilogin_user(struct userec* user,int usernum)
     int unum,logincount;
     int curr_login_num;
 
-    unum = searchuser(user->userid);
     logincount=apply_utmpuid( NULL , usernum,0);
 
     if (logincount<1) RemoveMsgCountFile(user->userid);

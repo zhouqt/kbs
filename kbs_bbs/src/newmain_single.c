@@ -235,7 +235,8 @@ u_exit()
 
     brc_update(currentuser->userid);
 
-    clear_utmp(0);
+    if (utmpent>0)
+    	clear_utmp(utmpent,usernum);
 }
 
 int
@@ -338,7 +339,7 @@ void multi_user_check()
 	            sprintf(buffer, "kicked (multi-login)" );
 	            report(buffer);
 
-				clear_utmp(num);
+				clear_utmp(num,usernum);
 				continue;
 	        } 
 	        oflush();
