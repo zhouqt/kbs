@@ -39,9 +39,7 @@ void disply_userinfo(u, real)
     clrtobot();
     prints("您的代号     : %s\n", u->userid);
     prints("您的昵称     : %s\n", u->username);
-    if (real == 2)  //注册单不显示真实姓名
-        prints("\n");
-    else
+    if (real != 2)  //注册单不显示真实姓名
         prints("真实姓名     : %s\n", ud.realname);
     prints("居住住址     : %s\n", ud.address);
     if(real)

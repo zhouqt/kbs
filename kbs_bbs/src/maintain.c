@@ -1347,7 +1347,9 @@ char *logfile, *regfile;
             move(1, 0);
             prints("帐号位置     : %d   共有 %d 张注册单，当前为第 %d 张，还剩 %d 张\n", unum, total_num, count, sum - count + 1);    /*Haohmaru.2000.3.9.计算还有多少单子没处理 */
             count++;
+#ifdef AUTO_CHECK_REGISTER_FORM
             disply_userinfo(&uinfo, 2);
+#endif
 			
 			read_userdata(lookupuser->userid, &ud);
 #ifdef AUTO_CHECK_REGISTER_FORM
@@ -1387,7 +1389,9 @@ if (ret==2) {
                  * Bigman, 2001.11.9
                  */
                  clrtoeol();
+#ifdef AUTO_CHECK_REGISTER_FORM
 		 if (strstr(finfo[n],"真实姓名")) continue;
+#endif
                 if (n == 1) {
                     if (check_proxy_IP(uinfo.lasthost, buf) > 0)
                         prints("%s     : %s \033[33m%s\033[m\n", finfo[n], fdata[n], buf);
@@ -1521,8 +1525,12 @@ else ans[0]='n';
                 break;
             case 'N':
             case 'n':
-                for (n = 0; field[n] != NULL; n++)
+                for (n = 0; field[n] != NULL; n++) {
+#ifdef AUTO_CHECK_REGISTER_FORM
+		 if (strstr(finfo[n],"真实姓名")) continue;
+#endif
                     prints("%s: %s\n", finfo[n], fdata[n]);
+		}
                 move(9, 0);
 #ifdef AUTO_CHECK_REGISTER_FORM
               if (ret==2) {
