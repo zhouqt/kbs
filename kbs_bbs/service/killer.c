@@ -236,7 +236,7 @@ void refreshit()
     int i,j;
     for(i=0;i<myroom->people;i++) {
         move(i+2,0);
-        prints(inrooms->peoples[i].id);
+        prints(inrooms.peoples[i].id);
     }
     for(i=2;i<=t_lines-2;i++) 
     if(msgst-1-(t_lines-2-i)>=0)
@@ -269,7 +269,7 @@ void join_room(struct room_struct * r)
     inrooms.peoples[i].pid = uinfo.pid;
     if(i==0) {
         inrooms.status = INROOM_STOP;
-        inrooms.title = "ÎÒÉ±ÎÒÉ±ÎÒÉ±É±É±";
+        strcpy(inrooms.title, "ÎÒÉ±ÎÒÉ±ÎÒÉ±É±É±");
         inrooms.peoples[i].flag = PEOPLE_ROOMOP;
     }
     end_change_inroom();
@@ -280,8 +280,8 @@ void join_room(struct room_struct * r)
         getdata(24, 0, "ÊäÈë:", buf, 75, 1, NULL, 1);
         if(!buf[0]) break;
         for(i=0;i<myroom->people;i++) {
-            send_msg(inrooms->peoples[i].id, buf);
-            kill(inrooms->peoples[i].pid, SIGUSR1);
+            send_msg(inrooms.peoples[i].id, buf);
+            kill(inrooms.peoples[i].pid, SIGUSR1);
         }
     }
     r->people--;
@@ -325,7 +325,7 @@ static int room_list_select(struct _select_def *conf)
         refresh(); sleep(1);
         return SHOW_REFRESH;
     }
-    join_room(find_room(name));
+    join_room(find_room(r2->name));
     return SHOW_DIRCHANGE;
 }
 
