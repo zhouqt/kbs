@@ -13,7 +13,6 @@ $(=$bbsgid;
 $<=$bbsuid;
 $>=$bbsuid;
 $ENV{'PATH'}='/bin:/usr/etc:/usr/local/bin:/usr/ucb';
-#$normaluser = $ARGV[0];
 $normaluser = $ENV{'EXT'};
 $logdir="$BBS_HOME/log";
 mkdir($logdir,0700) unless -d $logdir;
@@ -25,7 +24,7 @@ print LOG "Mail to $normaluser \n";
 for ($n=0; $n < $MAILBODY; $n++) {
         print LOG $MAIL[$n];
 }
-print LOG "\'$Header{'From'}\' \'$normaluser\'  \'$Header{'Subject'}\' \'$Header{'Received'}\'\n";
+print LOG "\'$Header{'From'}\' \'$normaluser\'  \'$Header{'Subject'}\' \'$Header{'Received'}\' \'$Header{'boundary'}\'\n";
 $ENV{'TITLE'} = $Header{'Subject'};
 $ENV{'MSGID'} = $Header{'Received'};
 if (substr($normaluser, 0, 1) eq "_")
@@ -36,7 +35,7 @@ if (substr($normaluser, 0, 1) eq "_")
 }
 else
 {
-	open(BBSGATE,"| $mail2bbs \'$Header{'From'}\' \'$normaluser\'");
+	open(BBSGATE,"| $mail2bbs \'$Header{'From'}\' \'$normaluser\' \'$Header{'boundary'}\'");
 }
 for ($n= $MAILBODY; $n <= $#MAIL; $n++) {
 	print BBSGATE $MAIL[$n];
