@@ -45,6 +45,7 @@ char nextHtml[MAX_PATH];
 FILE *pdstFile;
 FILE *chmcontentFile;
 FILE *attachFile;
+int genBBSPackage = 1;
 
 int DealParameters(int argc, char **argv)
 {
@@ -59,10 +60,16 @@ int DealParameters(int argc, char **argv)
         int this_option_optind = optind ? optind : 1;
         int option_index;
 
-        c = getopt(argc, argv, "w:d:o:c:");
+        c = getopt(argc, argv, "w:d:o:c:b:");
         if (c == -1)
             break;
         switch (c) {
+        case 'b':
+            if (toupper(optarg[0]) == 'N') {
+                printf("Disable generate BBS Package\n");
+                genBBSPackage = 0;
+            }
+            break;
         case 'd':
             printf("change to directory %s\n", optarg);
             chdir(optarg);
@@ -70,8 +77,8 @@ int DealParameters(int argc, char **argv)
         case 'w':
             printf("Set Work Directory:%s\n", optarg);
             strncpy(WorkDir, optarg, MAX_PATH - 1);
-            if (WorkDir[strlen(WorkDir)-1]!='/')
-		strcat(WorkDir,"/");
+            if (WorkDir[strlen(WorkDir) - 1] != '/')
+                strcat(WorkDir, "/");
             break;
         case 'o':
             printf("Set OutputDirectory:%s\n", optarg);
@@ -107,7 +114,7 @@ int DealParameters(int argc, char **argv)
 
         p = strrchr(argv[optind], '/');
         if (p)
-            if (*(p + 1) == '/') {
+            if (*(p + 1) == 0) {
                 *p = 0;
                 p = strrchr(argv[optind], '/');
             };
@@ -123,7 +130,7 @@ int DealParameters(int argc, char **argv)
         task_head->next = NULL;
     }
     if (!task_head) {
-        printf("usage:%s -w tmp_directory -o out_directory -d announce_dir directory_need_deal_with\n", argv[0]);
+        printf("usage:%s -w tmp_directory -o out_directory -d announce_dir -b(y|n) directory_need_deal_with\n", argv[0]);
         return -1;
     }
     return 0;
@@ -215,28 +222,30 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
         fputs("<a name=\"top\"></a>\n", pdstFile);
 
         sprintf(filename, "%s/bbs/%s/%s", WorkDir, directory, Link);
-        if (NULL == (pBBSFile = fopen(filename, "wt")))
+        if (genBBSPackage && (NULL == (pBBSFile = fopen(filename, "wt"))))
             printf("Unexpected error: Can not open file \"%s\"\n", filename);
 
         while (!feof(psrcFile)) {
             off_t attach_len, size, left;
             char *attach_ptr, *attach_filename, *p;
             char dirname[MAXLINELEN];
-	    int asize;
+            int asize;
             int ret;
 
-            ret=attach_fgets(srcLine, MAXLINELEN, psrcFile);
-            if (ret==0)
+            ret = attach_fgets(srcLine, MAXLINELEN - 1, psrcFile);
+            srcLine[MAXLINELEN - 1] = 0;
+            if (ret == 0)
                 break;
-            if (ret<0)
-                is_attach=1;
+            if (ret < 0)
+                is_attach = 1;
             else
-                is_attach=-1;
+                is_attach = -1;
             if (is_attach != -1) {
-                char buf[1024*16];
-                int o,size,headersize;
-		headersize=ATTACHMENT_SIZE+4+strlen(srcLine)+1;
-                size=-ret;
+                char buf[1024 * 16];
+                int o, size, headersize;
+
+                headersize = ATTACHMENT_SIZE + 4 + strlen(srcLine) + 1;
+                size = -ret;
                 is_attach = -1;
                 sprintf(dirname, "%s/%s/%08d", WorkDir, directory, index);
                 if (mkdir(dirname, 0700) == -1) {
@@ -252,52 +261,51 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
                     return NULL;
                 }
                 fread(buf, 1, headersize, psrcFile);
-                fwrite(buf, 1, headersize, pBBSFile);
-                size-=headersize;
-                while(size&&(o=fread(buf, 1, size>1024*16?1024*16:size, psrcFile))!=0) {
-                       size-=o;
-                       fwrite(buf, 1, o, pBBSFile);
-                       fwrite(buf, 1, o, attachFile);
+                if (genBBSPackage)
+                    fwrite(buf, 1, headersize, pBBSFile);
+                size -= headersize;
+                while (size && (o = fread(buf, 1, size > 1024 * 16 ? 1024 * 16 : size, psrcFile)) != 0) {
+                    size -= o;
+                    if (genBBSPackage)
+                        fwrite(buf, 1, o, pBBSFile);
+                    fwrite(buf, 1, o, attachFile);
                 }
-/*
-		put_attach(psrcFile,pBBSFile,size);//save attach;
-		fseek(psrcFile,-(-ret-(ATTACHMENT_SIZE+4+strlen(srcLine)+1)),SEEK_CUR); //seek attachment header
-		put_attach(psrcFile,attachFile,-ret-(ATTACHMENT_SIZE+4+strlen(srcLine)+1));//save attach;
-*/
                 fclose(attachFile);
                 if (((ptr = strrchr(srcLine, '.')) != NULL) && (!strcasecmp(ptr, ".bmp") || !strcasecmp(ptr, ".jpg") || !strcasecmp(ptr, ".gif") || !strcasecmp(ptr, ".jpeg")))
-                            sprintf(dstLine, "¸½Í¼:<br />\n<img src=\"%08d/%s\"></img>\n", index, srcLine);
+                    sprintf(dstLine, "¸½Í¼:<br />\n<img src=\"%08d/%s\"></img>\n", index, srcLine);
                 else
-                            sprintf(dstLine, "¸½¼þ:<br />\n<a href=\"%08d/%s\">%s</a>\n", index, srcLine, srcLine);
+                    sprintf(dstLine, "¸½¼þ:<br />\n<a href=\"%08d/%s\">%s</a>\n", index, srcLine, srcLine);
             } else {
-                if (fputs(srcLine, pBBSFile) == EOF)
+                if (genBBSPackage && fputs(srcLine, pBBSFile) == EOF)
                     perror("fputs error bbs file:");
 
                 if ('\n' == srcLine[strlen(srcLine) - 1])
                     srcLine[strlen(srcLine) - 1] = ' ';
 
-                for (j = 0; srcLine[j]; j++) {
-                    if (ptr = strchr(srcLine + j, '@')) {
-                        j = ptr - srcLine;
-                        if (strchr(ptr, '.')) {
-                            if (strchr(ptr, ' ') - strchr(ptr, '.') > 0) {
-                                for (k = j - 1; k >= 0; k--)
-                                    if (!((srcLine[k] >= '0' && srcLine[k] <= '9')
-                                          || (srcLine[k] >= 'A' && srcLine[k] <= 'Z')
-                                          || (srcLine[k] >= 'a' && srcLine[k] <= 'z')
-                                          || '.' == srcLine[k]))
-                                        break;
+                if (0) {        //disable it for core dump
+                    for (j = 0; srcLine[j]; j++) {      //email detect
+                        if (ptr = strchr(srcLine + j, '@')) {
+                            j = ptr - srcLine;
+                            if (strchr(ptr, '.')) {
+                                if (strchr(ptr, ' ') - strchr(ptr, '.') > 0) {
+                                    for (k = j - 1; k >= 0; k--)
+                                        if (!((srcLine[k] >= '0' && srcLine[k] <= '9')
+                                              || (srcLine[k] >= 'A' && srcLine[k] <= 'Z')
+                                              || (srcLine[k] >= 'a' && srcLine[k] <= 'z')
+                                              || '.' == srcLine[k]))
+                                            break;
 
-                                strcpy(Buf2, srcLine + k + 1);
-                                sprintf(srcLine + k + 1, "mailto:%s", Buf2);
-                                ptr += 7;       /* strlen("mailto:") */
-                                j = strchr(ptr, ' ') - srcLine - 1;
-                            }   /* End if (strchr(ptr, ' ') - strchr(ptr, '.') > 0) */
-                        }       /* End if (strchr(ptr, '.')) */
-                    }           /* End if (ptr = strchr(srcLine + j, '@')) */
-                }               /* for (j = 0; srcLine[j]; j ++) */
+                                    strcpy(Buf2, srcLine + k + 1);
+                                    sprintf(srcLine + k + 1, "mailto:%s", Buf2);        //wrong code,will overflow!! disable detect.
+                                    ptr += 7;   /* strlen("mailto:") */
+                                    j = strchr(ptr, ' ') - srcLine - 1;
+                                }       /* End if (strchr(ptr, ' ') - strchr(ptr, '.') > 0) */
+                            }   /* End if (strchr(ptr, '.')) */
+                        }       /* End if (ptr = strchr(srcLine + j, '@')) */
+                    }           /* for (j = 0; srcLine[j]; j ++) */
+                }               //disable
 
-                for (j = Buf2[0] = 0; srcLine[j]; j++) {
+                for (j = Buf2[0] = 0; srcLine[j] && j < MAXLINELEN * 4 - 8; j++) {      //MAXLINELEN*4-8 for aviod Buf2 strcat overflow
                     switch (srcLine[j]) {
                     case '>':
                         strcat(Buf2, "&gt;");
@@ -342,7 +350,7 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
                             if (ptr) {
                                 *ptr = 0;
                                 k = strlen(Buf2);
-                                sprintf(Buf2 + k, "<a href=\"%s\">%s</a>", srcLine + j, srcLine + j + 7 * (!strncasecmp(srcLine + j, "mailto:", 7)));
+                                snprintf(Buf2 + k, MAXLINELEN * 4, "<a href=\"%s\">%s</a>", srcLine + j, srcLine + j + 7 * (!strncasecmp(srcLine + j, "mailto:", 7)));
                                 *ptr = ' ';
                                 j += ptr - (srcLine + j) - 1;
                                 break;
@@ -359,18 +367,18 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
                 }
 
                 if (':' == srcLine[0])
-                    sprintf(dstLine, "¡Ã<i>%s</i><br />\n", Buf2 + 1);
+                    snprintf(dstLine, MAXLINELEN * 4, "¡Ã<i>%s</i><br />\n", Buf2 + 1);
                 else if ('>' == srcLine[0])
-                    sprintf(dstLine, "£¾<i>%s</i><br />\n", Buf2 + 4);
+                    snprintf(dstLine, MAXLINELEN * 4, "£¾<i>%s</i><br />\n", Buf2 + 4);
                 else
-                    sprintf(dstLine, "%s<br />\n", Buf2);
+                    snprintf(dstLine, MAXLINELEN * 4, "%s<br />\n", Buf2);
             }
 
             fputs(dstLine, pdstFile);
         }
 
         fclose(psrcFile);
-        if (pBBSFile)
+        if (genBBSPackage && pBBSFile)
             fclose(pBBSFile);
         sprintf(filename, "%08d.htm", index);
         strcpy(prevprevHtml, prevHtml);
@@ -413,16 +421,18 @@ void DealDirectory(char *directory)
         fprintf(stderr, "can't open %s file", filename);
         return;
     }
-    sprintf(filename, "%s/bbs/%s/%s", WorkDir, directory, DOTNAMES);
-    if ((BBSDotFile = fopen(filename, "wt")) == NULL) {
-        fprintf(stderr, "can't open %s file", filename);
-        return;
+    if (genBBSPackage) {
+        sprintf(filename, "%s/bbs/%s/%s", WorkDir, directory, DOTNAMES);
+        if ((BBSDotFile = fopen(filename, "wt")) == NULL) {
+            fprintf(stderr, "can't open %s file", filename);
+            return;
+        }
     }
 
     sprintf(filename, "%s/%s/%s", WorkDir, directory, INDEXHTML);
     if ((IndexHtmlFile = fopen(filename, "wt")) == NULL) {
         fclose(DotFile);
-        if (BBSDotFile)
+        if (genBBSPackage && BBSDotFile)
             fclose(BBSDotFile);
         perror("can't open Index Html file");
         return;
@@ -436,7 +446,7 @@ void DealDirectory(char *directory)
 
         if (fgets(Buf, MAXLINELEN, DotFile) == 0)
             break;
-        if (BBSDotFile)
+        if (genBBSPackage && BBSDotFile)
             if (!(strstr(Buf, "Name=") && (strstr(Buf, "(BM: BMS)") || strstr(Buf, "(BM: SYSOPS)"))))
                 if (fputs(Buf, BBSDotFile) == EOF)
                     perror("fputs bbs .Name:");
@@ -473,14 +483,20 @@ void DealDirectory(char *directory)
                     printf("Unexpected error: Incorrect format in \"%s\" file\n\tName not match path", DOTNAMES);
                     break;
                 } else {
-                    if (BBSDotFile)
+                    if (genBBSPackage && BBSDotFile)
                         fputs(Buf, BBSDotFile);
                     if (ptr = strstr(Buf, "Path=~/")) {
                         char *herfname;
                         char datestr[25];
                         int isDir;
 
+                        if (*ptr == 0) {
+                            printf("Unexpected error: Incorrect format in \"%s\" file: Path error:%s", DOTNAMES, Buf);
+                            continue;
+                        }
                         ptr[strlen(ptr) - 1] = 0;
+                        if (!strncmp(ptr, "announce.", 9))
+                            continue;
                         herfname = DealLink(directory, ptr + 7, index, &isDir, datestr, Name);
                         if (herfname) {
                             index++;
@@ -495,7 +511,7 @@ void DealDirectory(char *directory)
         }                       /* if Buf has "Name" */
     };                          /* while feof(DotFile) */
     fclose(DotFile);
-    if (BBSDotFile)
+    if (genBBSPackage && BBSDotFile)
         fclose(BBSDotFile);
 
     if (pdstFile) {
@@ -587,13 +603,15 @@ int main(int argc, char **argv)
 
     printf("Finished creating HTML files...\n");
 
-    printf("Compressing BBS files...\n");
-    printf("Calling \"gnu tar\"...\n");
-    sprintf(Buf, "%s/%s.bbs.tgz", OutDir, maindir);
-    unlink(Buf);
-    sprintf(Buf, "cd %s/bbs; %s zcf %s/%s.bbs.tgz %s", WorkDir, GNUTAR, OutDir, maindir, maindir);
-    printf("%s\n", Buf);
-    system(Buf);
+    if (genBBSPackage) {
+        printf("Compressing BBS files...\n");
+        printf("Calling \"gnu tar\"...\n");
+        sprintf(Buf, "%s/%s.bbs.tgz", OutDir, maindir);
+        unlink(Buf);
+        sprintf(Buf, "cd %s/bbs; %s zcf %s/%s.bbs.tgz %s", WorkDir, GNUTAR, OutDir, maindir, maindir);
+        printf("%s\n", Buf);
+        system(Buf);
+    }
 
     printf("Compressing HTML files...\n");
     printf("Calling \"gnu tar\"...\n");
