@@ -34,7 +34,7 @@ int calcboard(struct boardheader * bh, void * arg)
     ptr1 = (struct fileheader *) ptr;
     for (i = 0; i < total; i++) {
         struct stat st;
-        char* p;
+        char* p,*op;
         char ffn[80];
         int j;
         size_t fsize;
@@ -44,6 +44,7 @@ int calcboard(struct boardheader * bh, void * arg)
         {
             int k,abssize=0,entercount=0,ignoreline=0;
             j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize, NULL);
+            op = p;
             if(j) {
                 k=fsize;
                 while(k) {
@@ -61,7 +62,7 @@ int calcboard(struct boardheader * bh, void * arg)
                 }
                 ptr1->eff_size = abssize;
             }
-            end_mmapfile((void*)p, fsize, -1);
+            end_mmapfile((void*)op, fsize, -1);
         }
         ptr1++;
     }
