@@ -137,14 +137,13 @@ static void load_import_path()
     struct stat st;
 
     sethomefile(buf, currentuser->userid, "BMpath");
-    stat(buf,&st);
-    if (st.st_mtime==import_path_time)
+    if (stat(buf,&st)!=-1)
+        if (st.st_mtime==import_path_time)
 	    return;
     if (import_path_select!=0)
 	    free_import_path();
     fn = fopen(buf, "rt");
     if (fn) {
-	fstat(fileno(fn),&st);
         import_path_time=st.st_mtime;	
     	for (i=0;i<ANNPATH_NUM;i++) {
     		if (!feof(fn)) {
