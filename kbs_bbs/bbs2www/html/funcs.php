@@ -166,7 +166,7 @@ if ($utmpkey!="") {
   if (($ret=bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),$currentuinfo_tmp,$compat_telnet))==0) {
     $loginok=1;
     $currentuinfo_num=bbs_getcurrentuinfo();
-    $currentuser_num=bbs_getcurrentuser(&$currentuser);
+    $currentuser_num=bbs_getcurrentuser($currentuser);
   }
 }
 
