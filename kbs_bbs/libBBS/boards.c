@@ -122,6 +122,7 @@ void load_favboard(int dohelp)
                 if(k) {
                     favbrd_list[favbrd_list_t].flag = k-1;
                     favbrd_list[favbrd_list_t].father = -1;
+                    favbrd_list_t++;
                 }
             }
             fclose(fp);
@@ -785,7 +786,7 @@ int haspostperm(struct userec *user, char *bname)
     if ((i = getbnum(bname)) == 0)
         return 0;
     if (!HAS_PERM(user, PERM_POST)) {
-        if (!strcmp(bname, "BBSHelp"))
+        if (!strcmp(bname, "BBShelp"))
             return 1;
         if (!HAS_PERM(user, PERM_LOGINOK))
             return 0;
