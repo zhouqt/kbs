@@ -874,6 +874,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 ?>
 <script src="bc.js"></script>
 <?php
-	$pc["STYLE"]["INDEXFUNC"]($link,$pc,$sec,$nodes,$blogs,$pur,$tags,$pno,$totalnodes);
+	if (function_exists($pc["STYLE"]["INDEXFUNC"]))
+	    $pc["STYLE"]["INDEXFUNC"]($link,$pc,$sec,$nodes,$blogs,$pur,$tags,$pno,$totalnodes);
 	pc_db_close($link);
 ?>
