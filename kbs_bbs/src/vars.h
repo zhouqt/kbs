@@ -56,3 +56,5 @@ extern int dumb_term ;
 extern int showansi;
 
 extern char fromhost[60];
+extern time_t   login_start_time;
+
