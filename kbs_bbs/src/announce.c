@@ -1025,8 +1025,8 @@ void a_manager(pm, ch)
             }
             break;
         case 't':
-	    strncpy(changed_T,item->title,79);
-	    changed_T[79]=0;
+	    strncpy(changed_T,item->title,39);
+	    changed_T[39]=0;
 	    {
                 char*p;
                 p=changed_T+strlen(changed_T)-1;
