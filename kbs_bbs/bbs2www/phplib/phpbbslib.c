@@ -44,6 +44,7 @@ static PHP_FUNCTION(bbs_getmailnum);
 static PHP_FUNCTION(bbs_getmailnum2);
 static PHP_FUNCTION(bbs_getmails);
 static PHP_FUNCTION(bbs_getmailusedspace);
+static PHP_FUNCTION(bbs_valid_filename);
 static PHP_FUNCTION(bbs_loadmaillist);
 static PHP_FUNCTION(bbs_changemaillist);
 static PHP_FUNCTION(bbs_getwebmsg);
@@ -93,6 +94,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_getmailnum2, NULL)
         PHP_FE(bbs_getmails, NULL)
         PHP_FE(bbs_getmailusedspace, NULL)
+        PHP_FE(bbs_valid_filename, NULL)
         PHP_FE(bbs_loadmaillist, NULL)
         PHP_FE(bbs_changemaillist, NULL)
         PHP_FE(bbs_getwebmsg, third_arg_force_ref_1111)
@@ -2239,3 +2241,18 @@ static PHP_FUNCTION(bbs_normalboard)
 	RETURN_LONG(normal_board(boardname));
 }
 
+/*
+ * valid_filename()
+ * @author stiger
+ */
+static PHP_FUNCTION(bbs_valid_filename)
+{
+    int ac = ZEND_NUM_ARGS();
+	char * filename;
+	int name_len;
+
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &filename, &name_len) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+	RETURN_LONG(VALID_FILENAME(filename));
+}
