@@ -258,9 +258,9 @@ void add_loginfo(char *filepath, struct userec *user, char *currboard, int Anony
      * ÓÉBigmanÔö¼Ó:2000.8.10 Announce°æÄäÃû·¢ÎÄÎÊÌâ 
      */
     if (!strcmp(currboard, "Announce"))
-        fprintf(fp, "[m[1;%2dm¡ù À´Ô´:¡¤%s %s¡¤[FROM: %s][m\n", color, BBS_FULL_NAME, email_domain(), NAME_BBS_CHINESE " BBSÕ¾");
+        fprintf(fp, "[m[1;%2dm¡ù À´Ô´:¡¤%s %s¡¤[FROM: %s][m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, NAME_BBS_CHINESE " BBSÕ¾");
     else
-        fprintf(fp, "\n[m[1;%2dm¡ù À´Ô´:¡¤%s %s¡¤[FROM: %s][m\n", color, BBS_FULL_NAME, email_domain(), (noidboard) ? NAME_ANONYMOUS_FROM : fromhost);
+        fprintf(fp, "\n[m[1;%2dm¡ù À´Ô´:¡¤%s %s¡¤[FROM: %s][m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, (noidboard) ? NAME_ANONYMOUS_FROM : fromhost);
     fclose(fp);
     return;
 }
