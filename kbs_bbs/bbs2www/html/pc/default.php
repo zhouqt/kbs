@@ -512,8 +512,8 @@ input {
               <td align="left" valign="top" bgcolor="#F6F6F6" class="td">
 		<?php pcmain_blog_top_ten(); ?>
 	      <center>
-	      <a href="pc.php?order=visitcount&order1=DESC" class="low2">更多</a>
-	      <a href="opml.php?t=1" class="low2">OPML</a>
+	      [<a href="pc.php?order=visitcount&order1=DESC" class="low2">更多</a>]
+	      [<a href="opml.php?t=1" class="low2">OPML</a>]
 	      </center>
 	      </td>
           </tr>
@@ -532,8 +532,8 @@ input {
                 <td align="left" valign="top" bgcolor="#E8FFEE" class="td">
 				<?php pcmain_blog_last_update(); ?>
 		<center>
-	        <a href="pc.php?order=modifytime&order1=DESC" class="low2">更多</a>
-	        <a href="opml.php" class="low2">OPML</a>
+	        [<a href="pc.php?order=modifytime&order1=DESC" class="low2">更多</a>]
+	        [<a href="opml.php" class="low2">OPML</a>]
 	        </center>
 		</td>
             </tr>
@@ -552,8 +552,8 @@ input {
                 <td align="left" valign="top" bgcolor="#FFFFE6" class="td">
 				<?php pcmain_blog_new_user(); ?>
 		<center>
-	        <a href="pc.php?order=createtime&order1=DESC" class="low2">更多</a>
-	        <a href="opml.php?t=2" class="low2">OPML</a>
+	        [<a href="pc.php?order=createtime&order1=DESC" class="low2">更多</a>]
+	        [<a href="opml.php?t=2" class="low2">OPML</a>]
 	        </center>
 		</td>
             </tr>
@@ -583,7 +583,14 @@ input {
 				  <a href="/pc/rssrec.php"><img src="/pc/images/xml.gif" border="0" alt="推荐日志" /></a>
 				<br />
                   最新日志
-				  <a href="/pc/rssnew.php"><img src="/pc/images/xml.gif" border="0" alt="最新日志" /></a>				  </td>
+				  <a href="/pc/rssnew.php"><img src="/pc/images/xml.gif" border="0" alt="最新日志" /></a>
+				<br /><br />
+		  OPML频道群组<br />
+		  <a href="opml.php">最近更新用户组</a><br />
+		  <a href="opml.php?t=1">访问最多用户组</a><br />
+		  <a href="opml.php?t=2">最新申请用户组</a>  
+				  
+				  				  </td>
             </tr>
           </table></td><td align="center" valign="top"><table width="100%"  border="0" cellspacing="0" cellpadding="3">
           <tr>
