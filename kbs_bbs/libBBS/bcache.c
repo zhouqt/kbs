@@ -75,6 +75,21 @@ int updatelastpost(char *board)
         return -1;
 }
 
+int setboardmark(char *board, int i)
+{
+    int pos;
+
+    pos = getbnum(board);       /* board name --> board No. */
+    if (pos > 0) {
+    	 int j;
+    	 j=brdshm->bstatus[pos - 1].updatemark;
+    	 if(i>=0&&i<=1)
+        brdshm->bstatus[pos - 1].updatemark = i;
+        return j;
+    } else
+        return -1;
+}
+
 void resolve_boards()
 {
     int boardfd;

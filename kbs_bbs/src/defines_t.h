@@ -94,6 +94,8 @@ int do_send(char *userid, char *title,char* q_file);
 int digest_mode();
 int thread_mode();
 int deleted_mode();
+int marked_mode();
+int change_mode();
 int junk_mode();
 int Goodbye();
 int post_reply(int ent, struct fileheader *fileinfo, char *direct);

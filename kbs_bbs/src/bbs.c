@@ -338,7 +338,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct)
     move(4, 0);                 /* Leeward 98.02.25 */
     prints
         ("[1m[33mÇë×¢Òâ£º[31m±¾Õ¾Õ¾¹æ¹æ¶¨£ºÍ¬ÑùÄÚÈİµÄÎÄÕÂÑÏ½ûÔÚ 5 (º¬) ¸öÒÔÉÏÌÖÂÛÇøÄÚÖØ¸´ÕÅÌù¡£\n\nÎ¥·´Õß[33m³ıËùÌùÎÄÕÂ»á±»É¾³ıÖ®Íâ£¬»¹½«±»[31m°ş¶á¼ÌĞø·¢±íÎÄÕÂµÄÈ¨Á¦¡£[33mÏêÏ¸¹æ¶¨Çë²ÎÕÕ£º\n\n    Announce °æµÄÕ¾¹æ£º¡°¹ØÓÚ×ªÌùºÍÕÅÌùÎÄÕÂµÄ¹æ¶¨¡±¡£\n\nÇë´ó¼Ò¹²Í¬Î¬»¤ BBS µÄ»·¾³£¬½ÚÊ¡ÏµÍ³×ÊÔ´¡£Ğ»Ğ»ºÏ×÷¡£\n\n[0m");
-    move(1,0);
+    move(1, 0);
     if (!get_a_boardname(bname, "ÇëÊäÈëÒª×ªÌùµÄÌÖÂÛÇøÃû³Æ: ")) {
         return FULLUPDATE;
     }
@@ -380,7 +380,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct)
         strcpy(quote_board, currboard);
         strcpy(dbname, currboard);
         strcpy(currboard, bname);
-        if (post_cross(currentuser, currboard, quote_board, quote_title, q_file, Anony, in_mail, ispost[0], 0) == -1) {     /* ×ªÌù */
+        if (post_cross(currentuser, currboard, quote_board, quote_title, q_file, Anony, in_mail, ispost[0], 0) == -1) { /* ×ªÌù */
             pressreturn();
             move(2, 0);
             strcpy(currboard, dbname);
@@ -412,41 +412,8 @@ void readtitle()
     if (currBM[0] == '\0' || currBM[0] == ' ') {
         strcpy(header, "³ÏÕ÷°åÖ÷ÖĞ");
     } else {
-        if (HAS_PERM(currentuser,PERM_SYSOP)) {
-    		char * p1,*p2;
-    		strcpy(header,"°åÖ÷: ");
-    		p1=currBM;
-    		p2=p1;
-    		while (1) {
-    			if ((*p2==' ')||(*p2==0)) {
-				int end;
-				end=0;
-    				if (p1==p2) {
-					if (*p2==0) break;
-    					p1++;
-    					p2++;
-    					continue;
-    				}
-				if (*p2==0)
-					end=1;
-    				*p2=0;
-    				if (apply_utmp(NULL,1,p1,NULL)) {
-    					sprintf(genbuf,"\x1b[1;32m%s\x1b[0;44;33m ",p1);
-    					strcat(header,genbuf);
-    				} else {
-    					strcat(header,p1);
-    					strcat(header," ");
-				}
-				if (end) break;
-    				p1=p2+1;
-    				*p2= ' ';
-    			}
-    			p2++;
-    		}
-    	} else {
-        	sprintf(header, "°åÖ÷: %s", currBM);
-    	}
- }
+        sprintf(header, "°åÖ÷: %s", currBM);
+    }
     chkmailflag = chkmail();
     if (chkmailflag == 2)       /*Haohmaru.99.4.4.¶ÔÊÕĞÅÒ²¼ÓÏŞÖÆ */
         strcpy(title, "[ÄúµÄĞÅÏä³¬¹ıÈİÁ¿,²»ÄÜÔÙÊÕĞÅ!]");
@@ -465,10 +432,18 @@ void readtitle()
         strcpy(readmode, "ÎÄÕª");
     else if (digestmode == 2)
         strcpy(readmode, "Ö÷Ìâ");
+    else if (digestmode == 3)
+        strcpy(readmode, "¾«»ª");
     else if (digestmode == 4)
         strcpy(readmode, "»ØÊÕ");
     else if (digestmode == 5)
         strcpy(readmode, "Ö½Â¦");
+    else if (digestmode == 6)
+        strcpy(readmode, "Ô­×÷");
+    else if (digestmode == 7)
+        strcpy(readmode, "×÷Õß");
+    else if (digestmode == 8)
+        strcpy(readmode, "±êÌâ");
 
     prints("[37m[44m ±àºÅ   %-12s %6s %-40s[%4sÄ£Ê½] [m\n", "¿¯ µÇ Õß", "ÈÕ  ÆÚ", " ÎÄÕÂ±êÌâ", readmode);
     clrtobot();
@@ -717,7 +692,7 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     case KEY_LEFT:
         break;
     case KEY_REFRESH:
-    	break;
+        break;
     case ' ':
     case 'j':
     case KEY_RIGHT:
@@ -895,7 +870,7 @@ int digest_mode()
         if (!dashf(currdirect)) {
             digestmode = false;
             setbdir(digestmode, currdirect, currboard);
-            return DONOTHING;
+            return FULLUPDATE;
         }
     }
     return NEWDIRECT;
@@ -934,6 +909,242 @@ int deleted_mode()
         }
     }
     return NEWDIRECT;
+}
+
+int generate_mark()
+{
+    extern char currdirect[STRLEN];
+    struct fileheader mkpost;
+    struct flock ldata, ldata2;
+    int fd, fd2, size = sizeof(fileheader), total, i, count = 0;
+    char olddirect[PATHLEN];
+    char *ptr, *ptr1;
+    struct stat buf;
+
+    digestmode = 0;
+    setbdir(digestmode, olddirect, currboard);
+    digestmode = 3;
+    setbdir(digestmode, currdirect, currboard);
+    if ((fd = open(currdirect, O_WRONLY | O_CREAT, 0664)) == -1) {
+        report("recopen err");
+        return -1;              // ´´½¨ÎÄ¼ş·¢Éú´íÎó
+    }
+    ldata.l_type = F_WRLCK;
+    ldata.l_whence = 0;
+    ldata.l_len = 0;
+    ldata.l_start = 0;
+    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+        report("reclock err");
+        close(fd);
+        return -1;              // lock error
+    }
+    // ¿ªÊ¼»¥³â¹ı³Ì
+    if (!setboardmark(currboard, -1)) {
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+        return -1;
+    }
+
+    if ((fd2 = open(olddirect, O_RDONLY, 0664)) == -1) {
+        report("recopen err");
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+        return -1;
+    }
+    fstat(fd2, &buf);
+    ldata2.l_type = F_RDLCK;
+    ldata2.l_whence = 0;
+    ldata2.l_len = 0;
+    ldata2.l_start = 0;
+    fcntl(fd2, F_SETLKW, &ldata2);
+    total = buf.st_size / size;
+
+    if ((i = safe_mmapfile_handle(fd2, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
+        if (i == 2)
+            end_mmapfile((void *) ptr, buf.st_size, -1);
+        ldata2.l_type = F_UNLCK;
+        fcntl(fd2, F_SETLKW, &ldata2);
+        close(fd2);
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+        return -1;
+    }
+    ptr1 = ptr;
+    for (i = 0; i < total; i++) {
+        memcpy(&mkpost, ptr1, size);
+        if (mkpost.accessed[0] & FILE_MARKED) {
+            write(fd, &mkpost, size);
+            count++;
+        }
+        ptr1 += size;
+    }
+    end_mmapfile((void *) ptr, buf.st_size, -1);
+    ldata2.l_type = F_UNLCK;
+    fcntl(fd2, F_SETLKW, &ldata2);
+    close(fd2);
+    ftruncate(fd, count * size);
+
+    setboardmark(currboard, 0); // ±ê¼Çflag
+
+    ldata.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &ldata);        // ÍË³ö»¥³âÇøÓò
+    close(fd);
+    return 0;
+}
+
+int marked_mode()
+{
+    extern char currdirect[STRLEN];
+
+    if (digestmode == 3) {
+        digestmode = false;
+        setbdir(digestmode, currdirect, currboard);
+    } else {
+        digestmode = 3;
+        if (setboardmark(currboard, -1)) {
+            if (generate_mark() == -1) {
+                digestmode = false;
+                return FULLUPDATE;
+            }
+        }
+        setbdir(digestmode, currdirect, currboard);
+        if (!dashf(currdirect)) {
+            digestmode = false;
+            setbdir(digestmode, currdirect, currboard);
+            return FULLUPDATE;
+        }
+    }
+    return NEWDIRECT;
+}
+
+int search_mode(int mode, char *index)
+// added by bad 2002.8.8 search mode
+{
+    extern char currdirect[STRLEN];
+    struct fileheader mkpost;
+    struct flock ldata, ldata2;
+    int fd, fd2, size = sizeof(fileheader), total, i, count = 0;
+    char olddirect[PATHLEN];
+    char *ptr, *ptr1;
+    struct stat buf;
+
+    digestmode = 0;
+    setbdir(digestmode, olddirect, currboard);
+    digestmode = mode;
+    setbdir(digestmode, currdirect, currboard);
+    if ((fd = open(currdirect, O_WRONLY | O_CREAT, 0664)) == -1) {
+        report("recopen err");
+        return FULLUPDATE;      // ´´½¨ÎÄ¼ş·¢Éú´íÎó
+    }
+    ldata.l_type = F_WRLCK;
+    ldata.l_whence = 0;
+    ldata.l_len = 0;
+    ldata.l_start = 0;
+    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+        report("reclock err");
+        close(fd);
+        return FULLUPDATE;      // lock error
+    }
+    // ¿ªÊ¼»¥³â¹ı³Ì
+
+    if ((fd2 = open(olddirect, O_RDONLY, 0664)) == -1) {
+        report("recopen err");
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+        return FULLUPDATE;
+    }
+    fstat(fd2, &buf);
+    ldata2.l_type = F_RDLCK;
+    ldata2.l_whence = 0;
+    ldata2.l_len = 0;
+    ldata2.l_start = 0;
+    fcntl(fd2, F_SETLKW, &ldata2);
+    total = buf.st_size / size;
+
+    if ((i = safe_mmapfile_handle(fd2, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
+        if (i == 2)
+            end_mmapfile((void *) ptr, buf.st_size, -1);
+        ldata2.l_type = F_UNLCK;
+        fcntl(fd2, F_SETLKW, &ldata2);
+        close(fd2);
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+        return FULLUPDATE;
+    }
+    ptr1 = ptr;
+    for (i = 0; i < total; i++) {
+        memcpy(&mkpost, ptr1, size);
+        if (mode == 6 && strstr(mkpost.title, "Re:") != mkpost.title || mode == 7 && strcasecmp(mkpost.owner, index) == 0 || mode == 8 && strstr(mkpost.title, index) != NULL) {
+            write(fd, &mkpost, size);
+            count++;
+        }
+        ptr1 += size;
+    }
+    end_mmapfile((void *) ptr, buf.st_size, -1);
+    ldata2.l_type = F_UNLCK;
+    fcntl(fd2, F_SETLKW, &ldata2);
+    close(fd2);
+    ftruncate(fd, count * size);
+
+    ldata.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &ldata);        // ÍË³ö»¥³âÇøÓò
+    close(fd);
+    return NEWDIRECT;
+}
+
+int change_mode()
+{
+    extern char currdirect[STRLEN];
+    char ans[4];
+    char buf[STRLEN];
+
+    if (digestmode > 0) {
+        if (digestmode == 7 || digestmode == 8)
+            unlink(currdirect);
+        digestmode = 0;
+        setbdir(digestmode, currdirect, currboard);
+        return NEWDIRECT;
+    }
+    move(t_lines - 1, 0);
+    clrtoeol();
+    getdata(t_lines - 1, 0, "ÇĞ»»Ä£Ê½µ½: 1)ÎÄÕª 2)±»mÎÄÕÂ 3)Í¬×÷Õß 4)±êÌâ¹Ø¼ü×Ö [1]: ", ans, 3, DOECHO, NULL, true);
+    if (ans[0] == '3') {
+        move(t_lines - 1, 0);
+        clrtoeol();
+        getdata(t_lines - 1, 0, "ÄúÏë²éÕÒÄÄÎ»ÍøÓÑµÄÎÄÕÂ? ", buf, 13, DOECHO, NULL, true);
+        if (buf[0] == 0)
+            return FULLUPDATE;
+    } else if (ans[0] == '4') {
+        move(t_lines - 1, 0);
+        clrtoeol();
+        getdata(t_lines - 1, 0, "ÄúÏë²éÕÒµÄÎÄÕÂ±êÌâ¹Ø¼ü×Ö: ", buf, 30, DOECHO, NULL, true);
+        if (buf[0] == 0)
+            return FULLUPDATE;
+    }
+    switch (ans[0]) {
+    case 0:
+    case '1':
+        return digest_mode();
+        break;
+    case '2':
+        return marked_mode();
+        break;
+//              case '3':
+//                      return search_mode(6, buf);
+//                      break;
+    case '3':
+        return search_mode(7, buf);
+        break;
+    case '4':
+        return search_mode(8, buf);
+        break;
+    }
+    return FULLUPDATE;
 }
 
 int junk_mode()
@@ -1061,8 +1272,9 @@ int digest_post(int ent, struct fileheader *fhdr, char *direct)
 #ifndef NOREPLY
 int do_reply(struct fileheader *fileinfo)
 /* reply POST */
-{                          
+{
     char buf[255];
+
     if (fileinfo->accessed[1] & FILE_READ) {    /*Haohmaru.99.01.01.ÎÄÕÂ²»¿Ére */
         clear();
         move(3, 0);
@@ -1098,7 +1310,7 @@ int garbage_line(char *str)
 }
 
 /* When there is an old article that can be included -jjyang */
-void do_quote(char *filepath, char quote_mode, char* q_file,char* q_user)
+void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
 {                               /* ÒıÓÃÎÄÕÂ£¬ È«¾Ö±äÁ¿quote_file,quote_user, */
     FILE *inf, *outf;
     char *qfile, *quser;
@@ -1170,9 +1382,9 @@ void do_quote(char *filepath, char quote_mode, char* q_file,char* q_user)
         fclose(inf);
     }
     /*
-    *q_file = '\0';
-    *q_user = '\0';
-    */
+       *q_file = '\0';
+       *q_user = '\0';
+     */
 
     if ((numofsig > 0) && !(currentuser->signature == 0 || Anony == 1)) {       /* Ç©ÃûµµÎª0Ôò²»Ìí¼Ó */
         if (currentuser->signature < 0)
@@ -1250,7 +1462,7 @@ int do_post()
     clear();
 
     /* edit, then send the mail */
-    switch (do_send(uid, title,q_file)) {
+    switch (do_send(uid, title, q_file)) {
     case -1:
         prints("ÏµÍ³ÎŞ·¨ËÍĞÅ\n");
         break;
@@ -1285,7 +1497,7 @@ int show_board_notes(char bname[30])
     return -1;
 }
 
-int post_article(char* q_file)
+int post_article(char *q_file)
 {                               /*ÓÃ»§ POST ÎÄÕÂ */
     struct fileheader post_file;
     char filepath[STRLEN];
@@ -1474,7 +1686,7 @@ int post_article(char* q_file)
 
     modify_user_mode(POSTING);
 
-    do_quote(filepath, include_mode,q_file,quote_user);   /*ÒıÓÃÔ­ÎÄÕÂ */
+    do_quote(filepath, include_mode, q_file, quote_user);       /*ÒıÓÃÔ­ÎÄÕÂ */
 
     strcpy(quote_title, save_title);
     strcpy(quote_board, currboard);
@@ -1862,7 +2074,7 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct)
         || !strcmp(currboard, "deleted"))       /* Leeward : 98.01.22 */
         return DONOTHING;
 
-    if (digestmode == 2 || digestmode == 4 || digestmode == 5)
+    if (digestmode == 2 || digestmode == 3 || digestmode == 4 || digestmode == 5)
         return DONOTHING;
     keep = sysconf_eval("KEEP_DELETED_HEADER"); /*ÊÇ·ñ±£³Ö±»É¾³ıµÄPOSTµÄ title */
     if (fileinfo->owner[0] == '-' && keep > 0 && !SR_BMDELFLAG) {
@@ -1965,7 +2177,7 @@ extern int b_jury_edit();       /*stephen 2001.11.1 */
 
 static int sequent_ent;
 
-int sequent_messages(struct fileheader *fptr,int idc, int *continue_flag)
+int sequent_messages(struct fileheader *fptr, int idc, int *continue_flag)
 {
     if (readpost) {
         if (idc < sequent_ent)
@@ -2003,8 +2215,8 @@ int sequent_messages(struct fileheader *fptr,int idc, int *continue_flag)
         case 'q':
         case KEY_LEFT:
             break;
-    	case KEY_REFRESH:
-    		break;
+        case KEY_REFRESH:
+            break;
         case 'Y':
         case 'R':
         case 'y':
@@ -2047,7 +2259,7 @@ int sequential_read(int ent, struct fileheader *fileinfo, char *direct)
     sequent_ent = ent;
     continue_flag = 0;
     setbdir(digestmode, buf, currboard);
-    apply_record(buf, (APPLY_FUNC_ARG ) sequent_messages, sizeof(struct fileheader), &continue_flag, 1,false);
+    apply_record(buf, (APPLY_FUNC_ARG) sequent_messages, sizeof(struct fileheader), &continue_flag, 1, false);
     return FULLUPDATE;
 }
 
@@ -2073,7 +2285,7 @@ struct one_key read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
     {';', noreply_post},        /*Haohmaru.99.01.01,Éè¶¨²»¿ÉreÄ£Ê½ */
     {'#', sign_post},           /* Bigman: 2000.8.12  Éè¶¨ÎÄÕÂ±ê¼ÇÄ£Ê½ */
     {'E', edit_post},
-    {Ctrl('G'), digest_mode},
+    {Ctrl('G'), change_mode},   /* bad : 2002.8.8 add marked mode */
     {'`', digest_mode},
     {'.', deleted_mode},
     {'>', junk_mode},
@@ -2339,15 +2551,15 @@ int Goodbye()
             if (choose >= 1 && choose <= num_sysop) {
                 /*        do_send(sysoplist[choose-1], "Ê¹ÓÃÕß¼ÄÀ´µÄµÄ½¨ÒéĞÅ"); */
                 if (choose == 1)        /*modified by Bigman : 2000.8.8 */
-                    do_send(sysoplist[0], "¡¾Õ¾Îñ×Ü¹Ü¡¿Ê¹ÓÃÕß¼ÄÀ´µÄ½¨ÒéĞÅ","");
+                    do_send(sysoplist[0], "¡¾Õ¾Îñ×Ü¹Ü¡¿Ê¹ÓÃÕß¼ÄÀ´µÄ½¨ÒéĞÅ", "");
                 else if (choose == 2)
-                    do_send(sysoplist[1], "¡¾ÏµÍ³Î¬»¤¡¿Ê¹ÓÃÕß¼ÄÀ´µÄ½¨ÒéĞÅ","");
+                    do_send(sysoplist[1], "¡¾ÏµÍ³Î¬»¤¡¿Ê¹ÓÃÕß¼ÄÀ´µÄ½¨ÒéĞÅ", "");
                 else if (choose == 3)
-                    do_send(sysoplist[2], "¡¾°æÃæ¹ÜÀí¡¿Ê¹ÓÃÕß¼ÄÀ´µÄ½¨ÒéĞÅ","");
+                    do_send(sysoplist[2], "¡¾°æÃæ¹ÜÀí¡¿Ê¹ÓÃÕß¼ÄÀ´µÄ½¨ÒéĞÅ", "");
                 else if (choose == 4)
-                    do_send(sysoplist[3], "¡¾Éí·İÈ·ÈÏ¡¿Ê¹ÓÃÕß¼ÄÀ´µÄ½¨ÒéĞÅ","");
+                    do_send(sysoplist[3], "¡¾Éí·İÈ·ÈÏ¡¿Ê¹ÓÃÕß¼ÄÀ´µÄ½¨ÒéĞÅ", "");
                 else if (choose == 5)
-                    do_send(sysoplist[4], "¡¾ÖÙ²ÃÊÂÒË¡¿Ê¹ÓÃÕß¼ÄÀ´µÄ½¨ÒéĞÅ","");
+                    do_send(sysoplist[4], "¡¾ÖÙ²ÃÊÂÒË¡¿Ê¹ÓÃÕß¼ÄÀ´µÄ½¨ÒéĞÅ", "");
             }
 /* added by stephen 11/13/01 */
             choose = -1;
@@ -2366,7 +2578,7 @@ int Goodbye()
             getdata(num_sysop + 6, 0, spbuf, genbuf, 4, DOECHO, NULL, true);
             choose = genbuf[0] - '0';
             if (choose == 1)    /*modified by Bigman : 2000.8.8 */
-                do_send(sysoplist[3], "¡¾Éí·İÈ·ÈÏ¡¿Ê¹ÓÃÕß¼ÄÀ´µÄ½¨ÒéĞÅ","");
+                do_send(sysoplist[3], "¡¾Éí·İÈ·ÈÏ¡¿Ê¹ÓÃÕß¼ÄÀ´µÄ½¨ÒéĞÅ", "");
             choose = -1;
 
             /*  for(i=0;i<=3;i++)
@@ -2505,7 +2717,7 @@ int Goodbye()
             if (!strcmp(uid, currentuser->userid))      /*É¾³ı±¾ÓÃ»§µÄ Ñ°ÈËÃûµ¥ */
                 del_from_file("friendbook", buf);       /*Ñ°ÈËÃûµ¥Ö»ÔÚ±¾´ÎÉÏÏßÓĞĞ§ */
         }
-        if (fp)                                        /*---	add by period 2000-11-11 fix null hd bug	---*/
+        if (fp)                                            /*---	add by period 2000-11-11 fix null hd bug	---*/
             fclose(fp);
     }
     sleep(1);
@@ -2610,10 +2822,13 @@ int change_post_flag(int ent, struct fileheader *fileinfo, char *direct, int fla
     if (!chk_currBM(currBM, currentuser))
         return DONOTHING;
 
-    if (flag == FILE_DIGEST_FLAG && (digestmode == 1 || digestmode == 4 || digestmode == 5))
+    if (flag == FILE_DIGEST_FLAG && (digestmode == 1 || digestmode == 2 || digestmode == 3 || digestmode == 4 || digestmode == 5))
         /* ÎÄÕªÄ£Ê½ÄÚ ²»ÄÜ Ìí¼ÓÎÄÕª, »ØÊÕºÍÖ½Â¨Ä£Ê½Ò²²»ÄÜ */
         return DONOTHING;
-    if (flag == FILE_DELETE_FLAG && digestmode != 0 && digestmode != 1)
+    if (flag == FILE_MARK_FLAG && (digestmode == 1 || digestmode == 2 || digestmode == 3 || digestmode == 4 || digestmode == 5))
+        /* ÎÄÕªÄ£Ê½ÄÚ ²»ÄÜ Ìí¼ÓÎÄÕª, »ØÊÕºÍÖ½Â¨Ä£Ê½Ò²²»ÄÜ */
+        return DONOTHING;
+    if (flag == FILE_DELETE_FLAG && digestmode != 0 && digestmode != 1 && digestmode != 3)
         return DONOTHING;
     if ((flag == FILE_MARK_FLAG || flag == FILE_DELETE_FLAG) && (!strcmp(currboard, "syssecurity")
                                                                  || !strcmp(currboard, "Filter")))
@@ -2684,10 +2899,11 @@ int change_post_flag(int ent, struct fileheader *fileinfo, char *direct, int fla
     }
     switch (flag) {
     case FILE_MARK_FLAG:
-        if (fileinfo->accessed[0] & FILE_MARKED)
-            fileinfo->accessed[0] &= ~FILE_MARKED;
+        if (fileinfo->accessed[0] & FILE_MARKED)        //added by bad 2002.8.7 mark file mode added
+            fileinfo->accessed[0] = (fileinfo->accessed[0] & ~FILE_MARKED);
         else
-            fileinfo->accessed[0] |= FILE_MARKED;
+            fileinfo->accessed[0] = fileinfo->accessed[0] | FILE_MARKED;
+        setboardmark(currboard, 1);
         break;
     case FILE_NOREPLY_FLAG:
         if (fileinfo->accessed[1] & FILE_READ) {

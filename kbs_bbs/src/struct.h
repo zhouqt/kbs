@@ -92,6 +92,9 @@ struct UTMPFILE {
 struct BoardStatus {            /* use this to speed up board list */
     int total;
     int lastpost;
+    bool updatemark;
+    bool updatetitle;
+    bool updateorigin;
 };
 struct BCACHE {
     int numboards;

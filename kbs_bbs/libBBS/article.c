@@ -90,6 +90,8 @@ postreport(fileinfo->title, -1, currboard); added by alex, 96.9.12 */
             fclose( fn );
         }
 */
+	 if (fileinfo->accessed[0] & FILE_MARKED)
+	 	setboardmark(board,1);
         if ((true != digestmode)        /* 不可以用 “NA ==” 判断：digestmode 三值 */
             &&!((fileinfo->accessed[0] & FILE_MARKED)
                 && (fileinfo->accessed[1] & FILE_READ)

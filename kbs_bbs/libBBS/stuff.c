@@ -581,12 +581,24 @@ char *setbdir(int digestmode, char *buf, char *boardname)
     case 2:
         strcpy(dir, THREAD_DIR);
         break;
+    case 3:
+    	 strcpy(dir, ".MARK");
+    	 break;
     case 4:
         strcpy(dir, ".DELETED");
         break;
     case 5:
         strcpy(dir, ".JUNK");
         break;
+    case 6:
+    	 strcpy(dir, ".ORIGIN");
+    	 break;
+    case 7:
+    	 sethomefile(buf, currentuser->userid, ".AUTHOR");
+    	 return buf;
+    case 8:
+    	 sethomefile(buf, currentuser->userid, ".TITLE");
+    	 return buf;
     }
     sprintf(buf, "boards/%s/%s", boardname, dir);
     return buf;

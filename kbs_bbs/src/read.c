@@ -391,11 +391,16 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
                 else if (digestmode == 2)
                     thread_mode();
 
+                else if (digestmode == 3)
+                	marked_mode();
+
                 else if (digestmode == 4)
                     deleted_mode();
 
                 else if (digestmode == 5)
                     junk_mode();
+
+                else if (digestmode > 0) change_mode();
             }
             if (mode == NEWDIRECT) {
                 num = last_line - screen_len + 1;
@@ -462,13 +467,19 @@ static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, 
         else if (digestmode == 2)
             return thread_mode();
 
+        else if (digestmode == 3)
+            return marked_mode();
+
         else if (digestmode == 4)
             return deleted_mode();
 
         else if (digestmode == 5)
             return junk_mode();
 
-        else
+        else if (digestmode > 0)
+            return change_mode();  // added by bad 2002.8.8
+            
+        else 
             return DOQUIT;
     case Ctrl('L'):
         redoscr();
