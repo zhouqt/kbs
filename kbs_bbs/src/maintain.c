@@ -934,7 +934,198 @@ char *buf;
     fclose(Ban);
     return IPX;
 }  
+int apply_reg(regfile,fname,pid,num)
+/* added by Bigman, 2002.5.31 */
+/* ÉêÇëÖ¸¶¨ÌõÊı×¢²áµ¥ */
+char *regfile,*fname;
+long pid;
+int num;
+{
+	FILE		*in_fn,*out_fn,*tmp_fn;
+	char	fname1[STRLEN],fname2[STRLEN];
+	int sum;	
+	char *ptr;
 
+	strcpy(fname1,"reg.ctrl");
+	
+    if ((in_fn = fopen(regfile, "r")) == NULL)
+    {
+        move(2, 0);
+        prints("ÏµÍ³´íÎó, ÎŞ·¨¶ÁÈ¡×¢²á×ÊÁÏµµ: %s\n", regfile);
+        pressreturn();
+        return -1;
+    }
+    
+    
+    if ((out_fn = fopen(fname, "w")) == NULL)
+    {
+        move(2, 0);
+        prints("ÏµÍ³´íÎó, ÎŞ·¨Ğ´ÁÙÊ±×¢²á×ÊÁÏµµ: %s\n", fname);
+        pressreturn();
+        return -1;
+    } 
+    sum=0;
+    
+    while (fgets(genbuf, STRLEN, in_fn) != NULL)
+    {
+        if ((ptr = (char *) strstr(genbuf, "----")) != NULL)
+            sum++;
+            
+            fputs(genbuf, out_fn);
+            
+        if (sum >= num) break;
+    }	
+    fclose(out_fn);
+    
+    if (sum>=num) 
+    {
+    		sum=0;
+    		
+    		sprintf(fname2,"tmp/reg.%ld",pid);
+        
+        	if ((tmp_fn = fopen(fname2, "w")) == NULL)
+		{
+     			prints("²»ÄÜ½¨Á¢ÁÙÊ±ÎÄ¼ş:%s\n",fname2);
+        		pressreturn();	
+        		return -1;
+        	}		
+    		
+		while (fgets(genbuf, STRLEN, in_fn) != NULL)
+    		{
+        		if ((ptr = (char *) strstr(genbuf, "userid")) != NULL)
+            			sum++;
+            		fputs(genbuf, tmp_fn);
+            		
+             	}
+
+    		fclose(in_fn);
+    		fclose(tmp_fn);
+    		        		
+		if (sum>0) 
+		{	f_rm(regfile);
+			f_mv(fname2,regfile);      
+        	}
+        	else f_rm(regfile);
+        	
+        	f_rm(fname2);
+    	
+    }
+    
+    else f_rm(regfile);
+    
+    if ((out_fn = fopen(fname1, "a")) == NULL)
+    {
+        move(2, 0);
+        prints("ÏµÍ³´íÎó, ÎŞ·¨¸ü¸Ä×¢²á¿ØÖÆÎÄ¼ş: %s\n", fname1);
+        pressreturn();
+        return -1;
+    }
+    
+    fprintf(out_fn,"%ld\n",pid);
+    fclose(out_fn);
+	
+    return(0);
+}
+int check_reg(mod)
+int mod;
+/* added by Bigman, 2002.5.31 */
+/* mod=0 ¼ì²éreg_controlÎÄ¼ş */
+/* mod=1 Õı³£ÍË³öÉ¾³ı¸ÃÎÄ¼ş */
+{
+	FILE		*fn1,*fn2;
+	char	fname1[STRLEN]; 
+	char	fname2[STRLEN];
+	long	myid;
+	int	flag=0;
+
+	strcpy(fname1,"reg.ctrl");
+	
+	if ((fn1 = fopen(fname1, "r")) != NULL)
+        {	sprintf(fname2,"tmp/reg.c%ld",getpid());
+        
+        	if ((fn2 = fopen(fname2, "w")) == NULL)
+		{
+     			prints("²»ÄÜ½¨Á¢ÁÙÊ±ÎÄ¼ş:%s\n",fname2);
+        		pressreturn();	
+        		return -1;
+        	}
+        	else
+        	{        	
+        		while (fgets(genbuf, STRLEN, fn1) != NULL)
+   			{
+
+   				myid=atol(genbuf); 
+  
+				if (mod ==0) {
+    					if (myid==getpid())
+					{
+					prints("ÄãÖ»ÄÜÒ»¸ö½ø³Ì½øĞĞÉóÅúÕÊºÅ");
+					pressreturn();
+					return -1;
+					}
+	
+   					if (kill(myid,0)==-1)	/*×¢²áÖĞ¼ä¶ÏÏßÁË£¬»Ö¸´*/
+   					{	flag=1;
+   						restore_reg(myid);
+   					}
+   					else
+   					{
+   						fprintf(fn2,"%ld\n",myid);
+   					}
+   				}
+   				else
+   				{		flag=1;
+   					if (myid!=getpid())
+   						fprintf(fn2,"%ld\n",myid);
+   					
+   				
+   				}
+   				 				
+   			}
+   		fclose(fn2);
+   		}       
+        	fclose(fn1);
+        	
+        	if (flag ==1) {
+			f_rm(fname1);
+			f_mv(fname2,fname1);
+			}
+        	f_rm(fname2);		
+        	
+        }
+	
+	return(0);
+}
+
+int restore_reg(pid)
+long pid;
+/* added by Bigman, 2002.5.31 */
+/* »Ö¸´¶ÏÏßµÄ×¢²áÎÄ¼ş */
+{
+	FILE           *fn,*freg;
+    	char            *regfile,buf[STRLEN];	
+    	
+    	regfile = "new_register";    	
+    	
+    	sprintf(buf,"register.%ld",pid);
+
+    	if ((fn = fopen(buf, "r")) != NULL)
+    	{
+    		if ((freg = fopen(regfile, "a")) != NULL) 
+    		{
+        		while (fgets(genbuf, STRLEN, fn) != NULL)
+        			fputs(genbuf, freg);
+                    
+        		fclose(freg);   
+        
+        	}
+        	fclose(fn);
+        	
+        	f_rm(buf);
+        }	
+        
+return(0);
+}
 static const char    *field[] = {"usernum", "userid", "realname", "career",
                            "addr", "phone", "birth", NULL};
 static const char    *reason[] = {
@@ -958,22 +1149,33 @@ char           *logfile, *regfile;
     int             n, unum;
     int		    count,sum;/*Haohmaru.2000.3.9.¼ÆËã»¹ÓĞ¶àÉÙµ¥×ÓÃ»´¦Àí*/
 
+    long	pid;	/* Added by Bigman: 2002.5.31 */
+
     uid = currentuser->userid;
     stand_title("ÒÀĞòÉè¶¨ËùÓĞĞÂ×¢²á×ÊÁÏ");
-    sprintf(fname, "%s.tmp", regfile);
+/*    sprintf(fname, "%s.tmp", regfile);*/
+
+    pid=getpid();
+    sprintf(fname, "register.%ld",pid);
+
     move(2, 0);
     if (dashf(fname))
     {
-        prints("[1mÆäËû SYSOP ÕıÔÚÊ¹ÓÃ telnet »ò WWW ²é¿´×¢²áÉêÇëµ¥£¬Çë¼ì²éÊ¹ÓÃÕß×´Ì¬¡£\n\n");
+/*        prints("[1mÆäËû SYSOP ÕıÔÚÊ¹ÓÃ telnet »ò WWW ²é¿´×¢²áÉêÇëµ¥£¬Çë¼ì²éÊ¹ÓÃÕß×´Ì¬¡£\n\n");
         prints("[33mÈç¹ûÃ»ÓĞÆäËû SYSOP ÕıÔÚ²é¿´×¢²áÉêÇëµ¥£¬ÔòÊÇÓÉÓÚ¶ÏÏßÔì³ÉµÄÎŞ·¨×¢²á¡£\n");
         prints("Çë½ø bbsroot ÕÊ»§ÔËĞĞÒ»´ÎÒÔÏÂÃüÁî£º\n");
         prints("                                   [32mcat new_register.tmp >> new_register[33m\n");
         prints("È·ÈÏÉÏÊöÃüÁîÔËĞĞ³É¹¦ºó£¬ÔÙÔËĞĞÒ»´ÎÒÔÏÂÃüÁî£º\n");
         prints("                                            [32mrm new_register.tmp\n[0m");
         pressreturn();
-        return -1;
+        return -1;*/
+
+        restore_reg(pid);	/* Bigman,2002.5.31:»Ö¸´¸ÃÎÄ¼ş */
     }
-    f_mv(regfile, fname);
+/*    f_mv(regfile, fname);*/
+/*ÉêÇë×¢²áµ¥ added by Bigman, 2002.5.31*/
+   apply_reg(regfile,fname,pid,50);
+
     if ((fn = fopen(fname, "r")) == NULL)
     {
         move(2, 0);
@@ -1119,6 +1321,9 @@ char           *logfile, *regfile;
                         fputs(genbuf, freg);
                     fclose(freg);
                 }
+
+                check_reg(1);	/* Bigman:2002.5.31 */
+
                 break;
             case 'N':
             case 'n':
@@ -1212,9 +1417,13 @@ int m_register()
     }
     clear();
 
+   if (check_reg(0)!=0) return(-1);	/* added by Bigman, 2002.5.31 */
+
     stand_title("Éè¶¨Ê¹ÓÃÕß×¢²á×ÊÁÏ");
     move(2, 0);
-    fname = "new_register";
+
+    fname = "new_register"; 
+
     if ((fn = fopen(fname, "r")) == NULL)
     {
         prints("Ä¿Ç°²¢ÎŞĞÂ×¢²á×ÊÁÏ.");
@@ -1247,7 +1456,7 @@ int m_register()
                 sprintf(secu, "Éè¶¨Ê¹ÓÃÕß×¢²á×ÊÁÏ");
                 securityreport(secu,NULL,NULL);
             }
-            scan_register_form("register.list", fname);
+            scan_register_form("register.list", fname); 
         }
     }
     clear();
