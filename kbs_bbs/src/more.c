@@ -335,7 +335,7 @@ char *fname;
                                                        */
 void netty_more()
 {
-    char buf[256];
+    char buf[350];
     int ne_row = 1;
     int x, y;
     time_t thetime = time(0);
