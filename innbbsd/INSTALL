@@ -49,7 +49,8 @@ cnTest          [转信]  ●  cn.bbs.*测试区
 
 3 配置 innbbsd <cn.bbs.* HOWTO Q6,Q8>
     innbbsd 的所有配置文件默认都在 ~bbs/innd 目录，如果没有这个目录就建立一
-下。下面都假设当前已经在这个目录下面。
+下。下面都假设当前已经在这个目录下面。相关的文件在 innbbsd/contrib/ 目录里
+都有示例可以参考。
 
 3.1 补上缺少的 filter.ctl
     touch filter.ctl
@@ -81,7 +82,8 @@ cnTest          [转信]  ●  cn.bbs.*测试区
 cn.bbs.* 的部分自动统计程序就不能正确给出你站点的统计信息。
 
 3.5 配置cnnews.active
-    写入：（格式不要管了，注意每行有十个0，后面是九个0一个1）
+    这个文件是主动转信程序 bbsnnrp 用来记录当前已经转入过的贴子 ID。在该文件
+中写入：（格式不要管了，注意每行有十个0，后面是九个0一个1）
     cn.bbs.admin            0000000000      0000000001      y
     cn.bbs.admin.announce   0000000000      0000000001      y
     cn.bbs.admin.lists      0000000000      0000000001      y
@@ -98,10 +100,10 @@ cn.bbs.* 的部分自动统计程序就不能正确给出你站点的统计信息。
 ~bbs/bin/innbbsd
 
 转入是
-./bbsnnrp -v news.zixia.net cnnews.active
+~bbs/bin/bbsnnrp -v news.zixia.net cnnews.active
 
 转出是
-./bbslink -v ~bbs
+~bbs/bin/bbslink -v ~bbs
 
 以上命令可以添加到 crontab 定时执行。参考 <cn.bbs.* HOWTO Q7>。
 
@@ -136,9 +138,11 @@ ncmperm.bbs，把它删掉 - 除非你知道这文件是干嘛用的）；你的转信对应版面不对
 配置了某些文件但是没有重新启动 innbbsd（执行 ctlinnbbsd reload 即可）。
 
 7.2 最开始主动转信的时候，我不想要新闻组上面以前的文章。
-    执行 bbsnnrp -c news_server active_file（如果打 bbsnnrp，帮助信息里面也
-有 -c 这个参数的说明）。一般新闻组上面保留最近几个月的文章，如果以一般方式执
-行主动转信的 bbsnnrp 程序，就会按时间顺序每次收 100 篇文章下来。
+    执行一次 bbsnnrp -c news.zixia.net cnnews.active。注意，只要执行一次即可，
+不要把带 -c 参数的 bbsnnrp 命令放入 crontab。这个 -c 参数的意思是重置记录文件
+cnnews.active 使得好像已经转入过以前的所有贴子。一般新闻组上面保留最近几个月
+的文章，如果以一般方式执行主动转信的 bbsnnrp 程序，就会按时间顺序每次收 100 
+篇文章下来。
 
 7.3 我怎么看得到 cn.bbs.admin 新闻组上面的文章啊！
     有几个办法。可以去新闻组网页版 http://webnews.cn-bbs.org/；也可以去
