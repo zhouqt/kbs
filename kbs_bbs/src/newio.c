@@ -328,8 +328,6 @@ int filter_telnet(char *s, int *len)
 }
 
 static bool inremsg = false;
-extern struct key_struct *keymem=NULL;
-extern int keymem_total;
 
 int igetch()
 {
@@ -525,6 +523,10 @@ int igetch()
 
     idle_count = 0;
     c = inbuf[icurrchar];
+
+    if(keymem_total) {
+    }
+    
     switch (c) {
     case Ctrl('L'):
         redoscr();
