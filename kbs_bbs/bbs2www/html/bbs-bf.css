@@ -1,15 +1,15 @@
 {TEXT-DECORATION: none;}
 A:HOVER {COLOR: #ff0000;}
-TABLE.BODY {BORDER: 1px solid; BORDER-COLOR: #BBD0BB;}
-BODY {BACKGROUND-COLOR: #E5EDE5; FONT-SIZE: 14px; }
+TABLE.BODY {BORDER: 1px solid; BORDER-COLOR: #CCCCCC}
+BODY {BACKGROUND-COLOR: #F6F6F6; FONT-SIZE: 14px; }
 body.dark {BACKGROUND-COLOR: #BBD0BB}
 TABLE,TH,TD,P,INPUT,TEXTAREA,SELECT {FONT-SIZE: 14px;}
 TABLE.dark {BACKGROUND-COLOR: #BBD0BB}
-TD.default {BACKGROUND-COLOR: #E5EDE5}
+TD.default {BACKGROUND-COLOR: #F6F6F6}
 input.default { background-color: #F0F0FF; border: #000000 solid 1px }
 input.readonly { background-color: #F0F0FF; border: 0px }
 input.button { background-color: #CCCCFF }
-hr.default { COLOR: #008000 }
+hr.default { COLOR: #999999; border-style:dashed }
 
 FONT.c30 {COLOR: #000000;}
 FONT.c31 {COLOR: #e00000;}

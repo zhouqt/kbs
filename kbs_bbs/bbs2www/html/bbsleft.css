@@ -1,0 +1,11 @@
+BODY {BACKGROUND-COLOR: #718BD6; FONT-SIZE: 12px; COLOR: #FFFFFFscrollbar-3dlight-color:#170708;scrollbar-arrow-color:#000000; scrollbar-base-color:#170708; scrollbar-darkshadow-color:#ffffff; scrollbar-face-color:#EEEAEB; scrollbar-highlight-color:#FBFDFC; scrollbar-shadow-color:#170708}
+.b1 {font-family: "Arial", "Helvetica", "sans-serif";font-size: 12px;color: #FFFFFF;text-decoration: none;}
+.b2 {font-family: "Arial", "Helvetica", "sans-serif";font-size: 14px;font-weight: bold;color: #000000;text-decoration: none;}
+.f1 {font-size: 12px;border: 1px solid #718BD6;}
+.t1 {border-bottom-width: 1px;border-top-style: none;border-right-style: none;border-bottom-style: dashed;border-left-style: none;border-bottom-color: #666666;}
+.t2 {background-color: #D2E1FE;font-family: "Arial", "Helvetica", "sans-serif";font-size: 12px;font-weight: bold;color: #000000;text-decoration: none;}
+.b2 {font-size: 12px;color: #FFFFFF;}
+.f2 {font-size: 12px;color: #000000;background-color: #FFFFFF;border: 1px solid #666666;}
+a:link {font-size: 12px;color: #FFFFFF;text-decoration: none;}
+a:visited {font-size: 12px;color: #FFFFFF;text-decoration: none;}
+a:hover {font-size: 12px;color: #FF0000;text-decoration: none;}

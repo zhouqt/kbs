@@ -1,5 +1,5 @@
-BODY {color: #303230; background-color: #e8f0e8; font-size:16px; line-height=16px}
-FONT {color: #303230; background-color: #e8f0e8}
+BODY {color: #303230; background-color: #F6F6F6; font-size:16px; line-height=16px}
+FONT {color: #303230; background-color: #F6F6F6}
 FONT.f000 {}
 FONT.f001 {color: #e87874 }
 FONT.f002 {color: #00b400 }
@@ -128,19 +128,19 @@ FONT.f712 {color: #0000e8; background-color: #c1c8c1 }
 FONT.f713 {color: #e800e8; background-color: #c1c8c1 }
 FONT.f714 {color: #009691; background-color: #c1c8c1 }
 FONT.f715 {color: #000000; background-color: #c1c8c1 }
-FONT.f800 {color: #e8f0e8; background-color: #e8f0e8 }
-FONT.f801 {color: #e87874; background-color: #e8f0e8 }
-FONT.f802 {color: #00b400; background-color: #e8f0e8 }
-FONT.f803 {color: #aeb400; background-color: #e8f0e8 }
-FONT.f804 {color: #7478e8; background-color: #e8f0e8 }
-FONT.f805 {color: #e878e8; background-color: #e8f0e8 }
-FONT.f806 {color: #00b4ae; background-color: #e8f0e8 }
-FONT.f807 {color: #303230; background-color: #e8f0e8 }
-FONT.f808 {color: #747874; background-color: #e8f0e8 }
-FONT.f809 {color: #e80000; background-color: #e8f0e8 }
-FONT.f810 {color: #009600; background-color: #e8f0e8 }
-FONT.f811 {color: #919600; background-color: #e8f0e8 }
-FONT.f812 {color: #0000e8; background-color: #e8f0e8 }
-FONT.f813 {color: #e800e8; background-color: #e8f0e8 }
-FONT.f814 {color: #009691; background-color: #e8f0e8 }
-FONT.f815 {color: #000000; background-color: #e8f0e8 }
+FONT.f800 {color: #e8f0e8; background-color: #F6F6F6 }
+FONT.f801 {color: #e87874; background-color: #F6F6F6 }
+FONT.f802 {color: #00b400; background-color: #F6F6F6 }
+FONT.f803 {color: #aeb400; background-color: #F6F6F6 }
+FONT.f804 {color: #7478e8; background-color: #F6F6F6 }
+FONT.f805 {color: #e878e8; background-color: #F6F6F6 }
+FONT.f806 {color: #00b4ae; background-color: #F6F6F6 }
+FONT.f807 {color: #303230; background-color: #F6F6F6 }
+FONT.f808 {color: #747874; background-color: #F6F6F6 }
+FONT.f809 {color: #e80000; background-color: #F6F6F6 }
+FONT.f810 {color: #009600; background-color: #F6F6F6 }
+FONT.f811 {color: #919600; background-color: #F6F6F6 }
+FONT.f812 {color: #0000e8; background-color: #F6F6F6 }
+FONT.f813 {color: #e800e8; background-color: #F6F6F6 }
+FONT.f814 {color: #009691; background-color: #F6F6F6 }
+FONT.f815 {color: #000000; background-color: #F6F6F6 }
