@@ -38,6 +38,7 @@ static ZEND_FUNCTION(bbs_sendwebmsg);
 static ZEND_FUNCTION(bbs_sethomefile);
 static ZEND_FUNCTION(bbs_setmailfile);
 static ZEND_FUNCTION(bbs_mail_file);
+static ZEND_FUNCTION(bbs_update_uinfo);
 
 static ZEND_MINIT_FUNCTION(bbs_module_init);
 static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown);
@@ -80,6 +81,7 @@ static function_entry bbs_php_functions[] = {
 	ZEND_FE(bbs_sethomefile, NULL)
     	ZEND_FE(bbs_setmailfile,NULL)
     	ZEND_FE(bbs_mail_file, NULL)
+    	ZEND_FE(bbs_update_uinfo, NULL)
 	{NULL, NULL, NULL}
 };
 
@@ -1627,7 +1629,36 @@ static ZEND_FUNCTION(bbs_mail_file)
 		RETURN_FALSE;
 	RETURN_TRUE;
 }
+
+/**
+ * set currentuinfo for user.
+ * prototype:
+ * string bbs_update_uinfo(string field, value)
+ * @return TRUE on success,
+ *       FALSE on failure.
+ * @author kcn
+ */
+static ZEND_FUNCTION(bbs_update_uinfo)
+{
+    zval *value;
+    char *field;
+    int field_len;
+    int ac = ZEND_NUM_ARGS();
+
+    if (ac != 2
+        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sz", &field, &field_len, &value) == FAILURE)
+    {
+        WRONG_PARAM_COUNT;
+    }
 	
+    if (!strcmp(field,"invisible")) {
+/*	    conver_to_boolean_ex(&value);
+ *	    */
+	    currentuinfo->invisible=Z_LVAL_P(value);
+    }
+    RETURN_LONG(0);
+}
+
 /**
  * set password for user.
  * prototype:
@@ -1688,6 +1719,7 @@ static ZEND_MINIT_FUNCTION(bbs_module_init)
 #endif
     REGISTER_LONG_CONSTANT("BBS_PERM_POSTMASK", PERM_POSTMASK, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_PERM_NOZAP", PERM_NOZAP, CONST_CS | CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("BBS_PERM_CLOAK", PERM_CLOAK, CONST_CS | CONST_PERSISTENT);
     chdir(old_pwd);
 #ifdef DEBUG
     zend_error(E_WARNING, "module init");

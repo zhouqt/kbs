@@ -80,7 +80,7 @@ int main()
     printf("</div>\n");
     ptr = "";
     if (loginok && currentuser->userlevel & PERM_CLOAK)
-        ptr = "<img src=\"/images/link.gif\"> <a target=\"f3\" onclick=\"return confirm('确实切换隐身状态吗?')\" href=\"bbscloak\">切换隐身</a><br>\n";
+        ptr = "<img src=\"/images/link.gif\"> <a target=\"f3\" onclick=\"return confirm('确实切换隐身状态吗?')\" href=\"/bbscloak.php\">切换隐身</a><br>\n";
     if (loginok) {
         printdiv(4, "个人工具箱", "/images/folder.gif");
         printf("			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsinfo\">个人资料</a><br>\n"

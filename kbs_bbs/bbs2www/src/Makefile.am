@@ -4,7 +4,7 @@ bin_PROGRAMS = bbsusr bbscon bbsbrdadd bbsall bbsanc bbs0an \
 	  bbsfadd bbsfdel bbsfall bbsfriend bbspwd bbsinfo \
 	  bbsmybrd bbspst bbsgcon bbsdel bbsdelmail bbsmailcon bbsmail \
 	  bbssnd \
-	  bbssndmail bbsnewmail bbspstmail bbschat bbssel bbscloak \
+	  bbssndmail bbsnewmail bbspstmail bbschat bbssel \
 	  bbsnick bbstfind bbstcon bbstdoc \
 	  bbsccc bbsufind bbsclear bbsedit bbsman bbsparm \
 	  bbsfwd bbsdenyall bbsdenydel bbsdenyadd \
