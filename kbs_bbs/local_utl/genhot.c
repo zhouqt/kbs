@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <time.h>
 #include "bbs.h"
+#include "urlencode.c"
 #ifdef COMMEND_ARTICLE
 
 #define	MAX_COMMEND 5
@@ -16,6 +17,7 @@ int gen_commend_xml()
 	char dirfile[STRLEN];
 	char xml_buf[256];
 	char buf[256];
+	char url_buf[256];
 	struct stat st;
 	int numrecords;
 	int i;
@@ -52,14 +54,14 @@ int gen_commend_xml()
 			numrecords ++;
 
 			fprintf(fp, "<hotsubject>\n");
-			fprintf(fp, "<title>%s</title>\n", encode_xml(xml_buf, dirfh.title, sizeof(xml_buf)));
-			fprintf(fp, "<author>%s</author>\n", dirfh.owner);
+			fprintf(fp, "<title>%s</title>\n", encode_url(url_buf,encode_xml(xml_buf, dirfh.title, sizeof(xml_buf)),sizeof(url_buf)));
+			fprintf(fp, "<author>%s</author>\n", encode_url(url_buf,dirfh.owner,sizeof(url_buf)));
 			fprintf(fp, "<time>%d</time>\n", get_posttime(&dirfh));
-			fprintf(fp, "<board>%s</board>\n", COMMEND_ARTICLE);
+			fprintf(fp, "<board>%s</board>\n", encode_url(url_buf,COMMEND_ARTICLE,sizeof(url_buf)));
 			fprintf(fp, "<id>%d</id>\n", dirfh.id);
 			bh = getboard(dirfh.o_bid);
-			fprintf(fp, "<o_board>%s</o_board>\n", bh ? bh->filename : "");
-			fprintf(fp, "<o_id>%d</o_id>\n", dirfh.o_id);
+			fprintf(fp, "<o_board>%s</o_board>\n", encode_url(url_buf,(bh ? bh->filename : ""),sizeof(url_buf)));
+			fprintf(fp, "<o_id>%d</o_id>\n",dirfh.o_id);
 			if( fgets(buf, 255, fp1) ){
 				if( ! strncmp(buf, "∑¢–≈»À: ", 8) ){
 					if( (c=strchr(buf+8, ' ')) != NULL )
@@ -76,7 +78,7 @@ int gen_commend_xml()
 					buf[255]=0;
 					while( (c=strchr(buf, '\x1b')) != NULL )
 						*c='*';
-					fprintf(fp, "%s", encode_xml(xml_buf, buf, sizeof(xml_buf)) );
+					fprintf(fp, "%s", encode_url(url_buf,encode_xml(xml_buf, buf, sizeof(xml_buf)),sizeof(url_buf)) );
 					i++;
 				}else
 					break;

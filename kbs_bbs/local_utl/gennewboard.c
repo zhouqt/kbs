@@ -5,6 +5,7 @@
 #include <stdio.h>
 //#include <time.h>
 #include "bbs.h"
+#include "urlencode.c"
 
 #define	MAX_NEW_BOARD_NUM 100
 
@@ -112,6 +113,7 @@ int gen_newboards_xml()
 	struct newpostdata boarddata[MAX_NEW_BOARD_NUM];
 	int boardcount,i;
 	char title[STRLEN];
+	char buf[128];
 
 	if ((fp = fopen("xml/newboards.xml", "w")) == NULL) {
 		printf("open xml/newboards.xml file failed.\n");
@@ -129,12 +131,13 @@ int gen_newboards_xml()
 	for(i = 0; i < boardcount; i++)
 	{
 		fprintf(fp, "<newboard>\n");
-		fprintf(fp, "<filename>%s</filename>\n", boarddata[i].name);
+		
+		fprintf(fp, "<filename>%s</filename>\n",encode_url(buf, boarddata[i].name, sizeof(buf)));
 		strcpy(title, boarddata[i].title);
 		title[7] = 0;
-		fprintf(fp, "<class>%s</class>\n", title);
-		fprintf(fp, "<title>%s</title>\n", title+13);
-		fprintf(fp, "<BM>%s</BM>\n", boarddata[i].BM);
+		fprintf(fp, "<class>%s</class>\n", encode_url(buf, title, sizeof(buf)));
+		fprintf(fp, "<title>%s</title>\n", encode_url(buf, title+13, sizeof(buf)));
+		fprintf(fp, "<BM>%s</BM>\n", encode_url(buf, boarddata[i].BM, sizeof(buf)));
 		
 		fprintf(fp, "<count>%d</count>\n", boarddata[i].total);
 		fprintf(fp, "</newboard>\n");

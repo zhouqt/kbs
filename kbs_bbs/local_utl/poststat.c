@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <time.h>
 #include "bbs.h"
+#include "urlencode.c"
 #define	DELETE
 
 char *myfile[] = { "day", "week", "month", "year", "bless" };
@@ -429,6 +430,7 @@ void gen_sec_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE], in
      */
     int m, n;
     char BoardName[100][13];
+    char url_buf[256];
 	char xml_buf[256];
 	struct boardheader *bp;
 
@@ -497,10 +499,10 @@ void gen_sec_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE], in
             real++;
 
 			fprintf(fp, "<hotsubject>\n");
-			fprintf(fp, "<title>%s</title>\n", encode_xml(xml_buf, fh.title, 
-						sizeof(xml_buf)));
-			fprintf(fp, "<author>%s</author>\n", fh.owner);
-			fprintf(fp, "<board>%s</board>\n", top[i].board);
+			fprintf(fp, "<title>%s</title>\n", encode_url(url_buf,encode_xml(xml_buf, fh.title, 
+						sizeof(xml_buf)),sizeof(url_buf)));
+			fprintf(fp, "<author>%s</author>\n", encode_url(url_buf,fh.owner,sizeof(url_buf)));
+			fprintf(fp, "<board>%s</board>\n", encode_url(url_buf,top[i].board,sizeof(url_buf)));
 			fprintf(fp, "<time>%d</time>\n", top[i].date);
 			fprintf(fp, "<number>%d</number>\n", top[i].number);
 			fprintf(fp, "<groupid>%d</groupid>\n", top[i].groupid);
@@ -549,6 +551,7 @@ void gen_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE])
     int m, n;
     char BoardName[100][13];
 	char xml_buf[256];
+	char url_buf[256];
 
 	/* ---------------------------------------------- */
     /*
@@ -609,10 +612,10 @@ void gen_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE])
             real++;
 
 			fprintf(fp, "<hotsubject>\n");
-			fprintf(fp, "<title>%s</title>\n", encode_xml(xml_buf, fh.title, 
-						sizeof(xml_buf)));
-			fprintf(fp, "<author>%s</author>\n", fh.owner);
-			fprintf(fp, "<board>%s</board>\n", top[i].board);
+			fprintf(fp, "<title>%s</title>\n", encode_url(url_buf,encode_xml(xml_buf, fh.title, 
+						sizeof(xml_buf)),sizeof(url_buf)));
+			fprintf(fp, "<author>%s</author>\n", encode_url(url_buf,fh.owner,sizeof(url_buf)));
+			fprintf(fp, "<board>%s</board>\n", encode_url(url_buf,top[i].board,sizeof(url_buf)));
 			fprintf(fp, "<time>%d</time>\n", top[i].date);
 			fprintf(fp, "<number>%d</number>\n", top[i].number);
 			fprintf(fp, "<groupid>%d</groupid>\n", top[i].groupid);
@@ -645,6 +648,7 @@ void gen_blessing_list_xml(struct postrec *dobucket[HASHSIZE])
     int m, n;
     char BoardName[100][13];
 	char xml_buf[256];
+	char url_buf[256];
 	int mytype = 4;
 
 	/* ---------------------------------------------- */
@@ -703,10 +707,10 @@ void gen_blessing_list_xml(struct postrec *dobucket[HASHSIZE])
             real++;
 
 			fprintf(fp, "<hotsubject>\n");
-			fprintf(fp, "<title>%s</title>\n", encode_xml(xml_buf, fh.title, 
-						sizeof(xml_buf)));
-			fprintf(fp, "<author>%s</author>\n", fh.owner);
-			fprintf(fp, "<board>%s</board>\n", top[i].board);
+			fprintf(fp, "<title>%s</title>\n", encode_url(url_buf,encode_xml(xml_buf, fh.title, 
+						sizeof(xml_buf)),sizeof(url_buf)));
+			fprintf(fp, "<author>%s</author>\n", encode_url(url_buf,fh.owner,sizeof(url_buf)));
+			fprintf(fp, "<board>%s</board>\n", encode_url(url_buf,top[i].board,sizeof(url_buf)));
 			fprintf(fp, "<time>%d</time>\n", top[i].date);
 			fprintf(fp, "<number>%d</number>\n", top[i].number);
 			fprintf(fp, "<groupid>%d</groupid>\n", top[i].groupid);

@@ -21,7 +21,7 @@ function find_content($parent,$name)
     $nodes = $parent->child_nodes();
     while($node = array_shift($nodes))
         if ($node->node_name() == $name)
-            return get_content($node);
+            return urldecode(get_content($node));
     return "";
 }
 
@@ -81,7 +81,7 @@ while($board = array_shift($boards))
 	$brd_encode = urlencode($brdarr["NAME"]);
 ?>
 <li class="default">
-<a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $hot_title)); ?></a> &nbsp;&nbsp;[作者: <a href="/bbsqry.php?userid=<?php echo $hot_author; ?>"><?php  echo $hot_author; ?></a>]&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
+<a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars($hot_title); ?></a> &nbsp;&nbsp;[作者: <a href="/bbsqry.php?userid=<?php echo $hot_author; ?>"><?php  echo $hot_author; ?></a>]&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
 <?php
 }
 ?>
@@ -124,7 +124,7 @@ function gen_sec_hot_subjects_html($secid)
 			continue;
 		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
-<li class="default"><a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $hot_title)); ?></a>&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
+<li class="default"><a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars($hot_title); ?></a>&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
 <?php
 	}
 ?>
@@ -173,7 +173,7 @@ while($board = array_shift($boards))
     $staytime = find_content($board, "StayTime");
     $secid = find_content($board, "SecId");
 	$sec_boards[$secid][$sec_boards_num[$secid]]["EnglishName"] = $ename;
-	$sec_boards[$secid][$sec_boards_num[$secid]]["ChineseName"] = iconv("UTF-8", "GBK", $cname);
+	$sec_boards[$secid][$sec_boards_num[$secid]]["ChineseName"] = $cname;
 	$sec_boards[$secid][$sec_boards_num[$secid]]["VisitTimes"] = $visittimes;
 	$sec_boards[$secid][$sec_boards_num[$secid]]["StayTime"] = $staytime;
 	$sec_boards_num[$secid]++;
@@ -389,7 +389,7 @@ while($board = array_shift($boards))
 
 ?>
 <tr>
-<td valign="top" class="MainContentText"><LI class=default><a href="/bbsrecon.php?id=<?php echo $commend_id;?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $commend_title));?></a>&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode;?>"><?php echo htmlspecialchars($brdarr["DESC"]);?></a>&gt;
+<td valign="top" class="MainContentText"><LI class=default><a href="/bbsrecon.php?id=<?php echo $commend_id;?>"><?php echo htmlspecialchars($commend_title);?></a>&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode;?>"><?php echo htmlspecialchars($brdarr["DESC"]);?></a>&gt;
 &nbsp;&nbsp;[<a href="/bbstcon.php?board=<?php echo $brd_encode;?>&gid=<?php echo $commend_o_groupid;?>">同主题阅读原版原文</a>]
 <dl style="MARGIN-TOP: 1px;MARGIN-BOTTOM: 5px; MARGIN-LEFT: 25px;"><dt>
 <?php echo htmlspecialchars(iconv("UTF-8","GBK",$commend_brief));?>
@@ -438,7 +438,7 @@ while($board = array_shift($boards))
 	$cname = find_content($board, "ChineseName");
 ?>
               <tr> 
-                <td height="20" class="MainContentText"><?php echo $i+1; ?>. <a href="bbsdoc.php?board=<?php echo urlencode($ename); ?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $cname)); ?></a></td>
+                <td height="20" class="MainContentText"><?php echo $i+1; ?>. <a href="bbsdoc.php?board=<?php echo urlencode($ename); ?>"><?php echo htmlspecialchars($cname); ?></a></td>
               </tr>
 <?php
 	$i++;
@@ -486,7 +486,7 @@ while($board = array_shift($boards))
     $hot_board = find_content($board, "board");
     $hot_groupid = find_content($board, "groupid");
 ?>
-<li class="default"><a href="/bbstcon.php?board=<?php echo $hot_board; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $hot_title)); ?></a></li>
+<li class="default"><a href="/bbstcon.php?board=<?php echo $hot_board; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars($hot_title); ?></a></li>
 <?php
 }
 ?>

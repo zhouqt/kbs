@@ -1,6 +1,7 @@
 #include <time.h>
 #include <stdio.h>
 #include "bbs.h"
+#include "urlencode.c"
 #include "config.h"
 
 struct binfo {
@@ -131,6 +132,7 @@ void gen_board_rank_xml(int brdcount, struct binfo *bi)
     FILE *fp;
     char xmlfile[STRLEN];
 	char xml_buf[256];
+	char url_buf[256];
 	struct boardheader *bp;
 	int sec_id;
 
@@ -138,7 +140,7 @@ void gen_board_rank_xml(int brdcount, struct binfo *bi)
     if ((fp = fopen(xmlfile, "w")) == NULL)
         return;
     fprintf(fp, "<?xml version=\"1.0\" encoding=\"GBK\"?>\n");
-    fprintf(fp, "<BoardList Desc=\"讨论区使用状况统计\">\n");
+    fprintf(fp, "<BoardList Desc=\"%s\">\n",encode_url(url_buf,"讨论区使用状况统计",sizeof(url_buf)));
     for (i = 0; i < brdcount; i++) {
 		bp = getbcache(bi[i].boardname);
 		if (bp == NULL || (bp->flag & BOARD_GROUP))
@@ -147,9 +149,9 @@ void gen_board_rank_xml(int brdcount, struct binfo *bi)
 			continue;
         fprintf(fp, "<Board>\n");
         fprintf(fp, "<EnglishName>%s</EnglishName>\n", 
-				encode_xml(xml_buf, bi[i].boardname, sizeof(xml_buf)));
+				encode_url(url_buf,encode_xml(xml_buf, bi[i].boardname, sizeof(xml_buf)),sizeof(url_buf)));
         fprintf(fp, "<ChineseName>%s</ChineseName>\n", 
-				encode_xml(xml_buf, bi[i].expname, sizeof(xml_buf)));
+				encode_url(url_buf,encode_xml(xml_buf, bi[i].expname, sizeof(xml_buf)),sizeof(url_buf)));
         fprintf(fp, "<VisitTimes>%ld</VisitTimes>\n", bi[i].times);
         fprintf(fp, "<StayTime>%ld</StayTime>\n", bi[i].sum);
         fprintf(fp, "<SecId>%ld</SecId>\n", sec_id);

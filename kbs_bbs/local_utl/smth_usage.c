@@ -2,6 +2,7 @@
 #include <time.h>
 #include <stdio.h>
 #include "bbs.h"
+#include "urlencode.c"
 #include "config.h"
 
 #define MAX_SEC_BOARD 100
@@ -175,16 +176,17 @@ void save_useboard_xml(int brdcount, struct binfo *bi)
     int i;
     FILE *fp;
     char xmlfile[STRLEN];
+    char url_buf[256];
 
     snprintf(xmlfile, sizeof(xmlfile), BBSHOME "/0Announce/bbslists/board.xml");
     if ((fp = fopen(xmlfile, "w")) == NULL)
         return;
     fprintf(fp, "<?xml version=\"1.0\" encoding=\"GB2312\"?>\n");
-    fprintf(fp, "<BoardList Desc=\"讨论区使用状况统计\">\n");
+    fprintf(fp, "<BoardList Desc=\"%s\">\n",encode_url(url_buf,"讨论区使用状况统计",sizeof(url_buf)));
     for (i = 0; i < brdcount; i++) {
         fprintf(fp, "<Board>\n");
-        fprintf(fp, "<EnglishName>%s</EnglishName>\n", bi[i].boardname);
-        fprintf(fp, "<ChineseName>%s</ChineseName>\n", bi[i].expname);
+        fprintf(fp, "<EnglishName>%s</EnglishName>\n", encode_url(url_buf,bi[i].boardname,sizeof(url_buf)));
+        fprintf(fp, "<ChineseName>%s</ChineseName>\n", encode_url(url_buf,bi[i].expname,sizeof(url_buf)));
         fprintf(fp, "<VisitTimes>%ld</VisitTimes>\n", bi[i].times);
         fprintf(fp, "<StayTime>%ld</StayTime>\n", bi[i].sum);
         fprintf(fp, "</Board>\n");
