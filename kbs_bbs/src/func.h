@@ -291,6 +291,8 @@ int clean_cachedata(char* userid,int unum);
  */
     int get_records_from_id(int fd, int id, fileheader_t * buf, int num, int *index);
 
+	int get_threads_from_id(const char *filename, int id, fileheader_t *buf, int num);
+
     int Origin2(char text[256]);
 /*¼ÓÈëedit mark*/
     int add_edit_mark(char *fname, int mode, char *title);
