@@ -40,6 +40,7 @@ function showAllSecs(){
 	GLOBAL $_GET;
 
 	for ($i=0;$i<$sectionCount;$i++){
+		echo "<a name=\"sec$i\"></a>";
 		if ($_COOKIE['ShowSecBoards'.$i]=='Y') {
 			showSecs($i,0,true);
 		} else {
@@ -67,11 +68,11 @@ function showSecs($secNum,$group,$isFold,$loadFav=0) {
 <?php
 		if ($isFold) {
 ?>
-<a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=N" title="关闭版面列表"><img src="pic/nofollow.gif" border=0></a><a href="section.php?sec=<?php echo $secNum ; ?>" title=进入本分类讨论区><?php echo $section_names[$secNum][0]; ?> </a>
+<a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=N#sec<?php echo $secNum ?>" title="关闭版面列表"><img src="pic/nofollow.gif" border=0></a><a href="section.php?sec=<?php echo $secNum ; ?>" title=进入本分类讨论区><?php echo $section_names[$secNum][0]; ?> </a>
 <?php
 		} else {
 ?>
-<a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=Y" title="展开版面列表"><img src="pic/plus.gif" border=0></a><a href="section.php?sec=<?php echo $secNum ; ?>" title=进入本分类讨论区><?php echo $section_names[$secNum][0]; ?> </a>
+<a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=Y#sec<?php echo $secNum ?>" title="展开版面列表"><img src="pic/plus.gif" border=0></a><a href="section.php?sec=<?php echo $secNum ; ?>" title=进入本分类讨论区><?php echo $section_names[$secNum][0]; ?> </a>
 <?php
 		}
 	} else {
@@ -94,7 +95,7 @@ function showSecs($secNum,$group,$isFold,$loadFav=0) {
 <?php
 	if (! $isFold && (BOARDLISTSTYLE=='simplest')) {
 ?>
-		<TR><TD colspan="2" class=TableBody1>&nbsp;版面列表已关闭 [<a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=Y" title="展开版面列表">展开</a>]</td></tr>
+		<TR><TD colspan="2" class=TableBody1>&nbsp;版面列表已关闭 [<a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=Y#sec<?php echo $secNum ?>" title="展开版面列表">展开</a>]</td></tr>
 <?php
 	} else {
 		if ($loadFav == 0) {
