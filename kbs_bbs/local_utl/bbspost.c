@@ -24,8 +24,6 @@ char *ProgramUsage = "\
 /*#include "../bbs.h"  Leeward 98.04.27 For macro LEEWARD_X_RECORD*/
 #define MAXLEN          1024
 
-char currboard[1];
-
 char *crypt();
 char *homepath;
 int visitflag;
