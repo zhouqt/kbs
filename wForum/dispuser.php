@@ -80,7 +80,7 @@ if ($user['userdefine0'] & BBS_DEF_SHOWDETAILUSERDATA) {
 <?php
 	$photo_url=htmlspecialchars(trim($user['photo_url']),ENT_QUOTES);
 	if ($photo_url!='') {
-		echo "<img src='".$photo_url."'>"; 
+		echo "<a href=\"$photo_url\" target=\"_blank\"><img onload=\"javascript:if (this.height > 150) this.height = 150; \" src=\"$photo_url\" border=\"0\"></a>"; 
 	} else {
 		echo  "<font color=gray>нч</font>";
 	}
