@@ -130,10 +130,6 @@ AC_TYPE_SIGNAL
 AC_FUNC_STAT
 AC_CHECK_FUNCS([alarm bzero ftruncate getcwd memset mkdir munmap socket strcasecmp strchr strdup strerror strncasecmp strrchr strstr])
 
-AC_CONFIG_LINKS(mkinstalldirs:../mkinstalldirs)
-AC_CONFIG_LINKS(missing:../missing)
-AC_CONFIG_LINKS(depcomp:../depcomp)
-
 AC_CONFIG_FILES([Makefile
                  lib/Makefile
                  phplib/Makefile
