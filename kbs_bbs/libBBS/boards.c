@@ -938,7 +938,7 @@ int normal_board(const char *bname)
 #ifdef NINE_BUILD
     ret=!(bh.level&PERM_SYSOP)&&!(bh.flag&BOARD_CLUB_HIDE)&&!(bh.flag&BOARD_CLUB_READ);
 #else
-    ret=(bh.level == 0)&&!(bh.flag&BOARD_CLUB_HIDE)&&!(bh.flag&BOARD_CLUB_READ);
+    ret=((bh.level == 0)||(bh.level&PERM_POSTMASK))&&!(bh.flag&BOARD_CLUB_HIDE)&&!(bh.flag&BOARD_CLUB_READ);
 #endif
     if (bh.title_level) ret=0;
     if (ret&&(bh.group)) {
