@@ -319,6 +319,9 @@ main(argc, argv)
         return (0);
     }
 
+#ifdef BLESS_BOARD
+    resolve_boards();
+#endif
     time(&now);
     ptime = localtime(&now);
     if (ptime->tm_hour == 0) {
