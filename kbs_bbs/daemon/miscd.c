@@ -528,7 +528,7 @@ static int miscd_dodaemon(char *argv1, char *daemon)
         exit(-1);
     }
 
-#ifdef TMPFS
+#if USE_TMPFS==1
     /* init tmpfs */
     sprintf(genbuf1,"%s/home",TMPFSROOT);
     mkdir(genbuf1,0700);
