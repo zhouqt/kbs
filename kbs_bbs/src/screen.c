@@ -546,6 +546,7 @@ int n;
 
 #define DO_MODIFY { if (slp->smod > begincol) slp->smod=begincol; \
                     if (slp->emod < reg_col) slp->emod=reg_col; \
+                    if (reg_col > slp->len) slp->len = reg_col;\
 		    	slp->mode |= MODIFIED ; \
 	          }
 
@@ -568,6 +569,7 @@ int n;
                      memset(slp->data+slp->len, ' ', cur_col-slp->len+1);
 			slp->smod = Min(slp->smod, slp->len);
 			slp->mode |= MODIFIED;
+                     slp->len = cur_col;
 		}
 		while ((str - begin_str < n) && *str) {
 		    if (inansi) {
@@ -669,6 +671,7 @@ int n;
                                     slp->data[reg_col+j]=*(str+j);
                                 str+=i+1;
                                 reg_col+=i+1;
+                                slp->len+=i+1;
                                 DO_MODIFY;
                                 continue;
                              }
@@ -687,6 +690,8 @@ int n;
                         if(isalpha(slp->data[reg_col+i])) {
                             for(j=reg_col;j<scr_cols-i-1;j++)
                                 slp->data[j]=slp->data[j+i+1];
+                            if(reg_col+i<slp->len)
+                                slp->len-=i+1;
                         }
                      }
 			if (*str == '') {
