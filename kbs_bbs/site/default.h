@@ -224,7 +224,7 @@
 #define SYSMAIL_BOARD       "sysmail"
 #endif
 
-#ifndef BLESS_BAORD
+#ifndef BLESS_BOARD
 #define BLESS_BOARD "Blessing"
 #endif
 
