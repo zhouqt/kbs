@@ -45,7 +45,7 @@ static /*struct screenline old_line; */ char tmpbuffer[LINELEN*3];
 
 void setfcolor(int i,int j)
 {
-    cur_color = i+cur_color/16*16;
+    cur_color = i+cur_color&0xf0;
     if(j) cur_mode|=SCREEN_BRIGHT;
     else cur_mode&=~SCREEN_BRIGHT;
 }
@@ -53,7 +53,7 @@ void setfcolor(int i,int j)
 void setbcolor(int i)
 {
     if(i==0) i=8;
-    cur_color = cur_color%16+i*16;
+    cur_color = cur_color&0x0f+i<<4;
 }
 
 void resetcolor()
@@ -168,8 +168,8 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
     tc_line = new_ln;
     if ((new_col == 0) && (new_ln == was_ln + 1)) {
         ochar('\n');
-        if(tc_color%16!=7)
-            tc_color = tc_color/16*16+8;
+        if(tc_color&0x0f!=7)
+            tc_color = tc_color&0xf0+8;
         if (was_col != 0)
             ochar('\r');
         return;
@@ -188,7 +188,9 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
         for(i=was_col;i<new_col;i++)
             p=p&&(bp[q].color[i]==tc_color)&&(bp[q].mode[i]==tc_mode);
         if(p) {
-            output(bp[q].data+was_col, new_col-was_col);
+            for (i = was_col; i < new_col; i++)
+                ochar(bp[q].data[i]);
+//            output(bp[q].data+was_col, new_col-was_col);
             return;
         }
     }
@@ -213,7 +215,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
     if ((new_col == was_col || new_col==0) && new_ln>=was_ln+1) {
         char ss[20];
         if(tc_color%16!=7)
-            tc_color = tc_color/16*16+8;
+            tc_color = tc_color&0xf0+8;
         if(new_ln==was_ln+1)
             sprintf(ss, "\x1b[B");
         else
@@ -226,7 +228,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
     if ((new_col == was_col || new_col==0) && new_ln<=was_ln-1) {
         char ss[20];
         if(tc_color%16!=7)
-            tc_color = tc_color/16*16+8;
+            tc_color = tc_color&0xf0+8;
         if(new_ln==was_ln-1)
             sprintf(ss, "\x1b[A");
         else
@@ -243,7 +245,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
         if(p) {
             ochar('\n');
             if(tc_color%16!=7)
-                tc_color = tc_color/16*16+8;
+                tc_color = tc_color&0xf0+8;
             if (was_col != 0)
                 ochar('\r');
             ochar(bp[q].data, new_col);
@@ -300,8 +302,10 @@ void refresh()
         j = (i + roll)%scr_lns;
         if(!bp[j].changed) continue;
 
+        bp[j].changed = false;
+
         ii=scr_cols-1;
-        while(ii>=0&&(bp[j].data[ii]==0||bp[j].data[ii]==32)&&(bp[j].color[ii]/16)==(bp[j].color[scr_cols-1]/16)&&((bp[j].mode[ii]&~SCREEN_BRIGHT)==(bp[j].mode[scr_cols-1]&~SCREEN_BRIGHT))) ii--;
+        while(ii>=0&&(bp[j].data[ii]==0||bp[j].data[ii]==32)&&(bp[j].color[ii]>>4)==(bp[j].color[scr_cols-1]>>4)&&((bp[j].mode[ii]&~SCREEN_BRIGHT)==(bp[j].mode[scr_cols-1]&~SCREEN_BRIGHT))) ii--;
         p=ii+1;
         count = 0;
         for(ii=p;ii<scr_cols;ii++)
@@ -315,7 +319,7 @@ void refresh()
             if((!(s&SCREEN_BRIGHT)&&tc_mode&SCREEN_BRIGHT&&bp[j].data[k]!=' '||
                 !(s&SCREEN_LINE)&&tc_mode&SCREEN_LINE||
                 !(s&SCREEN_BLINK)&&tc_mode&SCREEN_BLINK&&bp[j].data[k]!=' '||
-                !(s&SCREEN_BACK)&&tc_mode&SCREEN_BACK)||(tc_color/16!=0&&bp[j].color[k]/16==0)) {
+                !(s&SCREEN_BACK)&&tc_mode&SCREEN_BACK)||(tc_color>>4!=0&&bp[j].color[k]>>4==0)) {
                 char buf[10];
                 tc_mode = 0;
                 tc_color = 7;
@@ -339,17 +343,17 @@ void refresh()
                 stack[stackt++]=7;
             }
             if(tc_color%16!=bp[j].color[k]%16&&(bp[j].data[k]!=' '||bp[j].mode[k]&SCREEN_LINE||bp[j].mode[k]&SCREEN_BACK)) {
-                tc_color=tc_color/16*16+bp[j].color[k]%16;
+                tc_color=tc_color&0xf0+bp[j].color[k]&0x0f;
                 if(DEFINE(currentuser, DEF_COLOR))
                     stack[stackt++]=30+bp[j].color[k]%16;
             }
-            if(tc_color/16!=bp[j].color[k]/16) {
-                tc_color=bp[j].color[k]/16*16+tc_color%16;
+            if(tc_color>>4!=bp[j].color[k]>>4) {
+                tc_color=bp[j].color[k]&0xf0+tc_color&0x0f;
                 if(DEFINE(currentuser, DEF_COLOR)) {
-                    if(bp[j].color[k]/16==8)
+                    if(bp[j].color[k]>>4==8)
                         stack[stackt++]=40;
                     else
-                        stack[stackt++]=40+bp[j].color[k]/16;
+                        stack[stackt++]=40+bp[j].color[k]>>4;
                 }
             }
             if(stackt>0) {
@@ -619,10 +623,10 @@ void outns(const char*str, int n)
                         else if(m==7)
                             cur_mode|=SCREEN_BACK;
                         else if(m>=30&&m<=37)
-                            cur_color = m-30+cur_color/16*16;
+                            cur_color = m-30+cur_color&0xf0;
                         else if(m>=40&&m<=47) {
                             if(m==40) m=48;
-                            cur_color = (m-40)*16+cur_color%16;
+                            cur_color = (m-40)<<4+cur_color&0x0f;
                         }
                     }
                     j++;
