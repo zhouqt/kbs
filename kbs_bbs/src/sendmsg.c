@@ -27,7 +27,7 @@ int line;
     prints("送音信给：%s", uid);
     memset(msg, 0, sizeof(msg));
     while (1) {
-        getdata(line + 1, 0, "音信 : ", msg, 59, DOECHO, NULL, false);
+        multi_getdata(line + 1, 0, 78, "音信 : ", msg, MAX_MSG_SIZE, false);
         if (msg[0] == '\0')
             return false;
         getdata(line + 2, 0, "确定要送出吗(Y)是的 (N)不要 (E)再编辑? [Y]: ", genbuf, 2, DOECHO, NULL, 1);
@@ -58,7 +58,7 @@ int mode;
 {
     char uident[STRLEN];
     struct user_info *uin;
-    char buf[80];
+    char buf[MAX_MSG_SIZE];
     int Gmode = 0;
     int result;
 
