@@ -21,6 +21,7 @@
 #include "bbslib.h"
 #include "vote.h"
 
+static unsigned char one_arg_force_ref_1[]  = { 1, BYREF_FORCE };
 static unsigned char two_arg_force_ref_01[] = { 2, BYREF_NONE, BYREF_FORCE };
 static unsigned char third_arg_force_ref_1111[] = { 4, BYREF_FORCE, BYREF_FORCE, BYREF_FORCE, BYREF_FORCE };
 static unsigned char third_arg_force_ref_011[] = { 3, BYREF_NONE, BYREF_FORCE, BYREF_FORCE };
@@ -186,6 +187,8 @@ static PHP_FUNCTION(bbs_sendwebmsg);
 
 static PHP_FUNCTION(bbs_wwwlogin);
 static PHP_FUNCTION(bbs_wwwlogoff);
+static PHP_FUNCTION(bbs_getwwwparameters);
+static PHP_FUNCTION(bbs_setwwwparameters);
 static PHP_FUNCTION(bbs_printansifile);
 static PHP_FUNCTION(bbs_print_article);
 static PHP_FUNCTION(bbs_print_article_js);
@@ -271,6 +274,8 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_getcurrentuinfo, NULL)
         PHP_FE(bbs_wwwlogin, NULL)
         PHP_FE(bbs_wwwlogoff, NULL)
+        PHP_FE(bbs_getwwwparameters,one_arg_force_ref_1)
+        PHP_FE(bbs_setwwwparameters,NULL)
         PHP_FE(bbs_printansifile, NULL)
         PHP_FE(bbs_print_article, NULL)
         PHP_FE(bbs_print_article_js, NULL)
@@ -4089,6 +4094,62 @@ static PHP_FUNCTION(bbs_wwwlogoff)
         RETURN_LONG(-1);
 }
 
+static PHP_FUNCTION(bbs_getwwwparameters)
+{
+	zval *wwwparameters;
+	FILE* fn;
+	char  buf[1024];
+	
+	int ac = ZEND_NUM_ARGS();
+	
+	if (ac != 1 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "z" , &wwwparameters ) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+	if (!PZVAL_IS_REF(wwwparameters))
+	{
+        	zend_error(E_WARNING, "Parameter wasn't passed by reference");
+        	RETURN_FALSE;
+    	}
+	
+	sethomefile(buf,currentuser->userid,"www");
+	if(!file_exist(buf))
+	{
+		if ((fn=fopen(buf,"w"))==NULL)
+		RETURN_LONG(-10);
+		fprintf(fn,"0");
+		fclose(fn);
+	}
+	if ((fn=fopen(buf,"r"))==NULL)
+		RETURN_LONG(-1);
+	fgets(buf,1024,fn);
+	ZVAL_STRING(wwwparameters,buf,1);
+	fclose(fn);
+	RETURN_LONG(0);
+}
+
+static PHP_FUNCTION(bbs_setwwwparameters)
+{
+	char* wwwparameters;
+	int   wwwparameters_len;
+	FILE *fn;
+	char  buf[200];
+	
+	int ac = ZEND_NUM_ARGS();
+	
+	if (ac != 1 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "s" , &wwwparameters , &wwwparameters_len) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+	
+	sethomefile(buf,currentuser->userid,"www");
+	if ((fn=fopen(buf,"w"))==NULL)
+		RETURN_LONG(-10);
+	fprintf(fn,"%s",wwwparameters);
+	fclose(fn);
+	RETURN_LONG(0);
+}
+
 #ifdef HAVE_BRC_CONTROL
 static PHP_FUNCTION(bbs_brcaddread)
 {
@@ -5211,7 +5272,7 @@ static PHP_FUNCTION(bbs_getactivation)
 	sethomefile(afile,uc->userid,"activation");
 	if ((fn=fopen(afile,"r"))==NULL)
 		RETURN_LONG(-2);
-	if(fgets(buf,1024,fn)==NULL)
+	if(fgets(buf,200,fn)==NULL)
 	{
 		fclose(fn);
 		sprintf(buf,"rm -f %s",afile);
