@@ -755,11 +755,16 @@ static int i_read_key(int cmdmode, struct one_key *rcmdlist, struct keeploc *loc
 int auth_search_down(int ent, struct fileheader *fileinfo, char *direct)
 {
     struct keeploc *locmem;
+	int i;
 
-    locmem = getkeep(direct, 1, 1);
-    if (search_author(locmem, 1, fileinfo->owner))
+	if(strstr(direct,".DINGDIR")) locmem=getkeep(currdirect,1,1);
+	else locmem = getkeep(direct, 1, 1);
+
+    i = search_author(locmem, 1, fileinfo->owner);
+    if (i == 2)
+		return DIRCHANGED;
+	else if (i == 1)
         return PARTUPDATE;
-
     else
         update_endline();
     return DONOTHING;
@@ -769,11 +774,16 @@ int auth_search_down(int ent, struct fileheader *fileinfo, char *direct)
 int auth_search_up(int ent, struct fileheader *fileinfo, char *direct)
 {
     struct keeploc *locmem;
+	int i;
 
-    locmem = getkeep(direct, 1, 1);
-    if (search_author(locmem, -1, fileinfo->owner))
+	if(strstr(direct,".DINGDIR")) locmem=getkeep(currdirect,1,1);
+	else locmem = getkeep(direct, 1, 1);
+
+    i = search_author(locmem, -1, fileinfo->owner);
+    if (i == 2)
+		return DIRCHANGED;
+	else if (i == 1)
         return PARTUPDATE;
-
     else
         update_endline();
     return DONOTHING;
@@ -782,11 +792,16 @@ int auth_search_up(int ent, struct fileheader *fileinfo, char *direct)
 int post_search_down(int ent, struct fileheader *fileinfo, char *direct)
 {
     struct keeploc *locmem;
+	int i;
 
-    locmem = getkeep(direct, 1, 1);
-    if (search_post(locmem, 1))
+	if(strstr(direct,".DINGDIR")) locmem=getkeep(currdirect,1,1);
+	else locmem = getkeep(direct, 1, 1);
+    
+	i = search_post(locmem, 1);
+    if (i == 2)
+		return NEWDIRECT;
+	else if(i==1)
         return PARTUPDATE;
-
     else
         update_endline();
     return DONOTHING;
@@ -795,11 +810,16 @@ int post_search_down(int ent, struct fileheader *fileinfo, char *direct)
 int post_search_up(int ent, struct fileheader *fileinfo, char *direct)
 {
     struct keeploc *locmem;
+	int i;
 
-    locmem = getkeep(direct, 1, 1);
-    if (search_post(locmem, -1))
+	if(strstr(direct,".DINGDIR")) locmem=getkeep(currdirect,1,1);
+	else locmem = getkeep(direct, 1, 1);
+
+	i = search_post(locmem, -1);
+    if (i == 2)
+		return NEWDIRECT;
+	else if(i==1)
         return PARTUPDATE;
-
     else
         update_endline();
     return DONOTHING;
@@ -1081,7 +1101,7 @@ int SR_authorX(int ent, struct fileheader *fileinfo, char *direct)
     sread(-1003, 1, NULL, 1, fileinfo);
     return FULLUPDATE;
 }
-
+/*
 int auth_post_down(int ent, struct fileheader *fileinfo, char *direct)
 {
     struct keeploc *locmem;
@@ -1105,14 +1125,20 @@ int auth_post_up(int ent, struct fileheader *fileinfo, char *direct)
         update_endline();
     return DONOTHING;
 }
-
+*/
 
 int t_search_down(int ent, struct fileheader *fileinfo, char *direct)
 {
     struct keeploc *locmem;
+	int i;
 
-    locmem = getkeep(direct, 1, 1);
-    if (search_title(locmem, 1))
+	if(strstr(direct,".DINGDIR")) locmem=getkeep(currdirect,1,1);
+	else locmem = getkeep(direct, 1, 1);
+
+	i = search_title(locmem, 1);
+	if(i == 2)
+		return NEWDIRECT;
+	else if(i == 1)
         return PARTUPDATE;
     else
         update_endline();
@@ -1122,9 +1148,15 @@ int t_search_down(int ent, struct fileheader *fileinfo, char *direct)
 int t_search_up(int ent, struct fileheader *fileinfo, char *direct)
 {
     struct keeploc *locmem;
+	int i;
 
-    locmem = getkeep(direct, 1, 1);
-    if (search_title(locmem, -1))
+	if(strstr(direct,".DINGDIR")) locmem=getkeep(currdirect,1,1);
+	else locmem = getkeep(direct, 1, 1);
+    
+	i = search_title(locmem, -1);
+	if(i == 2)
+		return NEWDIRECT;
+	else if(i == 1)
         return PARTUPDATE;
     else
         update_endline();
@@ -1559,10 +1591,15 @@ int searchpattern(char *filename, char *query)
 
 
 /* COMMAN : use mmap to speed up searching */
+/* add by stiger
+ * return :   2 :  DIRCHANGED
+ *            1 :  FULLUPDATE
+ *            0 :  DONOTHING
+ */
 static int search_articles(struct keeploc *locmem, char *query, int offset, int aflag)
 {
     char ptr[STRLEN];
-    int now, match = 0;
+    int now, match = 0, retn;
     int complete_search;
     char upper_ptr[STRLEN], upper_query[STRLEN];
     bool init;
@@ -1583,9 +1620,6 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
         return 0;
     }
 
-	/* add by stiger */
-	if(strstr(locmem->key,".DINGDIR")) return 0;
-
     /*
      * move(t_lines-1,0);
      * clrtoeol();
@@ -1597,10 +1631,18 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
 /*    refresh();*/
     memset(&SR_fptr, 0, sizeof(struct fileheader));
     match = 0;
+	retn = 0;
     BBS_TRY {
         if (safe_mmapfile(currdirect, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &pFh, &size, NULL) == 0)
             BBS_RETURN(0);
         last_line = size / sizeof(struct fileheader);
+		/*在置顶文章前搜索*/
+		if(now > last_line){
+			locmem->crs_line=last_line;
+			if(locmem->top_line>locmem->crs_line) locmem->top_line=last_line;
+			now = last_line;
+			retn = 2;
+		}
         if (now <= last_line) {
             pFh1 = pFh + now - 1;
             while (1) {
@@ -1671,7 +1713,22 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
     BBS_END end_mmapfile((void *) pFh, size, -1);
     move(t_lines - 1, 0);
     clrtoeol();
-    return match;
+	/*add by stiger,置顶的处理 */
+    if (uinfo.mode != RMAIL && uinfo.mode != GMENU
+         && (digestmode==DIR_MODE_NORMAL||digestmode==DIR_MODE_THREAD)){
+		char dirtmp[256];
+		char *dirp;
+		strcpy(dirtmp,currdirect);
+		dirp=strrchr(dirtmp,'/');
+		if(dirp){
+			*dirp='\0';
+			strcat(dirtmp,"/.DINGDIR");
+			last_line += get_num_records(dirtmp,sizeof(struct fileheader));
+		}
+	}
+	if(retn) return 2;
+	if(match) return 1;
+    return 0;
 }
 
 static int search_threadid(struct keeploc *locmem, int offset, int groupid, int mode)
@@ -1761,8 +1818,8 @@ static int search_threadid(struct keeploc *locmem, int offset, int groupid, int 
 				}
 			}
 			END: {}
-		}
             memcpy(&SR_fptr, pFh + locmem->crs_line - 1, sizeof(struct fileheader));
+		}
     }
     BBS_CATCH {
         memset(&SR_fptr, 0, sizeof(struct fileheader));
