@@ -213,7 +213,7 @@ function cache_process($scope, $forcecachetime, $modifytime, $expiretime) {
 		return TRUE;
 	}
 	header("Last-Modified: " . gmdate("D, d M Y H:i:s", $modifytime) . " GMT");
-	header("Expires: " . gmdate("D, d M Y H:i:s", $modifytime+$expiretime) . " GMT");
+	header("Expires: " . gmdate("D, d M Y H:i:s", time()+$expiretime) . " GMT");
 	header("Cache-Control: max-age=" . "$expiretime");
 	return FALSE;
 }
