@@ -190,5 +190,5 @@
 <IMG onclick=Cmarquee() height=22 alt=移动字 src="pic/move.gif" width=23 border=0>
 <IMG onclick=Cguang() height=22 alt=发光字 src="pic/glow.gif" width=23 border=0>
 <IMG onclick=Cying() height=22 alt=阴影字 src="pic/shadow.gif" width=23 border=0>
-<IMG onclick=openScript('smiles.php',500,600) src="pic/ubb_smilie.gif" border=0 alt=查看更多的心情图标>
+<!--<IMG onclick=openScript('smiles.php',500,600) src="pic/ubb_smilie.gif" border=0 alt=查看更多的心情图标>-->
 <img onclick=Csound() src="pic/csound.gif" width="23" height="22" alt="背景音乐" border="0">
