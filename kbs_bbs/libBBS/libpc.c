@@ -717,6 +717,9 @@ int add_pc_users(struct pc_users *pn)
 		mysql_close(&s);
 		return 0;
 	}
+	
+	sprintf(sql,"UPDATE newapply SET `apptime` = `apptime` , manager = '%s' , management = 0 WHERE username = '%s ' ;", currentuser->userid , pn->username);	
+	mysql_real_query( &s, sql, strlen(sql) );
 
 	mysql_close(&s);
 
@@ -963,7 +966,79 @@ int del_pc_users(struct pc_users *pn)
 		mysql_close(&s);
 		return 0;
 	}
+	
+	sprintf(sql,"DELETE FROM nodes WHERE uid=%u ;", pn->uid );
 
+	if( mysql_real_query( &s, sql, strlen(sql) )){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		mysql_close(&s);
+		return 0;
+	}
+	
+	sprintf(sql,"DELETE FROM comments WHERE uid=%u ;", pn->uid );
+
+	if( mysql_real_query( &s, sql, strlen(sql) )){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		mysql_close(&s);
+		return 0;
+	}
+	
+	sprintf(sql,"DELETE FROM blacklist WHERE uid=%u ;", pn->uid );
+
+	if( mysql_real_query( &s, sql, strlen(sql) )){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		mysql_close(&s);
+		return 0;
+	}
+	
+	sprintf(sql,"DELETE FROM recommend WHERE uid=%u ;", pn->uid );
+
+	if( mysql_real_query( &s, sql, strlen(sql) )){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		mysql_close(&s);
+		return 0;
+	}
+	
+	sprintf(sql,"DELETE FROM topics WHERE uid=%u ;", pn->uid );
+
+	if( mysql_real_query( &s, sql, strlen(sql) )){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		mysql_close(&s);
+		return 0;
+	}
+	
+	sprintf(sql,"DELETE FROM trackback WHERE uid=%u ;", pn->uid );
+
+	if( mysql_real_query( &s, sql, strlen(sql) )){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		mysql_close(&s);
+		return 0;
+	}
+		
 	mysql_close(&s);
 
 	return 1;
@@ -1218,5 +1293,51 @@ int pc_add_visitcount(unsigned long nid)
 
 	return 1;
 }
+
+int pc_logs(struct pc_logs *pn)
+{
+	MYSQL s;
+	char sql[600];
+	char newhostname[21];
+	char newaction[101];
+	char newcomment[201];
+	char newts[20];
+	
+	newhostname[0]=0;
+	newaction[0]=0;
+	newcomment[0]=0;
+	newts[0] = 0;
+	
+	mysql_init(&s);
+	if (! my_connect_mysql(&s) ){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		return 0;
+	}
+
+	mysql_escape_string(newhostname, pn->hostname, strlen(pn->hostname));
+	mysql_escape_string(newaction, pn->action, strlen(pn->action));
+	mysql_escape_string(newcomment, pn->comment, strlen(pn->comment));
+	
+	sprintf(sql,"INSERT INTO logs VALUES (NULL, '%s', '%s', '%s', '%s' , '%s' , '%s', '%s' );",pn->username, newhostname,newaction, pn->pri_id, pn->sec_id, newcomment, tt2timestamp(pn->logtime,newts));
+	
+	if( mysql_real_query( &s, sql, strlen(sql) )){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		mysql_close(&s);
+		return 0;
+	}
+
+	mysql_close(&s);
+
+	return 1;
+}
+
 
 #endif
