@@ -83,6 +83,12 @@ function showSecs($secNum=0,$group,$isFold) {
 			for ($i = 0; $i < $rows; $i++)	{
 				$isFirst=!$isFirst;
 				if ($isFold){
+					if ($brd_name[$i]=='Registry')
+						continue;
+					if ($brd_name[$i]=='bbsnet')
+						continue;
+					if ($brd_name[$i]=='undenypost')
+						continue;
 ?>
 			<TR><TD align=middle width="100%" class=TableBody1>
 		<table width="100%" cellspacing=0 cellpadding=0><TR><TD align=middle width=46 class=TableBody1>
@@ -130,7 +136,9 @@ function showSecs($secNum=0,$group,$isFold) {
 	?>
 </TD></TR><TR><TD width=*><FONT face=Arial><img src=pic/forum_readme.gif align=middle> <?php echo $brd_desc[$i] ?></FONT>
 </TD></TR><TR><TD class=TableBody2 height=20 width=*>版主：<?php echo $brd_bm[$i]==''?'暂无':$brd_bm[$i] ; ?> </TD><td width=40 align=center class=TableBody2>&nbsp;</td><TD vAlign=middle class=TableBody2 width=200>
-		<table width=100% border=0><tr><td width=25% vAlign=middle><img src=pic/forum_today.gif alt=今日帖 align=absmiddle>&nbsp;<font color=#FF0000><?php echo bbs_get_today_article_num($brd_name[$i]) ?></font></td><td width=30% vAlign=middle><img src=pic/forum_topic.gif alt=主题 border=0  align=absmiddle>&nbsp;<?php echo bbs_getthreadnum($brd_bid[$i]) ?></td><td width=45% vAlign=middle><img src=pic/forum_post.gif alt=文章 border=0 align=absmiddle>&nbsp;<?php echo $brd_artcnt[$i]; ?></td></tr>
+		<table width=100% border=0><tr>
+<td width=25% vAlign=middle><img src=pic/forum_today.gif alt=今日帖 align=absmiddle>&nbsp;<font color=#FF0000><?php echo bbs_get_today_article_num($brd_name[$i]) ?></font></td><td width=30% vAlign=middle><img src=pic/forum_topic.gif alt=主题 border=0  align=absmiddle>&nbsp;<?php echo bbs_getthreadnum($brd_bid[$i]) ?></td>
+<td width=45% vAlign=middle><img src=pic/forum_post.gif alt=文章 border=0 align=absmiddle>&nbsp;<?php echo $brd_artcnt[$i]; ?></td></tr>
 		</table></TD></TR></TBODY></TABLE></td></tr></table></td></tr>
 <?php
 				} else {
