@@ -153,7 +153,7 @@ function showSecsJS($secNum,$group,$isFold,$isFav) {
 							$lastPosttime = strftime('%Y-%m-%d %H:%M:%S', intval($articles[0]['origin']['POSTTIME']));
 						}
 						echo "lastID = $lastID;\n";
-						echo "lastTitle = '$lastTitle';\n";
+						echo "lastTitle = '$lastTitle ';\n";
 						echo "lastOwner = '$lastOwner';\n";
 						echo "lastPosttime = '$lastPosttime';\n";
 					}
