@@ -275,8 +275,8 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
 
 void poststat(int mytype, time_t now, struct tm *ptime)
 {
-    static char *logfile = ".post";
-    static char *oldfile = ".post.old";
+    static char *logfile = ".newpost";
+    static char *oldfile = ".newpost.old";
 
     char buf[40], curfile[40] = "etc/posts/day.0";
     struct postrec *pp;

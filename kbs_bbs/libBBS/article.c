@@ -343,7 +343,7 @@ int write_posts(char *id, char *board, unsigned int groupid)
 
         if (log) {
             append_record(xpostfile, &postlog, sizeof(postlog));
-            append_record(".post", &postlog, sizeof(postlog));
+            append_record(".newpost", &postlog, sizeof(postlog));
         }
     }
 
