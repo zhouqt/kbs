@@ -21,6 +21,9 @@ static ZEND_FUNCTION(bbs_ann_traverse_check);
 static ZEND_FUNCTION(bbs_ann_get_board);
 static ZEND_FUNCTION(bbs_getboards);
 static ZEND_FUNCTION(bbs_getarticles);
+static ZEND_FUNCTION(bbs_countarticles);
+static ZEND_FUNCTION(bbs_is_bm);
+static ZEND_FUNCTION(bbs_getannpath);
 
 static ZEND_MINIT_FUNCTION(bbs_module_init);
 static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown);
@@ -48,9 +51,11 @@ static function_entry bbs_php_functions[] = {
 	ZEND_FE(bbs_getboard, NULL)
 	ZEND_FE(bbs_ann_traverse_check, NULL)
 	ZEND_FE(bbs_ann_get_board, NULL)
-	/*ZEND_FE(bbs_getboards, a2_arg_force_ref)*/
 	ZEND_FE(bbs_getboards, NULL)
 	ZEND_FE(bbs_getarticles, NULL)
+	ZEND_FE(bbs_countarticles, NULL)
+	ZEND_FE(bbs_is_bm, NULL)
+	ZEND_FE(bbs_getannpath, NULL)
 	{NULL, NULL, NULL}
 };
 
@@ -136,13 +141,15 @@ static void assign_userinfo(zval * array, struct user_info *uinfo, int num)
 
 static void assign_board(zval * array, struct boardheader *board, int num)
 {
-    add_assoc_long(array, "index", num);
-    add_assoc_string(array, "filename", board->filename, 1);
-    add_assoc_string(array, "owner", board->owner, 1);
+    add_assoc_long(array, "NUM", num);
+    add_assoc_string(array, "NAME", board->filename, 1);
+    add_assoc_string(array, "OWNER", board->owner, 1);
     add_assoc_string(array, "BM", board->BM, 1);
-    add_assoc_long(array, "flag", board->flag);
-    add_assoc_string(array, "title", board->title, 1);
-    add_assoc_long(array, "level", board->level);
+    add_assoc_long(array, "FLAG", board->flag);
+    add_assoc_string(array, "DESC", board->title+13, 1);
+    add_assoc_stringl(array, "CLASS", board->title+1, 6, 1);
+    add_assoc_stringl(array, "SECNUM", board->title, 1, 1);
+    add_assoc_long(array, "LEVEL", board->level);
 }
 
 static int currentusernum;
@@ -597,7 +604,6 @@ static ZEND_FUNCTION(bbs_getboard)
     const struct boardheader *bh;
     int b_num;
 
-    MAKE_STD_ZVAL(array); /* Is it necessary? */
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
     old_pwd[1023] = 0;
@@ -836,6 +842,7 @@ bbs_make_article_array(zval *array, struct fileheader *fh, char *flags,
     add_assoc_long(array, "ID", fh->id);
     add_assoc_long(array, "GROUPID", fh->groupid);
     add_assoc_long(array, "REID", fh->reid);
+    add_assoc_long(array, "POSTTIME", FILENAME2POSTTIME(fh->filename));
     add_assoc_stringl(array, "INNFLAG", fh->innflag, sizeof(fh->innflag), 1);
     add_assoc_string(array, "OWNER", fh->owner, 1);
     add_assoc_string(array, "TITLE", fh->title, 1);
@@ -892,10 +899,10 @@ static ZEND_FUNCTION(bbs_getarticles)
 	is_bm = is_BM(bp, currentuser);
 	setbdir(mode, dirpath, board);
 	total = get_num_records(dirpath, sizeof(struct fileheader));
-	if (start > total - num)
-		start = total - num;
-	if (start < 0)
-		start = 0;
+	if (start > (total - num + 1))
+		start = (total - num + 1);
+	if (start <= 0)
+		start = 1;
 
 	/* fetching articles */
 	if (array_init(return_value) == FAILURE)
@@ -911,7 +918,7 @@ static ZEND_FUNCTION(bbs_getarticles)
 		MAKE_STD_ZVAL(element);
 		array_init(element);
 		flags[0] = get_article_flag(articles + i, currentuser, is_bm);
-		if (articles[i].accessed[0] & FILE_IMPORTED)
+		if (is_bm && (articles[i].accessed[0] & FILE_IMPORTED))
 			flags[1] = 'y';
 		else
 			flags[1] = 'n';
@@ -924,6 +931,73 @@ static ZEND_FUNCTION(bbs_getarticles)
 				(void*) &element, sizeof(zval*), NULL);
 	}
 	efree(articles);
+}
+
+/**
+ * Count articles in a board with specific .DIR mode.
+ * prototype:
+ * int bbs_countarticles(int brdnum, int mode);
+ *
+ * @return non-negative value on success,
+ *         negative value on failure.
+ * @author flyriver
+ */
+static ZEND_FUNCTION(bbs_countarticles)
+{
+	int brdnum;
+	int mode;
+	const struct boardheader *bp = NULL;
+	char dirpath[STRLEN];
+	int total;
+	int ac = ZEND_NUM_ARGS();
+
+	/* getting arguments */
+	if (ac != 2 
+		|| zend_parse_parameters(2 TSRMLS_CC, "ll", &brdnum, &mode) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+	if ((bp = getboard(brdnum)) == NULL)
+	{
+		RETURN_LONG(-1);
+	}
+	setbdir(mode, dirpath, bp->filename);
+	total = get_num_records(dirpath, sizeof(struct fileheader));
+	RETURN_LONG(total);
+}
+
+/**
+ * Checking whether a user is a BM of a board or not.
+ * prototype:
+ * int bbs_is_bm(int brdnum, int usernum);
+ *
+ * @return one if the user is BM,
+ *         zero if not.
+ * @author flyriver
+ */
+static ZEND_FUNCTION(bbs_is_bm)
+{
+	int brdnum;
+	int usernum;
+	const struct boardheader *bp = NULL;
+	const struct userec *up = NULL;
+	int ac = ZEND_NUM_ARGS();
+
+	/* getting arguments */
+	if (ac != 2 
+		|| zend_parse_parameters(2 TSRMLS_CC, "ll", &brdnum, &usernum) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+	if ((bp = getboard(brdnum)) == NULL)
+	{
+		RETURN_LONG(0);
+	}
+	if ((up = getuserbynum(usernum)) == NULL)
+	{
+		RETURN_LONG(0);
+	}
+	RETURN_LONG(is_BM(bp, up));
 }
 
 static ZEND_FUNCTION(bbs_checkreadperm)
@@ -988,6 +1062,35 @@ static ZEND_FUNCTION(bbs_ann_get_board)
     if (zend_parse_parameters(1 TSRMLS_CC, "ss", &path, &path_len, &board, &board_len) != SUCCESS)
         WRONG_PARAM_COUNT;
     RETURN_LONG(ann_get_board(path, board, board_len));
+}
+
+/**
+ * Fetching the announce path from a board name.
+ * prototype:
+ * string bbs_getannpath(char *board);
+ *
+ * @return a string of the announce path on success,
+ *         FALSE on failure.
+ * @author flyriver
+ */
+static ZEND_FUNCTION(bbs_getannpath)
+{
+	char *board;
+	int board_len;
+	char buf[256];
+	int ac = ZEND_NUM_ARGS();
+
+	/* getting arguments */
+	if (ac != 1 
+		|| zend_parse_parameters(1 TSRMLS_CC, "s", &board, &board_len) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+	if (ann_get_path(board, buf, sizeof(buf)) < 0)
+	{
+		RETURN_FALSE;
+	}
+	RETURN_STRING(buf, 1);
 }
 
 static ZEND_MINIT_FUNCTION(bbs_module_init)
