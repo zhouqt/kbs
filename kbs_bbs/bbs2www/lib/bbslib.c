@@ -170,21 +170,6 @@ char *strright(char *s, int len)
     return s + (l - len);
 }
 
-#ifndef FREEBSD
-char *strcasestr(char *s1, char *s2)
-{
-    int l;
-
-    l = strlen(s2);
-    while (s1[0]) {
-        if (!strncasecmp(s1, s2, l))
-            return s1;
-        s1++;
-    }
-    return 0;
-}
-#endif                          /* not FREEBSD */
-
 int strsncpy(char *s1, char *s2, int n)
 {
     int l = strlen(s2);
@@ -3241,14 +3226,14 @@ int web_send_sms(char *dest,char *msgstr){
 		h.sent = 1;
 		h.time = time(0);
 		save_msgtext(currentuser->userid, &h, buf);
-#if HAVE_MYSQL == 1
+#if HAVE_MYSQL_SMTH == 1
         save_smsmsg(currentuser->userid, &h, buf, 1);
 #endif
 		if( !isdigit(dest[0]) ){
 			h.sent = 0;
 			strcpy(h.id, currentuser->userid);
 			save_msgtext(destid, &h, buf);
-#if HAVE_MYSQL == 1
+#if HAVE_MYSQL_SMTH == 1
         	save_smsmsg(uident, &h, buf, 1);
 #endif
 			if(uin) kill(uin->pid, SIGUSR2);
