@@ -322,17 +322,17 @@ struct _simple_select_arg{
 
 static int simple_onselect(struct _select_def *conf)
 {
-    struct _simple_select_arg*arg = (struct struct _simple_select_arg *) conf->arg;
+    struct _simple_select_arg *arg = (struct _simple_select_arg *) conf->arg;
     return SHOW_CONTINUE;
 }
 
 static int simple_show(struct _select_def *conf, int i)
 {
-    struct _simple_select_arg*arg = (struct struct _simple_select_arg *) conf->arg;
+    struct _simple_select_arg *arg = (struct _simple_select_arg *) conf->arg;
     struct _select_item * item;
 
 	i=i-1;
-	item=arg->items[i];
+	item=&arg->items[i];
 	if (item->type==SIT_SELECT) {
 		outs((char*)item->data);
 	} //TODO: Add other SIT support
@@ -341,7 +341,7 @@ static int simple_show(struct _select_def *conf, int i)
 
 static int simple_key(struct _select_def *conf, int key)
 {
-    struct _simple_select_arg*arg = (struct struct _simple_select_arg *) conf->arg;
+    struct _simple_select_arg *arg = (struct _simple_select_arg *) conf->arg;
     int sel;
 
 	if (arg->flag&SIF_NUMBERKEY) {
