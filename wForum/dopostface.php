@@ -5,7 +5,7 @@ if (!USER_FACE) exit;
 html_init();
 if ($loginok != 1) die("游客？");
 ?>
-<body topmargin=0 leftmargin=0>
+<body style="margin: 0pt;">
 <script src="inc/browser.js"  language="javascript"></script>
 <script language="javascript">
 	oSubmit=getParentRawObject("oSubmit");
@@ -14,7 +14,7 @@ if ($loginok != 1) die("游客？");
 	oSubmit2.disabled=false;	
 </script>
 <table width="100%" border=0 cellspacing=0 cellpadding=0>
-<tr><td class=TableBody2 valign=top height=40>
+<tr><td class=TableBody2 valign=middle height=28>
 <?php
 
 function get_extname($name) //我的本意其实只是防止 .PHP 类文件，不过先这样吧... - atppp

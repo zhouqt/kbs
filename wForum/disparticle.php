@@ -298,6 +298,8 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
         /* 显示发文时间 */
 		$articleContents = "<b>发布于: ".strftime('%Y-%m-%d %H:%M:%S', intval($thread['POSTTIME']))."</b><br /><br />".$articleContents;
 	}
+	$articleContents = str_replace("&nbsp;", " ", $articleContents);
+	$articleContents = str_replace("  ", " &nbsp;", $articleContents);
 	$articleContents = DvbTexCode($articleContents,0,$fgstyle,$is_tex);
 	/* 文章内容处理结束，此时 $articleContents 应该是能够直接输出的内容 */
 
@@ -312,7 +314,7 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 	$fgstyle='TableBody'.(2-$type);
 ?>
 <tr><td class="<?php echo $bgstyle ;?>" valign="top" width="175" >
-<table width="100%" cellpadding="4" cellspacing="0" >
+<table width="100%" cellpadding="2" cellspacing="0" >
 <tr><td width="*" valign="middle" style="filter:glow(color=#9898BA,strength=2)" >&nbsp;
 <?php
 	$str = "<font color=\"#990000\"><b>" . $thread['OWNER'] . "</b></font>";
@@ -368,7 +370,7 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 <?php
 	if ($user !== false) {
 ?>
-&nbsp;&nbsp;<?php echo get_myface($user, "align=\"absmiddle\""); ?><br/>
+&nbsp;&nbsp;<?php echo get_myface($user); ?><br/>
 &nbsp;&nbsp;等级：<?php echo bbs_getuserlevel($thread['OWNER']); ?><br/>
 &nbsp;&nbsp;文章：<?php echo $user['numposts']; ?><br/>
 <?php
