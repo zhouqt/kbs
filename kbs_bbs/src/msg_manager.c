@@ -199,7 +199,8 @@ static int set_smsg_key(struct _select_def *conf, int key)
 			return SHOW_REFRESH;
 		}
 
-		sprintf(sql,"update smsmsg set deleted=1 WHERE id=%d;",s_m[conf->pos-conf->page_pos].id);
+                sprintf(sql,"DELETE FROM smsmsg WHERE id=%d;",s_m[conf->pos-conf->page_pos].id);
+
 
 		if( mysql_real_query( &s, sql, strlen(sql) ) ){
 			clear();
