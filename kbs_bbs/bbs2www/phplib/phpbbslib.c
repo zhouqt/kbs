@@ -4464,15 +4464,23 @@ static PHP_FUNCTION(bbs_brcclear)
 
 static PHP_FUNCTION(bbs_ann_traverse_check)
 {
-    char *path;
-    int path_len;
+    char *path,*userid;
+    int path_len,userid_len;
+    struct userec *user;
 
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
     old_pwd[1023] = 0;
-    if (zend_parse_parameters(1 TSRMLS_CC, "s", &path, &path_len) != SUCCESS)
+    if (zend_parse_parameters(2 TSRMLS_CC, "ss", &path, &path_len, &userid, &userid_len) != SUCCESS)
         WRONG_PARAM_COUNT;
-    RETURN_LONG(ann_traverse_check(path, getCurrentUser()));
+    
+    if (userid != 0) {
+        if (getuser(userid, &user) == 0)
+            RETURN_FALSE;
+    } else
+        user = getCurrentUser();
+    
+    RETURN_LONG(ann_traverse_check(path, user));
 }
 
 static PHP_FUNCTION(bbs_ann_get_board)
