@@ -45,6 +45,7 @@ function preprocess() {
 	if (isset($_GET['boxname'])) {
 		setstat("回复信件");
 		$action=1;
+		$num=intval($_GET['num']);
 		if ($_GET['boxname']=='inbox') {
 			return getmail('inbox','.DIR','收件箱', $num);
 		}
@@ -58,7 +59,8 @@ function preprocess() {
 	if (isset($_GET['board'])) {
 		setstat("发信给作者");
 		$action=2;
-		return getarticle($_GET['board'],$_GET['reID']);
+		$reID=intval($_GET['reID']);
+		return getarticle($_GET['board'],$reID);
 	}
 }
 
