@@ -683,6 +683,30 @@ char   *msgid;
 #include "bbs.h"
 #undef  OS_OSDEP_H
 
+int cmp_title(char* title,struct fileheader* fh1)
+{
+    char* p1,*p2;
+    if (!strncmp(fh1->title,"Re:",3)) p1=fh1->title+4;
+    else p1=fh1->title;
+    return (!strncmp(p1,title,STRLEN));
+}
+
+int find_thread(struct fileheader *fh,char* board,char* title)
+{
+    char direct[255];
+    char* p;
+    int ret;
+    int fd;
+    setbfile(direct,board, DOT_DIR);
+    if ((fd = open(direct, O_RDONLY , 0644)) == -1)
+       return 0;
+    if (!strncmp(title,"Re:",3)) p=title+4;
+    else p=title;
+    ret=search_record_back(fd, sizeof(struct fileheader), 0X7FFFF, (RECORD_FUNC_ARG) cmp_title, title, fh, 1);
+    close(fd);
+    return ret;
+}
+
 char   *
 post_article(homepath, userid, board, writebody, pathname, firstpath)
 char   *homepath;
@@ -692,6 +716,7 @@ char   *pathname, *firstpath;
 {
 	struct userec record;
 	struct fileheader header;
+	struct fileheader threadfh;
 /*    char        *subject = SUBJECT;  */
 	char    index[MAXPATHLEN];
 	static char name[MAXPATHLEN];
@@ -702,6 +727,9 @@ char   *pathname, *firstpath;
 	time_t  now;
 	int     linkflag;
 	char    conv_buf[256];
+    char old_path[255];
+
+    getcwd(old_path,255);
 	sprintf(index, "%s/.DIR", homepath);
 	if ((fidx = fopen(index, "r")) == NULL) {
 		if ((fidx = fopen(index, "w")) == NULL) {
@@ -767,11 +795,16 @@ char   *pathname, *firstpath;
 	header.title[STRLEN - 1] = '\0';
 	header.innflag[1] = 'M';
 	/* if append record record, should return fail message */
+    chdir(BBSHOME);
 	resolve_boards();
-        if (after_post(NULL, &header, board, NULL)!=0) {
+
+        linkflag=find_thread(&threadfh,board,header.title);
+        if (after_post(NULL, &header, board,linkflag?&threadfh:NULL)!=0) {
             innbbslog(":Err:after_post Unable to post in %s.\n", homepath);
+    chdir(old_path);
 	    return NULL;
 	}
+    chdir(old_path);
 	return name;
 }
 cancel_article(homepath, board, file)

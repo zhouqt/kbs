@@ -198,7 +198,9 @@ char *bname;
     register int i;
 
     for (i = 0; i < brdshm->numboards; i++)
+#ifdef BBSMAIN
         if (bcache[i].level & PERM_POSTMASK || HAS_PERM(currentuser, bcache[i].level) || (bcache[i].level & PERM_NOZAP))
+#endif
             if (!strncasecmp(bname, bcache[i].filename, STRLEN))
                 return i + 1;
     return 0;

@@ -586,6 +586,7 @@ char  **argv;
 #if !defined(DBZSERVER)
 	initial_lang();
 #endif
+	chdir(BBSHOME);
 
 	port = DefaultINNBBSPort;
 	path = LOCALDAEMON;

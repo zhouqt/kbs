@@ -1018,6 +1018,8 @@ void a_manager(pm, ch)
             }
             break;
         case 't':
+	    strncpy(changed_T,item->title,83);
+	    changed_T[83]=0;
             a_prompt(-2, "ĞÂ±êÌâ: ", changed_T);
             /* modified by netty to properly handle title change,add bm by SmallPig */
             if (*changed_T) {

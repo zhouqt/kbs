@@ -799,7 +799,7 @@ int change_post_flag(char* currBM, struct userec* currentuser, int digestmode, c
     
     if ((digestmode!=DIR_MODE_NORMAL)&&(digestmode!=DIR_MODE_DIGEST)) {
     	setbdir(0, genbuf, currboard);
-    	orgent = search_record(&genbuf[512], &mkpost2, sizeof(struct fileheader), (RECORD_FUNC_ARG) cmpfileinfoname, fileinfo->filename);
+    	orgent = search_record(genbuf, &mkpost2, sizeof(struct fileheader), (RECORD_FUNC_ARG) cmpfileinfoname, fileinfo->filename);
     	if (!orgent) {
 #ifdef BBSMAIN
         	move(2, 0);
