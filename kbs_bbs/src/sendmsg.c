@@ -545,7 +545,7 @@ void r_msg()
         }
         if (ch=='\r'||ch=='\n') {
         	// make a tag for msg end
-        	prints("\x1b[m已发出消息");
+//        	prints("\x1b[m已发出消息");
         	break;
         }
     }
