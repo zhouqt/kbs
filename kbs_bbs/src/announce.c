@@ -830,12 +830,14 @@ int a_Import(path, key, fileinfo, nomsg, direct, ent)
 			}
 	    } else
 	    	pm.path=path;
+	    /*
 	    if (!nomsg) {
 			sprintf(buf, "将该文章放进 %s,确定吗?(Y/N) [N]: ", pm.path);
 			a_prompt(-1, buf, ans);
 			if (ans[0] != 'Y' && ans[0] != 'y')
 			    return 2;
 	    }
+	    */
 	    a_loadnames(&pm);
 	    ann_get_postfilename(fname, fileinfo, &pm);
 	    sprintf(bname, "%s/%s", pm.path, fname);
