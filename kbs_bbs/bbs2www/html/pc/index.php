@@ -164,7 +164,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 			<form action="pcnsearch.php" method="get" onsubmit="if(this.keyword.value==''){alert('ÇëÊäÈë¹Ø¼ü×Ö');return false;}">
 			<input type="hidden" name="area" value="<?php echo $pc["USER"]; ?>">
 			<tr><td align="left" class="t3">
-			:: BlogËÑË÷ ::
+			<strong>:: BlogËÑË÷ ::</strong>
 			</td></tr>
 			<tr><td class="t4">
 			<input type="text" name="keyword" id="keyword" class="f1">
@@ -172,7 +172,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 			</td></tr>
 			</form>
 			<tr><td align="left" class="t3">
-			:: µÇÂ¼ ::
+			<strong>:: µÇÂ¼ ::</strong>
 			</td></tr>
 			<?php
 				if($loginok==1 && strcmp($currentuser["userid"],"guest"))
