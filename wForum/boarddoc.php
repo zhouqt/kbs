@@ -116,10 +116,13 @@ function showBoardContents($boardID,$boardName,$page,$ftype,$sorted){
 		$articles = bbs_getarticles($boardName, $start, $num, $ftype);
 		$articleNum = count($articles);
 		$cur = $start;
+		$topimg = "<img src=\"pic/istop.gif\" title=\"ÖÃ¶¥\" align=\"absmiddle\">";
 		foreach ($articles as $article) {
+			$flags = $article["FLAGS"];
+			$nn = (!strncmp($flags,"D",1)||!strncmp($flags,"d",1)) ? $topimg : $cur;
 ?>
 <tr>
-<td height="25" align="center" class="TableBody1"><?php echo $cur; ?></td>
+<td height="25" align="center" class="TableBody1"><?php echo $nn; ?></td>
 <td align="center" class="TableBody2"><?php if ($article["FLAGS"][3] == "@") echo "<img src=\"pic/havefolder.gif\" align=\"absmiddle\" title=\"ÓÐ¸½¼þ\">"; ?></td>
 <td align="center" class="TableBody1"><a target="_blank" href="dispuser.php?id=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
 <td align="center" class="TableBody2"><?php echo strftime("%Y-%m-%d %H:%M:%S", $article["POSTTIME"]); ?></td>
