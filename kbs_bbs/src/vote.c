@@ -633,7 +633,7 @@ setcontrolfile();
     
 sprintf(fname, "vote/%s/flag.%lu", currboard, currvote.opendate);
     
-count_result(NULL, 0);
+count_result(NULL, NULL,0);
     
 sprintf(sugname, "vote/%s/tmp.%d", currboard, getpid());
     
@@ -798,7 +798,7 @@ setcontrolfile();
     
 sprintf(fname, "vote/%s/flag.%lu", currboard, currvote.opendate);
     
-count_result(NULL, 0);
+count_result(NULL, 0,0);
     
 sprintf(sugname, "vote/%s/tmp.%d", currboard, getpid());
     

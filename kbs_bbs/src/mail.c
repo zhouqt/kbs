@@ -733,7 +733,6 @@ int m_new()
         prints("No new messages\n\n\n");
         return -1;
     }
-    idc=0;
     apply_record(currmaildir, (APPLY_FUNC_ARG ) delete_new_mail, sizeof(struct fileheader), NULL, 1,true);
 /*    	
     if (delcnt) {
