@@ -4,7 +4,6 @@
 
 #include "bbs.h"
 #include "permissions.h"
-#define A 01000000000
 main()
 {
     FILE *rec;
@@ -13,8 +12,13 @@ main()
     unsigned int perm;
 
     rec = fopen(BBSHOME "/.PASSWDS", "rb");
+    if(NULL==rec) {
+	    printf("Can not open .PASSWDS");
+	    return 0;
+    }
 
     printf("[1;31;5mUserLevel Records Transfering...\n[m");
+
     while (1) {
         if (fread(&user, sizeof(user), 1, rec) <= 0)
             break;
@@ -59,16 +63,6 @@ main()
             user.userlevel |= PERM_NOZAP;
 	if (perm & PERM_JURY)
 	    user.userlevel &=~PERM_JURY;
-	if(strcmp(user.userid,"SYSOP")==0) {
-        	user.userlevel = ~0;
-	        user.userlevel &= ~PERM_SUICIDE;        /* Leeward 98.10.13 */
-           	user.userlevel &= ~(PERM_DENYMAIL | PERM_DENYRELAX);    /* Bigman 2000.9.22 */
-	        user.userlevel &= ~PERM_JURY;   /* ²»ÄÜÊÇÖÙ²Ã */
-	}
-	if (perm & A ) 
-		user.userlevel |= PERM_SUICIDE;
-
-
 	user.userdefine = -1;
 #ifdef HAVE_WFORUM
 	user.userdefine &= ~DEF_SHOWREALUSERDATA;
