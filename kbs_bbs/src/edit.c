@@ -89,7 +89,13 @@ void display_buffer()
             prints("%s~", ANSI_RESET);
         prints("\n");
         y++;
-        if (y >= scr_lns-1) break;
+        if (y >= scr_lns-1) {
+            if (outii!=-1) {
+                outii = i+1;
+                outjj = 0;
+            }
+            break;
+        }
     }
 
     msgline();
