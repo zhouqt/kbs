@@ -758,7 +758,6 @@ void saveline(int line, int mode, char* buffer)	/* 0 : save, 1 : restore */
 
 void do_naws(int ln, int col)
 {
-#ifndef SSHBBS
     t_lines = ln;
     t_columns = col;
     if(t_lines<24||t_lines>100)
@@ -767,5 +766,4 @@ void do_naws(int ln, int col)
         t_columns = 80;
     initscr();
     refresh();
-#endif
 }
