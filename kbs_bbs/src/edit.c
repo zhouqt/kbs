@@ -1141,6 +1141,10 @@ int vedit_process_ESC(arg)
 #define CHOOSE_ERROR    "Ñ¡Ïî´íÎó"
 
     switch (arg) {
+    case 'A':
+    case 'a':
+        show_eof = !show_eof;
+        break;
     case 'M':
     case 'm':
         ch2 = ask(CHOOSE_MARK);
@@ -1348,9 +1352,6 @@ static int process_ESC_action(int action, int arg)
 
     msg[0] = '\0';
     switch (action) {
-    case 'A':
-        show_eof = !show_eof;
-        break;
     case 'L':
         if (ismsgline >= 1) {
             ismsgline = 0;
