@@ -149,6 +149,7 @@ static void trunclog(int signo)
     }
     openbbslog();
     trunc=true;
+    alarm(60*10); /*十分钟flush一次*/
 }
 
 static void flushBBSlog_time(int signo)
