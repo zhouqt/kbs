@@ -209,7 +209,7 @@ void refresh()
         o_clear();
         for (i=0; i < scr_lns; i++)
             for(j=0;j<scr_cols;j++)
-                if((bp[i].data[j]==0||bp[i].data[j]==32)&&bp[i].mode[j]&SCREEN_MODIFIED&&
+                if((bp[i].data[j]==0||bp[i].data[j]==32)&&
                     bp[i].mode[j]&(SCREEN_BACK|SCREEN_LINE)==0&&bp[i].color[j]/16==0)
                     bp[i].mode[j]&=~SCREEN_MODIFIED;
                 else
