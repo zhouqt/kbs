@@ -60,7 +60,7 @@
     }
 ?>
 <br>
-[<a href="/cgi-bin/bbs/bbsfriend">在线好友</a>] [<a href="bbsuser.php?start=<?php echo $start+$num;?>">下一页</a>]<br><form method="GET">
+[<a href="bbsfriend.php">在线好友</a>] [<a href="bbsuser.php?start=<?php echo $start+$num;?>">下一页</a>]<br><form method="GET">
 <input type="submit" value="跳转到第"> <input type="input" size="4" name="start"> 个使用者</form></center>
 
 <?php 
