@@ -247,6 +247,12 @@ int auto_register(char* userid,char* email,int msize)
 	FILE* fout;
 	int n;
 	struct userec deliveruser;
+	static const char *finfo[] = { "帐号位置", "申请代号", "真实姓名", "服务单位",
+        "目前住址", "连络电话", "生    日", NULL
+    };
+  	static const char *field[] = { "usernum", "userid", "realname", "career",
+    	"addr", "phone", "birth", NULL
+	};
 
 	bzero(&deliveruser,sizeof(struct userec));
 	strcpy(deliveruser.userid,"deliver");
@@ -254,12 +260,6 @@ int auto_register(char* userid,char* email,int msize)
 	strcpy(deliveruser.username,"自动发信系统");
 
 
-	static const char *finfo[] = { "帐号位置", "申请代号", "真实姓名", "服务单位",
-        "目前住址", "连络电话", "生    日", NULL
-    };
-  	static const char *field[] = { "usernum", "userid", "realname", "career",
-    	"addr", "phone", "birth", NULL
-	};
 
 	bzero(fdata,7*STRLEN);
 

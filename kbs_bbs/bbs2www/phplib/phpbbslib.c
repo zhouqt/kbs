@@ -1008,7 +1008,7 @@ static ZEND_FUNCTION(bbs_get_records_from_id)
 	int mode;
 	int fd;
 	char dirpath[STRLEN];
-	const int record_cnt = 3;
+#define record_cnt 3
 	fileheader_t articles[record_cnt];
 	struct boardheader *bp;
 	int i;
