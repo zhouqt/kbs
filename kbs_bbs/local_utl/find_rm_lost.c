@@ -250,13 +250,19 @@ find_rm_lost(struct boardheader *bhp,void* arg)
 }
 
 int
-main()
+main(int argc,char **argv)
 {
+	struct boardheader bh;
+
 	chdir(BBSHOME);
 	resolve_boards();
 	
 	printf("find_rm_lost is running~\n");
-	apply_boards(find_rm_lost,NULL);
+	if(argc > 1){
+    	strncpy(bh.filename,argv[1],STRLEN);
+    	find_rm_lost(&bh,NULL);
+	}else
+		apply_boards(find_rm_lost,NULL);
 	printf("allfile %d, allref %d, alllost %d\n", allfile, allref, alllost);
 	printf("unknownfn %d, nindexitem %d, nstrangeitem %d\n", unknownfn,
 	       nindexitem, nstrangeitem);
