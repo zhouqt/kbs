@@ -7982,7 +7982,8 @@ static PHP_FUNCTION(bbs_x_search)
     if (array_init(return_value) == FAILURE)
         RETURN_FALSE;
 
-    strcpy(ip, sysconf_str("QUERY_SERVER"));
+    if ((pp = sysconf_str("QUERY_SERVER")) == NULL) return;
+    strcpy(ip, pp);
     if((sockfd=socket(AF_INET, SOCK_STREAM, 0))==-1) return;
     memset(&addr, 0, sizeof(addr));
     addr.sin_family=AF_INET;    
