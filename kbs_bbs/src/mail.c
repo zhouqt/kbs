@@ -2378,6 +2378,7 @@ int MailProc()
 
     clear();
     arg.tmpnum = -1;
+    arg.cmdnum = 0;
     for (i=0;i<sizeof(mail_cmds) / sizeof(struct command_def);i++) {
         if (HAS_PERM(currentuser,mail_cmds[i].permission)) {
         	arg.cmdptr[arg.cmdnum]=i;
