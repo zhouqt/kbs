@@ -1563,7 +1563,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
                 do_reply(&SR_fptr);
             case ' ':
             case '\n':
-            case 'n':
+            case 'j':
             case KEY_DOWN:
                 isnext = 1;
                 break;
@@ -1589,7 +1589,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
                 sendmsgtoauthor(0, &SR_fptr, currdirect);
                 isnext = 1;
                 break;
-            case 'l':
+            case 'k':
             case KEY_UP:
             case 'u':
             case 'U':
@@ -1602,6 +1602,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
                 digest_post(0, &SR_fptr, currdirect);
                 break;
             case 'L':
+            case 'l':
                 if (uinfo.mode == LOOKMSGS)
                     break;
                 show_allmsgs();
