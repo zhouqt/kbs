@@ -225,7 +225,9 @@ type - meaning
 	int fd, data[DATALEN];
     	struct flock ldata;
 	struct stat buf;
+	char direct[PATHLEN];
 	if(!chk_BM_instr(boardname, id)) return 0;
+	sprintf(direct, "boards/%s/.bm.%s", boardname, id);
        if ((fd = open(direct, O_RDWR | O_CREAT, 0644)) == -1) return 0;
        ldata.l_type = F_RDLCK;
        ldata.l_whence = 0;
