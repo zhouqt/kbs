@@ -151,7 +151,7 @@ int addtodeny(char* uident) /* 添加 禁止POST用户 */
 	    	}
 		prints("%s","0.手动输入封禁理由");
 		    while (1) {
-		    	getdata(2,0,"请从列表选择封禁理由(0为手工输入,*退出):",denymsg,2,DOECHO,NULL,YEA);
+		    	getdata(2,0,"请从列表选择封禁理由(0为手工输入,*退出):",denymsg,2,DOECHO,NULL,true);
 			if (denymsg[0]=='*') {
 		    	free(file_buf);
     			close(reasonfile);
@@ -183,15 +183,15 @@ int addtodeny(char* uident) /* 添加 禁止POST用户 */
     }
 
     while(0 == strlen(denymsg)) {
-	    getdata(2,0,"输入说明(按*取消): ", denymsg,30,DOECHO,NULL,YEA);
+	    getdata(2,0,"输入说明(按*取消): ", denymsg,30,DOECHO,NULL,true);
     }
     if (denymsg[0]=='*')
         return 0;
-    autofree = askyn("该封禁是否自动解封？", YEA);
+    autofree = askyn("该封禁是否自动解封？", true);
         sprintf(filebuf,"输入天数(最长%d天)",maxdeny);
     denyday = 0;
     while(!denyday) {
-        getdata(3,0,filebuf, buf2,4,DOECHO,NULL,YEA);
+        getdata(3,0,filebuf, buf2,4,DOECHO,NULL,true);
         if ((buf2[0]<'0')||(buf2[0]>'9')) continue; /*goto MUST1;*/
         denyday=atoi(buf2);
         if ((denyday<0)||(denyday>maxdeny)) denyday = 0; /*goto MUST1;*/
@@ -344,7 +344,7 @@ Here:
 	else 
 	    snprintf(querybuf, 0xff, "(O)增加%s (A)增加 or (E)离开 [E]: ",fileinfo->owner);
 
-        getdata(1,0, querybuf, ans,7,DOECHO,NULL,YEA);
+        getdata(1,0, querybuf, ans,7,DOECHO,NULL,true);
     *ans=(char)toupper((int)*ans);
     
 	if (*ans == 'A' || *ans == 'O' ) {
@@ -377,7 +377,7 @@ Here:
             	     Haohmaru.99.4.1,增加被解ID正确性检查*/
             /*          if(!(id = searchuser(uident)))  change getuser -> searchuser, by dong, 1999.10.26 */
             sprintf(genbuf,"删除无法 POST 的使用者: ");
-            getdata(1, 0, genbuf, uident, 13, DOECHO, NULL,YEA);
+            getdata(1, 0, genbuf, uident, 13, DOECHO, NULL,true);
             find = 0;/*Haohmaru.99.12.09.原来的代码如果被封者已自杀就删不掉了*/
             setbfile( genbuf, currboard,"deny_users" );
             if ((fp = fopen(genbuf, "r")) == NULL)
@@ -417,7 +417,7 @@ Here:
                 if(ldenytime > now) {
                     move(3, 0);
                     prints(genbuf);
-                    if(NA == askyn("该用户封禁时限未到，确认要解封？", NA/*, NA*/))
+                    if(false == askyn("该用户封禁时限未到，确认要解封？", false/*, false*/))
                         goto Here;	/* I hate Goto!!! */
                 }
             }

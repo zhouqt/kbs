@@ -246,7 +246,7 @@ int delete_board(char* boardname,char* title)
     move(1,0) ;
     prints( "删除讨论区 '%s'.", bcache[bid].filename );
     clrtoeol();
-    getdata(2,0,"(Yes, or No) [N]: ",genbuf,4,DOECHO,NULL,YEA) ;
+    getdata(2,0,"(Yes, or No) [N]: ",genbuf,4,DOECHO,NULL,true) ;
     if( genbuf[0] != 'Y' && genbuf[0] != 'y') { /* if not yes quit */
         move(2,0) ;
         prints("取消删除....\n") ;

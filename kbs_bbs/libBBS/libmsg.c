@@ -21,13 +21,13 @@ int write_peer(bbsmsg_t *msgbuf)
 
 int canmsg(struct userec * fromuser,struct user_info *uin)
 {
-    if ((uin->pager&ALLMSG_PAGER) || HAS_PERM(fromuser,PERM_SYSOP)) return YEA;
+    if ((uin->pager&ALLMSG_PAGER) || HAS_PERM(fromuser,PERM_SYSOP)) return true;
     if ((uin->pager&FRIENDMSG_PAGER))
     {
         if(can_override(uin->userid,fromuser->userid))
-            return YEA;
+            return true;
     }
-    return NA;
+    return false;
 }
 
 int can_override(char *userid,char *whoasks)
@@ -36,7 +36,7 @@ int can_override(char *userid,char *whoasks)
     char buf[255];
 
     sethomefile( buf, userid, "friends" );
-    return  (search_record( buf, &fh, sizeof(fh), (RECORD_FUNC_ARG)cmpfnames, whoasks )>0)?YEA:NA;
+    return  (search_record( buf, &fh, sizeof(fh), (RECORD_FUNC_ARG)cmpfnames, whoasks )>0)?true:false;
 }
 
 int read_peer(int sockfd, bbsmsg_t *msgbuf)
@@ -268,7 +268,7 @@ int sendmsgfunc( struct user_info *uentp, const char* msgstr, int mode)
         return -1 ;
     }
 
-    if ((mode!=3)&&(NA==canIsend2(uin->userid)))/*Haohmaru.06.06.99.检查自己是否被ignore*/
+    if ((mode!=3)&&(false==canIsend2(uin->userid)))/*Haohmaru.06.06.99.检查自己是否被ignore*/
     {
     	strcpy(msgerr,"对方拒绝接受你的讯息...\n");
         return -1;
@@ -348,7 +348,7 @@ int sendmsgfunc( struct user_info *uentp, const char* msgstr, int mode)
 
     if ((uin == NULL) || (uin->active == 0) || (uin->pid == 0) || ((kill(uin->pid, 0) !=0) && (uentp->pid != 1)))
     { /*
-        uin=t_search(MsgDesUid, NA);
+        uin=t_search(MsgDesUid, false);
             if ((uin == NULL) || (uin->active == 0) || (uin->pid == 0) || (kill(uin->pid, 0) !=0)){ */
         if (mode == 0)
             return -2;

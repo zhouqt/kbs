@@ -556,7 +556,7 @@ set_safe_record()
 
         sprintf(buf,"Error:Read Passfile %4d %12.12s",usernum,currentuser->userid);
         report(buf);
-        ERROR_READ_SYSTEM_FILE=YEA;
+        ERROR_READ_SYSTEM_FILE=true;
         abort_bbs(0);
         return -1;
     }

@@ -62,10 +62,10 @@ jmp_buf byebye ;
 int convcode=0; /* KCN,99.09.05 */
 
 FILE *ufp ;
-int     RUNSH=NA;
-int     ERROR_READ_SYSTEM_FILE=NA;
-int talkrequest = NA ;
-int ntalkrequest = NA ;
+int     RUNSH=false;
+int     ERROR_READ_SYSTEM_FILE=false;
+int talkrequest = false ;
+int ntalkrequest = false ;
 int enter_uflags;
 time_t lastnote;
 
@@ -84,13 +84,13 @@ int
 canbemsged(uin)/*Haohmaru.99.5.29*/
 struct user_info *uin;
 {
-    if (uinfo.pager&ALLMSG_PAGER) return YEA;
+    if (uinfo.pager&ALLMSG_PAGER) return true;
     if (uinfo.pager&FRIENDMSG_PAGER)
     {
         if(can_override(currentuser->userid,uin->userid))
-                return YEA;
+                return true;
     }
-    return NA;
+    return false;
 }
 
 void
@@ -147,13 +147,13 @@ u_enter()
 
     enter_uflags = currentuser->flags[0];
     memset( &uinfo, 0, sizeof( uinfo ) );
-    uinfo.active = YEA ;
+    uinfo.active = true ;
     uinfo.pid    = getpid();
 /*    if( HAS_PERM(currentuser,PERM_LOGINCLOAK) && (currentuser->flags[0] & CLOAK_FLAG) && HAS_PERM(currentuser,PERM_SEECLOAK)) */
 
     /* Bigman 2000.8.29 ÖÇÄÒÍÅÄÜ¹»ÒşÉí */
     if( (HAS_PERM(currentuser,PERM_CHATCLOAK) || HAS_PERM(currentuser,PERM_CLOAK)) && (currentuser->flags[0] & CLOAK_FLAG))
-        uinfo.invisible = YEA;
+        uinfo.invisible = true;
     uinfo.mode = LOGIN ;
     uinfo.pager = 0;
 /*    uinfo.pager = !(currentuser->flags[0] & PAGER_FLAG);*/
@@ -197,7 +197,7 @@ u_enter()
     }
 
     listmode=0;
-    digestmode=NA;
+    digestmode=false;
 }
 
 void
@@ -263,7 +263,7 @@ void
 talk_request(int signo)
 {
     signal(SIGUSR1,talk_request) ;
-    talkrequest = YEA ;
+    talkrequest = true ;
     bell(); bell(); bell();
     sleep( 1 );
     bell(); bell(); bell(); bell(); bell();
@@ -319,7 +319,7 @@ void multi_user_check()
 	    if (ret==1) {
 			if (kickmulti==-1)
 	    		getdata(0, 0, "ÄãÍ¬Ê±ÉÏÏßµÄ´°¿ÚÊı¹ı¶à£¬ÊÇ·ñÌß³ö±¾IDÆäËü´°¿Ú(Y/N)? [N]", 
-	                buffer, 4, DOECHO, NULL, YEA);
+	                buffer, 4, DOECHO, NULL, true);
 	        if(buffer[0] == 'Y' || buffer[0] == 'y' || kickmulti==1) 
 	        {
 				int lres;
@@ -434,7 +434,7 @@ login_query()
     char buf[256];
     curr_login_num = get_utmp_number();;
     if( curr_login_num >= MAXACTIVE ) {
-        ansimore( "etc/loginfull", NA );
+        ansimore( "etc/loginfull", false );
         oflush();
         Net_Sleep( 20 );
         exit( 1 ) ;
@@ -457,7 +457,7 @@ login_query()
     output("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",22);
     attempts=5;
     while(attempts) {
-    getdata(0, 0, "Please input(login as) bbs or bb5 here ==>",passbuf,6, DOECHO, NULL,YEA);
+    getdata(0, 0, "Please input(login as) bbs or bb5 here ==>",passbuf,6, DOECHO, NULL,true);
     if (!strcmp(passbuf,"bbs")) break;
     if (!strcmp(passbuf,"bbsbm")) break;
     if (!strcmp(passbuf,"bbsop")) break;
@@ -479,7 +479,7 @@ login_query()
         show_issue();
     }                
     */
-    ansimore("etc/issue",NA);
+    ansimore("etc/issue",false);
     /*strcpy(fname,"etc/issue"); Leeward: disable the old code */
 /*    if(dashf(fname,"r")) This block is disabled for long, not for SHARE MEM
     {
@@ -487,10 +487,10 @@ login_query()
         if(issues>=1)
         {
                 user_display(fname,(issues==1)?1:
-                                   ((time(0)/24*60*60)%(issues))+1,NA);
+                                   ((time(0)/24*60*60)%(issues))+1,false);
         }
     }*/
-    /*ansimore(fname,NA); Leeward: disable the old code */
+    /*ansimore(fname,false); Leeward: disable the old code */
 
 /*    prints( "\033[1m»¶Ó­¹âÁÙ[31m%s[37m¡ô"ISSUE_LOGIN"¡ô [36mÉÏÏßÈËÊı \033[1m%d(%dWWW GUEST)[m", BBS_FULL_NAME, curr_login_num+getwwwguestcount(),getwwwguestcount());
  *    */
@@ -505,7 +505,7 @@ login_query()
 #endif
     while( 1 ) {
         if( attempts++ >= LOGINATTEMPTS ) {
-            ansimore( "etc/goodbye", NA );
+            ansimore( "etc/goodbye", false );
             oflush();
             sleep( 1 );
             exit( 1 );
@@ -517,7 +517,7 @@ login_query()
         signal(SIGALRM, SIG_IGN);
 #endif
 
-        getdata( 0,0, "\nÇëÊäÈë´úºÅ: ", uid, STRLEN-1, DOECHO, NULL ,YEA);
+        getdata( 0,0, "\nÇëÊäÈë´úºÅ: ", uid, STRLEN-1, DOECHO, NULL ,true);
 		uid[STRLEN-1]=0;
 		if (uid[strlen(uid)-1]=='.') {
 			convcode=1;
@@ -545,7 +545,7 @@ login_query()
         } else 
 /* Add by KCN for let sysop can use extra 10 UTMP */
         if(!HAS_PERM(currentuser,PERM_ADMINMENU)&&( curr_login_num >= MAXACTIVE+10 )) {
-        	ansimore( "etc/loginfull", NA );
+        	ansimore( "etc/loginfull", false );
 	        oflush();
 	        sleep( 1 );
 	        exit( 1 ) ;
@@ -557,7 +557,7 @@ login_query()
 	        if (!convcode)
             	convcode=!(currentuser->userdefine&DEF_USEGB);  /* KCN,99.09.05 */
             	
-            getdata( 0, 0, "\033[1m[37mÇëÊäÈëÃÜÂë: [m", passbuf, 39, NOECHO, NULL ,YEA);
+            getdata( 0, 0, "\033[1m[37mÇëÊäÈëÃÜÂë: [m", passbuf, 39, NOECHO, NULL ,true);
 
 	        if( !checkpasswd2(passbuf, currentuser ))
     	    {
@@ -569,14 +569,14 @@ login_query()
         prints("[31m±§Ç¸!![m\n");
         prints("[32m±¾ÕÊºÅÊ¹ÓÃÖĞÎÄÎª´úºÅ£¬´ËÕÊºÅÒÑ¾­Ê§Ğ§...[m\n");
         prints("[32mÏë±£ÁôÈÎºÎÇ©ÃûµµÇë¸úÕ¾³¤ÁªÂç £¬Ëû(Ëı)»áÎªÄã·şÎñ¡£[m\n");
-        getdata( 0, 0, "°´ [RETURN] ¼ÌĞø",genbuf,10,NOECHO,NULL,YEA);
+        getdata( 0, 0, "°´ [RETURN] ¼ÌĞø",genbuf,10,NOECHO,NULL,true);
         oflush();
         sleep( 1 );
         exit( 1 );
     }
 			    if( simplepasswd( passbuf ) ) {
 			        prints("[33m* ÃÜÂë¹ıì¶¼òµ¥, ÇëÑ¡ÔñÒ»¸öÒÔÉÏµÄÌØÊâ×ÖÔª.[m\n");
-			        getdata( 0, 0, "°´ [RETURN] ¼ÌĞø",genbuf,10,NOECHO,NULL,YEA);
+			        getdata( 0, 0, "°´ [RETURN] ¼ÌĞø",genbuf,10,NOECHO,NULL,true);
 			    }
 			    /* passwd ok, covert to md5 --wwj 2001/5/7 */
 			    if(currentuser->passwd[0]){
@@ -588,7 +588,7 @@ login_query()
         }
     }
 #else
-   getdata( 0, 0, "\n°´ [RETURN] ¼ÌĞø",genbuf,10,NOECHO,NULL,YEA);
+   getdata( 0, 0, "\n°´ [RETURN] ¼ÌĞø",genbuf,10,NOECHO,NULL,true);
 #endif
     if( strcasecmp(currentuser->userid,"guest")&&!HAS_PERM(currentuser, PERM_BASIC ) ) {
 	sethomefile( genbuf, currentuser->userid,"giveup" );
@@ -765,7 +765,7 @@ user_login()
         }
         else if((noteln-currentuser->noteline)>0){
                 clear();
-                ansimore2("etc/notepad",NA,0,noteln-currentuser->noteline+1);
+                ansimore2("etc/notepad",false,0,noteln-currentuser->noteline+1);
                 prints("[31m¡Ñ©Ø¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©Ø¡Ñ[m\n");
                 igetkey();
                 currentuser->noteline=noteln;
@@ -776,13 +776,13 @@ user_login()
     }
     /* Leeward 98.09.24 Use SHARE MEM to diaplay statistic data below */
     if (DEFINE(currentuser,DEF_SHOWSTATISTIC))
-    	ansimore("0Announce/bbslists/countlogins", YEA);
+    	ansimore("0Announce/bbslists/countlogins", true);
     if(vote_flag(NULL,'\0',2/*¼ì²é¶Á¹ıĞÂµÄWelcome Ã»*/)==0)
     {
         if(dashf( "Welcome" ))
         {
                 clear();
-                ansimore("Welcome",YEA);
+                ansimore("Welcome",true);
                 vote_flag(NULL,'R',2/*Ğ´Èë¶Á¹ıĞÂµÄWelcome*/);
         }
     }
@@ -790,10 +790,10 @@ user_login()
     if(DEFINE(currentuser,DEF_SHOWHOT))
     { /* Leeward 98.09.24 Use SHARE MEM and disable old code 
       if (DEFINE(currentuser,DEF_SHOWSTATISTIC)) {
-    	ansimore("etc/posts/day", NA);
+    	ansimore("etc/posts/day", false);
       }
       */
-      ansimore("etc/posts/day",NA);  /* Leeward: disable old code */
+      ansimore("etc/posts/day",false);  /* Leeward: disable old code */
     }
     move( t_lines - 2/*1*/, 0 ); /* Leeward: 98.09.24 Alter below message */
     clrtoeol();
@@ -803,16 +803,16 @@ user_login()
     /* È«¹úÊ®´óÈÈÃÅ»°Ìâ added by Czz 020128 */
     show_help("0Announce/bbslists/newsday");
     /* added end */
-    ansimore("0Announce/hotinfo",NA);
+    ansimore("0Announce/hotinfo",false);
     move( t_lines - 1/*1*/, 0 ); /* Leeward: 98.09.24 Alter below message */
     clrtoeol();
     prints("[1;36m¡î °´ÈÎÒâ¼ü¼ÌĞø...[33m[m ");
     igetkey();
     move( t_lines - 1, 0 );
     sethomefile( fname,currentuser->userid, BADLOGINFILE );
-    if( ansimore( fname, NA ) != -1 ) {
+    if( ansimore( fname, false ) != -1 ) {
         getdata( t_lines-1, 0, "ÄúÒªÉ¾³ıÒÔÉÏÃÜÂëÊäÈë´íÎóµÄ¼ÇÂ¼Âğ (Y/N)? [Y] ",
-        ans, 4, DOECHO, NULL ,YEA);
+        ans, 4, DOECHO, NULL ,true);
         if( *ans != 'N' && *ans != 'n' )
             unlink( fname );
     }
@@ -875,7 +875,7 @@ chk_friend_book()
                 idnum=atoi(buf);
                 if(idnum!=usernum||idnum<=0)
                    continue;    
-                uin=t_search(uid,NA);
+                uin=t_search(uid,false);
                 sprintf(msg,"%s ÒÑ¾­ÉÏÕ¾¡£",currentuser->userid);
                 /* ±£´æËù·¢msgµÄÄ¿µÄuid 1998.7.5 by dong*/
                 strcpy(MsgDesUid, uin?uin->userid:"");
@@ -981,7 +981,7 @@ main_bbs(int convit,char* argv)
     {
         sethomefile(notename,currentuser->userid,"notes");
         if(dashf(notename))
-                ansimore(notename,YEA);
+                ansimore(notename,true);
     }
     b_closepolls();
     num_alcounter();
@@ -996,7 +996,7 @@ main_bbs(int convit,char* argv)
     }
 }
 
-int refscreen = NA ;
+int refscreen = false ;
 
 int
 egetch()
@@ -1006,31 +1006,31 @@ egetch()
     check_calltime();
     if (talkrequest) {
         talkreply() ;
-        refscreen = YEA ;
+        refscreen = true ;
         return -1 ;
     }
 /*    if (ntalkrequest) {
         ntalkreply() ;
-        refscreen = YEA ;
+        refscreen = true ;
         return -1 ;
     }*/
     while( 1 ) {
         rval = igetkey();
         if(talkrequest) {
             talkreply() ;
-            refscreen = YEA ;
+            refscreen = true ;
             return -1 ;
         }/*
         if(ntalkrequest) {
             ntalkreply() ;
-            refscreen = YEA ;
+            refscreen = true ;
             return -1 ;
         }*/
         if( rval != Ctrl('L') )
             break;
         redoscr();
     }
-    refscreen = NA ;
+    refscreen = false ;
     return rval ;
 }
 
@@ -1218,7 +1218,7 @@ tlog_recover()
     clear();
     strcpy(genbuf, "");
 
-    getdata(0, 0, "\033[1;32mÄúÓĞÒ»¸ö²»Õı³£¶ÏÏßËùÁôÏÂÀ´µÄÁÄÌì¼ÇÂ¼, ÄúÒª .. (M) ¼Ä»ØĞÅÏä (Q) ËãÁË£¿[Q]£º\033[m", genbuf,4,DOECHO,NULL,YEA);
+    getdata(0, 0, "\033[1;32mÄúÓĞÒ»¸ö²»Õı³£¶ÏÏßËùÁôÏÂÀ´µÄÁÄÌì¼ÇÂ¼, ÄúÒª .. (M) ¼Ä»ØĞÅÏä (Q) ËãÁË£¿[Q]£º\033[m", genbuf,4,DOECHO,NULL,true);
  
     if (genbuf[0] == 'M' || genbuf[0] == 'm')
         mail_file(currentuser->userid,buf, currentuser->userid, "ÁÄÌì¼ÇÂ¼",1);

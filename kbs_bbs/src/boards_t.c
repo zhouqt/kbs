@@ -33,7 +33,7 @@ static int clear_all_board_read_flag_func(struct boardheader *bh)
 int clear_all_board_read_flag()
 {
 	char save_board[BOARDNAMELEN],ans[4];
-	getdata(t_lines - 1, 0, "Çå³ıËùÓĞµÄÎ´¶Á±ê¼ÇÃ´(Y/N)? [N]: ", ans, 2, DOECHO, NULL, YEA);
+	getdata(t_lines - 1, 0, "Çå³ıËùÓĞµÄÎ´¶Á±ê¼ÇÃ´(Y/N)? [N]: ", ans, 2, DOECHO, NULL, true);
 	if (ans[0] == 'Y' || ans[0] == 'y')
 	{
 
@@ -121,12 +121,12 @@ struct newpostdata *ptr;
 int
 search_board( int *num,int *i,int *find,char* bname)
 {
-    int         n,ch,tmpn=NA;
+    int         n,ch,tmpn=false;
 
-    if (*find == YEA)
+    if (*find == true)
     {
         bzero(bname, STRLEN);
-        *find = NA;
+        *find = false;
         *i = 0;
     }
     while (1)
@@ -143,7 +143,7 @@ search_board( int *num,int *i,int *find,char* bname)
             {
                 if (!strncasecmp(nbrd[n].name, bname, *i))
                 {
-                    tmpn=YEA;
+                    tmpn=true;
                     *num = n;
                     if(!strcmp(nbrd[n].name, bname))
                         return 1/*ÕÒµ½ÀàËÆµÄ°å£¬»­ÃæÖØ»­*/;
@@ -151,7 +151,7 @@ search_board( int *num,int *i,int *find,char* bname)
             }
             if(tmpn)
                 return 1;
-            if (*find == NA)
+            if (*find == false)
             {
                 bname[--(*i)] = '\0';
             }
@@ -163,7 +163,7 @@ search_board( int *num,int *i,int *find,char* bname)
             (*i)--;
             if (*i < 0)
             {
-                *find = YEA;
+                *find = true;
                 break;
             }
             else
@@ -174,7 +174,7 @@ search_board( int *num,int *i,int *find,char* bname)
         }
         else if (ch == '\t')
         {
-            *find = YEA;
+            *find = true;
             break;
         }
         else if (Ctrl('Z') == ch)
@@ -184,7 +184,7 @@ search_board( int *num,int *i,int *find,char* bname)
         }
         else if (ch == '\n' || ch == '\r' || ch == KEY_RIGHT)
         {
-            *find = YEA;
+            *find = true;
             break;
         }
         bell(1);
@@ -239,7 +239,7 @@ char *direct ;
 
         for( n = 0; n < get_boardcount(); n++ ) {
             bptr = (struct boardheader*) getboard(n+1);
-            if( chk_BM_instr(bptr->BM,lookupuser->userid) == YEA){
+            if( chk_BM_instr(bptr->BM,lookupuser->userid) == true){
                 prints("©Ç©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©ï©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©Ï\n");
                 prints("©§%-32s©§%-32s©§\n",bptr->filename,bptr->title+12);
             }
@@ -300,7 +300,7 @@ query_bm( )
 
     for( n = 0; n < get_boardcount(); n++ ) {
         bptr = getboard(n+1);
-        if( chk_BM_instr(bptr->BM,lookupuser->userid) == YEA)
+        if( chk_BM_instr(bptr->BM,lookupuser->userid) == true)
         {
             prints("©Ç©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©ï©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©Ï\n");
             prints("©§%-32s©§%-32s©§\n",bptr->filename,bptr->title+12);
@@ -356,7 +356,7 @@ int     page, clsflag, newflag;
         strcpy(tmpBM,ptr->BM);
 
         /* Leeward 98.03.28 Displaying whether a board is READONLY or not */
-        if (YEA == checkreadonly(ptr->name))
+        if (true == checkreadonly(ptr->name))
             sprintf(buf, "¡ôÖ»¶Á¡ô%s", ptr->title + 8);
         else
             sprintf(buf, " %s", ptr->title + 1);
@@ -373,7 +373,7 @@ static int choose_board(int  newflag ) /* Ñ¡Ôñ °æ£¬ readnew»òreadboard */
     struct newpostdata *ptr;
     int         page, ch, tmp, number,tmpnum;
     int         loop_mode=0;
-    int     i = 0,find = YEA;
+    int     i = 0,find = true;
     char    bname[STRLEN];
 
     if( !strcmp( currentuser->userid, "guest" ) )
@@ -434,7 +434,7 @@ static int choose_board(int  newflag ) /* Ñ¡Ôñ °æ£¬ readnew»òreadboard */
                 saveline(t_lines-2, 0, NULL);
                 move(t_lines-2, 0);
                 clrtoeol();
-                getdata(t_lines-2, 0,"[1m[5m[31mÁ¢¼´¶ÏÏß[m¡Ã[1m[33mÒÔ±ã»Ö¸´ÉÏ´ÎÕı³£Àë¿ª±¾Õ¾Ê±µÄÎ´¶Á±ê¼Ç (Y/N)£¿ [N][m: ", restore,4,DOECHO,NULL,YEA);
+                getdata(t_lines-2, 0,"[1m[5m[31mÁ¢¼´¶ÏÏß[m¡Ã[1m[33mÒÔ±ã»Ö¸´ÉÏ´ÎÕı³£Àë¿ª±¾Õ¾Ê±µÄÎ´¶Á±ê¼Ç (Y/N)£¿ [N][m: ", restore,4,DOECHO,NULL,true);
                 if ('y' == restore[0] || 'Y' == restore[0])
                 {
                     sethomefile(fname, currentuser->userid,".boardrc" );
@@ -446,7 +446,7 @@ static int choose_board(int  newflag ) /* Ñ¡Ôñ °æ£¬ readnew»òreadboard */
                     prints("[1m[33mÒÑ»Ö¸´ÉÏ´ÎÕı³£Àë¿ª±¾Õ¾Ê±µÄÎ´¶Á±ê¼Ç[m");
                     move(t_lines-1, 0);
                     clrtoeol();
-                    getdata(t_lines-1, 0,"[1m[32mÇë°´ Enter ¶ÏÏß£¬È»ºóÖØĞÂµÇÂ¼ 8-) [m", restore,1,DOECHO,NULL,YEA);
+                    getdata(t_lines-1, 0,"[1m[32mÇë°´ Enter ¶ÏÏß£¬È»ºóÖØĞÂµÇÂ¼ 8-) [m", restore,1,DOECHO,NULL,true);
                     abort_bbs(0);
                 }
                 saveline(t_lines-2, 1, NULL);
@@ -570,7 +570,7 @@ case 'n': case 'j': case KEY_DOWN:
 	                loop_mode=1;
 	            else
 	            {
-			find=YEA;
+			find=true;
 			i=0;
 	                loop_mode=0;
 	                update_endline();

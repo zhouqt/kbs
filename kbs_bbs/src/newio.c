@@ -332,7 +332,7 @@ igetch()
     extern int RMSG;
 
 
-    if((uinfo.mode==CHAT1||uinfo.mode==TALK||uinfo.mode==PAGE) && RMSG==YEA)
+    if((uinfo.mode==CHAT1||uinfo.mode==TALK||uinfo.mode==PAGE) && RMSG==true)
         hasaddio=0;
 
 igetagain:
@@ -493,7 +493,7 @@ igetkey()
 
     mode = last = 0;
     while( 1 ) {
-        /*        if((uinfo.mode==CHAT1||uinfo.mode==TALK||uinfo.mode==PAGE) && RMSG==YEA)
+        /*        if((uinfo.mode==CHAT1||uinfo.mode==TALK||uinfo.mode==PAGE) && RMSG==true)
                 {
                         char a;
 #ifdef SSHBBS
@@ -558,7 +558,7 @@ int getdata(int line,int col,char* prompt,char* buf,int len,int echo,void* nouse
     extern unsigned char scr_cols ;
     extern int RMSG;
 
-    if (clearlabel==YEA)
+    if (clearlabel==true)
     {
         memset(buf,0, sizeof(buf));
     }
@@ -574,7 +574,7 @@ int getdata(int line,int col,char* prompt,char* buf,int len,int echo,void* nouse
     buf[curr]='\0';
     prints("%s", buf);
 
-    if (!scrint||(echo==NA))
+    if (!scrint||(echo==false))
     {
         while ((ch = igetkey()) != '\r')
         {
@@ -626,13 +626,13 @@ removed by wwj, just use oflush , 2001/5/8
     clrtoeol();
     while (1)
     {
-        if((uinfo.mode==CHAT1||uinfo.mode==TALK )&& RMSG==YEA)
+        if((uinfo.mode==CHAT1||uinfo.mode==TALK )&& RMSG==true)
         {
             refresh();
         }
         ch = igetkey();
 
-        if (YEA == RMSG && (KEY_UP == ch || KEY_DOWN == ch))
+        if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch))
             return - ch; /* Leeward 98.07.30 supporting msgX */
 
         if (ch == '\n'||ch == '\r')
@@ -772,7 +772,7 @@ int lock_scr() /* Leeward 98.02.22 */
         prints("[1m[32mBBS "NAME_BBS_CHINESE"’æ[m");
         move(21,0);
         clrtobot();
-        getdata(21, 0, "∆¡ƒªœ÷‘⁄“—æ≠À¯∂®£¨“™Ω‚≥˝À¯∂®£¨«Î ‰»Î√‹¬Î£∫", passbuf, 39, NOECHO, NULL ,YEA);
+        getdata(21, 0, "∆¡ƒªœ÷‘⁄“—æ≠À¯∂®£¨“™Ω‚≥˝À¯∂®£¨«Î ‰»Î√‹¬Î£∫", passbuf, 39, NOECHO, NULL ,true);
         move(22,32);
         if( !checkpasswd2( passbuf,currentuser)) {
             prints( "[1m[31m√‹¬Î ‰»Î¥ÌŒÛ...[m\n" );
@@ -826,7 +826,7 @@ pressreturn()
                showansi=1;
                move(t_lines-1,0);
                clrtoeol();
-               getdata(t_lines-1,0,"                              \x1b[33m«Î∞¥ °Ù\x1b[36mEnter\x1b[33m°Ù ºÃ–¯\x1b[m",buf,2,NOECHO,NULL,YEA);
+               getdata(t_lines-1,0,"                              \x1b[33m«Î∞¥ °Ù\x1b[36mEnter\x1b[33m°Ù ºÃ–¯\x1b[m",buf,2,NOECHO,NULL,true);
                move(t_lines-1,0) ;
                clrtoeol() ;
                refresh() ;
@@ -843,7 +843,7 @@ int defa;
 
     sprintf(realstr,"%s (Y/N)? [%c]: ",str,(defa)?'Y':'N');
     getyx(&x,&y);
-    getdata( x, y, realstr, ans,3,DOECHO,NULL,YEA);
+    getdata( x, y, realstr, ans,3,DOECHO,NULL,true);
     if(ans[0]=='Y' || ans[0]=='y')
         return 1;
     else if(ans[0]=='N' || ans[0]=='n')

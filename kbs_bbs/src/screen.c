@@ -43,8 +43,8 @@ unsigned char   cur_ln = 0, cur_col = 0 ;
 int             roll, scrollcnt ;
 unsigned char   docls ;
 unsigned char   downfrom ;
-int             standing = NA ;
-int             inansi=NA;
+int             standing = false ;
+int             inansi=false;
 int tc_col, tc_line ;
 struct screenline *big_picture = NULL ;
 static const char nullstr[] = "(null)" ;
@@ -57,13 +57,13 @@ char *str;
     int len,i,ansinum,ansi;
 
     ansinum=0;
-    ansi=NA;
+    ansi=false;
     len=strlen(str);
     for (i=0; i < len; i++)
     {
         if (str[i] == KEY_ESC)
         {
-            ansi = YEA;
+            ansi = true;
             ansinum++;
             continue;
         }
@@ -77,7 +77,7 @@ char *str;
             else if (isalpha(str[i]))
             {
                 ansinum++;
-                ansi = NA;
+                ansi = false;
                 continue;
             }
             else
@@ -105,7 +105,7 @@ int     slns, scols;
         slp->len = 0 ;
         slp->oldlen = 0 ;
     }
-    docls = YEA ;
+    docls = true ;
     downfrom = 0 ;
     roll = 0 ;
 }
@@ -116,7 +116,7 @@ initscr()
     if( !big_picture)
         t_columns=WRAPMARGIN;
     init_screen(t_lines,WRAPMARGIN) ;
-    iscolor = YEA;
+    iscolor = true;
 }
 
 void
@@ -203,7 +203,7 @@ redoscr()
         bp[j].oldlen = bp[j].len ;
     }
     rel_move(tc_col,tc_line,cur_col,cur_ln) ;
-    docls = NA ;
+    docls = false ;
     scrollcnt = 0 ;
     oflush() ;
 }
@@ -317,7 +317,7 @@ clear()
     register struct screenline *slp;
 
     roll = 0 ;
-    docls = YEA ;
+    docls = true ;
     downfrom = 0 ;
     for(i=0 ;i<scr_lns;i++) {
         slp = &big_picture[ i ];
@@ -341,7 +341,7 @@ clrtoeol()
     register struct screenline *slp ;
     register int        ln;
 
-    standing = NA ;
+    standing = false ;
     ln = cur_ln + roll;
     while( ln >= scr_lns )  ln -= scr_lns;
     slp = &big_picture[ ln ];
@@ -402,7 +402,7 @@ outc(unsigned char c )
         }
         return;
     }
-    if(c==KEY_ESC&&iscolor==NA)
+    if(c==KEY_ESC&&iscolor==false)
     {
         inansi=1;
         return;
@@ -419,7 +419,7 @@ outc(unsigned char c )
         if(c == '\n' || c =='\r') {  /* do the newline thing */
             if(standing) {
                 slp->eso = Max(slp->eso,reg_col) ;
-                standing = NA ;
+                standing = false ;
             }
             if(reg_col > slp->len) {
                 register int i ;
@@ -458,7 +458,7 @@ outc(unsigned char c )
     reg_col++;
     if(reg_col >= scr_cols) {
         if(standing && slp->mode&STANDOUT) {
-            standing = NA ;
+            standing = false ;
             slp->eso = Max(slp->eso,reg_col) ;
         }
         reg_col = 0 ;
@@ -482,7 +482,7 @@ int n ;
 #define DO_MODIFY { if (slp->smod > begincol) slp->smod=begincol; \
                     if (slp->emod < reg_col) slp->emod=reg_col; \
                     if(standing && slp->mode&STANDOUT) { \
-                        standing = NA ; \
+                        standing = false ; \
                         slp->eso = Max(slp->eso,reg_col) ; \
 		    } \
 		    if(!(slp->mode & MODIFIED)) { \
@@ -615,10 +615,10 @@ prints(char *format, ...)
             case 'd':
                 i = va_arg(ap, int) ;
 
-                negi = NA ;
+                negi = false ;
                 if(i < 0)
                 {
-                    negi = YEA ;
+                    negi = true ;
                     i *= -1 ;
                 }
                 for(indx=0;indx < 10;indx++)
@@ -713,7 +713,7 @@ standout()
         ln = cur_ln + roll;
         while( ln >= scr_lns )  ln -= scr_lns;
         slp = &big_picture[ ln ] ;
-        standing = YEA ;
+        standing = true ;
         slp->sso = cur_col ;
         slp->eso = cur_col ;
         slp->mode |= STANDOUT ;
@@ -730,7 +730,7 @@ standend()
         ln = cur_ln + roll;
         while( ln >= scr_lns )  ln -= scr_lns;
         slp = &big_picture[ ln ] ;
-        standing= NA ;
+        standing= false ;
         slp->eso = Max(slp->eso,cur_col) ;
     }
 }

@@ -178,7 +178,7 @@ char *prompt, *data ;
     char *temp;
     int ch ;
     int count = 0 ;
-    int clearbot = NA ;
+    int clearbot = false ;
     if(scrint) {
         struct word *cwlist,*morelist ;
         int x,y ;
@@ -232,7 +232,7 @@ char *prompt, *data ;
                         continue ;
                     }
                 }
-                clearbot = YEA ;
+                clearbot = true ;
                 col = 0 ;
                 if(!morelist)  morelist = cwlist ;
                 len = MaxLen(morelist,NUMLINES) ;
@@ -370,7 +370,7 @@ char *prompt, *data ;
     if( scrint ) {
         char    *cwbuf, *cwlist, *temp;
         int     cwnum, x, y, origx, origy;
-        int     clearbot = NA, count = 0, morenum = 0;
+        int     clearbot = false, count = 0, morenum = 0;
         char    ch;
         struct userec* lookupuser;
 
@@ -422,7 +422,7 @@ char *prompt, *data ;
                 }
                 if (count<2) continue;
 	        cwlist = u_namearray( (char (*)[13])cwbuf, &cwnum, data );
-                clearbot = YEA;
+                clearbot = true;
                 col = 0;
                 len = UserMaxLen( (char (*)[13])cwlist, cwnum, morenum, NUMLINES );
                 move( 2, 0 );

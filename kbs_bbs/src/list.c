@@ -20,16 +20,16 @@ int Show_Users();
 int myfriend(int uid,char* fexp)
 {
     extern int  nf;
-    int i,found=NA;
+    int i,found=false;
     /*char buf[IDLEN+3];*/
 
     if(nf<=0)
     {
-        return NA;
+        return false;
     }
     for (i=0;i<nf;i++) {
     	if (topfriend[i].uid==uid) {
-    		found=YEA;
+    		found=true;
     		break;
     	}
     }
@@ -59,7 +59,7 @@ int print_title2()
 void
 update_data(void* data)
 {
-    if(readplan==YEA)
+    if(readplan==true)
         return;
    	idle_count++;
     if(time(0)>=update_time+refreshtime*idle_count-1)
@@ -254,9 +254,9 @@ do_userlist()
             if((i+page<numf)||friendmode)
                 override=myfriend(uentp.uid,fexp);
             else
-                override=NA;
+                override=false;
         }
-        if(readplan==YEA)
+        if(readplan==true)
         {
             return 0;
         }
@@ -273,7 +273,7 @@ do_userlist()
                          (showexplain&&override)? fexp:uentp.username,(override&&showexplain)?"[m":"",
                          ((/* !DEFINE(currentuser,DEF_HIDEIP) &&*/ (pagec==' ' || pagec=='O') ) || HAS_PERM(currentuser,PERM_SYSOP)) ? uentp.from : "*",/*Haohmaru.99.12.18*/
                          pagec,
-                         /*(uentp.invisible ? '#' : ' ')*/msgchar(&uentp,&isfriend),(uentp.invisible==YEA)
+                         /*(uentp.invisible ? '#' : ' ')*/msgchar(&uentp,&isfriend),(uentp.invisible==true)
                          ?"[34m":"",
                          modestring(uentp.mode, uentp.destuid, 0,/* 1->0 ²»ÏÔÊ¾ÁÄÌì¶ÔÏóµÈ modified by dong 1996.10.26 */
                                     (uentp.in_chat ? uentp.chatid : NULL)),
@@ -309,14 +309,14 @@ show_userlist()
         prints( "Ã»ÓÐÊ¹ÓÃÕß£¨ÅóÓÑ£©ÔÚÁÐ±íÖÐ...\n" );
         clrtobot();
         if(friendmode){
-            getdata(BBS_PAGESIZE+3,0,"ÊÇ·ñ×ª»»³ÉÊ¹ÓÃÕßÄ£Ê½ (Y/N)[Y]: ",genbuf,4,DOECHO,NULL,YEA);
+            getdata(BBS_PAGESIZE+3,0,"ÊÇ·ñ×ª»»³ÉÊ¹ÓÃÕßÄ£Ê½ (Y/N)[Y]: ",genbuf,4,DOECHO,NULL,true);
             move(BBS_PAGESIZE+3,0);
             clrtobot();
             if(genbuf[0] != 'N' && genbuf[0] != 'n')
             {
                 range=num_visible_users();
                 page=-1;
-                friendmode=NA;
+                friendmode=false;
                 return 1;
             }
         }else
@@ -344,10 +344,10 @@ int allnum,pagenum;
     char    buf[STRLEN],genbuf[5];
     static  int   msgflag;
 
-    if(msgflag==YEA)
+    if(msgflag==true)
     {
         show_message(NULL);
-        msgflag=NA;
+        msgflag=false;
     }
     switch(ch)
     {
@@ -361,7 +361,7 @@ case 'k': case'K':
                 user_record[allnum]->userid);
         move(BBS_PAGESIZE+3,0);
         clrtoeol();
-        getdata(BBS_PAGESIZE+3,0,buf,genbuf,4,DOECHO,NULL,YEA);
+        getdata(BBS_PAGESIZE+3,0,buf,genbuf,4,DOECHO,NULL,true);
         if(genbuf[0] != 'Y' && genbuf[0] != 'y')
         {
             return 1;
@@ -376,7 +376,7 @@ case 'k': case'K':
             sprintf(buf,"%s ÎÞ·¨Ìß³öÕ¾Íâ",
                     user_record[allnum]->userid);
         }
-        msgflag=YEA;
+        msgflag=true;
         break;
 case 'h':case 'H':
         show_help( "help/userlisthelp" );
@@ -403,9 +403,9 @@ case 'm': case'M':
         break;
 case 'f': case 'F':
         if(friendmode)
-            friendmode=NA;
+            friendmode=false;
         else
-            friendmode=YEA;
+            friendmode=true;
         update_time=0;
         break;
 case 's': case 'S':
@@ -416,7 +416,7 @@ case 's': case 'S':
         {
             sprintf(buf,"%s ÒÑ¾­¹Ø±ÕÑ¶Ï¢ºô½ÐÆ÷",
                     user_record[allnum]->userid);
-            msgflag=YEA;
+            msgflag=true;
             break;
         }
         /* ±£´æËù·¢msgµÄÄ¿µÄuid 1998.7.5 by dong*/
@@ -437,7 +437,7 @@ case 'o': case 'O':
             sprintf(buf,"%s ÁÐÈëÅóÓÑÃûµ¥",
                     user_record[allnum]->userid);
         }
-        msgflag=YEA;
+        msgflag=true;
         break;
 case 'd': case'D':
         if(!strcmp("guest",currentuser->userid))
@@ -447,7 +447,7 @@ case 'd': case'D':
                 user_record[allnum]->userid);
         move(BBS_PAGESIZE+3,0);
         clrtoeol();
-        getdata(BBS_PAGESIZE+3,0,buf,genbuf,4,DOECHO,NULL,YEA);
+        getdata(BBS_PAGESIZE+3,0,buf,genbuf,4,DOECHO,NULL,true);
         move(BBS_PAGESIZE+3,0);
         clrtoeol();
         if(genbuf[0] != 'Y' && genbuf[0] != 'y')
@@ -463,7 +463,7 @@ case 'd': case'D':
             sprintf(buf,"%s ÒÑ´ÓÅóÓÑÃûµ¥ÒÆ³ý",
                     user_record[allnum]->userid);
         }
-        msgflag=YEA;
+        msgflag=true;
         break;
     default:
         return 0;
@@ -472,7 +472,7 @@ case 'd': case'D':
         modify_user_mode(FRIEND);
     else
         modify_user_mode(LUSERS);
-    if(readplan==NA)
+    if(readplan==false)
     {
         print_title();
         clrtobot();
@@ -494,10 +494,10 @@ int allnum,pagenum;
     char    buf[STRLEN];
     static  int   msgflag;
 
-    if(msgflag==YEA)
+    if(msgflag==true)
     {
         show_message(NULL);
-        msgflag=NA;
+        msgflag=false;
     }
     switch(ch)
     {
@@ -525,7 +525,7 @@ case 'o': case 'O':
                     user_data[allnum-pagenum].userid);
             show_message(buf);
         }
-        msgflag=YEA;
+        msgflag=true;
         if(!friendmode)
             return 1;
         break;
@@ -543,7 +543,7 @@ case 'd': case'D':
                 user_data[allnum-pagenum].userid);
         move(BBS_PAGESIZE+3,0);
         clrtoeol();
-        getdata(BBS_PAGESIZE+3,0,buf,genbuf,4,DOECHO,NULL,YEA);
+        getdata(BBS_PAGESIZE+3,0,buf,genbuf,4,DOECHO,NULL,true);
         move(BBS_PAGESIZE+3,0);
         clrtoeol();
         if(genbuf[0] != 'Y' && genbuf[0] != 'y')
@@ -561,7 +561,7 @@ case 'd': case'D':
                     user_data[allnum-pagenum].userid);
             show_message(buf);
         }
-        msgflag=YEA;
+        msgflag=true;
         if(!friendmode)
             return 1;
         break;
@@ -569,7 +569,7 @@ case 'd': case'D':
         return 0;
     }
     modify_user_mode(LAUSERS);
-    if(readplan==NA)
+    if(readplan==false)
     {
         print_title2();
         move(3,0);
@@ -704,7 +704,7 @@ void Users()
     modify_user_mode(LAUSERS );
     clear();
     user_data=(struct userec *)calloc(sizeof(struct userec),BBS_PAGESIZE);
-    choose(NA,0,print_title2,deal_key2,Show_Users,do_query2);
+    choose(false,0,print_title2,deal_key2,Show_Users,do_query2);
     clear();
     free(user_data);
     return;
@@ -717,7 +717,7 @@ t_friends()
     char        genbuf[STRLEN];
 
     modify_user_mode(FRIEND);
-    friendmode=YEA;
+    friendmode=true;
     sethomefile( genbuf, currentuser->userid,"friends" );
     if ((fp = fopen(genbuf, "r")) == NULL) {
         move( 1, 0 );
@@ -733,32 +733,32 @@ t_friends()
         move( 2, 0 );
         clrtobot();
         prints( "Ä¿Ç°ÎÞºÃÓÑÉÏÏß\n");
-        getdata(BBS_PAGESIZE+3,0,"ÊÇ·ñ×ª»»³ÉÊ¹ÓÃÕßÄ£Ê½ (Y/N)[Y]: ",genbuf,4,DOECHO,NULL,YEA);
+        getdata(BBS_PAGESIZE+3,0,"ÊÇ·ñ×ª»»³ÉÊ¹ÓÃÕßÄ£Ê½ (Y/N)[Y]: ",genbuf,4,DOECHO,NULL,true);
         move(BBS_PAGESIZE+3,0);
         clrtobot();
         if(genbuf[0] != 'N' && genbuf[0] != 'n')
         {
             range=num_visible_users();
             page=-1;
-            friendmode=NA;
+            friendmode=false;
             update_time=0;
-            choose(YEA,0,print_title,deal_key,show_userlist,do_query);
+            choose(true,0,print_title,deal_key,show_userlist,do_query);
             clear();
             return 0;
         }
     }else
     {
         update_time=0;
-        choose(YEA,0,print_title,deal_key,show_userlist,do_query);
+        choose(true,0,print_title,deal_key,show_userlist,do_query);
     }
     clear();
-    friendmode=NA;
+    friendmode=false;
     return 0;
 }
 
 int t_users()
 {
-    friendmode=NA;
+    friendmode=false;
     modify_user_mode(LUSERS);
     range=num_visible_users();
     if( range == 0 ) {
@@ -767,7 +767,7 @@ int t_users()
         prints( "Ä¿Ç°ÎÞÊ¹ÓÃÕßÉÏÏß\n");
     }
     update_time=0;
-    choose(YEA,0,print_title,deal_key,show_userlist,do_query);
+    choose(true,0,print_title,deal_key,show_userlist,do_query);
     clear();
     return 0;
 }
@@ -776,7 +776,7 @@ int choose(int update,int defaultn,int (*title_show)(), int (*key_deal)(), int (
   int (*read)())
 {
     int         ch, number,deal;
-    readplan=NA;
+    readplan=false;
     (*title_show)();
     func_list_show=list_show;
     set_alarm(0,NULL,NULL);
@@ -803,7 +803,7 @@ int choose(int update,int defaultn,int (*title_show)(), int (*key_deal)(), int (
             update_endline();
             continue;
         }
-        if(readplan==YEA)
+        if(readplan==true)
         {
             if((*read)(page,num)==-1)
                 return num;
@@ -811,13 +811,13 @@ int choose(int update,int defaultn,int (*title_show)(), int (*key_deal)(), int (
         else{
             move( 3+num-page,0 ); prints( ">", number );}
         ch = egetch();
-        if(readplan==NA)
+        if(readplan==false)
             move( 3+num-page,0 ); prints( " " );
         if( ch == 'q' || ch == 'e' || ch == KEY_LEFT || ch == EOF )
         {
-            if(readplan==YEA)
+            if(readplan==true)
             {
-                readplan=NA;
+                readplan=false;
                 move(1,0);
                 clrtobot();
                 if((*list_show)()==-1)
@@ -843,7 +843,7 @@ case 'P': case 'b': case Ctrl('B'): case KEY_PGUP:
             else  num -= BBS_PAGESIZE;
             break;
         case ' ':
-            if(readplan==YEA){
+            if(readplan==true){
                 if( ++num >= range )  num = 0;
                 break;
             }
@@ -869,12 +869,12 @@ case '$':case KEY_END:
             /* fall through */
     case 'r': case KEY_RIGHT:
             {
-                if(readplan==YEA)
+                if(readplan==true)
                 {
                     if( ++num >= range )  num = 0;
                 }
                 else
-                    readplan=YEA;
+                    readplan=true;
                 break;
             }
         default:

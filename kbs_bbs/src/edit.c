@@ -428,7 +428,7 @@ register int pos ;
         curr_window_line++ ;
         currln++;
     }
-    redraw_everything = YEA ;
+    redraw_everything = true ;
 }
 
 /*
@@ -449,15 +449,15 @@ register struct textline *line ;
 {
     register int ovfl ;
     if(!line->next)
-        return YEA ;
+        return true ;
     /*if(*killsp(line->next->data) == '\0')
-      return YEA ;*/
+      return true ;*/
     ovfl = line->len + line->next->len - WRAPMARGIN ;
     if(ovfl < 0) {
         strcat(line->data, line->next->data) ;
         line->len += line->next->len ;
         delete_line(line->next) ;
-        return YEA ;
+        return true ;
     } else {
         register char *s ;
         register struct textline *p = line->next ;
@@ -468,11 +468,11 @@ register struct textline *line ;
         while(s!=p->data && *s != ' ')
             s-- ;
         if(s == p->data)
-            return YEA ;
+            return true ;
         split(p,(s - p->data) + 1) ;
         if(line->len + p->len >= WRAPMARGIN) {
             indigestion(0) ;
-            return YEA ;
+            return true ;
         }
         join(line) ;
         p = line->next ;
@@ -482,7 +482,7 @@ register struct textline *line ;
                 p->len++ ;
             }
         }
-        return NA ;
+        return false ;
     }
 }
 
@@ -493,7 +493,7 @@ register int ch ;
     register int i ;
     register char *s ;
     register struct textline *p = currline ;
-    int wordwrap = YEA ;
+    int wordwrap = true ;
 
     if(currpnt > p->len) {
         indigestion(1) ;
@@ -516,7 +516,7 @@ register int ch ;
     while(s!=p->data && *s != ' ')
         s-- ;
     if(s==p->data) {
-        wordwrap = NA ;
+        wordwrap = false ;
         s = p->data + (p->len -2) ;
     }
 
@@ -592,7 +592,7 @@ vedit_init()
     top_of_win = p ;
     curr_window_line = 0 ;
     currln=0;
-    redraw_everything = NA ;
+    redraw_everything = false ;
     CLEAR_MARK();
 }
 
@@ -694,7 +694,7 @@ char    *pmt, *abort;
     }
 #endif
 
-    getdata( 0, 0, pmt, abort, 3, DOECHO, NULL ,YEA);
+    getdata( 0, 0, pmt, abort, 3, DOECHO, NULL ,true);
     switch(abort[0]){
 case 'A': case 'a':     /* abort */
 case 'E': case 'e':     /* keep editing */
@@ -1252,7 +1252,7 @@ static int process_ESC_action(int action,int arg)
         break;
     case 'G':
         go();
-        redraw_everything = YEA;
+        redraw_everything = true;
         break;
     case 'E':
         sprintf( filename, "tmp/clip/%s.%c", currentuser->userid, arg);
@@ -1268,11 +1268,11 @@ static int process_ESC_action(int action,int arg)
         break;
     case 'N':
         searchline(searchtext);
-        redraw_everything = YEA;
+        redraw_everything = true;
         break;
     case 'S':
         search();
-        redraw_everything = YEA;
+        redraw_everything = true;
         break;
     case 'F':
         sprintf( buf, "%c[3%cm", 27, arg ); ve_insert_str( buf ); break;
@@ -1281,12 +1281,12 @@ static int process_ESC_action(int action,int arg)
     case 'R':
         ve_insert_str( ANSI_RESET );  break;
     case 'C':
-        editansi = showansi = 1; redraw_everything = YEA;
+        editansi = showansi = 1; redraw_everything = true;
         clear();  display_buffer(); redoscr();
         strcpy( msg, "已显示彩色编辑成果，即将切回单色模式" );
     }
 
-    if (strchr("FBRCM", action)) redraw_everything = YEA;
+    if (strchr("FBRCM", action)) redraw_everything = true;
 
     if (msg[ 0 ] != '\0') {
         if ( action == 'C' ) {   /* need redraw */
@@ -1393,7 +1393,7 @@ int     ch;
             break ;
         case Ctrl('G'): /* redraw screen */
                         clear() ;
-            redraw_everything = YEA ;
+            redraw_everything = true ;
             break ;
             /* Leeward 98.07.30 Change hot key for msgX */
             /*case Ctrl('Z'):  call help screen */
@@ -1403,7 +1403,7 @@ int     ch;
 #else
                         show_helpmenu( vedithelp );
 #endif
-            redraw_everything = YEA ;
+            redraw_everything = true ;
             break ;
     case Ctrl('R'): case KEY_LEFT: /* backward character */
     if(currpnt > 0 ){
@@ -1476,7 +1476,7 @@ int     ch;
             currln-=moveln;
             curr_window_line = getlineno() ;
             if( currpnt > currline->len )  currpnt = currline->len;
-            redraw_everything = YEA ;
+            redraw_everything = true ;
             break ;
     case Ctrl('F'): case KEY_PGDN: /* next page */
             top_of_win = forward_line( top_of_win, 22 ) ;
@@ -1497,7 +1497,7 @@ int     ch;
                 curr_window_line--;
                 currline=currline->prev;
             }
-            redraw_everything = YEA ;
+            redraw_everything = true ;
             break ;
     case Ctrl('A'): case KEY_HOME: /* begin of line */
             currpnt = 0 ;
@@ -1511,7 +1511,7 @@ int     ch;
             currpnt = 0 ;
             curr_window_line = 0 ;
             currln=0;
-            redraw_everything = YEA ;
+            redraw_everything = true ;
             break ;
         case Ctrl('T'): /* tail of file */
                         top_of_win = back_line(lastline,22) ;
@@ -1526,7 +1526,7 @@ int     ch;
                 currln-=2;
                 curr_window_line-=2;
             }
-            redraw_everything = YEA ;
+            redraw_everything = true ;
             break ;
     case Ctrl('O'): case KEY_INS: /* Toggle insert/overwrite */
             insert_character = !insert_character;
@@ -1558,7 +1558,7 @@ int     ch;
                 /* end of this modification             */
                 if(*killsp(currline->next->data) == '\0') {
                     delete_line(currline->next) ;
-                    redraw_everything = YEA ;
+                    redraw_everything = true ;
                     break;
                 }
                 p = currline ;
@@ -1569,7 +1569,7 @@ int     ch;
                         abort_bbs(0) ;
                     }
                 }
-                redraw_everything = YEA ;
+                redraw_everything = true ;
                 break ;
             }
             currpnt-- ;
@@ -1592,7 +1592,7 @@ int     ch;
                     }
                 }else if(currpnt==0)
                     vedit_key( Ctrl('K') );
-                redraw_everything = YEA ;
+                redraw_everything = true ;
                 break;
             }
             delete_char() ;
@@ -1657,7 +1657,7 @@ int     ch;
                     curr_window_line--;
                     currln--;
                 }
-                redraw_everything = YEA ;
+                redraw_everything = true ;
                 break ;
             }
             if(currline->len == currpnt) {
@@ -1670,7 +1670,7 @@ int     ch;
                         abort_bbs(0) ;
                     }
                 }
-                redraw_everything = YEA ;
+                redraw_everything = true ;
                 break ;
             }
             currline->len = currpnt ;
@@ -1686,7 +1686,7 @@ int     ch;
             indigestion(6) ;
         } else {
             top_of_win = top_of_win->prev ;
-            /*            redraw_everything = YEA ;
+            /*            redraw_everything = true ;
                         move(t_lines-2,0);
                         clrtoeol();
                         refresh();*/
@@ -1701,7 +1701,7 @@ int     ch;
                 indigestion(7) ;
             } else {
                 top_of_win = top_of_win->next ;
-                /*          redraw_everything = YEA ;
+                /*          redraw_everything = true ;
                           move(t_lines-1,0);
                           clrtoeol();
                           refresh();*/
@@ -1710,17 +1710,17 @@ int     ch;
         }
     }
 
-    if ( editansi /*|| mark_on*/ ) redraw_everything = YEA;
+    if ( editansi /*|| mark_on*/ ) redraw_everything = true;
     shift = (currpnt+2 > STRLEN) ?
             (currpnt/(STRLEN-scrollen))*(STRLEN-scrollen) : 0;
     msgline();
-    if(shifttmp!=shift||redraw_everything ==YEA)
+    if(shifttmp!=shift||redraw_everything ==true)
     {
-        redraw_everything = YEA ;
+        redraw_everything = true ;
         shifttmp=shift;
     }
     else
-        redraw_everything = NA ;
+        redraw_everything = false ;
 
     move(curr_window_line,0) ;
     if(currline->attr & M_MARK)
@@ -1776,7 +1776,7 @@ int headlines ;
                 firstline=st_tmp->next; /* 继续编辑则再次修改第一行的指针*/
                 firstline->prev=NULL;
             }
-            redraw_everything = YEA ;
+            redraw_everything = true ;
             break;
         case KEY_ESC:
             if ( KEY_ESC_arg == KEY_ESC ) insert_char(KEY_ESC);
@@ -1784,7 +1784,7 @@ int headlines ;
                 newch = vedit_process_ESC(KEY_ESC_arg);
                 clear();
             }
-            redraw_everything = YEA;
+            redraw_everything = true;
             break;
         default:
             vedit_key( ch );
@@ -1792,7 +1792,7 @@ int headlines ;
         if(redraw_everything){
             display_buffer() ;
         }
-        redraw_everything = NA ;
+        redraw_everything = false ;
         shift = (currpnt+2> STRLEN) ?
                 (currpnt/(STRLEN-scrollen))*(STRLEN-scrollen) : 0;
         move(curr_window_line,currpnt-shift) ;

@@ -303,7 +303,7 @@ char    *pmt, *buf;
 {
     move(t_lines+bot, 0);
     clrtoeol();
-    getdata( t_lines+bot, 0, pmt, buf, 39, DOECHO, NULL ,YEA);
+    getdata( t_lines+bot, 0, pmt, buf, 39, DOECHO, NULL ,true);
 }
 
 /* a_SeSave ÓÃÀ´É¾³ı´æµ½Ôİ´æµµÊ±µÄÎÄ¼şÍ·ºÍÎ² Life 1997.4.6 */
@@ -729,7 +729,7 @@ int     mode;
                 move(1,0) ;
                 clrtoeol() ;
                 /*$$$$$$$$ Multi-BM Input, Modified By Excellent $$$$$$$*/
-                getdata(1,0,"°åÖ÷: ",uident,STRLEN-1,DOECHO,NULL,YEA) ;
+                getdata(1,0,"°åÖ÷: ",uident,STRLEN-1,DOECHO,NULL,true) ;
                 if(uident[0]!='\0')
                     sprintf( buf, "%-38.38s(BM: %s)", title,uident);
                 else
@@ -1069,7 +1069,7 @@ int     ch;
                         clrtoeol() ;
                         /*usercomplete("°åÖ÷: ",uident) ;*/
                         /*$$$$$$$$ Multi-BM Input, Modified By Excellent $$$$$$$*/
-                        getdata(1,0,"°åÖ÷: ",uident,STRLEN-1,DOECHO,NULL,YEA) ;
+                        getdata(1,0,"°åÖ÷: ",uident,STRLEN-1,DOECHO,NULL,true) ;
                         if(uident[0]!='\0')
                             sprintf( genbuf, "%-38.38s(BM: %s)", changed_T,uident);
                         else
@@ -1259,10 +1259,10 @@ case KEY_PGDN: case Ctrl( 'F' ): case ' ':
                 }else
                     sprintf( fname, "%s/%s", path, me.item[ me.now ]->fname );
                 if( dashf( fname ) ) {
-                    /*ansimore( fname, YEA );*/
+                    /*ansimore( fname, true );*/
                     /* Leeward 98.09.13 ĞÂÌí¹¦ÄÜ¡Ã
                     £¬ÓÃÉÏ£¯ÏÂ¼ıÍ·Ö±½ÓÌø×ªµ½Ç°£¯ºóÒ»Ïî */
-                    ansimore( fname, NA );
+                    ansimore( fname, false );
                     prints("[1m[44m[31m[ÔÄ¶Á¾«»ªÇø×ÊÁÏ]  [33m½áÊø Q,¡û ©¦ ÉÏÒ»Ïî×ÊÁÏ U,¡ü©¦ ÏÂÒ»Ïî×ÊÁÏ <Enter>,<Space>,¡ı [m");
                     switch( ch = egetch() )
                     {

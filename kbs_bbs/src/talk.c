@@ -103,13 +103,13 @@ char
 canpage(friend, pager)
 int friend,pager;
 {
-    if ((pager&ALL_PAGER) || HAS_PERM(currentuser,PERM_SYSOP)) return YEA;
+    if ((pager&ALL_PAGER) || HAS_PERM(currentuser,PERM_SYSOP)) return true;
     if ((pager&FRIEND_PAGER))
     {
         if(friend)
-            return YEA;
+            return true;
     }
-    return NA;
+    return false;
 }
 
 int
@@ -179,7 +179,7 @@ char userid[IDLEN];
     {
         prints("[36mÃ»ÓĞ¸öÈËËµÃ÷µµ[m\n");
         /*fclose(pf);*/ /* Leeward 98.04.20 */
-        return NA;
+        return false;
     }
     else
     {
@@ -191,7 +191,7 @@ char userid[IDLEN];
             else break;
         }
         fclose(pf);
-        return YEA;
+        return true;
     }
 }
 
@@ -466,7 +466,7 @@ list:		move(5,0) ;
             clrtobot() ;
             tmp=ucount+8;
             getdata( tmp, 0, "ÇëÑ¡Ò»¸öÄã¿´µÄ±È½ÏË³ÑÛµÄ [0]: ",
-                     buf, 4, DOECHO, NULL,YEA);
+                     buf, 4, DOECHO, NULL,true);
             unum=atoi(buf);
             if(unum == 0) { clear(); return 0; }
             if(unum > ucount || unum < 0) {
@@ -528,7 +528,7 @@ list:		move(5,0) ;
         clrtoeol() ;
         return -1 ;
     }
-    if (NA==canIsend2(uin.userid))/*Haohmaru.99.6.6.¼ì²éÊÇ·ñ±»ignore*/
+    if (false==canIsend2(uin.userid))/*Haohmaru.99.6.6.¼ì²éÊÇ·ñ±»ignore*/
     {
         move(2,0) ;
         prints("¶Ô·½¾Ü¾øºÍÄãÁÄÌì\n");
@@ -547,7 +547,7 @@ list:		move(5,0) ;
         move( 3, 0 );
         clrtobot();
         show_user_plan(uident);
-        getdata( 2, 0, "È·¶¨ÒªºÍËû/ËıÁÄÌìÂğ? (Y/N) [N]: ", genbuf, 4, DOECHO, NULL,YEA);
+        getdata( 2, 0, "È·¶¨ÒªºÍËû/ËıÁÄÌìÂğ? (Y/N) [N]: ", genbuf, 4, DOECHO, NULL,true);
         if ( *genbuf != 'y' && *genbuf != 'Y' ) {
             clear();
             return 0;
@@ -576,7 +576,7 @@ list:		move(5,0) ;
             perror("socket name err") ;
             return -1 ;
         }
-        uinfo.sockactive = YEA ;
+        uinfo.sockactive = true ;
         uinfo.sockaddr = server.sin_port ;
         uinfo.destuid = tuid ;
         UPDATE_UTMP(sockactive,uinfo);
@@ -589,7 +589,7 @@ list:		move(5,0) ;
 
         listen(sock,1) ;
         add_io(sock,20) ;
-        while(YEA) {
+        while(true) {
             int ch ;
             ch = igetch() ;
             if(ch == I_TIMEOUT) {
@@ -601,7 +601,7 @@ list:		move(5,0) ;
                     prints("¶Ô·½ÒÑÀëÏß\n") ;
                     pressreturn() ;
                     /*Add by SmallPig 2 lines*/
-                    uinfo.sockactive = NA ;
+                    uinfo.sockactive = false ;
                     uinfo.destuid = 0 ;
                     return -1 ;
                 }
@@ -612,7 +612,7 @@ list:		move(5,0) ;
             if(ch == '\004') {
                 add_io(0,0) ;
                 close(sock) ;
-                uinfo.sockactive = NA ;
+                uinfo.sockactive = false ;
                 uinfo.destuid = 0 ;
                 UPDATE_UTMP(sockactive,uinfo);
                 UPDATE_UTMP(destuid,uinfo);
@@ -628,7 +628,7 @@ list:		move(5,0) ;
         }
         add_io(0,0) ;
         close(sock) ;
-        uinfo.sockactive = NA ;
+        uinfo.sockactive = false ;
         uinfo.destuid = 0 ;
         UPDATE_UTMP(sockactive,uinfo);
         UPDATE_UTMP(destuid,uinfo);
@@ -747,7 +747,7 @@ int servicepage(int     line,char    *mesg)
     char buf[STRLEN];
     int tuid = search_ulist( &ui, cmpunums, usernum );
 
-    if(tuid == 0 || !ui.sockactive) talkrequest = NA;
+    if(tuid == 0 || !ui.sockactive) talkrequest = false;
     if (!talkrequest) {
         if (page_requestor[0]) {
             switch (uinfo.mode) {
@@ -761,13 +761,13 @@ int servicepage(int     line,char    *mesg)
             memset(page_requestor, 0, STRLEN);
             last_check = 0;
         }
-        return NA;
+        return false;
     } else {
         now = time(0);
         if (now - last_check > P_INT) {
             last_check = now;
             if (!page_requestor[0] && setpagerequest(0/*For Talk*/))
-                return NA;
+                return false;
             else switch (uinfo.mode) {
                 case TALK:
                     move(line, 0);
@@ -779,7 +779,7 @@ int servicepage(int     line,char    *mesg)
                 }
         }
     }
-    return YEA;
+    return true;
 }
 
 int
@@ -809,9 +809,9 @@ talkreply()
     struct sockaddr_in sin ;
     char inbuf[STRLEN*2];
 
-    talkrequest = NA ;
+    talkrequest = false ;
 #ifdef BBSNTALKD
-    ntalkrequest = NA ;
+    ntalkrequest = false ;
 #endif
     if (setpagerequest(0/*For Talk*/)) return 0;
     /*  added by netty  */
@@ -838,7 +838,7 @@ talkreply()
 #endif
     memset(page_requestor, 0, sizeof(page_requestor));
     memset(page_requestorid, 0, sizeof(page_requestorid));
-    getdata(0,0, inbuf ,buf,STRLEN,DOECHO,NULL,YEA) ;
+    getdata(0,0, inbuf ,buf,STRLEN,DOECHO,NULL,true) ;
     /*        
     gethostname(hostname,STRLEN) ;
     if(!(h = gethostbyname(hostname))) {
@@ -867,7 +867,7 @@ talkreply()
     {
         move(1,0);
         clrtobot();
-        getdata(1,0, "Áô»°£º" ,reason,50,DOECHO,NULL,YEA) ;
+        getdata(1,0, "Áô»°£º" ,reason,50,DOECHO,NULL,true) ;
     }
     write(a,buf,1) ;
     if(buf[0]=='M'||buf[0]=='m')
@@ -1068,7 +1068,7 @@ endmsg(void* data)
     talkidletime+=60;
     if(talkidletime>=IDLE_TIMEOUT)
         kill(getpid(),SIGHUP);
-    if(uinfo.in_chat == YEA)
+    if(uinfo.in_chat == true)
         return;
     getyx(&x,&y);
     update_endline();
@@ -1084,7 +1084,7 @@ static int do_talk(int fd)
 {
     struct talk_win     mywin, itswin;
     char        mid_line[ 256 ];
-    int         page_pending = NA;
+    int         page_pending = false;
     int         i,i2;
     int         previous_mode;
 #ifdef TALK_LOG
@@ -1115,7 +1115,7 @@ static int do_talk(int fd)
     add_io(fd,0) ;
     add_flush(talkflush) ;
 
-    while(YEA) {
+    while(true) {
         int ch ;
         if (talkrequest) 
             page_pending = servicepage( (t_lines-1) / 2, mid_line );
@@ -1258,9 +1258,9 @@ static int do_talk(int fd)
     /*---	changed by period	2000-09-18	---*/
     *genbuf = 0;
     move(t_lines-1,0);
-    if(askyn("ÊÇ·ñ¼Ä»ØÁÄÌì¼ÍÂ¼ ", NA)==YEA) {
+    if(askyn("ÊÇ·ñ¼Ä»ØÁÄÌì¼ÍÂ¼ ", false)==true) {
         /*---						---*
-            getdata(23, 0, "ÊÇ·ñ¼Ä»ØÁÄÌì¼ÍÂ¼ [Y/n]: ", genbuf, 2, DOECHO, NULL, YEA); 
+            getdata(23, 0, "ÊÇ·ñ¼Ä»ØÁÄÌì¼ÍÂ¼ [Y/n]: ", genbuf, 2, DOECHO, NULL, true); 
 
             if (genbuf[0] != 'N' || genbuf[0] != 'n')  {
          *---	also '||' used above is wrong...	---*/
@@ -1301,10 +1301,10 @@ struct user_info *uentp;
         int ovv;
 
         if(i<numf||friendmode)
-            ovv=YEA;
+            ovv=true;
         else
-            ovv=NA;
-        sprintf(ubuf,"%s%-12.12s %s%-10.10s[m",(ovv)?"[32m£®":"  ",user_record[i]->userid,(user_record[i]->invisible==YEA)?"[34m":"",
+            ovv=false;
+        sprintf(ubuf,"%s%-12.12s %s%-10.10s[m",(ovv)?"[32m£®":"  ",user_record[i]->userid,(user_record[i]->invisible==true)?"[34m":"",
                 modestring(user_record[i]->mode, user_record[i]->destuid, 0, NULL));
         prints("%s",ubuf);
         if((i+1)%3==0)
@@ -1324,7 +1324,7 @@ char *modestr;
     extern int RMSG;
     int chkmailflag=0;
 
-    if(RMSG!=YEA)/*Èç¹ûÊÕµ½ Msg µÚÒ»ĞĞ²»ÏÔÊ¾¡£*/
+    if(RMSG!=true)/*Èç¹ûÊÕµ½ Msg µÚÒ»ĞĞ²»ÏÔÊ¾¡£*/
     {
         move(0,0);
         clrtoeol();
@@ -1397,14 +1397,14 @@ t_monitor()
     ulistpage=0;
     do_list("Ì½ÊÓÃñÇé");
     set_alarm(M_INT*idle_count,sig_catcher,NULL);
-    while (YEA) {
+    while (true) {
         i=egetch();
         if (Ctrl('Z') == i) r_lastmsg(); /* Leeward 98.07.30 support msgX */
         if(i=='f' ||i=='F'){
-            if(friendmode==YEA)
-                friendmode=NA;
+            if(friendmode==true)
+                friendmode=false;
             else
-                friendmode=YEA;
+                friendmode=true;
             do_list("Ì½ÊÓÃñÇé");
         }
         if(i == KEY_DOWN)
@@ -1474,7 +1474,7 @@ char    *cmdfile;
         return;
     }
     save_pager = uinfo.pager;
-    if( pager == NA ) {
+    if( pager == false ) {
         uinfo.pager = 0;
     }
     modify_user_mode( umode );
@@ -1483,58 +1483,58 @@ char    *cmdfile;
     ******/    
     sethomepath(userhome, currentuser->userid);
     sprintf( buf, "/bin/sh %s %s %s %s", cmdfile, userhome,currentuser->userid, currentuser->username);
-    RUNSH=YEA;
+    RUNSH=true;
     do_exec(buf,NULL) ;
-    RUNSH=NA;
+    RUNSH=false;
     uinfo.pager = save_pager;
     clear();
 }
 
 void
 t_irc() {
-    exec_cmd( IRCCHAT, NA, "bin/irc.sh" );
+    exec_cmd( IRCCHAT, false, "bin/irc.sh" );
 }
 #endif /* IRC */
 
 /*
 void
 t_announce() {
-    exec_cmd( CSIE_ANNOUNCE, YEA, "bin/faq.sh" );
+    exec_cmd( CSIE_ANNOUNCE, true, "bin/faq.sh" );
 }
 
 void
 t_tin() {
-    exec_cmd( CSIE_TIN, YEA, "bin/tin.sh" );
+    exec_cmd( CSIE_TIN, true, "bin/tin.sh" );
 }
 
 void
 t_gopher() {
-    exec_cmd( CSIE_GOPHER, YEA, "bin/gopher.sh" );
+    exec_cmd( CSIE_GOPHER, true, "bin/gopher.sh" );
 }
 void
 t_www() {
-    exec_cmd( WWW, YEA, "bin/www.sh" );
+    exec_cmd( WWW, true, "bin/www.sh" );
 }*/
 
 /*Add By Excellent*/
 /*void
 x_excemj() {
     clear();
-    exec_cmd( EXCE_MJ, YEA, "bin/excemj.sh" );
+    exec_cmd( EXCE_MJ, true, "bin/excemj.sh" );
         }
 */
 /*Add By Excellent */
 /*void
 x_excebig2() {
     clear();
-    exec_cmd( EXCE_BIG2, YEA, "bin/excebig2.sh" );
+    exec_cmd( EXCE_BIG2, true, "bin/excebig2.sh" );
         }
 */
 /* Add By Excellent */
 /*void
 x_excechess() {
     clear();
-    exec_cmd( EXCE_CHESS, YEA, "bin/excechess.sh" );
+    exec_cmd( EXCE_CHESS, true, "bin/excechess.sh" );
         }        
 */
 
@@ -1613,7 +1613,7 @@ char *uident;
         move(2,0);
         clrtoeol();
         sprintf(genbuf,"ÇëÊäÈë¸øºÃÓÑ¡¾%s¡¿µÄËµÃ÷: ",tmp.id);
-        getdata(2,0,genbuf, tmp.exp,15,DOECHO,NULL,YEA);
+        getdata(2,0,genbuf, tmp.exp,15,DOECHO,NULL,true);
     }
     else
     {
@@ -1622,7 +1622,7 @@ char *uident;
         refresh();
         strcpy(tmp.id,uident);
         sprintf(genbuf,"ÇëÊäÈë¸øºÃÓÑ¡¾%s¡¿µÄËµÃ÷: ",tmp.id);
-        getdata(t_lines-2,0,genbuf, tmp.exp,15,DOECHO,NULL,YEA);
+        getdata(t_lines-2,0,genbuf, tmp.exp,15,DOECHO,NULL,true);
     }
     sethomefile( genbuf, currentuser->userid,"friends" );
     n=append_record(genbuf,&tmp,sizeof(struct friends));
@@ -1692,7 +1692,7 @@ char *direc;
     if(pos>0)
     {
         sprintf(buf,"ÇëÊäÈë %s µÄĞÂºÃÓÑËµÃ÷: ",fh->id);
-        getdata(t_lines-2,0,buf,nh.exp,15,DOECHO,NULL,NA);
+        getdata(t_lines-2,0,buf,nh.exp,15,DOECHO,NULL,false);
     }
     if(substitute_record(direc, &nh, sizeof(nh), pos)<0)
         report("Friend files subs err");
@@ -1739,20 +1739,20 @@ struct friends *fh;
 char *direct;
 {
     char buf[STRLEN];
-    int deleted=NA;
+    int deleted=false;
 
     saveline(t_lines-2, 0, NULL);
     move(t_lines-2,0);
     clrtoeol();
     sprintf(buf,"ÊÇ·ñ°Ñ¡¾%s¡¿´ÓºÃÓÑÃûµ¥ÖĞÈ¥³ı",fh->id);
-    if(askyn(buf,NA)==YEA)
+    if(askyn(buf,false)==true)
     {
         move(t_lines-2,0);
         clrtoeol();
         if(deleteoverride(fh->id)==1)
         {
             prints("ÒÑ´ÓºÃÓÑÃûµ¥ÖĞÒÆ³ı¡¾%s¡¿,°´ÈÎºÎ¼ü¼ÌĞø...",fh->id);
-            deleted=YEA;
+            deleted=true;
         }
         else
             prints("ÕÒ²»µ½¡¾%s¡¿,°´ÈÎºÎ¼ü¼ÌĞø...",fh->id);
@@ -1897,7 +1897,7 @@ wait_friend()
     }
     sprintf(buf,"ÄãÈ·¶¨Òª°Ñ %s ¼ÓÈëÏµÍ³Ñ°ÈËÃûµ¥ÖĞ",uid);
     move(2,0);
-    if(askyn(buf,YEA)==NA)
+    if(askyn(buf,true)==false)
     {
         clear();
         return -1;
@@ -1997,12 +1997,12 @@ int badlist()
         {
             move(1,0);
             prints("ÒÑ¾­µ½´ïºÚÃûµ¥×î´óÈËÊıÏŞÖÆ");
-            getdata(0,0,"(D)É¾³ı (C)Çå³ı (Q)·µ»Ø? [Q]£º " , tmp,2,DOECHO,NULL,YEA);
+            getdata(0,0,"(D)É¾³ı (C)Çå³ı (Q)·µ»Ø? [Q]£º " , tmp,2,DOECHO,NULL,true);
         }
         else if (cnt<=0)
-            getdata(0,0,"(A)Ôö¼Ó (Q)·µ»Ø? [Q]£º " , tmp,2,DOECHO,NULL,YEA);
+            getdata(0,0,"(A)Ôö¼Ó (Q)·µ»Ø? [Q]£º " , tmp,2,DOECHO,NULL,true);
         else
-            getdata(0,0,"(A)Ôö¼Ó (D)É¾³ı (C)Çå³ı (Q)·µ»Ø? [Q]£º " , tmp,2,DOECHO,NULL,YEA);
+            getdata(0,0,"(A)Ôö¼Ó (D)É¾³ı (C)Çå³ı (Q)·µ»Ø? [Q]£º " , tmp,2,DOECHO,NULL,true);
 
 
         if(tmp[0]=='Q'||tmp[0]=='q'||tmp[0]=='\0')
@@ -2080,7 +2080,7 @@ int badlist()
         }
         else if ((tmp[0]=='c'||tmp[0]=='C')&&(cnt>0))
         {
-            getdata(1,0,"È·¶¨É¾³ıºÚÃûµ¥? (Y/N) [N]:" , tmp,2,DOECHO,NULL,YEA);
+            getdata(1,0,"È·¶¨É¾³ıºÚÃûµ¥? (Y/N) [N]:" , tmp,2,DOECHO,NULL,true);
             if (tmp[0]=='y'||tmp[0]=='Y') {
                 unlink(path);
                 /*cnt=list_ignore(path);*/

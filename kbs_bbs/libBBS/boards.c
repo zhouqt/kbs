@@ -495,9 +495,9 @@ int junkboard(char* currboard)  /* 判断当前版是否为 junkboards */
 {
     struct boardheader* bh=getbcache(currboard);
     if (bh&&(bh->flag & BOARD_JUNK)) /* Checking if DIR access mode is "555" */
-        return YEA;
+        return true;
     else
-        return NA;
+        return false;
 /*    return seek_in_file("etc/junkboards",currboard);*/
 }
 
@@ -506,18 +506,18 @@ checkreadonly( char *board) /* 检查是否是只读版面 */
 {
     struct boardheader* bh=getbcache(board);
     if (bh&&(bh->flag & BOARD_READONLY)) /* Checking if DIR access mode is "555" */
-        return YEA;
+        return true;
     else
-        return NA;
+        return false;
 }
 
 int anonymousboard(char* board) /*检查版面是不是匿名版*/
 {
     struct boardheader* bh=getbcache(board);
     if (bh&&(bh->flag & BOARD_ANNONY)) /* Checking if DIR access mode is "555" */
-        return YEA;
+        return true;
     else
-        return NA;
+        return false;
 }
 
 int
@@ -567,9 +567,9 @@ int chk_BM_instr(const char BMstr[STRLEN-1],const char    bmname[IDLEN+2])
     while(1)
     {
         if(ptr==NULL)
-            return NA;
+            return false;
         if(!strcmp(ptr,bmname/*,strlen(currentuser->userid)*/))
-            return YEA;
+            return true;
         ptr=strtok(NULL,",: ;|&()\0\n");
     }
 }
@@ -579,10 +579,10 @@ int chk_currBM(const char BMstr[STRLEN-1],struct userec* user)
 	/* 根据输入的版主名单 判断user是否有版主 权限*/
 {
     if(HAS_PERM(currentuser,PERM_OBOARDS)||HAS_PERM(currentuser,PERM_SYSOP))
-        return YEA;
+        return true;
 
     if(!HAS_PERM(currentuser,PERM_BOARDS))
-        return NA;
+        return false;
 
     return chk_BM_instr(BMstr, currentuser->userid);
 }

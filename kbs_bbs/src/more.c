@@ -161,7 +161,7 @@ setcalltime()
 
     move(1,0);
     clrtoeol();
-    getdata(1,0,"¼¸·ÖÖÓááÒªÏµÍ³ÌáÐÑÄã: ",ans,3,DOECHO,NULL,YEA);
+    getdata(1,0,"¼¸·ÖÖÓááÒªÏµÍ³ÌáÐÑÄã: ",ans,3,DOECHO,NULL,true);
     if(!isdigit(ans[0]))
         return;
     ttt=atoi(ans);
@@ -364,7 +364,7 @@ static int rawmore(char    *filename, int     promptend, int     row, int     nu
     struct stat st ;
     int         fd, tsize;
     char        buf[ 256 ] ;
-    int         i, ch, viewed, pos ,isin=NA,titleshow=NA;
+    int         i, ch, viewed, pos ,isin=false,titleshow=false;
     int         numbytes ;
     int         curr_row = row;
     int         linesread = 0;
@@ -412,12 +412,12 @@ static int rawmore(char    *filename, int     promptend, int     row, int     nu
                     ||(!strncmp(buf,"¡ù ÒýÊö",7)))
             {
                 prints("[33m%s[m",buf);
-                titleshow=YEA;
+                titleshow=true;
             }else if(buf[0]!=':'&&buf[0]!='>')
             {
-                if(isin==YEA)
+                if(isin==true)
                 {
-                    isin=NA;
+                    isin=false;
                     prints("[m");
                 }
                 if(check_stuffmode())
@@ -432,7 +432,7 @@ static int rawmore(char    *filename, int     promptend, int     row, int     nu
                     showstuff(buf);
                 else
                     prints("%s",buf);
-                isin=YEA;
+                isin=true;
             }
             i++ ;
             pos++ ;

@@ -38,7 +38,7 @@ void user_display(char    *filename,int number,int mode)
         }
         if(count==number)
         {
-            if(mode==YEA)
+            if(mode==true)
                 showstuff(buf);
             else
             {

@@ -70,12 +70,12 @@ int showperminfoX(unsigned int pbits,int i,int flag ) /* Leeward 98.06.05 */
         move(6 + (i >= 16) + (i >= 10) + (i >=11) + (i >= 14) + (i >= 17) + (i >=20) + (i >= 21) + (i>=29) + (i>=28) + (i>=26), 0);
         prints( buf );
         refresh();
-        return YEA;
+        return true;
     }
     else
     {
         if (pbits) bell();
-        return NA;
+        return false;
     }
 }
 
@@ -89,7 +89,7 @@ showperminfo( unsigned int pbits,int i,int flag)
     move( i+6-(( i>15)? 16:0) , 0+(( i>15)? 40:0) );
     prints( buf );
     refresh();
-    return YEA;
+    return true;
 }
 /* bad 2002.7.6 */
 int
@@ -106,13 +106,13 @@ showperminfo2( unsigned int pbits,unsigned int basic,int i,int flag)
     move( i+6-(( i>15)? 16:0) , 0+(( i>15)? 50:0) );
     prints( buf );
     refresh();
-    return YEA;
+    return true;
 }
 
 unsigned int setperms(unsigned int pbits,char *prompt,int numbers,int (*showfunc)(unsigned int ,int ,int))
 {
     int lastperm = numbers - 1;
-    int i, done = NA;
+    int i, done = false;
     char choice[3];
 
     move(4,0);
@@ -121,17 +121,17 @@ unsigned int setperms(unsigned int pbits,char *prompt,int numbers,int (*showfunc
     clrtobot();
     /*    pbits &= (1 << numbers) - 1;*/
     for (i=0; i<=lastperm; i++) {
-        (*showfunc)( pbits, i,NA);
+        (*showfunc)( pbits, i,false);
     }
     while (!done) {
-        getdata(t_lines-1, 0, "Ñ¡Ôñ(ENTER ½áÊø): ",choice,2,DOECHO,NULL,YEA);
+        getdata(t_lines-1, 0, "Ñ¡Ôñ(ENTER ½áÊø): ",choice,2,DOECHO,NULL,true);
         *choice = toupper(*choice);
-        if (*choice == '\n' || *choice == '\0') done = YEA;
+        if (*choice == '\n' || *choice == '\0') done = true;
         else if (*choice < 'A' || *choice > 'A' + lastperm) bell();
         else {
             i = *choice - 'A';
             pbits ^= (1 << i);
-            if((*showfunc)( pbits, i ,YEA)==NA)
+            if((*showfunc)( pbits, i ,true)==false)
             {
                 pbits ^= (1 << i);
             }
@@ -143,7 +143,7 @@ unsigned int setperms(unsigned int pbits,char *prompt,int numbers,int (*showfunc
 unsigned int setperms2(unsigned int pbits,unsigned int basic,char *prompt,int numbers,int (*showfunc)(unsigned int ,unsigned int,int ,int))
 {
     int lastperm = numbers - 1;
-    int i, done = NA;
+    int i, done = false;
     char choice[3];
 
     move(4,0);
@@ -152,17 +152,17 @@ unsigned int setperms2(unsigned int pbits,unsigned int basic,char *prompt,int nu
     clrtobot();
     /*    pbits &= (1 << numbers) - 1;*/
     for (i=0; i<=lastperm; i++) {
-        (*showfunc)( pbits, basic, i,NA);
+        (*showfunc)( pbits, basic, i,false);
     }
     while (!done) {
-        getdata(t_lines-1, 0, "Ñ¡Ôñ(ENTER ½áÊø): ",choice,2,DOECHO,NULL,YEA);
+        getdata(t_lines-1, 0, "Ñ¡Ôñ(ENTER ½áÊø): ",choice,2,DOECHO,NULL,true);
         *choice = toupper(*choice);
-        if (*choice == '\n' || *choice == '\0') done = YEA;
+        if (*choice == '\n' || *choice == '\0') done = true;
         else if (*choice < 'A' || *choice > 'A' + lastperm) bell();
         else {
             i = *choice - 'A';
             pbits ^= (1 << i);
-            if((*showfunc)( pbits, basic,i ,YEA)==NA)
+            if((*showfunc)( pbits, basic,i ,true)==false)
             {
                 pbits ^= (1 << i);
             }
@@ -276,7 +276,7 @@ p_level()
     {
         prints("ÓÃ»§ '%s' ÏÖÔÚÃ»ÓĞ·¢ÎÄÈ¨ÏŞ\n",lookupuser->userid) ;
     }
-    getdata(12,0,"È·¶¨ÒªĞŞ¸Ä¸ÃÓÃ»§µÄ·¢ÎÄÈ¨ÏŞ (Y/N)? [N]: ",genbuf,4,DOECHO,NULL,YEA);
+    getdata(12,0,"È·¶¨ÒªĞŞ¸Ä¸ÃÓÃ»§µÄ·¢ÎÄÈ¨ÏŞ (Y/N)? [N]: ",genbuf,4,DOECHO,NULL,true);
 
     if(*genbuf=='y'||*genbuf=='Y'){
         lookupuser->userlevel ^= PERM_POST;/* ¸Ä±ä¸ÃÓÃ»§È¨ÏŞ */
@@ -530,7 +530,7 @@ XCheckLevel() /* Leeward 98.06.05 */
 
                 /*sprintf(secu, "ÁĞÊ¾¾ßÓĞÌØ¶¨È¨ÏŞµÄ %ld ¸öÓÃ»§µÄ×ÊÁÏ", count);*/
                 clear();
-                ansimore(buffer, NA);
+                ansimore(buffer, false);
                 clear();
                 move(2, 0);
                 prints("ÁĞÊ¾²Ù×÷Íê³É");
@@ -621,7 +621,7 @@ x_cloak()
 {
     modify_user_mode( GMENU );
     report("toggle cloak");
-    uinfo.invisible = (uinfo.invisible)?NA:YEA ;
+    uinfo.invisible = (uinfo.invisible)?false:true ;
 	UPDATE_UTMP(invisible,uinfo);
     if (!uinfo.in_chat) {
         move(1,0) ;
@@ -667,7 +667,7 @@ x_edits()
     }
     prints("[[32m%d[m] ¶¼²»Ïë¸Ä\n",num+1);
 
-    getdata(num+5,0,"ÄãÒª±àĞŞÄÄÒ»Ïî¸öÈËµµ°¸: ",ans,2,DOECHO,NULL,YEA);
+    getdata(num+5,0,"ÄãÒª±àĞŞÄÄÒ»Ïî¸öÈËµµ°¸: ",ans,2,DOECHO,NULL,true);
     if(ans[0]-'0'<=0 || ans[0]-'0'>num|| ans[0]=='\n'|| ans[0]=='\0')
         return;
 
@@ -683,7 +683,7 @@ x_edits()
     move(3,0);
     clrtobot();
     sprintf(buf,"(E)±à¼­ (D)É¾³ı %s? [E]: ",explain_file[ch]);
-    getdata(3,0,buf,ans,2,DOECHO,NULL,YEA);
+    getdata(3,0,buf,ans,2,DOECHO,NULL,true);
     if (ans[0] == 'D' || ans[0] == 'd') {
         unlink(genbuf);
         move(5,0);
@@ -695,7 +695,7 @@ x_edits()
         return;
     }
     modify_user_mode( EDITUFILE);
-    aborted = vedit(genbuf, NA);
+    aborted = vedit(genbuf, false);
     clear();
     if (!aborted) {
         prints("%s ¸üĞÂ¹ı\n",explain_file[ch]);
@@ -746,7 +746,7 @@ a_edits()
     prints("[[32m%2d[m] ¶¼²»Ïë¸Ä\n",num+1);
 
 	/* ÏÂÃæµÄ21ÊÇĞĞºÅ£¬ÒÔºóÌí¼Ó£¬¿ÉÒÔÏàÓ¦µ÷Õû */
-    getdata(21,0,"ÄãÒª±àĞŞÄÄÒ»ÏîÏµÍ³µµ°¸: ",ans,3,DOECHO,NULL,YEA);
+    getdata(21,0,"ÄãÒª±àĞŞÄÄÒ»ÏîÏµÍ³µµ°¸: ",ans,3,DOECHO,NULL,true);
     ch=atoi(ans);
     if(!isdigit(ans[0])||ch<=0 || ch>num|| ans[0]=='\n'|| ans[0]=='\0')
         return;
@@ -755,7 +755,7 @@ a_edits()
     move(2,0);
     clrtobot();
     sprintf(buf,"(E)±à¼­ (D)É¾³ı %s? [E]: ",explain_file[ch]);
-    getdata(3,0,buf,ans,2,DOECHO,NULL,YEA);
+    getdata(3,0,buf,ans,2,DOECHO,NULL,true);
     if (ans[0] == 'D' || ans[0] == 'd') {
         {
             char        secu[STRLEN];
@@ -772,7 +772,7 @@ a_edits()
         return;
     }
     modify_user_mode( EDITSFILE);
-    aborted = vedit(genbuf, NA);
+    aborted = vedit(genbuf, false);
     clear();
     if (aborted!=-1) {
         prints("%s ¸üĞÂ¹ı",explain_file[ch]);
@@ -831,7 +831,7 @@ int zsend_file( char *filename, char *title )
        move(t_lines-1, 0);
        clrtoeol();
        strcpy(buf,"N");
-       getdata( t_lines-1, 0, "ÄúÈ·¶¨ÒªÊ¹ÓÃZmodem´«ÊäÎÄ¼şÃ´?[y/N]", buf, 2, DOECHO, NULL ,YEA);
+       getdata( t_lines-1, 0, "ÄúÈ·¶¨ÒªÊ¹ÓÃZmodem´«ÊäÎÄ¼şÃ´?[y/N]", buf, 2, DOECHO, NULL ,true);
        if (toupper(buf[0])  != 'Y') return FULLUPDATE;
        strncpy(buf,title,76) ;
        buf[80] = '\0';

@@ -288,7 +288,7 @@ int chat_parse(chatcontext * pthis)
                 print_chatid(pthis);
                 clrtoeol();
                 
-                uinfo.in_chat = YEA;
+                uinfo.in_chat = true;
                 strcpy(uinfo.chatid, pthis->chatid);
                 UPDATE_UTMP_STR(chatid,uinfo);
                 break;
@@ -414,7 +414,7 @@ int ent_chat_conn(chatcontext * pthis, int chatnum)
 
     while (1)
     {
-        getdata(2, 0, "ÇëÊäÈëÁÄÌì´úºÅ£º", inbuf, 9, DOECHO, NULL,YEA);
+        getdata(2, 0, "ÇëÊäÈëÁÄÌì´úºÅ£º", inbuf, 9, DOECHO, NULL,true);
 
         if ('*' == inbuf[0]) /* Leeward 98.04.26 */
         {
@@ -461,8 +461,8 @@ static int ent_chat(int chatnum)  /* ½øÈëÁÄÌìÊÒ*/
     int  currchar;
     int  modified; /* the line is modified? -- wwj */
     int  newmail;
-    int  page_pending = NA;
-    int  chatting = YEA;
+    int  page_pending = false;
+    int  chatting = true;
 
     if (!strcmp(currentuser->userid,"guest")) return -1;
     
@@ -482,7 +482,7 @@ static int ent_chat(int chatnum)  /* ½øÈëÁÄÌìÊÒ*/
     modified = newmail = cmdpos = currchar = 0;
 
     /* update uinfo */
-    uinfo.in_chat = YEA;
+    uinfo.in_chat = true;
     strcpy(uinfo.chatid, pthis->chatid);
     UPDATE_UTMP(in_chat,uinfo);
     UPDATE_UTMP_STR(chatid,uinfo);
@@ -701,7 +701,7 @@ static int ent_chat(int chatnum)  /* ½øÈëÁÄÌìÊÒ*/
     
     add_io(0, 0);
     
-    uinfo.in_chat = NA;
+    uinfo.in_chat = false;
     uinfo.chatid[0] = '\0';
     UPDATE_UTMP(in_chat,uinfo);
     UPDATE_UTMP(chatid[0],uinfo);
@@ -831,7 +831,7 @@ void call_user(chatcontext *pthis,const char *arg) /* invite user online to chat
         sprintf(msg,"[32mÄãÃ»ÓÐ·¢ÐÅÏ¢µÄÈ¨ÏÞ[m");
     else
     {
-        uin=t_search(arg,NA);
+        uin=t_search(arg,false);
         if(uin==NULL)
             sprintf(msg,"[32m%s[37m ²¢Ã»ÓÐÉÏÕ¾[m",arg);
         else if(LOCKSCREEN == uin->mode) /* Leeward 98.02.28 */
@@ -888,7 +888,7 @@ void chat_sendmsg(chatcontext *pthis,const char *arg) /* send msg in chatroom , 
     } else if(!HAS_PERM(currentuser,PERM_PAGE)) {  /* Leeward 98.07.30 */
 		sprintf(msg,"\x1b[32mÄãÃ»ÓÐ·¢ÐÅÏ¢µÄÈ¨ÏÞ\x1b[m");
 	} else {
-		uin=t_search(userid,NA);
+		uin=t_search(userid,false);
 		if(uin==NULL)
 		{
 			sprintf(msg,"\x1b[32m%s\x1b[37m ²¢Ã»ÓÐÉÏÕ¾\x1b[m",userid);
@@ -899,7 +899,7 @@ void chat_sendmsg(chatcontext *pthis,const char *arg) /* send msg in chatroom , 
 		{
 			if(!canmsg(currentuser,uin))
 				sprintf(msg,"\x1b[32m%s\x1b[37mÒÑ¾­¹Ø±Õ½ÓÊÜÑ¶Ï¢µÄºô½ÐÆ÷.\n", uin->userid);
-			else if(NA==canIsend2(uin->userid))
+			else if(false==canIsend2(uin->userid))
 				sprintf(msg,"\x1b[32m%s\x1b[37m¾Ü¾ø½ÓÊÜÄãµÄÑ¶Ï¢.\n",uin->userid);/*Haohmaru.99.6.6,¼ì²éÊÇ·ñ±»ignore*/
 			else {  
 			    FILE *fp;
@@ -1212,7 +1212,7 @@ void call_kickoff(chatcontext *pthis, const char *arg) /* kick ID off BBS, by Lu
             sprintf(msg,"*** Faint!ÄãÒª°Ñ×Ô¼ºÌßÏÂÕ¾°¡£¿***");
         else
         {
-            uin=t_search(arg,NA);
+            uin=t_search(arg,false);
             if(uin==NULL)
             {
                 sprintf(msg,"%s ²¢Ã»ÓÐÉÏÕ¾",arg);

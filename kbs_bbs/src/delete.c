@@ -65,7 +65,7 @@ d_board()
     if(seek_in_file("0Announce/.Search",bname))
     {
 #ifdef BBSMAIN
-        getdata(3,0,"移除精华区 (Yes, or No) [Y]: ",genbuf,4,DOECHO,NULL,YEA) ;
+        getdata(3,0,"移除精华区 (Yes, or No) [Y]: ",genbuf,4,DOECHO,NULL,true) ;
         if( genbuf[0] != 'N' && genbuf[0] != 'n')
         {
 #endif
@@ -138,7 +138,7 @@ void suicide()
     if(askyn("你确定要自杀吗？",0)==1)
     {
         clear();
-        getdata(0,0,"请输入原密码(输入正确的话会立刻断线): ",buf,39,NOECHO,NULL,YEA);/*Haohmaru,98.10.12,check the passwds*/
+        getdata(0,0,"请输入原密码(输入正确的话会立刻断线): ",buf,39,NOECHO,NULL,true);/*Haohmaru,98.10.12,check the passwds*/
         if( *buf == '\0' || !checkpasswd2( buf,currentuser )) {
             prints("\n\n很抱歉, 您输入的密码不正确。\n");
             pressanykey();
@@ -247,7 +247,7 @@ PERM_DENYMAIL发信
     prints("(5) - 发信权限");
 
     getdata( 10, 0, "请选择 [0]",
-             ans, 2, DOECHO, NULL,YEA);
+             ans, 2, DOECHO, NULL,true);
     if(ans[0]<'1'||ans[0]>'5')
     {
         return;
@@ -278,7 +278,7 @@ PERM_DENYMAIL发信
     }
 
     getdata( 11, 0, "请输入戒网天数 [0]",
-             day, 4, DOECHO, NULL,YEA);
+             day, 4, DOECHO, NULL,true);
     i=0;
     while(day[i]){
         if(!isdigit(day[i])) return;
@@ -298,7 +298,7 @@ PERM_DENYMAIL发信
     
     if(askyn("你确定要戒网吗？",0)==1)
     {
-        getdata(15,0,"请输入密码: ",buf,39,NOECHO,NULL,YEA);
+        getdata(15,0,"请输入密码: ",buf,39,NOECHO,NULL,true);
         if( *buf == '\0' || !checkpasswd2( buf,currentuser )) {
             prints("\n\n很抱歉, 您输入的密码不正确。\n");
             pressanykey();
@@ -423,7 +423,7 @@ char cid[IDLEN];
     else
         prints(" %s 将离开这里",cid);
     clrtoeol();
-    getdata(2,0,"(Yes, or No) [N]: ",genbuf,4,DOECHO,NULL,YEA) ;
+    getdata(2,0,"(Yes, or No) [N]: ",genbuf,4,DOECHO,NULL,true) ;
     if(genbuf[0] != 'Y' && genbuf[0] != 'y') { /* if not yes quit */
         move(2,0) ;
         if(uinfo.mode!=OFFLINE)
@@ -515,7 +515,7 @@ int kick_user(struct user_info *userinfo)
         move(1,0) ;
         prints("Kick User '%s'.",userid) ;
         clrtoeol();
-        getdata(2,0,"(Yes, or No) [N]: ",genbuf,4,DOECHO,NULL,YEA) ;
+        getdata(2,0,"(Yes, or No) [N]: ",genbuf,4,DOECHO,NULL,true) ;
         if(genbuf[0] != 'Y' && genbuf[0] != 'y') { /* if not yes quit */
             move(2,0) ;
             prints("Aborting Kick User\n") ;
@@ -528,7 +528,7 @@ int kick_user(struct user_info *userinfo)
     {
         uin=*userinfo;
         strcpy(userid,uin.userid);
-        ind=YEA;
+        ind=true;
     }
 	if (uin.mode == WEBEXPLORE)
 		clear_utmp((userinfo-utmpshm->uinfo)+1,uin.uid,uin.pid);
@@ -550,9 +550,9 @@ int kick_user(struct user_info *userinfo)
     bbslog("1user","kicked %s",userid);
     /*sprintf( genbuf, "%s (%s)", kuinfo.userid, kuinfo.username );modified by dong, 1998.11.2 */
     /*bbslog( "1system", "KICK %s (%s)", uin.userid, uin.username );*/
-    /*    uin.active = NA;
+    /*    uin.active = false;
         uin.pid = 0;
-        uin.invisible = YEA;
+        uin.invisible = true;
         uin.sockactive = 0;
         uin.sockaddr = 0;
         uin.destuid = 0;

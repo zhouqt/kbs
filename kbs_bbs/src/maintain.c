@@ -34,7 +34,7 @@ int check_systempasswd()
     FILE           *pass;
     char            passbuf[40], prepass[STRLEN];
 
-    if ((sysoppassed)&&(time(NULL)-sysoppassed<60*60)) return YEA;
+    if ((sysoppassed)&&(time(NULL)-sysoppassed<60*60)) return true;
     clear();
     if ((pass = fopen("etc/systempassword", "rb")) != NULL)
     {
@@ -45,9 +45,9 @@ int check_systempasswd()
         }
         fclose(pass);
         
-        getdata(1, 0, "请输入系统密码: ", passbuf, 39, NOECHO, NULL, YEA);
+        getdata(1, 0, "请输入系统密码: ", passbuf, 39, NOECHO, NULL, true);
         if (passbuf[0] == '\0' || passbuf[0] == '\n')
-            return NA;
+            return false;
             
         
         if(!strcmp(prepass,"md5")){
@@ -61,11 +61,11 @@ int check_systempasswd()
             prints( MSG_ERR_USERID );
             securityreport("系统密码输入错误...",NULL,NULL);
             pressanykey();
-            return NA;
+            return false;
         }
     }
     sysoppassed=time(NULL);
-    return YEA;
+    return true;
 }
 
 int setsystempasswd()
@@ -78,8 +78,8 @@ int setsystempasswd()
         return -1;
     if (!check_systempasswd())
         return -1;
-    getdata(2, 0, "请输入新的系统密码: ", passbuf, 39, NOECHO, NULL, YEA);
-    getdata(3, 0, "确认新的系统密码: ", prepass, 39, NOECHO, NULL, YEA);
+    getdata(2, 0, "请输入新的系统密码: ", passbuf, 39, NOECHO, NULL, true);
+    getdata(3, 0, "确认新的系统密码: ", prepass, 39, NOECHO, NULL, true);
     if (strcmp(passbuf, prepass))
         return -1;
     if ((pass = fopen("etc/systempassword", "w")) == NULL)
@@ -362,7 +362,7 @@ static char    *groups[] = {
     sprintf(buf, "请输入你的选择(0~%d): ", i-1);
     while (1)
     {
-        getdata(i + 3, 0, buf, ans, 4, DOECHO, NULL, YEA);
+        getdata(i + 3, 0, buf, ans, 4, DOECHO, NULL, true);
         if (!isdigit(ans[0]))
             continue;
         ch = atoi(ans);
@@ -395,14 +395,14 @@ int m_newbrd()
     prints("开启新讨论区:");
     while (1)
     {
-        getdata(3, 0, "讨论区名称:   ", newboard.filename, 18, DOECHO, NULL, YEA);
+        getdata(3, 0, "讨论区名称:   ", newboard.filename, 18, DOECHO, NULL, true);
         if (newboard.filename[0] == '\0')
             return -1;
         if (valid_brdname(newboard.filename))
             break;
         prints("不合法名称...");
     }
-    getdata(4, 0, "讨论区说明:   ", newboard.title, 60, DOECHO, NULL, YEA);
+    getdata(4, 0, "讨论区说明:   ", newboard.title, 60, DOECHO, NULL, true);
     strcpy(vbuf, "vote/");
     strcat(vbuf, newboard.filename);
     setbpath(genbuf, newboard.filename);
@@ -415,11 +415,11 @@ int m_newbrd()
         return -1;
     }
     newboard.flag = 0;
-    getdata(5, 0, "讨论区管理员: ", newboard.BM, BM_LEN - 1, DOECHO, NULL, YEA);
-    getdata(6, 0, "是否限制存取权力 (Y/N)? [N]: ", ans, 4, DOECHO, NULL, YEA);
+    getdata(5, 0, "讨论区管理员: ", newboard.BM, BM_LEN - 1, DOECHO, NULL, true);
+    getdata(6, 0, "是否限制存取权力 (Y/N)? [N]: ", ans, 4, DOECHO, NULL, true);
     if (*ans == 'y' || *ans == 'Y')
     {
-        getdata(6, 0, "限制 Read/Post? [R]: ", ans, 4, DOECHO, NULL, YEA);
+        getdata(6, 0, "限制 Read/Post? [R]: ", ans, 4, DOECHO, NULL, true);
         if (*ans == 'P' || *ans == 'p')
             newboard.level = PERM_POSTMASK;
         else
@@ -435,15 +435,15 @@ int m_newbrd()
     }
     else
         newboard.level = 0;
-    getdata(7, 0, "是否加入匿名板 (Y/N)? [N]: ", ans, 4, DOECHO, NULL, YEA);
+    getdata(7, 0, "是否加入匿名板 (Y/N)? [N]: ", ans, 4, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y') {
     	newboard.flag|=BOARD_ANNONY;
         addtofile("etc/anonymous", newboard.filename);
     }
-    getdata(8, 0, "是否不记文章数(Y/N)? [N]: ", ans, 4, DOECHO, NULL, YEA);
+    getdata(8, 0, "是否不记文章数(Y/N)? [N]: ", ans, 4, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y')
         newboard.flag|=BOARD_JUNK;
-    getdata(9, 0, "是否可向外转信(Y/N)? [N]: ", ans, 4, DOECHO, NULL, YEA);
+    getdata(9, 0, "是否可向外转信(Y/N)? [N]: ", ans, 4, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y')
         newboard.flag|=BOARD_OUTFLAG;
     if (add_board(&newboard)==-1) {
@@ -525,13 +525,13 @@ int m_editbrd()
     strcpy(oldtitle, fh.title);
     prints("限制 %s 权力: %s", (fh.level & PERM_POSTMASK) ? "POST" : "READ",
            (fh.level & ~PERM_POSTMASK) == 0 ? "不设限" : "有设限");
-    getdata(9, 0, "是否更改以上资讯? (Yes or No) [N]: ", genbuf, 4, DOECHO, NULL, YEA);
+    getdata(9, 0, "是否更改以上资讯? (Yes or No) [N]: ", genbuf, 4, DOECHO, NULL, true);
     if (*genbuf == 'y' || *genbuf == 'Y')
     {
         move(8, 0);
         prints("直接按 <Return> 不修改此栏资讯\n");
 enterbname:
-        getdata(9, 0, "新讨论区名称: ", genbuf, 18, DOECHO, NULL, YEA);
+        getdata(9, 0, "新讨论区名称: ", genbuf, 18, DOECHO, NULL, true);
         if (*genbuf != 0)
         {
             if (getboardnum(genbuf,NULL)>0)
@@ -545,17 +545,17 @@ enterbname:
             strncpy(newfh.filename, genbuf, sizeof(newfh.filename));
             strcpy(bname, genbuf);
         }
-        getdata(10, 0, "新讨论区说明: ", genbuf, 60, DOECHO, NULL, YEA);
+        getdata(10, 0, "新讨论区说明: ", genbuf, 60, DOECHO, NULL, true);
         if (*genbuf != 0)
             strncpy(newfh.title, genbuf, sizeof(newfh.title));
-        getdata(11, 0, "讨论区管理员: ", genbuf, 60, DOECHO, NULL, YEA);
+        getdata(11, 0, "讨论区管理员: ", genbuf, 60, DOECHO, NULL, true);
         if (*genbuf != 0)
             strncpy(newfh.BM, genbuf, sizeof(newfh.BM));
         if (*genbuf == ' ')
             strncpy(newfh.BM, "\0", sizeof(newfh.BM));
         /* newfh.BM[ BM_LEN - 1 ]=fh.BM[ BM_LEN - 1 ]; */
         sprintf(buf, "匿名版 (Y/N)? [%c]: ", (noidboard) ? 'Y' : 'N');
-        getdata(12, 0, buf, genbuf, 4, DOECHO, NULL, YEA);
+        getdata(12, 0, buf, genbuf, 4, DOECHO, NULL, true);
         if (*genbuf == 'y' || *genbuf == 'Y' || *genbuf == 'N' || *genbuf == 'n')
         {
             if (*genbuf == 'y' || *genbuf == 'Y')
@@ -564,7 +564,7 @@ enterbname:
                 noidboard = 0;
         }
         sprintf(buf, "不记文章数 (Y/N)? [%c]: ", (newfh.flag&BOARD_JUNK) ? 'Y' : 'N');
-        getdata(13, 0, buf, genbuf, 4, DOECHO, NULL, YEA);
+        getdata(13, 0, buf, genbuf, 4, DOECHO, NULL, true);
         if (*genbuf == 'y' || *genbuf == 'Y' || *genbuf == 'N' || *genbuf == 'n')
         {
             if (*genbuf == 'y' || *genbuf == 'Y')
@@ -573,7 +573,7 @@ enterbname:
         		newfh.flag&=~BOARD_JUNK;
         };
         sprintf(buf, "可向外转信 (Y/N)? [%c]: ", (newfh.flag&BOARD_OUTFLAG) ? 'Y' : 'N');
-        getdata(14, 0, buf, genbuf, 4, DOECHO, NULL, YEA);
+        getdata(14, 0, buf, genbuf, 4, DOECHO, NULL, true);
         if (*genbuf == 'y' || *genbuf == 'Y' || *genbuf == 'N' || *genbuf == 'n')
         {
             if (*genbuf == 'y' || *genbuf == 'Y')
@@ -581,18 +581,18 @@ enterbname:
             else
         		newfh.flag&=~BOARD_OUTFLAG;
         };
-        getdata(15, 0, "是否移动精华区的位置 (Y/N)? [N]: ", genbuf, 4, DOECHO, NULL, YEA);
+        getdata(15, 0, "是否移动精华区的位置 (Y/N)? [N]: ", genbuf, 4, DOECHO, NULL, true);
         if (*genbuf == 'Y' || *genbuf == 'y')
             a_mv = 2;
         else
             a_mv = 0;
-        getdata(16, 0, "是否更改存取权限 (Y/N)? [N]: ", genbuf, 4, DOECHO, NULL, YEA);
+        getdata(16, 0, "是否更改存取权限 (Y/N)? [N]: ", genbuf, 4, DOECHO, NULL, true);
         if (*genbuf == 'Y' || *genbuf == 'y')
         {
             char            ans[5];
             sprintf(genbuf, "限制 (R)阅读 或 (P)张贴 文章 [%c]: ",
                     (newfh.level & PERM_POSTMASK ? 'P' : 'R'));
-            getdata(17, 0, genbuf, ans, 4, DOECHO, NULL, YEA);
+            getdata(17, 0, genbuf, ans, 4, DOECHO, NULL, true);
             if ((newfh.level & PERM_POSTMASK) && (*ans == 'R' || *ans == 'r'))
                 newfh.level &= ~PERM_POSTMASK;
             else
@@ -605,10 +605,10 @@ enterbname:
                    newfh.level & PERM_POSTMASK ? "张贴" : "阅读", newfh.filename);
             newfh.level = setperms(newfh.level, "权限", NUMPERMS, showperminfo);
             clear();
-            getdata(0, 0, "确定要更改吗? (Y/N) [N]: ", genbuf, 4, DOECHO, NULL, YEA);
+            getdata(0, 0, "确定要更改吗? (Y/N) [N]: ", genbuf, 4, DOECHO, NULL, true);
         } else
         {
-            getdata(17, 0, "确定要更改吗? (Y/N) [N]: ", genbuf, 4, DOECHO, NULL, YEA);
+            getdata(17, 0, "确定要更改吗? (Y/N) [N]: ", genbuf, 4, DOECHO, NULL, true);
         }
         if (*genbuf == 'Y' || *genbuf == 'y')
         {
@@ -692,7 +692,7 @@ int searchtrace()
     char tmp_command[80], tmp_id[20];
     char buf[8192];
 
-    if (check_systempasswd()==NA) return -1;
+    if (check_systempasswd()==false) return -1;
     modify_user_mode(ADMIN);
     clear();
     stand_title("查询使用者发文记录");
@@ -802,7 +802,7 @@ int m_mclean()
     stand_title("清除私人信件");
     move(1, 0);
     prints("清除所有已读且未 mark 的信件\n");
-    getdata(2, 0, "确定吗 (Y/N)? [N]: ", ans, 3, DOECHO, NULL, YEA);
+    getdata(2, 0, "确定吗 (Y/N)? [N]: ", ans, 3, DOECHO, NULL, true);
     if (ans[0] != 'Y' && ans[0] != 'y')
     {
         clear();
@@ -879,7 +879,7 @@ int m_trace()
         move(9, 0);
         prints("<1> 切换一般记录\n");
         prints("<2> 切换聊天记录\n");
-        getdata(12, 0, "请选择 (1/2/Exit) [E]: ", ans, 2, DOECHO, NULL, YEA);
+        getdata(12, 0, "请选择 (1/2/Exit) [E]: ", ans, 2, DOECHO, NULL, true);
 
         switch (ans[0])
         {
@@ -1325,7 +1325,7 @@ char           *logfile, *regfile;
             } else
             {
                 getdata(t_lines - 1, 0, "是否接受此资料 (Y/N/Q/Del/Skip)? [S]: ",
-                        ans, 3, DOECHO, NULL, YEA);
+                        ans, 3, DOECHO, NULL, true);
             }
             move(2, 0);
             clrtobot();
@@ -1416,7 +1416,7 @@ char           *logfile, *regfile;
                 prints("请选择/输入退回申请表原因, 按 <enter> 取消.\n");
                 for (n = 0; reason[n] != NULL; n++)
                     prints("%d) %s\n", n, reason[n]);
-                getdata(10 + n, 0, "退回原因: ", buf, STRLEN, DOECHO, NULL, YEA);
+                getdata(10 + n, 0, "退回原因: ", buf, STRLEN, DOECHO, NULL, true);
                 buff = buf[0];	/* Added by Marco */
                 if (buf[0] != '\0')
                 {
@@ -1539,7 +1539,7 @@ int m_register()
             }
         }
         fclose(fn);
-        getdata(t_lines - 1, 0, "设定资料吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, YEA);
+        getdata(t_lines - 1, 0, "设定资料吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, true);
         if (ans[0] == 'Y' || ans[0] == 'y')
         {
             {
@@ -1558,10 +1558,10 @@ int m_stoplogin()
 {
     char ans[4];
     if (!HAS_PERM(currentuser,PERM_ADMIN)) return -1;
-    getdata(t_lines - 1, 0, "禁止登陆吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, YEA);
+    getdata(t_lines - 1, 0, "禁止登陆吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y')
     {
-        if( vedit("NOLOGIN",NA)==-1)
+        if( vedit("NOLOGIN",false)==-1)
             unlink("NOLOGIN");
     }
     return 0;
@@ -1571,7 +1571,7 @@ int m_stoplogin()
 int inn_start()
 {
 	char ans[4], tmp_command[80];
-	getdata(t_lines - 1, 0, "启动转信吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, YEA);
+	getdata(t_lines - 1, 0, "启动转信吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, true);
 	if (ans[0] == 'Y' || ans[0] == 'y')
 	{
 		sprintf(tmp_command, "~bbs/innd/innbbsd");
@@ -1583,7 +1583,7 @@ int inn_start()
 int inn_reload()
 {
 	char ans[4], tmp_command[80];
-	getdata(t_lines - 1, 0, "重读配置吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, YEA);
+	getdata(t_lines - 1, 0, "重读配置吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, true);
 	if (ans[0] == 'Y' || ans[0] == 'y')
 	{
 		sprintf(tmp_command, "~bbs/innd/ctlinnbbsd reload");
@@ -1595,7 +1595,7 @@ int inn_reload()
 int inn_stop()
 {
 	char ans[4], tmp_command[80];
-	getdata(t_lines - 1, 0, "停止转信吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, YEA);
+	getdata(t_lines - 1, 0, "停止转信吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, true);
 	if (ans[0] == 'Y' || ans[0] == 'y')
 	{
 		sprintf(tmp_command, "~bbs/innd/ctlinnbbsd shutdown");

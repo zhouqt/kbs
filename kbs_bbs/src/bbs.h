@@ -84,9 +84,6 @@ public shm,而attach shm又需要sysconf_eval,ft*/
 extern int errno ;
 #endif
 
-#define YEA (1)        /* Booleans  (Yep, for true and false) */
-#define NA  (0) 
-
 #define DOECHO (1)     /* Flags to getdata input function */
 #define NOECHO (0)
 

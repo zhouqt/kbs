@@ -89,7 +89,7 @@ postreport(fileinfo->title, -1, currboard); added by alex, 96.9.12 */
             fclose( fn );
         }
 */
-        if ((YEA != digestmode) /* ²»¿ÉÒÔÓÃ ¡°NA ==¡± ÅĞ¶Ï£ºdigestmode ÈıÖµ */
+        if ((true != digestmode) /* ²»¿ÉÒÔÓÃ ¡°NA ==¡± ÅĞ¶Ï£ºdigestmode ÈıÖµ */
                 &&!((fileinfo->accessed[0]&FILE_MARKED)
                     &&(fileinfo->accessed[1]& FILE_READ)
                     &&(fileinfo->accessed[0]& FILE_FORWARDED)))
@@ -407,7 +407,7 @@ void getcross(char* filepath,char* quote_file,struct userec* user,int in_mail,ch
             { for(count=8;buf[count]!=' ';count++)
                 owner[count-8]=buf[count];}
         owner[count-8]='\0';
-        if(in_mail==YEA)
+        if(in_mail==true)
             fprintf( of, "[1;37m¡¾ ÒÔÏÂÎÄ×Ö×ªÔØ×Ô [32m%s [37mµÄĞÅÏä ¡¿\n",user->userid);
         else
             fprintf( of, "¡¾ ÒÔÏÂÎÄ×Ö×ªÔØ×Ô %s ÌÖÂÛÇø ¡¿\n",board);
@@ -504,7 +504,7 @@ int post_cross(struct userec* user,char* toboard,char* fromboard,char* title,cha
     if ( !strcmp( postfile.title, buf ) && file[0] != '\0' )
     */
     if(islocal=='l'||islocal=='L')
-            local_article=YEA;
+            local_article=true;
 
 #ifdef BBSMAIN
     modify_user_mode( POSTING );
@@ -579,7 +579,7 @@ int post_file(struct userec* user,char* fromboard,char* filename,char* nboard,ch
     {  /* ËÑË÷ÒªPOSTµÄ°æ ,ÅĞ¶ÏÊÇ·ñ´æÔÚ¸Ã°æ */
         return -1;
     }
-    post_cross(user,nboard,fromboard,posttitle,filename,Anony,NA,'l',mode);  /* post ÎÄ¼ş */
+    post_cross(user,nboard,fromboard,posttitle,filename,Anony,false,'l',mode);  /* post ÎÄ¼ş */
     return 0;
 }
 

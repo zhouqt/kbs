@@ -34,7 +34,7 @@ char *fname;
     }
     ++cnt;
     clear();
-    ansimore(fname,YEA);
+    ansimore(fname,true);
     clear();
     --cnt;
 }

@@ -594,14 +594,14 @@ void clear_utmp2(int uent)
 	 * if the user is login from web. */
 	if (utmpshm->uinfo[uent-1].mode == WEBEXPLORE)
 		delfrom_msglist(uent, utmpshm->uinfo[uent-1].userid);
-    zeroinfo.active = NA ;
+    zeroinfo.active = false ;
     zeroinfo.pid = 0 ;
-    zeroinfo.invisible = YEA ;
-    zeroinfo.sockactive = NA ;
+    zeroinfo.invisible = true ;
+    zeroinfo.sockactive = false ;
     zeroinfo.sockaddr = 0 ;
     zeroinfo.destuid = 0 ;
 
-	if (utmpshm->uinfo[ uent - 1 ].active!=NA)
+	if (utmpshm->uinfo[ uent - 1 ].active!=false)
   		utmphead->number--;
     utmpshm->uinfo[ uent - 1 ] = zeroinfo;
 }

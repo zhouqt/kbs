@@ -111,7 +111,7 @@ b_notes_edit()
     clear();
     makevdir( currboard );
     setvfile( buf, currboard, "notes" );
-    getdata(1,0,"(E)±à¼­ (D)É¾³ı ±¾ÌÖÂÛÇøµÄ±¸ÍüÂ¼? [E]: ",ans,2,DOECHO,NULL,YEA);
+    getdata(1,0,"(E)±à¼­ (D)É¾³ı ±¾ÌÖÂÛÇøµÄ±¸ÍüÂ¼? [E]: ",ans,2,DOECHO,NULL,true);
     if (ans[0] == 'D' || ans[0] == 'd')
     {
         move(2,0);
@@ -125,7 +125,7 @@ b_notes_edit()
         }else
             aborted=-1;
     }else
-        aborted = vedit( buf, NA );
+        aborted = vedit( buf, false );
     if( aborted ==-1) {
         pressreturn();
     } else
@@ -151,7 +151,7 @@ b_jury_edit()   /* stephen 2001.11.1: ±à¼­°æÃæÖÙ²ÃÃûµ¥ */
     clear();
     makevdir(currboard);
     setvfile( buf, currboard, "jury" );
-    getdata(1,0,"(E)±à¼­ (D)É¾³ı ±¾ÌÖÂÛÇøÖÙ²ÃÎ¯Ô±Ãûµ¥? (C)È¡Ïû [C]: ",ans,2,DOECHO,NULL,YEA);
+    getdata(1,0,"(E)±à¼­ (D)É¾³ı ±¾ÌÖÂÛÇøÖÙ²ÃÎ¯Ô±Ãûµ¥? (C)È¡Ïû [C]: ",ans,2,DOECHO,NULL,true);
     if (ans[0] == 'D' || ans[0] == 'd')
     {
         move(2,0);
@@ -166,7 +166,7 @@ b_jury_edit()   /* stephen 2001.11.1: ±à¼­°æÃæÖÙ²ÃÃûµ¥ */
             aborted=-1;
     }
     else if (ans[0] =='E' || ans[0]=='e')
-        aborted = vedit( buf, NA );
+        aborted = vedit( buf, false );
     else 
     {    
 	prints("È¡Ïû");
@@ -522,7 +522,7 @@ struct votebal *bal;
     for (num = 0; num < 32; num++)
     {
         sprintf( buf, "%c) ", num + 'A' );
-        getdata( (num%16) + 4 , (num / 16) * 40 , buf, bal->items[num], 36, DOECHO, NULL,YEA);
+        getdata( (num%16) + 4 , (num / 16) * 40 , buf, bal->items[num], 36, DOECHO, NULL,true);
         if (strlen(bal->items[num]) == 0)
         {
             if (num != 0)
@@ -556,7 +556,7 @@ char    *bname;
     for(;;)
     {
         getdata(2,0,"(1)ÊÇ·Ç, (2)µ¥Ñ¡, (3)¸´Ñ¡, (4)ÊıÖµ (5)ÎÊ´ğ (6)È¡Ïû ? : "
-                ,genbuf,2,DOECHO,NULL,YEA);
+                ,genbuf,2,DOECHO,NULL,true);
         genbuf[0] -= '0' ;
         if(genbuf[0] == 6)
         {
@@ -574,7 +574,7 @@ char    *bname;
     igetch();
     setvfile( genbuf, bname, "desc" );
     sprintf( buf ,"%s.%lu",genbuf,ball->opendate);
-    aborted = vedit( buf, NA );
+    aborted = vedit( buf, false );
     if ( aborted ) {
         clear();
         prints( "È¡Ïû´Ë´ÎÍ¶Æ±\n" );
@@ -583,7 +583,7 @@ char    *bname;
     }
 
     clear();
-    getdata( 0,0,"´Ë´ÎÍ¶Æ±ËùĞëÌìÊı (²»¿É£°Ìì): ",buf, 4, DOECHO, NULL ,YEA);
+    getdata( 0,0,"´Ë´ÎÍ¶Æ±ËùĞëÌìÊı (²»¿É£°Ìì): ",buf, 4, DOECHO, NULL ,true);
 
     if ( *buf == '\n' || atoi(buf) == 0 || *buf == '\0' )
         strcpy( buf, "1" );
@@ -591,7 +591,7 @@ char    *bname;
     ball->maxdays = atoi(buf);
     for(;;)
     {
-        getdata(1,0,"Í¶Æ±ÏäµÄ±êÌâ: ",ball->title, 61 ,DOECHO, NULL, YEA);
+        getdata(1,0,"Í¶Æ±ÏäµÄ±êÌâ: ",ball->title, 61 ,DOECHO, NULL, true);
         if(strlen(ball->title)>0)
             break;
         bell();
@@ -613,7 +613,7 @@ char    *bname;
     case VOTE_MULTI:
         get_vitems(ball) ;
         for(;;) {
-            getdata(21,0,"Ò»¸öÈË×î¶à¼¸Æ±? [1]: ",buf,5,DOECHO,NULL,YEA);
+            getdata(21,0,"Ò»¸öÈË×î¶à¼¸Æ±? [1]: ",buf,5,DOECHO,NULL,true);
             ball->maxtkt = atoi(buf);
             if(ball->maxtkt <= 0) ball->maxtkt = 1;
             if(ball->maxtkt >ball->totalitems)
@@ -623,14 +623,14 @@ char    *bname;
         break;
     case VOTE_VALUE:
         for(;;) {
-            getdata(3,0,"ÊäÈëÊıÖµ×î´ó²»µÃ³¬¹ı [100] : ",buf,7,DOECHO,NULL,YEA);
+            getdata(3,0,"ÊäÈëÊıÖµ×î´ó²»µÃ³¬¹ı [100] : ",buf,7,DOECHO,NULL,true);
             ball->maxtkt = atoi(buf);
             if(ball->maxtkt <= 0) ball->maxtkt = 100;
             break;
         }
         break;
     case VOTE_ASKING:
-        /*                    getdata(3,0,"´ËÎÊ´ğÌâ×÷´ğĞĞÊıÖ®ÏŞÖÆ :",buf,3,DOECHO,NULL,YEA) ;
+        /*                    getdata(3,0,"´ËÎÊ´ğÌâ×÷´ğĞĞÊıÖ®ÏŞÖÆ :",buf,3,DOECHO,NULL,true) ;
                             ball->maxtkt = atof(buf) ;
                             if(ball->maxtkt <= 0) ball->maxtkt = 10;*/
         ball->maxtkt = 0;
@@ -642,16 +642,16 @@ char    *bname;
     /*Haohmaru.99.11.17.¸ù¾İÍ¶Æ±¹ÜÀíÔ±ÉèµÄÏŞÖÆÌõ¼şÅĞ¶ÏÊÇ·ñÈÃ¸ÃÊ¹ÓÃÕßÍ¶Æ±*/
     if(HAS_PERM(currentuser,PERM_OVOTE)||HAS_PERM(currentuser,PERM_SYSOP)||HAS_PERM(currentuser,PERM_JURY))
     {
-        getdata(1,0,"ÊÇ·ñ¶ÔÍ¶Æ±×Ê¸ñ½øĞĞÏŞÖÆ(Y/N) [Y]:",buf,3,DOECHO,NULL,YEA) ;
+        getdata(1,0,"ÊÇ·ñ¶ÔÍ¶Æ±×Ê¸ñ½øĞĞÏŞÖÆ(Y/N) [Y]:",buf,3,DOECHO,NULL,true) ;
         if ( buf[0] != 'N' && buf[0] != 'n' )
         {
-            getdata(2,0,"ÇëÊäÈë¶ÔÉÏÕ¾´ÎÊıµÄÏŞÖÆ(0ÎªÃ»ÓĞÏŞÖÆ),ÉÏÕ¾´ÎÊı´óÓÚ:",buf,5,DOECHO,NULL,YEA) ;
+            getdata(2,0,"ÇëÊäÈë¶ÔÉÏÕ¾´ÎÊıµÄÏŞÖÆ(0ÎªÃ»ÓĞÏŞÖÆ),ÉÏÕ¾´ÎÊı´óÓÚ:",buf,5,DOECHO,NULL,true) ;
             v_limit->numlogins = atoi(buf);
-            getdata(3,0,"ÇëÊäÈë¶ÔÎÄÕÂÊıÄ¿µÄÏŞÖÆ(0ÎªÃ»ÓĞÏŞÖÆ),ÎÄÕÂÊıÄ¿´óÓÚ:",buf,5,DOECHO,NULL,YEA) ;
+            getdata(3,0,"ÇëÊäÈë¶ÔÎÄÕÂÊıÄ¿µÄÏŞÖÆ(0ÎªÃ»ÓĞÏŞÖÆ),ÎÄÕÂÊıÄ¿´óÓÚ:",buf,5,DOECHO,NULL,true) ;
             v_limit->numposts = atoi(buf);
-            getdata(4,0,"ÇëÊäÈë¶ÔÉÏÕ¾×ÜÊ±ÊıµÄÏŞÖÆ(0ÎªÃ»ÓĞÏŞÖÆ),ÉÏÕ¾×ÜÊ±Êı´óÓÚ(Ğ¡Ê±):",buf,5,DOECHO,NULL,YEA) ;
+            getdata(4,0,"ÇëÊäÈë¶ÔÉÏÕ¾×ÜÊ±ÊıµÄÏŞÖÆ(0ÎªÃ»ÓĞÏŞÖÆ),ÉÏÕ¾×ÜÊ±Êı´óÓÚ(Ğ¡Ê±):",buf,5,DOECHO,NULL,true) ;
             v_limit->stay = atoi(buf);
-            getdata(5,0,"ÇëÊäÈë¶ÔÉÏÕ¾ÎïÀíÊ±¼äµÄÏŞÖÆ(0ÎªÃ»ÓĞÏŞÖÆ),ÉÏÕ¾ÎïÀíÊ±¼ä´óÓÚ(Ìì):",buf,5,DOECHO,NULL,YEA) ;
+            getdata(5,0,"ÇëÊäÈë¶ÔÉÏÕ¾ÎïÀíÊ±¼äµÄÏŞÖÆ(0ÎªÃ»ÓĞÏŞÖÆ),ÉÏÕ¾ÎïÀíÊ±¼ä´óÓÚ(Ìì):",buf,5,DOECHO,NULL,true) ;
             v_limit->day = atoi(buf);
         }
         else
@@ -678,7 +678,7 @@ char    *bname;
     }
 
     /*Haohmaru.99.10.26.add below 8 lines*/
-    getdata(1,0,"È·¶¨¿ªÆôÍ¶Æ±?[Y] :",buf,3,DOECHO,NULL,YEA) ;
+    getdata(1,0,"È·¶¨¿ªÆôÍ¶Æ±?[Y] :",buf,3,DOECHO,NULL,true) ;
     if ( buf[0] == 'N' || buf[0] == 'n' )
     {
         clear();
@@ -800,11 +800,11 @@ int     i,flag;
     char        buf[ STRLEN ];
     int count;
 
-    if(flag==YEA)
+    if(flag==true)
     {
         count= vote_check(pbits);
         if(count > currvote.maxtkt)
-            return NA;
+            return false;
         move(2,0);
         clrtoeol();
         prints("ÄãÒÑ¾­Í¶ÁË %d Æ±",count);
@@ -814,7 +814,7 @@ int     i,flag;
     move( i+6-(( i>15)? 16:0) , 0+(( i>15)? 40:0) );
     prints( buf );
     refresh();
-    return YEA;
+    return true;
 }
 
 void
@@ -859,7 +859,7 @@ struct ballot *uv;
     }
     for (i = 0; i < 3; i++)
     {
-        getdata(line + i, 0, ": ", uv->msg[i], STRLEN-2, DOECHO, NULL,NA);
+        getdata(line + i, 0, ": ", uv->msg[i], STRLEN-2, DOECHO, NULL,false);
         if (uv->msg[i][0] == '\0')
             break;
     }
@@ -899,7 +899,7 @@ struct ballot *uv;
         memset(buf,0,sizeof(buf));
     do
     {
-        getdata(3,0,"ÇëÊäÈëÒ»¸öÖµ? [0]: ",buf,5,DOECHO,NULL,NA);
+        getdata(3,0,"ÇëÊäÈëÒ»¸öÖµ? [0]: ",buf,5,DOECHO,NULL,false);
         uv->voted=abs(atoi(buf));
     }while((int)uv->voted>currvote.maxtkt && buf[0]!='\n' && buf[0]!='\0');
     if( buf[0]=='\n' || buf[0]=='\0' ||uv->voted==chs)
@@ -915,7 +915,7 @@ user_vote( int num)
     struct ballot uservote,tmpbal;
     struct votelimit userlimit;
     int votevalue;
-    int aborted=NA,pos;
+    int aborted=false,pos;
 
     move(t_lines-2,0);
     get_record(controlfile,&currvote,sizeof(struct votebal),num);
@@ -924,15 +924,15 @@ user_vote( int num)
                              currentuser->userid)) <= 0)
     {
         (void)memset(&uservote, 0, sizeof(uservote));
-        voted_flag=NA;
+        voted_flag=false;
     }else
     {
-        voted_flag=YEA;
+        voted_flag=true;
     }
     strcpy(uservote.uid,currentuser->userid);
     sprintf(bname,"desc.%lu",currvote.opendate);
     setvfile( buf, currboard, bname );
-    ansimore( buf, YEA );
+    ansimore( buf, true );
     move( 0, 0 );
 
     /*Haohmaru.99.11.17.¸ù¾İ°åÖ÷ÉèµÄÏŞÖÆÌõ¼şÅĞ¶ÏÊÇ·ñÈÃ¸ÃÊ¹ÓÃÕßÍ¶Æ±*/
@@ -958,12 +958,12 @@ user_vote( int num)
 case VOTE_SINGLE: case VOTE_MULTI: case VOTE_YN:
         votevalue=multivote(&uservote);
         if(votevalue==-1)
-            aborted=YEA;
+            aborted=true;
         break;
     case VOTE_VALUE:
         votevalue=valuevote(&uservote);
         if(votevalue==-1)
-            aborted=YEA;
+            aborted=true;
         break;
     case VOTE_ASKING:
         uservote.voted=0;
@@ -971,7 +971,7 @@ case VOTE_SINGLE: case VOTE_MULTI: case VOTE_YN:
         break;
     }
     clear();
-    if(aborted==YEA)
+    if(aborted==true)
     {
         prints("±£Áô ¡¾%s¡¿Ô­À´µÄµÄÍ¶Æ±¡£\n",currvote.title);
     }else
@@ -1028,17 +1028,17 @@ printvote(struct  votebal *ent,int *i)
     if (search_record(flagname, &uservote, sizeof(uservote), (RECORD_FUNC_ARG)cmpvuid,
                       currentuser->userid)<= 0)
     {
-        voted_flag=NA;
+        voted_flag=false;
     }
     else
-        voted_flag=YEA;
+        voted_flag=true;
     num_voted=get_num_records(flagname,sizeof(struct ballot));
     date=ctime(&ent->opendate)+4;
     if ((ent->type<=0)||(ent->type>5)) ent->type=1;
-    sprintf(buf," %s%3d %-12.12s %-6.6s %-40.40s%-4.4s %3d %4d[m\n",(voted_flag==NA)?"[1m":"",*i,ent->userid,
+    sprintf(buf," %s%3d %-12.12s %-6.6s %-40.40s%-4.4s %3d %4d[m\n",(voted_flag==false)?"[1m":"",*i,ent->userid,
             date,ent->title,vote_type[ent->type-1],ent->maxdays,num_voted);
 /*
-    sprintf(buf," %s%3d %-12.12s %-6.6s %-40.40s%-4.4s %3d  %4d[m\n",(voted_flag==NA)?"[1m":"",*i,ent->userid,
+    sprintf(buf," %s%3d %-12.12s %-6.6s %-40.40s%-4.4s %3d  %4d[m\n",(voted_flag==false)?"[1m":"",*i,ent->userid,
             date,ent->title,vote_type[ent->type-1],ent->maxdays,num_voted);
 */
     prints("%s",buf);
@@ -1075,7 +1075,7 @@ char    *bname;
     char buf[STRLEN];
 
     setvfile( buf, bname, "results" );
-    if ( ansimore( buf, YEA ) == -1 ) {
+    if ( ansimore( buf, true ) == -1 ) {
         move(3,0);
         prints("Ä¿Ç°Ã»ÓĞÈÎºÎÍ¶Æ±µÄ½á¹û¡£\n");
         clrtobot();
@@ -1125,13 +1125,13 @@ case 'H': case 'h':
         break;
 case 'A': case 'a':
         if(!chk_currBM(currBM,currentuser))
-            return YEA;
+            return true;
         vote_maintain(currboard);
         deal=1;
         break;
 case 'O': case 'o':
         if(!chk_currBM(currBM,currentuser))
-            return YEA;
+            return true;
         if (!strcmp(currboard,"Birthday"))/*Haohmaru.99.3.29.Ó¦ÉúÈÕ°åÇ°°åÖ÷µÄÒªÇó¶øÉè,½áÊøÓÚDec 28 20:52:29 2000*/
             break;
         clear();
@@ -1155,7 +1155,7 @@ case 'O': case 'o':
         break;
     case '@':
         if(!HAS_PERM(currentuser,PERM_SYSOP))
-            return YEA;
+            return true;
         clear();
         deal=1;
         get_record(controlfile,&currvote,sizeof(struct votebal),allnum+1);
@@ -1240,7 +1240,7 @@ b_vote()
     }
     setlistrange(num_of_vote);
     clear();
-    voting=choose(NA,0,vote_title,vote_key,Show_Votes,user_vote);
+    voting=choose(false,0,vote_title,vote_key,Show_Votes,user_vote);
     clear();
     return /*user_vote( currboard )*/FULLUPDATE;
 }

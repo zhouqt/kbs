@@ -449,7 +449,7 @@ void *attach_shm1( char    *shmstr,int     defaultkey, int shmsize,int* iscreate
             return 0;
         }
         shmid = shmget( shmkey, shmsize, IPC_CREAT | 0660 ); /* modified by dong , for web application , 1998.12.1 */
-        *iscreate=YEA;
+        *iscreate=true;
         if( shmid < 0 ) {
             attach_err( shmkey, "shmget" );
             exit(0);
@@ -560,10 +560,10 @@ char *setbdir(int digestmode,char *buf, char *boardname)
 
     switch(digestmode)
     {
-    case NA:
+    case false:
         strcpy(dir,DOT_DIR);
         break;
-    case YEA:
+    case true:
         strcpy(dir,DIGEST_DIR);
         break;
     case 2:
@@ -856,16 +856,16 @@ char *userid;
     char buf[IDLEN+1];
     char path[256];
 
-    if (HAS_PERM(currentuser,PERM_SYSOP)) return YEA;
+    if (HAS_PERM(currentuser,PERM_SYSOP)) return true;
 
     sethomefile( path, userid , "/ignores");
     if (search_record(path, buf, IDLEN+1, (RECORD_FUNC_ARG)cmpinames, currentuser->userid))
-        return NA;
+        return false;
     sethomefile( path, userid , "/bads");
     if (search_record(path, buf, IDLEN+1, (RECORD_FUNC_ARG)cmpinames, currentuser->userid))
-        return NA;
+        return false;
     else
-        return YEA;
+        return true;
 }
 
 sigjmp_buf bus_jump;
@@ -1012,7 +1012,7 @@ void getuinfo(FILE *fn,struct userec *ptr_urec)
 int del_from_file(char filename[STRLEN],char str[STRLEN])
 {
     FILE *fp, *nfp;
-    int deleted = NA;
+    int deleted = false;
     char fnnew[256/*STRLEN*/];
     char buf[256/*STRLEN*/];
 
@@ -1021,7 +1021,7 @@ int del_from_file(char filename[STRLEN],char str[STRLEN])
     if ((nfp = fopen(fnnew, "w")) == NULL) return -1;
     while(fgets(buf, 256/*STRLEN*/, fp) != NULL) {
         if( strncasecmp(buf, str, strlen(str)) == 0 && buf[strlen(str)] <= 32)
-            deleted = YEA;
+            deleted = true;
         else if( *buf > ' ' )
             fputs(buf, nfp);
     }

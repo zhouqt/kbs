@@ -9,7 +9,7 @@
 #include "screen.h"
 #define MAXMESSAGE 5
 
-int  RMSG=NA;
+int  RMSG=false;
 extern int RUNSH;
 extern struct screenline *big_picture;
 extern char MsgDesUid[14]; /* ±£´æËù·¢msgµÄÄ¿µÄuid 1998.7.5 by dong */
@@ -29,24 +29,24 @@ int line;
     memset(msg,0,sizeof(msg));
     while(1)
     {
-        getdata( line+1, 0, "ÒôÐÅ : ", msg, 59, DOECHO, NULL,NA);
+        getdata( line+1, 0, "ÒôÐÅ : ", msg, 59, DOECHO, NULL,false);
         if(msg[0]=='\0')
-            return NA;
+            return false;
         getdata( line+2, 0, "È·¶¨ÒªËÍ³öÂð(Y)ÊÇµÄ (N)²»Òª (E)ÔÙ±à¼­? [Y]: ",
                  genbuf, 2, DOECHO, NULL ,1);
         if(genbuf[0]=='e'||genbuf[0]=='E')
             continue;
         if(genbuf[0]=='n'||genbuf[0]=='N')
-            return NA;
+            return false;
         if(genbuf[0]=='G')
         {
             if(HAS_PERM(currentuser,PERM_SYSOP))
                 return 2;
             else
-                return YEA;
+                return true;
         }
         else
-            return YEA;
+            return true;
     }
 }
 
@@ -86,7 +86,7 @@ int mode;
             clear() ;
             return 0 ;
         }
-        uin=t_search(uident,NA);
+        uin=t_search(uident,false);
         if(uin==NULL)
         {
             move(2,0) ;
@@ -190,7 +190,7 @@ show_allmsgs()
     modify_user_mode( LOOKMSGS);
     if(dashf(fname))
     {
-        ansimore(fname,YEA);
+        ansimore(fname,true);
         clear();
     }
     else
@@ -231,7 +231,7 @@ int
 wall()
 {
     char buf2[STRLEN];
-    if (check_systempasswd()==NA) return 0;
+    if (check_systempasswd()==false) return 0;
     modify_user_mode( MSG );
     move(2,0) ; clrtobot();
     if (!get_msg("ËùÓÐÊ¹ÓÃÕß",buf2,1) ){
@@ -316,7 +316,7 @@ void r_msg(int signo)
         return;
     }
     sethomefile(fname2,currentuser->userid,"msgcount");
-    RMSG=YEA;
+    RMSG=true;
     RMSGCount ++; /* Leeward 98.07.30 supporting msgX */
     saveline(line, 0, savebuffer);
     while(1)             /* modified by Luzi 1997.12.27 */
@@ -392,17 +392,17 @@ MSGX: /* Leeward 98.07.30 supporting msgX */
                 send_pid-=100;
             ptr=strtok(msg+10," ["); /* ºÍmsgÖÐ useridµÄÎ»ÖÃ¹ØÏµÃÜÇÐ*/
             if(ptr==NULL)/*|| !strcasecmp(ptr,currentuser->userid))*/
-                good_id=NA;
+                good_id=false;
             else
             {
                 strcpy(usid,ptr);
                 uin=t_search(usid,send_pid);
                 if(uin==NULL)
-                    good_id=NA;
+                    good_id=false;
                 else
-                    good_id=YEA;
+                    good_id=true;
             }
-            if(good_id==YEA)
+            if(good_id==true)
             {
                 if (- KEY_UP != msgXch && - KEY_DOWN != msgXch) {
                     strncpy(tmp, big_picture[line + 1].data, 256/*LINELEN*/) ;
@@ -412,9 +412,9 @@ MSGX: /* Leeward 98.07.30 supporting msgX */
                 sprintf(msgbuf,"»ØÑ¶Ï¢¸ø %s: ",usid);
 
                 /* Leeward 98.07.30 supporting msgX */
-                /*getdata(line + 1,0,msgbuf,buf,49,DOECHO,NULL,YEA);*/
+                /*getdata(line + 1,0,msgbuf,buf,49,DOECHO,NULL,true);*/
 MSGX2:
-                switch (msgXch = getdata(line + 1,0,msgbuf,buf,59,DOECHO,NULL,YEA))
+                switch (msgXch = getdata(line + 1,0,msgbuf,buf,59,DOECHO,NULL,true))
                 {
                 case - KEY_UP:
                 case - KEY_DOWN:
@@ -533,7 +533,7 @@ MSGX2:
     refresh();
     /* Leeward 98.07.30 supporting msgX */
     RMSGCount --;
-    if (0 == RMSGCount) RMSG=NA;
+    if (0 == RMSGCount) RMSG=false;
     signal(SIGUSR2,r_msg);
     return ;
 }

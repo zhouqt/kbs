@@ -27,8 +27,8 @@
 #define RMVCURS   move(3+locmem->crs_line-locmem->top_line,0);prints(" ");
 
 struct fileheader SR_fptr;
-int SR_BMDELFLAG=NA;
-int B_to_b=NA;
+int SR_BMDELFLAG=false;
+int B_to_b=false;
 /*---	Modified by period	2000-11-12	---*
 char *pnt;
  *---	current code memory leak ---*/
@@ -223,7 +223,7 @@ char            *powner;
     snprintf( pmt,STRLEN, "%s的文章搜寻作者 [%s]: ", offset > 0 ?  "往後来" : "往先前", currauth );
     move(t_lines-1,0);
     clrtoeol();
-    getdata( t_lines-1, 0, pmt, ans, IDLEN+1, DOECHO, NULL ,YEA);/*Haohmaru.98.09.29.修正作者查找只能11位ID的错误*/
+    getdata( t_lines-1, 0, pmt, ans, IDLEN+1, DOECHO, NULL ,true);/*Haohmaru.98.09.29.修正作者查找只能11位ID的错误*/
     if( ans[0] != '\0' )  strncpy( author, ans,IDLEN);
     else strcpy(author,currauth);
 
@@ -259,14 +259,14 @@ void i_read( int     cmdmode,char    *direct ,void (*dotitle)() ,
         else if(cmdmode==GMENU)
         {
             getdata(t_lines-1, 0, "没有任何好友 (A)新增好友 (Q)离开？[Q] ",
-                    genbuf, 4, DOECHO,NULL,YEA);
+                    genbuf, 4, DOECHO,NULL,true);
             if (genbuf[0] == 'a'||genbuf[0] == 'A')
                 friend_add(0,NULL,0);
         }
         else
         {
             getdata(t_lines-1, 0, "看板新成立 (P)发表文章 (Q)离开？[Q] ",
-                    genbuf, 4, DOECHO,NULL,YEA);
+                    genbuf, 4, DOECHO,NULL,true);
             if (genbuf[0] == 'p'||genbuf[0] == 'P')
                 do_post();
         }
@@ -376,7 +376,7 @@ void i_read( int     cmdmode,char    *direct ,void (*dotitle)() ,
             last_line = get_num_records( currdirect, ssize );
             if(last_line==0&&digestmode>0)
             {
-                if(digestmode==YEA)
+                if(digestmode==true)
                     digest_mode();
                 else if(digestmode==2)
                     thread_mode();
@@ -457,7 +457,7 @@ static int i_read_key(struct one_key * rcmdlist, struct keeploc * locmem,int ch,
         /*---	Commented by period	2000-11-12	coz it memory leak	---*/
 #if 0 /*1 0   revised by stephen 2000-12-03 for a mailbox-board bug */
     case 'v': 		/*Haohmaru.2000.04.26*/
-        if(uinfo.mode==RMAIL || digestmode!=NA)
+        if(uinfo.mode==RMAIL || digestmode!=false)
             break;
         strcpy(buf,currdirect);
         m_read();
@@ -465,7 +465,7 @@ static int i_read_key(struct one_key * rcmdlist, struct keeploc * locmem,int ch,
         return 100;
 #endif /*0*/
 case 'q': case 'e': case KEY_LEFT:
-        if(digestmode==YEA)
+        if(digestmode==true)
             return digest_mode();
         else if(digestmode==2)
             return thread_mode();
@@ -678,7 +678,7 @@ char *direct ;
     if(!HAS_PERM(currentuser,PERM_PAGE))
         return DONOTHING;
     clear();
-    uin=(struct user_info*)t_search(fileinfo->owner,NA);
+    uin=(struct user_info*)t_search(fileinfo->owner,false);
     if( !uin || !canmsg(currentuser,uin))
         do_sendmsg(NULL,NULL,0);
     else {
@@ -736,9 +736,9 @@ char *direct ;
         prints("%s",buf);
         buf[76]=savech;
 /*        strcpy(buf,buf+76);*/
-        getdata(t_lines-2, 0,buf+76,ch,3,DOECHO,NULL,YEA);
+        getdata(t_lines-2, 0,buf+76,ch,3,DOECHO,NULL,true);
     } else
-        getdata(t_lines-3, 0,buf,ch,3,DOECHO,NULL,YEA);
+        getdata(t_lines-3, 0,buf,ch,3,DOECHO,NULL,true);
     BMch=atoi(ch);
     if(BMch<=0||BMch>7)
     {
@@ -757,7 +757,7 @@ char *direct ;
     clrtoeol();
     /* Leeward 98.04.16 */
     snprintf(buf,256,"是否从此主题第一篇开始%s (Y)第一篇 (N)目前这篇 (C)取消 (Y/N/C)? [Y]: ",SR_BMitems[BMch-1]);
-    getdata(t_lines-3, 0,buf,ch,3,DOECHO,NULL,YEA);
+    getdata(t_lines-3, 0,buf,ch,3,DOECHO,NULL,true);
     switch (ch[0])
     {
     default:
@@ -812,9 +812,9 @@ char *direct ;
         prints("%s",buf);
         buf[76]=savech;
 /*        strcpy(buf,buf+76);*/
-        getdata(t_lines-2, 0,buf+76,ch,3,DOECHO,NULL,YEA);
+        getdata(t_lines-2, 0,buf+76,ch,3,DOECHO,NULL,true);
     } else
-        getdata(t_lines-3, 0,buf,ch,3,DOECHO,NULL,YEA);
+        getdata(t_lines-3, 0,buf,ch,3,DOECHO,NULL,true);
 
     BMch=atoi(ch);
     if (BMch<=0||BMch>7)
@@ -829,8 +829,8 @@ char *direct ;
     clrtoeol();
     /* Leeward 98.04.16 */
     snprintf(buf,256,"是否从此主题第一篇开始%s (Y)第一篇 (N)目前这篇 (C)取消 (Y/N/C)? [Y]: ",SR_BMitems[BMch-1]);
-    getdata(t_lines-2, 0,buf,ch,3,DOECHO,NULL,YEA);
-    B_to_b = YEA;
+    getdata(t_lines-2, 0,buf,ch,3,DOECHO,NULL,true);
+    B_to_b = true;
     switch (ch[0])
     {
     default:
@@ -848,7 +848,7 @@ case 'c': case 'C':
         sread(-(BMch+SR_BMBASE),0,ent,0,fileinfo);
     else
         sread(BMch+SR_BMBASE,0,ent,0,fileinfo);
-    B_to_b = NA;
+    B_to_b = false;
     return DIRCHANGED;
 }
 
@@ -1041,7 +1041,7 @@ int             offset;
     snprintf( pmt,STRLEN, "搜寻%s的文章 [%s]: ", offset > 0 ?  "往後来" : "往先前", ans);
     move(t_lines-1,0);
     clrtoeol();
-    getdata( t_lines-1, 0, pmt, ans, 50 , DOECHO, NULL ,YEA);
+    getdata( t_lines-1, 0, pmt, ans, 50 , DOECHO, NULL ,true);
     if( ans[0] != '\0' )  strcpy( query, ans );
 
     return search_articles( locmem, query, offset, -1 );
@@ -1059,7 +1059,7 @@ int             offset;
     snprintf( pmt, STRLEN,"%s搜寻标题 [%s]: ", offset > 0 ? "往後" : "往前", ans );
     move(t_lines-1,0);
     clrtoeol();
-    getdata( t_lines-1, 0, pmt, ans, STRLEN-1, DOECHO, NULL ,YEA);
+    getdata( t_lines-1, 0, pmt, ans, STRLEN-1, DOECHO, NULL ,true);
     if( *ans != '\0' )  strcpy( title, ans );
     return search_articles( locmem, title, offset, 0 );
 }
@@ -1153,9 +1153,9 @@ case 0: case 1: case 2:
             if (!( SR_fptr.accessed[ 0 ] & FILE_MARKED ))
                 /* Bigman 2000.8.20: 修改同主题删除错误.... Leeward这个增加的不对呀,以后的内容没有读呀 */
             {
-                SR_BMDELFLAG=YEA;
+                SR_BMDELFLAG=true;
                 del_post(locmem->crs_line,&SR_fptr,currdirect);
-                SR_BMDELFLAG=NA;
+                SR_BMDELFLAG=false;
                 if(sysconf_eval( "KEEP_DELETED_HEADER" )<=0)
                 {
                     last_line--;
@@ -1190,16 +1190,16 @@ case 0: case 1: case 2:
             mark_post(locmem->crs_line,&SR_fptr,currdirect);
             break;
         case SR_BMDIGEST:
-            if(digestmode==YEA||digestmode==4||digestmode==5)
+            if(digestmode==true||digestmode==4||digestmode==5)
                 return -1;
             digest_post(locmem->crs_line,&SR_fptr,currdirect);
             break;
         case SR_BMIMPORT:
-            a_Import( "0Announce", currboard, &SR_fptr ,YEA, currdirect, locmem->crs_line);  /* Leeward 98.04.15 */
+            a_Import( "0Announce", currboard, &SR_fptr ,true, currdirect, locmem->crs_line);  /* Leeward 98.04.15 */
             break;
         case SR_BMTMP: /* Leeward 98.04.16 */
-            if (-1 == B) a_SeSave("0Announce", currboard, &SR_fptr ,YEA);
-            else           a_Save("0Announce", currboard, &SR_fptr ,YEA, currdirect, locmem->crs_line);
+            if (-1 == B) a_SeSave("0Announce", currboard, &SR_fptr ,true);
+            else           a_Save("0Announce", currboard, &SR_fptr ,true, currdirect, locmem->crs_line);
             break;
         }
         if(!isstart)
@@ -1221,8 +1221,8 @@ case 0: case 1: case 2:
             int lch;	/* period 2000-09-11	方案1:				*
             * 解决:同主题向上查找,文章大于一屏时按一次UP键屏幕无内容 *
             * 方案2: rawmore()函数中, 判断KEY_UP==ch处不应该清屏	*/
-            lch = ansimore(genbuf,NA) ;
-            /*    ansimore(genbuf,NA) ;  */
+            lch = ansimore(genbuf,false) ;
+            /*    ansimore(genbuf,false) ;  */
             brc_add_read( SR_fptr.filename ) ;
             isstart=0;
             move(t_lines-1, 0);
@@ -1348,11 +1348,11 @@ char *query;
         if(strstr(buf,query))
         {
             fclose(fp);
-            return YEA;
+            return true;
         }
     }
     fclose(fp);
-    return NA;
+    return false;
 }
 
 /* COMMAN : use mmap to speed up searching */

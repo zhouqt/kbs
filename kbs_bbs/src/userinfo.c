@@ -107,7 +107,7 @@ int uinfo_query(struct userec *u,int real,int unum)
     getdata( t_lines-1, 0, real ?
              "请选择 (0)结束 (1)修改资料 (2)设定密码 (3) 改 ID ==> [0]" :
              "请选择 (0)结束 (1)修改资料 (2)设定密码 ==> [0]",
-             ans, 2, DOECHO, NULL,YEA);
+             ans, 2, DOECHO, NULL,true);
     clear();
     refresh();
 
@@ -122,19 +122,19 @@ int uinfo_query(struct userec *u,int real,int unum)
         prints("请逐项修改,直接按 <ENTER> 代表使用 [] 内的资料。\n");
 
         sprintf( genbuf, "昵称 [%s]: ", u->username );
-        getdata( i++, 0, genbuf, buf, NAMELEN, DOECHO, NULL ,YEA);
+        getdata( i++, 0, genbuf, buf, NAMELEN, DOECHO, NULL ,true);
         if( buf[0] ) strncpy( newinfo.username, buf, NAMELEN );
 
         sprintf( genbuf, "真实姓名 [%s]: ", u->realname );
-        getdata( i++, 0, genbuf, buf, NAMELEN, DOECHO, NULL,YEA);
+        getdata( i++, 0, genbuf, buf, NAMELEN, DOECHO, NULL,true);
         if( buf[0] ) strncpy( newinfo.realname, buf, NAMELEN );
 
         sprintf( genbuf, "居住地址 [%s]: ", u->address );
-        getdata( i++, 0, genbuf, buf, STRLEN, DOECHO, NULL,YEA);
+        getdata( i++, 0, genbuf, buf, STRLEN, DOECHO, NULL,true);
         if( buf[0] ) strncpy( newinfo.address, buf, NAMELEN );
 
         sprintf( genbuf, "电子信箱 [%s]: ", u->email );
-        getdata( i++, 0, genbuf, buf, STRLEN, DOECHO, NULL,YEA);
+        getdata( i++, 0, genbuf, buf, STRLEN, DOECHO, NULL,true);
         if ( buf[0] )
         {
             /*netty_check = 1;*/
@@ -144,15 +144,15 @@ int uinfo_query(struct userec *u,int real,int unum)
         }
         if( real ) {
             sprintf( genbuf, "真实Email[%s]: ", u->realemail );
-            getdata( i++, 0, genbuf, buf, STRLEN, DOECHO, NULL ,YEA);
+            getdata( i++, 0, genbuf, buf, STRLEN, DOECHO, NULL ,true);
             if( buf[0] ) strncpy( newinfo.realemail, buf, STRLEN-16 );
 
             sprintf( genbuf, "上线次数 [%d]: ", u->numlogins );
-            getdata( i++, 0, genbuf, buf, 16, DOECHO, NULL ,YEA);
+            getdata( i++, 0, genbuf, buf, 16, DOECHO, NULL ,true);
             if( atoi( buf ) > 0 ) newinfo.numlogins = atoi( buf );
 
             sprintf( genbuf, "文章数目 [%d]: ", u->numposts );
-            getdata( i++, 0, genbuf, buf, 16, DOECHO, NULL ,YEA);
+            getdata( i++, 0, genbuf, buf, 16, DOECHO, NULL ,true);
             {
                 int lres;
                 lres = atoi(buf);
@@ -162,11 +162,11 @@ int uinfo_query(struct userec *u,int real,int unum)
             /*            if( atoi( buf ) > 0 ) newinfo.numposts = atoi( buf );*/
 
             sprintf( genbuf, "将注册日期提前"REGISTER_WAIT_TIME_NAME" [Y/N]");
-            getdata( i++, 0, genbuf, buf, 16, DOECHO, NULL, YEA);
+            getdata( i++, 0, genbuf, buf, 16, DOECHO, NULL, true);
             if(buf[0]=='y'||buf[0]=='Y') newinfo.firstlogin-=REGISTER_WAIT_TIME;
 
             sprintf( genbuf, "将最近光临日期设置为今天吗？[Y/N]");
-            getdata( i++, 0, genbuf, buf, 16, DOECHO, NULL, YEA);
+            getdata( i++, 0, genbuf, buf, 16, DOECHO, NULL, true);
             if(buf[0]=='y'||buf[0]=='Y') newinfo.lastlogin=time(0);
 
         }
@@ -178,7 +178,7 @@ int uinfo_query(struct userec *u,int real,int unum)
             return 0;
         }
         /* Bigman 2000.10.2 修改使用者ID位数不够 */
-        getdata(i++,0,"新的使用者代号: ",genbuf,IDLEN+1,DOECHO,NULL,YEA);
+        getdata(i++,0,"新的使用者代号: ",genbuf,IDLEN+1,DOECHO,NULL,true);
         if(*genbuf != '\0') {
             if(searchuser(genbuf)) {
                 prints("\n错误! 已经有同样 ID 的使用者\n") ;
@@ -194,20 +194,20 @@ int uinfo_query(struct userec *u,int real,int unum)
         
     case '2':
         if( ! real ) {
-            getdata(i++,0,"请输入原密码: ",buf,39,NOECHO,NULL,YEA);
+            getdata(i++,0,"请输入原密码: ",buf,39,NOECHO,NULL,true);
             if( *buf == '\0' || !checkpasswd2( buf,u)) {
                 prints("\n\n很抱歉, 您输入的密码不正确。\n");
                 fail++;
                 break;
             }
         }
-        getdata(i++,0,"请设定新密码: ",buf,39,NOECHO,NULL,YEA);
+        getdata(i++,0,"请设定新密码: ",buf,39,NOECHO,NULL,true);
         if( buf[0] == '\0' ) {
             prints("\n\n密码设定取消, 继续使用旧密码\n");
             fail++;
             break;
         }
-        getdata(i++,0,"请重新输入新密码: ",genbuf,39,NOECHO,NULL,YEA);
+        getdata(i++,0,"请重新输入新密码: ",genbuf,39,NOECHO,NULL,true);
         if(strcmp(buf,genbuf)) {
             prints("\n\n两个密码不一致, 无法设定新密码。\n");
             fail++;
@@ -236,7 +236,7 @@ int uinfo_query(struct userec *u,int real,int unum)
     }
     for(;;)
     {
-        getdata(t_lines-1,0,"确定要改变吗?  (Yes or No): ",ans,2,DOECHO,NULL,YEA);
+        getdata(t_lines-1,0,"确定要改变吗?  (Yes or No): ",ans,2,DOECHO,NULL,true);
         if (*ans=='n'||*ans=='N') break;
         if( *ans == 'y' || *ans == 'Y' ) {
             if(real)
@@ -363,7 +363,7 @@ char    *info, *desc, *buf;
     move( line, 0 );
     prints( genbuf );
     sprintf( prompt, "  %s: ", desc );
-    getdata( line+1, 0, prompt, genbuf, len, DOECHO, NULL ,YEA);
+    getdata( line+1, 0, prompt, genbuf, len, DOECHO, NULL ,true);
     if( genbuf[0] != '\0' ) {
         strncpy( buf, genbuf, len );
     }
@@ -424,8 +424,8 @@ x_fillform()
         fclose( fn );
     }
     /* added by KCN 1999.10.25 */
-    ansimore("etc/register.note",NA);
-    getdata(t_lines-1,0,"您确定要填写注册单吗 (Y/N)? [N]: ",ans,3,DOECHO,NULL,YEA);
+    ansimore("etc/register.note",false);
+    getdata(t_lines-1,0,"您确定要填写注册单吗 (Y/N)? [N]: ",ans,3,DOECHO,NULL,true);
     if( ans[0] != 'Y' && ans[0] != 'y' )
         return;
     strncpy( rname, currentuser->realname, NAMELEN );
@@ -450,7 +450,7 @@ x_fillform()
             getfield( 12, "包括可连络时间,若无可用呼机或Email地址代替",     "连络电话", phone, STRLEN ); }
         getfield( 14, "年.月.日(公元)",     "出生年月", birth, STRLEN );
         mesg = "以上资料是否正确, 按 Q 放弃注册 (Y/N/Quit)? [N]: ";
-        getdata(t_lines-1,0,mesg,ans,3,DOECHO,NULL,YEA);
+        getdata(t_lines-1,0,mesg,ans,3,DOECHO,NULL,true);
         if( ans[0] == 'Q' || ans[0] == 'q' )
             return;
         if( ans[0] == 'Y' || ans[0] == 'y' )

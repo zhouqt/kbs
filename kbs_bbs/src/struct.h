@@ -42,7 +42,7 @@ struct user_info {              /* Structure used in UTMP file */
         int     sockaddr;       /* ... */
         int     destuid;        /* talk uses this to identify who called */
         int     mode;           /* UL/DL, Talk Mode, Chat Mode, ... */
-        int     pager;          /* pager toggle, YEA, or NA */
+        int     pager;          /* pager toggle, true, or false */
         int     in_chat;        /* for in_chat commands   */
         char    chatid[ 16 ];   /* chat id, if in chat mode */
         char    from[ IPLEN+4 ];     /* machine name the user called in from */

@@ -29,7 +29,7 @@ int check_query_mail(char qry_mail_dir[STRLEN])
             read(fd,&ch,1) ;
             if(!(ch & FILE_READ)) {
                 close(fd) ;
-                return YEA ;
+                return true ;
             }
             lseek(fd,-sizeof(fh)-1,SEEK_CUR);
         }*/
@@ -38,10 +38,10 @@ int check_query_mail(char qry_mail_dir[STRLEN])
     read(fd,&ch,1) ;
     if(!(ch & FILE_READ)) {
         close(fd) ;
-        return YEA ;
+        return true ;
     }
     close(fd) ;
-    return NA ;
+    return false ;
 }
 
 

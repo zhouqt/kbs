@@ -52,12 +52,12 @@ new_register()
     exit(-1);
 */
     memset( &newuser, 0, sizeof(newuser) );
-    getdata(0, 0, "Ê¹ÓÃGB±àÂëÔÄ¶Á?(\xa8\xcf\xa5\xce BIG5\xbd\x58\xbe\x5c\xc5\xaa\xbd\xd0\xbf\xefN)(Y/N)? [Y]: ", buf, 4, DOECHO, NULL, YEA);
+    getdata(0, 0, "Ê¹ÓÃGB±àÂëÔÄ¶Á?(\xa8\xcf\xa5\xce BIG5\xbd\x58\xbe\x5c\xc5\xaa\xbd\xd0\xbf\xefN)(Y/N)? [Y]: ", buf, 4, DOECHO, NULL, true);
     if (*buf == 'n' || *buf == 'N')
         if (!convcode)
             switch_code();
 
-    ansimore("etc/register", NA);
+    ansimore("etc/register", false);
     do_try = 0;
     while( 1 ) {
         if( ++do_try >= 10 ) {
@@ -65,7 +65,7 @@ new_register()
             refresh();
             longjmp( byebye, -1 );
         }
-        getdata(0,0,"ÇëÊäÈë´úºÅ: ",newuser.userid,IDLEN+1,DOECHO,NULL,YEA);
+        getdata(0,0,"ÇëÊäÈë´úºÅ: ",newuser.userid,IDLEN+1,DOECHO,NULL,true);
         flag = 1;
         if(id_invalid(newuser.userid)==1)
         {
@@ -109,12 +109,12 @@ new_register()
             refresh();
             longjmp( byebye, -1 );
         }
-        getdata(0,0,"ÇëÉè¶¨ÄúµÄÃÜÂë: ",passbuf,39,NOECHO,NULL,YEA) ;
+        getdata(0,0,"ÇëÉè¶¨ÄúµÄÃÜÂë: ",passbuf,39,NOECHO,NULL,true) ;
         if( strlen( passbuf ) < 4 || !strcmp( passbuf, newuser.userid ) ) {
             prints("ÃÜÂëÌ«¶Ì»òÓëÊ¹ÓÃÕß´úºÅÏàÍ¬, ÇëÖØĞÂÊäÈë\n") ;
             continue;
         }
-        getdata(0,0,"ÇëÔÙÊäÈëÒ»´ÎÄãµÄÃÜÂë: ",passbuf2,39,NOECHO,NULL,YEA);
+        getdata(0,0,"ÇëÔÙÊäÈëÒ»´ÎÄãµÄÃÜÂë: ",passbuf2,39,NOECHO,NULL,true);
         if( strcmp( passbuf, passbuf2) != 0 ) {
             prints("ÃÜÂëÊäÈë´íÎó, ÇëÖØĞÂÊäÈëÃÜÂë.\n") ;
             continue;
@@ -175,9 +175,9 @@ int     msize;
     if( strchr( email, '@' ) && valid_ident( email ) )
         return 0;
     /*
-        ansimore( emailfile, NA );
+        ansimore( emailfile, false );
         getdata(t_lines-1,0,"ÄúÒªÏÖÔÚ email-post Âğ? (Y/N) [Y]: ",
-            ans,2,DOECHO,NULL,YEA);
+            ans,2,DOECHO,NULL,true);
         while( *ans != 'n' && *ans != 'N' ) {
     */
     sprintf( fname, "tmp/email/%s", userid );
@@ -197,7 +197,7 @@ int     msize;
             prints( "½¨ÒéÄú,  ÏÈËÄ´¦ä¯ÀÀÒ»ÏÂ, \n" );
             prints( "         ²»¶®µÄµØ·½, ÇëÔÚ sysop °åÁôÑÔ, \n" );
             prints( "         ±¾Õ¾»áÅÉ×¨ÈËÎªÄú½â´ğ. \n" );
-            getdata( 18 ,0, "Çë°´ <Enter>  <<  ", ans,2,DOECHO,NULL ,YEA);
+            getdata( 18 ,0, "Çë°´ <Enter>  <<  ", ans,2,DOECHO,NULL ,true);
             return 0;
         }
     }
@@ -222,7 +222,7 @@ check_register_info()
 
     /*    if( sysconf_str( "IDENTFILE" ) != NULL ) {  commented out by netty to save time */
     while ( strlen( currentuser->username ) < 2 ) {
-        getdata( 2, 0, "ÇëÊäÈëÄúµÄêÇ³Æ:(ÀıÈç," DEFAULT_NICK ") << ", buf, NAMELEN,DOECHO,NULL ,YEA);
+        getdata( 2, 0, "ÇëÊäÈëÄúµÄêÇ³Æ:(ÀıÈç," DEFAULT_NICK ") << ", buf, NAMELEN,DOECHO,NULL ,true);
         strcpy(currentuser->username,buf);
         strcpy(uinfo.username,buf);
         UPDATE_UTMP_STR(username,uinfo);
@@ -230,13 +230,13 @@ check_register_info()
     if ( strlen( currentuser->realname ) < 2 ) {
         move( 3, 0 );
         prints( "ÇëÊäÈëÄúµÄÕæÊµĞÕÃû: (Õ¾³¤»á°ïÄú±£ÃÜµÄ !)\n" );
-        getdata( 4, 0, "> ", buf, NAMELEN,DOECHO,NULL,YEA);
+        getdata( 4, 0, "> ", buf, NAMELEN,DOECHO,NULL,true);
         strcpy(currentuser->realname,buf);
     }
     if ( strlen( currentuser->address ) < 6 ) {
         move( 5, 0 );
         prints( "ÄúÄ¿Ç°ÌîĞ´µÄµØÖ·ÊÇ¡®%s¡¯£¬³¤¶ÈĞ¡ÓÚ [1m[37m6[m£¬ÏµÍ³ÈÏÎªÆä¹ıÓÚ¼ò¶Ì¡£\n", currentuser->address[0] ? currentuser->address : "¿ÕµØÖ·" ); /* Leeward 98.04.26 */
-        getdata( 6, 0, "ÇëÏêÏ¸ÌîĞ´ÄúµÄ×¡Ö·£º", buf, NAMELEN,DOECHO,NULL,YEA);
+        getdata( 6, 0, "ÇëÏêÏ¸ÌîĞ´ÄúµÄ×¡Ö·£º", buf, NAMELEN,DOECHO,NULL,true);
         strcpy(currentuser->address,buf);
     }
     if ( strchr( currentuser->email, '@' ) == NULL ) {
@@ -251,7 +251,7 @@ check_register_info()
                     move( 17, 0 );
                     prints( "µç×ÓĞÅÏä¸ñÊ½Îª: xxx@xxx.xxx.edu.cn \n" );
                     getdata( 18, 0, "ÇëÊäÈëµç×ÓĞÅÏä: (²»ÄÜÌá¹©Õß°´ <Enter>) << "
-                                    , urec->email, STRLEN,DOECHO,NULL,YEA);
+                                    , urec->email, STRLEN,DOECHO,NULL,true);
                     if ((strchr( urec->email, '@' ) == NULL )) { 
                         sprintf( genbuf, "%s.bbs@%s", urec->userid,buf );
                         strncpy( urec->email, genbuf, STRLEN);
@@ -296,7 +296,7 @@ check_register_info()
                        prints( "ÄúµÄµç×ÓĞÅÏä  ÉĞĞëÍ¨¹ı»ØĞÅÑéÖ¤...  \n" );
                        prints( "      SYSOP ½«¼ÄÒ»·âÑéÖ¤ĞÅ¸øÄú,\n" );
                        prints( "      ÄúÖ»Òª»ØĞÅ, ¾Í¿ÉÒÔ³ÉÎª±¾Õ¾ºÏ¸ñ¹«Ãñ.\n" );
-                       getdata( 19 ,0, "ÄúÒª SYSOP ¼ÄÕâÒ»·âĞÅÂğ?(Y/N) [Y] << ", ans,2,DOECHO,NULL,YEA);
+                       getdata( 19 ,0, "ÄúÒª SYSOP ¼ÄÕâÒ»·âĞÅÂğ?(Y/N) [Y] << ", ans,2,DOECHO,NULL,true);
                        if ( *ans != 'n' && *ans != 'N' ) {
                        code=(time(0)/2)+(rand()/10);
                        sethomefile(genbuf,urec->userid,"mailcheck");
@@ -334,7 +334,7 @@ check_register_info()
                            fclose( fin );
                            fclose( fout );                                     
                        }
-                       getdata( 20 ,0, "ĞÅÒÑ¼Ä³ö, SYSOP ½«µÈÄú»ØĞÅÅ¶!! Çë°´ <Enter> << ", ans,2,DOECHO,NULL ,YEA);
+                       getdata( 20 ,0, "ĞÅÒÑ¼Ä³ö, SYSOP ½«µÈÄú»ØĞÅÅ¶!! Çë°´ <Enter> << ", ans,2,DOECHO,NULL ,true);
                        }
                    }else
                    {
@@ -365,7 +365,7 @@ check_register_info()
     if( currentuser->lastlogin - currentuser->firstlogin < REGISTER_WAIT_TIME &&
             !HAS_PERM(currentuser, PERM_SYSOP) && newregfile != NULL ) {
         currentuser->userlevel &= ~(perm);
-        ansimore( newregfile, YEA );
+        ansimore( newregfile, true );
     }
     if( HAS_PERM(currentuser, PERM_DENYPOST ) && !HAS_PERM(currentuser, PERM_SYSOP ) )
     {
