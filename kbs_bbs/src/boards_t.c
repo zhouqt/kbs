@@ -349,8 +349,10 @@ static int fav_show(struct _select_def *conf, int pos)
         else
             prints(" %4d  £«  <Ä¿Â¼>  ", ptr->total);
     } else {
-        if (!arg->newflag)
+        if (!arg->newflag){
+			check_newpost(ptr);
             prints(" %4d  %s ", pos, ptr->unread?"¡ô" : "¡ó");     /*zap±êÖ¾ */
+		}
         else if (ptr->zap && !(ptr->flag & BOARD_NOZAPFLAG)) {
             /*
              * ptr->total = ptr->unread = 0;
