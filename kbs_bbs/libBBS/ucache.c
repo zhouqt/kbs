@@ -885,7 +885,7 @@ void init_cachedata(char* userid,int unum)
         write(brcfdr, brc, BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
         close(brcfdr);
     }
-    if(safe_mmapfile(path1, O_RDWR|O_CREAT, PROT_READ|PROT_WRITE, MAP_SAHRED, (void **)&brc_cache_entry, &brcfilesize, &brcfdr)==0) {
+    if(safe_mmapfile(path1, O_RDWR|O_CREAT, PROT_READ|PROT_WRITE, MAP_SHARED, (void **)&brc_cache_entry, &brcfilesize, &brcfdr)==0) {
         bbslog("error", "cannot mmap entry");
         abort_bbs(0);
     }
