@@ -1013,11 +1013,9 @@ int load_boards(struct newpostdata *nbrd,char *boardprefix,int pos,int len,bool 
     if (zapbuf == NULL) {
         load_zapbuf();
     }
-    if (sort) {
-    	namelist=(char**)malloc(sizeof(char**)*(pos+len-1));
-    	titlelist=(char**)malloc(sizeof(char**)*(pos+len-1));
-    	indexlist=(int*)malloc(sizeof(int*)*(pos+len-1));
-    }
+    namelist=(char**)malloc(sizeof(char**)*(pos+len-1));
+    titlelist=(char**)malloc(sizeof(char**)*(pos+len-1));
+    indexlist=(int*)malloc(sizeof(int*)*(pos+len-1));
     for (n = 0; n < get_boardcount(); n++) {
         bptr = (struct boardheader *) getboard(n + 1);
         if (!bptr)
@@ -1031,59 +1029,52 @@ int load_boards(struct newpostdata *nbrd,char *boardprefix,int pos,int len,bool 
             continue;
         if (yank_flag || zapbuf[n] != 0 || (bptr->level & PERM_NOZAP)) {
             brdnum++;
-            if (!sort) {
-                if (brdnum<pos||brdnum>=pos+len)
-                	continue;
-                ptr = &nbrd[brdnum-pos];
-                ptr->dir = 0;
-                ptr->name = bptr->filename;
-                ptr->title = bptr->title;
-                ptr->BM = bptr->BM;
-                ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
-                ptr->pos = n;
-                ptr->total = -1;
-                ptr->zap = (zapbuf[n] == 0);
-            } else {  //如果是要排序，那么应该先排序缓存一下
-                int i;
-                int j;
-                for (i=0;i<curcount;i++) {
-                	int ret;
-                	ret = strcasecmp(namelist[i],bptr->filename);
-                	if (ret>0) break;
-                	if (ret==0&&(strcasecmp(titlelist[i],bptr->title)>0)) break;
-                }
-                if ((i==curcount)&&curcount>=pos+len-1) //已经在范围之外乐
-                	continue;
-                else
-                	   for (j=(curcount>=pos+len-1)?pos+len-2:curcount;j>i;j--) {
-                			namelist[j]=namelist[j-1];
-                			titlelist[j]=titlelist[j-1];
-                			indexlist[j]=indexlist[j-1];
-                 	   }
-                namelist[i]=bptr->filename;
-                titlelist[i]=bptr->title;
-                indexlist[i]=n;
-                if (curcount<pos+len-1) curcount++;
+            //都要排序
+            int i;
+            int j;
+            for (i=0;i<curcount;i++) {
+                    int ret;
+		    int type;
+		    type = 0;
+
+		    if (!sort) {
+			type = titlelist[i][0] - bptr->title[0];
+                        if (type == 0)
+                            type = strncasecmp(&titlelist[i][1], bptr->title + 1, 6);
+                    }
+                    if (type == 0)
+                        type = strcasecmp(namelist[i], bptr->filename);
+		    if (type>0) break;
             }
+            if ((i==curcount)&&curcount>=pos+len-1) //已经在范围之外乐
+                continue;
+            else
+                for (j=(curcount>=pos+len-1)?pos+len-2:curcount;j>i;j--) {
+                    namelist[j]=namelist[j-1];
+                    titlelist[j]=titlelist[j-1];
+                    indexlist[j]=indexlist[j-1];
+                }
+            namelist[i]=bptr->filename;
+            titlelist[i]=bptr->title;
+            indexlist[i]=n;
+            if (curcount<pos+len-1) curcount++;
         }
     }
-    if (sort) {
-        for (n=pos-1;n<curcount;n++) {
-	    ptr=&nbrd[n-(pos-1)];
-            bptr = getboard(indexlist[n]+1);
-            ptr->dir = 0;
-            ptr->name = bptr->filename;
-            ptr->title = bptr->title;
-            ptr->BM = bptr->BM;
-            ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
-            ptr->pos = indexlist[n];
-            ptr->total = -1;
-            ptr->zap = (zapbuf[indexlist[n]] == 0);
-        }
-        free(titlelist);
-        free(namelist);
-        free(indexlist);
-     }
+    for (n=pos-1;n<curcount;n++) {
+        ptr=&nbrd[n-(pos-1)];
+        bptr = getboard(indexlist[n]+1);
+        ptr->dir = 0;
+        ptr->name = bptr->filename;
+        ptr->title = bptr->title;
+        ptr->BM = bptr->BM;
+        ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
+        ptr->pos = indexlist[n];
+        ptr->total = -1;
+        ptr->zap = (zapbuf[indexlist[n]] == 0);
+    }
+    free(titlelist);
+    free(namelist);
+    free(indexlist);
     return brdnum;
 }
 
