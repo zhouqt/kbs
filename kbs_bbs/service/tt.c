@@ -115,12 +115,12 @@ start:
   while(m<30) {
     ch = igetkey();
     if (ch == KEY_ESC || ch == Ctrl('D') || ch == Ctrl('C') ) return 0;
-/*
+
     if(m==0 && abs(times(NULL)-t)>300) {
         prints("\033\n超时! 你必须在\033[1;32m3\033[m秒钟以内开始!\n");
        goto start;
     }
-*/
+
     if(ch == c[m]+65 || ch == c[m]+97) {
       prints("%c%c", chars[c[m]*2], chars[c[m]*2+1]);
       if(m == 0) {
