@@ -541,7 +541,7 @@ void x_fillform()
         }
         genbuf[0] = '\0';
         while (strlen(genbuf) < 2) {
-            getfield(8, "学校系级或单位全称", "服务单位", career, STRLEN);
+            getfield(8, "学校系级或单位全称及所属部门", "服务单位", career, STRLEN);
         }
         genbuf[0] = '\0';
         while (strlen(genbuf) < 6) {
