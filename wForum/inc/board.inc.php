@@ -149,13 +149,14 @@ function showBoardContents($boardID,$boardName,$page){
 <TR align=middle><TD class=TableBody2 width=32 height=27>
 <?php
 //print_r($articles[$i]);
-	if (strtoupper($origin['FLAGS'][0])=='D') {
+	$upperflag = strtoupper($origin['FLAGS'][0]);
+	if ($upperflag=='D') {
 		echo "<img src=\"pic/istop.gif\" alt=固顶的主题>";
 	} elseif( $threadNum > 10 ) {
 		echo "<img src=\"pic/blue/hotfolder.gif\" alt=回复超过10贴>";
-	} elseif( ';' == strtoupper($origin['FLAGS'][0]) ) {
+	} elseif( ';' == $upperflag ) {
 		echo "<img src=\"pic/blue/lockfolder.gif\" alt=锁定的主题>";
-	} elseif( 'M' == strtoupper($origin['FLAGS'][0]) ) {
+	} elseif( 'M' == $upperflag || 'B' == $upperflag || 'G' == $upperflag) { //暂时这样吧，原来只判断是否是 'M' - atppp
 		echo "<img src=\"pic/isbest.gif\" alt=精华帖>";
 	} else {
 		echo "<img src=\"pic/blue/folder.gif\" alt=开放主题>";
@@ -258,8 +259,9 @@ function showBroadcast($boardID,$boardName){
   } 
   unset($rs);
   $sth->free();
+  /* ToDo: 注意：精华 link 暂时是搜索本版所有精华贴，待改。注意搜索好像没有分页。- atppp */
 ?>
-	</marquee><td align=right width=240><a href=# onclick="alert('本功能尚在开发中！')"  title=查看本版精华><font color=#FF0000><B>精华</B></font></a>
+	</marquee><td align=right width=240><a href="queryresult.php?boardName=<?php echo $boardName; ?>&title=&title2=&title3=&userid=&dt=0&mg=on" title=查看本版精华贴><font color=#FF0000><B>精华</B></font></a>
 	| <a href=# onclick="alert('本功能尚在开发中！')" title=查看本版在线详细情况>在线</a> | <a href=bbseven.asp?boardid=1 title=查看本版事件>事件</a> | <a href=# onclick="alert('本功能尚在开发中！')" title=查看本版用户组权限>权限</a>
 | <a href=# onclick="alert('本功能尚在开发中！')">管理</a></td></tr></table>
 </td></tr>
