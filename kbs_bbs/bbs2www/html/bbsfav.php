@@ -30,7 +30,7 @@
                 {
                         $delete_s=$_GET["delete"];
                         settype($delete_s,"integer");
-                        bbs_del_favboard($delete_s);
+                        bbs_del_favboard($select,$delete_s);
                 }
                 if (isset($_GET["dname"]))
                 {
