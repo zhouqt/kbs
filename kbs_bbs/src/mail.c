@@ -1436,12 +1436,12 @@ struct one_key mail_comms[] = {
     {'\\', SR_last},
     {'=', SR_first},
     {Ctrl('C'), do_cross},
-    {Ctrl('S'), SR_read},
+/*    {Ctrl('S'), SR_read},
     {'n', SR_first_new},
     {'p', SR_read},
-    {Ctrl('X'), SR_readX},      /* Leeward 98.10.03 */
-    {Ctrl('U'), SR_author},
-    {Ctrl('H'), SR_authorX},    /* Leeward 98.10.03 */
+    {Ctrl('X'), SR_readX},   */   /* Leeward 98.10.03 */
+/*    {Ctrl('U'), SR_author},
+    {Ctrl('H'), SR_authorX}, */   /* Leeward 98.10.03 */
     {'h', mailreadhelp},
     {Ctrl('J'), mailreadhelp},
     {Ctrl('O'), add_author_friend},
