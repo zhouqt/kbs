@@ -127,8 +127,13 @@ int get_nextid(char* boardname)
 
     fd = bcache_lock();
     bstr=getbcache(boardname);
-    bstr->nowid++;
-    ret=bstr->nowid;
+    if (bstr!=0) {
+        bstr->nowid++;
+        ret=bstr->nowid;
+    } else {
+       bbslog("3system", "wrong get_nextid %s", boardname);
+       ret=0;
+    }
     bcache_unlock(fd);
     return ret;
 }
