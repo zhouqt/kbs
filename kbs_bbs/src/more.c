@@ -1016,7 +1016,7 @@ int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
         move(i,0);
         clrtoeol();
     }
-    move(t_lines/2+1);
+    move(t_lines/2+1,0);
     curr_line = l.curr_line;
     for (i = 0, j = 0;;) {
         if (shownflag) {
