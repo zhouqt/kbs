@@ -1270,6 +1270,7 @@ char *logfile, *regfile;
     char fdata[8][STRLEN];
     char fname[STRLEN], buf[STRLEN], buff;
     char sender[IDLEN + 2];
+    int  useproxy;
 
     /*
      * ^^^^^ Added by Marco 
@@ -1366,6 +1367,7 @@ char *logfile, *regfile;
 #endif
 			
 			read_userdata(lookupuser->userid, &ud);
+			useproxy = check_proxy_IP(uinfo.lasthost, buf);
 #ifdef AUTO_CHECK_REGISTER_FORM
 {
 struct REGINFO regform;
@@ -1379,7 +1381,12 @@ strncpy(regform.career,fdata[3],99);
 strncpy(regform.addr,fdata[4],99);
 strncpy(regform.phone,fdata[5],99);
 strncpy(regform.birth,fdata[6],99);
-ret=checkreg(regform, errorstr);
+if (useproxy > 0) { //穿梭用户全部改为手动认证 windinsn May 14,2004
+    ret = -2;
+    sprintf(errorstr,"\x1b[1;33m用户可能通过穿梭注册：%s (%s)\x1b[m", uinfo.lasthost ,buf);
+}
+else
+    ret=checkreg(regform, errorstr);
 if (ret==-2) {
 #endif
 
@@ -1402,13 +1409,14 @@ if (ret==-2) {
                  clrtoeol();
 #ifdef AUTO_CHECK_REGISTER_FORM
 		 if (strstr(finfo[n],"真实姓名")) continue;
-#endif
+#else
                 if (n == 1) {
-                    if (check_proxy_IP(uinfo.lasthost, buf) > 0)
+                    if (useproxy > 0)
                         prints("%s     : %s \033[33m%s\033[m\n", finfo[n], fdata[n], buf);
                     else
                         prints("%s     : %s\n", finfo[n], fdata[n]);
                 } else
+#endif
                     prints("%s     : %s\n", finfo[n], fdata[n]);
             }
             /*
@@ -1429,7 +1437,7 @@ if (ret==-2) {
 	(saveret==2?"还是你来看看吧":(saveret==-1?"这个id不太好吧":"应该退回 理由:")),
 	errorstr);
 */
-		prints("\x1b[1;32m系统建议:%s\x1b[m",errorstr);
+		prints("\x1b[1;32m系统建议:\x1b[m%s",errorstr);
                 move(t_lines - 1, 0);
 #endif
                 getdata(t_lines - 1, 0, "是否接受此资料 (Y/N/Q/Del/Skip)? [S]: ", ans, 3, DOECHO, NULL, true);
