@@ -320,7 +320,7 @@ void i_read( int     cmdmode,char    *direct ,void (*dotitle)() ,
                         currentuser->userid, /*13-strlen(currentuser->userid)
                         	TODO:这个地方有问题，他想对齐，但是代码不对
                         ,*/ nullbuf,
-                        (allstay/60)%1000, allstay%60, nullbuf);
+                        (allstay/60)%1000, allstay%60);
                 move(t_lines-1, 0);
                 clrtoeol();
                 prints(pntbuf);
