@@ -322,6 +322,7 @@ function pc_add_member($link,$pc,$userid)
 
 function pc_del_member($link,$pc,$userid)
 {
+	global $currentuser;
 	if(!$pc || !is_array($pc))
 		return FALSE;
 	if(!pc_is_groupwork($pc))
