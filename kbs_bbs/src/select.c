@@ -439,6 +439,17 @@ bool list_select_has_key(struct _select_def* conf)
 
 int list_select_add_key(struct _select_def* conf,int key)
 {
+    int i,j;
+    /*  ‰»Î∫œ≤¢ */
+    if ((key==KEY_DIRCHANGE)||(key==KEY_SELCHANGE)||(key==KEY_REFRESH))
+      for (i=0;i<conf->keybuflen;i++) {
+        if (conf->keybuf[i]==key) {
+             for (j=i;j<conf->keybuflen-1;j++)
+                 conf->keybuf[j]=conf->keybuf[j+1];
+	     conf->keybuf[conf->keybuflen]=0;
+	     conf->keybuflen--;
+	}
+      }
     if ((conf->keybuflen<KEY_BUF_LEN)&&(key!=KEY_INVALID)) {
         conf->keybuf[conf->keybuflen]=key;
         conf->keybuflen++;

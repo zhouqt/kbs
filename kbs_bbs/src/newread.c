@@ -389,9 +389,15 @@ static int read_getdata(struct _select_def *conf, int pos, int len)
             dingcount=currboard->toptitle;
         }
 
+	if (count+dingcount==0) {
+		conf->item_count=0;
+		return SHOW_CONTINUE;
+        }
         if (pos>count+dingcount) {
-            conf->new_pos=count+dingcount;
+            conf->new_pos=count+dingcount-100;
+	    if (conf->new_pos<=0) conf->new_pos=1;
             list_select_add_key(conf,KEY_DIRCHANGE);
+	    newbbslog(BBSLOG_DEBUG,"%s pos %d count %d",arg->board->filename,pos,count+dingcount);
             return SHOW_SELCHANGE;
 	}
 	if (pos<=count) {
