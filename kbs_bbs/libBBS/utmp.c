@@ -295,7 +295,7 @@ int getnewutmpent(struct user_info *up)
             utmphead->uptime = now;
             uentp = &(utmpshm->uinfo[n]);
             if ((uentp->mode == WEBEXPLORE)
-                && ((now - uentp->freshtime) < 360)) {
+                && ((now - uentp->freshtime) < 1200)) {
                 continue;
             }
             if (uentp->active && uentp->pid && kill(uentp->pid, 0) == -1) {     /*uentp¼ì²é */
