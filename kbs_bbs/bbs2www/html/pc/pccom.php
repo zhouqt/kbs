@@ -85,7 +85,7 @@
 	</td>
 </tr>
 <tr>
-	<td class="t8"><textarea name="blogbody" class="f1" cols="100" rows="20" id="blogbody" wrap="physical">
+	<td class="t8"><textarea name="blogbody" class="f1" cols="100%" rows="20" id="blogbody" wrap="physical">
 	<?php echo $pcconfig["EDITORALERT"].$_POST["blogbody"]; ?>
 	</textarea></td>
 </tr>

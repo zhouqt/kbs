@@ -348,7 +348,7 @@
 	if($pc["EDITOR"]!=2)// not use ubb
 	{
 ?>	
-	<textarea name="blogbody" class="f1" cols="120" rows="30" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical"><?php echo $pcconfig["EDITORALERT"].$_POST["blogbody"]; ?></textarea>
+	<textarea name="blogbody" class="f1" cols="100%" rows="30" id="blogbody" wrap="physical"><?php echo $pcconfig["EDITORALERT"].$_POST["blogbody"]; ?></textarea>
 <?php
 	}
 	else
@@ -536,7 +536,7 @@
 </tr>
 <tr>
 	<td class="t8">
-	<textarea name="blogbody" class="f1" cols="120" rows="30" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical"><?php echo $pcconfig["EDITORALERT"]; ?><?php echo htmlspecialchars($rows[body]); ?></textarea>
+	<textarea name="blogbody" class="f1" cols="100%" rows="30" id="blogbody" wrap="physical"><?php echo $pcconfig["EDITORALERT"]; ?><?php echo htmlspecialchars($rows[body]); ?></textarea>
 	</td>
 </tr>
 <tr>

@@ -48,7 +48,9 @@ function submitwithcopy() {
 }
 
 function confirmLeave() {
-	return "正在编辑，确定离开吗？编辑的内容将全部丢失！";
+	window.onbeforeunload = function() {
+		return "正在编辑，确定离开吗？编辑的内容将全部丢失！";
+	}
 }
 
 function doCancel() {
@@ -64,7 +66,13 @@ function initEditor() {
 	*/
 	editor = new HTMLArea("blogbody", getBlogConfig());
 	editor.generate();
-	window.onbeforeunload = confirmLeave;
+	document.onkeypress = confirmLeave;
+	setTimeout( function() {
+		var doc = editor._iframe.contentWindow.document;
+		if (doc) {
+			HTMLArea._addEvent(doc, "keypress", confirmLeave);
+		}
+	}, 1000);
 	return false;
 }
 
