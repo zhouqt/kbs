@@ -32,6 +32,7 @@ if ($loginok!=1) {
 showAllSecs();
 
 //showUserInfo();
+showFriendLinks();
 showOnlineUsers();
 showSample();
 
@@ -84,5 +85,16 @@ function FastLogin()
 </form>
 </table><br>
 <?php 
+}
+
+function showFriendLinks() {
+	$infile = get_bbsfile("/etc/flinks.wForum");
+	$outfile = get_bbsfile("/etc/flinks.wForum.html");
+	if (!file_exists($infile)) return;
+	if (!file_exists($outfile)) {
+		require("inc/friendlink.inc.php");
+		if (gen_friend_links($infile, $outfile) === false) return;
+	}
+	readfile($outfile);
 }
 ?>
