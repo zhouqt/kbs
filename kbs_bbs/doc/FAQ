@@ -4,6 +4,8 @@
 如有问题，欢迎来 BBS 水木清华站的 BBSMan_Dev 版参与讨论。
 
 1. ChangeLog
+2004.5.29
+    flyriver 增加 FAQ 2.10 和 2.11
 2004.4.1
     flyriver 增加 FAQ 2.7 和 2.8
              修改 FAQ 2.6
@@ -104,6 +106,23 @@
 来生成。假如编译了php的cli版本，也可以用
   php bbsXXX.php 2>/dev/null | awk 'NR>3 {print;}' > tmp.html; mv -f 
 tmp.html bbsguestXXX.html
+
+2.10. 为什么我编译的 phpbbslib 没有 .so 后缀？
+[答复]
+  这个问题常见于 Redhat Fedora 和 Debain Sarge 上，由某些 1.5.x 版本的 libtool
+  引起，解决办法是分别在 smthbbs 的主目录、bbs2www 子目录、sshbbsd 子目录和
+  innbbsd 子目录下分别执行：
+      libtoolize -c --force;autoheader;aclocal;automake -a;autoconf
+
+  然后重新 configure 和 make 一遍。
+
+2.11. 我在 php.ini 里面加上了 extension=libphpbbslib.so，但还是无法使用 web
+    界面，不知道该怎么办？
+[答复]
+  a) 如果修改了 php.ini，需要重新启动 apache 才能生效(假设是 mod_php 的方式)。
+  b) 这个问题也可能是 libphpbbslib 没有 so 后缀引起的，参考 2.10 的答复。
+  c) 检查 php.ini 里面设定的 extension_dir 参数指向一个 apache 可以访问的目录，
+     而且该目录中有 libphpbbslib.so 这个问文件。
 
 3. 管理维护
 
