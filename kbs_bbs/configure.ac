@@ -176,6 +176,7 @@ AC_CONFIG_FILES([Makefile
                  daemon/Makefile
                  contrib/Makefile
                  contrib/fb2k2smth/Makefile
+                 contrib/smth2wforum/Makefile
                  mail2bbs/Makefile
                  local_utl/Makefile
                  service/Makefile
