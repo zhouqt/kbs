@@ -768,6 +768,9 @@ void save_giveupinfo(struct userec* lookupuser,int lcount,int s[10][2])
 {
 /*Bad 2002.7.6 受限与戒网问题*/
 	int kcount,tcount,i,j;
+	char buf[255];
+	FILE* fn;
+    sethomefile(buf, lookupuser->userid, "giveup");
     kcount = lcount;
     for (i = 0; i < lcount; i++) {
         j = 0;
@@ -795,9 +798,9 @@ void save_giveupinfo(struct userec* lookupuser,int lcount,int s[10][2])
     }
     if (kcount != lcount) {
         if (kcount == 0)
-            unlink(genbuf2);
+            unlink(buf);
         else {
-            fn = fopen(genbuf2, "wt");
+            fn = fopen(buf, "wt");
             for (i = 0; i < lcount; i++)
                 if (s[i][1] > 0)
                     fprintf(fn, "%d %d\n", s[i][0], s[i][1]);
