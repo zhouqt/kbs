@@ -48,7 +48,7 @@ int main()
    	printf("<input type=\"radio\" name=\"signature\" value=\"0\">0\n"); */
 	printf(" <input type=\"checkbox\" name=\"backup\">备份\n");
    	printf("<br>\n");
-   	printf("<textarea name=\"text\" rows=\"20\" cols=\"80\" wrap=\"physicle\">\n\n");
+   	printf("<textarea name=\"text\" rows=\"20\" cols=\"80\" wrap=\"physical\">\n\n");
 	if(file[0]) {
 		int lines=0;
 		printf("【 在 %s 的来信中提到: 】\n", userid);

@@ -30,7 +30,7 @@ int main()
 		fclose(fp);
 	}
    	printf("签名档每6行为一个单位, 可设置多个签名档.<table width=\"610\" border=\"1\"><tr><td>");
-   	printf("<textarea name=\"text\" rows=\"20\" cols=\"80\" wrap=\"physicle\">\n");
+   	printf("<textarea name=\"text\" rows=\"20\" cols=\"80\" wrap=\"physical\">\n");
 	printf("%s", void1(buf));
    	printf("</textarea></table>\n");
    	printf("<input type=\"submit\" value=\"存盘\"> ");

@@ -24,7 +24,7 @@ int main()
 	printf("<tr><td align=\"right\">您的email地址(可选):</td><td align=\"left\"><input name=\"email\" size=\"40\"></td></tr>\n");
 	printf("<tr><td align=\"right\">您的联络电话(可选):</td><td align=\"left\"><input name=\"phone\" size=\"40\"></td></tr>\n");
 	printf("<tr><td align=\"right\">上站留言(可选):</td><td align=\"left\">");
-	printf("<textarea name=\"words\" rows=\"3\" cols=\"40\" wrap=\"physicle\"></textarea></td></tr>");
+	printf("<textarea name=\"words\" rows=\"3\" cols=\"40\" wrap=\"physical\"></textarea></td></tr>");
 	printf("</table><hr color=\"green\">\n");
 	printf("<input type=\"submit\" value=\"提交表格\"> <input type=\"reset\" value=\"重新填写\">\n");
 	printf("</form></center>");

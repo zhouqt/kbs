@@ -147,7 +147,7 @@ int main()
 	printf("<tr><td><form method=\"post\" action=\"bbsedit\">\n");
    	printf("使用标题: %s 讨论区: %s<br>\n", nohtml(x.title), board);
    	printf("本文作者：%s<br>\n", currentuser->userid);
-   	printf("<textarea name=\"text\" rows=\"20\" cols=\"80\" wrap=\"physicle\">");
+   	printf("<textarea name=\"text\" rows=\"20\" cols=\"80\" wrap=\"physical\">");
 	setbfile(path, board, file);
 	fp=fopen(path, "r");
 	if(fp==0)

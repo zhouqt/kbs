@@ -31,7 +31,7 @@ int main()
 		fclose(fp);
 	}
    	printf("<table width=\"610\" border=\"1\"><tr><td>");
-   	printf("<textarea name=\"text\" rows=\"20\" cols=\"80\" wrap=\"physicle\">\n");
+   	printf("<textarea name=\"text\" rows=\"20\" cols=\"80\" wrap=\"physical\">\n");
 	printf("%s", void1(buf));
    	printf("</textarea></td></tr></table>\n");
    	printf("<input type=\"submit\" value=\"´æÅÌ\"> ");

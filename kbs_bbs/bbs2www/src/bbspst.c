@@ -56,7 +56,7 @@ int main()
 	/* 加上匿名讨论区支持*/
 	if (seek_in_file("etc/anonymous",board))
 		printf("<input type=\"checkbox\" name=\"anony\" value=\"1\">使用匿名\n");
-   	printf("<br>\n<textarea name=\"text\" rows=\"20\" cols=\"80\" wrap=\"physicle\">\n\n");
+   	printf("<br>\n<textarea name=\"text\" rows=\"20\" cols=\"80\" wrap=\"physical\">\n\n");
 	if(file[0])
 	{
 		int lines=0;
