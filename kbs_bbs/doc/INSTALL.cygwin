@@ -1,0 +1,138 @@
+                        smthbbs 在 cygwin 上的安装说明
+
+    本文由 BBS 水木清华站(http://www.smth.org)系统维护组负责维护，介绍了
+smthbbs 在 cygwin 上的编译和安装。欢迎到 BBS 水木清华站的 BBSMan_Dev 版
+参与 smthbbs 的讨论。
+
+0. ChangeLog
+2003.11.27
+  flyriver v1.0  初始版本
+
+1. 需要的软件
+cygwin > 1.5.3         必须      系统中必须已经安装 cygipc 的库
+libesmtp > 0.8         必须      编译时必须加上 --disable-pthreads 选项
+autoconf-2.57          可选
+automake-1.6.X         可选
+libtool-1.4.3          可选
+apache_1.3.X           可选      选择 web 界面支持才需要
+  or apache2
+php > 4.2.0            可选      选择 web 界面支持才需要
+libxml2                可选      选择 web 界面支持才需要
+libiconv               可选      选择 web 界面支持才需要
+zlib                   可选      选择 web 界面支持才需要
+openssl		       可选      选择 pop3d 支持 pop3s 才需要
+gmp-4.1.2              可选      选择 ssh 方式支持才需要
+
+注意：其中 libesmtp 和 gmp 在 cygwin 的安装包并不包含，而且在 cygwin 上的
+编译和安装有些难度，建议直接安装 ftp://dev.smth.org 上专门为 cygwin 编译的
+二进制包。
+
+2. 安装
+    本节介绍 smthbbs 的 telnet/ssh/web 方式在 cygwin 的安装。
+
+2.1 一些约定
+    $(BBSHOME)         表示 bbs 的安装目录，缺省为 /home/bbs，在本文中指定为
+                       /usr/local/bbs
+    $(WWWHOME)         表示 apache 的安装目录，在本文中指定为 /usr/local/www
+    $(PHPHOME)         表示 php 的安装目录，在本文中按缺省的 /usr/local
+    $(SRCDIR)          表示存放 smthbbs、apache 和 php 源代码的目录，可自己设
+                       定一个，例如放在自己 home 目录的某个子目录下
+
+2.2 安装 libesmtp 和 gmp
+    从 ftp://dev.smth.org 下载 libesmtp-cygwin.tar.gz 和 gmp-cygwin.tar.gz 
+二进制包，可放在 $(SRCDIR) 目录下，使用如下命令进行安装：
+          tar zxPf libesmtp-cygwin.tar.gz
+          tar zxPf gmp-cygwin.tar.gz
+    注意：libesmtp-cygwin.tar.gz 和 gmp-cygwin.tar.gz 应替换为实际的文件名。
+
+2.3 下载 smthbbs-snapshot、apache 和 php 的代码包
+    目前只有 smthbbs-snapshot 版本才支持 cygwin，其他更老的版本都不支持，这
+一点要特别注意。将 smthbbs-snapshot、apache 和 php 的代码包放在 $(SRCDIR)
+目录，然后分别解开。
+
+2.4 预安装 apache 和 php
+    首先切换目录到 $(SRCDIR)，进入 apache 的源代码目录。为了节省篇幅，下面
+直接以命令表示。
+          cd apache_1.3.X
+          ./configure --prefix=/usr/local/www
+          
+          cd ../php-4.3.X
+          ./configure --with-apache=../apache_1.3.X
+          make
+          make install
+          
+          cd ../apache_1.3.X
+          ./configure --prefix=/usr/local/www \
+              --activate-module=src/modules/php4/libphp4.a
+          make
+          make install
+
+2.5 安装 smthbbs
+    同样切换到 $(SRCDIR) 目录，进入 smthbbs 的源代码目录。编辑 site/devel.h
+文件，加入下面这一行：
+#define BUILD_PHP_EXTENSION 1   /*将php lib编成php extension */
+
+    然后执行下面的一系列命令：
+          ./configure --prefix=/usr/local/bbs --enable-site=devel \
+              --with-www=/usr/local/www --with-php=/usr/local/include/php \
+              --without-mysql --enable-ssh
+          make
+          make install
+          make install-home
+
+2.6 将 phpbbslib 放入 php
+    同样切换到 $(SRCDIR) 目录，进入 php 的源代码目录。
+          mkdir ext/smth_bbs
+
+    然后将 smthbbs 源代码目录 bbs2www/phplib/ 下的 config.m4、php_smth_bbs.h
+和 phpbbslib.c 三个文件复制到 ext/smth_bbs 目录，然后执行：
+          ./buildconf --force
+
+2.7 再次编译安装 apache 和 php
+    重复 2.4 节中的步骤即可，但 php 的 configure 命令应改为：
+          ./configure --disable-debug -enable-track-vars \
+              --with-apache=../apache_1.3.X --enable-mime-magic \
+              --with-zlib-dir --enable-smth_bbs --with-dom --with-iconv
+
+
+    如果一切顺利，至此 smthbbs、apache 和 php 都已经安装完毕。
+
+3. 运行之前的配置
+    本节主要说明 ssh 方式和 web 方式的配置。
+
+3.1 ssh 方式
+    请参考 doc/sshbbsd-howto 文件。该文件中提到的 random_seed、identity 和 
+identity.pub 文件可预先在 Linux 或 FreeBSD 下生成，然后复制到 cygwin 里面
+的相应目录。
+
+3.2 web 方式
+    apache 的配置文件为 /usr/local/www/conf/httpd.conf，编辑该文件，加入
+        AddType application/x-httpd-php .php
+
+    修改 Port 参数为 80，修改 User 和 Group 参数为你自己的用户名和所属组。
+可参考 /etc/passwd 和 /etc/group 文件。
+
+    将 smthbbs 源代码目录 bbs2www/xml 下的文件复制到 /usr/local/www/htdocs。
+然后
+          cd /usr/local/www/htdocs
+          cp sites/smth.php site.php
+          cp sites/smth_menu.html menu.html
+
+    php 的配置文件可以从 php 源代码目录得到，将 php.ini-dist 复制为
+/usr/local/lib/php.ini，然后编辑 php.ini 文件，将 short_open_tag 的值修改为
+Off 即可。
+
+4. 运行
+
+4.1 运行 smthbbs
+          cd /usr/local/bbs/bin
+          ./miscd daemon
+          ./bbslogd
+          ./bbsd -p 23
+          ./sshbbsd
+
+    然后 telnet localhost，注册 SYSOP 和 guest 两个帐号。
+
+4.2 运行 apache
+          /usr/local/www/bin/apachectl start
+  
