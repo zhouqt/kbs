@@ -38,7 +38,7 @@
 <center><?php echo $BBS_FULL_NAME; ?> -- ¡Ù—‘∞Â
 <hr>
 <pre>
-<? 
+<?php 
 	bbs_printansifile($top_file);
 ?>
 </pre>

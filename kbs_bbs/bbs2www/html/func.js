@@ -92,6 +92,7 @@ var o=null;
 		o=document.getElementById("div"+mn);
 		if(o==null) return;
 		o.style.visibility="hidden";
+                o.style.display="none";
 		o=document.getElementById("img"+mn);
 	}else if(isGood){
 		o=document.getElementById("div"+mn);
@@ -113,6 +114,7 @@ var o=null;
 		o=document.getElementById("div"+mn);
 		if(o==null) return;
 		o.style.visibility="visible";
+                o.style.display="";
 		o=document.getElementById("img"+mn);
 	}else if(isGood){
 		o=document.getElementById("div"+mn);

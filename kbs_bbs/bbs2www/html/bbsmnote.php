@@ -35,7 +35,7 @@
 [<a href=bbsdoc.php?board=<?php echo $board; ?>>本讨论区</a>]
 </center>
 </body>
-<?
+<?php
 			}
 		} else {
 			$fp = fopen($top_file, "r");
@@ -44,7 +44,7 @@
 <center><?php echo $BBS_FULL_NAME; ?> -- 备忘录 [讨论区: <?php echo $board; ?>]<hr color=green>
 <form method="post" action=<?php echo "\"bbsmnote?type=update&board=" . $board . "\""; ?>>
 <table width="610" border="1"><tr><td><textarea name="text" rows="20" cols="80" wrap="physical">
-<? 
+<?php
 			if ($fp != FALSE) {
 				for ($i=0;!feof($fp)&&$i<200;$i++)
 					echo(fgets($fp,256));

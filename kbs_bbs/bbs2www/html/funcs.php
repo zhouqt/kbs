@@ -77,7 +77,7 @@ function error_alert($msg)
 {
 ?>
 <SCRIPT language="javascript">
-window.alert(<? echo "\"$msg\""; ?>);
+window.alert(<?php echo "\"$msg\""; ?>);
 history.go(-1);
 </SCRIPT>
 <?php

@@ -17,7 +17,7 @@
         }
 ?>
 <body>
-<?
+<?php
 		bbs_update_uinfo("invisible", !$currentuinfo["invisible"]);
         if (!$currentuinfo["invisible"])
             echo("¿ªÊ¼ÒþÉí!");

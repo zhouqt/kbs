@@ -139,7 +139,7 @@
 		{
 ?>
 <a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&start=<?php echo $start + $artcnt; ?>">下一页</a>
-<?
+<?php
 		}
 ?>
 <a href=bbsdoc.php?board=<?php echo $brd_encode; ?>>一般模式</a> <a href=/cgi-bin/bbs/bbsdenyall?board=<?php echo $brd_encode; ?>>封人名单</a> <a href=bbsmnote.php?board=<?php echo $brd_encode; ?>>编辑进版画面</a>

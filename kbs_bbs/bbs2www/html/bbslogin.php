@@ -5,9 +5,9 @@
 	 */
 require("funcs.php");
 $data = array ();
-$id = $_POST["id"];
-$passwd = $_POST["passwd"];
-$kick_multi = $_POST["kick_multi"];
+@$id = $_POST["id"];
+@$passwd = $_POST["passwd"];
+@$kick_multi = $_POST["kick_multi"];
 $error=-1;
 if ($id!="") {
     if (($id!="guest")&&bbs_checkpasswd($id,$passwd)!=0)
@@ -35,7 +35,15 @@ if ($id!="") {
     }
 } else {
 ?>
-<html>
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+    <title>BBS 水木清华站</title>
+  </head>
 <body >
 <SCRIPT language="javascript">
 	alert("用户名不能为空!");
@@ -43,20 +51,20 @@ if ($id!="") {
 </SCRIPT>
 </body>
 </html>
-<?
+<?php
     return;
 }
 ?>
 <html>
 
-<?
+<?php
 if ($loginok != 1) {
   if ($loginok==6) {
 ?>
 <body >
 <SCRIPT language="javascript">
 	alert("用户密码错误，请重新登陆！"+
-<?
+<?php
  echo "\"$error\"";
 ?>
 );
@@ -64,17 +72,17 @@ if ($loginok != 1) {
 </SCRIPT>
 </body>
 </html>
-<?
+<?php
     return;
   } else {
 ?>
 <body >
 <form name="infoform" action="bbslogin.php" method="post">
-<input class="default" type="hidden" name="id" maxlength="12" size="8" value=<?
+<input class="default" type="hidden" name="id" maxlength="12" size="8" value=<?php
 echo "\"$id\"";
 ?>
 ><br>
-<input class="default" type="hidden" name="passwd" maxlength="39" size="8" value=<?
+<input class="default" type="hidden" name="passwd" maxlength="39" size="8" value=<?php
 echo "\"$passwd\"";
 ?>
 ><br>
@@ -88,7 +96,7 @@ echo "\"$passwd\"";
 </SCRIPT>
 </body>
 </html>
-<?
+<?php
 	return;
   }
 } 

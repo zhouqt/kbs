@@ -49,7 +49,7 @@
 <body>
 <center><?php echo $BBS_FULL_NAME; ?> -- ±¸ÍüÂ¼ [ÌÖÂÛÇø: <?php echo $board; ?>]<hr color=green>
 <table border=1 width=610><tr><td><pre>
-<? 
+<?php
 	bbs_printansifile($top_file);
 ?></tr></td>
 </pre></table>
