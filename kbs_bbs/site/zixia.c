@@ -348,10 +348,11 @@ int multilogin_user(struct userec *user, int usernum,int mode)
     /* Bigman: 2000.8.17 智囊团能够开2个窗口 */
     /* stephen: 2001.10.30 仲裁可以开两个窗口 */
 	/* roy: 版主&AKA版同学可以开两个窗口 */
+    /* atppp: 3 ! 20050323 */
     if ((HAS_PERM(user,PERM_BOARDS) || HAS_PERM(user,PERM_CHATOP)||
         HAS_PERM(user,PERM_JURY) || HAS_PERM(user,PERM_CHATCLOAK)
 		|| HAS_PERM(user, PERM_BMAMANGER)  )
-        && logincount< 2)
+        && logincount< 3)
         return 0;
 
     /* allow multiple guest user */
@@ -360,8 +361,8 @@ int multilogin_user(struct userec *user, int usernum,int mode)
             return 2;
         }
         return 0;
-    } else if (((curr_login_num < 500) && (logincount >= 2)) /*小于500可以双登*/
-               || ((curr_login_num >= 500) && (logincount >= 1)  /*500人以上*/
+    } else if (((curr_login_num < 500) && (logincount >= 3)) /*小于500可以3登*/
+               || ((curr_login_num >= 500) && (logincount >= 2)  /*500人以上*/
                      && !(((arg.telnet_count==0)&&(mode==0))  /* telnet个数为零可以再登一个telnet */
                             || (((arg.www_count==0)&&(mode==1)) ))))       /*user login limit */
         return 1;
@@ -528,19 +529,19 @@ void get_mail_limit(struct userec* user,int *sumlimit,int * numlimit)
 {
     if ((!(user->userlevel & PERM_SYSOP)) && strcmp(user->userid, "Arbitrator")) {
         if (user->userlevel & PERM_CHATCLOAK) {
-            *sumlimit = 4000;
-            *numlimit = 4000;
+            *sumlimit = 8000;
+            *numlimit = 8000;
         } else
             /*
              *              * if (lookupuser->userlevel & PERM_BOARDS)
              *                           * set BM, chatop, and jury have bigger mailbox, stephen 2001.10.31 
              *                                        */
         if (user->userlevel & PERM_MANAGER) {
-            *sumlimit = 600;
-            *numlimit = 600;
+            *sumlimit = 4000;
+            *numlimit = 4000;
         } else if (user->userlevel & PERM_LOGINOK) {
-            *sumlimit = 240;
-            *numlimit = 300;
+            *sumlimit = 1000;
+            *numlimit = 1000;
         } else {
             *sumlimit = 15;
             *numlimit = 15;
