@@ -102,7 +102,7 @@ int update_form(char *board, char *file)
 		fgets(buf2, sizeof(buf2), fin);
 		fprintf(fout, "%s", buf2);
 	}
-	fprintf(fout, "%s", buf);
+	fprintf(fout, "%s", unix_string(buf));
 	fprintf(fout, "[36m¡ù ÐÞ¸Ä:¡¤%s ì¶ %s ÐÞ¸Ä±¾ÎÄ¡¤[FROM: %s][m\n",
 			currentuser->userid, wwwCTime(time(0))+4, fromhost);
 	while (fgets(buf2, sizeof(buf2), fin) != NULL)

@@ -44,7 +44,7 @@ int main()
 	}
 	*(int*)(u_info->from+36)=time(0);
 	sprintf(filename, "tmp/%s.%d.tmp", getcurruserid(), getpid());
-	f_append(filename, content);
+	f_append(filename, unix_string(content));
 	r = post_article(board, title, filename, currentuser, fromhost, sig, local, anony);
 	if(r<=0)
 		http_fatal("内部错误，无法发文");
