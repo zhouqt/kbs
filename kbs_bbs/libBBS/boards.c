@@ -442,13 +442,14 @@ int brc_clear_new_flag(char* filename)
         int     ftime, n, i;
         ftime=atoi(&filename[2]);
         if(filename[0]!='M' && filename[0]!='G')  return;
-        if(brc_num<=0) 
-                return;
         for (n = 0; n < brc_num; n++) 
                 if (ftime >= brc_list[n]) 
 			break;
-	brc_num=n;
-        brc_changed = 1;
+	if (n<BRC_MAXNUM) {
+		brc_num=n+1;
+		brc_list[brc_num] = ftime;
+        	brc_changed = 1;
+	}
 	return;
 }
 
