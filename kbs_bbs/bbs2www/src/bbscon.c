@@ -102,7 +102,7 @@ int main()
         ptr += 4;
     ptr[60] = 0;
     if ((oldx.accessed[1] & FILE_READ) == 0)
-        printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=Re: %s&refilename=%s\">回文章</a>]", buf2, file, oldx.owner, encode_url(buf, void1(ptr), sizeof(buf)), encode_url(buf3, void1(oldx.filename), sizeof(buf3)));
+        printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=Re: %s&refilename=%s\">回文章</a>]", buf2, file, oldx.owner, encode_url(buf, void1(ptr), sizeof(buf)), oldx.filename);
     printf("[<a href=\"bbstfind?board=%s&title=%s\">同主题阅读</a>]", buf2, encode_url(buf, void1(ptr), sizeof(buf)));
     printf("[<a href=\"javascript:history.go(-1)\">快速返回</a>]\n");
     printf("</center>\n");
