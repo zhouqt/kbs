@@ -6,13 +6,14 @@
 int main()
 {
     FILE *fp;
-    char buf[512], dirname[15], dir[80], file[80], path[80], *ptr, *id;
+    char buf[512], dirname[15], dir[80], file[80], path[80], *ptr, *id,title[20];
     struct fileheader x;
     int num, tmp, total;
 
     init_all();
     strsncpy(file, getparm("file"), 32);
-    strsncpy(dirname, getparm("dir"), 14);
+    strsncpy(dirname, getparm("dir"), 15);
+    strsncpy(title,getparm("title"),20);
     num = atoi(getparm("num"));
     printf("<center>\n");
     id = currentuser->userid;
@@ -37,7 +38,7 @@ int main()
     fp = fopen(path, "r");
     if (fp == 0)
         printf("本文不存在或者已被删除</pre>\n</table><hr>\n");
-    else 
+    else
     {
     while (1) {
         if (fgets(buf, 512, fp) == 0)
@@ -46,7 +47,7 @@ int main()
     }
     fclose(fp);
     printf("</pre>\n</table><hr>\n");
-    printf("[<a onclick='return confirm(\"你真的要删除这封信吗?\")' href=bbsdelmail?file=%s> 删除</a>]", file);
+    printf("[<a onclick='return confirm(\"你真的要删除这封信吗?\")' href=bbsdelmail?file=%s&dir=%s&title=%s> 删除</a>]", file,dirname,title);
     }
     fp = fopen(dir, "r+");
     if (fp == 0)

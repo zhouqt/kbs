@@ -33,7 +33,7 @@ int main()
 {
     FILE *fp;
     struct fileheader f;
-    char path[80], file[80], *id;
+    char path[80], file[80], *id,dirname[15],title[20];
     int num = 0;
 
     init_all();
@@ -41,9 +41,12 @@ int main()
         http_fatal("您尚未登录");
     id = currentuser->userid;
     strsncpy(file, getparm("file"), 20);
+    strsncpy(dirname, getparm("dir"), 15);
+    strsncpy(title,getparm("title"),20);
+
     if (strncmp(file, "M.", 2) || strstr(file, ".."))
         http_fatal("错误的参数");
-    sprintf(path, "mail/%c/%s/.DIR", toupper(id[0]), id);
+    sprintf(path, "mail/%c/%s/%s", toupper(id[0]), id,dirname);
     fp = fopen(path, "r");
     if (fp == 0)
         http_fatal("错误的参数2");
@@ -53,9 +56,9 @@ int main()
         num++;
         if (!strcmp(f.filename, file)) {
             fclose(fp);
-            sprintf(path, "mail/%c/%s/%s", toupper(id[0]), id, ".DIR");
+            sprintf(path, "mail/%c/%s/%s", toupper(id[0]), id, dirname);
             del_mail(num, &f, path);
-            printf("信件已删除.<br><a href=\"bbsmail\">返回所有信件列表</a>\n");
+	    printf("信件已删除.<br><a href=\"/bbsreadmail.php?path=%s&title=%s\">返回信件列表</a>\n",dirname,title);
             http_quit();
         }
     }
