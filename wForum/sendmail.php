@@ -244,7 +244,10 @@ function main() {
 ?>
 </select>
  [<a target="_balnk" href="bbssig.php">查看签名档</a>]<br>
- <input type=checkbox name=backup>备份到发件箱中
+<?php
+    $bBackup = (bbs_is_save2sent() != 0);
+?>
+ <input type="checkbox" name="backup"<?php if ($bBackup) echo " checked=\"checked\""; ?>>备份到发件箱中
 			</td>
 		  </tr>
           <tr> 
