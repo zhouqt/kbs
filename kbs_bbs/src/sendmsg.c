@@ -256,6 +256,7 @@ reenter:
                 break;
             case KEY_PGDN:
             case ' ':
+            case KEY_RIGHT:
                 if(page<count-11) page+=10;
                 else page=count-1;
                 break;
