@@ -51,8 +51,8 @@ main(argc,argv)
 				buf[strlen(buf)-1]=0;
 			}
 			if (i==120) strcpy(buf,"   À­Èø");
-			else if (i==128) strcpy(buf,"   Ì«Ô­");
-
+/*	else if (i==128) strcpy(buf,"   Ì«Ô­");
+i*/
 			if (j==2)
 			{
 				printf ("%s %s\n",buf,in_buf);
