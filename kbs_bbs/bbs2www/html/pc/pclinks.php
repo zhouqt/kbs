@@ -44,6 +44,7 @@
 			$favlinksnum = count($pc["LINKS"]);
 			for($i = 0;$i < $favlinksnum ; $i ++ )
 			{
+				if(!$_POST["link".$i] || !$_POST["url".$i]) continue;
 				$favlinks[$i] = array("LINK" => $_POST["link".$i] , "URL" => $_POST["url".$i] , "IMAGE" => (int)($_POST["image".$i]));
 			}
 			if($_POST["link".$favlinksnum] && $_POST["url".$favlinksnum])
@@ -56,7 +57,10 @@
 			for($i = 0;$i < count($pc["LINKS"]);$i ++)
 			{
 				if($i != $_GET["linkid"] - 1)
-					$favlinks[] = array("LINK" => $pc["LINKS"][$i]["LINK"] ,"URL" => $pc["LINKS"][$i]["URL"] , "IMAGE" => $pc["LINKS"][$i]["IMAGE"]?1:0 );
+				{
+					$isImage = $pc["LINKS"][$i]["IMAGE"]?1:0;
+					$favlinks[] = array("LINK" => $pc["LINKS"][$i]["LINK"] ,"URL" => $pc["LINKS"][$i]["URL"] , "IMAGE" => $isImage );
+				}
 			}
 			pc_edit_link($link,$favlinks,$pc["UID"]);
 		}
