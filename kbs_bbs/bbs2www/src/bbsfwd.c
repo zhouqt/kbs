@@ -33,6 +33,8 @@ int main()
     printf("<center>%s -- 转寄/推荐给好友 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser->userid);
     if (target[0]) {
         if (!strchr(target, '@')) {
+	    if (HAS_PERM(currentuser,PERM_DENYMAIL))
+		http_fatal("你无权给本站用户转信!");
             if (getuser(target, &u) == 0)
                 http_fatal("错误的使用者帐号");
             strcpy(target, u->userid);
