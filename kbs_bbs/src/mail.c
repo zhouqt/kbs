@@ -654,6 +654,7 @@ int do_send(char *userid, char *title, char *q_file)
 int m_send(char *userid)
 {
     char uident[STRLEN];
+    int oldmode;
 
     /*
      * 封禁Mail Bigman:2000.8.22 
@@ -661,13 +662,15 @@ int m_send(char *userid)
     if (HAS_PERM(currentuser, PERM_DENYMAIL))
         return DONOTHING;
 
+    oldmode = uinfo.mode;
+    modify_user_mode(SMAIL);
     if (userid == NULL) {
         move(1, 0);
         clrtoeol();
-        modify_user_mode(SMAIL);
         usercomplete("收信人： ", uident);
         if (uident[0] == '\0') {
             clear();
+            modify_user_mode(oldmode);
             return 0;
         }
     } else
@@ -700,6 +703,7 @@ int m_send(char *userid)
         prints("信件已寄出\n");
     }
     pressreturn();
+    modify_user_mode(oldmode);
     return 0;
 }
 

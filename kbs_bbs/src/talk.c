@@ -233,11 +233,12 @@ char q_id[IDLEN];
     char permstr[10];
     char exittime[40];
     time_t exit_time, temp /*Haohmaru.98.12.04 */ ;
-    int logincount, seecount;
+    int logincount, seecount, oldmode;
     struct userec *lookupuser;
 
+    oldmode = uinfo.mode;
+    modify_user_mode(QUERY);
     if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND && uinfo.mode != READING && uinfo.mode != MAIL && uinfo.mode != RMAIL && uinfo.mode != GMENU) {
-        modify_user_mode(QUERY);
         /*
          * count = shortulist(NULL); 
          */
@@ -250,6 +251,7 @@ char q_id[IDLEN];
         usercomplete(NULL, uident);
         if (uident[0] == '\0') {
             clear();
+            modify_user_mode(oldmode);
             return 0;
         }
     } else {
@@ -269,6 +271,7 @@ char q_id[IDLEN];
         pressanykey();
         move(2, 0);
         clrtoeol();
+        modify_user_mode(oldmode);
         return -1;
     }
     uinfo.destuid = tuid;
@@ -380,7 +383,7 @@ char q_id[IDLEN];
                 break;
             case 'O':
                 if (!strcmp("guest", currentuser->userid))
-                    return 0;
+                    break;
                 if (addtooverride(uident) == -1)
                     sprintf(buf, "%s 已在朋友名单", uident);
                 else
@@ -414,6 +417,7 @@ char q_id[IDLEN];
         }
     }
     uinfo.destuid = 0;
+    modify_user_mode(oldmode);
     return 0;
 }
 int count_visible_active(struct user_info *uentp, int *count, int pos)
