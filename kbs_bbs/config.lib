@@ -142,9 +142,10 @@ if test "$LIBESMTP_DIR" != "no"; then
       LIBESMTP_LIBS="-L$LIBESMTP_DIR/lib -lesmtp"
       LIBS="$SAVE_LIBS $LIBESMTP_LIBS"
     ],[
-      LIBS=$SAVE_LIBS
-      BBS_PROG_SENDMAIL
+      AC_MSG_ERROR(Cannot find libesmtp library)
     ])
+  else
+    BBS_PROG_SENDMAIL
   fi
 else
   BBS_PROG_SENDMAIL
