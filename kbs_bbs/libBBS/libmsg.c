@@ -10,7 +10,7 @@ char msgerr[255];
 
 int getuinfopid(void);
 
-int write_peer(msg_t *msgbuf)
+int write_peer(bbsmsg_t *msgbuf)
 {
 	char buf[2*STRLEN];
 
@@ -39,7 +39,7 @@ int can_override(char *userid,char *whoasks)
     return  (search_record( buf, &fh, sizeof(fh), (RECORD_FUNC_ARG)cmpfnames, whoasks )>0)?YEA:NA;
 }
 
-int read_peer(int sockfd, msg_t *msgbuf)
+int read_peer(int sockfd, bbsmsg_t *msgbuf)
 {
 	char buf[2*STRLEN];
 	char *ptr;
@@ -70,13 +70,13 @@ int read_peer(int sockfd, msg_t *msgbuf)
 	return rv;
 }
 
-int get_request_type(msg_t *msgbuf)
+int get_request_type(bbsmsg_t *msgbuf)
 {
 	assert(msgbuf != NULL);
 	return msgbuf->type;
 }
 
-int get_response_type(msg_t *msgbuf)
+int get_response_type(bbsmsg_t *msgbuf)
 {
 	assert(msgbuf != NULL);
 	return msgbuf->type;
@@ -90,10 +90,10 @@ int get_sockfd()
 
 	bzero(&sun, sizeof(sun));
 	snprintf(path, sizeof(path), BBSHOME"/.msgd");
-	sockfd = socket(AF_LOCAL, SOCK_STREAM, 0);
+	sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
 	if (sockfd == -1)
 		return -1;
-	sun.sun_family = AF_LOCAL;
+	sun.sun_family = AF_UNIX;
 	strncpy(sun.sun_path, path, sizeof(sun.sun_path)-1);
 	if (connect(sockfd, (struct sockaddr *)&sun, sizeof(sun)) < 0)
 	{
@@ -105,7 +105,7 @@ int get_sockfd()
 
 int addto_msglist(int utmpnum, char *userid)
 {
-	msg_t msgbuf;
+	bbsmsg_t msgbuf;
 
 	if ((msgbuf.sockfd = get_sockfd()) < 0)
 		return -1;
@@ -127,7 +127,7 @@ add_failed:
 
 int delfrom_msglist(int utmpnum, char *userid)
 {
-	msg_t msgbuf;
+	bbsmsg_t msgbuf;
 
 	if ((msgbuf.sockfd = get_sockfd()) < 0)
 		return -1;
@@ -149,7 +149,7 @@ del_failed:
 
 int send_webmsg(int destutmp, char *destid, int srcutmp, char *srcid, char *msg)
 {
-	msg_t msgbuf;
+	bbsmsg_t msgbuf;
 
 	if ((msgbuf.sockfd = get_sockfd()) < 0)
 		return -1;
@@ -178,7 +178,7 @@ send_failed:
 
 int receive_webmsg(int destutmp, char *destid, int *srcutmp, char *srcid, char *msg)
 {
-	msg_t msgbuf;
+	bbsmsg_t msgbuf;
 	char *ptr;
 	char *ptr2;
 

@@ -28,7 +28,6 @@
 #include <setjmp.h>
 #include <ctype.h>
 #include <errno.h>
-#include <getopt.h>
 
 /* send cancel string to get the other end to shut up */
 void

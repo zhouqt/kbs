@@ -68,13 +68,13 @@ int init_socket()
 	bzero(&sun, sizeof(sun));
 	snprintf(path, sizeof(path), BBSHOME"/.msgd");
 	unlink(path);
-	sockfd = socket(AF_LOCAL, SOCK_STREAM, 0);
+	sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
 	if (sockfd == -1)
 	{
 		perror("socket");
 		exit(-1);
 	}
-	sun.sun_family = AF_LOCAL;
+	sun.sun_family = AF_UNIX;
 	strncpy(sun.sun_path, path, sizeof(sun.sun_path)-1);
 	if (bind(sockfd, (struct sockaddr *)&sun, SUN_LEN(&sun)) == -1)
 	{
@@ -217,7 +217,7 @@ int free_msglist_ent(int utmpnum, char *userid)
  * 专用于 request type 为 MSGD_NEW 的情况
  * 在 msglist 中为用户分配 entry，如果允许的话。
  */
-int new_user(msg_t *msgbuf)
+int new_user(bbsmsg_t *msgbuf)
 {
 	char *ptr;
 	char *ptr2;
@@ -257,7 +257,7 @@ int new_user(msg_t *msgbuf)
  * 专用于 request type 为 MSGD_DEL 的情况
  * 在 msglist 中释放该用户占用的 entry，如果允许的话。
  */
-int delete_user(msg_t *msgbuf)
+int delete_user(bbsmsg_t *msgbuf)
 {
 	char *ptr;
 	char *ptr2;
@@ -304,7 +304,7 @@ int delete_user(msg_t *msgbuf)
  * 发送消息的任务应该交给 write_msg() 来处理。只好再定义一个
  * msgent2_t 结构用于 read_msg() 和 write_msg() 交换信息。
  */
-int read_msg(msg_t *msgbuf)
+int read_msg(bbsmsg_t *msgbuf)
 {
 	char *ptr;
 	char *ptr2;
@@ -378,7 +378,7 @@ int read_msg(msg_t *msgbuf)
  * 另外，如果 web 端用户发送消息给 telnet 端用户的话，
  * 将绕过 webmsgd，直接调用 sendmsgfunc() 发送给 telnet 端用户。
  */
-int write_msg(msg_t *msgbuf)
+int write_msg(bbsmsg_t *msgbuf)
 {
 	char *ptr;
 	char *ptr2;
@@ -428,7 +428,7 @@ int write_msg(msg_t *msgbuf)
 
 void process_request(int clientfd)
 {
-	msg_t msgbuf;
+	bbsmsg_t msgbuf;
 
 	if (read_request(clientfd, &msgbuf) < 0)
 		return;

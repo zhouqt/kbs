@@ -37,7 +37,7 @@ typedef struct _msg_t
 	int type;				/* request or response type */
 	int sockfd;				/* */
 	char rawdata[2*STRLEN];	/* */
-}msg_t;
+}bbsmsg_t;
 
 /*static msg_t     msgbuf;*/
 
