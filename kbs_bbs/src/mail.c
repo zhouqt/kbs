@@ -2237,6 +2237,8 @@ static int maillist_key(struct _select_def *conf, int command)
         int i = 0, y, x;
         struct stat st;
 
+        if (!HAS_PERM(currentuser,PERM_LOGINOK)) 
+	    return SHOW_CONTINUE;
         if (mail_list_t >= MAILBOARDNUM) {
             move(2, 0);
             clrtoeol();
@@ -2282,6 +2284,8 @@ static int maillist_key(struct _select_def *conf, int command)
         char ans[2];
 	int num,y;
 
+        if (!HAS_PERM(currentuser,PERM_LOGINOK)) 
+	    return SHOW_CONTINUE;
 	if (conf->pos<=arg->cmdnum+arg->sysboxnum)
             return SHOW_CONTINUE;
         move(0, 0);
@@ -2313,6 +2317,8 @@ static int maillist_key(struct _select_def *conf, int command)
 	int num;
         char ans[2];
 
+        if (!HAS_PERM(currentuser,PERM_LOGINOK)) 
+	    return SHOW_CONTINUE;
 	if (conf->pos<=arg->cmdnum+arg->sysboxnum)
             return SHOW_CONTINUE;
         move(0, 0);
