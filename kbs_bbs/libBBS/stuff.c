@@ -594,11 +594,11 @@ char *setbdir(int digestmode, char *buf, char *boardname)
     	 strcpy(dir, ".ORIGIN");
     	 break;
     case 7:
-    	 sethomefile(buf, currentuser->userid, ".AUTHOR");
-    	 return buf;
+    	 sprintf(dir, ".AUTHOR.%s", currentuser->userid);
+    	 break;
     case 8:
-    	 sethomefile(buf, currentuser->userid, ".TITLE");
-    	 return buf;
+    	 sprintf(dir, ".TITLE.%s", currentuser->userid);
+    	 break;
     }
     sprintf(buf, "boards/%s/%s", boardname, dir);
     return buf;
