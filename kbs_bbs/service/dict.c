@@ -7,6 +7,7 @@
 void print_res(char * r)
 {
     char * p;
+    int insound=0;
     for (p=r;*p!=0;p++) {
         if (insound) {
             if (*p==25) insound=0;
@@ -47,6 +48,7 @@ void print_res(char * r)
 void prinf_res(FILE* fp, char * r)
 {
     char * p;
+    int insound=0;
     for (p=r;*p!=0;p++) {
         if (insound) {
             if (*p==25) insound=0;
@@ -190,7 +192,6 @@ int dict_main()
             strcpy(word,row[1]);
            while (row != NULL) {
             	char* p;
-            	int insound=0;
             	if (strcmp(word,row[1]))
                     fprintf(fp, "\x1b[1;32;4m%s\x1b[m\n", row[1]);
             	prinf_res(fp, row[2]);
