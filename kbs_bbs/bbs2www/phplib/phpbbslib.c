@@ -127,6 +127,8 @@ static PHP_FUNCTION(bbs_get_tmpl_from_num);
 static PHP_FUNCTION(bbs_make_tmpl_file);
 #ifdef SMS_SUPPORT
 static PHP_FUNCTION(bbs_send_sms);
+static PHP_FUNCTION(bbs_register_sms_sendcheck);
+static PHP_FUNCTION(bbs_register_sms_docheck);
 #endif
 static PHP_FUNCTION(bbs_printoriginfile);
 static PHP_FUNCTION(bbs_caneditfile);
@@ -252,6 +254,8 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_make_tmpl_file,NULL)
 #ifdef SMS_SUPPORT
 		PHP_FE(bbs_send_sms,NULL)
+		PHP_FE(bbs_register_sms_sendcheck,NULL)
+		PHP_FE(bbs_register_sms_docheck,NULL)
 #endif
         {NULL, NULL, NULL}
 };
@@ -6658,6 +6662,38 @@ static PHP_FUNCTION(bbs_send_sms)
 	}
 
 	ret = web_send_sms( dest, msgstr );
+
+	RETURN_LONG(ret);
+}
+
+static PHP_FUNCTION(bbs_register_sms_sendcheck)
+{
+	int ac = ZEND_NUM_ARGS();
+	char *dest;
+	int dest_len;
+	int ret;
+
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &dest, &dest_len) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	ret = web_register_sms_sendcheck( dest );
+
+	RETURN_LONG(ret);
+}
+
+static PHP_FUNCTION(bbs_register_sms_docheck)
+{
+	int ac = ZEND_NUM_ARGS();
+	char *dest;
+	int dest_len;
+	int ret;
+
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &dest, &dest_len) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	ret = web_register_sms_docheck( dest );
 
 	RETURN_LONG(ret);
 }
