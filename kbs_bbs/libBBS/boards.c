@@ -858,6 +858,8 @@ void brc_clear(session_t* session)
     struct BoardStatus const *bs;
     /*干脆不搞guest的这个算了*/
     if (!strcmp(session->currentuser->userid,"guest")) return;
+    if (session->brc_currcache==-1) return;
+    if (session->brc_cache_entry==NULL) return;
     bs=getbstatus(session->brc_cache_entry[session->brc_currcache].bid);
     session->brc_cache_entry[session->brc_currcache].list[0] = bs->nowid;
     session->brc_cache_entry[session->brc_currcache].list[1] = 0;
@@ -869,6 +871,8 @@ void brc_clear_new_flag(unsigned int fid,session_t* session)
     int n;
     /*干脆不搞guest的这个算了*/
     if (!strcmp(session->currentuser->userid,"guest")) return;
+    if (session->brc_currcache==-1) return;
+    if (session->brc_cache_entry==NULL) return;
 
     for (n = 0; (n < BRC_MAXNUM) && session->brc_cache_entry[session->brc_currcache].list[n]; n++)
         if (fid >= session->brc_cache_entry[session->brc_currcache].list[n])
