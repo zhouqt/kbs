@@ -944,7 +944,7 @@ int DoSendSMS(char * n, char * d, char * c)
     long2byte(smsuin->uid, h1.UserID);
     strcpy(h1.SrcMobileNo, n);
     strcpy(h1.DstMobileNo, d);
-    sprintf(h1.cUserID, "1%d", smsuin->uid);
+    sprintf(h1.SrccUserID, "1%d", smsuin->uid);
     while(head->sem) {
         sleep(1);
         count++;
