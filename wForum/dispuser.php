@@ -138,14 +138,14 @@ if ($user['userdefine0'] & BBS_DEF_SHOWDETAILUSERDATA) {
 <br>
 <?php
 }
-if ($user['userdefine0'] & BBS_DEF_SHOWREALUSERDATA) {
+if (SHOW_REGISTER_TIME && ($user['userdefine0'] & BBS_DEF_SHOWREALUSERDATA)) {
 ?>
 <table cellspacing=1 cellpadding=3 align=center class=TableBorder1 style="table-layout:fixed;word-break:break-all">
   <col width=20% ><col width=*><col width=40% > 
   <tr> 
     <th colspan=2 align=left height=25>
       用户详细资料</th>
-    <td rowspan=16 class=TableBody1 width=40% valign=top>
+    <td rowspan=17 class=TableBody1 width=40% valign=top>
 <b>性格：</b>
 <br>
 <?php   echo $character[$user['character']]; ?>
@@ -248,6 +248,10 @@ if ($user['userdefine0'] & BBS_DEF_SHOWREALUSERDATA) {
   <tr> 
     <td class=TableBody1 width=20% align=right>毕业院校：</td>
     <td class=TableBody1><?php    echo showIt($user['graduateschool']); ?></td>
+  </tr>
+  <tr> 
+    <td class=TableBody1 width=20% align=right>注册日期：</td>
+    <td class=TableBody1><?php echo strftime("%Y-%m-%d %H:%M:%S", $user['firstlogin']); ?></td>
   </tr></table>
 <br>
 <?php
@@ -296,8 +300,8 @@ N/A
     </td>
   </tr>
   <tr> 
-    <td class=TableBody1 width=15% align=right>注册日期：</td>
-    <td  width=35%  class=TableBody1><b><?php echo SHOW_REGISTER_TIME ? strftime("%Y-%m-%d %H:%M:%S", $user['firstlogin']) : "保密"; ?></b></td>
+    <td class=TableBody1 width=15% align=right>生命力：</td>
+    <td  width=35%  class=TableBody1><b><?php echo bbs_compute_user_value($user["userid"]); ?></b></td>
     <td width=15% align=right class=TableBody1>上次登录：</td>
     <td width=35%  class=TableBody1><b><?php echo strftime("%Y-%m-%d %H:%M:%S", $user['lastlogin']); ?></b></td>
   </tr>
