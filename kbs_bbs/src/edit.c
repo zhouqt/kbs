@@ -1252,7 +1252,13 @@ void process_MARK_action(arg, msg)
         for (p = firstline; p != NULL; p = p->next) {
             if (p->attr & M_MARK) {
                 currline = p;
+		p=p->prev;
                 vedit_key(Ctrl('Y'));
+		if (p==NULL) {
+			p=firstline;
+			if (p==NULL);
+			break;
+		}
             }
         }
         process_ESC_action('M', '0');
