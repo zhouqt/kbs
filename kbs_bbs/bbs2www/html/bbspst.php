@@ -164,8 +164,15 @@
 <input type="checkbox" name="anony" value="1" />匿名
 <?php
     }
+    if (bbs_is_outgo_board($brdarr)) {
+        $local_save = 0;
+        if ($reid > 0) $local_save = !strncmp($articles[1]["INNFLAG"], "LL", 2);
 ?>
-<input type="checkbox" name="outgo" value="1" checked="checked" />转信<br />
+<input type="checkbox" name="outgo" value="1"<?php if (!$local_save) echo " checked=\"checked\"" ?> />转信
+<?php
+    }
+?>
+<br />
 <textarea class="sb1" name="text"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' rows="20" cols="80" wrap="physical">
 <?php
     if($reid > 0){

@@ -29,6 +29,8 @@
 		if (!isset($_POST["reid"])) $reID = $_GET["reid"];   
 		else
 			$reID = 0;
+		if (bbs_is_outgo_board($brdArr)) $outgo = intval($_POST["outgo"]);
+		else $outgo = 0;
 		
 		settype($reID, "integer");
 				
@@ -42,7 +44,7 @@
 		//post articles
 		$ret = bbs_postarticle($boardName, preg_replace("/\\\(['|\"|\\\])/","$1",$_POST["title"]), 
 			preg_replace("/\\\(['|\"|\\\])/","$1",$_POST["text"]), intval($_POST["signature"]), $reID, 
-			intval($_POST["outgo"]), intval($_POST["anony"]));
+			$outgo, intval($_POST["anony"]));
 		switch ($ret) {
 			case -1:
 				html_error_quit("错误的讨论区名称!");
