@@ -155,7 +155,7 @@ int modes[200][2], modest;
 static int set_modes_show(struct _select_def *conf, int i)
 {
     i--;
-    prints(" %s%s\x1b[m", modes[i][1]?"*":" ", modes[i][0]?ModeType(modes[i][0]):"全部");
+    prints("%s%s\x1b[m", modes[i][1]?"*":" ", modes[i][0]?ModeType(modes[i][0]):"全部");
     return SHOW_CONTINUE;
 }
 
@@ -186,7 +186,7 @@ static int set_modes_key(struct _select_def *conf, int key)
                 if(modes[i][0]>0)
                     modest++;
             }
-            return DIRCHANGED;
+            return SHOW_DIRCHANGE;
     }
     return SHOW_CONTINUE;
 }
