@@ -973,17 +973,17 @@ char *maildoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
         sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s  %s%.50s\033[m", same ? c1 : "", num, reply_status, status, b2, date, same ? c1 : "", ent->title);
     } /* modified by dong, 1998.9.19 */
     else {
-        sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s  бя %s%.49s\033[m", same ? c2 : "", num, reply_status, status, b2, date, same ? c2 : "", ent->title);
+        sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s  бя %s%.47s\033[m", same ? c2 : "", num, reply_status, status, b2, date, same ? c2 : "", ent->title);
     }                           /* modified by dong, 1998.9.19 */
 #ifdef ZIXIA
   } else {
     int size = 0;
     if (ent->eff_size > 0) size = (ent->eff_size-1) / 1024 + 1;
     if (!strncmp("Re:", ent->title, 3)) {
-        sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s  %s%-43.43s%5dK\033[m", same ? c1 : "", num, reply_status, status, b2, date, same ? c1 : "", ent->title, size);
+        sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s  %s%-45.45s%4dK\033[m", same ? c1 : "", num, reply_status, status, b2, date, same ? c1 : "", ent->title, size);
     } /* modified by dong, 1998.9.19 */
     else {
-        sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s  бя %s%-41.41s%4dK\033[m", same ? c2 : "", num, reply_status, status, b2, date, same ? c2 : "", ent->title, size);
+        sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s  бя %s%-42.42s%4dK\033[m", same ? c2 : "", num, reply_status, status, b2, date, same ? c2 : "", ent->title, size);
     }                           /* modified by dong, 1998.9.19 */
   }
 #endif
