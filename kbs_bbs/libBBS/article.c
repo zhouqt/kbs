@@ -1008,4 +1008,65 @@ int change_post_flag(char* currBM, struct userec* currentuser, int digestmode, c
     return newent ? DIRCHANGED : PARTUPDATE;
 }
 
+char get_article_flag(struct fileheader *ent, struct userec *user, int is_bm)
+{
+    char unread_mark = (DEFINE(user, DEF_UNREADMARK) ? '*' : 'N');
+	char type;
 
+    type = brc_unread(FILENAME2POSTTIME(ent->filename)) ? unread_mark : ' ';
+    if ((ent->accessed[0] & FILE_DIGEST)
+        if (type == ' ')
+            type = 'g';
+        else
+            type = 'G';
+    }
+    if (ent->accessed[0] & FILE_MARKED) {
+        switch (type) {
+        case ' ':
+            type = 'm';
+            break;
+        case '*':
+        case 'N':
+            type = 'M';
+            break;
+        case 'g':
+            type = 'b';
+            break;
+        case 'G':
+            type = 'B';
+            break;
+        }
+    }
+    if (is_bm && (ent->accessed[1] & FILE_READ)) {
+        switch (type) {
+        case 'g':
+        case 'G':
+            type = 'O';
+            break;
+        case 'm':
+        case 'M':
+            type = 'U';
+            break;
+        case 'b':
+        case 'B':
+            type = '8';
+            break;
+        case ' ':
+        case '*':
+        case 'N':
+        default:
+            type = ';';
+            break;
+        }
+    }
+	else if (HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[0] & FILE_SIGN))
+    {
+        type = '#';
+    }
+
+    if (is_bm && (ent->accessed[1] & FILE_DEL)) {
+        type = 'X';
+    }
+
+	return type;
+}
