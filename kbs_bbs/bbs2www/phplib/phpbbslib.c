@@ -2401,6 +2401,9 @@ static PHP_FUNCTION(bbs_add_import_path)
 	int im_time=0;
 	int im_select=0;
 	char buf[MAXPATH];
+	char board[MAXPATH];
+	char *c;
+    struct boardheader *bp;
 
 	if(ac == 2){
     	if ( zend_parse_parameters(2 TSRMLS_CC, "sl", &path, &path_len, &num) == FAILURE) {
@@ -2422,13 +2425,25 @@ static PHP_FUNCTION(bbs_add_import_path)
 	path_len = strlen(path);
 	if(path[path_len-1]=='/')
 		snprintf(buf, sizeof(buf), "0Announce%s", path);
-	else
+	else if(strncmp(path,"0Announce",9))
 		snprintf(buf, sizeof(buf), "0Announce/%s", path);
+	else
+		snprintf(buf, sizeof(buf), "%s", path);
 
-	if (ann_traverse_check(buf, currentuser) < 0)
+	if(strncmp(buf,"0Announce/groups/",17))
 		RETURN_LONG(0);
 
-	if (0) /* if no PERM_BOARDS */
+	if((c=strchr(buf+17,'/'))==NULL)
+		RETURN_LONG(0);
+	strcpy(board,c+1);
+	if((c=strchr(board,'/'))!=NULL) *c='\0';
+    if ((bp = getbcache(board)) == NULL) {
+        RETURN_LONG(0);
+    }
+    if(! is_BM(bp, currentuser))
+        RETURN_LONG(0);
+
+	if (ann_traverse_check(buf, currentuser) < 0)
 		RETURN_LONG(0);
 
 	if(num < 0 || num >= ANNPATH_NUM)
@@ -2440,7 +2455,7 @@ static PHP_FUNCTION(bbs_add_import_path)
 	im_path[num] = malloc(strlen(buf)+1);
 	strcpy(im_path[num],buf);
 
-	if(title == NULL){
+	if(title == NULL || title[0]==0 ){
 		MENU pm;
 
 		bzero(&pm,sizeof(pm));
