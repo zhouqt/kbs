@@ -422,14 +422,14 @@ a_select_path(bool save_mode)
     arg.show_path=false;
     arg.tmpnum=0;
     pts = (POINT *)malloc(sizeof(POINT) * ANNPATH_NUM);
-    for (i = 0; i < ANNPATH_NUM; i++)
+    for (i = 0; i < 20; i++)
     {
         pts[i].x = 2;
         pts[i].y = i + 3;
     }
     bzero(&pathlist_conf, sizeof(struct _select_def));
     pathlist_conf.item_count = ANNPATH_NUM;
-    pathlist_conf.item_per_page = ANNPATH_NUM;
+    pathlist_conf.item_per_page = 20;
     /* 加上 LF_VSCROLL 才能用 LEFT 键退出 */
     pathlist_conf.flag = LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;
     pathlist_conf.prompt = "◆";
@@ -819,7 +819,7 @@ int a_Import(path, key, fileinfo, nomsg, direct, ent)
 			bzero(&pm,sizeof(pm));
 			if (import_path[i][0] != '\0') {
 				pm.path = import_path[i];
-				strcpy(path,import_path[0]);
+				strcpy(path,import_path[i]);
 			} else {
 			       strcpy(importpath,buf);
 				pm.path=importpath;
