@@ -49,6 +49,7 @@ if ($sec_index >= 0)
 |
 <a href="/bbsfav.php?bname=<?php echo $brdarr["NAME"]; ?>&select=-1" class="b2" target="f3"><font class="b2">添加到收藏夹</font></a>
 )
+<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>&env" target="f3"><font color=red><strong>进入版面</strong></font></a>
 </p>
 <?php
 html_normal_quit();

@@ -4,6 +4,7 @@
 	 * $Id$
 	 */
 	require("funcs.php");
+	$visitedboard = $_COOKIE["BBSVISITEDBRD"];
 	
 	function display_navigation_bar($brdarr,$brdnum,$start,$total,$page,$order=FALSE)
 	{
@@ -247,11 +248,10 @@
 		
 		/* BBS Board Envelop Code START
 		** add by windinsn , Mar 13 ,2004 */
-		if( defined("HAVE_BRDENV") )
+		if( defined("HAVE_BRDENV") && !isset($_GET["env"]))
 		{
 			if( bbs_board_have_envelop($board))
 			{
-				$visitedboard = $_COOKIE["BBSVISITEDBRD"];
 				if( !stristr($visitedboard,"|".$board."|") )
 				{
 					setcookie("BBSVISITEDBRD" , $visitedboard.$board."|");
