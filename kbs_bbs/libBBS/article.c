@@ -582,6 +582,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
 {
     char buf[256];
     int fd, err = 0, nowid = 0;
+    char* p;
 
     if ((re == NULL) && (!strncmp(fh->title, "Re:", 3))) {
         strncpy(fh->title, fh->title + 4, STRLEN);
@@ -592,6 +593,9 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
         perror(buf);
         err = 1;
     }
+    /*过滤彩色标题*/
+    for (p=fh->title;*p;p++) if (*p=='\x1b') *p=' ';
+	  
     if (!err) {
         flock(fd, LOCK_EX);
         nowid = get_nextid(boardname);
