@@ -296,12 +296,12 @@ int do_userlist()
         clrtoeol();
         getyx(&y, &x);
         move(y, 20);
-        if(showcolor)
+        if(!showcolor)
             disable_color = true;
         disable_move = true;
         prints(tbuf);
         disable_move = false;
-        if(showcolor)
+        if(!showcolor)
             disable_color = false;
         resetcolor();
         move(y, x);
