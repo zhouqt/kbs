@@ -96,7 +96,9 @@ int main()
                "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsfall\">设定好友</a><br>\n" "			%s</div>", ptr);
         printdiv(5, "处理信件区", "/images/folder.gif");
         printf("			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsnewmail\">阅览新邮件</a><br>\n"
-               "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsmail\">所有邮件</a><br>\n");
+               "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsmail\">所有邮件</a><br>\n"
+         	   "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"/bbsmailbox_system.php\">系统预定义邮箱</a><br>\n"
+		   "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"/bbsmailbox_custom.php\">自定义邮箱</a><br>\n");
         if (can_send_mail())
             printf("			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbspstmail\">发送邮件</a><br>\n");
         printf("			</div>\n");
