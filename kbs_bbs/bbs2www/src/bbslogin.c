@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 #else
     snprintf(buf, sizeof(buf), "ENTER ?@%s [www]", fromhost);
 #endif
-    bbslog("1system", "%s", buf);
+    newbbslog(LOG_USIES,"%s", buf);
     /*f_append("usies", buf); */
     n = 0;
     if (!loginok && strcasecmp(id, "guest"))

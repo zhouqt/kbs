@@ -1158,7 +1158,7 @@ void call_listen(chatcontext * pthis, const char *arg)
                 sprintf(uident, "/listen %s\n", uident);
                 chat_send(pthis, uident);
             } else {
-                bbslog("3user", "listen %s failed", uident);
+                bbslog("3error", "listen %s failed", uident);
                 printchatline(pthis, "*** system error ***");
             }
         }
@@ -1224,7 +1224,7 @@ void call_ignore(chatcontext * pthis, const char *arg)
                     chat_send(pthis, buf);
                 } else {
                     printchatline(pthis, "*** 系统错误 ***");
-                    bbslog("3user", "ignore %s failed", uident);
+                    bbslog("3error", "ignore %s failed", uident);
                 }
             }
         }
@@ -1280,7 +1280,7 @@ void call_alias(chatcontext * pthis, const char *arg)
                 sprintf(buf, "/alias_del %s", emoteid);
                 chat_send(pthis, buf);
             } else {
-                bbslog("3user", "delete alias %s fail", emoteid);
+                bbslog("3error", "delete alias %s fail", emoteid);
                 printchatline(pthis, "*** system error ***");
             }
         } else if (!*arg)
@@ -1303,7 +1303,7 @@ void call_alias(chatcontext * pthis, const char *arg)
                 sprintf(buf2, "/alias_add %s", buf);
                 chat_send(pthis, buf2);
             } else {
-                bbslog("3user", "add alias %s fail", emoteid);
+                bbslog("3error", "add alias %s fail", emoteid);
                 printchatline(pthis, "*** 系统错误 ***");
             }
         }

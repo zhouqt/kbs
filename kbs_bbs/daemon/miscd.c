@@ -86,7 +86,7 @@ int dokilldir(char *board)
     strcat(hehe, "/");
     strcat(hehe, board);
     killed = killdir(hehe, ".DELETED") + killdir(hehe, ".JUNK");
-    bbslog("1miscdaemon", "deleted %d files in %s board", killed, board);
+    newbbslog(LOG_USIES, "deleted %d files in %s board", killed, board);
     return killed;
 }
 
@@ -135,7 +135,7 @@ int killauser(struct userec *theuser, char *data)
         return 0;
     a = compute_user_value(theuser);
     if (a < 0) {
-        bbslog("1user", "kill user %s", theuser->userid);
+        newbbslog(LOG_USIES, "kill user %s", theuser->userid);
         a = getuser(theuser->userid, &ft);
         setmailpath(tmpbuf, theuser->userid);
         sprintf(genbuf1, "/bin/rm -rf %s", tmpbuf);
@@ -157,9 +157,9 @@ int killauser(struct userec *theuser, char *data)
 
 int dokilluser()
 {
-    bbslog("1user", "Started kill users\n");
+    newbbslog(LOG_USIES, "Started kill users\n");
     apply_users(killauser, NULL);
-    bbslog("1user", "kill users done\n");
+    newbbslog(LOG_USIES, "kill users done\n");
 }
 int updateauser(struct userec *theuser, char *data)
 {
@@ -225,9 +225,9 @@ int updateauser(struct userec *theuser, char *data)
 
 int doupdategiveupuser()
 {
-    bbslog("1user", "Started update giveup users\n");
+    newbbslog(LOG_USIES, "Started update giveup users\n");
     apply_users(updateauser, NULL);
-    bbslog("1user", "update giveup users done\n");
+    newbbslog(LOG_USIES, "update giveup users done\n");
 }
 
 int getnextday4am()
@@ -566,7 +566,7 @@ static int miscd_dodaemon(char *argv1, char *daemon)
             } else {
                 switch (fork()) {
                 case -1:
-                    bbslog("1miscdaemon", "fork failed\n");
+                    bbslog("3error", "fork failed\n");
                     break;
                 case 0:
                     dokilluser();
@@ -580,7 +580,7 @@ static int miscd_dodaemon(char *argv1, char *daemon)
             if (ismonday()) {
                 switch (fork()) {
                 case -1:
-                    bbslog("1miscdaemon", "fork failed\n");
+                    bbslog("3error", "fork failed\n");
                     break;
                 case 0:
                     dokillalldir();
@@ -613,6 +613,7 @@ int main(int argc, char *argv[])
     setreuid(BBSUID, BBSUID);
     setregid(BBSGID, BBSGID);
 
+    init_bbslog();
     setpublicshmreadonly(0);
 #undef time
     bbssettime(time(0));

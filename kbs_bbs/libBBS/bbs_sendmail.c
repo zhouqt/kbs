@@ -160,7 +160,7 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
     setmailfile(buf, userid, DOT_DIR);
     if (append_record(buf, &newmessage, sizeof(newmessage)) == -1)
         return -1;
-    bbslog("1user", "mailed %s ", userid);
+    newbbslog(LOG_USER, "mailed %s ", userid);
     if (!strcasecmp(userid, "SYSOP"))
         updatelastpost("sysmail");
     return 0;

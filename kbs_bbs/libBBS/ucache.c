@@ -88,7 +88,7 @@ static void ucache_hashinit()
     }
     fclose(fp);
 
-    bbslog("1system", "HASH load");
+    newbbslog(LOG_USIES,"HASH load");
 }
 
 /*
@@ -322,7 +322,7 @@ int load_ucache()
     for (i = 0; i < MAXUSERS; i++)
         fillucache(&passwd[i], &usernumber, &prev);
 
-    bbslog("1system", "CACHE:reload ucache for %d users", usernumber);
+    newbbslog(LOG_USIES, "CACHE:reload ucache for %d users", usernumber);
     uidshm->number = usernumber;
 
     return 0;

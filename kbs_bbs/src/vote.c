@@ -229,7 +229,7 @@ int b_closepolls()
     prints("对不起，系统关闭投票中，请稍候...");
     refresh();
     if ((cfp = fopen(buf, "w")) == NULL) {
-        bbslog("user","%s","lastpoll write error");
+        bbslog("3error","%s","lastpoll write error");
         return 0;
     }
     fprintf(cfp, "%s", ctime(&now));
@@ -312,7 +312,7 @@ static int mk_result(int num)
     count_result(NULL, NULL, 0);
     sprintf(sugname, "vote/%s/tmp.%d", currboard, getpid());
     if ((sug = fopen(sugname, "w")) == NULL) {
-        bbslog("user","%s","open vote tmp file error");
+        bbslog("3error","%s","open vote tmp file error");
         prints("Error: 结束投票错误...\n");
         pressanykey();
     }

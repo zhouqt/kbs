@@ -2160,7 +2160,7 @@ int add_edit_mark(char *fname, int mode, char *title)
         if (ADD_EDITMARK)
             add_edit_mark(genbuf, 1, /*NULL*/ fileinfo->title);
     }
-    bbslog("1user", "edited post '%s' on %s", fileinfo->title, currboard);
+    newbbslog(LOG_USER, "edited post '%s' on %s", fileinfo->title, currboard);
     return FULLUPDATE;
 }
 
@@ -3122,7 +3122,7 @@ int Goodbye()
         /*
          * sprintf( genbuf, "Stay:%3ld (%s)", stay / 60, currentuser->username ); 
          */
-        bbslog("1system", "EXIT: Stay:%3ld (%s)[%d %d]", stay / 60, currentuser->username, utmpent, usernum);
+        newbbslog(LOG_USIES,"EXIT: Stay:%3ld (%s)[%d %d]", stay / 60, currentuser->username, utmpent, usernum);
         u_exit();
         started = 0;
     }

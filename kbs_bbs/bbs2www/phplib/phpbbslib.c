@@ -1114,6 +1114,7 @@ static ZEND_MINIT_FUNCTION(bbs_module_init)
     resolve_ucache();
     resolve_utmp();
     resolve_boards();
+    init_bbslog();
     www_data_init();
 #ifdef SQUID_ACCL
     REGISTER_MAIN_LONG_CONSTANT("SQUID_ACCL", 1, CONST_CS | CONST_PERSISTENT);

@@ -464,7 +464,7 @@ void brc_update(char *userid)
         errstr=gzerror(fd,&gzerrno);
         if (errno==Z_ERRNO)
             errstr=strerror(errno);
-        bbslog("3user", "can't %s open to read:%s", dirfile, errstr);
+        bbslog("3error", "can't %s open to read:%s", dirfile, errstr);
         return;
     }
     bzero(data,BRC_FILESIZE);
@@ -527,7 +527,7 @@ void brc_addreaddirectly(char *userid, int bnum, unsigned int postid)
             errstr=gzerror(fd,&gzerrno);
             if (errno==Z_ERRNO)
 	        errstr=strerror(errno);
-            bbslog("3user", "can't %s open to readwrite:%s", dirfile, errstr);
+            bbslog("3error", "can't %s open to readwrite:%s", dirfile, errstr);
             return;
     }
     gzseek(fd,BRC_ITEMSIZE * (bnum - 1),SEEK_SET);

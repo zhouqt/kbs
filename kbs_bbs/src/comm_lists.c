@@ -481,7 +481,7 @@ char *menu_name;
             if (!HAS_PERM(currentuser, PERM_SYSOP)) {
                 break;
             }
-            bbslog("1bbs", "rebuild sysconf.img");
+            newbbslog(LOG_USIES, "rebuild sysconf.img");
             build_sysconf("etc/sysconf.ini", NULL);
             bbslog("user","%s","reload sysconf.img");
             load_sysconf();

@@ -118,7 +118,7 @@ postbbslog("user","%s",fileinfo->title, -1, currboard); added by alex, 96.9.12 *
         utime(fileinfo->filename, 0);
         if (user != NULL)
             bmlog(user->userid, board, 8, 1);
-        bbslog("1user", "Del '%s' on '%s'", fileinfo->title, board);     /* bbslog */
+        newbbslog(LOG_USER, "Del '%s' on '%s'", fileinfo->title, board);     /* bbslog */
         return 0;
     }
     return -1;
@@ -616,7 +616,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
         close(fd);
     }
     if (err) {
-        bbslog("1user", "Posting '%s' on '%s': append_record failed!", fh->title, boardname);
+        bbslog("3error", "Posting '%s' on '%s': append_record failed!", fh->title, boardname);
         setbfile(buf, boardname, fh->filename);
         unlink(buf);
 #ifdef BBSMAIN
@@ -628,7 +628,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     updatelastpost(boardname);
     brc_add_read(fh->id);
     sprintf(buf, "posted '%s' on '%s'", fh->title, boardname);
-    bbslog("1user", "%s", buf);
+    newbbslog(LOG_USER, "%s", buf);
 
     if (fh->id == fh->groupid)
         setboardorigin(boardname, 1);

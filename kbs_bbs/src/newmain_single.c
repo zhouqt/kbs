@@ -269,7 +269,7 @@ void abort_bbs(int signo)
         record_exit_time();
         stay = time(0) - login_start_time;
 /*---	period	2000-10-20	4 debug	---*/
-        bbslog("1system", "AXXED Stay: %3ld (%s)[%d %d]", stay / 60, currentuser->username, utmpent, usernum);
+        newbbslog(LOG_USIES, "AXXED Stay: %3ld (%s)[%d %d]", stay / 60, currentuser->username, utmpent, usernum);
         u_exit();
     }
     shutdown(0, 2);
@@ -362,7 +362,7 @@ void system_init()
 void system_abort()
 {
     if (started) {
-        bbslog("1system","ABORT %s", currentuser->username);
+        newbbslog(LOG_USIES,"ABORT %s", currentuser->username);
         u_exit();
     }
     clear();
@@ -628,7 +628,7 @@ void user_login()
     }
     /* ?????后面还有check_register_info */
     ruser = getenv("REMOTEUSERNAME");
-    bbslog("1system", "ENTER %s@%s", ruser ? ruser : "?", fromhost);
+    newbbslog(LOG_USIES,"ENTER %s@%s", ruser ? ruser : "?", fromhost);
     if (ruser) {
         sprintf(genbuf, "%s@%s", ruser, fromhost);
         if (valid_ident(genbuf)) {
@@ -643,7 +643,7 @@ void user_login()
 
     bbslog("user","%s",genbuf);
 /*---	period	2000-10-19	4 debug	---*/
-    bbslog("1system", "ALLOC: [%d %d]", utmpent, usernum);
+    newbbslog(LOG_USIES,"ALLOC: [%d %d]", utmpent, usernum);
 /*---	---*/
     started = 1;
     if (USE_NOTEPAD == 1)
