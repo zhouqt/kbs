@@ -3,7 +3,6 @@
 	 * This file handles user login.
 	 * $Id$
 	 */
-$needlogin = 0;
 require("funcs.php");
 
 set_fromhost();

@@ -100,104 +100,103 @@ $loginok=0;
 
 function set_fromhost()
 {
-global $fullfromhost;
-global $fromhost;
-
-@$fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
-  if ($fullfromhost=="") {
-      @$fullfromhost=$_SERVER["REMOTE_ADDR"];
-      $fromhost=$fullfromhost;
-  }
-  else {
-	$str = strrchr($fullfromhost, ",");
-	if ($str!=FALSE)
-		$fromhost=substr($str,1);
-        else
+	global $fullfromhost;
+	global $fromhost;
+	
+	@$fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
+	if ($fullfromhost=="") {
+		@$fullfromhost=$_SERVER["REMOTE_ADDR"];
 		$fromhost=$fullfromhost;
-  }
-if ($fromhost=="")  {
-  $fromhost="127.0.0.1"; 
-  $fullfromhost="127.0.0.1"; 
-}
-//sometimes,fromhost has strang space
-bbs_setfromhost(trim($fromhost),trim($fullfromhost));
+	}
+	else {
+		$str = strrchr($fullfromhost, ",");
+		if ($str!=FALSE)
+			$fromhost=substr($str,1);
+		else
+			$fromhost=$fullfromhost;
+	}
+	if ($fromhost=="")  {
+		$fromhost="127.0.0.1"; 
+		$fullfromhost="127.0.0.1"; 
+	}
+	//sometimes,fromhost has strang space
+	bbs_setfromhost(trim($fromhost),trim($fullfromhost));
 }
 
 function login_init()
 {
-global $currentuinfo;
-global $loginok;
-global $currentuser_num;
-global $currentuinfo_num;
-global $currentuser;
-global $utmpnum;
-$currentuinfo_tmp = array();
-
-set_fromhost();
-
-$compat_telnet=0;
-@$sessionid = $_GET["sid"];
-
-//TODO: add the check of telnet compat
-if (($sessionid!='')&&($_SERVER['PHP_SELF']=='/bbscon.php')) {
-	$utmpnum=decodesessionchar($sessionid[0])+decodesessionchar($sessionid[1])*36+decodesessionchar($sessionid[2])*36*36;
-	$utmpkey=decodesessionchar($sessionid[3])+decodesessionchar($sessionid[4])*36+decodesessionchar($sessionid[5])*36*36
-		+decodesessionchar($sessionid[6])*36*36*36+decodesessionchar($sessionid[7])*36*36*36*36+decodesessionchar($sessionid[8])*36*36*36*36*36;
-	$userid='';
-  	$compat_telnet=1;
-} else {
-	@$utmpkey = $_COOKIE["UTMPKEY"];
-	@$utmpnum = $_COOKIE["UTMPNUM"];
-	@$userid = $_COOKIE["UTMPUSERID"];
-}
-
-if (($utmpkey!="") && (!isset($needlogin) || ($needlogin!=0)) ) {
-  if (($ret=bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),$currentuinfo_tmp,$compat_telnet))==0) {
-    $loginok=1;
-    $currentuinfo_num=bbs_getcurrentuinfo();
-    $currentuser_num=bbs_getcurrentuser($currentuser);
-  }else
-	$utmpkey="";
-}
-
-// add by stiger, 如果登陆失败就继续用guest登陆
-if (($utmpkey == "")&&(!isset($needlogin) || ($needlogin!=0))){
-	$error = bbs_wwwlogin(0);
-	if($error == 2 || $error == 0){
-		$data = array();
-		$num = bbs_getcurrentuinfo($data);
-        setcookie("UTMPKEY",$data["utmpkey"],time()+360000,"");
-        setcookie("UTMPNUM",$num,time()+360000,"");
-        setcookie("UTMPUSERID",$data["userid"],time()+360000,"");
-        setcookie("LOGINTIME",$data["logintime"],time()+360000,"");
-        setcookie("WWWPARAMS",WWW_DEFAULT_PARAMS,time()+360000,""); 
-		@$utmpkey = $data["utmpkey"];
-		@$utmpnum = $num;
-		@$userid = $data["userid"];
-  		$compat_telnet=1;
+	global $currentuinfo;
+	global $loginok;
+	global $currentuser_num;
+	global $currentuinfo_num;
+	global $currentuser;
+	global $utmpnum;
+	global $setboard;
+	$currentuinfo_tmp = array();
+	
+	set_fromhost();
+	
+	$compat_telnet=0;
+	@$sessionid = $_GET["sid"];
+	
+	//TODO: add the check of telnet compat
+	if (($sessionid!='')&&($_SERVER['PHP_SELF']=='/bbscon.php')) {
+		$utmpnum=decodesessionchar($sessionid[0])+decodesessionchar($sessionid[1])*36+decodesessionchar($sessionid[2])*36*36;
+		$utmpkey=decodesessionchar($sessionid[3])+decodesessionchar($sessionid[4])*36+decodesessionchar($sessionid[5])*36*36
+			+decodesessionchar($sessionid[6])*36*36*36+decodesessionchar($sessionid[7])*36*36*36*36+decodesessionchar($sessionid[8])*36*36*36*36*36;
+		$userid='';
+		$compat_telnet=1;
+	} else {
+		@$utmpkey = $_COOKIE["UTMPKEY"];
+		@$utmpnum = $_COOKIE["UTMPNUM"];
+		@$userid = $_COOKIE["UTMPUSERID"];
 	}
-//guest 登陆成功，设置一下
-if ($utmpkey!="") {
-  if (($ret=bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),$currentuinfo_tmp,$compat_telnet))==0) {
-    $loginok=1;
-    $currentuinfo_num=bbs_getcurrentuinfo();
-    $currentuser_num=bbs_getcurrentuser($currentuser);
-  }
-}
-
-}
-
-$currentuinfo = $currentuinfo_tmp;
-
-settype($utmpnum,"integer");
-if ((!isset($needlogin)||($needlogin!=0))&&($loginok!=1)&&($_SERVER["PHP_SELF"]!="/bbslogin.php")) {
-	error_nologin();
-	return;
-}
-
-if (($loginok==1)&&(isset($setboard)&&($setboard==1))) bbs_set_onboard(0,0);
-//add end
-
+	
+	if ($utmpkey!="") {
+		if (($ret=bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),$currentuinfo_tmp,$compat_telnet))==0) {
+			$loginok=1;
+			$currentuinfo_num=bbs_getcurrentuinfo();
+			$currentuser_num=bbs_getcurrentuser($currentuser);
+		}else
+			$utmpkey="";
+	}
+	
+	// add by stiger, 如果登陆失败就继续用guest登陆
+	if ($utmpkey == "") {
+		$error = bbs_wwwlogin(0);
+		if($error == 2 || $error == 0){
+			$data = array();
+			$num = bbs_getcurrentuinfo($data);
+			setcookie("UTMPKEY",$data["utmpkey"],time()+360000,"");
+			setcookie("UTMPNUM",$num,time()+360000,"");
+			setcookie("UTMPUSERID",$data["userid"],time()+360000,"");
+			setcookie("LOGINTIME",$data["logintime"],time()+360000,"");
+			setcookie("WWWPARAMS",WWW_DEFAULT_PARAMS,time()+360000,""); 
+			@$utmpkey = $data["utmpkey"];
+			@$utmpnum = $num;
+			@$userid = $data["userid"];
+			$compat_telnet=1;
+		}
+		//guest 登陆成功，设置一下
+		if ($utmpkey!="") {
+			if (($ret=bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),$currentuinfo_tmp,$compat_telnet))==0) {
+				$loginok=1;
+				$currentuinfo_num=bbs_getcurrentuinfo();
+				$currentuser_num=bbs_getcurrentuser($currentuser);
+			}
+		}
+	}
+	
+	$currentuinfo = $currentuinfo_tmp;
+	
+	settype($utmpnum,"integer");
+	if (($loginok!=1)&&($_SERVER["PHP_SELF"]!="/bbslogin.php")) {
+		error_nologin();
+		return;
+	}
+	
+	if (($loginok==1)&&(isset($setboard)&&($setboard==1))) bbs_set_onboard(0,0);
+	//add end
 }
 
 

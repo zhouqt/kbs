@@ -3,7 +3,6 @@
 	 * This file registry a new id, work with bbsreg.html
 	 * by binxun 2003.5
 	 */
-	$needlogin=false;
 	require("funcs.php");
 	set_fromhost();
 	if (!defined("SITE_ZIXIA")) {

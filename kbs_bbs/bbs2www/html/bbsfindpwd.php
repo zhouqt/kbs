@@ -3,7 +3,6 @@
 	 * 丢失密码的用户取回新密码
 	 * by binxun 2003.5
 	 */
-	$needlogin=false;
 	require("funcs.php");
 	html_init("gb2312");
 
