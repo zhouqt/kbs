@@ -303,11 +303,12 @@ void refresh()
         bp[j].changed = false;
 
         ii=scr_cols-1;
-        while(ii>=0&&(bp[j].data[ii]==0||bp[j].data[ii]==32)&&(bp[j].color[ii]>>4)==(bp[j].color[scr_cols-1]>>4)&&((bp[j].mode[ii]&~SCREEN_BRIGHT)==(bp[j].mode[scr_cols-1]&~SCREEN_BRIGHT))) ii--;
-        p=ii+1;
         count = 0;
-        for(ii=p;ii<scr_cols;ii++)
+        while(ii>=0&&(bp[j].data[ii]==0||bp[j].data[ii]==32)&&(bp[j].color[ii]>>4)==(bp[j].color[scr_cols-1]>>4)&&((bp[j].mode[ii]&~SCREEN_BRIGHT)==(bp[j].mode[scr_cols-1]&~SCREEN_BRIGHT))) {
             if(!ndiff(j,ii)) count++;
+            ii--;
+        }
+        p=ii+1;
 
         for (k = 0; k < scr_cols; k++)
         if(!ndiff(j,k)&&(isprint2(bp[j].data[k]))||(k>=p&&count>=5)) {
@@ -342,17 +343,14 @@ void refresh()
             }
             if((tc_color&0x0f)!=(bp[j].color[k]&0x0f)&&(bp[j].data[k]!=' '||bp[j].mode[k]&SCREEN_LINE||bp[j].mode[k]&SCREEN_BACK)) {
                 tc_color=(tc_color&0xf0)+(bp[j].color[k]&0x0f);
-                if(DEFINE(currentuser, DEF_COLOR))
-                    stack[stackt++]=30+(bp[j].color[k]&0x0f);
+                stack[stackt++]=30+(bp[j].color[k]&0x0f);
             }
             if((tc_color>>4)!=(bp[j].color[k]>>4)) {
                 tc_color=(bp[j].color[k]&0xf0)+(tc_color&0x0f);
-                if(DEFINE(currentuser, DEF_COLOR)) {
-                    if((bp[j].color[k]>>4)==8)
-                        stack[stackt++]=40;
-                    else
-                        stack[stackt++]=40+(bp[j].color[k]>>4);
-                }
+                if((bp[j].color[k]>>4)==8)
+                    stack[stackt++]=40;
+                else
+                    stack[stackt++]=40+(bp[j].color[k]>>4);
             }
             if(stackt>0) {
                 char buf[200],*p;
@@ -532,6 +530,7 @@ void outns(const char*str, int n)
                     s2[i-j-1]=0;
                     y=atoi(s1)-1+offsetln;
                     x=atoi(s2)-1;
+                    if(DEFINE(currentuser, DEF_COLOR))
                     if(y>=0&&y<scr_lns&&x>=0&&x<scr_cols&&!disable_move) {
                         cur_col=x; cur_ln=y;
                     }
@@ -552,6 +551,7 @@ void outns(const char*str, int n)
                 if(s1[0]) k=atoi(s1);
                 else k=1;
 
+                if(DEFINE(currentuser, DEF_COLOR))
                 if(!disable_move) {
                 
                     if(*(str+i)=='A') {
@@ -587,6 +587,7 @@ void outns(const char*str, int n)
              }
              else if(*(str+i)=='u' && i==2) {
                 str+=3;
+                if(DEFINE(currentuser, DEF_COLOR))
                 if(savey!=-1&&savex!=-1&&!disable_move) {
                     cur_ln=savey; cur_col=savex;
                     continue;
@@ -594,12 +595,14 @@ void outns(const char*str, int n)
              }
              else if(*(str+i)=='J') {
                 str+=i+1;
+                if(DEFINE(currentuser, DEF_COLOR))
                 if(!disable_move)
                     clear();
                 continue;
              }
              else if(*(str+i)=='m') {
                 j=2;
+                if(DEFINE(currentuser, DEF_COLOR))
                 while(*(str+j)!='m') {
                     int m;
                     char s[100];
@@ -640,6 +643,7 @@ void outns(const char*str, int n)
              else if(*(str+i)=='M') {
                 k=1;
                 for(j=2;j<i;j++) k=k&&(*(str+j)>='0'&&*(str+j)<='9');
+                if(DEFINE(currentuser, DEF_COLOR))
                 if(k) {
                     refresh();
                     output(str, i+1);
