@@ -1411,7 +1411,7 @@ char get_article_flag(struct fileheader *ent, struct userec *user, char *boardna
 #ifdef SMTH
     } else if ((ent->accessed[1] & FILE_CENSOR) 
         && ((!strcmp(boardname, FILTER_BOARD)&&HAS_PERM(user, PERM_OBOARDS))
-        ||(!strcmp(boardname,"NewsClub")&&haspostperm(user, "NewsClub")))) {
+        ||(!strcmp(boardname,"NewsClub")&&(haspostperm(user, "NewsClub")||HAS_PERM(user, PERM_OBOARDS))))) {
         type = '@';
 #else
     } else if (HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[1] & FILE_CENSOR) && !strcmp(boardname, FILTER_BOARD)) {
