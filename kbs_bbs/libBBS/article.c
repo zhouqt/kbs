@@ -821,7 +821,7 @@ int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)
     return ret;
 }
 
-int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, void *arg, int * index)
+int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, void *arg)
 {
     struct fileheader *data;
     size_t filesize;
@@ -847,8 +847,6 @@ int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, voi
                 ret = (*func) (fd, data, mid + 1, total, true, arg);
                 end_mmapfile((void *) data, filesize, -1);
                 flock(fd, LOCK_UN);
-                if (index)
-                    *index = mid+1;
                 BBS_RETURN(ret);
             } else if (comp < 0)
                 high = mid - 1;
@@ -856,8 +854,6 @@ int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, voi
                 low = mid + 1;
         }
         ret = (*func) (fd, data, low + 1, total, false, arg);
-        if (index)
-             *index = low+1;
     }
     BBS_CATCH {
     }
@@ -871,6 +867,8 @@ int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, voi
 struct dir_record_set {
     fileheader_t *records;
     int num;
+	int rec_no; /* 记录集的中间记录在索引文件中的记录号，基 1 的，
+				   其他记录的记录号可以通过 num 和 rec_no 算出 */
 };
 
 static int get_dir_records(int fd, fileheader_t * base, int ent, int total, bool match, void *arg)
@@ -882,6 +880,7 @@ static int get_dir_records(int fd, fileheader_t * base, int ent, int total, bool
         int count = 0;
 
         off = ent - rs->num / 2;
+		rs->rec_no = ent; /* 在这里保存记录号 */
         for (i = 0; i < rs->num; i++) {
             if (off < 1 || off > total)
                 bzero(rs->records + i, sizeof(fileheader_t));
@@ -897,17 +896,22 @@ static int get_dir_records(int fd, fileheader_t * base, int ent, int total, bool
     return 0;
 }
 
-int get_records_from_id(int fd, int id, fileheader_t * buf, int num, int * index)
+int get_records_from_id(int fd, int id, fileheader_t *buf, int num, int *index)
 {
     struct dir_record_set rs;
     fileheader_t key;
+	int ret;
 
     rs.records = buf;
     rs.num = num;
+	rs.rec_no = 0;
     bzero(&key, sizeof(key));
     key.id = id;
-
-    return mmap_dir_search(fd, &key, get_dir_records, &rs, index);
+	ret = mmap_dir_search(fd, &key, get_dir_records, &rs);
+	if (index != NULL)
+		*index = rs.rec_no;
+	
+	return ret;
 }
 
 //土鳖两分法，    by yuhuan
