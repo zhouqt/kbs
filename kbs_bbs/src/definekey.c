@@ -217,12 +217,12 @@ int set_modes(int *res)
     n=1; modest=0;
     modes[0][0]=0;
     modes[0][1]=res[0]==0;
-    if(res[0]!=-1)
     for(i=0;i<200;i++) {
         s=ModeType(i);
         if(s[0]&&!strchr(s,'?')) {
             modes[n][0]=i;
             modes[n][1]=0;
+            if(res[0]!=-1)
             for(j=0;j<10;j++) {
                 if(!res[j]) break;
                 if(res[j]==i) {
