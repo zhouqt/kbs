@@ -16,8 +16,9 @@ function blogCalendarLink(thisYear,thisMonth,thisDay,isToday)
 	
 	
 	timeStr = thisYearStr + thisMonthStr + thisDayStr ;
+	deliChar = (blogNodeUrl.indexOf('?') == -1) ? "?" : "&n";
 	if( blogCalendarArray[timeStr] )
-		return "<font style=\"background-color:#999999\"><a href='" + blogNodeUrl + "&nid=" + blogCalendarArray[timeStr] + "' class = '" + styleClass + "'>" + thisDay + "</a></font>" ;
+		return "<font style=\"background-color:#999999\"><a href='" + blogNodeUrl + deliChar + "id=" + blogCalendarArray[timeStr] + "' class = '" + styleClass + "'>" + thisDay + "</a></font>" ;
 	else
 		return "<font class = '" + noLinkStyleClass + "' >" + thisDay + "</font>";
 }
