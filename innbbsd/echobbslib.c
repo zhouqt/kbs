@@ -110,9 +110,9 @@ verboselog(char* fmt,...)
 }
 
 #ifdef PalmBBS
-xbbslog(char* fmt,...)
+void xbbslog(char* fmt,...)
 #else
-innbbsdlog(char* fmt,...)
+void innbbsdlog(char* fmt,...)
 #endif
 {
     va_list ap;
