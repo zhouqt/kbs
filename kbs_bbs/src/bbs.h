@@ -161,6 +161,7 @@ extern long ti;
 #define DOT_DIR  ".DIR"         /* Name of Directory file info */
 #define THREAD_DIR ".THREAD"
 #define DIGEST_DIR  ".DIGEST"   /* Name of Directory file info */
+#define DING_DIR ".DINGDIR"	/* 置顶文章.DIR , stiger */
 #define NAMEFILE "BoardName"    /* File containing site name of bbs */
 #define BADLOGINFILE    "logins.bad"
 #define USERDATA ".userdata"
@@ -182,6 +183,7 @@ extern long ti;
 #endif
 #define FILE_SIGN 0x1           /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[0] */
 #define FILE_DEL  0x2           /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[1] */
+#define FILE_DING 0x4		/* 已经置顶的文章, stiger 20030409, in accessed[1] */
 
 /* Leeward 98.05.11:
 In /etc/sendmail.cf:
@@ -366,6 +368,7 @@ typedef size_t socklen_t;
 #define FILE_CENSOR_FLAG 7
 #endif
 #define FILE_ATTACHPOS_FLAG 8
+#define FILE_DING_FLAG 9	/* stiger,置顶 */
 
 /**
  * Enumeration values for the so-called board .DIR file.
