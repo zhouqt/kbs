@@ -79,7 +79,6 @@ static int refresh_select(struct _select_def *conf)
         if (show_item(conf, i, false) == SHOW_QUIT)
             return SHOW_QUIT;
     good_move(conf->item_pos[conf->pos-conf->page_pos].y, conf->item_pos[conf->pos-conf->page_pos].x);
-    refresh();
     return SHOW_CONTINUE;
 }
 static int select_change(struct _select_def *conf, int new_pos)
@@ -142,7 +141,6 @@ static int select_change(struct _select_def *conf, int new_pos)
     }
     good_move(conf->item_pos[new_pos-conf->page_pos].y,
     	    conf->item_pos[new_pos-conf->page_pos].x);
-    refresh();
     /*conf->pos = new_pos;*/
     return ret;
 }

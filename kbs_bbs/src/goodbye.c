@@ -43,7 +43,6 @@ void user_display(char *filename, int number, int mode)
         else
             continue;
     }
-    refresh();
     fclose(fp);
     return;
 }

@@ -96,7 +96,6 @@ void show_message(char *msg)
     clrtoeol();
     if (msg != NULL)
         prints("[1m%s[m", msg);
-    refresh();
 }
 
 void swap_user_record(a, b)

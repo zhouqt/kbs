@@ -377,7 +377,6 @@ void printacbar()
     else
         prints("[35m©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[36m" FOOTER_MOVIE "[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©¼ [m\n");
     good_move(y, x);
-    refresh();
 }
 
 extern int idle_count;
@@ -973,7 +972,6 @@ int numlines;
         ch = mmap_more(filename, 1, NULL, NULL);
     if (promptend)
         pressanykey();
-    refresh();
     return ch;
 }
 

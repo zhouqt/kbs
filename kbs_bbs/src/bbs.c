@@ -793,7 +793,6 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     }
     memcpy(&ReadPostHeader, fileinfo, sizeof(struct fileheader));
 
-    refresh();
 /* sleep(1); *//*
  * * * * * * * * * * * ????? 
  */
@@ -1348,7 +1347,6 @@ int title_mode()
         move(t_lines - 1, 0);
         clrtoeol();
         prints("ÏµÍ³¸ºµ£¹ıÖØ£¬ÔİÊ±²»ÄÜÏìÓ¦Ö÷ÌâÔÄ¶ÁµÄÇëÇó...");
-        refresh();
         pressanykey();
         return FULLUPDATE;
     }
@@ -1578,7 +1576,6 @@ int do_thread()
     move(t_lines - 1, 0);
     clrtoeol();
     prints("[5mÇëÉÔºò£¬ÏµÍ³´¦Àí±êÌâÖĞ...[m\n");
-    refresh();
     /*
      * sprintf(buf,"bin/thread %s&",currboard); 
      */
@@ -1603,7 +1600,6 @@ int thread_mode()
         move(t_lines - 1, 0);
         clrtoeol();
         prints("ÏµÍ³¸ºµ£¹ıÖØ£¬ÔİÊ±²»ÄÜÏìÓ¦Ö÷ÌâÔÄ¶ÁµÄÇëÇó...");
-        refresh();
         pressanykey();
         return FULLUPDATE;
     }

@@ -109,7 +109,6 @@ int uinfo_query(struct userec *u, int real, int unum)
 	read_userdata(u->userid, &ud);
     getdata(t_lines - 1, 0, real ? "请选择 (0)结束 (1)修改资料 (2)设定密码 (3) 改 ID ==> [0]" : "请选择 (0)结束 (1)修改资料 (2)设定密码 ==> [0]", ans, 2, DOECHO, NULL, true);
     clear();
-    refresh();
     i = 3;
     move(i++, 0);
     if (ans[0] != '3' || real)

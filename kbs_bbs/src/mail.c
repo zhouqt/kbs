@@ -256,7 +256,6 @@ int mailall()
             move(t_lines - 1, 0);
             clrtoeol();
             prints("[32m[44mÕıÔÚ¼ÄĞÅ¼şÖĞ£¬ÇëÉÔºò.....                                                        [m");
-            refresh();
             mailtoall(ans4[0] - '0');
             move(t_lines - 1, 0);
             clrtoeol();
@@ -313,7 +312,6 @@ void m_internet()
         pressreturn();
     }
     clear();
-    refresh();
 }
 
 void m_init()
@@ -511,7 +509,6 @@ int do_send(char *userid, char *title, char *q_file)
         prints("ĞÅ¼ş¼´½«¼Ä¸ø %s \n", userid);
         prints("±êÌâÎª£º %s \n", title);
         prints("È·¶¨Òª¼Ä³öÂğ? (Y/N) [Y]");
-        refresh();
         ch = igetkey();
         switch (ch) {
         case KEY_REFRESH:
@@ -556,7 +553,6 @@ int do_send(char *userid, char *title, char *q_file)
                     noansi = 0;
 
                 prints("ÇëÉÔºò, ĞÅ¼ş´«µİÖĞ...\n");
-                refresh();
                 /*
                  * res = bbs_sendmail( tmp_fname, title, userid );  
                  */
@@ -2023,7 +2019,6 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
         struct userec *lookupuser;
 
         prints("×ª¼ÄĞÅ¼ş¸ø %s, ÇëÉÔºò....\n", receiver);
-        refresh();
 
         return_no = getuser(receiver, &lookupuser);
         if (return_no == 0) {
@@ -2082,7 +2077,6 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
             noansi = 0;
 
         prints("×ª¼ÄĞÅ¼ş¸ø %s, ÇëÉÔºò....\n", receiver);
-        refresh();
 
         /*
          * return_no = bbs_sendmail(fname, title, receiver); 

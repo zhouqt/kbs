@@ -29,7 +29,6 @@ void show_help(fname)
     static short int cnt;
 
     if (cnt >= 2) {
-        refresh();
         return;
     }
     ++cnt;

@@ -356,7 +356,6 @@ void system_abort()
         u_exit();
     }
     clear();
-    refresh();
     prints("谢谢光临, 记得常来喔 !\n");
     oflush();
     abort_bbs(0);
@@ -586,7 +585,6 @@ void notepad_init()
     if ((time(NULL) - lastnote) >= maxsec) {
         move(t_lines - 1, 0);
         prints("对不起，系统自动发信，请稍候.....");
-        refresh();
         now = time(0);
         check = fopen("etc/checknotepad", "w");
         lastnote = time(NULL) - (time(NULL) % maxsec);

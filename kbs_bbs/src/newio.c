@@ -746,9 +746,6 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
     }
     clrtoeol();
     while (1) {
-        if ((uinfo.mode == CHAT1 || uinfo.mode == TALK) && RMSG == true) {
-            refresh();
-        }
         ch = igetkey();
         /*
          * TODO: add KEY_REFRESH support ???
@@ -911,7 +908,6 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
         prints("%s", buf);
     }
     prints("\n");
-    refresh();
     return clen;
 }
 
@@ -970,7 +966,6 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
             }
         }
         good_move(cursory, cursorx);
-        refresh();
         ch = igetkey();
         if (ch == '\n' || ch == '\r')
             break;
@@ -1211,7 +1206,6 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
         }
     }
 
-    refresh();
     return y-starty+1;
 }
 
@@ -1291,7 +1285,6 @@ int pressreturn()
     getdata(t_lines - 1, 0, "                              \x1b[33mÇë°´ ¡ô\x1b[36mEnter\x1b[33m¡ô ¼ÌÐø\x1b[m", buf, 2, NOECHO, NULL, true);
     move(t_lines - 1, 0);
     clrtoeol();
-    refresh();
     return 0;
 }
 

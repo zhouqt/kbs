@@ -295,7 +295,6 @@ char *prompt, *data;
         if (ch == EOF)
             longjmp(byebye, -1);
         prints("\n");
-        refresh();
         if (clearbot) {
             move(2, 0);
             clrtobot();
@@ -490,7 +489,6 @@ char *prompt, *data;
         if (ch == EOF)
             longjmp(byebye, -1);
         prints("\n");
-        refresh();
         if (clearbot) {
             move(2, 0);
             clrtobot();

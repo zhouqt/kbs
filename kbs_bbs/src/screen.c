@@ -213,6 +213,7 @@ void refresh()
         do_move(0, t_lines - 2, ochar);
         tc_col = 0; tc_line = t_lines-2;
     }
+    count = 0;
     for (i=0; i < scr_lns; i++)
         for(j=0;j<scr_cols;j++)
             if((bp[i].data[j]==0||bp[i].data[j]==32)&&(bp[i].mode[j]&SCREEN_MODIFIED)&&
@@ -737,7 +738,6 @@ void saveline(int line, int mode, char* buffer)	/* 0 : save, 1 : restore */
             strncpy(bp[line].color, tmp+LINELEN*2, LINELEN);
             for(i=0;i<scr_cols;i++)
                 bp[line].mode[i]|=SCREEN_MODIFIED;
-            refresh();
             break;
     }
 };

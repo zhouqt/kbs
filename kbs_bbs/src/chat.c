@@ -678,7 +678,6 @@ static int ent_chat(int chatnum)
     UPDATE_UTMP(in_chat, uinfo);
     UPDATE_UTMP(chatid[0], uinfo);
     clear();
-    refresh();
     free(pthis);
     return 0;
 }

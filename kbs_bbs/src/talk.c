@@ -237,7 +237,6 @@ char q_id[IDLEN];
 
     if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND && uinfo.mode != READING && uinfo.mode != MAIL && uinfo.mode != RMAIL && uinfo.mode != GMENU) {
         modify_user_mode(QUERY);
-        refresh();
         /*
          * count = shortulist(NULL); 
          */
@@ -732,7 +731,6 @@ int ttt_talk(struct user_info *userinfo)
 	    talkreply();
         close(msgsock);
         clear();
-        refresh();
     }
     return 0;
 }
@@ -741,7 +739,6 @@ int t_talk()
 {
     int netty_talk;
 
-    refresh();
     netty_talk = ttt_talk(NULL);
     clear();
     return (netty_talk);
@@ -904,7 +901,6 @@ int talkreply()
         close(a);
         bbslog("user","%s","page refused");
         clear();
-        refresh();
         return 0;
     }
     bbslog("user","%s","page accepted");
@@ -912,7 +908,6 @@ int talkreply()
     do_talk(a);
     close(a);
     clear();
-    refresh();
     return 0;
 }
 
@@ -1111,7 +1106,6 @@ void endmsg(void *data)
     refresh();
     set_alarm(60, 0, endmsg, NULL);
     showansi = tmpansi;
-    UNUSED_ARG(data);
     return;
 }
 static int do_talk(int fd)
@@ -1131,7 +1125,6 @@ static int do_talk(int fd)
 #endif                          /* 
                                  */
     endmsg(NULL);
-    refresh();
     previous_mode = uinfo.mode;
     modify_user_mode(TALK);
     sprintf(mid_line, " %s (%s) ºÍ %s ÕıÔÚ³©Ì¸ÖĞ", currentuser->userid, currentuser->username, save_page_requestor);
@@ -1381,7 +1374,6 @@ char *modestr;
         move(t_lines - 1, 0);
         prints("[44m[33mÄ¿Ç°ÓĞ %3d %6sÉÏÏß, Ê±¼ä: %s , Ä¿Ç°×´Ì¬£º%10s   [m", count, friendmode ? "ºÃÅóÓÑ" : "Ê¹ÓÃÕß", Ctime(thetime), friendmode ? "ÄãµÄºÃÅóÓÑ" : "ËùÓĞÊ¹ÓÃÕß");
     }
-    refresh();
     return 0;
 }
 
@@ -1391,7 +1383,6 @@ int t_list()
     bbslog("user","%s","t_list");
     do_list("Ê¹ÓÃÕß×´Ì¬");
     pressreturn();
-    refresh();
     clear();
     return 0;
 }
@@ -1642,7 +1633,6 @@ char *uident;
     } else {
         move(t_lines - 2, 0);
         clrtoeol();
-        refresh();
         strcpy(tmp.id, uident);
         sprintf(genbuf, "ÇëÊäÈë¸øºÃÓÑ¡¾%s¡¿µÄËµÃ÷: ", tmp.id);
         getdata(t_lines - 2, 0, genbuf, tmp.exp, 15, DOECHO, NULL, true);

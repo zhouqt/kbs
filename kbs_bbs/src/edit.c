@@ -46,7 +46,6 @@ void top_show(char *prompt)
 {
     if (editansi) {
         prints(ANSI_RESET);
-        refresh();
     }
     move(0, 0);
     clrtoeol();
@@ -134,7 +133,6 @@ void domsg()
     msgline();
 
     move(x, y);
-    refresh();
     showansi = tmpansi;
     return;
 }
@@ -1401,7 +1399,6 @@ static int process_ESC_action(int action, int arg)
             ismsgline = 0;
             move(t_lines - 1, 0);
             clrtoeol();
-            refresh();
         } else
             ismsgline = 1;
         break;
