@@ -645,8 +645,10 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
         signal(SIGALRM, SIG_IGN);
 #endif
 
-        getdata( 0, 0, "\n\033[1m[37mÇëÊäÈë´úºÅ(ÊÔÓÃÇëÊäÈë `\033[36mguest\033[37m', ×¢²áÇëÊäÈë`\033[36mnew\033[37m'): [m",/*
-        getdata( 0, 0, "\n\033[1m[37mÇëÊäÈë´úºÅ(ÊÔÓÃÇëÊäÈë `\033[36mguest\033[37m'; ÒòÏµÍ³¹ÊÕÏ£¬ÔİÍ£×¢²áĞÂÕÊºÅ¹¦ÄÜÒ»¶ÎÊ±¼ä£¬¼ûÁÂ): [m",*/
+        getdata( 0, 0, "\n\033[1m[37mÇëÊäÈë´úºÅ(ÊÔÓÃÇëÊäÈë `\033[36mguest\033[37m', ×¢²áÇëÊäÈë`\033[36mnew\033[37m'): [m",
+/*
+        getdata( 0, 0, "\n\033[1m[37mÇëÊäÈë´úºÅ(ÊÔÓÃÇëÊäÈë `\033[36mguest\033[37m', ÔİÍ£×¢²áĞÂÕÊºÅ): [m",
+*/
                 uid, STRLEN-1, DOECHO, NULL ,YEA);
         if( strcmp( uid, "new" ) == 0 ) {
 #ifdef LOGINASNEW

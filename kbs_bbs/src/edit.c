@@ -1395,7 +1395,7 @@ int     action, arg;
     case 'M':
         process_MARK_action(arg, msg); break;
     case 'I':
-        sprintf( filename, "/tmp/clip/%s.%c", currentuser->userid, arg);
+        sprintf( filename, "tmp/clip/%s.%c", currentuser->userid, arg);
         if( (fp = fopen( filename, "r" )) != NULL ) {
             insert_from_fp( fp ); fclose( fp );
             sprintf( msg, "已取出剪贴簿第 %c 页", arg );
@@ -1406,7 +1406,7 @@ int     action, arg;
         redraw_everything = YEA;
         break;
     case 'E':
-        sprintf( filename, "/tmp/clip/%s.%c", currentuser->userid, arg);
+        sprintf( filename, "tmp/clip/%s.%c", currentuser->userid, arg);
         if( (fp = fopen( filename, "w" )) != NULL ) {
             if ( mark_on ) {
                 struct textline *p;
