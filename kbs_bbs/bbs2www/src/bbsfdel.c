@@ -15,7 +15,7 @@ int deleteoverride2(char *uident)
     deleted = search_record( buf, &fh, sizeof(fh), cmpfnames2, uident );
     if(deleted > 0)
     {
-        if(delete_record(buf, sizeof(fh), deleted) != -1)
+        if(delete_record(buf, sizeof(fh), deleted,NULL,NULL) != -1)
             getfriendstr();
         else
         {
