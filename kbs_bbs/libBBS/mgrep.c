@@ -17,40 +17,58 @@
 extern ONLYCOUNT, FNAME, SILENT, FILENAMEONLY, num_of_matched;
 extern INVERSE;
 extern WORDBOUND, WHOLELINE, NOUPPER;
-extern unsigned char *CurrentFileName, Progname[];
+extern unsigned char *CurrentFileName;
 extern total_line;
 
 #ifdef BBSMAIN
 #define printf prints
 #define putchar outc
 #endif
-
-int LONG = 0;
-int SHORT = 0;
-int p_size = 0;
-unsigned char SHIFT1[MAXMEMBER1];
-unsigned char tr[MAXSYM];
-unsigned char tr1[MAXSYM];
 struct pat_list {
     int index;
     struct pat_list *next;
-} *HASH[MAXHASH];
-struct pat_list *pt, *qt;
-unsigned char buf[MAXPATFILE + BLOCKSIZE];
-unsigned char pat_spool[MAXPATFILE + 2 * max_num + MAXPAT];
-unsigned char *patt[max_num];
-unsigned char pat_len[max_num];
+};
+struct pattern_image {
+	int LONG = 0;
+	int SHORT = 0;
+	int p_size = 0;
+	unsigned char SHIFT1[MAXMEMBER1];
+	unsigned char tr[MAXSYM];
+	unsigned char tr1[MAXSYM];
+    struct pat_list *HASH[MAXHASH];
+	unsigned char buf[MAXPATFILE + BLOCKSIZE];
+	unsigned char pat_spool[MAXPATFILE + 2 * max_num + MAXPAT];
+	unsigned char *patt[max_num];
+	unsigned char pat_len[max_num];
+};
 
+int releasepf(struct pattern_image* patt_img)
+{
+    int i;
+    for (i = 0; i < MAXHASH; i++) {
+        struct pat_list* curr;
+        curr=patt_img->HASH[i];
+        while (curr!=NULL) {
+            struct pat_list* next;
+            next=curr->next;
+        	free(curr);
+        	curr=next;
+        }
+    }
+    free(patt_img);
+}
 
-prepf(fp)
-int fp;
+int prepf(int fp,struct pattern_image** ppatt_img)
 {
     int length = 0, i, p = 1, pdx = 0, num_pat;
-    unsigned char *pat_ptr = pat_spool, temp[10];
+    unsigned char *pat_ptr = patt_img->pat_spool, temp[10];
     unsigned Mask = 15;
     int num_read;
+    struct pattern_image *patt_img;
 
-    while ((num_read = read(fp, buf + length, BLOCKSIZE)) > 0) {
+    *ppatt_img=malloc(sizeof(struct pattern_image));
+    patt_img=*patt_img;
+    while ((num_read = read(fp, patt_img->buf + length, BLOCKSIZE)) > 0) {
         length = length + num_read;
         if (length > MAXPATFILE) {
 #ifdef BBSMAIN
@@ -60,16 +78,16 @@ int fp;
             return -1;
         }
     }
-    buf[length] = '\n';
+    patt_img->buf[length] = '\n';
     i = 0;
     p = 1;
     while (i < length) {
-        patt[p] = pat_ptr;
+        patt_img->patt[p] = pat_ptr;
         if (WORDBOUND)
             *pat_ptr++ = W_DELIM;
         if (WHOLELINE)
             *pat_ptr++ = L_DELIM;
-        while ((*pat_ptr = buf[i++]) != '\n')
+        while ((*pat_ptr = patt_img->buf[i++]) != '\n')
             pat_ptr++;
         if (WORDBOUND)
             *pat_ptr++ = W_DELIM;
@@ -88,47 +106,47 @@ int fp;
     for (i = 1; i < 20; i++)
         *pat_ptr = i;           /* boundary safety zone */
     for (i = 0; i < MAXSYM; i++)
-        tr[i] = i;
+        patt_img->tr[i] = i;
     if (NOUPPER) {
         for (i = 'A'; i <= 'Z'; i++)
-            tr[i] = i + 'a' - 'A';
+            patt_img->tr[i] = i + 'a' - 'A';
     }
     if (WORDBOUND) {
         for (i = 0; i < 128; i++)
             if (!isalnum(i))
-                tr[i] = W_DELIM;
+                patt_img->tr[i] = W_DELIM;
     }
     for (i = 0; i < MAXSYM; i++)
-        tr1[i] = tr[i] & Mask;
+        patt_img->tr1[i] = patt_img->tr[i] & Mask;
     num_pat = p - 1;
-    p_size = MAXPAT;
+    patt_img->p_size = MAXPAT;
     for (i = 1; i <= num_pat; i++) {
-        p = strlen(patt[i]);
-        pat_len[i] = p;
-        if (p != 0 && p < p_size)
-            p_size = p;
+        p = strlen(patt_img->patt[i]);
+        patt_img->pat_len[i] = p;
+        if (p != 0 && p < patt_img->p_size)
+            patt_img->p_size = p;
     }
-    if (p_size == 0) {
+    if (patt_img->p_size == 0) {
 #ifdef BBSMAIN
         prints("the pattern file is empty\n");
 #endif
         bbslog("3error", "the pattern file is empty\n");
         return -1;
     }
-    if (length > 400 && p_size > 2)
-        LONG = 1;
-    if (p_size == 1)
-        SHORT = 1;
+    if (length > 400 && patt_img->p_size > 2)
+        patt_img->LONG = 1;
+    if (patt_img->p_size == 1)
+        patt_img->SHORT = 1;
     for (i = 0; i < MAXMEMBER1; i++)
-        SHIFT1[i] = p_size - 2;
+        patt_img->SHIFT1[i] = patt_img->p_size - 2;
     for (i = 0; i < MAXHASH; i++) {
-        HASH[i] = 0;
+        patt_img->HASH[i] = 0;
     }
     for (i = 1; i <= num_pat; i++)
-        f_prep(i, patt[i]);
+        f_prep(i, patt_img->patt[i]);
 }
 
-int mgrep_str(char *text, int num)
+int mgrep_str(char *text, int num,struct pattern_image* patt_img)
 {
     register char r_newline = '\n';
     unsigned char buf_text[MAXLINE];
@@ -149,7 +167,7 @@ int mgrep_str(char *text, int num)
     strncpy(buf_text + 1, text, start);
     buf_text[start + 1] = '\n'; /* initial case */
 
-    if (SHORT)
+    if (patt_img->SHORT)
         m_short(buf_text, 0, start + 1);
     else
         monkey1(buf_text, 0, start + 1);
@@ -167,7 +185,7 @@ int mgrep_str(char *text, int num)
 
     residue = buf_end - end + 1;
     /*text[start - 1] = r_newline;*/
-    if (SHORT)
+    if (patt_img->SHORT)
         m_short(text, start, end);
     else
         monkey1(text, start, end);
@@ -183,7 +201,7 @@ int mgrep_str(char *text, int num)
     if (residue > 1) {
         strncpy(buf_text + 1, text + end, residue);
         text[residue] = '\n';
-        if (SHORT)
+        if (patt_img->SHORT)
             m_short(buf_text, 0, residue);
         else
             monkey1(buf_text, 0, residue);
@@ -191,8 +209,9 @@ int mgrep_str(char *text, int num)
     return num_of_matched;
 }                               /* end mgrep */
 
-mgrep(fd)
+mgrep(fd,patt_img)
 int fd;
+struct pattern_image *patt_img;
 {
     register char r_newline = '\n';
     unsigned char text[2 * BLOCKSIZE + MAXLINE];
@@ -209,7 +228,7 @@ int fd;
             end--;
         residue = buf_end - end + 1;
         text[start - 1] = r_newline;
-        if (SHORT)
+        if (patt_img->SHORT)
             m_short(text, start, end);
         else
             monkey1(text, start, end);
@@ -225,7 +244,7 @@ int fd;
     text[MAXLINE] = '\n';
     text[start - 1] = '\n';
     if (residue > 1) {
-        if (SHORT)
+        if (patt_img->SHORT)
             m_short(text, start, end);
         else
             monkey1(text, start, end);
@@ -245,15 +264,16 @@ int len;
 }
 
 
-monkey1(text, start, end)
+monkey1(text, start, end,patt_img)
 int start, end;
 register unsigned char *text;
+struct pattern_image* patt_img;
 {
     register unsigned char *textend;
     register unsigned hash, i;
     register unsigned char shift;
-    register int m1, j, Long = LONG;
-    int pat_index, m = p_size;
+    register int m1, j, Long = patt_img->LONG;
+    int pat_index, m = patt_img->p_size;
     int MATCHED = 0;
     register unsigned char *qx;
     register struct pat_list *p;
@@ -265,27 +285,27 @@ register unsigned char *text;
     lastout = text + start + 1;
     text = text + start + m1;
     while (text <= textend) {
-        hash = tr1[*text];
-        hash = (hash << 4) + (tr1[*(text - 1)]);
+        hash = patt_img->tr1[*text];
+        hash = (hash << 4) + (patt_img->tr1[*(text - 1)]);
         if (Long)
-            hash = (hash << 4) + (tr1[*(text - 2)]);
-        shift = SHIFT1[hash];
+            hash = (hash << 4) + (patt_img->tr1[*(text - 2)]);
+        shift = patt_img->SHIFT1[hash];
         if (shift == 0) {
             hash = 0;
             for (i = 0; i <= m1; i++) {
-                hash = (hash << 4) + (tr1[*(text - i)]);
+                hash = (hash << 4) + (patt_img->tr1[*(text - i)]);
             }
             hash = hash & mm;
-            p = HASH[hash];
+            p = patt_img->HASH[hash];
             while (p != 0) {
                 pat_index = p->index;
                 p = p->next;
                 qx = text - m1;
                 j = 0;
-                while (tr[patt[pat_index][j]] == tr[*(qx++)])
+                while (patt_img->tr[patt_img->patt[pat_index][j]] == patt_img->tr[*(qx++)])
                     j++;
                 if (j > m1) {
-                    if (pat_len[pat_index] <= j) {
+                    if (patt_img->pat_len[pat_index] <= j) {
                         if (text > textend)
                             return;
                         num_of_matched++;
@@ -346,9 +366,10 @@ register unsigned char *text;
             putchar(*lastout++);
 }
 
-m_short(text, start, end)
+m_short(text, start, end,patt_img)
 int start, end;
 register unsigned char *text;
+struct pattern_image* patt_img;
 {
     register unsigned char *textend;
     register unsigned i;
@@ -364,15 +385,15 @@ register unsigned char *text;
     lastout = text + start + 1;
     text = text + start - 1;
     while (++text <= textend) {
-        p = HASH[*text];
+        p = patt_img->HASH[*text];
         while (p != 0) {
             pat_index = p->index;
             p = p->next;
             qx = text;
             j = 0;
-            while (tr[patt[pat_index][j]] == tr[*(qx++)])
+            while (patt_img->tr[patt_img->patt[pat_index][j]] == patt_img->tr[*(qx++)])
                 j++;
-            if (pat_len[pat_index] <= j) {
+            if (patt_img->pat_len[pat_index] <= j) {
                 if (text >= textend)
                     return;
                 num_of_matched++;
@@ -416,27 +437,29 @@ register unsigned char *text;
             putchar(*lastout++);
 }
 
-f_prep(pat_index, Pattern)
+f_prep(pat_index, Pattern,patt_img)
 unsigned char *Pattern;
 int pat_index;
+struct pattern_image* patt_img;
 {
     int i, j, m;
     register unsigned hash, Mask = 15;
+	struct pat_list *pt, *qt;
 
-    m = p_size;
-    for (i = m - 1; i >= (1 + LONG); i--) {
+    m = patt_img->p_size;
+    for (i = m - 1; i >= (1 + patt_img->LONG); i--) {
         hash = (Pattern[i] & Mask);
         hash = (hash << 4) + (Pattern[i - 1] & Mask);
-        if (LONG)
+        if (patt_img->LONG)
             hash = (hash << 4) + (Pattern[i - 2] & Mask);
-        if (SHIFT1[hash] >= m - 1 - i)
-            SHIFT1[hash] = m - 1 - i;
+        if (patt_img->SHIFT1[hash] >= m - 1 - i)
+            patt_img->SHIFT1[hash] = m - 1 - i;
     }
-    if (SHORT)
+    if (patt_img->SHORT)
         Mask = 255;             /* 011111111 */
     hash = 0;
     for (i = m - 1; i >= 0; i--) {
-        hash = (hash << 4) + (tr[Pattern[i]] & Mask);
+        hash = (hash << 4) + (patt_img->tr[Pattern[i]] & Mask);
     }
 /*
 	if(INVERSE) hash = Pattern[1];
@@ -444,7 +467,7 @@ int pat_index;
     hash = hash & mm;
     qt = (struct pat_list *) malloc(sizeof(struct pat_list));
     qt->index = pat_index;
-    pt = HASH[hash];
+    pt = patt_img->HASH[hash];
     qt->next = pt;
-    HASH[hash] = qt;
+    patt_img->HASH[hash] = qt;
 }
