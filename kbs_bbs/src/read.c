@@ -646,7 +646,7 @@ static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, 
             return FULLUPDATE;
             break;
         }
-    case Ctrl('V'):
+    case ',':
         if(uinfo.mode==GMENU) break;
         if (TDEFINE(TDEF_SPLITSCREEN))
         	tmpuser&=~TDEF_SPLITSCREEN;
