@@ -1579,7 +1579,7 @@ void vedit_key(int ch)
             break;
             /* Leeward 98.07.30 Change hot key for msgX */
             /*case Ctrl('Z'):  call help screen */
-        case Ctrl('R'):
+        case Ctrl('P'):
             show_eof = !show_eof;
             break;
         case Ctrl('Q'):        /* call help screen */
