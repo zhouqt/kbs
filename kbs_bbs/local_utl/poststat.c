@@ -352,7 +352,7 @@ main(argc, argv)
     time(&now);
     ptime = localtime(&now);
     if (argc == 2) {
-        i=atoi(argv[1]));
+        i=atoi(argv[1]);
         if (i!=0) {
         	poststat(i,now,ptime);
         	return 0;
@@ -373,11 +373,11 @@ main(argc, argv)
 
 		sprintf(fname,"%d年%2d月%2d日十大统计",
 			ptime->tm_year+1900,ptime->tm_mon+1,ptime->tm_mday);
-        post_file(NULL, "", "etc/posts/day", "BBSLists", fname 0, 1);
+        post_file(NULL, "", "etc/posts/day", "BBSLists", fname ,0, 1);
         if (ptime->tm_wday==6) {
 			sprintf(fname,"%d年%2d月%2d日本周五十大统计",
 				ptime->tm_year+1900,ptime->tm_mon+1,ptime->tm_mday);
-	        post_file(NULL, "", "etc/posts/week", "BBSLists", fname 0, 1);
+	        post_file(NULL, "", "etc/posts/week", "BBSLists", fname ,0, 1);
         }
     }
 }

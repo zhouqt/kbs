@@ -127,6 +127,8 @@ int main()
     if (loginok && can_enter_chatroom())
         printf("<br><a href=\"javascript:openchat()\">[" CHAT_SERVER "<font color=\"red\">测试中</font>]</a>");
     printf("</div><script>if(isNS4) arrange();if(isOP)alarrangeO();</script>");
+    printf("<p>全国网络计算大赛拉开帷幕,大赛奖项高达20万元，其中一等奖奖金高达10万元。详情请见</p>"
+			    "<p><a href=\"http://www.hpc-contest.edu.cn\"  target=\"_blank\">http://www.hpc-contest.edu.cn</a><br></p>");
     printf("</body>");
 }
 
