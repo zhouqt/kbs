@@ -1,5 +1,5 @@
 /*
- * This program converts .PASSWDS file from Firebird 3.0K beta6 to smth_bbs
+ * This program converts .PASSWDS file from Firebird 3.0K beta6 to smth_bbs.
  */
 
 #include "bbs.h"
