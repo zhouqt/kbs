@@ -1065,9 +1065,9 @@ int do_select(int ent, struct fileheader *fileinfo, char *direct)
         return FULLUPDATE;
     }
 
-    board_setcurrentuser(uinfo.currentboard, -1)
+    board_setcurrentuser(uinfo.currentboard, -1);
     uinfo.currentboard = getbnum(bname);
-    UPDATE_UTMP(currentboard,utmpent);
+    UPDATE_UTMP(currentboard,uinfo);
     board_setcurrentuser(uinfo.currentboard, 1);
     
     selboard = 1;
@@ -1518,7 +1518,7 @@ int search_mode(int mode, char *index)
     total = buf.st_size / size;
 
     init = false;
-    if ((i = safe_mmapfile_handle(fd2, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
+    if ((i = safe_mmapfile_handle(fd2, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size)) != 1) {
         if (i == 2)
             end_mmapfile((void *) ptr, buf.st_size, -1);
         ldata2.l_type = F_UNLCK;
@@ -2664,7 +2664,7 @@ int del_ding(int ent, struct fileheader *fileinfo, char *direct)
 {
 
 	int failed;
-	int tmpname[100];
+	char tmpname[100];
 
 	if ( digestmode != 0 ) return DONOTHING;
 
@@ -2691,7 +2691,7 @@ int del_ding(int ent, struct fileheader *fileinfo, char *direct)
         clear();
 		return FULLUPDATE;
 	}else{
-		sprintf(tmpname,"boards/%s/%s",currboard,fileinfo->filename);
+		snprintf(tmpname,100,"boards/%s/%s",currboard,fileinfo->filename);
 		unlink(tmpname);
 	}
 
@@ -3111,7 +3111,7 @@ int Read()
 
     board_setcurrentuser(uinfo.currentboard, -1);
     uinfo.currentboard = getbnum(currboard);
-    UPDATE_UTMP(currentboard,utmpent);
+    UPDATE_UTMP(currentboard,uinfo);
     board_setcurrentuser(uinfo.currentboard, 1);
     
     setvfile(notename, currboard, "notes");
@@ -3143,7 +3143,7 @@ int Read()
 
     board_setcurrentuser(uinfo.currentboard, -1);
     uinfo.currentboard = 0;
-    UPDATE_UTMP(currentboard,utmpent);
+    UPDATE_UTMP(currentboard,uinfo);
     return 0;
 }
 

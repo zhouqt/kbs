@@ -254,7 +254,7 @@ void check_register_info()
     invalid_realmail(currentuser->userid,ud.realemail,STRLEN - 16);
 
     read_userdata(currentuser->userid,&ud);
-    do_after_login(currentuser,utmpent);
+    do_after_login(currentuser,utmpent,0);
 
     /*    if( sysconf_str( "IDENTFILE" ) != NULL ) {  commented out by netty to save time */
     while (strlen(currentuser->username) < 2) {

@@ -671,7 +671,7 @@ static int check_newpost(struct newpostdata *ptr)
 
     ptr->total = ptr->unread = 0;
 
-    bptr = getbstatus(ptr->pos);
+    bptr = getbstatus(ptr->pos+1);
     if (bptr == NULL)
         return 0;
     ptr->total = bptr->total;

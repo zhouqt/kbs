@@ -185,7 +185,7 @@ void detach_boards()
 
 struct BoardStatus *getbstatus(int index)
 {
-    return &brdshm->bstatus[index];
+    return &brdshm->bstatus[index-1];
 }
 int apply_boards(int (*func) (struct boardheader *, void* ),void* arg)
 {                               /* 对所有版 应用 func函数 */

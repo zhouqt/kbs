@@ -242,4 +242,7 @@ int show_authorBM(int ent, struct fileheader *fileinfo, char *direct);
 int deny_user(int ent,struct fileheader* fileinfo,char* direct);    /* 禁止POST用户名单 维护主函数 */
 int clubmember(int ent,struct fileheader* fh,char* direct);
 
+/* zmodem */
+int bbs_zsendfile(char* filename,char* sendname);
+char* bbs_zrecvfile();
 #endif

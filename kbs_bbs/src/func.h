@@ -40,7 +40,8 @@ extern "C" {
     int load_ucache();
     int get_giveupinfo(char *userid, int *basicperm, int s[10][2]);
     void save_giveupinfo(struct userec *lookupuser, int lcount, int s[10][2]);
-    int do_after_login(struct userec* user,int unum);
+    int do_after_login(struct userec* user,int unum,int mode);
+    int do_after_logout(struct userec* user,struct user_info* uinfo,int unum, int mode);
 
 #if USE_TMPFS==1
 void setcachehomefile(char* path,char* user,char* file);

@@ -15,6 +15,7 @@ int range, page, readplan, num;
 struct user_info *user_record[USHM_SIZE];
 struct userec *user_data;
 
+time_t set_idle_time(struct user_info * uentp, time_t t);
 int loginok = 0;
 friends_t bbb[MAXREJECTS];
 int badnum = 0;
@@ -1279,7 +1280,7 @@ int get_file_ent(char *board, char *file, struct fileheader *x)
     char dir[80];
 
     sprintf(dir, "boards/%s/.DIR", board);
-    return search_record(dir, x, sizeof(struct fileheader), cmpname, file);
+    return search_record(dir, x, sizeof(struct fileheader), (RECORD_FUNC_ARG)cmpname, file);
 }
 
 int set_my_cookie()
@@ -1566,10 +1567,10 @@ char *get_favboard(int k)
                 if (favbrd_list[i].flag == -1)
                     return favbrd_list[i].title;
                 else {
-                    struct boardheader *bptr;
+                    struct boardheader const*bptr;
 
                     bptr = getboard(favbrd_list[i].flag);
-                    return bptr->filename;
+                    return (char*)bptr->filename;
                 }
             }
             j++;
@@ -1892,7 +1893,7 @@ static int www_new_guest_entry()
 
 static struct WWW_GUEST_S* www_get_guest_entry(int idx)
 {
-    return  wwwguest_shm->guest_entry[idx];
+    return  &wwwguest_shm->guest_entry[idx];
 }
 
 static int www_free_guest_entry(int idx)
@@ -2181,7 +2182,7 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
                 ret = 0;
             }
             getfriendstr(currentuser, u);
-            do_after_login(currentuser,utmpent);
+            do_after_login(currentuser,utmpent,0);
         }
     } else {
         /*
@@ -2207,7 +2208,7 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
             *putmpent = idx;
             getuser("guest", &currentuser);
             ret = 0;
-            do_after_login(currentuser,idx);
+            do_after_login(currentuser,idx,1);
         }
     }
 
