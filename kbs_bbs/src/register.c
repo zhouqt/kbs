@@ -173,7 +173,7 @@ getnewuserid()
         }
         close( fd );
     }
-    */
+*/
     if( (fd = open( PASSFILE, O_RDWR|O_CREAT, 0600 )) == -1 )
         return -1;
     flock( fd, LOCK_EX );
@@ -274,13 +274,31 @@ new_register()
             /*                prints("帐号必须由英文字母或数字，而且帐号第一个字是英文字母!\n");*/
             flag=0;
         }
-        if (flag) {if(strlen(newuser.userid) < 2) {
+        if (flag) {
+	    if(strlen(newuser.userid) < 2) {
                 prints("代号至少需有两个英文字母!\n");
             } else if ( (*newuser.userid == '\0') || bad_user_id( newuser.userid )){
                 prints( "系统用字或是不雅的代号。\n" );
-            } else if((usernum = searchuser( newuser.userid )) != 0) { /*( dosearchuser( newuser.userid ) ) { midified by dong , 1998.12.2, change getuser -> searchuser , 1999.10.26*/
+            } else if((usernum = searchuser( newuser.userid )) != 0) /*( dosearchuser( newuser.userid ) ) midified by dong , 1998.12.2, change getuser -> searchuser , 1999.10.26*/
+	    {
                 prints("此帐号已经有人使用\n") ;
-            } else break;}
+            } else {
+		/*---	---*/
+	      	struct stat lst;
+		time_t lnow;
+		lnow = time(NULL);
+		sethomepath( genbuf, newuser.userid );
+		if(!stat(genbuf, &lst) && S_ISDIR(lst.st_mode)
+			&& (lnow - lst.st_ctime < 2592000/* 3600*24*30 */) ) {
+			prints("目前无法注册帐号%s，请与系统管理人员联系。\n", newuser.userid);
+			sprintf(genbuf, "IP %s new id %s failed[home changed in past 30 days]",
+					fromhost, newuser.userid);
+			report(genbuf);
+		} else
+		/*---	---*/
+		break;
+            }
+	}
     }
     setuserid( allocid, newuser.userid ); /* added by dong, 1998.12.2 */
     newuser.firstlogin = newuser.lastlogin = time(NULL) - 13 * 60 * 24 ;

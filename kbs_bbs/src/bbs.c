@@ -3967,7 +3967,7 @@ Goodbye()    /*离站 选单*/
         FILE* fp;
 
         strcpy(lbuf,"自首-");
-        strftime(lbuf+5, 30, "%Y%m%d%y%H%M", localtime(&login_start_time));
+        strftime(lbuf+5, 30, "%Y-%m-%d%y:%H:%M", localtime(&login_start_time));
         sprintf(tmpfile,"tmp/.tmp%d",getpid());
         fp = fopen(tmpfile,"w");
         if (fp) {

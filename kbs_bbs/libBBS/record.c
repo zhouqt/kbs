@@ -215,7 +215,7 @@ int size ;
     char *buf,*buf1,*buf2;
     int fd, sizeread, n, i;
     struct stat stat;
-    buf2=alloca(size);
+    buf2=malloc(size);
     if((fd = open(filename,O_RDONLY,0)) == -1)
         return -1 ;
     if (fstat(fd,&stat) <0 ) { close(fd); return 0; }
@@ -243,7 +243,7 @@ int size ;
     char *buf,*buf1,*buf2;
     int fd, sizeread, n, i;
     struct stat stat;
-    buf2=alloca(size);
+    buf2=malloc(size);
     if((fd = open(filename,O_RDONLY,0)) == -1)
         return -1 ;
     if (fstat(fd,&stat) <0 ) { close(fd); return 0; }

@@ -753,16 +753,17 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
 #ifdef LOGINASNEW
             /*prints( "\033[32m´íÎóµÄÊ¹ÓÃÕß´úºÅ...\033[m\n" );*/
             if (check_ban_IP(fromhost,buf)<=0)
-              {
-                memset( &currentuser, 0, sizeof( currentuser ) );
-                new_register();
-		    setmailpath(tmpstr, currentuser.userid);/*Haohmaru.00.04.23,ÃâµÃÄÜ¿´Ç°ÈËµÄĞÅ*/
-                    sprintf( buf, "/bin/mv -f %s /home0/bbs/mailback/%s", tmpstr,currentuser.userid);
-                    system( buf );
-                    sethomepath(tmpstr, currentuser.userid);
-                    sprintf( buf, "/bin/mv -f %s /home0/bbs/homeback/%s", tmpstr,currentuser.userid);
-                    system( buf );
-                break;}
+	    {
+	        memset( &currentuser, 0, sizeof( currentuser ) );
+		new_register();
+		sethomepath(tmpstr, currentuser.userid);
+		sprintf( buf, "/bin/mv -f %s /home0/bbs/homeback/%s", tmpstr,currentuser.userid);
+		system( buf );
+		setmailpath(tmpstr, currentuser.userid);/*Haohmaru.00.04.23,ÃâµÃÄÜ¿´Ç°ÈËµÄĞÅ*/
+		sprintf( buf, "/bin/mv -f %s /home0/bbs/mailback/%s", tmpstr,currentuser.userid);
+		system( buf );
+		break;
+	    }
             prints( "±¾ÏµÍ³ÒòÎª %s µÄÔ­Òò½ûÖ¹ÄúËùÔÚÍø¶Î×¢²áĞÂÓÃ»§\n",buf);
 #else
             prints( "[37m±¾ÏµÍ³Ä¿Ç°ÎŞ·¨ÒÔ new ×¢²á, ÇëÓÃ guest ½øÈë.[m\n" );
@@ -786,9 +787,10 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
             getdata( 0, 0, "\033[1m[37mÇëÊäÈëÃÜÂë: [m", passbuf, PASSLEN, NOECHO, NULL ,YEA);
             passbuf[8] = '\0';
 /*  COMMAN : Ê¹ÓÃÀÏµÄ checkpassword ÒÔ½ÚÊ¡ CPU Load
-            if( !checkpasswd(currentuser.passwd, passbuf )) {
+            if( !checkpasswd(currentuser.passwd, passbuf ))
 */
-		if( !checkpasswd2(currentuser.passwd, passbuf )) {
+	    if( !checkpasswd2(currentuser.passwd, passbuf ))
+	    {
                 logattempt( currentuser.userid, fromhost );
                 prints( "[32mÃÜÂëÊäÈë´íÎó...[m\n" );
             } else {
