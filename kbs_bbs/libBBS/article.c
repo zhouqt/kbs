@@ -2053,6 +2053,7 @@ int delete_range(struct write_dir_arg* dirarg,int id1,int id2,int del_mode,int c
             cancelpost(board->filename, currentuser->userid, &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser->userid), 0);
         setbdir(DIR_MODE_DELETED, genbuf, board->filename);
         append_record(genbuf, (char *) delfhdr, delcount * sizeof(struct fileheader));
+		setboardorigin(board->filename, 1);
     }
     else if (curmode==DIR_MODE_MAIL&&!strstr(dirarg->filename, ".DELETED")) {
         setmailfile(genbuf, currentuser->userid, ".DELETED");
