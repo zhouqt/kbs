@@ -368,7 +368,7 @@ void start_game()
     for(i=0;i<totalk;i++) {
         do{
             j=rand()%myroom->people;
-        }while(inrooms.peoples[j].flag!=0);
+        }while(inrooms.peoples[j].flag!=0&&inrooms.peoples[j].flag!=PEOPLE_ROOMOP);
         inrooms.peoples[j].flag = PEOPLE_KILLER;
         send_msg(inrooms.peoples+j, "你做了一个无耻的坏人\n用你的尖刀(\x1b[31;1mCtrl+S\x1b[m)选择你要残害的人吧...");
     }
