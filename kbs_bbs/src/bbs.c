@@ -1579,9 +1579,10 @@ int change_mode(int ent, struct fileheader *fileinfo, char *direct)
         setbdir(digestmode, currdirect, currboard->filename);
         return NEWDIRECT;
     }
-    move(t_lines - 1, 0);
+    move(t_lines - 2, 0);
     clrtoeol();
-    getdata(t_lines - 1, 0, "切换模式到: 1)文摘 2)同主题 3)被m文章 4)原作 5)同作者 6)标题关键字 [1]: ", ans, 3, DOECHO, NULL, true);
+    prints("切换模式到: 1)文摘 2)同主题 3)被m文章 4)原作 5)同作者 6)标题关键字 ");
+    getdata(t_lines - 1, 12, "7)超级文章选择 [1]: ", ans, 3, DOECHO, NULL, true);
     if (ans[0] == ' ') {
         ans[0] = ans[1];
         ans[1] = 0;
@@ -1627,6 +1628,9 @@ int change_mode(int ent, struct fileheader *fileinfo, char *direct)
         break;
     case '6':
         return search_mode(8, buf);
+        break;
+    case '7':
+        return super_filter(ent, fileinfo, direct);
         break;
     }
     return FULLUPDATE;
@@ -3020,7 +3024,7 @@ struct one_key read_comms[] = { /*阅读状态，键定义 */
     {'=', SR_first},
     {Ctrl('S'), SR_read},
     {'p', SR_read},
-    {Ctrl('X'), super_filter},      /* Leeward 98.10.03 */
+    {Ctrl('X'), SR_readX},      /* Leeward 98.10.03 */
     {Ctrl('U'), SR_author},
     {Ctrl('H'), SR_authorX},    /* Leeward 98.10.03 */
     {'b', SR_BMfunc},
