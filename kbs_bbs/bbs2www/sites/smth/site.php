@@ -14,6 +14,9 @@ define("QUOTED_LINES","3");
 define("ACTIVATIONLEN",15); //激活码长度
 define("ENABLE_ABOARDS" , 1);//web首页使用活动看板
 
+$domain_name = explode(":",trim($_SERVER["HTTP_HOST"]));
+define("BBS_DOMAIN_NAME" , $domain_name[0]); //域名
+
 $section_nums = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9","A","B","C");
 $section_names = array(
     array("BBS 系统", "[站内]"),
