@@ -36,6 +36,9 @@ md $1/boards
 md $1/boards/_attach
 md $1/etc/posts
 md $1/etc/notepad_tmp
+md $1/game
+md $1/game/pipgame
+md $1/game/worker
 md $1/tmp
 md $1/tmp/forward
 md $1/tmp/bbs-gsend
