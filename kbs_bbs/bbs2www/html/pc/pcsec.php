@@ -61,13 +61,13 @@
 <?php		
 	}
 	
-	pc_html_init("gb2312",BBS_FULL_NAME."Blog");
+	pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
 	
 	
 ?>
 <br /><a name="top">
 <p align=center><strong>
-<?php echo BBS_FULL_NAME; ?>BlogĿ¼
+<?php echo $pcconfig["BBSNAME"]; ?>BlogĿ¼
 </strong></p>
 <?php
 	display_blog_catalog();

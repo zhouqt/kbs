@@ -686,7 +686,7 @@ Blog名
 	<td>
 	<table cellspacing="0" cellpadding="3" border="0" class="t0" width="100%" class="tt1">
 		<tr>
-			<td class="tt1">&nbsp;&nbsp;&nbsp;&nbsp;<?php echo "<a href=\"/\" class=\"f1\">".BBS_FULL_NAME."</a> - <a href='pc.php' class=\"f1\">Blog</a> - <a href=\"index.php?id=".$pc["USER"]."\" class=\"f1\">".$pc["NAME"]."</a>"; ?></td>
+			<td class="tt1">&nbsp;&nbsp;&nbsp;&nbsp;<?php echo "<a href=\"/\" class=\"f1\">".$pcconfig["BBSNAME"]."</a> - <a href='pc.php' class=\"f1\">Blog</a> - <a href=\"index.php?id=".$pc["USER"]."\" class=\"f1\">".$pc["NAME"]."</a>"; ?></td>
 			<td align="right" class="tt1"><?php echo pc_personal_domainname($pc["USER"]); ?>&nbsp;&nbsp;&nbsp;&nbsp;</td>
 		</tr>
 	</table>
@@ -805,7 +805,7 @@ Blog名
 	else
 		echo "/frames.html";
 ?>	
-	" class=f1 target="_top"><?php echo BBS_FULL_NAME; ?>首页</a>]
+	" class=f1 target="_top"><?php echo $pcconfig["BBSNAME"]; ?>首页</a>]
 	<a href="rss.php?userid=<?php echo $pc["USER"]; ?>"><img src="images/xml.gif" border="0" alt="XML" align="absmiddle"></a>
 	</td>
 </tr>

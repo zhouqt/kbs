@@ -178,7 +178,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 			</td><td class=t11>
 			<a href="pc.php" class="f1">Blog首页</a>
 			</td><td class=t11>
-			<a href="/<?php echo ($loginok==1 && strcmp($currentuser["userid"],"guest"))?"frames.html":"guest-frames.html"; ?>" class="f1"><?php echo BBS_FULL_NAME; ?></a>
+			<a href="/<?php echo ($loginok==1 && strcmp($currentuser["userid"],"guest"))?"frames.html":"guest-frames.html"; ?>" class="f1"><?php echo $pcconfig["BBSNAME"]; ?></a>
 			</td>
 		</tr>
 	</table>
@@ -756,7 +756,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	if(!$pc)
 	{
 		pc_db_close($link);
-		html_init("gb2312",BBS_FULL_NAME."Blog");		
+		html_init("gb2312",$pcconfig["BBSNAME"]."Blog");		
 		html_error_quit("对不起，您要查看的Blog不存在");
 		exit();
 	}

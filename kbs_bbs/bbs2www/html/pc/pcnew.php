@@ -59,11 +59,11 @@
 	pc_db_close($link);
 	
 	
-	pc_html_init("gb2312",BBS_FULL_NAME."Blog");
+	pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
 ?>
 <br><br>
 <p align=center class=f2>
-欢迎使用<?php echo BBS_FULL_NAME; ?>Blog系统
+欢迎使用<?php echo $pcconfig["BBSNAME"]; ?>Blog系统
 </p>
 <?php display_navigation_bar($type); ?>
 <hr size=1>

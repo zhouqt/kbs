@@ -15,7 +15,7 @@
 	}
 	else
 	{
-		pc_html_init("gb2312",BBS_FULL_NAME."Blog","","","",TRUE);		
+		pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog","","","",TRUE);		
 		$nid = (int)($_GET["nid"]);
 		$act = $_GET["act"];
 		$cid = (int)($_GET["cid"]);

@@ -153,11 +153,11 @@
 	if( $pageno < 1 || $pageno > $totalpage )
 		$pageno = 1;
 	$startno = ($pageno - 1)*$pagesize;
-	pc_html_init("gb2312",BBS_FULL_NAME."Blog");
+	pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
 ?>
 <center><br><br>
 <p align="center" class="f2">
-<?php echo BBS_FULL_NAME; ?>Blog
+<?php echo $pcconfig["BBSNAME"]; ?>Blog
 </p>
 <hr size=1>
 <p class="f1">
