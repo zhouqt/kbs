@@ -667,6 +667,10 @@ static long insert_from_fp(FILE *fp)
                 insertch_from_fp(*data);
             }
         }
+	else
+	{
+		BBS_RETURN(-1);
+	}
     }
     BBS_CATCH {
     }
