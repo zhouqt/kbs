@@ -295,4 +295,12 @@ typedef struct fileheader {     /* This structure is used to hold data in */
 
 #define HAS_MAILBOX_PROP(u, x) ((u)->mailbox_prop & x)
 
+/**
+ * Mailgroup macros.
+ *
+ * @author flyriver
+ */
+#define MAX_MAILGROUP_NUM 30
+#define MAX_MAILGROUP_USERS 300
+
 #endif

@@ -58,7 +58,7 @@
 #define LIFE_DAY_NEW		15
 #define LIFE_DAY_SUICIDE	15
 
-#define DAY_DELETED_CLEAN	99
+#define DAY_DELETED_CLEAN	97
 #define SEC_DELETED_OLDHOME	2592000/* 3600*24*30，注册新用户如果存在这个用户的目录，保留时间*/
 
 #define	REGISTER_WAIT_TIME	(1)
@@ -391,5 +391,13 @@ typedef struct fileheader {     /* This structure is used to hold data in */
 #define MBP_NUMS 3
 
 #define HAS_MAILBOX_PROP(u, x) ((u)->mailbox_prop & x)
+
+/**
+ * Mailgroup macros.
+ *
+ * @author flyriver
+ */
+#define MAX_MAILGROUP_NUM 30
+#define MAX_MAILGROUP_USERS 300
 
 #endif
