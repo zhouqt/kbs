@@ -209,13 +209,7 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
             feval(&w, s, k+1, r-1);
             fmakesure(w.num, 4);
             p->num=true;
-            t.tm_sec=w.s-1;
-            t.tm_min=v.s-1;
-            t.tm_hour=u.s-1;
-            t.tm_mday=1;
-            t.tm_mon=0;
-            t.tm_year=0;
-            p->s = mktime(&t);
+            p->s = (u.s*60+v.s)*60+w.s;
             return;
         }
         ferr=18;
@@ -311,7 +305,7 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
     char olddirect[PATHLEN];
     char *ptr;
     struct stat buf;
-    int mode=8, load_content=0, found=0;
+    int mode=8, load_content=0, found=0, load_stat=0;
     extern int scr_cols;
     static char index[1024]="";
 
@@ -341,6 +335,7 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
     if(!index[0]) 
         return FULLUPDATE;
     load_content = (strstr(index, "content")!=NULL);
+    load_stat = (strstr(index, "ftime")!=NULL)||(strstr(index, "size")!=NULL);
     if (digestmode==7||digestmode==8 ) {
         if (digestmode == 7 || digestmode == 8)
             unlink(currdirect);
@@ -427,11 +422,13 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
         set_vard(fvars+fget_var("unread"), brc_unread(ptr1->id));
 #endif
         setbfile(ffn, currboard, ptr1->filename);
-        if(stat(ffn, &st)!=-1)
-            set_vard(fvars+fget_var("size"), st.st_size);
-        else
-            set_vard(fvars+fget_var("size"), 0);
-        set_vard(fvars+fget_var("ftime"), st.st_mtime);
+        if(load_stat) {
+            if(stat(ffn, &st)!=-1)
+                set_vard(fvars+fget_var("size"), st.st_size);
+            else
+                set_vard(fvars+fget_var("size"), 0);
+            set_vard(fvars+fget_var("ftime"), st.st_mtime);
+        }
         if(load_content) {
             set_vars(fvars+fget_var("content"), ptr1->filename);
             j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize, NULL);
