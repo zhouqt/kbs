@@ -857,8 +857,8 @@ function pc_update_cache_header($updatetime = 10)
 	        header("Cache-Control: max-age=" . "$expiretime");
 		return TRUE;
 	}
-	header("Last-Modified: " . gmdate("D, d M Y H:i:s", $modifytime) . "GMT");
-	header("Expires: " . gmdate("D, d M Y H:i:s", $modifytime+$expiretime) . "GMT");
+	header("Last-Modified: " . gmdate("D, d M Y H:i:s", $modifytime) . " GMT");
+	header("Expires: " . gmdate("D, d M Y H:i:s", $modifytime+$expiretime) . " GMT");
 	header("Cache-Control: max-age=" . "$expiretime");
 	return FALSE;
 }

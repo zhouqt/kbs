@@ -31,8 +31,8 @@ if ($nomalboard) { //need to do cache check
 		header("HTTP/1.1 304 Not Modified");
 		return;
 	}
-	header("Last-Modified: " . gmdate("D, d M Y H:i:s", $modifytime) . "GMT");
-	header("Expires: " . gmdate("D, d M Y H:i:s", $modifytime+300) . "GMT");
+	header("Last-Modified: " . gmdate("D, d M Y H:i:s", $modifytime) . " GMT");
+	header("Expires: " . gmdate("D, d M Y H:i:s", $modifytime+300) . " GMT");
 	header("Cache-Control: max-age=300, must-revalidate");
 } else {
 	header("Expires: Fri, 12 12 1930 00:00:00 GMT");
