@@ -2683,6 +2683,9 @@ do { \
         case '\\': \
             BUFFERED_OUTPUT(output, "\\\\", 2); \
             break; \
+		case '\r': \
+            BUFFERED_OUTPUT(output, "\\r", 2); \
+			break; \
         default: \
             BUFFERED_OUTPUT(output, &(_js_ptr[_js_i]), 1); \
         } \
@@ -2871,6 +2874,9 @@ do { \
         case '\\': \
             BUFFERED_OUTPUT(output, "\\\\", 2); \
             break; \
+		case '\r': \
+            BUFFERED_OUTPUT(output, "\\r", 2); \
+			break; \
         default: \
             BUFFERED_OUTPUT(output, &(_jbo_ptr[_jbo_i]), 1); \
         } \
