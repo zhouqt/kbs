@@ -589,8 +589,11 @@ void pop3_timeout(int signo)
 
 int main(int argc, char **argv)
 {
-
+#ifdef HAVE_IPV6
+    struct sockaddr_in6 fsin, our;
+#else
     struct sockaddr_in fsin, our;
+#endif
     int on, alen, len, i, n;
     char *str;
     int portnum = POP3PORT;
@@ -636,6 +639,16 @@ int main(int argc, char **argv)
         break;
     }
 #endif
+#ifdef HAVE_IPV6
+    if ((msock = socket(AF_INET6, SOCK_STREAM, 0)) < 0) {
+        exit(1);
+    }
+    setsockopt(msock, SOL_SOCKET, SO_REUSEADDR, (char *) &on, sizeof(on));
+    bzero((char *) &fsin, sizeof(fsin));
+    fsin.sin6_family = AF_INET6;
+/*    fsin.sin6_addr.s_addr = htonl(INADDR_ANY); //all zeroz might be ok */
+    fsin.sin6_port = htons(portnum);
+#else
     if ((msock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         exit(1);
     }
@@ -644,6 +657,7 @@ int main(int argc, char **argv)
     fsin.sin_family = AF_INET;
     fsin.sin_addr.s_addr = htonl(INADDR_ANY);
     fsin.sin_port = htons(portnum);
+#endif
 
     if (bind(msock, (struct sockaddr *) &fsin, sizeof(fsin)) < 0) {
         exit(1);
@@ -683,8 +697,11 @@ int main(int argc, char **argv)
 
             setgid(BBSGID);
             setuid(BBSUID);
-
+#ifdef HAVE_IPV6
+	    inet_ntop(AF_INET6, &fsin.sin6_addr, getSession()->fromhost, IPLEN);
+#else
             strcpy(getSession()->fromhost, (char *) inet_ntoa(fsin.sin_addr));
+#endif	
             if (check_ban_IP(getSession()->fromhost, genbuf)>0) {
                 outs("-ERR your ip is baned");
                 close(sock);

@@ -1,0 +1,36 @@
+- by FreeWizard [方括号内文字为 atppp 添加 2005-02-01] -
+
+
+
+为smthbbs添加IPv6支持 (20050113cvs)
+
+检查内核的ipv6支持情况
+
+检查apache和php的ipv6支持情况
+
+在源码上应用补丁 
+cd smth_bbs && patch -p0 --dry-run < smthbbs_ipv6.diff && patch -p0 < smthbbs_ipv6.diff 
+[这步不用做了，现在的 CVS 已经包含了这个 patch。]
+
+在site.h中增加
+#ifndef HAVE_IPV6
+#define HAVE_IPV6
+#endif
+#define LEGACY_IPV4_DISPLAY
+
+在site.php中增加
+define("IPV6_LEGACY_IPV4_DISPLAY", 1);
+（注：LEGACY_IPV4_DISPLAY将IPv4映射地址如::ffff:166.111.160.66显示为166.111.160.66）
+
+编译 make
+
+停止所有bbs相关进程并清除共享内存
+
+安装 make install
+
+备份然后转换.PASSWDS
+[提供了 cnv_ipv6.c，请特别对照 userec1 结构，如果和当前系统的不同则需要修改这个转换程序。]
+
+启动bbsd
+
+注意：当前补丁不支持ipv6的地址黑名单

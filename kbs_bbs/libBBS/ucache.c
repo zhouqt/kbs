@@ -452,14 +452,27 @@ void setuserid(int num, const char *userid)
 
     int m_socket;
     char cmdbuf[255];
+#ifdef HAVE_IPV6
+    struct sockaddr_in6 sin;
+#else
     struct sockaddr_in sin;
+#endif
     fd_set rfds;
     int result;
     struct timeval tv;
 
+#ifdef HAVE_IPV6
+    m_socket = socket(PF_INET6, SOCK_STREAM, IPPROTO_TCP);
+#else
     m_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+#endif
     if (m_socket < 0)
         return;
+#ifdef HAVE_IPV6
+    sin.sin6_family = AF_INET6;
+    sin.sin6_port = htons(60001);
+    inet_pton(AF_INET6, "::1", &sin.sin6_addr);
+#else /* IPV6 */
     sin.sin_family = AF_INET;
     sin.sin_port = htons(60001);
 #ifdef HAVE_INET_ATON
@@ -470,6 +483,7 @@ void setuserid(int num, const char *userid)
 	/* Is it OK? */
     my_inet_aton("127.0.0.1", &sin.sin_addr);
 #endif
+#endif /* IPV6 */
     if (connect(m_socket, (struct sockaddr *) &sin, sizeof(sin)) != 0) {
         close(m_socket);
         return;
@@ -640,14 +654,27 @@ int getnewuserid3(char *userid)
 
     int m_socket;
     char cmdbuf[255];
+#ifdef HAVE_IPV6
+    struct sockaddr_in6 sin;
+#else
     struct sockaddr_in sin;
+#endif
     fd_set rfds;
     int result;
     struct timeval tv;
 
+#ifdef HAVE_IPV6
+    m_socket = socket(PF_INET6, SOCK_STREAM, IPPROTO_TCP);
+#else
     m_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+#endif
     if (m_socket < 0)
         return -1;
+#ifdef HAVE_IPV6
+    sin.sin6_family = AF_INET6;
+    sin.sin6_port = htons(60001);
+    inet_pton(AF_INET6, "::1", &sin.sin6_addr);
+#else /* IPV6 */
     sin.sin_family = AF_INET;
     sin.sin_port = htons(60001);
 #ifdef HAVE_INET_ATON
@@ -658,6 +685,7 @@ int getnewuserid3(char *userid)
 	/* Is it OK? */
     my_inet_aton("127.0.0.1", &sin.sin_addr);
 #endif
+#endif /* IPV6 */
     if (connect(m_socket, (struct sockaddr *) &sin, sizeof(sin)) != 0) {
         close(m_socket);
         return -1;

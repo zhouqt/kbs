@@ -16,6 +16,17 @@ int max_load = 79;              /* 原值39 , modified by KCN,1999.09.07 */
 
 int proxy_getpeername(int csock,struct sockaddr* psaddr,int* plen)
 {
+#ifdef HAPPY_BBS
+    int ret=getpeername(csock,psaddr,plen);
+    struct sockaddr_in* psin=(struct sockaddr_in*)psaddr;
+    if (psin->sin_addr.s_addr==0x01001E0A) {
+        int buf;
+        read(csock,&buf,4);
+        if (buf==0x330123) {
+            read(csock,&psin->sin_addr.s_addr,4);
+        }
+    }
+#else
     int ret=getpeername(csock,psaddr,plen);
 #ifdef SMTH
     struct sockaddr_in* psin=(struct sockaddr_in*)psaddr;
@@ -28,6 +39,7 @@ int proxy_getpeername(int csock,struct sockaddr* psaddr,int* plen)
         }
     }
 #endif
+#endif /* HAPPY_BBS */
     return ret;
 }
 
@@ -193,7 +205,11 @@ static void start_daemon(inetd, port)
     int port;                   /* Thor.981206: 取 0 代表 *没有参数* */
 {
     int n;
+#ifdef HAVE_IPV6
+    struct sockaddr_in6 sin;
+#else
     struct sockaddr_in sin;
+#endif
     char buf[80];
     time_t val;
     /*
@@ -253,10 +269,16 @@ static void start_daemon(inetd, port)
       		fprintf(stderr,"can't lock pid file:var/%s.pid\n",buf);
       		exit(0);
       }
+#ifdef HAVE_IPV6
+      sin.sin6_family = AF_INET6;
+      sin.sin6_addr = in6addr_any;
+      n = socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP);
+#else
       sin.sin_family = AF_INET;
       sin.sin_addr.s_addr = htonl(INADDR_ANY);
       /*    sin.sin_addr.s_addr = htonl(INADDR_LOOPBACK);*/
       n = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+#endif
 
       val = 1;
       setsockopt(n, SOL_SOCKET, SO_REUSEADDR, (char *) &val, sizeof(val));
@@ -272,7 +294,11 @@ static void start_daemon(inetd, port)
         strcpy(code, "e");
       else
         strcpy(code, "d");
+#ifdef HAVE_IPV6
+      sin.sin6_port = htons(port);
+#else
       sin.sin_port = htons(port);
+#endif
       if ((bind(n, (struct sockaddr *) &sin, sizeof(sin)) < 0) || (listen(n, QLEN) < 0)) {
         exit(1);
       }
@@ -360,7 +386,11 @@ static void getremotehost(int sockfd, char *rhost, int buf_len)
 {
 	struct hostent *hp;
 	char *ptr;
+#ifdef HAVE_IPV6
+	struct sockaddr_in6 sin;
+#else
 	struct sockaddr_in sin;
+#endif
 	int value;
 	char buf[STRLEN];
 	
@@ -370,12 +400,27 @@ static void getremotehost(int sockfd, char *rhost, int buf_len)
 	{
 		signal(SIGALRM, dns_query_timeout);
 		alarm(5);
+		hp = NULL;
+#ifdef HAVE_IPV6
+		hp = gethostbyaddr((char *) &(sin.sin6_addr), sizeof(struct in6_addr),
+		                   sin.sin6_family);
+#else
 		hp = gethostbyaddr((char *) &(sin.sin_addr), sizeof(struct in_addr),
 		                   sin.sin_family);
+#endif
 		alarm(0);
 	}
+#ifdef HAVE_IPV6
+	strncpy(buf, ((hp)&&(strchr(hp->h_name, ':')==0)) ? hp->h_name : 
+#ifdef LEGACY_IPV4_DISPLAY
+	ISV4ADDR(sin.sin6_addr) ?
+	inet_ntop(AF_INET, &sin.sin6_addr.s6_addr[12], buf, STRLEN) :
+#endif
+	inet_ntop(AF_INET6, &sin.sin6_addr, buf, STRLEN), sizeof(buf) - 1);
+#else /* IPV6 */
 	strncpy(buf, hp ? hp->h_name : (char *) inet_ntoa(sin.sin_addr), 
 		sizeof(buf) - 1);
+#endif
 	buf[sizeof(buf) - 1] = '\0';
 	if ((ptr = strstr(buf, "." NAME_BBS_ENGLISH)) != NULL)
 		*ptr = '\0';
@@ -594,7 +639,7 @@ int bbs_main(argv)
     sprintf(bbs_prog_path, "%s/bin/bbs", BBSHOME);
 #endif
 
-    getSession()->fromhost[16] = '\0';
+    getSession()->fromhost[IPLEN-1] = '\0';
     if (check_ban_IP(getSession()->fromhost, buf) > 0) {      /* Leeward 98.07.31 */
         local_prints("本站目前不欢迎来自 %s 访问!\r\n原因：%s。\r\n\r\n", getSession()->fromhost, buf);
         local_Net_Sleep(60);
@@ -645,18 +690,42 @@ enum bbs_handlers{
   BBS_HANDLERS
 };
 
+#ifdef HAVE_IPV6
+#ifdef LEGACY_IPV4_DISPLAY
+#define FROMHOST(sin) \
+  {\
+    char *host = ISV4ADDR(sin.sin6_addr) ? \
+                 (char *) inet_ntop(AF_INET, &sin.sin6_addr.s6_addr[12], getSession()->fromhost, IPLEN) : \
+                 (char *) inet_ntop(AF_INET6, &sin.sin6_addr, getSession()->fromhost, IPLEN); \
+    strncpy(getSession()->fromhost, host, IPLEN);\
+    getSession()->fromhost[IPLEN-1] = 0;\
+  }
+#else
+#define FROMHOST(sin) \
+  {\
+    char *host = (char *) inet_ntop(AF_INET6, &sin.sin6_addr, getSession()->fromhost, IPLEN);\
+    strncpy(getSession()->fromhost, host, IPLEN);\
+    getSession()->fromhost[IPLEN-1] = 0;\
+   }
+#endif
+#else /* IPV6 */
 #define FROMHOST(sin) \
   {\
     char *host = (char *) inet_ntoa(sin.sin_addr);\
     strncpy(getSession()->fromhost, host, IPLEN);\
-    getSession()->fromhost[IPLEN] = 0;\
+    getSession()->fromhost[IPLEN-1] = 0;\
   }
-
+#endif /* IPV6 */
 static int bbs_standalone_main(char* argv)
 {
   int csock;                  /* socket for Master and Child */
   int value;
+#ifdef HAVE_IPV6
+  struct sockaddr_in6 sin;
+  char addr_buf[IPLEN];
+#else
   struct sockaddr_in sin;
+#endif
   int count;
   time_t lasttime;
 
@@ -699,8 +768,13 @@ if (!no_fork){
     }
 }
     /* sanshao@10.24: why next line is originally sizeof(sin) not &value */
-
+#ifdef HAVE_IPV6
+    addr_buf[0]='\0';
+    inet_ntop(AF_INET6, &sin.sin6_addr, addr_buf, IPLEN);
+    bbslog("0connect", "connect from %s(%d) in port %d", addr_buf, htons(sin.sin6_port), mport);
+#else
     bbslog("0connect", "connect from %s(%d) in port %d", inet_ntoa(sin.sin_addr), htons(sin.sin_port), mport);
+#endif
     setsid();
 
     if (csock!=0) {
@@ -722,7 +796,11 @@ if (!no_fork){
 
 static int bbs_inet_main(char* argv)
 {
+#ifdef HAVE_IPV6
+  struct sockaddr_in6 sin;
+#else
   struct sockaddr_in sin;
+#endif
   int sinlen = sizeof(sin);
 
   getpeername(0, (struct sockaddr *) &sin, (void *) &sinlen);
@@ -832,19 +910,32 @@ int bbs_entry(void)
 {
     /* 本函数供 SSH 使用 */
     int sinlen;
+#ifdef HAVE_IPV6
+    struct sockaddr_in6 sin;
+#else
     struct sockaddr_in sin;
-
+#endif
     setuid(BBSUID);
     setgid(BBSGID);
     main_signals();
-    sinlen = sizeof(struct sockaddr_in);
+    sinlen = sizeof(sin);
     atexit(ssh_exit);
     proxy_getpeername(0, (struct sockaddr *) &sin, (void *) &sinlen);
     {
+#ifdef HAVE_IPV6
+	char host[IPLEN];
+	host[0]='\0';
+#ifdef LEGACY_IPV4_DISPLAY
+	if (ISV4ADDR(sin.sin6_addr)) 
+	    inet_ntop(AF_INET, &sin.sin6_addr.s6_addr[12], host, IPLEN); 
+	else
+#endif
+	inet_ntop(AF_INET6, &sin.sin6_addr, host, IPLEN);
+#else /* IPV6 */
         char *host = (char *) inet_ntoa(sin.sin_addr);
-
+#endif
         strncpy(getSession()->fromhost, host, IPLEN);
-        getSession()->fromhost[IPLEN] = 0;
+        getSession()->fromhost[IPLEN-1] = 0;
     }
     return bbs_main(saved_argv[0]);
 }

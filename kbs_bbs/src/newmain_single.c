@@ -766,7 +766,7 @@ void user_login()
     /* ?????后面还有check_register_info */
     newbbslog(BBSLOG_USIES,"ENTER @%s", getSession()->fromhost);
     u_enter();
-    sprintf(genbuf, "Enter from %-16s", getSession()->fromhost);      /* Leeward: 97.12.02 */
+    sprintf(genbuf, "Enter from %s", getSession()->fromhost);      /* Leeward: 97.12.02 */
 
     bbslog("user","%s",genbuf);
 /*---	period	2000-10-19	4 debug	---*/
@@ -858,7 +858,7 @@ void user_login()
     }
 
     strncpy(getCurrentUser()->lasthost, getSession()->fromhost, IPLEN);
-    getCurrentUser()->lasthost[15] = '\0';   /* dumb mistake on my part */
+    getCurrentUser()->lasthost[IPLEN-1] = '\0';   /* dumb mistake on my part */
    if(uinfo.invisible == true && HAS_PERM(getCurrentUser(), PERM_SYSOP)){
 		clear();
 		move(3,0);

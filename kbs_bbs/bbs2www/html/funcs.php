@@ -119,6 +119,10 @@ function set_fromhost()
 		$fromhost="127.0.0.1"; 
 		$fullfromhost="127.0.0.1"; 
 	}
+	if (defined("IPV6_LEGACY_IPV4_DISPLAY")) { 
+		if ((strchr($fromhost, '.'))&&($p=strrchr($fromhost, ':')))
+			$fromhost=substr($p, 1);
+	}
 	//sometimes,fromhost has strang space
 	bbs_setfromhost(trim($fromhost),trim($fullfromhost));
 }

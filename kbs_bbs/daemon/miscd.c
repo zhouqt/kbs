@@ -378,17 +378,30 @@ void userd()
 {
     int m_socket;
 
+#ifdef HAVE_IPV6
+    struct sockaddr_in6 sin;
+#else
     struct sockaddr_in sin;
+#endif
     int sinlen = sizeof(sin);
     int opt = 1;
 
     bzero(&sin, sizeof(sin));
+#ifdef HAVE_IPV6
+    if ((m_socket = socket(PF_INET6, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+#else
     if ((m_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+#endif
         bbslog("3system", "userd:socket %s", strerror(errno));
         exit(-1);
     }
     setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, &opt, 4);
     memset(&sin, 0, sinlen);
+#ifdef HAVE_IPV6
+    sin.sin6_family = AF_INET6;
+    sin.sin6_port = htons(60001);
+    inet_pton(AF_INET6, "::1", &sin.sin6_addr);
+#else 
     sin.sin_family = AF_INET;
     sin.sin_port = htons(60001);
 #ifdef HAVE_INET_ATON
@@ -399,6 +412,7 @@ void userd()
 	/* Is it OK? */
     my_inet_aton("127.0.0.1", &sin.sin_addr);
 #endif
+#endif /* IPV6 */
     if (0 != bind(m_socket, (struct sockaddr *) &sin, sizeof(sin))) {
         bbslog("3system", "userd:bind %s", strerror(errno));
         exit(-1);

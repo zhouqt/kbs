@@ -194,7 +194,11 @@ extern long ti;
 #define ACBOARD_BUFSIZE      LENGTH_ACBOARD_BUFFER      /* max. length of each line for activity board  */
 #define ACBOARD_MAXLINE      LENGTH_ACBOARD_LINE        /* max. lines of  activity board  */
 #define STRLEN   80             /* Length of most string data */
-#define IPLEN   16              /* Length of most string data */
+#ifdef HAVE_IPV6
+#define IPLEN   46              /* Length of most string data */
+#else
+#define IPLEN   16
+#endif
 #define NAMELEN  40             /* Length of username/realname */
 #define IDLEN    12             /* Length of userids */
 #define BOARDNAMELEN 30         /* max length of board */
