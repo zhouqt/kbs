@@ -1980,11 +1980,6 @@ int www_user_init(int useridx, char *userid, int key, struct userec **x, struct 
     return 0;
 }
 
-static int cmpuids2(int unum, struct user_info *urec)
-{
-    return (unum == urec->uid);
-}
-
 int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromhost, char *fullfrom, struct user_info **ppuinfo, int *putmpent)
 {
     int ret;
