@@ -45,6 +45,7 @@ void writelog(struct bbs_msgbuf *msg)
     char header[256];
     struct tm *n;
     struct taglogconfig *pconf;
+    char ch;
 
     if ((msg->mtype < 0) || (msg->mtype >= sizeof(logconfig) / sizeof(struct taglogconfig)))
         return;
@@ -53,7 +54,9 @@ void writelog(struct bbs_msgbuf *msg)
     if (pconf->fd<0) return;
     n = localtime(&msg->msgtime);
 
-    snprintf(header, 256, "[%02u/%02u %02u:%02u:%02u %5lu %lu] %s %s", n->tm_mon + 1, n->tm_mday, n->tm_hour, n->tm_min, n->tm_sec, (long int) msg->pid, msg->mtype, msg->userid, msg->mtext);
+    ch=msg->mtext[0];
+    msg->mtext[0]=0;
+    snprintf(header, 256, "[%02u/%02u %02u:%02u:%02u %5lu %lu] %s %c%s", n->tm_mon + 1, n->tm_mday, n->tm_hour, n->tm_min, n->tm_sec, (long int) msg->pid, msg->mtype, msg->userid,ch,&msg->mtext[1]);
     if (pconf->buf) {
         if ((int) (pconf->bufptr + strlen(header)) <= pconf->bufsize) {
             strcpy(&pconf->buf[pconf->bufptr], header);
@@ -81,8 +84,11 @@ void flushlog(int signo)
 
         pconf = &logconfig[i];
         if (pconf->fd>=0 && pconf->buf && pconf->bufptr) {
+            flock(pconf->fd, LOCK_SH);
+            lseek(pconf->fd, 0, SEEK_END);
             write(pconf->fd, pconf->buf, pconf->bufptr);
             pconf->bufptr = 0;
+            flock(pconf->fd, LOCK_UN);
         }
     }
     if (signo==-1) return;
