@@ -735,7 +735,15 @@ int seek_in_file(char filename[STRLEN],char seekstr[STRLEN])
 static struct public_data *publicshm;
 struct public_data* get_publicshm()
 {
-	return publicshm;
+    if (publicshm==NULL) {
+        publicshm = attach_shm1( NULL, PUBLIC_SHMKEY, sizeof( *publicshm) ,&iscreate,1,NULL); /* attach public share memory readonly*/
+		if (iscreate) {
+			bbslog("4bbstime","time daemon not start");
+			exit(1);
+		}
+    }
+
+    return publicshm;
 }
 
 void bbssettime(time_t now)
