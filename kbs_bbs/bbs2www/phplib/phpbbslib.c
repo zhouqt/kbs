@@ -6782,6 +6782,45 @@ static PHP_FUNCTION(bbs_getonline_user_list)
 	}
 }
 
+int get_pos(char * s)
+{
+    struct stat st;
+    FILE* fp;
+    char buf[240],buf2[100],tt[100];
+    int i,j,k;
+    if(stat(s, &st)==-1) return -1;
+    strcpy(buf, s);
+    i=strlen(buf)-1;
+    while(buf[i]!='/') i--;
+    i++;
+    strcpy(buf2, buf+i);
+    strcpy(buf+i, ".Names");
+    fp=fopen(buf, "r");
+    if(fp==NULL) return -1;
+    tt[0]=0;
+    j=0;
+    while(!feof(fp))
+    {
+	if(!fgets(buf, 240, fp)) {
+	    fclose(fp);
+	    return -1;
+	}
+	if(buf[0]) buf[strlen(buf)-1]=0;
+	if(!strncmp(buf, "Name=", 5)) {
+	    strcpy(tt, buf+5);
+	}
+	if(!strncmp(buf, "Path=~/", 7)) {
+	    j++;
+	    if(!strcmp(buf+7, buf2)) {
+		fclose(fp);
+		return j;
+	    }
+	}
+    }
+    fclose(fp);
+    return -1;
+}
+
 static PHP_FUNCTION(bbs_x_search)
 {
     int toomany, res_total;
