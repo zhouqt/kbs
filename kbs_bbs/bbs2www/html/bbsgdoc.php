@@ -140,8 +140,8 @@
 <?php
 		}
 ?>
-<a href="/cgi-bin/bbs/bbsnot?board=<?php echo $brd_encode; ?>">进版画面</a>
-<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>">普通模式</a>
+<a href="bbsnot.php?board=<?php echo $brd_encode; ?>">进版画面</a>
+<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>">普通模式</a>
 <?php
 		$ann_path = bbs_getannpath($brdarr["NAME"]);
 		if ($ann_path != FALSE)
@@ -163,7 +163,7 @@
 		if ($sec_index >= 0)
 		{
 ?>
-<a href="/bbsboa.php?group=<?php echo $sec_index; ?>">返回[<?php echo $section_names[$sec_index][0]; ?>]</a>
+<a href="bbsboa.php?group=<?php echo $sec_index; ?>">返回[<?php echo $section_names[$sec_index][0]; ?>]</a>
 <?php
 		}
 ?>
