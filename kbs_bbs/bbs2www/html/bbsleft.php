@@ -592,8 +592,11 @@
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/games/index.html" target="f3">–›œ–”È¿÷</a><br>
 					&nbsp;
-					<img src="/images/line1.gif" border="0" align="absmiddle">
+					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/data/fterm-smth.zip" target="_blank">Ftermœ¬‘ÿ</a><br>
+					&nbsp;
+					<img src="/images/line1.gif" border="0" align="absmiddle">
+					<a href="/data/FeedDemon-rc4a.exe" target="_blank">FeedDemonœ¬‘ÿ</a><br>
 				</DIV>
 			</td>
 		</tr>
