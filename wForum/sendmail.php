@@ -15,26 +15,16 @@ setStat("撰写新邮件");
 
 show_nav();
 
-if ($loginok==1) {
-?>
-<table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
-<?php
-	showUserMailbox();
-?>
-</table>
-<?php
-}
-
 preprocess();
 
-if (!isErrFounded()) {
-	head_var($userid."的发件箱","usermailbox.php?boxname=sendbox",0);
-}
-
 if ($loginok==1) {
-	showUserManageMenu();
-	showmailBoxes();
-	main();
+	if (!isErrFounded()) {
+		showUserMailbox();
+		head_var($userid."的发件箱","usermailbox.php?boxname=sendbox",0);
+		showUserManageMenu();
+		showmailBoxes();
+		main();
+	}
 }else {
 	foundErr("本页需要您以正式用户身份登陆之后才能访问！");
 }

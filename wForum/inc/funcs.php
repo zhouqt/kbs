@@ -69,7 +69,7 @@ if (!isset($needlogin)){
 	$needlogin=1;
 }
 
-function setSucMsg($msg){
+function setSucMsg($msg){ //ToDo: non-standard HTML - atppp
 	global $sucmsg;
 	$sucmsg.='<br><li>'.$msg;
 }
@@ -78,7 +78,7 @@ function setStat($stat){
 	$stats=$stat;
 }
 
-function foundErr($msg){
+function foundErr($msg){ //ToDo: non-standard HTML - atppp
 	global $errMsg;
 	global $foundErr;
 	$errMsg.='<br><li>'.$msg;
@@ -142,14 +142,14 @@ $loginok=0;
 
 @$fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
   if ($fullfromhost=="") {
-      @$fullfromhost=$_SERVER["REMOTE_ADDR"];
-      $fromhost=$fullfromhost;
+	  @$fullfromhost=$_SERVER["REMOTE_ADDR"];
+	  $fromhost=$fullfromhost;
   }
   else {
 	$str = strrchr($fullfromhost, ",");
 	if ($str!=FALSE)
 		$fromhost=substr($str,1);
-        else
+		else
 		$fromhost=$fullfromhost;
   }
 
@@ -165,7 +165,7 @@ if (($sessionid!='')&&($_SERVER['PHP_SELF']=='/bbscon.php')) {
 	$utmpkey=decodesessionchar($sessionid[3])+decodesessionchar($sessionid[4])*36+decodesessionchar($sessionid[5])*36*36
 		+decodesessionchar($sessionid[6])*36*36*36+decodesessionchar($sessionid[7])*36*36*36*36+decodesessionchar($sessionid[8])*36*36*36*36*36;
 	$userid='';
-  	$compat_telnet=1;
+	$compat_telnet=1;
 } else {
 	@$utmpkey = $_COOKIE["W_UTMPKEY"];
 	@$utmpnum = $_COOKIE["W_UTMPNUM"];
@@ -263,11 +263,11 @@ function cache_header($scope,$modifytime=0,$expiretime=300)
 		return FALSE;
 	@$oldmodified=$_SERVER["HTTP_IF_MODIFIED_SINCE"];
 	if ($oldmodified!="") {
-                $oldtime=strtotime($oldmodified);
+				$oldtime=strtotime($oldmodified);
 	} else $oldtime=0;
 	if ($oldtime>=$modifytime) {
 		header("HTTP/1.1 304 Not Modified");
-	        header("Cache-Control: max-age=" . "$expiretime");
+			header("Cache-Control: max-age=" . "$expiretime");
 		return TRUE;
 	}
 	header("Last-Modified: " . gmdate("D, d M Y H:i:s", $modifytime) . "GMT");
@@ -298,7 +298,7 @@ function html_init($charset="",$title="",$otherheader="")
 	if ($cachemode=="") {
 		cache_header("no-cache");
 		Header("Cache-Control: no-cache");
-    }
+	}
 	@$css_style = $_COOKIE["style"];
 	if ($css_style==''){
 		$css_style=$DEFAULTStyle;
@@ -306,8 +306,8 @@ function html_init($charset="",$title="",$otherheader="")
 ?>
 <?xml version="1.0" encoding="<?php echo $charset; ?>"?>
 <!DOCTYPE html
-     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+	 PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>"/>
@@ -319,6 +319,42 @@ function html_init($charset="",$title="",$otherheader="")
 <?php
 }
 
+
+function showLogon($showBack = 0){
+?>
+	<form action="logon.php" method=post> 
+	<input type="hidden" name="action" value="doLogon">
+	<table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
+	<tr>
+	<th valign=middle colspan=2 align=center height=25>请输入您的用户名、密码登陆</td></tr>
+	<tr>
+	<td valign=middle class=TableBody1>请输入您的用户名</td>
+	<td valign=middle class=TableBody1><INPUT name=id type=text tabindex="1"> &nbsp; <a href="register.php">没有注册？</a></td></tr>
+	<tr>
+	<td valign=middle class=TableBody1>请输入您的密码</font></td>
+	<td valign=middle class=TableBody1><INPUT name=password type=password tabindex="2"> &nbsp; <!--<a href="foundlostpass.php">忘记密码？</a>--></td></tr>
+	<tr>
+	<td class=TableBody1 valign=top width=30% ><b>Cookie 选项</b><BR> 请选择你的 Cookie 保存时间，下次访问可以方便输入。</td>
+	<td valign=middle class=TableBody1>
+	<input type=radio name=CookieDate value=0 checked>不保存，关闭浏览器就失效<br>
+				<input type=radio name=CookieDate value=1>保存一天<br>
+				<input type=radio name=CookieDate value=2>保存一月<br>
+				<input type=radio name=CookieDate value=3>保存一年<br>                
+	</td></tr>
+	<input type=hidden name=comeurl value="<?php echo $_SERVER['HTTP_REFERER']; ?>">
+	<tr>
+	<td class=TableBody2 valign=middle colspan=2 align=center><input tabindex="3" type=submit name=submit value="登 陆">
+<?php
+	if ($showBack) {
+?>
+	&nbsp;&nbsp;<input type=button name="back" value="返 回" onclick="location.href='<?php  echo $_SERVER['HTTP_REFERER']; ?>'">
+<?php
+	}
+?>
+	</td></tr></table>
+</form>
+<?php
+}
 
 
 
@@ -340,36 +376,13 @@ function html_error_quit()
 <li>您是否仔细阅读了<a href="boardhelp.php">帮助文件</a>，可能您还没有登陆或者不具有使用当前功能的权限。
 <?php   echo $errMsg; ?>
 </td></tr>
-<?php   if (($needlogin!=0)&&($loginok!=1))
-  {
+<?php
+	if (($needlogin!=0)&&($loginok!=1)) {
+  		showLogon(1);
+  	} else {
 ?>
-<form action="logon.php" method=post>
-<input type="hidden" name="action" value="doLogon">
-    <tr>
-    <th valign=middle colspan=2 align=center height=25>请输入您的用户名、密码登陆</td></tr>
-    <tr>
-    <td valign=middle class=TableBody1>请输入您的用户名</td>
-    <td valign=middle class=TableBody1><INPUT name=id type=text tabindex="1"> &nbsp; <a href=reg.php>没有注册？</a></td></tr>
-    <tr>
-    <td valign=middle class=TableBody1>请输入您的密码</font></td>
-    <td valign=middle class=TableBody1><INPUT name=password type=password tabindex="2"> &nbsp; <a href=lostpass.php>忘记密码？</a></td></tr>
-    <tr>
-    <td class=TableBody1 valign=top width=30% ><b>Cookie 选项</b><BR> 请选择你的 Cookie 保存时间，下次访问可以方便输入。</td>
-    <td valign=middle class=TableBody1>
-                <input type=radio name=CookieDate value=0 checked="checked">不保存，关闭浏览器就失效<br>
-                <input type=radio name=CookieDate value=1>保存一天<br>
-                <input type=radio name=CookieDate value=2>保存一月<br>
-                <input type=radio name=CookieDate value=3>保存一年<br>                </td></tr>
-	<input type=hidden name=comeurl value="<?php     echo $_SERVER['HTTP_REFERER']; ?>">
-    <tr>
-    <td class=TableBody2 valign=middle colspan=2 align=center><input tabindex="3" type=submit name=submit value="登 陆">&nbsp;&nbsp;<input type=button name="back" value="返 回" onclick="location.href='<?php  echo $_SERVER['HTTP_REFERER']; ?>'"></td></tr>
-</form>
-<?php   }
-    else
-  {
-?>
-    <tr>
-    <td class=TableBody2 valign=middle colspan=2 align=center><a href="<?php echo $_SERVER['HTTP_REFERER']; ?>"> <<返回上一页 </a></td></tr>
+	<tr>
+	<td class=TableBody2 valign=middle colspan=2 align=center><a href="<?php echo $_SERVER['HTTP_REFERER']; ?>"> <<返回上一页 </a></td></tr>
 <?php   } ?>
 </table>
 <?php 
@@ -448,109 +461,109 @@ function get_secname_index($secnum)
 
 function ansi_getfontcode($fgcolor,$bgcolor,$defaultfg,$defaultbg,$highlight,$blink,$underlink, &$head,&$tail)
 {
-    $modify="";
-    if ($fgcolor==-1) 
-      $modify=sprintf(" color=%s",$defaultfg);
-    else
-    if ($fgcolor==-2)
-      $modify=sprintf(" color=%s",$defaultbg);
-    else
-    if ($highlight)
-       $fgcolor+=8;
-    if ($fgcolor<0) $fgcolor=0;
-    if ($bgcolor==-1)
-      $modify .= sprintf(" style='background-color:%s'",$defaultbg);
-    else
-    if ($bgcolor==-2)
-      $modify .= sprintf(" style='background-color:%s'",$defaultfg);
-    if ($bgcolor<0) $bgcolor=0;
-    $head = sprintf("<font class=f%d%02d%s>",$bgcolor,$fgcolor,$modify);
-    if ($underlink) {
-       $head .= "<u>";
-       $tail = "</u>";
-    }
-    $tail .= "</font>";
+	$modify="";
+	if ($fgcolor==-1) 
+	  $modify=sprintf(" color=%s",$defaultfg);
+	else
+	if ($fgcolor==-2)
+	  $modify=sprintf(" color=%s",$defaultbg);
+	else
+	if ($highlight)
+	   $fgcolor+=8;
+	if ($fgcolor<0) $fgcolor=0;
+	if ($bgcolor==-1)
+	  $modify .= sprintf(" style='background-color:%s'",$defaultbg);
+	else
+	if ($bgcolor==-2)
+	  $modify .= sprintf(" style='background-color:%s'",$defaultfg);
+	if ($bgcolor<0) $bgcolor=0;
+	$head = sprintf("<font class=f%d%02d%s>",$bgcolor,$fgcolor,$modify);
+	if ($underlink) {
+	   $head .= "<u>";
+	   $tail = "</u>";
+	}
+	$tail .= "</font>";
 }
 
 function ansi_convert( $buf , $defaultfg, $defaultbg)
 {
-    $keyword = preg_split("/\x1b\[([^a-zA-Z]*)([a-zA-Z])/",$buf,-1,PREG_SPLIT_DELIM_CAPTURE);
-    $fgcolor=-1;
-    $bgcolor=-1;
-    $blink=false;
-    $underlink=false;
-    $highlight=false;
-    for ($i=1;$i<count($keyword);$i+=3) {
-        if ($keyword[$i+2]=="")
-            continue;
-        if ($keyword[$i+1]=='m') {
-            $head="";
-            $tail="";
-            if ($keyword[$i]=="") {
-            		// *[;m
-                $fgcolor=-1;
-                $bgcolor=-1;
-                $blink=false;
-                $underlink=false;
-                $highlight=false;
-            } else {
-            	$good=true;
-            	$colorcodes=split(';',$keyword[$i]);
-                foreach ( $colorcodes as $code ) {
-            	    if (preg_match("/[\D]/",$code)) {
-            	    	$good=false;
-            	        break;
-            	    }
-                    if ($code=="") 
-                        $value=0;
-            	    else
-            	        $value=intval($code);
-                    if ($value<=8 && $value>=1) {
-                    	switch ($value) {
-                    	case 0:
-                            $fgcolor=-1;
-                            $bgcolor=-1;
-                            $blink=false;
-                            $underlink=false;
-                            break;
-                    	case 1:
-                    	    $highlight=1;
-                    	    break;
-                    	case 4:
-                    	    $underlink=1;
-                    	    break;
-                    	case 5:
-                    	    $blink=1;
-                    	case 7:
-                    	    $savebg=$bgcolor;
-                    	    if ($fgcolor==-1)
-                    	        $bgcolor=-2;
-                    	    else
-                    	        $bgcolor=$fgcolor;
-                    	    if ($bgcolor==-1)
-                    	        $fgcolor=-2;
-                    	    else
-                    	        $fgcolor=$savebg;
-                        }
-                    } else
-                    if ($value<=37 && $value>=30)
-                        $fgcolor=$value-30;
-                    else
-                    if ($value<=47 && $value>=40)
-                        $bgcolor=$value-40;
-                    else {
-                    	// unsupport code
-            	    	$good=false;
-                        break;
-                    }
-                }
-                if ($good)
-                    ansi_getfontcode($fgcolor,$bgcolor,$defaultfg,$defaultbg,$highlight,$blink,$underlink, $head,$tail);
-            }
-            $final .= $head . htmlspecialchars($keyword[$i+2]) . $tail;
-        } else $final .= htmlspecialchars($keyword[$i+2]);
-    }
-    return $final;
+	$keyword = preg_split("/\x1b\[([^a-zA-Z]*)([a-zA-Z])/",$buf,-1,PREG_SPLIT_DELIM_CAPTURE);
+	$fgcolor=-1;
+	$bgcolor=-1;
+	$blink=false;
+	$underlink=false;
+	$highlight=false;
+	for ($i=1;$i<count($keyword);$i+=3) {
+		if ($keyword[$i+2]=="")
+			continue;
+		if ($keyword[$i+1]=='m') {
+			$head="";
+			$tail="";
+			if ($keyword[$i]=="") {
+					// *[;m
+				$fgcolor=-1;
+				$bgcolor=-1;
+				$blink=false;
+				$underlink=false;
+				$highlight=false;
+			} else {
+				$good=true;
+				$colorcodes=split(';',$keyword[$i]);
+				foreach ( $colorcodes as $code ) {
+					if (preg_match("/[\D]/",$code)) {
+						$good=false;
+						break;
+					}
+					if ($code=="") 
+						$value=0;
+					else
+						$value=intval($code);
+					if ($value<=8 && $value>=1) {
+						switch ($value) {
+						case 0:
+							$fgcolor=-1;
+							$bgcolor=-1;
+							$blink=false;
+							$underlink=false;
+							break;
+						case 1:
+							$highlight=1;
+							break;
+						case 4:
+							$underlink=1;
+							break;
+						case 5:
+							$blink=1;
+						case 7:
+							$savebg=$bgcolor;
+							if ($fgcolor==-1)
+								$bgcolor=-2;
+							else
+								$bgcolor=$fgcolor;
+							if ($bgcolor==-1)
+								$fgcolor=-2;
+							else
+								$fgcolor=$savebg;
+						}
+					} else
+					if ($value<=37 && $value>=30)
+						$fgcolor=$value-30;
+					else
+					if ($value<=47 && $value>=40)
+						$bgcolor=$value-40;
+					else {
+						// unsupport code
+						$good=false;
+						break;
+					}
+				}
+				if ($good)
+					ansi_getfontcode($fgcolor,$bgcolor,$defaultfg,$defaultbg,$highlight,$blink,$underlink, $head,$tail);
+			}
+			$final .= $head . htmlspecialchars($keyword[$i+2]) . $tail;
+		} else $final .= htmlspecialchars($keyword[$i+2]);
+	}
+	return $final;
 }
 
 function bbs_is_owner($article, $user)
@@ -618,8 +631,8 @@ function show_nav($boardName='')
 
 </td></tr>
 <tr><td class=TopLighNav height=9></td></tr>
-        <tr> 
-          <td class=TopLighNav1 height=22  valign="middle">&nbsp;&nbsp;
+		<tr> 
+		  <td class=TopLighNav1 height=22  valign="middle">&nbsp;&nbsp;
 <?php   
 	if ($loginok!=1)  {
 ?>
@@ -648,7 +661,7 @@ function show_nav($boardName='')
 ?> <img src=pic/navspacer.gif align=absmiddle> <a href="logout.php">退出</a><?php   
 } ?>
 			</td>
-        </tr>
+		</tr>
 </table>
 </td></tr>
 </table>
@@ -722,7 +735,7 @@ function show_footer()
 		<tr>
 			<td align=center nowrap>
 				<?php   echo $Copyright; ?>
- 				, 页面执行时间：<?php  printf(number_format(($endtime-$StartTime)*1000,3)); ?>毫秒
+				, 页面执行时间：<?php  printf(number_format(($endtime-$StartTime)*1000,3)); ?>毫秒
 			</td>
 		</tr>
 		</table>

@@ -10,18 +10,8 @@ setStat("用户自定义参数");
 show_nav();
 
 if ($loginok==1) {
-?>
-<table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
-<?php
 	showUserMailbox();
-?>
-</table>
-<?php
-}
-
-head_var($userid."的控制面板","usermanagemenu.php",0);
-
-if ($loginok==1) {
+	head_var($userid."的控制面板","usermanagemenu.php",0);
 	showUserManageMenu();
 	main();
 }else {

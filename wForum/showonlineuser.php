@@ -9,17 +9,7 @@ setStat("在线用户列表");
 
 show_nav();
 
-if ($loginok==1) {
-?>
-<table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
-<?php
-	showUserMailbox();
-?>
-</table>
-<?php
-} else {
-	echo "<br>";
-}
+showUserMailBoxOrBR();
 
 head_var("谈天说地","usermanagemenu.php",0);
 

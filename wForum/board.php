@@ -15,8 +15,6 @@ global $page;
 
 preprocess();
 
-
-
 setStat("ндубап╠М");
 
 show_nav($boardName);
@@ -24,25 +22,14 @@ show_nav($boardName);
 if (isErrFounded()) {
 	html_error_quit() ;
 } else {
-	if ($loginok==1) {
+	showUserMailBoxOrBR();
+	board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
 ?>
 <table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
 <?php
-		showUserMailbox();
-?>
-</table>
-<?php
-	} else {
-		echo "<br>";
-	}
-
-	board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
-?>
-	<TABLE cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
-<?php
 	showAnnounce(); 
 ?>
-</TABLE>
+</table>
 <?php
 	if ($boardArr['FLAG'] & BBS_BOARD_GROUP ) {
 		showSecs($boardArr['SECNUM'],$boardID,true);

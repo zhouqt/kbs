@@ -26,19 +26,7 @@ show_nav($boardName);
 if (isErrFounded()) {
 	html_error_quit() ;
 } else {
-	if ($loginok==1) {
-?>
-<table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
-<?php
-		showUserMailbox();
-?>
-</table>
-<?php
-	} else {
-		echo "<br>";
-	}
-
-
+	showUserMailBoxOrBR();
 	board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
 	showArticleThreads($boardName,$boardID,$articleID,$article,$start,$listType);
 }

@@ -1,7 +1,18 @@
 <?php
-function showUserMailbox(){
+
+function showUserMailBoxOrBR() { //用于普通用户就可以访问的页面
+	global $loginok;
+	if ($loginok==1) {
+		showUserMailBox();
+	} else {
+		echo "<br>";
+	}
+}
+
+function showUserMailbox(){ //这个函数直接调用必须先判断是否 $loginok==1
 	global $currentuser;
 ?>
+<table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
 <tr><td width=65% >
 </td><td width=35% align=right>
 <?php   
@@ -19,6 +30,7 @@ function showUserMailbox(){
   }
 ?>
 </td></tr>
+</table>
 <?php
 }
 
@@ -271,7 +283,7 @@ extract($GLOBALS);
 <tr>
 <th align=left id=TableTitleLink height=25 style="font-weight:normal">
 <b>-=> 快速登录入口</b>
-[<a href=register.php>注册用户</a>]　[<a href=lostpass.php style="CURSOR: help">忘记密码</a>]
+[<a href=register.php>注册用户</a>]　<!--[<a href=lostpass.php style="CURSOR: help">忘记密码</a>]-->
 </th>
 </tr>
 <tr>

@@ -16,17 +16,7 @@ show_nav();
 if (isErrFounded()) {
 	html_error_quit() ;
 } else {
-	if ($loginok==1) {
-?>
-<table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
-<?php
-		showUserMailbox();
-?>
-</table>
-<?php
-	} else {
-		echo "<br>";
-	}
+	showUserMailBoxOrBR();
 	head_var();
 	showUserData($user,$user_num);
 }

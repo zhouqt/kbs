@@ -10,26 +10,15 @@ setStat("编辑显示签名档");
 show_nav();
 
 if ($loginok==1) {
-?>
-<table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
-<?php
 	showUserMailbox();
-?>
-</table>
-<?php
-}
-
-head_var($userid."的控制面板","usermanagemenu.php",0);
-
-if ($loginok==1) {
+	head_var($userid."的控制面板","usermanagemenu.php",0);
 	main();
 }else {
 	foundErr("本页需要您以正式用户身份登陆之后才能访问！");
 }
 
-
 if (isErrFounded()) {
-		html_error_quit();
+	html_error_quit();
 } 
 show_footer();
 

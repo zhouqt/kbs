@@ -18,16 +18,7 @@ if (isErrFounded()) {
 	echo"<br>";
 	html_error_quit() ;
 } else {
-	if ($loginok==1) {
-?>
-<TABLE cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
-<?php
-		showUserMailbox();
-?>
-</table>
-<?php
-	}
-
+	showUserMailBoxOrBR();
 	board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
 	main($boardID,$boardName);
 }

@@ -16,28 +16,18 @@ setStat("分区版面列表");
 if (isErrFounded()) {
 	html_error_quit();
 } else {
-	if ($loginok==1) {
-?>
-<table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
-<?php
-		showUserMailbox();
-?>	
-</table>
-<?php
-	} else {
-		echo "<br>";
-	}
+	showUserMailBoxOrBR();
 	head_var($section_names[$secNum][0],'section.php?sec='.$secNum, 0);
 ?>
-	<TABLE cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
+<table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
  <?php
 	showAnnounce(); 
 ?>
-	<tr>
-	<td align=center width=100% valign=middle colspan=2>
-	<hr>
-	</td></tr>
-	</TABLE>
+<tr>
+<td align=center width=100% valign=middle colspan=2>
+<hr>
+</td></tr>
+</table>
 <?php
 	showSecs($secNum,0,true);
 	if (isErrFounded()) {

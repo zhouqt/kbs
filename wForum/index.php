@@ -10,15 +10,7 @@ preprocess();
 
 show_nav();
 
-?>
-<table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
-<?php
-
-if ($loginok==1) {
-	showUserMailbox();
-} else {
-	echo "<br>";
-}
+showUserMailBoxOrBR();
 ?>
 <table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
 <?php
@@ -29,9 +21,8 @@ showAnnounce();
 </td></tr>
 <?php
 showTitle();
-
 ?>
-</TABLE>
+</table>
 <?php
 
 

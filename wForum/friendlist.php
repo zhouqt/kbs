@@ -10,16 +10,7 @@ setStat("好友列表");
 show_nav();
 
 if ($loginok==1) {
-?>
-<table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
-<?php
 	showUserMailbox();
-?>
-</table>
-<?php
-}
-
-if ($loginok==1) {
 	head_var($userid."的控制面板","usermanagemenu.php",0);
 	if (preProcess()) {
 		html_success_quit("查看所有好友列表", "friendlist.php");

@@ -9,16 +9,8 @@ require("inc/user.inc.php");
 show_nav();
 
 setStat("十大热门话题");
-?>
-<TABLE cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
-<?php
 
-if ($loginok==1) {
-	showUserMailbox();
-} else {
-	echo "<br>";
-}
-
+showUserMailBoxOrBR();
 head_var();
 
 if (isErrFounded()) {
