@@ -723,6 +723,15 @@ void x_edits()
         move(5, 0);
         prints("%s ÒÑÉ¾³ý\n", explain_file[ch]);
         sprintf(buf, "delete %s", explain_file[ch]);
+		if (!strcmp(e_file[ch], "signatures")) {
+			getSession()->currentmemo->ud.signum = calc_numofsig(getCurrentUser()->userid);
+			write_userdata( getCurrentUser()->userid, &(getSession()->currentmemo->ud) );
+
+            if (getSession()->currentmemo->ud.signum&&(getCurrentUser()->signature==0))
+            	getCurrentUser()->signature=1;
+        }else if(!strcmp(e_file[ch], "myurl")){
+			get_my_webdomain(1);
+		}
         bbslog("user","%s",buf);
         pressreturn();
         clear();
