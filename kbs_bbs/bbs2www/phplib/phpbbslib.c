@@ -1638,20 +1638,16 @@ static PHP_FUNCTION(bbs_searchtitle)
 {
     char *board,*title, *title2, *title3,*author;
     long bLen,tLen,tLen2,tLen3,aLen;
-    long date,mmode,origin,attach;
+    long date,mmode,attach;
     bcache_t bh;
 	char dirpath[STRLEN];
 	int fd;
 	struct stat buf;
 	struct flock ldata;
-	struct fileheader *ptr1;
-	char* ptr;
-	long int threadsFounded;
-	unsigned int *IDList;
-	unsigned int *IDList2;
-	unsigned int *index;
-	long int threads;
-	int total,i;
+    struct wwwthreadheader *ptr1=NULL;
+    int threads = 0;
+    char* ptr;
+	int total,i,j;
 	zval * element;
 	int is_bm;
     char flags[4];              /* flags[0]: flag character
@@ -1660,10 +1656,11 @@ static PHP_FUNCTION(bbs_searchtitle)
                                  * flags[3]: attach flag
                                  */
     struct boardheader *bp;
-	int found;
+    zval* columns[3];
+    char* thread_col_names[]={"origin","lastreply","articlenum"};
 
 
-    if (ZEND_NUM_ARGS() != 9 || zend_parse_parameters(9 TSRMLS_CC, "sssssllll", &board, &bLen,&title,&tLen, &title2, &tLen2, &title3, &tLen3,&author, &aLen, &date,&mmode,&attach,&origin) != SUCCESS) {
+    if (ZEND_NUM_ARGS() != 8 || zend_parse_parameters(8 TSRMLS_CC, "ssssslll", &board, &bLen,&title,&tLen, &title2, &tLen2, &title3, &tLen3,&author, &aLen, &date,&mmode,&attach) != SUCCESS) {
             WRONG_PARAM_COUNT;
     }
     if (date <= 0)
@@ -1678,7 +1675,7 @@ static PHP_FUNCTION(bbs_searchtitle)
         RETURN_LONG(-1); //"错误的讨论区";
     if (!check_read_perm(getCurrentUser(), &bh))
         RETURN_LONG(-2); //您无权阅读本版;
-    setbdir(DIR_MODE_NORMAL, dirpath, bh.filename);
+    setbdir(DIR_MODE_WEB_THREAD, dirpath, bh.filename);
     if ((fd = open(dirpath, O_RDONLY, 0)) == -1)
         RETURN_LONG(-3);   
     ldata.l_type = F_RDLCK;
@@ -1695,7 +1692,7 @@ static PHP_FUNCTION(bbs_searchtitle)
         close(fd);
 		RETURN_LONG(-201);
 	}
-    total = buf.st_size / sizeof(struct fileheader);
+    total = buf.st_size / sizeof(struct wwwthreadheader);
 
     if ((i = safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
         if (i == 2)
@@ -1714,88 +1711,71 @@ static PHP_FUNCTION(bbs_searchtitle)
 #ifdef HAVE_BRC_CONTROL
     brc_initial(getCurrentUser()->userid, board, getSession());
 #endif
-	IDList	= emalloc((1000)*sizeof(long int));
-	if (IDList==NULL) {
-		RETURN_LONG(-211);
-	}
-	IDList2	= emalloc((10000)*sizeof(long int));
-	if (IDList2==NULL) {
-		RETURN_LONG(-212);
-	}
-	index	= emalloc((10000)*sizeof(long int));
-	if (index==NULL) {
-		RETURN_LONG(-213);
-	}
-	threadsFounded=0;
-	threads=0;
-    ptr1 = (struct fileheader *) ptr;
+    ptr1 = (struct wwwthreadheader *) ptr;
 
 	for (i=total-1;i>=0;i--) {
-		if (foundInArray(ptr1[i].groupid,IDList2,threads)==-1)	{
-			found=Search_Bin((struct fileheader *)ptr,ptr1[i].groupid,0,total-1);
-			if (found>=0) {
-				IDList2[threads]=ptr1[i].groupid;
-				index[threads]=found;
-				threads++;
-			} else {
-    			continue;
-			}
-		} else {
-			continue;
-		}
 		if (threads>=9999) 
 			break;
-		if (title[0] && !strcasestr(ptr1[i].title, title))
+		if (title[0] && !strcasestr(ptr1[i].origin.title, title))
 	        continue;
-	    if (title2[0] && !strcasestr(ptr1[i].title, title2))
+	    if (title2[0] && !strcasestr(ptr1[i].origin.title, title2))
 	        continue;
-	    if (author[0] && strcasecmp(ptr1[i].owner, author))
+	    if (author[0] && strcasecmp(ptr1[i].origin.owner, author))
 	        continue;
-		if (title3[0] && strcasestr(ptr1[i].title, title3))
+		if (title3[0] && strcasestr(ptr1[i].origin.title, title3))
 			continue;
-		if (abs(time(0) - get_posttime(ptr1+i)) > date * 86400)
+		if (abs(time(0) - get_posttime(&(ptr1[i].lastreply))) > date * 86400) //last reply out of the bound, we can stop for sure.
 			break;
-		if (mmode && !(ptr1[i].accessed[0] & FILE_MARKED) && !(ptr1[i].accessed[0] & FILE_DIGEST))
+		if (mmode && !(ptr1[i].origin.accessed[0] & FILE_MARKED) && !(ptr1[i].origin.accessed[0] & FILE_DIGEST))
 			continue;
-		if (origin && (ptr1[i].groupid!=ptr1[i].id) )
+		if (attach && ptr1[i].origin.attachment==0)
 			continue;
-		if (attach && ptr1[i].attachment==0)
-			continue;
-		if (foundInArray(ptr1[i].groupid,IDList,threadsFounded)==-1)	{
-			int found,tmp=foundInArray(ptr1[i].groupid,IDList2,threads);
-			found=index[tmp];
-			IDList[threadsFounded]=ptr1[i].groupid;
-			threadsFounded++;
-			MAKE_STD_ZVAL(element);
-			array_init(element);
-			flags[0] = get_article_flag(ptr1+found, getCurrentUser(), board, is_bm, getSession());
-			if (is_bm && (ptr1[found].accessed[0] & FILE_IMPORTED))
-				flags[1] = 'y';
-			else
-				flags[1] = 'n';
-			if (ptr1[found].accessed[1] & FILE_READ)
-				flags[2] = 'y';
-			else
-				flags[2] = 'n';
-			if (ptr1[found].attachment)
-				flags[3] = '@';
-			else
-				flags[3] = ' ';
-			bbs_make_article_array(element, ptr1+found, flags, sizeof(flags));
-			//add_assoc_long(element, "threadsnum",tmp); //.DIR里头第几个thread，似乎已经没用了。 - disabled by atppp
-			zend_hash_index_update(Z_ARRVAL_P(return_value),threadsFounded, (void *) &element, sizeof(zval *), NULL);
-			if (threadsFounded>=999){
-				break;
-			}
+
+        threads++;
+		MAKE_STD_ZVAL(element);
+		array_init(element);
+		for (j = 0; j < 3; j++) {
+			MAKE_STD_ZVAL(columns[j] );
+			zend_hash_update(Z_ARRVAL_P(element), thread_col_names[j], strlen(thread_col_names[j]) + 1, (void *) &columns[j] , sizeof(zval *), NULL);
 		}
+		flags[0] = get_article_flag(&(ptr1[i].origin), getCurrentUser(), bp->filename, is_bm, getSession());
+		if (is_bm && (ptr1[i].origin.accessed[0] & FILE_IMPORTED))
+			flags[1] = 'y';
+		else
+			flags[1] = 'n';
+		if (ptr1[i].origin.accessed[1] & FILE_READ)
+			flags[2] = 'y';
+		else
+			flags[2] = 'n';
+		if (ptr1[i].origin.attachment)
+			flags[3] = '@';
+		else
+			flags[3] = ' ';
+		array_init(columns[0] );
+		bbs_make_article_array(columns[0], &(ptr1[i].origin), flags, sizeof(flags));
+		flags[0] = get_article_flag(&(ptr1[i].lastreply), getCurrentUser(), bp->filename, is_bm, getSession());
+		if (is_bm && (ptr1[i].lastreply.accessed[0] & FILE_IMPORTED))
+			flags[1] = 'y';
+		else
+			flags[1] = 'n';
+		if (ptr1[i].lastreply.accessed[1] & FILE_READ)
+			flags[2] = 'y';
+		else
+			flags[2] = 'n';
+		if (ptr1[i].lastreply.attachment)
+			flags[3] = '@';
+		else
+			flags[3] = ' ';
+		array_init(columns[1] );
+		bbs_make_article_array(columns[1], &(ptr1[i].lastreply), flags, sizeof(flags));
+		ZVAL_LONG(columns[2],ptr1[i].articlecount);
+
+		zend_hash_index_update(Z_ARRVAL_P(return_value), threads, (void *) &element, sizeof(zval *), NULL);
 	}
     end_mmapfile((void *) ptr, buf.st_size, -1);
     ldata.l_type = F_UNLCK;
     fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
     close(fd);
-    efree(IDList);
-    efree(IDList2);
-	efree(index);
 }
 
 

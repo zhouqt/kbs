@@ -88,15 +88,14 @@ function showSearchMenu(){
 </select>
 	</b></td>
 	</tr><tr>
-	<td class=TableBody2 valign=middle colspan=2 align=center><b>搜索选项</b></td></tr>
+	<td class=TableBody2 valign=middle colspan=2 align=center><b>搜索选项 (以下选项均只针对楼主贴)</b></td></tr>
 <tr><td class=TableBody1 valign=middle colspan=2 align=center>标题含有: <input type="text" maxlength="50" size="20" name="title"> AND <input type="text" maxlength="50" size="20" name="title2"></td></tr>
 <tr><td class=TableBody1 valign=middle colspan=2 align=center>标题不含: <input type="text" maxlength="50" size="20" name="title3"></td></tr>
 <tr><td class=TableBody1 valign=middle colspan=2 align=center>作者帐号: <input type="text" maxlength="12" size="12" name="userid"></td></tr>
-<tr><td class=TableBody1 valign=middle colspan=2 align=center>时间范围: <input type="text" maxlength="4"  size="4"  name="dt" value="7"> 天以内</td></tr>
+<tr><td class=TableBody1 valign=middle colspan=2 align=center>最后回复: <input type="text" maxlength="4"  size="4"  name="dt" value="7"> 天以内</td></tr>
 <tr><td class=TableBody1 valign=middle colspan=2 align=center>
 	<input type="checkbox" name="mg" id="mg"><label style="cursor:hand;" for="mg">精华文章</label>&nbsp;&nbsp;
 	<input type="checkbox" name="ag" id="ag"><label style="cursor:hand;" for="ag">带附件文章</label>&nbsp;&nbsp;
-	<input type="checkbox" name="og" id="og"><label style="cursor:hand;" for="og">不含跟贴</label>
 </td></tr>
 	<tr>
 	<td class=TableBody2 valign=middle colspan=2 align=center>

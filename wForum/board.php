@@ -104,19 +104,19 @@ function showBoardContents($boardID,$boardName,$page){
 	$total = bbs_getThreadNum($boardID);
 	if ($total<=0) {
 ?>
-<tr><td>
+<tr><td class=TableBody2 align="center" colspan="5">
 	本版还没有文章
-<td></tr>
+</td></tr>
 </table>
 <?php
 	} else {
 ?>
 <form action=admin_batch.asp method=post name=batch><TR align=middle>
-<Th height=25 width=32 id=TableTitleLink><a href=list.asp?name=<?php echo $boardName; ?>&page=&action=batch>状态</a></th>
-<Th width=* id=TableTitleLink>主 题  (点<img src=pic/plus.gif align=absmiddle>即可展开贴子列表)</Th>
-<Th width=80 id=TableTitleLink>作 者</Th>
-<Th width=64 id=TableTitleLink>回复</Th>
-<Th width=200 id=TableTitleLink>最后更新 | 回复人</Th></TR>
+<Th height=25 width=32><a href=list.asp?name=<?php echo $boardName; ?>&page=&action=batch>状态</a></th>
+<Th width=*>主 题  (点<img src=pic/plus.gif align=absmiddle>即可展开贴子列表)</Th>
+<Th width=80>作 者</Th>
+<Th width=64>回复</Th>
+<Th width=200>最后更新 | 回复人</Th></TR>
 <?php
 		
 		$totalPages=ceil($total/ARTICLESPERPAGE);

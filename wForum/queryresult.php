@@ -10,9 +10,9 @@ global $boardID;
 
 setStat("搜索结果");
 
-show_nav();
-
 preprocess();
+
+show_nav($boardName);
 
 showUserMailBoxOrBR();
 
@@ -68,13 +68,16 @@ function preprocess(){
 
 function doSearch($boardID,$boardName){
 	global $title,$title2,$title3,$author;
-	$result=bbs_searchtitle($boardName,$title,$title2,$title3,$author,intval($_REQUEST['dt']),isset($_REQUEST['mg']),isset($_REQUEST['ag']),isset($_REQUEST['og']));
-	$num=count($result);
-	if ($num==0 || $result<=0) {
+	$articles=bbs_searchtitle($boardName,$title,$title2,$title3,$author,intval($_REQUEST['dt']),isset($_REQUEST['mg']),isset($_REQUEST['ag']));
+	$num=count($articles);
+	if ($num==0 || $articles<=0) {
 		foundErr("<font color=#ff0000>没有找到您要的结果</font>");
 		return false;
 	}
 ?>
+<script src="inc/loadThread.js"></script>
+<iframe width=0 height=0 src="" id="hiddenframe" name="hiddenframe"></iframe>
+
 <table cellpadding=0 cellspacing=0 border=0 width="97%" align=center>
 <tr><td>搜索主题共查询到<font color=#FF0000><?php echo$num; ?></font>个结果
 </td></tr></table>
@@ -83,24 +86,27 @@ function doSearch($boardID,$boardName){
 <Th height=25 width=32>状态</Th>
 <Th width=*>主 题</Th>
 <Th width=80>作 者</Th>
-<Th width=195>最后更新 | 回复人</Th>
+<Th width=64>回复</Th>
+<Th width=200>最后更新 | 回复人</Th></TR>
 </TR>
+<script language="JavaScript">
+<!--
 <?php
+	print_file_display_javascript($boardName);
 	for ($i=1;$i<=$num;$i++) {
+			$origin=$articles[$i]['origin'];
+			$lastreply=$articles[$i]['lastreply'];
+			$threadNum=$articles[$i]['articlenum']-1;
 ?>
-  <TR><TD align=middle class=TableBody2 width=32><img src=pic/blue/folder.gif alt=开放主题或回帖>
-  </TD>
-  <TD  class=TableBody1 width=*><a href='disparticle.php?boardName=<?php echo $boardName; ?>&ID=<?php echo $result[$i]['ID']; ?>' target=_blank><img src='face/face1.gif' border=0 alt="开新窗口浏览此主题"></a> <a href='disparticle.php?boardName=<?php echo $boardName; ?>&ID=<?php echo $result[$i]['ID']; ?>'>
-<?php echo $result[$i]['TITLE']; ?>
-</a>    </TD> 
-    <TD align=middle  class=TableBody2  width=80><a href="dispuser.php?id=<?php echo $result[$i]['OWNER']; ?>"><?php echo $result[$i]['OWNER']; ?></a></TD> 
-    <TD  class=TableBody1 width=195><?php echo strftime("%y-%m-%d %H:%M", $result[$i]['POSTTIME']); ?>
-&nbsp;<font color="#FF0000">|</font>&nbsp;
-<a href="dispuser.php?id=<?php echo $result[$i]['OWNER']; ?>"><?php echo $result[$i]['OWNER']; ?></a>
-</TD>
-</TR> 
+	origin = new Post(<?php echo $origin['ID']; ?>, '<?php echo $origin['OWNER']; ?>', '<?php echo strftime("%Y-%m-%d %H:%M:%S", $origin['POSTTIME']); ?>', '<?php echo $origin['FLAGS'][0]; ?>');
+	lastreply = new Post(<?php echo $lastreply['ID']; ?>, '<?php echo $lastreply['OWNER']; ?>', '<?php echo strftime("%Y-%m-%d %H:%M:%S", $lastreply['POSTTIME']); ?>', '<?php echo $lastreply['FLAGS'][0]; ?>');
+	writepost(<?php echo $i+$start; ?>, '<?php echo addslashes(htmlspecialchars($origin['TITLE'],ENT_QUOTES)); ?> ', <?php echo $threadNum; ?>, origin, lastreply, <?php echo ($origin['GROUPID'] == $lastreply['GROUPID'])?"true":"false"; ?>);
 <?php
 	}
-
+?>
+//-->
+</script>
+</table>
+<?php
 }
 ?>
