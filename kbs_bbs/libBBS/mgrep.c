@@ -14,7 +14,7 @@
 #define W_DELIM	   128
 #define L_DELIM    10
 
-extern COUNT, FNAME, SILENT, FILENAMEONLY, num_of_matched;
+extern ONLYCOUNT, FNAME, SILENT, FILENAMEONLY, num_of_matched;
 extern INVERSE;
 extern WORDBOUND, WHOLELINE, NOUPPER;
 extern unsigned char *CurrentFileName, Progname[];
@@ -135,7 +135,7 @@ int mgrep_str(char *text, int num)
     register int buf_end, num_read, i = 0, j, start, end, residue = 0;
 
 
-    if (INVERSE && COUNT)
+    if (INVERSE && ONLYCOUNT)
         countline(text, num);
 
     start = 0;
@@ -202,7 +202,7 @@ int fd;
     start = MAXLINE - 1;
 
     while ((num_read = read(fd, text + MAXLINE, BLOCKSIZE)) > 0) {
-        if (INVERSE && COUNT)
+        if (INVERSE && ONLYCOUNT)
             countline(text + MAXLINE, num_read);
         buf_end = end = MAXLINE + num_read - 1;
         while (text[end] != r_newline && end > MAXLINE)
@@ -292,7 +292,7 @@ register unsigned char *text;
                         if (FILENAMEONLY || SILENT)
                             return;
                         MATCHED = 1;
-                        if (COUNT) {
+                        if (ONLYCOUNT) {
                             while (*text != '\n')
                                 text++;
                         } else {
@@ -341,7 +341,7 @@ register unsigned char *text;
         }
         text = text + shift;
     }
-    if (INVERSE && !COUNT)
+    if (INVERSE && !ONLYCOUNT)
         while (lastout <= textend)
             putchar(*lastout++);
 }
@@ -378,7 +378,7 @@ register unsigned char *text;
                 num_of_matched++;
                 if (FILENAMEONLY || SILENT)
                     return;
-                if (COUNT) {
+                if (ONLYCOUNT) {
                     while (*text != '\n')
                         text++;
                 } else {
@@ -411,7 +411,7 @@ register unsigned char *text;
         }
         MATCHED = 0;
     }                           /* while */
-    if (INVERSE && !COUNT)
+    if (INVERSE && !ONLYCOUNT)
         while (lastout <= textend)
             putchar(*lastout++);
 }

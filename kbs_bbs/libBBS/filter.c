@@ -1,16 +1,11 @@
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-
+#include "bbs.h"
 extern int prepf(int fp);
 extern int mgrep(int fp);
 
 //³ÌÐòÃû
 
 int WORDBOUND, WHOLELINE, NOUPPER, INVERSE, FILENAMEONLY, SILENT, FNAME;
-int COUNT, num_of_matched, total_line;
+int ONLYCOUNT, num_of_matched, total_line;
 char *CurrentFileName;
 
 int check_filter(char *patternfile, char *checkfile,int defaultval)
@@ -26,7 +21,7 @@ int check_filter(char *patternfile, char *checkfile,int defaultval)
     WORDBOUND = 0;
     SILENT = 1;
     FNAME = 1;
-    COUNT = 0;
+    ONLYCOUNT = 0;
 
     CurrentFileName = checkfile;
     num_of_matched = 0;
