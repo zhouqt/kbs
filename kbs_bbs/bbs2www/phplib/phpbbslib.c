@@ -7818,7 +7818,7 @@ static int full_user_list(struct user_info *uentp, struct fulluserlistarg* arg,i
     add_assoc_string ( element, "username", userinfo.username, 1 );
     add_assoc_string ( element, "userfrom", HAS_PERM(currentuser, PERM_SYSOP)? userinfo.from: SHOW_USERIP(NULL, userinfo.from), 1 );
     add_assoc_string ( element, "mode", ModeType(userinfo.mode), 1 );
-    add_assoc_long ( element, "idle", (time(0) - get_idle_time(&userinfo)) );
+    add_assoc_long ( element, "idle", (long)(time(0) - get_idle_time(&userinfo))/60 );
     
     zend_hash_index_update(Z_ARRVAL_P(arg->return_value), count+1-arg->start, (void *) &element, sizeof(zval *), NULL);
     return COUNT;
