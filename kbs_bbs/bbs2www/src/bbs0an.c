@@ -63,7 +63,7 @@ void ann_show_item(MENU * pm, ITEM * it)
 	if(ann_is_bm){
 
 	    snprintf(pathbuf, sizeof(pathbuf), "%s", ptr == NULL ? "" : ptr);
-		printf("<td><a onclick=\"return confirm('你真的要删除本目录或者文章吗?  请慎重')\" href=\"bbs0an?path=%s&action=del&dpath=%s\">删除</a></td>",
+		printf("<td><a href=\"#\" onclick=\"if(confirm('确认要删除该目录吗?(不能恢复)')){window.location.href='bbs0an?path=%s&action=del&dpath=%s';return true;}return false;\">删除</a></td>",
 				http_encode_string(pathbuf, sizeof(pathbuf)),it->fname);
 	}
 
