@@ -1204,15 +1204,18 @@ int check_IP_lists(char *IP)
         return -1;              /* lock error*/
     }
     for(i=0;i<MAXLIST;i++) {
+        if((double)(now-ips[i].last)>60*60) {
+            ips[i].ip[0]=0;
+        }
         if(ip[0]==ips[i].ip[0]&&ip[1]==ips[i].ip[1]&&ip[2]==ips[i].ip[2]&&ip[3]==ips[i].ip[3]){
-            if(now-ips[i].last<=CON_THRESHOLD2) {
+            if((double)(now-ips[i].last)<=CON_THRESHOLD2) {
                 bbslog("user", "too short connection %d.%d.%d.%d", ip[0],ip[1],ip[2],ip[3]);
                 ret = 1;
             }
             found=1;
             ips[i].last = now;
             ips[i].t++;
-            if(ips[i].t/(ips[i].last-ips[i].first)>=CON_THRESHOLD) {
+            if(ips[i].t/(double)(ips[i].last-ips[i].first)>=CON_THRESHOLD) {
                 bbslog("user", "too many connection %d.%d.%d.%d", ip[0],ip[1],ip[2],ip[3]);
                 ret = 1;
             }
