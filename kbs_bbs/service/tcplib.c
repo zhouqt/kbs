@@ -213,12 +213,7 @@ SafeAccept(int sockfd, struct sockaddr *cliaddr, socklen_t *addrlen)
 		{
 			/* from UNPv1 Page 424 */
 			if (errno != EWOULDBLOCK && errno != ECONNABORTED
-
-#ifndef FREEBSD
 				&& errno != EINTR)
-#else
-				&& errno != EPROTO && errno != EINTR)
-#endif
 				break;
 		}
 		/* Ê¹ socket ¸´Ô­ */
