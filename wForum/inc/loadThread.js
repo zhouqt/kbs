@@ -308,7 +308,7 @@ function writepost(pos, html_title, threadNum, origin, lastreply, origin_exists,
 	}
 	document.write('</TD>');
 	document.write('<TD class=TableBody1 width=64 align="center">' + ((origin_exists?0:1)+threadNum) + '</TD>');
-	document.write('<TD align=left class=TableBody2 width=200><nobr>&nbsp;<a href="disparticle.php?boardName=' + boardName + '&ID=' + origin.ID + '&pos=' + pos + '&page=' + Math.ceil((threadNum+1)/siteconf_THREADSPERPAGE) + '#a' + threadNum + '">');
+	document.write('<TD align=left class=TableBody2 width=210><nobr>&nbsp;<a href="disparticle.php?boardName=' + boardName + '&ID=' + origin.ID + '&pos=' + pos + '&page=' + Math.ceil((threadNum+1)/siteconf_THREADSPERPAGE) + '#a' + threadNum + '">');
 	document.write(lastreply.POSTTIME + '</a>&nbsp;<font color=#FF0000>|</font>&nbsp;<a href=dispuser.php?id=' + lastreply.OWNER + ' target=_blank>');
 	document.write(lastreply.OWNER + '</nobr></a></TD></TR>');
 	if (threadNum>0) {
