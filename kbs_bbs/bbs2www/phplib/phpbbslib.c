@@ -76,6 +76,14 @@ static PHP_FUNCTION(bbs_get_vote_from_num);
 static PHP_FUNCTION(bbs_vote_num);
 static PHP_FUNCTION(bbs_get_explain);
 static PHP_FUNCTION(bbs_start_vote);
+/* favboard operation. by caltary  */
+static PHP_FUNCTION(bbs_load_favboard);
+static PHP_FUNCTION(bbs_fav_boards);
+static PHP_FUNCTION(bbs_release_favboard);
+static PHP_FUNCTION(bbs_is_favboard);
+static PHP_FUNCTION(bbs_add_favboarddir);
+static PHP_FUNCTION(bbs_add_favboard);
+static PHP_FUNCTION(bbs_del_favboard);
 
 /*
  * define what functions can be used in the PHP embedded script
@@ -142,6 +150,15 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_vote_num,NULL)
 		PHP_FE(bbs_get_explain,NULL)
 		PHP_FE(bbs_start_vote,NULL)
+	/* favboard operation. by caltary  */
+	PHP_FE(bbs_load_favboard,NULL)
+	PHP_FE(bbs_fav_boards,NULL)
+	PHP_FE(bbs_release_favboard,NULL)
+	PHP_FE(bbs_is_favboard,NULL)
+	PHP_FE(bbs_add_favboarddir,NULL)
+	PHP_FE(bbs_add_favboard,NULL)
+	PHP_FE(bbs_del_favboard,NULL)
+
         {NULL, NULL, NULL}
 };
 
@@ -746,7 +763,8 @@ static int check_newpost(struct newpostdata *ptr)
     return 1;
 }
 
-#define BOARD_COLUMNS 7
+/* 7 -> 8 , by caltary  */
+#define BOARD_COLUMNS 8
 
 char *brd_col_names[BOARD_COLUMNS] = {
     "NAME",
@@ -755,8 +773,20 @@ char *brd_col_names[BOARD_COLUMNS] = {
     "BM",
     "ARTCNT",                   /* article count */
     "UNREAD",
-    "ZAPPED"
+    "ZAPPED",
+    "POSITION"                  /* added by caltary */
 };
+
+/* added by caltary */
+struct favbrd_struct
+{
+  int flag;
+  char *title;
+  int father;
+};
+extern struct favbrd_struct favbrd_list[FAVBOARDNUM];
+extern int favbrd_list_t;
+extern int favnow;
 
 static void bbs_make_board_columns(zval ** columns)
 {
@@ -786,6 +816,9 @@ static void bbs_make_board_zval(zval * value, char *col_name, struct newpostdata
         ZVAL_STRING(value, brd->name, 1);
     } else if (strncmp(col_name, "BM", len) == 0) {
         ZVAL_STRING(value, brd->BM, 1);
+    /* added by caltary */
+    } else if (strncmp(col_name, "POSITION", len) == 0){
+        ZVAL_LONG(value, brd->pos);/*added end */
     } else {
         ZVAL_EMPTY_STRING(value);
     }
@@ -3625,5 +3658,181 @@ static PHP_FUNCTION(bbs_start_vote)
 	}
 
 	RETURN_LONG(1);
+}
+
+
+/*
+  * bbs_load_favboard()
+
+*/
+static PHP_FUNCTION(bbs_load_favboard)
+{
+        int ac = ZEND_NUM_ARGS();
+        int dohelp;
+        int select;
+        if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll", &dohelp,&select) ==FAILURE) {
+                WRONG_PARAM_COUNT;
+        }
+        load_favboard(dohelp);
+        if(select<favbrd_list_t)
+        {
+                SetFav(select);
+                RETURN_LONG(0);
+        }
+        else 
+                RETURN_LONG(-1);
+}
+
+static PHP_FUNCTION(bbs_is_favboard)
+{
+        int ac = ZEND_NUM_ARGS();
+        int position;
+        if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l" ,&position) == FAILURE){
+                WRONG_PARAM_COUNT;
+        }
+        RETURN_LONG(IsFavBoard(position));
+}
+
+static PHP_FUNCTION(bbs_del_favboard)
+{
+        int ac = ZEND_NUM_ARGS();
+        int position;
+        if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l" , &position) == FAILURE){
+                WRONG_PARAM_COUNT;
+        }
+        DelFavBoard(position);
+        save_favboard();
+}
+//add fav dir
+static PHP_FUNCTION(bbs_add_favboarddir)
+{
+        int ac = ZEND_NUM_ARGS();
+        int char_len;   
+        char *char_dname;
+        if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC,"s",&char_dname,&char_len) ==FAILURE){
+                WRONG_PARAM_COUNT;
+        }
+        if(char_len <= 20)
+        {
+                addFavBoardDir(0,char_dname);
+                save_favboard();
+        }
+        RETURN_LONG(char_len);
+}
+
+static PHP_FUNCTION(bbs_add_favboard)
+{
+        int ac = ZEND_NUM_ARGS();
+        int char_len;
+        char *char_bname;
+        int i;
+        if(ac !=1 || zend_parse_parameters(1 TSRMLS_CC,"s",&char_bname,&char_len) ==FAILURE){
+                WRONG_PARAM_COUNT;
+        }
+        i=getbnum(char_bname);
+        if(i >0 && ! IsFavBoard(i - 1))
+        {
+                addFavBoard(i - 1);
+                save_favboard();
+        }
+}
+
+/**
+ * Fetch all fav boards which have given prefix into an array.
+ * prototype:
+ * array bbs_fav_boards(char *prefix, int yank);
+ *
+ * @return array of loaded fav boards on success,
+ *         FALSE on failure.
+ * @
+ */
+
+
+static PHP_FUNCTION(bbs_fav_boards)
+{
+    int select;
+    int yank;
+    int rows = 0;
+    struct newpostdata newpost_buffer[FAVBOARDNUM];
+    struct newpostdata *ptr;
+    zval **columns;
+    zval *element;
+    int i;
+    int j;
+    int ac = ZEND_NUM_ARGS();
+    int brdnum, yank_flag;
+    /*
+     * getting arguments 
+     */
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll", &select, &yank) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+
+
+    /*
+     * loading boards 
+     */
+    /*
+     * handle some global variables: currentuser, yank, brdnum, 
+     * * nbrd.
+     */
+    /*
+     * NOTE: currentuser SHOULD had been set in funcs.php, 
+     * * but we still check it. 
+     */
+    if (currentuser == NULL) {
+        RETURN_FALSE;
+    }
+    yank_flag = yank;
+    if (strcmp(currentuser->userid, "guest") == 0)
+        yank_flag = 1;          /* see all boards including zapped boards. */
+    if (yank_flag != 0)
+        yank_flag = 1;
+    brdnum = 0;
+    
+    if ((brdnum = fav_loaddata(newpost_buffer, select, 1, FAVBOARDNUM, 1, NULL)) <= -1) {
+        RETURN_FALSE;
+    }
+    /*
+     * fill data in output array. 
+     */
+    /*
+     * setup column names 
+     */
+    rows=brdnum;
+    if (array_init(return_value) == FAILURE) {
+        RETURN_FALSE;
+    }
+    columns = emalloc(BOARD_COLUMNS * sizeof(zval *));
+    for (i = 0; i < BOARD_COLUMNS; i++) {
+        MAKE_STD_ZVAL(element);
+        array_init(element);
+        columns[i] = element;
+        zend_hash_update(Z_ARRVAL_P(return_value), brd_col_names[i], strlen(brd_col_names[i]) + 1, (void *) &element, sizeof(zval *), NULL);
+    }
+   /*
+     * fill data for each column 
+     */
+   for (i = 0; i < rows; i++) {
+        ptr = &newpost_buffer[i];
+        check_newpost(ptr);
+        for (j = 0; j < BOARD_COLUMNS; j++) {
+            MAKE_STD_ZVAL(element);
+            bbs_make_board_zval(element, brd_col_names[j], ptr);
+            zend_hash_index_update(Z_ARRVAL_P(columns[j]), i, (void *) &element, sizeof(zval *), NULL);
+        }       
+    }
+        
+    efree(columns);
+    
+}
+
+/*
+ * bbs_release_favboard()
+
+*/
+static PHP_FUNCTION(bbs_release_favboard)
+{
+        release_favboard();
 }
 
