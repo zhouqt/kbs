@@ -348,7 +348,29 @@ int exec_mbem(char *s)
             *c=0;        
             c++; 
         }      
+#if defined(CYGWIN) && defined(SSHBBS)
+		{
+			char sshsvc[STRLEN];
+			char *ptr;
+
+			if ((ptr = strrchr(s+5, '.')) != NULL)
+			{
+				*ptr = '\0';
+				strcpy(sshsvc, s+5);
+				strcat(sshsvc, ".ssh");
+				*ptr = '.';
+				strcat(sshsvc, ptr);
+			}
+			else
+			{
+				strcpy(sshsvc, s+5);
+				strcat(sshsvc, ".ssh");
+			}
+			hdll=dlopen(sshsvc,RTLD_LAZY);      
+		}
+#else
         hdll=dlopen(s+5,RTLD_LAZY);      
+#endif
         if(hdll)      
         {         
 	    char* error;
