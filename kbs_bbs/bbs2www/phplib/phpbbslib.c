@@ -980,7 +980,7 @@ static ZEND_FUNCTION(bbs_get_records_from_id)
 	fileheader_t articles[record_cnt];
 	struct boardheader *bp;
 	int i;
-	zval *element,articlearray;
+	zval *element,*articlearray;
 	int is_bm;
 	char flags[3]; /* flags[0]: flag character
 					* flags[1]: imported flag
@@ -1017,6 +1017,11 @@ static ZEND_FUNCTION(bbs_get_records_from_id)
 	{
 		close(fd);
 		RETURN_LONG(0);
+	}
+	MAKE_STD_ZVAL(articlearray);
+        if(array_init(articlearray) != SUCCESS)
+        {
+                RETURN_LONG(0);
 	}
 	for (i = 0; i < retnum; i++)
 	{
