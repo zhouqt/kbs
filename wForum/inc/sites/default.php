@@ -19,6 +19,10 @@ if (!defined('ARTICLESPERPAGE')) {
 	define('ARTICLESPERPAGE',30); //目录列表下每页显示的主题数
 }
 
+if (!defined('USERSPERPAGE')) {
+    define("USERSPERPAGE", 20); //在线用户/好友等列表每页显示的人数
+}
+
 if (!defined('THREADSPERPAGE')) { //同主题阅读每页文章数
 	define('THREADSPERPAGE',10);
 }

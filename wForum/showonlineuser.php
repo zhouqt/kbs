@@ -56,7 +56,6 @@ function main() {
         $startNum = 1;
     }
     if ($startNum <= 0) $startNum = 1;
-    define("USERSPERPAGE", 20); //ToDo: put this define into site.php  - atppp
 	$online_user_list = bbs_getonline_user_list($startNum, USERSPERPAGE);
     $total_online_num = bbs_getonlineusernumber();
     
