@@ -501,8 +501,9 @@ char *prompt, *data ;
         char    *temp;
 
         if( prompt != NULL ) {
-            printf( "%s", prompt );
-            fflush( stdout );
+            prints( "%s", prompt );
+            //fflush( stdout );
+	    oflush();
         }
         if( fgets( data, STRLEN, stdin ) == NULL )
             longjmp( byebye, -1 );

@@ -448,14 +448,14 @@ char *uid, *frm;
     int         fd, len;
 
     sprintf( genbuf, "%-12.12s  %-30s %s\n",
-                uid, Ctime( login_start_time ), frm );
+                uid, Ctime( bbstime(0)), frm );
     len = strlen( genbuf );
-    if( (fd = open( BADLOGINFILE, O_WRONLY|O_CREAT|O_APPEND, 0644 )) > 0 ) {
+    if( (fd = open( BADLOGINFILE, O_WRONLY|O_CREAT|O_APPEND, 0644 )) >= 0 ) {
         write( fd, genbuf, len );
         close( fd );
     }
     sethomefile( fname, uid, BADLOGINFILE );
-    if( (fd = open( fname, O_WRONLY|O_CREAT|O_APPEND, 0644 )) > 0 ) {
+    if( (fd = open( fname, O_WRONLY|O_CREAT|O_APPEND, 0644 )) >= 0 ) {
         write( fd, genbuf, len );
         close( fd );
     }
@@ -1041,7 +1041,11 @@ main_bbs(int convit,char* argv)
     clear(); 
 
 #ifndef DEBUG
+#ifdef SSHBBS
+    sprintf(argv,"sshbbsd:%s",currentuser->userid);
+#else
     sprintf(argv,"bbsd:%s",currentuser->userid);
+#endif 
 #endif
 
 #ifdef TALK_LOG

@@ -56,7 +56,7 @@ static time_t lasttime = 0;
 extern int convcode;
 extern char* big2gb(char*,int*,int);
 extern char* gb2big(char*,int*,int);
-
+extern int ssh_sock;
 void
 oflush()
 {
@@ -251,7 +251,7 @@ igetagain:
         to.tv_usec = 0 ;
         hifd=1;
         FD_ZERO(&readfds) ;
-        FD_SET(0,&readfds) ;
+	FD_SET(0,&readfds) ;
         if(hasaddio&&(i_newfd)) {
             FD_SET(i_newfd,&readfds) ;
             if(hifd<=i_newfd)hifd=i_newfd+1;
@@ -266,7 +266,7 @@ igetagain:
             	int alarm_timeout;
                 hifd=1;
                 FD_ZERO(&xds);
-                FD_SET(0,&xds);
+	     	FD_SET(0,&xds);
                 FD_ZERO(&readfds) ;
                 FD_SET(0,&readfds) ;
                 if(hasaddio&&(i_newfd)) {

@@ -641,15 +641,14 @@ char *argv[];
 #else
 void ssh_exit()
 {
-    packet_disconnect("sshd exit");
+    packet_disconnect("sshbbsd exit");
 }
-
+extern char **saved_argv;
 int bbs_entry(void)
 {
    /* 本函数供 SSH 使用 */
    int sinlen;
    struct sockaddr_in sin;
-   char faint[99];
    setuid(BBSUID);
    setgid(BBSGID);
    main_signals();
@@ -661,6 +660,6 @@ int bbs_entry(void)
         strncpy(fromhost,host,IPLEN);
         fromhost[IPLEN]=0;
    } 
-   bbs_main(faint);
+   bbs_main(saved_argv[0]);
 }
 #endif
