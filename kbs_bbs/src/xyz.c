@@ -22,6 +22,7 @@
 */
 
 #include "bbs.h"
+#include "select.h"
 int use_define=0;
 extern int iscolor;
 extern int switch_code(); /* KCN,99.09.05 */
@@ -58,9 +59,9 @@ x_csh()
     clear() ;
     return 0 ;
 }
-*/
 
-int showperminfoX(unsigned int pbits,int i,int flag ) /* Leeward 98.06.05 */
+
+int showperminfoX(unsigned int pbits,int i,int flag )
 {
     char        buf[ STRLEN ];
 
@@ -91,24 +92,24 @@ showperminfo( unsigned int pbits,int i,int flag)
     refresh();
     return true;
 }
-/* bad 2002.7.6 */
-int
-showperminfo2( unsigned int pbits,unsigned int basic,int i,int flag)
-{
-    char        buf[ STRLEN ];
+*/
 
-    if((1<<i==PERM_BASIC||1<<i==PERM_POST||1<<i==PERM_CHAT||1<<i==PERM_PAGE||1<<i==PERM_DENYMAIL)&&(basic&(1<<i)))
-        sprintf( buf, "%c. %-30s [32;1m%3s[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
-                 ((pbits >> i) & 1 ? "ON" : "OFF"));
-    else
-        sprintf( buf, "%c. %-30s [37;0m%3s[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
-                 ((pbits >> i) & 1 ? "ON" : "OFF"));
-    move( i+6-(( i>15)? 16:0) , 0+(( i>15)? 50:0) );
-    prints( buf );
-    refresh();
-    return true;
+int showperminfo(struct _select_def* conf,int i)
+{
+	struct _setperm_select* arg=(struct _setperm_select*)conf->arg;
+	i=i-1;
+	if (i==conf->item_count-1) {
+		prints( "%c. ÍË³ö ",'A'+i);
+	}
+	else
+	{
+    	prints("%c. %-30s %3s", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
+             ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
+	}
+	return SHOW_CONTINUE;
 }
 
+/*
 unsigned int setperms(unsigned int pbits,char *prompt,int numbers,int (*showfunc)(unsigned int ,int ,int))
 {
     int lastperm = numbers - 1;
@@ -119,7 +120,6 @@ unsigned int setperms(unsigned int pbits,char *prompt,int numbers,int (*showfunc
     prints("Çë°´ÏÂÄãÒªµÄ´úÂëÀ´Éè¶¨%s£¬°´ Enter ½áÊø.\n",prompt);
     move(6,0);
     clrtobot();
-    /*    pbits &= (1 << numbers) - 1;*/
     for (i=0; i<=lastperm; i++) {
         (*showfunc)( pbits, i,false);
     }
@@ -139,37 +139,7 @@ unsigned int setperms(unsigned int pbits,char *prompt,int numbers,int (*showfunc
     }
     return( pbits );
 }
-/* bad 2002.7.6
-unsigned int setperms2(unsigned int pbits,unsigned int basic,char *prompt,int numbers,int (*showfunc)(unsigned int ,unsigned int,int ,int))
-{
-    int lastperm = numbers - 1;
-    int i, done = false;
-    char choice[3];
-
-    move(4,0);
-    prints("Çë°´ÏÂÄãÒªµÄ´úÂëÀ´Éè¶¨%s£¬°´ Enter ½áÊø.\n",prompt);
-    move(6,0);
-    clrtobot();
-    for (i=0; i<=lastperm; i++) {
-        (*showfunc)( pbits, basic, i,false);
-    }
-    while (!done) {
-        getdata(t_lines-1, 0, "Ñ¡Ôñ(ENTER ½áÊø): ",choice,2,DOECHO,NULL,true);
-        *choice = toupper(*choice);
-        if (*choice == '\n' || *choice == '\0') done = true;
-        else if (*choice < 'A' || *choice > 'A' + lastperm) bell();
-        else {
-            i = *choice - 'A';
-            pbits ^= (1 << i);
-            if((*showfunc)( pbits, basic,i ,true)==false)
-            {
-                pbits ^= (1 << i);
-            }
-        }
-    }
-    return( pbits );
-}*/
-#include "select.h"
+*/
 struct _setperm_select {
 	unsigned int pbits;
 	unsigned int basic;
@@ -223,7 +193,8 @@ int setperm_key(struct _select_def *conf,int key)
     return SHOW_CONTINUE;
 }
 
-unsigned int setperms2(unsigned int pbits,unsigned int basic,char *prompt,int numbers,int (*showfunc)(unsigned int ,unsigned int,int ,int))
+unsigned int setperms(unsigned int pbits,unsigned int basic,char *prompt,int numbers,int (*show)(struct _select_def* conf,int i))
+)
 {
 	struct _select_def perm_conf;
 	struct _setperm_select arg;
@@ -232,6 +203,9 @@ unsigned int setperms2(unsigned int pbits,unsigned int basic,char *prompt,int nu
 
 	pts=(POINT*)malloc(sizeof(POINT)*(numbers+1));
 
+    move(4,0);
+    prints("Çë°´ÏÂÄãÒªµÄ´úÂëÀ´Éè¶¨%s.\n",prompt);
+    
 	for (i=0;i<numbers+1;i++) {
 		pts[i].x=0+(( i>15)? 50:1) ;
 		pts[i].y=i+6-(( i>15)? 16:0);
@@ -251,7 +225,7 @@ unsigned int setperms2(unsigned int pbits,unsigned int basic,char *prompt,int nu
 	perm_conf.pos=numbers+1;
 
 	perm_conf.on_select=setperm_select;
-	perm_conf.show_data=setperm_show;
+	perm_conf.show_data=show;
 	perm_conf.key_command=setperm_key;
 
 	list_select_loop(&perm_conf);
@@ -465,7 +439,7 @@ x_level()
     clrtobot();
     move(2,0);
     prints("ÇëÉè¶¨"NAME_USER_SHORT" '%s' µÄÈ¨ÏŞ\n", genbuf);
-    newlevel = setperms2(lookupuser->userlevel,basicperm,"È¨ÏŞ",NUMPERMS,showperminfo2);
+    newlevel = setperms(lookupuser->userlevel,basicperm,"È¨ÏŞ",NUMPERMS,setperm_show);
     move(2,0);
     if (newlevel == lookupuser->userlevel)
         prints(NAME_USER_SHORT" '%s' µÄÈ¨ÏŞÃ»ÓĞ¸ü¸Ä\n", lookupuser->userid);
@@ -555,7 +529,8 @@ XCheckLevel() /* Leeward 98.06.05 */
     move(2,0);
     prints("ÇëÉè¶¨ĞèÒª¼ì²éµÄÈ¨ÏŞ\n");
     scanuser.userlevel = 0;
-    newlevel = setperms(scanuser.userlevel,"È¨ÏŞ",NUMPERMS,showperminfoX);
+    /* change showperminfoX to showperminfo*/
+    newlevel = setperms(scanuser.userlevel,"È¨ÏŞ",NUMPERMS,showperminfo);
     move(2,0);
     if (newlevel == scanuser.userlevel)
         prints("ÄãÃ»ÓĞÉè¶¨ÈÎºÎÈ¨ÏŞ\n");
