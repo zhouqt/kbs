@@ -100,6 +100,7 @@ if ($board) {
         }
     }
     else {
+        $board = '';
         if (cache_header('public, must-revalidate',filemtime($filename),10))
             return;
     }

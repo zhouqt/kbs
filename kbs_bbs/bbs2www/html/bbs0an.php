@@ -105,6 +105,7 @@ if ($board) {
         bbs_board_header($brdarr);
     }
     else {
+        $board = '';
         html_init('gb2312','','',1);
         bbs_ann_header($board);
     }
