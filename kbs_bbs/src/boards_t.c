@@ -694,7 +694,7 @@ static int fav_key(struct _select_def *conf, int command)
         modify_user_mode(arg->newflag ? READNEW : READBRD);
         return SHOW_REFRESH;
     case 'a':
-        if (BOARD_FAV == arg->yank_flag) {
+        {
             char bname[STRLEN];
             int i = 0;
 
@@ -705,23 +705,43 @@ static int fav_key(struct _select_def *conf, int command)
                 pressreturn();
                 return SHOW_REFRESH;
             }
-            move(0, 0);
-            clrtoeol();
-            prints("输入讨论区英文名 (大小写皆可，按空白键自动搜寻): ");
-            clrtoeol();
+            if (BOARD_FAV == arg->yank_flag) {
+	            move(0, 0);
+	            clrtoeol();
+	            prints("输入讨论区英文名 (大小写皆可，按空白键自动搜寻): ");
+	            clrtoeol();
 
-            make_blist();
-            namecomplete((char *) NULL, bname);
-            CreateNameList();   /*  free list memory. */
-            if (*bname)
-                i = getbnum(bname);
-            if (i==0)
-            	return SHOW_REFRESH;
+	            make_blist();
+	            namecomplete((char *) NULL, bname);
+	            CreateNameList();   /*  free list memory. */
+	            if (*bname)
+	                i = getbnum(bname);
+	            if (i==0)
+	            	return SHOW_REFRESH;
+            } else {
+        		struct boardheader bh;
+                move(2, 0);
+                clrtoeol();
+        		i=getboardnum(ptr->name, &bh);
+        		if (i<=0)
+        			return SHOW_REFRESH;
+            	if (IsFavBoard(i - 1)) {
+                	move(2, 0);
+                	prints("已存在该讨论区.\n");
+                	pressreturn();
+                	return SHOW_REFRESH;
+            	}
+                if (askyn("加入个人定制区？",0)!=1)
+                	return SHOW_REFRESH;
+            }
             if (i > 0 && !IsFavBoard(i - 1)) {
                 addFavBoard(i - 1);
                 save_favboard();
                 arg->reloaddata=true;
-                return SHOW_DIRCHANGE;
+            	if (BOARD_FAV == arg->yank_flag)
+                	return SHOW_DIRCHANGE;
+            	else
+                	return SHOW_REFRESH;
             } else if (IsFavBoard(i - 1)) {
                 move(2, 0);
                 prints("已存在该讨论区.\n");
