@@ -85,7 +85,7 @@ function display_navigation_bar($brdarr, $short_filename, $num)
 			html_init("gb2312");
 			html_error_quit("错误的讨论区");
 		}
-		$total = bbs_countarticles($brdnum, $dir_modes["ORIGIN"]);
+		$total = bbs_countarticles($brdnum, $dir_modes["THREAD"]);
 		if ($total <= 0) {
 			html_init("gb2312");
 			html_error_quit("本文摘区目前没有文章");
@@ -105,7 +105,7 @@ function display_navigation_bar($brdarr, $short_filename, $num)
 				html_init("gb2312");
 				html_error_quit("错误的文章号.");
 			}
-			$short_filename = bbs_get_filename_from_num( $brdarr["NAME"], $num, $dir_modes["ORIGIN"] );
+			$short_filename = bbs_get_filename_from_num( $brdarr["NAME"], $num, $dir_modes["THREAD"] );
 			if(! $short_filename ){
 				html_init("gb2312");
 				html_error_quit("错误的文章号.....");
