@@ -343,7 +343,7 @@ editor_generate('nodebody');
 <tr>
 	<td class="t5">
 	评论
-	<input type="radio" name="comment" class="f1" value="0" <?php if($rows[comment]!=0) echo "checked"; ?>允许
+	<input type="radio" name="comment" class="f1" value="0" <?php if($rows[comment]!=0) echo "checked"; ?>>允许
 	<input type="radio" name="comment" class="f1" value="1" <?php if($rows[comment]==0) echo "checked"; ?>>不允许
 	</td>
 </tr>
