@@ -1,0 +1,54 @@
+用户hash设计
+
+--------------------------------------------------------------------------------
+
+  firebird BBS系统查询用户一直使用的是从头到尾遍历整个用户链表的模式
+来查找用户，这个在大用户量的情况下是极大的开销。为了解决这个问题，
+我设想使用hash表保存用户id索引，加快查找速度。相关的程序在libBBS/ucache.c
+和libBBS/utmp.c中实现。
+  这个函数由我和ttiny@SMTH共同设计，由ttiny@SMTH完成。
+  我采用的是线性探测再散列的hash表。之所以不用二次探测再散列，是考虑到
+当我们的hash_size>2-3倍的max_user的时候，如果选择恰当的hash函数，hash
+的命中率可以<2，进行二次探测再散列就没有必要了。此时的时间复杂度是O(1)
+而这么大的hash_size的空间复杂度这样计算：
+  线性的再散列需要增加hash_size个头结点，每个用户结点需要增加一个双向链表
+需要的两个指针。
+         hash_head         uidshm
+            0  --------->   0 --
+            1\              1  |
+            2 -\-------->   2  |
+                            4<-
+           ...             ...
+           ...             max_user
+           ...
+           ...
+         hash_size
+
+  hash_size * sizeof(hash_head)+max_user*2*sizeof(pointer)
+= 5 * max_user * sizeof(pointer)
+
+  对于SMTH的15万用户，hash的空间占用是3M。
+
+  之后就要设计hash函数了。我考虑到namecomplete也需要进行uid检索，而以前的
+namecomplete方式有这个问题：他是一下子把所有的ID全部进入他的缓冲区，当用户
+数增大到一定程度的时候，namecomplete将会占用很大的内存和CPU时间。所以我们想了
+一个要求，namecomplete至少要2个字母开头才允许查询。之后，只要hash函数满足这个
+特性：相同2个字母开头的ID他们的hash value在一个小范围之内，当进行namecomplete
+的时候，就只需要检索这个范围内的user id。
+  另一个要求就是命中率的要求了。id的字母分布是很不均匀的，为此ttiny编了一个
+perl脚本计算了SMTH的ID字母开头分布，将前4个字母根据分布放入一个表里，这个表
+决定了hash值的前HASHBTABLE_SIZE，而剩下字母的信息量就远小于前4个字母，填充
+剩下的HASHBTABLE_SIZE空间。前四个字母的表是这样决定的：当以前两个字母开头
+ID数小于平均值的时候，那么就占用这个表的一个表项。否则将这两个字母开头的ID
+继续分散到3个字母开头的表，以前三个字母占用一个表项。同样如果3个字母开头的
+ID还是多的话，那就再展开4个字母占用一个表项.
+  hash value = (前四个字母查表)*UCACHE_HASHBSIZE+
+                后面字母运算值%UCACHE_HASHBSIZE;
+  后面字母的运算是
+  len=strlen(userid)-4;
+  每个字母value= id[pos]*(len-pos) pos为在后面字母的顺序。
+
+  最后一个要求很简单，就是空的user id应该值为0，当new用户的时候直接从hash[0]
+里面获得，不需要遍历整个user list....
+  最后经过计算，我们的hash函数命中率在1.6.
+

@@ -1,0 +1,21 @@
+cvs服务器: cvs.smth.org
+用户：     bbsdev
+密码：     bbsdev
+
+相关的module:
+smth_bbs: 主程序代码
+sshbbsd:  ssh接口的代码
+bbshome:  一个bbs站点例子。
+innbbsd:  转信程序
+sites:    各个站点定制文件
+
+其中，sshbbsd，bbshome,innbbsd,sites都应该在smth_bbs目录下checkout
+
+获得代码之后生成configure文件：
+
+在smth_bbs,bbs2www,sshbbsd目录分别下
+autoheader;aclocal;automake -a;autoconf
+
+之后，就可以按照正常方式安装使用BBS 代码了。
+
+
