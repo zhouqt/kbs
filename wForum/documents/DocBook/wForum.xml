@@ -21,7 +21,7 @@
 	</section>
 	<section id="install">
 		<title>wForum 安装说明</title>
-		<para>首先到 <ulink url="http://dev.smth.org/">smthbbs 开发主页</ulink> 下载最新的 smthbbs 和 wForum 代码。</para>
+		<para>首先到 <ulink url="http://dev.smth.org/">smthbbs 开发主页</ulink> 下载最新的 smthbbs 和 wForum 代码。请一定注意 wForum 必须配合同一个时间点 smthbbs 的 CVS 版本或者 snapshot 版本使用，比如下载同一天的 snapshot 就不会有问题，如果最新 wForum snapshot 配合 smthbbs 1.2.1 使用就会有这样那样的小问题。</para>
 		<section id="install_smthbbs">
 			<title>smthbbs 安装</title>
 			<para>smthbbs 安装请参考其安装文档；必须打开 WWW 支持。站点文件请参考 site/zixia.h 和 site/zixia.c。</para>
@@ -81,6 +81,11 @@ create table smallpaper_tb(
 				<programlisting>ls -d1 * | awk '{system(sprintf("rm %s/.WEBTHREAD", $1));}'</programlisting>
 			另外现在的 wForum 系统会自动显示每封新的信件的大小，但是以前旧的信件的大小需要用 local_utl/sync_mailsize 程序同步一下。这个程序加 -a 参数就会同步所有的信件大小。
 			</para>
+		</section>
+		<section id="install_tex2mathml">
+			<title>加入 itex2mathml 支持</title>
+			<para>现在 wForum 支持 itex（数学公式排版语言 tex 的一种衍生形式） 到 mathml （浏览器显示数学公式的推荐标准）的自动转化。这部分功能参考 ythtbbs 系统完成，<ulink url="http://ytht.net">一塌糊涂 BBS 站</ulink>在 web 下发表文章的页面有一个链接是这个功能的说明，可以参考。</para>
+			<para>wForum 支持 itex2mathml 对客户端和服务器端都有要求。客户端的要求是最新版的 Mozilla Firefox，Netscape 等使用 Mozilla 内核的浏览器。如果是 MSIE 浏览器的话，必须是 5.5 版以上，而且需要预装 <ulink url="http://www.dessci.com/en/products/mathplayer/download.htm">MathPlayer 2.0</ulink> 插件，wForum 不会提示用户安装。服务器端要求 <ulink url="http://pear.math.pitt.edu/mathzilla/itex2mml.html">itex2mml</ulink> 转换程序，请下载后将 itex2MML 可执行文件放在 ~bbs/bin/ 目录下面，并且在 site.php 里面加入：<programlisting>define("SUPPORT_TEX", true);</programlisting>用户发表需要 itex2mathml 支持的帖子的时候要选择“使用 tex 发表”选项。关于 itex2mml 支持的 tex 格式可以在其主页上找到文档。目前这部分功能还有很多问题，但是基本功能已经可以使用。具体的技术细节可以参考下面的 <xref linkend="itex2mathml_details" endterm="itex2mathml_details_title"/>。</para>
 		</section>
 		<section id="install_append">
 			<title>附加说明</title>
@@ -373,6 +378,12 @@ menuDivStyle.visible="hidden";</programlisting>
 					</glosslist>
 				</listitem>
 			</orderedlist>
+		</section>
+		<section id="itex2mathml_details">
+			<title id="itex2mathml_details_title">itex2mathml 的一些技术细节</title>
+			<para>Mozilla 等通过服务器发送的 Content-Type 来判断文档类型，只有 xml 才会得到 Mathml 支持。而 IE 的 MathPlayer 插件也可以依赖于 Content-Type 来判断是否需要 MathPlayer 的预处理，所以碰到带有 tex 的帖子，服务器会自动发送 application/xhtml+xml 的 Content-Type。另外，如果 IE 没有装 MathPlayer 插件，用这个 Content-Type 会造成 xml parse 错误，所以如果 User-Agent 表明客户端是一个没有安装 MathPlayer 的 IE，还是会使用普通的 text/html Content-Type。这是唯一需要判断浏览器类型的地方，具体的代码可以在 inc/funcs.php 的 html_init() 函数内找到。请注意，程序假设客户端如果不是 IE 就必定支持 Mathml，如果客户端是比较古老的浏览器是有问题的，请站点管理员对最终用户说明。</para>
+			<para>由于 Mathml 必须使用 xml 文档标准，而 xml 对页面 tag 的要求极为严格，所以需要使用 application/xhtml+xml Content-Type 的文件，html 的书写必须按照 xhtml 的标准非常规范的书写。目前可能使用 application/xhtml+xml Content-Type 的页面只有 disparticle.php 和 preview.php，所有与这两个页面相关的 html 已经按照 xhtml 标准改写，但是其它页面还远远没有达到 xhtml 的规范，wForum 今后的开发必须要避免不规范的 xhtml 写法。</para>
+			<para>不规范的 xml 文档在 Mozilla 里面会出 parse 错误，所以这必须严格避免。为此，一旦帖子使用 tex 发表，就禁用除 [upload=1][/upload] 上传文件 ubb 以外的所有 ubb 功能。另外，在两个 $ 之间或者 \[ 和 \] 之间是 itex 公式，这个公式区域内所有的 ansi 颜色格式等（包括引文变色）也失效。目前这部分可能还有一些问题，可能还可以通过一些办法使浏览器出错导致不能阅读帖子，请发现问题提交 bug 报告。</para>
 		</section>
 		<section id="browscap">
 			<title>USEBROWSCAP 站点参数</title>
