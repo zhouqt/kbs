@@ -30,7 +30,10 @@ if ($loginok==1) {
 
 if (isErrFounded()) {
 		html_error_quit();
-} 
+} else {
+	showMailSampleIcon();
+}
+
 show_footer();
 
 function main() {
@@ -74,8 +77,8 @@ function showmailBox($boxName, $path, $desc, $startNum){
 	global $currentuser;
 ?>
 <br>
-<form action="delusermail.php" method=post id="oForm">
-<input type="hidden" name="targetbox" value="<?php echo $boxName; ?>">
+<form action="usermailoperations.php" method=post id="oForm">
+<input type="hidden" name="boxname" value="<?php echo $boxName; ?>">
 <table cellpadding=3 cellspacing=1 align=center class=tableborder1>
 <tr>
 <th valign=middle width=30 height=25>已读</th>
@@ -128,10 +131,8 @@ function showmailBox($boxName, $path, $desc, $startNum){
 			
 			switch($maildata[$i]["FLAGS"][0]){
 			case 'M':
-				echo  '<img src="pic/m_oldlocks.gif">';
-					break;
 			case 'm':
-				echo  '<img src="pic/m_newlocks.gif">';
+				echo  '<img src="pic/m_lockreplys.gif">';
 					break;
 			default:
 				echo  '<img src="pic/m_replys.gif">';
@@ -198,7 +199,7 @@ function showmailBox($boxName, $path, $desc, $startNum){
 <input type="hidden" name="nums" id="oNums">
 <input type="hidden" id="oNum">
 <script >
-function doDelete(desc,action) {
+function doAction(desc,action) {
 	var nums,s,first;
 	if(confirm(desc))	{
 		oForm.oNums.value="";
@@ -220,7 +221,7 @@ function doDelete(desc,action) {
 	return false;
 }
 </script>
-<input type=checkbox name=chkall value=on onclick="CheckAll(this.form)">选中所有显示信件&nbsp;<input type=button onclick="doDelete('确定删除选定的纪录吗?','delete');" value="删除信件">&nbsp;<input type=button onclick="doDelete('确定清除<?php echo $desc; ?>所有的纪录吗?','deleteAll');" value="清空<?php   echo $desc; ?>"></td>
+<input type=checkbox name=chkall value=on onclick="CheckAll(this.form)">选中所有显示信件&nbsp;<input type=button onclick="doAction('确定锁定/解除锁定选定的纪录吗?','lock');" value="锁定信件">&nbsp;<input type=button onclick="doAction('确定删除选定的纪录吗?','delete');" value="删除信件">&nbsp;<input type=button onclick="doAction('确定清除<?php echo $desc; ?>所有的纪录吗?','deleteAll');" value="清空<?php   echo $desc; ?>"></td>
 </tr>
 </table>
 </form>

@@ -8,6 +8,8 @@ if ( (!isset($_COOKIE['iscookies'])) || ($_COOKIE['iscookies']==''))
 	exit();
 } 
 
+$setboard=1;
+
 require("inc/funcs.php");
 require("inc/user.inc.php");
 
@@ -25,7 +27,11 @@ if ($loginok==1) {
 }
 
 showAnnounce(); 
-
+?>
+<td align=center width=100% valign=middle colspan=2>
+<hr>
+</td></tr>
+<?php
 showTitle();
 
 ?>

@@ -92,3 +92,15 @@ font-family:Tahoma,Verdana,ËÎÌו; font-size: 12px; line-height: 15px;}
 
 .navclass2
 {border:1px #A0CFFE solid; border-top-width: 0px; border-right-width: 1px; border-bottom-width: 0px; border-left-width: 1px;width:97%;}
+
+.buttonclass1
+{width:99;height:25;background-image:url(../pic/blue/postnew0.gif)}
+
+.buttonclass2
+{width:99;height:25;background-image:url(../pic/blue/votenew0.gif)}
+
+.buttonclass3
+{width:99;height:25;background-image:url(../pic/blue/xzb0.gif)}
+
+.buttonclass4
+{width:99;height:25;background-image:url(../pic/blue/reply0.gif)}

@@ -93,7 +93,7 @@ function showSecs($secNum=0,$isFold) {
 		<TD vAlign=top width=* class=tablebody1>
 		
 		<TABLE cellSpacing=0 cellPadding=2 width=100% border=0>
-		<tr><td class=tablebody1 width=*><a href="board.php?boardid=<?php echo $brd_bid[$i]; ?> ">
+		<tr><td class=tablebody1 width=*><a href="board.php?name=<?php echo $brd_name[$i]; ?> ">
 		<font color=#000066><?php echo $brd_name[$i] ?> </font></a>
 				</td>
 		<td width=40 rowspan=2 align=center class=tablebody1></td><td width=200 rowspan=2 class=tablebody1><?php
@@ -130,7 +130,7 @@ function showSecs($secNum=0,$isFold) {
 					echo "<tr>";
 				}
 ?>
-<td class=tablebody1 width="50%"><TABLE cellSpacing=2 cellPadding=2 width=100% border=0><tr><td width="100%" title="<?php echo $brd_desc[$i] ; ?>" colspan=2><a href="board.php?boardid=<?php echo $brd_bid[$i]; ?>"><font color=#000066><?php echo $brd_name[$i] ; ?></font></a></td></tr><tr>
+<td class=tablebody1 width="50%"><TABLE cellSpacing=2 cellPadding=2 width=100% border=0><tr><td width="100%" title="<?php echo $brd_desc[$i] ; ?>" colspan=2><a href="board.php?name=<?php echo $brd_name[$i]; ?>"><font color=#000066><?php echo $brd_name[$i] ; ?></font></a></td></tr><tr>
 <?php
 				if ($brd_flag[$i] & BBS_BOARD_GROUP) {
 ?>
@@ -199,9 +199,6 @@ arNews = [<?php
 </td>
 </tr>
 <tr>
-<td align=center width=100% valign=middle colspan=2>
-<hr>
-</td></tr>
 <?php
 }
 
@@ -215,7 +212,7 @@ extract($GLOBALS);
 <tr>
 <th align=left id=tabletitlelink height=25 style="font-weight:normal">
 <b>-=> 快速登录入口</b>
-[<a href=reg.php>注册用户</a>]　[<a href=lostpass.php style="CURSOR: help">忘记密码</a>]
+[<a href=register.php>注册用户</a>]　[<a href=lostpass.php style="CURSOR: help">忘记密码</a>]
 </th>
 </tr>
 <tr>
@@ -288,6 +285,14 @@ function showSample(){
 ?>
 <table cellspacing=1 cellpadding=3 width="97%" border=0 align=center>
 <tr><td align=center><img src="pic/forum_nonews.gif" align="absmiddle">&nbsp;没有新的帖子&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="pic/forum_isnews.gif" align="absmiddle">&nbsp;有新的帖子&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="pic/forum_lock.gif" align="absmiddle">&nbsp;被锁定的论坛</td></tr>
+</table><br>
+<?php
+}
+
+function showMailSampleIcon(){
+?>
+<table cellspacing=1 cellpadding=3 width="97%" border=0 align=center>
+<tr><td align=center><img src="pic/m_news.gif" align="absmiddle">&nbsp;未读邮件&nbsp<img src="pic/m_olds.gif" align="absmiddle">&nbsp;已读邮件&nbsp<img src="pic/m_replys.gif" align="absmiddle">&nbsp;已回复邮件&nbsp;<img src="pic/m_newlocks.gif" align="absmiddle">&nbsp;锁定的未读邮件&nbsp;<img src="pic/m_oldlocks.gif" align="absmiddle">&nbsp;锁定的已读邮件&nbsp;<img src="pic/m_lockreplys.gif" align="absmiddle">&nbsp;锁定的已回复邮件</td></tr>
 </table><br>
 <?php
 }

@@ -91,3 +91,15 @@ font-family:Tahoma,Verdana,ËÎÌו; font-size: 12px; line-height: 15px;}
 
 .navclass2
 {border:1px darkseagreen solid; border-top-width: 0px; border-right-width: 1px; border-bottom-width: 0px; border-left-width: 1px;width:97%;}
+
+.buttonclass1
+{width:72;height:21;background-image:url(../pic/more/i4.gif)}
+
+.buttonclass2
+{width:72;height:21;background-image:url(../pic/more/i5.gif)}
+
+.buttonclass3
+{width:72;height:21;background-image:url(../pic/more/i6.gif)}
+
+.buttonclass4
+{width:72;height:21;background-image:url(../pic/more/i7.gif)}

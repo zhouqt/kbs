@@ -45,6 +45,10 @@ $foundErr=false;
 $loginok=0;
 $guestloginok=0;
 
+if (!isset($setboard)){
+	$setboard=0;
+}
+
 if (!isset($needlogin)){
 	$needlogin=1;
 }
@@ -709,7 +713,7 @@ if (($needlogin!=0)&&($loginok!=1)&& ($guestloginok!=1) ){
 }
 
 
-if (( ($loginok==1) || ($guestloginok==1) )&&(isset($setboard)&&($setboard==1))) bbs_set_onboard(0,0);
+if (( ($loginok==1) || ($guestloginok==1) )&&($setboard==1)) bbs_set_onboard(0,0);
 
 } // !define ('_BBS_FUNCS_PHP_')
 ?>
