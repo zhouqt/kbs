@@ -715,9 +715,10 @@ char *direct ;
     sprintf(genbuf,"%s/%s",buf,fileinfo->filename) ;
     strcpy( quote_file, genbuf );
     strcpy( quote_board, currboard );
-    strcpy(quote_title,fileinfo->title);
+    strncpy(quote_title,fileinfo->title,118);
     quote_file[119] = fileinfo->filename[STRLEN-2];
-    strcpy( quote_user, fileinfo->owner );
+    strncpy( quote_user, fileinfo->owner ,IDLEN);
+    quote_user[IDLEN]=0;
 
 #ifndef NOREPLY
     ch = ansimore(genbuf,NA) ;  /* ÏÔÊ¾ÎÄÕÂÄÚÈÝ */
@@ -1332,7 +1333,8 @@ char *direct ;
 
     /* indicate the quote file/user */
     setbfile( quote_file, currboard, fileinfo->filename );
-    strcpy( quote_user, fileinfo->owner );
+    strncpy( quote_user, fileinfo->owner ,IDLEN);
+    quote_user[IDLEN]=0;
 
     /* find the author */
     if (strchr(quote_user, '.')) {
@@ -2441,7 +2443,8 @@ sequent_messages(struct fileheader *fptr,int* continue_flag)
         }
         setbfile( genbuf, currboard, fptr->filename );
         strcpy( quote_file, genbuf );
-        strcpy( quote_user, fptr->owner );
+    	 strncpy( quote_user, fptr->owner ,IDLEN);
+    	 quote_user[IDLEN]=0;
 #ifdef NOREPLY
         more(genbuf,YEA);
 #else

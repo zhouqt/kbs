@@ -1044,7 +1044,8 @@ char *direct ;
     strncat(title,fileinfo->title,STRLEN-5) ;
 
     setmailfile(quote_file, currentuser->userid, fileinfo->filename);
-    strcpy(quote_user, fileinfo->owner);
+    strncpy( quote_user, fileinfo->owner ,IDLEN);
+    quote_user[IDLEN]=0;
     switch (do_send(uid,title)) {
     case -1: prints("无法投递\n"); break;
     case -2: prints("取消回信\n"); break;
