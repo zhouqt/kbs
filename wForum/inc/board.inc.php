@@ -197,7 +197,7 @@ function showBoardStaticsTop($boardArr){
 }
 
 
-function showBroadcast($boardID,$boardName){
+function showBroadcast($boardID,$boardName,$is_ann=false){
 	global $conn;
 ?>
 <tr><td class=TableBody1 colspan=5 height=20>
@@ -209,10 +209,26 @@ function showBroadcast($boardID,$boardName){
   } 
   unset($rs);
   $sth->free();
-  /* ToDo: 注意：精华 link 暂时是搜索本版所有精华贴，待改。注意搜索好像没有分页。- atppp */
 ?>
-	</marquee><td align=right width=240><a href="queryresult.php?boardName=<?php echo $boardName; ?>&title=&title2=&title3=&userid=&dt=0&mg=on" title=查看本版精华贴><font color=#FF0000><B>精华</B></font></a>
-	| <a href=# onclick="alert('本功能尚在开发中！')" title=查看本版在线详细情况>在线</a>
+	</marquee>
+	<td align=right width=240>
+<?php
+	if ($is_ann) {
+?>
+	<a href="board.php?name=<?php echo $boardName; ?>" title=查看本版文章><font color=blue><B>版面</B></font></a> | 
+<?php
+	} else {
+		$ann_path = bbs_getannpath($boardName);
+		if ($ann_path != FALSE) {
+	    	if (!strncmp($ann_path,"0Announce/",10))
+			$ann_path=substr($ann_path,9);
+?>
+	<a href="elite.php?path=<?php echo urlencode($ann_path); ?>" title=查看本版精华区><font color=#FF0000><B>精华</B></font></a> | 
+<?php
+		}
+	}
+?>	
+    <a href=# onclick="alert('本功能尚在开发中！')" title=查看本版在线详细情况>在线</a>
 	| <a href=# onclick="alert('本功能尚在开发中！')" title=查看本版事件>事件</a>
 	| <a href=# onclick="alert('本功能尚在开发中！')" title=查看本版用户组权限>权限</a>
     | <a href=# onclick="alert('本功能尚在开发中！')">管理</a></td></tr></table>
