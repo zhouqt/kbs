@@ -96,8 +96,7 @@ msgline()
     showansi=tmpshow;
 }
 
-void
-msg()
+void domsg()
 {
     int x,y;
     time_t now=time(0);
@@ -107,7 +106,7 @@ msg()
     getyx(&x,&y);
     msgline();
 
-    signal(SIGALRM, msg);
+    signal(SIGALRM, domsg);
     move(x,y);
     refresh();
     alarm(60);
@@ -271,7 +270,7 @@ go()
     int line;
     signal(SIGALRM, SIG_IGN);
     getdata( 23,0,"请问要跳到第几行: ",tmp, 7, DOECHO, NULL );
-    msg();
+    domsg();
     if(tmp[0]=='\0')
         return;
     line=atoi(tmp);
@@ -343,7 +342,7 @@ search()
 
     signal(SIGALRM, SIG_IGN);
     getdata( 23,0,"搜寻字串: ",tmp, 65, DOECHO, NULL );
-    msg();
+    domsg();
     if(tmp[0]=='\0')
         return;
     else
@@ -945,7 +944,7 @@ int saveheader ;
             unlink(filename);
         aborted = -1;
     } else if (abort[0] == 'e' || abort[0] == 'E') {
-        msg();
+        domsg();
         return KEEP_EDITING;
     } else if (abort[0] == 't' || abort[0] == 'T' ) {
         char    buf[ STRLEN ];
@@ -1983,7 +1982,7 @@ int saveheader ;
 #else
     ismsgline=1;
 #endif
-    msg();
+    domsg();
 #ifdef VEDITOR
     sprintf(bkfname,"%s~",filename);
     sprintf(currfname,"%s",filename);
@@ -2009,7 +2008,7 @@ int saveheader ;
 #else
     ismsgline=1;
 #endif
-    msg();
+    domsg();
 #ifdef VEDITOR
     sprintf(bkfname,"%s~",filename);
     sprintf(currfname,"%s",filename);
