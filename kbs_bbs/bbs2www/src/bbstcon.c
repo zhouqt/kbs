@@ -152,7 +152,7 @@ int show_file(char *board,struct boardheader* bh,struct fileheader *x, int n, ch
     printf("<table width=\"90%%\" class=\"BODY\">\n");
 	printf("<tr><td class=\"default\">\n");
 	sprintf(www_url,"/bbscon.php?board=%s&id=%d",board_url,x->id);
-    printf("[<a href=\"/bbscon.php?board=%s&id=%d\">本篇全文</a>]", board_url, x->id);
+    printf("[<a href=\"%s\">本篇全文</a>]", www_url);
     if (strncmp(x->title,"Re:",3))
 	    title=x->title;
     else
