@@ -54,7 +54,7 @@
 </style>
 <body>
 <?php
-	echo "<a name=\"top\"><p class=date>::Blog信息::<br />名称: ".$pc["NAME"]."<br />作者: <a href=\"".$pcconfig["SITE"]."/bbsqry.php?userid=".$pc["USER"]."\">".$pc["USRE"]."</a><br />域名: <a href=\"".pc_personal_domainname($pc["USER"])."\">".pc_personal_domainname($pc["USER"])."</a><br />站点: <a href=\"http://".$pcconfig["SITE"]."\">".$pcconfig["BBSNAME"]."</a><br /></p>";
+	echo "<a name=\"top\"><p class=date>::Blog信息::<br />名称: ".$pc["NAME"]."<br />作者: <a href=\"".$pcconfig["SITE"]."/bbsqry.php?userid=".$pc["USER"]."\">".$pc["USER"]."</a><br />域名: <a href=\"".pc_personal_domainname($pc["USER"])."\">".pc_personal_domainname($pc["USER"])."</a><br />站点: <a href=\"http://".$pcconfig["SITE"]."\">".$pcconfig["BBSNAME"]."</a><br /></p>";
 	echo "<p class=date>档案日期：".time_format($archDate[0])." ～ ".time_format($archDate[1])."</p><hr size=1>";
 	
 	$query = "SELECT * FROM nodes WHERE uid = '".$pc["UID"]."' AND type = 0 AND changed >= ".$archDate[0]." AND changed <= ".$archDate[1]." ";
@@ -65,12 +65,12 @@
 	else
 		$query .=" AND access = 0 ";
 	
-	$query .=" ORDER BY nid ASC ;";
+	$query .=" ORDER BY nid DESC ;";
 	$result = mysql_query($query);
 	while($rows=mysql_fetch_array($result))
 	{
+		echo "<p class=date>".time_format($rows[created])."</p>";
 		echo "<p class=content><strong>主题: </strong><a href=\"http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$pc["UID"]."&nid=".$rows[nid]."&s=all\">".html_format($rows[subject])."</a><br />";
-		echo "<strong>发表日期: </strong>".time_format($rows[created])."<br />";
 		echo "<font class=content>".html_format($rows[body],TRUE,$rows[htmltag])."</font><br /><br /><a href=\"#top\">[返回顶部]</a></p><hr size=1>";
 	}
 	mysql_free_result($result);
