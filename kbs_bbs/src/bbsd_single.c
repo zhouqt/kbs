@@ -219,78 +219,79 @@ static void start_daemon(inetd, port)
          */
         return;
     }
+    else {
+      sprintf(buf, "bbsd start at %s", ctime(&val));
+      cat(PID_FILE, buf);
 
-    sprintf(buf, "bbsd start at %s", ctime(&val));
-    cat(PID_FILE, buf);
-
-    close(0);
-    /* COMMAN: do not fork in debuggind mode */
-    if (fork())
+      close(0);
+      /* COMMAN: do not fork in debuggind mode */
+      if (fork())
         exit(0);
 
-    setsid();
+      setsid();
 
-    if (fork())
+      if (fork())
         exit(0);
-    sin.sin_family = AF_INET;
-    sin.sin_addr.s_addr = htonl(INADDR_ANY);
-/*    sin.sin_addr.s_addr = htonl(INADDR_LOOPBACK);*/
+      sin.sin_family = AF_INET;
+      sin.sin_addr.s_addr = htonl(INADDR_ANY);
+      /*    sin.sin_addr.s_addr = htonl(INADDR_LOOPBACK);*/
 
-    /*  if (port <= 0)  Thor.981206: port 0 代表没有参数
-       {
-       n = MAXPORTS - 1;
-       while (n)
-       {
-       if (fork() == 0)
-       break;
+      /*  if (port <= 0)  Thor.981206: port 0 代表没有参数
+	  {
+	  n = MAXPORTS - 1;
+	  while (n)
+	  {
+	  if (fork() == 0)
+	  break;
 
-       sleep(1);
-       n--;
-       }
-       port = myports[n];
-       }
-     */
+	  sleep(1);
+	  n--;
+	  }
+	  port = myports[n];
+	  }
+      */
 
-    n = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+      n = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-    val = 1;
-    setsockopt(n, SOL_SOCKET, SO_REUSEADDR, (char *) &val, sizeof(val));
+      val = 1;
+      setsockopt(n, SOL_SOCKET, SO_REUSEADDR, (char *) &val, sizeof(val));
 
 #if 0
-    setsockopt(n, SOL_SOCKET, SO_KEEPALIVE, (char *) &val, sizeof(val));
+      setsockopt(n, SOL_SOCKET, SO_KEEPALIVE, (char *) &val, sizeof(val));
 
-    setsockopt(n, IPPROTO_TCP, TCP_NODELAY, (char *) &val, sizeof(val));
+      setsockopt(n, IPPROTO_TCP, TCP_NODELAY, (char *) &val, sizeof(val));
 #endif
 
-    /* --------------------------------------------------- */
-    /* Give up root privileges: no way back from here    */
-    /* --------------------------------------------------- */
+      /* --------------------------------------------------- */
+      /* Give up root privileges: no way back from here    */
+      /* --------------------------------------------------- */
 
 
-    mport = port;
-    if (port == 6001)
+      mport = port;
+      if (port == 6001)
         strcpy(code, "e");
-    else
+      else
         strcpy(code, "d");
-    sin.sin_port = htons(port);
-    if ((bind(n, (struct sockaddr *) &sin, sizeof(sin)) < 0) || (listen(n, QLEN) < 0)) {
+      sin.sin_port = htons(port);
+      if ((bind(n, (struct sockaddr *) &sin, sizeof(sin)) < 0) || (listen(n, QLEN) < 0)) {
         cat(PID_FILE, strerror(errno));
         exit(1);
-    }
+      }
 
-    setgid(BBSGID);
-    setuid(BBSUID);
+      setgid(BBSGID);
+      setuid(BBSUID);
 
-    sprintf(buf, "reclog/bbsd.pid.%d", port);
-    if ((lock_pid = fopen(buf, "w+")) == NULL) {
+      sprintf(buf, "reclog/bbsd.pid.%d", port);
+      if ((lock_pid = fopen(buf, "w+")) == NULL) {
         cat(PID_FILE, strerror(errno));
         exit(0);
+      }
+      /*
+	flock(lock_pid,LOCK_EX);
+      */
+      fprintf(lock_pid, "%d\n", getpid());
+      fclose(lock_pid);
     }
-    /*
-       flock(lock_pid,LOCK_EX);
-     */
-    fprintf(lock_pid, "%d\n", getpid());
-    fclose(lock_pid);
 }
 
 
@@ -482,13 +483,103 @@ int bbs_main(argv)
 }
 
 #ifndef SSHBBS
+
+typedef int (*bbs_handler)(char*);
+
+enum bbs_handlers{
+  BBS_STANDALONE,
+  BBS_INETD,
+  BBS_PREFORK,
+  BBS_HANDLERS,
+};
+
+#define FROMHOST(sin) \
+  {\
+    char *host = (char *) inet_ntoa(sin.sin_addr);\
+    strncpy(fromhost, host, IPLEN);\
+    fromhost[IPLEN] = 0;\
+  }
+
+static int bbs_standalone_main(char* argv)
+{
+  int csock;                  /* socket for Master and Child */
+  int value;
+  struct sockaddr_in sin;
+
+#if 0
+  for (; listprocess > 0; listprocess--)
+    fork();
+#endif
+  for (;;) {
+    /*
+      value = 1;
+      if (select(1, (fd_set *) & value, NULL, NULL, NULL) < 0)
+      continue;
+    */
+    value = sizeof(sin);
+    csock = accept(0, (struct sockaddr *) &sin, (socklen_t *) & value);
+    if (csock < 0) {
+      /*                reaper();*/
+      continue;
+    }
+    /* COMMAN :do not fork in debugging mode */
+    if (fork()) {
+      close(csock);
+      continue;
+    }
+    /* sanshao@10.24: why next line is originally sizeof(sin) not &value */
+    getpeername(csock, (struct sockaddr *) &sin, (socklen_t *) & value);
+    bbslog("0connect", "connect from %s(%d) in port %d", inet_ntoa(sin.sin_addr), htons(sin.sin_port), mport);
+    setsid();
+
+    close(0);
+
+    dup2(csock, 0);
+    /* COMMAN: 有人说不处理1和2号文件句柄会把stderr and stdout打进文件弄坏PASSWD之类
+       想想挺有道理的说，不过为什么以前税目没有碰上过呢....
+       笨蛋COMMAN:这个当然是因为stderr,stdout都被全部检查过，不会写入，唯一的可能
+       发生的情况是在system调用。 */
+    /* COMMAN end */
+    close(csock);
+    break;
+  }
+
+  FROMHOST(sin);
+
+  telnet_init();
+  return bbs_main(argv);
+
+}
+
+static int bbs_inet_main(char* argv)
+{
+  struct sockaddr_in sin;
+  int sinlen = sizeof(sin);
+
+  getpeername(0, (struct sockaddr *) &sin, (void *) &sinlen);
+
+  FROMHOST(sin);
+
+  telnet_init();
+  return bbs_main();
+}
+
+extern int bbs_prefork_main(char*);
+
+#undef FROMHOST
+
+bbs_handler handlers[]={
+  bbs_standalone_main,
+  bbs_inet_main,
+#ifdef USING_PREFORK
+  bbs_prefork_main,
+#endif
+};
+
 int main(argc, argv)
     int argc;
     char *argv[];
 {
-    int csock;                  /* socket for Master and Child */
-    int value;
-    struct sockaddr_in sin;
 
     /* --------------------------------------------------- */
     /* setup standalone daemon                           */
@@ -505,18 +596,21 @@ int main(argc, argv)
     /* Thor.981207: usage,  bbsd, or bbsd 1234, or bbsd -i 1234 */
     /*  start_daemon(argc > 2, atoi(argv[argc-1]));
        KCN change it for not port parm */
-    int inetd, port;
-
-    inetd = 0;
+    int mode, port;
     int c;
 
-    while ((c = getopt(argc, argv, "idp:")) != -1){
+    mode = BBS_STANDALONE;
+
+    while ((c = getopt(argc, argv, "ifdp:")) != -1){
       switch (c){
       case 'i':
-	inetd = 1;
+	mode = BBS_INETD;
+	break;
+      case 'f':
+	mode = BBS_PREFORK;
 	break;
       case 'd':
-	no_fork=1;
+	no_fork = 1;
 	break;
       case 'p':
 	port=atoi(optarg);
@@ -543,7 +637,7 @@ int main(argc, argv)
             listprocess = atoi(argv[2]);
     }
 #endif
-    start_daemon(inetd, port);
+    start_daemon((mode == BBS_INETD), port);
     main_signals();
 
     /* --------------------------------------------------- */
@@ -551,49 +645,8 @@ int main(argc, argv)
     /* --------------------------------------------------- */
 
     server_pid = getpid();
-    if (!inetd) {
-#if 0
-        for (; listprocess > 0; listprocess--)
-            fork();
-#endif
-        for (;;) {
-/*
-            value = 1;
-            if (select(1, (fd_set *) & value, NULL, NULL, NULL) < 0)
-                continue;
-*/
-            value = sizeof(sin);
-            csock = accept(0, (struct sockaddr *) &sin, (socklen_t *) & value);
-            if (csock < 0) {
-/*                reaper();*/
-                continue;
-            }
-            /* COMMAN :do not fork in debugging mode */
-            if (fork()) {
-                close(csock);
-                continue;
-            }
-            /* sanshao@10.24: why next line is originally sizeof(sin) not &value */
-            getpeername(csock, (struct sockaddr *) &sin, (socklen_t *) & value);
-            bbslog("0connect", "connect from %s(%d) in port %d", inet_ntoa(sin.sin_addr), htons(sin.sin_port), port);
-            setsid();
+    return (*handlers[mode])(argv[0]);
 
-            close(0);
-
-            dup2(csock, 0);
-            /* COMMAN: 有人说不处理1和2号文件句柄会把stderr and stdout打进文件弄坏PASSWD之类
-               想想挺有道理的说，不过为什么以前税目没有碰上过呢....
-               笨蛋COMMAN:这个当然是因为stderr,stdout都被全部检查过，不会写入，唯一的可能
-               发生的情况是在system调用。 */
-            /* COMMAN end */
-            close(csock);
-            break;
-        }
-    } else {
-        int sinlen = sizeof(struct sockaddr_in);
-
-        getpeername(0, (struct sockaddr *) &sin, (void *) &sinlen);
-    }
 
     /*
        whee = gethostbyaddr((char*)&sin.sin_addr.s_addr,sizeof(struct in_addr),AF_INET);
@@ -601,14 +654,6 @@ int main(argc, argv)
        strncpy(hid, whee->h_name, 17) ;
        else
        KCN temp change it for trace IP!! don't remove. 2000.8.19 */
-    {
-        char *host = (char *) inet_ntoa(sin.sin_addr);
-
-        strncpy(fromhost, host, IPLEN);
-        fromhost[IPLEN] = 0;
-    }
-    telnet_init();
-    return bbs_main(argv[0]);
 }
 #else
 void ssh_exit()
