@@ -378,6 +378,16 @@ function pcmain_blogger_area()
 
 $link = pc_db_connect();
 pcmain_html_init();
+if (defined("SITE_SMTH")) {
+?>
+<script type="text/javascript"><!--
+reg = new RegExp("^http://[^/]*smth\\.[^/]+/");
+if (top.location != self.location && !top.location.href.match(reg)) {
+	top.location = self.location;
+}
+// --></script>
+<?php
+}
 ?>
   <tr>
     <td><table width="100%" border="0" cellspacing="0" cellpadding="3">
