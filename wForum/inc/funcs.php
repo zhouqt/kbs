@@ -696,7 +696,7 @@ function head_var($Title='', $URL='',$showWelcome=0)
 ?>
 <table cellspacing=1 cellpadding=3 align=center class=TableBorder2>
 <tr><td>
-<img src="pic/forum_nav.gif" align=absmiddle> <a href="<?php echo $SiteURL; ?>"><?php   echo $SiteName; ?></a> ¡ú 
+<img src="pic/forum_nav.gif" align=absmiddle> <a href="index.php"><?php   echo $SiteName; ?></a> ¡ú 
 <?php 
 	if ($Title!='') {
 		echo  "<a href=".$URL.">".$Title."</a> ¡ú ";

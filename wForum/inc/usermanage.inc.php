@@ -9,7 +9,7 @@ function showUserManageMenu(){
 <th width=14%  id=TableTitleLink><a href=userparam.php>用户自定义参数</a></th>
 <th width=14%  id=TableTitleLink><a href=usermailbox.php>用户信件服务</a></th>
 <th width=14%  id=TableTitleLink><a href=friendlist.php>编辑好友列表</a></th>
-<th width=14%  id=TableTitleLink><a href=favboard.php>用户收藏版面</a></th>
+<th width=14%  id=TableTitleLink><a href=modifyfavboards.php>收藏版面管理</a></th>
 </tr>
 </table>
 <?php

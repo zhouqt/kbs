@@ -296,7 +296,7 @@ function board_head_var($boardDesc,$boardName,$secNum)
 ?>
 <table cellspacing=1 cellpadding=3 align=center class=TableBorder2>
 <tr><td>
-<img src="pic/forum_nav.gif"> <a href="<?php echo $SiteURL; ?>"><?php   echo $SiteName; ?></a> ¡ú 
+<img src="pic/forum_nav.gif"> <a href="index.php"><?php   echo $SiteName; ?></a> ¡ú 
 <a href="section.php?sec=<?php echo $secNum; ?>"><?php echo $section_names[intval($secNum)][0] ; ?></a> ¡ú <a href="board.php?name=<?php echo $boardName; ?>"><?php echo $boardDesc; ?></a> ¡ú <?php echo $stats; ?> 
 </td></tr>
 </table>
