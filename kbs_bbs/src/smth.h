@@ -20,6 +20,7 @@
 #define	LENGTH_ACBOARD_LINE 	80
 
 #define LIFE_DAY_USER		120
+#define LIFE_DAY_YEAR          365
 #define LIFE_DAY_LONG		666
 #define LIFE_DAY_SYSOP		119
 #define LIFE_DAY_NODIE		999
