@@ -85,6 +85,7 @@ int	Goodbye();
 int i_read_mail(); /* period 2000.11.12 */
 
 void    RemoveAppendedSpace(); /* Leeward 98.02.13 */
+int set_delete_mark(int ent,struct fileheader *fileinfo,char *direct ); /* KCN */
 
 extern int      numboards;
 extern time_t   login_start_time;
