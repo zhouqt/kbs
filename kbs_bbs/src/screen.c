@@ -739,7 +739,7 @@ void saveline(int line, int mode, char* buffer)	/* 0 : save, 1 : restore */
             strncpy(bp[line].data, tmp, LINELEN);
             strncpy(bp[line].mode, tmp+LINELEN, LINELEN);
             strncpy(bp[line].color, tmp+LINELEN*2, LINELEN);
-            for(i=0;i<scr_lns;i++)
+            for(i=0;i<scr_cols;i++)
                 bp[line].mode[i]|=SCREEN_MODIFIED;
             refresh();
             break;
@@ -764,7 +764,7 @@ void norefresh_saveline(int line, int mode, char*buffer)	/* 0 : save, 1 : restor
             strncpy(bp[line].data, tmp, LINELEN);
             strncpy(bp[line].mode, tmp+LINELEN, LINELEN);
             strncpy(bp[line].color, tmp+LINELEN*2, LINELEN);
-            for(i=0;i<scr_lns;i++)
+            for(i=0;i<scr_cols;i++)
                 bp[line].mode[i]|=SCREEN_MODIFIED;
             break;
     }
