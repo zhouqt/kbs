@@ -5,6 +5,8 @@
 	** @id:windinsn Nov 19,2003
 	*/
 	require("pcfuncs.php");
+	if(pc_update_cache_header())
+		return;
 	
 	function display_user_list($link,$listorder="username",$listorder1="ASC",$char=FALSE,$startno=0,$pagesize=10)
 	{

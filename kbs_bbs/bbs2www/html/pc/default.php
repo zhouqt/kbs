@@ -354,8 +354,8 @@ function pcmain_section_top_view()
 <?php
 }
 
-//if(pc_update_cache_header())
-//	return;
+if(pc_update_cache_header())
+	return;
 
 $link = pc_db_connect();
 pcmain_html_init();

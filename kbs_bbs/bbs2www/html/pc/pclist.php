@@ -3,8 +3,8 @@ require("pcfuncs.php");
 require("pcstat.php");
 require("pcmainfuncs.php");
 
-//if(pc_update_cache_header())
-//	return;
+if(pc_update_cache_header(60))
+	return;
 
 function pcmain_hot_users($link,$period,$color)
 {
