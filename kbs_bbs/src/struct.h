@@ -152,6 +152,21 @@ struct _mail_list{
     int mail_list_t;
 } ;
 
+typedef struct
+{
+	char group_name[8]; /** "groupXX\0", XX stands for 00 to 99 */
+	unsigned int users_num;
+	char group_desc[40];
+	char __reserved[12];
+}mailgroup_list_item;
+
+typedef struct
+{
+	unsigned int groups_num;
+	mailgroup_list_item groups[MAX_MAILGROUP_NUM];
+}mailgroup_list_t;
+
+typedef struct friends mailgroup_t;
 
 #endif
 
