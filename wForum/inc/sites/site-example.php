@@ -24,6 +24,7 @@ define ("ATTACHMAXTOTALSIZE","20971520");
 define("ATTACHMAXCOUNT","20");
 
 define('SERVERTIMEZONE','北京时间'); //服务器时区
+//define("SHOW_SERVER_TIME", true); //显示服务器时间
 
 define('SHOWTELNETPARAM', 0); //是否允许配置 telnet 下专用的个人参数
 

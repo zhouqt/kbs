@@ -353,3 +353,22 @@ function article_is_unread(flag) {
 	if (!siteconf_SHOW_POST_UNREAD) return false;
 	return ( 'D' == flag || 'G' == flag || 'M' == flag  || 'B' == flag || 'N' == flag || '*' == flag);
 }
+
+
+/* 服务器时钟 */
+var serverDiff;
+function initTime(st) {
+	serverDiff = st * 1000 - new Date().getTime();
+	showTime();
+	setInterval("showTime()", 1000);
+}
+function prefixZero(d) {
+	if (d > 9) return d;
+	else return "0" + d;
+}
+function showTime() {
+	if ((KCN = getRawObject("serverTime")) == null) return;
+	var Timer = new Date(serverDiff + new Date().getTime());
+	str = Timer.getUTCFullYear() + "-" + prefixZero(Timer.getUTCMonth() + 1) + "-" + prefixZero(Timer.getUTCDate()) + " " + prefixZero(Timer.getUTCHours()) + ":" + prefixZero(Timer.getUTCMinutes()) + ":" + prefixZero(Timer.getUTCSeconds());
+	KCN.innerHTML = "服务器时间: " + str;
+}

@@ -638,7 +638,7 @@ function head_var($Title='', $URL='',$showWelcome=0)
   } 
 ?>
 <table cellspacing=1 cellpadding=3 align=center class=TableBorder2>
-<tr><td>
+<tr><td><nobr>
 <img src="pic/forum_nav.gif" align=absmiddle> <a href="index.php"><?php   echo $SiteName; ?></a> ¡ú 
 <?php 
 	if ($Title!='') {
@@ -646,8 +646,21 @@ function head_var($Title='', $URL='',$showWelcome=0)
 	}
 	echo $stats;
 ?>
-</td></td>
+</nobr></td>
+<td align="right" id="serverTime"> </td>
+</tr>
 </table>
+<?php
+	if (SHOW_SERVER_TIME) {
+?>
+<script language="JavaScript">
+<!--
+	initTime(<?php echo time()+intval(date("Z")); ?>);
+//-->
+</script>
+<?php
+	}
+?>
 <br>
 <?php 
 } 

@@ -185,13 +185,26 @@ function board_head_var($boardDesc,$boardName,$secCode)
   $secIndex = get_secname_index($secCode);
 ?>
 <table cellspacing=1 cellpadding=3 align=center class=TableBorder2>
-<tr><td>
+<tr><td><nobr>
 <img src="pic/forum_nav.gif"> <a href="index.php"><?php   echo $SiteName; ?></a> ¡ú 
 <a href="section.php?sec=<?php echo $secIndex; ?>"><?php echo $section_names[$secIndex][0] ; ?></a> ¡ú 
 <a href="board.php?name=<?php echo $boardName; ?>"><?php echo $boardDesc; ?></a> ¡ú 
 <?php echo $stats; ?> 
-</td></tr>
+</nobr></td>
+<td align="right" id="serverTime"> </td>
+</tr>
 </table>
+<?php
+	if (SHOW_SERVER_TIME) {
+?>
+<script language="JavaScript">
+<!--
+	initTime(<?php echo time()+intval(date("Z")); ?>);
+//-->
+</script>
+<?php
+	}
+?>
 <br>
 <?php 
 } 
