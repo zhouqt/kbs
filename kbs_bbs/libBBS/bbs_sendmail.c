@@ -509,19 +509,21 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5,
         server = "127.0.0.1:25";
     smtp_set_server(smtpsession, server);
 	smtp_set_hostname(smtpsession, email_domain());
-    sprintf(newbuf, "%s@%s", session->currentuser->userid, email_domain());
-    snprintf(from, STRLEN, "%s(%s) <%s@%s>",session->currentuser->userid, session->currentuser->username, session->currentuser->userid, email_domain());
-    from[STRLEN-1]=0;
+    snprintf(newbuf, STRLEN, "%s(%s)",session->currentuser->userid, session->currentuser->username);
+    newbuf[STRLEN-1]=0;
     if (isbig5) {
-       len=strlen(from);
-       encodestr=gb2big(from,&len,1);
+       len=strlen(newbuf);
+       encodestr=gb2big(newbuf,&len,1);
        encodestr=encodestring(encodestr,"BIG5");
     } else {
-       encodestr=encodestring(from,"GBK");
+       encodestr=encodestring(newbuf,"GBK");
     }
-	strncpy(from,encodestr,STRLEN-1);
+	strncpy(newbuf,encodestr,STRLEN-1);
+    newbuf[STRLEN-1]=0;
+    snprintf(from, STRLEN, "\"%s\" <%s@%s>",newbuf, session->currentuser->userid, email_domain());
     from[STRLEN-1]=0;
 	free(encodestr);
+    sprintf(newbuf, "%s@%s", session->currentuser->userid, email_domain());
     smtp_set_reverse_path(message, newbuf);
     smtp_set_header(message, "Message-Id", NULL);
     if (isbig5) {
