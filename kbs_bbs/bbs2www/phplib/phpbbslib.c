@@ -2467,6 +2467,7 @@ static PHP_FUNCTION(bbs_createregform)
 
     if (fn) {
         now = time(NULL);
+        flock(fileno(fn),LOCK_EX);
         fprintf(fn, "usernum: %d, %s", usernum, ctime(&now));
         fprintf(fn, "userid: %s\n", userid);
         fprintf(fn, "realname: %s\n", realname);
@@ -2475,6 +2476,7 @@ static PHP_FUNCTION(bbs_createregform)
         fprintf(fn, "phone: %s\n", phone);
         fprintf(fn, "birth: %s\n", genbuf);
         fprintf(fn, "----\n");
+        flock(fileno(fn),LOCK_UN);
         fclose(fn);
         RETURN_LONG(0);
     }
@@ -2512,7 +2514,8 @@ static PHP_FUNCTION(bbs_findpwd_check)
     if(userid_len > IDLEN)RETURN_LONG(1);
 
 	//Éú³ÉÐÂÃÜÂë
-	sprintf(pwd,"S%d",rand());
+	srand(time(NULL));
+	sprintf(pwd,"%d",rand());
 
 	if(userid_len > 0){
         if(getuser(userid,&uc) == 0)RETURN_LONG(3);
