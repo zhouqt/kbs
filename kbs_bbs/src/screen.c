@@ -503,12 +503,14 @@ outc(unsigned char c)
 		ochar(c);
 		return;
 	}
-	if (inansi == 1) {
-		if (c == 'm') {
-			inansi = 0;
+	if (inansi == true) {
+		if (isalpha(c) ) {
+			inansi = false;
 			return;
-		}
-		return;
+		} else if ((c=='\n') || (c=='\r'))
+		    inansi=false;
+		else
+		    return;
 	}
 	{
 		register int reg_line = cur_ln + roll;
@@ -541,6 +543,9 @@ outc(unsigned char c)
 			return;
 		} else if (c != KEY_ESC || !showansi) {
 			c = '*';	/* else substitute a '*' for non-printable */
+		} if ((c==KEY_ESC)&&(!iscolor)) {
+		    inansi=true;
+		    return;
 		}
 	}
 	if (reg_col >= slp->len) {
@@ -589,6 +594,8 @@ int n;
 	const char *begin_str = str;
 	int begincol = 0;
 
+	inansi=false;
+
 #define DO_MODIFY { if (slp->smod > begincol) slp->smod=begincol; \
                     if (slp->emod < reg_col) slp->emod=reg_col; \
                     if(standing && slp->mode&STANDOUT) { \
@@ -623,6 +630,17 @@ int n;
 			slp->mode |= MODIFIED;
 		}
 		while ((str - begin_str < n) && *str) {
+		    if (inansi) {
+		        //filter ansi
+		        if (isalpha(*str))
+		            inansi=false;
+		        if ((*str=='\n')||(*str=='\r')) {
+		            inansi=false;
+		            continue;
+		        }
+		        str++;
+		        continue;
+		    }
                       if (*str == ''&&*(str+1)=='[') {
                              register int i=1;
                              while(!isalpha(*(str+i))&&(*(str+i)!='')&&*(str+i)) i++;
@@ -658,9 +676,12 @@ int n;
 				break;
 			}
 			if (*str == '') {
-				slp->data[reg_col++] = (unsigned char) '';
-			} else if (!isprint2(*str))
-				slp->data[reg_col++] = (unsigned char) '*';
+			    if (iscolor) 
+        		        slp->data[reg_col++] = (unsigned char) '';
+			    else
+        		        inansi=true;
+    			} else if (!isprint2(*str))
+    				slp->data[reg_col++] = (unsigned char) '*';
 			else
 				slp->data[reg_col++] = *(str);
 			str++;
