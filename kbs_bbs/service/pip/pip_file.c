@@ -25,7 +25,7 @@ pip_write_file()
 #ifdef MAPLE
 	sprintf(buf, "home/%s/new_chicken", cuser->userid);
 #else
-	sprintf(buf, "home/%c/%s/new_chicken", tnupper(cuser->userid[0]),
+	sprintf(buf, "home/%c/%s/new_chicken", toupper(cuser->userid[0]),
 		cuser->userid);
 #endif				// END MAPLE
 
