@@ -425,9 +425,7 @@ int multilogin_user(struct userec *user, int usernum,int mode)
     if (HAS_PERM(user, PERM_MULTILOG))
         return 0;               /* don't check sysops */
     curr_login_num = get_utmp_number();
-    /* Leeward: 97.12.22 BMs may open 2 windows at any time */
-    /* Bigman: 2000.8.17 智囊团能够开2个窗口 */
-    /* stephen: 2001.10.30 仲裁可以开两个窗口 */
+    /* binxun 2003.5 仲裁，版主，Chatop，等都可以三登*/
     if ((HAS_PERM(user, PERM_BOARDS) || HAS_PERM(user, PERM_CHATOP) 
     	|| HAS_PERM(user, PERM_JURY) || HAS_PERM(user, PERM_CHATCLOAK)
     	|| HAS_PERM(user, PERM_BMAMANGER) )
