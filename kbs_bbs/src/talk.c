@@ -197,6 +197,24 @@ int t_printstatus(struct user_info *uentp, int *arg, int pos)
 }
 
 /* Modified By Excellent*/
+int talk_showstatus(struct user_info *uentp, struct _tag_talk_showstatus *arg, int pos)
+{
+    char buf[80];
+
+    if (uentp->invisible && !HAS_PERM(currentuser, PERM_SEECLOAK))
+        return 0;
+    arg->pos[arg->count++] = pos;
+    sprintf(buf, "(%d) 目前状态: %s, 来自: %s \n", arg->count, modestring(uentp->mode, uentp->destuid, 0,       /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
+                                                                          uentp->in_chat ? uentp->chatid : NULL), uentp->from);
+    strcat(genbuf, buf);
+    return COUNT;
+}
+
+int t_cmpuids(int uid, struct user_info *up)
+{
+    return (up->active && uid == up->uid);
+}
+
 int t_query(q_id)
 char q_id[IDLEN];
 {
@@ -309,8 +327,87 @@ char q_id[IDLEN];
         prints("\n");
     }
     show_user_plan(planid);
-    if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND && uinfo.mode != GMENU)
-        pressanykey();
+    if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND && uinfo.mode != GMENU) {
+        if(uinfo.mode != QUERY)
+            pressanykey();
+        else {
+            int ch, tuid, ucount, unum;
+            char genbuf[STRLEN], buf[STRLEN];
+            struct user_info *uin;
+            struct _tag_talk_showstatus ts;
+            move(t_lines - 1, 0);
+            if ((genbuf[0]) && seecount) {
+                if (DEFINE(currentuser, DEF_HIGHCOLOR))
+                    prints("\x1b[m\x1b[44m聊天[\x1b[1;32mt\x1b[m\x1b[0;44m] 寄信[\x1b[1;32mm\x1b[m\x1b[0;44m] 送讯息[\x1b[1;32ms\x1b[m\x1b[0;44m] 加,减朋友[\x1b[1;32mo\x1b[m\x1b[0;44m,\x1b[1;32md\x1b[m\x1b[0;44m] 其它键继续                            \x1b[m");
+                else
+                    prints("\x1b[44m聊天[t] 寄信[m] 送讯息[s] 加,减朋友[o,d] 其它键继续                            \x1b[m");
+            }
+            else {
+                if (DEFINE(currentuser, DEF_HIGHCOLOR))
+                    prints("\x1b[m\x1b[44m        寄信[\x1b[1;32mm\x1b[m\x1b[0;44m]           加,减朋友[\x1b[1;32mo\x1b[m\x1b[0;44m,\x1b[1;32md\x1b[m\x1b[0;44m] 其它键继续                            \x1b[m");
+                else
+                    prints("\x1b[44m        寄信[m]           加,减朋友[o,d] 其它键继续                            \x1b[m");
+            }
+            ch = igetkey();
+            switch(toupper(ch)) {
+                case 'T':
+                    if (!((genbuf[0]) && seecount)) break;
+                    uin = t_search(uident, false);
+                    if(uin==NULL) break;
+                    ttt_talk(&uin);
+                    break;
+                case 'S':
+                    if (!((genbuf[0]) && seecount)) break;
+                    if (strcmp(uident, "guest") && !HAS_PERM(currentuser, PERM_PAGE))
+                        break;
+                    uin = t_search(uident, false);
+                    if (!canmsg(currentuser, uin)) {
+                        sprintf(buf, "%s 已经关闭讯息呼叫器", uident);
+                        break;
+                    }
+                    strcpy(MsgDesUid, uident);
+                    do_sendmsg(uin, NULL, 0);
+                    break;
+                case 'M':
+                    if (HAS_PERM(currentuser, PERM_DENYMAIL)
+                    	||!HAS_PERM(currentuser, PERM_LOGINOK))
+                        break;
+                    m_send(uident);
+                    break;
+                case 'O':
+                    if (!strcmp("guest", currentuser->userid))
+                        return 0;
+                    if (addtooverride(uident) == -1)
+                        sprintf(buf, "%s 已在朋友名单", uident);
+                    else
+                        sprintf(buf, "%s 列入朋友名单", uident);
+                    move(BBS_PAGESIZE + 3, 0);
+                    clrtoeol();
+                    prints("%s", buf);
+                    sleep(1);
+                    break;
+                case 'D':
+                    if (!strcmp("guest", currentuser->userid))
+                        break;
+                    sprintf(buf, "你要把 %s 从朋友名单移除吗 (Y/N) [N]: ", uident);
+                    move(BBS_PAGESIZE + 3, 0);
+                    clrtoeol();
+                    getdata(BBS_PAGESIZE + 3, 0, buf, genbuf, 4, DOECHO, NULL, true);
+                    move(BBS_PAGESIZE + 3, 0);
+                    clrtoeol();
+                    if (genbuf[0] != 'Y' && genbuf[0] != 'y') break;
+                    if (deleteoverride(uident) == -1)
+                        sprintf(buf, "%s 本来就不在朋友名单中", uident);
+                    else
+                        sprintf(buf, "%s 已从朋友名单移除", uident);
+                    move(BBS_PAGESIZE + 3, 0);
+                    clrtoeol();
+                    prints("%s", buf);
+                    sleep(1);
+                    break;
+            }
+        }
+    }
     uinfo.destuid = 0;
     return 0;
 }
@@ -361,26 +458,10 @@ int num_visible_users()
     apply_ulist_addr((APPLY_UTMP_FUNC) count_visible_active, (char *) &count);
     return count;
 }
-int t_cmpuids(int uid, struct user_info *up)
-{
-    return (up->active && uid == up->uid);
-}
 struct _tag_talk_showstatus {
     int count;
     int pos[20];
 };
-int talk_showstatus(struct user_info *uentp, struct _tag_talk_showstatus *arg, int pos)
-{
-    char buf[80];
-
-    if (uentp->invisible && !HAS_PERM(currentuser, PERM_SEECLOAK))
-        return 0;
-    arg->pos[arg->count++] = pos;
-    sprintf(buf, "(%d) 目前状态: %s, 来自: %s \n", arg->count, modestring(uentp->mode, uentp->destuid, 0,       /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
-                                                                          uentp->in_chat ? uentp->chatid : NULL), uentp->from);
-    strcat(genbuf, buf);
-    return COUNT;
-}
 int ttt_talk(struct user_info *userinfo)
 {
     char uident[STRLEN];
