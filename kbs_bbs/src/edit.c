@@ -670,7 +670,7 @@ static long insert_from_fp(FILE *fp, long * attach_length)
                         data+=4+attsize-1;
                         not+=4+attsize-1;
                         matched = 0;
-						*attach_length += data - sstart + ATTACHMENT_SIZE;
+						if( attach_length) *attach_length += data - sstart + ATTACHMENT_SIZE;
                     }
                     continue;
                 }
