@@ -89,10 +89,10 @@
 		exit();
 	}
 	$pc = array(
-			"NAME" => html_format($rows[corpusname]),
+			"NAME" => htmlspecialchars(stripslashes($rows[corpusname])),
 			"USER" => $rows[username],
-			"DESC" => html_format($rows[description],TRUE),
-			"THEM" => html_format($rows[theme]),
+			"DESC" => htmlspecialchars(stripslashes($rows[description])),
+			"THEM" => htmlspecialchars(stripslashes($rows[theme])),
 			"UID" => $rows[uid]
 			);
 	$rss = array();
@@ -111,7 +111,7 @@
 	{
 		$rss[etems][$i] = array(
 					"etemaddr" => "http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$pc["UID"]."&amp;nid=".$rows[nid]."&amp;tid=".$rows[tid],
-					"etemtitle" => html_format($rows[subject]),
+					"etemtitle" => htmlspecialchars(stripslashes($rows[subject])),
 					"etemdesc" => html_format($rows[body],TRUE),
 					"etemauth" => $pc["USER"],
 					"etemtime" => rss_time_format($rows[created])
