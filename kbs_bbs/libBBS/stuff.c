@@ -2428,3 +2428,91 @@ int mail_birth()
 }
 
 #endif
+
+#define MAXLIST 1000
+
+int check_ID_lists(char * id)
+{
+    int i;
+    FILE* fp;
+    struct stat st;
+    struct flock ldata;
+    int fd;
+    char fn[80];
+    int found=0,min=0,ret=0;
+    time_t now;
+    struct id_struct{
+        char id[IDLEN+2];
+        time_t first,last;
+        int t;
+    } ids[MAXLIST];
+
+    sprintf(fn, ".IDlists");
+    if(stat(fn,&st)==-1) {
+        memset(ids, 0, sizeof(struct id_struct)*MAXLIST);
+        fd=open(fn, O_WRONLY|O_CREAT, 0600);
+        write(fd, ids, sizeof(struct id_struct)*MAXLIST);
+        close(fd);
+    }
+    now = time(0);
+    if(id[0]==0) return 0;
+    if(!strcmp(id, "guest")) return 0;
+
+    fd = open(fn, O_RDWR, 0600);
+    ldata.l_type = F_WRLCK;
+    ldata.l_whence = 0;
+    ldata.l_len = 0;
+    ldata.l_start = 0;
+    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+        bbslog("user", "%s", "reclock err");
+        close(fd);
+        return 0;              /* lock error*/
+    }
+    read(fd, ids, sizeof(struct id_struct)*MAXLIST);
+
+    for(i=0;i<MAXLIST;i++) {
+        if((double)(now-ids[i].last)>60*60) {
+            ids[i].id[0]=0;
+        }
+        if(!strncmp(ids[i].id, id, IDLEN)){
+            if((double)(now-ids[i].last)<=ID_CONNECT_CON_THRESHOLD2) {
+                fp=fopen(".IDdenys", "a");
+                if(fp){
+                    fprintf(fp, "0 %ld %s %d\n", now, id, ids[i].t);
+                    fclose(fp);
+                }
+                if((double)(now-ids[i].last)<=5.0)
+                    ret = 1;
+            }
+            found=1;
+            ids[i].last = now;
+            ids[i].t++;
+            if(ret==0)
+            if(ids[i].t>=10&&(ids[i].t/(double)(ids[i].last-ids[i].first)>=ID_CONNECT_CON_THRESHOLD)) {
+                fp=fopen(".IDdenys", "a");
+                if(fp){
+                    fprintf(fp, "1 %ld %s %d\n", now, id, ids[i].t);
+                    fclose(fp);
+                }
+                if(ids[i].t/(double)(ids[i].last-ids[i].first)>=100.0/60/60)
+                    ret = 1;
+            }
+            break;
+        }
+        if(ids[i].last<ids[min].last) min = i;
+    }
+    if(!found) {
+        strcpy(ids[min].id, id);
+        ids[min].first = now;
+        ids[min].last = now;
+        ids[min].t = 1;
+    }
+
+    lseek(fd, 0, SEEK_SET);
+    write(fd, ids, sizeof(struct id_struct)*MAXLIST);
+    ldata.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &ldata);        /* ÍË³ö»¥³âÇøÓò*/
+    close(fd);
+    return ret;
+}
+
