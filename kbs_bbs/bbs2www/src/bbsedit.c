@@ -60,7 +60,7 @@ int get_file_attach( char *infile, long *attach_pt, long * attach_length){
     char attachpad[10];
     int matched;
     char* ptr;
-    long size;
+    off_t size;
 	long ret=0;
 	int fd;
 
@@ -70,15 +70,15 @@ int get_file_attach( char *infile, long *attach_pt, long * attach_length){
 	*attach_length=0;
     matched=0;
 
-        if (safe_mmapfile_handle(fd,  PROT_READ, MAP_SHARED, (void **) &ptr, (off_t *) & size) == 1) {
+        if (safe_mmapfile_handle(fd,  PROT_READ, MAP_SHARED, (void **) &ptr, &size) == 1) {
             char* data;
             long not;
             data=ptr;
             for (not=0;not<size;not++,data++) {
-                if (data != NULL && *data==0) {
+                if (*data==0) {
                     matched++;
                     if (matched==ATTACHMENT_SIZE) {
-                        int d, size;
+                        int d, size2;
 						char *sstart = data;
                         data++; not++;
 						if(ret == 0)
@@ -90,9 +90,9 @@ int get_file_attach( char *infile, long *attach_pt, long * attach_length){
                         data++;
                         not++;
                         memcpy(&d, data, 4);
-                        size = htonl(d);
-                        data+=4+size-1;
-                        not+=4+size-1;
+                        size2 = htonl(d);
+                        data+=4+size2-1;
+                        not+=4+size2-1;
                         matched = 0;
 						*attach_length += data - sstart + ATTACHMENT_SIZE;
                     }
