@@ -695,7 +695,7 @@ int n;
                                 if(savey<0) savey=0;
                                 if(savey>=scr_lns) savey=scr_lns-1;
 
-                                good_gotoyx(savey,savex);
+                                good_move(savey,savex);
                                 str+=i+1;
                                 break;
                              }
