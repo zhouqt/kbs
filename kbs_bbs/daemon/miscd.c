@@ -10,10 +10,12 @@
 void do_exit()
 {
     flush_ucache();
+    bbslog("4miscdaemon", "flush passwd file");
 }
 
 void do_exit_sig(int sig)
 {
+    do_exit();
     exit(0);
 }
 
