@@ -1,6 +1,6 @@
 #include "bbs.h"
 
-static int ann_can_access(char *title, char *board)
+static int ann_can_access(char *title, char *board,struct userec* user)
 {
 	struct boardheader *bp;
 	char BM[STRLEN];
@@ -14,12 +14,15 @@ static int ann_can_access(char *title, char *board)
 			return 0;
 		strncpy(BM, bp->BM, sizeof(BM)-1);
 		BM[sizeof(BM)-1] = '\0';
-		if (chk_currBM(BM, currentuser) == 0)
+		if (chk_currBM(BM, user) == 0)
 			return 0;
+		return 2;
 	}
-	if (strstr(title,"(BM: SYSOPS)") && !HAS_PERM(currentuser, PERM_SYSOP))
+	if (strstr(title,"(BM: SYSOPS)")))
 	{
-		return 0;
+		if (!HAS_PERM(user, PERM_SYSOP))
+			return 0;
+		return 3;
 	}
 	return 1;
 }
@@ -228,7 +231,7 @@ int ann_get_path(char *board, char* path, size_t len)
 	return -1;
 }
 
-int ann_traverse_check(char *path)
+int ann_traverse_check(char *path,struct userec* user)
 {
 	char *ptr;
 	char *ptr2;
@@ -240,6 +243,7 @@ int ann_traverse_check(char *path)
 	char currpath[256];
 	FILE *fp;
 	char board[STRLEN];
+	int ret=0;
 
 	/* path parameter can not have leading '/' character */
 	if (path[0] == '/')
@@ -266,6 +270,7 @@ int ann_traverse_check(char *path)
 			return -1;
 		while(fgets(buf, sizeof(buf), fp) != NULL)
 		{
+			int t;
 			if ((ptr2 = strrchr(buf, '\n')) != NULL)
 				*ptr2 = '\0';
 			if ( strncmp( buf, "Name=", 5 ) == 0 )
@@ -287,9 +292,10 @@ int ann_traverse_check(char *path)
 			/*if ((!strstr(title,"(BM: BMS)")||HAS_PERM(currentuser,PERM_BOARDS))&&
 				(!strstr(title,"(BM: SYSOPS)")||HAS_PERM(currentuser,PERM_SYSOP))&&
 				(!strstr(title,"(BM: ZIXIAs)")||HAS_PERM(currentuser,PERM_SECANC)))*/
-			if (ann_can_access(title, board))
+			if ((t=ann_can_access(title, board,user))!=0)
 			{
-				/* directory can be accessed */
+				if (ret<t) ret=t; /* directory can be accessed but it should be access with some
+				permission */
 				break;
 			}
 			else
@@ -310,6 +316,6 @@ int ann_traverse_check(char *path)
 		ptr++;
 		i++;
 	}
-	return 0;
+	return ret;
 }
 

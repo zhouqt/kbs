@@ -17,6 +17,8 @@ static ZEND_FUNCTION(bbs_printansifile);
 static ZEND_FUNCTION(bbs_getboard);
 static ZEND_FUNCTION(bbs_checkreadperm);
 static ZEND_FUNCTION(bbs_brcaddread);
+static ZEND_FUNCTION(bbs_ann_traverse_check);
+static ZEND_FUNCTION(bbs_ann_get_board);
 
 static ZEND_MINIT_FUNCTION(bbs_module_init);
 static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown);
@@ -644,6 +646,29 @@ static ZEND_FUNCTION(bbs_brcaddread)
 	brc_addreaddirectly(getcurrentuser()->userid,boardnum,posttime);
 
 	RETURN_NULL();
+}
+
+static ZEND_FUNCTION(bbs_ann_traverse_check)
+{
+	char* path;
+	int path_len;
+	getcwd(old_pwd,1023);
+	chdir(BBSHOME);
+	old_pwd[1023]=0;
+	if (zend_parse_parameters(1 TSRMLS_CC, "s" , 
+		&path,&path_len)!= SUCCESS) 
+                WRONG_PARAM_COUNT;
+	RETURN_LONG(ann_traverse_check(path,getcurrentuser()));
+}
+
+static ZEND_FUNCTION(bbs_ann_get_board)
+{
+	char* path,*board;
+	int path_len,board_len;
+	if (zend_parse_parameters(1 TSRMLS_CC, "ss" , 
+		&path,&path_len,&board,&board_len)!= SUCCESS) 
+                WRONG_PARAM_COUNT;
+	RETURN_LONG(ann_get_board(path,board,board_len));
 }
 
 static ZEND_MINIT_FUNCTION(bbs_module_init)

@@ -23,7 +23,7 @@ void ann_show_file(char *path)
 			snprintf(pathbuf, sizeof(pathbuf), "0Announce%s", path);
 		else
 			snprintf(pathbuf, sizeof(pathbuf), "0Announce/%s", path);
-		if (ann_traverse_check(pathbuf) < 0)
+		if (ann_traverse_check(pathbuf,currentuser) < 0)
 			http_fatal("此目录不存在");
 	}
 	else
