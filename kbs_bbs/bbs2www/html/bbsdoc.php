@@ -125,7 +125,7 @@
 		}
 		$i = 0;
 		if ($order) {
-			array_reverse($articles);
+			$articles = array_reverse($articles);
 			$i = count($articles) - $ding_cnt - 1;
 		}
 		foreach ($articles as $article)
