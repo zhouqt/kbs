@@ -7058,6 +7058,8 @@ static PHP_FUNCTION(bbs_x_search)
             if(j>=84&&p==0) {
                 t++;
                 if(t>=3) break;
+                sprintf(pp, "<br/>");
+                pp += 5;
                 j=0;
             }
         }
