@@ -57,7 +57,7 @@ int main()
         fread(&x, sizeof(x), 1, fp);
         printf("[<a href=bbsmailcon?file=%s&dir=%s&num=%d>上一篇</a>]", x.filename, dirname, num - 1);
     }
-    printf("[<a href=bbsmail>返回信件列表</a>]");
+    printf("[<a href=\"/bbsreadmail.php\">返回信件列表</a>]");
     if (num < total - 1) {
         fseek(fp, sizeof(x) * (num + 1), SEEK_SET);
         fread(&x, sizeof(x), 1, fp);

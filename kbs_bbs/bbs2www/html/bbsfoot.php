@@ -48,14 +48,14 @@ echo $currentuser["userid"]; ?></a>] <?php
 		{
 		    if (bbs_getmailnum($currentuser["userid"],$total,$unread)) {
 			  if ($unread!=0) {
-		        echo "信箱[<a href=\"/cgi-bin/bbs/bbsmail\" target=\"f3\">" . $total . "封(新信" . $unread . ")</a>] ";
+		        echo "信箱[<a href=\"bbsreadmail.php\" target=\"f3\">" . $total . "封(新信" . $unread . ")</a>] ";
 			  }
 			  else {
-		        echo "信箱[<a href=\"/cgi-bin/bbs/bbsmail\" target=\"f3\">" . $total . "封</a>] ";
+		        echo "信箱[<a href=\"bbsreadmail.php\" target=\"f3\">" . $total . "封</a>] ";
 			  }
 			}
 			else
-		      echo "信箱[<a href=\"/cgi-bin/bbs/bbsmail\" target=\"f3\">0封</a>] ";
+		      echo "信箱[<a href=\"bbsreadmail.php\" target=\"f3\">0封</a>] ";
 		}
 ?>
 停留[<input class="readonly" TYPE="text" NAME="stay" size="10">]
