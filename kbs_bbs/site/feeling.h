@@ -266,12 +266,6 @@ bigger mailbox. --stephen 2001.10.31*/
 
 #define TDEF_SPLITSCREEN 000001
 
-extern const char *permstrings[];
-extern const char *groups[];
-extern const char *explain[];
-extern const char *user_definestr[];
-extern const char *mailbox_prop_str[];
-
 /**
  * 看在线用户时的按键处理字符。
  */
@@ -369,5 +363,7 @@ attach define
 #define QUOTED_LINES 3
 #define QUOTELEV 0
 #define BOARD_SHOW_ONLINE 1
+
+#define BMSLOG
 
 #endif
