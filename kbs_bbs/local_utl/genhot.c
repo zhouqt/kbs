@@ -59,12 +59,15 @@ int gen_commend_xml()
 			fprintf(fp, "<o_id>%d</o_id>\n", dirfh.o_id);
 			fprintf(fp, "<o_groupid>%d</o_groupid>\n<brief>", dirfh.o_groupid);
 			for(i=0;i<4;i++) fgets(buf, 255, fp1);
-			for(i=0;i<4;i++){
+			for(i=0;i<4;){
 				if(fgets(buf, 255, fp1) ){
+					if( buf[0] == '\n' || buf[0] == '\r' || buf[0]=='\0' )
+						continue;
 					buf[255]=0;
 					while( (c=strchr(buf, '\x1b')) != NULL )
 						*c='*';
 					fprintf(fp, "%s", encode_xml(xml_buf, buf, sizeof(xml_buf)) );
+					i++;
 				}else
 					break;
 			}
