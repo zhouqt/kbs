@@ -116,8 +116,8 @@ int get_rl2(char * s, int r, int l)
 void feval(struct fvar_struct * p, char * s, int l, int r)
 {
     int i,j,n;
-    char op[14][4]={"&&","||","==","!=",">=","<=",">","<","+","-","*","/","%","<<"};
-    char op2[14][10]={"且","或","是","不是","大等于","小等于","大于","小于","加","减","乘","除","模", "包含"};
+    char op[14][4]={"||","&&","==","!=",">=","<=",">","<","+","-","*","/","%","<<"};
+    char op2[14][10]={"或","且","是","不是","大等于","小等于","大于","小于","加","减","乘","除","模", "包含"};
     struct fvar_struct * t,q;
     char buf[1000];
     while(s[l]==' '&&l<=r) l++;
@@ -266,10 +266,10 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
                 p->num=true;
                 switch(j) {
                     case 0:
-                        p->s=m1.s&&m2.s;
+                        p->s=m1.s||m2.s;
                         break;
                     case 1:
-                        p->s=m1.s||m2.s;
+                        p->s=m1.s&&m2.s;
                         break;
                     case 2:
                         if(m1.num) p->s=m1.s==m2.s;
@@ -317,6 +317,8 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
                 return;
             }
             if(s[n]==')') n=get_rl(s,n,l);
+            if(s[n]=='\'') {n--;while(n>=l&&s[n]!='\'') n--;}
+            if(s[n]=='"') {n--;while(n>=l&&s[n]!='"') n--;}
             n--;
         }while(n>=l);
     }
