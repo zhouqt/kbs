@@ -80,6 +80,14 @@ function get_mimetype($name)
 			html_init("gb2312");
 			html_error_quit("错误的文章号");
 		}
+		settype($id, "integer");
+		if (isset($_GET["num"]))
+			$num = $_GET["num"];
+		else {
+			html_init("gb2312");
+			html_error_quit("错误的文章号");
+		}
+		settype($num, "integer");
 		$articles = bbs_get_records_from_id($brdarr["NAME"], $id, 
 				$dir_modes["NORMAL"]);
 		if ($articles == FALSE)
@@ -118,8 +126,33 @@ function get_mimetype($name)
 			} else
 			{
 				html_init("gb2312");
+				$brd_encode = urlencode($brdarr["NAME"]);
+				$PAGE_SIZE = 20;
 ?>
 <body>
+<center><p><?php echo $BBS_FULL_NAME; ?> -- 文章阅读 [讨论区: <?php echo $brdarr["NAME"]; ?>]</a></p>
+[<a href="/cgi-bin/bbs/bbsfwd?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">转寄/推荐</a>]
+[<a href="/cgi-bin/bbs/bbsccc?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">转贴</a>]
+<?php
+				if ($articles[0]["ID"] != 0)
+				{
+?>
+[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[0]["ID"]; ?>&num=<?php echo $num - 1; ?>">上一篇</a>]
+<?php
+				}
+?>
+[<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>&page=<?php echo intval(($num + $PAGE_SIZE - 1) / $PAGESIZE); ?>">本讨论区</a>]
+<?php
+				if ($articles[2]["ID"] != 0)
+				{
+?>
+[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[2]["ID"]; ?>&num=<?php echo $num + 1; ?>">下一篇</a>]
+<?php
+				}
+?>
+[<a href="/cgi-bin/bbs/bbspst?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>&userid=<?php echo $currentuser["userid"]; ?>&title=Re: <?php echo urlencode($articles[1]["TITLE"]); ?>&refilename=<?php echo $articles[1]["FILENAME"]; ?>&attach=<?php echo $brdarr["FLAG"]&BBS_BOARD_ATTACH ? 1 : 0; ?>">回文章</a>]
+[<a href="/cgi-bin/bbs/bbstfind?board=<?php echo $brd_encode; ?>&title=<?php echo urlencode($articles[1]["TITLE"]); ?>">同主题阅读</a>]
+[<a href="javascript:history.go(-1)">快速返回</a>]
 <?php
 				bbs_printansifile($filename,1,$_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']);
 			}
