@@ -379,6 +379,7 @@ char *ModeType(mode)
     case SERVICES:
         return "休闲娱乐..";
 	case FRIENDTEST:  return "心有灵犀";
+	case TETRIS:  return "俄罗斯方块";
     case CHICKEN:
 	return "星空战斗鸡";
 	case HELP:

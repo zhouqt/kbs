@@ -423,6 +423,8 @@ int mode;
         return "帮助";
     case POSTTMPL:
         return "模板发文";
+	case TETRIS:
+		return "俄罗斯方块";
     default:
         return "去了那里!?";
     }

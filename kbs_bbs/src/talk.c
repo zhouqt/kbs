@@ -394,7 +394,11 @@ int t_query(char* q_id)
             if ((newline = strchr(exittime, '\n')) != NULL)
                 *newline = '\0';
         } else
+#ifdef FREE
+            strcpy(exittime, "       正在线上       ");
+#else
             strcpy(exittime, "因在线上或非常断线不详");
+#endif
     }
 #if defined(NINE_BUILD)
     prints("\n上次在  [%s] 从 [%s] 到本站一游。", Ctime(lookupuser->lastlogin), ((lookupuser->lasthost[0] == '\0') ? "(不详)" : SHOW_USERIP(lookupuser, lookupuser->lasthost)));
@@ -663,7 +667,7 @@ int ttt_talk(struct user_info *userinfo)
     /*
      * modified by Excellent 
      */
-    if (uin.mode == ULDL || uin.mode == IRCCHAT || uin.mode == BBSNET || uin.mode == FOURM || uin.mode == EXCE_BIG2 || uin.mode == EXCE_MJ || uin.mode == EXCE_CHESS) {
+    if (uin.mode == ULDL || uin.mode == IRCCHAT || uin.mode == BBSNET || uin.mode == FOURM || uin.mode == EXCE_BIG2 || uin.mode == EXCE_MJ || uin.mode == EXCE_CHESS || uin.mode == TETRIS) {
         move(2, 0);
         prints("目前无法呼叫.\n");
         pressreturn();
