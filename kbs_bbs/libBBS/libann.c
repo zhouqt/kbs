@@ -327,6 +327,20 @@ int a_loadnames(MENU* pm, session_t* session)             /* 装入 .Names */
 
     a_freenames(pm);
     pm->num = 0;
+#ifdef ANN_COUNT
+	sprintf(buf, "%s/counter.person", pm->path);
+	if(fn=fopen(buf,"r")){
+		fscanf(fn,"%d", &(pm->count));
+		fclose(fn);
+	}else
+		pm->count = 0;
+
+	pm->count++;
+	if(fn=fopen(buf,"w")){
+		fprintf(fn,"%d",pm->count);
+		fclose(fn);
+	}
+#endif
     sprintf(buf, "%s/.Names", pm->path);        /*.Names记录菜单信息 */
     if ((fn = fopen(buf, "r")) == NULL)
         return 0;

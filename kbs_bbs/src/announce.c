@@ -359,7 +359,11 @@ MENU *pm;
         strcpy(buf, "");
     prints("\033[44m%s%s%s\033[m\n", buf, genbuf, buf);
     prints("            F 寄回自己的信箱┃↑↓ 移动┃→ <Enter> 读取┃←,q 离开\033[m\n");
+#ifdef ANN_COUNT
+    prints("\033[44m\033[37m 编号  %-20s\033[32m本目录已被浏览\033[33m%9d\033[32m次\033[37m 整  理           %8s \033[m", "[类别] 标    题", pm->count, a_fmode == 2 ? "档案名称" : "编辑日期");
+#else
     prints("\033[44m\033[37m 编号  %-45s 整  理           %8s \033[m", "[类别] 标    题", a_fmode == 2 ? "档案名称" : "编辑日期");
+#endif
     prints("\n");
     if (pm->num == 0)
         prints("      << 目前没有文章 >>\n");
@@ -1318,6 +1322,9 @@ int a_repair(MENU *pm)
 
 	while( (direntp=readdir(dirp)) != NULL){
 		if(direntp->d_name[0]=='.') continue;
+#ifdef ANN_COUNT
+		if(!strcmp(direntp->d_name,"counter.person")) continue;
+#endif
 		for( i=0; i < pm->num; i++ ){
 			if(strcmp(pm->item[i]->fname, direntp->d_name)==0){
 				i=-1;

@@ -20,6 +20,9 @@ typedef struct {
     int num, page, now;
     int level;
     time_t modified_time;
+#ifdef ANN_COUNT
+	int count;
+#endif
 } MENU;
 
 #endif
