@@ -738,11 +738,11 @@ extern int yank_flag;
 /**
  * Fetch all boards which have given prefix into an array.
  * prototype:
- * int bbs_getboards(char *prefix, int yank, array &output);
- * by flyriver, 2002.8.6
+ * array bbs_getboards(char *prefix, int yank);
  *
- * @return >=0 number of fetched boards
- *         <0  failure
+ * @return array of loaded boards on success.
+ *         FALSE on failure.
+ * @author flyriver
  */
 static ZEND_FUNCTION(bbs_getboards)
 {
@@ -753,7 +753,6 @@ static ZEND_FUNCTION(bbs_getboards)
 	char *prefix;
 	int plen;
 	int yank;
-	zval *brdarrs;
 	int rows = 0;
 	struct newpostdata newpost_buffer[MAXBOARD];
 	struct newpostdata *ptr;
@@ -764,19 +763,11 @@ static ZEND_FUNCTION(bbs_getboards)
 	int ac = ZEND_NUM_ARGS();
 
 	/* getting arguments */
-#if 0
-	if (ac != 3 
-		|| zend_parse_parameters(3 TSRMLS_CC, "sla", &prefix, &plen, &yank, &brdarrs) == FAILURE)
-	{
-		WRONG_PARAM_COUNT;
-	}
-#endif
 	if (ac != 2 
 		|| zend_parse_parameters(2 TSRMLS_CC, "sl", &prefix, &plen, &yank) == FAILURE)
 	{
 		WRONG_PARAM_COUNT;
 	}
-	/*array_init(brdarrs);*/
 	if (array_init(return_value) == FAILURE)
 	{
 		RETURN_FALSE;
@@ -784,7 +775,7 @@ static ZEND_FUNCTION(bbs_getboards)
 
 	/* loading boards */
 	/* handle some global variables: currentuser, yank, brdnum, 
-	 * boardprefix, nbrd.
+	 * nbrd.
 	 */
 	/* NOTE: currentuser SHOULD had been set in funcs.php, 
 	 * but we still check it. */
@@ -848,6 +839,19 @@ static ZEND_FUNCTION(bbs_getboards)
 	}
 	efree(columns);
 	/*RETURN_LONG(rows);*/
+}
+
+/**
+ * Fetch a list of articles in a board into an array.
+ * prototype:
+ * array bbs_getarticles(char *board, int start, int num);
+ *
+ * @return array of loaded articles on success.
+ *         FALSE on failure.
+ * @author flyriver
+ */
+static ZEND_FUNCTION(bbs_getarticles)
+{
 }
 
 static ZEND_FUNCTION(bbs_checkreadperm)
