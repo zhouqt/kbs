@@ -239,12 +239,8 @@ int addtodeny(char *uident)
             my_flag = 0;
             fprintf(fn, "寄信人: SYSOP (System Operator) \n");
             fprintf(fn, "标  题: %s\n", buffer);
-            fprintf(fn, "发信站: %s (%24.24s)\n", "BBS " NAME_BBS_CHINESE "站", ctime(&now));
-#ifdef NINE_BUILD
-            fprintf(fn, "来  源: smth.org\n");
-#else
-            fprintf(fn, "来  源: bbs.net9.org\n");
-#endif
+            fprintf(fn, "发信站: %s (%24.24s)\n", BBS_FULL_NAME, ctime(&now));
+            fprintf(fn, "来  源: %s\n", NAME_BBS_ENGLISH);
             fprintf(fn, "\n");
             fprintf(fn, "由于您在 \x1b[4m%s\x1b[m 版 \x1b[4m%s\x1b[m，我很遗憾地通知您， \n", currboard, denymsg);
             if (denyday)
