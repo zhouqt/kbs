@@ -319,6 +319,12 @@ void m_init()
     setmailfile(currmaildir, currentuser->userid, DOT_DIR);
 }
 
+/* 返回值定义: 
+  *   -1  收信者不存在;  -2 取消发信;
+  *   -3  无法收信   -4 信箱已满
+  *   -5  自杀中无法收信    -552 信件超长?
+  *    (错误代码统一定义才好，不然太混乱，维护很不爽。:(  )
+  */
 int do_send(char *userid, char *title, char *q_file)
 {
     struct fileheader newmessage;
