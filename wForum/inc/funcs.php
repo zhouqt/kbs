@@ -459,7 +459,7 @@ function show_nav($boardName='',$is_mathml=false)
 
 <table border="0" width="100%" align="center">
 <tr>
-<td align="left" width="25%"><a href="<?php  echo  $SiteURL; ?>" target="_blank"><img border="0" src='<?php echo  $Banner; ?>'/></a></td>
+<td align="left" width="25%"><a href="<?php  echo  $SiteURL; ?>"><img border="0" src='<?php echo  $Banner; ?>'/></a></td>
 <td align="center" width="65%">
 <?php echo MAINTITLE; ?>
 </td>
