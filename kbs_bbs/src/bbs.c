@@ -2045,6 +2045,29 @@ int show_board_notes(char bname[30])
     return -1;
 }
 
+void add_attach(char* file1, char* file2, char* filename)
+{
+    FILE* fp,*fp2;
+    struct stat st;
+    uint32_t size;
+    char o[8]={0,0,0,0,0,0,0,0};
+    char buf[1024*16];
+    int i;
+    stat(file2, &st);
+    size=htonl(st.st_size);
+    fp=fopen(file1, "ab");
+    fp2=fopen(file2, "rb");
+    fwrite(o,1,8,fp);
+    fwrite(filename, 1, strlen(filename)+1, fp);
+    fwrite(&size,1,4,fp);
+    while((i=fread(buf,1,1024*16,fp2))) {
+        fwrite(buf,1,i,fp);
+    }
+    
+    fclose(fp2);
+    fclose(fp);
+}
+
 int post_article(char *q_file, struct fileheader *re_file)
 {                               /*用户 POST 文章 */
     struct fileheader post_file;
@@ -2055,6 +2078,7 @@ int post_article(char *q_file, struct fileheader *re_file)
     char ans[4], include_mode = 'S';
     struct boardheader *bp;
     long eff_size;/*用于统计文章的有效字数*/
+    char* upload = NULL;
 
 #ifdef FILTER
     int returnvalue;
@@ -2066,10 +2090,6 @@ int post_article(char *q_file, struct fileheader *re_file)
 #ifdef AIX_CANCELLED_BY_LEEWARD
     if (true == check_RAM_lack())       /* Leeward 98.06.16 */
         return FULLUPDATE;
-#endif
-
-#ifdef NINE_BUILD
-    bbs_zrecvfile();
 #endif
 
     modify_user_mode(POSTING);
@@ -2195,6 +2215,13 @@ int post_article(char *q_file, struct fileheader *re_file)
                 clear();
                 ansimore2(buf2, false, 0, 18);
             }
+        } else if (ans[0] == 'U') {
+            struct boardheader* b=getbcache(currboard);
+            if(b->flag&BOARD_ATTACH) {
+                chdir("tmp");
+                upload = bbs_zrecvfile();
+                chdir("..");
+            }
         } else {
             /*
              * Changed by KCN,disable color title 
@@ -2283,6 +2310,13 @@ int post_article(char *q_file, struct fileheader *re_file)
     aborted = vedit(filepath, true, &eff_size, NULL);    /* 进入编辑状态 */
 
     add_loginfo(filepath, currentuser, currboard, Anony);       /*添加最后一行 */
+
+    if(upload) {
+        char sbuf[PATHLEN];
+        strcpy(sbuf,"tmp/");
+        strcat(buf, upload);
+        add_attach(filepath, sbuf, upload);
+    }
 
     strncpy(post_file.title, save_title, STRLEN);
     if (aborted == 1 || !(bp->flag & BOARD_OUTFLAG)) {  /* local save */
