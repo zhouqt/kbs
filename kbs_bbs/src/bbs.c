@@ -2066,6 +2066,7 @@ void add_attach(char* file1, char* file2, char* filename)
     
     fclose(fp2);
     fclose(fp);
+    unlink(file2);
 }
 
 int post_article(char *q_file, struct fileheader *re_file)
@@ -2314,7 +2315,7 @@ int post_article(char *q_file, struct fileheader *re_file)
     if(upload) {
         char sbuf[PATHLEN];
         strcpy(sbuf,"tmp/");
-        strcat(buf, upload);
+        strcpy(sbuf+strlen(sbuf), upload);
         add_attach(filepath, sbuf, upload);
     }
 
