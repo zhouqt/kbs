@@ -100,8 +100,7 @@ int main()
         ptr += 4;
     ptr[60] = 0;
     if ((records[1].accessed[1] & FILE_READ) == 0) {
-        printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=Re: %s&refilename=%s&attach=%d\">回文章</a>]",
-               buf2, records[1].filename, records[1].owner, encode_url(buf, void1(ptr), sizeof(buf)), records[1].filename,bp->flag&BOARD_ATTACH?1:0);
+        printf("[<a href=\"/bbspst.php?board=%s&reid=%d\">回文章</a>]",buf2, records[1].id);
     }
 	printf("[<a href=\"bbspstmail?board=%s&file=%s&userid=%s&title=Re: %s\">回信给作者</a>]",
 		   buf2, records[1].filename, records[1].owner, encode_url(buf, void1(ptr), sizeof(buf)));
