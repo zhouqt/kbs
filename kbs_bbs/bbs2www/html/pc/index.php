@@ -512,7 +512,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	更新时间:
 	<?php echo time_format($pc["MODIFY"]); ?>
 	<br>
-	Powered By <a href="http://dev.smth.org" target="_blank"><font face=Verdana, Arial, Helvetica, sans-serif><b><font color="#CC0000">SmthBBS</font> 2.0</b></font></a>
+	Powered By <a href="http://dev.smth.org" target="_blank"><font face=Verdana, Arial, Helvetica, sans-serif><b><font color="#CC0000">SmthBBS</font></b></font></a>
     <a href="http://www.smth.org"><font face=Verdana, Arial, Helvetica, sans-serif><b>Smth<font color="#CC0000">.Org</font></b></font></a>
 	<br />
 &copy;All Rights Reserved
@@ -652,7 +652,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		<td width="80%" align="right" valign="top">
 		<?php display_nodes($link,$pc,$nodes,"99%",1,$totalnodes,$pno); ?>
 		<p align=center class=f1>
-		Powered By <a href="http://dev.smth.org" target="_blank"><font face=Verdana, Arial, Helvetica, sans-serif><b><font color="#CC0000">SmthBBS</font> 2.0</b></font></a>
+		Powered By <a href="http://dev.smth.org" target="_blank"><font face=Verdana, Arial, Helvetica, sans-serif><b><font color="#CC0000">SmthBBS</font> </b></font></a>
     <a href="http://www.smth.org"><font face=Verdana, Arial, Helvetica, sans-serif><b>Smth<font color="#CC0000">.Org</font></b></font></a>
 	<br />
 	更新时间: <?php echo time_format($pc["MODIFY"]); ?>
@@ -793,7 +793,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	更新时间:
 	<?php echo time_format($pc["MODIFY"]); ?>
 	<br />
-	Powered By <a href="http://dev.smth.org" target="_blank"><font face=Verdana, Arial, Helvetica, sans-serif><b><font color="#CC0000">SmthBBS</font> 2.0</b></font></a>
+	Powered By <a href="http://dev.smth.org" target="_blank"><font face=Verdana, Arial, Helvetica, sans-serif><b><font color="#CC0000">SmthBBS</font> </b></font></a>
     <a href="http://www.smth.org"><font face=Verdana, Arial, Helvetica, sans-serif><b>Smth<font color="#CC0000">.Org</font></b></font></a>
 	<br />
 &copy;All Rights Reserved

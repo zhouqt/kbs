@@ -93,7 +93,7 @@ function pcmain_html_quit()
           <tr><td height="5"> </td></tr>
   <tr>
     <td align="center">
-    Powered By <a href="http://dev.smth.org" target="_blank"><font face=Verdana, Arial, Helvetica, sans-serif><b><font color="#CC0000">SmthBBS</font> 2.0</b></font></a>
+    Powered By <a href="http://dev.smth.org" target="_blank"><font face=Verdana, Arial, Helvetica, sans-serif><b><font color="#CC0000">SmthBBS</font> </b></font></a>
     <a href="http://www.smth.org"><font face=Verdana, Arial, Helvetica, sans-serif><b>Smth<font color="#CC0000">.Org</font></b></font></a>
 	<br />∞Ê»®À˘”– &copy;<?php echo $pcconfig["BBSNAME"]; ?>
 	</td>
