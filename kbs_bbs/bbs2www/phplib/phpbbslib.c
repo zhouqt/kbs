@@ -393,22 +393,26 @@ static ZEND_FUNCTION(bbs_wwwlogin)
 static ZEND_FUNCTION(bbs_getcurrentuinfo)
 {
         zval* user_array;
-        long ret;
+        long ret=1;
 
-        if (zend_parse_parameters(1 TSRMLS_CC, "a" , &user_array) != SUCCESS) {
+	if(ZEND_NUM_ARGS() == 1) {
+          if (zend_parse_parameters(1 TSRMLS_CC, "a" , &user_array) != SUCCESS) {
                 WRONG_PARAM_COUNT;
-        }
-
-        if(array_init(user_array) != SUCCESS) {
+          }
+          if(array_init(user_array) != SUCCESS) {
                 ret=0;
-        }
-        else {
+          }
+          else {
                 if (getcurrentuinfo()) {
                   assign_userinfo(user_array,getcurrentuinfo());
-                  ret=getcurrentuinfo_num();
                 } else
                         ret=0;
-        }
+          }
+	} else if (ZEND_NUM_ARGS() != 0)
+                WRONG_PARAM_COUNT;
+	if (ret)
+        	ret=getcurrentuinfo_num();
+
         RETURN_LONG(ret);
 }
 
