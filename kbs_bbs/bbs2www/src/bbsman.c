@@ -13,8 +13,8 @@ int change_flag(struct fileheader*f,char* board,char*dirdir,int ent, int flag)
         struct write_dir_arg dirarg;
         struct boardheader* bh;
         struct fileheader data;
-        data.accessed[0]=0xff;
-        data.accessed[1]=0xff;
+        data.accessed[0] = ~(f->accessed[0]);
+        data.accessed[1] = ~(f->accessed[1]);
         bh=getbcache(board);
         malloc_write_dir_arg(&dirarg);
         dirarg.filename=dirdir;
