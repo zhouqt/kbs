@@ -1903,13 +1903,22 @@ int post_article(char *q_file, struct fileheader *re_file)
         pressreturn();
         clear();
         return FULLUPDATE;
-    } else if (deny_me(currentuser->userid, currboard->filename) && !HAS_PERM(currentuser, PERM_SYSOP)) { /* 版主禁止POST 检查 */
-        move(3, 0);
-        clrtobot();
-        prints("\n\n                     很抱歉，你被版主停止了 POST 的权力...\n");
-        pressreturn();
-        clear();
-        return FULLUPDATE;
+    } else if (deny_me(currentuser->userid, currboard->filename)) { /* 版主禁止POST 检查 */
+		if( !HAS_PERM(currentuser, PERM_SYSOP) ){
+        	move(3, 0);
+        	clrtobot();
+        	prints("\n\n                     很抱歉，你被版主停止了 POST 的权力...\n");
+        	pressreturn();
+        	clear();
+        	return FULLUPDATE;
+		}else{
+			clear();
+            getdata(3, 0, "您被版主停止了POST权力,强制发文吗？[y/N]: ", buf, 79, DOECHO, NULL, true);
+			if( buf[0]!='y' && buf[0]!='Y' ){
+				clear();
+				return FULLUPDATE;
+			}
+		}
     }
 
     memset(&post_file, 0, sizeof(post_file));
