@@ -106,6 +106,7 @@ void suicide()
     int num;
 
     modify_user_mode(OFFLINE);
+#ifndef NINE_BUILD
     if (HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_BOARDS) || HAS_PERM(currentuser, PERM_OBOARDS) || HAS_PERM(currentuser, PERM_ACCOUNTS)
         || HAS_PERM(currentuser, PERM_ANNOUNCE)
         || HAS_PERM(currentuser, PERM_JURY) || HAS_PERM(currentuser, PERM_SUICIDE) || HAS_PERM(currentuser, PERM_CHATOP) || (!HAS_PERM(currentuser, PERM_POST))
@@ -117,6 +118,15 @@ void suicide()
         pressanykey();
         return;
     }
+#else
+    if (HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_BOARDS)) {
+        clear();
+        move(11, 28);
+        prints("[1m[33mƒ„”–÷ÿ»Œ‘⁄…Ì£¨≤ªƒ‹◊‘…±£°[m");
+        pressanykey();
+        return;
+    }
+#endif
 
     clear();
     move(1, 0);
