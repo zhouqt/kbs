@@ -463,7 +463,6 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 			"UPDATE" => (int)($rows[updatetime]),
 			"INFOR" => str_replace("<?","&lt;?",stripslashes($rows[userinfor])),
 			"TYPE" => $rows[pctype],
-			"LOGTID" => $rows[logtid],
 			"DEFAULTTOPIC" => $rows[defaulttopic]
 			);
 	if($pc["CSSFILE"])
@@ -1138,10 +1137,12 @@ function pc_group_logs($link,$pc,$action,$content="")
 	if(!$action)
 		return FALSE;
 	
-	$action = "[".date("Y-m-d H:i:s")."@".$_SERVER["REMOTE_ADDR"]."]".$currentuser["userid"]." ".$action;	 
-	$ret = pc_add_node($link,$pc,0,$pc["LOGTID"],0,1,2,0,0,$action,$content,1);
-	if($ret != 0)
+	$action = "[".date("Y-m-d H:i:s")."@".$_SERVER["REMOTE_ADDR"]."]".$currentuser["userid"]." ".$action."\n";
+	$pc_groupwokrs_logs = BBS_HOME . "/blog.log";
+	if(!($fn = fopen($pc_groupwokrs_logs,"a")))
 		return FALSE;
+	fputs($fn,$action);
+	fclose($fn);
 	return TRUE;
 }
 
@@ -1179,23 +1180,11 @@ function pc_convertto_group($link,$pc)
 	if(pc_is_groupwork($pc))
 		return -2;
 	
-	if(!pc_add_topic($link,$pc,2,"GROUPWORK LOGs"))
-		return -3;
-	
-	$query = "SELECT tid FROM topics WHERE uid = '".$pc["UID"]."' AND access = 2 AND topicname = 'GROUPWORK LOGs' ORDER BY tid DESC LIMIT 0,1;";
-	$result = mysql_query($query,$link);
-	$rows = mysql_fetch_array($result);
-	mysql_free_result($result);
-	if(!$rows)
-		return -3;
-	$logtid = $rows[tid];
-	
-	$query = "UPDATE users SET createtime = createtime , pctype = 1 , logtid = ".$logtid." WHERE uid = ".$pc["UID"]." LIMIT 1;";
+	$query = "UPDATE users SET createtime = createtime , pctype = 1  WHERE uid = ".$pc["UID"]." LIMIT 1;";
 	if(!mysql_query($query,$link))
 		return -4;
 	
 	$pc["TYPE"] = 1;
-	$pc["LOGTID"] = $logtid;
 	
 	if(!pc_group_logs($link,$pc,"CONVERT TO GROUPWORK"))
 		return -5;
