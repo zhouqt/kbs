@@ -671,7 +671,7 @@ void user_login()
     }
     /* Leeward 98.09.24 Use SHARE MEM to diaplay statistic data below */
     if (DEFINE(currentuser, DEF_SHOWSTATISTIC)) {
-        ansimore("0Announce/bbslists/countlogins", true);
+        /*ansimore("0Announce/bbslists/countlogins", true); È¥µôÏÔÊ¾ÉÏÕ¾ÈËÊý */
 #ifdef BLESS_BOARD
         if (dashf("etc/posts/bless"))
             ansimore("etc/posts/bless", true);
@@ -685,14 +685,14 @@ void user_login()
         }
     }
     clear();
-    if (DEFINE(currentuser, DEF_SHOWHOT)) {     /* Leeward 98.09.24 Use SHARE MEM and disable old code 
+    if (DEFINE(currentuser, DEF_SHOWHOT)) {     /* Leeward 98.09.24 Use SHARE MEM and disable old code
                                                    if (DEFINE(currentuser,DEF_SHOWSTATISTIC)) {
                                                    ansimore("etc/posts/day", false);
                                                    }
                                                  */
         ansimore("etc/posts/day", false);       /* Leeward: disable old code */
     }
-    
+
     move(t_lines - 2 /*1 */ , 0);       /* Leeward: 98.09.24 Alter below message */
     clrtoeol();
     prints("[1;36m¡î ÕâÊÇÄúµÚ [33m%d[36m ´ÎÉÏÕ¾£¬ÉÏ´ÎÄúÊÇ´Ó [33m%s[36m Á¬Íù±¾Õ¾¡£\n", currentuser->numlogins + 1, currentuser->lasthost);
