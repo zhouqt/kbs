@@ -1,4 +1,18 @@
+#! /bin/bash
+#
+# bbs start/stop smth bbs
+#
+# chkconfig: 3 99 01
+# description: start/stop smth bbs
+# probe: true
+### BEGIN INIT INFO
+# Provides: $network
+### END INIT INFO
+
+# Source function library.
+
 BBSHOME=/home/bbs
+start() {
 cd $BBSHOME
 mv $BBSHOME/tmp $BBSHOME/.bbs.tmp
 rm -rf $BBSHOME/.bbs.tmp&
@@ -8,22 +22,51 @@ mkdir $BBSHOME/tmp/bbs-gsend
 mkdir $BBSHOME/tmp/email
 mkdir $BBSHOME/tmp/clip
 mkdir $BBSHOME/tmp/bbs-internet-gw
+mkdir $BBSHOME/tmp/Xpost
 chown -R bbs.bbs $BBSHOME/tmp
+mkdir $BBSHOME/cache/home
+for i in A B C D E F G H I J K L M N O P R S T U V W X Y Z; do
+mkdir $BBSHOME/cache/home/$i
+done
+chown -R bbs.bbs $BBSHOME/cache
 
 su bbs -c "rm -rf /tmp/* /tmp/.*&"
 su bbs -c "rm -f $BBSHOME/sysconf.img.*"
 
 #init...
 bin/miscd daemon
+#bin/webmsgd
 bin/bbslogd
+#bin/nsupdated
+bin/bbssmsd
 
-sleep 5
+#sleep 5
 bin/startbbsd
 bin/startsshd
 bin/newpop3d
-if [ -f innd/innbbsd ]; then
-	su bbs -c innd/innbbsd &> /dev/null
+if [ -f bin/innbbsd ]; then
+	su bbs -c bin/innbbsd &> /dev/null
 fi
 
 /home0/www/bin/apachectl start
 /home0/www2/bin/apachectl start
+}
+
+stop() {
+	$BBSHOME/bin/miscd flush
+}
+
+case "$1" in
+start)
+    start
+    ;;
+stop)
+    stop
+    ;;
+*)
+    echo $"Usage: $0 {start|stop|restart|condrestart|status}"
+    exit 1
+esac
+
+exit $?
+exit $RETVAL

@@ -813,6 +813,7 @@ void brc_add_read(unsigned int fid,session_t* session)
 
     if (!session->currentuser) return;
     if (session->brc_currcache==-1) return;
+    if (session->brc_cache_entry==NULL) return;
     /*干脆不搞guest的这个算了*/
     if (!strcmp(session->currentuser->userid,"guest")) return;
     for (n = 0; (n < BRC_MAXNUM) && session->brc_cache_entry[session->brc_currcache].list[n]; n++) {
