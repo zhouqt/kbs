@@ -168,7 +168,7 @@
 	<td class="f2" align="center" height="40" valign="middle">
 	<?php echo $pc["USER"]; ?> 的个人文集
 	-
-	<?php echo html_format($pc["NAME"]); ?>
+	<?php echo $pc["NAME"]; ?>
 	</td>
 </tr>
 <tr>
