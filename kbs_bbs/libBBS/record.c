@@ -494,6 +494,7 @@ int size, id, number;
             close(fd);
             return m;
         }
+		close(fd);
         return (m+ n/size);
     }
         
