@@ -941,11 +941,15 @@ int clean_cachedata(char* userid,int unum)
     close(fd);
     } else logincount=0;
     if (logincount==0) {
+	if ((userid[0]==0)||(userid==NULL)) {
+	  bbslog("3error","error in clean cache");
+	} else {
         sethomefile(path1, userid, ".boardrc.gz");
         setcachehomefile(path2, userid,-1, ".boardrc.gz");
         f_cp(path2,path1,O_TRUNC);
         setcachehomefile(path1, userid, -1, NULL);
         f_rm(path1);
+	}
     }
 }
 #endif
