@@ -18,6 +18,9 @@ int first_mark_line;
 int currpnt = 0 ;
 extern int local_article;
 char searchtext[80];
+char save_title[STRLEN] ;
+int in_mail ;
+
 int        editansi = 0;
 int        scrollen=2;
 int        marknum;
@@ -646,9 +649,6 @@ char *filename ;
     insert_from_fp( fp );
     fclose(fp);
 }
-
-char save_title[STRLEN] ;
-int in_mail ;
 
 #define KEEP_EDITING -2
 
