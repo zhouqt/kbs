@@ -14,11 +14,11 @@ int build_badwordimage()
     int fp;
     void* pattern_buf;
     size_t pattern_imagesize;
-    fp = open("etc/badwords", O_RDONLY);
+    fp = open("etc/badword", O_RDONLY);
     if (fp==-1)
     	return -1;
     flock(fp,LOCK_EX);
-    if (dashf("etc/badwords.img")) {
+    if (dashf("etc/badword.img")) {
     	flock(fp,LOCK_UN);
     	close(fp);
     	return 0;
@@ -26,7 +26,7 @@ int build_badwordimage()
     prepf(fp,&pattern_buf,&pattern_imagesize);
    	flock(fp,LOCK_UN);
     close(fp);
-    fp = open("etc/badwords.img", O_WRONLY|O_TRUNC|O_CREAT);
+    fp = open("etc/badword.img", O_WRONLY|O_TRUNC|O_CREAT,0600);
     if (fp==-1)
     	return -1;
     write(fp,pattern_buf,pattern_imagesize);
@@ -41,13 +41,24 @@ int check_badword(char *checkfile)
     int size,retv;
     void* pattern_img_ptr;
     int pattern_img_size;
+    WHOLELINE = 0;
+    NOUPPER = 0;
+    INVERSE = 0;
+    FILENAMEONLY = 1;
+    WORDBOUND = 0;
+    SILENT = 1;
+    FNAME = 1;
+    ONLYCOUNT = 0;
+
+    CurrentFileName = checkfile;
+    num_of_matched = 0;
     BBS_TRY {
         if (safe_mmapfile(checkfile, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)
             BBS_RETURN(0);
         retry:
-        if (safe_mmapfile("etc/badwords.img", O_RDONLY, PROT_READ, MAP_SHARED, (void **) &pattern_img_ptr, &pattern_img_size, NULL) == 0)
+        if (safe_mmapfile("etc/badword.img", O_RDONLY, PROT_READ, MAP_SHARED, (void **) &pattern_img_ptr, &pattern_img_size, NULL) == 0)
         {
-            if (!dashf("etc/badwords.img")) {
+            if (!dashf("etc/badword.img")) {
             	if (build_badwordimage()==0)
             		goto retry;
             }
