@@ -34,7 +34,7 @@ int readpost;
 int digestmode;
 int usernum;
 //char currboard[STRLEN - BM_LEN];
-struct boardheader* currboard;
+struct boardheader* currboard=NULL;
 int currboardent;
 char currBM[BM_LEN - 1];
 int selboard = 0;
@@ -3141,7 +3141,7 @@ int Read()
     int bid;
     int returnmode;
 
-    if (!selboard) {
+    if (!selboard||!currboard) {
         move(2, 0);
         prints("请先选择讨论区\n");
         pressreturn();
