@@ -318,7 +318,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
                 *t = '\0';
             h = &pnt[(locmem->crs_line - locmem->top_line) * ssize];
             sprintf(genbuf, "%s/%s", buf, h->filename);
-            if (strcmp(genbuf,lastfile) {
+            if (strcmp(genbuf,lastfile)) {
             	draw_content(genbuf,h);
             	strcpy(lastfile, genbuf);
             }

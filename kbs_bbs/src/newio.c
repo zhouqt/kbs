@@ -398,7 +398,7 @@ int igetch()
                 if (i_top)
                     to = *i_top;
                 else {
-                    while ((i_timeout != 0)||(i_timeoutusec!=0))) {
+                    while ((i_timeout != 0)||(i_timeoutusec!=0)) {
                         to.tv_sec = i_timeout - (time(0) - i_begintimeout);
                         to.tv_usec = i_timeoutusec;
                         if ((to.tv_sec < 0) ||((to.tv_sec==0)&&(i_timeoutusec==0))){
