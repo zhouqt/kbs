@@ -731,6 +731,9 @@ int main(int argc, char *argv[])
         if (strcasecmp(argv[1], "killdir") == 0)
             return dokilldir(argv[2]);
         if (strcasecmp(argv[1], "flush") == 0) {
+            if (resolve_ucache() != 0)
+	              return -1;
+            resolve_boards();
             flush_ucache();
             flush_bcache();
 			bbslog("4miscdaemon", "flush passwd file");

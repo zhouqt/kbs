@@ -1094,7 +1094,7 @@ void load_user_title()
         bbslog("3system", "Can't open " USER_TITLE_FILE "file %s", strerror(errno));
     } else {
         int i;
-        for (i=0;i<256;i++) {
+        for (i=0;i<255;i++) {
             fgets(uidshm->user_title[i],USER_TITLE_LEN,titlefile);
             
             if ((uidshm->user_title[i][0]!=0)&&(uidshm->user_title[i][strlen(uidshm->user_title[i])-1]=='\n'))
