@@ -576,111 +576,135 @@ delete_range(filename,id1,id2,del_mode)
 char *filename ;
 int id1,id2,del_mode ;
 {
-    struct fileheader fhdr;
-    char        tmpfile[ STRLEN ], deleted[ STRLEN ], buf[STRLEN], lockfile[256];
-    int         fdr, fdw, fd;
-    int         count;
+#define DEL_RANGE_BUF 2048
+    struct fileheader savefhdr[DEL_RANGE_BUF];
 
-/*#ifdef DEBUG
-    {
-    	char * ptr;
-	strcpy(lockfile, filename);
-	if(NULL != (ptr = strchr(lockfile, '/'))) *(ptr+1) = 0;
-	else *lockfile = 0;
-	strcat(lockfile, ".dellock");
-    }
-    if((fd = open(lockfile,O_RDWR|O_CREAT|O_APPEND, 0644)) == -1)
-        return -1 ;
-#else*/
-    if((fd = open(".dellock",O_RDWR|O_CREAT|O_APPEND, 0644)) == -1)
-        return -1;
-/*#endif DEBUG*/
-    flock(fd,LOCK_EX);
-    tmpfilename( filename, tmpfile, deleted );
+    struct fileheader delfhdr[DEL_RANGE_BUF];
+    int         fdr;
+    int         count,totalcount,delcount,remaincount,keepcount;
+    int         pos_read,pos_write,pos_end;
     /*digestmode=4, 5的情形或者允许区段删除,或者不允许,这可以在
     调用函数中或者任何地方给定, 这里的代码是按照不允许删除写的,
     但是为了修理任何缘故造成的临时文件故障(比如自动删除机), 还是
     尝试了一下打开操作; tmpfile是否对每种模式独立, 这个还是值得
     商榷的.  -- ylsdd*/
-    if(digestmode==4||digestmode==5) {
+    if(digestmode==4||digestmode==5)  { /* KCN:暂不允许 */
        tmpfile[strlen(tmpfile)-1]=(digestmode==4)?'D':'J';
        deleted[strlen(deleted)-1]=(digestmode==4)?'D':'J';
-    }
-
-    if((fdr = open(filename,O_RDONLY,0)) == -1) {
-        return -2;
-    }
-
-    if((fdw = open(tmpfile,O_WRONLY|O_CREAT|O_EXCL,0660)) == -1) {
-        close(fdr);
-        return -3;
-    }
-    if(digestmode==4||digestmode==5) {
-       close(fdr);
-       unlink(tmpfile);
-       close(fdw);
        return 0;
     }
 
-    flock(fdw,LOCK_EX);
+    if((fdr = open(filename,O_RDWR,0)) == -1) {
+        return -2;
+    }
 
-    count = 1;
-    while(read(fdr,&fhdr,sizeof fhdr) == sizeof fhdr) {
-        if( !(fhdr.accessed[1]&FILE_DEL) 
-           && ( count < id1 || count > id2
-              || ((del_mode!=1) && strcmp(fhdr.owner,"deliver") && (fhdr.accessed[0] & FILE_MARKED))))/*Haohmaru.99.4.20.强制删除mark文章*/ {
-            if((safewrite(fdw,&fhdr,sizeof fhdr) == -1)) {
-                flock(fdw,LOCK_UN);
-                unlink(tmpfile);
-                close(fdw);
-                close(fdr);
-                return -4;
-            }
-        } else {
-#ifndef LEEWARD_X_RECORD /* This macro need defining for *.c under directories
-            of both local_utl and innd */
-/* Leeward: 98.01.22 adds below for logs in deleted/junk */
-/* rewrited by ylsdd */
-            cancelpost(currboard, currentuser.userid,
-                       &fhdr, !strcmp(fhdr.owner, currentuser.userid));
-#else
-            char *t;
-            char fullpath[STRLEN];
-            strcpy(buf,filename);
-            if( (t = strrchr(buf,'/')) != NULL )
-                *t = '\0';
-            sprintf(fullpath,"%s/%s",buf,fhdr.filename);
-            unlink(fullpath);
-#endif
+    flock(fdr,LOCK_EX);
+
+    pos_end=lseek(fdr,0,SEEK_END);
+    delcount = 0;
+    if (pos_end==-1) {
+        close(fdr);
+        return -2;
+    }
+    totalcount = pos_end/sizeof(struct filehead);
+    pos_end = totalcount*sizeof(struct filehead);
+    if (id2!=-1) {
+        char buf[3];
+        pos_read=sizeof(struct fileheader)*id2;
+    }
+    else
+        pos_read=pos_end;
+        
+    if (id2>totalcount) {
+        getdata(6,0,"文章编号大于文章总数，确认删除 (Y/N)? [N]: ",buf,2,DOECHO,NULL,YEA) ;
+        if(*buf != 'Y' && *buf != 'y') {
+            close(fdr);
+            return -3;
         }
-        count++;
+        pos_read=pos_end;
+        id2=totalcount;
     }
-    close(fdw);
+    
+    if (id1!=0) {
+        pos_write=sizeof(struct fileheader)*(id1-1);
+        count = 1;
+    }
+    else {
+        pos_write=0;
+        count = 1;
+    }
+    
+    if (del_mode==0) { //rangle mark del
+        while (count<=id2) {
+            int i,j;
+            lseek(fdr,pos_write,SEEK_SET);
+            readcount=read(fdr,savefhdr,DEL_RANGLE_BUF*sizeof(struct fileheader))/sizeof(struct fileheader);
+            for (i=0;i<readcount;i++,count++) {
+                if (count>id2) break;  //del end
+                savefhdr[i].accessed[1]|=FILE_DEL;
+            }
+            lseek(fdr,pos_write,SEEK_SET);
+            write(fdr,savefhdr,i*sizeof(struct fileheader))/sizeof(struct fileheader);
+            pos_write+=i*sizeof(struct fileheader);
+        }
+        close(fdr);
+        return 0;
+    }
+    remaincount=count-1;
+    keepcount=0;
+    lseek(fdr,pos_write,SEEK_SET);
+    while (count<=id2) {
+        int readcount;
+        readcount=read(fdr,savefhdr,DEL_RANGLE_BUF*sizeof(struct fileheader))/sizeof(struct fileheader);
+//        if (readcount==0) break;
+        for (i=0;i<readcount;i++,count++) {
+            if (count>id2) break;  //del end
+            if ((savefhdr[i].accessed[0] & FILE_MARKED)&&del_mode!=2) 
+            {
+                memcpy(readfhdr[keepcount],savefhdr[i],sizeof(struct fileheader));
+                keepcount++;
+                remaincount++;
+                if (keepcount>DEL_RANGLE_BUF) {
+                    lseek(fdr,pos_write,SEEK_SET);
+                    write(fdr,savefhdr,DEL_RANGLE_BUF*sizeof(struct fileheader));
+                    lseek(fdr,remaincount*sizeof(struct fileheader),SEEK_SET);
+                    keepcount=0;
+                }
+            } else {
+                memcpy(delfhdr[delcount],savefhdr[i],sizeof(struct fileheader));
+                delcount++;
+                if (delcount>DEL_RANGLE_BUF) {
+                    for (j=0;j<DEL_RANGLE_BUF;j++)
+                        cancelpost(currboard, currentuser.userid,
+                               &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser.userid,0));
+                    delcount=0;
+                    setbdir( genbuf, board );
+                    append_record( genbuf, delfhdr, DEL_RANGLE_BUF*sizeof(struct fileheader) );
+                }  //need clear delcount
+            } //if mark file
+        }  //for readcount
+    }
+        
+    while (1) {
+        int readcount;
+        lseek(fdr,pos_read,SEEK_SET);   
+        readcount=read(fdr,savefhdr,DEL_RANGLE_BUF*sizeof(struct fileheader))/sizeof(struct fileheader);
+        if (readcount==0) break;
+        
+        lseek(fdr,remaincount*sizeof(struct fileheader),SEEK_SET);
+        write(fdr,readfhdr,keepcount*sizeof(struct fileheader));
+        pos_read+=readcount*sizeof(struct fileheader);
+        remaincount+=readcount;
+    }
+    ftruncate(fdr,remaincount*sizeof(struct fileheader));
     close(fdr);
-    if (YEA == checkreadonly(currboard))/*Haohmaru.使只读情况下也可以区段删除*/
-    {
-        sprintf(buf,"cp -f ~bbsroot/%s ~bbsroot/%s",filename,deleted);
-        system(buf);
+    if (delcount) {
+        for (j=0;j<delcount;j++)
+            cancelpost(currboard, currentuser.userid,
+                   &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser.userid,0));
+        setbdir( genbuf, board );
+        append_record( genbuf, delfhdr, delcount*sizeof(postfile) );
     }
-    else if(rename(filename,deleted) == -1) {
-        flock(fd,LOCK_UN);
-        close(fd);
-        return -5;
-    }
-    if (YEA == checkreadonly(currboard))
-    {
-        sprintf(buf,"cp -f ~bbsroot/%s ~bbsroot/%s",tmpfile,filename);
-        system(buf);
-        sprintf(buf,"rm -rf ~bbsroot/%s",tmpfile);
-        system(buf);
-    }
-    else if(rename(tmpfile,filename) == -1) {
-        flock(fd,LOCK_UN);
-        close(fd);
-        return -6;
-    }
-    flock(fd,LOCK_UN);
-    close(fd);
     return 0;
 }
 

@@ -708,7 +708,7 @@ char *direct ;
     for(i=0;i<6;i++)
         sprintf(buf,"%s(%d)%s  ",buf,i+1,SR_BMitems[i]);
     strcat(buf,"? [0]: ");
-    if (strlen(buf)>70) {
+    if (strlen(buf)>76) {
         char savech=buf[76];
         buf[76]=0;
         prints("%s",buf);
