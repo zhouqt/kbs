@@ -145,6 +145,7 @@
 		{
 ?>
 <a href="/cgi-bin/bbs/bbsclear?board=<?php echo $brd_encode; ?>&start=<?php echo $start; ?>">Çå³ıÎ´¶Á</a>
+<a href="/bbsshowvote.php?board=<?php echo $brd_encode; ?>">±¾°æÍ¶Æ±</a>
 <?php
 		}
 		$sec_index = get_secname_index($brdarr["SECNUM"]);
