@@ -2440,15 +2440,15 @@ static PHP_FUNCTION(bbs_createregform)
 	ud.address[STRLEN-1] = '\0';
 	ud.reg_email[STRLEN-1] = '\0';
 
-#ifdef SMS_SUPPORT
-    if(strcmp(mobile_phone,""))
-	{
-	    ud.mobileregistered = false;
+    if(strcmp(mobile_phone,"")){
+	    ud.mobileregistered = true;
 		strncpy(ud.mobilenumber,mobile_phone,MOBILENUMBER);
 		ud.mobilenumber[MOBILENUMBER-1] = '\0';
 	}
-#endif
-
+    else{
+    	ud.mobileregistered = false;
+    	}
+    
 #ifdef HAVE_BIRTHDAY
     ud.birthyear=(year > 1900 && year < 2050)?(year-1900):0;
 	ud.birthmonth=(month >=1 && month <=12)?month:0;
