@@ -6,7 +6,7 @@
 int main()
 {
     FILE *fp;
-    char filename[80], dir[80], board[80], title[80], buf[80], oldfilename[80], *content,path[80];
+    char filename[80], dir[80], board[80], title[80], buf[80], buf2[80], *content,path[80];
     int r, i, sig;
 	int reid;
     struct fileheader x, *oldx;
@@ -19,7 +19,7 @@ int main()
         http_fatal("匆匆过客不能发表文章，请先登录");
     strsncpy(board, getparm("board"), 18);
     strsncpy(title, getparm("title"), 50);
-    strsncpy(oldfilename, getparm("refilename"), 80);
+    /*strsncpy(oldfilename, getparm("refilename"), 80);*/
     brd = getbcache(board);
     if (brd == 0)
         http_fatal("错误的讨论区名称");
@@ -95,7 +95,7 @@ int main()
     if(oldx)
     	free(oldx);
     unlink(filename);
-    sprintf(buf, "/bbsdoc.php?board=%s", board);
+    sprintf(buf, "/bbsdoc.php?board=%s", encode_url(buf2, board, sizeof(buf2)));
     if (!junkboard(board)) {
         currentuser->numposts++;
         write_posts(currentuser->userid, board, title);
