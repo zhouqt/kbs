@@ -219,7 +219,6 @@ int port; /* Thor.981206: 取 0 代表 *没有参数* */
 
     close(0);
     /* COMMAN: do not fork in debuggind mode */
-  if (!no_fork) {
        if (fork())
           exit(0);
 
@@ -227,7 +226,6 @@ int port; /* Thor.981206: 取 0 代表 *没有参数* */
 
        if (fork())
           exit(0); 
-   }
     sin.sin_family = AF_INET;
     sin.sin_addr.s_addr = htonl(INADDR_ANY);
 /*    sin.sin_addr.s_addr = htonl(INADDR_LOOPBACK);*/
@@ -546,13 +544,11 @@ char *argv[];
                 continue;
             }
             /* COMMAN :do not fork in debugging mode*/
-	   if (!no_fork) {	
                    if (fork())
                    {
                      close(csock);
                      continue;
                    }
-	    }
 	    /* sanshao@10.24: why next line is originally sizeof(sin) not &value */	
             getpeername(csock,(struct sockaddr*)&sin,(socklen_t*)&value);
             bbslog("0connect","connect from %s(%d) in port %d",inet_ntoa(sin.sin_addr),htons(sin.sin_port),port);
