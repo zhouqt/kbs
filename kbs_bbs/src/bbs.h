@@ -123,7 +123,7 @@ extern long ti;
 #endif
 
 /*#ifdef SMS_SUPPORT*/
-#define MOBILENUMBERLEN 17
+#define MOBILE_NUMBER_LEN 17
 /*#endif*/
 /*#define NUMPERMS (31)*/
 

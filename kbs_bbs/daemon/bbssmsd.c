@@ -34,7 +34,6 @@ struct header{
 #define CMD_BBSSEND 8
 #define CMD_GWSEND 9
 
-#define MOBILE_NUMBER_LEN 17
 #define USER_LEN 20
 #define PASS_LEN 50
 

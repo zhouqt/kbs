@@ -679,8 +679,6 @@ struct header{
 #define CMD_BBSSEND 8
 #define CMD_GWSEND 9
 
-#define MOBILE_NUMBER_LEN 17
-
 struct RegMobileNoPacket { //Type=3
     char MobileNo[MOBILE_NUMBER_LEN];
 };

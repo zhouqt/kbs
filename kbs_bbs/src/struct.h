@@ -50,7 +50,7 @@ struct userdata
     char reg_email[STRLEN]; /* registry email . added by binxun . 2003.6.6 */
 /*#ifdef SMS_SUPPORT*/
     bool mobileregistered;
-    char mobilenumber[MOBILENUMBERLEN];
+    char mobilenumber[MOBILE_NUMBER_LEN];
 /*#endif*/
 };
 
