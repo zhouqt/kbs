@@ -261,6 +261,42 @@ struct msghead {
     int frompid, topid;
 };
 
+struct smsmsg {
+	int id;
+	char userid[13];
+	char dest[13];
+	char time[15];
+	int type;
+	int level;
+	char *context;
+	int readed;
+};
+
+struct addresslist{
+	int id;
+	char userid[13];
+	char name[15];
+	char bbsid[15];
+	char school[100];
+	char zipcode[7];
+	char homeaddr[100];
+	char companyaddr[100];
+	char tel_o[20];
+	char tel_h[20];
+	char mobile[15];
+	char email[30];
+	char qq[10];
+	int birth_year;
+	int birth_month;
+	int birth_day;
+	char *memo;
+	char group[10];
+};
+
+#define AL_ORDER_NAME 1
+#define AL_ORDER_BBSID 2
+#define AL_ORDER_COUNT 2
+
 struct key_struct { // ×Ô¶¨Òå¼ü by bad
     int status[10];
     int key;
