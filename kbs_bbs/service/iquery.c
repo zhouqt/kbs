@@ -69,7 +69,7 @@ void do_query_all(int w, char * s)
 {
     struct sockaddr_in addr;
     FILE* sockfp;
-    int sockfd, i;
+    int sockfd, i, j;
     char buf[256];
     char ip[20];
     
@@ -77,7 +77,23 @@ void do_query_all(int w, char * s)
     else strcpy(ip,"166.111.8.235");
     
     res_total = -2;
+    if(strstr(s, "∑®¬÷π¶")||strstr(s, "kcn")||strstr(s, "∂æ÷–÷Æ∂æ")||
+        strstr(s, "Ω≠‘Û√Ò")) {
+        res_total = -1;
+        return;
+    }
     
+    j=1;
+    for(i=0;i<strlen(s);i++)
+        if(s[i]>='a'&&s[i]<='z'||s[i]>='A'&&s[i]<='Z'||s[i]>='0'&&s[i]<='9'||s[i]<0) {
+            j=0;
+            break;
+        }
+    if(j) {
+        res_total = -1;
+        return;
+    }
+
     if((sockfd=socket(AF_INET, SOCK_STREAM, 0))==-1) return;
     memset(&addr, 0, sizeof(addr));
     addr.sin_family=AF_INET;    
@@ -85,7 +101,7 @@ void do_query_all(int w, char * s)
     addr.sin_port=htons(4875);
     if(connect(sockfd, (struct sockaddr*)&addr, sizeof(addr))<0) return;
     sockfp=fdopen(sockfd, "r+");
-    fprintf(sockfp, "%d\n%s\n", w, s);
+    fprintf(sockfp, "\n%d\n%s\n", w, s);
     fflush(sockfp);
     fscanf(sockfp, "%d %d %d\n", &toomany, &i, &res_total);
     for(i=0;i<res_total;i++) {
@@ -107,7 +123,7 @@ static int choose_file_refresh(struct _select_def *conf)
 {
     clear();
     docmdtitle("[¡Ó∫¸≥ÂÀ—À˜]",
-              "  ÕÀ≥ˆ[\x1b[1;32m°˚\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ≤Ïø¥[\x1b[1;32mEnter\x1b[0;37m] —°‘Ò[\x1b[1;32m°¸\x1b[0;37m,\x1b[1;32m°˝\x1b[0;37m]                        ◊˜’ﬂ: \x1b[31;1mbad@smth.org\x1b[m");
+              "  ÕÀ≥ˆ[\x1b[1;32m°˚\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ≤Ïø¥[\x1b[1;32mEnter\x1b[0;37m] —°‘Ò[\x1b[1;32m°¸\x1b[0;37m,\x1b[1;32m°˝\x1b[0;37m] ∑≠“≥≤È’“[\x1b[1;32m[\x1b[0;37m,\x1b[1;32m]\x1b[0;37m]              ◊˜’ﬂ: \x1b[31;1mbad@smth.org\x1b[m");
     move(2, 0);
     prints("[0;1;37;44m    %4s %-30s %s        %d-%d π≤%d  πÿº¸◊÷:%s", "±‡∫≈", "±ÍÃ‚", "¬∑æ∂", wh*MAX_KEEP+1, wh*MAX_KEEP+res_total, toomany, qn);
     clrtoeol();
@@ -139,14 +155,21 @@ again:
     if(ch==0) ch=igetkey();
     switch(ch){
         case KEY_UP:
+        case 'l':
+        case 'k':
             conf->pos--;
             if(conf->pos<=0) conf->pos = res_total;
             goto again;
         case KEY_DOWN:
         case ' ':
+        case 'n':
+        case 'j':
             conf->pos++;
             if(conf->pos>res_total) conf->pos = 1;
             goto again;
+        case Ctrl('Y'):
+            zsend_file(ss, res_title[conf->pos-1]);
+            break;
     }
     return SHOW_REFRESH;
 }
