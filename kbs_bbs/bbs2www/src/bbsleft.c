@@ -157,9 +157,10 @@ int main()
         ptr = "<img src=\"/images/link.gif\"> <a target=\"f3\" onclick=\"return confirm('确实切换隐身状态吗?')\" href=\"/bbscloak.php\">切换隐身</a><br>\n";
     if (loginok) {
         printdiv(4, "个人工具箱", "/images/folder.gif");
-        printf("			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsinfo\">个人资料</a><br>\n"
-               "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"/bbsplan.php\">改说明档<a><br>\n"
-               "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"/bbssig.php\">改签名档<a><br>\n"
+        printf("			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"/bbsfillform.html\">填写注册单</a><br>\n"
+               "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsinfo\">个人资料</a><br>\n"
+               "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"/bbsplan.php\">改说明档</a><br>\n"
+               "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"/bbssig.php\">改签名档</a><br>\n"
                "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbspwd\">修改密码</a><br>\n"
                "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsparm\">修改个人参数</a><br>\n"
 /*
