@@ -985,13 +985,13 @@ static void query_user(chatcontext *pthis,const char* userid)
     printchatline(pthis,genbuf);
     sprintf(genbuf,"共上站 %d 次，发表过 %d 篇文章，生命力[%d]%s",
             lookupuser->numlogins, lookupuser->numposts,
-            compute_user_value(&lookupuser),
+            compute_user_value(lookupuser),
             (lookupuser->userlevel & PERM_SUICIDE)?" (自杀中)":" ");
     printchatline(pthis,genbuf);
 #else
     sprintf(genbuf, "%s (%s):   生命力[%d]%s   %s",
             lookupuser->userid, lookupuser->username,
-            compute_user_value(&lookupuser),
+            compute_user_value(lookupuser),
             (lookupuser->userlevel & PERM_SUICIDE)?" (自杀中)":" ",
             (check_query_mail(qry_mail_dir)==1)? "有新信":"    ");
     printchatline(pthis,genbuf);

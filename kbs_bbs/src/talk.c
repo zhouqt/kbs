@@ -366,7 +366,7 @@ char q_id[IDLEN];
     uleveltochar(&permstr,lookupuser->userlevel);
     prints("ÐÅÏä£º[[5m%2s[m] ÉúÃüÁ¦£º[%d] µÈ¼¶: [%s]%s\n",
            (check_query_mail(qry_mail_dir)==1)? "ÐÅ":"  ",
-           compute_user_value(&lookupuser),
+           compute_user_value(lookupuser),
            permstr,(lookupuser->userlevel & PERM_SUICIDE)?" (×ÔÉ±ÖÐ)":"¡£");
 
 #if defined(QUERY_REALNAMES)
