@@ -3,7 +3,7 @@
 
 static int default_write_func(const char *str, size_t len)
 {
-	fwrite(str, 1, len, stderr);
+	fwrite(str, 1, len, stdout);
 	return len;
 }
 
