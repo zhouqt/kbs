@@ -631,7 +631,7 @@ void insertch_from_fp(int ch)
     else if (ch == Ctrl('I'))
         do {
             insert_char(' ');
-        } while (currpnt & 0x7);
+        } while ((currpnt & 0x7) && (currpnt <= MAX_EDIT_LINE));
     else if (ch == '\n')
         split(currline, currpnt);
 }
@@ -1573,7 +1573,7 @@ void vedit_key(int ch)
             NO_ANSI_MODIFY;
             do {
                 insert_char(' ');
-            } while (currpnt & 0x7);
+            } while ((currpnt & 0x7) && (currpnt <= MAX_EDIT_LINE));
             break;
         case '\r':
         case '\n':
