@@ -2178,7 +2178,7 @@ int add_edit_mark(char *fname, int mode, char *title)
     fclose(out);
 
     f_mv(outname, fname);
-    pressanykey();
+//    pressanykey();
 
     return 1;
 }
@@ -2269,7 +2269,7 @@ int edit_title(int ent, struct fileheader *fileinfo, char *direct)
         || !strcmp(currboard, "deleted"))       /* Leeward : 98.01.22 */
         return DONOTHING;
 
-    if ((digestmode == 4) || (digestmode == 5))
+    if (digestmode >= 2)
         return DONOTHING;
     if (true == check_readonly(currboard))      /* Leeward 98.03.28 */
         return FULLUPDATE;
@@ -2283,6 +2283,7 @@ int edit_title(int ent, struct fileheader *fileinfo, char *direct)
             if (!isowner(currentuser, fileinfo)) {
                 return DONOTHING;
             }
+    strcpy(buf, fileinfo->title);
     getdata(t_lines - 1, 0, "新文章标题: ", buf, 50, DOECHO, NULL, true);       /*输入标题 */
     if (buf[0] != '\0') {
         char tmp[STRLEN * 2], *t;
