@@ -448,7 +448,7 @@ int Xdelipacl()
     int id;
     struct userec *lookupuser;
 
-    if (HAS_PERM(currentuser, PERM_SYSOP)) {
+    if (!HAS_PERM(currentuser, PERM_SYSOP)) {
         move(3, 0);
         clrtobot();
         prints("抱歉, 只有SYSOP权限的管理员才能修改其他用户权限");
@@ -488,7 +488,7 @@ int Xdeljunk()
 {
     char buf[256];
 
-    if (HAS_PERM(currentuser, PERM_SYSOP)) {
+    if (!HAS_PERM(currentuser, PERM_SYSOP)) {
         move(3, 0);
         clrtobot();
         prints("抱歉, 只有SYSOP权限的管理员才能修改其他用户权限");
