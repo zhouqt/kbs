@@ -11,7 +11,7 @@
 #
 
 AC_INIT(sshd.c)
-AM_INIT_AUTOMAKE(sshbbsd,1.0)
+AM_INIT_AUTOMAKE(sshbbs, 1.0)
 AM_CONFIG_HEADER(config.h)
 AC_PREREQ(2.10)
 
