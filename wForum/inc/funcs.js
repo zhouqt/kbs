@@ -372,3 +372,8 @@ function showTime() {
 	str = Timer.getUTCFullYear() + "-" + prefixZero(Timer.getUTCMonth() + 1) + "-" + prefixZero(Timer.getUTCDate()) + " " + prefixZero(Timer.getUTCHours()) + ":" + prefixZero(Timer.getUTCMinutes()) + ":" + prefixZero(Timer.getUTCSeconds());
 	KCN.innerHTML = "服务器时间: " + str;
 }
+
+
+function resizeImg(obj) {
+	if (obj.width>screen.width-333) obj.width=screen.width-333;
+}

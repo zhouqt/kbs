@@ -64,3 +64,6 @@ function getBbsStyleFile()
 }
 
 
+function resizeImg(obj) {
+	if (obj.width>screen.width-333) obj.width=screen.width-333;
+}
