@@ -2782,7 +2782,7 @@ int Read()
     }
     usetime = time(0);
     i_read(READING, buf, readtitle, (READ_FUNC) readdoent, &read_comms[0], sizeof(struct fileheader));  /*½øÈë±¾°æ */
-    bbslog("boardusage", "%-20s Stay: %5ld", currboard, time(0) - usetime);
+    newbbslog(LOG_BOARDUSAGE, "%-20s Stay: %5ld", currboard, time(0) - usetime);
     bmlog(currentuser->userid, currboard, 0, time(0) - usetime);
     bmlog(currentuser->userid, currboard, 1, 1);
 

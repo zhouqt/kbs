@@ -805,6 +805,7 @@ void main_bbs(int convit, char *argv)
     resolve_ucache();
     resolve_utmp();
     resolve_boards();
+    init_bbslog();
     srand(time(0) + getpid());
 
     /* commented by period for it changed to local variable 2000.11.12
