@@ -31,7 +31,6 @@ static int ismsgline;
 static int tmpline;
 static struct textline *top_of_win = NULL;
 static int curr_window_line, currln;
-static int redraw_everything;
 static int insert_character = 1;
 /* for copy/paste */
 static struct textline *mark_begin, *mark_end;
@@ -84,7 +83,6 @@ void msgline()
     now = time(0);
     tmpshow = showansi;
     showansi = 1;
-#ifndef VEDITOR
     if (talkrequest) {
         talkreply();
         clear();
@@ -107,14 +105,6 @@ void msgline()
     sprintf(buf2, " ×´Ì¬ [%s][%4.4d,%3.3d]      Ê±¼ä", insert_character ? "²åÈë" : "Ìæ»»", currln + 1, currpnt + 1);
     strcat(buf, buf2);
     sprintf(buf2, "[33m[44m¡¾%.16s¡¿", ctime(&now));
-#else
-    /*´ËÈíÌåËäÎª Freeware £¬µ«Çë²»ÒªÐÞ¸ÄÒÔÏÂµÄ×ÖÑù£¬Ð»Ð» */
-    strcpy(buf, "[36m[44mÖÐÕý×Ê¹¤ BBS Éè¼Æ [31mCtrl-Z[33m Çó¾È");
-    sprintf(buf2, " [%s][%6d,%3d]", insert_character ? "Ins" : "Rep", currln + 1, currpnt + 1);
-    strcat(buf, buf2);
-    sprintf(ptr, "%.5s", ctime(&now) + 11);
-    sprintf(buf2, "[33m[44m %22.22s [m%.2s:%.2s][m", currfname, ptr, ptr + 3);
-#endif
     strcat(buf, buf2);
     move(t_lines - 1, 0);
     prints("%s", buf);
@@ -446,7 +436,6 @@ void split(struct textline * line, int pos)
         curr_window_line++;
         currln++;
     }
-    redraw_everything = true;
 }
 
 /*
@@ -630,7 +619,6 @@ void vedit_init()
     top_of_win = p;
     curr_window_line = 0;
     currln = 0;
-    redraw_everything = false;
     CLEAR_MARK();
 }
 
@@ -1202,46 +1190,44 @@ static int Origin(struct textline *text)
 #endif
 }
 
+int myy, myx;
+
 void display_buffer()
 {
     struct textline *p;
-    int i;
-    int shift;
-    int temp_showansi;
+    int i, j, ch;
 
-    temp_showansi = showansi;
-
-    for (i=0; i<t_lines-1; i++) {
-        move(i, 0); clrtoeol();
-    }
-    move(0, 0);
+    clear();
     for (p = top_of_win, i = 0; i < t_lines - 1; i++) {
         if (p) {
-            shift = (currpnt + 2 > scr_cols) ? (currpnt / (scr_cols - scrollen)) * (scr_cols - scrollen) : 0;
-            if (editansi) {
-                showansi = 1;
+            if (editansi)
                 prints("%s", p->data);
-            } else if ((p->attr & M_MARK)) {
-                showansi = 1;
-                clear_whole_line(i);
-                cstrnput(p->data + shift);
-            } else {
-                if (p->len >= shift) {
-                    showansi = 0;
-                    strnput(p->data + shift);
-                } 
-//                else
-//                    clrtoeol();
+            else {
+                if (p->attr & M_MARK) prints("%s", ANSI_REVERSE);
+                j = 0; ch = 0;
+                for (i = 0; i < p->len; i++) {
+                    if (ch) ch = 0;
+                    else if (p->data[i]<0) ch = 1;
+                    if (p == currline && i == currpnt)
+                        getyx(&myy, &myx);
+                    if (j >= scr_cols || j >= scr_cols-1 && ch) {
+                        prints("\n");
+                        j = 0;
+                    }
+                    outc(p->data[i]);
+                    j++;
+                }
+                if (p == currline && i == currpnt)
+                    getyx(&myy, &myx);
+                if (p->attr & M_MARK) prints("%s", ANSI_RESET);
             }
             p = p->next;
         } else
-            prints("%s~", editansi ? ANSI_RESET : "");
+            prints("%s~", ANSI_RESET);
         prints("\n");
     }
 
-    showansi = temp_showansi;
     msgline();
-    return;
 }
 
 int vedit_process_ESC(arg)
@@ -1491,7 +1477,6 @@ static int process_ESC_action(int action, int arg)
         break;
     case 'G':
         go();
-        redraw_everything = true;
         break;
     case 'E':
         sprintf(filename, "tmp/clip/%s.%c", currentuser->userid, arg);
@@ -1511,11 +1496,9 @@ static int process_ESC_action(int action, int arg)
         break;
     case 'N':
         searchline(searchtext);
-        redraw_everything = true;
         break;
     case 'S':
         search();
-        redraw_everything = true;
         break;
     case 'F':
         sprintf(buf, "%c[3%cm", 27, arg);
@@ -1530,15 +1513,10 @@ static int process_ESC_action(int action, int arg)
         break;
     case 'C':
         editansi = showansi = 1;
-        redraw_everything = true;
         clear();
         display_buffer();
-        redoscr();
         strcpy(msg, "ÒÑÏÔÊ¾²ÊÉ«±à¼­³É¹û£¬¼´½«ÇÐ»Øµ¥É«Ä£Ê½");
     }
-
-    if (strchr("FBRCM", action))
-        redraw_everything = true;
 
     if (msg[0] != '\0') {
         if (action == 'C') {    /* need redraw */
@@ -1548,8 +1526,6 @@ static int process_ESC_action(int action, int arg)
             pressanykey();
             newch = '\0';
             editansi = showansi = 0;
-            clear();
-            display_buffer();
         } else
             newch = ask(strcat(msg, "£¬Çë¼ÌÐø±à¼­¡£"));
     } else
@@ -1600,7 +1576,6 @@ void vedit_key(ch)
             break;
         case Ctrl('G'):        /* redraw screen */
             go();
-            redraw_everything = true;
             break;
             /* Leeward 98.07.30 Change hot key for msgX */
             /*case Ctrl('Z'):  call help screen */
@@ -1610,7 +1585,6 @@ void vedit_key(ch)
 #else
             show_helpmenu(vedithelp);
 #endif
-            redraw_everything = true;
             break;
         case Ctrl('R'):
 #ifdef CHINESE_CHARACTER
@@ -1733,7 +1707,6 @@ void vedit_key(ch)
             curr_window_line = getlineno();
             if (currpnt > currline->len)
                 currpnt = currline->len;
-            redraw_everything = true;
             break;
         case Ctrl('F'):
         case KEY_PGDN:         /* next page */
@@ -1754,7 +1727,6 @@ void vedit_key(ch)
                 curr_window_line--;
                 currline = currline->prev;
             }
-            redraw_everything = true;
             break;
         case Ctrl('A'):
         case KEY_HOME:         /* begin of line */
@@ -1770,7 +1742,6 @@ void vedit_key(ch)
             currpnt = 0;
             curr_window_line = 0;
             currln = 0;
-            redraw_everything = true;
             break;
         case Ctrl('T'):        /* tail of file */
             top_of_win = back_line(lastline, 22);
@@ -1784,7 +1755,6 @@ void vedit_key(ch)
                 currln -= 2;
                 curr_window_line -= 2;
             }
-            redraw_everything = true;
             break;
         case Ctrl('O'):
         case KEY_INS:          /* Toggle insert/overwrite */
@@ -1817,7 +1787,6 @@ void vedit_key(ch)
                 /* end of this modification             */
                 if (*killsp(currline->next->data) == '\0') {
                     delete_line(currline->next);
-                    redraw_everything = true;
                     break;
                 }
                 p = currline;
@@ -1828,7 +1797,6 @@ void vedit_key(ch)
                         abort_bbs(0);
                     }
                 }
-                redraw_everything = true;
                 break;
             }
             currpnt--;
@@ -1862,7 +1830,6 @@ void vedit_key(ch)
                     }
                 } else if (currpnt == 0)
                     vedit_key(Ctrl('K'));
-                redraw_everything = true;
                 break;
             }
 #ifdef CHINESE_CHARACTER
@@ -1933,7 +1900,6 @@ void vedit_key(ch)
                     curr_window_line--;
                     currln--;
                 }
-                redraw_everything = true;
                 break;
             }
             if (currline->len == currpnt) {
@@ -1946,7 +1912,6 @@ void vedit_key(ch)
                         abort_bbs(0);
                     }
                 }
-                redraw_everything = true;
                 break;
             }
             currline->len = currpnt;
@@ -1984,25 +1949,6 @@ void vedit_key(ch)
             }
         }
     }
-
-    if (editansi /*|| mark_on */ )
-        redraw_everything = true;
-    shift = (currpnt + 2 > scr_cols) ? (currpnt / (scr_cols - scrollen)) * (scr_cols - scrollen) : 0;
-    msgline();
-    if (shifttmp != shift || redraw_everything == true) {
-        redraw_everything = true;
-        shifttmp = shift;
-    } else
-        redraw_everything = false;
-
-    move(curr_window_line, 0);
-    if (currline->attr & M_MARK) {
-        showansi = 1;
-        cstrnput(currline->data + shift);
-        showansi = 0;
-    } else
-        strnput(currline->data + shift);
-    clrtoeol();
 }
 
 static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,long* pattachpos)
@@ -2031,8 +1977,6 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,
     currln = 0;
     currpnt = 0;
     clear();
-    display_buffer();
-    msgline();
     while (ch != EOF) {
         newch = '\0';
         switch (ch) {
@@ -2050,7 +1994,6 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,
                 firstline = st_tmp->next;       /* ¼ÌÐø±à¼­ÔòÔÙ´ÎÐÞ¸ÄµÚÒ»ÐÐµÄÖ¸Õë */
                 firstline->prev = NULL;
             }
-            redraw_everything = true;
             break;
         case KEY_ESC:
             if (KEY_ESC_arg == KEY_ESC)
@@ -2059,20 +2002,14 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,
                 newch = vedit_process_ESC(KEY_ESC_arg);
                 clear();
             }
-            redraw_everything = true;
             break;
         case KEY_REFRESH:
-            redraw_everything = true;
             break;
         default:
             vedit_key(ch);
         }
-        if (redraw_everything) {
-            display_buffer();
-        }
-        redraw_everything = false;
-        shift = (currpnt + 2 > scr_cols) ? (currpnt / (scr_cols - scrollen)) * (scr_cols - scrollen) : 0;
-        move(curr_window_line, currpnt - shift);
+        display_buffer();
+        move(myy, myx);
 
         ch = (newch != '\0') ? newch : igetkey();
     }
