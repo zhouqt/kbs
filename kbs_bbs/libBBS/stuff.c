@@ -72,6 +72,7 @@ int my_system(const char *cmdstring)
     return status;
 }
 
+#define IDLE_STR_BUF_LEN 10 /* quick fix */
 char *idle_str(char* hh_mm_ss,struct user_info *uent)
 {
     time_t now, diff;
@@ -96,7 +97,7 @@ char *idle_str(char* hh_mm_ss,struct user_info *uent)
     hh = diff / 3600;
     mm = (diff / 60) % 60;
     if (hh > 0)
-        snprintf(hh_mm_ss, sizeof(hh_mm_ss), "%2d:%02d", hh, mm);
+        snprintf(hh_mm_ss, IDLE_STR_BUF_LEN, "%2d:%02d", hh, mm);
 
     else if (mm > 0)
         sprintf(hh_mm_ss, "%d", mm);
@@ -1356,6 +1357,8 @@ char *uid, *frm;
     int fd, len;
     char buf[256];
 
+    if (strcmp(uid, "guest") == 0) return;
+
     snprintf(buf, sizeof(buf), "%-12.12s  %-30s %s\n", uid, Ctime(time(0)), frm);
     len = strlen(buf);
     if ((fd = open(BADLOGINFILE, O_WRONLY | O_CREAT | O_APPEND, 0644)) >= 0) {
@@ -2516,3 +2519,27 @@ int check_ID_lists(char * id)
     return ret;
 }
 
+
+int check_ip_acl(char * id, char * sip)
+{
+    char fn[160];
+    int ip[4],rip[4],l,a;
+    unsigned int ips, rips;
+    FILE* fp;
+    sprintf(fn, BBSHOME "/home/%c/%s/ipacl", toupper(id[0]), id);
+    sscanf(sip, "%d.%d.%d.%d", &ip[0], &ip[1], &ip[2], &ip[3]);
+    ips = (ip[0]<<24)+(ip[1]<<16)+(ip[2]<<8)+ip[3];
+    fp = fopen(fn, "r");
+    if(fp) {
+        while(!feof(fp)) {
+            if(fscanf(fp, "%d.%d.%d.%d %d %d", &rip[0], &rip[1], &rip[2], &rip[3], &l, &a)<=0) break;
+            rips = (rip[0]<<24)+(rip[1]<<16)+(rip[2]<<8)+rip[3];
+            if(((ips>>(32-l))<<(32-l))==((rips>>(32-l))<<(32-l))||l==0) {
+                fclose(fp);
+                return a;
+            }
+        }        
+        fclose(fp);
+    }
+    return 0;
+}
