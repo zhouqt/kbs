@@ -1566,6 +1566,22 @@ static void bbs_make_board_zval(zval * value, char *col_name, struct newpostdata
     }
 }
 
+static void bbs_make_thread_zval(zval * value, int index, struct newpostdata *brd)
+{
+	switch(index) {
+	case 0:
+		
+	case 1:
+		break;
+	case 2:
+		break;
+	default:
+		ZVAL_EMPTY_STRING(value);
+		break;
+	}
+
+}
+
 #ifdef HAVE_WFORUM
 
 unsigned int * zapbuf;
@@ -2037,27 +2053,26 @@ static PHP_FUNCTION(bbs_getthreads)
     int total;
     struct boardheader *bp=NULL;
 	char dirpath[STRLEN];
-    int i;
+    int i,j;
     zval *element;
     int is_bm;
-	unsigned int *IDList=NULL;
     char flags[4];              /* flags[0]: flag character
                                  * flags[1]: imported flag
                                  * flags[2]: no reply flag
                                  * flags[3]: attach flag
                                  */
-	unsigned int threadsFounded;
 	int fd;
 	struct stat buf;
 	struct flock ldata;
-	struct fileheader *ptr1=NULL;
+	struct wwwthreadheader *ptr1=NULL;
 	char* ptr;
 	unsigned int long found;
-	unsigned int DingNum;
-    struct fileheader *articles=NULL;
 	int includeTop;
-
+	int skip;
     int ac = ZEND_NUM_ARGS();
+	int begin,end;
+	zval* columns[3];
+	char* thread_col_names[]={"origin","lastreply","articlenum"};
 
 
 
@@ -2095,72 +2110,10 @@ static PHP_FUNCTION(bbs_getthreads)
     brc_initial(currentuser->userid, bp->filename);
 #endif
 
-	IDList	= emalloc((num+start)*sizeof(long int));
 
-	if (IDList==NULL) {
-		RETURN_FALSE;
-	}
-
-	threadsFounded=0;
-
-	//get top articles
-
-	if (includeTop) {
-
-		setbdir(DIR_MODE_ZHIDING, dirpath, bp->filename);
-
-		total = get_num_records(dirpath, sizeof(struct fileheader));
-
-		DingNum=total;
-
-		articles = emalloc(DingNum * sizeof(struct fileheader));
-
-		if (articles==NULL) {
-			RETURN_FALSE;
-		}
-
-		DingNum = get_records(dirpath, articles, sizeof(struct fileheader), 1, DingNum);
-
-		for (i = DingNum-1; i>=0; i--) {
-			if (foundInArray(articles[i].groupid,IDList,threadsFounded)==-1)	{
-				if (articles[i].groupid!=articles[i].id) continue;
-				IDList[threadsFounded]=articles[i].groupid;
-				threadsFounded++;
-				if ((threadsFounded-1)>=start){
-					MAKE_STD_ZVAL(element);
-					array_init(element);
-					flags[0] = get_article_flag(articles+i, currentuser, bp->filename, is_bm);
-					if (is_bm && (articles[i].accessed[0] & FILE_IMPORTED))
-						flags[1] = 'y';
-					else
-						flags[1] = 'n';
-					if (articles[i].accessed[1] & FILE_READ)
-						flags[2] = 'y';
-					else
-						flags[2] = 'n';
-					if (articles[i].attachment)
-						flags[3] = '@';
-					else
-						flags[3] = ' ';
-					bbs_make_article_array(element, articles+i, flags, sizeof(flags));
-					zend_hash_index_update(Z_ARRVAL_P(return_value), threadsFounded-1-start, (void *) &element, sizeof(zval *), NULL);
-					if ((threadsFounded>=num+start) || (threadsFounded>MAX_DING)){
-						break;
-					}
-				}
-			
-			}
-		}
-		efree(articles);
-	}
-
-
-	// get normal articles
-
-    setbdir(DIR_MODE_NORMAL, dirpath, bp->filename);
+    setbdir(DIR_MODE_WEB_THREAD, dirpath, bp->filename);
 
     if ((fd = open(dirpath, O_RDONLY, 0)) == -1) {
-		efree(IDList);
         RETURN_LONG(-1);   
 	}
     ldata.l_type = F_RDLCK;
@@ -2168,7 +2121,6 @@ static PHP_FUNCTION(bbs_getthreads)
     ldata.l_len = 0;
     ldata.l_start = 0;
     if (fcntl(fd, F_SETLKW, &ldata)==-1) {
-		efree(IDList);
 		close(fd);
 		RETURN_LONG(-200);
 	}
@@ -2176,10 +2128,9 @@ static PHP_FUNCTION(bbs_getthreads)
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
-        efree(IDList);
 		RETURN_LONG(-201);
 	}
-    total = buf.st_size / sizeof(struct fileheader);
+    total = buf.st_size / sizeof(struct wwwthreadheader);
 
     if ((i = safe_mmapfile_handle(fd, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size)) != 1) {
         if (i == 2)
@@ -2187,50 +2138,72 @@ static PHP_FUNCTION(bbs_getthreads)
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
-		efree(IDList);
         RETURN_LONG(-2);
     }
+
+
     ptr1 = (struct fileheader *) ptr;
     /*
      * fetching articles 
      */
-
-
-
-	for (i=total-1;i>=0;i--) {
-		if (foundInArray(ptr1[i].groupid,IDList,threadsFounded)==-1)	{
-			if ((found=binarySearchInFileHeader(ptr1,total,ptr1[i].groupid))==-1) continue;
-			IDList[threadsFounded]=ptr1[i].groupid;
-			threadsFounded++;
-			if ((threadsFounded-1)>=start){
-				MAKE_STD_ZVAL(element);
-				array_init(element);
-				flags[0] = get_article_flag(ptr1+found, currentuser, bp->filename, is_bm);
-				if (is_bm && (ptr1[found].accessed[0] & FILE_IMPORTED))
-					flags[1] = 'y';
-				else
-					flags[1] = 'n';
-				if (ptr1[found].accessed[1] & FILE_READ)
-					flags[2] = 'y';
-				else
-					flags[2] = 'n';
-				if (ptr1[found].attachment)
-					flags[3] = '@';
-				else
-					flags[3] = ' ';
-				bbs_make_article_array(element, ptr1+found, flags, sizeof(flags));
-				zend_hash_index_update(Z_ARRVAL_P(return_value), threadsFounded-1-start, (void *) &element, sizeof(zval *), NULL);
-				if (threadsFounded>=num+start){
-					break;
-				}
-			}
+	 total--;
+	if (!includeTop) {
+		for (i=total;i>=0;i--) {
+			if (!( ptr1[i].flags & FILE_ON_TOP )) 
+				break;
 		}
+		total=i;
+	} 
+	begin=total-start;
+	end=total-start-num+1;
+	if (end<0)
+		end=0;
+
+	for (i=begin;i>=end;i--) {
+		MAKE_STD_ZVAL(element);
+		array_init(element);
+		for (j = 0; j < 3; j++) {
+			MAKE_STD_ZVAL(columns[j] );
+			zend_hash_update(Z_ARRVAL_P(element), thread_col_names[j], strlen(thread_col_names[j]) + 1, (void *) &columns[j] , sizeof(zval *), NULL);
+		}
+		flags[0] = get_article_flag(&(ptr1[i].origin), currentuser, bp->filename, is_bm);
+		if (is_bm && (ptr1[i].origin.accessed[0] & FILE_IMPORTED))
+			flags[1] = 'y';
+		else
+			flags[1] = 'n';
+		if (ptr1[i].origin.accessed[1] & FILE_READ)
+			flags[2] = 'y';
+		else
+			flags[2] = 'n';
+		if (ptr1[i].origin.attachment)
+			flags[3] = '@';
+		else
+			flags[3] = ' ';
+		array_init(columns[0] );
+		bbs_make_article_array(columns[0], &(ptr1[i].origin), flags, sizeof(flags));
+		flags[0] = get_article_flag(&(ptr1[i].lastreply), currentuser, bp->filename, is_bm);
+		if (is_bm && (ptr1[i].lastreply.accessed[0] & FILE_IMPORTED))
+			flags[1] = 'y';
+		else
+			flags[1] = 'n';
+		if (ptr1[i].lastreply.accessed[1] & FILE_READ)
+			flags[2] = 'y';
+		else
+			flags[2] = 'n';
+		if (ptr1[i].lastreply.attachment)
+			flags[3] = '@';
+		else
+			flags[3] = ' ';
+		array_init(columns[1] );
+		bbs_make_article_array(columns[1], &(ptr1[i].lastreply), flags, sizeof(flags));
+		ZVAL_LONG(columns[2],ptr1[i].articlecount);
+
+		zend_hash_index_update(Z_ARRVAL_P(return_value), begin-i, (void *) &element, sizeof(zval *), NULL);
 	}
     end_mmapfile((void *) ptr, buf.st_size, -1);
     ldata.l_type = F_UNLCK;
     fcntl(fd, F_SETLKW, &ldata);        /* ÍË³ö»¥³âÇøÓò*/
     close(fd);
-    efree(IDList);
 }
 
 #ifdef HAVE_WFORUM
