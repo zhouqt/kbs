@@ -77,6 +77,8 @@ int calendar_main()
     day = nowr.tm_mday;
     month = nowr.tm_mon+1;
     year = nowr.tm_year;
+    prints("%d %d %d", year, month, day);
+    refresh(); sleep(10);
     
     while(1){
         draw_main();
@@ -125,3 +127,4 @@ int calendar_main()
         saveline(i, 1, save_scr[i]);
     move(save_y, save_x);
 }
+#endif
