@@ -78,7 +78,7 @@ BORDER-RIGHT:#104a7b1pxsolid;
 BORDER-TOP:#afc4d51pxsolid;
 BACKGROUND:#CBD9FE;
 BORDER-LEFT:#afc4d51pxsolid;
-CURSOR:hand;
+CURSOR:pointer;
 COLOR:#000066;
 BORDER-BOTTOM:#104a7b1pxsolid;
 HEIGHT:19px;
@@ -260,7 +260,7 @@ line-height:20px;
 text-decoration:none;
 }
 .hand{
-cursor:hand;
+cursor:pointer;
 font-size:8pt;
 font-family:"Georgia","TimesNewRoman","Times","serif"
 }
