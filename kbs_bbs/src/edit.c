@@ -804,10 +804,12 @@ int write_file(filename, saveheader)
         move(1, 0);
         prints("旧标题: %s", save_title);
         getdata(2, 0, "新标题: ", buf, STRLEN, DOECHO, NULL, 0);
-        if (strcmp(save_title, buf))
-            local_article = 0;
-        strncpy(save_title, buf, STRLEN);
-        strncpy(quote_title, buf, STRLEN);
+	if (buf[0]!=0) {
+            if (strcmp(save_title, buf))
+                local_article = 0;
+            strncpy(save_title, buf, STRLEN);
+            strncpy(quote_title, buf, STRLEN);
+	}
     } else if (abort[0] == 's' || abort[0] == 'S' || abort[0] == 'f' || abort[0] == 'F') {
         local_article = 0;
 #ifdef VEDITOR
