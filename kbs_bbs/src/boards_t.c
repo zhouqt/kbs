@@ -114,6 +114,48 @@ struct newpostdata *ptr;
 #endif
 }
 
+int show_boardinfo(const char *bname)
+{
+    const struct boardheader *bp = getbcache(bname);
+
+	if(bp==NULL)
+		return 0;
+
+	clear();
+
+	move(2,0);
+	prints("\033[1;33m版面名称\033[m: %s [%s]\n\n", bp->filename, bp->title+13);
+	prints("\033[1;33m版面版主\033[m: %s \n", bp->BM);
+	prints("\033[1;33m版面关键字\033[m: %s \n\n", bp->des);
+    prints("\033[1;32m%s\033[m记文章数 \033[1;32m%s\033[m统计十大\n", 
+        (bp->flag & BOARD_JUNK) ? "不" : "", (bp->flag & BOARD_POSTSTAT) ? "不" : "");
+    prints("\033[1;32m%s\033[m可向外转信 \033[1;32m%s\033[m可粘贴附件 \033[1;32m%s\033[m可re文\n\n", 
+			(bp->flag & BOARD_OUTFLAG) ? "" : "不",
+			(bp->flag & BOARD_ATTACH) ? "" : "不",
+			(bp->flag & BOARD_NOREPLY) ? "不" : "");
+
+    if (bp->flag & BOARD_CLUB_READ || bp->flag & BOARD_CLUB_WRITE)
+        prints("\033[1;33m俱乐部\033[m:   %s %s %s\n", bp->flag & BOARD_CLUB_READ ? "阅读限制" : "", bp->flag & BOARD_CLUB_WRITE ? "发表限制" : "", bp->flag & BOARD_CLUB_HIDE ? "隐藏" : "" );
+    else
+        prints("\033[1;33m%s\033[m", "非俱乐部\n");
+    prints("限制 %s 权力: \033[1;32m%s\033[m"
+#ifdef HAVE_CUSTOM_USER_TITLE
+        "      需要的用户职务: \033[1;32m%s\033[m"
+#endif
+        ,
+        (bp->level & PERM_POSTMASK) ? "POST" : "READ", 
+        (bp->level & ~PERM_POSTMASK) == 0 ? "不设限" : "有设限"
+#ifdef HAVE_CUSTOM_USER_TITLE
+        ,bp->title_level? get_user_title(bp->title_level):"无"
+#endif
+        );
+	prints("\n");
+
+	pressanykey();
+
+	return 1;
+}
+
 /* inserted by cityhunter to query BM */
 int query_bm()
 {
@@ -659,6 +701,11 @@ static int fav_key(struct _select_def *conf, int command)
     case 'h':
         show_help("help/boardreadhelp");
         return SHOW_REFRESH;
+	case Ctrl('A'):
+		if (ptr->dir)
+			break;
+		show_boardinfo(ptr->name);
+		return SHOW_REFRESH;
     case '/':                  /*搜索board */
         {
             int tmp, num;
