@@ -2041,6 +2041,8 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
     int ret;
     char buf[255];
     struct userdata ud;
+    char genbuf[STRLEN];
+    struct userec* uc;
 
     if (user != NULL && strcasecmp(user->userid, "guest")) {
         struct user_info ui;
@@ -2100,6 +2102,19 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
                  * user->userlevel &= ~PERM_POST;
                  */
             }
+#ifdef SMTH
+	    else if(strlen(ud.realemail) >=3){
+		 strncpy(genbuf,ud.realemail+strlen(ud.realemail)-3,3);
+		 if(!strncasecmp(genbuf,"#TH",3))
+		 {
+			 getuser(user->userid,&uc);
+			 if(time(NULL) - uc->firstlogin >= REGISTER_TSINGHUA_WAIT_TIME)
+				auto_register(user->userid,ud.realemail,STRLEN);
+		 }
+		 read_userdata(user->userid,&ud);
+	    }
+#endif		  
+	    
         }
 
         memset(&ui, 0, sizeof(struct user_info));
