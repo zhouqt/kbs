@@ -37,7 +37,7 @@ login_init();
 			fclose($handle);
 			unlink($filename);
 		}
-		if (!isset($_POST["reid"])) $reID = $_GET["reid"];   
+		if (isset($_GET["reid"])) $reID = $_GET["reid"];
 		else
 			$reID = 0;
 		if (bbs_is_outgo_board($brdArr)) $outgo = intval($_POST["outgo"]);
