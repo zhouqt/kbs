@@ -9,7 +9,7 @@
 #define NEW_COMERS 		1	/* 注册后在 newcomers 版自动发文 */
 #define HAVE_BIRTHDAY 		1
 #define HAPPY_BBS		0
-#define HAVE_COLOR_DATE		0
+#define HAVE_COLOR_DATE		1
 #define HAVE_TEMPORARY_NICK	0
 #define HAVE_FRIENDS_NUM	0
 #define HAVE_REVERSE_DNS	0
@@ -24,6 +24,8 @@
 #define MANUAL_DENY         0   /*是否允许手动解封*/
 #define BBS_SERVICE_DICT    1
 #define HAVE_TSINGHUA_INFO_REGISTER 0 /* 允许从清华信息系统注册 */
+
+#define HAVE_WFORUM 1
 
 #define SMTH			1		/* SMTH专有代码 */
 #define FILTER			1		/* 使用文章内容过滤 */
@@ -241,12 +243,14 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_UNREADMARK 0400000000       /* Luzi 99.01.12 */
 #define DEF_USEGB     01000000000       /* KCN,99.09.05 */
 #define DEF_CHCHAR    02000000000		
+#define DEF_SHOWDETAILUSERDATA 04000000000
+#define DEF_SHOWREALUSERDATA   010000000000
 //#define DEF_SPLITSCREEN 02000000000 /* bad 2002.9.1 */
 /*#define DEF_HIDEIP    02000000000  Haohmaru,99.12.18*/
 
 /*#define PERM_POSTMASK  0100000  *//* means the rest is a post mask */
 
-#define NUMDEFINES 28 //29
+#define NUMDEFINES 31//29
 
 
 #define TDEF_SPLITSCREEN 000001

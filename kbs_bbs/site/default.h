@@ -53,8 +53,10 @@
 #undef HAVE_REVERSE_DNS
 #endif
 
-#if HAVE_WFORUM != 1
-#undef HAVE_WFORUM /* wbbs 支持 */
+#ifdef HAVE_WFORUM
+#define RAW_ARTICLE 1
+#define HAVE_USERMONEY 1
+#define HAVE_BIRTHDAY 1
 #endif
 
 #ifndef CHINESE_CHARACTER /*汉字整字处理,缺省使能*/
