@@ -387,6 +387,14 @@ int do_commend(int ent, struct fileheader *fileinfo, char *direct)
         pressreturn();
         return FULLUPDATE;
     }
+    if ( deny_me(currentuser->userid, COMMEND_ARTICLE) ) {
+        clear();
+        move(1, 0);
+        prints("对不起，您被停止了推荐的权力");
+        move(2, 0);
+        pressreturn();
+        return FULLUPDATE;
+    }
 
     clear();
     move(0, 0);
