@@ -173,7 +173,7 @@ register int n ;
         if( c2 >= 'a' && c2 <= 'z' )
             c2 += 'A' - 'a';
         if( c1 != c2 )
-            return (c1 - c2);
+            return (c2 - c1);
         if( c1 == 0 )
             return 0;
     }
@@ -194,7 +194,7 @@ register char   *s1, *s2;
         if( c2 >= 'a' && c2 <= 'z' )
             c2 += 'A' - 'a';
         if( c1 != c2 )
-            return (c1 - c2);
+            return (c2 - c1);
         if( c1 == 0 )
             return 0;
     }

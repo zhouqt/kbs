@@ -3973,7 +3973,7 @@ Goodbye()    /*离站 选单*/
         if (fp) {
             fputs(lbuf,fp);
             fclose(fp);
-            mail_file(tmpfile,"surrender2k","自首");
+            mail_file(tmpfile,"surr","自首");
         }
         unlink(tmpfile);
     }
