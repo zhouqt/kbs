@@ -837,18 +837,18 @@ int post_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
     bool up=(bool)extraarg;
     
     strncpy(currauth, fh->owner, STRLEN);
-    snprintf(pmt, STRLEN, "搜寻%s的文章 [%s]: ", up ? "往先前":"往后来", ans);
+    snprintf(pmt, STRLEN, "搜寻%s的文章 [%s]: ", up ? "往先前":"往后来", query);
     move(t_lines - 1, 0);
     clrtoeol();
     getdata(t_lines - 1, 0, pmt, ans, IDLEN + 1, DOECHO, NULL, true);   /*Haohmaru.98.09.29.修正作者查找只能11位ID的错误 */
+    if (ans[0] != '\0')
+        strncpy(query, ans, IDLEN);
     switch (read_search_articles(conf, query, up, -1)) {
         case 1:
             return SELCHANGE;
         default:
             conf->show_endline(conf);
     }
-    if (ans[0] != '\0')
-        strncpy(query, ans, IDLEN);
     return DONOTHING;
 }
 
