@@ -465,7 +465,7 @@ void login_query()
             sleep(1);
             exit(1);
         } else if ( /*strcmp */ strcasecmp(uid, "guest") == 0) {
-            currentuser->userlevel = PERM_DENYMAIL;
+            currentuser->userlevel = PERM_DENYMAIL|PERM_DENYRELAX;
             currentuser->flags[0] = CURSOR_FLAG | PAGER_FLAG;
             break;
         } else {

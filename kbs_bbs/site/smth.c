@@ -20,7 +20,7 @@ const char *permstrings[] = {
         "板主",                 /* PERM_BOARDS */
         "帐号管理员",           /* PERM_ACCOUNTS */
         "水木清华智囊团",       /* PERM_CHATCLOAK */
-        "投票管理员",           /* PERM_OVOTE */
+        "封禁娱乐权限",           /* PERM_DENYRELAX */
         "系统维护管理员",       /* PERM_SYSOP */
         "Read/Post 限制",       /* PERM_POSTMASK */
         "精华区总管",           /* PERM_ANNOUNCE*/
@@ -191,7 +191,8 @@ int uleveltochar(char *buf, struct userec *lookupuser)
     else if (lvl & (PERM_LOGINOK)) {
         if (lookupuser->flags[0] & GIVEUP_FLAG)
             strcpy(buf, "戒网");
-        else if (!(lvl & (PERM_CHAT)) || !(lvl & (PERM_PAGE)) || !(lvl & (PERM_POST)) || (lvl & (PERM_DENYMAIL)))
+        else if (!(lvl & (PERM_CHAT)) || !(lvl & (PERM_PAGE)) || !(lvl & (PERM_POST)) 
+        		|| (lvl & (PERM_DENYMAIL)) || (lvl & (PERM_DENYRELAX)))
             strcpy(buf, "受限");
         else
             strcpy(buf, "用户");

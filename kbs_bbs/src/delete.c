@@ -109,7 +109,8 @@ void suicide()
     if (HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_BOARDS) || HAS_PERM(currentuser, PERM_OBOARDS) || HAS_PERM(currentuser, PERM_ACCOUNTS)
         || HAS_PERM(currentuser, PERM_ANNOUNCE)
         || HAS_PERM(currentuser, PERM_JURY) || HAS_PERM(currentuser, PERM_SUICIDE) || HAS_PERM(currentuser, PERM_CHATOP) || (!HAS_PERM(currentuser, PERM_POST))
-        || HAS_PERM(currentuser, PERM_DENYMAIL)) {
+        || HAS_PERM(currentuser, PERM_DENYMAIL)
+        || HAS_PERM(currentuser, PERM_DENYRELAX)) {
         clear();
         move(11, 28);
         prints("[1m[33mƒ„”–÷ÿ»Œ‘⁄…Ì£¨≤ªƒ‹◊‘…±£°[m");
@@ -178,6 +179,7 @@ PERM_POST    ∑¢±Ì
 PERM_CHAT    ¡ƒÃÏ
 PERM_PAGE    ∫ÙΩ–
 PERM_DENYMAIL∑¢–≈
+PERM_DENYRELAX”È¿÷
 */
     char buf[STRLEN], genbuf[PATHLEN];
     FILE *fn;
@@ -230,6 +232,9 @@ PERM_DENYMAIL∑¢–≈
             case 5:
                 prints("∑¢–≈»®œﬁ");
                 break;
+            case 6:
+                prints("–›œ–”È¿÷»®œﬁ");
+                break;
             }
             sprintf(buf, "        ªπ”–%dÃÏ\n", j - time(0) / 3600 / 24);
             prints(buf);
@@ -255,9 +260,11 @@ PERM_DENYMAIL∑¢–≈
     prints("(4) - ∫ÙΩ–»®œﬁ");
     move(8, 0);
     prints("(5) - ∑¢–≈»®œﬁ");
+    move(9, 0);
+    prints("(6) - –›œ–”È¿÷»®œﬁ");
 
-    getdata(10, 0, "«Î—°‘Ò [0]", ans, 2, DOECHO, NULL, true);
-    if (ans[0] < '1' || ans[0] > '5') {
+    getdata(12, 0, "«Î—°‘Ò [0]", ans, 2, DOECHO, NULL, true);
+    if (ans[0] < '1' || ans[0] > '6') {
         return;
     }
     k = 1;
@@ -276,6 +283,9 @@ PERM_DENYMAIL∑¢–≈
         break;
     case '5':
         k = k && !(currentuser->userlevel & PERM_DENYMAIL);
+        break;
+    case '6':
+        k = k && !(currentuser->userlevel & PERM_DENYRELAX);
         break;
     }
 
@@ -339,6 +349,9 @@ PERM_DENYMAIL∑¢–≈
         case '5':
             currentuser->userlevel |= PERM_DENYMAIL;
             break;
+        case '6':
+            currentuser->userlevel |= PERM_DENYRELAX;
+            break;
         }
         lcount++;
 
@@ -352,8 +365,10 @@ PERM_DENYMAIL∑¢–≈
             tcount++;
         if (!(currentuser->userlevel & PERM_DENYMAIL))
             tcount++;
+        if (!(currentuser->userlevel & PERM_DENYRELAX))
+            tcount++;
 
-        if (lcount + tcount == 5)
+        if (lcount + tcount == 6)
             currentuser->flags[0] |= GIVEUP_FLAG;
         else
             currentuser->flags[0] &= ~GIVEUP_FLAG;

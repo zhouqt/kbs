@@ -1563,6 +1563,7 @@ int x_deny()
         PERM_DENYMAIL,
         PERM_CHAT,
         PERM_PAGE,
+        PERM_DENYRELAX,
         -1
     };
     const int normal_level[] = {
@@ -1571,6 +1572,7 @@ int x_deny()
         0,
         PERM_CHAT,
         PERM_PAGE,
+        0,
         -1
     };
 
@@ -1580,8 +1582,9 @@ int x_deny()
         {3, 8, -1, SIT_SELECT, (void *) "3)发信权限"},
         {3, 9, -1, SIT_SELECT, (void *) "4)进入聊天室权限"},
         {3, 10, -1, SIT_SELECT, (void *) "5)呼叫聊天权限"},
-        {3, 11, -1, SIT_SELECT, (void *) "6)换一个ID"},
-        {3, 12, -1, SIT_SELECT, (void *) "7)退出"},
+        {3, 11, -1, SIT_SELECT, (void *) "6)休闲娱乐权限"},
+        {3, 12, -1, SIT_SELECT, (void *) "7)换一个ID"},
+        {3, 13, -1, SIT_SELECT, (void *) "8)退出"},
         {-1, -1, -1, 0, NULL}
     };
 

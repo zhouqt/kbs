@@ -170,6 +170,7 @@ int updateauser(struct userec *theuser, char *data)
     if ((theuser->userlevel & PERM_BASIC) && (theuser->userlevel & PERM_POST)
         && (theuser->userlevel & PERM_CHAT) && (theuser->userlevel & PERM_PAGE)
         && !(theuser->userlevel & PERM_DENYMAIL))
+        && !(theuser->userlevel & PERM_DENYRELAX))
         return 0;
     if (!(theuser->userlevel & PERM_LOGINOK))
         return 0;
@@ -203,6 +204,9 @@ int updateauser(struct userec *theuser, char *data)
                     break;
                 case 5:
                     theuser->userlevel &= ~PERM_DENYMAIL;
+                    break;
+                case 6:
+                    theuser->userlevel &= ~PERM_DENYRELAX;
                     break;
                 }
                 s[i][1] = 0;

@@ -98,7 +98,7 @@ int setperm_show(struct _select_def *conf, int i)
     } else {
         if ((arg->pbits & (1 << i)) != (arg->oldbits & (1 << i))) {
             prints("%c. %-27s [31;1m%3s[m", 'A' + i, permstrings[i], ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
-        } else if ((1 << i == PERM_BASIC || 1 << i == PERM_POST || 1 << i == PERM_CHAT || 1 << i == PERM_PAGE || 1 << i == PERM_DENYMAIL) && (arg->basic & (1 << i)))
+        } else if ((1 << i == PERM_BASIC || 1 << i == PERM_POST || 1 << i == PERM_CHAT || 1 << i == PERM_PAGE || 1 << i == PERM_DENYMAIL|| 1 << i == PERM_DENYRELAX) && (arg->basic & (1 << i)))
             prints("%c. %-27s [32;1m%3s[m", 'A' + i, permstrings[i], ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
         else
             prints("%c. %-27s [37;0m%3s[m", 'A' + i, permstrings[i], ((arg->pbits >> i) & 1 ? "ON" : "OFF"));

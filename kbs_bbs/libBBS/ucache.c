@@ -764,6 +764,9 @@ int get_giveupinfo(char* userid,int* basicperm,int s[10][2])
             case 5:
                 *basicperm |= PERM_DENYMAIL;
                 break;
+            case 6:
+                *basicperm |= PERM_DENYRELAX;
+                break;
             }
             lcount++;
         }
@@ -798,6 +801,9 @@ void save_giveupinfo(struct userec* lookupuser,int lcount,int s[10][2])
         case 5:
             j = !(lookupuser->userlevel & PERM_DENYMAIL);
             break;
+        case 6:
+            j = !(lookupuser->userlevel & PERM_DENYRELAX);
+            break;
         }
         if (j) {
             kcount--;
@@ -827,7 +833,10 @@ void save_giveupinfo(struct userec* lookupuser,int lcount,int s[10][2])
     if (!(lookupuser->userlevel & PERM_DENYMAIL))
         tcount++;
 
-    if (kcount + tcount == 5 && kcount > 0)
+    if (!(lookupuser->userlevel & PERM_DENYRELAX))
+        tcount++;
+
+    if (kcount + tcount == 6 && kcount > 0)
         lookupuser->flags[0] |= GIVEUP_FLAG;
     else
         lookupuser->flags[0] &= ~GIVEUP_FLAG;

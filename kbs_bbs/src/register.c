@@ -214,7 +214,7 @@ void check_register_info()
     clear();
     sprintf(buf, "%s", email_domain());
     if (!(currentuser->userlevel & PERM_BASIC)) {
-        currentuser->userlevel = PERM_DENYMAIL;
+        currentuser->userlevel = PERM_DENYMAIL|PERM_DENYRELAX;
         return;
     }
     /*urec->userlevel |= PERM_DEFAULT; */
@@ -362,7 +362,7 @@ void check_register_info()
     if (!strcmp(currentuser->userid, "SYSOP")) {
         currentuser->userlevel = ~0;
         currentuser->userlevel &= ~PERM_SUICIDE;        /* Leeward 98.10.13 */
-        currentuser->userlevel &= ~PERM_DENYMAIL;       /* Bigman 2000.9.22 */
+        currentuser->userlevel &= ~(PERM_DENYMAIL|PERM_DENYRELAX);       /* Bigman 2000.9.22 */
     }
     if (!(currentuser->userlevel & PERM_LOGINOK)) {
         if (HAS_PERM(currentuser, PERM_SYSOP))
