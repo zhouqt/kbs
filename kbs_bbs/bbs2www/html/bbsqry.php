@@ -53,7 +53,7 @@ else
 <a href="/bbssendmsg.php?destid=<?php echo $lookupuser["userid"];?>">[发送讯息]</a>
 <a href="/bbsfadd.php?userid=<?php echo $lookupuser["userid"];?>">[加入好友]</a>
 <a href="/bbsfdel.php?userid=<?php echo $lookupuser["userid"];?>">[删除好友]</a>
-<a href="/pc/pc.php?userid=<?php echo $lookupuser["userid"];?>">[个人文集]</a>
+<a href="/pc/index.php?id=<?php echo $lookupuser["userid"];?>">[个人文集]</a>
 <br>
 </center>
 <?php
