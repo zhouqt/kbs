@@ -803,8 +803,8 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	}
 	/*visit count end*/
 	
-	if( pc_cache( $pc["MODIFY"] ) )
-		return;
+	//if( pc_cache( $pc["MODIFY"] ) )
+	//	return;
 	pc_html_init("gb2312",$pc["NAME"],"",$pc["STYLE"]["CSSFILE"],$pc["BKIMG"]);
 	get_calendar_array($link,$pc,$pur);
 ?>

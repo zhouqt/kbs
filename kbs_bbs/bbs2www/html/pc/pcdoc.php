@@ -688,8 +688,8 @@ BlogÃû
 	}
 	/*visit count end*/
 	
-	if( pc_cache( $pc["MODIFY"] ) )
-		return;
+	//if( pc_cache( $pc["MODIFY"] ) )
+	//	return;
 	pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
 ?>
 <a name="top"></a>
