@@ -550,7 +550,7 @@ void eval(struct var_struct * p, char * s, int l, int r)
             p->p=0;
             return;
         }
-        else if(i==2) {
+        else if(i==1) {
             sscanf(buf, "%lf:%lf", &f1, &f2);
             if(f1<f2) f3=1; else f3=-1;
         }
@@ -595,7 +595,7 @@ void eval(struct var_struct * p, char * s, int l, int r)
             j=get_var(buf);
             strcpy(buf, s+i+1);
             s[r-1-i]=0;
-            k=strchr(buf, ',');
+            k=strchr(buf, ',')-buf;
             eval(&u, buf, 0, k-1);
             makesure(1);
             eval(&v, buf, k+1, strlen(buf)-1);
