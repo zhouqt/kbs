@@ -25,13 +25,15 @@ int main()
     strcpy(board, getbcache(board)->filename);
     if ((loginok)&&strcmp(currentuser->userid,"guest"))
         brc_initial(currentuser->userid, board);
-    printf("%s -- 主题文章阅读 [讨论区: %s]<hr class=\"default\">", BBSNAME, board);
+    printf("%s -- 主题文章阅读 [讨论区: %s]<hr class=\"default\" />", BBSNAME, board);
     if (VALID_FILENAME(file) < 0)
         http_fatal("错误的参数");
     sprintf(dir, "boards/%s/.DIR", board);
     fp = fopen(dir, "r+");
     if (fp == 0)
         http_fatal("目录错误");
+    printf("<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"dark\"><tr><td>");
+    printf("<table style=\"border: 1px solid; width: 610\">\n");
     while (1) {
         if (fread(&oldx, sizeof(x), 1, fp) <= 0)
             break;
@@ -54,6 +56,7 @@ int main()
         }
     }
     fclose(fp);
+    printf("</table></td></tr></table><hr class=\"default\" />");
     if (found == 0)
         http_fatal("错误的文件名");
 //    if (!can_reply_post(board, file))
@@ -69,20 +72,85 @@ int main()
     http_quit();
 }
 
+static void flush_buffer(buffered_output_t *output)
+{
+	*(output->outp) = '\0'; 
+	printf("%s", output->buf);
+	output->outp = output->buf;
+}
+
+static int buffered_output(char *buf, size_t buflen, void *arg)
+{
+	buffered_output_t *output = (buffered_output_t *)arg;
+	if (output->buflen < buflen)
+	{
+		output->flush(output);
+		printf("%s", buf);
+		return 0;
+	}
+	if ((output->buflen - (output->outp - output->buf)) < buflen) 
+		output->flush(output);
+	strncpy(output->outp, buf, buflen); 
+	output->outp += buflen;
+
+	return 0;
+}
+
+int show_article(char *filename)
+{
+	int fd;
+
+    if ((fd = open(filename, O_RDONLY, 0644)) < 0) {
+        printf("打开本文失败!<br />\n");
+        return 0;
+    } else {
+		size_t filesize;
+		char *ptr;
+		const int outbuf_len = 4096;
+		buffered_output_t out;
+
+		if (flock(fd, LOCK_EX) == -1)
+			return 0;
+		BBS_TRY
+		{
+			if (safe_mmapfile_handle(fd, O_RDONLY, PROT_READ, MAP_SHARED,
+						(void **)&ptr, &filesize) == 0)
+			{
+				flock(fd, LOCK_UN);
+				BBS_RETURN(0);
+			}
+			if ((out.buf = (char *)malloc(outbuf_len)) == NULL)
+			{
+				end_mmapfile((void *)ptr, filesize, -1);
+				flock(fd, LOCK_UN);
+				BBS_RETURN(0);
+			}
+			out.outp = out.buf;
+			out.buflen = outbuf_len;
+			out.output = buffered_output;
+			out.flush = flush_buffer;
+			output_ansi_html(ptr, filesize, &out,NULL);
+			free(out.buf);
+		}
+		BBS_CATCH
+		{
+		}
+		BBS_END end_mmapfile((void *)ptr, filesize, -1);
+		flock(fd, LOCK_UN);
+        return 1;
+    }
+}
+
 int show_file(char *board,struct boardheader* bh,struct fileheader *x, int n, char* brdencode)
 {
-    FILE *fp;
     char path[80], buf[512], board_url[80];
     char* title;
 
     if ((loginok)&&strcmp(currentuser->userid,"guest"))
         brc_add_read(x->id);
     sprintf(path, "boards/%s/%s", board, x->filename);
-    fp = fopen(path, "r");
-    if (fp == 0)
-        return;
     encode_url(board_url, board, sizeof(board_url));
-    printf("<table width=\"610\"><pre>\n");
+	printf("<tr><td class=\"default\">\n");
     printf("[<a href=\"bbscon?board=%s&id=%d&num=%d\">本篇全文</a>] ", board_url, x->id, n);
     if (strncmp(x->title,"Re:",3))
 	    title=x->title;
@@ -91,19 +159,8 @@ int show_file(char *board,struct boardheader* bh,struct fileheader *x, int n, ch
     if ((x->accessed[1] & FILE_READ) == 0)
         printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=Re: %s&refilename=%s&attach=%d\">回文章</a>]", 
             brdencode, x->filename, x->owner, encode_url(buf, title, sizeof(buf)), x->filename,bh->flag&BOARD_ATTACH?1:0);
-    printf("[本篇作者: %s]\n", userid_str(x->owner));
+    printf("[本篇作者: %s]<br />\n", userid_str(x->owner));
+	show_article(path);
     /*printf("[本篇人气: %d]\n", *(int*)(x->title+73)); */
-    while (1) {
-        if (fgets(buf, 500, fp) == 0)
-            break;
-        if (!strncmp(buf, ": ", 2))
-            printf("<font color=\"#008080\"><i>");
-        /*if (!strncmp(buf, "【 在 ", 4))
-            continue;*/
-        hhprintf("%s", buf);
-        if (!strncmp(buf, ": ", 2))
-            printf("</i></font>");
-    }
-    fclose(fp);
-    printf("</pre></table><hr class=\"default\">");
+	printf("</td></tr>\n");
 }
