@@ -328,7 +328,7 @@ int do_send(char *userid, char *title, char *q_file)
     struct fileheader newmessage;
     struct stat st;
     char filepath[STRLEN], fname[STRLEN];
-    char buf2[256], buf3[STRLEN], buf4[STRLEN];
+    char titlebuf[STRLEN], buf2[256], buf3[STRLEN], buf4[STRLEN];
     int replymode = 1;          /* Post New UI */
     char ans[4], include_mode = 'Y';
 
@@ -339,6 +339,7 @@ int do_send(char *userid, char *title, char *q_file)
     extern char quote_title[120];
     int ret;
     char* upload = NULL;
+    int savesent = HAS_MAILBOX_PROP(&uinfo, MBP_SAVESENTMAIL);
 
     if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL)) {
         prints("\033[1m\033[33m很抱歉∶您无法给 %s 发信．因为 您被封禁了Mail权限。\n\033[m");
@@ -435,35 +436,49 @@ int do_send(char *userid, char *title, char *q_file)
 #endif
     if (!title) {
         replymode = 0;
-        title = "没主题";
         buf4[0] = '\0';
-    } else
+        titlebuf[0] = '\0';
+    } else {
         buf4[0] = ' ';
+        strncpy(titlebuf, title, sizeof(titlebuf) - 1);
+        titlebuf[sizeof(titlebuf) - 1] = '\0';
+    }
+    title = titlebuf;
 
     if (getCurrentUser()->signature > getSession()->currentmemo->ud.signum)
         getCurrentUser()->signature = (getSession()->currentmemo->ud.signum == 0) ? 0 : 1;
     while (1) {
-        sprintf(buf3, "引言模式 [\033[1m%c\033[m]", include_mode);
+        if (replymode) {
+            sprintf(buf3, "     引言模式 [\033[1m%c\033[m]", include_mode);
+        } else {
+            buf3[0] = '\0';
+        }
+        if (internet_mail || buf4[0] == '\0' || buf4[0] == '\n') {
+            buf2[0] = '\0';
+        } else {
+            sprintf(buf2, "     %s保存到发件箱[\033[1;32ms\033[m切换]", savesent ? "" : "不");
+        }
         move(t_lines - 4, 0);
         clrtoeol();
         prints("收信人: \033[1m%s\033[m\n", userid);
         clrtoeol();
-        prints("使用标题: \033[1m%-50s\033[m\n", (title[0] == '\0') ? "[正在设定标题]" : title);
+        prints("使用标题: \033[1m%-50s\033[m\n", (titlebuf[0] == '\0') ? "没主题" : titlebuf);
         clrtoeol();
         if (getCurrentUser()->signature < 0)
-            prints("使用随机签名档     %s", (replymode) ? buf3 : "");
+            prints("使用随机签名档%s%s", buf3, buf2);
         else
-            prints("使用第 \033[1m%d\033[m 个签名档     %s", getCurrentUser()->signature, (replymode) ? buf3 : "");
+            prints("使用第 \033[1m%d\033[m 个签名档%s%s", getCurrentUser()->signature, buf3, buf2);
 
         if (buf4[0] == '\0' || buf4[0] == '\n') {
             move(t_lines - 1, 0);
             clrtoeol();
-            getdata(t_lines - 1, 0, "标题: ", buf4, 50, DOECHO, NULL, true);
-            if ((buf4[0] == '\0' || buf4[0] == '\n')) {
+            strcpy(buf4, titlebuf);
+            getdata(t_lines - 1, 0, "标题: ", buf4, 50, DOECHO, NULL, false);
+            if ((buf4[0] != '\0' && buf4[0] != '\n')) {
+                strcpy(titlebuf, buf4);
+            } else {
                 buf4[0] = ' ';
-                continue;
             }
-            title = buf4;
             continue;
         }
         move(t_lines - 1, 0);
@@ -482,6 +497,8 @@ int do_send(char *userid, char *title, char *q_file)
             include_mode = ans[0];
         } else if (ans[0] == 'T') {
             buf4[0] = '\0';
+        } else if (ans[0] == 'S') {
+            savesent = !savesent;
         } else if (ans[0] == 'L') {
             getCurrentUser()->signature = -1;
         } else if (ans[0] == 'V') {     /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
@@ -500,7 +517,10 @@ int do_send(char *userid, char *title, char *q_file)
             chdir("..");
          }
         else {
-            strncpy(newmessage.title, title, ARTICLE_TITLE_LEN - 1);
+            if (titlebuf[0] == '\0') {
+                strcpy(titlebuf, "没主题");
+            }
+            strncpy(newmessage.title, titlebuf, ARTICLE_TITLE_LEN - 1);
             newmessage.title[ARTICLE_TITLE_LEN -1] = 0;
             strncpy(save_title, newmessage.title, ARTICLE_TITLE_LEN - 1);
             save_title[ARTICLE_TITLE_LEN-1] = 0;
@@ -524,7 +544,7 @@ int do_send(char *userid, char *title, char *q_file)
         clear();
       redo:
         prints("信件即将寄给 %s \n", userid);
-        prints("标题为： %s \n", title);
+        prints("标题为： %s \n", titlebuf);
         prints("确定要寄出吗? (Y/N) [Y]");
         ch = igetkey();
         switch (ch) {
@@ -622,7 +642,7 @@ int do_send(char *userid, char *title, char *q_file)
          getdata(1, 0, "保存信件到发件箱? [N]: ", buf2, 2, DOECHO, 0, 0);
          if (buf2[0] == 'y' || buf2[0] == 'Y')
          */
-        if (HAS_MAILBOX_PROP(&uinfo, MBP_SAVESENTMAIL)) {
+        if (savesent) {
             /*
              * backup mail to sent folder 
              */
