@@ -1066,6 +1066,39 @@ static int mail_del(int ent, struct fileheader *fileinfo, char *direct)
     return FULLUPDATE;
 }
 
+//added by bad 03-2-10
+#ifdef NINE_BUILD
+static int mail_edit(int ent, struct fileheader *fileinfo, char *direct)
+{
+    char buf[512];
+    char *t;
+    long eff_size;
+
+    clear();
+    strcpy(buf, direct);
+    if ((t = strrchr(buf, '/')) != NULL)
+        *t = '\0';
+#ifndef LEEWARD_X_FILTER
+    sprintf(genbuf, "/bin/cp -f %s/%s tmp/%d.editpost.bak", buf, fileinfo->filename, getpid()); /* Leeward 98.03.29 */
+    system(genbuf);
+#endif
+
+    /*
+     * Leeward 2000.01.23: Cache 
+     * sprintf(genbuf, "/board/%s/%s.html", currboard,fileinfo->filename);
+     * ca_expire(genbuf); 
+     */
+
+    sprintf(genbuf, "%s/%s", buf, fileinfo->filename);
+    if (vedit_post(genbuf, false, &eff_size) != -1) {
+        if (ADD_EDITMARK)
+            add_edit_mark(genbuf, 1, /*NULL*/ fileinfo->title);
+    }
+    newbbslog(BBSLOG_USER, "edited mail '%s' on %s", fileinfo->title, currboard);
+    return FULLUPDATE;
+}
+#endif
+
 /** Added by netty to handle mail to 0Announce */
 int mail_to_tmp(ent, fileinfo, direct)
 int ent;
@@ -1289,6 +1322,10 @@ extern int mailreadhelp();
 struct one_key mail_comms[] = {
     {'d', mail_del},
     {'D', mail_del_range},
+//added by bad 03-2-10
+#ifdef NINE_BUILD
+    {'E', mail_edit},
+#endif
     {'r', mail_read},
     {'R', mail_reply},
     {'m', mail_mark},
