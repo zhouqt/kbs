@@ -349,7 +349,7 @@ resolve_ucache()
 
     iscreate = 0;
     if( uidshm == NULL ) {
-        uidshm = (struct UCACHE*)attach_shm1( "UCACHE_SHMKEY", 3696, sizeof( *uidshm ) ,&iscreate , 1); 
+        uidshm = (struct UCACHE*)attach_shm1( "UCACHE_SHMKEY", 3696, sizeof( *uidshm ) ,&iscreate , 1, NULL); 
             /*attach to user shm,readonly */
         if (iscreate) { /* shouldn't load passwd file in this place */
         	log("4system","passwd daemon havn't startup");
@@ -366,6 +366,15 @@ resolve_ucache()
     }        
 }
 
+static void ucache_setreadonly(int readonly)
+{
+    shmdt(uidshm);
+    if (readonly)
+        uidshm = (struct UCACHE*)attach_shm1( "UCACHE_SHMKEY", 3696, sizeof( *uidshm ) ,&iscreate , 1, uidshm); 
+    else
+        uidshm = (struct UCACHE*)attach_shm1( "UCACHE_SHMKEY", 3696, sizeof( *uidshm ) ,&iscreate , 0, uidshm); 
+}
+
 /*---	period	2000-10-20	---*/
 int getuserid(char * userid, int uid)
 {
@@ -378,6 +387,7 @@ int getuserid(char * userid, int uid)
 void
 setuserid_internal( int     num,const char    *userid) /* 设置user num的id为user id*/
 {
+    ucache_setreadonly(0);
     if( num > 0 && num <= MAXUSERS ) {
     	int oldkey,newkey,find;
         if( num > uidshm->number )
@@ -412,6 +422,7 @@ setuserid_internal( int     num,const char    *userid) /* 设置user num的id为user
 /*        }	        */
         strncpy( passwd[ num - 1 ].userid, userid, IDLEN+1 );
     }
+    ucache_setreadonly(1);
 }
 
 void setuserid( int num,const char * userid)
