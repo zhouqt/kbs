@@ -945,19 +945,35 @@ get_dir_threads(int fd, fileheader_t * base, int ent, int total, bool match, voi
 		if (ts->num < 0)
 		{
 			off = -1;
-			start = 1;
-			end = ent - 1;
+			start = ent - 1;
+			end = 1;
 			ts->num = -ts->num;
-		}
-        for (i = start; i < end; i++) {
-			if (count == ts->num)
-				break;
-			if (base[i-1].groupid == base[ent-1].groupid)
+			for (i = start; i >= end; i--)
 			{
-				memcpy(ts->records + i, base + off - 1, sizeof(fileheader_t));
-				count++;
+				if (count == ts->num)
+					break;
+				if (base[i-1].groupid == base[ent-1].groupid)
+				{
+					memcpy(ts->records + count, base + i - 1,
+							sizeof(fileheader_t));
+					count++;
+				}
 			}
-        }
+		}
+		else
+		{
+			for (i = start; i <= end; i++)
+			{
+				if (count == ts->num)
+					break;
+				if (base[i-1].groupid == base[ent-1].groupid)
+				{
+					memcpy(ts->records + count, base + i - 1,
+							sizeof(fileheader_t));
+					count++;
+				}
+			}
+		}
         return count;
     }
 
