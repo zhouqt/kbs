@@ -117,8 +117,8 @@ void msgline()
 #endif
     strcat(buf, buf2);
     move(t_lines - 1, 0);
-    clrtoeol();
     prints("%s", buf);
+    clrtoeol();
     showansi = tmpshow;
 }
 
