@@ -1117,23 +1117,25 @@ static ZEND_FUNCTION(bbs_getmailnum)
     struct fileheader x;
     char path[80];
     int totalcount = 0, unreadcount = 0;
-	int ac = ZEND_NUM_ARGS();
+    int ac = ZEND_NUM_ARGS();
     int fd;
 
-	if (ac != 3
-		||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "szz", &userid,&userid_len,&total,&unread) == FAILURE)
-	{
-		WRONG_PARAM_COUNT;
-	}
+    if (ac != 3
+        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "szz", &userid,&userid_len,&total,&unread) == FAILURE)
+    {
+        WRONG_PARAM_COUNT;
+    }
+    if (userid_len>IDLEN)
+        WRONG_PARAM_COUNT;
 
     /* check for parameter being passed by reference */
-    if (!PZVAL_IS_REF(*total)||!PZVAL_IS_REF(*unread))
+    if (!PZVAL_IS_REF(total)||!PZVAL_IS_REF(unread))
     {
         zend_error(E_WARNING, "Parameter wasn't passed by reference");
         RETURN_FALSE;
     }
 
-    setmailfile(path, userid, DOTDIR);
+    setmailfile(path, userid, DOT_DIR);
     fd = open(path, O_RDONLY);
     if (fd == -1)
         RETURN_FALSE;
@@ -1144,8 +1146,8 @@ static ZEND_FUNCTION(bbs_getmailnum)
     }
     close(fd);
     /* make changes to the parameter */
-    ZVAL_LONG(*total, totalcount);
-    ZVAL_LONG(*unread, unreadcount);
+    ZVAL_LONG(total, totalcount);
+    ZVAL_LONG(unread, unreadcount);
     RETURN_TRUE;
 }
 
