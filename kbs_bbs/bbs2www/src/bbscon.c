@@ -61,7 +61,7 @@ int main()
 		}
 		if(!strncmp(buf, ": ", 2))
 			printf("<font color=\"#008080\"><i>");
-		hhprintf("%s", encode_html(buf2, buf, sizeof(buf2)));
+		hhprintf("%s", buf);
 		if(!strncmp(buf, ": ", 2))
 			printf("</i></font>");
 	}
