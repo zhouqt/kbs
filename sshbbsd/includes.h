@@ -16,6 +16,9 @@ This file includes most of the needed system headers.
 /*
  * $Id$
  * $Log$
+ * Revision 1.4  2004/02/01 05:18:04  flyriver
+ * ¼òµ¥´Ö±©·¨È¥³ý Warning.
+ *
  * Revision 1.3  2002/08/04 11:39:42  kcn
  * format c
  *
@@ -127,6 +130,14 @@ This file includes most of the needed system headers.
 
 /* Note: autoconf documentation tells to use the <...> syntax and have -I. */
 #include "./config.h"
+
+#undef PACKAGE
+#undef PACKAGE_BUGREPORT
+#undef PACKAGE_NAME
+#undef PACKAGE_STRING
+#undef PACKAGE_TARNAME
+#undef PACKAGE_VERSION
+#undef VERSION
 
 #include "version.h"
 

@@ -20,6 +20,9 @@ agent connections.
 /*
  * $Id$
  * $Log$
+ * Revision 1.12  2004/02/01 05:18:04  flyriver
+ * 简单粗暴法去除 Warning.
+ *
  * Revision 1.11  2003/05/25 14:10:13  bad
  * 改一个define
  *
@@ -487,8 +490,8 @@ agent connections.
  *
  * $Endlog$
  */
-#include "bbs.h"
 #include "includes.h"
+#include "bbs.h"
 #include <gmp.h>
 #include "xmalloc.h"
 #include "rsa.h"
