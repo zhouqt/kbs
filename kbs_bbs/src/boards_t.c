@@ -408,7 +408,7 @@ static int fav_show(struct _select_def *conf, int pos)
 	       } else if (f!=' ') {
 	           sprintf(flag,"\x1b[1;33m%c\x1b[m",f);
           } else sprintf(flag,"%c",f);
-          prints("%c%-16s %s%s%-36s %-12s\n", ((ptr->zap && !(ptr->flag & BOARD_NOZAPFLAG)) ? '*' : ' '), ptr->name, (ptr->flag & BOARD_VOTEFLAG) ? "[31mV[m" : " ", flag, buf, ptr->BM[0] <= ' ' ? "³ÏÕ÷°æÖ÷ÖÐ" : strtok(tmpBM, " ")); /*µÚÒ»¸ö°æÖ÷ */
+          prints("%c%-16s %s%s%-36s %-12s\n", ((ptr->zap && !(ptr->flag & BOARD_NOZAPFLAG)) ? '*' : ' '), ptr->name, (ptr->flag & BOARD_VOTEFLAG) ? "[31;1mV[m" : " ", flag, buf, ptr->BM[0] <= ' ' ? "³ÏÕ÷°æÖ÷ÖÐ" : strtok(tmpBM, " ")); /*µÚÒ»¸ö°æÖ÷ */
     }
     return SHOW_CONTINUE;
 }
