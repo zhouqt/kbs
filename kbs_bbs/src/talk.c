@@ -191,12 +191,18 @@ struct _tag_talk_showstatus {
 int talk_showstatus(struct user_info *uentp, struct _tag_talk_showstatus *arg, int pos)
 {
     char buf[80],buf2[80];
+	struct userec *lookupuser;
 
     if (uentp->invisible && !HAS_PERM(getCurrentUser(), PERM_SEECLOAK))
         return 0;
+    if( getuser(uentp->userid, &lookupuser) == 0 ){
+		return 0;
+    }                                  
     arg->pos[arg->count++] = pos;
+
     sprintf(buf, "(%d) 目前状态: %s, 来自: %s \n", arg->count, modestring(buf2,uentp->mode, uentp->destuid, 0,       /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
-                                                                          uentp->in_chat ? uentp->chatid : NULL), uentp->from);
+                                                                          uentp->in_chat ? uentp->chatid : NULL), 
+			SHOW_USERIP(lookupuser, uentp->from));
     strcat(genbuf, buf);
     return COUNT;
 }

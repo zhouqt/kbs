@@ -2879,9 +2879,6 @@ int edit_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 
     if (fileinfo==NULL)
         return DONOTHING;
-    if (!haspostperm(getCurrentUser(), currboard->filename)) { /* POST权限检查 */
-        return DONOTHING;
-	}
     if (!strcmp(currboard->filename, "syssecurity")
         || !strcmp(currboard->filename, "junk")
         || !strcmp(currboard->filename, "deleted"))       /* Leeward : 98.01.22 */
@@ -2909,7 +2906,7 @@ int edit_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
             else dobmlog=true;
         }
 
-    if (deny_me(getCurrentUser()->userid, currboard->filename) && !HAS_PERM(getCurrentUser(), PERM_SYSOP)) {        /* 版主禁止POST 检查 */
+    if (deny_me(getCurrentUser()->userid, currboard->filename) && (!HAS_PERM(getCurrentUser(), PERM_SYSOP))) {        /* 版主禁止POST 检查 */
         move(3, 0);
         clrtobot();
         prints("\n\n                     很抱歉，你被版主停止了 POST 的权力...\n");
@@ -2972,6 +2969,14 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
     if (fileinfo==NULL)
         return DONOTHING;
 
+    if (deny_me(getCurrentUser()->userid, currboard->filename) && (!HAS_PERM(getCurrentUser(), PERM_SYSOP))) {
+        move(3, 0);
+        clrtobot();
+        prints("\n\n                     很抱歉，你被版主停止了 POST 的权力...\n");
+        pressreturn();
+        clear();
+        return FULLUPDATE;
+    }
 
     if (!strcmp(currboard->filename, "syssecurity")
         || !strcmp(currboard->filename, "junk")
