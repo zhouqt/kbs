@@ -421,7 +421,7 @@ struct MemMoreLines {
 
 int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
 {
-    int i, w, in_esc = 0, db = 0, lastspace = 0, asciiart = 0;
+    int i, w, in_esc = 0, db = 0, lastspace = 0, asciiart = 0, autoline = 1;
     char *p = p0;
 
     if (size == 0)
@@ -450,6 +450,7 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
             lastspace = i - 1;
         } else if (in_esc) {
             if (strchr("suHMfL@PABCDJK", *p) != NULL) {
+                if(strchr("HABCDJ", *p) != NULL) autoline=0;
                 asciiart = 1;
                 continue;
             }
@@ -457,6 +458,7 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
                 in_esc = 0;
         } else if (isprint2(*p)) {
             if (!db) {
+                if(autoline)
                 if (w >= scr_cols-1) {
                     *l = i;
                     *s = i;
