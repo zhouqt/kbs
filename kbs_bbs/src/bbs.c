@@ -761,18 +761,12 @@ void  board_attach_link(char* buf,int buf_len,long attachpos,void* arg)
     char* server=sysconf_str("BBS_WEBDOMAIN");
     if (server==NULL)
         server=sysconf_str("BBSDOMAIN");
-    /*
-     *if (normal_board(currboard->filename)) {
-     * @todo: generate temp sid
-     */
-    if (1) {
-      snprintf(buf,buf_len-SESSIONLEN,"http://%s/bbscon.php?bid=%d&id=%d&ap=%d",
-        server,getbnum(currboard->filename),fh->id,attachpos);
-    } else {
-      snprintf(buf,buf_len-SESSIONLEN,"http://%s/bbscon.php?bid=%d&id=%d&ap=%d&sid=%s",
-        server,getbnum(currboard->filename),fh->id,attachpos);
-        get_telnet_sessionid(buf+strlen(buf), utmpent);
-    }
+    if (attachpos!=-1)
+        snprintf(buf,buf_len,"http://%s/bbscon.php?bid=%d&id=%d&ap=%d",
+            server,getbnum(currboard->filename),fh->id,attachpos);
+    else
+        snprintf(buf,buf_len,"http://%s/bbscon.php?bid=%d&id=%d",
+            server,getbnum(currboard->filename),fh->id );
 }
 
 int zsend_attach(int ent, struct fileheader *fileinfo, char *direct)

@@ -28,6 +28,12 @@ time_t calltime = 0;
 char calltimememo[40];
 static int stuffmode = 0;
 
+enum LINE_CODE {
+    LINE_NORMAL,
+    LINE_ATTACHMENT,
+    LINE_ATTACHLINK
+};
+
 static int mem_show(char *ptr, int size, int row, int numlines, char *fn);
 
 /*typedef (void  generate_attach_link_t)(char* buf,int buf_len,char* attachname,long attachpos,long attachsize);
@@ -435,91 +441,91 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
 
     if (size <= 0)
         return -1;
-    if (oldty!=100) {
-    for (i = 0, w = 0; i < size; i++, p++) {
-        if (*p == '\n') {
-            *l = i;
-            *s = i + 1;
-            break;
-        }
-        if (*p == '\0') {
-            *l = i;
-            *s = i;
-            break;
-        }
-/*        if (asciiart) {
-            continue;
-        } else*/
-        if (*p == '\t') {
-            db = 0;
-            w = (w + 8) / 8 * 8;
-            lastspace = i;
-        } else if (*p == '\033') {
-            db = 0;
-            in_esc = 1;
-            lastspace = i - 1;
-        } else if (in_esc) {
-            if (strchr("suHmMfL@PABCDJK", *p) != NULL) {
-                if(strchr("suHmABCDJ", *p) != NULL) autoline=0;
-                in_esc = 0;
+    if (oldty!=100) { //上一行不是附件
+        for (i = 0, w = 0; i < size; i++, p++) {
+            if (*p == '\n') {
+                *l = i;
+                *s = i + 1;
+                break;
+            }
+            if (*p == '\0') {
+                *l = i;
+                *s = i;
+                break;
+            }
+    /*        if (asciiart) {
                 continue;
-            }
-//            if (strchr("[0123456789;,", *p) == NULL)
-//                in_esc = 0;
-        } else if (isprint2(*p)) {
-            if (!db) {
-                if(autoline)
-                if (w >= scr_cols-1&&(i>=size-1||*(p+1)<0) || w >= scr_cols) {
-                    *l = i;
-                    *s = i;
-                    break;
-                }
-                if ((unsigned char) *p >= 128)
-                    db = 1;
-                else if (isblank((int) *p))
-                    lastspace = i;
-            } else {
+            } else*/
+            if (*p == '\t') {
                 db = 0;
+                w = (w + 8) / 8 * 8;
                 lastspace = i;
+            } else if (*p == '\033') {
+                db = 0;
+                in_esc = 1;
+                lastspace = i - 1;
+            } else if (in_esc) {
+                if (strchr("suHmMfL@PABCDJK", *p) != NULL) {
+                    if(strchr("suHmABCDJ", *p) != NULL) autoline=0;
+                    in_esc = 0;
+                    continue;
+                }
+    //            if (strchr("[0123456789;,", *p) == NULL)
+    //                in_esc = 0;
+            } else if (isprint2(*p)) {
+                if (!db) {
+                    if(autoline)
+                    if (w >= scr_cols-1&&(i>=size-1||*(p+1)<0) || w >= scr_cols) {
+                        *l = i;
+                        *s = i;
+                        break;
+                    }
+                    if ((unsigned char) *p >= 128)
+                        db = 1;
+                    else if (isblank((int) *p))
+                        lastspace = i;
+                } else {
+                    db = 0;
+                    lastspace = i;
+                }
+                w++;
             }
-            w++;
         }
-    }
-    if (i >= size) {
-        *l = size;
-        *s = size;
-    }
-    if (*s > 0 && ((p0[*s - 1] == '\n') || (p0[*s - 1] == '\0'))) {
-        switch (oldty) {
-        case 1:
-            *ty = 0;
-            break;
-        case 3:
-            *ty = 2;
-            break;
-        default:
-            if (*l < 2 || strncmp(p0, ": ", 2))
+        if (i >= size) {
+            *l = size;
+            *s = size;
+        }
+        if (*s > 0 && ((p0[*s - 1] == '\n') || (p0[*s - 1] == '\0'))) {
+            switch (oldty) {
+            case 1:
                 *ty = 0;
-            else
+                break;
+            case 3:
                 *ty = 2;
-        }
-    } else {
-        switch (oldty) {
-        case 1:
-            *ty = 1;
-            break;
-        case 3:
-            *ty = 3;
-            break;
-        default:
-            if (*l < 2 || strncmp(p0, ": ", 2))
+                break;
+            default:
+                if (*l < 2 || strncmp(p0, ": ", 2))
+                    *ty = 0;
+                else
+                    *ty = 2;
+            }
+        } else {
+            switch (oldty) {
+            case 1:
                 *ty = 1;
-            else
+                break;
+            case 3:
                 *ty = 3;
+                break;
+            default:
+                if (*l < 2 || strncmp(p0, ": ", 2))
+                    *ty = 1;
+                else
+                    *ty = 3;
+            }
         }
-    }
-    if (*s == size)
-        return 0;
+        if (*s == size)
+            return 0;
     }
     if ( oldty==100 || (size > ATTACHMENT_SIZE
         && !memcmp(p0, ATTACHMENT_PAD, ATTACHMENT_SIZE))) {
@@ -527,14 +533,18 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
 
         *ty = 100;
         p = p0;
-	if (oldty==100) p--;
+        /* 上一行为附件的行的size=1,因此-1获得真正的attach开始*/
+	 if (oldty==100) p--;
+	 /*  跳过attachment前面的PAD */
         p += ATTACHMENT_SIZE;
+
+        /* 跳过文件名*/
         if ((p = (char *) memchr(p, '\0', size - (ATTACHMENT_SIZE))) == NULL) {
             return 0;
         }
         p++;
         *s = ntohl(*(unsigned long *) p) + p - p0 + sizeof(unsigned long);
-	if (oldty==100) {
+	if (oldty==100) { /*上次是附件，下一行是附件连接行*/
           *ty=101;
           *s--;
 	}
@@ -549,12 +559,6 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
 		*s++;
     }
 
-    /*
-    if ((oldty == 100) && (*ty != 100)) {
-        *l = 0;
-        *s = 0;
-        *ty = 104;
-    }*/
     return 0;
 }
 
@@ -698,22 +702,7 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
     char* ptr=l->curr;
     int len=l->currlen;
     int ty=l->currty;
-    if (stuffmode) {
-        char buf[256];
-
-        memcpy(buf, ptr, (len >= 256) ? 255 : len);
-        buf[(len >= 256) ? 255 : len] = 0;
-        showstuff(buf);
-        prints("\n");
-        return;
-    }
-    if (!strncmp(ptr, "□ 引用", 7) || !strncmp(ptr, "==>", 3)
-        || !strncmp(ptr, "【 在", 5) || !strncmp(ptr, "※ 引述", 7)) {
-        outns("\033[1;33m", 7);
-        outns(ptr, len);
-        outns("\033[m\n", 4);
-        return;
-    } else if (ty == 100) {
+    if (ty == 100) {
         char attachname[41], *p;
         strncpy(attachname, ptr + ATTACHMENT_SIZE, 40);
         p = strrchr(attachname, '.');
@@ -732,7 +721,24 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
             strcpy(slink,"(用www方式阅读本文可以下载此附件)");
 	prints("\033[4m%s\033[m\n",slink);
         return;
-    } else if (ty >= 2) {
+    }
+    if (stuffmode) {
+        char buf[256];
+
+        memcpy(buf, ptr, (len >= 256) ? 255 : len);
+        buf[(len >= 256) ? 255 : len] = 0;
+        showstuff(buf);
+        prints("\n");
+        return;
+    }
+    if (!strncmp(ptr, "□ 引用", 7) || !strncmp(ptr, "==>", 3)
+        || !strncmp(ptr, "【 在", 5) || !strncmp(ptr, "※ 引述", 7)) {
+        outns("\033[1;33m", 7);
+        outns(ptr, len);
+        outns("\033[m\n", 4);
+        return;
+    }
+    if (ty >= 2) {
         outns("\033[36m", 5);
         outns(ptr, len);
         outns("\033[m\n", 4);

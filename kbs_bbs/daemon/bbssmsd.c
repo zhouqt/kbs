@@ -137,7 +137,7 @@ int sendtouser(struct GWSendSMS * h, char* buf)
 int requiretouser(struct RequireBindPacket * h, unsigned int sn)
 {
     char * uident;
-    char buf[21];
+    char buf[200];
     struct user_info * uin;
     struct usermemo *pum;
     struct userdata ud;

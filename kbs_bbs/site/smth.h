@@ -254,7 +254,7 @@ bigger mailbox. --stephen 2001.10.31*/
 
 /*#define PERM_POSTMASK  0100000  *//* means the rest is a post mask */
 
-#define NUMDEFINES 29
+#define NUMDEFINES 31
 
 
 #define TDEF_SPLITSCREEN 000001

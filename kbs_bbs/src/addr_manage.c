@@ -587,6 +587,7 @@ int al_read()
 			return -1;
 		}
 		i = get_sql_al(a_l, currentuser->userid, al_dest, al_group, 0, BBS_PAGESIZE, al_order, NULL);
+		group_conf.item_count = 1;
 	}
 
 	if(i <= 0){

@@ -84,6 +84,7 @@ int pc_add_user()
 				return 0;
 
 			if( del_pc_users( &pu ) ){
+				lookupuser->flags &= ~PCORP_FLAG ;
 				move(10,0);
 				prints("É¾³ı³É¹¦");
 				pressanykey();
@@ -178,6 +179,7 @@ int pc_add_user()
 		pu.createtime = time(0);
 
 	if(add_pc_users(&pu) ){
+		lookupuser->flags |= PCORP_FLAG ;
 		move(18,0);
 		if(pu.uid)
 			prints("ĞŞ¸Ä³É¹¦",lookupuser->userid);
@@ -448,7 +450,7 @@ int pc_perm(char *userid){
 
 	struct user_info *uin;
 
-	if( HAS_PERM(currentuser, PERM_SYSOP) || !strcasecmp(userid, currentuser->userid) )
+	if( HAS_PERM(currentuser, PERM_ADMIN) || !strcasecmp(userid, currentuser->userid) )
 		return 5;
 
 	uin = t_search(userid, 0);
@@ -944,7 +946,7 @@ static int pc_dir_title(struct _select_def *conf)
 	}
 
 	move(1,0);
-	prints("               ÍË³ö[[1;32mq[m] Ôö¼Ó[[1;32ma[m] É¾³ı[[1;32md[m] ĞŞ¸Ä[[1;32me[m] ¿½±´[[1;32mc[m] Õ³Ìù[1;32mp[m]");
+	prints("               ÍË³ö[[1;32mq[m] Ôö¼Ó[[1;32ma[m] É¾³ı[[1;32md[m] ĞŞ¸Ä[[1;32me[m] ¿½±´[[1;32mc[m] Õ³Ìù[[1;32mp[m]");
 	move(2,0);
 	prints("[0;1;44m  %-4s %-6s %-38s %-4s %-4s %-12s[m","ĞòºÅ","Àà±ğ","±êÌâ","ÆÀÂÛ","·ÃÎÊ","ÎÄÕÂ·¢±íÊ±¼ä");
 	update_endline();
@@ -1521,7 +1523,7 @@ static int pc_com_key(struct _select_def *conf, int key)
 		return SHOW_REFRESH;
 		break;
 	case 'e':
-		if( ! pc_can_com(pc_n[pc_now_node_ent].comment) )
+		if( strcasecmp(currentuser->userid, pc_c[conf->pos-conf->page_pos].username ) )
 			return SHOW_CONTINUE;
 		if ( pc_add_a_com( pc_c[conf->pos-conf->page_pos].cid ) )
 			return SHOW_DIRCHANGE;
@@ -1685,9 +1687,12 @@ int import_to_pc(int ent, struct fileheader *fileinfo, char *direct)
 	char fpath[STRLEN];
 	int ret;
 
+	if( ! (currentuser->flags & PCORP_FLAG) )
+		return DONOTHING;
+
 	bzero( &pu, sizeof(pu) );
 	if(get_pc_users( & pu, currentuser->userid ) <= 0)
-		return DONOTHING;
+		return FULLUPDATE;
 
 	bzero( &pn, sizeof(pn) );
 

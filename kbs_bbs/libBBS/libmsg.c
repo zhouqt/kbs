@@ -263,7 +263,7 @@ MYSQL * my_connect_mysql(MYSQL *s){
                             sysconf_str("MYSQLHOST"),
                             sysconf_str("MYSQLUSER"),
 			    sysconf_str("MYSQLPASSWORD"),
-			    sysconf_str("MYSQLDATABASE"),
+			    sysconf_str("MYSQLSMSDATABASE"),
 			    sysconf_eval("MYSQLPORT",1521), sysconf_str("MYSQLSOCKET"), 0);
 }
 

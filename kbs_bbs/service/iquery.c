@@ -20,7 +20,7 @@
 #define MAX_KEEP 100
 
 char res_title[MAX_KEEP][80],res_filename[MAX_KEEP][200];
-int res_total=0,toomany=0;
+int res_total=0,toomany=0,wh=0;
 
 char qn[60];
 
@@ -28,8 +28,79 @@ int get_word()
 {
     clear();
     prints("Áîºü³åËÑË÷");
+    move(6, 0);
+    prints("    ÎÒÏë²é                    ¹Ø¼ü×Ö");
+    move(7, 0);
+    prints("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+    move(8, 0);
+    prints("    µçÓ°Ó°ÆÀ                  movie ÎŞ¼äµÀ");
+    move(9, 0);
+    prints("    Á÷ĞĞÀÖ¸è´Ê                popmusic ÎÒ»³ÄîÓĞÒ»ÄêµÄÏÄÌì");
+    move(10, 0);
+    prints("    ĞÂÎÅÒªµã                  news ¿ÆË÷ÎÖ");
+    move(11, 0);
+    prints("    ÎäÏÀĞ¡Ëµ                  emprise ´óÌÆĞĞïÚ");
+    move(12, 0);
+    prints("    Ê³ÎïÊ³Æ×                  food ÌÇ´×ÅÅ¹Ç");
+    move(13, 0);
+    prints("    ÓéÀÖÒªÎÅ                  estar ²Ì×¿åû ÖÓĞÀÍ©");
+    move(14, 0);
+    prints("    °²È«¼¼Êõ                  Ê¹ÓÃsoftice");
+    move(15, 0);
+    prints("    µçÄÔÓ²¼ş                  Òº¾§ÏÔÊ¾Æ÷");
+    move(16, 0);
+    prints("    ÓÎÏ·¹¦ÂÔ                  palsword Ö§Ïß");
+    move(17, 0);
+    prints("    ±à³ÌËã·¨                  Îå×ÓÆå Ëã·¨");
+    move(18, 0);
+    prints("    ÓÄÄ¬Ğ¦»°                  joke Å¼ºÍÅ¼mm");
+    move(19, 0);
+    prints("    °üº¬bad²»°üº¬goodÎÄÕÂ     bad -good");
+    move(20, 0);
+    prints("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
     getdata(2, 0, "²éÑ¯¹Ø¼ü×Ö: ", qn, 60, 1, 0, 0);
+    move(3, 0);
+    prints("¿ªÊ¼²éÑ¯....");
+    refresh();
     return qn[0];
+}
+
+void do_query_all(int w, char * s)
+{
+    struct sockaddr_in addr;
+    FILE* sockfp;
+    int sockfd, i;
+    char buf[256];
+    char ip[20];
+    
+    if(rand()%2==0)strcpy(ip,"166.111.3.125");
+    else strcpy(ip,"166.111.8.235");
+    
+    res_total = -2;
+    
+    if((sockfd=socket(AF_INET, SOCK_STREAM, 0))==-1) return;
+    memset(&addr, 0, sizeof(addr));
+    addr.sin_family=AF_INET;    
+    addr.sin_addr.s_addr=inet_addr(ip);
+    addr.sin_port=htons(4875);
+    if(connect(sockfd, (struct sockaddr*)&addr, sizeof(addr))<0) return;
+    sockfp=fdopen(sockfd, "r+");
+    fprintf(sockfp, "%d\n%s\n", w, s);
+    fflush(sockfp);
+    fscanf(sockfp, "%d %d %d\n", &toomany, &i, &res_total);
+    for(i=0;i<res_total;i++) {
+        fgets(buf, 256, sockfp);
+        if(buf[0]&&buf[strlen(buf)-1]=='\n') buf[strlen(buf)-1]=0;
+        strncpy(res_title[i], buf, 80);
+        res_title[i][79] = 0;
+
+        fgets(buf, 256, sockfp);
+        if(buf[0]&&buf[strlen(buf)-1]=='\n') buf[strlen(buf)-1]=0;
+        strncpy(res_filename[i], buf, 200);
+        res_filename[i][199] = 0;
+    }
+    fclose(sockfp);
+    close(sockfd);
 }
 
 static int choose_file_refresh(struct _select_def *conf)
@@ -38,10 +109,7 @@ static int choose_file_refresh(struct _select_def *conf)
     docmdtitle("[Áîºü³åËÑË÷]",
               "  ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ²ì¿´[\x1b[1;32mEnter\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ı\x1b[0;37m]                        ×÷Õß: \x1b[31;1mbad@smth.org\x1b[m");
     move(2, 0);
-    if(toomany)
-        prints("[0;1;37;44m    %4s %-30s %s    ¹²ËÑË÷µ½ %d Ïî£¬±£ÁôÇ° %d Ïî", "±àºÅ", "±êÌâ", "Â·¾¶", toomany, res_total);
-    else
-        prints("[0;1;37;44m    %4s %-30s %s    ¹²ËÑË÷µ½ %d Ïî", "±àºÅ", "±êÌâ", "Â·¾¶", res_total);
+    prints("[0;1;37;44m    %4s %-30s %s        %d-%d ¹²%d  ¹Ø¼ü×Ö:%s", "±àºÅ", "±êÌâ", "Â·¾¶", wh*MAX_KEEP+1, wh*MAX_KEEP+res_total, toomany, qn);
     clrtoeol();
     resetcolor();
     update_endline();
@@ -54,15 +122,33 @@ static int choose_file_show(struct _select_def *conf, int i)
     char f1[160],f2[160];
     strcpy(f1, res_title[i-1]);
     strcpy(f2, res_filename[i-1]);
-    prints("  %3d  %-30s %s", i, f1, f2);
+    prints("  %3d  %-30s %s", i+wh*MAX_KEEP, f1, f2);
     return SHOW_CONTINUE;
 }
 
 static int choose_file_select(struct _select_def *conf)
 {
-    char * ss = res_filename[conf->pos-1];
-    ansimore_withzmodem(ss, 1, "uhoh");
-    return SHOW_DIRCHANGE;
+    char * ss;
+    int ch;
+again:
+    ss = res_filename[conf->pos-1];
+    ch = ansimore_withzmodem(ss, 0, res_title[conf->pos-1]);
+    move(t_lines-1, 0);
+    prints("[0;1;31;44m[µÚ%d/%dÆª]  [33m½áÊø Q,¡û ©¦ÉÏÒ»·â ¡ü©¦ÏÂÒ»·â <Space>,¡ı©¦ËÑË÷¹Ø¼ü×Ö:%s", conf->pos+wh*MAX_KEEP, toomany, qn);
+    clrtoeol();
+    if(ch==0) ch=igetkey();
+    switch(ch){
+        case KEY_UP:
+            conf->pos--;
+            if(conf->pos<=0) conf->pos = res_total;
+            goto again;
+        case KEY_DOWN:
+        case ' ':
+            conf->pos++;
+            if(conf->pos>res_total) conf->pos = 1;
+            goto again;
+    }
+    return SHOW_REFRESH;
 }
 
 static int choose_file_getdata(struct _select_def *conf, int pos, int len)
@@ -96,6 +182,28 @@ static int choose_file_prekey(struct _select_def *conf, int *key)
 
 static int choose_file_key(struct _select_def *conf, int key)
 {
+    switch (key) {
+    case ']':
+        if((wh+1)*MAX_KEEP+1<=toomany) {
+            move(t_lines-1, 0);
+            prints("²éÕÒÊı¾İ....");
+            clrtoeol();
+            refresh();
+            wh++;
+            do_query_all(wh, qn);
+            return SHOW_DIRCHANGE;
+        }
+    case '[':
+        if(wh>0) {
+            move(t_lines-1, 0);
+            prints("²éÕÒÊı¾İ....");
+            clrtoeol();
+            refresh();
+            wh--;
+            do_query_all(wh, qn);
+            return SHOW_DIRCHANGE;
+        }
+    }
     return SHOW_CONTINUE;
 }
 
@@ -146,47 +254,12 @@ int show_res()
     }
 }
 
-void do_query_all(char * s)
-{
-    struct sockaddr_in addr;
-    FILE* sockfp;
-    int sockfd, i;
-    char buf[256];
-    char ip[20]="166.111.8.235";
-    
-    res_total = -2;
-    
-    if((sockfd=socket(AF_INET, SOCK_STREAM, 0))==-1) return;
-    memset(&addr, 0, sizeof(addr));
-    addr.sin_family=AF_INET;    
-    addr.sin_addr.s_addr=inet_addr(ip);
-    addr.sin_port=htons(4875);
-    if(connect(sockfd, (struct sockaddr*)&addr, sizeof(addr))<0) return;
-    sockfp=fdopen(sockfd, "r+");
-    fprintf(sockfp, "0\n%s\n", s);
-    fflush(sockfp);
-    fscanf(sockfp, "%d %d %d\n", &toomany, &i, &res_total);
-    if(toomany==res_total) toomany=0;
-    for(i=0;i<res_total;i++) {
-        fgets(buf, 256, sockfp);
-        if(buf[0]&&buf[strlen(buf)-1]=='\n') buf[strlen(buf)-1]=0;
-        strncpy(res_title[i], buf, 80);
-        res_title[i][79] = 0;
-
-        fgets(buf, 256, sockfp);
-        if(buf[0]&&buf[strlen(buf)-1]=='\n') buf[strlen(buf)-1]=0;
-        strncpy(res_filename[i], buf, 200);
-        res_filename[i][199] = 0;
-    }
-    fclose(sockfp);
-    close(sockfd);
-}
-
 int iquery_main()
 {
     qn[0] = 0;
     while(get_word()) {
-        do_query_all(qn);
+        wh = 0;
+        do_query_all(wh, qn);
         show_res();
     }
 }
