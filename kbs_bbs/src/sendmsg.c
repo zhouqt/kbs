@@ -538,7 +538,6 @@ void r_msg()
                             if(i!=1)
 #endif
                             sleep(1);
-                            saveline(0, 1, savebuffer[0]);
                         }
                     }
                     ch = '\n';
@@ -550,6 +549,8 @@ void r_msg()
 
 
 outhere:
+    for(i=0;i<=24;i++)
+        norefresh_saveline(i, 1, savebuffer[i]);
     showansi = tmpansi;
     good_move(y,x);
     refresh();

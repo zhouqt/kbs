@@ -603,7 +603,7 @@ int translate_msg(char* src, struct msghead *head, char* dest)
             }
             else {
                 sprintf(dest, "\x1b[0;1;32m=>[37m%-12.12s[33m(%-12.12s):[36m", head->id, time);
-                strcpy(attstr, "[36m");
+                strcpy(attstr, "[36;1m");
             }
             break;
         case 3:

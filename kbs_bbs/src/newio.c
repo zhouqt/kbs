@@ -922,7 +922,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                             else if(buf[i]<0) chk=1;
                         }
                         if(chk) {
-                            for(i=now-1;i<strlen(buf)-1;i++)
+                            for(i=now-1;i<strlen(buf);i++)
                                 buf[i]=buf[i+1];
                             now--;
                         }
@@ -942,7 +942,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                             else if(buf[i]<0) chk=1;
                         }
                         if(chk)
-                            for(i=now;i<strlen(buf)-1;i++)
+                            for(i=now;i<strlen(buf);i++)
                                 buf[i]=buf[i+1];
                     }
 #endif
