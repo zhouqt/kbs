@@ -1,5 +1,6 @@
 <?php
 	$needlogin=0;
+	session_start();
 	require("inc/funcs.php");
 	setStat("ÐÂÓÃ»§×¢²á");
 	show_nav(false);
