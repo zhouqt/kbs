@@ -640,7 +640,7 @@ static long insert_from_fp(FILE *fp, long * attach_length)
     int matched;
     char* ptr;
     long size;
-	int ret=0;
+	long ret=0;
 
 	if( attach_length ) *attach_length=0;
     matched=0;
