@@ -456,6 +456,7 @@ $ret=bbs_createregform($userid,$realname,$dept,$address,$gender,$year,$month,$da
 		if ($fp!=false) {
 			fwrite($fp,str_replace("\r\n", "\n", $signature));
 			fclose($fp);
+			bbs_recalc_sig();
 		}
 	}
 	$personal=trim($_POST["personal"]);

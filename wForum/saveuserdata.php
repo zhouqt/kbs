@@ -85,6 +85,7 @@ $ret=bbs_saveuserdata($currentuser['userid'],$realname,$address,$gender,$year,$m
 		if ($fp!=false) {
 			fwrite($fp,str_replace("\r\n", "\n", $signature));
 			fclose($fp);
+			bbs_recalc_sig();
 		}
 	}
 	$personal=trim($_POST["personal"]);
