@@ -1620,7 +1620,7 @@ int x_deny()
                 if (askyn(buf, 0) != 0) {
                 	sprintf(reportbuf, "·â½û%sµÄ%s ", lookupuser->userid, (char *) level_conf[sel-1].data+2);
                     lookupuser->userlevel ^= level[sel-1];
-                    securityreport(reportbuf);
+                    securityreport(reportbuf,NULL,NULL);
                 }
             } else {
             	if ((basicperm&level[sel-1]) == normal_level[sel-1])  {
@@ -1633,7 +1633,7 @@ int x_deny()
                 }
                 if (askyn(buf, 0) != 0) {
                     lookupuser->userlevel ^= level[sel-1];
-                    securityreport(reportbuf);
+                    securityreport(reportbuf,NULL,NULL);
                 }
             }
 	    save_giveupinfo(lookupuser,lcount,s);
