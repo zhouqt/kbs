@@ -4,6 +4,7 @@ define("ATTACHMAXSIZE","2097152");
 define("ATTACHMAXCOUNT","10");
 define("HAVE_PC", 1); // 支持个人文集
 define("MAINPAGE_FILE","mainpage.html"); // 使用静态 mainpage 页面
+define("STATIC_FRAME",1); //使用静态 frame
 define("HAVE_BRDENV", 1); //支持版面导读
 define("QUOTED_LINES","3");
 define("ACTIVATIONLEN",15); //激活码长度
