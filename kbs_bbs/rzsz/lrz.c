@@ -134,14 +134,17 @@ time_t stop_time;
 /* called by signal interrupt or terminate to clean things up */
 extern void bibi(int n);
 
-int bbs_zrecvfile()
+static char fname[1024];
+
+char * bbs_zrecvfile()
 {
     register char *cp;
     register int npats = 0;
     char **patts = NULL;        /* keep compiler quiet */
     int exitcode = 0;
     int c;
-    char paths[100]="upload";
+    char paths[100]="tmp/";
+    char* fn;
     unsigned int startup_delay = 0;
 
     Rxtimeout = 100;
@@ -153,17 +156,20 @@ int bbs_zrecvfile()
     /* initialize zsendline tab */
     zsendline_init();
 
-    io_mode(0, 1);
-    readline_setup(1, HOWMANY, MAX_BLOCK * 2);
+    io_mode(1, 1);
+    readline_setup(1, 128, 256);
+    purgeline(1);
     patts = &paths;
+    fn = fname;
     if (wcreceive(npats, patts) == ERROR) {
         exitcode = 0200;
         canit(0);
+        fn=NULL;
     }
     io_mode(0, 0);
     if (exitcode && !zmodem_requested)  /* bellow again with all thy might. */
         canit(0);
-    return 0;
+    return fn;
 }
 
 static void usage(int exitcode, const char *what)
@@ -704,6 +710,7 @@ static int procheader(char *name, struct zm_fileinfo *zi)
             if (fout)
                 fclose(fout);
         }
+        strcpy(fname, name_static);
         fout = fopen(name_static, openmode);
         if (!fout) {
             return ERROR;
