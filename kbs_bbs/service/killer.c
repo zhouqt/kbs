@@ -1051,8 +1051,8 @@ void join_room(int w, int spec)
                         !(inrooms[myroom].peoples[sel].flag&PEOPLE_SPECTATOR) &&
                         sel!=me) {
                         int i,j,t1,t2,t3;
-                        sprintf(buf, "\x1b[32;1m%s投了%s一票\x1b[m", inrooms[myroom].peoples[me].nick,
-                            inrooms[myroom].peoples[sel].nick);
+                        sprintf(buf, "\x1b[32;1m%d %s投了%d %s一票\x1b[m", me+1, inrooms[myroom].peoples[me].nick,
+                            sel+1, inrooms[myroom].peoples[sel].nick);
                         start_change_inroom();
                         inrooms[myroom].peoples[me].vote = pid;
                         end_change_inroom();
