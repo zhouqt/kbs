@@ -13,11 +13,11 @@ global $boardID;
 global $boardName;
 global $articles;
 global $groupID;
-global $start;
+global $start; /*第几篇开始 0-based */
 global $listType;
 global $isbm;
-global $total;
-global $num;
+global $total; /* 主题一共几篇 */
+global $num; /* 一共显示几篇 */
 global $is_tex;
 
 setStat("文章阅读");
@@ -73,10 +73,14 @@ function preprocess(){
 		if ($_GET['listType']=='1')
 			$listType=1;
 	}
-	if (!isset($_GET['start'])) {
-		$start=0;
+	if (isset($_GET['page'])) {
+		$start = THREADSPERPAGE * (intval($_GET['page']) - 1);
 	} else {
-		$start=intval($_GET['start']);
+		if (!isset($_GET['start'])) {
+			$start=0;
+		} else {
+			$start=intval($_GET['start']);
+		}
 	}
 
 	$isbm = bbs_is_bm($boardID, $usernum);
@@ -209,46 +213,17 @@ function showArticleThreads($boardName,$boardID,$groupID,$articles,$start,$listT
 <table cellPadding="5" cellSpacing="1" align="center" class="TableBorder1" style=" table-layout:fixed;word-break:break-all">
 <?php
 	for($i=0;$i<$num;$i++) {
-			if (($i+$start)==0) 
-				showArticle($boardName,$boardID,0,intval($articles[0]['ID']),$articles[0],$i%2);
-			else 
-				showArticle($boardName,$boardID,$i+$start,intval($articles[$i+$start]['ID']),$articles[$i+$start],$i%2);
+		showArticle($boardName,$boardID,$i+$start,intval($articles[$i+$start]['ID']),$articles[$i+$start],$i%2);
 	}
 ?>
 </table>
-<table cellpadding="0" cellspacing="3" border="0" width="97%" align="center"><tr><td valign="middle" nowrap="nowarp">本主题贴数<b><?php echo $total; ?></b>
+<table cellpadding="0" cellspacing="3" border="0" width="97%" align="center"><tr><td valign="middle" nowrap="nowarp">本主题贴数<b><?php echo $total; ?></b>，
 <?php
 	if ($listType!=1) {
 ?>
-，分页： 
+分页： 
 <?php
-		if ($page>4) {
-			echo "<a href=\"?boardName=".$boardName."&amp;ID=".$groupID."&amp;start=0\">[1]</a>";
-			if ($page>5) {
-				echo " ...";
-			}
-		} 
-
-		if ($totalPages>$page+3){
-			$endpage=$page+3;
-		}  else{
-			$endpage=$totalPages;
-		} 
-
-		for ($i=($page-3>0)?($page-3):1; $i<=$endpage; $i++){
-			if ($i==$page)   {
-				echo " <font color=\"#ff0000\">[".$i."]</font>";
-			} else {
-				echo " <a href=\"?boardName=".$boardName."&amp;ID=".$groupID."&amp;start=".($i-1)*THREADSPERPAGE."\">[".$i."]</a>";
-			} 
-		} 
-
-		if ($endpage<$totalPages) {
-			if ($endpage<$totalPages-1){
-				echo " ...";
-			}
-			echo " <a href=\"?boardName=".$boardName."&amp;ID=".$groupID."&amp;start=".($totalPages-1)*THREADSPERPAGE."\">[".$totalPages."]</a>";
-		} 
+		showPageJumpers($page, $totalPages, "disparticle.php?boardName=".$boardName."&amp;ID=".$groupID."&amp;page=");
 	}
 ?></td><td valign="middle" nowrap="nowrap" align="right">
 <?php 

@@ -328,37 +328,45 @@ function getModenameIfAllowed($ftype, &$sorted) {
 	}
 }
 
+function pageJumperHelper($page, $linkpage, $urlbase) {
+	if ($linkpage == $page)	{
+		return "<font color='#ff0000'><b>".$page."</b></font> ";
+	} else {
+		return "<a href='$urlbase$linkpage'><b>$linkpage</b></a> ";
+	}
+}
+
 function showPageJumpers($page, $totalPages, $urlbase) {
-    $lastTenPages=(floor(($page-1)/ 10))*10;
-	if ($page==1) {
-		echo "<font color=\"#FF0000\">&lt;&lt;</font>   ";
-	}   else {
-		echo "<a href=\"$urlbase&amp;page=1\" title=\"首页\">&lt;&lt;</a>   ";
-	} 
+	$HalfPageShow = 4;
+	$str = "";
+	if ($page > 1) {
+		$str .= "<a href='$urlbase".($page-1)."' title='上一页'>&lt;&lt;</a> ";
+	}
+	$min = $page - $HalfPageShow;
+	$max = $page + $HalfPageShow;
+	if (($min < 1) && ($max > $totalPages)) {
+		$min = 1;
+		$max = $totalPages;
+	} else if ($min < 1) {
+		$min = 1;
+		$max = $min + 2 * $HalfPageShow;
+		if ($max > $totalPages) $max = $totalPages;
+	} else if ($max > $totalPages) {
+		$max = $totalPages;
+		$min = $max - 2 * $HalfPageShow;
+		if ($min < 1) $min = 1;
+	}
 
-	if ($lastTenPages>0)  {
-		echo "<a href='$urlbase&amp;page=" . $lastTenPages . "' title=上十页>&lt;</a>   ";  
-	} 
-
-	echo "<b>";
-	for ($i=$lastTenPages+1; $i<=$lastTenPages+10; $i++) {
-		if ($i==$page)	{
-			echo "<font color=#ff0000>".$i."</font> ";
-		} else {
-			echo "<a href='$urlbase&amp;page=".$i."'>".$i."</a> ";
-		} 
-		if ($i==$totalPages) {
-		  break;
-		} 
-	} 
-	echo "</b>";
-	if ($i<$totalPages) {
-		echo "<a href='$urlbase&amp;page=".$i."' title=下十页>&gt;</a>   ";  
-	} 
-	if ($page==$totalPages) {
-		echo "<font color=#ff0000>&gt;&gt;</font>   ";
-	}  else  {
-		echo "<a href='$urlbase&amp;page=".$totalPages."' title=尾页>&gt;&gt;</a>   ";
-	} 
+	if ($min > 1) $str .= pageJumperHelper($page, 1, $urlbase);
+	if ($min > 2) $str .= "... ";
+	for ($i = $min; $i <= $max; $i++) {
+		$str .= pageJumperHelper($page, $i, $urlbase);
+	}
+	if ($max < $totalPages - 1) $str .= "... ";
+	if ($max < $totalPages) $str .= pageJumperHelper($page, $totalPages, $urlbase);
+	if ($page < $totalPages) {
+		$str .= "<a href='$urlbase".($page+1)."' title='下一页'>&gt;&gt;</a> ";
+	}
+	echo $str;
 }
 ?>
