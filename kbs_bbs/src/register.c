@@ -615,6 +615,7 @@ void ConveyID()
 		currentuser->numposts = 0;
 		if(currentuser->numlogins > 10)currentuser->numlogins = 10;
 		currentuser->stay = 0;
+		strncpy(currentuser->username,currentuser->userid,IDLEN);
 		//clear 用户信息
 		bzero(&curruserdata,sizeof(struct userdata));
 		strcpy(curruserdata.userid,currentuser->userid);
