@@ -569,7 +569,13 @@ void refreshit()
                     inrooms[myroom].peoples[j].pid)
                     k++;
             if(k>0) {
+                int j0=0;
                 if(k>=strlen(buf)) k=strlen(buf);
+                for(i0=0;i0<k;i0++) {
+                    if(j0) j0=0;
+                    else if(buf[i0]<0) j0=1;
+                }
+                if(j0&&k<strlen(buf)) k++;
                 strcpy(buf2, buf);
                 buf2[k]=0;
                 strcpy(buf3, buf+k);
