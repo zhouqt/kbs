@@ -3,7 +3,6 @@
 	** article search in personal corp.
 	** @id:windinsn nov 30,2003
 	*/
-	
 	$needlogin=0;
 	require("pcfuncs.php");
 	
@@ -30,6 +29,7 @@
 	function pc_search_display_result($rows,$keyword)
 	{
 		global $pcconfig;
+		if($rows[htmltag]) $rows[body] = undo_html_format(strip_tags($rows[body]));
 		$bodylen = strlen($rows[body]);
 		if($bodylen < 500)
 			$body = $rows[body];
@@ -87,7 +87,7 @@ BlogÎÄÕÂËÑË÷
 		$link = pc_db_connect();
 		
 		$query_i = "SELECT COUNT(*) FROM nodes WHERE `access` = 0 ";
-		$query = "SELECT `nid`,`tid`,`uid`,`subject`,`body`,`created` FROM nodes WHERE `access` = 0 ";
+		$query = "SELECT `nid`,`tid`,`uid`,`subject`,`body`,`created`,`htmltag` FROM nodes WHERE `access` = 0 ";
 		if($area != "_all")
 		{
 			$query0 = "SELECT `uid` FROM users WHERE `username` = '".$area."' LIMIT 0 , 1 ;";
