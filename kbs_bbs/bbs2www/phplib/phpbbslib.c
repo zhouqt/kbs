@@ -990,7 +990,7 @@ static ZEND_FUNCTION(bbs_get_records_from_id)
     int retnum;
 
     if (ac != 4
-        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "slla", &board, &blen, &id, &mode, & articlearray) == FAILURE)
+        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "slla", &board, &blen, &id, &mode, &articlearray) == FAILURE)
     {
         WRONG_PARAM_COUNT;
     }
@@ -1004,10 +1004,10 @@ static ZEND_FUNCTION(bbs_get_records_from_id)
 	{
 		RETURN_LONG(0);
 	}
-	if (array_init(return_value) == FAILURE)
+	/*if (array_init(return_value) == FAILURE)
 	{
 		RETURN_LONG(0);
-	}
+	}*/
 	setbdir(mode, dirpath, board);
 	if ((fd = open(dirpath, O_RDWR, 0644)) < 0)
 	{
@@ -1018,12 +1018,12 @@ static ZEND_FUNCTION(bbs_get_records_from_id)
 		close(fd);
 		RETURN_LONG(0);
 	}
-	MAKE_STD_ZVAL(articlearray);
-        if(array_init(articlearray) != SUCCESS)
-        {
+	//MAKE_STD_ZVAL(articlearray);
+	if(array_init(articlearray) != SUCCESS)
+	{
                 RETURN_LONG(0);
 	}
-	for (i = 0; i < retnum; i++)
+	for (i = 0; i < record_cnt; i++)
 	{
 		MAKE_STD_ZVAL(element);
 		array_init(element);
