@@ -327,14 +327,14 @@ int hhprintf(char *fmt, ...) {
 			}
 			tmp=strtok(s, "\'\" \r\t)(,;\n");
 			if(tmp==0) break;
-			if(1) {
+			/*if(1) {
 				if(strstr(tmp, ".gif") || strstr(tmp, ".jpg") || strstr(tmp, ".bmp")) {
 					printf("<img src=\"%s\">", nohtml(tmp));
 					tmp=strtok(0, "");
 					if(tmp==0) return -1;
 					return hhprintf(tmp);
 				}
-			}
+			}*/
 			printf("<a target=\"_blank\" href=\"%s\">%s</a>", nohtml(tmp), nohtml(tmp));
 			tmp=strtok(0, "");
 			if(tmp==0) return printf("\n");
@@ -858,15 +858,15 @@ int send_msg(char *srcid, int srcutmp, char *destid, int destutmp, char *msg)
 	/* ÂËµôÌØÊâ×Ö·û£¬Ó¦¸ÃĞ´³ÉÒ»¸öº¯Êı */
 	for(i=0; i<(int)strlen(msg); i++)
 		if((0<msg[i] && msg[i]<=27 )|| msg[i]==-1) msg[i]=32;
-	strcpy(MsgDesUid, destid);
 	if (destutmp == 0)
 		uin = t_search(destid, destutmp);
 	else
 		uin = get_utmpent(destutmp);
 	if (uin == NULL)
 		return -1;
-	if (strcmp(uin->userid, destid))
+	if (strcasecmp(uin->userid, destid))
 		return -1;
+	strcpy(MsgDesUid, uin->userid);
 	if (uin != NULL && uin->mode == WEBEXPLORE)
 	{
 		char msgbuf[256];
@@ -882,7 +882,7 @@ int send_msg(char *srcid, int srcutmp, char *destid, int destutmp, char *msg)
 			srcid, timestr, msg, getuinfopid()+100, uin->pid+100);
         snprintf(msgbak, sizeof(msgbak), 
 			"[44m[0;1;32m=>[37m%-10.10s[33m(%-5.5s):[36m%-59.59s[m[%dm\033[%dm\n",
-			destid, timestr, msg, getuinfopid()+100, uin->pid+100);
+			uin->userid, timestr, msg, getuinfopid()+100, uin->pid+100);
 		if (destutmp == 0)
 			destutmp = get_utmpent_num(uin);
 		if (send_webmsg(destutmp, uin->userid, srcutmp, srcid, msgbuf) < 0)
@@ -2090,5 +2090,42 @@ time_t set_idle_time(struct user_info *uentp, time_t t)
 	}
 
 	return t;
+}
+
+int can_enter_chatroom()
+{
+	if (HAS_PERM(currentuser, PERM_CHAT))
+		return 1;
+	else
+		return 0;
+}
+
+int can_send_mail()
+{
+    if (HAS_PERM(currentuser, PERM_DENYMAIL))
+		return 0;
+	else if (HAS_PERM(currentuser, PERM_LOGINOK))
+		return 1;
+	else
+		return 0;
+}
+
+int can_reply_post(char *board, char *filename)
+{
+	char dirpath[STRLEN];
+	struct fileheader fh;
+	int pos;
+
+	if((!strcmp(board,"News")) || (!strcmp(board,"Original")))
+		return 0;
+	setbdir(0, dirpath, board);
+	pos = search_record(dirpath, &fh, sizeof(fh), (RECORD_FUNC_ARG)cmpname, 
+			filename);
+	if (pos <= 0)
+		return 0;
+	if (fh.accessed[1] & FILE_READ)
+		return 0;
+	else
+		return 1;
 }
 
