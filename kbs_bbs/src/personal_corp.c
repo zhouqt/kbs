@@ -1226,7 +1226,7 @@ static int pc_dir_key(struct _select_def *conf, int key)
 		if( ! pc_is_admin(pc_u->username) )
 			return SHOW_CONTINUE;
 		if( pc_dirmode == 5 ){
-			if( del_pc_nodes( pc_n[conf->pos-conf->page_pos].nid ) ){
+			if( del_pc_nodes( pc_n[conf->pos-conf->page_pos].nid , pc_n[conf->pos-conf->page_pos].access ,pc_u->uid ) ){
 				return SHOW_DIRCHANGE;
 			}
 		}else if(pc_dirmode == 4){
@@ -1239,10 +1239,10 @@ static int pc_dir_key(struct _select_def *conf, int key)
 				update_endline();
 				return SHOW_CONTINUE;
 			}
-			if( del_pc_node_junk( pc_n[conf->pos-conf->page_pos].nid ) )
+			if( del_pc_node_junk( pc_n[conf->pos-conf->page_pos].nid  , pc_n[conf->pos-conf->page_pos].access ,pc_u->uid  ) )
 				return SHOW_DIRCHANGE;
 		}else{
-			if( del_pc_node_junk( pc_n[conf->pos-conf->page_pos].nid ) )
+			if( del_pc_node_junk( pc_n[conf->pos-conf->page_pos].nid  , pc_n[conf->pos-conf->page_pos].access ,pc_u->uid  ) )
 				return SHOW_DIRCHANGE;
 		}
 		return SHOW_REFRESH;

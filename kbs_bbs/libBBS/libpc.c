@@ -704,7 +704,7 @@ int add_pc_users(struct pc_users *pn)
 	mysql_escape_string(newdesc, pn->description, strlen(pn->description));
 
 	if( pn->uid <= 0 )
-		sprintf(sql,"INSERT INTO users VALUES (NULL, '%s', '%s', '%s', '%s', %d, %d, '%s', 0 ,NULL);",pn->username, newcorp, newdesc, newtheme, pn->nodelimit, pn->dirlimit, tt2timestamp(pn->createtime,newts) );
+		sprintf(sql,"INSERT INTO users VALUES (NULL, '%s', '%s', '%s', '%s', %d, %d, '%s', 0 ,NULL,0,0,NULL,'%s');",pn->username, newcorp, newdesc, newtheme, pn->nodelimit, pn->dirlimit, tt2timestamp(pn->createtime,newts), tt2timestamp(pn->createtime,newts) );
 	else
 		sprintf(sql,"UPDATE users SET description='%s', corpusname='%s', theme='%s', nodelimit=%d, dirlimit=%d, createtime='%s' WHERE uid=%lu AND username='%s' ;",newdesc, newcorp, newtheme, pn->nodelimit, pn->dirlimit, tt2timestamp(pn->createtime,newts), pn->uid, pn->username );
 	
@@ -775,9 +775,18 @@ int add_pc_nodes(struct pc_nodes *pn)
 		mysql_escape_string(newbody, pn->body, strlen(pn->body));
 
 	if( pn->nid <= 0 )
+	{
+		if(pn->access == 0)
+		{
+			sprintf(ql,"UPDATE users SET modifytime = '%s' , nodescount = nodescount + 1 WHERE uid=%d ;",tt2timestamp(pn->changed,newts),pn->uid );	
+			mysql_real_query( &s, ql, strlen(ql) );
+		}
 		sprintf(ql,"INSERT INTO nodes VALUES (NULL, %lu,  %d, '%s', '%s', '%s', '%s', %d, %d, %lu, '%s', '%s', %d,  %d , 0 , 0);",pn->pid, pn->type, newsource, newhostname, tt2timestamp(pn->changed,newts), tt2timestamp(pn->created, newts1), pn->uid, pn->comment, pn->commentcount, newsubject, pn->body?newbody:"", pn->access, pn->visitcount );
+	}
 	else
+	{
 		sprintf(ql,"UPDATE nodes SET pid=%lu, type=%d, source='%s', hostname='%s', uid=%d, comment=%d, commentcount=%d, subject='%s', body='%s', access=%d, visitcount=%d WHERE nid=%lu ;",pn->pid, pn->type, newsource, newhostname, pn->uid, pn->comment, pn->commentcount, newsubject, pn->body?newbody:"", pn->access, pn->visitcount, pn->nid );
+	}
 	
 	if( mysql_real_query( &s, ql, strlen(ql) )){
 #ifdef BBSMAIN
@@ -913,7 +922,7 @@ int del_pc_users(struct pc_users *pn)
 	return 1;
 }
 
-int del_pc_nodes( unsigned long nid )
+int del_pc_nodes( unsigned long nid , int access , int uid )
 {
 		char sql[100];
 		MYSQL s;
@@ -940,7 +949,12 @@ int del_pc_nodes( unsigned long nid )
 #endif
 			return 0;
 		}
-
+		if( access == 0 )
+		{
+			sprintf(sql,"UPDATE users SET nodescount = nodescount - 1 WHERE uid=%d ;",uid );	
+			mysql_real_query( &s, sql, strlen(sql) );
+		}
+		
 		sprintf(sql,"DELETE FROM nodes WHERE nid=%lu;",nid);
 
 		if( mysql_real_query( &s, sql, strlen(sql) ) ){
@@ -992,7 +1006,7 @@ int pc_del_junk(int uid)
 	return 1;
 }
 
-int del_pc_node_junk(unsigned int nid)
+int del_pc_node_junk(unsigned int nid , int access , int uid )
 {
 	MYSQL s;
 	char ql[200];
@@ -1017,7 +1031,12 @@ int del_pc_node_junk(unsigned int nid)
 #endif
 		return 0;
 	}
-
+	
+	if( access == 0 )
+		{
+			sprintf(ql,"UPDATE users SET nodescount = nodescount - 1 WHERE uid=%d ;",uid );	
+			mysql_real_query( &s, ql, strlen(ql) );
+		}
 	sprintf(ql,"UPDATE nodes SET access=4,pid=0,type=0 WHERE nid=%lu",nid);
 	
 	if( mysql_real_query( &s, ql, strlen(ql) )){
