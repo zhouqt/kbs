@@ -438,9 +438,10 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
             *s = i;
             break;
         }
-        if (asciiart) {
+/*        if (asciiart) {
             continue;
-        } else if (*p == '\t') {
+        } else*/
+        if (*p == '\t') {
             db = 0;
             w = (w + 8) / 8 * 8;
             lastspace = i;
@@ -451,11 +452,11 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
         } else if (in_esc) {
             if (strchr("suHmMfL@PABCDJK", *p) != NULL) {
                 if(strchr("suHmABCDJ", *p) != NULL) autoline=0;
-                asciiart = 1;
+                in_esc = 0;
                 continue;
             }
-            if (strchr("[0123456789;,", *p) == NULL)
-                in_esc = 0;
+//            if (strchr("[0123456789;,", *p) == NULL)
+//                in_esc = 0;
         } else if (isprint2(*p)) {
             if (!db) {
                 if(autoline)
