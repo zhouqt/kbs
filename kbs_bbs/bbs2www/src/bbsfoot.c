@@ -62,8 +62,8 @@ setTimeout(\"Time()\",58000)\n\
  */
 
 	printf("<style type=\"text/css\">\nA {color: #0000FF}\n</style>\n");
-  	printf("<body bgcolor=\"#c0c0f0\" onload=\"Init()\"><form name=\"clock\">");
-  	printf("时间[<INPUT TYPE=\"text\" NAME=\"myclock\" size=\"18\" style=\"border: 0\">] ");
+  	printf("<body onload=\"Init()\"><form name=\"clock\">");
+  	printf("时间[<INPUT class=\"readonly\" TYPE=\"text\" NAME=\"myclock\" size=\"18\">] ");
 	/*
   	printf("时间[<span id=\"myclock\"></span>] ");
 	*/
@@ -84,7 +84,7 @@ setTimeout(\"Time()\",58000)\n\
 				mail_total, mail_unread);
 		}
 	}
-	printf("停留[<INPUT TYPE=\"text\" NAME=\"stay\" size=\"10\" style=\"border: 0\">]</form>");
+	printf("停留[<INPUT class=\"readonly\" TYPE=\"text\" NAME=\"stay\" size=\"10\">]</form>");
 	/*
 	printf("停留[<span id=\"stay\"></span>]");
 	*/

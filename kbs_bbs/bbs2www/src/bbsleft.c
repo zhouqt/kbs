@@ -17,17 +17,18 @@ int main()
 	int i;
 
   	init_all();
-	printf("<style type=\"text/css\">A {color: #000080} BODY {BACKGROUND-COLOR: #b0e0b0; FONT-SIZE: 12px;}</style><br>\n");
+	printf("<style type=\"text/css\">A {color: #000080}</style><br>\n");
 	printf("<script src=\"/func.js\"></script>"
-	"<body leftmargin=\"1\" topmargin=\"1\" MARGINHEIGHT=\"1\" MARGINWIDTH=\"1\">");
+	"<body class=\"dark\" leftmargin=\"1\" topmargin=\"1\" MARGINHEIGHT=\"1\" MARGINWIDTH=\"1\">");
 
-	if(!loginok) {
+	if(!loginok)
+	{
                 printf("<center>"
 "               	<form action=\"bbslogin\" method=\"post\" target=\"_top\"><br>"
 "		bbs”√ªßµ«¬º<br>"
-"               	’ ∫≈ <input style=\"height:20px;BACKGROUND-COLOR:e0f0e0\" type=\"text\" name=\"id\" maxlength=\"12\" size=\"8\"><br>"
-"               	√‹¬Î <input style=\"height:20px;BACKGROUND-COLOR:e0f0e0\" type=\"password\" name=\"pw\" maxlength=\"39\" size=\"8\"><br>"
-"               	<input style=\"width:72px; height:22px; BACKGROUND-COLOR:b0e0b0\" type=\"submit\" value=\"µ«¬ºΩ¯’æ\">"
+"               	’ ∫≈ <input class=\"default\" type=\"text\" name=\"id\" maxlength=\"12\" size=\"8\"><br>"
+"               	√‹¬Î <input class=\"default\" type=\"password\" name=\"pw\" maxlength=\"39\" size=\"8\"><br>"
+"               	<input class=\"button\" type=\"submit\" value=\"µ«¬ºΩ¯’æ\">"
 "		</center>");
 	}
 	else
