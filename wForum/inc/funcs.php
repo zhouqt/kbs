@@ -654,12 +654,24 @@ function htmlformat($str,$multi=false) {
     return $str;    
 }
 
-function jumpReferer() {
-	if (!isset($_SERVER["HTTP_REFERER"]) || ( $_SERVER["HTTP_REFERER"]=="") ) {
-		header("Location: index.php");
+function jumpReferer($forcehome = false) {
+	if ($forcehome || !isset($_SERVER["HTTP_REFERER"]) || ( $_SERVER["HTTP_REFERER"]=="") ) {
+		$target = "index.php";
 	} else {
-		header("Location: ".$_SERVER["HTTP_REFERER"]);
+		$target = $_SERVER["HTTP_REFERER"];
 	} 
+	//header("Location: $target");
+?>
+<script language="JavaScript">
+<!--
+    if (top == self) {
+        location.href = "<?php echo $target; ?>";
+    } else {
+        top.location.href = "frames.php?target=<?php echo urlencode($target); ?>";
+    }
+//-->
+</script>
+<?php
 }
 
 

@@ -12,9 +12,5 @@ setcookie(COOKIE_PREFIX."UTMPUSERID",'',time()+36000000,COOKIE_PATH);
 setcookie(COOKIE_PREFIX."LOGINTIME",'',time()+36000000,COOKIE_PATH);
 setcookie(COOKIE_PREFIX."PASSWORD",'',time()+36000000,COOKIE_PATH);
 
-if (isset($_GET["jumphome"])) {
-	header("Location: index.php");
-} else {
-	jumpReferer();
-}
+jumpReferer(isset($_GET["jumphome"]));
 ?>

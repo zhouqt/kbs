@@ -7,6 +7,6 @@
 </head>
 <frameset name="mainframe" frameborder="0" border="1" cols="120,*">
     <frame name="menu" marginwidth="0" marginheight="0" src="bbsleft.php">
-    <frame name="main" marginwidth="0" marginheight="0" src="index.php">
+    <frame name="main" marginwidth="0" marginheight="0" src="<?php echo isset($_GET["target"])?urldecode($_GET["target"]):"index.php"; ?>">
 </frameset>
 </html>

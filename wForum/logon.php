@@ -94,6 +94,13 @@ function doLogon(){
 	head_var();
 ?>
 <meta HTTP-EQUIV=REFRESH CONTENT='2; URL=<?php   echo $comeurl; ?>' >
+<script language="JavaScript">
+<!--
+    if (top != self) {
+        top.menu.location.href = "bbsleft.php";
+    }
+//-->
+</script>
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1 style="width: 75%;">
 <tr>
 <th height=25>登录成功：<?php echo $SiteName; ?>欢迎您的到来</th>
