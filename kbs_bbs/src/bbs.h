@@ -276,8 +276,10 @@ extern int Net_Sleep(int);
 
 #define chartoupper(c)  ((c >= 'a' && c <= 'z') ? c+'A'-'a' : c)
 
+/*
 #define strncasecmp(x,y,n) ci_strncmp(x,y,n)
 #define strcasecmp(x,y) ci_strcmp(x,y)
+*/
 
 #ifdef NULL
 #undef NULL
