@@ -55,8 +55,12 @@ class my_mysql {
 	
 	function my_mysql($dbhost, $dbuser, $dbpasswd, $dbname) {
 		$this->my_err = false;
-		@$this->my_conn = @mysql_connect($dbhost, $dbuser, $dbpasswd) or $this->my_err = true;
-		if (!$this->my_err) @mysql_select_db($dbname) or $this->my_err = true;
+		if (!function_exists('mysql_connect'))  {
+		    $this->my_err = true;
+		} else {
+    		@$this->my_conn = @mysql_connect($dbhost, $dbuser, $dbpasswd) or $this->my_err = true;
+    		if (!$this->my_err) @mysql_select_db($dbname) or $this->my_err = true;
+    	}
 	}
 	
 	function query($sql) {
