@@ -147,7 +147,7 @@ function showSecsJS($secNum,$group,$isFold,$isFav) {
 							$j_lastPosttime = "'" . strftime('%Y-%m-%d %H:%M:%S', intval($articles[0]['origin']['POSTTIME'])) . "'";
 						}
 					} else {
-						$j_nArticles = $j_lastID = $j_lastTitle = $j_lastOwner = $j_lastPosttime = 0;
+						$j_nThreads = $j_nArticles = $j_lastID = $j_lastTitle = $j_lastOwner = $j_lastPosttime = 0;
 					}
 					$j_bm = "'".$brd_bm[$i]."'";
 					echo "boards[boards.length] = new Board($j_isGroup,$j_isUnread,$j_boardName,$j_boardDesc,$j_lastID,$j_lastTitle,$j_lastOwner,$j_lastPosttime,$j_bm,$j_todayNum,$j_nArticles,$j_nThreads,$j_select,$j_npos,$j_bid);\n";
