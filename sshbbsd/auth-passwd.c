@@ -17,6 +17,9 @@ the password is valid for the user.
 /*
  * $Id$
  * $Log$
+ * Revision 1.9  2004/05/08 15:26:51  kcn
+ * remove rsh check,change currentuser
+ *
  * Revision 1.8  2003/12/26 13:20:10  stiger
  * 除了config.h中的部分redefined外没有其他warning了
  *
@@ -190,10 +193,10 @@ int auth_password(const char *server_user, const char *password)
     sinlen = sizeof(struct sockaddr_in);
     getpeername(packet_get_connection_in(), (struct sockaddr *) &sin, (void *) &sinlen);
     host = (char *) inet_ntoa(sin.sin_addr);
-    if(check_ip_acl(currentuser->userid, host)) {
+    if(check_ip_acl(getCurrentUser()->userid, host)) {
     	return 0;
     }
-    if (!checkpasswd2(password, currentuser)) {
+    if (!checkpasswd2(password, getCurrentUser())) {
         logattempt((char *)server_user, (char *)get_canonical_hostname());
         return 0;
     }

@@ -781,38 +781,6 @@ AC_ARG_WITH(login,
   [ AC_MSG_RESULT(no) ]
 )
 
-AC_MSG_CHECKING(whether to use rsh)
-AC_ARG_WITH(rsh, 
-[  --with-rsh=PATH         Specify where to find rsh.
-  --without-rsh           Do not use rsh under any conditions. ],
-[ case "$withval" in
-    no) 
-        AC_MSG_RESULT(no)
-	;;
-    yes) 
-	 AC_MSG_RESULT(yes)
-	 AC_PATH_PROGS(RSH_PATH, remsh resh rsh)
-         AC_DEFINE_UNQUOTED(RSH_PATH, "$RSH_PATH")
-	;;
-    *) 
-       AC_MSG_RESULT($withval)
-       AC_DEFINE_UNQUOTED(RSH_PATH, "$withval")
-       RSH_PATH="$withval"
-       ;;
-  esac ],
-  [ AC_MSG_RESULT(yes)
-    AC_PATH_PROGS(RSH_PATH, remsh resh rsh)
-    AC_DEFINE_UNQUOTED(RSH_PATH, "$RSH_PATH") ]
-)
-
-# Check that we didn't accidentally get ssh as rsh.
-if test -n "$RSH_PATH"; then
-  if test -n "`$RSH_PATH </dev/null 2>&1 | grep listen-port:host:port`"; then
-    AC_MSG_WARN(Found rsh in $RSH_PATH but it appears to actually be ssh.)
-    AC_MSG_ERROR(Probably forgot to specify --with-rsh=PATH-TO-REAL-RSH.)
-  fi
-fi
-
 # Code to permit setting default path for users (alden@math.ohio-state.edu)
 AC_MSG_CHECKING(default path)
 AC_ARG_WITH(path,
