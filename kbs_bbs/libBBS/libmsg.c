@@ -608,31 +608,31 @@ int translate_msg(char* src, struct msghead *head, char* dest)
         case 2:
         case 4:
             if(!head->sent) {
-                sprintf(dest, "[44%sm\x1b[36m%-14.14s[33m(%-12.12s):[37m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
+                sprintf(dest, "[44%sm\x1b[36m%-14.14s[33m(%-12.12s):[37m                                                   [m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
                 sprintf(attstr, "[44%sm[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
             }
             else {
-                sprintf(dest, "\x1b[0;1;32m=>[37m%-12.12s[33m(%-12.12s):[36m\n", head->id, time);
+                sprintf(dest, "\x1b[0;1;32m=>[37m%-12.12s[33m(%-12.12s):[36m                                                   [m\n", head->id, time);
                 sprintf(attstr, "[36;1m");
             }
             break;
         case 3:
-            sprintf(dest, "[44%sm\x1b[33mÕ¾³¤ÓÚ %13.13s Ê±¹ã²¥£º[37m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", time);
+            sprintf(dest, "[44%sm\x1b[33mÕ¾³¤ÓÚ %13.13s Ê±¹ã²¥£º[37m                                                   [m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", time);
             sprintf(attstr, "[44%sm[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
             break;
         case 1:
             if(!head->sent) {
-                sprintf(dest, "[44%sm\x1b[36m%-12.12s(%-12.12s) ÑûÇëÄã[37m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
+                sprintf(dest, "[44%sm\x1b[36m%-12.12s(%-12.12s) ÑûÇëÄã[37m                                               [m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
                 sprintf(attstr, "[44m%s[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
             }
             else {
-                sprintf(dest, "[44%sm\x1b[37mÄã(%-12.12s) ÑûÇë%-12.12s[36m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", time, head->id);
+                sprintf(dest, "[44%sm\x1b[37mÄã(%-12.12s) ÑûÇë%-12.12s[36m                                               [m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", time, head->id);
                 sprintf(attstr, "[44%sm[36m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
             }
 //            space=33;
             break;
         case 5:
-            sprintf(dest, "[45%sm\x1b[36m%-14.14s\x1b[33m(\x1b[36m%-12.12s\x1b[33m):\x1b[37m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
+            sprintf(dest, "[45%sm\x1b[36m%-14.14s\x1b[33m(\x1b[36m%-12.12s\x1b[33m):\x1b[37m                                                   [m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
             sprintf(attstr, "[45%sm[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
 //            space=29;
             break;
