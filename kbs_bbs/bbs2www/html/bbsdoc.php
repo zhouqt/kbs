@@ -21,7 +21,7 @@
 		$usernum = $currentuser["index"];
 		if (bbs_checkreadperm($usernum, $brdnum) == 0)
 			html_error_quit("错误的讨论区");
-		$total = bbs_countarticles($brdnum, $dir_mode["NORMAL"]);
+		$total = bbs_countarticles($brdnum, $dir_modes["NORMAL"]);
 		if ($total <= 0)
 			html_error_quit("本讨论区目前没有文章");
 		if (isset($_GET["start"]))
@@ -40,7 +40,7 @@
 			$start = ($total - $artcnt + 1);
 		if ($start < 0)
 			$start = 1;
-		$articles = bbs_getarticles($board, $start, $artcnt, $dir_mode["NORMAL"]);
+		$articles = bbs_getarticles($board, $start, $artcnt, $dir_modes["NORMAL"]);
 		if ($articles == FALSE)
 			html_error_quit("读取文章列表失败");
 		$bms = explode(" ", trim($brdarr["BM"]));
@@ -141,7 +141,7 @@
 		}
 ?>
 <a href="/cgi-bin/bbs/bbsnot?board=<?php echo $brd_encode; ?>">进版画面</a>
-<a href="/cgi-bin/bbs/bbsgdoc?board=<?php echo $brd_encode; ?>">文摘区</a>
+<a href="/bbsgdoc.php?board=<?php echo $brd_encode; ?>">文摘区</a>
 <?php
 		$ann_path = bbs_getannpath($brdarr["NAME"]);
 		if ($ann_path != FALSE)
