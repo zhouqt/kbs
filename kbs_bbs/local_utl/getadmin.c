@@ -9,16 +9,21 @@ int main(int argc, char **argv)
 {
 	struct userec *x = NULL;
 
-	if (argc != 2)
+	if (argc != 3)
 	{
-		fprintf(stderr, "Usage: %s <username>\n", argv[0]);
+		fprintf(stderr, "Usage: %s --force <username>\n", argv[0]);
+		exit(-1);
+	}
+	if (strcmp(argv[1], "--force"))
+	{
+		fprintf(stderr, "Usage: %s --force <username>\n", argv[0]);
 		exit(-1);
 	}
 	chdir(BBSHOME);
 	resolve_ucache();
 	resolve_utmp();
 
-	getuser(argv[1], &x);
+	getuser(argv[2], &x);
 	if (x == NULL)
 	{
 		fprintf(stderr, "%s not found.\n", argv[1]);
