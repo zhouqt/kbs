@@ -365,21 +365,21 @@ void poststat(int mytype, time_t now, struct tm *ptime)
         writestat(4, blessbucket);
 #endif
     for (i = 0; i < HASHSIZE; i++) {
-		while( bucket[i] ){
-       		for (pp = bucket[i], qq=NULL; pp->next ; qq=pp, pp = pp->next );
-            free(pp);
-			if( qq ) qq->next=NULL;
-			else bucket[i]=NULL;
+		pp=bucket[i];
+		while( pp ){
+			qq=pp;
+			pp=pp->next;
+            free(qq);
 		}
         bucket[i] = NULL;
     }
 #ifdef BLESS_BOARD
     for (i = 0; i < HASHSIZE; i++) {
-		while(blessbucket[i]){
-        	for (pp = blessbucket[i], qq=NULL; pp->next ; qq=pp, pp = pp->next);
-            free(pp);
-			if( qq) qq->next=NULL;
-			else blessbucket[i]=NULL;
+		pp=blessbucket[i];
+		while(pp){
+			qq=pp;
+			pp=pp->next;
+            free(qq);
 		}
         blessbucket[i] = NULL;
     }
