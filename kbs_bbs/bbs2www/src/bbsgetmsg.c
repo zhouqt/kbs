@@ -18,12 +18,6 @@ int main()
 		printf("<body style=\"BACKGROUND-COLOR: #f8f0f0\">");
 		http_quit();
 	}
-	if(loginok)
-	{
-		/*id=currentuser->userid;*/
-		/*dt=abs(time(0) - *(int*)(u_info->from+32))/60;*/
-				set_idle_time(u_info, time(0));
-	}
 	if (receive_webmsg(get_utmpent_num(getcurruinfo()), getcurruserid(), &srcutmp, srcid, buf) == 0)
 	{
 		printf("<bgsound src=\"/sound/msg.wav\">\n");

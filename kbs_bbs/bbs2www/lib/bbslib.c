@@ -494,7 +494,9 @@ int user_init(struct userec **x, struct user_info **y)
 	if (id[0] == '\0')
 		return -1;
 
-	if (www_user_init(i,id, key, x, y)==0) return 1;
+	if (www_user_init(i,id, key, x, y)==0
+			&& strcasecmp("guest", currentuser->userid))
+		return 1;
 	return 0;
 }
 
@@ -624,7 +626,8 @@ int write_file2(FILE *fp, FILE *fp2)
 	{
 		if(fgets(buf3, sizeof(buf3), fp2) == NULL)
 			break;
-		if ((ptr = strrchr(buf3, '\r')) != NULL)
+		ptr = strrchr(buf3, '\r');
+		if (ptr != NULL)
 		{
 			if (*(ptr+1) == '\n')
 			{

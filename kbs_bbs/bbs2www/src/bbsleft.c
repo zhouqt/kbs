@@ -23,7 +23,7 @@ int main()
 	"<body class=\"dark\" leftmargin=\"5\" topmargin=\"1\" MARGINHEIGHT=\"1\" MARGINWIDTH=\"1\">");
 	printf("<table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n");
 	printf("<tr><td>");
-	if(!loginok)
+	/*if(!loginok)
 	{
 		printf( "<form action=\"/bbslogin.jsp\" method=\"post\" target=\"_top\"><br>\n"
 NAME_BBS_CHINESE "用户登录<br>\n"
@@ -32,7 +32,7 @@ NAME_BBS_CHINESE "用户登录<br>\n"
 "<input class=\"button\" type=\"submit\" value=\"登录进站\">\n"
 "</form>\n");
 	}
-	else
+	else*/
 	{
         char buf[256]="未注册用户";
 		if (currentuser==NULL)
