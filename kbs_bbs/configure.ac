@@ -117,7 +117,7 @@ AC_FUNC_UTIME_NULL
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([alarm atexit bzero dup2 ftruncate getcwd gethostbyaddr gethostbyname gethostname inet_ntoa isascii memchr memset mkdir munmap rmdir select socket strcasecmp strcasestr strchr strdup strerror strncasecmp strpbrk strrchr strstr strtol utime memmem flock inet_aton inet_pton isblank])
 AC_CHECK_TYPES(bool)
-AC_CHECK_TYPES(sig_t)
+AC_CHECK_TYPES(sig_t,,,[#include <signal.h>])
 
 dnl Select Error language
 AC_ARG_ENABLE(site,

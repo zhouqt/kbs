@@ -1516,7 +1516,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
             sprintf(genbuf, "%s%s", buf, digest.filename);
             bmlog(currentuser->userid, currboard, 3, 1);
             if (dashf(genbuf)) {
-		return DONOTHING;
+				return DONOTHING;
             } else {
                 digest.accessed[0] = 0;
                 digest.accessed[1] = 0;
@@ -1538,7 +1538,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
 #endif
                     return PARTUPDATE;
                 }
-		link(&genbuf[512], genbuf);
+				link(&genbuf[512], genbuf);
                 append_record(buf, &digest, sizeof(digest));    /* 文摘目录下添加 .DIR */
             }
         }

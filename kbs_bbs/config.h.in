@@ -56,6 +56,9 @@
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
+/* Define to 1 if you have the `flock' function. */
+#undef HAVE_FLOCK
+
 /* Define to 1 if you have the `fork' function. */
 #undef HAVE_FORK
 
@@ -80,14 +83,23 @@
 /* Define to 1 if you have the `getpagesize' function. */
 #undef HAVE_GETPAGESIZE
 
+/* Define to 1 if you have the `inet_aton' function. */
+#undef HAVE_INET_ATON
+
 /* Define to 1 if you have the `inet_ntoa' function. */
 #undef HAVE_INET_NTOA
+
+/* Define to 1 if you have the `inet_pton' function. */
+#undef HAVE_INET_PTON
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
 /* Define to 1 if you have the `isascii' function. */
 #undef HAVE_ISASCII
+
+/* Define to 1 if you have the `isblank' function. */
+#undef HAVE_ISBLANK
 
 /* Define to 1 if you have the `dgc' library (-ldgc). */
 #undef HAVE_LIBDGC
@@ -161,6 +173,9 @@
 
 /* Define to 1 if you have the <sgtty.h> header file. */
 #undef HAVE_SGTTY_H
+
+/* Define to 1 if the system has the type `sig_t'. */
+#undef HAVE_SIG_T
 
 /* Define to 1 if you have the `socket' function. */
 #undef HAVE_SOCKET
