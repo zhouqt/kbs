@@ -391,11 +391,13 @@ static int read_getdata(struct _select_def *conf, int pos, int len)
 
         if (pos>count+dingcount)
             return DIRCHANGED;
-        if (lseek(arg->fd, arg->ssize * (pos - 1), SEEK_SET) != -1) {
+	if (pos<=count) {
+          if (lseek(arg->fd, arg->ssize * (pos - 1), SEEK_SET) != -1) {
             if ((n = read(arg->fd, arg->data, arg->ssize * len)) != -1) {
                 entry=(n / arg->ssize);
             }
-        }
+          }
+	}
         
         /* 获得置顶的数据*/
         if (dingcount) {
@@ -403,15 +405,26 @@ static int read_getdata(struct _select_def *conf, int pos, int len)
                 int dingfd;
                 n=0;
                 if ((dingfd=open(arg->dingdirect,O_RDONLY,0))!=-1) {
-                    if ((n = read(dingfd, arg->data+arg->ssize*entry, arg->ssize * (len-entry))) != -1) {
+		    if (pos>count) {
+                       lseek(dingfd, (pos-count-1)*arg->ssize,SEEK_SET);
+                       n=read(dingfd, arg->data, arg->ssize * len);
+		       entry=pos-count;
+		    }
+		    else
+                       n=read(dingfd, arg->data+arg->ssize*entry, arg->ssize * (len-entry));
+		    if (n!=-1) {
                         n/=arg->ssize;
-                    }
+                    } else n=0;
                     close(dingfd);
                 }
-                if ((n!=dingcount)&&(n!=(len-entry))) {
+                if (pos<=count) {
+		  if ((n!=dingcount)&&(n!=(len-entry))) {
                     /*置顶数据肯定出问题*/
                     dingcount=n;
-                }
+                  }
+	        } else {
+                    dingcount=n+pos-count-1;
+		}
             }
             /*加上置顶个数*/
             count+=dingcount;
