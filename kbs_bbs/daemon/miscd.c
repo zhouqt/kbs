@@ -184,7 +184,7 @@ int getrequest(int m_socket)
 		cmd=tmpbuf;
                 username = strtok(NULL," ");
                 pnum = strtok(NULL," ");
-		num = atoi(pnum);
+		num = pnum?atoi(pnum):0;
                 if (strcmp(tmpbuf,"QUIT")==0) exit(0);
                 if (strcmp(tmpbuf,"NEW") == 0) break;
                 if (strcmp(tmpbuf,"SET") == 0) break;
