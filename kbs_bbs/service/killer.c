@@ -11,10 +11,75 @@ struct room_struct {
     unsigned int level;
     int flag;
     int people;
+    int maxpeople;
+};
+
+#define PEOPLE_SPECTATOR 01
+#define PEOPLE_KILLER 02
+#define PEOPLE_ALIVE 04
+#define PEOPLE_ROOMOP 010
+
+struct people_struct {
+    char id[IDLEN+2];
+    char nick[NAMELEN];
+    int flag;
+    int pid;
+};
+
+#define INROOM_STOP 1
+#define INROOM_NIGHT 2
+#define INROOM_DAY 3
+
+struct inroom_struct {
+    char title[NAMELEN];
+    int status;
+    struct people_struct peoples[100];
 };
 
 struct room_struct * rooms;
 int * roomst;
+struct inroom_struct inrooms;
+
+char msgs[200][80];
+int msgst;
+
+void load_msgs()
+{
+    FILE* fp;
+    int i;
+    char filename[80], buf[80];
+    msgst=0;
+    sprintf(filename, "home/%c/%s/.INROOMMSG", toupper(currentuser->userid[0]), currentuser->userid);
+    fp = fopen(filename, "r");
+    if(fp) {
+        while(!feof(fp)) {
+            fgets(buf, 79, fp);
+            if(buf[0]) {
+                if(msgst==200) {
+                    msgst--;
+                    for(i=0;i<msgst;i++)
+                        strcpy(msgs[i],msgs[i+1]);
+                }
+                strcpy(msgs[msgst],buf);
+                msgst++;
+            }
+        }
+        fclose(fp);
+    }
+}
+
+void send_msg(char* id, char* msg)
+{
+    FILE* fp;
+    int i;
+    char filename[80], buf[80];
+    sprintf(filename, "home/%c/%s/.INROOMMSG", toupper(id[0]), id);
+    fp = fopen(filename, "a");
+    if(fp) {
+        fprintf(fp, "%s\n", msg);
+        fclose(fp);
+    }
+}
 
 int add_room(struct room_struct * r)
 {
@@ -40,11 +105,94 @@ int del_room(struct room_struct * r)
     return 0;
 }
 
+void load_inroom(struct room_struct * r)
+{
+    int fd;
+    struct flock ldata;
+    char filename[80];
+    sprintf(filename, "home/%c/%s/.INROOM", toupper(r->creator[0]), r->creator);
+    if((fd = open(filename, O_RDONLY, 0644))!=-1) {
+        ldata.l_type=F_RDLCK;
+        ldata.l_whence=0;
+        ldata.l_len=0;
+        ldata.l_start=0;
+        if(fcntl(fd, F_SETLKW, &ldata)!=-1){
+            read(fd, &inrooms, sizeof(struct inroom_struct));
+            	
+            ldata.l_type = F_UNLCK;
+            fcntl(fd, F_SETLKW, &ldata);
+        }
+        close(fd);
+    }
+}
+
+void save_inroom(struct room_struct * r)
+{
+    int fd;
+    struct flock ldata;
+    char filename[80];
+    sprintf(filename, "home/%c/%s/.INROOM", toupper(r->creator[0]), r->creator);
+    if((fd = open(filename, O_WRONLY|O_CREAT, 0644))!=-1) {
+        ldata.l_type=F_WRLCK;
+        ldata.l_whence=0;
+        ldata.l_len=0;
+        ldata.l_start=0;
+        if(fcntl(fd, F_SETLKW, &ldata)!=-1){
+            write(fd, &inrooms, sizeof(struct inroom_struct));
+            	
+            ldata.l_type = F_UNLCK;
+            fcntl(fd, F_SETLKW, &ldata);
+        }
+        close(fd);
+    }
+}
+
+int change_fd;
+
+void start_change_inroom(struct room_struct * r)
+{
+    struct flock ldata;
+    char filename[80];
+    sprintf(filename, "home/%c/%s/.INROOM", toupper(r->creator[0]), r->creator);
+    if((change_fd = open(filename, O_RDWR|O_CREAT, 0644))!=-1) {
+        ldata.l_type=F_WRLCK;
+        ldata.l_whence=0;
+        ldata.l_len=0;
+        ldata.l_start=0;
+        if(fcntl(change_fd, F_SETLKW, &ldata)!=-1){
+            lseek(change_fd, 0, SEEK_SET);
+            read(change_fd, &inrooms, sizeof(struct inroom_struct));
+        }
+    }
+}
+
+void end_change_inroom()
+{
+    struct flock ldata;
+    ldata.l_whence=0;
+    ldata.l_len=0;
+    ldata.l_start=0;
+    lseek(change_fd, 0, SEEK_SET);
+    write(change_fd, &inrooms, sizeof(struct inroom_struct));
+    	
+    ldata.l_type = F_UNLCK;
+    fcntl(change_fd, F_SETLKW, &ldata);
+    close(change_fd);
+}
+
 int can_see(struct room_struct * r)
 {
     if(r->level&currentuser->userlevel!=r->level) return 0;
     if(r->style!=1) return 0;
     if(r->flag&ROOM_SECRET&&!HAS_PERM(currentuser, PERM_SYSOP)) return 0;
+    return 1;
+}
+
+int can_enter(struct room_struct * r)
+{
+    if(r->level&currentuser->userlevel!=r->level) return 0;
+    if(r->style!=1) return 0;
+    if(r->flag&ROOM_LOCKED&&!HAS_PERM(currentuser, PERM_SYSOP)) return 0;
     return 1;
 }
 
@@ -72,13 +220,72 @@ struct room_struct * find_room(char * s)
 {
     int i;
     struct room_struct * r2;
-    for(i=0;i<room_count();i++) {
-        r2 = room_get(i);
-        if(!strcmp(r2->name, s)) {
+    for(i=0;i<*roomst;i++) {
+        r2 = rooms+i;
+        if(!can_enter(r2)) continue;
+        if(!strcmp(r2->name, s))
             return r2;
-        }
     }
     return NULL;
+}
+
+struct room_struct * myroom;
+
+void refreshit()
+{
+    int i,j;
+    for(i=0;i<myroom->people;i++) {
+        move(i+2,0);
+        prints(inrooms->peoples[i].id);
+    }
+    for(i=2;i<=t_lines-2;i++) 
+    if(msgst-1-(t_lines-2-i)>=0)
+    {
+        move(i,20);
+        prints(msgs[msgst-1-(t_lines-2-i)]);
+    }
+}
+
+void room_refresh(int signo)
+{
+    signal(SIGUSR1, room_refresh);
+
+    load_inroom(myroom);
+    load_msgs();
+    refreshit();
+}
+
+void join_room(struct room_struct * r)
+{
+    char buf[80];
+    int i;
+    myroom = r;
+    signal(SIGUSR1, room_refresh);
+    i=r->people;
+    start_change_inroom(r);
+    inrooms.peoples[i].flag = 0;
+    strcpy(inrooms.peoples[i].id, currentuser->userid);
+    inrooms.peoples[i].nick[0]=0;
+    inrooms.peoples[i].pid = uinfo.pid;
+    if(i==0) {
+        inrooms.status = INROOM_STOP;
+        inrooms.title = "我杀我杀我杀杀杀";
+        inrooms.peoples[i].flag = PEOPLE_ROOMOP;
+    }
+    end_change_inroom();
+    r->people++;
+
+    room_refresh(0);
+    while(1){
+        getdata(24, 0, "输入:", buf, 75, 1, NULL, 1);
+        if(!buf[0]) break;
+        for(i=0;i<myroom->people;i++) {
+            send_msg(inrooms->peoples[i].id, buf);
+            kill(inrooms->peoples[i].pid, SIGUSR1);
+        }
+    }
+    r->people--;
+    signal(SIGUSR1, talk_request);
 }
 
 static int room_list_refresh(struct _select_def *conf)
@@ -103,8 +310,23 @@ static int room_list_show(struct _select_def *conf, int i)
 
 static int room_list_select(struct _select_def *conf)
 {
-
-    return SHOW_REFRESH;
+    struct room_struct * r = room_get(conf->pos-1), * r2;
+    if((r2=find_room(r->name))==NULL) {
+        move(0, 0);
+        clrtoeol();
+        prints(" 该房间已被锁定!");
+        refresh(); sleep(1);
+        return SHOW_REFRESH;
+    }
+    if(r2->people==r2->maxpeople) {
+        move(0, 0);
+        clrtoeol();
+        prints(" 该房间人数已满");
+        refresh(); sleep(1);
+        return SHOW_REFRESH;
+    }
+    join_room(find_room(name));
+    return SHOW_DIRCHANGE;
 }
 
 static int room_list_getdata(struct _select_def *conf, int pos, int len)
@@ -136,16 +358,9 @@ static int room_list_prekey(struct _select_def *conf, int *key)
     return SHOW_CONTINUE;
 }
 
-void join_room(struct room_struct * r)
-{
-    r->people++;
-
-    r->people--;
-}
-
 static int room_list_key(struct _select_def *conf, int key)
 {
-    struct room_struct r;
+    struct room_struct r, *r2;
     char name[40];
     switch(key) {
     case 'a':
@@ -156,6 +371,7 @@ static int room_list_key(struct _select_def *conf, int key)
         r.style = 1;
         r.flag = 0;
         r.people = 0;
+        r.maxpeople = 100;
         if(add_room(&r)==-1) {
             move(0, 0);
             clrtoeol();
@@ -168,10 +384,17 @@ static int room_list_key(struct _select_def *conf, int key)
     case 'J':
         getdata(0, 0, "房间名:", name, 38, 1, NULL, 1);
         if(!name[0]) return SHOW_REFRESH;
-        if(find_room(name)==-1) {
+        if((r2=find_room(name))==NULL) {
             move(0, 0);
             clrtoeol();
             prints(" 没有找到该房间!");
+            refresh(); sleep(1);
+            return SHOW_REFRESH;
+        }
+        if(r2->people==r2->maxpeople) {
+            move(0, 0);
+            clrtoeol();
+            prints(" 该房间人数已满");
             refresh(); sleep(1);
             return SHOW_REFRESH;
         }
@@ -224,7 +447,7 @@ int killer_main()
     shm=attach_shm("KILLER_SHMKEY", 3451, sizeof(struct room_struct)*1000+4, &i);
     rooms = shm+4;
     roomst = shm;
-    if(i) roomst = 0;
+    if(i) (*roomst) = 0;
     oldmode = uinfo.mode;
     modify_user_mode(KILLER);
     choose_room();
