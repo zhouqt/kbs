@@ -93,7 +93,7 @@ bool is_sorted_mode(int mode)
 
 /** 初始化filearg结构
   */
-void malloc_write_dir_arg(struct write_dir_arg*filearg)
+void init_write_dir_arg(struct write_dir_arg*filearg)
 {
     filearg->filename=NULL;
     filearg->fileptr=MAP_FAILED;
@@ -106,7 +106,7 @@ void malloc_write_dir_arg(struct write_dir_arg*filearg)
 
 /** 初始化filearg结构,把各个东西mmap上
   */
-int init_write_dir_arg(struct write_dir_arg*filearg)
+int malloc_write_dir_arg(struct write_dir_arg*filearg)
 {
     if (filearg->fileptr==MAP_FAILED) {
         if (filearg->fd==-1) {
@@ -160,7 +160,7 @@ int prepare_write_dir(struct write_dir_arg * filearg,struct fileheader* fileinfo
     BBS_TRY {
         int count;
         struct fileheader* nowFh;
-        if (init_write_dir_arg(filearg)!=0)
+        if (malloc_write_dir_arg(filearg)!=0)
             BBS_RETURN(-1);
         count=filearg->size/sizeof(struct fileheader);
         if (filearg->needlock)
@@ -223,7 +223,7 @@ int del_origin(char *board, struct fileheader *fileinfo)
 		return 0;
 	}
 
-   	malloc_write_dir_arg(&dirarg);
+   	init_write_dir_arg(&dirarg);
 
     setbdir(DIR_MODE_ORIGIN, olddirect, board);
     dirarg.filename=olddirect;
@@ -2367,7 +2367,7 @@ int change_post_flag(struct write_dir_arg* dirarg,int currmode, struct boardhead
         /*需要更新.DIR文件*/
         char dirpath[MAXPATH];
         struct write_dir_arg dotdirarg;
-        malloc_write_dir_arg(&dotdirarg);
+        init_write_dir_arg(&dotdirarg);
         setbdir(DIR_MODE_NORMAL, dirpath, board->filename);
         dotdirarg.filename=dirpath;
         change_post_flag(&dotdirarg, DIR_MODE_NORMAL, board, originFh, flag,data,false);

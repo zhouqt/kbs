@@ -16,7 +16,7 @@ int change_flag(struct fileheader*f,char* board,char*dirdir,int ent, int flag)
         data.accessed[0] = ~(f->accessed[0]);
         data.accessed[1] = ~(f->accessed[1]);
         bh=getbcache(board);
-        malloc_write_dir_arg(&dirarg);
+        init_write_dir_arg(&dirarg);
         dirarg.filename=dirdir;
         dirarg.ent = ent;
         if(change_post_flag(&dirarg, 

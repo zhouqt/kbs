@@ -377,7 +377,7 @@ int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,long f
     if (!isbm)
         return DONOTHING;
     data=*fileinfo;
-    malloc_write_dir_arg(&dirarg);
+    init_write_dir_arg(&dirarg);
     dirarg.fd=arg->fd;
     dirarg.ent = conf->pos;
     ptr=flaglist;
@@ -2693,7 +2693,7 @@ int edit_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
         if (attachpos!=fileinfo->attachment) {
             struct write_dir_arg dirarg;
             fileinfo->attachment=attachpos;
-            malloc_write_dir_arg(&dirarg);
+            init_write_dir_arg(&dirarg);
             dirarg.fd=arg->fd;
             dirarg.ent = conf->pos;
             change_post_flag(&dirarg, arg->mode, currboard,  
@@ -3010,7 +3010,7 @@ int del_range(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
         struct write_dir_arg dirarg;
 	if (!mailmode)
             bmlog(currentuser->userid, currboard->filename, 5, 1);
-        malloc_write_dir_arg(&dirarg);
+        init_write_dir_arg(&dirarg);
         dirarg.fd=arg->fd;
         dirarg.filename=arg->direct;
         result = delete_range(&dirarg, inum1, inum2, idel_mode,arg->mode,currboard);
@@ -3079,7 +3079,7 @@ int del_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     }
 
     if (arg->writearg==NULL) {
-        malloc_write_dir_arg(&delarg);
+        init_write_dir_arg(&delarg);
         if ((arg->mode!=DIR_MODE_NORMAL)&& arg->mode != DIR_MODE_DIGEST) {
             setbdir(DIR_MODE_NORMAL, direct, currboard->filename);
             delarg.filename=direct;
@@ -3132,7 +3132,7 @@ int Save_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     if (ret) {
         struct write_dir_arg dirarg;
         struct fileheader data;
-        malloc_write_dir_arg(&dirarg);
+        init_write_dir_arg(&dirarg);
         dirarg.fd=arg->fd;
         dirarg.ent = conf->pos;
         data.accessed[0]=FILE_IMPORTED;
@@ -3159,7 +3159,7 @@ int Semi_save(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     if (ret) {
         struct write_dir_arg dirarg;
         struct fileheader data;
-        malloc_write_dir_arg(&dirarg);
+        init_write_dir_arg(&dirarg);
         dirarg.fd=arg->fd;
         dirarg.ent = conf->pos;
         data.accessed[0]=FILE_IMPORTED;
@@ -3356,14 +3356,14 @@ int range_flag(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
         data.accessed[0]=0xff;
         data.accessed[1]=0xff;
 
-        malloc_write_dir_arg(&dirarg);
+        init_write_dir_arg(&dirarg);
         dirarg.fd=arg->fd;
         dirarg.filename=arg->direct;
         dirarg.ent = i;
         dirarg.needlock=false;
         data.accessed[0]=FILE_IMPORTED;
         flock(arg->fd,LOCK_EX);
-        init_write_dir_arg(&dirarg);
+        malloc_write_dir_arg(&dirarg);
         change_post_flag(&dirarg, 
             arg->mode,
             currboard, 
@@ -5333,7 +5333,7 @@ static int SR_BMFunc(struct _select_def* conf, struct fileheader* fh, void* extr
 
     func_arg.action=BMch;
     ent=conf->pos;
-    malloc_write_dir_arg(&dirarg);
+    init_write_dir_arg(&dirarg);
     dirarg.fd=arg->fd;
     dirarg.needlock=false;
     arg->writearg=&dirarg;

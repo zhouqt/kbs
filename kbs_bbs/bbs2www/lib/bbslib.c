@@ -3396,7 +3396,7 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
         if (!chk_currBM(bm_str, currentuser)) {
             return 1;
         }
-    malloc_write_dir_arg(&delarg);
+    init_write_dir_arg(&delarg);
     setbdir(DIR_MODE_NORMAL, direct, bp->filename);
     delarg.filename=direct;
     delarg.ent=ent;

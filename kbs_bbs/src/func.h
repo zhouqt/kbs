@@ -324,8 +324,8 @@ void unlock_sem_check(int lockid);
       bool needclosefd; //释放结构的时候是否需要关闭文件，内部使用
       bool needlock; //是否需要自己lock文件
     };
-    void malloc_write_dir_arg(struct write_dir_arg*filearg);
-    int init_write_dir_arg(struct write_dir_arg*filearg);
+    void init_write_dir_arg(struct write_dir_arg*filearg);
+    int malloc_write_dir_arg(struct write_dir_arg*filearg);
     void free_write_dir_arg(struct write_dir_arg*filearg);
 
     /*加入置顶*/
