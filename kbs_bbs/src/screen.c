@@ -551,11 +551,11 @@ int n ;
 	            	slp->data[reg_col++]=(unsigned char)'';
             } else if (!isprint2(*str)) 
                 slp->data[reg_col++]=(unsigned char)'*';
-            } else 
+            else 
             	slp->data[reg_col++]=*(str);
-			str++;
+		str++;
             if(reg_col >= scr_cols) {
-				DO_MODIFY;
+		DO_MODIFY;
                 DO_CRLF;
                 break;
             }
