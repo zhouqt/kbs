@@ -693,7 +693,8 @@ long insert_from_fp(FILE *fp, long * attach_length)
 long read_file(char *filename,long *attach_length)
 {
     FILE *fp;
-    long ret;
+    long ret = 0;
+	struct stat fs;
 
     if (currline == NULL)
         vedit_init();
@@ -705,7 +706,9 @@ long read_file(char *filename,long *attach_length)
         indigestion(4);
         abort_bbs(0);
     }
-    ret=insert_from_fp(fp, attach_length);
+	fstat(fileno(fp), &fs);
+	if (fs.st_size != 0)
+    	ret=insert_from_fp(fp, attach_length);
     fclose(fp);
     return ret;
 }
