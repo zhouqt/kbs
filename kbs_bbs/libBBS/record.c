@@ -638,3 +638,54 @@ int delete_record(char *filename, int size, int id, RECORD_FUNC_ARG filecheck, v
 
     return ret;
 }
+
+#ifdef TOP_MOVE
+int move_record(char *filename, int size, int id, int toid, RECORD_FUNC_ARG filecheck, void *arg)
+{
+    int fdr;
+    off_t filesize;
+    char *ptr;
+    int ret;
+
+    if (id <= 0 || toid <= 0 || toid == id )
+        return 0;
+    BBS_TRY {
+        if (safe_mmapfile(filename, O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &ptr, &filesize, &fdr) == 0)
+            BBS_RETURN(-1);
+        ret = 0;
+        if (id * size > filesize || toid * size > filesize) {
+            ret = -2;
+        } else {
+            if (filecheck) {
+               if (!(*filecheck) (ptr + (id - 1) * size, arg)) {
+                  for (id = 0; id * size < filesize; id++)
+                      if ((*filecheck) (ptr + (id - 1) * size, arg))
+                         break;
+                      if (id * size >= filesize)
+                         ret = -2;
+               }
+            }
+        }
+        if (ret == 0) {
+			char *idptr;
+			idptr = (char *)malloc(size);
+			memcpy(idptr, ptr + (id - 1) * size, size);
+
+			if (id > toid){ 
+				memmove(ptr + toid * size, ptr + (toid - 1) * size, (id - toid) * size);
+			}else{
+				memmove(ptr + (id - 1) * size, ptr + id * size, (toid - id) * size);
+			}
+			memcpy(ptr + (toid - 1) * size, idptr, size);
+			free(idptr);
+		}
+	}
+	BBS_CATCH {
+		ret = -3;
+	}
+	BBS_END end_mmapfile(ptr, filesize, -1);
+	close(fdr);
+	
+	return ret;
+}
+#endif
