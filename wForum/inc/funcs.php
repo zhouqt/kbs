@@ -26,7 +26,7 @@ $StartTime=getmicrotime();
 // NOTE: If you want to statically link smth_bbs phpbbslib into php,
 //       you *MUST* set enable_dl variable to Off in php.ini file.
 if (ini_get("enable_dl") == 1)
-	dl("libphpbbslib.so");
+	@dl("libphpbbslib.so");
 
 
 global $SQUID_ACCL;
