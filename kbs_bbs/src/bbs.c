@@ -4277,9 +4277,11 @@ int m_template()
 		char ans[3];
 		clear();
         getdata(t_lines - 1, 0, "本版现在没有模板，需要现在增加吗(Y/N)? [N]: ", ans, sizeof(ans), DOECHO, NULL, true);
-        if (ans[0] != 'Y' && ans[0] != 'y')
+        if (ans[0] != 'Y' && ans[0] != 'y'){
+			free( ptemplate);
+			ptemplate = NULL;
 			return FULLUPDATE;
-
+		}
 		if( tmpl_add() < 0 ){
 			free( ptemplate);
 			ptemplate = NULL;
