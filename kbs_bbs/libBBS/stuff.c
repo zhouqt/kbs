@@ -769,7 +769,7 @@ void bbssettime(time_t now)
 
 static void escape_filename(char *fn)
 {
-     static const  char invalid[] = {' /','\\','!','&','|','*','?','\`','\'','\"',';','<','>'};
+     static const  char invalid[] = {' /','\\','!','&','|','*','?','\`','\'','\"',';','<','>',':'};
      int i,j;
      for (i=0;i<strlen(fn);i++)
      	  for (j=0;j<sizeof(invalid);j++)
