@@ -5,6 +5,8 @@
 	else
 	{
 		html_init("gb2312");
+        if ($currentuser["userid"]=="guest")
+            html_error_quit("匆匆过客不能设定好友");
 ?>
 <body>
 <center><?php echo BBS_FULL_NAME; ?> -- 删除好友 [使用者: <?php echo $currentuser["userid"]; ?>]<hr color="green">

@@ -51,7 +51,7 @@ else
 <center>
 <a href="/bbspstmail.php?userid=<?php echo $lookupuser["userid"];?>&title=没主题">[写信问候]</a>
 <a href="/bbssendmsg.php?destid=<?php echo $lookupuser["userid"];?>">[发送讯息]</a>
-<a href="bbsfadd?userid=<?php echo $lookupuser["userid"];?>">[加入好友]</a>
+<a href="/bbsfadd.php?userid=<?php echo $lookupuser["userid"];?>">[加入好友]</a>
 <a href="/bbsfdel.php?userid=<?php echo $lookupuser["userid"];?>">[删除好友]</a>
 <br>
 </center>

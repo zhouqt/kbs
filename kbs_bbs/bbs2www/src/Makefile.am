@@ -1,6 +1,6 @@
 bindir=@CGIPATH@
 bin_PROGRAMS = bbsusr bbsbrdadd bbsall bbsanc bbs0an \
-	  bbsfadd bbsfriend bbspwd bbsinfo \
+	  bbsfriend bbspwd bbsinfo \
 	  bbsmybrd \
 	  bbssnd \
 	  bbssndmail bbschat bbssel \

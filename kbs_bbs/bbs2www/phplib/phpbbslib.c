@@ -82,6 +82,7 @@ static PHP_FUNCTION(bbs_getarticles);
 static PHP_FUNCTION(bbs_getfriends);
 static PHP_FUNCTION(bbs_countfriends);
 static PHP_FUNCTION(bbs_delete_friend);
+static PHP_FUNCTION(bbs_add_friend);
 static PHP_FUNCTION(bbs_get_records_from_id);
 static PHP_FUNCTION(bbs_get_records_from_num);
 static PHP_FUNCTION(bbs_get_filename_from_num);
@@ -223,6 +224,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_getfriends, NULL)
         PHP_FE(bbs_countfriends, NULL)
         PHP_FE(bbs_delete_friend, NULL)
+        PHP_FE(bbs_add_friend, NULL)
         PHP_FE(bbs_get_records_from_id, NULL)
         PHP_FE(bbs_get_records_from_num, NULL)
         PHP_FE(bbs_get_filename_from_num, NULL)
@@ -1993,6 +1995,48 @@ static PHP_FUNCTION(bbs_delete_friend)
 	}
 }
 
+static PHP_FUNCTION(bbs_add_friend)
+{
+    char *userid;
+    int userid_len;
+	char *exp;
+	int exp_len;
+    int ac = ZEND_NUM_ARGS();
+    char buf[STRLEN];
+    struct friends fh;
+	struct userec *lookupuser;
+	int n;
+
+    if (ac != 2 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "ss", &userid, &userid_len, &exp, &exp_len) == FAILURE) {
+        WRONG_PARAM_COUNT;
+	}
+
+    memset(&fh, 0, sizeof(fh));
+    sethomefile(buf, currentuser->userid, "friends");
+
+    if ((!HAS_PERM(currentuser, PERM_ACCOUNTS) && !HAS_PERM(currentuser, PERM_SYSOP))
+        && (get_num_records(buf, sizeof(struct friends)) >= MAXFRIENDS)) {
+		RETURN_LONG(-1);
+    }
+
+	if(! getuser(userid,&lookupuser))
+		RETURN_LONG(-4);
+
+    n = search_record(buf, &fh, sizeof(fh), cmpfnames2, lookupuser->userid);
+    if (n > 0)
+		RETURN_LONG(-2);
+
+    strsncpy(fh.id, lookupuser->userid, sizeof(fh.id));
+    strsncpy(fh.exp, exp, sizeof(fh.exp));
+
+    n = append_record(buf, &fh, sizeof(friends_t));
+
+    if (n != -1)
+		RETURN_LONG(0);
+
+	RETURN_LONG(-3);
+}
+
 /*
  * stiger: getfriends
  */
@@ -3642,7 +3686,6 @@ static PHP_FUNCTION(bbs_checknewmail)
 {
 	char *userid;
 	int userid_len;
-    struct userec *lookupuser;
 	char qry_mail_dir[STRLEN];
 
     if (zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) != SUCCESS) {
