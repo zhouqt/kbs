@@ -926,6 +926,68 @@ int get_records_from_id(int fd, int id, fileheader_t *buf, int num, int *index)
 	return ret;
 }
 
+struct dir_thread_set {
+    fileheader_t *records;
+    int num;
+};
+
+static int 
+get_dir_threads(int fd, fileheader_t * base, int ent, int total, bool match, void *arg)
+{
+    if (match) {
+        struct dir_thread_set *ts = (struct dir_thread_set *) arg;
+        int i;
+        int off = 1;
+        int count = 0;
+		int start = ent + 1;
+		int end = total;
+
+		if (ts->num < 0)
+		{
+			off = -1;
+			start = 1;
+			end = ent - 1;
+			ts->num = -ts->num;
+		}
+        for (i = start; i < end; i++) {
+			if (count == ts->num)
+				break;
+			if (base[i-1].groupid == base[ent-1].groupid)
+			{
+				memcpy(ts->records + i, base + off - 1, sizeof(fileheader_t));
+				count++;
+			}
+        }
+        return count;
+    }
+
+    return 0;
+}
+
+/* 正数 num 表示取 id 的同主题后 num 篇文章；
+   负数 num 表示取 id 的同主题前 |num| 篇文章 */
+int 
+get_threads_from_id(const char *filename, int id, fileheader_t *buf, int num)
+{
+    struct dir_thread_set ts;
+    fileheader_t key;
+	int fd;
+	int ret;
+
+	if (num == 0)
+		return 0;
+    ts.records = buf;
+    ts.num = num;
+    bzero(&key, sizeof(key));
+    key.id = id;
+	if ((fd = open(filename, O_RDWR, 0644)) < 0)
+		return -1;
+	ret = mmap_dir_search(fd, &key, get_dir_threads, &ts);
+	close(fd);
+	
+	return ret;
+}
+
 //土鳖两分法，    by yuhuan
 //请flyriver同学或其他人自行整合
 int
