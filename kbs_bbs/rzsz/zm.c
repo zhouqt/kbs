@@ -542,8 +542,8 @@ int zrdata(char *buf, int length, size_t * bytes_received)
     register int d;
 
     *bytes_received = 0;
-    if (Rxframeind == ZBIN32)
-        return zrdat32(buf, length, bytes_received);
+//    if (Rxframeind == ZBIN32)
+//        return zrdat32(buf, length, bytes_received);
 
     crc = 0;
     end = buf + length;
