@@ -1912,7 +1912,7 @@ int lastlevel, lastbmonly;
                     me.page = 9999;
                     break;
                 } else
-                    sprintf(fname, "%s/%s", path, me.item[me.now]->fname);
+                    snprintf(fname, sizeof(fname), "%s/%s", path, me.item[me.now]->fname);
                 if (dashf(fname)) {
                     /*
                      * ansimore( fname, true ); 
