@@ -14,11 +14,11 @@
 #define W_DELIM	   128
 #define L_DELIM    10
 
-extern ONLYCOUNT, FNAME, SILENT, FILENAMEONLY, num_of_matched;
-extern INVERSE;
-extern WORDBOUND, WHOLELINE, NOUPPER;
+extern int ONLYCOUNT, FNAME, SILENT, FILENAMEONLY, num_of_matched;
+extern int INVERSE;
+extern int WORDBOUND, WHOLELINE, NOUPPER;
 extern unsigned char *CurrentFileName;
-extern total_line;
+extern int total_line;
 
 #ifdef BBSMAIN
 #define printf prints
@@ -29,9 +29,9 @@ struct pat_list {
     struct pat_list *next;
 };
 struct pattern_image {
-	int LONG = 0;
-	int SHORT = 0;
-	int p_size = 0;
+	int LONG;
+	int SHORT;
+	int p_size;
 	unsigned char SHIFT1[MAXMEMBER1];
 	unsigned char tr[MAXSYM];
 	unsigned char tr1[MAXSYM];
@@ -42,6 +42,8 @@ struct pattern_image {
 	unsigned char pat_len[max_num];
 };
 
+int m_short(unsigned char* text,int start,int end,struct pattern_image* patt_img);
+
 int releasepf(struct pattern_image* patt_img)
 {
     int i;
@@ -51,23 +53,27 @@ int releasepf(struct pattern_image* patt_img)
         while (curr!=NULL) {
             struct pat_list* next;
             next=curr->next;
-        	free(curr);
+        	free((void*)curr);
         	curr=next;
         }
     }
-    free(patt_img);
+    free((void*)patt_img);
 }
 
 int prepf(int fp,struct pattern_image** ppatt_img)
 {
     int length = 0, i, p = 1, pdx = 0, num_pat;
-    unsigned char *pat_ptr = patt_img->pat_spool, temp[10];
+    struct pattern_image *patt_img;
+    unsigned char *pat_ptr , temp[10];
     unsigned Mask = 15;
     int num_read;
-    struct pattern_image *patt_img;
 
     *ppatt_img=malloc(sizeof(struct pattern_image));
-    patt_img=*patt_img;
+    patt_img=*ppatt_img;
+    pat_ptr=patt_img->pat_spool;
+    patt_img->LONG = 0;
+    patt_img->SHORT = 0;
+    patt_img->p_size = 0;
     while ((num_read = read(fp, patt_img->buf + length, BLOCKSIZE)) > 0) {
         length = length + num_read;
         if (length > MAXPATFILE) {
@@ -143,7 +149,7 @@ int prepf(int fp,struct pattern_image** ppatt_img)
         patt_img->HASH[i] = 0;
     }
     for (i = 1; i <= num_pat; i++)
-        f_prep(i, patt_img->patt[i]);
+        f_prep(i, patt_img->patt[i],patt_img);
 }
 
 int mgrep_str(char *text, int num,struct pattern_image* patt_img)
@@ -168,9 +174,9 @@ int mgrep_str(char *text, int num,struct pattern_image* patt_img)
     buf_text[start + 1] = '\n'; /* initial case */
 
     if (patt_img->SHORT)
-        m_short(buf_text, 0, start + 1);
+        m_short(buf_text, 0, start + 1,patt_img);
     else
-        monkey1(buf_text, 0, start + 1);
+        monkey1(buf_text, 0, start + 1,patt_img);
 
     if (FILENAMEONLY && num_of_matched) {
         return num_of_matched;
@@ -186,9 +192,9 @@ int mgrep_str(char *text, int num,struct pattern_image* patt_img)
     residue = buf_end - end + 1;
     /*text[start - 1] = r_newline;*/
     if (patt_img->SHORT)
-        m_short(text, start, end);
+        m_short(text, start, end, patt_img);
     else
-        monkey1(text, start, end);
+        monkey1(text, start, end, patt_img);
     if (FILENAMEONLY && num_of_matched) {
         return num_of_matched;
     }
@@ -202,9 +208,9 @@ int mgrep_str(char *text, int num,struct pattern_image* patt_img)
         strncpy(buf_text + 1, text + end, residue);
         text[residue] = '\n';
         if (patt_img->SHORT)
-            m_short(buf_text, 0, residue);
+            m_short(buf_text, 0, residue,patt_img);
         else
-            monkey1(buf_text, 0, residue);
+            monkey1(buf_text, 0, residue,patt_img);
     }
     return num_of_matched;
 }                               /* end mgrep */
@@ -229,9 +235,9 @@ struct pattern_image *patt_img;
         residue = buf_end - end + 1;
         text[start - 1] = r_newline;
         if (patt_img->SHORT)
-            m_short(text, start, end);
+            m_short(text, start, end,patt_img);
         else
-            monkey1(text, start, end);
+            monkey1(text, start, end,patt_img);
         if (FILENAMEONLY && num_of_matched) {
             return num_of_matched;
         }
@@ -245,9 +251,9 @@ struct pattern_image *patt_img;
     text[start - 1] = '\n';
     if (residue > 1) {
         if (patt_img->SHORT)
-            m_short(text, start, end);
+            m_short(text, start, end,patt_img);
         else
-            monkey1(text, start, end);
+            monkey1(text, start, end,patt_img);
     }
     return;
 }                               /* end mgrep */
@@ -366,10 +372,7 @@ struct pattern_image* patt_img;
             putchar(*lastout++);
 }
 
-m_short(text, start, end,patt_img)
-int start, end;
-register unsigned char *text;
-struct pattern_image* patt_img;
+int m_short(unsigned char* text,int start,int end,struct pattern_image* patt_img)
 {
     register unsigned char *textend;
     register unsigned i;
@@ -395,10 +398,10 @@ struct pattern_image* patt_img;
                 j++;
             if (patt_img->pat_len[pat_index] <= j) {
                 if (text >= textend)
-                    return;
+                    return 0;
                 num_of_matched++;
                 if (FILENAMEONLY || SILENT)
-                    return;
+                    return 0;
                 if (ONLYCOUNT) {
                     while (*text != '\n')
                         text++;
