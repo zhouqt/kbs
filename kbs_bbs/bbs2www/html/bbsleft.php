@@ -3,6 +3,8 @@
 	
 	require("funcs.php");
 	
+    $img_subdir = "images/menuspring/";
+
 	function display_board_group($section_names,$section_nums,$group_name,$group_id,$totle_group,$group,$group2,$level){
 		$yank = 0;
 		settype($group, "integer");
@@ -27,7 +29,7 @@
 	</A></DIV>
 	</td>
 	<td>
-	<a href="/bbsboa.php?group=<?php echo $group; ?>" target="f3"><img src="images/folder1.gif" width="16" height="16" border="0" align="absmiddle"><?php echo $group_name; ?></a>
+	<a href="/bbsboa.php?group=<?php echo $group; ?>" target="f3"><img src="images/kfolder1.gif" width="16" height="16" border="0" align="absmiddle"><?php echo $group_name; ?></a>
 	</td>
 </tr>
 <tr>
@@ -116,7 +118,7 @@
 	</A></DIV>
 	</td>
 	<td>
-	<img src="images/folder1.gif" width="16" height="16" border="0" align="absmiddle"><a href="bbsfav.php?select=<?php echo $level; ?>&up=<?php echo $up; ?>" target="f3"><?php echo $group_name; ?></a>
+	<img src="images/kfolder1.gif" width="16" height="16" border="0" align="absmiddle"><a href="bbsfav.php?select=<?php echo $level; ?>&up=<?php echo $up; ?>" target="f3"><?php echo $group_name; ?></a>
 	</td>
 </tr>
 <tr>
@@ -390,11 +392,11 @@
 		<table width="90%" border="0" cellspacing="0" cellpadding="1" class="b1">
 		<tr>
 			<td width="16"><img src="/images/open.gif" border="0"></td>
-			<td><a href="<?php echo MAINPAGE_FILE; ?>" target="f3"><img src="/images/home.gif" border="0" alt="首页" align="absmiddle"> 首页导读</a></td>
+			<td><a href="<?php echo MAINPAGE_FILE; ?>" target="f3"><img src="<?php echo $img_subdir; ?>m1.gif" border="0" alt="首页" align="absmiddle"> 首页导读</a></td>
 		</tr>
 		<tr>
 			<td width="16"><img src="/images/open.gif" border="0"></td>
-			<td><a href="/cgi-bin/bbs/bbs0an" target="f3"><img src="/images/t3.gif" border="0" alt="精华区" align="absmiddle"> 精华区</a></td>
+			<td><a href="/cgi-bin/bbs/bbs0an" target="f3"><img src="<?php echo $img_subdir; ?>m2.gif" border="0" alt="精华区" align="absmiddle"> 精华区</a></td>
 		</tr>
 		<tr>
 			<td width="16">
@@ -402,7 +404,7 @@
 				<a href='javascript:changemn("board");'><img id="imgboard" src="/images/close.gif" border="0"></a>
 				</DIV>
 			</td>
-			<td><a href="/bbssec.php" target="f3"><img src="/images/folder4.gif" border="0" alt="分类讨论区" align="absmiddle"> 分类讨论区</a></td>
+			<td><a href="/bbssec.php" target="f3"><img src="<?php echo $img_subdir; ?>mfolder0.gif" border="0" alt="分类讨论区" align="absmiddle"> 分类讨论区</a></td>
 		</tr>
 		<tr>
 			<td> </td>
@@ -418,7 +420,7 @@
 			<td width="16"><img src="/images/open.gif" border="0"></td>
 			<form action="cgi-bin/bbs/bbssel" target="f3">
 			<td>
-			<img src="/images/t8.gif" border="0" alt="搜索讨论区" align="absmiddle">
+			<img src="<?php echo $img_subdir; ?>m5.gif" border="0" alt="搜索讨论区" align="absmiddle">
 			<input name="board" type="text" class="f2" value="搜索讨论区" size="12" onclick="this.value=''" /> 
 <input name="submit" type="submit" value="GO" style="width:25px;height:20px;font-size: 12px;color: #ffffff;border-style: none;background-color: #718BD6;" />
 			</td>
@@ -433,7 +435,7 @@
 				<a href='javascript:changemn("fav");'><img id="imgfav" src="/images/close.gif" border="0"></a>
 				</DIV>
 			</td>
-			<td><a href="bbsfav.php?select=-1" target="f3"><img src="/images/folder3.gif" border="0" alt="我的收藏夹" align="absmiddle"> 我的收藏夹</a></td>
+			<td><a href="bbsfav.php?select=-1" target="f3"><img src="<?php echo $img_subdir; ?>mfolder3.gif" border="0" alt="我的收藏夹" align="absmiddle"> 我的收藏夹</a></td>
 		</tr>
 		<tr>
 			<td> </td>
@@ -460,7 +462,7 @@
 			</td>
 			<td>
 			<a href='javascript:changemn("pc");'>
-			<img src="/images/t15.gif" border="0" alt="<?php echo BBS_FULL_NAME; ?>Blog" align="absmiddle"> 水木Blog
+			<img src="<?php echo $img_subdir; ?>m3.gif" border="0" alt="<?php echo BBS_FULL_NAME; ?>Blog" align="absmiddle"> 水木Blog
 			</a>
 			</td>
 		</tr>
@@ -486,7 +488,7 @@
 					<a href="/pc/pcnew.php?t=c" target="f3">最新评论</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/pc/pcsearch2.php" target="f3">Blog搜索</a><br>
+					<a href="/pc/pcsearch2.php" target="f3">文集搜索</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/pc/pcnsearch.php" target="f3">文章搜索</a><br>
@@ -516,7 +518,7 @@
 				<a href='javascript:changemn("mail");'><img id="imgmail" src="/images/close.gif" border="0"></a>
 				</DIV>
 			</td>
-			<td><a href="/bbsmail.php" target="f3"><img src="/images/t5.gif" border="0" alt="我的信箱" align="absmiddle"> 我的信箱</a></td>
+			<td><a href="/bbsmail.php" target="f3"><img src="<?php echo $img_subdir; ?>m4.gif" border="0" alt="我的信箱" align="absmiddle"> 我的信箱</a></td>
 		</tr>
 		<tr>
 			<td> </td>
@@ -539,7 +541,7 @@
 			</td>
 			<td>
 			<a href='javascript:changemn("chat");'>
-			<img src="/images/t6.gif" border="0" alt="谈天说地" align="absmiddle"> 谈天说地
+			<img src="<?php echo $img_subdir; ?>m8.gif" border="0" alt="谈天说地" align="absmiddle"> 谈天说地
 			</a>
 			</td>
 		</tr>
@@ -593,7 +595,7 @@
 			</td>
 			<td>
 			<a href='javascript:changemn("tool");'>
-			<img src="/images/t4.gif" border="0" alt="个人参数设置" align="absmiddle"> 个人参数设置
+			<img src="<?php echo $img_subdir; ?>m7.gif" border="0" alt="个人参数设置" align="absmiddle"> 个人参数设置
 			</a>
 			</td>
 		</tr>
@@ -644,7 +646,7 @@
 				<a href='javascript:changemn("style");'><img id="imgstyle" src="/images/close.gif" border="0"></a>
 				</DIV>
 			</td>
-			<td><img src="/images/t7.gif" border="0" alt="界面风格" align="absmiddle"> 界面风格</td>
+			<td><img src="<?php echo $img_subdir; ?>m7.gif" border="0" alt="界面风格" align="absmiddle"> 界面风格</td>
 		</tr>
 		<tr>
 			<td> </td>
@@ -668,7 +670,7 @@
 			</td>
 			<td>
 			<a href='javascript:changemn("exp");'>
-			<img src="/images/t7.gif" border="0" alt="水木特刊Web版" align="absmiddle"> 水木特刊Web版
+			<img src="<?php echo $img_subdir; ?>m6.gif" border="0" alt="水木特刊Web版" align="absmiddle"> 水木特刊Web版
 			</a>
 			</td>
 		</tr>
@@ -699,7 +701,7 @@
 			</td>
 			<td>
 			<a href='javascript:changemn("ser");'>
-			<img src="/images/t9.gif" border="0" alt="文件下载及其他" align="absmiddle"> 文件下载及其他
+			<img src="<?php echo $img_subdir; ?>m7.gif" border="0" alt="文件下载及其他" align="absmiddle"> 文件下载及其他
 			</a>
 			</td>
 		</tr>
@@ -721,7 +723,7 @@
 		</tr>
 		<tr>
 			<td width="16"><img src="/images/open.gif" border="0"></td>
-			<td><a href="telnet:smth.org"><img src="/images/t11.gif" border="0" alt="telnet登录" align="absmiddle"> Telnet登录</a>
+			<td><a href="telnet:smth.org"><img src="<?php echo $img_subdir; ?>m6.gif" border="0" alt="telnet登录" align="absmiddle"> Telnet登录</a>
 		</tr>
 <!--
 		<tr>
@@ -731,7 +733,7 @@
 -->
 		<tr>
 			<td width="16"><img src="/images/open.gif" border="0"></td>
-			<td><a href="/bbslogout.php" target="_top"><img src="/images/leave.gif" border="0" alt="离开本站" align="absmiddle"> 离开本站</a>
+			<td><a href="/bbslogout.php" target="_top"><img src="<?php echo $img_subdir; ?>m7.gif" border="0" alt="离开本站" align="absmiddle"> 离开本站</a>
 		</tr>
 		
 		</table>
@@ -739,7 +741,6 @@
 </tr>
 </table>
 <p align="center"><a href="http://www.dawning.com.cn/" target="_blank"><img src="/images/dawning.gif" width="120" height="53" border="0" alt="曙光公司"></a></p>
-
 <?php
 		html_normal_quit();
 		}
