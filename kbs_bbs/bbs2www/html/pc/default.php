@@ -112,7 +112,12 @@ function  pcmain_blog_most_hot()
 		echo "<td class=\"".$tdclass."\" width=\"33%\">";
 		$rows = mysql_fetch_array($result);
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
-		echo "|&nbsp;<a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">".html_format($rows[subject])."</a>\n".
+		echo "|&nbsp;<a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">";
+		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,20));
+		if(strlen($rows[subject]) > 20 )
+			$subject .= "...";
+		$subject .= "</span>";
+		echo $subject."</a>\n".
 			"&nbsp;<a href=\"index.php?id=".$pcinfor[USER]."\"><font class=low>".$pcinfor[NAME]."</font></a>&nbsp;<a href=\"/bbsqry.php?userid=".$pcinfor["USER"]."\"><font class=low2>".$pcinfor["USER"]."</font></a>\n";
 		echo "</td>\n";	
 		if($i % 2 == 1 ) echo "</tr>";
@@ -125,7 +130,7 @@ function  pcmain_blog_most_hot()
 function  pcmain_blog_most_trackback()
 {
 	global $pcconfig,$link;
-	$query = "SELECT nid , subject  uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-1209600)." AND trackbackcount != 0 ORDER BY trackbackcount DESC , nid DESC LIMIT 0 , 20;";
+	$query = "SELECT nid , subject , uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-1209600)." AND trackbackcount != 0 ORDER BY trackbackcount DESC , nid DESC LIMIT 0 , 20;";
 	$result = mysql_query($query,$link);
 	$num = mysql_num_rows($result);
 ?>
@@ -137,7 +142,12 @@ function  pcmain_blog_most_trackback()
 		if( $i == 10 ) echo "</td><td align=\"left\" style=\"line-height:16px\" width=\"50%\">";
 		$rows = mysql_fetch_array($result);
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
-		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">".html_format($rows[subject])."</a>\n".
+		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">";
+		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,20));
+		if(strlen($rows[subject]) > 20 )
+			$subject .= "...";
+		$subject .= "</span>";
+		echo $subject."</a>\n".
 			"&nbsp;<a href=\"index.php?id=".$pcinfor[USER]."\"><font class=low>".$pcinfor[NAME]."</font></a>&nbsp;<a href=\"/bbsqry.php?userid=".$pcinfor[USER]."\"><font class=low2>".$pcinfor[USER]."</font></a>";
 		echo "</li>\n";	
 	}
@@ -163,7 +173,12 @@ function  pcmain_blog_most_view()
 		if( $i == 10 ) echo "</tr><td style=\"line-height:16px \" align=left width=\"50%\">";
 		$rows = mysql_fetch_array($result);
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
-		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">".html_format($rows[subject])."</a>\n".
+		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">";
+		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,20));
+		if(strlen($rows[subject]) > 20 )
+			$subject .= "...";
+		$subject .= "</span>";
+		echo $subject."</a>\n".
 			"&nbsp;<a href=\"index.php?id=".$pcinfor[USER]."\"><font class=low>".$pcinfor[NAME]."</font></a>&nbsp;<a href=\"/bbsqry.php?userid=".$pcinfor[USER]."\"><font class=low2>".$pcinfor[USER]."</font></a>\n";
 		echo "</li>\n";	
 	}
@@ -183,12 +198,12 @@ function pcmain_blog_new_nodes()
 <?php
 	for($i = 0;$i < $newNum ;$i ++)
 	{
-		if($i % 6 == 0 ) 
+		if($i % 4 == 0 ) 
 		{
 			echo "<tr>";
 			$tdclass = "td2";
 		}
-		elseif($i % 6 == 3 )
+		elseif($i % 4 == 2 )
 		{
 			echo "<tr>";
 			$tdclass ="td1";
@@ -196,10 +211,10 @@ function pcmain_blog_new_nodes()
 		echo "<td class=".$tdclass." width=\"33%\">[<span title=\"".$newBlogs[useretems][$i][pc][DESC]."\"><a href=\"index.php?id=".$newBlogs[useretems][$i][pc][USER]."\">".$newBlogs[useretems][$i][pc][NAME]."</a></span>]".
 			 "<a href='pccon.php?id=".$newBlogs[useretems][$i][pc][UID]."&tid=".$newBlogs[useretems][$i][tid]."&nid=".$newBlogs[useretems][$i][nid]."&s=all'>";
 		echo "<span title=\"".$newBlogs[useretems][$i][subject]."\">";
-		echo substr($newBlogs[useretems][$i][subject],0,12);
-		if(strlen($newBlogs[useretems][$i][subject])>12) echo "...";
+		echo substr($newBlogs[useretems][$i][subject],0,20);
+		if(strlen($newBlogs[useretems][$i][subject])>20) echo "...";
 		echo "</span></a>&nbsp;<a href='/bbsqry.php?userid=".$newBlogs[useretems][$i][pc][USER]."'><font class=low>".$newBlogs[useretems][$i][pc][USER]."</font></a></td>";
-		if($i % 3 == 2 ) echo "</tr>";
+		if($i % 2 == 1 ) echo "</tr>";
 	}
 ?>
 </td></tr>				
@@ -305,6 +320,8 @@ $link = pc_db_connect();
 	border-right-color: #999999;
 	border-bottom-color: #999999;
 	line-height: 16px;
+	word-wrap:break-word;
+	word-break:break-all;
 }
 body {
 	font-size: 12px;
@@ -349,6 +366,8 @@ input {
 	text-align:left;
 	line-height: 16px;
 	background-color: #FCFCFC;
+	word-wrap:break-word;
+	word-break:break-all;
 }
 .td2 {
 	border-bottom-width: 1px;
@@ -357,6 +376,8 @@ input {
 	text-align:left;
 	background-color: #F0F0F0;
 	line-height: 16px;
+	word-wrap:break-word;
+	word-break:break-all;
 }
 .low2 {
 	color: #3399CC;
