@@ -1,7 +1,7 @@
 bin_PROGRAMS = bbsd
 EXTRA_PROGRAMS = 
 bbsd_SOURCES=bbs.c record.c delete.c stuff.c mail.c register.c \
-           xyz.c talk.c read.c comm_lists.c namecomplete.c chat.c \
+           xyz.c talk.c comm_lists.c namecomplete.c chat.c \
            maintain.c edit.c more.c pass.c help.c bcache.c boards.c \
            screen.c userinfo.c vote.c announce.c sendmsg.c boards_t.c\
 	   bm.c list.c goodbye.c bbsd_single.c lvars.c select.c libann.c\

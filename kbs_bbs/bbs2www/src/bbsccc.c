@@ -137,7 +137,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct, char *board, ch
 
 	if(!HAS_PERM(currentuser, PERM_POST))	 /* ÅÐ¶ÏÊÇ·ñÓÐPOSTÈ¨ */
 	{
-		return DONOTHING;
+		return 0;
 	}
 	if((fileinfo->accessed[0] & FILE_FORWARDED) && !HAS_PERM(currentuser, PERM_SYSOP))
 	{

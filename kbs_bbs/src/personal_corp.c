@@ -1,6 +1,7 @@
 #include "bbs.h"
 
 #ifdef PERSONAL_CORP
+#include "read.h"
 //#include "mysql.h"
 
 struct pc_users *pc_u = NULL;
@@ -1891,27 +1892,29 @@ int pc_read_comment()
 
 int import_to_pc(int ent, struct fileheader *fileinfo, char *direct)
 {
-	struct pc_users pu;
-	struct pc_nodes pn;
-	char fpath[STRLEN];
-	int ret;
+    struct pc_users pu;
+    struct pc_nodes pn;
+    char fpath[STRLEN];
+    int ret;
+    char buf1[512];
+    char* t;
 
-	if( ! (currentuser->flags & PCORP_FLAG) )
+    if( ! (currentuser->flags & PCORP_FLAG) )
 		return DONOTHING;
 
-	bzero( &pu, sizeof(pu) );
-	if(get_pc_users( & pu, currentuser->userid ) <= 0)
-		return FULLUPDATE;
+    bzero( &pu, sizeof(pu) );
+    if(get_pc_users( & pu, currentuser->userid ) <= 0)
+        return FULLUPDATE;
 
-	bzero( &pn, sizeof(pn) );
+    bzero( &pn, sizeof(pn) );
 
 	strncpy(pn.subject, fileinfo->title, STRLEN);
 	pn.subject[STRLEN-1]=0;
 
-	if( uinfo.mode == RMAIL )
-		setmailfile(fpath, currentuser->userid, fileinfo->filename);
-	else
-		setbfile(fpath, currboard->filename, fileinfo->filename);
+    strcpy(buf1, direct);
+    if ((t = strrchr(buf1, '/')) != NULL)
+        *t = '\0';
+    snprintf(fpath, 512, "%s/%s", buf1, fileinfo->filename);
 
 	pn.body = NULL;
 	if( ! pc_conv_file_to_body(&(pn.body), fpath)){

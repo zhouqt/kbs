@@ -881,7 +881,7 @@ int zsend_file(char *filename, char *title)
     strcpy(buf, "N");
     getdata(t_lines - 1, 0, "您确定要使用Zmodem传输文件么?[y/N]", buf, 2, DOECHO, NULL, true);
     if (toupper(buf[0]) != 'Y')
-        return FULLUPDATE;
+        return 1;
     strncpy(buf, title, 76);
     buf[80] = '\0';
     escape_filename(buf);
@@ -893,13 +893,13 @@ int zsend_file(char *filename, char *title)
     clrtoeol();
     getdata(t_lines - 1, 0, "", buf, 78, DOECHO, NULL, 0);
     if (buf[0] == '\0')
-        return FULLUPDATE;
+        return 0;
     buf[78] = '\0';
     escape_filename(buf);
     sprintf(buf1, "SMTH-%s-", currboard->filename);
     strcat(buf1, buf);
     bbs_zsendfile(filename, buf1);
-    return FULLUPDATE;
+    return 0;
 }
 
 int my_inet_aton(const char * ip, struct in_addr* queryip)

@@ -1,5 +1,6 @@
 #include "bbs.h"
 #include <utime.h>
+#define DEBUG
 
 void cancelpost(char *board, char *userid, struct fileheader *fh, int owned, int autoappend);
 int outgo_post(struct fileheader *fh, char *board, char *title)
@@ -70,67 +71,205 @@ char name[STRLEN];
     return 0;
 }
 
-int do_del_post(struct userec *user, int ent, struct fileheader *fileinfo, char *direct, char *board, int digestmode, int decpost)
+/*
+  * 判断当前模式是否可以使用id二分
+  */
+bool is_sorted_mode(int mode)
 {
-    char buf[512];
-    char *t;
-    int owned, fail;
+    switch (mode) {
+        case DIR_MODE_NORMAL:
+        case DIR_MODE_THREAD:
+        case DIR_MODE_MARK:
+        case DIR_MODE_ORIGIN:
+        case DIR_MODE_AUTHOR:
+        case DIR_MODE_TITLE:
+        case DIR_MODE_SUPERFITER:
+        case DIR_MODE_WEB_THREAD:
+            return true;
+    }
+    return false;
+}
 
-    strcpy(buf, direct);
-    if ((t = strrchr(buf, '/')) != NULL)
-        *t = '\0';
-/*    if( keep <= 0 ) {*/
-    if (fileinfo->id == fileinfo->groupid)
+/** 初始化filearg结构
+  */
+void malloc_write_dir_arg(struct write_dir_arg*filearg)
+{
+    filearg->filename=NULL;
+    filearg->fileptr=MAP_FAILED;
+    filearg->ent=-1;
+    filearg->fd=-1;
+    filearg->size=-1;
+    filearg->needclosefd=false;
+    filearg->needlock=true;
+}
+
+/** 初始化filearg结构,把各个东西mmap上
+  */
+int init_write_dir_arg(struct write_dir_arg*filearg)
+{
+    if (filearg->fileptr==MAP_FAILED) {
+        if (filearg->fd==-1) {
+            if (safe_mmapfile(filearg->filename, 
+                        O_RDWR, 
+                        PROT_READ | PROT_WRITE, 
+                        MAP_SHARED,
+                        (void **) &filearg->fileptr, &filearg->size, &filearg->fd) == 0)
+                return -1;
+            filearg->needclosefd=true;
+        } else { //用fd来打开
+            if (safe_mmapfile_handle(filearg->fd, 
+                        PROT_READ | PROT_WRITE, 
+                        MAP_SHARED,
+                        (void **) &filearg->fileptr, &filearg->size) == 0)
+                return -1;
+        }
+    }
+    return 0;
+}
+
+/*
+ *  释放filearg所分配的资源。
+ */
+void free_write_dir_arg(struct write_dir_arg*filearg)
+{
+    if (filearg->needclosefd&&(filearg->fd!=-1)) {
+        close(filearg->fd);
+    }
+    if (filearg->fileptr!=MAP_FAILED)
+        end_mmapfile((void *) filearg->fileptr, filearg->size, -1);
+}
+
+/*
+ * 写dir文件之前把文件定位到正确的位置，lock住，并返回相应的数据
+ * 这里边并不调用free_write_dir_arg来释放资源。需要上层自己来
+ * 调用此函数如果成功，记得及时flock(filearg->fd,LOCK_UN)
+ * @param filearg 传入的结构。如果filearg->fd不为-1，说明需要打开dirarg->direct文件
+ *                        否则使用filearg->fd作为文件句柄。
+ *                        filearg->ent为预计的位置，ent>=1
+ *                        filearg->fileptr如果不等于MAP_FAILED,那么这个函数会mmap文件并
+ *                        填写filearg->fileptr和filearg->size用于返回数据
+ * @param fileinfo 用于定位的东西，不为空的时候需要定位
+ * @param mode 当前模式，只有sorted的可以使用二分
+ * @return 0成功,此时mmap完毕。
+ */
+int prepare_write_dir(struct write_dir_arg * filearg,struct fileheader* fileinfo,int mode)
+{
+    int ret=0;
+    bool needrelocation=false;
+    BBS_TRY {
+        int count;
+        struct fileheader* nowFh;
+        if (init_write_dir_arg(filearg)!=0)
+            BBS_RETURN(-1);
+        count=filearg->size/sizeof(struct fileheader);
+        if (filearg->needlock)
+            flock(filearg->fd,LOCK_EX);
+        if (fileinfo) { //定位一下
+            if ((filearg->ent>count)||(filearg->ent<=0))
+                needrelocation=true;
+            else {
+                nowFh=filearg->fileptr+(filearg->ent-1);
+                needrelocation=strcmp(fileinfo->filename,nowFh->filename);
+			}
+            
+        }
+        if (needrelocation) { //重定位这个位置
+            int i;
+            if (is_sorted_mode(mode)) {
+                filearg->ent=Search_Bin(filearg->fileptr, fileinfo->id, 0, count-1)+1;
+            } else {//匹配文件名
+                int oldent=filearg->ent;
+                nowFh=filearg->fileptr;
+                filearg->ent=-1;
+                /* 先从当前位置往前找，因为一般都是被删除导致向前了*/
+                nowFh=filearg->fileptr+(oldent-1);
+                for (i=oldent;i>=0;i--,nowFh--) {
+                    if (!strcmp(fileinfo->filename,nowFh->filename)) {
+                        filearg->ent=i+1;
+                        break;
+                    }
+                }
+                /* 再从当前位置往后找*/
+                nowFh=filearg->fileptr+oldent;
+                for (i=oldent+1;i<count;i++,nowFh++) {
+                    if (!strcmp(fileinfo->filename,nowFh->filename)) {
+                        filearg->ent=i+1;
+                        break;
+                    }
+                }
+            }
+            if (filearg->ent<=0)
+                ret=-1;
+        }
+    }
+    BBS_CATCH {
+        ret = -1;
+    }
+    BBS_END;
+    if (ret!=0)
+        flock(filearg->fd,LOCK_UN);
+    return ret;
+}
+
+int do_del_post(struct userec *user, struct write_dir_arg*dirarg,struct fileheader *fileinfo, char *board, int currmode, int decpost)
+{
+    char *t;
+    int owned;
+    struct fileheader fh;
+
+    if (prepare_write_dir(dirarg,fileinfo,currmode)!=0)
+        return-1;
+    BBS_TRY {
+		fh=*(dirarg->fileptr + (dirarg->ent - 1));
+        memcpy(dirarg->fileptr + (dirarg->ent - 1), 
+            dirarg->fileptr + dirarg->ent, 
+            dirarg->size - sizeof(struct fileheader) * dirarg->ent);
+        dirarg->size-=sizeof(struct fileheader);
+#ifdef DEBUG
+#ifdef BBSMAIN
+        newbbslog(BBSLOG_DEBUG,"%s ftruncate %d",
+            dirarg->filename?dirarg->filename:currboard->filename,
+            dirarg->size);
+#endif
+#endif      
+        ftruncate(dirarg->fd, dirarg->size);
+    }
+    BBS_CATCH {
+    }
+    BBS_END;
+	if (dirarg->needlock)
+        flock(dirarg->fd,LOCK_UN); /*这个是需要赶紧做的*/
+    if (fh.id == fh.groupid)
         setboardorigin(board, 1);
     setboardtitle(board, 1);
-    /*
-     * added by bad 2002.8.12
-     */
-    fail = delete_record(direct, sizeof(struct fileheader), ent, (RECORD_FUNC_ARG) cmpname, fileinfo->filename);
-/*
-    } else {
-        fail = update_file(direct,sizeof(struct fileheader),ent,cmpfilename,
-                           cpyfilename);
-    }
-    */
-    owned = isowner(user, fileinfo);
-    if (!fail) {
-        cancelpost(board, user->userid, fileinfo, owned, 1);
+
+    
+    owned = isowner(user, &fh);
+        cancelpost(board, user->userid, &fh, owned, 1);
         updatelastpost(board);
-/*
-        sprintf(buf,"%s/%s",buf,fileinfo->filename) ;
-        if(keep >0)  if ( (fn = fopen( buf, "w" )) != NULL ) {
-            fprintf( fn, "\n\n\t\t本文章已被 %s 删除.\n",
-                     currentuser->userid );
-            fclose( fn );
-        }
-*/
-        if (fileinfo->accessed[0] & FILE_MARKED)
+        if (fh.accessed[0] & FILE_MARKED)
             setboardmark(board, 1);
-        if ((true != digestmode)        /* 不可以用 “NA ==” 判断：digestmode 三值 */
-            &&!((fileinfo->accessed[0] & FILE_MARKED)
-                && (fileinfo->accessed[1] & FILE_READ)
-                && (fileinfo->accessed[0] & FILE_FORWARDED))) { /* Leeward 98.06.17 在文摘区删文不减文章数目 */
+        if ((DIR_MODE_NORMAL == currmode)        /* 不可以用 “NA ==” 判断：digestmode 三值 */
+            &&!((fh.accessed[0] & FILE_MARKED)
+                && (fh.accessed[1] & FILE_READ)
+                && (fh.accessed[0] & FILE_FORWARDED))) { /* Leeward 98.06.17 在文摘区删文不减文章数目 */
             if (owned) {
                 if ((int) user->numposts > 0 && !junkboard(board)) {
                     user->numposts--;   /*自己删除的文章，减少post数 */
                 }
-            } else if (!strstr(fileinfo->owner, ".") && BMDEL_DECREASE && decpost /*版主删除,减少POST数 */ ) {
+            } else if (!strstr(fh.owner, ".") && BMDEL_DECREASE && decpost /*版主删除,减少POST数 */ ) {
                 struct userec *lookupuser;
-                int id = getuser(fileinfo->owner, &lookupuser);
+                int id = getuser(fh.owner, &lookupuser);
 
                 if (id && (int) lookupuser->numposts > 0 && !junkboard(board) && strcmp(board, SYSMAIL_BOARD)) {        /* SYSOP MAIL版删文不减文章 Bigman: 2000.8.12 *//* Leeward 98.06.21 adds above later 2 conditions */
                     lookupuser->numposts--;
                 }
             }
         }
-        utime(fileinfo->filename, 0);
         if (user != NULL)
             bmlog(user->userid, board, 8, 1);
-        newbbslog(BBSLOG_USER, "Del '%s' on '%s'", fileinfo->title, board);     /* bbslog */
+        newbbslog(BBSLOG_USER, "Del '%s' on '%s'", fh.title, board);     /* bbslog */
         return 0;
-    }
-    return -1;
 }
 
 /* by ylsdd 
@@ -621,7 +760,7 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
         pressreturn();
         clear();
 #endif
-        return FULLUPDATE;
+        return -2;
     }
 
     if (mode == 1)
@@ -871,32 +1010,6 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     else
 #endif
         return 0;
-}
-
-int dele_digest(char *dname, char *direc)
-{                               /* 删除文摘内一篇POST, dname=post文件名,direc=文摘目录名 */
-    char digest_name[STRLEN];
-    char new_dir[STRLEN];
-    char buf[STRLEN];
-    char *ptr;
-    struct fileheader fh;
-    int pos;
-
-    strcpy(digest_name, dname);
-    strcpy(new_dir, direc);
-
-    POSTFILE_BASENAME(digest_name)[0] = 'G';
-    ptr = strrchr(new_dir, '/') + 1;
-    strcpy(ptr, DIGEST_DIR);
-    pos = search_record(new_dir, &fh, sizeof(fh), (RECORD_FUNC_ARG) cmpname, digest_name);      /* 文摘目录下 .DIR中 搜索 该POST */
-    if (pos <= 0) {
-        return -1;
-    }
-    delete_record(new_dir, sizeof(struct fileheader), pos, (RECORD_FUNC_ARG) cmpname, digest_name);
-    *ptr = '\0';
-    sprintf(buf, "%s%s", new_dir, digest_name);
-    my_unlink(buf);
-    return 0;
 }
 
 int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)
@@ -1170,7 +1283,7 @@ get_threads_from_gid(const char *filename, int gid, fileheader_t *buf, int num)
 //土鳖两分法，    by yuhuan
 //请flyriver同学或其他人自行整合
 int
-Search_Bin(char *ptr, int key, int start, int end)
+Search_Bin(struct fileheader*ptr, int key, int start, int end)
 {
         // 在有序表中折半查找其关键字等于key的数据元素。
         // 若查找到，返回索引
@@ -1182,7 +1295,7 @@ Search_Bin(char *ptr, int key, int start, int end)
         high = end;
         while (low <= high) {
                 mid = (low + high) / 2;
-                totest = (struct fileheader *)(ptr + mid * sizeof(struct fileheader));
+                totest = (struct fileheader *)(ptr + mid );
                 if (key == totest->id)
                         return mid;
                 else if (key < totest->id)
@@ -1191,523 +1304,6 @@ Search_Bin(char *ptr, int key, int start, int end)
                         low = mid + 1;
         }
         return -(low+1);
-}
-
-int change_dir_post_flag(struct userec *currentuser, char *currboard, int ent, struct fileheader *fileinfo, int flag)
-{
-    /*---	---*/
-    int newent = 0, ret = 1;
-    char *ptr, buf[STRLEN];
-    char ans[256];
-    char genbuf[1024], direct[256];
-    struct fileheader mkpost;
-    struct flock ldata;
-    int fd, size = sizeof(fileheader);
-
-    setbdir(0, direct, currboard);
-    strcpy(buf, direct);
-    ptr = strrchr(buf, '/') + 1;
-    ptr[0] = '\0';
-    sprintf(&genbuf[512], "%s%s", buf, fileinfo->filename);
-    if (!dashf(&genbuf[512]))
-        ret = 0;                /* 借用一下newent :PP   */
-
-    if (ret)
-        if ((fd = open(direct, O_RDWR | O_CREAT, 0644)) == -1)
-            ret = 0;
-    if (ret) {
-        ldata.l_type = F_RDLCK;
-        ldata.l_whence = 0;
-        ldata.l_len = size;
-        ldata.l_start = size * (ent - 1);
-        if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-            bbslog("user", "%s", "reclock error");
-            close(fd);
-                                /*---	period	2000-10-20	file should be closed	---*/
-            ret = 0;
-        }
-    }
-    if (ret) {
-        if (lseek(fd, size * (ent - 1), SEEK_SET) == -1) {
-            bbslog("user", "%s", "subrec seek err");
-            /*---	period	2000-10-24	---*/
-            ldata.l_type = F_UNLCK;
-            fcntl(fd, F_SETLK, &ldata);
-            close(fd);
-            ret = 0;
-        }
-    }
-    if (ret) {
-        if (get_record_handle(fd, &mkpost, sizeof(mkpost), ent) == -1) {
-            bbslog("user", "%s", "subrec read err");
-            ret = 0;
-        }
-        if (ret)
-            if (strcmp(mkpost.filename, fileinfo->filename))
-                ret = 0;
-        if (!ret) {
-            newent = search_record_back(fd, sizeof(struct fileheader), ent, (RECORD_FUNC_ARG) cmpfileinfoname, fileinfo->filename, &mkpost, 1);
-            ret = (newent > 0);
-            if (ret)
-                memcpy(fileinfo, &mkpost, sizeof(mkpost));
-            else {
-                ldata.l_type = F_UNLCK;
-                fcntl(fd, F_SETLK, &ldata);
-                close(fd);
-            }
-            ent = newent;
-        }
-    }
-    if (!ret)
-        return DIRCHANGED;
-    switch (flag) {
-    case FILE_MARK_FLAG:
-        if (fileinfo->accessed[0] & FILE_MARKED)
-            fileinfo->accessed[0] = (fileinfo->accessed[0] & ~FILE_MARKED);
-        else
-            fileinfo->accessed[0] = fileinfo->accessed[0] | FILE_MARKED;
-        break;
-#ifdef FILTER
-    case FILE_CENSOR_FLAG:
-        if (fileinfo->accessed[1] & FILE_CENSOR)
-            fileinfo->accessed[1] &= ~FILE_CENSOR;
-        else
-            fileinfo->accessed[1] |= FILE_CENSOR;
-        break;
-#endif
-    case FILE_NOREPLY_FLAG:
-        if (fileinfo->accessed[1] & FILE_READ)
-            fileinfo->accessed[1] &= ~FILE_READ;
-        else
-            fileinfo->accessed[1] |= FILE_READ;
-        break;
-    case FILE_SIGN_FLAG:
-        if (fileinfo->accessed[0] & FILE_SIGN)
-            fileinfo->accessed[0] &= ~FILE_SIGN;
-        else
-            fileinfo->accessed[0] |= FILE_SIGN;
-        break;
-    case FILE_DELETE_FLAG:
-        if (fileinfo->accessed[1] & FILE_DEL)
-            fileinfo->accessed[1] &= ~FILE_DEL;
-        else
-            fileinfo->accessed[1] |= FILE_DEL;
-        break;
-    case FILE_DIGEST_FLAG:
-        if (fileinfo->accessed[0] & FILE_DIGEST)
-            fileinfo->accessed[0] = (fileinfo->accessed[0] & ~FILE_DIGEST);
-        else
-            fileinfo->accessed[0] = fileinfo->accessed[0] | FILE_DIGEST;
-        break;
-    case FILE_IMPORT_FLAG:
-        fileinfo->accessed[0] |= FILE_IMPORTED;
-        break;
-    }
-
-    if (lseek(fd, size * (ent - 1), SEEK_SET) == -1) {
-        bbslog("user", "%s", "subrec seek err");
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLK, &ldata);
-        close(fd);
-        return DONOTHING;
-    }
-    if (safewrite(fd, fileinfo, size) != size) {
-        bbslog("user", "%s", "subrec write err");
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLK, &ldata);
-        close(fd);
-        return DONOTHING;
-    }
-
-    ldata.l_type = F_UNLCK;
-    fcntl(fd, F_SETLK, &ldata);
-    close(fd);
-
-    return newent ? DIRCHANGED : PARTUPDATE;
-}
-
-int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, char *currboard, int ent, struct fileheader *fileinfo, char *direct, int flag, int prompt)
-{
-    /*---	---*/
-    int newent = 0, ret = 1;
-    char *ptr, buf[STRLEN];
-    char ans[256];
-    char genbuf[1024];
-    struct fileheader mkpost, mkpost2;
-    struct flock ldata;
-    int fd, size = sizeof(fileheader), orgent;
-    int isbm;
-
-#ifdef FILTER
-    int filedes;
-    int nowid = 0;
-    char oldpath[50], newpath[50], buffer[256];
-    struct fileheader *newfh = fileinfo;
-#endif
-
-    /*---	---*/
-    /* add ifdef by stiger,add BBSMAIN define,don't check perm in web */
-#ifdef BBSMAIN
-    isbm=chk_currBM(currBM, currentuser);
-
-#ifdef FILTER
-#ifdef SMTH
-    if (!strcmp(currboard,"NewsClub")&&haspostperm(currentuser, currboard)) 
-        isbm=true;
-#endif
-#endif
-
-    if (!isbm)
-        return DONOTHING;
-#endif
-    /* add by stiger */
-    if ( POSTFILE_BASENAME(fileinfo->filename)[0]=='Z' && (flag==FILE_MARK_FLAG || flag==FILE_DIGEST_FLAG || flag==FILE_DELETE_FLAG || flag==FILE_NOREPLY_FLAG) ) return DONOTHING;
-/* modified by stiger */
-    if ((flag == FILE_DIGEST_FLAG || flag==FILE_DING_FLAG) && (digestmode == 1 || digestmode == 4 || digestmode == 5))
-        return DONOTHING;
-    if (flag == FILE_MARK_FLAG && (digestmode == 1 || digestmode == 4 || digestmode == 5))
-        return DONOTHING;
-    if (flag == FILE_IMPORT_FLAG && (digestmode == 4 || digestmode == 5))
-        return DONOTHING;
-    if (flag == FILE_DELETE_FLAG && (digestmode == 4 || digestmode == 5))
-        return DONOTHING;
-    if ((flag == FILE_MARK_FLAG || flag == FILE_DELETE_FLAG) && (!strcmp(currboard, "syssecurity")
-                                                                 || !strcmp(currboard, FILTER_BOARD)))
-        return DONOTHING;       /* Leeward 98.03.29 */
-    /*
-     * Haohmaru.98.10.12.主题模式下不允许mark文章 
-     */
-    if (flag == FILE_TITLE_FLAG && digestmode != 0)
-        return DONOTHING;
-    if (flag == FILE_NOREPLY_FLAG && (digestmode == 1 || digestmode==4 || digestmode==5))
-        return DONOTHING;
-
-    if(!fileinfo->filename[0]) {
-        setbdir(digestmode, genbuf, currboard);
-        fd = open(genbuf, O_RDWR | O_CREAT, 0644);
-        if (fd!=-1) {
-            get_record_handle(fd, fileinfo, sizeof(struct fileheader), ent);
-            close(fd);
-        }
-    }
-
-    if ((digestmode != DIR_MODE_NORMAL) && (digestmode != DIR_MODE_DIGEST)) {
-        setbdir(0, genbuf, currboard);
-        orgent = search_record(genbuf, &mkpost2, sizeof(struct fileheader), (RECORD_FUNC_ARG) cmpfileinfoname, fileinfo->filename);
-        if (!orgent) {
-#ifdef BBSMAIN
-            if(prompt) {
-                move(2, 0);
-                prints(" 该文件可能已经被删除\n");
-                clrtobot();
-                pressreturn();
-            }
-#endif
-            return FULLUPDATE;
-        }
-    }
-    strcpy(buf, direct);
-    ptr = strrchr(buf, '/') + 1;
-    ptr[0] = '\0';
-    sprintf(&genbuf[512], "%s%s", buf, fileinfo->filename);
-    if (!dashf(&genbuf[512]))
-        ret = 0;                /* 借用一下newent :PP   */
-
-    if (ret)
-        if ((fd = open(direct, O_RDWR | O_CREAT, 0644)) == -1)
-            ret = 0;
-    if (ret) {
-        ldata.l_type = F_RDLCK;
-        ldata.l_whence = 0;
-        ldata.l_len = size;
-        ldata.l_start = size * (ent - 1);
-        if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-            bbslog("user", "%s", "reclock error");
-            close(fd);
-                                /*---period	2000-10-20 file should be closed	---*/
-            ret = 0;
-        }
-    }
-    if (ret) {
-        if (lseek(fd, size * (ent - 1), SEEK_SET) == -1) {
-            bbslog("user", "%s", "subrec seek err");
-            /*---	period	2000-10-24	---*/
-            ldata.l_type = F_UNLCK;
-            fcntl(fd, F_SETLK, &ldata);
-            close(fd);
-            ret = 0;
-        }
-    }
-    if (ret) {
-        if (get_record_handle(fd, &mkpost, sizeof(mkpost), ent) == -1) {
-            bbslog("user", "%s", "subrec read err");
-            ret = 0;
-        }
-        if (ret)
-            if (strcmp(mkpost.filename, fileinfo->filename))
-                ret = 0;
-        if (!ret) {
-            newent = search_record_back(fd, sizeof(struct fileheader), ent, (RECORD_FUNC_ARG) cmpfileinfoname, fileinfo->filename, &mkpost, 1);
-            ret = (newent > 0);
-            if (ret)
-                memcpy(fileinfo, &mkpost, sizeof(mkpost));
-            else {
-                ldata.l_type = F_UNLCK;
-                fcntl(fd, F_SETLK, &ldata);
-                close(fd);
-            }
-            ent = newent;
-        }
-    }
-    if (!ret) {
-#ifdef BBSMAIN
-        if(prompt) {
-            move(2, 0);
-            prints(" 文章列表发生变动，文章[%s]可能已被删除．\n", fileinfo->title);
-            clrtobot();
-            pressreturn();
-        }
-#endif
-        return DIRCHANGED;
-    }
-    switch (flag) {
-	case FILE_EFFSIZE_FLAG:
-		break;
-    case FILE_MARK_FLAG:
-        if (fileinfo->accessed[0] & FILE_MARKED) {      /*added by bad 2002.8.7 mark file mode added */
-            fileinfo->accessed[0] = (fileinfo->accessed[0] & ~FILE_MARKED);
-            bmlog(currentuser->userid, currboard, 7, 1);
-        } else {
-            fileinfo->accessed[0] = fileinfo->accessed[0] | FILE_MARKED;
-            bmlog(currentuser->userid, currboard, 6, 1);
-        }
-        setboardmark(currboard, 1);
-        break;
-    case FILE_NOREPLY_FLAG:
-        if (fileinfo->accessed[1] & FILE_READ) {
-            fileinfo->accessed[1] &= ~FILE_READ;
-#ifdef BBSMAIN
-            if (prompt)
-                a_prompt(-1, " 该文章已取消不可re模式, 请按 Enter 继续 << ", ans);
-#endif
-        } else {
-            fileinfo->accessed[1] |= FILE_READ;
-#ifdef BBSMAIN
-            if (prompt)
-                a_prompt(-1, " 该文章已设为不可re模式, 请按 Enter 继续 << ", ans);
-#endif
-            /*
-             * Bigman:2000.8.29 sysmail版处理添加版务姓名 
-             */
-            if (!strcmp(currboard, SYSMAIL_BOARD)) {
-                sprintf(ans, "〖%s〗 处理: %s", currentuser->userid, fileinfo->title);
-                strncpy(fileinfo->title, ans, STRLEN);
-                fileinfo->title[STRLEN - 1] = 0;
-            }
-        }
-        break;
-    case FILE_SIGN_FLAG:
-        if (fileinfo->accessed[0] & FILE_SIGN) {
-            fileinfo->accessed[0] &= ~FILE_SIGN;
-#ifdef BBSMAIN
-            if (prompt)
-                a_prompt(-1, " 该文章已撤消标记模式, 请按 Enter 继续 << ", ans);
-#endif
-        } else {
-            fileinfo->accessed[0] |= FILE_SIGN;
-#ifdef BBSMAIN
-            if (prompt)
-                a_prompt(-1, " 该文章已设为标记模式, 请按 Enter 继续 << ", ans);
-#endif
-        }
-        break;
-#ifdef FILTER
-    case FILE_CENSOR_FLAG:
-#ifdef SMTH
-        if ((!strcmp(currboard, FILTER_BOARD)) ||(!strcmp(currboard, "NewsClub")))
-#else
-        if (!strcmp(currboard, FILTER_BOARD)) 
-#endif
-        {
-            if (fileinfo->accessed[1] & FILE_CENSOR || fileinfo->o_board[0] == 0) {
-#ifdef BBSMAIN
-                if (prompt)
-                    a_prompt(-1, " 该文章已经通过审核或者无需审核, 请按 Enter 继续 << ", ans);
-#endif
-            } else {
-                fileinfo->accessed[1] |= FILE_CENSOR;
-                setbfile(oldpath, currboard, fileinfo->filename);
-                setbfile(newpath, fileinfo->o_board, fileinfo->filename);
-                f_cp(oldpath, newpath, 0);
-
-                setbfile(buffer, fileinfo->o_board, DOT_DIR);
-                if ((filedes = open(buffer, O_WRONLY | O_CREAT, 0664)) == -1) {
-#ifdef BBSMAIN
-                    perror(buffer);
-#endif
-                }
-                flock(filedes, LOCK_EX);
-                nowid = get_nextid(fileinfo->o_board);
-                newfh->id = nowid;
-                if (fileinfo->o_id == fileinfo->o_groupid)
-                    newfh->groupid = newfh->reid = newfh->id;
-                else {
-                    newfh->groupid = fileinfo->o_groupid;
-                    newfh->reid = fileinfo->o_reid;
-                }
-                lseek(filedes, 0, SEEK_END);
-                if (safewrite(filedes, newfh, sizeof(fileheader)) == -1) {
-                    bbslog("user", "%s", "apprec write err!");
-                }
-                flock(filedes, LOCK_UN);
-                close(filedes);
-                updatelastpost(fileinfo->o_board);
-#ifdef HAVE_BRC_CONTROL
-                brc_add_read(newfh->id);
-#endif
-                if (newfh->id == newfh->groupid)
-                    setboardorigin(fileinfo->o_board, 1);
-                setboardtitle(fileinfo->o_board, 1);
-                if (newfh->accessed[0] & FILE_MARKED)
-                    setboardmark(fileinfo->o_board, 1);
-            }
-        }
-        break;
-#endif                          /* FILTER */
-    case FILE_DELETE_FLAG:
-        if (fileinfo->accessed[1] & FILE_DEL)
-            fileinfo->accessed[1] &= ~FILE_DEL;
-        else
-            fileinfo->accessed[1] |= FILE_DEL;
-        break;
-    case FILE_DIGEST_FLAG:
-        if (fileinfo->accessed[0] & FILE_DIGEST) {      /* 如果已经是文摘的话，则从文摘中删除该post */
-            fileinfo->accessed[0] = (fileinfo->accessed[0] & ~FILE_DIGEST);
-            bmlog(currentuser->userid, currboard, 4, 1);
-            dele_digest(fileinfo->filename, direct);
-        } else {
-            struct fileheader digest;
-            char *ptr, buf[64];
-
-            memcpy(&digest, fileinfo, sizeof(digest));
-            if (digestmode)
-                strncpy(digest.title, mkpost2.title, STRLEN);
-            POSTFILE_BASENAME(digest.filename)[0] = 'G';
-            strcpy(buf, direct);
-            ptr = strrchr(buf, '/') + 1;
-            ptr[0] = '\0';
-            sprintf(genbuf, "%s%s", buf, digest.filename);
-            bmlog(currentuser->userid, currboard, 3, 1);
-            if (dashf(genbuf)) {
-                fileinfo->accessed[0] = fileinfo->accessed[0] | FILE_DIGEST;
-            } else {
-                digest.accessed[0] = 0;
-                sprintf(&genbuf[512], "%s%s", buf, fileinfo->filename);
-                strcpy(ptr, DIGEST_DIR);
-                if (get_num_records(buf, sizeof(digest)) > MAX_DIGEST) {
-                    ldata.l_type = F_UNLCK;
-                    fcntl(fd, F_SETLK, &ldata);
-                    close(fd);
-#ifdef BBSMAIN
-                    if(prompt) {
-                        move(3, 0);
-                        clrtobot();
-                        move(4, 10);
-                        prints("抱歉，你的文摘文章已经超过 %d 篇，无法再加入...\n", MAX_DIGEST);
-                        pressanykey();
-                    }
-#endif
-                    return PARTUPDATE;
-                }
-		link(&genbuf[512], genbuf);
-                append_record(buf, &digest, sizeof(digest));    /* 文摘目录下添加 .DIR */
-                fileinfo->accessed[0] = fileinfo->accessed[0] | FILE_DIGEST;
-            }
-        }
-        break;
-    case FILE_TITLE_FLAG:
-        fileinfo->groupid = fileinfo->id;
-        fileinfo->reid = fileinfo->id;
-        if (!strncmp(fileinfo->title, "Re:", 3)) {
-            strcpy(buf, fileinfo->title + 4);
-            strcpy(fileinfo->title, buf);
-        }
-        break;
-    case FILE_IMPORT_FLAG:
-        fileinfo->accessed[0] |= FILE_IMPORTED;
-        break;
-    case FILE_ATTACHPOS_FLAG:
-        break;
-	/* add by stiger */
-    case FILE_DING_FLAG:
-        if (POSTFILE_BASENAME(fileinfo->filename)[0] == 'Z') {
-	    newent=1;
-        } else {
-            struct fileheader digest;
-            char *ptr, buf[64];
-
-            memcpy(&digest, fileinfo, sizeof(digest));
-            if (digestmode)
-                strncpy(digest.title, mkpost2.title, STRLEN);
-            POSTFILE_BASENAME(digest.filename)[0] = 'Z';
-            strcpy(buf, direct);
-            ptr = strrchr(buf, '/') + 1;
-            ptr[0] = '\0';
-            sprintf(genbuf, "%s%s", buf, digest.filename);
-            bmlog(currentuser->userid, currboard, 3, 1);
-            if (dashf(genbuf)) {
-				return DONOTHING;
-            } else {
-                digest.accessed[0] = 0;
-                digest.accessed[1] = 0;
-                digest.accessed[1] |= FILE_READ;
-                sprintf(&genbuf[512], "%s%s", buf, fileinfo->filename);
-                strcpy(ptr, DING_DIR);
-                if (get_num_records(buf, sizeof(digest)) > MAX_DING) {
-                    ldata.l_type = F_UNLCK;
-                    fcntl(fd, F_SETLK, &ldata);
-                    close(fd);
-#ifdef BBSMAIN
-                    if(prompt) {
-                        move(3, 0);
-                        clrtobot();
-                        move(4, 10);
-                        prints("抱歉，你的置顶文章已经超过 %d 篇，无法再加入...\n", MAX_DING);
-                        pressanykey();
-                    }
-#endif
-                    return PARTUPDATE;
-                }
-				link(&genbuf[512], genbuf);
-                append_record(buf, &digest, sizeof(digest));    /* 文摘目录下添加 .DIR */
-            }
-        }
-	break;
-	/* add end */
-    }
-
-    if (lseek(fd, size * (ent - 1), SEEK_SET) == -1) {
-        bbslog("user", "%s", "subrec seek err");
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLK, &ldata);
-        close(fd);
-        return DONOTHING;
-    }
-    if (safewrite(fd, fileinfo, size) != size) {
-        bbslog("user", "%s", "subrec write err");
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLK, &ldata);
-        close(fd);
-        return DONOTHING;
-    }
-
-    ldata.l_type = F_UNLCK;
-    fcntl(fd, F_SETLK, &ldata);
-    close(fd);
-    if ((digestmode != DIR_MODE_NORMAL) && (digestmode != DIR_MODE_DIGEST))
-        change_dir_post_flag(currentuser, currboard, orgent, &mkpost2, flag);
-
-    return newent ? DIRCHANGED : PARTUPDATE;
 }
 
 char get_article_flag(struct fileheader *ent, struct userec *user, char *boardname, int is_bm)
@@ -2124,3 +1720,529 @@ long calc_effsize(char *fname)
     fclose(fp);
     return effsize;
 }
+
+/*
+  dirarg，要操作的dir结构
+  id1,id2, 起始编号
+  删除模式 [del_mode = 0]标记删除 [1]普通删除 [2]强制删除
+  TODO: use mmap
+*/
+int delete_range(struct write_dir_arg* dirarg,int id1,int id2,int del_mode,int curmode)
+{
+#define DEL_RANGE_BUF 2048
+    struct fileheader *savefhdr;
+    struct fileheader *readfhdr;
+    struct fileheader *delfhdr;
+    int count, totalcount, delcount, remaincount, keepcount;
+    int pos_read, pos_write, pos_end;
+    int i;
+
+#ifdef BBSMAIN
+    int savedigestmode;
+
+    /*
+     * curmode=4, 5的情形或者允许区段删除,或者不允许,这可以在
+     * 调用函数中或者任何地方给定, 这里的代码是按照不允许删除写的,
+     * 但是为了修理任何缘故造成的临时文件故障(比如自动删除机), 还是
+     * 尝试了一下打开操作; tmpfile是否对每种模式独立, 这个还是值得
+     * 商榷的.  -- ylsdd 
+     */
+    if ((curmode != DIR_MODE_NORMAL)&& (curmode != DIR_MODE_MAIL)) {   /* KCN:暂不允许 */
+        return 0;
+    }
+#endif                          /* 
+                                 */
+    prepare_write_dir(dirarg, NULL, curmode);
+    pos_end = lseek(dirarg->fd, 0, SEEK_END);
+    delcount = 0;
+    if (pos_end == -1) {
+        return -2;
+    }
+    totalcount = pos_end / sizeof(struct fileheader);
+    pos_end = totalcount * sizeof(struct fileheader);
+    if (id2 != -1) {
+        pos_read = sizeof(struct fileheader) * id2;
+    } else
+        pos_read = pos_end;
+    if (id2 == -1)
+        id2 = totalcount;
+    if (id1 != 0) {
+        pos_write = sizeof(struct fileheader) * (id1 - 1);
+        count = id1;
+        if (id1 > totalcount) {
+            if (dirarg->needlock)
+                flock(dirarg->fd,LOCK_UN);
+#ifdef BBSMAIN
+            prints("开始文章号大于文章总数");
+            pressanykey();
+#endif                          /* 
+                                 */
+            return 0;
+        }
+    } else {
+        pos_write = 0;
+        count = 1;
+        id2 = totalcount;
+    }
+    if (id2 > totalcount) {
+#ifdef BBSMAIN
+        char buf[3];
+
+        if (dirarg->needlock)
+            flock(dirarg->fd,LOCK_UN);
+        getdata(6, 0, "文章编号大于文章总数，确认删除 (Y/N)? [N]: ", buf, 2, DOECHO, NULL, true);
+        if (dirarg->needlock)
+            flock(dirarg->fd,LOCK_EX);
+        if (*buf != 'Y' && *buf != 'y') {
+            return -3;
+        }
+#else
+        if (dirarg->needlock)
+            flock(dirarg->fd,LOCK_UN);
+        return -3;
+#endif
+        pos_read = pos_end;
+        id2 = totalcount;
+    }
+    savefhdr = (struct fileheader *) malloc(DEL_RANGE_BUF * sizeof(struct fileheader));
+    readfhdr = (struct fileheader *) malloc(DEL_RANGE_BUF * sizeof(struct fileheader));
+    delfhdr = (struct fileheader *) malloc(DEL_RANGE_BUF * sizeof(struct fileheader));
+    if ((id1 != 0) && (del_mode == 0)) {        /*rangle mark del */
+        while (count <= id2) {
+            int i;
+            int readcount;
+
+            lseek(dirarg->fd, pos_write, SEEK_SET);
+            readcount = read(dirarg->fd, savefhdr, DEL_RANGE_BUF * sizeof(struct fileheader)) / sizeof(struct fileheader);
+            for (i = 0; i < readcount; i++, count++) {
+                if (count > id2)
+                    break;      /*del end */
+                if (!(savefhdr[i].accessed[0] & FILE_MARKED))
+                    savefhdr[i].accessed[1] |= FILE_DEL;
+            }
+            lseek(dirarg->fd, pos_write, SEEK_SET);
+            write(dirarg->fd, savefhdr, i * sizeof(struct fileheader));
+            pos_write += i * sizeof(struct fileheader);
+        }
+        if (dirarg->needlock)
+            flock(dirarg->fd,LOCK_UN);
+        free(savefhdr);
+        free(readfhdr);
+        free(delfhdr);
+        return 0;
+    }
+    remaincount = count - 1;
+    keepcount = 0;
+    lseek(dirarg->fd, pos_write, SEEK_SET);
+    while (count <= id2) {
+        int readcount;
+        lseek(dirarg->fd, (count - 1) * sizeof(struct fileheader), SEEK_SET);
+        readcount = read(dirarg->fd, savefhdr, DEL_RANGE_BUF * sizeof(struct fileheader)) / sizeof(struct fileheader);
+/*        if (readcount==0) break; */
+        for (i = 0; i < readcount; i++, count++) {
+            if (count > id2)
+                break;          /*del end */
+            if (((savefhdr[i].accessed[0] & FILE_MARKED) && del_mode != 2)
+                || ((id1 == 0) && (!(savefhdr[i].accessed[1] & FILE_DEL)))) {
+                memcpy(&readfhdr[keepcount], &savefhdr[i], sizeof(struct fileheader));
+                readfhdr[keepcount].accessed[1] &= ~FILE_DEL;
+                keepcount++;
+                remaincount++;
+                if (keepcount >= DEL_RANGE_BUF) {
+                    lseek(dirarg->fd, pos_write, SEEK_SET);
+                    write(dirarg->fd, readfhdr, DEL_RANGE_BUF * sizeof(struct fileheader));
+                    pos_write += keepcount * sizeof(struct fileheader);
+                    keepcount = 0;
+                }
+            }
+#ifdef BBSMAIN
+            else if (curmode != DIR_MODE_MAIL) {
+                int j;
+                memcpy(&delfhdr[delcount], &savefhdr[i], sizeof(struct fileheader));
+                delcount++;
+                if (delcount >= DEL_RANGE_BUF) {
+                    for (j = 0; j < DEL_RANGE_BUF; j++)
+                        cancelpost(currboard->filename, currentuser->userid, &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser->userid), 0);
+                    delcount = 0;
+                    setbdir(DIR_MODE_DELETED, genbuf, currboard->filename);
+                    append_record(genbuf, (char *) delfhdr, DEL_RANGE_BUF * sizeof(struct fileheader));
+                }
+                /*
+                 * need clear delcount 
+                 */
+            }
+            else if (!strstr(dirarg->filename, ".DELETED")) {
+                int j;
+                memcpy(&delfhdr[delcount], &savefhdr[i], sizeof(struct fileheader));
+                delcount++;
+                if (delcount >= DEL_RANGE_BUF) {
+                    delcount = 0;
+                    setmailfile(genbuf, currentuser->userid, ".DELETED");
+                    append_record(genbuf, (char *) delfhdr, DEL_RANGE_BUF * sizeof(struct fileheader));
+                }
+            }
+            else {
+               int j;
+	        struct stat st;
+               memcpy(&delfhdr[delcount], &savefhdr[i], sizeof(struct fileheader));
+               delcount++;
+               if (delcount >= DEL_RANGE_BUF) {
+               	delcount = 0;
+	        	for (j = 0; j < DEL_RANGE_BUF; j++){
+	            		setmailfile(genbuf, currentuser->userid, delfhdr[j].filename);
+	            		if (stat(genbuf, &st) !=-1) currentuser->usedspace-=st.st_size;
+	        	}
+               }
+            }
+#endif                          /* 
+                                 */
+        }                       /*for readcount */
+    }
+    if (keepcount) {
+        lseek(dirarg->fd, pos_write, SEEK_SET);
+        write(dirarg->fd, readfhdr, keepcount * sizeof(struct fileheader));
+    }
+    while (1) {
+        int readcount;
+
+        lseek(dirarg->fd, pos_read, SEEK_SET);
+        readcount = read(dirarg->fd, savefhdr, DEL_RANGE_BUF * sizeof(struct fileheader)) / sizeof(struct fileheader);
+        if (readcount == 0)
+            break;
+        lseek(dirarg->fd, remaincount * sizeof(struct fileheader), SEEK_SET);
+        write(dirarg->fd, savefhdr, readcount * sizeof(struct fileheader));
+        pos_read += readcount * sizeof(struct fileheader);
+        remaincount += readcount;
+    }
+#ifdef DEBUG
+#ifdef BBSMAIN
+            newbbslog(BBSLOG_DEBUG,"%s ftruncate %d",
+                dirarg->filename?dirarg->filename:currboard->filename,
+                remaincount * sizeof(struct fileheader));
+#endif
+#endif      
+    ftruncate(dirarg->fd, remaincount * sizeof(struct fileheader));
+#ifdef BBSMAIN
+    if ((curmode != DIR_MODE_MAIL) && delcount) {
+        int j;
+
+        for (j = 0; j < delcount; j++)
+            cancelpost(currboard->filename, currentuser->userid, &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser->userid), 0);
+        setbdir(DIR_MODE_DELETED, genbuf, currboard->filename);
+        append_record(genbuf, (char *) delfhdr, delcount * sizeof(struct fileheader));
+    }
+    else if (curmode==DIR_MODE_MAIL&&!strstr(dirarg->filename, ".DELETED")) {
+        setmailfile(genbuf, currentuser->userid, ".DELETED");
+        append_record(genbuf, (char *) delfhdr, delcount * sizeof(struct fileheader));
+    }
+    else if (curmode==DIR_MODE_MAIL) {
+        struct stat st;
+        int j;
+        for (j = 0; j < delcount; j++){
+            setmailfile(genbuf, currentuser->userid, delfhdr[j].filename);
+            if (stat(genbuf, &st) !=-1) currentuser->usedspace-=st.st_size;
+        }
+    }
+#endif
+    if (dirarg->needlock)
+        flock(dirarg->fd,LOCK_UN);
+    free(savefhdr);
+    free(readfhdr);
+    free(delfhdr);
+    return 0;
+}
+
+/* 增加置顶文章*/
+int add_top(struct fileheader* fileinfo,char* boardname,int flag)
+{
+    struct fileheader top;
+    char path[MAXPATH],newpath[MAXPATH],dirpath[MAXPATH];
+
+    if (POSTFILE_BASENAME(fileinfo->filename)[0] == 'Z')
+        return 3;
+    memcpy(&top, fileinfo, sizeof(top));
+    POSTFILE_BASENAME(top.filename)[0] = 'Z';
+    setbfile(path, boardname, top.filename);
+    top.accessed[0] = flag;
+    setbfile(newpath, boardname, fileinfo->filename);
+    setbdir(DIR_MODE_ZHIDING,dirpath,boardname);
+    if (get_num_records(dirpath, sizeof(top)) > MAX_DIGEST) {
+        return 4;
+    }
+    link(newpath, path);
+    append_record(dirpath, &top, sizeof(top));
+    board_update_toptitle(getbcache(boardname),1);
+    return 0;
+}
+
+/*增加文摘*/
+int add_digest(struct fileheader* fileinfo,char* boardname)
+{
+    struct fileheader digest;
+    char path[MAXPATH],newpath[MAXPATH],dirpath[MAXPATH];
+
+    memcpy(&digest, fileinfo, sizeof(digest));
+    digest.accessed[0] &= ~FILE_DIGEST;
+    POSTFILE_BASENAME(digest.filename)[0] = 'G';
+    setbfile(path, boardname, digest.filename);
+    digest.accessed[0] = 0;
+    setbfile(newpath, boardname, fileinfo->filename);
+    setbdir(DIR_MODE_DIGEST,dirpath,boardname);
+    if (get_num_records(dirpath, sizeof(digest)) > MAX_DIGEST) {
+        return 4;
+    }
+    link(newpath, path);
+    append_record(dirpath, &digest, sizeof(digest));    /* 文摘目录下添加 .DIR */
+    fileinfo->accessed[0] = fileinfo->accessed[0] | FILE_DIGEST;
+    return 0;
+}
+
+/*删除文摘*/
+int dele_digest(char *dname, const char *boardname)
+{                               /* 删除文摘内一篇POST, dname=post文件名,boardname版面名字*/
+    char digest_name[STRLEN];
+    char new_dir[STRLEN];
+    char buf[STRLEN];
+    char *ptr;
+    struct fileheader fh;
+    int pos;
+
+    strcpy(digest_name, dname);
+    setbdir(DIR_MODE_DIGEST, new_dir, boardname);
+
+    POSTFILE_BASENAME(digest_name)[0] = 'G';
+    //TODO: 这里也有个同步问题
+    pos = search_record(new_dir, &fh, sizeof(fh), (RECORD_FUNC_ARG) cmpname, digest_name);      /* 文摘目录下 .DIR中 搜索 该POST */
+    if (pos <= 0) {
+        return 2;
+    }
+    delete_record(new_dir, sizeof(struct fileheader), pos, (RECORD_FUNC_ARG) cmpname, digest_name);
+    setbfile(buf, boardname, digest_name);
+    my_unlink(buf);
+    return 0;
+}
+
+#ifdef FILTER
+int pass_filter(struct fileheader* fileinfo,struct boardheader* board)
+{
+#ifdef SMTH
+        if ((!strcmp(board->filename, FILTER_BOARD)) ||(!strcmp(board->filename, "NewsClub")))
+#else
+        if (!strcmp(board->filename, FILTER_BOARD)) 
+#endif
+        {
+            if (fileinfo->accessed[1] & FILE_CENSOR || fileinfo->o_board[0] == 0) {
+                return 3;
+            } else {
+                char oldpath[MAXPATH],newpath[MAXPATH],dirpath[MAXPATH];
+                struct fileheader newfh;
+                int nowid;
+                int filedes;
+                
+                fileinfo->accessed[1] |= FILE_CENSOR;
+                setbfile(oldpath, board->filename, fileinfo->filename);
+                setbfile(newpath, fileinfo->o_board, fileinfo->filename);
+                f_cp(oldpath, newpath, 0);
+
+                setbfile(dirpath, fileinfo->o_board, DOT_DIR);
+                if ((filedes = open(dirpath, O_WRONLY | O_CREAT, 0664)) == -1) {
+                    return -1;
+                }
+                newfh=*fileinfo;
+                flock(filedes, LOCK_EX);
+                nowid = get_nextid(fileinfo->o_board);
+                newfh.id = nowid;
+                if (fileinfo->o_id == fileinfo->o_groupid)
+                    newfh.groupid = newfh.reid = newfh.id;
+                else {
+                    newfh.groupid = fileinfo->o_groupid;
+                    newfh.reid = fileinfo->o_reid;
+                }
+                lseek(filedes, 0, SEEK_END);
+                if (safewrite(filedes, &newfh, sizeof(fileheader)) == -1) {
+                    bbslog("3user", "apprec write err! %s",newfh.filename);
+                }
+                flock(filedes, LOCK_UN);
+                close(filedes);
+                
+                updatelastpost(fileinfo->o_board);
+#ifdef HAVE_BRC_CONTROL
+                brc_add_read(newfh.id);
+#endif
+                if (newfh.id == newfh.groupid)
+                    setboardorigin(fileinfo->o_board, 1);
+                setboardtitle(fileinfo->o_board, 1);
+                if (newfh.accessed[0] & FILE_MARKED)
+                    setboardmark(fileinfo->o_board, 1);
+            }
+        }
+    return 0;
+}
+#endif                          /* FILTER */
+
+/**
+  设置fileheader的属性
+  @param dirarg 需要操作的.DIR
+  @param currmode 当前dir的模式
+  @param board 当前版面
+  @param fileinfo 文章结构
+  @param flag 要操作的标志
+  @param data 进行的操作数据。
+  @param bmlog 是否做版主操作记录
+  TODO: 检查调用这个函数的地方必须都检查版主权限
+  @return 0 成功
+              1 不能做操作
+              2 找不到原文
+              3 操作已完成
+              4 文摘区(置顶区)满
+              -1 文件打开错误
+  */
+int change_post_flag(struct write_dir_arg* dirarg,int currmode, struct boardheader*board, 
+        struct fileheader *fileinfo, int flag,struct fileheader * data,bool dobmlog)
+{
+    char buf[MAXPATH];
+    struct fileheader* originFh;
+    int ret=0;
+    if ( fileinfo&&POSTFILE_BASENAME(fileinfo->filename)[0]=='Z' )
+        /*置顶的文章不能做操作*/
+        return 1;
+    
+    if ((flag == FILE_DIGEST_FLAG) && (currmode != DIR_MODE_NORMAL))
+        /*在除了普通区不能做文摘操作*/
+        return 1;
+    
+    if (currmode == DIR_MODE_DELETED || currmode == DIR_MODE_JUNK)
+        /*在删除区，自删区不能做操作*/
+        return 1;
+    
+    if ((flag == FILE_MARK_FLAG || flag == FILE_DELETE_FLAG) && (!strcmp(board->filename, "syssecurity")
+                                                                 || !strcmp(board->filename, FILTER_BOARD)))
+    /*在过滤板，系统记录版面不能做mark,标记删除操作*/
+        return 1;       /* Leeward 98.03.29 */
+
+    if (flag == FILE_TITLE_FLAG && currmode != DIR_MODE_NORMAL)
+        /*在普通模式下才能修改主体*/
+        return 1;
+
+    if (flag == FILE_COMMEND_FLAG && currmode != DIR_MODE_NORMAL)
+        /*在普通模式下才能推荐*/
+        return 1;
+    if (prepare_write_dir(dirarg, fileinfo, currmode)!=0)
+        return 2;
+    
+    originFh=dirarg->fileptr+(dirarg->ent-1); /*新的fileheader*/
+    setbfile(buf, board->filename, originFh->filename);
+
+    /* mark 处理*/
+    if (flag&FILE_MARK_FLAG) {
+        if (data->accessed[0] & FILE_MARKED) {
+            originFh->accessed[0] |= FILE_MARKED;
+            if (dobmlog)
+                bmlog(currentuser->userid, board->filename, 7, 1);
+        } else {
+            originFh->accessed[0] &= ~FILE_MARKED;
+            if (dobmlog)
+                bmlog(currentuser->userid, board->filename, 6, 1);
+        } 
+        setboardmark(board->filename, 1);
+    }
+    
+    /* 不可回复 处理*/
+    if (flag&FILE_NOREPLY_FLAG) {
+        if (!strcmp(board->filename, SYSMAIL_BOARD)) {
+            char ans[STRLEN];
+            sprintf(ans, "〖%s〗 处理: %s", currentuser->userid, fileinfo->title);
+            strncpy(fileinfo->title, ans, STRLEN);
+            originFh->title[STRLEN - 1] = 0;
+        }
+        if (data->accessed[1] & FILE_READ) {
+            originFh->accessed[1] |= FILE_READ;
+        } else {
+            originFh->accessed[1] &= ~FILE_READ;
+        } 
+    }
+    
+    /* 标记 处理*/
+    if (flag&FILE_COMMEND_FLAG) {
+        if (data->accessed[1] & FILE_SIGN)
+            originFh->accessed[1] |= FILE_COMMEND;
+        else
+            originFh->accessed[1] &= ~FILE_COMMEND;
+    }
+
+    /* 标记 处理*/
+    if (flag&FILE_SIGN_FLAG) {
+        if (data->accessed[0] & FILE_SIGN)
+            originFh->accessed[0] |= FILE_SIGN;
+        else
+            originFh->accessed[0] &= ~FILE_SIGN;
+    }
+
+    /* 标记删除 处理*/
+    if (flag&FILE_DELETE_FLAG) {
+        if (data->accessed[1] & FILE_DEL)
+            originFh->accessed[1] |= FILE_DEL;
+        else
+            originFh->accessed[1] &= ~FILE_DEL;
+    }
+
+    /* 收入文摘处理*/
+    if (flag&FILE_DIGEST_FLAG) {
+        if (data->accessed[0] & FILE_DIGEST)  {     /*设置DIGEST*/ 
+            if (dobmlog)
+                bmlog(currentuser->userid, board->filename, 3, 1);
+            ret=add_digest(originFh,board->filename);
+        } else {/* 如果已经是文摘的话，则从文摘中删除该post */
+            originFh->accessed[0] = (originFh->accessed[0] & ~FILE_DIGEST);
+            if (dobmlog)
+                bmlog(currentuser->userid, board->filename, 4, 1);
+            ret=dele_digest(originFh->filename, board->filename);
+        }
+    }
+    if (ret==0) {
+        if (flag&FILE_TITLE_FLAG) {
+            originFh->groupid = originFh->id;
+            originFh->reid = originFh->id;
+            if (!strncmp(originFh->title, "Re: ", 4)) {
+                strcpy(buf, originFh->title + 4);
+                if (*buf!=0)
+                    strcpy(originFh->title, buf);
+            }
+        }
+        if (flag&FILE_IMPORT_FLAG) {
+            if (data->accessed[0] & FILE_IMPORTED)
+                originFh->accessed[0] |= FILE_IMPORTED;
+            else
+                originFh->accessed[0] &= ~FILE_IMPORTED;
+        }
+#ifdef FILTER
+        if (flag&FILE_CENSOR_FLAG) {
+            ret=pass_filter(originFh,board);
+        }
+#endif
+        if (flag&FILE_ATTACHPOS_FLAG) {
+            originFh->attachment=data->attachment;
+        }
+        if (flag&FILE_DING_FLAG) {
+            ret=add_top(originFh,board->filename,data->accessed[0]);
+        }
+        if (flag&FILE_EFFSIZE_FLAG) {
+            originFh->eff_size=data->eff_size;
+        }
+    }
+    if ((currmode != DIR_MODE_NORMAL) && (currmode != DIR_MODE_DIGEST)) {
+        /*需要更新.DIR文件*/
+        char dirpath[MAXPATH];
+        struct write_dir_arg dotdirarg;
+        malloc_write_dir_arg(&dotdirarg);
+        setbdir(DIR_MODE_NORMAL, dirpath, board->filename);
+        dotdirarg.filename=dirpath;
+        change_post_flag(&dotdirarg, DIR_MODE_NORMAL, board, originFh, flag,data,false);
+        free_write_dir_arg(&dotdirarg);
+    }
+    if (dirarg->needlock)
+        flock(dirarg->fd,LOCK_UN);
+    return ret;
+}
+
+

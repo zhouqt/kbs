@@ -59,6 +59,7 @@
 #include <arpa/inet.h>
 #include <sys/wait.h>
 #include <stdarg.h>
+#include <setjmp.h>
 
 #ifdef HAVE_TERMIOS_H
 #include <termios.h>
@@ -297,19 +298,6 @@ O MaxMessageSize=32000
 /*#ifndef BBSIRC*/
 #include "modes.h"              /* The list of valid user modes */
 
-#define DONOTHING       0       /* Read menu command return states */
-#define FULLUPDATE      1       /* Entire screen was destroyed in this oper */
-#define PARTUPDATE      2       /* Only the top three lines were destroyed */
-#define DOQUIT          3       /* Exit read menu was executed */
-#define NEWDIRECT       4       /* Directory has changed, re-read files */
-#define READ_NEXT       5       /* Direct read next file */
-#define READ_PREV       6       /* Direct read prev file */
-#define GOTO_NEXT       7       /* Move cursor to next */
-#define DIRCHANGED      8       /* Index file was changed */
-#define NEWSCREEN	9	/* split the screen */
-#define CHANGEMODE  10  /* 换版面了或者是换模式了*/
-#define SELCHANGE   11 /*选择变了,对应SHOW_SELCHANGE*/ 
-
 #define I_TIMEOUT   (-2)        /* Used for the getchar routine select call */
 #define I_OTHERDATA (-333)      /* interface, (-3) will conflict with chinese */
 
@@ -319,18 +307,6 @@ O MaxMessageSize=32000
 #define Max(a,b) ((a>b)?a:b)
 
 /*#endif*//* !BBSIRC */
-
-/*SREAD Define*/
-#define SR_BMBASE       (10)
-#define SR_BMDEL        (11)
-#define SR_BMMARK       (12)
-#define SR_BMDIGEST     (13)
-#define SR_BMIMPORT     (14)
-#define SR_BMTMP        (15)
-#define SR_BMMARKDEL   (16)
-#define SR_BMNOREPLY    (17)
-#define SR_BMTOTAL      (18)
-/*SREAD Define*/
 
 #ifndef EXTEND_KEY
 #define EXTEND_KEY
@@ -415,19 +391,20 @@ typedef size_t socklen_t;
 #define BBS_PAGESIZE    (t_lines - 4)
 
 /* added by bad 2002.8.1 */
-#define FILE_MARK_FLAG 0
-#define FILE_NOREPLY_FLAG 1
-#define FILE_SIGN_FLAG 2
-#define FILE_DELETE_FLAG 3
-#define FILE_DIGEST_FLAG 4
-#define FILE_TITLE_FLAG 5
-#define FILE_IMPORT_FLAG 6
+#define FILE_MARK_FLAG 1
+#define FILE_NOREPLY_FLAG 2
+#define FILE_SIGN_FLAG 4
+#define FILE_DELETE_FLAG 8
+#define FILE_DIGEST_FLAG 0x10
+#define FILE_TITLE_FLAG 0x20
+#define FILE_IMPORT_FLAG 0x40
 #ifdef FILTER
-#define FILE_CENSOR_FLAG 7
+#define FILE_CENSOR_FLAG 0x80
 #endif
-#define FILE_ATTACHPOS_FLAG 8
-#define FILE_DING_FLAG 9	/* stiger,置顶 */
-#define FILE_EFFSIZE_FLAG 10
+#define FILE_ATTACHPOS_FLAG 0x100
+#define FILE_DING_FLAG 0x200	/* stiger,置顶 */
+#define FILE_EFFSIZE_FLAG 0x400
+#define FILE_COMMEND_FLAG 0x800
 
 /**
  * Enumeration values for the so-called board .DIR file.
@@ -445,9 +422,11 @@ enum BBS_DIR_MODE
     DIR_MODE_ORIGIN  = 6, /** .ORIGIN */
     DIR_MODE_AUTHOR  = 7, /** .AUTHOR.userid */
     DIR_MODE_TITLE   = 8, /** .TITLE.userid */
-	DIR_MODE_ZHIDING = 9,  /** .DINGDIR */
-	DIR_MODE_WEB_THREAD = 10, /** .WEBTHREAD */
-	DIR_MODE_MAIL /* mail mode */
+    DIR_MODE_SUPERFITER = 9, /** .FILTER */
+    DIR_MODE_WEB_THREAD = 10, /** .WEBTHREAD */
+    DIR_MODE_ZHIDING = 11,  /** .DINGDIR */
+    DIR_MODE_MAIL ,/* mail mode */
+    DIR_MODE_FRIEND, /*好友名单*/
 };
 
 enum BBSLOG_TYPE
@@ -455,7 +434,8 @@ enum BBSLOG_TYPE
     BBSLOG_USIES =1,
     BBSLOG_USER  =2,
     BBSLOG_BOARDUSAGE =3,
-    BBSLOG_SMS =4
+    BBSLOG_SMS =4,
+    BBSLOG_DEBUG
 };
 
 enum BBSPOST_MODE

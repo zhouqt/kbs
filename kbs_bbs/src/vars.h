@@ -15,7 +15,6 @@ SMTH_API int scrint;              /* Set when screen has been initialized */
 
                                   /* Used by namecomplete *only* */
 
-SMTH_API int digestmode;          /*To control Digestmode */
 extern struct user_info uinfo;  /* Ditto above...utmp entry is stored here
                                    and written back to the utmp file when
                                    necessary (pretty darn often). */

@@ -18,6 +18,7 @@
 */
 
 #include "bbs.h"
+#include "read.h"
 #ifdef lint
 #include <sys/uio.h>
 #endif                          /* 
@@ -31,12 +32,6 @@
 extern int numf, friendmode;
 int talkidletime = 0;
 int ulistpage;
-int friend_query();
-int friend_mail();
-int friend_dele();
-int friend_add();
-int friend_edit();
-int friend_help();
 int badlist();                  /* Bigman 2000.12.26 */
 static int do_talk(int fd);
 
@@ -47,19 +42,6 @@ int talkrec = -1;
 char partner[IDLEN + 1];
 #endif
                                  
-struct one_key friend_list[] = {
-    {'r', friend_query},
-    {'m', friend_mail},
-    {'M', friend_mail},
-    {'a', friend_add},
-    {'A', friend_add},
-    {'d', friend_dele},
-    {'D', friend_dele},
-    {'E', friend_edit},
-    {'h', friend_help},
-    {'H', friend_help},
-    {'\0', NULL},
-};
 struct talk_win {
 
     int curcol, curln;
@@ -1686,7 +1668,7 @@ int deleteoverride(char *uident)
     return (deleted > 0) ? 1 : -1;
 }
 
-void friend_title()
+int friend_title(struct _select_def* conf)
 {
     int chkmailflag = 0;
 
@@ -1704,45 +1686,41 @@ void friend_title()
     prints(" [¡û,e] Àë¿ª [h] ÇóÖú [¡ú,r] ºÃÓÑËµÃ÷µµ [¡ü,¡ý] Ñ¡Ôñ [a] Ôö¼ÓºÃÓÑ [d] É¾³ýºÃÓÑ\n");
     prints("[44m ±àºÅ  ºÃÓÑÁÐ±í      ´úºÅËµÃ÷                                                   [m\n");
 }
-char *friend_doentry(char *buf, int ent, struct friends *fh)
+
+char *friend_doentry(char *buf, int ent, struct friends *fh,void* readdata,struct _select_def * conf)
 {
     sprintf(buf, " %4d  %-12.12s  %s", ent, fh->id, fh->exp);
     return buf;
 }
 
-int friend_edit(ent, fh, direc)
-int ent;
-struct friends *fh;
-char *direc;
+int friend_edit(struct _select_def* conf,struct friends *fh,void* extraarg)
 {
     struct friends nh;
     char buf[STRLEN / 2];
     int pos;
+    struct read_arg* read_arg=(struct read_arg*)conf->arg;
 
-    pos = search_record(direc, &nh, sizeof(nh), (RECORD_FUNC_ARG) cmpfnames, fh->id);
+    pos = search_record(read_arg->direct, &nh, sizeof(nh), (RECORD_FUNC_ARG) cmpfnames, fh->id);
     move(t_lines - 2, 0);
     clrtoeol();
     if (pos > 0) {
         sprintf(buf, "ÇëÊäÈë %s µÄÐÂºÃÓÑËµÃ÷: ", fh->id);
         getdata(t_lines - 2, 0, buf, nh.exp, 15, DOECHO, NULL, false);
     }
-    if (substitute_record(direc, &nh, sizeof(nh), pos) < 0)
+    if (substitute_record(read_arg->direct, &nh, sizeof(nh), pos) < 0)
         bbslog("user","%s","Friend files subs err");
     move(t_lines - 2, 0);
     clrtoeol();
-    return NEWDIRECT;
+    return DIRCHANGED;
 }
 
-int friend_help()
+int friend_help(struct _select_def* conf,struct friends *fh,void* extraarg)
 {
     show_help("help/friendshelp");
     return FULLUPDATE;
 }
 
-int friend_add(ent, fh, direct)
-int ent;
-struct friends *fh;
-char *direct;
+int friend_add(struct _select_def* conf,struct friends *fh,void* extraarg)
 {
     char uident[13];
 
@@ -1760,10 +1738,7 @@ char *direct;
     return FULLUPDATE;
 }
 
-int friend_dele(ent, fh, direct)
-int ent;
-struct friends *fh;
-char *direct;
+int friend_dele(struct _select_def* conf,struct friends *fh,void* extraarg)
 {
     char buf[STRLEN];
     int deleted = false;
@@ -1793,10 +1768,7 @@ char *direct;
     return (deleted) ? FULLUPDATE : DONOTHING;
 }
 
-int friend_mail(ent, fh, direct)
-int ent;
-struct friends *fh;
-char *direct;
+int friend_mail(struct _select_def* conf,struct friends *fh,void* extraarg)
 {
     if (!HAS_PERM(currentuser, PERM_POST))
         return DONOTHING;
@@ -1804,10 +1776,7 @@ char *direct;
     return FULLUPDATE;
 }
 
-int friend_query(ent, fh, direct)
-int ent;
-struct friends *fh;
-char *direct;
+int friend_query(struct _select_def* conf,struct friends *fh,void* extraarg)
 {
     int ch;
 
@@ -1847,10 +1816,25 @@ char *direct;
     return FULLUPDATE;
 }
 
+struct key_command friend_list[] = {
+    {'r', (READ_KEY_FUNC)friend_query,NULL},
+    {'m', (READ_KEY_FUNC)friend_mail,NULL},
+    {'M', (READ_KEY_FUNC)friend_mail,NULL},
+    {'a', (READ_KEY_FUNC)friend_add,NULL},
+    {'A', (READ_KEY_FUNC)friend_add,NULL},
+    {'d', (READ_KEY_FUNC)friend_dele,NULL},
+    {'D', (READ_KEY_FUNC)friend_dele,NULL},
+    {'E', (READ_KEY_FUNC)friend_edit,NULL},
+    {'h', (READ_KEY_FUNC)friend_help,NULL},
+    {'H', (READ_KEY_FUNC)friend_help,NULL},
+    {'\0', NULL},
+};
+
 void t_override()
 {
+    char genbuf[PATHLEN];
     sethomefile(genbuf, currentuser->userid, "friends");
-    i_read(GMENU, genbuf, friend_title, (READ_FUNC) friend_doentry, friend_list, sizeof(struct friends));
+    new_i_read(DIR_MODE_FRIEND, genbuf, friend_title, (READ_ENT_FUNC) friend_doentry, friend_list, sizeof(struct friends));
     clear();
     return;
 }

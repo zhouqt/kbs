@@ -435,3 +435,13 @@ void board_setcurrentuser(int idx,int num)
     else
         brdshm->bstatus[idx - 1].currentusers=0;
 }
+
+void board_update_toptitle(struct boardheader* bh,int increment)
+{
+    int fd=bcache_lock();
+    if (increment==0)
+      bh->toptitle=0;
+    else
+      bh->toptitle+=increment;
+    bcache_unlock(fd);
+}

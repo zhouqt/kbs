@@ -145,7 +145,7 @@
 #undef HAVE_MUNMAP
 
 /* Enable MySQL support */
-#undef HAVE_MYSQL
+#undef HAVE_MYSQL_SMTH
 
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 #undef HAVE_NDIR_H

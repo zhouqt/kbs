@@ -111,7 +111,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     int dashf(char *fname);
     int dashd(char *fname);
     int seek_in_file(char filename[STRLEN], char seekstr[STRLEN]);
-    char *setbdir(int digestmode, char *buf, char *boardname);
+    char *setbdir(int digestmode, char *buf, const char *boardname);
     int my_system(const char *cmdstring);
     char *modestring(int mode, int towho, int complete, char *chatid);
     int countexp(struct userec *udata);
@@ -135,7 +135,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     char *setmailfile(char *buf, const char *userid, const char *filename);     /* 取某用户mail文件 路径 */
     char *setmailpath(char *buf, char *userid); /* 取 某用户 的mail */
     char *setbpath(char *buf, char *boardname); /* 取某版 路径 */
-    char *setbfile(char *buf, char *boardname, char *filename); /* 取某版下文件 */
+    char *setbfile(char *buf,const char *boardname,const char *filename); /* 取某版下文件 */
     void RemoveMsgCountFile(char *userID);
     int bad_user_id(char *userid);      /* 检查.badname是否允许注册的 */
     int valid_ident(char *ident);       /* 检查合法的ident */
@@ -165,13 +165,16 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     unsigned int store_mailbox_prop(char *userid);
     unsigned int get_mailbox_prop(char *userid);
     unsigned int update_mailbox_prop(char *userid, unsigned int prop);
-	int gen_title(char *boardname );
+	int gen_title(const char *boardname );
 	size_t read_user_memo( char *userid, struct usermemo ** ppum );
 
 #define time(x) bbstime(x)
 
+    sigjmp_buf* push_sigbus();
+    void popup_sigbus();
+
 #define BBS_TRY \
-    if (!sigsetjmp(bus_jump, 1)) { \
+    if (!sigsetjmp(*push_sigbus(), 1)) { \
         signal(SIGBUS, sigbus);
 
 #define BBS_CATCH \
@@ -179,10 +182,11 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     else { \
 
 #define BBS_END } \
-    signal(SIGBUS, SIG_IGN);
+    popup_sigbus();
 
-#define BBS_RETURN(x) {signal(SIGBUS, SIG_IGN);return (x);}
-#define BBS_RETURN_VOID {signal(SIGBUS, SIG_IGN);return;}
+#define BBS_RETURN(x) {popup_sigbus();return (x);}
+#define BBS_RETURN_VOID {popup_sigbus();return;}
+
 
     int safe_mmapfile(char *filename, int openflag, int prot, int flag, void **ret_ptr, size_t * size, int *ret_fd);
     int safe_mmapfile_handle(int fd, int prot, int flag, void **ret_ptr, size_t * size);
@@ -210,6 +214,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     int setboardtitle(char *board, int i);
     int board_setreadonly(char *board, int readonly);   /* 设置版面只读属性 */
     int get_nextid(char *boardname);    /*生成文章索引号并自动加一 */
+    void board_update_toptitle(struct boardheader* bh,int increment); /*改变置顶个数*/
 #if HAVE_WWW==1
     int resolve_guest_table(); /* www guest shm */
     int www_guest_lock();
@@ -256,7 +261,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     int junkboard(char *currboard);     /* 判断是否为 junkboards */
     int checkreadonly(char *board);     /* 判断是不是只读版面 */
     int deny_me(char *user, char *board);       /* 判断用户 是否被禁止在当前版发文章 */
-    int haspostperm(struct userec *user, char *bname);  /* 判断在 bname版 是否有post权 */
+    int haspostperm(const struct userec *user,const char *bname);  /* 判断在 bname版 是否有post权 */
     int chk_BM_instr(const char BMstr[STRLEN - 1], const char bmname[IDLEN + 2]);       /*查询字符串中是否包含 bmname */
     int chk_currBM(const char BMstr[STRLEN - 1], struct userec *user);  /* 根据输入的版主名单 判断user是否有版主 权限 */
     int deldeny(struct userec *user, char *board, char *uident, int notice_only);       /* 删除 禁止POST用户 */
@@ -266,10 +271,24 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     int is_emailpost_board(char *board);
 
 /* define in article.c */
+    struct write_dir_arg {
+      char* filename; /*.dir的文件名*/
+      int fd;                 //文件句柄
+      struct fileheader* fileptr;   //文件mmap指针
+      int ent;               //当前位置
+      off_t size;           //文件大小
+      bool needclosefd; //释放结构的时候是否需要关闭文件，内部使用
+      bool needlock; //是否需要自己lock文件
+    };
+    void malloc_write_dir_arg(struct write_dir_arg*filearg);
+    int init_write_dir_arg(struct write_dir_arg*filearg);
+    void free_write_dir_arg(struct write_dir_arg*filearg);
 	/* Search_Bin 
 	 * 功能：依据key, 对ptr传入的.DIR索引进行二分查找
 	 */
-	int Search_Bin(char *ptr, int key, int start, int end);
+	int Search_Bin(struct fileheader*ptr, int key, int start, int end);
+    int delete_range(struct write_dir_arg* dirarg,int id1,int id2,int del_mode,int curmode);
+
     /*
      * mmap_search_dir_apply
      * 功能:mmap struct fileheader结构的文件，找到需要的记录,
@@ -319,7 +338,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     int update_user_usedspace(int delta, struct userec *user);
     int getmailnum(char *recmaildir);
     int isowner(struct userec *user, struct fileheader *fileinfo);
-    int do_del_post(struct userec *user, int ent, struct fileheader *fileinfo, char *direct, char *board, int digestmode, int decpost);
+    int do_del_post(struct userec *user, struct write_dir_arg* delarg,struct fileheader *fileinfo, char *board, int digestmode, int decpost);
     /*
      * 删除文章，digestmode定义阅读模式，decpost表示斑竹删除是否减文章数 
      */
@@ -345,9 +364,10 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     int post_file(struct userec *user, char *fromboard, char *filename, char *nboard, char *posttitle, int Anony, int mode);
     int post_cross(struct userec *user, char *toboard, char *fromboard, char *title, char *filename, int Anony, int in_mail, char islocal, int mode);   /* (自动生成文件名) 转贴或自动发信 */
 
-/* bad 2002.8.16 */
-    int dele_digest(char *dname, char *direc);
-    int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, char *currboard, int ent, struct fileheader *fileinfo, char *direct, int flag, int prompt);
+    int dele_digest(char *dname, const char *boardname);
+    int change_post_flag(struct write_dir_arg* dirarg,int currmode, struct boardheader*board,
+        struct fileheader *fileinfo, int flag,struct fileheader * data,bool dobmlog);
+
 
 /**
  * A function return flag character of an article.
@@ -394,7 +414,6 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     long get_mailusedspace(struct userec *user, int force);     /*peregrine */
     int get_record_handle(int fd, void *rptr, int size, int id);
     int get_record(char *filename, void *rptr, int size, int id);
-    int delete_range(char *filename, int id1, int id2, int del_mode);
     int get_records(char *filename, void *rptr, int size, int id, int number);
     int read_get_records(char *filename, char *filename1, char *rptr, int size, int id, int number);
     int search_record_back(int fd,      /* idx file handle */
@@ -404,7 +423,6 @@ void set_user_title(unsigned char titleidx,char* newtitle);
                            void *farg,  /* additional param to call fptr() / original record */
                            void *rptr,  /* record data buffer to be used for reading idx file */
                            int sorted); /* if records in file are sorted */
-    int del_range(int ent, struct fileheader *fileinfo, char *direct, int mailmode);
     void load_mail_list(struct userec *user, struct _mail_list *mail_list);
     void save_mail_list(struct _mail_list *mail_list);
 
@@ -509,7 +527,7 @@ int pc_read_comment();
 	void load_import_path(char ** i_path,char ** i_title, int * i_path_time,int * i_path_select);
 	void free_import_path(char ** i_path,char ** i_title,int * i_path_time);
 	int linkto(char *path, char *fname, char *title);
-	int add_grp(char group[STRLEN], char bname[STRLEN], char title[STRLEN], char gname[STRLEN]);
+	int add_grp(const char group[STRLEN],const char bname[STRLEN],const char title[STRLEN],const char gname[STRLEN]);
 
 /* check the user's access for the path
   return < 0 deny access
@@ -553,6 +571,9 @@ time_t calc_calltime(int mode);
 /* xml.c */
 char *encode_xml(char *buf, const char *str, size_t buflen);
 char *string_copy(char *buf, const char *str, size_t * buflen);
+
+/* output.c */
+buffered_output_t* alloc_output(size_t buflen);
 
 #ifdef SMS_SUPPORT
 int smsid2uid(char* smsid);

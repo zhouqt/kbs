@@ -2908,6 +2908,8 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
     struct userec *user;
     char bm_str[BM_LEN - 1];
     struct boardheader *bp;
+    struct write_dir_arg delarg;
+    int ret;
 
     user = currentuser;
     bp = getbcache(board);
@@ -2915,21 +2917,27 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
     if (!strcmp(board, "syssecurity")
         || !strcmp(board, "junk")
         || !strcmp(board, "deleted"))   /* Leeward : 98.01.22 */
-        return DONOTHING;
+        return 4;
 
     if (fileinfo->owner[0] == '-') {
-        return FULLUPDATE;
+        return 2;
     }
     owned = isowner(user, fileinfo);
     /* change by KCN  ! strcmp( fileinfo->owner, currentuser->userid ); */
     strcpy(usrid, fileinfo->owner);
     if (!(owned) && !HAS_PERM(currentuser, PERM_SYSOP))
         if (!chk_currBM(bm_str, currentuser)) {
-            return DONOTHING;
+            return 1;
         }
-    if (do_del_post(currentuser, ent, fileinfo, direct, board, 0, 1) != 0)
-        return FULLUPDATE;
-    return DIRCHANGED;
+    malloc_write_dir_arg(&delarg);
+    setbdir(DIR_MODE_NORMAL, direct, bp->filename);
+    delarg.filename=direct;
+    delarg.ent=ent;
+    ret=do_del_post(currentuser, &delarg, fileinfo, board, DIR_MODE_NORMAL, true);
+    free_write_dir_arg(&delarg);
+    if (ret != 0)
+        return 3;
+    return 0;
 
 }
 

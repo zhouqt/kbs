@@ -19,6 +19,7 @@
 */
 #include "bbs.h"
 #include "vote.h"
+#include "read.h"
 extern int page, range;
 struct votebal currvote;
 struct votelimit currlimit;     /*Haohmaru.99.11.17.根据版主设的限制条件判断是否让该使用者投票 */
@@ -123,7 +124,7 @@ int b_notes_edit()
     return FULLUPDATE;
 }
 
-int b_sec_notes_edit()
+int b_sec_notes_edit(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     char buf[STRLEN];
     char ans[4];
@@ -158,7 +159,7 @@ int b_sec_notes_edit()
     return FULLUPDATE;
 }
 
-int b_jury_edit()
+int b_jury_edit(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {                               /* stephen 2001.11.1: 编辑版面仲裁名单 */
     char buf[STRLEN];
     char ans[4];
@@ -1078,7 +1079,7 @@ char *bname;
     return FULLUPDATE;
 }
 
-int b_vote_maintain()
+int b_vote_maintain(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
 	int ret;
 #ifdef NEW_HELP
@@ -1221,7 +1222,7 @@ static int Show_Votes()
     return 0;
 }
 
-int b_vote()
+int b_vote(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     int num_of_vote;
     int voting;
@@ -1254,11 +1255,6 @@ int b_vote()
     return /*user_vote( currboard->filename ) */ FULLUPDATE;
 }
 
-int b_results()
-{
-    return vote_results(currboard->filename);
-}
-
 int m_vote()
 {
     modify_user_mode(ADMIN);
@@ -1275,7 +1271,7 @@ int x_vote()
     modify_user_mode(XMENU);
     bh=currboard;
     bid=currboardent;
-    b_vote();
+    b_vote(NULL,NULL,NULL);
     currboard=bh;
     currboardent=bid;
     return 0;

@@ -25,6 +25,7 @@
 */
 
 #include "bbs.h"
+#include "read.h"
 #include <time.h>
 #include <ctype.h>
 
@@ -323,7 +324,7 @@ int addtodeny(char *uident)
 }
 
 
-int deny_user(int ent, struct fileheader *fileinfo, char *direct)
+int deny_user(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {                               /* 禁止POST用户名单 维护主函数 */
     char uident[STRLEN];
     int page = 0;
@@ -544,7 +545,7 @@ int delclubmember(char *uident, int readperm)
     return DONOTHING;
 }
 
-int clubmember(int ent, struct fileheader *fh, char *direct)
+int clubmember(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     char uident[STRLEN];
     char ans[8], buf[STRLEN];

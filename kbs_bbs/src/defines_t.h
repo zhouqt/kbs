@@ -93,28 +93,18 @@ int check_readonly(char *checked);      /* Leeward 98.03.28 */
 void record_exit_time();        /* 记录离线时间  Luzi 1998/10/23 */
 int shownotepad();
 int check_stuffmode();
-int do_reply(struct fileheader *fileinfo);
-int do_select(int ent, struct fileheader *fileinfo, char *direct);      /* 输入讨论区名 选择讨论区 */
+int do_reply(struct _select_def* conf,struct fileheader *fileinfo);
 int do_post();
 void make_blist();
 int digest_post(int ent, struct fileheader *fhdr, char *direct);
 int mark_post(int ent, struct fileheader *fhdr, char *direct);
-int post_article();             /*用户 POST 文章 */
+int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_file);             /*用户 POST 文章 */
 int do_send(char *userid, char *title,char* q_file);
-int digest_mode();
-int deleted_mode();
-int marked_mode();
-int change_mode();
-int junk_mode();
 int Goodbye();
-int post_reply(int ent, struct fileheader *fileinfo, char *direct);
 int sequential_read2(int ent);
 void do_quote(char *filepath, char quote_mode, char* q_file,char* q_user);
 void setqtitle(char *stitle);
-int set_delete_mark(int ent, struct fileheader *fileinfo, char *direct);
-int noreply_post_noprompt(int ent, struct fileheader *fileinfo, char *direct);
 void RemoveAppendedSpace(char *ptr);
-int del_post(int ent, struct fileheader *fileinfo, char *direct);
 
 /*vote.c*/
 void makevdir(char *bname);
@@ -149,7 +139,6 @@ int servicepage(int line, char *mesg);
 int addtooverride(char *uident);
 int t_query(char* q_id);
 int talkreply();
-int friend_add(int ent, struct friends *fh, char *direct);
 void talk_request();
 int num_user_logins(char *uid);
 int listfilecontent(char *fname);
@@ -166,6 +155,7 @@ int show_authorinfo(int ent, struct fileheader *fileinfo, char *direct);
 struct keeploc *getkeep(char *s, int def_topline, int def_cursline);
 int sread(int passonly, int readfirst, int auser, int pnum, struct fileheader *ptitle);
 void fixkeep(char *s, int first, int last);
+
 typedef char *(*READ_FUNC) (void *, int, void *);
 int i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, struct one_key *rcmdlist, int ssize);
 void u_exit();
@@ -195,6 +185,7 @@ int a_SeSave(char *path, char *key, struct fileheader *fileinfo, int nomsg, char
 int a_menusearch(char *path, char *key, int level);
 int a_Save(char *path, char *key, struct fileheader *fileinfo, int nomsg, char *direct, int ent);
 int a_Import(char *path, char *key, struct fileheader *fileinfo, int nomsg, char *direct, int ent);     /* Leeward 98.04.15 */
+int set_import_path(char* path);
 
 /* goodbye.c */
 void showstuff(char buf[256]);
@@ -233,7 +224,6 @@ unsigned int setperms(unsigned int pbits, unsigned int basic, char *prompt, int 
 void record_exit_time();
 
 /* announce.c */
-int add_grp(char group[STRLEN], char bname[STRLEN], char title[STRLEN], char gname[STRLEN]);
 int edit_grp(char bname[STRLEN], char title[STRLEN], char newtitle[100]);
 
 /* boards_t.c */
@@ -242,10 +232,12 @@ int choose_board(int newflag, char *boardprefix,int group,int yank_flag);
 /* 选择 版， readnew或readboard */
 
 /* bm.c*/
-int deny_user(int ent,struct fileheader* fileinfo,char* direct);    /* 禁止POST用户名单 维护主函数 */
-int clubmember(int ent,struct fileheader* fh,char* direct);
+int deny_user(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg); /* 禁止POST用户名单 维护主函数 */
+int clubmember(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
+
 
 /* zmodem */
+int read_zsend(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
 int bbs_zsendfile(char* filename,char* sendname);
 char* bbs_zrecvfile();
 

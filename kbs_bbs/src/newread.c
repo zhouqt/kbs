@@ -6,9 +6,116 @@
 #include "read.h"
 
 extern char MsgDesUid[14];
+extern unsigned int tmpuser;
+
+//每一个模式上次阅读位置保存
+struct _read_pos {
+    int mode;
+    char* key;
+    int pos;
+    struct _read_pos* next;
+}static *read_pos_head=NULL;
+
+/* 获得上一次阅读的位置
+  * @param mode 阅读模式
+  * @param direct dir的文件名
+  * @return 上次位置，为0则失败
+*/
+int getPos(int mode,char* direct,struct boardheader* bh)
+{
+    struct _read_pos* ptr;
+    char* key;
+    
+    ptr=read_pos_head;
+    if (mode==DIR_MODE_MAIL)
+        key=direct;
+    else if (mode==DIR_MODE_FRIEND)
+        key=NULL;
+    else
+        key=bh->filename;
+    while (ptr!=NULL) {
+        if (mode==ptr->mode) {
+            if ((key==NULL)||((ptr->key!=NULL)&&(!strcmp(key,ptr->key))))
+                return ptr->pos;
+        }
+        ptr=ptr->next;
+    }
+    return 0;
+}
+
+/* 保存阅读位置
+  * @param mode 阅读模式
+  * @param direct dir的文件名
+  * @param pos 阅读位置
+*/
+void savePos(int mode,char* direct,int pos,struct boardheader* bh)
+{
+    struct _read_pos*ptr;
+    char* key;
+    
+    ptr=read_pos_head;
+    if (mode==DIR_MODE_MAIL)
+        key=direct;
+    else if (mode==DIR_MODE_FRIEND)
+        key=NULL;
+    else
+        key=bh->filename;
+    while (ptr!=NULL) {
+        if (mode==ptr->mode) {
+            if ((key==NULL)||((ptr->key!=NULL)&&(!strcmp(key,ptr->key))))
+                break;
+        }
+        ptr=ptr->next;
+    }
+    if (ptr==NULL) { /*增加一个表项*/
+        ptr=(struct _read_pos*)malloc(sizeof(struct _read_pos));
+        ptr->next=read_pos_head;
+        read_pos_head=ptr;
+    }
+    ptr->mode=mode;
+    if (key!=NULL) {
+    ptr->key=(char*)malloc(strlen(key)+1);
+    strcpy(ptr->key,key);
+    } else
+        ptr->key=NULL;
+    ptr->pos=pos;
+}
+
+static int read_search_articles(struct _select_def* conf, char *query, bool up, int aflag);
+/* 寻找下一个未读文章，找到返回位置，否则返回0*/
+int find_nextnew(struct _select_def* conf,int begin)
+{
+    struct read_arg* arg=conf->arg;
+    struct fileheader *pFh,*nowFh;
+    off_t size;
+    bool found;
+    int i;
+    if (i<=0)
+        return 0;
+    BBS_TRY {
+        if (safe_mmapfile_handle(arg->fd, PROT_READ|PROT_WRITE, MAP_SHARED, (void **) &pFh, &size) ) {
+            nowFh=pFh+begin-1;
+            found=false;
+            for (i=begin-1;i<size/sizeof(struct fileheader);i++,nowFh++) {
+                if (brc_unread(nowFh->id)) {
+                    found=true;
+                    break;
+                }
+            }
+        }
+    }
+    BBS_CATCH {
+    }
+    BBS_END;
+    if (pFh!=MAP_FAILED)
+        end_mmapfile((void *) pFh, size, -1);
+    if (found)
+        return i+1;
+    return 0;
+}
 
 /*用于apply_record的回调函数*/
-static int fileheader_thread_read(struct _select_def* conf, struct fileheader* fh,int ent, void* extraarg)
+int fileheader_thread_read(struct _select_def* conf, struct fileheader* fh,int ent, void* extraarg)
 {
     struct read_arg *read_arg = (struct read_arg *) conf->arg;
     int mode=(int)extraarg;
@@ -60,6 +167,7 @@ static int read_key(struct _select_def *conf, int command)
     int i;
     int ret=SHOW_CONTINUE;
     int mode=DONOTHING;
+    struct fileheader* currfh;
 
     switch (command) {    
         case 'L':
@@ -97,57 +205,113 @@ static int read_key(struct _select_def *conf, int command)
                 break;
             }
     }
+    if (conf->pos!=0)
+        currfh=(struct fileheader*)(arg->data+(conf->pos - conf->page_pos) * arg->ssize);
+    else
+	currfh=NULL;
     for (i = 0; arg->rcmdlist[i].fptr != NULL; i++) {
         if (arg->rcmdlist[i].key == command) {
-            mode = (*(arg->rcmdlist[i].fptr)) (conf, arg->data+(conf->pos - conf->page_pos) * arg->ssize, arg->rcmdlist[i].arg);
+            mode = (*(arg->rcmdlist[i].fptr)) (conf, currfh, arg->rcmdlist[i].arg);
             break;
         }
     }
     switch (mode) {
+        case CHANGEMODE:
+            arg->returnvalue=CHANGEMODE;
+            ret=SHOW_QUIT;
+            break;
         case FULLUPDATE:
         case PARTUPDATE:
             clear();
             ret=SHOW_REFRESH;
             break;
+        case NEWDIRECT: {
+                int newfd;
+                if ((newfd = open(arg->direct, O_RDWR, 0)) != -1) {
+                    close(arg->fd);
+                    arg->fd=newfd;
+                }
+/*其实这里有个问题，在savePos的时候，arg->direct其实已经被改动成新的direct了
+  正确的做法是类似newmode的写法，在这里保存原来的。
+  但是，因为返回NEWDIRECT的只有阅读的时候，而阅读的时候只用当前版面作为key,
+  所以，其实arg->direct是无用的。
+  另一个问题，在这里，conf->pos没法设定成filecount,因为此时还没有getdata
+*/
+                savePos(arg->mode,arg->direct,conf->pos,arg->board);
+		arg->board=currboard;
+                conf->pos=getPos(arg->newmode,arg->direct,currboard);
+                arg->mode=arg->newmode;
+                arg->newmode=-1;
+            }
         case DIRCHANGED:
-        case NEWDIRECT:
+        case NEWSCREEN:
             ret=SHOW_DIRCHANGE;
             break;
         case DOQUIT:
-        case CHANGEMODE:
             ret=SHOW_QUIT;
             break;
         case READ_NEXT:
-            if (arg->readmode==READ_NORMAL) {
+        case GOTO_NEXT:
+            ret=SHOW_REFRESH;
+            if (arg->readmode==READ_NEW) { //find next new article;
+                int findpos=find_nextnew(conf,conf->pos);
+                if (findpos) {
+                    conf->new_pos=findpos;
+                    list_select_add_key(conf, 'r');
+                    ret=SHOW_SELCHANGE;
+                }
+            } else if (arg->readmode==READ_NORMAL) {
                 if (conf->pos<conf->item_count) {
                     conf->new_pos = conf->pos + 1;
-                    list_select_add_key(conf,'r'); //SEL change的下一条指令是read
+                    if (mode==READ_NEXT)
+                        list_select_add_key(conf,'r'); //SEL change的下一条指令是read
                     ret=SHOW_SELCHANGE;
-                } else ret=SHOW_REFRESH;
-            } else  { /* 处理同主题阅读*/
+                }
+            } else  if (arg->readmode==READ_THREAD) { /* 处理同主题阅读*/
                 int findthread=apply_thread(conf,
-                    arg->data+(conf->pos - conf->page_pos) * arg->ssize,
+                    currfh,
                     fileheader_thread_read,
+                    false,
                     true,
                     (void*)SR_NEXT);
                 if (findthread!=0) {
                     list_select_add_key(conf,'r'); //SEL change的下一条指令是read
                     ret=SHOW_SELCHANGE;
                 }
-                else ret=SHOW_REFRESH;
+            } else { //处理同作者阅读
+                if (read_search_articles(conf,currfh->owner,false,1)==1) {
+                    list_select_add_key(conf,'r'); //SEL change的下一条指令是read
+                    ret=SHOW_SELCHANGE;
+                }
+            }
+            
+            if (ret==SHOW_REFRESH) {
+                arg->readmode=READ_NORMAL;
+		if (arg->oldpos!=0) {
+                /*恢复到原来的位置*/
+                list_select_add_key(conf,KEY_REFRESH); //先刷新一下
+		conf->new_pos=arg->oldpos;
+                ret=SHOW_SELCHANGE;
+                arg->oldpos=0;
+               }
             }
             break;
         case READ_PREV:
+            if (arg->readmode==READ_NEW) {
+                break;
+            }
             if (arg->readmode==READ_NORMAL) {
                 if (conf->pos>1) {
                     conf->new_pos = conf->pos - 1;
                     list_select_add_key(conf,'r'); //SEL change的下一条指令是read
                     ret=SHOW_SELCHANGE;
                 } else ret= SHOW_REFRESH;
-            } else { /* 处理同主题阅读*/
+            }
+            else if (arg->readmode==READ_THREAD) {/* 处理同主题阅读*/
                 int findthread=apply_thread(conf,
-                    arg->data+(conf->pos - conf->page_pos) * arg->ssize,
+                    (struct fileheader*)(arg->data+(conf->pos - conf->page_pos) * arg->ssize),
                     fileheader_thread_read,
+                    false,
                     false,
                     (void*)SR_PREV);
                 if (findthread!=0) {
@@ -155,48 +319,86 @@ static int read_key(struct _select_def *conf, int command)
                     ret=SHOW_SELCHANGE;
                 }
                 else ret=SHOW_REFRESH;
+            } else { //处理同作者阅读
+                if (read_search_articles(conf,currfh->owner,true,1)==1) {
+                    list_select_add_key(conf,'r'); //SEL change的下一条指令是read
+                    ret=SHOW_SELCHANGE;
+                }
+            }
+            if (ret==SHOW_REFRESH) {
+                arg->readmode=READ_NORMAL;
+		if (arg->oldpos!=0) {
+                /*恢复到原来的位置*/
+                list_select_add_key(conf,KEY_REFRESH); //先刷新一下
+                ret=SHOW_SELCHANGE;
+		conf->new_pos=arg->oldpos;
+                arg->oldpos=0;
+               }
             }
             break;
         case SELCHANGE:
             ret=SHOW_SELCHANGE;
             break;
     } 
-    if (ret!=SHOW_SELCHANGE) /*返回非顺序阅读模式*/
+    if ((ret!=SHOW_SELCHANGE)&&!list_select_has_key(conf)) /*返回非顺序阅读模式*/
         arg->readmode=READ_NORMAL;
     return ret;
 }
 
 static int read_onselect(struct _select_def *conf)
 {
-    struct read_arg *arg = (struct read_arg *) conf->arg;
     return SHOW_CONTINUE;
 }
 
 static int read_getdata(struct _select_def *conf, int pos, int len)
 {
     struct read_arg *arg = (struct read_arg *) conf->arg;
-    int n;
     struct stat st;
-    int entry=0;
     int count;
 
     if (arg->data==NULL)
-        arg->data=calloc(BBS_PAGESIZE,arg->ssize);
+        arg->data=calloc(conf->item_per_page,arg->ssize);
     
     if (fstat(arg->fd,&st)!=-1) {
+        int entry=0;
+        int dingcount=0;
+        int n;
         count=st.st_size/arg->ssize;
-        if (count!=conf->item_count) {
-            //need refresh
-            conf->item_count=count;
-            arg->filecount=count;//TODO,置顶的时候，filecount和item_count不一样，少个置顶
-            return SHOW_DIRCHANGE;
+        arg->filecount=count;
+        if ((arg->mode==DIR_MODE_NORMAL)||
+            (arg->mode==DIR_MODE_MARK))
+        { //需要检查置顶
+            dingcount=currboard->toptitle;
         }
-        
+
+        if (pos>count+dingcount)
+            return DIRCHANGED;
         if (lseek(arg->fd, arg->ssize * (pos - 1), SEEK_SET) != -1) {
             if ((n = read(arg->fd, arg->data, arg->ssize * len)) != -1) {
                 entry=(n / arg->ssize);
             }
         }
+        
+        /* 获得置顶的数据*/
+        if (dingcount) {
+            if (entry!=len) { //需要读入.DING
+                int dingfd;
+                n=0;
+                if ((dingfd=open(arg->dingdirect,O_RDONLY,0))!=-1) {
+                    if ((n = read(dingfd, arg->data+arg->ssize*entry, arg->ssize * (len-entry))) != -1) {
+                        n/=arg->ssize;
+                    }
+                    close(dingfd);
+                }
+                if ((n!=dingcount)&&(n!=(len-entry))) {
+                    /*置顶数据肯定出问题*/
+                    dingcount=n;
+                }
+            }
+            /*加上置顶个数*/
+            count+=dingcount;
+        }
+        conf->item_count=count;
     } else
         return SHOW_QUIT;
     return SHOW_CONTINUE;
@@ -206,15 +408,29 @@ static int read_title(struct _select_def *conf)
 {
     struct read_arg *arg = (struct read_arg *) conf->arg;
     clear();
-    (*arg->dotitle) ();
+    (*arg->dotitle) (conf);
     return SHOW_CONTINUE;
 }
 
+extern int draw_content(char *fn, struct fileheader *fh);
+static int read_showcontent(struct _select_def* conf,int newpos)
+{
+    char buf[256], *t;
+    struct read_arg *arg = (struct read_arg *) conf->arg;
+    struct fileheader* h;
+    strcpy(buf, read_getcurrdirect(conf));
+    if ((t = strrchr(buf, '/')) != NULL)
+        *t = '\0';
+    h = (struct fileheader*)(arg->data+(newpos-conf->page_pos) * arg->ssize);
+    sprintf(genbuf, "%s/%s", buf, h->filename);
+    draw_content(genbuf,h);
+    return SHOW_CONTINUE;
+}
+
+
 static int read_endline(struct _select_def *conf)
 {
-    struct read_arg *arg = (struct read_arg *) conf->arg;
-
-    if (!conf->tmpnum)
+    if (conf->tmpnum==-1)
         update_endline();
     else if (DEFINE(currentuser, DEF_ENDLINE)) {
         extern time_t login_start_time;
@@ -234,12 +450,40 @@ static int read_endline(struct _select_def *conf)
         prints(pntbuf);
         clrtoeol();
     }
+    if (TDEFINE(TDEF_SPLITSCREEN))
+	    read_showcontent(conf,conf->pos);
     return SHOW_CONTINUE;
 }
 
 static int read_prekey(struct _select_def *conf, int *command)
 {
     struct read_arg *arg = (struct read_arg *) conf->arg;
+    switch (*command) {
+        case KEY_END:
+        case '$':
+            conf->new_pos=arg->filecount;
+            *command=KEY_INVALID;
+            return SHOW_SELCHANGE;
+        case 'P': //翻页控制使用arg->filecount，不到达置顶
+        case KEY_PGUP:
+        case Ctrl('B'):
+  	    if (conf->pos-conf->item_per_page>0)
+    	        conf->new_pos= conf->page_pos - conf->item_per_page;
+	    else
+    		conf->new_pos=1;
+            *command=KEY_INVALID;
+            return SHOW_SELCHANGE;
+        case KEY_PGDN:
+        case 'N':
+        case Ctrl('F'):
+        case ' ':
+  	    if (conf->page_pos+conf->item_per_page<=conf->item_count)
+    	        conf->new_pos= conf->page_pos + conf->item_per_page;
+	    else
+    		conf->new_pos=conf->item_count;
+        *command=KEY_INVALID;
+        return SHOW_SELCHANGE;
+    }
     return SHOW_CONTINUE;
 }
 
@@ -247,7 +491,7 @@ static int read_show(struct _select_def *conf, int pos)
 {
     struct read_arg *arg = (struct read_arg *) conf->arg;
     char foroutbuf[512];
-    prints("%s",(*arg->doentry) (foroutbuf, pos, arg->data+(pos-conf->page_pos) * arg->ssize));
+    prints("%s",(*arg->doentry) (foroutbuf, pos, arg->data+(pos-conf->page_pos) * arg->ssize,arg->readdata,conf));
     clrtoeol();
     return SHOW_CONTINUE;
 }
@@ -256,27 +500,34 @@ static int read_onsize(struct _select_def* conf)
 {
     int i;
     struct read_arg *arg = (struct read_arg *) conf->arg;
+    int per_page=conf->item_per_page;
+    conf->item_per_page = TDEFINE(TDEF_SPLITSCREEN)?BBS_PAGESIZE/2:BBS_PAGESIZE;
     if (conf->item_pos!=NULL)
         free(conf->item_pos);
-    conf->item_pos = (POINT *) calloc(BBS_PAGESIZE,sizeof(POINT));
+    conf->item_pos = (POINT *) calloc(conf->item_per_page,sizeof(POINT));
 
-    for (i = 0; i < BBS_PAGESIZE; i++) {
+    for (i = 0; i < conf->item_per_page; i++) {
         conf->item_pos[i].x = 1;
         conf->item_pos[i].y = i + 3;
     };
+    if (per_page!=conf->item_per_page) {
     if (arg->data!=NULL) {
         free(arg->data);
         arg->data=NULL;
     }
-    conf->item_per_page = BBS_PAGESIZE;
+    if (TDEFINE(TDEF_SPLITSCREEN))
+        conf->on_selchange=read_showcontent;
+    else conf->on_selchange=NULL;
     return SHOW_DIRCHANGE;
+    }
+    return DONOTHING;
 }
 
-int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, struct key_command *rcmdlist, int ssize)
+int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct _select_def*), READ_ENT_FUNC doentry, struct key_command *rcmdlist, int ssize)
 {
     struct _select_def read_conf;
     struct read_arg arg;
-    int i;
+    int lastpos;
     const static struct key_translate ktab[]= {
             {'\n','r'},
             {'\r','r'},
@@ -286,20 +537,20 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (), READ
             {'e',KEY_LEFT},
             {'k',KEY_UP},
             {'j',KEY_DOWN},
-            {'N',KEY_PGDN},
-            {Ctrl('F'),KEY_PGDN},
-            {' ',KEY_PGDN},
-            {'p',KEY_PGDN},
-            {Ctrl('B'),KEY_PGUP},
             {-1,-1}
     };
 
-    if (cmdmode==DIR_MODE_MAIL)
-        modify_user_mode(RMAIL);
-    else //todo: other mode
-        modify_user_mode(READBRD);
 
+    if (cmdmode==DIR_MODE_MAIL) {
+        modify_user_mode(RMAIL);
+     }
+    else {
+        modify_user_mode(READING);
+    } //todo: other mode 
+
+    lastpos=getPos(cmdmode,direct,currboard);
     /* save argument */
+    bzero(&arg,sizeof(struct read_arg));
     arg.mode=cmdmode;
     arg.direct=direct;
     arg.dotitle=dotitle;
@@ -308,12 +559,24 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (), READ
     arg.ssize=ssize;
     arg.readmode=READ_NORMAL;
     arg.data=NULL;
+    arg.readdata=NULL;
+    arg.returnvalue=QUIT;
+    arg.writearg=NULL;
+    arg.board=currboard;
+    if ((arg.mode==DIR_MODE_NORMAL)||
+        ((arg.mode>=DIR_MODE_THREAD)&&(arg.mode<=DIR_MODE_WEB_THREAD))) {
+        char ding_direct[PATHLEN];
+        //设置置顶的.DIR direct TODO:用tmpfs
+        sprintf(ding_direct,"boards/%s/%s",currboard->filename,DING_DIR);
+        arg.dingdirect=malloc(strlen(ding_direct)+1);
+        strcpy(arg.dingdirect,ding_direct);
+    } else arg.dingdirect=NULL;
 
     clear();
 
     if ((arg.fd = open(arg.direct, O_RDWR, 0)) != -1) {
         bzero((char *) &read_conf, sizeof(struct _select_def));
-        read_conf.item_per_page = BBS_PAGESIZE;
+        read_conf.item_per_page = TDEFINE(TDEF_SPLITSCREEN)?BBS_PAGESIZE/2:BBS_PAGESIZE;
         read_conf.flag = LF_NUMSEL | LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;     /*|LF_HILIGHTSEL;*/
         read_conf.prompt = ">";
         read_conf.arg = &arg;
@@ -329,26 +592,72 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (), READ
         read_conf.show_title = read_title;
         read_conf.show_endline= read_endline;
         read_conf.on_size= read_onsize;
-        read_conf.key_table = &ktab[0];
+        read_conf.key_table = (struct key_translate *)ktab;
 
-        read_conf.pos = 1; //TODO: get last position
-        read_getdata(&read_conf,read_conf.pos,read_conf.item_per_page);
-        read_conf.pos = read_conf.item_count; //TODO: get last position
-        read_conf.page_pos = ((read_conf.pos-1)/BBS_PAGESIZE)*BBS_PAGESIZE+1; //TODO
+        read_getdata(&read_conf,1,read_conf.item_per_page);
+        if (TDEFINE(TDEF_SPLITSCREEN))
+            read_conf.on_selchange= read_showcontent;
+        if ((lastpos!=0)&&(lastpos<arg.filecount))
+            read_conf.pos = lastpos;
+        else {
+            read_conf.pos = arg.filecount; 
+        }
+        read_conf.page_pos = ((read_conf.pos-1)/read_conf.item_per_page)*read_conf.item_per_page+1;
 
         list_select_loop(&read_conf);
-        if (arg.data!=NULL)
-            free(arg.data);    
-        if (read_conf.item_pos!=NULL)
-            free(read_conf.item_pos);
         close(arg.fd);
+        savePos(arg.mode,direct,read_conf.pos,arg.board);
     } else {
-            prints("没有任何信件...");
-            pressreturn();
-            clear();
+        prints("没有任何信件...");
+        pressreturn();
+        clear();
     }
+    if (arg.data!=NULL)
+        free(arg.data);    
+    if (arg.readdata!=NULL)
+        free(arg.readdata);
+    if (arg.dingdirect!=NULL)
+        free(arg.dingdirect);
+    if (read_conf.item_pos!=NULL)
+        free(read_conf.item_pos);
+    if (cmdmode!=arg.mode)
+        arg.returnvalue=CHANGEMODE;
+    return arg.returnvalue;
 }
 
+
+static int searchpattern(char *filename, char *query)
+{
+    FILE *fp;
+    char buf[256];
+
+    if ((fp = fopen(filename, "r")) == NULL)
+
+        return 0;
+    while (fgets(buf, 256, fp) != NULL) {
+        if (strstr(buf, query)) {
+            fclose(fp);
+            return true;
+        }
+    }
+    fclose(fp);
+    return false;
+}
+
+static void get_upper_str(char *ptr2, char *ptr1)
+{
+    int ln, i;
+
+    for (ln = 0; (ln < STRLEN) && (ptr1[ln] != 0); ln++);
+    for (i = 0; i < ln; i++) {
+        ptr2[i] = toupper(ptr1[i]);
+        /******** 下面为Luzi添加 ************/
+        if (ptr2[i] == '\0')
+            ptr2[i] = '\1';
+        /******** 以上为Luzi添加 ************/
+    }
+    ptr2[ln] = '\0';
+}
 
 /* COMMAN : use mmap to speed up searching */
 /* add by stiger
@@ -360,7 +669,6 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
 {
     char ptr[STRLEN];
     int now, match = 0;
-    int complete_search;
     char upper_query[STRLEN];
     bool init;
     size_t bm_search[256];
@@ -371,12 +679,6 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
     struct read_arg *arg = (struct read_arg *) conf->arg;
 
     get_upper_str(upper_query, query);
-    if (aflag >= 2) {
-        complete_search = 1;
-        aflag -= 2;
-    } else {
-        complete_search = 0;
-    }
     if (*query == '\0') {
         return 0;
     }
@@ -425,10 +727,11 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
                     } else
                         continue;
                 }
-                strncpy(ptr, aflag ? pFh1->owner : pFh1->title, STRLEN - 1);
-                ptr[STRLEN - 1] = 0;
-                if (complete_search == 1) {
-                    char *ptr2 = ptr;
+                if (aflag == 0) {
+                    char *ptr2;
+                    strncpy(ptr, pFh1->title, STRLEN - 1);
+                    ptr[STRLEN - 1] = 0;
+                    ptr2 = ptr;
 
                     if ((*ptr == 'R' || *ptr == 'r')
 
@@ -436,22 +739,17 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
                         && (*(ptr + 3) == ' ')) {
                         ptr2 = ptr + 4;
                     }
-                    if (!strcmp(ptr2, query)) {
+                    if (strcasestr(ptr2,query)) {
                         match = 1;
                         break;
                     }
                 } else {
+                    strncpy(ptr, pFh1->owner, STRLEN - 1);
+                    ptr[STRLEN - 1] = 0;
                     /*
                      * 同作者查询改成完全匹配 by dong, 1998.9.12 
                      */
-                    if (aflag == 1) {   /* 进行同作者查询 */
-                        if (!strcasecmp(ptr, upper_query)) {
-                            match = 1;
-                            break;
-                        }
-                    }
-
-                    else if (bm_strcasestr_rp(ptr, upper_query,bm_search,&init) != NULL) {
+                    if (!strcasecmp(ptr, upper_query)) {
                         match = 1;
                         break;
                     }
@@ -473,6 +771,28 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
     return 0;
 }
 
+int post_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
+{
+    static char query[STRLEN];
+    char ans[IDLEN + 1], pmt[STRLEN];
+    char currauth[STRLEN];
+    bool up=(bool)extraarg;
+    
+    strncpy(currauth, fh->owner, STRLEN);
+    snprintf(pmt, STRLEN, "搜寻%s的文章 [%s]: ", up ? "往先前":"往后来", ans);
+    move(t_lines - 1, 0);
+    clrtoeol();
+    getdata(t_lines - 1, 0, pmt, ans, IDLEN + 1, DOECHO, NULL, true);   /*Haohmaru.98.09.29.修正作者查找只能11位ID的错误 */
+    switch (read_search_articles(conf, query, up, -1)) {
+        case 1:
+            return SELCHANGE;
+        default:
+            conf->show_endline(conf);
+    }
+    if (ans[0] != '\0')
+        strncpy(query, ans, IDLEN);
+    return DONOTHING;
+}
 
 int auth_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 {
@@ -524,12 +844,16 @@ int title_search(struct _select_def* conf, struct fileheader* fh, void* extraarg
 
 bool isThreadTitle(char* a,char* b)
 {
-  if (!strncasecmp(a,"re: ",4)) a+=4;
-  if (!strncasecmp(b,"re: ",4)) b+=4;
-  return strcmp(a,b)?0:1;
+    if (!strncasecmp(a,"re: ",4)) a+=4;
+    if (!strncasecmp(b,"re: ",4)) b+=4;
+    if (!strncmp(a, "├ ", 3)) a+=3;
+    if (!strncmp(b, "├ ", 3)) b+=3;
+    if (!strncmp(a, "└ ", 3)) a+=3;
+    if (!strncmp(b, "└ ", 3)) b+=3;
+    return strcmp(a,b)?0:1;
 }
 
-int apply_thread(struct _select_def* conf, struct fileheader* fh,APPLY_THREAD_FUNC func, bool down,void* arg)
+int apply_thread(struct _select_def* conf, struct fileheader* fh,APPLY_THREAD_FUNC func,bool applycurrent, bool down,void* arg)
 {
     struct fileheader *pFh,*nowFh;
     int size;
@@ -544,15 +868,12 @@ int apply_thread(struct _select_def* conf, struct fileheader* fh,APPLY_THREAD_FU
     BBS_TRY {
         if (safe_mmapfile_handle(read_arg->fd, PROT_READ|PROT_WRITE, MAP_SHARED, (void **) &pFh, &size) ) {
             bool needmove;
-            if(now > read_arg->filecount){
-            /*在置顶文章前搜索*/
-                now = read_arg->filecount;
-            }
             recordcount=size/sizeof(struct fileheader);
             if (now>recordcount)
+                /*在置顶文章前搜索*/
                 now=recordcount;
             nowFh=pFh+now-1;
-            needmove=true;
+            needmove=!applycurrent;
             while (1) {
                 int ret;
                 /* 移动指针*/
@@ -567,9 +888,12 @@ int apply_thread(struct _select_def* conf, struct fileheader* fh,APPLY_THREAD_FU
                         nowFh--;
                     }
                 }
+                needmove=true;
                 
                 /* 判断是不是同一主题,不是直接continue*/
-                if (read_arg->mode==DIR_MODE_NORMAL) { /*判断是否使用groupid*/
+                if ((read_arg->mode==DIR_MODE_NORMAL)||
+                     ((read_arg->mode>=DIR_MODE_THREAD)&&(read_arg->mode>=DIR_MODE_WEB_THREAD)))
+                { /*使用groupid*/
                     if (fh->groupid!=nowFh->groupid)
                     continue;
                 } else {
@@ -584,7 +908,11 @@ int apply_thread(struct _select_def* conf, struct fileheader* fh,APPLY_THREAD_FU
                     if (ret==APPLY_QUIT) break;
 
                     /*在返回APPLY_REAPPLY的时候不需要移动指针*/
-                    needmove=(ret!=APPLY_REAPPLY);
+                    if (ret==APPLY_REAPPLY) {
+                        read_arg->filecount--;
+                        needmove=false;
+                    } else 
+                        needmove=true;
                 }
             }
         }
@@ -597,40 +925,31 @@ int apply_thread(struct _select_def* conf, struct fileheader* fh,APPLY_THREAD_FU
     return count;
 }
 
-int thread_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
-{
-//TODO: 在.DIR的时候，用groupid来搜
-    bool up=(bool)extraarg;
-    char* title=fh->title;
-    if (title[0] == 'R' && (title[1] == 'e' || title[1] == 'E')
-        && title[2] == ':')
-        title += 4;
-    setqtitle(title);
-    switch (read_search_articles(conf, title, up, 2)) {
-        case 1:
-            return SELCHANGE;
-        default:
-            conf->show_endline(conf);
-    }
-    return DONOTHING;
-}
-
 int thread_read(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 {
     int mode=(int)extraarg;
     struct read_arg *read_arg = (struct read_arg *) conf->arg;
     conf->new_pos=0;
+    read_arg->oldpos=0;
     switch (mode) {
+        case SR_READX:
+            read_arg->oldpos=conf->pos;
+        case SR_READ:
+            read_arg->readmode=READ_THREAD;
+            list_select_add_key(conf, 'r');
+            return DONOTHING;
         case SR_FIRST:
-            apply_thread(conf,fh,fileheader_thread_read,false,(void*)mode);
+        case SR_PREV:
+            apply_thread(conf,fh,fileheader_thread_read,false,false,(void*)mode);
             break;
         case SR_LAST:
-            apply_thread(conf,fh,fileheader_thread_read,true,(void*)mode);
+        case SR_NEXT:
+            apply_thread(conf,fh,fileheader_thread_read,false,true,(void*)mode);
             break;
         case SR_FIRSTNEW:
-            apply_thread(conf,fh,fileheader_thread_read,false,(void*)mode);
+            apply_thread(conf,fh,fileheader_thread_read,false,false,(void*)mode);
             if (conf->new_pos==0) {
-                apply_thread(conf,fh,fileheader_thread_read,true,(void*)SR_FIRSTNEWDOWNSEARCH);
+                apply_thread(conf,fh,fileheader_thread_read,false,true,(void*)SR_FIRSTNEWDOWNSEARCH);
             }
             break;
     }
@@ -644,6 +963,22 @@ int thread_read(struct _select_def* conf, struct fileheader* fh, void* extraarg)
     return SELCHANGE;
 }
 
+int author_read(struct _select_def* conf, struct fileheader* fh, void* extraarg)
+{
+    int mode=(int)extraarg;
+    struct read_arg *read_arg = (struct read_arg *) conf->arg;
+    conf->new_pos=0;
+    read_arg->oldpos=0;
+    switch (mode) {
+        case SR_READX:
+            read_arg->oldpos=conf->pos;
+        case SR_READ:
+            read_arg->readmode=READ_AUTHOR;
+            list_select_add_key(conf, 'r');
+            return DONOTHING;
+    }
+    return SELCHANGE;
+}
 
 int read_sendmsgtoauthor(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 {
@@ -767,16 +1102,17 @@ int read_addauthorfriend(struct _select_def* conf, struct fileheader* fh, void* 
     return FULLUPDATE;
 }
 
+extern int zsend_file(char *filename, char *title);
 int read_zsend(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 {
-    struct read_arg *read_arg = (struct read_arg *) conf->arg;
-    return zsend_post(conf->pos, fh, read_arg->direct);
-}
-
-int read_cross(struct _select_def* conf, struct fileheader* fh, void* extraarg)
-{
-    struct read_arg *read_arg = (struct read_arg *) conf->arg;
-    return do_cross(conf->pos, fh, read_arg->direct);
+    char *t;
+    char buf1[512];
+    strcpy(buf1, read_getcurrdirect(conf));
+    if ((t = strrchr(buf1, '/')) != NULL)
+        *t = '\0';
+    snprintf(genbuf, 512, "%s/%s", buf1, fh->filename);
+    zsend_file(genbuf, fh->title);
+    return FULLUPDATE;
 }
 
 #ifdef PERSONAL_CORP
@@ -787,3 +1123,30 @@ int read_importpc(struct _select_def* conf, struct fileheader* fh, void* extraar
 }
 #endif
 
+char* read_getcurrdirect(struct _select_def* conf)
+{
+    struct read_arg *read_arg = (struct read_arg *) conf->arg;
+    if ((conf->pos>read_arg->filecount)&&(read_arg->dingdirect!=NULL)) {
+        return read_arg->dingdirect;
+    }
+    return read_arg->direct;
+}
+
+void setreadpost(struct _select_def* conf,struct fileheader* fh)
+{
+    struct read_arg* arg=conf->arg;
+    if (arg->readdata==NULL)
+        arg->readdata=malloc(sizeof(struct fileheader));
+    memcpy(arg->readdata,fh,sizeof(struct fileheader));
+}
+
+
+int read_splitscreen(struct _select_def* conf, struct fileheader* fh, void* extraarg)
+{
+    if (TDEFINE(TDEF_SPLITSCREEN))
+        tmpuser&=~TDEF_SPLITSCREEN;
+    else
+        tmpuser|=TDEF_SPLITSCREEN;
+    list_select_add_key(conf, KEY_ONSIZE);
+    return DONOTHING;
+}

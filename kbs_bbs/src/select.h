@@ -89,6 +89,7 @@ struct _select_def {
 };
 int list_select(struct _select_def *conf, int key);
 int list_select_loop(struct _select_def *conf);
+bool list_select_has_key(struct _select_def* conf);
 int list_select_add_key(struct _select_def* conf,int key); /* 加入一个键到输入缓冲区*/
 int list_select_remove_key(struct _select_def* conf); /*从输入缓冲区里面取出一个键*/
 struct _select_def* select_get_current_conf(); /*获得当前的conf*/

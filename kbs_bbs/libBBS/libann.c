@@ -578,7 +578,7 @@ int linkto(char *path, char *fname, char *title)
  *     title    版精华区的中文名
  *     gname    与 group 对应的中文名
  */
-int add_grp(char group[STRLEN], char bname[STRLEN], char title[STRLEN], char gname[STRLEN])
+int add_grp(const char group[STRLEN],const char bname[STRLEN],const char title[STRLEN],const char gname[STRLEN])
         /*
          * 精华区 加 目录 
          */

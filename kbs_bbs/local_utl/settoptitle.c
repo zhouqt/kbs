@@ -1,6 +1,7 @@
 #include "bbs.h"
 
 
+#define DEBUG_NEW_READ
 int settop(struct boardheader* bh,void* arg)
 {
 #ifdef DEBUG_NEW_READ
@@ -8,6 +9,7 @@ int settop(struct boardheader* bh,void* arg)
   int i;
   setbdir(DIR_MODE_ZHIDING,buf,bh->filename);
    i=get_num_records(buf, sizeof(struct fileheader));
+   board_update_toptitle(bh,0);
    board_update_toptitle(bh,i);
 #endif
 //   printf("%s %d\n",bh->filename,i);

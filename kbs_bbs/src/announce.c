@@ -435,7 +435,7 @@ int a_SeSave(char *path, char *key, struct fileheader *fileinfo, int nomsg, char
         if ((ans[0] == 'N' || ans[0] == 'n') && (!nomsg)) {
             ans[0]='N';
         } else if (((ans[0] == 'C' || ans[0] == 'c')) && (!nomsg))
-            return 1;
+            return 0;
         else {
             ans[0]='Y';
         }
@@ -513,7 +513,6 @@ int a_SeSave(char *path, char *key, struct fileheader *fileinfo, int nomsg, char
             a_prompt(-1, buf, ans);
         }
     }
-    change_post_flag(currBM, currentuser, digestmode, currboard->filename, ent, fileinfo, direct, FILE_IMPORT_FLAG, 0);
     return 1;
 }
 
@@ -536,7 +535,7 @@ int a_Save(char *path, char *key, struct fileheader *fileinfo, int nomsg, char *
         if ((ans[0] == 'N' || ans[0] == 'n') && (!nomsg)) {
             ans[0]='N';
         } else if (((ans[0] == 'C' || ans[0] == 'c')) && (!nomsg))
-            return 1;
+            return 0;
         else {
             ans[0]='Y';
         }
@@ -591,8 +590,6 @@ int a_Save(char *path, char *key, struct fileheader *fileinfo, int nomsg, char *
         }
     }
     sprintf(buf, "将 boards/%s/%s 存入暂存档", key, fileinfo->filename);
-    if (direct!=NULL)
-    change_post_flag(currBM, currentuser, digestmode, currboard->filename, ent, fileinfo, direct, FILE_IMPORT_FLAG, 0);
     a_report(buf);
     if (!nomsg) {
         sprintf(buf, " 已将该文章存入暂存档, 请按任何键以继续 << ");
@@ -662,12 +659,12 @@ int ent;
             /*
              * Leeward 98.04.15 add below FILE_IMPORTED 
              */
-            change_post_flag(currBM, currentuser, digestmode, currboard->filename, ent, fileinfo, direct, FILE_IMPORT_FLAG, 0);
             bmlog(currentuser->userid, currboard->filename, 12, 1);
         } else {
-            sprintf(buf, " 收入精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
-            if (!nomsg)
+            if (!nomsg) {
+                sprintf(buf, " 收入精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
                 a_prompt(-1, buf, ans);
+            }
             ret = 3;
         }
         for (ch = 0; ch < pm.num; ch++)
@@ -1740,7 +1737,7 @@ int lastlevel, lastbmonly;
             me.page = 9999;
             break;              /*Haohmaru 98.09.22 */
         case 'v':
-            i_read_mail();
+            i_read_mail(NULL,NULL,NULL);
             me.page = 9999;
             break;
         case 'u':
@@ -1914,4 +1911,19 @@ void Announce()
     sprintf(genbuf, "%s 精华区公布栏", BBS_FULL_NAME);
     a_menu(genbuf, "0Announce", HAS_PERM(currentuser, PERM_ANNOUNCE) ? PERM_BOARDS : 0, 0);
     clear();
+}
+
+int set_import_path(char* path)
+{
+    int i;
+    i = a_select_path(true);
+    if (i == 0)
+        return 1;
+    import_path_select = i;
+    i--;
+    if (import_path[i][0] != '\0') {
+        strncpy(path, import_path[i], MAXPATH);
+        return 0;
+    }
+     return 2;
 }

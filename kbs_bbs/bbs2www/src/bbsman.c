@@ -7,6 +7,27 @@ char genbuf[1024];
 char currfile[STRLEN];
 char im_path[MAXPATH];
 
+int change_flag(struct fileheader*f,char* board,char*dirdir,int ent)
+{
+    int ret;
+        struct write_dir_arg dirarg;
+        struct boardheader* bh;
+        struct fileheader data;
+        data.accessed[0]=0xff;
+        data.accessed[1]=0xff;
+        bh=getbcache(board);
+        malloc_write_dir_arg(&dirarg);
+        dirarg.filename=dirdir;
+        dirarg.ent = ent;
+        if(change_post_flag(&dirarg, 
+            DIR_MODE_NORMAL, 
+            bh, f, FILE_IMPORT_FLAG, &data,true)!=0)
+        ret = 1;
+    else
+        ret = 0;
+        free_write_dir_arg(&dirarg);
+     return ret;
+}
 int main()
 {
     int i, total = 0, mode,num;
@@ -96,11 +117,11 @@ int do_del(char *board, int id)
     if( get_records_from_id( fd, id, &f, 1, &ent) ){
 	close(fd);
         switch (del_post(ent, &f, dir, board)) {
-        case DONOTHING:
-            http_fatal("你无权删除该文");
+        case 0:
+            printf("<tr><td>%s  </td><td>标题:%s </td><td>删除成功.</td></tr>\n", f.owner, nohtml(f.title));
             break;
         default:
-            printf("<tr><td>%s  </td><td>标题:%s </td><td>删除成功.</td></tr>\n", f.owner, nohtml(f.title));
+            http_fatal("你无权删除该文");
 	}
 	return;
     }
@@ -136,10 +157,7 @@ int bbsman_import(int ent,char *board,struct fileheader *f,char *dirdir)
 		free(pm.item[i]);
 
 	if(ret){
-		if(change_post_flag("", currentuser, 0, board, ent, f, dirdir, FILE_IMPORT_FLAG, 0)!=DONOTHING)
-			ret = 1;
-		else
-			ret = 0;
+        ret=change_flag(f,board,dirdir,ent);
 	}
 
 	return ret;
@@ -197,11 +215,11 @@ int do_del_zd(char *board, int id)
 
     if( ffind ){
         switch (del_post(ent, &f, dir, board)) {
-        case DONOTHING:
-            http_fatal("你无权删除该文");
+        case 0:
+            printf("<tr><td>%s  </td><td>标题:%s </td><td>删除成功.</td></tr>\n", f.owner, nohtml(f.title));
             break;
         default:
-            printf("<tr><td>%s  </td><td>标题:%s </td><td>删除成功.</td></tr>\n", f.owner, nohtml(f.title));
+            http_fatal("你无权删除该文");
 	}
 	return;
     }
@@ -218,12 +236,12 @@ int do_set(char *board, int id, int flag)
     struct fileheader f;
     int ent;
 
-	setbdir(DIR_MODE_NORMAL, dir, board);
+    setbdir(DIR_MODE_NORMAL, dir, board);
     fd = open(dir, O_RDWR, 0644);
     if( fd >= 0 && get_records_from_id( fd, id, &f, 1, &ent) )
 	{
         close(fd);
-		if(change_post_flag(NULL, currentuser, 0, board, ent, &f, dir, flag, 0)!=DONOTHING)
+		if(change_flag(&f,board,dir,ent)==0)
 			printf("<tr><td>%s</td><td>标题:%s</td><td>标记成功.</td></tr>\n", f.owner, nohtml(f.title));
 		else
 			printf("<tr><td>%s</td><td>标题:%s</td><td>标记不成功.</td></tr>\n", f.owner, nohtml(f.title));
@@ -243,7 +261,7 @@ int do_set_zd(char *board, int id, int flag)
     int ent=1;
     int ffind=0;
 
-    sprintf(dir,"boards/%s/" DING_DIR,board);
+    setbdir(DIR_MODE_NORMAL,dir,board);
     
 	fp = fopen(dir, "r+");
     if (fp == 0) 
@@ -260,7 +278,7 @@ int do_set_zd(char *board, int id, int flag)
     fclose(fp);
 
 	if(ffind){
-		if(change_post_flag(NULL, currentuser, 0, board, ent, &f, dir, flag, 0)!=DONOTHING)
+		if(change_flag(&f,board,dir,ent)==0)
 			printf("<tr><td>%s</td><td>标题:%s</td><td>标记成功.</td></tr>\n", f.owner, nohtml(f.title));
 		else
 			printf("<tr><td>%s</td><td>标题:%s</td><td>标记不成功.</td></tr>\n", f.owner, nohtml(f.title));

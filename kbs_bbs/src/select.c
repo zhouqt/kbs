@@ -24,7 +24,7 @@ static int check_valid(struct _select_def *conf)
     int ret = SHOW_CONTINUE;;
     if (conf->item_count < 0)
         return SHOW_QUIT;
-    if (conf->item_count < 0) {
+    if (conf->item_count == 0) {
         conf->pos=0;
         conf->page_pos=0;
 	return ret;
@@ -101,10 +101,12 @@ static int refresh_select(struct _select_def *conf)
         move(conf->endline_pos.y, conf->endline_pos.x);
         (*conf->show_endline) (conf);
     }
+    if (conf->page_pos!=0) {
     for (i = conf->page_pos; (i < conf->page_pos + conf->item_per_page)
          && (i <= conf->item_count); i++)
         if (show_item(conf, i, false) == SHOW_QUIT)
             return SHOW_QUIT;
+    }
     move(conf->item_pos[conf->pos-conf->page_pos].y, conf->item_pos[conf->pos-conf->page_pos].x);
     return SHOW_CONTINUE;
 }
@@ -113,6 +115,8 @@ static int select_change(struct _select_def *conf, int new_pos)
     int ret = SHOW_CONTINUE;
     int old_pos;
 
+    if (conf->item_count==0)
+        return SHOW_CONTINUE;
     if (new_pos <= 0 || new_pos > conf->item_count) {
         if ((new_pos == 0) && (conf->flag & LF_LOOP)) {
             new_pos = conf->item_count;
@@ -175,6 +179,8 @@ static int do_select_internal(struct _select_def *conf, int key)
     int ret = SHOW_CONTINUE;
 
     if (!(conf->flag & LF_INITED)) { /*初始化工作*/
+        if (conf->flag & LF_NUMSEL)
+            conf->tmpnum=-1;
         if (conf->on_size) { //初始化界面
             (*conf->on_size)(conf);
         }
@@ -192,8 +198,6 @@ static int do_select_internal(struct _select_def *conf, int key)
             conf->flag |= LF_MULTIPAGE;
         if (refresh_select(conf) == SHOW_QUIT)
             return SHOW_QUIT;
-        if (conf->flag & LF_NUMSEL)
-            conf->tmpnum=0;
     }
     if (key == KEY_INIT)
         return SHOW_CONTINUE;
@@ -202,23 +206,27 @@ static int do_select_internal(struct _select_def *conf, int key)
     if (conf->pre_key_command) {
     	ret=(*conf->pre_key_command)(conf,&key);
     	if (ret!=SHOW_CONTINUE) {
-            conf->tmpnum=0;
+            conf->tmpnum=-1;
             return ret;
     	}
     }
     if (conf->flag & LF_NUMSEL) { /*处理用数字跳转*/
         if (key>='0' && key<='9') {
+            if (conf->tmpnum==-1) conf->tmpnum=0;
             conf->tmpnum=conf->tmpnum*10+key-'0';
+	    /* 显示提示条，其实这个地方应该是根据需要显示...*/
+            if (conf->show_endline) (*conf->show_endline)(conf);
             return SHOW_CONTINUE;
         }
-        if ((key == '\r' || key == '\n') && (conf->tmpnum != 0)) {
+        if ((key == '\r' || key == '\n') && (conf->tmpnum != -1)) {
             /* 直接输入数字跳转*/
             int ret;
+	    if (conf->tmpnum==0) conf->tmpnum=conf->item_count;
             ret=select_change(conf,conf->tmpnum);
-            conf->tmpnum = 0;
+            conf->tmpnum = -1;
             return ret;
         }
-        conf->tmpnum = 0;
+        conf->tmpnum = -1;
     }
 
     /* 查转换表*/
@@ -247,6 +255,8 @@ static int do_select_internal(struct _select_def *conf, int key)
     case '\r':
 	return SHOW_SELECT;
     case KEY_SELECT:
+        if (conf->item_count<1||conf->pos>conf->item_count)
+            return SHOW_CONTINUE;
         if (conf->on_select)
             return (*conf->on_select) (conf);
         return SHOW_SELECT;
@@ -351,6 +361,12 @@ static int do_select_internal(struct _select_def *conf, int key)
         return (*conf->key_command) (conf, key);
     return SHOW_CONTINUE;
 }
+
+static void adjust_conf(struct _select_def* conf)
+{
+    conf->page_pos=((conf->pos-1)/conf->item_per_page)*conf->item_per_page+1;
+}
+
 int list_select(struct _select_def *conf, int key)
 {
     int ret;
@@ -365,6 +381,7 @@ int list_select(struct _select_def *conf, int key)
 checkret:
 	    switch (ret) {
 	    case SHOW_DIRCHANGE:
+                adjust_conf(conf);
 	        if (conf->get_data) {
 	            ret=(*conf->get_data) (conf, conf->page_pos, conf->item_per_page);
 	            if (ret==SHOW_DIRCHANGE) goto checkret; //possible loop.....
@@ -402,6 +419,11 @@ checkret:
 	    key=ret;
 	}
     return SHOW_CONTINUE;
+}
+
+bool list_select_has_key(struct _select_def* conf)
+{
+    return (conf->keybuflen!=0);
 }
 
 int list_select_add_key(struct _select_def* conf,int key)

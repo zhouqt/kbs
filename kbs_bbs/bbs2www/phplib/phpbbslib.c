@@ -5735,7 +5735,7 @@ static PHP_FUNCTION(bbs_delfile)
 		if (fread(&f, sizeof(struct fileheader), 1, fp) <= 0)
 			break;
 		if (!strcmp(f.filename, file)) {
-			if(del_post(num + 1, &f, dir, brd->filename) == DONOTHING)
+                        if(del_post(num + 1, &f, dir, brd->filename) != 0)
 				result = -1;
 			else
 				result = 0;

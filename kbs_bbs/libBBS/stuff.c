@@ -556,7 +556,7 @@ int countperf(struct userec *udata)
 /*
  * 根据阅读模式 取某版 目录路径 
  */
-char *setbdir(int digestmode, char *buf, char *boardname)
+char *setbdir(int digestmode, char *buf,const  char *boardname)
 {
     char dir[STRLEN];
 
@@ -588,12 +588,18 @@ char *setbdir(int digestmode, char *buf, char *boardname)
     case DIR_MODE_TITLE:
         sprintf(dir, ".TITLE.%s", currentuser->userid);
         break;
-	case DIR_MODE_ZHIDING:
-		strcpy(dir, DING_DIR);
-		break;
+    case DIR_MODE_ZHIDING:
+	strcpy(dir, DING_DIR);
+	break;
     case DIR_MODE_NORMAL:
-    default:
         strcpy(dir, DOT_DIR);
+        break;
+    case DIR_MODE_SUPERFITER:
+        sprintf(dir, ".Search.%s", currentuser->userid);
+        break;
+    default:
+        sprintf(dir, ".Search.%s", currentuser->userid);
+	newbbslog(BBSLOG_DEBUG,"uknown dir mode %d",digestmode); 
         break;
     }
     sprintf(buf, "boards/%s/%s", boardname, dir);
@@ -642,7 +648,7 @@ char *setbpath(char *buf, char *boardname)
     strcat(buf, boardname);
     return buf;
 }
-char *setbfile(char *buf, char *boardname, char *filename)
+char *setbfile(char *buf,const char *boardname,const char *filename)
 {                               /* 取某版下文件 */
     sprintf(buf, "boards/%s/%s", boardname, filename);
     return buf;
@@ -917,12 +923,6 @@ int canIsend2(struct userec *user, char *userid)
      */
     return true;
 }
-
-sigjmp_buf bus_jump;
-void sigbus(int signo)
-{
-    siglongjmp(bus_jump, 1);
-};
 
 /**
     将文件描述符fd mmap到内存中
@@ -1229,6 +1229,43 @@ int del_from_file(char filename[STRLEN], char str[STRLEN])
         return -1;
     return (f_mv(fnnew, filename));
 }
+
+struct _sigjmp_stack {
+    sigjmp_buf bus_jump;
+    struct _sigjmp_stack* next;
+} static *sigjmp_stack=NULL;
+
+sigjmp_buf* push_sigbus()
+{
+  struct _sigjmp_stack* jumpbuf;
+  jumpbuf=(struct _sigjmp_stack*) malloc(sizeof(struct _sigjmp_stack));
+  if (sigjmp_stack==NULL) {
+    sigjmp_stack=jumpbuf;
+    jumpbuf->next=NULL;
+  } else {
+    jumpbuf->next=sigjmp_stack;
+    sigjmp_stack=jumpbuf;
+  }
+  return &(jumpbuf->bus_jump);
+}
+
+void popup_sigbus()
+{
+    struct _sigjmp_stack* jumpbuf=sigjmp_stack;
+    if (sigjmp_stack) {
+        sigjmp_stack=jumpbuf->next;
+        free(jumpbuf);
+    }
+    if (sigjmp_stack==NULL)
+        signal(SIGBUS, SIG_IGN);
+}
+
+void sigbus(int signo)
+{
+    if (sigjmp_stack) {
+        siglongjmp(sigjmp_stack->bus_jump, 1);
+    }
+};
 
 int simplepasswd(char *str)
 {
@@ -1807,7 +1844,7 @@ int setmailcheck(char *userid)
 	return apply_utmp( (APPLY_UTMP_FUNC) setutmpmailcheck, 0, userid, 0 );
 }
 
-int gen_title(char *boardname )
+int gen_title(const char *boardname )
 {
     struct fileheader mkpost, *ptr1, *ptr2;
     struct flock ldata, ldata2;

@@ -3,6 +3,7 @@
 */
 
 #include "bbs.h"
+#include "read.h"
 
 extern time_t login_start_time;
 extern int *zapbuf;
@@ -15,6 +16,7 @@ struct favbrd_struct {
 };
 extern struct favbrd_struct favbrd_list[FAVBOARDNUM];
 extern int favbrd_list_t, favnow;
+extern int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
 static int check_newpost(struct newpostdata *ptr);
 
 void EGroup(cmd)
@@ -173,10 +175,6 @@ int query_bm()
 }
 
 /* end of insertion */
-
-extern int load_mboards();
-extern void mailtitle();
-extern char *maildoent(char *buf, int num, struct fileheader *ent);
 
 static int check_newpost(struct newpostdata *ptr)
 {
@@ -515,11 +513,10 @@ static int fav_onselect(struct _select_def *conf)
             brc_initial(currentuser->userid, ptr->name);
 #endif
             memcpy(currBM, ptr->BM, BM_LEN - 1);
-            if (DEFINE(currentuser, DEF_FIRSTNEW)) {
-                setbdir(digestmode, buf, currboard->filename);
+            if (DEFINE(currentuser, DEF_FIRSTNEW)&&(getPos(DIR_MODE_NORMAL,currboard->filename,currboard)==0)) {
+                setbdir(DIR_MODE_NORMAL, buf, currboard->filename);
                 tmp = unread_position(buf, ptr);
-                page = tmp - t_lines / 2;
-                getkeep(buf, page > 1 ? page : 1, tmp + 1);
+                savePos(DIR_MODE_NORMAL,currboard->filename,tmp+1,currboard);
             }
             while (1) {
                 returnmode=Read();
@@ -958,7 +955,7 @@ static int fav_key(struct _select_def *conf, int command)
     return SHOW_CONTINUE;
 }
 
-static void fav_refresh(struct _select_def *conf)
+static int fav_refresh(struct _select_def *conf)
 {
     struct favboard_proc_arg *arg = (struct favboard_proc_arg *) conf->arg;
     struct newpostdata *ptr;
@@ -997,7 +994,7 @@ static void fav_refresh(struct _select_def *conf)
             clrtoeol();
             prints("请输入要找寻的 board 名称：%s", arg->bname);
     }
-
+    return SHOW_CONTINUE;
 }
 
 static int fav_getdata(struct _select_def *conf, int pos, int len)
@@ -1116,7 +1113,7 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
         else
             favboard_conf.get_data = boards_getdata;
         (*favboard_conf.get_data)(&favboard_conf, favboard_conf.page_pos, BBS_PAGESIZE);
-        if (favboard_conf.item_count==0)
+        if (favboard_conf.item_count==0) {
             if (arg.yank_flag == BOARD_FAV || arg.yank_flag == BOARD_BOARDALL)
                 break;
 	    else {
@@ -1129,6 +1126,7 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
                 if (favboard_conf.item_count==0)
 		    break;
 	    }
+        }
         fav_gotonextnew(&favboard_conf);
         favboard_conf.on_select = fav_onselect;
         favboard_conf.show_data = fav_show;
