@@ -113,8 +113,8 @@ function  pcmain_blog_most_hot()
 		$rows = mysql_fetch_array($result);
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
 		echo "|&nbsp;<a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">";
-		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,25));
-		if(strlen($rows[subject]) > 25 )
+		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,20));
+		if(strlen($rows[subject]) > 20 )
 			$subject .= "...";
 		$subject .= "</span>";
 		echo $subject."</a>\n&nbsp;<a href=\"index.php?id=".$pcinfor[USER]."\">";
@@ -144,8 +144,8 @@ function  pcmain_blog_most_trackback()
 		$rows = mysql_fetch_array($result);
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
 		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">";
-		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,25));
-		if(strlen($rows[subject]) > 25 )
+		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,20));
+		if(strlen($rows[subject]) > 20 )
 			$subject .= "...";
 		$subject .= "</span>";
 		echo $subject."</a>\n&nbsp;<a href=\"index.php?id=".$pcinfor[USER]."\">";
@@ -176,8 +176,8 @@ function  pcmain_blog_most_view()
 		$rows = mysql_fetch_array($result);
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
 		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">";
-		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,25));
-		if(strlen($rows[subject]) > 25 )
+		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,20));
+		if(strlen($rows[subject]) > 20 )
 			$subject .= "...";
 		$subject .= "</span>";
 		echo $subject."</a>\n&nbsp;<a href=\"index.php?id=".$pcinfor[USER]."\">";
@@ -213,10 +213,10 @@ function pcmain_blog_new_nodes()
 		}
 		echo "<td class=".$tdclass." width=\"33%\">[<span title=\"".$newBlogs[useretems][$i][pc][DESC]."\"><a href=\"index.php?id=".$newBlogs[useretems][$i][pc][USER]."\"><font class=low2>".$newBlogs[useretems][$i][pc][NAME]."</font></a></span>]".
 			"&nbsp;<a href='/bbsqry.php?userid=".$newBlogs[useretems][$i][pc][USER]."'><font class=low>".$newBlogs[useretems][$i][pc][USER]."</font></a><br />".
-			"<a href='pccon.php?id=".$newBlogs[useretems][$i][pc][UID]."&tid=".$newBlogs[useretems][$i][tid]."&nid=".$newBlogs[useretems][$i][nid]."&s=all'>";
+			"<a href='pccon.php?id=".$newBlogs[useretems][$i][pc][UID]."&tid=".$newBlogs[useretems][$i][tid]."&nid=".$newBlogs[useretems][$i][nid]."&s=all'>".
 			"<span title=\"".$newBlogs[useretems][$i][subject]."\">";
-		echo substr($newBlogs[useretems][$i][subject],0,40);
-		if(strlen($newBlogs[useretems][$i][subject])>40) echo "...";
+		echo substr($newBlogs[useretems][$i][subject],0,36);
+		if(strlen($newBlogs[useretems][$i][subject])>36) echo "...";
 		echo "</span></a></td>";
 		if($i % 2 == 1 ) echo "</tr>";
 	}
@@ -277,6 +277,50 @@ function pcmain_blog_sections()
 <?php
 }
 
+function pcmain_section_top_view()
+{
+	global $pcconfig,$link;
+?>
+<table cellspacing=0 cellpadding=3 width="100%">
+<?php
+	$sections = array_keys($pcconfig["SECTION"]);
+	foreach( $sections as $section )
+	{
+		$query = "SELECT nodes.uid , nid , subject , theme , username , corpusname ".
+			 "FROM nodes , users ".
+			 "WHERE nodes.uid = users.uid AND access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-604800)." AND nodes.visitcount != 0 AND theme = '".$section."' ".
+			 "GROUP BY nodes.uid ".
+			 "ORDER BY nodes.visitcount DESC , nid DESC ".
+			 "LIMIT 0 , 4 ;";
+		$result = mysql_query($query,$link);
+		$num_rows = mysql_num_rows($result);
+		if($num_rows)
+		{
+?>
+<tr><td align="left">
+[<strong><a href="/pc/pcsec.php?sec=<?php echo $section; ?>"><font class=low2><?php echo $pcconfig["SECTION"][$section]; ?></font></a></strong>]&nbsp;
+<?php
+			for( $i = 0 ; $i < $num_rows ; $i ++ )
+			{
+				$rows = mysql_fetch_array($result);
+				echo "<a href=\"/pc/pccon.php?id=".$rows[0]."&nid=".$rows[nid]."&s=all\">".
+				     "<span title=\"".html_format($rows[subject])."(".$rows[username]."'s BLOG:".html_format($rows[corpusname]).")\">";
+				$subject = substr( $rows[subject] , 0 , 13 );
+				if( strlen( $rows[subject] ) > 13 ) $subject .= "...";
+				echo $subject."</span></a>";
+				if( $i < $num_rows - 1 ) echo " - ";
+			}
+?>
+</td></tr>
+<?php			
+		}
+		mysql_free_result($result);
+	}
+?>
+</table>
+<?php
+}
+
 if(pc_update_cache_header())
 	return;
 
@@ -286,7 +330,7 @@ $link = pc_db_connect();
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-<title><?php $pcconfig["BBSNAME"]; ?>BLOG</title>
+<title><?php echo $pcconfig["BBSNAME"]; ?>BLOG</title>
 <style type="text/css">
 <!--
 .table {
@@ -578,8 +622,8 @@ input {
                 <td class="topic">分类主题</td>
                 </tr>
               <tr>
-                <td>
-				<?php pcmain_blog_sections(); ?>				</td>
+                <td bgcolor="#E8FFEE">
+				<?php pcmain_section_top_view(); ?>				</td>
                 </tr>
             </table></td>
           </tr>
