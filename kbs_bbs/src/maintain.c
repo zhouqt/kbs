@@ -1311,14 +1311,14 @@ char *logfile, *regfile;
 
             move(15, 0);
             printdash(NULL);
-            for (n = 0; field[n] != NULL; n++)
+            for (n = 0; field[n] != NULL; n++) {
                 /*
                  * added for rejection of register from proxy 
                  */
                 /*
                  * Bigman, 2001.11.9 
                  */
-                clrtoeol();
+                 clrtoeol();
                 if (n == 1) {
                     if (check_proxy_IP(uinfo.lasthost, buf) > 0)
                         prints("%s     : %s \033[33m%s\033[m\n", finfo[n], fdata[n], buf);
@@ -1326,6 +1326,7 @@ char *logfile, *regfile;
                         prints("%s     : %s\n", finfo[n], fdata[n]);
                 } else
                     prints("%s     : %s\n", finfo[n], fdata[n]);
+            }
             /*
              * if (uinfo.userlevel & PERM_LOGINOK) modified by dong, 1999.4.18 
              */
