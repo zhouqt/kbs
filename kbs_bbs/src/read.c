@@ -572,6 +572,7 @@ static int i_read_key(int cmdmode, struct one_key *rcmdlist, struct keeploc *loc
                 unlink(currdirect);
             digestmode = 0;
             setbdir(digestmode, currdirect, currboard->filename);
+            return NEWDIRECT;
         }
         else
             return DOQUIT;
