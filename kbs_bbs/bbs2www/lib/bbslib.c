@@ -894,9 +894,12 @@ int sig_append(FILE * fp, char *id, int sig)
         }
         /*
          * 读入签名档成功，设置默认签名档为当前使用的签名档 
+         * 改成由 phpbbslib 来设置这个，因为随机签名档在这里判断不出来 - atppp
          */
+        /*
         if (i > skip_lines)
             x->signature = sig;
+        */
     }
     fclose(fp2);
     if (i > skip_lines)

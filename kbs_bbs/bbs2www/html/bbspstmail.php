@@ -107,7 +107,7 @@ login_init();
 ?>
 <option value="0">不使用签名档</option>
 <?php
-			for ($i = 1; $i < 6; $i++)
+			for ($i = 1; $i <= $currentuser["signum"]; $i++)
 			{
 				if ($currentuser["signature"] == $i)
 				{
@@ -124,6 +124,7 @@ login_init();
 			}
 		}
 ?>
+<option value="-1" <?php if ($currentuser["signature"] < 0) echo "selected "; ?>>随机签名档</option>
 </select>
  [<a target="_balnk" href="bbssig.php">查看签名档</a>]
 <?php

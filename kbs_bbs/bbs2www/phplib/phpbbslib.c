@@ -5461,6 +5461,14 @@ static PHP_FUNCTION(bbs_postmail){
     snprintf(title2,ARTICLE_TITLE_LEN-1, "{%s} %s", targetID, title);
     title2[ARTICLE_TITLE_LEN-1] = 0;
     
+    getCurrentUser()->signature = sig;
+    if (sig < 0) {
+        struct userdata ud;
+        read_userdata(getCurrentUser()->userid, &ud);
+        if (ud.signum > 0) {
+            sig = 1 + (int) (((double)ud.signum) * rand() / (RAND_MAX + 1.0)); //(rand() % ud.signum) + 1;
+        } else sig = 0;
+    }
     if ((ret=post_mail(targetID, title3, filename, getCurrentUser()->userid, getCurrentUser()->username, fromhost, sig, backup))!=0)
     {
 		RETURN_LONG(ret-1);
