@@ -161,8 +161,6 @@ find_rm_lost(struct boardheader *bhp)
 {
 	char buf[200];
 	int i;
-	if (strcmp(bhp->filename,"vote"))
-		return 0;
 	for (i = 0; i < HASHSIZE; i++) {
 		nfile[i] = 0;
 	}
