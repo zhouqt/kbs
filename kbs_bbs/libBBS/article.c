@@ -1812,8 +1812,8 @@ int attach_fgets(char* s,int size,FILE* stream)
      }
      *ptr=ch;
      ptr++;
-     if ((ptr-s)==size-1) {
-	     *(ptr-1)=0;
+     if ((ptr-s)>=size-2) {
+	     *ptr=0;
 	     return 1;
      }
      if (ch=='\n') {
