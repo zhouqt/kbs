@@ -726,7 +726,7 @@ inline void long2byte(unsigned int num, byte* arg) {
 }
 
 
-int init_memory()
+int sms_init_memory()
 {
     void * p;
     int iscreate;

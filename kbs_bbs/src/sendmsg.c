@@ -662,7 +662,7 @@ int register_sms()
     char ans[4];
     char valid[20];
     char buf2[80];
-    init_memory();
+    sms_init_memory();
     smsuin = &uinfo;
     clear();
     prints("注册手机号\n\n注册你的手机号之后，你可在bbs上发送和接收手机短信\n");
@@ -728,7 +728,7 @@ int unregister_sms()
     char ans[4];
     char valid[20];
     char buf2[80];
-    init_memory();
+    sms_init_memory();
     smsuin = &uinfo;
     clear();
     prints("取消注册手机号");
@@ -784,7 +784,7 @@ int do_send_sms_func(char * dest, char * msgstr)
         return 0;
     }
     
-    init_memory();
+    sms_init_memory();
     smsuin = &uinfo;
     inremsg = true;
 
