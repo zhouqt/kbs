@@ -9,6 +9,7 @@
 #define HAVE_TEMPORARY_NICK /* 允许临时改变昵称 */
 #define HAVE_FRIENDS_NUM /* 显示好友数目 */
 #define HAVE_REVERSE_DNS /* 反查域名 */
+#define FILTER
 
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
@@ -345,7 +346,14 @@ const char    *groups[] = {
 typedef struct fileheader {     /* This structure is used to hold data in */
     char filename[FILENAME_LEN];      /* the DIR files */
     unsigned int id, groupid, reid;
+#ifdef FILTER
+	unsigned int o_id;
+	unsigned int o_groupid;
+	unsigned int o_reid;
+	char unused1[34];
+#else
     char unused1[46];
+#endif
     char innflag[2];
 	char owner[OWNER_LEN];
     char unused2[50-sizeof(time_t)];
