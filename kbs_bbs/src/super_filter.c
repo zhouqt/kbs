@@ -390,6 +390,8 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
     libs = (char*)malloc(LIBLEN);
     for (i = 0; i < total; i++) {
         struct stat st;
+        char* p;
+        char ffn[80];
         int j;
         size_t fsize;
         libptr = libs;
@@ -428,8 +430,6 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
         }
         if(load_content) {
             int k,abssize=0,entercount=0,ignoreline=0;
-            char* p;
-            char ffn[80];
             set_vars(fvars+fget_var("content"), ptr1->filename);
             j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize, NULL);
             if(j) {
