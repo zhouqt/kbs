@@ -122,6 +122,14 @@ function pcmain_navigation_bar()
 <a href="/pc/pcmain.php">博客首页</a>
 |
 <a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">博客论坛</a>
+<?php
+    if ($pcconfig["BLOGONBLOG"]) {
+?>
+|
+<a href="/pc/index.php?id=<?php echo urlencode ($pcconfig["BLOGONBLOG"]); ?>">BLOG心得集</a>
+<?php
+    }
+?>
 |
 <a href="/pc/pc.php">用户列表</a>
 |
@@ -136,8 +144,6 @@ function pcmain_navigation_bar()
 <a href="/pc/pclist.php">热门排行</a>
 |
 <a href="/pc/pcnsearch.php">日志搜索</a>
-|
-<a href="/pc/pcmain_o.php">老版本</a>
 |
 <a href="/pc/pcapp0.html"><font color="red">立即申请</font></a>
 <?php

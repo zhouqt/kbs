@@ -22,6 +22,7 @@ $pcconfig["USERFILEPERM"]:用户个人空间是否支持权限控制
 $pcconfig["USERFILEREF"] :用户个人空间是否检查HTTP_REFERER以防止盗链,开启此功能时请编辑 $accept_hosts 的预定值
 $pcconfig["ENCODINGTBP"] :对 trackback ping 的字符串进行编码处理,包括送出编码和接收编码.开启此功能请确定你的PHP支持 mbstring 和 iconv
 $pcconfig["TYPES"]: blog类型
+$pcconfig["BLOGONBLOG"]: blog on blog,hehe,如果没有，设成""即可。
 pc_personal_domainname($userid)函数 :用户Blog的域名;
 */
 $pcconfig["LIST"] = 100;
@@ -45,6 +46,7 @@ $pcconfig["USERFILESNUMLIMIT"] = 1000;
 $pcconfig["USERFILEPERM"]= false;
 $pcconfig["USERFILEREF"] = true;
 $pcconfig["ENCODINGTBP"] = true;
+$pcconfig["BLOGONBLOG"] = "smth.blog";
 $pcconfig["TYPES"] = array (
                     "normal" => "",
                     "group"  => "group",

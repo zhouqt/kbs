@@ -803,6 +803,13 @@ function pc_main_navigation_bar()
 ?>
 <p align="center">
 [<a href="pcmain.php">首页</a>]
+<?php
+    if ($pcconfig["BLOGONBLOG"]) {
+?>
+<a href="/pc/index.php?id=<?php echo urlencode ($pcconfig["BLOGONBLOG"]); ?>">BLOG心得集</a>        
+<?php
+    }
+?>
 [<a href="pc.php">用户</a>]
 [<a href="pclist.php">热门排行</a>]
 [<a href="pcsec.php">分类</a>]
