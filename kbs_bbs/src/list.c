@@ -459,6 +459,9 @@ int allnum, pagenum;
 #ifdef NINE_BUILD
     case 'c':
     case 'C':
+#else
+    case 'f':
+    case 'F':
 #endif
         if (friendmode)
             friendmode = false;

@@ -943,7 +943,7 @@ int draw_content_more(char *ptr, int size, char *fn)
     init_MemMoreLines(&l, ptr, size);
 
     move(t_lines/2, 0);
-    prints("\033[34m！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！");
+    prints("\033[34m！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！");
 //    move(t_lines/2+1, 0);
     prints("\n\033[m");
     curr_line = l.curr_line;
