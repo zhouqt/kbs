@@ -189,22 +189,95 @@ int mode;
 
 int show_allmsgs()
 {
-    char fname[STRLEN];
-    int oldmode;
+    char buf[MAX_MSG_SIZE+100], showmsg[MAX_MSG_SIZE*2];
+    int oldmode, count, i, j, page, ch, y;
 
     sethomefile(fname, currentuser->userid, "msgfile");
-    clear();
     oldmode = uinfo.mode;
     modify_user_mode(LOOKMSGS);
-    if (dashf(fname)) {
-        ansimore(fname, true);
+
+    page = 0;
+    count = get_msgcount(0, currentuser->userid);
+    while(1) {
         clear();
-    } else {
-        move(5, 30);
-        prints("Ã»ÓĞÈÎºÎµÄÑ¶Ï¢´æÔÚ£¡£¡");
-        pressanykey();
-        clear();
+        if(count==0) {
+            good_move(5,30);
+            prints("Ã»ÓĞÈÎºÎµÄÑ¶Ï¢´æÔÚ£¡£¡");
+        }
+        else {
+            y = 0;
+            i = page;
+            load_msgtext(0, currentuser->userid, i, buf);
+            j = translate_msg(buf, showmsg);
+            while(y+j<=23) {
+                y+=j; i++;
+                prints("%s", showmsg);
+                if(i>=count) break;
+                load_msgtext(0, currentuser->userid, i, buf);
+                j = translate_msg(buf, showmsg);
+            }
+        }
+        good_move(23,0);
+        prints("[1;44;32mÑ¶Ï¢ä¯ÀÀÆ÷   ±£Áô <[37mr[32m>    Çå³ı <[37mc[32m>   ¼Ä»ØĞÅÏä<[37mm[m");
+        clrtoeol();
+        refresh();
+        oflush();
+reenter:
+        ch = igetch();
+        switch(ch) {
+            case 'r':
+            case 'R':
+            case 'q':
+            case 'Q':
+            case KEY_LEFT:
+                goto outofhere;
+            case KEY_UP:
+                if(page>0) page--;
+                break;
+            case KEY_DOWN:
+                if(page<count-1) page++;
+                break;
+            case KEY_PGDN:
+            case ' ':
+                if(page<count-11) page+=10;
+                else page=count-1;
+                break;
+            case KEY_PGUP:
+                if(page>10) page-=10;
+                else page=0;
+                break;
+            case 'c':
+            case 'C':
+                clear_msg();
+                goto outofhere;
+            case 'm':
+            case 'M':
+                char title[STRLEN];
+                time_t now;
+                char fname[STRLEN];
+                FILE* fn;
+
+                sprintf(fname, "tmp/%s.msg", currentuser->userid);
+                fn = fopen(fname, "w");
+                for(i=0;i<count;i++) {
+                    load_msgtext(0, currentuser->userid, i, buf);
+                    translate_msg(buf, showmsg);
+                    fprintf(fname, "%s", showmsg);
+                }
+                fclose(fn);
+
+                now = time(0);
+                sprintf(title, "[%12.12s] ËùÓĞÑ¶Ï¢±¸·İ", ctime(&now) + 4);
+                mail_file(currentuser->userid, fname, currentuser->userid, title, BBSPOST_MOVE);
+                unlink(fname);
+                goto outofhere;
+            default:
+                goto reenter;
+        }
     }
+outofhere:
+    
+    clear();
     uinfo.mode = oldmode;
     return 0;
 }
@@ -335,10 +408,10 @@ void r_msg()
         if(buf[1]=='3'||uin==NULL) canreply = 0;
         else canreply = 1;
         
-        good_move(0,0);
-        clrtoeol();
         if (DEFINE(currentuser, DEF_SOUNDMSG))
             bell();
+        good_move(0,0);
+        clrtoeol();
         if (DEFINE(currentuser, DEF_HIGHCOLOR))
             prints("\x1b[1m%s", outmsg);
         else
@@ -352,8 +425,14 @@ void r_msg()
         }
         
 
-        prints("[m  µÚ%3d/%-3dÌõÏûÏ¢, ¡ü¡ıÇĞ»»Ñ¶Ï¢, Enter ½áÊø, %s", now+1, count, canreply?"»Ø¸´:":(uin?"¸ÃÏûÏ¢ÎŞ·¨»Ø¸´":"ÓÃ»§ÒÑÏÂÕ¾,ÎŞ·¨»Ø¸´"));
         clrtoeol();
+        if(canreply)
+            prints("[m %3d/%-3d,¡ü¡ıÇĞ»»,Enter½áÊø, »Ø¸´%s:", now+1, count, uid);
+        else
+            if(uin)
+                prints("[m %3d/%-3d,¡ü¡ıÇĞ»»,Enter½áÊø, ¸ÃÏûÏ¢ÎŞ·¨»Ø¸´", now+1, count);
+            else
+                prints("[m %3d/%-3d,¡ü¡ıÇĞ»»,Enter½áÊø, ÓÃ»§%sÒÑÏÂÕ¾,ÎŞ·¨»Ø¸´", now+1, count, uid);
         good_getyx(&oy, &ox);
         
         refresh();

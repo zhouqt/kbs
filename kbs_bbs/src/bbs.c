@@ -3322,11 +3322,10 @@ int Goodbye()
         FILE *fp;
         char buf[STRLEN], *ptr;
 
-        sethomefile(fname, currentuser->userid, "msgindex");
-        unlink(fname);
         sethomefile(fname, currentuser->userid, "msgfile");
         if (DEFINE(currentuser, DEF_MAILMSG /*离站时寄回所有信息 */ ) && dashf(fname)) {
-#ifdef NINE_BUILD
+            show_allmsgs();
+/*    #ifdef NINE_BUILD
             time_t now, timeout;
             char ans[3];
 
@@ -3346,11 +3345,11 @@ int Goodbye()
                 now = time(0);
                 sprintf(title, "[%12.12s] 所有讯息备份", ctime(&now) + 4);
                 mail_file(currentuser->userid, fname, currentuser->userid, title, BBSPOST_MOVE);
-#ifdef NINE_BUILD
+#ifdef NINE_BUILD*/
             }
 #endif
         } else
-            unlink(fname);
+            clear_msg();
         fp = fopen("friendbook", "r");  /*搜索系统 寻人名单 */
         while (fp != NULL && fgets(buf, sizeof(buf), fp) != NULL) {
             char uid[14];

@@ -594,7 +594,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
 int translate_msg(char* src, char* dest)
 {
     char id[14], time[8], msg[MAX_MSG_SIZE];
-    int i,j=0,len,pos,space;
+    int i,j=0,len,pos,space, ret=0;
     memcpy(id, src+2, 12);
     id[12] = 0;
     memcpy(time, src+14, 5);
@@ -635,6 +635,7 @@ int translate_msg(char* src, char* dest)
             for(;pos<78;pos++)
                 dest[len++]=' ';
             dest[len++]='\n';
+            ret++;
             for(pos=0;pos<space;pos++)
                 dest[len++]=' ';
         }
@@ -645,5 +646,6 @@ int translate_msg(char* src, char* dest)
         dest[len++]=' ';
     dest[len++]='\n';
     dest[len]=0;
+    return ret+1;
 }
 
