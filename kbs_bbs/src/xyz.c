@@ -91,6 +91,23 @@ showperminfo( unsigned int pbits,int i,int flag)
     refresh();
     return YEA;
 }
+/* bad 2002.7.6 */
+int
+showperminfo2( unsigned int pbits,unsigned int basic,int i,int flag)
+{
+    char        buf[ STRLEN ];
+
+    if((1<<i==PERM_BASIC||1<<i==PERM_POST||1<<i==PERM_CHAT||1<<i==PERM_PAGE||1<<i==PERM_DENYMAIL)&&(basic&(1<<i)))
+        sprintf( buf, "%c. %-30s [32;1m%3s[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
+                 ((pbits >> i) & 1 ? "ON" : "OFF"));
+    else
+        sprintf( buf, "%c. %-30s [37;0m%3s[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
+                 ((pbits >> i) & 1 ? "ON" : "OFF"));
+    move( i+6-(( i>15)? 16:0) , 0+(( i>15)? 50:0) );
+    prints( buf );
+    refresh();
+    return YEA;
+}
 
 unsigned int setperms(unsigned int pbits,char *prompt,int numbers,int (*showfunc)(unsigned int ,int ,int))
 {
@@ -115,6 +132,37 @@ unsigned int setperms(unsigned int pbits,char *prompt,int numbers,int (*showfunc
             i = *choice - 'A';
             pbits ^= (1 << i);
             if((*showfunc)( pbits, i ,YEA)==NA)
+            {
+                pbits ^= (1 << i);
+            }
+        }
+    }
+    return( pbits );
+}
+/* bad 2002.7.6*/
+unsigned int setperms2(unsigned int pbits,unsigned int basic,char *prompt,int numbers,int (*showfunc)(unsigned int ,unsigned int,int ,int))
+{
+    int lastperm = numbers - 1;
+    int i, done = NA;
+    char choice[3];
+
+    move(4,0);
+    prints("«Î∞¥œ¬ƒ„“™µƒ¥˙¬Î¿¥…Ë∂®%s£¨∞¥ Enter Ω· ¯.\n",prompt);
+    move(6,0);
+    clrtobot();
+    /*    pbits &= (1 << numbers) - 1;*/
+    for (i=0; i<=lastperm; i++) {
+        (*showfunc)( pbits, basic, i,NA);
+    }
+    while (!done) {
+        getdata(t_lines-1, 0, "—°‘Ò(ENTER Ω· ¯): ",choice,2,DOECHO,NULL,YEA);
+        *choice = toupper(*choice);
+        if (*choice == '\n' || *choice == '\0') done = YEA;
+        else if (*choice < 'A' || *choice > 'A' + lastperm) bell();
+        else {
+            i = *choice - 'A';
+            pbits ^= (1 << i);
+            if((*showfunc)( pbits, basic,i ,YEA)==NA)
             {
                 pbits ^= (1 << i);
             }
@@ -258,6 +306,10 @@ x_level()
     int flag=0;/*Haohmaru,98.10.05*/
     int flag1=0,flag2=0; /* bigman 2000.1.5 */
     struct userec* lookupuser;
+    char genbuf2[255];
+    int lcount=0,tcount=0,i,j,kcount=0,basicperm;
+    int s[10][2];
+    FILE* fn;
 
     /* add by alex, 97.7 , strict the power of sysop */
     if (!HAS_PERM(currentuser,PERM_ADMIN) || !HAS_PERM(currentuser,PERM_SYSOP))
@@ -299,11 +351,32 @@ x_level()
     if ((lookupuser->userlevel & PERM_XEMPT ))
         flag2=1;
 
+/*Bad 2002.7.6  ‹œﬁ”ÎΩ‰Õ¯Œ Ã‚*/
+	basicperm=0;
+	sethomefile( genbuf2, lookupuser->userid,"giveup" );
+    	fn = fopen(genbuf2, "rt");
+    	if (fn) {
+	    while(!feof(fn)){
+    	        if(fscanf(fn, "%d %d",&i,&j)<=0)break;
+    	        s[lcount][0]=i;
+    	        s[lcount][1]=j;
+    	        switch(i){
+    	        	case 1:basicperm|=PERM_BASIC; break;
+    	        	case 2:basicperm|=PERM_POST; break;
+    	        	case 3:basicperm|=PERM_CHAT; break;
+    	        	case 4:basicperm|=PERM_PAGE; break;
+    	        	case 5:basicperm|=PERM_DENYMAIL; break;
+    	        }
+    	        lcount++;
+            }
+    	    fclose(fn);
+    	}
+
     move(1,0);
     clrtobot();
     move(2,0);
     prints("«Î…Ë∂®"NAME_USER_SHORT" '%s' µƒ»®œﬁ\n", genbuf);
-    newlevel = setperms(lookupuser->userlevel,"»®œﬁ",NUMPERMS,showperminfo);
+    newlevel = setperms2(lookupuser->userlevel,basicperm,"»®œﬁ",NUMPERMS,showperminfo2);
     move(2,0);
     if (newlevel == lookupuser->userlevel)
         prints(NAME_USER_SHORT" '%s' µƒ»®œﬁ√ª”–∏¸∏ƒ\n", lookupuser->userid);
@@ -327,6 +400,39 @@ x_level()
             mail_file(currentuser->userid,"etc/forcloak",lookupuser->userid,NAME_SYSOP_GROUP" ⁄”Ëƒ˙“˛…Ì»®œﬁ",0);
         if ((lookupuser->userlevel & PERM_XEMPT ) && flag2==0 )
             mail_file(currentuser->userid,"etc/forlongid",lookupuser->userid,NAME_SYSOP_GROUP" ⁄”Ëƒ˙≥§∆⁄’ ∫≈»®œﬁ",0);
+/*Bad 2002.7.6  ‹œﬁ”ÎΩ‰Õ¯Œ Ã‚*/
+    	kcount=lcount;
+    	for(i=0;i<lcount;i++){
+    		j=0;
+    		switch(s[i][0]){
+    			case 1:j=lookupuser->userlevel&PERM_BASIC;break;
+    			case 2:j=lookupuser->userlevel&PERM_POST;break;
+    			case 3:j=lookupuser->userlevel&PERM_CHAT;break;
+    			case 4:j=lookupuser->userlevel&PERM_PAGE;break;
+    			case 5:j=!(lookupuser->userlevel&PERM_DENYMAIL);break;
+    		}
+    		if(j){
+    			kcount--;
+    			s[i][1]=0;
+    		}
+    	}
+    	if(kcount!=lcount){
+    		if(kcount==0) unlink(genbuf2);
+    		else{
+			fn=fopen(genbuf2, "wt");
+            		for(i=0;i<lcount;i++)
+            		if(s[i][1]>0) fprintf(fn,"%d %d\n",s[i][0],s[i][1]);
+            		fclose(fn);
+    		}
+    	}
+        if(lookupuser->userlevel&PERM_BASIC) tcount++;
+        if(lookupuser->userlevel&PERM_POST) tcount++;
+        if(lookupuser->userlevel&PERM_CHAT) tcount++;
+        if(lookupuser->userlevel&PERM_PAGE) tcount++;
+        if(!(lookupuser->userlevel&PERM_DENYMAIL)) tcount++;
+
+        if(kcount+tcount==5&&kcount>0)lookupuser->flags[0]|=GIVEUP_FLAG;
+        else lookupuser->flags[0]&=~GIVEUP_FLAG;
     }
     pressreturn() ;
     clear() ;

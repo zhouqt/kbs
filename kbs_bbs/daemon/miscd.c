@@ -137,10 +137,60 @@ int killauser(struct userec *theuser,char *data)
 }
 int dokilluser()
 {
-/*    if (load_ucache()!=0) return -1;*/
     bbslog("1user","Started kill users\n");
     apply_users(killauser,NULL);
     bbslog("1user","kill users done\n");
+}
+int updateauser(struct userec *theuser,char *data)
+{
+    FILE* fn;
+    char genbuf[255],buf[255];
+    int lcount=0,tcount,s[10][2],i,j;
+    if((theuser->userlevel&PERM_BASIC)&&(theuser->userlevel&PERM_POST)
+    	&&(theuser->userlevel&PERM_CHAT)&&(theuser->userlevel&PERM_PAGE)
+    	&&!(theuser->userlevel&PERM_DENYMAIL)) return 0;
+    if(!(theuser->userlevel&PERM_LOGINOK)) return 0;
+    sethomefile( genbuf, theuser->userid,"giveup" );
+    fn = fopen(genbuf, "rt");
+    if (fn) {
+	while(!feof(fn)){
+    	    if(fscanf(fn, "%d %d",&i,&j)<=0)break;
+    	    s[lcount][0]=i;
+    	    s[lcount][1]=j;
+    	    lcount++;
+    	}
+    	fclose(fn);
+	tcount=lcount;
+        for(i=0;i<lcount;i++){
+            s[i][1]--;
+            if(s[i][1]==0){
+            	tcount--;
+            	switch(s[i][0]){
+            	    case 1:theuser->userlevel|=PERM_BASIC;break;
+            	    case 2:theuser->userlevel|=PERM_POST;break;
+            	    case 3:theuser->userlevel|=PERM_CHAT;break;
+            	    case 4:theuser->userlevel|=PERM_PAGE;break;
+            	    case 5:theuser->userlevel&=~PERM_DENYMAIL;break;
+            	}
+            }
+        }
+        if(theuser->flags[0]&GIVEUP_FLAG&&tcount==0)
+             theuser->flags[0]&=~GIVEUP_FLAG;
+        if(tcount==0) unlink(genbuf);
+        else{
+            fn=fopen(genbuf, "wt");
+            for(i=0;i<lcount;i++)
+            if(s[i][1]>0) fprintf(fn,"%d %d\n",s[i][0],s[i][1]);
+            fclose(fn);
+        }
+    }
+    return 0;
+}
+int doupdategiveupuser()
+{
+    bbslog("1user","Started update giveup users\n");
+    apply_users(updateauser,NULL);
+    bbslog("1user","update giveup users done\n");
 }
 int getnextday4am()
 {
@@ -447,6 +497,7 @@ int dodaemon(char* argv1,char* daemon)
 	int ft;
 		if (argv1==NULL) {
 		  dokilluser();
+		  doupdategiveupuser();
 		} else {
     	 switch(fork()) {
        	     case -1: 
@@ -454,6 +505,7 @@ int dodaemon(char* argv1,char* daemon)
        	        break;
        	     case 0 : 
        	        dokilluser();
+		doupdategiveupuser();
                 exit(0);
        	        break;
        	     default:
@@ -503,7 +555,8 @@ int main (int argc,char *argv[])
 #define time(x) bbstime(x)
     setpublicshmreadonly(1);
      if (argc>1) {
-         if (strcasecmp(argv[1],"killuser") == 0)  return dokilluser();
+         if (strcasecmp(argv[1],"killuser") == 0)  {if (load_ucache()!=0) return -1;return dokilluser();}
+         if (strcasecmp(argv[1],"giveup") == 0)  {if (load_ucache()!=0) return -1;return doupdategiveupuser();}
          if (strcasecmp(argv[1],"allboards") == 0) return dokillalldir();
          if (strcasecmp(argv[1],"daemon") == 0) return dodaemon(argv[1],argv[2]);
          if (strcasecmp(argv[1],"killdir") == 0) return dokilldir(argv[2]);

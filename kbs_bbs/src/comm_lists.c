@@ -85,6 +85,7 @@ int     lock_scr(); /* Leeward 98.02.22 */
 int     FavBoard(); /* period  2000-09-11 */
 int 	searchtrace(); 	/* stephen 2000.12.15 */
 int	badlist();	/* Bigman 2000.12.26 */
+int	giveupnet(); /* bad 2002.7.5 */
 int	m_stoplogin();
 int	inn_start();	/* czz 2002.01.15 */
 int	inn_reload();	/* czz 2002.01.15 */
@@ -158,6 +159,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"ConvCode",     switch_code}, /* KCN 99.09.03 */
     {"FavBoard",	FavBoard},	/* added period 2000-09-11 */
     {"BadList",	badlist},	/* added Bigman 2000.12.26 */
+    {"GiveupNet", giveupnet},	/* added Bad 2002.7.5 */
     {"CheckForm",    m_register},
     {"ModifyInfo",   m_info},
     {"ModifyLevel",  x_level},

@@ -173,6 +173,173 @@ void suicide()
     }
 }
 
+int giveupnet() /* bad 2002.7.5 */
+{
+/*
+PERM_BASIC   ÉÏÕ¾
+PERM_POST    ·¢±í
+PERM_CHAT    ÁÄÌì
+PERM_PAGE    ºô½Ğ
+PERM_DENYMAIL·¢ĞÅ
+*/
+    char buf[STRLEN],genbuf[PATHLEN];
+    FILE *fn;
+    char ans[3],day[10];
+    int i,j,k,lcount,tcount;
+
+    modify_user_mode( GIVEUPNET );
+    if(HAS_PERM(currentuser,PERM_SYSOP)||HAS_PERM(currentuser,PERM_BOARDS)||HAS_PERM(currentuser,PERM_OBOARDS)||HAS_PERM(currentuser,PERM_ACCOUNTS)||HAS_PERM(currentuser,PERM_ANNOUNCE)||HAS_PERM(currentuser,PERM_JURY) ||HAS_PERM(currentuser,PERM_SUICIDE)||HAS_PERM(currentuser,PERM_CHATOP))
+    {
+        clear();
+        move(11,28);
+        prints("[1m[33mÄãÓĞÖØÈÎÔÚÉí£¬²»ÄÜ½äÍø£¡[m");
+        pressanykey();
+        return;
+    }
+    
+    lcount=0; tcount=0;
+    sethomefile( genbuf, currentuser->userid,"giveup" );
+    fn = fopen(genbuf, "rt");
+    if (fn) {
+    	clear();
+    	move(1,0);
+    	prints("ÄãÏÖÔÚµÄ½äÍøÇé¿ö£º\n\n");
+	while(!feof(fn)){
+    	    if(fscanf(fn, "%d %d",&i,&j)<=0)break;
+    	    switch(i){
+    	    	case 1:prints("ÉÏÕ¾È¨ÏŞ"); break;
+    	    	case 2:prints("·¢±íÈ¨ÏŞ"); break;
+    	    	case 3:prints("ÁÄÌìÈ¨ÏŞ"); break;
+    	    	case 4:prints("ºô½ĞÈ¨ÏŞ"); break;
+    	    	case 5:prints("·¢ĞÅÈ¨ÏŞ"); break;
+    	    }
+    	    sprintf(buf,"        »¹ÓĞ%dÌì\n",j);
+    	    prints(buf);
+    	    lcount++;
+    	}
+    	fclose(fn);
+    	pressanykey();
+    }
+    
+
+    clear();
+    move(1,0);
+    prints("ÇëÑ¡Ôñ½äÍøÖÖÀà:");
+    move(3,0);
+    prints("(0) - ½áÊø");
+    move(4,0);
+    prints("(1) - ÉÏÕ¾È¨ÏŞ");
+    move(5,0);
+    prints("(2) - ·¢±íÈ¨ÏŞ");
+    move(6,0);
+    prints("(3) - ÁÄÌìÈ¨ÏŞ");
+    move(7,0);
+    prints("(4) - ºô½ĞÈ¨ÏŞ");
+    move(8,0);
+    prints("(5) - ·¢ĞÅÈ¨ÏŞ");
+
+    getdata( 10, 0, "ÇëÑ¡Ôñ [0]",
+             ans, 2, DOECHO, NULL,YEA);
+    if(ans[0]<'1'||ans[0]>'5')
+    {
+        return;
+    }
+    k=1;
+    switch(ans[0]){
+    	case '1':
+    	    k=k&&(currentuser->userlevel&PERM_BASIC);
+    	    break;
+    	case '2':
+    	    k=k&&(currentuser->userlevel&PERM_POST);
+    	    break;
+    	case '3':
+    	    k=k&&(currentuser->userlevel&PERM_CHAT);
+    	    break;
+    	case '4':
+    	    k=k&&(currentuser->userlevel&PERM_PAGE);
+    	    break;
+    	case '5':
+    	    k=k&&!(currentuser->userlevel&PERM_DENYMAIL);
+    	    break;
+    }
+
+    if(!k){
+    	prints("\n\nÄãÒÑ¾­Ã»ÓĞÁË¸ÃÈ¨ÏŞ");
+    	pressanykey();
+    	return;
+    }
+
+    getdata( 11, 0, "ÇëÊäÈë½äÍøÌìÊı [0]",
+             day, 4, DOECHO, NULL,YEA);
+    i=0;
+    while(day[i]){
+        if(!isdigit(day[i])) return;
+        i++;
+    }
+    j=atoi(day);
+    if(j<=0) return;
+    
+    if(ans[0]=='1'&&compute_user_value(currentuser)<=j){
+    	prints("\n\n¶Ô²»Æğ£¬ÌìÊı²»¿ÉÒÔ´óÓÚÉúÃüÁ¦...");
+    	pressanykey();
+    	return;
+    }
+    
+    move(13,0);
+    
+    if(askyn("ÄãÈ·¶¨Òª½äÍøÂğ£¿",0)==1)
+    {
+        getdata(15,0,"ÇëÊäÈëÃÜÂë: ",buf,39,NOECHO,NULL,YEA);
+        if( *buf == '\0' || !checkpasswd2( buf,currentuser )) {
+            prints("\n\nºÜ±§Ç¸, ÄúÊäÈëµÄÃÜÂë²»ÕıÈ·¡£\n");
+            pressanykey();
+            return;
+        }
+
+	sethomefile( genbuf, currentuser->userid,"giveup" );
+	fn = fopen(genbuf, "at");
+	if (!fn) {
+		prints("\n\nÓÉÓÚÏµÍ³ÎÊÌâ£¬ÏÖÔÚÄã²»ÄÜ½äÍø");
+		pressanykey();
+		return;
+	}
+	fprintf(fn, "%d %d\n",ans[0]-48,j);
+	fclose(fn);
+
+        switch(ans[0]){
+    	    case '1':
+	        currentuser->userlevel&=~PERM_BASIC;
+	        break;
+	    case '2':
+	    	currentuser->userlevel&=~PERM_POST;
+	    	break;
+	    case '3':
+	    	currentuser->userlevel&=~PERM_CHAT;
+	    	break;
+	    case '4':
+	    	currentuser->userlevel&=~PERM_PAGE;
+	    	break;
+	    case '5':
+	    	currentuser->userlevel|=PERM_DENYMAIL;
+	    	break;
+        }
+        lcount++;
+        
+        if(currentuser->userlevel&PERM_BASIC) tcount++;
+        if(currentuser->userlevel&PERM_POST) tcount++;
+        if(currentuser->userlevel&PERM_CHAT) tcount++;
+        if(currentuser->userlevel&PERM_PAGE) tcount++;
+        if(!(currentuser->userlevel&PERM_DENYMAIL)) tcount++;
+
+        if(lcount+tcount==5)currentuser->flags[0]|=GIVEUP_FLAG;
+        else currentuser->flags[0]&=~GIVEUP_FLAG;
+        
+        prints("\n\nÄãÒÑ¾­¿ªÊ¼½äÍøÁË");
+        pressanykey();
+        if(ans[0]=='1') abort_bbs(0);
+    }
+}
+
 
 void offline()
 {
