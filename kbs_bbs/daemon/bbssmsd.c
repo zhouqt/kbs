@@ -133,22 +133,22 @@ int requiretouser(struct RequireBindPacket * h, unsigned int sn)
 
     if (read_user_memo(uident, &pum)>0) {
         memcpy(&ud,&pum->ud,sizeof(ud));
-        if (strncmp(ud->mobilenumber, h->MobileNo, MOBILE_NUMBER_LEN-1)) {
+        if (strncmp(ud.mobilenumber, h->MobileNo, MOBILE_NUMBER_LEN-1)) {
             return -2;
         }
         if(h->Bind) {
             pum->ud.mobileregistered=true;
-            ud->mobileregistered=true;
-            strcpy(buf, "你的帐号已经和%s绑定！",ud->mobilenumber);
+            ud.mobileregistered=true;
+            sprintf(buf, "你的帐号已经和%s绑定！",ud.mobilenumber);
         }
         else {
             pum->ud.mobileregistered=false;
-            ud->mobileregistered=false;
-            strcpy(buf, "你的帐号已经取消和%s的绑定！",ud->mobilenumber);
+            ud.mobileregistered=false;
+            sprintf(buf, "你的帐号已经取消和%s的绑定！",ud.mobilenumber);
         }
 	end_mmapfile(currentmemo, sizeof(struct usermemo), -1);
        write_userdata(uident, &ud);
-       mail_file("deliver", "", uident, buf, BBSPOST_COPY, struct fileheader * fh)
+       mail_file("deliver", "", uident, buf, BBSPOST_COPY, NULL);
        return 0;
     }
     return 1;
@@ -207,7 +207,7 @@ void processremote()
                pheader->Type = CMD_REPLY;
                long2byte(sizeof(*prp), pheader->BodyLength);
                
-               printf("send CMD_REPLY  %s\n",rp.isSucceed);
+               printf("send CMD_REPLY  %d\n",prp->isSucceed);
                write(sockfd, &reth, sizeof(reth)+sizeof(*prp));
             }
             break;
