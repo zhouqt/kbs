@@ -22,7 +22,7 @@ SITE_DEF = -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' -DINVISIBLE
 DEFINES	=  $(CSIE_DEF) $(OS_DEF)
 CFLAGS += -I..
 
-BINFILE=utmpd miscd webmsgd
+BINFILE=miscd webmsgd
 
 .SUFFIXES: .o .c .ln
 

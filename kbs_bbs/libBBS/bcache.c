@@ -138,7 +138,8 @@ void resolve_boards()
 						&brdshm->bstatus[i].total);
 					maxi=i;
 				}
-			brdshm->numboards=maxi+1;
+			if (maxi!=0)
+				brdshm->numboards=maxi+1;
 			bcache_unlock(fd);
 		}
     }
