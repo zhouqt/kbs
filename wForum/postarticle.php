@@ -321,12 +321,12 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 <BR><BR></td>
 	</tr><tr>
 	<td valign=middle colspan=2 align=center class=TableBody2>
-	<input type=Submit value='发 表' name=Submit id="oSubmit"> &nbsp; <input type=button value='预 览' name=Button onclick=gopreview() disabled>&nbsp;
+	<input type=Submit value='发 表' name=Submit id="oSubmit"> &nbsp; <input type=button value='预 览' name=Button onclick=gopreview()>&nbsp;
 <input type=reset name=Submit2 value='清 除' id="oSubmit2">
                 </td></form></tr>
       </table>
 </form>
-<form name=preview action=preview.php?boardid=<?php echo $Boardid; ?> method=post target=preview_page>
+<form name=frmPreview action=preview.php?boardid=<?php echo $Boardid; ?> method=post target=preview_page>
 <input type=hidden name=title value=><input type=hidden name=body value=>
 </form>
 <?php
