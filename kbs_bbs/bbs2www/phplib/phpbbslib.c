@@ -1217,7 +1217,7 @@ static ZEND_FUNCTION(bbs_sethomefile)
     char buf[60];
     int ac = ZEND_NUM_ARGS();
     if (ac==2)  {
-    	if (zend_parse_parameters(1 TSRMLS_CC, "ss", &userid, &userid_len, &file, &file_len) != SUCCESS)
+    	if (zend_parse_parameters(2 TSRMLS_CC, "ss", &userid, &userid_len, &file, &file_len) != SUCCESS)
             WRONG_PARAM_COUNT;
     } else
     if (ac==1) {
@@ -1225,7 +1225,7 @@ static ZEND_FUNCTION(bbs_sethomefile)
             WRONG_PARAM_COUNT;
     } else
         WRONG_PARAM_COUNT;
-    if (file_len==0)
+    if (file_len!=0)
         sethomefile(buf,userid, file);
     else
         sethomepath(buf,userid);
