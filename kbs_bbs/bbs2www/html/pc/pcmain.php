@@ -37,7 +37,8 @@ function pcmain_blog_new_user()
 function pcmain_blog_top_ten()
 {
 	global $pcconfig,$link;
-	$mostVstUsers = getMostVstUsers($link,_PCMAIN_USERS_NUM_);
+	$mostVstUsers = getHotUsersByPeriod($link,'day',_PCMAIN_USERS_NUM_); //每日热门
+	//$mostVstUsers = getMostVstUsers($link,_PCMAIN_USERS_NUM_);
 ?>
 		
 <?php
@@ -416,7 +417,7 @@ pcmain_html_init();
           <tr>
               <td class="channelback"><table width="100%"  border="0" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td class="channel">点击排行</td>
+                  <td class="channel">热门博客</td>
                   <td align="right" class="more"><a href="pc.php?order=visitcount&order1=DESC"><font class="more">更多</font></a></td>
               </tr>
               </table></td>
