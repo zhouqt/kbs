@@ -1974,7 +1974,6 @@ int badlist()
     int cnt,nIdx;
     char ignoreuser[IDLEN+1],path[40];
 
-    int cmpinames();
     int search_record(),append_record();
     int usercomplete(),namecomplete();
 
