@@ -419,6 +419,9 @@ int clean_cachedata(char* userid,int unum);
     int a_loadnames(MENU* pm);             /* 装入 .Names */
     int a_savenames(MENU* pm);             /*保存当前MENU到 .Names */
     void a_freenames(MENU * pm);
+    int save_import_path(char ** i_path,char ** i_title,int * i_path_time );
+	void load_import_path(char ** i_path,char ** i_title, int * i_path_time,int * i_path_select);
+	void free_import_path(char ** i_path,char ** i_title,int * i_path_time);
 
 /* check the user's access for the path
   return < 0 deny access
