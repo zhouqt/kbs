@@ -32,8 +32,6 @@ int main()
     fp = fopen(dir, "r+");
     if (fp == 0)
         http_fatal("目录错误");
-    printf("<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"dark\"><tr><td>");
-    printf("<table style=\"border: 1px solid; width: 610\">\n");
     while (1) {
         if (fread(&oldx, sizeof(x), 1, fp) <= 0)
             break;
@@ -56,7 +54,7 @@ int main()
         }
     }
     fclose(fp);
-    printf("</table></td></tr></table><hr class=\"default\" />");
+    printf("<hr class=\"default\" />");
     if (found == 0)
         http_fatal("错误的文件名");
 //    if (!can_reply_post(board, file))
@@ -150,8 +148,9 @@ int show_file(char *board,struct boardheader* bh,struct fileheader *x, int n, ch
         brc_add_read(x->id);
     sprintf(path, "boards/%s/%s", board, x->filename);
     encode_url(board_url, board, sizeof(board_url));
+    printf("<table width=\"90%%\" class=\"BODY\">\n");
 	printf("<tr><td class=\"default\">\n");
-    printf("[<a href=\"bbscon?board=%s&id=%d&num=%d\">本篇全文</a>] ", board_url, x->id, n);
+    printf("[<a href=\"bbscon?board=%s&id=%d&num=%d\">本篇全文</a>]", board_url, x->id, n);
     if (strncmp(x->title,"Re:",3))
 	    title=x->title;
     else
@@ -159,8 +158,10 @@ int show_file(char *board,struct boardheader* bh,struct fileheader *x, int n, ch
     if ((x->accessed[1] & FILE_READ) == 0)
         printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=Re: %s&refilename=%s&attach=%d\">回文章</a>]", 
             brdencode, x->filename, x->owner, encode_url(buf, title, sizeof(buf)), x->filename,bh->flag&BOARD_ATTACH?1:0);
+	printf("[<a href=\"bbspstmail?board=%s&file=%s&userid=%s&title=Re: %s\">回信给作者</a>]",
+		   brdencode, x->filename, x->owner, encode_url(buf, title, sizeof(buf)));
     printf("[本篇作者: %s]<br />\n", userid_str(x->owner));
 	show_article(path);
     /*printf("[本篇人气: %d]\n", *(int*)(x->title+73)); */
-	printf("</td></tr>\n");
+	printf("</td></tr></table>\n");
 }
