@@ -199,27 +199,37 @@ int main() {
 	bcache_t *brd;
 
 	init_all();
-	if(!loginok) http_fatal("请先登录");
+	if(!loginok)
+		http_fatal("请先登录");
 	strsncpy(board, getparm("board"), 60);
 	mode=atoi(getparm("mode"));
 	brd=getbcache(board);
-	if(brd==0) http_fatal("错误的讨论区");
+	if(brd==0)
+		http_fatal("错误的讨论区");
 	strcpy(board, brd->filename);
-	if(!has_BM_perm(currentuser, board)) http_fatal("你无权访问本页");
-	if(mode<=0 || mode>5) http_fatal("错误的参数");
+	if(!has_BM_perm(currentuser, board))
+		http_fatal("你无权访问本页");
+	if(mode<=0 || mode>5)
+		http_fatal("错误的参数");
 	printf("<table>");
-	for(i=0; i<parm_num && i<40; i++) {
-		if(!strncmp(parm_name[i], "box", 3)) {
+	for(i=0; i<parm_num && i<40; i++)
+	{
+		if(!strncmp(parm_name[i], "box", 3))
+		{
 			total++;
-			if(mode==1) do_del(board, parm_name[i]+3);
-			if(mode==2) do_set(board, parm_name[i]+3, FILE_MARKED);
-			if(mode==3) do_set(board, parm_name[i]+3, FILE_DIGEST);
-			if(mode==5) do_set(board, parm_name[i]+3, 0);
+			if(mode==1)
+				do_del(board, parm_name[i]+3);
+			if(mode==2)
+				do_set(board, parm_name[i]+3, FILE_MARKED);
+			if(mode==3)
+				do_set(board, parm_name[i]+3, FILE_DIGEST);
+			if(mode==5)
+				do_set(board, parm_name[i]+3, 0);
 		}
 	}
 	printf("</table>");
 	if(total<=0) printf("请先选定文章<br>\n");
-	printf("<br><a href=bbsmdoc?board=%s>返回管理模式</a>", board);
+	printf("<br><a href=\"bbsmdoc?board=%s\">返回管理模式</a>", board);
 	http_quit();
 }
 
@@ -234,8 +244,10 @@ int do_del(char *board, char *file) {
 	sprintf(dir, "boards/%s/.DIR", board);
 	sprintf(path, "boards/%s/%s", board, file);
 	fp=fopen(dir, "r");
-	if(fp==0) http_fatal("错误的参数");
-	while(1) {
+	if(fp==0)
+		http_fatal("错误的参数");
+	while(1)
+	{
 		if(fread(&f, sizeof(struct fileheader), 1, fp)<=0) break;
 		if(!strcmp(f.filename, file))
 		{
@@ -255,26 +267,36 @@ int do_del(char *board, char *file) {
 	printf("<tr><td></td><td>%s</td><td>文件不存在.</td></tr>\n", file);
 }
 
-int do_set(char *board, char *file, int flag) {
+/* 加 G 时并没有 post 到文摘区 */
+int do_set(char *board, char *file, int flag)
+{
 	FILE *fp;
 	char path[256], dir[256];
 	struct fileheader f;
+
 	sprintf(dir, "boards/%s/.DIR", board);
 	sprintf(path, "boards/%s/%s", board, file);
 	fp=fopen(dir, "r+");
-	if(fp==0) http_fatal("错误的参数");
-	while(1) {
-		if(fread(&f, sizeof(struct fileheader), 1, fp)<=0) break;
-		if(!strcmp(f.filename, file)) {
+	if(fp==0)
+		http_fatal("错误的参数");
+	while(1)
+	{
+		if(fread(&f, sizeof(struct fileheader), 1, fp)<=0)
+			break;
+		if(!strcmp(f.filename, file))
+		{
 			f.accessed[0]|=flag;
-			if(flag==0) f.accessed[0]=0;
+			if(flag==0)
+				f.accessed[0]=0;
 			fseek(fp, -1*sizeof(struct fileheader), SEEK_CUR);
 			fwrite(&f, sizeof(struct fileheader), 1, fp);
 			fclose(fp);
-			printf("<tr><td>%s<td>标题:%s<td>标记成功.\n", f.owner, nohtml(f.title));
+			printf("<tr><td>%s</td><td>标题:%s</td><td>标记成功.</td></tr>\n",
+					f.owner, nohtml(f.title));
 			return;
 		}
 	}
 	fclose(fp);
-	printf("<td><td><td>%s<td>文件不存在.\n", file);
+	printf("<tr><td></td><td></td><td>%s</td><td>文件不存在.</td></tr>\n",
+			file);
 }

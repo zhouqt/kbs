@@ -1289,7 +1289,7 @@ char *userid_str(char *s) {
 			strcat(buf, " ");
 		} else {
 			ptr=nohtml(ptr);
-			sprintf(buf2, "<a href=bbsqry?userid=%s>%s</a> ", ptr, ptr);
+			sprintf(buf2, "<a href=\"bbsqry?userid=%s\">%s</a> ", ptr, ptr);
 			strcat(buf, buf2);
 		}
 		ptr=strtok(0, " ,();\r\n\t");

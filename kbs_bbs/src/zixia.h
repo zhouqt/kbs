@@ -7,7 +7,7 @@
 #define BBSGID 			80 //99
 
 /* for bbs2www, by flyriver, 2001.3.9 */
-#define SECNUM 9
+#define SECNUM 10
 
 #define DEFAULTBOARD    	"zixia.net"//test
 #define MAXUSERS  		20000 //150,000

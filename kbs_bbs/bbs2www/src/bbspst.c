@@ -27,7 +27,7 @@ int main()
 	printf("<tr><td>");
 	printf("<font color=\"green\">发文注意事项: <br>\n");
 	printf("发文时应慎重考虑文章内容是否适合公开场合发表，请勿肆意灌水。谢谢您的合作。<br></font></td></tr>\n");
-	printf("<tr><td>\n", board);
+	printf("<tr><td>\n");
    	printf("使用标题: <input type=\"text\" name=\"title\" size=\"40\" maxlength=\"100\" value=\"%s\">\n", 
 		void1(title));
 	printf(" 讨论区: [%s]<br>\n",board);
