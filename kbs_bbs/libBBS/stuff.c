@@ -644,6 +644,12 @@ int compute_user_value( struct userec *urec)
     * zixia 2001-11-20 所有的生命力都使用宏替换，
     * 在 smth.h/zixia.h 中定义 
     * */
+
+#ifdef ZIXIA
+    if( urec->userlevel & PERM_MM )
+	return LIFE_DAY_SYSOP;
+#endif
+
     
     if( ((urec->userlevel & PERM_HORNOR)||(urec->userlevel & PERM_CHATCLOAK )) && (!(urec->userlevel & PERM_SUICIDE)))
         return LIFE_DAY_NODIE;
@@ -652,11 +658,6 @@ int compute_user_value( struct userec *urec)
 	return LIFE_DAY_SYSOP;
 	/* 站务人员生命力不变 Bigman 2001.6.23 */
 	
-#ifdef ZIXIA
-    if( urec->userlevel & PERM_MM )
-	return LIFE_DAY_SYSOP;
-#endif
-
 
     value = (time(0) - urec->lastlogin) / 60;    /* min */
     if (0 == value) value = 1; /* Leeward 98.03.30 */

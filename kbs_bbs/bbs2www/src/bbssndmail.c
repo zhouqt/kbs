@@ -12,7 +12,7 @@ int main() {
    	strsncpy(userid, getparm("userid"), 40);
    	strsncpy(title, getparm("title"), 50);
 	backup=strlen(getparm("backup"));
-	if(!strstr(userid, "@")) {
+	if(!strstr(userid, "@")||strstr(userid,"|")||strstr(userid,"&")||strstr(userid,";")) {
 	 	getuser(userid,&u);
 		if(u==0) http_fatal("错误的收信人帐号");
 		strcpy(userid, u->userid);
