@@ -682,6 +682,10 @@ static int i_read_key(int cmdmode, struct one_key *rcmdlist, struct keeploc *loc
 	else
         locmem->crs_line = last_line;
 	/*modified by stiger end */
+		if( (locmem->crs_line - locmem->top_line) <= 0){
+			locmem->top_line = last_line - screen_len + 1;
+			return PARTUPDATE;
+		}
         PUTCURS(locmem);
         break;
     case 'L':
