@@ -123,7 +123,7 @@ int check_systempasswd();
 void stand_title(char* title);
 int get_grp(char seekstr[STRLEN]);
 int del_grp(char grp[STRLEN],char bname[STRLEN],char title[STRLEN]);
-int securityreport(char* str,struct userec* lookupuser,char fdata[7][STRLEN]);
+void securityreport(char* str,struct userec* lookupuser,char fdata[7][STRLEN]);
 
 /* talk.c */
 void creat_list();

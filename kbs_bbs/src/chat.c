@@ -341,14 +341,14 @@ int chat_checkparse(chatcontext * pthis)
 
 
 /* KCN add chat 2 */
-ent_chat2()  /* 进入聊天室*/
+int ent_chat2()  /* 进入聊天室*/
 {
-    ent_chat(2);
+    return ent_chat(2);
 }
 
-ent_chat1()  /* 进入聊天室*/
+int ent_chat1()  /* 进入聊天室*/
 {
-    ent_chat(1);
+    return ent_chat(1);
 }
 
 /* 2001/5/6 --wwj, 修改 ent_chat 函数 */

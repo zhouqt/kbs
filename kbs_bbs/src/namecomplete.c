@@ -275,28 +275,29 @@ char *prompt, *data ;
                 move(y,x) ;
                 continue ;
             }
-            if (isprint2(ch))
-            if(count < STRLEN) {
-                struct word *node ;
+            if (isprint2(ch)) {
+	            if(count < STRLEN) {
+	                struct word *node ;
 
-                *temp++ = ch ;
-                count++ ;
-                *temp = '\0' ;
-                node = GetSubList(data,cwlist) ;
-                if(node == NULL) {
-                    temp-- ;
-                    *temp = '\0' ;
-                    count-- ;
-                    continue ;
-                }
-                ClearSubList(cwlist) ;
-                cwlist = node ;
-                morelist = NULL ;
-                move(y,x) ;
-                outc(ch) ;
-                x++ ;
+	                *temp++ = ch ;
+	                count++ ;
+	                *temp = '\0' ;
+	                node = GetSubList(data,cwlist) ;
+	                if(node == NULL) {
+	                    temp-- ;
+	                    *temp = '\0' ;
+	                    count-- ;
+	                    continue ;
+	                }
+	                ClearSubList(cwlist) ;
+	                cwlist = node ;
+	                morelist = NULL ;
+	                move(y,x) ;
+	                outc(ch) ;
+	                x++ ;
+	            }
+	            else bell();
             }
-            else bell();
         }
         if(ch == EOF)
             longjmp(byebye,-1) ;
@@ -458,7 +459,7 @@ char *prompt, *data ;
                 outc( ' ' );
                 move( y, x );
                 continue;
-            } else if (isprint2(ch))
+            } else if (isprint2(ch)) {
 				if( count < STRLEN ) {
                     int     n;
 
@@ -482,6 +483,7 @@ char *prompt, *data ;
             	}
 				else
 					bell();
+            }
         }
         free( cwbuf );
         if( ch == EOF )

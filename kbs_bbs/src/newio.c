@@ -82,7 +82,7 @@ oflush()
     obufsize = 0 ;
 }
 
-void ochar( int     c)
+void ochar( char c)
 {
     if(obufsize > OBUFSIZE-1) {  /* doin a oflush */
         oflush();

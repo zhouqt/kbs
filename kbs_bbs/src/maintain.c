@@ -75,19 +75,19 @@ int setsystempasswd()
 
     modify_user_mode(ADMIN);
     if (strcmp(currentuser->userid, "SYSOP"))
-        return;
+        return -1;
     if (!check_systempasswd())
-        return;
+        return -1;
     getdata(2, 0, "请输入新的系统密码: ", passbuf, 39, NOECHO, NULL, YEA);
     getdata(3, 0, "确认新的系统密码: ", prepass, 39, NOECHO, NULL, YEA);
     if (strcmp(passbuf, prepass))
-        return;
+        return -1;
     if ((pass = fopen("etc/systempassword", "w")) == NULL)
     {
         move(4, 0);
         prints("系统密码无法设定....");
         pressanykey();
-        return;
+        return -1;
     }
     fwrite("md5\n",4,1,pass);
     
@@ -98,12 +98,12 @@ int setsystempasswd()
     move(4, 0);
     prints("系统密码设定完成....");
     pressanykey();
-    return;
+    return 0;
 }
 
 
 
-int securityreport(char *str,struct userec* lookupuser,char fdata[ 7 ][ STRLEN ])		/* Leeward: 1997.12.02 */
+void securityreport(char *str,struct userec* lookupuser,char fdata[ 7 ][ STRLEN ])		/* Leeward: 1997.12.02 */
 {
     FILE           *se;
     char            fname[STRLEN];
@@ -150,7 +150,7 @@ int securityreport(char *str,struct userec* lookupuser,char fdata[ 7 ][ STRLEN ]
 	            fclose(se);
 	            post_file(currentuser,"", fname, "syssecurity", str, 0, 2);
 	        }
-	        else if (ptr = strstr(str, "的权限XPERM"))
+	        else if ((ptr = strstr(str, "的权限XPERM"))!=NULL)
 	        {
 	            int             oldXPERM, newXPERM;
 	            int             num;
@@ -383,7 +383,6 @@ int m_newbrd()
     char            ans[5];
     char            vbuf[100];
     char           *group;
-    int             bid;
 
 
     modify_user_mode(ADMIN);
@@ -919,9 +918,9 @@ char *buf;
 
     while (fgets(IPBan, 64, Ban))
        {
-        if (ptr = strchr(IPBan, '\n'))
+        if ((ptr = strchr(IPBan, '\n'))!=NULL)
             *ptr = 0;
-        if (ptr = strchr(IPBan, ' '))
+        if ((ptr = strchr(IPBan, ' '))!=NULL)
         {
             *ptr ++ = 0;
             strcpy(buf, ptr);
@@ -1258,13 +1257,14 @@ int m_register()
 int m_stoplogin()
 {
     char ans[4];
-    if (!HAS_PERM(currentuser,PERM_ADMIN)) return;
+    if (!HAS_PERM(currentuser,PERM_ADMIN)) return -1;
     getdata(t_lines - 1, 0, "禁止登陆吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, YEA);
     if (ans[0] == 'Y' || ans[0] == 'y')
     {
         if( vedit("NOLOGIN",NA)==-1)
             unlink("NOLOGIN");
     }
+    return 0;
 }
 
 /* czz added 2002.01.15 */
@@ -1277,6 +1277,7 @@ int inn_start()
 		sprintf(tmp_command, "~bbs/innd/innbbsd");
 		system(tmp_command);
 	}
+	return 0;
 }
 
 int inn_reload()
@@ -1288,6 +1289,7 @@ int inn_reload()
 		sprintf(tmp_command, "~bbs/innd/ctlinnbbsd reload");
 		system(tmp_command);
 	}
+	return 0;
 }
 
 int inn_stop()
@@ -1299,5 +1301,6 @@ int inn_stop()
 		sprintf(tmp_command, "~bbs/innd/ctlinnbbsd shutdown");
 		system(tmp_command);
 	}
+	return 0;
 }
 /* added end */
