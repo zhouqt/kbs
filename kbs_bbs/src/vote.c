@@ -181,7 +181,7 @@ b_jury_edit()   /* stephen 2001.11.1: 编辑版面仲裁名单 */
 	}
 	else 
 	{  sprintf(secu, "修改 %s 版的仲裁委员名单",currboard);
-	//securityreport(secu, NULL);
+	/*securityreport(secu, NULL);*/
 	   postfile(buf, "syssecurity", secu, 2);
 	   postfile(buf, "JuryMail", secu, 2);
 	}

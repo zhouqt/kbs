@@ -471,7 +471,7 @@ int ent;
 
                 /* Leeward: 97.12.17: 对版主的多个窗口同步丝路 */
 
-                // by zixia: 相对路经 sprintf(genbuf, "%s/%s", BBSHOME, Importname);
+                /* by zixia: 相对路经 sprintf(genbuf, "%s/%s", BBSHOME, Importname); */
 		sprintf(genbuf, "%s", Importname);
                 ptr = strstr(genbuf, ".faq/");
                 if (ptr)
@@ -1033,8 +1033,8 @@ int     ch;
                 FILE *sl;
                 char *ptr;
 
-                // by zixia: 用相对路经 sprintf(genbuf, "%s/%s", BBSHOME,netty_path);
-		sprintf(genbuf, "%s", netty_path);
+                /* by zixia: 用相对路经 sprintf(genbuf, "%s/%s", BBSHOME,netty_path);*/
+		printf(genbuf, "%s", netty_path);
                 ptr = strstr(genbuf, ".faq/");
                 if (ptr)
                 {

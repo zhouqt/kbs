@@ -50,7 +50,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 
-// System names.. by zixia.
+/* System names.. by zixia.*/
 #include BBSSITE_H
 
 #include "config.h"             /* User-configurable stuff */
@@ -90,7 +90,7 @@ extern long ti ;
 #define MAXFRIENDS (400)
 #define NUMPERMS (30)
 
-//#define FILE_BUFSIZE      160   /* max. length of a file in SHM*/
+/*#define FILE_BUFSIZE      160    max. length of a file in SHM*/
 #define FILE_BUFSIZE      LENGTH_FILE_BUFFER   /* max. length of a file in SHM*/
 #define FILE_MAXLINE      24    /* max. line of a file in SHM */
 #define MAX_GOODBYE       5     /* ¿Î’æª≠√Ê ˝ */
@@ -100,8 +100,8 @@ extern long ti ;
 
 #define MORE_BUFSIZE    4096
 #define MAXnettyLN      5     /* lines of  activity board  */        
-//#define ACBOARD_BUFSIZE      150   /* max. length of each line for activity board  */
-//#define ACBOARD_MAXLINE      80    /* max. lines of  activity board  */
+/*#define ACBOARD_BUFSIZE      150    max. length of each line for activity board  */
+/*#define ACBOARD_MAXLINE      80     max. lines of  activity board  */
 #define ACBOARD_BUFSIZE      LENGTH_ACBOARD_BUFFER   /* max. length of each line for activity board  */
 #define ACBOARD_MAXLINE      LENGTH_ACBOARD_LINE    /* max. lines of  activity board  */
 #define STRLEN   80    /* Length of most string data */

@@ -68,7 +68,7 @@ AddSignature(FILE *fp, char *username, int fh) /* Leeward: 98.05.17 */
     char szSig[128];
     int  i;
 
-    // by zixia: 用相对路经 sprintf(szSig, "%shome/%c/%s/signatures", BBSHOME, toupper(username[0]), username);
+    /* by zixia: 用相对路经 sprintf(szSig, "%shome/%c/%s/signatures", BBSHOME, toupper(username[0]), username);*/
     sprintf(szSig, "home/%c/%s/signatures", toupper(username[0]), username);
     sig = fopen(szSig, "rt");
     /*Haohmaru.99.11.24.below 9 lines*/

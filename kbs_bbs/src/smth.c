@@ -1,7 +1,7 @@
 #include "bbs.h"
 
 int
-uleveltochar( char *buf, struct userec *lookupuser ) // 取用户权限中文说明 Bigman 2001.6.24
+uleveltochar( char *buf, struct userec *lookupuser ) /* 取用户权限中文说明 Bigman 2001.6.24*/
 {
 	unsigned lvl;
 	char userid[IDLEN+2];

@@ -2027,8 +2027,8 @@ int isuu;
     { /* Leeward 98.04.27: better:-) */
 
         char *ptrX;
-        //ptrX = strstr(receiver, ".bbs@smth.org");
-	// @smth.org @zixia.net 取到前面的用户即可
+        /*ptrX = strstr(receiver, ".bbs@smth.org");
+	 @smth.org @zixia.net 取到前面的用户即可 */
         ptrX = strstr(receiver, (const char*)email_domain() );
 
         /*disable by KCN      if (!ptrX) ptrX = strstr(receiver, ".bbs@"); */
@@ -2051,8 +2051,8 @@ int isuu;
             strncpy(receiver, lookupuser->userid, IDLEN+1);
             receiver[IDLEN] = 0;
 
-            //if(!chkreceiver(receiver,NULL))/*Haohamru.99.4.05*/
-	    // FIXME NULL -> lookupuser，在 zixia.net 上是这么改的... 有没有问题？
+            /*if(!chkreceiver(receiver,NULL))Haohamru.99.4.05
+	     FIXME NULL -> lookupuser，在 zixia.net 上是这么改的... 有没有问题？ */
             if(!chkreceiver(receiver,lookupuser))/*Haohamru.99.4.05*/
             {
                 prints("%s 信箱已满,无法收信\n",receiver);

@@ -113,7 +113,7 @@ int killauser(struct userec *theuser,char *data)
        if (!theuser || theuser->userid[0]==0) return 0;
        a = compute_user_value(theuser);
        if (a<0) {
-       log("0miscdaemon","kill user %s",theuser->userid); 
+       log("1user","kill user %s",theuser->userid); 
        a = getuser(theuser->userid,&ft);
        setmailpath(tmpbuf,theuser->userid);
        sprintf(genbuf1,"/bin/rm -rf %s",tmpbuf);
@@ -123,7 +123,7 @@ int killauser(struct userec *theuser,char *data)
        system(genbuf1) ;
        sprintf(genbuf1,"/bin/rm -fr tmp/email/%s", theuser->userid) ;
        system(genbuf1) ; 
-       setuserid(a,"");
+       setuserid2(a,"");
        theuser->userlevel=0;
        strcpy(theuser->address, "");
        strcpy(theuser->username, "");
@@ -134,10 +134,10 @@ int killauser(struct userec *theuser,char *data)
 }
 int dokilluser()
 {
-    resolve_ucache();
-    log("0miscdaemon","Started kill users\n");
+    if (load_ucache()!=0) return -1;
+    log("1user","Started kill users\n");
     apply_users(killauser,NULL);
-    log("0miscdaemon","kill users done\n");
+    log("1user","kill users done\n");
 }
 int getnextday4am()
 {

@@ -662,7 +662,7 @@ write_posts()
     struct
     {
         char author[IDLEN + 1];
-        //char board[IDLEN + 1];
+        /*char board[IDLEN + 1];*/
         char board[IDLEN + 6];
         char title[66];
         time_t date;

@@ -94,7 +94,7 @@ int checkpasswd(const char * passwd,const char * test)
     static char pwbuf[14] ;
     char *pw ;
 
-//    return 1;
+/*    return 1; */
     strncpy(pwbuf,test,14) ;
     pw = crypt1(pwbuf, (char *)passwd) ;
     return (!strcmp(pw, passwd)) ;

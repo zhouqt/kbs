@@ -165,8 +165,8 @@ new_register()
     }
     newuser.userlevel = PERM_BASIC;
     newuser.userdefine=-1;
-//    newuser.userdefine&=~DEF_MAILMSG;
-//    newuser.userdefine&=~DEF_EDITMSG;
+/*   newuser.userdefine&=~DEF_MAILMSG;
+    newuser.userdefine&=~DEF_EDITMSG; */
     newuser.userdefine &= ~DEF_NOTMSGFRIEND;
     if (convcode)
         newuser.userdefine&=~DEF_USEGB;

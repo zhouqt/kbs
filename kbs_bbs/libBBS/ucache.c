@@ -49,7 +49,7 @@ struct UCACHE {
 static struct userec* passwd=NULL;
 static struct UCACHE   *uidshm=NULL;
 
-static inline int ucache_lock()
+static int ucache_lock()
 {
     int lockfd;
     lockfd = open( ULIST, O_RDWR|O_CREAT, 0600 );
@@ -61,7 +61,7 @@ static inline int ucache_lock()
     return lockfd;
 }
 
-static inline int ucache_unlock(int fd)
+static int ucache_unlock(int fd)
 {
     flock(fd,LOCK_UN);
     close(fd);
@@ -442,13 +442,13 @@ void setuserid(int num,const char * userid)
         int result;
         struct  timeval tv;
         m_socket = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
-        if (m_socket<0) return -1;
+        if (m_socket<0) return;
         sin.sin_family=AF_INET;
         sin.sin_port=htons(60001);
         inet_aton("127.0.0.1",&sin.sin_addr);
         if (connect(m_socket,(struct sockaddr*)&sin,sizeof(sin))!=0) {
                 close(m_socket);
-                return -1;
+                return;
         }
         sprintf(cmdbuf,"SET %s %d",userid,num);
         write(m_socket,cmdbuf,strlen(cmdbuf));
@@ -461,11 +461,11 @@ void setuserid(int num,const char * userid)
         {
                 int len=read(m_socket,&result,sizeof(result));
                 close(m_socket);
-                if (len!=sizeof(result)) return -1;
-                return result;
+                if (len!=sizeof(result)) return;
+                return;
         }
         close(m_socket);
-        return -1;
+        return;
 }
 
 int

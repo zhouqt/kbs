@@ -3814,7 +3814,7 @@ Goodbye()    /*离站 选单*/
                     do_send(sysoplist[3], "【身份确认】使用者寄来的建议信");
     		else if(choose==5)
 		    do_send(sysoplist[4], "【仲裁事宜】使用者寄来的建议信");
-// added by stephen 11/13/01
+/* added by stephen 11/13/01 */
 	        choose=-1;
         }
         else

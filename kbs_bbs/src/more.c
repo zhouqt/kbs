@@ -345,6 +345,7 @@ printacbar()
     refresh();
 }
 
+extern int idle_count;
 void R_monitor(void* data)
 {
     if(!DEFINE(DEF_ACBOARD))
@@ -354,7 +355,7 @@ void R_monitor(void* data)
         return;
     netty_more();
     printacbar();
-	idle_count++;
+    idle_count++;
     set_alarm(10*idle_count,R_monitor,NULL);
     UNUSED_ARG(data); 
 }

@@ -251,22 +251,22 @@ int port; /* Thor.981206: 取 0 代表 *没有参数* */
 		/*
 		close file descriptor 1 and 2
 		*/
-    chdir(BBSHOME);	//将当前目录转换到BBSHOME
+    chdir(BBSHOME);	/*将当前目录转换到BBSHOME*/
     umask(07);
 
     if(inetd) /* Thor.981206: inetd -i */
     {
         /* Give up root privileges: no way back from here	 */
         server_pid=0;
-        setgid(BBSGID);	// setgid sets the effective group ID of the current process.
-        setuid(BBSUID);	// sets the effective user ID of the current process.
+        setgid(BBSGID);	/* setgid sets the effective group ID of the current process.*/
+        setuid(BBSUID);	/* sets the effective user ID of the current process.*/
         setreuid(BBSUID,BBSUID);	/* setreuid  sets real and effective user ID's 
 									of the current process. */
         setregid(BBSGID,BBSGID);	/* setregid sets real and effective group ID's 
 									of the current process. */		
         mport = port;
         if (port) strcpy(code,"e");
-        else strcpy(code,"d");		//没有参数的话将code置'd'
+        else strcpy(code,"d");		/*没有参数的话将code置'd'*/
         /*    sprintf(data, "%d\tinetd -i\n", getpid() );
             cat(PID_FILE, data);
         */
@@ -288,7 +288,7 @@ int port; /* Thor.981206: 取 0 代表 *没有参数* */
 
     sin.sin_family = AF_INET;
     sin.sin_addr.s_addr = htonl(INADDR_ANY);
-//    sin.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+/*    sin.sin_addr.s_addr = htonl(INADDR_LOOPBACK);*/
 
     /*  if (port <= 0)  Thor.981206: port 0 代表没有参数
       {
@@ -560,8 +560,8 @@ char *argv[];
     int inetd,port,listprocess;
 
     inetd = 0;
-    if ((argc<=1) || !strcmp(argv[1],"-i") )  //如果只有文件名或者第一个参数是“-i”
-       inetd=1;                               //则用inetd启动 
+    if ((argc<=1) || !strcmp(argv[1],"-i") )  /*如果只有文件名或者第一个参数是“-i”*/
+       inetd=1;                               /*则用inetd启动 */
     else {
        if (argc<=1) port = 23;
        else

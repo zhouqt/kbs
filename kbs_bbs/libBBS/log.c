@@ -147,7 +147,7 @@ int log(const char * from,const char *fmt,...)
         prio=from[0]-'0';
         from++;
     }
-// temp disable log
+/* temp disable log*/
 #ifdef BBSMAIN
     if (prio==0&&strcasecmp(from,"boardusage")) return 0;
 #endif

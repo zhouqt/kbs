@@ -45,6 +45,11 @@ BBSLIB = libBBS.a
 #CSIE_DEF = -DSHOW_IDLE_TIME -D_DETAIL_UINFO_ 
 CSIE_DEF = -DSHOW_IDLE_TIME -DBBSGID=99 -D_DETAIL_UINFO_
 #-DTALK_LOG
+
+PROGNAME = bbsd_single
+
+all: $(PROGNAME) chatd $(BBSLIB) newpop3d bbspost
+
 ifeq (Makefile.spec ,$(wildcard Makefile.spec))
 include	Makefile.spec
 endif
@@ -52,7 +57,6 @@ endif
 #############################################################
 ###        You needn't modify the following stuff      ######
 #############################################################
-PROGNAME = bbsd_single
 CFILE    = bbs.c record.c delete.c stuff.c mail.c register.c \
            xyz.c talk.c read.c comm_lists.c namecomplete.c chat.c \
            maintain.c edit.c more.c pass.c help.c bcache.c boards.c \
@@ -88,7 +92,6 @@ DEFINES	=  $(CSIE_DEF) $(OS_DEF)
 .c.ln:  ;   lint -abhi $*.c
 
 #--------------------- Dependency starts here -------------------
-all: $(PROGNAME) chatd $(BBSLIB) newpop3d bbspost
 
 ifeq (.depend,$(wildcard .depend))
 include .depend
@@ -96,7 +99,7 @@ endif
 
 dep:
 	rm -f .depend
-	ls *.c | xargs gcc $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL  -M  >>.depend
+	echo $(CFILE) | xargs $(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL  -M -DBBSMAIN >>.depend
 
 $(PROGNAME): $(COBJS) $(OTHERS)
 	$(CC) -o bbsd_single $(CFLAGS) $(COBJS) $(LIBS) -g
@@ -114,7 +117,7 @@ lint: $(LNFILES)
 	lint -abh $(LNFILES)
 
 newpop3.o: newpop3.c
-	gcc -g $(SITE_DEF) $(DEFINES)  -c newpop3.c
+	$(CC) -g $(SITE_DEF) $(DEFINES)  -c newpop3.c
 	
 newpop3d: newpop3.o $(BBSLIB) 
 	$(CC) $(CFLAGS) -o newpop3d $(SITE_DEF) $(DEFINES) newpop3.o $(BBSLIB) $(LIBS)
