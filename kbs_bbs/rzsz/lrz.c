@@ -142,11 +142,11 @@ void bibi(int n)
 }
 
 
-int main(int argc, char *argv[])
+/*int main(int argc, char *argv[])
 {
     register char *cp;
     register int npats;
-    char **patts = NULL;        /* keep compiler quiet */
+    char **patts = NULL;
     int exitcode = 0;
     int c;
     unsigned int startup_delay = 0;
@@ -155,13 +155,11 @@ int main(int argc, char *argv[])
     setbuf(stderr, NULL);
     Restricted = 2;
 
-    /* make temporary and unfinished files */
     umask(0077);
 
     protocol = ZM_ZMODEM;
 
 
-    /* initialize zsendline tab */
     zsendline_init();
 #ifdef HAVE_SIGINTERRUPT
     siginterrupt(SIGALRM, 1);
@@ -188,10 +186,10 @@ int main(int argc, char *argv[])
         canit(0);
     }
     io_mode(0, 0);
-    if (exitcode && !zmodem_requested)  /* bellow again with all thy might. */
+    if (exitcode && !zmodem_requested)  
         canit(0);
     exit(exitcode);
-}
+}*/
 
 static void usage(int exitcode, const char *what)
 {
@@ -202,10 +200,11 @@ static void usage(int exitcode, const char *what)
  * Let's receive something already.
  */
 
-static int wcreceive(int argc, char **argp)
+static int bbs_zrecvfile()
 {
     int c;
     struct zm_fileinfo zi;
+    FILE* fp=fopen("flist","w");
 
     zi.fname = NULL;
     zi.modtime = 0;
@@ -216,54 +215,27 @@ static int wcreceive(int argc, char **argp)
     zi.bytes_skipped = 0;
     zi.eof_seen = 0;
 
-    if (protocol != ZM_XMODEM || argc == 0) {
-        Crcflg = 1;
-        if ((c = tryz()) != 0) {
-            if (c == ZCOMPL)
-                return OK;
-            if (c == ERROR)
-                goto fubar;
-            c = rzfiles(&zi);
-
-            if (c)
-                goto fubar;
-        } else {
-            for (;;) {
-                if (wcrxpn(&zi, secbuf) == ERROR)
-                    goto fubar;
-                if (secbuf[0] == 0)
-                    return OK;
-                if (procheader(secbuf, &zi) == ERROR)
-                    goto fubar;
-                if (wcrx(&zi) == ERROR)
-                    goto fubar;
-
-            }
-        }
-    } else {
-        char dummy[128];
-
-        dummy[0] = '\0';        /* pre-ANSI HPUX cc demands this */
-        dummy[1] = '\0';        /* procheader uses name + 1 + strlen(name) */
-        zi.bytes_total = DEFBYTL;
-
-        procheader(dummy, &zi);
-
-        if (Pathname)
-            free(Pathname);
-        errno = 0;
-        Pathname = malloc(PATH_MAX + 1);
-        if (!Pathname)
-            zmodem_error(1, 0, "out of memory");
-
-        strcpy(Pathname, *argp);
-        checkpath(Pathname);
-
-        if ((fout = fopen(Pathname, "w")) == NULL) {
-            return ERROR;
-        }
-        if (wcrx(&zi) == ERROR) {
+    Crcflg = 1;
+    if ((c = tryz()) != 0) {
+        if (c == ZCOMPL)
+            return OK;
+        if (c == ERROR)
             goto fubar;
+        c = rzfiles(&zi);
+
+        if (c)
+            goto fubar;
+    } else {
+        for (;;) {
+            if (wcrxpn(&zi, secbuf) == ERROR)
+                goto fubar;
+            if (secbuf[0] == 0)
+                return OK;
+            if (procheader(secbuf, &zi) == ERROR)
+                goto fubar;
+            if (wcrx(&zi) == ERROR)
+                goto fubar;
+            fprintf(fp, "%s\n", zi.fname);
         }
     }
     return OK;
@@ -275,6 +247,7 @@ static int wcreceive(int argc, char **argp)
     if (Restricted && Pathname) {
         unlink(Pathname);
     }
+    fclose(fp);
     return ERROR;
 }
 

@@ -735,6 +735,7 @@ int zsend_attach(int ent, struct fileheader *fileinfo, char *direct)
     size_t size;
     long left;
 
+    if(fileinfo->attachment==0) return -1;
     strcpy(buf1, direct);
     if ((t = strrchr(buf1, '/')) != NULL)
         *t = '\0';
@@ -764,6 +765,7 @@ int zsend_attach(int ent, struct fileheader *fileinfo, char *direct)
     BBS_CATCH {
     }
     BBS_END end_mmapfile((void *) ptr, size, -1);
+    return 0;
 }
 
 int read_post(int ent, struct fileheader *fileinfo, char *direct)
@@ -2243,6 +2245,7 @@ int post_article(char *q_file, struct fileheader *re_file)
     strcpy(quote_title, save_title);
     strcpy(quote_board, currboard);
     aborted = vedit(filepath, true, &eff_size, NULL);    /* 进入编辑状态 */
+    bbs_zrecvfile();
 
     add_loginfo(filepath, currentuser, currboard, Anony);       /*添加最后一行 */
 
