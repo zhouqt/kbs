@@ -1100,7 +1100,7 @@ int allnum, pagenum;
         deal = 1;
         get_record(controlfile, &currvote, sizeof(struct votebal),
                    allnum + 1);
-        prints("检查投票：^[[1m%s^[[m\n", currvote.title);
+        prints("检查投票：\x1b[1m%s\x1b[m\n", currvote.title);
         check_result(allnum + 1);
         break;
     case 'D':

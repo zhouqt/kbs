@@ -295,7 +295,7 @@ void multi_user_check()
     while (ret != 0) {
         ret = multilogin_user(currentuser, usernum);
         if (ret == 2) {
-            prints("^[[33m抱歉, 目前已有太多 ^[[36mguest, 请稍候再试。^[[m\n");
+            prints("\x1b[33m抱歉, 目前已有太多 \x1b[36mguest, 请稍候再试。\x1b[m\n");
             pressreturn();
             oflush();
             sleep(5);

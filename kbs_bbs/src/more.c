@@ -1234,6 +1234,6 @@ int ansimore_withzmodem( char *filename, int promptend,char* title)
     if (promptend)
         pressanykey();
     move(t_lines - 1, 0);
-    prints("^[[0m^[[m");
+    prints("\x1b[0m\x1b[m");
     return ch;
 }

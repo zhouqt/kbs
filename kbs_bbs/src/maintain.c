@@ -182,7 +182,7 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
                 post_file(currentuser, "", fname, "syssecurity", str, 0, 2);
             } else {            /* Modified for change id by Bigman 2001.5.25 */
 
-                fprintf(se, "系统安全记录系统\n^[[32m原因：%s^[[m\n", str);
+                fprintf(se, "系统安全记录系统\0x1b[32m原因：%s\x1b[m\n", str);
                 fprintf(se, "以下是个人资料");
                 getuinfo(se, currentuser);
                 fclose(se);
