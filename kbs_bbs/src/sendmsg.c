@@ -203,30 +203,24 @@ int show_allmsgs()
 
     page = 0;
     count = get_msgcount(0, currentuser->userid);
-    clear();
     while(1) {
         if(reload) {
             reload = 0;
             page = 0;
             count = get_msgcount(all?2:0, currentuser->userid);
         }
+        clear();
         if(count==0) {
-            clear();
             good_move(5,30);
             prints("没有任何的讯息存在！！");
             i = 0;
         }
         else {
-            for(j=0;j<24;j++) {
-                good_move(j, 0);
-                clrtoeol();
-            }
             y = 0;
             i = page;
             load_msghead(all?2:0, currentuser->userid, i, &head);
             load_msgtext(currentuser->userid, &head, buf);
             j = translate_msg(buf, &head, showmsg);
-            good_move(0,0);
             while(y+j<=23) {
                 y+=j; i++;
                 prints("%s", showmsg);
