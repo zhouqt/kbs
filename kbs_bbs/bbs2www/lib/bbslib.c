@@ -2117,6 +2117,7 @@ void output_ansi_text(char *buf, size_t buflen,
 				{
 					extension++;
 					if (!strcasecmp(extension, "jpg")
+						|| !strcasecmp(extension, "ico")
 						|| !strcasecmp(extension, "gif"))
 					{
 						attachType[attachmatched] = ATTACH_IMG;
@@ -2308,6 +2309,7 @@ void output_ansi_javascript(char *buf, size_t buflen,
 				{
 					extension++;
 					if (!strcasecmp(extension, "jpg")
+						|| !strcasecmp(extension, "ico")
 						|| !strcasecmp(extension, "gif"))
 					{
 						attachType[attachmatched] = ATTACH_IMG;
@@ -2494,6 +2496,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
 				{
 					extension++;
 					if (!strcasecmp(extension, "jpg")
+						|| !strcasecmp(extension, "ico")
 						|| !strcasecmp(extension, "gif"))
 					{
 						attachType[attachmatched] = ATTACH_IMG;
