@@ -169,13 +169,6 @@ uleveltochar( char* buf, struct userec *lookupuser )
 	unsigned lvl;
 	char userid[IDLEN+2];
 	
-#ifdef HAVE_CUSTOM_USER_TITLE
-    if (lookupuser->title != 0) {
-        strcpy(buf, get_user_title(lookupuser->title));
-        if (buf[0] != 0)
-            return 0;
-    }
-#endif
 	lvl = lookupuser->userlevel;
 	strncpy( userid, lookupuser->userid, IDLEN+2 );
 
@@ -192,6 +185,12 @@ uleveltochar( char* buf, struct userec *lookupuser )
       	else  if( lvl & PERM_CHATCLOAK ) strcpy(buf,"无敌牛虱");
       	else if  ( lvl & PERM_BOARDS ) strcpy(buf,"二当家的");
       	else strcpy(buf, NAME_USER_SHORT);
+
+#ifdef HAVE_CUSTOM_USER_TITLE
+    if (lookupuser->title != 0) {
+        strcpy(buf, get_user_title(lookupuser->title));
+    }
+#endif
 
 	//中文说明，根据 level
     	if( !strcmp(lookupuser->userid,"SYSOP")
