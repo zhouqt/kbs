@@ -23,7 +23,7 @@ int main()
         x = &(bc[i]);
         if (x->filename[0] <= 32 || x->filename[0] > 'z')
             continue;
-        if (!check_read_perm(currentuser, &x))
+        if (!check_read_perm(currentuser, x))
             continue;
         memcpy(&data[total], x, sizeof(struct boardheader));
         total++;
