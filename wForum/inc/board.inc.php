@@ -95,9 +95,11 @@ function bbs_is_noreply_board($board)
 }
 
 
-function showBoardStaticsTop($boardArr, $is_bm, $is_ann=false){
+/* $ftype == -1: 精华区, false: 默认主题模式 */
+function showBoardStaticsTop($boardArr, $is_bm, $ftype=false){
 	global $conn;
 	global $loginok;
+	global $dir_modes;
 ?>
 <TABLE cellpadding=3 cellspacing=1 class=TableBorder1 align=center>
 <TR><Th height=25 width=100% align=left id=TableTitleLink style="font-weight:normal">
@@ -114,28 +116,34 @@ function showBoardStaticsTop($boardArr, $is_bm, $is_ann=false){
 <BR>
 <table cellpadding=2 cellspacing=0 border=0 width=97% align=center valign=middle><tr><td align=center width=2> </td>
 <td align=left style="height:27" valign="center"><table cellpadding=0 cellspacing=0 border=0 ><tr>
-<td width="110"><a href=postarticle.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass1" border="0" title="发新帖"></div></a></td>
+<td width="110"><a href="postarticle.php?board=<?php echo $boardArr['NAME']; ?>"><div class="buttonClass1" border="0" title="发新帖"></div></a></td>
 <!--<td width="110"><a href=# onclick="alert('本功能尚在开发中！')"><div class="buttonClass2" border="0" title="发起新投票"></div></a></td>-->
 <?php
 	if ($conn !== false) {
 ?>
-<td width="110"><a href=smallpaper.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass3" border="0" title="发布小字报"></div></a></td>
+<td width="110"><a href="smallpaper.php?board=<?php echo $boardArr['NAME']; ?>"><div class="buttonClass3" border="0" title="发布小字报"></div></a></td>
 <?php
 	}
 ?>
 </tr></table></td>
 <td align=right>
 <?php
+	if (RSS_SUPPORT) {
+?>
+	<a title="本版 RSS" href="rsslinks.php?board=<?php echo $boardArr['NAME']; ?>"><img src="pic/xml.gif" align="top" width="36" height="14" alt="XML" border="0" /></a> &nbsp;
+<?php
+	}
 	if ($is_bm) {
 ?>
 	<a href="bmdeny.php?board=<?php echo $boardArr['NAME']; ?>" title=查看和操作本版封禁名单><font color=red>封禁名单</font></a> | 
 <?php
 	}
-	if ($is_ann) {
+	if ($ftype !== false) {
 ?>
 	<a href="board.php?name=<?php echo $boardArr['NAME']; ?>" title=查看本版文章><font color=blue><B>讨论区</B></font></a> 
 <?php
-	} else {
+	}
+	if ($ftype != -1) {
 		$ann_path = bbs_getannpath($boardArr['NAME']);
 		if ($ann_path != FALSE) {
 	    	if (!strncmp($ann_path,"0Announce/",10))
@@ -145,13 +153,12 @@ function showBoardStaticsTop($boardArr, $is_bm, $is_ann=false){
 <?php
 		}
 	}
-?>	
-<!--
-    | <a href=# onclick="alert('本功能尚在开发中！')" title=查看本版在线详细情况>在线</a>
-	| <a href=# onclick="alert('本功能尚在开发中！')" title=查看本版事件>事件</a>
-	| <a href=# onclick="alert('本功能尚在开发中！')" title=查看本版用户组权限>权限</a>
-    | <a href=# onclick="alert('本功能尚在开发中！')">管理</a>
--->
+	if ($dir_modes["DIGEST"] != $ftype) {
+?>
+	<a href="boarddoc.php?name=<?php echo $boardArr['NAME']; ?>&amp;ftype=1" title=查看本版文摘区><font color=#FF00FF><B>文摘区</B></font></a> 
+<?php
+	}
+?>
 &nbsp;&nbsp;<img src=pic/team2.gif align=absmiddle>
 <?php 
 	$bms=split(' ',$boardArr['BM']);
@@ -288,10 +295,70 @@ function isSelfMultiQueryAllowed() {
     return (ALLOW_SELF_MULTIQUERY);
 }
 
-function getBoardRSS($boardName) {
+/* title === false 的时候只返回链接 */
+function getBoardRSS($boardName, $ftype=-1, $title="") {
 	global $SiteURL;
 	if (RSS_SUPPORT) {
-		return "<link id=\"RSSLink\" title=\"RSS\" type=\"application/rss+xml\" rel=\"alternate\" href=\"".$SiteURL."rss.php?board=".$boardName."\"></link>";
+		if ($ftype == -1) {
+			$title = "版面文章";
+			$link = "rss.php?board=".$boardName;
+		} else {
+			$link = "rss.php?board=".$boardName."&amp;ftype=$ftype";
+		}
+		if ($title === false) return $link;
+		else return "<link id=\"RSSLink\" title=\"$title RSS\" type=\"application/rss+xml\" rel=\"alternate\" href=\"".$SiteURL.$link."\"></link>";
 	} else return "";
+}
+
+/* 不允许的模式返回 false，如果要支持回收站等模式千万注意权限和 web cache 两个问题！ */
+function getModenameIfAllowed($ftype, &$sorted) {
+	global $dir_modes;
+	switch($ftype) {
+		case $dir_modes["NORMAL"]:
+			$sorted = true;
+			return "单文区"; //ft
+		case $dir_modes["DIGEST"]:
+			$sorted = false;
+			return "文摘区";
+		case $dir_modes["ORIGIN"]:
+			$sorted = true;
+			return "原作区";
+		default:
+			return false;
+	}
+}
+
+function showPageJumpers($page, $totalPages, $urlbase) {
+    $lastTenPages=(floor(($page-1)/ 10))*10;
+	if ($page==1) {
+		echo "<font color=\"#FF0000\">&lt;&lt;</font>   ";
+	}   else {
+		echo "<a href=\"$urlbase&amp;page=1\" title=\"首页\">&lt;&lt;</a>   ";
+	} 
+
+	if ($lastTenPages>0)  {
+		echo "<a href='$urlbase&amp;page=" . $lastTenPages . "' title=上十页>&lt;</a>   ";  
+	} 
+
+	echo "<b>";
+	for ($i=$lastTenPages+1; $i<=$lastTenPages+10; $i++) {
+		if ($i==$page)	{
+			echo "<font color=#ff0000>".$i."</font> ";
+		} else {
+			echo "<a href='$urlbase&amp;page=".$i."'>".$i."</a> ";
+		} 
+		if ($i==$totalPages) {
+		  break;
+		} 
+	} 
+	echo "</b>";
+	if ($i<$totalPages) {
+		echo "<a href='$urlbase&amp;page=".$i."' title=下十页>&gt;</a>   ";  
+	} 
+	if ($page==$totalPages) {
+		echo "<font color=#ff0000>&gt;&gt;</font>   ";
+	}  else  {
+		echo "<a href='$urlbase&amp;page=".$totalPages."' title=尾页>&gt;&gt;</a>   ";
+	} 
 }
 ?>

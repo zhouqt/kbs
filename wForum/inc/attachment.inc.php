@@ -70,7 +70,7 @@ function output_attachment($filename, $attachpos, $attachname = "") {
 	Header("Accept-Ranges: bytes");
 	Header("Content-Length: " . $attachsize);
 	Header("Content-Disposition: inline;filename=" . $attachname);
-	echo fread($file,$attachsize);
+	if ($attachsize>0) echo fread($file,$attachsize);
 	fclose($file);
 }
 ?>

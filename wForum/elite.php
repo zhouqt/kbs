@@ -2,8 +2,6 @@
 require("inc/funcs.php");
 require("inc/board.inc.php");
 require("inc/user.inc.php");
-require("inc/attachment.inc.php");
-require("inc/ubbcode.php");
 
 global $boardName;
 global $boardArr;
@@ -19,6 +17,7 @@ preprocess();
 if ($file !== false) {
 	@$attachpos=$_GET["ap"];
 	if ($attachpos!=0) {
+		require("inc/attachment.inc.php");
 		if ($cacheit) {
 			if (cache_header('public',filemtime($file),300))
 				return;
@@ -44,7 +43,7 @@ if ($boardID) {
 ?>
 </table>
 <?php
-		showBoardStaticsTop($boardArr, bbs_is_bm($boardID, $currentuser["index"]), true);
+		showBoardStaticsTop($boardArr, bbs_is_bm($boardID, $currentuser["index"]), -1);
 ?>
 <table cellPadding=1 cellSpacing=1 class=TableBorder1 align=center>
 <?php
@@ -234,15 +233,16 @@ function ann_display_folder($articles, $parent) {
 }
 
 function ann_display_file($filename, $parent) {
+	require("inc/ubbcode.php");
 ?>
 <table cellPadding=1 cellSpacing=1 align=center class=TableBorder1 style=" table-layout:fixed;word-break:break-all">
-<tr><th height="25" width="100%" class=TableBody2>精华区文章阅读</th></tr>
+<tr><th height="25" width="100%" id="TableTitleLink">精华区文章阅读 [<a href="elite.php?path=<?php echo urlencode($parent); ?>">返回</a>]</th></tr>
 <tr><td width="100%" style="font-size:9pt;line-height:12pt;padding:10px" class=TableBody1>
 <?php
 		echo dvbcode(bbs_printansifile($filename,1,'elite.php?file='.urlencode($_GET['file'])),0,"TableBody1");
 ?>
 </td></tr>
-<tr><td height="20" align="center" class=TableBody2>[<a href="elite.php?path=<?php echo urlencode($parent); ?>">返回精华区目录</a>]</td></tr></table>
+<tr><td height="25" align="center" class=TableBody2>[<a href="elite.php?path=<?php echo urlencode($parent); ?>">返回精华区目录</a>]</td></tr></table>
 <?php
 }
 ?>
