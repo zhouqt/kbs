@@ -28,7 +28,7 @@ function preprocess() {
 function check_mysql() {
     global $dbhost, $dbuser, $dbpasswd, $dbname;
 ?>
-<table cellpadding=3 cellspacing=1 align=center class=TableBorder1 width="97%"><tr><th>数据库配置检查</td></tr>
+<table cellpadding=3 cellspacing=1 align=center class=TableBorder1 width="97%"><tr><th>数据库配置检查</th></tr>
 <?php
     if (!DB_ENABLED) {
 ?>
