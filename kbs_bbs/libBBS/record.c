@@ -294,8 +294,10 @@ search_record(char *filename,void *rptr,int size,RECORD_FUNC_ARG fptr,void *farg
     	case 1:
         for (i =0,buf1=buf;i<filesize/size;i++,buf1+=size) {
             if ((*fptr)(farg,buf1)) {
-            	end_mmapfile((void*)buf,filesize,-1);
-    			return i+1;
+            		if (rptr)
+            			memcpy(rptr,buf1,size);
+            		end_mmapfile((void*)buf,filesize,-1);
+            	    	return i+1;
     	    }
     	}	
     }
