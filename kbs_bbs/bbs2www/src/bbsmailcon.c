@@ -20,10 +20,12 @@ int main()
         http_fatal("错误的参数1");
     if (strstr(file, "..") || strstr(file, "/"))
         http_fatal("错误的参数2");
+    /*自定义邮箱不应该判断这个
     sprintf(dir, "mail/%c/%s/.DIR", toupper(id[0]), id);
     total = file_size(dir) / sizeof(x);
     if (total <= 0)
         http_fatal("错误的参数3");
+	*/
     printf("<table width=610 border=1>\n");
     printf("<tr><td>\n<pre>");
     sprintf(path, "mail/%c/%s/%s", toupper(id[0]), id, file);

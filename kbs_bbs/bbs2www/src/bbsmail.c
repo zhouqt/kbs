@@ -27,8 +27,9 @@ int main()
     if (data == 0)
         http_fatal("memory overflow");
     fp = fopen(dir, "r");
-    if (fp == 0)
-        http_fatal("dir error");
+    if (fp == 0) {
+        http_fatal("没有信件");
+    }
     total = fread(data, sizeof(struct fileheader), total, fp);
     fclose(fp);
     if (start > total - 19)
