@@ -37,6 +37,9 @@ $total=count($threads);
 </script>
 
 <?php
+/*  rem by roy 2003.7.28
+	按文章之间的继承关系排序
+
 function showTree($boardName,$boardID,$articleID,$article,$threads,$threadNum) {
 	$printed=array(); 
 	$nowID=array();
@@ -63,6 +66,33 @@ function showTree($boardName,$boardID,$articleID,$article,$threads,$threadNum) {
 		}
 	} 
 
+}
+*/
+function showTree($boardName,$boardID,$articleID,$article,$threads,$threadNum) {
+		$IDs=array();
+	$nodes=array();
+	$printed=array();
+	$level=array();
+	$head=0;
+	$bottom=0;
+	$IDs[$bottom]=intval($threads[$threadNum-1]['ID']);
+	$level[$bottom]=0;
+	$printed[0]=1;
+	$nodes[0]=0;
+	$bottom++;
+	while($head<$bottom) {
+		showTreeItem($boardName,$articleID,$threads[$threadNum-$nodes[$head]-1],$nodes[$head],$level[$head]);
+		for ($i=0;$i<$threadNum;$i++){
+			if ( (!isset($printed[$i])) && ($threads[$threadNum-$i-1]['REID']==$IDs[$head]) ) {
+				$IDs[$bottom]=intval($threads[$threadNum-$i-1]['ID']);
+				$level[$bottom]=$level[$head]+1;
+				$printed[$i]=1;
+				$nodes[$bottom]=$i;
+				$bottom++;
+			}
+		}
+		$head++;
+	}
 }
 
 function showTreeItem($boardName,$articleID,$thread,$threadID,$level){

@@ -26,8 +26,9 @@ function main() {
 		$destutmp = 0;
 	settype($destutmp, "integer");
 ?>
-<div id="msgcontent" onkeydown="dosendmsg();">
-<form action="dosendmsg.php" method=post name=messager id=messager>
+<div id="msgcontent" >
+<div onkeydown="if(event.keyCode==13 && event.ctrlKey) { document.all.oSend.focus();document.all.oSend.click();} ">
+<form action="dosendmsg.php" method=post name=messager id=messager >
 <input type="hidden" name="destutmp" value="<?php echo $destutmp; ?>"/>
 <table cellpadding=3 cellspacing=1 align=center class=tableborder1>
           <tr> 
@@ -68,7 +69,7 @@ function main() {
           </tr>
           <tr> 
             <td  class=tablebody2 valign=middle colspan=2 align=center> 
-              <input type=button value="·¢ËÍ" name=Submit onclick="dosendmsg();">
+              <input type=button value="·¢ËÍ" name=Submit id="oSend" onclick="dosendmsg();">
              &nbsp;
 <!--
 			  <form action="showmsgs.php">
@@ -80,7 +81,7 @@ function main() {
             </td>
           </tr>
         </table>
-
+</div>
 </div>
 	<script>
 	parent.document.all.floater.innerHTML=msgcontent.innerHTML;

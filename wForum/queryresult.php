@@ -1,6 +1,6 @@
 <?php
 require("inc/funcs.php");
-
+require("inc/user.inc.php");
 require("inc/board.inc.php");
 
 
@@ -35,7 +35,11 @@ else {
 if (isErrFounded()) {
 		html_error_quit();
 } else {
-	doSearch($boardName);
+	doSearch($boardID,$boardName);
+}
+
+if (isErrFounded()) {
+	html_error_quit();
 }
 
 show_footer();
@@ -45,11 +49,12 @@ function preprocess(){
 	global $boardName;
 	global $currentuser;
 	global $boardArr;
-	if (!isset($_GET['boardName'])) {
+	global $title,$title2,$title3,$author;
+	if (!isset($_POST['boardName'])) {
 		foundErr("未指定版面。");
 		return false;
 	}
-	$boardName=$_GET['boardName'];
+	$boardName=$_POST['boardName'];
 	$brdArr=array();
 	$boardID= bbs_getboard($boardName,$brdArr);
 	$boardArr=$brdArr;
@@ -62,10 +67,49 @@ function preprocess(){
 		foundErr("您无权阅读本版");
 		return false;
 	}
+	$title=trim($_POST['title']);
+	$title2=trim($_POST['title2']);
+	$title3=trim($_POST['title3']);
+	$author=trim($_POST['author']);
+	
 	return true;
 }
 
-function showSearchMenu(){
+function doSearch($boardID,$boardName){
+	global $title,$title2,$title3,$author;
+	$result=bbs_searchTitle($boardName,$title,$title2,$title3,$author,intval($_POST['dt']),isset($_POST['mg']),isset($_POST['ag']),isset($_POST['og']));
+	$num=count($result);
+	if ($num==0) {
+		foundErr("<font color=#ff0000>没有找到您要的结果</font>");
+		return false;
+	}
+?>
+<table cellpadding=0 cellspacing=0 border=0 width="97%" align=center>
+<tr><td>搜索主题共查询到<font color=#FF0000><?php echo$num; ?></font>个结果
+</td></tr></table>
+<TABLE cellPadding=3 cellSpacing=1 class=tableborder1 align=center>
+<TR valign=middle>
+<Th height=25 width=32>状态</Th>
+<Th width=*>主 题</Th>
+<Th width=80>作 者</Th>
+<Th width=195>最后更新 | 回复人</Th>
+</TR>
+<?php
+	for ($i=1;$i<=$num;$i++) {
+?>
+  <TR><TD align=middle class=tablebody2 width=32><img src=pic/blue/folder.gif alt=开放主题或回帖>
+  </TD>
+  <TD  class=tablebody1 width=*><a href='disparticle.php?boardName=<?php echo $boardName; ?>&ID=<?php echo $result[$i]['threadsnum']; ?>' target=_blank><img src='face/face1.gif' border=0 alt="开新窗口浏览此主题"></a> <a href='disparticle.php?boardName=<?php echo $boardName; ?>&ID=<?php echo $result[$i]['threadsnum']; ?>'>
+<?php echo $result[$i]['TITLE']; ?>
+</a>    </TD> 
+    <TD align=middle  class=tablebody2  width=80><a href="dispuser.php?id=<?php echo $result[$i]['OWNER']; ?>"><?php echo $result[$i]['OWNER']; ?></a></TD> 
+    <TD  class=tablebody1 width=195><?php echo strftime("%y-%m-%d %H:%M", $result[$i]['POSTTIME']); ?>
+&nbsp;<font color="#FF0000">|</font>&nbsp;
+<a href="dispuser.php?id=<?php echo $result[$i]['OWNER']; ?>"><?php echo $result[$i]['OWNER']; ?></a>
+</TD>
+</TR> 
+<?php
+	}
 
 }
 ?>

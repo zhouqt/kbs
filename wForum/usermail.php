@@ -111,7 +111,7 @@ function showmail($boxName, $boxPath, $boxDesc, $num){
                     <td  class=tablebody1 valign=top align=left>
 					<b>
 <?php
-					bbs_printansifile($filename);
+					echo bbs_printansifile($filename);
 ?>
 	</b>
 	&nbsp;

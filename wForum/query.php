@@ -1,6 +1,6 @@
 <?php
 require("inc/funcs.php");
-
+require("inc/user.inc.php");
 require("inc/board.inc.php");
 
 

@@ -623,7 +623,7 @@ function show_nav($boardName='')
 <TR>
 <TD align=left width="25%"><a href="<?php  echo  $BannerURL; ?>" target="_blank"><img border=0 src='<?php echo  $Banner; ?>'></a></TD>
 <TD Align=center width="65%">
-<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0" width="468" height="60"><param name=movie value="http://www.dvbbs.net/skin/default/dvbanner.swf"><param name=quality value=high><param name=menu value=false><embed src="http://www.dvbbs.net/skin/default/dvbanner.swf" quality=high pluginspage="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash" type="application/x-shockwave-flash" width="468" height="60"></embed></object>
+<!-- banner -->
 </td>
 <td align=right style="line-height: 15pt" width="10%">
 <a href=#><span style="CURSOR: hand" onClick="window.external.AddFavorite('<?php   echo $SiteURL; ?>', '<?php   echo $SiteName; ?>')">º”»Î ’≤ÿ</span></a>
