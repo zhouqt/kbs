@@ -1,4 +1,4 @@
-<?
+<?php
 require("funcs.jsp");
 $data = array ();
 $id = $_POST["id"];

@@ -1,4 +1,4 @@
-<?
+<?php
   require("funcs.jsp");
   if ($loginok!=1) {
 ?>
@@ -8,7 +8,8 @@
 没有登陆<br><br>
 <a href="/index.html">快速返回</a>
 </html>
-<? } else {
+<?php
+ } else {
 	bbs_wwwlogoff();
     setcookie("UTMPKEY","",time()-360,"/");
     setcookie("UTMPNUM","",time()-360,"/");
