@@ -115,8 +115,12 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
             if (strstr(str, "ÈÃ") && strstr(str, "Í¨¹ýÉí·ÝÈ·ÈÏ")) {
                 fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n[32mÔ­Òò£º%s[m\n", str);
                 fprintf(se, "ÒÔÏÂÊÇÍ¨¹ýÕß¸öÈË×ÊÁÏ");
-                /*    getuinfo(se, lookupuser); */
-                /*Haohmaru.99.4.15.°Ñ±»×¢²áµÄ×ÊÁÏÁÐµÃ¸üÏêÏ¸,Í¬Ê±È¥µô×¢²áÕßµÄ×ÊÁÏ */
+                /*
+                 * getuinfo(se, lookupuser); 
+                 */
+                /*
+                 * Haohmaru.99.4.15.°Ñ±»×¢²áµÄ×ÊÁÏÁÐµÃ¸üÏêÏ¸,Í¬Ê±È¥µô×¢²áÕßµÄ×ÊÁÏ 
+                 */
                 fprintf(se, "\n\nÄúµÄ´úºÅ     : %s\n", fdata[1]);
                 fprintf(se, "ÄúµÄêÇ³Æ     : %s\n", lookupuser->username);
                 fprintf(se, "ÕæÊµÐÕÃû     : %s\n", fdata[2]);
@@ -131,8 +135,10 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
                 fprintf(se, "ÉÏÕ¾´ÎÊý     : %d ´Î\n", lookupuser->numlogins);
                 fprintf(se, "ÎÄÕÂÊýÄ¿     : %d(Board)\n", lookupuser->numposts);
                 fprintf(se, "Éú    ÈÕ     : %s\n", fdata[6]);
-                /*    fprintf(se, "\n[33mÒÔÏÂÊÇÈÏÖ¤Õß¸öÈË×ÊÁÏ[35m");
-                   getuinfo(se, currentuser);rem by Haohmaru.99.4.16 */
+                /*
+                 * fprintf(se, "\n[33mÒÔÏÂÊÇÈÏÖ¤Õß¸öÈË×ÊÁÏ[35m");
+                 * getuinfo(se, currentuser);rem by Haohmaru.99.4.16 
+                 */
                 fclose(se);
                 post_file(currentuser, "", fname, "Registry", str, 0, 2);
             } else if (strstr(str, "É¾³ýÊ¹ÓÃÕß£º")) {
@@ -204,7 +210,7 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
 }
 
 void stand_title(title)
-    char *title;
+char *title;
 {
     clear();
     standout();
@@ -251,7 +257,7 @@ int m_info()
 extern int cmpbnames();
 
 int valid_brdname(brd)
-    char *brd;
+char *brd;
 {
     char ch;
 
@@ -271,39 +277,39 @@ char *chgrp()
     char buf[STRLEN], ans[6];
 
     /*
-       static char    *explain[] = {
-       "±¾Õ¾ÏµÍ³",
-       "ÐÝÏÐÓéÀÖ",
-       "µçÄÔ¼¼Êõ",
-       "Ñ§Êõ¿ÆÑ§",
-       "ÌåÓý½¡Éí",
-       "Ì¸ÌìËµµØ",
-       "Ð£Ô°ÐÅÏ¢",
-       "ÒÕÊõÎÄ»¯",
-       "ÈËÎÄÉç»á",
-       "ÍøÂçÐÅÏ¢",
-       "Çå»ª´óÑ§",
-       "ÐÖµÜÔºÐ£",
-       "Æä  Ëû",
-       NULL
-       };
-
-       static char    *groups[] = {
-       "system.faq",
-       "rec.faq",
-       "comp.faq",
-       "sci.faq",
-       "sport.faq",
-       "talk.faq",
-       "campus.faq",
-       "literal.faq",
-       "soc.faq",
-       "network.faq",
-       "thu.faq",
-       "univ.faq",
-       "other.faq",
-       NULL
-       };
+     * static char    *explain[] = {
+     * "±¾Õ¾ÏµÍ³",
+     * "ÐÝÏÐÓéÀÖ",
+     * "µçÄÔ¼¼Êõ",
+     * "Ñ§Êõ¿ÆÑ§",
+     * "ÌåÓý½¡Éí",
+     * "Ì¸ÌìËµµØ",
+     * "Ð£Ô°ÐÅÏ¢",
+     * "ÒÕÊõÎÄ»¯",
+     * "ÈËÎÄÉç»á",
+     * "ÍøÂçÐÅÏ¢",
+     * "Çå»ª´óÑ§",
+     * "ÐÖµÜÔºÐ£",
+     * "Æä  Ëû",
+     * NULL
+     * };
+     * 
+     * static char    *groups[] = {
+     * "system.faq",
+     * "rec.faq",
+     * "comp.faq",
+     * "sci.faq",
+     * "sport.faq",
+     * "talk.faq",
+     * "campus.faq",
+     * "literal.faq",
+     * "soc.faq",
+     * "network.faq",
+     * "thu.faq",
+     * "univ.faq",
+     * "other.faq",
+     * NULL
+     * };
      */
 
     clear();
@@ -494,7 +500,9 @@ int m_editbrd()
             strncpy(newfh.BM, genbuf, sizeof(newfh.BM));
         if (*genbuf == ' ')
             strncpy(newfh.BM, "\0", sizeof(newfh.BM));
-        /* newfh.BM[ BM_LEN - 1 ]=fh.BM[ BM_LEN - 1 ]; */
+        /*
+         * newfh.BM[ BM_LEN - 1 ]=fh.BM[ BM_LEN - 1 ]; 
+         */
         sprintf(buf, "ÄäÃû°æ (Y/N)? [%c]: ", (noidboard) ? 'Y' : 'N');
         getdata(12, 0, buf, genbuf, 4, DOECHO, NULL, true);
         if (*genbuf == 'y' || *genbuf == 'Y' || *genbuf == 'N' || *genbuf == 'n') {
@@ -590,7 +598,7 @@ int m_editbrd()
                         sprintf(oldpath, "0Announce/groups/%s/%s", tmp_grp, fh.filename);
                         if (dashd(oldpath)) {
                             /*
-                               sprintf(genbuf, "/bin/rm -fr %s", newpath);
+                             * sprintf(genbuf, "/bin/rm -fr %s", newpath);
                              */
                             f_rm(newpath);
                         }
@@ -755,8 +763,8 @@ int m_mclean()
 */
 
 void trace_state(flag, name, size)
-    int flag, size;
-    char *name;
+int flag, size;
+char *name;
 {
     char buf[STRLEN];
 
@@ -769,7 +777,7 @@ void trace_state(flag, name, size)
 }
 
 int touchfile(filename)
-    char *filename;
+char *filename;
 {
     int fd;
 
@@ -838,7 +846,7 @@ int m_trace()
 }
 
 int valid_userid(ident)         /* check the user has registed, added by dong, 1999.4.18 */
-    char *ident;
+char *ident;
 {
     if (strchr(ident, '@') && valid_ident(ident))
         return 1;
@@ -846,16 +854,20 @@ int valid_userid(ident)         /* check the user has registed, added by dong, 1
 }
 
 int check_proxy_IP(ip, buf)
-                                /* added for rejection of register from proxy,
-                                   Bigman, 2001.11.9 */
- /* Óëbbsd_singleÀïÃæµÃlocal_check_ban_IP»ù±¾Ò»Ñù£¬¿ÉÒÔ¿¼ÂÇ¹²ÓÃ */
-    char *ip;
-    char *buf;
+                                /*
+                                 * added for rejection of register from proxy,
+                                 * Bigman, 2001.11.9 
+                                 */
+ /*
+  * Óëbbsd_singleÀïÃæµÃlocal_check_ban_IP»ù±¾Ò»Ñù£¬¿ÉÒÔ¿¼ÂÇ¹²ÓÃ 
+  */
+char *ip;
+char *buf;
 {                               /* Leeward 98.07.31
-                                   RETURN:
-                                   - 1: No any banned IP is defined now
-                                   0: The checked IP is not banned
-                                   other value over 0: The checked IP is banned, the reason is put in buf
+                                 * RETURN:
+                                 * - 1: No any banned IP is defined now
+                                 * 0: The checked IP is not banned
+                                 * other value over 0: The checked IP is banned, the reason is put in buf
                                  */
     FILE *Ban = fopen("etc/proxyIP", "r");
     char IPBan[64];
@@ -887,9 +899,9 @@ int check_proxy_IP(ip, buf)
 int apply_reg(regfile, fname, pid, num)
 /* added by Bigman, 2002.5.31 */
 /* ÉêÇëÖ¸¶¨ÌõÊý×¢²áµ¥ */
-    char *regfile, *fname;
-    long pid;
-    int num;
+char *regfile, *fname;
+long pid;
+int num;
 {
     FILE *in_fn, *out_fn, *tmp_fn;
     char fname1[STRLEN], fname2[STRLEN];
@@ -985,7 +997,7 @@ int apply_reg(regfile, fname, pid, num)
 }
 
 int check_reg(mod)
-    int mod;
+int mod;
 
 /* added by Bigman, 2002.5.31 */
 /* mod=0 ¼ì²éreg_controlÎÄ¼þ */
@@ -1058,7 +1070,7 @@ int check_reg(mod)
 }
 
 int restore_reg(pid)
-    long pid;
+long pid;
 
 /* added by Bigman, 2002.5.31 */
 /* »Ö¸´¶ÏÏßµÄ×¢²áÎÄ¼þ */
@@ -1104,7 +1116,7 @@ static const char *reason[] = {
 };
 
 int scan_register_form(logfile, regfile)
-    char *logfile, *regfile;
+char *logfile, *regfile;
 {
     static const char *finfo[] = { "ÕÊºÅÎ»ÖÃ", "ÉêÇë´úºÅ", "ÕæÊµÐÕÃû", "·þÎñµ¥Î»",
         "Ä¿Ç°×¡Ö·", "Á¬Âçµç»°", "Éú    ÈÕ", NULL
@@ -1114,7 +1126,9 @@ int scan_register_form(logfile, regfile)
     char fdata[7][STRLEN];
     char fname[STRLEN], buf[STRLEN], buff;
 
-    /* ^^^^^ Added by Marco */
+    /*
+     * ^^^^^ Added by Marco 
+     */
     char ans[5], *ptr, *uid;
     int n, unum, fd;
     int count, sum, total_num;  /*Haohmaru.2000.3.9.¼ÆËã»¹ÓÐ¶àÉÙµ¥×ÓÃ»´¦Àí */
@@ -1172,7 +1186,9 @@ int scan_register_form(logfile, regfile)
         return -1;
     }
     memset(fdata, 0, sizeof(fdata));
-    /*Haohmaru.2000.3.9.¼ÆËã¹²ÓÐ¶àÉÙµ¥×Ó */
+    /*
+     * Haohmaru.2000.3.9.¼ÆËã¹²ÓÐ¶àÉÙµ¥×Ó 
+     */
     sum = 0;
     while (fgets(genbuf, STRLEN, fn) != NULL) {
         if ((ptr = (char *) strstr(genbuf, "userid")) != NULL)
@@ -1208,8 +1224,12 @@ int scan_register_form(logfile, regfile)
             move(15, 0);
             printdash(NULL);
             for (n = 0; field[n] != NULL; n++)
-                /* added for rejection of register from proxy */
-                /* Bigman, 2001.11.9 */
+                /*
+                 * added for rejection of register from proxy 
+                 */
+                /*
+                 * Bigman, 2001.11.9 
+                 */
                 if (n == 1) {
                     if (check_proxy_IP(uinfo.lasthost, buf) > 0)
                         prints("%s     : %s \033[33m%s\033[0m\n", finfo[n], fdata[n], buf);
@@ -1217,7 +1237,9 @@ int scan_register_form(logfile, regfile)
                         prints("%s     : %s\n", finfo[n], fdata[n]);
                 } else
                     prints("%s     : %s\n", finfo[n], fdata[n]);
-            /* if (uinfo.userlevel & PERM_LOGINOK) modified by dong, 1999.4.18 */
+            /*
+             * if (uinfo.userlevel & PERM_LOGINOK) modified by dong, 1999.4.18 
+             */
             if ((uinfo.userlevel & PERM_LOGINOK) || valid_userid(uinfo.realemail)) {
                 move(t_lines - 1, 0);
                 prints("´ËÕÊºÅ²»ÐèÔÙÌîÐ´×¢²áµ¥.\n");
@@ -1266,10 +1288,16 @@ int scan_register_form(logfile, regfile)
                     fprintf(fout, "----\n");
                     fclose(fout);
                 }
-                /* user_display( &uinfo, 1 ); */
-                /* pressreturn(); */
+                /*
+                 * user_display( &uinfo, 1 ); 
+                 */
+                /*
+                 * pressreturn(); 
+                 */
 
-                /* Ôö¼Ó×¢²áÐÅÏ¢¼ÇÂ¼ 2001.11.11 Bigman */
+                /*
+                 * Ôö¼Ó×¢²áÐÅÏ¢¼ÇÂ¼ 2001.11.11 Bigman 
+                 */
                 sethomefile(buf, uinfo.userid, "/register");
                 if ((fout = fopen(buf, "w")) != NULL) {
                     for (n = 0; field[n] != NULL; n++)
@@ -1320,7 +1348,9 @@ int scan_register_form(logfile, regfile)
                     strncpy(uinfo.address, genbuf, NAMELEN);
                     update_user(&uinfo, unum, 0);
 
-                    /* ------------------- Added by Marco */
+                    /*
+                     * ------------------- Added by Marco 
+                     */
                     switch (buff) {
                     case '0':
                         mail_file(currentuser->userid, "etc/f_fill.realname", uinfo.userid, uinfo.address, 0);
@@ -1353,14 +1383,20 @@ int scan_register_form(logfile, regfile)
                     /*
                      * -------------------------------------------------------
                      */
-                    /* user_display( &uinfo, 1 ); */
-                    /* pressreturn(); */
+                    /*
+                     * user_display( &uinfo, 1 ); 
+                     */
+                    /*
+                     * pressreturn(); 
+                     */
                     break;
                 }
                 move(10, 0);
                 clrtobot();
                 prints("È¡ÏûÍË»Ø´Ë×¢²áÉêÇë±í.\n");
-                /* run default -- put back to regfile */
+                /*
+                 * run default -- put back to regfile 
+                 */
             default:
                 if ((freg = fopen(regfile, "a")) != NULL) {
                     fd = fileno(freg);
@@ -1443,6 +1479,10 @@ int m_stoplogin()
 {
     char ans[4];
 
+    modify_user_mode(ADMIN);
+    if (!check_systempasswd()) {
+        return -1;
+    }
     if (!HAS_PERM(currentuser, PERM_ADMIN))
         return -1;
     getdata(t_lines - 1, 0, "½ûÖ¹µÇÂ½Âð (Y/N)? [N]: ", ans, 2, DOECHO, NULL, true);
@@ -1491,3 +1531,102 @@ int inn_stop()
 }
 
 /* added end */
+/* ·â½ûÈ¨ÏÞ¹ÜÀí*/
+int x_deny()
+{
+    int sel;
+    char userid[IDLEN + 1];
+    struct userec *lookupuser;
+    const int level[] = {
+        PERM_BASIC,
+        PERM_POST,
+        PERM_DENYMAIL,
+        PERM_CHAT,
+        PERM_PAGE,
+        -1
+    };
+    const int normal_level[] = {
+        PERM_BASIC,
+        PERM_POST,
+        0,
+        PERM_CHAT,
+        PERM_PAGE,
+        -1
+    };
+
+    const struct _select_item level_conf[] = {
+        {3, 6, -1, SIT_SELECT, (void *) "1)µÇÂ½"},
+        {3, 7, -1, SIT_SELECT, (void *) "2)·¢ÎÄ"},
+        {3, 8, -1, SIT_SELECT, (void *) "3)ÐÅ¼þ"},
+        {3, 9, -1, SIT_SELECT, (void *) "4)ÁÄÌìÊÒ"},
+        {3, 10, -1, SIT_SELECT, (void *) "5)Message & talk"},
+        {3, 11, -1, SIT_SELECT, (void *) "6)ÖØÐÂÊäÈë"},
+        {3, 12, -1, SIT_SELECT, (void *) "7)ÍË³ö"},
+        {-1, -1, -1, 0, NULL}
+    };
+
+    modify_user_mode(ADMIN);
+    if (!check_systempasswd()) {
+        return -1;
+    }
+    move(0, 0);
+    clear();
+
+    while (1) {
+        int i;
+        int basicperm;
+        int s[10][2];
+        int lcount;
+
+        move(1, 0);
+
+        usercomplete("ÇëÊäÈëÊ¹ÓÃÕßÕÊºÅ:", genbuf);
+        strncpy(userid, genbuf, IDLEN);
+        if (userid[0] == '\0') {
+            clear();
+            return 0;
+        }
+
+        if (!(getuser(userid, &lookupuser))) {
+            move(3, 0);
+            prints("²»ÕýÈ·µÄÊ¹ÓÃÕß´úºÅ\n");
+            clrtoeol();
+            pressreturn();
+            clear();
+            continue;
+        }
+        lcount = get_giveupinfo(lookupuser->userid, &basicperm, s);
+        move(3, 0);
+        clrtobot();
+
+        for (i = 0; level[i] != -1; i++)
+            if ((lookupuser->userlevel & level[i]) != normal_level[i]) {
+                move(6 + i, 40);
+                if (level[i] & basicperm)
+                    prints("½äÍøÖÐ");
+                else
+                    prints("·â½ûÖÐ");
+            }
+        sel = simple_select_loop(level_conf, SIF_NUMBERKEY|SIF_SINGLE, 0, 6, NULL);
+        if (sel == i + 2)
+            break;
+        if (sel > 0 && sel <= i) {
+            char buf[40];
+
+            move(40, 0);
+            if ((lookupuser->userlevel & level[sel-1]) == normal_level[sel-1]) {
+                sprintf(buf, "ÕæµÄÒª·â½û%sµÄ%sÈ¨ÏÞ", lookupuser->userid, (char *) level_conf[sel-1].data);
+                if (askyn(buf, 0) != 0) {
+                    lookupuser->userlevel ^= level[sel-1];
+                }
+            } else {
+                sprintf(buf, "ÕæµÄÒª½â¿ª%sµÄ%s ·â½û(½äÍø)", lookupuser->userid, (char *) level_conf[sel-1].data);
+                if (askyn(buf, 0) != 0) {
+                    lookupuser->userlevel ^= level[sel-1];
+                }
+            }
+	    save_giveupinfo(lookupuser,lcount,s);
+        }
+    }
+    return 0;
+}

@@ -76,6 +76,7 @@ int t_query(), t_talk(), t_pager(), t_override(), x_cloak();
 int t_irc()
 #endif
 int kick_user();
+int x_deny();
 
 /* add by KCN */
 /* Modified by sanshao, sb KCN */
@@ -195,6 +196,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"EditBoard", m_editbrd},
     {"DelBoard", d_board},
     {"SetTrace", m_trace},
+    {"Xlevel", x_deny},
 /*    
     {"CleanMail", m_mclean},
     */
