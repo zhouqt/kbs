@@ -97,13 +97,11 @@ int addtodeny(char* uident) /* 添加 禁止POST用户 */
     int maxdeny;
     /*Haohmaru.99.4.1.auto notify*/
     time_t  now;
-    int  id;
     char buffer[STRLEN];
     FILE *fn;
     char filename[STRLEN];
-    int day, autofree = 0;
+    int autofree = 0;
     char filebuf[STRLEN];
-    char deadline[STRLEN];/*补充说明*/
     char denymsg[STRLEN];
     int  denyday;
 
@@ -240,6 +238,7 @@ int addtodeny(char* uident) /* 添加 禁止POST用户 */
 	        post_file(currentuser,"",filename,"denypost",buffer,0,8);
 	        unlink(filename);
     }
+    return 0;
 }
 
 
@@ -343,7 +342,7 @@ Here:
             }
             /*---	add to check if undeny time reached.	by period 2000-09-11	---*/
             {
-                char lbuf[256], * lptr;
+                char * lptr;
                 time_t ldenytime;
                 /* now the corresponding line in genbuf */
                 if( NULL != (lptr = strrchr(genbuf, '[')) )

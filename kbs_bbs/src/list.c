@@ -38,20 +38,22 @@ int myfriend(int uid,char* fexp)
     return found;
 }
 
-void print_title()
+int print_title()
 {
 
     docmdtitle((friendmode)?"[ºÃÅóÓÑÁĞ±í]":"[Ê¹ÓÃÕßÁĞ±í]",
                " ÁÄÌì[t] ¼ÄĞÅ[m] ËÍÑ¶Ï¢[s] ¼Ó,¼õÅóÓÑ[o,d] ¿´ËµÃ÷µµ[¡ú,r] ÇĞ»»Ä£Ê½ [f] Çó¾È[h]");
     update_endline();
+    return 0;
 }
 
-void print_title2()
+int print_title2()
 {
 
     docmdtitle((friendmode)?"[ºÃÅóÓÑÁĞ±í]":"[Ê¹ÓÃÕßÁĞ±í]",
                "          ¼ÄĞÅ[m] ¼Ó,¼õÅóÓÑ[o,d] ¿´ËµÃ÷µµ[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] Çó¾È[h]");
     update_endline();
+    return 0;
 }
 
 void
@@ -673,7 +675,7 @@ void setlistrange( int i)
 }
 
 
-void do_query(int star,int curr)
+int do_query(int star,int curr)
 {
 
     clear();
@@ -685,13 +687,15 @@ void do_query(int star,int curr)
     move(t_lines-1,0);
     prints( "[44mÁÄÌì[t] ¼ÄĞÅ[m] ËÍÑ¶Ï¢[s] ¼Ó,¼õÅóÓÑ[o,d] Ñ¡ÔñÊ¹ÓÃÕß[¡ü,¡ı] ÇĞ»»Ä£Ê½ [f] Çó¾È[h][m");
     }
+    return 0;
 }
 
-void do_query2(int star,int curr)
+int do_query2(int star,int curr)
 {
     t_query(user_data[curr-star].userid);
     move(t_lines-1,0);
     prints( "[44m           ¼ÄĞÅ[m] ¼Ó,¼õÅóÓÑ[o,d] ¿´ËµÃ÷µµ[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] Çó¾È[h]           [m");
+    return 0;
 }
 
 void Users()
