@@ -380,6 +380,8 @@ char *ModeType(mode)
 	return "星空战斗鸡";
 	case HELP:
 	return "帮助";
+	case POSTTMPL:
+	return "模版发文";
     default:
         return "去了那里!?";
     }
