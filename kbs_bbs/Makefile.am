@@ -1,4 +1,4 @@
-EXTRA_DIST = lib/* README INSTALL site/wforum.c site/wforum.h site/devel.c site/devel.h site/default.c site/default.h bbshome innbbsd config.icc config.lib doc/* index/* makedist.sh
+EXTRA_DIST = lib/* README INSTALL site/wforum.c site/wforum.h site/devel.c site/devel.h site/default.c site/default.h bbshome innbbsd config.icc config.lib doc/* index/* makedist.sh contrib/crontab.SMTH contrib/build-RH9.sh contrib/smth2wforum/*
 SUBDIRS=libsystem libBBS rzsz src daemon local_utl mail2bbs service @subdirs@
 CLEANFILES=@EXTRA_CLEAN@
 AM_MAKEFLAGS=-s 
