@@ -123,6 +123,7 @@ static int save_import_path()
     		fputs("\n",fn);
     	}
 	fstat(fileno(fn),&st);
+	fclose(fn);
         import_path_time=st.st_mtime;	
     	return 0;
     }
