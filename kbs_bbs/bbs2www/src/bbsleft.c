@@ -41,7 +41,7 @@ NAME_BBS_CHINESE "用户登录<br>\n"
 				getcurruserid(), getcurruserid());
 		uleveltochar(buf, getcurrusr());
         printf("身份: %s<br>\n", buf);
-        printf("<a href=\"bbslogout\" target=\"_top\">注销本次登录</a><br>\n");
+        printf("<a href=\"/bbslogout.jsp\" target=\"_top\">注销本次登录</a><br>\n");
 	}
 	printf("</td></tr><tr><td>\n");
 	printf("<hr style=\"color:2020f0; height=1px\" width=\"84px\" align=\"center\">\n");

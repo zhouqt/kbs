@@ -12,6 +12,7 @@ static ZEND_FUNCTION(bbs_getcurrentuser);
 static ZEND_FUNCTION(bbs_setonlineuser);
 static ZEND_FUNCTION(bbs_getcurrentuinfo);
 static ZEND_FUNCTION(bbs_wwwlogin);
+static ZEND_FUNCTION(bbs_wwwlogoff);
 static ZEND_FUNCTION(bbs_printansifile);
 static ZEND_FUNCTION(bbs_getboard);
 static ZEND_FUNCTION(bbs_checkreadperm);
@@ -35,6 +36,7 @@ static function_entry bbs_php_functions[] = {
 	ZEND_FE(bbs_setonlineuser, NULL)
 	ZEND_FE(bbs_getcurrentuinfo, NULL)
 	ZEND_FE(bbs_wwwlogin, NULL)
+	ZEND_FE(bbs_wwwlogoff, NULL)
 	ZEND_FE(bbs_printansifile, NULL)
 	ZEND_FE(bbs_checkreadperm, NULL)
 	ZEND_FE(bbs_brcaddread, NULL)
@@ -616,6 +618,17 @@ static ZEND_FUNCTION(bbs_checkreadperm)
 	user=getuserbynum(user_num);
 	if (user==NULL) RETURN_LONG(0);
 	RETURN_LONG(check_read_perm(user,boardnum));
+}
+
+static ZEND_FUNCTION(bbs_wwwlogoff)
+{
+	if (getcurrentuser()) {
+		int ret=(www_user_logoff(getcurrentuser(),getcurrentuser_num(),
+					getcurrentuinfo(),getcurrentuinfo_num()));
+		RETURN_LONG(ret);
+	}
+	else
+		RETURN_LONG(-1);
 }
 
 static ZEND_FUNCTION(bbs_brcaddread)

@@ -1351,13 +1351,13 @@ getfriendstr()
 }
 
 /* from bbs.c */
-void 
-record_exit_time()   /* 记录离线时间  Luzi 1998/10/23 */
+static void 
+record_exit_time(char* userid)   /* 记录离线时间  Luzi 1998/10/23 */
 {
     char path[80];
     FILE *fp;
     time_t now;
-    sethomefile( path, getcurruserid() , "exit");
+    sethomefile( path, userid , "exit");
     fp=fopen(path, "wb");
     if (fp!=NULL)
     {
@@ -2029,12 +2029,12 @@ int www_user_logoff(struct userec* user,int useridx,struct user_info* puinfo,int
 	int stay=0;
 	struct userec *x = NULL;
 
-	stay = abs(time(0) - u_info->logintime);
+	stay = abs(time(0) - puinfo->logintime);
 	/* 上站时间超过 2 小时按 2 小时计 */
 	if(stay>7200)
 		stay = 7200;
 	user->stay+=stay;
-	record_exit_time();
+	record_exit_time(user->userid);
 	bbslog( "1system", "EXIT: Stay:%3ld (%s)[%d %d]", stay / 60, 
 			user->username, get_curr_utmpent(), useridx);
 	if (strcasecmp(user->userid,"guest")) {
