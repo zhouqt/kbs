@@ -1394,6 +1394,33 @@ int search_mode(int mode, char *index)
     return NEWDIRECT;
 }
 
+int search_x(char * b, char * s)
+{
+    void *hdll;
+    int (*func)(char * b, char * s);
+    char *c;
+    char buf[1024];
+    int oldmode;
+
+    oldmode = uinfo.mode;
+    modify_user_mode(SERVICES);
+    hdll=dlopen("service/libiquery.so",RTLD_LAZY);
+    if(hdll)
+    {
+        char* error;
+        if(func=dlsym(hdll,"iquery_board"))
+            func(b, s);
+        else
+        if ((error = dlerror()) != NULL)  {
+            clear();
+            prints ("%s\n", error);
+            pressanykey();
+        }
+        dlclose(hdll);
+    }
+    modify_user_mode(oldmode);
+}
+
 int change_mode(int ent, struct fileheader *fileinfo, char *direct)
 {
     char ans[4];
@@ -1405,10 +1432,21 @@ int change_mode(int ent, struct fileheader *fileinfo, char *direct)
     prints("切换模式到: 1)文摘 2)同主题 3)被m文章 4)原作 5)同作者 6)标题关键字 ");
     move(t_lines - 1, 0);
     clrtoeol();
-    getdata(t_lines - 1, 12, "7)超级文章选择 [1]: ", ans, 3, DOECHO, NULL, true);
+    getdata(t_lines - 1, 12, "7)超级文章选择  8)本版精华区搜索 [1]: ", ans, 3, DOECHO, NULL, true);
     if (ans[0] == ' ') {
         ans[0] = ans[1];
         ans[1] = 0;
+    }
+    if (ans[0] == '8') {
+        move(t_lines - 1, 0);
+        clrtoeol();
+        sprintf(buf, "您想查找的文章标题关键字[%s]: ", title);
+        getdata(t_lines - 1, 0, buf, buf2, 70, DOECHO, NULL, true);
+        if (buf2[0])
+            strcpy(title, buf2);
+        strcpy(buf, title);
+        if(buf[0]) search_x(currboard->filename, buf);
+        return FULLUPDATE;
     }
     if (ans[0] == '5') {
         move(t_lines - 1, 0);
