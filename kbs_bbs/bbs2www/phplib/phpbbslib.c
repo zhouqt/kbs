@@ -139,6 +139,8 @@ static PHP_FUNCTION(bbs_caneditfile);
 static PHP_FUNCTION(bbs_updatearticle);
 static PHP_FUNCTION(bbs_getthreadnum);
 static PHP_FUNCTION(bbs_getthreads);
+static PHP_FUNCTION(bbs_ext_initialized);
+static PHP_FUNCTION(bbs_init_ext);
 
 /*
  * define what functions can be used in the PHP embedded script
@@ -265,6 +267,8 @@ static function_entry smth_bbs_functions[] = {
 #if HAVE_MYSQL == 1
 		PHP_FE(bbs_csv_to_al, NULL)
 #endif
+		PHP_FE(bbs_ext_initialized, NULL)
+		PHP_FE(bbs_init_ext, NULL)
         {NULL, NULL, NULL}
 };
 
@@ -3985,6 +3989,70 @@ static PHP_FUNCTION(bbs_setpassword)
     RETURN_TRUE;
 }
 
+static int ext_init = 0; /* Don't access this variable directly, 
+						  use the following helper routines */
+
+static int get_initialized()
+{
+	return ext_init;
+}
+
+static int initialize_ext()
+{
+    getcwd(old_pwd, 1023);
+    old_pwd[1023] = 0;
+    chdir(BBSHOME);
+    resolve_ucache();
+    resolve_utmp();
+    resolve_boards();
+    init_bbslog();
+    www_data_init();
+    chdir(old_pwd);
+	ext_init = 1;
+
+	return ext_init;
+}
+
+/**
+ * return status flag of initialization of the extension.
+ * prototype:
+ * bool bbs_ext_initialized()
+ *
+ * @return TRUE if the extension had been initialized,
+ *       FALSE otherwise.
+ * @author flyriver
+ */
+static PHP_FUNCTION(bbs_ext_initialized)
+{
+	if (!get_initialized())
+        RETURN_FALSE;
+    RETURN_TRUE;
+}
+
+/**
+ * initialize the extension.
+ * prototype:
+ * bool bbs_init_ext()
+ *
+ * @return TRUE on success,
+ *       FALSE on failure.
+ * @author flyriver
+ */
+static PHP_FUNCTION(bbs_init_ext)
+{
+	int ret = 0;
+	if (!get_initialized())
+        ret = initialize_ext();
+	if (ret)
+	{
+    	RETURN_TRUE;
+	}
+	else
+	{
+		RETURN_FALSE;
+	}
+}
+
 PHP_MINIT_FUNCTION(smth_bbs)
 {
     /*
@@ -3998,21 +4066,8 @@ PHP_MINIT_FUNCTION(smth_bbs)
     PHP_SET_SYMBOL(&EG(symbol_table), "BBS_HOME", bbs_home);
     PHP_SET_SYMBOL(&EG(symbol_table), "BBS_FULL_NAME", bbs_full_name);
     */
-	/*struct stat st;
-	while (stat("/tmp/start", &st) < 0)
-	{
-		sleep(1);
-	}*/
     REGISTER_STRINGL_CONSTANT("BBS_HOME",BBSHOME,strlen(BBSHOME),CONST_CS | CONST_PERSISTENT);
     REGISTER_STRINGL_CONSTANT("BBS_FULL_NAME",BBS_FULL_NAME,strlen(BBS_FULL_NAME),CONST_CS | CONST_PERSISTENT);
-    getcwd(old_pwd, 1023);
-    old_pwd[1023] = 0;
-    chdir(BBSHOME);
-    resolve_ucache();
-    resolve_utmp();
-    resolve_boards();
-    init_bbslog();
-    www_data_init();
 #ifdef SQUID_ACCL
     REGISTER_LONG_CONSTANT("SQUID_ACCL", 1, CONST_CS | CONST_PERSISTENT);
 #else
@@ -4041,7 +4096,6 @@ PHP_MINIT_FUNCTION(smth_bbs)
     REGISTER_LONG_CONSTANT("BBS_BOARD_CLUB_WRITE", BOARD_CLUB_WRITE, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_BOARD_CLUB_HIDE", BOARD_CLUB_HIDE, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_BOARD_GROUP", BOARD_GROUP, CONST_CS | CONST_PERSISTENT);
-    chdir(old_pwd);
 #ifdef DEBUG
     zend_error(E_WARNING, "module init");
 #endif
@@ -4050,11 +4104,14 @@ PHP_MINIT_FUNCTION(smth_bbs)
 
 PHP_MSHUTDOWN_FUNCTION(smth_bbs)
 {
-    www_data_detach();
-    detach_utmp();
-    detach_boards();
-    detach_ucache();
-    detach_publicshm();
+	if (get_initialized())
+	{
+		www_data_detach();
+		detach_utmp();
+		detach_boards();
+		detach_ucache();
+		detach_publicshm();
+	}
 
 #ifdef DEBUG
     zend_error(E_WARNING, "module shutdown");

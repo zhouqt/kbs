@@ -14,6 +14,9 @@ if (!isset($topdir))
 //       you *MUST* set enable_dl variable to Off in php.ini file.
 if (BUILD_PHP_EXTENSION==0)
 	@dl("$topdir/../libexec/bbs/libphpbbslib.so");
+
+if (!bbs_ext_initialized())
+	bbs_init_ext();
 global $SQUID_ACCL;
 global $BBS_PERM_POSTMASK;
 global $BBS_PERM_NOZAP;
