@@ -436,6 +436,9 @@ int multilogin_user(struct userec *user, int usernum,int mode)
     	|| HAS_PERM(user, PERM_BMAMANGER) )
         && logincount < 3)
         return 0;
+    /* 未通过注册的用户不能双登 added by bixnun 2003.5.30 */
+    if((!HAS_PERM(user,PERM_LOGINOK)) && logincount >0)return 1; 
+    
     /* allow multiple guest user */
     if (!strcmp("guest", user->userid)) {
         if (logincount > MAX_GUEST_NUM) {
