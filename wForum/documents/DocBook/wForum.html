@@ -132,7 +132,6 @@ create table smallpaper_tb(
 <div class="itemizedlist"><ul type="disc">
 <li><p>$SiteURL: 这个变量用于一些需要输出绝对路径的地方，应该定义为 wForum 安装的根的 URL，最后一个字符必须是 '/'。</p></li>
 <li><p>MAINTITLE: 站点标题可以包含 html，打开 mathml 支持的站点千万注意 html 必须符合 xhtml 标准。</p></li>
-<li><p>RSS_SUPPORT: wForum 可以动态产生十大热门话题和每个版面最近 20 帖的 RSS，目前不在页面内显示 XML 图标提示用户订阅，需要充分利用这个功能的站点可以参考 bbs.zixia.net 站 wForum 版的一些 RSS 功能使用举例。</p></li>
 <li>
 <p>ONBOARD_USERS: 光打开这个参数只能让有 SYSOP 权限的用户看到版面在线名单，如果想让普通用户也看到，还需要在 src/site.h 内定义：</p>
 <pre class="programlisting">#define ALLOW_PUBLIC_USERONBOARD 1</pre>
