@@ -43,7 +43,7 @@ login_init();
 ?>
 <body>
 <center><?php echo BBS_FULL_NAME; ?> -- ±¸ÍüÂ¼ [ÌÖÂÛÇø: <?php echo $board; ?>]<hr color=green>
-<form name=form1 method="post" action=<?php echo "\"bbsmnote?type=update&board=" . $board . "\""; ?>>
+<form name=form1 method="post" action=<?php echo "\"bbsmnote.php?type=update&board=" . $board . "\""; ?>>
 <table width="610" border="1"><tr><td><textarea  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.form1.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.form1.submit()' name="text" rows="20" cols="80" wrap="physical">
 <?php
 			if ($fp != FALSE) {
