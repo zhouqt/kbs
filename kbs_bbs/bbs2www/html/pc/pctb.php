@@ -39,7 +39,7 @@
 	{
 		echo "<tr>\n<td class=t5><font class=content>\n".
 			"<strong>主题:</strong>\n<a href='".html_format($tb[url])."'>".html_format($tb[title])."</a><br />\n".
-			"<strong>摘要:</strong>\n".html_format($tb[excerpt],TRUE)." <br />\n".
+			"<strong>摘要:</strong>\n".html_format($tb[excerpt],TRUE)." \n <br />\n".
 			"<strong>Blog:</strong>\n".html_format($tb[blogname])."<br />\n".
 			"<strong>时间:</strong>\n".time_format($tb[time])."\n".
 			"</font></td></tr>\n";	
