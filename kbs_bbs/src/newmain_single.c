@@ -1187,7 +1187,7 @@ chk_friend_book()
 }
 
 void
-main_bbs(char *originhost, int convit)
+main_bbs(char *originhost, int convit,char* argv)
 {
     extern char currmaildir[ STRLEN ];
     char   notename[STRLEN];
@@ -1231,6 +1231,10 @@ main_bbs(char *originhost, int convit)
     user_login();
     m_init();
     clear(); 
+
+#ifndef DEBUG
+    sprintf(argv,"bbsd:%s",currentuser.userid);
+#endif
 
 #ifdef TALK_LOG
     tlog_recover();     /* 2000.9.15 Bigman Ìí¼ÓÖÐ¶ÏtalkµÄ»Ö¸´ */

@@ -199,7 +199,7 @@ toobigmesg()
         fprintf( stderr, "record size too big!!\n" );
     */
 }
-
+#ifdef DEBUG
 /* apply_record进行了预读优化,以减少系统调用次数,提高速度. ylsdd 2001.4.24 */
 int
 apply_record(filename,fptr,size)
@@ -233,6 +233,31 @@ int size ;
     close(fd) ;
     return 0 ;
 }
+#else
+int
+apply_record(filename,fptr,size)
+char *filename ;
+int (*fptr)() ;
+int size ;
+{
+    char abuf[BUFSIZE] ;
+    int fd ;
+
+    if( size > BUFSIZE ) {
+        toobigmesg();
+        return -1;
+    }
+    if((fd = open(filename,O_RDONLY,0)) == -1)
+        return -1 ;
+    while(read(fd,abuf,size) == size)
+        if((*fptr)(abuf) == QUIT) {
+            close(fd) ;
+            return QUIT ;
+        }
+    close(fd) ;
+    return 0 ;
+}
+#endif
 /*---   Added by period   2000-10-26  ---*/
 /*---	也可以考虑用一次读入CheckStep个记录的方法.	---*
  *---	就是在内存占用和系统IO之间作个选择		---*/
@@ -334,6 +359,7 @@ id = npos;
 /*#endif*/ /*_DEBUG_*/
 /*---   End of Addition     ---*/
 
+#ifdef DEBUG
 /* search_record进行了预读优化,以减少系统调用次数,提高速度. ylsdd, 2001.4.24 */
 int
 search_record(filename,rptr,size,fptr,farg)
@@ -376,6 +402,31 @@ char *farg ;
     close(fd) ;
     return 0 ;
 }
+#else
+int
+search_record(filename,rptr,size,fptr,farg)
+char *filename ;
+char *rptr ;
+int size ;
+int (*fptr)() ;
+char *farg ;
+{
+    int fd ;
+    int id = 1 ;
+
+    if((fd = open(filename,O_RDONLY,0)) == -1)
+        return 0 ;
+    while(read(fd,rptr,size) == size) {
+        if((*fptr)(farg,rptr)) {
+            close(fd) ;
+            return id ;
+        }
+        id++ ;
+    }
+    close(fd) ;
+    return 0 ;
+}
+#endif
 
 int
 get_record_handle(fd,rptr,size,id)
@@ -756,7 +807,7 @@ int id1,id2,del_mode ;
             if (((savefhdr[i].accessed[0] & FILE_MARKED)&&del_mode!=2)||((id1==0)&&(!(savefhdr[i].accessed[1]&FILE_DEL))))
             {
                 memcpy(&readfhdr[keepcount],&savefhdr[i],sizeof(struct fileheader));
-		        readfhdr[keepcount].accessed[1]=readfhdr[keepcount].accessed[1]&(!FILE_DEL);
+		        readfhdr[keepcount].accessed[1]&=~FILE_DEL;
                 keepcount++;
                 remaincount++;
                 if (keepcount>=DEL_RANGE_BUF) {
@@ -765,7 +816,7 @@ int id1,id2,del_mode ;
 		    pos_write+=keepcount*sizeof(struct fileheader);
                     keepcount=0;
                 }
-            } else {
+            } else if (uinfo.mode!=RMAIL) {
                 memcpy(&delfhdr[delcount],&savefhdr[i],sizeof(struct fileheader));
                 delcount++;
                 if (delcount>=DEL_RANGE_BUF) {
@@ -797,7 +848,7 @@ int id1,id2,del_mode ;
     }
     ftruncate(fdr,remaincount*sizeof(struct fileheader));
     close(fdr);
-    if (delcount) {
+    if ((uinfo.mode!=RMAIL)&&delcount) {
         for (j=0;j<delcount;j++)
             cancelpost(currboard, currentuser.userid,
                    &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser.userid),0);

@@ -824,7 +824,8 @@ unsigned lvl;
 
 
     /* Bigman: 增加中文查询显示 2000.8.10 */
-    if( lvl & PERM_SYSOP ) strcpy(buf,"站务");
+    /*if( lvl & PERM_ZHANWU ) strcpy(buf,"站务");*/
+    if( (lvl & PERM_ANNOUNCE) && (lvl & PERM_OBOARDS) ) strcpy(buf,"站务");
     else  if( lvl & PERM_CHATCLOAK ) strcpy(buf,"元老");
     else if  ( lvl & PERM_BOARDS ) strcpy(buf,"版主");
     else {
@@ -4321,7 +4322,6 @@ int     autoappend;
     now=time(NULL);
     sprintf( genbuf, "%-32.32s - %s", fh->title, userid );
     strncpy( ph->title, genbuf, STRLEN );
-    now=time(NULL);
     ph->title[STRLEN-1]=0;
     ph->accessed[11]=now/(3600*24)%100; /*localtime(&now)->tm_mday;*/
     if (autoappend) {

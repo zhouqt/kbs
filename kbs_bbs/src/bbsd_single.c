@@ -306,6 +306,7 @@ int port; /* Thor.981206: 取 0 代表 *没有参数* */
     */
     sprintf(buf,"%d\n",getpid());
     write(lock_pid,buf,strlen(buf));
+    close(lock_pid);
 
     mport = port;
     if (port==6001) strcpy(code,"e");
@@ -322,8 +323,6 @@ int port; /* Thor.981206: 取 0 代表 *没有参数* */
 
     setgid(BBSGID);
     setuid(BBSUID);
-    sprintf(data, "%d\t\t%d\n", getpid(), port);
-    cat(PID_FILE, data);
 }
 
 

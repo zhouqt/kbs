@@ -203,7 +203,7 @@ do_userlist()
 {
     int i;
     int fd,len;
-    char  user_info_str[STRLEN*2],pagec;
+    char  user_info_str[256/*STRLEN*2*/],pagec;
     int   override;
     struct user_info *uentp;
     /*  _SHOW_ONLINE_USER */
