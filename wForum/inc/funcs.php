@@ -587,6 +587,7 @@ function show_nav($boardName='')
 	global $StartTime;
 	global $loginok;
 	global $currentuser;
+	global $currentuinfo;
 
   html_init();
   if ($loginok==1) {
@@ -630,6 +631,12 @@ function show_nav($boardName='')
 <?php  
 	}  else  {
 		echo '欢迎您 <b>'.$currentuser['userid'].'</b> ';
+		if ($currentuser["userlevel"] & BBS_PERM_CLOAK) {
+?>
+<img src=pic/navspacer.gif align=absmiddle>
+<a href="changecloak.php"><?php echo $currentuinfo["invisible"]?"现身":"隐身"; ?></a> 
+<?php
+		}
 ?>
 <img src=pic/navspacer.gif align=absmiddle>
 <a href="logon.php">重登陆</a> 

@@ -80,7 +80,7 @@ function doSearch($boardID,$boardName){
 	global $title,$title2,$title3,$author;
 	$result=bbs_searchtitle($boardName,$title,$title2,$title3,$author,intval($_REQUEST['dt']),isset($_REQUEST['mg']),isset($_REQUEST['ag']),isset($_REQUEST['og']));
 	$num=count($result);
-	if ($num==0) {
+	if ($num==0 || $result<=0) {
 		foundErr("<font color=#ff0000>没有找到您要的结果</font>");
 		return false;
 	}
