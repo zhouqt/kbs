@@ -44,6 +44,7 @@ int main()
     *(int *) (u_info->from + 36) = time(0);
     sprintf(filename, "tmp/%s.%d.tmp", getcurruserid(), getpid());
     f_append(filename, unix_string(content));
+    oldx = (struct fileheader*)malloc(sizeof(struct fileheader));
     if(oldfilename[0]){
     	int pos = search_record(dir, oldx, sizeof(fileheader), (RECORD_FUNC_ARG) cmpname, oldfilename);
     	if (pos <= 0) oldx = NULL;
@@ -53,6 +54,7 @@ int main()
     if (r <= 0)
         http_fatal("内部错误，无法发文");
     brc_update(currentuser->userid);
+    free(oldx);
     unlink(filename);
     sprintf(buf, "bbsdoc?board=%s", board);
     if (!junkboard(board)) {
