@@ -34,7 +34,7 @@ int check_BM(struct boardheader *bptr)
    	fcntl(fd, F_SETLKW, &ldata);
    	close(fd);
     
-    printf("版面名称: %s        版主: %s        停留时间: %d 秒", bptr->filename, bptr->title + 12);
+    printf("版面名称: %s        版主: %s        停留时间: %d 秒", bptr->filename, curuserid, data[0]);
     return 0;
 }
 

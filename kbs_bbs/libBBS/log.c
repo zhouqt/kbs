@@ -228,10 +228,12 @@ type - meaning
     	struct flock ldata;
 	struct stat buf;
 	struct boardheader * btemp;
-	char direct[PATHLEN];
+	char direct[PATHLEN], BM[PATHLEN];
 	btemp = getbcache(boardname);
 	if (btemp==NULL) return 0;
-	if(!chk_BM_instr(btemp->BM, id)) return 0;
+	strncpy(BM, btemp->BM, sizeof(BM)-1);
+	BM[sizeof(BM)-1] = '\0';
+	if(!chk_BM_instr(BM, id)) return 0;
 	sprintf(direct, "boards/%s/.bm.%s", boardname, id);
        if ((fd = open(direct, O_RDWR | O_CREAT, 0644)) == -1) return 0;
        ldata.l_type = F_RDLCK;
