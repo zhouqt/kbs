@@ -93,12 +93,10 @@ static void print_font_style(unsigned int style, buffered_output_t *output)
 
 	if (STYLE_ISSET(style, FONT_BG_SET))
 	{
-		bg = STYLE_GET_BG(style);
-		if (bg == 0)
-			bg = 8;
+		bg = 8;
 	}
 	else
-		bg = 0;
+		bg = STYLE_GET_BG(style);
 	sprintf(font_class, "f%01d%02d", bg, STYLE_GET_FG(style));
 	font_style[0] = '\0';
 	if (STYLE_ISSET(style, FONT_STYLE_UL))
@@ -181,7 +179,7 @@ static void generate_font_style(unsigned int *style, unsigned int *ansi_val,
 		else if (ansi_val[i] >= 40 && ansi_val[i] <= 47)
 		{
 			/* user explicitly specify background color */
-			STYLE_SET(*style, FONT_BG_SET); 
+			/* STYLE_SET(*style, FONT_BG_SET); */
 			color = ansi_val[i] - 40;
 			STYLE_SET_BG(*style, color);
 		}
