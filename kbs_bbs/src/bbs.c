@@ -51,6 +51,9 @@ char replytitle[STRLEN];
 
 char    *filemargin() ;
 /*For read.c*/
+int change_post_flag( int ent, struct fileheader *fileinfo, char *direct, int flag, int prompt);
+/* bad 2002.8.1 */
+
 int     auth_search_down();
 int     auth_search_up();
 int     t_search_down();
@@ -1071,54 +1074,7 @@ dele_digest(char* dname,char *direc)         /* 删除文摘内一篇POST, dname=post文
 int
 digest_post(int ent,struct fileheader *fhdr,char *direct)
 {
-
-    if(!chk_currBM(currBM,currentuser))       /* 权力检查 */
-    {
-        return DONOTHING ;
-    }
-    if (digestmode==true||digestmode==4||digestmode==5)      /* 文摘模式内 不能 添加文摘, 回收和纸篓模式也不能 */
-        return DONOTHING;
-
-    if (fhdr->accessed[0] & FILE_DIGEST)  /* 如果已经是文摘的话，则从文摘中删除该post */
-    {
-        fhdr->accessed[0]  = (fhdr->accessed[0] & ~FILE_DIGEST);
-        dele_digest(fhdr->filename,direct);
-    }
-    else
-    {
-        struct fileheader digest;
-        char *ptr, buf[64];
-
-        memcpy(&digest, fhdr, sizeof(digest));
-        digest.filename[0]='G';
-        strcpy(buf, direct);
-        ptr = strrchr(buf, '/') + 1;
-        ptr[0] = '\0';
-        sprintf(genbuf, "%s%s", buf, digest.filename);
-        if (dashf(genbuf))
-        {
-            fhdr->accessed[0] = fhdr->accessed[0] | FILE_DIGEST;
-            substitute_record(direct, fhdr, sizeof(*fhdr), ent);
-            return PARTUPDATE;
-        }
-        digest.accessed[0] = 0;
-        sprintf( &genbuf[512], "%s%s", buf, fhdr->filename);
-        link(&genbuf[512], genbuf);
-        strcpy(ptr, DIGEST_DIR);
-        if( get_num_records(buf,sizeof(digest) )>MAX_DIGEST)
-        {
-            move(3,0);
-            clrtobot();
-            move(4,10);
-            prints("抱歉，你的文摘文章已经超过 %d 篇，无法再加入...\n",MAX_DIGEST);
-            pressanykey();
-            return PARTUPDATE;
-        }
-        append_record(buf, &digest, sizeof(digest));  /* 文摘目录下添加 .DIR */
-        fhdr->accessed[0] = fhdr->accessed[0] | FILE_DIGEST;
-    }
-    substitute_record(direct, fhdr, sizeof(*fhdr), ent);  /* 版目录下 .DIR 改变 (添加了g标志) */
-    return PARTUPDATE;
+	return change_post_flag(ent, fhdr, direct, FILE_DIGEST_FLAG, 1);
 }
 
 #ifndef NOREPLY
@@ -1802,147 +1758,24 @@ int edit_title( int ent, struct fileheader *fileinfo, char *direct)
 /* Mark POST */
 int mark_post( int ent, struct fileheader *fileinfo, char *direct)
 {
-    int newent = 1;
-    char *ptr, buf[STRLEN];
-    struct fileheader mkpost;
-
-    if( !HAS_PERM(currentuser,PERM_SYSOP) )
-        if( !chk_currBM(currBM,currentuser) )
-        {
-            return DONOTHING;
-        }
-
-    if (!strcmp(currboard, "syssecurity")
-            ||!strcmp(currboard, "Filter")) /* Leeward 98.04.06 */
-        return DONOTHING ; /* Leeward 98.03.29 */
-    /*Haohmaru.98.10.12.主题模式下不允许mark文章*/
-    if (strstr(direct, "/.THREAD")) return DONOTHING;
-    if (fileinfo->accessed[0] & FILE_MARKED)
-        fileinfo->accessed[0] &= ~FILE_MARKED;
-    else fileinfo->accessed[0] |= FILE_MARKED;
-    strcpy(buf, direct);
-    ptr = strrchr(buf, '/') + 1;
-    ptr[0] = '\0';
-    sprintf( &genbuf[512], "%s%s", buf, fileinfo->filename);
-    if(!dashf( &genbuf[512]) ) newent = 0; /* 借用一下newent :PP   */
-    if(!newent || get_record(direct, &mkpost, sizeof(mkpost), ent) < 0
-            || strcmp(mkpost.filename, fileinfo->filename)) {
-        if(newent) /* newent = 0 说明文件已被删除,不用再search了   */
-            newent = search_record_back(direct, sizeof(struct fileheader),
-                                        ent, (RECORD_FUNC_ARG)strcmp, fileinfo, &mkpost, 1);
-        if(newent <= 0) {
-            move(2,0) ;
-            prints(" 文章列表发生变动，文章[%s]可能已被删除．\n", fileinfo->title) ;
-            clrtobot();
-            pressreturn() ;
-            return DIRCHANGED;
-        }
-        ent = newent;
-        /* file status may be changed by other BM, so use data *
-         * returned from search_record_back()                  */
-        if(fileinfo->accessed[0] & FILE_MARKED) mkpost.accessed[0] |= FILE_MARKED;
-        else mkpost.accessed[0] &= ~FILE_MARKED;
-        memcpy(fileinfo, &mkpost, sizeof(mkpost));
-    } else newent = 0;
-
-    substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
-    return (ent == newent) ? DIRCHANGED : PARTUPDATE;
+	return change_post_flag(ent, fileinfo, direct, FILE_MARK_FLAG, 0);
 }
 
 int
 noreply_post( int ent, struct fileheader *fileinfo, char *direct)
-	/*Haohmaru.99.01.01设定文章不可re */
 {
-    char ans[256];
-
-    if( !HAS_PERM(currentuser,PERM_OBOARDS) )
-    {
-        if (!chk_currBM(currBM,currentuser))
-            return DONOTHING;
-    }
-
-    /*Haohmaru.98.10.12.主题模式下不允许设定不可re文章*/
-    if (strstr(direct, "/.THREAD")) return DONOTHING;
-    if (fileinfo->accessed[1] & FILE_READ)
-    {
-        fileinfo->accessed[1] &= ~FILE_READ;
-        a_prompt( -1, " 该文章已取消不可re模式, 请按 Enter 继续 << ",ans );
-    }
-    else
-    {
-        fileinfo->accessed[1] |= FILE_READ;
-        a_prompt( -1, " 该文章已设为不可re模式, 请按 Enter 继续 << ",ans );
-
-        /* Bigman:2000.8.29 sysmail版处理添加版务姓名 */
-        if (!strcmp(currboard,"sysmail"))
-        {
-            sprintf(ans,"〖%s〗 处理: %s",currentuser->userid,fileinfo->title);
-            strncpy(fileinfo->title, ans, STRLEN);
-            fileinfo->title[STRLEN-1] = 0;
-        }
-    }
-
-    substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
-    return PARTUPDATE;
+	return change_post_flag(ent, fileinfo, direct, FILE_NOREPLY_FLAG, 1);
 }
 
 int noreply_post_noprompt( int ent, struct fileheader *fileinfo, char *direct)
-	/*Haohmaru.99.01.01设定文章不可re */
 {
-    char ans[256];
-
-    if( !HAS_PERM(currentuser,PERM_OBOARDS) )
-    {
-        if (!chk_currBM(currBM,currentuser))
-            return DONOTHING;
-    }
-
-    /*Haohmaru.98.10.12.主题模式下不允许设定不可re文章*/
-    if (strstr(direct, "/.THREAD")) return DONOTHING;
-    if (fileinfo->accessed[1] & FILE_READ)
-    {
-        fileinfo->accessed[1] &= ~FILE_READ;
-    }
-    else
-    {
-        fileinfo->accessed[1] |= FILE_READ;
-        /* Bigman:2000.8.29 sysmail版处理添加版务姓名 */
-        if (!strcmp(currboard,"sysmail"))
-        {
-            sprintf(ans,"〖%s〗 处理: %s",currentuser->userid,fileinfo->title);
-            strncpy(fileinfo->title, ans, STRLEN);
-            fileinfo->title[STRLEN-1] = 0;
-        }
-    }
-
-    substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
-    return PARTUPDATE;
+	return change_post_flag(ent, fileinfo, direct, FILE_NOREPLY_FLAG, 0);
 }
 
 int
 sign_post( int ent, struct fileheader *fileinfo, char *direct)
-	/*Bigman:2000.8.12 设定文章标志 */
 {
-    char ans[STRLEN];
-    if( !HAS_PERM(currentuser,PERM_OBOARDS) )
-    {
-        return (int)DONOTHING;
-    }
-
-    /*Bigman:2000.8.12 文摘方式下不能设定文章提醒标志 */
-    if (strstr(direct, "/.THREAD")) return DONOTHING;
-    if (fileinfo->accessed[0] & FILE_SIGN)
-    {
-        fileinfo->accessed[0] &= ~FILE_SIGN;
-        a_prompt( -1, " 该文章已撤消标记模式, 请按 Enter 继续 << ",ans );
-    }
-    else
-    {
-        fileinfo->accessed[0] |= FILE_SIGN;
-        a_prompt( -1, " 该文章已设为标记模式, 请按 Enter 继续 << ",ans );
-    }
-    substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
-    return PARTUPDATE;
+	return change_post_flag(ent, fileinfo, direct, FILE_SIGN_FLAG, 1);
 }
 int
 del_range(int ent,struct fileheader *fileinfo ,char *direct ,int mailmode)
@@ -2856,51 +2689,197 @@ int i_read_mail()
 int
 set_delete_mark( int ent , struct fileheader *fileinfo , char *direct )
 {
+	change_post_flag(ent, fileinfo, direct, FILE_DELETE_FLAG, 1);
+}
+
+int change_post_flag( int ent, struct fileheader *fileinfo, char *direct, int flag, int prompt)
+{
     /*---	---*/
-    int newent = 1;
+    int newent = 0, ret = 1;
     char *ptr, buf[STRLEN];
+    char ans[256];
     struct fileheader mkpost;
+    struct flock ldata;
+    int fd, size = sizeof(fileheader);
     /*---	---*/
 
-    if(digestmode!=false&&digestmode!=true)
+    if( !chk_currBM(currBM,currentuser) )
         return DONOTHING;
-    if( !HAS_PERM(currentuser,PERM_SYSOP) )
-        if( !chk_currBM(currBM,currentuser) )
-        {
-            return DONOTHING;
-        }
 
-    if (!strcmp(currboard, "syssecurity")
-            ||!strcmp(currboard, "Filter")) /* Leeward 98.04.06 */
+    if (flag==FILE_DIGEST_FLAG&&(digestmode==1||digestmode==4||digestmode==5))
+    /* 文摘模式内 不能 添加文摘, 回收和纸篓模式也不能 */
+        return DONOTHING;
+    if(flag==FILE_DELETE_FLAG&&digestmode!=0&&digestmode!=1)
+        return DONOTHING;
+    if ( (flag == FILE_MARK_FLAG || flag == FILE_DELETE_FLAG) &&
+        (!strcmp(currboard, "syssecurity")
+            ||!strcmp(currboard, "Filter")))
         return DONOTHING ; /* Leeward 98.03.29 */
-    /*Haohmaru.98.10.12.主题模式下不允许mark delete文章*/
-    if (strstr(direct, "/.THREAD")) return DONOTHING;
-    if (fileinfo->accessed[1]&FILE_DEL)
-        fileinfo->accessed[1]&=!FILE_DEL;
-    else
-        fileinfo->accessed[1]|=FILE_DEL;
-
+    /*Haohmaru.98.10.12.主题模式下不允许mark文章*/
+    if ((flag <= FILE_DELETE_FLAG)&&strstr(direct, "/.THREAD")) return DONOTHING;
+    
     strcpy(buf, direct);
     ptr = strrchr(buf, '/') + 1;
     ptr[0] = '\0';
     sprintf( &genbuf[512], "%s%s", buf, fileinfo->filename);
-    if(!dashf( genbuf) ) 
-    {
-            move(2,0) ;
-            prints(" 文章列表发生变动，文章[%s]垦被删除．\n", fileinfo->title) ;
-            clrtobot();
-            pressreturn() ;
-            return DIRCHANGED;
+    if(!dashf( &genbuf[512]) ) ret = 0; /* 借用一下newent :PP   */
+    
+    if (ret)
+    	if ((fd = open(direct,O_RDWR|O_CREAT,0644)) == -1)
+        	ret = 0;
+    if (ret) {
+        ldata.l_type = F_RDLCK;
+	    ldata.l_whence=0;
+    	ldata.l_len=size;
+	    ldata.l_start=size*(ent-1);
+	    if (fcntl(fd,F_SETLKW,&ldata)== -1) {
+    	    report("reclock error");
+        	close(fd);	/*---	period	2000-10-20	file should be closed	---*/
+        	ret = 0;
+	    }
     }
-    newent=substitute_record_comp(direct, fileinfo, sizeof(*fileinfo), ent,fileinfo,(RECORD_FUNC_ARG)strcmp,&mkpost);
-    if (newent)
-    {
-            move(2,0) ;
-            prints(" 文章列表发生变动，文章[%s]垦被删除．\n", fileinfo->title) ;
-            clrtobot();
-            pressreturn() ;
-            return DIRCHANGED;
+    if (ret) {
+        if (lseek(fd,size*(ent-1),SEEK_SET) == -1) {
+            report("subrec seek err");
+            /*---	period	2000-10-24	---*/
+            ldata.l_type=F_UNLCK;
+            fcntl(fd,F_SETLK,&ldata);
+            close(fd);
+            ret = 0;
+        }
+    }
+    if (ret) {
+    	if (get_record_handle(fd,&mkpost,sizeof(mkpost),ent) == -1) {
+        	report("subrec read err");
+            ret = 0;
+        }
+    	if (ret)
+    		if (strcmp(mkpost.filename, fileinfo->filename))
+    			ret = 0;
+        if (!ret){
+            newent = search_record_back(fd, sizeof(struct fileheader),
+                                        ent, (RECORD_FUNC_ARG)cmpfileinfoname, fileinfo->filename, &mkpost, 1);
+            ret = (newent > 0);
+	        if (ret) memcpy(fileinfo, &mkpost, sizeof(mkpost));
+	        else {
+	            ldata.l_type=F_UNLCK;
+	            fcntl(fd,F_SETLK,&ldata);
+	            close(fd);
+	        }
+	        ent = newent;
+        }
+    }
+    if (!ret) {
+        move(2,0) ;
+        prints(" 文章列表发生变动，文章[%s]可能已被删除．\n", fileinfo->title) ;
+        clrtobot();
+	refresh();
+        pressreturn() ;
+        return DIRCHANGED;
+    }
+    switch(flag){
+    	case FILE_MARK_FLAG:
+		    if (fileinfo->accessed[0] & FILE_MARKED)
+		        fileinfo->accessed[0] &= ~FILE_MARKED;
+		    else 
+		    	fileinfo->accessed[0] |= FILE_MARKED;
+    		break;
+    	case FILE_NOREPLY_FLAG:
+		    if (fileinfo->accessed[1] & FILE_READ) {
+		        fileinfo->accessed[1] &= ~FILE_READ;
+		        if (prompt) a_prompt( -1, " 该文章已取消不可re模式, 请按 Enter 继续 << ",ans );
+		    }
+		    else {
+		    	fileinfo->accessed[1] |= FILE_READ;
+		    	if (prompt) a_prompt( -1, " 该文章已设为不可re模式, 请按 Enter 继续 << ",ans );
+		        /* Bigman:2000.8.29 sysmail版处理添加版务姓名 */
+		        if (!strcmp(currboard,"sysmail"))
+		        {
+		            sprintf(ans,"〖%s〗 处理: %s",currentuser->userid,fileinfo->title);
+		            strncpy(fileinfo->title, ans, STRLEN);
+		            fileinfo->title[STRLEN-1] = 0;
+		        }
+		   	}
+    		break;
+    	case FILE_SIGN_FLAG:
+		    if (fileinfo->accessed[0] & FILE_SIGN) {
+		        fileinfo->accessed[0] &= ~FILE_SIGN;
+        		if (prompt) a_prompt( -1, " 该文章已撤消标记模式, 请按 Enter 继续 << ",ans );
+		    }
+		    else {
+		    	fileinfo->accessed[0] |= FILE_SIGN;
+	        	if (prompt) a_prompt( -1, " 该文章已设为标记模式, 请按 Enter 继续 << ",ans );
+		   	}
+    		break;
+    	case FILE_DELETE_FLAG:
+		    if (fileinfo->accessed[1] & FILE_DEL) 
+		        fileinfo->accessed[1] &= ~FILE_DEL;
+		    else
+		        fileinfo->accessed[1] |= FILE_DEL;
+    		break;
+    	case FILE_DIGEST_FLAG:
+		    if (fileinfo->accessed[0] & FILE_DIGEST)  /* 如果已经是文摘的话，则从文摘中删除该post */
+		    {
+		        fileinfo->accessed[0]  = (fileinfo->accessed[0] & ~FILE_DIGEST);
+		        dele_digest(fileinfo->filename,direct);
+		    }
+		    else
+		    {
+		        struct fileheader digest;
+		        char *ptr, buf[64];
+		
+		        memcpy(&digest, fileinfo, sizeof(digest));
+		        digest.filename[0]='G';
+		        strcpy(buf, direct);
+		        ptr = strrchr(buf, '/') + 1;
+		        ptr[0] = '\0';
+		        sprintf(genbuf, "%s%s", buf, digest.filename);
+		        if (dashf(genbuf))
+		        {
+		            fileinfo->accessed[0] = fileinfo->accessed[0] | FILE_DIGEST;
+		        }
+		        else {
+			        digest.accessed[0] = 0;
+			        sprintf( &genbuf[512], "%s%s", buf, fileinfo->filename);
+			        link(&genbuf[512], genbuf);
+			        strcpy(ptr, DIGEST_DIR);
+			        if( get_num_records(buf,sizeof(digest) )>MAX_DIGEST)
+			        {
+					    ldata.l_type=F_UNLCK;
+					    fcntl(fd,F_SETLK,&ldata);
+						close(fd);
+			            move(3,0);
+			            clrtobot();
+			            move(4,10);
+			            prints("抱歉，你的文摘文章已经超过 %d 篇，无法再加入...\n",MAX_DIGEST);
+			            pressanykey();
+			            return PARTUPDATE;
+			        }
+			        append_record(buf, &digest, sizeof(digest));  /* 文摘目录下添加 .DIR */
+			        fileinfo->accessed[0] = fileinfo->accessed[0] | FILE_DIGEST;
+			    }
+		    }
+        	break;
     }
 
-    return DIRCHANGED;
+    if (lseek(fd,size*(ent-1),SEEK_SET) == -1) {
+       	report("subrec seek err");
+	    ldata.l_type=F_UNLCK;
+	    fcntl(fd,F_SETLK,&ldata);
+		close(fd);
+	   	return DONOTHING;
+    }
+    if (safewrite(fd,fileinfo,size) != size){
+        report("subrec write err");
+	    ldata.l_type=F_UNLCK;
+	    fcntl(fd,F_SETLK,&ldata);
+		close(fd);
+	   	return DONOTHING;
+    }
+    
+    ldata.l_type=F_UNLCK;
+    fcntl(fd,F_SETLK,&ldata);
+	close(fd);
+	
+	return newent ? DIRCHANGED : PARTUPDATE;
 }

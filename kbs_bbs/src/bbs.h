@@ -330,6 +330,12 @@ typedef size_t socklen_t;
 /* added period 2000-09-11	4 FavBoard */
 #define FAVBOARDNUM     20
 
+/* added by bad 2002.8.1 */
+#define FILE_MARK_FLAG 0
+#define FILE_NOREPLY_FLAG 1
+#define FILE_SIGN_FLAG 2
+#define FILE_DELETE_FLAG 3
+#define FILE_DIGEST_FLAG 4
 
 #include "system.h"
 #include "vars.h"
