@@ -33,8 +33,10 @@
 	    html_error_quit("密码不规范, 密码长度应为 4-39 位! ");
 	
 	//generate activation code
-	if(!($activation=bbs_create_activation()))
-		html_error_quit("生成激活码错误，请联系管理员!");
+	if (!defined("SITE_ZIXIA")) {
+		if(!($activation=bbs_create_activation()))
+			html_error_quit("生成激活码错误，请联系管理员!");
+	}
 	
 	//create new id
 	$ret=bbs_createnewid($userid,$password,$nickname);
