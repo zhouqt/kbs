@@ -10,7 +10,7 @@
 	function pc_save_posts($subject,$body,$htmltag) {
 ?>
 <center>
-<table cellspacing="0" cellpadding="5" border="0" class="t1">
+<table cellspacing="0" cellpadding="5" border="0" class="t1" width="90%">
 <tr><td class="t2">请重新登录后再发表</td></tr>
 <tr><td class="t3">主题</td></tr>
 <tr><td class="t5"><?php echo html_format($subject); ?></td></tr>
@@ -241,6 +241,9 @@
 					case -8:
 						$error_alert = "对方服务器无响应,引用通告发送失败!";
 						break;
+				    case -9:
+				        $error_alert = "您的文章可能含有不当词汇，请等待管理员审核。";
+				        break;
 					default:
 				}
 				

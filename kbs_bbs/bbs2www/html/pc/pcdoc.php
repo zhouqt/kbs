@@ -76,10 +76,14 @@
 <?php		
 	}
 	
-	function display_art_list($link,$pc,$tag,$pur,$tid=0,$order="")
+	function display_art_list($link,$pc,$tag,$pur,$tid=0,$order="",$pno)
 	{
-		$query = "SELECT `nid` , `pid` ,  `created` , `emote` , `changed` , `comment` , `commentcount` , `subject` , `visitcount` , `htmltag` ,`trackbackcount` , `trackback` ".
-			" FROM nodes WHERE `access` = '".$tag."' AND `uid` = '".$pc["UID"]."'  AND `tid` = '".$tid."' ";
+		if ($pc['USER'] == '_filter' )
+	    	$query = "SELECT `fid` , `pid` , `state` , `username`, `uid` , `created` , `emote` , `changed` , `comment` , `commentcount` , `subject` , `visitcount` , `htmltag` ,`trackbackcount` , `trackback` ".
+	    		" FROM filter WHERE `state` = '".$tag."' ";
+		else
+	    	$query = "SELECT `nid` , `pid` ,  `created` , `emote` , `changed` , `comment` , `commentcount` , `subject` , `visitcount` , `htmltag` ,`trackbackcount` , `trackback` ".
+		    	" FROM nodes WHERE `access` = '".$tag."' AND `uid` = '".$pc["UID"]."'  AND `tid` = '".$tid."' ";
 		switch($order)
 		{
 			case "c":
@@ -104,16 +108,38 @@
 				$query.=" ORDER BY ";
 				
 		}	
-		$query .= "  `created` DESC ;";
+		$query .= "  `created` DESC  ";
 		
+		$pno = intval($pno);
+		if ($pno < 1) $pno = 1; 
+		$cnt = 20;
+		
+		$query .= " LIMIT ".(($pno-1)*$cnt).",".$cnt." ;";
+				
 		$result = mysql_query($query,$link);
 		$i = 0;
 ?>
 <form action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>" method="post">	
 <table cellspacing="0" cellpadding="3" border="0" width="99%" class="t1">
-
 <?php
-		if($pur > 2)
+		if ($pc['USER'] == '_filter' )
+		{
+?>
+<tr>
+	<td class="t2" width="30">序号</td>
+	<td class="t2" width="80">作者</td>
+	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=co&tid=".$tid; ?>" class="f3">状态</a></td>
+	<td class="t2">主题</td>
+	<td class="t2" width="120">
+	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=c&tid=".$tid; ?>" class="f3">创建</a>
+	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=v&tid=".$tid; ?>" class="f3">浏览</a></td>
+	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=r&tid=".$tid; ?>" class="f3">评论</a></td>
+	<td class="t2" width="15">过</td>
+	<td class="t2" width="15">滤</td>
+</tr>
+<?php
+		}
+		elseif($pur > 2)
 		{
 ?>
 <tr>
@@ -170,7 +196,23 @@
 				$c = "<img src='images/lock.gif' alt='被锁定的主题' border='0'>";
 			else
 				$c = "<img src='images/open.gif' alt='开放的主题' border='0'>";
-			if($pur > 2)
+		    
+		    if ($pc['USER'] == '_filter' )
+		    {
+		        echo "<tr>\n<td class='t3'>".$i."</td>\n".
+					"<td align=\"center\" class='t4'><a href=\"/bbsqry.php?userid=".$rows[username]."\">".html_format($rows[username])."</a></td>\n".
+					"<td class='t3'>".$c."</td>\n".
+					"<td class='t5'>";
+				echo ($rows[htmltag]==1)?"&nbsp;":"#";
+				echo "<img src=\"icon/".$rows[emote].".gif\" border=\"0\" align=\"absmiddle\">\n<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$rows[fid]."&order=".$order."&tid=".$tid."\">".html_format($rows[subject])."</a></td>\n".
+					"<td class='t3'>\n".time_format($rows[created])."</td>\n".
+					"<td class='t4'>".$rows[visitcount]."</td>\n".
+					"<td class='t3'>".$rows[commentcount]."</td>\n";
+				echo	"<td class='t3'><a href=\"pcadmin_flt.php?fid=".$rows[fid]."&filter=n\">过</a></td>\n".
+					"<td class='t4'><a href=\"pcadmin_flt.php?fid=".$rows[fid]."&filter=y\">滤</a></td>\n".
+					"</tr>\n";
+			}
+			elseif($pur > 2)
 			{
 				echo "<tr>\n<td class='t3'>".$i."</td>\n".
 					"<td align=\"center\" class='t4'><input type=\"checkbox\" name=\"art".$i."\" value=\"".$rows[nid]."\" class=\"b2\"></td>\n".
@@ -212,7 +254,15 @@
 		}
 ?>
 </table>
+<p align="center" class="f1">
 <?php
+		if ($pno > 1)
+		    echo "[<a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=0&tid=".$tid."\">第一页</a>]&nbsp;[<a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=0&tid=".$tid."&pno=".($pno-1)."\">上一页</a>]&nbsp;";
+		if ($cnt == $i)
+		    echo "[<a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=0&tid=".$tid."&pno=".($pno+1)."\">下一页</a>]";
+?>
+</p>
+<?php		    
 		if($pur > 2)
 			display_action_bar($tag,$tid);
 ?>
@@ -779,14 +829,15 @@ Blog名
 <table cellspacing="0" cellpadding="0" border="0" width="100%">
 <tr>
 <?php
-	if($tag == 0 || $tag == 1 || $tag ==2 )
-	{
+	if ($pc['USER']!='_filter')
+	    if($tag == 0 || $tag == 1 || $tag ==2 )
+	    {
 ?>
 	<td rowspan="2" align="middle" valign="top" width="150">
 	<?php display_blog_menu($pc,$tid,$tag,$blogMenus); ?>
 	</td>
 <?php
-	}
+	    }
 ?>
 	<td align="left" valign="top">
 	<table cellspacing="0" cellpadding="0" border="0" width="100%">
@@ -820,7 +871,7 @@ Blog名
 	if($tag == 3)
 		display_fav_folder($link,$pc,$pid,$pur,addslashes($_GET["order"]));
 	elseif($tag < 5 )
-		display_art_list($link,$pc,$tag,$pur,$tid,addslashes($_GET["order"]));
+		display_art_list($link,$pc,$tag,$pur,$tid,addslashes($_GET["order"]),$_GET["pno"]);
 	elseif($tag == 5)
 		display_friend_manage($pc,$f_err);
 	elseif($tag == 6)

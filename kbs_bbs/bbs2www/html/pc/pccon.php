@@ -53,37 +53,47 @@
 <?php		
 	}
 	
-	function display_navigation_bar($link,$pc,$nid,$pid,$tag,$spr,$order,$comment,$tid=0,$pur,$trackback , $subject , $recommend , $nodetype)
+	function display_navigation_bar($link,$pc,$nid,$pid,$tag,$spr,$order,$comment,$tid=0,$pur,$trackback , $subject , $recommend , $nodetype , $username , $state)
 	{
 		global $currentuser,$loginok,$pcconfig;
-		echo " <a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nid."&pid=".$pid."&tag=".$tag."&tid=".$tid."&p=p\">上一篇</a>\n";
-		echo " <a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nid."&pid=".$pid."&tag=".$tag."&tid=".$tid."&p=n\">下一篇</a>\n";
-		
-		if($comment != 0)
-		{
-			if($spr)
-				echo "<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nid."\">仅显示评论主题</a>\n";
-			else
-				echo "<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nid."&s=all\">展开所有评论</a>\n";
-			echo "<a href=\"pccom.php?act=pst&nid=".$nid."\">发表评论</a>\n";
+			
+    	if ($pc['USER'] == '_filter') {
+		    if ($state == 0)
+		    echo "<a href=\"pcadmin_flt.php?fid=".$nid."&filter=n\">通过</a>\n".
+		         "<a href=\"pcadmin_flt.php?fid=".$nid."&filter=y\">不通过</a>\n";
+		    echo "<a href=\"/bbspstmail.php?userid=".$username;
 		}
-		if($trackback && $tag == 0)
-			echo "<a href=\"/pc/pcmanage.php?userid=".$currentuser["userid"]."&act=post&tag=0&tbArtAddr=".urlencode("http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$pc["UID"]."&nid=".$nid."&s=all")."&tbTBP=".urlencode("http://".$pcconfig["SITE"]."/pc/tb.php?id=".$nid)."\" target=\"_blank\"><font color=red>拿该日志来写BLOG</font></a>\n";
-		if($pur == 3)
-			echo "<a href=\"pcmanage.php?userid=".$pc["USER"]."&act=edit&nid=".$nid."\">修改</a>\n";
-		if($recommend == 0 && $tag == 0)
-			echo "<a href=\"pcrec.php?nid=".$nid."\">推荐</a>\n";
-		if($tag==0)
-			echo "<a href=\"pcfwd.php?nid=".$nid."\">转载</a>\n";
-		if($trackback && $tag == 0)
-			echo 	"<a href=\"javascript:openScript('pctb.php?nid=".$nid."&uid=".$pc["UID"]."&subject=".base64_encode($subject)."',460 , 480)\">引用</a>\n";
-		if(pc_is_manager($currentuser) && $nodetype == 0)
-			echo "<a href=\"#\" onclick=\"bbsconfirm('pcadmin_blo.php?nid=".$nid."','确实要屏蔽此文吗(无法恢复)?')\">屏蔽</a>\n";
-		echo 	"<a href=\"";
-		if($pc["EMAIL"])
-			echo "mailto:".$pc["EMAIL"];
-		else
-			echo  "/bbspstmail.php?userid=".$pc["USER"]."&title=问候";
+		else {
+    		echo " <a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nid."&pid=".$pid."&tag=".$tag."&tid=".$tid."&p=p\">上一篇</a>\n";
+    	    echo " <a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nid."&pid=".$pid."&tag=".$tag."&tid=".$tid."&p=n\">下一篇</a>\n";
+    	
+    		if($comment != 0)
+    		{
+    			if($spr)
+    				echo "<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nid."\">仅显示评论主题</a>\n";
+    			else
+    				echo "<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nid."&s=all\">展开所有评论</a>\n";
+    			echo "<a href=\"pccom.php?act=pst&nid=".$nid."\">发表评论</a>\n";
+    		}
+    		if($trackback && $tag == 0)
+    			echo "<a href=\"/pc/pcmanage.php?userid=".$currentuser["userid"]."&act=post&tag=0&tbArtAddr=".urlencode("http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$pc["UID"]."&nid=".$nid."&s=all")."&tbTBP=".urlencode("http://".$pcconfig["SITE"]."/pc/tb.php?id=".$nid)."\" target=\"_blank\"><font color=red>拿该日志来写BLOG</font></a>\n";
+    		if($pur == 3)
+    			echo "<a href=\"pcmanage.php?userid=".$pc["USER"]."&act=edit&nid=".$nid."\">修改</a>\n";
+    		if($recommend == 0 && $tag == 0)
+    			echo "<a href=\"pcrec.php?nid=".$nid."\">推荐</a>\n";
+    		if($tag==0)
+    			echo "<a href=\"pcfwd.php?nid=".$nid."\">转载</a>\n";
+    		if($trackback && $tag == 0)
+    			echo 	"<a href=\"javascript:openScript('pctb.php?nid=".$nid."&uid=".$pc["UID"]."&subject=".base64_encode($subject)."',460 , 480)\">引用</a>\n";
+    		if(pc_is_manager($currentuser) && $nodetype == 0)
+    			echo "<a href=\"#\" onclick=\"bbsconfirm('pcadmin_blo.php?nid=".$nid."','确实要屏蔽此文吗(无法恢复)?')\">屏蔽</a>\n";
+    		echo 	"<a href=\"";
+    		if($pc["EMAIL"])
+    			echo "mailto:".$pc["EMAIL"];
+    		else
+    			echo  "/bbspstmail.php?userid=".$pc["USER"]."&title=问候";
+		
+		}
 		echo "\">写信问候</a>\n".
 			//"<a href=\"pccon.php?id=".$id."&nid=".$nid."\">转寄</a>\n".
 			//"<a href=\"pccon.php?id=".$id."&nid=".$nid."\">转载</a>\n".
@@ -233,8 +243,11 @@
 	$pur = $userPermission["pur"];
 	$tags = $userPermission["tags"];
 		
-		
-	$query = "SELECT * FROM nodes WHERE `nid` = '".$nid."' AND `uid` = '".$id."' AND type = 0 LIMIT 0 , 1 ;";
+	if ($pc['USER'] == '_filter')	
+	    $query = "SELECT * FROM filter WHERE `fid` = '".$nid."'  LIMIT 0 , 1 ;";
+	else
+	    $query = "SELECT * FROM nodes WHERE `nid` = '".$nid."' AND `uid` = '".$id."' AND type = 0 LIMIT 0 , 1 ;";
+
 	$result = mysql_query($query,$link);
 	$rows = mysql_fetch_array($result);
 	mysql_free_result($result);
@@ -246,14 +259,22 @@
 		exit();
 	}
 	
-	if(!$tags[$rows[access]])
-	{
-		pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
-		html_error_quit("对不起，您无权查看该文章!");
-		exit();
+	if ($pc['USER'] != '_filter') {
+    	if(!$tags[$rows[access]])
+    	{
+    		pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
+    		html_error_quit("对不起，您无权查看该文章!");
+    		exit();
+    	}
+    	$nid = $rows[nid];
+	    $tid = $rows[tid];
+	    $author = $pc['USER'];
 	}
-	$nid = $rows[nid];
-	$tid = $rows[tid];
+	else {
+	    $nid = $rows[fid];
+	    $tid = 0;
+	    $author = $rows[username];
+	}
 	
 	if($pur != 3 && $rows[nodetype] == 0)
 	{
@@ -306,7 +327,7 @@
 	</tr>
 	<tr>
 		<td width="20%" align="left" valign="top" class="t8">
-		作者：<?php echo "<a href=\"/bbsqry.php?userid=".$pc["USER"]."\">".$pc["USER"]."</a>"; ?><br/>
+		作者：<?php echo "<a href=\"/bbsqry.php?userid=".$author."\">".$author."</a>"; ?><br/>
 		发表时间：<br/>
 		<?php echo time_format($rows[created]); ?><br/>
 		更新时间：<br/>
@@ -322,6 +343,9 @@
 				echo "引用：".$rows[trackbackcount]."次<br/>";
 		?>
 		地址：<?php echo $rows[hostname]; ?>
+<?php
+    if ($pc['USER'] != '_filter') {
+?>
 		<br/><br/><br/>
 		<table cellspacing=0 cellpadding=5 width=95% border=0 class=t1>
 			<tr><td class=t3>
@@ -342,6 +366,9 @@
 			</ul>
 			</td></tr>
 		</table>
+<?php
+    }
+?>
 		</td>
 		<td width="80%" height="300" align="left" valign="top" class="t5">
 		<font class="<?php echo ($rows[htmltag])?"contentwithhtml":"content"; ?>">
@@ -351,7 +378,7 @@
 	</tr>
 	<tr>
 		<td colspan="2" align="right" class="t8">
-		<?php display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur,$rows[trackback],$rows[subject] , $rows[recommend] , $rows[nodetype]); ?>
+		<?php display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur,$rows[trackback],$rows[subject] , $rows[recommend] , $rows[nodetype] , $rows[username] , $rows[state]); ?>
 		</td>
 	</tr>
 	</table>
@@ -379,13 +406,14 @@
 	<td align="middle" class="f1" height="40" valign="middle">
 	<?php
 		if($re_num != 0 || $tb_num != 0)
-			display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur,$rows[trackback],$rows[subject] , $rows[recommend] , $rows[nodetype]); 
+			display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur,$rows[trackback],$rows[subject] , $rows[recommend] , $rows[nodetype] , $rows[username] , $rows[state]); 
 	?>
 	&nbsp;</td>
 </tr>
 <tr>
 	<td>
 	<?php 
+		if ($pc['USER'] != '_filter')
 		if($rows[comment] && $rows[type] == 0)
 		{
 			$alert = ($loginok != 1 || !strcmp($currentuser["userid"],"guest"))?TRUE:FALSE;

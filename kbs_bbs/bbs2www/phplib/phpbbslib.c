@@ -106,6 +106,7 @@ static PHP_FUNCTION(bbs_getbdes);
 static PHP_FUNCTION(bbs_checkpostperm);
 static PHP_FUNCTION(bbs_postarticle);
 static PHP_FUNCTION(bbs_edittitle);
+static PHP_FUNCTION(bbs_checkbadword);
 #ifdef HAVE_BRC_CONTROL
 static PHP_FUNCTION(bbs_brcaddread);
 #endif
@@ -297,6 +298,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_getboard, NULL)
 	PHP_FE(bbs_postarticle,NULL)
         PHP_FE(bbs_edittitle, NULL)
+        PHP_FE(bbs_checkbadword, NULL)
         PHP_FE(bbs_ann_traverse_check, NULL)
         PHP_FE(bbs_ann_get_board, NULL)
         PHP_FE(bbs_getboards, NULL)
@@ -4203,6 +4205,23 @@ static PHP_FUNCTION(bbs_edittitle)
 	/* update .DIR END   */
 	RETURN_LONG(0);
 }
+
+static PHP_FUNCTION(bbs_checkbadword)
+{
+    char *str;
+    int  str_len;
+    
+    int ac = ZEND_NUM_ARGS();
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &str, &str_len) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+#ifdef FILTER
+	if (check_badword_str(str, strlen(str)))
+		RETURN_TRUE;
+#endif    
+    RETURN_FALSE;
+}
+
 
 /*  function bbs_updatearticle(string boardName, string filename ,string text)  
  *  ¸üÐÂ±à¼­ÎÄÕÂ

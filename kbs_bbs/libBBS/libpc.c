@@ -145,7 +145,7 @@ int pc_load_usr( struct _pc_selusr **ps, char prefix)
 		return 0;
 	}
 
-	sprintf(sql, "SELECT COUNT(*) FROM users WHERE username LIKE \"%c%%\"", prefix);
+	sprintf(sql, "SELECT COUNT(*) FROM users WHERE pctype != 9 AND username LIKE \"%c%%\"", prefix);
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
 #ifdef BBSMAIN
@@ -175,7 +175,7 @@ int pc_load_usr( struct _pc_selusr **ps, char prefix)
 		return 0;
 	}
 
-	sprintf(sql, "SELECT username,corpusname,createtime FROM users WHERE username LIKE \"%c%%\" LIMIT %d", prefix,ret);
+	sprintf(sql, "SELECT username,corpusname,createtime FROM users WHERE pctype != 9 AND username LIKE \"%c%%\" LIMIT %d", prefix,ret);
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
 #ifdef BBSMAIN
@@ -231,7 +231,7 @@ int get_pc_users( struct pc_users * pu, char * userid )
 		return 0;
 	}
 
-	sprintf(sql, "SELECT * FROM users WHERE username=\"%s\"", userid);
+	sprintf(sql, "SELECT * FROM users WHERE pctype != 9 AND username=\"%s\"", userid);
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
 #ifdef BBSMAIN

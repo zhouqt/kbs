@@ -439,6 +439,7 @@ function pc_db_close($link)
 function pc_load_infor($link,$userid=FALSE,$uid=0)
 {
 	global $cssFile;
+	global $currentuser;
 	if (!$userid && !$uid)
 		return FALSE;
 	if($userid)
@@ -487,7 +488,11 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 		$cssFile = $pc["CSSFILE"];
 	else
 		$cssFile = "";
-		
+	
+	if($pc['pctype'] == 9) 
+	    if (!pc_is_manager($currentuser))
+            return false;
+	
 	return $pc;
 	}
 }
@@ -689,7 +694,13 @@ function display_blog_catalog()
 function pc_get_user_permission($currentuser,$pc)
 {
 	global $loginok;
-	if(pc_is_admin($currentuser,$pc) && $loginok == 1)
+	if($pc['USER']=='_filter' && pc_is_manager($currentuser))
+	{
+		$sec = array("待处理","已通过","未通过");
+		$pur = 1;
+		$tags = array(1,1,1,0,0,0,0,0);	    
+	}
+	elseif(pc_is_admin($currentuser,$pc) && $loginok == 1)
 	{
 		$sec = array("公开区","好友区","私人区","收藏区","删除区","设定好友","分类管理","参数设定");
 		$pur = 3;
@@ -994,8 +1005,9 @@ function pc_detect_trackbackpings($body,&$detecttbps)
 **         -6 :系统错误导致引用通告发送失败
 **         -7 :引用通告的url错误
 **         -8 :引用通告目标服务器连接超时
+**         -9 :被审核
 */
-function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$trackback,$subject,$body,$nodeType,$autodetecttbp=FALSE,$tbpUrl="",$tbpArt="")
+function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$trackback,$subject,$body,$nodeType,$autodetecttbp=FALSE,$tbpUrl="",$tbpArt="",$filtered=false)
 {
 	global $pcconfig;
 	
@@ -1045,70 +1057,86 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
 		$autodetecttbp = FALSE;
 	}
 	
-	if($tbpUrl && pc_tbp_check_url($tbpUrl) && $tbpArt) //若有引用通告的相关文章，加上链接
-	{
-		if($htmlTag)
-			$body .= "<br /><br /><strong>相关文章</strong><br />\n".
-			         "<a href='".$tbpArt."'>".$tbpArt."</a>";
-		else
-			$body .= "\n\n[相关文章]\n".$tbpArt;
-		
-	}
+	if (!$filtered) //未经过过滤检查的要先检查一次
+	    if (bbs_checkbadword($subject) || bbs_checkbadword($body))
+	        $into_filter = true;
+	
+	if (!$into_filter)
+    	if($tbpUrl && pc_tbp_check_url($tbpUrl) && $tbpArt) //若有引用通告的相关文章，加上链接
+    	{
+    		if($htmlTag)
+    			$body .= "<br /><br /><strong>相关文章</strong><br />\n".
+    			         "<a href='".$tbpArt."'>".$tbpArt."</a>";
+    		else
+    			$body .= "\n\n[相关文章]\n".$tbpArt;
+    		
+    	}
+	
 	$body = addslashes($body);
 	
 	//日志入库
-	$query = "INSERT INTO `nodes` (  `pid` , `tid` , `type` , `recuser` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`) ".
-	   	 "VALUES ( '".$pid."', '".$tid."' , '0', '', '".$emote."' ,  '".addslashes($_SERVER["REMOTE_ADDR"])."',NOW( ) , NOW( ), '".$pc["UID"]."', '".$comment."', '0', '".$subject."', '".$body."', '".$access."', '0' , '".$htmlTag."' ,'".$trackback."','0','".$nodeType."');";
+	if ($into_filter)
+	    $query = "INSERT INTO `filter` (  `pid` , `tid` , `type` , `state` , `recuser` , `emote` , `hostname` , `changed` , `created` , `uid` , `username` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`,`tbp_url`,`tbp_art`,`auto_tbp`) ".
+	   	     "VALUES ( '".$pid."', '".$tid."' , '0', '0' , '', '".$emote."' ,  '".addslashes($_SERVER["REMOTE_ADDR"])."',NOW( ) , NOW( ), '".$pc["UID"]."' , '".addslashes($pc["USER"])."' , '".$comment."', '0', '".$subject."', '".$body."', '".$access."', '0' , '".$htmlTag."' ,'".$trackback."','0','".$nodeType."','".addslashes($tbpUrl)."','".addslashes($tbpArt)."','".intval($autodetecttbp)."');";
+	else
+	    $query = "INSERT INTO `nodes` (  `pid` , `tid` , `type` , `recuser` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`) ".
+	   	     "VALUES ( '".$pid."', '".$tid."' , '0', '', '".$emote."' ,  '".addslashes($_SERVER["REMOTE_ADDR"])."',NOW( ) , NOW( ), '".$pc["UID"]."', '".$comment."', '0', '".$subject."', '".$body."', '".$access."', '0' , '".$htmlTag."' ,'".$trackback."','0','".$nodeType."');";
+	
 	if(!mysql_query($query,$link))
 		return -5;
 	
 	//公开区文章发布后更新文章数
-	if($access == 0)
-		pc_update_record($link,$pc["UID"],"+1");
+	if (!$into_filter)
+    	if($access == 0)
+    		pc_update_record($link,$pc["UID"],"+1");
 	
-	$detectnum = 0;
-	if($autodetecttbp) //自动发掘引用通告
-	{
-		$detecttbps = array();
-		$detectnum  = pc_detect_trackbackpings($body,$detecttbps);
+	if (!$into_filter) {
+    	$detectnum = 0;
+    	if($autodetecttbp) //自动发掘引用通告
+    	{
+    		$detecttbps = array();
+    		$detectnum  = pc_detect_trackbackpings($body,$detecttbps);
+    	}
+    	if($tbpUrl || $detectnum) //发送引用通告前提取NID
+    	{
+    		//提取日志的nid
+    		$query = "SELECT `nid` FROM nodes WHERE `subject` = '".$subject."' AND `body` = '".$body."' AND `uid` = '".$pc["UID"]."' AND `access` = '".$access."' AND `pid` = '".$pid."' AND `tid` = '".$tid."' ORDER BY nid DESC LIMIT 0,1;";
+    		$result = mysql_query($query,$link);
+    		$rows = mysql_fetch_array($result);
+    		
+    		if(!$rows)
+    			return -6;
+    		
+    		$thisNid = $rows[nid];
+    		mysql_free_result($result);
+    		
+    		if($htmlTag)
+    			$tbbody = undo_html_format(strip_tags($body));
+    		else
+    			$tbbody = $body;
+    		
+    		if(strlen($tbbody) > 255 )
+    			$tbbody = substr($tbbody,0,251)." ...";
+    		
+    		$tbarr = array(
+    				"title" => stripslashes($subject),
+    				"excerpt" => stripslashes($tbbody),
+    				"url" => "http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$pc["UID"]."&tid=".$tid."&nid=".$thisNid."&s=all",
+    				"blogname" => undo_html_format($pc["NAME"])
+    				);	
+    		
+    		if($tbpUrl) //发送引用通告
+    			pc_tbp_trackback_ping($tbpUrl,$tbarr);
+    		for($i = 0 ; $i < $detectnum ; $i ++) //发送自动发掘的引用通告
+    		{
+    			pc_tbp_trackback_ping($detecttbps[$i],$tbarr);
+    		}
+    	}
 	}
-	if($tbpUrl || $detectnum) //发送引用通告前提取NID
-	{
-		//提取日志的nid
-		$query = "SELECT `nid` FROM nodes WHERE `subject` = '".$subject."' AND `body` = '".$body."' AND `uid` = '".$pc["UID"]."' AND `access` = '".$access."' AND `pid` = '".$pid."' AND `tid` = '".$tid."' ORDER BY nid DESC LIMIT 0,1;";
-		$result = mysql_query($query,$link);
-		$rows = mysql_fetch_array($result);
-		
-		if(!$rows)
-			return -6;
-		
-		$thisNid = $rows[nid];
-		mysql_free_result($result);
-		
-		if($htmlTag)
-			$tbbody = undo_html_format(strip_tags($body));
-		else
-			$tbbody = $body;
-		
-		if(strlen($tbbody) > 255 )
-			$tbbody = substr($tbbody,0,251)." ...";
-		
-		$tbarr = array(
-				"title" => stripslashes($subject),
-				"excerpt" => stripslashes($tbbody),
-				"url" => "http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$pc["UID"]."&tid=".$tid."&nid=".$thisNid."&s=all",
-				"blogname" => undo_html_format($pc["NAME"])
-				);	
-		
-		if($tbpUrl) //发送引用通告
-			pc_tbp_trackback_ping($tbpUrl,$tbarr);
-		for($i = 0 ; $i < $detectnum ; $i ++) //发送自动发掘的引用通告
-		{
-			pc_tbp_trackback_ping($detecttbps[$i],$tbarr);
-		}
-	}
-	
-	return 0;
+	if ($into_filter)
+	    return -9;
+	else
+    	return 0;
 }
 
 //获取收藏夹根目录的pid
@@ -1155,7 +1183,7 @@ function pc_group_logs($link,$pc,$action,$content="")
 	if(!$action)
 		return FALSE;
 	
-	$action = "[".date("Y-m-d H:i:s")."@".$_SERVER["REMOTE_ADDR"]."]".$currentuser["userid"]." ".$action."#".$pc["UID"]."\n";
+	$action = "[".date("Y-m-d H:i:s")."@".$_SERVER["REMOTE_ADDR"]."#".$pc["UID"]."]".$currentuser["userid"]." ".$action."\n";
 	$pc_groupwokrs_logs = BBS_HOME . "/blog.log";
 	if(!($fn = fopen($pc_groupwokrs_logs,"a")))
 		return FALSE;
