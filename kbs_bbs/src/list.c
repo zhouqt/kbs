@@ -297,13 +297,14 @@ int do_userlist()
         resetcolor();
         move(y, x);
         sprintf(user_info_str,
-                " %4d%2s%s%-12.12s%s%s ", 
+                " %4d%2s%s%-12.12s%s%s "), 
+                i + 1 + page, (override) ? (uentp.invisible ? "ёё" : FRIENDSIG) : (uentp.invisible ? "ё╙" : ""),
                 (override) ? "[1;32m" : "", uentp.userid, (override) ? "[m" : "", 
                 (override && showexplain) ? "[1;31m" : "");
         prints("%s", user_info_str);
         resetcolor();
         move(y, 36);
-        sprintf(user_info_str, " %-16.16s %c %c %s%-16.16s[m%5.5s\n", i + 1 + page, (override) ? (uentp.invisible ? "ёё" : FRIENDSIG) : (uentp.invisible ? "ё╙" : ""), 
+        sprintf(user_info_str, " %-16.16s %c %c %s%-16.16s[m%5.5s\n",  
                 (((pagec == ' ' || pagec == 'O')) || HAS_PERM(currentuser, PERM_SYSOP)) ? uentp.from : FROMSTR,
                 pagec, msgchar(&uentp, &isfriend), 
                 (uentp.invisible == true)? "[34m" : "", modestring(uentp.mode, uentp.destuid, 0,        /* 1->0 ╡╩отй╬адлЛ╤тоС╣х modified by dong 1996.10.26 */
