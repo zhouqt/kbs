@@ -43,7 +43,7 @@ int FFLL = 0;
 int Anony;
 char genbuf[1024];
 char quote_title[120], quote_board[120];
-char quote_file[120], quote_user[120];
+char quote_user[120];
 struct friends_info *topfriend;
 
 #ifndef NOREPLY
@@ -208,11 +208,6 @@ void setqtitle(char *stitle)
         ReplyPost[STRLEN - 1] = 0;
         ReadPost[STRLEN - 1] = 0;
     }
-}
-
-void setquotefile(char filepath[])
-{
-    strcpy(quote_file, filepath);
 }
 
 /*Add by SmallPig*/
@@ -630,10 +625,13 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     if ((t = strrchr(buf, '/')) != NULL)
         *t = '\0';
     sprintf(genbuf, "%s/%s", buf, fileinfo->filename);
+/*
     strcpy(quote_file, genbuf);
+*/
     strcpy(quote_board, currboard);
     strncpy(quote_title, fileinfo->title, 118);
-    quote_file[119] = fileinfo->filename[STRLEN - 2];
+/*    quote_file[119] = fileinfo->filename[STRLEN - 2];
+*/
     strncpy(quote_user, fileinfo->owner, IDLEN);
     quote_user[IDLEN] = 0;
 
@@ -1026,7 +1024,9 @@ int digest_post(int ent, struct fileheader *fhdr, char *direct)
 
 #ifndef NOREPLY
 int do_reply(struct fileheader *fileinfo)
-{                               /* reply POST */
+/* reply POST */
+{                          
+	char buf[255];
     if (fileinfo->accessed[1] & FILE_READ) {    /*Haohmaru.99.01.01.文章不可re */
         clear();
         move(3, 0);
@@ -1034,8 +1034,9 @@ int do_reply(struct fileheader *fileinfo)
         pressreturn();
         return FULLUPDATE;
     }
+    setbfile(buf, currboard, fptr->filename);
     strcpy(replytitle, fileinfo->title);
-    post_article();
+    post_article(buf);
     replytitle[0] = '\0';
     return FULLUPDATE;
 }
@@ -1146,9 +1147,8 @@ void do_quote(char *filepath, char quote_mode, char* q_file,char* q_user)
 
 int do_post()
 {                               /* 用户post */
-    *quote_file = '\0';
     *quote_user = '\0';
-    return post_article();
+    return post_article("");
 }
 
  /*ARGSUSED*/ int post_reply(int ent, struct fileheader *fileinfo, char *direct)
@@ -1185,7 +1185,7 @@ int do_post()
     /* find the author */
     if (strchr(quote_user, '.')) {
         genbuf[0] = '\0';
-        fp = fopen(quote_file, "r");
+        fp = fopen(q_file, "r");
         if (fp != NULL) {
             fgets(genbuf, 255, fp);
             fclose(fp);
@@ -1247,7 +1247,7 @@ int show_board_notes(char bname[30])
     return -1;
 }
 
-int post_article()
+int post_article(char* q_file)
 {                               /*用户 POST 文章 */
     struct fileheader post_file;
     char filepath[STRLEN];
@@ -1430,13 +1430,13 @@ int post_article()
         local_article = 0;
     else
         local_article = 1;
-    if (!strcmp(post_file.title, buf) && quote_file[0] != '\0')
-        if (quote_file[119] == 'L')
+    if (!strcmp(post_file.title, buf) && q_file[0] != '\0')
+        if (q_file[119] == 'L')
             local_article = 1;
 
     modify_user_mode(POSTING);
 
-    do_quote(filepath, include_mode,quote_file,quote_user);   /*引用原文章 */
+    do_quote(filepath, include_mode,q_file,quote_user);   /*引用原文章 */
 
     strcpy(quote_title, save_title);
     strcpy(quote_board, currboard);
@@ -1955,8 +1955,6 @@ int sequent_messages(struct fileheader *fptr, int *continue_flag)
             clear();
             return 0;
         }
-        setbfile(genbuf, currboard, fptr->filename);
-        strcpy(quote_file, genbuf);
         strncpy(quote_user, fptr->owner, IDLEN);
         quote_user[IDLEN] = 0;
         ansimore(genbuf, false);
@@ -2263,9 +2261,6 @@ int Goodbye()
     int i, num_sysop, choose, logouts, mylogout = false;
     FILE *sysops;
     long Time = 10;             /*Haohmaru */
-
-    /* Add by SmallPig */
-    strcpy(quote_file, "");
 
 /*---	显示备忘录的关掉该死的活动看板	2001-07-01	---*/
     modify_user_mode(READING);

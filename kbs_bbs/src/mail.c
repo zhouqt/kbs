@@ -49,7 +49,7 @@ int cmpinames();                /* added by Leeward 98.04.10 */
 
 extern int nf;
 extern int numofsig;
-extern char quote_file[], quote_user[];
+extern char quote_user[];
 char *sysconf_str();
 char currmaildir[STRLEN];
 
@@ -237,8 +237,7 @@ int mailall()
                     break;
                 }
             }
-            setquotefile("");
-            do_quote(fname, include_mode,quote_file,quote_user);
+            do_quote(fname, include_mode,"",quote_user);
             if (vedit(fname, true) == -1) {
                 in_mail = false;
                 unlink(fname);
@@ -1247,7 +1246,6 @@ int g_send()
         return DONOTHING;
 
     modify_user_mode(SMAIL);
-    *quote_file = '\0';
     clear();
     sethomefile(maillists, currentuser->userid, "maillist");
     cnt = listfilecontent(maillists);
