@@ -307,15 +307,13 @@ function usersysinfo($info){
 } 
 
 function showUserInfo(){
+	global $fromhost;
 ?>
 <table cellpadding=5 cellspacing=1 class=TableBorder1 align=center style="word-break:break-all;" width="97%">
 <TR><Th align=left colSpan=2 height=25>-=&gt; 用户来访信息</Th></TR>
 <TR><TD vAlign=top class=TableBody1 height=25 width=100% >
 <?php
-$userip = $_SERVER["HTTP_X_FORWARDED_FOR"];
-$userip2 = $_SERVER["REMOTE_ADDR"];
-if ($userip=='') $userip = $userip2;
-echo '您的真实ＩＰ是：'. $userip. '，';
+echo '您的真实ＩＰ是：'. trim($fromhost). '，';
 echo usersysinfo($_SERVER["HTTP_USER_AGENT"]);
 
 ?>

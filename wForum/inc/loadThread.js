@@ -149,7 +149,15 @@ function showSec(isFold, isFav, boards, secNum, isHide) {
 				} else {
 					str += '主题：<a href="disparticle.php?boardName=' + boards[i].boardName + '&ID=' + boards[i].lastID + '">' + boards[i].lastTitle + ' &nbsp;</a><BR>作者：<a href="dispuser.php?id=' + boards[i].lastOwner + '" target=_blank>' + boards[i].lastOwner + ' </a><BR>日期：' + boards[i].lastPosttime + '&nbsp;<a href="disparticle.php?boardName=' + boards[i].boardName + '&ID=' + boards[i].lastID + '"><IMG border=0 src="pic/lastpost.gif" title="转到：' + boards[i].lastTitle + ' "> </a>';
 				}
-				str += '</TD></TR><TR><TD width=*><FONT face=Arial><img src=pic/forum_readme.gif align=middle> ' + boards[i].boardName + '</FONT></TD></TR><TR><TD class=TableBody2 height=20 width=*>版主：' + (boards[i].bm == '' ? '暂无' : boards[i].bm) + ' </TD><td width=40 align=center class=TableBody2>&nbsp;</td><TD vAlign=middle class=TableBody2 width=200>';
+				str += '</TD></TR><TR><TD width=*><FONT face=Arial><img src=pic/forum_readme.gif align=middle> ' + boards[i].boardName + '</FONT>';
+				if (!boards[i].isBoardGroup && !boards[i].isFavGroup) {
+					str += '&nbsp;&nbsp;[在线：' + boards[i].currentusers + ']';
+				}
+				str += '</TD></TR><TR><TD class=TableBody2 height=20 width=*>';
+				if (!boards[i].isFavGroup && !boards[i].isBoardGroup) {
+					str += '版主：' + (boards[i].bm == '' ? '暂无' : boards[i].bm);
+				}
+				str += ' </TD><td width=40 align=center class=TableBody2>&nbsp;</td><TD vAlign=middle class=TableBody2 width=200>';
 				if (!boards[i].isFavGroup && !boards[i].isBoardGroup) {
 					str += '<table width=100% border=0><tr><td width=25% vAlign=middle><img src=pic/forum_today.gif alt=今日帖 align=absmiddle>&nbsp;<font color=#FF0000>' + boards[i].todayNum + '</font></td><td width=30% vAlign=middle><img src=pic/forum_topic.gif alt=主题 border=0  align=absmiddle>&nbsp;' + boards[i].nThreads + '</td><td width=45% vAlign=middle><img src=pic/forum_post.gif alt=文章 border=0 align=absmiddle>&nbsp;' + boards[i].nArticles + '</td></tr></table>';
 				}
