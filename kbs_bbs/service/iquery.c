@@ -315,7 +315,7 @@ static int choose_file_show(struct _select_def *conf, int ii)
             prints("\n"); clrtoeol();
             return SHOW_CONTINUE;
         }
-        while(t<180) {
+        while(t<180&&t<fsize) {
             memset(out2, 0, fsize);
             t=0;
             for(k=0;k<fsize;k++) 
