@@ -4,11 +4,11 @@
 	 * $Id$
 	 */
 	require("funcs.php");
-	if ($loginok != 1)
+	if ($loginok != 1) {
 		html_nologin();
-	else
-	{
-		html_init("gb2312");
+		exit;
+	}
+		html_init("gb2312","","",1);
 		if (! bbs_can_send_mail() )
 			html_error_quit("您不能发送信件");
 		if (isset($_GET["board"]))
@@ -35,14 +35,63 @@
 				html_error_quit("错误的文章..");
 		}
 		$brd_encode = urlencode($brdarr["NAME"]);
-	}
+
+		//system mailboxs
+		$mail_box = array(".DIR",".SENT",".DELETED");
+		$mail_boxtitle = array("收件箱","发件箱","垃圾箱");
+
+		//custom mailboxs
+		$mail_cusbox = bbs_loadmaillist($currentuser["userid"]);
+		$i = 2;
+		if ($mail_cusbox != -1){
+			foreach ($mail_cusbox as $mailbox){
+				$i++;
+				$mail_box[$i] = $mailbox["pathname"];
+				$mail_boxtitle[$i] = $mailbox["boxname"];
+				//$mail_boxnums[$i] = bbs_getmailnum2(bbs_setmailfile($currentuser["userid"],$mailbox["pathname"]));
+				//$totle_mails+= $mail_boxnums[$i];
+				}
+			}
+		$mailboxnum = $i + 1;
 ?>
 <body>
+<p align="left" class="b2">
+<a href="bbssec.php" class="b2"><?php echo BBS_FULL_NAME; ?></a>
+-
+<a href="bbsmail.php">
+<?php echo $currentuser["userid"]; ?>的邮箱
+</a></p>
 <center>
-<?php echo BBS_FULL_NAME; ?> -- 寄语信鸽 [使用者: <?php echo $currentuser["userid"]; ?>]
-<hr class="default" />
+<table border="0" width="750" cellspacing="0" cellpadding="0">
+	<tr>
+	<td align="center" valign="middle" background="/images/m2.gif" width="80" height="26">
+	<a href="bbspstmail.php" class="mb1">写邮件</a>
+	</td>
+<?php
+	for($i=0;$i<$mailboxnum;$i++){
+?>
+<td align="center" valign="middle" background="/images/m1.gif" width="80" height="26">
+<a href="bbsmailbox.php?path=<?php echo $mail_box[$i];?>&title=<?php echo urlencode($mail_boxtitle[$i]);?>" class="mb1"><?php echo htmlspecialchars($mail_boxtitle[$i]); ?></a>
+</td>
+<?php		
+	}
+?>
+		<td width="<?php echo (int)(670-80*$mailboxnum);	?>"><img src="/images/empty.gif"></td>
+	</tr>
+	<tr>
+		<td style="{background-image: url('/images/m3.gif'); background-repeat:repeat-y; background-color: #CEE3F8;}"><img src="/images/empty.gif"></td>
+		<td colspan="<?php echo $mailboxnum + 1;	?>" align="right" background="/images/m10.gif"><img src="/images/m12.gif"></td>
+	</tr>
+	<tr>
+		<td height=200 colspan="<?php echo $mailboxnum+2;	?>">
+		<table width="100%" cellspacing="0" cellpadding="0">
+			<tr>
+				<td width="7" background="/images/m3.gif"><img src="/images/empty.gif"></td>
+				<td background="/images/m6.gif" height="400" align="center" valign="top">
+
+<center>
 <form name="postform" method="post" action="/cgi-bin/bbs/bbssndmail">
-<table border="1">
+<table>
 <tr>
 <td>
 发信人: <?php echo $currentuser["userid"]; ?><br />
@@ -135,4 +184,26 @@
 <input type="reset" value="清除" />
 <input type="button" value="返回" onclick="window.location.href='bbsmail.php'" />
 </form></div></table>
-</html>
+
+				</td>
+				<td width="7" background="/images/m4.gif"><img src="/images/empty.gif"></td>
+			</tr>
+		
+		</table>
+		</td>
+	<tr>
+		
+		<td colspan="<?php echo $mailboxnum+2;	?>">
+		<table width="100%" cellspacing="0" cellpadding="0"><tr>
+			<td width="9" height="26"><img src="/images/m7.gif"></td>
+			<td background="/images/m5.gif" height="26"><img src="/images/empty.gif"></td>
+			<td width="9" height="26"><img src="/images/m8.gif"></td>
+		</tr></table>
+		</td>
+	</tr>
+</table><br>
+</center>
+<?php
+	html_normal_quit();
+?>
+
