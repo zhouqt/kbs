@@ -2393,7 +2393,7 @@ int edit_title(int ent, struct fileheader *fileinfo, char *direct)
 #endif
         strcpy(tmp2, fileinfo->title);  /* Do a backup */
         /*
-         * Changed by KCN,disable color title 
+         * Changed by KCN,disable color title
          */
         {
             unsigned int i;
@@ -2406,16 +2406,16 @@ int edit_title(int ent, struct fileheader *fileinfo, char *direct)
             fileinfo->title[i] = 0;
         }
         /*
-         * strcpy(fileinfo->title,buf); 
+         * strcpy(fileinfo->title,buf);
          */
         strcpy(tmp, direct);
         if ((t = strrchr(tmp, '/')) != NULL)
             *t = '\0';
         sprintf(genbuf, "%s/%s", tmp, fileinfo->filename);
 
-        add_edit_mark(genbuf, 2, buf);
+        if(strcmp(tmp2,buf)) add_edit_mark(genbuf, 2, buf);
         /*
-         * Leeward 99.07.12 added below to fix a big bug 
+         * Leeward 99.07.12 added below to fix a big bug
          */
         setbdir(digestmode, buf, currboard);
         if ((fd = open(buf, O_RDONLY, 0)) != -1) {
@@ -2432,7 +2432,7 @@ int edit_title(int ent, struct fileheader *fileinfo, char *direct)
         if (0 == i)
             return PARTUPDATE;
         /*
-         * Leeward 99.07.12 added above to fix a big bug 
+         * Leeward 99.07.12 added above to fix a big bug
          */
 
         substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
