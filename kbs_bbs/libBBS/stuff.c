@@ -898,6 +898,8 @@ int bad_user_id( char    *userid)
 
     i = 0;
     ptr = userid;
+    if (!strcasecmp(userid,"deliver")||!strcasecmp(userid,"new"))
+    	return 1;
     while( (ch = *ptr++) != '\0' ) {
         i++;
         if( !isalnum( ch ) && ch != '_' )
