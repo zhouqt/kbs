@@ -120,6 +120,19 @@ int setboardtitle(char *board, int i)
         return -1;
 }
 
+int get_nextid(char* boardname)
+{
+    struct boardheader* bstr;
+    int fd,ret;
+
+    fd = bcache_lock();
+    bstr=getbcache(boardname);
+    bstr->nowid++;
+    ret=bstr->nowid;
+    bcache_unlock(1);
+    return ret;
+}
+
 void resolve_boards()
 {
     int boardfd;

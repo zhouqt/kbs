@@ -553,12 +553,9 @@ int post_file(struct userec *user, char *fromboard, char *filename, char *nboard
 int after_post(struct userec *user, struct fileheader *fh, char *boardname, struct fileheader *re)
 {
     char buf[256];
-    struct boardheader * bstr, btmp;
     int fd, err=0, nowid=0;
 
     setbfile(buf, boardname, DOT_DIR);
-    bstr = getbcache(boardname);
-    memcpy(&btmp, bstr, sizeof(btmp));
 
     if ((fd = open(buf, O_WRONLY | O_CREAT, 0664)) == -1) {
         perror(buf);
@@ -566,9 +563,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     }
     if(!err) {
 	    flock(fd, LOCK_EX);
-	    btmp.nowid++;
-	    set_board(getbnum(boardname),&btmp);
-	    nowid = bstr->nowid;
+	    nowid = get_nextid(boardname);
 	    fh->id = nowid;
 	    if(re==NULL){
 		fh->groupid = fh->id;
