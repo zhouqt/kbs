@@ -186,7 +186,7 @@ extern "C" {
 /* define in boards.c */
     void detach_boards();
     int anonymousboard(char *board);
-    int load_boards(char *boardprefix);
+    int load_boards(struct newpostdata *nbrd,char *boardprefix,int pos,int len,bool sort,bool yank_flag);
     void brc_clear_new_flag(unsigned fid);    /* 清除版面的到这篇文章未读标记 */
 
     int getfavnum();

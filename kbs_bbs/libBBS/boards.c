@@ -361,118 +361,6 @@ void save_zapbuf()
 }
 #endif
 
-int load_boards(char *boardprefix)
-{
-    struct boardheader *bptr;
-    struct newpostdata *ptr;
-    int n, k;
-
-    if (zapbuf == NULL) {
-        load_zapbuf();
-    }
-    brdnum = 0;
-    if (yank_flag == 2) {
-        for (n = 0; n < favbrd_list_t; n++)
-            if (favbrd_list[n].flag == -1 && favbrd_list[n].father == favnow) {
-                ptr = &nbrd[brdnum++];
-                ptr->name = NullChar;
-                ptr->title = favbrd_list[n].title;
-                ptr->dir = 1;
-                ptr->BM = NullChar;
-                ptr->flag = -1;
-                ptr->tag = n;
-                ptr->pos = 0;
-                ptr->total = 0;
-                ptr->unread = 1;
-                for (k = 0; k < favbrd_list_t; k++)
-                    if (favbrd_list[k].father == n)
-                        ptr->total++;
-                ptr->zap = 0;
-            } else if (favbrd_list[n].father == favnow) {
-                bptr = (struct boardheader *) getboard(favbrd_list[n].flag + 1);
-                if (!bptr)
-                    continue;
-#ifndef _DEBUG_
-                if (!*bptr->filename)
-                    continue;
-#endif /*_DEBUG_*/
-                if (!check_see_perm(currentuser,bptr))
-                    continue;
-                if (boardprefix != NULL && strchr(boardprefix, bptr->title[0]) == NULL && boardprefix[0] != '*')
-                    continue;
-                if (boardprefix != NULL && boardprefix[0] == '*')
-                    if (!strstr(bptr->title, "●") && !strstr(bptr->title, "⊙")
-                        && bptr->title[0] != '*')
-                        continue;
-                if (boardprefix == NULL && bptr->title[0] == '*')
-                    continue;
-
-                ptr = &nbrd[brdnum++];
-                ptr->name = bptr->filename;
-                ptr->dir = 0;
-                ptr->title = bptr->title;
-                ptr->BM = bptr->BM;
-                ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
-                ptr->tag = n;
-                ptr->pos = favbrd_list[n].flag;
-                ptr->total = -1;
-                ptr->zap = (zapbuf[favbrd_list[n].flag] == 0);
-            }
-    } else
-        for (n = 0; n < get_boardcount(); n++) {
-            bptr = (struct boardheader *) getboard(n + 1);
-            if (!bptr)
-                continue;
-#ifndef _DEBUG_
-            if (!*bptr->filename)
-                continue;
-#endif /*_DEBUG_*/
-            if (!check_see_perm(currentuser,bptr)) {
-                continue;
-            }
-            if (boardprefix != NULL && strchr(boardprefix, bptr->title[0]) == NULL && boardprefix[0] != '*')
-                continue;
-            if (boardprefix != NULL && boardprefix[0] == '*') {
-                if (!strstr(bptr->title, "●") && !strstr(bptr->title, "⊙")
-                    && bptr->title[0] != '*')
-                    continue;
-            }
-            if (boardprefix == NULL && bptr->title[0] == '*')
-                continue;
-        /*---	period	2000-09-11	4 FavBoard	---*/
-            if ((1 == yank_flag || (!yank_flag && (zapbuf[n] != 0 || (bptr->level & PERM_NOZAP))))) {
-                ptr = &nbrd[brdnum++];
-                ptr->dir = 0;
-                ptr->name = bptr->filename;
-                ptr->title = bptr->title;
-                ptr->BM = bptr->BM;
-                ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
-                ptr->pos = n;
-                ptr->total = -1;
-                ptr->zap = (zapbuf[n] == 0);
-            }
-        }
-    if (yank_flag == 2 && brdnum == 0) {
-        ptr = &nbrd[brdnum++];
-        ptr->name = NullChar;
-        ptr->dir = 1;
-        ptr->title = EmptyChar;
-        ptr->BM = NullChar;
-        ptr->tag = -1;
-        ptr->flag = -1;
-        ptr->pos = -1;
-        ptr->total = 0;
-        ptr->unread = 0;
-        ptr->zap = 0;
-    }
-    if (brdnum == 0 && !yank_flag && boardprefix == NULL) {
-        brdnum = -1;
-        yank_flag = 1;
-        return -1;
-    }
-    return 0;
-}
-
 void brc_update(char *userid)
 {
     int i;
@@ -1108,3 +996,94 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort)
     }
     return brdnum;
 }
+
+int load_boards(struct newpostdata *nbrd,char *boardprefix,int pos,int len,bool sort,bool yank_flag)
+{
+    int n, k;
+    struct boardheader *bptr;
+    int brdnum;
+    struct newpostdata *ptr;
+    int curcount;
+    char** namelist;
+    char** titlelist;
+    int* indexlist;
+
+    brdnum = 0;
+    curcount=0;
+    if (zapbuf == NULL) {
+        load_zapbuf();
+    }
+    if (sort) {
+    	namelist=(char**)malloc(sizeof(char**)*(pos+len-1));
+    	titlelist=(char**)malloc(sizeof(char**)*(pos+len-1));
+    	indexlist=(int*)malloc(sizeof(int*)*(pos+len-1));
+    }
+    for (n = 0; n < get_boardcount(); n++) {
+        bptr = (struct boardheader *) getboard(n + 1);
+        if (!bptr)
+            continue;
+        if (!*bptr->filename)
+            continue;
+        if (!check_see_perm(currentuser,bptr)) {
+            continue;
+        }
+        if (boardprefix != NULL && strchr(boardprefix, bptr->title[0]) == NULL && boardprefix[0] != '*')
+            continue;
+        if (yank_flag || zapbuf[n] != 0 || (bptr->level & PERM_NOZAP)) {
+            brdnum++;
+            if (!sort) {
+                if (brdnum<pos||brdnum>=pos+len)
+                	continue;
+                ptr = &nbrd[brdnum-pos];
+                ptr->dir = 0;
+                ptr->name = bptr->filename;
+                ptr->title = bptr->title;
+                ptr->BM = bptr->BM;
+                ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
+                ptr->pos = n;
+                ptr->total = -1;
+                ptr->zap = (zapbuf[n] == 0);
+            } else {  //如果是要排序，那么应该先排序缓存一下
+                int i;
+                int j;
+                for (i=0;i<curcount;i++) {
+                	int ret;
+                	ret = strcasecmp(namelist[i],bptr->filename);
+                	if (ret>0) break;
+                	if (ret==0&&(strcasecmp(titlelist[i],bptr->title)>0)) break;
+                }
+                if ((i==curcount)&&curcount>=pos+len-1) //已经在范围之外乐
+                	continue;
+                else
+                	   for (j=(curcount>=pos+len-1)?pos+len-2:curcount;j>i;j--) {
+                			namelist[j]=namelist[j-1];
+                			titlelist[j]=titlelist[j-1];
+                			indexlist[j]=indexlist[j-1];
+                 	   }
+                namelist[i]=bptr->filename;
+                titlelist[i]=bptr->title;
+                indexlist[i]=n;
+                if (curcount<pos+len-1) curcount++;
+            }
+        }
+    }
+    if (sort) {
+        for (n=pos-1;n<curcount;n++) {
+	    ptr=&nbrd[n-(pos-1)];
+            bptr = getboard(indexlist[n]+1);
+            ptr->dir = 0;
+            ptr->name = bptr->filename;
+            ptr->title = bptr->title;
+            ptr->BM = bptr->BM;
+            ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
+            ptr->pos = indexlist[n];
+            ptr->total = -1;
+            ptr->zap = (zapbuf[indexlist[n]] == 0);
+        }
+        free(titlelist);
+        free(namelist);
+        free(indexlist);
+     }
+    return brdnum;
+}
+
