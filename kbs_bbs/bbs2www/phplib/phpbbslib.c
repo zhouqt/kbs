@@ -4037,7 +4037,7 @@ stiger: 在 post_article 里处理
 }
 
 /*
- * function bbs_edittitle(string boardName , int id , string newTitle)
+ * function bbs_edittitle(string boardName , int id , string newTitle , int dirMode)
  * 修改文章标题
  * @author: windinsn apr 28,2004
  * return 0 : 成功
