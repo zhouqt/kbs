@@ -24,7 +24,7 @@ $HTMLCharset="GB2312";
 
 $DEFAULTStyle="defaultstyle";
 
-$Banner="pic/ws.jpg";
+$Banner="";
 
 $BannerURL="http://wforum.zixia.net/";
 
