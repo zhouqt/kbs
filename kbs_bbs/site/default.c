@@ -431,6 +431,8 @@ int compute_user_value(struct userec *urec)
         return LIFE_DAY_SYSOP;
     /* 站务人员生命力不变 Bigman 2001.6.23 */
 
+    if ((urec->userlevel & PERM_XEMPT) && (!(urec->userlevel & PERM_SUICIDE)))
+        return LIFE_DAY_USER; /* 长期帐号 - atppp 20041023 */
 
     value = (time(0) - urec->lastlogin) / 60;   /* min */
     if (0 == value)
