@@ -729,7 +729,7 @@ int SR_BMfunc(int ent, struct fileheader *fileinfo, char *direct)
     if (digestmode == 4 || digestmode == 5)     /* KCN:ÔÝ²»ÔÊÐí */
         return DONOTHING;
     if (digestmode >= 2) 
-    	return NOTHING;
+    	return DONOTHING;
     saveline(t_lines - 3, 0, linebuffer);
     saveline(t_lines - 2, 0, NULL);
     move(t_lines - 3, 0);
