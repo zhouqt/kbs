@@ -289,7 +289,7 @@ function bbs_ann_header($board='') {
 	    精华公布栏
 <?php
         if ($board)
-            echo ' '.$board.'版';
+            echo ' <a href="/bbsdoc.php?board='.$board.'">'.$board.'版</a>';
 ?>
     </td>
   </tr>
