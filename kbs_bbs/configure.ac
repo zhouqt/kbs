@@ -18,6 +18,17 @@ AC_PREFIX_DEFAULT(/home/bbs)
 
 m4_include(config.icc)
 
+AC_ARG_ENABLE(innbbsd,
+[  --enable-innbbsd
+                enable innbbsd  support(need innbbsd package)],
+[
+        if test -d innbbsd; then
+                AC_CONFIG_SUBDIRS(nnbbsd)
+        else
+                AC_MSG_ERROR([can't find innbbsd package,please get it first!])
+        fi
+])
+
 AC_ARG_ENABLE(ssh,
 [  --enable-ssh
 		enable ssh bbsd  support(need sshbbsd package)],
