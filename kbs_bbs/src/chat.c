@@ -1123,7 +1123,6 @@ void chat_friends(chatcontext *pthis, const char *arg)
 	pthis->apply_buf[0]=0;
 	num = 0;
    	for (i=0;i<nf;i++) {
-/*        sort_user_record(0,i2-1);*/
 	    num+=apply_utmpuid((APPLY_UTMP_FUNC)print_friend_ent,topfriend[i].uid,(char*)pthis);
    	}
    	if (pthis->apply_count)

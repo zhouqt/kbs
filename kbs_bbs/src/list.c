@@ -123,24 +123,6 @@ int a,b;
     user_record[b]=c;
 }
 
-void
-sort_user_record(left,right)
-int left, right;
-{
-    int i,last;
-
-    if(left>=right)
-        return;
-    swap_user_record(left,(left+right)/2);
-    last=left;
-    for(i=left+1;i<=right;i++)
-        if(strcasecmp(user_record[i]->userid,user_record[left]->userid)<0)
-            swap_user_record(++last,i);
-    swap_user_record(left,last);
-    sort_user_record(left,last-1);
-    sort_user_record(last+1,right);
-}
-
 int full_utmp(struct user_info* uentp,int* count)
 {
     if( !uentp->active || !uentp->pid )
@@ -169,26 +151,12 @@ fill_userlist()
     i2=0;
     if(!friendmode)
     {
-        /*把朋友放在一起
-
-        int n;
-        numf=0;
-		for(n=0;n<i2;n++)
-        {
-            if(myfriend(searchuser(user_record[n]->userid,NULL)))
-            {
-                swap_user_record(numf++,n);
-            }
-        }
-        sort_user_record(0,numf-1);
-        sort_user_record(numf,i2-1);*/
 	    apply_ulist_addr((APPLY_UTMP_FUNC)full_utmp,(char*)&i2);
     }else {
     	for (i=0;i<nf;i++) {
-/*        sort_user_record(0,i2-1);*/
-		if (topfriend[i].uid)
-			apply_utmpuid((APPLY_UTMP_FUNC)full_utmp,topfriend[i].uid,(char*)&i2);
-    	}
+			if (topfriend[i].uid)
+				apply_utmpuid((APPLY_UTMP_FUNC)full_utmp,topfriend[i].uid,(char*)&i2);
+	    	}
     }
     range=i2;
     return i2==0?-1:1;
