@@ -478,10 +478,14 @@ setTimeout('bbs_auto_reload()',540000);
 			<td> </td>
 			<td>
 				<DIV class="s" id="divchat">
+<?php
+    if (!defined("SITE_SMTH")) { // Smth不提供在线用户列表 add by windinsn, May 5,2004
+?>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">&nbsp;
 					<a href="bbsuser.php" target="f3">在线用户</a><br>
 <?php
+        }
 	if($currentuser["userid"]=="guest"){
 ?>					
 					&nbsp;

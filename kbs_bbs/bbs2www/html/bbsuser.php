@@ -5,6 +5,10 @@
 	 */
 	 
 	require("funcs.php");
+	
+	if (defined("SITE_SMTH")) // Smth不提供在线用户列表 add by windinsn, May 5,2004
+	    exit ();
+	    
 login_init();
 	
 	if ($loginok != 1)
