@@ -291,7 +291,6 @@ $brdarr = array();
         <tr> 
 		  <td width="23">&nbsp;</td>
           <td><a href="/bbsrecommend.php">&gt;&gt;推荐文章&gt;&gt;</a></td>
-		  <td width="80"><a href="/bbsrecommend.php">更多>></a></td>
         </tr>
 	</table>
 
@@ -329,6 +328,7 @@ while($board = array_shift($boards))
 <?php
 }
 ?>
+<tr><td width="100%" height=15 align="right"><a href="/bbsrecommend.php">>>>更多推荐文章>>></a></td></tr>
 </table>
 <?php
 }
