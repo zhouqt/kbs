@@ -741,11 +741,13 @@ int main(int argc, char *argv[])
         }
         return miscd_dodaemon(NULL, argv[1]);
     }
-    printf("Usage : %s killuser to kill old users\n", argv[0]);
-    printf("        %s allboards to delete all old files\n", argv[0]);
-    printf("        %s daemon to run as a daemon\n", argv[0]);
-    printf("        %s BOARDNAME to delete old file in BOARDNAME\n", argv[0]);
-    printf("That's all, folks\n");
+    printf("Usage : %s daemon: to run as a daemon (this is the most common use)\n", argv[0]);
+    printf("        %s killuser: to kill old users\n", argv[0]);
+    printf("        %s giveup: to unlock given-up users\n", argv[0]);
+    printf("        %s killdir <BOARDNAME>: to delete old file in <BOARDNAME>\n", argv[0]);
+    printf("        %s allboards: to delete old files in all boards\n", argv[0]);
+    printf("        %s flush: to synchronize .PASSWDS and .BOARDS to disk\n", argv[0]);
+    printf("That's all, folks. See doc/README.SYSOP for more details\n");
 
     return 0;
 }
