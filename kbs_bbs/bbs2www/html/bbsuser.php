@@ -46,7 +46,7 @@
             echo "<td><a href=\"bbsqry.php?userid=" . $users[$i]["userid"] . "\">" . $users[$i]["username"] . "</a></td>";
             echo "<td>" . $users[$i]["userfrom"] . "</td>";
             echo "<td>" . $users[$i]["username"] . "</td>";
-            echo "<td>" . $users[$i]["idletime"]!=0?$users[$i]["idletime"]:" " . "</td></tr>";
+            echo "<td>" . $users[$i]["idletime"]!=0?$users[$i]["idletime"]:" " . "</td></tr>\n";
         }
 ?>
 </table>
@@ -60,7 +60,15 @@
     }
 ?>
 <br>
-[<a href="bbsfriend.php">在线好友</a>] [<a href="bbsuser.php?start=<?php echo $start+$num;?>">下一页</a>]<br><form method="GET">
+[<a href="bbsfriend.php">在线好友</a>]
+<?php
+	if( $count >= $num ){
+?>
+[<a href="bbsuser.php?start=<?php echo $start+$num;?>">下一页</a>]
+<?php
+	}
+?>
+<br><form method="GET">
 <input type="submit" value="跳转到第"> <input type="input" size="4" name="start"> 个使用者</form></center>
 
 <?php 
