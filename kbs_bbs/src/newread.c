@@ -752,6 +752,7 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
     BBS_TRY {
         if (safe_mmapfile_handle(arg->fd, PROT_READ, MAP_SHARED, (void **) &pFh, &size) == 0)
             BBS_RETURN(0);
+	arg->filecount=size/sizeof(struct fileheader);
         if(now > arg->filecount){
 	/*ÔÚÖÃ¶¥ÎÄÕÂÇ°ËÑË÷*/
             now = arg->filecount;
