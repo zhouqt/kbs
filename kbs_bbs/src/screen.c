@@ -115,6 +115,8 @@ void init_screen(int slns, int scols)
         memset(slp->ldata, 255, LINELEN);
     }
     roll = 0;
+    if (!oldp)
+        return;
     for (slns = 0; slns < 24; slns++) {
     	slp = &big_picture[slns];
     	oslp = &oldp[slns];
