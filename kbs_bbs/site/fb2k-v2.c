@@ -10,7 +10,7 @@ const char seccode[SECNUM][5] = {
     "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C",
 };
 
-const char *permstrings[] = {
+const char * const permstrings[] = {
         "基本权力",             /* PERM_BASIC */
         "进入聊天室",           /* PERM_CHAT */
         "呼叫他人聊天",         /* PERM_PAGE */
@@ -46,7 +46,7 @@ const char *permstrings[] = {
 
 /* You might want to put more descriptive strings for SPECIAL1 and SPECIAL2
    depending on how/if you use them. */
-const char *user_definestr[] = {
+const char * const user_definestr[] = {
     "活动看版",                 /* DEF_ACBOARD */
     "使用彩色",                 /* DEF_COLOR */
     "编辑时显示状态栏",         /* DEF_EDITMSG */
@@ -82,7 +82,7 @@ const char *user_definestr[] = {
     "隐藏ip"                 /* DEF_SHOWALLIP */
 };
 
-const char    *explain[] = {
+const char * const explain[] = {
     "本站系统",
     "青青校园",
     "校园信息",
@@ -100,7 +100,7 @@ const char    *explain[] = {
     NULL
 };
 
-const char    *groups[] = {
+const char * const groups[] = {
     "system.faq",
     "thu.faq",
     "sci.faq",
@@ -133,7 +133,7 @@ const char secname[SECNUM][2][20] = {
     {"电脑技术", "[专项技术]"},
 };
 
-const char *mailbox_prop_str[] =
+const char * const mailbox_prop_str[] =
 {
 	"发信时保存信件到发件箱",
 	"删除信件时不保存到垃圾箱",
@@ -480,7 +480,7 @@ int multilogin_user(struct userec *user, int usernum,int mode)
         if (logincount > MAX_GUEST_NUM)
             return 2;
 #define MAX_GUEST_PER_IP 20
-        if (apply_utmp((APPLY_UTMP_FUNC) checkguestip, 0, "guest", fromhost) > MAX_GUEST_PER_IP)
+        if (apply_utmp((APPLY_UTMP_FUNC) checkguestip, 0, "guest", getSession()->fromhost) > MAX_GUEST_PER_IP)
             return 3;
         return 0;
     }
@@ -861,7 +861,7 @@ int auto_register(char* userid,char* email,int msize)
         //post_file(currentuser, "", fname, "Registry", str, 0, 2);
 
         sprintf(genbuf, "%s 自动通过注册", ud.userid);
-        post_file(&deliveruser, "", fname, "Registry", genbuf, 0, 1);
+        post_file(&deliveruser, "", fname, "Registry", genbuf, 0, 1, getSession());
         /*
          * if (( fout = fopen(logfile,"a")) != NULL)
          * {
@@ -891,7 +891,7 @@ char * showuserip(struct userec *user, char *ip)
 	static char sip[25];
 	char *c;
 
-	if ((currentuser!=NULL)&&(currentuser->title==10))
+	if ((getCurrentUser() != NULL) && (getCurrentUser()->title==10))
             return ip;
 	if( user!=NULL && (!DEFINE(user, DEF_HIDEIP)) )
 		return ip;
