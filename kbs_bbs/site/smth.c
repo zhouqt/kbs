@@ -823,16 +823,31 @@ int smsnumber2uid(byte number[4])
     char buf[10];
     uid = byte2long(number);
     /* 现在我们用的是1开头的,需要去掉开始的那个1*/
-    printf(buf,"%d",uid);
+    sprintf(buf,"%d",uid);
     if (buf[0]!='1')
         return -1;
     uid=atoi(buf+1);
     return uid;
 }
 
-void uid2smsnumber(struct user_info* uin,char* number)
+int uid2smsnumber(struct user_info* uin)
 {
-  sprintf(number,"1%d",uin->uid);
+  char buf[10];
+  sprintf(buf,"1%d",uin->uid);
+  return atoi(buf);
 }
+
+int smsid2uid(char* smsid) {
+   if (smsid[0]!='1')
+        return -1;
+    uid=atoi(smsid+1);  
+    return uid;
+}
+
+void uid2smsid(struct user_info* uin,char* smsid)
+{
+    sprintf(smsid,"1%d",uin->uid);
+}
+
 
 #endif

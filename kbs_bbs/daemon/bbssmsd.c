@@ -105,7 +105,6 @@ int sendtouser(struct GWSendSMS * h, char* buf)
     struct user_info * uin;
     struct msghead hh;
     uid = smsnumber2uid(h->UserID);
-    
     uident = getuserid2(uid);
     if(uident == NULL)
         return -1;
@@ -142,12 +141,9 @@ int requiretouser(struct RequireBindPacket * h, unsigned int sn)
     struct user_info * uin;
     struct usermemo *pum;
     struct userdata ud;
-    int uid,smsnumber;
-    byte bufbyte[4];
+    int uid;
     /* 我们先分配1开头的uid*/
-    smsnumber=atoi(h->cUserID);
-    long2byte(smsnumber,bufbyte);
-    uid=smsnumber2uid(bufbyte);
+    uid=smsid2uid(h->cUserID);
     uident = getuserid2(uid);
     if (uident==NULL) return -1;
 

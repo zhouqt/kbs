@@ -894,7 +894,7 @@ int DoReg(char * n)
     long2byte(smsuin->pid, h.pid);
     long2byte(sizeof(h1), h.BodyLength);
     strcpy(h1.MobileNo, n);
-    uid2smsnumber(smsuin,h1.cUserID);
+    uid2smsid(smsuin,h1.cUserID);
     while(head->sem) {
         sleep(1);
         count++;
@@ -916,7 +916,7 @@ int DoUnReg(char * n)
     long2byte(smsuin->pid, h.pid);
     long2byte(sizeof(h1), h.BodyLength);
     strcpy(h1.MobileNo, n);
-    uid2smsnumber(smsuin,h1.cUserID);
+    uid2smsid(smsuin,h1.cUserID);
     while(head->sem) {
         sleep(1);
         count++;
@@ -939,7 +939,7 @@ int DoCheck(char * n, char * c)
     long2byte(sizeof(h1), h.BodyLength);
     strcpy(h1.MobileNo, n);
     strcpy(h1.ValidateNo, c);
-    uid2smsnumber(smsuin,h1.cUserID);
+    uid2smsid(smsuin,h1.cUserID);
     while(head->sem) {
         sleep(1);
         count++;
@@ -964,8 +964,8 @@ int DoSendSMS(char * n, char * d, char * c)
     long2byte(strlen(c)+1, h1.MsgTxtLen);
     strcpy(h1.SrcMobileNo, n);
     strcpy(h1.DstMobileNo, d);
-    uid2smsnumber(smsuin,h1.SrccUserID);
-    number=atoi(h1.SrccUserID);
+    uid2smsid(smsuin,h1.SrccUserID);
+    number=uid2smsnumber(smsuin);
     long2byte(number, h1.UserID);
     while(head->sem) {
         sleep(1);
