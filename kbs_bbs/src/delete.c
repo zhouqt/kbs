@@ -66,7 +66,6 @@ int d_board()
         getdata(3, 0, "移除精华区 (Yes, or No) [Y]: ", genbuf, 4, DOECHO, NULL, true);
         if (genbuf[0] != 'N' && genbuf[0] != 'n') {
 #endif
-            char lookgrp[30];
 
             del_grp(bname, title + 13);
         }
@@ -255,7 +254,7 @@ PERM_DENYRELAX娱乐
         move(11, 28);
         prints("\033[1m\033[33m你有还没有注册通过，不能戒网！\033[m");
         pressanykey();
-        return;
+        return -1;
     }
 
     if (HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_BOARDS) || HAS_PERM(currentuser, PERM_OBOARDS) || HAS_PERM(currentuser, PERM_ACCOUNTS)
@@ -265,7 +264,7 @@ PERM_DENYRELAX娱乐
         move(11, 28);
         prints("\033[1m\033[33m你有重任在身，不能戒网！\033[m");
         pressanykey();
-        return;
+        return -1;
     }
 
     lcount = 0;
@@ -299,7 +298,7 @@ PERM_DENYRELAX娱乐
                 prints("休闲娱乐权限");
                 break;
             }
-            sprintf(buf, "        还有%d天\n", j - time(0) / 3600 / 24);
+            sprintf(buf, "        还有%ld天\n", j - time(0) / 3600 / 24);
             prints(buf);
             lcount++;
         }
@@ -328,7 +327,7 @@ PERM_DENYRELAX娱乐
 
     getdata(12, 0, "请选择 [0]", ans, 2, DOECHO, NULL, true);
     if (ans[0] < '1' || ans[0] > '6') {
-        return;
+        return -1;
     }
     k = 1;
     switch (ans[0]) {
@@ -355,24 +354,24 @@ PERM_DENYRELAX娱乐
     if (!k) {
         prints("\n\n你已经没有了该权限");
         pressanykey();
-        return;
+        return -1;
     }
 
     getdata(11, 0, "请输入戒网天数 [0]", day, 4, DOECHO, NULL, true);
     i = 0;
     while (day[i]) {
         if (!isdigit(day[i]))
-            return;
+            return -1;
         i++;
     }
     j = atoi(day);
     if (j <= 0)
-        return;
+        return -1;
 
     if (compute_user_value(currentuser) <= j) {
         prints("\n\n对不起，天数不可以大于生命力...");
         pressanykey();
-        return;
+        return -1;
     }
     j = time(0) / 3600 / 24 + j;
 
@@ -383,7 +382,7 @@ PERM_DENYRELAX娱乐
         if (*buf == '\0' || !checkpasswd2(buf, currentuser)) {
             prints("\n\n很抱歉, 您输入的密码不正确。\n");
             pressanykey();
-            return;
+            return -1;
         }
 
         sethomefile(genbuf, currentuser->userid, "giveup");
@@ -391,7 +390,7 @@ PERM_DENYRELAX娱乐
         if (!fn) {
             prints("\n\n由于系统问题，现在你不能戒网");
             pressanykey();
-            return;
+            return -1;
         }
         fprintf(fn, "%d %d\n", ans[0] - 48, j);
         fclose(fn);
@@ -441,6 +440,7 @@ PERM_DENYRELAX娱乐
         if (ans[0] == '1')
             abort_bbs(0);
     }
+    return 0;
 }
 
 

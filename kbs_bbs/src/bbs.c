@@ -78,6 +78,8 @@ extern int b_vote(struct _select_def* conf,struct fileheader *fileinfo,void* ext
 extern int b_vote_maintain(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
 extern int b_jury_edit(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
 extern int mainreadhelp(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
+static int choose_tmpl_refresh(struct _select_def *conf);
+static int choose_tmpl(char *title, char *fname);
 
 int check_readonly(char *checked)
 {                               /* Leeward 98.03.28 */
@@ -332,6 +334,77 @@ int get_a_boardname(char *bname, char *prompt)
     return 1;
 }
 
+int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,long flag)
+{
+    struct read_arg* arg=(struct read_arg*)conf->arg;
+    bool    isbm=chk_currBM(currboard->BM, currentuser);
+    struct write_dir_arg dirarg;
+    struct fileheader data;
+    int ret;
+    struct actionlist{
+        int action;
+        int pos;
+        long flag;
+        char* name;
+    };
+    const struct actionlist *ptr;
+    static const struct actionlist flaglist[]= {
+            {FILE_MARK_FLAG,0,FILE_MARKED,"标记m"},
+            {FILE_NOREPLY_FLAG,1,FILE_READ,"不可Re"},
+            {FILE_SIGN_FLAG,0,FILE_SIGN,"标记#"},
+            {FILE_DELETE_FLAG,1,FILE_DEL,"标记#"},
+            {FILE_DIGEST_FLAG,0,FILE_DIGEST,"文摘"},
+            {FILE_TITLE_FLAG,0,0,"原文"},
+            {FILE_IMPORT_FLAG,0,FILE_IMPORTED,"收入精华区"},
+#ifdef FILTER
+            {FILE_CENSOR_FLAG,0,0,"审核通过"},
+#endif
+#ifdef COMMEND_ARTICLE
+            {FILE_COMMEND_FLAG,1,FILE_COMMEND,"审核通过"},
+#endif
+            {0,0,0,NULL}
+    };
+    if (fileinfo==NULL)
+        return DONOTHING;
+    
+#ifdef FILTER
+#ifdef SMTH
+    if (!strcmp(currboard->filename,"NewsClub")&&haspostperm(currentuser, currboard->filename)) 
+            isbm=true;
+#endif
+#endif
+    
+    if (!isbm)
+        return DONOTHING;
+    data=*fileinfo;
+    malloc_write_dir_arg(&dirarg);
+    dirarg.fd=arg->fd;
+    dirarg.ent = conf->pos;
+    ptr=flaglist;
+    while (ptr->action!=0) {
+        if (ptr->action==flag) {
+            data.accessed[ptr->pos] = (fileinfo->accessed[ptr->pos] & ptr->flag)?0 : ptr->flag;
+            break;
+        }
+        ptr++;
+    }
+    if (ptr->action!=0) {
+        ret=change_post_flag(&dirarg, arg->mode, currboard,  
+            fileinfo,flag, &data,isbm);
+        if (ret==0) {
+//prompt...
+            ret=DIRCHANGED;
+        } else {
+            char buf[STRLEN];
+            a_prompt(-1, "操作失败, 请按 Enter 继续 << ", buf);
+            ret=FULLUPDATE;
+        }
+    } else
+        ret=DONOTHING;
+    free_write_dir_arg(&dirarg);
+    return ret;
+}
+
 #ifdef COMMEND_ARTICLE
 /* stiger, 推荐文章 */
 int do_commend(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
@@ -403,7 +476,6 @@ int do_commend(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
 int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {                               /* 转贴 一篇 文章 */
     char bname[STRLEN];
-    char dbname[STRLEN];
     char ispost[10];
     char q_file[STRLEN];
     struct read_arg* arg=(struct read_arg*)conf->arg;
@@ -790,7 +862,7 @@ void  board_attach_link(char* buf,int buf_len,long attachpos,void* arg)
     if (server==NULL)
         server=sysconf_str("BBSDOMAIN");
     if (attachpos!=-1)
-        snprintf(buf,buf_len,"http://%s/bbscon.php?bid=%d&id=%d&ap=%d",
+        snprintf(buf,buf_len,"http://%s/bbscon.php?bid=%d&id=%d&ap=%ld",
             server,getbnum(currboard->filename),fh->id,attachpos);
     else
         snprintf(buf,buf_len,"http://%s/bbscon.php?bid=%d&id=%d",
@@ -812,7 +884,7 @@ int zsend_attach(int ent, struct fileheader *fileinfo, char *direct)
     snprintf(genbuf, 512, "%s/%s", buf1, fileinfo->filename);
     BBS_TRY {
         if (safe_mmapfile(genbuf, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0) {
-            BBS_RETURN_VOID;
+            BBS_RETURN(-1);
         }
         for (p=ptr,left=size;left>0;p++,left--) {
             long attach_len;
@@ -973,10 +1045,10 @@ reget:
         post_reply(conf, fileinfo, extraarg);      /* 回文章 */
         break;
     case 'g':
-        ret=set_article_flag(conf , fileinfo, (void*)FILE_DIGEST_FLAG);       /* Leeward 99.03.02 */
+        ret=set_article_flag(conf , fileinfo, FILE_DIGEST_FLAG);       /* Leeward 99.03.02 */
         break;
     case 'M':
-        ret=set_article_flag(conf , fileinfo, (void*)FILE_MARK_FLAG);       /* Leeward 99.03.02 */
+        ret=set_article_flag(conf , fileinfo, FILE_MARK_FLAG);       /* Leeward 99.03.02 */
         break;
     case Ctrl('U'):
         if (arg->readmode==READ_NORMAL) {
@@ -1374,6 +1446,28 @@ int title_mode(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
     return NEWDIRECT;
 }
 
+int junk_mode(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
+{
+    struct read_arg* arg=(struct read_arg*)conf->arg;
+    if (!HAS_PERM(currentuser, PERM_SYSOP)) {
+        return DONOTHING;
+    }
+
+    if (arg->mode == DIR_MODE_JUNK) {
+        arg->newmode = DIR_MODE_NORMAL;
+        setbdir(arg->newmode, arg->direct, currboard->filename);
+    } else {
+        arg->newmode = DIR_MODE_JUNK;
+        setbdir(DIR_MODE_JUNK, arg->direct, currboard->filename);
+        if (!dashf(arg->direct)) {
+            arg->newmode = DIR_MODE_NORMAL;
+            setbdir(arg->mode, arg->direct, currboard->filename);
+            return DONOTHING;
+        }
+    }
+    return NEWDIRECT;
+}
+
 static char search_data[STRLEN];
 int search_mode(struct _select_def* conf,struct fileheader *fileinfo,int mode, char *index)
 /* added by bad 2002.8.8 search mode*/
@@ -1445,9 +1539,9 @@ int search_mode(struct _select_def* conf,struct fileheader *fileinfo,int mode, c
     }
     ptr1 = (struct fileheader *) ptr;
     for (i = 0; i < total; i++) {
-        if (mode == DIR_MODE_ORIGIN && ptr1->id == ptr1->groupid 
-            || mode == DIR_MODE_AUTHOR && strcasecmp(ptr1->owner, index) == 0
-            || mode == DIR_MODE_TITLE && bm_strcasestr_rp(ptr1->title, index, bm_search, &init) != NULL) {
+        if (((mode == DIR_MODE_ORIGIN) && (ptr1->id == ptr1->groupid ))
+            || ((mode == DIR_MODE_AUTHOR) && !strcasecmp(ptr1->owner, index) )
+            || ((mode == DIR_MODE_TITLE)  && !bm_strcasestr_rp(ptr1->title, index, bm_search, &init))) {
             write(fd, ptr1, size);
             count++;
         }
@@ -1482,8 +1576,6 @@ int search_x(char * b, char * s)
     void *hdll;
 	typedef int (*iquery_board_func)(char *b, char *s);
 	iquery_board_func iquery_board;
-    char *c;
-    char buf[1024];
     int oldmode;
 
     oldmode = uinfo.mode;
@@ -1492,7 +1584,7 @@ int search_x(char * b, char * s)
     if(hdll)
     {
         char* error;
-        if(iquery_board = (iquery_board_func)dlsym(hdll,"iquery_board"))
+        if((iquery_board = (iquery_board_func)dlsym(hdll,"iquery_board"))!=NULL)
             iquery_board(b, s);
         else
         if ((error = dlerror()) != NULL)  {
@@ -1503,6 +1595,7 @@ int search_x(char * b, char * s)
         dlclose(hdll);
     }
     modify_user_mode(oldmode);
+    return 0;
 }
 
 int change_mode(struct _select_def* conf,struct fileheader *fileinfo,int newmode)
@@ -1639,28 +1732,6 @@ int read_hot_info(struct _select_def* conf,struct fileheader *fileinfo,void* ext
 		show_help("etc/posts/day");
     }
     return FULLUPDATE;
-}
-
-int junk_mode(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
-{
-    struct read_arg* arg=(struct read_arg*)conf->arg;
-    if (!HAS_PERM(currentuser, PERM_SYSOP)) {
-        return DONOTHING;
-    }
-
-    if (arg->mode == DIR_MODE_JUNK) {
-        arg->newmode = DIR_MODE_NORMAL;
-        setbdir(arg->newmode, arg->direct, currboard->filename);
-    } else {
-        arg->newmode = DIR_MODE_JUNK;
-        setbdir(DIR_MODE_JUNK, arg->direct, currboard->filename);
-        if (!dashf(arg->direct)) {
-            arg->newmode = DIR_MODE_NORMAL;
-            setbdir(arg->mode, arg->direct, currboard->filename);
-            return DONOTHING;
-        }
-    }
-    return NEWDIRECT;
 }
 
 #ifndef NOREPLY
@@ -1832,7 +1903,6 @@ int post_reply(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
     char *t;
     FILE *fp;
     char q_file[STRLEN];
-	int old_in_mail;
 
 
     if (fileinfo==NULL)
@@ -1974,7 +2044,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     char buf[256], buf2[256], buf3[STRLEN], buf4[STRLEN];
 //	char tmplate[STRLEN];
 	int use_tmpl=0;
-    int aborted, anonyboard, olddigestmode = 0;
+    int aborted, anonyboard;
     int replymode = 1;          /* Post New UI */
     char ans[4], include_mode = 'S';
     struct boardheader *bp;
@@ -2156,7 +2226,6 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         } else if (ans[0] == 'U') {
             struct boardheader* b=currboard;
             if(b->flag&BOARD_ATTACH && use_tmpl<=0) {
-                int i;
                 chdir("tmp");
                 upload = bbs_zrecvfile();
                 chdir("..");
@@ -2236,7 +2305,6 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 		char filepath1[STRLEN];
 		char buff[256];
 		char title_prefix[STRLEN];
-		int i;
 
 		if( ! strncmp(post_file.title, "Re: ",4) )
 			strncpy(title_prefix, post_file.title+4, STRLEN);
@@ -2408,7 +2476,7 @@ int edit_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     modify_user_mode(EDIT);
 
     if (!HAS_PERM(currentuser, PERM_SYSOP))     /* SYSOP、当前版主、原发信人 可以编辑 */
-        if (!chk_currBM(currBM, currentuser))
+        if (!chk_currBM(currBM, currentuser)) {
             /*
              * change by KCN 1999.10.26
              * if(strcmp( fileinfo->owner, currentuser->userid))
@@ -2416,6 +2484,7 @@ int edit_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
             if (!isowner(currentuser, fileinfo))
                 return DONOTHING;
             else dobmlog=true;
+        }
 
     if (deny_me(currentuser->userid, currboard->filename) && !HAS_PERM(currentuser, PERM_SYSOP)) {        /* 版主禁止POST 检查 */
         move(3, 0);
@@ -2577,76 +2646,47 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
     return PARTUPDATE;
 }
 
-int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,int flag)
+/* add by stiger,delete 置顶文章 */
+int del_ding(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
+    int failed;
+    char tmpname[100];
     struct read_arg* arg=(struct read_arg*)conf->arg;
-    bool    isbm=chk_currBM(currboard->BM, currentuser);
-    struct write_dir_arg dirarg;
-    struct fileheader data;
-    int ret;
-    struct actionlist{
-        int action;
-        int pos;
-        int flag;
-        char* name;
-    };
-    const struct actionlist *ptr;
-    static const struct actionlist flaglist[]= {
-            {FILE_MARK_FLAG,0,FILE_MARKED,"标记m"},
-            {FILE_NOREPLY_FLAG,1,FILE_READ,"不可Re"},
-            {FILE_SIGN_FLAG,0,FILE_SIGN,"标记#"},
-            {FILE_DELETE_FLAG,1,FILE_DEL,"标记#"},
-            {FILE_DIGEST_FLAG,0,FILE_DIGEST,"文摘"},
-            {FILE_TITLE_FLAG,0,0,"原文"},
-            {FILE_IMPORT_FLAG,0,FILE_IMPORTED,"收入精华区"},
-#ifdef FILTER
-            {FILE_CENSOR_FLAG,0,0,"审核通过"},
-#endif
-#ifdef COMMEND_ARTICLE
-            {FILE_COMMEND_FLAG,1,FILE_COMMEND,"审核通过"},
-#endif
-            {0,0,0,NULL}
-    };
+
     if (fileinfo==NULL)
         return DONOTHING;
-    
-#ifdef FILTER
-#ifdef SMTH
-    if (!strcmp(currboard->filename,"NewsClub")&&haspostperm(currentuser, currboard->filename)) 
-            isbm=true;
-#endif
-#endif
-    
-    if (!isbm)
-        return DONOTHING;
-    data=*fileinfo;
-    malloc_write_dir_arg(&dirarg);
-    dirarg.fd=arg->fd;
-    dirarg.ent = conf->pos;
-    ptr=flaglist;
-    while (ptr->action!=0) {
-        if (ptr->action==flag) {
-            data.accessed[ptr->pos] = (fileinfo->accessed[ptr->pos] & ptr->flag)?0 : ptr->flag;
-            break;
-        }
-        ptr++;
+    if ( arg->mode != DIR_MODE_NORMAL) return DONOTHING;
+
+    if (!HAS_PERM(currentuser, PERM_SYSOP) && !chk_currBM(currBM, currentuser))
+            return DONOTHING;
+    clear();
+    prints("删除文章 '%s'.", fileinfo->title);
+    getdata(1, 0, "(Y/N) [N]: ", genbuf, 3, DOECHO, NULL, true);
+    if (genbuf[0] != 'Y' && genbuf[0] != 'y') {     /* if not yes quit */
+        move(2, 0);
+        prints("取消\n");
+        pressreturn();
+        clear();
+        return FULLUPDATE;
     }
-    if (ptr->action!=0) {
-        ret=change_post_flag(&dirarg, arg->mode, currboard,  
-            fileinfo,flag, &data,isbm);
-        if (ret==0) {
-//prompt...
-            ret=DIRCHANGED;
-        } else {
-            char buf[STRLEN];
-            a_prompt(-1, "操作失败, 请按 Enter 继续 << ", buf);
-            ret=FULLUPDATE;
-        }
-    } else
-        ret=DONOTHING;
-    free_write_dir_arg(&dirarg);
-    return ret;
+
+    failed=delete_record(arg->dingdirect, sizeof(struct fileheader), conf->pos-arg->filecount, 
+        (RECORD_FUNC_ARG) cmpname, fileinfo->filename);
+
+    if(failed){
+        move(2, 0);
+        prints("删除失败\n");
+        pressreturn();
+        clear();
+        return FULLUPDATE;
+    }else{
+        snprintf(tmpname,100,"boards/%s/%s",currboard->filename,fileinfo->filename);
+        my_unlink(tmpname);
+        board_update_toptitle(currboard,-1);
+    }
+    return DIRCHANGED;
 }
+/* add end */
 
 /* stiger, 置顶 */
 int zhiding_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
@@ -2667,7 +2707,6 @@ int noreply_post(struct _select_def* conf,struct fileheader *fileinfo,void* extr
     char ans[4];
     int mode=0; /* 0x1斑竹, 0x2:推荐版斑竹 */
     int ret=FULLUPDATE;
-    struct read_arg* arg=(struct read_arg*)conf->arg;
 
 #ifdef COMMEND_ARTICLE
     int bnum;
@@ -2808,48 +2847,6 @@ int del_range(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     return FULLUPDATE;
 }
 
-/* add by stiger,delete 置顶文章 */
-int del_ding(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
-{
-    int failed;
-    char tmpname[100];
-    struct read_arg* arg=(struct read_arg*)conf->arg;
-
-    if (fileinfo==NULL)
-        return DONOTHING;
-    if ( arg->mode != DIR_MODE_NORMAL) return DONOTHING;
-
-    if (!HAS_PERM(currentuser, PERM_SYSOP) && !chk_currBM(currBM, currentuser))
-            return DONOTHING;
-    clear();
-    prints("删除文章 '%s'.", fileinfo->title);
-    getdata(1, 0, "(Y/N) [N]: ", genbuf, 3, DOECHO, NULL, true);
-    if (genbuf[0] != 'Y' && genbuf[0] != 'y') {     /* if not yes quit */
-        move(2, 0);
-        prints("取消\n");
-        pressreturn();
-        clear();
-        return FULLUPDATE;
-    }
-
-    failed=delete_record(arg->dingdirect, sizeof(struct fileheader), conf->pos-arg->filecount, 
-        (RECORD_FUNC_ARG) cmpname, fileinfo->filename);
-
-    if(failed){
-        move(2, 0);
-        prints("删除失败\n");
-        pressreturn();
-        clear();
-        return FULLUPDATE;
-    }else{
-        snprintf(tmpname,100,"boards/%s/%s",currboard->filename,fileinfo->filename);
-        my_unlink(tmpname);
-        board_update_toptitle(currboard,-1);
-    }
-    return DIRCHANGED;
-}
-/* add end */
-
 int del_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     char usrid[STRLEN],direct[MAXPATH];
@@ -2929,6 +2926,8 @@ int del_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         case DIR_MODE_AUTHOR:
         case DIR_MODE_TITLE:
             search_mode(conf,fileinfo,arg->mode, search_data);
+            break;
+        default:
             break;
         }
     }
@@ -3119,10 +3118,8 @@ int range_flag(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
     char num1[10], num2[10];
     int inum1, inum2, total=0;
     struct stat st;
-    struct fileheader f;
-    int i,j,k;
+    int i,k;
     int fflag;
-    int y,x;
     struct read_arg* arg=conf->arg;
     
     if (!chk_currBM(currBM, currentuser)) return DONOTHING;
@@ -3572,10 +3569,6 @@ int Goodbye()
      * Haohmaru.98.11.10.简单判断是否用上站机 
      */
     if ( /*strcmp(currentuser->username,"guest")&& */ stay <= Time) {
-        char lbuf[256];
-        char tmpfile[256];
-        FILE *fp;
-
 /*        strcpy(lbuf, "自首-");
         strftime(lbuf + 5, 30, "%Y-%m-%d%Y:%H:%M", localtime(&login_start_time));
         sprintf(tmpfile, "tmp/.tmp%d", getpid());
@@ -3946,7 +3939,10 @@ int set_ip_acl()
     if(fp){
         i=0;
         while(!feof(fp)) {
-            if(fscanf(fp, "%d.%d.%d.%d %d %d", &rip[0], &rip[1], &rip[2], &rip[3], &(acl[i].len), &(acl[i].deny))<=0) break;
+            int len,deny;
+            if(fscanf(fp, "%d.%d.%d.%d %d %d", &rip[0], &rip[1], &rip[2], &rip[3], &len, &deny)<=0) break;
+            acl[i].len=(char)len;
+            acl[i].deny=(char)deny;
             acl[i].ip = (rip[0]<<24)+(rip[1]<<16)+(rip[2]<<8)+rip[3];
             i++;
             if(i>=ACL_MAX) break;
@@ -4023,11 +4019,9 @@ int tmpl_init(int mode){
 
 }
 
-int tmpl_free(){
-
+void tmpl_free(){
 	orig_tmpl_free( & ptemplate, template_num );
 	template_num = 0;
-
 }
 
 int tmpl_save(){
@@ -4038,8 +4032,6 @@ int tmpl_save(){
 
 int tmpl_add(){
 
-	int fd;
-	char filepath[STRLEN];
 	char buf[60];
 	struct s_template tmpl;
 
@@ -4193,7 +4185,6 @@ static int content_key(struct _select_def *conf, int key)
 	case 'd':
 		{
             char ans[3];
-			char filepath[STRLEN];
 
             getdata(t_lines - 1, 0, "确实要删除吗(Y/N)? [N]: ", ans, sizeof(ans), DOECHO, NULL, true);
             if (ans[0] == 'Y' || ans[0] == 'y') {
@@ -4288,7 +4279,6 @@ static int tmpl_key(struct _select_def *conf, int key)
 	case 'd' :
 		{
             char ans[3];
-			char filepath[STRLEN];
 
             getdata(t_lines - 1, 0, "确实要删除吗(Y/N)? [N]: ", ans, sizeof(ans), DOECHO, NULL, true);
             if (ans[0] == 'Y' || ans[0] == 'y') {
@@ -4506,9 +4496,7 @@ static int tmpl_select(struct _select_def *conf)
 
 int m_template()
 {
-	int fd,i;
-	struct s_template tmpl;
-	char tmpldir[STRLEN];
+	int i;
 	POINT *pts;
     struct _select_def grouplist_conf;
 
@@ -4648,7 +4636,6 @@ static int choose_tmpl_post(char * title, char *fname){
 				while(fgets(buf,255,fpsrc)){
 					int l;
 					int linex = 0;
-					int ischinese=0;
 					char *pn,*pe;
 
 					for(pn = buf; *pn!='\0'; pn++){
@@ -4814,9 +4801,8 @@ static int choose_tmpl_key(struct _select_def *conf, int key)
 	return SHOW_CONTINUE;
 }
 
-int choose_tmpl(char *title, char *fname)
+static int choose_tmpl(char *title, char *fname)
 {
-	struct s_template tmpl;
 	POINT *pts;
     struct _select_def grouplist_conf;
     int i;

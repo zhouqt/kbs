@@ -10,6 +10,9 @@ int mail_uforward(struct _select_def* conf,struct fileheader* data,void* extrada
 #endif
 
 /*screen.c*/
+void setfcolor(int i,int j);
+void setbcolor(int i);
+void resetcolor();
 int scr_cols,scr_lns;
 void clear_whole_line(int i);
 void move(int y, int x);
@@ -37,6 +40,7 @@ void outline(char *s);
 
 
 /* newio.c */
+int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len, int maxline, int clearlabel, int textmode);
 void ochar(char c);
 int ask(char *prompt);
 void oflush();
@@ -72,6 +76,7 @@ int namecomplete(char *prompt, char *data);
 int usercomplete(char *prompt, char *data);
 
 /* newmain_single.c */
+void showsysinfo(char * fn);
 extern int talkrequest;
 extern int numofsig;
 int count_user();
@@ -83,6 +88,7 @@ void set_numofsig();
 void docmdtitle(char *title, char *prompt);
 
 /* bbs.c*/
+int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
 extern int helpmode;
 int zsend_post(int ent, struct fileheader *fileinfo, char *direct);
 void  board_attach_link(char* buf,int buf_len,long attachpos,void* arg);
@@ -107,12 +113,15 @@ void setqtitle(char *stitle);
 void RemoveAppendedSpace(char *ptr);
 
 /*vote.c*/
+int b_notes_edit();
+int vote_results(char* bname);
 void makevdir(char *bname);
 void setvfile(char *buf, char *bname, char *filename);
 int b_closepolls();
 int vote_flag(char *bname, char val, int mode);
 
 /* mail.c */
+int MailProc();
 int m_read();
 int chkmail();
 int getmailnum(char recmaildir[STRLEN]);
@@ -241,4 +250,9 @@ int read_zsend(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
 int bbs_zsendfile(char* filename,char* sendname);
 char* bbs_zrecvfile();
 
+/* comm_lists.c */
+int exec_mbem(char *s);
+
+/* super_filter.c */
+int super_filter(struct _select_def* conf,struct fileheader* fileinfo,void* extraarg);
 #endif

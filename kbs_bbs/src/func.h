@@ -290,6 +290,11 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     int init_write_dir_arg(struct write_dir_arg*filearg);
     void free_write_dir_arg(struct write_dir_arg*filearg);
 
+    /*加入置顶*/
+    int add_top(struct fileheader* fileinfo,char* boardname,int flag);
+    /*推荐文章*/
+    int post_commend(struct userec *user, char *fromboard, struct fileheader *fileinfo);
+
 	/* Search_Bin 
 	 * 功能：依据key, 对ptr传入的.DIR索引进行二分查找
 	 */
@@ -445,6 +450,9 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     int check_sysconf();
 
 /* libmsg.c */
+    int get_msgcount(int id, char *uident);
+    void mail_msg(struct userec* user);
+    int clear_msg(char *uident);
     int addto_msglist(int utmpnum, char *userid);
     int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode);
     int canmsg(struct userec *fromuser, struct user_info *uin);

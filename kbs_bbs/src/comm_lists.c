@@ -100,7 +100,6 @@ int query_bm();
 /* end of insertion */
 int lock_scr();                 /* Leeward 98.02.22 */
 int FavBoard();                 /* period  2000-09-11 */
-int MailProc();                 /* bad 2002.9.4 */
 int searchtrace();              /* stephen 2000.12.15 */
 int badlist();                  /* Bigman 2000.12.26 */
 int giveupnet();                /* bad 2002.7.5 */
