@@ -514,7 +514,7 @@ void board_update_toptitle(int bid,bool needlock)
     struct BoardStatus* bs=getbstatus(bid);
     struct boardheader* bh;
     char dirpath[MAXPATH];
-    int fd;
+    int fd=0;
     if (bs==NULL)
         return;
     bh=&bcache[bid-1];

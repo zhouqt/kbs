@@ -357,14 +357,14 @@ type - meaning
 	struct _new_bmlog *ppostlog = (struct _new_bmlog *) (buf + ((char *)msg->mtext - (char *)msg) + 1);
 
 	if (userid[0]=='\0' || boardname=='\0')
-		return;
+		return 0;
     if (disablelog)
-        return;
+        return 0;
     if (logmsqid == -1 ) {
         logmsqid = init_bbslog();
         if (logmsqid ==-1 ) {
             disablelog = 1;
-            return;
+            return 0;
         }
     }
 
@@ -379,5 +379,7 @@ type - meaning
 	ppostlog->value = value;
 
     msgsnd(logmsqid, msg, sizeof(struct _new_bmlog) + ((char *) msg->mtext - (char *) msg) - sizeof(msg->mtype) + 1, IPC_NOWAIT | MSG_NOERROR);
+
+	return 0;
 }
 #endif

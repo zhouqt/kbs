@@ -1245,5 +1245,5 @@ void unlock_user(int fd)
     flock(fd, LOCK_UN);
     close(fd);
 	*/
-	return 0;
+	return ;
 }
