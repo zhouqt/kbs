@@ -2081,8 +2081,8 @@ const static struct command_def mail_cmds[] = {
     {"O)┌设定好友名单", 0, t_override, NULL},
     {"F)└寄信给好友名单", PERM_LOGINOK, ov_send, NULL},
     {"C) 清空备份的邮箱", 0, m_clean, NULL},
+    {"X) 设置邮箱选项", 0, set_mailbox_prop, NULL},
     {"M) 寄信给所有人", PERM_SYSOP, mailall, NULL},
-    {"X) 设置邮箱选项", PERM_SYSOP, set_mailbox_prop, NULL},
 };
 
 struct mail_proc_arg {
