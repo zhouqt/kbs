@@ -40,8 +40,8 @@ static ZEND_FUNCTION(bbs_sethomefile);
 static ZEND_FUNCTION(bbs_setmailfile);
 static ZEND_FUNCTION(bbs_mail_file);
 static ZEND_FUNCTION(bbs_update_uinfo);
-static ZEND_FUNCTION(bbs_createNewID);
-static ZEND_FUNCTION(bbs_fillIDInfo);
+static ZEND_FUNCTION(bbs_createnewid);
+static ZEND_FUNCTION(bbs_fillidinfo);
 
 static ZEND_MINIT_FUNCTION(bbs_module_init);
 static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown);
@@ -86,8 +86,8 @@ static function_entry bbs_php_functions[] = {
         ZEND_FE(bbs_setmailfile, NULL)
         ZEND_FE(bbs_mail_file, NULL)
         ZEND_FE(bbs_update_uinfo, NULL)
-        ZEND_FE(bbs_createNewID,NULL)
-        ZEND_FE(bbs_fillIDInfo,NULL)
+        ZEND_FE(bbs_createnewid,NULL)
+        ZEND_FE(bbs_fillidinfo,NULL)
         {NULL, NULL, NULL}
 };
 
@@ -1783,32 +1783,32 @@ static ZEND_RSHUTDOWN_FUNCTION(bbs_request_shutdown)
  * check ID is valid
  *  rototype:
  * int bbs_createNewID(string smthid,string passwd);
- * 
+ *
  *  @return the result
  *  	0 -- success, 1 -- specail char or first char not alpha
  *  	2 -- at least two chars 3 -- system name or bad name
  *  	4 -- have been used 5 -- length > IDLEN
  *  	6 -- passwd is too long > 39
- *  	10 -- system error 
+ *  .	7 -- IP is baned
+ *  	10 -- system error
  *  @author binxun
  */
-static ZEND_FUNCTION(bbs_createNewID)
+static ZEND_FUNCTION(bbs_createnewid)
 {
 	char* userid;
 	int userid_len;
 	char* passbuf;
 	int passbuf_len;
-	char genbuf[1024];
+	char buf[1024];
+	char tmpstr[30];
 	struct stat lst;
 	time_t lnow;
 	struct userec newuser;
 	int allocid;
-	
-        int ac = ZEND_NUM_ARGS();
-        /*
-         * getting arguments
-         */
-        if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ss", &userid, &userid_len,&passbuf,&passbuf_len) == FAILURE) {
+
+    int ac = ZEND_NUM_ARGS();
+
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ss", &userid, &userid_len,&passbuf,&passbuf_len) == FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
 	if (userid_len > IDLEN)RETURN_LONG(5);
@@ -1819,19 +1819,24 @@ static ZEND_FUNCTION(bbs_createNewID)
 	if (bad_user_id(userid)) RETURN_LONG(3);
 	if (searchuser(userid)) RETURN_LONG(4);
 
+	//if(check_ban_IP(fromhost,buf) < 0)RETURN_LONG(7);
+
 	lnow = time(NULL);
-	sethomepath(genbuf,userid);
-	if ( !stat(genbuf,&lst) && S_ISDIR(lst.st_mode) && (lnow-lst.st_ctime < SEC_DELETED_OLDHOME ))
+	sethomepath(buf,userid);
+	//存在前人的目录,并且还在保存期限以内
+	if (!stat(buf,&lst) && S_ISDIR(lst.st_mode) && (lnow-lst.st_ctime < SEC_DELETED_OLDHOME ))
 	{
 		//log?
+
 		RETURN_LONG(10);
 	}
 
 	memset(&newuser,0,sizeof(newuser));
-	strncpy(newuser.userid ,userid,IDLEN);	
+	strncpy(newuser.userid ,userid,IDLEN);
 	newuser.firstlogin = newuser.lastlogin = time(NULL);
 
 	setpasswd(passbuf,&newuser);
+
 	newuser.userlevel = PERM_BASIC;
 	newuser.userdefine = -1;
 	newuser.userdefine &= ~DEF_NOTMSGFRIEND;
@@ -1840,36 +1845,51 @@ static ZEND_FUNCTION(bbs_createNewID)
 	newuser.flags[0] = CURSOR_FLAG;
 	newuser.flags[0] |= PAGER_FLAG;
 	newuser.flags[1] = 0;
-	
+
+	//分配ID号
 	allocid = getnewuserid2(newuser.userid);
 	if (allocid > MAXUSERS || allocid <= 0) RETURN_LONG(10);
 
+	//更新共享内存数据
 	update_user(&newuser,allocid,1);
 
 	if (!getuser(newuser.userid,&currentuser))RETURN_LONG(10);
 
 	bbslog("user","%s","new account from tsinghua www");
-	
+
+
+	//检查是否有前人的信件
+	sethomepath(tmpstr,userid);
+	sprintf(buf,"/bin/mv -f %s " BBSHOME "/homeback/%s",tmpstr,userid);
+	system(buf);
+	setmailpath(tmpstr,userid);
+	sprintf(buf,"/bin/mv -f %s " BBSHOME "/mailback/%s",tmpstr,userid);
+	system(buf);
+
+	//创建新目录
+	sethomepath(tmpstr,userid);
+	if(mkdir(tmpstr,0755) < 0)RETURN_LONG(10);
+
 	RETURN_LONG(0);
 }
 /**
  * fill infomation of ID ,name, NO. dept, for tsinghua
  * prototype:
  * int bbs_fillIDInfo(string smthid,string name,string number,string dept);
- * 
+ *
  *  @return the result
  *  	0 -- success, -1 -- Invalid parameter
  *  	-2 -- error
  *  @author binxun
  */
-static ZEND_FUNCTION(bbs_fillIDInfo)
+static ZEND_FUNCTION(bbs_fillidinfo)
 {
     char* userid;
     int userid_len;
     char* realname;
     int realname_len;
     char* number;
-    int number_len;	
+    int number_len;
     char* dept;
     int dept_len;
     char genbuf[STRLEN];
@@ -1879,14 +1899,14 @@ static ZEND_FUNCTION(bbs_fillIDInfo)
     int ac = ZEND_NUM_ARGS();
 
 
-    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "ssss", &userid, &userid_len,&realname,&realname_len,&number,&number_len,&dept,&dept_len) == FAILURE) 
+    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "ssss", &userid, &userid_len,&realname,&realname_len,&number,&number_len,&dept,&dept_len) == FAILURE)
     {
             WRONG_PARAM_COUNT;
     }
 
     if(userid_len > IDLEN || realname_len > NAMELEN || dept_len > STRLEN)
        RETURN_LONG(-1);
-     
+
     memset(&ud,0,sizeof(ud));
     if(read_userdata(userid,&ud) < 0)RETURN_LONG(-2);
 
