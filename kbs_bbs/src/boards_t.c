@@ -384,7 +384,7 @@ int page, clsflag, newflag;
          * Leeward 98.03.28 Displaying whether a board is READONLY or not 
          */
         if (ptr->dir == 2)
-            sprintf(buf, "%s(%d)", ptr->title);
+            sprintf(buf, "%s(%d)", ptr->title,ptr->total);
         else if (ptr->dir >= 1)
             sprintf(buf, "%s", ptr->title);     // added by bad 2002.8.3
         else if (true == checkreadonly(ptr->name))
