@@ -35,6 +35,7 @@
 #define DEFAULTBOARD    	"sysop"
 #define FILTER_BOARD        "Filter"
 #define SYSMAIL_BOARD       "SYSOPMail"
+#define BLESS_BOARD "Blessing"
 #define MAXUSERS  		20000
 #define MAXCLUB         128
 #define MAXBOARD  		400
