@@ -1036,13 +1036,15 @@ void join_room(int w, int spec)
                 if(jpage<=0) jpage=0;
                 refreshit();
             }
-            else if(ch==Ctrl('T')&&inrooms[myroom].status == INROOM_DAY&&inrooms[myroom].flag&PEOPLE_POLICE) {
+            else if(ch==Ctrl('T')&&inrooms[myroom].status == INROOM_DAY) {
                 int pid;
                 int sel;
                 sel = getpeople(selected);
                 if(sel==-1) continue;
                 me = mypos;
                 pid = inrooms[myroom].peoples[me].pid;
+                if(!(inrooms[myroom].peoples[me].flag&PEOPLE_POLICE))
+                    continue;
                 if(inrooms[myroom].peoples[me].flag&PEOPLE_TESTED) {
                     send_msg(pid, "\x1b[31;1m本轮你已经侦查过了\x1b[m");
                     refreshit();
