@@ -80,53 +80,53 @@ int main() {
 					" <a target=\"f3\" href=\"bbsdoc?board=%s\">%s</a><br>\n",
 					bptr->filename, bptr->filename);
 		}
-		printf("<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsmybrd\">"
-				" 预定管理</a><br>\n");
+		printf("<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsmybrd\">"
+				"预定管理</a><br>\n");
 		printf("</div>\n");
 	}
   	printf(" <img src=\"/folder.gif\" name=\"img1\"><a href=\"javascript: t(document.all.div1, document.img1)\">分类讨论区</a><br>"
 "		<div id=\"div1\" style=\"display:none\">\n");
 	for (i = 0; i < SECNUM; i++)
-		printf("<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsboa?%d\"> %s</a><br>",
+		printf("<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsboa?%d\">%s</a><br>",
 				i, secname[i][0]);
 	printf("</div><img src=\"/folder.gif\" name=\"img2\"><a href=\"javascript: t(document.all.div2, document.img2)\">谈天说地区</a><br>\n");
 	printf("<div id=\"div2\" style=\"display:none\">\n");
   	if(loginok) {
-		printf("<img src=\"/link.gif\"><a href=\"bbsfriend\" target=\"f3\"> 在线好友</a><br>\n");
+		printf("<img src=\"/link.gif\"> <a href=\"bbsfriend\" target=\"f3\">在线好友</a><br>\n");
 	}
-  	printf("<img src=\"/link.gif\"><a href=\"bbsusr\" target=\"f3\"> 环顾四方</a><br>\n");
-  	printf("<img src=\"/link.gif\"><a href=\"bbsqry\" target=\"f3\"> 查询网友</a><br>\n");
+  	printf("<img src=\"/link.gif\"> <a href=\"bbsusr\" target=\"f3\">环顾四方</a><br>\n");
+  	printf("<img src=\"/link.gif\"> <a href=\"bbsqry\" target=\"f3\">查询网友</a><br>\n");
         if(loginok&&currentuser->userlevel & PERM_PAGE) {
-                printf("<img src=\"/link.gif\"><a href=\"bbssendmsg\" target=\"f3\"> 发送讯息</a><br>\n");
-                printf("<img src=\"/link.gif\"><a href=\"bbsmsg\" target=\"f3\"> 查看所有讯息</a><br>\n");
+                printf("<img src=\"/link.gif\"> <a href=\"bbssendmsg\" target=\"f3\">发送讯息</a><br>\n");
+                printf("<img src=\"/link.gif\"> <a href=\"bbsmsg\" target=\"f3\">查看所有讯息</a><br>\n");
 	}
 	printf("</div>\n");
 	ptr="";
 	if(loginok&&currentuser->userlevel & PERM_CLOAK)
-		ptr="<img src=\"/link.gif\"><a target=\"f3\" onclick=\"return confirm('确实切换隐身状态吗?')\" href=\"bbscloak\"> 切换隐身</a><br>\n";
+		ptr="<img src=\"/link.gif\"> <a target=\"f3\" onclick=\"return confirm('确实切换隐身状态吗?')\" href=\"bbscloak\">切换隐身</a><br>\n";
 	if(loginok)
                 printf("<img src=\"/folder.gif\" name=\"img3\"><a href=\"javascript: t(document.all.div3, document.img3)\">个人工具箱</a><br>"
 "			<div id=\"div3\" style=\"display:none\">"
-"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsinfo\"> 个人资料</a><br>"
-"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsplan\"> 改说明档<a><br>"
-"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbssig\"> 改签名档<a><br>"
-"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbspwd\"> 修改密码</a><br>"
-"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsparm\"> 修改个人参数</a><br>"
-"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsmywww\"> WWW个人定制</a><br>"
-"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsnick\"> 临时改昵称</a><br>"
+"			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsinfo\">个人资料</a><br>"
+"			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsplan\">改说明档<a><br>"
+"			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbssig\">改签名档<a><br>"
+"			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbspwd\">修改密码</a><br>"
+"			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsparm\">修改个人参数</a><br>"
+"			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsmywww\">WWW个人定制</a><br>"
+"			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsnick\">临时改昵称</a><br>"
 /*"		<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsstat\"> 排名统计</a><br>"*/
-"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsfall\"> 设定好友</a><br>"
+"			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsfall\">设定好友</a><br>"
 "			%s</div>"
 "			<img src=\"/folder.gif\" name=\"img5\"><a href=\"javascript: t(document.all.div5, document.img5)\">处理信件区</a><br>"
 "			<div id=\"div5\" style=\"display:none\">"
-"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsnewmail\"> 阅览新邮件</a><br>"
-"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsmail\"> 所有邮件</a><br>"
-"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbspstmail\"> 发送邮件</a><br>"
+"			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsnewmail\">阅览新邮件</a><br>"
+"			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsmail\">所有邮件</a><br>"
+"			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbspstmail\">发送邮件</a><br>"
 "			</div>", ptr);
 	printf("<img src=\"/folder.gif\" name=\"img4\">");
 	printf("<a href=\"javascript: t(document.all.div4, document.img4)\">特别服务区</a><br>\n");
 	printf("<div id=\"div4\" style=\"display:none\">\n");
-	printf("<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsalluser\">所有使用者</a><br>\n");
+	printf("<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsalluser\">所有使用者</a><br>\n");
 	/*printf("<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsadl\">下载精华区</a><br>\n");*/
 	printf("</div>\n");
   	printf("<img src=\"/link0.gif\"><a href=\"bbsfind\" target=\"f3\">文章查询</a><br>\n");
