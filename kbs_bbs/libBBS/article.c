@@ -302,8 +302,11 @@ int write_posts(char *id, char *board, char *title)
     char *ptr;
     time_t now;
     struct posttop postlog, pl;
-
+#ifdef BLESS_BOARD
     if (junkboard(board) || normal_board(board) != 1)
+#else
+    if (strcasecmp(board,BLESS_BOARD)&&(junkboard(board) || normal_board(board) != 1))
+#endif
         return 0;
     now = time(0);
     strcpy(postlog.author, id);

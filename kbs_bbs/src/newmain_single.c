@@ -679,7 +679,8 @@ void user_login()
     if (DEFINE(currentuser, DEF_SHOWSTATISTIC)) {
         ansimore("0Announce/bbslists/countlogins", true);
 #ifdef BLESS_BOARD
-        ansimore("0Announce/etc/posts/bless", true);
+        if (dashf("etc/posts/bless"))
+            ansimore("etc/posts/bless", true);
 #endif
     }
     if (vote_flag(NULL, '\0', 2 /*检查读过新的Welcome 没 */ ) == 0) {
