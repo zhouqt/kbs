@@ -31,15 +31,15 @@ int main()
         if (!strncmp(parm_name[i], "box", 3)) {
             total++;
             if (mode == 1)
-                do_del(board, parm_name[i] + 3);
+                do_del(board, atoi(parm_name[i] + 3));
             if (mode == 2)
-                do_set(board, parm_name[i] + 3, FILE_MARKED);
+                do_set(board, atoi(parm_name[i] + 3), FILE_MARKED);
             if (mode == 3)
-                do_set(board, parm_name[i] + 3, FILE_DIGEST);
+                do_set(board, atoi(parm_name[i] + 3), FILE_DIGEST);
             if (mode==4)
-                do_set(board, parm_name[i] + 3, FILE_READ);
+                do_set(board, atoi(parm_name[i] + 3), FILE_READ);
             if (mode == 5)
-                do_set(board, parm_name[i] + 3, 0);
+                do_set(board, atoi(parm_name[i] + 3), 0);
         }
     }
     printf("</table>");
@@ -49,24 +49,26 @@ int main()
     http_quit();
 }
 
-int do_del(char *board, char *file)
+/* modified by stiger,use id */
+int do_del(char *board, int id)
 {
     FILE *fp;
     int num = 0;
-    char path[256], buf[256], dir[256], *id = currentuser->userid;
+    //char path[256], buf[256], dir[256] ;
+    char dir[256];
     struct fileheader f;
-    struct userec *u = NULL;
+    //struct userec *u = NULL;
     bcache_t *brd = getbcache(board);
 
     sprintf(dir, "boards/%s/.DIR", board);
-    sprintf(path, "boards/%s/%s", board, file);
+    //sprintf(path, "boards/%s/%s", board, file);
     fp = fopen(dir, "r");
     if (fp == 0)
         http_fatal("错误的参数");
     while (1) {
         if (fread(&f, sizeof(struct fileheader), 1, fp) <= 0)
             break;
-        if (!strcmp(f.filename, file)) {
+        if (f.id==id) {
             switch (del_post(num, &f, dir, board)) {
             case DONOTHING:
                 http_fatal("你无权删除该文");
@@ -79,25 +81,26 @@ int do_del(char *board, char *file)
         num++;
     }
     fclose(fp);
-    printf("<tr><td></td><td>%s</td><td>文件不存在.</td></tr>\n", file);
+    printf("<tr><td></td><td></td><td>文件不存在.</td></tr>\n");
 }
 
 /* 加 G 时并没有 post 到文摘区 */
-int do_set(char *board, char *file, int flag)
+/* modified by stiger,use id */
+int do_set(char *board, int id, int flag)
 {
     FILE *fp;
     char path[256], dir[256];
     struct fileheader f;
 
     sprintf(dir, "boards/%s/.DIR", board);
-    sprintf(path, "boards/%s/%s", board, file);
+    //sprintf(path, "boards/%s/%s", board, file);
     fp = fopen(dir, "r+");
     if (fp == 0)
         http_fatal("错误的参数");
     while (1) {
         if (fread(&f, sizeof(struct fileheader), 1, fp) <= 0)
             break;
-        if (!strcmp(f.filename, file)) {
+        if (f.id==id) {
             if (flag==FILE_READ)
                 f.accessed[1] |= flag;
             else
@@ -114,5 +117,7 @@ int do_set(char *board, char *file, int flag)
         }
     }
     fclose(fp);
-    printf("<tr><td></td><td></td><td>%s</td><td>文件不存在.</td></tr>\n", file);
+    printf("<tr><td></td><td></td><td></td><td>文件不存在.</td></tr>\n");
 }
+
+//change_post_flag(NULL, currentuser, 0, board, ent, fileinfo, direct, flag, 0)

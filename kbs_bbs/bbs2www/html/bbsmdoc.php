@@ -81,7 +81,7 @@
 			$flags = $article["FLAGS"];
 ?>
 <tr>
-<td><?php echo $start + $i; ?></td><td><input style="height:18px" name="box<?php echo $article["FILENAME"]; ?>" type="checkbox"></td>
+<td><?php echo $start + $i; ?></td><td><input style="height:18px" name="box<?php echo $article["ID"]; ?>" type="checkbox"></td>
 <td>
 <?php
 			if ($flags[1] == 'y')
