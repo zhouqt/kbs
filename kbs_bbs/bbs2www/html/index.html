@@ -6,36 +6,47 @@
 </style>
 
 <title>BBS Ë®Ä¾Çå»ªÕ¾</title>
+<script language="JavaScript">
+<!--
+function guestlogin()
+{
+	document.form1.id.value="guest";
+	document.form1.submit();
+}
+-->
+</script>
 </head>
 <body leftmargin="0" topmargin="0" marginwidth="1" marginheight="1">
 <div align="left">
   <table width="760" border="0" cellspacing="0" cellpadding="0">
     <tr>
       <td valign="middle" align="left"><img src="images/smth.jpg" width="760" height="500" border="0"> 
+          <div id="Layer2" style="position:absolute; width:276px; height:40px; z-index:2; left: 90px; top: 185px; border: 1px none #000000"> 
         <form action=bbslogin.jsp method=post name=form1 >
-        <div id="Layer2" style="position:absolute; width:279px; height:46px; z-index:2; left: 89px; top: 185px; background-image: url(images/back1.gif); layer-background-image: url(images/back1.gif); border: 1px none #000000"> 
-            <table align=center bgcolor=#ffffff border=0 bordercolordark=#ffffff bordercolorlight=#000000 cellpadding=0 cellspacing=0 width="100%" height="49%" background="images/back1.gif">
-              <tr align="center" valign="middle"> 
-                <td width="180" valign="bottom" height="27"><font style="font-size: 14px">ÕÊºÅ 
-                  <input type="text" name="id" onMouseOver="this.focus()" onFocus="this.select()" size="16" maxlength="12">
-                  </font> </td>
-                <td width="71" height="27"> 
-                  <input type="submit" value="µÇ¡¡Â¼" style="font-size: 14px; background-color:rgb(246,167,133); color: #F000000" name="submit">
-                </td>
-              </tr>
-              <tr align="center" valign="middle"> 
-                <td width="180" height="22"> <font style="font-size: 14px">ÃÜÂë 
-                  <input type="password" name="passwd" size="16" maxlength="39">
-                  </font> </td>
-<!--
-                <td width="71">
-                  <input type="submit" name="guest" value="ÄäÃûµÇÂ½" style="font-size: 14px; background-color:rgb(246,167,133); color: #F000000">
-                </td>
---->
-              </tr>
+            <table align=center bgcolor=#c4d3fe border=0 bordercolordark=#ffffff bordercolorlight=#000000 cellpadding=0 cellspacing=0 width="100%" height="49%">
+            <tr><td>
+            <table align=center cellpadding=0 cellspacing=0 width="160" height="49%">
+            <tr align="center" valign="middle"> 
+              <td width="100%" valign="bottom"><font style="font-size: 14px">ÕÊºÅ
+                <input type="text" name="id" onMouseOver="this.focus()" onFocus="this.select()" size="16"></font>
+              </td>
+            </tr>
+            <tr align="center" valign="middle"> 
+              <td width="100%" height="22">
+                <font style="font-size: 14px">ÃÜÂë
+                <input type="password" name="passwd" size="16" maxlength="39"></font>
+              </td>
+            </tr>
             </table>
-        </div>
+            </td>
+            <td align=center>
+				<input type="submit" value="µÇ¡¡Â¼" style="width:80px; font-size: 14px; background-color:rgb(246,167,133); color: #F000000" name="submit1">
+				<input type="button" name="guest" value="ÄäÃûµÇÂ½" style="width:80px; font-size: 14px; background-color:rgb(246,167,133); color: #F000000" onclick=guestlogin()>
+                </td>
+            </tr>
+            </table>
       </form>
+        </div>
       </td>
     </tr>
   </table>
