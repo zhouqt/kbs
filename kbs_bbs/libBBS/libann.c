@@ -317,6 +317,26 @@ void a_additem(MENU* pm,const char* title,const char* fname,char* host,int port,
     }
 }
 
+#ifdef ANN_CTRLK
+static int canread(int level, char *path, char * fname)
+{
+	char buf[PATHLEN+20];
+
+	if(strlen(path)+strlen(fname) > PATHLEN)
+		return 0;
+	if(level & PERM_BOARDS) return 1;
+
+	sprintf(buf,"%s/%s",path,fname);
+	if(dashd(buf)){
+		strcat(buf,"/.allow");
+		if(!dashf(buf)) return 1;
+		if(!seek_in_file(buf,getCurrentUser()->userid)) return 0;
+		return 1;
+	}
+	return 1;
+}
+#endif
+
 int a_loadnames(MENU* pm, session_t* session)             /* 装入 .Names */
 {
     FILE *fn;
@@ -359,6 +379,9 @@ int a_loadnames(MENU* pm, session_t* session)             /* 装入 .Names */
             else
                 strncpy(litem.fname, buf + 5, sizeof(litem.fname));
             if (strstr(litem.fname,"..")) continue;
+#ifdef ANN_CTRLK
+			if (!canread(pm->level, pm->path, litem.fname)) continue;
+#endif
             if (HAS_PERM(session->currentuser, PERM_SYSOP)
                 ||((!strstr(litem.title, "(BM: BMS)") || HAS_PERM(session->currentuser, PERM_BOARDS))
                  &&(!strstr(litem.title, "(BM: SYSOPS)") || HAS_PERM(session->currentuser, PERM_SYSOP)) 

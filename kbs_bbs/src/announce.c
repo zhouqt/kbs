@@ -1346,6 +1346,60 @@ int a_repair(MENU *pm)
 }
 /* add end */
 
+#ifdef ANN_CTRLK
+static int a_control_user(char *fpath)
+{
+    char buf[PATHLEN+20];
+    int count;
+    char ans[20];
+    char uident[STRLEN];
+
+    sprintf(buf, "%s/.allow", fpath);
+
+    while (1) {
+        clear();
+        prints("设定目录访问名单\n");
+        count = listfilecontent(buf);
+        if (count)
+            getdata(1, 0, "(A)增加 (D)删除or (E)离开[E]", ans, 7, DOECHO, NULL, true);
+        else
+            getdata(1, 0, "(A)增加 or (E)离开 [E]: ", ans, 7, DOECHO, NULL, true);
+        if (*ans == 'A' || *ans == 'a') {
+            move(1, 0);
+            usercomplete("增加访问允许成员: ", uident);
+            if (*uident != '\0') {
+                if(seek_in_file(buf,uident)){
+					move(2,0);
+					prints("%s 已经在名单中\n",uident);
+					continue;
+				}
+				addtofile(buf,uident);
+				continue;
+            }
+        } else if ((*ans == 'D' || *ans == 'd') && count) {
+            move(1, 0);
+            namecomplete("删除访问允许成员: ", uident);
+            if (uident[0] != '\0') {
+                if (seek_in_file(buf, uident)) {
+                    del_from_file(buf, uident);
+                }
+                continue;
+            }
+        } else
+            break;
+    }
+	if(count<=0){
+		clear();
+		move(1,0);
+		if(askyn("允许访问者名单空,你要取消访问设置,让所有用户可以访问吗?",0) == 1){
+			unlink(buf);
+		}
+	}
+
+    return 1;
+}
+#endif
+
 void a_manager(MENU *pm,int ch)
 {
     char uident[STRLEN];
@@ -1396,6 +1450,12 @@ void a_manager(MENU *pm,int ch)
         	save_import_path(import_path,import_title,&import_path_time, getSession());
         }
         break;
+#ifdef ANN_CTRLK
+	case Ctrl('K'):
+		a_control_user(pm->path);
+        pm->page = 9999;
+		break;
+#endif
 	/* add by stiger,20030502 */
 	/* 寻找丢失条目 */
 	case 'z':
