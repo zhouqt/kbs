@@ -105,13 +105,14 @@ int day,month,year;
 #define getnum(a) (((a)[0]-'0')*10+(a)[1]-'0')
 
 int leapMonth(int y) {
-    return(lunarInfo[y-1900] & 0xf);
+    int lm = lunarInfo[y-1900] & 0xf;
+    return(lm==0xf?0:lm);
 }
 
 int leapDays(int y)
 {
-    if(leapMonth(y))  return((lunarInfo[y-1900] & 0x10000)? 30: 29);
-    else return(0);
+     if(leapMonth(y)) return( (lunarInfo[y-1899]&0xf)==0xf? 30: 29);
+     else return(0);
 }
 
 int lYearDays(int y) 
@@ -149,7 +150,7 @@ void Lunar(int day, int * lmonth, int * lday)
     for(i=1901;i<year;i++) offset+=get_day2(i);
     for(j=1;j<month;j++) offset+=get_day(year, j);
     offset+=day;
-    for(i=1900; i<2050 && offset>0; i++) { temp=lYearDays(i); offset-=temp; }
+    for(i=1900; i<2100 && offset>0; i++) { temp=lYearDays(i); offset-=temp; }
     if(offset<0) { offset+=temp; i--; }
 
     lyear = i;
