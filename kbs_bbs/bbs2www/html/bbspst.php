@@ -218,6 +218,8 @@
 </td></tr>
 </table></form>
 
+<center><a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>">╠╬лжбшгЬ</a></center>
+
 </html>
 <?php
 ?>
