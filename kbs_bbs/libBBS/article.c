@@ -2131,7 +2131,9 @@ int change_post_flag(struct write_dir_arg* dirarg,int currmode, struct boardhead
         /*置顶的文章不能做操作*/
         return 1;
     
-        /*在除了普通区不能做文摘操作*/
+        /*在文摘区不能做文摘操作*/
+    if ((flag == FILE_DIGEST_FLAG) && (currmode == DIR_MODE_DIGEST))
+        return 1;
     /*
     if ((flag == FILE_DIGEST_FLAG) && (currmode != DIR_MODE_NORMAL))
         return 1;
