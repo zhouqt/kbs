@@ -298,9 +298,14 @@ int EnameInFav(char *ename)
 {
     int i;
 
-    for (i = 0; i < bdirshm->allbrd_list_t ; i++)
-        if ( ! strcasecmp( bdirshm->allbrd_list[i].ename , ename) )
-            return i + 1;
+    for (i = 0; i < bdirshm->allbrd_list_t ; i++){
+        if ( ! strcasecmp( bdirshm->allbrd_list[i].ename , ename) ){
+			if( bdirshm->allbrd_list[i].level==0 || HAS_PERM(currentuser, bdirshm->allbrd_list[i].level) )
+            	return i + 1;
+			else
+				return 0;
+		}
+	}
     return 0;
 }
 
