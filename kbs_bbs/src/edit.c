@@ -1110,6 +1110,7 @@ void keep_fail_post()
         free(p);
         p = v;
     }
+	fclose(fp);
     return;
 }
 
