@@ -254,6 +254,60 @@
 <?php		
 	}
 		
+	function display_blog_menu($userid,$userfirstlogin)
+	{
+		$db["HOST"]=bbs_sysconf_str("MYSQLHOST");
+		$db["USER"]=bbs_sysconf_str("MYSQLUSER");
+		$db["PASS"]=bbs_sysconf_str("MYSQLPASSWORD");
+		$db["NAME"]=bbs_sysconf_str("MYSQLSMSDATABASE");
+		
+		@$link = mysql_connect($db["HOST"],$db["USER"],$db["PASS"]) or die("无法连接到服务器!");
+		@mysql_select_db($db["NAME"],$link);
+		
+		$query = "SELECT `uid` FROM `users` WHERE `username` = '".$userid."' AND `createtime`  > ".date("YmdHis",$userfirstlogin)." LIMIT 0,1 ;";
+		$result = mysql_query($query,$link);
+		$rows = mysql_fetch_array($result);
+		@mysql_free_result($result);
+		if(!$rows)
+		{
+			return NULL;
+		}
+		else
+		{
+?>
+&nbsp;
+<img src="images/line.gif" width="11" height="16" align="absmiddle">
+<A href="/pc/index.php?id=<?php echo $userid; ?>" target="f3">我的个人文集</A><BR>
+&nbsp;
+<img src="images/line.gif" width="11" height="16" align="absmiddle">
+<A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=0" target="f3">公开区</A><BR>
+&nbsp;
+<img src="images/line.gif" width="11" height="16" align="absmiddle">
+<A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=1" target="f3">好友区</A><BR>
+&nbsp;
+<img src="images/line.gif" width="11" height="16" align="absmiddle">
+<A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=2" target="f3">私人区</A><BR>
+&nbsp;
+<img src="images/line.gif" width="11" height="16" align="absmiddle">
+<A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=3" target="f3">收藏区</A><BR>
+&nbsp;
+<img src="images/line.gif" width="11" height="16" align="absmiddle">
+<A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=4" target="f3">删除区</A><BR>
+&nbsp;
+<img src="images/line.gif" width="11" height="16" align="absmiddle">
+<A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=5" target="f3">好友管理</A><BR>
+&nbsp;
+<img src="images/line.gif" width="11" height="16" align="absmiddle">
+<A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=6" target="f3">文集管理</A><BR>
+&nbsp;
+<img src="images/line.gif" width="11" height="16" align="absmiddle">
+<A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=7" target="f3">参数设定</A><BR>
+&nbsp;
+<img src="images/line.gif" width="11" height="16" align="absmiddle">
+<A href="/pc/pcmanage.php?act=post&tag=0&pid=0" target="f3">添加文章</A><BR>
+<?php		
+		}	
+	}
 		
 	if ($loginok != 1)
 		html_nologin();
@@ -352,6 +406,10 @@
 			<td> </td>
 			<td>
 				<DIV class="s" id="divpc">
+<?php
+		if($currentuser["userid"]!="guest")
+			display_blog_menu($currentuser["userid"],$currentuser["firstlogin"]);
+?>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/pc/pc.php" target="f3">个人文集</a><br>
