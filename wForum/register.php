@@ -41,7 +41,34 @@ function do_apply(){
 	require "inc/userdatadefine.inc.php";
 
 ?>
-<form method=post action="<?php echo $_SERVER['PHP_SELF'] ?>" name="theForm">
+<script language="javascript">
+<!--
+	function checkEmpty(form, fieldID, fieldName) {
+		if (form[fieldID].value == "") {
+			alert('请输入您的' + fieldName + '!');
+			form[fieldID].focus();
+			return false;
+		}
+		return true;
+	}
+	function CheckDataValid(form) 
+	{
+		var fID = new Array("userid", "pass1", "validCode", "realname", "dept", "address");
+		var fName = new Array("用户名", "密码", "验证码", "真实姓名", "学校系级或工作单位", "详细通讯地址");
+		var len = fID.length;
+		for (i = 0; i < len; i++) {
+			if (!checkEmpty(form, fID[i], fName[i])) return false;
+		}
+		if (form["pass1"].value != form["pass2"].value) {
+			alert("你两次输入的密码不一样：（"); 
+			form["pass1"].focus(); 
+			return false; 
+		}
+		return true;
+	}
+//-->
+</script> 
+<form method=post action="register.php" onsubmit="return CheckDataValid(this);" name="theForm">
 <input type="hidden" name="action" value="save">
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
 <thead>
@@ -348,7 +375,7 @@ function do_save(){
 
 	@$realname=$_POST["realname"];
 	@$dept=$_POST["dept"];
-    @$address=$_POST["address"];
+	@$address=$_POST["address"];
 	@$year=$_POST["year"];
 	@$month=$_POST["month"];
 	@$day=$_POST["day"];
