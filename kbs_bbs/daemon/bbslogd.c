@@ -18,7 +18,7 @@ struct bbs_msgbuf *rcvlog(int msqid)
         msgp->mtext[retv] = '\n';
         retv++;
     }
-    msgp->mtext[retv] = 0;
+    msgp->mtext[retv-((char*)msgp->mtext-(char*)msgp->msgtime)] = 0;
     return msgp;
 }
 
