@@ -117,7 +117,7 @@ int sendtouser(struct GWSendSMS * h, char* buf)
     strncpy(hh.id, h->SrcMobileNo, IDLEN+2);
     hh.id[IDLEN+1] = 0;
 
-    newbbslog(BBSLOG_SMS,"receive %s from %s for %s",buf,h->SrcMobileNo, uin->userid);
+    newbbslog(BBSLOG_SMS,"receive %s from %s for %s",buf,h->SrcMobileNo, uident);
     if(uin == NULL){
 		hh.topid = -1;
 #if HAVE_MYSQL == 1
