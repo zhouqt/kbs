@@ -216,7 +216,7 @@ void refresh()
 
     for (i = 0; i < scr_lns; i++) {
         j = (i + roll)%scr_lns;
-        for (k = 0; k < t_columns; k++)
+        for (k = 0; k < scr_cols; k++)
         if(bp[j].mode[k]&SCREEN_MODIFIED&&(isprint2(bp[j].data[k]))||bp[j].data[k]==0) {
             stackt=0;
             rel_move(tc_col, tc_line, k, i);
@@ -251,6 +251,17 @@ void refresh()
                 push(40+bp[j].color[k]/16);
             }
             outstack();
+            if(k<scr_cols-3&&(bp[j].data[k]==0||bp[j].data[k]==32)&&(bp[j].data[k+1]==0||bp[j].data[k+1]==32)) {
+                int p=1;
+                for(ii=k+1;ii<scr_cols;ii++)
+                    p&&=(bp[j].data[ii]==0||bp[j].data[ii]==32)&&bp[j].color[ii]/16==bp[j].color[k]/16&&(bp[j].mode[ii]&~SCREEN_MODIFIED==bp[j].mode[k]&~SCREEN_MODIFIED);
+                if(p) {
+                    for(ii=k;ii<scr_cols;ii++)
+                        bp[j].mode[ii]&=~SCREEN_MODIFIED;
+                    o_clreol();
+                    continue;
+                }
+            }
             if(bp[j].data[k]==0) ochar(' ');
             else ochar(bp[j].data[k]);
             tc_col++;
@@ -341,8 +352,7 @@ void clrtoeol()
     }
 }
 
-void
-clrtobot()
+void clrtobot()
 {
     register struct screenline *slp;
     register int i, k, ln;
@@ -350,7 +360,9 @@ clrtobot()
     for (i = cur_ln; i < scr_lns; i++) {
         ln = (i + roll)%scr_lns;
         slp = &big_picture[ln];
-        for(k=0;k<t_columns;k++) {
+        for(k=0;k<t_columns;k++) 
+        if(i!=cur_ln||k>=cur_col)
+        {
             if((slp->data[k]==32||slp->data[k]==0)&&slp->mode[k]==cur_mode&&slp->color[k]/16==cur_color/16)
                 slp->mode[k]=SCREEN_MODIFIED;
             else
@@ -465,6 +477,11 @@ void outns(const char*str, int n)
                     cur_ln=savey; cur_col=savex;
                     continue;
                 }
+             }
+             else if(*(str+i)=='J') {
+                str+=i+1;
+                clear();
+                continue;
              }
              else if(*(str+i)=='m') {
                 j=2;
