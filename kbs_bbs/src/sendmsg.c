@@ -84,7 +84,7 @@ int mode;
         uin = t_search(uident, false);
         if (uin == NULL) {
             move(2, 0);
-            prints("¶Ô·½Ä¿Ç°²»ÔÚÏßÉÏ£¬»òÊÇÊ¹ÓÃÕß´úºÅÊäÈë´íÎó...\n");
+            prints("¶Ô·½Ä¿Ç°²»ÔÚÏßÉÏ£¬»òÊÇÊ¹ÓÃÕß´úºÅÊäÈë´íÎó...");
             pressreturn();
             move(2, 0);
             clrtoeol();
@@ -92,7 +92,7 @@ int mode;
         }
         if (!canmsg(currentuser, uin)) {
             move(2, 0);
-            prints("¶Ô·½ÒÑ¾­¹Ø±Õ½ÓÊÜÑ¶Ï¢µÄºô½ĞÆ÷...\n");
+            prints("¶Ô·½ÒÑ¾­¹Ø±Õ½ÓÊÜÑ¶Ï¢µÄºô½ĞÆ÷...");
             pressreturn();
             move(2, 0);
             clrtoeol();
@@ -511,8 +511,6 @@ void r_msg()
                 ch = igetkey();
             } while(ch!=KEY_UP&&ch!=KEY_DOWN&&ch!='\r'&&ch!='\n');
         }
-        for(i=0;i<=oy;i++)
-            saveline(i, 1, savebuffer[i]);
         switch(ch) {
             case Ctrl('Z'):
                 ch = '\n';
@@ -529,25 +527,45 @@ void r_msg()
                 if(canreply) {
                     if(buf[0]) {
                         strcpy(MsgDesUid, uid);
-                        i = sendmsgfunc(uin, buf, 4);
+                        pid = head.frompid;
+                        uin = t_search(uid, pid);
+                        if(uin==NULL) {
+                            i=-1;
+                            strcpy(msgerr, "¶Ô·½ÒÑ¾­ÀëÏß....");
+                        }
+                        else
+                            i = sendmsgfunc(uin, buf, 4);
                         buf[0]=0;
                         if(i==1) strcpy(buf, "[1m°ïÄãËÍ³öÑ¶Ï¢ÁË[m");
                         else if(i!=0) strcpy(buf, msgerr);
                         if(buf[0]) {
-                            good_move(0,0);
-                            clrtoeol();
-                            prints("%s", buf);
-                            refresh();
-#ifdef NINE_BUILD
-                            if(i!=1)
+                            if(i!=1&&i!=0) {
+                                move(oy+1, 0);
+                                prints("%s °´ÈÎÒâ¼ü¼ÌĞø", buf);
+                                igetkey();
+                                saveline(oy+1, 1, savebuffer[oy+1]);
+                            }
+                            else {
+                                for(i=0;i<=oy;i++)
+                                    saveline(i, 1, savebuffer[i]);
+                                good_move(0,0);
+                                clrtoeol();
+                                prints("%s", buf);
+                            }
+#ifndef NINE_BUILD
+                            if(i==1) {
+                                refresh();
+                                sleep(1);
+                            }
 #endif
-                            sleep(1);
                         }
                     }
                     ch = '\n';
                 }
                 break;
         }
+        for(i=0;i<=oy;i++)
+            saveline(i, 1, savebuffer[i]);
         if (ch=='\r'||ch=='\n') {
         	// make a tag for msg end
 //        	prints("\x1b[mÒÑ·¢³öÏûÏ¢");
@@ -557,7 +575,8 @@ void r_msg()
 
 
 outhere:
-    saveline(0, 1, savebuffer[0]);
+    for(i=0;i<=23;i++)
+        saveline(i, 1, savebuffer[i]);
     showansi = tmpansi;
     good_move(y,x);
     if(oldi)

@@ -525,21 +525,21 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
     if (!HAS_PERM(currentuser, PERM_SEECLOAK) && uin->invisible && strcmp(uin->userid, currentuser->userid) && mode != 4)
         return -2;
     if ((mode != 3) && (LOCKSCREEN == uin->mode)) {     /* Leeward 98.02.28 */
-        strcpy(msgerr, "对方已经锁定屏幕，请稍候再发或给他(她)写信...\n");
+        strcpy(msgerr, "对方已经锁定屏幕，请稍候再发或给他(她)写信...");
         return -1;
     }
     if ((mode != 3) && (uin->mode == BBSNET)) /* flyriver, 2002.9.12 */
     {
-	strcpy(msgerr, "对方尚有一些讯息未处理，请稍候再发或给他(她)写信...\n");
+	strcpy(msgerr, "对方尚有一些讯息未处理，请稍候再发或给他(她)写信...");
        return -1;
     }
     if ((mode != 3) && (false == canIsend2(currentuser,uin->userid))) {     /*Haohmaru.06.06.99.检查自己是否被ignore */
-        strcpy(msgerr, "对方拒绝接受你的讯息...\n");
+        strcpy(msgerr, "对方拒绝接受你的讯息...");
         return -1;
     }
     if (mode != 3 && uin->mode != WEBEXPLORE) {
         if (get_unreadcount(uident) > MAXMESSAGE) {
-            strcpy(msgerr, "对方尚有一些讯息未处理，请稍候再发或给他(她)写信...\n");
+            strcpy(msgerr, "对方尚有一些讯息未处理，请稍候再发或给他(她)写信...");
             return -1;
         }
     }
@@ -559,7 +559,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
     if (uin->mode == WEBEXPLORE) {
         if (send_webmsg(get_utmpent_num(uin), uident, utmpent, 
 						currentuser->userid, head.time, msgstr) < 0) {
-            strcpy(msgerr, "无法发送Web消息...\n");
+            strcpy(msgerr, "无法发送Web消息...");
             return -1;
         }
         if (save_msgtext(uident, &head, msgstr) < 0)
@@ -576,7 +576,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
         || strncasecmp(MsgDesUid,uident,STRLEN)) {
         if (mode == 0)
             return -2;
-        strcpy(msgerr, "对方已经离线....\n");
+        strcpy(msgerr, "对方已经离线....");
         return -1;
     }
 
@@ -587,7 +587,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
             return -2;
     }
     if (uentp->pid != 1 && kill(uin->pid, SIGUSR2) == -1) {
-        strcpy(msgerr, "对方已经离线.....\n");
+        strcpy(msgerr, "对方已经离线.....");
         return -1;
     }
     return 1;
