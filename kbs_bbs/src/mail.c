@@ -495,6 +495,8 @@ int do_send(char *userid, char *title, char *q_file)
             if(currboard->flag&BOARD_ATTACH) {
                 chdir("tmp");
                 upload = bbs_zrecvfile();
+                while(strchr(upload, '>')) *strchr(upload, '>')='A';
+                while(strchr(upload, '<')) *strchr(upload, '<')='A';
                 chdir("..");
             }
         }

@@ -2125,8 +2125,11 @@ int post_article(char *q_file, struct fileheader *re_file)
         } else if (ans[0] == 'U') {
             struct boardheader* b=currboard;
             if(b->flag&BOARD_ATTACH) {
+                int i;
                 chdir("tmp");
                 upload = bbs_zrecvfile();
+                for(i=0;i<strlen(upload);i++)
+                    if(!isalnum(upload[i])) upload[i]='A';
                 chdir("..");
             }
         } else {
