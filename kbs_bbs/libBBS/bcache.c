@@ -26,7 +26,7 @@
 #include "bbs.h"
 #include <sys/ipc.h>
 #include <sys/shm.h>
-
+static void bcache_setreadonly(int readonly);
 static int bcache_lock()
 {
     int lockfd;
@@ -35,6 +35,7 @@ static int bcache_lock()
         log( "3system", "CACHE:lock bcache:%s", strerror(errno) );
         return -1;
     }
+    bcache_setreadonly(0);
     flock(lockfd,LOCK_EX);
     return lockfd;
 }
@@ -42,12 +43,29 @@ static int bcache_lock()
 static int bcache_unlock(int fd)
 {
     flock(fd,LOCK_UN);
+    bcache_setreadonly(1);
     close(fd);
 }
 
 void
 reload_boards()
 {
+}
+static void bcache_setreadonly(int readonly)
+{
+   int boardfd;
+    munmap(bcache,MAXBOARD*sizeof(struct boardheader));
+    if ((boardfd=open(BOARDS,O_RDWR|O_CREAT,0644)) == -1) {
+                log("3system","Can't open " BOARDS "file %s",strerror(errno));
+        exit(-1);
+        }
+    if (readonly)
+        bcache =  (struct boardheader*) mmap(NULL,
+                            MAXBOARD*sizeof(struct boardheader),
+                        PROT_READ,MAP_SHARED,boardfd,0);
+    else
+        bcache = (struct boardheader*) mmap(NULL, MAXBOARD*sizeof(struct boardheader),
+                  PROT_READ|PROT_WRITE,MAP_SHARED,boardfd,0);
 }
 
 int
