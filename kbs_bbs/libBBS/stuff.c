@@ -1227,6 +1227,7 @@ int check_IP_lists(char *IP)
         ips[min].ip[3]=ip[3];
         ips[min].first = now;
         ips[min].last = now;
+        ips[min].t = 1;
     }
 
     lseek(fd, 0, SEEK_SET);
