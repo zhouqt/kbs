@@ -17,8 +17,8 @@ long f_offset = 0;
 static int RMSGCount = 0;       /* Leeward 98.07.30 supporting msgX */
 
 int get_msg(uid, msg, line)
-    char *msg, *uid;
-    int line;
+char *msg, *uid;
+int line;
 {
     char genbuf[3];
 
@@ -52,9 +52,9 @@ int s_msg()
 extern char msgerr[255];
 
 int do_sendmsg(uentp, msgstr, mode)
-    struct user_info *uentp;
-    const char msgstr[256];
-    int mode;
+struct user_info *uentp;
+const char msgstr[256];
+int mode;
 {
     char uident[STRLEN];
     struct user_info *uin;
@@ -96,19 +96,28 @@ int do_sendmsg(uentp, msgstr, mode)
             clrtoeol();
             return -1;
         }
-        /* ±£´æËù·¢msgµÄÄ¿µÄuid 1998.7.5 by dong */
+        /*
+         * ±£´æËù·¢msgµÄÄ¿µÄuid 1998.7.5 by dong 
+         */
         strcpy(MsgDesUid, uident);
-        /* uentp = uin; */
+        /*
+         * uentp = uin; 
+         */
 
     } else {
-        /*  if(!strcasecmp(uentp->userid,currentuser->userid))  rem by Haohmaru,ÕâÑù²Å¿ÉÒÔ×Ô¼º¸ø×Ô¼º·¢msg
-           return 0;    
+        /*
+         * if(!strcasecmp(uentp->userid,currentuser->userid))  rem by Haohmaru,ÕâÑù²Å¿ÉÒÔ×Ô¼º¸ø×Ô¼º·¢msg
+         * return 0;    
          */ uin = uentp;
         strcpy(uident, uin->userid);
-        /*   strcpy(MsgDesUid, uin->userid); change by KCN,is wrong */
+        /*
+         * strcpy(MsgDesUid, uin->userid); change by KCN,is wrong 
+         */
     }
 
-    /* try to send the msg */
+    /*
+     * try to send the msg 
+     */
     result = sendmsgfunc(uin, msgstr, mode);
 
     switch (result) {
@@ -146,7 +155,9 @@ int do_sendmsg(uentp, msgstr, mode)
         return result;
         break;
     }
-    /* resend the message */
+    /*
+     * resend the message 
+     */
     result = sendmsgfunc(uin, buf, mode);
 
     switch (result) {
@@ -213,7 +224,9 @@ int dowall(struct user_info *uin, char *buf2)
     prints("[32mÕı¶Ô %s ¹ã²¥.... Ctrl-D Í£Ö¹¶Ô´ËÎ» User ¹ã²¥¡£[m", uin->userid);
     refresh();
     if (strcmp(uin->userid, "guest")) { /* Leeward 98.06.19 */
-        /* ±£´æËù·¢msgµÄÄ¿µÄuid 1998.7.5 by dong */
+        /*
+         * ±£´æËù·¢msgµÄÄ¿µÄuid 1998.7.5 by dong 
+         */
         strcpy(MsgDesUid, uin->userid);
 
         do_sendmsg(uin, buf2, 3);       /* ¹ã²¥Ê±±ÜÃâ±»¹ı¶àµÄ guest ´ò¶Ï */
@@ -243,7 +256,7 @@ int wall()
         prints("Ã»ÓĞÈÎºÎÊ¹ÓÃÕßÉÏÏß\n");
         pressanykey();
     }
-    sprintf(genbuf, "%s ¹ã²¥:%s", currentuser->userid,buf2);
+    sprintf(genbuf, "%s ¹ã²¥:%s", currentuser->userid, buf2);
     securityreport(genbuf, NULL, NULL);
     prints("\nÒÑ¾­¹ã²¥Íê±Ï....\n");
     pressanykey();
@@ -254,7 +267,7 @@ int msg_count;
 void r_msg_sig(int signo)
 {
     msg_count++;
-    signal(SIGUSR2,r_msg_sig);
+    signal(SIGUSR2, r_msg_sig);
 }
 
 void r_msg()
@@ -370,13 +383,18 @@ void r_msg()
         }
         move(line, 0);
         clrtoeol();
-        prints("%s", msg);
+        if (DEFINE(currentuser, DEF_HIGHCOLOR))
+            prints("\x1b[1m%s", msg);
+        else
+            prints("%s", msg);
         refresh();
         oflush();
         ch = 0;
         while ( /*ch!='\n'&&ch!='\r' */ 1) {
 
-            /*        read(0,&ch,1); */
+            /*
+             * read(0,&ch,1); 
+             */
           END:
             ch = igetkey();
             if (!DEFINE(currentuser, DEF_IGNOREMSG)) {  /*Haohmaru.98.12.23 */
@@ -388,7 +406,9 @@ void r_msg()
                     goto END;
             }
 
-            /* Added by Marco */
+            /*
+             * Added by Marco 
+             */
           MSGX:                /* Leeward 98.07.30 supporting msgX */
             strcpy(msgX, msg);
 
@@ -398,9 +418,9 @@ void r_msg()
             *ptr = '\0';
             ptr = strrchr(buf, '[');
             if (ptr)
-            	send_pid = atoi(ptr + 1);
-           	else
-            	send_pid = 0;
+                send_pid = atoi(ptr + 1);
+            else
+                send_pid = 0;
             if (send_pid > 100)
                 send_pid -= 100;
             ptr = strtok(msg + 10, " [");      /* ºÍmsgÖĞ useridµÄÎ»ÖÃ¹ØÏµÃÜÇĞ */
@@ -423,8 +443,12 @@ void r_msg()
                 clrtoeol();
                 sprintf(msgbuf, "»ØÑ¶Ï¢¸ø %s: ", usid);
 
-                /* Leeward 98.07.30 supporting msgX */
-                /*getdata(line + 1,0,msgbuf,buf,49,DOECHO,NULL,true); */
+                /*
+                 * Leeward 98.07.30 supporting msgX 
+                 */
+                /*
+                 * getdata(line + 1,0,msgbuf,buf,49,DOECHO,NULL,true); 
+                 */
               MSGX2:
                 switch (msgXch = getdata(line + 1, 0, msgbuf, buf, 59, DOECHO, NULL, true)) {
                 case -KEY_UP:
@@ -440,9 +464,9 @@ void r_msg()
                                 Line++;
                                 ptrX = strrchr(bufX, '[');
                                 if (ptrX)
-                                	send_pidX = atoi(ptrX + 1);
+                                    send_pidX = atoi(ptrX + 1);
                                 else
-                                	send_pidX=0;
+                                    send_pidX = 0;
                                 if (send_pidX > 100)
                                     send_pidX -= 100;
                                 if (uinfo.pid == send_pidX) {
@@ -459,12 +483,16 @@ void r_msg()
                                 }       /* End if (uinfo.pid == send_pidX) */
                             }   /* End while (fgets(bufX,256,fpX)) */
                         }
-                        /* if (fpX = fopen(fname,"r")) */
+                        /*
+                         * if (fpX = fopen(fname,"r")) 
+                         */
                         if (XOK) {
                             rewind(fpX);
                             for (Line = 0; Line < Line_1; Line++)
                                 fgets(bufX, 256, fpX);
-                            /* Leeward 98.09.24 enable scroll on both ends when Ctrl+Z */
+                            /*
+                             * Leeward 98.09.24 enable scroll on both ends when Ctrl+Z 
+                             */
                             if (!strncmp(msgX, bufX, strlen(msgX))) {
                                 if (-KEY_DOWN == msgXch) {
                                     rewind(fpX);
@@ -476,7 +504,10 @@ void r_msg()
                             strcpy(msg, bufX);
                             move(line, 0);
                             clrtoeol();
-                            prints("%s", msg);
+                            if (DEFINE(currentuser, DEF_HIGHCOLOR))
+                                prints("\x1b[1m%s", msg);
+                            else
+                                prints("%s", msg);
                             refresh();
                             oflush();
                             ch = 'R';
@@ -499,10 +530,12 @@ void r_msg()
                     sprintf(msgbuf, "[1m½áÊø»ØÕâÌõÑ¶Ï¢[m");
                 else if (0 == XOK && (-KEY_UP == msgXch || -KEY_DOWN == msgXch))
 //                    sprintf(msgbuf, "[1mÏµÍ³´íÎó£ºsendmsg.c/r_msg/msgx/fopen|locate[m"); fixed by bad 2002.8.12
-			;
+                    ;
                 else {
                     if (buf[0] != '\0') {
-                        /* ±£´æËù·¢msgµÄÄ¿µÄuid 1998.7.5 by dong */
+                        /*
+                         * ±£´æËù·¢msgµÄÄ¿µÄuid 1998.7.5 by dong 
+                         */
                         strcpy(MsgDesUid, usid);
                         retcode = do_sendmsg(uin, buf, 4);
                         if (retcode == 1)
@@ -519,10 +552,15 @@ void r_msg()
                     tmp[big_picture[line + 1].len] = '\0';
                 }
                 sprintf(msgbuf, "[1mÕÒ²»³ö·¢Ñ¶Ï¢µÄÈË[m");
-                /* Leeward 98.07.30 enable reply other messages */
+                /*
+                 * Leeward 98.07.30 enable reply other messages 
+                 */
                 move(line, 0);
                 clrtoeol();
-                prints("%s", msgbuf);
+                if (DEFINE(currentuser, DEF_HIGHCOLOR))
+                    prints("\x1b[1m%s", msgbuf);
+                else
+                    prints("%s", msgbuf);
                 refresh();
                 oflush();
                 sprintf(msgbuf, "[1mÇë°´¡ü»ò¡ıÇĞ»»Ñ¶Ï¢£¬»ò°´ Enter ½áÊø£º[m");
@@ -564,7 +602,9 @@ void r_msg()
     saveline(line, 1, savebuffer);      /* restore line */
     move(y, x);
     refresh();
-    /* Leeward 98.07.30 supporting msgX */
+    /*
+     * Leeward 98.07.30 supporting msgX 
+     */
     RMSGCount--;
     if (0 == RMSGCount)
         RMSG = false;
@@ -577,45 +617,43 @@ void r_lastmsg()
     r_msg();
 }
 
-int
-myfriend_wall( struct user_info *uin,char* buf,int i)
+int myfriend_wall(struct user_info *uin, char *buf, int i)
 {
-	if ((uin->pid - uinfo.pid == 0) || !uin->active || !uin->pid
-	    || !canmsg(currentuser,uin)) return -1;
-	if (myfriend(uin->uid,NULL)) {
-		move(1, 0);
-		clrtoeol();
-		prints("\x1b[1;32mÕıÔÚËÍÑ¶Ï¢¸ø %s...  \x1b[m", uin->userid);
-		refresh();
-                strcpy(MsgDesUid, uin->userid);
-		do_sendmsg(uin, buf, 5);
-	}
-	return 0;
+    if ((uin->pid - uinfo.pid == 0) || !uin->active || !uin->pid || !canmsg(currentuser, uin))
+        return -1;
+    if (myfriend(uin->uid, NULL)) {
+        move(1, 0);
+        clrtoeol();
+        prints("\x1b[1;32mÕıÔÚËÍÑ¶Ï¢¸ø %s...  \x1b[m", uin->userid);
+        refresh();
+        strcpy(MsgDesUid, uin->userid);
+        do_sendmsg(uin, buf, 5);
+    }
+    return 0;
 }
 
-int
-friend_wall()
+int friend_wall()
 {
-	char buf[80];
+    char buf[80];
 
-	if (uinfo.invisible) {
-		move(2, 0);
-		prints("±§Ç¸, ´Ë¹¦ÄÜÔÚÒşÉí×´Ì¬ÏÂ²»ÄÜÖ´ĞĞ...\n");
-		pressreturn();
-		return 0;
-	}
-	modify_user_mode(MSG);
-	move(2, 0);
-	clrtobot();
-	if (!get_msg("ÎÒµÄºÃÅóÓÑ", buf, 1))
-			return 0;
-	if (apply_ulist(myfriend_wall,buf) == -1) {
-		move(2, 0);
-		prints("ÏßÉÏ¿ÕÎŞÒ»ÈË\n");
-		pressanykey();
-	}
-	move(6, 0);
-	prints("Ñ¶Ï¢´«ËÍÍê±Ï...");
-	pressanykey();
-	return 1;
+    if (uinfo.invisible) {
+        move(2, 0);
+        prints("±§Ç¸, ´Ë¹¦ÄÜÔÚÒşÉí×´Ì¬ÏÂ²»ÄÜÖ´ĞĞ...\n");
+        pressreturn();
+        return 0;
+    }
+    modify_user_mode(MSG);
+    move(2, 0);
+    clrtobot();
+    if (!get_msg("ÎÒµÄºÃÅóÓÑ", buf, 1))
+        return 0;
+    if (apply_ulist(myfriend_wall, buf) == -1) {
+        move(2, 0);
+        prints("ÏßÉÏ¿ÕÎŞÒ»ÈË\n");
+        pressanykey();
+    }
+    move(6, 0);
+    prints("Ñ¶Ï¢´«ËÍÍê±Ï...");
+    pressanykey();
+    return 1;
 }

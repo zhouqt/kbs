@@ -385,7 +385,7 @@ static int choose_board(int newflag, char *boardprefix)
     modify_user_mode(newflag ? READNEW : READBRD);
     brdnum = number = 0;
 /* show_brdlist( 0, 1, newflag ); *//*
- * board list显示 的 2次显示问题解决! 96.9.5 alex 
+ * * board list显示 的 2次显示问题解决! 96.9.5 alex 
  */
     while (1) {
         if (brdnum <= 0) {      /*初始化 */
@@ -955,7 +955,7 @@ void FavBoard()
     int ifnew = 1, yanksav;
 
 /*    if(heavyload()) ifnew = 0; *//*
- * no heavyload() in FB2.6x 
+ * * no heavyload() in FB2.6x 
  */
     yanksav = yank_flag;
     yank_flag = 2;
