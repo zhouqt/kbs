@@ -5680,12 +5680,16 @@ static PHP_FUNCTION(bbs_getactivation)
 
 static PHP_FUNCTION(bbs_modify_nick)
 {
+    struct userec newinfo;
+    int unum;
+
     char* username;
     int username_len;
     int ac = ZEND_NUM_ARGS();
-	int m;
+    int m, bTmp = 1;
 
     if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &username, &username_len) == FAILURE)
+        if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &username, &username_len, &bTmp) == FAILURE)
     {
             WRONG_PARAM_COUNT;
     }
@@ -5695,6 +5699,16 @@ static PHP_FUNCTION(bbs_modify_nick)
 	}
 	if( strlen(username) >= NAMELEN)
        RETURN_LONG(-1);
+
+    if (!bTmp) {
+        if( (unum = getusernum(getCurrentUser()->userid))==0)
+            RETURN_LONG(-1);
+        memcpy(&newinfo, getCurrentUser(), sizeof(struct userec));
+        if (strcmp(newinfo.username, username)) {
+            strcpy(newinfo.username, username);
+        	update_user(&newinfo, unum, 1);
+        }
+    }
 
 	strcpy(currentuinfo->username, username);
     UPDATE_UTMP_STR(username, (*currentuinfo));
