@@ -20,6 +20,9 @@ agent connections.
 /*
  * $Id$
  * $Log$
+ * Revision 1.9  2003/05/17 10:57:41  bad
+ * fork之前
+ *
  * Revision 1.8  2003/04/18 14:58:56  bad
  * ssh多行
  *
@@ -1073,6 +1076,7 @@ int main(int ac, char **av)
 #endif                          /* LIBWRAP */
                 break;
             } else {
+                if (check_IP_lists(sin.sin_addr.s_addr)==0) 
                 /* Normal production daemon.  Fork, and have the child process
                    the connection.  The parent continues listening. */
                 if ((pid = fork()) == 0) {
