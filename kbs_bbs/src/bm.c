@@ -437,7 +437,7 @@ int deny_user(int ent, struct fileheader *fileinfo, char *direct)
                 if (deldeny(currentuser, currboard, uident, 0)) {
                 }
             }
-        } else if (count > 20) {
+        } else if (count > 20 && isdigit(ans[0])) {
             if (ans[1] == 0)
                 page = *ans - '0';
             else
