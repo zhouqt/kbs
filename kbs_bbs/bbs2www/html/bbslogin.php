@@ -3,6 +3,7 @@
 	 * This file handles user login.
 	 * $Id$
 	 */
+$needlogin = 0;
 require("funcs.php");
 $data = array ();
 @$id = $_POST["id"];
