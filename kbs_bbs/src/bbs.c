@@ -3681,8 +3681,8 @@ static int set_acl_list_key(struct _select_def *conf, int key)
             int d;
 
             getdata(0, 0, "请输入要移动到的位置: ", ans, 3, DOECHO, NULL, true);
-            d=atoi(ans);
-            if (d>=1&&d<=aclt+1&&d!=conf->pos-1) {
+            d=atoi(ans)-1;
+            if (d>=0&&d<=aclt-1&&d!=conf->pos-1) {
                 struct acl_struct temp;
                 int i, p;
                 p = conf->pos-1;
