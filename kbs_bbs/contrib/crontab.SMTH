@@ -98,6 +98,7 @@ MAILTO=bbs
 # 每周一早上 3:33 , 将 BBS home 中超过七天的 chatlog & talklog 的档案砍掉
 33 3 * * 1 /usr/bin/find /home/bbs/home/ \! -ctime 7 \( -name chat_\* -o -name talk_\* \) | xargs rm -f
 # 每天早上1:00清理一个字母的mail里的死信,每天早上3:00清理一个字母的boards里的死文章,27号清理小写字母的boards里的死文章
+# Xclean程序有问题，大家千万不要再用了！- atppp
 #00 1 1 * * find /home/bbs/mail/A  -type f -exec /home/bbs/bin/Xclean {} \;
 #00 5 27 * * find /home/bbs/boards/v*  -type f -exec /home/bbs/bin/Xclean {} \;
 #每天更新天气预报Bigman 现在测试中
