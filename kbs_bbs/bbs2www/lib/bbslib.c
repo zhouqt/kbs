@@ -1802,8 +1802,8 @@ static struct user_info www_guest_uinfo;
 
 static int www_guest_calc_hashkey(struct in_addr *fromhostn)
 {
-	int i=ntohl(fromhostn->s_addr);
-	int j;
+	unsigned int i=ntohl(fromhostn->s_addr);
+	unsigned int j;
 			        
     j =  i & 0x0000FFFF;
     j |= (((i&0xFF000000)>>8) + (i&0x00FF0000)) & 0x000F0000;
