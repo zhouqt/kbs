@@ -295,7 +295,7 @@ void join_room(struct room_struct * r)
     for(i=0;i<myroom->people;i++)
         if(inrooms.peoples[i].pid==uinfo.pid) {
             for(j=i;j<myroom->people-1;j++)
-                memcpy(inrooms.people+j, inrooms.people+j+1, sizeof(struct inroom_struct));
+                memcpy(inrooms.peoples+j, inrooms.peoples+j+1, sizeof(struct inroom_struct));
             break;
         }
     r->people--;
