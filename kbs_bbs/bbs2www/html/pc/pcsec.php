@@ -4,6 +4,9 @@
 	*/
 	require("pcfuncs.php");
 	
+	if(pc_update_cache_header())
+		return;
+	
 	function display_section_blogs($sec)
 	{
 		global $pcconfig;

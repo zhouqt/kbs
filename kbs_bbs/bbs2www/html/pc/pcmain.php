@@ -1,6 +1,5 @@
 <?php
 require("pcfuncs.php");
-$link = pc_db_connect();
 
 function pcmain_blog_statistics_list()
 {
@@ -313,7 +312,7 @@ function  pcmain_blog_most_trackback()
 function  pcmain_blog_most_view()
 {
 	global $pcconfig,$link;
-	$query = "SELECT nid , subject , uid , body FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-604800)." AND visitcount != 0 ORDER BY visitcount DESC , nid DESC LIMIT 0 , 10;";
+	$query = "SELECT nid , subject , uid , body , htmltag FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-604800)." AND visitcount != 0 ORDER BY visitcount DESC , nid DESC LIMIT 0 , 10;";
 	$result = mysql_query($query,$link);
 	$num = mysql_num_rows($result);
 ?>
@@ -357,6 +356,7 @@ function  pcmain_blog_most_view()
 if(pc_update_cache_header())
 	return;
 
+$link = pc_db_connect();
 pc_html_init("gb2312" , $pcconfig["BBSNAME"]."Blog");
 ?>
 <table cellspacing=0 cellpadding=5 width=100% border=0 class=f1>

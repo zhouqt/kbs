@@ -20,14 +20,14 @@
 ?>
 <table border="0" cellspacing="0" cellpadding="5" width="99%" class="t1">
 <tr>
-	<td class="t2" width="30">编号</td>
-	<td class="t2" width="70">
+	<td class="t2" width="50">编号</td>
+	<td class="t2" width="90">
 		用户名
 		<a href="pc.php?order=username&order1=ASC&char=<?php echo $char; ?>"><img src="images/desc_order.png" border="0" align="absmiddle" alt="按用户名递增排序"></a>
 		<a href="pc.php?order=username&order1=DESC&char=<?php echo $char; ?>"><img src="images/asc_order.png" border="0" align="absmiddle" alt="按用户名递减排序"></a>
 	</td>
 	<td class="t2">Blog名称</td>
-	<td class="t2" width=50>类别</td>
+	<td class="t2" width=70>类别</td>
 	<td class="t2" width="70">
 		文章数
 		<a href="pc.php?order=nodescount&order1=ASC&char=<?php echo $char; ?>"><img src="images/desc_order.png" border="0" align="absmiddle" alt="按文章数递增排序"></a>
@@ -37,11 +37,11 @@
 		<a href="pc.php?order=visitcount&order1=ASC&char=<?php echo $char; ?>"><img src="images/desc_order.png" border="0" align="absmiddle" alt="按访问量递增排序"></a>
 		<a href="pc.php?order=visitcount&order1=DESC&char=<?php echo $char; ?>"><img src="images/asc_order.png" border="0" align="absmiddle" alt="按访问量递减排序"></a>
 	</td>
-	<td class="t2" width="120">
+	<td class="t2" width="130">
 		创建时间
 		<a href="pc.php?order=createtime&order1=ASC&char=<?php echo $char; ?>"><img src="images/desc_order.png" border="0" align="absmiddle" alt="按创建时间递增排序"></a>
 		<a href="pc.php?order=createtime&order1=DESC&char=<?php echo $char; ?>"><img src="images/asc_order.png" border="0" align="absmiddle" alt="按创建时间递减排序"></a>
-	<td class="t2" width="120">
+	<td class="t2" width="130">
 		更新时间
 		<a href="pc.php?order=modifytime&order1=ASC&char=<?php echo $char; ?>"><img src="images/desc_order.png" border="0" align="absmiddle" alt="按更新时间递增排序"></a>
 		<a href="pc.php?order=modifytime&order1=DESC&char=<?php echo $char; ?>"><img src="images/asc_order.png" border="0" align="absmiddle" alt="按更新时间递减排序"></a>

@@ -670,7 +670,7 @@ function pc_main_navigation_bar()
 <?php	
 }
 
-function pc_update_cache_header($updatetime = 20)
+function pc_update_cache_header($updatetime = 10)
 {
 	global $cachemode;
 	$scope = "public";

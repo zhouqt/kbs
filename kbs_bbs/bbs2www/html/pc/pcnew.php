@@ -73,13 +73,13 @@
 	{
 ?>
 	<tr>
-		<td class=t2 width=80>用户名</td>
-		<td class=t2 width=160>Blog名称</td>
+		<td class=t2 width=90>用户名</td>
+		<td class=t2 width=180>Blog名称</td>
 		<td class=t2 width=80>Blog主题</td>
-		<td class=t2 width=40>访问量</td>
-		<td class=t2 width=40>文章数</td>
+		<td class=t2 width=60>访问量</td>
+		<td class=t2 width=60>文章数</td>
 		<td class=t2>文章主题</td>
-		<td class=t2 width=120>更新时间</td>
+		<td class=t2 width=130>更新时间</td>
 	</tr>
 <?php
 		for($i=0;$i < $newNum;$i++)
@@ -90,7 +90,7 @@
 				$pcconfig["SECTION"][$newBlogs[useretems][$i][pc][THEM][0]]."</a></span></td>\n".
 				"<td class=t3>".$newBlogs[useretems][$i][pc][VISIT]."</td>\n".
 				"<td class=t4>".$newBlogs[useretems][$i][pc][NODES]."</td>\n".
-				"<td class=t8><a href='pccon.php?id=".$newBlogs[useretems][$i][pc][UID]."&tid=".$newBlogs[useretems][$i][tid]."&nid=".$newBlogs[useretems][$i][nid]."&s=all'>".$newBlogs[useretems][$i][title]."</a>&nbsp;</td>\n".
+				"<td class=t8><a href='pccon.php?id=".$newBlogs[useretems][$i][pc][UID]."&tid=".$newBlogs[useretems][$i][tid]."&nid=".$newBlogs[useretems][$i][nid]."&s=all'>".$newBlogs[useretems][$i][subject]."</a>&nbsp;</td>\n".
 				"<td class=t4>".$newBlogs[useretems][$i][created]."</td>\n</tr>\n";
 		}
 	}
@@ -98,13 +98,13 @@
 	{
 ?>
 	<tr>
-		<td class=t2 width=80>发布者</td>
+		<td class=t2 width=90>发布者</td>
 		<td class=t2>评论主题</td>
-		<td class=t2 width=120>评论发布时间</td>
-		<td class=t2 width=150>原文主题</td>
-		<td class=t2 width=120>原文发布时间</td>
-		<td class=t2 width=20>访</td>
-		<td class=t2 width=20>评</td>
+		<td class=t2 width=130>评论发布时间</td>
+		<td class=t2 width=200>原文主题</td>
+		<td class=t2 width=130>原文发布时间</td>
+		<td class=t2 width=50>访</td>
+		<td class=t2 width=50>评</td>
 	</tr>
 <?php
 		for($i=0;$i < $newNum;$i++)
