@@ -32,9 +32,6 @@ static PHP_FUNCTION(bbs_get_article);
 static PHP_FUNCTION(bbs_is_yank);
 static PHP_FUNCTION(bbs_alter_yank); 
 #endif
-static PHP_FUNCTION(bbs_getonline_user_list);
-static PHP_FUNCTION(bbs_get_elite_num);
-static PHP_FUNCTION(bbs_get_elite_list);
 
 #ifdef HAVE_USERMONEY
 static PHP_FUNCTION(bbs_getusermoney);
@@ -45,43 +42,57 @@ static PHP_FUNCTION(bbs_setuserscore);
 static PHP_FUNCTION(bbs_adduserscore);
 #endif
 
-static PHP_FUNCTION(bbs_saveuserdata);
-static PHP_FUNCTION(bbs_checkuserpasswd);
-static PHP_FUNCTION(bbs_setuserpasswd);
-
-static PHP_FUNCTION(bbs_getuserparam);
-static PHP_FUNCTION(bbs_setuserparam);
-
-static PHP_FUNCTION(bbs_getuserlevel);
+////////////////////////  System info operation functions  /////////////////////
+static PHP_FUNCTION(bbs_getonline_user_list);
+static PHP_FUNCTION(bbs_get_elite_num);
+static PHP_FUNCTION(bbs_get_elite_list);
 static PHP_FUNCTION(bbs_get_today_article_num);
-static PHP_FUNCTION(bbs_searchtitle);
-static PHP_FUNCTION(bbs_search_articles);
-static PHP_FUNCTION(bbs_postmail);
-static PHP_FUNCTION(bbs_mailwebmsgs);
-static PHP_FUNCTION(bbs_getwebmsgs);
-static PHP_FUNCTION(bbs_get_thread_article_num);
-static PHP_FUNCTION(bbs_get_thread_articles);
-static PHP_FUNCTION(bbs_getuser);
-static PHP_FUNCTION(bbs_getusermode);
-static PHP_FUNCTION(bbs_compute_user_value);
-static PHP_FUNCTION(bbs_checknewmail);
-static PHP_FUNCTION(bbs_user_level_char);
 static PHP_FUNCTION(bbs_getonlineuser);
-static PHP_FUNCTION(bbs_checkorigin);
 static PHP_FUNCTION(bbs_getonlinenumber);
 static PHP_FUNCTION(bbs_getonlineusernumber);
 static PHP_FUNCTION(bbs_getwwwguestnumber);
 static PHP_FUNCTION(bbs_countuser);
 static PHP_FUNCTION(bbs_setfromhost);
-static PHP_FUNCTION(bbs_checkpasswd);
 static PHP_FUNCTION(bbs_getcurrentuser);
 static PHP_FUNCTION(bbs_setonlineuser);
 static PHP_FUNCTION(bbs_getcurrentuinfo);
-static PHP_FUNCTION(bbs_wwwlogin);
-static PHP_FUNCTION(bbs_wwwlogoff);
-static PHP_FUNCTION(bbs_printansifile);
-static PHP_FUNCTION(bbs_print_article);
-static PHP_FUNCTION(bbs_print_article_js);
+
+////////////////////////  User operation functions  ///////////////////////////
+static PHP_FUNCTION(bbs_saveuserdata);
+static PHP_FUNCTION(bbs_checkuserpasswd);
+static PHP_FUNCTION(bbs_setuserpasswd);
+static PHP_FUNCTION(bbs_getuserparam);
+static PHP_FUNCTION(bbs_setuserparam);
+static PHP_FUNCTION(bbs_getuserlevel);
+static PHP_FUNCTION(bbs_getuser);
+static PHP_FUNCTION(bbs_getusermode);
+static PHP_FUNCTION(bbs_compute_user_value);
+static PHP_FUNCTION(bbs_user_level_char);
+static PHP_FUNCTION(bbs_checkpasswd);
+
+//Friends
+static PHP_FUNCTION(bbs_getfriends);
+static PHP_FUNCTION(bbs_getonlinefriends);
+static PHP_FUNCTION(bbs_countfriends);
+static PHP_FUNCTION(bbs_delete_friend);
+static PHP_FUNCTION(bbs_add_friend);
+
+static PHP_FUNCTION(bbs_createnewid);
+static PHP_FUNCTION(bbs_fillidinfo);
+static PHP_FUNCTION(bbs_modify_info);
+static PHP_FUNCTION(bbs_recalc_sig);
+static PHP_FUNCTION(bbs_modify_nick);
+static PHP_FUNCTION(bbs_createregform);
+static PHP_FUNCTION(bbs_findpwd_check);
+static PHP_FUNCTION(bbs_update_uinfo);
+static PHP_FUNCTION(bbs_is_bm);
+
+//////////////////////// Board/Article operation functions  ////////////////////
+static PHP_FUNCTION(bbs_searchtitle);
+static PHP_FUNCTION(bbs_search_articles);
+static PHP_FUNCTION(bbs_get_thread_article_num);
+static PHP_FUNCTION(bbs_get_thread_articles);
+static PHP_FUNCTION(bbs_checkorigin);
 static PHP_FUNCTION(bbs_getboard);
 static PHP_FUNCTION(bbs_checkreadperm);
 static PHP_FUNCTION(bbs_getbname);
@@ -90,60 +101,24 @@ static PHP_FUNCTION(bbs_postarticle);
 #ifdef HAVE_BRC_CONTROL
 static PHP_FUNCTION(bbs_brcaddread);
 #endif
-static PHP_FUNCTION(bbs_ann_traverse_check);
-static PHP_FUNCTION(bbs_ann_get_board);
 static PHP_FUNCTION(bbs_getboards);
 static PHP_FUNCTION(bbs_getarticles);
-static PHP_FUNCTION(bbs_getfriends);
-static PHP_FUNCTION(bbs_getonlinefriends);
-static PHP_FUNCTION(bbs_countfriends);
-static PHP_FUNCTION(bbs_delete_friend);
-static PHP_FUNCTION(bbs_add_friend);
 static PHP_FUNCTION(bbs_doforward);
-static PHP_FUNCTION(bbs_domailforward);
 static PHP_FUNCTION(bbs_get_records_from_id);
 static PHP_FUNCTION(bbs_get_records_from_num);
 static PHP_FUNCTION(bbs_get_filename_from_num);
 static PHP_FUNCTION(bbs_get_threads_from_id);
 static PHP_FUNCTION(bbs_get_threads_from_gid);
 static PHP_FUNCTION(bbs_countarticles);
-static PHP_FUNCTION(bbs_is_bm);
-static PHP_FUNCTION(bbs_getannpath);
-static PHP_FUNCTION(bbs_getmailnum);
-static PHP_FUNCTION(bbs_getmailnum2);
-static PHP_FUNCTION(bbs_getmails);
-static PHP_FUNCTION(bbs_getmailusedspace);
-static PHP_FUNCTION(bbs_valid_filename);
-static PHP_FUNCTION(bbs_can_send_mail);
-static PHP_FUNCTION(bbs_loadmaillist);
-static PHP_FUNCTION(bbs_changemaillist);
-static PHP_FUNCTION(bbs_checkwebmsg);
-static PHP_FUNCTION(bbs_getwebmsg);
-static PHP_FUNCTION(bbs_sendwebmsg);
-static PHP_FUNCTION(bbs_sethomefile);
-static PHP_FUNCTION(bbs_setmailfile);
-static PHP_FUNCTION(bbs_mail_file);
-static PHP_FUNCTION(bbs_update_uinfo);
-static PHP_FUNCTION(bbs_createnewid);
-static PHP_FUNCTION(bbs_fillidinfo);
-static PHP_FUNCTION(bbs_modify_info);
-static PHP_FUNCTION(bbs_recalc_sig);
-static PHP_FUNCTION(bbs_modify_nick);
-static PHP_FUNCTION(bbs_createregform);
-static PHP_FUNCTION(bbs_findpwd_check);
-static PHP_FUNCTION(bbs_delfile);
-static PHP_FUNCTION(bbs_delmail);
-static PHP_FUNCTION(bbs_normalboard);
-static PHP_FUNCTION(bbs_setmailreaded);
-static PHP_FUNCTION(bbs_add_import_path);
-static PHP_FUNCTION(bbs_get_import_path);
 static PHP_FUNCTION(bbs_new_board);
 static PHP_FUNCTION(bbs_set_onboard);
-static PHP_FUNCTION(bbs_get_votes);
-static PHP_FUNCTION(bbs_get_vote_from_num);
-static PHP_FUNCTION(bbs_vote_num);
-static PHP_FUNCTION(bbs_get_explain);
-static PHP_FUNCTION(bbs_start_vote);
+static PHP_FUNCTION(bbs_get_tmpls);
+static PHP_FUNCTION(bbs_get_tmpl_from_num);
+static PHP_FUNCTION(bbs_make_tmpl_file);
+
+static PHP_FUNCTION(bbs_delfile);
+static PHP_FUNCTION(bbs_normalboard);
+
 /* favboard operation. by caltary  */
 static PHP_FUNCTION(bbs_load_favboard);
 static PHP_FUNCTION(bbs_fav_boards);
@@ -152,27 +127,88 @@ static PHP_FUNCTION(bbs_is_favboard);
 static PHP_FUNCTION(bbs_add_favboarddir);
 static PHP_FUNCTION(bbs_add_favboard);
 static PHP_FUNCTION(bbs_del_favboard);
+
+
+static PHP_FUNCTION(bbs_printoriginfile);
+static PHP_FUNCTION(bbs_caneditfile);
+static PHP_FUNCTION(bbs_updatearticle);
+
+static PHP_FUNCTION(bbs_getthreadnum);
+static PHP_FUNCTION(bbs_getthreads);
+
+
+//////////////////////// Vote operation functions  ////////////////////
+static PHP_FUNCTION(bbs_get_votes);
+static PHP_FUNCTION(bbs_get_vote_from_num);
+static PHP_FUNCTION(bbs_vote_num);
+static PHP_FUNCTION(bbs_get_explain);
+static PHP_FUNCTION(bbs_start_vote);
+
+//////////////////////// Announce operation functions  ////////////////////
+static PHP_FUNCTION(bbs_ann_traverse_check);
+static PHP_FUNCTION(bbs_ann_get_board);
+static PHP_FUNCTION(bbs_getannpath);
+static PHP_FUNCTION(bbs_add_import_path);
+static PHP_FUNCTION(bbs_get_import_path);
+static PHP_FUNCTION(bbs_x_search);
+
+
+////////////////////////  Mail operation functions  ///////////////////////////
+static PHP_FUNCTION(bbs_postmail);
+static PHP_FUNCTION(bbs_checknewmail);
+static PHP_FUNCTION(bbs_getmailnum);
+static PHP_FUNCTION(bbs_getmailnum2);
+static PHP_FUNCTION(bbs_getmails);
+static PHP_FUNCTION(bbs_getmailusedspace);
+static PHP_FUNCTION(bbs_can_send_mail);
+static PHP_FUNCTION(bbs_loadmaillist);
+static PHP_FUNCTION(bbs_changemaillist);
+
+static PHP_FUNCTION(bbs_mail_file);
+static PHP_FUNCTION(bbs_delmail);
+static PHP_FUNCTION(bbs_setmailreaded);
+static PHP_FUNCTION(bbs_domailforward);
+
+////////////////////////   Msg functions  ////////////////////////////////////
+static PHP_FUNCTION(bbs_getwebmsgs);
+static PHP_FUNCTION(bbs_mailwebmsgs);
+static PHP_FUNCTION(bbs_checkwebmsg);
+static PHP_FUNCTION(bbs_getwebmsg);
+static PHP_FUNCTION(bbs_sendwebmsg);
+
+
+////////////////////////   WWW special functions  /////////////////////////////
+
+static PHP_FUNCTION(bbs_wwwlogin);
+static PHP_FUNCTION(bbs_wwwlogoff);
+static PHP_FUNCTION(bbs_printansifile);
+static PHP_FUNCTION(bbs_print_article);
+static PHP_FUNCTION(bbs_print_article_js);
+
+////////////////////////   Other helper functions  ////////////////////////////
+
+static PHP_FUNCTION(bbs_valid_filename);
+static PHP_FUNCTION(bbs_sethomefile);
+static PHP_FUNCTION(bbs_setmailfile);
 static PHP_FUNCTION(bbs_sysconf_str);
-static PHP_FUNCTION(bbs_get_tmpls);
-static PHP_FUNCTION(bbs_get_tmpl_from_num);
-static PHP_FUNCTION(bbs_make_tmpl_file);
+static PHP_FUNCTION(bbs_ext_initialized);
+static PHP_FUNCTION(bbs_init_ext);
+
+////////////////////////   SMS functions  ///////////////////////////////////
 #ifdef SMS_SUPPORT
 static PHP_FUNCTION(bbs_send_sms);
 static PHP_FUNCTION(bbs_register_sms_sendcheck);
 static PHP_FUNCTION(bbs_register_sms_docheck);
 static PHP_FUNCTION(bbs_unregister_sms);
+
+
 #endif
 #if HAVE_MYSQL_SMTH == 1
 static PHP_FUNCTION(bbs_csv_to_al);
 #endif
-static PHP_FUNCTION(bbs_printoriginfile);
-static PHP_FUNCTION(bbs_caneditfile);
-static PHP_FUNCTION(bbs_updatearticle);
-static PHP_FUNCTION(bbs_getthreadnum);
-static PHP_FUNCTION(bbs_getthreads);
-static PHP_FUNCTION(bbs_ext_initialized);
-static PHP_FUNCTION(bbs_init_ext);
-static PHP_FUNCTION(bbs_x_search);
+
+
+
 
 /*
  * define what functions can be used in the PHP embedded script
