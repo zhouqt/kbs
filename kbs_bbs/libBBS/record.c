@@ -533,6 +533,7 @@ int size, id ;
     char* ptr;
     struct stat st;
     int ret;
+    if (id<=0) return 0;
     if((fdr = open(filename,O_RDWR,0)) == -1) {
         return -2;
     }
@@ -542,8 +543,8 @@ int size, id ;
     	close(fdr);
     	return -2;
     }
-    if (id*size>=st.st_size) {
-    	ptr = (char*) mmap(size*(id-1), st.st_size-size*(id-1),
+    if (id*size<=st.st_size) {
+    	ptr = (char*) mmap(NULL, st.st_size,
     	              PROT_READ|PROT_WRITE,MAP_SHARED,fdr,0);
     } else {
         close(fdr);
@@ -552,10 +553,13 @@ int size, id ;
     if (!sigsetjmp(bus_jump,1)) {
 	signal(SIGBUS,sigbus);
 	signal(SIGSEGV,sigbus);
-	memcpy(ptr,ptr+size,st.st_size-size*id);
+	memcpy(ptr+(id-1)*size,ptr+id*size,st.st_size-size*id);
+	ret=0;
     } else
     	ret=-3;
     munmap(ptr,st.st_size);  
+    ftruncate(fdr,st.st_size-size);
+    flock(fdr,LOCK_UN);
     close(fdr);
     signal(SIGBUS,SIG_IGN);
     signal(SIGSEGV,SIG_IGN);

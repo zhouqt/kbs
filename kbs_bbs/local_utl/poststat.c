@@ -36,14 +36,7 @@ struct postrec
 
 
 /* 100 bytes */
-struct posttop
-{
-  char author[13];              /* author name */
-  char board[IDLEN+6];               /* board name */
-  char title[66];               /* title name */
-  time_t date;                  /* last post's date */
-  int number;                   /* post number */
-}       top[TOPCOUNT], postlog;
+struct posttop       top[TOPCOUNT], postlog;
 
 
 int

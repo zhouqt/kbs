@@ -1716,7 +1716,7 @@ char *uident;
     deleted = search_record( genbuf, &fh, sizeof(fh), cmpfnames, uident );
     if(deleted>0)
     {
-        if(delete_record(genbuf,sizeof(fh),deleted)!=-1)
+        if(delete_record(genbuf,sizeof(fh),deleted)==0)
             getfriendstr();
         else
         {
