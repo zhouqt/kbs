@@ -1,0 +1,14 @@
+        在FB2000.1219以及FB2000.1126转化过,其实只要站点的用户数据结构没有太大
+的修改都是适用的.
+
+        [使用方法]:
+                安装smth的代码的时候顺便把这堆代码丢到local_utl目录下面去,然后
+        修改一下Makefile.am文件加如新加的几个文件,重新autoconf一下,开始编译.
+
+                编译完后会生成chlevel、convboards和convpasswd三个文件，把你
+        原来FB2000站点的.PASSWDS文件改名为.PASSWDS.OLD，然后运行convpasswd，
+        生成新的.PASSWDS.NEW文件。接着把新的.PASSWDS.NEW文件改名为.PASSWDS，
+        运行chlevel进行用户的level转换，最后运行一下convboards转换一下.BOARDS
+        以及一些子目录，整个的转化就完成了。
+
+                默认的BBSHOME是/home/bbs，如果不是的话自己稍微修改一下代码。
