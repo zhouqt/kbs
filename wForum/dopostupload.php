@@ -77,7 +77,7 @@ if (($fp=@fopen($attachdir . "/.index","r"))!=FALSE) {
 	}
 	fclose($fp);
 }
-if ($_FILES['upfile']['size']+$totalsize>ATTACHMAXSIZE) {
+if ($_FILES['upfile']['size']+$totalsize>ATTACHMAXTOTALSIZE) {
 	unlink($attachdir . "/" . $act_attachname);
 	unset($filenames,$act_attachname);
 	$errno=UPLOAD_ERR_FORM_SIZE;

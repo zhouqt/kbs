@@ -33,8 +33,8 @@ if (bbs_checkpostperm($usernum, $boardID) == 0) {
 <input type="file" name="upfile">
 <input type="submit" name="Submit" value="上传" onclick="parent.document.forms[0].Submit.disabled=true,
 parent.document.forms[0].Submit2.disabled=true;">
-<font color=#FF0000 >本文还可上传<?php   echo ATTACHMAXCOUNT-getAttachmentCount(); ?>个</font>；
-  论坛限制：一篇文章<?php   echo ATTACHMAXCOUNT; ?>个，<!--一天<?php   echo $GroupSetting[50]; ?>个,-->每个<?php   echo intval(ATTACHMAXSIZE/1024); ?>K
+<font color=#FF0000 >本文还可上传<?php   echo ATTACHMAXCOUNT-getAttachmentCount(); ?>个，总大小<?php   echo intval((ATTACHMAXTOTALSIZE-$totalsize)/1024) ;?>K</font>；
+  论坛限制：一篇文章<?php   echo ATTACHMAXCOUNT; ?>个，<!--一天<?php   echo $GroupSetting[50]; ?>个,-->每个<?php   echo intval(ATTACHMAXSIZE/1024); ?>K，附件总大小<?php   echo intval(ATTACHMAXTOTALSIZE/1024); ?>K
 </td></tr>
 </table>
 </form>
@@ -46,18 +46,24 @@ $conn=null;
 function getAttachmentCount(){
 	global $currentuser;
 	global $utmpnum;
+	global $totalsize;
+	$totalsize=0;
 	$filecount=0;
 	$attachdir=getattachtmppath($currentuser["userid"] ,$utmpnum);
 	@mkdir($attachdir);
+
 	if (($fp=@fopen($attachdir . "/.index","r"))!=FALSE) {
 		while (!feof($fp)) {
 			$buf=fgets($fp);
 			$buf=substr($buf,0,-1); //remove "\n"
-			if ($buf=='')
+			if ($buf=="")
 				continue;
 			$file=substr($buf,0,strpos($buf,' '));
-			if ($file=='')
+			if ($file=="")
 				continue;
+			$name=strstr($buf,' ');
+			$name=substr($name,1);
+			$totalsize+=filesize($file);
 			$filecount++;
 		}
 		fclose($fp);

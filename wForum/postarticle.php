@@ -6,6 +6,7 @@ $needlogin=1;
 require("inc/funcs.php");
 require("inc/user.inc.php");
 require("inc/board.inc.php");
+require("inc/ubbcode.php");
 
 global $boardArr;
 global $boardID;
@@ -219,17 +220,18 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 <?php require_once("inc/ubbmenu.php"); ?>
 <textarea class=smallarea cols=95 name=Content rows=12 wrap=VIRTUAL title="可以使用Ctrl+Enter直接提交贴子" class=FormClass onkeydown=ctlent()>
 <?php
-    if($reID > 0){
+    if (($reID > 0) && ($_GET['quote']==1)){
 		$filename = $reArticles[1]["FILENAME"];
 		$filename = "boards/" . $boardName. "/" . $filename;
 		if(file_exists($filename))	{
 			$fp = fopen($filename, "r");
 			if ($fp) {
-				$buf = fgets($fp,500);
-				echo "\n【 在 " . $reArticles[1]['OWNER'] . " 的大作中提到: 】\n";
+				$buf = fgets($fp,5000);
+				echo "[quote][b]以下是引用[i]".$reArticles[1]['OWNER']."在".strftime("%Y-%m-%d %H:%M:%S",$reArticles[1]['POSTTIME'])."[/i]的发言：[/b]\n";
+				$buf2='';
 				if(strncmp($buf, "发信人", 6) == 0) {
 					for ($i = 0; $i < 4; $i++) {
-						if (($buf = fgets($fp,500)) == FALSE)
+						if (($buf = fgets($fp,5000)) == FALSE)
 							break;
 					}
 				}
@@ -245,15 +247,17 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 					if (strncmp($buf,'\n',1) == 0)
 						continue;
 					if (++$lines > 10) {
-						echo ": ...................\n";
+						echo "...................\n";
 						break;
 					}
 					/* */
 					if (stristr($buf, "</textarea>") == FALSE)  //filter </textarea> tag in the text
-						echo ": ". $buf;
-					if (($buf = fgets($fp,500)) == FALSE)
+						$buf2.=$buf;
+					if (($buf = fgets($fp,5000)) == FALSE)
 						break;
 				}
+				echo reUBBCode($buf2);
+				echo "[/quote]\n";
 				fclose($fp);
 			}
 		}

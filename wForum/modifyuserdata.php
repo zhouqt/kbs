@@ -328,13 +328,11 @@ function main(){
 <td valign=top width=40% class=tablebody1>　<b>毕业院校：</b>
 <input type=text name=college size=18 value="<?php echo htmlEncode($currentuser['graduateschool']); ?>"></td>
 </tr>
-
-    <tr align="center"> 
-      <td colspan="2" width="100%" class=tablebody2>
-            <input type=Submit value="更 新" name="Submit"> &nbsp; <input type="reset" name="Submit2" value="清 除">
-      </td>
-    </tr>  
-    </table></form>
+<tr align="center"> 
+<td colspan="2" width="100%" class=tablebody2>
+<input type=Submit value="更 新" name="Submit"> &nbsp; <input type="reset" name="Submit2" value="清 除">
+</td></tr>  
+</table></form>
 <?php
 }
 ?>

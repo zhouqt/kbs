@@ -113,7 +113,7 @@ function showmail($boxName, $boxPath, $boxDesc, $num){
                     <td  class=tablebody1 valign=top align=left>
 					<b>
 <?php
-					echo dvbcode(bbs_printansifile($filename),0);
+					echo dvbcode(bbs_printansifile($filename),0,'tablebody2');
 ?>
 	</b>
 	&nbsp;
