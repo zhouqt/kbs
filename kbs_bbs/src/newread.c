@@ -675,7 +675,7 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct 
         else {
             getdata(t_lines - 1, 0, "新版刚成立 (P)发表文章 (Q)离开？[Q] ", genbuf, 4, DOECHO, NULL, true);
             if (genbuf[0] == 'p' || genbuf[0] == 'P')
-                do_post();
+                do_post(NULL, NULL, NULL);
         }
         pressreturn();
         clear();
