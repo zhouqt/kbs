@@ -537,7 +537,7 @@ int igetch()
 #endif
         goto igetagain;
     case Ctrl('Z'):
-        if(!inremsg) {
+        if(uinfo.mode!=NEW&&uinfo.mode!=LOGIN&&uinfo.mode!=BBSNET &&!inremsg) {
             icurrchar++;
             inremsg = true;
             r_msg();
