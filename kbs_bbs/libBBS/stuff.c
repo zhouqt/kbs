@@ -849,6 +849,11 @@ int cmpfnames(char    *userid, struct friends *uv)
 	    return !strcasecmp(userid, uv->id);
 }       
   
+int cmpfileinfoname(char    *filename, struct fileheader *fi)
+{
+	    return !strncmp(filename, fi->filename, STRLEN);
+}
+
 int
 canIsend2(userid) /* Leeward 98.04.10 */
 char *userid;
@@ -874,6 +879,35 @@ void sigbus(int signo)
   siglongjmp(bus_jump,1);
 };
 
+int safe_mmapfile_handle(int fd,int openflag,int prot,int flag,void** ret_ptr,int* size)
+{
+        struct stat st;
+        if (fd < 0)
+                return 0;
+        if (fstat(fd, &st) < 0) {
+                close(fd);
+                return 0;
+        }
+        if (!S_ISREG(st.st_mode)) {
+                close(fd);
+                return 0;
+        }
+        if (st.st_size <= 0) {
+                close(fd);
+                return 0;
+        }
+        *ret_ptr = mmap(NULL, st.st_size, prot, flag, fd, 0);
+        if (*ret_ptr == NULL)
+                return 0;
+    if (!sigsetjmp(bus_jump,1)) {
+        signal(SIGBUS,sigbus);
+                /*
+                signal(SIGSEGV,sigbus);
+                */
+                *size=st.st_size;
+		return 1;
+	}
+}
 int safe_mmapfile(char* filename,int openflag,int prot,int flag,void** ret_ptr,int* size,int* ret_fd)
 {
 	int fd;

@@ -233,7 +233,7 @@ int apply_record(char *filename ,RECORD_FUNC_ARG fptr,int size ,void* arg,int ap
 
 /* COMMAN : use mmap to speed up searching */ 
 int search_record_back(
-	char *filename , /* idx file name */
+	int fd, /* file handle */
 	int size ,	/* record size */
 	int start ,	/* where to start reverse search */
 	RECORD_FUNC_ARG fptr ,	/* compare function */
@@ -244,12 +244,14 @@ int search_record_back(
     char *buf,*buf1;
     int i;
     int filesize;
-    switch (safe_mmapfile(filename,O_RDONLY,PROT_READ,MAP_SHARED,(void**)&buf,&filesize,NULL)) {
+    switch (safe_mmapfile_handle(fd,O_RDONLY,PROT_READ,MAP_SHARED,(void**)&buf,&filesize)) {
     	case 0: return 0;
     	case 1:
 		if (start > filesize/size) start = filesize/size;
-        for (i = start, buf1 = buf; i>=0; i--, buf1-=size) {
+        for (i = start, buf1 = buf+size*(start-1); i>0; i--, buf1-=size) {
             if ((*fptr)(farg,buf1)) {
+		if (rptr)
+			memcpy(rptr,buf1,size);
             	end_mmapfile((void*)buf,filesize,-1);
     	        return i;
     	    }
@@ -334,43 +336,6 @@ int size, id, number ;
     }
     close(fd) ;
     return (n/size) ;
-}
-
-int
-substitute_record_comp(char *filename,void* rptr,int size,int id,void* comptr,
-	RECORD_FUNC_ARG fptr,void* tmpbuf)
-{
-    int fd;
-    int newent;
-    
-    if((fd = open(filename,O_RDWR,0644)) == -1)
-        return -1 ;
-    flock(fd,LOCK_EX);
-
-    if (lseek(fd,size*(id-1),SEEK_SET) == -1) {
-        report("subrec seek err");
-        /*---	period	2000-10-24	---*/
-        close(fd);
-        return -1;
-    }
-    if (read(fd,tmpbuf,size)==size) {
-        if ((*fptr)(comptr,tmpbuf)) {
-            newent = search_record_back(filename,size,id,fptr,comptr,tmpbuf,0);
-            if (newent<=0) {
-                close(fd);
-                return -1;
-            }
-        } else 
-            newent=id;
-    } else {
-        close(fd);
-        return -1;
-    }
-    lseek(fd,size*(newent-1),SEEK_SET);
-    if (safewrite(fd,rptr,size) != size)
-        report("subrec write err");
-    close(fd);
-    return 0;
 }
 
 int
