@@ -635,10 +635,11 @@ void showsysinfo(char * fn)
     FILE* fp;
     char buf[200];
     int count=0,i,j;
+    return;
     fp=fopen(fn, "r");
     while(!feof(fp)) {
         if(!fgets(buf, 200, fp)) break;
-        if(strstr(buf, "@systeminfo@")) count++;
+        if(!strcmp(buf, "@systeminfo@")) count++;
     }
     fclose(fp);
     i=rand()%count;
@@ -647,7 +648,7 @@ void showsysinfo(char * fn)
     fp=fopen(fn, "r");
     while(!feof(fp)) {
         if(!fgets(buf, 200, fp)) break;
-        if(strstr(buf, "@systeminfo@")) count++;
+        if(!strcmp(buf, "@systeminfo@")) count++;
         else {
             if(count==i) prints("%s", buf);
         }
