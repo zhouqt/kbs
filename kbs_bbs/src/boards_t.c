@@ -311,16 +311,10 @@ int page, clsflag, newflag;
             if (yank_flag == 2)
                 docmdtitle("[¸öÈË¶¨ÖÆÇø]",
                            "  [mÖ÷Ñ¡µ¥[\x1b[1;32m¡û\x1b[m,\x1b[1;32me\x1b[m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ý\x1b[m] Ìí¼Ó[\x1b[1;32ma\x1b[m,\x1b[1;32mA\x1b[m] ÒÆ¶¯[\x1b[1;32mm\x1b[m] É¾³ý[\x1b[1;32md\x1b[m] ÅÅÐò[\x1b[1;32mS\x1b[m] ÇóÖú[\x1b[1;32mh\x1b[m]\n");
-            else if (yank_flag == 3)
-                docmdtitle("[´¦ÀíÐÅ¼ãÑ¡µ¥]",
-                           "  [mÖ÷Ñ¡µ¥[\x1b[1;32m¡û\x1b[m,\x1b[1;32me\x1b[m] ½øÈë[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ý\x1b[m] Ìí¼Ó[\x1b[1;32ma\x1b[m] ¸ÄÃû[\x1b[1;32mT\x1b[m] É¾³ý[\x1b[1;32md\x1b[m] \n");
-            else
+            else 
                 docmdtitle("[ÌÖÂÛÇøÁÐ±í]",
                            "  [mÖ÷Ñ¡µ¥[\x1b[1;32m¡û\x1b[m,\x1b[1;32me\x1b[m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ý\x1b[m] ÁÐ³ö[\x1b[1;32my\x1b[m] ÅÅÐò[\x1b[1;32mS\x1b[m] ËÑÑ°[\x1b[1;32m/\x1b[m] ÇÐ»»[\x1b[1;32mc\x1b[m] ÇóÖú[\x1b[1;32mh\x1b[m]\n");
-            if (yank_flag==3)
-                prints("[1;44m[37m ÐÅ¼þ       Àà±ð   Ãû³Æ[m\n");
-            else
-                prints("[1;44m[37m %s ÌÖÂÛÇøÃû³Æ       V  Àà±ð ×ªÐÅ  %-24s °æ  Ö÷   %s   [m\n", newflag ? "È«²¿ Î´¶Á" : "±àºÅ  ", "ÖÐ  ÎÄ  Ðð  Êö", newflag ? "" : "   ");
+            prints("[1;44m[37m %s ÌÖÂÛÇøÃû³Æ       V  Àà±ð ×ªÐÅ  %-24s °æ  Ö÷   %s   [m\n", newflag ? "È«²¿ Î´¶Á" : "±àºÅ  ", "ÖÐ  ÎÄ  Ðð  Êö", newflag ? "" : "   ");
         } else {
             if (yank_flag == 2)
                 docmdtitle("[¸öÈË¶¨ÖÆÇø]", "  [mÖ÷Ñ¡µ¥[¡û,e] ÔÄ¶Á[¡ú,r] Ñ¡Ôñ[¡ü,¡ý] Ìí¼Ó[a,A] ÒÆ¶¯[m] É¾³ý[d] ÅÅÐò[S] ÇóÖú[h]\n");
@@ -328,8 +322,6 @@ int page, clsflag, newflag;
                 docmdtitle("[´¦ÀíÐÅ¼ãÑ¡µ¥]", "  [mÖ÷Ñ¡µ¥[¡û,e] ½øÈë[¡ú,r] Ñ¡Ôñ[¡ü,¡ý] Ìí¼Ó[a] ¸ÄÃû[T] É¾³ý[d] \n");
             else
                 docmdtitle("[ÌÖÂÛÇøÁÐ±í]", "  [mÖ÷Ñ¡µ¥[¡û,e] ÔÄ¶Á[¡ú,r] Ñ¡Ôñ[¡ü,¡ý] ÁÐ³ö[y] ÅÅÐò[S] ËÑÑ°[/] ÇÐ»»[c] ÇóÖú[h]\n");
-            if (yank_flag==3);
-//                prints("[44m[37m ÐÅ¼þ       Àà±ð   Ãû³Æ[m\n");
             else
                 prints("[44m[37m %s ÌÖÂÛÇøÃû³Æ       V  Àà±ð ×ªÐÅ  %-24s °æ  Ö÷   %s   [m\n", newflag ? "È«²¿ Î´¶Á" : "±àºÅ  ", "ÖÐ  ÎÄ  Ðð  Êö", newflag ? "" : "   ");
         }
@@ -481,7 +473,6 @@ int choose_board(int newflag, char *boardprefix)
             {
                 char buf[STRLEN];
 
-                if (3==yank_flag) goto hotkey;
                 if (!HAS_PERM(currentuser, PERM_SYSOP) && !HAS_PERM(currentuser, PERM_OBOARDS))
                     break;
                 if (!strcmp(nbrd[num].name, "syssecurity")
@@ -510,7 +501,6 @@ int choose_board(int newflag, char *boardprefix)
             {
                 char buf[STRLEN];
 
-                if (3==yank_flag) goto hotkey;
                 if (!HAS_PERM(currentuser, PERM_SYSOP) && !HAS_PERM(currentuser, PERM_OBOARDS))
                     break;
                 if (nbrd[num].dir) break;
@@ -530,7 +520,6 @@ int choose_board(int newflag, char *boardprefix)
             }
         case 'L':
         case 'l':              /* Luzi 1997.10.31 */
-            if (3==yank_flag) goto hotkey;
             if (uinfo.mode != LOOKMSGS) {
                 show_allmsgs();
                 page = -1;
@@ -542,7 +531,6 @@ int choose_board(int newflag, char *boardprefix)
             break;
         case 'W':
         case 'w':              /* Luzi 1997.10.31 */
-            if (3==yank_flag) goto hotkey;
             if (!HAS_PERM(currentuser, PERM_PAGE))
                 break;
             s_msg();
@@ -552,7 +540,6 @@ int choose_board(int newflag, char *boardprefix)
             {
                 int oldmode = uinfo.mode;
 
-                if (3==yank_flag) goto hotkey;
                 clear();
                 modify_user_mode(QUERY);
                 t_query(NULL);
@@ -572,7 +559,6 @@ int choose_board(int newflag, char *boardprefix)
 #endif
             {                   /* Leeward 98.10.26 fix a bug by saving old mode */
 		int savemode;
-                if (3==yank_flag) goto hotkey;
                 savemode = uinfo.mode;
 
                 if (!HAS_PERM(currentuser, PERM_BASIC))
@@ -587,7 +573,6 @@ int choose_board(int newflag, char *boardprefix)
             }
         case 'P':
         case 'b':
-            if (3==yank_flag) goto hotkey;
         case Ctrl('B'):
         case KEY_PGUP:
             if (num == 0)
@@ -602,7 +587,6 @@ int choose_board(int newflag, char *boardprefix)
         case 'C':
         case 'c':              /*ÔÄ¶ÁÄ£Ê½ */
 #endif
-            if (3==yank_flag) goto hotkey;
             if (newflag == 1)
                 newflag = 0;
             else
@@ -621,14 +605,12 @@ int choose_board(int newflag, char *boardprefix)
             break;
         case 'p':
         case 'k':
-            if (3==yank_flag) goto hotkey;
         case KEY_UP:
             if (num-- <= 0)
                 num = brdnum - 1;
             break;
         case 'n':
         case 'j':
-            if (3==yank_flag) goto hotkey;
         case KEY_DOWN:
             if (++num >= brdnum)
                 num = 0;
@@ -637,7 +619,6 @@ int choose_board(int newflag, char *boardprefix)
             num = brdnum - 1;
             break;
         case 'h':
-            if (3==yank_flag) goto hotkey;
             show_help("help/boardreadhelp");
             page = -1;
             break;
@@ -658,7 +639,6 @@ int choose_board(int newflag, char *boardprefix)
             }
             break;
         case 'S':
-            if (yank_flag==3) goto hotkey;
             currentuser->flags[0] ^= BRDSORT_FLAG;      /*ÅÅÐò·½Ê½ */
             if (yank_flag != 2) {
                 qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);   /*ÅÅÐò */
@@ -680,7 +660,6 @@ int choose_board(int newflag, char *boardprefix)
              * }
              * else {
              */
-            if (yank_flag==3) goto hotkey;
             modify_user_mode(SELECT);
             if (do_select(0, NULL, genbuf) == NEWDIRECT)
                 Read();
@@ -734,44 +713,8 @@ int choose_board(int newflag, char *boardprefix)
                     show_brdlist(page, 1, newflag);     /*  refresh screen */
                 }
             }
-            else if (3 == yank_flag) {
-                char bname[STRLEN], buf[PATHLEN];
-                int i = 0;
-                struct stat st;
-
-                if (mail_list_t >= MAILBOARDNUM) {
-                    move(2, 0);
-                    clrtoeol();
-                    prints("ÓÊÏäÊýÒÑ¾­´ïÉÏÏÞ(%d)£¡", MAILBOARDNUM);
-                    pressreturn();
-                    show_brdlist(page, 1, newflag);     /*  refresh screen */
-                    break;
-                }
-                move(0, 0);
-                clrtoeol();
-                while(1){
-                	i++;
-                	sprintf(bname, ".MAILBOX%d", i);
-                	setmailfile(buf, currentuser->userid, bname);
-                	if (stat(buf, &st) == -1) break;
-                }
-                sprintf(bname, "MAILBOX%d", i);
-                move(0, 0);
-                clrtoeol();
-                getdata(0, 0, "ÊäÈëÓÊÏäÏÔÊ¾ÖÐÎÄÃû: ", buf, 30, DOECHO, NULL, true);
-		  if (buf[0]==0) {
-                    show_brdlist(page, 1, newflag);     /*  refresh screen */
-		      break;
-		  }
-                strncpy(mail_list[mail_list_t], buf, 29);
-                strncpy(mail_list[mail_list_t]+30, bname, 9);
-                mail_list_t++;
-                save_mail_list();
-                brdnum = -1;
-            }
             break;
         case 'A':              // added by bad 2002.8.3
-            if (3==yank_flag) goto hotkey;
             if (2 == yank_flag) {
                 char bname[STRLEN];
                 int i < 0;
@@ -810,27 +753,8 @@ int choose_board(int newflag, char *boardprefix)
                     }
                 }
             }
-            else if (3 == yank_flag) {
-                if (nbrd[num].dir == 2 && nbrd[num].tag >= 0){
-                	int p=1,i,j;
-                     char bname[STRLEN];
-                     char ans[2];
-
-                     move(0, 0);
-                     clrtoeol();
-                     strcpy(bname, nbrd[num].title);
-                     getdata(0, 0, "ÊäÈëÐÅÏäÖÐÎÄÃû: ", bname, 30, DOECHO, NULL, false);
-                     if (bname[0]) {
-                     	i = nbrd[num].tag;
-                     	strcpy(mail_list[i], bname);
-                     	save_mail_list();
-                     	brdnum = -1;
-                     }
-                }
-            }	
             break;
         case 'm':
-            if (3==yank_flag) goto hotkey;
             if (yank_flag == 2) {
                 if (currentuser->flags[0] & BRDSORT_FLAG) {
                     move(0, 0);
@@ -887,29 +811,9 @@ int choose_board(int newflag, char *boardprefix)
                 } else
                     show_brdlist(page, 1, newflag);     /*  refresh screen */
             }
-            else if (3 == yank_flag) {
-                if (nbrd[num].dir == 2 && nbrd[num].tag >= 0){
-                	int p=1,i,j;
-                     char ans[2];
-
-                     move(0, 0);
-                     clrtoeol();
-                     getdata(0, 0, "È·ÈÏÉ¾³ýÕû¸öÄ¿Â¼£¿(y/N)", ans, 2, DOECHO, NULL, true);
-                     p = ans[0] == 'Y' || ans[0] == 'y';
-                     if (p) {
-                     	p=nbrd[num].tag;
-                     	for(j=p; j<mail_list_t-1; j++)
-                     		memcpy(mail_list[j], mail_list[j+1], sizeof(mail_list[j]));
-                     	mail_list_t--;
-                     	save_mail_list();
-                     	brdnum = -1;
-                     }
-                }
-            }
             break;
             /*---	End of Addition	---*/
         case 'y':
-            if (3==yank_flag) goto hotkey;
             if (yank_flag < 2) {
                                 /*--- Modified 4 FavBoard 2000-09-11	---*/
                 yank_flag = !yank_flag;
@@ -917,7 +821,6 @@ int choose_board(int newflag, char *boardprefix)
             }
             break;
         case 'z':              /* Zap */
-            if (3==yank_flag) goto hotkey;
             if (yank_flag < 2) {
                                 /*--- Modified 4 FavBoard 2000-09-11	---*/
                 if (HAS_PERM(currentuser, PERM_BASIC) && !(nbrd[num].flag & BOARD_NOZAPFLAG)) {
@@ -946,7 +849,6 @@ int choose_board(int newflag, char *boardprefix)
              * fall through 
              */
         case 'r':
-            if (ch=='r'&&3==yank_flag) goto hotkey;
         case KEY_RIGHT:        /*½øÈë board */
             {
                 char buf[STRLEN];
@@ -1002,7 +904,6 @@ int choose_board(int newflag, char *boardprefix)
                 break;
             }
         case 'v':              /*Haohmaru.2000.4.26 */
-            if (3==yank_flag) goto hotkey;
             clear();
             m_read();
             show_brdlist(page, 1, newflag);
