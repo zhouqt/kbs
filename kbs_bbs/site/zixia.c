@@ -691,7 +691,7 @@ int auto_register(char* userid,char* email,int msize)
                 //post_file(currentuser, "", fname, "Registry", str, 0, 2);
 
 		sprintf(genbuf,"%s 自动通过注册",ud.userid);
-		post_file(&deliveruser,"",fname,"Registry",genbuf,0,1);
+		post_file(&deliveruser,"",fname,"Registry",genbuf,0,1,getSession());
 	/*if (( fout = fopen(logfile,"a")) != NULL)
 	{
 		fclose(fout);
