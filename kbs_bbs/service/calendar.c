@@ -1,10 +1,17 @@
+/******************************************************
+日记日历2003, 作者: bad@smth.org  Qian Wenjie
+在水木清华bbs系统上运行
+
+本游戏是自由软件，请随意复制移植
+请在修改后的文件头部保留版权信息
+******************************************************/
 #define BBSMAIN
 #include "bbs.h"
 #include <time.h>
 
 char save_scr[100][240];
 int save_y, save_x;
-char nums[11][3]={"零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"};
+char nums[11][3]={"〇", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"};
 char week[7][3]={"日", "一", "二", "三", "四", "五", "六"};
 int holiday_m[]={1, 2, 3, 3, 4, 5, 5, 6, 7, 8, 10, -1};
 int holiday_d[]={1, 14, 8, 9, 1, 1, 4, 1, 1, 1, 1};
@@ -40,7 +47,7 @@ void draw_main()
     int i,j,k,x,y;
     char buf[80];
     struct stat st;
-    for(i=0;i<t_lines-1;i++)
+    for(i=0;i<t_lines;i++)
         saveline(i, 1, save_scr[i]);
     resetcolor();
     for(i=0;i<13;i++) {
@@ -113,8 +120,8 @@ int newfile(char * s)
     FILE* fp;
     if(stat(s, &st)==-1) {
         fp=fopen(s, "w");
-        fprintf(fp, "<标题>\n");
-        fprintf(fp, "%d/%02d/%02d                星期%s                天气<晴>\n", year, month, day, week[get_week(year,month,day)]);
+        fprintf(fp, "标题: \n");
+        fprintf(fp, "%d/%02d/%02d                星期%s                天气:\n\n", year, month, day, week[get_week(year,month,day)]);
         fclose(fp);
         return 1;
     }
@@ -125,13 +132,14 @@ int calendar_main()
 {
     int i,j,ch,oldmode,cc;
     struct tm nowr;
-    char buf[80];
+    struct stat st;
+    char buf[80], title[80];
     long eff_size;
     time_t now;
     oldmode = uinfo.mode;
     modify_user_mode(CALENDAR);
     getyx(&save_y, &save_x);
-    for(i=0;i<t_lines-1;i++)
+    for(i=0;i<t_lines;i++)
         saveline(i, 0, save_scr[i]);
     now = time(0);
     localtime_r(&now, &nowr);
@@ -142,7 +150,7 @@ int calendar_main()
     while(1){
         draw_main();
         ch = igetkey();
-        if(ch==KEY_ESC) break;
+        if(ch==KEY_ESC||toupper(ch)=='Q') break;
         switch(ch) {
             case KEY_UP:
                 if(day>7) day-=7;
@@ -182,10 +190,23 @@ int calendar_main()
                 if(vedit(buf, 0, &eff_size, 0)&&cc) unlink(buf);
                 modify_user_mode(CALENDAR);
                 break;
+            case 32:
+                sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, day);
+                sprintf(title, "%d/%02d/%02d", year, month, day);
+                ansimore_withzmodem(buf, false, title);
+                break;
+            case KEY_DEL:
+                sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, day);
+                if(stat(s, &st)!=-1) {
+                    getdata(13, 48, "确认删除该日日记[y/N]", buf, 3, 1, 0, 1);
+                    if(toupper(buf[0])=='Y')
+                        unlink(buf);
+                }
+                break;
         }
     }
 
-    for(i=0;i<t_lines-1;i++)
+    for(i=0;i<t_lines;i++)
         saveline(i, 1, save_scr[i]);
     move(save_y, save_x);
     modify_user_mode(oldmode);
