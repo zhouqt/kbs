@@ -729,17 +729,20 @@ void join_room(int w, int spec)
                         }
 checkvote:
                         t1=0; t2=0; t3=0;
-                        for(i=0;i<rooms[myroom].people;i++)
+                        for(i=0;i<MAX_PEOPLE;i++)
                             inrooms[myroom].peoples[i].vnum = 0;
-                        for(i=0;i<rooms[myroom].people;i++)
+                        for(i=0;i<MAX_PEOPLE;i++)
+                        if(inrooms[myroom].peoples[i].style!=-1)
                         if(!(inrooms[myroom].peoples[i].flag&PEOPLE_SPECTATOR) &&
                             inrooms[myroom].peoples[i].flag&PEOPLE_ALIVE &&
                             (inrooms[myroom].peoples[i].flag&PEOPLE_KILLER||inrooms[myroom].status==INROOM_DAY)) {
-                            for(j=0;j<rooms[myroom].people;j++)
+                            for(j=0;j<MAX_PEOPLE;j++)
+                                if(inrooms[myroom].peoples[j].style!=-1)
                                 if(inrooms[myroom].peoples[j].pid == inrooms[myroom].peoples[i].vote)
                                     inrooms[myroom].peoples[j].vnum++;
                         }
-                        for(i=0;i<rooms[myroom].people;i++)
+                        for(i=0;i<MAX_PEOPLE;i++)
+                        if(inrooms[myroom].peoples[i].style!=-1)
                         if(!(inrooms[myroom].peoples[i].flag&PEOPLE_SPECTATOR) &&
                             inrooms[myroom].peoples[i].flag&PEOPLE_ALIVE) {
                             if(inrooms[myroom].peoples[i].vnum>=t1) {
@@ -750,7 +753,8 @@ checkvote:
                             }
                         }
                         j=1;
-                        for(i=0;i<rooms[myroom].people;i++)
+                        for(i=0;i<MAX_PEOPLE;i++)
+                        if(inrooms[myroom].peoples[i].style!=-1)
                         if(!(inrooms[myroom].peoples[i].flag&PEOPLE_SPECTATOR) &&
                             inrooms[myroom].peoples[i].flag&PEOPLE_ALIVE &&
                             (inrooms[myroom].peoples[i].flag&PEOPLE_KILLER||inrooms[myroom].status==INROOM_DAY))
@@ -760,13 +764,15 @@ checkvote:
                             }
                         if(j || t1-t2>t3) {
                             int max=0, ok=0, maxi, maxpid;
-                            for(i=0;i<rooms[myroom].people;i++)
+                            for(i=0;i<MAX_PEOPLE;i++)
                                 inrooms[myroom].peoples[i].vnum = 0;
-                            for(i=0;i<rooms[myroom].people;i++)
+                            for(i=0;i<MAX_PEOPLE;i++)
+                            if(inrooms[myroom].peoples[i].style!=-1)
                             if(!(inrooms[myroom].peoples[i].flag&PEOPLE_SPECTATOR) &&
                                 inrooms[myroom].peoples[i].flag&PEOPLE_ALIVE &&
                                 (inrooms[myroom].peoples[i].flag&PEOPLE_KILLER||inrooms[myroom].status==INROOM_DAY)) {
-                                for(j=0;j<rooms[myroom].people;j++)
+                                for(j=0;j<MAX_PEOPLE;j++)
+                                if(inrooms[myroom].peoples[j].style!=-1)
                                     if(inrooms[myroom].peoples[j].pid == inrooms[myroom].peoples[i].vote)
                                         inrooms[myroom].peoples[j].vnum++;
                             }
