@@ -2674,6 +2674,17 @@ int del_ding(int ent, struct fileheader *fileinfo, char *direct)
     if (!HAS_PERM(currentuser, PERM_SYSOP) && !chk_currBM(currBM, currentuser))
             return DONOTHING;
 
+        clear();
+        prints("É¾³ýÎÄÕÂ '%s'.", fileinfo->title);
+        getdata(1, 0, "(Y/N) [N]: ", genbuf, 3, DOECHO, NULL, true);
+        if (genbuf[0] != 'Y' && genbuf[0] != 'y') {     /* if not yes quit */
+            move(2, 0);
+            prints("È¡Ïû\n");
+            pressreturn();
+            clear();
+            return FULLUPDATE;
+        }
+
 	failed=delete_record(direct, sizeof(struct fileheader), ent, (RECORD_FUNC_ARG) cmpname, fileinfo->filename);
 
 	if(failed){
