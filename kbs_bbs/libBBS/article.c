@@ -71,7 +71,7 @@ int do_del_post(struct userec *user, int ent, struct fileheader *fileinfo, char 
 /* .post.X not use???! KCN
 postreport(fileinfo->title, -1, currboard); added by alex, 96.9.12 */
 /*    if( keep <= 0 ) {*/
-	if (strstr(fileinfo->title, "Re:")!=fileinfo->title) setboardorigin(board, 1);
+	if (fileinfo->id==fileinfo->groupid) setboardorigin(board, 1);
 	setboardtitle(board, 1);
 		//added by bad 2002.8.12
     fail = delete_record(direct, sizeof(struct fileheader), ent, (RECORD_FUNC_ARG) cmpname, fileinfo->filename);
@@ -159,6 +159,9 @@ void cancelpost(board, userid, fh, owned, autoappend)
         strcpy(postfile.filename, fh->filename);
         strncpy(postfile.owner, fh->owner, IDLEN + 2);
         postfile.owner[IDLEN + 1] = 0;
+        postfile.id = fh->id;
+        postfile.groupid = fh->groupid;
+        postfile.reid = fh->reid;
     };
     now = time(NULL);
     sprintf(oldpath, "%-32.32s - %s", fh->title, userid);
@@ -557,7 +560,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     char buf[256];
     int fd, err=0, nowid=0;
 
-    if ((re==NULL)&&(!strncasecmp(fh->title,"Re:",3))) {
+    if ((re==NULL)&&(!strncmp(fh->title,"Re:",3))) {
 	    strncpy(fh->title,fh->title+4,STRLEN);
     }
     setbfile(buf, boardname, DOT_DIR);
@@ -601,7 +604,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     sprintf(buf, "posted '%s' on '%s'", fh->title, boardname);
     bbslog("1user", "%s", buf);
 
-	if (strstr(fh->title, "Re:")!=fh->title) setboardorigin(boardname, 1);
+	if (fh->id==fh->groupid) setboardorigin(boardname, 1);
 	setboardtitle(boardname, 1);
 	if (fh->accessed[0]&FILE_MARKED) setboardmark(boardname, 1);
 	if (user!=NULL) bmlog(user->userid, boardname, 2, 1);
