@@ -271,7 +271,7 @@ PassWord:
 		<tr><td class="t4">
 		<?php
 			for($i = 0 ; $i < count($pc["LINKS"]) ; $i ++)
-				echo "<a href='http://".$pc["LINKS"][$i]["URL"]."'>".htmlspecialchars($pc["LINKS"][$i]["LINK"])."</a>\n";
+				echo "<a href='http://".htmlspecialchars($pc["LINKS"][$i]["LINK"])."'>".htmlspecialchars($pc["LINKS"][$i]["LINK"])."</a>\n";
 		?>
 		<br><br>
 		<a href="rss.php?userid=<?php echo $pc["USER"]; ?>" target="_blank">
