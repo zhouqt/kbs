@@ -2444,10 +2444,8 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         buf4[0] = '\0';
         replymode = 0;
     }
-    if (getSession()->currentmemo->ud.signum == 0)
-        getCurrentUser()->signature = 0;
-    else if (getCurrentUser()->signature > getSession()->currentmemo->ud.signum)      /*签名档No.检查 */
-        getCurrentUser()->signature = 1;
+    if (getCurrentUser()->signature > getSession()->currentmemo->ud.signum)      /*签名档No.检查 */
+        getCurrentUser()->signature = (getSession()->currentmemo->ud.signum == 0) ? 0 : 1;
     anonyboard = anonymousboard(currboard->filename);     /* 是否为匿名版 */
     if (!strcmp(currboard->filename, "Announce"))
         Anony = 1;

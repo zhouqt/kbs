@@ -438,7 +438,7 @@ int do_send(char *userid, char *title, char *q_file)
         buf4[0] = ' ';
 
     if (getCurrentUser()->signature > getSession()->currentmemo->ud.signum)
-        getCurrentUser()->signature = 1;
+        getCurrentUser()->signature = (getSession()->currentmemo->ud.signum == 0) ? 0 : 1;
     while (1) {
         sprintf(buf3, "ÒıÑÔÄ£Ê½ [\033[1m%c\033[m]", include_mode);
         move(t_lines - 4, 0);
