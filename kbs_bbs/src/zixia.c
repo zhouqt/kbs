@@ -20,7 +20,7 @@ uleveltochar( char* buf, struct userec *lookupuser )
       	else if( lvl & PERM_MM ) strcpy(buf,"观音姐姐");
       	else  if( lvl & PERM_CHATCLOAK ) strcpy(buf,"无敌牛虱");
       	else if  ( lvl & PERM_BOARDS ) strcpy(buf,"二当家的");
-      	else strcpy(buf,"斧头帮众");
+      	else strcpy(buf,"强盗");
 
 	//中文说明，根据 level
     	if( !strcmp(lookupuser->userid,"SYSOP")
@@ -30,10 +30,14 @@ uleveltochar( char* buf, struct userec *lookupuser )
 	    strcpy( buf, "旺财" );
     	else if( !strcmp(lookupuser->userid,"halen") )
 	    strcpy( buf, "小皮卡秋" );
+    	else if( !strcmp(lookupuser->userid,"Bison") )
+	    strcpy( buf, "淫贼" );
+    	else if( !strcmp(lookupuser->userid,"KCN") )
+	    strcpy( buf, "上帝" );
     	else if( !strcmp(lookupuser->userid,"cityhunter") 
 		    || !strcmp(lookupuser->userid,"soso")
 		    || !strcmp(lookupuser->userid,"Czz")
-	  	    || !strcmp(lookupuser->userid,"KCN") )
+		    || !strcmp(lookupuser->userid,"flyriver") )
 	    strcpy( buf, "牛魔王" );
     	else if( !strcmp(lookupuser->userid,"guest") )
 	    strcpy( buf, "葡萄" );
@@ -103,6 +107,7 @@ int     mode;
     case LOOKMSGS:  return NAME_VIEW_MSG;
     case WFRIEND:   return "寻人名册";
     case LOCKSCREEN:return "屏幕锁定";
+    case WEBEXPLORE:return "Web浏览";
     default: return "去了那里!?" ;
     }
 }

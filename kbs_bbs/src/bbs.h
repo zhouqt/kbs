@@ -296,14 +296,15 @@ typedef size_t socklen_t;
 /* added period 2000-09-11	4 FavBoard */
 #define FAVBOARDNUM     20
 
+#ifndef NJU_WWWBBS
 #include "vars.h"
 #include "func.h"
-
+#endif
 
 #define system my_system
 
-#if 0
-#ifdef BBS2WWW
+//#if 0
+#ifdef NJU_WWWBBS
 #define MAXREJECTS (32)
 #define BBSNAME NAME_BBS_CHINESE
 #define BBSHOST NAME_BBS_ENGLISH
@@ -312,6 +313,6 @@ typedef size_t socklen_t;
 #define SYS_MSGFILE         "msgfile"
 #define SYS_MSGFILELOG      "msgfile.log"   /* "msgfile.me" */
 #endif
-#endif
+//#endif
 #endif /* of _BBS_H_ */
 

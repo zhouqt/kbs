@@ -2228,6 +2228,9 @@ char* argv[];
     /* ----------------------------- */
     /* init variable : rooms & users */
     /* ----------------------------- */
+#ifdef FREEBSD
+    bzero( &sin, sizeof(sin) );
+#endif
     strcpy(rooms[0].name, mainroom);
     /*strcpy(rooms[0].topic, maintopic);*/
 

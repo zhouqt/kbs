@@ -655,7 +655,6 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
                 uid, STRLEN-1, DOECHO, NULL ,YEA);
         if( strcmp( uid, "new" ) == 0 ) {
 #ifdef LOGINASNEW
-            /*prints( "\033[32m´íÎóµÄÊ¹ÓÃÕß´úºÅ...\033[m\n" );*/
             if (check_ban_IP(fromhost,buf)<=0)
 	    {
 		new_register();
@@ -672,7 +671,7 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
             prints( "[37m±¾ÏµÍ³Ä¿Ç°ÎŞ·¨ÒÔ new ×¢²á, ÇëÓÃ guest ½øÈë.[m\n" );
 #endif
         } else if( *uid == '\0' || !dosearchuser( uid ) ) {
-            prints( "[32m´íÎóµÄÊ¹ÓÃÕß´úºÅ...[m\n" );
+            prints( "[32m" MSG_ERR_USERID "[m\n" );
         } else 
 /* Add by KCN for let sysop can use extra 10 UTMP */
         if(!HAS_PERM(PERM_ADMINMENU)&&( curr_login_num >= MAXACTIVE+10 )) {
@@ -936,6 +935,9 @@ user_login()
     prints( "[1;36m¡î ÕâÊÇÄúµÚ [33m%d[36m ´ÎÉÏÕ¾£¬ÉÏ´ÎÄúÊÇ´Ó [33m%s[36m Á¬Íù±¾Õ¾¡£\n", currentuser->numlogins + 1, currentuser->lasthost );
     prints( "¡î ÉÏ´ÎÁ¬ÏßÊ±¼äÎª [33m%s[m ", Ctime(currentuser->lastlogin) );
     igetkey();
+    /* È«¹úÊ®´óÈÈÃÅ»°Ìâ added by Czz 020128 */
+    show_help("0Announce/bbslists/newsday");
+    /* added end */
     ansimore("0Announce/hotinfo",NA);
     move( t_lines - 1/*1*/, 0 ); /* Leeward: 98.09.24 Alter below message */
     clrtoeol();

@@ -59,7 +59,7 @@ int check_systempasswd()
         }
         if (!passbuf[0]) {
             move(2, 0);
-            prints("错误的系统密码...");
+            prints( MSG_ERR_USERID );
             securityreport("系统密码输入错误...",NULL);
             pressanykey();
             return NA;
@@ -278,7 +278,7 @@ int m_info()
     if (!(id = getuser(genbuf,&lookupuser)))
     {
         move(3, 0);
-        prints("错误的使用者代号");
+        prints( MSG_ERR_USERID );
         clrtoeol();
         pressreturn();
         clear();

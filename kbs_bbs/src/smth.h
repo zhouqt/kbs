@@ -61,6 +61,9 @@
 #define	CHAT_PARTY		"大家"
 
 #define DEFAULT_NICK		"每天爱你多一些"
+
+#define MSG_ERR_USERID		"错误的使用者代号..."
+
 #ifndef EXTERN
 extern char *permstrings[];
 #else

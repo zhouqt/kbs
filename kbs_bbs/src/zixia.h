@@ -1,6 +1,8 @@
 #ifndef __SYSNAME_H_
 #define __SYSNAME_H_
 
+#define ZIXIA
+
 #define BBSUID 			80 //9999
 #define BBSGID 			80 //99
 
@@ -15,9 +17,9 @@
 #define	LENGTH_ACBOARD_BUFFER	200	//150
 #define	LENGTH_ACBOARD_LINE 	300	//80
 
-#define LIFE_DAY_USER		366	//120
-#define LIFE_DAY_LONG		667	//666
-#define LIFE_DAY_SYSOP		501	//120
+#define LIFE_DAY_USER		365	//120
+#define LIFE_DAY_LONG		666	//666
+#define LIFE_DAY_SYSOP		500	//120
 #define LIFE_DAY_NODIE		999	//120
 #define LIFE_DAY_NEW		30	//15
 #define LIFE_DAY_SUICIDE	15	//15
@@ -35,7 +37,7 @@
 #define ISSUE_LOGIN		"本站使用一台X86服务器" //本站使用曙光公司曙光天演服务器
 #define ISSUE_LOGOUT		"般若波羅密！" //还是走了罗
 
-#define NAME_USER_SHORT		"帮众" //用户
+#define NAME_USER_SHORT		"强盗" //用户
 #define NAME_USER_LONG		"斧头帮众" //"水木用户"
 #define NAME_SYSOP		"强盗头" //"System Operator"
 #define NAME_BM			"二当家的" //版主
@@ -47,7 +49,7 @@
 #define NAME_MATTER		"帮务" //站务
 #define NAME_SYS_MANAGE		"帮内管理" //"系统维护"
 #define NAME_SEND_MSG		"丢斧头" // "送讯息"
-#define NAME_VIEW_MSG		"丢斧头" // "送讯息"
+#define NAME_VIEW_MSG		"查斧头" // "送讯息"
 
 #define CHAT_MAIN_ROOM		"zixia" //main
 #define	CHAT_TOPIC		"盘丝洞？明明是水帘洞嘛……" //"大家先随便聊聊吧"
@@ -60,6 +62,8 @@
 #define	CHAT_PARTY		"帮众" // "大家"
 
 #define DEFAULT_NICK		"每天爱你多一些"
+
+#define MSG_ERR_USERID		"嗯？这个猪头是谁？..."
 
 #ifndef EXTERN
 extern char *permstrings[];
@@ -89,7 +93,7 @@ char *permstrings[] = {
         "系统总管理员",         /* PERM_ADMIN */
         "荣誉帐号",          	/* PERM_HORNOR*/
         "看秘密精华区",         /* PERM_SECANC*/
-        "看Girl版",           /* PERM_GIRL*/
+        "看AKA版",           /* PERM_GIRL*/
         "看Sexy版",           /* PERM_SEXY*/
         "自杀进行中",           /* PERM_SUICIDE?*/
         "观音姐姐",           /* PERM_MM*/

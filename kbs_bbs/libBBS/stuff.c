@@ -652,6 +652,10 @@ int compute_user_value( struct userec *urec)
 	return LIFE_DAY_SYSOP;
 	/* 站务人员生命力不变 Bigman 2001.6.23 */
 	
+#ifdef ZIXIA
+    if( urec->userlevel & PERM_MM )
+	return LIFE_DAY_SYSOP;
+#endif
 
 
     value = (time(0) - urec->lastlogin) / 60;    /* min */

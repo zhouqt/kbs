@@ -173,7 +173,7 @@ bbsnet(int n) {
     refresh();
     j=0;
     l=0;
-    for (i=0;i<15;i++){
+    for (i=0;i<30;i++){
         c= getch();
         if (c==' '||c=='\015'||c=='\0'||c=='\n') break;
         if (c==':'){
@@ -202,11 +202,11 @@ bbsnet(int n) {
         sprintf(buf3,"%c",c);
         prints(buf3);
         refresh();
+        i--;
         j--;
         }
         
         refresh();
-        i--;
      }
      if(l==0){
         strncpy(ip_zdh,buf1,40);

@@ -1905,7 +1905,7 @@ char *direct;
         if(searchuser(uident)<=0)
         {
             move(2,0);
-            prints("错误的使用者代号...");
+            prints( MSG_ERR_USERID );
             pressanykey();
         }else
             addtooverride(uident);

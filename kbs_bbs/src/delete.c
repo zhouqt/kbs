@@ -252,7 +252,7 @@ char cid[IDLEN];
         strcpy(userid,cid);
     if(!(id = getuser(userid,&lookupuser))) {
         move(3,0) ;
-        prints("错误的使用者代号...") ;
+        prints( MSG_ERR_USERID );
         clrtoeol() ;
         pressreturn() ;
         clear() ;

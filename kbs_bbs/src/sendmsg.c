@@ -123,18 +123,6 @@ int mode;
             clear() ;
             return 0 ;
         }
-        /*    if(searchuser(uident)==0 || tuid == usernum)
-              {
-              if(uentp==NULL)
-              {
-              move(2,0) ;
-              prints("错误的使用者 ID\n") ;
-              pressreturn() ;
-              move(2,0) ;
-              clrtoeol() ;
-              }
-              return -1 ;
-              }*/
         uin=t_search(uident,NA);
         if(uin==NULL)
         {
