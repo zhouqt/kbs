@@ -35,7 +35,7 @@ int winmineg_main() {
 int show_mines() {
  int x, y;
  for(x=1; x<=30; x++)
-   for(y=3; y<=18; y++)
+   for(y=1; y<17; y++)
       {
       if (a[x][y]) {
            move(y-1,x*2-2);
