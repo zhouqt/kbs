@@ -2,7 +2,7 @@
 	KCN,use mmap for system config.
 */
 #include "bbs.h"
-#define SC_BUFSIZE              10240
+#define SC_BUFSIZE              20480
 #define SC_KEYSIZE              256
 #define SC_CMDSIZE              256
 #define sysconf_ptr( offset )   (&sysconf_buf[ offset ]);
