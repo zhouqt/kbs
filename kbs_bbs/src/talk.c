@@ -236,12 +236,12 @@ char q_id[IDLEN];
     int logincount, seecount, oldmode;
     struct userec *lookupuser;
 
-    oldmode = uinfo.mode;
-    modify_user_mode(QUERY);
     if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND && uinfo.mode != READING && uinfo.mode != MAIL && uinfo.mode != RMAIL && uinfo.mode != GMENU) {
         /*
          * count = shortulist(NULL); 
          */
+        oldmode = uinfo.mode;
+        modify_user_mode(QUERY);
         move(2, 0);
         clrtobot();
         prints("<输入使用者代号, 按空白键可列出符合字串>\n");
@@ -254,6 +254,7 @@ char q_id[IDLEN];
             modify_user_mode(oldmode);
             return 0;
         }
+        modify_user_mode(oldmode);
     } else {
         char *p;
 
@@ -264,6 +265,8 @@ char q_id[IDLEN];
             };
         strcpy(uident, q_id);
     }
+    oldmode = uinfo.mode;
+    modify_user_mode(QUERY);
     if (!(tuid = getuser(uident, &lookupuser))) {
         move(2, 0);
         clrtoeol();
