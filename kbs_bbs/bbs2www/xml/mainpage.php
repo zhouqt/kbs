@@ -290,7 +290,7 @@ $brdarr = array();
 	<table width="97%" border="0" cellpadding="0" cellspacing="0" background="images/lan2.gif" class="title">
         <tr> 
 		  <td width="23">&nbsp;</td>
-          <td><a href="/bbsrecommend.php">&gt;&gt;推荐文章&gt;&gt;</a></td>
+          <td>&gt;&gt;推荐文章&gt;&gt;</td>
         </tr>
 	</table>
 
