@@ -212,201 +212,205 @@ int reg()
 
 int show_frm(int pid)
 {
-	printf("<frameset rows=\"0,0,*,48,16\" frameborder=\"0\">"
-		   "	<frame name=\"hide\" src=\"\">"
-		   "	<frame name=\"hide2\" src=\"\">"
-		   "	<frame name=\"main\" src=\"\">"
-		   "	<frame scrolling=\"auto\" marginheight=\"1\" framespacing=\"1\" name=\"input\" src=\"bbschat?t=frame_input&pid=%d\">"
-		   "	<frame scrolling=\"no\" marginwidth=\"4\" marginheight=\"1\" framespacing=\"1\" name=\"foot\" src=\"bbsfoot\">"
-		   "	</frameset>"
-		   "	</html>"
+	printf("<frameset rows=\"0,0,*,48,16\" frameborder=\"0\">\n"
+		   "	<frame name=\"hide\" src=\"\">\n"
+		   "	<frame name=\"hide2\" src=\"\">\n"
+		   /*"	<frame name=\"hide3\" src=\"/chataid.html\">\n"*/
+		   "	<frame name=\"main\" src=\"\">\n"
+		   "	<frame scrolling=\"auto\" marginheight=\"1\" framespacing=\"1\" name=\"input\" src=\"bbschat?t=frame_input&pid=%d\">\n"
+		   "	<frame scrolling=\"no\" marginwidth=\"4\" marginheight=\"1\" framespacing=\"1\" name=\"foot\" src=\"bbsfoot\">\n"
+		   "	</frameset>\n"
+		   "	</html>\n"
 		   , pid);
 	http_quit();
 }
 
 int frame_input(int pid)
 {
-	printf(" <script>"
-		   "		function r1() {"
-		   "			top.hide2.location='bbschat?t=chatrefresh&pid=%d';"
-		   "			setTimeout('r1()', 10000);"
-		   "		}"
-		   "		setTimeout('r1()', 500);"
-		   "	</script>"
-		   "	<body onload=\"document.form1.in1.focus()\">"
-		   "	<nobr>"
-		   "	<form onsubmit=\"add_cc()\" name=\"form1\" action=\"bbschat?pid=%d&t=chatsnd\" method=\"post\" target=\"hide\">"
-		   "	Input: <input name=\"in1\" maxlength=\"60\" size=\"56\">"
-		   "	<input type=\"submit\" value=\"·¢ËÍ\">"
-		   "	<script>"
-		   "		var cc, cc2;"
-		   "		cc='';"
-		   "		function add_cc0(x1, x) {"
-		   "			cc2=x1;"
-		   "			cc=x;"
-		   "		}"
-		   "		function do_quit() {"
-		   "			if(confirm('ÄúÕæµÄÒªÍË³öÁËÂğ£¿')) {"
-		   "				form1.in1.value='/b';"
-		   "				form1.submit();"
-		   "			}"
-		   "		}"
-		   "		function do_help() {"
-		   "			open('/chathelp.html', '_blank', "
-		   "			'toolbar=yes,location=no,status=no,menubar=no,scrollbar=auto,resizable=yes,width=620,height=400');"
-		   "		}"
-		   "		function do_alias(x) {"
-		   "			form1.in1.value=x;"
-		   "			form1.submit();"
-		   "		}"
-		   "		function do_room() {"
-		   "			xx=prompt('ÇëÊäÈë°üÏáÃû³Æ','');"
-		   "			if(xx=='' || xx==null) return;"
-		   "			form1.in1.value='/j '+ xx;"
-		   "			form1.submit();"
-		   "		}"
-		   "		function do_user() {"
-		   "			form1.in1.value='/l';"
-		   "			form1.submit();"
-		   "		}"
-		   "		function do_r() {"
-		   "			form1.in1.value='/r';"
-		   "			form1.submit();"
-		   "		}"
-		   "		function do_w() {"
-		   "			form1.in1.value='/w';"
-		   "			form1.submit();"
-		   "		}"
-		   "		function do_msg() {"
-		   "			xx=prompt('¸øË­¶ªĞ¡Ö½Ìõ','');"
-		   "			if(xx=='' || xx==null) return;"
-		   "			yy=prompt('Ê²Ã´ÄÚÈİ','');"
-		   "			if(yy=='' || xx==null) return;"
-		   "			form1.in1.value='/m '+xx+' '+yy;"
-		   "			form1.submit();"
-		   "		}"
-		   "		function do_n() {"
-		   "			xx=prompt('ÄãÏë¸Ä³ÉÊ²Ã´Ãû×Ö?','');"
-		   "			if(xx=='' || xx==null) return;"
-		   "			form1.in1.value='/n '+xx;"
-		   "			form1.submit();"
-		   "		}"
-		   "		function do_pic() {"
-		   "			xx=prompt('ÇëÊäÈëÍ¼Æ¬µÄURLµØÖ·:','http://');"
-		   "			if(xx=='http://' || xx=='' || xx==null) return;"
-		   "			form1.in1.value='<img src='+xx+'>';"
-		   "			form1.submit();"
-		   "		}"
-		   "	</script>"
-		   "	<select onChange='do_alias(this.options[this.selectedIndex].value);this.selectedIndex=0;'>"
-		   "        <option value=' ' selected>ÁÄÌì¶¯×÷</option>"
-		   "        <option value='//hehe'>ºÇºÇµÄÉµĞ¦</option>"
-		   "	<option value='//faint'>ÒªÔÎµ¹ÁË</option>"
-		   "	<option value='//sleep'>ÒªË¯×ÅÁË</option>"
-		   "	<option value='//:D'>ÀÖ×Ì×ÌµÄ</option>"
-		   "	<option value='//so'>¾ÍÕâÑù</option>"
-		   "	<option value='//shake'>Ò¡Ò¡Í·</option>"
-		   "	<option value='//luck'>ÕæĞÒÔË°¡</option>"
-		   "	<option value='//tongue'>ÍÂÍÂÉàÍ·</option>"
-		   "	<option value='//blush'>Á³ºìÁË</option>"
-		   "	<option value='//applaud'>ÈÈÁÒ¹ÄÕÆ</option>"
-		   "	<option value='//cough'>¿ÈËÔÒ»ÏÂ</option>"
-		   "	<option value='//happy'>ºÃ¸ßĞË°¡</option>"
-		   "	<option value='//hungry'>¶Ç×Ó¶öÁË</option>"
-		   "	<option value='//strut>´óÒ¡´ó°Ú</option>"
-		   "	<option value='//think'>ÏëÒ»Ïë</option>"
-		   "	<option value='//?'>ÒÉ»ó²»ÒÑ</option>"
-		   "	<option value='//bearbug'>ÈÈÇéÓµ±§</option>"
-		   "	<option value='//bless'>×£¸£</option>"
-		   "	<option value='//bow'>¾Ï¹ª</option>"
-		   "        <option value='//caress'>¸§Ãş</option>"
-		   "        <option value='//cringe'>ÆóÇó¿íË¡</option>"
-		   "        <option value='//cry'>·ÅÉù´ó¿Ş</option>"
-		   "        <option value='//comfort'>°²Î¿Ò»ÏÂ</option>"
-		   "	<option value='//clap'>ÈÈÁÒ¹ÄÕÆ</option>"
-		   "        <option value='//dance'>ôæôæÆğÎè</option>"
-		   "    	<option value='//drivel'>Á÷¿ÚË®</option>"
-		   "    	<option value='//farewell'>ÔÙ¼û</option>"
-		   "  	<option value='//giggle'>´ôĞ¦</option>"
-		   "    	<option value='//grin'>ßÖ×ìĞ¦</option>"
-		   "      	<option value='//growl'>´óÉùÅØÏø</option>"
-		   "        </select>"
-		   "	<select name=ccc onChange='add_cc0(this, this.options[this.selectedIndex].value)'>"
-		   "	<option value='' selected>°×É«</option>"
-		   "	<option value='%s'><font color=green>ºìÉ«</font></option>"
-		   "	<option value='%s'><font color=red>ÂÌÉ«</font></option>"
-		   "        <option value='%s'><font color=blue>À¶É«</font></option>"
-		   "        <option value='%s'><font color=blue>ÌìÀ¶</font></option>"
-		   "        <option value='%s'><font color=yellow>»ÆÉ«</font></option>"
-		   "        <option value='%s'><font color=red>Æ·ºì</font></option>"
-		   "	<option value='%s'>´ó×Ö</option>"
-		   "	</select>"
-		   "	<select onChange='do_func(this.selectedIndex);this.selectedIndex=0;'>"
-		   " 	<option selected>ÁÄÌìÊÒ¹¦ÄÜ</option>"
-		   "	<option>½øÈë°üÏá</option>"
-		   "	<option>²é¿´°üÏáÃû</option>"
-		   "	<option>±¾°üÏáÓĞË­</option>"
-		   "	<option>¿´ÓĞË­ÔÚÏß</option>"
-		   "	<option>¶ªĞ¡Ö½Ìõ</option>"
-		   "	<option>¸ÄÁÄÌì´úºÅ</option>"
-		   "	<option>ÌùÍ¼Æ¬</option>"
-		   "	<option>Çå³ıÆÁÄ»</option>"
-		   "	<option>±³¾°·´É«</option>"
-		   "	<option>Àë¿ªÁÄÌìÊÒ</option>"
-		   "        </select>"
-		   "	<br>"
-		   "	<a href='javascript:do_quit()'>[Àë¿ªbbs²è¹İ] </a>"
-		   "	<a href='/chathelp.html' target=_blank>[ÁÄÌìÊÒ°ïÖú] </a>"
-		   "	<script>"
-		   "	function do_func(n) {"
-		   "		if(n==0) return;"
-		   "		if(n==1) return do_room();"
-		   "		if(n==2) return do_r();"
-		   "		if(n==3) return do_w();"
-		   "		if(n==4) return do_user();"
-		   "		if(n==5) return do_msg();"
-		   "		if(n==6) return do_n();"
-		   "		if(n==7) return do_pic();"
-		   "		if(n==8) return do_c();"
-		   "		if(n==9) return do_css2();"
-		   "		if(n==10) return do_quit();"
-		   "	}"
-		   "	var css1;"
-		   "	css1='/bbschat.css';"
-		   "	function do_c() {"
-		   "		top.main.document.close();"
-		   "                top.main.document.writeln('<link rel=stylesheet type=text/css href='+css1+'><body><pre><font class=c37>');"
-		   "	}"
-		   "	function do_css2() {"
-		   "		if(css1=='bbschat.css')"
-		   "			css1='/bbschat2.css';"
-		   "		else"
-		   "			css1='/bbschat.css';"
-		   "		top.main.document.writeln('<link rel=stylesheet type=text/css href='+css1+'><body><pre><font class=c37>');"
-		   "	}"
-		   "	function add_cc() {"
-		   "	 	xxx=form1.in1.value;"
-		   "		if(xxx=='/h') {"
-		   "			do_help();"
-		   "			form1.in1.value='';"
-		   "			return; "
-		   "		}"
-		   "		if(xxx=='/c') {"
-		   "			do_c();"
-		   "			form1.in1.value='';"
-		   "			return;"
-		   "		}"
-		   "		if(xxx=='') return;"
-		   " 		if(xxx.indexOf('/')<0) {"
-		   " 			form1.in1.value=cc+xxx;"
-		   " 		}"
-		   " 		if(cc=='/I') {"
-		   " 			cc='';"
-		   " 			cc2.selectedIndex=0;"
-		   " 		}"
-		   " 	}"
-		   "	</script>"
-		   "	</form></body>",
+	printf(" <script>\n"
+		   "		function r1() {\n"
+		   "			top.hide2.location='bbschat?t=chatrefresh&pid=%d';\n"
+		   "			setTimeout('r1()', 10000);\n"
+		   "		}\n"
+		   "		setTimeout('r1()', 500);\n"
+		   "	</script>\n"
+		   "	<body onload=\"document.form1.in1.focus()\">\n"
+		   "	<nobr>\n"
+		   "	<form onsubmit=\"add_cc()\" name=\"form1\" action=\"bbschat?pid=%d&t=chatsnd\" method=\"post\" target=\"hide\">\n"
+		   "	ÊäÈë: <input name=\"in1\" maxlength=\"60\" size=\"56\">\n"
+		   "	<input type=\"submit\" value=\"·¢ËÍ\">\n"
+		   "	<script>\n"
+		   "		var cc, cc2;\n"
+		   "		cc='';\n"
+		   "		function add_cc0(x1, x) {\n"
+		   "			cc2=x1;\n"
+		   "			cc=x;\n"
+		   "		}\n"
+		   "		function do_quit() {\n"
+		   "			if(confirm('ÄúÕæµÄÒªÍË³öÁËÂğ£¿')) {\n"
+		   "				form1.in1.value='/b';\n"
+		   "				form1.submit();\n"
+		   "			}\n"
+		   "		}\n"
+		   "		function do_help() {\n"
+		   "			open('/chathelp.html', '_blank', \n"
+		   "			'toolbar=yes,location=no,status=no,menubar=no,scrollbar=auto,resizable=yes,width=620,height=400');\n"
+		   "		}\n"
+		   "		function do_alias(x) {\n"
+		   "			form1.in1.value=x;\n"
+		   "			form1.submit();\n"
+		   "		}\n"
+		   "		function do_room() {\n"
+		   "			xx=prompt('ÇëÊäÈë°üÏáÃû³Æ','');\n"
+		   "			if(xx=='' || xx==null) return;\n"
+		   "			form1.in1.value='/j '+ xx;\n"
+		   "			form1.submit();\n"
+		   "		}\n"
+		   "		function do_user() {\n"
+		   "			form1.in1.value='/l';\n"
+		   "			form1.submit();\n"
+		   "		}\n"
+		   "		function do_r() {\n"
+		   "			form1.in1.value='/r';\n"
+		   "			form1.submit();\n"
+		   "		}\n"
+		   "		function do_w() {\n"
+		   "			form1.in1.value='/w';\n"
+		   "			form1.submit();\n"
+		   "		}\n"
+		   "		function do_msg() {\n"
+		   "			xx=prompt('¸øË­¶ªĞ¡Ö½Ìõ','');\n"
+		   "			if(xx=='' || xx==null) return;\n"
+		   "			yy=prompt('Ê²Ã´ÄÚÈİ','');\n"
+		   "			if(yy=='' || xx==null) return;\n"
+		   "			form1.in1.value='/m '+xx+' '+yy;\n"
+		   "			form1.submit();\n"
+		   "		}\n"
+		   "		function do_n() {\n"
+		   "			xx=prompt('ÄãÏë¸Ä³ÉÊ²Ã´Ãû×Ö?','');\n"
+		   "			if(xx=='' || xx==null) return;\n"
+		   "			form1.in1.value='/n '+xx;\n"
+		   "			form1.submit();\n"
+		   "		}\n"
+		   "		function do_pic() {\n"
+		   "			xx=prompt('ÇëÊäÈëÍ¼Æ¬µÄURLµØÖ·:','http://');\n"
+		   "			if(xx=='http://' || xx=='' || xx==null) return;\n"
+		   "			form1.in1.value='<img src=\"'+xx+'\">';\n"
+		   "			form1.submit();\n"
+		   "		}\n"
+		   "	</script>\n"
+		   "	<select onChange=\"do_alias(this.options[this.selectedIndex].value);this.selectedIndex=0;\">\n"
+		   "        <option value=\" \" selected>ÁÄÌì¶¯×÷</option>\n"
+		   /*"        <option value=\"//hehe\">ºÇºÇµÄÉµĞ¦</option>\n"*/
+		   "	<option value=\"//faint\">ÒªÔÎµ¹ÁË</option>\n"
+		   "	<option value=\"//sleep\">ÒªË¯×ÅÁË</option>\n"
+		   "	<option value=\"//:D\">ÀÖ×Ì×ÌµÄ</option>\n"
+		   "	<option value=\"//nod\">µãÍ·</option>\n"
+		   "	<option value=\"//so\">¾ÍÕâÑù</option>\n"
+		   "	<option value=\"//shake\">Ò¡Ò¡Í·</option>\n"
+		   "	<option value=\"//luck\">ÕæĞÒÔË°¡</option>\n"
+		   "	<option value=\"//tongue\">ÍÂÍÂÉàÍ·</option>\n"
+		   "	<option value=\"//blush\">Á³ºìÁË</option>\n"
+		   "	<option value=\"//applaud\">ÈÈÁÒ¹ÄÕÆ</option>\n"
+		   "	<option value=\"//cough\">¿ÈËÔÒ»ÏÂ</option>\n"
+		   "	<option value=\"//happy\">ĞÒ¸£</option>\n"
+		   "	<option value=\"//hungry\">¶Ç×Ó¶öÁË</option>\n"
+		   "	<option value=\"//strut\">´óÒ¡´ó°Ú</option>\n"
+		   "	<option value=\"//miss\">ÏëÄî</option>\n"
+		   "	<option value=\"//think\">ÏëÒ»Ïë</option>\n"
+		   "	<option value=\"//?\">ÒÉ»ó²»ÒÑ</option>\n"
+		   "	<option value=\"//bearbug\">ÈÈÇéÓµ±§</option>\n"
+		   "	<option value=\"//bless\">×£¸£</option>\n"
+		   "	<option value=\"//bow\">¾Ï¹ª</option>\n"
+		   "        <option value=\"//caress\">¸§Ãş</option>\n"
+		   "        <option value=\"//cringe\">ÆóÇó¿íË¡</option>\n"
+		   "        <option value=\"//cry\">·ÅÉù´ó¿Ş</option>\n"
+		   "        <option value=\"//comfort\">°²Î¿Ò»ÏÂ</option>\n"
+		   "	<option value=\"//clap\">ÈÈÁÒ¹ÄÕÆ</option>\n"
+		   "        <option value=\"//dance\">ôæôæÆğÎè</option>\n"
+		   "    	<option value=\"//drivel\">Á÷¿ÚË®</option>\n"
+		   "    	<option value=\"//wave\">Ò¡ÊÖ</option>\n"
+		   "    	<option value=\"//bye\">ÔÙ¼û</option>\n"
+		   "  	<option value=\"//giggle\">´ôĞ¦</option>\n"
+		   "    	<option value=\"//grin\">Ğ°¶ñµØĞ¦</option>\n"
+		   "      	<option value=\"//growl\">´óÉùÅØÏø</option>\n"
+		   "        </select>\n"
+		   "	<select name=\"ccc\" onChange=\"add_cc0(this, this.options[this.selectedIndex].value)\">\n"
+		   "	<option value=\"\" selected>°×É«</option>\n"
+		   "	<option value=\"%s\"><font color=\"green\">ºìÉ«</font></option>\n"
+		   "	<option value=\"%s\"><font color=\"red\">ÂÌÉ«</font></option>\n"
+		   "        <option value=\"%s\"><font color=\"blue\">À¶É«</font></option>\n"
+		   "        <option value=\"%s\"><font color=\"blue\">ÌìÀ¶</font></option>\n"
+		   "        <option value=\"%s\"><font color=\"yellow\">»ÆÉ«</font></option>\n"
+		   "        <option value=\"%s\"><font color=\"red\">Æ·ºì</font></option>\n"
+		   "	<option value=\"%s\">´ó×Ö</option>\n"
+		   "	</select>\n"
+		   "	<select onChange=\"do_func(this.selectedIndex);this.selectedIndex=0;\">\n"
+		   " 	<option selected>ÁÄÌìÊÒ¹¦ÄÜ</option>\n"
+		   "	<option>½øÈë"CHAT_ROOM_NAME"</option>\n"
+		   "	<option>²é¿´"CHAT_ROOM_NAME"Ãû³Æ</option>\n"
+		   "	<option>±¾"CHAT_ROOM_NAME"ÓĞË­</option>\n"
+		   "	<option>¿´ÓĞË­ÔÚÏß</option>\n"
+		   "	<option>¶ªĞ¡Ö½Ìõ</option>\n"
+		   "	<option>¸ÄÁÄÌì´úºÅ</option>\n"
+		   "	<option>ÌùÍ¼Æ¬</option>\n"
+		   "	<option>Çå³ıÆÁÄ»</option>\n"
+		   "	<option>±³¾°·´É«</option>\n"
+		   "	<option>Àë¿ªÁÄÌìÊÒ</option>\n"
+		   "        </select>\n"
+		   "	<br>\n"
+		   "	[<a href=\"javascript:do_quit()\">Àë¿ª"CHAT_SERVER"</a>] \n"
+		   "	[<a href=\"/chathelp.html\" target=\"_blank\">ÁÄÌìÊÒ°ïÖú</a>]\n"
+		   "	<script>\n"
+		   "	function do_func(n) {\n"
+		   "		if(n==0) return;\n"
+		   "		if(n==1) return do_room();\n"
+		   "		if(n==2) return do_r();\n"
+		   "		if(n==3) return do_w();\n"
+		   "		if(n==4) return do_user();\n"
+		   "		if(n==5) return do_msg();\n"
+		   "		if(n==6) return do_n();\n"
+		   "		if(n==7) return do_pic();\n"
+		   "		if(n==8) return do_c();\n"
+		   "		if(n==9) return do_css2();\n"
+		   "		if(n==10) return do_quit();\n"
+		   "	}\n"
+		   "	var css1;\n"
+		   "	css1='/bbschat.css';\n"
+		   "	function do_c() {\n"
+		   "		top.main.document.close();\n"
+		   "                top.main.document.writeln('<link rel=\"stylesheet\" type=\"text/css\" href=\"'+css1+'\"><body><pre><font class=\"c37\">');\n"
+		   "	}\n"
+		   "	function do_css2() {\n"
+		   "		if(css1=='bbschat.css')\n"
+		   "			css1='/bbschat2.css';\n"
+		   "		else\n"
+		   "			css1='/bbschat.css';\n"
+		   "		top.main.document.writeln('<link rel=\"stylesheet\" type=\"text/css\" href=\"'+css1+'\"><body><pre><font class=\"c37\">');\n"
+		   "	}\n"
+		   "	function add_cc() {\n"
+		   "	 	xxx=form1.in1.value;\n"
+		   "		if(xxx=='/h' || xxx=='//') {\n"
+		   "			do_help();\n"
+		   "			form1.in1.value='';\n"
+		   "			return; \n"
+		   "		}\n"
+		   "		if(xxx=='/c') {\n"
+		   "			do_c();\n"
+		   "			form1.in1.value='';\n"
+		   "			return;\n"
+		   "		}\n"
+		   "		if(xxx=='') return;\n"
+		   " 		if(xxx.indexOf('/')<0) {\n"
+		   " 			form1.in1.value=cc+xxx;\n"
+		   " 		}\n"
+		   " 		if(cc=='/I') {\n"
+		   " 			cc='';\n"
+		   " 			cc2.selectedIndex=0;\n"
+		   " 		}\n"
+		   " 	}\n"
+		   "	</script>\n"
+		   "	</form></body>\n",
 		   pid, pid, "%R", "%G", "%B", "%C", "%Y", "%M", "%I");
 	http_quit();
 }
@@ -466,6 +470,7 @@ int chatrefresh(int pid)
 	char filename[256], tmp[256];
 	int t1;
 	FILE *fp;
+
 	kill(pid, SIGINT);
 	usleep(150000);
 	if(kill(pid, 0)!=0)
@@ -482,13 +487,19 @@ int chatrefresh(int pid)
 	}
 	fp=fopen(filename, "r");
 	if(fp)
+	{
 		while(1)
 		{
 			int i;
 			char buf2[512];
-			if(fgets(buf2, 255, fp) == NULL) break;
+			if(fgets(buf2, 255, fp) == NULL)
+				break;
 			sprintf(genbuf, "%s", cco(buf2));
-			for(i=0; genbuf[i]; i++) if(genbuf[i]==10 || genbuf[i]==13)	genbuf[i]=0;
+			for(i=0; genbuf[i]; i++)
+			{
+				if(genbuf[i]==10 || genbuf[i]==13)
+					genbuf[i]=0;
+			}
 			if(!strncmp(genbuf, "/init", 5))
 			{
 				printf("<script>\n");
@@ -501,15 +512,18 @@ int chatrefresh(int pid)
 			if(!strncmp(genbuf, "/t", 2))
 			{
 				int i;
-				printf("<script>top.document.title='bbs²è¹İ--»°Ìâ: ");
+				printf("<script>top.document.title='%s%s--»°Ìâ: ",
+					   BBS_FULL_NAME, CHAT_SERVER);
 				hprintf(genbuf+2);
 				printf("'</script>");
-				sprintf(buf2, "±¾°üÏáµÄ»°ÌâÊÇ: [[1;33m%s[37m]", genbuf+2);
+				sprintf(buf2, "±¾%sµÄ»°ÌâÊÇ: [[1;33m%s[37m]",
+						CHAT_ROOM_NAME, genbuf+2);
 				strcpy(genbuf, buf2);
 			}
 			if(!strncmp(genbuf, "/r", 2))
 			{
-				sprintf(buf2, "±¾°üÏáµÄÃû³ÆÊÇ: [[1;33m%s[37m]", genbuf+2);
+				sprintf(buf2, "±¾%sµÄÃû³ÆÊÇ: [[1;33m%s[37m]",
+						CHAT_ROOM_NAME, genbuf+2);
 				strcpy(genbuf, buf2);
 			}
 			if(!strncmp(genbuf, "/", 1))
@@ -519,8 +533,10 @@ int chatrefresh(int pid)
 			}
 			for(i=0; i<strlen(genbuf); i++)
 			{
-				if(genbuf[i]==10 || genbuf[i]==13) genbuf[i]=0;
-				if(genbuf[i]==34) genbuf[i]=39;
+				if(genbuf[i]==10 || genbuf[i]==13)
+					genbuf[i]=0;
+				if(genbuf[i]==34)
+					genbuf[i]=39;
 			}
 			printf("<script>\n");   
 			printf("top.main.document.writeln('");
@@ -528,9 +544,11 @@ int chatrefresh(int pid)
 			printf(" <font class=\"c37\">");
 			printf("');");
 			printf("top.main.scrollBy(0, 99999);\n");
-			if(test==0)	printf("top.input.form1.in1.value='';\n");
+			if(test==0)
+				printf("top.input.form1.in1.value='';\n");
 			printf("</script>\n");
 		}
+	}
 	unlink(filename);
 	printf("<br>");
 	http_quit();
