@@ -32,6 +32,10 @@ int check_systempasswd()
 {
     FILE *pass;
     char passbuf[40], prepass[STRLEN];
+    
+#ifdef NINE_BUILD
+    return true;
+#endif
 
     if ((sysoppassed) && (time(NULL) - sysoppassed < 60 * 60))
         return true;

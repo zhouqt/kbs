@@ -13,7 +13,11 @@
 #define PERM_PAGE       000004
 #define PERM_POST       000010
 #define PERM_LOGINOK    000020
-#define PERM_UNUSE  000040
+#ifdef NINE_BUILD
+#define PERM_DCS		000040
+#else
+#define PERM_UNUSE		000040
+#endif
 #define PERM_CLOAK      000100
 #define PERM_SEECLOAK   000200
 #define PERM_XEMPT      000400
@@ -38,9 +42,16 @@
 #define PERM_MM 	01000000000
 #define PERM_DISS        02000000000
 #define PERM_DENYMAIL   	04000000000
+#ifdef NINE_BUILD
+#define PERM_MALE		    08000000000
+#endif
 
 
+#ifdef NINE_BUILD
+#define XPERMSTR "bTCPRp#@XWBA$VS!DEM1234567890%L"
+#else
 #define XPERMSTR "bTCPRp#@XWBA$VS!DEM1234567890%"
+#endif
 /* means the rest is a post mask */
 
 /* This is the default permission granted to all new accounts. */
