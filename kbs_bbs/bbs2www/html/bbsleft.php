@@ -322,10 +322,45 @@
 	<td>
 		<table width="100%" border="0" cellspacing="0" cellpadding="0">
 		<tr>
-			<td colspan="2" background="/images/back1.gif">
+			<td colspan="2">
 			<img src="/images/t1.gif" border="0">
 			</td>
 		</tr>
+<?php
+		if($currentuser["userid"]=="guest")
+		{
+?>
+<form action="/bbslogin.php" method="post" name="form1" target="_top">
+<tr>
+			<td align="center" width="10%" class="t2" height="25" valign="middle">
+			&nbsp;&nbsp;
+			<img src="/images/u1.gif" border="0" alt="登录用户名" align="absmiddle" width="54" height="21">
+			</td>
+			<td align="left" class="t2">
+			<INPUT TYPE=text STYLE="width:100px;height:18px;font-size: 12px;color: #000D3C;border-color: #718BD6;border-style: solid;border-width: 1px;background-color:  #D2E1FE;" LENGTH="10" onMouseOver="this.focus()" onFocus="this.select()" name="id" >
+			</td>
+</tr>
+<tr>
+			<td align="center" width="10%" class="t2" height="25" valign="middle">
+			&nbsp;&nbsp;
+			<img src="/images/u3.gif" border="0" alt="用户密码" align="absmiddle" width="54" height="21">
+			</td>
+			<td align="left" class="t2">
+			<INPUT TYPE=password  STYLE="width:100px;height:18px;font-size: 12px;color: #000D3C;border-color: #718BD6;border-style: solid;border-width: 1px;background-color:  #D2E1FE;" LENGTH="10" name="passwd" maxlength="39">
+			</td>
+</tr>
+<tr>
+			<td align="center" width="10%" colspan="2" class="t2" height="25" valign="middle">
+			<input type="image" name="login" src="/images/l1.gif" alt="登录进站">
+			<a href="/bbsreg0.html" target="_top"><img src="/images/l3.gif" border="0" alt="注册新用户"></a>
+			</td>
+</tr>
+</form>
+<?php
+		}
+		else
+		{
+?>
 		<tr>
 			<td align="center" width="10%" class="t2" height="25" valign="middle">
 			&nbsp;&nbsp;
@@ -333,13 +368,12 @@
 			</td>
 			<td align="left" class="t2">
 			&nbsp;&nbsp;
-			<?php	
-				if($currentuser["userid"]=="guest")
-					echo "游客参观";
-				else
-					echo $currentuser["userid"];	?>
+			<?php	echo $currentuser["userid"];	?>
 			</td>
 		</tr>
+<?php
+		}
+?>
 		<tr>
 			<td colspan="2" class="t2">
 			<img src="/images/t2.gif" border="0">
