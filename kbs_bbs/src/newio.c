@@ -118,7 +118,7 @@ int raw_write(int fd, char *buf, int len)
         int mylen;
 
         if ((unsigned char) buf[i] == 0xff)
-            mylen = write(fd, "\0xff\0xff", 2);
+            mylen = write(fd, "\xff\xff", 2);
         else if (buf[i] == 13)
             mylen = write(fd, "\x0d\x00", 2);
         else
