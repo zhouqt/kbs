@@ -359,7 +359,8 @@ int igetch()
             if (hifd <= i_newfd)
                 hifd = i_newfd + 1;
         }
-        if (!inremsg) {
+	//TODO: igetkey重入问题
+        if (scrint&&!inremsg) {
             while (msg_count) {
                 inremsg = true;
                 msg_count--;
@@ -371,7 +372,7 @@ int igetch()
         if (sr < 0 && errno == EINTR) {
             if (talkrequest)
                 return KEY_TALK;
-            if (!inremsg) {
+            if (scrint&&!inremsg) {
 /*这种msg处理仍然有同步问题，如果while判断完msg_count==0,
  * goto igetagain到select之间，发生了信号，那么，这个还是
  * 会丢失
@@ -598,13 +599,13 @@ int igetkey()
         check_calltime();
 
 #ifdef SMTH
-	if (ch==Ctrl('V')) {
+	if (scrint&&ch==Ctrl('V')) {
             if (currentuser&&!HAS_PERM(currentuser,PERM_DENYRELAX))
             exec_mbem("@mod:service/libdict.so#dict_main");
             continue;
         }
 #endif
-        if ((ch == KEY_TALK) && talkrequest) {
+        if (scrint&&(ch == KEY_TALK) && talkrequest) {
             if (uinfo.mode != CHAT1 && uinfo.mode != CHAT2 && uinfo.mode != CHAT3 && uinfo.mode != CHAT4 && uinfo.mode != TALK && uinfo.mode != PAGE) {
                 talkreply();
                 return KEY_REFRESH;
