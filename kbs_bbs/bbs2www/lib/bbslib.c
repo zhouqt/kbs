@@ -2109,7 +2109,7 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
 		 {
 			 getuser(user->userid,&uc);
 			 if(time(NULL) - uc->firstlogin >= REGISTER_TSINGHUA_WAIT_TIME)
-				auto_register(user->userid,ud.realemail,STRLEN);
+				if(auto_register(user->userid,ud.realemail,STRLEN)==0)user->userlevel |= PERM_DEFAULT;
 		 }
 		 read_userdata(user->userid,&ud);
 	    }
