@@ -244,8 +244,8 @@ function boardSearchAndJump($boardName, $boardID){
 <table border=0 cellpadding=0 cellspacing=3 width=97% align=center>
 <tr>
 <FORM METHOD=GET ACTION="queryresult.php">
-<input type="hidden" name="boardName" value="<?php echo $boardName; ?>">
-<td width=50% valign=middle nowrap height=40>快速搜索：<input type=text name=title>&nbsp;<input type=submit name=submit value=搜索></td>
+<input type="hidden" name="boardNames" value="<?php echo $boardName; ?>">
+<td width=50% valign=middle nowrap height=40>快速搜索：<input type=text name=title>&nbsp;<input type=submit value=搜索></td>
 </FORM>
 <td valign=middle nowrap width=50% > 
 <?php
