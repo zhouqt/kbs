@@ -14,118 +14,28 @@ struct room_struct {
 };
 
 struct room_struct * rooms;
-int roomst=0;
-
-void load_rooms()
-{
-    int fd;
-    struct flock ldata;
-    if(roomst) free(rooms);
-    roomst=0;
-    if((fd = open(".ROOMS", O_RDONLY, 0644))!=-1) {
-        ldata.l_type=F_RDLCK;
-        ldata.l_whence=0;
-        ldata.l_len=0;
-        ldata.l_start=0;
-        if(fcntl(fd, F_SETLKW, &ldata)!=-1){
-            read(fd, &roomst, sizeof(roomst));
-            rooms=(struct room_struct*)malloc(sizeof(struct room_struct)*(roomst+1));
-            read(fd, rooms, sizeof(struct room_struct)*roomst);
-            	
-            ldata.l_type = F_UNLCK;
-            fcntl(fd, F_SETLKW, &ldata);
-        }
-        close(fd);
-    }
-}
-
-void save_rooms()
-{
-    int fd;
-    struct flock ldata;
-    if((fd = open(".ROOMS", O_WRONLY|O_CREAT, 0644))!=-1) {
-        ldata.l_type=F_WRLCK;
-        ldata.l_whence=0;
-        ldata.l_len=0;
-        ldata.l_start=0;
-        if(fcntl(fd, F_SETLKW, &ldata)!=-1){
-            write(fd, &roomst, sizeof(roomst));
-            write(fd, rooms, sizeof(struct room_struct)*roomst);
-            	
-            ldata.l_type = F_UNLCK;
-            fcntl(fd, F_SETLKW, &ldata);
-        }
-        close(fd);
-    }
-}
+int * roomst;
 
 int add_room(struct room_struct * r)
 {
-    int fd, i;
-    struct flock ldata;
-    if(roomst) free(rooms);
-    roomst=0;
-    if((fd = open(".ROOMS", O_RDWR|O_CREAT, 0644))!=-1) {
-        ldata.l_type=F_WRLCK;
-        ldata.l_whence=0;
-        ldata.l_len=0;
-        ldata.l_start=0;
-        if(fcntl(fd, F_SETLKW, &ldata)!=-1){
-            ldata.l_type = F_UNLCK;
-            lseek(fd, 0, SEEK_SET);
-            read(fd, &roomst, sizeof(roomst));
-            rooms=(struct room_struct*)malloc(sizeof(struct room_struct)*(roomst+1));
-            read(fd, rooms, sizeof(struct room_struct)*roomst);
-            for(i=0;i<roomst;i++)
-            if(!strcmp(rooms[i].name, r->name)) {
-                fcntl(fd, F_SETLKW, &ldata);
-                close(fd);
-                return -1;
-            }
-            memcpy(&(rooms[roomst]), r, sizeof(struct room_struct));
-            roomst++;
-            lseek(fd, 0, SEEK_SET);
-            write(fd, &roomst, sizeof(roomst));
-            write(fd, rooms, sizeof(struct room_struct)*roomst);
-            
-            fcntl(fd, F_SETLKW, &ldata);
-        }
-        close(fd);
-    }
+    int i;
+    for(i=0;i<*roomst;i++)
+    if(!strcmp(rooms[i].name, r->name))
+        return -1;
+    memcpy(&(rooms[*roomst]), r, sizeof(struct room_struct));
+    (*roomst)++;
     return 0;
 }
 
 int del_room(struct room_struct * r)
 {
-    int fd, i, j;
-    struct flock ldata;
-    if(roomst) free(rooms);
-    roomst=0;
-    if((fd = open(".ROOMS", O_RDWR|O_CREAT, 0644))!=-1) {
-        ldata.l_type=F_WRLCK;
-        ldata.l_whence=0;
-        ldata.l_len=0;
-        ldata.l_start=0;
-        if(fcntl(fd, F_SETLKW, &ldata)!=-1){
-            ldata.l_type = F_UNLCK;
-            lseek(fd, 0, SEEK_SET);
-            read(fd, &roomst, sizeof(roomst));
-            rooms=(struct room_struct*)malloc(sizeof(struct room_struct)*(roomst+1));
-            read(fd, rooms, sizeof(struct room_struct)*roomst);
-            for(i=0;i<roomst;i++)
-            if(!strcmp(rooms[i].name, r->name)) {
-                roomst--;
-                for(j=i;j<roomst;j++)
-                    memcpy(&(rooms[i]), &(rooms[i+1]), sizeof(struct room_struct));
-                break;
-            }
-            lseek(fd, 0, SEEK_SET);
-            write(fd, &roomst, sizeof(roomst));
-            write(fd, rooms, sizeof(struct room_struct)*roomst);
-            
-            fcntl(fd, F_SETLKW, &ldata);
-        }
-        close(fd);
+    int i;
+    for(i=0;i<*roomst;i++)
+    if(!strcmp(rooms[i].name, r->name)) {
+        (*roomst)--;
+        for(j=i;j<*roomst;j++)
+            memcpy(&(rooms[i]), &(rooms[i+1]), sizeof(struct room_struct));
+        break;
     }
     return 0;
 }
@@ -141,7 +51,7 @@ int can_see(struct room_struct * r)
 int room_count()
 {
     int i,j=0;
-    for(i=0;i<roomst;i++)
+    for(i=0;i<*roomst;i++)
         if(can_see(rooms+i)) j++;
     return j;
 }
@@ -149,10 +59,23 @@ int room_count()
 struct room_struct * room_get(int w)
 {
     int i,j=0;
-    for(i=0;i<roomst;i++) {
+    for(i=0;i<*roomst;i++) {
         if(can_see(rooms+i)) {
             if(w==j) return rooms+i;
             j++;
+        }
+    }
+    return NULL;
+}
+
+struct room_struct * find_room(char * s)
+{
+    int i;
+    struct room_struct * r2;
+    for(i=0;i<room_count;i++) {
+        r2 = room_get(i);
+        if(!strcmp(r2.name, s)) {
+            return r2;
         }
     }
     return NULL;
@@ -162,9 +85,10 @@ static int room_list_refresh(struct _select_def *conf)
 {
     clear();
     docmdtitle("[”Œœ∑ “—°µ•]",
-              "ÕÀ≥ˆ[\x1b[1;32m°˚\x1b[0;37m,\x1b[1;32me\x1b[0;37m] Ω¯»Î[\x1b[1;32mEnter\x1b[0;37m] —°‘Ò[\x1b[1;32m°¸\x1b[0;37m,\x1b[1;32m°˝\x1b[0;37m] ÃÌº”[\x1b[1;32ma\x1b[0;37m] \x1b[m");
+              "  ÕÀ≥ˆ[\x1b[1;32m°˚\x1b[0;37m,\x1b[1;32me\x1b[0;37m] Ω¯»Î[\x1b[1;32mEnter\x1b[0;37m] —°‘Ò[\x1b[1;32m°¸\x1b[0;37m,\x1b[1;32m°˝\x1b[0;37m] ÃÌº”[\x1b[1;32ma\x1b[0;37m] º”»Î[\x1b[1;32mJ\x1b[0;37m] \x1b[m");
     move(2, 0);
-    prints("[0;1;37;44m  %4s %-40s %-12s %4s %4s[m", "±‡∫≈", "”Œœ∑ “√˚≥∆", "¥¥Ω®’ﬂ", "»À ˝", "¿‡–Õ");
+    prints("[0;1;37;44m    %4s %-40s %-12s %4s %4s[m", "±‡∫≈", "”Œœ∑ “√˚≥∆", "¥¥Ω®’ﬂ", "»À ˝", "¿‡–Õ");
+    clrtoeol();
     update_endline();
     return SHOW_CONTINUE;
 }
@@ -185,7 +109,6 @@ static int room_list_select(struct _select_def *conf)
 
 static int room_list_getdata(struct _select_def *conf, int pos, int len)
 {
-    load_rooms();
     conf->item_count = room_count();
     return SHOW_CONTINUE;
 }
@@ -213,14 +136,23 @@ static int room_list_prekey(struct _select_def *conf, int *key)
     return SHOW_CONTINUE;
 }
 
+void join_room(struct room_struct * r)
+{
+    r->people++;
+
+    r->people--;
+}
+
 static int room_list_key(struct _select_def *conf, int key)
 {
     struct room_struct r;
+    char name[40];
     switch(key) {
     case 'a':
         strcpy(r.creator, currentuser->userid);
-        getdata(0, 0, "∑øº‰√˚:", r.name, 38, 1, NULL, 1);
-        if(!r.name[0]) return SHOW_REFRESH;
+        getdata(0, 0, "∑øº‰√˚:", name, 38, 1, NULL, 1);
+        if(!name[0]) return SHOW_REFRESH;
+        strcpy(r.name, name);
         r.style = 1;
         r.flag = 0;
         r.people = 0;
@@ -231,9 +163,20 @@ static int room_list_key(struct _select_def *conf, int key)
             refresh(); sleep(1);
             return SHOW_REFRESH;
         }
+        join_room(find_room(r.name));
         return SHOW_DIRCHANGE;
     case 'J':
-        break;
+        getdata(0, 0, "∑øº‰√˚:", name, 38, 1, NULL, 1);
+        if(!name[0]) return SHOW_REFRESH;
+        if(find_room(name)==-1) {
+            move(0, 0);
+            clrtoeol();
+            prints(" √ª”–’“µΩ∏√∑øº‰!");
+            refresh(); sleep(1);
+            return SHOW_REFRESH;
+        }
+        join_room(find_room(name));
+        return SHOW_DIRCHANGE;
     }
     return SHOW_CONTINUE;
 }
@@ -244,7 +187,6 @@ int choose_room()
     int i;
     POINT *pts;
 
-    load_rooms();
     bzero(&grouplist_conf, sizeof(struct _select_def));
     grouplist_conf.item_count = room_count();
     if (grouplist_conf.item_count == 0) {
@@ -278,6 +220,11 @@ int choose_room()
 int killer_main()
 {
     int i,oldmode;
+    void * shm;
+    shm=attach_shm("KILLER_SHMKEY", 3451, sizeof(struct room_struct)*1000+4, &i);
+    rooms = shm+4;
+    roomst = shm;
+    if(i) roomst = 0;
     oldmode = uinfo.mode;
     modify_user_mode(KILLER);
     choose_room();
