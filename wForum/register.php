@@ -6,15 +6,15 @@
 	@$action=$_POST['action'];
 	if ($action=='apply') {
 		setStat("填写资料");
-		head_var("新用户注册");
+		head_var("新用户注册",'',1);
 		do_apply();
 	} elseif ($action=='save') {
 		setStat("提交注册");
-		head_var("新用户注册");
+		head_var("新用户注册",'',1);
 		do_save();
 	} else {
 		setStat("注册协议");
-		head_var("新用户注册");
+		head_var("新用户注册",'',1);
 		do_show();
 	}
 
@@ -213,23 +213,6 @@ function do_apply(){
 <TEXTAREA name=Signature rows=5 wrap=PHYSICAL cols=60></TEXTAREA>
 </TD>
 </TR>
-<tr>    
-<td width=40%  class=tablebody1><B>选择Cookie的保留时间</B>：<BR>登陆论坛信息保留时间，在这个时间内重复登陆论坛不需要重新登陆</font></td>  
-<td width=60%  class=tablebody1>    
-<input type=radio name=usercookies value=1 checked>
-<font color=red>1天</font> 
-<input type=radio name=usercookies value=2> 1个月 <input type=radio name=usercookies value=3> 1年
-<input type=radio name=usercookies value=0>
- 不保留 </td></tr>
-<tr>    
-<td width=40%  class=tablebody1><B>是否开放您的基本资料</B>：<BR>开放后别人可以看到您的性别、Email、QQ等信息</td>  
-<td width=60%  class=tablebody1>    
-<input type=radio name=setuserinfo value=1 > 开放 <input type=radio name=setuserinfo value=0 checked> 不开放 </td></tr>
-<tr>    
-<td width=40%  class=tablebody1><B>是否开放您的真实资料</B>：<BR>开放后别人可以看到您的真实姓名、联系方式等信息</td>
-  <td width=60%  class=tablebody1>
-<input type=radio name=setusertrue value=1> 开放 <input type=radio name=setusertrue value=0 checked> 不开放</td>   
-      </tr>
 <tr>
 <th height=25 align=left valign=middle colspan=2><b>&nbsp;个人真实信息</b>（以下内容建议填写）</th>
 </tr>

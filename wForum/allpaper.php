@@ -78,7 +78,7 @@ function boardeven($boardID,$boardName){
 		while($rs=$sth->fetchRow(DB_FETCHMODE_ASSOC)) {
 			echo '<tr>';
 			echo '<td class=tablebody1 align=center height=24>';
-			echo '<a href=dispuser.php?name='.$rs['Owner'].' target=_blank>'.$rs['Owner'].'</a>';
+			echo '<a href=dispuser.php?id='.$rs['Owner'].' target=_blank>'.$rs['Owner'].'</a>';
 			echo '</td>';
 			echo '<td class=tablebody1>';
 			echo "<a href=javascript:openScript('viewpaper.php?id=".$rs["ID"]."&boardname=".$boardName."',500,400)>".htmlspecialchars($rs['Title'],ENT_QUOTES).'</a>';

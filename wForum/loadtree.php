@@ -106,7 +106,7 @@ function showTreeItem($boardName,$articleID,$thread,$threadID,$level){
 	} else {
 		echo htmlspecialchars($thread['TITLE'],ENT_QUOTES);
 	}
-	echo '</a> -- <a href="dispuser.asp?name='.$thread['OWNER'].'">'.$thread['OWNER'].'</a></td></tr>';
+	echo '</a> -- <a href="dispuser.php?id='.$thread['OWNER'].'">'.$thread['OWNER'].'</a></td></tr>';
 
 }
 ?>

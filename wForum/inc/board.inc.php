@@ -96,7 +96,7 @@ function showBoardStaticsTop($boardArr){
 	$bms=split(' ',$boardArr['BM']);
 	foreach($bms as $bm) {
 ?>
-<a href="dispuser.php?name=<?php echo $bm; ?>" target=_blank title=点击查看该版主资料><?php echo $bm; ?></a>
+<a href="dispuser.php?id=<?php echo $bm; ?>" target=_blank title=点击查看该版主资料><?php echo $bm; ?></a>
 <?php
 	}
 ?>
@@ -176,7 +176,7 @@ function showBoardContents($boardID,$boardName,$page){
 			} else {
 				echo strftime("%Y-%m-%d %H:%M", $threads[0]['POSTTIME']);
 			}
-?></a>&nbsp;<font color=#FF0000>|</font>&nbsp;<a href=dispuser.asp?id=4 target=_blank>
+?></a>&nbsp;<font color=#FF0000>|</font>&nbsp;<a href=dispuser.php?id=<?php echo $threads[0]['OWNER']; ?>  target=_blank>
 <?php 
 			if ($threadNum==0) {
 				echo $articles[$i]['OWNER'];

@@ -115,4 +115,13 @@ function get_astro($birthmonth, $birthday)
 	} 
 	return $function_ret;
 }
+
+function showIt($str){
+	$str1=htmlspecialchars(trim($str),ENT_QUOTES);
+	if ($str1!='') {
+		echo $str1; 
+	} else {
+		return  "<font color=gray>δ֪</font>";
+	}
+}
  ?>

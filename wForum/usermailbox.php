@@ -121,7 +121,7 @@ function showmailBox($boxName, $path, $desc, $startNum){
 			foundErr("读取邮件数据失败!");
 			return false;
 	}
-	for ($i = 0; $i < $num; $i++){
+	for ($i = $num-1; $i >= 0; $i--){
 ?>
 <tr>
 <td class=tablebody1 align=center valign=middle>

@@ -5,6 +5,8 @@ require("inc/usermanage.inc.php");
 
 require("inc/user.inc.php");
 
+require("inc/ubbcode.php");
+
 setStat("²ì¿´ÓÊ¼þ");
 
 show_nav();

@@ -76,7 +76,7 @@ function showpaper($boardID,$boardName){
 </TR>
 <TR> 
 <TD class=tablebody1>
-<p align=center><a href=dispuser.php?name=<?php echo htmlspecialchars($rs["Owner"],ENT_QUOTES); ?> target=_blank><?php echo htmlspecialchars($rs["Owner"],ENT_QUOTES); ?></a> 发布于 <?php  echo $rs["Addtime"]; ?></p>
+<p align=center><a href=dispuser.php?id=<?php echo $rs["Owner"]; ?> target=_blank><?php echo $rs["Owner"]; ?></a> 发布于 <?php  echo $rs["Addtime"]; ?></p>
     <blockquote>   
       <br>   
 <?php     echo dvbcode($rs["Content"],1); ?>  
