@@ -370,8 +370,10 @@ int http_init() {
 		}
 		t2=strtok(0, ";");
 	}
-	strsncpy(fromhost, getsenv("X-Forwarded-For"), IPLEN);
-	if (fromhost[0])
+#ifdef SQUID_ACCL
+	strsncpy(fromhost, getsenv("HTTP_X_FORWARDED_FOR"), IPLEN);
+	if (!fromhost[0])
+#endif
 		strsncpy(fromhost, getsenv("REMOTE_ADDR"), IPLEN);
 }
 

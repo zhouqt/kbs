@@ -63,7 +63,7 @@ setTimeout(\"Time()\",58000)\n\
 
 	printf("<style type=\"text/css\">\nA {color: #0000FF}\n</style>\n");
   	printf("<body bgcolor=\"#c0c0f0\" onload=\"Init()\"><form name=\"clock\">");
-  	printf("时间[<INPUT TYPE=\"text\" NAME=\"myclock\" size=\"16\" style=\"border: 0\">] ");
+  	printf("时间[<INPUT TYPE=\"text\" NAME=\"myclock\" size=\"18\" style=\"border: 0\">] ");
 	/*
   	printf("时间[<span id=\"myclock\"></span>] ");
 	*/
