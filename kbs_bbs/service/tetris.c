@@ -26,7 +26,7 @@ int a[21][12]={
 8,0,0,0,0,0,0,0,0,0,0,8,
 8,8,8,8,8,8,8,8,8,8,8,8};
 
-unsigned char userid[30]="unknown.", userip[60]="unknown.";
+unsigned char userid[30]="unknown.";
 int dx[7][4][4], dy[7][4][4];
 int d[7][4][4]={
 0,1,4,5, 0,1,4,5, 0,1,4,5, 0,1,4,5,
@@ -40,9 +40,9 @@ int d[7][4][4]={
 int k,n,y,x,e;
 int newk=0;
 int lines=0;
-int delay, level;
-char topID[20][20],topFROM[20][32];
-int topT[20];
+int delay, level, score;
+char topID[20][20];
+int topT[20],topS[20];
  
 int getch()
 {
@@ -207,7 +207,6 @@ int tetris_main()
   int oldmode;
 
   strcpy(userid,getCurrentUser()->userid);
-  strcpy(userip,"unknown.");
 
   modify_user_mode(TETRIS);
   intr();
@@ -244,6 +243,7 @@ init_data()
   level=0;
   delay=200;
   lines=0;
+  score=0;
 }
 
 int crash2(int x, int y, int k, int n)
@@ -279,7 +279,7 @@ start()
       if(first) {pressanykey();first=0;}
       if(crash2(x,y,k,n)) 
       {
-         win_checkrec(lines);
+         win_checkrec(score,lines);
          break;
       }
       t=times(&faint);
@@ -325,9 +325,9 @@ checklines()
       for(x1=1;x1<=10;x1++)
       if(a[y1][x1]==0)break;
       if(x1<=10) continue;
-      s=1;
+      s++;
 	  move(23,0);
-      prints("Lines =\033[32m%3d", lines+1);
+      prints("\033[33mLines =\033[32m%3d", lines+1);
       if(lines==0) prints("                         ");
       for(y2=y1;y2>=1;y2--)
       for(x1=1;x1<=10;x1++)
@@ -335,9 +335,17 @@ checklines()
       for(x1=1;x1<=10;x1++) 
         a[0][x1]=0;
       if((++lines)%30==0) 
-        {delay*=.9; level++; bell();move(23,15);prints("Level =\033[32m%3d", level);} 
+        {delay*=.8; level++; bell();move(23,35);prints("\033[33mLevel =\033[32m%3d", level);} 
    }
-   if(s) {show0();}
+   if(s==1) score+=10;
+   else if(s==2) score+=30;
+   else if(s==3) score+=50;
+   else if(s==4) score+=100;
+   if(s) {
+	  move(23,15);
+	  prints("\033[33mScore = \033[32m%5d",score);
+      show0();
+   }
 }
 
 intr()
@@ -352,6 +360,7 @@ intr()
   prints("快降: ' ', 暂停: <\033[1;32mESC\033[m>.\r\n");
   prints("退出: '\033[1;32m^C\033[m', '\033[1;32m^D\033[m'.\r\n\r\n");
   prints("每消 \033[1;33m30\033[m 行升一级. \r\n"); 
+  prints("\n\n\033[1;31m注意:不支持在ssh下进行游戏,只支持telnet\n");
   pressanykey();
   clear();
 }
@@ -378,12 +387,12 @@ int win_loadrec()
   {
     strcpy(topID[n],"unknown.");
     topT[n]=0;
-    strcpy(topFROM[n],"unknown.");
+    topS[n]=0;
   }
   fp=fopen("tetris.rec","r");
   if(fp==NULL){win_saverec();return;}
   for(n=0;n<=19;n++)
-    fscanf(fp,"%s %d %s\n",topID[n],&topT[n],&topFROM[n]);
+    fscanf(fp,"%s %d %d\n",topID[n],&topT[n],&topS[n]);
   fclose(fp);
 }
 
@@ -394,7 +403,7 @@ int win_saverec()
   fp=fopen("tetris.rec","w");
   for(n=0;n<=19;n++)
     {
-      fprintf(fp,"%s %d %s\n",topID[n],topT[n],topFROM[n]);
+      fprintf(fp,"%s %d %d\n",topID[n],topT[n],topS[n]);
     }
   fclose(fp);
 }
@@ -407,18 +416,18 @@ int win_showrec()
   win_loadrec();
   clear();
   prints("\033[44;37m                         -       TETRIS 排行榜-                                 \r\n\033[m");
-  prints("\033[41m No.          ID        LINES                         FROM                      \033[m\n\r");
+  prints("\033[41m No.          ID        LINES                         Score                      \033[m\n\r");
   for(n=0;n<=19;n++)
   {
-    sprintf(tmp, "\033[1;37m%3d\033[32m%13s\033[0;37m%12d\033[m%29s\n\r",n+1,topID[n],topT[n]
-         ,topFROM[n]);
+    sprintf(tmp, "\033[1;37m%3d\033[32m%13s\033[0;37m%12d\033[m%29d\n\r",n+1,topID[n],topT[n]
+         ,topS[n]);
     prints(tmp);
   }
   prints("\033[41m                                                                               \033[m\n\r");
   pressanykey();
 }
 
-int win_checkrec(int dt)
+int win_checkrec(int ds,int dt)
 {
   char id[30];
   int n;
@@ -427,21 +436,21 @@ int win_checkrec(int dt)
   for(n=0;n<=19;n++)
     if(!strcmp(topID[n],id))
     {
-      if(dt>topT[n])
+      if(ds>topS[n])
       {
         topT[n]=dt;
-        strcpy(topFROM[n],userip);
+        topS[n]=ds;
         win_sort();
         win_saverec();
         win_showrec();
       }
       return;
     }
-  if(dt>topT[19])
+  if(ds>topS[19])
   {
     strcpy(topID[19],id);
     topT[19]=dt;
-    strcpy(topFROM[19],userip);
+    topS[19]=ds;
     win_sort();
     win_saverec();
     win_showrec();
@@ -458,12 +467,11 @@ int win_sort()
   pressanykey();
   for(n=0;n<=18;n++)
   for(n2=n+1;n2<=19;n2++)
-    if(topT[n]<topT[n2])
+    if(topS[n]<topS[n2])
     {
       tmp=topT[n];topT[n]=topT[n2];topT[n2]=tmp;
+      tmp=topS[n];topS[n]=topS[n2];topS[n2]=tmp;
       strcpy(tmpID,topID[n]);strcpy(topID[n],topID[n2]);
       strcpy(topID[n2],tmpID);
-      strcpy(tmpID,topFROM[n]);strcpy(topFROM[n],topFROM[n2]);
-      strcpy(topFROM[n2],tmpID);
     }
 }
