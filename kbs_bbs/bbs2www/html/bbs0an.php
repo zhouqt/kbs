@@ -52,9 +52,14 @@ function bbs_ann_display_articles($articles) {
 <?php    
 }
 
-require('funcs.php');
-require('board.inc.php');
-login_init();
+require_once('funcs.php');
+require_once('board.inc.php');
+if (defined ("SITE_SMTH")) {
+    include_once ('roam_server.php');
+    roam_login_init();
+}
+else
+    login_init();
 
 if (isset($_GET['path']))
 	$path = trim($_GET['path']);
@@ -89,17 +94,38 @@ $path = $path_tmp;
 $up_cnt = bbs_ann_updirs($path,$board,$up_dirs);
 if ($board) {
     $brdarr = array();
-    $bid = bbs_getboard($board,$brdarr);
+    if (defined ('SITE_SMTH')) {
+        $bid = bbs_roam_getboard ($board, $brdarr);
+        if ($bid < 0)
+            html_error_quit('系统错误');
+    }
+    else
+        $bid = bbs_getboard($board,$brdarr);
     if ($bid) {
         $board = $brdarr['NAME'];
         $usernum = $currentuser['index'];
-        if (bbs_checkreadperm($usernum, $bid) == 0)
-    		html_error_quit('不存在该目录');
-        bbs_set_onboard($bid,1);
-        if (bbs_normalboard($board)) {
-            $dotnames = BBS_HOME . '/' . $path . '/.Names';
-            if (cache_header('public, must-revalidate',filemtime($dotnames),10))
-                return;
+        if (defined ('SITE_SMTH')) {
+            $ret = bbs_roam_checkreadperm($usernum, $bid);
+            if ( $ret <= 0)
+        		html_error_quit('不存在该目录');
+            $ret = bbs_roam_normalboard($board);
+            if ( $ret < 0 )
+                html_error_quit('系统错误');
+            if ( $ret == 1 ) {
+                $dotnames = BBS_HOME . '/' . $path . '/.Names';
+                if (cache_header('public, must-revalidate',filemtime($dotnames),10))
+                    return;
+            }
+        }
+        else {
+            if (bbs_checkreadperm($usernum, $bid) == 0)
+        		html_error_quit('不存在该目录');
+            bbs_set_onboard($bid,1);
+            if (bbs_normalboard($board)) {
+                $dotnames = BBS_HOME . '/' . $path . '/.Names';
+                if (cache_header('public, must-revalidate',filemtime($dotnames),10))
+                    return;
+            }
         }
         html_init('gb2312','','',1);
         bbs_board_header($brdarr);

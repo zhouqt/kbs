@@ -3,9 +3,15 @@
 	 * This file displays article to user in digest .
 	 * $Id$
 	 */
-	require("funcs.php");
-	require("board.inc.php");
-login_init();
+	require_once("funcs.php");
+	require_once("board.inc.php");
+	if (defined ("SITE_SMTH")) {
+	    include_once ("roam_server.php");
+	    roam_login_init();
+	}
+	else
+        login_init();
+
 function get_mimetype($name)
 {
 	$dot = strrchr($name, '.');
@@ -71,11 +77,22 @@ function get_mimetype($name)
 		else
 			$filename="0Announce/".$path;
 
-		if( bbs_ann_traverse_check($filename) < 0 ) {
-			html_init("gb2312");
-			html_error_quit("错误的目录");
-		}
-
+        if (defined ("SITE_SMTH")) {
+            $ret =  bbs_roam_ann_traverse_check($filename,$currentuser["userid"]);
+            if( $ret < 0 )
+                html_error_quit("系统错误"); 
+            if ($ret != 1) {
+    			html_init("gb2312");
+    			html_error_quit("错误的目录");
+    		}
+        }
+        else {
+            if( bbs_ann_traverse_check($filename,$currentuser["userid"]) < 0 ) {
+    			html_init("gb2312");
+    			html_error_quit("错误的目录");
+    		}
+        }
+		
 		if(! file_exists($filename)){
 			html_init("gb2312");
 			html_error_quit("错误的文章号...");
@@ -87,24 +104,51 @@ function get_mimetype($name)
 		
 if ($board) {
     $brdarr = array();
-    $bid = bbs_getboard($board,$brdarr);
-    if ($bid) {
-        $board = $brdarr['NAME'];
-        $usernum = $currentuser['index'];
-        if (bbs_checkreadperm($usernum, $bid) == 0) 
-    		html_error_quit('不存在该目录');
-        bbs_set_onboard($bid,1);
-        if (bbs_normalboard($board)) {
+    if (defined ("SITE_SMTH")) {
+        $bid = bbs_roam_getboard($board,$brdarr);
+        if ($bid < 0)
+            html_error_quit('系统错误');
+        if ($bid) {
+            $board = $brdarr['NAME'];
+            $usernum = $currentuser['index'];
+            $ret = bbs_roam_checkreadperm($usernum, $bid);
+            if ($ret < 0)
+                html_error_quit('系统错误');
+            if ($ret == 0) 
+        		html_error_quit('不存在该目录');
+            $ret = bbs_roam_normalboard($board);
+            if ($ret < 0)
+                html_error_quit('系统错误');
+            if ($ret == 1) {
+                if (cache_header('public, must-revalidate',filemtime($filename),10))
+                    return;
+            }
+        }
+        else {
+            $board = '';
             if (cache_header('public, must-revalidate',filemtime($filename),10))
                 return;
         }
     }
     else {
-        $board = '';
-        if (cache_header('public, must-revalidate',filemtime($filename),10))
-            return;
+        $bid = bbs_getboard($board,$brdarr);
+        if ($bid) {
+            $board = $brdarr['NAME'];
+            $usernum = $currentuser['index'];
+            if (bbs_checkreadperm($usernum, $bid) == 0) 
+        		html_error_quit('不存在该目录');
+            bbs_set_onboard($bid,1);
+            if (bbs_normalboard($board)) {
+                if (cache_header('public, must-revalidate',filemtime($filename),10))
+                    return;
+            }
+        }
+        else {
+            $board = '';
+            if (cache_header('public, must-revalidate',filemtime($filename),10))
+                return;
+        }
     }
-    
 }
 else {
     if (cache_header('public, must-revalidate',filemtime($filename),10))
@@ -135,15 +179,12 @@ else {
 			} else
 			{
 				html_init("gb2312","","",1);
-?>
-<link rel="stylesheet" type="text/css" href="/ansi.css"/>
-<?php
 				$bid?bbs_board_header($brdarr):bbs_ann_header($board);
 				bbs_ann_xsearch($board);
 ?>
 <center>
 <table width="98%" border="0" class="t1" cellspacing="0" cellpadding="3" >
-<tr><td class="t3">精华区文章阅读</td></tr>
+<tr><td class="t2">精华区文章阅读</td></tr>
 <tr><td class="t7"><font class="content">
 <?php
 				bbs_print_article($filename,1,$_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']);
