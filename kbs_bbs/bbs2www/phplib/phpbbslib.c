@@ -3835,7 +3835,7 @@ static PHP_FUNCTION(bbs_updatearticle)
     }
     fprintf(fout, "%s", unix_string(content));
 #ifndef RAW_ARTICLE
-    fprintf(fout, "\033[36m※ 修改:·%s 於 %s 修改本文·[FROM: %s]\033[m\n", currentuser->userid, wwwCTime(time(0)) + 4, fromhost);
+    fprintf(fout, "\033[36m※ 修改:·%s 於 %s 修改本文·[FROM: %s]\033[m\n", currentuser->userid, wwwCTime(time(0)) + 4, SHOW_USERIP(fromhost));
     while (fgets(buf2, sizeof(buf2), fin) != NULL) {
         if (Origin2(buf2)) {
             fprintf(fout, "%s", buf2);
@@ -5420,7 +5420,7 @@ static PHP_FUNCTION(bbs_createregform)
 		{
 			fprintf(fout, "大家好,\n\n");
 			fprintf(fout, "我是 %s (%s), 来自 %s\n", uc->userid,
-					uc->username, fromhost);
+					uc->username, SHOW_USERIP(fromhost));
 			fprintf(fout, "今天%s初来此站报到, 请大家多多指教。\n",
 #ifdef HAVE_BIRTHDAY
 					(ud.gender == 'M') ? "小弟" : "小女子");
@@ -5582,7 +5582,7 @@ static PHP_FUNCTION(bbs_createregform)
 		{
 			fprintf(fout, "大家好,\n\n");
 			fprintf(fout, "我是 %s (%s), 来自 %s\n", uc->userid,
-					uc->username, fromhost);
+					uc->username, SHOW_USERIP(fromhost));
 			fprintf(fout, "今天%s初来此站报到, 请大家多多指教。\n",
 #ifdef HAVE_BIRTHDAY
 					(ud.gender == 'M') ? "小弟" : "小女子");
@@ -5735,7 +5735,7 @@ static PHP_FUNCTION(bbs_getonlinefriends)
 	add_assoc_long ( element, "idle", (long)(time(0) - get_idle_time(&user[i]))/60 );
 	add_assoc_string ( element, "userid", user[i].userid, 1 );       
 	add_assoc_string ( element, "username", user[i].username, 1 );   
-	add_assoc_string ( element, "userfrom", user[i].from, 1 );
+	add_assoc_string ( element, "userfrom", HAS_PERM(currentuser, PERM_SYSOP)?user[i].from:SHOW_USERIP(user[i].from), 1 );
 	add_assoc_string ( element, "mode", ModeType(user[i].mode), 1 );
 	zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
 	}
@@ -7558,7 +7558,7 @@ static int full_user_list(struct user_info *uentp, struct fulluserlistarg* arg,i
     add_assoc_bool ( element, "isfriend", isfriend(userinfo.userid) );
     add_assoc_string ( element, "userid", userinfo.userid, 1 );
     add_assoc_string ( element, "username", userinfo.username, 1 );
-    add_assoc_string ( element, "userfrom", userinfo.from, 1 );
+    add_assoc_string ( element, "userfrom", HAS_PERM(currentuser, PERM_SYSOP)? userinfo.from: SHOW_USERIP(userinfo.from), 1 );
     add_assoc_string ( element, "mode", ModeType(userinfo.mode), 1 );
     add_assoc_long ( element, "idle", (time(0) - get_idle_time(&userinfo)) );
     

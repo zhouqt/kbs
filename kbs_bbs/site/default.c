@@ -652,3 +652,9 @@ int add_money(struct userec *user, int money_addition){
 }
 #endif
 
+#ifndef HAVE_OWN_USERIP
+char * showuserip(char *ip)
+{
+		return ip;
+}
+#endif

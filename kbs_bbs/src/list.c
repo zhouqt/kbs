@@ -340,7 +340,7 @@ int do_userlist()
         resetcolor();
         move(y, 36);
         sprintf(user_info_str, " %-16.16s %c %c %s%-16.16s\033[m%5.5s\n",  
-                (((pagec == ' ' || pagec == 'O')) || HAS_PERM(currentuser, PERM_SYSOP)) ? uentp.from : FROMSTR,
+                (HAS_PERM(currentuser, PERM_SYSOP))? uentp.from : ( (pagec == ' ' || pagec == 'O')  ? SHOW_USERIP(uentp.from) : FROMSTR ),
                 pagec, msgchar(&uentp, &isfriend), 
                 (uentp.invisible == true)? "\033[34m" : "", modestring(uentp.mode, uentp.destuid, 0,        /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
                                            (uentp.in_chat ? uentp.chatid : NULL)),            

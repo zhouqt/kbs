@@ -9,6 +9,8 @@
 extern "C" {
 #endif
 
+	char *showuserip(char *ip);
+
 /* defined in pass.c */
     int checkpasswd(const char *passwd, const char *test);
     int checkpasswd2(const char *passwd, const struct userec *user);

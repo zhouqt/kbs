@@ -649,7 +649,7 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
     fprintf(fp, "寄信人: %s (%s)\n", id, nickname);
     fprintf(fp, "标  题: %s\n", title);
     fprintf(fp, "发信站: %s (%s)\n", BBSNAME, wwwCTime(time(0)));
-    fprintf(fp, "来  源: %s\n\n", ip);
+    fprintf(fp, "来  源: %s\n\n", SHOW_USERIP(ip));
     if (fp2) {
         while (fgets(buf3, 256, fp2) != NULL) {
             fprintf2(fp, buf3);
@@ -658,7 +658,7 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
     }
     fprintf(fp, "\n--\n");
     sig_append(fp, id, sig);
-    fprintf(fp, "\n\033[1;%dm※ 来源:．%s %s．[FROM: %.20s]\033[m\n", 31 + rand() % 7, BBSNAME, NAME_BBS_ENGLISH, ip);
+    fprintf(fp, "\n\033[1;%dm※ 来源:．%s %s．[FROM: %.20s]\033[m\n", 31 + rand() % 7, BBSNAME, NAME_BBS_ENGLISH, SHOW_USERIP(ip));
     fclose(fp);
     sprintf(buf3, "mail/%c/%s/%s", toupper(userid[0]), userid, header.filename); /*ft.buf3 have changed.added by binxun.*/
     if (stat(buf3, &st) != -1)

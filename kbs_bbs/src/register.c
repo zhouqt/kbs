@@ -437,7 +437,7 @@ void check_register_info()
 		{
 			fprintf(fout, "大家好,\n\n");
 			fprintf(fout, "我是 %s (%s), 来自 %s\n", currentuser->userid,
-					currentuser->username, fromhost);
+					currentuser->username, SHOW_USERIP(fromhost));
 			fprintf(fout, "今天%s初来此站报到, 请大家多多指教。\n",
 #ifdef HAVE_BIRTHDAY
 //					(curruserdata.gender == 'M') ? "小弟" : "小女子");

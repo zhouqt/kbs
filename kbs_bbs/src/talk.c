@@ -299,9 +299,9 @@ int t_query(char* q_id)
             strcpy(exittime, "因在线上或非常断线不详");
     }
 #ifdef NINE_BUILD
-    prints("\n上次在  [%s] 从 [%s] 到本站一游。", Ctime(lookupuser->lastlogin), ((lookupuser->lasthost[0] == '\0') ? "(不详)" : lookupuser->lasthost));
+    prints("\n上次在  [%s] 从 [%s] 到本站一游。", Ctime(lookupuser->lastlogin), ((lookupuser->lasthost[0] == '\0') ? "(不详)" : SHOW_USERIP(lookupuser->lasthost)));
 #else
-    prints("\n上次在  [%s] 从 [%s] 到本站一游。\n离线时间[%s] ", Ctime(lookupuser->lastlogin), ((lookupuser->lasthost[0] == '\0') /*|| DEFINE(currentuser,DEF_HIDEIP) */ ? "(不详)" : lookupuser->lasthost),    /*Haohmaru.99.12.18. hide ip */
+    prints("\n上次在  [%s] 从 [%s] 到本站一游。\n离线时间[%s] ", Ctime(lookupuser->lastlogin), ((lookupuser->lasthost[0] == '\0') /*|| DEFINE(currentuser,DEF_HIDEIP) */ ? "(不详)" : SHOW_USERIP(lookupuser->lasthost)),    /*Haohmaru.99.12.18. hide ip */
            exittime);
 #endif
 #ifdef NINE_BUILD

@@ -19,7 +19,7 @@ else{
 <center><?php echo BBS_FULL_NAME; ?> -- 查询网友<hr color=green>
 </center><pre>
 <?php echo $lookupuser["userid"];?> (<?php echo $lookupuser["username"];?>) 共上站 <?php echo $lookupuser["numlogins"];?> 次，发表过 <?php echo $lookupuser["numposts"];?> 篇文章
-上次在  [<?php echo date("D M j H:i:s Y",$lookupuser["lastlogin"]);?>] 从 [<?php echo $lookupuser["lasthost"];?>] 到本站一游。
+上次在  [<?php echo date("D M j H:i:s Y",$lookupuser["lastlogin"]);?>] 从 [<?php echo $substr($lookupuser["lasthost"], 0, strrpos($lookupuser["lasthost"],".")+1)."***" ;?>] 到本站一游。
 离线时间[<?php 
 
 if( $usermodestr!="" && $usermodestr{0}=="1" ){

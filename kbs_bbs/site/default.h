@@ -672,6 +672,10 @@ typedef struct fileheader fileheader_t;
 #define MAILFILE_BASENAME(x) (x)
 #endif
 
+#ifndef SHOW_USERIP
+#define SHOW_USERIP(x) x
+#endif
+
 // WWW部分
 
 //修改密码之类的页面使用https

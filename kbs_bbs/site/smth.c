@@ -900,6 +900,22 @@ int auto_register(char *userid, char *email, int msize)
     return 0;
 }
 
+char * showuserip(char *ip)
+{
+	static char sip[25];
+	char *c;
+
+	strncpy(sip, ip, 24);
+	sip[24]=0;
+	if( (c=strrchr(sip, '.')) != NULL){
+		*(++c)='*';
+		*(++c)='*';
+		*(++c)='*';
+		*(++c)='\0';
+	}
+	return sip;
+}
+
 #ifdef SMS_SUPPORT
 int smsnumber2uid(byte number[4])
 {

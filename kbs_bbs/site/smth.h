@@ -368,4 +368,7 @@ attach define
 
 #define NOT_USE_DEFAULT_SMS_FUNCTIONS
 
+#define HAVE_OWN_USERIP
+#define SHOW_USERIP(x) showuserip(x)
+
 #endif
