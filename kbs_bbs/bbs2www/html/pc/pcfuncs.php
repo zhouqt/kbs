@@ -741,8 +741,6 @@ function pc_get_user_permission($currentuser,$pc)
 			$tags[3] = 1;
 		}
 	}
-	else
-	    return false;
 	    	
 	return array(
 		"tags" => $tags ,
