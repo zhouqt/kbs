@@ -527,9 +527,9 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
                 break;
             default:
                 if (*l > 2 && (!strncmp(p0, ": " ,2) || !strncmp(p0, "> " ,2)))
-                    *ty = LINE_NORMAL;
-                else
                     *ty = LINE_QUOTA; //引文
+                else
+                    *ty = LINE_NORMAL;
             }
         } else {
             /*无回车的行*/
@@ -542,9 +542,9 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
                 break;
             default:
                 if (*l > 2 && (!strncmp(p0, ": " ,2) || !strncmp(p0, "> " ,2)))
-                    *ty = LINE_NORMAL_NOCF;
-                else
                     *ty = LINE_QUOTA_NOCF;
+                else
+                    *ty = LINE_NORMAL_NOCF;
             }
         }
         if (*s == size)
