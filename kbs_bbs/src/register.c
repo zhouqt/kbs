@@ -19,8 +19,12 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
 */
 
+/*
+    checked Global variable
+*/
 #include "bbs.h"
 
 #define  EMAIL          0x0001
@@ -35,7 +39,6 @@ char *sysconf_str();
 char *Ctime();
 
 extern time_t login_start_time;
-time_t system_time;
 extern int convcode;            /* KCN,99.09.05 */
 extern int switch_code();       /* KCN,99.09.05 */
 
