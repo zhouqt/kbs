@@ -5172,8 +5172,6 @@ static PHP_FUNCTION(bbs_setactivation)
 	if(getuser(userid,&uc)==0)
 		RETURN_LONG(-1);
 	sethomefile(afile,uc->userid,"activation");
-	sprintf(buf,"rm -f %s",afile);
-	system(buf);
 	if ((fn=fopen(afile,"w"))==NULL)
 		RETURN_LONG(-10);
 	fprintf(fn,"%s",filebody);
