@@ -460,13 +460,11 @@ char *menu_name;
      * }
      */
 
-    /*
-     * disable it,因为不知道为何会core dump
-     * if (check_sysconf()) {
-     * free(menupos);
-     * menupos=NULL;
-     * }
-     */
+    if (check_sysconf()) {
+       free(menupos);
+       menupos=NULL;
+    }
+
     if (menupos == NULL) {
         menupos = (struct _menupos *) malloc(sizeof(struct _menupos) * sysconf_menu);
         copymenupos();

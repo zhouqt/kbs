@@ -637,12 +637,14 @@ void login_query()
     getdata(0, 0, "\n按 [RETURN] 继续", genbuf, 10, NOECHO, NULL, true);
 #endif //SSHBBS
 
+#ifdef CHECK_CONNECT
     if(check_ID_lists(currentuser->userid)) {
         prints("你的连接频率过高，byebye!");
         oflush();
         sleep(1);
         exit(1);
     }
+#endif
 
 	/* We must create home directory before initializing current userdata */
     sethomepath(genbuf, currentuser->userid);

@@ -719,4 +719,12 @@ attach define
 #endif
 #endif
 
+#ifndef CHECK_CONNECT /*是否检查连接频率并ban*/
+#define CHECK_CONNECT
+#else
+#if CHECK_CONNECT == 0
+#undef CHECK_CONNECT
+#endif
+#endif
+
 #endif
