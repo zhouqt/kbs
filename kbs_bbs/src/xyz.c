@@ -193,7 +193,7 @@ int setperm_show(struct _select_def* conf,int i)
 	}
 	else
 	{
-		if (arg->pbits&(1<<i)!=arg->oldbits&(1<<i)) {
+		if ((arg->pbits&(1<<i))!=(arg->oldbits&(1<<i))) {
 	        prints( "%c. %-30s [31;1m%3s[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
 	                 ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
 		} else
