@@ -137,7 +137,10 @@ void free_write_dir_arg(struct write_dir_arg*filearg)
         close(filearg->fd);
     }
     if (filearg->fileptr!=MAP_FAILED)
+	{
         end_mmapfile((void *) filearg->fileptr, filearg->size, -1);
+		filearg->fileptr = MAP_FAILED;
+	}
 }
 
 /*
@@ -236,25 +239,20 @@ int del_origin(char *board, struct fileheader *fileinfo)
     BBS_TRY {
         fh=*(dirarg.fileptr + (dirarg.ent - 1));
         memcpy(dirarg.fileptr + (dirarg.ent - 1), 
-            dirarg.fileptr + dirarg.ent, 
-            dirarg.size - sizeof(struct fileheader) * dirarg.ent);
-        dirarg.size-=sizeof(struct fileheader);
-#ifdef DEBUG
-#ifdef BBSMAIN
-        newbbslog(BBSLOG_DEBUG,"%s ftruncate %d",
-            dirarg.filename ? dirarg.filename:board,
-            dirarg.size);
-#endif
-#endif      
-        ftruncate(dirarg.fd, dirarg.size);
+				dirarg.fileptr + dirarg.ent, 
+				dirarg.size - sizeof(struct fileheader) * dirarg.ent);
     }
     BBS_CATCH {
     }
     BBS_END;
-    if (dirarg.needlock)
-        flock(dirarg.fd,LOCK_UN); /*这个是需要赶紧做的*/
 
+	dirarg.needclosefd = false;
    	free_write_dir_arg(&dirarg);
+	dirarg.size-=sizeof(struct fileheader);
+	ftruncate(dirarg.fd, dirarg.size);
+    if (dirarg.needlock)
+        flock(dirarg.fd,LOCK_UN);
+	close(dirarg.fd);
 
 	return 0;
 }
@@ -263,6 +261,9 @@ int do_del_post(struct userec *user, struct write_dir_arg*dirarg,struct filehead
 {
     int owned;
     struct fileheader fh;
+#ifdef CYGWIN
+	bool old_needclosefd;
+#endif
 
     if (prepare_write_dir(dirarg,fileinfo,currmode)!=0)
         return-1;
@@ -271,15 +272,25 @@ int do_del_post(struct userec *user, struct write_dir_arg*dirarg,struct filehead
         memcpy(dirarg->fileptr + (dirarg->ent - 1), 
             dirarg->fileptr + dirarg->ent, 
             dirarg->size - sizeof(struct fileheader) * dirarg->ent);
-        dirarg->size-=sizeof(struct fileheader);
 #ifdef DEBUG
 #ifdef BBSMAIN
         newbbslog(BBSLOG_DEBUG,"%s ftruncate %d",
             dirarg->filename?dirarg->filename:currboard->filename,
             dirarg->size);
 #endif
-#endif      
+#endif
+#ifdef CYGWIN
+		old_needclosefd = dirarg->needclosefd;
+		dirarg->needclosefd = false;
+		free_write_dir_arg(dirarg);
+        dirarg->size-=sizeof(struct fileheader);
         ftruncate(dirarg->fd, dirarg->size);
+		dirarg->needclosefd = old_needclosefd;
+		malloc_write_dir_arg(dirarg);
+#else
+        dirarg->size-=sizeof(struct fileheader);
+        ftruncate(dirarg->fd, dirarg->size);
+#endif
     }
     BBS_CATCH {
     }

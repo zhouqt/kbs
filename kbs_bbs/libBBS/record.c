@@ -625,13 +625,17 @@ int delete_record(char *filename, int size, int id, RECORD_FUNC_ARG filecheck, v
         }
         if (ret == 0) {
             memcpy(ptr + (id - 1) * size, ptr + id * size, filesize - size * id);
-            ftruncate(fdr, filesize - size);
         }
     }
     BBS_CATCH {
         ret = -3;
     }
-    BBS_END end_mmapfile(ptr, filesize, fdr);
+    BBS_END end_mmapfile(ptr, filesize, -1);
+	if (ret == 0)
+	{
+		ftruncate(fdr, filesize - size);
+		close(fdr);
+	}
 
     return ret;
 }
