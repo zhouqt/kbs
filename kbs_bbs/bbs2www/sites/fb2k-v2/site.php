@@ -11,6 +11,8 @@ define("ATTACHMAXSIZE","1048576");
 define("ATTACHMAXCOUNT","20");
 define("MAINPAGE_FILE","mainpage.php");
 define("QUOTED_LINES","3");
+define("PWD_HTTP", 1); //修改密码使用 http - atppp
+
 $section_nums = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9","A","B","C");
 $section_names = array(
     array("BBS 系统", "[站内]"),
