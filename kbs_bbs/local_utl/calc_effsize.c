@@ -10,7 +10,7 @@ int calcboard(struct boardheader * bh, void * arg)
     char * ptr;
     int size=sizeof(struct fileheader);
     setbdir(0, fn, bh->filename);
-    if ((fd = open(fn, O_RFONLY, 0664)) == -1) {
+    if ((fd = open(fn, O_RDONLY, 0664)) == -1) {
         bbslog("user", "%s", "recopen err");
         return 0;      /* 创建文件发生错误*/
     }
@@ -38,7 +38,7 @@ int calcboard(struct boardheader * bh, void * arg)
         int j;
         size_t fsize;
 
-        setbfile(ffn, currboard, ptr1->filename);
+        setbfile(ffn, bh->filename, ptr1->filename);
         {
             int k,abssize=0,entercount=0,ignoreline=0;
             j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize, NULL);
@@ -72,7 +72,7 @@ int calcboard(struct boardheader * bh, void * arg)
 
 
 
-void main(int argc, char ** argv)
+int main(int argc, char ** argv)
 {
     chdir(BBSHOME);
     resolve_boards();
