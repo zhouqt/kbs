@@ -347,10 +347,11 @@ typedef struct fileheader {     /* This structure is used to hold data in */
     char filename[FILENAME_LEN];      /* the DIR files */
     unsigned int id, groupid, reid;
 #ifdef FILTER
+    char o_board[STRLEN - BM_LEN];
 	unsigned int o_id;
 	unsigned int o_groupid;
 	unsigned int o_reid;
-	char unused1[34];
+	char unused1[14];
 #else
     char unused1[46];
 #endif
