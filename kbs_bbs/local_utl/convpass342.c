@@ -79,7 +79,7 @@ create_userdata(userec_r341 *olduser)
 			return;
 	}
 	sethomefile(datafile, olduser->userid, USERDATA);
-	if ((fd = open(datafile, O_WRONLY | O_CREAT | O_EXCL, 0644)) < 0)
+	if ((fd = open(datafile, O_WRONLY | O_CREAT, 0644)) < 0)
 	{
 		fprintf(stderr, "open %s failed.\n", datafile);
 		return;
