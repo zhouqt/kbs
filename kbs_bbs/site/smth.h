@@ -65,7 +65,7 @@
 /* ASCIIArt, by czz, 2002.7.5 */
 #define       LENGTH_SCREEN_LINE      255
 #define       LENGTH_FILE_BUFFER      255
-#define       LENGTH_ACBOARD_BUFFER   200
+#define       LENGTH_ACBOARD_BUFFER   300
 #define       LENGTH_ACBOARD_LINE     300
 
 #define LIFE_DAY_USER		120
