@@ -17,7 +17,7 @@ CRecordFile::CRecordFile(char* filename)
 		m_strFileName=new char[strlen(filename)];
 		strcpy(m_strFileName,filename);
 	} else
-		m_strFileName = NULL;
+		m_strFileName = (char*)NULL;
 }
 
 CRecordFile::~CRecordFile()

@@ -1,22 +1,16 @@
 #include "bbs.h"
 
 int
-report()
-{
-        return;
-}
-
-int
 tranfer(uid)
 char *uid;
 {
-    struct friend fh;
+    struct friends fh;
     char genbuf[80],*str;
     char fname[80];
     char dname[80];
     FILE *fp;
 
-    memset(&fh,0,sizeof(struct friend));
+    memset(&fh,0,sizeof(struct friends));
 
     sprintf( fname, "/home/bbs/home/%s/overrides",uid);
     sprintf( dname, "/home/bbs/home/%s/friends",uid);

@@ -1,58 +1,70 @@
 # Modified by Leeward 1997.11 1998.04-05
+# The home directory for the user 'bbs'
+BBSHOME=/home/bbs
+
+# The uid for the user 'bbs'
+BBSUID=9999
+#BBSUID=502
+
 
 # The macro "LEEWARD_X_RECORD" need defining for *.c under local_utl */
 #CC       = cc -DAIX -DSYSV -DLEEWARD_X_RECORD
-CC       = cc -g -DLINUX -DSYSV -DLEEWARD_X_RECORD -I../include -I..
-CPP       = gcc -g -DLINUX -DSYSV -DLEEWARD_X_RECORD -I../include -I..
-include Makefile.spec
+#CC       = cc -g -DLINUX -DSYSV -DLEEWARD_X_RECORD -I../include -I..
+#CPP       = gcc -g -DLINUX -DSYSV -DLEEWARD_X_RECORD -I../include -I..
+OS_DEF   = -DLINUX -DSYSV 
+CSIE_DEF = -DSHOW_IDLE_TIME -DBBSGID=502 -D_DETAIL_UINFO_ 
 
-BINFILE= poststat static usage bfinger Xclean Xhtml Bhtml bfinger refriend chlevel listonline syncann printboards MakeTar 
+include ../Makefile.spec
 
-.SUFFIXES: .o .c .cpp .ln
+CPP=$(CC)
 
-.c.o:   ;   $(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -c $*.c
+SITE_DEF = -DBBSHOME='"$(BBSHOME)"' -DBBSUID=$(BBSUID) -DINVISIBLE
+DEFINES	=  $(CSIE_DEF) $(OS_DEF)
+CFLAGS += -I..
+
+BINFILE= poststat static usage Xclean Xhtml Bhtml refriend chlevel listonline syncann printboards MakeTar 
+
+.SUFFIXES: .o .c .ln
+
+.c.o:   ;   $(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL -DBBSMAIN -c $*.c
 .c.ln:  ;   lint -abhi $*.c
 
 
 all:  $(BINFILE)
 
-Xclean:
-	$(CC) -o Xclean clean.c
+Xclean: clean.o
+	$(CC) -o $@ $^
 
-Xhtml: Xhtml.c
-	$(CC) -o Xhtml Xhtml.c
+Xhtml: Xhtml.o
+	$(CC) -o $@ $^
 
-Bhtml:
-	$(CC) -o Bhtml Bhtml.c
+Bhtml: Bhtml.o
+	$(CC) -o $@ $^
 
-poststat: poststat.c
-	$(CC) -o poststat poststat.c
+poststat: poststat.o
+	$(CC) -o $@ $^
 
-static: static.c
-	$(CC) -o static static.c
-usage: usage.c record.c 
-	$(CC) -o usage usage.c record.c 
+static: static.o
+	$(CC) -o $@ $^
 
-# Leeward: Below "chmod 6755"  is needed for WWW CGI
-bfinger: bfinger.c modetype.c
-	$(CC) -o bfinger bfinger.c modetype.c
-	cp -f bfinger ../../bin
-	chmod 6755 ../../bin/bfinger
+usage:  usage.o ../libBBS.a
+	$(CC) -o $@ $^
 
 clean:
 	rm -rf *.o *~ core $(BINFILE)
 # Modification ends here by Leeward 1997.11
 
-refriend: refriend.c record.c
-	$(CC) -o refriend refriend.c record.c
-chlevel: chlevel.c record.c
-	$(CC) -o chlevel chlevel.c record.c
+refriend: refriend.o ../libBBS.a
+	$(CC) -o $@ $^
+
+chlevel: chlevel.o ../libBBS.a
+	$(CC) -o $@ $^
 
 install: all
 	cp -f $(BINFILE) ../../bin
 
 listonline:listonline.o ../libBBS.a
-	gcc -o listonline listonline.o ../libBBS.a
+	$(CC) -o $@ $^
 
 #bcache.o:bcache.c
 #	gcc -c bcache.c
@@ -69,11 +81,11 @@ RecordFile.o:RecordFile.cpp
 Mutex.o:Mutex.cpp
 	$(CPP) $(CFLAGS) $(SITE_DEF) $(DEFINES) -c Mutex.cpp
 
-printboards:PrintBoards.o RecordFile.o
-	$(CPP) -o printboards PrintBoards.o RecordFile.o
-
 MakeTar.o:MakeTar.cpp
-	$(CPP) $(CFLAGS) $(SITE_DEF) $(DEFINES) -c MakeTar.cpp
+	$(CPP) $(CFLAGS) $(SITE_DEF) $(DEFINES) -c $^
+
+printboards:PrintBoards.o RecordFile.o
+	$(CC) -o $@ $^ -lbsd
 
 MakeTar:MakeTar.o Mutex.o
 	$(CPP) -o MakeTar MakeTar.o Mutex.o -lpthread

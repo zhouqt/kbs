@@ -1,12 +1,6 @@
 #include "bbs.h"
 #include "../permissions.h"
 
-int
-report()
-{
-        return;
-}
-
 main()
 {
         FILE *rec;

@@ -95,15 +95,6 @@ dep:
 	ls *.c | xargs gcc $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL  -M  >>.depend
 
 
-listonline: $(COBJS)
-	$(CC) -c listonline.c 
-	$(CC) -o listonline $(CFLAGS) listonline.o bbs.o delete.o stuff.o mail.o register.o \
-           xyz.o talk.o read.o comm_lists.o namecomplete.o chat.o \
-           maintain.o edit.o more.o pass.o help.o bcache.o boards.o \
-           screen.o userinfo.o vote.o announce.o sendmsg.o\
-           bm.o list.o goodbye.o fileshm.o cache.o 
-
-
 $(PROGNAME): $(COBJS) $(OTHERS) 
 	$(CC) -o bbsd_single $(CFLAGS) $(COBJS) $(LIBS) -g
 #	cp -f bbsnew ../bin/bbsnew

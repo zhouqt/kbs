@@ -168,8 +168,6 @@ time_t *t;
     return time_str ;
 }
 
-report() {};
-
 dump_record(serial_no, p)
 int serial_no;
 struct user_info *p;
@@ -179,7 +177,6 @@ struct user_info *p;
 
     sprintf( field_str[ i++ ], "%d", p->pid );
     sprintf( field_str[ i++ ], "%s", p->from );
-    sprintf( field_str[ i++ ], "%s", p->tty );
     sprintf( field_str[ i++ ], "%d", p->mode );
     sprintf( field_str[ i++ ], "%s", ModeType(p->mode) );
     sprintf( field_str[ i++ ], "%s", p->userid );

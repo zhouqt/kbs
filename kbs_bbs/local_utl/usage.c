@@ -50,20 +50,6 @@ struct binfo *a, *b;
     return a->sum - b->sum;
 }
 
-int report()
-{
-        return ;
-}
-char    *Ctime(date)
-time_t  *date;
-{
-        static char buf[80];
-
-        strcpy(buf, (char *)ctime(date));
-        buf[strlen(buf)-1] = '\0';
-        return buf;
-}
-
 int
 record_data(board,sec)
 char *board;
