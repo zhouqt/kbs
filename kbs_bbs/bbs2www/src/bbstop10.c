@@ -32,7 +32,7 @@ int main()
 		strsncpy(title, s1+27, 60);
 		rtrim(title);
 		encode_url(buf, brd, sizeof(buf));
-		printf("<tr><td>第 %d 名<td><a href=\"bbsdoc?board=%s\">%s</a></td><td><a href=\"bbstfind?board=%s&title=%s\">%42.42s</a></td><td><a href=\"bbsqry?userid=%s\">%12s</a></td><td>%s</td></tr>\n",
+		printf("<tr><td>第 %d 名<td><a href=\"bbsdoc?board=%s\">%s</a></td><td><a href=\"bbstfind?board=%s&title=%s\">%s</a></td><td><a href=\"bbsqry?userid=%s\">%12s</a></td><td>%s</td></tr>\n",
 			n, buf, brd, buf, encode_url(buf2, title, sizeof(buf2)),
 			encode_html(buf3, title, sizeof(buf3)), id, id, num);
 	}
