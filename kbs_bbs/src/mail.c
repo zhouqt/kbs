@@ -81,7 +81,7 @@ int chkmail()
 		return ismail;
 	}
 
-	utmpshm->uinfo[ utmpent - 1 ].mailcheck=1;
+	//utmpshm->uinfo[ utmpent - 1 ].mailcheck=1;
 	uinfo.mailcheck = 1;
 
     setmailfile(curmaildir, currentuser->userid, DOT_DIR);
@@ -652,6 +652,7 @@ int do_send(char *userid, char *title, char *q_file)
             return -2;
 
         setmailfile(genbuf, userid, DOT_DIR);
+		setmailcheck(userid);
         if (append_record(genbuf, &newmessage, sizeof(newmessage)) == -1)
             return -1;
 
