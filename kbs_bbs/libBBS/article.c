@@ -1419,10 +1419,8 @@ int Origin2(text)
     char tmp[STRLEN];
 
     sprintf(tmp, "¡ù À´Ô´:¡¤%s ", BBS_FULL_NAME);
-    if (strstr(text, tmp))
-        return 1;
-    else
-        return 0;
+
+	return (strstr(text, tmp) != NULL);
 }
 
 int add_edit_mark(char *fname, int mode, char *title)
