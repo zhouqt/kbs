@@ -22,7 +22,7 @@ int build_badwordimage()
     if (fp==-1)
     	return -1;
     flock(fp,LOCK_EX);
-    if (dashf("etc/badword.img")) {
+    if (dashf(BADWORD_IMG_FILE)) {
     	flock(fp,LOCK_UN);
     	close(fp);
     	return 0;
@@ -32,7 +32,7 @@ int build_badwordimage()
     badimg_time;
     flock(fp,LOCK_UN);
     close(fp);
-    fp = open("etc/badword.img", O_WRONLY|O_TRUNC|O_CREAT,0600);
+    fp = open("etc/badwordv2.img", O_WRONLY|O_TRUNC|O_CREAT,0600);
     if (fp==-1) {
         releasepf(pattern_buf);
     	return -1;
@@ -46,7 +46,7 @@ int build_badwordimage()
 static int check_badwordimg(int checkreload)
 {
     struct stat st;
-    stat("etc/badword.img",&st);
+    stat(BADWORD_IMG_FILE,&st);
     if ((badword_img!=NULL)&&(badimg_time!=st.st_mtime)) 
         checkreload=1;
     if (checkreload) {
@@ -60,9 +60,9 @@ static int check_badwordimg(int checkreload)
       if (!dashf("etc/badword"))
       	return -1;
       retry:
-      if (safe_mmapfile("etc/badword.img", O_RDONLY, PROT_READ, MAP_SHARED, (void **) &badword_img, &badword_img_size, NULL) == 0)
+      if (safe_mmapfile(BADWORD_IMG_FILE, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &badword_img, &badword_img_size, NULL) == 0)
       {
-        if (!dashf("etc/badword.img")) {
+        if (!dashf(BADWORD_IMG_FILE)) {
         	if (build_badwordimage()==0)
         		goto retry;
         }

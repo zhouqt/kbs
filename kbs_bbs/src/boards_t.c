@@ -865,7 +865,7 @@ static int fav_show(struct _select_def *conf, int pos)
             prints(" %4d%s%s ", ptr->total, ptr->total > 9999 ? " " : "  ", ptr->unread ? "¡ô" : "¡ó"); /*ÊÇ·ñÎ´¶Á */
         } else {
             if (ptr->total == -1) {
-                refresh();
+                /*refresh();*/
                 check_newpost(ptr);
             }
             prints(" %4d%s%s ", ptr->total, ptr->total > 9999 ? " " : "  ", ptr->unread ? "¡ô" : "¡ó"); /*ÊÇ·ñÎ´¶Á */
@@ -979,7 +979,7 @@ static int fav_gotonextnew(struct _select_def *conf)
     if (arg->newflag) {
       num = tmp = conf->pos;
       while(num<=conf->item_count) {
-          while ((num < page_pos+conf->item_per_page-1)&&num<=conf->item_count) {
+          while ((num <= page_pos+conf->item_per_page-1)&&num<=conf->item_count) {
               struct newpostdata *ptr;
   
               ptr = &arg->nbrd[num - page_pos];
@@ -989,7 +989,7 @@ static int fav_gotonextnew(struct _select_def *conf)
                   break;
                   num++;
           }
-          if ((num < page_pos+conf->item_per_page-1)&&num<=conf->item_count) {
+          if ((num <= page_pos+conf->item_per_page-1)&&num<=conf->item_count) {
               conf->pos = num;
               conf->page_pos=page_pos;
   	     return SHOW_DIRCHANGE;

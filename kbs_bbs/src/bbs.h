@@ -168,6 +168,7 @@ extern long ti;
 #define FILE_IMPORTED 0x80      /* Leeward 98.04.15 */
 #ifdef FILTER
 #define FILE_CENSOR 0x20        /* for accessed[1], flyriver, 2002.9.29 */
+#define BADWORD_IMG_FILE "etc/badwordv2.img"
 #endif
 #define FILE_SIGN 0x1           /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[0] */
 #define FILE_DEL  0x2           /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[1] */

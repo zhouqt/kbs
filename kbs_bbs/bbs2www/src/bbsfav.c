@@ -77,9 +77,10 @@ int brd_show_boards(int sec, int yank)
         yank_flag = 1;
     nbrd = newpost_buffer;
     brdnum = 0;
-    if (load_boards(NULL) == -1)
+    if ((brdnum=fav_loaddata(nbrd,sec,1,FAVBOARDNUM,1)) == -1)
         return -1;
-    qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);
+/*    qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);
+    */
     printf("<style type=\"text/css\">A {color: #0000f0}</style>");
     printf("<center>\n");
     printf("%s -- 个人定制区 [%s]", BBSNAME, (sec == -1) ? "根目录" : favbrd_list[sec].title);

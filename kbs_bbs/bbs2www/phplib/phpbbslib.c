@@ -812,12 +812,14 @@ static ZEND_FUNCTION(bbs_getboards)
 	brdnum = 0;
 	/* TODO: replace load_board() with a new one, without accessing
 	 * global variables. */
-	if (load_boards(prefix) < 0)
+	if ((brdnum=load_boards(nbrd,prefix,1,MAXBOARD,1,yank_flag)) <= 0)
 	{
 		RETURN_FALSE;
 	}
+	/*
 	qsort( nbrd, brdnum, sizeof( nbrd[0] ), 
 		   (int (*)(const void *, const void *))bbs_cmpboard );
+		   */
 	rows = brdnum; /* number of loaded boards */
 
 	/* fill data in output array. */

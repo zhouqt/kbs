@@ -681,7 +681,7 @@ void a_edits()
             prints("\nWelcome 记录档更新");
         }
 	if (!strcmp(e_file[ch], "badword")) {
-            unlink("etc/badword.img");
+            unlink(BADWORD_IMG_FILE);
             prints("\n过滤词表更新");
 	}
     }
