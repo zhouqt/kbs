@@ -23,6 +23,8 @@ int main()
     brd = getbcache(board);
     if (brd == 0)
         http_fatal("错误的讨论区名称");
+    if (brd->flag&BOARD_GROUP)
+        http_fatal("错误的讨论区名称");
     strcpy(board, brd->filename);
     for (i = 0; i < strlen(title); i++) {
         if (title[i] <= 27 && title[i] >= -1)
