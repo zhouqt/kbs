@@ -2025,7 +2025,7 @@ int badlist()
             }
             else
             {
-                nIdx=search_record( path,ignoreuser, IDLEN+1, cmpinames, userid );
+                nIdx=search_record( path,ignoreuser, IDLEN+1, (RECORD_FUNC_ARG)cmpinames, userid );
 
                 if (tmp[0]=='a' || tmp[0]=='A')
                 {
