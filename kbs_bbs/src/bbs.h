@@ -265,8 +265,8 @@ extern int showansi;
 #define KEY_PGDN        0x0206
 #endif
 
-#define Ctrl(c)         ( c & 037 )
-#define isprint2(c)     ( (c & 0x80) || isprint(c) )
+#define Ctrl(c)         ( (c) & 037 )
+#define isprint2(c)     ( ((c) & 0xe0) && ((c)!=127) )
 
 #ifdef  SYSV
 #define bzero(tgt, len)         memset( tgt, 0, len )
@@ -296,3 +296,6 @@ extern int Net_Sleep(int);
 #ifdef PROFILE
 #define memcpy(x,y,z) pr_memcpy(x,y,z)
 #endif
+
+#define strncasecmp(x,y,n) ci_strncmp(x,y,n)
+#define strcasecmp(x,y) ci_strcmp(x,y)

@@ -486,12 +486,6 @@ register unsigned char c ;
     cur_col = reg_col;  /* store cur_col back */
 }
 
-void
-outs(str)
-register char *str ;
-{
-    outns(str,4096);
-}
 
 void
 outns(str,n)
@@ -580,6 +574,12 @@ int n ;
     }
 }
 
+void
+outs(str)
+register char *str ;
+{
+    outns(str,4096);
+}
 
 int dec[] = {1000000000,100000000,10000000,1000000,100000,10000,1000,100,10,1};
 

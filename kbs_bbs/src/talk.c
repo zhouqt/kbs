@@ -2302,7 +2302,6 @@ int badlist()
 
     int cmpinames();
     int search_record(),append_record(),delete_record();
-    int strcasecmp();
     int usercomplete(),namecomplete();
 
     modify_user_mode( EDITUFILE);
