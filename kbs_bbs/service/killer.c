@@ -129,7 +129,7 @@ struct action party_data[] = {
     {"growl", "对", "咆哮不已"},
     {"hand", "跟", "握手"},
     {"hammer", "举起好大好大的铁锤！！哇！往",
-     "头上用力一敲！\n***************\n*  5000000 Pt *\n***************\n      | |      %1★%2☆%3★%4☆%5★%6☆%0\n      | |         好多的星星哟\n      |_|"},
+     "头上用力一敲！\n***************\n*  5000000 Pt *\n***************\n      | |      ★☆★☆★☆\n      | |         好多的星星哟\n      |_|"},
     {"heng", "看都不看", "一眼， 哼了一声，高高的把头扬起来了,不屑一顾的样子..."},
     {"hug", "轻轻地拥抱", ""},
     {"idiot", "无情地耻笑", "的痴呆。"},
@@ -256,7 +256,7 @@ void send_msg(int u, char* msg)
         strcpy(buf2, buf+i+1);
         strcpy(buf, buf2);
     }
-    while(strlen(buf)>54) {
+    while(strlen(buf)>56) {
         int maxi=0;
         k=0; j = 0; f = 0;
         for(i=0;i<strlen(buf);i++) {
@@ -265,7 +265,7 @@ void send_msg(int u, char* msg)
                 if(isalpha(buf[i])) f=0;
                 continue;
             }
-            if(k==0&&i<=54) {
+            if(k==0&&i<=56) {
                 if(i>maxi)
                     maxi = i;
             }
@@ -273,7 +273,7 @@ void send_msg(int u, char* msg)
             if(k) k=0;
             else if(buf[i]<0) k=1;
         }
-        if(maxi<strlen(buf)) {
+        if(maxi<strlen(buf)&&maxi!=0) {
             strcpy(buf2, buf);
             buf[maxi]=0;
             send_msg(u, buf);
