@@ -306,7 +306,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
       </table>
 </form>
 <form name=frmPreview action=preview.php?boardid=<?php echo $Boardid; ?> method=post target=preview_page>
-<input type=hidden name=title value=><input type=hidden name=body value=><input type=hidden name=texflag value=>
+<input type=hidden name=title value=><input type=hidden name=body value=><input type=hidden name=texflag value=0>
 </form>
 <?php
 }

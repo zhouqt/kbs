@@ -113,8 +113,12 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
           <td width=20% class=TableBody2><b>主题标题</b>
           </td>
           <td width=80% class=TableBody2>&nbsp;<?php echo htmlspecialchars($reArticles[1]["TITLE"],ENT_QUOTES); ?>&nbsp;&nbsp;
+          <input name=subject type=hidden value="<?php echo htmlspecialchars($reArticles[1]["TITLE"],ENT_QUOTES); ?>">
 	 </td>
         </tr>
+<?php
+		/* disabled by atppp
+?>
         <tr>
           <td width=20% valign=top class=TableBody1><b>当前心情</b><br><li>将放在帖子的前面</td>
           <td width=80% class=TableBody1>
@@ -135,27 +139,15 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 ?>
  </td>
         </tr>
+<?php
+     (心情符号，disabled) */
+?>
         <tr>
           <td width=20% valign=top class=TableBody1>
-<b>内容</b><br>
-<li>HTML标签： <?php   echo $Board_Setting[5]?"可用":"不可用"; ?>
-<li>UBB标签： <?php   echo $Board_Setting[6]?"可用":"不可用"; ?>
-<li>贴图标签： <?php   echo $Board_Setting[7]?"可用":"不可用"; ?>
-<li>多媒体标签：<?php   echo $Board_Setting[9]?"可用":"不可用"; ?>
-<li>表情字符转换：<?php   echo $Board_Setting[8]?"可用":"不可用"; ?>
-<li>上传图片：<?php   echo $Forum_Setting[3]?"可用":"不可用"; ?>
-<li>最多<?php   echo intval($Board_Setting[16]/1024); ?>KB<BR><BR>
-<B>特殊内容</B><BR>
-<li><?php   echo $Board_Setting[10]?"<a href=\"javascript:money()\" title=\"使用语法：[money=可浏览该部分内容需要金钱数]内容[/money]\">金钱帖</a>":"金钱帖：不可用"; ?>
-<li><?php   echo $Board_Setting[11]?"<a href=\"javascript:point()\" title=\"使用语法：[point=可浏览该部分内容需要积分数]内容[/point]\">积分帖</a>":"积分帖：不可用"; ?>
-<li><?php   echo $Board_Setting[12]?"<a href=\"javascript:usercp()\" title=\"使用语法：[usercp=可浏览该部分内容需要魅力数]内容[/usercp]\">魅力帖</a>":"魅力帖：不可用"; ?>
-<li><?php   echo $Board_Setting[13]?"<a href=\"javascript:power()\" title=\"使用语法：[power=可浏览该部分内容需要威望数]内容[/power]\">威望帖</a>":"威望帖：不可用"; ?>
-<li><?php   echo $Board_Setting[14]?"<a href=\"javascript:article()\" title=\"使用语法：[post=可浏览该部分内容需要文章数]内容[/post]\">文章帖</a>":"文章帖：不可用"; ?>
-<li><?php   echo $Board_Setting[15]?"<a href=\"javascript:replyview()\" title=\"使用语法：[replyview]该部分内容回复后可见[/replyview]\">回复帖</a>":"回复帖：不可用"; ?>
-<li><?php   echo $Board_Setting[23]?"<a href=\"javascript:usemoney()\" title=\"使用语法：[usemoney=浏览该部分内容需要消耗的金钱数]内容[/usemoney]\">出售帖</a>":"出售帖：不可用"; ?>
+<b>内容</b>
 	  </td>
           <td width=80% class=TableBody1>
-<?php require_once("inc/ubbmenu.php"); ?>
+<?php if (ENABLE_UBB) require_once("inc/ubbmenu.php"); ?>
 <textarea class=smallarea cols=95 name=Content rows=12 wrap=VIRTUAL title="可以使用Ctrl+Enter直接提交贴子" class=FormClass onkeydown=ctlent()>
 <?php
 	bbs_printoriginfile($boardName,$reArticles[1]['FILENAME']); //ToDo: 这个地方过滤 </textarea> 且没有 html 化，待改
@@ -163,6 +155,9 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 </textarea>
           </td>
         </tr>
+<?php
+        if (ENABLE_UBB) {
+?>
 		<tr>
                 <td class=TableBody1 valign=top colspan=2 style="table-layout:fixed; word-break:break-all"><b>点击表情图即可在帖子中加入相应的表情</B><br>
 <?php 
@@ -180,15 +175,17 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 ?>
     		</td>
                 </tr>
+<?php
+        }
+?>
 <tr>
 	<td valign=middle colspan=2 align=center class=TableBody2>
-	<input type=Submit value='发 表' name=Submit> &nbsp; <input type=button value='预 览' name=Button onclick=gopreview()>&nbsp;
-<input type=reset name=Submit2 value='清 除'>
+	<input type=Submit value='发 表' name=Submit> &nbsp;&nbsp;&nbsp; <input type=button value='预 览 (附件无效)' name=preview onclick=gopreview()>
                 </td></form></tr>
       </table>
 </form>
 <form name=frmPreview action=preview.php?boardid=<?php echo $Boardid; ?> method=post target=preview_page>
-<input type=hidden name=title value=><input type=hidden name=body value=>
+<input type=hidden name=title value=><input type=hidden name=body value=><input type=hidden name=texflag value=<?php echo (SUPPORT_TEX && $reArticles[1]["IS_TEX"])?1:0; ?>>
 </form>
 <?php
 }
