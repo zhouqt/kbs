@@ -287,23 +287,25 @@ int DelFavBoard(int i)
 /* 注意,q现在是当前移动的位置
   返回favnow
 */
-int MoveFavBoard(int p, int q, int fav_father)
+int MoveFavBoard(int p, int qq, int fav_father)
 {
     struct favbrd_struct temp;
     int i;
+	int q=0;
 
     int count;
     count=0;
-    if (q!=0) {
+    if (qq!=0) {
         for (i=0;i<favbrd_list_t;i++) {
             if (favbrd_list[i].father==fav_father) {
             count++;
-            if (count==q+1)
+            if (count==qq+1)
                 break;
             }
         }
-	if (i==favbrd_list_t)
-	    return fav_father;
+		if (i==favbrd_list_t)
+		    return fav_father;
+		q=i;
     }
     if (p == q)
 	    return fav_father;
