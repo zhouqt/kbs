@@ -708,7 +708,8 @@ void init_brc_cache(const char* userid,bool replace,session_t* session) {
         brcfdr = open(dirfile, O_RDWR, 0600);
 	if (brcfdr==-1) bbslog("3error","can't open %s errno %d",dirfile,errno);
         session->brc_cache_entry = mmap(NULL, BRC_CACHE_NUM*sizeof(struct _brc_cache_entry), PROT_READ|PROT_WRITE, MAP_SHARED, brcfdr, 0);
-	if (session->brc_cache_entry==MAP_FAILED) bbslog("3error","can't mmap %s errno %d",dirfile,errno);
+        if (session->brc_cache_entry==MAP_FAILED) bbslog("3error","can't mmap %s errno %d",dirfile,errno);
+        session->brc_currcache = -1; //added by atppp 20040719
         close(brcfdr);
     }
 }
@@ -786,6 +787,7 @@ int brc_unread(unsigned int fid,session_t* session)
 
     /*干脆不搞guest的这个算了*/
     if (!strcmp(session->currentuser->userid,"guest")) return 1;
+    if (session->brc_currcache == -1) return 1;
     for (n = 0; n < BRC_MAXNUM; n++) {
         if (session->brc_cache_entry[session->brc_currcache].list[n] == 0) {
             if (n == 0)
