@@ -54,7 +54,9 @@ void load_favboard(int dohelp)
     favnow = -1;
     if ((fd = open(fname, O_RDONLY, 0600)) != -1) {
         read(fd, &i, sizeof(int));
-        if (i != 0x8080) {
+        if (i != 0x8080) {/* We can consider the 0x8080 magic number as a 
+		                   * version identifier of favboard file. */
+			/* We handle old version here. */
             favbrd_list_t = i;
             for (i = 0; i < favbrd_list_t; i++) {
                 read(fd, &j, sizeof(int));
@@ -62,6 +64,7 @@ void load_favboard(int dohelp)
                 favbrd_list[i].father = -1;
             }
         } else {
+			/* We handle new version here. */
             read(fd, &favbrd_list_t, sizeof(int));
             for (i = 0; i < favbrd_list_t; i++) {
                 read(fd, &j, sizeof(int));
