@@ -1,29 +1,9 @@
 <?php
 require("site.php");
+require("board.inc.php");
+
 if (!bbs_ext_initialized())
 	bbs_init_ext();
-
-# iterate through an array of nodes
-# looking for a text node
-# return its content
-function get_content($parent)
-{
-    $nodes = $parent->child_nodes();
-    while($node = array_shift($nodes))
-        if ($node->node_type() == XML_TEXT_NODE)
-            return $node->node_value();
-    return "";
-}
-
-# get the content of a particular node
-function find_content($parent,$name)
-{
-    $nodes = $parent->child_nodes();
-    while($node = array_shift($nodes))
-        if ($node->node_name() == $name)
-            return get_content($node);
-    return "";
-}
 
 # get an attribute from a particular node
 function find_attr($parent,$name,$attr)
@@ -81,7 +61,7 @@ while($board = array_shift($boards))
 	$brd_encode = urlencode($brdarr["NAME"]);
 ?>
 <li class="default">
-<a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $hot_title)); ?></a> &nbsp;&nbsp;[作者: <a href="/bbsqry.php?userid=<?php echo $hot_author; ?>"><?php  echo $hot_author; ?></a>]&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
+<a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars($hot_title); ?></a> &nbsp;&nbsp;[作者: <a href="/bbsqry.php?userid=<?php echo $hot_author; ?>"><?php  echo $hot_author; ?></a>]&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
 <?php
 }
 ?>
@@ -124,7 +104,7 @@ function gen_sec_hot_subjects_html($secid)
 			continue;
 		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
-<li class="default"><a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $hot_title)); ?></a>&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
+<li class="default"><a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars($hot_title); ?></a>&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
 <?php
 	}
 ?>
@@ -173,7 +153,7 @@ while($board = array_shift($boards))
     $staytime = find_content($board, "StayTime");
     $secid = find_content($board, "SecId");
 	$sec_boards[$secid][$sec_boards_num[$secid]]["EnglishName"] = $ename;
-	$sec_boards[$secid][$sec_boards_num[$secid]]["ChineseName"] = iconv("UTF-8", "GBK", $cname);
+	$sec_boards[$secid][$sec_boards_num[$secid]]["ChineseName"] = $cname;
 	$sec_boards[$secid][$sec_boards_num[$secid]]["VisitTimes"] = $visittimes;
 	$sec_boards[$secid][$sec_boards_num[$secid]]["StayTime"] = $staytime;
 	$sec_boards_num[$secid]++;
@@ -258,9 +238,13 @@ $boards = $root->child_nodes();
 <ul style="margin-top: 5px; margin-left: 20px">
 <?php
 	$brdarr = array();
+	$j = 0;
 	# shift through the array
 	while($board = array_shift($boards))
 	{
+		if($j > 9)
+			break;
+		
 		if ($board->node_type() == XML_TEXT_NODE)
 			continue;
 
@@ -269,12 +253,22 @@ $boards = $root->child_nodes();
 		if ($brdnum == 0)
 			continue;
 		$brd_encode = urlencode($brdarr["NAME"]);
+		$j ++ ;
 ?>
 <li class="default">&lt;<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
 <?php
 	}
 ?>
-</ul></td></tr>
+</ul>
+<?php
+	if($j > 9)
+	{
+?>
+<p align="right"><a href="/bbsnewbrd.php">&gt;&gt;更多</a></p>
+<?php
+	}
+?>
+	</td></tr>
       </table>
       <br>
 <?php
@@ -351,7 +345,7 @@ $brdarr = array();
         </tr>
 	</table>
 
-	<table border="0" cellpadding="0" cellspacing="0" width="626">
+	<table border="0" cellpadding="0" cellspacing="0" width="97%">
 	<tr><td height=10></td></tr>
 <?php
 # shift through the array
@@ -375,10 +369,10 @@ while($board = array_shift($boards))
 
 ?>
 <tr>
-<td valign="top" class="MainContentText"><LI class=default><a href="/bbsrecon.php?id=<?php echo $commend_id;?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $commend_title));?></a>&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode;?>"><?php echo htmlspecialchars($brdarr["DESC"]);?></a>&gt;
+<td valign="top" class="MainContentText"><LI class=default><a href="/bbsrecon.php?id=<?php echo $commend_id;?>"><?php echo htmlspecialchars($commend_title);?></a>&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode;?>"><?php echo htmlspecialchars($brdarr["DESC"]);?></a>&gt;
 &nbsp;&nbsp;[<a href="/bbstcon.php?board=<?php echo $brd_encode;?>&gid=<?php echo $commend_o_groupid;?>">同主题阅读原版原文</a>]
 <dl style="MARGIN-TOP: 1px;MARGIN-BOTTOM: 5px; MARGIN-LEFT: 25px;"><dt>
-<?php echo htmlspecialchars(iconv("UTF-8","GBK",$commend_brief));?>
+<?php echo htmlspecialchars($commend_brief);?>
 </dl>
 </td>
 </tr>
@@ -424,7 +418,7 @@ while($board = array_shift($boards))
 	$cname = find_content($board, "ChineseName");
 ?>
               <tr> 
-                <td height="20" class="MainContentText"><?php echo $i+1; ?>. <a href="bbsdoc.php?board=<?php echo urlencode($ename); ?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $cname)); ?></a></td>
+                <td height="20" class="MainContentText"><?php echo $i+1; ?>. <a href="bbsdoc.php?board=<?php echo urlencode($ename); ?>"><?php echo htmlspecialchars($cname); ?></a></td>
               </tr>
 <?php
 	$i++;
@@ -449,6 +443,7 @@ $root = $doc->document_element();
 $boards = $root->child_nodes();
 
 ?>
+<a name="#todaybless">
       <table width="100%" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
         <tr> 
           <td width="16" background="images/lt.gif">&nbsp;</td>
@@ -472,7 +467,7 @@ while($board = array_shift($boards))
     $hot_board = find_content($board, "board");
     $hot_groupid = find_content($board, "groupid");
 ?>
-<li class="default"><a href="/bbstcon.php?board=<?php echo $hot_board; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $hot_title)); ?></a></li>
+<li class="default"><a href="/bbstcon.php?board=<?php echo $hot_board; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars($hot_title); ?></a></li>
 <?php
 }
 ?>
@@ -492,21 +487,33 @@ while($board = array_shift($boards))
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr> 
     <td colspan="2" height="77"><img src="images/logo.gif" width="144" height="71"></td>
-    <td colspan="6" ><object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0" width="100%" height="100%">
-      <param name="movie" value="SMTH2.swf">
+    <td colspan="7" >
+    <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0" width="100%" height="100%">
+      <param name="movie" value="ad.swf">
       <param name="quality" value="high">
-      <embed src="SMTH2.swf" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash" width="670" height="77"></embed>
-    </object></td>
+      <embed src="ad.swf" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash"></embed>
+    </object>
+    </td>
   </tr>
   <form action="/cgi-bin/bbs/bbssel">
   <tr> 
-    <td height="18" width="84" class="header" align="center">系统公告</td>
-    <td width="84" class="header" align="center">推荐文章</td>
-    <td width="80" class="header" align="center">分类讨论区</td>
-    <td width="80" class="header" align="center">推荐版面</td>
-    <td width="81" class="header" align="center">人气排名</td>
-    <td width="79" class="header" align="center">本日祝福</td>
-    <td width="56" class="header"></td>
+    <td height="18" width="84" class="header" align="center"><a href="bbsdoc.php?board=Announce">系统公告</a></td>
+    <td width="84" class="header" align="center"><a href="/bbsrecommend.php">推荐文章</a></td>
+    <td width="80" class="header" align="center"><a href="/bbssec.php">分类讨论区</a></td>
+    <td width="80" class="header" align="center"><a href="/bbsrecbrd.php">推荐版面</a></td>
+    <td width="81" class="header" align="center"><a href="/bbsbrdran.php">人气排名</a></td>
+    <td width="79" class="header" align="center"><a href="#todaybless">本日祝福</a></td>
+    <td width="79" class="header" align="center">
+<?php
+	if(defined("HAVE_PC"))
+	{
+?>
+    <a href="/pc/pcmain.php">水木BLOG</a>
+<?php
+	}
+?>
+    </td>
+    <td class="header"></td>
     <td class="header" align="right" width="315"> <input type="text" name="board" size="12" maxlength="30" value="版面搜索" class="text"> 
       <input type="submit" size="15" value="GO" class="button"> 
     </td></form>
@@ -517,7 +524,7 @@ while($board = array_shift($boards))
     <td colspan="5" height="8"></td>
   </tr>
   <tr>
-    <td width="75%">
+    <td width="80%">
 <?php
 	gen_commend_html();
 ?>
@@ -561,7 +568,7 @@ while($board = array_shift($boards))
       <br>
 系统公告结束   -->
 <?php
-	gen_system_vote_html();
+	//gen_system_vote_html();
 	gen_new_boards_html();
 	gen_recommend_boards_html();
 	gen_board_rank_html();
