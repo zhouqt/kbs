@@ -65,7 +65,7 @@
 			}
 ?>
 <br><center>
-<form action="pceditcom.php?act=edit2&cid=<?php echo $cid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入评论主题!');return false;}">
+<form name="postform" action="pceditcom.php?act=edit2&cid=<?php echo $cid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入评论主题!');return false;}">
 <table cellspacing="0" cellpadding="5" width="90%" border="0" class="t1">
 <tr>
 	<td class="t2">修改评论</td>
@@ -86,7 +86,7 @@
 	<td class="t11">内容</td>
 </tr>
 <tr>
-	<td class="t8"><textarea class="f1" name="body" cols="100" rows="20" id="body"><?php echo htmlspecialchars(stripslashes($rows[body]." ")); ?></textarea></td>
+	<td class="t8"><textarea name="body" class="f1" cols="100" rows="20" id="body"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical"><?php echo htmlspecialchars(stripslashes($rows[body]." ")); ?></textarea></td>
 </tr>
 <tr>
 	<td class="t2">

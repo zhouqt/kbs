@@ -180,7 +180,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			{
 ?>
 <br><center>
-<form action="pcmanage.php?act=post&<?php echo "tag=".$tag."&pid=".$pid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
+<form name="postform" action="pcmanage.php?act=post&<?php echo "tag=".$tag."&pid=".$pid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
 <table cellspacing="0" cellpadding="5" border="0" width="90%" class="t1">
 <tr>
 	<td class="t2">发表文章</td>
@@ -219,7 +219,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 	<td class="t11">内容</td>
 </tr>
 <tr>
-	<td class="t8"><textarea name="body" cols="100" rows="20" id="body" class="f1"></textarea></td>
+	<td class="t8"><textarea name="body" class="f1" cols="100" rows="20" id="body"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical"></textarea></td>
 </tr>
 <tr>
 	<td class="t2">
@@ -264,7 +264,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			{
 ?>
 <br><center>			
-<form action="pcmanage.php?act=edit&nid=<?php echo $nid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
+<form name="postform" action="pcmanage.php?act=edit&nid=<?php echo $nid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
 <table cellspacing="0" cellpadding="5" border="0" width="90%" class="t1">
 <?php
 		if($rows[type]==1)
@@ -332,7 +332,10 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 	<td class="t11">内容</td>
 </tr>
 <tr>
-	<td class="t8"><textarea name="body" class="f1" cols="100" rows="20" id="body"><?php echo htmlspecialchars(stripslashes($rows[body]." ")); ?></textarea></td>
+	<td class="t8">
+	<textarea name="body" class="f1" cols="100" rows="20" id="body"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
+	<?php echo htmlspecialchars(stripslashes($rows[body]." ")); ?>
+	</textarea></td>
 </tr>
 <tr>
 	<td class="t2">
