@@ -161,7 +161,24 @@ function al_print_form($al){
 				settype($edit_id, "integer");
 				if($edit_id < 0)
 					html_error_quit("参数错误7");
+			}else {
+				$sqlstr = "SELECT COUNT(*) FROM addr WHERE userid=\"".$currentuser["userid"];
+
+				$result = mysql_query($sqlstr) or die(mysql_error());
+				if( ! $result ){
+					html_error_quit("数据错误");
+				}else{
+					$row = mysql_fetch_row($result);
+					if( ! $row )
+						html_error_quit("数据错误1");
+					$allcount = $row[0];
+					settype($allcount, "integer");
+echo $allcount;
+					if( $allcount > 400 )
+						html_error_quit("通讯录满");
+				}
 			}
+
 
 			if( $_GET["submit"] || $_POST["submit"] ){
 				if( $_POST["t_name"] ){
