@@ -411,6 +411,7 @@ void r_msg()
     struct user_info * uin;
     struct msghead head;
     int now, count, canreply, first=1;
+    int hasnewmsg;
     int savemode;
 
     savemode=uinfo.mode;
@@ -425,10 +426,11 @@ void r_msg()
     for(i=0;i<=23;i++)
         saveline(i, 0, savebuffer[i]);
 
+    hasnewmsg=get_unreadcount(currentuser->userid);
     if ((uinfo.mode == POSTING || uinfo.mode == SMAIL) && !DEFINE(currentuser, DEF_LOGININFORM)) {      /*Haohmaru.99.12.16.·¢ÎÄÕÂÊ±²»»Ømsg */
         good_move(0, 0);
         clrtoeol();
-        if (get_unreadcount(currentuser->userid)) {
+        if (hasnewmsg) {
             prints("[1m[33mÄãÓÐÐÂµÄÑ¶Ï¢£¬Çë·¢±íÍêÎÄÕÂºó°´ Ctrl+Z »ØÑ¶Ï¢[m");
             good_move(y, x);
             refresh();
@@ -466,7 +468,7 @@ void r_msg()
         load_msgtext(currentuser->userid, &head, buf);
         translate_msg(buf, &head, outmsg);
         
-        if (DEFINE(currentuser, DEF_SOUNDMSG))
+        if (hasnewmsg&&DEFINE(currentuser, DEF_SOUNDMSG))
             bell();
         good_move(0,0);
         clrtoeol();
