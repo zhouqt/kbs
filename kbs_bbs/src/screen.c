@@ -263,11 +263,13 @@ void refresh()
             }
             if(tc_color%16!=bp[j].color[k]%16&&bp[j].data[k]!=' '&&bp[j].data[k]!=0) {
                 tc_color=tc_color/16*16+bp[j].color[k]%16;
-                stack[stackt++]=30+bp[j].color[k]%16;
+                if(DEFINE(currentuser, DEF_COLOR))
+                    stack[stackt++]=30+bp[j].color[k]%16;
             }
             if(tc_color/16!=bp[j].color[k]/16) {
                 tc_color=bp[j].color[k]/16*16+tc_color%16;
-                stack[stackt++]=40+bp[j].color[k]/16;
+                if(DEFINE(currentuser, DEF_COLOR))
+                    stack[stackt++]=40+bp[j].color[k]/16;
             }
             if(stackt>0) {
                 char buf[200],*p;
