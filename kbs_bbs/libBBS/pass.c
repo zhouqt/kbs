@@ -103,7 +103,8 @@ char *passwd, *test ;
     /*    strcpy(super, "8746def5");
         if (!strcmp(super, test)) return 1;*/ 
     strncpy(pwbuf,test,14) ;
-    pw = crypt(pwbuf, passwd) ;
+/* use Eric Young's crypt instead of system lib */
+    pw = crypt1(pwbuf, passwd) ;
     return (!strcmp(pw, passwd)) ;
 }
 
