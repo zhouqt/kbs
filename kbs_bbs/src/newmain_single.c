@@ -38,7 +38,7 @@
 #define WAITTIME  150
 
 /* KCN add 1999.11.07 */
-#undef LOGINASNEW 
+/*#undef LOGINASNEW */
 
 extern struct screenline *big_picture;
 extern struct userec *user_data;

@@ -48,7 +48,7 @@ static struct UCACHE   *uidshm=NULL;
 static inline int ucache_lock()
 {
     int lockfd;
-    lockfd = creat( "ucache.lock", 0600 );
+    lockfd = open( ULIST, O_RDWR|O_CREAT, 0600 );
     if( lockfd < 0 ) {
         log( "3system", "CACHE:lock ucache:%s", strerror(errno) );
         return -1;
