@@ -3,185 +3,54 @@
 	
 	require("funcs.php");
 	
-    $img_subdir = "images/menuspring/";
+        $img_subdir = "/images/menuspring/";
 
-	function display_board_group($section_names,$section_nums,$group_name,$group_id,$totle_group,$group,$group2,$level){
-		$yank = 0;
-		settype($group, "integer");
-		settype($group2, "integer");
-		settype($yank, "integer");
-		if ($group < 0)
-			$group = 0;
-		if ($group <= sizeof($section_nums)){
-			$boards = bbs_getboards($section_nums[$group], $group2, $yank);
-			$brd_name = $boards["NAME"]; // 英文名
-			$brd_desc = $boards["DESC"]; // 中文描述
-			$brd_flag = $boards["FLAG"]; //flag
-			$brd_bid = $boards["BID"]; //flag
-			$rows = sizeof($brd_name);			
+	function display_board_list($section_names,$section_nums)
+	{
 ?>
 <table width="100%" border="0" cellspacing="0" cellpadding="1" class="b1">
-<tr> 
-	<td width="16" align="right">
-	<DIV class=r id=divb<?php echo $level.$group_id; ?>a>
-	<A href='javascript:changemn("b<?php echo $level.$group_id; ?>");'>
-	<img id="imgb<?php echo $level.$group_id; ?>" src="images/close.gif" width="16" height="16" border="0" align="absmiddle"> 
-	</A></DIV>
-	</td>
-	<td>
-	<a href="/bbsboa.php?group=<?php echo $group; ?>" target="f3"><img src="images/kfolder1.gif" width="16" height="16" border="0" align="absmiddle"><?php echo $group_name; ?></a>
-	</td>
-</tr>
-<tr>
 <?php
-	if($group_id != $totle_group - 1){
-?>
-	<td  width="16" background="/images/line3.gif"> </td>
-<?php
-	}
-	else{
-?>
-	<td width="16"></td>
-<?php
-	}
-?>
-	<td class="b1">
-	<DIV class=s id=divb<?php echo $level.$group_id; ?>>
-	
-<?php
-			for ($j = 0; $j < $rows; $j++)	
-			{
-				if ($brd_flag[$j]&BBS_BOARD_GROUP){
-					$brd_link="/bbsboa.php?group=" . $group . "&group2=" . $brd_bid[$j];
-					$level++;
-					display_board_group($section_names,$section_nums,$brd_desc[$j],$j,$rows,$group,$brd_bid[$j],$level);
-					$level--;
-					}
-				else{
-			  		$brd_link="/bbsdoc.php?board=" . urlencode($brd_name[$j]);
-
-				if( $j != $rows-1 )
-				{
-?>
-&nbsp;
-<img src="images/line.gif" width="11" height="16" align="absmiddle">
-<?php
-				}
-				else
-				{
-?>
-&nbsp;
-<img src="images/line1.gif" width="11" height="16" align="absmiddle">
-<?php
-				}
-?>
-<A href="<?php echo $brd_link; ?>" target="f3"><?php echo $brd_desc[$j]; ?></A><BR>
-<?php
-				}
-			}
-?>
-</DIV>
-</td>
-</tr>
-</table>
-<?php		
-		}
-	}
-	
-	
-	
-	function display_board_list($section_names,$section_nums){
 		$i = 0;
-		foreach ($section_names as $secname){
+		foreach ($section_names as $secname)
+		{
 			$i++;
 			$group=$i-1;
 			$group2 = $yank = 0;
 			$level = 0;
-			display_board_group($section_names,$section_nums,$secname[0],$group,count($section_names),$group,$group2,$level);
-			}
-		}
-	
-	
-	function display_fav_group($boards,$group_name,$group_id,$totle_group,$level,$up=-1){
-		$brd_name = $boards["NAME"]; // 英文名
-		$brd_desc = $boards["DESC"]; // 中文描述
-		$brd_flag = $boards["FLAG"]; //flag
-		$brd_bid = $boards["BID"]; 
-		$rows = sizeof($brd_bid);
-			
 ?>
-<table width="100%" border="0" cellspacing="0" cellpadding="1" class="b1">
-<tr> 
-	<td width="16" align="right"> 
-	<DIV class=r id=divf<?php echo $level.$group_id; ?>a><A href='javascript:changemn("f<?php echo $level.$group_id; ?>");'> 
-	<img id="imgf<?php echo $level.$group_id; ?>" src="images/close.gif" width="16" height="16" border="0" align="absmiddle"> 
-	</A></DIV>
-	</td>
-	<td>
-	<img src="images/kfolder1.gif" width="16" height="16" border="0" align="absmiddle"><a href="bbsfav.php?select=<?php echo $level; ?>&up=<?php echo $up; ?>" target="f3"><?php echo $group_name; ?></a>
-	</td>
-</tr>
 <tr>
-<?php
-	if($group_id != $totle_group - 1){
-?>
-	<td background="/images/line3.gif"> </td>
-<?php
-	}
-	else{
-?>
-	<td> </td>
-<?php
-	}
-?>
-	<td>
-	<DIV class=s id=divf<?php echo $level.$group_id; ?>>
-<?php
-			for ($j = 0; $j < $rows; $j++)	
-			{
-				if ($brd_flag[$j]&BBS_BOARD_GROUP){
-					if( bbs_load_favboard($brd_bid[$j])!=-1 && $fav_boards = bbs_fav_boards($brd_bid[$j], 1) && $brd_bid[$j]!= -1) {
-	                                	$fav_boards = bbs_fav_boards($brd_bid[$j], 1);
-	                                	display_fav_group($fav_boards,$brd_desc[$j],$j,$rows,$brd_bid[$j],$level);
-	                                	}
-	                                }
-				else{
-			  		$brd_link="/bbsdoc.php?board=" . urlencode($brd_name[$j]);
-
-				if( $j != $rows-1 )
-				{
-?>
-&nbsp;
-<img src="images/line.gif" width="11" height="16" align="absmiddle">
-<?php
-				}
-				else
-				{
-?>
-&nbsp;
-<img src="images/line1.gif" width="11" height="16" align="absmiddle">
-<?php
-				}
-?>
-<A href="<?php echo $brd_link; ?>" target="f3"><?php echo $brd_desc[$j]; ?></A><BR>
-<?php
-				}
-			}
-?>
-</DIV>
+<td align="right" width="16">
+<a href="javascript:submenu(0,0,<?php echo $group; ?>,0,0)">
+<img id="submenuimg_brd_<?php echo $group; ?>_0" src="/images/close.gif" border="0">
+</a>
+</td>
+<td>
+<a href="/bbsboa.php?group=<?php echo $group; ?>" target="f3"><img src="/images/kfolder1.gif" width="16" height="16" border="0" align="absmiddle"><?php echo $secname[0]; ?></a>
 </td>
 </tr>
+<tr id="submenu_brd_<?php echo $group; ?>_0" style="display:none">
+<td> </td>
+<td id="submenu_brd_<?php echo $group; ?>_0_td">
+<DIV></DIV>
+</td>
+</tr>
+<?php
+		}
+?>
 </table>
-<?php		
+<?php
 	}
 	
-	
-	
-	function display_my_favorite(){
+	function display_my_favorite()
+	{
+?>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="b1">
+<?php
  		$select = -1; 
  		$yank = 0;
  		 		
-                if( bbs_load_favboard($select)!=-1 && $boards = bbs_fav_boards($select, 1)) {
+                if( bbs_load_favboard($select)!=-1 && $boards = bbs_fav_boards($select, 1)) 
+                {
 			$brd_name = $boards["NAME"]; // 英文名
 	                $brd_desc = $boards["DESC"]; // 中文描述
 	                $brd_flag = $boards["FLAG"]; 
@@ -190,36 +59,60 @@
                 	
                 	for ($j = 0; $j < $rows; $j++)	
                         {
-				if ($brd_flag[$j]==-1){//&BBS_BOARD_GROUP){
-					$fav_boards = bbs_fav_boards($brd_bid[$j], 1); 
-	                                display_fav_group($fav_boards,$brd_desc[$j],$j,$rows,$brd_bid[$j]);
-					}
-				else{
-			  		$brd_link="/bbsdoc.php?board=" . urlencode($brd_name[$j]);
-
-				if( $j != $rows-1 )
+				if ($brd_flag[$j]==-1)
 				{
 ?>
-&nbsp;
-<img src="images/line.gif" width="11" height="16" align="absmiddle">
+<tr>
+<td align="right" width="16">
+<a href="javascript:submenu(1,<?php echo $brd_bid[$j]; ?>,0,0,0)">
+<img id="submenuimg_fav_<?php echo $brd_bid[$j]; ?>" src="/images/close.gif" border="0">
+</a>
+</td>
+<td>
+<a href="/bbsfav.php?select=<?php echo $brd_bid[$j]; ?>&up=-1" target="f3"><img src="/images/kfolder1.gif" width="16" height="16" border="0" align="absmiddle"><?php echo $brd_desc[$j]; ?></a>
+</td>
+</tr>
+<tr id="submenu_fav_<?php echo $brd_bid[$j]; ?>" style="display:none">
+<td background="/images/line3.gif"> </td>
+<td id="submenu_fav_<?php echo $brd_bid[$j]; ?>_td">
+<DIV></DIV>
+</td>
+</tr>
 <?php
 				}
 				else
 				{
 ?>
-&nbsp;
+<tr>
+<td width="16" align="right">
+<?php			  		
+			  		$brd_link="/bbsdoc.php?board=" . urlencode($brd_name[$j]);
+
+					if( $j != $rows-1 )
+					{
+?>
+<img src="images/line.gif" width="11" height="16" align="absmiddle">
+<?php
+					}
+					else
+					{
+?>
 <img src="images/line1.gif" width="11" height="16" align="absmiddle">
 <?php
-				}
+					}
 ?>
-<A href="<?php echo $brd_link; ?>" target="f3"><?php echo $brd_desc[$j]; ?></A><BR>
+</td><td>
+<A href="<?php echo $brd_link; ?>" target="f3"><?php echo $brd_desc[$j]; ?></A>
+</td></tr>
 <?php
 				}
 			}
                         bbs_release_favboard(); 
                         
-                	}
-               
+                }
+?>
+</table>
+<?php     
 	}
 	
 	function display_mail_menu($userid)
@@ -319,6 +212,7 @@
 ?>
 <script src="bbsleft.js"></script>
 <body  TOPMARGIN="0" leftmargin="0">
+<iframe id="hiddenframe" name="hiddenframe" width="0" height="0"></iframe>
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 <tr>
 	<td>

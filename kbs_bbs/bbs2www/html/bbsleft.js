@@ -156,6 +156,38 @@ function openreg()
 	open('bbsreg', '', 'width=600,height=460,resizable=yes,scrollbars=yes');
 }
 
+function submenu( isfav , favselect , group , group2 , yank )
+{
+	if( isfav == 1 )
+	{
+		linkurl = "/bbsleft-submenu.php?select=" + favselect + "&fav";
+		submenuname = "submenu_fav_" + favselect ;
+		imgname = "submenuimg_fav_" + favselect ;
+	}
+	else
+	{
+		linkurl = "/bbsleft-submenu.php?group=" + group + "&group2=" + group2 + "&yank=" + yank;
+		submenuname = "submenu_brd_" + group + "_" + group2 ;
+		imgname = "submenuimg_brd_" + group + "_" + group2 ;
+	}
+	submenustatus = document.all(submenuname).style.display;
+	if (submenustatus == "block")
+	{
+		document.all(imgname).src="/images/close.gif";
+		document.all(submenuname).style.display="none";
+	}
+	if (submenustatus=="none")
+	{
+		document.all(imgname).src="images/open.gif";
+		document.all(submenuname).style.display="block";
+		if (document.all(submenuname + "_td").innerHTML.substr(0,5)=="<DIV>")
+		{
+			document.all(submenuname + "_td").innerHTML="<DIV class=b1>‘ÿ»Î÷–°≠°≠</DIV>";
+			document.frames("hiddenframe").location = linkurl ;
+		}
+	}
+}
+
 Is();
 
 with (document) {
