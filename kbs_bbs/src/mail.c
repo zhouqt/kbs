@@ -471,7 +471,7 @@ int do_send(char *userid, char *title, char *q_file)
             move(t_lines - 1, 0);
             clrtoeol();
             strcpy(buf4, titlebuf);
-            getdata(t_lines - 1, 0, "标题: ", buf4, 50, DOECHO, NULL, false);
+            getdata(t_lines - 1, 0, "标题: ", buf4, 79, DOECHO, NULL, false);
             if ((buf4[0] != '\0' && buf4[0] != '\n')) {
                 strcpy(titlebuf, buf4);
             } else {
