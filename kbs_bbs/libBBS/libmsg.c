@@ -242,7 +242,16 @@ int msg_can_sendmsg(char *userid, int utmpnum)
     return 1;
 }
 
-int save_msgtext(char *uident, char *msgbuf)
+struct msghead {
+    int pos, len;
+    char sent;
+    int mode;
+    char id[IDLEN+2];
+    time_t time;
+    int frompid, topid;
+};
+
+int save_msgtext(char *uident, struct msghead * head, char *msgbuf)
 {
     char fname[STRLEN], fname2[STRLEN];
     int fd, fd2, i, j, count, size;
@@ -274,17 +283,19 @@ int save_msgtext(char *uident, char *msgbuf)
     fstat(fd2, &buf);
     size = buf.st_size;
     fstat(fd, &buf);
-    count = buf.st_size/4-1;
-    if(count<0) {
+    count = (buf.st_size-4)/sizeof(struct msghead);
+    if(buf.st_size<=0) {
         i = 0;
         write(fd, &i, 4);
         count = 0;
     }
-    lseek(fd, (count+1)*4, SEEK_SET);
-    write(fd, &size, 4);
-    lseek(fd2, size, SEEK_SET);
+    lseek(fd, count*sizeof(struct msghead)+4, SEEK_SET);
     i = strlen(msgbuf)+1;
-    if (i>=MAX_MSG_SIZE+100) i=MAX_MSG_SIZE+100-1;
+    if (i>=MAX_MSG_SIZE) i=MAX_MSG_SIZE-1;
+    head->pos = size;
+    head->len = i;
+    write(fd, head, sizeof(struct msghead));
+    lseek(fd2, size, SEEK_SET);
     write(fd2, msgbuf, i);
 
     close(fd2);
@@ -308,14 +319,14 @@ int save_msgtext(char *uident, char *msgbuf)
             return -1;              /* lock error*/
         }
         fstat(fd, &buf);
-        count = buf.st_size/4-1;
-        if(count<0) {
+        count = (buf.st_size-4)/sizeof(struct msghead);
+        if(buf.st_size<=0) {
             i = 0;
             write(fd, &i, 4);
             count = 0;
         }
-        lseek(fd, (count+1)*4, SEEK_SET);
-        write(fd, &size, 4);
+        lseek(fd, count*sizeof(struct msghead)+4, SEEK_SET);
+        write(fd, head, sizeof(struct msghead));
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
@@ -327,33 +338,16 @@ int save_msgtext(char *uident, char *msgbuf)
 int get_msgcount(int id, char *uident)
 {
     char fname[STRLEN];
-    int fd, i, j, count;
-    struct flock ldata;
+    int i, j, count;
     struct stat buf;
 
     if(id) sethomefile(fname, uident, "msgindex2");
     else sethomefile(fname, uident, "msgindex");
 
-    if ((fd = open(fname, O_RDONLY, 0664)) == -1) {
-        bbslog("user", "%s", "msgopen err");
-        return 0;              /* ´´½¨ÎÄ¼þ·¢Éú´íÎó*/
-    }
-    ldata.l_type = F_RDLCK;
-    ldata.l_whence = 0;
-    ldata.l_len = 0;
-    ldata.l_start = 0;
-    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-        bbslog("user", "%s", "msglock err");
-        close(fd);
-        return -1;              /* lock error*/
-    }
-    fstat(fd, &buf);
-    count = buf.st_size/4-1;
-    if (count<0) count=0;
+    stat(fname, &buf);
+    count = (buf.st_size-4)/sizeof(struct msghead);
+    if (buf.st_size<=0) count=0;
 
-    ldata.l_type = F_UNLCK;
-    fcntl(fd, F_SETLKW, &ldata);
-    close(fd);
     return count;
 }
 
@@ -394,8 +388,8 @@ int get_unreadmsg(char *uident)
         return -1;              /* lock error*/
     }
     fstat(fd, &buf);
-    count = buf.st_size/4-1;
-    if (count<0) ret = -1;
+    count = (buf.st_size-4)/sizeof(struct msghead);
+    if (buf.st_size<=0) ret = -1;
     else {
         read(fd, &ret, 4);
         if(ret >= count) ret = -1;
@@ -434,8 +428,8 @@ int get_unreadcount(char *uident)
         return 0;              /* lock error*/
     }
     fstat(fd, &buf);
-    count = buf.st_size/4-1;
-    if (count<0) ret = 0;
+    count = (buf.st_size-4)/sizeof(struct msghead);
+    if (buf.st_size<=0) ret = 0;
     else {
         read(fd, &ret, 4);
         if(ret >= count) ret = 0;
@@ -449,26 +443,20 @@ int get_unreadcount(char *uident)
     return ret;
 }
 
-int load_msgtext(int id, char *uident, int index, char *msgbuf)
+int load_msghead(int id, char *uident, int index, struct msghead *head)
 {
-    char fname[STRLEN], fname2[STRLEN];
-    int fd, fd2, i, j, count, size, now, next;
+    char fname[STRLEN];
+    int fd, i, j, count, now, next;
     struct flock ldata;
     struct stat buf;
 
     if(id) sethomefile(fname, uident, "msgindex2");
     else sethomefile(fname, uident, "msgindex");
-    sethomefile(fname2, uident, "msgcontent");
 
     msgbuf[0] = 0;
 
     if ((fd = open(fname, O_RDONLY, 0664)) == -1) {
         bbslog("user", "%s", "msgopen err");
-        return -1;              /* ´´½¨ÎÄ¼þ·¢Éú´íÎó*/
-    }
-    if ((fd2 = open(fname2, O_RDONLY, 0664)) == -1) {
-        bbslog("user", "%s", "msgopen err");
-        close(fd);
         return -1;              /* ´´½¨ÎÄ¼þ·¢Éú´íÎó*/
     }
     ldata.l_type = F_RDLCK;
@@ -477,36 +465,47 @@ int load_msgtext(int id, char *uident, int index, char *msgbuf)
     ldata.l_start = 0;
     if (fcntl(fd, F_SETLKW, &ldata) == -1) {
         bbslog("user", "%s", "msglock err");
-        close(fd2);
         close(fd);
         return -1;              /* lock error*/
     }
-    fstat(fd2, &buf);
-    size = buf.st_size;
     fstat(fd, &buf);
-    count = buf.st_size/4-1;
+    count = (buf.st_size-4)/sizeof(struct msghead);
     if(index<0||index>=count) {
-        close(fd2);
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
         return -1;
     }
-    lseek(fd, (index+1)*4, SEEK_SET);
-    read(fd, &now, 4);
-    if (index<count-1)
-        read(fd, &next, 4);
-    else
-        next = size;
-    lseek(fd2, now, SEEK_SET);
-    if(next-now > MAX_MSG_SIZE+100) next=now+MAX_MSG_SIZE+100-1;
-    read(fd2, msgbuf, next-now);
-    msgbuf[next-now-1] = 0;
+    lseek(fd, index*sizeof(struct msghead)+4, SEEK_SET);
+    read(fd, head, sizeof(struct msghead));
 
-    close(fd2);
     ldata.l_type = F_UNLCK;
     fcntl(fd, F_SETLKW, &ldata);
     close(fd);
+    return 0;
+}
+
+int load_msgtext(char *uident, struct msghead *head, char *msgbuf)
+{
+    char fname2[STRLEN];
+    int fd2, i, j;
+
+    sethomefile(fname2, uident, "msgcontent");
+
+    msgbuf[0] = 0;
+
+    if ((fd2 = open(fname2, O_RDONLY, 0664)) == -1) {
+        bbslog("user", "%s", "msgopen err");
+        close(fd);
+        return -1;              /* ´´½¨ÎÄ¼þ·¢Éú´íÎó*/
+    }
+    lseek(fd2, head->pos, SEEK_SET);
+    i = head->len;
+    if(i >= MAX_MSG_SIZE) i=MAX_MSG_SIZE-1;
+    read(fd2, msgbuf, i);
+    msgbuf[i] = 0;
+
+    close(fd2);
     return 0;
 }
 
@@ -516,7 +515,8 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
     FILE *fp;
     time_t now;
     struct user_info *uin;
-    char buf[80], msgbuf[MAX_MSG_SIZE+100], *timestr, msgbak[MAX_MSG_SIZE+100];
+    char buf[80], *timestr;
+    struct msghead head, head2;
     int msg_count = 0;
 
     *msgbak = 0;
@@ -548,12 +548,19 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
     if (msgstr == NULL) {
         return 0;
     }
-    now = time(0);
-    timestr = ctime(&now) + 11;
-    *(timestr + 8) = '\0';
-    sprintf(msgbuf, "0%d%-12.12s%-5.5s%-10.10d%-10.10d%s", mode, currentuser->userid, timestr, getuinfopid() , uin->pid, msgstr);
-    if(mode!=3&&mode!=5)
-        sprintf(msgbak, "1%d%-12.12s%-5.5s%-10.10d%-10.10d%s", mode, uident, timestr, getuinfopid() , uin->pid, msgstr);
+    head.time = time(0);
+    head.sent = 0;
+    head.mode = mode;
+    strncpy(head.id, currentuser->userid, IDLEN);
+    head.frompid = getuinfopid();
+    head.topid = uin->pid;
+    memcpy(&head2, &head, sizeof(struct msghead));
+    head2.sent = 1;
+    strncpy(head2.id, uident, IDLEN);
+    
+//    now = time(0);
+//    timestr = ctime(&now) + 11;
+//    *(timestr + 8) = '\0';
 #ifdef BBSMAIN
     if (uin->mode == WEBEXPLORE) {
         if (send_webmsg(get_utmpent_num(uin), uident, utmpent, currentuser->userid, msgbuf) < 0) {
@@ -578,10 +585,10 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
         return -1;
     }
 
-    if (save_msgtext(uident, msgbuf) < 0)
+    if (save_msgtext(uident, &head, msgbuf) < 0)
         return -2;
     if (strcmp(currentuser->userid, uident)) {
-        if (save_msgtext(currentuser->userid, msgbak) < 0)
+        if (save_msgtext(currentuser->userid, &head2, msgbak) < 0)
             return -2;
     }
     if (uentp->pid != 1 && kill(uin->pid, SIGUSR2) == -1) {
@@ -591,46 +598,43 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
     return 1;
 }
 
-int translate_msg(char* src, char* dest)
+int translate_msg(char* src, struct msghead *head, char* dest)
 {
-    char id[14], time[8], msg[MAX_MSG_SIZE];
+    char id[14], *time;
     int i,j=0,len,pos,space, ret=0;
-    memcpy(id, src+2, 12);
-    id[12] = 0;
-    memcpy(time, src+14, 5);
-    time[5] = 0;
-    strncpy(msg, src+39, MAX_MSG_SIZE);
+    time = ctime(&head->time)+11;
+    time[8] = 0;
     dest[0] = 0;
     space=22;
-    switch(src[1]) {
+    switch(head->mode) {
         case '0':
         case '2':
         case '4':
-            if(src[0]=='0')
-                sprintf(dest, "[44m\x1b[36m%-14.14s[33m(%-5.5s):[37m", id, time);
+            if(!head->sent)
+                sprintf(dest, "[44m\x1b[36m%-14.14s[33m(%-5.5s):[37m", head->id, time);
             else
-                sprintf(dest, "[44m\x1b[0;1;32m=>[37m%-12.12s[33m(%-5.5s):[36m", id, time);
+                sprintf(dest, "[44m\x1b[0;1;32m=>[37m%-12.12s[33m(%-5.5s):[36m", head->id, time);
             break;
         case '3':
             sprintf(dest, "[44m\x1b[33mÕ¾³¤ÓÚ %6.6s Ê±¹ã²¥£º[37m", time);
             break;
         case '1':
-            if(src[0]=='0')
-                sprintf(dest, "[44m\x1b[36m%-12.12s(%-5.5s) ÑûÇëÄã[37m", id, time);
+            if(!head->sent)
+                sprintf(dest, "[44m\x1b[36m%-12.12s(%-5.5s) ÑûÇëÄã[37m", head->id, time);
             else
-                sprintf(dest, "[44m\x1b[37mÄã(%-5.5s) ÑûÇë%-12.12s[36m", time, id);
+                sprintf(dest, "[44m\x1b[37mÄã(%-5.5s) ÑûÇë%-12.12s[36m", time, head->id);
             space=26;
             break;
         case '5':
-            sprintf(dest, "[45m\x1b[36m%-14.14s\x1b[33m(\x1b[36m%-5.5s\x1b[33m):\x1b[37m", id, time);
+            sprintf(dest, "[45m\x1b[36m%-14.14s\x1b[33m(\x1b[36m%-5.5s\x1b[33m):\x1b[37m", head->id, time);
             space=22;
             break;
     }
     len = strlen(dest);
     pos = space;
-    for(i=0;i<strlen(msg);i++){
+    for(i=0;i<strlen(src);i++){
         if(j) j=0;
-        else if(msg[i]<0) j=1;
+        else if(src[i]<0) j=1;
         if(j==0&&pos>=78||j==1&&pos>=77) {
             for(;pos<78;pos++)
                 dest[len++]=' ';
@@ -639,12 +643,15 @@ int translate_msg(char* src, char* dest)
             for(pos=0;pos<space;pos++)
                 dest[len++]=' ';
         }
-        dest[len++]=msg[i];
+        dest[len++]=src[i];
         pos++;
     }
     for(;pos<78;pos++)
         dest[len++]=' ';
     dest[len++]='\n';
+    dest[len++]='';
+    dest[len++]='[';
+    dest[len++]='m';
     dest[len]=0;
     return ret+1;
 }
