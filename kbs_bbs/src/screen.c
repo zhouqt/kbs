@@ -48,6 +48,7 @@ int             inansi=NA;
 int tc_col, tc_line ;
 struct screenline *big_picture = NULL ;
 static const char nullstr[] = "(null)" ;
+static /*struct screenline old_line;*/char tmpbuffer[256];
 
 int
 num_noans_chr(str)
@@ -739,7 +740,6 @@ int line, mode;
 char *buffer;
 {
     register struct screenline *bp = big_picture ;
-    static /*struct screenline old_line;*/char tmpbuffer[256];
     char *tmp=tmpbuffer;
     int x,y;
     if (buffer) tmp=buffer;
