@@ -336,7 +336,7 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 			"USER" => $rows[username],
 			"UID" => $rows[uid],
 			"DESC" => html_format($rows[description]),
-			"THEM" => html_format($rows[theme]),
+			"THEM" => $pcThem,
 			"TIME" => $rows[createtime],
 			"VISIT" => $rows[visitcount],
 			"CREATED" => $rows[createtime],
@@ -444,7 +444,7 @@ function pc_blog_menu($link,$uid,$tag=9)
 	mysql_free_result($result);
 	$blog[$i] = array(
 			"TID" => 0,
-			"NAME" => "未归类",
+			"NAME" => "其他类别",
 			"SEQ" => 0,
 			"TAG" => 9
 			);
@@ -570,4 +570,24 @@ function pc_get_user_permission($currentuser,$pc)
 		"sec" => $sec  
 		);
 }
+
+function pc_select_blogtheme($theme,$themeValue="pcthem")
+{
+	global $pcconfig;
+?>
+<select name="<?php echo $themeValue; ?>" class="f1">
+<?php
+	reset($pcconfig["SECTION"]);
+	while( list($sec , $secName) = each($pcconfig["SECTION"]) )
+	{
+		if($theme[0] == $sec)
+			echo "<option value=\"".htmlspecialchars($sec)."\" selected>".htmlspecialchars($secName)."</option>";
+		else
+			echo "<option value=\"".htmlspecialchars($sec)."\">".htmlspecialchars($secName)."</option>";
+	}	
+?>
+</select>
+<?php
+}
+
 ?>

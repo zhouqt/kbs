@@ -125,17 +125,21 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 			"<tr><td class=\"".$cellclass[0]."\"><img src=\"icon/".$nodes[$i][emote].".gif\" border=0 align=absmiddle>\n".
 			"<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\" class=f2>".html_format($nodes[$i][subject])."</a></td>".
 			"<td align=right class=\"".$cellclass[1]."\">&nbsp;</td>".
-			"</tr><tr><td colspan=2 class=\"".$cellclass[1]."\"><font class='".$contentcss."'>";
+			"</tr>";
 			if($pc["INDEX"]["nodeChars"]==0)
-				echo html_format($nodes[$i][body],TRUE,$nodes[$i][htmltag]);
+				echo "<tr><td colspan=2 class=\"".$cellclass[1]."\"><font class='".$contentcss."'>".
+				     html_format($nodes[$i][body],TRUE,$nodes[$i][htmltag]).
+				     "</font></td></tr>\n";
 			else
 			{
-				echo html_format(substr($nodes[$i][body],0,$pc["INDEX"]["nodeChars"])." ",TRUE,$nodes[$i][htmltag]); 
+				echo "<tr><td colspan=2 class=\"".$cellclass[1]."\"><font class='".$contentcss."'>".
+				     html_format(substr($nodes[$i][body],0,$pc["INDEX"]["nodeChars"])." ",TRUE,$nodes[$i][htmltag]); 
                         	if (strlen($nodes[$i][body])>$pc["INDEX"]["nodeChars"]) 
-                        		echo " ......<br class=\"\" /><A href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\">阅读全文</A>"; 
+                        		echo " <br class=\"\" /> ......<br class=\"\" /><br class=\"\" />".
+                        		     "<strong><A href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\">>> 阅读全文</A></strong>".
+                        		     "</font></td></tr>\n";; 
                         }
-                        echo "</font></td></tr>\n". 
-			"<tr><td colspan=2 class=\"".$cellclass[2]."\"><font class=\"f7\">\n&nbsp; <a href=\"/bbsqry.php?userid=".$pc["USER"]."\">".$pc["USER"]."</a> 发布于 ".time_format($nodes[$i][created]).
+                        echo "<tr><td colspan=2 class=\"".$cellclass[2]."\"><font class=\"f7\">\n&nbsp; <a href=\"/bbsqry.php?userid=".$pc["USER"]."\">".$pc["USER"]."</a> 发布于 ".time_format($nodes[$i][created]).
 			"\n|\n浏览[".$nodes[$i][visitcount]."]".
 			"\n|\n<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\">评论[".$nodes[$i][commentcount]."]</a>";
 			if($nodes[$i][trackback])
@@ -246,12 +250,12 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 				else
 				{
 ?>
-<form action="/bbslogin.php?mainurl=<?php echo urlencode($_SERVER["REQUEST_URI"]); ?>" method="post" name="form1" target="_top" >
+<form action="/bbslogin.php?mainurl=/pc/index.php?id=<?php echo $pc["USER"]; ?>" method="post" name="form1" target="_top" >
 <tr><td class="t4">
-UserName:
+用户名:
 <INPUT TYPE=text class="f1" size="12" onMouseOver="this.focus()" onFocus="this.select()" name="id" >
 <br>
-PassWord:
+密&nbsp;&nbsp;码:
 <INPUT TYPE=password  class="f1" size="12" name="passwd" maxlength="39">
 <br>
 <INPUT TYPE=submit value="Login" class="f1"></form>
@@ -284,7 +288,7 @@ PassWord:
 ?>
 			<ul>
 <?php
-		for($i=0;$i<( count($blogs) - 1);$i++)
+		for($i=0;$i<( count($blogs));$i++)
 		{
 			echo "<li><a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=0&tid=".$blogs[$i]["TID"]."\">".html_format($blogs[$i]["NAME"])."</a></li>\n";	
 			

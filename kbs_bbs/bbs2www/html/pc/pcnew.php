@@ -88,13 +88,16 @@
 	</tr>
 <?php
 		for($i=0;$i < $newNum;$i++)
+		{
 			echo "<tr>\n<td class=t4><a href='/bbsqry.php?userid=".$newBlogs[useretems][$i][pc][USER]."'>".$newBlogs[useretems][$i][pc][USER]."</a></td>\n".
 				"<td class=t3><span title=\"".$newBlogs[useretems][$i][pc][DESC]."\"><a href=\"index.php?id=".$newBlogs[useretems][$i][pc][USER]."\">".$newBlogs[useretems][$i][pc][NAME]."</a>&nbsp;</span></td>\n".
-				"<td class=t4>".$newBlogs[useretems][$i][pc][THEM]."&nbsp;</td>\n".
+				"<td class=t4><span title=\"点击查看该分类的其它Blog信息\"><a href=\"pcsec.php?sec=".html_format($newBlogs[useretems][$i][pc][THEM][0])."\">".
+				$pcconfig["SECTION"][$newBlogs[useretems][$i][pc][THEM][0]]."</a></span></td>\n".
 				"<td class=t3>".$newBlogs[useretems][$i][pc][VISIT]."</td>\n".
 				"<td class=t4>".$newBlogs[useretems][$i][pc][NODES]."</td>\n".
 				"<td class=t8><a href='pccon.php?id=".$newBlogs[useretems][$i][pc][UID]."&tid=".$newBlogs[useretems][$i][tid]."&nid=".$newBlogs[useretems][$i][nid]."&s=all'>".$newBlogs[useretems][$i][title]."</a>&nbsp;</td>\n".
 				"<td class=t4>".$newBlogs[useretems][$i][created]."</td>\n</tr>\n";
+		}
 	}
 	else
 	{

@@ -64,9 +64,9 @@
 				$rootpid = 0;
 			
 			if($act == "cut" && $target == 3)
-				$query = "UPDATE nodes SET `access` = '".$target."' , `changed` = '".date("YmdHis")."' , `pid` = '".$rootpid."', `tid` = 0 WHERE `uid` = '".$pc["UID"]."' AND ( `nid` = '0' ";
+				$query = "UPDATE nodes SET created = created `access` = '".$target."' , `changed` = '".date("YmdHis")."' , `pid` = '".$rootpid."', `tid` = 0 WHERE `uid` = '".$pc["UID"]."' AND ( `nid` = '0' ";
 			elseif($act == "cut")
-				$query = "UPDATE nodes SET `access` = '".$target."' , `changed` = '".date("YmdHis")."' , `pid` = '0' , `tid` = 0 WHERE `uid` = '".$pc["UID"]."' AND `type` = 0  AND ( `nid` = '0' ";
+				$query = "UPDATE nodes SET created = created `access` = '".$target."' , `changed` = '".date("YmdHis")."' , `pid` = '0' , `tid` = 0 WHERE `uid` = '".$pc["UID"]."' AND `type` = 0  AND ( `nid` = '0' ";
 			else
 				$query = "SELECT * FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `type` = 0 AND ( `nid` = '0' ";
 			
@@ -217,6 +217,19 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			}
 			else
 			{
+				//默认发表在该分区的当前目录下 windinsn feb 22 , 2004
+				$tid = (int)($_GET["tid"]);
+				if($tid)
+				{
+					$query = "SELECT tid FROM topics WHERE tid = ".$tid." AND uid = ".$pc["UID"]." AND access = ".$tag." LIMIT 0 , 1;";
+					$result = mysql_query($query,$link);
+					if(!$rows = mysql_fetch_array($result))
+					{
+						html_error_quit("所指定的分类不存在，请重试!");
+						exit();
+					}
+					mysql_free_result($result);
+				}
 ?>
 <br><center>
 <form name="postform" action="pcmanage.php?act=post&<?php echo "tag=".$tag."&pid=".$pid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
@@ -243,7 +256,12 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 <?php
 		$blogs = pc_blog_menu($link,$pc["UID"],$tag);
 		for($i = 0 ; $i < count($blogs) ; $i ++)
-			echo "<option value=\"".$blogs[$i]["TID"]."\">".html_format($blogs[$i]["NAME"])."</option>";
+		{
+			if($blogs[$i]["TID"] == $tid )
+				echo "<option value=\"".$blogs[$i]["TID"]."\" selected>".html_format($blogs[$i]["NAME"])."</option>";
+			else
+				echo "<option value=\"".$blogs[$i]["TID"]."\">".html_format($blogs[$i]["NAME"])."</option>";
+		}
 ?>
 	</select>
 	</td>

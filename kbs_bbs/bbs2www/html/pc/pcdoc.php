@@ -37,14 +37,14 @@
 <?php		
 	}
 	
-	function display_action_bar($tag,$pid=0)
+	function display_action_bar($tag,$tid=0,$pid=0)
 	{
 		global $sec;
 ?>
 <table cellspacing="0" cellpadding="5" border="0" width="95%" class="b2">
 <tr>
 <td>
-<a href="pcmanage.php?act=post&<?php echo "tag=".$tag."&pid=".$pid; ?>">
+<a href="pcmanage.php?act=post&<?php echo "tag=".$tag."&pid=".$pid."&tid=".$tid; ?>">
 <img src="images/post.gif" border="0" alt="发表文章">
 </a>
 </td>
@@ -215,7 +215,7 @@
 </table>
 <?php
 		if($pur > 2)
-			display_action_bar($tag);
+			display_action_bar($tag,$tid);
 ?>
 </form>
 <?php		
@@ -403,7 +403,7 @@
 		}
 		if( $pur > 2 )
 		{
-			display_action_bar(3,$pid);			
+			display_action_bar(3,0,$pid);			
 ?>
 </form>
 <?php
@@ -554,7 +554,7 @@ Blog名
 <tr>
 	<td class="t3">Blog主题</td>
 	<td class="t5">&nbsp;
-	<input type="text" maxlength="20" name="pcthem" value="<?php echo $pc["THEM"]; ?>" class="f1">
+	<?php pc_select_blogtheme($pc["THEM"]); ?>
 	[<a href="pcsec.php?act=list">查看本站可用的主题</a>]
 	</td>
 </tr>

@@ -15,13 +15,13 @@
 	}
 	else
 	{
-		pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog","","","",TRUE);		
 		$act = $_GET["act"];
 		$cid = (int)($_GET["cid"]);
 		
 		$link =	pc_db_connect();
 		if($act == "del")
 		{
+			pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
 			$query = "SELECT `username` , `uid` ,`nid` FROM comments WHERE `cid` = '".$cid."' LIMIT 0 , 1 ;";
 			$result = mysql_query($query);
 			$rows = mysql_fetch_array($result);
@@ -60,9 +60,15 @@
 			mysql_free_result($result);
 			if(!$rows)
 			{
+				pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
 				html_error_quit("所选择的评论不存在!");
 				exit();
 			}
+			//判定评论文章是否用了编辑器，根据情况调入 windinsn feb 22 , 2004
+			if($rows[htmltag])
+				pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog","","","",TRUE);		
+			else
+				pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
 ?>
 <br><center>
 <form name="postform" action="pceditcom.php?act=edit2&cid=<?php echo $cid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入评论主题!');return false;}">
@@ -84,12 +90,14 @@
 </tr>
 <tr>
 	<td class="t11">
-	<input type="checkbox" name="htmltag" value=1 <?php if(strstr($rows[body],$pcconfig["NOWRAPSTR"]) || $rows[htmltag] == 1) echo "checked"; ?> >使用HTML标记
+	<input type="checkbox" name="htmltag" value=1 <?php if(strstr($rows[body],$pcconfig["NOWRAPSTR"]) || $rows[htmltag] ) echo "checked"; ?> >使用HTML标记
 	</td>
 </tr>
 <tr>
 	<td class="t8"><textarea name="blogbody" class="f1" cols="100" rows="20" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
-	<?php echo $pcconfig["EDITORALERT"]; ?>
+	<?php
+		if($rows[htmltag]) echo $pcconfig["EDITORALERT"];
+	?>
 	<?php echo htmlspecialchars(stripslashes($rows[body]." ")); ?>
 	</textarea></td>
 </tr>
