@@ -155,6 +155,81 @@ int ismonday()
      return tm -> tm_wday == 1;
 }
 
+int getrequest(int m_socket)
+{
+        int len;
+        struct sockaddr_in sin;
+        int s;
+        for (s = accept(m_socket,&sin,&len);;s = accept(m_socket,&sin,&len)) {
+                if (s<=0) exit(-1);
+                memset(tmpbuf,0,255);
+                len = read(s,tmpbuf,255);
+                if (len<=0) {close (s) ;continue;}
+                strtok(tmpbuf," ");
+                username = strtok(NULL," ");
+                if (strcmp(tmdbuf,"QUIT")==0) exit(0);
+                if (strcmp(tmdbuf,"NEW") == 0) break;
+                close(s);
+        }
+        return s;
+}
+
+void putrequest(int sock,int id)
+{
+        write(sock,&id,sizeof(id));
+        close(sock);
+}
+
+void userd()
+{
+    int m_socket;
+    char *username;
+
+    struct sockaddr_in sin;
+    int sinlen = sizeof(sin);
+    int opt=1;
+    if (( m_socket = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP))<0) {
+    	log("3system","userd:socket %s",strerror(errno));
+    	exit(-1);
+    }
+    setsockopt(m_socket,SOL_SOCKET,SO_REUSEADDR,&opt,4);
+    sin.sin_family = AF_INET;
+    sin.sin_port = htons(60000);
+    inet_aton("127.0.0.1",&sin.sin_addr);
+    if  (0!=bind(m_socket,(struct sockaddr *)&sin,sizeof(sin))) {
+    	log("3system","userd:bind %s",strerror(errno));
+    	exit(-1);
+    }
+    if (0!=listen(m_socket,5)) {
+    	log("3system","userd:listen %s",strerror(errno));
+    	exit(-1);
+    }
+    while (1) {
+        sock = getrequest();
+        id = getnewuserid(username);
+        putrequest(sock,id);
+    }
+    return;
+}
+
+void flushd()
+{
+    struct sigaction act;
+
+    atexit(do_exit);
+    bzero(&act,sizeof(act));
+    act.sa_handler = do_exit_sig;
+    sigaction(SIGTERM,&act,NULL);
+    sigaction(SIGHUP,&act,NULL);
+    sigaction(SIGABRT,&act,NULL);
+
+    while (1) {
+        sleep(2*60*60);
+      	 flush_ucache();
+        log("4miscdaemon","flush passwd file");
+    };
+}
+
 static void
 reaper()
 {
@@ -224,18 +299,8 @@ int dodaemon()
     	 }
      };
      default:
-        atexit(do_exit);
-        bzero(&act,sizeof(act));
-        act.sa_handler = do_exit_sig;
-        sigaction(SIGTERM,&act,NULL);
-        sigaction(SIGHUP,&act,NULL);
-        sigaction(SIGABRT,&act,NULL);
-
-        while (1) {
-         sleep(2*60*60);
-       	 flush_ucache();
-         log("4miscdaemon","flush passwd file");
-        };
+        if (fork()) userd();
+        else flushd();
     }
 }
 int main (int argc,char *argv[])
