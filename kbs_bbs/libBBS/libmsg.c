@@ -762,8 +762,8 @@ int wait_for_result()
     FILE* fp;
     int i;
     signal(SIGUSR1, SMS_request);
-	gettmpfilename( fn, "sms.res");
-    //sprintf(fn, "tmp/%d.res", smsuin->pid);
+//	gettmpfilename( fn, "sms.res");
+    sprintf(fn, "tmp/%d.res", smsuin->pid);
     unlink(fn);
     smsresult = 0;
     head->sem=0;
