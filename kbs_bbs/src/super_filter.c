@@ -341,6 +341,7 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
     libs = (char*)malloc(LIBLEN);
     for (i = 0; i < total; i++) {
         int fd3;
+        int j;
         char* p;
         size_t fsize;
         libptr = libs;
@@ -373,20 +374,8 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
             char ffn[80];
             setbfile(ffn, currboard, ptr1->filename);
             set_vars(fvars+fget_var("content"), ptr1->filename);
-            fd3 = open(ffn, O_RDONLY, 0664);
-            if(fd3!=-1) {
-                int j;
-                j = safe_mmapfile_handle(fd3, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize);
-                if(j==2) {
-                    end_mmapfile((void*)p, fsize, -1);
-                    close(fd3);
-                    fd3=-1;
-                }
-                else if(j==0) {
-                    set_vars(fvars+fget_var("content"), p);
-                }
-                else fd3=-1;
-            }
+            j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize, NULL);
+            if(j) set_vars(fvars+fget_var("content"), p);
         }
         ferr=0;
         feval(fvars+fget_var("res"), index, 0, strlen(index)-1);
@@ -397,9 +386,8 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
             found++;
         }
         if(load_content) {
-            if(fd3!=-1) {
+            if(j)
                 end_mmapfile((void*)p, fsize, -1);
-            }
         }
         ptr1++;
     }
