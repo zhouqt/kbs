@@ -982,7 +982,7 @@ static int room_list_refresh(struct _select_def *conf)
     docmdtitle("[ÓÎÏ·ÊÒÑ¡µ¥]",
               "  ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ½øÈë[\x1b[1;32mEnter\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ý\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ¼ÓÈë[\x1b[1;32mJ\x1b[0;37m] \x1b[m");
     move(2, 0);
-    prints("[0;1;37;44m    %4s %-14s %-12s %4s %4s %4s %4s %20s", "±àºÅ", "ÓÎÏ·ÊÒÃû³Æ", "´´½¨Õß", "ÀàÐÍ", "ÈËÊý", "×î¶à", "Ëø¶¨", "»°Ìâ");
+    prints("[0;1;37;44m    %4s %-14s %-12s %4s %4s %4s %4s %-20s", "±àºÅ", "ÓÎÏ·ÊÒÃû³Æ", "´´½¨Õß", "ÀàÐÍ", "ÈËÊý", "×î¶à", "Ëø¶¨", "»°Ìâ");
     clrtoeol();
     resetcolor();
     update_endline();
@@ -992,10 +992,10 @@ static int room_list_refresh(struct _select_def *conf)
 static int room_list_show(struct _select_def *conf, int i)
 {
     struct room_struct * r = room_get(i-1);
-    int i;
+    int j;
     if(r) {
-        i=load_inroom(r);
-        prints("  %3d  %-14s %-12s %4s %3d  %3d   %2s %20s", i, r->name, r->creator, "É±ÈË", r->people, r->maxpeople, (r->flag&ROOM_LOCKED)?"ÊÇ":"·ñ", (i==-1)?"":inrooms.title);
+        j=load_inroom(r);
+        prints("  %3d  %-14s %-12s %4s %3d  %3d   %2s  %-20s", i, r->name, r->creator, "É±ÈË", r->people, r->maxpeople, (r->flag&ROOM_LOCKED)?"ÊÇ":"·ñ", (j==-1)?"":inrooms.title);
     }
     return SHOW_CONTINUE;
 }
