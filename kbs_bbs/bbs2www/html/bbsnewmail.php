@@ -14,7 +14,7 @@ login_init();
 		$mail_fullpath = bbs_setmailfile($currentuser["userid"],".DIR");
 		$mail_num = bbs_getmailnum2($mail_fullpath);
 
-		if($mail_num < 0 || $mail_num > 30000)http_error_quit("Too many mails!");
+		if($mail_num < 0 || $mail_num > 30000)html_error_quit("Too many mails!");
 
 		$maildata = bbs_getmails($mail_fullpath,0,$mail_num);
 		if ($maildata == FALSE)
