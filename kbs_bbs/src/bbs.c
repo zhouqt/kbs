@@ -4802,7 +4802,7 @@ static int choose_tmpl_post(char * title, char *fname){
 					}
 				}else{
 					int ti;
-					for( ti=0; tmp[l-1][ti]!='\0' && newl < STRLEN - 1; ti++, newl++ ){
+					for( ti=0; tmp[l-1][ti]!='\0' && tmp[l-1][ti]!='\n' && tmp[l-1][ti]!='\r' && newl < STRLEN - 1; ti++, newl++ ){
 						newtitle[newl] = tmp[l-1][ti] ;
 						newtitle[newl+1]='\0';
 					}
