@@ -27,7 +27,7 @@ int dict_main()
         return;
     }
     while (1) {
-    char* table;
+    char table[8];
     move(2,0);
     getdata(2, 0, "«Î ‰»Îµ•¥ :  ", word, 70, true, NULL, true);
     clear();
@@ -35,9 +35,9 @@ int dict_main()
     if (word[0]==0) break;
     if (strchr(word,'\'')) break;
     if (word[0]&0x80)
-        table="cedict";
+        strcpy(table, "cedict");
     else
-        table="ecdict";
+        strcpy(table, "ecdict");
 #ifdef SMTH
     if (!HAS_PERM(currentuser,PERM_SYSOP))
         sprintf(sql, "SELECT * FROM %s WHERE word='%s' and dictid=0", table, word);

@@ -1,15 +1,6 @@
 #define BBSMAIN
 #include "bbs.h"
 
-#define BLACK 0
-#define RED 1
-#define GREEN 2
-#define YELLOW 3
-#define BLUE 4
-#define PINK 5
-#define CYAN 6
-#define WHITE 7
-
 #define TOTALNUM 20
 #define FRIENDTOP ".FRIENDTOP"
 #define BADLIST ".FRIENDBADLIST"
@@ -48,25 +39,6 @@ void sethometop(char* s, char* id)
 void sethomestat(char* s, char* id)
 {
     sprintf(s, "home/%c/%s/.FRIENDSTAT", toupper(id[0]), id);
-}
-
-void setfcolor(int i,int j)
-{
-    char buf[30];
-    sprintf(buf, "\033[%d;%dm",i+30,j);
-    prints(buf);
-}
-
-void setbcolor(int i)
-{
-    char buf[30];
-    sprintf(buf, "\033[%d;%dm",i+40);
-    prints(buf);
-}
-
-void resetcolor()
-{
-    prints("\033[27;40;0m");
 }
 
 void load_users(char* filename)
