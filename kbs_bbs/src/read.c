@@ -25,13 +25,6 @@
 
 #define PUTCURS   move(3+locmem->crs_line-locmem->top_line,0);prints(">");
 #define RMVCURS   move(3+locmem->crs_line-locmem->top_line,0);prints(" ");
-static sigjmp_buf bus_jump;
-
-
-static void sigbus(int signo)
-{
-  siglongjmp(bus_jump,1);
-};
 
 struct fileheader SR_fptr;
 int SR_BMDELFLAG=NA;

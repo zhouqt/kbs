@@ -28,13 +28,6 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 
-static sigjmp_buf bus_jump;
-
-static void sigbus(int signo)
-{
-  siglongjmp(bus_jump,1);
-};
-
 #ifdef SYSV
 int
 flock(fd, op)
@@ -234,6 +227,8 @@ apply_record(char *filename ,int (*fptr)(char*,char*) ,int size ,char* arg)
             if ((*fptr)(buf2,arg) == QUIT) {
     		munmap(buf,stat.st_size);
     		close(fd);
+    		signal(SIGBUS,SIG_IGN);
+    		signal(SIGSEGV,SIG_IGN);
     		return QUIT;
             }
     	}
@@ -488,6 +483,7 @@ int size, id ;
     return 0 ;
 }
 
+/*
 void
 tmpfilename( filename, tmpfile, deleted )
 char    *filename, *tmpfile, *deleted;
@@ -496,7 +492,7 @@ char    *filename, *tmpfile, *deleted;
 
     strcpy( tmpfile, filename );
 #ifdef BBSMAIN
-    if (YEA == checkreadonly(currboard))/*Haohmaru 2000.3.19*/
+    if (YEA == checkreadonly(currboard))
     {
         sprintf(delfname,".%sdeleted",currboard);
         sprintf(tmpfname,".%stmpfile",currboard);
@@ -517,8 +513,6 @@ char    *filename, *tmpfile, *deleted;
         sprintf(tmpfname , ".tmpfile%d",getpid());
     }
 
-    /*    if( (ptr = strchr( tmpfile, '/' )) != NULL ) {
-     changed by alex , 97.5.2 , 修正不能删除friends的bug */ 
     if( (ptr = strrchr( tmpfile, '/' )) != NULL ) {
         strcpy( ptr+1, delfname );
         strcpy( deleted, tmpfile );
@@ -528,12 +522,45 @@ char    *filename, *tmpfile, *deleted;
         strcpy( tmpfile, tmpfname );
     }
 }
+*/
 
 int
 delete_record(filename,size,id)
 char *filename ;
 int size, id ;
 {
+    int fdr;
+    char* ptr;
+    struct stat st;
+    int ret;
+    if((fdr = open(filename,O_RDWR,0)) == -1) {
+        return -2;
+    }
+
+    flock(fdr,LOCK_EX);
+    if (-1==fstat(fdr,&st)) {
+    	close(fdr);
+    	return -2;
+    }
+    if (id*size>=st.st_size) {
+    	ptr = (char*) mmap(size*(id-1), st.size-size*(id-1),
+    	              PROT_READ|PROT_WRITE,MAP_SHARED,fdr,0);
+    } else {
+        close(fdr);
+        return -3;
+    };
+    if (!sigsetjmp(bus_jump,1)) {
+	signal(SIGBUS,sigbus);
+	signal(SIGSEGV,sigbus);
+	memcpy(ptr,ptr+size,st.size-size*id);
+    } else
+    	ret=-3;
+    munmap(ptr,st.st_size);  
+    close(fdr);
+    signal(SIGBUS,SIG_IGN);
+    signal(SIGSEGV,SIG_IGN);
+    return ret;
+/*
     char        tmpfile[ STRLEN ], deleted[ STRLEN ], lockfile[256];
     char        abuf[BUFSIZE] ;
     int         fdr, fdw, fd ;
@@ -543,21 +570,8 @@ int size, id ;
         toobigmesg();
         return -1;
     }
-/*
-#ifdef DEBUG
-    {
-    	char * ptr;
-	strcpy(lockfile, filename);
-	if(NULL != (ptr = strchr(lockfile, '/'))) *(ptr+1) = 0;
-	else *lockfile = 0;
-	strcat(lockfile, ".dellock");
-    }
-    if((fd = open(lockfile,O_RDWR|O_CREAT|O_APPEND, 0644)) == -1)
-        return -1 ;
-#else*/
     if((fd = open(".dellock",O_RDWR|O_CREAT|O_APPEND, 0644)) == -1)
         return -1 ;
-/*#endif DEBUG*/
     flock(fd,LOCK_EX) ;
     tmpfilename( filename, tmpfile, deleted );
 
@@ -597,6 +611,7 @@ int size, id ;
     flock(fd,LOCK_UN) ;
     close(fd) ;
     return 0 ;
+*/
 }
 
 int

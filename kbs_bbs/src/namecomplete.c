@@ -374,6 +374,7 @@ char *prompt, *data ;
         char    ch;
         struct userec* lookupuser;
 
+/* 大量内存临时占用 KCN*/
         cwbuf = malloc( MAXUSERS* (IDLEN+1) );
         if( prompt != NULL ) {
             prints( "%s", prompt );
