@@ -11,7 +11,12 @@ int dict_main()
 
     clear();
     mysql_init(&s);
-    if (!mysql_real_connect(&s, "166.111.8.235", "smth", "3s4m5t9h", "dict", 9527, 0, 0)) {
+    if (!mysql_real_connect(&s, 
+                            sysconf_str("MYSQLHOST"),
+                            sysconf_str("MYSQLUSER"),
+			    sysconf_str("MYSQLPASSWORD"),
+			    sysconf_str("MYSQLDATABASE"),
+			    sysconf_eval("MYSQLPORT",1521), 0, 0)) {
         prints("%s\n", mysql_error(&s));
         pressanykey();
         return;
