@@ -350,7 +350,7 @@ char *ModeType(mode)
 
 int multilogin_user(struct userec *user, int usernum)
 {
-    return 1;
+    return 0;
 }
 
 #endif
