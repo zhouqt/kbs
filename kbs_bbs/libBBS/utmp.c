@@ -137,15 +137,15 @@ int sendutmpreq(struct requesthdr *req)
         close(m_socket);
         return -1;
 }
-
+#if 0
 int getnewutmpent(struct user_info *up){
 	utmpreq.command = 1;
 	memcpy(&utmpreq.u_info.utmp,up,sizeof(*up));
 	/* connect and send request */
 	return sendutmpreq(&utmpreq);
 }
-#if 0
-int real_getnewutmpent(struct user_info *up)
+#endif
+int getnewutmpent(struct user_info *up)
 {
     struct user_info    *uentp;
     time_t      now;
@@ -239,7 +239,6 @@ int real_getnewutmpent(struct user_info *up)
     utmp_unlock(utmpfd);
     return pos+1 ;
 }
-#endif 
 /* same as getnewutmpent() except no updating of utmpshm 
  * only called in www
  */
@@ -451,6 +450,7 @@ void clear_utmp2(struct user_info* uentp)
 	clear_utmp((uentp-utmpshm->uinfo)+1);
 }
 */
+#if 0
 void clear_utmp(int uent)
 {
 	utmpreq.command = 3;
@@ -458,6 +458,11 @@ void clear_utmp(int uent)
 	/* connect and clear */
 	sendutmpreq(&utmpreq);
 }
+#endif 
+void clear_utmp(int uent)
+{
+	clear_utmp2(uent);
+}	
 void clear_utmp2(int uent)
 {
  	int lockfd , hashkey, find;
