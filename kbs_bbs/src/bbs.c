@@ -4321,6 +4321,7 @@ int     autoappend;
     now=time(NULL);
     sprintf( genbuf, "%-32.32s - %s", fh->title, userid );
     strncpy( ph->title, genbuf, STRLEN );
+    now=time(NULL);
     ph->title[STRLEN-1]=0;
     ph->accessed[11]=now/(3600*24)%100; /*localtime(&now)->tm_mday;*/
     if (autoappend) {
