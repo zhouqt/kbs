@@ -2947,8 +2947,6 @@ unsigned int binarySearchInFileHeader(struct fileheader *start,int total, unsign
 	found=-1;
 	while (low <= high) {
 		mid = (high + low) / 2;
-//		if (mid>=total)
-//			break;
 		if (key == start[mid].id) {
 			found=mid;
 			break;
