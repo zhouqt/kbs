@@ -25,6 +25,7 @@ struct people_struct {
     int flag;
     int pid;
     int vote;
+    int vnum;
 };
 
 #define INROOM_STOP 1
@@ -348,12 +349,12 @@ void start_game()
             j=rand()%myroom->people;
         }while(inrooms.peoples[j].flag!=0);
         inrooms.peoples[j].flag = PEOPLE_KILLER;
-        send_msg(inrooms.peoples+j, "你做了一个无耻的坏人\n下面用你的尖刀(\x1b[31;1mCtrl+S\x1b[m)选择你要残害的人吧...");
+        send_msg(inrooms.peoples+j, "你做了一个无耻的坏人\n用你的尖刀(\x1b[31;1mCtrl+S\x1b[m)选择你要残害的人吧...");
     }
     for(i=0;i<totalk;i++) {
         inrooms.peoples[j].flag |= PEOPLE_ALIVE;
         if(!(inrooms.peoples[j].flag&PEOPLE_KILLER))
-            send_msg(inrooms.peoples+j, "黑色的夜幕降临了...");
+            send_msg(inrooms.peoples+j, "现在是晚上...");
     }
     for(i=0;i<myroom->people;i++)
         kill(inrooms.peoples[i].pid, SIGUSR1);
@@ -450,9 +451,133 @@ void join_room(struct room_struct * r)
 
     room_refresh(0);
     while(1){
+        buf[0]=0;
         do{
-            getdata(t_lines-1, 0, "输入:", buf, 75, 1, NULL, 1);
-            if(!buf[0]) {
+            int ch;
+            ch=-getdata(t_lines-1, 0, "输入:", buf, 75, 1, NULL, 0);
+            if(ch==KEY_UP) {
+                selected--;
+                if(selected<0) selected = myroom->people-1;
+                refreshit();
+            }
+            else if(ch==KEY_DOWN) {
+                selected++;
+                if(selected>=myroom->people) selected=0;
+            }
+            else if(ch==Ctrl('S')) {
+                int pid;
+                for(me=0;me<myroom->people;me++)
+                    if(inrooms.peoples[me].pid == uinfo.pid) break;
+                pid=inrooms.peoples[selected].pid;
+                if(inrooms.status!=INROOM_STOP) {
+                    if(inrooms.peoples[selected].flag&PEOPLE_ALIVE && 
+                        !(inrooms.peoples[selected].flag&PEOPLE_SPECTATOR)) {
+                        int i,j;
+                        sprintf(buf, "\x1b[32;1m%s投了%s一票\x1b[m", inrooms.peoples[me].nick[0]?inrooms.peoples[me].nick:inrooms.peoples[me].id,
+                            inrooms.peoples[selected].nick[0]?inrooms.peoples[selected].nick:inrooms.peoples[selected].id);
+                        inrooms.peoples[me].vote = pid;
+                        if(inrooms.status==INROOM_NIGHT) {
+                            for(i=0;i<myroom->people;i++)
+                                if(inrooms.peoples[i].flag&PEOPLE_KILLER||
+                                    inrooms.peoples[i].flag&PEOPLE_SPECTATOR)
+                                    send_msg(inrooms.peoples+i, buf);
+                        }
+                        else {
+                            for(i=0;i<myroom->people;i++)
+                                send_msg(inrooms.peoples+i, buf);
+                        }
+                        j=1;
+                        for(i=0;i<myroom->people;i++)
+                        if(!(inrooms.peoples[i].flag&PEOPLE_SPECTATOR) &&
+                            inrooms.peoples[i].flag&PEOPLE_ALIVE &&
+                            (inrooms.peoples[i].flag&PEOPLE_KILLER||inrooms.status==INROOM_DAY))
+                            if(inrooms.peoples[i].vote == 0) j=0;
+                        if(j) {
+                            int max=0, ok=0, maxi, maxpid;
+                            for(i=0;i<myroom->people;i++)
+                                inrooms.peoples[i].vnum = 0;
+                            for(i=0;i<myroom->people;i++)
+                            if(!(inrooms.peoples[i].flag&PEOPLE_SPECTATOR) &&
+                                inrooms.peoples[i].flag&PEOPLE_ALIVE &&
+                                (inrooms.peoples[i].flag&PEOPLE_KILLER||inrooms.status==INROOM_DAY)) {
+                                for(j=0;j<myroom->people;j++)
+                                    if(inrooms.peoples[j].pid == inrooms.peoples[i].vote)
+                                        inrooms.peoples[j].vnum++;
+                            }
+                            sprintf(buf, "投票结果:");
+                            if(inrooms.status==INROOM_NIGHT) {
+                                for(j=0;j<myroom->people;j++)
+                                    if(inrooms.peoples[j].flag&PEOPLE_KILLER||
+                                        inrooms.peoples[j].flag&PEOPLE_SPECTATOR)
+                                        send_msg(inrooms.peoples+j, buf);
+                            }
+                            else {
+                                for(j=0;j<myroom->people;j++)
+                                    send_msg(inrooms.peoples+j, buf);
+                            }
+                            for(i=0;i<myroom->people;i++)
+                            if(!(inrooms.peoples[i].flag&PEOPLE_SPECTATOR) &&
+                                inrooms.peoples[i].flag&PEOPLE_ALIVE) {
+                                sprintf(buf, "%s的投票数: %d 票", 
+                                    inrooms.peoples[i].nick[0]?inrooms.peoples[i].nick:inrooms.peoples[i].id,
+                                    inrooms.peoples[i].vnum);
+                                if(inrooms.peoples[i].vnum==max)
+                                    ok=0;
+                                if(inrooms.peoples[i].vnum>max) {
+                                    max=inrooms.peoples[i].vnum;
+                                    ok=1;
+                                    maxi=i;
+                                    maxpid=inrooms.peoples[i].pid;
+                                }
+                                if(inrooms.status==INROOM_NIGHT) {
+                                    for(j=0;j<myroom->people;j++)
+                                        if(inrooms.peoples[j].flag&PEOPLE_KILLER||
+                                            inrooms.peoples[j].flag&PEOPLE_SPECTATOR)
+                                            send_msg(inrooms.peoples+j, buf);
+                                }
+                                else {
+                                    for(j=0;j<myroom->people;j++)
+                                        send_msg(inrooms.peoples+j, buf);
+                                }
+                            }
+                            if(!ok) {
+                                sprintf(buf, "最高票数相同,请重新协商结果...");
+                                if(inrooms.status==INROOM_NIGHT) {
+                                    for(j=0;j<myroom->people;j++)
+                                        if(inrooms.peoples[j].flag&PEOPLE_KILLER||
+                                            inrooms.peoples[j].flag&PEOPLE_SPECTATOR)
+                                            send_msg(inrooms.peoples+j, buf);
+                                }
+                                else {
+                                    for(j=0;j<myroom->people;j++)
+                                        send_msg(inrooms.peoples+j, buf);
+                                }
+                            }
+                            else {
+                                sprintf(buf, "%s被杀掉了!",
+                                    inrooms.peoples[maxi].nick[0]?inrooms.peoples[maxi].nick:inrooms.peoples[maxi].id);
+                                for(j=0;j<myroom->people;j++)
+                                    send_msg(inrooms.peoples+j, buf);
+                                start_change_inroom(myroom);
+                                for(i=0;i<myroom->people;i++)
+                                    if(inrooms.peoples[i].pid == maxpid)
+                                        inrooms.peoples[i].flag &= ~PEOPLE_ALIVE;
+                                end_change_inroom();
+                            }
+                        }
+                        for(i=0;i<myroom->people;i++)
+                            kill(inrooms.peoples[i].pid, SIGUSR1);
+                    }
+                    else {
+                        if(!(inrooms.peoples[selected].flag&PEOPLE_ALIVE))
+                            send_msg(inrooms.peoples+me, "\x1b[31;1m此人已死\x1b[m");
+                        else
+                            send_msg(inrooms.peoples+me, "\x1b[31;1m此人是旁观者\x1b[m");
+                        kill(inrooms.peoples[i].pid, SIGUSR1);
+                    }
+                }
+            }
+            else if(!buf[0]) {
                 if(do_com_menu()) goto quitgame;
             }
         }while(!buf[0]);
