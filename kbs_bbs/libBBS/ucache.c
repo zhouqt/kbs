@@ -1180,6 +1180,7 @@ int resolve_guest_table()
 
 int lock_user(char* userid)
 {
+	/*
     int fd = 0;
     char buf[MAXPATH];
 
@@ -1192,10 +1193,15 @@ int lock_user(char* userid)
         return -1;
     }
     return fd;
+	*/
+	return 0;
 }
 
 void unlock_user(int fd)
 {
+	/*
     flock(fd, LOCK_UN);
     close(fd);
+	*/
+	return 0;
 }
