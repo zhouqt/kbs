@@ -266,7 +266,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 <strong><?php echo $currentuser["userid"]; ?></strong>
 &nbsp;
 [<a href="/bbslogout.php" target="_top" class="f1">×¢Ïú</a>]
-[<?php bbs_add_super_fav ('[BLOG] '.$pc['NAME'], '/pc/index.php?id='.$pc['USER']); ?>]
+[<?php bbs_add_super_fav ('[BLOG] '.undo_html_format($pc['NAME']), '/pc/index.php?id='.$pc['USER']); ?>]
 </td></tr>
 <?php
 				}
