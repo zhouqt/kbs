@@ -59,10 +59,11 @@
 #define CHAT_SYSTEM		"上天" //"系统"
 #define	CHAT_PARTY		"帮众" // "大家"
 
+#define DEFAULT_NICK		"每天爱你多一些"
 
-#define DEFAULT_NICK	"旺财"
-/* You might want to put more descriptive strings for SPECIAL1 and SPECIAL2
-   depending on how/if you use them. */
+#ifndef EXTERN
+extern char *permstrings[];
+#else
 char *permstrings[] = {
         "基本权力",             /* PERM_BASIC */
         "进入聊天室",           /* PERM_CHAT */
@@ -86,7 +87,7 @@ char *permstrings[] = {
         "不能 ZAP(讨论区专用)", /* PERM_NOZAP*/
         "聊天室OP(元老院专用)", /* PERM_CHATOP */
         "系统总管理员",         /* PERM_ADMIN */
-        "荣誉帐号",             /* PERM_HORNOR*/
+        "荣誉帐号",          	/* PERM_HORNOR*/
         "看秘密精华区",         /* PERM_SECANC*/
         "看Girl版",           /* PERM_GIRL*/
         "看Sexy版",           /* PERM_SEXY*/
@@ -96,6 +97,7 @@ char *permstrings[] = {
         "封禁Mail",           /* PERM_DENYMAIL*/
 
 };
+#endif
 
 static char    *explain[] = {
 	"斧 头 帮",
@@ -104,10 +106,10 @@ static char    *explain[] = {
         "吃喝玩乐",
 	"唧唧歪歪",
 	"吟风弄月",
-        "西游取经",
+        "西游之路",
         "豆腐西施",
 	"月光宝盒",
-        "保 留 地",
+        "大圣取经",
          NULL
 };
  
@@ -124,41 +126,4 @@ static char    *groups[] = {
   	"Reserve",
          NULL
 };
-#if 0
-    static char    *explain[] = {
-        "本站系统",
-        "休闲娱乐",
-        "电脑技术",
-        "学术科学",
-        "体育健身",
-        "谈天说地",
-        "校园信息",
-        "艺术文化",
-        "人文社会",
-        "网络信息",
-        "清华大学",
-        "兄弟院校",
-        "其  他",
-        NULL
-    };
-
-    static char    *groups[] = {
-        "system.faq",
-        "rec.faq",
-        "comp.faq",
-        "sci.faq",
-        "sport.faq",
-        "talk.faq",
-        "campus.faq",
-        "literal.faq",
-        "soc.faq",
-        "network.faq",
-        "thu.faq",
-        "univ.faq",
-        "other.faq",
-        NULL
-    };
-
-#endif
-
 #endif

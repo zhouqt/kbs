@@ -578,7 +578,7 @@ int getnewuserid3(char * userid)
         m_socket = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
         if (m_socket<0) return -1;
         sin.sin_family=AF_INET;
-        sin.sin_port=htons(60000);
+        sin.sin_port=htons(60001);
         inet_aton("127.0.0.1",&sin.sin_addr);
         if (connect(m_socket,(struct sockaddr*)&sin,sizeof(sin))!=0) {
                 close(m_socket);

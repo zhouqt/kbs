@@ -204,7 +204,7 @@ void userd()
     }
     setsockopt(m_socket,SOL_SOCKET,SO_REUSEADDR,&opt,4);
     sin.sin_family = AF_INET;
-    sin.sin_port = htons(60000);
+    sin.sin_port = htons(60001);
     inet_aton("127.0.0.1",&sin.sin_addr);
     if  (0!=bind(m_socket,(struct sockaddr *)&sin,sizeof(sin))) {
     	log("3system","userd:bind %s",strerror(errno));
@@ -267,7 +267,8 @@ int dodaemon(char* argv1)
 #ifdef AIX
      setpgrp();
 #else
-     setpgrp(0, 0);
+     // by zixia setpgrp(0, 0);
+     setpgrp();
 #endif
 #ifdef AIX
     act.sa_handler = NULL;

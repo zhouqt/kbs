@@ -1,12 +1,12 @@
-#include "bbs.h"
+#include <bbs.h>
 #define MAILDIR  BBSHOME"/mail"
 #define MYPASSFILE BBSHOME"/.PASSWDS"
-#define DOMAIN_NAME "cs.ccu.edu.tw"
-#define BBSGID          99
-#define BBSUID          9999
+#define DOMAIN_NAME "bbs.zixia.net"
+/*
 report()
 {
 }
+*/
 struct userec checkuser ;
 
 cmpuids(uid,up)

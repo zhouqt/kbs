@@ -51,7 +51,7 @@
 #include <sys/mman.h>
 
 // System names.. by zixia.
-#include "smth.h"
+#include BBSSITE_H
 
 #include "config.h"             /* User-configurable stuff */
 #include "permissions.h"

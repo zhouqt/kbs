@@ -1,13 +1,16 @@
 # The macro "LEEWARD_X_RECORD" need defining for *.c under mail2bbs */
+ifeq (../Makefile.spec ,$(wildcard ../Makefile.spec))
+include	../Makefile.spec
+endif
 CC=gcc
 MAIL2BBS=mail2bbs
-BBS_SRC=/home0/bbs/bbs_src
+BBS_SRC=/home/system/bbs/src/zixia_bbs
 #RECORD_OBJ=$(BBS_SRC)/record.o
 RECORD_SRC=$(BBS_SRC)/record.c
-CFLAGS=-I$(BBS_SRC)
+CFLAGS=-I$(BBS_SRC) -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' -DINVISIBLE
 
-INSTALLDIR=/home0/bbs/bin
-BBSHOME=/home0/bbs
+INSTALLDIR=/home/system/bbs/bin
+SITE_DEF = 
 
 all:
 	@echo use 'make mail2bbs' to make mail2bbs

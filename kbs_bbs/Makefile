@@ -40,7 +40,6 @@ LIBS     = -lbsd -lesmtp -Llibesmtp/.libs
 #INSTALL  = /usr/bin/install -c
 INSTALL  = ./install.sh 
 
-BBSSITE = smth
 BBSLIB = libBBS.a
 
 #CSIE_DEF = -DSHOW_IDLE_TIME -D_DETAIL_UINFO_ 
@@ -60,7 +59,7 @@ CFILE    = bbs.c record.c delete.c stuff.c mail.c register.c \
            screen.c userinfo.c vote.c announce.c sendmsg.c\
 	   bm.c list.c goodbye.c fileshm.c cache.c bbsd_single.c \
 	   newmain_single.c newio.c newterm.c convcode.c bbs_sendmail.c crypt.c \
-   	ucache.c utmp.c log.c md5.c $(BBSSITE).c 
+	   ucache.c utmp.c log.c md5.c ${BBSSITE}.c 
 
 COBJS    = bbs.o record.o delete.o stuff.o mail.o register.o \
            xyz.o talk.o read.o comm_lists.o namecomplete.o chat.o \
@@ -170,7 +169,7 @@ $(BBSHOME)/bin/chatd: chatd
 clean: /tmp
 	-rm -fr $(GARBAGE) $(COBJS) $(PROGNAME) $(LNFILES) chatd
 	-rm -rf *.o
-	-rm *.a
+	-rm -rf *.a
 
 dist_clean: clean
 	-rm -f CONFIG/config.log

@@ -284,7 +284,7 @@ int port; /* Thor.981206: 取 0 代表 *没有参数* */
     setsid();
 
     if (fork())
-        exit(0);
+        exit(0); 
 
     sin.sin_family = AF_INET;
     sin.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -580,7 +580,7 @@ char *argv[];
     server_pid=getpid();
     if (!inetd) {
         for (;listprocess>0;listprocess--)
-          fork();
+		fork();
         for (;;)
         {
 /*
