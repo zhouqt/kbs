@@ -76,11 +76,24 @@ void load_msgs()
 void send_msg(struct people_struct * u, char* msg)
 {
     FILE* fp;
-    int i;
+    int i, j;
     char filename[80], buf[80];
     sprintf(filename, "home/%c/%s/.INROOMMSG%d", toupper(u->id[0]), u->id, u->pid);
     fp = fopen(filename, "a");
     if(fp) {
+        while(strlen(msg)>58) {
+            j=0;
+            for(i=0;i<strlen(msg);i++){
+                if(i>=57&&!j) break;
+                if(j) j=0;
+                else if(msg[i]<0) j=1;
+            }
+            strcpy(buf, msg);
+            buf[i]=0;
+            fprintf(fp, "%s\n", buf);
+            strcpy(buf, msg+i);
+            strcpy(msg, buf);
+        }
         fprintf(fp, "%s\n", msg);
         fclose(fp);
     }
@@ -379,9 +392,10 @@ void start_game()
     for(i=0;i<totalk;i++) {
         do{
             j=rand()%myroom->people;
-        }while(inrooms.peoples[j].flag!=0&&inrooms.peoples[j].flag!=PEOPLE_ROOMOP);
+        }while(inrooms.peoples[j].flag&PEOPLE_KILLER);
         inrooms.peoples[j].flag = PEOPLE_KILLER;
-        send_msg(inrooms.peoples+j, "你做了一个无耻的坏人\n用你的尖刀(\x1b[31;1mCtrl+S\x1b[m)选择你要残害的人吧...");
+        send_msg(inrooms.peoples+j, "你做了一个无耻的坏人");
+        send_msg(inrooms.peoples+j, "用你的尖刀(\x1b[31;1mCtrl+S\x1b[m)选择你要残害的人吧...");
     }
     for(i=0;i<myroom->people;i++) 
     if(!(inrooms.peoples[i].flag&PEOPLE_SPECTATOR))
@@ -403,7 +417,7 @@ int do_com_menu()
     int menupos[menust],i,j,k,sel=0,ch,max=0,me;
     char buf[80];
     if(inrooms.status != INROOM_STOP)
-        strcpy(menus[7], "7-继续");
+        strcpy(menus[7], "7-结束游戏");
     menupos[0]=0;
     for(i=1;i<menust;i++)
         menupos[i]=menupos[i-1]+strlen(menus[i-1])+1;
@@ -578,8 +592,17 @@ int do_com_menu()
                 case 7:
                     if(inrooms.status == INROOM_STOP)
                         start_game();
-                    else
-                        return 2;
+                    else {
+                        start_change_inroom(myroom);
+                        inrooms.status = INROOM_STOP;
+                        for(i=0;i<myroom->people;i++) {
+                            send_msg(inrooms.peoples+i, "游戏被屋主强制结束");
+                        }
+                        end_change_inroom();
+                        for(i=0;i<myroom->people;i++)
+                            kill(inrooms.peoples[i].pid, SIGUSR1);
+                        return 0;
+                    }
                     return 0;
             }
             break;
@@ -629,7 +652,7 @@ void join_room(struct room_struct * r)
     while(1){
         do{
             int ch;
-            ch=-getdata(t_lines-1, 0, "输入:", buf, 30, 1, NULL, 1);
+            ch=-getdata(t_lines-1, 0, "输入:", buf, 70, 1, NULL, 1);
             if(myroom->style!=1) kicked = 1;
             if(kicked) goto quitgame;
             if(ch==KEY_UP) {
@@ -829,8 +852,11 @@ checkvote:
                                 }
                                 else if(inrooms.status == INROOM_DAY) {
                                     inrooms.status = INROOM_NIGHT;
-                                    for(i=0;i<myroom->people;i++)
+                                    for(i=0;i<myroom->people;i++) {
                                         send_msg(inrooms.peoples+i, "恐怖的夜色又降临了...");
+                                        if(inrooms.peoples[i].flag&PEOPLE_KILLER&&inrooms.peoples[i].flag&PEOPLE_ALIVE)
+                                            send_msg(inrooms.peoples+i, "请抓紧你的宝贵时间用\x1b[31;1mCtrl+S\x1b[m杀人...");
+                                    }
                                 }
                                 else {
                                     inrooms.status = INROOM_DAY;
