@@ -189,7 +189,7 @@ int ann_get_board(char *path, char *board, size_t len)
 int ann_get_path(char *board, char *path, size_t len)
 {
     struct boardheader* bh;
-    if ((bh=getbcache(board)!=NULL)) {
+    if ((bh=getbcache(board))!=NULL) {
         if (strlen(bh->ann_path)+strlen("0Announce/groups")>len)
             return -1;
         sprintf(path,"0Announce/groups/%s",bh->ann_path);
