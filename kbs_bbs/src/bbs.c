@@ -3057,7 +3057,7 @@ int noreply_post(struct _select_def* conf,struct fileheader *fileinfo,void* extr
     if (fileinfo==NULL)
         return DONOTHING;
 	if(chk_currBM(currBM, getCurrentUser())) mode |= 0x1;
-#ifdef OPEN_NOREPLY
+#if defined(OPEN_NOREPLY) || defined(COMMEND_ARTICLE)
 	if(!strcmp(getCurrentUser()->userid, fileinfo->owner)) mode |= 0x4;
 #endif
 
