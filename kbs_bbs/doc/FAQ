@@ -14,3 +14,8 @@
     bbslogd就好了
   不知道为啥。
 
+2.make install的时候是否会覆盖原来的bbshome
+
+  我们没有做文件存在检查，所以对make install没有做
+对bbshome的拷贝。在一开始安装的时候手动考一次bbshome
+下的文件到你的bbs目录下吧。
