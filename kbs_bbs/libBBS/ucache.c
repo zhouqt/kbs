@@ -516,6 +516,7 @@ char *u_namearray( char    buf[][ IDLEN+1 ],int     *pnum, char * tag)
     *pnum=0;
 
     len=strlen(tag);
+    if (len>IDLEN) return NULL;
     if(!len){
         return NULL;
     }
