@@ -539,6 +539,7 @@ void ConveyID()
     FILE* fn = NULL;
 	long now;
 	char buf[STRLEN],filename[STRLEN],systembuf[STRLEN];
+	int i;
 
     //检查权限
         if (HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_BOARDS) || HAS_PERM(currentuser, PERM_OBOARDS) || HAS_PERM(currentuser, PERM_ACCOUNTS)
@@ -616,6 +617,22 @@ void ConveyID()
 		if(currentuser->numlogins > 10)currentuser->numlogins = 10;
 		currentuser->stay = 0;
 		strncpy(currentuser->username,currentuser->userid,IDLEN);
+		currentuser->userdefine &= ~DEF_NOTMSGFRIEND;
+        if (convcode)
+            currentuser->userdefine &= ~DEF_USEGB;
+
+        currentuser->notemode = -1;
+
+        currentuser->flags[0] = CURSOR_FLAG;
+        currentuser->flags[0] |= PAGER_FLAG;
+        currentuser->flags[1] = 0;
+		for(i = 0; i < MAXCLUB>>5 ; i++){
+		    currentuser->club_read_rights[i] = 0;
+			currentuser->club_write_rights[i] = 0;
+		}
+		currentuser->signature = 0;
+		currentuser->usedspace = 0;
+
 		//clear 用户信息
 		bzero(&curruserdata,sizeof(struct userdata));
 		strcpy(curruserdata.userid,currentuser->userid);
