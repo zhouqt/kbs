@@ -43,7 +43,7 @@ function main() {
 
 <?php
 
-	return setSucMsg("×´Ì¬ÒÑÇÐ»»".$mode);
+	return setSucMsg("×´Ì¬ÒÑÇÐ»»Îª".(($mode==0)?'ÏÔÊ¾È«²¿':'ÏÔÊ¾Ö»ÏÔÊ¾¶©ÔÄ°æ'));
 }
 
 ?>

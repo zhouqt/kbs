@@ -1,5 +1,4 @@
 <?php
-require "default.php";
 
 function getattachtmppath($userid,$utmpnum)
 {
@@ -77,4 +76,5 @@ $user_define=array(array(0,"ÏÔÊ¾»î¶¯¿´°æ", "ÔÚtelnet·½Ê½ÏÂÊÇ·ñÏÔÊ¾»î¶¯¿´°å","ÏÔÊ
 );
 
 $user_define_num=count($user_define);
+require "default.php";
 ?>

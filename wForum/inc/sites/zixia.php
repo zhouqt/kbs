@@ -1,5 +1,4 @@
 <?php
-require "default.php";
 define("ATTACHTMPPATH","boards/_attach");
 function getattachtmppath($userid,$utmpnum)
 {
@@ -7,6 +6,8 @@ function getattachtmppath($userid,$utmpnum)
   return $attachdir;
 //  return ATTACHTMPPATH."/".$userid."_".$utmpnum;
 }
+
+define('BOARDLISTSTYLE','simplest');
 
 define("ANNOUNCENUMBER",5);
 
@@ -83,4 +84,5 @@ $user_define=array(array(0,"ÏÔÊ¾»î¶¯¿´°æ", "ÔÚtelnet·½Ê½ÏÂÊÇ·ñÏÔÊ¾»î¶¯¿´°å","ÏÔÊ
 );
 
 $user_define_num=count($user_define);
+require "default.php";
 ?>
