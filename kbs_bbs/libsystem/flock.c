@@ -33,11 +33,10 @@
  */
 
 /* A quick and dirty implementatiion of flock() for Solaris port. */
-#include <unistd.h>
-#include <fcntl.h>
+#include "bbs.h"
 
 #ifndef HAVE_FLOCK
-#include <flock.h>
+#include "flock.h"
 int flock(int fd, int operation)
 {
 	struct flock fl;
