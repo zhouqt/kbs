@@ -2495,11 +2495,12 @@ static void print_font_style(unsigned int style, buffered_output_t * output)
 static void html_output(char *buf, size_t buflen, buffered_output_t * output)
 */
 #define html_output(buf, buflen, output) \
-{ \
-    size_t i; \
+do { \
+    size_t _ho_i; \
+	const char *_ho_ptr = buf; \
 \
-    for (i = 0; i < buflen; i++) { \
-        switch ((buf)[i]) { \
+    for (_ho_i = 0; _ho_i < buflen; _ho_i++) { \
+        switch (_ho_ptr[_ho_i]) { \
         case '&': \
             BUFFERED_OUTPUT(output, "&amp;", 5); \
             break; \
@@ -2513,10 +2514,10 @@ static void html_output(char *buf, size_t buflen, buffered_output_t * output)
             BUFFERED_OUTPUT(output, "&nbsp;", 6); \
             break; \
         default: \
-            BUFFERED_OUTPUT(output, &((buf)[i]), 1); \
+            BUFFERED_OUTPUT(output, &(_ho_ptr[_ho_i]), 1); \
         } \
     } \
-}
+} while(0)
 
 static void print_raw_ansi(char *buf, size_t buflen, buffered_output_t * output)
 {
