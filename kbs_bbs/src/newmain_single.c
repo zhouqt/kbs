@@ -526,12 +526,12 @@ void login_query()
 #ifndef SSHBBS
     attempts = 0;
 #ifdef LOGINASNEW
-    prints("\n\033[1m[37m ‘”√«Î ‰»Î `\033[36mguest\033[37m', ◊¢≤·«Î ‰»Î`\033[36mnew\033[37m',add \033[36m'.'\33[37m after your ID for BIG5[m");
+    prints("\n\033[1m[37m ‘”√«Î ‰»Î `\033[36mguest\033[37m', ◊¢≤·«Î ‰»Î`\033[36mnew\033[37m',add '\033[36m.\33[37m' after your ID for BIG5[m");
 #else
 #ifdef NINE_BUILD
     prints("\n\033[1m[37m«Î ‰»Î¥˙∫≈( ‘”√«Î ‰»Î `\033[36mguest^[[37m)[m");
 #else
-    prints("\n\033[1m\033[37m«Î ‰»Î¥˙∫≈( ‘”√«Î ‰»Î `\033[36mguest\033[37m', ‘›Õ£◊¢≤·–¬’ ∫≈,add \033[36m'.'\33[37m after your ID for BIG5\033[m");
+    prints("\n\033[1m\033[37m«Î ‰»Î¥˙∫≈( ‘”√«Î ‰»Î `\033[36mguest\033[37m', ‘›Õ£◊¢≤·–¬’ ∫≈,add '\033[36m.\33[37m' after your ID for BIG5\033[m");
 #endif //NINE_BUILD
 #endif //LOGINASNEW
     while (1) {
