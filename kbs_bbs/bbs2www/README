@@ -1,26 +1,24 @@
-NJUWWWBBS-0.9.测试版 for FB3 & FB2000.
----------------------------------------------------------------
+此目录下为水木web部分的代码。
 
-本代码在0.7基础上做了大量改进. 如果你在使用0.7版, 建议您升级到
-新版.
+一.模块：
+1.bbslib模块
+  该模块提供www和bbslib之间的数据转换以及web特定的一些数据管理.
+2.phplib模块
+  为php提供底层的bbs函数支持.是smthbbs的web php的重要支持部分.
+3.html模块
+  web页面,包括php页面和一些静态页面.
+4.cgi模块
+  该模块位于src目录下,是一些尚未转为php的cgi程序.将被废除.
+5.sites目录
+  各个站点定制的模块.
 
-下载地址:
-http://bbs.nju.edu.cn/download/NJUWWWBBS-0.9.tgz (约60K)
+二.关于版权声明：
+   水木的web代码bbslib和cgi部分是修改于NJUWWWBBS-0.9，此部分
+代码遵循原有的nju www bbs的版权声明（GPL）。php部分的代码（
+phplib以及php页面）不再遵循GPL，正在考虑使用其他开放源码的版
+权声明（BSD或者MPL之类）。
 
-安装方法:
-设定好Makefile里面的路径以及BBSLIB.inc前面部分的路径.
-然后make install
-
-注意事项:
-缺省的cgi-bin目录是cgi-bin/bbs(推荐). 如有不同请修改 html/index.html
-
-相关讨论请到bbs.nju.edu.cn的BBSDev版, 或各大转信站的相应版面进行讨论.
-ChangeLog和相关文档正在整理中. 请稍候.
-
-Example Site: http://bbs.nju.edu.cn/
-
-
-
-
-                                        zhch.bbs@bbs.nju.edu.cn
-                                        2001.05.27
+三.关于使用水木WEB代码的站点
+    希望使用水木代码的Web站点加上powered by smth的图标.该图标
+位于html/images/poweredby.gif目录,链接指向http://dev.smth.org
+    使用水木代码的站点可以通过dev.smth.org获得代码的最新信息.
