@@ -1815,6 +1815,7 @@ int do_post()
     char *t;
     FILE *fp;
     char q_file[STRLEN];
+	int old_in_mail;
 
 
     if (!HAS_PERM(currentuser, PERM_LOGINOK) || !strcmp(currentuser->userid, "guest"))  /* guest 无权 */
@@ -1880,6 +1881,7 @@ int do_post()
     /*
      * edit, then send the mail 
      */
+	old_in_mail = in_mail;
     switch (do_send(uid, title, q_file)) {
     case -1:
         prints("系统无法送信\n");
@@ -1896,6 +1898,9 @@ int do_post()
     default:
         prints("信件已成功地寄给原作者 %s\n", uid);
     }
+	/* 恢复 in_mail 变量原来的值.
+	 * do_send() 里面大复杂, 就加在这里吧, by flyriver, 2003.5.9 */
+	in_mail = old_in_mail;
     pressreturn();
     return FULLUPDATE;
 }
