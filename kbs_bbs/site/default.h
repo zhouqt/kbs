@@ -56,10 +56,6 @@
 #undef NEW_COMERS		/* 注册后在 newcomers 版自动发文 */
 #endif
 
-#if HAVE_BIRTHDAY == 0
-#undef HAVE_BIRTHDAY
-#endif
-
 #if HAVE_COLOR_DATE == 0
 #undef HAVE_COLOR_DATE
 #endif
@@ -87,6 +83,15 @@
 
 #if RAW_ARTICLE == 0
 #undef RAW_ARTICLE
+#endif
+
+/* 默认情况下加入 HAVE_BIRTHDAY 支持 - atppp 20040819 */
+#ifdef HAVE_BIRTHDAY
+#if HAVE_BIRTHDAY == 0
+#undef HAVE_BIRTHDAY
+#endif
+#else
+#define HAVE_BIRTHDAY 1
 #endif
 
 #ifndef CHINESE_CHARACTER /*汉字整字处理,缺省使能*/

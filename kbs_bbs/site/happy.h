@@ -7,7 +7,6 @@
 #define CONV_PASS		1
 #define NINE_BUILD		0
 #define NEW_COMERS		1	/* 注册后在 newcomers 版自动发文 */
-#define HAVE_BIRTHDAY		1
 #define HAPPY_BBS		1
 #define HAVE_COLOR_DATE		1
 #define HAVE_TEMPORARY_NICK 	1	/* 允许临时改变昵称 */

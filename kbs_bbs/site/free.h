@@ -5,7 +5,6 @@
 #define TMPFSROOT   "cache"     /*tmpfs的根在bbshome/cache */
 #define NINE_BUILD		0
 #define NEW_COMERS 		0       /* 注册后在 newcomers 版自动发文 */
-#define HAVE_BIRTHDAY		1
 #define HAVE_USERMONEY 1
 #define CONV_PASS		1
 #define HAPPY_BBS		0

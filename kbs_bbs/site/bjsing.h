@@ -26,7 +26,6 @@
 #define	SAVELIVE	1
 #define	FIVEGAME	1
 #define NEW_COMERS		1
-#define HAVE_BIRTHDAY		1
 #define CONV_PASS 		1
 #define HAVE_COLOR_DATE		1
 #define HAVE_TEMPORARY_NICK	0
