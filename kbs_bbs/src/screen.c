@@ -147,7 +147,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
     }
     if ((new_col == 0) && (new_ln == was_ln)) {
         if (was_col != 0)
-            ochar(char c)('\r');
+            ochar('\r');
         return;
     }
     if (new_col <= was_col - 1 && new_col>=was_col-5 && new_ln == was_ln) {
