@@ -101,8 +101,9 @@ int ZmodemRateLimit = 1;
 int raw_write(int fd,char *buf,int len)
 {
     static int lastcounter = 0;
-    int nowcounter;
+    int nowcounter,i;
     static int bufcounter;
+    int retlen;
     if (ZmodemRateLimit)
    {
        nowcounter = time(0);
@@ -121,7 +122,18 @@ int raw_write(int fd,char *buf,int len)
 #ifdef SSHBBS
     return ssh_write(fd,buf,len);
 #else
-    return write(fd,buf,len);	
+    for (i=0;i<len;i++)
+    	{
+    	    int mylen;
+    	     if (buf[i] == 0xff) 
+    	     	  mylen = write (fd,"\0xff,0xff",2);
+    	     else if (buf[i] == 13) 
+    	     	  mylen =  write(fd,"\x0d\x00",2);
+    	     else mylen = write(fd,&buf[i],1);
+    	     if (mylen< 0) break;
+    	     retlen += mylen;
+    	}
+    return retlen;
 #endif
 }
 
