@@ -563,7 +563,7 @@ while($board = array_shift($boards))
       <br>
 系统公告结束   -->
 <?php
-	gen_system_vote_html();
+	//gen_system_vote_html();
 	gen_new_boards_html();
 	gen_recommend_boards_html();
 	gen_board_rank_html();
