@@ -285,7 +285,7 @@ int do_userlist()
         if (readplan == true) {
             return 0;
         }
-        pagec = pagerchar(usernum,uentp, uentp.pager, &isfriend);
+        pagec = pagerchar(usernum,&uentp, uentp.pager, &isfriend);
         sprintf(user_info_str,
                  /*---	modified by period	2000-10-21	ÔÚÏßÓÃ»§Êı¿ÉÒÔ´óÓÚ1000µÄ
                          " %3d%2s%s%-12.12s%s%s %-16.16s%s %-16.16s %c %c %s%-17.17s[m%5.5s\n",

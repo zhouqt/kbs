@@ -82,7 +82,7 @@ extern "C" {
     int apply_utmp(APPLY_UTMP_FUNC fptr, int maxcount, char *userid, void *arg);
     int getfriendstr(struct userec* user,struct user_info* puinfo);
     int myfriend(int uid, char *fexp);
-	bool hisfriend(int uid,struct * him);
+    bool hisfriend(int uid,struct user_info* him);
 
 /* defined in newio.c */
     void output(char *s, int len);

@@ -730,7 +730,7 @@ int myfriend(int uid, char *fexp)
     return found;
 }
 
-bool hisfriend(int uid,struct * him)
+bool hisfriend(int uid,struct user_info* him)
 {
     int i, found = false;
     if (him->friendsnum<= 0) {
