@@ -150,6 +150,7 @@ function get_mimetype($name)
 </center>
 <?php
 			}
+		bbs_setmailreaded($dir,$num);
 		html_normal_quit();
 	}
 ?>
