@@ -8,6 +8,7 @@
 #undef HAVE_TEMPORARY_NICK
 #undef HAVE_FRIENDS_NUM
 #undef HAVE_REVERSE_DNS
+#define FILTER
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
  *       Then decide how long to let them stay: MONITOR_TIMEOUT is the time in
@@ -247,7 +248,15 @@ extern const char *user_definestr[];
 typedef struct fileheader {     /* This structure is used to hold data in */
     char filename[FILENAME_LEN];      /* the DIR files */
     unsigned int id, groupid, reid;
+#ifdef FILTER
+    char o_board[STRLEN - BM_LEN];
+    unsigned int o_id;
+    unsigned int o_groupid;
+    unsigned int o_reid;
+    char unused1[14];
+#else
     char unused1[46];
+#endif
     char innflag[2];
     char owner[OWNER_LEN];
     char unused2[50];

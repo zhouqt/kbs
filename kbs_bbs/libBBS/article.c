@@ -605,40 +605,29 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     int fd, err = 0, nowid = 0;
     char* p;
 #ifdef FILTER
-    int i, num_badword;
-    char f[256], oldpath[50], newpath[50];
-    char badword[200][STRLEN];
-    FILE *fp, *badfile;
+    char oldpath[50], newpath[50];
 #endif
 
     if ((re == NULL) && (!strncmp(fh->title, "Re:", 3))) {
         strncpy(fh->title, fh->title + 4, STRLEN);
     }
 #ifdef FILTER
-//    i = 0;
-//    if ((badfile = fopen("etc/badword", "r")) != NULL) {
-//        while (fgets(buf, STRLEN, badfile) != NULL && i < 20) {
-//            strcpy(badword[i], (char *) strtok(buf, " \n\r\t"));
-//            i++;
-//        }
-//        fclose(badfile);
-//    }
-//    num_badword = i;
     sprintf(oldpath, "%s/boards/%s/%s", BBSHOME, boardname, fh->filename);
-//    if ((fp = fopen(oldpath, "r")) == NULL)
-//	    return;
-//    while (fgets(f, sizeof(f), fp) != NULL) {
-//        for (i=1; i<=num_badword;i++) {
-//	    if(strstr(f,badword[i-1])) {
 	    if(check_badword(oldpath)) {
 		    sprintf(newpath, "%s/boards/Filter/%s", BBSHOME, fh->filename);
-	            symlink(oldpath, newpath);
+	            f_mv(oldpath, newpath);
+		    strncpy(fh->o_board, boardname, STRLEN - BM_LEN);
+		    nowid = get_nextid(boardname);
+		    fh->o_id = nowid;
+		    if (re == NULL) {
+			    fh->o_groupid = fh->o_id;
+			    fh->o_reid = fh->o_id;
+		    } else {
+			    fh->o_groupid = re->groupid;
+			    fh->o_reid = re->id;
+		    }
 		    boardname = "Filter";
-//		    break;
 	    }
-//        }
-//    }
-//    fclose(fp);
 #endif
     setbfile(buf, boardname, DOT_DIR);
 
@@ -838,6 +827,14 @@ int change_dir_post_flag(struct userec *currentuser, char *currboard, int ent, s
         else
             fileinfo->accessed[0] = fileinfo->accessed[0] | FILE_MARKED;
         break;
+#ifdef FILTER
+    case FILE_CENSOR_FLAG:
+	if (fileinfo->accessed[0] & FILE_CENSOR)
+	    fileinfo->accessed[0] &= ~FILE_CENSOR;
+	else
+	    fileinfo->accessed[0] |= FILE_CENSOR;
+	break;
+#endif
     case FILE_NOREPLY_FLAG:
         if (fileinfo->accessed[1] & FILE_READ)
             fileinfo->accessed[1] &= ~FILE_READ;
@@ -899,6 +896,12 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
     struct fileheader mkpost, mkpost2;
     struct flock ldata;
     int fd, size = sizeof(fileheader), orgent;
+#ifdef FILTER
+    FILE* filedes;
+    int nowid = 0;
+    char oldpath[50], newpath[50], buffer[256];
+    struct fileheader *newfh = fileinfo;
+#endif
 
     /*---	---*/
 
@@ -1048,6 +1051,51 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
 #endif
         }
         break;
+#ifdef FILTER
+    case FILE_CENSOR_FLAG:
+	if (!strcmp(currboard, "Filter"))
+	if (fileinfo->accessed[0] & FILE_CENSOR) {
+#ifdef BBSMAIN
+	    if (prompt)
+		a_prompt(-1, " 该文章已经通过审核, 请按 Enter 继续 << ", ans);
+#endif
+	} else {
+	    fileinfo->accessed[0] |= FILE_CENSOR;
+	    sprintf(oldpath, "%s/boards/Filter/%s", BBSHOME, fileinfo->filename);
+	    sprintf(newpath, "boards/%s/%s", fileinfo->o_board, fileinfo->filename);
+	    symlink(oldpath, newpath);
+
+	    setbfile(buffer, fileinfo->o_board, DOT_DIR);
+	    if ((filedes = open(buffer, O_WRONLY | O_CREAT, 0664)) == -1) {
+#ifdef BBSMAIN
+                perror(buffer);
+#endif  
+	    }
+	    flock(filedes, LOCK_EX);
+	    nowid = get_nextid(fileinfo->o_board);
+	    newfh->id = nowid;
+	    if (fileinfo->o_id == fileinfo->o_groupid)
+		    newfh->groupid = newfh->reid = newfh->id;
+	    else {
+		    newfh->groupid = fileinfo->o_groupid;
+		    newfh->reid = fileinfo->o_reid;
+	    }
+	    lseek(filedes, 0, SEEK_END);
+	    if (safewrite(filedes, newfh, sizeof(fileheader)) == -1) {
+		    bbslog("user","%s","apprec write err!");
+	    }
+	    flock(filedes, LOCK_UN);
+	    close(filedes);
+	    updatelastpost(fileinfo->o_board);
+	    brc_add_read(newfh->id);
+	    if (newfh->id == newfh->groupid)
+		    setboardorigin(fileinfo->o_board, 1);
+	    setboardtitle(fileinfo->o_board, 1);
+	    if (newfh->accessed[0] & FILE_MARKED)
+		    setboardmark(fileinfo->o_board, 1);
+	}
+	break;
+#endif
     case FILE_DELETE_FLAG:
         if (fileinfo->accessed[1] & FILE_DEL)
             fileinfo->accessed[1] &= ~FILE_DEL;
@@ -1189,6 +1237,10 @@ char get_article_flag(struct fileheader *ent, struct userec *user, int is_bm)
         }
     } else if (HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[0] & FILE_SIGN)) {
         type = '#';
+#ifdef FILTER
+    } else if (ent->accessed[0] & FILE_CENSOR) {
+	type = '@';
+#endif
     }
 
     if (is_bm && (ent->accessed[1] & FILE_DEL)) {

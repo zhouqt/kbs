@@ -2412,6 +2412,13 @@ int sign_post(int ent, struct fileheader *fileinfo, char *direct)
     return change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_SIGN_FLAG, 1);
 }
 
+#ifdef FILTER
+int censor_post(int ent, struct fileheader *fileinfo, char *direct)
+{
+	return change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_CENSOR_FLAG, 1);
+}
+#endif
+
 int set_be_title(int ent, struct fileheader *fileinfo, char *direct);
 
 int del_range(int ent, struct fileheader *fileinfo, char *direct, int mailmode)
@@ -2796,6 +2803,9 @@ struct one_key read_comms[] = { /*阅读状态，键定义 */
     {'m', mark_post},
     {';', noreply_post},        /*Haohmaru.99.01.01,设定不可re模式 */
     {'#', sign_post},           /* Bigman: 2000.8.12  设定文章标记模式 */
+#ifdef FILTER
+    {'@', censor_post},		/* czz: 2002.9.29 审核被过滤文章 */
+#endif
     {'E', edit_post},
     {Ctrl('G'), change_mode},   /* bad : 2002.8.8 add marked mode */
     {'`', digest_mode},

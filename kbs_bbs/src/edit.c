@@ -735,11 +735,6 @@ int write_file(filename, saveheader)
     int temp;
     extern char quote_title[120], quote_board[120];
     extern int Anony;
-#ifdef FILTER
-int i, num_badword;
-char badword[200][STRLEN], buf[256];
-FILE *badfile;
-#endif
 
 #ifndef VEDITOR
     char p_buf[100];
@@ -775,26 +770,6 @@ FILE *badfile;
         else
             strcpy(p_buf, "(S)´¢´æµµ°¸, (F)×Ô¶¯»»ÐÐ´æ´¢, (A)·ÅÆú±à¼­, (E)¼ÌÐø±à¼­? [S]: ");
         temp = valid_article(p_buf, abort);
-#ifdef FILTER
-	i = 0;
-        if ((badfile = fopen("etc/badword", "r")) != NULL) {
-            while (fgets(buf, STRLEN, badfile) != NULL && i < 20) {
-                strcpy(badword[i], (char *) strtok(buf, " \n\r\t"));
-                i++;
-            }
-            fclose(badfile);
-	}
-        num_badword = i;
-        while (p != NULL) {
-	    for (i=1; i<=num_badword;i++) {
-                if(strstr(p->data,badword[i-1])) {
-                    abort[0] = 'a';
-		    break;
-		}
-	    }
-	    p = p->next;
-	}
-#endif
         if (abort[0] == '\0') {
             if (local_article == 1)
                 abort[0] = 'l';
@@ -812,6 +787,16 @@ FILE *badfile;
         abort[0] = 's';
 #endif
 
+#ifdef FILTER
+    while (p != NULL) {
+	    if(check_badword(p->data)) {
+		    abort[0] = 'a';
+		    break;
+	    }
+	    p = p->next;
+    }
+    p = firstline;
+#endif
     if (abort[0] == 'a' || abort[0] == 'A') {
         struct stat stbuf;
 
@@ -939,7 +924,6 @@ FILE *badfile;
                 } else
                     fprintf(fp, "%s\n", p->data);
             }
-
         free(p);
         p = v;
     }

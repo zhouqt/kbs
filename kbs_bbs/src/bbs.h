@@ -164,6 +164,9 @@ extern long ti;
 #define FILE_REPLIED 0x20       /* in mail ,added by alex, 96.9.7 */
 #define FILE_FORWARDED 0x40     /* in mail ,added by alex, 96.9.7 */
 #define FILE_IMPORTED 0x80      /* Leeward 98.04.15 */
+#ifdef FILTER
+#define FILE_CENSOR 0x160
+#endif
 #define FILE_SIGN 0x1           /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[0] */
 #define FILE_DEL  0x2           /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[1] */
 
@@ -341,6 +344,9 @@ typedef size_t socklen_t;
 #define FILE_DIGEST_FLAG 4
 #define FILE_TITLE_FLAG 5
 #define FILE_IMPORT_FLAG 6
+#ifdef FILTER
+#define	FILE_CENSOR_FLAG 7
+#endif
 
 /**
  * Enumeration values for the so-called board .DIR file.
