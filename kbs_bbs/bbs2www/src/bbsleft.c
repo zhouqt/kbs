@@ -102,8 +102,8 @@ int main()
 	}
 
 	printdiv(6,"界面风格","/images/folder.gif");
-	printf("<img src=\"/images/link.gif\"> <a href=\"bbsstyle?style=0\">小字体</a><br>\n");
-	printf("<img src=\"/images/link.gif\"> <a href=\"bbsstyle?style=1\">大字体</a><br>\n");
+	printf("<img src=\"/images/link.gif\"> <a href=\"javascript:change_style(0)\">小字体</a><br>\n");
+	printf("<img src=\"/images/link.gif\"> <a href=\"javascript:change_style(1)\">大字体</a><br>\n");
 	/*printf("<img src=\"/images/link.gif\"><a target=\"f3\" href=\"bbsadl\">下载精华区</a><br>\n");*/
 	printf("</div>\n");
 	printf("<div class=\"r\">");
