@@ -692,31 +692,25 @@ int write_file2(FILE * fp, FILE * fp2)
 }
 
 /* return value:
-// >0		success
-// -1		write .DIR failed*/
+   >0		success
+   -1		write .DIR failed*/
 int post_article(char *board, char *title, char *file, struct userec *user, char *ip, int sig, int local_save, int anony, struct fileheader* oldx)
 {
     struct fileheader post_file;
     char filepath[STRLEN], fname[STRLEN];
     char buf[256];
     int fd, anonyboard;
-    time_t now;
     FILE *fp, *fp2;
 
     memset(&post_file, 0, sizeof(post_file));
-    anonyboard = seek_in_file("etc/anonymous", board);  /* 是否为匿名版 */
+    anonyboard = anonymousboard(board);  /* 是否为匿名版 */
 
     /* 自动生成 POST 文件名 */
-    now = time(NULL);
-    sprintf(fname, "M.%d.A", now);
-    setbfile(filepath, board, fname);
-    while ((fd = open(filepath, O_CREAT | O_EXCL | O_WRONLY, 0644)) == -1) {
-        now++;
-        sprintf(fname, "M.%d.A", now);
-        setbfile(filepath, board, fname);
-    }
-    close(fd);
-    strcpy(post_file.filename, fname);
+    setbfile(filepath, board, "");
+	if (GET_POSTFILENAME(post_file.filename, filepath) != 0) {
+		return -1;
+	}
+	setbfile(filepath, board, post_file.filename);
 
     anony = anonyboard && anony;
     strncpy(post_file.owner, anony ? board : getcurruserid(), OWNER_LEN);
@@ -724,7 +718,6 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
 
     if ((!strcmp(board, "Announce")) && (!strcmp(post_file.owner, board)))
         strcpy(post_file.owner, "SYSOP");
-
     fp = fopen(filepath, "w");
     fp2 = fopen(file, "r");
     write_header2(fp, board, title, user->userid, user->username, anony);
@@ -755,12 +748,7 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
 
     after_post(currentuser, &post_file, board, oldx);
 
-/*      postreport(post_file.title, 1); *//*added by alex, 96.9.12 */
-    /*if ( !junkboard(board) )
-       //{
-       //    currentuser->numposts++;
-       //} */
-    return now;
+    return post_file.id;
 }
 
 int sig_append(FILE * fp, char *id, int sig)

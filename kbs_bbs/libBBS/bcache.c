@@ -327,6 +327,7 @@ int add_board(struct boardheader *newboard)
     bcache_unlock(fd);
     return -1;
 }
+
 int set_board(int bid, struct boardheader *board)
 {
     bcache_setreadonly(0);

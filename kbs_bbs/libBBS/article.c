@@ -1,6 +1,7 @@
 #include "bbs.h"
 #include <utime.h>
 
+
 void cancelpost(char *board, char *userid, struct fileheader *fh, int owned, int autoappend);
 int outgo_post(struct fileheader *fh, char *board, char *title)
 {
@@ -14,7 +15,9 @@ int outgo_post(struct fileheader *fh, char *board, char *title)
     return -1;
 }
 
-int get_postfilename(char *filename, char *direct)
+extern char alphabet[];
+
+int get_postfilename(char *filename, char *direct, int use_subdir)
 {
     static const char post_sufix[] = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     int fp;
@@ -22,13 +25,23 @@ int get_postfilename(char *filename, char *direct)
     int i;
     char fname[255];
     int pid = getpid();
+	int rn;
+	int len;
 
     /*
      * 自动生成 POST 文件名 
      */
     now = time(NULL);
-    for (i = 0; i < 10; i++) {
-        sprintf(filename, "M.%lu.%c%c", now, post_sufix[(pid + i) % 62], post_sufix[(pid * i) % 62]);
+	len = strlen(alphabet);
+    for (i = 0; i < 10; i++)
+	{
+		if (use_subdir)
+		{
+			rn = 0 + (int) (len * 1.0 * rand() / (RAND_MAX + 1.0));
+			sprintf(filename, "%c/M.%lu.%c%c", alphabet[rn], now, post_sufix[(pid + i) % 62], post_sufix[(pid * i) % 62]);
+		}
+		else
+			sprintf(filename, "M.%lu.%c%c", now, post_sufix[(pid + i) % 62], post_sufix[(pid * i) % 62]);
         sprintf(fname, "%s/%s", direct, filename);
         if ((fp = open(fname, O_CREAT | O_EXCL | O_WRONLY, 0644)) != -1) {
             break;
@@ -46,7 +59,7 @@ int isowner(struct userec *user, struct fileheader *fileinfo)
 
     if (strcmp(fileinfo->owner, user->userid))
         return 0;
-    posttime = atoi(fileinfo->filename + 2);
+    posttime = get_posttime(fileinfo);
     if (posttime < user->firstlogin)
         return 0;
     return 1;
@@ -165,6 +178,7 @@ int autoappend;
         postfile.id = fh->id;
         postfile.groupid = fh->groupid;
         postfile.reid = fh->reid;
+		set_posttime2(&postfile, fh);
     };
     now = time(NULL);
     sprintf(oldpath, "%-32.32s - %s", fh->title, userid);
@@ -177,7 +191,7 @@ int autoappend;
     }
     if ((fh->innflag[1] == 'S')
         && (fh->innflag[0] == 'S')
-        && (atoi(fh->filename + 2) > now - 14 * 86400)) {
+        && (get_posttime(fh) > now - 14 * 86400)) {
         FILE *fp;
         char buf[256];
         char from[STRLEN];
@@ -496,7 +510,7 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
 
     setbfile(filepath, toboard, "");
 
-    if ((aborted = get_postfilename(postfile.filename, filepath)) != 0) {
+    if ((aborted = GET_POSTFILENAME(postfile.filename, filepath)) != 0) {
 #ifdef BBSMAIN
         move(3, 0);
         clrtobot();
@@ -516,12 +530,12 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
     postfile.owner[OWNER_LEN-1]=1;
     setbfile(filepath, toboard, postfile.filename);
 
-    local_article = 0;
-    /*
-     * if ( !strcmp( postfile.title, buf ) && file[0] != '\0' )
-     */
-    if (islocal == 'l' || islocal == 'L')
-        local_article = true;
+    local_article = 1; /* default is local article */
+    if (islocal != 'l' && islocal != 'L')
+	{
+		if (is_outgo_board(toboard))
+			local_article = 0;
+	}
 
 #ifdef BBSMAIN
     modify_user_mode(POSTING);
@@ -591,7 +605,9 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     setbfile(buf, boardname, DOT_DIR);
 
     if ((fd = open(buf, O_WRONLY | O_CREAT, 0664)) == -1) {
+#ifdef BBSMAIN
         perror(buf);
+#endif
         err = 1;
     }
     /*过滤彩色标题*/
@@ -608,6 +624,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
             fh->groupid = re->groupid;
             fh->reid = re->id;
         }
+		set_posttime(fh);
         lseek(fd, 0, SEEK_END);
         if (safewrite(fd, fh, sizeof(fileheader)) == -1) {
             bbslog("user","%s","apprec write err!");

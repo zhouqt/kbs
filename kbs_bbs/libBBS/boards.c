@@ -730,6 +730,16 @@ int anonymousboard(char *board)
         return false;
 }
 
+int is_outgo_board(char *board)
+{
+    struct boardheader *bh = getbcache(board);
+
+    if (bh && (bh->flag & BOARD_OUTFLAG))
+        return true;
+    else
+        return false;
+}
+
 int deny_me(char *user, char *board)
 {                               /* 判断用户 是否被禁止在当前版发文章 */
     char buf[STRLEN];

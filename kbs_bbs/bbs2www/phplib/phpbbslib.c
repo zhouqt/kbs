@@ -846,7 +846,7 @@ bbs_make_article_array(zval *array, struct fileheader *fh, char *flags,
     add_assoc_long(array, "ID", fh->id);
     add_assoc_long(array, "GROUPID", fh->groupid);
     add_assoc_long(array, "REID", fh->reid);
-    add_assoc_long(array, "POSTTIME", FILENAME2POSTTIME(fh->filename));
+    add_assoc_long(array, "POSTTIME", get_posttime(fh));
     add_assoc_stringl(array, "INNFLAG", fh->innflag, sizeof(fh->innflag), 1);
     add_assoc_string(array, "OWNER", fh->owner, 1);
     add_assoc_string(array, "TITLE", fh->title, 1);

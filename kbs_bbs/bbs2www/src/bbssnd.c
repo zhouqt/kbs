@@ -57,8 +57,12 @@ int main()
     	oldx = NULL;
     }
     brc_initial(currentuser->userid, board);
+	if (is_outgo_board(board) && local == 0)
+		local = 0;
+	else
+		local = 1;
     r = post_article(board, title, filename, currentuser, fromhost, sig, local, anony, oldx);
-    if (r <= 0)
+    if (r < 0)
         http_fatal("内部错误，无法发文");
     brc_update(currentuser->userid);
     if(oldx)

@@ -1154,3 +1154,42 @@ int dodaemon(char* daemonname,bool single,bool closefd)
     return 0;
 }
 
+int is_valid_date(int year, int month, int day)
+{
+	int feb;
+	/* 首先检查月份 */
+	switch (month)
+	{
+	case 1:
+	case 3:
+	case 5:
+	case 7:
+	case 8:
+	case 10:
+	case 12:
+		/* 大月 */
+		if (day >= 1 && day <= 31)
+			return 1;
+		else
+			return 0;
+	case 4:
+	case 6:
+	case 9:
+	case 11:
+		/* 小月 */
+		if (day >= 1 && day <= 30)
+			return 1;
+		else
+			return 0;
+	case 2:
+		/* 是否闰年 */
+		feb = 28 + ((year % 100 == 0) ? (year % 400 == 0) : (year % 4 == 0));
+		if (day >= 1 && day <= feb)
+			return 1;
+		else
+			return 0;
+	default:
+		return 0;
+	}
+}
+

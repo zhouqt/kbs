@@ -98,7 +98,7 @@ int post_cross2(char islocal, char *board)
 	/* 还有一个破 save_title 的问题 */ 
 	strncpy(save_title, buf4, STRLEN);
 	setbfile(fname, board, "");
-	get_postfilename(postfile.filename, fname);
+	GET_POSTFILENAME(postfile.filename, fname);
 	strcpy(whopost, getcurruserid());
 	strncpy(postfile.owner, whopost, OWNER_LEN);
 	postfile.owner[OWNER_LEN-1]=0;

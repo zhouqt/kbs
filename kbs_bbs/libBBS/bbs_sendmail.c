@@ -155,7 +155,7 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
      * setmailpath(filepath, userid, fname); 
      */
     setmailpath(filepath, userid);
-    get_postfilename(fname, filepath);
+    GET_MAILFILENAME(fname, filepath);
     strcpy(newmessage.filename, fname);
     setmailfile(filepath, userid, fname);
     /*
