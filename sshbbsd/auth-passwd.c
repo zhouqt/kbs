@@ -17,6 +17,9 @@ the password is valid for the user.
 /*
  * $Id$
  * $Log$
+ * Revision 1.6  2003/06/20 06:14:08  bad
+ * ssh ipacl不对
+ *
  * Revision 1.5  2003/06/17 11:52:28  kcn
  * :PPP  去和mm吃饭心切改错了
  *
@@ -165,6 +168,9 @@ char useridbuf[255];
    authentication succeeds. */
 int auth_password(const char *server_user, const char *password)
 {
+    int sinlen;
+    struct sockaddr_in sin;
+    char *host;
     load_sysconf();
     resolve_ucache();
     resolve_utmp();
@@ -174,7 +180,11 @@ int auth_password(const char *server_user, const char *password)
     if (*server_user == '\0' || !dosearchuser(useridbuf))
         return 0;
 
-    if(check_ip_acl(currentuser->userid, fromhost)) {
+
+    sinlen = sizeof(struct sockaddr_in);
+    proxy_getpeername(0, (struct sockaddr *) &sin, (void *) &sinlen);
+    host = (char *) inet_ntoa(sin.sin_addr);
+    if(check_ip_acl(currentuser->userid, host)) {
     	return 0;
     }
     if (!checkpasswd2(password, currentuser)) {

@@ -461,11 +461,11 @@ int check_ID_lists(char * id)
 
 int check_ip_acl(char * id, char * sip)
 {
-    char fn[80];
+    char fn[160];
     int ip[4],rip[4],l,a;
     unsigned int ips, rips;
     FILE* fp;
-    sethomefile(fn, id, "ipacl");
+    sprintf(fn, BBSHOME "/home/%c/%s/ipacl", id[0], id);
     sscanf(sip, "%d.%d.%d.%d", &ip[0], &ip[1], &ip[2], &ip[3]);
     ips = (ip[0]<<24)+(ip[1]<<16)+(ip[2]<<8)+ip[3];
     fp = fopen(fn, "r");
