@@ -3035,7 +3035,7 @@ static PHP_FUNCTION(bbs_new_board)
 
 		bbs_bm_change(newboard.filename, &newboard, &oldboard);
 
-		if(newboard.BM[0]!='\0' && strcpy(oldboard.BM, newboard.BM)){
+		if(newboard.BM[0]!='\0' && strcmp(oldboard.BM, newboard.BM)){
 			if(newboard.BM[0] != '\0'){
 				if(strlen(newboard.BM) <= 30)
 					sprintf(vbuf,"%-38.38s(BM: %s)", newboard.title + 13, newboard.BM);
