@@ -312,7 +312,7 @@ function pc_add_member($link,$pc,$userid)
 		exit("群体BLOG LOG错误");
 	
 	$title = $userid . " 由 " . $currentuser["userid"] . " 授予 " . $pc["USER"] . " 群体BLOG的权利";
-	$content = "    欢迎加入 ".$pc["USER"]."/".$pc["NAME"]." 大家庭";
+	$content = "    欢迎加入 ".$pc["USER"]."/".undo_html_format($pc["NAME"])." 大家庭";
 	// post announcement
 	bbs_postarticle($pcconfig["APPBOARD"], preg_replace("/\\\(['|\"|\\\])/","$1",$title), preg_replace("/\\\(['|\"|\\\])/","$1",$content), 0 , 0 , 0 , 0);
 	// post mail
