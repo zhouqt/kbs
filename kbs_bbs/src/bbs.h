@@ -77,6 +77,10 @@ typedef enum { false = 0, true = 1 } bool;
 #endif
 #endif
 
+#ifdef SOLARIS
+#define LOCK_SH LOCK_EX
+#endif
+
 #include "site.h"
 #include "default.h"
 

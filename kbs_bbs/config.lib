@@ -1,3 +1,7 @@
+BBSINCLUDE=""
+define([ADDINC],[if test "$1" != "/usr/include"; then
+BBSINCLUDE=$BBSINCLUDE -I$1
+fi])
 AC_ARG_WITH(zlib,
 [  --with-zlib[=DIR]
        Include ZLIB support (requires zlib >= 1.0.9).],
@@ -29,13 +33,12 @@ if test "$ZLIB_DIR" != "no"; then
   ])
   
   ZLIB_LIBS="-L$ZLIB_DIR/lib -lz"
-  ZLIB_INC="-I$ZLIB_INC"
+  ADDINC($ZLIB_INC)
 else
   AC_MSG_ERROR(Need zlib support)
 fi
 
 LIBS="$LIBS $ZLIB_LIBS"
-CFLAGS="$CFLAGS $ZLIB_INC"
 
 AC_ARG_WITH(mysql,
 [  --with-mysql[=DIR]
@@ -75,12 +78,11 @@ if test "$MYSQL_DIR" != "no"; then
     LIBS=$SAVE_LIBS
 
     MYSQL_LIBS="-L$MYSQL_DIR/lib -L$MYSQL_DIR/lib/mysql -lmysqlclient"
+    ADDINC($MYSQL_INC)
     MYSQL_INC="-I$MYSQL_INC"
     LIBS="$LIBS $MYSQL_LIBS"
-    CFLAGS="$CFLAGS $MYSQL_INC"
   fi
 fi
-
 
 AC_ARG_WITH(libesmtp,
 [  --with-libesmtp[=DIR]
@@ -106,7 +108,6 @@ if test "$LIBESMTP_DIR" != "no"; then
   LIBS=$SAVE_LIBS
 
   LIBESMTP_LIBS="-L$LIBESMTP_DIR/lib -lesmtp"
-  LIBESMTP_INC="-I$LIBESMTP_INC"
 else
   for i in /usr/local /usr ; do
     if test -f $i/include/libesmtp.h; then
@@ -129,13 +130,78 @@ else
   LIBS=$SAVE_LIBS
 
   LIBESMTP_LIBS="-L$LIBESMTP_DIR/lib -lesmtp"
-  LIBESMTP_INC="-I$LIBESMTP_INC"
 fi
+ADDINC($LIBESMTP_INC)
+
 LIBS="$LIBS $LIBESMTP_LIBS"
-CFLAGS="$CFLAGS $LIBESMTP_INC"
 
 
+AH_TEMPLATE([USE_SSL],
+[Define to use openssl library])
+
+AC_ARG_WITH(openssl,
+[  --with-openssl[=path],Build with OpenSSL [yes|no|path].
+        ],
+    use_openssl="$withval", use_openssl="no")
+case "$use_openssl" in
+        no)
+                AC_MSG_RESULT(no)
+                DST_OPENSSL_INC=""
+                USE_OPENSSL=""
+                ;;
+        *)
+            # User did not specify a path - guess it
+            openssldirs="/usr /usr/local /usr/local/ssl /usr/pkg"
+            for d in $openssldirs
+            do
+                  if test -f $d/include/openssl/opensslv.h
+                  then
+                      use_openssl=$d
+                      break
+                  fi
+            done
+            if test "$use_openssl" = "yes"
+            then
+                  AC_MSG_RESULT(not found)
+                  AC_MSG_ERROR(
+[OpenSSL was not found in any of $openssldirs; use --with-openssl=/path])
+            fi
+
+            AC_DEFINE(USE_SSL)
+            ADDINC($use_openssl/include)
+            OPENSSL_LIBS="-L$use_openssl/lib -lcrypto -lssl"
+            AC_MSG_RESULT(using openssl from $use_openssl/lib and $use_openssl/include)
+
+            AC_MSG_CHECKING(OpenSSL library version)
+            saved_cflags="$CFLAGS"
+            saved_libs="$LIBS"
+            CFLAGS="$CFLAGS $DST_OPENSSL_INC"
+            LIBS="$LIBS $DNS_OPENSSL_LIBS"
+            AC_TRY_RUN([
+#include <stdio.h>
+#include <openssl/opensslv.h>
+int main() {
+        printf("\n\nFound   OPENSSL_VERSION_NUMBER %#010x\n",
+                OPENSSL_VERSION_NUMBER);
+        return (0);
+}
+],
+            [AC_MSG_RESULT(ok)],
+            [AC_MSG_RESULT(not compatible)],
+            [AC_MSG_RESULT(assuming target platform has compatible version)])
+            CFLAGS="$saved_cflags"
+            LIBS="$saved_libs"
+            ;;
+esac
+
+AC_SUBST(OPENSSL_LIBS)
+
+if test "$OPENSSL_INC" = "/usr/include"; then
+OPENSSL_INC=""
+fi
+AC_SUBST(OPENSSL_INC)
+
+CFLAGS="$CFLAGS $BBSINCLUDE"
 AC_CHECK_LIB([bsd], [vfork], [LIBS="$LIBS -lbsd"])
 AC_CHECK_LIB([dl], [dlopen], [LIBS="$LIBS -ldl"])
 AC_CHECK_LIB([ltdl], [lt_dlopen], [LIBS="$LIBS -lltdl"])
-

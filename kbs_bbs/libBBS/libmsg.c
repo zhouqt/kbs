@@ -78,18 +78,18 @@ int get_response_type(bbsmsg_t * msgbuf)
 
 int get_sockfd()
 {
-    struct sockaddr_un sun;
+    struct sockaddr_un sockun;
     int sockfd;
     char path[80];
 
-    bzero(&sun, sizeof(sun));
+    bzero(&sockun, sizeof(sockun));
     snprintf(path, sizeof(path), BBSHOME "/.msgd");
     sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
     if (sockfd == -1)
         return -1;
-    sun.sun_family = AF_UNIX;
-    strncpy(sun.sun_path, path, sizeof(sun.sun_path) - 1);
-    if (connect(sockfd, (struct sockaddr *) &sun, sizeof(sun)) < 0) {
+    sockun.sun_family = AF_UNIX;
+    strncpy(sockun.sun_path, path, sizeof(sockun.sun_path) - 1);
+    if (connect(sockfd, (struct sockaddr *) &sockun, sizeof(sun)) < 0) {
         close(sockfd);
         return -1;
     }

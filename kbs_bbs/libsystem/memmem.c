@@ -32,7 +32,9 @@
  * SUCH DAMAGE.
  */
 
+#ifndef SOLARIS
 #include <sys/cdefs.h>
+#endif
 
 #include <sys/types.h>
 #include <limits.h>

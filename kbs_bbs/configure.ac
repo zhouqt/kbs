@@ -6,11 +6,18 @@ AM_INIT_AUTOMAKE([foreign dist-bzip2])
 AC_CANONICAL_TARGET
 case "${host}" in
   i*86-*-freebsd4*)
-	CFLAGS="$CFLAGS -DFREEBSD"
-	;;
-  *)
-	;;
-esac
+        OSTYPE="FREEBSD"
+        ;;      
+  *-*-solaris*) 
+        OSTYPE="SOLARIS"
+        ;;  
+  *-*-sunos*)
+        OSTYPE="SUNOS"
+        ;;  
+  *)        
+        ;;        
+esac              
+CFLAGS="$CFLAGS -D$OSTYPE"
 
 AC_CONFIG_SRCDIR([config.h.in])
 AM_CONFIG_HEADER(config.h)
@@ -123,67 +130,6 @@ else
   fi
 fi
 AC_SUBST(BBSSITE)
-
-AH_TEMPLATE([USE_SSL],
-[Define to use openssl library])
-
-AC_ARG_WITH(openssl,
-[  --with-openssl[=path],Build with OpenSSL [yes|no|path].
-	],
-    use_openssl="$withval", use_openssl="no")
-case "$use_openssl" in
-        no)
-                AC_MSG_RESULT(no)
-                DST_OPENSSL_INC=""
-                USE_OPENSSL=""
-                ;;
-        *)
-            # User did not specify a path - guess it
-            openssldirs="/usr /usr/local /usr/local/ssl /usr/pkg"
-            for d in $openssldirs
-            do
-                  if test -f $d/include/openssl/opensslv.h
-                  then
-                      use_openssl=$d
-                      break
-                  fi
-            done
-            if test "$use_openssl" = "yes"
-            then
-                  AC_MSG_RESULT(not found)
-                  AC_MSG_ERROR(
-[OpenSSL was not found in any of $openssldirs; use --with-openssl=/path])
-            fi
-
-    	    AC_DEFINE(USE_SSL)
-            OPENSSL_INC="-I$use_openssl/include"
-            OPENSSL_LIBS="-L$use_openssl/lib -lcrypto -lssl"
-            AC_MSG_RESULT(using openssl from $use_openssl/lib and $use_openssl/include)
-
-            AC_MSG_CHECKING(OpenSSL library version)
-            saved_cflags="$CFLAGS"
-            saved_libs="$LIBS"
-            CFLAGS="$CFLAGS $DST_OPENSSL_INC"
-            LIBS="$LIBS $DNS_OPENSSL_LIBS"
-            AC_TRY_RUN([
-#include <stdio.h>
-#include <openssl/opensslv.h>
-int main() {
-        printf("\n\nFound   OPENSSL_VERSION_NUMBER %#010x\n",
-                OPENSSL_VERSION_NUMBER);
-        return (0);
-}
-],
-            [AC_MSG_RESULT(ok)],
-            [AC_MSG_RESULT(not compatible)],
-            [AC_MSG_RESULT(assuming target platform has compatible version)])
-            CFLAGS="$saved_cflags"
-            LIBS="$saved_libs"
-            ;;
-esac
-
-AC_SUBST(OPENSSL_INC)
-AC_SUBST(OPENSSL_LIBS)
 
 # Checks for programs.
 AC_PROG_CXX
