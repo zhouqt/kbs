@@ -298,6 +298,7 @@
     	[<a href="#listtop">返回顶部</a>]
     	[<a href="bbsdoc.php?board=<?php echo $brdarr["NAME"]; ?>">返回一般模式</a>]
     	[<a href="javascript:location=location">刷新</a>]
+  	    [<a href="/bbsbfind.php?board=<?php echo $brd_encode; ?>">版内查询</a>]
     	<?php
     		if (strcmp($currentuser["userid"], "guest") != 0)
 		{

@@ -427,6 +427,7 @@
     	[<a href="#listtop">返回顶部</a>]
     	[<a href="javascript:location=location">刷新</a>]
     	[<a href="bbstdoc.php?board=<?php echo $brd_encode; ?>">同主题模式</a>]
+  	    [<a href="/bbsbfind.php?board=<?php echo $brd_encode; ?>">版内查询</a>]
     	<?php
     		if (strcmp($currentuser["userid"], "guest") != 0)
 		{
