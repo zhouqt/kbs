@@ -1053,16 +1053,32 @@ int generate_mark()
     return 0;
 }
 
+static int simple_digest(char* str,int maxlen)
+{
+	char x[sizeof(int)];
+	char *p;
+	for (p=str;*p&&((p-str)<maxlen);p++)
+		x[(p-str)%sizeof(int)]+=*p;
+	return (int)x;
+}
+
 int generate_title()
 {
-    struct fileheader mkpost, *tmppost;
+    struct fileheader mkpost, *ptr1;
     struct flock ldata, ldata2;
-    int fd, fd2, size = sizeof(fileheader), total, i, j, count = 0;
+    int fd, fd2, size = sizeof(fileheader), total, i, count = 0;
     char olddirect[PATHLEN];
-    char *ptr, *ptr1, *t, *t2;
-    int* index;
+    char *ptr, *t, *t2;
+    struct search_temp{
+    	bool has_pre;
+    	int digest;
+    	int thread_id; /*主题*/
+    	int next; /*下一个主题文章*/
+    }  *index;
     struct stat buf;
+    int gen_threadid;
 
+	gen_threadid=1;
     digestmode = 0;
     setbdir(digestmode, olddirect, currboard);
     digestmode = 2;
@@ -1095,13 +1111,11 @@ int generate_title()
         close(fd);
         return -1;
     }
-    fstat(fd2, &buf);
     ldata2.l_type = F_RDLCK;
     ldata2.l_whence = 0;
     ldata2.l_len = 0;
     ldata2.l_start = 0;
     fcntl(fd2, F_SETLKW, &ldata2);
-    total = buf.st_size / size;
 
     if ((i = safe_mmapfile_handle(fd2, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
         if (i == 2)
@@ -1114,49 +1128,56 @@ int generate_title()
         close(fd);
         return -1;
     }
-    index = (int*)malloc(sizeof(int)*total);
-    ptr1 = ptr;
-    for (i = 0; i < total; i++) {
-        memcpy(&mkpost, ptr1, size);
-        t2 = mkpost.title;
-        if (strstr(t2, "Re:") == t2) t2+=4;
-    	index[i]=-1;
-    	for (j=0; j<i; j++) 
-    	if (index[j]==-1){
+    total = buf.st_size / size;
+    index = (int*)malloc(sizeof(*index)*total);
+    ptr1 = (struct fileheader*)ptr;
+    for (i = 0; i < total; i++, ptr1++) {
+    	int j;
+        t2 = ptr1->title;
+        if (!strncmp(t2, "Re:",3)) {
+   			index[i].has_pre=true;
+        	t2+=4;
+        } else
+   			index[i].has_pre=false;
+        index[i].thread_id=0;
+        index[i].digest=simple_digest(t2,STRLEN);
+    	for (j=i-1; j>=0;j--) {
+    		struct fileheader* tmppost;
+    		if (index[j].digest!=index[i].digest)
+    			continue;
     		tmppost = ((fileheader*)(ptr+j*size));
     		t = tmppost->title;
-    		if (strstr(t, "Re:") == t) t+=4;
+    		if (index[j].has_pre) 
+    			t+=4;
     		if (!strcmp(t, t2)) {
-    			index[i]=j;
+    			index[j].next=i;
+    			index[i].thread_id=index[j].thread_id;
+    			index[i].next=0;
     			break;
     		}
     	}
-        ptr1 += size;
+        if (index[i].thread_id==0) {
+        	index[i].thread_id=gen_threadid;
+        	index[i].next=0;
+        	gen_threadid++;
+        }
     }
-    for(i=0;i<total;i++)
-    	if(index[i]==-1){
-    		int has=0;
-    		memcpy(&mkpost, ptr+i*size, size);
-    		write(fd, &mkpost, size);
-    		count++;
-    		for(j=i+1;j<total;j++)
-    			if(index[j]==i){
-    				if (has) {
-    					if (strstr(mkpost.title, "Re:")==mkpost.title)
-	                    			sprintf(mkpost.title, "├ %s", mkpost.title + 4);
-	    				write(fd, &mkpost, size);
-    					count++;
-    				}
-    				memcpy(&mkpost, ptr+j*size, size);
-	    			has=1;
-    			}
-		if (has) {
-    			if (strstr(mkpost.title, "Re:")==mkpost.title)
-        			sprintf(mkpost.title, "└ %s", mkpost.title + 4);
+    gen_threadid=0;
+    for(i=0;i<total;i++) {
+    	if (gen_threadid!=index[i].thread_id) {
+    		write(fd, ptr+i*size, size);
+    		gen_threadid=index[i].thread_id;
+    	} else {
+    		ptr1=(struct fileheader*)ptr+i*size;
+    		memcpy(&mkpost, ptr1, size);
+    		if (index[i].next)
+	            sprintf(mkpost.title, "├ %s", ptr1->title + index[i].has_pre?4:0);
+    		else
+       			sprintf(mkpost.title, "└ %s", ptr1->title+ index[i].has_pre?4:0);
 			write(fd, &mkpost, size);
-			count++;
-		}
     	}
+		count++;
+    }
     free(index);
     end_mmapfile((void *) ptr, buf.st_size, -1);
     ldata2.l_type = F_UNLCK;
@@ -1171,6 +1192,7 @@ int generate_title()
     close(fd);
     return 0;
 }
+
 int marked_mode()
 {
     if (digestmode == 3) {
