@@ -36,7 +36,7 @@ int check_systempasswd()
     FILE           *pass;
     char            passbuf[40], prepass[STRLEN];
 
-    if (sysoppassed) return YEA;
+    if ((sysoppassed)&&(time(NULL)-sysoppassed<60*60)) return YEA;
     clear();
     if ((pass = fopen("etc/systempassword", "rb")) != NULL)
     {
@@ -66,7 +66,7 @@ int check_systempasswd()
             return NA;
         }
     }
-    sysoppassed=1;
+    sysoppassed=time(NULL);
     return YEA;
 }
 
