@@ -328,9 +328,9 @@ void r_msg()
             i=strlen(uid);
             while(i>0&&uid[i-1]==' ') i--;
             uid[i] = 0;
-            buf[39]=0;
-            i=29;
-            while(buf[i]=='0'&&i<38) i++;
+            buf[29]=0;
+            i=19;
+            while(buf[i]=='0'&&i<28) i++;
             pid = atoi(buf+i);
             uin = t_search(uid, pid);
             if(buf[1]=='3'||uin==NULL) canreply = 0;
@@ -352,7 +352,7 @@ void r_msg()
             }
             
 
-            prints("[m  µÚ%3d/%-3dÌõÏûÏ¢, °´¡ü»ò¡ýÇÐ»»Ñ¶Ï¢, »ò°´ Enter ½áÊø, %s", now+1, count, canreply?"»Ø¸´:":(uin?"¸ÃÏûÏ¢ÎÞ·¨»Ø¸´":"ÓÃ»§ÒÑÏÂÕ¾,ÎÞ·¨»Ø¸´"));
+            prints("[m  µÚ%3d/%-3dÌõÏûÏ¢, ¡ü¡ýÇÐ»»Ñ¶Ï¢, Enter ½áÊø, %s", now+1, count, canreply?"»Ø¸´:":(uin?"¸ÃÏûÏ¢ÎÞ·¨»Ø¸´":"ÓÃ»§ÒÑÏÂÕ¾,ÎÞ·¨»Ø¸´"));
             clrtoeol();
             good_getyx(&oy, &ox);
             
@@ -360,8 +360,11 @@ void r_msg()
             oflush();
             if(canreply)
                 ch = -getdata(oy, ox, NULL, buf, 1024, DOECHO, NULL, true);
-            else
-                ch = igetkey();
+            else {
+                do {
+                    ch = igetkey();
+                } while(ch!=KEY_UP&&ch!=KEY_DOWN&&ch!='\r'&&ch!='\n');
+            }
             for(i=0;i<=oy;i++)
                 saveline(i, 1, savebuffer[i]);
             switch(ch) {
@@ -386,6 +389,9 @@ void r_msg()
                                 clrtoeol();
                                 prints("%s", buf);
                                 refresh();
+#ifdef NINE_BUILD
+                                if(i!=1)
+#endif
                                 sleep(1);
                                 saveline(0, 1, savebuffer[0]);
                             }
