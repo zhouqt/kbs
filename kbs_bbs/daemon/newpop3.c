@@ -96,7 +96,6 @@ int msock, sock;                /* master server socket */
 static void reaper(int signo);
 static char inbuf[BUFSIZE];
 char remote_userid[STRLEN];
-FILE *cfp;
 char *msg, *cmd;
 int fd;
 struct fileheader *fcache;
@@ -573,7 +572,6 @@ void pop3_timeout(int signo)
     idletime++;
     if (idletime > 5) {
         BBSlog_usies("ABORT - TIMEOUT");
-        fclose(cfp);
         close(sock);
         exit(1);
     }
@@ -673,6 +671,11 @@ int main(int argc, char **argv)
             setuid(BBSUID);
 
             strcpy(fromhost, (char *) inet_ntoa(fsin.sin_addr));
+            if (check_ban_IP(fromhost, genbuf)>0) {
+                outs("-ERR your ip is baned");
+                close(csock);
+                exit(0);
+            }
             len = sizeof our;
             getsockname(sock, (struct sockaddr *) &our, (socklen_t *) & len);
 
@@ -736,7 +739,6 @@ int main(int argc, char **argv)
                 free(postlen);
             }
             BBSlog_usies("ABORT");
-            fclose(cfp);
             close(sock);
             exit(0);
             break;
@@ -860,7 +862,7 @@ void BBSlog_usies(char *buf)
         p = localtime(&now);
 	/* logµÄY2K czz 2003.3.8 */
         fprintf(fp, "%04d/%02d/%02d %02d:%02d:%02d [%s](%s) %s\n",
-                p->tm_year+1900, p->tm_mon + 1, p->tm_mday, p->tm_hour, p->tm_min, p->tm_sec, currentuser->userid ? currentuser->userid : "", remote_userid, buf);
+                p->tm_year+1900, p->tm_mon + 1, p->tm_mday, p->tm_hour, p->tm_min, p->tm_sec, currentuser->userid ? currentuser->userid : "", fromhost, buf);
         fflush(fp);
         fclose(fp);
     }
@@ -1242,7 +1244,6 @@ void Quit()
     BBSlog_usies("EXIT");
     sprintf(genbuf, "+OK SMTH BBS POP3/POP3S server at %s signing off.", NAME_BBS_ENGLISH);
     outs(genbuf);
-    fclose(cfp);
     close(sock);
     exit(0);
 }
