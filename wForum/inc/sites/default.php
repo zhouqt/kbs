@@ -47,4 +47,8 @@ if (!defined('SERVERTIMEZONE')) { //服务器时区 - 暂时这样搞吧 - atppp
 	define('SERVERTIMEZONE','北京时间');
 }
 
+if (!defined('USEBROWSCAP')) { //是否使用 browscap 函数来更准确地判断浏览器和操作系统类型，需要配置 PHP - atppp
+	define('USEBROWSCAP',0); //默认 OFF
+}
+
 ?>
