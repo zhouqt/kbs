@@ -6,6 +6,7 @@ atppp: 同步邮件字节数
 
 
 #include "bbs.h"
+/* #define FORCE_SYNC */
 
 int calc_mailsize(char *userid, char *dirname)
 {
@@ -43,6 +44,9 @@ int calc_mailsize(char *userid, char *dirname)
     for (i = 0; i < total; i++) {
         struct stat st;
         char ffn[256];
+#ifndef FORCE_SYNC
+        if (ptr1->eff_size > 0) continue;
+#endif
         setmailfile(ffn, userid, ptr1->filename);
         if (lstat(ffn, &st) == -1 || !S_ISREG(st.st_mode)) ptr1->eff_size = 0;
         else ptr1->eff_size = st.st_size;
