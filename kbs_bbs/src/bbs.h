@@ -533,13 +533,12 @@ struct UnRegPacket { //Type=5
     char cUserID[IDLEN+2];
 };
 struct RequireBindPacket { //Type = 6
-    byte UserID[4];
+    char cUserID[IDLEN+2];
     char MobileNo[MOBILE_NUMBER_LEN];
     char Bind;
 };
 struct ReplyBindPacket { //Type=7
     char MobileNo[MOBILE_NUMBER_LEN];
-    char cUserID[IDLEN+2];
     char isSucceed;
 };
 struct BBSSendSMS { //Type=8

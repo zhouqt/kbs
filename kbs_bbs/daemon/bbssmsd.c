@@ -106,15 +106,12 @@ int sendtouser(struct GWSendSMS * h, char* buf)
 
 int requiretouser(struct RequireBindPacket * h)
 {
-    int uid;
-    char * uident;
+    char uident[IDLEN+2];
     char buf[21];
     struct user_info * uin;
     struct msghead hh;
-    uid = byte2long(h->UserID);
-    uident = getuserid2(uid);
-    if(uident == NULL)
-        return -1;
+    strncpy(uident, h->cUserID, IDLEN+2);
+    uident[IDLEN+1]=0;
     uin = t_search(uident, NULL);
     if(uin == NULL)
         return -1;
