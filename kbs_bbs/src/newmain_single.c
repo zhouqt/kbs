@@ -1162,7 +1162,7 @@ void showtitle( char *title, char*mid)
 	    sprintf(note, "ÌÖÂÛÇø [%s]", currboard->filename);
     else {
         int bid;
-        bid=getboard(DEFAULTBOARD);
+        bid = getbnum(boardname);
         currboardent=bid;
         currboard=(struct boardheader*)getboard(bid);
 #ifdef HAVE_BRC_CONTROL
