@@ -21,7 +21,6 @@ void f_catfile(char* srcpath,char* dstpath)
         if ((fdst = open(dstpath, O_WRONLY , 0600)) >= 0) {
             char* src=(char*)malloc(10240);
             long ret;
-            lseek(fsrc,*pattachpos-1,SEEK_SET);
             do {
                 ret = read(fsrc, src, 10240);
                 if (ret <= 0)
