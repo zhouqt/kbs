@@ -20,12 +20,10 @@ login_init();
 		if (bbs_checkreadperm($usernum,$brdnum)==0)
 			html_error_quit("错误的讨论区");
 		$top_file= bbs_get_vote_filename($brdarr["NAME"], "notes");
-		$fp = @fopen($top_file, "r");
-		if ($fp == FALSE) {
+		if (!file_exists($top_file)) {
 		        html_init("gb2312");
 			html_error_quit("现在没有备忘录");
                 }
-                fclose($fp);
                 if (cache_header("public",filemtime($top_file),300))
                 	return;
 		html_init("gb2312");
