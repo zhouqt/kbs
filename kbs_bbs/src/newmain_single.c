@@ -488,10 +488,10 @@ login_query()
     }*/
     /*ansimore(fname,NA); Leeward: disable the old code */
 
-    prints( "\033[1mª∂”≠π‚¡Ÿ [31m%s[37m °Ù"ISSUE_LOGIN"°Ù [36mƒø«∞…œœﬂ»À ˝ \033[1m%d+%d[m", BBS_FULL_NAME, curr_login_num,getwwwguestcount());
+/*    prints( "\033[1mª∂”≠π‚¡Ÿ[31m%s[37m°Ù"ISSUE_LOGIN"°Ù [36m…œœﬂ»À ˝ \033[1m%d(%dWWW GUEST)[m", BBS_FULL_NAME, curr_login_num+getwwwguestcount(),getwwwguestcount());
+ *    */
+    prints( "  \033[1mª∂”≠π‚¡Ÿ °Ù[31m%s[37m°Ù [36m…œœﬂ»À ˝ \033[1m%d(%d WWW GUEST)[m", BBS_FULL_NAME, curr_login_num+getwwwguestcount(),getwwwguestcount());
 
-    if ((curr_http_num != -1) && (curr_http_num != 0)) /* dong 2000.4.18 */ 
-      prints("[1m[36m+%d[m", curr_http_num); /* Leeward 99.03.06 */
 #ifndef SSHBBS
     attempts = 0;
 #ifdef LOGINASNEW
@@ -1077,7 +1077,7 @@ update_endline()
             sprintf(stitle,"[4%dm[33m ±º‰[[36m%12.12s[33m] ◊‹»À ˝/∫√”—[%3d/%3d][%c£∫%c]  π”√’ﬂ%-24s Õ£¡Ù[%3d:%2d][m",colour,
                     ctime(&now)+4,count_users,count_friends,(uinfo.pager&ALL_PAGER)?'Y':'N',(!(uinfo.pager&FRIEND_PAGER))?'N':'Y',buf,(allstay/60)%1000,allstay%60);*/
             sprintf(stitle,"\x1b[4%dm\x1b[33m ±º‰[\x1b[36m%12.12s\x1b[33m] ◊‹»À ˝ [ %3d ] [%c£∫%c]  π”√’ﬂ%-24s Õ£¡Ù[%3d:%2d]\x1b[m",colour,
-                    ctime(&now)+4,get_utmp_number(),(uinfo.pager&ALL_PAGER)?'Y':'N',(!(uinfo.pager&FRIEND_PAGER))?'N':'Y',buf,(allstay/60)%1000,allstay%60);
+                    ctime(&now)+4,get_utmp_number()+getwwwguestcount(),(uinfo.pager&ALL_PAGER)?'Y':'N',(!(uinfo.pager&FRIEND_PAGER))?'N':'Y',buf,(allstay/60)%1000,allstay%60);
     }
     move(t_lines-1,0);
     clrtoeol();

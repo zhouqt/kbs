@@ -108,37 +108,40 @@ void resolve_boards()
 	int boardfd;
 	int iscreate=0;
 	
-    if( brdshm == NULL ) {
-        brdshm = attach_shm( "BCACHE_SHMKEY", 3693, sizeof( *brdshm ) ,&iscreate); /* attach board share memory*/
-    }
-    
-	if ((boardfd=open(BOARDS,O_RDWR|O_CREAT,0644)) == -1) {
-		bbslog("3system","Can't open " BOARDS "file %s",strerror(errno));
-       	exit(-1);
-	}
-   	bcache = (struct boardheader*) mmap(NULL,
+	if (bcache==NULL) {
+		if ((boardfd=open(BOARDS,O_RDWR|O_CREAT,0644)) == -1) {
+			bbslog("3system","Can't open " BOARDS "file %s",strerror(errno));
+       		exit(-1);
+		}
+   		bcache = (struct boardheader*) mmap(NULL,
    			MAXBOARD*sizeof(struct boardheader),
    			PROT_READ|PROT_WRITE,MAP_SHARED,boardfd,0);
-   	if (bcache==(struct boardheader*)-1) {
-		bbslog("4system","Can't map " BOARDS "file %s",strerror(errno));
-		close(boardfd);
-       	exit(-1);
-   	}
-	if (iscreate) {
-		int i;
-		int fd;
-		fd = bcache_lock();
-		ftruncate(boardfd,MAXBOARD*sizeof(struct boardheader));
-		for (i=0;i<MAXBOARD;i++)
-			if (bcache[i].filename[0]) {
-				brdshm->numboards=i+1;
-				getlastpost(bcache[i].filename, 
-					&brdshm->bstatus[i].lastpost, 
-					&brdshm->bstatus[i].total);
-			}
-		bcache_unlock(fd);
+   		if (bcache==(struct boardheader*)-1) {
+			bbslog("4system","Can't map " BOARDS "file %s",strerror(errno));
+			close(boardfd);
+       		exit(-1);
+	   	}
+   		close(boardfd);
 	}
-   	close(boardfd);
+    if( brdshm == NULL ) {
+        brdshm = attach_shm( "BCACHE_SHMKEY", 3693, sizeof( *brdshm ) ,&iscreate); /* attach board share memory*/
+		if (iscreate) {
+			int i,maxi=0;
+			int fd;
+			bbslog("3system","reload bcache!");
+			fd = bcache_lock();
+			ftruncate(boardfd,MAXBOARD*sizeof(struct boardheader));
+			for (i=0;i<MAXBOARD;i++)
+				if (bcache[i].filename[0]) {
+					getlastpost(bcache[i].filename, 
+						&brdshm->bstatus[i].lastpost, 
+						&brdshm->bstatus[i].total);
+					maxi=i;
+				}
+			brdshm->numboards=maxi+1;
+			bcache_unlock(fd);
+		}
+    }
 }
 
 struct BoardStatus* getbstatus(int index)
