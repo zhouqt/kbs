@@ -29,7 +29,7 @@ struct userec {                  /* Structure used to hold information in */
         time_t          notedate;
         int             noteline;
         int             notemode;
-        int             unuse1;/* no use*/
+        time_t          exittime;
         int             unuse2;/* no use*/
 };
 

@@ -132,7 +132,7 @@ new_register()
         newuser.userdefine&=~DEF_USEGB;
 
     newuser.notemode=-1;
-    newuser.unuse1=-1;
+    newuser.exittime=time(NULL)-100;
     newuser.unuse2=-1;
     newuser.flags[0] = CURSOR_FLAG;
     newuser.flags[0] |= PAGER_FLAG;

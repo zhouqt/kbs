@@ -2513,6 +2513,8 @@ notepad()
 
 void record_exit_time()   /* 记录离线时间  Luzi 1998/10/23 */
 {
+	currentuser->exittime=time(NULL);
+	/*
     char path[80];
     FILE *fp;
     time_t now;
@@ -2524,6 +2526,7 @@ void record_exit_time()   /* 记录离线时间  Luzi 1998/10/23 */
         fwrite(&now,sizeof(time_t),1,fp);
         fclose(fp);
     }
+	*/
 }
 
 int
