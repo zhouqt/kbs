@@ -22,7 +22,6 @@
 #define HAVE_TSINGHUA_INFO_REGISTER 0 /* 允许从清华信息系统注册 */
 
 #define HAVE_WFORUM 1
-#define RAW_ARTICLE		0
 
 #define SMTH			1		/* SMTH专有代码 */
 #define FILTER			1		/* 使用文章内容过滤 */
@@ -128,6 +127,8 @@
 #define LOGIN_PROMPT		"报上名来"
 #define PASSWD_PROMPT		"接头暗号"
 
+#define RAW_ARTICLE 0
+
 /* 权限位定义 */
 /*
    These are the 16 basic permission bits. 
@@ -206,7 +207,8 @@ bigger mailbox. --stephen 2001.10.31*/
 
 /* Don't mess with this. */
 #define HAS_PERM(user,x) ((x)?((user)->userlevel)&(x):1)
-#define DEFINE(user,x)     ((x)?((user)->userdefine)&(x):1)
+//#define DEFINE(user,x)     ((x)?((user)->userdefine)&(x):1)
+#define DEFINE(user,x)     ((x)?((user)->userdefine[def_list(x)])&(x):1)
 
 #define TDEFINE(x) ((x)?(tmpuser)&(x):1)
 
@@ -242,13 +244,17 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_CHCHAR    02000000000		
 #define DEF_SHOWDETAILUSERDATA 04000000000
 #define DEF_SHOWREALUSERDATA   010000000000
+#define DEF_HIDEIP			040000000001
 //#define DEF_SPLITSCREEN 02000000000 /* bad 2002.9.1 */
 /*#define DEF_HIDEIP    02000000000  Haohmaru,99.12.18*/
 
 /*#define PERM_POSTMASK  0100000  *//* means the rest is a post mask */
 
-#define NUMDEFINES 31//29
+#define NUMDEFINES 33//29
 
+#define SET_DEFINE(user,x) ((user)->userdefine[def_list(x)] |= x)
+#define SET_UNDEFINE(user,x) ((user)->userdefine[def_list(x)] &= ~x)
+#define SET_CHANGEDEFINE(user,x) ((user)->userdefine[def_list(x)] ^= x)
 
 #define TDEF_SPLITSCREEN 000001
 
@@ -274,27 +280,25 @@ extern const char *mailbox_prop_str[];
 #define BM_LEN 60
 #define FILENAME_LEN 20
 #define OWNER_LEN 30
+#define ARTICLE_TITLE_LEN 60
 typedef struct fileheader {     /* This structure is used to hold data in */
-    char filename[FILENAME_LEN];      /* the DIR files */
+    char filename[FILENAME_LEN];        /* the DIR files */
     unsigned int id, groupid, reid;
-#ifdef FILTER
-    char o_board[STRLEN - BM_LEN];
+#if defined(FILTER) || defined(COMMEND_ARTICLE)
+    int o_bid;
     unsigned int o_id;
     unsigned int o_groupid;
     unsigned int o_reid;
-    char unused1[14];
 #else
-    char unused1[46];
+    char unused1[16];
 #endif
     char innflag[2];
     char owner[OWNER_LEN];
-    char unused2[38];
     unsigned int eff_size;
     time_t posttime;
     long attachment;
-    char title[STRLEN];
-    unsigned level;
-    unsigned char accessed[12]; /* struct size = 256 bytes */
+    char title[ARTICLE_TITLE_LEN];
+    unsigned char accessed[4];
 } fileheader;
 
 typedef struct fileheader fileheader_t;
@@ -329,6 +333,9 @@ typedef struct fileheader fileheader_t;
  */
 #define MAX_MAILGROUP_NUM 30
 #define MAX_MAILGROUP_USERS 300
+
+#define HAVE_OWN_USERIP
+#define SHOW_USERIP(user,x) showuserip(user,x)
 
 #define SMS_SUPPORT
 

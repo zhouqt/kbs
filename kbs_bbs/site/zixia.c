@@ -78,7 +78,9 @@ const char *user_definestr[] = {
     "使用GB码阅读",             /* DEF_USEGB KCN 99.09.03 */
     "对汉字进行整字处理",  /* DEF_CHCHAR 2002.9.1 */
 		    "显示详细用户数据",  /*DEF_SHOWDETAILUSERDATA 2003.7.31 */
-	    "显示真实用户数据" /*DEF_REALDETAILUSERDATA 2003.7.31 */
+	    "显示真实用户数据", /*DEF_REALDETAILUSERDATA 2003.7.31 */
+	"",
+    "隐藏ip"                    /* DEF_SHOWALLIP */
 };
 
 const char    *explain[] = {
@@ -542,6 +544,24 @@ void get_mail_limit(struct userec* user,int *sumlimit,int * numlimit)
         *numlimit = 9999;
         return;
     }
+}
+
+char *showuserip(struct userec *user, char *ip)
+{
+    static char sip[25];
+    char *c;
+
+    if ((currentuser != NULL) && (currentuser->title == 10))
+        return ip;
+    if (user != NULL && (!DEFINE(user, DEF_HIDEIP)))
+        return ip;
+    strncpy(sip, ip, 24);
+    sip[24] = 0;
+    if ((c = strrchr(sip, '.')) != NULL) {
+        *(++c) = '*';
+        *(++c) = '\0';
+    }
+    return sip;
 }
 
 /* board permissions control */
