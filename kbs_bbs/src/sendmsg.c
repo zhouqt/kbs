@@ -736,8 +736,9 @@ int register_sms()
             return -1;
         }
         move(5, 0);
-        prints("请用你的手机向%s发送:\nZCYH 1%d\n来注册用户，成功之后你将收到确认信",
-            sysconf_str("SMS_NUMBER"),usernum);
+        uid2smsnumber(&uinfo, buf2);
+        prints("请用你的手机向%s发送:\nZCYH %s\n来注册用户，成功之后你将收到确认信",
+            sysconf_str("SMS_NUMBER"),buf2);
         pressreturn();
      }
     return 0;

@@ -142,11 +142,12 @@ int requiretouser(struct RequireBindPacket * h, unsigned int sn)
     struct user_info * uin;
     struct usermemo *pum;
     struct userdata ud;
-    int uid;
+    int uid,smsnumber;
+    byte bufbyte[4];
     /* 我们先分配1开头的uid*/
-    if (h->cUserID[0]!='1')
-        return -1;
-    uid = atoi(h->cUserID+1);
+    smsnumber=atoi(h->cUserID);
+    long2byte(smsnumber,bufbyte);
+    uid=smsnumber2uid(bufbyte);
     uident = getuserid2(uid);
     if (uident==NULL) return -1;
 
