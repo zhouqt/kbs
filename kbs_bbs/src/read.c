@@ -52,7 +52,7 @@ struct keeploc {
 
 
 /*struct fileheader *files = NULL;*/
-char            currdirect[ STRLEN ];
+char            currdirect[ 255 ]; /*COMMAN: increased directory length to MAX_PATH */
 int             screen_len;
 int             last_line;
 extern int	m_read();
@@ -109,7 +109,7 @@ int     def_cursline;
     p->key = (char *) malloc(strlen(s)+1) ;
     strcpy(p->key,s) ;
     p->top_line = def_topline ;
-    p->crs_line = def_cursline ;
+    p->crs_line = def_cursline ; /* this should be safe */
     p->next = keeplist ;
     keeplist = p ;
     return p ;
@@ -236,7 +236,7 @@ int     ssize;
     /*---	Moved from top of file	period	2000-11-12	---*/
     char * pnt;
 
-    strcpy( currdirect, direct );
+    strncpy( currdirect, direct ,255); /* COMMAN: strncpy */
     /*---	HERE:	---*/
     screen_len = t_lines - 4;
     modify_user_mode( cmdmode );
@@ -301,7 +301,7 @@ int     ssize;
                 int allstay;
                 char pntbuf[256], nullbuf[2] = " ";
                 allstay = (time(0) - login_start_time)/60;
-                sprintf(pntbuf, "\033[33;44m转到∶[\033[36m%9.9s\033[33m]"
+                snprintf(pntbuf, 256, "\033[33;44m转到∶[\033[36m%9.9s\033[33m]"
                         "  呼叫器[好友:%3s∶一般:%3s] 使用者[\033[36m%.12s\033[33m]%*s停留[%3d:%2d]\033[m",
                         lbuf, (!(uinfo.pager&FRIEND_PAGER)) ? "NO " : "YES",
                         (uinfo.pager&ALL_PAGER) ? "YES" : "NO ",
@@ -681,7 +681,7 @@ char *direct ;
     if( !uin || !canmsg(uin))
         do_sendmsg(NULL,NULL,0);
     else {
-        strcpy(MsgDesUid, uin->userid);
+        strncpy(MsgDesUid, uin->userid, 20);
         do_sendmsg(uin,NULL,0);
     }
     return FULLUPDATE;
@@ -723,7 +723,7 @@ char *direct ;
     clrtoeol();
     strcpy(buf,"相同主题 (0)取消  ");
     for(i=0;i<7;i++)
-        sprintf(buf,"%s(%d)%s  ",buf,i+1,SR_BMitems[i]);
+        snprintf(buf,256,"%s(%d)%s  ",buf,i+1,SR_BMitems[i]);
     strcat(buf,"? [0]: ");
     if (strlen(buf)>76) {
         char savech=buf[76];
@@ -751,7 +751,7 @@ char *direct ;
     move(t_lines-3, 0);
     clrtoeol();
     /* Leeward 98.04.16 */
-    sprintf(buf,"是否从此主题第一篇开始%s (Y)第一篇 (N)目前这篇 (C)取消 (Y/N/C)? [Y]: ",SR_BMitems[BMch-1]);
+    sprintf(buf,256,"是否从此主题第一篇开始%s (Y)第一篇 (N)目前这篇 (C)取消 (Y/N/C)? [Y]: ",SR_BMitems[BMch-1]);
     getdata(t_lines-3, 0,buf,ch,3,DOECHO,NULL,YEA);
     switch (ch[0])
     {
@@ -796,7 +796,7 @@ char *direct ;
     clrtoeol();
     strcpy(buf,"相同主题 (0)取消  ");
     for(i=0;i<7;i++)
-        sprintf(buf,"%s(%d)%s  ",buf,i+1,SR_BMitems[i]);
+        snprintf(buf,256,"%s(%d)%s  ",buf,i+1,SR_BMitems[i]);
     strcat(buf,"? [0]: ");
     if (strlen(buf)>76) {
         char savech=buf[76];
@@ -820,7 +820,7 @@ char *direct ;
     move(t_lines-3, 0);
     clrtoeol();
     /* Leeward 98.04.16 */
-    sprintf(buf,"是否从此主题第一篇开始%s (Y)第一篇 (N)目前这篇 (C)取消 (Y/N/C)? [Y]: ",SR_BMitems[BMch-1]);
+    snprintf(buf,256,"是否从此主题第一篇开始%s (Y)第一篇 (N)目前这篇 (C)取消 (Y/N/C)? [Y]: ",SR_BMitems[BMch-1]);
     getdata(t_lines-2, 0,buf,ch,3,DOECHO,NULL,YEA);
     B_to_b = YEA;
     switch (ch[0])
@@ -931,13 +931,13 @@ char            *powner;
     char        ans[ IDLEN+1 ], pmt[ STRLEN ];
     char currauth[STRLEN];
 
-    strcpy( currauth, powner);
+    strncpy( currauth, powner,STRLEN);
 
-    sprintf( pmt, "%s的文章搜寻作者 [%s]: ", offset > 0 ?  "往後来" : "往先前", currauth );
+    sprintf( pmt,STRLEN, "%s的文章搜寻作者 [%s]: ", offset > 0 ?  "往後来" : "往先前", currauth );
     move(t_lines-1,0);
     clrtoeol();
     getdata( t_lines-1, 0, pmt, ans, IDLEN+1, DOECHO, NULL ,YEA);/*Haohmaru.98.09.29.修正作者查找只能11位ID的错误*/
-    if( ans[0] != '\0' )  strcpy( author, ans );
+    if( ans[0] != '\0' )  strncpy( author, ans,IDLEN);
     else strcpy(author,currauth);
 
     return search_articles( locmem, author, offset, 1 );
@@ -1051,8 +1051,8 @@ int             offset;
     static char query[ STRLEN ];
     char  ans[STRLEN],pmt[ STRLEN ];
 
-    strcpy(ans,query);
-    sprintf( pmt, "搜寻%s的文章 [%s]: ", offset > 0 ?  "往後来" : "往先前", ans);
+    strncpy(ans,query,STRLEN);
+    snprintf( pmt,STRLEN, "搜寻%s的文章 [%s]: ", offset > 0 ?  "往後来" : "往先前", ans);
     move(t_lines-1,0);
     clrtoeol();
     getdata( t_lines-1, 0, pmt, ans, 50 , DOECHO, NULL ,YEA);
@@ -1069,8 +1069,8 @@ int             offset;
     static char title[ STRLEN ];
     char        ans[ STRLEN ], pmt[ STRLEN ];
 
-    strcpy( ans, title );
-    sprintf( pmt, "%s搜寻标题 [%s]: ", offset > 0 ? "往後" : "往前", ans );
+    strncpy( ans, title,STRLEN );
+    snprintf( pmt, STRLEN,"%s搜寻标题 [%s]: ", offset > 0 ? "往後" : "往前", ans );
     move(t_lines-1,0);
     clrtoeol();
     getdata( t_lines-1, 0, pmt, ans, STRLEN-1, DOECHO, NULL ,YEA);
@@ -1107,7 +1107,7 @@ struct fileheader *ptitle;
 /*    int Xflag = (-1003 != passonly )? 0 : !(passonly = 0);奇怪啊KCN */
     int Xflag = (-1003 != passonly )? 0 : (passonly = 0,1);
 
-    strcpy(ori_file, ptitle->filename);
+    strncpy(ori_file, ptitle->filename,STRLEN);
 
     B = (passonly < 0 ? - 1 : 1); /* Leeward 98.04.16 */
     passonly *= B;
@@ -1143,11 +1143,11 @@ case KEY_UP:case 'u':case'U':
     ori_crs = locmem->crs_line;
     if(auser==0)
     {
-        strcpy(title,ptitle->title);
+        strncpy(title,ptitle->title,STRLEN);
         setqtitle(title);
     }else
     {
-        strcpy(title,ptitle->owner);
+        strncpy(title,ptitle->owner,STRLEN);
         setqtitle(ptitle->title);
     }
     if( !strncmp(title,"Re: ",4)|!strncmp(title,"RE: ",4))

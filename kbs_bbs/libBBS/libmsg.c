@@ -1,7 +1,7 @@
 #include "bbs.h"
 #include "screen.h"
 #define MAXMESSAGE 5
-char MsgDesUid[14];
+char MsgDesUid[20];
 char msgerr[255];
 int getuinfopid(void);
 int

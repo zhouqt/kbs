@@ -952,10 +952,12 @@ int chat_status(struct user_info *uentp,chatcontext *pthis)
 	lpTmp=(char*)idle_str(uentp);
 	if (uentp->in_chat) /* add by Luzi 1997.11.18*/
 	{
+	      int res;
 		sprintf(tmpstr,"/q %s",uentp->userid);
 		chat_send(pthis,tmpstr);
-		
-		tmpstr[chat_recv(pthis, tmpstr, 30)]='\0';
+		res = chat_recv(pthis, tmpstr, 30);
+		if (res<=0) return -1;
+		tmpstr[res]='\0';
 		
 		if (tmpstr[0]=='1')
 		{  
@@ -1069,7 +1071,7 @@ void call_query_ByChatid(chatcontext *pthis, const char *arg) /* add by dong, 19
 {
     char        uident[32];
     char        tmpstr[40];
-
+   int res;
     if (!*arg) {
         printchatline(pthis,"*** 请输入要查询的chat ID ***");
         return;
@@ -1080,7 +1082,9 @@ void call_query_ByChatid(chatcontext *pthis, const char *arg) /* add by dong, 19
     /* get user id from the chat id */
     sprintf(tmpstr,"/qc %s", uident);
     chat_send(pthis, tmpstr);
-    tmpstr[chat_recv(pthis, tmpstr, 40)]='\0';
+    res = chat_recv(pthis, tmpstr, 40);
+    if (res<=0) return ;
+    tmpstr[res]='\0';
     if (tmpstr[0]=='1')
     {
         sprintf(uident, "%s", tmpstr+1);
