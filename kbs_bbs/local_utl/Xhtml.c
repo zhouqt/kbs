@@ -330,11 +330,11 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
 			}
 
 			if (':' == srcLine[0])
-				sprintf(dstLine, "กร<i>%s</i><br/>\n", Buf2 + 1);
+				sprintf(dstLine, "กร<i>%s</i><br>\n", Buf2 + 1);
 			else if ('>' == srcLine[0])
-				sprintf(dstLine, "ฃพ<i>%s</i><br/>\n", Buf2 + 4);
+				sprintf(dstLine, "ฃพ<i>%s</i><br>\n", Buf2 + 4);
 			else
-				sprintf(dstLine, "%s<br/>\n", Buf2);
+				sprintf(dstLine, "%s<br>\n", Buf2);
 
 			fputs(dstLine, pdstFile);
 		}
