@@ -77,9 +77,9 @@ const char *user_definestr[] = {
     "使用GB码阅读",             /* DEF_USEGB KCN 99.09.03 */
     "对汉字进行整字处理",       /* DEF_SPLITSCREEN 2002.9.1 */
     "显示详细用户数据",         /*DEF_SHOWDETAILUSERDATA 2003.7.31 */
-    "显示真实用户数据",          /*DEF_REALDETAILUSERDATA 2003.7.31 */
-	"",
-    "隐藏ip"                 /* DEF_SHOWALLIP */
+    "显示真实用户数据",         /*DEF_REALDETAILUSERDATA 2003.7.31 */
+    "",
+    "隐藏ip"                    /* DEF_SHOWALLIP */
 };
 
 const char *explain[] = {
@@ -419,10 +419,10 @@ int mode;
         return "登录控制";
     case EDITOR:
         return "编辑器";
-	case HELP:
-		return "帮助";
-	case POSTTMPL:
-		return "模板发文";
+    case HELP:
+        return "帮助";
+    case POSTTMPL:
+        return "模板发文";
     default:
         return "去了那里!?";
     }
@@ -665,7 +665,7 @@ int ann_get_postfilename(char *filename, struct fileheader *fileinfo, MENU * pm)
 /**
  * 文章相关函数。
  */
-time_t get_posttime(const struct fileheader *fileinfo)
+time_t get_posttime(const struct fileheader * fileinfo)
 {
     if (fileinfo->filename[1] == '/')
         return fileinfo->posttime;
@@ -902,22 +902,22 @@ int auto_register(char *userid, char *email, int msize)
     return 0;
 }
 
-char * showuserip(struct userec *user, char *ip)
+char *showuserip(struct userec *user, char *ip)
 {
-	static char sip[25];
-	char *c;
+    static char sip[25];
+    char *c;
 
-	if ((currentuser!=NULL)&&(currentuser->title==10))
-            return ip;
-	if( user!=NULL && (!DEFINE(user, DEF_HIDEIP)) )
-		return ip;
-	strncpy(sip, ip, 24);
-	sip[24]=0;
-	if( (c=strrchr(sip, '.')) != NULL){
-		*(++c)='*';
-		*(++c)='\0';
-	}
-	return sip;
+    if ((currentuser != NULL) && (currentuser->title == 10))
+        return ip;
+    if (user != NULL && (!DEFINE(user, DEF_HIDEIP)))
+        return ip;
+    strncpy(sip, ip, 24);
+    sip[24] = 0;
+    if ((c = strrchr(sip, '.')) != NULL) {
+        *(++c) = '*';
+        *(++c) = '\0';
+    }
+    return sip;
 }
 
 #ifdef SMS_SUPPORT

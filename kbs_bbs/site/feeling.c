@@ -75,9 +75,11 @@ const char *user_definestr[] = {
     "观看人数统计和祝福榜",     /* DEF_SHOWSTATISTIC Haohmaru 98.09.24 */
     "未读标记使用 *",           /* DEF_UNREADMARK Luzi 99.01.12 */
     "使用GB码阅读",             /* DEF_USEGB KCN 99.09.03 */
-    "对汉字进行整字处理"        /* DEF_SPLITSCREEN 2002.9.1 */
-        "显示详细用户数据",     /*DEF_SHOWDETAILUSERDATA 2003.7.31 */
-    "显示真实用户数据"          /*DEF_REALDETAILUSERDATA 2003.7.31 */
+    "对汉字进行整字处理",       /* DEF_SPLITSCREEN 2002.9.1 */
+    "显示详细用户数据",         /*DEF_SHOWDETAILUSERDATA 2003.7.31 */
+    "显示真实用户数据",         /*DEF_REALDETAILUSERDATA 2003.7.31 */
+    "",
+    "隐藏ip"                    /* DEF_SHOWALLIP */
 };
 
 const char *explain[] = {
@@ -304,8 +306,8 @@ int mode;
         return "看谁在线上";
     case FRIEND:
         return "找线上好友";
-    case MONITOR:
-        return "监看中";
+//    case MONITOR:
+//        return "监看中";
     case QUERY:
         return "查询网友";
     case TALK:
@@ -329,7 +331,7 @@ int mode;
     case VOTING:
         return "投票";
     case BBSNET:
-        return "时空穿梭";      //ft
+        return "时空穿梭";      //why ft?
         /*
          * return "穿梭银河";
          */
@@ -403,6 +405,10 @@ int mode;
         return "登录控制";
     case EDITOR:
         return "编辑器";
+    case HELP:
+        return "帮助";
+    case POSTTMPL:
+        return "模板发文";
     default:
         return "去了那里!?";
     }
@@ -458,14 +464,24 @@ int multilogin_user(struct userec *user, int usernum, int mode)
         return 0;
 
     if (!strcmp("guest", user->userid)) {
-        if (logincount > MAX_GUEST_NUM) {
+        if (logincount > MAX_GUEST_NUM)
             return 2;
-        }
+#define MAX_GUEST_PER_IP 20
+        if (apply_utmp((APPLY_UTMP_FUNC) checkguestip, 0, "guest", fromhost) > MAX_GUEST_PER_IP)
+            return 3;
         return 0;
-    } else if (((curr_login_num < 700) && (logincount >= 3))    /*小于700可以三登 */
-               ||((curr_login_num >= 700) && (logincount >= 2)  /*700人以上 */
-                  &&!(((arg.telnet_count == 0) && (mode == 0))  /* telnet个数为零可以再登一个telnet */
-                      ||(((arg.www_count == 0) && (mode == 1))))))      /*user login limit */
+    }
+
+    /*
+     * 未通过注册的用户不能双登 added by bixnun 2003.5.30 
+     */
+    if ((!HAS_PERM(user, PERM_LOGINOK)) && logincount > 0)
+        return 1;
+
+    if (((curr_login_num < 700) && (logincount >= 3))   /*小于700可以三登 */
+        ||((curr_login_num >= 700) && (logincount >= 2) /*700人以上 */
+           &&!(((arg.telnet_count == 0) && (mode == 0)) /* telnet个数为零可以再登一个telnet */
+               ||(((arg.www_count == 0) && (mode == 1))))))     /*user login limit */
         return 1;
     return 0;
 }
@@ -555,7 +571,7 @@ int compute_user_value(struct userec *urec)
      */
 
     if (urec->lastlogin < 1022036050)
-        return old_compute_user_value(urec);
+        return old_compute_user_value(urec) + 15;
     /*
      * 这个是死人的id,sigh 
      */
@@ -588,12 +604,12 @@ int compute_user_value(struct userec *urec)
      * 自杀功能,Luzi 1998.10.10 
      */
     if (urec->userlevel & PERM_SUICIDE)
-        return (LIFE_DAY_SUICIDE * 24 * 60 - value) / (60 * 24);
+        return (LIFE_DAY_SUICIDE * 24 * 60 - value) / (60 * 24) + 15;
     /**********************/
     if (urec->numlogins <= 3)
-        return (LIFE_DAY_SUICIDE * 24 * 60 - value) / (60 * 24);
+        return (LIFE_DAY_SUICIDE * 24 * 60 - value) / (60 * 24) + 15;
     if (!(urec->userlevel & PERM_LOGINOK))
-        return (LIFE_DAY_NEW * 24 * 60 - value) / (60 * 24);
+        return (LIFE_DAY_NEW * 24 * 60 - value) / (60 * 24) + 15;
     /*
      * if (urec->userlevel & PERM_LONGID)
      * return (667 * 24 * 60 - value)/(60*24); 
@@ -605,7 +621,7 @@ int compute_user_value(struct userec *urec)
         basiclife = LIFE_DAY_LONG + 1;
     else
         basiclife = LIFE_DAY_YEAR + 1;
-    return (basiclife * 24 * 60 - value) / (60 * 24);
+    return (basiclife * 24 * 60 - value) / (60 * 24) + 15;
 }
 
 /**
@@ -632,7 +648,7 @@ int ann_get_postfilename(char *filename, struct fileheader *fileinfo, MENU * pm)
 /**
  * 文章相关函数。
  */
-time_t get_posttime(const struct fileheader *fileinfo)
+time_t get_posttime(const struct fileheader * fileinfo)
 {
     return atoi(fileinfo->filename + 2);
 }
@@ -644,7 +660,7 @@ void set_posttime(struct fileheader *fileinfo)
 
 void set_posttime2(struct fileheader *dest, struct fileheader *src)
 {
-    return;
+    dest->posttime = src->posttime;
 }
 
 /**
@@ -659,15 +675,12 @@ void build_board_structure(const char *board)
 void get_mail_limit(struct userec *user, int *sumlimit, int *numlimit)
 {
     if ((!(user->userlevel & PERM_SYSOP)) && strcmp(user->userid, "Arbitrator")) {
-        if (user->userlevel & PERM_COLLECTIVE) {
-            *sumlimit = -1;
-            *numlimit = -1;
-        } else if (user->userlevel & PERM_JURY) {
+        if (user->userlevel & PERM_JURY) {
+            *sumlimit = 10000;
+            *numlimit = 10000;
+        } else if (user->userlevel & PERM_BMAMANGER) {
             *sumlimit = 8000;
             *numlimit = 8000;
-        } else if (user->userlevel & PERM_BMAMANGER) {
-            *sumlimit = 4000;
-            *numlimit = 4000;
         } else if (user->userlevel & PERM_CHATCLOAK) {
             *sumlimit = 8000;
             *numlimit = 8000;
@@ -677,11 +690,11 @@ void get_mail_limit(struct userec *user, int *sumlimit, int *numlimit)
              * set BM, chatop, and jury have bigger mailbox, stephen 2001.10.31 
              */
         if (user->userlevel & PERM_MANAGER) {
-            *sumlimit = 1200;
-            *numlimit = 1200;
+            *sumlimit = 4000;
+            *numlimit = 4000;
         } else if (user->userlevel & PERM_LOGINOK) {
-            *sumlimit = 480;
-            *numlimit = 600;
+            *sumlimit = 1000;
+            *numlimit = 1000;
         } else {
             *sumlimit = 15;
             *numlimit = 15;
@@ -698,6 +711,13 @@ int check_read_perm(struct userec *user, const struct boardheader *board)
 {
     if (board == NULL)
         return 0;
+
+    if (user == NULL) {
+        if (board->title_level != 0)
+            return 0;
+    } else if (!HAS_PERM(user, PERM_OBOARDS) && board->title_level && (board->title_level != user->title))
+        return 0;
+
     if (board->level & PERM_POSTMASK || HAS_PERM(user, board->level) || (board->level & PERM_NOZAP)) {
         if (board->flag & BOARD_CLUB_READ) {    /*俱乐部 */
             if (HAS_PERM(user, PERM_OBOARDS) && HAS_PERM(user, PERM_SYSOP))
@@ -718,6 +738,12 @@ int check_see_perm(struct userec *user, const struct boardheader *board)
 {
     if (board == NULL)
         return 0;
+    if (user == NULL) {
+        if (board->title_level != 0)
+            return 0;
+    } else if (!HAS_PERM(user, PERM_OBOARDS) && board->title_level && (board->title_level != user->title))
+        return 0;
+
     if (board->level & PERM_POSTMASK || ((user == NULL) && (board->level == 0))
         || ((user != NULL) && HAS_PERM(user, board->level))
         || (board->level & PERM_NOZAP)) {
@@ -844,6 +870,24 @@ int auto_register(char *userid, char *email, int msize)
     }
 
     return 0;
+}
+
+char *showuserip(struct userec *user, char *ip)
+{
+    static char sip[25];
+    char *c;
+
+    if ((currentuser != NULL) && (currentuser->title == 10))
+        return ip;
+    if (user != NULL && (!DEFINE(user, DEF_HIDEIP)))
+        return ip;
+    strncpy(sip, ip, 24);
+    sip[24] = 0;
+    if ((c = strrchr(sip, '.')) != NULL) {
+        *(++c) = '*';
+        *(++c) = '\0';
+    }
+    return sip;
 }
 
 #ifdef SMS_SUPPORT

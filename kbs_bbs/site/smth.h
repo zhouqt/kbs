@@ -15,11 +15,11 @@
 #define CNBBS_TOPIC		0       /* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
 #define MAIL2BOARD		0       /* 是否允许直接 mail to any board */
 #define MAILOUT			0       /* 是否允许向站外主动发信 */
-#define MANUAL_DENY		0	/*是否允许手动解封 */
+#define MANUAL_DENY		0       /*是否允许手动解封 */
 #define BBS_SERVICE_DICT	1
 #define HAVE_TSINGHUA_INFO_REGISTER 1   /* 允许从清华信息系统注册 */
-#define HAVE_PERSONAL_DNS	1	/*个人域名服务 */
-#define HAVE_CUSTOM_USER_TITLE	1	/*定义用户特定的title */
+#define HAVE_PERSONAL_DNS	1       /*个人域名服务 */
+#define HAVE_CUSTOM_USER_TITLE	1       /*定义用户特定的title */
 
 #define BUILD_PHP_EXTENSION 1   /*将php lib编成php extension */
 
@@ -253,7 +253,7 @@ bigger mailbox. --stephen 2001.10.31*/
 /*#define DEF_HIDEIP    02000000000  Haohmaru,99.12.18*/
 
 /*#define PERM_POSTMASK  0100000  *//*
- * means the rest is a post mask 
+ * * means the rest is a post mask 
  */
 
 #define NUMDEFINES 33
@@ -291,7 +291,7 @@ typedef struct fileheader {     /* This structure is used to hold data in */
     char filename[FILENAME_LEN];        /* the DIR files */
     unsigned int id, groupid, reid;
 #if defined(FILTER) || defined(COMMEND_ARTICLE)
-	int o_bid;
+    int o_bid;
     unsigned int o_id;
     unsigned int o_groupid;
     unsigned int o_reid;
@@ -365,7 +365,7 @@ attach define
 #define HAVE_OWN_USERIP
 #define SHOW_USERIP(user,x) showuserip(user,x)
 
-#define AUTO_CHECK_REGISTER_FORM //自动通过注册单
+#define AUTO_CHECK_REGISTER_FORM        //自动通过注册单
 
 #define QUOTED_LINES 3
 #define QUOTELEV 0
