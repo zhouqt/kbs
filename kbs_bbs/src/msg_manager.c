@@ -1,6 +1,26 @@
 #include "bbs.h"
 #include "mysql.h"
 
+/******************************************************
+ * mysql ½á¹¹:
+ *
+ * mysql> desc smsmsg;
+ * +-----------+--------------------+------+-----+---------+----------------+
+ * | Field     | Type               | Null | Key | Default | Extra          |
+ * +-----------+--------------------+------+-----+---------+----------------+
+ * | id        | int(10)            |      | PRI | NULL    | auto_increment |
+ * | userid    | varchar(13) binary |      | MUL |         |                |
+ * | dest      | varchar(13)        |      | MUL |         |                |
+ * | timestamp | timestamp(14)      | YES  | MUL | NULL    |                |
+ * | type      | int(11)            |      |     | 0       |                |
+ * | context   | text               | YES  | MUL | NULL    |                |
+ * | level     | int(11)            | YES  |     | NULL    |                |
+ * | readed    | int(1)             |      | MUL | 0       |                |
+ * +-----------+--------------------+------+-----+---------+----------------+
+ *
+ *                                                               stiger
+ ******************************************************/
+
 struct smsmsg * s_m;
 int sm_num=0;
 int sm_start=0;

@@ -1,6 +1,34 @@
 #include "bbs.h"
 #include "mysql.h"
 
+/**********************************************************
+ * mysql½á¹¹:
+ *
+ * mysql> desc addr;
+ * +-------------+--------------+------+-----+---------+----------------+
+ * | Field       | Type         | Null | Key | Default | Extra          |
+ * +-------------+--------------+------+-----+---------+----------------+
+ * | id          | int(10)      |      | PRI | NULL    | auto_increment |
+ * | userid      | varchar(13)  |      | MUL |         |                |
+ * | name        | varchar(15)  |      | MUL |         |                |
+ * | bbsid       | varchar(15)  | YES  | MUL | NULL    |                |
+ * | school      | varchar(100) | YES  |     | NULL    |                |
+ * | zipcode     | varchar(6)   | YES  |     | NULL    |                |
+ * | homeaddr    | varchar(100) | YES  |     | NULL    |                |
+ * | companyaddr | varchar(100) | YES  |     | NULL    |                |
+ * | tel_o       | varchar(20)  | YES  |     | NULL    |                |
+ * | tel_h       | varchar(20)  | YES  |     | NULL    |                |
+ * | mobile      | varchar(15)  | YES  | MUL | NULL    |                |
+ * | email       | varchar(30)  | YES  |     | NULL    |                |
+ * | qq          | varchar(10)  | YES  |     | NULL    |                |
+ * | birthday    | date         | YES  |     | NULL    |                |
+ * | memo        | text         | YES  |     | NULL    |                |
+ * | groupname   | varchar(10)  | YES  | MUL | NULL    |                |
+ * +-------------+--------------+------+-----+---------+----------------+
+ *
+ *                                                    stiger
+ **********************************************************/
+
 struct addresslist * a_l;
 int al_num=0;
 int al_start=0;
