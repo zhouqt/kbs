@@ -2212,12 +2212,12 @@ static int m_clean()
     setmailfile(buf, currentuser->userid, mail_sysbox[1]);
     num = get_num_records(buf, sizeof(struct fileheader));
     if (num && askyn("清除发件箱么?", 0))
-        delete_range(buf, 1, num, 2);
+        delete_range(buf, 1, num, 1);
     move(0, 0);
     setmailfile(buf, currentuser->userid, mail_sysbox[2]);
     num = get_num_records(buf, sizeof(struct fileheader));
     if (num && askyn("清除垃圾箱么?", 0))
-        delete_range(buf, 1, num, 2);
+        delete_range(buf, 1, num, 1);
 	/*
     if (user_mail_list.mail_list_t) {
         int i;
