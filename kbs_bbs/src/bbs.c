@@ -2249,13 +2249,6 @@ int post_article(char *q_file, struct fileheader *re_file)
 
     aborted = vedit(filepath, true, &eff_size, NULL);    /* 进入编辑状态 */
 
-    if(upload) {
-        char sbuf[PATHLEN];
-        strcpy(sbuf,"tmp/");
-        strcpy(sbuf+strlen(sbuf), upload);
-        post_file.attachment = add_attach(filepath, sbuf, upload);
-    }
-    
     add_loginfo(filepath, currentuser, currboard, Anony);       /*添加最后一行 */
 
     strncpy(post_file.title, save_title, STRLEN);
@@ -2291,6 +2284,13 @@ int post_article(char *q_file, struct fileheader *re_file)
 #endif
         after_post(currentuser, &post_file, currboard, re_file);
 
+    if(upload) {
+        char sbuf[PATHLEN];
+        strcpy(sbuf,"tmp/");
+        strcpy(sbuf+strlen(sbuf), upload);
+        post_file.attachment = add_attach(filepath, sbuf, upload);
+    }
+    
     if (!junkboard(currboard)) {
         currentuser->numposts++;
     }
