@@ -13,7 +13,7 @@ struct ModuleVersion {
   int minor;
 };
 
-#include "version.h"
+#include "bbsversion.h"
 
 /**
   *  ¼ì²é°æ±¾ºÅ
@@ -80,7 +80,7 @@ struct ModuleVersion*  findmodule(char* name)
     struct ModuleVersion * def;
     def=modules;
     while (def->major!=-1&&(def->minor!=-1)) {
-        if ((def->name!=NULL)&&(!strcmp(def->name,name))
+        if ((def->name!=NULL)&&(!strcmp(def->name,name)))
             return def;
     }
     return NULL;
