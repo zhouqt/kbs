@@ -1132,8 +1132,6 @@ int resolve_guest_table()
 {
     int iscreate = 0;
 
-    sleep(20);
-	bbslog("3error","loading guest shm:%d",errno);
     if (wwwguest_shm == NULL) {
         wwwguest_shm = (struct WWW_GUEST_TABLE *)
             attach_shm("WWWGUEST_SHMKEY", 4500, sizeof(*wwwguest_shm), &iscreate);      /*attach user tmp cache */

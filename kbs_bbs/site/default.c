@@ -565,3 +565,49 @@ int smsnumber2uid(byte number[4]){
 #endif
 	
 #endif
+
+#ifdef HAVE_USERMONEY
+/* user score, add by roy 2003.7.23 */
+#ifdef HAVE_USERMONEY
+int get_score(struct userec *user){
+        return user->score;
+}
+int set_score(struct userec *user, int score){
+        unsigned int old_score=user->score;
+        if (score<0) {
+                   return -1;
+        }
+        user->score=score;
+        return old_score;
+}
+int add_score(struct userec *user, int score_addition){
+        unsigned int new_score;
+        new_score=user->score+score_addition;
+        if (new_score<0){
+                return -1;
+        };
+        user->score=new_score;
+        return user->score;
+}
+int get_money(struct userec *user){
+        return user->money;
+}
+int set_money(struct userec *user, int money){
+        unsigned int old_money=user->money;
+        if (money<0) {  
+                        return -1;
+        }
+        user->money=money;
+        return old_money;
+}
+int add_money(struct userec *user, int money_addition){
+        unsigned int new_money;
+        new_money=user->money+money_addition;
+        if (new_money<0) {
+                        return -1;
+        }
+        user->money=money_addition;
+        return user->money;
+}
+#endif
+
