@@ -3071,7 +3071,7 @@ int noreply_post(struct _select_def* conf,struct fileheader *fileinfo,void* extr
 	if(mode & 0x1) can |= 0x2;
 
 #ifdef COMMEND_ARTICLE
-	if ( (mode & 0x1) || (mode & 0x2) ) can |= 0x4;
+	if ( (mode & 0x1) || (mode & 0x2) || (mode & 0x4) ) can |= 0x4;
 #endif
 
 	if(can==0) return DONOTHING;
