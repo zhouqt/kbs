@@ -47,7 +47,7 @@ function pcmain_blog_statistics_list()
 function pcmain_blog_new_user()
 {
 	global $pcconfig,$link;
-	$query = "SELECT username,corpusname FROM users ORDER BY createtime DESC LIMIT 0,10;";
+	$query = "SELECT username,corpusname,description FROM users ORDER BY createtime DESC LIMIT 0,10;";
 	$result = mysql_query($query,$link);
 	$num = mysql_num_rows($result);
 ?>
@@ -65,7 +65,7 @@ function pcmain_blog_new_user()
 	for($i = 0;$i<$num;$i++)
 	{
 		$rows = mysql_fetch_array($result);
-		echo "<li><a href=\"index.php?id=".$rows[username]."\">".html_format($rows[corpusname])."</a>&nbsp;&lt;<a href=\"/bbsqry.php?userid=".$rows[username]."\">".$rows[username]."</a>&gt;</li>";	
+		echo "<li><a href=\"index.php?id=".$rows[username]."\"><span title=\"".html_format($rows[description])."\">".html_format($rows[corpusname])."</span></a><br/>&nbsp;&lt;<a href=\"/bbsqry.php?userid=".$rows[username]."\">".$rows[username]."</a>&gt;</li>";	
 	}
 ?>				
 				</ul>
@@ -81,7 +81,7 @@ function pcmain_blog_new_user()
 function pcmain_blog_top_ten()
 {
 	global $pcconfig,$link;
-	$query = "SELECT username , corpusname FROM users ORDER BY visitcount DESC LIMIT 0,10;";
+	$query = "SELECT username , corpusname , description FROM users ORDER BY visitcount DESC LIMIT 0,10;";
 	$result = mysql_query($query,$link);
 	$num = mysql_num_rows($result);
 ?>
@@ -99,7 +99,7 @@ function pcmain_blog_top_ten()
 	for($i = 0;$i<$num;$i++)
 	{
 		$rows = mysql_fetch_array($result);
-		echo "<li><a href=\"index.php?id=".$rows[username]."\">".html_format($rows[corpusname])."</a>&nbsp;&lt;<a href=\"/bbsqry.php?userid=".$rows[username]."\">".$rows[username]."</a>&gt;</li>";	
+		echo "<li><a href=\"index.php?id=".$rows[username]."\"><span title=\"".html_format($rows[description])."\">".html_format($rows[corpusname])."</span></a><br/>&nbsp;&lt;<a href=\"/bbsqry.php?userid=".$rows[username]."\">".$rows[username]."</a>&gt;</li>";	
 	}
 ?>				
 				</ul>
@@ -115,7 +115,7 @@ function pcmain_blog_top_ten()
 function pcmain_blog_last_update()
 {
 	global $pcconfig,$link;
-	$query = "SELECT username , corpusname FROM users WHERE createtime != modifytime ORDER BY modifytime DESC LIMIT 0,10;";
+	$query = "SELECT username , corpusname , description FROM users WHERE createtime != modifytime ORDER BY modifytime DESC LIMIT 0,10;";
 	$result = mysql_query($query,$link);
 	$num = mysql_num_rows($result);
 ?>
@@ -133,7 +133,7 @@ function pcmain_blog_last_update()
 	for($i = 0;$i<$num;$i++)
 	{
 		$rows = mysql_fetch_array($result);
-		echo "<li><a href=\"index.php?id=".$rows[username]."\">".html_format($rows[corpusname])."</a>&nbsp;&lt;<a href=\"/bbsqry.php?userid=".$rows[username]."\">".$rows[username]."</a>&gt;</li>";	
+		echo "<li><a href=\"index.php?id=".$rows[username]."\"><span title=\"".html_format($rows[description])."\">".html_format($rows[corpusname])."</span></a><br/>&nbsp;&lt;<a href=\"/bbsqry.php?userid=".$rows[username]."\">".$rows[username]."</a>&gt;</li>";	
 	}
 ?>				
 				</ul>
@@ -205,7 +205,7 @@ function  pcmain_blog_recommend_nodes()
 			$body = undo_html_format(strip_tags($rows[body]));
 		else
 			$body = $rows[body];
-		echo html_format(substr($body,0,600)." \n");
+		echo html_format(substr($body,0,500)." \n");
 		if(strlen($body)>500) echo " ... ...\n";
 		echo "</li>\n";	
 	}
@@ -236,7 +236,7 @@ function  pcmain_blog_most_hot()
 	<td>
 		<table cellspacing=0 cellpadding=10 width=100% class=t1>
 			<tr>
-				<td class=t5 style="line-height=16px">
+				<td class=t5 style="line-height=20px">
 				<ul>
 <?php
 	for($i = 0;$i < $num ;$i ++)
@@ -249,8 +249,8 @@ function  pcmain_blog_most_hot()
 			$body = undo_html_format(strip_tags($rows[body]));
 		else
 			$body = $rows[body];
-		echo html_format(substr($body,0,600)." \n");
-		if(strlen($body)>500) echo " ... ...\n";
+		echo html_format(substr($body,0,300)." \n");
+		if(strlen($body)>300) echo " ... ...\n";
 		echo "</li>\n";	
 	}
 ?>				
@@ -279,7 +279,7 @@ function  pcmain_blog_most_trackback()
 	<td>
 		<table cellspacing=0 cellpadding=10 width=100% class=t1>
 			<tr>
-				<td class=t5 style="line-height=16px">
+				<td class=t5 style="line-height=20px">
 				<ul>
 <?php
 	for($i = 0;$i < $num ;$i ++)
@@ -292,8 +292,8 @@ function  pcmain_blog_most_trackback()
 			$body = undo_html_format(strip_tags($rows[body]));
 		else
 			$body = $rows[body];
-		echo html_format(substr($body,0,600)." \n");
-		if(strlen($body)>500) echo " ... ...\n";
+		echo html_format(substr($body,0,300)." \n");
+		if(strlen($body)>300) echo " ... ...\n";
 		echo "</li>\n";	
 	}
 ?>				
@@ -322,7 +322,7 @@ function  pcmain_blog_most_view()
 	<td>
 		<table cellspacing=0 cellpadding=10 width=100% class=t1>
 			<tr>
-				<td class=t5 style="line-height=20px">
+				<td class=t5 style="line-height=24px">
 				<ul>
 <?php
 	for($i = 0;$i < $num ;$i ++)
