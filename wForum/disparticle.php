@@ -241,6 +241,7 @@ function showArticleThreads($boardName,$boardID,$articleID,$article,$start,$list
 }
 
 function showArticle($boardName,$boardID,$num, $threadID,$thread,$type){
+	global $loginok;
 	$user=array();
 	$user_num=bbs_getuser($thread['OWNER'],$user);
 	$bgstyle='TableBody'.($type+1);
