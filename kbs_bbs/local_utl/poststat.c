@@ -152,7 +152,7 @@ void load_stat(fname)
 {
     FILE *fp;
 
-    if (fp = fopen(fname, "r")) {
+    if ((fp = fopen(fname, "r"))!=NULL) {
         int count = fread(top, sizeof(struct posttop), TOPCOUNT, fp);
 
         fclose(fp);
@@ -189,13 +189,13 @@ void writestat(int mytype,struct postrec* dobucket[HASHSIZE])
 
     p = myfile[mytype];
     sprintf(curfile, "etc/posts/%s.0", p);
-    if (fp = fopen(curfile, "w")) {
+    if ((fp = fopen(curfile, "w"))!=NULL) {
         fwrite(top, sizeof(struct posttop), j, fp);
         fclose(fp);
     }
 
     sprintf(curfile, "etc/posts/%s", p);
-    if (fp = fopen(curfile, "w")) {
+    if ((fp = fopen(curfile, "w"))!=NULL) {
 #ifdef BLESS_BOARD
         if (mytype==4)
         fprintf(fp,"              \x1b[1;33m©¤©¤ \x1b[31m¡î\x1b[33m¡î\x1b[32m¡î \x1b[41;32m  \x1b[33m±¾ÈÕÊ®´óÖÔÐÄ×£¸£  \x1b[40m \x1b[32m¡î\x1b[31m¡î\x1b[33m¡î ©¤©¤\x1b[m\n\n");
@@ -255,11 +255,12 @@ void writestat(int mytype,struct postrec* dobucket[HASHSIZE])
             else
 #endif
             fprintf(fp,
-                    "[37mµÚ[31m%3d[37m Ãû [37mÐÅÇø : [33m%-16s[37m¡¾[32m%s[37m¡¿[36m%4d [37mÈË[35m%+16s\n"
+                    "[37mµÚ[31m%3d[37m Ãû [37mÐÅÇø : [33m%-16s[37m¡¾[32m%s[37m¡¿[36m%4d [37mÈË[35m%16s\n"
                     "     [37m±êÌâ : [44m[37m%-60.60s[40m\n", !mytype ? real : (i + 1), top[i].board, p, top[i].number, top[i].author, top[i].title);
         }
 #ifdef BLESS_BOARD
-	fprintf(fp,"                                                                         %s\x1b[m",surfix_bless[20]);
+	if (mytype==4)
+	    fprintf(fp,"                                                                         %s\x1b[m",surfix_bless[20]);
 #endif
         fclose(fp);
     }
@@ -340,44 +341,44 @@ void poststat(int mytype,time_t now,  struct tm *ptime)
 }
 
 
-main(argc, argv)
-    char *argv[];
+int main(int argc, char** argv)
 {
     time_t now;
-    struct tm *ptime;
+    struct tm ptime;
     int i;
 
     chdir(BBSHOME);
 
     time(&now);
-    ptime = localtime(&now);
+    ptime = *localtime(&now);
     if (argc == 2) {
         i=atoi(argv[1]);
         if (i!=0) {
-        	poststat(i,now,ptime);
+        	poststat(i,now,&ptime);
         	return 0;
         }
     }
 
     resolve_boards();
-    if (ptime->tm_hour == 0) {
-        if (ptime->tm_mday == 1)
-            poststat(2,now,ptime);
-        if (ptime->tm_wday == 0)
-            poststat(1,now,ptime);
-        poststat(0,now,ptime);
+    if (ptime.tm_hour == 0) {
+        if (ptime.tm_mday == 1)
+            poststat(2,now,&ptime);
+        if (ptime.tm_wday == 0)
+            poststat(1,now,&ptime);
+        poststat(0,now,&ptime);
     }
-    poststat(-1,now,ptime);
-    if (ptime->tm_hour==23) {
+    poststat(-1,now,&ptime);
+    if (ptime.tm_hour==23) {
         char fname[STRLEN];
 
 		sprintf(fname,"%dÄê%2dÔÂ%2dÈÕÊ®´óÍ³¼Æ",
-			ptime->tm_year+1900,ptime->tm_mon+1,ptime->tm_mday);
+			ptime.tm_year+1900,ptime.tm_mon+1,ptime.tm_mday);
         post_file(NULL, "", "etc/posts/day", "BBSLists", fname ,0, 1);
-        if (ptime->tm_wday==6) {
+        if (ptime.tm_wday==6) {
 			sprintf(fname,"%dÄê%2dÔÂ%2dÈÕ±¾ÖÜÎåÊ®´óÍ³¼Æ",
-				ptime->tm_year+1900,ptime->tm_mon+1,ptime->tm_mday);
+				ptime.tm_year+1900,ptime.tm_mon+1,ptime.tm_mday);
 	        post_file(NULL, "", "etc/posts/week", "BBSLists", fname ,0, 1);
         }
     }
+    return 0;
 }
