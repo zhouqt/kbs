@@ -30,8 +30,10 @@ static unsigned char fourth_arg_force_ref_0111[] = { 4, BYREF_NONE, BYREF_FORCE,
 static unsigned char third_arg_force_ref_001[] = { 3, BYREF_NONE, BYREF_NONE, BYREF_FORCE };
 static unsigned char fifth_arg_force_ref_00011[] = { 5, BYREF_NONE, BYREF_NONE, BYREF_NONE, BYREF_FORCE , BYREF_FORCE};
 
-#ifdef HAVE_WFORUM
+#ifdef I_LOVE_ROY // 这个 #ifdef 包括 roy 写的专门用于 wforum 的函数，结果被我换掉了，代码还是暂时留着吧。roy 不要打我 pp - atppp
 static PHP_FUNCTION(bbs_get_article);
+#endif
+#ifdef HAVE_WFORUM
 static PHP_FUNCTION(bbs_is_yank);
 static PHP_FUNCTION(bbs_alter_yank); 
 #endif
@@ -48,9 +50,10 @@ static PHP_FUNCTION(bbs_adduserscore);
 
 ////////////////////////  System info operation functions  /////////////////////
 static PHP_FUNCTION(bbs_getonline_user_list);
+#ifdef HAVE_WFORUM
 static PHP_FUNCTION(bbs_get_elite_num);
 static PHP_FUNCTION(bbs_get_elite_list);
-static PHP_FUNCTION(bbs_get_today_article_num);
+#endif
 static PHP_FUNCTION(bbs_getonlineuser);
 static PHP_FUNCTION(bbs_getonlinenumber);
 static PHP_FUNCTION(bbs_getonlineusernumber);
@@ -95,8 +98,10 @@ static PHP_FUNCTION(bbs_is_bm);
 //////////////////////// Board/Article operation functions  ////////////////////
 static PHP_FUNCTION(bbs_searchtitle);
 static PHP_FUNCTION(bbs_search_articles);
+#ifdef I_LOVE_ROY
 static PHP_FUNCTION(bbs_get_thread_article_num);
 static PHP_FUNCTION(bbs_get_thread_articles);
+#endif
 static PHP_FUNCTION(bbs_checkorigin);
 static PHP_FUNCTION(bbs_getboard);
 static PHP_FUNCTION(bbs_checkreadperm);
@@ -107,9 +112,7 @@ static PHP_FUNCTION(bbs_postarticle);
 static PHP_FUNCTION(bbs_getattachtmppath);
 static PHP_FUNCTION(bbs_edittitle);
 static PHP_FUNCTION(bbs_checkbadword);
-#ifdef HAVE_BRC_CONTROL
 static PHP_FUNCTION(bbs_brcaddread);
-#endif
 static PHP_FUNCTION(bbs_brcclear);
 static PHP_FUNCTION(bbs_getboards);
 static PHP_FUNCTION(bbs_getarticles);
@@ -153,8 +156,9 @@ static PHP_FUNCTION(bbs_caneditfile);
 static PHP_FUNCTION(bbs_updatearticle);
 #ifdef HAVE_WFORUM
 static PHP_FUNCTION(bbs_getthreadnum);
-#endif
+static PHP_FUNCTION(bbs_get_today_article_num);
 static PHP_FUNCTION(bbs_getthreads);
+#endif
 
 
 //////////////////////// Vote operation functions  ////////////////////
@@ -240,15 +244,19 @@ static PHP_FUNCTION(bbs_csv_to_al);
  */
 static function_entry smth_bbs_functions[] = {
 #ifdef HAVE_WFORUM
+#ifdef I_LOVE_ROY
 		PHP_FE(bbs_get_article, NULL)
+#endif
 		PHP_FE(bbs_is_yank, NULL)
 		PHP_FE(bbs_alter_yank, NULL)
 #endif
 		PHP_FE(bbs_getuserparam, NULL)
 		PHP_FE(bbs_setuserparam, NULL)
 		PHP_FE(bbs_getonline_user_list, NULL)
+#ifdef HAVE_WFORUM
 		PHP_FE(bbs_get_elite_num, NULL)
 		PHP_FE(bbs_get_elite_list, NULL)
+#endif
 #ifdef HAVE_USERMONEY
 		PHP_FE(bbs_getusermoney, NULL)
 		PHP_FE(bbs_setusermoney, NULL)
@@ -261,17 +269,19 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_checkuserpasswd, NULL)
 		PHP_FE(bbs_setuserpasswd, NULL)
 		PHP_FE(bbs_getuserlevel, NULL)
-		PHP_FE(bbs_get_today_article_num, NULL)
 		PHP_FE(bbs_searchtitle, NULL)
 		PHP_FE(bbs_search_articles, NULL)
 		PHP_FE(bbs_postmail, NULL)
 		PHP_FE(bbs_mailwebmsgs, NULL)
 		PHP_FE(bbs_getwebmsgs, NULL)
+#ifdef I_LOVE_ROY
 		PHP_FE(bbs_get_thread_article_num,NULL)
 		PHP_FE(bbs_get_thread_articles, NULL)
-		PHP_FE(bbs_getthreads, NULL)
+#endif
 #ifdef HAVE_WFORUM
+		PHP_FE(bbs_get_today_article_num, NULL)
 		PHP_FE(bbs_getthreadnum, NULL)
+		PHP_FE(bbs_getthreads, NULL)
 #endif
         PHP_FE(bbs_getuser, NULL)
         PHP_FE(bbs_getusermode, NULL)
@@ -303,10 +313,8 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_getbdes, NULL)
         PHP_FE(bbs_checkpostperm, NULL)
 		PHP_FE(bbs_updatearticle, NULL)
-#ifdef HAVE_BRC_CONTROL
         PHP_FE(bbs_brcaddread, NULL)
         PHP_FE(bbs_brcclear, NULL)
-#endif
         PHP_FE(bbs_getboard, NULL)
     	PHP_FE(bbs_postarticle,NULL)
     	PHP_FE(bbs_getattachtmppath, NULL)
@@ -2750,6 +2758,7 @@ static PHP_FUNCTION(bbs_mailwebmsgs){
 	RETURN_TRUE;
 }
 
+#ifdef HAVE_WFORUM
 /**
  * 获取版面精华主题数量
  * prototype:
@@ -2944,8 +2953,9 @@ static PHP_FUNCTION(bbs_getthreads)
     fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
     close(fd);
 }
+#endif //HAVE_WFORUM
 
-#ifdef HAVE_WFORUM
+#ifdef I_LOVE_ROY
 static PHP_FUNCTION(bbs_get_article)
 {
     char *board;
@@ -3060,7 +3070,6 @@ static PHP_FUNCTION(bbs_get_article)
     fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
     close(fd);
 }
-#endif
 
 /**
  * 反序获取从start开始的num个同主题文章
@@ -3199,7 +3208,9 @@ static PHP_FUNCTION(bbs_get_thread_articles)
     fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
     close(fd);
 }
+#endif //I_LOVE_ROY
 
+#ifdef HAVE_WFORUM
 static PHP_FUNCTION(bbs_get_today_article_num){
     char *board;
     int blen;
@@ -3283,7 +3294,9 @@ static PHP_FUNCTION(bbs_get_today_article_num){
     close(fd);
 	RETURN_LONG(articleNums);
 }
+#endif //HAVE_WFORUM
 
+#ifdef I_LOVE_ROY
 /**
  * 获取同主题的文章个数
  * prototype:
@@ -3391,6 +3404,8 @@ static PHP_FUNCTION(bbs_get_thread_article_num)
     close(fd);
 	RETURN_LONG(articleNums);
 }
+#endif //I_LOVE_ROY
+
 /**
  * Count articles in a board with specific .DIR mode.
  * prototype:
@@ -4407,7 +4422,6 @@ static PHP_FUNCTION(bbs_setwwwparameters)
 	RETURN_LONG(0);
 }
 
-#ifdef HAVE_BRC_CONTROL
 static PHP_FUNCTION(bbs_brcaddread)
 {
 	char *board;
@@ -4423,14 +4437,14 @@ static PHP_FUNCTION(bbs_brcaddread)
 	if ((bp=getbcache(board))==0){
 		RETURN_NULL();
 	}
+#ifdef HAVE_BRC_CONTROL
 	brc_initial(getCurrentUser()->userid, bp->filename, getSession());
 	brc_add_read(fid, getSession());
 	brc_update(getCurrentUser()->userid, getSession());
     /*brc_addreaddirectly(getcurrentuser()->userid, boardnum, fid);*/
-
+#endif
     RETURN_NULL();
 }
-#endif
 
 /**
  * 清除版面未读标记 
