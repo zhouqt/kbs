@@ -276,7 +276,13 @@ if ( chr($user['gender'])=='M' ){
 &nbsp;&nbsp;等级：<?php echo bbs_getuserlevel($thread['OWNER']); ?><BR>
 &nbsp;&nbsp;文章：<?php echo $user['numposts']; ?><br>
 &nbsp;&nbsp;积分：<?php echo $user['score']; ?><br>
+<?php
+	if (SHOW_REGISTER_TIME) {
+?>
 &nbsp;&nbsp;注册：<?php echo strftime('%Y-%m-%d',$user['firstlogin']); ?><BR>
+<?php
+	}
+?>
 &nbsp;&nbsp;星座：<?php echo get_astro($user['birthmonth'],$user['birthday']); ?>
 </td>
 

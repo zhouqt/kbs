@@ -18,6 +18,8 @@ define ('MAINTITLE','<IMG SRC="bar/title.jpg">'); //页面正上方显示的站点标题
 
 define('OLD_REPLY_STYLE', true); //使用传统 telnet re 文方式
 
+define('SHOW_REGISTER_TIME', false); //是否显示用户注册时间
+
 /* 附件：每个最大尺寸，总最大尺寸，总最大数量 */
 define("ATTACHMAXSIZE","5242880");
 define ("ATTACHMAXTOTALSIZE","20971520");

@@ -291,7 +291,7 @@ N/A
   </tr>
   <tr> 
     <td class=TableBody1 width=15% align=right>注册日期：</td>
-    <td  width=35%  class=TableBody1><b><?php echo strftime("%Y-%m-%d %H:%M:%S", $user['firstlogin']); ?></b></td>
+    <td  width=35%  class=TableBody1><b><?php echo SHOW_REGISTER_TIME ? strftime("%Y-%m-%d %H:%M:%S", $user['firstlogin']) : "保密"; ?></b></td>
     <td width=15% align=right class=TableBody1>上次登录：</td>
     <td width=35%  class=TableBody1><b><?php echo strftime("%Y-%m-%d %H:%M:%S", $user['lastlogin']); ?></b></td>
   </tr>
