@@ -93,9 +93,6 @@ int totalusers, usercounter;
 int
 check_readonly(char *checked) /* Leeward 98.03.28 */
 {
-    struct stat st;
-    char        buf[STRLEN];
-
     if (checkreadonly(checked)) /* Checking if DIR access mode is "555" */
     {
         if (currboard == checked)
@@ -117,10 +114,7 @@ check_readonly(char *checked) /* Leeward 98.03.28 */
 
 /* undelete 一篇文章 Leeward 98.05.18 */
 /* modified by ylsdd */
-UndeleteArticle(ent,fileinfo,direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+int UndeleteArticle(int ent,struct fileheader *fileinfo,char *direct)
 {
     char *p, buf[1024];
     char UTitle[128];
@@ -244,9 +238,11 @@ int shownotepad()   /* 显示 notepad */
 void printutitle()  /* 屏幕显示 用户列表 title */
 {
     /*---	modified by period	2000-11-02	hide posts/logins	---*/
+#ifndef _DETAIL_UINFO_
     int isadm;
     const char *fmtadm = "#上站 #文章", *fmtcom = "           ";
     isadm = HAS_PERM(currentuser,PERM_ADMINMENU);
+#endif
 
     move(2,0) ;
     prints(
@@ -486,7 +482,6 @@ readdoent(char* buf,int num,struct fileheader* ent)  /* 在文章列表中 显示 一篇文
     char        date[20];
     char        *TITLE;
     int         type;
-    int         coun;
     int manager;
     char cUnreadMark=(DEFINE(currentuser,DEF_UNREADMARK)?'*':'N');
     char* typeprefix;
@@ -672,13 +667,6 @@ char *direct ;
     char buf[512];
     int  ch;
     int cou;
-
-    int fd;/*Haohmaru*/
-    struct one_key  read_comms[] = {
-                                       'r',        read_post,
-                                       '\0',	    NULL
-                                   };
-    char counterfile[STRLEN],chen;
 
     clear() ;
     strcpy(buf,direct) ;
@@ -1006,6 +994,7 @@ do_thread()
     /*sprintf(buf,"bin/thread %s&",currboard);*/
     sprintf(buf,"bin/thread %s",currboard);
     system(buf);
+    return 0;
 }
 
 int
@@ -1088,19 +1077,17 @@ char *direc;
     pos=search_record(new_dir, &fh, sizeof(fh),(RECORD_FUNC_ARG)cmpname, digest_name); /* 文摘目录下 .DIR中 搜索 该POST */
     if(pos<=0)
     {
-        return;
+        return -1;
     }
     delete_record(new_dir,sizeof(struct fileheader),pos,(RECORD_FUNC_ARG)cmpname,digest_name);
     *ptr='\0';
     sprintf(buf,"%s%s",new_dir,digest_name);
     unlink(buf);
+    return 0;
 }
 
 int
-digest_post(ent, fhdr, direct)
-int ent;
-struct fileheader *fhdr;
-char *direct;
+digest_post(int ent,struct fileheader *fhdr,char *direct)
 {
 
     if(!chk_currBM(currBM,currentuser))       /* 权力检查 */
@@ -1189,7 +1176,7 @@ do_quote( char    *filepath,char quote_mode)   /* 引用文章， 全局变量quote_file,
     FILE        *inf, *outf;
     char        *qfile, *quser;
     char        buf[256], *ptr;
-    char        ans[4], op;
+    char        op;
     int         bflag;
     int		line_count=0;	/* 添加简略模式计数 Bigman: 2000.7.2 */
 
@@ -1368,9 +1355,9 @@ int
 post_article()                         /*用户 POST 文章 */
 {
     struct fileheader post_file ;
-    char        filepath[STRLEN], fname[STRLEN];
+    char        filepath[STRLEN];
     char        buf[256],buf2[256],buf3[STRLEN],buf4[STRLEN];
-    int         fp, aborted,anonyboard;
+    int         aborted,anonyboard;
     int         replymode=1; /* Post New UI*/
     char        ans[4],include_mode='S';
 
@@ -1458,13 +1445,14 @@ post_article()                         /*用户 POST 文章 */
             clrtoeol();
             strcpy(buf4,buf);
             getdata(t_lines-1,0,"标题: ",buf4,50,DOECHO,NULL,NA);
-            if((buf4[0]=='\0'||buf4[0]=='\n'))
+            if((buf4[0]=='\0'||buf4[0]=='\n')) {
                 if(buf[0]!='\0'){
                     buf4[0]=' ';
                     continue;
                 }
                 else
                     return FULLUPDATE;
+            }
             strcpy(buf,buf4);
             continue;
         }
@@ -1606,16 +1594,12 @@ post_article()                         /*用户 POST 文章 */
 }
 
 int
-add_edit_mark(fname,mode,title)
-char *fname;
-int mode;
-char *title;
+add_edit_mark(char *fname,int mode,char *title)
 {
     FILE *fp,*out;
     char buf[256];
     time_t now;
     char outname[STRLEN];
-    char tmp[STRLEN];/*Haohmaru.99.4.19*/
     int step=0;
 
     if( ( fp = fopen (fname,"r") ) == NULL )
@@ -1990,7 +1974,7 @@ int
 del_range(int ent,struct fileheader *fileinfo ,char *direct ,int mailmode)
   /* 区域删除 */
 {
-    char del_mode[11],num1[11],num2[11],temp[2] ;
+    char del_mode[11],num1[11],num2[11];
     char fullpath[STRLEN];
     int inum1, inum2 ;
     int result; /* Leeward: 97.12.15 */
@@ -2052,7 +2036,6 @@ THERE:
             report(genbuf); /*bbslog*/
         }
         prints("删除%s\n", result ? "失败！" : "完成") ; /* Leeward: 97.12.15 */
-DO_REPAIR:
         if (result)/* prints("错误代码: %d;%s 请报告站长，谢谢！", result,direct);
             added by Haohmaru,修复区段删除错误,98.9.12 */	{
             prints("错误代码: %d;%s",result,direct);
@@ -2112,11 +2095,8 @@ DO_REPAIR:
 
 int del_post(int ent,struct fileheader *fileinfo,char *direct )
 {
-    FILE        *fn;
-    char        buf[512];
     char        usrid[STRLEN];
-    char        *t ;
-    int         owned, keep, fail;
+    int         owned, keep;
     extern int SR_BMDELFLAG;
 
     if (!strcmp(currboard, "syssecurity")
@@ -2353,76 +2333,76 @@ clear_all_new_flag( int ent , struct fileheader *fileinfo , char *direct )
 }
 
 struct one_key  read_comms[] = { /*阅读状态，键定义 */
-                                   'r',        read_post,
-                                   'K',        skip_post,
-                                   /*   'u',        skip_post,    rem by Haohmaru.99.11.29*/
-                                   'd',        del_post,
-                                   'D',        del_range,
-                                   'm',        mark_post,
-                                   ';',	noreply_post, /*Haohmaru.99.01.01,设定不可re模式*/
-                                   '#',	sign_post,	/* Bigman: 2000.8.12  设定文章标记模式 */
-                                   'E',        edit_post,
-                                   Ctrl('G'),  digest_mode,
-                                   '`',        digest_mode,
-                                   '.',        deleted_mode,
-                                   '>',        junk_mode,
-                                   'g',        digest_post,
-				   'T',        edit_title,
-                                   's',        do_select,
-                                   Ctrl('C'),  do_cross,
-                                   'Y',        UndeleteArticle, /* Leeward 98.05.18 */
-                                   Ctrl('P'),  do_post,
-                                   'c',        clear_new_flag,
-                                   'f', 	clear_all_new_flag, /* added by dong, 1999.1.25 */
-                                   'S',        sequential_read,
+                                   {'r',        read_post},
+                                   {'K',        skip_post},
+                                   /*   {'u',        skip_post},    rem by Haohmaru.99.11.29*/
+                                   {'d',        del_post},
+                                   {'D',        del_range},
+                                   {'m',        mark_post},
+                                   {';',	noreply_post}, /*Haohmaru.99.01.01,设定不可re模式*/
+                                   {'#',	sign_post},	/* Bigman: 2000.8.12  设定文章标记模式 */
+                                   {'E',        edit_post},
+                                   {Ctrl('G'),  digest_mode},
+                                   {'`',        digest_mode},
+                                   {'.',        deleted_mode},
+                                   {'>',        junk_mode},
+                                   {'g',        digest_post},
+				   				   {'T',        edit_title},
+                                   {'s',        do_select},
+                                   {Ctrl('C'),  do_cross},
+                                   {'Y',        UndeleteArticle}, /* Leeward 98.05.18 */
+                                   {Ctrl('P'),  do_post},
+                                   {'c',        clear_new_flag},
+                                   {'f', 	clear_all_new_flag}, /* added by dong, 1999.1.25 */
+                                   {'S',        sequential_read},
 #ifdef INTERNET_EMAIL
-                                   'F',        mail_forward,
-                                   'U',        mail_uforward,
-                                   Ctrl('R'),  post_reply,
+                                   {'F',        mail_forward},
+                                   {'U',        mail_uforward},
+                                   {Ctrl('R'),  post_reply},
 #endif
-                                   'J',	Semi_save,
-                                   'i',        Save_post,
-                                   'I',        Import_post,
-                                   'R',        b_results,
-                                   'V',        b_vote,
-                                   'M',        b_vote_maintain,
-                                   'W',        b_notes_edit,
-                                   'h',        mainreadhelp,
-                                   'X',		b_jury_edit,
+                                   {'J',	Semi_save},
+                                   {'i',        Save_post},
+                                   {'I',        Import_post},
+                                   {'R',        b_results},
+                                   {'V',        b_vote},
+                                   {'M',        b_vote_maintain},
+                                   {'W',        b_notes_edit},
+                                   {'h',        mainreadhelp},
+                                   {'X',		b_jury_edit},
 /*编辑版面的仲裁委员名单,stephen on 2001.11.1 */
-                                   KEY_TAB,    show_b_note,
-                                   'x',        into_announce,
-                                   'a',        auth_search_down,
-                                   'A',        auth_search_up,
-                                   '/',        t_search_down,
-                                   '?',        t_search_up,
-                                   '\'',       post_search_down,
-                                   '\"',       post_search_up,
-                                   ']',        thread_down,
-                                   '[',        thread_up,
-                                   Ctrl('D'),  deny_user,
-                                   Ctrl('A'),  show_author,
-                                   Ctrl('O'),  add_author_friend,
-                                   Ctrl('Q'),  show_authorinfo,/*Haohmaru.98.12.05*/
-                                   Ctrl('W'),  show_authorBM,  /*cityhunter 00.10.18 */
-                                   'z',	sendmsgtoauthor,/*Haohmaru.2000.5.19*/
-                                   'Z',	sendmsgtoauthor,/*Haohmaru.2000.5.19*/
-                                   Ctrl('N'),  SR_first_new,
-                                   'n',        SR_first_new,
-                                   '\\',       SR_last,
-                                   '=',        SR_first,
-                                   Ctrl('S'),  SR_read,
-                                   'p',        SR_read,
-                                   Ctrl('X'),  SR_readX, /* Leeward 98.10.03 */
-                                   Ctrl('U'),  SR_author,
-                                   Ctrl('H'),  SR_authorX, /* Leeward 98.10.03 */
-                                   'b',       SR_BMfunc,
-                                   'B',       SR_BMfuncX, /* Leeward 98.04.16 */
-                                   Ctrl('T'),  thread_mode,
-                                   't',        set_delete_mark, /*KCN 2001 */
-                                   'v',	i_read_mail, /* period 2000-11-12 read mail in article list */
-                                   /*'!',	Goodbye,Haohmaru 98.09.21*/
-                                   '\0',       NULL
+                                   {KEY_TAB,    show_b_note},
+                                   {'x',        into_announce},
+                                   {'a',        auth_search_down},
+                                   {'A',        auth_search_up},
+                                   {'/',        t_search_down},
+                                   {'?',        t_search_up},
+                                   {'\'',       post_search_down},
+                                   {'\"',       post_search_up},
+                                   {']',        thread_down},
+                                   {'[',        thread_up},
+                                   {Ctrl('D'),  deny_user},
+                                   {Ctrl('A'),  show_author},
+                                   {Ctrl('O'),  add_author_friend},
+                                   {Ctrl('Q'),  show_authorinfo},/*Haohmaru.98.12.05*/
+                                   {Ctrl('W'),  show_authorBM},  /*cityhunter 00.10.18 */
+                                   {'z',	sendmsgtoauthor},/*Haohmaru.2000.5.19*/
+                                   {'Z',	sendmsgtoauthor},/*Haohmaru.2000.5.19*/
+                                   {Ctrl('N'),  SR_first_new},
+                                   {'n',        SR_first_new},
+                                   {'\\',       SR_last},
+                                   {'=',        SR_first},
+                                   {Ctrl('S'),  SR_read},
+                                   {'p',        SR_read},
+                                   {Ctrl('X'),  SR_readX}, /* Leeward 98.10.03 */
+                                   {Ctrl('U'),  SR_author},
+                                   {Ctrl('H'),  SR_authorX}, /* Leeward 98.10.03 */
+                                   {'b',       SR_BMfunc},
+                                   {'B',       SR_BMfuncX}, /* Leeward 98.04.16 */
+                                   {Ctrl('T'),  thread_mode},
+                                   {'t',        set_delete_mark}, /*KCN 2001 */
+                                   {'v',	i_read_mail}, /* period 2000-11-12 read mail in article list */
+                                   /*{'!',	Goodbye},Haohmaru 98.09.21*/
+                                   {'\0',       NULL},
                                } ;
 
 int Read()
@@ -2642,7 +2622,7 @@ Goodbye()    /*离站 选单*/
             choose=genbuf[0]-'0';
             if (0 != genbuf[1])
                 choose = genbuf[1] - '0' + 10;
-            if(choose>=1&&choose<=num_sysop)
+            if(choose>=1&&choose<=num_sysop) {
                 /*        do_send(sysoplist[choose-1], "使用者寄来的的建议信");*/
                 if(choose==1) /*modified by Bigman : 2000.8.8 */
                     do_send(sysoplist[0], "【站务总管】使用者寄来的建议信");
@@ -2652,8 +2632,9 @@ Goodbye()    /*离站 选单*/
                     do_send(sysoplist[2], "【版面管理】使用者寄来的建议信");
                 else if(choose==4)
                     do_send(sysoplist[3], "【身份确认】使用者寄来的建议信");
-    		else if(choose==5)
-		    do_send(sysoplist[4], "【仲裁事宜】使用者寄来的建议信");
+    			else if(choose==5)
+		    		do_send(sysoplist[4], "【仲裁事宜】使用者寄来的建议信");
+            }
 /* added by stephen 11/13/01 */
 	        choose=-1;
         }
@@ -2765,7 +2746,7 @@ Goodbye()    /*离站 选单*/
         FILE* fp;
 
         strcpy(lbuf,"自首-");
-        strftime(lbuf+5, 30, "%Y-%m-%d%y:%H:%M", localtime(&login_start_time));
+        strftime(lbuf+5, 30, "%Y-%m-%d%Y:%H:%M", localtime(&login_start_time));
         sprintf(tmpfile,"tmp/.tmp%d",getpid());
         fp = fopen(tmpfile,"w");
         if (fp) {

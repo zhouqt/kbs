@@ -716,7 +716,7 @@ int id1,id2,del_mode ;
                   savefhdr[i].accessed[1]|=FILE_DEL;
             }
             lseek(fdr,pos_write,SEEK_SET);
-            write(fdr,savefhdr,i*sizeof(struct fileheader))/sizeof(struct fileheader);
+            write(fdr,savefhdr,i*sizeof(struct fileheader));
             pos_write+=i*sizeof(struct fileheader);
         }
         close(fdr);
