@@ -22,9 +22,9 @@
 		$fp = fopen($top_file, "r");
 		if ($fp == FALSE) {
 		        html_init("gb2312");
-			html_error_quit("现在没有留言");
+			html_error_quit("现在没有备忘录");
                 }
-                
+                flose($fp);
                 $modifytime=filemtime($top_file);
 	session_cache_limiter("public");
 	$oldmodified=$_SERVER["HTTP_IF_MODIFIED_SINCE"];
@@ -47,7 +47,7 @@
 	html_init("gb2312");
 ?>
 <body>
-<center><?php echo $BBS_FULL_NAME; ?>水木清华 -- 备忘录 [讨论区: <?php echo $board; ?>]<hr color=green>
+<center><?php echo $BBS_FULL_NAME; ?> -- 备忘录 [讨论区: <?php echo $board; ?>]<hr color=green>
 <table border=1 width=610><tr><td><pre>
 <? 
 	bbs_printansifile($top_file);
@@ -55,7 +55,7 @@
 </pre></table>
 [<a href=bbsdoc.php?board=<?php echo $board; ?>>本讨论区</a>]<?
     if (bbs_is_bm($brdnum,$usernum))
-	echo "[<a href=/cgi-bin/bbs/bbsmnote?board=" . $board . ">编辑进版画面</a>]";
+	echo "[<a href=bbsmnote.php?board=" . $board . ">编辑进版画面</a>]";
 ?> 
 </center>
 <?php
