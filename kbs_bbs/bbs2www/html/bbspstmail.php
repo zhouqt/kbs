@@ -35,7 +35,6 @@ login_init();
 			if (isset($file) && ( $file[0]!='M' || strstr($file,"..") ) )
 				html_error_quit("╢МнС╣дндуб..");
 		}
-		$brd_encode = urlencode($brdarr["NAME"]);
 
 		//system mailboxs
 		$mail_box = array(".DIR",".SENT",".DELETED");

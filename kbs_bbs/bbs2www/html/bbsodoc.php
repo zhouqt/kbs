@@ -9,7 +9,7 @@ login_init();
 	
 	function display_navigation_bar($brdarr,$brdnum,$start,$total,$page,$order=FALSE)
 	{
-		global $section_names;
+		global $section_names,$currentuser;
 		$brd_encode = urlencode($brdarr["NAME"]);
 	?>
 <table width="100%" border="0" cellspacing="0" cellpadding="3" class="b1">		

@@ -48,7 +48,7 @@ function find_content($parent,$name)
 
 function bbs_board_header($brdarr,$articles=0)
 {
-	global $section_names;
+	global $section_names,$currentuser;
 	$brd_encode = urlencode($brdarr["NAME"]);
 	$ann_path = bbs_getannpath($brdarr["NAME"]);
 	

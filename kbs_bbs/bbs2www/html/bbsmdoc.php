@@ -27,7 +27,7 @@ login_init();
 		$total = bbs_countarticles($brdnum, $dir_modes["NORMAL"]);
 		if ($total <= 0)
 			html_error_quit("本讨论区目前没有文章");
-		bbs_set_onboard($brcnum,1);
+		bbs_set_onboard($brdnum,1);
 
 		if (isset($_GET["start"]))
 			$start = $_GET["start"];

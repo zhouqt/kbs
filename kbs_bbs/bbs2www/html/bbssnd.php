@@ -22,7 +22,7 @@ login_init();
 		if( $boardID == 0) html_error_quit("指定的版面不存在!");
 		$usernum = $currentuser["index"];
 		if (bbs_checkreadperm($usernum, $boardID) == 0) html_error_quit("您无权阅读该版!");
-		if (bbs_is_readonly_board($boardArr)) html_error_quit("本版为只读讨论区!");
+		if (bbs_is_readonly_board($brdArr)) html_error_quit("本版为只读讨论区!");
 		if (bbs_checkpostperm($usernum, $boardID) == 0) html_error_quit("您无权在该版面发文!");
 		
 		if (!isset($_POST["title"])) html_error_quit("没有指定文章标题!");
@@ -44,9 +44,10 @@ login_init();
 		}
 		
 		//post articles
+		$anony = isset($_POST["anony"])?intval($_POST["anony"]):0;
 		$ret = bbs_postarticle($boardName, preg_replace("/\\\(['|\"|\\\])/","$1",trim($_POST["title"])), 
 			preg_replace("/\\\(['|\"|\\\])/","$1",$_POST["text"]), intval($_POST["signature"]), $reID, 
-			$outgo, intval($_POST["anony"]));
+			$outgo, $anony);
 		switch ($ret) {
 			case -1:
 				html_error_quit("错误的讨论区名称!");
@@ -82,7 +83,7 @@ login_init();
 </tr><tr><td width="100%" class=TableBody1>
 本页面将在3秒后自动返回版面文章列表<meta HTTP-EQUIV=REFRESH CONTENT='3; URL=bbsdoc.php?board=<?php echo $boardName; ?>' >，<b>您可以选择以下操作：</b><br><ul>
 <li><a href="<?php echo MAINPAGE_FILE; ?>">返回首页</a></li>
-<li><a href="bbsdoc.php?board=<?php   echo $boardName; ?>">返回<?php   echo $boardArr['DESC']; ?></a></li>
+<li><a href="bbsdoc.php?board=<?php   echo $boardName; ?>">返回<?php   echo $brdArr['DESC']; ?></a></li>
 </ul></td></tr></table>
 
 <?php
