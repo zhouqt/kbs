@@ -3191,7 +3191,6 @@ char *direct ;
         { /* Leeward 98.06.17 在文摘区删文不减文章数目 */
             if (owned)
             {
-                set_safe_record();
                 if ((int)currentuser->numposts > 0 && !junkboard())
                 {
                     currentuser->numposts--;/*自己删除的文章，减少post数*/

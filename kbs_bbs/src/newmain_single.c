@@ -978,7 +978,6 @@ user_login()
     strncpy(currentuser->lasthost, fromhost, 16);
     currentuser->lasthost[15] = '\0';   /* dumb mistake on my part */
         currentuser->lastlogin = time(NULL) ;
-    set_safe_record();
     currentuser->numlogins++;
 
     /* Leeward 98.06.20 adds below 3 lines */
