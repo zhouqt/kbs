@@ -749,8 +749,18 @@ static int fav_key(struct _select_def *conf, int command)
         return SHOW_DIRCHANGE;
     case 's':                  /* sort/unsort -mfchen */
         if (do_select(0, NULL, genbuf) == CHANGEMODE) {
-            if (!(currboard->flag&BOARD_GROUP))
-                Read();
+            if (!(currboard->flag&BOARD_GROUP)) {
+                while (1) {
+                    int returnmode;
+                    returnmode=Read();
+                    if (returnmode==CHANGEMODE) { //select another board
+                        if (currboard->flag&BOARD_GROUP) {
+                            arg->tmpnum=-1;
+                            return SHOW_SELECT;
+                        }
+                    } else break;
+                }
+            }
             else {
                 arg->tmpnum=-1;
                 return SHOW_SELECT;
