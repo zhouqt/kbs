@@ -614,6 +614,14 @@ char *path;
     	struct boardheader* objectboard;
 	char *savept;
 	
+#ifdef FB2KPC
+	if(!strncmp(FB2KPC,path,strlen(FB2KPC))){
+		if(fb2kpc_is_owner(path))
+			return 1;
+		else
+			return 0;
+	}
+#endif
 	pathnum = 0;
 	pathdelim = "/";
 	strtok_r( path , pathdelim , &savept);
@@ -682,8 +690,8 @@ int ent;
                 	sprintf(buf, " a.o... 你已经不能再收录到这里了... ... ");
                 	a_prompt(-1, buf, ans);
                 	return 3;
+				}
 		}
-	}
          /*
          * if (!nomsg) {
          * sprintf(buf, "将该文章放进 %s,确定吗?(Y/N) [N]: ", pm.path);
@@ -693,6 +701,10 @@ int ent;
          * }
          */
 
+#ifdef FB2KPC
+		if(!strncmp(FB2KPC,newpath,strlen(FB2KPC)))
+			ret = 2;
+#endif
         a_loadnames(&pm, getSession());
         ann_get_postfilename(fname, fileinfo, &pm);
         sprintf(bname, "%s/%s", pm.path, fname);
@@ -705,7 +717,8 @@ int ent;
             /*
              * Leeward 98.04.15 add below FILE_IMPORTED 
              */
-            bmlog(getCurrentUser()->userid, currboard->filename, 12, 1);
+			if(ret==0)
+            	bmlog(getCurrentUser()->userid, currboard->filename, 12, 1);
         } else {
             if (!nomsg) {
                 sprintf(buf, " 收入精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
@@ -1635,15 +1648,12 @@ void a_manager(MENU *pm,int ch)
 void ann_attach_link(char* buf,int buf_len,long attachpos,void* arg)
 {
     char *fname=(char *)arg;
-    char* server=sysconf_str("BBS_WEBDOMAIN");
-    if (server==NULL)
-        server=sysconf_str("BBSDOMAIN");
     /*
      *if (normal_board(currboard->filename)) {
      * @todo: generate temp sid
      */
       snprintf(buf,buf_len-9,"http://%s/bbsanc.php?path=%s&ap=%ld",
-        server,fname+10,attachpos);
+        get_my_webdomain(0),fname+10,attachpos);
 }
 
 #ifdef FB2KPC
@@ -1822,6 +1832,12 @@ int lastlevel, lastbmonly;
             else
                 me.now = 0;
             break;
+		case KEY_HOME:
+			me.now = 0;
+			break;
+		case KEY_END:
+			me.now = me.num - 1;
+			break;
         case Ctrl('C'):
         case Ctrl('P'):
             if (!HAS_PERM(getCurrentUser(), PERM_POST))

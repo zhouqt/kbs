@@ -341,6 +341,44 @@ int get_a_boardname(char *bname, char *prompt)
     return 1;
 }
 
+#ifdef TOP_MOVE
+int top_move(struct _select_def* conf,struct fileheader *fileinfo)
+{
+    struct read_arg* arg=(struct read_arg*)conf->arg;
+    char ans[3];
+	int d;
+	int alltop;
+	int ret;
+
+	alltop = arg->boardstatus->toptitle;
+	if (alltop <= 0)
+		return DONOTHING;
+	getdata(t_lines - 1, 0, "移动到新位置: ", ans, 3, DOECHO, NULL, true);
+	if (ans[0] == '\0' || ans[0] == '\n' || ans[0] == '\r')
+		return SHOW_REFRESH;
+	d = atoi(ans);
+	if (d < 1)
+		d = 1;
+	else if (d > alltop)
+		d = alltop;
+	if (d == conf->pos - arg->filecount)
+		return SHOW_REFRESH;
+
+	ret = move_record(arg->dingdirect, sizeof(struct fileheader), conf->pos-arg->filecount, d,
+					(RECORD_FUNC_ARG) cmpname, fileinfo->filename);
+	if (ret==0) {
+		ret=DIRCHANGED;
+		board_update_toptitle(arg->bid, true);
+	} else {
+		char buf[STRLEN];
+		a_prompt(-1, "操作失败, 请按 Enter 继续 << ", buf);
+		ret=SHOW_REFRESH;
+		board_update_toptitle(arg->bid, true);
+	}
+	return ret;
+}
+#endif
+
 int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,long flag)
 {
     struct read_arg* arg=(struct read_arg*)conf->arg;
@@ -387,6 +425,10 @@ int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,long f
 #endif
 					)
         return DONOTHING;
+#ifdef TOP_MOVE
+    if (conf->pos > arg->filecount && flag == FILE_MARK_FLAG)
+        return top_move(conf, fileinfo);
+#endif
     data=*fileinfo;
     init_write_dir_arg(&dirarg);
     dirarg.fd=arg->fd;
@@ -1041,24 +1083,62 @@ void get_telnet_sessionid(char* buf,int unum)
     buf[9]=0;
 }
 
+char *get_my_webdomain(int force)
+{
+	static char myurl[80];
+	static int urlinit=0;
+
+	if(force) urlinit=0;
+
+	if(!urlinit){
+		FILE *fp;
+		char buf[256];
+		char *c;
+
+		sethomefile(buf, getCurrentUser()->userid, "myurl");
+		if((fp=fopen(buf,"r"))!=NULL){
+			if(fgets(myurl,80,fp)){
+				if(c=strchr(myurl,'\n')) *c='\0';
+				if(c=strchr(myurl,'\r')) *c='\0';
+				if(strlen(myurl)>5)
+					urlinit=1;
+			}
+			fclose(fp);
+		}
+		if(!urlinit){
+			c=sysconf_str("BBS_WEBDOMAIN");
+			if(c!=NULL){
+				urlinit=1;
+				strncpy(myurl, c, 80);
+				myurl[79]='\0';
+			}
+		}
+		if(!urlinit){
+			strncpy(myurl, sysconf_str("BBSDOMAIN"), 80);
+			myurl[79]='\0';
+			urlinit=1;
+		}
+	}
+
+	return myurl;
+
+}
+
 void  board_attach_link(char* buf,int buf_len,long attachpos,void* arg)
 {
     struct fileheader* fh=(struct fileheader*)arg;
-    char* server=sysconf_str("BBS_WEBDOMAIN");
     char ftype[12];
     if (POSTFILE_BASENAME(fh->filename)[0] == 'Z') {
         sprintf(ftype, "&ftype=%d", DIR_MODE_ZHIDING);
     } else {
         ftype[0] = '\0';
     }
-    if (server==NULL)
-        server=sysconf_str("BBSDOMAIN");
     if (attachpos!=-1)
         snprintf(buf,buf_len,"http://%s/bbscon.php?bid=%d&id=%d&ap=%ld%s",
-            server,getbnum(currboard->filename),fh->id,attachpos, ftype);
+            get_my_webdomain(0),getbnum(currboard->filename),fh->id,attachpos, ftype);
     else
         snprintf(buf,buf_len,"http://%s/bbscon.php?bid=%d&id=%d%s",
-            server,getbnum(currboard->filename),fh->id, ftype);
+            get_my_webdomain(0),getbnum(currboard->filename),fh->id, ftype);
 }
 
 int zsend_attach(int ent, struct fileheader *fileinfo, char *direct)

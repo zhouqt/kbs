@@ -687,12 +687,12 @@ void x_edits()
     int aborted;
     char ans[7], buf[STRLEN];
     int ch, num;
-    char *e_file[] = { "plans", "signatures", "notes", "logout", 
+    char *e_file[] = { "plans", "signatures", "notes", "logout", "myurl",
 #ifdef AUTOREMAIL
 			"autoremail",
 #endif
 			NULL };
-    char *explain_file[] = { "个人说明档", "签名档", "自己的备忘录", "离站的画面",
+    char *explain_file[] = { "个人说明档", "签名档", "自己的备忘录", "离站的画面", "www url",
 #ifdef AUTOREMAIL
 			"站内信件自动回复",
 #endif
@@ -742,7 +742,9 @@ void x_edits()
             if (getSession()->currentmemo->ud.signum&&(getCurrentUser()->signature==0))
             	getCurrentUser()->signature=1;
             prints("系统重新设定以及读入你的签名档...");
-        }
+        }else if(!strcmp(e_file[ch], "myurl")){
+			get_my_webdomain(1);
+		}
         bbslog("user","%s",buf);
     } else
         prints("%s 取消修改\n", explain_file[ch]);
