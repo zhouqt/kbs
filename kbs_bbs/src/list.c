@@ -89,6 +89,7 @@ int print_user_info_title()
 #endif                          /*  */
     prints("%s", title_str);
     clrtoeol();
+    prints("\n");
     return 0;
 }
 void show_message(char *msg)
