@@ -5,7 +5,7 @@
 	$hostname=bbs_sysconf_str("MYSQLHOST");
 	$username=bbs_sysconf_str("MYSQLUSER");
 	$password=bbs_sysconf_str("MYSQLPASSWORD");
-	$dbname=bbs_sysconf_str("MYSQLDATABASE");
+	$dbname=bbs_sysconf_str("MYSQLSMSDATABASE");
 
 function al_print_form($al){
 
