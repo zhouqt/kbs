@@ -18,7 +18,7 @@
 			html_error_quit("错误的讨论区");
 		if (bbs_checkreadperm($usernum,$brdnum)==0)
 			html_error_quit("错误的讨论区");
-		$top_file= bbs_get_vote_filename($board, "notes");
+		$top_file= bbs_get_vote_filename($brdarr["NAME"], "notes");
 		$fp = fopen($top_file, "r");
 		if ($fp == FALSE) {
 		        html_init("gb2312");
