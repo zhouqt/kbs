@@ -354,7 +354,7 @@ int igetch()
         hifd = 1;
         FD_ZERO(&readfds);
         FD_SET(0, &readfds);
-        if (hasaddio && (i_newfd)) {
+        if ((hasaddio && (i_newfd))&&(!inremsg)) {
             FD_SET(i_newfd, &readfds);
             if (hifd <= i_newfd)
                 hifd = i_newfd + 1;
@@ -401,7 +401,7 @@ int igetch()
                 FD_SET(0, &xds);
                 FD_ZERO(&readfds);
                 FD_SET(0, &readfds);
-                if (hasaddio && (i_newfd)) {
+                if ((hasaddio && (i_newfd))&&(!inremsg)) {
                     FD_SET(i_newfd, &readfds);
                     if (hifd <= i_newfd)
                         hifd = i_newfd + 1;
