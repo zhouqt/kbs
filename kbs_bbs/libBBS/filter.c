@@ -163,8 +163,10 @@ int check_filter(char *patternfile, char *checkfile,int defaultval)
     fp = open(patternfile, O_RDONLY);
     prepf(fp,&pattern_buf,&pattern_imagesize);
     BBS_TRY {
-        if (safe_mmapfile(checkfile, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)
+        if (safe_mmapfile(checkfile, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0) {
+	    close(fp);
             BBS_RETURN(0);
+	}
         retv = mgrep_str(ptr, size,pattern_buf);
     }
     BBS_CATCH {
