@@ -365,6 +365,7 @@ int igetch()
                 inremsg = true;
                 msg_count--;
                 r_msg();
+                refresh();
                 inremsg = false;
             }
         }
@@ -381,6 +382,7 @@ int igetch()
                     inremsg = true;
                     msg_count--;
                     r_msg();
+                    refresh();
                     inremsg = false;
                 }
                 goto igetagain;
@@ -438,6 +440,7 @@ int igetch()
                         inremsg = true;
                         msg_count--;
                         r_msg();
+                        refresh();
                         inremsg = false;
                     }
                     if (sr<0&&saveerrno==EINTR)continue;
@@ -545,6 +548,7 @@ int igetch()
             icurrchar++;
             inremsg = true;
             r_msg();
+            refresh();
             inremsg = false;
             goto igetagain;
         }
