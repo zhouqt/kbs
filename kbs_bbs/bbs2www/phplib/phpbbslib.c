@@ -20,13 +20,12 @@ static ZEND_FUNCTION(bbs_brcaddread);
 static ZEND_FUNCTION(bbs_ann_traverse_check);
 static ZEND_FUNCTION(bbs_ann_get_board);
 static ZEND_FUNCTION(bbs_getboards);
+static ZEND_FUNCTION(bbs_getarticles);
 
 static ZEND_MINIT_FUNCTION(bbs_module_init);
 static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown);
 static ZEND_RINIT_FUNCTION(bbs_request_init);
 static ZEND_RSHUTDOWN_FUNCTION(bbs_request_shutdown);
-
-static unsigned char a2_arg_force_ref[] = { 2, BYREF_NONE, BYREF_FORCE };
 
 /*
  * define what functions can be used in the PHP embedded script
@@ -51,6 +50,7 @@ static function_entry bbs_php_functions[] = {
 	ZEND_FE(bbs_ann_get_board, NULL)
 	/*ZEND_FE(bbs_getboards, a2_arg_force_ref)*/
 	ZEND_FE(bbs_getboards, NULL)
+	ZEND_FE(bbs_getarticles, NULL)
 	{NULL, NULL, NULL}
 };
 
@@ -740,7 +740,7 @@ extern int yank_flag;
  * prototype:
  * array bbs_getboards(char *prefix, int yank);
  *
- * @return array of loaded boards on success.
+ * @return array of loaded boards on success,
  *         FALSE on failure.
  * @author flyriver
  */
@@ -768,10 +768,6 @@ static ZEND_FUNCTION(bbs_getboards)
 	{
 		WRONG_PARAM_COUNT;
 	}
-	if (array_init(return_value) == FAILURE)
-	{
-		RETURN_FALSE;
-	}
 
 	/* loading boards */
 	/* handle some global variables: currentuser, yank, brdnum, 
@@ -781,7 +777,6 @@ static ZEND_FUNCTION(bbs_getboards)
 	 * but we still check it. */
 	if (currentuser == NULL)
 	{
-		/*RETURN_LONG(-1);*/
 		RETURN_FALSE;
 	}
 	yank_flag = yank;
@@ -795,7 +790,6 @@ static ZEND_FUNCTION(bbs_getboards)
 	 * global variables. */
 	if (load_boards(prefix) < 0)
 	{
-		/*RETURN_LONG(-1);*/
 		RETURN_FALSE;
 	}
 	qsort( nbrd, brdnum, sizeof( nbrd[0] ), 
@@ -804,13 +798,16 @@ static ZEND_FUNCTION(bbs_getboards)
 
 	/* fill data in output array. */
 	/* setup column names */
+	if (array_init(return_value) == FAILURE)
+	{
+		RETURN_FALSE;
+	}
 	columns = emalloc(BOARD_COLUMNS * sizeof(zval*));
 	for (i = 0; i < BOARD_COLUMNS; i++)
 	{
 		MAKE_STD_ZVAL(element);
 		array_init(element);
 		columns[i] = element;
-		/*zend_hash_update(Z_ARRVAL_P(brdarrs), */
 		zend_hash_update(Z_ARRVAL_P(return_value), 
 				brd_col_names[i], strlen(brd_col_names[i])+1,
 				(void *) &element, sizeof(zval *), NULL);
@@ -824,34 +821,109 @@ static ZEND_FUNCTION(bbs_getboards)
 		{
 			MAKE_STD_ZVAL(element);
 			bbs_make_board_zval(element, brd_col_names[j], ptr);
-			/*
-			 * 首先，取得 outarrs[i]，为一个 zval** 型指针；
-			 * 然后，施行 *(outarrs[i])，得到 zval* 型指针(实际上指向
-			 *       一个哈希表，该哈希表元素的数据类型为 zval*)；
-			 * 最后，通过 ->value.ht 得到该哈希表的起始地址。
-			 * 由于哈希表中存放的是 zval* 型元素，所以必须传入 element
-			 * 的指针和 element 这个指针本身所占用的空间长度，这就是
-			 * &element 和 sizeof(zval *) 的来历。
-			 */
 			zend_hash_index_update(Z_ARRVAL_P(columns[j]), i,
 				   	(void*) &element, sizeof(zval*), NULL);
 		}
 	}
 	efree(columns);
-	/*RETURN_LONG(rows);*/
+}
+
+static void
+bbs_make_article_array(zval *array, struct fileheader *fh, char *flags,
+						size_t flags_len)
+{
+    add_assoc_string(array, "FILENAME", fh->filename, 1);
+    add_assoc_long(array, "ID", fh->id);
+    add_assoc_long(array, "GROUPID", fh->groupid);
+    add_assoc_long(array, "REID", fh->reid);
+    add_assoc_stringl(array, "INNFLAG", fh->innflag, sizeof(fh->innflag), 1);
+    add_assoc_string(array, "OWNER", fh->owner, 1);
+    add_assoc_string(array, "TITLE", fh->title, 1);
+    add_assoc_long(array, "LEVEL", fh->level);
+    add_assoc_stringl(array, "FLAGS", flags, flags_len, 1);
 }
 
 /**
  * Fetch a list of articles in a board into an array.
  * prototype:
- * array bbs_getarticles(char *board, int start, int num);
+ * array bbs_getarticles(char *board, int start, int num, int mode);
  *
- * @return array of loaded articles on success.
+ * @return array of loaded articles on success,
  *         FALSE on failure.
  * @author flyriver
  */
 static ZEND_FUNCTION(bbs_getarticles)
 {
+	char *board;
+	int blen;
+	int start;
+	int num;
+	int mode;
+	char dirpath[STRLEN];
+	int total;
+	struct fileheader *articles;
+	struct boardheader *bp;
+	int rows;
+	int i;
+	zval *element;
+	int is_bm;
+	char flags[3]; /* flags[0]: flag character
+					* flags[1]: imported flag
+					* flags[2]: no reply flag
+					*/
+	int ac = ZEND_NUM_ARGS();
+
+	/* getting arguments */
+	if (ac != 4 
+		|| zend_parse_parameters(4 TSRMLS_CC, "slll", &board, &blen, &start, &num, &mode) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+
+	/* checking arguments */
+	if (currentuser == NULL)
+	{
+		RETURN_FALSE;
+	}
+	if ((bp = getbcache(board)) == NULL)
+	{
+		RETURN_FALSE;
+	}
+	is_bm = is_BM(bp, currentuser);
+	setbdir(mode, dirpath, board);
+	total = get_num_records(dirpath, sizeof(struct fileheader));
+	if (start > total - num)
+		start = total - num;
+	if (start < 0)
+		start = 0;
+
+	/* fetching articles */
+	if (array_init(return_value) == FAILURE)
+	{
+		RETURN_FALSE;
+	}
+	brc_initial(currentuser->userid, board);
+	articles = emalloc(num * sizeof(struct fileheader));
+	rows = get_records(dirpath, articles, sizeof(struct fileheader), start,
+			num);
+	for (i = 0; i < rows; i++)
+	{
+		MAKE_STD_ZVAL(element);
+		array_init(element);
+		flags[0] = get_article_flag(articles + i, currentuser, is_bm);
+		if (articles[i].accessed[0] & FILE_IMPORTED)
+			flags[1] = 'y';
+		else
+			flags[1] = 'n';
+		if (articles[i].accessed[1] & FILE_READ)
+			flags[2] = 'y';
+		else
+			flags[2] = 'n';
+		bbs_make_article_array(element, articles + i, flags, sizeof(flags));
+		zend_hash_index_update(Z_ARRVAL_P(return_value), i,
+				(void*) &element, sizeof(zval*), NULL);
+	}
+	efree(articles);
 }
 
 static ZEND_FUNCTION(bbs_checkreadperm)
