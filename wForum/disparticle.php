@@ -399,8 +399,9 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 	if ($loginok) {
 		bbs_brcaddread($boardName, $thread['ID']);
 	};
-	$str = bbs_printansifile($filename,1,'bbscon.php?bid='.$boardID.'&amp;id='.$thread['ID']);
-	if (SUPPORT_TEX && $thread["IS_TEX"]) { //先用一个最最猥琐的办法
+	$is_tex = SUPPORT_TEX && $thread["IS_TEX"];
+	$str = bbs_printansifile($filename,1,'bbscon.php?bid='.$boardID.'&amp;id='.$thread['ID'],$is_tex,0);
+	if ($is_tex) { //先用一个最最猥琐的办法
 		$tmpfile = BBS_HOME . "/tmp/" . mt_rand();
 		$handle = popen(BBS_HOME . "/bin/itex2MML > $tmpfile", "w");
 		if ($handle) {
