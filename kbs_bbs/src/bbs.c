@@ -376,7 +376,7 @@ int do_commend(int ent, struct fileheader *fileinfo, char *direct)
 
 	char ispost[3];
 
-    if (!chk_currBM(currBM, currentuser) || uinfo.mode == RMAIL || digestmode!=0) {
+    if (uinfo.mode == RMAIL || digestmode!=0) {
         return DONOTHING;
     }
     if ((fileinfo->accessed[1] & FILE_COMMEND) && !HAS_PERM(currentuser, PERM_SYSOP)) {
