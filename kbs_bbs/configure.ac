@@ -116,8 +116,8 @@ AC_SUBST(BBSSITE)
 
 AC_CONFIG_LINKS(libBBS/site.c:$SITEDIR/$BBSSITE.c
 		libBBS/site.h:$SITEDIR/$BBSSITE.h
-		src/site.c:site/$BBSSITE.c
-		src/site.h:site/$BBSSITE.h
+		src/site.c:$SITEDIR/$BBSSITE.c
+		src/site.h:$SITEDIR/$BBSSITE.h
 		)
 
 cd libBBS; for i in *.c ; do 
