@@ -4492,7 +4492,7 @@ static int tmpl_key(struct _select_def *conf, int key)
 				return SHOW_REFRESH;
 
 			strncpy(ptemplate[conf->pos-1].tmpl->title_tmpl, newtitle, STRLEN);
-			ptemplate[conf->pos-1].tmpl->title[STRLEN-1]='\0';
+			ptemplate[conf->pos-1].tmpl->title_tmpl[STRLEN-1]='\0';
 
 			tmpl_save();
 
