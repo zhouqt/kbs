@@ -680,10 +680,12 @@ void a_edits()
             unlink("Welcome.rec");
             prints("\nWelcome 记录档更新");
         }
+#ifdef FILTER
 	if (!strcmp(e_file[ch], "badword")) {
             unlink(BADWORD_IMG_FILE);
             prints("\n过滤词表更新");
 	}
+#endif
     }
     pressreturn();
 }

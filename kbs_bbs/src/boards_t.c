@@ -313,7 +313,7 @@ static int search_board(int *num, struct _select_def *conf, int key)
                 arg->find = true;
                 break;
             } else {
-                arg->bname[arg->bname_len'\0';
+                arg->bname[arg->bname_len]=0;
                 continue;
             }
         } else if (ch == '\t') {
@@ -952,9 +952,9 @@ int choose_board(int newflag, char *boardprefix,int favmode)
         favboard_conf.title_pos.y = 0;
         favboard_conf.pos = sellist[favlevel];
         favboard_conf.page_pos = ((sellist[favlevel]-1)/BBS_PAGESIZE)*BBS_PAGESIZE+1;
-        if (arg.amelist) {
-        	free(arg.amelist);
-        	arg.amelist=NULL;
+        if (arg.namelist) {
+        	free(arg.namelist);
+        	arg.namelist=NULL;
         }
 
         if (favmode)        
@@ -992,9 +992,9 @@ int choose_board(int newflag, char *boardprefix,int favmode)
     }
     free(nbrd);
     free(pts);
-    if (arg.amelist) {
-    	free(arg.amelist);
-    	arg.amelist=NULL;
+    if (arg.namelist) {
+    	free(arg.namelist);
+    	arg.namelist=NULL;
     }
 }
 
