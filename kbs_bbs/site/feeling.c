@@ -3,7 +3,7 @@
 const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 const char seccode[SECNUM][5] = {
-    "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C",
+    "0", "1", "2", "3", "4", "5", "6", "7", "8",
 };
 
 const char *permstrings[] = {
@@ -75,54 +75,40 @@ const char *user_definestr[] = {
 };
 
 const char    *explain[] = {
-    "本站系统",
-    "清华大学",
-    "校园信息",
-    "学术科学",
-    "休闲娱乐",
-    "文化人文",
-    "社会信息",
-    "游戏天地",
-    "体育健身",
-    "知性感性",
-    "电脑信息",
-    "软件开发",
-    "操作系统",
+    "温馨小屋",
+    "校园生活",
+    "BBS 技术",
     "电脑技术",
+    "学术科学",
+    "文化人文",
+    "休闲娱乐",
+    "知性感性",
+    "体育新闻",
     NULL
 };
 
 const char    *groups[] = {
-    "system.faq",
-    "thu.faq",
-    "univ.faq",
-    "sci.faq",
-    "rec.faq",
-    "literal.faq",
-    "social.faq",
-    "game.faq",
-    "sport.faq",
-    "talk.faq",
-    "info.faq",
-    "develop.faq",
-    "os.faq",
-    "comp.faq",
+    "GROUP_0",
+    "GROUP_1",
+    "GROUP_2",
+    "GROUP_3",
+    "GROUP_4",
+    "GROUP_5",
+    "GROUP_6",
+    "GROUP_7",
+    "GROUP_8",
     NULL
 };
 const char secname[SECNUM][2][20] = {
-    {"BBS 系统", "[站内]"},
-    {"清华大学", "[本校]"},
-    {"学术科学", "[学科/语言]"},
-    {"休闲娱乐", "[休闲/音乐]"},
-    {"文化人文", "[文化/人文]"},
-    {"社会信息", "[社会/信息]"},
-    {"游戏天地", "[游戏/对战]"},
-    {"体育健身", "[运动/健身]"},
-    {"知性感性", "[谈天/感性]"},
-    {"电脑信息", "[电脑/信息]"},
-    {"软件开发", "[语言/工具]"},
-    {"操作系统", "[系统/内核]"},
-    {"电脑技术", "[专项技术]"},
+    {"温馨小屋", "[本站][系统]"},
+    {"校园生活", "[校园][协会]"},
+    {"BBS 技术", "[版本][管理][转信]"},
+    {"电脑技术", "[编程][电脑][系统]"},
+    {"学术科学", "[学习][语言]"},
+    {"文化人文", "[文学]"},
+    {"休闲娱乐", "[休闲][音乐][娱乐]"},
+    {"知性感性", "[感性][闲聊]"},
+    {"体育新闻", "[体育][新闻][信息]"},
 };
 
 const char *mailbox_prop_str[] =
@@ -270,10 +256,10 @@ char *ModeType(mode)
         return "进入本站";
     case CSIE_ANNOUNCE:
         return "汲取精华";
-    case CSIE_TIN:
-        return "使用TIN";
-    case CSIE_GOPHER:
-        return "使用Gopher";
+//    case CSIE_TIN:
+//        return "使用TIN";
+//    case CSIE_GOPHER:
+//        return "使用Gopher";
     case MMENU:
         return "主菜单";
     case ADMIN:
@@ -300,24 +286,24 @@ char *ModeType(mode)
         return "看谁在线上";
     case FRIEND:
         return "找线上好友";
-    case MONITOR:
-        return "监看中";
+//    case MONITOR:
+//        return "监看中";
     case QUERY:
         return "查询网友";
     case TALK:
         return "聊天";
     case PAGE:
         return "呼叫网友";
-    case CHAT2:
-        return "梦幻国度";
+//    case CHAT2:
+//        return "梦幻国度";
     case CHAT1:
         return "聊天室中";
-    case CHAT3:
-        return "快哉亭";
-    case CHAT4:
-        return "老大聊天室";
-    case IRCCHAT:
-        return "会谈IRC";
+//    case CHAT3:
+//        return "快哉亭";
+//    case CHAT4:
+//        return "老大聊天室";
+//    case IRCCHAT:
+//        return "会谈IRC";
     case LAUSERS:
         return "探视网友";
     case XMENU:
@@ -329,30 +315,30 @@ char *ModeType(mode)
 	/*
         return "穿梭银河";
 	*/
-    case EDITWELC:
-        return "编辑 Welc";
+//    case EDITWELC:
+//        return "编辑 Welc";
     case EDITUFILE:
         return "编辑档案";
     case EDITSFILE:
         return "系统管理";
         /*        case  EDITSIG:  return "刻印";
            case  EDITPLAN: return "拟计画"; */
-    case ZAP:
-        return "订阅讨论区";
-    case EXCE_MJ:
-        return "围城争霸";
-    case EXCE_BIG2:
-        return "比大营";
-    case EXCE_CHESS:
-        return "楚河汉界";
+//    case ZAP:
+//        return "订阅讨论区";
+//    case EXCE_MJ:
+//        return "围城争霸";
+//    case EXCE_BIG2:
+//        return "比大营";
+//    case EXCE_CHESS:
+//        return "楚河汉界";
     case NOTEPAD:
         return "留言板";
     case GMENU:
         return "工具箱";
-    case FOURM:
-        return "4m Chat";
-    case ULDL:
-        return "UL/DL";
+//    case FOURM:
+//        return "4m Chat";
+//    case ULDL:
+//        return "UL/DL";
     case MSG:
         return "送讯息";
     case USERDEF:
@@ -365,8 +351,8 @@ char *ModeType(mode)
         return "编修精华";
     case WEBEXPLORE:
         return "Web浏览";
-    case CCUGOPHER:
-        return "他站精华";
+//    case CCUGOPHER:
+//        return "他站精华";
     case LOOKMSGS:
         return "察看讯息";
     case WFRIEND:
