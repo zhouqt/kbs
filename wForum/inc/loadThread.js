@@ -246,7 +246,7 @@ function Post(id, owner, posttime, flags) {
 	this.FLAGS = flags;
 }
 
-function writepost(unused_id, html_title, threadNum, origin, lastreply, origin_exists, has_attach) {
+function writepost(pos, html_title, threadNum, origin, lastreply, origin_exists, has_attach) {
 	/* note: when origin post does not exists, origin is actually the same as lastreply except
 	 * groupID is different. See also www_generateOriginIndex() */
 	//if (!origin_exists) return;
@@ -264,7 +264,7 @@ function writepost(unused_id, html_title, threadNum, origin, lastreply, origin_e
 	}
 	document.write("</TD><TD align=left class=TableBody1 width=* >");
 	if (threadNum==0) {
-		document.write('<img src="pic/nofollow.gif" id="followImg' + unused_id + '">');
+		document.write('<img src="pic/nofollow.gif" id="followImg' + pos + '">');
 	} else {
 		document.write('<img loaded="no" src="pic/plus.gif" id="followImg' + origin.ID + '" style="cursor:hand;" onclick="loadThreadFollow(\'' + origin.ID +"','" + boardName + "')\" title=\"展开贴子列表\">");
 	}
@@ -280,18 +280,18 @@ function writepost(unused_id, html_title, threadNum, origin, lastreply, origin_e
 	} else {
 		href_title = "原贴已删除";
 	}
-	document.write('<a href="disparticle.php?boardName=' + boardName + '&ID=' + origin.ID + '" title="' + href_title + '">' + html_title + ' </a>');
+	document.write('<a href="disparticle.php?boardName=' + boardName + '&ID=' + origin.ID + '&pos=' + pos + '" title="' + href_title + '">' + html_title + ' </a>');
 	threadPages = Math.ceil((threadNum+1)/siteconf_THREADSPERPAGE);
 	if (threadPages>1) {
 		document.write("<b>[<img src=\"pic/multipage.gif\"> ");
 		for (t=1; (t<7) && (t<=threadPages); t++) {
-			document.write("<a href=\"disparticle.php?boardName=" + boardName + "&ID=" + origin.ID + "&page=" + t + "\">" + t + "</a> ");
+			document.write("<a href=\"disparticle.php?boardName=" + boardName + "&ID=" + origin.ID + "&pos=" + pos + "&page=" + t + "\">" + t + "</a> ");
 		}
 		if (threadPages>=7) {
 			if (threadPages>=8) {
 				document.write("...");
 			}
-			document.write("<a href=\"disparticle.php?boardName=" + boardName + "&ID=" + origin.ID + "&page=" + t + "\">" + threadPages + "</a> ");
+			document.write("<a href=\"disparticle.php?boardName=" + boardName + "&ID=" + origin.ID + "&pos=" + pos + "&page=" + t + "\">" + threadPages + "</a> ");
 		}
 		document.write(" ]</b>");
 	}
@@ -308,7 +308,7 @@ function writepost(unused_id, html_title, threadNum, origin, lastreply, origin_e
 	}
 	document.write('</TD>');
 	document.write('<TD class=TableBody1 width=64 align="center">' + ((origin_exists?0:1)+threadNum) + '</TD>');
-	document.write('<TD align=left class=TableBody2 width=200><nobr>&nbsp;<a href="disparticle.php?boardName=' + boardName + '&ID=' + origin.ID + '&start=' + threadNum + '">');
+	document.write('<TD align=left class=TableBody2 width=200><nobr>&nbsp;<a href="disparticle.php?boardName=' + boardName + '&ID=' + origin.ID + '&pos=' + pos + '&start=' + threadNum + '">');
 	document.write(lastreply.POSTTIME + '</a>&nbsp;<font color=#FF0000>|</font>&nbsp;<a href=dispuser.php?id=' + lastreply.OWNER + ' target=_blank>');
 	document.write(lastreply.OWNER + '</nobr></a></TD></TR>');
 	if (threadNum>0) {
