@@ -1,4 +1,4 @@
-/**
+/*
  * This program converts .PASSWDS file from Firebird 3.0K beta6 to SMTH_BBS.
 */
 
