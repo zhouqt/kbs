@@ -665,10 +665,10 @@ void brc_add_read(unsigned int fid)
 
 void brc_clear()
 {
-    struct boardheader *bh = getboard(brc_cache_entry[brc_currcache].bid);
+    struct boardheader *bh;
     /*干脆不搞guest的这个算了*/
     if (!strcmp(currentuser->userid,"guest")) return;
-
+    bh = getboard(brc_cache_entry[brc_currcache].bid);
     brc_cache_entry[brc_currcache].list[0] = bh->nowid;
     brc_cache_entry[brc_currcache].list[1] = 0;
     brc_cache_entry[brc_currcache].changed = 1;
