@@ -397,7 +397,7 @@ void brc_update(char *userid)
     gzFile fd = NULL;
     char dirfile[MAXPATH];
     unsigned int data[MAXBOARD][BRC_MAXNUM];
-    size_t count;
+    int count;
 
     if (brc_cache_entry==NULL) return;
     /*干脆不搞guest的这个算了*/
@@ -484,7 +484,6 @@ static int brc_getcache(char *userid)
 void brc_addreaddirectly(char *userid, int bnum, unsigned int postid)
 {
     char dirfile[MAXPATH];
-    size_t filesize;
     int fdr;
     int i, n;
     int list[BRC_MAXNUM];
@@ -568,7 +567,7 @@ int brc_initial(char *userid, char *boardname)
     int bid;
     gzFile brcfile;
     struct boardheader const *bptr;
-    size_t count;
+    int count;
 
     if (boardname == NULL)
         return 0;

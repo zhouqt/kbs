@@ -692,7 +692,8 @@ int seek_MemMoreLines(struct MemMoreLines *l, int n)
 int mmap_show(char *fn, int row, int numlines)
 {
     char *ptr;
-    int size, retv;
+    off_t size;
+    int retv;
 
     BBS_TRY {
         if (safe_mmapfile(fn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)
@@ -1169,7 +1170,8 @@ int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
 int draw_content(char *fn, struct fileheader *fh)
 {
     char *ptr;
-    int size, retv;
+    off_t size;
+    int retv;
 
     BBS_TRY {
         if (safe_mmapfile(fn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)

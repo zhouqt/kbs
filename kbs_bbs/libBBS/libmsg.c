@@ -1576,13 +1576,13 @@ static int free_csv_list( struct csv_list * cl)
 }
 		
 
-static struct csv_list * read_csv_line(char *ptr, size_t size, size_t *dlength)
+static struct csv_list * read_csv_line(char *ptr, off_t size, off_t *dlength)
 {
 	struct csv_list * cl = NULL;
 	struct csv_list * nowcl = NULL;
 	int start=0;
 	char *p = ptr;
-	size_t sz=0;
+	off_t sz=0;
 	int i,have_quota;
 	int clnum = 0;
 
@@ -1682,9 +1682,7 @@ int conv_csv_to_al(char *fname)
 	FILE *fp;
 	char *ptr;
 	char *p;
-	size_t size;
-	size_t sz;
-	size_t dlength;
+	off_t size,sz,dlength;
 	struct csv_list *cl;
 	struct csv_list *nowcl;
 	struct addresslist al;
@@ -1698,7 +1696,7 @@ int conv_csv_to_al(char *fname)
 	for( i=0; i< CSV_LIST_MAX_KEYNUM; i++)
 		csv_hash[i]=0;
 
-	if (safe_mmapfile_handle(fileno(fp), PROT_READ | PROT_WRITE, MAP_SHARED, (void **)(&ptr) , (size_t *) & size) == 1) {
+	if (safe_mmapfile_handle(fileno(fp), PROT_READ | PROT_WRITE, MAP_SHARED, (void **)(&ptr) , & size) == 1) {
 
 		sz = size;
 		p=ptr;

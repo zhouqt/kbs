@@ -434,7 +434,7 @@ int super_filter(struct _select_def* conf,struct fileheader* fileinfo,void* extr
     fcntl(fd2, F_SETLKW, &ldata2);
     total = buf.st_size / size;
 
-    if ((i = safe_mmapfile_handle(fd2, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size)) != 1) {
+    if ((i = safe_mmapfile_handle(fd2, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
         if (i == 2)
             end_mmapfile((void *) ptr, buf.st_size, -1);
         ldata2.l_type = F_UNLCK;
@@ -452,7 +452,7 @@ int super_filter(struct _select_def* conf,struct fileheader* fileinfo,void* extr
         char* p;
         char ffn[80];
         int j;
-        size_t fsize;
+        off_t fsize;
         libptr = libs;
         ferr = 0;
         

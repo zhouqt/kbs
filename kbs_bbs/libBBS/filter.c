@@ -12,7 +12,7 @@ extern void releasepf(void* patternbuf);
 
 static void* badword_img=NULL;
 static time_t badimg_time;
-static int badword_img_size;
+static off_t badword_img_size;
 int build_badwordimage()
 {
     int fp;
@@ -89,7 +89,8 @@ static void default_setting()
 int check_badword(char *checkfile)
 {
     char *ptr;
-    int size,retv;
+    off_t size;
+    int retv;
     void* pattern_img_ptr;
     int pattern_img_size;
     int retrycount=0;
@@ -154,7 +155,8 @@ int check_filter(char *patternfile, char *checkfile,int defaultval)
 {
     int fp;
     char *ptr;
-    int size, retv;
+    off_t size;
+    int retv;
     void* pattern_buf;
     size_t pattern_imagesize;
 

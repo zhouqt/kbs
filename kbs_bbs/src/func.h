@@ -165,8 +165,8 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     unsigned int store_mailbox_prop(char *userid);
     unsigned int get_mailbox_prop(char *userid);
     unsigned int update_mailbox_prop(char *userid, unsigned int prop);
-	int gen_title(const char *boardname );
-	size_t read_user_memo( char *userid, struct usermemo ** ppum );
+    int gen_title(const char *boardname );
+    off_t read_user_memo( char *userid, struct usermemo ** ppum );
 
 #define time(x) bbstime(x)
 
@@ -188,8 +188,8 @@ void set_user_title(unsigned char titleidx,char* newtitle);
 #define BBS_RETURN_VOID {popup_sigbus();return;}
 
 
-    int safe_mmapfile(char *filename, int openflag, int prot, int flag, void **ret_ptr, size_t * size, int *ret_fd);
-    int safe_mmapfile_handle(int fd, int prot, int flag, void **ret_ptr, size_t * size);
+    int safe_mmapfile(char *filename, int openflag, int prot, int flag, void **ret_ptr, off_t * size, int *ret_fd);
+    int safe_mmapfile_handle(int fd, int prot, int flag, void **ret_ptr, off_t * size);
     void end_mmapfile(void *ptr, int size, int fd);
     void set_proc_title(char *argv0, char *title);
 

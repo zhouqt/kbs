@@ -1014,7 +1014,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
 int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)
 {
     struct fileheader *data;
-    size_t filesize;
+    off_t filesize;
     int total;
     int low, high;
     int ret;
@@ -1057,7 +1057,7 @@ int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)
 int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, void *arg)
 {
     struct fileheader *data;
-    size_t filesize;
+    off_t filesize;
     int total;
     int low, high;
     int mid, comp;
@@ -1577,7 +1577,7 @@ int get_effsize(char * ffn)
     char* p,*op, *attach;
     long attach_len;
     int j;
-    size_t fsize;
+    off_t fsize;
     int k,abssize=0,entercount=0,ignoreline=0;
     j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize, NULL);
     op = p;
@@ -1614,7 +1614,7 @@ long calc_effsize(char *fname)
     FILE *fp;
     int matched;
     char* ptr;
-    long size;
+    off_t size;
 	long effsize = 0;
 	int insign=0;
 	long signsize=0;
@@ -1626,7 +1626,7 @@ long calc_effsize(char *fname)
     matched=0;
 
     BBS_TRY {
-        if (safe_mmapfile_handle(fileno(fp),  PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & size) == 1) {
+        if (safe_mmapfile_handle(fileno(fp),  PROT_READ, MAP_SHARED, (void **) &ptr, (off_t *) & size) == 1) {
             char* data;
             long not;
             data=ptr;

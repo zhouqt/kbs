@@ -731,8 +731,10 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
 
 /*	int mmap_offset,mmap_length; */
     struct fileheader *pFh, *pFh1;
-    int size;
+    off_t size;
     struct read_arg *arg = (struct read_arg *) conf->arg;
+    size_t bm_search[256];
+    bool inited=false;
 
     get_upper_str(upper_query, query);
     if (*query == '\0') {
@@ -774,7 +776,7 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
                 if (aflag == -1) { /*内容检索*/
                     char p_name[256];
 
-                    if (uinfo.mode != RMAIL)
+                    if (arg->mode!=DIR_MODE_MAIL)
                         setbfile(p_name, currboard->filename, pFh1->filename);
                     else
                         setmailfile(p_name, currentuser->userid, pFh1->filename);
@@ -796,7 +798,7 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
                         && (*(ptr + 3) == ' ')) {
                         ptr2 = ptr + 4;
                     }
-                    if (strcasestr(ptr2,query)) {
+                    if (bm_strcasestr_rp(ptr2,query,bm_search,&inited)) {
                         match = 1;
                         break;
                     }
@@ -913,7 +915,7 @@ bool isThreadTitle(char* a,char* b)
 int apply_thread(struct _select_def* conf, struct fileheader* fh,APPLY_THREAD_FUNC func,bool applycurrent, bool down,void* arg)
 {
     struct fileheader *pFh,*nowFh;
-    int size;
+    off_t size;
     int now; /*当前扫描到的位置*/
     int count; /*计数器*/
     int recordcount; /*文章总数*/

@@ -257,7 +257,7 @@ int apply_record(char *filename, APPLY_FUNC_ARG fptr, int size, void *arg, int a
 {
     char *buf, *buf1, *buf2;
     int i;
-    size_t file_size;
+    off_t file_size;
     int count;
 
     if (applycopy)
@@ -324,7 +324,7 @@ int search_record_back(int fd,  /* file handle */
 {                               /* if records in file are sorted */
     char *buf, *buf1;
     int i;
-    size_t filesize;
+    off_t filesize;
 
     BBS_TRY {
         if (safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, (void **) &buf, &filesize) == 0)
@@ -352,7 +352,7 @@ int search_record_back_lite(int fd, int size, int start, int num, RECORD_FUNC_AR
 {
 	char *buf, *buf1;
 	int i;
-	size_t filesize;
+	off_t filesize;
 
 	BBS_TRY {
 		if (safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, (void **) &buf, &filesize) == 0)
@@ -381,7 +381,7 @@ int search_record(char *filename, void *rptr, int size, RECORD_FUNC_ARG fptr, vo
 {
     int i;
     char *buf, *buf1;
-    size_t filesize;
+    off_t filesize;
 
     BBS_TRY {
         if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &buf, &filesize, NULL) == 0)
@@ -604,7 +604,7 @@ char    *filename, *tmpfile, *deleted;
 int delete_record(char *filename, int size, int id, RECORD_FUNC_ARG filecheck, void *arg)
 {
     int fdr;
-    size_t filesize;
+    off_t filesize;
     char *ptr;
     int ret;
 

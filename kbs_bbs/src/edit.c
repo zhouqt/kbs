@@ -648,13 +648,13 @@ long insert_from_fp(FILE *fp, long * attach_length)
     char attachpad[10];
     int matched;
     char* ptr;
-    long size;
+    off_t size;
 	long ret=0;
 
 	if( attach_length ) *attach_length=0;
     matched=0;
     BBS_TRY {
-        if (safe_mmapfile_handle(fileno(fp), PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & size) == 1) {
+        if (safe_mmapfile_handle(fileno(fp), PROT_READ, MAP_SHARED, (void **) &ptr, & size) == 1) {
             char* data;
             long not;
             data=ptr;
