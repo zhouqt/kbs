@@ -185,7 +185,7 @@ char    buf[256];
     sprintf(stay,"%d",(time(0) - login_start_time) / 60);
     /*---	modified by period	hide posts/logins	2000-11-02	---*/
 #ifndef _DETAIL_UINFO_
-    if(uinfo.mode == RMAIL && (!HAS_PERM(PERM_ADMINMENU)) ) {
+    if(uinfo.mode == RMAIL && (!HAS_PERM(currentuser,PERM_ADMINMENU)) ) {
         strcpy(numlogins, "$log");
         strcpy(numposts,  "$pst");
     } else

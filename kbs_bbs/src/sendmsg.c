@@ -44,7 +44,7 @@ int line;
             return NA;
         if(genbuf[0]=='G')
         {
-            if(HAS_PERM(PERM_SYSOP))
+            if(HAS_PERM(currentuser,PERM_SYSOP))
                 return 2;
             else
                 return YEA;
@@ -58,7 +58,7 @@ int
 canmsg(uin)
 struct user_info *uin;
 {
-    if ((uin->pager&ALLMSG_PAGER) || HAS_PERM(PERM_SYSOP)) return YEA;
+    if ((uin->pager&ALLMSG_PAGER) || HAS_PERM(currentuser,PERM_SYSOP)) return YEA;
     if ((uin->pager&FRIENDMSG_PAGER))
     {
         if(can_override(uin->userid,currentuser->userid))
@@ -206,7 +206,7 @@ show_allmsgs()
     char fname[STRLEN];
     int  oldmode;
 
-    setuserfile(fname,"msgfile");
+    sethomefile(fname,currentuser->userid,"msgfile");
     clear();
     oldmode = uinfo.mode;
     modify_user_mode( LOOKMSGS);
@@ -302,9 +302,9 @@ r_msg()
         line=t_lines/2-1;
     else line=0;
 
-    if((uinfo.mode == POSTING || uinfo.mode == SMAIL) && !DEFINE(DEF_LOGININFORM))/*Haohmaru.99.12.16.发文章时不回msg*/
+    if((uinfo.mode == POSTING || uinfo.mode == SMAIL) && !DEFINE(currentuser,DEF_LOGININFORM))/*Haohmaru.99.12.16.发文章时不回msg*/
     {
-        setuserfile(buf,"msgcount");
+        sethomefile(buf,currentuser->userid,"msgcount");
         fp = fopen(buf,"rb");
         if( fp != NULL )
         {
@@ -324,7 +324,7 @@ r_msg()
         saveline(line, 1, savebuffer);
         return;
     }
-    setuserfile(fname,"msgfile");
+    sethomefile(fname,currentuser->userid,"msgfile");
     if(!dashf(fname)) { /* Leeward 98.07.30 */
         saveline(line, 0, savebuffer);
         move(line,0); clrtoeol(); refresh();
@@ -333,7 +333,7 @@ r_msg()
         saveline(line, 1, savebuffer); /* restore line */
         return;
     }
-    setuserfile(fname2,"msgcount");
+    sethomefile(fname2,currentuser->userid,"msgcount");
     RMSG=YEA;
     RMSGCount ++; /* Leeward 98.07.30 supporting msgX */
     saveline(line, 0, savebuffer);
@@ -370,7 +370,7 @@ r_msg()
         f_offset=ftell(fp);
         fclose(fp);
         if (i==0) break;
-        if(DEFINE(DEF_SOUNDMSG))
+        if(DEFINE(currentuser,DEF_SOUNDMSG))
         {
             bell();
             bell();
@@ -384,7 +384,7 @@ r_msg()
             /*        read(0,&ch,1);*/
 END:
             ch=igetkey();
-            if(!DEFINE(DEF_IGNOREMSG))/*Haohmaru.98.12.23*/
+            if(!DEFINE(currentuser,DEF_IGNOREMSG))/*Haohmaru.98.12.23*/
             {
                 if (ch== KEY_ESC) break;
                 else if(ch==Ctrl('R')||ch=='r'||ch=='R')

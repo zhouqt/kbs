@@ -73,7 +73,7 @@ int chkreceiver(char* userid,struct userec* lookupuser)
     /* Bigman 2000.9.8 : 修正没有用户的话,返回0 */
     /* 修正PERM_SYSOP给自杀用户发信后的错误*/
 
-    if (HAS_PERM(PERM_SYSOP))  /* Leeward 99.07.28 */
+    if (HAS_PERM(currentuser,PERM_SYSOP))  /* Leeward 99.07.28 */
         return 1;
 
 
@@ -116,7 +116,7 @@ char *userid;
     char buf[IDLEN+1];
     char path[256];
 
-    if (HAS_PERM(PERM_SYSOP)) return YEA;
+    if (HAS_PERM(currentuser,PERM_SYSOP)) return YEA;
 
     sethomefile( path, userid , "/ignores");
     if (search_record(path, buf, IDLEN+1, cmpinames, currentuser->userid))
@@ -152,7 +152,7 @@ chkmail()
     int sum,sumlimit, numlimit;/*Haohmaru.99.4.4.对收信也加限制*/
 
     m_init();
-    if( !HAS_PERM( PERM_BASIC ) ) {
+    if( !HAS_PERM(currentuser, PERM_BASIC ) ) {
         return 0;
     }
     /* ylsdd 2001.4.23: 检测文件状态应该在get_mailnum，get_sum_records之前，否则岂不是
@@ -163,23 +163,23 @@ chkmail()
         return ismail ;
     
 
-    if ( !HAS_PERM(PERM_SYSOP)|| !strcmp(currentuser->userid, "Arbitrator") )
+    if ( !HAS_PERM(currentuser,PERM_SYSOP)|| !strcmp(currentuser->userid, "Arbitrator") )
     /*Arbitrator's mailbox has no limit, stephen 2001.11.1 */
     {/*Haohmaru.99.4.4.对收信也加限制,改动下面的数字时请同时改动chkreceiver函数*/
-        if (HAS_PERM(PERM_CHATCLOAK))
+        if (HAS_PERM(currentuser,PERM_CHATCLOAK))
             /* Bigman:2000.8.17 智囊团修改 */
         {
             sumlimit = 2000;
             numlimit = 2000;
         }
-        /* else if (HAS_PERM(PERM_BOARDS)) */
+        /* else if (HAS_PERM(currentuser,PERM_BOARDS)) */
         /* give Jury a bigger mail box. stephen 2001.10.31 */
-        else if (HAS_PERM(PERM_MANAGER))
+        else if (HAS_PERM(currentuser,PERM_MANAGER))
         {
             sumlimit = 300;
             numlimit = 300;
         }
-        else if (HAS_PERM(PERM_LOGINOK))
+        else if (HAS_PERM(currentuser,PERM_LOGINOK))
         {
             sumlimit = 120;
             numlimit = 150;
@@ -377,7 +377,7 @@ mailall()
                     buf4[0]='\0';
                 }else if(ans[0]=='V')
                 { /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
-                    setuserfile(buf2,"signatures");
+                    sethomefile(buf2,currentuser->userid,"signatures");
                     move(t_lines-1,0);
                     if (askyn("预设显示前三个签名档, 要显示全部吗",NA,YEA)==YEA)
                         ansimore(buf2);
@@ -482,24 +482,24 @@ char *userid, *title ;
     if ( !strchr(userid,'@') && !chkreceiver(userid,&user))
         return -4;
 
-    if ((user.userlevel & PERM_SUICIDE) && ( !HAS_PERM(PERM_SYSOP) ) )
+    if ((user.userlevel & PERM_SUICIDE) && ( !HAS_PERM(currentuser,PERM_SYSOP) ) )
         return -5;
     /* SYSOP也能给自杀的人发信 */
 
-    if ( !HAS_PERM(PERM_SYSOP) || !strcmp(currentuser->userid, "Arbitrator")){
+    if ( !HAS_PERM(currentuser,PERM_SYSOP) || !strcmp(currentuser->userid, "Arbitrator")){
 /*Arbitrator's mailbox has no limit, stephen 2001.11.1 */ 
-        if ( HAS_PERM(PERM_CHATCLOAK))
+        if ( HAS_PERM(currentuser,PERM_CHATCLOAK))
             /* Bigman: 2000.8.17, 智囊团信箱*/
         {
             sumlimit = 2000;
             numlimit = 2000;
         }
-        else if (HAS_PERM(PERM_MANAGER))  /* alex于1996.10.20添加，revised by stephen on 2001.11.1, mailbox容量限制 */
+        else if (HAS_PERM(currentuser,PERM_MANAGER))  /* alex于1996.10.20添加，revised by stephen on 2001.11.1, mailbox容量限制 */
         {
             sumlimit = 300;
             numlimit = 300;
         }
-        else if (HAS_PERM(PERM_LOGINOK))
+        else if (HAS_PERM(currentuser,PERM_LOGINOK))
         {
             sumlimit = 120;
             numlimit = 150;
@@ -642,7 +642,7 @@ edit_mail_file:
             buf4[0]='\0';
         }else if(ans[0]=='V')
         { /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
-            setuserfile(buf2,"signatures");
+            sethomefile(buf2,currentuser->userid,"signatures");
             move(t_lines-1,0);
             if (askyn("预设显示前三个签名档, 要显示全部吗",NA,YEA)==YEA)
                 ansimore(buf2);
@@ -760,7 +760,7 @@ char userid[];
     char uident[STRLEN] ;
 
     /* 封禁Mail Bigman:2000.8.22 */
-    if (HAS_PERM(PERM_DENYMAIL))
+    if (HAS_PERM(currentuser,PERM_DENYMAIL))
         return DONOTHING;
 
     if(uinfo.mode!=LUSERS&&uinfo.mode!=LAUSERS&&uinfo.mode!=FRIEND
@@ -852,7 +852,7 @@ read_new_mail(struct fileheader *fptr ,char* arg)
     case 'R': case 'r':
 
             /* 封禁Mail Bigman:2000.8.22 */
-            if (HAS_PERM(PERM_DENYMAIL))
+            if (HAS_PERM(currentuser,PERM_DENYMAIL))
             {
                 clear();
                 move(3,10);
@@ -914,7 +914,7 @@ void
 mailtitle()
 {
     /* Leeward 98.01.19 adds below codes for statistics */
-    int MailSpace = ((HAS_PERM(PERM_SYSOP)||!strcmp(currentuser->userid, "Arbitrator") )  ? 9999 : (HAS_PERM(PERM_CHATCLOAK) ? 2000: (HAS_PERM(PERM_MANAGER) ? 300 : (HAS_PERM(PERM_LOGINOK) ? 120 : 15) ) ) ) ;
+    int MailSpace = ((HAS_PERM(currentuser,PERM_SYSOP)||!strcmp(currentuser->userid, "Arbitrator") )  ? 9999 : (HAS_PERM(currentuser,PERM_CHATCLOAK) ? 2000: (HAS_PERM(currentuser,PERM_MANAGER) ? 300 : (HAS_PERM(currentuser,PERM_LOGINOK) ? 120 : 15) ) ) ) ;
     int UsedSpace = get_sum_records(currmaildir, sizeof(fileheader));
 
     showtitle( "邮件选单    ", BoardName );
@@ -1017,7 +1017,7 @@ char *direct ;
     case 'R': case 'r':
 
             /* 封禁Mail Bigman:2000.8.22 */
-            if (HAS_PERM(PERM_DENYMAIL))
+            if (HAS_PERM(currentuser,PERM_DENYMAIL))
             {
                 clear();
                 move(3,10);
@@ -1147,7 +1147,7 @@ char *direct ;
     char        board[ STRLEN ];
     char        ans[ STRLEN ];
 
-    if (!HAS_PERM(PERM_BOARDS)) {
+    if (!HAS_PERM(currentuser,PERM_BOARDS)) {
         return DONOTHING;
     }
     strncpy(buf, direct, sizeof(buf));
@@ -1191,7 +1191,7 @@ char *direct ;
 {
     char buf[STRLEN];
     char *p;
-    if (!HAS_PERM(PERM_FORWARD)) {
+    if (!HAS_PERM(currentuser,PERM_FORWARD)) {
         return DONOTHING;
     }
     strncpy(buf, direct, sizeof(buf));
@@ -1228,7 +1228,7 @@ char *direct ;
 {
     char buf[STRLEN];
     char *p;
-    if (!HAS_PERM(PERM_FORWARD)) {
+    if (!HAS_PERM(currentuser,PERM_FORWARD)) {
         return DONOTHING;
     }
     strncpy(buf, direct, sizeof(buf));
@@ -1400,7 +1400,7 @@ g_send()
     struct userec* lookupuser;
 
     /* 封禁Mail Bigman:2000.8.22 */
-    if (HAS_PERM(PERM_DENYMAIL)) return DONOTHING;
+    if (HAS_PERM(currentuser,PERM_DENYMAIL)) return DONOTHING;
 
     modify_user_mode( SMAIL );
     *quote_file = '\0';
@@ -1577,20 +1577,20 @@ int num ;
     /* 添加在好友寄信时的发信上限限制 Bigman 2000.12.11 */
     int sumlimit,numlimit,sum;
 
-    if ( !HAS_PERM(PERM_SYSOP) ) {
-        if (HAS_PERM(PERM_CHATCLOAK))
+    if ( !HAS_PERM(currentuser,PERM_SYSOP) ) {
+        if (HAS_PERM(currentuser,PERM_CHATCLOAK))
             /* Bigman: 2000.8.17 智囊团 */
         {
             sumlimit = 2000;
             numlimit = 2000;
         }
-        else if (HAS_PERM(PERM_MANAGER))  /* Leeward 于1997.12.13添加，revised by stephen on 2001.11.1 , */
+        else if (HAS_PERM(currentuser,PERM_MANAGER))  /* Leeward 于1997.12.13添加，revised by stephen on 2001.11.1 , */
 /* mailbox 容量限制 */
         {
             sumlimit = 300;
             numlimit = 300;
         }
-        else if (HAS_PERM(PERM_LOGINOK))
+        else if (HAS_PERM(currentuser,PERM_LOGINOK))
         {
             sumlimit = 120;
             numlimit = 150;
@@ -1687,7 +1687,7 @@ int num ;
             buf4[0]='\0';
         }else if(ans[0]=='V')
         { /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
-            setuserfile(buf2,"signatures");
+            sethomefile(buf2,currentuser->userid,"signatures");
             move(t_lines-1,0);
             if (askyn("预设显示前三个签名档, 要显示全部吗",NA,YEA)==YEA)
                 ansimore(buf2);
@@ -1716,7 +1716,7 @@ int num ;
     {
         char maillists[STRLEN];
 
-        setuserfile( maillists,"maillist"  );
+        sethomefile( maillists,currentuser->userid,"maillist"  );
         if ((mp = fopen(maillists, "r")) == NULL)
         {
             return -3;
@@ -1869,7 +1869,7 @@ ov_send()
     int all,i;
 
     /* 封禁Mail Bigman:2000.8.22 */
-    if (HAS_PERM(PERM_DENYMAIL)) return DONOTHING;
+    if (HAS_PERM(currentuser,PERM_DENYMAIL)) return DONOTHING;
 
     modify_user_mode( SMAIL );
     move(1,0); clrtobot();
@@ -1948,19 +1948,19 @@ doforward(char *direct,struct boardheader*fh,int isuu)
         }
     }
 
-    if ( !HAS_PERM(PERM_SYSOP) ) {
-        if (HAS_PERM(PERM_CHATCLOAK))
+    if ( !HAS_PERM(currentuser,PERM_SYSOP) ) {
+        if (HAS_PERM(currentuser,PERM_CHATCLOAK))
             /* Bigman: 2000.8.17 智囊团 */
         {
             sumlimit = 2000;
             numlimit = 2000;
         }
-        else if (HAS_PERM(PERM_MANAGER))  /* Leeward 于1997.12.13添加，revised by stephen on 2001.11.1, mailbox 容量限制 */
+        else if (HAS_PERM(currentuser,PERM_MANAGER))  /* Leeward 于1997.12.13添加，revised by stephen on 2001.11.1, mailbox 容量限制 */
         {
             sumlimit = 300;
             numlimit = 300;
         }
-        else if (HAS_PERM(PERM_LOGINOK))
+        else if (HAS_PERM(currentuser,PERM_LOGINOK))
         {
             sumlimit = 120;
             numlimit = 150;
@@ -2008,7 +2008,7 @@ doforward(char *direct,struct boardheader*fh,int isuu)
         strncpy( receiver, address, STRLEN );
     }
     if (invalidaddr(receiver)) return -2;
-    if (!HAS_PERM(PERM_POST))
+    if (!HAS_PERM(currentuser,PERM_POST))
         if(!strstr(receiver,"@")&&!strstr(receiver,"."))
         {
             prints("你尚无权限转寄信件给站内其它用户。");

@@ -78,7 +78,7 @@ NNread_init()
      ---*/
     nnline = 0;
     xxxline = 0;
-    if(!DEFINE(DEF_ACBOARD))
+    if(!DEFINE(currentuser,DEF_ACBOARD))
     {
         nnline = 1;
         xxxline = 1;
@@ -305,7 +305,7 @@ netty_more()
     int x,y;
     time_t thetime = time(0);
 
-    if(!DEFINE(DEF_ACBOARD))
+    if(!DEFINE(currentuser,DEF_ACBOARD))
     {
         update_endline();
         return ;
@@ -316,7 +316,7 @@ netty_more()
     getyx(&y,&x);
     update_endline();
     move(3,0);
-    while ((nnline < movieshm->movielines)/*&&DEFINE(DEF_ACBOARD)*/) {
+    while ((nnline < movieshm->movielines)/*&&DEFINE(currentuser,DEF_ACBOARD)*/) {
         move(2+ne_row,0);
         clrtoeol();
 
@@ -348,7 +348,7 @@ printacbar()
 extern int idle_count;
 void R_monitor(void* data)
 {
-    if(!DEFINE(DEF_ACBOARD))
+    if(!DEFINE(currentuser,DEF_ACBOARD))
         return;
 
     if (uinfo.mode != MMENU)
@@ -496,7 +496,7 @@ int     numlines;
                 }
                 /* Luzi  ÐÂÔöÔÄ¶ÁÈÈ¼ü 1997.11.1 */
                 else if (ch=='O')
-                    { if (HAS_PERM(PERM_BASIC))
+                    { if (HAS_PERM(currentuser,PERM_BASIC))
                     {
                         t_friends();
                         i = pos = 0;
@@ -538,7 +538,7 @@ int     numlines;
                     numbytes = readln(fd,buf,more_buf) ;  curr_row++;
                 }
                 else if (ch=='W')
-                    { if (HAS_PERM(PERM_PAGE))
+                    { if (HAS_PERM(currentuser,PERM_PAGE))
                     {
                         s_msg();
                         i = pos = 0;
@@ -572,7 +572,7 @@ int     numlines;
                     int  count;
 
                     sprintf(buffer, "tmp/XCL.%s%d", currentuser->userid, getpid());
-                    if (HAS_PERM(PERM_ADMIN) && HAS_PERM(PERM_SYSOP)
+                    if (HAS_PERM(currentuser,PERM_ADMIN) && HAS_PERM(currentuser,PERM_SYSOP)
                             &&  !strcmp(buffer, filename))
                     {
                         for (count = 0; count < t_lines; count ++)

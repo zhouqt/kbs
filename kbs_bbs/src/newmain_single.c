@@ -156,15 +156,15 @@ u_enter()
     memset( &uinfo, 0, sizeof( uinfo ) );
     uinfo.active = YEA ;
     uinfo.pid    = getpid();
-/*    if( HAS_PERM(PERM_LOGINCLOAK) && (currentuser->flags[0] & CLOAK_FLAG) && HAS_PERM(PERM_SEECLOAK)) */
+/*    if( HAS_PERM(currentuser,PERM_LOGINCLOAK) && (currentuser->flags[0] & CLOAK_FLAG) && HAS_PERM(currentuser,PERM_SEECLOAK)) */
 
     /* Bigman 2000.8.29 ÖÇÄÒÍÅÄÜ¹»ÒþÉí */
-    if( (HAS_PERM(PERM_CHATCLOAK) || HAS_PERM(PERM_CLOAK)) && (currentuser->flags[0] & CLOAK_FLAG))
+    if( (HAS_PERM(currentuser,PERM_CHATCLOAK) || HAS_PERM(currentuser,PERM_CLOAK)) && (currentuser->flags[0] & CLOAK_FLAG))
         uinfo.invisible = YEA;
     uinfo.mode = LOGIN ;
     uinfo.pager = 0;
 /*    uinfo.pager = !(currentuser->flags[0] & PAGER_FLAG);*/
-    if(DEFINE(DEF_FRIENDCALL))
+    if(DEFINE(currentuser,DEF_FRIENDCALL))
     {
         uinfo.pager|=FRIEND_PAGER;
     }
@@ -173,11 +173,11 @@ u_enter()
         uinfo.pager|=ALL_PAGER;
         uinfo.pager|=FRIEND_PAGER;
     }
-    if(DEFINE(DEF_FRIENDMSG))
+    if(DEFINE(currentuser,DEF_FRIENDMSG))
     {
         uinfo.pager|=FRIENDMSG_PAGER;
     }
-    if(DEFINE(DEF_ALLMSG))
+    if(DEFINE(currentuser,DEF_ALLMSG))
     {
         uinfo.pager|=ALLMSG_PAGER;
         uinfo.pager|=FRIENDMSG_PAGER;
@@ -187,7 +187,7 @@ u_enter()
 #ifdef SHOW_IDLE_TIME
     uinfo.freshtime=time(0);
 #endif
-    iscolor=(DEFINE(DEF_COLOR))? 1:0;
+    iscolor=(DEFINE(currentuser,DEF_COLOR))? 1:0;
     strncpy( uinfo.userid,   currentuser->userid,   20 );
     strncpy( uinfo.realname, currentuser->realname, 20 );
     strncpy( uinfo.username, currentuser->username, 40 );
@@ -235,10 +235,10 @@ u_exit()
     if(!started || !uinfo.active) return;
 /*---		---*/
     setflags(PAGER_FLAG, (uinfo.pager&ALL_PAGER));
-/*    if (HAS_PERM(PERM_LOGINCLOAK)&&HAS_PERM(PERM_SEECLOAK))*/
+/*    if (HAS_PERM(currentuser,PERM_LOGINCLOAK)&&HAS_PERM(currentuser,PERM_SEECLOAK))*/
 
    /* Bigman 2000.8.29 ÖÇÄÒÍÅÄÜ¹»ÒþÉí */
-	if((HAS_PERM(PERM_CHATCLOAK) || HAS_PERM(PERM_CLOAK)))
+	if((HAS_PERM(currentuser,PERM_CHATCLOAK) || HAS_PERM(currentuser,PERM_CLOAK)))
         setflags(CLOAK_FLAG, uinfo.invisible);
 
     clear_utmp(0);
@@ -324,13 +324,6 @@ count_user()
     return apply_utmpuid( NULL , usernum,0);
 }
 
-void RemoveMsgCountFile()
-{
-  char fname[STRLEN];
-  setuserfile(fname,"msgcount");
-  unlink(fname);
- }
-
 /* to be Continue to fix kick problem */
 void
 multi_user_check()
@@ -339,15 +332,15 @@ multi_user_check()
     int         curr_login_num;
     char        buffer[40];
 
-    if (count_user()<1) RemoveMsgCountFile();
+    if (count_user()<1) RemoveMsgCountFile(currentuser->userid);
 
-    if (HAS_PERM(PERM_MULTILOG)) 
+    if (HAS_PERM(currentuser,PERM_MULTILOG)) 
         return;  /* don't check sysops */
     curr_login_num = get_utmp_number();
     /* Leeward: 97.12.22 BMs may open 2 windows at any time */
     /* Bigman: 2000.8.17 ÖÇÄÒÍÅÄÜ¹»¿ª2¸ö´°¿Ú */
     /* stephen: 2001.10.30 ÖÙ²Ã¿ÉÒÔ¿ªÁ½¸ö´°¿Ú */
-    if ((HAS_PERM(PERM_BOARDS) || HAS_PERM(PERM_CHATOP)|| HAS_PERM(PERM_JURY) || HAS_PERM(PERM_CHATCLOAK)) && count_user() < 2)
+    if ((HAS_PERM(currentuser,PERM_BOARDS) || HAS_PERM(currentuser,PERM_CHATOP)|| HAS_PERM(currentuser,PERM_JURY) || HAS_PERM(currentuser,PERM_CHATCLOAK)) && count_user() < 2)
         return;
     /* allow multiple guest user */
     if (!strcmp("guest", currentuser->userid)) {
@@ -394,7 +387,7 @@ multi_user_check()
             DOECHO, NULL,YEA);
 
     if(genbuf[0] == 'Y' || genbuf[0] == 'y') {
-       RemoveMsgCountFile();
+       RemoveMsgCountFile(currentuser->userid);
        kill(uin.pid,9);
         sprintf(buffer, "kicked (multi-login)" );
         report(buffer);
@@ -674,7 +667,7 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
             prints( "[32m" MSG_ERR_USERID "[m\n" );
         } else 
 /* Add by KCN for let sysop can use extra 10 UTMP */
-        if(!HAS_PERM(PERM_ADMINMENU)&&( curr_login_num >= MAXACTIVE+10 )) {
+        if(!HAS_PERM(currentuser,PERM_ADMINMENU)&&( curr_login_num >= MAXACTIVE+10 )) {
         	ansimore( "etc/loginfull", NA );
 	        oflush();
 	        sleep( 1 );
@@ -694,7 +687,7 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
                 logattempt( currentuser->userid, fromhost );
                 prints( "[32mÃÜÂëÊäÈë´íÎó...[m\n" );
             } else {
-                if( !HAS_PERM( PERM_BASIC ) ) {
+                if( !HAS_PERM(currentuser, PERM_BASIC ) ) {
                    prints( "[32m±¾ÕÊºÅÒÑÍ£»ú¡£ÇëÏò [36mSYSOP[32m ²éÑ¯Ô­Òò[m\n" );
                    oflush();
                    sleep( 1 );
@@ -727,7 +720,7 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
    getdata( 0, 0, "\n°´ [RETURN] ¼ÌÐø",genbuf,10,NOECHO,NULL,YEA);
 #endif
 #ifdef DEBUG
-    if (!HAS_PERM(PERM_SYSOP)) {
+    if (!HAS_PERM(currentuser,PERM_SYSOP)) {
 		prints("±¾¶Ë¿Ú½ö¹©²âÊÔÓÃ£¬ÇëÁ¬½Ó±¾Õ¾µÄÆäËû¿ª·Å¶Ë¿Ú¡£\n");
 		oflush();
 		Net_Sleep(3);
@@ -866,7 +859,7 @@ user_login()
     if( USE_NOTEPAD == 1)
             notepad_init();
     if(strcmp(currentuser->userid,"guest")!=0 && USE_NOTEPAD == 1){
-      if(DEFINE(DEF_NOTEPAD))
+      if(DEFINE(currentuser,DEF_NOTEPAD))
       { 
         int noteln;
         if(lastnote>currentuser->notedate)
@@ -890,7 +883,7 @@ user_login()
       }
     }
     /* Leeward 98.09.24 Use SHARE MEM to diaplay statistic data below */
-    if (DEFINE(DEF_SHOWSTATISTIC))
+    if (DEFINE(currentuser,DEF_SHOWSTATISTIC))
     {
     if(show_statshm("0Announce/bbslists/countlogins",0))
     {
@@ -909,9 +902,9 @@ user_login()
         }
     }
     clear();
-    if(DEFINE(DEF_SHOWHOT))
+    if(DEFINE(currentuser,DEF_SHOWHOT))
     { /* Leeward 98.09.24 Use SHARE MEM and disable old code */
-      if (DEFINE(DEF_SHOWSTATISTIC)) {
+      if (DEFINE(currentuser,DEF_SHOWSTATISTIC)) {
         show_statshm("etc/posts/day",1);
         refresh(); 
       } else ansimore("etc/posts/day",NA); /* Leeward: disable old code */
@@ -930,7 +923,7 @@ user_login()
     prints("[1;36m¡î °´ÈÎÒâ¼ü¼ÌÐø...[33m[m ");
     igetkey();
     move( t_lines - 1, 0 );
-    setuserfile( fname, BADLOGINFILE );
+    sethomefile( fname,currentuser->userid, BADLOGINFILE );
     if( ansimore( fname, NA ) != -1 ) {
         getdata( t_lines-1, 0, "ÄúÒªÉ¾³ýÒÔÉÏÃÜÂëÊäÈë´íÎóµÄ¼ÇÂ¼Âð (Y/N)? [Y] ",
         ans, 4, DOECHO, NULL ,YEA);
@@ -961,7 +954,7 @@ set_numofsig()
     int sigln;
     char signame[STRLEN];
 
-    setuserfile( signame, "signatures" );
+    sethomefile( signame,currentuser->userid, "signatures" );
     sigln=countln(signame);
     numofsig=sigln/6;
     if((sigln%6)!=0)
@@ -1084,10 +1077,10 @@ main_bbs(char *originhost, int convit,char* argv)
 #endif
        
     currmail=get_num_records( currmaildir, sizeof(struct fileheader) );
-    if( (currmail > MAIL_LIMIT) && !HAS_PERM(PERM_BOARDS) &&  !HAS_PERM(PERM_SYSOP)) /* Leeward 98.05.20 */
+    if( (currmail > MAIL_LIMIT) && !HAS_PERM(currentuser,PERM_BOARDS) &&  !HAS_PERM(currentuser,PERM_SYSOP)) /* Leeward 98.05.20 */
                 prints("ÄãµÄÐÅ¼þ¸ß´ï %d ·â, ÇëÉ¾³ý¹ýÆÚÐÅ¼þ, Î¬³ÖÔÚ %d ·âÒÔÏÂ£¬·ñÔò½«²»ÄÜ·¢ÐÅ\n",currmail,MAIL_LIMIT);
 
-    if (HAS_PERM(PERM_SYSOP)&&dashf("new_register"))
+    if (HAS_PERM(currentuser,PERM_SYSOP)&&dashf("new_register"))
            prints("ÓÐÐÂÊ¹ÓÃÕßÕýÔÚµÈÄúÍ¨¹ý×¢²á×ÊÁÏ¡£\n");
 
     /*chk_friend_book();*/
@@ -1099,18 +1092,18 @@ main_bbs(char *originhost, int convit,char* argv)
     memset(netty_path,0,sizeof(netty_path));
     nettyNN=NNread_init();
     set_numofsig();
-    if(DEFINE(DEF_INNOTE))
+    if(DEFINE(currentuser,DEF_INNOTE))
     {
-        setuserfile(notename,"notes");
+        sethomefile(notename,currentuser->userid,"notes");
         if(dashf(notename))
                 ansimore(notename,YEA);
     }
     b_closepolls();
     num_alcounter();
-    if(count_friends>0&&DEFINE(DEF_LOGFRIEND))
+    if(count_friends>0&&DEFINE(currentuser,DEF_LOGFRIEND))
         t_friends();
     while( 1 ) {
-        if(DEFINE(DEF_NORMALSCR))
+        if(DEFINE(currentuser,DEF_NORMALSCR))
                 domenu( "TOPMENU" );
         else
                 domenu( "TOPMENU2" );
@@ -1182,7 +1175,7 @@ update_endline()
     int         allstay;
     int         colour;
 
-    if(DEFINE(DEF_TITLECOLOR))
+    if(DEFINE(currentuser,DEF_TITLECOLOR))
     {
         colour=4;
     }else
@@ -1191,7 +1184,7 @@ update_endline()
             if(colour==3)
                 colour=1;
     }
-    if(!DEFINE(DEF_ENDLINE))
+    if(!DEFINE(currentuser,DEF_ENDLINE))
     {
         move(t_lines-1,0);
         clrtoeol();
@@ -1200,7 +1193,7 @@ update_endline()
     now=time(0);
     allstay=(now - login_start_time)/60;
     sprintf(buf,"[[36m%.12s[33m]",currentuser->userid);
-    if(DEFINE(DEF_NOTMSGFRIEND))
+    if(DEFINE(currentuser,DEF_NOTMSGFRIEND))
     {
             sprintf(stitle,"[4%dm[33mÊ±¼ä[[36m%12.12s[33m] ºô½ÐÆ÷[ºÃÓÑ:%3s£ºÒ»°ã:%3s] Ê¹ÓÃÕß%-24s Í£Áô[%3d:%2d][m",colour,ctime(&now)+4,
                   (!(uinfo.pager&FRIEND_PAGER))?"NO ":"YES",(uinfo.pager&ALL_PAGER)?"YES":"NO ",buf,(allstay/60)%1000,allstay%60);
@@ -1218,10 +1211,10 @@ update_endline()
 
     /* Leeward 98.09.30 show hint for rookies */
     /* PERMs should coincide with ~bbsroot/etc/sysconf.ini: PERM_ADMENU */
-    if ( !DEFINE(DEF_NORMALSCR)  && MMENU == uinfo.mode 
-      && !HAS_PERM(PERM_ACCOUNTS) && !HAS_PERM(PERM_OVOTE) 
-      && !HAS_PERM(PERM_SYSOP)    && !HAS_PERM(PERM_OBOARDS) 
-      && !HAS_PERM(PERM_WELCOME) && !HAS_PERM(PERM_ANNOUNCE) )
+    if ( !DEFINE(currentuser,DEF_NORMALSCR)  && MMENU == uinfo.mode 
+      && !HAS_PERM(currentuser,PERM_ACCOUNTS) && !HAS_PERM(currentuser,PERM_OVOTE) 
+      && !HAS_PERM(currentuser,PERM_SYSOP)    && !HAS_PERM(currentuser,PERM_OBOARDS) 
+      && !HAS_PERM(currentuser,PERM_WELCOME) && !HAS_PERM(currentuser,PERM_ANNOUNCE) )
     {
       move(t_lines - 2, 0);
       clrtoeol();
@@ -1240,7 +1233,7 @@ char    *title, *mid;
     int         spc1,spc2;
     int         colour;
 
-    if(DEFINE(DEF_TITLECOLOR))
+    if(DEFINE(currentuser,DEF_TITLECOLOR))
     {
         colour=4;
     }else

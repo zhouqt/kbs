@@ -9,13 +9,6 @@ count_user()
     return apply_utmpuid( NULL, num, 0);
 }
 
-void RemoveMsgCountFile()
-{
-  char fname[STRLEN];
-  setuserfile(fname,"msgcount");
-  unlink(fname);
- }
-
 /* to be Continue to fix kick problem */
 void
 multi_user_check()
@@ -25,15 +18,15 @@ multi_user_check()
     char        buffer[40];
 
     if (count_user()<1)
-		RemoveMsgCountFile();
+		RemoveMsgCountFile(currentuser->userid);
 
-    if (has_perm(PERM_MULTILOG)) 
+    if (HAS_PERM(currentuser,PERM_MULTILOG)) 
         return;  /* don't check sysops */
     curr_login_num = get_utmp_number();
     /* Leeward: 97.12.22 BMs may open 2 windows at any time */
     /* Bigman: 2000.8.17 智囊团能够开2个窗口 */
     /* stephen: 2001.10.30 仲裁可以开两个窗口 */
-    if ((has_perm(PERM_BOARDS) || has_perm(PERM_CHATOP)|| has_perm(PERM_JURY) || has_perm(PERM_CHATCLOAK)) && count_user() < 2)
+    if ((HAS_PERM(currentuser,PERM_BOARDS) || HAS_PERM(currentuser,PERM_CHATOP)|| HAS_PERM(currentuser,PERM_JURY) || HAS_PERM(currentuser,PERM_CHATCLOAK)) && count_user() < 2)
         return;
     if ( (curr_login_num<700)&&(count_user()>=2) 
            || (curr_login_num>=700)&& (count_user()>=1) ) /*user login limit*/
@@ -87,13 +80,13 @@ int main(int argc,char** argv)
 		strsncpy(x->lasthost, fromhost, IPLEN);
 		//save_user_data(x);
 		//currentuser=x;	/* struct assignment */
-		if (!has_perm(PERM_LOGINOK) && !has_perm(PERM_SYSOP))
+		if (!HAS_PERM(currentuser,PERM_LOGINOK) && !HAS_PERM(currentuser,PERM_SYSOP))
 		{
 			if (strchr(currentuser->realemail, '@')
 				&& valid_ident(currentuser->realemail))
 			{
 				currentuser->userlevel |= PERM_DEFAULT;
-				if (has_perm(PERM_DENYPOST)/* && !has_perm(PERM_SYSOP)*/)
+				if (HAS_PERM(currentuser,PERM_DENYPOST)/* && !HAS_PERM(currentuser,PERM_SYSOP)*/)
 					currentuser->userlevel &= ~PERM_POST;
 			}
 			//save_user_data(&currentuser);
@@ -122,7 +115,7 @@ int wwwlogin(struct userec *user) {
     //ui.pid    = getpid();
 
     /* Bigman 2000.8.29 智囊团能够隐身 */
-    if( (has_perm(PERM_CHATCLOAK) || has_perm(PERM_CLOAK)) && (user->flags[0] & CLOAK_FLAG))
+    if( (HAS_PERM(currentuser,PERM_CHATCLOAK) || HAS_PERM(currentuser,PERM_CLOAK)) && (user->flags[0] & CLOAK_FLAG))
         ui.invisible = YEA;
     ui.pager = 0;
     if(define(DEF_FRIENDCALL))
@@ -191,7 +184,7 @@ int get_msgcount()
 	int fd;
 	int msg_count;
 
-	setuserfile(fname2,"msgcount");
+	setuserfile(fname2,currentuser->userid,"msgcount");
 	if ((fd = open(fname2, O_RDWR, 0600)) < 0)
 	{
 		sprintf(buf2, "open %s failed: %s\n", fname2, strerror(errno));
@@ -210,7 +203,7 @@ void set_msgcount(int msg_count)
 	char fname2[STRLEN];
 	int fd;
 
-	setuserfile(fname2,"msgcount");
+	setuserfile(fname2,currentuser->userid,"msgcount");
 	if ((fd = open(fname2, O_RDWR, 0600)) < 0)
 	{
 		sprintf(buf2, "open %s failed: %s\n", fname2, strerror(errno));
@@ -242,14 +235,14 @@ void add_msg()
 	int fd;
 
 	ui = getcurruinfo();
-    setuserfile(fname,"msgfile");
+    setuserfile(fname,currentuser->userid,"msgfile");
     if(!file_exist(fname))
         return;
 	sleep(1); /* quick and dirty */
 	if ((msg_count = get_msgcount()) < 0)
 		return;
-   	setuserfile(file,"wwwmsg");
-	setuserfile(file2, ".wwwmsg.lock");
+   	setuserfile(file,currentuser->userid,"wwwmsg");
+	setuserfile(file2, currentuser->userid,".wwwmsg.lock");
 	if ((fd = open(file2, O_RDWR | O_CREAT, 0600)) < 0)
 		goto failed;
 	flock(fd, LOCK_EX);
@@ -301,7 +294,7 @@ void add_msg()
     }
 	set_msgcount(msg_count);
     if (count_user()<2)
-		RemoveMsgCountFile();
+		RemoveMsgCountFile(currentuser->userid);
 	flock(fd, LOCK_UN);
 	close(fd);
 
@@ -333,10 +326,10 @@ u_exit()
     if(!ui->active) return;
 /*---		---*/
     setflags(PAGER_FLAG, (ui->pager&ALL_PAGER));
-/*    if (HAS_PERM(PERM_LOGINCLOAK)&&HAS_PERM(PERM_SEECLOAK))*/
+/*    if (HAS_PERM(currentuser,PERM_LOGINCLOAK)&&HAS_PERM(currentuser,PERM_SEECLOAK))*/
 
    /* Bigman 2000.8.29 智囊团能够隐身 */
-	if((has_perm(PERM_CHATCLOAK) || has_perm(PERM_CLOAK)))
+	if((HAS_PERM(currentuser,PERM_CHATCLOAK) || HAS_PERM(currentuser,PERM_CLOAK)))
         setflags(CLOAK_FLAG, ui->invisible);
 
     clear_utmp2(ui);

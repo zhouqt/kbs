@@ -41,7 +41,7 @@ char *cmd;
 
     sprintf( buf, "EGROUP%c", *cmd );
     boardprefix = sysconf_str( buf );
-    choose_board( DEFINE(DEF_NEWPOST)?1:0 );
+    choose_board( DEFINE(currentuser,DEF_NEWPOST)?1:0 );
 }
 
 void
@@ -209,7 +209,7 @@ char *direct ;
     int         tuid=0;
     int         n;
 
-    if(!HAS_PERM( PERM_ACCOUNTS )||!strcmp(fileinfo->owner,"Anonymous")||!strcmp(fileinfo->owner,"deliver"))
+    if(!HAS_PERM(currentuser, PERM_ACCOUNTS )||!strcmp(fileinfo->owner,"Anonymous")||!strcmp(fileinfo->owner,"deliver"))
         return DONOTHING;
     else
     {
@@ -438,7 +438,7 @@ int     newflag;
                 getdata(t_lines-2, 0,"[1m[5m[31mÁ¢¼´¶ÏÏß[m¡Ã[1m[33mÒÔ±ã»Ö¸´ÉÏ´ÎÕý³£Àë¿ª±¾Õ¾Ê±µÄÎ´¶Á±ê¼Ç (Y/N)£¿ [N][m: ", restore,4,DOECHO,NULL,YEA);
                 if ('y' == restore[0] || 'Y' == restore[0])
                 {
-                    setuserfile(fname, ".boardrc" );
+                    sethomefile(fname, currentuser->userid,".boardrc" );
                     sprintf(restore, "/bin/cp %s.bak %s", fname, fname);
                     system(restore);
 
@@ -457,7 +457,7 @@ int     newflag;
             {
                 char buf[STRLEN];
 
-                if (!HAS_PERM(PERM_SYSOP) && !HAS_PERM(PERM_OBOARDS)) break;
+                if (!HAS_PERM(currentuser,PERM_SYSOP) && !HAS_PERM(currentuser,PERM_OBOARDS)) break;
                 if (!strcmp(nbrd[num].name, "syssecurity")
                         ||!strcmp(nbrd[num].name, "Filter")
                         ||!strcmp(nbrd[num].name, "junk")
@@ -483,7 +483,7 @@ int     newflag;
             {
                 char buf[STRLEN];
 
-                if (!HAS_PERM(PERM_SYSOP) && !HAS_PERM(PERM_OBOARDS)) break;
+                if (!HAS_PERM(currentuser,PERM_SYSOP) && !HAS_PERM(currentuser,PERM_OBOARDS)) break;
 
                 sprintf(buf, "chmod 755 boards/%s", nbrd[num].name);
                 system(buf);
@@ -511,7 +511,7 @@ case 'L':case 'l':  /* Luzi 1997.10.31 */
             r_lastmsg();
             break;
 case 'W':case 'w':       /* Luzi 1997.10.31 */
-            if (!HAS_PERM(PERM_PAGE)) break;
+            if (!HAS_PERM(currentuser,PERM_PAGE)) break;
             s_msg();
             page=-1;
             break;
@@ -531,7 +531,7 @@ case 'W':case 'w':       /* Luzi 1997.10.31 */
 case 'O':case 'o':       /* Luzi 1997.10.31 */
             { /* Leeward 98.10.26 fix a bug by saving old mode */
                 int  savemode = uinfo.mode;
-                if (!HAS_PERM(PERM_BASIC)) break;
+                if (!HAS_PERM(currentuser,PERM_BASIC)) break;
                 t_friends();
                 page=-1;
                 modify_user_mode(savemode);
@@ -635,7 +635,7 @@ case 'n': case 'j': case KEY_DOWN:
             break;
         case 'z': /* Zap*/
             if(yank_flag < 2) { /*--- Modified 4 FavBoard 2000-09-11	---*/
-                if( HAS_PERM( PERM_BASIC )&&!(nbrd[num].flag&NOZAP_FLAG)) {
+                if( HAS_PERM(currentuser, PERM_BASIC )&&!(nbrd[num].flag&NOZAP_FLAG)) {
                     ptr = &nbrd[num];
                     ptr->zap = !ptr->zap;
                     ptr->total = -1;
@@ -664,7 +664,7 @@ case 'n': case 'j': case KEY_DOWN:
                 ptr = &nbrd[num];
                 brc_initial( currentuser->userid,ptr->name );
                 memcpy( currBM, ptr->BM, BM_LEN -1);
-                if( DEFINE(DEF_FIRSTNEW) ) {
+                if( DEFINE(currentuser,DEF_FIRSTNEW) ) {
                     setbdir( buf, currboard );
                     tmp = unread_position( buf, ptr );
                     page = tmp - t_lines / 2;

@@ -146,7 +146,7 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
     owned = isowner(user,fileinfo);
     /* change by KCN  ! strcmp( fileinfo->owner, currentuser->userid ); */
     strcpy(usrid,fileinfo->owner);
-    if( !(owned) && !has_perm(PERM_SYSOP) )
+    if( !(owned) && !HAS_PERM(currentuser,PERM_SYSOP) )
         if( !chk_currBM(bm_str))
         {
             return DONOTHING ;
@@ -214,7 +214,7 @@ int main()
 		http_fatal("错误的参数");
 	if(strstr(file, "..")) http_fatal("错误的参数");
 	if(brd==0) http_fatal("版面错误");
-	if(!has_post_perm(currentuser, board)) http_fatal("错误的讨论区");
+	if(!haspostperm(currentuser, board)) http_fatal("错误的讨论区");
 	sprintf(dir, "boards/%s/.DIR", board);
 	sprintf(path, "boards/%s/%s", board, file);
 	fp=fopen(dir, "r");

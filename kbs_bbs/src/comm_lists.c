@@ -52,7 +52,7 @@ int     show_allmsgs();
 int     Conditions(), x_cloak(), t_users(), x_info(), x_fillform(), x_vote();
 int	ShowWeather();	/* 2001.6.12 */
 int     x_results(), ent_bnet(), a_edits(), x_edits();
-int     x_date(),shownotepad(),x_userdefine();
+int     x_date(),shownotepad(),x_userDEFINE(currentuser,);
 int	confirm_delete_id();	/* Added by Bigman 2001.7.14 */
 /*Add by SmallPig*/
 int     m_new(), m_read(), m_send(), g_send();
@@ -568,7 +568,7 @@ int     cmdprompt;
     char        *str;
     int         help, line, col, num;
 
-    if(!DEFINE(DEF_NORMALSCR))
+    if(!DEFINE(currentuser,DEF_NORMALSCR))
         clear();
     help = (currentuser->flags[0] & CURSOR_FLAG);
     line = 3;
@@ -582,7 +582,7 @@ int     cmdprompt;
             if( strcmp( pm->name, "title" ) == 0 ) {
                 docmdtitle( pm->desc, cmdprompt );
             } else if( strcmp( pm->name, "screen" ) == 0 ) {
-                if (DEFINE(DEF_SHOWSCREEN))
+                if (DEFINE(currentuser,DEF_SHOWSCREEN))
                 {
                     if( help && (str = sysconf_str( pm->desc )) != NULL ) {
                         move( pm->line, pm->col );
@@ -599,7 +599,7 @@ int     cmdprompt;
             }
             break;
         default:
-            if( pm->line >= 0 && HAS_PERM( pm->level ) ) {
+            if( pm->line >= 0 && HAS_PERM(currentuser, pm->level ) ) {
                 if( pm->line == 0 ) {
                     pm->line = line;  pm->col = col;
                 } else {
@@ -650,7 +650,7 @@ char    *menu_name;
 if (nettyNN ==1) { R_monitor(NULL);}
     while( 1 ) {
         printacbar();
-        while( pm[now].level < 0 || !HAS_PERM( pm[now].level ) ) {
+        while( pm[now].level < 0 || !HAS_PERM(currentuser, pm[now].level ) ) {
             now++;
             if( now >= size )  now = 0;
         }
@@ -686,7 +686,7 @@ if (nettyNN ==1) { R_monitor(NULL);}
         case KEY_RIGHT:
             for( i = 0; i < size; i++ ) {
                 if( pm[i].line == pm[now].line && pm[i].level >= 0 &&
-                        pm[i].col > pm[now].col && HAS_PERM( pm[i].level ) )
+                        pm[i].col > pm[now].col && HAS_PERM(currentuser, pm[i].level ) )
                     break;
             }
             if( i < size ) {
@@ -712,7 +712,7 @@ if (nettyNN ==1) { R_monitor(NULL);}
         case KEY_LEFT:
             for( i = 0; i < size; i++ ) {
                 if( pm[i].line == pm[now].line && pm[i].level >= 0 &&
-                        pm[i].col < pm[now].col && HAS_PERM( pm[i].level ) )
+                        pm[i].col < pm[now].col && HAS_PERM(currentuser, pm[i].level ) )
                     break;
                 if( pm[i].fptr == Goodbye )
                     break;
@@ -727,13 +727,13 @@ if (nettyNN ==1) { R_monitor(NULL);}
             break;
         case KEY_UP:
             now--;
-            while( pm[now].level < 0 || !HAS_PERM( pm[now].level ) ) {
+            while( pm[now].level < 0 || !HAS_PERM(currentuser, pm[now].level ) ) {
                 if( now > 0 )  now--;
                 else  now = size - 1;
             }
             break;
         case '~':
-            if(!HAS_PERM(PERM_SYSOP)) {
+            if(!HAS_PERM(currentuser,PERM_SYSOP)) {
                 break;
             }
             free( menuitem );
@@ -750,7 +750,7 @@ if (nettyNN ==1) { R_monitor(NULL);}
                 cmd = cmd - 'a' + 'A';
             for( i = 0; i < size; i++ ) {
                 if( pm[i].line > 0 && cmd == pm[i].name[0] &&
-                        HAS_PERM( pm[i].level ) ) {
+                        HAS_PERM(currentuser, pm[i].level ) ) {
                     now = i;
                     break;
                 }

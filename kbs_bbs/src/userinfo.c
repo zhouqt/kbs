@@ -52,7 +52,7 @@ int     real;
         prints("最近光临机器 : %s\n", u->lasthost );
     }
     /*---	added by period		hide posts/logins	2000-11-02	---*/
-    /*    if(HAS_PERM(PERM_ADMINMENU)) {*/ /* removed to let user can see his own data */
+    /*    if(HAS_PERM(currentuser,PERM_ADMINMENU)) {*/ /* removed to let user can see his own data */
     prints("上站次数     : %d 次\n", u->numlogins);
     if(real) prints("文章数目     : %d 篇\n", u->numposts);
     /*       if( real ) {

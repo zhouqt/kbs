@@ -30,7 +30,7 @@ int main()
 		http_quit();
 	}
    	//sprintf(path, "home/%c/%s/mybrds", toupper(currentuser->userid[0]), currentuser->userid);
-   	/*setuserfile(path, "favboard");
+   	/*setuserfile(path, currentuser->userid,"favboard");
 	fp=fopen(path, "r");
    	if(fp) {
 		mybrdnum=fread(mybrd, sizeof(mybrd[0]), 30, fp);

@@ -128,7 +128,7 @@ int inform(char *board, char *user)
 			"BBS "NAME_BBS_CHINESE"站",ctime(&now)) ;
 	fprintf(fn1,"来  源: %s \n",usr->lasthost) ;
 	fprintf(fn1,"\n");
-    if (has_perm(PERM_SYSOP) || has_perm(PERM_OBOARDS))
+    if (HAS_PERM(currentuser,PERM_SYSOP) || HAS_PERM(currentuser,PERM_OBOARDS))
         fprintf(fn1,"您被站务人员 %s 解除在 %s 板的封禁\n",usr->userid,board);
     else
         fprintf(fn1,"您被 %s 板板主 %s 解除封禁\n",board,usr->userid);

@@ -22,10 +22,10 @@ u_exit()
     if(!ui->active) return;
 /*---		---*/
     setflags(PAGER_FLAG, (ui->pager&ALL_PAGER));
-/*    if (HAS_PERM(PERM_LOGINCLOAK)&&HAS_PERM(PERM_SEECLOAK))*/
+/*    if (HAS_PERM(currentuser,PERM_LOGINCLOAK)&&HAS_PERM(currentuser,PERM_SEECLOAK))*/
 
    /* Bigman 2000.8.29 ÖÇÄÒÍÅÄÜ¹»ÒþÉí */
-	if((has_perm(PERM_CHATCLOAK) || has_perm(PERM_CLOAK)))
+	if((HAS_PERM(currentuser,PERM_CHATCLOAK) || HAS_PERM(currentuser,PERM_CLOAK)))
         setflags(CLOAK_FLAG, ui->invisible);
 
     clear_utmp2(ui);

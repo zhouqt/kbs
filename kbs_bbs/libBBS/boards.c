@@ -40,7 +40,7 @@ void load_favboard(int dohelp)
 {
     char fname[STRLEN];
     int  fd, size, idx;
-    setuserfile(fname, "favboard");
+    sethomefile(fname,currentuser->userid, "favboard");
     if( (fd = open( fname, O_RDONLY, 0600 )) != -1 ) {
         size = (FAVBOARDNUM+1) * sizeof( int );
         read( fd, favbrd_list, size );
@@ -72,7 +72,7 @@ void load_favboard(int dohelp)
             			bh &&
                         bh->filename[0]
                         && ( (bh->level & PERM_POSTMASK)
-                             || HAS_PERM(bh->level)
+                             || HAS_PERM(currentuser,bh->level)
                              || (bh->level&PERM_NOZAP) )
                     )
               )
@@ -118,7 +118,7 @@ load_zapbuf()  /* 装入zap信息*/
     zapbuf = (int *) malloc( size );
     for( n = 0; n < MAXBOARD; n++ )
         zapbuf[n] = 1;
-    setuserfile( fname, ".lastread" ); /*user的.lastread， zap信息*/
+    sethomefile( fname,currentuser->userid, ".lastread" ); /*user的.lastread， zap信息*/
     if( (fd = open( fname, O_RDONLY, 0600 )) != -1 ) {
         size = get_boardcount() * sizeof( int );
         read( fd, zapbuf, size );
@@ -132,7 +132,7 @@ void save_userfile(char * fname, int numblk, char * buf)
     char        fbuf[ 256 ];
     int         fd, size;
 
-    setuserfile( fbuf, fname );
+    sethomefile( fbuf, currentuser->userid,fname );
     if( (fd = open( fbuf, O_WRONLY | O_CREAT, 0600 )) != -1 ) {
         size = numblk * sizeof( int );
         write( fd, buf, size );
@@ -153,7 +153,7 @@ save_zapbuf() /*保存Zap信息*/
     char        fname[ STRLEN ];
     int         fd, size;
 
-    setuserfile( fname, ".lastread" );
+    sethomefile( fname, currentuser->userid,".lastread" );
     if( (fd = open( fname, O_WRONLY | O_CREAT, 0600 )) != -1 ) {
         size = numboards * sizeof( int );
         write( fd, zapbuf, size );
@@ -179,7 +179,7 @@ load_boards()
 #ifndef _DEBUG_
         if(!*bptr->filename) continue;
 #endif /*_DEBUG_*/
-        if( !(bptr->level & PERM_POSTMASK) && !HAS_PERM(bptr->level) && !(bptr->level&PERM_NOZAP))
+        if( !(bptr->level & PERM_POSTMASK) && !HAS_PERM(currentuser,bptr->level) && !(bptr->level&PERM_NOZAP))
         {
             continue;
         }
@@ -473,4 +473,37 @@ checkreadonly( char *board) /* 检查是否是只读版面 */
     else
         return NA;
 }
+
+int
+deny_me(char* user,char* board)   /* 判断用户 是否被禁止在当前版发文章 */
+{
+    char buf[STRLEN];
+
+    setbfile(buf,board,"deny_users");
+    return seek_in_file(buf,user->userid);
+}
+
+
+
+int haspostperm(char* user,char *bname) /* 判断在 bname版 是否有post权 */
+{
+    register int i;
+
+#ifdef BBSMAIN
+    if(digestmode)
+        return 0;
+#endif
+    /*    if( strcmp( bname, DEFAULTBOARD ) == 0 )  return 1; change by KCN 2000.09.01 */
+    if ((i = getbnum(bname)) == 0) return 0;
+    if (HAS_PERM(user,PERM_DENYPOST))
+        /*if(!strcmp(bname, "sysop"))
+               return 1;*/ /* Leeward 98.05.21 revised by stephen 2000.10.27*/ 
+        /* let user denied post right post at Complain*/
+    {if (!strcmp(bname, "Complain")) return 1;/* added by stephen 2000.10.27*/
+        else if(!strcmp(bname, "sysop"))
+            return 1;} /* stephen 2000.10.27 */
+    if (!HAS_PERM(user,PERM_POST)) return 0;
+    return (HAS_PERM(user,(bcache[i-1].level&~PERM_NOZAP) & ~PERM_POSTMASK));
+}
+
 

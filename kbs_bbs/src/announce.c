@@ -241,9 +241,9 @@ MENU    *pm;
                 strncpy( litem.fname, buf + 7, sizeof(litem.fname) );
             else
                 strncpy( litem.fname, buf + 5, sizeof(litem.fname) );
-            if((!strstr(litem.title,"(BM: BMS)")||HAS_PERM(PERM_BOARDS))&&
-                 (!strstr(litem.title,"(BM: SYSOPS)")||HAS_PERM(PERM_SYSOP))&&
- 	        (!strstr(litem.title,"(BM: ZIXIAs)")||HAS_PERM(PERM_SECANC)))
+            if((!strstr(litem.title,"(BM: BMS)")||HAS_PERM(currentuser,PERM_BOARDS))&&
+                 (!strstr(litem.title,"(BM: SYSOPS)")||HAS_PERM(currentuser,PERM_SYSOP))&&
+ 	        (!strstr(litem.title,"(BM: ZIXIAs)")||HAS_PERM(currentuser,PERM_SECANC)))
             {
                 if(strstr(litem.fname,"!@#$%")) /*取 host & port */
                 {
@@ -587,7 +587,7 @@ int     level;
     if (getboardnum(key,&fhdr)==0) return 0;
 
 
-    if (!((fhdr.level & PERM_POSTMASK) || HAS_PERM(fhdr.level)
+    if (!((fhdr.level & PERM_POSTMASK) || HAS_PERM(currentuser,fhdr.level)
             ||(fhdr.level & PERM_NOZAP))) {
 	return 0;
     }
@@ -750,7 +750,7 @@ int     mode;
         else
         {
             /*Add by SmallPig*/
-            if( HAS_PERM( PERM_SYSOP ||HAS_PERM( PERM_ANNOUNCE )) ){
+            if( HAS_PERM(currentuser, PERM_SYSOP ||HAS_PERM(currentuser, PERM_ANNOUNCE )) ){
                 move(1,0) ;
                 clrtoeol() ;
                 /*$$$$$$$$ Multi-BM Input, Modified By Excellent $$$$$$$*/
@@ -1062,7 +1062,7 @@ int     ch;
         case 'd':  a_delete( pm );
             pm->page = 9999;     break;
     case 'V':  case 'v':
-            if( HAS_PERM( PERM_SYSOP ) ) {
+            if( HAS_PERM(currentuser, PERM_SYSOP ) ) {
                 if (ch == 'v')
                     sprintf(fpath, "%s/.Names", pm->path);
                 else
@@ -1085,7 +1085,7 @@ int     ch;
                     sprintf(r_genbuf,"改变文件 %s 的标题",fpath+17);
                     a_report(r_genbuf);
                 } else if( dashd( fpath ) ) {
-                    if( HAS_PERM( PERM_SYSOP ||HAS_PERM( PERM_ANNOUNCE )) ){
+                    if( HAS_PERM(currentuser, PERM_SYSOP ||HAS_PERM(currentuser, PERM_ANNOUNCE )) ){
                         move(1,0) ;
                         clrtoeol() ;
                         /*usercomplete("板主: ",uident) ;*/
@@ -1149,7 +1149,7 @@ int     lastlevel,lastbmonly;
     bmstr=strstr(buf,"(BM:");
     if(bmstr!=NULL)
     {
-        if(chk_currBM(bmstr+4)||HAS_PERM(PERM_SYSOP))
+        if(chk_currBM(bmstr+4)||HAS_PERM(currentuser,PERM_SYSOP))
             me.level |= PERM_BOARDS;
         else if(bmonly==1&&!(me.level & PERM_BOARDS))
             return;
@@ -1200,7 +1200,7 @@ case KEY_PGDN: case Ctrl( 'F' ): case ' ':
             else                            me.now = 0;
             break;
         case Ctrl('P'):
-                if(!HAS_PERM( PERM_POST ))
+                if(!HAS_PERM(currentuser, PERM_POST ))
                         break;
  		if( !me.item[ me.now ] )
  			break;
@@ -1216,7 +1216,7 @@ case KEY_PGDN: case Ctrl( 'F' ): case ' ':
                     clrtoeol();
                     strcpy(tmp,currboard);
                     strcpy(currboard,bname);
-                    if(deny_me())
+                    if(deny_me(currentuser->userid,currboard))
                     {
                         prints("对不起，你在 %s 板被停止发表文章的权力",bname);
                         pressreturn();
@@ -1224,7 +1224,7 @@ case KEY_PGDN: case Ctrl( 'F' ): case ' ':
                         me.page = 9999;
                         break;
                     }
-                    if (!haspostperm(currboard))
+                    if (!haspostperm(currentuser,currboard))
                     {
                         move( 1, 0 );
                         prints("您尚无权限在 %s 发表文章.\n",currboard);
@@ -1309,7 +1309,7 @@ case KEY_PGDN: case Ctrl( 'F' ): case ' ':
             break;
         case 'F':
         case 'U':
-            if( me.now < me.num && HAS_PERM( PERM_BASIC ) ) {
+            if( me.now < me.num && HAS_PERM(currentuser, PERM_BASIC ) ) {
                 a_forward( path, me.item[ me.now ], ch == 'U' );
                 me.page = 9999;
             }
@@ -1319,7 +1319,7 @@ case KEY_PGDN: case Ctrl( 'F' ): case ' ':
         case '!': Goodbye(); me.page=9999;break;/*Haohmaru 98.09.24*/
             /*
                         case 'Z':
-                            if( me.now < me.num && HAS_PERM( PERM_BASIC ) ) {
+                            if( me.now < me.num && HAS_PERM(currentuser, PERM_BASIC ) ) {
                                 sprintf( fname, "%s/%s", path, me.item[ me.now ]->fname );
                                 a_download( fname );
                                 me.page = 9999;
@@ -1510,7 +1510,7 @@ void
 Announce()
 {
     sprintf( genbuf, "%s 精华区公布栏", BoardName );
-    a_menu( genbuf, "0Announce", HAS_PERM(PERM_ANNOUNCE) ? PERM_BOARDS : 0 ,0);
+    a_menu( genbuf, "0Announce", HAS_PERM(currentuser,PERM_ANNOUNCE) ? PERM_BOARDS : 0 ,0);
     clear();
 }
 

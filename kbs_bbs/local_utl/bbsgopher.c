@@ -195,7 +195,7 @@ case 'h':case 'H':
         break;
 case 'E': case 'e':
         tmpitem=find_kth(topitem,allnum);
-        setuserfile(fname,"gopher.tmp");
+        sethomefile(fname,currentuser->userid,"gopher.tmp");
         if(tmpitem->title[0]!='0')
         {
             return 1;
@@ -231,9 +231,9 @@ case 'E': case 'e':
         break;
     case Ctrl('P'):
                     tmpitem=find_kth(topitem,allnum);
-        if(!HAS_PERM( PERM_POST ))
+        if(!HAS_PERM(currentuser, PERM_POST ))
             break;
-        setuserfile(fname,"gopher.tmp");
+        sethomefile(fname,currentuser->userid,"gopher.tmp");
         if(tmpitem->title[0]!='0')
 {
             return 1;
@@ -267,7 +267,7 @@ case 'E': case 'e':
         return 1;
 case 'U':case 'F':case 'u':case 'f':case 'z':case 'Z':
         tmpitem=find_kth(topitem,allnum);
-        setuserfile(fname,"gopher.tmp");
+        sethomefile(fname,currentuser->userid,"gopher.tmp");
         if(tmpitem->title[0]!='0')
         {
             return 1;
@@ -524,7 +524,7 @@ showout()
             if(get_con(tmpitem->server,tmpitem->port)==-1)
                 return -1;
             enterdir(tmpitem->file);
-            setuserfile(tmpfile,"gopher.tmp");
+            sethomefile(tmpfile,currentuser->userid,"gopher.tmp");
             savetmpfile(tmpfile);
             close(a);
             ansimore(tmpfile,YEA);

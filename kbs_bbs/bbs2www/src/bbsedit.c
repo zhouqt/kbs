@@ -15,7 +15,7 @@ int main() {
 	if(brd==0) http_fatal("错误的讨论区");
 	strcpy(board, brd->filename);
 	strsncpy(file, getparm("file"), 20);
-	if(!has_post_perm(currentuser, board))
+	if(!haspostperm(currentuser, board))
 		http_fatal("错误的讨论区或者您无权在此讨论区发表文章");
 	if (valid_filename(file) < 0)
 		http_fatal("错误的参数");

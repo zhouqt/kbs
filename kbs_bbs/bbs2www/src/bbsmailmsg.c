@@ -10,7 +10,7 @@ int main()
 	setmsgfile(filename, currentuser->userid);
 	post_mail(currentuser->userid, "所有讯息备份", filename, currentuser->userid, currentuser->username, fromhost, -1);
 	unlink(filename);
-	setuserfile(filename, "msgcount");
+	setuserfile(filename, currentuser->userid,"msgcount");
 	unlink(filename);
 	printf("讯息备份已经寄回您的信箱");
 	printf("<a href='javascript:history.go(-2)'>返回</a>");

@@ -34,7 +34,7 @@ int t_printstatus(struct user_info* uentp,int* arg,int pos)
 {
     if(uentp->invisible==1)
     {
-        if(!has_perm(PERM_SEECLOAK))
+        if(!HAS_PERM(currentuser,PERM_SEECLOAK))
 	        return COUNT;
     }
     (*arg)++;

@@ -565,17 +565,6 @@ char    *buf, *userid;
     return buf;
 }
 
-char *
-setmailpath( buf, userid )  /* È¡ Ä³ÓÃ»§ µÄmail */
-char    *buf, *userid;
-{
-    if (isalpha(userid[0]))  /* ¼ÓÈë´íÎóÅĞ¶Ï,Ìá¸ßÈİ´íĞÔ, alex 1997.1.6*/
-        sprintf( buf, "mail/%c/%s", toupper(userid[0]), userid );
-    else
-        sprintf( buf, "mail/wrong/%s", userid);
-    return buf;
-}
-
 /*Add by SmallPig*/
 void
 setqtitle(stitle)   /* È¡ Reply ÎÄÕÂºóĞÂµÄ ÎÄÕÂtitle */
@@ -622,10 +611,10 @@ char BMstr[STRLEN-1];
     char *ptr;
     char BMstrbuf[STRLEN-1];
 
-    if(HAS_PERM(PERM_OBOARDS)||HAS_PERM(PERM_SYSOP))
+    if(HAS_PERM(currentuser,PERM_OBOARDS)||HAS_PERM(currentuser,PERM_SYSOP))
         return YEA;
 
-    if(!HAS_PERM(PERM_BOARDS))
+    if(!HAS_PERM(currentuser,PERM_BOARDS))
         return NA;
     strcpy(BMstrbuf,BMstr);
     ptr=strtok(BMstrbuf,",: ;|&()\0\n");
@@ -692,16 +681,6 @@ char *buf, *boardname;
     return buf;
 }
 
-
-
-int
-deny_me()   /* ÅĞ¶Ïµ±Ç°ÓÃ»§ ÊÇ·ñ±»½ûÖ¹ÔÚµ±Ç°°æ·¢ÎÄÕÂ */
-{
-    char buf[STRLEN];
-
-    setbfile(buf,currboard,"deny_users");
-    return seek_in_file(buf,currentuser->userid);
-}
 
 
 /*Add by SmallPig*/
@@ -782,7 +761,7 @@ printutitle()  /* ÆÁÄ»ÏÔÊ¾ ÓÃ»§ÁĞ±í title */
     /*---	modified by period	2000-11-02	hide posts/logins	---*/
     int isadm;
     const char *fmtadm = "#ÉÏÕ¾ #ÎÄÕÂ", *fmtcom = "           ";
-    isadm = HAS_PERM(PERM_ADMINMENU);
+    isadm = HAS_PERM(currentuser,PERM_ADMINMENU);
 
     move(2,0) ;
     prints(
@@ -807,7 +786,7 @@ int
 g_board_names(fhdrp)
 struct boardheader *fhdrp ;
 {
-    if ((fhdrp->level & PERM_POSTMASK) || HAS_PERM(fhdrp->level)
+    if ((fhdrp->level & PERM_POSTMASK) || HAS_PERM(currentuser,fhdrp->level)
             ||(fhdrp->level & PERM_NOZAP))
     {
         AddNameList(fhdrp->filename) ;
@@ -904,10 +883,10 @@ char *direct;
     char dbname[STRLEN];
     char ispost[10];
 
-    if (!HAS_PERM(PERM_POST)) /* ÅĞ¶ÏÊÇ·ñÓĞPOSTÈ¨ */
+    if (!HAS_PERM(currentuser,PERM_POST)) /* ÅĞ¶ÏÊÇ·ñÓĞPOSTÈ¨ */
     {return DONOTHING;}
 
-    if ((fileinfo->accessed[0] & FILE_FORWARDED) && !HAS_PERM(PERM_SYSOP))
+    if ((fileinfo->accessed[0] & FILE_FORWARDED) && !HAS_PERM(currentuser,PERM_SYSOP))
     {
         clear();
         move(1,0);
@@ -946,7 +925,7 @@ char *direct;
 
         strcpy(szTemp, currboard); /* ±£´æµ±Ç°°æÃæ */
         strcpy(currboard, bname);  /* ÉèÖÃµ±Ç°°æÃæÎªÒª×ªÌùµ½µÄ°æÃæ */
-        if(deny_me()&&!HAS_PERM(PERM_SYSOP))     /* °æÖ÷½ûÖ¹POST ¼ì²é */
+        if(deny_me(currentuser->userid,currboard)&&!HAS_PERM(currentuser,PERM_SYSOP))     /* °æÖ÷½ûÖ¹POST ¼ì²é */
         {
             move( 3, 0 );
             clrtobot();
@@ -1052,15 +1031,15 @@ struct fileheader *ent ;
     int         type;
     int         coun;
     int manager;
-    char cUnreadMark=(DEFINE(DEF_UNREADMARK)?'*':'N');
+    char cUnreadMark=(DEFINE(currentuser,DEF_UNREADMARK)?'*':'N');
     char* typeprefix;
     char* typesufix;
     typesufix = typeprefix = "";
 
-	manager = (HAS_PERM(PERM_OBOARDS)||(chk_currBM(currBM))) ;
+	manager = (HAS_PERM(currentuser,PERM_OBOARDS)||(chk_currBM(currBM))) ;
 
     type = brc_unread( ent->filename ) ? cUnreadMark : ' ';
-    if ((ent->accessed[0] & FILE_DIGEST) /*&& HAS_PERM(PERM_MARKPOST)*/)
+    if ((ent->accessed[0] & FILE_DIGEST) /*&& HAS_PERM(currentuser,PERM_MARKPOST)*/)
     {  /* ÎÄÕªÄ£Ê½ ÅĞ¶Ï */
         if (type == ' ')
             type = 'g';
@@ -1086,7 +1065,7 @@ struct fileheader *ent ;
             break;
         }
     }
-    /*    if(HAS_PERM(PERM_OBOARDS) && ent->accessed[1] & FILE_READ) *//*°åÎñ×Ü¹ÜÒÔÉÏµÄÄÜ¿´²»¿Ére±êÖ¾,Haohmaru.99.6.7*/
+    /*    if(HAS_PERM(currentuser,PERM_OBOARDS) && ent->accessed[1] & FILE_READ) *//*°åÎñ×Ü¹ÜÒÔÉÏµÄÄÜ¿´²»¿Ére±êÖ¾,Haohmaru.99.6.7*/
     if (manager & ent->accessed[1] & FILE_READ) /* °æÖ÷ÒÔÉÏÄÜ¿´²»¿Ére±êÖ¾, Bigman.2001.2.27 */
     {
         switch(type)
@@ -1123,7 +1102,7 @@ struct fileheader *ent ;
             break;
         }
     }
-    else  if(HAS_PERM(PERM_OBOARDS) && ent->accessed[0] & FILE_SIGN)
+    else  if(HAS_PERM(currentuser,PERM_OBOARDS) && ent->accessed[0] & FILE_SIGN)
         /*°åÎñ×Ü¹ÜÒÔÉÏµÄÄÜ¿´Sign±êÖ¾, Bigman: 2000.8.12*/
     {
         type='#';
@@ -1290,7 +1269,7 @@ char *direct ;
     quote_file[119] = fileinfo->filename[STRLEN-2];
     strcpy( quote_user, fileinfo->owner );
     /****** Èç¹ûÎ´¶Á£¬Ôò¼ÆÊı¼Ó1£¬»ØĞ´.DIRÎÄ¼ş ******/
-    /*if (HAS_PERM(PERM_POST) && brc_unread(fileinfo->filename))
+    /*if (HAS_PERM(currentuser,PERM_POST) && brc_unread(fileinfo->filename))
       {
         fileinfo->ldReadCount++;
         substitute_record(direct, fileinfo, sizeof(*fileinfo), ent); 
@@ -1319,7 +1298,7 @@ char *direct ;
 #ifndef NOREPLY
     move(t_lines-1, 0);
     clrtoeol();  /* ÇåÆÁµ½ĞĞÎ² */
-    if (haspostperm(currboard)) {  /* ¸ù¾İÊÇ·ñÓĞPOSTÈ¨ ÏÔÊ¾×îÏÂÒ»ĞĞ */
+    if (haspostperm(currentuser,currboard)) {  /* ¸ù¾İÊÇ·ñÓĞPOSTÈ¨ ÏÔÊ¾×îÏÂÒ»ĞĞ */
         prints("[44m[31m[ÔÄ¶ÁÎÄÕÂ] [33m »ØĞÅ R ©¦ ½áÊø Q,¡û ©¦ÉÏÒ»·â ¡ü©¦ÏÂÒ»·â <Space>,¡ı©¦Ö÷ÌâÔÄ¶Á ^X»òp [m");
     } else {
         prints("[44m[31m[ÔÄ¶ÁÎÄÕÂ]  [33m½áÊø Q,¡û ©¦ÉÏÒ»·â ¡ü©¦ÏÂÒ»·â <Space>,<Enter>,¡ı©¦Ö÷ÌâÔÄ¶Á ^X »ò p [m");
@@ -1424,7 +1403,7 @@ case 'y' : case 'r':
         add_author_friend(0,fileinfo,'\0');
         return READ_NEXT;
 case 'Z':case 'z':
-        if (!HAS_PERM(PERM_PAGE)) break;
+        if (!HAS_PERM(currentuser,PERM_PAGE)) break;
         sendmsgtoauthor(0,fileinfo,'\0');
         return READ_NEXT;
         break;
@@ -1448,11 +1427,11 @@ case 'L': case 'l':         /* Luzi 1997.11.1 */
         r_lastmsg();
         break;
     case 'w':                   /* Luzi 1997.11.1 */
-        if (!HAS_PERM(PERM_PAGE)) break;
+        if (!HAS_PERM(currentuser,PERM_PAGE)) break;
         s_msg();
         break;
 case 'O': case 'o':         /* Luzi 1997.11.1 */
-        if (!HAS_PERM(PERM_BASIC)) break;
+        if (!HAS_PERM(currentuser,PERM_BASIC)) break;
         t_friends();
         break;
     case 'u':		    /* Haohmaru 1999.11.28*/
@@ -1548,7 +1527,7 @@ int
 isJury()
 {
     char buf[STRLEN];
-    if(!HAS_PERM(PERM_JURY)) return 0;
+    if(!HAS_PERM(currentuser,PERM_JURY)) return 0;
     makevdir(currboard);
     setvfile(buf,currboard,"jury");
     return seek_in_file(buf,currentuser->userid);
@@ -1586,7 +1565,7 @@ junk_mode()
 {
    extern  char  currdirect[ STRLEN ];
 
-  if (!HAS_PERM(PERM_SYSOP)) {
+  if (!HAS_PERM(currentuser,PERM_SYSOP)) {
       return DONOTHING;
   }
 
@@ -1981,13 +1960,13 @@ char *direct ;
     FILE        *fp;
 
 
-    if(!HAS_PERM(PERM_LOGINOK) || !strcmp(currentuser->userid,"guest")) /* guest ÎŞÈ¨ */
+    if(!HAS_PERM(currentuser,PERM_LOGINOK) || !strcmp(currentuser->userid,"guest")) /* guest ÎŞÈ¨ */
         return 0;
     /*Ì«ºİÁË°É,±»·âpost¾Í²»ÈÃ»ØĞÅÁË
-        if (!HAS_PERM(PERM_POST)) return; Haohmaru.99.1.18*/
+        if (!HAS_PERM(currentuser,PERM_POST)) return; Haohmaru.99.1.18*/
 
     /* ·â½ûMail Bigman:2000.8.22 */
-    if (HAS_PERM(PERM_DENYMAIL))
+    if (HAS_PERM(currentuser,PERM_DENYMAIL))
     {
         clear();
         move(3,10);
@@ -2055,7 +2034,7 @@ int mode;
     int         fp,i;
     int aborted;
 
-    if (!haspostperm(currboard)&&!mode)
+    if (!haspostperm(currentuser,currboard)&&!mode)
     {
         move( 1, 0 );
         prints("ÄúÉĞÎŞÈ¨ÏŞÔÚ %s ·¢±íÎÄÕÂ.\n",currboard);
@@ -2179,7 +2158,7 @@ char *filepath;
 
     noidboard=(seek_in_file("etc/anonymous",currboard)&&Anony); /* etc/anonymousÎÄ¼şÖĞ ÊÇÄäÃû°æ°æÃû */
     color=(currentuser->numlogins%7)+31; /* ÑÕÉ«Ëæ»ú±ä»¯ */
-    setuserfile( fname, "signatures" );
+    sethomefile( fname, currentuser->userid,"signatures" );
     fp=fopen(filepath,"a");
     if ((fp2=fopen(fname, "r"))== NULL||          /* ÅĞ¶ÏÊÇ·ñÒÑ¾­ ´æÔÚ Ç©Ãûµµ */
             currentuser->signature==0||noidboard)
@@ -2251,7 +2230,7 @@ post_article()                         /*ÓÃ»§ POST ÎÄÕÂ */
 #endif
 
     modify_user_mode(POSTING);
-    if (!haspostperm(currboard))     /* POSTÈ¨ÏŞ¼ì²é*/
+    if (!haspostperm(currentuser,currboard))     /* POSTÈ¨ÏŞ¼ì²é*/
     {
         move( 3, 0 );
         clrtobot();
@@ -2269,7 +2248,7 @@ post_article()                         /*ÓÃ»§ POST ÎÄÕÂ */
         pressreturn();
         clear();
         return FULLUPDATE;
-    } else if(deny_me()&&!HAS_PERM(PERM_SYSOP))     /* °æÖ÷½ûÖ¹POST ¼ì²é */
+    } else if(deny_me(currentuser->userid,currboard)&&!HAS_PERM(currentuser,PERM_SYSOP))     /* °æÖ÷½ûÖ¹POST ¼ì²é */
     {
         move( 3, 0 );
         clrtobot();
@@ -2357,7 +2336,7 @@ post_article()                         /*ÓÃ»§ POST ÎÄÕÂ */
             Anony=(Anony==1)?0:1;
         }else if(ans[0]=='V')
         { /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
-            setuserfile(buf2,"signatures");
+            sethomefile(buf2,currentuser->userid,"signatures");
             move(t_lines-1,0);
             if (askyn("Ô¤ÉèÏÔÊ¾Ç°Èı¸öÇ©Ãûµµ, ÒªÏÔÊ¾È«²¿Âğ",NA,YEA)==YEA)
                 ansimore(buf2);
@@ -2452,7 +2431,7 @@ post_article()                         /*ÓÃ»§ POST ÎÄÕÂ */
     setbdir( buf, currboard );
 
     /* ÔÚboards°æ°æÖ÷·¢ÎÄ×Ô¶¯Ìí¼ÓÎÄÕÂ±ê¼Ç Bigman:2000.8.12*/
-    if (!strcmp(currboard, "Board")  && !HAS_PERM(PERM_OBOARDS)   && HAS_PERM(PERM_BOARDS) )
+    if (!strcmp(currboard, "Board")  && !HAS_PERM(currentuser,PERM_OBOARDS)   && HAS_PERM(currentuser,PERM_BOARDS) )
     {
         post_file.accessed[0] |= FILE_SIGN;
     }
@@ -2577,7 +2556,7 @@ char *direct ;
 
     modify_user_mode( EDIT );
 
-    if (!HAS_PERM(PERM_SYSOP))      /* SYSOP¡¢µ±Ç°°æÖ÷¡¢Ô­·¢ĞÅÈË ¿ÉÒÔ±à¼­ */
+    if (!HAS_PERM(currentuser,PERM_SYSOP))      /* SYSOP¡¢µ±Ç°°æÖ÷¡¢Ô­·¢ĞÅÈË ¿ÉÒÔ±à¼­ */
         if ( !chk_currBM( currBM) )
             /* change by KCN 1999.10.26
                     if(strcmp( fileinfo->owner, currentuser->userid))
@@ -2585,7 +2564,7 @@ char *direct ;
             if (!isowner(currentuser,fileinfo))
                 return DONOTHING ;
 
-    if(deny_me()&&!HAS_PERM(PERM_SYSOP))     /* °æÖ÷½ûÖ¹POST ¼ì²é */
+    if(deny_me(currentuser->userid,currboard)&&!HAS_PERM(currentuser,PERM_SYSOP))     /* °æÖ÷½ûÖ¹POST ¼ì²é */
     {
         move( 3, 0 );
         clrtobot();
@@ -2655,7 +2634,7 @@ char *direct;
     if (YEA == check_readonly(currboard)) /* Leeward 98.03.28 */
         return FULLUPDATE;
 
-    if(!HAS_PERM(PERM_SYSOP)) /* È¨ÏŞ¼ì²é */
+    if(!HAS_PERM(currentuser,PERM_SYSOP)) /* È¨ÏŞ¼ì²é */
         if( !chk_currBM(currBM))
             /* change by KCN 1999.10.26
               if(strcmp( fileinfo->owner, currentuser->userid))
@@ -2739,7 +2718,7 @@ char *direct;
     struct fileheader mkpost;
     /*---	---*/
 
-    if( !HAS_PERM(PERM_SYSOP) )
+    if( !HAS_PERM(currentuser,PERM_SYSOP) )
         if( !chk_currBM(currBM) )
         {
             return DONOTHING;
@@ -2801,7 +2780,7 @@ char *direct;
 {
     char ans[256];
 
-    if( !HAS_PERM(PERM_OBOARDS) )
+    if( !HAS_PERM(currentuser,PERM_OBOARDS) )
     {
         if (!chk_currBM(currBM))
             return DONOTHING;
@@ -2840,7 +2819,7 @@ char *direct;
 {
     char ans[256];
 
-    if( !HAS_PERM(PERM_OBOARDS) )
+    if( !HAS_PERM(currentuser,PERM_OBOARDS) )
     {
         if (!chk_currBM(currBM))
             return DONOTHING;
@@ -2875,7 +2854,7 @@ struct fileheader *fileinfo;
 char *direct;
 {
     char ans[STRLEN];
-    if( !HAS_PERM(PERM_OBOARDS) )
+    if( !HAS_PERM(currentuser,PERM_OBOARDS) )
     {
         return (int)DONOTHING;
     }
@@ -2914,7 +2893,7 @@ int mailmode;
             ||strstr(direct,".THREAD")/*Haohmaru.98.10.16*/)    /* Leeward : 98.01.22 */
         return DONOTHING ;
 
-    if(uinfo.mode == READING && !HAS_PERM(PERM_SYSOP ) )
+    if(uinfo.mode == READING && !HAS_PERM(currentuser,PERM_SYSOP ) )
         if(!chk_currBM(currBM))
         {
             return DONOTHING ;
@@ -3053,7 +3032,7 @@ char *direct ;
     owned = isowner(currentuser,fileinfo);
     /* change by KCN  ! strcmp( fileinfo->owner, currentuser->userid ); */
     strcpy(usrid,fileinfo->owner);
-    if( !(owned) && !HAS_PERM(PERM_SYSOP) )
+    if( !(owned) && !HAS_PERM(currentuser,PERM_SYSOP) )
         if( !chk_currBM(currBM))
         {
             return DONOTHING ;
@@ -3127,7 +3106,7 @@ char *direct ;
 /* Added by netty to handle post saving into (0)Announce */
 int Save_post(int ent,struct fileheader *fileinfo,char *direct)
 {
-    if(!HAS_PERM(PERM_SYSOP))
+    if(!HAS_PERM(currentuser,PERM_SYSOP))
         if(!chk_currBM(currBM))
             return DONOTHING ;
     return(a_Save( "0Announce", currboard, fileinfo ,NA,direct,ent));
@@ -3140,7 +3119,7 @@ int ent;
 struct fileheader *fileinfo;
 char *direct;
 {
-    if(!HAS_PERM(PERM_SYSOP))
+    if(!HAS_PERM(currentuser,PERM_SYSOP))
         if(!chk_currBM(currBM))
             return DONOTHING ;
     return(a_SeSave( "0Announce", currboard, fileinfo ,NA));
@@ -3155,7 +3134,7 @@ char *direct;
 {
     char szBuf[STRLEN];
 
-    if(!HAS_PERM(PERM_SYSOP))
+    if(!HAS_PERM(currentuser,PERM_SYSOP))
         if(!chk_currBM(currBM) )
             return DONOTHING ;
 
@@ -3227,8 +3206,8 @@ void postreport(const char * posttitle, int post_num, char *board)
 int
 into_announce()
 {
-    if( a_menusearch( "0Announce", currboard, (HAS_PERM(PERM_ANNOUNCE)||
-                      HAS_PERM(PERM_SYSOP)||HAS_PERM(PERM_OBOARDS)) ? PERM_BOARDS:0) )
+    if( a_menusearch( "0Announce", currboard, (HAS_PERM(currentuser,PERM_ANNOUNCE)||
+                      HAS_PERM(currentuser,PERM_SYSOP)||HAS_PERM(currentuser,PERM_OBOARDS)) ? PERM_BOARDS:0) )
         return FULLUPDATE;
     return DONOTHING;
 }
@@ -3250,7 +3229,7 @@ char *direct;
     }
 
     /* ·â½ûMail Bigman:2000.8.22 */
-    if (HAS_PERM(PERM_DENYMAIL))
+    if (HAS_PERM(currentuser,PERM_DENYMAIL))
     {
         clear();
         move(3,10);
@@ -3272,7 +3251,7 @@ char *direct;
         return DONOTHING;
 
     /* ·â½ûMail Bigman:2000.8.22 */
-    if (HAS_PERM(PERM_DENYMAIL))
+    if (HAS_PERM(currentuser,PERM_DENYMAIL))
     {
         clear();
         move(3,10);
@@ -3647,7 +3626,7 @@ b_jury_edit()*/ /*stephen 2001.11.1: ±à¼­°æÃæÖÙ²ÃÃûµ¥ */
     char ans[4];
     int         aborted;
 
-    if(!(HAS_PERM(PERM_JURY) && HAS_PERM(PERM_BOARDS) || HAS_PERM(PERM_SYSOP)))
+    if(!(HAS_PERM(currentuser,PERM_JURY) && HAS_PERM(currentuser,PERM_BOARDS) || HAS_PERM(currentuser,PERM_SYSOP)))
     {
         return 0 ;
     }
@@ -3799,7 +3778,7 @@ Goodbye()    /*ÀëÕ¾ Ñ¡µ¥*/
         return 0;
     if(strcmp(currentuser->userid,"guest")!=0){
         if(choose==3) /*ÁôÑÔ²¾*/
-            if( USE_NOTEPAD ==1 &&HAS_PERM(PERM_POST))
+            if( USE_NOTEPAD ==1 &&HAS_PERM(currentuser,PERM_POST))
                 notepad();
     }
 
@@ -3809,17 +3788,17 @@ Goodbye()    /*ÀëÕ¾ Ñ¡µ¥*/
     
     currentuser->stay+=stay;
 
-    if(DEFINE(DEF_OUTNOTE/*ÍË³öÊ±ÏÔÊ¾ÓÃ»§±¸ÍüÂ¼*/))
+    if(DEFINE(currentuser,DEF_OUTNOTE/*ÍË³öÊ±ÏÔÊ¾ÓÃ»§±¸ÍüÂ¼*/))
     {
-        setuserfile(notename,"notes");
+        sethomefile(notename,currentuser->userid,"notes");
         if(dashf(notename))
             ansimore(notename,YEA);
     }
 
     /* Leeward 98.09.24 Use SHARE MEM and disable the old code */
-    if(DEFINE(DEF_LOGOUT)) /* Ê¹ÓÃ×Ô¼ºµÄÀëÕ¾»­Ãæ */
+    if(DEFINE(currentuser,DEF_LOGOUT)) /* Ê¹ÓÃ×Ô¼ºµÄÀëÕ¾»­Ãæ */
     {
-        setuserfile( fname, "logout" );
+        sethomefile( fname, currentuser->userid,"logout" );
         if(dashf(fname))
             mylogout=YEA;
     }
@@ -3839,9 +3818,9 @@ Goodbye()    /*ÀëÕ¾ Ñ¡µ¥*/
         }
     }
 
-    /*if(DEFINE(DEF_LOGOUT\*Ê¹ÓÃ×Ô¼ºµÄÀëÕ¾»­Ãæ*\)) Leeward: disable the old code
+    /*if(DEFINE(currentuser,DEF_LOGOUT\*Ê¹ÓÃ×Ô¼ºµÄÀëÕ¾»­Ãæ*\)) Leeward: disable the old code
 {
-        setuserfile( fname, "logout" );
+        sethomefile( fname,currentuser->userid, "logout" );
         if(!dashf(fname))
                 strcpy(fname,"etc/logout");
 }else
@@ -3860,7 +3839,7 @@ Goodbye()    /*ÀëÕ¾ Ñ¡µ¥*/
     /* Leeward 98.04.24 */
     if(strcmp(currentuser->userid,"guest")) /* guest ²»±Ø */
     {
-        setuserfile(fname, ".boardrc" );
+        sethomefile(fname, currentuser->userid,".boardrc" );
         if (dashf(fname))
         {
             sprintf(genbuf, "/bin/cp %s %s.bak", fname, fname);
@@ -3905,10 +3884,10 @@ Goodbye()    /*ÀëÕ¾ Ñ¡µ¥*/
     {
         FILE *fp;
         char buf[STRLEN],*ptr;
-        setuserfile(fname,"msgindex");
+        sethomefile(fname,currentuser->userid,"msgindex");
         unlink(fname);
-        setuserfile(fname,"msgfile");
-        if(DEFINE(DEF_MAILMSG/*ÀëÕ¾Ê±¼Ä»ØËùÓĞĞÅÏ¢*/)&&dashf(fname))
+        sethomefile(fname,currentuser->userid,"msgfile");
+        if(DEFINE(currentuser,DEF_MAILMSG/*ÀëÕ¾Ê±¼Ä»ØËùÓĞĞÅÏ¢*/)&&dashf(fname))
         {
             char title[STRLEN];
             time_t now;
@@ -4212,7 +4191,7 @@ char *direct ;
 
     if(digestmode!=NA&&digestmode!=YEA)
         return DONOTHING;
-    if( !HAS_PERM(PERM_SYSOP) )
+    if( !HAS_PERM(currentuser,PERM_SYSOP) )
         if( !chk_currBM(currBM) )
         {
             return DONOTHING;

@@ -145,7 +145,7 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
     owned = isowner(user,fileinfo);
     /* change by KCN  ! strcmp( fileinfo->owner, currentuser->userid ); */
     strcpy(usrid,fileinfo->owner);
-    if( !(owned) && !has_perm(PERM_SYSOP) )
+    if( !(owned) && !HAS_PERM(currentuser,PERM_SYSOP) )
         if( !chk_currBM(bm_str))
         {
             return DONOTHING ;

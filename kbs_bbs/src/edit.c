@@ -789,7 +789,7 @@ int blank;
     char fname[STRLEN];
     char tmp[STRLEN];
 
-    setuserfile( fname, "signatures" );
+    sethomefile( fname, currentuser->userid,"signatures" );
     if ((sigfile = fopen(fname, "r"))== NULL)
     {return;}
     if ( blank ) fputs("\n", fp);
@@ -1980,7 +1980,7 @@ int saveheader ;
     t = showansi;
     showansi=0;
 #ifndef VEDITOR
-    ismsgline=(DEFINE(DEF_EDITMSG))?1:0;
+    ismsgline=(DEFINE(currentuser,DEF_EDITMSG))?1:0;
 #else
     ismsgline=1;
 #endif
@@ -2004,7 +2004,7 @@ int saveheader ;
     t = showansi;
     showansi=0;
 #ifndef VEDITOR
-    ismsgline=(DEFINE(DEF_EDITMSG))?1:0;
+    ismsgline=(DEFINE(currentuser,DEF_EDITMSG))?1:0;
 #else
     ismsgline=1;
 #endif

@@ -31,7 +31,6 @@ int badnum=0;
 
 struct user_info *u_info;
 struct UTMPFILE *shm_utmp;
-struct BCACHE *shm_bcache;
 struct UCACHE *shm_ucache;
 char fromhost[IPLEN];
 char parm_name[256][80], *parm_val[256];
@@ -552,28 +551,6 @@ int post_imail(char *userid, char *title, char *file, char *id, char *nickname, 
 	return 0;
 }
 
-int check_readonly(checked) /* Leeward 98.03.28 */
-char *checked;          /* 改动本函数必须同步 bbs.c 和 bbssnd.c (4 WWW) */
-{
-    struct stat st;
-    char        buf[STRLEN];
-
-    sprintf(buf, "boards/%s", checked);
-    stat(buf, &st);
-    if (365 == (st.st_mode & 0X1FF)) /* Checking if DIR access mode is "555" */
-        return YEA;
-    else
-        return NA;
-}
-
-int deny_me(char *board)   /* 判断当前用户 是否被禁止发表文章 */
-{
-    char buf[STRLEN];
-
-    setbfile(buf, board, "deny_users");
-    return seek_in_file(buf, getcurruserid());
-}
-
 int outgo_post2(struct fileheader *fh, char *board, 
 				char *userid, char *username, char *title)
 {
@@ -596,7 +573,7 @@ void add_loginfo2(char *filepath, char *board, struct userec *user, int anony)
 
     //noidboard=(seek_in_file("etc/anonymous",board)&&anony);
     color=(user->numlogins%7)+31; /* 颜色随机变化 */
-    setuserfile( fname, "signatures" );
+    setuserfile( fname, currentuser->userid,"signatures" );
     fp=fopen(filepath,"a");
     if ((fp2=fopen(fname, "r"))== NULL|| /* 判断是否已经 存在 签名档 */
             user->signature==0 || anony==1)
@@ -634,7 +611,7 @@ void addsignature2(FILE *fp, struct userec *user, int sig)
 
 	if (sig == 0)
 		return;
-    setuserfile( fname, "signatures" );
+    setuserfile( fname, currentuser->userid,"signatures" );
     if ((sigfile = fopen(fname, "r"))== NULL)
     	return;
     fputs("--\n", fp);
@@ -756,8 +733,8 @@ post_article(char *board, char *title, char *file, struct userec *user,
     setbfile( buf, board, DOT_DIR);
 
     /* 在boards版版主发文自动添加文章标记 Bigman:2000.8.12*/
-    if (!strcmp(board, "Board")  && !has_perm(PERM_OBOARDS)
-		&& has_perm(PERM_BOARDS) )
+    if (!strcmp(board, "Board")  && !HAS_PERM(currentuser,PERM_OBOARDS)
+		&& HAS_PERM(currentuser,PERM_BOARDS) )
     {
         post_file.accessed[0] |= FILE_SIGN;
     }
@@ -853,11 +830,6 @@ int has_read_perm(struct userec *user, char *board) {
 	/*if(user_perm(user, PERM_SPECIAL8)) return 0;*/
 	if(user_perm(user, x->level)) return 1;
 	return 0;
-}
-
-int has_post_perm(struct userec *user, char *board)
-{
-	return haspostperm(board);
 }
 
 int count_mails(char *id, int *total, int *unread) {
@@ -966,7 +938,7 @@ int
 canmsg(uin)
 struct user_info *uin;
 {
-    if ((uin->pager&ALLMSG_PAGER) || has_perm(PERM_SYSOP))
+    if ((uin->pager&ALLMSG_PAGER) || HAS_PERM(currentuser,PERM_SYSOP))
 		return YEA;
     if ((uin->pager&FRIENDMSG_PAGER))
     {
@@ -987,7 +959,7 @@ char *userid;
     char buf[IDLEN+1];
     char path[256];
 
-    if (has_perm(PERM_SYSOP)) return YEA;
+    if (HAS_PERM(currentuser,PERM_SYSOP)) return YEA;
 
     sethomefile( path, userid , "ignores");
     if (search_record(path, buf, IDLEN+1, cmpinames, getcurruserid()))
@@ -1543,7 +1515,7 @@ unsigned int getcurrulevel()
 	return currentuser->userlevel;
 }
 
-int has_perm(unsigned int x)
+int HAS_PERM(currentuser,unsigned int x)
 {
 	return x ? currentuser->userlevel&x : 1;
 }
@@ -1626,10 +1598,10 @@ int chk_currBM(char *BMstr)   /* 根据输入的版主名单 判断当前user是否是版主 */
     char *ptr;
     char BMstrbuf[STRLEN-1];
 
-    if(has_perm(PERM_OBOARDS)||has_perm(PERM_SYSOP))
+    if(HAS_PERM(currentuser,PERM_OBOARDS)||HAS_PERM(currentuser,PERM_SYSOP))
         return YEA;
 
-    if(!has_perm(PERM_BOARDS))
+    if(!HAS_PERM(currentuser,PERM_BOARDS))
         return NA;
     strcpy(BMstrbuf,BMstr);
     ptr=strtok(BMstrbuf,",: ;|&()\0\n");
@@ -1712,11 +1684,11 @@ getfriendstr()
 
     if(topfriend!=NULL)
         free(topfriend);
-    setuserfile( filename, "friends" );
+    setuserfile( filename, currentuser->userid,"friends" );
     nf=get_num_records(filename,sizeof(struct friends));
     if(nf<=0)
         return 0;
-    if(!has_perm(PERM_ACCOUNTS) && !has_perm(PERM_SYSOP))/*Haohmaru.98.11.16*/
+    if(!HAS_PERM(currentuser,PERM_ACCOUNTS) && !HAS_PERM(currentuser,PERM_SYSOP))/*Haohmaru.98.11.16*/
         nf=(nf>=MAXFRIENDS)?MAXFRIENDS:nf;
     friendsdata=(struct friends *)calloc(sizeof(struct friends),nf);
     get_records(filename,friendsdata,sizeof(struct friends),1,nf);
@@ -1791,7 +1763,7 @@ int full_utmp(struct user_info* uentp,int* count)
     {
         return 0;
     }
-    if(!has_perm(PERM_SEECLOAK) && uentp->invisible 
+    if(!HAS_PERM(currentuser,PERM_SEECLOAK) && uentp->invisible 
 		&& strcmp(uentp->userid,getcurruserid()))/*Haohmaru.99.4.24.让隐身者能看见自己*/
     {
         return 0;
@@ -1925,8 +1897,8 @@ char qry_mail_dir[STRLEN];
     char buf[STRLEN];
 
     memset(&tmp,0,sizeof(tmp));
-    setuserfile( buf, "friends" );
-    if((!has_perm(PERM_ACCOUNTS) && !has_perm(PERM_SYSOP)) &&
+    setuserfile( buf,currentuser->userid, "friends" );
+    if((!HAS_PERM(currentuser,PERM_ACCOUNTS) && !HAS_PERM(currentuser,PERM_SYSOP)) &&
             (get_num_records(buf,sizeof(struct friends))>=MAXFRIENDS) )
     {
         return -1;

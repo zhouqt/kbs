@@ -291,12 +291,12 @@ check_register_info()
     }
     if(!(currentuser->userlevel&PERM_LOGINOK))
     {
-        if( HAS_PERM( PERM_SYSOP ))
+        if( HAS_PERM(currentuser, PERM_SYSOP ))
             return;
         if(!invalid_realmail( currentuser->userid, currentuser->realemail, STRLEN-16 ))
         {
             currentuser->userlevel |= PERM_DEFAULT;
-            if( HAS_PERM( PERM_DENYPOST ) && !HAS_PERM( PERM_SYSOP ) )
+            if( HAS_PERM(currentuser, PERM_DENYPOST ) && !HAS_PERM(currentuser, PERM_SYSOP ) )
                 currentuser->userlevel &= ~PERM_POST;
         }else {
             /* added by netty to automatically send a mail to new user. */
@@ -377,11 +377,11 @@ check_register_info()
     }
     newregfile = sysconf_str( "NEWREGFILE" );
     if( currentuser->lastlogin - currentuser->firstlogin < REGISTER_WAIT_TIME &&
-            !HAS_PERM( PERM_SYSOP) && newregfile != NULL ) {
+            !HAS_PERM(currentuser, PERM_SYSOP) && newregfile != NULL ) {
         currentuser->userlevel &= ~(perm);
         ansimore( newregfile, YEA );
     }
-    if( HAS_PERM( PERM_DENYPOST ) && !HAS_PERM( PERM_SYSOP ) )
+    if( HAS_PERM(currentuser, PERM_DENYPOST ) && !HAS_PERM(currentuser, PERM_SYSOP ) )
     {
         currentuser->userlevel &= ~PERM_POST;
     }

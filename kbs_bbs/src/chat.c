@@ -728,7 +728,7 @@ int printuserent(chatcontext *pthis,struct user_info *uentp) /* print one user &
     }
     if (!uentp->active || !uentp->pid)
         return 0;
-    if (!HAS_PERM(PERM_SEECLOAK) && uentp->invisible)
+    if (!HAS_PERM(currentuser,PERM_SEECLOAK) && uentp->invisible)
         return 0;
 
 #if 0
@@ -757,7 +757,7 @@ print_friend_ent(struct user_info *uentp,chatcontext *pthis,int pos) /* print on
 
     if (!uentp->active || !uentp->pid)
         return 0;
-    if (!HAS_PERM(PERM_SEECLOAK) && uentp->invisible)
+    if (!HAS_PERM(currentuser,PERM_SEECLOAK) && uentp->invisible)
         return 0;
 
 #if 0
@@ -825,7 +825,7 @@ void call_user(chatcontext *pthis,const char *arg) /* invite user online to chat
     }
     if(!strcasecmp(arg,currentuser->userid))
         sprintf(msg,"[32mƒ„≤ª”√—˚«Î◊‘º∫∞°[m");
-    else if (!HAS_PERM(PERM_PAGE))  /* Leeward 98.07.30 */
+    else if (!HAS_PERM(currentuser,PERM_PAGE))  /* Leeward 98.07.30 */
         sprintf(msg,"[32mƒ„√ª”–∑¢–≈œ¢µƒ»®œﬁ[m");
     else
     {
@@ -883,7 +883,7 @@ void chat_sendmsg(chatcontext *pthis,const char *arg) /* send msg in chatroom , 
     } else if (!*arg) {
         printchatline(pthis,"\x1b[37m*** \x1b[32m«Î ‰»Îƒ„“™∑¢µƒœ˚œ¢\x1b[37m ***\x1b[m");
         return;
-    } else if(!HAS_PERM(PERM_PAGE)) {  /* Leeward 98.07.30 */
+    } else if(!HAS_PERM(currentuser,PERM_PAGE)) {  /* Leeward 98.07.30 */
 		sprintf(msg,"\x1b[32mƒ„√ª”–∑¢–≈œ¢µƒ»®œﬁ\x1b[m");
 	} else {
 		uin=t_search(userid,NA);
@@ -943,7 +943,7 @@ int chat_status(struct user_info *uentp,chatcontext *pthis)
     
 	if(uentp->invisible==1)
 	{
-		if(HAS_PERM(PERM_SEECLOAK))
+		if(HAS_PERM(currentuser,PERM_SEECLOAK))
 		{
 			sprintf(genbuf+strlen(genbuf),"\x1b[32m#\x1b[m");
 		}
@@ -1016,13 +1016,13 @@ static void query_user(chatcontext *pthis,const char* userid)
     if (apply_utmpuid((APPLY_UTMP_FUNC) chat_status,tuid,(char*)pthis)) {
     	char buf[1024];
         sprintf(buf, "ƒø«∞’˝‘⁄œﬂ…œ: ¿¥◊‘ %s …œœﬂ ±º‰ %s"/*\n"*/,
-                (lookupuser->lasthost[0] == '\0'/* || DEFINE(DEF_HIDEIP)*/ ? "(≤ªœÍ)" : lookupuser->lasthost), inbuf);/*Haohmaru.99.12.18*/
+                (lookupuser->lasthost[0] == '\0'/* || DEFINE(currentuser,DEF_HIDEIP)*/ ? "(≤ªœÍ)" : lookupuser->lasthost), inbuf);/*Haohmaru.99.12.18*/
         printchatline(pthis,buf);
         
 	    printchatline(pthis,genbuf);
     } else {
         sprintf(genbuf, "…œ¥Œ…œœﬂ¿¥◊‘  %s  ±º‰Œ™ %s "/*\n"*/ ,
-                (lookupuser->lasthost[0] == '\0'/* || DEFINE(DEF_HIDEIP)*/ ? "(≤ªœÍ)" : lookupuser->lasthost), inbuf);/* Haohmaru.99.12.18*/
+                (lookupuser->lasthost[0] == '\0'/* || DEFINE(currentuser,DEF_HIDEIP)*/ ? "(≤ªœÍ)" : lookupuser->lasthost), inbuf);/* Haohmaru.99.12.18*/
         printchatline(pthis,genbuf);
 
         /* ªÒµ√¿Îœﬂ ±º‰ Luzi 1998/10/23 */
@@ -1034,10 +1034,10 @@ static void query_user(chatcontext *pthis,const char* userid)
         if (exit_time <= lookupuser->lastlogin )
         	/*
                 || (uin.active && uin.pid
-                    && (!uin.invisible || (uin.invisible && HAS_PERM(PERM_SEECLOAK)))))
+                    && (!uin.invisible || (uin.invisible && HAS_PERM(currentuser,PERM_SEECLOAK)))))
             */
             strcpy(inbuf,"“Ú‘⁄œﬂ…œªÚ∑«≥£∂œœﬂ≤ªœÍ");
-        if (exit_time <= lookupuser->lastlogin) /* && (uin.invisible&& !HAS_PERM(PERM_SEECLOAK)))*/
+        if (exit_time <= lookupuser->lastlogin) /* && (uin.invisible&& !HAS_PERM(currentuser,PERM_SEECLOAK)))*/
         {
             temp=lookupuser->lastlogin+(lookupuser->numlogins%7)+5;
             strcpy(inbuf,ctime(&temp));/*Haohmaru.98.12.04.»√“˛…Ì”√ªßø¥…œ»•¿Îœﬂ ±º‰±»…œœﬂ ±º‰ÕÌ5√Î÷”*/
@@ -1049,7 +1049,7 @@ static void query_user(chatcontext *pthis,const char* userid)
         printchatline(pthis,genbuf);
     }
 #ifdef DEBUG
-    if(HAS_PERM(PERM_SYSOP)) {
+    if(HAS_PERM(currentuser,PERM_SYSOP)) {
 	sprintf(genbuf, "%d", tuid);
 	printchatline(pthis,genbuf);
     }
@@ -1134,7 +1134,7 @@ void set_rec(chatcontext *pthis, const char *arg) /* set recorder */
     time_t now;
 
     now=time(0);
-    /*        if(!HAS_PERM(PERM_SYSOP))
+    /*        if(!HAS_PERM(currentuser,PERM_SYSOP))
                     return;*/
 
     sprintf(fname,"tmp/%s.chat",currentuser->userid);
@@ -1193,7 +1193,7 @@ void call_kickoff(chatcontext *pthis, const char *arg) /* kick ID off BBS, by Lu
     char msg[STRLEN];
     struct user_info *uin ;
 
-    if(!HAS_PERM(PERM_SYSOP))
+    if(!HAS_PERM(currentuser,PERM_SYSOP))
     {
         printchatline(pthis,"*** ƒ„≤ª «’æ≥§ ***");
         return;
@@ -1479,7 +1479,7 @@ void chat_show_allmsgs(chatcontext *pthis,const char *arg)
     if(line<screen_lines-1)line=screen_lines-1;
     if(line>300)line=300;
 
-    setuserfile(fname,"msgfile");
+    sethomefile(fname,currentuser->userid,"msgfile");
     if( (fp=fopen(fname,"rb")) !=NULL )
     {
         fseek(fp,0,SEEK_END);

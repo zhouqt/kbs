@@ -296,7 +296,7 @@ int     ssize;
                 lbuf[ lbc++ ] = ch;
             lbuf[lbc] = 0;
             if(!lbc) update_endline();
-            else if(DEFINE(DEF_ENDLINE)) {
+            else if(DEFINE(currentuser,DEF_ENDLINE)) {
                 extern time_t login_start_time;
                 int allstay;
                 char pntbuf[256], nullbuf[2] = " ";
@@ -534,7 +534,7 @@ case 'L': case 'l':  /* Luzi 1997.10.31 */
         r_lastmsg();
         break;
     case 'w':       /* Luzi 1997.10.31 */
-        if (!HAS_PERM(PERM_PAGE)) break;
+        if (!HAS_PERM(currentuser,PERM_PAGE)) break;
         s_msg();
         return FULLUPDATE;
         break;
@@ -547,7 +547,7 @@ case 'L': case 'l':  /* Luzi 1997.10.31 */
 case 'O': case 'o':       /* Luzi 1997.10.31 */
         { /* Leeward 98.10.26 fix a bug by saving old mode */
             int  savemode = uinfo.mode;
-            if (!HAS_PERM(PERM_BASIC)) break;
+            if (!HAS_PERM(currentuser,PERM_BASIC)) break;
             t_friends();
             modify_user_mode(savemode);
             return FULLUPDATE;
@@ -647,7 +647,7 @@ char *direct ;
     struct userec uinfo ;
     struct userec* lookupuser;
     int id;
-    if(!HAS_PERM( PERM_ACCOUNTS )||!strcmp(fileinfo->owner,"Anonymous")||!strcmp(fileinfo->owner,"deliver"))
+    if(!HAS_PERM(currentuser, PERM_ACCOUNTS )||!strcmp(fileinfo->owner,"Anonymous")||!strcmp(fileinfo->owner,"deliver"))
         return DONOTHING;
     else
     {
@@ -674,7 +674,7 @@ char *direct ;
 {
     struct user_info *uin ;
     int id;
-    if(!HAS_PERM(PERM_PAGE))
+    if(!HAS_PERM(currentuser,PERM_PAGE))
         return DONOTHING;
     clear();
     uin=(struct user_info*)t_search(fileinfo->owner,NA);
@@ -1280,7 +1280,7 @@ case 0: case 1: case 2:
                 isnext=1;
                 break;
 case 'z':case 'Z':/*Haohmaru.2000.5.19,直接给作者发msg*/
-                if (!HAS_PERM(PERM_PAGE)) break;
+                if (!HAS_PERM(currentuser,PERM_PAGE)) break;
                 sendmsgtoauthor(0, &SR_fptr, currdirect);
                 isnext=1;
                 break;
@@ -1302,14 +1302,14 @@ case KEY_UP:case 'u':case'U':
                 r_lastmsg();
                 break;
             case 'w':            /* Luzi 1997.11.1 */
-                if (!HAS_PERM(PERM_PAGE)) break;
+                if (!HAS_PERM(currentuser,PERM_PAGE)) break;
                 s_msg();
                 break;
             case '!' :/*Haohmaru 1998.09.24*/
                 Goodbye();
                 break;
         case 'O': case 'o':  /* Luzi 1997.11.1 */
-                if (!HAS_PERM(PERM_BASIC)) break;
+                if (!HAS_PERM(currentuser,PERM_BASIC)) break;
                 t_friends();
                 break;
             default : break;
@@ -1488,10 +1488,10 @@ int val;
 int from_top;
 {
     if ( val > last_line ) {
-        val = DEFINE(DEF_CIRCLE)?1:last_line;
+        val = DEFINE(currentuser,DEF_CIRCLE)?1:last_line;
     }
     if ( val <= 0 ) {
-        val = DEFINE(DEF_CIRCLE)?last_line:1;
+        val = DEFINE(currentuser,DEF_CIRCLE)?last_line:1;
     }
     if ( val >= locmem->top_line && val < locmem->top_line + screen_len-1 ) {
         RMVCURS ;

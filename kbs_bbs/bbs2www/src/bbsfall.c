@@ -14,11 +14,11 @@ int main()
 	//fnum = get_friends_num();
 	//fi = get_finfo_addr();
 	//loadfriend(currentuser.userid);
-	setuserfile(filename, "friends");
+	setuserfile(filename,currentuser->userid, "friends");
 	fnum = get_num_records(filename, sizeof(friends_t));
 	if (fnum <= 0)
 		http_fatal("您尚未设定好友名单");
-	if ((!has_perm(PERM_ACCOUNTS) && !has_perm(PERM_SYSOP)))
+	if ((!HAS_PERM(currentuser,PERM_ACCOUNTS) && !HAS_PERM(currentuser,PERM_SYSOP)))
 		fnum = (fnum >= MAXFRIENDS) ? MAXFRIENDS : fnum;
 	frnds = (friends_t *)calloc(sizeof(friends_t), fnum);
 	get_records(filename, frnds, sizeof(friends_t), 1, fnum);

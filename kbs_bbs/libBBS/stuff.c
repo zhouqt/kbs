@@ -688,8 +688,7 @@ int compute_user_value( struct userec *urec)
 
 
 char *
-sethomefile( buf, userid, filename )  /*取某用户文件 路径*/
-char    *buf, *userid, *filename;
+sethomefile( char    *buf,char  *userid,char *filename)  /*取某用户文件 路径*/
 {
     if (isalpha(userid[0]))  /* 加入错误判断,提高容错性, alex 1997.1.6*/
         sprintf( buf, "home/%c/%s/%s", toupper(userid[0]), userid, filename );
@@ -699,19 +698,7 @@ char    *buf, *userid, *filename;
 }
 
 char *
-setuserfile( buf, filename )    /* 取当前用户文件 路径*/
-char    *buf, *filename;
-{
-    if (isalpha(currentuser->userid[0]))  /* 加入错误判断,提高容错性, alex 1997.1.6*/
-        sprintf( buf, "home/%c/%s/%s", toupper(currentuser->userid[0]), currentuser->userid, filename );
-    else
-        sprintf( buf, "home/wrong/%s/%s", currentuser->userid, filename);
-    return buf;
-}
-
-char *
-setmailfile( buf, userid, filename )    /* 取某用户mail文件 路径*/
-char    *buf, *userid, *filename;
+setmailfile( char    *buf, char *userid, char *filename)    /* 取某用户mail文件 路径*/
 {
     if (isalpha(userid[0]))  /* 加入错误判断,提高容错性, alex 1997.1.6*/
         sprintf( buf, "mail/%c/%s/%s", toupper(userid[0]), userid, filename );
@@ -720,25 +707,29 @@ char    *buf, *userid, *filename;
     return buf;
 }
 
-char *
-setbpath( buf, boardname )   /* 取某版 路径 */
-char *buf, *boardname;
+char * setmailpath( char    *buf, char *userid)  /* 取 某用户 的mail */
+{
+    if (isalpha(userid[0]))  /* 加入错误判断,提高容错性, alex 1997.1.6*/
+        sprintf( buf, "mail/%c/%s", toupper(userid[0]), userid );
+    else
+        sprintf( buf, "mail/wrong/%s", userid);
+    return buf;
+}
+
+char * setbpath( char *buf, char *boardname)   /* 取某版 路径 */
 {
     strcpy( buf, "boards/" );
     strcat( buf, boardname );
     return buf;
 }
 
-char *
-setbfile( buf, boardname, filename )  /* 取某版下文件 */
-char *buf, *boardname, *filename;
+char *setbfile( char *buf, char *boardname, char *filename)  /* 取某版下文件 */
 {
     sprintf( buf, "boards/%s/%s", boardname, filename );
     return buf;
 }
 
-void RemoveMsgCountFile2(userID)
-char *userID;
+void RemoveMsgCountFile(char *userID)
 {
   char fname[STRLEN];
   sethomefile(fname,userID,"msgcount");
@@ -785,8 +776,7 @@ int Rename(char* srcPath,char* destPath)
    return -1;
 }
 
-int seek_in_file(filename,seekstr)
-char filename[STRLEN],seekstr[STRLEN];
+int seek_in_file(char filename[STRLEN],seekstr[STRLEN])
 {
     FILE *fp;
     char buf[STRLEN];
@@ -843,9 +833,7 @@ time_t bbstime(time_t* t)
     return publicshm->nowtime;
 }
 
-int
-bad_user_id( userid )
-char    *userid;
+int bad_user_id( char    *userid)
 {
     FILE        *fp;
     char        buf[STRLEN];
@@ -892,9 +880,7 @@ char    *userid;
     return 0;
 }
 
-int
-valid_ident( ident )
-char *ident;
+int valid_ident( char *ident)
 {
     static char *invalid[] = { "unknown@", "root@", "gopher@", "bbs@",
         "guest@", NULL };

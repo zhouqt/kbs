@@ -172,7 +172,7 @@ int apply_boards(int (*func)()) /* 对所有版 应用 func函数*/
     for(i=0;i<brdshm->numboards;i++)
 #ifdef BBSMAIN 
         if( bcache[i].level & PERM_POSTMASK || 
-             HAS_PERM( bcache[i].level ) || 
+             HAS_PERM(currentuser, bcache[i].level ) || 
              (bcache[i].level&PERM_NOZAP))
 #endif
             if (bcache[i].filename[0])
@@ -188,7 +188,7 @@ char    *bname;
     register int i;
 
     for(i=0;i<brdshm->numboards;i++)
-        if( bcache[i].level & PERM_POSTMASK || HAS_PERM( bcache[i].level )|| (bcache[i].level&PERM_NOZAP))
+        if( bcache[i].level & PERM_POSTMASK || HAS_PERM(currentuser, bcache[i].level )|| (bcache[i].level&PERM_NOZAP))
             if(!strncasecmp( bname, bcache[i].filename, STRLEN ) )
                 return i+1 ;
     return 0 ;
@@ -206,27 +206,6 @@ int getboardnum(char*  bname ,struct boardheader* bh) /* board name --> board No
         }
     return 0 ;
 } /*---	---*/
-
-int haspostperm(char *bname) /* 判断在 bname版 是否有post权 */
-{
-    register int i;
-
-#ifdef BBSMAIN
-    if(digestmode)
-        return 0;
-#endif
-    /*    if( strcmp( bname, DEFAULTBOARD ) == 0 )  return 1; change by KCN 2000.09.01 */
-    if ((i = getbnum(bname)) == 0) return 0;
-    if (HAS_PERM(PERM_DENYPOST))
-        /*if(!strcmp(bname, "sysop"))
-               return 1;*/ /* Leeward 98.05.21 revised by stephen 2000.10.27*/ 
-        /* let user denied post right post at Complain*/
-    {if (!strcmp(bname, "Complain")) return 1;/* added by stephen 2000.10.27*/
-        else if(!strcmp(bname, "sysop"))
-            return 1;} /* stephen 2000.10.27 */
-    if (!HAS_PERM(PERM_POST)) return 0;
-    return (HAS_PERM((bcache[i-1].level&~PERM_NOZAP) & ~PERM_POSTMASK));
-}
 
 int normal_board(char *bname)
 {

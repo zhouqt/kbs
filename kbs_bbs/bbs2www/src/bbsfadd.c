@@ -7,8 +7,8 @@ int addtooverride2(char *uident, char *exp)
     char buf[STRLEN];
 
     memset(&tmp, 0, sizeof(tmp));
-    setuserfile(buf, "friends" );
-    if((!has_perm(PERM_ACCOUNTS) && !has_perm(PERM_SYSOP))
+    setuserfile(buf,currentuser->userid, "friends" );
+    if((!HAS_PERM(currentuser,PERM_ACCOUNTS) && !HAS_PERM(currentuser,PERM_SYSOP))
 		   	&& (get_num_records(buf, sizeof(struct friends)) >= MAXFRIENDS) )
     {
         hprintf("抱歉，本站目前仅可以设定 %d 个好友.", MAXFRIENDS);
@@ -36,7 +36,7 @@ int main()
 	init_all();
    	if(!loginok)
 	   	http_fatal("您尚未登录，请先登录");
-	setuserfile(path, "friends");
+	setuserfile(path, currentuser->userid,"friends");
    	printf("<center>%s -- 好友名单 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser->userid);
 	strsncpy(userid, getparm("userid"), 13);
 	strsncpy(exp, getparm("exp"), 32);

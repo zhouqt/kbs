@@ -1288,7 +1288,7 @@ int m_register()
 int m_stoplogin()
 {
     char ans[4];
-    if (!HAS_PERM(PERM_ADMIN)) return;
+    if (!HAS_PERM(currentuser,PERM_ADMIN)) return;
     getdata(t_lines - 1, 0, "½ûÖ¹µÇÂ½Âð (Y/N)? [N]: ", ans, 2, DOECHO, NULL, YEA);
     if (ans[0] == 'Y' || ans[0] == 'y')
     {

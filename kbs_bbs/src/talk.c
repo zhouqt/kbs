@@ -101,7 +101,7 @@ char
 canpage(friend, pager)
 int friend,pager;
 {
-    if ((pager&ALL_PAGER) || HAS_PERM(PERM_SYSOP)) return YEA;
+    if ((pager&ALL_PAGER) || HAS_PERM(currentuser,PERM_SYSOP)) return YEA;
     if ((pager&FRIEND_PAGER))
     {
         if(friend)
@@ -123,7 +123,7 @@ listcuent(struct user_info *uentp,char* arg,int pos)
         return 0;
     if(uentp->mode == ULDL)
         return 0;
-    if(!HAS_PERM(PERM_SEECLOAK) && uentp->invisible)
+    if(!HAS_PERM(currentuser,PERM_SEECLOAK) && uentp->invisible)
         return 0;
     AddNameList( uentp->userid );
     return 0 ;
@@ -143,7 +143,7 @@ t_pager()
     if(uinfo.pager&ALL_PAGER)
     {
         uinfo.pager&=~ALL_PAGER;
-        if( DEFINE(DEF_FRIENDCALL))
+        if( DEFINE(currentuser,DEF_FRIENDCALL))
             uinfo.pager|=FRIEND_PAGER;
         else
             uinfo.pager&=~FRIEND_PAGER;
@@ -198,7 +198,7 @@ int t_printstatus(struct user_info* uentp,int* arg,int pos)
 {
     if(uentp->invisible==1)
     {
-        if(!HAS_PERM(PERM_SEECLOAK))
+        if(!HAS_PERM(currentuser,PERM_SEECLOAK))
 	        return COUNT;
     }
     (*arg)++;
@@ -277,7 +277,7 @@ char q_id[IDLEN];
     perf=countperf(lookupuser);
     /*---	modified by period	2000-11-02	hide posts/logins	---*/
 #ifndef _DETAIL_UINFO_
-    if((!HAS_PERM(PERM_ADMINMENU)) && strcmp(lookupuser->userid, currentuser->userid))
+    if((!HAS_PERM(currentuser,PERM_ADMINMENU)) && strcmp(lookupuser->userid, currentuser->userid))
         prints( "%s (%s)", lookupuser->userid, lookupuser->username);
     else
 #endif
@@ -304,7 +304,7 @@ char q_id[IDLEN];
 	    } else
     	    strcpy(exittime,"ÒòÔÚÏßÉÏ»ò·Ç³£¶ÏÏß²»Ïê");
     prints( "\nÉÏ´ÎÔÚ  [%s] ´Ó [%s] µ½±¾Õ¾Ò»ÓÎ¡£\nÀëÏßÊ±¼ä[%s] ", Ctime(lookupuser->lastlogin),
-            ((lookupuser->lasthost[0] == '\0') /*|| DEFINE(DEF_HIDEIP)*/ ? "(²»Ïê)" : lookupuser->lasthost),/*Haohmaru.99.12.18. hide ip*/
+            ((lookupuser->lasthost[0] == '\0') /*|| DEFINE(currentuser,DEF_HIDEIP)*/ ? "(²»Ïê)" : lookupuser->lasthost),/*Haohmaru.99.12.18. hide ip*/
             exittime);
     /* SNOW CHANGE AT 10.20 (CHANGE THIS MSG)
         prints("ÐÅÏä£º[[5m%2s[m]£¬¾­ÑéÖµ£º[%d](%s) ±íÏÖÖµ£º[%d](%s) ÉúÃüÁ¦£º[%d]%s\n"
@@ -319,7 +319,7 @@ char q_id[IDLEN];
            permstr,(lookupuser->userlevel & PERM_SUICIDE)?" (×ÔÉ±ÖÐ)":"¡£");
 
 #if defined(QUERY_REALNAMES)
-    if (HAS_PERM(PERM_BASIC))
+    if (HAS_PERM(currentuser,PERM_BASIC))
         prints("Real Name: %s \n",lookupuser->realname);
 #endif
 
@@ -384,7 +384,7 @@ count_visible_active(struct user_info *uentp,char* arg,int pos)
     if(!uentp->active || !uentp->pid)
         return 0 ;
     count++ ;
-    if(!HAS_PERM(PERM_SEECLOAK) && uentp->invisible)
+    if(!HAS_PERM(currentuser,PERM_SEECLOAK) && uentp->invisible)
         count--;
     return 1 ;
 }
@@ -405,7 +405,7 @@ alcounter(struct user_info *uentp ,char* arg,int pos)
     if(!uentp->active || !uentp->pid)
         return 0 ;
 
-    canseecloak=(!HAS_PERM(PERM_SEECLOAK) && uentp->invisible)?0:1;
+    canseecloak=(!HAS_PERM(currentuser,PERM_SEECLOAK) && uentp->invisible)?0:1;
     if(myfriend(uentp->uid,NULL))
     {
         vi_friends++ ;
@@ -484,7 +484,7 @@ struct _tag_talk_showstatus {
 int talk_showstatus(struct user_info * uentp,struct _tag_talk_showstatus* arg,int pos)
 {
     char buf[80];
-    if (uentp->invisible && !HAS_PERM(PERM_SEECLOAK))
+    if (uentp->invisible && !HAS_PERM(currentuser,PERM_SEECLOAK))
     	return 0;
     arg->pos[arg->count++]=pos;
 
@@ -1017,7 +1017,7 @@ char *buf;
 {
     char mch;
     if (!uentp->active || !uentp->pid) return -1;
-    if(!HAS_PERM(PERM_SEECLOAK) && uentp->invisible)
+    if(!HAS_PERM(currentuser,PERM_SEECLOAK) && uentp->invisible)
         return -1;
     switch(uentp->mode) {
     case ULDL: mch = 'U'; break;
@@ -1349,7 +1349,7 @@ int fd ;
                     talkflush();
                     do_talk_char( &mywin, '\r' );
                 }
-            } else if (ch == Ctrl('P') && HAS_PERM(PERM_BASIC)) {
+            } else if (ch == Ctrl('P') && HAS_PERM(currentuser,PERM_BASIC)) {
                 t_pager();
                 update_endline();
             }
@@ -1729,8 +1729,8 @@ char *uident;
     char buf[STRLEN];
 
     memset(&tmp,0,sizeof(tmp));
-    setuserfile( buf, "friends" );
-    if((!HAS_PERM(PERM_ACCOUNTS) && !HAS_PERM(PERM_SYSOP)) &&
+    sethomefile( buf, currentuser->userid,"friends" );
+    if((!HAS_PERM(currentuser,PERM_ACCOUNTS) && !HAS_PERM(currentuser,PERM_SYSOP)) &&
             (get_num_records(buf,sizeof(struct friends))>=MAXFRIENDS) )
     {
         move(t_lines-2,0);
@@ -1760,7 +1760,7 @@ char *uident;
         sprintf(genbuf,"ÇëÊäÈë¸øºÃÓÑ¡¾%s¡¿µÄËµÃ÷: ",tmp.id);
         getdata(t_lines-2,0,genbuf, tmp.exp,15,DOECHO,NULL,YEA);
     }
-    setuserfile( genbuf, "friends" );
+    sethomefile( genbuf, currentuser->userid,"friends" );
     n=append_record(genbuf,&tmp,sizeof(struct friends));
     if(n!=-1)
         getfriendstr();
@@ -1800,7 +1800,7 @@ char *uident;
     int deleted;
     struct friends fh;
 
-    setuserfile( genbuf, "friends" );
+    sethomefile( genbuf, currentuser->userid,"friends" );
     deleted = search_record( genbuf, &fh, sizeof(fh), cmpfnames, uident );
     if(deleted>0)
     {
@@ -1942,7 +1942,7 @@ int ent;
 struct friends *fh;
 char *direct;
 {
-    if(!HAS_PERM(PERM_POST))
+    if(!HAS_PERM(currentuser,PERM_POST))
         return DONOTHING;
     m_send(fh->id);
     return FULLUPDATE;
@@ -1985,7 +1985,7 @@ void
 t_override()
 {
 
-    setuserfile( genbuf, "friends" );
+    sethomefile( genbuf, currentuser->userid,"friends" );
     i_read( GMENU, genbuf , friend_title , friend_doentry, friend_list ,sizeof(struct friends));
     clear();
     return;
@@ -2041,11 +2041,11 @@ getfriendstr()
 
     if(topfriend!=NULL)
         free(topfriend);
-    setuserfile( genbuf, "friends" );
+    sethomefile( genbuf, currentuser->userid,"friends" );
     nf=get_num_records(genbuf,sizeof(struct friends));
     if(nf<=0)
         return 0;
-    if(!HAS_PERM(PERM_ACCOUNTS) && !HAS_PERM(PERM_SYSOP))/*Haohmaru.98.11.16*/
+    if(!HAS_PERM(currentuser,PERM_ACCOUNTS) && !HAS_PERM(currentuser,PERM_SYSOP))/*Haohmaru.98.11.16*/
         nf=(nf>=MAXFRIENDS)?MAXFRIENDS:nf;
     friendsdata=(struct friends *)calloc(sizeof(struct friends),nf);
     get_records(genbuf,friendsdata,sizeof(struct friends),1,nf);

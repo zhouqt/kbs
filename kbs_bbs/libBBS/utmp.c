@@ -182,7 +182,7 @@ int getnewutmpent(struct user_info *up)
                 char buf[STRLEN];
                 strncpy(buf, uentp->userid, IDLEN+2);
                 clear_utmp(n+1);
-                RemoveMsgCountFile2(buf);
+                RemoveMsgCountFile(buf);
             }
         }
     }

@@ -147,7 +147,7 @@ int main() {
 	if(!loginok) 
 		printf("<img src=\"/link0.gif\"><a href=\"javascript:void open('bbsreg', '', 'width=620,height=550')\">新用户注册</a><br>\n");
    	if(loginok) {
-		if(has_perm(PERM_LOGINOK) && !has_perm(PERM_POST))
+		if(HAS_PERM(currentuser,PERM_LOGINOK) && !HAS_PERM(currentuser,PERM_POST))
 			printf("<script>alert('您被封禁了全站发表文章的权限, 请参看Announce版公告, 期满后在sysop版申请解封. 如有异议, 可在appeal版提出申诉.')</script>\n");
 		if(count_new_mails()>0) 
 			printf("<script>alert('您有新信件!')</script>\n");

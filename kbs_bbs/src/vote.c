@@ -141,7 +141,7 @@ b_jury_edit()   /* stephen 2001.11.1: 编辑版面仲裁名单 */
     char ans[4];
     int         aborted;
 
-    if(!(HAS_PERM(PERM_JURY) && HAS_PERM(PERM_BOARDS) || HAS_PERM(PERM_SYSOP)))
+    if(!(HAS_PERM(currentuser,PERM_JURY) && HAS_PERM(currentuser,PERM_BOARDS) || HAS_PERM(currentuser,PERM_SYSOP)))
     {
         return 0 ;
     }
@@ -572,8 +572,8 @@ char    *bname;
     int aborted;
 
     setcontrolfile();
-    if( !HAS_PERM( PERM_SYSOP ))
-        if (!HAS_PERM(PERM_OVOTE))
+    if( !HAS_PERM(currentuser, PERM_SYSOP ))
+        if (!HAS_PERM(currentuser,PERM_OVOTE))
             if( !chk_currBM(currBM))
             {
                 return 0 ;
@@ -667,7 +667,7 @@ char    *bname;
     setvoteflag(currboard,1);
     clear();
     /*Haohmaru.99.11.17.根据投票管理员设的限制条件判断是否让该使用者投票*/
-    if(HAS_PERM(PERM_OVOTE)||HAS_PERM(PERM_SYSOP)||HAS_PERM(PERM_JURY))
+    if(HAS_PERM(currentuser,PERM_OVOTE)||HAS_PERM(currentuser,PERM_SYSOP)||HAS_PERM(currentuser,PERM_JURY))
     {
         getdata(1,0,"是否对投票资格进行限制(Y/N) [Y]:",buf,3,DOECHO,NULL,YEA) ;
         if ( buf[0] != 'N' && buf[0] != 'n' )
@@ -1187,7 +1187,7 @@ case 'O': case 'o':
         report(buf);
         break;
     case '@':
-        if(!HAS_PERM(PERM_SYSOP))
+        if(!HAS_PERM(currentuser,PERM_SYSOP))
             return YEA;
         clear();
         deal=1;
@@ -1257,7 +1257,7 @@ b_vote()
     int num_of_vote;
     int voting;
 
-    if (!HAS_PERM(PERM_LOGINOK))
+    if (!HAS_PERM(currentuser,PERM_LOGINOK))
         return 0; /* Leeward 98.05.15 */
 
     setcontrolfile();

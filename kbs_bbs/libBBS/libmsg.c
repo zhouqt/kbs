@@ -28,7 +28,7 @@ int mode;
         strcpy(uident,uin->userid);
         /*   strcpy(MsgDesUid, uin->userid); change by KCN,is wrong*/
     }
-    if(!HAS_PERM(PERM_SEECLOAK) && uin->invisible && strcmp(uin->userid,currentuser->userid) && mode!=4)
+    if(!HAS_PERM(currentuser,PERM_SEECLOAK) && uin->invisible && strcmp(uin->userid,currentuser->userid) && mode!=4)
         return -2;
 
 

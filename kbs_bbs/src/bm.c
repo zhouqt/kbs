@@ -116,7 +116,7 @@ char *uident;
     setbfile( genbuf, currboard,"deny_users" );
     if( seek_in_file(genbuf, uident) || !strcmp(currboard, "denypost"))
         return -1;
-    if (HAS_PERM(PERM_SYSOP)||HAS_PERM(PERM_OBOARDS))
+    if (HAS_PERM(currentuser,PERM_SYSOP)||HAS_PERM(currentuser,PERM_OBOARDS))
         maxdeny=70;
     else
         maxdeny=14;
@@ -132,7 +132,7 @@ char *uident;
 #ifdef DEBUG
     autofree = askyn("该封禁是否自动解封？", YEA);
 #else
-    if (HAS_PERM(PERM_SYSOP)||HAS_PERM(PERM_OBOARDS))
+    if (HAS_PERM(currentuser,PERM_SYSOP)||HAS_PERM(currentuser,PERM_OBOARDS))
         sprintf(filebuf,"输入天数(0-手动解封，最长%d天)",maxdeny);
     else
 #endif /*DEBUG*/
@@ -144,9 +144,9 @@ char *uident;
         if ((buf2[0]<'0')||(buf2[0]>'9')) continue; /*goto MUST1;*/
         denyday=atoi(buf2);
         if ((denyday<0)||(denyday>maxdeny)) denyday = 0; /*goto MUST1;*/
-        else if (!(HAS_PERM(PERM_SYSOP)||HAS_PERM(PERM_OBOARDS))&&!denyday)
+        else if (!(HAS_PERM(currentuser,PERM_SYSOP)||HAS_PERM(currentuser,PERM_OBOARDS))&&!denyday)
             denyday = 0; /*goto MUST1;*/
-        else if ((HAS_PERM(PERM_SYSOP)||HAS_PERM(PERM_OBOARDS)) && !denyday && !autofree)
+        else if ((HAS_PERM(currentuser,PERM_SYSOP)||HAS_PERM(currentuser,PERM_OBOARDS)) && !denyday && !autofree)
             break;
     }
 
@@ -207,7 +207,7 @@ char *uident;
     /*Haohmaru.4.1.自动发信通知*/
     sprintf(filename,"etc/%s.dny",currentuser->userid);
     fn1=fopen(filename,"w");
-    if (HAS_PERM(PERM_SYSOP)||HAS_PERM(PERM_OBOARDS))
+    if (HAS_PERM(currentuser,PERM_SYSOP)||HAS_PERM(currentuser,PERM_OBOARDS))
     {sprintf(buffer,"[通知]");
         fprintf(fn1,"寄信人: %s \n",currentuser->userid) ;
         fprintf(fn1,"标  题: %s\n",buffer) ;
@@ -264,7 +264,7 @@ char *direct ;
 
     /*   static page=0;*//*Haohmaru.12.18*/
     now=time(0);
-    if(!HAS_PERM(PERM_SYSOP))
+    if(!HAS_PERM(currentuser,PERM_SYSOP))
         if(!chk_currBM(currBM))
         {
             return DONOTHING;
@@ -317,7 +317,7 @@ Here:
                     currentuser = &saveuser;
                     sprintf(buffer,"%s被取消在%s版的发文权限",uident,currboard);
 
-                    if ((HAS_PERM(PERM_SYSOP)||HAS_PERM(PERM_OBOARDS)) && !chk_currBM1(currBM))
+                    if ((HAS_PERM(currentuser,PERM_SYSOP)||HAS_PERM(currentuser,PERM_OBOARDS)) && !chk_currBM1(currBM))
                     {	   my_flag=0;
                         fprintf(fn,"寄信人: SYSOP (System Operator) \n") ;
                         fprintf(fn,"标  题: %s\n",buffer) ;
@@ -474,7 +474,7 @@ BoardFilter()
     char *e_file[]={".badword", NULL};
     char *explain_file[]={bufX, NULL};
 
-    if(!HAS_PERM(PERM_SYSOP) && !HAS_PERM(PERM_OBOARDS))
+    if(!HAS_PERM(currentuser,PERM_SYSOP) && !HAS_PERM(currentuser,PERM_OBOARDS))
         return DONOTHING;
     if(!check_systempasswd())
         return DONOTHING;

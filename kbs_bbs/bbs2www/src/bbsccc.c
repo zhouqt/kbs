@@ -79,7 +79,7 @@ int post_cross2(char islocal, char *board)
     time_t          now;
 	int local_article;
 
-    if (!haspostperm(board))
+    if (!haspostperm(currentuser,board))
     {
 		printf("no post perm.<br>\n");
         return -1;
@@ -170,12 +170,12 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct,
     char dbname[STRLEN];
 	char local;
 
-    if (!has_perm(PERM_POST)) /* 判断是否有POST权 */
+    if (!HAS_PERM(currentuser,PERM_POST)) /* 判断是否有POST权 */
     {
 		return DONOTHING;
 	}
 
-    if ((fileinfo->accessed[0] & FILE_FORWARDED) && !has_perm(PERM_SYSOP))
+    if ((fileinfo->accessed[0] & FILE_FORWARDED) && !HAS_PERM(currentuser,PERM_SYSOP))
     {
         http_fatal("本文章已经转贴过一次，无法再次转贴");
     }
@@ -189,7 +189,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct,
         http_fatal("\n\n                          本板的文章不需要转贴到本板!");
     }
 
-	if(deny_me(board2)&&!has_perm(PERM_SYSOP))     /* 版主禁止POST 检查 */
+	if(deny_me(currentuser->userid,board2)&&!HAS_PERM(currentuser,PERM_SYSOP))     /* 版主禁止POST 检查 */
 	{
 		http_fatal("\n\n                很抱歉，你在该版被其版主停止了 POST 的权力...\n");
 	}
@@ -267,7 +267,7 @@ int main()
 			BBSNAME, currentuser->userid);
 	if(target[0])
 	{
-		if(!has_post_perm(currentuser, target))
+		if(!haspostperm(currentuser, target))
 			http_fatal("错误的讨论区名称或你没有在该版发文的权限");
 		return do_ccc(num+1, &f, dir, board, target, local);
 	}

@@ -92,7 +92,7 @@ print_user_info_title()
              ---*/
              "[44m %s%-12.12s %-16.16s %-16.16s %c %c %-15.15s %5s[m\n",
              "±àºÅ  ","Ê¹ÓÃÕß´úºÅ", (showexplain==1)?"ºÃÓÑËµÃ÷»ò´úºÅ":field_2, "À´×Ô", 'P',
-             /*(HAS_PERM(PERM_SYSOP) ? 'C' : ' ')*/'M', "¶¯Ì¬",
+             /*(HAS_PERM(currentuser,PERM_SYSOP) ? 'C' : ' ')*/'M', "¶¯Ì¬",
 #ifdef SHOW_IDLE_TIME
              "Ê±:·Ö" );
 #else
@@ -147,7 +147,7 @@ int full_utmp(struct user_info* uentp,int* count)
     {
         return 0;
     }
-    if(!HAS_PERM(PERM_SEECLOAK) && uentp->invisible && strcmp(uentp->userid,currentuser->userid))/*Haohmaru.99.4.24.ÈÃÒþÉíÕßÄÜ¿´¼û×Ô¼º*/
+    if(!HAS_PERM(currentuser,PERM_SEECLOAK) && uentp->invisible && strcmp(uentp->userid,currentuser->userid))/*Haohmaru.99.4.24.ÈÃÒþÉíÕßÄÜ¿´¼û×Ô¼º*/
     {
         return 0;
     }
@@ -296,7 +296,7 @@ do_userlist()
                          ,(override)? "[m":"",(override&&showexplain)?"[1;31m":"",
                          (real_user_names) ? uentp.realname:
                          (showexplain&&override)? fexp:uentp.username,(override&&showexplain)?"[m":"",
-                         ((/* !DEFINE(DEF_HIDEIP) &&*/ (pagec==' ' || pagec=='O') ) || HAS_PERM(PERM_SYSOP)) ? uentp.from : "*",/*Haohmaru.99.12.18*/
+                         ((/* !DEFINE(currentuser,DEF_HIDEIP) &&*/ (pagec==' ' || pagec=='O') ) || HAS_PERM(currentuser,PERM_SYSOP)) ? uentp.from : "*",/*Haohmaru.99.12.18*/
                          pagec,
                          /*(uentp.invisible ? '#' : ' ')*/msgchar(&uentp,&isfriend),(uentp.invisible==YEA)
                          ?"[34m":"",
@@ -377,7 +377,7 @@ int allnum,pagenum;
     switch(ch)
     {
 case 'k': case'K':
-        if(!HAS_PERM(PERM_SYSOP)&&strcmp(currentuser->userid,
+        if(!HAS_PERM(currentuser,PERM_SYSOP)&&strcmp(currentuser->userid,
                                          user_record[allnum]->userid))
             return 1;
         if (!strcmp(currentuser->userid, "guest"))
@@ -413,7 +413,7 @@ case 'W':case 'w':
             showexplain=1;
         break;
 case 't': case'T':
-        if(!HAS_PERM(PERM_PAGE))
+        if(!HAS_PERM(currentuser,PERM_PAGE))
             return 1;
         if(strcmp(currentuser->userid,
                   user_record[allnum]->userid))
@@ -422,7 +422,7 @@ case 't': case'T':
             return 1;
         break;
 case 'm': case'M':
-        if(!HAS_PERM(PERM_POST))
+        if(!HAS_PERM(currentuser,PERM_POST))
             return 1;
         m_send(user_record[allnum]->userid);
         break;
@@ -435,7 +435,7 @@ case 'f': case 'F':
         break;
 case 's': case 'S':
         if( strcmp(user_record[allnum]->userid,"guest") && 
-		!HAS_PERM(PERM_PAGE))
+		!HAS_PERM(currentuser,PERM_PAGE))
             return 1;
         if(!canmsg(user_record[allnum]))
         {
@@ -530,7 +530,7 @@ case 'h':case 'H':
         show_help( "help/usershelp" );
         break;
 case 'm': case'M':
-        if(!HAS_PERM(PERM_POST))
+        if(!HAS_PERM(currentuser,PERM_POST))
             return 1;
         m_send(user_data[allnum-pagenum].userid);
         break;
@@ -638,7 +638,7 @@ printuent(struct userec *uentp ,char* arg)
 #ifdef _DETAIL_UINFO_
     prints(" %5d%2s%s%-14s%s %s%-19s%s  %5d %5d %4s   %-16s\n",i+1,
 #else
-    if(HAS_PERM(PERM_ADMINMENU))
+    if(HAS_PERM(currentuser,PERM_ADMINMENU))
         sprintf(buf, "%5d %5d", uentp->numlogins, uentp->numposts);
     prints(" %5d%2s%s%-14s%s %s%-19s%s  %11s %4s   %-16s\n", i+1,
 #endif
@@ -767,7 +767,7 @@ t_friends()
 
     modify_user_mode(FRIEND);
     friendmode=YEA;
-    setuserfile( genbuf, "friends" );
+    sethomefile( genbuf, currentuser->userid,"friends" );
     if ((fp = fopen(genbuf, "r")) == NULL) {
         move( 1, 0 );
         clrtobot();

@@ -89,7 +89,7 @@ suicide()
     int  num;
 
     modify_user_mode( OFFLINE );
-    if(HAS_PERM(PERM_SYSOP)||HAS_PERM(PERM_BOARDS)||HAS_PERM(PERM_OBOARDS)||HAS_PERM(PERM_ACCOUNTS)||HAS_PERM(PERM_ANNOUNCE)||HAS_PERM(PERM_JURY) ||HAS_PERM(PERM_SUICIDE)||HAS_PERM(PERM_CHATOP)||HAS_PERM(PERM_DENYPOST)||HAS_PERM(PERM_DENYMAIL))
+    if(HAS_PERM(currentuser,PERM_SYSOP)||HAS_PERM(currentuser,PERM_BOARDS)||HAS_PERM(currentuser,PERM_OBOARDS)||HAS_PERM(currentuser,PERM_ACCOUNTS)||HAS_PERM(currentuser,PERM_ANNOUNCE)||HAS_PERM(currentuser,PERM_JURY) ||HAS_PERM(currentuser,PERM_SUICIDE)||HAS_PERM(currentuser,PERM_CHATOP)||HAS_PERM(currentuser,PERM_DENYPOST)||HAS_PERM(currentuser,PERM_DENYMAIL))
     {
         clear();
         move(11,28);
@@ -159,7 +159,7 @@ offline()
 
     modify_user_mode( OFFLINE );
 
-    if(HAS_PERM(PERM_SYSOP))
+    if(HAS_PERM(currentuser,PERM_SYSOP))
         return;
     clear();
     move(1,0);

@@ -49,7 +49,6 @@ extern int loginok;
 extern struct userec* currentuser;
 extern struct user_info *u_info;
 extern struct UTMPFILE *shm_utmp;
-extern struct BCACHE *shm_bcache;
 extern struct UCACHE *shm_ucache;
 extern char fromhost[IPLEN];
 extern friends_t fff[200];
@@ -180,15 +179,13 @@ int has_BM_perm(struct userec *user, char *board);
 
 int has_read_perm(struct userec *user, char *board);
 
-int has_post_perm(struct userec *user, char *board);
-
 bcache_t *getbcache(char *board);
 
 int count_mails(char *id, int *total, int *unread);
 
 int findnextutmp(char *id, int from);
 #ifndef SMTH
-int sethomefile(char *buf, char *id, char *file);
+/*int sethomefile(char *buf, char *id, char *file); define in func.h*/
 #else /* SMTH */
 char *sethomefile(char *buf, char *userid, char *filename);
 #endif /* SMTH */
@@ -318,10 +315,6 @@ int get_favboard_count();
 int add_favboard(char *brdname);
 
 struct boardheader const* getboard(int num);
-
-int deny_me(char *board);
-
-int check_readonly(char *checked);
 
 int isowner(struct userec *user, struct fileheader *fileinfo);
 

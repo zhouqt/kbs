@@ -44,9 +44,9 @@ struct userec record;
     char *ptr;
     char BMstrbuf[STRLEN-1];
 
-    if(HAS_PERM(PERM_OBOARDS)||HAS_PERM(PERM_SYSOP))
+    if(HAS_PERM(currentuser,PERM_OBOARDS)||HAS_PERM(currentuser,PERM_SYSOP))
         return 1;
-    if(!HAS_PERM(PERM_BOARDS))
+    if(!HAS_PERM(currentuser,PERM_BOARDS))
         return 0;
     strcpy(BMstrbuf,BMstr);
     ptr=strtok(BMstrbuf,",: ;|&()\0\n");
@@ -426,13 +426,13 @@ int usermail;
 		letter[strlen(letter)-1]=0;
         Xuserec2(letter); /* Leeward 98.10.01 Fix a bug */
 
-        if (!HAS_PERM(PERM_SYSOP) && !HAS_PERM(PERM_LOGINOK))
+        if (!HAS_PERM(currentuser,PERM_SYSOP) && !HAS_PERM(currentuser,PERM_LOGINOK))
         { /* Leeward 98.07.26 加入权限判断 */
             printf(":Err: User %s try to send letter while not registered .\n", userid);
             return;
         }
 
-        if( HAS_PERM(PERM_DENYMAIL))
+        if( HAS_PERM(currentuser,PERM_DENYMAIL))
         { /* Bigman: 2000.9.5 封禁Mail 不能发信 */
             printf(":Err: Deny_mail User %s try to mail in (%s) .\n", userid, homepath);
             return;
@@ -481,11 +481,11 @@ int usermail;
         ptr = strrchr( homepath, '/' );
         (ptr == NULL) ? (ptr = homepath) : (ptr++);
 /*        search_record(BOARDS, &brdhdr, sizeof(brdhdr), cmpbnames, ptr);*/
-        if ( haspostperm(ptr) ) /* Leeward 98.09.28 Fix bugs */
+        if ( haspostperm(currentuser,ptr) ) /* Leeward 98.09.28 Fix bugs */
         {
-            if( !HAS_PERM(PERM_SYSOP) && (!HAS_PERM(PERM_POST)
-                                      || !HAS_PERM(brdhdr.level)
-                                      || HAS_PERM(PERM_DENYPOST)) )
+            if( !HAS_PERM(currentuser,PERM_SYSOP) && (!HAS_PERM(currentuser,PERM_POST)
+                                      || !HAS_PERM(currentuser,brdhdr.level)
+                                      || HAS_PERM(currentuser,PERM_DENYPOST)) )
             { /* Leeward 98.05.02
                   加入 PERM_DENYPOST 的判断，消除下列 BUG:
                      被封POST后不用telnet登录则 PERM(PERM_POST) 仍为真，仍可 WWW-POST)

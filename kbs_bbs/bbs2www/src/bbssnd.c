@@ -90,9 +90,9 @@ int main()
    	if(title[0]==0)
       	http_fatal("文章必须要有标题");
 	sprintf(dir, "boards/%s/.DIR", board);
-	if(YEA == check_readonly(board) || !has_post_perm(currentuser, board))
+	if(YEA == checkreadonly(board) || !haspostperm(currentuser, board))
 		http_fatal("此讨论区是唯读的, 或是您尚无权限在此发表文章.");
-	if(deny_me(board) && !has_perm(PERM_SYSOP))
+	if(deny_me(currentuser->userid,board) && !HAS_PERM(currentuser,PERM_SYSOP))
 		http_fatal("很抱歉, 你被版务人员停止了本版的post权利.");
 	if(abs(time(0) - *(int*)(u_info->from+36))<6)
 	{

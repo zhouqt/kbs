@@ -72,8 +72,8 @@ bigger mailbox. --stephen 2001.10.31*/
 #define PERM_FORWARD    PERM_BASIC     /* to do the forwarding */
 
 /* Don't mess with this. */
-#define HAS_PERM(x)     ((x)?currentuser->userlevel&(x):1)
-#define DEFINE(x)     ((x)?currentuser->userdefine&(x):1)
+#define HAS_PERM(user,x) ((x)?((user)->userlevel)&(x):1)
+#define DEFINE(user,x)     ((x)?((user)->userdefine)&(x):1)
 
 
 /*#define NUMPERMS (30)*//*Define in bbs.h*/

@@ -141,7 +141,7 @@ int confirm_delete_id()
    char commd[STRLEN],buff[STRLEN];
 	int num;
 
-   if (!HAS_PERM(PERM_ADMIN) )
+   if (!HAS_PERM(currentuser,PERM_ADMIN) )
     {
         move( 3, 0 );
         clrtobot();
@@ -193,7 +193,7 @@ p_level()
     int num;
     struct userec* lookupuser;
 
-    if (!HAS_PERM(PERM_OBOARDS) )
+    if (!HAS_PERM(currentuser,PERM_OBOARDS) )
     {
         move( 3, 0 );
         clrtobot();
@@ -271,7 +271,7 @@ x_level()
     struct userec* lookupuser;
 
     /* add by alex, 97.7 , strict the power of sysop */
-    if (!HAS_PERM(PERM_ADMIN) || !HAS_PERM(PERM_SYSOP))
+    if (!HAS_PERM(currentuser,PERM_ADMIN) || !HAS_PERM(currentuser,PERM_SYSOP))
     {
         move( 3, 0 );
         clrtobot();
@@ -350,7 +350,7 @@ XCheckLevel() /* Leeward 98.06.05 */
     unsigned int newlevel;
     struct userec scanuser;
 
-    if (!HAS_PERM(PERM_ADMIN) || !HAS_PERM(PERM_SYSOP))
+    if (!HAS_PERM(currentuser,PERM_ADMIN) || !HAS_PERM(currentuser,PERM_SYSOP))
     {
         move( 3, 0 );
         clrtobot();
@@ -457,7 +457,7 @@ XCheckLevel() /* Leeward 98.06.05 */
 }
 
 int
-x_userdefine()
+x_userDEFINE(currentuser,)
 {
     int id ;
     unsigned int newlevel;
@@ -492,26 +492,26 @@ x_userdefine()
         uinfo.pager|=FRIEND_PAGER;
         if(!(uinfo.pager&ALL_PAGER))
         {
-            if(!DEFINE(DEF_FRIENDCALL))
+            if(!DEFINE(currentuser,DEF_FRIENDCALL))
                 uinfo.pager&=~FRIEND_PAGER;
         }
         uinfo.pager&=~ALLMSG_PAGER;
         uinfo.pager&=~FRIENDMSG_PAGER;
-        if(DEFINE(DEF_FRIENDMSG))
+        if(DEFINE(currentuser,DEF_FRIENDMSG))
         {
             uinfo.pager|=FRIENDMSG_PAGER;
         }
-        if(DEFINE(DEF_ALLMSG))
+        if(DEFINE(currentuser,DEF_ALLMSG))
         {
             uinfo.pager|=ALLMSG_PAGER;
             uinfo.pager|=FRIENDMSG_PAGER;
         }
 		UPDATE_UTMP(pager,uinfo);
-        if(DEFINE(DEF_ACBOARD))
+        if(DEFINE(currentuser,DEF_ACBOARD))
             nettyNN=NNread_init();
         prints("新的参数设定完成...\n\n") ;
     }
-    iscolor=(DEFINE(DEF_COLOR))?1:0;
+    iscolor=(DEFINE(currentuser,DEF_COLOR))?1:0;
     pressreturn() ;
     clear() ;
     use_define=0;
@@ -585,7 +585,7 @@ x_edits()
 	    	modify_user_mode( EDITSIG );
     }
 
-    setuserfile(genbuf,e_file[ch]);
+    sethomefile(genbuf,currentuser->userid,e_file[ch]);
     move(3,0);
     clrtobot();
     sprintf(buf,"(E)编辑 (D)删除 %s? [E]: ",explain_file[ch]);
