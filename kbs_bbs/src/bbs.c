@@ -3014,7 +3014,7 @@ int Goodbye()
     move(top+10,left);
     prints("\x1b[1;47;37m¨^¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨a\x1b[m");
 
-    choose=simple_select_loop(level_conf,SIF_SINGLE|SIF_ESCQUIT,t_columns,t_lines,NULL);
+    choose=simple_select_loop(level_conf,SIF_SINGLE|SIF_ESCQUIT|SIF_NUMBERKEY,t_columns,t_lines,NULL);
     if (choose==0) choose=2;
     clear();
     if (strcmp(currentuser->userid, "guest") && choose == 1) {  /* Ð´ÐÅ¸øÕ¾³¤ */

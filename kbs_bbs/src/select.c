@@ -351,8 +351,8 @@ static int simple_key(struct _select_def *conf, int key)
 	if ((arg->flag&SIF_ESCQUIT)&&(key==KEY_ESC))
 		return SHOW_QUIT;
 	if (arg->flag&SIF_NUMBERKEY) {
-	    if (key <= '0'+conf->item_count && key >= '0') {
-	        conf->new_pos = key-'0' +1;
+	    if (key < '1'+conf->item_count && key >= '1') {
+	        conf->new_pos = key-'0';
 	        return SHOW_SELCHANGE;
 	    }
 	} else
