@@ -772,6 +772,9 @@ void a_edits()
         #ifdef FLOWBANNER
         "banner",
         #endif
+#ifdef FB2KENDLINE
+		"whatdate",
+#endif
         NULL
     };
 
@@ -795,6 +798,9 @@ void a_edits()
         #ifdef FLOWBANNER
         "全站流动信息",
         #endif
+#ifdef FB2KENDLINE
+		"节日信息",
+#endif
         NULL
     };
 
@@ -882,6 +888,13 @@ void a_edits()
        if (!strcmp(e_file[ch],"banner")) {
           load_site_banner(0);
        }
+#endif
+#ifdef FB2KENDLINE
+	   if (!strcmp(e_file[ch],"whatdate")){
+			setpublicshmreadonly(0);
+			publicshm->nextfreshdatetime = time(0);
+			setpublicshmreadonly(0);
+	   }
 #endif
     }
     pressreturn();

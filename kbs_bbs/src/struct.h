@@ -250,6 +250,12 @@ struct public_data {
 #else
     char unused[1004];
 #endif
+
+#ifdef FB2KENDLINE
+	time_t nextfreshdatetime;
+	char date[60];
+#endif
+
 };
 struct smenuitem {
     int line, col, level;

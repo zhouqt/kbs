@@ -987,6 +987,68 @@ int chk_friend_book()
     return n;
 }
 
+#ifdef FB2KENDLINE
+void fill_date()
+{
+	time_t now,next;
+	struct public_data *publicshm = get_publicshm();
+	char   buf[82], buf2[30], index[5], index_buf[5], *t;
+	struct tm tm;
+	FILE   *fp;
+
+	now = time(0);
+
+	if (now < publicshm->nextfreshdatetime && publicshm->date[0]!='\0')
+		return;
+
+	localtime_r(&now,&tm);
+	next = now - (tm.tm_hour * 3600) - (tm.tm_min * 60) - tm.tm_sec 
+		 + 86400;	/* 算出今天 0:0:00 的时间, 然後再往後加一天 */
+	setpublicshmreadonly(0);
+	publicshm->nextfreshdatetime = next;
+	setpublicshmreadonly(1);
+
+	fp = fopen("etc/whatdate", "r");
+
+	if (fp == NULL)
+		return;
+
+	strftime(index_buf, 5, "%m%d", &tm);
+
+	while (fgets(buf, 80, fp)) {
+		buf[80]='\0';
+        t = strchr(buf,'\n');  if(t) *t='\0';
+        t = strchr(buf,'\r');  if(t) *t='\0';
+
+		if (buf[0] == ';' || buf[0] == '#' || buf[0] == ' ' || strlen(buf)<6)
+			continue;
+
+		buf[35] = '\0';
+		strncpy(index,buf,4);
+		index[4] = '\0';
+		strcpy(buf2,buf+5);	
+
+		if (!strcmp(index, "0000") || !strcmp(index_buf, index) ){
+			buf2[29]='\0';
+			if(strlen(buf2)<29){
+				int i;
+				for(i=strlen(buf2);i<29;i++)
+					buf2[i]=' ';
+				buf2[29]='\0';
+			}
+			setpublicshmreadonly(0);
+			strcpy(publicshm->date, buf2);
+			setpublicshmreadonly(1);
+		}
+	}
+
+	fclose(fp);
+
+	return;
+}
+
+#endif
+
 void main_bbs(int convit, char *argv)
 {
     char notename[STRLEN];
@@ -1077,6 +1139,10 @@ void main_bbs(int convit, char *argv)
 		pressanykey();
 	}
 
+#ifdef FB2KENDLINE
+	fill_date();
+#endif
+
 	calc_calltime(1);
 	while(calltime != 0 && calltime < time(0)){
 		clear();
@@ -1130,7 +1196,6 @@ void main_bbs(int convit, char *argv)
 /*Add by SmallPig*/
 void update_endline()
 {
-    char buf[STRLEN];
     char stitle[256];
     time_t now;
     int allstay;
@@ -1166,6 +1231,20 @@ void update_endline()
 	if (!allstay) {
 #endif
     allstay = (now - login_start_time) / 60;
+#ifdef FB2KENDLINE
+	{
+		struct public_data *publicshm = get_publicshm();
+		struct tm *tm;
+		char mydatestring[12];
+		char weeknum[7][3]={"日","一","二","三","四","五","六"};
+
+		tm = localtime(&now);
+		sprintf(mydatestring,"%02d:%02d:%02d %s", tm->tm_hour,tm->tm_min,tm->tm_sec,weeknum[tm->tm_wday]);
+		num_alcounter();
+		sprintf(stitle, "\033[1;44;33m[\033[36m%s\033[33m][\033[36m%11s\033[33m][\033[36m%4d\033[33m人/\033[1;36m%3d\033[33m友][\033[36m%.12s\033[33m]", 
+	    publicshm->date,mydatestring,count_users,count_friends,getCurrentUser()->userid);
+	}
+#else
     sprintf(buf, "[\033[36m%.12s\033[33m]", getCurrentUser()->userid);
     if (DEFINE(getCurrentUser(), DEF_NOTMSGFRIEND)) {
 		if (DEFINE(getCurrentUser(),DEF_HIGHCOLOR))
@@ -1186,13 +1265,19 @@ void update_endline()
 	else
         sprintf(stitle, "\x1b[4%dm\x1b[33m时间[\x1b[36m%12.12s\x1b[33m] 总人数 [ %3d ] [%c：%c] 使用者%s", colour,
                 ctime(&now) + 4, get_utmp_number() + getwwwguestcount(), (uinfo.pager & ALL_PAGER) ? 'Y' : 'N', (!(uinfo.pager & FRIEND_PAGER)) ? 'N' : 'Y', buf);
-#endif
+#endif //HAVE_FRIENDS_NUM
     }
+#endif //FB2KENDLINE
     move(t_lines - 1, 0);
     prints("%s", stitle);
     clrtoeol();
+#ifdef FB2KENDLINE
+    sprintf(stitle, "[\033[36m%3d\033[33m:\033[36m%d\033[33m]\033[m", (allstay / 60) % 1000, allstay % 60);
+    move(t_lines - 1, -8);
+#else
     sprintf(stitle, "停留[%3d:%d]", (allstay / 60) % 1000, allstay % 60);
     move(t_lines - 1, -strlen(stitle)-1);
+#endif //FB2KENDLINE
     prints("%s", stitle);
     resetcolor();
 #ifdef FLOWBANNER
