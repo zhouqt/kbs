@@ -279,8 +279,7 @@ void check_register_info()
 	sethomefile(buf,currentuser->userid,"conveyID");
 	if(dashf(buf))
 	{
-	    unlink(buf);
-
+	
         move(6,0);
 		prints("此ID由您的朋友转让给您,恭喜您获得此ID,请填写以下资料.");
 		do{
@@ -295,6 +294,8 @@ void check_register_info()
 		strncpy(curruserdata.realemail,buf,STRLEN-16);
 		curruserdata.realemail[STRLEN-16-1]='\0';
 		write_userdata(currentuser->userid,&curruserdata);
+		
+             unlink(buf);   
 	}
 
 
