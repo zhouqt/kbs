@@ -190,10 +190,6 @@ static void start_daemon(inetd, port)
     /* detach daemon process                             */
     /* --------------------------------------------------- */
 
-#ifndef DEBUG_MEMORY
-    close(1);
-    close(2);
-#endif
     /*
        close file descriptor 1 and 2
      */
@@ -202,6 +198,8 @@ static void start_daemon(inetd, port)
 
     if (inetd) {                /* Thor.981206: inetd -i */
         /* Give up root privileges: no way back from here        */
+        close(1);
+        close(2);
         server_pid = 0;
         setgid(BBSGID);         /* setgid sets the effective group ID of the current process. */
         setuid(BBSUID);         /* sets the effective user ID of the current process. */

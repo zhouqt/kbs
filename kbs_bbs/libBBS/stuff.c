@@ -1185,6 +1185,7 @@ int dodaemon(char* daemonname,bool single,bool closefd)
     if (closefd) {
     	int i;
     	for (i=0;i<64;i++)
+		if (i!=pidfd)
     		close(i);
     }
     snprintf(line,sizeof(line),"%ld\n",(long)getpid());
