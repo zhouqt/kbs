@@ -1842,11 +1842,6 @@ int garbage_line(const char *str)
 {                               /* 判断本行是否是 无用的 */
     int qlevel = 0;
 
-#ifdef NINE_BUILD
-#define QUOTELEV 1
-#else
-#define QUOTELEV 0
-#endif
     while (*str == ':' || *str == '>') {
         str++;
         if (*str == ' ')
@@ -1934,10 +1929,10 @@ void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
                         strcpy(buf + 250, "\n");
                     if (!garbage_line(buf)) {   /* 判断是否是无用行 */
                         fprintf(outf, ": %s", buf);
-#ifndef NINE_BUILD
+#if defined(QUOTED_LINES) && QUOTED_LINES >= 3
                         if (op == 'S') {        /* 简略模式,只引用前几行 Bigman:2000.7.2 */
                             line_count++;
-                            if (line_count > 10) {
+                            if (line_count >= QUOTED_LINES) {
                                 fprintf(outf, ": ...................");
                                 break;
                             }
