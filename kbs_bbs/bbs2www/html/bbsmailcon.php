@@ -138,7 +138,7 @@ function get_mimetype($name)
 <?php
 				}
 ?>
-[<a href="/bbsreadmail.php?path=<?php echo $dirname;?>&title=<?php echo $title;?>">返回信件列表</a>]
+[<a href="/bbsmailbox.php?path=<?php echo $dirname;?>&title=<?php echo $title;?>">返回信件列表</a>]
 <?php
 				if($num < $total-1){
 ?>

@@ -133,5 +133,6 @@
 </textarea><br><div align="center">
 <input type="submit" value="·¢ËÍ" />
 <input type="reset" value="Çå³ý" />
+<input type="button" value="·µ»Ø" onclick="window.location.href='bbsmail.php'" />
 </form></div></table>
 </html>
