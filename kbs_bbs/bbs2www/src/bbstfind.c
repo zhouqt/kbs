@@ -3,24 +3,6 @@
  */
 #include "bbslib.h"
 
-int my_strncmp (
-        const char * first,
-        const char * last,
-        size_t count
-        )
-{
-        if (!count)
-                return(0);
-
-        while (--count && *first && *first == *last)
-        {
-                first++;
-                last++;
-        }
-
-        return( *(unsigned char *)first - *(unsigned char *)last );
-}
-
 int main()
 {
 	FILE *fp;
@@ -29,6 +11,7 @@ int main()
 	bcache_t *x1;
 	struct fileheader x, x0;
 	int sum=0, total=0;
+    int title_len;
 
  	init_all();
 	strsncpy(board, getparm("board"), 32);
@@ -48,13 +31,15 @@ int main()
 	printf("<center>%s -- 同主题查找 [讨论区: %s] [主题 '%s']<hr class=\"default\">\n", 
 		BBSNAME, board, nohtml(title));
 	printf("<table border=\"1\"><tr><td>编号</td><td>作者</td><td>日期</td><td>标题</td></tr>\n");
+	title_len = strlen(title);
+	title_len = title_len > 40 ? 40 : title_len;
 	while(1)
 	{
 		if(fread(&x, sizeof(x), 1, fp)==0)
 			break;
 		sum++;
-		if(!my_strncmp(title, x.title, 40) || 
-		  (!my_strncmp(title, x.title+4, 40) && !my_strncmp(x.title, "Re: ", 4)))
+		if(!strncmp(title, x.title, title_len) || 
+		  (!strncmp(title, x.title+4, title_len) && !strncmp(x.title, "Re: ", 4)))
 		{
 			if(total==0)
 				strcpy(first_file, x.filename);
