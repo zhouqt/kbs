@@ -15,7 +15,7 @@
 <tr><td class="t3">主题</td></tr>
 <tr><td class="t5"><input type="text" class="f1" value="<?php echo $subject; ?>" size="100" /></td></tr>
 <tr><td class="t3">内容</td></tr>
-<tr><td class="t5"><textarea class="f1" cols="120" rows="30"><?php echo $body; ?></textarea></td></tr>
+<tr><td class="t5"><textarea name="blogbody" class="f1" cols="120" rows="30" id="blogbody"><?php echo $body; ?></textarea></td></tr>
 </table>
 </center>	    
 <?php	    
@@ -23,18 +23,24 @@
 	
 						
 	if ($loginok != 1) {
-		html_init("gb2312");
-		if ($_GET['act'] == 'post')
-		    if ($_POST['subject'] || $_POST['blogbody'])
+		if ($_GET['act'] == 'post' && ($_POST['subject'] || $_POST['blogbody']))
+		{
+		        pc_html_init("gb2312","拯救文档","","","",1);
 		        pc_save_posts($_POST['subject'],$_POST['blogbody']);
+		}
+		else
+		        html_init("gb2312");
 		html_error_quit("请先登录!");	
 	}
 	elseif(!strcmp($currentuser["userid"],"guest"))
 	{
-		html_init("gb2312");
-		if ($_GET['act'] == 'post')
-		    if ($_POST['subject'] || $_POST['blogbody'])
+		if ($_GET['act'] == 'post' && ($_POST['subject'] || $_POST['blogbody']))
+		{
+		        pc_html_init("gb2312","拯救文档","","","",1);
 		        pc_save_posts($_POST['subject'],$_POST['blogbody']);
+		}
+		else
+		        html_init("gb2312");
 		html_error_quit("guest 没有Blog!");
 	}
 	else
