@@ -770,6 +770,7 @@ void showsysinfo(char * fn)
     char buf[500];
     int count=1,i,j;
     fp=fopen(fn, "r");
+    if(!fp) return;
     while(!feof(fp)) {
         if(!fgets(buf, 500, fp)) break;
         if(strstr(buf, "@systeminfo@")) count++;
