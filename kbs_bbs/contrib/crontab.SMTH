@@ -25,7 +25,9 @@ MAILTO=bbs
 1 0  * * * cp -f /home/bbs/etc/posts/day /home/bbs/0Announce/bbslists/posts
 #2 0 * * * cp -f /home/bbs/0Announce/bbslists/day.html /home/bbs/0Announce/bbslists/posts.html
 #2 0 * * * cp -f /home/bbs/0Announce/bbslists/day2000.html /home/bbs/0Announce/bbslists/posts2000.html
-59 23 * * * rm -f /home/bbs/.Xpost
+# stiger:新的十大统计
+#59 23 * * * rm -f /home/bbs/.Xpost
+59 23 * * * rm -f /home/bbs/tmp/Xpost/*
 59 23 * * * rm -f /home/bbs/.post.X
 # 每个小时 59 分统计上站人数图; 2 分 html 化
 MAILTO=""

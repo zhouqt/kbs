@@ -55,9 +55,10 @@ struct fileheader               /* This structure is used to hold data in */
  fh[1];
 
 struct postrec {
-    char author[13];            /* author name */
+//    char author[13];            /* author name */
     char board[IDLEN + 6];      /* board name */
-    char title[66];             /* title name */
+//    char title[66];             /* title name */
+	unsigned int groupid;
     time_t date;                /* last post's date */
     int number;                 /* post number */
     struct postrec *next;       /* next rec */
@@ -69,15 +70,9 @@ struct posttop top[TOPCOUNT], postlog;
 
 
 int hash(key)
-char *key;
+unsigned int key;
 {
-    int i, value = 0;
-
-    for (i = 0; key[i] && i < 80; i++)
-        value += key[i] < 0 ? -key[i] : key[i];
-
-    value = value % HASHSIZE;
-    return value;
+    return key % HASHSIZE;
 }
 
 
@@ -91,7 +86,7 @@ void search(struct posttop *t)
     struct postrec *p, *q, *s;
     int i, found = 0;
 
-    i = hash(t->title);
+    i = hash(t->groupid);
     q = NULL;
 #ifdef BLESS_BOARD
     if (!strcasecmp(t->board, BLESS_BOARD))
@@ -100,7 +95,7 @@ void search(struct posttop *t)
 #endif
         p = bucket[i];
     while (p && (!found)) {
-        if (!strcmp(p->title, t->title) && !strcmp(p->board, t->board))
+        if (p->groupid == t->groupid && !strcmp(p->board, t->board))
             found = 1;
         else {
             q = p;
@@ -173,9 +168,10 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
     /*
      * Haohmaru.99.11.20.¼ì²éÊÇ·ñÒÑ±»É¾ 
      */
-    FILE *fp1;
+	int fd;
     char dirfile[80];
     int exist, real;
+	fileheader_t fh;
 
     /*
      * Bigman.2000.8.28: ÐÞ¸ÄÍ³¼Æ·½Ê½ 
@@ -225,37 +221,17 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
             strcpy(buf, ctime(&top[i].date));
             buf[20] = NULL;
             p = buf + 4;
-#ifdef	DELETE
-            /*
-             * Haohmaru.99.11.20.¼ì²éÊÇ·ñÒÑ±»É¾ 
-             */
-            if (mytype == 0) {  /*Ö»ÓÐµ±ÈÕÊ®´ó²Å×öÏÂÃæµÄ¼ì²é */
-                sprintf(dirfile, "boards/%s/.DIR", top[i].board);
-                exist = 0;
-                if ((fp1 = fopen(dirfile, "r")) != NULL) {
-                    exist = 1;
-                    while (fread(fh, sizeof(struct fileheader), 1, fp1)) {
-                        char *p1, *p2;
 
-                        p1 = fh->title;
-                        p2 = top[i].title;
-                        if (p1[0] == 'R' && p1[1] == 'e' && p1[2] == ':' && p1[3] == ' ')
-                            p1 += 4;
-                        if (p2[0] == 'R' && p2[1] == 'e' && p2[2] == ':' && p2[3] == ' ')
-                            p2 += 4;
-                        if (!strcmp(p1, p2) /* || strstr(top[i].title,fh->title) */ ) {
-                            exist = 0;
-                            break;
-                        }
-                    }
-                    fclose(fp1);
-                }
-                if (exist)
-                    continue;
+            sprintf(dirfile, "boards/%s/.DIR", top[i].board);
+			if ((fd = open(dirfile, O_RDWR, 0644)) < 0)
+				continue;
 
-                /*
-                 * Bigman 2000.8.28 ÐÞ¸ÄÍ³¼Æ·½Ê½ 
-                 */
+    		if( get_records_from_id(fd, top[i].groupid, &fh, 1, NULL) == 0 ){
+				close(fd);
+				continue;
+			}
+			close(fd);
+
 #ifndef NINE_BUILD
                 m = 0;
                 for (n = 0; n < real; n++) {
@@ -271,21 +247,24 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
 #endif
 
                 strcpy(BoardName[real], top[i].board);
-            }
+
             real++;
-#endif
+
+
 #ifdef BLESS_BOARD
             if (mytype == 4)
                 fprintf(fp,
                         "                                            %s \x1b[1;31m%4d\x1b[0;37mÈË      %s\x1b[m\n"
                         "\x1b[1mµÚ\x1b[31m%2d \x1b[37mÃû \x1b[4%dm %-51.51s\x1b[m \x1b[1;33m%-12s%s\x1b[m\n",
-                        p, top[i].number, surfix_bless[(real - 1) * 2], real, (real - 1) / 2 + 1, top[i].title, top[i].author, surfix_bless[(real - 1) * 2 + 1]);
+                        p, top[i].number, surfix_bless[(real - 1) * 2], real, (real - 1) / 2 + 1, fh.title, fh.owner, surfix_bless[(real - 1) * 2 + 1]);
             else
 #endif
                 fprintf(fp,
                         "[37mµÚ[31m%3d[37m Ãû [37mÐÅÇø : [33m%-16s[37m¡¾[32m%s[37m¡¿[36m%4d [37mÈË[35m%16s\n"
-                        "     [37m±êÌâ : [44m[37m%-60.60s[m\n", !mytype ? real : (i + 1), top[i].board, p, top[i].number, top[i].author, top[i].title);
+                        "     [37m±êÌâ : [44m[37m%-60.60s[m\n", !mytype ? real : (i + 1), top[i].board, p, top[i].number, fh.owner, fh.title);
         }
+
+
 #ifdef BLESS_BOARD
         if (mytype == 4)
             fprintf(fp, "                                                                         %s\x1b[m", surfix_bless[20]);

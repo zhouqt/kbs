@@ -2238,7 +2238,7 @@ int post_article(char *q_file, struct fileheader *re_file)
 #ifdef FILTER
     returnvalue =
 #endif
-        after_post(currentuser, &post_file, currboard->filename, re_file);
+        after_post(currentuser, &post_file, currboard->filename, re_file, !(Anony && anonyboard));
 
     if(upload) {
         char sbuf[PATHLEN];

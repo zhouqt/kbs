@@ -298,11 +298,12 @@ void addsignature(FILE * fp, struct userec *user, int sig)
         fputs(tmpsig[i - 1], fp);
 }
 
-int write_posts(char *id, char *board, char *title)
+int write_posts(char *id, char *board, unsigned int groupid)
 {
     char *ptr;
     time_t now;
     struct posttop postlog, pl;
+	char xpostfile[PATHLEN];
 
 #ifdef BLESS_BOARD
     if (strcasecmp(board, BLESS_BOARD) && (junkboard(board) || normal_board(board) != 1))
@@ -311,21 +312,20 @@ int write_posts(char *id, char *board, char *title)
 #endif
         return 0;
     now = time(0);
-    strcpy(postlog.author, id);
+//    strcpy(postlog.author, id);
     strcpy(postlog.board, board);
-    ptr = title;
-    if (!strncmp(ptr, "Re: ", 4))
-        ptr += 4;
-    strncpy(postlog.title, ptr, 65);
+	postlog.groupid = groupid;
     postlog.date = now;
     postlog.number = 1;
+
+	sprintf(xpostfile, "tmp/Xpost/%s", id);
 
     {                           /* added by Leeward 98.04.25 
                                  * TODO: 这个地方有点不妥,每次发文要遍历一次,保存到.Xpost中,
                                  * 用来完成十大发文统计针对ID而不是文章.不好
                                  * KCN */
         int log = 1;
-        FILE *fp = fopen(".Xpost", "r");
+        FILE *fp = fopen(xpostfile, "r");
 
         if (fp) {
             while (!feof(fp)) {
@@ -333,9 +333,7 @@ int write_posts(char *id, char *board, char *title)
                 if (feof(fp))
                     break;
 
-                if (!strcmp(pl.title, postlog.title)
-                    && !strcmp(pl.author, postlog.author)
-                    && !strcmp(pl.board, postlog.board)) {
+                if (  pl.groupid == groupid && !strcmp(pl.board,board) ){
                     log = 0;
                     break;
                 }
@@ -344,7 +342,7 @@ int write_posts(char *id, char *board, char *title)
         }
 
         if (log) {
-            append_record(".Xpost", &postlog, sizeof(postlog));
+            append_record(xpostfile, &postlog, sizeof(postlog));
             append_record(".post", &postlog, sizeof(postlog));
         }
     }
@@ -385,14 +383,16 @@ void write_header(FILE * fp, struct userec *user, int in_mail, char *board, char
         fprintf(fp, "寄信人: %s (%s)\n", uid, uname);
     else {
         noname = anonymousboard(board);
+		/*
         if (((mode == 0) || (mode == 2)) && !(noname && Anony)) {
-            /*
+            *
              * mode=0是正常的发文并且local save 
              * * mode=1是不需要记录的
              * * mode=2是非local save的
-             */
+             *
             write_posts(user->userid, board, title);
         }
+		*/
 #ifdef SMTH
         if (!strcmp(board, "Announce") && Anony)
             /*
@@ -604,7 +604,7 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
 #endif
         postfile.accessed[0] |= FILE_FORWARDED;
     }
-    after_post(user, &postfile, toboard, NULL);
+    after_post(user, &postfile, toboard, NULL, !(Anony));
 #ifdef BBSMAIN
     modify_user_mode(oldmode);
 #endif
@@ -622,7 +622,7 @@ int post_file(struct userec *user, char *fromboard, char *filename, char *nboard
     return 0;
 }
 
-int after_post(struct userec *user, struct fileheader *fh, char *boardname, struct fileheader *re)
+int after_post(struct userec *user, struct fileheader *fh, char *boardname, struct fileheader *re, int poststat)
 {
     char buf[256];
     int fd, err = 0, nowid = 0;
@@ -767,6 +767,9 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
 
 
         sprintf(buf, "posted '%s' on '%s'", fh->title, boardname);
+
+		if(poststat && user)
+			write_posts(user->userid, boardname, fh->groupid);
 #ifdef FILTER
     }
 #endif

@@ -831,7 +831,7 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
 	}
     fclose(fp);
     post_file.eff_size = get_effsize(filepath);
-	retvalue = after_post(currentuser, &post_file, board, oldx);
+	retvalue = after_post(currentuser, &post_file, board, oldx, !(anonyboard && anony));
 
     if (attach_dir != NULL) {
 

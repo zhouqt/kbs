@@ -108,7 +108,9 @@ int main()
     sprintf(buf, "/bbsdoc.php?board=%s", encode_url(buf2, board, sizeof(buf2)));
     if (!junkboard(board)) {
         currentuser->numposts++;
+		/*  do it in post_article
         write_posts(currentuser->userid, board, title);
+		*/
     }
     redirect(buf);
     return 0;

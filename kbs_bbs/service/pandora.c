@@ -107,7 +107,7 @@ int bbsnet_report(char *station, char *addr, long id, int mode)
 	fprintf(fp, "    ¸ÃÓÃ»§´Ó [1;31m%s[m µÇÂ¼±¾Õ¾.\n", fromhost);
 	fclose(fp);
 	
-	return after_post(NULL, &fh, BBSNET_LOG_BOARD, NULL);
+	return after_post(NULL, &fh, BBSNET_LOG_BOARD, NULL, 0);
 }
 
 

@@ -203,9 +203,11 @@ struct BCACHE {
     struct BoardStatus bstatus[MAXBOARD];
 };
 struct posttop {
-    char author[IDLEN + 1];     /* author name */
+/*    char author[IDLEN + 1];      author name */
     char board[IDLEN + 6];      /* board name */
-    char title[66];             /* title name */
+/*    int bnum; */
+/*    char title[66];              title name */
+    unsigned int groupid;	/* article group id */
     time_t date;                /* last post's date */
     int number;                 /* post number */
 };

@@ -3252,7 +3252,10 @@ static PHP_FUNCTION(bbs_postarticle)
         if (!sigsetjmp(bus_jump, 1)) {
             signal(SIGBUS, sigbus);
             signal(SIGSEGV, sigbus);
+			/*
+stiger: 在 post_article 里处理
         	write_posts(currentuser->userid, board, title);
+			*/
         }
         signal(SIGBUS, SIG_IGN);
         signal(SIGSEGV, SIG_IGN);

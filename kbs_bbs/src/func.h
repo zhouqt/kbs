@@ -337,10 +337,10 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     void write_header(FILE * fp, struct userec *user, int in_mail, char *board, char *title, int Anony, int mode);
 
 /*写入.post文件供分析*/
-    int write_posts(char *id, char *board, char *title);
+    int write_posts(char *id, char *board, unsigned int groupid);
     void cancelpost(char *board, char *userid, struct fileheader *fh, int owned, int autoappend);
     int outgo_post(struct fileheader *fh, char *board, char *title);
-    int after_post(struct userec *user, struct fileheader *fh, char *boardname, struct fileheader *re);
+    int after_post(struct userec *user, struct fileheader *fh, char *boardname, struct fileheader *re, int poststat);
     int post_file(struct userec *user, char *fromboard, char *filename, char *nboard, char *posttitle, int Anony, int mode);
     int post_cross(struct userec *user, char *toboard, char *fromboard, char *title, char *filename, int Anony, int in_mail, char islocal, int mode);   /* (自动生成文件名) 转贴或自动发信 */
 
@@ -433,6 +433,7 @@ int sign_smsmsg_read(int id );
 int chk_smsmsg(int force );
 
 #if HAVE_MYSQL == 1
+char * get_al_mobile( char *userid, char *mobile);
 int get_sql_al( struct addresslist * smdata, char *userid, char *dest, char *group,int start, int num, int order, char *msgtxt);
 int add_sql_al(char *userid, struct addresslist *al, char *msgbuf);
 #endif

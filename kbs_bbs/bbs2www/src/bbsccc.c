@@ -119,7 +119,7 @@ int post_cross2(char islocal, char *board)
 		postfile.innflag[0] = 'S';
 		outgo_post2(&postfile, board, user->userid, user->username, save_title);
 	}
-	after_post(currentuser, &postfile, board, NULL);
+	after_post(currentuser, &postfile, board, NULL, 1);
 
 	return 1;
 }
