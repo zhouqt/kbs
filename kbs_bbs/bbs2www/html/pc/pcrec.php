@@ -18,31 +18,8 @@ if(!strcmp($currentuser["userid"],"guest"))
 
 $nid = $_GET["nid"];
 $nid = intval( $nid );
-
-if (!isset($_GET['topic']))
-{
-?>   
-<br /><br />
-<p align="center">
-<form aciton="<?php echo $_SERVER['PHP_SELF']; ?>" method="get" >
-<input type="hidden" name="nid" value="<?php echo $nid; ?>" />
-推荐类型
-<select name="topic" class="f1">
-<?php
-    while(list($key,$value)=each($pcconfig["SECTION"]))
-        echo '<option value="'.$key.'">'.htmlspecialchars($value).'</option>';
-?>
-</select>
-<input type="submit" value="推荐" class="f1" />
-<input type="button" value="返回" class="f1" onclick="history.go(-1);" />
-</form>
-</p> 
-<?php    
-}
-else
-{
-    $link = pc_db_connect();
-    $query = "SELECT recommend , uid FROM nodes WHERE access = 0 AND type = 0 AND nid = ".$nid." LIMIT 0 , 1;";
+$link = pc_db_connect();
+    $query = "SELECT recommend , uid , theme  FROM nodes WHERE access = 0 AND type = 0 AND nid = ".$nid." LIMIT 0 , 1;";
     $result = mysql_query($query , $link);
     $node = mysql_fetch_array($result);
     
@@ -56,6 +33,34 @@ else
     	html_error_quit("对不起，该文已被推荐");
     	exit();
     }
+
+if (!isset($_GET['topic']))
+{
+?>   
+<br /><br />
+<p align="center">
+<form aciton="<?php echo $_SERVER['PHP_SELF']; ?>" method="get" >
+<input type="hidden" name="nid" value="<?php echo $nid; ?>" />
+推荐类型
+<select name="topic" class="f1">
+<?php
+    while(list($key,$value)=each($pcconfig["SECTION"])) {
+        if ($key == $node[theme])
+            echo '<option value="'.$key.'" selected>'.htmlspecialchars($value).'</option>';
+        else
+            echo '<option value="'.$key.'">'.htmlspecialchars($value).'</option>';
+    }
+?>
+</select>
+<input type="submit" value="推荐" class="f1" />
+<input type="button" value="返回" class="f1" onclick="history.go(-1);" />
+</form>
+</p> 
+<?php    
+}
+else
+{
+    
 /*
 if(!pc_is_manager($currentuser))
 {
