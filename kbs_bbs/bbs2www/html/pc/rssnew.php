@@ -49,7 +49,7 @@
 			"<hr size=1>\n".
 			html_format($rows[body],TRUE).
 			"<hr size=1>\n".
-			"(<a href=\"http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$rows[uid]."&amp;nid=".$rows[nid]."&amp;tid=".$rows[tid]."&s=all\">浏览全文</a>\n".
+			"(<a href=\"http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&tid=".$rows[tid]."&s=all\">浏览全文</a>\n".
 			"<a href=\"http://".$pcconfig["SITE"]."/pc/pccom.php?act=pst&nid=330\">发表评论</a>)<br>\n".
 			"<a href=\"http://".$pcconfig["SITE"]."/pc/rss.php?userid=".$bloguser[$rows[uid]]["USER"]."\"><img src=\"http://".$pcconfig["SITE"]."/pc/images/xml.gif\" border=\"0\" align=\"absmiddle\" alt=\"XML\">Blog地址：http://".$pcconfig["SITE"]."/pc/rss.php?userid=".$bloguser[$rows[uid]]["USER"]."</a>";
 		$rss[useretems][$j] = array(
