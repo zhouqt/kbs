@@ -336,7 +336,7 @@ int get_msgcount(int id, char *uident)
     else strcpy(idname, "msgindex");
     sethomefile(fname, uident, idname);
 
-    stat(fname, &buf);
+    if(stat(fname, &buf)) return 0;
     count = (buf.st_size-4)/sizeof(struct msghead);
     if (buf.st_size<=0) count=0;
 

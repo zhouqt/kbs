@@ -878,8 +878,9 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
             if(x>maxcol) {
                 x = col;
                 y++;
-                good_move(y, x);
+                good_move(y, 0);
                 clrtoeol();
+                good_move(y, x);
             }
             prints("%c", buf[i]);
             x++;
@@ -957,7 +958,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 }
                 break;
             case KEY_RIGHT:
-                if(now<strlen(buf)-1) {
+                if(now<strlen(buf)) {
                     now++;
 #ifdef CHINESE_CHARACTER
                     if (DEFINE(currentuser, DEF_CHCHAR)) {
