@@ -8,8 +8,9 @@ char *email_domain()
 {
     char        *domain;
 
-    domain = sysconf_str( "BBSDOMAIN" );
-    if( domain == NULL )  domain = "unknown.BBSDOMAIN";
+    /*domain = sysconf_str( "BBSDOMAIN" );
+    if( domain == NULL )  domain = "unknown.BBSDOMAIN";*/
+	domain = MAIL_BBSDOMAIN;
     return domain;
 }
 
@@ -155,10 +156,11 @@ int isuu, isbig5, noansi;
     
     if ( isuu  )
     {
+		char buf[256];
         sprintf( uname, "tmp/uu%05d", getpid() );
-        sprintf( genbuf, "uuencode %s thbbs.%05d > %s",
+        sprintf( buf, "uuencode %s thbbs.%05d > %s",
                  fname, getpid(), uname );
-        system( genbuf );
+        system( buf );
     }
 
     if ((fin = fopen (isuu?uname:fname, "r")) == NULL)
@@ -182,7 +184,8 @@ int isuu, isbig5, noansi;
     smtp_set_monitorcb (session, monitor_cb, fout, 1);
 */
     
-    server = sysconf_str( "MAILSERVER" );
+    /*server = sysconf_str( "MAILSERVER" );*/
+	server = MAIL_MAILSERVER;
     if(( server == NULL )||!strcmp(server,"(null ptr)"))  server = "127.0.0.1:25";
 
     smtp_set_server (session, server);

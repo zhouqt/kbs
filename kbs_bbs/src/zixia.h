@@ -34,6 +34,9 @@
 #define	REGISTER_WAIT_TIME	(30*60) // (72*60*60)
 #define	REGISTER_WAIT_TIME_NAME	"30分钟" //72 小时
 
+#define MAIL_BBSDOMAIN      "bbs.zixia.net"
+#define MAIL_MAILSERVER     "127.0.0.1:25"
+
 #define NAME_BBS_ENGLISH	"bbs.zixia.net" //smth.org
 #define	NAME_BBS_CHINESE	"大话西游" //水木清华
 #define NAME_BBS_NICK		"斧头帮" // BBS 站

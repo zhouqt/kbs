@@ -46,10 +46,10 @@ void abort_program() {
 	}
 }
 
-void debug_abort(int signo)
+/*void debug_abort(int signo)
 {
 	abort();
-}
+}*/
 
 int main() {
 	int stay, pid;
@@ -57,7 +57,7 @@ int main() {
 
 	init_all();
 	if(!loginok) http_fatal("ÄãÃ»ÓÐµÇÂ¼");
-	signal(SIGBUS, debug_abort);
+	//signal(SIGBUS, debug_abort);
 //	ui = getcurruinfo();
 //	pid = ui->pid;
 //	if(pid>1) kill(pid, SIGHUP);

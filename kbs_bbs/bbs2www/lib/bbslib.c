@@ -2,19 +2,6 @@
 #include "bbslib.h"
 #include "boardrc.h"
 
-static const struct _shmkey shmkeys[]= {
-{ "BCACHE_SHMKEY",  3693 },
-{ "UCACHE_SHMKEY",  3696 },
-{ "UTMP_SHMKEY",    3699 },
-{ "ACBOARD_SHMKEY", 9013 },
-{ "ISSUE_SHMKEY",   5010 },
-{ "GOODBYE_SHMKEY", 5020 },
-{ "PASSWDCACHE_SHMKEY", 3697 },
-{ "STAT_SHMKEY",    5100 },
-{ "CONVTABLE_SHMKEY",    5101 },
-{    "",   0 }
-};
-
 time_t update_time=0;
 int showexplain=0,freshmode=0;
 int mailmode,numf;
@@ -30,8 +17,8 @@ friends_t bbb[MAXREJECTS];
 int badnum=0;
 
 struct user_info *u_info;
-struct UTMPFILE *shm_utmp;
-struct UCACHE *shm_ucache;
+//struct UTMPFILE *shm_utmp;
+//struct UCACHE *shm_ucache;
 char fromhost[IPLEN];
 char parm_name[256][80], *parm_val[256];
 int parm_num=0;
@@ -185,7 +172,7 @@ int http_fatal(char *fmt, ...) {
         va_end(ap);
 	buf[1023]=0;
  	printf("错误! %s! <br><br>\n", buf);
-	printf("<a href=javascript:history.go(-1)>快速返回</a>");
+	printf("<a href=\"javascript:history.go(-1)\">快速返回</a>");
 	http_quit();
 }
 
@@ -247,6 +234,12 @@ int hsprintf(char *s, char *fmt, ...) {
 	s[len]=0;
 }
 
+// for bbs_sendmail(), faint
+/*void prints(va_alist)
+va_dcl
+{
+	hprintf(va_alist);
+}*/
 
 int hprintf(char *fmt, ...) {
 	char buf[8096], buf2[1024];
@@ -488,8 +481,8 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
 	char buf3[256], dir[256];
 	struct fileheader header;
 	int t, i;
-	if(strstr(userid, "@")) 
-		return post_imail(userid, title, file, id, nickname, ip, sig);
+	//if(strstr(userid, "@")) 
+		//return post_imail(userid, title, file, id, nickname, ip, sig);
 	bzero(&header, sizeof(header));
 	strcpy(header.owner, id);
 	for(i=0; i<100; i++) {
@@ -526,6 +519,7 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
 	return 0;
 }
 
+/*
 int post_imail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig) {
         FILE *fp1, *fp2;
         char buf[256];
@@ -549,7 +543,7 @@ int post_imail(char *userid, char *title, char *file, char *id, char *nickname, 
         fclose(fp1);
         pclose(fp2);
 	return 0;
-}
+}*/
 
 int outgo_post2(struct fileheader *fh, char *board, 
 				char *userid, char *username, char *title)
@@ -855,14 +849,14 @@ int count_mails(char *id, int *total, int *unread) {
 	return 0;
 }
 
-int findnextutmp(char *id, int from) {
+/*int findnextutmp(char *id, int from) {
 	int i;
 	if(from<0) from=0;
 	for(i=from; i<MAXACTIVE; i++) 
 		if(shm_utmp->uinfo[i].active)
 			if(!strcasecmp(shm_utmp->uinfo[i].userid, id)) return i;
 	return -1;
-}
+}*/
 
 int setmsgfile(char *buf, char *id)
 {
@@ -1131,19 +1125,21 @@ int checkuser(char *id, char *pw) {
 	return checkpasswd2(pw, x);
 }
 
+/*
 int count_id_num(char *id) {
 	int i, total=0;
 	for(i=0; i<MAXACTIVE; i++)
 		if(shm_utmp->uinfo[i].active && !strcasecmp(shm_utmp->uinfo[i].userid, id)) total++;
 	return total;
 }
+*/
 
-int count_online2() {
+/*int count_online2() {
 	int i, total=0;
 	for(i=0; i<MAXACTIVE; i++)
 		if(shm_utmp->uinfo[i].active && shm_utmp->uinfo[i].invisible==0) total++;
 	return total;
-}
+}*/
 
 int loadfriend(char *id) {
         FILE *fp;
@@ -1596,6 +1592,18 @@ int count_online() /* ugly */
 	return u == NULL ? 0 : u->number;*/
 	return (utmpshm == NULL) ? 0 : utmpshm->number;
 }
+
+int count_www()
+{
+	int i, total=0;
+	for(i=0; i<MAXACTIVE; i++)
+	{
+		if(utmpshm->uinfo[i].mode==WEBEXPLORE)
+			total++;
+	}
+	return total;
+}
+
 
 int get_utmpent_num(uinfo_t *uent)
 {

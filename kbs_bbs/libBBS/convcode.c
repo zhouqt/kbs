@@ -25,11 +25,13 @@ char gb2big_savec[2];
 char big2gb_savec[2];
 extern void redoscr();
 
+#ifdef BBSMAIN
 int switch_code()
 {
     convcode=!convcode;
     redoscr();
 }
+#endif
 
 void resolv_file(char* buf)
 {
@@ -70,7 +72,9 @@ void(*resolv_file)(char*);
     int		shmkey;
 
 #ifndef STANDCONV
-    shmkey = sysconf_eval( shmstr );
+    //shmkey = sysconf_eval( shmstr );
+    //if( shmkey < 1024 )
+    shmkey = get_shmkey( shmstr );
     if( shmkey < 1024 )
 #endif
         shmkey = defaultkey;

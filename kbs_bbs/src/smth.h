@@ -32,6 +32,9 @@
 #define	REGISTER_WAIT_TIME	(72*60*60)
 #define	REGISTER_WAIT_TIME_NAME	"72 小时"
 
+#define MAIL_BBSDOMAIN      "smth.org"
+#define MAIL_MAILSERVER     "166.111.8.236:25"
+
 #define NAME_BBS_ENGLISH	"smth.org"
 #define	NAME_BBS_CHINESE	"水木清华"
 #define NAME_BBS_NICK		"BBS 站"

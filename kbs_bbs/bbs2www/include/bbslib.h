@@ -71,10 +71,10 @@ struct post_log {
 	time_t	date;
 	int	number;
 };
-struct _shmkey {
+/*struct _shmkey {
 	char key[20];
 	int value;
-};
+};*/
 
 char *strcasestr();
 char *ModeType();

@@ -37,3 +37,7 @@ $(BINFILE): % : %.o ../libBBS.a ../libsystem.a
 
 install: all
 	$(INSTALL) $(BINFILE) $(BBSHOME)/bin
+
+clean:
+	rm -f utmpd miscd utmp.o miscd.o
+

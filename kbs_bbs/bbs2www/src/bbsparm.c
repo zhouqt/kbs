@@ -1,5 +1,6 @@
 #include "bbslib.h"
 
+#if 0
 char *user_definestr[] = {
         "活动看版",             /* DEF_ACBOARD */
         "使用彩色",             /* DEF_COLOR */
@@ -32,6 +33,7 @@ char *user_definestr[] = {
         "使用GB码阅读", /* DEF_USEGB KCN 99.09.03 */
 	"隐藏自己的IP", /* DEF_HIDEIP Haohmaru 99.12.18 */
 };
+#endif
 
 int main()
 {

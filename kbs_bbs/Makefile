@@ -74,7 +74,7 @@ COBJS    = bbs.o record.o delete.o stuff.o mail.o register.o \
 	   newmain_single.o newio.o newterm.o convcode.o bbs_sendmail.o crypt.o \
 	   ucache.o utmp.o log.o md5.o libmsg.o article.o $(BBSSITE).o
 
-BBSLIBOBJS = record.o log.o ucache.o stuff.o md5.o crypt.o pass.o bcache.o utmp.o lvars.o $(BBSSITE).o boards.o lvars.o bbs_sendmail.o libmsg.o article.o
+BBSLIBOBJS = record.o log.o ucache.o stuff.o md5.o crypt.o pass.o bcache.o utmp.o lvars.o $(BBSSITE).o boards.o lvars.o bbs_sendmail.o libmsg.o article.o convcode.o
 
 OTHERS   = bbs.h edit.h
 
