@@ -36,7 +36,5 @@ struct screenline {
     unsigned char mode;         /* status of line, as far as update  */
     unsigned char smod;         /* start of modified data            */
     unsigned char emod;         /* end of modified data              */
-    unsigned char sso;          /* start stand out */
-    unsigned char eso;          /* end stand out */
     char data[LINELEN];
 };
