@@ -196,10 +196,11 @@ int addtodeny(char *uident)
     if (denymsg[0] == '*')
         return 0;
     autofree = askyn("¸Ã·â½ûÊÇ·ñ×Ô¶¯½â·â£¿(Ñ¡ [1;31mY[m ±íÊ¾½øĞĞ×Ô¶¯½â·â)", true);
-    sprintf(filebuf, "ÊäÈëÌìÊı(×î³¤%dÌì)", maxdeny);
+    sprintf(filebuf, "ÊäÈëÌìÊı(×î³¤%dÌì)(°´*È¡Ïû·â½û)", maxdeny);
     denyday = 0;
     while (!denyday) {
         getdata(3, 0, filebuf, buf2, 4, DOECHO, NULL, true);
+	if (buf2[0] == '*')return 0; 
         if ((buf2[0] < '0') || (buf2[0] > '9'))
             continue;           /*goto MUST1; */
         denyday = atoi(buf2);
