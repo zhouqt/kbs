@@ -9,10 +9,9 @@
 
 	@$userid=$_POST["userid"];
 	@$nickname=$_POST["username"];
-
 	@$realname=$_POST["realname"];
 	@$dept=$_POST["dept"];
-    @$address=$_POST["address"];
+	@$address=$_POST["address"];
 	@$year=$_POST["year"];
 	@$month=$_POST["month"];
 	@$day=$_POST["day"];
@@ -22,17 +21,46 @@
 	@$m_register=$_POST["m_register"];
 	@$mobile_phone=$_POST["mobile_phone"];
 
-    if(!strchr($reg_email,'@'))
+	if(!strchr($reg_email,'@'))
 	    html_error_quit("错误的注册 email 地址!");
 
 	//generate passwd
 	$password=bbs_findpwd_check("","","");
 
-	//发送密码到reg_email
-/*	bool mail ( string to, string subject, string message [, string
-additional_headers [, string additional_parameters]])*/
-    if(!mail($reg_email,"BBS水木清华站用户注册密码",$userid . "的密码是" . $password))
-	    html_error_quit("发送密码到您的注册Email失败!请确认您的该Email地址正确");
+$mailbody="
+<?xml version=\"1.0\" encoding=\"gb2312\">
+<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">
+<html>
+<body><P class=MsoNormal><FONT size=2><SPAN 
+style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">  " . $realname  . "欢迎您来到</SPAN><SPAN 
+style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">BBS水木清华站。</SPAN></FONT></P>
+<P class=MsoNormal><FONT size=2><SPAN 
+style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">您的注册信息是：</SPAN></FONT></P>
+<P class=MsoNormal><FONT size=2><SPAN 
+style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">用户名：" . $userid . "</SPAN></FONT></P>
+<P class=MsoNormal><FONT size=2><SPAN 
+style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">姓名：" . $realname . "<SPAN></FONT></P>
+<P class=MsoNormal><FONT size=2><SPAN 
+style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">地区：" . $address . "</SPAN></FONT></P>
+<P class=MsoNormal><FONT size=2><SPAN 
+style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">密码：" . $password . "</SPAN></FONT></P>
+<P class=MsoNormal><FONT size=2><SPAN lang=EN-US>email</SPAN><SPAN 
+style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">：" . $reg_email . "</SPAN></FONT></P>
+<P class=MsoNormal><FONT size=2><A 
+href=\"https://www.smth.edu.cn\"><SPAN 
+style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">点击这里登录“</SPAN>
+</body>
+</html>
+";
+/* To send HTML mail, you can set the Content-type header. */
+$headers  = "MIME-Version: 1.0\r\n";
+$headers .= "Content-type: text/html; charset=gb2312\r\n";
+
+/* additional headers */
+$headers .= "From: BBS水木清华站 <https://www.smth.edu.cn>\r\n";
+
+if(!mail($reg_email, "welcome to BBS水木清华站",$mailbody."欢迎到来",$headers))
+    html_error_quit("发送密码到您的注册Email失败!请确认您的该Email地址正确");
 
 	//create new id
 	$ret=bbs_createnewid($userid,$password,$nickname);
