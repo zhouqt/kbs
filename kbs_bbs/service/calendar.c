@@ -100,7 +100,9 @@ char wFtv[][100] = {
 char lmonths[14][20] = {
 "","正","二","三","四","五","六","七","八","九","十","十一","腊",""};
 
+int sTermInfo[] = {0,21208,42467,63836,85337,107014,128867,150921,173149,195551,218072,240693,263343,285989,308563,331033,353350,375494,397447,419210,440795,462224,483532,504758};
 int day,month,year;
+int lyear;
 
 #define getnum(a) (((a)[0]-'0')*10+(a)[1]-'0')
 
@@ -144,7 +146,6 @@ void Lunar(int day, int * lmonth, int * lday)
     int i, j, leap=0, temp=0;
     int offset   = 0;
     bool isLeap;
-    int lyear;
 
     for(j=2;j<=12;j++) offset+=get_day(1900, j);
     for(i=1901;i<year;i++) offset+=get_day2(i);
@@ -177,6 +178,25 @@ void Lunar(int day, int * lmonth, int * lday)
     *lmonth = i;
     *lday = offset + 1;
 }
+
+char solarTerm[24][8] = 
+{"小寒","大寒","立春","雨水","惊蛰","春分",
+ "清明","谷雨","立夏","小满","芒种","夏至",
+ "小暑","大暑","立秋","处暑","白露","秋分",
+ "寒露","霜降","立冬","小雪","大雪","冬至"};
+
+int sTerm(int y, int n, int day)
+{
+    double k=
+       (31556925974.7*(y-1900) + sTermInfo[n]*60000 + 1.0/24*2 + 1.0/24/60*5)/86400000-6;
+    int pass, i, j;
+    pass = (int) k;
+    for(i=1900;i<year;i++) pass-=get_day2(i);
+    for(i=1;i<month;i++) pass-=get_day(year, i);
+    pass-=day;
+    return (pass==0);
+}
+
 
 int get_week(int year, int month, int day)
 {
@@ -310,6 +330,14 @@ void draw_main()
         }
         i0++;
     }
+    for(i=0;i<24;i++)
+        if(sTerm(lyear, i, day)) {
+            strcpy(buf, solarTerm[i]);
+            k-=strlen(buf);
+            move(13, k);
+            k--;
+            prints(buf);
+        }
     move(t_lines-1, scr_cols);
 }
 
