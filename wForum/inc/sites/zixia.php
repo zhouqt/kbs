@@ -1,6 +1,6 @@
 <?php
 
-define('BOARDLISTSTYLE','simplest');
+//define('BOARDLISTSTYLE','simplest');
 
 $SiteName="大话西游";
 
