@@ -18,7 +18,6 @@ int main()
         printf("讨论区名称: <input type=text name=board>");
         printf(" <input type=submit value=确定>");
         printf("</form>\n");
-        http_quit();
     } else {
         for (i = 0; i < MAXBOARD; i++) {
             board1 = bc[i].filename;
@@ -43,9 +42,16 @@ int main()
                 total++;
                 printf("<tr><td>%d", total);
                 printf("<td><a href=/bbsdoc.php?board=%s>%s</a><td>%s<br>\n", board1, board1, title + 7);
+				if (total == 1) {
+					sprintf(buf, "/bbsdoc.php?board=%s", board1);
+				}
             }
         }
         printf("</table><br>\n");
         printf("共找到%d个符合条件的讨论区.\n", total);
+		if (total == 1) {
+			redirect(buf);
+		}
     }
+	http_quit();
 }
