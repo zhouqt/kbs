@@ -1793,9 +1793,10 @@ static int www_free_guest_entry(int idx)
 	setpublicshmreadonly(0);
 	pub=get_publicshm();
 	fd = www_guest_lock();
-	wwwguest_shm->use_map[idx/32]&=1<<(idx%32);
-	if (((wwwguest_shm->use_map[idx/32])&(1<<(idx%32)))&&pub->www_guest_count>0) {
-		pub->www_guest_count--;
+	if (wwwguest_shm->use_map[idx/32])&(1<<(idx%32))
+		wwwguest_shm->use_map[idx/32]&=~(1<<(idx%32));
+		if (pub->www_guest_count>0)
+			pub->www_guest_count--;
 	}
 	www_guest_unlock(fd);
 	setpublicshmreadonly(1);
@@ -2070,7 +2071,7 @@ int www_user_logoff(struct userec* user,int useridx,struct user_info* puinfo,int
 		stay = 7200;
 	user->stay+=stay;
 	record_exit_time(user->userid);
-	bbslog( "1system", "EXIT: Stay:%3ld (%s)[%d %d]", stay / 60, 
+	bbslog( "1system", "EXIT: Stay:%3ld (%s)[%d %d](www)", stay / 60, 
 			user->username, get_curr_utmpent(), useridx);
 	if (strcasecmp(user->userid,"guest")) {
 	    	if(!puinfo->active) return 0;
