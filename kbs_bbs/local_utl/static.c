@@ -25,8 +25,10 @@ main(argc, argv)
   struct tm * date_tm;
   char    *blk[10] =
   {
+	/* 方框太难看了 modified by Czz */
       "＿", "＿", "▁", "▂", "▃",
       "▄", "▅", "▆", "▇", "█",
+      /* modified end */
   };
 
   if ((fp = fopen(BBSHOME"/usies", "r")) == NULL)
