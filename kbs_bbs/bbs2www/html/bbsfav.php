@@ -18,6 +18,9 @@
                 else
                         $list_father=-1;
                 settype($list_father,"integer");
+
+                if (!strcmp($currentuser["userid"],"guest"))
+                    html_error_quit("请先注册帐号");
                 
                 if ($select < -1)// || $group > sizeof($section_nums))
                         html_error_quit("错误的参数");
@@ -43,23 +46,34 @@
                 if ($boards == FALSE)
                         html_error_quit("读取版列表失败");
 ?>
-<style type="text/css">A {color: #0000f0}</style>
 <body>
-<center><?php echo BBS_FULL_NAME; ?> -- 个人定制区
-<?php
- if( $select===-1 ) echo "[根目录]";
-?>
-<a href="bbssec.php">分类讨论区</a>
-<hr class="default"/>
-<table width="610">
+<table width="100%" border="0" cellspacing="0" cellpadding="3" >
+  <tr> 
+    <td colspan="2" class="kb2" colspan=2>
+	    <a class="kts1" href="mainpage.php"><?php echo BBS_FULL_NAME; ?></a>  - <a class="kts1"  href="bbsfav.php">个人定制区</a></td>
+  </tr>
+   <tr valign=bottom align=center> 
+    <td align="left" class="kb4"><?php if( $select===-1 ) echo "[根目录]"; ?></td>
+     <td align="right" class="kb1" >
+	   <a class="kts1" href="bbssec.php">分类讨论区</a>
+    </td>
+         
+  </tr>
+   <tr> 
+    <td colspan="2" height="9" background="images/dashed.gif"> </td>
+  </tr>
+   <tr><td colspan="2" align="center">
+
+<table width="100%" border="0" cellspacing="0" cellpadding="3" class="kt1">
 <tr>
-<td>序号</td>
-<td>未</td>
-<td>讨论区名称</td>
-<td>类别</td>
-<td>中文描述</td>
-<td>版主</td>
-<td>文章数</td>
+<td class="kt2" width="2%"> </td>
+<td class="kt2" width="2%"> </td>
+<td class="kt2" width="23%">讨论区名称</td>
+<td class="kt2" width="10%">类别</td>
+<td class="kt2" width="38%">中文描述</td>
+<td class="kt2" width="14%">版主</td>
+<td class="kt2" width="5%">篇数</td>
+<td class="kt2" width="6%"> </td>
 </tr>
 <?php
                 $brd_name = $boards["NAME"]; // 英文名
@@ -76,12 +90,12 @@
                 if($select != -1)
                 {
 ?>
-                <tr>
-<td></td>
-<td><img src=/images/folder.gif></td>
-<td><a href="bbsfav.php?select=<?php echo $list_father; ?>">回到上一级</a></td>
-<td colspan=4></td>
-</tr>
+	<tr>
+	<td class="kt3 c2" height="25"> </td>
+	<td class="kt4 c2"> <img src="images/groupgroup.gif" height="15" width="20" alt="up" title="回到上一级"></td>
+	<td class="kt3 c3" colspan="6" align="left"><a class="kts1" href="bbsfav.php?select=<?php echo $list_father; ?>">回到上一级</a>
+	</td>
+	</tr>
 <?php
                 }
                 for ($i = 0; $i < $rows; $i++)  
@@ -90,42 +104,41 @@
                         continue;
 ?>
 <tr>
-<td><?php echo $i+1; ?></td>
-<td>
+<td class="kt3 c2" align=center height=25><?php echo $i+1; ?></td>
 <?php
                         if ($brd_flag[$i] ==-1 )
                         {
 ?>
-        <img src=/images/folder.gif></td>
-        <td>
-        <a href="bbsfav.php?select=<?php echo $brd_bid[$i];?>&up=<?php echo $select; ?>">
+        <td class="kt4 c2"> <img src="images/groupgroup.gif" height="15" width="20"  alt="＋" title="版面组"></td><td class="kt3 c3"><a class="kts1" href="bbsfav.php?select=<?php echo $brd_bid[$i];?>&up=<?php echo $select; ?>">
         <?php echo $brd_desc[$i];?>
         </a></td>
-        <td colspan=4></td>
-        <td><a href="bbsfav.php?select=<?php echo $select;?>&delete=<?php echo $brd_bid[$i];?>">删除</a></td>
+        <td class="kt3 c2">[目录]</td>
+        <td class="kt3 c2" colspan="3">&nbsp;</td>
+        <td class="kt3 c2"><a class="kts1" href="bbsfav.php?select=<?php echo $select;?>&delete=<?php echo $brd_bid[$i];?>">删除</a></td>
         </tr>   
 <?php
                                 continue;
                         }
-                        if ($brd_unread[$i] == 1)
-                                echo "◆";
-                        else
-                                echo "◇";
+                        if ($brd_unread[$i] == 1) {
 ?>
-</td>
-<td>
+<td class="kt4 c1"> <img src="images/newgroup.gif"  height="15" width="20" alt="◆" title="未读标志"></td><td class="kt3 c1">
+<?php                              
+                        } else {
+?>
+<td class="kt4 c1" > <img src="images/oldgroup.gif" height="15" width="20"   alt="◇" title="已读标志"></td><td class="kt3 c1">
 <?php
+                        }
                         if ($brd_zapped[$i] == 1)
                                 echo "*";
                         else
                                 echo "&nbsp;";
-?><a href="/bbsdoc.php?board=<?php echo urlencode($brd_name[$i]); ?>"><?php echo $brd_name[$i]; ?></a>
+?><a class="kts1" href="/bbsdoc.php?board=<?php echo urlencode($brd_name[$i]); ?>"><?php echo $brd_name[$i]; ?></a>
 </td>
-<td><?php echo $brd_class[$i]; ?></td>
-<td>
-<a href="/bbsdoc.php?board=<?php echo urlencode($brd_name[$i]); ?>"><?php echo $brd_desc[$i]; ?></a>
+<td class="kt3 c3" align="center"><?php echo $brd_class[$i]; ?></td>
+<td class="kt3 c1">&nbsp;&nbsp;
+<a class="kts1" href="/bbsdoc.php?board=<?php echo urlencode($brd_name[$i]); ?>"><?php echo $brd_desc[$i]; ?></a>
 </td>
-<td>
+<td class="kt3 c2" align="center">
 <?php
                         $bms = explode(" ", trim($brd_bm[$i]));
                         if (strlen($bms[0]) == 0 || $bms[0][0] <= chr(32))
@@ -137,15 +150,15 @@
                                 else
                                 {
 ?>
-<a href="/bbsqry.php?userid=<?php echo $bms[0]; ?>"><?php echo $bms[0]; ?></a>
+<a class="kts1" href="/bbsqry.php?userid=<?php echo $bms[0]; ?>"><?php echo $bms[0]; ?></a>
 <?php
                                 }
                         }
 ?>
 </td>
-<td><?php echo $brd_artcnt[$i]; ?></td>
-<td>
-<a href="bbsfav.php?select=<?php echo $select;?>&delete=<?php echo bbs_is_favboard($brd_position[$i])-1;?>">
+<td class="kt3 c1"><?php echo $brd_artcnt[$i]; ?></td>
+<td class="kt3 c2">
+<a class="kts1" href="bbsfav.php?select=<?php echo $select;?>&delete=<?php echo bbs_is_favboard($brd_position[$i])-1;?>">
 删除</a>
 </td>
 </tr>
@@ -153,11 +166,15 @@
                 }
 ?>
 </table>
-<br>
+   <tr> 
+    <td colspan="2" height="9" background="images/dashed.gif"> </td>
+  </tr>
+  </table>
+<center>
 <form action=bbsfav.php>增加目录<input name=dname size=24 maxlength=20 type=text value=""><input type=submit value=确定><input type=hidden name=select value=<?php echo $select;?>></form>
 <form action=bbsfav.php>增加版面<input name=bname size=24 maxlength=20 type=text value=""><input type=submit value=确定><input type=hidden name=select value=<?php echo $select;?>></from>
-<hr class="default"/>
 </center>
+
 
 <?php
                 bbs_release_favboard();
