@@ -106,10 +106,9 @@ function showBoardStaticsTop($boardArr){
 
 function showBoardContents($boardID,$boardName,$page){
 	global $dir_modes;
-	$dir_mode = $dir_modes["ORIGIN"];
 ?>
 <?php
-	$total = bbs_countarticles($boardID, $dir_mode);
+	$total = bbs_getThreadNum($boardID);
 	if ($total<=0) {
 ?>
 <tr><td>
@@ -128,24 +127,27 @@ function showBoardContents($boardID,$boardName,$page){
 		} else if ($page<1) {
 			$page=1;
 		}
+	/*
 		$start=$total-$page* ARTICLESPERPAGE+1;
 		$num=ARTICLESPERPAGE;
 		if ($start<=0) {
 			$num+=$start-1;
 			$start=1;
 		}
+    */
+		$start=($page-1)* ARTICLESPERPAGE;
+		$num=ARTICLESPERPAGE;
 
-
-		$articles = bbs_getarticles($boardName, $start, $num, $dir_modes["ORIGIN"]);
+		$articles = bbs_getthreads($boardName, $start, $num);
 		$articleNum=count($articles);
-		for($i=$articleNum-1;$i>=0;$i--){
+		for($i=0;$i<$articleNum;$i++){
 			unset($threads);
-			$threads=bbs_get_threads_from_id($boardID, intval($articles[$i]['ID']), $dir_modes["NORMAL"], 50000);
-			$threadNum=count($threads);
+			$threads=bbs_get_thread_articles($boardName, intval($articles[$i]['ID']), 0,1);
+			$threadNum=bbs_get_thread_article_num($boardName,intval($articles[$i]['ID']));
 ?>
 <TR align=middle><TD class=tablebody2 width=32 height=27><img src="pic/blue/folder.gif" alt=开放主题></TD><TD align=left class=tablebody1 width=* >
 <?php 
-	if ($threads==NULL) {
+	if ($threadNum==0) {
 		echo '<img src="pic/nofollow.gif" id="followImg'.($i+$start).'">';
 	} else {
 		echo '<img loaded="no" src="pic/plus.gif" id="followImg'.($i+$start).'" style="cursor:hand;" onclick="loadThreadFollow('.($start+$i).",'".$boardName."')\" title=展开贴子列表>";
@@ -167,23 +169,23 @@ function showBoardContents($boardID,$boardName,$page){
 		echo " ]</b>";
 	}
 ?>
-</TD><TD class=tablebody2 width=80><a href="dispuser.asp?id=<?php echo $articles[$i]['OWNER'] ;?>" target=_blank><?php echo $articles[$i]['OWNER'] ;?></a></TD><TD class=tablebody1 width=64><?php echo $threads==NULL?0:$threadNum; ?></TD><TD align=left class=tablebody2 width=195>&nbsp;<a href="dispbbs.asp?boardid=1&id=1&star=1#1">
+</TD><TD class=tablebody2 width=80><a href="dispuser.asp?id=<?php echo $articles[$i]['OWNER'] ;?>" target=_blank><?php echo $articles[$i]['OWNER'] ;?></a></TD><TD class=tablebody1 width=64><?php echo $threadNum; ?></TD><TD align=left class=tablebody2 width=195>&nbsp;<a href="dispbbs.asp?boardid=1&id=1&star=1#1">
 <?php
-			if ($threads==NULL) {
+			if ($threadNum==0) {
 				echo strftime("%Y-%m-%d %H:%M", $articles[$i]['POSTTIME']);
 			} else {
-				echo strftime("%Y-%m-%d %H:%M", $threads[$threadNum-1]['POSTTIME']);
+				echo strftime("%Y-%m-%d %H:%M", $threads[0]['POSTTIME']);
 			}
 ?></a>&nbsp;<font color=#FF0000>|</font>&nbsp;<a href=dispuser.asp?id=4 target=_blank>
 <?php 
-			if ($threads==NULL) {
+			if ($threadNum==0) {
 				echo $articles[$i]['OWNER'];
 			} else {
-				echo $threads[$threadNum-1]['OWNER'];
+				echo $threads[0]['OWNER'];
 			}
 ?></a></TD></TR>
 <?php
-			if ($threads!=NULL) {
+			if ($threadNum>0) {
 ?>
 <tr style="display:none" id="follow<?php echo $i+$start; ?>"><td colspan=5 id="followTd<?php echo $i+$start;?>" style="padding:0px"><div style="width:240px;margin-left:18px;border:1px solid black;background-color:lightyellow;color:black;padding:2px" onclick="loadThreadFollow(<?php echo $i+$start;?>,'<?php echo $boardName; ?>')">正在读取关于本主题的跟贴，请稍侯……</div></td></tr>
 <?php

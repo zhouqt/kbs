@@ -21,33 +21,26 @@ if (bbs_checkreadperm($usernum, $boardID) == 0) {
 	return false;
 }
 bbs_set_onboard($boardID,1);
-$articles = bbs_getarticles($boardName, $articleID, 1, $dir_modes["ORIGIN"]);
+$articles = bbs_getthreads($boardName, $articleID, 1);
 @$article=$articles[0];
 if ($article==NULL) {
 	exit(0);
 }
-$threads=bbs_get_threads_from_id($boardID, intval($article['ID']), $dir_modes["NORMAL"], 50000);
-if ($threads!=NULL) {
-	$total=count($threads)+1;
-} else {
-	$total=1;
-}
+$threadNum=bbs_get_thread_article_num($boardName,intval($article['ID']));
+$total=$threadNum+1;
+$threads=bbs_get_thread_articles($boardName, intval($article['ID']),0,$total);
+$total=count($threads);
 
 ?>
 <script>
-	parent.followTd<?php echo $articleID; ?>.innerHTML='<TABLE border=0 cellPadding=0 cellSpacing=0 width="100%" align=center><TBODY><?php 
-
-
-	showTree($boardName,$boardID,$articleID,$article,$threads,$total);
-?></TBODY></TABLE>';
+	parent.followTd<?php echo $articleID; ?>.innerHTML='<TABLE border=0 cellPadding=0 cellSpacing=0 width="100%" align=center><TBODY><?php showTree($boardName,$boardID,$articleID,$article,$threads,$total);?></TBODY></TABLE>';
 </script>
 
 <?php
 function showTree($boardName,$boardID,$articleID,$article,$threads,$threadNum) {
 	$flags=array();
-	showTreeItem($boardName,$articleID,$article,0,$flags);
-	for ($i=1;$i<$threadNum;$i++){
-		showTreeItem($boardName,$articleID,$threads[$i-1],$i,$flags);
+	for ($i=0;$i<$threadNum;$i++){
+		showTreeItem($boardName,$articleID,$threads[$threadNum-$i-1],$i,$flags);
 	}
 }
 

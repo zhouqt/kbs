@@ -89,7 +89,7 @@ function preprocess(){
 	}
 
 	bbs_set_onboard($boardID,1);
-	$articles = bbs_getarticles($boardName, $articleID, 1, $dir_modes["ORIGIN"]);
+	$articles = bbs_getthreads($boardName, $articleID, 1);
 	@$article=$articles[0];
 	if ($article==NULL) {
 		foundErr("您指定的文章不存在！");
@@ -119,7 +119,7 @@ function article_bar($boardName,$boardID,$articleID,$article,$threadID,$listType
 <?php
 	}
 ?>
-	　<a href="disparticle.php?boardName=<?php 	echo $boardName; ?>&ID=<?php echo $articleID<bbs_countarticles($boardID, $dir_modes['ORIGIN'])?$articleID+1:$articleID; ?>"><img src="pic/nextthread.gif" border=0 alt=浏览下一篇主题 width=52 height=12></a>
+	　<a href="disparticle.php?boardName=<?php 	echo $boardName; ?>&ID=<?php echo $articleID<bbs_getThreadNum($boardID)?$articleID+1:$articleID; ?>"><img src="pic/nextthread.gif" border=0 alt=浏览下一篇主题 width=52 height=12></a>
 	</td>
 	</tr>
 </table>
@@ -154,12 +154,9 @@ function dispArticleTitle($boardName,$boardID,$articleID,$article, $threadID){
 
 function showArticleThreads($boardName,$boardID,$articleID,$article,$start,$listType) {
 	global $dir_modes;
-	$threads=bbs_get_threads_from_id($boardID, intval($article['ID']), $dir_modes["NORMAL"], 50000);
-	if ($threads!=NULL) {
-		$total=count($threads)+1;
-	} else {
-		$total=1;
-	}
+	$threadNum=bbs_get_thread_article_num($boardName,intval($article['ID']));
+	$total=$threadNum+1;
+
 	$totalPages=ceil(($total)/THREADSPERPAGE);
 	$num=THREADSPERPAGE;
 	if ($start<0) {
@@ -171,6 +168,8 @@ function showArticleThreads($boardName,$boardID,$articleID,$article,$start,$list
 		$num=$total-$start;
 	}
 	$page=ceil(($start+1)/THREADSPERPAGE);
+	$threads=bbs_get_thread_articles($boardName, intval($article['ID']), 	$total-$start-$num,$num);
+	$num=count($threads);
 	article_bar($boardName,$boardID,$articleID, $article, $start, $listType);
 	dispArticleTitle($boardName,$boardID,$articleID,$article,$start);
 ?>
@@ -180,11 +179,7 @@ function showArticleThreads($boardName,$boardID,$articleID,$article,$start,$list
 		$num=1;
 	} 
 	for($i=0;$i<$num;$i++) {
-		if (($i+$start)==0) {
-			showArticle($boardName,$boardID,$i+$start,intval($article['ID']), $article);
-		} else {
-			showArticle($boardName,$boardID,$i+$start,intval($threads[$start+$i-1]['ID']),$threads[$start+$i-1]);
-		}
+			showArticle($boardName,$boardID,$i+$start,intval($threads[$num-$i-1]['ID']),$threads[$num-$i-1]);
 	}
 ?>
 </table>
@@ -229,6 +224,10 @@ function showArticleThreads($boardName,$boardID,$articleID,$article,$start,$list
 <br>
 <?php
 	if ($listType==1) {
+		$threadNum=bbs_get_thread_article_num($boardName,intval($article['ID']));
+		$total=$threadNum+1;
+		$threads=bbs_get_thread_articles($boardName, intval($article['ID']),0,$total);
+		$total=count($threads);
 		showArticleTree($boardName,$boardID,$articleID,$article,$threads,$total,$start);
 	}
 }
@@ -243,7 +242,7 @@ function showArticle($boardName,$boardID,$num, $threadID,$thread){
 
 <td class=tablebody1 valign=top width=*>
 
-<table width=100% ><tr><td width=*><a href="javascript:openScript('messanger.asp?action=new&touser=Roy',500,400)"><img src="pic/message.gif" border=0 alt="给Roy发送一个短消息"></a>&nbsp;<a href="friendlist.asp?action=addF&myFriend=Roy" target=_blank><img src="pic/friend.gif" border=0 alt="把Roy加入好友"></a>&nbsp;<a href="dispuser.asp?id=4" target=_blank><img src="pic/profile.gif" border=0 alt="查看Roy的个人资料"></a>&nbsp;<a href="queryResult.asp?stype=1&nSearch=3&keyword=Roy&BoardID=1&SearchDate=ALL" target=_blank><img src="pic/find.gif" border=0 alt="搜索Roy在测试的所有贴子"></a>&nbsp;<A href="mailto:roy@zixia.net"><IMG alt="点击这里发送电邮给Roy" border=0 src=pic/email.gif></A>&nbsp;<a href="editarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $thread['ID']; ?>"><img src="pic/edit.gif" border=0 alt=编辑></a>&nbsp;<a href="postarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $thread['ID']; ?>"><img src="pic/reply_a.gif" border=0 alt=回复这个贴子></a></td><td width=50><b><?php echo $num==0?'楼主':'第<font color=#ff0000>'.$num.'</font>楼'; ?></b></td></tr><tr><td bgcolor=#D8C0B1 height=1 colspan=2></td></tr>
+<table width=100% ><tr><td width=* valign='center'><a href="javascript:openScript('messanger.asp?action=new&touser=Roy',500,400)"><img src="pic/message.gif" border=0 alt="给Roy发送一个短消息"></a>&nbsp;<a href="friendlist.asp?action=addF&myFriend=Roy" target=_blank><img src="pic/friend.gif" border=0 alt="把Roy加入好友"></a>&nbsp;<a href="dispuser.asp?id=4" target=_blank><img src="pic/profile.gif" border=0 alt="查看Roy的个人资料"></a>&nbsp;<a href="queryResult.asp?stype=1&nSearch=3&keyword=Roy&BoardID=1&SearchDate=ALL" target=_blank><img src="pic/find.gif" border=0 alt="搜索Roy在测试的所有贴子"></a>&nbsp;<A href="mailto:roy@zixia.net"><IMG alt="点击这里发送电邮给Roy" border=0 src=pic/email.gif></A>&nbsp;<a href="editarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $thread['ID']; ?>"><img src="pic/edit.gif" border=0 alt=编辑></a>&nbsp;<a href="deletearticle.php?board=<?php echo $boardName; ?>&ID=<?php echo $thread['ID']; ?>" onclick="return confirm('你真的要删除本文吗?')"><img src="pic/delete.gif" border=0 alt=删除>删除</a>&nbsp;<a href="postarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $thread['ID']; ?>"><img src="pic/reply_a.gif" border=0 alt=回复这个贴子></a></td><td width=50><b><?php echo $num==0?'楼主':'第<font color=#ff0000>'.$num.'</font>楼'; ?></b></td></tr><tr><td bgcolor=#D8C0B1 height=1 colspan=2></td></tr>
 </table>
 
 <blockquote><table class=tablebody2 border=0 width=90% style=" table-layout:fixed;word-break:break-all"><tr><td width="100%" style="font-size:9pt;line-height:12pt"><img src=face/face1.gif border=0 alt=发贴心情>&nbsp;<?php echo  $thread['TITLE']; ?><b></b><br><?php 
@@ -273,9 +272,8 @@ function showArticleTree($boardName,$boardID,$articleID,$article,$threads,$threa
 <th width=10% align=right valign=middle height=24 id=tabletitlelink> <a href=#top><img src=pic/gotop.gif border=0>顶端</a>&nbsp;</th></tr>
 <?php
 	$flags=array();
-	showTreeItem($boardName,$articleID,$article,0,$start,$flags);
-	for ($i=1;$i<$threadNum;$i++){
-		showTreeItem($boardName,$articleID,$threads[$i-1],$i,$start,$flags);
+	for ($i=0;$i<$threadNum;$i++){
+		showTreeItem($boardName,$articleID,$threads[$threadNum-$i-1],$i,$start,$flags);
 	}
 ?>
 </table>
