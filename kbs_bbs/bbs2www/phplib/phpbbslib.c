@@ -4077,6 +4077,14 @@ static PHP_FUNCTION(bbs_postarticle)
         local = 0;
     else
         local = 1;
+    getCurrentUser()->signature = sig;
+    if (sig < 0) {
+        struct userdata ud;
+        read_userdata(getCurrentUser()->userid, &ud);
+        if (ud.signum > 0) {
+            sig = 1 + (int) (((double)ud.signum) * rand() / (RAND_MAX + 1.0)); //(rand() % ud.signum) + 1;
+        } else sig = 0;
+    }
     if (brd->flag&BOARD_ATTACH) {
         getattachtmppath(buf, MAXPATH);
         if (!sigsetjmp(bus_jump, 1)) {

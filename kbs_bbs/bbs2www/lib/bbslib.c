@@ -747,7 +747,6 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
     fclose(fp2);
     if (!anony)
         addsignature(fp, user, sig);
-    user->signature = sig;
 #ifndef RAW_ARTICLE
     add_loginfo2(fp, board, user, anony);       /*添加最后一行 */
 #endif
