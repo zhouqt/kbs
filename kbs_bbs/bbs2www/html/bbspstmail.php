@@ -184,7 +184,7 @@ login_init();
 ?>
 </textarea><br><div align="center">
 <input class="bt1" type="submit" value="·¢ËÍ" />
-<input class="bt1" type="reset" value="Çå³ý" />
+&nbsp;&nbsp;&nbsp;&nbsp;
 <input class="bt1" type="button" value="·µ»Ø" onclick="window.location.href='bbsmail.php'" />
 </div></table></form>
 

@@ -239,12 +239,13 @@ function dosubmit() {
 </textarea><br>
 <center>
 <input class="sb1" type="button" onclick="dosubmit();" name="post" value="发表" />
-<input class="sb1" type="reset" value="清除" />
+&nbsp;&nbsp;&nbsp;&nbsp;
 <input class="sb1" type="reset" value="返回" onclick="history.go(-1)" />
 <?php
 		if (bbs_is_attach_board($brdarr))
 		{
 ?>
+&nbsp;&nbsp;&nbsp;&nbsp;
 <input class="sb1" type="button" name="attach22" value="附件" onclick="return GoAttachWindow()" />
 <?php
 		}
