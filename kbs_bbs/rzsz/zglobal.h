@@ -203,7 +203,7 @@ void purgeline (int fd);
 void canit (int fd);
 /* error.c */
 
-extern void error (int status, int errnum, const char *format, ...);
+extern void zmodem_error (int status, int errnum, const char *format, ...);
 
 /* crctab.c */
 extern unsigned short crctab[256];

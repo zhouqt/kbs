@@ -171,7 +171,7 @@ static int play_with_sigint=0;
 void bibi (int n)
 {
 	canit(0);
-	fflush (stdout);
+	oflush();
 	io_mode (io_mode_fd,0);
 	if (n == SIGQUIT)
 		abort ();
@@ -270,7 +270,7 @@ wcs(const char *oname, const char *remotename)
 #endif
 		) {
 			canit(0);
-			error(1,0,
+			zmodem_error(1,0,
 				"security violation: not allowed to upload from %s",oname);
 		}
 	}
@@ -1099,7 +1099,7 @@ zsendfdata (struct zm_fileinfo *zi)
 		 *  sent by the receiver, in place of setjmp/longjmp
 		 *  rdchk(fdes) returns non 0 if a character is available
 		 */
-		fflush (stdout);
+		oflush();
 		while (rdchk (io_mode_fd)) {
 #ifdef READCHECK_READS
 			switch (checked)

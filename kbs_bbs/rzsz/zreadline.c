@@ -104,7 +104,7 @@ readline_setup(int fd, size_t readnum, size_t bufsize)
 	readline_readnum=readnum;
 	readline_buffer=malloc(bufsize > readnum ? bufsize : readnum);
 	if (!readline_buffer)
-		error(1,0,"out of memory");
+		zmodem_error(1,0,"out of memory");
 }
 
 void readline_clean(void)

@@ -138,7 +138,7 @@ void bibi(int n)
 		zmputs(Attn);
 	canit(0);
 	io_mode(0,0);
-	error(128+n,0,"caught signal %d; exiting", n);
+	zmodem_error(128+n,0,"caught signal %d; exiting", n);
 }
 
 
@@ -255,7 +255,7 @@ wcreceive(int argc, char **argp)
 		errno=0;
 		Pathname=malloc(PATH_MAX+1);
 		if (!Pathname)
-			error(1,0,"out of memory");
+			zmodem_error(1,0,"out of memory");
 
 		strcpy(Pathname, *argp);
 		checkpath(Pathname);
@@ -553,7 +553,7 @@ procheader(char *name, struct zm_fileinfo *zi)
 	}
 	name_static=malloc(strlen(name)+1);
 	if (!name_static)
-		error(1,0,"out of memory");
+		zmodem_error(1,0,"out of memory");
 	strcpy(name_static,name);
 	zi->fname=name_static;
 
@@ -651,7 +651,7 @@ procheader(char *name, struct zm_fileinfo *zi)
 			free(name_static);
 			name_static=malloc(strlen(tmpname)+1);
 			if (!name_static)
-				error(1,0,"out of memory");
+				zmodem_error(1,0,"out of memory");
 			strcpy(name_static,tmpname);
 			zi->fname=name_static;
 		}
@@ -679,7 +679,7 @@ procheader(char *name, struct zm_fileinfo *zi)
 			free(Pathname);
 		Pathname=malloc((PATH_MAX)*2);
 		if (!Pathname)
-			error(1,0,"out of memory");
+			zmodem_error(1,0,"out of memory");
 		strcpy(Pathname, name_static);
 		checkpath(name_static);
 		if (Nflag)

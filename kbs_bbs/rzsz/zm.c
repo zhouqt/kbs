@@ -109,7 +109,7 @@ extern int zmodem_requested;
 #define xsendline(c) raw_ochar(c)
 
 void
-error (int status, int errnum, const char *message, ...)
+zmodem_error (int status, int errnum, const char *message, ...)
 {
      if (status) exit(status);
 }
@@ -294,7 +294,7 @@ zsendline_s(const char *s, size_t count)
 			t++;
 		}
 		if (t!=s) {
-			fwrite(s,(size_t)(t-s),1,stdout);
+			raw_write(0,s,(size_t)(t-s));
 			lastsent=t[-1];
 			s=t;
 		}
