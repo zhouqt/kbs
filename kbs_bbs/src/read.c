@@ -1537,7 +1537,8 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
             /*
              * period 2000-09-11       原因同上 
              */
-            if (KEY_UP != lch && 'U' != lch)
+            if (lch != KEY_UP && lch != KEY_DOWN
+                    && (lch <= 0 || strchr("RrEexp", lch) == NULL))
                 lch = igetkey();
             /*
              * TODO: add KEY_REFRESH support 
@@ -1550,9 +1551,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
             case Ctrl('Z'):
                 r_lastmsg();    /* Leeward 98.07.30 support msgX */
                 break;
-            case 'N':
             case 'Q':
-            case 'n':
             case 'q':
             case KEY_LEFT:
                 istest = 1;
@@ -1564,6 +1563,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
                 do_reply(&SR_fptr);
             case ' ':
             case '\n':
+            case 'n':
             case KEY_DOWN:
                 isnext = 1;
                 break;
@@ -1589,6 +1589,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
                 sendmsgtoauthor(0, &SR_fptr, currdirect);
                 isnext = 1;
                 break;
+            case 'l':
             case KEY_UP:
             case 'u':
             case 'U':
@@ -1601,7 +1602,6 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
                 digest_post(0, &SR_fptr, currdirect);
                 break;
             case 'L':
-            case 'l':          /* Luzi 1997.11.1 */
                 if (uinfo.mode == LOOKMSGS)
                     break;
                 show_allmsgs();
