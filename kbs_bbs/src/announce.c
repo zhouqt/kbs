@@ -49,6 +49,7 @@ int a_loadnames(MENU* pm);             /* 装入 .Names */
 static char* import_path[ANNPATH_NUM]; /*多丝路*/
 static char* import_title[ANNPATH_NUM];
 static int import_path_select=0;
+static time_t import_path_time=0;	
 
 static void a_freenames(MENU* pm)
 {
@@ -98,6 +99,14 @@ void a_report(s)                /* Haohmaru.99.12.06 */
 */
 }
 
+static void free_import_path()
+{
+    int i;
+    for (i=0;i<ANNPATH_NUM;i++) {
+    	free(import_path[i]);
+    	free(import_title[i]);
+    }
+}
 static int save_import_path()
 {
     FILE* fn;
@@ -106,12 +115,15 @@ static int save_import_path()
     sethomefile(buf, currentuser->userid, "BMpath");
     fn = fopen(buf, "wt");
     if (fn) {
+	struct stat st;
     	for (i=0;i<ANNPATH_NUM;i++) {
     		fputs(import_path[i],fn);
     		fputs("\n",fn);
     		fputs(import_title[i],fn);
     		fputs("\n",fn);
     	}
+	fstat(fileno(fn),&st);
+        import_path_time=st.st_mtime;	
     	return 0;
     }
     return -1;
@@ -122,9 +134,18 @@ static void load_import_path()
     FILE* fn;
     char buf[MAXPATH];
     int i;
+    struct stat st;
+
     sethomefile(buf, currentuser->userid, "BMpath");
+    stat(buf,&st);
+    if (st.st_mtime==import_path_time)
+	    return;
+    if (import_path_select!=0)
+	    free_import_path();
     fn = fopen(buf, "rt");
     if (fn) {
+	fstat(fileno(fn),&st);
+        import_path_time=st.st_mtime;	
     	for (i=0;i<ANNPATH_NUM;i++) {
     		if (!feof(fn)) {
 	           fgets(buf, MAXPATH-1, fn);
@@ -174,14 +195,6 @@ static void load_import_path()
     import_path_select=1;
 }
 
-static void free_import_path()
-{
-    int i;
-    for (i=0;i<ANNPATH_NUM;i++) {
-    	free(import_path[i]);
-    	free(import_title[i]);
-    }
-}
 
 typedef struct 
 {
@@ -797,7 +810,7 @@ int a_Import(path, key, fileinfo, nomsg, direct, ent)
 		i=a_select_path(true);
 		if (i==0)
 			return 1;
-
+                import_path_select=i;
 		i--;
 		bzero(&pm,sizeof(pm));
 		if (import_path[i][0] != '\0') {
@@ -1337,6 +1350,7 @@ void a_manager(pm, ch)
 	    if (i==0)
 	        break;
 
+            import_path_select=i;
 	    i--;
 	    free(import_path[i]);
 	    import_path[i]=malloc(strlen(pm->path)+1);
