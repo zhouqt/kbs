@@ -3168,6 +3168,8 @@ void record_exit_time()
      */
 }
 
+extern int icurrchar, ibufsize;
+
 int Goodbye()
 {                               /*¿Î’æ —°µ• */
     extern int started;
@@ -3459,6 +3461,9 @@ int Goodbye()
     }
     sleep(1);
     pressreturn();              /*Haohmaru.98.10.18 */
+    prints("\x033[m");
+    icurrchar = 0; ibufsize = 0;
+    refresh();
     shutdown(0, 2);
     close(0);
     exit(0);
