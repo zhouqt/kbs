@@ -862,7 +862,7 @@ int canIsend2(struct userec* user,char* userid)           /* Leeward 98.04.10 */
 
     if (HAS_PERM(user, PERM_SYSOP))
         return true;
-    sethomefile(path, userid, "/ignores");
+    sethomefile(path, userid, "ignores");
     if (search_record(path, buf, IDLEN + 1, (RECORD_FUNC_ARG) cmpinames, currentuser->userid))
         return false;
     /*

@@ -24,6 +24,9 @@ int getmailnum(char *recmaildir)
     return numfiles;
 }
 
+/*
+ * 检查信箱是否超容
+ */
 int chkusermail(struct userec *user)
 {
     char recmaildir[STRLEN], buf[STRLEN];
@@ -58,6 +61,15 @@ int chkusermail(struct userec *user)
     }
     return 0;
 }
+
+/**
+ * 检查可否发信给 receiver.
+ * 
+ * @return 0 可以发信
+ *         1 不能发信，收信人已经自杀或被封禁 mail 权限
+ *         2 不能发信，发信人信箱超容
+ *         3 不能发信，收信人信箱超容
+ */
 int chkreceiver(struct userec *fromuser, struct userec *touser)
 
 /*Haohmaru.99.4.4.检查收信者信箱是否满,改动下面的数字时请同时改动do_send do_gsend doforward doforward函数*/
@@ -141,7 +153,6 @@ int mail_file_sent(char *fromid, char *tmpfile, char *userid, char *title, int u
     struct stat st;
     char fname[STRLEN], filepath[STRLEN];
     char buf[255];
-    int now;                    /* added for mail to SYSOP: Bigman 2000.8.11 */
 
     memset(&newmessage, 0, sizeof(newmessage));
     strcpy(buf, fromid);        /* Leeward 98.04.14 */
@@ -155,7 +166,6 @@ int mail_file_sent(char *fromid, char *tmpfile, char *userid, char *title, int u
         if (!(st.st_mode & S_IFDIR))
             return -1;
     }
-    now = time(NULL);
     /*
      * setmailpath(filepath, userid, fname); 
      */

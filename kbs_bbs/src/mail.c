@@ -325,7 +325,7 @@ int do_send(char *userid, char *title, char *q_file)
     struct fileheader newmessage;
     struct stat st;
     char filepath[STRLEN], fname[STRLEN], *ip;
-    int fp, sum, sumlimit;
+    int sum, sumlimit;
     char buf2[256], buf3[STRLEN], buf4[STRLEN];
     int replymode = 1;          /* Post New UI */
     char ans[4], include_mode = 'Y';
@@ -335,8 +335,6 @@ int do_send(char *userid, char *title, char *q_file)
     int noansi;
     struct userec *user;
     extern char quote_title[120];
-
-    int now;                    /* added by Bigman: for SYSOP mail */
     int ret;
 
     if (!strchr(userid, '@')) {
@@ -400,20 +398,7 @@ int do_send(char *userid, char *title, char *q_file)
     }
 
     memset(&newmessage, 0, sizeof(newmessage));
-    now = time(NULL);
-    sprintf(fname, "M.%d.A", now);
-
-    setmailfile(filepath, userid, fname);
-    ip = strrchr(fname, 'A');
-    while ((fp = open(filepath, O_CREAT | O_EXCL | O_WRONLY, 0644)) == -1) {
-        if (*ip == 'Z')
-            ip++, *ip = 'A', *(ip + 1) = '\0';
-        else
-            (*ip)++;
-        setmailfile(filepath, userid, fname);
-    }
-
-    close(fp);
+	GET_MAILFILENAME(fname, filepath);
     strcpy(newmessage.filename, fname);
 
 
@@ -601,17 +586,24 @@ int do_send(char *userid, char *title, char *q_file)
             mail_file(currentuser->userid, filepath, currentuser->userid, save_title, 1);
             return -2;
         }
+		/* 加上保存到发件箱的确认，by flyriver, 2002.9.23 */
+		getdata(2, 0, "保存信件到发件箱? [N]: ", buf2, 2, DOECHO, 0, 0);
+		if (buf2[0] == 'y' || buf2[0] == 'Y')
+		{
+			/* backup mail to sent folder */
+			mail_file_sent(userid, filepath, currentuser->userid, save_title, 0);
+		}
         if (askyn("确定寄出？", true) == false)
             return -2;
 
-        mail_file_sent(userid, filepath, currentuser->userid, save_title, 0);
         setmailfile(genbuf, userid, DOT_DIR);
         if (append_record(genbuf, &newmessage, sizeof(newmessage)) == -1)
             return -1;
 
         if (stat(filepath, &st) != -1) {
             user->usedspace += st.st_size;
-            currentuser->usedspace += st.st_size;
+			/* Removed by flyriver, 2002.9.23 */
+            /*currentuser->usedspace += st.st_size;*/ /* 这里多计算了一次 */
         }
 
         newbbslog(BBSLOG_USER, "mailed %s %s", userid,save_title);
