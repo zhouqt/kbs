@@ -18,13 +18,24 @@ void ann_show_item(MENU *pm, ITEM *it)
 	}
 	else
 	{
-		title[38] = '\0';
-		id = title + 39;
-		if (!strncmp(id, "BM: ", 4))
-			id += 4;
-		ptr = strchr(id, ')');
-		if (ptr)
-			ptr[0] = '\0';
+		if ((ptr = strchr(title, '(')) != NULL)
+		{
+			*ptr = '\0';
+			id = ptr+1;
+			if (strncmp(id, "BM: ", 4) == 0)
+				id += 4;
+			if ((ptr = strchr(id, ')')) != NULL)
+				*ptr = '\0';
+		}
+		else if ((ptr = strchr(title + 38, ' ')) != NULL)
+		{
+			*ptr = '\0';
+			id = ptr + 1;
+			trim(id);
+		}
+		else
+			id = "";
+		rtrim(title);
 	}
 	printf("<tr><td>%d</td>", pm->now + 1);
 	sprintf(buf, "%s/%s", pm->path, it->fname);
