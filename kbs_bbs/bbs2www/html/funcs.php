@@ -165,7 +165,7 @@ function get_bbsfile($relative_name)
 	return $BBS_HOME . $relative_name;
 }
 
-if (($loginok!=1)&&($_SERVER["PHP_SELF"]!="/bbslogin.jsp")) {
+if (($loginok!=1)&&($_SERVER["PHP_SELF"]!="/bbslogin.php")) {
 	error_nologin();
 	return;
 }
