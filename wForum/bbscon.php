@@ -1,5 +1,8 @@
 <?php
-	$needlogin=0;
+	@$attachpos = $_GET["ap"]; //pointer to the size after ATTACHMENT PAD
+	if ($attachpos!=0) {
+		$needlogin=0;
+	}
 	require("inc/funcs.php");
 	require("inc/attachment.inc.php");
 
@@ -59,7 +62,6 @@
 		return;
 	}
 
-	@$attachpos = $_GET["ap"]; //pointer to the size after ATTACHMENT PAD
 	if ($attachpos==0) {
 		// jump to the article, this link must be generated from telnet session. added by atppp
 		$gid = $articles[1]["GROUPID"];
