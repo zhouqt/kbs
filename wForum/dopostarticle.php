@@ -8,6 +8,7 @@ require("inc/board.inc.php");
 global $boardArr;
 global $boardID;
 global $boardName;
+global $reID;
 
 preprocess();
 
@@ -32,7 +33,7 @@ if (isErrFounded()) {
 
 	board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
 
-	doPostAritcles($boardID,$boardName,$boardArr);
+	doPostAritcles($boardID,$boardName,$boardArr,$reID);
 
 	if (isErrFounded()) {
 		html_error_quit() ;
@@ -48,6 +49,8 @@ function preprocess(){
 	global $currentuser;
 	global $boardArr;
 	global $loginok;
+	global $reID;
+	global $reArticles;
 	if ($loginok!=1) {
 		foundErr("游客不能发表文章。");
 		return false;
@@ -85,12 +88,30 @@ function preprocess(){
 		foundErr("没有指定文章内容！");
 		return false;
 	}
+		if (isset($_POST["reID"])) {
+		$reID = $_POST["reID"];
+	}else {
+		$reID = 0;
+	}
+	settype($reID, "integer");
+	$articles = array();
+	if ($reID > 0)	{
+	$num = bbs_get_records_from_id($boardName, $reID,$dir_modes["NORMAL"],$articles);
+		if ($num == 0)	{
+				foundErr("错误的 Re 文编号");
+				return false;
+		}
+		if ($articles[1]["FLAGS"][2] == 'y') {
+			foundErr("该文不可回复!");
+			return false;
+		}
+	}
 	return true;
 }
 
-function 	doPostAritcles($boardID,$boardName,$boardArr){
+function 	doPostAritcles($boardID,$boardName,$boardArr,$reID){
 	global $_POST;
-	$ret=bbs_postarticle($boardName,$_POST['subject'],$_POST['Content'],intval($_POST['signature']), 0,intval($_POST['outgo']),intval($_POST['anonymous']));
+	$ret=bbs_postarticle($boardName,$_POST['subject'],$_POST['Content'],intval($_POST['signature']), $reID,intval($_POST['outgo']),intval($_POST['anonymous']));
 	switch ($ret) {
 		case -1:
 			foundErr("错误的讨论区名称。");

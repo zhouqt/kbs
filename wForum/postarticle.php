@@ -10,6 +10,8 @@ require("inc/board.inc.php");
 global $boardArr;
 global $boardID;
 global $boardName;
+global $reID;
+global $reArticles;
 
 preprocess();
 
@@ -34,7 +36,7 @@ if (isErrFounded()) {
 
 	board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
 
-	showPostArticles($boardID,$boardName,$boardArr);
+	showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles);
 }
 
 //showBoardSampleIcons();
@@ -46,6 +48,8 @@ function preprocess(){
 	global $currentuser;
 	global $boardArr;
 	global $loginok;
+	global $reID;
+	global $reArticles;
 	if ($loginok!=1) {
 		foundErr("游客不能发表文章。");
 		return false;
@@ -75,16 +79,37 @@ function preprocess(){
 		foundErr("您无权在本版发表文章！");
 		return false;
 	}
+	if (isset($_GET["reID"])) {
+		$reID = $_GET["reID"];
+	}else {
+		$reID = 0;
+	}
+	settype($reID, "integer");
+	$articles = array();
+	if ($reID > 0)	{
+	$num = bbs_get_records_from_id($boardName, $reID,$dir_modes["NORMAL"],$articles);
+		if ($num == 0)	{
+				foundErr("错误的 Re 文编号");
+				return false;
+		}
+		if ($articles[1]["FLAGS"][2] == 'y') {
+			foundErr("该文不可回复!");
+			return false;
+		}
+	}
+	$reArticles=$articles;
+
 	return true;
 }
 
-function showPostArticles($boardID,$boardName,$boardArr){
+function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 	global $currentuser;
 	global $_COOKIE;
 ?>
 <script src="inc/ubbcode.js"></script>
 <form action="dopostarticle.php" method=POST onSubmit=submitonce(this) name=frmAnnounce>
 <input type="hidden" value="<?php echo $boardName; ?>" name="board">
+<input type="hidden" value="<?php echo $reID; ?>" name="reID">
 <table cellpadding=3 cellspacing=1 class=tableborder1 align=center>
     <tr>
       <th width=100% height=25 colspan=2 align=left>&nbsp;&nbsp;发表新帖子</th>
@@ -111,7 +136,17 @@ function showPostArticles($boardID,$boardName,$boardArr){
               <OPTION value=[建议]>[建议]</OPTION> <OPTION value=[下载]>[下载]</OPTION>
               <OPTION value=[分享]>[分享]</OPTION></SELECT>
           </td>
-          <td width=80% class=tablebody2><input name=subject size=70 maxlength=80>&nbsp;&nbsp;<font color=#ff0000><strong>*</strong></font>不得超过 25 个汉字或50个英文字符
+          <td width=80% class=tablebody2>
+<?php
+		if ($reID>0)	{
+	        if(!strncmp($reArticles[1]["TITLE"],"Re: ",4)) $nowtitle = $reArticles[1]["TITLE"];
+	        else
+	            $nowtitle = "Re: " . $reArticles[1]["TITLE"];
+		} else {
+			$nowtitle='';
+		}
+?>
+		  <input name=subject size=70 maxlength=80 value="<?php echo $nowtitle; ?>">&nbsp;&nbsp;<font color=#ff0000><strong>*</strong></font>不得超过 25 个汉字或50个英文字符
 	 </td>
         </tr>
         <tr>
@@ -182,7 +217,51 @@ function showPostArticles($boardID,$boardName,$boardArr){
 	  </td>
           <td width=80% class=tablebody1>
 <?php require_once("inc/ubbmenu.php"); ?>
-<textarea class=smallarea cols=95 name=Content rows=12 wrap=VIRTUAL title="可以使用Ctrl+Enter直接提交贴子" class=FormClass onkeydown=ctlent()></textarea>
+<textarea class=smallarea cols=95 name=Content rows=12 wrap=VIRTUAL title="可以使用Ctrl+Enter直接提交贴子" class=FormClass onkeydown=ctlent()>
+<?php
+    if($reID > 0){
+		$filename = $reArticles[1]["FILENAME"];
+		$filename = "boards/" . $boardName. "/" . $filename;
+		if(file_exists($filename))	{
+			$fp = fopen($filename, "r");
+			if ($fp) {
+				$lines = 0;
+				$buf = fgets($fp,256);       /* 取出第一行中 被引用文章的 作者信息 */
+				$end = strrpos($buf,")");
+				$start = strpos($buf,":");
+				if($start != FALSE && $end != FALSE)
+					$quser=substr($buf,$start+2,$end-$start-1);
+
+				echo "\n【 在 " . $quser . " 的大作中提到: 】\n";
+				for ($i = 0; $i < 3; $i++) {
+					if (($buf = fgets($fp,500)) == FALSE)
+						break;
+				}
+				while (1) {
+					if (($buf = fgets($fp,500)) == FALSE)
+						break;
+					if (strncmp($buf, ": 【", 4) == 0)
+						continue;
+					if (strncmp($buf, ": : ", 4) == 0)
+						continue;
+					if (strncmp($buf, "--\n", 3) == 0)
+						break;
+					if (strncmp($buf,'\n',1) == 0)
+						continue;
+					if (++$lines > 10) {
+						echo ": ...................\n";
+						break;
+					}
+					/* */
+					if (stristr($buf, "</textarea>") == FALSE)  //filter </textarea> tag in the text
+						echo ": ". $buf;
+				}
+				fclose($fp);
+			}
+		}
+	}
+?>
+	</textarea>
           </td>
         </tr>
 
