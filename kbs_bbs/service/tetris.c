@@ -209,10 +209,6 @@ int tetris_main()
   strcpy(userid,getCurrentUser()->userid);
   strcpy(userip,"unknown.");
 
-#ifdef SSHBBS
-  return 0;
-#endif
-
   modify_user_mode(TETRIS);
   intr();
   start();
