@@ -5,22 +5,29 @@
 	 */
 	$needlogin=false;
 	require("funcs.php");
+	require("reg.inc.php");
 
 	@$num_auth=$_POST["num_auth"];
 	@$userid=$_POST["userid"];
 	@$nickname=$_POST["username"];
+	/*
 	@$realname=$_POST["realname"];
 	@$dept=$_POST["dept"];
 	@$address=$_POST["address"];
 	@$year=$_POST["year"];
 	@$month=$_POST["month"];
 	@$day=$_POST["day"];
+	*/
 	@$reg_email=$_POST["reg_email"];
+	/*
 	@$phone=$_POST["phone"];
 	@$gender=$_POST["gender"];
 	@$m_register=$_POST["m_register"];
 	@$mobile_phone=$_POST["mobile_phone"];
-
+	*/
+	@$password = $_POST["pass1"];
+	@$re_password = $_POST["pass2"];
+	/*
 	session_start();
 	if(!isset($_SESSION['num_auth']))
   	    html_error_quit("请等待识别的图片显示完毕!");
@@ -29,10 +36,17 @@
 
 	if(!strchr($reg_email,'@'))
 	    html_error_quit("错误的注册 email 地址!");
-
-	//generate passwd
-	$password=bbs_findpwd_check("","","");
-
+	*/
+	if($password != $re_password)
+	    html_error_quit("密码与确认密码不一致! ");
+	    
+	if(strlen($password) < 4 || strlen($password) > 39)
+	    html_error_quit("密码不规范, 密码长度应为 4-39 位! ");
+	
+	//generate activation code
+	if(!($activation=bbs_create_activation()))
+		html_error_quit("生成激活码错误，请联系管理员!");
+	
 	//create new id
 	$ret=bbs_createnewid($userid,$password,$nickname);
 
@@ -65,8 +79,11 @@
 			html_error_quit("注册ID时发生未知的错误!");
 			break;
 	}
-
-
+	
+	$ret = bbs_setactivation($userid,"0".$activation.$reg_email);
+	if($ret != 0)
+		html_error_quit("设置激活码错误");
+	
 $mailbody="
 <?xml version=\"1.0\" encoding=\"gb2312\">
 <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">
@@ -79,18 +96,17 @@ style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-f
 <P class=MsoNormal><FONT size=2><SPAN 
 style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">用户名：" . $userid . "</SPAN></FONT></P>
 <P class=MsoNormal><FONT size=2><SPAN 
-style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">姓名：" . $realname . "<SPAN></FONT></P>
-<P class=MsoNormal><FONT size=2><SPAN 
-style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">地区：" . $address . "</SPAN></FONT></P>
+style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">昵称：" . $nickname . "<SPAN></FONT></P>
 <P class=MsoNormal><FONT size=2><SPAN 
 style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">密码：" . $password . "</SPAN></FONT></P>
 <P class=MsoNormal><FONT size=2><SPAN lang=EN-US>email</SPAN><SPAN 
 style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">：" . $reg_email . "</SPAN></FONT></P>
 <P class=MsoNormal><FONT size=2><A 
-href=\"https://www.smth.edu.cn\"><SPAN 
-style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">点击这里登录" . BBS_FULL_NAME . "</SPAN>
+href=\"https://www.smth.edu.cn/bbsact.php?userid=".$userid."&acode=".$activation."<SPAN 
+style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">点击这里激活您在" . BBS_FULL_NAME . "的新帐号</SPAN>
+<br /><br />
 <P class=MsoNormal><FONT size=2><SPAN 
-style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">您现在尚不能进行发表文章等操作,请等待站长手工通过注册单,谢谢.</SPAN></FONT></P>
+style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\"></SPAN></FONT></P>
 </body>
 </html>
 ";
@@ -101,41 +117,24 @@ $headers .= "Content-type: text/html; charset=gb2312\r\n";
 /* additional headers */
 $headers .= "From: BBS水木清华站 <https://www.smth.edu.cn>\r\n";
 
+html_init("gb2312");
 if(!mail($reg_email, "welcome to " . BBS_FULL_NAME, $mailbody,$headers))
-    html_error_quit("发送密码到您的注册Email失败!请确认您的该Email地址正确");
-
-	if(!strcmp($gender,"男"))$gender=1;
-    else
-        $gender=2;
-    settype($year,"integer");
-	settype($month,"integer");
-	settype($day,"integer");
-	settype($m_register,"bool");
-
-    if(!$m_register)$mobile_phone="";
-    if (BBS_WFORUM==0)  {
-        $ret=bbs_createregform($userid,$realname,$dept,$address,$gender,$year,$month,$day,$reg_email,$phone,$mobile_phone,TRUE);//自动生成注册单
-    } else {
-        $ret=bbs_createregform($userid,$realname,$dept,$address,$gender,$year,$month,$day,$email,$phone,$mobile_phone, $_POST['OICQ'], $_POST['ICQ'], $_POST['MSN'],  $_POST['homepage'], intval($_POST['face']), $_POST['myface'], intval($_POST['width']), intval($_POST['height']), intval($_POST['groupname']), $_POST['country'],  $_POST['province'], $_POST['city'], intval($_POST['shengxiao']), intval($_POST['blood']), intval($_POST['belief']), intval($_POST['occupation']), intval($_POST['marital']), intval($_POST['education']), $_POST['college'], intval($_POST['character']), TRUE);//自动生成注册单
-    }
-	switch($ret)
-	{
-	case 0:
-		break;
-	case 2:
-		html_error_quit("该用户不存在!");
-		break;
-	case 3:
-		html_error_quit("生成注册单发生 参数错误! 请两天后手工填写注册单");
-		break;
-	default:
-		html_error_quit("生成注册单发生 未知的错误! 请两天后手工填写注册单");
-		break;
-	}
-	html_init("gb2312");
+{
 ?>
 <body>
-申请BBS水木清华ID成功,你现在还没有通过身份认证,只有最基本的权限,不能发文,发信,聊天等,两天后系统会自动生成注册单.<br>
-注册单通过审核后,你将获得合法用户权限！<br/><a href="https://www.smth.edu.cn">现在登录进站</a>
+申请BBS水木清华ID成功,<font color=red>注册码发送到您的注册Email失败!登录后请确认您的Email地址并重新发送注册码</font><br>
+激活并通过审核后,你才将获得合法用户权限！<br/><a href="https://www.smth.edu.cn">现在登录进站</a>
 </body>
+<?php
+}   
+else
+{	
+?>
+<body>
+申请BBS水木清华ID成功,你现在还没有通过身份认证,只有最基本的权限,不能发文,发信,聊天等,请查收您收到的注册确认Email，点击里面的激活链接激活您在本站的帐号.<br>
+激活并通过审核后,你将获得合法用户权限！<br/><a href="https://www.smth.edu.cn">现在登录进站</a>
+</body>
+<?php
+}
+?>
 </html>

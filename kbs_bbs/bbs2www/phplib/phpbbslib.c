@@ -21,9 +21,11 @@
 #include "bbslib.h"
 #include "vote.h"
 
+static unsigned char two_arg_force_ref_01[] = { 2, BYREF_NONE, BYREF_FORCE };
 static unsigned char third_arg_force_ref_1111[] = { 4, BYREF_FORCE, BYREF_FORCE, BYREF_FORCE, BYREF_FORCE };
 static unsigned char third_arg_force_ref_011[] = { 3, BYREF_NONE, BYREF_FORCE, BYREF_FORCE };
 static unsigned char fourth_arg_force_ref_0001[] = { 4, BYREF_NONE, BYREF_NONE, BYREF_NONE, BYREF_FORCE };
+static unsigned char fourth_arg_force_ref_0111[] = { 4, BYREF_NONE, BYREF_FORCE, BYREF_FORCE, BYREF_FORCE };
 static unsigned char third_arg_force_ref_001[] = { 3, BYREF_NONE, BYREF_NONE, BYREF_FORCE };
 static unsigned char fifth_arg_force_ref_00011[] = { 5, BYREF_NONE, BYREF_NONE, BYREF_NONE, BYREF_FORCE , BYREF_FORCE};
 
@@ -78,6 +80,8 @@ static PHP_FUNCTION(bbs_delete_friend);
 static PHP_FUNCTION(bbs_add_friend);
 
 static PHP_FUNCTION(bbs_createnewid);
+static PHP_FUNCTION(bbs_setactivation);
+static PHP_FUNCTION(bbs_getactivation);
 static PHP_FUNCTION(bbs_fillidinfo);
 static PHP_FUNCTION(bbs_modify_info);
 static PHP_FUNCTION(bbs_recalc_sig);
@@ -316,6 +320,8 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_mail_file, NULL)
         PHP_FE(bbs_update_uinfo, NULL)
         PHP_FE(bbs_createnewid,NULL)
+        PHP_FE(bbs_setactivation,NULL)
+        PHP_FE(bbs_getactivation,two_arg_force_ref_01)
 	PHP_FE(bbs_createregform,NULL)
 	PHP_FE(bbs_findpwd_check,NULL)
         PHP_FE(bbs_fillidinfo,NULL)
@@ -5056,8 +5062,9 @@ static PHP_FUNCTION(bbs_createnewid)
 	time_t lnow;
 	struct userec newuser;
 	int allocid;
-
-    int ac = ZEND_NUM_ARGS();
+	FILE*   fn;
+	
+	int ac = ZEND_NUM_ARGS();
 
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
@@ -5134,7 +5141,89 @@ static PHP_FUNCTION(bbs_createnewid)
 	    bbslog("3error","create id %s home dir error:%s",userid,strerror(errno));
 	    RETURN_LONG(10);
 	}
+	
+	RETURN_LONG(0);
+}
 
+/**
+* set user's activation file
+* function bbs_setactivation(string userid , string filebody)
+* return  0 : seccess
+*         -1: user not exist
+*         -10:system error
+**/
+static PHP_FUNCTION(bbs_setactivation)
+{
+	char* userid;
+	int   userid_len;
+	char* filebody;
+	int   filebody_len;
+	struct userec *uc;
+	FILE *fn;
+	char* afile;
+	char buf[200];
+	
+	int ac = ZEND_NUM_ARGS();
+	
+	if (ac != 2 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "ss" , &userid , &userid_len , &filebody , &filebody_len) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+	
+	if(getuser(userid,&uc)==0)
+		RETURN_LONG(-1);
+	sethomefile(afile,uc->userid,"activation");
+	sprintf(buf,"rm -f %s",afile);
+	system(buf);
+	if ((fn=fopen(afile,"w"))==NULL)
+		RETURN_LONG(-10);
+	fprintf(fn,"%s",filebody);
+	fclose(fn);
+	RETURN_LONG(0);
+}
+
+/*
+** function bbs_getactivation(string userid,&string &activation)
+*  return  0 :seccess;
+*          -1:user not exist
+*          -2:can not find activation file
+*          -10:system error
+*/
+static PHP_FUNCTION(bbs_getactivation)
+{
+	char* userid;
+	int   userid_len;
+	zval *activation;
+	FILE* fn;
+	struct userec *uc;
+	char  buf[200];
+	char* afile;
+	
+	int ac = ZEND_NUM_ARGS();
+	
+	if (ac != 2 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "sz" , &userid , &userid_len , &activation ) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+	if (!PZVAL_IS_REF(activation))
+	{
+        	zend_error(E_WARNING, "Parameter wasn't passed by reference");
+        	RETURN_FALSE;
+    	}
+	if(getuser(userid,&uc)==0)
+		RETURN_LONG(-1);
+	sethomefile(afile,uc->userid,"activation");
+	if ((fn=fopen(afile,"r"))==NULL)
+		RETURN_LONG(-2);
+	if(fgets(buf,1024,fn)==NULL)
+	{
+		fclose(fn);
+		sprintf(buf,"rm -f %s",afile);
+		system(buf);
+		RETURN_LONG(-2);
+	}
+	ZVAL_STRING(activation,buf,1);
+	fclose(fn);
 	RETURN_LONG(0);
 }
 
@@ -5500,7 +5589,8 @@ static PHP_FUNCTION(bbs_saveuserdata)
  *      1 -- 注册单尚未处理
  *      2 -- 参数错误
  *      3 -- 用户不存在
- *      4 -- 用户已经通过注册  5 -- 不到时间
+ *      4 -- 用户已经通过注册
+ *      5 -- 不到时间
  *  	10 -- system error
  *  @author binxun 2003.5
  */
@@ -5593,6 +5683,7 @@ static PHP_FUNCTION(bbs_createregform)
         //检查用户是否已经通过注册或者还不到时间(先放到这里,最好放到php里面)
 	    if(getuser(userid,&uc) == 0)RETURN_LONG(3);
 		if(HAS_PERM(uc,PERM_LOGINOK))RETURN_LONG(4);
+
 	if(!bAuto)
 	{
 		/* remed by roy 2003.7.17 
@@ -5736,7 +5827,8 @@ static PHP_FUNCTION(bbs_createregform)
  *      1 -- 注册单尚未处理
  *      2 -- 参数错误
  *      3 -- 用户不存在
- *      4 -- 用户已经通过注册  5 -- 不到时间
+ *      4 -- 用户已经通过注册
+ *      5 -- 不到时间
  *  	10 -- system error
  *  @author binxun 2003.5
  */
@@ -5786,6 +5878,7 @@ static PHP_FUNCTION(bbs_createregform)
         //检查用户是否已经通过注册或者还不到时间(先放到这里,最好放到php里面)
 	    if(getuser(userid,&uc) == 0)RETURN_LONG(3);
 		if(HAS_PERM(uc,PERM_LOGINOK))RETURN_LONG(4);
+	
 	if(!bAuto)
 	{
 		/* remed by roy 2003.7.17 

@@ -4,6 +4,7 @@
 	 * by binxun 2003.5
 	 */
 	require("funcs.php");
+	require("reg.inc.php");
 	html_init("gb2312");
 
 	if ($loginok != 1)
@@ -24,6 +25,17 @@
 	if(!strcmp($currentuser["userid"],"guest"))
 		html_error_quit("请申请另外的帐号填写注册单!");
 
+	//检查激活码
+	$ret = bbs_getactivation($currentuser["userid"],$activation);
+	if($ret==0) //需要激活
+	{
+		if(!bbs_reg_haveactivated($activation))
+			html_error_quit("对不起，请先激活您的帐号。激活链接在您的注册Email里。<a href=\"/bbssendacode.php\">[我还没收到激活码]</a>");
+	
+		if(strtolower($email) != strtolower(bbs_reg_getactivationemail($activation)))
+			html_error_quit("对不起，您的注册Email有变动，请<a href=\"/bbssendacode.php\">重新激活</a>");
+	}
+	
 	//用户已经通过注册
 	//未满等待时间(先放到phplib里面做了)
 	if(!strcmp($gender,"男"))$gender=1;
@@ -66,6 +78,6 @@
 ?>
 <body>
 注册单已经提交,24小时内站务将会审核,如果通过,你就会获得合法用户权限！<br>
-<a href=\"javascript:history.go(-1)\">快速返回</a>
+<a href="javascript:history.go(-1)">快速返回</a>
 </body>
 </html>
