@@ -1616,7 +1616,7 @@ static PHP_FUNCTION(bbs_search_articles)
     struct boardheader *bp;
 	int found;
 	int i1,i2;
-	time_t now;
+	time_t timeLimit;
 
 
     if (ZEND_NUM_ARGS() != 9 || zend_parse_parameters(9 TSRMLS_CC, "sssssllll", &board, &bLen,&title,&tLen, &title2, &tLen2, &title3, &tLen3,&author, &aLen, &date,&mmode,&attach,&origin) != SUCCESS) {
@@ -1671,20 +1671,24 @@ static PHP_FUNCTION(bbs_search_articles)
 
 	i1=0;
 	i2=total-1;
-	now=time(0);
-	while( i1 < i2 ){
-		i=(i1+i2)/2;
-		if( now - get_posttime(ptr1+i) > date*86400 ){
-			i1=i+1;
-		}else if(now - get_posttime(ptr1+i) < date*86400){
-			i2=i-1;
-		}else
-			break;
-	}
-	while( now - get_posttime(ptr1+i) <= date*86400 && i>=0 )
-		i--;
+	timeLimit = time(0) - date*86400;
+	if (total > 0) {
+		while( i1 < i2 ){
+			i=(i1+i2)/2;
+			if( timeLimit > get_posttime(ptr1+i) ){
+				i1=i+1;
+			}else if(timeLimit < get_posttime(ptr1+i) ){
+				i2=i-1;
+			}else
+				break;
+		}
+		while( i>=0 && timeLimit <= get_posttime(ptr1+i) )
+			i--;
 
-	i++;
+		i++;
+	} else {
+		i = 0;
+	}
 
 	for (found=0;i<total;i++) {
 		if (title[0] && !strcasestr(ptr1[i].title, title))
@@ -1695,7 +1699,7 @@ static PHP_FUNCTION(bbs_search_articles)
 	        continue;
 		if (title3[0] && strcasestr(ptr1[i].title, title3))
 			continue;
-		if (abs(time(0) - get_posttime(ptr1+i)) > date * 86400)
+		if (timeLimit > get_posttime(ptr1+i))
 			continue;
 		if (mmode && !(ptr1[i].accessed[0] & FILE_MARKED) && !(ptr1[i].accessed[0] & FILE_DIGEST))
 			continue;
@@ -1866,6 +1870,7 @@ static PHP_FUNCTION(bbs_searchtitle)
         if (title3[0] && strcasestr(ptr1[i].origin.title, title3))
             continue;
         if (abs(time(0) - get_posttime(&(ptr1[i].lastreply))) > date * 86400) {
+            /* why abs? and should cache time(0) locally to speed up - atppp */
             if (ptr1[i].flags & FILE_ON_TOP) continue;
             else break; //normal article, lastreply out of range, so we can break
         }
