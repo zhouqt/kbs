@@ -637,7 +637,7 @@ int m_send(char *userid)
     if (HAS_PERM(currentuser, PERM_DENYMAIL))
         return DONOTHING;
 
-    if (userid == NULL || (uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND && uinfo.mode != GMENU)) {
+    if (userid == NULL) {
         move(1, 0);
         clrtoeol();
         modify_user_mode(SMAIL);

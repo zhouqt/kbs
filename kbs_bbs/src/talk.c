@@ -389,6 +389,7 @@ char q_id[IDLEN];
                     move(BBS_PAGESIZE + 3, 0);
                     clrtoeol();
                     prints("%s", buf);
+                    refresh();
                     sleep(1);
                     break;
                 case 'D':
@@ -408,6 +409,7 @@ char q_id[IDLEN];
                     move(BBS_PAGESIZE + 3, 0);
                     clrtoeol();
                     prints("%s", buf);
+                    refresh();
                     sleep(1);
                     break;
             }
@@ -473,7 +475,7 @@ int ttt_talk(struct user_info *userinfo)
 
     move(1, 0);
     clrtobot();
-    if (((uinfo.mode != LUSERS) && (uinfo.mode != FRIEND)) || userinfo == NULL) {
+    if (userinfo == NULL) {
         move(2, 0);
         prints("<输入使用者代号>\n");
         move(1, 0);
