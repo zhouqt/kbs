@@ -1,6 +1,6 @@
 # Process this file with autoconf to produce a configure script.
 #AC_INIT(FULL-PACKAGE-NAME, VERSION, BUG-REPORT-ADDRESS)
-AC_INIT(smthbbs, 1.0.1, SYSOP@smth.org)
+AC_INIT(smthbbs, 1.1, SYSOP@smth.org)
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
 
 AC_CANONICAL_TARGET
