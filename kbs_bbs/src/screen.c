@@ -171,6 +171,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
         else
             sprintf(ss, "\x1b[%dD", new_col-was_col);
         output(ss, strlen(ss));
+        return;
     }
     if (new_ln == was_ln && new_col<=was_col-1&&new_col>=was_col-9) {
         char ss[20];
@@ -179,22 +180,29 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
         else
             sprintf(ss, "\x1b[%dC", was_col-new_col);
         output(ss, strlen(ss));
+        return;
     }
-    if (new_col == was_col && new_ln>=was_ln+1&&new_ln<=was_ln+9) {
+    if ((new_col == was_col || new_col==0) && new_ln>=was_ln+1&&new_ln<=was_ln+9) {
         char ss[20];
         if(new_ln==was_ln+1)
             sprintf(ss, "\x1b[B");
         else
             sprintf(ss, "\x1b[%dB", new_ln-was_ln);
         output(ss, strlen(ss));
+        if(new_col==0&&was_col!=0)
+            ochar('\r');
+        return;
     }
-    if (new_col == was_col && new_ln<=was_ln-1&&new_ln>=was_ln-9) {
+    if ((new_col == was_col || new_col==0) && new_ln<=was_ln-1&&new_ln>=was_ln-9) {
         char ss[20];
         if(new_ln==was_ln-1)
             sprintf(ss, "\x1b[A");
         else
             sprintf(ss, "\x1b[%dA", was_ln-new_ln);
         output(ss, strlen(ss));
+        if(new_col==0&&was_col!=0)
+            ochar('\r');
+        return;
     }
     if(new_ln == was_ln+1 && new_col<=5) {
         int p=1, q=(new_ln+roll)%scr_lns;
