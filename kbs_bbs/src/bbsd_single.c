@@ -416,7 +416,7 @@ int check_IP_lists(unsigned int IP2)
             if((double)(now-ips[i].last)<=CON_THRESHOLD2) {
                 fp=fopen(".IPdenys", "a");
                 if(fp){
-                    fprintf(fp, "0 %ld %d.%d.%d.%d %d\n", (unsigned int)now, ip[0],ip[1],ip[2],ip[3], ips[i].t);
+                    fprintf(fp, "0 %ld %d.%d.%d.%d %d %d\n", (unsigned int)now, ip[0],ip[1],ip[2],ip[3], ips[i].t);
                     fclose(fp);
                 }
                 ret = 1;
