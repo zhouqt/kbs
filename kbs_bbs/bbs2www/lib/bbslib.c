@@ -1968,7 +1968,7 @@ int www_user_login(struct userec* user,int useridx,int kick_multi,char* fromhost
 		strncpy( ui.userid,   user->userid,   20 );
 		strncpy( ui.realname, user->realname, 20 );
 		strncpy( ui.username, user->username, 40 );
-		utmpent = getnewutmpent(&ui) ;
+		utmpent = getnewutmpent2(&ui) ;
 		if (utmpent == -1)
 			ret=1;
 		else {
@@ -2005,12 +2005,13 @@ int www_user_login(struct userec* user,int useridx,int kick_multi,char* fromhost
 			www_guest_uinfo.utmpkey=tmp;
 			*ppuinfo=&www_guest_uinfo;
 			*putmpent=idx;
+			getuser("guest",&currentuser);
 			ret=0;
 		}
 	}
 	
 	if ((ret==0)||(ret==2)) {
-		snprintf(buf, sizeof(buf), "ENTER ?@%s [www]", fromhost);
+		snprintf(buf, sizeof(buf), "ENTER ?@%s (ALLOC %d) [www]", fromhost, *putmpent);
 		bbslog("1system", "%s",buf);
 	}
 	return ret;
@@ -2035,7 +2036,7 @@ int www_user_logoff(struct userec* user,int useridx,struct user_info* puinfo,int
 	user->stay+=stay;
 	record_exit_time();
 	bbslog( "1system", "EXIT: Stay:%3ld (%s)[%d %d]", stay / 60, 
-			x->username, get_curr_utmpent(), useridx);
+			user->username, get_curr_utmpent(), useridx);
 	if (strcasecmp(user->userid,"guest")) {
 	    	if(!puinfo->active) return 0;
 	    		setflags(user,PAGER_FLAG, (puinfo->pager&ALL_PAGER));
@@ -2062,3 +2063,4 @@ time_t set_idle_time(struct user_info *uentp, time_t t)
 
 	return t;
 }
+

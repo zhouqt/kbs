@@ -44,7 +44,8 @@ if ($utmpkey!="") {
   }
 }
 
-global function valid_filename($fn)
+/*
+function valid_filename($fn)
 {
 	if ((strstr($fn,"..")!=FALSE)||(strstr($fn,"/")))
 		return 0;
@@ -65,4 +66,5 @@ history.go(-1);
 </SCRIPT>
 <?
 }
+*/
 ?>

@@ -7,16 +7,16 @@ $kick_multi = $_POST["kick_multi"];
 $error=-1;
 if ($loginok!=1) {
   if ($id!="") {
-    if (bbs_checkpasswd($id,$passwd)!=0)
+    if (($id!="guest")&&bbs_checkpasswd($id,$passwd)!=0)
       $loginok=6;
     else {
       $kick=0;
       if ($kick_multi!="")
-	$kick=1;
+	  	$kick=1;
       $error=bbs_wwwlogin($kick);
       if (($error!=0)&&($error!=2)) {
         $loginok=6;
-	if ($error==-1) 
+	  if ($error==-1) 
 		$loginok=4;
       }
       else {
@@ -25,14 +25,14 @@ if ($loginok!=1) {
         setcookie("UTMPKEY",$data["utmpkey"]);
         setcookie("UTMPNUM",$num);
         setcookie("UTMPUSERID",$data["userid"]);
-	header("Location: /index.html");
-	return;
+	    header("Location: /frames.html");
+	    return;
       }
     }
   }
 }
 else {
-	header("Location: /index.html");
+	header("Location: /frames.html");
 	return;
 }
 ?>

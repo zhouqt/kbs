@@ -38,7 +38,7 @@ CGI	= bbsusr bbstop10 bbssec bbsdoc bbscon bbsbrdadd bbsboa bbsall bbsanc bbs0an
 
 all: $(CGI)
 
-$(CGI): % : %.o
+$(CGI): % : %.o ../lib/libbbslib.a
 	$(LD) $^ -o $* -lbbslib $(LDFLAGS) $(EXECLDFLAGS) -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' $(DEFINES) 
 
 install: $(patsubst %,$(CGIPATH)/%,$(CGI))
