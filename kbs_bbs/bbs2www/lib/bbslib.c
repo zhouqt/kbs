@@ -510,7 +510,7 @@ int user_init(struct userec **x, struct user_info **y)
     if (id[0] == '\0')
         return -1;
 
-    if (www_user_init(getSession()->utmpent, id, key, x, y, 0) == 0 && strcasecmp("guest", getCurrentUser()->userid))
+    if (www_user_init(getSession()->utmpent, id, key, x, y, 0) == 0 && strcasecmp("guest", (*x)->userid))
         return 1;
     return 0;
 }
@@ -974,6 +974,7 @@ int initwww_all()
 	struct userec * user;
     srand(time(0) * 2 + getpid());
     chdir(BBSHOME);
+    init_sessiondata(getSession());
     http_init();
     /*
      * seteuid(BBSUID);
@@ -996,7 +997,6 @@ int initwww_all()
     }
     html_init();
     init_bbslog();
-	init_sessiondata(getSession());
 }
 
 char *void1(unsigned char *s)
