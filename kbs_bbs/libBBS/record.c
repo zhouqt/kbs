@@ -24,7 +24,7 @@
 #include "bbs.h"
 
 #define BUFSIZE (MAXUSERS + 244)
-#define NUMBUFFER 20
+#define NUMBUFFER 80
 
 #ifdef SYSV
 int
@@ -351,6 +351,7 @@ char *farg ;
     if((buf=malloc(size*NUMBUFFER))==NULL) {
         while(read(fd,rptr,size) == size) {
             if((*fptr)(farg,rptr)) {
+                free(buf);
                 close(fd) ;
                 return id ;
             }
