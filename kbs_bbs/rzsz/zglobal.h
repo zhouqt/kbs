@@ -64,8 +64,8 @@ struct termios;
 #     include <sgtty.h>
 #     define USE_SGTTY
 #     ifdef LLITOUT
-extern long Locmode;		/* Saved "local mode" for 4.x BSD "new driver" */
-extern long Locbit;		/* Bit SUPPOSED to disable output translations */
+extern long Locmode;            /* Saved "local mode" for 4.x BSD "new driver" */
+extern long Locbit;             /* Bit SUPPOSED to disable output translations */
 #     endif
 #    else
 #     error neither termio.h nor sgtty.h found. Cannot continue.
@@ -130,17 +130,17 @@ extern void raw_ochar(char c);
 #define ACK 6
 #define NAK 025
 #define CPMEOF 032
-#define WANTCRC 0103		/* send C not NAK to get crc not checksum */
-#define WANTG 0107		/* Send G not NAK to get nonstop batch xmsn */
+#define WANTCRC 0103            /* send C not NAK to get crc not checksum */
+#define WANTG 0107              /* Send G not NAK to get nonstop batch xmsn */
 #define TIMEOUT (-2)
 #define RCDO (-3)
 #define WCEOT (-10)
 
 #define RETRYMAX 10
 
-#define UNIXFILE 0xF000		/* The S_IFMT file mask bit for stat */
+#define UNIXFILE 0xF000         /* The S_IFMT file mask bit for stat */
 
-#define DEFBYTL 2000000000L	/* default rx file size */
+#define DEFBYTL 2000000000L     /* default rx file size */
 
 enum zm_type_enum {
     ZM_XMODEM,
@@ -155,7 +155,7 @@ struct zm_fileinfo {
     size_t bytes_total;
     size_t bytes_sent;
     size_t bytes_received;
-    size_t bytes_skipped;	/* crash recovery */
+    size_t bytes_skipped;       /* crash recovery */
     int eof_seen;
 };
 
@@ -163,10 +163,10 @@ struct zm_fileinfo {
 
 extern enum zm_type_enum protocol;
 
-extern const char *program_name;	/* the name by which we were called */
+extern const char *program_name;        /* the name by which we were called */
 extern int errors;
 extern int no_timeout;
-extern int Zctlesc;		/* Encode control characters */
+extern int Zctlesc;             /* Encode control characters */
 
 void bibi(int n);
 
@@ -174,8 +174,8 @@ void bibi(int n);
 #define xsendline(c) raw_ochar(c)
 
 /* zreadline.c */
-extern char *readline_ptr;	/* pointer for removing chars from linbuf */
-extern int readline_left;	/* number of buffered chars left to read */
+extern char *readline_ptr;      /* pointer for removing chars from linbuf */
+extern int readline_left;       /* number of buffered chars left to read */
 
 #define READLINE_PF(timeout) \
     (--readline_left >= 0? (*readline_ptr++ & 0377) : readline_internal(timeout))
@@ -219,23 +219,23 @@ extern long cr3tab[];
 
 /* zm.c */
 #include "zmodem.h"
-extern unsigned int Rxtimeout;	/* Tenths of seconds to wait for something */
-extern int bytes_per_error;	/* generate one error around every x bytes */
+extern unsigned int Rxtimeout;  /* Tenths of seconds to wait for something */
+extern int bytes_per_error;     /* generate one error around every x bytes */
 
 /* Globals used by ZMODEM functions */
-extern int Rxframeind;		/* ZBIN ZBIN32, or ZHEX type of frame received */
-extern int Rxtype;		/* Type of header received */
-extern int Zrwindow;		/* RX window size (controls garbage count) */
+extern int Rxframeind;          /* ZBIN ZBIN32, or ZHEX type of frame received */
+extern int Rxtype;              /* Type of header received */
+extern int Zrwindow;            /* RX window size (controls garbage count) */
 
 /* extern int Rxcount; *//* Count of data bytes received */
-extern char Rxhdr[4];		/* Received header */
-extern char Txhdr[4];		/* Transmitted header */
-extern long Txpos;		/* Transmitted file position */
-extern int Txfcs32;		/* TURE means send binary frames with 32 bit FCS */
-extern int Crc32t;		/* Display flag indicating 32 bit CRC being sent */
-extern int Crc32;		/* Display flag indicating 32 bit CRC being received */
-extern int Znulls;		/* Number of nulls to send at beginning of ZDATA hdr */
-extern char Attn[ZATTNLEN + 1];	/* Attention string rx sends to tx on err */
+extern char Rxhdr[4];           /* Received header */
+extern char Txhdr[4];           /* Transmitted header */
+extern long Txpos;              /* Transmitted file position */
+extern int Txfcs32;             /* TURE means send binary frames with 32 bit FCS */
+extern int Crc32t;              /* Display flag indicating 32 bit CRC being sent */
+extern int Crc32;               /* Display flag indicating 32 bit CRC being received */
+extern int Znulls;              /* Number of nulls to send at beginning of ZDATA hdr */
+extern char Attn[ZATTNLEN + 1]; /* Attention string rx sends to tx on err */
 
 extern void zsendline(int c);
 extern void zsendline_init(void);

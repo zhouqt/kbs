@@ -48,17 +48,17 @@ int check_crc(unsigned char *S, unsigned char *buf, word32 len, unsigned char *I
 
     crc = 0;
     if (IV && !CMP(S, IV)) {
-	crc_update(&crc, 1);
-	crc_update(&crc, 0);
+        crc_update(&crc, 1);
+        crc_update(&crc, 0);
     }
     for (c = buf; c < buf + len; c += SSH_BLOCKSIZE) {
-	if (!CMP(S, c)) {
-	    crc_update(&crc, 1);
-	    crc_update(&crc, 0);
-	} else {
-	    crc_update(&crc, 0);
-	    crc_update(&crc, 0);
-	}
+        if (!CMP(S, c)) {
+            crc_update(&crc, 1);
+            crc_update(&crc, 0);
+        } else {
+            crc_update(&crc, 0);
+            crc_update(&crc, 0);
+        }
     }
 
     return (crc == 0);
@@ -85,61 +85,61 @@ int detect_attack(unsigned char *buf, word32 len, unsigned char *IV)
     for (l = n; l < HASH_FACTOR(len / SSH_BLOCKSIZE); l = l << 2);
 
     if (h == NULL) {
-	debug("Installing crc compensation attack detector.");
-	n = l;
-	h = (word16 *) xmalloc(n * sizeof(word16));
+        debug("Installing crc compensation attack detector.");
+        n = l;
+        h = (word16 *) xmalloc(n * sizeof(word16));
     } else {
-	if (l > n) {
-	    n = l;
-	    h = (word16 *) xrealloc(h, n * sizeof(word16));
-	}
+        if (l > n) {
+            n = l;
+            h = (word16 *) xrealloc(h, n * sizeof(word16));
+        }
     }
 
 
     if (len <= HASH_MINBLOCKS) {
-	for (c = buf; c < buf + len; c += SSH_BLOCKSIZE) {
-	    if (IV && (!CMP(c, IV))) {
-		if ((check_crc(c, buf, len, IV)))
-		    return (DEATTACK_DETECTED);
-		else
-		    break;
-	    }
-	    for (d = buf; d < c; d += SSH_BLOCKSIZE) {
-		if (!CMP(c, d)) {
-		    if ((check_crc(c, buf, len, IV)))
-			return (DEATTACK_DETECTED);
-		    else
-			break;
-		}
-	    }
-	}
-	return (DEATTACK_OK);
+        for (c = buf; c < buf + len; c += SSH_BLOCKSIZE) {
+            if (IV && (!CMP(c, IV))) {
+                if ((check_crc(c, buf, len, IV)))
+                    return (DEATTACK_DETECTED);
+                else
+                    break;
+            }
+            for (d = buf; d < c; d += SSH_BLOCKSIZE) {
+                if (!CMP(c, d)) {
+                    if ((check_crc(c, buf, len, IV)))
+                        return (DEATTACK_DETECTED);
+                    else
+                        break;
+                }
+            }
+        }
+        return (DEATTACK_OK);
     }
 
     for (i = 0; i < n; i++)
-	h[i] = HASH_UNUSED;
+        h[i] = HASH_UNUSED;
 
     if (IV)
-	h[HASH(IV) & (n - 1)] = HASH_IV;
+        h[HASH(IV) & (n - 1)] = HASH_IV;
 
 
     for (c = buf, j = 0; c < (buf + len); c += SSH_BLOCKSIZE, j++) {
-	for (i = HASH(c) & (n - 1); h[i] != HASH_UNUSED; i = (i + 1) & (n - 1)) {
-	    if (h[i] == HASH_IV) {
-		if (!CMP(c, IV)) {
-		    if (check_crc(c, buf, len, IV))
-			return (DEATTACK_DETECTED);
-		    else
-			break;
-		}
-	    } else if (!CMP(c, buf + h[i] * SSH_BLOCKSIZE)) {
-		if (check_crc(c, buf, len, IV))
-		    return (DEATTACK_DETECTED);
-		else
-		    break;
-	    }
-	}
-	h[i] = j;
+        for (i = HASH(c) & (n - 1); h[i] != HASH_UNUSED; i = (i + 1) & (n - 1)) {
+            if (h[i] == HASH_IV) {
+                if (!CMP(c, IV)) {
+                    if (check_crc(c, buf, len, IV))
+                        return (DEATTACK_DETECTED);
+                    else
+                        break;
+                }
+            } else if (!CMP(c, buf + h[i] * SSH_BLOCKSIZE)) {
+                if (check_crc(c, buf, len, IV))
+                    return (DEATTACK_DETECTED);
+                else
+                    break;
+            }
+        }
+        h[i] = j;
     }
 
     return (DEATTACK_OK);

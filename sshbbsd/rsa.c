@@ -39,6 +39,9 @@ Description of the RSA algorithm can be found e.g. from the following sources:
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:43  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:48  kcn
  * format C
  *
@@ -84,9 +87,9 @@ Description of the RSA algorithm can be found e.g. from the following sources:
 
 int rsa_verbose = 1;
 
-#define MAX_PRIMES_IN_TABLE 1050	/* must be more than # primes */
+#define MAX_PRIMES_IN_TABLE 1050        /* must be more than # primes */
 
-static const unsigned int small_primes[MAX_PRIMES_IN_TABLE + 1] = {	/* 2 is eliminated by trying only odd numbers. */
+static const unsigned int small_primes[MAX_PRIMES_IN_TABLE + 1] = {     /* 2 is eliminated by trying only odd numbers. */
     3, 5, 7, 11, 13, 17, 19,
     23, 29, 31, 37, 41, 43, 47, 53,
     59, 61, 67, 71, 73, 79, 83, 89,
@@ -230,11 +233,11 @@ void rsa_random_integer(MP_INT * ret, RandomState * state, unsigned int bits)
     /* We first create a random hex number of the desired size, and then
        convert it to a mp-int. */
     for (i = 0; i < bytes; i++)
-	sprintf(str + 2 * i, "%02x", random_get_byte(state));
+        sprintf(str + 2 * i, "%02x", random_get_byte(state));
 
     /* Convert it to the internal representation. */
     if (mpz_set_str(ret, str, 16) < 0)
-	fatal("Intenal error, mpz_set_str returned error");
+        fatal("Intenal error, mpz_set_str returned error");
 
     /* Clear extra data. */
     memset(str, 0, 2 * bytes);
@@ -274,63 +277,63 @@ void rsa_random_prime(MP_INT * ret, RandomState * state, unsigned int bits)
        random number. */
     moduli = xmalloc(MAX_PRIMES_IN_TABLE * sizeof(moduli[0]));
     if (bits < 16)
-	num_primes = 0;		/* Don\'t use the table for very small numbers. */
+        num_primes = 0;         /* Don\'t use the table for very small numbers. */
     else {
-	for (num_primes = 0; small_primes[num_primes] != 0; num_primes++) {
-	    mpz_mod_ui(&aux, &start, small_primes[num_primes]);
-	    moduli[num_primes] = mpz_get_ui(&aux);
-	}
+        for (num_primes = 0; small_primes[num_primes] != 0; num_primes++) {
+            mpz_mod_ui(&aux, &start, small_primes[num_primes]);
+            moduli[num_primes] = mpz_get_ui(&aux);
+        }
     }
 
     /* Look for numbers that are not evenly divisible by any of the small
        primes. */
     for (difference = 0;; difference += 2) {
-	unsigned int i;
+        unsigned int i;
 
-	if (difference > 0x70000000) {	/* Should never happen, I think... */
-	    if (rsa_verbose)
-		fprintf(stderr, "rsa_random_prime: failed to find a prime, retrying.\n");
-	    xfree(moduli);
-	    goto retry;
-	}
+        if (difference > 0x70000000) {  /* Should never happen, I think... */
+            if (rsa_verbose)
+                fprintf(stderr, "rsa_random_prime: failed to find a prime, retrying.\n");
+            xfree(moduli);
+            goto retry;
+        }
 
-	/* Check if it is a multiple of any small prime.  Note that this
-	   updates the moduli into negative values as difference grows. */
-	for (i = 0; i < num_primes; i++) {
-	    while (moduli[i] + difference >= small_primes[i])
-		moduli[i] -= small_primes[i];
-	    if (moduli[i] + difference == 0)
-		break;
-	}
-	if (i < num_primes)
-	    continue;		/* Multiple of a known prime. */
+        /* Check if it is a multiple of any small prime.  Note that this
+           updates the moduli into negative values as difference grows. */
+        for (i = 0; i < num_primes; i++) {
+            while (moduli[i] + difference >= small_primes[i])
+                moduli[i] -= small_primes[i];
+            if (moduli[i] + difference == 0)
+                break;
+        }
+        if (i < num_primes)
+            continue;           /* Multiple of a known prime. */
 
-	/* It passed the small prime test (not divisible by any of them). */
-	if (rsa_verbose) {
-	    fprintf(stderr, ".");
-	}
+        /* It passed the small prime test (not divisible by any of them). */
+        if (rsa_verbose) {
+            fprintf(stderr, ".");
+        }
 
-	/* Compute the number in question. */
-	mpz_add_ui(ret, &start, difference);
+        /* Compute the number in question. */
+        mpz_add_ui(ret, &start, difference);
 
-	/* Perform the fermat test for witness 2.  This means:
-	   it is not prime if 2^n mod n != 2. */
-	mpz_set_ui(&aux, 2);
-	mpz_powm(&aux, &aux, ret, ret);
-	if (mpz_cmp_ui(&aux, 2) == 0) {
-	    /* Passed the fermat test for witness 2. */
-	    if (rsa_verbose) {
-		fprintf(stderr, "+");
-	    }
-	    /* Perform a more tests.  These are probably unnecessary. */
-	    if (mpz_probab_prime_p(ret, 20))
-		break;		/* It is a prime with probability 1 - 2^-40. */
-	}
+        /* Perform the fermat test for witness 2.  This means:
+           it is not prime if 2^n mod n != 2. */
+        mpz_set_ui(&aux, 2);
+        mpz_powm(&aux, &aux, ret, ret);
+        if (mpz_cmp_ui(&aux, 2) == 0) {
+            /* Passed the fermat test for witness 2. */
+            if (rsa_verbose) {
+                fprintf(stderr, "+");
+            }
+            /* Perform a more tests.  These are probably unnecessary. */
+            if (mpz_probab_prime_p(ret, 20))
+                break;          /* It is a prime with probability 1 - 2^-40. */
+        }
     }
 
     /* Found a (probable) prime.  It is in ret. */
     if (rsa_verbose) {
-	fprintf(stderr, "+ (distance %ld)\n", difference);
+        fprintf(stderr, "+ (distance %ld)\n", difference);
     }
 
     /* Free the small prime moduli; they are no longer needed. */
@@ -340,9 +343,9 @@ void rsa_random_prime(MP_INT * ret, RandomState * state, unsigned int bits)
        wrapped around)? */
     mpz_div_2exp(&aux, ret, bits - 1);
     if (mpz_get_ui(&aux) != 1) {
-	if (rsa_verbose)
-	    fprintf(stderr, "rsa_random_prime: high bit not set, retrying.\n");
-	goto retry;
+        if (rsa_verbose)
+            fprintf(stderr, "rsa_random_prime: high bit not set, retrying.\n");
+        goto retry;
     }
     mpz_clear(&start);
     mpz_clear(&aux);
@@ -364,18 +367,18 @@ static void mpz_mod_inverse(MP_INT * x, MP_INT * a, MP_INT * n)
     mpz_init(&mod);
     mpz_init(&aux);
     while (mpz_cmp_ui(&g1, 0) != 0) {
-	mpz_divmod(&div, &mod, &g0, &g1);
-	mpz_mul(&aux, &div, &v1);
-	mpz_sub(&aux, &v0, &aux);
-	mpz_set(&v0, &v1);
-	mpz_set(&v1, &aux);
-	mpz_set(&g0, &g1);
-	mpz_set(&g1, &mod);
+        mpz_divmod(&div, &mod, &g0, &g1);
+        mpz_mul(&aux, &div, &v1);
+        mpz_sub(&aux, &v0, &aux);
+        mpz_set(&v0, &v1);
+        mpz_set(&v1, &aux);
+        mpz_set(&g0, &g1);
+        mpz_set(&g1, &mod);
     }
     if (mpz_cmp_ui(&v0, 0) < 0)
-	mpz_add(x, &v0, n);
+        mpz_add(x, &v0, n);
     else
-	mpz_set(x, &v0);
+        mpz_set(x, &v0);
 
     mpz_clear(&g0);
     mpz_clear(&g1);
@@ -416,11 +419,11 @@ static void derive_rsa_keys(MP_INT * n, MP_INT * e, MP_INT * d, MP_INT * u, MP_I
     mpz_gcd(&G, &p_minus_1, &q_minus_1);
 
     if (rsa_verbose) {
-	if (mpz_cmp_ui(&G, 100) >= 0) {
-	    fprintf(stderr, "Warning: G=");
-	    mpz_out_str(stdout, 10, &G);
-	    fprintf(stderr, " is large (many spare key sets); key may be bad!\n");
-	}
+        if (mpz_cmp_ui(&G, 100) >= 0) {
+            fprintf(stderr, "Warning: G=");
+            mpz_out_str(stdout, 10, &G);
+            fprintf(stderr, " is large (many spare key sets); key may be bad!\n");
+        }
     }
 
     /* F = phi / G; the number of relative prime numbers per spare key set. */
@@ -429,11 +432,11 @@ static void derive_rsa_keys(MP_INT * n, MP_INT * e, MP_INT * d, MP_INT * u, MP_I
     /* Find a suitable e (the public exponent). */
     mpz_set_ui(e, 1);
     mpz_mul_2exp(e, e, ebits);
-    mpz_sub_ui(e, e, 1);	/* make lowest bit 1, and substract 2. */
+    mpz_sub_ui(e, e, 1);        /* make lowest bit 1, and substract 2. */
     /* Keep adding 2 until it is relatively prime to (p-1)(q-1). */
     do {
-	mpz_add_ui(e, e, 2);
-	mpz_gcd(&aux, e, &phi);
+        mpz_add_ui(e, e, 2);
+        mpz_gcd(&aux, e, &phi);
     }
     while (mpz_cmp_ui(&aux, 1) != 0);
 
@@ -483,10 +486,10 @@ void rsa_generate_key(RSAPrivateKey * prv, RSAPublicKey * pub, RandomState * sta
 
 #ifndef RSAREF
   retry0:
-#endif				/* !RSAREF */
+#endif                          /* !RSAREF */
 
     if (rsa_verbose) {
-	fprintf(stderr, "Generating p:  ");
+        fprintf(stderr, "Generating p:  ");
     }
 
     /* Generate random number p. */
@@ -495,7 +498,7 @@ void rsa_generate_key(RSAPrivateKey * prv, RSAPublicKey * pub, RandomState * sta
   retry:
 
     if (rsa_verbose) {
-	fprintf(stderr, "Generating q:  ");
+        fprintf(stderr, "Generating q:  ");
     }
 
     /* Generate random number q. */
@@ -504,14 +507,14 @@ void rsa_generate_key(RSAPrivateKey * prv, RSAPublicKey * pub, RandomState * sta
     /* Sort them so that p < q. */
     ret = mpz_cmp(&prv->p, &prv->q);
     if (ret == 0) {
-	if (rsa_verbose)
-	    fprintf(stderr, "Generated the same prime twice!\n");
-	goto retry;
+        if (rsa_verbose)
+            fprintf(stderr, "Generated the same prime twice!\n");
+        goto retry;
     }
     if (ret > 0) {
-	mpz_set(&aux, &prv->p);
-	mpz_set(&prv->p, &prv->q);
-	mpz_set(&prv->q, &aux);
+        mpz_set(&aux, &prv->p);
+        mpz_set(&prv->p, &prv->q);
+        mpz_set(&prv->q, &aux);
     }
 
     /* Make sure that p and q are not too close together (I am not sure if this
@@ -519,23 +522,23 @@ void rsa_generate_key(RSAPrivateKey * prv, RSAPublicKey * pub, RandomState * sta
     mpz_sub(&aux, &prv->q, &prv->p);
     mpz_div_2exp(&test, &prv->q, 10);
     if (mpz_cmp(&aux, &test) < 0) {
-	if (rsa_verbose)
-	    fprintf(stderr, "The primes are too close together.\n");
-	goto retry;
+        if (rsa_verbose)
+            fprintf(stderr, "The primes are too close together.\n");
+        goto retry;
     }
 
     /* Make certain p and q are relatively prime (in case one or both were false
        positives...  Though this is quite impossible). */
     mpz_gcd(&aux, &prv->p, &prv->q);
     if (mpz_cmp_ui(&aux, 1) != 0) {
-	if (rsa_verbose)
-	    fprintf(stderr, "The primes are not relatively prime!\n");
-	goto retry;
+        if (rsa_verbose)
+            fprintf(stderr, "The primes are not relatively prime!\n");
+        goto retry;
     }
 
     /* Derive the RSA private key from the primes. */
     if (rsa_verbose)
-	fprintf(stderr, "Computing the keys...\n");
+        fprintf(stderr, "Computing the keys...\n");
     derive_rsa_keys(&prv->n, &prv->e, &prv->d, &prv->u, &prv->p, &prv->q, 5);
     prv->bits = bits;
 
@@ -544,34 +547,34 @@ void rsa_generate_key(RSAPrivateKey * prv, RSAPublicKey * pub, RandomState * sta
     mpz_init_set(&pub->n, &prv->n);
     mpz_init_set(&pub->e, &prv->e);
 
-#ifndef RSAREF			/* I don't want to kludge these to work with RSAREF. */
+#ifndef RSAREF                  /* I don't want to kludge these to work with RSAREF. */
     /* Test that the key really works.  This should never fail (I think). */
     if (rsa_verbose)
-	fprintf(stderr, "Testing the keys...\n");
+        fprintf(stderr, "Testing the keys...\n");
     rsa_random_integer(&test, state, bits);
-    mpz_mod(&test, &test, &pub->n);	/* must be less than n. */
+    mpz_mod(&test, &test, &pub->n);     /* must be less than n. */
     rsa_private(&aux, &test, prv);
     rsa_public(&aux, &aux, pub);
     if (mpz_cmp(&aux, &test) != 0) {
-	if (rsa_verbose)
-	    fprintf(stderr, "**** private+public failed to decrypt.\n");
-	goto retry0;
+        if (rsa_verbose)
+            fprintf(stderr, "**** private+public failed to decrypt.\n");
+        goto retry0;
     }
 
     rsa_public(&aux, &test, pub);
     rsa_private(&aux, &aux, prv);
     if (mpz_cmp(&aux, &test) != 0) {
-	if (rsa_verbose)
-	    fprintf(stderr, "**** public+private failed to decrypt.\n");
-	goto retry0;
+        if (rsa_verbose)
+            fprintf(stderr, "**** public+private failed to decrypt.\n");
+        goto retry0;
     }
-#endif				/* !RSAREF */
+#endif                          /* !RSAREF */
 
     mpz_clear(&aux);
     mpz_clear(&test);
 
     if (rsa_verbose)
-	fprintf(stderr, "Key generation complete.\n");
+        fprintf(stderr, "Key generation complete.\n");
 }
 
 /* Frees any memory associated with the private key. */
@@ -653,7 +656,7 @@ void rsa_public(MP_INT * output, MP_INT * input, RSAPublicKey * pub)
     mpz_powm(output, input, &pub->e, &pub->n);
 }
 
-#endif				/* !RSAREF */
+#endif                          /* !RSAREF */
 
 /* Special realloc that zeroes the old memory before freeing it. */
 
@@ -664,7 +667,7 @@ static void *rsa_realloc(void *ptr, size_t old_size, size_t new_size)
 
     s = old_size;
     if (old_size > new_size)
-	s = new_size;
+        s = new_size;
     memcpy(p, ptr, s);
     memset(ptr, 0, old_size);
     xfree(ptr);

@@ -16,6 +16,9 @@ The IDEA encryption algorithm.
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:42  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:47  kcn
  * format C
  *
@@ -64,4 +67,4 @@ void idea_cfb_encrypt(IDEAContext * c, unsigned char *iv, unsigned char *dest, c
    decryption. */
 void idea_cfb_decrypt(IDEAContext * c, unsigned char *iv, unsigned char *dest, const unsigned char *src, unsigned int len);
 
-#endif				/* IDEA_H */
+#endif                          /* IDEA_H */

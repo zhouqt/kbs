@@ -16,6 +16,9 @@ Cryptographically strong random number generator.
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:43  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:48  kcn
  * format C
  *
@@ -48,11 +51,11 @@ Cryptographically strong random number generator.
 
 /* Structure for the random state. */
 typedef struct {
-    unsigned char state[RANDOM_STATE_BYTES];	/* Pool of random data. */
-    unsigned char stir_key[64];	/* Extra data for next stirring. */
-    unsigned int next_available_byte;	/* Index of next available byte. */
-    unsigned int add_position;	/* Index to add noise. */
-    time_t last_dev_random_usage;	/* Time of last /dev/random usage. */
+    unsigned char state[RANDOM_STATE_BYTES];    /* Pool of random data. */
+    unsigned char stir_key[64]; /* Extra data for next stirring. */
+    unsigned int next_available_byte;   /* Index of next available byte. */
+    unsigned int add_position;  /* Index to add noise. */
+    time_t last_dev_random_usage;       /* Time of last /dev/random usage. */
 } RandomState;
 
 /* Initializes the random number generator, loads any random information
@@ -100,4 +103,4 @@ void random_save(RandomState * state, uid_t uid, const char *filename);
    generator. */
 void random_clear(RandomState * state);
 
-#endif				/* RANDOM_H */
+#endif                          /* RANDOM_H */

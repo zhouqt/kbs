@@ -13,6 +13,9 @@ Created: Wed Jan 24 20:19:53 1996 ylo
 
 /*
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:44  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:49  kcn
  * format C
  *
@@ -228,60 +231,60 @@ int do_popen(const char *command, const char *type)
     extern char **environ;
 
     if (pipe(fds) < 0)
-	fatal("pipe: %.100s", strerror(errno));
+        fatal("pipe: %.100s", strerror(errno));
 
     pid = fork();
     if (pid < 0)
-	fatal("fork: %.100s", strerror(errno));
+        fatal("fork: %.100s", strerror(errno));
 
-    if (pid == 0) {		/* Child */
+    if (pid == 0) {             /* Child */
 
 
-	/* Set up file descriptors. */
-	if (type[0] == 'r') {
-	    if (dup2(fds[1], 1) < 0)
-		perror("dup2 1");
-	} else {
-	    if (dup2(fds[0], 0) < 0)
-		perror("dup2 0");
-	}
-	close(fds[0]);
-	close(fds[1]);
+        /* Set up file descriptors. */
+        if (type[0] == 'r') {
+            if (dup2(fds[1], 1) < 0)
+                perror("dup2 1");
+        } else {
+            if (dup2(fds[0], 0) < 0)
+                perror("dup2 0");
+        }
+        close(fds[0]);
+        close(fds[1]);
 
-	/* Build argument vector. */
-	i = 0;
-	args[i++] = "/bin/sh";
-	args[i++] = "-c";
-	args[i++] = (char *) command;
-	args[i++] = NULL;
+        /* Build argument vector. */
+        i = 0;
+        args[i++] = "/bin/sh";
+        args[i++] = "-c";
+        args[i++] = (char *) command;
+        args[i++] = NULL;
 
-	/* Prune environment to remove any potentially dangerous variables. */
-	i = 0;
-	for (j = 0; environ[j] && i < sizeof(env) / sizeof(env[0]) - 1; j++)
-	    if (strncmp(environ[j], "HOME=", 5) == 0 ||
-		strncmp(environ[j], "USER=", 5) == 0 ||
-		strncmp(environ[j], "HOME=", 5) == 0 ||
-		strncmp(environ[j], "PATH=", 5) == 0 ||
-		strncmp(environ[j], "LOGNAME=", 8) == 0 ||
-		strncmp(environ[j], "TZ=", 3) == 0 ||
-		strncmp(environ[j], "MAIL=", 5) == 0 ||
-		strncmp(environ[j], "SHELL=", 6) == 0 ||
-		strncmp(environ[j], "TERM=", 5) == 0 ||
-		strncmp(environ[j], "DISPLAY=", 8) == 0 || strncmp(environ[j], "PRINTER=", 8) == 0 || strncmp(environ[j], "XAUTHORITY=", 11) == 0 || strncmp(environ[j], "TERMCAP=", 8) == 0)
-		env[i++] = environ[j];
-	env[i] = NULL;
+        /* Prune environment to remove any potentially dangerous variables. */
+        i = 0;
+        for (j = 0; environ[j] && i < sizeof(env) / sizeof(env[0]) - 1; j++)
+            if (strncmp(environ[j], "HOME=", 5) == 0 ||
+                strncmp(environ[j], "USER=", 5) == 0 ||
+                strncmp(environ[j], "HOME=", 5) == 0 ||
+                strncmp(environ[j], "PATH=", 5) == 0 ||
+                strncmp(environ[j], "LOGNAME=", 8) == 0 ||
+                strncmp(environ[j], "TZ=", 3) == 0 ||
+                strncmp(environ[j], "MAIL=", 5) == 0 ||
+                strncmp(environ[j], "SHELL=", 6) == 0 ||
+                strncmp(environ[j], "TERM=", 5) == 0 ||
+                strncmp(environ[j], "DISPLAY=", 8) == 0 || strncmp(environ[j], "PRINTER=", 8) == 0 || strncmp(environ[j], "XAUTHORITY=", 11) == 0 || strncmp(environ[j], "TERMCAP=", 8) == 0)
+                env[i++] = environ[j];
+        env[i] = NULL;
 
-	execve("/bin/sh", args, env);
-	fatal("execv /bin/sh failed: %.100s", strerror(errno));
+        execve("/bin/sh", args, env);
+        fatal("execv /bin/sh failed: %.100s", strerror(errno));
     }
 
     /* Parent. */
-    if (type[0] == 'r') {	/* It is for reading. */
-	close(fds[1]);
-	return fds[0];
-    } else {			/* It is for writing. */
-	close(fds[0]);
-	return fds[1];
+    if (type[0] == 'r') {       /* It is for reading. */
+        close(fds[1]);
+        return fds[0];
+    } else {                    /* It is for writing. */
+        close(fds[0]);
+        return fds[1];
     }
 }
 
@@ -289,7 +292,7 @@ int do_popen(const char *command, const char *type)
 
 struct UserFile {
     enum { USERFILE_LOCAL, USERFILE_REMOTE } type;
-    int handle;			/* Local: file handle; remote: index to descriptor array. */
+    int handle;                 /* Local: file handle; remote: index to descriptor array. */
     unsigned char buf[512];
     unsigned int buf_first;
     unsigned int buf_last;
@@ -320,10 +323,10 @@ UserFile userfile_open(uid_t uid, const char *path, int flags, mode_t mode)
     int handle;
 
     if (uid == geteuid()) {
-	handle = open(path, flags, mode);
-	if (handle < 0)
-	    return NULL;
-	return userfile_make_handle(USERFILE_LOCAL, handle);
+        handle = open(path, flags, mode);
+        if (handle < 0)
+            return NULL;
+        return userfile_make_handle(USERFILE_LOCAL, handle);
     }
 
     return NULL;
@@ -338,13 +341,13 @@ int userfile_close(UserFile uf)
 
     switch (uf->type) {
     case USERFILE_LOCAL:
-	ret = close(uf->handle);
-	xfree(uf);
-	return ret;
+        ret = close(uf->handle);
+        xfree(uf);
+        return ret;
 
     default:
-	fatal("userfile_close: type %d", uf->type);
-	 /*NOTREACHED*/ return -1;
+        fatal("userfile_close: type %d", uf->type);
+         /*NOTREACHED*/ return -1;
     }
 }
 
@@ -358,19 +361,19 @@ static int userfile_fill(UserFile uf)
     int ret;
 
     if (uf->buf_first < uf->buf_last)
-	fatal("userfile_fill: buffer not empty");
+        fatal("userfile_fill: buffer not empty");
 
     switch (uf->type) {
     case USERFILE_LOCAL:
-	ret = read(uf->handle, uf->buf, sizeof(uf->buf));
-	if (ret <= 0)
-	    return 0;
-	uf->buf_first = 0;
-	uf->buf_last = ret;
-	break;
+        ret = read(uf->handle, uf->buf, sizeof(uf->buf));
+        if (ret <= 0)
+            return 0;
+        uf->buf_first = 0;
+        uf->buf_last = ret;
+        break;
 
     default:
-	fatal("userfile_fill: type %d", uf->type);
+        fatal("userfile_fill: type %d", uf->type);
     }
 
     return 1;
@@ -382,11 +385,11 @@ static int userfile_fill(UserFile uf)
 int userfile_getc(UserFile uf)
 {
     if (uf->buf_first >= uf->buf_last) {
-	if (!userfile_fill(uf))
-	    return -1;
+        if (!userfile_fill(uf))
+            return -1;
 
-	if (uf->buf_first >= uf->buf_last)
-	    fatal("userfile_getc/fill error");
+        if (uf->buf_first >= uf->buf_last)
+            fatal("userfile_getc/fill error");
     }
 
     return uf->buf[uf->buf_first++];
@@ -404,10 +407,10 @@ int userfile_read(UserFile uf, void *buf, unsigned int len)
 
     ucp = buf;
     for (i = 0; i < len; i++) {
-	ch = userfile_getc(uf);
-	if (ch == -1)
-	    break;
-	ucp[i] = ch;
+        ch = userfile_getc(uf);
+        if (ch == -1)
+            break;
+        ucp[i] = ch;
     }
 
     return i;
@@ -424,11 +427,11 @@ int userfile_write(UserFile uf, const void *buf, unsigned int len)
 
     switch (uf->type) {
     case USERFILE_LOCAL:
-	return write(uf->handle, buf, len);
+        return write(uf->handle, buf, len);
 
     default:
-	fatal("userfile_write: type %d", uf->type);
-	 /*NOTREACHED*/ return 0;
+        fatal("userfile_write: type %d", uf->type);
+         /*NOTREACHED*/ return 0;
     }
 }
 
@@ -446,15 +449,15 @@ char *userfile_gets(char *buf, unsigned int size, UserFile uf)
     int ch;
 
     for (i = 0; i < size - 1;) {
-	ch = userfile_getc(uf);
-	if (ch == -1)
-	    break;
-	buf[i++] = ch;
-	if (ch == '\n')
-	    break;
+        ch = userfile_getc(uf);
+        if (ch == -1)
+            break;
+        buf[i++] = ch;
+        if (ch == '\n')
+            break;
     }
     if (i == 0)
-	return NULL;
+        return NULL;
 
     buf[i] = '\0';
 
@@ -467,12 +470,12 @@ off_t userfile_lseek(UserFile uf, off_t offset, int whence)
 {
     switch (uf->type) {
     case USERFILE_LOCAL:
-	return lseek(uf->handle, offset, whence);
+        return lseek(uf->handle, offset, whence);
 
 
     default:
-	fatal("userfile_lseek: type %d", uf->type);
-	 /*NOTREACHED*/ return 0;
+        fatal("userfile_lseek: type %d", uf->type);
+         /*NOTREACHED*/ return 0;
     }
 }
 
@@ -482,7 +485,7 @@ int userfile_mkdir(uid_t uid, const char *path, mode_t mode)
 {
     /* Perform directly if with current effective uid. */
     if (uid == geteuid())
-	return mkdir(path, mode);
+        return mkdir(path, mode);
     return -1;
 }
 
@@ -494,7 +497,7 @@ int userfile_stat(uid_t uid, const char *path, struct stat *st)
 
     /* Perform directly if with current effective uid. */
     if (uid == geteuid())
-	return stat(path, st);
+        return stat(path, st);
     return -1;
 }
 
@@ -504,7 +507,7 @@ int userfile_remove(uid_t uid, const char *path)
 {
     /* Perform directly if with current effective uid. */
     if (uid == geteuid())
-	return remove(path);
+        return remove(path);
 
     return -1;
 }
@@ -518,10 +521,10 @@ UserFile userfile_popen(uid_t uid, const char *command, const char *type)
     int handle;
 
     if (uid == geteuid()) {
-	handle = do_popen(command, type);
-	if (handle < 0)
-	    return NULL;
-	return userfile_make_handle(USERFILE_LOCAL, handle);
+        handle = do_popen(command, type);
+        if (handle < 0)
+            return NULL;
+        return userfile_make_handle(USERFILE_LOCAL, handle);
     }
 
     return NULL;
@@ -535,15 +538,15 @@ int userfile_pclose(UserFile uf)
 
     switch (uf->type) {
     case USERFILE_LOCAL:
-	ret = close(uf->handle);
-	ret2 = wait(NULL);
-	if (ret >= 0)
-	    ret = ret2;
-	xfree(uf);
-	return ret;
+        ret = close(uf->handle);
+        ret2 = wait(NULL);
+        if (ret >= 0)
+            ret = ret2;
+        xfree(uf);
+        return ret;
 
     default:
-	fatal("userfile_close: type %d", uf->type);
-	 /*NOTREACHED*/ return -1;
+        fatal("userfile_close: type %d", uf->type);
+         /*NOTREACHED*/ return -1;
     }
 }

@@ -16,6 +16,9 @@ Replacement for strerror for systems that don't have it.
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:44  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:49  kcn
  * format C
  *
@@ -48,7 +51,7 @@ extern char *sys_errlist[];
 char *strerror(int error_number)
 {
     if (error_number >= 0 && error_number < sys_nerr)
-	return sys_errlist[error_number];
+        return sys_errlist[error_number];
     else
-	return "Bad error code";
+        return "Bad error code";
 }

@@ -20,6 +20,9 @@ agent connections.
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:44  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:49  kcn
  * format C
  *
@@ -467,15 +470,15 @@ agent connections.
 
 #ifdef HAVE_ULIMIT_H
 #include <ulimit.h>
-#endif				/* HAVE_ULIMIT_H */
+#endif                          /* HAVE_ULIMIT_H */
 #ifdef HAVE_ETC_SHADOW
 #ifdef HAVE_SHADOW_H
 #include <shadow.h>
-#endif				/* HAVE_SHADOW_H */
+#endif                          /* HAVE_SHADOW_H */
 #ifndef SHADOW
 #define SHADOW "/etc/shadow"
 #endif
-#endif				/* HAVE_ETC_SHADOW */
+#endif                          /* HAVE_ETC_SHADOW */
 
 
 #ifdef LIBWRAP
@@ -483,10 +486,10 @@ agent connections.
 #include <syslog.h>
 #ifdef NEED_SYS_SYSLOG_H
 #include <sys/syslog.h>
-#endif				/* NEED_SYS_SYSLOG_H */
+#endif                          /* NEED_SYS_SYSLOG_H */
 int allow_severity = LOG_INFO;
 int deny_severity = LOG_WARNING;
-#endif				/* LIBWRAP */
+#endif                          /* LIBWRAP */
 
 
 #ifdef _PATH_BSHELL
@@ -505,7 +508,7 @@ int deny_severity = LOG_WARNING;
 #define DEFAULT_PATH    "/bin:/usr/bin:/usr/ucb:/usr/bin/X11:/usr/local/bin"
 #endif
 #endif
-#endif				/* DEFAULT_PATH */
+#endif                          /* DEFAULT_PATH */
 
 #ifndef O_NOCTTY
 #define O_NOCTTY        0
@@ -547,11 +550,11 @@ int no_agent_forwarding_flag = 0;
 int no_x11_forwarding_flag = 0;
 int no_pty_flag = 0;
 time_t idle_timeout = 0;
-char *forced_command = NULL;	/* RSA authentication "command=" option. */
-char *original_command = NULL;	/* original command from protocol. */
+char *forced_command = NULL;    /* RSA authentication "command=" option. */
+char *original_command = NULL;  /* original command from protocol. */
 struct envstring *custom_environment = NULL;
 
-			  /* RSA authentication "environment=" options. */
+                          /* RSA authentication "environment=" options. */
 
 /* Session id for the current session. */
 unsigned char session_id[16];
@@ -640,7 +643,7 @@ RETSIGTYPE sigdanger_handler(int sig)
 {
     log_msg("Received signal %d (SIGDANGER, means memory is low); ignoring.", sig);
 }
-#endif				/* SIGDANGER */
+#endif                          /* SIGDANGER */
 
 /* SIGCHLD handler.  This is called whenever a child dies.  This will then 
    reap any zombies left by exited c. */
@@ -678,13 +681,13 @@ RETSIGTYPE key_regeneration_alarm(int sig)
 {
     /* Check if we should generate a new key. */
     if (key_used) {
-	/* This should really be done in the background. */
-	log_msg("Generating new %d bit RSA key.", options.server_key_bits);
-	random_acquire_light_environmental_noise(&sensitive_data.random_state);
-	rsa_generate_key(&sensitive_data.private_key, &public_key, &sensitive_data.random_state, options.server_key_bits);
-	random_save(&sensitive_data.random_state, geteuid(), options.random_seed_file);
-	key_used = 0;
-	log_msg("RSA key generation complete.");
+        /* This should really be done in the background. */
+        log_msg("Generating new %d bit RSA key.", options.server_key_bits);
+        random_acquire_light_environmental_noise(&sensitive_data.random_state);
+        rsa_generate_key(&sensitive_data.private_key, &public_key, &sensitive_data.random_state, options.server_key_bits);
+        random_save(&sensitive_data.random_state, geteuid(), options.random_seed_file);
+        key_used = 0;
+        log_msg("RSA key generation complete.");
     }
 
     /* Reschedule the alarm. */
@@ -704,24 +707,24 @@ int main(int ac, char **av)
     int ret;
     fd_set fdset;
     struct sockaddr_in sin;
-    char buf[100];		/* Must not be larger than remote_version. */
-    char remote_version[100];	/* Must be at least as big as buf. */
+    char buf[100];              /* Must not be larger than remote_version. */
+    char remote_version[100];   /* Must be at least as big as buf. */
     char *comment;
     char *ssh_remote_version_string = NULL;
     FILE *f;
 
 #if defined(SO_LINGER) && defined(ENABLE_SO_LINGER)
     struct linger linger;
-#endif				/* SO_LINGER */
+#endif                          /* SO_LINGER */
     int done;
 
     chdir(BBS_HOME);
     /* Save argv[0]. */
     saved_argv = av;
     if (strchr(av[0], '/'))
-	av0 = strrchr(av[0], '/') + 1;
+        av0 = strrchr(av[0], '/') + 1;
     else
-	av0 = av[0];
+        av0 = av[0];
 
     /* Prevent core dumps to avoid revealing sensitive information. */
     signals_prevent_core();
@@ -734,57 +737,57 @@ int main(int ac, char **av)
 
     /* Parse command-line arguments. */
     while ((opt = getopt(ac, av, "f:p:b:k:h:g:diqV:")) != EOF) {
-	switch (opt) {
-	case 'f':
-	    config_file_name = optarg;
-	    break;
-	case 'd':
-	    debug_flag = 1;
-	    break;
-	case 'i':
-	    inetd_flag = 1;
-	    break;
-	case 'q':
-	    options.quiet_mode = 1;
-	    break;
-	case 'b':
-	    options.server_key_bits = atoi(optarg);
-	    break;
-	case 'p':
-	    options.port = atoi(optarg);
-	    break;
-	case 'g':
-	    options.login_grace_time = atoi(optarg);
-	    break;
-	case 'k':
-	    options.key_regeneration_time = atoi(optarg);
-	    break;
-	case 'h':
-	    options.host_key_file = optarg;
-	    break;
-	case 'V':
-	    ssh_remote_version_string = optarg;
-	    break;
-	case '?':
-	default:
+        switch (opt) {
+        case 'f':
+            config_file_name = optarg;
+            break;
+        case 'd':
+            debug_flag = 1;
+            break;
+        case 'i':
+            inetd_flag = 1;
+            break;
+        case 'q':
+            options.quiet_mode = 1;
+            break;
+        case 'b':
+            options.server_key_bits = atoi(optarg);
+            break;
+        case 'p':
+            options.port = atoi(optarg);
+            break;
+        case 'g':
+            options.login_grace_time = atoi(optarg);
+            break;
+        case 'k':
+            options.key_regeneration_time = atoi(optarg);
+            break;
+        case 'h':
+            options.host_key_file = optarg;
+            break;
+        case 'V':
+            ssh_remote_version_string = optarg;
+            break;
+        case '?':
+        default:
 #ifdef F_SECURE_COMMERCIAL
 
-#endif				/* F_SECURE_COMMERCIAL */
-	    fprintf(stderr, "sshd version %s [%s]\n", SSH_VERSION, HOSTTYPE);
-	    fprintf(stderr, "Usage: %s [options]\n", av0);
-	    fprintf(stderr, "Options:\n");
-	    fprintf(stderr, "  -f file    Configuration file (default %s/sshd_config)\n", ETCDIR);
-	    fprintf(stderr, "  -d         Debugging mode\n");
-	    fprintf(stderr, "  -i         Started from inetd\n");
-	    fprintf(stderr, "  -q         Quiet (no logging)\n");
-	    fprintf(stderr, "  -p port    Listen on the specified port (default: 22)\n");
-	    fprintf(stderr, "  -k seconds Regenerate server key every this many seconds (default: 3600)\n");
-	    fprintf(stderr, "  -g seconds Grace period for authentication (default: 300)\n");
-	    fprintf(stderr, "  -b bits    Size of server RSA key (default: 768 bits)\n");
-	    fprintf(stderr, "  -h file    File from which to read host key (default: %s)\n", HOST_KEY_FILE);
-	    fprintf(stderr, "  -V str     Remote version string already read from the socket\n");
-	    exit(1);
-	}
+#endif                          /* F_SECURE_COMMERCIAL */
+            fprintf(stderr, "sshd version %s [%s]\n", SSH_VERSION, HOSTTYPE);
+            fprintf(stderr, "Usage: %s [options]\n", av0);
+            fprintf(stderr, "Options:\n");
+            fprintf(stderr, "  -f file    Configuration file (default %s/sshd_config)\n", ETCDIR);
+            fprintf(stderr, "  -d         Debugging mode\n");
+            fprintf(stderr, "  -i         Started from inetd\n");
+            fprintf(stderr, "  -q         Quiet (no logging)\n");
+            fprintf(stderr, "  -p port    Listen on the specified port (default: 22)\n");
+            fprintf(stderr, "  -k seconds Regenerate server key every this many seconds (default: 3600)\n");
+            fprintf(stderr, "  -g seconds Grace period for authentication (default: 300)\n");
+            fprintf(stderr, "  -b bits    Size of server RSA key (default: 768 bits)\n");
+            fprintf(stderr, "  -h file    File from which to read host key (default: %s)\n", HOST_KEY_FILE);
+            fprintf(stderr, "  -V str     Remote version string already read from the socket\n");
+            exit(1);
+        }
     }
 
     /* Read server configuration options from the configuration file. */
@@ -795,21 +798,21 @@ int main(int ac, char **av)
 
     /* Check certain values for sanity. */
     if (options.server_key_bits < 512 || options.server_key_bits > 32768) {
-	fprintf(stderr, "fatal: Bad server key size.\n");
-	exit(1);
+        fprintf(stderr, "fatal: Bad server key size.\n");
+        exit(1);
     }
     if (options.port < 1 || options.port > 65535) {
-	fprintf(stderr, "fatal: Bad port number.\n");
-	exit(1);
+        fprintf(stderr, "fatal: Bad port number.\n");
+        exit(1);
     }
     if (options.umask != -1) {
-	umask(options.umask);
+        umask(options.umask);
     }
 
     /* Check that there are no remaining arguments. */
     if (optind < ac) {
-	fprintf(stderr, "fatal: Extra argument %.100s.\n", av[optind]);
-	exit(1);
+        fprintf(stderr, "fatal: Extra argument %.100s.\n", av[optind]);
+        exit(1);
     }
 
     /* Initialize the log (it is reinitialized below in case we forked). */
@@ -821,14 +824,14 @@ int main(int ac, char **av)
     done = load_private_key(geteuid(), options.host_key_file, "", &sensitive_data.host_key, &comment);
 
     if (!done) {
-	if (debug_flag) {
-	    fprintf(stderr, "Could not load host key: %.200s\n", options.host_key_file);
-	    fprintf(stderr, "fatal: Please check that you have sufficient permissions and the file exists.\n");
-	} else {
-	    log_init(av0, !inetd_flag, 1, 0, options.log_facility);
-	    error("fatal: Could not load host key: %.200s.  Check path and permissions.", options.host_key_file);
-	}
-	exit(1);
+        if (debug_flag) {
+            fprintf(stderr, "Could not load host key: %.200s\n", options.host_key_file);
+            fprintf(stderr, "fatal: Please check that you have sufficient permissions and the file exists.\n");
+        } else {
+            log_init(av0, !inetd_flag, 1, 0, options.log_facility);
+            error("fatal: Could not load host key: %.200s.  Check path and permissions.", options.host_key_file);
+        }
+        exit(1);
     }
     xfree(comment);
 
@@ -836,41 +839,41 @@ int main(int ac, char **av)
        the controlling terminal, and fork.  The original process exits. */
     if (!debug_flag && !inetd_flag)
 #ifdef HAVE_DAEMON
-	if (daemon(0, 0) < 0)
-	    error("daemon: %.100s", strerror(errno));
-#else				/* HAVE_DAEMON */
+        if (daemon(0, 0) < 0)
+            error("daemon: %.100s", strerror(errno));
+#else                           /* HAVE_DAEMON */
     {
 #ifdef TIOCNOTTY
-	int fd;
-#endif				/* TIOCNOTTY */
+        int fd;
+#endif                          /* TIOCNOTTY */
 
-	/* Fork, and have the parent exit.  The child becomes the server. */
-	if (fork())
-	    exit(0);
+        /* Fork, and have the parent exit.  The child becomes the server. */
+        if (fork())
+            exit(0);
 
-	/* Redirect stdin, stdout, and stderr to /dev/null. */
-	freopen("/dev/null", "r", stdin);
-	freopen("/dev/null", "w", stdout);
-	freopen("/dev/null", "w", stderr);
+        /* Redirect stdin, stdout, and stderr to /dev/null. */
+        freopen("/dev/null", "r", stdin);
+        freopen("/dev/null", "w", stdout);
+        freopen("/dev/null", "w", stderr);
 
-	/* Disconnect from the controlling tty. */
+        /* Disconnect from the controlling tty. */
 #ifdef TIOCNOTTY
-	fd = open("/dev/tty", O_RDWR | O_NOCTTY);
-	if (fd >= 0) {
-	    (void) ioctl(fd, TIOCNOTTY, NULL);
-	    close(fd);
-	}
-#endif				/* TIOCNOTTY */
+        fd = open("/dev/tty", O_RDWR | O_NOCTTY);
+        if (fd >= 0) {
+            (void) ioctl(fd, TIOCNOTTY, NULL);
+            close(fd);
+        }
+#endif                          /* TIOCNOTTY */
 #ifdef HAVE_SETSID
 #ifdef ultrix
-	setpgrp(0, 0);
-#else				/* ultrix */
-	if (setsid() < 0)
-	    error("setsid: %.100s", strerror(errno));
+        setpgrp(0, 0);
+#else                           /* ultrix */
+        if (setsid() < 0)
+            error("setsid: %.100s", strerror(errno));
 #endif
-#endif				/* HAVE_SETSID */
+#endif                          /* HAVE_SETSID */
     }
-#endif				/* HAVE_DAEMON */
+#endif                          /* HAVE_DAEMON */
 
     /* Reinitialize the log (because of the fork above). */
     log_init(av0, debug_flag && !inetd_flag, debug_flag || options.fascist_logging, options.quiet_mode, options.log_facility);
@@ -879,8 +882,8 @@ int main(int ac, char **av)
        necessary to make double encryption work with rsaref.  Oh, I hate
        software patents. */
     if (options.server_key_bits > sensitive_data.host_key.bits - SSH_KEY_BITS_RESERVED && options.server_key_bits < sensitive_data.host_key.bits + SSH_KEY_BITS_RESERVED) {
-	options.server_key_bits = sensitive_data.host_key.bits + SSH_KEY_BITS_RESERVED;
-	debug("Forcing server key to %d bits to make it differ from host key.", options.server_key_bits);
+        options.server_key_bits = sensitive_data.host_key.bits + SSH_KEY_BITS_RESERVED;
+        debug("Forcing server key to %d bits to make it differ from host key.", options.server_key_bits);
     }
 
     /* Initialize memory allocation so that any freed MP_INT data will be
@@ -901,189 +904,189 @@ int main(int ac, char **av)
 
     /* Start listening for a socket, unless started from inetd. */
     if (inetd_flag) {
-	int s1, s2;
+        int s1, s2;
 
-	s1 = dup(0);		/* Make sure descriptors 0, 1, and 2 are in use. */
-	s2 = dup(s1);
-	sock_in = dup(0);
-	sock_out = dup(1);
-	/* We intentionally do not close the descriptors 0, 1, and 2 as our
-	   code for setting the descriptors won\'t work if ttyfd happens to
-	   be one of those. */
-	debug("inetd sockets after dupping: %d, %d", sock_in, sock_out);
+        s1 = dup(0);            /* Make sure descriptors 0, 1, and 2 are in use. */
+        s2 = dup(s1);
+        sock_in = dup(0);
+        sock_out = dup(1);
+        /* We intentionally do not close the descriptors 0, 1, and 2 as our
+           code for setting the descriptors won\'t work if ttyfd happens to
+           be one of those. */
+        debug("inetd sockets after dupping: %d, %d", sock_in, sock_out);
 
-	/* Generate an rsa key. */
-	log_msg("Generating %d bit RSA key.", options.server_key_bits);
-	rsa_generate_key(&sensitive_data.private_key, &public_key, &sensitive_data.random_state, options.server_key_bits);
-	random_save(&sensitive_data.random_state, geteuid(), options.random_seed_file);
-	log_msg("RSA key generation complete.");
+        /* Generate an rsa key. */
+        log_msg("Generating %d bit RSA key.", options.server_key_bits);
+        rsa_generate_key(&sensitive_data.private_key, &public_key, &sensitive_data.random_state, options.server_key_bits);
+        random_save(&sensitive_data.random_state, geteuid(), options.random_seed_file);
+        log_msg("RSA key generation complete.");
     } else {
-	/* Create socket for listening. */
-	listen_sock = socket(AF_INET, SOCK_STREAM, 0);
-	if (listen_sock < 0)
-	    fatal("socket: %.100s", strerror(errno));
+        /* Create socket for listening. */
+        listen_sock = socket(AF_INET, SOCK_STREAM, 0);
+        if (listen_sock < 0)
+            fatal("socket: %.100s", strerror(errno));
 
-	/* Set socket options.  We try to make the port reusable and have it
-	   close as fast as possible without waiting in unnecessary wait states
-	   on close. */
-	setsockopt(listen_sock, SOL_SOCKET, SO_REUSEADDR, (void *) &on, sizeof(on));
+        /* Set socket options.  We try to make the port reusable and have it
+           close as fast as possible without waiting in unnecessary wait states
+           on close. */
+        setsockopt(listen_sock, SOL_SOCKET, SO_REUSEADDR, (void *) &on, sizeof(on));
 #if defined(SO_LINGER) && defined(ENABLE_SO_LINGER)
-	linger.l_onoff = 1;
-	linger.l_linger = 15;
-	setsockopt(listen_sock, SOL_SOCKET, SO_LINGER, (void *) &linger, sizeof(linger));
-#endif				/* SO_LINGER */
+        linger.l_onoff = 1;
+        linger.l_linger = 15;
+        setsockopt(listen_sock, SOL_SOCKET, SO_LINGER, (void *) &linger, sizeof(linger));
+#endif                          /* SO_LINGER */
 
-	/* Initialize the socket address. */
-	memset(&sin, 0, sizeof(sin));
-	sin.sin_family = AF_INET;
-	sin.sin_addr = options.listen_addr;
-	sin.sin_port = htons(options.port);
+        /* Initialize the socket address. */
+        memset(&sin, 0, sizeof(sin));
+        sin.sin_family = AF_INET;
+        sin.sin_addr = options.listen_addr;
+        sin.sin_port = htons(options.port);
 
-	/* Bind the socket to the desired port. */
-	if (bind(listen_sock, (struct sockaddr *) &sin, sizeof(sin)) < 0) {
-	    error("bind: %.100s", strerror(errno));
-	    shutdown(listen_sock, 2);
-	    close(listen_sock);
-	    fatal("Bind to port %d failed: %.200s.", options.port, strerror(errno));
-	}
+        /* Bind the socket to the desired port. */
+        if (bind(listen_sock, (struct sockaddr *) &sin, sizeof(sin)) < 0) {
+            error("bind: %.100s", strerror(errno));
+            shutdown(listen_sock, 2);
+            close(listen_sock);
+            fatal("Bind to port %d failed: %.200s.", options.port, strerror(errno));
+        }
 
-	if (!debug_flag) {
-	    /* Record our pid in /etc/sshd_pid to make it easier to kill the
-	       correct sshd.  We don\'t want to do this before the bind above
-	       because the bind will fail if there already is a daemon, and this
-	       will overwrite any old pid in the file. */
-	    f = fopen(options.pid_file, "w");
-	    if (f) {
-		fprintf(f, "%u\n", (unsigned int) getpid());
-		fclose(f);
-	    }
-	}
+        if (!debug_flag) {
+            /* Record our pid in /etc/sshd_pid to make it easier to kill the
+               correct sshd.  We don\'t want to do this before the bind above
+               because the bind will fail if there already is a daemon, and this
+               will overwrite any old pid in the file. */
+            f = fopen(options.pid_file, "w");
+            if (f) {
+                fprintf(f, "%u\n", (unsigned int) getpid());
+                fclose(f);
+            }
+        }
 
-	/* Start listening on the port. */
-	log_msg("Server listening on port %d.", options.port);
-	if (listen(listen_sock, 5) < 0)
-	    fatal("listen: %.100s", strerror(errno));
+        /* Start listening on the port. */
+        log_msg("Server listening on port %d.", options.port);
+        if (listen(listen_sock, 5) < 0)
+            fatal("listen: %.100s", strerror(errno));
 
-	/* Generate an rsa key. */
-	log_msg("Generating %d bit RSA key.", options.server_key_bits);
-	rsa_generate_key(&sensitive_data.private_key, &public_key, &sensitive_data.random_state, options.server_key_bits);
-	random_save(&sensitive_data.random_state, geteuid(), options.random_seed_file);
-	log_msg("RSA key generation complete.");
+        /* Generate an rsa key. */
+        log_msg("Generating %d bit RSA key.", options.server_key_bits);
+        rsa_generate_key(&sensitive_data.private_key, &public_key, &sensitive_data.random_state, options.server_key_bits);
+        random_save(&sensitive_data.random_state, geteuid(), options.random_seed_file);
+        log_msg("RSA key generation complete.");
 
-	/* Schedule server key regeneration alarm. */
-	signal(SIGALRM, key_regeneration_alarm);
-	alarm(options.key_regeneration_time);
+        /* Schedule server key regeneration alarm. */
+        signal(SIGALRM, key_regeneration_alarm);
+        alarm(options.key_regeneration_time);
 
-	/* Arrange to restart on SIGHUP.  The handler needs listen_sock. */
-	signal(SIGHUP, sighup_handler);
-	signal(SIGTERM, sigterm_handler);
-	signal(SIGQUIT, sigterm_handler);
+        /* Arrange to restart on SIGHUP.  The handler needs listen_sock. */
+        signal(SIGHUP, sighup_handler);
+        signal(SIGTERM, sigterm_handler);
+        signal(SIGQUIT, sigterm_handler);
 
-	/* AIX sends SIGDANGER when memory runs low.  The default action is
-	   to terminate the process.  This sometimes makes it difficult to
-	   log in and fix the problem. */
+        /* AIX sends SIGDANGER when memory runs low.  The default action is
+           to terminate the process.  This sometimes makes it difficult to
+           log in and fix the problem. */
 
 #ifdef SIGDANGER
-	signal(SIGDANGER, sigdanger_handler);
-#endif				/* SIGDANGER */
+        signal(SIGDANGER, sigdanger_handler);
+#endif                          /* SIGDANGER */
 
-	/* Arrange SIGCHLD to be caught. */
-	signal(SIGCHLD, main_sigchld_handler);
+        /* Arrange SIGCHLD to be caught. */
+        signal(SIGCHLD, main_sigchld_handler);
 
-	/* Stay listening for connections until the system crashes or the
-	   daemon is killed with a signal. */
-	for (;;) {
-	    if (received_sighup)
-		sighup_restart();
+        /* Stay listening for connections until the system crashes or the
+           daemon is killed with a signal. */
+        for (;;) {
+            if (received_sighup)
+                sighup_restart();
 
-	    /* Wait in select until there is a connection. */
-	    FD_ZERO(&fdset);
-	    FD_SET(listen_sock, &fdset);
-	    ret = select(listen_sock + 1, &fdset, NULL, NULL, NULL);
-	    if (ret < 0 || !FD_ISSET(listen_sock, &fdset)) {
-		if (errno == EINTR)
-		    continue;
-		error("select: %.100s", strerror(errno));
-		continue;
-	    }
+            /* Wait in select until there is a connection. */
+            FD_ZERO(&fdset);
+            FD_SET(listen_sock, &fdset);
+            ret = select(listen_sock + 1, &fdset, NULL, NULL, NULL);
+            if (ret < 0 || !FD_ISSET(listen_sock, &fdset)) {
+                if (errno == EINTR)
+                    continue;
+                error("select: %.100s", strerror(errno));
+                continue;
+            }
 
-	    aux = sizeof(sin);
-	    newsock = accept(listen_sock, (struct sockaddr *) &sin, &aux);
-	    if (newsock < 0) {
-		if (errno == EINTR)
-		    continue;
-		error("accept: %.100s", strerror(errno));
-		continue;
-	    }
+            aux = sizeof(sin);
+            newsock = accept(listen_sock, (struct sockaddr *) &sin, &aux);
+            if (newsock < 0) {
+                if (errno == EINTR)
+                    continue;
+                error("accept: %.100s", strerror(errno));
+                continue;
+            }
 
-	    /* Got connection.  Fork a child to handle it, unless we are in
-	       debugging mode. */
-	    if (debug_flag) {
-		/* In debugging mode.  Close the listening socket, and start
-		   processing the connection without forking. */
-		debug("Server will not fork when running in debugging mode.");
-		close(listen_sock);
-		sock_in = newsock;
-		sock_out = newsock;
-		pid = getpid();
+            /* Got connection.  Fork a child to handle it, unless we are in
+               debugging mode. */
+            if (debug_flag) {
+                /* In debugging mode.  Close the listening socket, and start
+                   processing the connection without forking. */
+                debug("Server will not fork when running in debugging mode.");
+                close(listen_sock);
+                sock_in = newsock;
+                sock_out = newsock;
+                pid = getpid();
 #ifdef LIBWRAP
-		{
-		    struct request_info req;
+                {
+                    struct request_info req;
 
-		    signal(SIGCHLD, SIG_DFL);
+                    signal(SIGCHLD, SIG_DFL);
 
-		    request_init(&req, RQ_DAEMON, av0, RQ_FILE, newsock, NULL);
-		    fromhost(&req);
-		    if (!hosts_access(&req))
-			refuse(&req);
-		    syslog(allow_severity, "connect from %s", eval_client(&req));
-		}
-#endif				/* LIBWRAP */
-		break;
-	    } else {
-		/* Normal production daemon.  Fork, and have the child process
-		   the connection.  The parent continues listening. */
-		if ((pid = fork()) == 0) {
-		    /* Child.  Close the listening socket, and start using
-		       the accepted socket.  Reinitialize logging (since our
-		       pid has changed).  We break out of the loop to handle
-		       the connection. */
-		    close(listen_sock);
-		    sock_in = newsock;
-		    sock_out = newsock;
+                    request_init(&req, RQ_DAEMON, av0, RQ_FILE, newsock, NULL);
+                    fromhost(&req);
+                    if (!hosts_access(&req))
+                        refuse(&req);
+                    syslog(allow_severity, "connect from %s", eval_client(&req));
+                }
+#endif                          /* LIBWRAP */
+                break;
+            } else {
+                /* Normal production daemon.  Fork, and have the child process
+                   the connection.  The parent continues listening. */
+                if ((pid = fork()) == 0) {
+                    /* Child.  Close the listening socket, and start using
+                       the accepted socket.  Reinitialize logging (since our
+                       pid has changed).  We break out of the loop to handle
+                       the connection. */
+                    close(listen_sock);
+                    sock_in = newsock;
+                    sock_out = newsock;
 #ifdef LIBWRAP
-		    {
-			struct request_info req;
+                    {
+                        struct request_info req;
 
-			signal(SIGCHLD, SIG_DFL);
+                        signal(SIGCHLD, SIG_DFL);
 
-			request_init(&req, RQ_DAEMON, av0, RQ_FILE, newsock, NULL);
-			fromhost(&req);
-			if (!hosts_access(&req))
-			    refuse(&req);
-			syslog(allow_severity, "connect from %s", eval_client(&req));
-		    }
-#endif				/* LIBWRAP */
+                        request_init(&req, RQ_DAEMON, av0, RQ_FILE, newsock, NULL);
+                        fromhost(&req);
+                        if (!hosts_access(&req))
+                            refuse(&req);
+                        syslog(allow_severity, "connect from %s", eval_client(&req));
+                    }
+#endif                          /* LIBWRAP */
 
-		    log_init(av0, debug_flag && !inetd_flag, options.fascist_logging || debug_flag, options.quiet_mode, options.log_facility);
-		    break;
-		}
-	    }
+                    log_init(av0, debug_flag && !inetd_flag, options.fascist_logging || debug_flag, options.quiet_mode, options.log_facility);
+                    break;
+                }
+            }
 
-	    /* Parent.  Stay in the loop. */
-	    if (pid < 0)
-		error("fork: %.100s", strerror(errno));
-	    else
-		debug("Forked child %d.", pid);
+            /* Parent.  Stay in the loop. */
+            if (pid < 0)
+                error("fork: %.100s", strerror(errno));
+            else
+                debug("Forked child %d.", pid);
 
-	    /* Mark that the key has been used (it was "given" to the child). */
-	    key_used = 1;
+            /* Mark that the key has been used (it was "given" to the child). */
+            key_used = 1;
 
-	    random_acquire_light_environmental_noise(&sensitive_data.random_state);
+            random_acquire_light_environmental_noise(&sensitive_data.random_state);
 
-	    /* Close the new socket (the child is now taking care of it). */
-	    close(newsock);
-	}
+            /* Close the new socket (the child is now taking care of it). */
+            close(newsock);
+        }
     }
 
     /* This is the child processing a new connection. */
@@ -1106,7 +1109,7 @@ int main(int ac, char **av)
     linger.l_onoff = 1;
     linger.l_linger = 15;
     setsockopt(sock_in, SOL_SOCKET, SO_LINGER, (void *) &linger, sizeof(linger));
-#endif				/* SO_LINGER */
+#endif                          /* SO_LINGER */
 
     /* Register our connection.  This turns encryption off because we do not
        have a key. */
@@ -1117,27 +1120,27 @@ int main(int ac, char **av)
 
     /* Check whether logins are denied from this host. */
     {
-	const char *hostname = get_canonical_hostname();
-	const char *ipaddr = get_remote_ipaddr();
-	int i;
+        const char *hostname = get_canonical_hostname();
+        const char *ipaddr = get_remote_ipaddr();
+        int i;
 
-	if (options.num_deny_hosts > 0) {
-	    for (i = 0; i < options.num_deny_hosts; i++)
-		if (match_host(hostname, ipaddr, options.deny_hosts[i]))
-		    perm_denied = 1;
-	}
-	if ((!perm_denied) && options.num_allow_hosts > 0) {
-	    for (i = 0; i < options.num_allow_hosts; i++)
-		if (match_host(hostname, ipaddr, options.allow_hosts[i]))
-		    break;
-	    if (i >= options.num_allow_hosts)
-		perm_denied = 1;
-	}
-	if (perm_denied && options.silent_deny) {
-	    close(sock_in);
-	    close(sock_out);
-	    exit(0);
-	}
+        if (options.num_deny_hosts > 0) {
+            for (i = 0; i < options.num_deny_hosts; i++)
+                if (match_host(hostname, ipaddr, options.deny_hosts[i]))
+                    perm_denied = 1;
+        }
+        if ((!perm_denied) && options.num_allow_hosts > 0) {
+            for (i = 0; i < options.num_allow_hosts; i++)
+                if (match_host(hostname, ipaddr, options.allow_hosts[i]))
+                    break;
+            if (i >= options.num_allow_hosts)
+                perm_denied = 1;
+        }
+        if (perm_denied && options.silent_deny) {
+            close(sock_in);
+            close(sock_out);
+            exit(0);
+        }
     }
 
     /* We don't want to listen forever unless the other side successfully
@@ -1147,79 +1150,79 @@ int main(int ac, char **av)
        to have the server exit just when you are about to discover the bug. */
     signal(SIGALRM, grace_alarm_handler);
     if (!debug_flag)
-	alarm(options.login_grace_time);
+        alarm(options.login_grace_time);
 
 
     if (ssh_remote_version_string == NULL) {
-	/* Send our protocol version identification. */
-	snprintf(buf, sizeof(buf), "SSH-%d.%d-%.50s", PROTOCOL_MAJOR, PROTOCOL_MINOR, SSH_VERSION);
-	strcat(buf, "\n");
-	if (write(sock_out, buf, strlen(buf)) != strlen(buf))
-	    fatal_severity(SYSLOG_SEVERITY_INFO, "Could not write ident string.");
+        /* Send our protocol version identification. */
+        snprintf(buf, sizeof(buf), "SSH-%d.%d-%.50s", PROTOCOL_MAJOR, PROTOCOL_MINOR, SSH_VERSION);
+        strcat(buf, "\n");
+        if (write(sock_out, buf, strlen(buf)) != strlen(buf))
+            fatal_severity(SYSLOG_SEVERITY_INFO, "Could not write ident string.");
     }
 
     if (ssh_remote_version_string == NULL) {
-	/* Read other side\'s version identification. */
-	for (i = 0; i < sizeof(buf) - 1; i++) {
-	    if (read(sock_in, &buf[i], 1) != 1)
-		fatal_severity(SYSLOG_SEVERITY_INFO, "Did not receive ident string.");
-	    if (buf[i] == '\r') {
-		buf[i] = '\n';
-		buf[i + 1] = 0;
-		break;
-	    }
-	    if (buf[i] == '\n') {
-		/* buf[i] == '\n' */
-		buf[i + 1] = 0;
-		break;
-	    }
-	}
-	buf[sizeof(buf) - 1] = 0;
+        /* Read other side\'s version identification. */
+        for (i = 0; i < sizeof(buf) - 1; i++) {
+            if (read(sock_in, &buf[i], 1) != 1)
+                fatal_severity(SYSLOG_SEVERITY_INFO, "Did not receive ident string.");
+            if (buf[i] == '\r') {
+                buf[i] = '\n';
+                buf[i + 1] = 0;
+                break;
+            }
+            if (buf[i] == '\n') {
+                /* buf[i] == '\n' */
+                buf[i + 1] = 0;
+                break;
+            }
+        }
+        buf[sizeof(buf) - 1] = 0;
     } else {
-	strncpy(buf, ssh_remote_version_string, sizeof(buf) - 1);
-	buf[sizeof(buf) - 1] = 0;
+        strncpy(buf, ssh_remote_version_string, sizeof(buf) - 1);
+        buf[sizeof(buf) - 1] = 0;
     }
 
     /* Check that the versions match.  In future this might accept several
        versions and set appropriate flags to handle them. */
     if (sscanf(buf, "SSH-%d.%d-%[^\n]\n", &remote_major, &remote_minor, remote_version) != 3) {
-	const char *s = "Protocol mismatch.\n";
+        const char *s = "Protocol mismatch.\n";
 
-	(void) write(sock_out, s, strlen(s));
-	close(sock_in);
-	close(sock_out);
-	fatal_severity(SYSLOG_SEVERITY_INFO, "Bad protocol version identification: %.100s", buf);
+        (void) write(sock_out, s, strlen(s));
+        close(sock_in);
+        close(sock_out);
+        fatal_severity(SYSLOG_SEVERITY_INFO, "Bad protocol version identification: %.100s", buf);
     }
     debug("Client protocol version %d.%d; client software version %.100s", remote_major, remote_minor, remote_version);
 
     switch (check_emulation(remote_major, remote_minor, NULL, NULL)) {
     case EMULATE_MAJOR_VERSION_MISMATCH:
-	{
-	    const char *s = "Protocol major versions differ.\n";
+        {
+            const char *s = "Protocol major versions differ.\n";
 
-	    (void) write(sock_out, s, strlen(s));
-	    close(sock_in);
-	    close(sock_out);
-	    fatal_severity(SYSLOG_SEVERITY_INFO, "Protocol major versions differ: %d vs. %d", PROTOCOL_MAJOR, remote_major);
-	}
-	break;
+            (void) write(sock_out, s, strlen(s));
+            close(sock_in);
+            close(sock_out);
+            fatal_severity(SYSLOG_SEVERITY_INFO, "Protocol major versions differ: %d vs. %d", PROTOCOL_MAJOR, remote_major);
+        }
+        break;
     case EMULATE_VERSION_TOO_OLD:
-	packet_disconnect("Your ssh version is too old and is no " "longer supported.  Please install a newer version.");
-	break;
+        packet_disconnect("Your ssh version is too old and is no " "longer supported.  Please install a newer version.");
+        break;
     case EMULATE_VERSION_NEWER:
-	packet_disconnect("This server does not support your " "new ssh version.");
-	break;
+        packet_disconnect("This server does not support your " "new ssh version.");
+        break;
     case EMULATE_VERSION_OK:
-	break;
+        break;
     default:
-	fatal("Unexpected return value from check_emulation.");
+        fatal("Unexpected return value from check_emulation.");
     }
 
     if (perm_denied) {
-	const char *hostname = get_canonical_hostname();
+        const char *hostname = get_canonical_hostname();
 
-	log_msg("Connection from %.200s not allowed.\n", hostname);
-	packet_disconnect("Sorry, you are not allowed to connect.");
+        log_msg("Connection from %.200s not allowed.\n", hostname);
+        packet_disconnect("Sorry, you are not allowed to connect.");
      /*NOTREACHED*/}
 
     packet_set_nonblocking();
@@ -1255,13 +1258,13 @@ void do_connection(int privileged_port)
        rhosts authentication, and this is one of the reasons why it is
        inherently insecure. */
     for (i = 0; i < 8; i++)
-	check_bytes[i] = random_get_byte(&sensitive_data.random_state);
+        check_bytes[i] = random_get_byte(&sensitive_data.random_state);
 
     /* Send our public key.  We include in the packet 64 bits of random
        data that must be matched in the reply in order to prevent IP spoofing. */
     packet_start(SSH_SMSG_PUBLIC_KEY);
     for (i = 0; i < 8; i++)
-	packet_put_char(check_bytes[i]);
+        packet_put_char(check_bytes[i]);
 
     /* Store our public server RSA key. */
     packet_put_int(public_key.bits);
@@ -1282,13 +1285,13 @@ void do_connection(int privileged_port)
     /* Declare supported authentication types. */
     auth_mask = 0;
     if (options.rhosts_authentication)
-	auth_mask |= 1 << SSH_AUTH_RHOSTS;
+        auth_mask |= 1 << SSH_AUTH_RHOSTS;
     if (options.rhosts_rsa_authentication)
-	auth_mask |= 1 << SSH_AUTH_RHOSTS_RSA;
+        auth_mask |= 1 << SSH_AUTH_RHOSTS_RSA;
     if (options.rsa_authentication)
-	auth_mask |= 1 << SSH_AUTH_RSA;
+        auth_mask |= 1 << SSH_AUTH_RSA;
     if (options.password_authentication)
-	auth_mask |= 1 << SSH_AUTH_PASSWORD;
+        auth_mask |= 1 << SSH_AUTH_PASSWORD;
     packet_put_int(auth_mask);
 
     /* Send the packet and wait for it to be sent. */
@@ -1306,8 +1309,8 @@ void do_connection(int privileged_port)
     /* Get check bytes from the packet.  These must match those we sent earlier
        with the public key packet. */
     for (i = 0; i < 8; i++)
-	if (check_bytes[i] != packet_get_char())
-	    packet_disconnect("IP Spoofing check bytes do not match.");
+        if (check_bytes[i] != packet_get_char())
+            packet_disconnect("IP Spoofing check bytes do not match.");
 
     debug("Encryption type: %.200s", cipher_name(cipher_type));
 
@@ -1322,15 +1325,15 @@ void do_connection(int privileged_port)
     /* Decrypt it using our private server key and private host key (key with 
        larger modulus first). */
     if (mpz_cmp(&sensitive_data.private_key.n, &sensitive_data.host_key.n) > 0) {
-	/* Private key has bigger modulus. */
-	assert(sensitive_data.private_key.bits >= sensitive_data.host_key.bits + SSH_KEY_BITS_RESERVED);
-	rsa_private_decrypt(&session_key_int, &session_key_int, &sensitive_data.private_key);
-	rsa_private_decrypt(&session_key_int, &session_key_int, &sensitive_data.host_key);
+        /* Private key has bigger modulus. */
+        assert(sensitive_data.private_key.bits >= sensitive_data.host_key.bits + SSH_KEY_BITS_RESERVED);
+        rsa_private_decrypt(&session_key_int, &session_key_int, &sensitive_data.private_key);
+        rsa_private_decrypt(&session_key_int, &session_key_int, &sensitive_data.host_key);
     } else {
-	/* Host key has bigger modulus (or they are equal). */
-	assert(sensitive_data.host_key.bits >= sensitive_data.private_key.bits + SSH_KEY_BITS_RESERVED);
-	rsa_private_decrypt(&session_key_int, &session_key_int, &sensitive_data.host_key);
-	rsa_private_decrypt(&session_key_int, &session_key_int, &sensitive_data.private_key);
+        /* Host key has bigger modulus (or they are equal). */
+        assert(sensitive_data.host_key.bits >= sensitive_data.private_key.bits + SSH_KEY_BITS_RESERVED);
+        rsa_private_decrypt(&session_key_int, &session_key_int, &sensitive_data.host_key);
+        rsa_private_decrypt(&session_key_int, &session_key_int, &sensitive_data.private_key);
     }
 
     /* Compute session id for this session. */
@@ -1343,7 +1346,7 @@ void do_connection(int privileged_port)
 
     /* Xor the first 16 bytes of the session key with the session id. */
     for (i = 0; i < 16; i++)
-	session_key[i] ^= session_id[i];
+        session_key[i] ^= session_id[i];
 
     /* Destroy the decrypted integer.  It is no longer needed. */
     mpz_clear(&session_key_int);
@@ -1389,15 +1392,15 @@ void do_authentication_fail_loop(void)
     /* Keep reading packets, and always respond with a failure.  This is to
        avoid disclosing whether such a user really exists. */
     for (;;) {
-	/* Read a packet.  This will not return if the client disconnects. */
-	(void) packet_read();
-	packet_get_all();
+        /* Read a packet.  This will not return if the client disconnects. */
+        (void) packet_read();
+        packet_get_all();
 
-	/* Send failure.  This should be indistinguishable from a failed
-	   authentication. */
-	packet_start(SSH_SMSG_FAILURE);
-	packet_send();
-	packet_write_wait();
+        /* Send failure.  This should be indistinguishable from a failed
+           authentication. */
+        packet_start(SSH_SMSG_FAILURE);
+        packet_send();
+        packet_write_wait();
     }
      /*NOTREACHED*/ abort();
 }
@@ -1417,106 +1420,106 @@ void do_authentication(char *user, int privileged_port, int cipher_type)
     int password_attempts = 0;
 
     if (strlen(user) > 255)
-	do_authentication_fail_loop();
+        do_authentication_fail_loop();
 
     /* Verify that the user is a valid user.  We disallow usernames starting
        with any characters that are commonly used to start NIS entries. */
     if (user[0] == '-' || user[0] == '+' || user[0] == '@')
-	do_authentication_fail_loop();
+        do_authentication_fail_loop();
 
     debug("Attempting authentication for %.100s.", user);
 
     /* If the user has no password, accept authentication immediately. */
     if (auth_password(user, "")) {
-	/* Authentication with empty password succeeded. */
-	authentication_type = SSH_AUTH_PASSWORD;
-	authenticated = 1;
-	/* Success packet will be sent after loop below. */
+        /* Authentication with empty password succeeded. */
+        authentication_type = SSH_AUTH_PASSWORD;
+        authenticated = 1;
+        /* Success packet will be sent after loop below. */
     } else {
-	/* Indicate that authentication is needed. */
-	packet_start(SSH_SMSG_FAILURE);
-	packet_send();
-	packet_write_wait();
+        /* Indicate that authentication is needed. */
+        packet_start(SSH_SMSG_FAILURE);
+        packet_send();
+        packet_write_wait();
     }
 
     /* Loop until the user has been authenticated or the connection is closed. */
     while (!authenticated) {
-	/* Get a packet from the client. */
-	type = packet_read();
+        /* Get a packet from the client. */
+        type = packet_read();
 
-	/* Process the packet. */
-	switch (type) {
+        /* Process the packet. */
+        switch (type) {
 
-	case SSH_CMSG_AUTH_RHOSTS:
-	    packet_get_all();
-	    log_msg("Rhosts authentication disabled.");
-	    break;
+        case SSH_CMSG_AUTH_RHOSTS:
+            packet_get_all();
+            log_msg("Rhosts authentication disabled.");
+            break;
 
-	case SSH_CMSG_AUTH_RHOSTS_RSA:
-	    packet_get_all();
-	    log_msg("Rhosts with RSA authentication disabled.");
-	    break;
+        case SSH_CMSG_AUTH_RHOSTS_RSA:
+            packet_get_all();
+            log_msg("Rhosts with RSA authentication disabled.");
+            break;
 
-	case SSH_CMSG_AUTH_RSA:
-	    packet_get_all();
-	    log_msg("RSA authentication disabled.");
-	    break;
+        case SSH_CMSG_AUTH_RSA:
+            packet_get_all();
+            log_msg("RSA authentication disabled.");
+            break;
 
-	case SSH_CMSG_AUTH_PASSWORD:
-	    if (cipher_type == SSH_CIPHER_NONE) {
-		packet_get_all();
-		log_msg("Password authentication not available for unencrypted session.");
-		break;
-	    }
+        case SSH_CMSG_AUTH_PASSWORD:
+            if (cipher_type == SSH_CIPHER_NONE) {
+                packet_get_all();
+                log_msg("Password authentication not available for unencrypted session.");
+                break;
+            }
 
-	    /* Password authentication requested. */
-	    /* Read user password.  It is in plain text, but was transmitted
-	       over the encrypted channel so it is not visible to an outside
-	       observer. */
-	    password = packet_get_string(NULL);
+            /* Password authentication requested. */
+            /* Read user password.  It is in plain text, but was transmitted
+               over the encrypted channel so it is not visible to an outside
+               observer. */
+            password = packet_get_string(NULL);
 
-	    if (password_attempts >= 5) {	/* Too many password authentication attempts. */
-		packet_disconnect("Too many password authentication attempts from %.100s for user %.100s.", get_canonical_hostname(), user);
-	     /*NOTREACHED*/}
+            if (password_attempts >= 5) {       /* Too many password authentication attempts. */
+                packet_disconnect("Too many password authentication attempts from %.100s for user %.100s.", get_canonical_hostname(), user);
+             /*NOTREACHED*/}
 
-	    /* Count password authentication attempts, and log if appropriate. */
-	    if (password_attempts > 0) {
-		/* Log failures if attempted more than once. */
-		debug("Password authentication failed for user %.100s from %.100s.", user, get_canonical_hostname());
-	    }
-	    password_attempts++;
+            /* Count password authentication attempts, and log if appropriate. */
+            if (password_attempts > 0) {
+                /* Log failures if attempted more than once. */
+                debug("Password authentication failed for user %.100s from %.100s.", user, get_canonical_hostname());
+            }
+            password_attempts++;
 
-	    /* Try authentication with the password. */
-	    if (auth_password(user, password)) {
-		/* Successful authentication. */
-		/* Clear the password from memory. */
-		memset(password, 0, strlen(password));
-		xfree(password);
-		log_msg("Password authentication for %.100s accepted.", user);
-		authentication_type = SSH_AUTH_PASSWORD;
-		authenticated = 1;
-		break;
-	    }
-	    debug("Password authentication for %.100s failed.", user);
-	    memset(password, 0, strlen(password));
-	    xfree(password);
-	    break;
+            /* Try authentication with the password. */
+            if (auth_password(user, password)) {
+                /* Successful authentication. */
+                /* Clear the password from memory. */
+                memset(password, 0, strlen(password));
+                xfree(password);
+                log_msg("Password authentication for %.100s accepted.", user);
+                authentication_type = SSH_AUTH_PASSWORD;
+                authenticated = 1;
+                break;
+            }
+            debug("Password authentication for %.100s failed.", user);
+            memset(password, 0, strlen(password));
+            xfree(password);
+            break;
 
-	default:
-	    /* Any unknown messages will be ignored (and failure returned)
-	       during authentication. */
-	    packet_get_all();
-	    log_msg("Unknown message during authentication: type %d", type);
-	    break;		/* Respond with a failure message. */
-	}
-	/* If successfully authenticated, break out of loop. */
-	if (authenticated)
-	    break;
+        default:
+            /* Any unknown messages will be ignored (and failure returned)
+               during authentication. */
+            packet_get_all();
+            log_msg("Unknown message during authentication: type %d", type);
+            break;              /* Respond with a failure message. */
+        }
+        /* If successfully authenticated, break out of loop. */
+        if (authenticated)
+            break;
 
-	/* Send a message indicating that the authentication attempt failed. */
-	packet_start(SSH_SMSG_FAILURE);
-	packet_send();
-	packet_write_wait();
+        /* Send a message indicating that the authentication attempt failed. */
+        packet_start(SSH_SMSG_FAILURE);
+        packet_send();
+        packet_write_wait();
     }
 
 
@@ -1557,107 +1560,107 @@ void do_authenticated(char *pw)
     /* We stay in this loop until the client requests to execute a shell or a
        command. */
     while (1) {
-	/* Get a packet from the client. */
-	type = packet_read();
+        /* Get a packet from the client. */
+        type = packet_read();
 
-	/* Process the packet. */
-	switch (type) {
-	case SSH_CMSG_REQUEST_COMPRESSION:
-	    /* COMMAN: k core said that compression is not useful */
-	    goto fail;
-	    compression_level = packet_get_int();
-	    if (compression_level < 1 || compression_level > 9) {
-		packet_send_debug("Received illegal compression level %d.", compression_level);
-		goto fail;
-	    }
-	    /* Enable compression after we have responded with SUCCESS. */
-	    enable_compression_after_reply = 1;
-	    break;
+        /* Process the packet. */
+        switch (type) {
+        case SSH_CMSG_REQUEST_COMPRESSION:
+            /* COMMAN: k core said that compression is not useful */
+            goto fail;
+            compression_level = packet_get_int();
+            if (compression_level < 1 || compression_level > 9) {
+                packet_send_debug("Received illegal compression level %d.", compression_level);
+                goto fail;
+            }
+            /* Enable compression after we have responded with SUCCESS. */
+            enable_compression_after_reply = 1;
+            break;
 
-	case SSH_CMSG_MAX_PACKET_SIZE:
-	    /* Get maximum size from paket. */
-	    max_size = packet_get_int();
+        case SSH_CMSG_MAX_PACKET_SIZE:
+            /* Get maximum size from paket. */
+            max_size = packet_get_int();
 
-	    /* Make sure that it is acceptable. */
-	    if (max_size < 4096 || max_size > 256 * 1024) {
-		packet_send_debug("Received illegal max packet size %lu.", max_size);
-		goto fail;
-	    }
+            /* Make sure that it is acceptable. */
+            if (max_size < 4096 || max_size > 256 * 1024) {
+                packet_send_debug("Received illegal max packet size %lu.", max_size);
+                goto fail;
+            }
 
-	    /* Set the size and return success. */
-	    packet_set_max_size(max_size);
-	    break;
+            /* Set the size and return success. */
+            packet_set_max_size(max_size);
+            break;
 
-	case SSH_CMSG_REQUEST_PTY:
-	    packet_get_all();
-	    debug("Allocating a pty not permitted for this authentication.");
-	    break;
+        case SSH_CMSG_REQUEST_PTY:
+            packet_get_all();
+            debug("Allocating a pty not permitted for this authentication.");
+            break;
 
-	case SSH_CMSG_X11_REQUEST_FORWARDING:
-	    packet_get_all();
-	    debug("X11 forwarding disabled in this site.");
-	    packet_send_debug("X11 forwarding disabled in this site.");
-	    goto fail;
+        case SSH_CMSG_X11_REQUEST_FORWARDING:
+            packet_get_all();
+            debug("X11 forwarding disabled in this site.");
+            packet_send_debug("X11 forwarding disabled in this site.");
+            goto fail;
 
-	case SSH_CMSG_AGENT_REQUEST_FORWARDING:
-	    packet_get_all();
-	    debug("Authentication agent forwarding not permitted for this authentication.");
-	    goto fail;
-	case SSH_CMSG_PORT_FORWARD_REQUEST:
-	    packet_get_all();
-	    debug("All port forwardings disabled in this site.");
-	    packet_send_debug("All port forwardings disabled in this site.");
-	    goto fail;
+        case SSH_CMSG_AGENT_REQUEST_FORWARDING:
+            packet_get_all();
+            debug("Authentication agent forwarding not permitted for this authentication.");
+            goto fail;
+        case SSH_CMSG_PORT_FORWARD_REQUEST:
+            packet_get_all();
+            debug("All port forwardings disabled in this site.");
+            packet_send_debug("All port forwardings disabled in this site.");
+            goto fail;
 
-	case SSH_CMSG_EXEC_SHELL:
-	    /* Set interactive/non-interactive mode. */
-	    packet_set_interactive(1, options.keepalives);
+        case SSH_CMSG_EXEC_SHELL:
+            /* Set interactive/non-interactive mode. */
+            packet_set_interactive(1, options.keepalives);
 
-	    if (forced_command != NULL)
-		goto do_forced_command;
-	    debug("Forking shell.");
-	    do_exec_no_pty(NULL, pw, display, proto, data);
-	    return;
+            if (forced_command != NULL)
+                goto do_forced_command;
+            debug("Forking shell.");
+            do_exec_no_pty(NULL, pw, display, proto, data);
+            return;
 
-	case SSH_CMSG_EXEC_CMD:
-	    packet_get_all();
-	    debug("command executing disabled in this site.");
-	    packet_send_debug("command executing disabled in this site.");
-	    goto fail;
+        case SSH_CMSG_EXEC_CMD:
+            packet_get_all();
+            debug("command executing disabled in this site.");
+            packet_send_debug("command executing disabled in this site.");
+            goto fail;
 
-	default:
-	    /* Any unknown messages in this phase are ignored, and a failure
-	       message is returned. */
-	    packet_get_all();
-	    log_msg("Unknown packet type received after authentication: %d", type);
-	    goto fail;
-	}
+        default:
+            /* Any unknown messages in this phase are ignored, and a failure
+               message is returned. */
+            packet_get_all();
+            log_msg("Unknown packet type received after authentication: %d", type);
+            goto fail;
+        }
 
-	/* The request was successfully processed. */
-	packet_start(SSH_SMSG_SUCCESS);
-	packet_send();
-	packet_write_wait();
+        /* The request was successfully processed. */
+        packet_start(SSH_SMSG_SUCCESS);
+        packet_send();
+        packet_write_wait();
 
-	/* Enable compression now that we have replied if appropriate. */
-	if (enable_compression_after_reply) {
-	    enable_compression_after_reply = 0;
-	    packet_start_compression(compression_level);
-	}
+        /* Enable compression now that we have replied if appropriate. */
+        if (enable_compression_after_reply) {
+            enable_compression_after_reply = 0;
+            packet_start_compression(compression_level);
+        }
 
-	continue;
+        continue;
 
       fail:
-	/* The request failed. */
-	packet_get_all();
-	packet_start(SSH_SMSG_FAILURE);
-	packet_send();
-	packet_write_wait();
-	continue;
+        /* The request failed. */
+        packet_get_all();
+        packet_start(SSH_SMSG_FAILURE);
+        packet_send();
+        packet_write_wait();
+        continue;
 
       do_forced_command:
-	/* There is a forced command specified for this login.  Execute it. */
-	debug("Executing forced command: %.900s", forced_command);
-	return;
+        /* There is a forced command specified for this login.  Execute it. */
+        debug("Executing forced command: %.900s", forced_command);
+        return;
     }
 }
 

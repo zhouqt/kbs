@@ -9,9 +9,9 @@ int main()
 
     init_all();
     if (!loginok)
-	http_fatal("你没有登录");
+        http_fatal("你没有登录");
     if (getcurrusr())
-	www_user_logoff(getcurrusr(), getusernum(getcurrusr()->userid), u_info, get_curr_utmpent());
+        www_user_logoff(getcurrusr(), getusernum(getcurrusr()->userid), u_info, get_curr_utmpent());
     /*
        abort_program();
        setcookie("UTMPKEY", "");

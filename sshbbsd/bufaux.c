@@ -17,6 +17,9 @@ Buffers.
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:40  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:45  kcn
  * format C
  *
@@ -68,15 +71,15 @@ void buffer_put_mp_int(Buffer * buffer, MP_INT * value)
     /* Check for an odd number of hex digits.  Process the odd digit 
        separately. */
     if (hex_size & 1) {
-	sscanf(buf, "%1x", &byte);
-	buf[oi++] = byte;
-	i = 1;
+        sscanf(buf, "%1x", &byte);
+        buf[oi++] = byte;
+        i = 1;
     }
 
     /* Convert the hex number into binary representation. */
     for (; i < hex_size; i += 2) {
-	sscanf(buf + i, "%2x", &byte);
-	buf[oi++] = byte;
+        sscanf(buf + i, "%2x", &byte);
+        buf[oi++] = byte;
     }
 
     assert(oi == ((bits + 7) / 8));
@@ -108,10 +111,10 @@ void buffer_get_mp_int(Buffer * buffer, MP_INT * value)
 
     /* Read and convert the binary bytes into a hex string. */
     for (i = 0; i < bytes; i++) {
-	unsigned char byte;
+        unsigned char byte;
 
-	buffer_get(buffer, (char *) &byte, 1);
-	sprintf(hex + 2 * i, "%02x", byte);
+        buffer_get(buffer, (char *) &byte, 1);
+        sprintf(hex + 2 * i, "%02x", byte);
     }
 
     /* Read the hex string into a mp-int. */
@@ -157,7 +160,7 @@ char *buffer_get_string(Buffer * buffer, unsigned int *length_ptr)
     /* Get the length. */
     len = buffer_get_int(buffer);
     if (len > 256 * 1024)
-	fatal("Received packet with bad string length %d", len);
+        fatal("Received packet with bad string length %d", len);
     /* Allocate space for the string.  Add one byte for a null character. */
     value = xmalloc(len + 1);
     /* Get the string. */
@@ -166,7 +169,7 @@ char *buffer_get_string(Buffer * buffer, unsigned int *length_ptr)
     value[len] = 0;
     /* Optionally return the length of the string. */
     if (length_ptr)
-	*length_ptr = len;
+        *length_ptr = len;
     return value;
 }
 

@@ -21,21 +21,21 @@ report()
 }
 
 main(argc, argv)
-	int argc;
-	char *argv[];
+    int argc;
+    char *argv[];
 {
     char dir[80];
 
     if (argc < 2) {
-	printf("Usage: %s <BBS_FULL_NAME>\n", argv[0]);
-	exit(1);
+        printf("Usage: %s <BBS_FULL_NAME>\n", argv[0]);
+        exit(1);
     }
     sprintf(dir, "%s/boards/%s", BBSHOME, argv[1]);
     myftw(dir);
 }
 
 do_remake(path, file)
-	char *path, *file;
+    char *path, *file;
 {
     FILE *fp;
     char *ptr, *ptr2;
@@ -46,11 +46,14 @@ do_remake(path, file)
 
     sprintf(filename, "%s/%s", path, file);
     if ((fp = fopen(filename, "r")) == NULL) {
-	printf("Open error.. \n");
-	return;
+        printf("Open error.. \n");
+        return;
     }
     strcpy(fh.filename, file);
     fh.level = 0;
     memset(&fh.accessed, 0, sizeof(fh.accessed));
     while (fgets(buf, 256, fp) != NULL) {
-	if (strstr(buf, "
+        if (strstr(buf, "
+
+
+

@@ -12,9 +12,9 @@ int fsize(char *path)
     struct stat buf;
 
     if (stat(path, &buf)) {
-	return 0;
+        return 0;
     } else {
-	return buf.st_size;
+        return buf.st_size;
     }
 }
 
@@ -23,8 +23,8 @@ main(int argc, char *argv[])
     int len, record_num = 0;
 
     if (argc != 5) {
-	printf("%s old_file old_size new_file new_size\n", argv[0]);
-	exit(0);
+        printf("%s old_file old_size new_file new_size\n", argv[0]);
+        exit(0);
     }
 
     inf_name = argv[1];
@@ -36,8 +36,8 @@ main(int argc, char *argv[])
     outf = fopen(outf_name, "w");
 
     if (inf == NULL || outf == NULL) {
-	printf("Error open file \n");
-	exit(0);
+        printf("Error open file \n");
+        exit(0);
     }
 
     t = fsize(inf_name);
@@ -45,19 +45,19 @@ main(int argc, char *argv[])
     printf("New file: %s  %d = %d x %d + %d \n", outf_name, 0, outf_size, 0, 0);
 
     if (t % inf_size) {
-	char ans[80];
+        char ans[80];
 
-	printf("Cannot match alignment, continue? ");
-	gets(ans);
-	if (!(ans[0] == 'Y' || ans[0] == 'y'))
-	    exit(0);
+        printf("Cannot match alignment, continue? ");
+        gets(ans);
+        if (!(ans[0] == 'Y' || ans[0] == 'y'))
+            exit(0);
     }
 
     memset(buf, 0, outf_size);
 
     while ((len = fread(buf, 1, inf_size, inf)) == inf_size) {
-	record_num++;
-	fwrite(buf, 1, outf_size, outf);
+        record_num++;
+        fwrite(buf, 1, outf_size, outf);
     }
 
     fclose(inf);

@@ -11,12 +11,12 @@ int main()
     init_all();
     type = atoi(getparm("type"));
     if (!loginok)
-	http_fatal("您尚未登录, 请重新登录。");
+        http_fatal("您尚未登录, 请重新登录。");
     printf("%s -- 填写注册单<hr color=\"green\">\n", BBSNAME);
     check_if_ok();
     if (type == 1) {
-	check_submit_form();
-	http_quit();
+        check_submit_form();
+        http_quit();
     }
     printf("您好, %s, 注册单通过后即可获得注册用户的权限, 下面各项务必请认真填写<br><hr>\n", currentuser->userid);
     printf("<form method=\"post\" action=\"bbsform?type=1\">\n");
@@ -32,15 +32,15 @@ int main()
 int check_if_ok()
 {
     if (user_perm(currentuser, PERM_LOGINOK))
-	http_fatal("您的身份确认已经成功, 欢迎加入本站的行列.");
+        http_fatal("您的身份确认已经成功, 欢迎加入本站的行列.");
     if ((time(0) - currentuser->firstlogin) < REGISTER_WAIT_TIME) {
-	hprintf("您首次登入本站未满" REGISTER_WAIT_TIME_NAME "...");
-	hprintf("请先四处熟悉一下，在满" REGISTER_WAIT_TIME_NAME "以后再填写注册单。");
-	exit(-1);
+        hprintf("您首次登入本站未满" REGISTER_WAIT_TIME_NAME "...");
+        hprintf("请先四处熟悉一下，在满" REGISTER_WAIT_TIME_NAME "以后再填写注册单。");
+        exit(-1);
     }
 
     if (has_fill_form())
-	http_fatal("目前站长尚未处理您的注册单，请耐心等待.");
+        http_fatal("目前站长尚未处理您的注册单，请耐心等待.");
 }
 
 int check_submit_form()
@@ -49,7 +49,7 @@ int check_submit_form()
 
     fp = fopen("new_register", "a");
     if (fp == 0)
-	http_fatal("注册文件错误，请通知SYSOP");
+        http_fatal("注册文件错误，请通知SYSOP");
     fprintf(fp, "usernum: %d, %s\n", getusernum(currentuser->userid), wwwCTime(time(0)));
     fprintf(fp, "userid: %s\n", currentuser->userid);
     /* 下面的各个信息应过滤掉非法字符之后再写入文件. */

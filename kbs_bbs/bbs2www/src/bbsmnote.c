@@ -11,23 +11,23 @@ int main()
     init_all();
     printf("<center>\n");
     if (!loginok)
-	http_fatal("匆匆过客，请先登录");
+        http_fatal("匆匆过客，请先登录");
     strsncpy(board, getparm("board"), 30);
     if (!has_BM_perm(currentuser, board))
-	http_fatal("你无权进行本操作");
+        http_fatal("你无权进行本操作");
     strsncpy(board, getbcache(board)->filename, 30);
     sprintf(path, "vote/%s/notes", board);
     if (!strcasecmp(getparm("type"), "update"))
-	save_note(path);
+        save_note(path);
     printf("%s -- 编辑进版画面 [讨论区: %s]<hr>\n", BBSNAME, board);
     printf("<form method=\"post\" action=\"bbsmnote?type=update&board=%s\">\n", encode_url(buf, board, sizeof(buf)));
     fp = fopen(path, "r");
     if (fp) {
-	fread(buf, 9999, 1, fp);
-	ptr = strcasestr(buf, "<textarea>");
-	if (ptr)
-	    ptr[0] = 0;
-	fclose(fp);
+        fread(buf, 9999, 1, fp);
+        ptr = strcasestr(buf, "<textarea>");
+        if (ptr)
+            ptr[0] = 0;
+        fclose(fp);
     }
     printf("<table width=\"610\" border=\"1\"><tr><td>");
     printf("<textarea name=\"text\" rows=\"20\" cols=\"80\" wrap=\"physical\">\n");

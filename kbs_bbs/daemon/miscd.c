@@ -33,40 +33,40 @@ int killdir(char *basedir, char *filename)
     strcat(genbuf1, filename);
     fd = open(genbuf1, O_RDWR);
     if (fd < 0)
-	return 0;
+        return 0;
     if (flock(fd, LOCK_EX) < 0) {
-	close(fd);
-	return 0;
+        close(fd);
+        return 0;
     }
     if (fstat(fd, &st) < 0) {
-	flock(fd, LOCK_UN);
-	close(fd);
-	return 0;
+        flock(fd, LOCK_UN);
+        close(fd);
+        return 0;
     }
     if ((files = (struct fileheader *) malloc(st.st_size)) == NULL) {
-	flock(fd, LOCK_UN);
-	close(fd);
-	return 0;
+        flock(fd, LOCK_UN);
+        close(fd);
+        return 0;
     }
     if (read(fd, files, st.st_size) < 0) {
-	free(files);
-	flock(fd, LOCK_UN);
-	close(fd);
-	return 0;
+        free(files);
+        flock(fd, LOCK_UN);
+        close(fd);
+        return 0;
     }
     lseek(fd, 0, 0);
     for (i = 0, afile = files; i < st.st_size / sizeof(struct fileheader); i++, afile++) {
-	if (((now - afile->accessed[11]) > DAY_DELETED_CLEAN)
-	    || ((now < afile->accessed[11]) && ((now + 100 - afile->accessed[11]) > DAY_DELETED_CLEAN))) {
-	    strcpy(genbuf1, basedir);
-	    strcat(genbuf1, "/");
-	    strcat(genbuf1, afile->filename);
-	    unlink(genbuf1);
-	    deleted++;
-	} else {
-	    write(fd, afile, sizeof(struct fileheader));
-	    count += sizeof(struct fileheader);
-	}
+        if (((now - afile->accessed[11]) > DAY_DELETED_CLEAN)
+            || ((now < afile->accessed[11]) && ((now + 100 - afile->accessed[11]) > DAY_DELETED_CLEAN))) {
+            strcpy(genbuf1, basedir);
+            strcat(genbuf1, "/");
+            strcat(genbuf1, afile->filename);
+            unlink(genbuf1);
+            deleted++;
+        } else {
+            write(fd, afile, sizeof(struct fileheader));
+            count += sizeof(struct fileheader);
+        }
     }
     ftruncate(fd, count);
     flock(fd, LOCK_EX);
@@ -81,7 +81,7 @@ int dokilldir(char *board)
     int killed;
 
     if (!board[0])
-	return 0;
+        return 0;
     strcpy(hehe, "boards");
     strcat(hehe, "/");
     strcat(hehe, board);
@@ -93,7 +93,7 @@ int dokilldir(char *board)
 int doaboard(struct boardheader *brd)
 {
     if (!brd)
-	return 0;
+        return 0;
     return dokilldir(brd->filename);
 }
 
@@ -106,23 +106,23 @@ static char tmpbuf[255];
 static char genbuf1[255];
 
 #if 0
-char *setmailpath(buf, userid)	/* 取 某用户 的mail */
-	char *buf, *userid;
+char *setmailpath(buf, userid)  /* 取 某用户 的mail */
+    char *buf, *userid;
 {
-    if (isalpha(userid[0]))	/* 加入错误判断,提高容错性, alex 1997.1.6 */
-	sprintf(buf, "mail/%c/%s", toupper(userid[0]), userid);
+    if (isalpha(userid[0]))     /* 加入错误判断,提高容错性, alex 1997.1.6 */
+        sprintf(buf, "mail/%c/%s", toupper(userid[0]), userid);
     else
-	sprintf(buf, "mail/wrong/%s", userid);
+        sprintf(buf, "mail/wrong/%s", userid);
     return buf;
 }
 
-char *sethomepath(buf, userid)	/* 取 某用户 的home */
-	char *buf, *userid;
+char *sethomepath(buf, userid)  /* 取 某用户 的home */
+    char *buf, *userid;
 {
-    if (isalpha(userid[0]))	/* 加入错误判断,提高容错性, alex 1997.1.6 */
-	sprintf(buf, "home/%c/%s", toupper(userid[0]), userid);
+    if (isalpha(userid[0]))     /* 加入错误判断,提高容错性, alex 1997.1.6 */
+        sprintf(buf, "home/%c/%s", toupper(userid[0]), userid);
     else
-	sprintf(buf, "home/wrong/%s", userid);
+        sprintf(buf, "home/wrong/%s", userid);
     return buf;
 }
 #endif
@@ -132,24 +132,24 @@ int killauser(struct userec *theuser, char *data)
     struct userec *ft;
 
     if (!theuser || theuser->userid[0] == 0)
-	return 0;
+        return 0;
     a = compute_user_value(theuser);
     if (a < 0) {
-	bbslog("1user", "kill user %s", theuser->userid);
-	a = getuser(theuser->userid, &ft);
-	setmailpath(tmpbuf, theuser->userid);
-	sprintf(genbuf1, "/bin/rm -rf %s", tmpbuf);
-	system(genbuf1);
-	sethomepath(tmpbuf, theuser->userid);
-	sprintf(genbuf1, "/bin/rm -rf %s", tmpbuf);
-	system(genbuf1);
-	sprintf(genbuf1, "/bin/rm -fr tmp/email/%s", theuser->userid);
-	system(genbuf1);
-	setuserid2(a, "");
-	theuser->userlevel = 0;
-	strcpy(theuser->address, "");
-	strcpy(theuser->username, "");
-	strcpy(theuser->realname, "");
+        bbslog("1user", "kill user %s", theuser->userid);
+        a = getuser(theuser->userid, &ft);
+        setmailpath(tmpbuf, theuser->userid);
+        sprintf(genbuf1, "/bin/rm -rf %s", tmpbuf);
+        system(genbuf1);
+        sethomepath(tmpbuf, theuser->userid);
+        sprintf(genbuf1, "/bin/rm -rf %s", tmpbuf);
+        system(genbuf1);
+        sprintf(genbuf1, "/bin/rm -fr tmp/email/%s", theuser->userid);
+        system(genbuf1);
+        setuserid2(a, "");
+        theuser->userlevel = 0;
+        strcpy(theuser->address, "");
+        strcpy(theuser->username, "");
+        strcpy(theuser->realname, "");
     }
 
     return 0;
@@ -168,57 +168,57 @@ int updateauser(struct userec *theuser, char *data)
     int lcount = 0, tcount, s[10][2], i, j;
 
     if ((theuser->userlevel & PERM_BASIC) && (theuser->userlevel & PERM_POST)
-	&& (theuser->userlevel & PERM_CHAT) && (theuser->userlevel & PERM_PAGE)
-	&& !(theuser->userlevel & PERM_DENYMAIL))
-	return 0;
+        && (theuser->userlevel & PERM_CHAT) && (theuser->userlevel & PERM_PAGE)
+        && !(theuser->userlevel & PERM_DENYMAIL))
+        return 0;
     if (!(theuser->userlevel & PERM_LOGINOK))
-	return 0;
+        return 0;
     sethomefile(genbuf, theuser->userid, "giveup");
     fn = fopen(genbuf, "rt");
     if (fn) {
-	while (!feof(fn)) {
-	    if (fscanf(fn, "%d %d", &i, &j) <= 0)
-		break;
-	    s[lcount][0] = i;
-	    s[lcount][1] = j;
-	    lcount++;
-	}
-	fclose(fn);
-	tcount = lcount;
-	for (i = 0; i < lcount; i++) {
-	    if (s[i][1] <= time(0) / 3600 / 24) {
-		tcount--;
-		switch (s[i][0]) {
-		case 1:
-		    theuser->userlevel |= PERM_BASIC;
-		    break;
-		case 2:
-		    theuser->userlevel |= PERM_POST;
-		    break;
-		case 3:
-		    theuser->userlevel |= PERM_CHAT;
-		    break;
-		case 4:
-		    theuser->userlevel |= PERM_PAGE;
-		    break;
-		case 5:
-		    theuser->userlevel &= ~PERM_DENYMAIL;
-		    break;
-		}
-		s[i][1] = 0;
-	    }
-	}
-	if (theuser->flags[0] & GIVEUP_FLAG && tcount == 0)
-	    theuser->flags[0] &= ~GIVEUP_FLAG;
-	if (tcount == 0)
-	    unlink(genbuf);
-	else {
-	    fn = fopen(genbuf, "wt");
-	    for (i = 0; i < lcount; i++)
-		if (s[i][1] > 0)
-		    fprintf(fn, "%d %d\n", s[i][0], s[i][1]);
-	    fclose(fn);
-	}
+        while (!feof(fn)) {
+            if (fscanf(fn, "%d %d", &i, &j) <= 0)
+                break;
+            s[lcount][0] = i;
+            s[lcount][1] = j;
+            lcount++;
+        }
+        fclose(fn);
+        tcount = lcount;
+        for (i = 0; i < lcount; i++) {
+            if (s[i][1] <= time(0) / 3600 / 24) {
+                tcount--;
+                switch (s[i][0]) {
+                case 1:
+                    theuser->userlevel |= PERM_BASIC;
+                    break;
+                case 2:
+                    theuser->userlevel |= PERM_POST;
+                    break;
+                case 3:
+                    theuser->userlevel |= PERM_CHAT;
+                    break;
+                case 4:
+                    theuser->userlevel |= PERM_PAGE;
+                    break;
+                case 5:
+                    theuser->userlevel &= ~PERM_DENYMAIL;
+                    break;
+                }
+                s[i][1] = 0;
+            }
+        }
+        if (theuser->flags[0] & GIVEUP_FLAG && tcount == 0)
+            theuser->flags[0] &= ~GIVEUP_FLAG;
+        if (tcount == 0)
+            unlink(genbuf);
+        else {
+            fn = fopen(genbuf, "wt");
+            for (i = 0; i < lcount; i++)
+                if (s[i][1] > 0)
+                    fprintf(fn, "%d %d\n", s[i][0], s[i][1]);
+            fclose(fn);
+        }
     }
     return 0;
 }
@@ -236,8 +236,8 @@ int getnextday4am()
     struct tm *tm = localtime(&now);
 
     if (tm->tm_hour >= 4) {
-	now += 86400;
-	tm = localtime(&now);
+        now += 86400;
+        tm = localtime(&now);
     }
     tm->tm_hour = 4;
     tm->tm_sec = 0;
@@ -259,8 +259,8 @@ static int num;
 struct requesthdr {
     int command;
     union {
-	struct user_info utmp;
-	int uent;
+        struct user_info utmp;
+        int uent;
     } u_info;
 } utmpreq;
 int getutmprequest(int m_socket)
@@ -274,27 +274,27 @@ int getutmprequest(int m_socket)
 
     len = sizeof(sin);
     for (s = accept(m_socket, &sin, &len);; s = accept(m_socket, &sin, &len)) {
-	if ((s <= 0) && errno != EINTR) {
-	    bbslog("3system", "utmpd:accept %s", strerror(errno));
-	    exit(-1);
-	}
-	if (s <= 0)
-	    continue;
-	memset(&utmpreq, 0, sizeof(utmpreq));
-	len = 1;
+        if ((s <= 0) && errno != EINTR) {
+            bbslog("3system", "utmpd:accept %s", strerror(errno));
+            exit(-1);
+        }
+        if (s <= 0)
+            continue;
+        memset(&utmpreq, 0, sizeof(utmpreq));
+        len = 1;
 
-	while (totalread < sizeof(utmpreq) && len > 0) {
-	    len = read(s, phdr, sizeof(utmpreq) - totalread);
-	    if (len > 0) {
-		totalread += len;
-		phdr += len;
-	    }
-	}
-	if (len <= 0) {
-	    close(s);
-	    continue;
-	}
-	close(s);
+        while (totalread < sizeof(utmpreq) && len > 0) {
+            len = read(s, phdr, sizeof(utmpreq) - totalread);
+            if (len > 0) {
+                totalread += len;
+                phdr += len;
+            }
+        }
+        if (len <= 0) {
+            close(s);
+            continue;
+        }
+        close(s);
     }
     return s;
 }
@@ -309,35 +309,35 @@ int getrequest(int m_socket)
     len = sizeof(sin);
 
     for (s = accept(m_socket, &sin, &len);; s = accept(m_socket, &sin, &len)) {
-	if ((s <= 0) && errno != EINTR) {
-	    bbslog("3system", "userd:accept %s", strerror(errno));
-	    exit(-1);
-	}
-	if (s <= 0)
-	    continue;
-	memset(tmpbuf, 0, 255);
-	len = read(s, tmpbuf, 255);
-	if (len <= 0) {
-	    close(s);
-	    continue;
-	}
-	strtok(tmpbuf, " ");
-	cmd = tmpbuf;
-	username = strtok(NULL, " ");
-	pnum = strtok(NULL, " ");
-	num = pnum ? atoi(pnum) : 0;
-	if (strcmp(tmpbuf, "QUIT") == 0)
-	    exit(0);
-	if (strcmp(tmpbuf, "NEW") == 0)
-	    break;
-	if (strcmp(tmpbuf, "SET") == 0)
-	    break;
-	if (strcmp(tmpbuf, "DEL") == 0) {
-	    pnum = username;
-	    num = atoi(pnum);
-	    break;
-	}
-	close(s);
+        if ((s <= 0) && errno != EINTR) {
+            bbslog("3system", "userd:accept %s", strerror(errno));
+            exit(-1);
+        }
+        if (s <= 0)
+            continue;
+        memset(tmpbuf, 0, 255);
+        len = read(s, tmpbuf, 255);
+        if (len <= 0) {
+            close(s);
+            continue;
+        }
+        strtok(tmpbuf, " ");
+        cmd = tmpbuf;
+        username = strtok(NULL, " ");
+        pnum = strtok(NULL, " ");
+        num = pnum ? atoi(pnum) : 0;
+        if (strcmp(tmpbuf, "QUIT") == 0)
+            exit(0);
+        if (strcmp(tmpbuf, "NEW") == 0)
+            break;
+        if (strcmp(tmpbuf, "SET") == 0)
+            break;
+        if (strcmp(tmpbuf, "DEL") == 0) {
+            pnum = username;
+            num = atoi(pnum);
+            break;
+        }
+        close(s);
     }
     return s;
 }
@@ -358,8 +358,8 @@ void userd()
 
     bzero(&sin, sizeof(sin));
     if ((m_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
-	bbslog("3system", "userd:socket %s", strerror(errno));
-	exit(-1);
+        bbslog("3system", "userd:socket %s", strerror(errno));
+        exit(-1);
     }
     setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, &opt, 4);
     memset(&sin, 0, sinlen);
@@ -367,28 +367,28 @@ void userd()
     sin.sin_port = htons(60001);
     inet_aton("127.0.0.1", &sin.sin_addr);
     if (0 != bind(m_socket, (struct sockaddr *) &sin, sizeof(sin))) {
-	bbslog("3system", "userd:bind %s", strerror(errno));
-	exit(-1);
+        bbslog("3system", "userd:bind %s", strerror(errno));
+        exit(-1);
     }
     if (0 != listen(m_socket, 5)) {
-	bbslog("3system", "userd:listen %s", strerror(errno));
-	exit(-1);
+        bbslog("3system", "userd:listen %s", strerror(errno));
+        exit(-1);
     }
     while (1) {
-	int sock, id;
+        int sock, id;
 
-	sock = getrequest(m_socket);
-	if (!strcmp(cmd, "NEW"))
-	    id = getnewuserid(username);
-	if (!strcmp(cmd, "SET")) {
-	    setuserid2(num, username);
-	    id = 0;
-	}
-	if (!strcmp(cmd, "DEL")) {
-	    setuserid2(num, "");
-	    id = 0;
-	}
-	putrequest(sock, id);
+        sock = getrequest(m_socket);
+        if (!strcmp(cmd, "NEW"))
+            id = getnewuserid(username);
+        if (!strcmp(cmd, "SET")) {
+            setuserid2(num, username);
+            id = 0;
+        }
+        if (!strcmp(cmd, "DEL")) {
+            setuserid2(num, "");
+            id = 0;
+        }
+        putrequest(sock, id);
     }
     return;
 }
@@ -403,8 +403,8 @@ void utmpd()
 
     bzero(&sin, sizeof(sin));
     if ((m_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
-	bbslog("3system", "utmpd:socket %s", strerror(errno));
-	exit(-1);
+        bbslog("3system", "utmpd:socket %s", strerror(errno));
+        exit(-1);
     }
     setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, &opt, 4);
     memset(&sin, 0, sinlen);
@@ -412,60 +412,60 @@ void utmpd()
     sin.sin_port = htons(60002);
     inet_aton("127.0.0.1", &sin.sin_addr);
     if (0 != bind(m_socket, (struct sockaddr *) &sin, sizeof(sin))) {
-	bbslog("3system", "utmpd:bind %s", strerror(errno));
-	exit(-1);
+        bbslog("3system", "utmpd:bind %s", strerror(errno));
+        exit(-1);
     }
     if (0 != listen(m_socket, 5)) {
-	bbslog("3system", "utmpd:listen %s", strerror(errno));
-	exit(-1);
+        bbslog("3system", "utmpd:listen %s", strerror(errno));
+        exit(-1);
     }
     while (1) {
-	int sock, id;
+        int sock, id;
 
-	sock = getutmprequest(m_socket);
+        sock = getutmprequest(m_socket);
 #if 0
-	{			/*kill user */
-	    time_t now;
-	    struct user_info *uentp;
+        {                       /*kill user */
+            time_t now;
+            struct user_info *uentp;
 
-	    now = time(NULL);
-	    if ((now > utmpshm->uptime + 120) || (now < utmpshm->uptime - 120)) {
-		int n;
+            now = time(NULL);
+            if ((now > utmpshm->uptime + 120) || (now < utmpshm->uptime - 120)) {
+                int n;
 
-		utmpshm->uptime = now;
-		bbslog("1system", "UTMP:Clean user utmp cache");
-		for (n = 0; n < USHM_SIZE; n++) {
-		    utmpshm->uptime = now;
-		    uentp = &(utmpshm->uinfo[n]);
-		    if (uentp->active && uentp->pid && kill(uentp->pid, 0) == -1) {	/*uentp检查 */
-			char buf[STRLEN];
+                utmpshm->uptime = now;
+                bbslog("1system", "UTMP:Clean user utmp cache");
+                for (n = 0; n < USHM_SIZE; n++) {
+                    utmpshm->uptime = now;
+                    uentp = &(utmpshm->uinfo[n]);
+                    if (uentp->active && uentp->pid && kill(uentp->pid, 0) == -1) {     /*uentp检查 */
+                        char buf[STRLEN];
 
-			strncpy(buf, uentp->userid, IDLEN + 2);
-			clear_utmp(n + 1);
-			RemoveMsgCountFile(buf);
-		    }
-		}
-	    }
-	}
+                        strncpy(buf, uentp->userid, IDLEN + 2);
+                        clear_utmp(n + 1);
+                        RemoveMsgCountFile(buf);
+                    }
+                }
+            }
+        }
 #endif
-	/* utmp */
-	switch (utmpreq.command) {
-	case 1:		// getnewutmp
-	    id = getnewutmpent2(&utmpreq.u_info.utmp);
-	    break;
-	case 2:
-	    id = -1;
-	    break;		// clear, by uentp
-	case 3:		// clear, by id
-	    /*这个代码有错误的，因为pid不能不判断 */
-	    clear_utmp(utmpreq.u_info.uent, 0, 0);
-	    id = 0;
-	    break;
-	default:
-	    id = -1;
-	    break;
-	}
-	putrequest(sock, id);
+        /* utmp */
+        switch (utmpreq.command) {
+        case 1:                // getnewutmp
+            id = getnewutmpent2(&utmpreq.u_info.utmp);
+            break;
+        case 2:
+            id = -1;
+            break;              // clear, by uentp
+        case 3:                // clear, by id
+            /*这个代码有错误的，因为pid不能不判断 */
+            clear_utmp(utmpreq.u_info.uent, 0, 0);
+            id = 0;
+            break;
+        default:
+            id = -1;
+            break;
+        }
+        putrequest(sock, id);
     }
     return;
 }
@@ -483,9 +483,9 @@ void flushd()
     sigaction(SIGABRT, &act, NULL);
 
     while (1) {
-	sleep(2 * 60 * 60);
-	flush_ucache();
-	bbslog("4miscdaemon", "flush passwd file");
+        sleep(2 * 60 * 60);
+        flush_ucache();
+        bbslog("4miscdaemon", "flush passwd file");
     };
 }
 
@@ -499,8 +499,8 @@ void timed()
     setpublicshmreadonly(0);
     while (1) {
 #undef time
-	bbssettime(time(0));
-	sleep(1);
+        bbssettime(time(0));
+        sleep(1);
 #define time(x) bbstime(x)
     }
 }
@@ -512,25 +512,25 @@ int dodaemon(char *argv1, char *daemon)
     char commbuf[10];
 
     if (load_ucache() != 0) {
-	printf("ft,load ucache error!");
-	exit(-1);
+        printf("ft,load ucache error!");
+        exit(-1);
     }
 
     if (argv1 != NULL) {
-	switch (fork()) {
-	case -1:
-	    printf("faint, i can't fork.\n");
-	    exit(0);
-	    break;
-	case 0:
-	    break;
-	default:
-	    exit(0);
-	    break;
-	}
-	commandline = argv1;
+        switch (fork()) {
+        case -1:
+            printf("faint, i can't fork.\n");
+            exit(0);
+            break;
+        case 0:
+            break;
+        default:
+            exit(0);
+            break;
+        }
+        commandline = argv1;
     } else {
-	commandline = commbuf;
+        commandline = commbuf;
     }
     setsid();
 #ifdef AIX
@@ -551,58 +551,58 @@ int dodaemon(char *argv1, char *daemon)
     sigaction(SIGCHLD, &act, NULL);
 #endif
     if (((daemon == NULL) || (!strcmp(daemon, "timed"))) && ((argv1 == NULL) || fork())) {
-	strcpy(commandline, "timed");
-	timed();
+        strcpy(commandline, "timed");
+        timed();
     }
 
     if (((daemon == NULL) || (!strcmp(daemon, "killd"))) && ((argv1 == NULL) || fork())) {
-	strcpy(commandline, "killd");
-	while (1) {
-	    int ft;
+        strcpy(commandline, "killd");
+        while (1) {
+            int ft;
 
-	    if (argv1 == NULL) {
-		dokilluser();
-		doupdategiveupuser();
-	    } else {
-		switch (fork()) {
-		case -1:
-		    bbslog("1miscdaemon", "fork failed\n");
-		    break;
-		case 0:
-		    dokilluser();
-		    doupdategiveupuser();
-		    exit(0);
-		    break;
-		default:
-		    break;
-		}
-	    }
-	    if (ismonday()) {
-		switch (fork()) {
-		case -1:
-		    bbslog("1miscdaemon", "fork failed\n");
-		    break;
-		case 0:
-		    dokillalldir();
-		    exit(0);
-		    break;
-		default:
-		    break;
-		}
-	    }
-	    ft = time(0);
-	    do {
-		sleep(86400 - (time(0) - ft));	/* 1 day */
-	    } while (ft + 86400 > time(0));
-	};
+            if (argv1 == NULL) {
+                dokilluser();
+                doupdategiveupuser();
+            } else {
+                switch (fork()) {
+                case -1:
+                    bbslog("1miscdaemon", "fork failed\n");
+                    break;
+                case 0:
+                    dokilluser();
+                    doupdategiveupuser();
+                    exit(0);
+                    break;
+                default:
+                    break;
+                }
+            }
+            if (ismonday()) {
+                switch (fork()) {
+                case -1:
+                    bbslog("1miscdaemon", "fork failed\n");
+                    break;
+                case 0:
+                    dokillalldir();
+                    exit(0);
+                    break;
+                default:
+                    break;
+                }
+            }
+            ft = time(0);
+            do {
+                sleep(86400 - (time(0) - ft));  /* 1 day */
+            } while (ft + 86400 > time(0));
+        };
     }
     if (((daemon == NULL) || (!strcmp(daemon, "userd"))) && ((argv1 == NULL) || fork())) {
-	strcpy(commandline, "userd");
-	userd();
+        strcpy(commandline, "userd");
+        userd();
     }
     if ((daemon == NULL) || (!strcmp(daemon, "flushd"))) {
-	strcpy(commandline, "flushd");
-	flushd();
+        strcpy(commandline, "flushd");
+        flushd();
     }
 }
 int main(int argc, char *argv[])
@@ -620,23 +620,23 @@ int main(int argc, char *argv[])
 #define time(x) bbstime(x)
     setpublicshmreadonly(1);
     if (argc > 1) {
-	if (strcasecmp(argv[1], "killuser") == 0) {
-	    if (load_ucache() != 0)
-		return -1;
-	    return dokilluser();
-	}
-	if (strcasecmp(argv[1], "giveup") == 0) {
-	    if (load_ucache() != 0)
-		return -1;
-	    return doupdategiveupuser();
-	}
-	if (strcasecmp(argv[1], "allboards") == 0)
-	    return dokillalldir();
-	if (strcasecmp(argv[1], "daemon") == 0)
-	    return dodaemon(argv[1], argv[2]);
-	if (strcasecmp(argv[1], "killdir") == 0)
-	    return dokilldir(argv[2]);
-	return dodaemon(NULL, argv[1]);
+        if (strcasecmp(argv[1], "killuser") == 0) {
+            if (load_ucache() != 0)
+                return -1;
+            return dokilluser();
+        }
+        if (strcasecmp(argv[1], "giveup") == 0) {
+            if (load_ucache() != 0)
+                return -1;
+            return doupdategiveupuser();
+        }
+        if (strcasecmp(argv[1], "allboards") == 0)
+            return dokillalldir();
+        if (strcasecmp(argv[1], "daemon") == 0)
+            return dodaemon(argv[1], argv[2]);
+        if (strcasecmp(argv[1], "killdir") == 0)
+            return dokilldir(argv[2]);
+        return dodaemon(NULL, argv[1]);
     }
     printf("Usage : %s killuser to kill old users\n", argv[0]);
     printf("        %s allboards to delete all old files\n", argv[0]);

@@ -23,8 +23,8 @@
 
 /* Lots o' modes! */
 
-#define IDLE            0	/* Modes a user can be in */
-#define ULDL            1	/* see mode in struct user_info in bbs.h */
+#define IDLE            0       /* Modes a user can be in */
+#define ULDL            1       /* see mode in struct user_info in bbs.h */
 #define TALK            2
 #define NEW             3
 #define CHAT1           4

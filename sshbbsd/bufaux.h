@@ -14,6 +14,9 @@ Created: Wed Mar 29 02:18:23 1995 ylo
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:40  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:45  kcn
  * format C
  *
@@ -68,4 +71,4 @@ char *buffer_get_string(Buffer * buffer, unsigned int *length_ptr);
 /* Stores and arbitrary binary string in the buffer. */
 void buffer_put_string(Buffer * buffer, const void *buf, unsigned int len);
 
-#endif				/* BUFAUX_H */
+#endif                          /* BUFAUX_H */

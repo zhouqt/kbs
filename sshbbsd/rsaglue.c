@@ -20,6 +20,9 @@ using the --with-rsaref configure option.
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:43  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:48  kcn
  * format C
  *
@@ -79,7 +82,7 @@ using the --with-rsaref configure option.
    These functions are exported by RSAREF and are thus part of the available
    interface without modifying RSAREF. */
 
-#define _MD5_H_			/* Kludge to prevent inclusion of rsaref md5.h. */
+#define _MD5_H_                 /* Kludge to prevent inclusion of rsaref md5.h. */
 #include "rsaref2/source/global.h"
 #include "rsaref2/source/rsaref.h"
 
@@ -143,7 +146,7 @@ void rsa_public_encrypt(MP_INT * output, MP_INT * input, RSAPublicKey * key, Ran
     R_RANDOM_STRUCT rands;
 
     if (key->bits > MAX_RSA_MODULUS_BITS)
-	fatal("RSA key has too many bits for RSAREF to handle (max %d).", MAX_RSA_MODULUS_BITS);
+        fatal("RSA key has too many bits for RSAREF to handle (max %d).", MAX_RSA_MODULUS_BITS);
 
     input_bits = mpz_sizeinbase(input, 2);
     input_len = (input_bits + 7) / 8;
@@ -153,11 +156,11 @@ void rsa_public_encrypt(MP_INT * output, MP_INT * input, RSAPublicKey * key, Ran
 
     R_RandomInit(&rands);
     for (i = 0; i < 256; i++)
-	buf[i] = random_get_byte(random_state);
+        buf[i] = random_get_byte(random_state);
     R_RandomUpdate(&rands, buf, 256);
 
     if (RSAPublicEncrypt(output_data, &output_len, input_data, input_len, &public_key, &rands) != 0)
-	fatal("RSAPublicEncrypt failed");
+        fatal("RSAPublicEncrypt failed");
 
     R_RandomFinal(&rands);
 
@@ -174,7 +177,7 @@ void rsa_private_decrypt(MP_INT * output, MP_INT * input, RSAPrivateKey * key)
     R_RSA_PRIVATE_KEY private_key;
 
     if (key->bits > MAX_RSA_MODULUS_BITS)
-	fatal("RSA key has too many bits for RSAREF to handle (max %d).", MAX_RSA_MODULUS_BITS);
+        fatal("RSA key has too many bits for RSAREF to handle (max %d).", MAX_RSA_MODULUS_BITS);
 
     input_bits = mpz_sizeinbase(input, 2);
     input_len = (input_bits + 7) / 8;
@@ -183,12 +186,12 @@ void rsa_private_decrypt(MP_INT * output, MP_INT * input, RSAPrivateKey * key)
     rsaref_private_key(&private_key, key);
 
     if (RSAPrivateDecrypt(output_data, &output_len, input_data, input_len, &private_key) != 0)
-	fatal("RSAPrivateDecrypt failed");
+        fatal("RSAPrivateDecrypt failed");
 
     rsaref_to_gmp(output, output_data, output_len);
 }
 
-#else				/* RSAREF */
+#else                           /* RSAREF */
 
 /* Encrypt input using the public key.  Input should be a 256 bit value. */
 
@@ -198,7 +201,7 @@ void rsa_public_encrypt(MP_INT * output, MP_INT * input, RSAPublicKey * key, Ran
     unsigned int i, input_bits, input_len, len;
 
     if (mpz_cmp_ui(&(key->e), 3) < 0)
-	fatal("Bad public key, POTENTIAL BREAK-IN ATTEMPT!");
+        fatal("Bad public key, POTENTIAL BREAK-IN ATTEMPT!");
     input_bits = mpz_sizeinbase(input, 2);
     input_len = (input_bits + 7) / 8;
     len = (key->bits + 7) / 8;
@@ -207,13 +210,13 @@ void rsa_public_encrypt(MP_INT * output, MP_INT * input, RSAPublicKey * key, Ran
 
     mpz_init_set_ui(&aux, 2);
     for (i = 2; i < len - input_len - 1; i++) {
-	unsigned int byte;
+        unsigned int byte;
 
-	do
-	    byte = random_get_byte(state);
-	while (byte == 0);
-	mpz_mul_2exp(&aux, &aux, 8);
-	mpz_add_ui(&aux, &aux, byte);
+        do
+            byte = random_get_byte(state);
+        while (byte == 0);
+        mpz_mul_2exp(&aux, &aux, 8);
+        mpz_add_ui(&aux, &aux, byte);
     }
     mpz_mul_2exp(&aux, &aux, 8 * (input_len + 1));
     mpz_add(&aux, &aux, input);
@@ -237,19 +240,19 @@ void rsa_private_decrypt(MP_INT * output, MP_INT * input, RSAPrivateKey * key)
 
     mpz_init_set(&aux, output);
     for (i = len; i >= 4; i -= 4) {
-	unsigned int limb = mpz_get_ui(&aux);
+        unsigned int limb = mpz_get_ui(&aux);
 
-	PUT_32BIT(value + i - 4, limb);
-	mpz_div_2exp(&aux, &aux, 32);
+        PUT_32BIT(value + i - 4, limb);
+        mpz_div_2exp(&aux, &aux, 32);
     }
     for (; i > 0; i--) {
-	value[i - 1] = mpz_get_ui(&aux);
-	mpz_div_2exp(&aux, &aux, 8);
+        value[i - 1] = mpz_get_ui(&aux);
+        mpz_div_2exp(&aux, &aux, 8);
     }
     mpz_clear(&aux);
 
     if (value[0] != 0 || value[1] != 2)
-	fatal("Bad result from rsa_private_decrypt");
+        fatal("Bad result from rsa_private_decrypt");
 
     for (i = 2; i < len && value[i]; i++);
 
@@ -258,4 +261,4 @@ void rsa_private_decrypt(MP_INT * output, MP_INT * input, RSAPrivateKey * key)
     mpz_mod_2exp(output, output, 8 * (len - i - 1));
 }
 
-#endif				/* RSAREF */
+#endif                          /* RSAREF */

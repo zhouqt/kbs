@@ -11,24 +11,24 @@ int main()
 
     init_all();
     if (!loginok)
-	http_fatal("匆匆过客不加入排名");
+        http_fatal("匆匆过客不加入排名");
     fp = fopen(".PASSWDS", "r");
     while (1) {
-	if (fread(&x, sizeof(x), 1, fp) <= 0)
-	    break;
-	if (x.userid[0] < 'A')
-	    continue;
-	if (x.userlevel == 0)
-	    continue;
-	if (x.numposts >= currentuser->numposts)
-	    posts++;
-	if (x.numlogins >= currentuser->numlogins)
-	    logins++;
-	if (x.stay >= currentuser->stay)
-	    stays++;
-	if (x.firstlogin <= currentuser->firstlogin)
-	    lifes++;
-	total++;
+        if (fread(&x, sizeof(x), 1, fp) <= 0)
+            break;
+        if (x.userid[0] < 'A')
+            continue;
+        if (x.userlevel == 0)
+            continue;
+        if (x.numposts >= currentuser->numposts)
+            posts++;
+        if (x.numlogins >= currentuser->numlogins)
+            logins++;
+        if (x.stay >= currentuser->stay)
+            stays++;
+        if (x.firstlogin <= currentuser->firstlogin)
+            lifes++;
+        total++;
     }
     fclose(fp);
     printf("<center>%s -- 个人排名统计 [使用者: %s]<hr color=green>\n", BBSNAME, currentuser->userid);

@@ -17,6 +17,9 @@ output to the system log.
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:42  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:47  kcn
  * format C
  *
@@ -70,7 +73,7 @@ output to the system log.
 #include <syslog.h>
 #ifdef NEED_SYS_SYSLOG_H
 #include <sys/syslog.h>
-#endif				/* NEED_SYS_SYSLOG_H */
+#endif                          /* NEED_SYS_SYSLOG_H */
 #include "packet.h"
 #include "xmalloc.h"
 #include "ssh.h"
@@ -92,47 +95,47 @@ void log_init(char *av0, int on_stderr, int debug, int quiet, SyslogFacility fac
 
     switch (facility) {
     case SYSLOG_FACILITY_DAEMON:
-	log_facility = LOG_DAEMON;
-	break;
+        log_facility = LOG_DAEMON;
+        break;
     case SYSLOG_FACILITY_USER:
-	log_facility = LOG_USER;
-	break;
+        log_facility = LOG_USER;
+        break;
     case SYSLOG_FACILITY_AUTH:
-	log_facility = LOG_AUTH;
-	break;
+        log_facility = LOG_AUTH;
+        break;
     case SYSLOG_FACILITY_LOCAL0:
-	log_facility = LOG_LOCAL0;
-	break;
+        log_facility = LOG_LOCAL0;
+        break;
     case SYSLOG_FACILITY_LOCAL1:
-	log_facility = LOG_LOCAL1;
-	break;
+        log_facility = LOG_LOCAL1;
+        break;
     case SYSLOG_FACILITY_LOCAL2:
-	log_facility = LOG_LOCAL2;
-	break;
+        log_facility = LOG_LOCAL2;
+        break;
     case SYSLOG_FACILITY_LOCAL3:
-	log_facility = LOG_LOCAL3;
-	break;
+        log_facility = LOG_LOCAL3;
+        break;
     case SYSLOG_FACILITY_LOCAL4:
-	log_facility = LOG_LOCAL4;
-	break;
+        log_facility = LOG_LOCAL4;
+        break;
     case SYSLOG_FACILITY_LOCAL5:
-	log_facility = LOG_LOCAL5;
-	break;
+        log_facility = LOG_LOCAL5;
+        break;
     case SYSLOG_FACILITY_LOCAL6:
-	log_facility = LOG_LOCAL6;
-	break;
+        log_facility = LOG_LOCAL6;
+        break;
     case SYSLOG_FACILITY_LOCAL7:
-	log_facility = LOG_LOCAL7;
-	break;
+        log_facility = LOG_LOCAL7;
+        break;
     default:
-	fprintf(stderr, "Unrecognized internal syslog facility code %d\n", (int) facility);
-	exit(1);
+        fprintf(stderr, "Unrecognized internal syslog facility code %d\n", (int) facility);
+        exit(1);
     }
 
     log_debug = debug;
     log_quiet = quiet;
     log_on_stderr = on_stderr;
-    closelog();			/* Close any previous log. */
+    closelog();                 /* Close any previous log. */
     openlog(av0, LOG_PID, log_facility);
 }
 
@@ -144,12 +147,12 @@ void log_msg(const char *fmt, ...)
     va_list args;
 
     if (log_quiet)
-	return;
+        return;
     va_start(args, fmt);
     vsnprintf(buf, sizeof(buf), fmt, args);
     va_end(args);
     if (log_on_stderr)
-	fprintf(stderr, "log: %s\n", buf);
+        fprintf(stderr, "log: %s\n", buf);
     syslog(LOG_INFO, "log: %.500s", buf);
 }
 
@@ -159,19 +162,19 @@ static int syslog_severity(int severity)
 {
     switch (severity) {
     case SYSLOG_SEVERITY_DEBUG:
-	return LOG_DEBUG;
+        return LOG_DEBUG;
     case SYSLOG_SEVERITY_INFO:
-	return LOG_INFO;
+        return LOG_INFO;
     case SYSLOG_SEVERITY_NOTICE:
-	return LOG_NOTICE;
+        return LOG_NOTICE;
     case SYSLOG_SEVERITY_WARNING:
-	return LOG_WARNING;
+        return LOG_WARNING;
     case SYSLOG_SEVERITY_ERR:
-	return LOG_ERR;
+        return LOG_ERR;
     case SYSLOG_SEVERITY_CRIT:
-	return LOG_CRIT;
+        return LOG_CRIT;
     default:
-	fatal("syslog_severity: bad severity %d", severity);
+        fatal("syslog_severity: bad severity %d", severity);
     }
     return 0;
 }
@@ -185,12 +188,12 @@ void log_severity(SyslogSeverity severity, const char *fmt, ...)
     va_list args;
 
     if (log_quiet)
-	return;
+        return;
     va_start(args, fmt);
     vsnprintf(buf, sizeof(buf), fmt, args);
     va_end(args);
     if (log_on_stderr)
-	fprintf(stderr, "log: %s\n", buf);
+        fprintf(stderr, "log: %s\n", buf);
     syslog(syslog_severity(severity), "log: %.500s", buf);
 }
 
@@ -202,12 +205,12 @@ void debug(const char *fmt, ...)
     va_list args;
 
     if (!log_debug || log_quiet)
-	return;
+        return;
     va_start(args, fmt);
     vsnprintf(buf, sizeof(buf), fmt, args);
     va_end(args);
     if (log_on_stderr)
-	fprintf(stderr, "debug: %s\n", buf);
+        fprintf(stderr, "debug: %s\n", buf);
     syslog(LOG_DEBUG, "debug: %.500s", buf);
 }
 
@@ -219,12 +222,12 @@ void error(const char *fmt, ...)
     va_list args;
 
     if (log_quiet)
-	return;
+        return;
     va_start(args, fmt);
     vsnprintf(buf, sizeof(buf), fmt, args);
     va_end(args);
     if (log_on_stderr)
-	fprintf(stderr, "error: %s\n", buf);
+        fprintf(stderr, "error: %s\n", buf);
     syslog(LOG_ERR, "error: %.500s", buf);
 }
 
@@ -256,12 +259,12 @@ void fatal_remove_cleanup(void (*proc) (void *context), void *context)
     struct fatal_cleanup **cup, *cu;
 
     for (cup = &fatal_cleanups; *cup; cup = &cu->next) {
-	cu = *cup;
-	if (cu->proc == proc && cu->context == context) {
-	    *cup = cu->next;
-	    xfree(cu);
-	    return;
-	}
+        cu = *cup;
+        if (cu->proc == proc && cu->context == context) {
+            *cup = cu->next;
+            xfree(cu);
+            return;
+        }
     }
     fatal("fatal_remove_cleanup: no such cleanup function: 0x%lx 0x%lx\n", (unsigned long) proc, (unsigned long) context);
 }
@@ -276,26 +279,26 @@ static void do_fatal_cleanups(void)
 #endif
 
     if (!fatal_called) {
-	fatal_called = 1;
+        fatal_called = 1;
 
-	/* Call cleanup functions. */
-	for (cu = fatal_cleanups; cu; cu = next_cu) {
-	    next_cu = cu->next;
-	    debug("Calling cleanup 0x%lx(0x%lx)", (unsigned long) cu->proc, (unsigned long) cu->context);
-	    (*cu->proc) (cu->context);
-	}
+        /* Call cleanup functions. */
+        for (cu = fatal_cleanups; cu; cu = next_cu) {
+            next_cu = cu->next;
+            debug("Calling cleanup 0x%lx(0x%lx)", (unsigned long) cu->proc, (unsigned long) cu->context);
+            (*cu->proc) (cu->context);
+        }
 #ifdef KERBEROS
-	/* If you forwarded a ticket you get one shot for proper
-	   authentication. */
-	/* If tgt was passed unlink file */
-	if (ticket) {
-	    if (strcmp(ticket, "none"))
-		/* ticket -> FILE:path */
-		unlink(ticket + 5);
-	    else
-		ticket = NULL;
-	}
-#endif				/* KERBEROS */
+        /* If you forwarded a ticket you get one shot for proper
+           authentication. */
+        /* If tgt was passed unlink file */
+        if (ticket) {
+            if (strcmp(ticket, "none"))
+                /* ticket -> FILE:path */
+                unlink(ticket + 5);
+            else
+                ticket = NULL;
+        }
+#endif                          /* KERBEROS */
     }
 }
 
@@ -307,12 +310,12 @@ void fatal(const char *fmt, ...)
     va_list args;
 
     if (log_quiet)
-	exit(1);
+        exit(1);
     va_start(args, fmt);
     vsnprintf(buf, sizeof(buf), fmt, args);
     va_end(args);
     if (log_on_stderr)
-	fprintf(stderr, "fatal: %s\n", buf);
+        fprintf(stderr, "fatal: %s\n", buf);
     syslog(LOG_ERR, "fatal: %.500s", buf);
 
     do_fatal_cleanups();
@@ -326,12 +329,12 @@ void fatal_severity(SyslogSeverity severity, const char *fmt, ...)
     va_list args;
 
     if (log_quiet)
-	exit(1);
+        exit(1);
     va_start(args, fmt);
     vsnprintf(buf, sizeof(buf), fmt, args);
     va_end(args);
     if (log_on_stderr)
-	fprintf(stderr, "fatal: %s\n", buf);
+        fprintf(stderr, "fatal: %s\n", buf);
     syslog(syslog_severity(severity), "fatal: %.500s", buf);
 
     do_fatal_cleanups();

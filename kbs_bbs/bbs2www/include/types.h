@@ -17,4 +17,4 @@ typedef struct override friends_t;
 #include <time.h>
 
 
-#endif				/* FB_TYPES_H */
+#endif                          /* FB_TYPES_H */

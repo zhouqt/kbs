@@ -16,6 +16,9 @@ Functions for manipulating fifo buffers (that can grow if needed).
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:40  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:45  kcn
  * format C
  *
@@ -85,25 +88,25 @@ void buffer_append_space(Buffer * buffer, char **datap, unsigned int len)
 {
     /* If the buffer is empty, start using it from the beginning. */
     if (buffer->offset == buffer->end) {
-	buffer->offset = 0;
-	buffer->end = 0;
+        buffer->offset = 0;
+        buffer->end = 0;
     }
 
   restart:
     /* If there is enough space to store all data, store it now. */
     if (buffer->end + len < buffer->alloc) {
-	*datap = buffer->buf + buffer->end;
-	buffer->end += len;
-	return;
+        *datap = buffer->buf + buffer->end;
+        buffer->end += len;
+        return;
     }
 
     /* If the buffer is quite empty, but all data is at the end, move the
        data to the beginning and retry. */
     if (buffer->offset > buffer->alloc / 2) {
-	memmove(buffer->buf, buffer->buf + buffer->offset, buffer->end - buffer->offset);
-	buffer->end -= buffer->offset;
-	buffer->offset = 0;
-	goto restart;
+        memmove(buffer->buf, buffer->buf + buffer->offset, buffer->end - buffer->offset);
+        buffer->end -= buffer->offset;
+        buffer->offset = 0;
+        goto restart;
     }
 
     /* Increase the size of the buffer and retry. */
@@ -124,7 +127,7 @@ unsigned int buffer_len(Buffer * buffer)
 void buffer_get(Buffer * buffer, char *buf, unsigned int len)
 {
     if (len > buffer->end - buffer->offset)
-	fatal("buffer_get trying to get more bytes than in buffer");
+        fatal("buffer_get trying to get more bytes than in buffer");
     memcpy(buf, buffer->buf + buffer->offset, len);
     buffer->offset += len;
 }
@@ -134,7 +137,7 @@ void buffer_get(Buffer * buffer, char *buf, unsigned int len)
 void buffer_consume(Buffer * buffer, unsigned int bytes)
 {
     if (bytes > buffer->end - buffer->offset)
-	fatal("buffer_get trying to get more bytes than in buffer");
+        fatal("buffer_get trying to get more bytes than in buffer");
     buffer->offset += bytes;
 }
 
@@ -143,7 +146,7 @@ void buffer_consume(Buffer * buffer, unsigned int bytes)
 void buffer_consume_end(Buffer * buffer, unsigned int bytes)
 {
     if (bytes > buffer->end - buffer->offset)
-	fatal("buffer_get trying to get more bytes than in buffer");
+        fatal("buffer_get trying to get more bytes than in buffer");
     buffer->end -= bytes;
 }
 
@@ -162,6 +165,6 @@ void buffer_dump(Buffer * buffer)
     unsigned char *ucp = (unsigned char *) buffer->buf;
 
     for (i = buffer->offset; i < buffer->end; i++)
-	fprintf(stderr, " %02x", ucp[i]);
+        fprintf(stderr, " %02x", ucp[i]);
     fprintf(stderr, "\n");
 }

@@ -14,6 +14,9 @@ Created: Wed Apr 19 16:50:42 1995 ylo
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:41  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:46  kcn
  * format C
  *
@@ -66,56 +69,56 @@ Created: Wed Apr 19 16:50:42 1995 ylo
 
 #ifndef WITHOUT_IDEA
 #include "idea.h"
-#endif				/* WITHOUT_IDEA */
+#endif                          /* WITHOUT_IDEA */
 #include "des.h"
 #ifdef WITH_ARCFOUR
 #include "arcfour.h"
-#endif				/* WITH_ARCFOUR */
+#endif                          /* WITH_ARCFOUR */
 #ifdef WITH_BLOWFISH
 #include "blowfish.h"
-#endif				/* WITH_BLOWFISH */
+#endif                          /* WITH_BLOWFISH */
 
 /* Cipher types.  New types can be added, but old types should not be removed
    for compatibility.  The maximum allowed value is 31. */
-#define SSH_CIPHER_NOT_SET	-1	/* None selected (invalid number). */
-#define SSH_CIPHER_NONE		0	/* no encryption */
-#define SSH_CIPHER_IDEA		1	/* IDEA CFB */
-#define SSH_CIPHER_DES		2	/* DES CBC */
-#define SSH_CIPHER_3DES		3	/* 3DES CBC */
-#define SSH_CIPHER_ARCFOUR	5	/* Arcfour */
-#define SSH_CIPHER_BLOWFISH     6	/* Bruce Schneier's Blowfish */
-#define SSH_CIPHER_RESERVED	7	/* Reserved for 40 bit crippled encryption,
-					   Bernard Perrot <perrot@lal.in2p3.fr> */
+#define SSH_CIPHER_NOT_SET	-1      /* None selected (invalid number). */
+#define SSH_CIPHER_NONE		0       /* no encryption */
+#define SSH_CIPHER_IDEA		1       /* IDEA CFB */
+#define SSH_CIPHER_DES		2       /* DES CBC */
+#define SSH_CIPHER_3DES		3       /* 3DES CBC */
+#define SSH_CIPHER_ARCFOUR	5       /* Arcfour */
+#define SSH_CIPHER_BLOWFISH     6       /* Bruce Schneier's Blowfish */
+#define SSH_CIPHER_RESERVED	7       /* Reserved for 40 bit crippled encryption,
+                                           Bernard Perrot <perrot@lal.in2p3.fr> */
 
 typedef struct {
     unsigned int type;
     union {
 #ifndef WITHOUT_IDEA
-	struct {
-	    IDEAContext key;
-	    unsigned char iv[8];
-	} idea;
-#endif				/* WITHOUT_IDEA */
+        struct {
+            IDEAContext key;
+            unsigned char iv[8];
+        } idea;
+#endif                          /* WITHOUT_IDEA */
 #ifdef WITH_DES
-	struct {
-	    DESContext key;
-	    unsigned char iv[8];
-	} des;
-#endif				/* WITH_DES */
-	struct {
-	    DESContext key1;
-	    unsigned char iv1[8];
-	    DESContext key2;
-	    unsigned char iv2[8];
-	    DESContext key3;
-	    unsigned char iv3[8];
-	} des3;
+        struct {
+            DESContext key;
+            unsigned char iv[8];
+        } des;
+#endif                          /* WITH_DES */
+        struct {
+            DESContext key1;
+            unsigned char iv1[8];
+            DESContext key2;
+            unsigned char iv2[8];
+            DESContext key3;
+            unsigned char iv3[8];
+        } des3;
 #ifdef WITH_ARCFOUR
-	ArcfourContext arcfour;
+        ArcfourContext arcfour;
 #endif
 #ifdef WITH_BLOWFISH
-	BlowfishContext blowfish;
-#endif				/* WITH_BLOWFISH */
+        BlowfishContext blowfish;
+#endif                          /* WITH_BLOWFISH */
     } u;
 } CipherContext;
 
@@ -147,4 +150,4 @@ void cipher_encrypt(CipherContext * context, unsigned char *dest, const unsigned
    multiple of 8. */
 void cipher_decrypt(CipherContext * context, unsigned char *dest, const unsigned char *src, unsigned int len);
 
-#endif				/* CIPHER_H */
+#endif                          /* CIPHER_H */

@@ -41,10 +41,10 @@
 #define BBSNAME NAME_BBS_CHINESE
 #endif
 
-#define WWW_LOG             "bbslog/www.log"	/* "www.bbslog" */
-#define WWW_BADLOGIN        "bbslog/badlogin.www"	/* "badlogin.www" */
+#define WWW_LOG             "bbslog/www.log"    /* "www.bbslog" */
+#define WWW_BADLOGIN        "bbslog/badlogin.www"       /* "badlogin.www" */
 #define SYS_MSGFILE         "msgfile"
-#define SYS_MSGFILELOG      "msgfile.log"	/* "msgfile.me" */
+#define SYS_MSGFILELOG      "msgfile.log"       /* "msgfile.me" */
 
 //typedef int (*APPLY_UTMP_FUNC)(struct user_info*,char*,int pos);
 
@@ -120,7 +120,7 @@ char *strright(char *s, int len);
 
 #ifndef FREEBSD
 char *strcasestr(char *s1, char *s2);
-#endif				/* not FREEBSD */
+#endif                          /* not FREEBSD */
 
 int strsncpy(char *s1, char *s2, int n);
 
@@ -191,9 +191,9 @@ int findnextutmp(char *id, int from);
 
 #ifndef SMTH
 /*int sethomefile(char *buf, char *id, char *file); define in func.h*/
-#else				/* SMTH */
+#else                           /* SMTH */
 char *sethomefile(char *buf, char *userid, char *filename);
-#endif				/* SMTH */
+#endif                          /* SMTH */
 
 int send_msg(char *myuserid, int mypid, char *touserid, int topid, char msg[256]);
 
@@ -279,7 +279,7 @@ struct dir {
 int full_utmp(struct user_info *uentp, int *count);
 struct user_info **get_ulist_addr();
 uinfo_t *get_user_info(int utmpnum);
-#endif				/* SMTH */
+#endif                          /* SMTH */
 
 char *getcurruserid();
 
@@ -351,4 +351,4 @@ char *http_encode_string(char *str, size_t len);
 char *unix_string(char *str);
 
 
-#endif				/* BBSLIB_H */
+#endif                          /* BBSLIB_H */

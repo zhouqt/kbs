@@ -16,6 +16,9 @@ RSA key generation, encryption and decryption.
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:43  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:48  kcn
  * format C
  *
@@ -51,19 +54,19 @@ RSA key generation, encryption and decryption.
 #include "randoms.h"
 
 typedef struct {
-    unsigned int bits;		/* Modulus size in bits. */
-    MP_INT e;			/* Public exponent. */
-    MP_INT n;			/* Modulus. */
+    unsigned int bits;          /* Modulus size in bits. */
+    MP_INT e;                   /* Public exponent. */
+    MP_INT n;                   /* Modulus. */
 } RSAPublicKey;
 
 typedef struct {
-    unsigned int bits;		/* Modulus size in bits. */
-    MP_INT n;			/* Modulus. */
-    MP_INT e;			/* Public exponent. */
-    MP_INT d;			/* Private exponent. */
-    MP_INT u;			/* Multiplicative inverse of p mod q. */
-    MP_INT p;			/* Prime number p. */
-    MP_INT q;			/* Prime number q. */
+    unsigned int bits;          /* Modulus size in bits. */
+    MP_INT n;                   /* Modulus. */
+    MP_INT e;                   /* Public exponent. */
+    MP_INT d;                   /* Private exponent. */
+    MP_INT u;                   /* Multiplicative inverse of p mod q. */
+    MP_INT p;                   /* Prime number p. */
+    MP_INT q;                   /* Prime number q. */
 } RSAPrivateKey;
 
 /* Generates a random integer of the desired number of bits. */
@@ -114,4 +117,4 @@ void rsa_public_encrypt(MP_INT * output, MP_INT * input, RSAPublicKey * key, Ran
 /* Performs a private key decrypt operation. */
 void rsa_private_decrypt(MP_INT * output, MP_INT * input, RSAPrivateKey * key);
 
-#endif				/* RSA_H */
+#endif                          /* RSA_H */

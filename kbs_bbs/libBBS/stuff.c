@@ -48,52 +48,52 @@ int status;
 
     
 if (!cmdstring)
-	return 1;
+        return 1;
     
 switch (pid = fork())
-	
+        
  {
     
 case -1:
-	
+        
 status = -1;
-	
+        
 break;
     
 case 0:
-	
+        
  {
-	    
+            
 int fd = open("/dev/zero", O_RDWR);
 
-	    
+            
 dup2(fd, 2);
-	    
+            
 dup2(fd, 1);
-	    
+            
 if (fd != 1 && fd != 2)
-		close(fd);
-	    
+                close(fd);
+            
 execl("/bin/sh", "sh", "-c", cmdstring, NULL);
-	    
+            
 _exit(127);
-	
+        
 }
     
 default:
-	
+        
 while (waitpid(pid, &status, 0) < 0)
-	    
+            
 if (errno != EINTR) {
-		
+                
 status = -1;
-		
+                
 break;
-	    
+            
 }
-	
+        
 break;
-	
+        
 }
     
 return status;
@@ -114,36 +114,36 @@ now = time(0);
     
 diff = now - uent->freshtime;
     
-if (diff == now)		/* @#$#!@$#@! */
-	
+if (diff == now)           /* @#$#!@$#@! */
+        
 diff = 0;
     
 #ifdef DOTIMEOUT
-	/* the 60 * 60 * 24 * 5 is to prevent fault /dev mount from
-	   kicking out all users */ 
-	
+        /* the 60 * 60 * 24 * 5 is to prevent fault /dev mount from
+           kicking out all users */ 
+        
 if ((diff > IDLE_TIMEOUT) && (diff < 60 * 60 * 24 * 5))
-	
+        
 kill(uent->pid, SIGHUP);
     
-#endif				/* 
+#endif                          /* 
  */
-	
+        
 hh = diff / 3600;
     
 mm = (diff / 60) % 60;
     
 
 if (hh > 0)
-	
+        
 snprintf(hh_mm_ss, sizeof(hh_mm_ss), "%2d:%02d", hh, mm);
     
     else if (mm > 0)
-	
+        
 sprintf(hh_mm_ss, "%d", mm);
     
     else
-	sprintf(hh_mm_ss, "   ");
+        sprintf(hh_mm_ss, "   ");
     
 
 
@@ -159,44 +159,44 @@ struct userec urec;
 
     
 
-	/* Leeward: 97.12.18: Below removing ' characters for more display width */ 
-	if (chatid) {
-	
+        /* Leeward: 97.12.18: Below removing ' characters for more display width */ 
+        if (chatid) {
+        
 if (complete)
-	    sprintf(modestr, "%s %s", ModeType(mode), chatid);
-	
-	else
-	    return ((char *) ModeType(mode));
-	
+            sprintf(modestr, "%s %s", ModeType(mode), chatid);
+        
+        else
+            return ((char *) ModeType(mode));
+        
 return (modestr);
     
 }
     
 if (mode != TALK && mode != PAGE && mode != QUERY)
-	
+        
 return ((char *) ModeType(mode));
     
     /*---	modified by period	2000-10-20	---*
         if (get_record(PASSFILE, &urec, sizeof(urec), towho) == -1)
             return (ModeType(mode));
     ---*/ 
-	if (complete) {
-	
+        if (complete) {
+        
 if (getuserid(urec.userid, towho) != towho)
-	    return (char *) ModeType(mode);
-	
+            return (char *) ModeType(mode);
+        
 sprintf(modestr, "%s %s", ModeType(mode), urec.userid);
     
 }
     
     else
-	
+        
 return ((char *) ModeType(mode));
     
 return (modestr);
 
 }
-	
+    
 
 int 
 dashf(fname) 
@@ -212,7 +212,7 @@ struct stat st;
 return (stat(fname, &st) == 0 && S_ISREG(st.st_mode));
 
 }
-	
+    
 
 int 
 dashd(fname) 
@@ -248,11 +248,11 @@ int numbbsenvs = 0;
 
 
 /* Case Independent strncmp */ 
-	
+    
 int 
 ci_strncmp(s1, s2, n) 
  register char *s1, *s2;
-	
+    
 register int n;
 
 
@@ -263,25 +263,25 @@ char c1, c2;
     
 
 while (n-- > 0) {
-	
+        
 c1 = *s1++;
-	
+        
 c2 = *s2++;
-	
+        
 if (c1 >= 'a' && c1 <= 'z')
-	    
+            
 c1 &= 0xdf;
-	
+        
 if (c2 >= 'a' && c2 <= 'z')
-	    
+            
 c2 &= 0xdf;
-	
+        
 if (c1 != c2)
-	    
+            
 return (c1 - c2);
-	
+        
 if (c1 == 0)
-	    
+            
 return 0;
     
 }
@@ -289,7 +289,7 @@ return 0;
 return 0;
 
 }
-	
+    
 
 int 
 ci_strcmp(s1, s2) 
@@ -303,31 +303,31 @@ char c1, c2;
     
 
 while (1) {
-	
+        
 c1 = *s1++;
-	
+        
 c2 = *s2++;
-	
+        
 if (c1 >= 'a' && c1 <= 'z')
-	    
+            
 c1 &= 0xdf;
-	
+        
 if (c2 >= 'a' && c2 <= 'z')
-	    
+            
 c2 &= 0xdf;
-	
+        
 if (c1 != c2)
-	    
+            
 return (c1 - c2);
-	
+        
 if (c1 == 0)
-	    
+            
 return 0;
     
 }
 
 }
-	
+    
 
 int 
 bbssetenv(env, val) 
@@ -341,27 +341,27 @@ register int i, len;
     
 
 if (numbbsenvs == 0)
-	
+        
 bbsenv[0] = NULL;
     
 len = strlen(env);
     
 for (i = 0; bbsenv[i]; i++)
-	
+        
 if (!strncasecmp(env, bbsenv[i], len))
-	    
+            
 break;
     
 if (i >= MAXENVS)
-	
+        
 return -1;
     
 if (bbsenv[i])
-	
+        
 free(bbsenv[i]);
     
     else
-	
+        
 bbsenv[++numbbsenvs] = NULL;
     
 bbsenv[i] = malloc(strlen(env) + strlen(val) + 2);
@@ -379,7 +379,7 @@ return 0;
 
 
 #ifdef BBSMAIN
-	int 
+    int 
 do_exec(com, wd) 
  char *com, *wd;
 
@@ -415,64 +415,64 @@ len = Min(strlen(com) + 1, MAXCOMSZ);
 pmode = LOOKFIRST;
     
 for (i = 0, argptr = 0; i < len; i++) {
-	
+        
 if (pcom[i] == '\0')
-	    
+            
 break;
-	
+        
 if (pmode == QUOTEMODE) {
-	    
+            
 if (pcom[i] == '\001') {
-		
+                
 pmode = LOOKFIRST;
-		
+                
 pcom[i] = '\0';
-		
+                
 continue;
-	    
+            
 }
-	    
+            
 continue;
-	
+        
 }
-	
+        
 if (pcom[i] == '\001') {
-	    
+            
 pmode = QUOTEMODE;
-	    
+            
 arglist[argptr++] = &pcom[i + 1];
-	    
+            
 if (argptr + 1 == MAXARGS)
-		
+                
 break;
-	    
+            
 continue;
-	
+        
 }
-	
+        
 if (pmode == LOOKFIRST) {
-	    
+            
 if (pcom[i] != ' ') {
-		
+                
 arglist[argptr++] = &pcom[i];
-		
+                
 if (argptr + 1 == MAXARGS)
-		    
+                    
 break;
-		
+                
 pmode = LOOKLAST;
-	    
+            
 } else
-		continue;
-	
+                continue;
+        
 }
-	
+        
 if (pcom[i] == ' ') {
-	    
+            
 pmode = LOOKFIRST;
-	    
+            
 pcom[i] = '\0';
-	
+        
 }
     
 }
@@ -480,72 +480,72 @@ pcom[i] = '\0';
 arglist[argptr] = NULL;
     
 if (argptr == 0)
-	
+        
 return -1;
     
 if (*arglist[0] == '/')
-	
+        
 strncpy(path, arglist[0], MAXPATHLEN);
     
     else
-	
+        
 strncat(path, arglist[0], MAXPATHLEN);
     
 #ifdef IRIX
-	if ((pid = fork()) == 0) {
-	
-#else				/* 
+        if ((pid = fork()) == 0) {
+        
+#else                           /* 
  */
-	if ((pid = vfork()) == 0) {
-	
-#endif				/* 
+        if ((pid = vfork()) == 0) {
+        
+#endif                          /* 
  */
-	    if (wd)
-	    
+            if (wd)
+            
 if (chdir(wd)) {
-		
-		    /* change by KCN 1999.09.08
-		       fprintf(stderr,"Unable to chdir to '%s'\n",wd) ;
-		     */ 
-		    prints("Unable to chdir to '%s'\n", wd);
-		
+                
+                    /* change by KCN 1999.09.08
+                       fprintf(stderr,"Unable to chdir to '%s'\n",wd) ;
+                     */ 
+                    prints("Unable to chdir to '%s'\n", wd);
+                
 oflush();
-		
+                
 exit(-1);
-	    
+            
 }
-	
+        
 bbssetenv("PATH", "/bin:.");
-	
+        
 bbssetenv("TERM", "vt100");
-	
+        
 bbssetenv("USER", currentuser->userid);
-	
+        
 bbssetenv("USERNAME", currentuser->username);
-	
-	    /* added for tin's reply to */ 
-	    bbssetenv("REPLYTO", currentuser->email);
-	
+        
+            /* added for tin's reply to */ 
+            bbssetenv("REPLYTO", currentuser->email);
+        
 bbssetenv("FROMHOST", fromhost);
-	
-	    /* end of insertion */ 
-	    if ((tz = getenv("TZ")) != NULL)
-	    
+        
+            /* end of insertion */ 
+            if ((tz = getenv("TZ")) != NULL)
+            
 bbssetenv("TZ", tz);
-	
+        
 if (numbbsenvs == 0)
-	    
+            
 bbsenv[0] = NULL;
-	
+        
 execve(path, arglist, bbsenv);
-	
-	    /* change by KCN 1999.09.08
-	       fprintf(stderr,"EXECV FAILED... path = '%s'\n",path) ;
-	     */ 
-	    prints("EXECV FAILED... path = '%s'\n", path);
-	
+        
+            /* change by KCN 1999.09.08
+               fprintf(stderr,"EXECV FAILED... path = '%s'\n",path) ;
+             */ 
+            prints("EXECV FAILED... path = '%s'\n", path);
+        
 oflush();
-	
+        
 exit(-1);
     
 }
@@ -555,8 +555,8 @@ isig = signal(SIGINT, SIG_IGN);
 qsig = signal(SIGQUIT, SIG_IGN);
     
 while ((w = wait(&status)) != pid && w != 1)
-	
-	    /* NULL STATEMENT */ ;
+        
+            /* NULL STATEMENT */ ;
     
 signal(SIGINT, isig);
     
@@ -567,18 +567,18 @@ return ((w == -1) ? w : status);
 }
 
 
-#endif				/* 
+#endif                          /* 
  */
     
 #ifdef kill
 #undef kill
-#endif				/* 
+#endif                          /* 
  */
 
 int safe_kill(int x, int y) 
 {
     if (x <= 0)
-	return -1;
+        return -1;
     
 return kill(x, y);
 
@@ -590,7 +590,7 @@ return kill(x, y);
 char *Cdate(time_t clock) /* 时间 --> 英文 */ 
 {
     
-	/* Leeward 2000.01.01 Adjust year display for 20** */ 
+        /* Leeward 2000.01.01 Adjust year display for 20** */ 
     static char foo[24 /*22 */ ];
     
 struct tm *mytm = localtime(&clock);
@@ -614,7 +614,7 @@ char *ptr = ctime(&clock);
     
 
 if ((foo = strchr(ptr, '\n')) != NULL)
-	*foo = '\0';
+        *foo = '\0';
     
 return (ptr);
 
@@ -634,20 +634,20 @@ char *nextword(const char **str, char *buf, int sz)
 {
     
 while (Isspace(**str))
-	(*str)++;
+        (*str)++;
     
 
 while (**str && !Isspace(**str)) {
-	
+        
 if (sz > 0) {
-	    
+            
 if (sz > 1)
-		*buf++ = **str;
-	    
+                *buf++ = **str;
+            
 sz--;
-	
+        
 }
-	
+        
 (*str)++;
     
 }
@@ -655,7 +655,7 @@ sz--;
 *buf = 0;
     
 while (Isspace(**str))
-	(*str)++;
+        (*str)++;
     
 return buf;
 
@@ -664,10 +664,10 @@ return buf;
 
 
 #ifndef BBSMAIN
-	void 
+    void 
 attach_err(shmkey, name) 
  int shmkey;
-	
+    
 char *name;
 
 
@@ -701,47 +701,47 @@ shmkey = defaultkey;
 shmid = shmget(shmkey, shmsize, 0);
     
 if (shmid < 0) {
-	
+        
 if (readonly) {
-	    
+            
 attach_err(shmkey, "shmget:readonly");
-	    
+            
 return 0;
-	
+        
 }
-	
+        
 shmid = shmget(shmkey, shmsize, IPC_CREAT | 0600);
-	
+        
 if (shmid < 0)
-	    
+            
 attach_err(shmkey, "shmget");
-	
+        
 shmptr = (void *) shmat(shmid, shmaddr, 0);
-	
+        
 if (shmptr == (void *) -1)
-	    
+            
 attach_err(shmkey, "shmat");
-	
-	else
-	    
+        
+        else
+            
 memset(shmptr, 0, shmsize);
-	
+        
 *iscreate = 1;
     
 } else {
-	
+        
 if (readonly)
-	    
+            
 shmptr = (void *) shmat(shmid, shmaddr, SHM_RDONLY);
-	
-	else
-	    
+        
+        else
+            
 shmptr = (void *) shmat(shmid, shmaddr, 0);
-	
+        
 if (shmptr == (void *) -1)
-	    
+            
 attach_err(shmkey, "shmat");
-	
+        
 *iscreate = 0;
     
 } 
@@ -750,7 +750,7 @@ return shmptr;
 }
 
 
-#else				/* 
+#else                           /* 
  */
 void attach_err(int shmkey, char *name) 
 {
@@ -781,70 +781,70 @@ int shmkey, shmid;
     
 
 if (shmstr)
-	
+        
 shmkey = sysconf_eval(shmstr);
     
     else
-	shmkey = 0;
+        shmkey = 0;
     
 if (shmkey < 1024)
-	
+        
 shmkey = defaultkey;
     
 shmid = shmget(shmkey, shmsize, 0);
     
 if (shmid < 0) {
-	
+        
 if (readonly) {
-	    
+            
 attach_err(shmkey, "shmget:readonly");
-	    
+            
 return 0;
-	
+        
 }
-	
-shmid = shmget(shmkey, shmsize, IPC_CREAT | 0660);	/* modified by dong , for web application , 1998.12.1 */
-	
+        
+shmid = shmget(shmkey, shmsize, IPC_CREAT | 0660);     /* modified by dong , for web application , 1998.12.1 */
+        
 *iscreate = true;
-	
+        
 if (shmid < 0) {
-	    
+            
 attach_err(shmkey, "shmget");
-	    
+            
 exit(0);
-	
+        
 }
-	
+        
 shmptr = (void *) shmat(shmid, shmaddr, 0);
-	
+        
 if (shmptr == (void *) -1) {
-	    
+            
 attach_err(shmkey, "shmat");
-	    
+            
 exit(0);
-	
+        
 } else
-	    
+            
 memset(shmptr, 0, shmsize);
     
 } else {
-	
+        
 *iscreate = 0;
-	
+        
 if (readonly)
-	    
+            
 shmptr = (void *) shmat(shmid, shmaddr, SHM_RDONLY);
-	
-	else
-	    
+        
+        else
+            
 shmptr = (void *) shmat(shmid, shmaddr, 0);
-	
+        
 if (shmptr == (void *) -1) {
-	    
+            
 attach_err(shmkey, "shmat");
-	    
+            
 exit(0);
-	
+        
 }
     
 } 
@@ -853,7 +853,7 @@ return shmptr;
 }
 
 
-#endif				/* 
+#endif                          /* 
  */
     
 /*
@@ -918,7 +918,7 @@ int exp;
     
 
 if (!strcmp(udata->userid, "guest"))
-	
+        
 return -9999;
     
 exp = udata->numposts + /*post_in_tin( udata->userid ) */ +udata->numlogins / 5 + (time(0) - udata->firstlogin) / 86400 + udata->stay / 3600;
@@ -938,13 +938,13 @@ int reg_days;
     
 
 if (!strcmp(udata->userid, "guest"))
-	
+        
 return -9999;
     
 reg_days = (time(0) - udata->firstlogin) / 86400 + 1;
     
 perf = ((float) (udata->numposts /*+post_in_tin( udata->userid ) */ ) / (float) udata->numlogins + 
-	     (float) udata->numlogins / (float) reg_days) * 10;
+             (float) udata->numlogins / (float) reg_days) * 10;
     
 return perf > 0 ? perf : 0;
 
@@ -961,39 +961,39 @@ char dir[STRLEN];
     
 
 switch (digestmode)
-	
+        
  {
     
 case false:
-	
+        
 strcpy(dir, DOT_DIR);
-	
+        
 break;
     
 case true:
-	
+        
 strcpy(dir, DIGEST_DIR);
-	
+        
 break;
     
 case 2:
-	
+        
 strcpy(dir, THREAD_DIR);
-	
+        
 break;
     
 case 4:
-	
+        
 strcpy(dir, ".DELETED");
-	
+        
 break;
     
 case 5:
-	
+        
 strcpy(dir, ".JUNK");
-	
+        
 break;
-	
+        
 }
     
 sprintf(buf, "boards/%s/%s", boardname, dir);
@@ -1009,12 +1009,12 @@ char *
 sethomefile(char *buf, char *userid, char *filename) /*取某用户文件 路径 */ 
 {
     
-if (isalpha(userid[0]))	/* 加入错误判断,提高容错性, alex 1997.1.6 */
-	
+if (isalpha(userid[0]))    /* 加入错误判断,提高容错性, alex 1997.1.6 */
+        
 sprintf(buf, "home/%c/%s/%s", toupper(userid[0]), userid, filename);
     
     else
-	
+        
 sprintf(buf, "home/wrong/%s/%s", userid, filename);
     
 return buf;
@@ -1026,12 +1026,12 @@ char *
 sethomepath(char *buf, char *userid) /* 取 某用户 的home */ 
 {
     
-if (isalpha(userid[0]))	/* 加入错误判断,提高容错性, alex 1997.1.6 */
-	
+if (isalpha(userid[0]))    /* 加入错误判断,提高容错性, alex 1997.1.6 */
+        
 sprintf(buf, "home/%c/%s", toupper(userid[0]), userid);
     
     else
-	
+        
 sprintf(buf, "home/wrong/%s", userid);
     
 return buf;
@@ -1043,12 +1043,12 @@ char *
 setmailfile(char *buf, char *userid, char *filename) /* 取某用户mail文件 路径 */ 
 {
     
-if (isalpha(userid[0]))	/* 加入错误判断,提高容错性, alex 1997.1.6 */
-	
+if (isalpha(userid[0]))    /* 加入错误判断,提高容错性, alex 1997.1.6 */
+        
 sprintf(buf, "mail/%c/%s/%s", toupper(userid[0]), userid, filename);
     
     else
-	
+        
 sprintf(buf, "mail/wrong/%s/%s", userid, filename);
     
 return buf;
@@ -1059,12 +1059,12 @@ return buf;
 char *setmailpath(char *buf, char *userid) /* 取 某用户 的mail */ 
 {
     
-if (isalpha(userid[0]))	/* 加入错误判断,提高容错性, alex 1997.1.6 */
-	
+if (isalpha(userid[0]))    /* 加入错误判断,提高容错性, alex 1997.1.6 */
+        
 sprintf(buf, "mail/%c/%s", toupper(userid[0]), userid);
     
     else
-	
+        
 sprintf(buf, "mail/wrong/%s", userid);
     
 return buf;
@@ -1114,15 +1114,15 @@ char *s;
 
     
 if (!isalpha(userid[0]))
-	
+        
 return 1;
     
 for (s = userid; *s != '\0'; s++) {
-	
+        
 if (*s < 1 || !isalnum(*s)) {
-	    
+            
 return 1;
-	
+        
 }
     
 }
@@ -1145,23 +1145,23 @@ char *namep;
     
 
 if ((fp = fopen(filename, "r")) == NULL)
-	
+        
 return 0;
     
 while (fgets(buf, STRLEN, fp) != NULL)
-	
+        
  {
-	
+        
 namep = (char *) strtok(buf, ": \n\r\t");
-	
+        
 if (namep != NULL && strcasecmp(namep, seekstr) == 0) {
-	    
+            
 fclose(fp);
-	    
+            
 return 1;
-	
+        
 }
-	
+        
 }
     
 fclose(fp);
@@ -1180,15 +1180,15 @@ int iscreate;
 
     
 if (publicshm == NULL) {
-	
-publicshm = attach_shm1(NULL, PUBLIC_SHMKEY, sizeof(*publicshm), &iscreate, 1, NULL);	/* attach public share memory readonly */
-	
+        
+publicshm = attach_shm1(NULL, PUBLIC_SHMKEY, sizeof(*publicshm), &iscreate, 1, NULL);  /* attach public share memory readonly */
+        
 if (iscreate) {
-	    
+            
 bbslog("4bbstime", "time daemon not start");
-	    
+            
 exit(1);
-	
+        
 }
     
 }
@@ -1214,17 +1214,17 @@ int iscreate;
 
     
 if (publicshm == NULL) {
-	
-publicshm = (struct public_data *) attach_shm1(NULL, PUBLIC_SHMKEY, sizeof(*publicshm), &iscreate, 0, NULL);	/* attach public share memory */
-	
+        
+publicshm = (struct public_data *) attach_shm1(NULL, PUBLIC_SHMKEY, sizeof(*publicshm), &iscreate, 0, NULL);   /* attach public share memory */
+        
 if (iscreate) {
-	    
-		/* 初始化public共享内存区 */ 
-		/* 开始的sysconf.img版本号为0 */ 
-		unlink("sysconf.img.0");
-	    
+            
+                /* 初始化public共享内存区 */ 
+                /* 开始的sysconf.img版本号为0 */ 
+                unlink("sysconf.img.0");
+            
 publicshm->sysconfimg_version = 0;
-	
+        
 
 }
     
@@ -1247,11 +1247,11 @@ int iscreate;
 shmdt(publicshm);
     
 if (readonly)
-	
+        
 publicshm = (struct public_data *) attach_shm1(NULL, PUBLIC_SHMKEY, sizeof(*publicshm), &iscreate, 1, publicshm);
     
     else
-	
+        
 publicshm = (struct public_data *) attach_shm1(NULL, PUBLIC_SHMKEY, sizeof(*publicshm), &iscreate, 0, publicshm);
     
 return (publicshm == NULL);
@@ -1267,21 +1267,21 @@ int iscreate;
 
     
 if (publicshm == NULL) {
-	
-publicshm = attach_shm1(NULL, PUBLIC_SHMKEY, sizeof(*publicshm), &iscreate, 1, NULL);	/* attach public share memory readonly */
-	
+        
+publicshm = attach_shm1(NULL, PUBLIC_SHMKEY, sizeof(*publicshm), &iscreate, 1, NULL);  /* attach public share memory readonly */
+        
 if (iscreate) {
-	    
+            
 bbslog("4bbstime", "time daemon not start");
-	    
+            
 exit(1);
-	
+        
 }
     
 }
     
 if (t)
-	*t = publicshm->nowtime;
+        *t = publicshm->nowtime;
     
 return publicshm->nowtime;
 
@@ -1306,82 +1306,82 @@ i = 0;
 ptr = userid;
     
 if (!strcasecmp(userid, "deliver") || !strcasecmp(userid, "new"))
-	
+        
 return 1;
     
 while ((ch = *ptr++) != '\0') {
-	
+        
 i++;
-	
+        
 if (!isalnum(ch) && ch != '_')
-	    
+            
 return 1;
     
 }
     
 if (i < 2)
-	return 1;
+        return 1;
     
 if ((fp = fopen(".badname", "r")) != NULL) {
-	
+        
 while (fgets(buf, STRLEN, fp) != NULL) {
-	    
+            
 ptr = strtok(buf, " \n\t\r");
-	    
+            
 if (ptr != NULL && *ptr != '#')
-		
+                
  {
-		
+                
 if (strcasecmp(ptr, userid) == 0) {
-		    
-if (ptr[13] > 47 && ptr[13] < 58)	/*Haohmaru.99.12.24 */
-			
+                    
+if (ptr[13] > 47 && ptr[13] < 58)  /*Haohmaru.99.12.24 */
+                        
  {
-			
+                        
 char timebuf[50];
 
-			
+                        
 time_t t, now;
-			
+                        
 strncpy(timebuf, ptr + 13, 49);
-			
+                        
 timebuf[49] = 0;
-			
+                        
 ptr = timebuf;
-			
+                        
 while (isdigit(*ptr))
-			    ptr++;
-			
+                            ptr++;
+                        
 *ptr = 0;
-			
+                        
 t = atol(timebuf);
-			
+                        
 now = time(0);
-			
+                        
 if (now - t > 24 * 30 * 3600)
-			    
+                            
  {
-			    
+                            
 fclose(fp);
-			    
+                            
 return 0;
-			    
+                            
 }
-			
+                        
 }
-		    
+                    
 fclose(fp);
-		    
+                    
 return 1;
-		
+                
 }
-		
+                
 }
-	    
+            
 bzero(buf, STRLEN);
-	
+        
 }
-	
+        
 fclose(fp);
     
 }
@@ -1399,9 +1399,9 @@ int i;
     
 
 for (i = 0; invalid[i] != NULL; i++)
-	
+        
 if (strstr(ident, invalid[i]) != NULL)
-	    
+            
 return 0;
     
 return 1;
@@ -1422,9 +1422,9 @@ int _t_search(struct user_info *uentp, struct _tag_t_search *data, int pos)
 {
     
 if (data->pid == 0) {
-	
+        
 data->result = uentp;
-	
+        
 return QUIT;
     
 }
@@ -1432,7 +1432,7 @@ return QUIT;
 data->result = uentp;
     
 if (uentp->pid == data->pid)
-	
+        
 return QUIT;
     
 UNUSED_ARG(pos);
@@ -1466,13 +1466,13 @@ int getuinfopid()
 {
     
 #ifdef BBSMAIN
-	return uinfo.pid;
+        return uinfo.pid;
     
-#else				/* 
+#else                           /* 
  */
-	return 1;
+        return 1;
     
-#endif				/* 
+#endif                          /* 
  */
 }
 
@@ -1503,7 +1503,7 @@ return !strncmp(filename, fi->filename, STRLEN);
 
 int 
 canIsend2(userid) /* Leeward 98.04.10 */ 
-	char *userid;
+    char *userid;
 
 
 {
@@ -1515,23 +1515,23 @@ char path[256];
     
 
 if (HAS_PERM(currentuser, PERM_SYSOP))
-	return true;
+        return true;
     
 
 sethomefile(path, userid, "/ignores");
     
 if (search_record(path, buf, IDLEN + 1, (RECORD_FUNC_ARG) cmpinames, currentuser->userid))
-	
+        
 return false;
     
 sethomefile(path, userid, "/bads");
     
 if (search_record(path, buf, IDLEN + 1, (RECORD_FUNC_ARG) cmpinames, currentuser->userid))
-	
+        
 return false;
     
     else
-	
+        
 return true;
 
 }
@@ -1555,29 +1555,29 @@ struct stat st;
 
     
 if (fd < 0)
-	
+        
 return 0;
     
 if (fstat(fd, &st) < 0) {
-	
+        
 close(fd);
-	
+        
 return 0;
     
 }
     
 if (!S_ISREG(st.st_mode)) {
-	
+        
 close(fd);
-	
+        
 return 0;
     
 }
     
 if (st.st_size <= 0) {
-	
+        
 close(fd);
-	
+        
 return 0;
     
 }
@@ -1585,18 +1585,18 @@ return 0;
 *ret_ptr = mmap(NULL, st.st_size, prot, flag, fd, 0);
     
 if (*ret_ptr == NULL)
-	
+        
 return 0;
     
 if (!sigsetjmp(bus_jump, 1)) {
-	
+        
 signal(SIGBUS, sigbus);
-	
-	    /*
-	       signal(SIGSEGV,sigbus);
-	     */ 
-	    *size = st.st_size;
-	
+        
+            /*
+               signal(SIGSEGV,sigbus);
+             */ 
+            *size = st.st_size;
+        
 return 1;
     
 }
@@ -1614,29 +1614,29 @@ struct stat st;
 fd = open(filename, openflag, 0600);
     
 if (fd < 0)
-	
+        
 return 0;
     
 if (fstat(fd, &st) < 0) {
-	
+        
 close(fd);
-	
+        
 return 0;
     
 }
     
 if (!S_ISREG(st.st_mode)) {
-	
+        
 close(fd);
-	
+        
 return 0;
     
 }
     
 if (st.st_size <= 0) {
-	
+        
 close(fd);
-	
+        
 return 0;
     
 }
@@ -1644,30 +1644,30 @@ return 0;
 *ret_ptr = mmap(NULL, st.st_size, prot, flag, fd, 0);
     
 if (!ret_fd)
-	
+        
 close(fd);
     
     else {
-	
+        
 *ret_fd = fd;
-	
+        
 flock(fd, LOCK_EX);
     
 }
     
 if (*ret_ptr == NULL)
-	
+        
 return 0;
     
 if (!sigsetjmp(bus_jump, 1)) {
-	
+        
 signal(SIGBUS, sigbus);
-	
-	    /*
-	       signal(SIGSEGV,sigbus);
-	     */ 
-	    *size = st.st_size;
-	
+        
+            /*
+               signal(SIGSEGV,sigbus);
+             */ 
+            *size = st.st_size;
+        
 return 1;
     
 }
@@ -1684,11 +1684,11 @@ munmap(ptr, size);
     
 signal(SIGBUS, SIG_IGN);
     
-	/*
-	   signal(SIGSEGV,SIG_IGN);
-	 */ 
-	if (fd != -1)
-	close(fd);
+        /*
+           signal(SIGSEGV,SIG_IGN);
+         */ 
+        if (fd != -1)
+        close(fd);
 
 }
 
@@ -1706,29 +1706,29 @@ int n;
 buf = str;
     
 while ((ch = *str++) != '\0') {
-	
+        
 if (*str == ch && str[1] == ch && str[2] == ch) {
-	    
+            
 n = 4;
-	    
+            
 str += 3;
-	    
+            
 while (*str == ch && n < 100) {
-		
+                
 str++;
-		
+                
 n++;
-	    
+            
 }
-	    
+            
 *buf++ = '\01';
-	    
+            
 *buf++ = ch;
-	    
+            
 *buf++ = n;
-	
+        
 } else
-	    
+            
 *buf++ = ch;
     
 }
@@ -1736,7 +1736,7 @@ n++;
 *buf = '\0';
 
 }
-	
+    
 
 int addtofile(filename, str) 
  char filename[STRLEN], str[STRLEN];
@@ -1751,7 +1751,7 @@ int rc;
     
 
 if ((fp = fopen(filename, "a")) == NULL)
-	
+        
 return -1;
     
 flock(fileno(fp), LOCK_EX);
@@ -1768,10 +1768,10 @@ return (rc == EOF ? -1 : 1);
 
 
 
-time_t get_exit_time(char *id, char *exittime)	/* 获取离线时间，id:用户ID,
-							   exittime:保存返回的时间，结束符为\n
-							   建议定义为 char exittime[40]
-							   Luzi 1998/10/23 */ 
+time_t get_exit_time(char *id, char *exittime)        /* 获取离线时间，id:用户ID,
+                                                           exittime:保存返回的时间，结束符为\n
+                                                           建议定义为 char exittime[40]
+                                                           Luzi 1998/10/23 */ 
 /* Leeward 98.10.26 add return value: time_t */ 
 {
     
@@ -1780,7 +1780,7 @@ char path[80];
     
 FILE * fp;
     
-time_t now = 1;		/* if fopen failed return 1 -- Leeward */
+time_t now = 1;            /* if fopen failed return 1 -- Leeward */
     
 struct userec *lookupuser;
 
@@ -1789,27 +1789,27 @@ struct userec *lookupuser;
 exittime[0] = '\n';
     
 if ((getuser(id, &lookupuser) == 0) || (lookupuser->exittime == -1)) {
-	
+        
 sethomefile(path, id, "exit");
-	
+        
 fp = fopen(path, "rb");
-	
+        
 if (fp != NULL)
-	    
+            
  {
-	    
+            
 fread(&now, sizeof(time_t), 1, fp);
-	    
+            
 fclose(fp);
-	    
+            
 strcpy(exittime, ctime(&now));
-	    
+            
 }
     
 } else {
-	
+        
 strcpy(exittime, ctime(&lookupuser->exittime));
-	
+        
 now = lookupuser->exittime;
     
 }
@@ -1865,21 +1865,21 @@ char buf[256 /*STRLEN*/];
     
 
 if ((fp = fopen(filename, "r")) == NULL)
-	return -1;
+        return -1;
     
 sprintf(fnnew, "%s.%d", filename, getuid());
     
 if ((nfp = fopen(fnnew, "w")) == NULL)
-	return -1;
+        return -1;
     
 while (fgets(buf, 256 /*STRLEN*/, fp) != NULL) {
-	
+        
 if (strncasecmp(buf, str, strlen(str)) == 0 && buf[strlen(str)] <= 32)
-	    
+            
 deleted = true;
-	
-	else if (*buf > ' ')
-	    
+        
+        else if (*buf > ' ')
+            
 fputs(buf, nfp);
     
 }
@@ -1889,12 +1889,12 @@ fclose(fp);
 fclose(nfp);
     
 if (!deleted)
-	return -1;
+        return -1;
     
 return (f_mv(fnnew, filename));
 
 }
-	
+    
 
 int 
 simplepasswd(str) 
@@ -1908,9 +1908,9 @@ char ch;
     
 
 while ((ch = *str++) != '\0') {
-	
+        
 if (!(ch >= 'a' && ch <= 'z'))
-	    
+            
 return 0;
     
 }
@@ -1918,7 +1918,7 @@ return 0;
 return 1;
 
 }
-	
+    
 
 void 
 logattempt(uid, frm) 
@@ -1941,9 +1941,9 @@ uid, Ctime(bbstime(0)), frm);
 len = strlen(buf);
     
 if ((fd = open(BADLOGINFILE, O_WRONLY | O_CREAT | O_APPEND, 0644)) >= 0) {
-	
+        
 write(fd, buf, len);
-	
+        
 close(fd);
     
 }
@@ -1951,9 +1951,9 @@ close(fd);
 sethomefile(fname, uid, BADLOGINFILE);
     
 if ((fd = open(fname, O_WRONLY | O_CREAT | O_APPEND, 0644)) >= 0) {
-	
+        
 write(fd, buf, len);
-	
+        
 close(fd);
     
 }
@@ -1963,12 +1963,12 @@ close(fd);
 
 int 
 check_ban_IP(char *IP, char *buf) 
-{				/* Leeward 98.07.31
-				   RETURN:
-				   - 1: No any banned IP is defined now
-				   0: The checked IP is not banned
-				   other value over 0: The checked IP is banned, the reason is put in buf
-				 */
+{                               /* Leeward 98.07.31
+                                   RETURN:
+                                   - 1: No any banned IP is defined now
+                                   0: The checked IP is not banned
+                                   other value over 0: The checked IP is banned, the reason is put in buf
+                                 */
     
 FILE * Ban = fopen(".badIP", "r");
     
@@ -1981,42 +1981,42 @@ char *ptr;
     
 
 if (!Ban)
-	
+        
 return IPX;
     
     else
-	
+        
 IPX++;
     
 
 while (fgets(IPBan, 64, Ban))
-	
+        
  {
-	
+        
 if ((ptr = strchr(IPBan, '\n')) != NULL)
-	    
+            
 *ptr = 0;
-	
+        
 if ((ptr = strchr(IPBan, ' ')) != NULL)
-	    
+            
  {
-	    
+            
 *ptr++ = 0;
-	    
+            
 strcpy(buf, ptr);
-	    
+            
 }
-	
+        
 IPX = strlen(IPBan);
-	
+        
 if (*IPBan == '+')
-	    
+            
 if (!strncmp(IP, IPBan + 1, IPX - 1))
-		
+                
 break;
-	
+        
 IPX = 0;
-	
+        
 }
     
 

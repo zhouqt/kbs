@@ -37,70 +37,70 @@ struct key_translate {
     
 int ch;
     
- int command;
+int command;
 
 };
 
 
 struct _select_def {
     
-int flag;			/*风格 */
-    
- 
- int item_count;		/*总item个数 */
-    
- int item_per_page;	/*一页总共有几个item，一般应该等于list_linenum */
-    
- POINT * item_pos;		/*一页里面每个item的位置，如果为空，则按一行一个排列 */
-    
- POINT title_pos;		/*标题位置 */
-    
- POINT endline_pos;	/*页末位置 */
-    
- void *arg;		/*其他传递的参数 */
-    
- 
-/*	int page_num;  当前页号 */ 
-    int pos;			/* 当前选择的item位置 */
-    
- int page_pos;		/*当前页的第一个item编号 */
-    
- char *prompt;		/*选择的item前面的提示字符 */
-    
- POINT cursor_pos;		/*光标位置 */
-    
- 
- int new_pos;		/*当返回SHOW_SELECTCHANGE 的时候，把新的位置放在这里 */
-    
- 
- struct key_translate *key_table;	/*键定义表 */
-    
-	/*内部使用的变量 */ 
-    
-int (*init) (struct _select_def * conf);	/*初始化 */
-    
-int (*page_init) (struct _select_def * conf);	/*翻页初始化，此时pos位置已经被改变了 */
-    
-int (*get_data) (struct _select_def * conf, int pos, int len);	/*获得pos位置,长度为len的数据 */
-    
-int (*show_data) (struct _select_def * conf, int pos);	/*显示pos位置的数据。 */
-    
-int (*show_title) (struct _select_def * conf);	/*显示标题。 */
-    
-int (*show_endline) (struct _select_def * conf);	/*显示行末。 */
-    
-int (*key_command) (struct _select_def * conf, int command);	/*处理键盘输入 */
-    
-int (*quit) (struct _select_def * conf);	/*结束 */
-    
-int (*on_selchange) (struct _select_def * conf, int new_pos);	/*改变选择的时候的回调函数 */
-    
-int (*on_select) (struct _select_def * conf);	/*选择了某一个 */
+int flag;                  /*风格 */
     
 
-int (*active) (struct _select_def * conf);	/*激活列表 */
+int item_count;           /*总item个数 */
     
-int (*deactive) (struct _select_def * conf);	/*列表失去焦点 */
+int item_per_page;         /*一页总共有几个item，一般应该等于list_linenum */
+    
+POINT * item_pos;          /*一页里面每个item的位置，如果为空，则按一行一个排列 */
+    
+POINT title_pos;           /*标题位置 */
+    
+POINT endline_pos;         /*页末位置 */
+    
+void *arg;                 /*其他传递的参数 */
+    
+
+/*	int page_num;  当前页号 */ 
+    int pos;                    /* 当前选择的item位置 */
+    
+int page_pos;              /*当前页的第一个item编号 */
+    
+char *prompt;              /*选择的item前面的提示字符 */
+    
+POINT cursor_pos;          /*光标位置 */
+    
+
+int new_pos;              /*当返回SHOW_SELECTCHANGE 的时候，把新的位置放在这里 */
+    
+
+struct key_translate *key_table;  /*键定义表 */
+    
+        /*内部使用的变量 */ 
+    
+int (*init) (struct _select_def * conf);   /*初始化 */
+    
+int (*page_init) (struct _select_def * conf);      /*翻页初始化，此时pos位置已经被改变了 */
+    
+int (*get_data) (struct _select_def * conf, int pos, int len);     /*获得pos位置,长度为len的数据 */
+    
+int (*show_data) (struct _select_def * conf, int pos);     /*显示pos位置的数据。 */
+    
+int (*show_title) (struct _select_def * conf);     /*显示标题。 */
+    
+int (*show_endline) (struct _select_def * conf);   /*显示行末。 */
+    
+int (*key_command) (struct _select_def * conf, int command);       /*处理键盘输入 */
+    
+int (*quit) (struct _select_def * conf);   /*结束 */
+    
+int (*on_selchange) (struct _select_def * conf, int new_pos);      /*改变选择的时候的回调函数 */
+    
+int (*on_select) (struct _select_def * conf);      /*选择了某一个 */
+    
+
+int (*active) (struct _select_def * conf);        /*激活列表 */
+    
+int (*deactive) (struct _select_def * conf);       /*列表失去焦点 */
 
 };
 
@@ -110,5 +110,5 @@ int list_select(struct _select_def *conf, int key);
 void list_select_loop(struct _select_def *conf);
 
 
-#endif	/* 
+#endif                          /* 
  */

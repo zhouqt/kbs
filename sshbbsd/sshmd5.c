@@ -49,33 +49,33 @@ void MD5Update(struct MD5Context *ctx, unsigned char const *buf, unsigned len)
 
     t = ctx->bits[0];
     if ((ctx->bits[0] = (t + ((md5_uint32) len << 3)) & 0xffffffff) < t)
-	ctx->bits[1]++;		/* Carry from low to high */
+        ctx->bits[1]++;         /* Carry from low to high */
     ctx->bits[1] += len >> 29;
 
-    t = (t >> 3) & 0x3f;	/* Bytes already in shsInfo->data */
+    t = (t >> 3) & 0x3f;        /* Bytes already in shsInfo->data */
 
     /* Handle any leading odd-sized chunks */
 
     if (t) {
-	unsigned char *p = ctx->in + t;
+        unsigned char *p = ctx->in + t;
 
-	t = 64 - t;
-	if (len < t) {
-	    memcpy(p, buf, len);
-	    return;
-	}
-	memcpy(p, buf, t);
-	MD5Transform(ctx->buf, ctx->in);
-	buf += t;
-	len -= t;
+        t = 64 - t;
+        if (len < t) {
+            memcpy(p, buf, len);
+            return;
+        }
+        memcpy(p, buf, t);
+        MD5Transform(ctx->buf, ctx->in);
+        buf += t;
+        len -= t;
     }
     /* Process data in 64-byte chunks */
 
     while (len >= 64) {
-	memcpy(ctx->in, buf, 64);
-	MD5Transform(ctx->buf, ctx->in);
-	buf += 64;
-	len -= 64;
+        memcpy(ctx->in, buf, 64);
+        MD5Transform(ctx->buf, ctx->in);
+        buf += 64;
+        len -= 64;
     }
 
     /* Handle any remaining bytes of data. */
@@ -105,15 +105,15 @@ void MD5Final(unsigned char digest[16], struct MD5Context *ctx)
 
     /* Pad out to 56 mod 64 */
     if (count < 8) {
-	/* Two lots of padding:  Pad the first block to 64 bytes */
-	memset(p, 0, count);
-	MD5Transform(ctx->buf, ctx->in);
+        /* Two lots of padding:  Pad the first block to 64 bytes */
+        memset(p, 0, count);
+        MD5Transform(ctx->buf, ctx->in);
 
-	/* Now fill the next block with 56 bytes */
-	memset(ctx->in, 0, 56);
+        /* Now fill the next block with 56 bytes */
+        memset(ctx->in, 0, 56);
     } else {
-	/* Pad block to 56 bytes */
-	memset(p, 0, count - 8);
+        /* Pad block to 56 bytes */
+        memset(p, 0, count - 8);
     }
 
     /* Append length in bits and transform */
@@ -125,7 +125,7 @@ void MD5Final(unsigned char digest[16], struct MD5Context *ctx)
     PUT_32BIT_LSB_FIRST(digest + 4, ctx->buf[1]);
     PUT_32BIT_LSB_FIRST(digest + 8, ctx->buf[2]);
     PUT_32BIT_LSB_FIRST(digest + 12, ctx->buf[3]);
-    memset(ctx, 0, sizeof(ctx));	/* In case it's sensitive */
+    memset(ctx, 0, sizeof(ctx));        /* In case it's sensitive */
 }
 
 #ifndef ASM_MD5
@@ -153,7 +153,7 @@ void MD5Transform(md5_uint32 buf[4], const unsigned char inext[64])
     word32 in[16];
 
     for (i = 0; i < 16; i++)
-	in[i] = GET_32BIT_LSB_FIRST(inext + 4 * i);
+        in[i] = GET_32BIT_LSB_FIRST(inext + 4 * i);
 
     a = buf[0];
     b = buf[1];

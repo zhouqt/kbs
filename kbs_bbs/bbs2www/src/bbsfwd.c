@@ -23,21 +23,21 @@ int main()
     big5 = atoi(getparm("big5"));
     noansi = atoi(getparm("noansi"));
     if (!loginok)
-	http_fatal("匆匆过客不能进行本项操作");
+        http_fatal("匆匆过客不能进行本项操作");
     if (!has_read_perm(currentuser, board))
-	http_fatal("错误的讨论区");
+        http_fatal("错误的讨论区");
     if (get_file_ent(board, file, &x) == 0)
-	http_fatal("错误的文件名");
+        http_fatal("错误的文件名");
     printf("<center>%s -- 转寄/推荐给好友 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser->userid);
     if (target[0]) {
-	if (!strchr(target, '@')) {
-	    if (getuser(target, &u) == 0)
-		http_fatal("错误的使用者帐号");
-	    strcpy(target, u->userid);
-	    big5 = 0;
-	    noansi = 0;
-	}
-	return do_fwd(&x, board, target, big5, noansi);
+        if (!strchr(target, '@')) {
+            if (getuser(target, &u) == 0)
+                http_fatal("错误的使用者帐号");
+            strcpy(target, u->userid);
+            big5 = 0;
+            noansi = 0;
+        }
+        return do_fwd(&x, board, target, big5, noansi);
     }
     printf("<table><tr><td>\n");
     printf("文章标题: %s<br>\n", nohtml(x.title));
@@ -60,24 +60,24 @@ int do_fwd(struct fileheader *x, char *board, char *target, int big5, int noansi
 
     sprintf(path, "boards/%s/%s", board, x->filename);
     if (!file_exist(path))
-	http_fatal("文件内容已丢失, 无法转寄");
+        http_fatal("文件内容已丢失, 无法转寄");
     sprintf(title, "%.50s(转寄)", x->title);
     if (!strchr(target, '@')) {
-	/*post_mail(target, title, path, currentuser->userid,
-	   currentuser->username, fromhost, -1); */
-	mail_file(getcurruserid(), path, target, title, 0);
-	printf("文章已转寄给'%s'<br>\n", nohtml(target));
-	rv = 0;
+        /*post_mail(target, title, path, currentuser->userid,
+           currentuser->username, fromhost, -1); */
+        mail_file(getcurruserid(), path, target, title, 0);
+        printf("文章已转寄给'%s'<br>\n", nohtml(target));
+        rv = 0;
     } else {
-	if (big5 == 1)
-	    conv_init();
-	if (bbs_sendmail(path, title, target, 0, big5, noansi) == 0) {
-	    printf("文章已转寄给'%s'<br>\n", nohtml(target));
-	    rv = 0;
-	} else {
-	    printf("转寄失败\n", nohtml(target));
-	    rv = -1;
-	}
+        if (big5 == 1)
+            conv_init();
+        if (bbs_sendmail(path, title, target, 0, big5, noansi) == 0) {
+            printf("文章已转寄给'%s'<br>\n", nohtml(target));
+            rv = 0;
+        } else {
+            printf("转寄失败\n", nohtml(target));
+            rv = -1;
+        }
     }
     printf("[<a href=\"javascript:history.go(-2)\">返回</a>]");
 

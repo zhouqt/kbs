@@ -17,6 +17,9 @@ with the other side.  This same code is used both on client and server side.
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:42  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:47  kcn
  * format C
  *
@@ -167,11 +170,11 @@ void packet_set_connection(int fd_in, int fd_out, RandomState * state)
     cipher_set_key(&send_context, SSH_CIPHER_NONE, (unsigned char *) "", 0, 1);
     cipher_set_key(&receive_context, SSH_CIPHER_NONE, (unsigned char *) "", 0, 0);
     if (!initialized) {
-	initialized = 1;
-	buffer_init(&input);
-	buffer_init(&output);
-	buffer_init(&outgoing_packet);
-	buffer_init(&incoming_packet);
+        initialized = 1;
+        buffer_init(&input);
+        buffer_init(&output);
+        buffer_init(&outgoing_packet);
+        buffer_init(&incoming_packet);
     }
 
     /* Kludge: arrange the close function to be called from fatal(). */
@@ -190,20 +193,20 @@ void packet_set_nonblocking(void)
     /* Set the socket into non-blocking mode. */
 #if defined(O_NONBLOCK) && !defined(O_NONBLOCK_BROKEN)
     if (fcntl(connection_in, F_SETFL, O_NONBLOCK) < 0)
-	error("fcntl O_NONBLOCK: %.100s", strerror(errno));
-#else				/* O_NONBLOCK && !O_NONBLOCK_BROKEN */
+        error("fcntl O_NONBLOCK: %.100s", strerror(errno));
+#else                           /* O_NONBLOCK && !O_NONBLOCK_BROKEN */
     if (fcntl(connection_in, F_SETFL, O_NDELAY) < 0)
-	error("fcntl O_NDELAY: %.100s", strerror(errno));
-#endif				/* O_NONBLOCK && !O_NONBLOCK_BROKEN */
+        error("fcntl O_NDELAY: %.100s", strerror(errno));
+#endif                          /* O_NONBLOCK && !O_NONBLOCK_BROKEN */
 
     if (connection_out != connection_in) {
 #if defined(O_NONBLOCK) && !defined(O_NONBLOCK_BROKEN)
-	if (fcntl(connection_out, F_SETFL, O_NONBLOCK) < 0)
-	    error("fcntl O_NONBLOCK: %.100s", strerror(errno));
-#else				/* O_NONBLOCK && !O_NONBLOCK_BROKEN */
-	if (fcntl(connection_out, F_SETFL, O_NDELAY) < 0)
-	    error("fcntl O_NDELAY: %.100s", strerror(errno));
-#endif				/* O_NONBLOCK && !O_NONBLOCK_BROKEN */
+        if (fcntl(connection_out, F_SETFL, O_NONBLOCK) < 0)
+            error("fcntl O_NONBLOCK: %.100s", strerror(errno));
+#else                           /* O_NONBLOCK && !O_NONBLOCK_BROKEN */
+        if (fcntl(connection_out, F_SETFL, O_NDELAY) < 0)
+            error("fcntl O_NDELAY: %.100s", strerror(errno));
+#endif                          /* O_NONBLOCK && !O_NONBLOCK_BROKEN */
     }
 }
 
@@ -226,22 +229,22 @@ int packet_get_connection_out(void)
 void packet_close(void)
 {
     if (!initialized)
-	return;
+        return;
     initialized = 0;
     if (connection_in == connection_out) {
-	shutdown(connection_out, 2);
-	close(connection_out);
+        shutdown(connection_out, 2);
+        close(connection_out);
     } else {
-	close(connection_in);
-	close(connection_out);
+        close(connection_in);
+        close(connection_out);
     }
     buffer_free(&input);
     buffer_free(&output);
     buffer_free(&outgoing_packet);
     buffer_free(&incoming_packet);
     if (packet_compression) {
-	buffer_free(&compression_buffer);
-	buffer_compress_uninit();
+        buffer_free(&compression_buffer);
+        buffer_compress_uninit();
     }
 }
 
@@ -266,7 +269,7 @@ unsigned int packet_get_protocol_flags(void)
 void packet_start_compression(int level)
 {
     if (packet_compression)
-	fatal("Compression already enabled.");
+        fatal("Compression already enabled.");
     packet_compression = 1;
     buffer_init(&compression_buffer);
     buffer_compress_init(level);
@@ -299,19 +302,19 @@ void packet_decrypt(CipherContext * cc, void *dest, void *src, unsigned int byte
     switch (cc->type) {
 #ifndef WITHOUT_IDEA
     case SSH_CIPHER_IDEA:
-	i = detect_attack(src, bytes, cc->u.idea.iv);
-	break;
+        i = detect_attack(src, bytes, cc->u.idea.iv);
+        break;
 #endif
     case SSH_CIPHER_NONE:
-	i = DEATTACK_OK;
-	break;
+        i = DEATTACK_OK;
+        break;
     default:
-	i = detect_attack(src, bytes, NULL);
-	break;
+        i = detect_attack(src, bytes, NULL);
+        break;
     }
 
     if (i == DEATTACK_DETECTED)
-	packet_disconnect("crc32 compensation attack: network attack detected");
+        packet_disconnect("crc32 compensation attack: network attack detected");
 
     cipher_decrypt(cc, dest, src, bytes);
 }
@@ -324,17 +327,17 @@ void packet_set_encryption_key(const unsigned char *key, unsigned int keylen, in
 {
     cipher_type = cipher;
     if (cipher == SSH_CIPHER_ARCFOUR) {
-	if (is_client) {	/* In client: use first half for receiving, second for sending. */
-	    cipher_set_key(&receive_context, cipher, key, keylen / 2, 0);
-	    cipher_set_key(&send_context, cipher, key + keylen / 2, keylen / 2, 1);
-	} else {		/* In server: use first half for sending, second for receiving. */
-	    cipher_set_key(&receive_context, cipher, key + keylen / 2, keylen / 2, 0);
-	    cipher_set_key(&send_context, cipher, key, keylen / 2, 1);
-	}
+        if (is_client) {        /* In client: use first half for receiving, second for sending. */
+            cipher_set_key(&receive_context, cipher, key, keylen / 2, 0);
+            cipher_set_key(&send_context, cipher, key + keylen / 2, keylen / 2, 1);
+        } else {                /* In server: use first half for sending, second for receiving. */
+            cipher_set_key(&receive_context, cipher, key + keylen / 2, keylen / 2, 0);
+            cipher_set_key(&send_context, cipher, key, keylen / 2, 1);
+        }
     } else {
-	/* All other ciphers use the same key in both directions for now. */
-	cipher_set_key(&receive_context, cipher, key, keylen, 0);
-	cipher_set_key(&send_context, cipher, key, keylen, 1);
+        /* All other ciphers use the same key in both directions for now. */
+        cipher_set_key(&receive_context, cipher, key, keylen, 0);
+        cipher_set_key(&send_context, cipher, key, keylen, 1);
     }
 }
 
@@ -390,17 +393,17 @@ void packet_send(void)
     unsigned long checksum;
 
     if (buffer_len(&outgoing_packet) >= max_packet_size - 30)
-	fatal("packet_send: sending too big a packet: size %u, limit %u.", buffer_len(&outgoing_packet), max_packet_size);
+        fatal("packet_send: sending too big a packet: size %u, limit %u.", buffer_len(&outgoing_packet), max_packet_size);
 
     /* If using packet compression, compress the payload of the outgoing
        packet. */
     if (packet_compression) {
-	buffer_clear(&compression_buffer);
-	buffer_consume(&outgoing_packet, 8);	/* Skip padding. */
-	buffer_append(&compression_buffer, "\0\0\0\0\0\0\0\0", 8);	/* padding */
-	buffer_compress(&outgoing_packet, &compression_buffer);
-	buffer_clear(&outgoing_packet);
-	buffer_append(&outgoing_packet, buffer_ptr(&compression_buffer), buffer_len(&compression_buffer));
+        buffer_clear(&compression_buffer);
+        buffer_consume(&outgoing_packet, 8);    /* Skip padding. */
+        buffer_append(&compression_buffer, "\0\0\0\0\0\0\0\0", 8);      /* padding */
+        buffer_compress(&outgoing_packet, &compression_buffer);
+        buffer_clear(&outgoing_packet);
+        buffer_append(&outgoing_packet, buffer_ptr(&compression_buffer), buffer_len(&compression_buffer));
     }
 
     /* Compute packet length without padding (add checksum, remove padding). */
@@ -409,9 +412,9 @@ void packet_send(void)
     /* Insert padding. */
     padding = 8 - len % 8;
     if (cipher_type != SSH_CIPHER_NONE) {
-	cp = buffer_ptr(&outgoing_packet);
-	for (i = 0; i < padding; i++)
-	    cp[7 - i] = random_get_byte(random_state);
+        cp = buffer_ptr(&outgoing_packet);
+        for (i = 0; i < padding; i++)
+            cp[7 - i] = random_get_byte(random_state);
     }
     buffer_consume(&outgoing_packet, 8 - padding);
 
@@ -457,28 +460,28 @@ int packet_read(void)
 
     /* Stay in the loop until we have received a complete packet. */
     for (;;) {
-	/* Try to read a packet from the buffer. */
-	type = packet_read_poll();
-	/* If we got a packet, return it. */
-	if (type != SSH_MSG_NONE)
-	    return type;
-	/* Otherwise, wait for some data to arrive, add it to the buffer,
-	   and try again. */
-	FD_ZERO(&set);
-	FD_SET(connection_in, &set);
-	/* Wait for some data to arrive. */
-	select(connection_in + 1, &set, NULL, NULL, NULL);
-	/* Read data from the socket. */
-	len = read(connection_in, buf, sizeof(buf));
-	if (len == 0)
-	    fatal_severity(SYSLOG_SEVERITY_INFO, "Connection closed by remote host.");
-	if (len < 0) {
-	    if (errno == EAGAIN || errno == EWOULDBLOCK)
-		continue;
-	    fatal_severity(SYSLOG_SEVERITY_INFO, "Read from socket failed: %.100s", strerror(errno));
-	}
-	/* Append it to the buffer. */
-	packet_process_incoming(buf, len);
+        /* Try to read a packet from the buffer. */
+        type = packet_read_poll();
+        /* If we got a packet, return it. */
+        if (type != SSH_MSG_NONE)
+            return type;
+        /* Otherwise, wait for some data to arrive, add it to the buffer,
+           and try again. */
+        FD_ZERO(&set);
+        FD_SET(connection_in, &set);
+        /* Wait for some data to arrive. */
+        select(connection_in + 1, &set, NULL, NULL, NULL);
+        /* Read data from the socket. */
+        len = read(connection_in, buf, sizeof(buf));
+        if (len == 0)
+            fatal_severity(SYSLOG_SEVERITY_INFO, "Connection closed by remote host.");
+        if (len < 0) {
+            if (errno == EAGAIN || errno == EWOULDBLOCK)
+                continue;
+            fatal_severity(SYSLOG_SEVERITY_INFO, "Read from socket failed: %.100s", strerror(errno));
+        }
+        /* Append it to the buffer. */
+        packet_process_incoming(buf, len);
     }
  /*NOTREACHED*/}
 
@@ -491,7 +494,7 @@ void packet_read_expect(int expected_type)
 
     type = packet_read();
     if (type != expected_type)
-	packet_disconnect("Protocol error: expected packet type %d, got %d", expected_type, type);
+        packet_disconnect("Protocol error: expected packet type %d, got %d", expected_type, type);
 }
 
 /* Checks if a full packet is available in the data received so far via
@@ -513,17 +516,17 @@ int packet_read_poll(void)
 
     /* Check if input size is less than minimum packet size. */
     if (buffer_len(&input) < 4 + 8)
-	return SSH_MSG_NONE;
+        return SSH_MSG_NONE;
     /* Get length of incoming packet. */
     ucp = (unsigned char *) buffer_ptr(&input);
     len = GET_32BIT(ucp);
     if (len < 1 + 2 + 2 || len > 256 * 1024)
-	packet_disconnect("Bad packet length %u.", len);
+        packet_disconnect("Bad packet length %u.", len);
     padded_len = (len + 8) & ~7;
 
     /* Check if the packet has been entirely received. */
     if (buffer_len(&input) < 4 + padded_len)
-	return SSH_MSG_NONE;
+        return SSH_MSG_NONE;
 
     /* The entire packet is in buffer. */
 
@@ -533,7 +536,7 @@ int packet_read_poll(void)
 /* Confirm that packet is empty after all data is processed from it. Calls
    fatal buffer is not empty. */
     if (buffer_len(&incoming_packet) != 0)
-	packet_disconnect("Junk data left to incoming packet buffer after all data processed");
+        packet_disconnect("Junk data left to incoming packet buffer after all data processed");
 
     /* Copy data to incoming_packet. */
     buffer_clear(&incoming_packet);
@@ -557,15 +560,15 @@ int packet_read_poll(void)
     ucp = (unsigned char *) buffer_ptr(&incoming_packet) + len - 4;
     stored_checksum = GET_32BIT(ucp);
     if (checksum != stored_checksum)
-	packet_disconnect("Corrupted check bytes on input.");
+        packet_disconnect("Corrupted check bytes on input.");
     buffer_consume_end(&incoming_packet, 4);
 
     /* If using packet compression, decompress the packet. */
     if (packet_compression) {
-	buffer_clear(&compression_buffer);
-	buffer_uncompress(&incoming_packet, &compression_buffer);
-	buffer_clear(&incoming_packet);
-	buffer_append(&incoming_packet, buffer_ptr(&compression_buffer), buffer_len(&compression_buffer));
+        buffer_clear(&compression_buffer);
+        buffer_uncompress(&incoming_packet, &compression_buffer);
+        buffer_clear(&incoming_packet);
+        buffer_append(&incoming_packet, buffer_ptr(&compression_buffer), buffer_len(&compression_buffer));
     }
 
     /* Get packet type. */
@@ -573,31 +576,31 @@ int packet_read_poll(void)
 
     /* Handle disconnect message. */
     if ((unsigned char) buf[0] == SSH_MSG_DISCONNECT)
-	fatal_severity(SYSLOG_SEVERITY_INFO, "%.900s", packet_get_string(NULL));
+        fatal_severity(SYSLOG_SEVERITY_INFO, "%.900s", packet_get_string(NULL));
 
     /* Ignore ignore messages. */
     if ((unsigned char) buf[0] == SSH_MSG_IGNORE) {
-	char *str;
+        char *str;
 
-	str = packet_get_string(NULL);
-	xfree(str);
-	goto restart;
+        str = packet_get_string(NULL);
+        xfree(str);
+        goto restart;
     }
 
     /* Send debug messages as debugging output. */
     if ((unsigned char) buf[0] == SSH_MSG_DEBUG) {
-	char *str;
+        char *str;
 
-	str = packet_get_string(NULL);
-	if (*str == '*') {	/* Magical kludge to force displaying
-				   debug messages with '*' anyway, even
-				   if not in verbose mode. */
-	    error("Remote: %.900s", str);
-	} else {
-	    debug("Remote: %.900s", str);
-	}
-	xfree(str);
-	goto restart;
+        str = packet_get_string(NULL);
+        if (*str == '*') {      /* Magical kludge to force displaying
+                                   debug messages with '*' anyway, even
+                                   if not in verbose mode. */
+            error("Remote: %.900s", str);
+        } else {
+            debug("Remote: %.900s", str);
+        }
+        xfree(str);
+        goto restart;
     }
 
     /* Return type. */
@@ -695,8 +698,8 @@ void packet_disconnect(const char *fmt, ...)
     va_list args;
     static int disconnecting = 0;
 
-    if (disconnecting)		/* Guard against recursive invocations. */
-	fatal("packet_disconnect called recursively.");
+    if (disconnecting)          /* Guard against recursive invocations. */
+        fatal("packet_disconnect called recursively.");
     disconnecting = 1;
 
     /* Format the message.  Note that the caller must make sure the message
@@ -728,13 +731,13 @@ void packet_write_poll(void)
     int len = buffer_len(&output);
 
     if (len > 0) {
-	len = write(connection_out, buffer_ptr(&output), len);
-	if (len <= 0)
-	    if (len != 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
-		return;
-	    else
-		fatal_severity(SYSLOG_SEVERITY_INFO, "Write failed: %.100s", strerror(errno));
-	buffer_consume(&output, len);
+        len = write(connection_out, buffer_ptr(&output), len);
+        if (len <= 0)
+            if (len != 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
+                return;
+            else
+                fatal_severity(SYSLOG_SEVERITY_INFO, "Write failed: %.100s", strerror(errno));
+        buffer_consume(&output, len);
     }
 }
 
@@ -745,12 +748,12 @@ void packet_write_wait(void)
 {
     packet_write_poll();
     while (packet_have_data_to_write()) {
-	fd_set set;
+        fd_set set;
 
-	FD_ZERO(&set);
-	FD_SET(connection_out, &set);
-	select(connection_out + 1, NULL, &set, NULL, NULL);
-	packet_write_poll();
+        FD_ZERO(&set);
+        FD_SET(connection_out, &set);
+        select(connection_out + 1, NULL, &set, NULL, NULL);
+        packet_write_poll();
     }
 }
 
@@ -766,9 +769,9 @@ int packet_have_data_to_write(void)
 int packet_not_very_much_data_to_write(void)
 {
     if (interactive_mode || sizeof(int) < 4)
-	return buffer_len(&output) < 16384;
+        return buffer_len(&output) < 16384;
     else
-	return buffer_len(&output) < 128 * 1024;
+        return buffer_len(&output) < 128 * 1024;
 }
 
 /* Informs that the current session is interactive.  Sets IP flags for that. */
@@ -783,44 +786,44 @@ void packet_set_interactive(int interactive, int keepalives)
     /* Only set socket options if using a socket (as indicated by the descriptors
        being the same). */
     if (connection_in != connection_out)
-	return;
+        return;
 
     if (keepalives) {
-	/* Set keepalives if requested. */
-	if (setsockopt(connection_in, SOL_SOCKET, SO_KEEPALIVE, (void *) &on, sizeof(on)) < 0)
-	    error("setsockopt SO_KEEPALIVE: %.100s", strerror(errno));
+        /* Set keepalives if requested. */
+        if (setsockopt(connection_in, SOL_SOCKET, SO_KEEPALIVE, (void *) &on, sizeof(on)) < 0)
+            error("setsockopt SO_KEEPALIVE: %.100s", strerror(errno));
     } else {
-	/* Clear keepalives if we don't want them. */
-	if (setsockopt(connection_in, SOL_SOCKET, SO_KEEPALIVE, (void *) &off, sizeof(off)) < 0)
-	    error("setsockopt SO_KEEPALIVE off: %.100s", strerror(errno));
+        /* Clear keepalives if we don't want them. */
+        if (setsockopt(connection_in, SOL_SOCKET, SO_KEEPALIVE, (void *) &off, sizeof(off)) < 0)
+            error("setsockopt SO_KEEPALIVE off: %.100s", strerror(errno));
     }
 
     if (interactive) {
-	/* Set IP options for an interactive connection.  Use IPTOS_LOWDELAY
-	   and TCP_NODELAY. */
+        /* Set IP options for an interactive connection.  Use IPTOS_LOWDELAY
+           and TCP_NODELAY. */
 #ifdef IPTOS_LOWDELAY
-	int lowdelay = IPTOS_LOWDELAY;
+        int lowdelay = IPTOS_LOWDELAY;
 
-	if (setsockopt(connection_in, IPPROTO_IP, IP_TOS, (void *) &lowdelay, sizeof(lowdelay)) < 0)
-	    error("setsockopt IPTOS_LOWDELAY: %.100s", strerror(errno));
-#endif				/* IPTOS_LOWDELAY */
+        if (setsockopt(connection_in, IPPROTO_IP, IP_TOS, (void *) &lowdelay, sizeof(lowdelay)) < 0)
+            error("setsockopt IPTOS_LOWDELAY: %.100s", strerror(errno));
+#endif                          /* IPTOS_LOWDELAY */
 #if defined(TCP_NODELAY) && defined(ENABLE_TCP_NODELAY)
-	if (setsockopt(connection_in, IPPROTO_TCP, TCP_NODELAY, (void *) &on, sizeof(on)) < 0)
-	    error("setsockopt TCP_NODELAY: %.100s", strerror(errno));
-#endif				/* TCP_NODELAY */
+        if (setsockopt(connection_in, IPPROTO_TCP, TCP_NODELAY, (void *) &on, sizeof(on)) < 0)
+            error("setsockopt TCP_NODELAY: %.100s", strerror(errno));
+#endif                          /* TCP_NODELAY */
     } else {
-	/* Set IP options for a non-interactive connection.  Use 
-	   IPTOS_THROUGHPUT. */
+        /* Set IP options for a non-interactive connection.  Use 
+           IPTOS_THROUGHPUT. */
 #ifdef IPTOS_THROUGHPUT
-	int throughput = IPTOS_THROUGHPUT;
+        int throughput = IPTOS_THROUGHPUT;
 
-	if (setsockopt(connection_in, IPPROTO_IP, IP_TOS, (void *) &throughput, sizeof(throughput)) < 0)
-	    error("setsockopt IPTOS_THROUGHPUT: %.100s", strerror(errno));
-#endif				/* IPTOS_THROUGHPUT */
+        if (setsockopt(connection_in, IPPROTO_IP, IP_TOS, (void *) &throughput, sizeof(throughput)) < 0)
+            error("setsockopt IPTOS_THROUGHPUT: %.100s", strerror(errno));
+#endif                          /* IPTOS_THROUGHPUT */
 #if defined(TCP_NODELAY) && defined(ENABLE_TCP_NODELAY)
-	if (setsockopt(connection_in, IPPROTO_TCP, TCP_NODELAY, (void *) &off, sizeof(off)) < 0)
-	    error("setsockopt TCP_NODELAY: %.100s", strerror(errno));
-#endif				/* TCP_NODELAY */
+        if (setsockopt(connection_in, IPPROTO_TCP, TCP_NODELAY, (void *) &off, sizeof(off)) < 0)
+            error("setsockopt TCP_NODELAY: %.100s", strerror(errno));
+#endif                          /* TCP_NODELAY */
     }
 }
 

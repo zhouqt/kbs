@@ -16,6 +16,9 @@ Server main loop for handling the interactive session.
 /*
  * $Id$
  * $Log$
+ * Revision 1.5  2002/08/04 11:39:43  kcn
+ * format c
+ *
  * Revision 1.4  2002/08/04 11:08:48  kcn
  * format C
  *
@@ -111,13 +114,13 @@ int ssh_write(int fd, const void *buf, size_t count)
     int result = count;
 
     while (count > 0) {
-	len = count > 512 ? 512 : count;
-	packet_start(SSH_SMSG_STDOUT_DATA);
-	packet_put_string(data, len);
-	packet_send();
-	packet_write_wait();
-	count -= len;
-	data += len;
+        len = count > 512 ? 512 : count;
+        packet_start(SSH_SMSG_STDOUT_DATA);
+        packet_put_string(data, len);
+        packet_send();
+        packet_write_wait();
+        count -= len;
+        data += len;
     }
     return result;
 }
@@ -128,11 +131,11 @@ int ssh_read(int fd, void *buf, size_t count)
     int retlen = 0;
 
     if (count < 0)
-	return count;
+        return count;
     ProcessOnePacket(0);
     while (buffer_len(&NetworkBuf) <= 0) {
-	ProcessOnePacket(1);
-	ProcessOnePacket(0);
+        ProcessOnePacket(1);
+        ProcessOnePacket(0);
     }
     retlen = buffer_len(&NetworkBuf);
     retlen = retlen > count ? count : retlen;
@@ -151,81 +154,81 @@ void ProcessOnePacket(int wait)
     int row, col, xpixel, ypixel;
 
     while (1) {
-	if (wait)
-	    type = packet_read();
-	else
-	    type = packet_read_poll();
-	if (type == SSH_MSG_NONE)
-	    goto read_done;
-	switch (type) {
-	case SSH_CMSG_STDIN_DATA:
-	    /* Stdin data from the client.  Append it to the buffer. */
-	    data = packet_get_string(&data_len);
-	    buffer_append(&NetworkBuf, data, data_len);
-	    memset(data, 0, data_len);
-	    xfree(data);
-	    if (wait)
-		goto read_done;
-	    break;
+        if (wait)
+            type = packet_read();
+        else
+            type = packet_read_poll();
+        if (type == SSH_MSG_NONE)
+            goto read_done;
+        switch (type) {
+        case SSH_CMSG_STDIN_DATA:
+            /* Stdin data from the client.  Append it to the buffer. */
+            data = packet_get_string(&data_len);
+            buffer_append(&NetworkBuf, data, data_len);
+            memset(data, 0, data_len);
+            xfree(data);
+            if (wait)
+                goto read_done;
+            break;
 
-	case SSH_CMSG_EOF:
-	    /* Eof from the client.  The stdin descriptor to the program
-	       will be closed when all buffered data has drained. */
-	    debug("EOF received for stdin.");
-	    goto read_done;
-	    break;
+        case SSH_CMSG_EOF:
+            /* Eof from the client.  The stdin descriptor to the program
+               will be closed when all buffered data has drained. */
+            debug("EOF received for stdin.");
+            goto read_done;
+            break;
 
-	case SSH_CMSG_WINDOW_SIZE:
-	    debug("Window change received.");
-	    row = packet_get_int();
-	    col = packet_get_int();
-	    xpixel = packet_get_int();
-	    ypixel = packet_get_int();
+        case SSH_CMSG_WINDOW_SIZE:
+            debug("Window change received.");
+            row = packet_get_int();
+            col = packet_get_int();
+            xpixel = packet_get_int();
+            ypixel = packet_get_int();
 //            pty_change_window_size(fdin, row, col, xpixel, ypixel);
-	    break;
+            break;
 
-	case SSH_MSG_PORT_OPEN:
-	    break;
+        case SSH_MSG_PORT_OPEN:
+            break;
 
-	case SSH_MSG_CHANNEL_OPEN_CONFIRMATION:
-	    debug("Received channel open confirmation.");
-	    break;
+        case SSH_MSG_CHANNEL_OPEN_CONFIRMATION:
+            debug("Received channel open confirmation.");
+            break;
 
-	case SSH_MSG_CHANNEL_OPEN_FAILURE:
-	    debug("Received channel open failure.");
-	    break;
+        case SSH_MSG_CHANNEL_OPEN_FAILURE:
+            debug("Received channel open failure.");
+            break;
 
-	case SSH_MSG_CHANNEL_DATA:
-	    break;
+        case SSH_MSG_CHANNEL_DATA:
+            break;
 
 #ifdef SUPPORT_OLD_CHANNELS
-	case SSH_MSG_CHANNEL_CLOSE:
-	    debug("Received channel close.");
-	    break;
+        case SSH_MSG_CHANNEL_CLOSE:
+            debug("Received channel close.");
+            break;
 
-	case SSH_MSG_CHANNEL_CLOSE_CONFIRMATION:
-	    debug("Received channel close confirmation.");
-	    break;
+        case SSH_MSG_CHANNEL_CLOSE_CONFIRMATION:
+            debug("Received channel close confirmation.");
+            break;
 #else
-	case SSH_MSG_CHANNEL_INPUT_EOF:
-	    debug("Received channel input eof.");
-	    break;
+        case SSH_MSG_CHANNEL_INPUT_EOF:
+            debug("Received channel input eof.");
+            break;
 
-	case SSH_MSG_CHANNEL_OUTPUT_CLOSED:
-	    debug("Received channel output closed.");
-	    break;
+        case SSH_MSG_CHANNEL_OUTPUT_CLOSED:
+            debug("Received channel output closed.");
+            break;
 
 #endif
 
-	default:
-	    /* In this phase, any unexpected messages cause a protocol
-	       error.  This is to ease debugging; also, since no 
-	       confirmations are sent messages, unprocessed unknown 
-	       messages could cause strange problems.  Any compatible 
-	       protocol extensions must be negotiated before entering the 
-	       interactive session. */
-	    packet_disconnect("Protocol error during session: type %d", type);
-	}
+        default:
+            /* In this phase, any unexpected messages cause a protocol
+               error.  This is to ease debugging; also, since no 
+               confirmations are sent messages, unprocessed unknown 
+               messages could cause strange problems.  Any compatible 
+               protocol extensions must be negotiated before entering the 
+               interactive session. */
+            packet_disconnect("Protocol error during session: type %d", type);
+        }
     }
   read_done:
 

@@ -11,8 +11,8 @@ unsigned long atoul(char *p)
     t = p;
     s = 0;
     while ((*t >= '0') && (*t <= '9')) {
-	s = s * 10 + *t - '0';
-	t++;
+        s = s * 10 + *t - '0';
+        t++;
     }
     return s;
 }
@@ -24,17 +24,17 @@ int canundeny(char *linebuf, unsigned long nowtime)
 
     p = linebuf;
     while ((*p != 0) && (*p != 0x1b))
-	p++;
+        p++;
     if (*p == 0)
-	return 0;
+        return 0;
     if (!strncmp(p - 2, "ºó", 2))
-	return 0;
+        return 0;
     p++;
     if (*p == 0)
-	return 0;
+        return 0;
     p++;
     if (*p == 0)
-	return 0;
+        return 0;
     time2 = atoul(p);
     return nowtime > time2;
 }
@@ -44,24 +44,24 @@ int sgetline(char *buf, char *linebuf, int *idx, int maxlen)
     int len = 0;
 
     while (len < maxlen) {
-	char ch;
+        char ch;
 
-	linebuf[len] = buf[*idx];
-	ch = buf[*idx];
-	(*idx)++;
-	if (ch == 0x0d) {
-	    linebuf[len] = 0;
-	    if (buf[*idx] == 0x0a)
-		(*idx)++;
-	    break;
-	}
-	if (ch == 0x0a) {
-	    linebuf[len] = 0;
-	    break;
-	}
-	if (ch == 0)
-	    break;
-	len++;
+        linebuf[len] = buf[*idx];
+        ch = buf[*idx];
+        (*idx)++;
+        if (ch == 0x0d) {
+            linebuf[len] = 0;
+            if (buf[*idx] == 0x0a)
+                (*idx)++;
+            break;
+        }
+        if (ch == 0x0a) {
+            linebuf[len] = 0;
+            break;
+        }
+        if (ch == 0)
+            break;
+        len++;
     }
     return len;
 }
@@ -79,55 +79,55 @@ int undenyboard(struct boardheader *bh)
 
     nowtime = time(NULL);
     if (bh->filename[0]) {
-	sprintf(denyfile, "boards/%s/deny_users", bh->filename);
-	if (stat(denyfile, &st) == 0) {
-	    if (st.st_size != 0) {
-		if (bufsize < st.st_size + 1) {
-		    if (buf)
-			free(buf);
-		    buf = malloc(st.st_size + 1);
-		    buf[st.st_size] = 0;
-		}
-		if ((d_fd = open(denyfile, O_RDWR)) != -1) {
-		    flock(d_fd, LOCK_EX);
-		    if (read(d_fd, buf, st.st_size) == st.st_size) {
-			idx1 = 0;
-			idx2 = 0;
-			while (idx2 < st.st_size) {
-			    int len = sgetline(buf, linebuf, &idx2, 255);
+        sprintf(denyfile, "boards/%s/deny_users", bh->filename);
+        if (stat(denyfile, &st) == 0) {
+            if (st.st_size != 0) {
+                if (bufsize < st.st_size + 1) {
+                    if (buf)
+                        free(buf);
+                    buf = malloc(st.st_size + 1);
+                    buf[st.st_size] = 0;
+                }
+                if ((d_fd = open(denyfile, O_RDWR)) != -1) {
+                    flock(d_fd, LOCK_EX);
+                    if (read(d_fd, buf, st.st_size) == st.st_size) {
+                        idx1 = 0;
+                        idx2 = 0;
+                        while (idx2 < st.st_size) {
+                            int len = sgetline(buf, linebuf, &idx2, 255);
 
-			    if (!canundeny(linebuf, nowtime)) {
-				if (idx1 != 0) {
-				    buf[idx1] = 0x0a;
-				    idx1++;
-				}
-				memcpy(buf + idx1, linebuf, len);
-				idx1 += len;
-			    } else {
-				char uid[IDLEN + 1], *p;
+                            if (!canundeny(linebuf, nowtime)) {
+                                if (idx1 != 0) {
+                                    buf[idx1] = 0x0a;
+                                    idx1++;
+                                }
+                                memcpy(buf + idx1, linebuf, len);
+                                idx1 += len;
+                            } else {
+                                char uid[IDLEN + 1], *p;
 
-				memcpy(uid, linebuf, IDLEN);
-				uid[IDLEN] = 0;
-				for (p = uid; *p; p++)
-				    if (*p == ' ') {
-					*p = 0;
-					break;
-				    }
-				printf("%s %s\n", bh->filename, uid);
-				deldeny(&deliveruser, bh->filename, uid, 1);
-			    }
-			}
-			buf[idx1] = 0x0a;
-			idx1++;
-			lseek(d_fd, 0, SEEK_SET);
-			write(d_fd, buf, idx1);
-			ftruncate(d_fd, idx1);
-		    }
-		    flock(d_fd, LOCK_UN);
-		    close(d_fd);
-		}
-	    }
-	}
+                                memcpy(uid, linebuf, IDLEN);
+                                uid[IDLEN] = 0;
+                                for (p = uid; *p; p++)
+                                    if (*p == ' ') {
+                                        *p = 0;
+                                        break;
+                                    }
+                                printf("%s %s\n", bh->filename, uid);
+                                deldeny(&deliveruser, bh->filename, uid, 1);
+                            }
+                        }
+                        buf[idx1] = 0x0a;
+                        idx1++;
+                        lseek(d_fd, 0, SEEK_SET);
+                        write(d_fd, buf, idx1);
+                        ftruncate(d_fd, idx1);
+                    }
+                    flock(d_fd, LOCK_UN);
+                    close(d_fd);
+                }
+            }
+        }
     }
     return 0;
 }

@@ -16,6 +16,9 @@ maximum core dump size.
 
 /*
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:43  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:48  kcn
  * format C
  *
@@ -62,7 +65,7 @@ maximum core dump size.
 #include "includes.h"
 #ifdef HAVE_SETRLIMIT
 #include <sys/resource.h>
-#endif				/* HAVE_SETRLIMIT */
+#endif                          /* HAVE_SETRLIMIT */
 
 #ifndef NSIG
 #define NSIG 100
@@ -85,53 +88,53 @@ void signals_prevent_core(void)
     int sig;
 
     for (sig = 1; sig < NSIG; sig++)
-	switch (sig) {
-	case SIGSTOP:
-	case SIGTSTP:
-	case SIGCONT:
-	case SIGCHLD:
-	case SIGTTIN:
-	case SIGTTOU:
+        switch (sig) {
+        case SIGSTOP:
+        case SIGTSTP:
+        case SIGCONT:
+        case SIGCHLD:
+        case SIGTTIN:
+        case SIGTTOU:
 #ifdef SIGIO
-	case SIGIO:
+        case SIGIO:
 #endif
 #if defined(SIGURG) && SIGURG != SIGIO
-	case SIGURG:
+        case SIGURG:
 #endif
 #ifdef SIGWINCH
-	case SIGWINCH:
+        case SIGWINCH:
 #endif
 #if defined(SIGINFO) && !defined(HAVE_INCOMPATIBLE_SIGINFO)
-	case SIGINFO:
+        case SIGINFO:
 #endif
 #if defined(SIGFREEZE)
-	case SIGFREEZE:
+        case SIGFREEZE:
 #endif
 #if defined(SIGTHAW)
-	case SIGTHAW:
+        case SIGTHAW:
 #endif
 #if defined(SIGPWR)
 #if !defined(SIGINFO) || (SIGINFO != SIGPWR)
-	case SIGPWR:
+        case SIGPWR:
 #endif
 #endif
-	    signal(sig, SIG_DFL);
-	    break;
-	default:
-	    signal(sig, signal_handler);
-	    break;
-	}
+            signal(sig, SIG_DFL);
+            break;
+        default:
+            signal(sig, signal_handler);
+            break;
+        }
 
 #if defined(HAVE_SETRLIMIT) && defined(RLIMIT_CORE)
     {
-	struct rlimit rl;
+        struct rlimit rl;
 
-	getrlimit(RLIMIT_CORE, &rl);
-	original_core_limit = rl.rlim_cur;
-	rl.rlim_cur = 0;
-	setrlimit(RLIMIT_CORE, &rl);
+        getrlimit(RLIMIT_CORE, &rl);
+        original_core_limit = rl.rlim_cur;
+        rl.rlim_cur = 0;
+        setrlimit(RLIMIT_CORE, &rl);
     }
-#endif				/* HAVE_SETRLIMIT && RLIMIT_CORE */
+#endif                          /* HAVE_SETRLIMIT && RLIMIT_CORE */
 }
 
 /* Sets all signals to their default state.  Restores RLIMIT_CORE previously
@@ -142,15 +145,15 @@ void signals_reset(void)
     int sig;
 
     for (sig = 1; sig < NSIG; sig++)
-	signal(sig, SIG_DFL);
+        signal(sig, SIG_DFL);
 
 #if defined(HAVE_SETRLIMIT) && defined(RLIMIT_CORE)
     {
-	struct rlimit rl;
+        struct rlimit rl;
 
-	getrlimit(RLIMIT_CORE, &rl);
-	rl.rlim_cur = original_core_limit;
-	setrlimit(RLIMIT_CORE, &rl);
+        getrlimit(RLIMIT_CORE, &rl);
+        rl.rlim_cur = original_core_limit;
+        setrlimit(RLIMIT_CORE, &rl);
     }
-#endif				/* HAVE_SETRLIMIT && RLIMIT_CORE */
+#endif                          /* HAVE_SETRLIMIT && RLIMIT_CORE */
 }

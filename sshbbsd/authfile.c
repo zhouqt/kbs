@@ -17,6 +17,9 @@ for reading the passphrase from the user.
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:40  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:44  kcn
  * format C
  *
@@ -81,47 +84,47 @@ int load_private_key(uid_t uid, const char *filename, const char *passphrase, RS
     /* Read the file into the buffer. */
     uf = open(filename, O_RDONLY, 0);
     if (uf < 0)
-	return 0;
+        return 0;
 
     len = lseek(uf, (off_t) 0L, 2);
     lseek(uf, (off_t) 0L, 0);
 
     if (len > 32000) {
-	close(uf);
-	debug("Authentication file too big: %.200s", filename);
-	return 0;
+        close(uf);
+        debug("Authentication file too big: %.200s", filename);
+        return 0;
     }
 
     buffer_init(&buffer);
     buffer_append_space(&buffer, &cp, len);
 
     if (read(uf, cp, len) != len) {
-	debug("Read from key file %.200s failed: %.100s", filename, strerror(errno));
-	buffer_free(&buffer);
-	close(uf);
-	return 0;
+        debug("Read from key file %.200s failed: %.100s", filename, strerror(errno));
+        buffer_free(&buffer);
+        close(uf);
+        return 0;
     }
     close(uf);
 
     /* Check that it is at least big enought to contain the ID string. */
     if (len < strlen(AUTHFILE_ID_STRING) + 1) {
-	debug("Bad key file %.200s.", filename);
-	buffer_free(&buffer);
-	return 0;
+        debug("Bad key file %.200s.", filename);
+        buffer_free(&buffer);
+        return 0;
     }
 
     /* Make sure it begins with the id string.  Consume the id string from
        the buffer. */
     for (i = 0; i < (unsigned int) strlen(AUTHFILE_ID_STRING) + 1; i++)
-	if (buffer_get_char(&buffer) != (unsigned char) AUTHFILE_ID_STRING[i]) {
-	    debug("Bad key file %.200s.", filename);
-	    buffer_free(&buffer);
-	    return 0;
-	}
+        if (buffer_get_char(&buffer) != (unsigned char) AUTHFILE_ID_STRING[i]) {
+            debug("Bad key file %.200s.", filename);
+            buffer_free(&buffer);
+            return 0;
+        }
 
     /* Read cipher type. */
     cipher_type = buffer_get_char(&buffer);
-    (void) buffer_get_int(&buffer);	/* Reserved data. */
+    (void) buffer_get_int(&buffer);     /* Reserved data. */
 
     /* Read the public key from the buffer. */
     prv->bits = buffer_get_int(&buffer);
@@ -130,15 +133,15 @@ int load_private_key(uid_t uid, const char *filename, const char *passphrase, RS
     mpz_init(&prv->e);
     buffer_get_mp_int(&buffer, &prv->e);
     if (comment_return)
-	*comment_return = buffer_get_string(&buffer, NULL);
+        *comment_return = buffer_get_string(&buffer, NULL);
     else
-	xfree(buffer_get_string(&buffer, NULL));
+        xfree(buffer_get_string(&buffer, NULL));
 
     /* Check that it is a supported cipher. */
     if (cipher_type != SSH_CIPHER_NONE && (cipher_mask() & (1 << cipher_type)) == 0) {
-	debug("Unsupported cipher %.100s used in key file %.200s.", cipher_name(cipher_type), filename);
-	buffer_free(&buffer);
-	goto fail;
+        debug("Unsupported cipher %.100s used in key file %.200s.", cipher_name(cipher_type), filename);
+        buffer_free(&buffer);
+        goto fail;
     }
 
     /* Initialize space for decrypted data. */
@@ -154,16 +157,16 @@ int load_private_key(uid_t uid, const char *filename, const char *passphrase, RS
     check1 = buffer_get_char(&decrypted);
     check2 = buffer_get_char(&decrypted);
     if (check1 != buffer_get_char(&decrypted) || check2 != buffer_get_char(&decrypted)) {
-	if (strcmp(passphrase, "") != 0)
-	    debug("Bad passphrase supplied for key file %.200s.", filename);
-	/* Bad passphrase. */
-	buffer_free(&decrypted);
+        if (strcmp(passphrase, "") != 0)
+            debug("Bad passphrase supplied for key file %.200s.", filename);
+        /* Bad passphrase. */
+        buffer_free(&decrypted);
       fail:
-	mpz_clear(&prv->n);
-	mpz_clear(&prv->e);
-	if (comment_return)
-	    xfree(*comment_return);
-	return 0;
+        mpz_clear(&prv->n);
+        mpz_clear(&prv->e);
+        if (comment_return)
+            xfree(*comment_return);
+        return 0;
     }
 
     /* Read the rest of the private key. */

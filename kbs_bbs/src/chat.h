@@ -28,19 +28,19 @@
 #define CHATPORT3 3586
 #define CHATPORT4 4686
 
-#define DEFAULT_CHATROOM        "Le_Jardin_Secret"	/* Default and Couldn't be changed */
-#define MAX_CHATROOM    10	/* MAX 10 Chat-Rooms */
-#define MAX_PORTS       25	/* MAX users in one Chat-Room */
-#define IDLEN           12	/* ID Length (must match in BBS.H) */
-#define CHAT_IDLEN      8	/* Chat ID Length in Chat-Room */
-#define CHAT_CMDLEN     8	/* MAX 8 characters of CHAT-ROOM commands */
-#define CHAT_NAMELEN    20	/* MAX 20 characters of CHAT-ROOM NAME */
-#define CHAT_TITLELEN   40	/* MAX 40 characters of CHAT-ROOM TITLE */
+#define DEFAULT_CHATROOM        "Le_Jardin_Secret"      /* Default and Couldn't be changed */
+#define MAX_CHATROOM    10      /* MAX 10 Chat-Rooms */
+#define MAX_PORTS       25      /* MAX users in one Chat-Room */
+#define IDLEN           12      /* ID Length (must match in BBS.H) */
+#define CHAT_IDLEN      8       /* Chat ID Length in Chat-Room */
+#define CHAT_CMDLEN     8       /* MAX 8 characters of CHAT-ROOM commands */
+#define CHAT_NAMELEN    20      /* MAX 20 characters of CHAT-ROOM NAME */
+#define CHAT_TITLELEN   40      /* MAX 40 characters of CHAT-ROOM TITLE */
 #define CHATLINE_MAX    255
-#define TITLE_ROW       0	/* Where to display the title (48,0) */
-#define TITLE_COL       48	/* 80 - strlen("Title : ") - CHAT_TITLELEN */
-#define DELTA_TIME      300	/* 5 mins * 60 = 300 */
-#define MAX_EMOTES      36	/* emotes user defined */
+#define TITLE_ROW       0       /* Where to display the title (48,0) */
+#define TITLE_COL       48      /* 80 - strlen("Title : ") - CHAT_TITLELEN */
+#define DELTA_TIME      300     /* 5 mins * 60 = 300 */
+#define MAX_EMOTES      36      /* emotes user defined */
 
 enum ERROR {
     ERROR_COMMAND, ERROR_HELP_TOPIC, ERROR_ACTION,
@@ -65,18 +65,18 @@ enum SORRY {
 #define LEADER_BIT      0x0004
 struct person_info {
     int portfd;
-    int uid;			/* Used to find person in PASSWD file */
-    unsigned userlevel;		/* Level of this user */
+    int uid;                    /* Used to find person in PASSWD file */
+    unsigned userlevel;         /* Level of this user */
     unsigned flag;
     char bbsid[IDLEN + 1];
     char chatid[CHAT_IDLEN + 1];
 };
 
 struct chat_info {
-    char name[CHAT_NAMELEN + 1];	/* Chat-room Name */
-    char title[CHAT_TITLELEN + 1];	/* Chat-room Title */
-    int time;			/* Set time of Chat-room Title */
-    unsigned access_level;	/* Who can access this room */
+    char name[CHAT_NAMELEN + 1];        /* Chat-room Name */
+    char title[CHAT_TITLELEN + 1];      /* Chat-room Title */
+    int time;                   /* Set time of Chat-room Title */
+    unsigned access_level;      /* Who can access this room */
     int numports;
     struct person_info person[MAX_PORTS];
 };
@@ -87,16 +87,16 @@ struct chat_info {
 #define MAXLASTCMD 32
 
 typedef struct {
-    int cfd;			/* 聊天室的socket */
+    int cfd;                    /* 聊天室的socket */
 
     char buf[512];
     int bufptr;
 
     char chatid[10];
-    char chatroom[IDLEN];	/* Chat-Room Name */
+    char chatroom[IDLEN];       /* Chat-Room Name */
     char topic[STRLEN];
 
-    int chatline;		/* Where to display message now */
+    int chatline;               /* Where to display message now */
     int outputcount;
 
     int cmdpos;
@@ -110,9 +110,9 @@ typedef struct {
 
 
 struct chat_command {
-    char *cmdname;		/* Char-room command length */
-    void (*cmdfunc) (chatcontext * pthis, const char *arg);	/* Pointer to function */
-    short nCmdLenth;		/*命令字串判别需要匹配的字符数 */
+    char *cmdname;              /* Char-room command length */
+    void (*cmdfunc) (chatcontext * pthis, const char *arg);     /* Pointer to function */
+    short nCmdLenth;            /*命令字串判别需要匹配的字符数 */
 };
 
 

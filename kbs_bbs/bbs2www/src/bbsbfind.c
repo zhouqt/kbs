@@ -17,72 +17,72 @@ int main()
     type = atoi(getparm("type"));
     strsncpy(board, getparm("board"), 30);
     if (type == 0)
-	return show_form(board);
+        return show_form(board);
     strsncpy(title, getparm("title"), 60);
     strsncpy(title2, getparm("title2"), 60);
     strsncpy(title3, getparm("title3"), 60);
     strsncpy(userid, getparm("userid"), 60);
     dt = atoi(getparm("dt"));
     if (!strcasecmp(getparm("mg"), "on"))
-	mg = 1;
+        mg = 1;
     if (!strcasecmp(getparm("og"), "on"))
-	og = 1;
+        og = 1;
     if (dt < 0)
-	dt = 0;
+        dt = 0;
     if (dt > 9999)
-	dt = 9999;
+        dt = 9999;
     num = getboardnum(board, &bh);
     if (num == 0)
-	http_fatal("错误的讨论区");
+        http_fatal("错误的讨论区");
     brd = &bh;
     strcpy(board, brd->filename);
     if (!has_read_perm(currentuser, board))
-	http_fatal("错误的讨论区");
+        http_fatal("错误的讨论区");
     sprintf(dir, "boards/%s/.DIR", board);
     fp = fopen(dir, "r");
     if (fp == 0)
-	http_fatal("讨论区错误或没有目前文章");
+        http_fatal("讨论区错误或没有目前文章");
     encode_url(brdencode, board, sizeof(brdencode));
     printf("查找讨论区'%s'内, 标题含: '%s' ", board, nohtml(title));
     if (title2[0])
-	printf("和 '%s' ", nohtml(title2));
+        printf("和 '%s' ", nohtml(title2));
     if (title3[0])
-	printf("不含 '%s' ", nohtml(title3));
+        printf("不含 '%s' ", nohtml(title3));
     printf("作者为: '%s', '%d'天以内的%s文章.<br>\n", userid[0] ? userid_str(userid) : "所有作者", dt, mg ? "精华" : "所有");
     printf("<table width=\"610\">\n");
     printf("<tr><td>编号</td><td>标记</td><td>作者</td><td>日期</td><td>标题</td></tr>\n");
     while (1) {
-	if (fread(&x, sizeof(x), 1, fp) == 0)
-	    break;
-	num++;
-	if (title[0] && !strcasestr(x.title, title))
-	    continue;
-	if (title2[0] && !strcasestr(x.title, title2))
-	    continue;
-	if (userid[0] && strcasecmp(x.owner, userid))
-	    continue;
-	if (title3[0] && strcasestr(x.title, title3))
-	    continue;
-	if (abs(time(0) - atoi(x.filename + 2)) > dt * 86400)
-	    continue;
-	if (mg && !(x.accessed[0] & FILE_MARKED) && !(x.accessed[0] & FILE_DIGEST))
-	    continue;
-	if (og && !strncmp(x.title, "Re: ", 4))
-	    continue;
-	total++;
-	printf("<tr><td>%d</td>", num);
-	printf("<td>%s</td>", flag_str(x.accessed[0]));
-	printf("<td>%s</td>", userid_str(x.owner));
-	printf("<td>%12.12s</td>", 4 + wwwCTime(atoi(x.filename + 2)));
-	printf("<td><a href=\"bbscon?board=%s&file=%s&num=%d\">%40.40s </a></td></tr>\n", brdencode, x.filename, num - 1, x.title);
-	if (total >= 999)
-	    break;
+        if (fread(&x, sizeof(x), 1, fp) == 0)
+            break;
+        num++;
+        if (title[0] && !strcasestr(x.title, title))
+            continue;
+        if (title2[0] && !strcasestr(x.title, title2))
+            continue;
+        if (userid[0] && strcasecmp(x.owner, userid))
+            continue;
+        if (title3[0] && strcasestr(x.title, title3))
+            continue;
+        if (abs(time(0) - atoi(x.filename + 2)) > dt * 86400)
+            continue;
+        if (mg && !(x.accessed[0] & FILE_MARKED) && !(x.accessed[0] & FILE_DIGEST))
+            continue;
+        if (og && !strncmp(x.title, "Re: ", 4))
+            continue;
+        total++;
+        printf("<tr><td>%d</td>", num);
+        printf("<td>%s</td>", flag_str(x.accessed[0]));
+        printf("<td>%s</td>", userid_str(x.owner));
+        printf("<td>%12.12s</td>", 4 + wwwCTime(atoi(x.filename + 2)));
+        printf("<td><a href=\"bbscon?board=%s&file=%s&num=%d\">%40.40s </a></td></tr>\n", brdencode, x.filename, num - 1, x.title);
+        if (total >= 999)
+            break;
     }
     fclose(fp);
     printf("</table>\n");
     printf("<br>共找到 %d 篇文章符合条件", total);
     if (total > 999)
-	printf("(匹配结果过多, 省略第1000以后的查询结果)");
+        printf("(匹配结果过多, 省略第1000以后的查询结果)");
     printf("<br>\n");
     printf("[<a href=\"bbsdoc?board=%s\">返回本讨论区</a>] [<a href=\"javascript:history.go(-1)\">返回上一页</a>]", brdencode);
     http_quit();

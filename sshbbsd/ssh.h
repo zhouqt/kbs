@@ -16,6 +16,9 @@ Generic header file for ssh.
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:44  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:49  kcn
  * format C
  *
@@ -306,7 +309,7 @@ only by root, whereas ssh_config should be world-readable. */
 /* Check that we always have PASSWD_PATH set */
 #ifndef PASSWD_PATH
 #define PASSWD_PATH "/bin/passwd"
-#endif				/* PASSWD_PATH */
+#endif                          /* PASSWD_PATH */
 
 /* Force host key length and server key length to differ by at least this
    many bits.  This is to make double encryption with rsaref work. */
@@ -320,8 +323,8 @@ only by root, whereas ssh_config should be world-readable. */
 #ifdef KRB5
 #include <krb5.h>
 #define KRB_SERVICE_NAME                "host"
-#endif				/* KRB5 */
-#endif				/* KERBEROS */
+#endif                          /* KRB5 */
+#endif                          /* KERBEROS */
 
 /* Authentication methods.  New types can be added, but old types should not
    be removed for compatibility.  The maximum allowed value is 31. */
@@ -347,70 +350,70 @@ only by root, whereas ssh_config should be world-readable. */
    so if someone else adds also new methods you dont use same number. */
 
 /* Protocol flags.  These are bit masks. */
-#define SSH_PROTOFLAG_SCREEN_NUMBER     1	/* X11 forwarding includes screen */
-#define SSH_PROTOFLAG_HOST_IN_FWD_OPEN  2	/* forwarding opens contain host */
+#define SSH_PROTOFLAG_SCREEN_NUMBER     1       /* X11 forwarding includes screen */
+#define SSH_PROTOFLAG_HOST_IN_FWD_OPEN  2       /* forwarding opens contain host */
 
 /* Definition of message types.  New values can be added, but old values
    should not be removed or without careful consideration of the consequences
    for compatibility.  The maximum value is 254; value 255 is reserved
    for future extension. */
 /* Message name *//* msg code *//* arguments */
-#define SSH_MSG_NONE                            0	/* no message */
-#define SSH_MSG_DISCONNECT                      1	/* cause (string) */
-#define SSH_SMSG_PUBLIC_KEY                     2	/* ck,msk,srvk,hostk */
-#define SSH_CMSG_SESSION_KEY                    3	/* key (MP_INT) */
-#define SSH_CMSG_USER                           4	/* user (string) */
-#define SSH_CMSG_AUTH_RHOSTS                    5	/* user (string) */
-#define SSH_CMSG_AUTH_RSA                       6	/* modulus (MP_INT) */
-#define SSH_SMSG_AUTH_RSA_CHALLENGE             7	/* int (MP_INT) */
-#define SSH_CMSG_AUTH_RSA_RESPONSE              8	/* int (MP_INT) */
-#define SSH_CMSG_AUTH_PASSWORD                  9	/* pass (string) */
-#define SSH_CMSG_REQUEST_PTY                    10	/* TERM, tty modes */
-#define SSH_CMSG_WINDOW_SIZE                    11	/* row,col,xpix,ypix */
-#define SSH_CMSG_EXEC_SHELL                     12	/* */
-#define SSH_CMSG_EXEC_CMD                       13	/* cmd (string) */
-#define SSH_SMSG_SUCCESS                        14	/* */
-#define SSH_SMSG_FAILURE                        15	/* */
-#define SSH_CMSG_STDIN_DATA                     16	/* data (string) */
-#define SSH_SMSG_STDOUT_DATA                    17	/* data (string) */
-#define SSH_SMSG_STDERR_DATA                    18	/* data (string) */
-#define SSH_CMSG_EOF                            19	/* */
-#define SSH_SMSG_EXITSTATUS                     20	/* status (int) */
-#define SSH_MSG_CHANNEL_OPEN_CONFIRMATION       21	/* channel (int) */
-#define SSH_MSG_CHANNEL_OPEN_FAILURE            22	/* channel (int) */
-#define SSH_MSG_CHANNEL_DATA                    23	/* ch,data (int,str) */
-#define SSH_MSG_CHANNEL_CLOSE                   24	/* channel (int) */
-#define SSH_MSG_CHANNEL_CLOSE_CONFIRMATION      25	/* channel (int) */
+#define SSH_MSG_NONE                            0       /* no message */
+#define SSH_MSG_DISCONNECT                      1       /* cause (string) */
+#define SSH_SMSG_PUBLIC_KEY                     2       /* ck,msk,srvk,hostk */
+#define SSH_CMSG_SESSION_KEY                    3       /* key (MP_INT) */
+#define SSH_CMSG_USER                           4       /* user (string) */
+#define SSH_CMSG_AUTH_RHOSTS                    5       /* user (string) */
+#define SSH_CMSG_AUTH_RSA                       6       /* modulus (MP_INT) */
+#define SSH_SMSG_AUTH_RSA_CHALLENGE             7       /* int (MP_INT) */
+#define SSH_CMSG_AUTH_RSA_RESPONSE              8       /* int (MP_INT) */
+#define SSH_CMSG_AUTH_PASSWORD                  9       /* pass (string) */
+#define SSH_CMSG_REQUEST_PTY                    10      /* TERM, tty modes */
+#define SSH_CMSG_WINDOW_SIZE                    11      /* row,col,xpix,ypix */
+#define SSH_CMSG_EXEC_SHELL                     12      /* */
+#define SSH_CMSG_EXEC_CMD                       13      /* cmd (string) */
+#define SSH_SMSG_SUCCESS                        14      /* */
+#define SSH_SMSG_FAILURE                        15      /* */
+#define SSH_CMSG_STDIN_DATA                     16      /* data (string) */
+#define SSH_SMSG_STDOUT_DATA                    17      /* data (string) */
+#define SSH_SMSG_STDERR_DATA                    18      /* data (string) */
+#define SSH_CMSG_EOF                            19      /* */
+#define SSH_SMSG_EXITSTATUS                     20      /* status (int) */
+#define SSH_MSG_CHANNEL_OPEN_CONFIRMATION       21      /* channel (int) */
+#define SSH_MSG_CHANNEL_OPEN_FAILURE            22      /* channel (int) */
+#define SSH_MSG_CHANNEL_DATA                    23      /* ch,data (int,str) */
+#define SSH_MSG_CHANNEL_CLOSE                   24      /* channel (int) */
+#define SSH_MSG_CHANNEL_CLOSE_CONFIRMATION      25      /* channel (int) */
 
 /* new channel protocol */
 #define SSH_MSG_CHANNEL_INPUT_EOF               24
 #define SSH_MSG_CHANNEL_OUTPUT_CLOSED           25
 
 /*      SSH_CMSG_X11_REQUEST_FORWARDING         26         OBSOLETE */
-#define SSH_SMSG_X11_OPEN                       27	/* channel (int) */
-#define SSH_CMSG_PORT_FORWARD_REQUEST           28	/* p,host,hp (i,s,i) */
-#define SSH_MSG_PORT_OPEN                       29	/* ch,h,p (i,s,i) */
-#define SSH_CMSG_AGENT_REQUEST_FORWARDING       30	/* */
-#define SSH_SMSG_AGENT_OPEN                     31	/* port (int) */
-#define SSH_MSG_IGNORE                          32	/* string */
-#define SSH_CMSG_EXIT_CONFIRMATION              33	/* */
-#define SSH_CMSG_X11_REQUEST_FORWARDING         34	/* proto,data (s,s) */
-#define SSH_CMSG_AUTH_RHOSTS_RSA                35	/* user,mod (s,mpi) */
-#define SSH_MSG_DEBUG                           36	/* string */
-#define SSH_CMSG_REQUEST_COMPRESSION            37	/* level 1-9 (int) */
-#define SSH_CMSG_MAX_PACKET_SIZE                38	/* max_size (int) */
+#define SSH_SMSG_X11_OPEN                       27      /* channel (int) */
+#define SSH_CMSG_PORT_FORWARD_REQUEST           28      /* p,host,hp (i,s,i) */
+#define SSH_MSG_PORT_OPEN                       29      /* ch,h,p (i,s,i) */
+#define SSH_CMSG_AGENT_REQUEST_FORWARDING       30      /* */
+#define SSH_SMSG_AGENT_OPEN                     31      /* port (int) */
+#define SSH_MSG_IGNORE                          32      /* string */
+#define SSH_CMSG_EXIT_CONFIRMATION              33      /* */
+#define SSH_CMSG_X11_REQUEST_FORWARDING         34      /* proto,data (s,s) */
+#define SSH_CMSG_AUTH_RHOSTS_RSA                35      /* user,mod (s,mpi) */
+#define SSH_MSG_DEBUG                           36      /* string */
+#define SSH_CMSG_REQUEST_COMPRESSION            37      /* level 1-9 (int) */
+#define SSH_CMSG_MAX_PACKET_SIZE                38      /* max_size (int) */
 
 /* Support for TIS authentication server
    Contributed by Andre April <Andre.April@cediti.be>. */
-#define SSH_CMSG_AUTH_TIS                       39	/* */
-#define SSH_SMSG_AUTH_TIS_CHALLENGE             40	/* string */
-#define SSH_CMSG_AUTH_TIS_RESPONSE              41	/* pass (string) */
+#define SSH_CMSG_AUTH_TIS                       39      /* */
+#define SSH_SMSG_AUTH_TIS_CHALLENGE             40      /* string */
+#define SSH_CMSG_AUTH_TIS_RESPONSE              41      /* pass (string) */
 
 /* Support for kerberos authentication by Glenn Machin and Dug Song
    <dugsong@umich.edu> */
-#define SSH_CMSG_AUTH_KERBEROS                  42	/* string (KTEXT) */
-#define SSH_SMSG_AUTH_KERBEROS_RESPONSE         43	/* string (KTEXT) */
-#define SSH_CMSG_HAVE_KERBEROS_TGT              44	/* string (credentials) */
+#define SSH_CMSG_AUTH_KERBEROS                  42      /* string (KTEXT) */
+#define SSH_SMSG_AUTH_KERBEROS_RESPONSE         43      /* string (KTEXT) */
+#define SSH_CMSG_HAVE_KERBEROS_TGT              44      /* string (credentials) */
 
 /* Reserved for official extensions, do not use these */
 #define SSH_CMSG_RESERVED_START                 45
@@ -450,7 +453,7 @@ int auth_rhosts(struct passwd *pw, const char *client_user, int ignore_rhosts, i
 /* Tries to authenticate the user using the .rhosts file and the host using
    its host key.  Returns true if authentication succeeds. */
 int auth_rhosts_rsa(RandomState * state,
-		    struct passwd *pw, const char *client_user, unsigned int bits, MP_INT * client_host_key_e, MP_INT * client_host_key_n, int ignore_rhosts, int ignore_root_rhosts, int strict_modes);
+                    struct passwd *pw, const char *client_user, unsigned int bits, MP_INT * client_host_key_e, MP_INT * client_host_key_n, int ignore_rhosts, int ignore_root_rhosts, int strict_modes);
 
 /* Tries to authenticate the user using password.  Returns true if
    authentication succeeds. */
@@ -695,7 +698,7 @@ void channel_permit_all_opens(void);
 
 
 
-#endif				/* F_SECURE_COMMERCIAL */
+#endif                          /* F_SECURE_COMMERCIAL */
 
 /* This is called after receiving CHANNEL_FORWARDING_REQUEST.  This initates
    listening for the port, and sends back a success reply (or disconnect
@@ -770,7 +773,7 @@ int match_host(const char *host, const char *ip, const char *pattern);
 
 #ifdef F_SECURE_COMMERCIAL
 
-#endif				/* F_SECURE_COMMERCIAL */
+#endif                          /* F_SECURE_COMMERCIAL */
 
 /* Expands tildes in the file name.  Returns data allocated by xmalloc.
    Warning: this calls getpw*. */
@@ -816,4 +819,4 @@ extern uid_t original_real_uid;
 #define UID_ROOT 0
 #endif
 
-#endif				/* SSH_H */
+#endif                          /* SSH_H */

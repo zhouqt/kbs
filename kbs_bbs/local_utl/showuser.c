@@ -53,8 +53,8 @@ char *field_name[] = {
 char *MYPASSFILE;
 
 set_opt(argc, argv)
-	int argc;
-	char *argv[];
+    int argc;
+    char *argv[];
 {
     int i, flag, field, size;
     int *p;
@@ -63,23 +63,23 @@ set_opt(argc, argv)
     field_count = 0;
 
     for (i = 2; i < argc; i++) {
-	field_ptr = (char *) strchr(field_idx, argv[i][0]);
-	if (field_ptr == NULL)
-	    continue;
-	else
-	    field = field_ptr - field_idx;
+        field_ptr = (char *) strchr(field_idx, argv[i][0]);
+        if (field_ptr == NULL)
+            continue;
+        else
+            field = field_ptr - field_idx;
 
-	size = atoi(argv[i] + 1);
+        size = atoi(argv[i] + 1);
 
-	field_lst_no[field_count] = field;
-	field_lst_size[field_count] = (size == 0) ? field_default_size[field] : size;
-	field_count++;
+        field_lst_no[field_count] = field;
+        field_lst_size[field_count] = (size == 0) ? field_default_size[field] : size;
+        field_count++;
     }
 
 }
 
 char *repeat(ch, n)
-	int ch, n;
+    int ch, n;
 {
     char *p;
     int i;
@@ -87,7 +87,7 @@ char *repeat(ch, n)
 
     p = buf;
     for (i = 0; i < n; i++)
-	*(p++) = ch;
+        *(p++) = ch;
     *p = '\0';
     return buf;
 }
@@ -97,15 +97,15 @@ print_head()
     int i, field, size;
 
     for (i = 0; i < field_count; i++) {
-	field = field_lst_no[i];
-	size = field_lst_size[i];
-	printf("%-*.*s ", size, size, field_name[field]);
+        field = field_lst_no[i];
+        size = field_lst_size[i];
+        printf("%-*.*s ", size, size, field_name[field]);
     }
     printf("\n");
     for (i = 0; i < field_count; i++) {
-	field = field_lst_no[i];
-	size = field_lst_size[i];
-	printf("%-*.*s ", size, size, repeat('=', size));
+        field = field_lst_no[i];
+        size = field_lst_size[i];
+        printf("%-*.*s ", size, size, repeat('=', size));
     }
     printf("\n");
 }
@@ -115,15 +115,15 @@ print_record()
     int i, field, size;
 
     for (i = 0; i < field_count; i++) {
-	field = field_lst_no[i];
-	size = field_lst_size[i];
-	printf("%-*.*s ", size, size, field_str[field]);
+        field = field_lst_no[i];
+        size = field_lst_size[i];
+        printf("%-*.*s ", size, size, field_str[field]);
     }
     printf("\n");
 }
 
 char *my_ctime(t)
-	time_t *t;
+    time_t *t;
 {
     static char time_str[80];
 
@@ -133,7 +133,7 @@ char *my_ctime(t)
 }
 
 char *strlower(str)
-	char *str;
+    char *str;
 {
     int i, len;
     char *p;
@@ -141,15 +141,15 @@ char *strlower(str)
     len = strlen(str);
     p = str;
     for (i = 0; i < len; i++) {
-	*p = tolower(*p);
-	p++;
+        *p = tolower(*p);
+        p++;
     }
     return str;
 }
 
 dump_record(serial_no, p)
-	int serial_no;
-	struct userec *p;
+    int serial_no;
+    struct userec *p;
 {
     int i = 0, j;
     int pat;
@@ -172,7 +172,7 @@ dump_record(serial_no, p)
     pat = p->userlevel;
     for (j = 0; j < 31; j++, pat >>= 1) {
 /*        field_str[ i ][ j ] = (pat &  1) ? '1' : '0' ; */
-	field_str[i][j] = (pat & 1) ? (65 /*'A' */  + j) : '0';
+        field_str[i][j] = (pat & 1) ? (65 /*'A' */  + j) : '0';
     }
     field_str[i++][j] = '\0';
 
@@ -183,42 +183,42 @@ dump_record(serial_no, p)
 }
 
 main(argc, argv)
-	int argc;
-	char *argv[];
+    int argc;
+    char *argv[];
 {
     FILE *inf;
     int i;
     char *p;
 
     if (argc < 3) {
-	printf("Usage: %s %s\n", argv[0], "password_file [XN] ....");
-	printf("Example: %s %s\n", argv[0], "d3 i12 e30");
-	printf("N is field width, X is one of the following char :\n");
+        printf("Usage: %s %s\n", argv[0], "password_file [XN] ....");
+        printf("Example: %s %s\n", argv[0], "d3 i12 e30");
+        printf("N is field width, X is one of the following char :\n");
 
-	for (i = 0; field_name[i]; i++) {
-	    printf("\t%c -> %20.20s (default size = %2d)\n", field_idx[i], field_name[i], field_default_size[i]);
-	}
+        for (i = 0; field_name[i]; i++) {
+            printf("\t%c -> %20.20s (default size = %2d)\n", field_idx[i], field_name[i], field_default_size[i]);
+        }
 
-	exit(0);
+        exit(0);
     } else {
-	set_opt(argc, argv);
-	MYPASSFILE = argv[1];
+        set_opt(argc, argv);
+        MYPASSFILE = argv[1];
     }
 
 
     inf = fopen(MYPASSFILE, "rb");
     if (inf == NULL) {
-	printf("Error open %s\n", MYPASSFILE);
-	exit(0);
+        printf("Error open %s\n", MYPASSFILE);
+        exit(0);
     }
 
     print_head();
 
     for (i = 0;; i++) {
-	if (fread(&aman, sizeof(aman), 1, inf) <= 0)
-	    break;
-	dump_record(i, &aman);
-	print_record();
+        if (fread(&aman, sizeof(aman), 1, inf) <= 0)
+            break;
+        dump_record(i, &aman);
+        print_record();
     }
 
     fclose(inf);

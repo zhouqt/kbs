@@ -17,6 +17,9 @@ precision integers.
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:42  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:47  kcn
  * format C
  *
@@ -51,4 +54,4 @@ void mp_unlinearize_msb_first(MP_INT * value, const unsigned char *buf, unsigned
    first representations of host_key_n, session_key_n, and the cookie. */
 void compute_session_id(unsigned char session_id[16], unsigned char cookie[8], unsigned int host_key_bits, MP_INT * host_key_n, unsigned int session_key_bits, MP_INT * session_key_n);
 
-#endif				/* MPAUX_H */
+#endif                          /* MPAUX_H */

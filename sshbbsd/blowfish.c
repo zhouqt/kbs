@@ -379,9 +379,9 @@ static void blowfish_decrypt(BlowfishContext * context, word32 xl, word32 xr, wo
 void blowfish_transform(word32 l, word32 r, word32 * output, int encrypt, void *context)
 {
     if (encrypt)
-	blowfish_encrypt((BlowfishContext *) context, l, r, output);
+        blowfish_encrypt((BlowfishContext *) context, l, r, output);
     else
-	blowfish_decrypt((BlowfishContext *) context, l, r, output);
+        blowfish_decrypt((BlowfishContext *) context, l, r, output);
 }
 
 /* Encrypt a buffer using mode cbc and initialization vector in
@@ -398,13 +398,13 @@ void blowfish_cbc_encrypt(BlowfishContext * ctx, unsigned char *dst, const unsig
     iv1 = GET_32BIT_LSB_FIRST(ctx->iv + 4);
 
     for (i = 0; i < len; i += 8) {
-	iv0 ^= GET_32BIT_LSB_FIRST(src + i);
-	iv1 ^= GET_32BIT_LSB_FIRST(src + i + 4);
-	blowfish_transform(iv0, iv1, out, 1, ctx);
-	iv0 = out[0];
-	iv1 = out[1];
-	PUT_32BIT_LSB_FIRST(dst + i, iv0);
-	PUT_32BIT_LSB_FIRST(dst + i + 4, iv1);
+        iv0 ^= GET_32BIT_LSB_FIRST(src + i);
+        iv1 ^= GET_32BIT_LSB_FIRST(src + i + 4);
+        blowfish_transform(iv0, iv1, out, 1, ctx);
+        iv0 = out[0];
+        iv1 = out[1];
+        PUT_32BIT_LSB_FIRST(dst + i, iv0);
+        PUT_32BIT_LSB_FIRST(dst + i + 4, iv1);
     }
     PUT_32BIT_LSB_FIRST(ctx->iv, iv0);
     PUT_32BIT_LSB_FIRST(ctx->iv + 4, iv1);
@@ -424,15 +424,15 @@ void blowfish_cbc_decrypt(BlowfishContext * ctx, unsigned char *dst, const unsig
     iv1 = GET_32BIT_LSB_FIRST(ctx->iv + 4);
 
     for (i = 0; i < len; i += 8) {
-	d0 = GET_32BIT_LSB_FIRST(src + i);
-	d1 = GET_32BIT_LSB_FIRST(src + i + 4);
-	blowfish_transform(d0, d1, out, 0, ctx);
-	iv0 ^= out[0];
-	iv1 ^= out[1];
-	PUT_32BIT_LSB_FIRST(dst + i, iv0);
-	PUT_32BIT_LSB_FIRST(dst + i + 4, iv1);
-	iv0 = d0;
-	iv1 = d1;
+        d0 = GET_32BIT_LSB_FIRST(src + i);
+        d1 = GET_32BIT_LSB_FIRST(src + i + 4);
+        blowfish_transform(d0, d1, out, 0, ctx);
+        iv0 ^= out[0];
+        iv1 ^= out[1];
+        PUT_32BIT_LSB_FIRST(dst + i, iv0);
+        PUT_32BIT_LSB_FIRST(dst + i + 4, iv1);
+        iv0 = d0;
+        iv1 = d1;
     }
     PUT_32BIT_LSB_FIRST(ctx->iv, iv0);
     PUT_32BIT_LSB_FIRST(ctx->iv + 4, iv1);
@@ -455,48 +455,48 @@ void blowfish_set_key(BlowfishContext * context, const unsigned char *key, short
     /* Copy the initialization s-boxes */
 
     for (i = 0, count = 0; i < 256; i++)
-	for (j = 0; j < 4; j++, count++)
-	    S[count] = blowfish_sbox[count];
+        for (j = 0; j < 4; j++, count++)
+            S[count] = blowfish_sbox[count];
 
     /* Set the p-boxes */
 
     for (i = 0; i < 16 + 2; i++)
-	P[i] = blowfish_pbox[i];
+        P[i] = blowfish_pbox[i];
 
     /* Actual subkey generation */
 
     for (j = 0, i = 0; i < 16 + 2; i++) {
-	temp = (((word32) key[j] << 24) | ((word32) key[(j + 1) % keybytes] << 16) | ((word32) key[(j + 2) % keybytes] << 8) | ((word32) key[(j + 3) % keybytes]));
+        temp = (((word32) key[j] << 24) | ((word32) key[(j + 1) % keybytes] << 16) | ((word32) key[(j + 2) % keybytes] << 8) | ((word32) key[(j + 3) % keybytes]));
 
-	P[i] = P[i] ^ temp;
-	j = (j + 4) % keybytes;
+        P[i] = P[i] ^ temp;
+        j = (j + 4) % keybytes;
     }
 
     data_l = 0x00000000;
     data_r = 0x00000000;
 
     for (i = 0; i < 16 + 2; i += 2) {
-	blowfish_encrypt(context, data_l, data_r, output);
+        blowfish_encrypt(context, data_l, data_r, output);
 
-	data_l = output[0];
-	data_r = output[1];
+        data_l = output[0];
+        data_r = output[1];
 
-	P[i] = data_l;
-	P[i + 1] = data_r;
+        P[i] = data_l;
+        P[i + 1] = data_r;
     }
 
     for (i = 0; i < 4; i++) {
-	for (j = 0, count = i * 256; j < 256; j += 2, count += 2) {
-	    blowfish_encrypt(context, data_l, data_r, output);
+        for (j = 0, count = i * 256; j < 256; j += 2, count += 2) {
+            blowfish_encrypt(context, data_l, data_r, output);
 
-	    data_l = output[0];
-	    data_r = output[1];
+            data_l = output[0];
+            data_r = output[1];
 
-	    S[count] = data_l;
-	    S[count + 1] = data_r;
-	}
+            S[count] = data_l;
+            S[count + 1] = data_r;
+        }
     }
 }
 
 
-#endif				/* WITHOUT_BLOWFISH */
+#endif                          /* WITHOUT_BLOWFISH */

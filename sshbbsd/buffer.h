@@ -16,6 +16,9 @@ Code for manipulating FIFO buffers.
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:40  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:45  kcn
  * format C
  *
@@ -39,10 +42,10 @@ Code for manipulating FIFO buffers.
 #define BUFFER_H
 
 typedef struct {
-    char *buf;			/* Buffer for data. */
-    unsigned int alloc;		/* Number of bytes allocated for data. */
-    unsigned int offset;	/* Offset of first byte containing data. */
-    unsigned int end;		/* Offset of last byte containing data. */
+    char *buf;                  /* Buffer for data. */
+    unsigned int alloc;         /* Number of bytes allocated for data. */
+    unsigned int offset;        /* Offset of first byte containing data. */
+    unsigned int end;           /* Offset of last byte containing data. */
 } Buffer;
 
 /* Initializes the buffer structure. */
@@ -82,4 +85,4 @@ char *buffer_ptr(Buffer * buffer);
    debugging purposes only. */
 void buffer_dump(Buffer * buffer);
 
-#endif				/* BUFFER_H */
+#endif                          /* BUFFER_H */

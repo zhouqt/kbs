@@ -70,11 +70,11 @@ int setpasswd(const char *passwd, struct userec *user)
 int checkpasswd2(const char *passwd, const struct userec *user)
 {
     if (user->passwd[0]) {
-	return checkpasswd(user->passwd, passwd);
+        return checkpasswd(user->passwd, passwd);
     } else {
-	unsigned char md5passwd[MD5_DIGEST_LENGTH];
+        unsigned char md5passwd[MD5_DIGEST_LENGTH];
 
-	igenpass(passwd, user->userid, md5passwd);
+        igenpass(passwd, user->userid, md5passwd);
 /*
         if (memcmp(md5passwd,user->md5passwd,MD5_DIGEST_LENGTH)) {
             unsigned char w_md5passwd[MD5_DIGEST_LENGTH];
@@ -85,7 +85,7 @@ int checkpasswd2(const char *passwd, const struct userec *user)
         }
 	return 1;
 */
-	return !(memcmp(md5passwd, user->md5passwd, MD5_DIGEST_LENGTH));
+        return !(memcmp(md5passwd, user->md5passwd, MD5_DIGEST_LENGTH));
     }
 }
 

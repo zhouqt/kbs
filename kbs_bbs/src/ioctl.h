@@ -8,7 +8,7 @@
 #ifndef _SYS_IOCTL_H
 #define	_SYS_IOCTL_H
 
-#pragma ident	"@(#)ioctl.h	1.9	92/07/14 SMI"	/* SVr4.0 11.8  */
+#pragma ident	"@(#)ioctl.h	1.9	92/07/14 SMI"   /* SVr4.0 11.8  */
 
 #ifdef	__cplusplus
 extern "C" {
@@ -89,7 +89,7 @@ extern "C" {
 #define		BS0		O_BS0
 #define		BS1		O_BS1
 #define		ALLDELAY	O_ALLDELAY
-#endif				/* _SGTTY_H */
+#endif                          /* _SGTTY_H */
 #define	CRTBS		O_CRTBS
 #define	PRTERA		O_PRTERA
 #define	CRTERA		O_CRTERA
@@ -112,5 +112,5 @@ extern "C" {
 #endif
 #include <sys/filio.h>
 #include <sys/sockio.h>
-#endif				/* BSD_COMP */
-#endif				/* _SYS_IOCTL_H */
+#endif                          /* BSD_COMP */
+#endif                          /* _SYS_IOCTL_H */

@@ -12,18 +12,18 @@ int count = 0;
     
 
 if ((fp = fopen(filename, "r")) == NULL)
-	
+        
 return 0;
     
 
 while (fgets(buf, 255, fp) != NULL)
-	
+        
  {
-	
+        
 if (strstr(buf, "@logout@") || strstr(buf, "@issue@"))
-	    
+            
 count++;
-	
+        
 }
     
 return count + 1;
@@ -48,50 +48,50 @@ clear();
 move(1, 0);
     
 if ((fp = fopen(filename, "r")) == NULL)
-	
+        
 return;
     
 
 while (fgets(buf, 255, fp) != NULL)
-	
+        
  {
-	
+        
 if (strstr(buf, "@logout@") || strstr(buf, "@issue@"))
-	    
+            
  {
-	    
+            
 count++;
-	    
+            
 continue;
-	    
+            
 }
-	
+        
 if (count == number)
-	    
+            
  {
-	    
+            
 if (mode == true)
-		
+                
 showstuff(buf);
-	    
-	    else
-		
+            
+            else
+                
  {
-		
+                
 prints("%s", buf);
-		
+                
 }
-	    
+            
 }
-	
-	else if (count > number)
-	    
+        
+        else if (count > number)
+            
 break;
-	
-	else
-	    
+        
+        else
+            
 continue;
-	
+        
 }
     
 refresh();
@@ -101,7 +101,7 @@ fclose(fp);
 return;
 
 }
-	
+    
 
 void showstuff(buf) 
  char buf[256];
@@ -127,20 +127,21 @@ ST_NUMLOGINS,
 ST_NUMPOSTS, 
 ST_LASTTIME, 
 ST_LASTHOST, 
-ST_THISTIME, 
+ST_THISTIME,
+        
 ST_BOARDNAME,
-	
+        
 ST_STAY, 
 ST_ALLTIME, 
 #ifdef _DETAIL_UEXP_
-	    ST_TIN, 
+            ST_TIN, 
 ST_EXP, 
 ST_CEXP, 
 ST_PERF, 
 ST_CCPERF, 
-#endif				/* 
+#endif                          /* 
  */
-	ST_END 
+        ST_END 
     };
     
 char numlogins[10], numposts[10], rgtday[35];
@@ -155,7 +156,7 @@ char alltime[20];
     char tin[10], exper[10], ccperf[20], perf[10], exp[10], ccexp[20];
 
     
-#endif				/* 
+#endif                          /* 
  */
     char *stuffstr[ST_END];
     
@@ -167,7 +168,7 @@ time_t now;
     
 
 static char *loglst[] = 
-	{ 
+        { 
 "userid", 
 "username", 
 "realname", 
@@ -185,23 +186,23 @@ static char *loglst[] =
 "stay", 
 "alltime", 
 #ifdef _DETAIL_UEXP_
-	    "exp", 
+            "exp", 
 "cexp", 
 "perf", 
 "cperf", 
-#endif				/* 
+#endif                          /* 
  */
-	NULL, NULL, 
+        NULL, NULL, 
     };
 
     
 
 if (currentuser)
-	
+        
 douser = *currentuser;
     
     else
-	
+        
 bzero(&douser, sizeof(struct userec));
     
 stuffstr[ST_USERID] = douser.userid;
@@ -237,7 +238,7 @@ stuffstr[ST_STAY] = stay;
 stuffstr[ST_ALLTIME] = alltime;
     
 #ifdef _DETAIL_UEXP_
-	stuffstr[ST_EXP] = exp;
+        stuffstr[ST_EXP] = exp;
     
 stuffstr[ST_CEXP] = ccexp;
     
@@ -245,14 +246,14 @@ stuffstr[ST_PERF] = perf;
     
 stuffstr[ST_CCPERF] = ccperf;
     
-#endif				/* 
+#endif                          /* 
  */
-	
+        
 now = time(0);
     
     /*---	modified by period	hide posts/logins	2000-11-02	---*/ 
 #ifdef _DETAIL_UEXP_
-	tmpnum = countexp(currentuser);
+        tmpnum = countexp(currentuser);
     
 sprintf(exp, "%d", tmpnum);
     
@@ -264,9 +265,9 @@ sprintf(perf, "%d", tmpnum);
     
 strcpy(ccperf, cperf(tmpnum));
     
-#endif				/* 
+#endif                          /* 
  */
-	sprintf(alltime, "%lu小时%lu分钟", douser.stay / 3600, (douser.stay / 60) % 60);
+        sprintf(alltime, "%lu小时%lu分钟", douser.stay / 3600, (douser.stay / 60) % 60);
     
 sprintf(rgtday, "%24.24s", ctime(&douser.firstlogin));
     
@@ -278,20 +279,20 @@ sprintf(stay, "%lu", (time(0) - login_start_time) / 60);
     
     /*---	modified by period	hide posts/logins	2000-11-02	---*/ 
 #ifndef _DETAIL_UINFO_
-	if (uinfo.mode == RMAIL && (!HAS_PERM(currentuser, PERM_ADMINMENU))) {
-	
+        if (uinfo.mode == RMAIL && (!HAS_PERM(currentuser, PERM_ADMINMENU))) {
+        
 strcpy(numlogins, "$log");
-	
+        
 strcpy(numposts, "$pst");
     
 } else
-	
-#endif				/* 
+        
+#endif                          /* 
  */
     {
-	
+        
 sprintf(numlogins, "%d", douser.numlogins);
-	
+        
 sprintf(numposts, "%d", douser.numposts);
     
 }
@@ -303,70 +304,70 @@ frg = 1;
 ptr2 = buf;
     
     do
-	
+        
  {
-	
+        
 if ((ptr = strchr(ptr2, '$')) != NULL)
-	    
+            
  {
-	    
+            
 matchfrg = 0;
-	    
+            
 *ptr = '\0';
-	    
+            
 outs(ptr2);
-	    
+            
 ptr++;
-	    
+            
 for (i = 0; i < ST_END; i++)
-		
+                
  {
-		
+                
 strlength = strlen(loglst[i]);
-		
+                
 if (!strncmp(ptr, loglst[i], strlength))
-		    
+                    
  {
-		    
-			/*
-			   ptr2 = ptr+strlength;
-			   for(cnt=0; *(ptr2+cnt) == ' '; cnt++);
-			   sprintf(buf2,"%-*.*s", cnt?strlength+cnt:strlength+1, strlength+cnt,stuffstr[i]);
-			   outs(buf2);
-			   ptr2 += (cnt?(cnt-1):cnt);
-			 */ 
-			outs(stuffstr[i]);
-		    
+                    
+                        /*
+                           ptr2 = ptr+strlength;
+                           for(cnt=0; *(ptr2+cnt) == ' '; cnt++);
+                           sprintf(buf2,"%-*.*s", cnt?strlength+cnt:strlength+1, strlength+cnt,stuffstr[i]);
+                           outs(buf2);
+                           ptr2 += (cnt?(cnt-1):cnt);
+                         */ 
+                        outs(stuffstr[i]);
+                    
 ptr2 = ptr + strlength;
-		    
+                    
 matchfrg = 1;
-		    
+                    
 break;
-		    
+                    
 }
-		
+                
 }
-	    
+            
 if (!matchfrg)
-		
+                
  {
-		
+                
 outc('$');
-		
+                
 ptr2 = ptr;
-		
+                
 }
-	    
+            
 }
-	
-	else
-	    
+        
+        else
+            
  {
-	    
+            
 outs(ptr2);
-	    
+            
 frg = 0;
-	    
+            
 }
     
 } 

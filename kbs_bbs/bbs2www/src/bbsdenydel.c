@@ -21,25 +21,25 @@ int loaddenyuser(char *board)
     sprintf(path, "boards/%s/deny_users", board);
     fp = fopen(path, "r");
     if (fp == 0)
-	return;
+        return;
     while (denynum < (sizeof(denyuser) / sizeof(denyuser[0]))) {
-	if (fgets(buf, sizeof(buf), fp) == 0)
-	    break;
-	id = strchr(buf, ' ');
-	if (id != NULL)
-	    *id = '\0';
-	strcpy(denyuser[denynum].id, buf);
-	strncpy(denyuser[denynum].exp, buf + 13, 30);
-	nick = strrchr(buf + 13, '[');
-	if (nick != NULL) {
-	    denyuser[denynum].free_time = atol(nick + 1);
-	    nick--;
-	    if (nick - buf > 43) {
-		*nick = '\0';
-		strcpy(denyuser[denynum].comment, buf + 43);
-	    }
-	}
-	denynum++;
+        if (fgets(buf, sizeof(buf), fp) == 0)
+            break;
+        id = strchr(buf, ' ');
+        if (id != NULL)
+            *id = '\0';
+        strcpy(denyuser[denynum].id, buf);
+        strncpy(denyuser[denynum].exp, buf + 13, 30);
+        nick = strrchr(buf + 13, '[');
+        if (nick != NULL) {
+            denyuser[denynum].free_time = atol(nick + 1);
+            nick--;
+            if (nick - buf > 43) {
+                *nick = '\0';
+                strcpy(denyuser[denynum].comment, buf + 43);
+            }
+        }
+        denynum++;
     }
     fclose(fp);
 }
@@ -53,18 +53,18 @@ int savedenyuser(char *board)
     sprintf(path, "boards/%s/deny_users", board);
     fp = fopen(path, "w");
     if (fp == 0)
-	return;
+        return;
     for (i = 0; i < denynum; i++) {
-	int m;
+        int m;
 
-	exp = denyuser[i].exp;
-	if (denyuser[i].id[0] == 0)
-	    continue;
-	for (m = 0; exp[m]; m++) {
-	    if (exp[m] < 32 && exp[m] > 0)
-		exp[m] = '.';
-	}
-	fprintf(fp, "%-12.12s %-30.30s%s\x1b[%um\n", denyuser[i].id, denyuser[i].exp, denyuser[i].comment, denyuser[i].free_time);
+        exp = denyuser[i].exp;
+        if (denyuser[i].id[0] == 0)
+            continue;
+        for (m = 0; exp[m]; m++) {
+            if (exp[m] < 32 && exp[m] > 0)
+                exp[m] = '.';
+        }
+        fprintf(fp, "%-12.12s %-30.30s%s\x1b[%um\n", denyuser[i].id, denyuser[i].exp, denyuser[i].comment, denyuser[i].free_time);
     }
     fclose(fp);
 }
@@ -77,24 +77,24 @@ int main()
 
     init_all();
     if (!loginok)
-	http_fatal("您尚未登录, 请先登录");
+        http_fatal("您尚未登录, 请先登录");
     strsncpy(board, getparm("board"), 30);
     if (!has_read_perm(currentuser, board))
-	http_fatal("错误的讨论区");
+        http_fatal("错误的讨论区");
     if (!has_BM_perm(currentuser, board))
-	http_fatal("你无权进行本操作");
+        http_fatal("你无权进行本操作");
     loaddenyuser(board);
     userid = getparm("userid");
     encode_url(brdencode, board, sizeof(brdencode));
     for (i = 0; i < denynum; i++) {
-	if (!strcasecmp(denyuser[i].id, userid)) {
-	    denyuser[i].id[0] = 0;
-	    savedenyuser(board);
-	    printf("已经给 %s 解封. <br>\n", userid);
-	    inform(board, userid);
-	    printf("[<a href=\"bbsdenyall?board=%s\">返回被封名单</a>]", brdencode);
-	    http_quit();
-	}
+        if (!strcasecmp(denyuser[i].id, userid)) {
+            denyuser[i].id[0] = 0;
+            savedenyuser(board);
+            printf("已经给 %s 解封. <br>\n", userid);
+            inform(board, userid);
+            printf("[<a href=\"bbsdenyall?board=%s\">返回被封名单</a>]", brdencode);
+            http_quit();
+        }
     }
     http_fatal("这个用户不在被封名单中");
     return 0;
@@ -124,18 +124,18 @@ int inform(char *board, char *user)
     fprintf(fn1, "来  源: %s \n", usr->lasthost);
     fprintf(fn1, "\n");
     if (HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_OBOARDS))
-	fprintf(fn1, "您被站务人员 %s 解除在 %s 板的封禁\n", usr->userid, board);
+        fprintf(fn1, "您被站务人员 %s 解除在 %s 板的封禁\n", usr->userid, board);
     else
-	fprintf(fn1, "您被 %s 板板主 %s 解除封禁\n", board, usr->userid);
+        fprintf(fn1, "您被 %s 板板主 %s 解除封禁\n", board, usr->userid);
     fclose(fn1);
     mail_file(getcurruserid(), filename, user, buffer, 0);
 
     /*解封同样发文到undenypost版  Bigman:2000.6.30 */
     getuser(user, &lookupuser);
     if (PERM_BOARDS & lookupuser->userlevel)
-	sprintf(buffer, "%s 解封某板板主 %s 在 %s ", usr->userid, user, board);
+        sprintf(buffer, "%s 解封某板板主 %s 在 %s ", usr->userid, user, board);
     else
-	sprintf(buffer, "%s 解封 %s 在 %s", usr->userid, user, board);
+        sprintf(buffer, "%s 解封 %s 在 %s", usr->userid, user, board);
     /*
        pi.userid = usr->userid;
        pi.username = usr->username;

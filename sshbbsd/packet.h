@@ -16,6 +16,9 @@ Interface for the packet protocol functions.
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:42  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:47  kcn
  * format C
  *
@@ -209,4 +212,4 @@ unsigned int packet_max_size(void);
 /* Parses tty modes for the fd from the current packet. */
 void tty_parse_modes(int fd);
 
-#endif				/* PACKET_H */
+#endif                          /* PACKET_H */

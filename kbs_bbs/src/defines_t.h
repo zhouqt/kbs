@@ -76,20 +76,20 @@ void set_numofsig();
 void docmdtitle(char *title, char *prompt);
 
 /* bbs.c*/
-int get_a_boardname(char *bname, char *prompt);	/* 输入一个版名 */
+int get_a_boardname(char *bname, char *prompt); /* 输入一个版名 */
 int Read();
-void printutitle();		/* 屏幕显示 用户列表 title */
-int check_readonly(char *checked);	/* Leeward 98.03.28 */
-void record_exit_time();	/* 记录离线时间  Luzi 1998/10/23 */
+void printutitle();             /* 屏幕显示 用户列表 title */
+int check_readonly(char *checked);      /* Leeward 98.03.28 */
+void record_exit_time();        /* 记录离线时间  Luzi 1998/10/23 */
 int shownotepad();
 int check_stuffmode();
 int do_reply(struct fileheader *fileinfo);
-int do_select(int ent, struct fileheader *fileinfo, char *direct);	/* 输入讨论区名 选择讨论区 */
+int do_select(int ent, struct fileheader *fileinfo, char *direct);      /* 输入讨论区名 选择讨论区 */
 int do_post();
 void make_blist();
 int digest_post(int ent, struct fileheader *fhdr, char *direct);
 int mark_post(int ent, struct fileheader *fhdr, char *direct);
-int post_article();		/*用户 POST 文章 */
+int post_article();             /*用户 POST 文章 */
 int do_send(char *userid, char *title);
 int digest_mode();
 int thread_mode();
@@ -181,7 +181,7 @@ void a_prompt(int bot, char *pmt, char *buf);
 int a_SeSave(char *path, char *key, struct fileheader *fileinfo, int nomsg);
 int a_menusearch(char *path, char *key, int level);
 int a_Save(char *path, char *key, struct fileheader *fileinfo, int nomsg, char *direct, int ent);
-int a_Import(char *path, char *key, struct fileheader *fileinfo, int nomsg, char *direct, int ent);	/* Leeward 98.04.15 */
+int a_Import(char *path, char *key, struct fileheader *fileinfo, int nomsg, char *direct, int ent);     /* Leeward 98.04.15 */
 
 /* goodbye.c */
 void showstuff(char buf[256]);

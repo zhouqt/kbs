@@ -24,7 +24,7 @@
 #ifndef  _BBS_H_
 #define _BBS_H_
 
-#include "bbsconfig.h"		/* User-configurable stuff */
+#include "bbsconfig.h"          /* User-configurable stuff */
 #ifndef BBSIRC
 
 /* Global includes, needed in most every source file... */
@@ -92,80 +92,80 @@ public shm,而attach shm又需要sysconf_eval,ft*/
 #define ADD_EDITMARK 1
 
 #ifndef LOCK_EX
-#define LOCK_EX         2	/* exclusive lock */
-#define LOCK_UN         8	/* unlock */
+#define LOCK_EX         2       /* exclusive lock */
+#define LOCK_UN         8       /* unlock */
 #endif
 
 #ifdef XINU
 extern int errno;
 #endif
 
-#define DOECHO (1)		/* Flags to getdata input function */
+#define DOECHO (1)              /* Flags to getdata input function */
 #define NOECHO (0)
 
 #ifndef strdup
-char *strdup();			/* External function declarations */
+char *strdup();                 /* External function declarations */
 #endif
 char *bfile();
 
-extern FILE *ufp;		/* External variable declarations */
+extern FILE *ufp;               /* External variable declarations */
 extern long ti;
 
-#endif				/* BBSIRC */
+#endif                          /* BBSIRC */
 
 #define MAXFRIENDS (400)
 #define NUMPERMS (30)
 
 /*#define FILE_BUFSIZE      160    max. length of a file in SHM*/
-#define FILE_BUFSIZE      LENGTH_FILE_BUFFER	/* max. length of a file in SHM */
-#define FILE_MAXLINE      24	/* max. line of a file in SHM */
-#define MAX_GOODBYE       5	/* 离站画面数 */
-#define MAX_ISSUE         5	/* 最大进站数 */
-#define MAX_EXP           5	/* 离站画面数 */
-#define MAX_DIGEST        1500	/* 最大文摘数 */
+#define FILE_BUFSIZE      LENGTH_FILE_BUFFER    /* max. length of a file in SHM */
+#define FILE_MAXLINE      24    /* max. line of a file in SHM */
+#define MAX_GOODBYE       5     /* 离站画面数 */
+#define MAX_ISSUE         5     /* 最大进站数 */
+#define MAX_EXP           5     /* 离站画面数 */
+#define MAX_DIGEST        1500  /* 最大文摘数 */
 
 #define MORE_BUFSIZE    4096
-#define MAXnettyLN      5	/* lines of  activity board  */
+#define MAXnettyLN      5       /* lines of  activity board  */
 /*#define ACBOARD_BUFSIZE      150    max. length of each line for activity board  */
 /*#define ACBOARD_MAXLINE      80     max. lines of  activity board  */
-#define ACBOARD_BUFSIZE      LENGTH_ACBOARD_BUFFER	/* max. length of each line for activity board  */
-#define ACBOARD_MAXLINE      LENGTH_ACBOARD_LINE	/* max. lines of  activity board  */
-#define STRLEN   80		/* Length of most string data */
-#define IPLEN   16		/* Length of most string data */
-#define NAMELEN  40		/* Length of username/realname */
-#define IDLEN    12		/* Length of userids */
-#define BOARDNAMELEN 30		/* max length of board */
+#define ACBOARD_BUFSIZE      LENGTH_ACBOARD_BUFFER      /* max. length of each line for activity board  */
+#define ACBOARD_MAXLINE      LENGTH_ACBOARD_LINE        /* max. lines of  activity board  */
+#define STRLEN   80             /* Length of most string data */
+#define IPLEN   16              /* Length of most string data */
+#define NAMELEN  40             /* Length of username/realname */
+#define IDLEN    12             /* Length of userids */
+#define BOARDNAMELEN 30         /* max length of board */
 #define PASSLEN 39
 #define MD5PASSLEN 16
-#define OLDPASSLEN  14		/* Length of encrypted passwd field */
-#define MAXGOPHERITEMS 9999	/*max of gopher items */
-#define PASSFILE   ".PASSWDS"	/* Name of file User records stored in */
-#define ULIST "UTMP"		/* Names of users currently on line */
-#define POSTLOGFILE ".post.X"	/* Name of file which log posting report */
+#define OLDPASSLEN  14          /* Length of encrypted passwd field */
+#define MAXGOPHERITEMS 9999     /*max of gopher items */
+#define PASSFILE   ".PASSWDS"   /* Name of file User records stored in */
+#define ULIST "UTMP"            /* Names of users currently on line */
+#define POSTLOGFILE ".post.X"   /* Name of file which log posting report */
 #ifndef BBSIRC
 
-#define FLUSH    ".PASSFLUSH"	/* Stores date for user cache flushing */
-#define WWWFLUSH ".WWWPASSFLUSH"	/* user cache flushing for www regist */
-#define BOARDS   ".BOARDS"	/* File containing list of boards */
-#define DOT_DIR  ".DIR"		/* Name of Directory file info */
+#define FLUSH    ".PASSFLUSH"   /* Stores date for user cache flushing */
+#define WWWFLUSH ".WWWPASSFLUSH"        /* user cache flushing for www regist */
+#define BOARDS   ".BOARDS"      /* File containing list of boards */
+#define DOT_DIR  ".DIR"         /* Name of Directory file info */
 #define THREAD_DIR ".THREAD"
-#define DIGEST_DIR  ".DIGEST"	/* Name of Directory file info */
-#define NAMEFILE "BoardName"	/* File containing site name of bbs */
+#define DIGEST_DIR  ".DIGEST"   /* Name of Directory file info */
+#define NAMEFILE "BoardName"    /* File containing site name of bbs */
 #define BADLOGINFILE    "logins.bad"
 
-#define QUIT 0x666		/* Return value to abort recursive functions */
-#define COUNT 0x2		/* count record */
+#define QUIT 0x666              /* Return value to abort recursive functions */
+#define COUNT 0x2               /* count record */
 
-#define FILE_READ  0x1		/* Ownership flags used in fileheader structure in accessed[1] */
-#define FILE_OWND  0x2		/* accessed array */
+#define FILE_READ  0x1          /* Ownership flags used in fileheader structure in accessed[1] */
+#define FILE_OWND  0x2          /* accessed array */
 #define FILE_VISIT 0x4
 #define FILE_MARKED 0x8
-#define FILE_DIGEST 0x10      /* Digest Mode*/	/*For SmallPig Digest Mode */
-#define FILE_REPLIED 0x20	/* in mail ,added by alex, 96.9.7 */
-#define FILE_FORWARDED 0x40	/* in mail ,added by alex, 96.9.7 */
-#define FILE_IMPORTED 0x80	/* Leeward 98.04.15 */
-#define FILE_SIGN 0x1		/* In article mode, Sign , Bigman 2000.8.12 ,in accessed[0] */
-#define FILE_DEL  0x2		/* In article mode, Sign , Bigman 2000.8.12 ,in accessed[1] */
+#define FILE_DIGEST 0x10      /* Digest Mode*/  /*For SmallPig Digest Mode */
+#define FILE_REPLIED 0x20       /* in mail ,added by alex, 96.9.7 */
+#define FILE_FORWARDED 0x40     /* in mail ,added by alex, 96.9.7 */
+#define FILE_IMPORTED 0x80      /* Leeward 98.04.15 */
+#define FILE_SIGN 0x1           /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[0] */
+#define FILE_DEL  0x2           /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[1] */
 
 /* Leeward 98.05.11:
 In /etc/sendmail.cf:
@@ -181,17 +181,17 @@ O MaxMessageSize=32000
 #define BOARD_READONLY 0x4
 #define BOARD_JUNK	0x8
 #define BOARD_ANNONY 0x10
-#define BOARD_OUTFLAG 0x20	/* for outgo boards */
+#define BOARD_OUTFLAG 0x20      /* for outgo boards */
 
-#define ZAPPED  0x1		/* For boards...tells if board is Zapped */
+#define ZAPPED  0x1             /* For boards...tells if board is Zapped */
 
 /* these are flags in userec.flags[0] */
-#define PAGER_FLAG   0x1	/* true if pager was OFF last session */
-#define CLOAK_FLAG   0x2	/* true if cloak was ON last session */
-#define SIG_FLAG     0x8	/* true if sig was turned OFF last session */
-#define BRDSORT_FLAG 0x20	/* true if the boards sorted alphabetical */
-#define CURSOR_FLAG  0x80	/* true if the cursor mode open */
-#define GIVEUP_FLAG  0x4	/* true if the user is giving up  by bad 2002.7.6 */
+#define PAGER_FLAG   0x1        /* true if pager was OFF last session */
+#define CLOAK_FLAG   0x2        /* true if cloak was ON last session */
+#define SIG_FLAG     0x8        /* true if sig was turned OFF last session */
+#define BRDSORT_FLAG 0x20       /* true if the boards sorted alphabetical */
+#define CURSOR_FLAG  0x80       /* true if the cursor mode open */
+#define GIVEUP_FLAG  0x4        /* true if the user is giving up  by bad 2002.7.6 */
 #define ACTIVE_BOARD 0x200
 /* For All Kinds of Pagers */
 #define ALL_PAGER       0x1
@@ -211,7 +211,7 @@ O MaxMessageSize=32000
 #define TERMTYPESZ (10)
 /* END */
 
-#endif				/* BBSIRC */
+#endif                          /* BBSIRC */
 
 #include "struct.h"
 #include "webmsg.h"
@@ -221,22 +221,22 @@ O MaxMessageSize=32000
 #include "prototype.h"
 
 /*#ifndef BBSIRC*/
-#include "modes.h"		/* The list of valid user modes */
+#include "modes.h"              /* The list of valid user modes */
 
-#define DONOTHING       0	/* Read menu command return states */
-#define FULLUPDATE      1	/* Entire screen was destroyed in this oper */
-#define PARTUPDATE      2	/* Only the top three lines were destroyed */
-#define DOQUIT          3	/* Exit read menu was executed */
-#define NEWDIRECT       4	/* Directory has changed, re-read files */
-#define READ_NEXT       5	/* Direct read next file */
-#define READ_PREV       6	/* Direct read prev file */
-#define GOTO_NEXT       7	/* Move cursor to next */
-#define DIRCHANGED      8	/* Index file was changed */
+#define DONOTHING       0       /* Read menu command return states */
+#define FULLUPDATE      1       /* Entire screen was destroyed in this oper */
+#define PARTUPDATE      2       /* Only the top three lines were destroyed */
+#define DOQUIT          3       /* Exit read menu was executed */
+#define NEWDIRECT       4       /* Directory has changed, re-read files */
+#define READ_NEXT       5       /* Direct read next file */
+#define READ_PREV       6       /* Direct read prev file */
+#define GOTO_NEXT       7       /* Move cursor to next */
+#define DIRCHANGED      8       /* Index file was changed */
 
-#define I_TIMEOUT   (-2)	/* Used for the getchar routine select call */
-#define I_OTHERDATA (-333)	/* interface, (-3) will conflict with chinese */
+#define I_TIMEOUT   (-2)        /* Used for the getchar routine select call */
+#define I_OTHERDATA (-333)      /* interface, (-3) will conflict with chinese */
 
-#define SCREEN_SIZE (23)	/* Used by read menu  */
+#define SCREEN_SIZE (23)        /* Used by read menu  */
 
 #define Min(a,b) ((a<b)?a:b)
 #define Max(a,b) ((a>b)?a:b)
@@ -279,7 +279,7 @@ O MaxMessageSize=32000
 
 #define usleep(usec)            { struct timeval t;t.tv_sec = usec / 1000000; t.tv_usec = usec % 1000000;select( 0, NULL, NULL, NULL, &t);}
 
-#endif				/* SYSV */
+#endif                          /* SYSV */
 
 /* =============== ANSI EDIT ================== */
 #define   ANSI_RESET    "\033[37;40m\033[0m"
@@ -294,8 +294,8 @@ extern int KEY_ESC_arg;
 extern void Net_Sleep(int);
 #endif
 
-#define MAX_IGNORE      30	/* ignore-users' count */
-#define NUMBUFFER 80		/* number of records to preload. ylsdd */
+#define MAX_IGNORE      30      /* ignore-users' count */
+#define NUMBUFFER 80            /* number of records to preload. ylsdd */
 
 #ifdef SAFE_KILL
 #define kill(x,y) safe_kill(x,y)
@@ -354,9 +354,9 @@ typedef size_t socklen_t;
 #define MAXREJECTS (32)
 #define BBSNAME NAME_BBS_CHINESE
 #define BBSHOST NAME_BBS_ENGLISH
-#define WWW_LOG             "bbslog/www.log"	/* "www.bbslog" */
-#define WWW_BADLOGIN        "bbslog/badlogin.www"	/* "badlogin.www" */
+#define WWW_LOG             "bbslog/www.log"    /* "www.bbslog" */
+#define WWW_BADLOGIN        "bbslog/badlogin.www"       /* "badlogin.www" */
 #define SYS_MSGFILE         "msgfile"
-#define SYS_MSGFILELOG      "msgfile.log"	/* "msgfile.me" */
+#define SYS_MSGFILELOG      "msgfile.log"       /* "msgfile.me" */
 #endif
-#endif				/* of _BBS_H_ */
+#endif                          /* of _BBS_H_ */

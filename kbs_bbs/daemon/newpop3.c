@@ -42,7 +42,7 @@
 
 #ifdef USE_SSL
 /* COMMAN : SPOP3(pop3 through SSL) support */
-#include <openssl/rsa.h>	/* SSLeay stuff */
+#include <openssl/rsa.h>        /* SSLeay stuff */
 #include <openssl/crypto.h>
 #include <openssl/x509.h>
 #include <openssl/pem.h>
@@ -90,7 +90,7 @@ char genbuf[BUFSIZE];
 static jmp_buf timebuf;
 
 int State;
-int msock, sock;		/* master server socket */
+int msock, sock;                /* master server socket */
 static void reaper(int signo);
 static char inbuf[BUFSIZE];
 char remote_userid[STRLEN];
@@ -113,7 +113,7 @@ void Rset();
 void Last();
 void Dele();
 void Uidl();
-void Top();			/* Leeward adds, 98.01.21 */
+void Top();                     /* Leeward adds, 98.01.21 */
 
 struct commandlist {
     char *name;
@@ -131,7 +131,7 @@ struct commandlist {
     "rset", Rset}, {
     "last", Last}, {
     "noop", Noop}, {
-    "top", Top},		/* Leeward adds, 98.01.21 */
+    "top", Top},                /* Leeward adds, 98.01.21 */
     {
 NULL, NULL},};
 
@@ -146,21 +146,21 @@ static void init_ssl(void)
     meth = SSLv23_server_method();
     ctx = SSL_CTX_new(meth);
     if (!ctx) {
-	ERR_print_errors_fp(stderr);
-	exit(-1);
+        ERR_print_errors_fp(stderr);
+        exit(-1);
     }
 
     if (SSL_CTX_use_certificate_file(ctx, CERTFILE, SSL_FILETYPE_PEM) <= 0) {
-	ERR_print_errors_fp(stderr);
-	exit(-1);
+        ERR_print_errors_fp(stderr);
+        exit(-1);
     }
     if (SSL_CTX_use_PrivateKey_file(ctx, KEYFILE, SSL_FILETYPE_PEM) <= 0) {
-	ERR_print_errors_fp(stderr);
-	exit(-1);
+        ERR_print_errors_fp(stderr);
+        exit(-1);
     }
     if (!SSL_CTX_check_private_key(ctx)) {
-	fprintf(stderr, "Private key does not match the certificate public key\n");
-	exit(-1);
+        fprintf(stderr, "Private key does not match the certificate public key\n");
+        exit(-1);
     }
 
 }
@@ -171,17 +171,17 @@ static void do_ssl(int fd)
 
     ssl = SSL_new(ctx);
     if (!ssl)
-	exit(-1);
+        exit(-1);
     SSL_set_fd(ssl, fd);
     err = SSL_accept(ssl);
     if (err < 0)
-	exit(-1);
+        exit(-1);
 }
 
 #endif
 
-static void logattempt(uid, frm)	/* Leeward 98.07.25 */
-	char *uid, *frm;
+static void logattempt(uid, frm)        /* Leeward 98.07.25 */
+    char *uid, *frm;
 {
     char fname[STRLEN];
     int fd, len;
@@ -190,17 +190,17 @@ static void logattempt(uid, frm)	/* Leeward 98.07.25 */
     char *foo = strrchr(ptr, '\n');
 
     if (foo)
-	*foo = 0;
+        *foo = 0;
     sprintf(genbuf, "%-12.12s  %-30s %-20s pop3\n", uid, ptr, frm);
     len = strlen(genbuf);
     if ((fd = open(BADLOGINFILE, O_WRONLY | O_CREAT | O_APPEND, 0644)) > 0) {
-	write(fd, genbuf, len);
-	close(fd);
+        write(fd, genbuf, len);
+        close(fd);
     }
     sprintf(fname, "home/%c/%s/%s", toupper(uid[0]), uid, BADLOGINFILE);
     if ((fd = open(fname, O_WRONLY | O_CREAT | O_APPEND, 0644)) > 0) {
-	write(fd, genbuf, len);
-	close(fd);
+        write(fd, genbuf, len);
+        close(fd);
     }
 }
 
@@ -247,31 +247,31 @@ static int readstr(int sock, char *s, int size)
     static int bufptr = 0;
 
     do {
-	/* read a char */
-	if (bufptr >= bufsize) {
+        /* read a char */
+        if (bufptr >= bufsize) {
 #ifdef USE_SSL
-	    if (use_ssl)
-		bufsize = SSL_read(ssl, myinbuf, 1024);
-	    else
+            if (use_ssl)
+                bufsize = SSL_read(ssl, myinbuf, 1024);
+            else
 #endif
-		bufsize = read(sock, myinbuf, 1024);
-	    if (bufsize <= 0) {
-		*s = '\0';
-		return retlen;
-	    }
-	    bufptr = 0;
-	}
-	retlen++;
-	c = myinbuf[bufptr++];
-	*s++ = c;
-	if (c == '\n' || retlen == size - 1) {
-	    *s = '\0';
-	    return retlen;
-	}
+                bufsize = read(sock, myinbuf, 1024);
+            if (bufsize <= 0) {
+                *s = '\0';
+                return retlen;
+            }
+            bufptr = 0;
+        }
+        retlen++;
+        c = myinbuf[bufptr++];
+        *s++ = c;
+        if (c == '\n' || retlen == size - 1) {
+            *s = '\0';
+            return retlen;
+        }
     } while (1);
 }
 static void outs(str)
-	char *str;
+    char *str;
 {
     char sendbuf[BUFSIZE * 2];
 
@@ -279,56 +279,56 @@ static void outs(str)
     (void) sprintf(sendbuf, "%s\r\n", str);
 #ifdef USE_SSL
     if (use_ssl)
-	SSL_write(ssl, sendbuf, strlen(sendbuf));
+        SSL_write(ssl, sendbuf, strlen(sendbuf));
     else
 #endif
-	(void) write(sock, sendbuf, strlen(sendbuf));
+        (void) write(sock, sendbuf, strlen(sendbuf));
 }
 
 void outfile(filename, linenum)
-	char *filename;
-	int linenum;
+    char *filename;
+    int linenum;
 {
     FILE *fp;
     char linebuf[256];
-    char *buf, *p;		/* KCN.99.09.01 */
+    char *buf, *p;              /* KCN.99.09.01 */
     char newbuf[256];
 
     if (linenum && (fp = fopen(filename, "r")) != NULL) {
-	while (fgets(linebuf, 256, fp) != NULL && linenum > 0) {
-	    int esc;
+        while (fgets(linebuf, 256, fp) != NULL && linenum > 0) {
+            int esc;
 
-	    linebuf[strlen(linebuf) - 1] = '\0';
-	    /*  Added by KCN 1999.09.01 for filter ANSI */
-	    buf = newbuf;
-	    esc = 0;
-	    for (p = linebuf; *p; p++) {
-		if (esc) {
-		    if (*p == '\033') {
-			esc = 0;
-			*buf = *p;
-			buf++;
-		    } else if (isalpha(*p))
-			esc = 0;
-		} else {
-		    if (*p == '\033') {
-			esc = 1;
-		    } else {
-			*buf = *p;
-			buf++;
-		    }
-		}
-	    }
+            linebuf[strlen(linebuf) - 1] = '\0';
+            /*  Added by KCN 1999.09.01 for filter ANSI */
+            buf = newbuf;
+            esc = 0;
+            for (p = linebuf; *p; p++) {
+                if (esc) {
+                    if (*p == '\033') {
+                        esc = 0;
+                        *buf = *p;
+                        buf++;
+                    } else if (isalpha(*p))
+                        esc = 0;
+                } else {
+                    if (*p == '\033') {
+                        esc = 1;
+                    } else {
+                        *buf = *p;
+                        buf++;
+                    }
+                }
+            }
 
-	    *buf = 0;
-	    /* KCN end filter 99.09.01 */
-	    if (strcmp(newbuf, ".") == 0)
-		outs("..");
-	    else
-		outs(newbuf);
-	    linenum--;
-	}
-	fclose(fp);
+            *buf = 0;
+            /* KCN end filter 99.09.01 */
+            if (strcmp(newbuf, ".") == 0)
+                outs("..");
+            else
+                outs(newbuf);
+            linenum--;
+        }
+        fclose(fp);
     }
     outs(".");
 }
@@ -336,16 +336,16 @@ void outfile(filename, linenum)
 
 /* timeout - handle timeouts */
 static void timeout(sig)
-	int sig;
+    int sig;
 {
     longjmp(timebuf, sig);
 }
 
 #if 0
 void rfc931(rmt_sin, our_sin, dest)
-	struct sockaddr_in *rmt_sin;
-	struct sockaddr_in *our_sin;
-	char *dest;
+    struct sockaddr_in *rmt_sin;
+    struct sockaddr_in *our_sin;
+    char *dest;
 {
     unsigned rmt_port;
     unsigned our_port;
@@ -368,136 +368,136 @@ void rfc931(rmt_sin, our_sin, dest)
      * sockets.
      */
     if ((fp = fsocket(AF_INET, SOCK_STREAM, 0)) != 0) {
-	setbuf(fp, (char *) 0);
+        setbuf(fp, (char *) 0);
 
-	/*
-	 * Set up a timer so we won't get stuck while waiting for the server.
-	 */
+        /*
+         * Set up a timer so we won't get stuck while waiting for the server.
+         */
 
-	if (setjmp(timebuf) == 0) {
-	    signal(SIGALRM, timeout);
-	    alarm(RFC931_TIMEOUT);
+        if (setjmp(timebuf) == 0) {
+            signal(SIGALRM, timeout);
+            alarm(RFC931_TIMEOUT);
 
-	    /*
-	     * Bind the local and remote ends of the query socket to the same
-	     * IP addresses as the connection under investigation. We go
-	     * through all this trouble because the local or remote system
-	     * might have more than one network address. The RFC931 etc.  
-	     * client sends only port numbers; the server takes the IP    
-	     * addresses from the query socket.
-	     */
+            /*
+             * Bind the local and remote ends of the query socket to the same
+             * IP addresses as the connection under investigation. We go
+             * through all this trouble because the local or remote system
+             * might have more than one network address. The RFC931 etc.  
+             * client sends only port numbers; the server takes the IP    
+             * addresses from the query socket.
+             */
 
-	    our_query_sin = *our_sin;
-	    our_query_sin.sin_port = htons(ANY_PORT);
-	    rmt_query_sin = *rmt_sin;
-	    rmt_query_sin.sin_port = htons(RFC931_PORT);
+            our_query_sin = *our_sin;
+            our_query_sin.sin_port = htons(ANY_PORT);
+            rmt_query_sin = *rmt_sin;
+            rmt_query_sin.sin_port = htons(RFC931_PORT);
 
-	    if (bind(fileno(fp), (struct sockaddr *) &our_query_sin, sizeof(our_query_sin)) >= 0 && connect(fileno(fp), (struct sockaddr *) &rmt_query_sin, sizeof(rmt_query_sin)) >= 0) {
+            if (bind(fileno(fp), (struct sockaddr *) &our_query_sin, sizeof(our_query_sin)) >= 0 && connect(fileno(fp), (struct sockaddr *) &rmt_query_sin, sizeof(rmt_query_sin)) >= 0) {
 
-		/*
-		 * Send query to server. Neglect the risk that a 13-byte
-		 * write would have to be fragmented by the local system and
-		 * cause trouble with buggy System V stdio libraries.
-		 */
+                /*
+                 * Send query to server. Neglect the risk that a 13-byte
+                 * write would have to be fragmented by the local system and
+                 * cause trouble with buggy System V stdio libraries.
+                 */
 
-		fprintf(fp, "%u,%u\r\n", ntohs(rmt_sin->sin_port), ntohs(our_sin->sin_port));
-		fflush(fp);
+                fprintf(fp, "%u,%u\r\n", ntohs(rmt_sin->sin_port), ntohs(our_sin->sin_port));
+                fflush(fp);
 
-		/*
-		 * Read response from server. Use fgets()/sscanf() so we can
-		 * work around System V stdio libraries that incorrectly
-		 * assume EOF when a read from a socket returns less than
-		 * requested.
-		 */
+                /*
+                 * Read response from server. Use fgets()/sscanf() so we can
+                 * work around System V stdio libraries that incorrectly
+                 * assume EOF when a read from a socket returns less than
+                 * requested.
+                 */
 
-		if (fgets(buffer, sizeof(buffer), fp) != 0
-		    && ferror(fp) == 0 && feof(fp) == 0
-		    && sscanf(buffer, "%u , %u : USERID :%*[^:]:%255s", &rmt_port, &our_port, user) == 3 && ntohs(rmt_sin->sin_port) == rmt_port && ntohs(our_sin->sin_port) == our_port) {
+                if (fgets(buffer, sizeof(buffer), fp) != 0
+                    && ferror(fp) == 0 && feof(fp) == 0
+                    && sscanf(buffer, "%u , %u : USERID :%*[^:]:%255s", &rmt_port, &our_port, user) == 3 && ntohs(rmt_sin->sin_port) == rmt_port && ntohs(our_sin->sin_port) == our_port) {
 
-		    /*
-		     * Strip trailing carriage return. It is part of the
-		     * protocol, not part of the data.
-		     */
+                    /*
+                     * Strip trailing carriage return. It is part of the
+                     * protocol, not part of the data.
+                     */
 
-		    if ((cp = strchr(user, '\r')) != NULL)
-			*cp = 0;
-		    result = user;
-		}
-	    }
-	    alarm(0);
-	}
-	fclose(fp);
+                    if ((cp = strchr(user, '\r')) != NULL)
+                        *cp = 0;
+                    result = user;
+                }
+            }
+            alarm(0);
+        }
+        fclose(fp);
     }
     STRN_CPY(dest, result, 60);
 
     if (strcmp(dest, "unknown") == 0)
-	strcpy(dest, "");
+        strcpy(dest, "");
     else
-	strcat(dest, "@");
+        strcat(dest, "@");
 
     hp = gethostbyaddr((char *) &rmt_sin->sin_addr, sizeof(struct in_addr), rmt_sin->sin_family);
     if (hp)
-	strcat(dest, hp->h_name);
+        strcat(dest, hp->h_name);
     else
-	strcat(dest, (char *) inet_ntoa(rmt_sin->sin_addr));
+        strcat(dest, (char *) inet_ntoa(rmt_sin->sin_addr));
 
 }
 #endif
 char *nextwordlower(str)
-	char **str;
+    char **str;
 {
     char *p;
 
     while (Isspace(**str))
-	(*str)++;
+        (*str)++;
     p = (*str);
 
     while (**str && !Isspace(**str)) {
-	**str = tolower(**str);
-	(*str)++;
+        **str = tolower(**str);
+        (*str)++;
     }
 
     if (**str) {
-	**str = '\0';
-	(*str)++;
+        **str = '\0';
+        (*str)++;
     }
     return p;
 }
 
 char *nextword2(str)
-	char **str;
+    char **str;
 {
     char *p;
 
     while (Isspace(**str))
-	(*str)++;
+        (*str)++;
     p = (*str);
 
     while (**str && !Isspace(**str))
-	(*str)++;
+        (*str)++;
 
     if (**str) {
-	**str = '\0';
-	(*str)++;
+        **str = '\0';
+        (*str)++;
     }
     return p;
 }
 
-char *nextwordX(str)		/* Leeward: 97.12.27: enable password include space(s) */
-	char **str;
+char *nextwordX(str)            /* Leeward: 97.12.27: enable password include space(s) */
+    char **str;
 {
     char *p;
 
     while (Isspace(**str))
-	(*str)++;
+        (*str)++;
     p = (*str);
 
     while (**str && '\t' != **str && 10 != **str && 13 != **str)
-	(*str)++;
+        (*str)++;
 
     if (**str) {
-	**str = '\0';
-	(*str)++;
+        **str = '\0';
+        (*str)++;
     }
     return p;
 }
@@ -520,7 +520,7 @@ void Login_init()
     totalnum = totalbyte = 0;
     sprintf(genbuf, "mail/%c/%s/.DIR", toupper(*LowUserid), LowUserid);
     if (stat(genbuf, &st) == -1 || st.st_size == 0) {
-	return;
+        return;
     }
     totalnum = st.st_size / sizeof(struct fileheader);
     fcache = (struct fileheader *) malloc(st.st_size);
@@ -530,20 +530,20 @@ void Login_init()
     close(fd);
 
     for (i = 0; i < totalnum; i++) {
-	if (index(fcache[i].owner, '@') == NULL) {
-	    if ((ptr = strchr(fcache[i].owner, ' ')) != NULL)
-		*ptr = '\0';
-	    strcat(fcache[i].owner, BBSNAME);
-	}
-	sprintf(genbuf, "mail/%c/%s/%s", toupper(*LowUserid), LowUserid, fcache[i].filename);
-	if (stat(genbuf, &st) == -1)
-	    st.st_size = 0;
-	postlen[i] = st.st_size + strlen(fcache[i].owner) + 10 + strlen(fcache[i].title)
-	    + 10 + 40;
-	totalbyte += postlen[i];
-	if (fcache[i].accessed[0] & FILE_MARKED)	/* Leeward 99.01.28 */
-	    fcache[i].accessed[1] = 'M';
-	fcache[i].accessed[0] = ' ';
+        if (index(fcache[i].owner, '@') == NULL) {
+            if ((ptr = strchr(fcache[i].owner, ' ')) != NULL)
+                *ptr = '\0';
+            strcat(fcache[i].owner, BBSNAME);
+        }
+        sprintf(genbuf, "mail/%c/%s/%s", toupper(*LowUserid), LowUserid, fcache[i].filename);
+        if (stat(genbuf, &st) == -1)
+            st.st_size = 0;
+        postlen[i] = st.st_size + strlen(fcache[i].owner) + 10 + strlen(fcache[i].title)
+            + 10 + 40;
+        totalbyte += postlen[i];
+        if (fcache[i].accessed[0] & FILE_MARKED)        /* Leeward 99.01.28 */
+            fcache[i].accessed[1] = 'M';
+        fcache[i].accessed[0] = ' ';
     }
 }
 
@@ -551,10 +551,10 @@ void pop3_timeout(int signo)
 {
     idletime++;
     if (idletime > 5) {
-	log_usies("ABORT - TIMEOUT");
-	fclose(cfp);
-	close(sock);
-	exit(1);
+        log_usies("ABORT - TIMEOUT");
+        fclose(cfp);
+        close(sock);
+        exit(1);
     }
     alarm(POP3_TIMEOUT);
 }
@@ -571,40 +571,40 @@ int main(int argc, char **argv)
 
 
     if (2 == argc)
-	portnum = atoi(argv[1]);
+        portnum = atoi(argv[1]);
 
     if (0 == portnum)
-	portnum = POP3PORT;
+        portnum = POP3PORT;
 #ifndef DEBUG
     if (fork())
-	exit(0);
+        exit(0);
 #endif
     for (n = 0; n < 10; n++)
-	close(n);
+        close(n);
     open("/dev/null", O_RDONLY);
     dup2(0, 1);
     dup2(0, 2);
     if ((n = open("/dev/tty", O_RDWR)) > 0) {
-	ioctl(n, TIOCNOTTY, 0);
-	close(n);
+        ioctl(n, TIOCNOTTY, 0);
+        close(n);
     }
 #ifdef USE_SSL
     switch (fork()) {
     case 0:
-	init_ssl();
-	portnum = POP3SPORT;
-	use_ssl = 1;
-	break;
+        init_ssl();
+        portnum = POP3SPORT;
+        use_ssl = 1;
+        break;
     case -1:
-	exit(-1);
-	break;
+        exit(-1);
+        break;
     default:
-	use_ssl = 0;
-	break;
+        use_ssl = 0;
+        break;
     }
 #endif
     if ((msock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-	exit(1);
+        exit(1);
     }
     setsockopt(msock, SOL_SOCKET, SO_REUSEADDR, (char *) &on, sizeof(on));
     bzero((char *) &fsin, sizeof(fsin));
@@ -613,7 +613,7 @@ int main(int argc, char **argv)
     fsin.sin_port = htons(portnum);
 
     if (bind(msock, (struct sockaddr *) &fsin, sizeof(fsin)) < 0) {
-	exit(1);
+        exit(1);
     }
 
     signal(SIGHUP, abort_server);
@@ -632,97 +632,97 @@ int main(int argc, char **argv)
     resolve_ucache();
     while (1) {
 
-	alen = sizeof(fsin);
-	sock = accept(msock, (struct sockaddr *) &fsin, (socklen_t *) & alen);
-	if (sock < 0) {
-	    if (errno != EINTR)
-		continue;
-	}
+        alen = sizeof(fsin);
+        sock = accept(msock, (struct sockaddr *) &fsin, (socklen_t *) & alen);
+        if (sock < 0) {
+            if (errno != EINTR)
+                continue;
+        }
 #ifndef DEBUG
-	if ((childpid = fork()) < 0) {
-	    exit(1);
-	}
+        if ((childpid = fork()) < 0) {
+            exit(1);
+        }
 #endif
 
-	switch (childpid) {
-	case 0:		/* child process */
-	    close(msock);
+        switch (childpid) {
+        case 0:                /* child process */
+            close(msock);
 
-	    setgid(BBSGID);
-	    setuid(BBSUID);
+            setgid(BBSGID);
+            setuid(BBSUID);
 
-	    strcpy(fromhost, (char *) inet_ntoa(fsin.sin_addr));
-	    len = sizeof our;
-	    getsockname(sock, (struct sockaddr *) &our, (socklen_t *) & len);
+            strcpy(fromhost, (char *) inet_ntoa(fsin.sin_addr));
+            len = sizeof our;
+            getsockname(sock, (struct sockaddr *) &our, (socklen_t *) & len);
 
-	    Init();
+            Init();
 
 #ifdef USE_SSL
-	    /* COMMAN: SSL init */
-	    if (use_ssl)
-		do_ssl(sock);
+            /* COMMAN: SSL init */
+            if (use_ssl)
+                do_ssl(sock);
 #endif
-	    /*  COMMAN: do we really need ident lookup?  2002-7
-	       rfc931( &fsin, &our, remote_userid );
-	     */
-	    /*   COMMAN: stdio lib is of no use
-	       cfp = fdopen(sock, "r+");
-	       setbuf(cfp, (char *) 0);
-	     */
+            /*  COMMAN: do we really need ident lookup?  2002-7
+               rfc931( &fsin, &our, remote_userid );
+             */
+            /*   COMMAN: stdio lib is of no use
+               cfp = fdopen(sock, "r+");
+               setbuf(cfp, (char *) 0);
+             */
 #ifdef USE_SSL
-	    sprintf(genbuf, "+OK SMTH BBS POP3/POP3S server at %s starting.", strchr(BBSNAME, '@') + 1);
+            sprintf(genbuf, "+OK SMTH BBS POP3/POP3S server at %s starting.", strchr(BBSNAME, '@') + 1);
 #else
-	    sprintf(genbuf, "+OK SMTH BBS POP3 server at %s starting.", strchr(BBSNAME, '@') + 1);
+            sprintf(genbuf, "+OK SMTH BBS POP3 server at %s starting.", strchr(BBSNAME, '@') + 1);
 #endif
-	    outs(genbuf);
+            outs(genbuf);
 
-	    log_usies("CONNECT");
-	    alarm(0);
-	    signal(SIGALRM, pop3_timeout);
-	    alarm(POP3_TIMEOUT);
+            log_usies("CONNECT");
+            alarm(0);
+            signal(SIGALRM, pop3_timeout);
+            alarm(POP3_TIMEOUT);
 
-	    while (readstr(sock, inbuf, sizeof(inbuf)) != 0) {
+            while (readstr(sock, inbuf, sizeof(inbuf)) != 0) {
 
-		idletime = 0;
+                idletime = 0;
 
-		msg = inbuf;
+                msg = inbuf;
 
-		inbuf[strlen(inbuf) - 1] = '\0';
-		if (inbuf[strlen(inbuf) - 1] == '\r')
-		    inbuf[strlen(inbuf) - 1] = '\0';
-		cmd = nextwordlower(&msg);
+                inbuf[strlen(inbuf) - 1] = '\0';
+                if (inbuf[strlen(inbuf) - 1] == '\r')
+                    inbuf[strlen(inbuf) - 1] = '\0';
+                cmd = nextwordlower(&msg);
 
-		if (*cmd == 0)
-		    continue;
+                if (*cmd == 0)
+                    continue;
 
-		i = 0;
-		while ((str = cmdlists[i].name) != NULL) {
-		    if (strcmp(cmd, str) == 0)
-			break;
-		    i++;
-		}
+                i = 0;
+                while ((str = cmdlists[i].name) != NULL) {
+                    if (strcmp(cmd, str) == 0)
+                        break;
+                    i++;
+                }
 
-		if (str == NULL) {
-		    sprintf(genbuf, "-ERR Unknown command: \"%s\".", cmd);
-		    outs(genbuf);
-		} else
-		    (*cmdlists[i].fptr) ();
+                if (str == NULL) {
+                    sprintf(genbuf, "-ERR Unknown command: \"%s\".", cmd);
+                    outs(genbuf);
+                } else
+                    (*cmdlists[i].fptr) ();
 
-	    }
+            }
 
-	    if (State == S_LOGIN) {
-		free(fcache);
-		free(postlen);
-	    }
-	    log_usies("ABORT");
-	    fclose(cfp);
-	    close(sock);
-	    exit(0);
-	    break;
-	default:		/* parent process */
-	    close(sock);
-	    break;
-	}
+            if (State == S_LOGIN) {
+                free(fcache);
+                free(postlen);
+            }
+            log_usies("ABORT");
+            fclose(cfp);
+            close(sock);
+            exit(0);
+            break;
+        default:               /* parent process */
+            close(sock);
+            break;
+        }
     }
 }
 
@@ -744,15 +744,15 @@ void Noop()
 }
 
 int get_userdata(user)
-	char *user;
+    char *user;
 {
     int uid;
 
     uid = getuser(user, &currentuser);
     if (uid) {
-	alluser = *currentuser;
-	currentuser = &alluser;
-	return 1;
+        alluser = *currentuser;
+        currentuser = &alluser;
+        return 1;
     }
     return -1;
 /*    FILE *rec;
@@ -789,22 +789,22 @@ void User()
     char *ptr;
 
     if (State == S_LOGIN) {
-	outs("-ERR Unknown command: \"user\".");
-	return;
+        outs("-ERR Unknown command: \"user\".");
+        return;
     }
 
     cmd = nextwordlower(&msg);
     if (*cmd == 0) {
-	outs("-ERR Too few arguments for the user command.");
-	return;
+        outs("-ERR Too few arguments for the user command.");
+        return;
     }
     if ((ptr = strstr(cmd, ".bbs")) != NULL) {
-	if (*(ptr + 4) != 0) {
-	    sprintf(genbuf, "-ERR Unknown user: \"%s\".", cmd);
-	    outs(genbuf);
-	    return;
-	}
-	*ptr = '\0';
+        if (*(ptr + 4) != 0) {
+            sprintf(genbuf, "-ERR Unknown user: \"%s\".", cmd);
+            outs(genbuf);
+            return;
+        }
+        *ptr = '\0';
     }
     /*
        if (strstr(cmd, ".bbs") == NULL) {
@@ -817,12 +817,12 @@ void User()
        *ptr = '\0';
      */
     if (get_userdata(cmd) == 1) {
-	strcpy(LowUserid, currentuser->userid);
-	sprintf(genbuf, "+OK Password required for %s", cmd);
-	outs(genbuf);
+        strcpy(LowUserid, currentuser->userid);
+        sprintf(genbuf, "+OK Password required for %s", cmd);
+        outs(genbuf);
     } else {
-	sprintf(genbuf, "-ERR Unknown user: \"%s\".", cmd);
-	outs(genbuf);
+        sprintf(genbuf, "-ERR Unknown user: \"%s\".", cmd);
+        outs(genbuf);
     }
     return;
 }
@@ -832,15 +832,15 @@ void log_usies(char *buf)
     FILE *fp;
 
     if ((fp = fopen("reclog/pop3d.log", "a")) != NULL) {
-	time_t now;
-	struct tm *p;
+        time_t now;
+        struct tm *p;
 
-	time(&now);
-	p = localtime(&now);
-	fprintf(fp, "%02d/%02d/%02d %02d:%02d:%02d [%s](%s) %s\n",
-		p->tm_year, p->tm_mon + 1, p->tm_mday, p->tm_hour, p->tm_min, p->tm_sec, currentuser->userid ? currentuser->userid : "", remote_userid, buf);
-	fflush(fp);
-	fclose(fp);
+        time(&now);
+        p = localtime(&now);
+        fprintf(fp, "%02d/%02d/%02d %02d:%02d:%02d [%s](%s) %s\n",
+                p->tm_year, p->tm_mon + 1, p->tm_mday, p->tm_hour, p->tm_min, p->tm_sec, currentuser->userid ? currentuser->userid : "", remote_userid, buf);
+        fflush(fp);
+        fclose(fp);
     }
 }
 
@@ -853,26 +853,26 @@ void Retr()
     char *ptr;
 
     if (State != S_LOGIN) {
-	outs("-ERR Unknown command: \"retr\".");
-	return;
+        outs("-ERR Unknown command: \"retr\".");
+        return;
     }
 
     cmd = nextword2(&msg);
 
     if (*cmd == 0) {
-	outs("-ERR Too few arguments for the retr command.");
-	return;
+        outs("-ERR Too few arguments for the retr command.");
+        return;
     }
 
     num = atoi(cmd);
     if (num <= 0 || totalnum < num) {
-	sprintf(genbuf, "-ERR Message %d does not exist.", num);
-	outs(genbuf);
-	return;
+        sprintf(genbuf, "-ERR Message %d does not exist.", num);
+        outs(genbuf);
+        return;
     } else if (fcache[num - 1].accessed[0] == 'X') {
-	sprintf(genbuf, "-ERR Message %d has been deleted.", num);
-	outs(genbuf);
-	return;
+        sprintf(genbuf, "-ERR Message %d has been deleted.", num);
+        outs(genbuf);
+        return;
     }
     num--;
     sprintf(genbuf, "+OK %d octets", postlen[num]);
@@ -901,8 +901,8 @@ void Retr()
 void Stat()
 {
     if (State != S_LOGIN) {
-	outs("-ERR Unknown command: \"stat\".");
-	return;
+        outs("-ERR Unknown command: \"stat\".");
+        return;
     }
     sprintf(genbuf, "+OK %d %d", totalnum, totalbyte);
     outs(genbuf);
@@ -914,12 +914,12 @@ void Rset()
     int i;
 
     if (State != S_LOGIN) {
-	outs("-ERR Unknown command: \"rset\".");
-	return;
+        outs("-ERR Unknown command: \"rset\".");
+        return;
     }
 
     for (i = 0; i < totalnum; i++) {
-	fcache[i].accessed[0] = ' ';
+        fcache[i].accessed[0] = ' ';
     }
     markdel = 0;
     sprintf(genbuf, "+OK Maildrop has %d messages (%d octets)", totalnum, totalbyte);
@@ -931,41 +931,41 @@ void List()
     int i;
 
     if (State != S_LOGIN) {
-	outs("-ERR Unknown command: \"list\".");
-	return;
+        outs("-ERR Unknown command: \"list\".");
+        return;
     }
 
     cmd = nextword2(&msg);
 
     if (*cmd == 0) {
-	sprintf(genbuf, "+OK %d messages (%d octets)", totalnum, totalbyte);
-	outs(genbuf);
-	for (i = 0; i < totalnum; i++) {
-	    if (fcache[i].accessed[0] == ' ') {
-		sprintf(genbuf, "%d %d", i + 1, postlen[i]);
-		outs(genbuf);
-	    }
-	}
-	outs(".");
+        sprintf(genbuf, "+OK %d messages (%d octets)", totalnum, totalbyte);
+        outs(genbuf);
+        for (i = 0; i < totalnum; i++) {
+            if (fcache[i].accessed[0] == ' ') {
+                sprintf(genbuf, "%d %d", i + 1, postlen[i]);
+                outs(genbuf);
+            }
+        }
+        outs(".");
     } else {
-	i = atoi(cmd);
-	if (i <= 0 || totalnum < i) {
-	    sprintf(genbuf, "-ERR Message %d does not exist.", i);
-	    outs(genbuf);
-	    return;
-	} else if (fcache[i - 1].accessed[0] == 'X') {
-	    sprintf(genbuf, "-ERR Message %d has been deleted.", i);
-	    outs(genbuf);
-	    return;
-	}
-	sprintf(genbuf, "+OK %d %d", i, postlen[i - 1]);
-	outs(genbuf);
+        i = atoi(cmd);
+        if (i <= 0 || totalnum < i) {
+            sprintf(genbuf, "-ERR Message %d does not exist.", i);
+            outs(genbuf);
+            return;
+        } else if (fcache[i - 1].accessed[0] == 'X') {
+            sprintf(genbuf, "-ERR Message %d has been deleted.", i);
+            outs(genbuf);
+            return;
+        }
+        sprintf(genbuf, "+OK %d %d", i, postlen[i - 1]);
+        outs(genbuf);
     }
 
 }
 
 void Top()
-{				/* Leeward adds, 98.01.21 */
+{                               /* Leeward adds, 98.01.21 */
     int num;
     int ln;
 
@@ -975,40 +975,40 @@ void Top()
 
 
     if (State != S_LOGIN) {
-	outs("-ERR Unknown command: \"top\".");
-	return;
+        outs("-ERR Unknown command: \"top\".");
+        return;
     }
 
     cmd = nextword2(&msg);
 
     if (*cmd == 0) {
-	outs("-ERR Too few arguments for the top command.");
-	return;
+        outs("-ERR Too few arguments for the top command.");
+        return;
     }
 
     num = atoi(cmd);
     if (num <= 0 || totalnum < num) {
-	sprintf(genbuf, "-ERR Message %d does not exist.", num);
-	outs(genbuf);
-	return;
+        sprintf(genbuf, "-ERR Message %d does not exist.", num);
+        outs(genbuf);
+        return;
     } else if (fcache[num - 1].accessed[0] == 'X') {
-	sprintf(genbuf, "-ERR Message %d has been deleted.", num);
-	outs(genbuf);
-	return;
+        sprintf(genbuf, "-ERR Message %d has been deleted.", num);
+        outs(genbuf);
+        return;
     }
 
     cmd = nextword2(&msg);
 
     if (*cmd == 0) {
-	outs("-ERR Too few arguments for the top command.");
-	return;
+        outs("-ERR Too few arguments for the top command.");
+        return;
     }
 
     ln = atoi(cmd);
     if (ln < 0) {
-	sprintf(genbuf, "-ERR Line %d does not exist.", ln);
-	outs(genbuf);
-	return;
+        sprintf(genbuf, "-ERR Line %d does not exist.", ln);
+        outs(genbuf);
+        return;
     }
 
 
@@ -1041,34 +1041,34 @@ void Uidl()
     int i;
 
     if (State != S_LOGIN) {
-	outs("-ERR Unknown command: \"uidl\".");
-	return;
+        outs("-ERR Unknown command: \"uidl\".");
+        return;
     }
 
     cmd = nextword2(&msg);
 
     if (*cmd == 0) {
-	outs("+OK");
-	for (i = 0; i < totalnum; i++) {
-	    if (fcache[i].accessed[0] == ' ') {
-		sprintf(genbuf, "%d %s", i + 1, fcache[i].filename);
-		outs(genbuf);
-	    }
-	}
-	outs(".");
+        outs("+OK");
+        for (i = 0; i < totalnum; i++) {
+            if (fcache[i].accessed[0] == ' ') {
+                sprintf(genbuf, "%d %s", i + 1, fcache[i].filename);
+                outs(genbuf);
+            }
+        }
+        outs(".");
     } else {
-	i = atoi(cmd);
-	if (i <= 0 || totalnum < i) {
-	    sprintf(genbuf, "-ERR Message %d does not exist.", i);
-	    outs(genbuf);
-	    return;
-	} else if (fcache[i - 1].accessed[0] == 'X') {
-	    sprintf(genbuf, "-ERR Message %d has been deleted.", i);
-	    outs(genbuf);
-	    return;
-	}
-	sprintf(genbuf, "+OK %d %s", i, fcache[i - 1].filename);
-	outs(genbuf);
+        i = atoi(cmd);
+        if (i <= 0 || totalnum < i) {
+            sprintf(genbuf, "-ERR Message %d does not exist.", i);
+            outs(genbuf);
+            return;
+        } else if (fcache[i - 1].accessed[0] == 'X') {
+            sprintf(genbuf, "-ERR Message %d has been deleted.", i);
+            outs(genbuf);
+            return;
+        }
+        sprintf(genbuf, "+OK %d %s", i, fcache[i - 1].filename);
+        outs(genbuf);
     }
 
 }
@@ -1077,8 +1077,8 @@ void Uidl()
 void Pass()
 {
     if (State == S_LOGIN) {
-	outs("-ERR Unknown command: \"pass\".");
-	return;
+        outs("-ERR Unknown command: \"pass\".");
+        return;
     }
 
     /* Leeward: 97.12.27: enable password include space(s) */
@@ -1086,27 +1086,27 @@ void Pass()
     cmd = nextwordX(&msg);
 
     if (*cmd == 0) {
-	outs("-ERR Too few arguments for the pass command.");
-	return;
+        outs("-ERR Too few arguments for the pass command.");
+        return;
     }
 
     if (LowUserid[0] == '\0') {
-	outs("-ERR need a USER");
-	return;
+        outs("-ERR need a USER");
+        return;
     }
 
     if (!checkpasswd2(cmd, currentuser)) {
-	sprintf(genbuf, "-ERR Password supplied for \"%s\" is incorrect.", LowUserid);
-	outs(genbuf);
-	LowUserid[0] = '\0';
-	log_usies("ERROR PASSWD");
-	logattempt(currentuser->userid, remote_userid);	/* Leeward 98.07.25 */
-	return;
+        sprintf(genbuf, "-ERR Password supplied for \"%s\" is incorrect.", LowUserid);
+        outs(genbuf);
+        LowUserid[0] = '\0';
+        log_usies("ERROR PASSWD");
+        logattempt(currentuser->userid, remote_userid); /* Leeward 98.07.25 */
+        return;
     }
 
     if (State == S_CONNECT) {
-	log_usies("ENTER");
-	State = S_LOGIN;
+        log_usies("ENTER");
+        State = S_LOGIN;
     }
 
     Login_init();
@@ -1117,8 +1117,8 @@ void Pass()
 void Last()
 {
     if (State != S_LOGIN) {
-	outs("-ERR Unknown command: \"last\".");
-	return;
+        outs("-ERR Unknown command: \"last\".");
+        return;
     }
 
     sprintf(genbuf, "+OK %d is the last message seen.", totalnum);
@@ -1130,30 +1130,30 @@ void Dele()
     int num;
 
     if (State != S_LOGIN) {
-	outs("-ERR Unknown command: \"dele\".");
-	return;
+        outs("-ERR Unknown command: \"dele\".");
+        return;
     }
 
     cmd = nextword2(&msg);
 
     if (*cmd == 0) {
-	outs("-ERR Too few arguments for the dele command.");
-	return;
+        outs("-ERR Too few arguments for the dele command.");
+        return;
     }
 
     num = atoi(cmd);
     if (num <= 0 || totalnum < num) {
-	sprintf(genbuf, "-ERR Message %d does not exist.", num);
-	outs(genbuf);
-	return;
+        sprintf(genbuf, "-ERR Message %d does not exist.", num);
+        outs(genbuf);
+        return;
     } else if (fcache[num - 1].accessed[0] == 'X') {
-	sprintf(genbuf, "-ERR Message %d has already been deleted.", num);
-	outs(genbuf);
-	return;
+        sprintf(genbuf, "-ERR Message %d has already been deleted.", num);
+        outs(genbuf);
+        return;
     } else if ('M' == fcache[num - 1].accessed[1]) {
-	sprintf(genbuf, "-ERR Message %d has already been marked:operation cancelled.", num);
-	outs(genbuf);		/* Leeward 99.01.28 */
-	return;
+        sprintf(genbuf, "-ERR Message %d has already been marked:operation cancelled.", num);
+        outs(genbuf);           /* Leeward 99.01.28 */
+        return;
     }
     num--;
 
@@ -1171,36 +1171,36 @@ void do_delete()
     sprintf(fpath, "mail/%c/%s/.DIR", toupper(*LowUserid), LowUserid);
     sprintf(fnew, "mail/%c/%s/.DIR.pop3", toupper(*LowUserid), LowUserid);
     if ((fdr = open(fpath, O_RDONLY)) == -1)
-	return;
+        return;
     if ((fdw = open(fnew, O_RDWR | O_CREAT, 0644)) == -1)
-	return;
+        return;
     i = count = 0;
     while (read(fdr, &currentmail, sizeof(currentmail))) {
-	if (i >= totalnum || fcache[i].accessed[0] == ' ') {
-	    write(fdw, &currentmail, sizeof(currentmail));
-	    count++;
-	} else {
-	    sprintf(genbuf, "mail/%c/%s/%s", toupper(*LowUserid), LowUserid, currentmail.filename);
-	    unlink(genbuf);
-	}
-	i++;
+        if (i >= totalnum || fcache[i].accessed[0] == ' ') {
+            write(fdw, &currentmail, sizeof(currentmail));
+            count++;
+        } else {
+            sprintf(genbuf, "mail/%c/%s/%s", toupper(*LowUserid), LowUserid, currentmail.filename);
+            unlink(genbuf);
+        }
+        i++;
     }
     close(fdr);
     close(fdw);
     unlink(fpath);
     if (count) {
-	f_mv(fnew, fpath);
+        f_mv(fnew, fpath);
     } else
-	unlink(fnew);
+        unlink(fnew);
 }
 
 void Quit()
 {
     if (State == S_LOGIN) {
-	free(fcache);
-	free(postlen);
-	if (markdel)
-	    do_delete();
+        free(fcache);
+        free(postlen);
+        if (markdel)
+            do_delete();
     }
     log_usies("EXIT");
     sprintf(genbuf, "+OK SMTH BBS POP3/POP3S server at %s signing off.", strchr(BBSNAME, '@') + 1);

@@ -16,6 +16,9 @@ Cryptographically strong random number generation.
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:43  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:48  kcn
  * format C
  *
@@ -67,12 +70,12 @@ Cryptographically strong random number generation.
 #ifdef HAVE_GETRUSAGE
 #ifdef HAVE_RUSAGE_H
 #include <sys/rusage.h>
-#endif				/* HAVE_RUSAGE_H */
-#endif				/* HAVE_GETRUSAGE */
+#endif                          /* HAVE_RUSAGE_H */
+#endif                          /* HAVE_GETRUSAGE */
 
 #ifdef HAVE_TIMES
 #include <sys/times.h>
-#endif				/* HAVE_TIMES */
+#endif                          /* HAVE_TIMES */
 
 /* Initializes the random number generator, loads any random information
    from the given file, and acquires as much environmental noise as it
@@ -97,19 +100,19 @@ void random_initialize(RandomState * state, uid_t uid, const char *filename)
     memset(state->state, 0, sizeof(state->state));
 
     /* Get noise from the file. */
-    random_add_noise(state, filename, strlen(filename));	/* Use the path. */
+    random_add_noise(state, filename, strlen(filename));        /* Use the path. */
     uf = userfile_open(uid, filename, O_RDONLY, 0);
     if (uf != NULL) {
-	state->state[0] += (int) uf;
-	bytes = userfile_read(uf, buf, sizeof(buf));
-	userfile_close(uf);
-	if (bytes > 0)
-	    random_add_noise(state, buf, bytes);
-	memset(buf, 0, sizeof(buf));
+        state->state[0] += (int) uf;
+        bytes = userfile_read(uf, buf, sizeof(buf));
+        userfile_close(uf);
+        if (bytes > 0)
+            random_add_noise(state, buf, bytes);
+        memset(buf, 0, sizeof(buf));
     } else {
-	/* Get all possible noise since we have no seed. */
-	random_acquire_environmental_noise(state, uid);
-	random_save(state, uid, filename);
+        /* Get all possible noise since we have no seed. */
+        random_acquire_environmental_noise(state, uid);
+        random_save(state, uid, filename);
     }
 
     /* Get easily available noise from the environment. */
@@ -142,17 +145,17 @@ void random_acquire_environmental_noise(RandomState * state, uid_t uid)
        systems we must use all possible noise sources. */
     random_get_noise_from_command(state, uid, "ps laxww 2>/dev/null");
     if (time(NULL) - start_time < 30)
-	random_get_noise_from_command(state, uid, "ps -al 2>/dev/null");
+        random_get_noise_from_command(state, uid, "ps -al 2>/dev/null");
     if (time(NULL) - start_time < 30)
-	random_get_noise_from_command(state, uid, "ls -alni /tmp/. 2>/dev/null");
+        random_get_noise_from_command(state, uid, "ls -alni /tmp/. 2>/dev/null");
     if (time(NULL) - start_time < 30)
-	random_get_noise_from_command(state, uid, "w 2>/dev/null");
+        random_get_noise_from_command(state, uid, "w 2>/dev/null");
     if (time(NULL) - start_time < 30)
-	random_get_noise_from_command(state, uid, "netstat -s 2>/dev/null");
+        random_get_noise_from_command(state, uid, "netstat -s 2>/dev/null");
     if (time(NULL) - start_time < 30)
-	random_get_noise_from_command(state, uid, "netstat -an 2>/dev/null");
+        random_get_noise_from_command(state, uid, "netstat -an 2>/dev/null");
     if (time(NULL) - start_time < 30)
-	random_get_noise_from_command(state, uid, "netstat -in 2>/dev/null");
+        random_get_noise_from_command(state, uid, "netstat -in 2>/dev/null");
 
     /* Get other easily available noise. */
     random_acquire_light_environmental_noise(state);
@@ -172,23 +175,23 @@ void random_acquire_light_environmental_noise(RandomState * state)
 
     /* About every five minutes, mix in some noise from /dev/random. */
     if (time(NULL) - state->last_dev_random_usage > 5 * 60) {
-	state->last_dev_random_usage = time(NULL);
+        state->last_dev_random_usage = time(NULL);
 
-	/* If /dev/random is available, read some data from there in non-blocking
-	   mode and mix it into the pool. */
-	f = open("/dev/random", O_RDONLY);
-	if (f >= 0) {
-	    /* Set the descriptor into non-blocking mode. */
+        /* If /dev/random is available, read some data from there in non-blocking
+           mode and mix it into the pool. */
+        f = open("/dev/random", O_RDONLY);
+        if (f >= 0) {
+            /* Set the descriptor into non-blocking mode. */
 #if defined(O_NONBLOCK) && !defined(O_NONBLOCK_BROKEN)
-	    fcntl(f, F_SETFL, O_NONBLOCK);
-#else				/* O_NONBLOCK && !O_NONBLOCK_BROKEN */
-	    fcntl(f, F_SETFL, O_NDELAY);
-#endif				/* O_NONBLOCK && !O_NONBLOCK_BROKEN */
-	    len = read(f, buf, sizeof(buf));
-	    close(f);
-	    if (len > 0)
-		random_add_noise(state, buf, len);
-	}
+            fcntl(f, F_SETFL, O_NONBLOCK);
+#else                           /* O_NONBLOCK && !O_NONBLOCK_BROKEN */
+            fcntl(f, F_SETFL, O_NDELAY);
+#endif                          /* O_NONBLOCK && !O_NONBLOCK_BROKEN */
+            len = read(f, buf, sizeof(buf));
+            close(f);
+            if (len > 0)
+                random_add_noise(state, buf, len);
+        }
     }
 
     /* Get miscellaneous noise from various system parameters and statistics. */
@@ -196,59 +199,59 @@ void random_acquire_light_environmental_noise(RandomState * state)
 
 #ifdef HAVE_GETTIMEOFDAY
     {
-	struct timeval tv;
+        struct timeval tv;
 
 #ifdef HAVE_NO_TZ_IN_GETTIMEOFDAY
-	gettimeofday(&tv);
+        gettimeofday(&tv);
 #else
-	gettimeofday(&tv, NULL);
+        gettimeofday(&tv, NULL);
 #endif
-	random_xor_noise(state, 0, (word32) tv.tv_usec);
-	random_xor_noise(state, 1, (word32) tv.tv_sec);
+        random_xor_noise(state, 0, (word32) tv.tv_usec);
+        random_xor_noise(state, 1, (word32) tv.tv_sec);
 #ifdef HAVE_CLOCK
-	random_xor_noise(state, 3, (word32) clock());
-#endif				/* HAVE_CLOCK */
+        random_xor_noise(state, 3, (word32) clock());
+#endif                          /* HAVE_CLOCK */
     }
-#endif				/* HAVE_GETTIMEOFDAY */
+#endif                          /* HAVE_GETTIMEOFDAY */
 #ifdef HAVE_TIMES
     {
-	struct tms tm;
+        struct tms tm;
 
-	random_xor_noise(state, 2, (word32) times(&tm));
-	random_xor_noise(state, 4, (word32) (tm.tms_utime ^ (tm.tms_stime << 8) ^ (tm.tms_cutime << 16) ^ (tm.tms_cstime << 24)));
+        random_xor_noise(state, 2, (word32) times(&tm));
+        random_xor_noise(state, 4, (word32) (tm.tms_utime ^ (tm.tms_stime << 8) ^ (tm.tms_cutime << 16) ^ (tm.tms_cstime << 24)));
     }
-#endif				/* HAVE_TIMES */
+#endif                          /* HAVE_TIMES */
 #ifdef HAVE_GETRUSAGE
     {
-	struct rusage ru, cru;
+        struct rusage ru, cru;
 
-	getrusage(RUSAGE_SELF, &ru);
-	getrusage(RUSAGE_CHILDREN, &cru);
-	random_xor_noise(state, 0, (word32) (ru.ru_utime.tv_usec + cru.ru_utime.tv_usec));
-	random_xor_noise(state, 2, (word32) (ru.ru_stime.tv_usec + cru.ru_stime.tv_usec));
-	random_xor_noise(state, 5, (word32) (ru.ru_maxrss + cru.ru_maxrss));
-	random_xor_noise(state, 6, (word32) (ru.ru_ixrss + cru.ru_ixrss));
-	random_xor_noise(state, 7, (word32) (ru.ru_idrss + cru.ru_idrss));
-	random_xor_noise(state, 8, (word32) (ru.ru_minflt + cru.ru_minflt));
-	random_xor_noise(state, 9, (word32) (ru.ru_majflt + cru.ru_majflt));
-	random_xor_noise(state, 10, (word32) (ru.ru_nswap + cru.ru_nswap));
-	random_xor_noise(state, 11, (word32) (ru.ru_inblock + cru.ru_inblock));
-	random_xor_noise(state, 12, (word32) (ru.ru_oublock + cru.ru_oublock));
-	random_xor_noise(state, 13, (word32) ((ru.ru_msgsnd ^ ru.ru_msgrcv ^ ru.ru_nsignals) + (cru.ru_msgsnd ^ cru.ru_msgrcv ^ cru.ru_nsignals)));
-	random_xor_noise(state, 14, (word32) (ru.ru_nvcsw + cru.ru_nvcsw));
-	random_xor_noise(state, 15, (word32) (ru.ru_nivcsw + cru.ru_nivcsw));
+        getrusage(RUSAGE_SELF, &ru);
+        getrusage(RUSAGE_CHILDREN, &cru);
+        random_xor_noise(state, 0, (word32) (ru.ru_utime.tv_usec + cru.ru_utime.tv_usec));
+        random_xor_noise(state, 2, (word32) (ru.ru_stime.tv_usec + cru.ru_stime.tv_usec));
+        random_xor_noise(state, 5, (word32) (ru.ru_maxrss + cru.ru_maxrss));
+        random_xor_noise(state, 6, (word32) (ru.ru_ixrss + cru.ru_ixrss));
+        random_xor_noise(state, 7, (word32) (ru.ru_idrss + cru.ru_idrss));
+        random_xor_noise(state, 8, (word32) (ru.ru_minflt + cru.ru_minflt));
+        random_xor_noise(state, 9, (word32) (ru.ru_majflt + cru.ru_majflt));
+        random_xor_noise(state, 10, (word32) (ru.ru_nswap + cru.ru_nswap));
+        random_xor_noise(state, 11, (word32) (ru.ru_inblock + cru.ru_inblock));
+        random_xor_noise(state, 12, (word32) (ru.ru_oublock + cru.ru_oublock));
+        random_xor_noise(state, 13, (word32) ((ru.ru_msgsnd ^ ru.ru_msgrcv ^ ru.ru_nsignals) + (cru.ru_msgsnd ^ cru.ru_msgrcv ^ cru.ru_nsignals)));
+        random_xor_noise(state, 14, (word32) (ru.ru_nvcsw + cru.ru_nvcsw));
+        random_xor_noise(state, 15, (word32) (ru.ru_nivcsw + cru.ru_nivcsw));
     }
-#endif				/* HAVE_GETRUSAGE */
+#endif                          /* HAVE_GETRUSAGE */
     random_xor_noise(state, 11, (word32) getpid());
     random_xor_noise(state, 12, (word32) getppid());
     random_xor_noise(state, 10, (word32) getuid());
     random_xor_noise(state, 10, (word32) (getgid() << 16));
 #ifdef _POSIX_CHILD_MAX
     random_xor_noise(state, 13, (word32) (_POSIX_CHILD_MAX << 16));
-#endif				/* _POSIX_CHILD_MAX */
+#endif                          /* _POSIX_CHILD_MAX */
 #ifdef CLK_TCK
     random_xor_noise(state, 14, (word32) (CLK_TCK << 16));
-#endif				/* CLK_TCK */
+#endif                          /* CLK_TCK */
 
     random_stir(state);
 }
@@ -263,9 +266,9 @@ void random_get_noise_from_command(RandomState * state, uid_t uid, const char *c
 
     uf = userfile_popen(uid, cmd, "r");
     if (uf == NULL)
-	return;
+        return;
     while (userfile_gets(line, sizeof(line), uf))
-	random_add_noise(state, line, strlen(line));
+        random_add_noise(state, line, strlen(line));
     userfile_pclose(uf);
     memset(line, 0, sizeof(line));
 }
@@ -278,14 +281,14 @@ void random_add_noise(RandomState * state, const void *buf, unsigned int bytes)
     const char *input = buf;
 
     while (bytes > 0) {
-	if (pos >= RANDOM_STATE_BYTES) {
-	    pos = 0;
-	    random_stir(state);
-	}
-	state->state[pos] ^= *input;
-	input++;
-	bytes--;
-	pos++;
+        if (pos >= RANDOM_STATE_BYTES) {
+            pos = 0;
+            random_stir(state);
+        }
+        state->state[pos] ^= *input;
+        input++;
+        bytes--;
+        pos++;
     }
     state->add_position = pos;
 }
@@ -309,15 +312,15 @@ void random_stir(RandomState * state)
 
     /* First CFB pass. */
     for (i = 0; i < RANDOM_STATE_BYTES; i += 16) {
-	MD5Transform(iv, state->stir_key);
-	iv[0] ^= GET_32BIT(state->state + i);
-	PUT_32BIT(state->state + i, iv[0]);
-	iv[1] ^= GET_32BIT(state->state + i + 4);
-	PUT_32BIT(state->state + i + 4, iv[1]);
-	iv[2] ^= GET_32BIT(state->state + i + 8);
-	PUT_32BIT(state->state + i + 8, iv[2]);
-	iv[3] ^= GET_32BIT(state->state + i + 12);
-	PUT_32BIT(state->state + i + 12, iv[3]);
+        MD5Transform(iv, state->stir_key);
+        iv[0] ^= GET_32BIT(state->state + i);
+        PUT_32BIT(state->state + i, iv[0]);
+        iv[1] ^= GET_32BIT(state->state + i + 4);
+        PUT_32BIT(state->state + i + 4, iv[1]);
+        iv[2] ^= GET_32BIT(state->state + i + 8);
+        PUT_32BIT(state->state + i + 8, iv[2]);
+        iv[3] ^= GET_32BIT(state->state + i + 12);
+        PUT_32BIT(state->state + i + 12, iv[3]);
     }
 
     /* Get new key. */
@@ -325,15 +328,15 @@ void random_stir(RandomState * state)
 
     /* Second CFB pass. */
     for (i = 0; i < RANDOM_STATE_BYTES; i += 16) {
-	MD5Transform(iv, state->stir_key);
-	iv[0] ^= GET_32BIT(state->state + i);
-	PUT_32BIT(state->state + i, iv[0]);
-	iv[1] ^= GET_32BIT(state->state + i + 4);
-	PUT_32BIT(state->state + i + 4, iv[1]);
-	iv[2] ^= GET_32BIT(state->state + i + 8);
-	PUT_32BIT(state->state + i + 8, iv[2]);
-	iv[3] ^= GET_32BIT(state->state + i + 12);
-	PUT_32BIT(state->state + i + 12, iv[3]);
+        MD5Transform(iv, state->stir_key);
+        iv[0] ^= GET_32BIT(state->state + i);
+        PUT_32BIT(state->state + i, iv[0]);
+        iv[1] ^= GET_32BIT(state->state + i + 4);
+        PUT_32BIT(state->state + i + 4, iv[1]);
+        iv[2] ^= GET_32BIT(state->state + i + 8);
+        PUT_32BIT(state->state + i + 8, iv[2]);
+        iv[3] ^= GET_32BIT(state->state + i + 12);
+        PUT_32BIT(state->state + i + 12, iv[3]);
     }
 
     memset(iv, 0, sizeof(iv));
@@ -351,9 +354,9 @@ void random_stir(RandomState * state)
 unsigned int random_get_byte(RandomState * state)
 {
     if (state->next_available_byte >= RANDOM_STATE_BYTES) {
-	/* Get some easily available noise.  More importantly, this stirs
-	   the pool. */
-	random_acquire_light_environmental_noise(state);
+        /* Get some easily available noise.  More importantly, this stirs
+           the pool. */
+        random_acquire_light_environmental_noise(state);
     }
     assert(state->next_available_byte < RANDOM_STATE_BYTES);
     return state->state[state->next_available_byte++];
@@ -367,7 +370,7 @@ unsigned int random_get_byte(RandomState * state)
 
 void random_save(RandomState * state, uid_t uid, const char *filename)
 {
-    char buf[RANDOM_STATE_BYTES / 2];	/* Save only half of its bits. */
+    char buf[RANDOM_STATE_BYTES / 2];   /* Save only half of its bits. */
     int i;
     UserFile uf;
 
@@ -384,7 +387,7 @@ void random_save(RandomState * state, uid_t uid, const char *filename)
        not reveal enough to make it possible to determine previous or future
        returns by the generator. */
     for (i = 0; i < sizeof(buf); i++)
-	buf[i] = random_get_byte(state);
+        buf[i] = random_get_byte(state);
 
     /* Again get a little noise and stir it to mix the unrevealed half with 
        those bits that have been saved to a file.  There should be enough 
@@ -396,9 +399,9 @@ void random_save(RandomState * state, uid_t uid, const char *filename)
        ignored. */
     uf = userfile_open(uid, filename, O_WRONLY | O_CREAT | O_TRUNC, 0600);
     if (uf != NULL) {
-	/* Creation successful.  Write data to the file. */
-	userfile_write(uf, buf, sizeof(buf));
-	userfile_close(uf);
+        /* Creation successful.  Write data to the file. */
+        userfile_write(uf, buf, sizeof(buf));
+        userfile_close(uf);
     }
     memset(buf, 0, sizeof(buf));
 }

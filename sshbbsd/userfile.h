@@ -17,6 +17,9 @@ This works by forking a separate process to do the reading.
 
 /*
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:44  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:49  kcn
  * format C
  *
@@ -141,4 +144,4 @@ UserFile userfile_encapsulate_fd(int fd);
 /* Get sun des 1 magic phrase, return NULL if not found */
 char *userfile_get_des_1_magic_phrase(uid_t uid);
 
-#endif				/* USERFILE_H */
+#endif                          /* USERFILE_H */

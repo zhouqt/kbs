@@ -17,6 +17,9 @@ precision integers.
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:42  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:47  kcn
  * format C
  *
@@ -54,14 +57,14 @@ void mp_linearize_msb_first(unsigned char *buf, unsigned int len, MP_INT * value
 
     mpz_init_set(&aux, value);
     for (i = len; i >= 4; i -= 4) {
-	unsigned long limb = mpz_get_ui(&aux);
+        unsigned long limb = mpz_get_ui(&aux);
 
-	PUT_32BIT(buf + i - 4, limb);
-	mpz_div_2exp(&aux, &aux, 32);
+        PUT_32BIT(buf + i - 4, limb);
+        mpz_div_2exp(&aux, &aux, 32);
     }
     for (; i > 0; i--) {
-	buf[i - 1] = mpz_get_ui(&aux);
-	mpz_div_2exp(&aux, &aux, 8);
+        buf[i - 1] = mpz_get_ui(&aux);
+        mpz_div_2exp(&aux, &aux, 8);
     }
     mpz_clear(&aux);
 }
@@ -75,14 +78,14 @@ void mp_unlinearize_msb_first(MP_INT * value, const unsigned char *buf, unsigned
 
     mpz_set_ui(value, 0);
     for (i = 0; i + 4 <= len; i += 4) {
-	unsigned long limb = GET_32BIT(buf + i);
+        unsigned long limb = GET_32BIT(buf + i);
 
-	mpz_mul_2exp(value, value, 32);
-	mpz_add_ui(value, value, limb);
+        mpz_mul_2exp(value, value, 32);
+        mpz_add_ui(value, value, limb);
     }
     for (; i < len; i++) {
-	mpz_mul_2exp(value, value, 8);
-	mpz_add_ui(value, value, buf[i]);
+        mpz_mul_2exp(value, value, 8);
+        mpz_add_ui(value, value, buf[i]);
     }
 }
 

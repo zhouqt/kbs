@@ -45,9 +45,9 @@ extern struct userec *user_data;
 
 /* extern char* pnt; */
 
-int temp_numposts;		/*Haohmaru.99.4.02.»√∞Æπ‡ÀÆµƒ»Àøﬁ»•∞…//grin */
+int temp_numposts;              /*Haohmaru.99.4.02.»√∞Æπ‡ÀÆµƒ»Àøﬁ»•∞…//grin */
 int nettyNN = 0;
-int count_friends, count_users;	/*Add by SmallPig for count users and Friends */
+int count_friends, count_users; /*Add by SmallPig for count users and Friends */
 int iscolor = 1;
 int nf;
 char *getenv();
@@ -60,7 +60,7 @@ int listmode;
 int numofsig = 0;
 jmp_buf byebye;
 
-int convcode = 0;		/* KCN,99.09.05 */
+int convcode = 0;               /* KCN,99.09.05 */
 
 FILE *ufp;
 int RUNSH = false;
@@ -80,37 +80,37 @@ int showansi = 1;
 
 static int i_domode = INPUT_ACTIVE;
 
-extern char MsgDesUid[14];	/* ±£¥ÊÀ˘∑¢msgµƒƒøµƒuid 1998.7.5 by dong */
-int canbemsged(uin)		/*Haohmaru.99.5.29 */
-	struct user_info *uin;
+extern char MsgDesUid[14];      /* ±£¥ÊÀ˘∑¢msgµƒƒøµƒuid 1998.7.5 by dong */
+int canbemsged(uin)             /*Haohmaru.99.5.29 */
+    struct user_info *uin;
 {
     if (uinfo.pager & ALLMSG_PAGER)
-	return true;
+        return true;
     if (uinfo.pager & FRIENDMSG_PAGER) {
-	if (can_override(currentuser->userid, uin->userid))
-	    return true;
+        if (can_override(currentuser->userid, uin->userid))
+            return true;
     }
     return false;
 }
 
 void wait_alarm_clock(int signo)
-{				/*Haohmaru.98.11.3 */
+{                               /*Haohmaru.98.11.3 */
     if (i_domode == INPUT_IDLE) {
-	clear();
-	exit(0);
+        clear();
+        exit(0);
     }
     i_domode = INPUT_IDLE;
     alarm(WAITTIME);
 }
 
 void initalarm()
-{				/*Haohmaru.98.11.3 */
+{                               /*Haohmaru.98.11.3 */
     signal(SIGALRM, wait_alarm_clock);
     alarm(WAITTIME);
 }
 
 void Net_Sleep(int times)
-{				/* KCN 1999.9.15 */
+{                               /* KCN 1999.9.15 */
     struct timeval tv;
     int sr;
     fd_set fd, efd;
@@ -127,14 +127,14 @@ void Net_Sleep(int times)
     old = time(0);
 
     while ((sr = select(csock + 1, &fd, NULL, &efd, &tv)) > 0) {
-	if (FD_ISSET(csock, &efd))
-	    abort_bbs(0);
-	tv.tv_sec = times - (time(0) - old);
-	tv.tv_usec = 0;
-	FD_ZERO(&fd);
-	FD_ZERO(&efd);
-	FD_SET(csock, &fd);
-	FD_SET(csock, &efd);
+        if (FD_ISSET(csock, &efd))
+            abort_bbs(0);
+        tv.tv_sec = times - (time(0) - old);
+        tv.tv_usec = 0;
+        FD_ZERO(&fd);
+        FD_ZERO(&efd);
+        FD_SET(csock, &fd);
+        FD_SET(csock, &efd);
     };
 
 }
@@ -151,23 +151,23 @@ void u_enter()
 
     /* Bigman 2000.8.29 ÷«ƒ“Õ≈ƒ‹πª“˛…Ì */
     if ((HAS_PERM(currentuser, PERM_CHATCLOAK) || HAS_PERM(currentuser, PERM_CLOAK)) && (currentuser->flags[0] & CLOAK_FLAG))
-	uinfo.invisible = true;
+        uinfo.invisible = true;
     uinfo.mode = LOGIN;
     uinfo.pager = 0;
 /*    uinfo.pager = !(currentuser->flags[0] & PAGER_FLAG);*/
     if (DEFINE(currentuser, DEF_FRIENDCALL)) {
-	uinfo.pager |= FRIEND_PAGER;
+        uinfo.pager |= FRIEND_PAGER;
     }
     if (currentuser->flags[0] & PAGER_FLAG) {
-	uinfo.pager |= ALL_PAGER;
-	uinfo.pager |= FRIEND_PAGER;
+        uinfo.pager |= ALL_PAGER;
+        uinfo.pager |= FRIEND_PAGER;
     }
     if (DEFINE(currentuser, DEF_FRIENDMSG)) {
-	uinfo.pager |= FRIENDMSG_PAGER;
+        uinfo.pager |= FRIENDMSG_PAGER;
     }
     if (DEFINE(currentuser, DEF_ALLMSG)) {
-	uinfo.pager |= ALLMSG_PAGER;
-	uinfo.pager |= FRIENDMSG_PAGER;
+        uinfo.pager |= ALLMSG_PAGER;
+        uinfo.pager |= FRIENDMSG_PAGER;
     }
     uinfo.uid = usernum;
     strncpy(uinfo.from, fromhost, IPLEN);
@@ -183,10 +183,10 @@ void u_enter()
     getfriendstr();
     utmpent = getnewutmpent(&uinfo);
     if (utmpent == -1) {
-	prints("»À ˝“—¬˙,Œﬁ∑®∑÷≈‰”√ªßÃıƒø!\n");
-	oflush();
-	Net_Sleep(20);
-	exit(-1);
+        prints("»À ˝“—¬˙,Œﬁ∑®∑÷≈‰”√ªßÃıƒø!\n");
+        oflush();
+        Net_Sleep(20);
+        exit(-1);
     }
 
     listmode = 0;
@@ -194,13 +194,13 @@ void u_enter()
 }
 
 void setflags(mask, value)
-	int mask, value;
+    int mask, value;
 {
     if (((currentuser->flags[0] & mask) && 1) != value) {
-	if (value)
-	    currentuser->flags[0] |= mask;
-	else
-	    currentuser->flags[0] &= ~mask;
+        if (value)
+            currentuser->flags[0] |= mask;
+        else
+            currentuser->flags[0] &= ~mask;
     }
 }
 
@@ -220,35 +220,35 @@ void u_exit()
     signal(SIGUSR2, SIG_IGN);
 /*---	Added by period		2000-11-19	sure of this	---*/
     if (!started || !uinfo.active)
-	return;
+        return;
 /*---		---*/
     setflags(PAGER_FLAG, (uinfo.pager & ALL_PAGER));
 /*    if (HAS_PERM(currentuser,PERM_LOGINCLOAK)&&HAS_PERM(currentuser,PERM_SEECLOAK))*/
 
     /* Bigman 2000.8.29 ÷«ƒ“Õ≈ƒ‹πª“˛…Ì */
     if ((HAS_PERM(currentuser, PERM_CHATCLOAK) || HAS_PERM(currentuser, PERM_CLOAK)))
-	setflags(CLOAK_FLAG, uinfo.invisible);
+        setflags(CLOAK_FLAG, uinfo.invisible);
 
     brc_update(currentuser->userid);
 
     if (utmpent > 0)
-	clear_utmp(utmpent, usernum, getpid());
+        clear_utmp(utmpent, usernum, getpid());
 }
 
 int cmpuids(uid, up)
-	char *uid;
-	struct userec *up;
+    char *uid;
+    struct userec *up;
 {
     return !strncasecmp(uid, up->userid, sizeof(up->userid));
 }
 
 int dosearchuser(userid)
-	char *userid;
+    char *userid;
 {
     int id;
 
     if ((id = getuser(userid, &currentuser)) != 0)
-	return usernum = id;
+        return usernum = id;
     return usernum = 0;
 }
 
@@ -274,13 +274,13 @@ void abort_bbs(int signo)
     time_t stay;
 
     if (uinfo.mode == POSTING || uinfo.mode == SMAIL || uinfo.mode == EDIT || uinfo.mode == EDITUFILE || uinfo.mode == EDITSFILE || uinfo.mode == EDITANN)
-	keep_fail_post();
+        keep_fail_post();
     if (started) {
-	record_exit_time();
-	stay = time(0) - login_start_time;
+        record_exit_time();
+        stay = time(0) - login_start_time;
 /*---	period	2000-10-20	4 debug	---*/
-	bbslog("1system", "AXXED Stay: %3ld (%s)[%d %d]", stay / 60, currentuser->username, utmpent, usernum);
-	u_exit();
+        bbslog("1system", "AXXED Stay: %3ld (%s)[%d %d]", stay / 60, currentuser->username, utmpent, usernum);
+        u_exit();
     }
     shutdown(0, 2);
     close(0);
@@ -288,8 +288,8 @@ void abort_bbs(int signo)
 }
 
 int cmpuids2(unum, urec)
-	int unum;
-	struct user_info *urec;
+    int unum;
+    struct user_info *urec;
 {
     return (unum == urec->uid);
 }
@@ -303,43 +303,43 @@ void multi_user_check()
     int kickmulti = -1;
 
     while (ret != 0) {
-	ret = multilogin_user(currentuser, usernum);
-	if (ret == 2) {
-	    prints("^[[33m±ß«∏, ƒø«∞“—”–Ã´∂‡ ^[[36mguest, «Î…‘∫Ú‘Ÿ ‘°£^[[m\n");
-	    pressreturn();
-	    oflush();
-	    sleep(5);
-	    exit(1);
-	}
-	if (ret == 1) {
-	    if (kickmulti == -1)
-		getdata(0, 0, "ƒ„Õ¨ ±…œœﬂµƒ¥∞ø⁄ ˝π˝∂‡£¨ «∑ÒÃﬂ≥ˆ±æID∆‰À¸¥∞ø⁄(Y/N)? [N]", buffer, 4, DOECHO, NULL, true);
-	    if (buffer[0] == 'Y' || buffer[0] == 'y' || kickmulti == 1) {
-		int lres;
-		int num;
+        ret = multilogin_user(currentuser, usernum);
+        if (ret == 2) {
+            prints("^[[33m±ß«∏, ƒø«∞“—”–Ã´∂‡ ^[[36mguest, «Î…‘∫Ú‘Ÿ ‘°£^[[m\n");
+            pressreturn();
+            oflush();
+            sleep(5);
+            exit(1);
+        }
+        if (ret == 1) {
+            if (kickmulti == -1)
+                getdata(0, 0, "ƒ„Õ¨ ±…œœﬂµƒ¥∞ø⁄ ˝π˝∂‡£¨ «∑ÒÃﬂ≥ˆ±æID∆‰À¸¥∞ø⁄(Y/N)? [N]", buffer, 4, DOECHO, NULL, true);
+            if (buffer[0] == 'Y' || buffer[0] == 'y' || kickmulti == 1) {
+                int lres;
+                int num;
 
-		kickmulti = 1;
-		if (!(num = search_ulist(&uin, cmpuids2, usernum)))
-		    return;	/* user isn't logged in */
-		if (uin.pid != 1) {
-		    if (!uin.active || (kill(uin.pid, 0) == -1))
-			return;	/* stale entry in utmp file */
-	/*---	modified by period	first try SIGHUP	2000-11-08	---*/
-		    lres = kill(uin.pid, SIGHUP);
-		    sleep(1);
-		    if (lres)
-	/*---	---*/
-			kill(uin.pid, 9);
-		}
-		sprintf(buffer, "kicked (multi-login)");
-		report(buffer);
+                kickmulti = 1;
+                if (!(num = search_ulist(&uin, cmpuids2, usernum)))
+                    return;     /* user isn't logged in */
+                if (uin.pid != 1) {
+                    if (!uin.active || (kill(uin.pid, 0) == -1))
+                        return; /* stale entry in utmp file */
+        /*---	modified by period	first try SIGHUP	2000-11-08	---*/
+                    lres = kill(uin.pid, SIGHUP);
+                    sleep(1);
+                    if (lres)
+        /*---	---*/
+                        kill(uin.pid, 9);
+                }
+                sprintf(buffer, "kicked (multi-login)");
+                report(buffer);
 
-		clear_utmp(num, usernum, uin.pid);
-		continue;
-	    }
-	    oflush();
-	    exit(1);		/* ∂‡¥∞ø⁄ ±ÃﬂµÙ“ª∏ˆ£¨◊‘º∫“≤∂œœﬂ */
-	}
+                clear_utmp(num, usernum, uin.pid);
+                continue;
+            }
+            oflush();
+            exit(1);            /* ∂‡¥∞ø⁄ ±ÃﬂµÙ“ª∏ˆ£¨◊‘º∫“≤∂œœﬂ */
+        }
     }
 }
 
@@ -349,9 +349,9 @@ void system_init()
     gethostname(genbuf, 256);
 #ifdef SINGLE
     if (strcmp(genbuf, SINGLE)) {
-	prints("Not on a valid machine!\n");
-	oflush();
-	exit(-1);
+        prints("Not on a valid machine!\n");
+        oflush();
+        exit(-1);
     }
 #endif
 
@@ -371,8 +371,8 @@ void system_init()
 void system_abort()
 {
     if (started) {
-	bbslog("1ABORT", currentuser->username);
-	u_exit();
+        bbslog("1ABORT", currentuser->username);
+        u_exit();
     }
     clear();
     refresh();
@@ -382,7 +382,7 @@ void system_abort()
     return;
 }
 
-#ifdef AIX			/* Leeward 99.03.06 */
+#ifdef AIX                      /* Leeward 99.03.06 */
 int num_active_http_users()
 {
     int a, b;
@@ -393,21 +393,21 @@ int num_active_http_users()
     char *ptr;
 
     gethostname(hostname, STRLEN);
-    if (!(h = gethostbyname(hostname)))	/*perror("gethostbyname") ; */
-	return -1;
+    if (!(h = gethostbyname(hostname))) /*perror("gethostbyname") ; */
+        return -1;
     memset(&sin, 0, sizeof sin);
     sin.sin_family = h->h_addrtype;
     memcpy(&sin.sin_addr, h->h_addr, h->h_length);
     sin.sin_port = 80;
     a = socket(sin.sin_family, SOCK_STREAM, 0);
-    if ((connect(a, (struct sockaddr *) &sin, sizeof sin)))	/*perror("connect err") ; */
-	return -1;
+    if ((connect(a, (struct sockaddr *) &sin, sizeof sin)))     /*perror("connect err") ; */
+        return -1;
     write(a, "GET /server-status\r\n", 20);
     read(a, buf, 2048);
     close(a);
     ptr = strstr(buf, " requests currently being processed,");
     if (NULL == ptr)
-	return -1;
+        return -1;
     for (; '\n' != *ptr; ptr--);
     sscanf(ptr + 1, "%d requests currently being processed, %d idle servers", &a, &b);
     return (a + b);
@@ -418,7 +418,7 @@ void login_query()
 {
     char uid[STRLEN], passbuf[40], *ptr;
     int curr_login_num, i, j;
-    int curr_http_num;		/* Leeward 99.03.06 */
+    int curr_http_num;          /* Leeward 99.03.06 */
     int attempts;
     char fname[STRLEN], tmpstr[30], genbuf[PATHLEN];
     FILE *fn;
@@ -426,10 +426,10 @@ void login_query()
 
     curr_login_num = get_utmp_number();;
     if (curr_login_num >= MAXACTIVE) {
-	ansimore("etc/loginfull", false);
-	oflush();
-	Net_Sleep(20);
-	exit(1);
+        ansimore("etc/loginfull", false);
+        oflush();
+        Net_Sleep(20);
+        exit(1);
     }
     curr_http_num = 0;
 /*disable by KCN     curr_http_num = num_active_http_users(); *//* Leeward 99.03.06 */
@@ -437,7 +437,7 @@ void login_query()
 /* ƒø«∞√ª”– π”√’‚∏ˆ∂´Œ˜,sigh*/
     ptr = sysconf_str("BBSNAME");
     if (ptr == NULL)
-	ptr = "…–Œ¥√¸√˚≤‚ ‘’æ";
+        ptr = "…–Œ¥√¸√˚≤‚ ‘’æ";
 /* add by KCN for input bbs */
 
 #ifdef DOTIMEOUT
@@ -497,134 +497,134 @@ void login_query()
     prints("\n\033[1m[37m«Î ‰»Î¥˙∫≈( ‘”√«Î ‰»Î `\033[36mguest\033[37m', ‘›Õ£◊¢≤·–¬’ ∫≈,add \033[36m'.'\33[37m after your ID for BIG5[m");
 #endif
     while (1) {
-	if (attempts++ >= LOGINATTEMPTS) {
-	    ansimore("etc/goodbye", false);
-	    oflush();
-	    sleep(1);
-	    exit(1);
-	}
+        if (attempts++ >= LOGINATTEMPTS) {
+            ansimore("etc/goodbye", false);
+            oflush();
+            sleep(1);
+            exit(1);
+        }
 /*Haohmaru.98.11.3*/
 #ifdef DOTIMEOUT
-	initalarm();
+        initalarm();
 #else
-	signal(SIGALRM, SIG_IGN);
+        signal(SIGALRM, SIG_IGN);
 #endif
 
-	getdata(0, 0, "\n«Î ‰»Î¥˙∫≈: ", uid, STRLEN - 1, DOECHO, NULL, true);
-	uid[STRLEN - 1] = 0;
-	if (uid[strlen(uid) - 1] == '.') {
-	    convcode = 1;
-	    uid[strlen(uid) - 1] = 0;
-	}
-	if (strcmp(uid, "new") == 0) {
+        getdata(0, 0, "\n«Î ‰»Î¥˙∫≈: ", uid, STRLEN - 1, DOECHO, NULL, true);
+        uid[STRLEN - 1] = 0;
+        if (uid[strlen(uid) - 1] == '.') {
+            convcode = 1;
+            uid[strlen(uid) - 1] = 0;
+        }
+        if (strcmp(uid, "new") == 0) {
 #ifdef LOGINASNEW
-	    if (check_ban_IP(fromhost, buf) <= 0) {
-		new_register();
-		sethomepath(tmpstr, currentuser->userid);
-		sprintf(buf, "/bin/mv -f %s " BBSHOME "/homeback/%s", tmpstr, currentuser->userid);
-		system(buf);
-		setmailpath(tmpstr, currentuser->userid);	/*Haohmaru.00.04.23,√‚µ√ƒ‹ø¥«∞»Àµƒ–≈ */
-		sprintf(buf, "/bin/mv -f %s " BBSHOME "/mailback/%s", tmpstr, currentuser->userid);
-		system(buf);
-		break;
-	    }
-	    prints("±æœµÕ≥“ÚŒ™ %s µƒ‘≠“ÚΩ˚÷πƒ˙À˘‘⁄Õ¯∂Œ◊¢≤·–¬”√ªß\n", buf);
+            if (check_ban_IP(fromhost, buf) <= 0) {
+                new_register();
+                sethomepath(tmpstr, currentuser->userid);
+                sprintf(buf, "/bin/mv -f %s " BBSHOME "/homeback/%s", tmpstr, currentuser->userid);
+                system(buf);
+                setmailpath(tmpstr, currentuser->userid);       /*Haohmaru.00.04.23,√‚µ√ƒ‹ø¥«∞»Àµƒ–≈ */
+                sprintf(buf, "/bin/mv -f %s " BBSHOME "/mailback/%s", tmpstr, currentuser->userid);
+                system(buf);
+                break;
+            }
+            prints("±æœµÕ≥“ÚŒ™ %s µƒ‘≠“ÚΩ˚÷πƒ˙À˘‘⁄Õ¯∂Œ◊¢≤·–¬”√ªß\n", buf);
 #else
-	    prints("[37m±æœµÕ≥ƒø«∞Œﬁ∑®“‘ new ◊¢≤·, «Î”√ guest Ω¯»Î.[m\n");
+            prints("[37m±æœµÕ≥ƒø«∞Œﬁ∑®“‘ new ◊¢≤·, «Î”√ guest Ω¯»Î.[m\n");
 #endif
-	} else if (*uid == '\0' || !dosearchuser(uid)) {
-	    prints("[32m" MSG_ERR_USERID "[m\n");
-	} else
+        } else if (*uid == '\0' || !dosearchuser(uid)) {
+            prints("[32m" MSG_ERR_USERID "[m\n");
+        } else
 /* Add by KCN for let sysop can use extra 10 UTMP */
-	if (!HAS_PERM(currentuser, PERM_ADMINMENU) && (curr_login_num >= MAXACTIVE + 10)) {
-	    ansimore("etc/loginfull", false);
-	    oflush();
-	    sleep(1);
-	    exit(1);
-	} else if ( /*strcmp */ strcasecmp(uid, "guest") == 0) {
-	    currentuser->userlevel = 0;
-	    currentuser->flags[0] = CURSOR_FLAG | PAGER_FLAG;
-	    break;
-	} else {
-	    if (!convcode)
-		convcode = !(currentuser->userdefine & DEF_USEGB);	/* KCN,99.09.05 */
+        if (!HAS_PERM(currentuser, PERM_ADMINMENU) && (curr_login_num >= MAXACTIVE + 10)) {
+            ansimore("etc/loginfull", false);
+            oflush();
+            sleep(1);
+            exit(1);
+        } else if ( /*strcmp */ strcasecmp(uid, "guest") == 0) {
+            currentuser->userlevel = 0;
+            currentuser->flags[0] = CURSOR_FLAG | PAGER_FLAG;
+            break;
+        } else {
+            if (!convcode)
+                convcode = !(currentuser->userdefine & DEF_USEGB);      /* KCN,99.09.05 */
 
-	    getdata(0, 0, "\033[1m[37m«Î ‰»Î√‹¬Î: [m", passbuf, 39, NOECHO, NULL, true);
+            getdata(0, 0, "\033[1m[37m«Î ‰»Î√‹¬Î: [m", passbuf, 39, NOECHO, NULL, true);
 
-	    if (!checkpasswd2(passbuf, currentuser)) {
-		logattempt(currentuser->userid, fromhost);
-		prints("[32m√‹¬Î ‰»Î¥ÌŒÛ...[m\n");
-	    } else {
-		if (id_invalid(uid)) {
-		    prints("[31m±ß«∏!![m\n");
-		    prints("[32m±æ’ ∫≈ π”√÷–ŒƒŒ™¥˙∫≈£¨¥À’ ∫≈“—æ≠ ß–ß...[m\n");
-		    prints("[32mœÎ±£¡Ù»Œ∫Œ«©√˚µµ«Î∏˙’æ≥§¡™¬Á £¨À˚(À˝)ª·Œ™ƒ„∑˛ŒÒ°£[m\n");
-		    getdata(0, 0, "∞¥ [RETURN] ºÃ–¯", genbuf, 10, NOECHO, NULL, true);
-		    oflush();
-		    sleep(1);
-		    exit(1);
-		}
-		if (simplepasswd(passbuf)) {
-		    prints("[33m* √‹¬Îπ˝Ï∂ºÚµ•, «Î—°‘Ò“ª∏ˆ“‘…œµƒÃÿ ‚◊÷‘™.[m\n");
-		    getdata(0, 0, "∞¥ [RETURN] ºÃ–¯", genbuf, 10, NOECHO, NULL, true);
-		}
-		/* passwd ok, covert to md5 --wwj 2001/5/7 */
-		if (currentuser->passwd[0]) {
-		    bbslog("covert", "for md5passwd");
-		    setpasswd(passbuf, currentuser);
-		}
-		break;
-	    }
-	}
+            if (!checkpasswd2(passbuf, currentuser)) {
+                logattempt(currentuser->userid, fromhost);
+                prints("[32m√‹¬Î ‰»Î¥ÌŒÛ...[m\n");
+            } else {
+                if (id_invalid(uid)) {
+                    prints("[31m±ß«∏!![m\n");
+                    prints("[32m±æ’ ∫≈ π”√÷–ŒƒŒ™¥˙∫≈£¨¥À’ ∫≈“—æ≠ ß–ß...[m\n");
+                    prints("[32mœÎ±£¡Ù»Œ∫Œ«©√˚µµ«Î∏˙’æ≥§¡™¬Á £¨À˚(À˝)ª·Œ™ƒ„∑˛ŒÒ°£[m\n");
+                    getdata(0, 0, "∞¥ [RETURN] ºÃ–¯", genbuf, 10, NOECHO, NULL, true);
+                    oflush();
+                    sleep(1);
+                    exit(1);
+                }
+                if (simplepasswd(passbuf)) {
+                    prints("[33m* √‹¬Îπ˝Ï∂ºÚµ•, «Î—°‘Ò“ª∏ˆ“‘…œµƒÃÿ ‚◊÷‘™.[m\n");
+                    getdata(0, 0, "∞¥ [RETURN] ºÃ–¯", genbuf, 10, NOECHO, NULL, true);
+                }
+                /* passwd ok, covert to md5 --wwj 2001/5/7 */
+                if (currentuser->passwd[0]) {
+                    bbslog("covert", "for md5passwd");
+                    setpasswd(passbuf, currentuser);
+                }
+                break;
+            }
+        }
     }
 #else
     getdata(0, 0, "\n∞¥ [RETURN] ºÃ–¯", genbuf, 10, NOECHO, NULL, true);
 #endif
     if (strcasecmp(currentuser->userid, "guest") && !HAS_PERM(currentuser, PERM_BASIC)) {
-	sethomefile(genbuf, currentuser->userid, "giveup");
-	fn = fopen(genbuf, "rt");
-	if (fn) {
-	    while (!feof(fn)) {
-		if (fscanf(fn, "%d %d", &i, &j) <= 0)
-		    break;
-		if (i == 1) {
-		    fclose(fn);
-		    sprintf(genbuf, "[32mƒ„“—æ≠Ω‰Õ¯£¨¿ÎΩ‰Õ¯Ω· ¯ªπ”–%dÃÏ[m\n", j - time(0) / 3600 / 24);
-		    prints(genbuf);
-		    oflush();
-		    sleep(1);
-		    exit(1);
-		}
-	    }
-	    fclose(fn);
-	}
-	prints("[32m±æ’ ∫≈“—Õ£ª˙°£«ÎœÚ [36mSYSOP[32m ≤È—Ø‘≠“Ú[m\n");
-	oflush();
-	sleep(1);
-	exit(1);
+        sethomefile(genbuf, currentuser->userid, "giveup");
+        fn = fopen(genbuf, "rt");
+        if (fn) {
+            while (!feof(fn)) {
+                if (fscanf(fn, "%d %d", &i, &j) <= 0)
+                    break;
+                if (i == 1) {
+                    fclose(fn);
+                    sprintf(genbuf, "[32mƒ„“—æ≠Ω‰Õ¯£¨¿ÎΩ‰Õ¯Ω· ¯ªπ”–%dÃÏ[m\n", j - time(0) / 3600 / 24);
+                    prints(genbuf);
+                    oflush();
+                    sleep(1);
+                    exit(1);
+                }
+            }
+            fclose(fn);
+        }
+        prints("[32m±æ’ ∫≈“—Õ£ª˙°£«ÎœÚ [36mSYSOP[32m ≤È—Ø‘≠“Ú[m\n");
+        oflush();
+        sleep(1);
+        exit(1);
     }
 #ifdef DEBUG
     if (!HAS_PERM(currentuser, PERM_SYSOP)) {
-	prints("±æ∂Àø⁄Ωˆπ©≤‚ ‘”√£¨«Î¡¨Ω”±æ’æµƒ∆‰À˚ø™∑≈∂Àø⁄°£\n");
-	oflush();
-	Net_Sleep(3);
-	system_abort();
+        prints("±æ∂Àø⁄Ωˆπ©≤‚ ‘”√£¨«Î¡¨Ω”±æ’æµƒ∆‰À˚ø™∑≈∂Àø⁄°£\n");
+        oflush();
+        Net_Sleep(3);
+        system_abort();
     }
 #endif
     multi_user_check();
     alarm(0);
-    signal(SIGALRM, SIG_IGN);	/*Haohmaru.98.11.12 */
+    signal(SIGALRM, SIG_IGN);   /*Haohmaru.98.11.12 */
     term_init();
     scrint = 1;
     sethomepath(tmpstr, currentuser->userid);
     sprintf(fname, "%s/%s.deadve", tmpstr, currentuser->userid);
     if ((fn = fopen(fname, "r")) != NULL) {
-	mail_file(currentuser->userid, fname, currentuser->userid, "≤ª’˝≥£∂œœﬂÀ˘±£¡Ùµƒ≤ø∑›...", 1);
-	fclose(fn);
+        mail_file(currentuser->userid, fname, currentuser->userid, "≤ª’˝≥£∂œœﬂÀ˘±£¡Ùµƒ≤ø∑›...", 1);
+        fclose(fn);
     }
     sethomepath(genbuf, currentuser->userid);
     mkdir(genbuf, 0755);
-    temp_numposts = 0;		/*Haohmaru.99.4.02.»√∞Æπ‡ÀÆµƒ»Àøﬁ»•∞…//grin */
+    temp_numposts = 0;          /*Haohmaru.99.4.02.»√∞Æπ‡ÀÆµƒ»Àøﬁ»•∞…//grin */
 }
 
 void write_defnotepad()
@@ -645,52 +645,52 @@ void notepad_init()
     maxsec = 24 * 60 * 60;
     lastnote = 0;
     if ((check = fopen("etc/checknotepad", "r")) != NULL) {
-	fgets(tmp, sizeof(tmp), check);
-	lastnote = atol(tmp);
-	fclose(check);
+        fgets(tmp, sizeof(tmp), check);
+        lastnote = atol(tmp);
+        fclose(check);
     } else
-	lastnote = 0;
+        lastnote = 0;
     if (lastnote == 0) {
-	lastnote = time(NULL) - (time(NULL) % maxsec);
-	check = fopen("etc/checknotepad", "w");
-	fprintf(check, "%lu", lastnote);
-	fclose(check);
-	sprintf(tmp, "¡Ù—‘∞Â‘⁄ %s Login ø™∆Ù£¨ƒ⁄∂®ø™∆Ù ±º‰ ±º‰Œ™ %s", currentuser->userid, Ctime(lastnote));
-	report(tmp);
+        lastnote = time(NULL) - (time(NULL) % maxsec);
+        check = fopen("etc/checknotepad", "w");
+        fprintf(check, "%lu", lastnote);
+        fclose(check);
+        sprintf(tmp, "¡Ù—‘∞Â‘⁄ %s Login ø™∆Ù£¨ƒ⁄∂®ø™∆Ù ±º‰ ±º‰Œ™ %s", currentuser->userid, Ctime(lastnote));
+        report(tmp);
     }
     if ((time(NULL) - lastnote) >= maxsec) {
-	move(t_lines - 1, 0);
-	prints("∂‘≤ª∆£¨œµÕ≥◊‘∂Ø∑¢–≈£¨«Î…‘∫Ú.....");
-	refresh();
-	now = time(0);
-	check = fopen("etc/checknotepad", "w");
-	lastnote = time(NULL) - (time(NULL) % maxsec);
-	fprintf(check, "%lu", lastnote);
-	fclose(check);
-	if ((check = fopen("etc/autopost", "r")) != NULL) {
-	    while (fgets(tmp, STRLEN, check) != NULL) {
-		fname = strtok(tmp, " \n\t:@");
-		bname = strtok(NULL, " \n\t:@");
-		ntitle = strtok(NULL, " \n\t:@");
-		if (fname == NULL || bname == NULL || ntitle == NULL)
-		    continue;
-		else {
-		    sprintf(notetitle, "[%.10s] %s", ctime(&now), ntitle);
-		    if (dashf(fname)) {
-			post_file(currentuser, "", fname, bname, notetitle, 0, 1);
-			sprintf(tmp, "%s ◊‘∂Ø’≈Ã˘", ntitle);
-			report(tmp);
-		    }
-		}
-	    }
-	    fclose(check);
-	}
-	sprintf(notetitle, "[%.10s] ¡Ù—‘∞Âº«¬º", ctime(&now));
-	if (dashf("etc/notepad")) {
-	    post_file(currentuser, "", "etc/notepad", "notepad", notetitle, 0, 1);
-	    unlink("etc/notepad");
-	}
-	report("◊‘∂Ø∑¢–≈ ±º‰∏¸∏ƒ");
+        move(t_lines - 1, 0);
+        prints("∂‘≤ª∆£¨œµÕ≥◊‘∂Ø∑¢–≈£¨«Î…‘∫Ú.....");
+        refresh();
+        now = time(0);
+        check = fopen("etc/checknotepad", "w");
+        lastnote = time(NULL) - (time(NULL) % maxsec);
+        fprintf(check, "%lu", lastnote);
+        fclose(check);
+        if ((check = fopen("etc/autopost", "r")) != NULL) {
+            while (fgets(tmp, STRLEN, check) != NULL) {
+                fname = strtok(tmp, " \n\t:@");
+                bname = strtok(NULL, " \n\t:@");
+                ntitle = strtok(NULL, " \n\t:@");
+                if (fname == NULL || bname == NULL || ntitle == NULL)
+                    continue;
+                else {
+                    sprintf(notetitle, "[%.10s] %s", ctime(&now), ntitle);
+                    if (dashf(fname)) {
+                        post_file(currentuser, "", fname, bname, notetitle, 0, 1);
+                        sprintf(tmp, "%s ◊‘∂Ø’≈Ã˘", ntitle);
+                        report(tmp);
+                    }
+                }
+            }
+            fclose(check);
+        }
+        sprintf(notetitle, "[%.10s] ¡Ù—‘∞Âº«¬º", ctime(&now));
+        if (dashf("etc/notepad")) {
+            post_file(currentuser, "", "etc/notepad", "notepad", notetitle, 0, 1);
+            unlink("etc/notepad");
+        }
+        report("◊‘∂Ø∑¢–≈ ±º‰∏¸∏ƒ");
     }
     return;
 }
@@ -703,22 +703,22 @@ void user_login()
     unsigned unLevel = PERM_SUICIDE;
 
     if (strcmp(currentuser->userid, "SYSOP") == 0) {
-	currentuser->userlevel &= (~0);	/* SYSOP gets all permission bits */
+        currentuser->userlevel &= (~0); /* SYSOP gets all permission bits */
     }
     /* ?????∫Û√Êªπ”–check_register_info */
     ruser = getenv("REMOTEUSERNAME");
     bbslog("1system", "ENTER %s@%s", ruser ? ruser : "?", fromhost);
     if (ruser) {
-	sprintf(genbuf, "%s@%s", ruser, fromhost);
-	if (valid_ident(genbuf)) {
-	    strncpy(currentuser->ident, genbuf, NAMELEN);
-	}
-	if (!valid_ident(currentuser->ident)) {
-	    currentuser->ident[0] = '\0';
-	}
+        sprintf(genbuf, "%s@%s", ruser, fromhost);
+        if (valid_ident(genbuf)) {
+            strncpy(currentuser->ident, genbuf, NAMELEN);
+        }
+        if (!valid_ident(currentuser->ident)) {
+            currentuser->ident[0] = '\0';
+        }
     }
     u_enter();
-    sprintf(genbuf, "Enter from %-16s", fromhost);	/* Leeward: 97.12.02 */
+    sprintf(genbuf, "Enter from %-16s", fromhost);      /* Leeward: 97.12.02 */
 
     report(genbuf);
 /*---	period	2000-10-19	4 debug	---*/
@@ -726,48 +726,48 @@ void user_login()
 /*---	---*/
     started = 1;
     if (USE_NOTEPAD == 1)
-	notepad_init();
+        notepad_init();
     if (strcmp(currentuser->userid, "guest") != 0 && USE_NOTEPAD == 1) {
-	if (DEFINE(currentuser, DEF_NOTEPAD)) {
-	    int noteln;
+        if (DEFINE(currentuser, DEF_NOTEPAD)) {
+            int noteln;
 
-	    if (lastnote > currentuser->notedate)
-		currentuser->noteline = 0;
-	    noteln = countln("etc/notepad");
-	    if (lastnote > currentuser->notedate || currentuser->noteline == 0) {
-		shownotepad();
-		currentuser->noteline = noteln;
-		write_defnotepad();
-	    } else if ((noteln - currentuser->noteline) > 0) {
-		clear();
-		ansimore2("etc/notepad", false, 0, noteln - currentuser->noteline + 1);
-		prints("[31m°—©ÿ°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™©ÿ°—[m\n");
-		igetkey();
-		currentuser->noteline = noteln;
-		write_defnotepad();
-		clear();
-	    }
-	}
+            if (lastnote > currentuser->notedate)
+                currentuser->noteline = 0;
+            noteln = countln("etc/notepad");
+            if (lastnote > currentuser->notedate || currentuser->noteline == 0) {
+                shownotepad();
+                currentuser->noteline = noteln;
+                write_defnotepad();
+            } else if ((noteln - currentuser->noteline) > 0) {
+                clear();
+                ansimore2("etc/notepad", false, 0, noteln - currentuser->noteline + 1);
+                prints("[31m°—©ÿ°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™°™©ÿ°—[m\n");
+                igetkey();
+                currentuser->noteline = noteln;
+                write_defnotepad();
+                clear();
+            }
+        }
     }
     /* Leeward 98.09.24 Use SHARE MEM to diaplay statistic data below */
     if (DEFINE(currentuser, DEF_SHOWSTATISTIC))
-	ansimore("0Announce/bbslists/countlogins", true);
+        ansimore("0Announce/bbslists/countlogins", true);
     if (vote_flag(NULL, '\0', 2 /*ºÏ≤È∂¡π˝–¬µƒWelcome √ª */ ) == 0) {
-	if (dashf("Welcome")) {
-	    clear();
-	    ansimore("Welcome", true);
-	    vote_flag(NULL, 'R', 2 /*–¥»Î∂¡π˝–¬µƒWelcome */ );
-	}
+        if (dashf("Welcome")) {
+            clear();
+            ansimore("Welcome", true);
+            vote_flag(NULL, 'R', 2 /*–¥»Î∂¡π˝–¬µƒWelcome */ );
+        }
     }
     clear();
-    if (DEFINE(currentuser, DEF_SHOWHOT)) {	/* Leeward 98.09.24 Use SHARE MEM and disable old code 
-						   if (DEFINE(currentuser,DEF_SHOWSTATISTIC)) {
-						   ansimore("etc/posts/day", false);
-						   }
-						 */
-	ansimore("etc/posts/day", false);	/* Leeward: disable old code */
+    if (DEFINE(currentuser, DEF_SHOWHOT)) {     /* Leeward 98.09.24 Use SHARE MEM and disable old code 
+                                                   if (DEFINE(currentuser,DEF_SHOWSTATISTIC)) {
+                                                   ansimore("etc/posts/day", false);
+                                                   }
+                                                 */
+        ansimore("etc/posts/day", false);       /* Leeward: disable old code */
     }
-    move(t_lines - 2 /*1 */ , 0);	/* Leeward: 98.09.24 Alter below message */
+    move(t_lines - 2 /*1 */ , 0);       /* Leeward: 98.09.24 Alter below message */
     clrtoeol();
     prints("[1;36m°Ó ’‚ «ƒ˙µ⁄ [33m%d[36m ¥Œ…œ’æ£¨…œ¥Œƒ˙ «¥” [33m%s[36m ¡¨Õ˘±æ’æ°£\n", currentuser->numlogins + 1, currentuser->lasthost);
     prints("°Ó …œ¥Œ¡¨œﬂ ±º‰Œ™ [33m%s[m ", Ctime(currentuser->lastlogin));
@@ -776,34 +776,34 @@ void user_login()
     show_help("0Announce/bbslists/newsday");
     /* added end */
     ansimore("0Announce/hotinfo", false);
-    move(t_lines - 1 /*1 */ , 0);	/* Leeward: 98.09.24 Alter below message */
+    move(t_lines - 1 /*1 */ , 0);       /* Leeward: 98.09.24 Alter below message */
     clrtoeol();
     prints("[1;36m°Ó ∞¥»Œ“‚º¸ºÃ–¯...[33m[m ");
     igetkey();
     move(t_lines - 1, 0);
     sethomefile(fname, currentuser->userid, BADLOGINFILE);
     if (ansimore(fname, false) != -1) {
-	getdata(t_lines - 1, 0, "ƒ˙“™…æ≥˝“‘…œ√‹¬Î ‰»Î¥ÌŒÛµƒº«¬º¬ (Y/N)? [Y] ", ans, 4, DOECHO, NULL, true);
-	if (*ans != 'N' && *ans != 'n')
-	    unlink(fname);
+        getdata(t_lines - 1, 0, "ƒ˙“™…æ≥˝“‘…œ√‹¬Î ‰»Î¥ÌŒÛµƒº«¬º¬ (Y/N)? [Y] ", ans, 4, DOECHO, NULL, true);
+        if (*ans != 'N' && *ans != 'n')
+            unlink(fname);
     }
 
     strncpy(currentuser->lasthost, fromhost, IPLEN);
-    currentuser->lasthost[15] = '\0';	/* dumb mistake on my part */
+    currentuser->lasthost[15] = '\0';   /* dumb mistake on my part */
     currentuser->lastlogin = time(NULL);
     currentuser->numlogins++;
 
     /* Leeward 98.06.20 adds below 3 lines */
     if ((int) currentuser->numlogins < 1)
-	currentuser->numlogins = 1;
+        currentuser->numlogins = 1;
     if ((int) currentuser->numposts < 0)
-	currentuser->numposts = 0;
+        currentuser->numposts = 0;
     if ((int) currentuser->stay < 0)
-	currentuser->stay = 1;
-    currentuser->userlevel &= (~unLevel);	/* ª÷∏¥◊‘…±±Í÷æ Luzi 98.10.10 */
+        currentuser->stay = 1;
+    currentuser->userlevel &= (~unLevel);       /* ª÷∏¥◊‘…±±Í÷æ Luzi 98.10.10 */
 
     if (currentuser->firstlogin == 0) {
-	currentuser->firstlogin = login_start_time - 7 * 86400;
+        currentuser->firstlogin = login_start_time - 7 * 86400;
     }
     check_register_info();
 }
@@ -817,7 +817,7 @@ void set_numofsig()
     sigln = countln(signame);
     numofsig = sigln / 6;
     if ((sigln % 6) != 0)
-	numofsig += 1;
+        numofsig += 1;
 }
 
 int chk_friend_book()
@@ -828,43 +828,43 @@ int chk_friend_book()
 
     move(3, 0);
     if ((fp = fopen("friendbook", "r")) == NULL)
-	return n;
+        return n;
     prints("[1mœµÕ≥—∞»À√˚≤·¡–±Ì:[m\n\n");
     /*if((fp=fopen("friendbook","r"))==NULL)
        return n; Moved before "prints", Leeward 98.12.03 */
     while (fgets(buf, sizeof(buf), fp) != NULL) {
-	char uid[14];
-	char msg[STRLEN];
-	struct user_info *uin;
+        char uid[14];
+        char msg[STRLEN];
+        struct user_info *uin;
 
-	ptr = strstr(buf, "@");
-	if (ptr == NULL)
-	    continue;
-	ptr++;
-	strcpy(uid, ptr);
-	ptr = strstr(uid, "\n");
-	*ptr = '\0';
-	idnum = atoi(buf);
-	if (idnum != usernum || idnum <= 0)
-	    continue;
-	uin = t_search(uid, false);
-	sprintf(msg, "%s “—æ≠…œ’æ°£", currentuser->userid);
-	/* ±£¥ÊÀ˘∑¢msgµƒƒøµƒuid 1998.7.5 by dong */
-	strcpy(MsgDesUid, uin ? uin->userid : "");
-	idnum = 0;		/*Haohmaru.99.5.29.–ﬁ’˝“ª∏ˆbug,√‚µ√”–»À¿˚”√’‚∏ˆ¿¥…ß»≈±»À */
-	if (uin != NULL && canbemsged(uin))
-	    idnum = do_sendmsg(uin, msg, 2);
-	if (idnum)
-	    prints("%s ’“ƒ„£¨œµÕ≥“—æ≠∏ÊÀﬂÀ˚(À˝)ƒ„…œ’æµƒœ˚œ¢°£\n", uid);
-	else
-	    prints("%s ’“ƒ„£¨œµÕ≥Œﬁ∑®¡™¬ÁµΩÀ˚(À˝)£¨«Îƒ„∏˙À˚(À˝)¡™¬Á°£\n", uid);
-	del_from_file("friendbook", buf);
-	n++;
-	if (n > 15) {		/* Leeward 98.12.03 */
-	    pressanykey();
-	    move(5, 0);
-	    clrtobot();
-	}
+        ptr = strstr(buf, "@");
+        if (ptr == NULL)
+            continue;
+        ptr++;
+        strcpy(uid, ptr);
+        ptr = strstr(uid, "\n");
+        *ptr = '\0';
+        idnum = atoi(buf);
+        if (idnum != usernum || idnum <= 0)
+            continue;
+        uin = t_search(uid, false);
+        sprintf(msg, "%s “—æ≠…œ’æ°£", currentuser->userid);
+        /* ±£¥ÊÀ˘∑¢msgµƒƒøµƒuid 1998.7.5 by dong */
+        strcpy(MsgDesUid, uin ? uin->userid : "");
+        idnum = 0;              /*Haohmaru.99.5.29.–ﬁ’˝“ª∏ˆbug,√‚µ√”–»À¿˚”√’‚∏ˆ¿¥…ß»≈±»À */
+        if (uin != NULL && canbemsged(uin))
+            idnum = do_sendmsg(uin, msg, 2);
+        if (idnum)
+            prints("%s ’“ƒ„£¨œµÕ≥“—æ≠∏ÊÀﬂÀ˚(À˝)ƒ„…œ’æµƒœ˚œ¢°£\n", uid);
+        else
+            prints("%s ’“ƒ„£¨œµÕ≥Œﬁ∑®¡™¬ÁµΩÀ˚(À˝)£¨«Îƒ„∏˙À˚(À˝)¡™¬Á°£\n", uid);
+        del_from_file("friendbook", buf);
+        n++;
+        if (n > 15) {           /* Leeward 98.12.03 */
+            pressanykey();
+            move(5, 0);
+            clrtobot();
+        }
     }
     fclose(fp);
     return n;
@@ -892,29 +892,29 @@ void main_bbs(int convit, char *argv)
     dup2(0, 1);
 #ifdef BBS_INFOD
     if (strstr(argv[0], "bbsinfo") != NULL) {
-	load_sysconf();
-	bbsinfod_main(argc, argv);
-	exit(0);
+        load_sysconf();
+        bbsinfod_main(argc, argv);
+        exit(0);
     }
 #endif
     initscr();
 
 #if 0
     if (argc < 2 || ((*argv[1] != 'h') && (*argv[1] != 'd') && (*argv[1] != 'e'))) {
-	/* KCN add 'd' mode for bbsd 1999.9.1 */
-	prints("You cannot execute this program directly.\n");
-	oflush();
-	exit(-1);
+        /* KCN add 'd' mode for bbsd 1999.9.1 */
+        prints("You cannot execute this program directly.\n");
+        oflush();
+        exit(-1);
     }
     if (*argv[1] == 'e')
-	convcode = 1;
+        convcode = 1;
 #endif
     convcode = convit;
-    conv_init();		/* KCN,99.09.05 */
+    conv_init();                /* KCN,99.09.05 */
 
     system_init();
     if (setjmp(byebye)) {
-	system_abort();
+        system_abort();
     }
     login_query();
     user_login();
@@ -930,40 +930,40 @@ void main_bbs(int convit, char *argv)
 #endif
 
 #ifdef TALK_LOG
-    tlog_recover();		/* 2000.9.15 Bigman ÃÌº”÷–∂œtalkµƒª÷∏¥ */
+    tlog_recover();             /* 2000.9.15 Bigman ÃÌº”÷–∂œtalkµƒª÷∏¥ */
 #endif
 
     currmail = get_num_records(currmaildir, sizeof(struct fileheader));
-    if ((currmail > MAIL_LIMIT) && !HAS_PERM(currentuser, PERM_BOARDS) && !HAS_PERM(currentuser, PERM_SYSOP))	/* Leeward 98.05.20 */
-	prints("ƒ„µƒ–≈º˛∏ﬂ¥Ô %d ∑‚, «Î…æ≥˝π˝∆⁄–≈º˛, Œ¨≥÷‘⁄ %d ∑‚“‘œ¬£¨∑Ò‘ÚΩ´≤ªƒ‹∑¢–≈\n", currmail, MAIL_LIMIT);
+    if ((currmail > MAIL_LIMIT) && !HAS_PERM(currentuser, PERM_BOARDS) && !HAS_PERM(currentuser, PERM_SYSOP))   /* Leeward 98.05.20 */
+        prints("ƒ„µƒ–≈º˛∏ﬂ¥Ô %d ∑‚, «Î…æ≥˝π˝∆⁄–≈º˛, Œ¨≥÷‘⁄ %d ∑‚“‘œ¬£¨∑Ò‘ÚΩ´≤ªƒ‹∑¢–≈\n", currmail, MAIL_LIMIT);
 
     if (HAS_PERM(currentuser, PERM_SYSOP) && dashf("new_register"))
-	prints("”––¬ π”√’ﬂ’˝‘⁄µ»ƒ˙Õ®π˝◊¢≤·◊ ¡œ°£\n");
+        prints("”––¬ π”√’ﬂ’˝‘⁄µ»ƒ˙Õ®π˝◊¢≤·◊ ¡œ°£\n");
 
     /*chk_friend_book(); */
     /* Leeward 98.12.03 */
     if (chk_friend_book()) {
-	pressreturn();
+        pressreturn();
     }
     clear();
     memset(netty_path, 0, sizeof(netty_path));
     nettyNN = NNread_init();
     set_numofsig();
     if (DEFINE(currentuser, DEF_INNOTE)) {
-	sethomefile(notename, currentuser->userid, "notes");
-	if (dashf(notename))
-	    ansimore(notename, true);
+        sethomefile(notename, currentuser->userid, "notes");
+        if (dashf(notename))
+            ansimore(notename, true);
     }
     b_closepolls();
     num_alcounter();
     if (count_friends > 0 && DEFINE(currentuser, DEF_LOGFRIEND))
-	t_friends();
+        t_friends();
     while (1) {
-	if (DEFINE(currentuser, DEF_NORMALSCR))
-	    domenu("TOPMENU");
-	else
-	    domenu("TOPMENU2");
-	Goodbye();
+        if (DEFINE(currentuser, DEF_NORMALSCR))
+            domenu("TOPMENU");
+        else
+            domenu("TOPMENU2");
+        Goodbye();
     }
 }
 
@@ -975,9 +975,9 @@ int egetch()
 
     check_calltime();
     if (talkrequest) {
-	talkreply();
-	refscreen = true;
-	return -1;
+        talkreply();
+        refscreen = true;
+        return -1;
     }
 /*    if (ntalkrequest) {
         ntalkreply() ;
@@ -985,20 +985,20 @@ int egetch()
         return -1 ;
     }*/
     while (1) {
-	rval = igetkey();
-	if (talkrequest) {
-	    talkreply();
-	    refscreen = true;
-	    return -1;
-	}			/*
-				   if(ntalkrequest) {
-				   ntalkreply() ;
-				   refscreen = true ;
-				   return -1 ;
-				   } */
-	if (rval != Ctrl('L'))
-	    break;
-	redoscr();
+        rval = igetkey();
+        if (talkrequest) {
+            talkreply();
+            refscreen = true;
+            return -1;
+        }                       /*
+                                   if(ntalkrequest) {
+                                   ntalkreply() ;
+                                   refscreen = true ;
+                                   return -1 ;
+                                   } */
+        if (rval != Ctrl('L'))
+            break;
+        redoscr();
     }
     refscreen = false;
     return rval;
@@ -1009,14 +1009,14 @@ char *boardmargin()
     static char buf[STRLEN];
 
     if (selboard)
-	sprintf(buf, "Ã÷¬€«¯ [%s]", currboard);
+        sprintf(buf, "Ã÷¬€«¯ [%s]", currboard);
     else {
-	brc_initial(currentuser->userid, DEFAULTBOARD);
-	if (getbnum(currboard)) {
-	    selboard = 1;
-	    sprintf(buf, "Ã÷¬€«¯ [%s]", currboard);
-	} else
-	    sprintf(buf, "ƒø«∞≤¢√ª”–…Ë∂®Ã÷¬€«¯");
+        brc_initial(currentuser->userid, DEFAULTBOARD);
+        if (getbnum(currboard)) {
+            selboard = 1;
+            sprintf(buf, "Ã÷¬€«¯ [%s]", currboard);
+        } else
+            sprintf(buf, "ƒø«∞≤¢√ª”–…Ë∂®Ã÷¬€«¯");
     }
     return buf;
 }
@@ -1031,29 +1031,29 @@ void update_endline()
     int colour;
 
     if (DEFINE(currentuser, DEF_TITLECOLOR)) {
-	colour = 4;
+        colour = 4;
     } else {
-	colour = currentuser->numlogins % 4 + 3;
-	if (colour == 3)
-	    colour = 1;
+        colour = currentuser->numlogins % 4 + 3;
+        if (colour == 3)
+            colour = 1;
     }
     if (!DEFINE(currentuser, DEF_ENDLINE)) {
-	move(t_lines - 1, 0);
-	clrtoeol();
-	return;
+        move(t_lines - 1, 0);
+        clrtoeol();
+        return;
     }
     now = time(0);
     allstay = (now - login_start_time) / 60;
     sprintf(buf, "[[36m%.12s[33m]", currentuser->userid);
     if (DEFINE(currentuser, DEF_NOTMSGFRIEND)) {
-	sprintf(stitle, "[4%dm[33m ±º‰[[36m%12.12s[33m] ∫ÙΩ–∆˜[∫√”—:%3s£∫“ª∞„:%3s]  π”√’ﬂ%-24s Õ£¡Ù[%3d:%2d][m", colour, ctime(&now) + 4,
-		(!(uinfo.pager & FRIEND_PAGER)) ? "NO " : "YES", (uinfo.pager & ALL_PAGER) ? "YES" : "NO ", buf, (allstay / 60) % 1000, allstay % 60);
+        sprintf(stitle, "[4%dm[33m ±º‰[[36m%12.12s[33m] ∫ÙΩ–∆˜[∫√”—:%3s£∫“ª∞„:%3s]  π”√’ﬂ%-24s Õ£¡Ù[%3d:%2d][m", colour, ctime(&now) + 4,
+                (!(uinfo.pager & FRIEND_PAGER)) ? "NO " : "YES", (uinfo.pager & ALL_PAGER) ? "YES" : "NO ", buf, (allstay / 60) % 1000, allstay % 60);
     } else {
 /*            num_alcounter();
             sprintf(stitle,"[4%dm[33m ±º‰[[36m%12.12s[33m] ◊‹»À ˝/∫√”—[%3d/%3d][%c£∫%c]  π”√’ﬂ%-24s Õ£¡Ù[%3d:%2d][m",colour,
                     ctime(&now)+4,count_users,count_friends,(uinfo.pager&ALL_PAGER)?'Y':'N',(!(uinfo.pager&FRIEND_PAGER))?'N':'Y',buf,(allstay/60)%1000,allstay%60);*/
-	sprintf(stitle, "\x1b[4%dm\x1b[33m ±º‰[\x1b[36m%12.12s\x1b[33m] ◊‹»À ˝ [ %3d ] [%c£∫%c]  π”√’ﬂ%-24s Õ£¡Ù[%3d:%2d]\x1b[m", colour,
-		ctime(&now) + 4, get_utmp_number() + getwwwguestcount(), (uinfo.pager & ALL_PAGER) ? 'Y' : 'N', (!(uinfo.pager & FRIEND_PAGER)) ? 'N' : 'Y', buf, (allstay / 60) % 1000, allstay % 60);
+        sprintf(stitle, "\x1b[4%dm\x1b[33m ±º‰[\x1b[36m%12.12s\x1b[33m] ◊‹»À ˝ [ %3d ] [%c£∫%c]  π”√’ﬂ%-24s Õ£¡Ù[%3d:%2d]\x1b[m", colour,
+                ctime(&now) + 4, get_utmp_number() + getwwwguestcount(), (uinfo.pager & ALL_PAGER) ? 'Y' : 'N', (!(uinfo.pager & FRIEND_PAGER)) ? 'N' : 'Y', buf, (allstay / 60) % 1000, allstay % 60);
     }
     move(t_lines - 1, 0);
     clrtoeol();
@@ -1062,18 +1062,18 @@ void update_endline()
     /* Leeward 98.09.30 show hint for rookies */
     /* PERMs should coincide with ~bbsroot/etc/sysconf.ini: PERM_ADMENU */
     if (!DEFINE(currentuser, DEF_NORMALSCR) && MMENU == uinfo.mode && !HAS_PERM(currentuser, PERM_ACCOUNTS) && !HAS_PERM(currentuser, PERM_OVOTE)
-	&& !HAS_PERM(currentuser, PERM_SYSOP) && !HAS_PERM(currentuser, PERM_OBOARDS)
-	&& !HAS_PERM(currentuser, PERM_WELCOME) && !HAS_PERM(currentuser, PERM_ANNOUNCE)) {
-	move(t_lines - 2, 0);
-	clrtoeol();
-	prints("[1m[32m’‚ «æ´ºÚƒ£ Ω÷˜—°µ•°£“™ π”√“ª∞„ƒ£ Ω£¨«Î…Ë∂®∏ˆ»À≤Œ ˝µ⁄£ÃœÓŒ™£œ£Œ≤¢’˝≥£¿Î’æ‘ŸΩ¯’æ°£[m");
+        && !HAS_PERM(currentuser, PERM_SYSOP) && !HAS_PERM(currentuser, PERM_OBOARDS)
+        && !HAS_PERM(currentuser, PERM_WELCOME) && !HAS_PERM(currentuser, PERM_ANNOUNCE)) {
+        move(t_lines - 2, 0);
+        clrtoeol();
+        prints("[1m[32m’‚ «æ´ºÚƒ£ Ω÷˜—°µ•°£“™ π”√“ª∞„ƒ£ Ω£¨«Î…Ë∂®∏ˆ»À≤Œ ˝µ⁄£ÃœÓŒ™£œ£Œ≤¢’˝≥£¿Î’æ‘ŸΩ¯’æ°£[m");
     }
 }
 
 
 /*ReWrite by SmallPig*/
 void showtitle(title, mid)
-	char *title, *mid;
+    char *title, *mid;
 {
     char buf[STRLEN], *note;
     char stitle[256];
@@ -1081,11 +1081,11 @@ void showtitle(title, mid)
     int colour;
 
     if (DEFINE(currentuser, DEF_TITLECOLOR)) {
-	colour = 4;
+        colour = 4;
     } else {
-	colour = currentuser->numlogins % 4 + 3;
-	if (colour == 3)
-	    colour = 1;
+        colour = currentuser->numlogins % 4 + 3;
+        if (colour == 3)
+            colour = 1;
     }
     note = boardmargin();
     spc1 = 39 - strlen(title) - strlen(mid) / 2;
@@ -1100,26 +1100,26 @@ void showtitle(title, mid)
     /*if( spc1 < 2 )  spc1 = 2;
        if( spc2 < 2 )  spc2 = 2; */
     if (spc2 < 2)
-	spc2 = 2;
+        spc2 = 2;
     if (spc1 < 2) {
-	spc2 -= 2 - spc1;
-	spc1 = 2;
-	if (spc2 < 2)
-	    spc2 = 2;
+        spc2 -= 2 - spc1;
+        spc1 = 2;
+        if (spc2 < 2)
+            spc2 = 2;
     }
 /* Modified by Leeward 97/11/23 -- modification stops */
     move(0, 0);
     clrtoeol();
     sprintf(buf, "%*s", spc1, "");
     if (!strcmp(mid, BBS_FULL_NAME)) {
-	sprintf(stitle, "[4%dm[33m%s%s[37m%s[4%dm", colour, title, buf, mid, colour);
-	prints("%s", stitle);
+        sprintf(stitle, "[4%dm[33m%s%s[37m%s[4%dm", colour, title, buf, mid, colour);
+        prints("%s", stitle);
     } else if (mid[0] == '[') {
-	sprintf(stitle, "[4%dm[33m%s%s[37m[5m%s[m[4%dm", colour, title, buf, mid, colour);
-	prints("%s", stitle);
+        sprintf(stitle, "[4%dm[33m%s%s[37m[5m%s[m[4%dm", colour, title, buf, mid, colour);
+        prints("%s", stitle);
     } else {
-	sprintf(stitle, "[4%dm[33m%s%s[36m%s", colour, title, buf, mid);
-	prints("%s", stitle);
+        sprintf(stitle, "[4%dm[33m%s%s[36m%s", colour, title, buf, mid);
+        prints("%s", stitle);
     }
     sprintf(buf, "%*s", spc2, "");
     prints("%s[33m%s[m\n", buf, note);
@@ -1142,14 +1142,14 @@ void docmdtitle(char *title, char *prompt)
 */
     chkmailflag = chkmail();
 
-    if (chkmailflag == 2)	/*Haohmaru.99.4.4.∂‘ ’–≈“≤º”œﬁ÷∆ */
-	strcpy(middoc, "[ƒ˙µƒ–≈œ‰≥¨π˝»›¡ø,≤ªƒ‹‘Ÿ ’–≈!]");
+    if (chkmailflag == 2)       /*Haohmaru.99.4.4.∂‘ ’–≈“≤º”œﬁ÷∆ */
+        strcpy(middoc, "[ƒ˙µƒ–≈œ‰≥¨π˝»›¡ø,≤ªƒ‹‘Ÿ ’–≈!]");
     else if (chkmailflag)
-	strcpy(middoc, "[ƒ˙”––≈º˛]");
+        strcpy(middoc, "[ƒ˙”––≈º˛]");
 /*    else if ( vote_flag( DEFAULTBOARD, '\0' ,0) == 0&&(bp->flag&BOARD_VOTEFLAG))
         strcpy(middoc,"[œµÕ≥Õ∂∆±÷–]");*/
     else
-	strcpy(middoc, BBS_FULL_NAME);
+        strcpy(middoc, BBS_FULL_NAME);
 
 
     showtitle(title, middoc);
@@ -1169,7 +1169,7 @@ int tlog_recover()
     sprintf(buf, "home/%c/%s/talklog", toupper(currentuser->userid[0]), currentuser->userid);
 
     if (strcasecmp(currentuser->userid, "guest") == 0 || !dashf(buf))
-	return;
+        return;
 
     clear();
     strcpy(genbuf, "");
@@ -1177,9 +1177,9 @@ int tlog_recover()
     getdata(0, 0, "\033[1;32mƒ˙”–“ª∏ˆ≤ª’˝≥£∂œœﬂÀ˘¡Ùœ¬¿¥µƒ¡ƒÃÏº«¬º, ƒ˙“™ .. (M) ºƒªÿ–≈œ‰ (Q) À„¡À£ø[Q]£∫\033[m", genbuf, 4, DOECHO, NULL, true);
 
     if (genbuf[0] == 'M' || genbuf[0] == 'm')
-	mail_file(currentuser->userid, buf, currentuser->userid, "¡ƒÃÏº«¬º", 1);
+        mail_file(currentuser->userid, buf, currentuser->userid, "¡ƒÃÏº«¬º", 1);
     else
-	unlink(buf);
+        unlink(buf);
     return;
 
 }

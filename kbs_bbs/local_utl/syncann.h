@@ -9,8 +9,8 @@ typedef void *POS;
 class CQueue {
   private:
     typedef struct _node {
-	void *data;
-	struct _node *next;
+        void *data;
+        struct _node *next;
     } CNode, *PCNode;
     int num;
 
@@ -28,7 +28,7 @@ class CQueue {
 
     POS GetHeadPosition();
     int GetNum() {
-	return num;
+        return num;
     };
     void *GetNext(POS & pos);
 };

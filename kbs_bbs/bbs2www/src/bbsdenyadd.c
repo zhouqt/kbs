@@ -21,25 +21,25 @@ int loaddenyuser(char *board)
     sprintf(path, "boards/%s/deny_users", board);
     fp = fopen(path, "r");
     if (fp == 0)
-	return;
+        return;
     while (denynum < (sizeof(denyuser) / sizeof(denyuser[0]))) {
-	if (fgets(buf, sizeof(buf), fp) == 0)
-	    break;
-	id = strchr(buf, ' ');
-	if (id != NULL)
-	    *id = '\0';
-	strcpy(denyuser[denynum].id, buf);
-	strncpy(denyuser[denynum].exp, buf + 13, 30);
-	nick = strrchr(buf + 13, '[');
-	if (nick != NULL) {
-	    denyuser[denynum].free_time = atol(nick + 1);
-	    nick--;
-	    if (nick - buf > 43) {
-		*nick = '\0';
-		strcpy(denyuser[denynum].comment, buf + 43);
-	    }
-	}
-	denynum++;
+        if (fgets(buf, sizeof(buf), fp) == 0)
+            break;
+        id = strchr(buf, ' ');
+        if (id != NULL)
+            *id = '\0';
+        strcpy(denyuser[denynum].id, buf);
+        strncpy(denyuser[denynum].exp, buf + 13, 30);
+        nick = strrchr(buf + 13, '[');
+        if (nick != NULL) {
+            denyuser[denynum].free_time = atol(nick + 1);
+            nick--;
+            if (nick - buf > 43) {
+                *nick = '\0';
+                strcpy(denyuser[denynum].comment, buf + 43);
+            }
+        }
+        denynum++;
     }
     fclose(fp);
 }
@@ -53,18 +53,18 @@ int savedenyuser(char *board)
     sprintf(path, "boards/%s/deny_users", board);
     fp = fopen(path, "w");
     if (fp == 0)
-	return;
+        return;
     for (i = 0; i < denynum; i++) {
-	int m;
+        int m;
 
-	exp = denyuser[i].exp;
-	if (denyuser[i].id[0] == 0)
-	    continue;
-	for (m = 0; exp[m]; m++) {
-	    if (exp[m] < 32 && exp[m] > 0)
-		exp[m] = '.';
-	}
-	fprintf(fp, "%-12.12s %-30.30s%s\x1b[%um\n", denyuser[i].id, denyuser[i].exp, denyuser[i].comment, denyuser[i].free_time);
+        exp = denyuser[i].exp;
+        if (denyuser[i].id[0] == 0)
+            continue;
+        for (m = 0; exp[m]; m++) {
+            if (exp[m] < 32 && exp[m] > 0)
+                exp[m] = '.';
+        }
+        fprintf(fp, "%-12.12s %-30.30s%s\x1b[%um\n", denyuser[i].id, denyuser[i].exp, denyuser[i].comment, denyuser[i].free_time);
     }
     fclose(fp);
 }
@@ -104,40 +104,40 @@ int inform(bcache_t * bp, char *user, char *exp, int dt)
     sprintf(title, "%s被取消在%s版的发文权限", user, board);
 
     if ((HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_OBOARDS)) && !chk_BM_instr(bp->BM, currentuser->userid)) {
-	my_flag = 0;
-	fprintf(fn, "寄信人: SYSOP (System Operator) \n");
-	fprintf(fn, "标  题: %s\n", title);
-	fprintf(fn, "发信站: %s (%24.24s)\n", "BBS " NAME_BBS_CHINESE "站", ctime(&now));
-	fprintf(fn, "来  源: " NAME_BBS_ENGLISH "\n");
-	fprintf(fn, "\n");
-	fprintf(fn, "由于您在 \x1b[4m%s\x1b[0m 版 \x1b[4m%s\x1b[0m，我很遗憾地通知您， \n", board, exp);
-	if (dt)
-	    fprintf(fn, "您被暂时取消在该版的发文权力 \x1b[4m%d\x1b[0m 天，到期后请回复\n", dt);
-	else
-	    fprintf(fn, "您被暂时取消在该版的发文权力，到期后请回复\n");
-	fprintf(fn, "此信申请恢复权限。\n");
-	fprintf(fn, "\n");
-	fprintf(fn, "                            " NAME_BBS_CHINESE NAME_SYSOP_GROUP "值班站务：\x1b[4m%s\x1b[0m\n", usr->userid);
-	fprintf(fn, "                              %s\n", ctime(&now));
-	strcpy(usr->userid, "SYSOP");
-	strcpy(usr->username, NAME_SYSOP);
-	strcpy(usr->realname, NAME_SYSOP);
+        my_flag = 0;
+        fprintf(fn, "寄信人: SYSOP (System Operator) \n");
+        fprintf(fn, "标  题: %s\n", title);
+        fprintf(fn, "发信站: %s (%24.24s)\n", "BBS " NAME_BBS_CHINESE "站", ctime(&now));
+        fprintf(fn, "来  源: " NAME_BBS_ENGLISH "\n");
+        fprintf(fn, "\n");
+        fprintf(fn, "由于您在 \x1b[4m%s\x1b[0m 版 \x1b[4m%s\x1b[0m，我很遗憾地通知您， \n", board, exp);
+        if (dt)
+            fprintf(fn, "您被暂时取消在该版的发文权力 \x1b[4m%d\x1b[0m 天，到期后请回复\n", dt);
+        else
+            fprintf(fn, "您被暂时取消在该版的发文权力，到期后请回复\n");
+        fprintf(fn, "此信申请恢复权限。\n");
+        fprintf(fn, "\n");
+        fprintf(fn, "                            " NAME_BBS_CHINESE NAME_SYSOP_GROUP "值班站务：\x1b[4m%s\x1b[0m\n", usr->userid);
+        fprintf(fn, "                              %s\n", ctime(&now));
+        strcpy(usr->userid, "SYSOP");
+        strcpy(usr->username, NAME_SYSOP);
+        strcpy(usr->realname, NAME_SYSOP);
     } else {
-	my_flag = 1;
-	fprintf(fn, "寄信人: %s \n", usr->userid);
-	fprintf(fn, "标  题: %s\n", title);
-	fprintf(fn, "发信站: %s (%24.24s)\n", "BBS " NAME_BBS_CHINESE "站", ctime(&now));
-	fprintf(fn, "来  源: %s \n", usr->lasthost);
-	fprintf(fn, "\n");
-	fprintf(fn, "由于您在 \x1b[4m%s\x1b[0m 版 \x1b[4m%s\x1b[0m，我很遗憾地通知您， \n", board, exp);
-	if (dt)
-	    fprintf(fn, "您被暂时取消在该版的发文权力 \x1b[4m%d\x1b[0m 天，到期后请回复\n", dt);
-	else
-	    fprintf(fn, "您被暂时取消在该版的发文权力，到期后请回复\n");
-	fprintf(fn, "此信申请恢复权限。\n");
-	fprintf(fn, "\n");
-	fprintf(fn, "                              " NAME_BM ":\x1b[4m%s\x1b[0m\n", usr->userid);
-	fprintf(fn, "                              %s\n", ctime(&now));
+        my_flag = 1;
+        fprintf(fn, "寄信人: %s \n", usr->userid);
+        fprintf(fn, "标  题: %s\n", title);
+        fprintf(fn, "发信站: %s (%24.24s)\n", "BBS " NAME_BBS_CHINESE "站", ctime(&now));
+        fprintf(fn, "来  源: %s \n", usr->lasthost);
+        fprintf(fn, "\n");
+        fprintf(fn, "由于您在 \x1b[4m%s\x1b[0m 版 \x1b[4m%s\x1b[0m，我很遗憾地通知您， \n", board, exp);
+        if (dt)
+            fprintf(fn, "您被暂时取消在该版的发文权力 \x1b[4m%d\x1b[0m 天，到期后请回复\n", dt);
+        else
+            fprintf(fn, "您被暂时取消在该版的发文权力，到期后请回复\n");
+        fprintf(fn, "此信申请恢复权限。\n");
+        fprintf(fn, "\n");
+        fprintf(fn, "                              " NAME_BM ":\x1b[4m%s\x1b[0m\n", usr->userid);
+        fprintf(fn, "                              %s\n", ctime(&now));
     }
     fclose(fn);
 
@@ -146,14 +146,14 @@ int inform(bcache_t * bp, char *user, char *exp, int dt)
     fn = fopen(buf, "w+");
     fprintf(fn, "由于 \x1b[4m%s\x1b[0m 在 \x1b[4m%s\x1b[0m 版的 \x1b[4m%s\x1b[0m 行为，\n", user, board, exp);
     if (dt)
-	fprintf(fn, "被暂时取消在本版的发文权力 \x1b[4m%d\x1b[0m 天。\n", dt);
+        fprintf(fn, "被暂时取消在本版的发文权力 \x1b[4m%d\x1b[0m 天。\n", dt);
     else
-	fprintf(fn, "您被暂时取消在该版的发文权力，到期后请回复\n");
+        fprintf(fn, "您被暂时取消在该版的发文权力，到期后请回复\n");
 
     if (my_flag == 0)
-	fprintf(fn, "                            " NAME_BBS_CHINESE NAME_SYSOP_GROUP "值班站务：\x1b[4m%s\x1b[0m\n", saveusr.userid);
+        fprintf(fn, "                            " NAME_BBS_CHINESE NAME_SYSOP_GROUP "值班站务：\x1b[4m%s\x1b[0m\n", saveusr.userid);
     else
-	fprintf(fn, "                              " NAME_BM ":\x1b[4m%s\x1b[0m\n", usr->userid);
+        fprintf(fn, "                              " NAME_BM ":\x1b[4m%s\x1b[0m\n", usr->userid);
     fprintf(fn, "                              %s\n", ctime(&now));
     fclose(fn);
     /*
@@ -171,9 +171,9 @@ int inform(bcache_t * bp, char *user, char *exp, int dt)
     getuser(user, &lookupuser);
 
     if (HAS_PERM(lookupuser, PERM_BOARDS))
-	sprintf(title, "%s 封某板" NAME_BM " %s 在 %s", usr->userid, user, board);
+        sprintf(title, "%s 封某板" NAME_BM " %s 在 %s", usr->userid, user, board);
     else
-	sprintf(title, "%s 封 %s 在 %s", usr->userid, user, board);
+        sprintf(title, "%s 封 %s 在 %s", usr->userid, user, board);
     post_file(usr, "", buf, "denypost", title, 0, 8);
 
     unlink(buf);
@@ -193,31 +193,31 @@ int main()
 
     init_all();
     if (!loginok)
-	http_fatal("您尚未登录, 请先登录");
+        http_fatal("您尚未登录, 请先登录");
     strsncpy(board, getparm("board"), 30);
     strsncpy(exp, getparm("exp"), 30);
     dt = atoi(getparm("dt"));
     if (!has_read_perm(currentuser, board))
-	http_fatal("错误的讨论区");
+        http_fatal("错误的讨论区");
     if (!has_BM_perm(currentuser, board))
-	http_fatal("你无权进行本操作");
+        http_fatal("你无权进行本操作");
     loaddenyuser(board);
     userid = getparm("userid");
     if (userid[0] == 0)
-	return show_form(board);
+        return show_form(board);
     if (getuser(userid, &u) == 0)
-	http_fatal("错误的使用者帐号");
+        http_fatal("错误的使用者帐号");
     strcpy(userid, u->userid);
     if (dt < 1 || dt > 70)
-	http_fatal("请输入被封天数(1-70)");
+        http_fatal("请输入被封天数(1-70)");
     if (exp[0] == 0)
-	http_fatal("请输入说明");
+        http_fatal("请输入说明");
     for (i = 0; i < denynum; i++) {
-	if (!strcasecmp(denyuser[i].id, userid))
-	    http_fatal("此用户已经被封");
+        if (!strcasecmp(denyuser[i].id, userid))
+            http_fatal("此用户已经被封");
     }
     if (denynum > 512)
-	http_fatal("太多人被封了");
+        http_fatal("太多人被封了");
     strsncpy(denyuser[denynum].id, userid, 13);
     strsncpy(denyuser[denynum].exp, exp, 30);
     undenytime = time(0) + dt * 86400;

@@ -22,6 +22,9 @@ following patents: PCT/CH91/00117, EP 0 482 154 B1, US Pat. 5,214,703.
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:42  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:47  kcn
  * format C
  *
@@ -60,15 +63,15 @@ void idea_set_key(IDEAContext * c, const unsigned char key[16])
 
     /* Keys for the first round are directly taken from the user-supplied key. */
     for (i = 0; i < 8; i++)
-	keys[i] = GET_16BIT(key + 2 * i);
+        keys[i] = GET_16BIT(key + 2 * i);
 
     /* Each round uses the key of the previous key, rotated to the left by 25
        bits.  The last four keys (output transform) are the first four keys
        from what would be the ninth round. */
     for (i = 8; i < 52; i++) {
-	if ((i & 7) == 0)
-	    keys += 8;
-	keys[i & 7] = ((keys[((i + 1) & 7) - 8] << 9) | (keys[((i + 2) & 7) - 8] >> 7)) & 0xffff;
+        if ((i & 7) == 0)
+            keys += 8;
+        keys[i & 7] = ((keys[((i + 1) & 7) - 8] << 9) | (keys[((i + 2) & 7) - 8] >> 7)) & 0xffff;
     }
 }
 
@@ -90,13 +93,13 @@ static inline word32 mulop(word32 a, word32 b)
     word32 ab = a * b;
 
     if (ab != 0) {
-	word32 lo = ab & 0xffff;
-	word32 hi = (ab >> 16) & 0xffff;
+        word32 lo = ab & 0xffff;
+        word32 hi = (ab >> 16) & 0xffff;
 
-	return (lo - hi) + (lo < hi);
+        return (lo - hi) + (lo < hi);
     }
     if (a == 0)
-	return 1 - b;
+        return 1 - b;
     return 1 - a;
 }
 
@@ -114,27 +117,27 @@ void idea_transform(IDEAContext * c, word32 l, word32 r, word32 * output)
     x3 = r >> 16;
     x4 = r;
     for (round = 0; round < 8; round++) {
-	x1 = mulop(x1 & 0xffff, keys[0]);
-	x3 = x3 + keys[2];
-	x4 = mulop(x4 & 0xffff, keys[3]);
-	x2 = x2 + keys[1];
-	t1 = x1 ^ x3;
-	t2 = x2 ^ x4;
-	t1 = mulop(t1 & 0xffff, keys[4]);
-	t2 = t1 + t2;
-	t2 = mulop(t2 & 0xffff, keys[5]);
-	t1 = t1 + t2;
-	x1 = x1 ^ t2;
-	x4 = x4 ^ t1;
-	t1 = t1 ^ x2;
-	x2 = t2 ^ x3;
-	x3 = t1;
-	keys += 6;
+        x1 = mulop(x1 & 0xffff, keys[0]);
+        x3 = x3 + keys[2];
+        x4 = mulop(x4 & 0xffff, keys[3]);
+        x2 = x2 + keys[1];
+        t1 = x1 ^ x3;
+        t2 = x2 ^ x4;
+        t1 = mulop(t1 & 0xffff, keys[4]);
+        t2 = t1 + t2;
+        t2 = mulop(t2 & 0xffff, keys[5]);
+        t1 = t1 + t2;
+        x1 = x1 ^ t2;
+        x4 = x4 ^ t1;
+        t1 = t1 ^ x2;
+        x2 = t2 ^ x3;
+        x3 = t1;
+        keys += 6;
     }
 
     x1 = mulop(x1 & 0xffff, keys[0]);
     x3 = (x2 + keys[2]) & 0xffff;
-    x2 = t1 + keys[1];		/* t1 == old x3 */
+    x2 = t1 + keys[1];          /* t1 == old x3 */
     x4 = mulop(x4 & 0xffff, keys[3]);
     output[0] = (x1 << 16) | (x2 & 0xffff);
     output[1] = (x3 << 16) | (x4 & 0xffff);
@@ -154,30 +157,30 @@ void idea_cfb_encrypt(IDEAContext * c, unsigned char *iv, unsigned char *dest, c
     iv1 = GET_32BIT(iv + 4);
 
     for (i = 0; i < len; i += 8) {
-	idea_transform(c, iv0, iv1, out);
-	iv0 = out[0] ^ GET_32BIT(src + i);
-	iv1 = out[1] ^ GET_32BIT(src + i + 4);
-	if (i + 8 <= len) {
-	    PUT_32BIT(dest + i, iv0);
-	    PUT_32BIT(dest + i + 4, iv1);
-	} else {
-	    switch (len - i) {
-	    case 7:
-		dest[i + 6] = iv1 >> 8;
-	     /*FALLTHROUGH*/ case 6:
-		dest[i + 5] = iv1 >> 16;
-	     /*FALLTHROUGH*/ case 5:
-		dest[i + 4] = iv1 >> 24;
-	     /*FALLTHROUGH*/ case 4:
-		dest[i + 3] = iv0;
-	     /*FALLTHROUGH*/ case 3:
-		dest[i + 2] = iv0 >> 8;
-	     /*FALLTHROUGH*/ case 2:
-		dest[i + 1] = iv0 >> 16;
-	     /*FALLTHROUGH*/ case 1:
-		dest[i] = iv0 >> 24;
-	     /*FALLTHROUGH*/}
-	}
+        idea_transform(c, iv0, iv1, out);
+        iv0 = out[0] ^ GET_32BIT(src + i);
+        iv1 = out[1] ^ GET_32BIT(src + i + 4);
+        if (i + 8 <= len) {
+            PUT_32BIT(dest + i, iv0);
+            PUT_32BIT(dest + i + 4, iv1);
+        } else {
+            switch (len - i) {
+            case 7:
+                dest[i + 6] = iv1 >> 8;
+             /*FALLTHROUGH*/ case 6:
+                dest[i + 5] = iv1 >> 16;
+             /*FALLTHROUGH*/ case 5:
+                dest[i + 4] = iv1 >> 24;
+             /*FALLTHROUGH*/ case 4:
+                dest[i + 3] = iv0;
+             /*FALLTHROUGH*/ case 3:
+                dest[i + 2] = iv0 >> 8;
+             /*FALLTHROUGH*/ case 2:
+                dest[i + 1] = iv0 >> 16;
+             /*FALLTHROUGH*/ case 1:
+                dest[i] = iv0 >> 24;
+             /*FALLTHROUGH*/}
+        }
     }
     PUT_32BIT(iv, iv0);
     PUT_32BIT(iv + 4, iv1);
@@ -197,32 +200,32 @@ void idea_cfb_decrypt(IDEAContext * c, unsigned char *iv, unsigned char *dest, c
     iv1 = GET_32BIT(iv + 4);
 
     for (i = 0; i < len; i += 8) {
-	idea_transform(c, iv0, iv1, out);
-	iv0 = GET_32BIT(src + i);
-	iv1 = GET_32BIT(src + i + 4);
-	plain0 = out[0] ^ iv0;
-	plain1 = out[1] ^ iv1;
-	if (i + 8 <= len) {
-	    PUT_32BIT(dest + i, plain0);
-	    PUT_32BIT(dest + i + 4, plain1);
-	} else {
-	    switch (len - i) {
-	    case 7:
-		dest[i + 6] = plain1 >> 8;
-	     /*FALLTHROUGH*/ case 6:
-		dest[i + 5] = plain1 >> 16;
-	     /*FALLTHROUGH*/ case 5:
-		dest[i + 4] = plain1 >> 24;
-	     /*FALLTHROUGH*/ case 4:
-		dest[i + 3] = plain0;
-	     /*FALLTHROUGH*/ case 3:
-		dest[i + 2] = plain0 >> 8;
-	     /*FALLTHROUGH*/ case 2:
-		dest[i + 1] = plain0 >> 16;
-	     /*FALLTHROUGH*/ case 1:
-		dest[i] = plain0 >> 24;
-	     /*FALLTHROUGH*/}
-	}
+        idea_transform(c, iv0, iv1, out);
+        iv0 = GET_32BIT(src + i);
+        iv1 = GET_32BIT(src + i + 4);
+        plain0 = out[0] ^ iv0;
+        plain1 = out[1] ^ iv1;
+        if (i + 8 <= len) {
+            PUT_32BIT(dest + i, plain0);
+            PUT_32BIT(dest + i + 4, plain1);
+        } else {
+            switch (len - i) {
+            case 7:
+                dest[i + 6] = plain1 >> 8;
+             /*FALLTHROUGH*/ case 6:
+                dest[i + 5] = plain1 >> 16;
+             /*FALLTHROUGH*/ case 5:
+                dest[i + 4] = plain1 >> 24;
+             /*FALLTHROUGH*/ case 4:
+                dest[i + 3] = plain0;
+             /*FALLTHROUGH*/ case 3:
+                dest[i + 2] = plain0 >> 8;
+             /*FALLTHROUGH*/ case 2:
+                dest[i + 1] = plain0 >> 16;
+             /*FALLTHROUGH*/ case 1:
+                dest[i] = plain0 >> 24;
+             /*FALLTHROUGH*/}
+        }
     }
     PUT_32BIT(iv, iv0);
     PUT_32BIT(iv + 4, iv1);

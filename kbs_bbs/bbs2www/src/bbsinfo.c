@@ -12,18 +12,18 @@ int main()
 
     init_all();
     if (!loginok)
-	http_fatal("您尚未登录");
+        http_fatal("您尚未登录");
     type = atoi(getparm("type"));
     printf("%s -- 用户个人资料<hr color=\"green\">\n", BBSNAME);
     if (type != 0) {
-	check_info();
-	http_quit();
+        check_info();
+        http_quit();
     }
     setmailfile(buf, currentuser->userid, DOT_DIR);
     if (stat(buf, &st) >= 0)
-	num = st.st_size / (sizeof(struct fileheader));
+        num = st.st_size / (sizeof(struct fileheader));
     else
-	num = 0;
+        num = 0;
     printf("<form action=\"bbsinfo?type=1\" method=\"post\">");
     printf("您的帐号: %s<br>\n", currentuser->userid);
     printf("您的昵称: <input type=\"text\" name=\"nick\" value=\"%s\" size=\"24\" maxlength=\"%d\"><br>\n", currentuser->username, NAMELEN - 1);
@@ -51,27 +51,27 @@ int check_info()
     /* 必须对所有的变量滤掉ANSI控制符 */
     strsncpy(buf, getparm("nick"), NAMELEN);
     for (m = 0; m < strlen(buf); m++) {
-	if (buf[m] < 32 && buf[m] > 0 || buf[m] == -1)
-	    buf[m] = ' ';
+        if (buf[m] < 32 && buf[m] > 0 || buf[m] == -1)
+            buf[m] = ' ';
     }
     if (strlen(buf) > 1)
-	strcpy(currentuser->username, buf);
+        strcpy(currentuser->username, buf);
     else
-	printf("警告: 昵称太短!<br>\n");
+        printf("警告: 昵称太短!<br>\n");
     strsncpy(buf, getparm("realname"), NAMELEN);
     if (strlen(buf) > 1)
-	strcpy(currentuser->realname, buf);
+        strcpy(currentuser->realname, buf);
     else
-	printf("警告: 真实姓名太短!<br>\n");
+        printf("警告: 真实姓名太短!<br>\n");
     strsncpy(buf, getparm("address"), STRLEN);
     if (strlen(buf) > 8)
-	strcpy(currentuser->address, buf);
+        strcpy(currentuser->address, buf);
     else
-	printf("警告: 居住地址太短!<br>\n");
+        printf("警告: 居住地址太短!<br>\n");
     strsncpy(buf, getparm("email"), STRLEN);
     if (strlen(buf) > 8 && strchr(buf, '@'))
-	strcpy(currentuser->email, buf);
+        strcpy(currentuser->email, buf);
     else
-	printf("警告: email地址不合法!<br>\n");
+        printf("警告: email地址不合法!<br>\n");
     printf("[%s] 个人资料修改成功.", currentuser->userid);
 }

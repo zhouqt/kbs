@@ -16,6 +16,9 @@ Interface to packet compression for ssh.
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:41  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:46  kcn
  * format C
  *
@@ -62,4 +65,4 @@ void buffer_compress(Buffer * input_buffer, Buffer * output_buffer);
    uncompressed data to the output buffer. */
 void buffer_uncompress(Buffer * input_buffer, Buffer * output_buffer);
 
-#endif				/* COMPRESS_H */
+#endif                          /* COMPRESS_H */

@@ -17,12 +17,12 @@ void main(int argc, char **argv)
 
 
     if (argc < 2)
-	return;
+        return;
 
     p = strrchr(argv[1], '/');
     if (!p) {
-	printf("ERROR process %s\n", argv[1]);
-	return;
+        printf("ERROR process %s\n", argv[1]);
+        return;
     }
 
     strcpy(fn, p + 1);
@@ -30,60 +30,60 @@ void main(int argc, char **argv)
     strcpy(dn, argv[1]);
 
     if (!strcmp(fn, ".DIR"))
-	return;
+        return;
     else if (!strcmp(fn, ".DIGEST"))
-	return;
+        return;
     else if (!strcmp(fn, "deny_users"))
-	return;
+        return;
     else if (!strcmp(fn, ".badword"))
-	return;
+        return;
 
     in = 0;
 
     chdir(dn);
 
     {
-	int i;
+        int i;
 
-	for (i = 0; i < 2 && 0 == in; i++) {
+        for (i = 0; i < 2 && 0 == in; i++) {
 
-	    if (0 == i)
-		fp = fopen(".DIR", "r");
-	    else if (1 == i)
-		fp = fopen(".DIGEST", "r");
+            if (0 == i)
+                fp = fopen(".DIR", "r");
+            else if (1 == i)
+                fp = fopen(".DIGEST", "r");
 
-	    if (fp) {
-		while (!feof(fp)) {
-		    fread(&fh, sizeof(struct fileheader), 1, fp);
-		    if (feof(fp))
-			break;
+            if (fp) {
+                while (!feof(fp)) {
+                    fread(&fh, sizeof(struct fileheader), 1, fp);
+                    if (feof(fp))
+                        break;
 
-		    if (!strcmp(fh.filename, fn)) {
-			in = 1;
-			break;
-		    }
-		}
-		fclose(fp);
-	    } else if (0 == i) {
-		printf(".DIR not found! You MUST NOT run clean in directory %s!!\n", dn);
-		return;
-	    }
+                    if (!strcmp(fh.filename, fn)) {
+                        in = 1;
+                        break;
+                    }
+                }
+                fclose(fp);
+            } else if (0 == i) {
+                printf(".DIR not found! You MUST NOT run clean in directory %s!!\n", dn);
+                return;
+            }
 
-	}			/* End for */
+        }                       /* End for */
     }
 
     if (!in) {
-	char mv[1024];
+        char mv[1024];
 
-	sprintf(mv, "%s/%s", dn, fn);
-	printf("Unlinking %s\n", mv);
-	unlink(mv);
-	/*p = strstr(dn, "/mail/");
-	   if (!p) p = strstr(dn, "/boards/");
-	   sprintf(mv, "/opt/bbsbackup/clean%s", p);
-	   mkdir(mv, 0000755);
-	   sprintf(mv, "/bin/mv %s/%s /opt/bbsbackup/clean%s", dn, fn, p);
-	   printf("%s\n", mv);
-	   system(mv); */
+        sprintf(mv, "%s/%s", dn, fn);
+        printf("Unlinking %s\n", mv);
+        unlink(mv);
+        /*p = strstr(dn, "/mail/");
+           if (!p) p = strstr(dn, "/boards/");
+           sprintf(mv, "/opt/bbsbackup/clean%s", p);
+           mkdir(mv, 0000755);
+           sprintf(mv, "/bin/mv %s/%s /opt/bbsbackup/clean%s", dn, fn, p);
+           printf("%s\n", mv);
+           system(mv); */
     }
 }

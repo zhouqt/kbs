@@ -27,118 +27,118 @@
 #include "modes.h"
 
 char *ModeType(mode)
-	int mode;
+    int mode;
 {
     switch (mode) {
     case IDLE:
-	return "";
+        return "";
     case NEW:
-	return "新站友注册";
+        return "新站友注册";
     case LOGIN:
-	return "进入本站";
+        return "进入本站";
     case CSIE_ANNOUNCE:
-	return "汲取精华";
+        return "汲取精华";
     case CSIE_TIN:
-	return "使用TIN";
+        return "使用TIN";
     case CSIE_GOPHER:
-	return "使用Gopher";
+        return "使用Gopher";
     case MMENU:
-	return "主菜单";
+        return "主菜单";
     case ADMIN:
-	return "系统维护";
+        return "系统维护";
     case SELECT:
-	return "选择讨论区";
+        return "选择讨论区";
     case READBRD:
-	return "浏览讨论区";
+        return "浏览讨论区";
     case READNEW:
-	return "阅读新文章";
+        return "阅读新文章";
     case READING:
-	return "阅读文章";
+        return "阅读文章";
     case POSTING:
-	return "发表文章";
+        return "发表文章";
     case MAIL:
-	return "信件选单";
+        return "信件选单";
     case SMAIL:
-	return "寄信中";
+        return "寄信中";
     case RMAIL:
-	return "读信中";
+        return "读信中";
     case TMENU:
-	return "谈天说地区";
+        return "谈天说地区";
     case LUSERS:
-	return "看谁在线上";
+        return "看谁在线上";
     case FRIEND:
-	return "找线上好友";
+        return "找线上好友";
     case MONITOR:
-	return "监看中";
+        return "监看中";
     case QUERY:
-	return "查询网友";
+        return "查询网友";
     case TALK:
-	return "聊天";
+        return "聊天";
     case PAGE:
-	return "呼叫网友";
+        return "呼叫网友";
     case CHAT2:
-	return "梦幻国度";
+        return "梦幻国度";
     case CHAT1:
-	return "聊天室中";
+        return "聊天室中";
     case CHAT3:
-	return "快哉亭";
+        return "快哉亭";
     case CHAT4:
-	return "老大聊天室";
+        return "老大聊天室";
     case IRCCHAT:
-	return "会谈IRC";
+        return "会谈IRC";
     case LAUSERS:
-	return "探视网友";
+        return "探视网友";
     case XMENU:
-	return "系统资讯";
+        return "系统资讯";
     case VOTING:
-	return "投票";
+        return "投票";
     case BBSNET:
-	return "穿梭银河";
+        return "穿梭银河";
     case EDITWELC:
-	return "编辑 Welc";
+        return "编辑 Welc";
     case EDITUFILE:
-	return "编辑档案";
+        return "编辑档案";
     case EDITSFILE:
-	return "系统管理";
+        return "系统管理";
 /*        case  EDITSIG:  return "刻印";
         case  EDITPLAN: return "拟计画";*/
     case ZAP:
-	return "订阅讨论区";
+        return "订阅讨论区";
     case EXCE_MJ:
-	return "围城争霸";
+        return "围城争霸";
     case EXCE_BIG2:
-	return "比大营";
+        return "比大营";
     case EXCE_CHESS:
-	return "楚河汉界";
+        return "楚河汉界";
     case NOTEPAD:
-	return "留言板";
+        return "留言板";
     case GMENU:
-	return "工具箱";
+        return "工具箱";
     case FOURM:
-	return "4m Chat";
+        return "4m Chat";
     case ULDL:
-	return "UL/DL";
+        return "UL/DL";
     case MSG:
-	return "送讯息";
+        return "送讯息";
     case USERDEF:
-	return "自订参数";
+        return "自订参数";
     case EDIT:
-	return "修改文章";
+        return "修改文章";
     case OFFLINE:
-	return "自杀中..";
+        return "自杀中..";
     case EDITANN:
-	return "编修精华";
+        return "编修精华";
     case WWW:
-	return "悠游 WWW";
+        return "悠游 WWW";
     case CCUGOPHER:
-	return "他站精华";
+        return "他站精华";
     case LOOKMSGS:
-	return "察看讯息";
+        return "察看讯息";
     case WFRIEND:
-	return "寻人名册";
+        return "寻人名册";
     case LOCKSCREEN:
-	return "屏幕锁定";
+        return "屏幕锁定";
     default:
-	return "去了那里!?";
+        return "去了那里!?";
     }
 }

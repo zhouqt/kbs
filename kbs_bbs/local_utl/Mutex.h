@@ -12,13 +12,13 @@ class CMutex {
     };
 
     virtual int Lock() {
-	return 1;
+        return 1;
     };
     virtual int Unlock() {
-	return 1;
+        return 1;
     };
     virtual int TestLock() {
-	return 1;
+        return 1;
     };
 };
 
@@ -34,10 +34,10 @@ class CThreadMutex:public CMutex {
     int TestLock();
 
     pthread_mutex_t *GetHandle() {
-	return &m_nMutex;
+        return &m_nMutex;
     };
-    operator  pthread_mutex_t() {
-	return m_nMutex;
+    operator     pthread_mutex_t() {
+        return m_nMutex;
     };
 };
 

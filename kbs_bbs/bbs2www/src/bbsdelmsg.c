@@ -9,7 +9,7 @@ int main()
 
     init_all();
     if (!loginok)
-	http_fatal("匆匆过客不能处理讯息, 请先登录");
+        http_fatal("匆匆过客不能处理讯息, 请先登录");
     /*sethomefile(path, currentuser->userid, "msgfile.me"); */
     setmsgfile(path, currentuser->userid);
     unlink(path);

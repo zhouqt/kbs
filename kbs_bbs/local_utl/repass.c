@@ -1,5 +1,5 @@
-struct userec2 {		/* Structure used to hold information in */
-    char userid[IDLEN + 2];	/* PASSFILE */
+struct userec2 {                /* Structure used to hold information in */
+    char userid[IDLEN + 2];     /* PASSFILE */
     char fill[30];
     time_t firstlogin;
     char lasthost[16];
@@ -17,7 +17,7 @@ struct userec2 {		/* Structure used to hold information in */
     char address[STRLEN];
     char email[STRLEN];
 };
-struct adduserec {		/* Structure used to add .PASSWDS */
+struct adduserec {              /* Structure used to add .PASSWDS */
     int signature;
     int userdefine;
     time_t notetime;
@@ -42,11 +42,11 @@ struct adduserec {		/* Structure used to add .PASSWDS */
 
     printf("Records transfer...");
     while (1) {
-	i++;
-	if (fread(&user, sizeof(user), 1, rec) <= 0)
-	    break;
-	fwrite(&user, sizeof(user), 1, rec2);
-	fwrite(&add, sizeof(add), 1, rec2);
+        i++;
+        if (fread(&user, sizeof(user), 1, rec) <= 0)
+            break;
+        fwrite(&user, sizeof(user), 1, rec2);
+        fwrite(&add, sizeof(add), 1, rec2);
     }
     printf("\n%d records changed...\n", i);
     fclose(rec);

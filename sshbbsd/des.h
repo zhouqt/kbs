@@ -16,6 +16,9 @@ information.
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:41  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:46  kcn
  * format C
  *
@@ -62,10 +65,10 @@ void des_cbc_decrypt(DESContext * ks, unsigned char *iv, unsigned char *dest, co
 
 /* Encrypts in CBC mode using triple-DES. */
 void des_3cbc_encrypt(DESContext * ks1, unsigned char *iv1,
-		      DESContext * ks2, unsigned char *iv2, DESContext * ks3, unsigned char *iv3, unsigned char *dest, const unsigned char *src, unsigned int len);
+                      DESContext * ks2, unsigned char *iv2, DESContext * ks3, unsigned char *iv3, unsigned char *dest, const unsigned char *src, unsigned int len);
 
 /* Decrypts in CBC mode using triple-DES. */
 void des_3cbc_decrypt(DESContext * ks1, unsigned char *iv1,
-		      DESContext * ks2, unsigned char *iv2, DESContext * ks3, unsigned char *iv3, unsigned char *dest, const unsigned char *src, unsigned int len);
+                      DESContext * ks2, unsigned char *iv2, DESContext * ks3, unsigned char *iv3, unsigned char *dest, const unsigned char *src, unsigned int len);
 
-#endif				/* DES_H */
+#endif                          /* DES_H */

@@ -10,6 +10,9 @@
  *
  *******************************************************************************
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:42  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:48  kcn
  * format C
  *
@@ -46,8 +49,8 @@
 #define YES 1
 #define NO 0
 
-int putenv(var)			/* put var in the environment */
-	char *var;
+int putenv(var)                 /* put var in the environment */
+    char *var;
 {
     register char **envp;
     register int oldenvcnt;
@@ -56,29 +59,29 @@ int putenv(var)			/* put var in the environment */
 
     /* count variables, look for var */
     for (envp = environ; *envp != 0; envp++) {
-	register char *varp = var, *ep = *envp;
-	register int namesame;
+        register char *varp = var, *ep = *envp;
+        register int namesame;
 
-	namesame = NO;
-	for (; *varp == *ep && *varp != '\0'; ++ep, ++varp)
-	    if (*varp == '=')
-		namesame = YES;
-	if (*varp == *ep && *ep == '\0')
-	    return WORKED;	/* old & new var's are the same */
-	if (namesame) {
-	    *envp = var;	/* replace var with new value */
-	    return WORKED;
-	}
+        namesame = NO;
+        for (; *varp == *ep && *varp != '\0'; ++ep, ++varp)
+            if (*varp == '=')
+                namesame = YES;
+        if (*varp == *ep && *ep == '\0')
+            return WORKED;      /* old & new var's are the same */
+        if (namesame) {
+            *envp = var;        /* replace var with new value */
+            return WORKED;
+        }
     }
     oldenvcnt = envp - environ;
 
     /* allocate new environment with room for one more variable */
     if (newenv == NULL)
-	newenv = (char **) malloc((unsigned) ((oldenvcnt + 1 + 1) * sizeof(*envp)));
+        newenv = (char **) malloc((unsigned) ((oldenvcnt + 1 + 1) * sizeof(*envp)));
     else
-	newenv = (char **) realloc((char *) newenv, (unsigned) ((oldenvcnt + 1 + 1) * sizeof(*envp)));
+        newenv = (char **) realloc((char *) newenv, (unsigned) ((oldenvcnt + 1 + 1) * sizeof(*envp)));
     if (newenv == NULL)
-	return FAILED;
+        return FAILED;
 
     /* copy old environment pointers, add var, switch environments */
     (void) bcopy((char *) environ, (char *) newenv, oldenvcnt * sizeof(*envp));

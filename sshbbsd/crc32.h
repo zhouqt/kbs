@@ -16,6 +16,9 @@ Functions for computing 32-bit CRC.
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/08/04 11:39:41  kcn
+ * format c
+ *
  * Revision 1.2  2002/08/04 11:08:46  kcn
  * format C
  *
@@ -42,4 +45,4 @@ Functions for computing 32-bit CRC.
    CRC.  The polynomial used is 0xedb88320. */
 unsigned long crc32(const unsigned char *buf, unsigned int len);
 
-#endif				/* CRC32_H */
+#endif                          /* CRC32_H */

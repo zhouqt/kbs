@@ -30,18 +30,18 @@ static ZEND_RSHUTDOWN_FUNCTION(bbs_request_shutdown);
  */
 static function_entry bbs_php_functions[] = {
     ZEND_FE(bbs_getuser, NULL)
-	ZEND_FE(bbs_getonlineuser, NULL)
-	ZEND_FE(bbs_getonlinenumber, NULL)
-	ZEND_FE(bbs_countuser, NULL)
-	ZEND_FE(bbs_setfromhost, NULL)
-	ZEND_FE(bbs_checkpasswd, NULL)
-	ZEND_FE(bbs_getcurrentuser, NULL)
-	ZEND_FE(bbs_setonlineuser, NULL)
-	ZEND_FE(bbs_getcurrentuinfo, NULL)
-	ZEND_FE(bbs_wwwlogin, NULL)
-	ZEND_FE(bbs_wwwlogoff, NULL)
-	ZEND_FE(bbs_printansifile, NULL)
-	ZEND_FE(bbs_checkreadperm, NULL) ZEND_FE(bbs_brcaddread, NULL) ZEND_FE(bbs_getboard, NULL) ZEND_FE(bbs_ann_traverse_check, NULL) ZEND_FE(bbs_ann_get_board, NULL) {NULL, NULL, NULL}
+        ZEND_FE(bbs_getonlineuser, NULL)
+        ZEND_FE(bbs_getonlinenumber, NULL)
+        ZEND_FE(bbs_countuser, NULL)
+        ZEND_FE(bbs_setfromhost, NULL)
+        ZEND_FE(bbs_checkpasswd, NULL)
+        ZEND_FE(bbs_getcurrentuser, NULL)
+        ZEND_FE(bbs_setonlineuser, NULL)
+        ZEND_FE(bbs_getcurrentuinfo, NULL)
+        ZEND_FE(bbs_wwwlogin, NULL)
+        ZEND_FE(bbs_wwwlogoff, NULL)
+        ZEND_FE(bbs_printansifile, NULL)
+        ZEND_FE(bbs_checkreadperm, NULL) ZEND_FE(bbs_brcaddread, NULL) ZEND_FE(bbs_getboard, NULL) ZEND_FE(bbs_ann_traverse_check, NULL) ZEND_FE(bbs_ann_get_board, NULL) {NULL, NULL, NULL}
 };
 
 /*
@@ -50,13 +50,13 @@ static function_entry bbs_php_functions[] = {
 
 static zend_module_entry bbs_php_module_entry = {
     STANDARD_MODULE_HEADER,
-    "bbs module",		/* extension name */
-    bbs_php_functions,		/* extension function list */
-    ZEND_MINIT(bbs_module_init),	/* extension-wide startup function */
-    ZEND_MSHUTDOWN(bbs_module_shutdown),	/* extension-wide shutdown function */
-    ZEND_RINIT(bbs_request_init),	/* per-request startup function */
-    ZEND_RSHUTDOWN(bbs_request_shutdown),	/* per-request shutdown function */
-    NULL,			/* information function */
+    "bbs module",               /* extension name */
+    bbs_php_functions,          /* extension function list */
+    ZEND_MINIT(bbs_module_init),        /* extension-wide startup function */
+    ZEND_MSHUTDOWN(bbs_module_shutdown),        /* extension-wide shutdown function */
+    ZEND_RINIT(bbs_request_init),       /* per-request startup function */
+    ZEND_RSHUTDOWN(bbs_request_shutdown),       /* per-request shutdown function */
+    NULL,                       /* information function */
     "1.0",
     STANDARD_MODULE_PROPERTIES
 };
@@ -186,12 +186,12 @@ static ZEND_FUNCTION(bbs_setfromhost)
     char *fullfromhostptr;
 
     if (zend_parse_parameters(2 TSRMLS_CC, "ss", &s, &s_len, &fullfromhostptr, &full_len) != SUCCESS) {
-	WRONG_PARAM_COUNT;
+        WRONG_PARAM_COUNT;
     }
     if (s_len > IPLEN)
-	s[IPLEN] = 0;
+        s[IPLEN] = 0;
     if (full_len > 80)
-	fullfromhostptr[80] = 0;
+        fullfromhostptr[80] = 0;
     strcpy(fullfrom, fullfromhostptr);
     strcpy(fromhost, s);
     RETURN_NULL();
@@ -210,18 +210,18 @@ static ZEND_FUNCTION(bbs_getuser)
     chdir(BBSHOME);
     old_pwd[1023] = 0;
     if (zend_parse_parameters(2 TSRMLS_CC, "sa", &s, &s_len, &user_array) != SUCCESS) {
-	WRONG_PARAM_COUNT;
+        WRONG_PARAM_COUNT;
     }
 
     if (s_len > IDLEN)
-	s[IDLEN] = 0;
+        s[IDLEN] = 0;
     v1 = getuser(s, &lookupuser);
 
     if (v1 == 0)
-	RETURN_LONG(0);
+        RETURN_LONG(0);
 
     if (array_init(user_array) != SUCCESS)
-	RETURN_LONG(0);
+        RETURN_LONG(0);
     assign_user(user_array, lookupuser, v1);
 /*        RETURN_STRING(retbuf, 1);
  *        */
@@ -239,18 +239,18 @@ static ZEND_FUNCTION(bbs_getonlineuser)
     chdir(BBSHOME);
     old_pwd[1023] = 0;
     if (zend_parse_parameters(2 TSRMLS_CC, "la", &idx, &user_array) != SUCCESS) {
-	WRONG_PARAM_COUNT;
+        WRONG_PARAM_COUNT;
     }
     uinfo = get_utmpent(idx);
     if (uinfo == NULL)
-	ret = 0;
+        ret = 0;
     else {
-	if (array_init(user_array) != SUCCESS)
-	    ret = 0;
-	else {
-	    assign_userinfo(user_array, uinfo, idx);
-	    ret = idx;
-	}
+        if (array_init(user_array) != SUCCESS)
+            ret = 0;
+        else {
+            assign_userinfo(user_array, uinfo, idx);
+            ret = idx;
+        }
     }
     RETURN_LONG(ret);
 }
@@ -269,7 +269,7 @@ static ZEND_FUNCTION(bbs_countuser)
     chdir(BBSHOME);
     old_pwd[1023] = 0;
     if (zend_parse_parameters(2 TSRMLS_CC, "l", &idx) != SUCCESS) {
-	WRONG_PARAM_COUNT;
+        WRONG_PARAM_COUNT;
     }
     RETURN_LONG(apply_utmpuid(NULL, idx, 0));
 }
@@ -288,22 +288,22 @@ static ZEND_FUNCTION(bbs_checkpasswd)
     chdir(BBSHOME);
     old_pwd[1023] = 0;
     if (zend_parse_parameters(2 TSRMLS_CC, "ss", &s, &s_len, &pw, &pw_len) != SUCCESS) {
-	WRONG_PARAM_COUNT;
+        WRONG_PARAM_COUNT;
     }
     if (s_len > IDLEN)
-	s[IDLEN] = 0;
+        s[IDLEN] = 0;
     if (pw_len > PASSLEN)
-	pw[PASSLEN] = 0;
+        pw[PASSLEN] = 0;
     if (!(unum = getuser(s, &user)))
-	ret = 2;
+        ret = 2;
     else {
-	if (checkpasswd2(pw, user)) {
-	    ret = 0;
-	    setcurrentuser(user, unum);
-	} else {
-	    ret = 1;
-	    logattempt(user->userid, fromhost);
-	}
+        if (checkpasswd2(pw, user)) {
+            ret = 0;
+            setcurrentuser(user, unum);
+        } else {
+            ret = 1;
+            logattempt(user->userid, fromhost);
+        }
     }
     RETURN_LONG(ret);
 }
@@ -319,24 +319,24 @@ static ZEND_FUNCTION(bbs_wwwlogin)
     chdir(BBSHOME);
     old_pwd[1023] = 0;
     if (ZEND_NUM_ARGS() == 1) {
-	if (zend_parse_parameters(1 TSRMLS_CC, "l", &kick_multi) != SUCCESS) {
-	    WRONG_PARAM_COUNT;
-	}
+        if (zend_parse_parameters(1 TSRMLS_CC, "l", &kick_multi) != SUCCESS) {
+            WRONG_PARAM_COUNT;
+        }
     } else if (ZEND_NUM_ARGS() != 0)
-	WRONG_PARAM_COUNT;
+        WRONG_PARAM_COUNT;
     ret = www_user_login(getcurrentuser(), getcurrentuser_num(), kick_multi, fromhost,
 #ifdef SQUID_ACCL
-			 fullfrom,
+                         fullfrom,
 #else
-			 fromhost,
+                         fromhost,
 #endif
-			 &pu, &utmpent);
+                         &pu, &utmpent);
     if (getcurrentuser() == NULL) {
-	struct userec *user;
-	int num;
+        struct userec *user;
+        int num;
 
-	num = getuser("guest", &user);
-	setcurrentuser(user, num);
+        num = getuser("guest", &user);
+        setcurrentuser(user, num);
     }
     setcurrentuinfo(pu, utmpent);
     RETURN_LONG(ret);
@@ -352,21 +352,21 @@ static ZEND_FUNCTION(bbs_getcurrentuinfo)
     chdir(BBSHOME);
     old_pwd[1023] = 0;
     if (ZEND_NUM_ARGS() == 1) {
-	if (zend_parse_parameters(1 TSRMLS_CC, "a", &user_array) != SUCCESS) {
-	    WRONG_PARAM_COUNT;
-	}
-	if (array_init(user_array) != SUCCESS) {
-	    ret = 0;
-	} else {
-	    if (getcurrentuinfo()) {
-		assign_userinfo(user_array, getcurrentuinfo(), getcurrentuinfo_num());
-	    } else
-		ret = 0;
-	}
+        if (zend_parse_parameters(1 TSRMLS_CC, "a", &user_array) != SUCCESS) {
+            WRONG_PARAM_COUNT;
+        }
+        if (array_init(user_array) != SUCCESS) {
+            ret = 0;
+        } else {
+            if (getcurrentuinfo()) {
+                assign_userinfo(user_array, getcurrentuinfo(), getcurrentuinfo_num());
+            } else
+                ret = 0;
+        }
     } else if (ZEND_NUM_ARGS() != 0)
-	WRONG_PARAM_COUNT;
+        WRONG_PARAM_COUNT;
     if (ret)
-	ret = getcurrentuinfo_num();
+        ret = getcurrentuinfo_num();
 
     RETURN_LONG(ret);
 }
@@ -381,17 +381,17 @@ static ZEND_FUNCTION(bbs_getcurrentuser)
     chdir(BBSHOME);
     old_pwd[1023] = 0;
     if (zend_parse_parameters(1 TSRMLS_CC, "a", &user_array) != SUCCESS) {
-	WRONG_PARAM_COUNT;
+        WRONG_PARAM_COUNT;
     }
 
     if (array_init(user_array) != SUCCESS) {
-	ret = 0;
+        ret = 0;
     } else {
-	if (getcurrentuser()) {
-	    assign_user(user_array, getcurrentuser(), getcurrentuser_num());
-	    ret = getcurrentuser_num();
-	} else
-	    ret = 0;
+        if (getcurrentuser()) {
+            assign_user(user_array, getcurrentuser(), getcurrentuser_num());
+            ret = getcurrentuser_num();
+        } else
+            ret = 0;
     }
     RETURN_LONG(ret);
 }
@@ -413,25 +413,25 @@ static ZEND_FUNCTION(bbs_setonlineuser)
     chdir(BBSHOME);
     old_pwd[1023] = 0;
     if (zend_parse_parameters(4 TSRMLS_CC, "slla", &userid, &userid_len, &utmpnum, &utmpkey, &user_array) != SUCCESS) {
-	WRONG_PARAM_COUNT;
+        WRONG_PARAM_COUNT;
     }
     if (userid_len > IDLEN)
-	RETURN_LONG(1);
+        RETURN_LONG(1);
     if (utmpnum < 0 || utmpnum >= MAXACTIVE)
-	RETURN_LONG(2);
+        RETURN_LONG(2);
 
     if ((ret = www_user_init(utmpnum, userid, utmpkey, &user, &pui)) == 0) {
-	setcurrentuinfo(pui, utmpnum);
-	idx = getuser(pui->userid, &user);
-	setcurrentuser(user, idx);
-	if (user == NULL)
-	    RETURN_LONG(6);
-	if (array_init(user_array) != SUCCESS)
-	    ret = 7;
-	else {
-	    assign_userinfo(user_array, pui, idx);
-	    ret = 0;
-	}
+        setcurrentuinfo(pui, utmpnum);
+        idx = getuser(pui->userid, &user);
+        setcurrentuser(user, idx);
+        if (user == NULL)
+            RETURN_LONG(6);
+        if (array_init(user_array) != SUCCESS)
+            ret = 7;
+        else {
+            assign_userinfo(user_array, pui, idx);
+            ret = 0;
+        }
     }
     RETURN_LONG(ret);
 }
@@ -449,124 +449,126 @@ static ZEND_FUNCTION(bbs_printansifile)
     chdir(BBSHOME);
     old_pwd[1023] = 0;
     if (ZEND_NUM_ARGS() == 1) {
-	if (zend_parse_parameters(1 TSRMLS_CC, "s", &filename, &filename_len) != SUCCESS) {
-	    WRONG_PARAM_COUNT;
-	}
-	linkmode = 1;
+        if (zend_parse_parameters(1 TSRMLS_CC, "s", &filename, &filename_len) != SUCCESS) {
+            WRONG_PARAM_COUNT;
+        }
+        linkmode = 1;
     } else {
-	if (zend_parse_parameters(2 TSRMLS_CC, "sl", &filename, &filename_len, &linkmode) != SUCCESS) {
-	    WRONG_PARAM_COUNT;
-	}
+        if (zend_parse_parameters(2 TSRMLS_CC, "sl", &filename, &filename_len, &linkmode) != SUCCESS) {
+            WRONG_PARAM_COUNT;
+        }
     }
     fd = open(filename, O_RDONLY);
     if (fd < 0)
-	RETURN_LONG(2);
+        RETURN_LONG(2);
     if (fstat(fd, &st) < 0) {
-	close(fd);
-	RETURN_LONG(2);
+        close(fd);
+        RETURN_LONG(2);
     }
     if (!S_ISREG(st.st_mode)) {
-	close(fd);
-	RETURN_LONG(2);
+        close(fd);
+        RETURN_LONG(2);
     }
     if (st.st_size <= 0) {
-	close(fd);
-	RETURN_LONG(2);
+        close(fd);
+        RETURN_LONG(2);
     }
 
     ptr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
     close(fd);
     if (ptr == NULL)
-	RETURN_LONG(-1);
+        RETURN_LONG(-1);
 
     if (!sigsetjmp(bus_jump, 1)) {
-	signal(SIGBUS, sigbus);
-	signal(SIGSEGV, sigbus);
-	{
-	    char *p;
-	    int mode = 0;
-	    char outbuf[4096];
-	    char *outp = outbuf;
-	    int ansicolor, cal;
+        signal(SIGBUS, sigbus);
+        signal(SIGSEGV, sigbus);
+        {
+            char *p;
+            int mode = 0;
+            char outbuf[4096];
+            char *outp = outbuf;
+            int ansicolor, cal;
 
-	    outbuf[sizeof(outbuf) - 1] = 0;
+            outbuf[sizeof(outbuf) - 1] = 0;
 #define FLUSHBUF { *outp=0;zend_printf("%s",outbuf); outp=outbuf; }
 #define OUTPUT(buf,len) { if ((outbuf-outp)<len) FLUSHBUF; strncpy(outp,buf,len); outp+=len; }
-	    for (p = ptr; (*p) && (p - ptr < st.st_size); p++) {
-		// TODO: need detect link
-		switch (mode) {
-		case 0:
-		    if (*p == 0x1b) {	//ESC
-			mode = 1;
-			continue;
-		    }
-		    if (*p == '&')
-			OUTPUT("&amp;", 5)
-		    else if (*p == '<')
-			OUTPUT("&lt;", 4)
-		    else if (*p == '>')
-			OUTPUT("&gt;", 4)
-		    else
-			break;
-		    continue;
-		case 1:
-		    if ((*p) != '[') {
-			if (!isalpha(*p)) {
-			    mode = 4;
-			    continue;
-			}
-			mode = 0;
-			continue;
-		    }
-		    mode = 2;
-		    cal = 0;
-		    continue;
-		case 2:
-		    // TODO: add more ansi colir support
-		    if (*p == ';') {
-			if (cal <= 37 && cal >= 30)
-			    ansicolor = cal;
-			continue;
-		    }
-		    if (*p == 'm') {
-			char ansibuf[30];
+            for (p = ptr; (*p) && (p - ptr < st.st_size); p++) {
+                // TODO: need detect link
+                switch (mode) {
+                case 0:
+                    if (*p == 0x1b) {   //ESC
+                        mode = 1;
+                        continue;
+                    }
+                    if (*p == '&')
+                        OUTPUT("&amp;", 5)
+                            else
+                    if (*p == '<')
+                        OUTPUT("&lt;", 4)
+                            else
+                    if (*p == '>')
+                        OUTPUT("&gt;", 4)
+                            else
+                        break;
+                    continue;
+                case 1:
+                    if ((*p) != '[') {
+                        if (!isalpha(*p)) {
+                            mode = 4;
+                            continue;
+                        }
+                        mode = 0;
+                        continue;
+                    }
+                    mode = 2;
+                    cal = 0;
+                    continue;
+                case 2:
+                    // TODO: add more ansi colir support
+                    if (*p == ';') {
+                        if (cal <= 37 && cal >= 30)
+                            ansicolor = cal;
+                        continue;
+                    }
+                    if (*p == 'm') {
+                        char ansibuf[30];
 
-			if (cal <= 37 && cal >= 30)
-			    ansicolor = cal;
-			if (ansicolor <= 37 && ansicolor >= 30) {
-			    sprintf(ansibuf, "<font class=\"c%d\">", ansicolor);
-			    OUTPUT(ansibuf, strlen(ansibuf));
-			    mode = 0;
-			    continue;
-			}
-		    }
-		    if (isdigit(*p)) {
-			cal = cal * 10 + (*p) - '0';
-			continue;
-		    }
-		    /* strange ansi escape,ignore it */
-		    if (!isalpha(*p)) {
-			mode = 4;
-			continue;
-		    }
-		    mode = 0;
-		    continue;
-		case 4:
-		    if (!isalpha(*p))
-			continue;
-		    mode = 0;
-		    continue;
-		}
-		*outp = *p;
-		outp++;
-		if (outp - outbuf >= sizeof(outbuf) - 1)
-		    FLUSHBUF;
-	    }
-	    if (outp != outbuf) {
-		*outp = 0;
-		zend_printf("%s", outbuf);
-	    }
-	}
+                        if (cal <= 37 && cal >= 30)
+                            ansicolor = cal;
+                        if (ansicolor <= 37 && ansicolor >= 30) {
+                            sprintf(ansibuf, "<font class=\"c%d\">", ansicolor);
+                            OUTPUT(ansibuf, strlen(ansibuf));
+                            mode = 0;
+                            continue;
+                        }
+                    }
+                    if (isdigit(*p)) {
+                        cal = cal * 10 + (*p) - '0';
+                        continue;
+                    }
+                    /* strange ansi escape,ignore it */
+                    if (!isalpha(*p)) {
+                        mode = 4;
+                        continue;
+                    }
+                    mode = 0;
+                    continue;
+                case 4:
+                    if (!isalpha(*p))
+                        continue;
+                    mode = 0;
+                    continue;
+                }
+                *outp = *p;
+                outp++;
+                if (outp - outbuf >= sizeof(outbuf) - 1)
+                    FLUSHBUF;
+            }
+            if (outp != outbuf) {
+                *outp = 0;
+                zend_printf("%s", outbuf);
+            }
+        }
     } else {
     }
     munmap(ptr, st.st_size);
@@ -588,26 +590,26 @@ static ZEND_FUNCTION(bbs_getboard)
     chdir(BBSHOME);
     old_pwd[1023] = 0;
     if (ZEND_NUM_ARGS() == 1) {
-	if (zend_parse_parameters(1 TSRMLS_CC, "s", &boardname, &boardname_len) != SUCCESS)
-	    WRONG_PARAM_COUNT;
-	array = NULL;
+        if (zend_parse_parameters(1 TSRMLS_CC, "s", &boardname, &boardname_len) != SUCCESS)
+            WRONG_PARAM_COUNT;
+        array = NULL;
     } else {
-	if (ZEND_NUM_ARGS() == 2) {
-	    if (zend_parse_parameters(2 TSRMLS_CC, "sa", &boardname, &boardname_len, &array) != SUCCESS)
-		WRONG_PARAM_COUNT;
-	} else
-	    WRONG_PARAM_COUNT;
+        if (ZEND_NUM_ARGS() == 2) {
+            if (zend_parse_parameters(2 TSRMLS_CC, "sa", &boardname, &boardname_len, &array) != SUCCESS)
+                WRONG_PARAM_COUNT;
+        } else
+            WRONG_PARAM_COUNT;
     }
     if (boardname_len > BOARDNAMELEN)
-	boardname[BOARDNAMELEN] = 0;
+        boardname[BOARDNAMELEN] = 0;
     b_num = getbnum(boardname);
     if (b_num == 0)
-	RETURN_LONG(0);
+        RETURN_LONG(0);
     bh = getboard(b_num);
     if (array) {
-	if (array_init(array) != SUCCESS)
-	    WRONG_PARAM_COUNT;
-	assign_board(array, (struct boardheader *) bh, b_num);
+        if (array_init(array) != SUCCESS)
+            WRONG_PARAM_COUNT;
+        assign_board(array, (struct boardheader *) bh, b_num);
     }
     RETURN_LONG(b_num);
 }
@@ -621,22 +623,22 @@ static ZEND_FUNCTION(bbs_checkreadperm)
     chdir(BBSHOME);
     old_pwd[1023] = 0;
     if (zend_parse_parameters(2 TSRMLS_CC, "ll", &user_num, &boardnum) != SUCCESS)
-	WRONG_PARAM_COUNT;
+        WRONG_PARAM_COUNT;
     user = getuserbynum(user_num);
     if (user == NULL)
-	RETURN_LONG(0);
+        RETURN_LONG(0);
     RETURN_LONG(check_read_perm(user, boardnum));
 }
 
 static ZEND_FUNCTION(bbs_wwwlogoff)
 {
     if (getcurrentuser()) {
-	int ret = (www_user_logoff(getcurrentuser(), getcurrentuser_num(),
-				   getcurrentuinfo(), getcurrentuinfo_num()));
+        int ret = (www_user_logoff(getcurrentuser(), getcurrentuser_num(),
+                                   getcurrentuinfo(), getcurrentuinfo_num()));
 
-	RETURN_LONG(ret);
+        RETURN_LONG(ret);
     } else
-	RETURN_LONG(-1);
+        RETURN_LONG(-1);
 }
 
 static ZEND_FUNCTION(bbs_brcaddread)
@@ -647,7 +649,7 @@ static ZEND_FUNCTION(bbs_brcaddread)
     chdir(BBSHOME);
     old_pwd[1023] = 0;
     if (zend_parse_parameters(2 TSRMLS_CC, "ll", &boardnum, &posttime) != SUCCESS)
-	WRONG_PARAM_COUNT;
+        WRONG_PARAM_COUNT;
     brc_addreaddirectly(getcurrentuser()->userid, boardnum, posttime);
 
     RETURN_NULL();
@@ -662,7 +664,7 @@ static ZEND_FUNCTION(bbs_ann_traverse_check)
     chdir(BBSHOME);
     old_pwd[1023] = 0;
     if (zend_parse_parameters(1 TSRMLS_CC, "s", &path, &path_len) != SUCCESS)
-	WRONG_PARAM_COUNT;
+        WRONG_PARAM_COUNT;
     RETURN_LONG(ann_traverse_check(path, getcurrentuser()));
 }
 
@@ -672,7 +674,7 @@ static ZEND_FUNCTION(bbs_ann_get_board)
     int path_len, board_len;
 
     if (zend_parse_parameters(1 TSRMLS_CC, "ss", &path, &path_len, &board, &board_len) != SUCCESS)
-	WRONG_PARAM_COUNT;
+        WRONG_PARAM_COUNT;
     RETURN_LONG(ann_get_board(path, board, board_len));
 }
 

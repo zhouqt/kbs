@@ -13,4 +13,4 @@ extern unsigned long emulation_information;
 
 extern int check_emulation(int her_major_version, int her_minor_version, int *return_major, int *return_minor);
 
-#endif				/* EMULATE_H */
+#endif                          /* EMULATE_H */

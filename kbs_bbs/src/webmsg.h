@@ -6,33 +6,33 @@
 #define WWW_MAX_LOGIN 1000
 
 typedef struct _msgent_t {
-    int srcutmp;		/* 消息发送者的 utmp 号 */
-    char srcid[IDLEN + 1];	/* 消息发送者的 ID */
-    char msg[MSG_LEN + 1];	/* 消息的内容 */
+    int srcutmp;                /* 消息发送者的 utmp 号 */
+    char srcid[IDLEN + 1];      /* 消息发送者的 ID */
+    char msg[MSG_LEN + 1];      /* 消息的内容 */
 } msgent_t;
 
 #if 0
 typedef struct _msgent2_t {
-    int destutmp;		/* 消息接收者的 utmp 号 */
-    char destid[IDLEN + 1];	/* 消息接收者的 ID */
-    int srcutmp;		/* 消息发送者的 utmp 号 */
-    char srcid[IDLEN + 1];	/* 消息发送者的 ID */
-    char msg[MSG_LEN + 1];	/* 消息的内容 */
+    int destutmp;               /* 消息接收者的 utmp 号 */
+    char destid[IDLEN + 1];     /* 消息接收者的 ID */
+    int srcutmp;                /* 消息发送者的 utmp 号 */
+    char srcid[IDLEN + 1];      /* 消息发送者的 ID */
+    char msg[MSG_LEN + 1];      /* 消息的内容 */
 } msgent2_t;
 #endif
 
 typedef struct _msglist_t {
-    int msgnum;			/* 用户未读消息的条数 */
-    int current;		/* 用户当前未读消息的序号 */
-    int utmpnum;		/* 消息接收者的 utmp 号 */
-    char userid[IDLEN + 1];	/* 消息接收者的 ID */
-    msgent_t msgs[MSG_NUM];	/* 消息列表 */
+    int msgnum;                 /* 用户未读消息的条数 */
+    int current;                /* 用户当前未读消息的序号 */
+    int utmpnum;                /* 消息接收者的 utmp 号 */
+    char userid[IDLEN + 1];     /* 消息接收者的 ID */
+    msgent_t msgs[MSG_NUM];     /* 消息列表 */
 } msglist_t;
 
 typedef struct _msg_t {
-    int type;			/* request or response type */
-    int sockfd;			/* */
-    char rawdata[2 * STRLEN];	/* */
+    int type;                   /* request or response type */
+    int sockfd;                 /* */
+    char rawdata[2 * STRLEN];   /* */
 } bbsmsg_t;
 
 /*static msg_t     msgbuf;*/
@@ -55,4 +55,4 @@ enum {
 #define write_request(x) write_peer(x)
 #define write_response(x) write_peer(x)
 
-#endif				/* __WEBMSG_H__  */
+#endif                          /* __WEBMSG_H__  */
