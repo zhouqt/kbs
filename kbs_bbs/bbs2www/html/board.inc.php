@@ -73,9 +73,8 @@ function bbs_board_header($brdarr,$articles=0)
 ?>
 <body topmargin="0" leftmargin="0">
 <a name="listtop"></a>
-<tbody>
 <table width="100%" border="0" cellspacing="0" cellpadding="3">
-  <tr> 
+<tbody>  <tr> 
     <td colspan="2" class="b2">
 	    <a href="<?php echo MAINPAGE_FILE; ?>" class="b2"><font class="b2"><?php echo BBS_FULL_NAME; ?></font></a>
 	    -
@@ -153,8 +152,8 @@ function bbs_board_header($brdarr,$articles=0)
   </tr>
   <tr> 
     <td colspan="2" height="9" background="images/dashed.gif"> </td>
-  </tr>
-</table></tbody>
+  </tr></tbody>
+</table>
 <?php	
 }
 
@@ -165,9 +164,9 @@ function bbs_board_foot($brdarr,$listmode)
 	$usernum = $currentuser["index"];
 	$brdnum  = $brdarr["NUM"];
 ?>
-<tbody>
+
 <table width="100%" border="0" cellspacing="0" cellpadding="3">
-  <tr> 
+<tbody>  <tr> 
     <td colspan="2" height="9" background="images/dashed.gif"> </td>
   </tr>
   <tr> 
@@ -215,7 +214,7 @@ if (bbs_is_bm($brdnum, $usernum))
 <?php
 	}
 ?>
-</table></tbody>
+</tbody></table>
 <?php	
 }
 
