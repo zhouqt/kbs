@@ -224,7 +224,7 @@ pip_ending_screen()
 	pip_log_record(buf);
 	sprintf(buf,
 		"[1;37mÔÚ [33m%s [37mµÄÊ±ºò£¬[36m%s [37mµÄĞ¡¼¦ [32m%s[37m ³öÏÖÁË½á¾Ö[0m\n",
-		ctime(&now), cuser->userid, d.name);
+		Cdate(now), cuser->userid, d.name);
 	pip_log_record(buf);
 	sprintf(buf,
 		"[1;37mĞ¡¼¦ [32m%s [37mÅ¬Á¦¼ÓÇ¿×Ô¼º£¬ááÀ´%s[0m\n[1;37mÒòÎªÖ®Ç°µÄÅ¬Á¦£¬Ê¹µÃÔÚÕâÒ»·½Ãæ%s[0m\n",

@@ -298,7 +298,7 @@ pip_live_again()
 
 	now = time(0);
 	sprintf(genbuf, "[1;33m%s %-11sµÄÐ¡¼¦ [%s¶þ´ú] ¸´»îÁË£¡[m\n",
-		ctime(&now), cuser->userid, d.name);
+		Cdate(now), cuser->userid, d.name);
 	pip_log_record(genbuf);
 
 	/*

@@ -319,7 +319,7 @@ pip_new_game()
 		 */
 		now = time(0);
 		sprintf(buf, "[1;36m%s %-11sÑøÁËÒ»Ö»½Ð [%s] µÄ %s Ð¡¼¦ [0m\n",
-			ctime(&now), cuser->userid, d.name, pipsex[d.sex]);
+			Cdate(now), cuser->userid, d.name, pipsex[d.sex]);
 		pip_log_record(buf);
 	}
 	pip_write_file();
@@ -355,7 +355,7 @@ int mode;
 	}
 
 	now = time(0);
-	sprintf(genbuf, "[1;31m%s %-11sµÄÐ¡¼¦ [%s] %s[m\n", ctime(&now),
+	sprintf(genbuf, "[1;31m%s %-11sµÄÐ¡¼¦ [%s] %s[m\n", Cdate(now),
 		cuser->userid, d.name, msg);
 	pip_log_record(genbuf);
 	pip_write_file();

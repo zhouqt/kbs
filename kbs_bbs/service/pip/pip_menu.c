@@ -430,7 +430,7 @@ int mode;
 		 */
 		now = time(0);
 		sprintf(genbuf, "[1;37m%s %-11sµÄĞ¡¼¦ [%s] Âú %d ËêÁË [0m\n",
-			ctime(&now), cuser->userid, d.name, m + 1);
+			Cdate(now), cuser->userid, d.name, m + 1);
 		pip_log_record(genbuf);
 		/*
 		 * ¼ÇÂ¼ÖÕÖ¹
