@@ -538,6 +538,7 @@ int igetch()
         goto igetagain;
     case Ctrl('Z'):
         if(!inremsg) {
+            icurrchar++;
             r_msg();
             goto igetagain;
         }
