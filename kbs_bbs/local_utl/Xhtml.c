@@ -44,6 +44,7 @@ char prevprevHtml[MAXPATH];
 char prevHtml[MAXPATH];
 char nextHtml[MAXPATH];
 FILE *pdstFile;
+FILE *chmcontentFile;
 
 int DealParameters(int argc,char** argv)
 {
@@ -51,12 +52,13 @@ int DealParameters(int argc,char** argv)
   extern int optind, opterr, optopt;
 
   char c;
+  chmcontentFile=NULL;
   int flag =1;
   while (flag) {
     int this_option_optind = optind ? optind : 1;
     int option_index;
     
-    c = getopt(argc, argv, "w:d:o:");
+    c = getopt(argc, argv, "w:d:o:c:");
     if (c==-1) break;
     switch (c)
     {
@@ -74,6 +76,18 @@ int DealParameters(int argc,char** argv)
 	if (OutDir[strlen(OutDir)-1]=='/')
 		OutDir[strlen(OutDir)-1]=0;
 	break;
+      case 'c':
+        if (chmcontentFile) {
+	    printf("Too many -c!\n");
+	    return -1;
+        }
+        chmcontentFile=fopen(optarg,"wt");
+        if (!chmcontentFile) {
+            printf("Can't open %s:%s",optarg,strerror(errno));
+            return -1;
+        }
+	printf("Set CHM content file:%s\n",optarg);
+        break;
       default:
 	flag= 0 ;
     }
@@ -114,7 +128,7 @@ int DealParameters(int argc,char** argv)
   return 0;
 }
 
-char* DealLink(char* directory,char* Link,int index,int* isDir,char* date)
+char* DealLink(char* directory,char* Link,int index,int* isDir,char* date,char* title)
 {
   static char filename[MAXPATH];
   struct stat st;
@@ -186,7 +200,7 @@ char* DealLink(char* directory,char* Link,int index,int* isDir,char* date)
     }                                 
   
     fputs("<HTML>\n<HEAD>\n<TITLE>", pdstFile);
-    fputs(HEADER, pdstFile);
+    fputs(title, pdstFile);
     fputs("</TITLE>\n</HEAD>\n<BODY>\n<CENTER><H1>", pdstFile);        
     fputs(HEADER, pdstFile);
     fputs("</H1></CENTER>\n", pdstFile);        
@@ -389,8 +403,10 @@ void DealDirectory(char* directory)
         } else 
         if (ptr = strstr(Buf, "Name="))
         {
+	  char Name[256];
       	  if ( strstr(Buf,"(BM: BMS)")) continue;
       	  if ( strstr(Buf,"(BM: SYSOPS)")) continue;
+	  strcpy(Name,ptr+5);
           
           strcpy(anchor, ptr + 5);
           while (1) 
@@ -410,7 +426,7 @@ void DealDirectory(char* directory)
               int isDir;
               
               ptr[strlen(ptr) - 1] = 0;
-              herfname = DealLink(directory,ptr+7,index,&isDir,datestr);
+              herfname = DealLink(directory,ptr+7,index,&isDir,datestr,Name);
               if (herfname) {
                 index++;
                 fprintf(IndexHtmlFile,"<tr><td>%d</td><td>%s</td>",index,isDir?"д©б╪":"нд╪Ч");
@@ -465,6 +481,11 @@ main(int argc, char **argv)
   if (DealParameters(argc,argv)!=0)
     return -1;
     
+  if (chmcontentFile) {
+    fputs("<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML//EN\">\n",chmcontentFile);
+    fputs("<HTML>\n<HEAD>\n<meta name=\"GENERATOR\" content=\"Microsoft&reg; HTML Help Workshop 4.1\">\n",chmcontentFile);
+    fputs("<!-- Sitemap 1.0 -->\n</HEAD><BODY>\n<UL>\n",chmcontentFile);
+  }
   if (WorkDir[0]==0) {
     sprintf(WorkDir,"%s.AIX",task_head->dir);
   } else {
