@@ -83,7 +83,6 @@
 #define NNTP_CANTPOST			"440 Posting not allowed"
 #define NNTP_CANTPOST_VAL		440
 
-
 /*
 **  The first character of an NNTP reply can be used as a category class.
 */
@@ -91,14 +90,12 @@
 #define NNTP_CLASS_ERROR		'4'
 #define NNTP_CLASS_FATAL		'5'
 
-
 /*
 **  The NNTP protocol currently has no way to say "offer me this article
 **  later, but don't close the connection."  That will be fixed in NNTP2.
 #define NNTP_RESENDIT_LATER		"?"
 #define NNTP_RESENDIT_LATER_VAL		?
 */
-
 
 /*
 **  Authentication commands from the RFC update (not official).
@@ -115,7 +112,7 @@
 /*
 **  XGTITLE, from ANU news.
 */
-#define NNTP_XGTITLE_BAD		481	/* Yes, 481. */
+#define NNTP_XGTITLE_BAD		481     /* Yes, 481. */
 #define NNTP_XGTITLE_OK			282
 
 #define NNTP_STRLEN			512
@@ -125,7 +122,7 @@
 */
 #define OK_XINDEX       		218     /* Tin style group index file follows */
 #define OK_XMOTD        		217     /* Motd (message of the day) file follows */
-#define ERR_XINDEX                      418	/* No tin style index file for newsgroup */
+#define ERR_XINDEX                      418     /* No tin style index file for newsgroup */
 #define ERR_XMOTD       		417     /* No motd (message of the day) file */
 
 /* For DBZ server */

@@ -40,19 +40,19 @@
 
 #define LEN 1024
 struct t_article {
-	long artnum;
-	char subject[LEN];          /* Subject: line from mail header */
-	char from[LEN];                     /* From: line from mail header (address)
- */
-        char name[LEN];                     /* From: line from mail header (full nam
-e) */
-        long date;                      /* Date: line from header in seconds */
-        char xref[LEN];                     /* Xref: cross posted article reference
-line */
-        int lines;                      /* Lines: number of lines in article */
-        char *archive;          /* Archive-name: line from mail header */
-        char *part;                     /* part  no. of archive */
-        char *patch;            /* patch no. of archive */
+    long artnum;
+    char subject[LEN];          /* Subject: line from mail header */
+    char from[LEN];             /* From: line from mail header (address)
+                                 */
+    char name[LEN];             /* From: line from mail header (full nam
+                                 * e) */
+    long date;                  /* Date: line from header in seconds */
+    char xref[LEN];             /* Xref: cross posted article reference
+                                 * line */
+    int lines;                  /* Lines: number of lines in article */
+    char *archive;              /* Archive-name: line from mail header */
+    char *part;                 /* part  no. of archive */
+    char *patch;                /* patch no. of archive */
 };
 
 typedef struct t_article art_t;

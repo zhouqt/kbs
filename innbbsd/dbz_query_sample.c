@@ -42,18 +42,16 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 
-
 #define	DBZ_CHANNEL	"innd/.innbbsd"
 
 #define TRUE	-1
 #define	FALSE	0
 
-char    INNBBSbuffer[4096];
+char INNBBSbuffer[4096];
 
 static FILE *innbbsin, *innbbsout;
 static int innbbsfd;
 static char dbz_connect = FALSE;
-
 
 #ifdef SOLARIS
 #ifndef bzero
@@ -65,127 +63,134 @@ static char dbz_connect = FALSE;
 	add Message-ID to DBZ server
 */
 add_mid(mid, path)
-char   *mid;			/* Message-ID to be added */
-char   *path;			/* path of that Message */
+char *mid;                      /* Message-ID to be added */
+char *path;                     /* path of that Message */
+
 /*
 	return:
 		TRUE:	OK
 		FALSE:	Failed (maybe duplicate)
 */
 {
-	char    line[4096];
-	if (dbz_connect) {
-		sprintf(line, "ADDHIST %s %s\r\n", mid, path);
-		fprintf(innbbsout, line);
-		fflush(innbbsout);
-		fgets(INNBBSbuffer, sizeof INNBBSbuffer, innbbsin);
+    char line[4096];
 
-		if (INNBBSbuffer[0] == '2')
-			return (TRUE);
-		else
-			return (FALSE);
-	} else
-		return (FALSE);
+    if (dbz_connect) {
+        sprintf(line, "ADDHIST %s %s\r\n", mid, path);
+        fprintf(innbbsout, line);
+        fflush(innbbsout);
+        fgets(INNBBSbuffer, sizeof INNBBSbuffer, innbbsin);
+
+        if (INNBBSbuffer[0] == '2')
+            return (TRUE);
+        else
+            return (FALSE);
+    } else
+        return (FALSE);
 }
+
 /*end of add_mid*/
-
-
 
 /*
 	query Message-ID from DBZ server
 */
 query_mid(mid, path)
-char   *mid;			/* Message-ID to be searched */
-char   *path;			/* If MID found, path will be put here, NULL
-				 * for just test mid */
+char *mid;                      /* Message-ID to be searched */
+char *path;                     /* If MID found, path will be put here, NULL
+                                 * for just test mid */
 /*
 	return:
 		TRUE:	mid found
 		FALSE:	not found
 */
 {
-	char    line[4096];
-	char   *l;
-	int     c;
-	if (dbz_connect) {
-		sprintf(line, "GREPHIST %s\r\n", mid);
-		fprintf(innbbsout, line);
-		fflush(innbbsout);
-		fgets(INNBBSbuffer, sizeof INNBBSbuffer, innbbsin);
+    char line[4096];
+    char *l;
+    int c;
 
-		if (INNBBSbuffer[0] == '2') {
-			if (path == (char *) NULL)
-				return (TRUE);
+    if (dbz_connect) {
+        sprintf(line, "GREPHIST %s\r\n", mid);
+        fprintf(innbbsout, line);
+        fflush(innbbsout);
+        fgets(INNBBSbuffer, sizeof INNBBSbuffer, innbbsin);
 
-			sprintf(line, "%s            ", INNBBSbuffer);
-			l = line;
+        if (INNBBSbuffer[0] == '2') {
+            if (path == (char *) NULL)
+                return (TRUE);
 
-			/* find path */
-			c = 0;
-			while (l[c] != 0 && l[c] != 0x9 && l[c] != 0x20)
-				c++;
-			l += c + 1;
+            sprintf(line, "%s            ", INNBBSbuffer);
+            l = line;
 
-			c = 0;
-			while (l[c] != 0 && l[c] != 0x9 && l[c] != 0x20)
-				c++;
-			l += c + 1;
+            /*
+             * find path 
+             */
+            c = 0;
+            while (l[c] != 0 && l[c] != 0x9 && l[c] != 0x20)
+                c++;
+            l += c + 1;
 
-			c = 0;
-			while (l[c] != 0 && l[c] != 0x9 && l[c] != 0x20)
-				c++;
-			l[c] = 0;
+            c = 0;
+            while (l[c] != 0 && l[c] != 0x9 && l[c] != 0x20)
+                c++;
+            l += c + 1;
 
-			strcpy(path, l);
+            c = 0;
+            while (l[c] != 0 && l[c] != 0x9 && l[c] != 0x20)
+                c++;
+            l[c] = 0;
 
-			return (TRUE);
+            strcpy(path, l);
 
-		} else
-			return (FALSE);
-	} else
-		return (FALSE);
+            return (TRUE);
+
+        } else
+            return (FALSE);
+    } else
+        return (FALSE);
 
 }
+
 /*end of query_mid*/
-
-
 
 /*
 	open UNIX DOMAIN socket
 */
-int 
-unixclient(path)
-char   *path;			/* unix domin socket path */
+int unixclient(path)
+char *path;                     /* unix domin socket path */
+
 /*
 	return:
 		>0:	OK
 		<0:	failed
 */
 {
-	struct sockaddr_un s_un;/* unix endpoint address */
-	int     s;
-	bzero((char *) &s_un, sizeof(s_un));
-	s_un.sun_family = AF_UNIX;
+    struct sockaddr_un s_un;    /* unix endpoint address */
+    int s;
 
-	if (path == NULL)
-		return (-1);
+    bzero((char *) &s_un, sizeof(s_un));
+    s_un.sun_family = AF_UNIX;
 
-	strcpy(s_un.sun_path, path);
+    if (path == NULL)
+        return (-1);
 
-	/* Allocate a socket */
-	s = socket(PF_UNIX, SOCK_STREAM, 0);
-	if (s < 0)
-		return -1;
+    strcpy(s_un.sun_path, path);
 
-	/* Connect the socket to the server */
-	if (connect(s, (struct sockaddr *) & s_un, sizeof(s_un)) < 0)
-		return -1;
+    /*
+     * Allocate a socket 
+     */
+    s = socket(PF_UNIX, SOCK_STREAM, 0);
+    if (s < 0)
+        return -1;
 
-	return s;
+    /*
+     * Connect the socket to the server 
+     */
+    if (connect(s, (struct sockaddr *) &s_un, sizeof(s_un)) < 0)
+        return -1;
+
+    return s;
 }
+
 /*end of unixclient*/
-
-
 
 /*
 	init dbz unix domain socket
@@ -198,99 +203,94 @@ init_dbz_channel()
 */
 {
 
-	dbz_connect = FALSE;
+    dbz_connect = FALSE;
 
 #ifdef DBZ_CHANNEL
 
-	innbbsfd = unixclient(DBZ_CHANNEL);
+    innbbsfd = unixclient(DBZ_CHANNEL);
 
-	if (innbbsfd < 0)
-		return (FALSE);
+    if (innbbsfd < 0)
+        return (FALSE);
 
-	if ((innbbsin = fdopen(innbbsfd, "r")) == NULL ||
-		(innbbsout = fdopen(innbbsfd, "w")) == NULL)
-		return (FALSE);
+    if ((innbbsin = fdopen(innbbsfd, "r")) == NULL || (innbbsout = fdopen(innbbsfd, "w")) == NULL)
+        return (FALSE);
 
-	dbz_connect = TRUE;
+    dbz_connect = TRUE;
 
-	/* dbz server responsed initial status */
-	fgets(INNBBSbuffer, sizeof(INNBBSbuffer), innbbsin);
-	if (strncmp(INNBBSbuffer, "200", 3)) {
-		dbz_connect = FALSE;
-		close_dbz_channel();
-	}
+    /*
+     * dbz server responsed initial status 
+     */
+    fgets(INNBBSbuffer, sizeof(INNBBSbuffer), innbbsin);
+    if (strncmp(INNBBSbuffer, "200", 3)) {
+        dbz_connect = FALSE;
+        close_dbz_channel();
+    }
 #endif
 
-	return (dbz_connect);
+    return (dbz_connect);
 
 }
+
 /*end of initsocket*/
-
-
 
 /*
 	close dbz channel
 */
 close_dbz_channel()
 {
-	if (dbz_connect) {
-		if (innbbsin != NULL)
-			fclose(innbbsin);
-		if (innbbsout != NULL)
-			fclose(innbbsout);
-		if (innbbsfd >= 0)
-			close(innbbsfd);
-	}
+    if (dbz_connect) {
+        if (innbbsin != NULL)
+            fclose(innbbsin);
+        if (innbbsout != NULL)
+            fclose(innbbsout);
+        if (innbbsfd >= 0)
+            close(innbbsfd);
+    }
 }
+
 /*end of closesocket*/
-
-
-
-
-
-
-
 
 /***********************************************************************
 		Just a SAMPLE, replace main() with your own
  ***********************************************************************/
 main(argc, argv)
-int     argc;
-char  **argv;
+int argc;
+char **argv;
 {
-	char    test[4096];
-	int     ret;
-	init_dbz_channel();
+    char test[4096];
+    int ret;
 
-	ret = add_mid("<tttt.eeee.ssss.tttt>", "THIS_IS_1ST_PATH");
-	if (ret)
-		printf("add 1st mid OK\n");
-	else
-		printf("add 1st mid failed\n");
+    init_dbz_channel();
 
-	ret = add_mid("<bbbb.cccc.dddd.eeee>", "THIS_IS_2ND_PATH");
-	if (ret)
-		printf("add 2st mid OK\n");
-	else
-		printf("add 2st mid failed\n");
+    ret = add_mid("<tttt.eeee.ssss.tttt>", "THIS_IS_1ST_PATH");
+    if (ret)
+        printf("add 1st mid OK\n");
+    else
+        printf("add 1st mid failed\n");
 
-	ret = query_mid("<tttt.eeee.ssss.tttt>", test);
-	if (ret)
-		printf("query 1st ok : '%s'\n", test);
-	else
-		printf("query 1st failed\n");
+    ret = add_mid("<bbbb.cccc.dddd.eeee>", "THIS_IS_2ND_PATH");
+    if (ret)
+        printf("add 2st mid OK\n");
+    else
+        printf("add 2st mid failed\n");
 
-	ret = query_mid("<bbbb.cccc.dddd.eeee>", test);
-	if (ret)
-		printf("query 2nd ok : '%s'\n", test);
-	else
-		printf("query 2nd failed\n");
+    ret = query_mid("<tttt.eeee.ssss.tttt>", test);
+    if (ret)
+        printf("query 1st ok : '%s'\n", test);
+    else
+        printf("query 1st failed\n");
 
-	ret = query_mid("<no.such.item>", test);
-	if (ret)
-		printf("query no_such_item found ??? : '%s'\n", test);
-	else
-		printf("query no_such_item not found\n");
+    ret = query_mid("<bbbb.cccc.dddd.eeee>", test);
+    if (ret)
+        printf("query 2nd ok : '%s'\n", test);
+    else
+        printf("query 2nd failed\n");
 
-	close_dbz_channel();
+    ret = query_mid("<no.such.item>", test);
+    if (ret)
+        printf("query no_such_item found ??? : '%s'\n", test);
+    else
+        printf("query no_such_item not found\n");
+
+    close_dbz_channel();
 }

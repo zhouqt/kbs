@@ -1,17 +1,17 @@
 /* for dbm and dbz */
 typedef struct {
-	char *dptr;
-	int dsize;
+    char *dptr;
+    int dsize;
 } datum;
 
 /* standard dbm functions */
 extern int dbminit();
 extern datum fetch();
 extern int store();
-extern int delete();		/* not in dbz */
-extern datum firstkey();	/* not in dbz */
-extern datum nextkey();		/* not in dbz */
-extern int dbmclose();		/* in dbz, but not in old dbm */
+extern int delete();            /* not in dbz */
+extern datum firstkey();        /* not in dbz */
+extern datum nextkey();         /* not in dbz */
+extern int dbmclose();          /* in dbz, but not in old dbm */
 
 /* new stuff for dbz */
 extern int dbzfresh();

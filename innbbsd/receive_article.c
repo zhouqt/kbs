@@ -35,7 +35,6 @@
    cacnel_article_front(mid) --> cancel_article() --> bbspost_write_cancel();
 */
 
-
 #ifndef PowerBBS
 
 #include "innbbsconf.h"
@@ -46,15 +45,21 @@
 
 extern int Junkhistory;
 
-char   *post_article ARG((char *, char *, char *, int (*) (), char *, char *));
+char *post_article ARG((char *, char *, char *, int (*)(), char *, char *));
 int cancel_article ARG((char *, char *, char *));
+
 #define FAILED goto failed
 
 report()
 {
-	/* Function called from record.o */
-	/* Please leave this function empty */
+    /*
+     * Function called from record.o 
+     */
+    /*
+     * Please leave this function empty 
+     */
 }
+
 #if defined(PalmBBS)
 #ifndef PATH
 #define PATH XPATH
@@ -66,480 +71,514 @@ report()
 
 /* process post write */
 bbspost_write_post(fh, board, filename)
-int     fh;
-char   *board;
-char   *filename;
+int fh;
+char *board;
+char *filename;
 {
-	char   *fptr, *ptr;
-	FILE   *fhfd;
-	char    conv_buf[256];
-	fhfd = fdopen(fh, "w");
-	if (fhfd == NULL) {
-		innbbslog("can't fdopen, maybe disk full\n");
-		return -1;
-	}
-	if (strlen(SUBJECT) > 256)
-		FAILED;
-	str_decode(conv_buf, SUBJECT);
-	if (fprintf(fhfd, "%s%s, %s%s\n", FromTxt, FROM, BoardTxt, board) == EOF ||
-		fprintf(fhfd, "%s%.70s\n", SubjectTxt, conv_buf) == EOF ||
-		fprintf(fhfd, "%s%.43s (%s)\n", OrganizationTxt, SITE, DATE) == EOF ||
-		fprintf(fhfd, "%s%s\n", PathTxt, PATH) == EOF)
-		FAILED;
+    char *fptr, *ptr;
+    FILE *fhfd;
+    char conv_buf[256];
 
-	if (POSTHOST != NULL) {
-		if (fprintf(fhfd, "出  处: %.70s\n", POSTHOST) == EOF)
-			FAILED;
-	}
-	if (fprintf(fhfd, "\n") == EOF)
-		FAILED;
-	for (fptr = BODY, ptr = strchr(fptr, '\r'); ptr != NULL && *ptr != '\0'; fptr = ptr + 1, ptr = strchr(fptr, '\r')) {
-		int     ch = *ptr;
-		*ptr = '\0';
-		/* 990530.edwardc 这裡应该要处理，採用留住单一 "." 的方式 */
-		if (fptr[0] == '.' && fptr[1] == '.')
-			fptr++;
-		if (fputs(fptr, fhfd) == EOF)
-			FAILED;
-		*ptr = ch;
-	}
+    fhfd = fdopen(fh, "w");
+    if (fhfd == NULL) {
+        innbbsdlog("can't fdopen, maybe disk full\n");
+        return -1;
+    }
+    if (strlen(SUBJECT) > 256)
+        FAILED;
+    str_decode(conv_buf, SUBJECT);
+    if (fprintf(fhfd, "%s%s, %s%s\n", FromTxt, FROM, BoardTxt, board) == EOF
+        || fprintf(fhfd, "%s%.70s\n", SubjectTxt, conv_buf) == EOF || fprintf(fhfd, "%s%.43s (%s)\n", OrganizationTxt, SITE, DATE) == EOF || fprintf(fhfd, "%s%s\n", PathTxt, PATH) == EOF)
+        FAILED;
 
-	/* 990530.edwardc 这裡也是 */
-	if (fptr[0] == '.' && fptr[1] == '.')
-		fptr++;
+    if (POSTHOST != NULL) {
+        if (fprintf(fhfd, "出  处: %.70s\n", POSTHOST) == EOF)
+            FAILED;
+    }
+    if (fprintf(fhfd, "\n") == EOF)
+        FAILED;
+    for (fptr = BODY, ptr = strchr(fptr, '\r'); ptr != NULL && *ptr != '\0'; fptr = ptr + 1, ptr = strchr(fptr, '\r')) {
+        int ch = *ptr;
 
-	if (fputs(fptr, fhfd) == EOF)
-		FAILED;
+        *ptr = '\0';
+        /*
+         * 990530.edwardc 这里应该要处理，采用留住单一 "." 的方式 
+         */
+        if (fptr[0] == '.' && fptr[1] == '.')
+            fptr++;
+        if (fputs(fptr, fhfd) == EOF)
+            FAILED;
+        *ptr = ch;
+    }
 
-	fflush(fhfd);
-	fclose(fhfd);
-	return 0;
-failed:
-	fclose(fhfd);
-	return -1;
+    /*
+     * 990530.edwardc 这里也是 
+     */
+    if (fptr[0] == '.' && fptr[1] == '.')
+        fptr++;
+
+    if (fputs(fptr, fhfd) == EOF)
+        FAILED;
+
+    fflush(fhfd);
+    fclose(fhfd);
+    return 0;
+  failed:
+    fclose(fhfd);
+    return -1;
 }
+
 #ifdef KEEP_NETWORK_CANCEL
 /* process cancel write */
 bbspost_write_cancel(fh, board, filename)
-int     fh;
-char   *board, *filename;
+int fh;
+char *board, *filename;
 {
-	char   *fptr, *ptr;
-	FILE   *fhfd = fdopen(fh, "w"), *fp;
-	char    buffer[256];
-	if (fhfd == NULL) {
-		innbbslog("can't fdopen, maybe disk full\n");
-		return -1;
-	}
-	if (fprintf(fhfd, "%s%s, %s%s\n", FromTxt, FROM, BoardTxt, board) == EOF)
-		FAILED;
-	if (fprintf(fhfd, "%s%.70s\n", SubjectTxt, SUBJECT) == EOF)
-		FAILED;
-	if (fprintf(fhfd, "%s%.43s (%s)\n", OrganizationTxt, SITE, DATE) == EOF)
-		FAILED;
-	if (fprintf(fhfd, "%s%.69s\n", PathTxt, PATH) == EOF)
-		FAILED;
-	if (HEADER[CONTROL_H] != NULL) {
-		if (fprintf(fhfd, "Control: %s\n", HEADER[CONTROL_H]) == EOF)
-			FAILED;
-	}
-	if (POSTHOST != NULL) {
-		if (fprintf(fhfd, "出  处: %s\n", POSTHOST) == EOF)
-			FAILED;
-	}
-	if (fprintf(fhfd, "\n") == EOF)
-		FAILED;
-	for (fptr = BODY, ptr = strchr(fptr, '\r'); ptr != NULL && *ptr != '\0'; fptr = ptr + 1, ptr = strchr(fptr, '\r')) {
-		int     ch = *ptr;
-		*ptr = '\0';
-		if (fputs(fptr, fhfd) == EOF)
-			FAILED;
-		*ptr = ch;
-	}
-	if (fputs(fptr, fhfd) == EOF)
-		FAILED;
-	/*
-	 * if (POSTHOST != NULL) { fprintf(fhfd, "\n * Origin: ● %.26s
-	 * m: %.40s\n",SITE,POSTHOST); }
-	 */
-	if (fprintf(fhfd, "\n---------------------\n") == EOF)
-		FAILED;
-	fp = fopen(filename, "r");
-	if (fp == NULL) {
-		innbbslog("can't open %s\n", filename);
-		fclose(fhfd);
-		return -1;
-	}
-	while (fgets(buffer, sizeof buffer, fp) != NULL) {
-		if (fputs(buffer, fhfd) == EOF)
-			FAILED;
-	}
-	fclose(fp);
-	fflush(fhfd);
-	fclose(fhfd);
+    char *fptr, *ptr;
+    FILE *fhfd = fdopen(fh, "w"), *fp;
+    char buffer[256];
 
-	{
-		fp = fopen(filename, "w");
-		if (fp == NULL) {
-			innbbslog("can't write %s\n", filename);
-			return -1;
-		}
-		fprintf(fp, "%s%s, %s%s\n", FromTxt, FROM, BoardTxt, board);
-		fprintf(fp, "%s%.70s\n", SubjectTxt, SUBJECT);
-		fprintf(fp, "%s%.43s (%s)\n", OrganizationTxt, SITE, DATE);
-		fprintf(fp, "%s%.70s\n", PathTxt, PATH);
-		if (POSTHOST != NULL) {
-			fprintf(fp, "出  处: %s\n", POSTHOST);
-		}
-		/*
-		 * if (HEADER[CONTROL_H] != NULL) { fprintf(fp, "Control:
-		 * %s\n",HEADER[CONTROL_H]); }
-		 */
-		fprintf(fp, "\n");
-		for (fptr = BODY, ptr = strchr(fptr, '\r'); ptr != NULL && *ptr != '\0'; fptr = ptr + 1, ptr = strchr(fptr, '\r')) {
-			*ptr = '\0';
-			/* 990530.edwardc 这裡应该要处理，採用留住单一 "." 的方式 */
-			if (fptr[0] == '.' && fptr[1] == '.')
-				fptr++;
-			fputs(fptr, fp);
-		}
+    if (fhfd == NULL) {
+        innbbsdlog("can't fdopen, maybe disk full\n");
+        return -1;
+    }
+    if (fprintf(fhfd, "%s%s, %s%s\n", FromTxt, FROM, BoardTxt, board) == EOF)
+        FAILED;
+    if (fprintf(fhfd, "%s%.70s\n", SubjectTxt, SUBJECT) == EOF)
+        FAILED;
+    if (fprintf(fhfd, "%s%.43s (%s)\n", OrganizationTxt, SITE, DATE) == EOF)
+        FAILED;
+    if (fprintf(fhfd, "%s%.69s\n", PathTxt, PATH) == EOF)
+        FAILED;
+    if (HEADER[CONTROL_H] != NULL) {
+        if (fprintf(fhfd, "Control: %s\n", HEADER[CONTROL_H]) == EOF)
+            FAILED;
+    }
+    if (POSTHOST != NULL) {
+        if (fprintf(fhfd, "出  处: %s\n", POSTHOST) == EOF)
+            FAILED;
+    }
+    if (fprintf(fhfd, "\n") == EOF)
+        FAILED;
+    for (fptr = BODY, ptr = strchr(fptr, '\r'); ptr != NULL && *ptr != '\0'; fptr = ptr + 1, ptr = strchr(fptr, '\r')) {
+        int ch = *ptr;
 
-		/* 990530.edwardc 这裡也是 */
-		if (fptr[0] == '.' && fptr[1] == '.')
-			fptr++;
-		fputs(fptr, fp);
-		/*
-		 * if (POSTHOST != NULL) { fprintf(fp, "\n * Origin: ● %.26s
-		 * rom: %.40s\n",SITE,POSTHOST); }
-		 */
-		fclose(fp);
-	}
-	return 0;
-failed:
-	fclose(fhfd);
-	return -1;
+        *ptr = '\0';
+        if (fputs(fptr, fhfd) == EOF)
+            FAILED;
+        *ptr = ch;
+    }
+    if (fputs(fptr, fhfd) == EOF)
+        FAILED;
+    /*
+     * if (POSTHOST != NULL) { fprintf(fhfd, "\n * Origin: ● %.26s
+     * m: %.40s\n",SITE,POSTHOST); }
+     */
+    if (fprintf(fhfd, "\n---------------------\n") == EOF)
+        FAILED;
+    fp = fopen(filename, "r");
+    if (fp == NULL) {
+        innbbsdlog("can't open %s\n", filename);
+        fclose(fhfd);
+        return -1;
+    }
+    while (fgets(buffer, sizeof buffer, fp) != NULL) {
+        if (fputs(buffer, fhfd) == EOF)
+            FAILED;
+    }
+    fclose(fp);
+    fflush(fhfd);
+    fclose(fhfd);
+
+    {
+        fp = fopen(filename, "w");
+        if (fp == NULL) {
+            innbbsdlog("can't write %s\n", filename);
+            return -1;
+        }
+        fprintf(fp, "%s%s, %s%s\n", FromTxt, FROM, BoardTxt, board);
+        fprintf(fp, "%s%.70s\n", SubjectTxt, SUBJECT);
+        fprintf(fp, "%s%.43s (%s)\n", OrganizationTxt, SITE, DATE);
+        fprintf(fp, "%s%.70s\n", PathTxt, PATH);
+        if (POSTHOST != NULL) {
+            fprintf(fp, "出  处: %s\n", POSTHOST);
+        }
+        /*
+         * if (HEADER[CONTROL_H] != NULL) { fprintf(fp, "Control:
+         * %s\n",HEADER[CONTROL_H]); }
+         */
+        fprintf(fp, "\n");
+        for (fptr = BODY, ptr = strchr(fptr, '\r'); ptr != NULL && *ptr != '\0'; fptr = ptr + 1, ptr = strchr(fptr, '\r')) {
+            *ptr = '\0';
+            /*
+             * 990530.edwardc 这里应该要处理，采用留住单一 "." 的方式 
+             */
+            if (fptr[0] == '.' && fptr[1] == '.')
+                fptr++;
+            fputs(fptr, fp);
+        }
+
+        /*
+         * 990530.edwardc 这里也是 
+         */
+        if (fptr[0] == '.' && fptr[1] == '.')
+            fptr++;
+        fputs(fptr, fp);
+        /*
+         * if (POSTHOST != NULL) { fprintf(fp, "\n * Origin: ● %.26s
+         * rom: %.40s\n",SITE,POSTHOST); }
+         */
+        fclose(fp);
+    }
+    return 0;
+  failed:
+    fclose(fhfd);
+    return -1;
 }
 #endif
 
 bbspost_write_control(fh, board, filename)
-int     fh;
-char   *board;
-char   *filename;
+int fh;
+char *board;
+char *filename;
 {
-	char   *fptr, *ptr;
-	FILE   *fhfd = fdopen(fh, "w");
-	if (fhfd == NULL) {
-		innbbslog("can't fdopen, maybe disk full\n");
-		return -1;
-	}
-	if (fprintf(fhfd, "Path: %s!%s\n", MYBBSID, HEADER[PATH_H]) == EOF ||
-		fprintf(fhfd, "From: %s\n", FROM) == EOF ||
-		fprintf(fhfd, "Newsgroups: %s\n", GROUPS) == EOF ||
-		fprintf(fhfd, "Subject: %s\n", SUBJECT) == EOF ||
-		fprintf(fhfd, "Date: %s\n", DATE) == EOF ||
-		fprintf(fhfd, "Organization: %s\n", SITE) == EOF) {
-		fclose(fhfd);
-		return -1;
-	}
-	if (POSTHOST != NULL) {
-		if (fprintf(fhfd, "NNTP-Posting-Host: %.70s\n", POSTHOST) == EOF)
-			FAILED;
-	}
-	if (HEADER[CONTROL_H] != NULL) {
-		if (fprintf(fhfd, "Control: %s\n", HEADER[CONTROL_H]) == EOF)
-			FAILED;
-	}
-	if (HEADER[APPROVED_H] != NULL) {
-		if (fprintf(fhfd, "Approved: %s\n", HEADER[APPROVED_H]) == EOF)
-			FAILED;
-	}
-	if (HEADER[DISTRIBUTION_H] != NULL) {
-		if (fprintf(fhfd, "Distribution: %s\n", HEADER[DISTRIBUTION_H]) == EOF)
-			FAILED;
-	}
-	if (fprintf(fhfd, "\n") == EOF)
-		FAILED;
-	for (fptr = BODY, ptr = strchr(fptr, '\r'); ptr != NULL && *ptr != '\0'; fptr = ptr + 1, ptr = strchr(fptr, '\r')) {
-		int     ch = *ptr;
-		*ptr = '\0';
-		/* 990530.edwardc 这裡应该要处理，採用留住单一 "." 的方式 */
-		if (fptr[0] == '.' && fptr[1] == '.')
-			fptr++;
-		if (fputs(fptr, fhfd) == EOF)
-			FAILED;
-		*ptr = ch;
-	}
+    char *fptr, *ptr;
+    FILE *fhfd = fdopen(fh, "w");
 
-	if (fptr[0] == '.' && fptr[1] == '.')
-		fptr++;
-	if (fputs(fptr, fhfd) == EOF)
-		FAILED;
+    if (fhfd == NULL) {
+        innbbsdlog("can't fdopen, maybe disk full\n");
+        return -1;
+    }
+    if (fprintf(fhfd, "Path: %s!%s\n", MYBBSID, HEADER[PATH_H]) == EOF ||
+        fprintf(fhfd, "From: %s\n", FROM) == EOF ||
+        fprintf(fhfd, "Newsgroups: %s\n", GROUPS) == EOF ||
+        fprintf(fhfd, "Subject: %s\n", SUBJECT) == EOF || fprintf(fhfd, "Date: %s\n", DATE) == EOF || fprintf(fhfd, "Organization: %s\n", SITE) == EOF) {
+        fclose(fhfd);
+        return -1;
+    }
+    if (POSTHOST != NULL) {
+        if (fprintf(fhfd, "NNTP-Posting-Host: %.70s\n", POSTHOST) == EOF)
+            FAILED;
+    }
+    if (HEADER[CONTROL_H] != NULL) {
+        if (fprintf(fhfd, "Control: %s\n", HEADER[CONTROL_H]) == EOF)
+            FAILED;
+    }
+    if (HEADER[APPROVED_H] != NULL) {
+        if (fprintf(fhfd, "Approved: %s\n", HEADER[APPROVED_H]) == EOF)
+            FAILED;
+    }
+    if (HEADER[DISTRIBUTION_H] != NULL) {
+        if (fprintf(fhfd, "Distribution: %s\n", HEADER[DISTRIBUTION_H])
+            == EOF)
+            FAILED;
+    }
+    if (fprintf(fhfd, "\n") == EOF)
+        FAILED;
+    for (fptr = BODY, ptr = strchr(fptr, '\r'); ptr != NULL && *ptr != '\0'; fptr = ptr + 1, ptr = strchr(fptr, '\r')) {
+        int ch = *ptr;
 
+        *ptr = '\0';
+        /*
+         * 990530.edwardc 这里应该要处理，采用留住单一 "." 的方式 
+         */
+        if (fptr[0] == '.' && fptr[1] == '.')
+            fptr++;
+        if (fputs(fptr, fhfd) == EOF)
+            FAILED;
+        *ptr = ch;
+    }
 
-	fflush(fhfd);
-	fclose(fhfd);
-	return 0;
-failed:
-	fclose(fhfd);
-	return -1;
+    if (fptr[0] == '.' && fptr[1] == '.')
+        fptr++;
+    if (fputs(fptr, fhfd) == EOF)
+        FAILED;
+
+    fflush(fhfd);
+    fclose(fhfd);
+    return 0;
+  failed:
+    fclose(fhfd);
+    return -1;
 }
+
 /* process cancel write */
 receive_article()
 {
-	char   *user, *userptr;
-	char   *ngptr, *nngptr, *pathptr;
-	char  **splitptr;
-	static char userid[32];
-	static char xdate[32];
-	static char xpath[180];
-	time_t  datevalue;
-	newsfeeds_t *nf;
-	char   *boardhome;
-	char    hispaths[4096];
-	char    firstpath[MAXPATHLEN], *firstpathbase;
-	char   *lesssym, *nameptrleft, *nameptrright;
-	static char sitebuf[80];
-	if (FROM == NULL) {
-		innbbslog(":Err: article without usrid %s\n", MSGID);
-		return 0;
-	}
-	if (strchr(FROM, '<') && (FROM[strlen(FROM) - 1] == '>'))
-		user = (char *) strrchr(FROM, '@');
-	else
-		user = (char *) strchr(FROM, '@');
-	lesssym = (char *) strchr(FROM, '<');
-	nameptrleft = NULL, nameptrright = NULL;
-	if (lesssym == NULL || lesssym >= user) {
-		lesssym = FROM;
-		nameptrleft = strchr(FROM, '(');
-		if (nameptrleft != NULL)
-			nameptrleft++;
-		nameptrright = strrchr(FROM, ')');
-	} else {
-		nameptrleft = FROM;
-		nameptrright = strrchr(FROM, '<');
-		lesssym++;
-	}
-	if (user != NULL) {
-		*user = '\0';
-		userptr = (char *) strchr(FROM, '.');
-		if (userptr != NULL) {
-			*userptr = '\0';
-			strncpy(userid, lesssym, sizeof userid);
-			*userptr = '.';
-		} else {
-			strncpy(userid, lesssym, sizeof userid);
-		}
-		*user = '@';
-	} else {
-		strncpy(userid, lesssym, sizeof userid);
-	}
-	if (!isalnum(userid[0]))
-		strcpy(userid, "Unknown");
-	strcat(userid, ".");
-	datevalue = parsedate(DATE, NULL);
+    char *user, *userptr;
+    char *ngptr, *nngptr, *pathptr;
+    char **splitptr;
+    static char userid[32];
+    static char xdate[32];
+    static char xpath[180];
+    time_t datevalue;
+    newsfeeds_t *nf;
+    char *boardhome;
+    char hispaths[4096];
+    char firstpath[MAXPATHLEN], *firstpathbase;
+    char *lesssym, *nameptrleft, *nameptrright;
+    static char sitebuf[80];
 
-	if (datevalue > 0) {
-		char   *p;
-		strncpy(xdate, ctime(&datevalue), sizeof(xdate));
-		p = (char *) strchr(xdate, '\n');
-		if (p != NULL)
-			*p = '\0';
-		DATE = xdate;
-	}
-	if (SITE && strcasecmp("Computer Science & Information Engineering NCTU", SITE) == 0) {
-		SITE = NCTUCSIETxt;
-	} else if (SITE && strcasecmp("Dep. Computer Sci. & Information Eng., Chiao Tung Univ., Taiwan, R.O.C", SITE) == 0) {
-		SITE = NCTUCSIETxt;
-	} else if (SITE == NULL || *SITE == '\0') {
-		if (nameptrleft != NULL && nameptrright != NULL) {
-			char    savech = *nameptrright;
-			*nameptrright = '\0';
-			strncpy(sitebuf, nameptrleft, sizeof sitebuf);
-			*nameptrright = savech;
-			SITE = sitebuf;
-		} else
-			/* SITE = "(Unknown)"; */
-			SITE = "";
-	}
-	if (strlen(MYBBSID) > 70) {
-		innbbslog(" :Err: your bbsid %s too long\n", MYBBSID);
-		return 0;
-	}
-	sprintf(xpath, "%s!%.*s", MYBBSID, sizeof(xpath) - strlen(MYBBSID) - 2, PATH);
-	PATH = xpath;
-	for (pathptr = PATH; pathptr != NULL && (pathptr = strstr(pathptr, ".edu.tw")) != NULL;) {
-		if (pathptr != NULL) {
-			strcpy(pathptr, pathptr + 7);
-		}
-	}
-	xpath[71] = '\0';
+    if (FROM == NULL) {
+        innbbsdlog(":Err: article without usrid %s\n", MSGID);
+        return 0;
+    }
+    if (strchr(FROM, '<') && (FROM[strlen(FROM) - 1] == '>'))
+        user = (char *) strrchr(FROM, '@');
+    else
+        user = (char *) strchr(FROM, '@');
+    lesssym = (char *) strchr(FROM, '<');
+    nameptrleft = NULL, nameptrright = NULL;
+    if (lesssym == NULL || lesssym >= user) {
+        lesssym = FROM;
+        nameptrleft = strchr(FROM, '(');
+        if (nameptrleft != NULL)
+            nameptrleft++;
+        nameptrright = strrchr(FROM, ')');
+    } else {
+        nameptrleft = FROM;
+        nameptrright = strrchr(FROM, '<');
+        lesssym++;
+    }
+    if (user != NULL) {
+        *user = '\0';
+        userptr = (char *) strchr(FROM, '.');
+        if (userptr != NULL) {
+            *userptr = '\0';
+            strncpy(userid, lesssym, sizeof userid);
+            *userptr = '.';
+        } else {
+            strncpy(userid, lesssym, sizeof userid);
+        }
+        *user = '@';
+    } else {
+        strncpy(userid, lesssym, sizeof userid);
+    }
+    if (!isalnum(userid[0]))
+        strcpy(userid, "Unknown");
+    strcat(userid, ".");
+    datevalue = parsedate(DATE, NULL);
 
-	echomaillog();
-	*hispaths = '\0';
-	splitptr = (char **) BNGsplit(GROUPS);
-	firstpath[0] = '\0';
-	firstpathbase = firstpath;
-	/*
-	 * try to split newsgroups into separate group and check if any
-	 * duplicated
-	 */
+    if (datevalue > 0) {
+        char *p;
 
-	/* try to use hardlink */
-	/*
-	 * for ( ngptr = GROUPS, nngptr = (char*) strchr(ngptr,','); ngptr !=
-	 * NULL && *ngptr != '\0'; nngptr = (char*)strchr(ngptr,',')) {
-	 */
-	for (ngptr = *splitptr; ngptr != NULL; ngptr = *(++splitptr)) {
-		char   *boardptr, *nboardptr;
-		/*
-		 * if (nngptr != NULL) { nngptr = '\0'; }
-		 */
-		if (*ngptr == '\0')
-			continue;
-		nf = (newsfeeds_t *) search_group(ngptr);
-		/* printf("board %s\n",nf->board); */
-		if (nf == NULL) {
-			innbbslog("unwanted \'%s\'\n", ngptr);
-			/*
-			 * if( strstr( ngptr, "tw.bbs" ) != NULL ) { }
-			 */
-			continue;
-		}
-		if (nf->board == NULL || !*nf->board)
-			continue;
-		if (nf->path == NULL || !*nf->path)
-			continue;
-		for (boardptr = nf->board, nboardptr = (char *) strchr(boardptr, ','); boardptr != NULL && *boardptr != '\0'; nboardptr = (char *) strchr(boardptr, ',')) {
-			if (nboardptr != NULL) {
-				*nboardptr = '\0';
-			}
-			if (*boardptr == '\t') {
-				goto boardcont;
-			}
-			boardhome = (char *) fileglue("%s/boards/%s", BBSHOME, boardptr);
-			if (!isdir(boardhome)) {
-				innbbslog(":Err: unable to write %s\n", boardhome);
-			} else {
-				char   *fname;
-				/*
-				 * if ( !isdir( boardhome )) { innbbslog( ":Err:
-				 * unable to write %s\n",boardhome);
-				 * testandmkdir(boardhome); }
-				 */
-				fname = (char *) post_article(boardhome, userid, boardptr, bbspost_write_post, NULL, firstpath);
-				if (fname != NULL) {
-					fname = (char *) fileglue("%s/%s", boardptr, fname);
-					if (firstpath[0] == '\0') {
-						sprintf(firstpath, "%s/boards/%s", BBSHOME, fname);
-						firstpathbase = firstpath + strlen(BBSHOME) + strlen("/boards/");
-					}
-					if (strlen(fname) + strlen(hispaths) + 1 < sizeof(hispaths)) {
-						strcat(hispaths, fname);
-						strcat(hispaths, " ");
-					}
-				} else {
-					innbbslog("fname is null %s\n", boardhome);
-					return -1;
-				}
-			}
+        strncpy(xdate, ctime(&datevalue), sizeof(xdate));
+        p = (char *) strchr(xdate, '\n');
+        if (p != NULL)
+            *p = '\0';
+        DATE = xdate;
+    }
+    if (SITE && strcasecmp("Computer Science & Information Engineering NCTU", SITE) == 0) {
+        SITE = NCTUCSIETxt;
+    } else if (SITE && strcasecmp("Dep. Computer Sci. & Information Eng., Chiao Tung Univ., Taiwan, R.O.C", SITE) == 0) {
+        SITE = NCTUCSIETxt;
+    } else if (SITE == NULL || *SITE == '\0') {
+        if (nameptrleft != NULL && nameptrright != NULL) {
+            char savech = *nameptrright;
 
-	boardcont:
-			if (nboardptr != NULL) {
-				*nboardptr = ',';
-				boardptr = nboardptr + 1;
-			} else
-				break;
+            *nameptrright = '\0';
+            strncpy(sitebuf, nameptrleft, sizeof sitebuf);
+            *nameptrright = savech;
+            SITE = sitebuf;
+        } else
+            /*
+             * SITE = "(Unknown)"; 
+             */
+            SITE = "";
+    }
+    if (strlen(MYBBSID) > 70) {
+        innbbsdlog(" :Err: your bbsid %s too long\n", MYBBSID);
+        return 0;
+    }
+    sprintf(xpath, "%s!%.*s", MYBBSID, sizeof(xpath) - strlen(MYBBSID) - 2, PATH);
+    PATH = xpath;
+    for (pathptr = PATH; pathptr != NULL && (pathptr = strstr(pathptr, ".edu.tw")) != NULL;) {
+        if (pathptr != NULL) {
+            strcpy(pathptr, pathptr + 7);
+        }
+    }
+    xpath[71] = '\0';
 
-		}		/* for board1,board2,... */
-		/*
-		 * if (nngptr != NULL) ngptr = nngptr + 1; else break;
-		 */
-		if (*firstpathbase)
-			feedfplog(nf, firstpathbase, 'P');
-	}
-	if (*hispaths)
-		bbsfeedslog(hispaths, 'P');
+    echomaillog();
+    *hispaths = '\0';
+    splitptr = (char **) BNGsplit(GROUPS);
+    firstpath[0] = '\0';
+    firstpathbase = firstpath;
+    /*
+     * try to split newsgroups into separate group and check if any
+     * duplicated
+     */
 
-	if (Junkhistory || *hispaths) {
-		if (storeDB(HEADER[MID_H], hispaths) < 0) {
-			innbbslog("store DB fail\n");
-			/* I suspect here will introduce duplicated articles */
-			/* return -1; */
-		}
-	}
-	return 0;
+    /*
+     * try to use hardlink 
+     */
+    /*
+     * for ( ngptr = GROUPS, nngptr = (char*) strchr(ngptr,','); ngptr !=
+     * NULL && *ngptr != '\0'; nngptr = (char*)strchr(ngptr,',')) {
+     */
+    for (ngptr = *splitptr; ngptr != NULL; ngptr = *(++splitptr)) {
+        char *boardptr, *nboardptr;
+
+        /*
+         * if (nngptr != NULL) { nngptr = '\0'; }
+         */
+        if (*ngptr == '\0')
+            continue;
+        nf = (newsfeeds_t *) search_group(ngptr);
+        /*
+         * printf("board %s\n",nf->board); 
+         */
+        if (nf == NULL) {
+            innbbsdlog("unwanted \'%s\'\n", ngptr);
+            /*
+             * if( strstr( ngptr, "tw.bbs" ) != NULL ) { }
+             */
+            continue;
+        }
+        if (nf->board == NULL || !*nf->board)
+            continue;
+        if (nf->path == NULL || !*nf->path)
+            continue;
+        for (boardptr = nf->board, nboardptr = (char *) strchr(boardptr, ','); boardptr != NULL && *boardptr != '\0'; nboardptr = (char *) strchr(boardptr, ',')) {
+            if (nboardptr != NULL) {
+                *nboardptr = '\0';
+            }
+            if (*boardptr == '\t') {
+                goto boardcont;
+            }
+            boardhome = (char *) fileglue("%s/boards/%s", BBSHOME, boardptr);
+            if (!isdir(boardhome)) {
+                innbbsdlog(":Err: unable to write %s\n", boardhome);
+            } else {
+                char *fname;
+
+                /*
+                 * if ( !isdir( boardhome )) { innbbsdlog( ":Err:
+                 * unable to write %s\n",boardhome);
+                 * testandmkdir(boardhome); }
+                 */
+                fname = (char *) post_article(boardhome, userid, boardptr, bbspost_write_post, NULL, firstpath);
+                if (fname != NULL) {
+                    fname = (char *) fileglue("%s/%s", boardptr, fname);
+                    if (firstpath[0] == '\0') {
+                        sprintf(firstpath, "%s/boards/%s", BBSHOME, fname);
+                        firstpathbase = firstpath + strlen(BBSHOME) + strlen("/boards/");
+                    }
+                    if (strlen(fname) + strlen(hispaths) + 1 < sizeof(hispaths)) {
+                        strcat(hispaths, fname);
+                        strcat(hispaths, " ");
+                    }
+                } else {
+                    innbbsdlog("fname is null %s\n", boardhome);
+                    return -1;
+                }
+            }
+
+          boardcont:
+            if (nboardptr != NULL) {
+                *nboardptr = ',';
+                boardptr = nboardptr + 1;
+            } else
+                break;
+
+        }                       /* for board1,board2,... */
+        /*
+         * if (nngptr != NULL) ngptr = nngptr + 1; else break;
+         */
+        if (*firstpathbase)
+            feedfplog(nf, firstpathbase, 'P');
+    }
+    if (*hispaths)
+        bbsfeedslog(hispaths, 'P');
+
+    if (Junkhistory || *hispaths) {
+        if (storeDB(HEADER[MID_H], hispaths) < 0) {
+            innbbsdlog("store DB fail\n");
+            /*
+             * I suspect here will introduce duplicated articles 
+             */
+            /*
+             * return -1; 
+             */
+        }
+    }
+    return 0;
 }
+
 receive_control()
 {
-	char   *boardhome, *fname;
-	char    firstpath[MAXPATHLEN], *firstpathbase;
-	char  **splitptr, *ngptr;
-	newsfeeds_t *nf;
-	innbbslog("control post %s\n", HEADER[CONTROL_H]);
-	boardhome = (char *) fileglue("%s/boards/control", BBSHOME);
-	testandmkdir(boardhome);
-	*firstpath = '\0';
-	if (isdir(boardhome)) {
-		fname = (char *) post_article(boardhome, FROM, "control", bbspost_write_control, NULL, firstpath);
-		if (fname != NULL) {
-			if (firstpath[0] == '\0')
-				sprintf(firstpath, "%s/boards/control/%s", BBSHOME, fname);
-			if (storeDB(HEADER[MID_H], (char *) fileglue("control/%s", fname)) < 0) {
-			}
-			bbsfeedslog(fileglue("control/%s", fname), 'C');
-			firstpathbase = firstpath + strlen(BBSHOME) + strlen("/boards/");
-			splitptr = (char **) BNGsplit(GROUPS);
-			for (ngptr = *splitptr; ngptr != NULL; ngptr = *(++splitptr)) {
-				if (*ngptr == '\0')
-					continue;
-				nf = (newsfeeds_t *) search_group(ngptr);
-				if (nf == NULL)
-					continue;
-				if (nf->board == NULL)
-					continue;
-				if (nf->path == NULL)
-					continue;
-				feedfplog(nf, firstpathbase, 'C');
-			}
-		}
-	}
-	return 0;
+    char *boardhome, *fname;
+    char firstpath[MAXPATHLEN], *firstpathbase;
+    char **splitptr, *ngptr;
+    newsfeeds_t *nf;
+
+    innbbsdlog("control post %s\n", HEADER[CONTROL_H]);
+    boardhome = (char *) fileglue("%s/boards/control", BBSHOME);
+    testandmkdir(boardhome);
+    *firstpath = '\0';
+    if (isdir(boardhome)) {
+        fname = (char *) post_article(boardhome, FROM, "control", bbspost_write_control, NULL, firstpath);
+        if (fname != NULL) {
+            if (firstpath[0] == '\0')
+                sprintf(firstpath, "%s/boards/control/%s", BBSHOME, fname);
+            if (storeDB(HEADER[MID_H], (char *) fileglue("control/%s", fname)) < 0) {
+            }
+            bbsfeedslog(fileglue("control/%s", fname), 'C');
+            firstpathbase = firstpath + strlen(BBSHOME) + strlen("/boards/");
+            splitptr = (char **) BNGsplit(GROUPS);
+            for (ngptr = *splitptr; ngptr != NULL; ngptr = *(++splitptr)) {
+                if (*ngptr == '\0')
+                    continue;
+                nf = (newsfeeds_t *) search_group(ngptr);
+                if (nf == NULL)
+                    continue;
+                if (nf->board == NULL)
+                    continue;
+                if (nf->path == NULL)
+                    continue;
+                feedfplog(nf, firstpathbase, 'C');
+            }
+        }
+    }
+    return 0;
 }
+
 cancel_article_front(msgid)
-char   *msgid;
+char *msgid;
 {
-	char   *ptr = (char *) DBfetch(msgid);
-	char   *filelist, filename[2048];
-	char    histent[4096];
-	char    firstpath[MAXPATHLEN], *firstpathbase;
-	if (ptr == NULL) {
-		return 0;
-	}
-	strncpy(histent, ptr, sizeof histent);
-	ptr = histent;
+    char *ptr = (char *) DBfetch(msgid);
+    char *filelist, filename[2048];
+    char histent[4096];
+    char firstpath[MAXPATHLEN], *firstpathbase;
+
+    if (ptr == NULL) {
+        return 0;
+    }
+    strncpy(histent, ptr, sizeof histent);
+    ptr = histent;
 #ifdef DEBUG
-	printf("**** try to cancel %s *****\n", ptr);
+    printf("**** try to cancel %s *****\n", ptr);
 #endif
-	innbbslog("**** try to cancel %s *****\n", ptr);
-	filelist = strchr(ptr, '\t');
-	if (filelist != NULL) {
-		filelist++;
-	}
-	*firstpath = '\0';
-	for (ptr = filelist; ptr && *ptr;) {
-		char   *file;
-		for (; *ptr && isspace(*ptr); ptr++);
-		if (*ptr == '\0')
-			break;
-		file = ptr;
-		for (ptr++; *ptr && !isspace(*ptr); ptr++);
-		if (*ptr != '\0') {
-			*ptr++ = '\0';
-		}
-		sprintf(filename, "%s/boards/%s", BBSHOME, file);
-		innbbslog("**** Get file %s ****\n", ptr);
-		if (isfile(filename)) {
+    innbbsdlog("**** try to cancel %s *****\n", ptr);
+    filelist = strchr(ptr, '\t');
+    if (filelist != NULL) {
+        filelist++;
+    }
+    *firstpath = '\0';
+    for (ptr = filelist; ptr && *ptr;) {
+        char *file;
+
+        for (; *ptr && isspace(*ptr); ptr++);
+        if (*ptr == '\0')
+            break;
+        file = ptr;
+        for (ptr++; *ptr && !isspace(*ptr); ptr++);
+        if (*ptr != '\0') {
+            *ptr++ = '\0';
+        }
+        sprintf(filename, "%s/boards/%s", BBSHOME, file);
+        innbbsdlog("**** Get file %s ****\n", ptr);
+        if (isfile(filename)) {
 /*              FILE *fp = fopen(filename,"r");
               char buffer[1024];
               char *xfrom, *xpath, *boardhome;
@@ -562,411 +601,451 @@ char   *msgid;
               fclose(fp);
 */
 
-			FILE   *fp;
-			char    buffer[1024];
-			char   *xfrom, *boardhome;
-			fp = fopen(filename, "r");
-			if (fp != NULL) {
-				fgets(buffer, sizeof(buffer), fp);
-				fclose(fp);
-			}
-			xfrom = strtok(buffer, " ");
-			if (strncmp(xfrom, FromTxt, 7) == 0) {
-				xfrom = (char *) strtok(NULL, ",\r\n");
-			} else {
-				xfrom = "\0";
-			}
-			if (strcmp(HEADER[FROM_H], xfrom)
+            FILE *fp;
+            char buffer[1024];
+            char *xfrom, *boardhome;
+
+            fp = fopen(filename, "r");
+            if (fp != NULL) {
+                fgets(buffer, sizeof(buffer), fp);
+                fclose(fp);
+            }
+            xfrom = strtok(buffer, " ");
+            if (strncmp(xfrom, FromTxt, 7) == 0) {
+                xfrom = (char *) strtok(NULL, ",\r\n");
+            } else {
+                xfrom = "\0";
+            }
+            if (strcmp(HEADER[FROM_H], xfrom)
 #ifdef USE_NCM_PATCH
-				&& !search_issuer(FROM)
+                && !search_issuer(FROM)
 #endif
-				) {
-				innbbslog("Invalid cancel %s, path: %s!%s\n", FROM, MYBBSID, PATH);
-				return 0;
-			}
-			innbbslog("cancel post %s\n", filename);
+                ) {
+                innbbsdlog("Invalid cancel %s, path: %s!%s\n", FROM, MYBBSID, PATH);
+                return 0;
+            }
+            innbbsdlog("cancel post %s\n", filename);
 
 #ifdef KEEP_NETWORK_CANCEL
 
-			boardhome = (char *) fileglue("%s/boards/deleted", BBSHOME);
-			testandmkdir(boardhome);
-			if (isdir(boardhome)) {
-				char    subject[1024];
-				char   *fname;
-				if (POSTHOST) {
-					sprintf(subject, "cancel by: %.1000s", POSTHOST);
-				} else {
-					char   *body, *body2;
-					body = strchr(BODY, '\r');
-					if (body != NULL)
-						*body = '\0';
-					body2 = strchr(BODY, '\n');
-					if (body2 != NULL)
-						*body = '\0';
-					sprintf(subject, "%.1000s", BODY);
-					if (body != NULL)
-						*body = '\r';
-					if (body2 != NULL)
-						*body = '\n';
-				}
-				if (*subject)
-					SUBJECT = subject;
-				fname = (char *) post_article(boardhome, FROM, "deleted", bbspost_write_cancel, filename, firstpath);
-				if (fname != NULL) {
-					if (firstpath[0] == '\0') {
-						sprintf(firstpath, "%s/boards/deleted/%s", BBSHOME, fname);
-						firstpathbase = firstpath + strlen(BBSHOME) + strlen("/boards/");
-					}
-					if (storeDB(HEADER[MID_H], (char *) fileglue("deleted/%s", fname)) < 0) {
-						/* should do something */
-						innbbslog("store DB fail\n");
-						/* return -1; */
-					}
-					bbsfeedslog(fileglue("deleted/%s", fname), 'D');
+            boardhome = (char *) fileglue("%s/boards/deleted", BBSHOME);
+            testandmkdir(boardhome);
+            if (isdir(boardhome)) {
+                char subject[1024];
+                char *fname;
+
+                if (POSTHOST) {
+                    sprintf(subject, "cancel by: %.1000s", POSTHOST);
+                } else {
+                    char *body, *body2;
+
+                    body = strchr(BODY, '\r');
+                    if (body != NULL)
+                        *body = '\0';
+                    body2 = strchr(BODY, '\n');
+                    if (body2 != NULL)
+                        *body = '\0';
+                    sprintf(subject, "%.1000s", BODY);
+                    if (body != NULL)
+                        *body = '\r';
+                    if (body2 != NULL)
+                        *body = '\n';
+                }
+                if (*subject)
+                    SUBJECT = subject;
+                fname = (char *) post_article(boardhome, FROM, "deleted", bbspost_write_cancel, filename, firstpath);
+                if (fname != NULL) {
+                    if (firstpath[0] == '\0') {
+                        sprintf(firstpath, "%s/boards/deleted/%s", BBSHOME, fname);
+                        firstpathbase = firstpath + strlen(BBSHOME) + strlen("/boards/");
+                    }
+                    if (storeDB(HEADER[MID_H], (char *) fileglue("deleted/%s", fname)) < 0) {
+                        /*
+                         * should do something 
+                         */
+                        innbbsdlog("store DB fail\n");
+                        /*
+                         * return -1; 
+                         */
+                    }
+                    bbsfeedslog(fileglue("deleted/%s", fname), 'D');
 
 #ifdef OLDDISPATCH
-					{
-						char    board[256];
-						newsfeeds_t *nf;
-						char   *filebase = filename + strlen(BBSHOME) + strlen("/boards/");
-						char   *filetail = strrchr(filename, '/');
-						if (filetail != NULL) {
-							strncpy(board, filebase, filetail - filebase);
-							nf = (newsfeeds_t *) search_board(board);
-							if (nf != NULL && nf->board && nf->path) {
-								feedfplog(nf, firstpathbase, 'D');
-							}
-						}
-					}
+                    {
+                        char board[256];
+                        newsfeeds_t *nf;
+                        char *filebase = filename + strlen(BBSHOME) + strlen("/boards/");
+                        char *filetail = strrchr(filename, '/');
+
+                        if (filetail != NULL) {
+                            strncpy(board, filebase, filetail - filebase);
+                            nf = (newsfeeds_t *)
+                                search_board(board);
+                            if (nf != NULL && nf->board && nf->path) {
+                                feedfplog(nf, firstpathbase, 'D');
+                            }
+                        }
+                    }
 #endif
-				} else {
-					innbbslog(" fname is null %s %s\n", boardhome, filename);
-					return -1;
-				}
-			}
-			/* innbbslog("**** %s should be removed\n", filename); */
-			/* unlink(filename); */
+                } else {
+                    innbbsdlog(" fname is null %s %s\n", boardhome, filename);
+                    return -1;
+                }
+            }
+            /*
+             * innbbsdlog("**** %s should be removed\n", filename); 
+             */
+            /*
+             * unlink(filename); 
+             */
 #endif
-			{
-				char   *fp = strrchr(file, '/');
-				if (fp != NULL) {
-					*fp = '\0';
-					cancel_article(BBSHOME, file, fp + 1);
-					*fp = '/';
-				}
-			}
-		}
-	}
-	if (*firstpath) {
-		char  **splitptr, *ngptr;
-		newsfeeds_t *nf;
-		splitptr = (char **) BNGsplit(GROUPS);
-		for (ngptr = *splitptr; ngptr != NULL; ngptr = *(++splitptr)) {
-			if (*ngptr == '\0')
-				continue;
-			nf = (newsfeeds_t *) search_group(ngptr);
-			if (nf == NULL)
-				continue;
-			if (nf->board == NULL)
-				continue;
-			if (nf->path == NULL)
-				continue;
-			feedfplog(nf, firstpathbase, 'D');
-		}
-	}
-	return 0;
+            {
+                char *fp = strrchr(file, '/');
+
+                if (fp != NULL) {
+                    *fp = '\0';
+                    cancel_article(BBSHOME, file, fp + 1);
+                    *fp = '/';
+                }
+            }
+        }
+    }
+    if (*firstpath) {
+        char **splitptr, *ngptr;
+        newsfeeds_t *nf;
+
+        splitptr = (char **) BNGsplit(GROUPS);
+        for (ngptr = *splitptr; ngptr != NULL; ngptr = *(++splitptr)) {
+            if (*ngptr == '\0')
+                continue;
+            nf = (newsfeeds_t *) search_group(ngptr);
+            if (nf == NULL)
+                continue;
+            if (nf->board == NULL)
+                continue;
+            if (nf->path == NULL)
+                continue;
+            feedfplog(nf, firstpathbase, 'D');
+        }
+    }
+    return 0;
 }
+
 #if defined(FirebirdBBS)|| defined(PhoenixBBS) || defined(SecretBBS) || defined(PivotBBS) || defined(MapleBBS)
 /* for PhoenixBBS's post article and cancel article */
 
-#define NO_OSDEP_H	/* skip the os_dep.h, we have it already! */
+#define NO_OSDEP_H              /* skip the os_dep.h, we have it already! */
 #include "bbs.h"
 #undef  OS_OSDEP_H
 
-int cmp_title(char* title,struct fileheader* fh1)
+int cmp_title(char *title, struct fileheader *fh1)
 {
-    char* p1;
-    if (!strncasecmp(title,"Re:",3)) p1=fh1->title+4;
-    else if (!strncasecmp(title,"回复:",5)) p1=fh1->title+6;
-    else p1=fh1->title;
-    return (!strncmp(p1,title,STRLEN));
+    char *p1;
+
+    if (!strncasecmp(title, "Re:", 3))
+        p1 = fh1->title + 4;
+    else if (!strncasecmp(title, "回复:", 5))
+        p1 = fh1->title + 6;
+    else
+        p1 = fh1->title;
+    return (!strncmp(p1, title, STRLEN));
 }
 
-int find_thread(struct fileheader *fh,char* board,char* title)
+int find_thread(struct fileheader *fh, char *board, char *title)
 {
     char direct[255];
-    char* p;
+    char *p;
     int ret;
     int fd;
-    setbfile(direct,board, DOT_DIR);
-    if ((fd = open(direct, O_RDONLY , 0644)) == -1)
-       return 0;
-    if (!strncasecmp(title,"Re:",3)) p=title+4;
-    else if (!strncasecmp(title,"回复:",5)) p=title+6;
-    else p=title;
-    ret=search_record_back_lite(fd, sizeof(struct fileheader), 0X7FFFF, 200, (RECORD_FUNC_ARG) cmp_title, p, fh, 1);
+
+    setbfile(direct, board, DOT_DIR);
+    if ((fd = open(direct, O_RDONLY, 0644)) == -1)
+        return 0;
+    if (!strncasecmp(title, "Re:", 3))
+        p = title + 4;
+    else if (!strncasecmp(title, "回复:", 5))
+        p = title + 6;
+    else
+        p = title;
+    ret = search_record_back_lite(fd, sizeof(struct fileheader), 0X7FFFF, 200, (RECORD_FUNC_ARG) cmp_title, p, fh, 1);
     close(fd);
     return ret;
 }
 
-char   *
-post_article(homepath, userid, board, writebody, pathname, firstpath)
-char   *homepath;
-char   *userid, *board;
-int     (*writebody) ();
-char   *pathname, *firstpath;
+char *post_article(homepath, userid, board, writebody, pathname, firstpath)
+char *homepath;
+char *userid, *board;
+int (*writebody) ();
+char *pathname, *firstpath;
 {
-	struct userec record;
-	struct fileheader header;
-	struct fileheader threadfh;
+    struct userec record;
+    struct fileheader header;
+    struct fileheader threadfh;
+
 /*    char        *subject = SUBJECT;  */
-	char    index[MAXPATHLEN];
-	static char name[MAXPATHLEN];
-	char    article[MAXPATHLEN];
-	char    buf[MAXPATHLEN], *ptr;
-	FILE   *fidx;
-	int     fh;
-	int ret;
-	time_t  now;
-	int     linkflag;
-	char    conv_buf[256];
+    char index[MAXPATHLEN];
+    static char name[MAXPATHLEN];
+    char article[MAXPATHLEN];
+    char buf[MAXPATHLEN], *ptr;
+    FILE *fidx;
+    int fh;
+    int ret;
+    time_t now;
+    int linkflag;
+    char conv_buf[256];
     char old_path[255];
 
-    getcwd(old_path,255);
-	sprintf(index, "%s/.DIR", homepath);
-	if ((fidx = fopen(index, "r")) == NULL) {
-		if ((fidx = fopen(index, "w")) == NULL) {
-			innbbslog(":Err: Unable to post in %s.\n", homepath);
-			return NULL;
-		}
-	}
-	fclose(fidx);
+    getcwd(old_path, 255);
+    sprintf(index, "%s/.DIR", homepath);
+    if ((fidx = fopen(index, "r")) == NULL) {
+        if ((fidx = fopen(index, "w")) == NULL) {
+            innbbsdlog(":Err: Unable to post in %s.\n", homepath);
+            return NULL;
+        }
+    }
+    fclose(fidx);
 
-	now = time(NULL);
-	sprintf(name, "M.%d.A", now);
-	ptr = strrchr(name, 'A');
-	while (1) {
-		sprintf(article, "%s/%s", homepath, name);
-		fh = open(article, O_CREAT | O_EXCL | O_WRONLY, 0644);
-		/* if( fh != -1 )  break; */
-		if (fh >= 0)
-			break;
-		if (errno != EEXIST) {
-			innbbslog(" Err: can't writable or other errors\n");
-			return NULL;
-		}
+    now = time(NULL);
+    sprintf(name, "M.%d.A", now);
+    ptr = strrchr(name, 'A');
+    while (1) {
+        sprintf(article, "%s/%s", homepath, name);
+        fh = open(article, O_CREAT | O_EXCL | O_WRONLY, 0644);
+        /*
+         * if( fh != -1 )  break; 
+         */
+        if (fh >= 0)
+            break;
+        if (errno != EEXIST) {
+            innbbsdlog(" Err: can't writable or other errors\n");
+            return NULL;
+        }
 /* to solve client gateway problem, add now instead of add A, */
-		now += 60;
-		sprintf(name, "M.%d.A", now);
+        now += 60;
+        sprintf(name, "M.%d.A", now);
 /*
         if( *ptr < 'Z' )  (*ptr)++;
         else  ptr++, *ptr = 'A', ptr[1] = '\0';
 */
-	}
+    }
 
 #ifdef DEBUG
-	printf("post to %s\n", article);
+    printf("post to %s\n", article);
 #endif
 
-	linkflag = 1;
-	if (firstpath && *firstpath) {
-		close(fh);
-		unlink(article);
+    linkflag = 1;
+    if (firstpath && *firstpath) {
+        close(fh);
+        unlink(article);
 #ifdef DEBUGLINK
-		innbbslog("try to link %s to %s", firstpath, article);
+        innbbsdlog("try to link %s to %s", firstpath, article);
 #endif
-		linkflag = link(firstpath, article);
-		if (linkflag) {
-			fh = open(article, O_CREAT | O_EXCL | O_WRONLY, 0644);
-		}
-	}
-	if (linkflag != 0) {
-		if (writebody) {
-			if ((*writebody) (fh, board, pathname) < 0)
-				return NULL;
-		} else {
-			if (bbspost_write_post(fh, board, pathname) < 0)
-				return NULL;
-		}
-		close(fh);
-	}
-	bzero((void *) &header, sizeof(header));
-	strcpy(header.filename, name);
-	strncpy(header.owner, userid, OWNER_LEN);
-	header.owner[OWNER_LEN-1]=0;
-	str_decode(conv_buf, SUBJECT);
-	strncpy(header.title, conv_buf, STRLEN);
-	header.title[STRLEN - 1] = '\0';
-	header.innflag[1] = 'M';
-	/* if append record record, should return fail message */
+        linkflag = link(firstpath, article);
+        if (linkflag) {
+            fh = open(article, O_CREAT | O_EXCL | O_WRONLY, 0644);
+        }
+    }
+    if (linkflag != 0) {
+        if (writebody) {
+            if ((*writebody) (fh, board, pathname) < 0)
+                return NULL;
+        } else {
+            if (bbspost_write_post(fh, board, pathname) < 0)
+                return NULL;
+        }
+        close(fh);
+    }
+    bzero((void *) &header, sizeof(header));
+    strcpy(header.filename, name);
+    strncpy(header.owner, userid, OWNER_LEN);
+    header.owner[OWNER_LEN - 1] = 0;
+    str_decode(conv_buf, SUBJECT);
+    strncpy(header.title, conv_buf, STRLEN);
+    header.title[STRLEN - 1] = '\0';
+    header.innflag[1] = 'M';
+    /*
+     * if append record record, should return fail message 
+     */
     chdir(BBSHOME);
-	resolve_boards();
-
-        linkflag=find_thread(&threadfh,board,header.title);
-        ret=after_post(NULL, &header, board,linkflag?&threadfh:NULL);
-	if ((ret!=0)&&(ret!=2)) {
-            innbbslog(":Err:after_post Unable to post in %s.\n", homepath);
+    resolve_boards();
+    linkflag = find_thread(&threadfh, board, header.title);
+    ret = after_post(NULL, &header, board, linkflag ? &threadfh : NULL);
+    if ((ret != 0) && (ret != 2)) {
+        innbbsdlog(":Err:after_post Unable to post in %s.\n", homepath);
+        chdir(old_path);
+        return NULL;
+    }
     chdir(old_path);
-	    return NULL;
-	}
-    chdir(old_path);
-	return name;
+    return name;
 }
+
 cancel_article(homepath, board, file)
-char   *homepath;
-char   *board, *file;
+char *homepath;
+char *board, *file;
 {
-	struct fileheader header;
-	struct stat state;
-	char    dirname[MAXPATHLEN];
-	char    buf[MAXPATHLEN];
-	long    numents, size, time, now;
-	int     fd, lower, ent;
-	if (file == NULL || file[0] != 'M' || file[1] != '.' ||
-		(time = atoi(file + 2)) <= 0)
-		return 0;
-	size = sizeof(header);
-	sprintf(dirname, "%s/boards/%s/.DIR", homepath, board);
-	if ((fd = open(dirname, O_RDWR)) == -1)
-		return 0;
-	f_exlock(fd);
-	fstat(fd, &state);
-	ent = ((long) state.st_size) / size;
-	lower = 0;
-	while (1) {
-		ent -= 8;
-		if (ent <= 0 || lower >= 2)
-			break;
-		lseek(fd, (off_t) (size * ent), SEEK_SET);
-		if (read(fd, &header, size) != size) {
-			ent = 0;
-			break;
-		}
-		now = atoi(header.filename + 2);
-		lower = (now < time) ? lower + 1 : 0;
-	}
-	if (ent < 0)
-		ent = 0;
-	while (read(fd, &header, size) == size) {
-		if (strcmp(file, header.filename) == 0) {
-			if (header.owner[0] != '-') {
-				sprintf(buf, "-%s", header.owner);
-				strncpy(header.owner, buf,OWNER_LEN);
-				header.owner[OWNER_LEN-1]=0;
-				sprintf(header.title, "<< cancelled from %-.50s >>", POSTHOST ? POSTHOST : "site of origin");
-				lseek(fd, (off_t) (-size), SEEK_CUR);
-				safewrite(fd, &header, size);
-			}
-			break;
-		}
-		now = atoi(header.filename + 2);
-		if (now > time)
-			break;
-	}
-	f_unlock(fd);
-	close(fd);
-	return 0;
+    struct fileheader header;
+    struct stat state;
+    char dirname[MAXPATHLEN];
+    char buf[MAXPATHLEN];
+    long numents, size, time, now;
+    int fd, lower, ent;
+
+    if (file == NULL || file[0] != 'M' || file[1] != '.' || (time = atoi(file + 2)) <= 0)
+        return 0;
+    size = sizeof(header);
+    sprintf(dirname, "%s/boards/%s/.DIR", homepath, board);
+    if ((fd = open(dirname, O_RDWR)) == -1)
+        return 0;
+    flock(fd, LOCK_EX);
+    fstat(fd, &state);
+    ent = ((long) state.st_size) / size;
+    lower = 0;
+    while (1) {
+        ent -= 8;
+        if (ent <= 0 || lower >= 2)
+            break;
+        lseek(fd, (off_t) (size * ent), SEEK_SET);
+        if (read(fd, &header, size) != size) {
+            ent = 0;
+            break;
+        }
+        now = atoi(header.filename + 2);
+        lower = (now < time) ? lower + 1 : 0;
+    }
+    if (ent < 0)
+        ent = 0;
+    while (read(fd, &header, size) == size) {
+        if (strcmp(file, header.filename) == 0) {
+            if (header.owner[0] != '-') {
+                sprintf(buf, "-%s", header.owner);
+                strncpy(header.owner, buf, OWNER_LEN);
+                header.owner[OWNER_LEN - 1] = 0;
+                sprintf(header.title, "<< cancelled from %-.50s >>", POSTHOST ? POSTHOST : "site of origin");
+                lseek(fd, (off_t) (-size), SEEK_CUR);
+                safewrite(fd, &header, size);
+            }
+            break;
+        }
+        now = atoi(header.filename + 2);
+        if (now > time)
+            break;
+    }
+    flock(fd, LOCK_UN);
+    close(fd);
+    return 0;
 }
 #elif defined(PalmBBS)
 #undef PATH XPATH
 #undef HEADER XHEADER
 #include "server.h"
 
-char   *
-post_article(homepath, userid, board, writebody, pathname, firstpath)
-char   *homepath;
-char   *userid, *board;
-int     (*writebody) ();
-char   *pathname, *firstpath;
+char *post_article(homepath, userid, board, writebody, pathname, firstpath)
+char *homepath;
+char *userid, *board;
+int (*writebody) ();
+char *pathname, *firstpath;
 {
-	PATH    msgdir, msgfile;
-	static PATH name;
+    PATH msgdir, msgfile;
+    static PATH name;
 
-	READINFO readinfo;
-	SHORT   fileid;
-	char    buf[MAXPATHLEN];
-	struct stat stbuf;
-	int     fh;
-	strcpy(msgdir, homepath);
-	if (stat(msgdir, &stbuf) == -1 || !S_ISDIR(stbuf.st_mode)) {
-		/* A directory is missing! */
-		innbbslog(":Err: Unable to post in %s.\n", msgdir);
-		return NULL;
-	}
-	get_filelist_ids(msgdir, &readinfo);
+    READINFO readinfo;
+    SHORT fileid;
+    char buf[MAXPATHLEN];
+    struct stat stbuf;
+    int fh;
 
-	for (fileid = 1; fileid <= BBS_MAX_FILES; fileid++) {
-		int     oumask;
-		if (test_readbit(&readinfo, fileid))
-			continue;
-		fileid_to_fname(msgdir, fileid, msgfile);
-		sprintf(name, "%04x", fileid);
+    strcpy(msgdir, homepath);
+    if (stat(msgdir, &stbuf) == -1 || !S_ISDIR(stbuf.st_mode)) {
+        /*
+         * A directory is missing! 
+         */
+        innbbsdlog(":Err: Unable to post in %s.\n", msgdir);
+        return NULL;
+    }
+    get_filelist_ids(msgdir, &readinfo);
+
+    for (fileid = 1; fileid <= BBS_MAX_FILES; fileid++) {
+        int oumask;
+
+        if (test_readbit(&readinfo, fileid))
+            continue;
+        fileid_to_fname(msgdir, fileid, msgfile);
+        sprintf(name, "%04x", fileid);
 #ifdef DEBUG
-		printf("post to %s\n", msgfile);
+        printf("post to %s\n", msgfile);
 #endif
-		if (firstpath && *firstpath) {
+        if (firstpath && *firstpath) {
 #ifdef DEBUGLINK
-			innbbslog("try to link %s to %s", firstpath, msgfile);
+            innbbsdlog("try to link %s to %s", firstpath, msgfile);
 #endif
-			if (link(firstpath, msgfile) == 0)
-				break;
-		}
-		oumask = umask(0);
-		fh = open(msgfile, O_CREAT | O_EXCL | O_WRONLY, 0664);
-		umask(oumask);
-		if (writebody) {
-			if ((*writebody) (fh, board, pathname) < 0)
-				return NULL;
-		} else {
-			if (bbspost_write_post(fh, board, pathname) < 0)
-				return NULL;
-		}
-		close(fh);
-		break;
-	}
+            if (link(firstpath, msgfile) == 0)
+                break;
+        }
+        oumask = umask(0);
+        fh = open(msgfile, O_CREAT | O_EXCL | O_WRONLY, 0664);
+        umask(oumask);
+        if (writebody) {
+            if ((*writebody) (fh, board, pathname) < 0)
+                return NULL;
+        } else {
+            if (bbspost_write_post(fh, board, pathname) < 0)
+                return NULL;
+        }
+        close(fh);
+        break;
+    }
 #ifdef CACHED_OPENBOARD
-	{
-		char   *bname;
-		bname = strrchr(msgdir, '/');
-		if (bname)
-			notify_new_post(++bname, 1, fileid, stbuf.st_mtime);
-	}
+    {
+        char *bname;
+
+        bname = strrchr(msgdir, '/');
+        if (bname)
+            notify_new_post(++bname, 1, fileid, stbuf.st_mtime);
+    }
 #endif
-	return name;
+    return name;
 }
+
 cancel_article(homepath, board, file)
-char   *homepath;
-char   *board, *file;
+char *homepath;
+char *board, *file;
 {
-	PATH    fname;
+    PATH fname;
+
 #ifdef  CACHED_OPENBOARD
-	PATH    bdir;
-	struct stat stbuf;
-	sprintf(bdir, "%s/boards/%s", homepath, board);
-	stat(bdir, &stbuf);
+    PATH bdir;
+    struct stat stbuf;
+
+    sprintf(bdir, "%s/boards/%s", homepath, board);
+    stat(bdir, &stbuf);
 #endif
-	sprintf(fname, "%s/boards/%s/%s", homepath, board, file);
-	unlink(fname);
-	/* kill it now! the function is far small then original..  :) */
-	/* because it won't make system load heavy like before */
+    sprintf(fname, "%s/boards/%s/%s", homepath, board, file);
+    unlink(fname);
+    /*
+     * kill it now! the function is far small then original..  :) 
+     */
+    /*
+     * because it won't make system load heavy like before 
+     */
 #ifdef CACHED_OPENBOARD
-	notify_new_post(board, -1, hex2SHORT(file), stbuf.st_mtime);
+    notify_new_post(board, -1, hex2SHORT(file), stbuf.st_mtime);
 #endif
 }
 #else
 error("You should choose one of the systems: PhoenixBBS, PowerBBS, or PalmBBS")
 #endif
-
 #else
 
 receive_article()
 {
 }
+
 receive_control()
 {
 }
+
 cancel_article_front(msgid)
-char   *msgid;
+char *msgid;
 {
 }
 #endif

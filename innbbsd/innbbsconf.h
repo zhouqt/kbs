@@ -67,7 +67,6 @@
 # define MAX_ART_SIZE 1000000L
 #endif
 
-
 /*
    Maximum number of articles stated for a newsgroup by bbsnnrp each time 
 */
@@ -81,7 +80,6 @@
 #ifndef MIN_WAIT
 # define MIN_WAIT 60
 #endif
-
 
 #ifndef DefaultINNBBSPort
 # define DefaultINNBBSPort "7777"
@@ -138,7 +136,7 @@
 #endif
 
 #if !defined(__svr4__) || defined(sun)
-#  define WITH_TM_GMTOFF  
+#  define WITH_TM_GMTOFF
 #endif
 #if (defined(__svr4__) && defined(sun)) || defined(SOLARIS)
 # ifndef SOLARIS
@@ -175,8 +173,8 @@
 #endif
 
 #ifndef LOCK_EX
-# define LOCK_EX         2       /* exclusive lock */
-# define LOCK_UN         8       /* unlock */
+# define LOCK_EX         2      /* exclusive lock */
+# define LOCK_UN         8      /* unlock */
 #endif
 
 #ifdef DEC_ALPHA
@@ -191,10 +189,10 @@
 
 #ifdef HCCC
 #if defined(HC) || defined(WORDG2B)
-#  define Rfprintf b2gfprintf 
-#  define Sfprintf g2bfprintf 
-#  define Rfputs   b2gfputs 
-#  define Sfputs   g2bfputs 
+#  define Rfprintf b2gfprintf
+#  define Sfprintf g2bfprintf
+#  define Rfputs   b2gfputs
+#  define Sfputs   g2bfputs
 #else
 #  define Rfprintf fprintf
 #  define Sfprintf fprintf
@@ -206,6 +204,5 @@
 #ifndef LANG
 #define LANG "BIG5"
 #endif
-
 
 #endif

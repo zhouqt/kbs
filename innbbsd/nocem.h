@@ -12,22 +12,21 @@ $Id$
 #include "innbbsconf.h"
 #include "bbslib.h"
 #include "inntobbs.h"
-#include "version.h"         /* for FB3 */
+#include "version.h"            /* for FB3 */
 
 #ifdef SOLARIS
-#include <stdarg.h>          /* for va_start() problem */
+#include <stdarg.h>             /* for va_start() problem */
 #else
 #include <varargs.h>
-#endif      
+#endif
 
-typedef struct ncmperm_t
-{
-  char *issuer;
-  char *type;
-  int perm;
+typedef struct ncmperm_t {
+    char *issuer;
+    char *type;
+    int perm;
 } ncmperm_t;
 
-ncmperm_t *NCMPERM=NULL, **NCMPERM_BYTYPE=NULL;
+ncmperm_t *NCMPERM = NULL, **NCMPERM_BYTYPE = NULL;
 static char *NCMPERM_BUF;
 int NCMCOUNT = 0;
 
@@ -47,7 +46,7 @@ int NCMCOUNT = 0;
 
 #define STRLEN          80
 #define MAXSPAMMID      10000
-#define	LINELEN		512
+#define	LINELEN		1024
 
 #define LeeymBBS        BBSHOST
 #define LeeymEMAIL      ADMINUSER
@@ -64,6 +63,8 @@ extern char COUNT[];
 extern char THRESHOLD[];
 extern char KEYID[];
 extern char SPAMMID_NOW[];
-extern char    SPAMMID[MAXSPAMMID][STRLEN];
 
-#endif /* NOCEM_H */
+//extern char SPAMMID[][];
+extern char SPAMMID[MAXSPAMMID][STRLEN];
+
+#endif                          /* NOCEM_H */

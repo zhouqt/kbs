@@ -2,39 +2,39 @@
 #define BBSLIB_H
 
 typedef struct nodelist_t {
-  char *node;
-  char *exclusion;
-  char *host;
-  char *protocol;
-  char *comments;
-  int feedtype;
-  FILE *feedfp;
+    char *node;
+    char *exclusion;
+    char *host;
+    char *protocol;
+    char *comments;
+    int feedtype;
+    FILE *feedfp;
 } nodelist_t;
 
 #ifdef FILTER
 typedef struct filter_t {
-  char *group;
-  char *rcmdfilter, *scmdfilter;
+    char *group;
+    char *rcmdfilter, *scmdfilter;
 } filter_t;
 
-typedef char *(*FuncPtr)();
+typedef char *(*FuncPtr) ();
 
 #endif
 
 typedef struct newsfeeds_t {
-  char *newsgroups;
-  char *board;
-  char *path;
+    char *newsgroups;
+    char *board;
+    char *path;
 #ifdef FILTER
-  FuncPtr rfilter, sfilter;
-  char *rcmdfilter, *scmdfilter;
+    FuncPtr rfilter, sfilter;
+    char *rcmdfilter, *scmdfilter;
 #endif
 } newsfeeds_t;
 
 typedef struct overview_t {
-  char *board, *filename, *group; 
-  time_t mtime; 
-  char *from, *subject;
+    char *board, *filename, *group;
+    time_t mtime;
+    char *from, *subject;
 } overview_t;
 
 extern char MYBBSID[];
@@ -57,22 +57,22 @@ extern int Maxclient;
 
 # ifndef ARG
 #  ifdef __STDC__
-#   define ARG(x) x 
+#   define ARG(x) x
 #  else
-#   define ARG(x) () 
+#   define ARG(x) ()
 #  endif
 # endif
 
-int initial_bbs ARG((char* ));
+int initial_bbs ARG((char *));
 char *restrdup ARG((char *, char *));
 nodelist_t *search_nodelist ARG((char *, char *));
 newsfeeds_t *search_group ARG((char *));
-int innbbslog ARG(());
+int innbbsdlog ARG(());
 void *mymalloc ARG((int));
 void *myrealloc ARG((void *, int));
 
 #ifdef PalmBBS
-#define innbbslog xbbslog
+#define innbbsdlog xbbslog
 #endif
 
 #endif
