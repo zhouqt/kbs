@@ -268,7 +268,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
         }
 
         else {
-            getdata(t_lines - 1, 0, "看板新成立 (P)发表文章 (Q)离开？[Q] ", genbuf, 4, DOECHO, NULL, true);
+            getdata(t_lines - 1, 0, "新版刚成立 (P)发表文章 (Q)离开？[Q] ", genbuf, 4, DOECHO, NULL, true);
             if (genbuf[0] == 'p' || genbuf[0] == 'P')
                 do_post();
         }

@@ -378,7 +378,7 @@ static int mk_result(int num)
     unlink(sugname);
     fclose(sug);
     sug = NULL;
-    sprintf(title, "[公告] %s 板的投票结果", currboard);
+    sprintf(title, "[公告] %s 版的投票结果", currboard);
     mail_file(currentuser->userid, nname, currvote.userid, title, 0);
     if (normal_board(currboard)) {
         post_file(currentuser, "", nname, "vote", title, 0, 1);
@@ -455,7 +455,7 @@ int check_result(int num)
     unlink(sugname);
     fclose(sug);
     sug = NULL;
-    sprintf(title, "[检查] %s 板的投票结果", currboard);
+    sprintf(title, "[检查] %s 版的投票结果", currboard);
     mail_file(currentuser->userid, nname, currentuser->userid, title, 1);
     return 0;
 }

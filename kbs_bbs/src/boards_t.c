@@ -137,7 +137,7 @@ int search_board(int *num, int *i, int *find, char *bname)
                     tmpn = true;
                     *num = n;
                     if (!strcmp(nbrd[n].name, bname))
-                        return 1 /*ÕÒµ½ÀàËÆµÄ°å£¬»­ÃæÖØ»­ */ ;
+                        return 1 /*ÕÒµ½ÀàËÆµÄ°æ£¬»­ÃæÖØ»­ */ ;
                 }
             }
             if (tmpn)
@@ -302,7 +302,7 @@ void show_brdlist(page, clsflag, newflag)       /* show board list */
 	        docmdtitle("[¸öÈË¶¨ÖÆÇø]", "  [mÖ÷Ñ¡µ¥[¡û,e] ÔÄ¶Á[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] Ìí¼Ó[a,A] ÒÆ¶¯[m] É¾³ı[d] ÅÅĞò[S] ÇóÖú[h]\n");
         else
        	 docmdtitle("[ÌÖÂÛÇøÁĞ±í]", "  [mÖ÷Ñ¡µ¥[¡û,e] ÔÄ¶Á[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] ÁĞ³ö[y] ÅÅĞò[S] ËÑÑ°[/] ÇĞ»»[c] ÇóÖú[h]\n");
-        prints("[44m[37m %s ÌÖÂÛÇøÃû³Æ       V  Àà±ğ ×ªĞÅ  %-24s °å  Ö÷   %s   [m\n", newflag ? "È«²¿ Î´¶Á" : "±àºÅ  ", "ÖĞ  ÎÄ  Ğğ  Êö", newflag ? "" : "   ");
+        prints("[44m[37m %s ÌÖÂÛÇøÃû³Æ       V  Àà±ğ ×ªĞÅ  %-24s °æ  Ö÷   %s   [m\n", newflag ? "È«²¿ Î´¶Á" : "±àºÅ  ", "ÖĞ  ÎÄ  Ğğ  Êö", newflag ? "" : "   ");
     }
 
     move(3, 0);

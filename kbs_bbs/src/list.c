@@ -396,7 +396,7 @@ if (user_record[i + page] == NULL) {
             
 clear();
             
-prints("[1;31mœµÕ≥≥ˆœ÷Bug,«ÎµΩSysop∞Â±®∏Ê£¨–ª–ª![m");
+prints("[1;31mœµÕ≥≥ˆœ÷Bug,«ÎµΩSysop∞Ê±®∏Ê£¨–ª–ª![m");
             
 oflush();
             

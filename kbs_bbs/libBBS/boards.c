@@ -8,7 +8,7 @@
 #define BRC_ITEMSIZE    (BRC_MAXNUM * sizeof( time_t ))
 #define BRC_FILESIZE BRC_ITEMSIZE*MAXBOARD
 
-#define BRC_CACHE_NUM 60        /* 未读标记cache 20个板 */
+#define BRC_CACHE_NUM 60        /* 未读标记cache 20个版 */
 
 static struct _brc_cache_entry {
     int bid;
@@ -847,9 +847,9 @@ int deldeny(struct userec *user, char *board, char *uident, int notice_only)
         fprintf(fn1, "来  源: %s \n", fromhost);
         fprintf(fn1, "\n");
         if (!strcmp(user->userid, "deliver"))
-            fprintf(fn1, "您被自动解封系统解除在 %s 板的封禁\n", board);
+            fprintf(fn1, "您被自动解封系统解除在 %s 版的封禁\n", board);
         else
-            fprintf(fn1, "您被站务人员 %s 解除在 %s 板的封禁\n", user->userid, board);
+            fprintf(fn1, "您被站务人员 %s 解除在 %s 版的封禁\n", user->userid, board);
     } else {
         sprintf(buffer, "[通知]");
         fprintf(fn1, "寄信人: %s \n", user->userid);
@@ -867,7 +867,7 @@ int deldeny(struct userec *user, char *board, char *uident, int notice_only)
         sprintf(buffer, "%s 解封死掉的帐号 %s 在 %s ", user->userid, uident, board);
     else {
         if (PERM_BOARDS & lookupuser->userlevel)
-            sprintf(buffer, "%s 解封某板版主 %s 在 %s ", user->userid, lookupuser->userid, board);
+            sprintf(buffer, "%s 解封某版版主 %s 在 %s ", user->userid, lookupuser->userid, board);
         else
             sprintf(buffer, "%s 解封 %s 在 %s", user->userid, lookupuser->userid, board);
         mail_file(user->userid, filename, uident, buffer, 0);

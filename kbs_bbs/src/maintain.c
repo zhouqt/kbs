@@ -383,7 +383,7 @@ int m_newbrd()
         clear();
     } else
         newboard.level = 0;
-    getdata(7, 0, "是否加入匿名板 (Y/N)? [N]: ", ans, 4, DOECHO, NULL, true);
+    getdata(7, 0, "是否加入匿名版 (Y/N)? [N]: ", ans, 4, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y') {
         newboard.flag |= BOARD_ANNONY;
         addtofile("etc/anonymous", newboard.filename);
@@ -419,7 +419,7 @@ int m_newbrd()
     {
         char secu[STRLEN];
 
-        sprintf(secu, "成立新板：%s", newboard.filename);
+        sprintf(secu, "成立新版：%s", newboard.filename);
         securityreport(secu, NULL, NULL);
     }
     pressreturn();
@@ -649,7 +649,7 @@ int searchtrace()
     mail_file(currentuser->userid, tmp_command, currentuser->userid, "系统查询结果", 1);
 
     sprintf(buf, "查询用户 %s 的发文情况", tmp_id);
-    securityreport(buf, NULL, NULL);    /*写入syssecurity板, stephen 2000.12.21 */
+    securityreport(buf, NULL, NULL);    /*写入syssecurity版, stephen 2000.12.21 */
     sprintf(buf, "Search the posts by %s in the trace", tmp_id);
     report(buf);                /*写入trace, stephen 2000.12.21 */
 

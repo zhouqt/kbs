@@ -167,11 +167,11 @@ int inform(bcache_t * bp, char *user, char *exp, int dt)
      */
     post_file(usr, "", buf, board, title, 0, 2);
     memcpy(usr, &saveusr, sizeof(saveusr));
-    sprintf(title, "%s 被 %s 封禁本板POST权", user, usr->userid);
+    sprintf(title, "%s 被 %s 封禁本版POST权", user, usr->userid);
     getuser(user, &lookupuser);
 
     if (HAS_PERM(lookupuser, PERM_BOARDS))
-        sprintf(title, "%s 封某板" NAME_BM " %s 在 %s", usr->userid, user, board);
+        sprintf(title, "%s 封某版" NAME_BM " %s 在 %s", usr->userid, user, board);
     else
         sprintf(title, "%s 封 %s 在 %s", usr->userid, user, board);
     post_file(usr, "", buf, "denypost", title, 0, 8);

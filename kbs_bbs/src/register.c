@@ -196,7 +196,7 @@ int invalid_realmail(userid, email, msize)
             prints("         包括Mail,Post,Message,Talk 等. \n");
             prints("  \n");
             prints("建议您,  先四处浏览一下, \n");
-            prints("         不懂的地方, 请在 sysop 板留言, \n");
+            prints("         不懂的地方, 请在 sysop 版留言, \n");
             prints("         本站会派专人为您解答. \n");
             getdata(18, 0, "请按 <Enter>  <<  ", ans, 2, DOECHO, NULL, true);
             return 0;

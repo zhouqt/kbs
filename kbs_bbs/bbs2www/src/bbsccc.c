@@ -342,7 +342,7 @@ if (!strcmp(board2, board))
         
  {
         
-http_fatal("\n\n                          本板的文章不需要转贴到本板!");
+http_fatal("\n\n                          本版的文章不需要转贴到本版!");
         
 }
     
@@ -408,7 +408,7 @@ fclose(fp);
     
 do_cross(ent, x, dir, board, board2, local);
     
-printf("'%s' 已转贴到 %s 板.<br>\n", nohtml(x->title), board2);
+printf("'%s' 已转贴到 %s 版.<br>\n", nohtml(x->title), board2);
     
 printf("[<a href=\"javascript:history.go(-2)\">返回</a>]");
 

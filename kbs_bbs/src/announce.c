@@ -158,7 +158,7 @@ void a_showmenu(pm)             /* ¾«»ªÇø ²Ëµ¥ ×´Ì¬ */
     clrtobot();
     move(t_lines - 1, 0);
     prints("%s", (pm->level & PERM_BOARDS) ?
-           "[31m[44m[°å  Ö÷]  [33mËµÃ÷ h ©¦ Àë¿ª q,¡û ©¦ ĞÂÔöÎÄÕÂ a ©¦ ĞÂÔöÄ¿Â¼ g ©¦ ±à¼­µµ°¸ e        [m" :
+           "[31m[44m[°æ  Ö÷]  [33mËµÃ÷ h ©¦ Àë¿ª q,¡û ©¦ ĞÂÔöÎÄÕÂ a ©¦ ĞÂÔöÄ¿Â¼ g ©¦ ±à¼­µµ°¸ e        [m" :
            "[31m[44m[¹¦ÄÜ¼ü] [33m ËµÃ÷ h ©¦ Àë¿ª q,¡û ©¦ ÒÆ¶¯ÓÎ±ê k,¡ü,j,¡ı ©¦ ¶ÁÈ¡×ÊÁÏ Rtn,¡ú         [m");
 }
 
@@ -630,7 +630,7 @@ void a_newitem(pm, mode)        /* ÓÃ»§´´½¨ĞÂµÄ ITEM */
     case ADDMAIL:
         sprintf(board, "tmp/bm.%s", currentuser->userid);
         if (!dashf(board)) {
-            sprintf(buf, "°¥Ñ½!! ÇëÏÈÖÁ¸Ã°å(ÌÖÂÛÇø)½«ÎÄÕÂ´æÈëÔİ´æµµ! << ");
+            sprintf(buf, "°¥Ñ½!! ÇëÏÈÖÁ¸Ã°æ(ÌÖÂÛÇø)½«ÎÄÕÂ´æÈëÔİ´æµµ! << ");
             a_prompt(-1, buf, ans);
             return;
         }
@@ -1179,7 +1179,7 @@ void a_menu(maintitle, path, lastlevel, lastbmonly)
                     strcpy(tmp, currboard);
                     strcpy(currboard, bname);
                     if (deny_me(currentuser->userid, currboard)) {
-                        prints("¶Ô²»Æğ£¬ÄãÔÚ %s °å±»Í£Ö¹·¢±íÎÄÕÂµÄÈ¨Á¦", bname);
+                        prints("¶Ô²»Æğ£¬ÄãÔÚ %s °æ±»Í£Ö¹·¢±íÎÄÕÂµÄÈ¨Á¦", bname);
                         pressreturn();
                         strcpy(currboard, tmp);
                         me.page = 9999;
@@ -1202,11 +1202,11 @@ void a_menu(maintitle, path, lastlevel, lastbmonly)
                         break;
                     }
                     strcpy(currboard, tmp);
-                    sprintf(tmp, "ÄãÈ·¶¨Òª×ªÌùµ½ %s °åÂğ", bname);
+                    sprintf(tmp, "ÄãÈ·¶¨Òª×ªÌùµ½ %s °æÂğ", bname);
                     if (askyn(tmp, 0) == 1) {
                         post_file(currentuser, "", fname, bname, me.item[me.now]->title, 0, 2);
                         move(2, 0);
-                        sprintf(tmp, "[1mÒÑ¾­°ïÄã×ªÌùÖÁ %s °åÁË[m", bname);
+                        sprintf(tmp, "[1mÒÑ¾­°ïÄã×ªÌùÖÁ %s °æÁË[m", bname);
                         prints(tmp);
                         refresh();
                         sleep(1);
@@ -1349,8 +1349,8 @@ int linkto(char *path, char *fname, char *title)
 /*
  * ²ÎÊıËµÃ÷:
  *     group    groups[]ÖĞµÄÄ³Ïî
- *     bname    ¿´°åµÄÓ¢ÎÄÃû
- *     title    ¸Ã°å¾«»ªÇøµÄÖĞÎÄÃû
+ *     bname    °æµÄÓ¢ÎÄÃû
+ *     title    °æ¾«»ªÇøµÄÖĞÎÄÃû
  *     gname    Óë group ¶ÔÓ¦µÄÖĞÎÄÃû
  */
 int add_grp(char group[STRLEN], char bname[STRLEN], char title[STRLEN], char gname[STRLEN])

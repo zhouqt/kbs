@@ -180,7 +180,7 @@ int UndeleteArticle(int ent, struct fileheader *fileinfo, char *direct)
 
     clear();
     move(2, 0);
-    prints("'%s' ÒÑ»Ö¸´µ½°åÃæ \n", UFile.title);
+    prints("'%s' ÒÑ»Ö¸´µ½°æÃæ \n", UFile.title);
     pressreturn();
 
     return FULLUPDATE;
@@ -350,7 +350,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct)
     if (!strcmp(bname, currboard) && (uinfo.mode != RMAIL)) {
         move(3, 0);
         clrtobot();
-        prints("\n\n                          ±¾°åµÄÎÄÕÂ²»ĞèÒª×ªÌùµ½±¾°å!");
+        prints("\n\n                          ±¾°æµÄÎÄÕÂ²»ĞèÒª×ªÌùµ½±¾°å!");
         pressreturn();
         clear();
         return FULLUPDATE;
@@ -377,7 +377,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct)
 
     move(0, 0);
     clrtoeol();
-    prints("×ªÌù ' %s ' µ½ %s °å ", quote_title, bname);
+    prints("×ªÌù ' %s ' µ½ %s °æ ", quote_title, bname);
     move(1, 0);
     getdata(1, 0, "(S)×ªĞÅ (L)±¾Õ¾ (A)È¡Ïû? [A]: ", ispost, 9, DOECHO, NULL, true);
     if (ispost[0] == 's' || ispost[0] == 'S' || ispost[0] == 'L' || ispost[0] == 'l') {
@@ -392,7 +392,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct)
         }
         strcpy(currboard, dbname);
         move(2, 0);
-        prints("' %s ' ÒÑ×ªÌùµ½ %s °å \n", quote_title, bname);
+        prints("' %s ' ÒÑ×ªÌùµ½ %s °æ \n", quote_title, bname);
         fileinfo->accessed[0] |= FILE_FORWARDED;        /*added by alex, 96.10.3 */
         substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
     } else {
@@ -530,7 +530,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
         }
     }
 /*    if(HAS_PERM(currentuser,PERM_OBOARDS) && ent->accessed[1] & FILE_READ) *//*
- * °åÎñ×Ü¹ÜÒÔÉÏµÄÄÜ¿´²»¿Ére±êÖ¾,Haohmaru.99.6.7 
+ * °æÎñ×Ü¹ÜÒÔÉÏµÄÄÜ¿´²»¿Ére±êÖ¾,Haohmaru.99.6.7 
  */
     if (manager & ent->accessed[1] & FILE_READ) {       /* °æÖ÷ÒÔÉÏÄÜ¿´²»¿Ére±êÖ¾, Bigman.2001.2.27 */
         switch (type) {
@@ -571,7 +571,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
         }
     } else if (HAS_PERM(currentuser, PERM_OBOARDS) && ent->accessed[0] & FILE_SIGN)
         /*
-         * °åÎñ×Ü¹ÜÒÔÉÏµÄÄÜ¿´Sign±êÖ¾, Bigman: 2000.8.12 
+         * °æÎñ×Ü¹ÜÒÔÉÏµÄÄÜ¿´Sign±êÖ¾, Bigman: 2000.8.12 
          */
     {
         type = '#';
@@ -768,7 +768,7 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
             clrtobot();
             prints("\n\n                    ºÜ±§Ç¸£¬¸Ã°æ½öÄÜ·¢±íÎÄÕÂ,²»ÄÜ»ØÎÄÕÂ...\n");
             pressreturn();
-            break;              /*Haohmaru.98.12.19,²»ÄÜ»ØÎÄÕÂµÄ°å */
+            break;              /*Haohmaru.98.12.19,²»ÄÜ»ØÎÄÕÂµÄ°æ */
         }
         if (fileinfo->accessed[1] & FILE_READ) {        /*Haohmaru.99.01.01.ÎÄÕÂ²»¿Ére */
             clear();
@@ -2153,7 +2153,7 @@ int del_range(int ent, struct fileheader *fileinfo, char *direct, int mailmode)
         if (result) {           /* prints("´íÎó´úÂë: %d;%s Çë±¨¸æÕ¾³¤£¬Ğ»Ğ»£¡", result,direct);
                                  * added by Haohmaru,ĞŞ¸´Çø¶ÎÉ¾³ı´íÎó,98.9.12 */
             prints("´íÎó´úÂë: %d;%s", result, direct);
-            getdata(8, 0, "Çø¶ÎÉ¾³ı´íÎó,Èç¹ûÏëĞŞ¸´,ÇëÈ·¶¨[35mÎŞÈËÔÚ±¾°åÖ´ĞĞÇø¶ÎÉ¾³ı²Ù×÷²¢°´'Y'[0m (Y/N)? [N]: ", num1, 10, DOECHO, NULL, true);
+            getdata(8, 0, "Çø¶ÎÉ¾³ı´íÎó,Èç¹ûÏëĞŞ¸´,ÇëÈ·¶¨[35mÎŞÈËÔÚ±¾°æÖ´ĞĞÇø¶ÎÉ¾³ı²Ù×÷²¢°´'Y'[0m (Y/N)? [N]: ", num1, 10, DOECHO, NULL, true);
             if (*num1 == 'Y' || *num1 == 'y') {
                 if (!mailmode) {
                     sprintf(fullpath, "mail/%c/%s/.tmpfile", toupper(currentuser->userid[0]), currentuser->userid);
@@ -2161,7 +2161,7 @@ int del_range(int ent, struct fileheader *fileinfo, char *direct, int mailmode)
                     sprintf(fullpath, "mail/%c/%s/.deleted", toupper(currentuser->userid[0]), currentuser->userid);
                     unlink(fullpath);
                 } else {
-                    if (true == checkreadonly(currboard)) {     /*Haohmaru,Ö»¶ÁÇé¿öÏÂ´íÎóÊÇ~bbsroot/boards/.°åÃûtmpfile ÎÄ¼şÒıÆğ */
+                    if (true == checkreadonly(currboard)) {     /*Haohmaru,Ö»¶ÁÇé¿öÏÂ´íÎóÊÇ~bbsroot/boards/.°æÃûtmpfile ÎÄ¼şÒıÆğ */
                         sprintf(fullpath, "boards/.%stmpfile", currboard);
                         unlink(fullpath);
                         sprintf(fullpath, "boards/.%sdeleted", currboard);

@@ -227,7 +227,7 @@ int addtodeny(char *uident)
         int my_flag = 0;        /* Bigman. 2001.2.19 */
         struct userec saveuser;
 
-        /*Haohmaru.4.1.×Ô¶¯·¢ĞÅÍ¨Öª²¢·¢ÎÄÕÂÓÚ°åÉÏ */
+        /*Haohmaru.4.1.×Ô¶¯·¢ĞÅÍ¨Öª²¢·¢ÎÄÕÂÓÚ°æÉÏ */
         sprintf(filename, "tmp/%s.deny", currentuser->userid);
         fn = fopen(filename, "w+");
         memcpy(&saveuser, currentuser, sizeof(struct userec));
@@ -293,11 +293,11 @@ int addtodeny(char *uident)
         /*      unlink(filename); */
         currentuser = saveptr;
 
-        sprintf(buffer, "%s ±» %s ·â½û±¾°åPOSTÈ¨", uident, currentuser->userid);
+        sprintf(buffer, "%s ±» %s ·â½û±¾°æPOSTÈ¨", uident, currentuser->userid);
         getuser(uident, &lookupuser);
 
         if (PERM_BOARDS & lookupuser->userlevel)
-            sprintf(buffer, "%s ·âÄ³°å" NAME_BM " %s ÔÚ %s", currentuser->userid, uident, currboard);
+            sprintf(buffer, "%s ·âÄ³°æ" NAME_BM " %s ÔÚ %s", currentuser->userid, uident, currboard);
         else
             sprintf(buffer, "%s ·â %s ÔÚ %s", currentuser->userid, uident, currboard);
         post_file(currentuser, "", filename, "denypost", buffer, 0, 8);
@@ -372,10 +372,6 @@ int deny_user(ent, fileinfo, direct)    /* ½ûÖ¹POSTÓÃ»§Ãûµ¥ Î¬»¤Ö÷º¯Êı */
             int len;
 
             move(1, 0);
-            /*           namecomplete("É¾³ıÎŞ·¨ POST µÄÊ¹ÓÃÕß: ", uident);by Haohmaru.99.4.1.ÕâÖÖÉ¾³ı·¨»áÎóÉ¾Í¬×ÖÄ¸¿ªÍ·µÄID
-               usercomplete("É¾³ıÎŞ·¨ POST µÄÊ¹ÓÃÕß: ", uident);Haohmaru.faint...Õâ¸öº¯ÊıÒ²»á³ö´í£,±ÈÈç·âµÄÊ±ºòID½ĞUSAleader,ºóÀ´ID±»É¾£¬ÓĞÈËÓÖ×¢²áÁË¸öusaleader,ÓÚÊÇ¾Í½â²»ÁË,´óĞ¡Ğ´ÒıÆğµÄ£¬Boy°å¾Í³öÏÖ¹ıÕâÖÖÇé¿ö£¬ËùÒÔ¸Ä³ÉÏÂÃæµÄ¡£
-               Haohmaru.99.4.1,Ôö¼Ó±»½âIDÕıÈ·ĞÔ¼ì²é */
-            /*          if(!(id = searchuser(uident)))  change getuser -> searchuser, by dong, 1999.10.26 */
             sprintf(genbuf, "É¾³ıÎŞ·¨ POST µÄÊ¹ÓÃÕß: ");
             getdata(1, 0, genbuf, uident, 13, DOECHO, NULL, true);
             find = 0;           /*Haohmaru.99.12.09.Ô­À´µÄ´úÂëÈç¹û±»·âÕßÒÑ×ÔÉ±¾ÍÉ¾²»µôÁË */
