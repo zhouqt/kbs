@@ -115,8 +115,8 @@ function pc_add_users($link,$userid,$corpusname,$manual,$blogtype="normal",$grou
 	}
 	else {
 	    $annTitle = "[公告] 开设 ".$userid." 群体Blog";
-	    $annBody =  "\n\n        根据用户 ".$groupmanager." 申请，经审核、讨论后决定开设 ".$userid." 群体Blog，\n".
-		    "    Blog 名称“".$corpusname."”。\n\n".
+	    $annBody =  "\n\n        根据用户 ".$groupmanager." 申请，经审核、讨论后决定开设".
+	        "    ".$userid." 群体Blog，Blog 名称“".$corpusname."”。\n\n".
 		    "        Blog 大部分功能提供在web 模式下，Blog 名称、描述、\n".
 		    "    分类等属性请群体Blog管理员在web 登录后自行修改。\n\n";
 	}
@@ -266,9 +266,9 @@ function bbsconfirm(url,infor){
     $types = array_keys ($pcconfig["TYPES"]);
     foreach ($types as $type) {
         if ($type=="normal")
-            echo '<option value="normal" selected>(NORMAL)<option>';
+            echo '<option value="normal" selected>(NORMAL)</option>';
         else
-            echo '<option value="'.$type.'">'.$pcconfig["TYPES"][$type].'.<option>';      
+            echo '<option value="'.$type.'">'.$pcconfig["TYPES"][$type].'.</option>';      
     }
 ?>
 </select>
