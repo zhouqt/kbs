@@ -58,7 +58,7 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
 static int search_author(struct keeploc *locmem, int offset, char *powner);
 static int search_post(struct keeploc *locmem, int offset);
 static int search_title(struct keeploc *locmem, int offset);
-static int i_read_key(int cmdmode, struct one_key *rcmdlist, struct keeploc *locmem, int ch, int ssize, char* pnt,char *ding_direct);
+static int i_read_key(int cmdmode, struct one_key *rcmdlist, struct keeploc *locmem, int ch, int ssize, char* pnt,char *ding_direct, char *direct);
 static int cursor_pos(struct keeploc *locmem, int val, int from_top);
 static int search_thread(struct keeploc *locmem, int offset, char *title);
 static int search_threadid(struct keeploc *locmem, int offset, int groupid, int mode);
@@ -413,7 +413,7 @@ int i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, str
             /*---	Modified by period	2000-11-12	---*
                    mode = i_read_key( rcmdlist, locmem, ch ,ssize);
              *---		---*/
-            mode = i_read_key(cmdmode, rcmdlist, locmem, ch, ssize, pnt,ding_direct);
+            mode = i_read_key(cmdmode, rcmdlist, locmem, ch, ssize, pnt,ding_direct,currdirect);
             while (mode == READ_NEXT || mode == READ_PREV) {
                 int reload;
 
@@ -440,7 +440,7 @@ int i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, str
                 /*---	Modified by period	2000-11-12	---*
                               mode = i_read_key( rcmdlist, locmem, ch ,ssize);
                  *---		---*/
-                mode = i_read_key(cmdmode, rcmdlist, locmem, ch, ssize, pnt,ding_direct);
+                mode = i_read_key(cmdmode, rcmdlist, locmem, ch, ssize, pnt,ding_direct,currdirect);
             }
             modify_user_mode(cmdmode);
         }
@@ -584,7 +584,7 @@ int i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, str
 }
 
 
-static int i_read_key(int cmdmode, struct one_key *rcmdlist, struct keeploc *locmem, int ch, int ssize, char* pnt, char* ding_direct)
+static int i_read_key(int cmdmode, struct one_key *rcmdlist, struct keeploc *locmem, int ch, int ssize, char* pnt, char* ding_direct,char *direct)
 {
     int i, mode = DONOTHING;
 
@@ -747,15 +747,15 @@ static int i_read_key(int cmdmode, struct one_key *rcmdlist, struct keeploc *loc
         		if( POSTFILE_BASENAME(((fileheader *)(pnt+(locmem->crs_line-locmem->top_line)*ssize))->filename)[0]=='Z' ){
         		    if(ch=='D' || ch=='b' || ch=='B') return DONOTHING;
         		    else if(ch=='s')
-                            mode = (*(rcmdlist[i].fptr)) (locmem->crs_line - get_num_records(currdirect, ssize), &pnt[(locmem->crs_line - locmem->top_line) * ssize], currdirect );
+                            mode = (*(rcmdlist[i].fptr)) (locmem->crs_line - get_num_records(currdirect, ssize), &pnt[(locmem->crs_line - locmem->top_line) * ssize], direct );
         		    else
                             mode = (*(rcmdlist[i].fptr)) (locmem->crs_line - get_num_records(currdirect, ssize), &pnt[(locmem->crs_line - locmem->top_line) * ssize], ding_direct );
         		}
         		else
-                            mode = (*(rcmdlist[i].fptr)) (locmem->crs_line, &pnt[(locmem->crs_line - locmem->top_line) * ssize], currdirect);
+                            mode = (*(rcmdlist[i].fptr)) (locmem->crs_line, &pnt[(locmem->crs_line - locmem->top_line) * ssize], direct);
                 }
                 else
-                      mode = (*(rcmdlist[i].fptr)) (locmem->crs_line, &pnt[(locmem->crs_line - locmem->top_line) * ssize], currdirect);
+                      mode = (*(rcmdlist[i].fptr)) (locmem->crs_line, &pnt[(locmem->crs_line - locmem->top_line) * ssize], direct);
                 break;
             }
         }

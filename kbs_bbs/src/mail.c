@@ -1044,7 +1044,7 @@ char *direct;
     else if ((fileinfo->accessed[0] & FILE_READ) != FILE_READ)
 	{
         fileinfo->accessed[0] |= FILE_READ;
-        substitute_record(currmaildir, fileinfo, sizeof(*fileinfo), ent);
+        substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
 	}
     if (readnext == true)
         return READ_NEXT;
@@ -1162,7 +1162,7 @@ static int mail_edit(int ent, struct fileheader *fileinfo, char *direct)
             add_edit_mark(genbuf, 1, /*NULL*/ fileinfo->title);
         if (attachpos!=fileinfo->attachment) {
             fileinfo->attachment=attachpos;
-            substitute_record(currmaildir, fileinfo, sizeof(*fileinfo), ent);
+            substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
         }
     }
     if(stat(genbuf,&st) != -1) currentuser->usedspace -= (before - st.st_size);
@@ -1341,7 +1341,7 @@ char *direct;
         fileinfo->accessed[0] &= ~FILE_MARKED;
     else
         fileinfo->accessed[0] |= FILE_MARKED;
-    substitute_record(currmaildir, fileinfo, sizeof(*fileinfo), ent);
+    substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
     return (PARTUPDATE);
 }
 
