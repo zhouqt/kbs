@@ -2439,8 +2439,8 @@ static PHP_FUNCTION(bbs_createregform)
 static PHP_FUNCTION(bbs_findpwd_check)
 {
     char*   userid,
-	        realname,
-            email;
+	        *realname,
+            *email;
 	int     userid_len,
 	        realname_len,
 			email_len;
