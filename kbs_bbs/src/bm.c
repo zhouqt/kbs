@@ -123,13 +123,14 @@ int addtodeny(char* uident) /* 添加 禁止POST用户 */
     	char* file_buf;
     	char *denymsglist[50];
     	struct stat st;
-	    move(4,0);
+	    move(3,0);
 	    if (fstat(reasonfile,&st)==0) {
 	    	int i;
 	    	file_buf=(char*)malloc(st.st_size);
 	    	read(reasonfile,file_buf,st.st_size);
 	    	maxreason=1;
 	    	denymsglist[0]=file_buf;
+		prints("%s","封禁理由列表.\n");
 	    	for (i=1;i<st.st_size;i++) {
 	    		if (file_buf[i]=='\n') {
 	    			file_buf[i]=0;
@@ -149,7 +150,7 @@ int addtodeny(char* uident) /* 添加 禁止POST用户 */
 	    	}
 		prints("%s","0.手动输入封禁理由");
 		    while (1) {
-		    	getdata(2,0,"输入封禁理由:",denymsg,2,DOECHO,NULL,YEA);
+		    	getdata(2,0,"请从列表选择封禁理由(0为手工输入):",denymsg,2,DOECHO,NULL,YEA);
 		    	if (isdigit(denymsg[0])) {
 		    		reason=atoi(denymsg);
 		    		if (reason==0) {
