@@ -1262,7 +1262,7 @@ char get_article_flag(struct fileheader *ent, struct userec *user, int is_bm)
     } else if (HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[0] & FILE_SIGN)) {
         type = '#';
 #ifdef FILTER
-    } else if (HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[1] & FILE_CENSOR)) {
+    } else if (HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[1] & FILE_CENSOR)&&!strcmp(currboard,FILTER_BOARD)) {
 	type = '@';
 #endif
     }
