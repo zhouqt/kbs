@@ -92,8 +92,11 @@ function pcmain_html_quit()
           </tr>
           <tr><td height="5"> </td></tr>
   <tr>
-    <td align="center">版权所有
-	&copy;<?php echo $pcconfig["BBSNAME"]; ?></td>
+    <td align="center">
+    Powered By <a href="http://dev.smth.org" target="_blank"><font face=Verdana, Arial, Helvetica, sans-serif><b><font color="#CC0000">SmthBBS</font> 2.0</b></font></a>
+    <a href="http://www.smth.org"><font face=Verdana, Arial, Helvetica, sans-serif><b>Smth<font color="#CC0000">.Org</font></b></font></a>
+	<br />版权所有 &copy;<?php echo $pcconfig["BBSNAME"]; ?>
+	</td>
     </tr>
 </table>
 </center></body></html>

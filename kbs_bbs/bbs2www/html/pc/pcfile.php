@@ -5,7 +5,7 @@ function pc_file_navigationbar($pc)
 {
 ?>	
 <center>
-[<a href="index.php?id=<?php echo $pc["USER"]; ?>"><?php echo html_format($pc["NAME"]); ?></a>]
+[<a href="index.php?id=<?php echo $pc["USER"]; ?>"><?php echo $pc["NAME"]; ?></a>]
 [<a href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=7">参数设定</a>]
 [<a href="/<?php echo MAINPAGE_FILE; ?>"><?php echo BBS_FULL_NAME; ?>首页</a>]
 [<a href="javascript:history.go(-1);">快速返回</a>]
@@ -76,7 +76,7 @@ function pc_file_showfiles($pc,$c_dir,$root_pid)
 	        else {
 	            echo '<tr><td class="t3">'.$start.'</td>';
 	            $start ++;
-	            $link_url = '<a href="'.'pcdownload.php?fid='.$file->fid.'" title="'.htmlspecialchars($file->remark).'" target="_blank">';
+	            $link_url = '<a href="pcdownload.php?fid='.$file->fid.'" title="'.htmlspecialchars($file->remark).'" target="_blank">';
 	        }
 	        
     		echo '<td class="t5">'.$link_url.html_format($file->filename).'</a></td>'.
@@ -105,7 +105,7 @@ function pc_file_showfiles($pc,$c_dir,$root_pid)
 </table>
 <?php
     if ($_COOKIE['PCFILEFID'])
-        echo '<br />[<a href="'.$_SERVER['PHP_SELF'].'?userid='.$pc['USER'].'&act=pt&fid='.intval($_COOKIE['PCFILEFID']).'&pid='.$root_pid.'&tid='.$root_pid.'">粘贴到根目录</a>]\n'.
+        echo '<br />[<a href="'.$_SERVER['PHP_SELF'].'?userid='.$pc['USER'].'&act=pt&fid='.intval($_COOKIE['PCFILEFID']).'&pid='.$root_pid.'&tid='.$root_pid.'">粘贴到根目录</a>]&nbsp;'.
              '[<a href="'.$_SERVER['PHP_SELF'].'?userid='.$pc['USER'].'&act=cl&pid='.$c_dir->fid.'">清空剪贴板</a>]<br/>';
 ?>
 </center>

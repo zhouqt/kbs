@@ -14,7 +14,6 @@
 	{
 		html_init("gb2312");
 		html_error_quit("guest 没有Blog!");
-		exit();
 	}
 	else
 	{
@@ -25,14 +24,12 @@
 		{
 			pc_db_close($link);
 			html_error_quit("对不起，您要查看的Blog不存在");
-			exit();
 		}
 		
 		if(!pc_is_admin($currentuser,$pc))
 		{
 			pc_db_close($link);
 			html_error_quit("对不起，您要查看的Blog不存在");
-			exit();
 		}
 		
 		if($pc["EDITOR"] != 1)
@@ -256,9 +253,36 @@
 						exit();
 					}
 				}
+				
+				if($pc["TMPSAVE"]) //启用发文暂存档
+				{
+?>
+<iframe name="tmpsave" id="tmpsave" src="pctmpsave.php" frameborder="0" width="0" height="0" scrolling="no"></iframe>
+<script language="javascript">
+var init = 0;
+function pc_client_tmpsave_import() 
+{
+	if (init == 0) 
+		init = 1;
+	else 
+	{
+		document.postform.action = "pctmpsave.php?userid=<?php echo $pc["USER"]; ?>&<?php echo "tag=".$tag."&pid=".$pid; ?>";
+		document.postform.target = "tmpsave";
+		document.postform.submit();
+		document.postform.action = "pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=post&<?php echo "tag=".$tag."&pid=".$pid; ?>";
+		document.postform.target = "_self;
+	}
+	setTimeout('pc_client_tmpsave_import()',<?php echo $pcconfig["TMPSAVETIME"]; ?>);	
+}
+pc_client_tmpsave_import();
+</script>
+<?php					
+				}
+				
 ?>
 <br><center>
-<form name="postform" id="postform" action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=post&<?php echo "tag=".$tag."&pid=".$pid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
+<form name="postform" id="postform" target="_self" action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=post&<?php echo "tag=".$tag."&pid=".$pid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
+<input type="hidden" name="tmpsave" id="tmpsave" value="0">
 <table cellspacing="0" cellpadding="5" border="0" width="90%" class="t1">
 <tr>
 	<td class="t2">发表文章</td>
@@ -656,7 +680,8 @@
 			$favmode = (int)($_POST["pcfavmode"]);
 			if($favmode != 1 && $favmode != 2)
 				$favmode = 0;
-			$query = "UPDATE `users` SET `createtime` = `createtime` , `corpusname` = '".addslashes(undo_html_format($_POST["pcname"]))."',`description` = '".addslashes(undo_html_format($_POST["pcdesc"]))."',`theme` = '".addslashes(undo_html_format($_POST["pcthem"]))."' , `backimage` = '".addslashes(undo_html_format($_POST["pcbkimg"]))."' , `logoimage` = '".addslashes(undo_html_format($_POST["pclogo"]))."' , `htmleditor` = '".(int)($_POST["htmleditor"])."', `style` = '".(int)($_POST["template"])."' , `indexnodechars` = '".(int)($_POST["indexnodechars"])."' , `indexnodes` = '".(int)($_POST["indexnodes"])."' , `favmode` = '".$favmode."' , `useremail` = '".addslashes(trim($_POST["pcuseremail"]))."' , `userinfor` = '".addslashes(trim($_POST["userinfor"]))."' , `defaulttopic` = '".addslashes(trim($_POST["pcdefaulttopic"]))."'  WHERE `uid` = '".$pc["UID"]."';";	
+			$tmpsave = ($_POST["pctmpsave"]==0)?0:1;
+			$query = "UPDATE `users` SET `createtime` = `createtime` , `corpusname` = '".addslashes(undo_html_format($_POST["pcname"]))."',`description` = '".addslashes(undo_html_format($_POST["pcdesc"]))."',`theme` = '".addslashes(undo_html_format($_POST["pcthem"]))."' , `backimage` = '".addslashes(undo_html_format($_POST["pcbkimg"]))."' , `logoimage` = '".addslashes(undo_html_format($_POST["pclogo"]))."' , `htmleditor` = '".(int)($_POST["htmleditor"])."', `style` = '".(int)($_POST["template"])."' , `indexnodechars` = '".(int)($_POST["indexnodechars"])."' , `indexnodes` = '".(int)($_POST["indexnodes"])."' , `favmode` = '".$favmode."' , `useremail` = '".addslashes(trim($_POST["pcuseremail"]))."' , `userinfor` = '".addslashes(trim($_POST["userinfor"]))."' , `defaulttopic` = '".addslashes(trim($_POST["pcdefaulttopic"]))."' , `tempsave` = '".$tmpsave."'  WHERE `uid` = '".$pc["UID"]."';";	
 			mysql_query($query,$link);
 			
 			$log_action = "UPDATE SETTINGS";

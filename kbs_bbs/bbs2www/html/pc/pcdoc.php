@@ -9,6 +9,7 @@
 	{
 		$blogs = $blogMenus;
 ?>
+<tbody>
 <table cellspacing="0" cellpadding="5" border="0" width="95%">
 <tr>
 	<td align="right" class="f2">Blog分类</td>
@@ -25,14 +26,14 @@
 				echo "<tr>\n<td align=\"right\" class='t7'>\n<a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=".$tag."&tid=".$blogs[$i]["TID"]."\" class='t7'>".html_format($blogs[$i]["NAME"])."</a>\n</td>\n</tr>\n";
 		}
 ?>
-</table>
+</table></tbody>
 <?php		
 	}
 	
 	function display_action_bar($tag,$tid=0,$pid=0)
 	{
 		global $pc,$sec,$blogMenus;
-?>
+?><tbody>
 <table cellspacing="0" cellpadding="5" border="0" width="95%" class="b2">
 <tr>
 <td>
@@ -71,7 +72,7 @@
 <a href="#" onclick="bbsconfirm('pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=clear&ret=<?php echo urlencode($_SERVER["REQUEST_URI"]); ?>','清空删除区的文章吗(无法恢复)?')">清空删除区</a>
 </td>
 </tr>
-</table>
+</table></tbody>
 <?php		
 	}
 	
@@ -110,6 +111,7 @@
 ?>
 <form action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>" method="post">	
 <table cellspacing="0" cellpadding="3" border="0" width="99%" class="t1">
+<tbody>
 <?php
 		if($pur > 2)
 		{
@@ -135,7 +137,7 @@
 ?>	
 	<td class="t2" width="15">改</td>
 	<td class="t2" width="15">删</td>
-</tr>
+</tr></tbody>
 <?php
 		}
 		else
@@ -158,7 +160,7 @@
 <?php
 	}
 ?>
-</tr>
+</tr></tbody>
 <?php
 		}
 		while($rows = mysql_fetch_array($result))
@@ -170,7 +172,7 @@
 				$c = "<img src='images/open.gif' alt='开放的主题' border='0'>";
 			if($pur > 2)
 			{
-				echo "<tr>\n<td class='t3'>".$i."</td>\n".
+				echo "<tbody><tr>\n<td class='t3'>".$i."</td>\n".
 					"<td align=\"center\" class='t4'><input type=\"checkbox\" name=\"art".$i."\" value=\"".$rows[nid]."\" class=\"b2\"></td>\n".
 					"<td class='t3'>".$c."</td>\n".
 					"<td class='t5'>";
@@ -188,11 +190,11 @@
 				}
 				echo	"<td class='t3'><a href=\"pcmanage.php?userid=".$pc["USER"]."&act=edit&nid=".$rows[nid]."\">改</a></td>\n".
 					"<td class='t4'><a href=\"#\" onclick=\"bbsconfirm('pcmanage.php?userid=".$pc["USER"]."&act=del&nid=".$rows[nid]."','确认删除?')\">删</a></td>\n".
-					"</tr>\n";
+					"</tr></tbody>\n";
 			}
 			else
 			{
-				echo "<tr>\n<td class='t3'>".$i."</td>\n".
+				echo "<tbody><tr>\n<td class='t3'>".$i."</td>\n".
 					"<td class='t4'>".$c."</td>\n".
 					"<td class='t8'>&nbsp;<img src=\"icon/".$rows[emote].".gif\" border=\"0\ align=\"absmiddle\">\n<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$rows[nid]."&order=".$order."&tid=".$tid."\">".html_format($rows[subject])."</a></td>\n".
 					"<td class='t4'>\n".time_format($rows[created])."<br/>".time_format($rows[changed])."\n</td>\n".
@@ -205,7 +207,7 @@
 					echo $rows[trackback]?$rows[trackbackcount]:"-";
 					echo "</td>\n";
 				}
-				echo	"</tr>\n";
+				echo	"</tr></tbody>\n";
 			}
 		}
 ?>
@@ -278,7 +280,7 @@
 		$i = 0;
 ?>
 <form action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>" method="post">	
-<table cellspacing="0" cellpadding="5" border="0" width="99%" class="t1">
+<table cellspacing="0" cellpadding="5" border="0" width="99%" class="t1"><tbody>
 <?php
 		if($pur > 2)
 		{
@@ -299,7 +301,7 @@
 	<td class="t2" width="15">改</td>
 	<td class="t2" width="15">删</td>
 	<td class="t2" colspan="<?php echo $_COOKIE["BLOGFAVACTION"]?3:2; ?>">操作</a>
-</tr>
+</tr></tbody>
 <?php
 		}
 		else
@@ -316,7 +318,7 @@
 	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=u"; ?>" class="f3">更新</a></td>
 	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=v"; ?>" class="f3">浏览</a></td>
 	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=r"; ?>" class="f3">评论</a></td>
-</tr>
+</tr></tbody>
 <?php
 		}
 		while($rows = mysql_fetch_array($result))
@@ -338,7 +340,7 @@
 			}
 			if( $pur > 2)
 			{
-				echo "<tr>\n<td class='t3'>".$i."</td>\n<td align=\"center\" class='t4'>";
+				echo "<tbody><tr>\n<td class='t3'>".$i."</td>\n<td align=\"center\" class='t4'>";
 				if($rows[type]==0)
 					echo "<input type=\"checkbox\" name=\"art".$i."\" value=\"".$rows[nid]."\" class=\"b2\">";
 				else
@@ -365,17 +367,17 @@
 					else
 						echo "<td class='t3' width=20>-</td>";
 				}
-				echo 	"</tr>\n";
+				echo 	"</tr></tbody>\n";
 			}
 			else
-				echo "<tr>\n<td class='t3'>".$i."</td>\n".
+				echo "<tbody><tr>\n<td class='t3'>".$i."</td>\n".
 					"<td class='t4'>".$type."</td>\n".
 					"<td class='t3'>".$c."</td>\n".
 					"<td class='t5'>&nbsp;<img src=\"icon/".$rows[emote].".gif\" border=\"0\" align=\"absmiddle\">\n<a href=\"".$url."\">".html_format($rows[subject])."</a></td>\n".
 					"<td class='t3'>".time_format($rows[created])."<br/>".time_format($rows[changed])."</td>\n".
 					"<td class='t4'>".$rows[visitcount]."</td>\n".
 					"<td class='t3'>".$rows[commentcount]."</td>\n".
-					"</tr>\n";
+					"</tr></tbody>\n";
 		}
 		mysql_free_result($result);
 ?>
@@ -388,11 +390,11 @@
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);
 			$prepid = ($rows[pid]>$rootpid)?$rows[pid]:$rootpid;
-?>
+?><tbody>
 <p align="center"  class="b2">
 [<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$rows[pid]; ?>">返回上层目录</a>]
 [<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3"; ?>">返回根目录</a>]
-</p>
+</p></tbody>
 <?php		
 		}
 		if( $pur > 2 )
@@ -449,23 +451,24 @@
 	{
 		$friendlist = pc_friend_list($pc["USER"]);
 ?>
-<table cellspacing="0" cellpadding="5" border="0" width="99%" class="t1">
+<table cellspacing="0" cellpadding="5" border="0" width="99%" class="t1"><tbody>
 <tr>
 	<td class="t2" width="25%">序号</td>
 	<td class="t2">好友</td>
 	<td class="t2">Blog</td>
 	<td class="t2" width="25%">删除</td>
-</tr>
+</tr></tbody>
 <?php
 		for($i = 0;$i < count($friendlist) ; $i ++)
 		{
-			echo "<tr>\n<td class='t3'>".($i+1)."</td>\n".
+			echo "<tbody><tr>\n<td class='t3'>".($i+1)."</td>\n".
 				"<td class='t4'><a href=\"/bbsqry.php?userid=".$friendlist[$i]."\">".$friendlist[$i]."</a></td>\n".
 				"<td class='t3'><a href=\"pcsearch.php?exact=1&key=u&keyword=".$friendlist[$i]."\">".$friendlist[$i]."</a></td>\n".
-				"<td class='t4'><a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=5&act=delfriend&id=".urlencode($friendlist[$i])."\">删除</a></td>\n</tr>\n";
+				"<td class='t4'><a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=5&act=delfriend&id=".urlencode($friendlist[$i])."\">删除</a></td>\n</tr></tbody>\n";
 			
 		}
 ?>
+<tbody>
 <form action="pcdoc.php" method="get" onsubmit="if(this.id.value==''){alert('请输入好友用户名！');return false;}">
 <tr>
 	<td colspan="3" align="center">
@@ -479,7 +482,7 @@
 ?>
 	</td>
 </tr>
-</form>
+</form></tbody>
 </table>
 <?php		
 	}
@@ -489,28 +492,28 @@
 		global $sec;
 		$blog = pc_blog_menu($link,$pc);	
 ?>
-<table cellspacing="0" cellpadding="5" border="0" width="99%" class="t1">
+<table cellspacing="0" cellpadding="5" border="0" width="99%" class="t1"><tbody>
 <tr>
 	<td class="t2" width="50">序号</td>
 	<td class="t2">Blog</td>
 	<td class="t2" width="200">分区</td>
 	<td class="t2" width="50">修改</td>
 	<td class="t2" width="50">删除</td>
-</tr>
+</tr></tbody>
 <?php
 		for($i = 0; $i < count($blog); $i ++)
 		{
-			echo "<tr>\n<td class='t3'>".($i+1)."</td>\n".
+			echo "<tbody><tr>\n<td class='t3'>".($i+1)."</td>\n".
 				"<td class='t5'>&nbsp;<a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=".$blog[$i]["TAG"]."&tid=".$blog[$i]["TID"]."\">《".html_format($blog[$i]["NAME"])."》</a></td>\n".
 				"<td class='t3'><a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=".$blog[$i]["TAG"]."\">".$sec[$blog[$i]["TAG"]]."</a></td>\n".
 				"<td class='t4'><a href=\"pcmanage.php?userid=".$pc["USER"]."&act=tedit&tid=".$blog[$i]["TID"]."\">修改</a></td>\n".
 				"<td class='t3'><a href=\"pcmanage.php?userid=".$pc["USER"]."&act=tdel&tid=".$blog[$i]["TID"]."\">"."删除</a></td>\n".
-				"</tr>\n";	
+				"</tr></tbody>\n";	
 			
 		}
 		
 ?>
-</table>
+</table><tbody>
 <form action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=tadd" method="post" onsubmit="if(this.topicname.value==''){alert('请输入Blog名称!');return false;}">
 <input type="hidden" name="tag" value="<?php echo $tag; ?>">
 <p align="center" class="b2">
@@ -525,14 +528,14 @@ Blog名
 <input type="text" name="topicname" maxlength="200" size="30" class="b2">
 <input type="submit" value="新建Blog" class="b1">
 </p>
-</form>
+</form></tbody>
 <?php
 	}
 	
 	function display_pc_settings($pc)
 	{
 	    global $pcconfig;
-?>
+?><tbody>
 <form action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=sedit" method="post" onsubmit="if(this.pcname.value==''){alert('请输入Blog名称!');return false;}">	
 <table cellspacing="0" cellpadding="3" border="0" width="99%" class="t1">		
 <tr>
@@ -683,7 +686,7 @@ Blog名
 <tr>
 </table>
 </form>
-<br>
+<br></tbody>
 <?php		
 	}
 	
@@ -736,7 +739,7 @@ Blog名
 	pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
 ?>
 <a name="top"></a>
-<table cellspacing="0" cellpadding="0" border="0" width="100%">
+<table cellspacing="0" cellpadding="0" border="0" width="100%"><tbody>
 <tr>
 	<td>
 	<table cellspacing="0" cellpadding="3" border="0" class="t0" width="100%" class="tt1">
@@ -747,6 +750,7 @@ Blog名
 	</table>
 	</td>
 </tr>
+</tbody><tbody>
 <tr>
 	<td class="f2" align="center" height="40" valign="middle">
 	<?php echo $pc["USER"]; ?> 的Blog
@@ -754,6 +758,7 @@ Blog名
 	<?php echo $pc["NAME"]; ?>
 	</td>
 </tr>
+</tbody><tbody>
 <tr>
 	<td>
 	<table cellspacing="0" cellpadding="10" border="0" width="100%" class="tt2">
@@ -768,10 +773,11 @@ Blog名
 	</table>
 	</td>
 </tr>
+</tbody>
 <tr>
 <td  valign="top">
 <table cellspacing="0" cellpadding="0" border="0" width="100%">
-<tr>
+<tbody><tr>
 <?php
 	if($tag == 0 || $tag == 1 || $tag ==2 )
 	{
@@ -806,7 +812,8 @@ Blog名
 	</tr>
 	</table>
 	</td>
-</tr>
+</tr></tbody>
+<tbody>
 <tr>
 	<td align="left" valign="top">
 <?php
@@ -822,9 +829,10 @@ Blog名
 		display_pc_settings($pc);
 ?>
 	</td>
-</tr>
+</tr></tbody>
 </table>
 </td></tr>
+<tbody>
 <tr>
 	<td align="center" valign="middle" class="f1">
 	[访问量 
@@ -846,7 +854,7 @@ Blog名
 	]
 	<br>&nbsp;
 	</td>
-</tr>
+</tr></tbody><tbody>
 <tr>
 	<td align="center" class="tt3" valign="middle" height="25">
 	[<a href="#top" class=f1>返回顶部</a>]
@@ -871,8 +879,13 @@ Blog名
 	" class=f1 target="_top"><?php echo $pcconfig["BBSNAME"]; ?>首页</a>]
 	<a href="rss.php?userid=<?php echo $pc["USER"]; ?>"><img src="images/xml.gif" border="0" alt="XML" align="absmiddle"></a>
 	</td>
-</tr>
+</tr></tbody>
 </table>
+<p align="center">
+Powered By <a href="http://dev.smth.org" target="_blank"><font face=Verdana, Arial, Helvetica, sans-serif><b><font color="#CC0000">SmthBBS</font> 2.0</b></font></a>
+    <a href="http://www.smth.org"><font face=Verdana, Arial, Helvetica, sans-serif><b>Smth<font color="#CC0000">.Org</font></b></font></a>
+	<br />
+	</p>
 <?php
 	pc_db_close($link);
 	html_normal_quit();

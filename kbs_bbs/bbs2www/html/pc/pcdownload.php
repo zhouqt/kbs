@@ -11,6 +11,9 @@
     if (!($f = new UserFile($fid)))
         html_error_quit("文件不存在");
     
+    if (!$f->fid || $f->type != 0)
+        html_error_quit("文件不存在");
+    
     if ($pcconfig["USERFILEPERM"])
         if ($f->access != 0) {
             $pc = pc_load_infor($link,'',$f->uid);    
