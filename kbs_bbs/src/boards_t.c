@@ -1097,7 +1097,7 @@ static int fav_refresh(struct _select_def *conf)
     setbcolor(BLUE);
     clrtoeol();
 #ifdef BOARD_SHOW_ONLINE
-    prints("  %s 讨论区名称       V 类别 转信  %-22s在线版  主     ", arg->newflag ? "全部 未读" : "编号 未读", "中  文  叙  述");
+    prints("  %s 讨论区名称       V 类别 转信  %-20s 在线 版  主     ", arg->newflag ? "全部 未读" : "编号 未读", "中  文  叙  述");
 #else
     prints("  %s 讨论区名称        V 类别 转信  %-24s 版  主     ", arg->newflag ? "全部 未读" : "编号 未读", "中  文  叙  述");
 #endif
