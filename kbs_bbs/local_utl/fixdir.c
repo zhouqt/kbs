@@ -8,16 +8,26 @@
 #include "bbs.h"
 extern int errno;
 
+int mailmode;
 struct fileheader data[20000];
 int len = 0;
+const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+int getposttime(char* filename)
+{
+	    if (filename[1]=='/')
+		    return atoi(filename + 4);
+	   return atoi(filename + 2);
+}
+
 
 int cmpfile(f1, f2)
 struct fileheader *f1, *f2;
 {
     time_t t1, t2;
 
-    t1 = atoi(f1->filename + 2);
-    t2 = atoi(f2->filename + 2);
+    t1 = getposttime(f1->filename);
+    t2 = getposttime(f2->filename);
     return t1 - t2;
 }
 
@@ -61,17 +71,121 @@ notice:\n\
     return 0;
 }
 
+
+int addfile(char* filename)
+{
+    struct fileheader fh;
+    FILE *art;
+    if ((strcmp(filename, ".DIR"))
+        && (strcmp(filename, "."))
+        && (strcmp(filename, ".."))
+        && (((filename[0] == 'M')&&(filename[1]=='.')) || (filename[2]=='M'))) {
+        struct stat st;
+        char buf1[256], buf2[256];
+    
+        if (stat(filename, &st)) {
+            return 0;
+	}
+        if ((art = fopen(filename, "r")) != NULL) {
+            char *p;
+    
+            bzero(&fh, sizeof(fh));
+            fgets(buf1, 256, art);
+            if (buf1 == 0) {
+		fclose(art);
+                return 0;
+            }
+            p = strchr(buf1 + 8, ' ');
+            if (p)
+                *p = 0;
+            if (p = strchr(buf1 + 8, '('))
+                *p = 0;
+            if (p = strchr(buf1 + 8, '\n'))
+                *p = 0;
+            strncpy(fh.owner, buf1 + 8, OWNER_LEN);
+            fh.owner[OWNER_LEN-1]=0;
+            fgets(buf2, 256, art);
+            if (buf2 == 0) {
+		fclose(art);
+                return 0;
+            }
+            if (p = strchr(buf2 + 8, '\n'))
+                *p = 0;
+            if (p = strchr(buf2 + 8, '\r'))
+                *p = 0;
+            strcpy(fh.filename, filename);
+            strncpy(fh.title, buf2 + 8, STRLEN);
+            if (mailmode) {
+                fh.accessed[0] |= FILE_READ;
+            }
+            if (strncmp(buf1, "发信站", 6) && strncmp(buf1, "寄信人: ", 8) && strncmp(buf1, "发信人: ", 8)) {
+		fclose(art);
+                return 0;
+            }
+            if ((strncmp(buf2, "标  题: ", 8))
+                && (strncmp(buf2, "标　题: ", 8))) {
+		fclose(art);
+                return 0;
+            }
+	    fh.posttime=getposttime(fh.filename);
+            insertfile(fh);
+            fclose(art);
+        }
+    }
+}
+
+int
+ispostfilename(char *file)
+{
+		if (strncmp(file, "M.", 2) && strncmp(file, "G.", 2)
+					    &&strncmp(file, "D.", 2) && strncmp(file, "J.", 2) && strncmp(file, "Z.", 2))
+					return 0;
+			if (!isdigit(file[3]))
+						return 0;
+				if (strlen(file) >= 20)
+							return 0;
+					return 1;
+}
+
+
+getallpost(char *path, char prefix)
+{
+	DIR *dirp;
+	struct dirent *direntp;
+	int h;
+	dirp = opendir(path);
+	if (dirp == NULL)
+		return -1;
+	while ((direntp = readdir(dirp)) != NULL) {
+		if (direntp->d_name[0] == '.') {
+			continue;
+		}
+#ifdef SMTH
+		if( prefix == NULL && strlen(direntp->d_name)==1 && strchr( alphabet, direntp->d_name[0] ) ){
+			char buf[200];
+			sprintf(buf, "%s/%c", path, direntp->d_name[0] );
+			getallpost(buf, direntp->d_name[0]);
+			continue;
+		}
+#endif
+		if (ispostfilename(direntp->d_name)) {
+			char buf[200];
+			sprintf(buf, "%c/%s", prefix, direntp->d_name );
+                    addfile(buf);
+			continue;
+		}
+	}
+	closedir(dirp);
+	return 0;
+}
+
 int main(int argc, char **argv)
 {
     DIR *pdir;
     char *name;
-    char buf1[256], buf2[256];
     struct dirent *ent;
     int i;
-    FILE *art;
     int file, file1;
-    struct fileheader fh;
-    int mailmode;
     int flag;                   /* test mode flag */
     mode_t old_dir_mode;
     char cwd[255];
@@ -135,53 +249,7 @@ int main(int argc, char **argv)
         return -1;
     }
     i = 1;
-    while ((ent = readdir(pdir)) != NULL) {
-        if ((strcmp(ent->d_name, ".DIR"))
-            && (strcmp(ent->d_name, "."))
-            && (strcmp(ent->d_name, ".."))
-            && (ent->d_name[0] == 'M')) {
-            struct stat st;
-
-            if (stat(ent->d_name, &st))
-                continue;
-            if ((art = fopen(ent->d_name, "r")) != NULL) {
-                char *p;
-
-                bzero(&fh, sizeof(fh));
-                fgets(buf1, 256, art);
-                if (buf1 == 0)
-                    continue;
-                p = strchr(buf1 + 8, ' ');
-                if (p)
-                    *p = 0;
-                if (p = strchr(buf1 + 8, '('))
-                    *p = 0;
-                if (p = strchr(buf1 + 8, '\n'))
-                    *p = 0;
-                strncpy(fh.owner, buf1 + 8, OWNER_LEN);
-                fh.owner[OWNER_LEN-1]=0;
-                fgets(buf2, 256, art);
-                if (buf2 == 0)
-                    continue;
-                if (p = strchr(buf2 + 8, '\n'))
-                    *p = 0;
-                if (p = strchr(buf2 + 8, '\r'))
-                    *p = 0;
-                strcpy(fh.filename, ent->d_name);
-                strncpy(fh.title, buf2 + 8, STRLEN);
-                if (mailmode) {
-                    fh.accessed[0] |= FILE_READ;
-                }
-                if (strncmp(buf1, "发信站", 6) && strncmp(buf1, "寄信人: ", 8) && strncmp(buf1, "发信人: ", 8))
-                    continue;
-                if ((strncmp(buf2, "标  题: ", 8))
-                    && (strncmp(buf2, "标　题: ", 8)))
-                    continue;
-                insertfile(fh);
-                fclose(art);
-            }
-        }
-    }
+    getallpost(name,NULL);
     qsort(data, len, sizeof(struct fileheader), cmpfile);
     printf("end.len=%d %d", len, len * sizeof(struct fileheader));
     if (write(file, data, len * sizeof(struct fileheader)) == -1)
@@ -209,3 +277,4 @@ int main(int argc, char **argv)
         chmod(name, old_dir_mode);
     return 0;
 }
+
