@@ -1136,6 +1136,9 @@ char *logfile, *regfile;
     long pid;                   /* Added by Bigman: 2002.5.31 */
 
     uid = currentuser->userid;
+
+    char result[256],ip[17];	/* Added for IP query by Bigman: 2002.8.20 */
+
     stand_title("依序设定所有新注册资料");
 /*    sprintf(fname, "%s.tmp", regfile);*/
 
@@ -1221,6 +1224,13 @@ char *logfile, *regfile;
             move(1, 0);
             prints("帐号位置     : %d   共有 %d 张注册单，当前为第 %d 张，还剩 %d 张\n", unum, total_num, count++, sum - count + 1);    /*Haohmaru.2000.3.9.计算还有多少单子没处理 */
             disply_userinfo(&uinfo, 1);
+
+/* 添加查询IP, Bigman: 2002.8.20 */
+	    move(8,20);
+	    strncpy(ip,uinfo.lasthost,17);
+	    find_ip(ip,2,result);
+	    prints("\033[33m%s\033[0m",result);
+
             move(15, 0);
             printdash(NULL);
             for (n = 0; field[n] != NULL; n++)

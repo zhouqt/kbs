@@ -813,37 +813,44 @@ int my_inet_aton(const char * ip, struct in_addr* queryip)
 	return 0;
 }
 
-int search_ip()
+int find_ip(ip,flag,result)
+int flag;
+char result[];
+/* 查找IP的主程序，flag：1	普通调用，打印所有信息 */
+/*			 0	在审批时调用，只返回结果到result */
+/* 返回：	0 正常 */
+/* 		1 数据文件无法打开 */
+/*		2 错误IP */
+/*		3 数据库无该项内容 */
+/* commented by Bigman: 2002.8.20 */
 {
-    char ip[17];
-    FILE *fn;
+    FILE *fn; 
+    int num=0;
 
     fn = fopen("etc/ip_arrange.txt", "rt");
+
     if (fn == NULL) {
-        prints("没找到ip_arrange.txt");
-        pressanykey();
+        strncpy(result,"没找到ip_arrange.txt",255);
         return 1;
     }
-    clear();
-    while (1) {
-        char linebuf[256];
-        struct in_addr queryip;
 
-        linebuf[255] = 0;
-        getdata(0, 0, "输入查询的IP(直接回车退出):", ip, 16, DOECHO, NULL, true);
-        if (ip[0] == 0) {
-	    fclose(fn);
-            return 0;
-	}
-	prints("%s 查询结果:\n",ip);
-	clrtobot();
+    unsigned long temp_num;
+    struct in_addr queryip;
+
+	temp_num=0;
+
         if (my_inet_aton(ip, &queryip) == 0) {
-            outs("错误的ip");
-            pressanykey();
-            continue;
-        }
+            strncpy(result,"错误的ip",254);
+	    fclose(fn);
+            return 2;
+	}
+
 	queryip.s_addr=ntohl(queryip.s_addr);
 	fseek(fn,0,SEEK_SET);
+
+	char linebuf[256];
+	linebuf[255] = 0;
+
         while (fgets(linebuf, 254, fn)) {
             char *p1, *p2;
             struct in_addr from, to;
@@ -884,9 +891,57 @@ int search_ip()
 	    if (from.s_addr==0) continue;
             if (((queryip.s_addr >= from.s_addr) && (queryip.s_addr <= to.s_addr) && (from.s_addr<=to.s_addr)) || 
                 ((queryip.s_addr >= to.s_addr) && (queryip.s_addr <= from.s_addr) && (from.s_addr>=to.s_addr)))
-                prints("%s %s %s", linebuf,tostr,p1);
+               	{
+			num++;
+			if (flag==1) prints("%s %s %s", linebuf,tostr,p1);
+			if ((temp_num == 0) || (temp_num >= (abs(to.s_addr-from.s_addr))))
+			{
+				temp_num=abs(to.s_addr-from.s_addr);
+				strncpy(result,p1,254);
+			}
+		}
         }
-    }
+
+	if (num==0) {
+		strncpy(result,"数据库暂无",254);
+		fclose(fn);
+		return(3);
+	}
+
     fclose(fn);
     return 0;
+}
+
+int search_ip()
+/* 从管理菜单调用查询IP程序 */
+/* Bigman: 2002.8.20 */
+/* 返回：0 正常 */
+/*       1 数据文件无法打开 */
+{
+	char ip[17];
+	char result[256];
+	int back_flag;
+
+	clear();
+	while (1) {
+            
+		getdata(0, 0, "输入查询的IP(直接回车退出):", ip, 16, DOECHO, NULL, true);
+
+		if (ip[0] == 0) {
+			return 0;
+		}
+		prints("%s 查询结果:\n",ip);
+		clrtobot();
+
+		back_flag=find_ip(ip,1,result);
+
+		prints("\033[33m%s\033[0m\n",result);
+
+		if (back_flag == 1) {
+		pressreturn();
+		return(1);
+		}
+
+	}
+	return(0);
 }
