@@ -92,7 +92,7 @@
     		if($trackback && $tag == 0)
     			echo 	"<a href=\"javascript:openScript('pctb.php?nid=".$nid."&uid=".$pc["UID"]."&subject=".base64_encode($subject)."',460 , 480)\">引用</a>\n";
     		if(pc_is_manager($currentuser) && $nodetype == 0)
-    			echo "<a href=\"#\" onclick=\"bbsconfirm('pcadmin_blo.php?nid=".$nid."','确实要屏蔽此文吗(无法恢复)?')\">屏蔽</a>\n";
+    			echo "<a href=\"#\" onclick=\"bbsconfirm('pcadmin_blo.php?nid=".$nid."','确实要锁定此文吗(不增加访问量，不排名。此操作无法恢复！)?')\">锁定</a>\n";
     		echo 	"<a href=\"";
     		if($pc["EMAIL"])
     			echo "mailto:".$pc["EMAIL"];
