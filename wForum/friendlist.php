@@ -108,7 +108,7 @@ function main() {
 <?php echo $friend['ID'] ?></a>
 </td>
 <td class=TableBody1 align=left style="font-weight:normal"><a href="dispuser.php?id=<?php echo $friend['ID'] ; ?>" > <?php       echo htmlspecialchars($friend['EXP'],ENT_QUOTES); ?></a>	</td>
-<td align=center valign=middle width=150 class=TableBody1>
+<td align=center valign=middle class=TableBody1>
 <a href="friendlist.php?delfriend=<?php echo $friend['ID']; ?>">删除好友</a> |
 <a href="sendmail.php?receiver=<?php echo $friend['ID']; ?>">发信问候</a>
 </td>
@@ -117,11 +117,7 @@ function main() {
 	}
 ?>
 <tr>
-<td align=center valign=middle colspan=3 class=TableBody2>
-<form method="GET" action="friendlist.php">
-<input type="text" name="addfriend">&nbsp;<input type="submit" name="submit" value="添加好友">
-</td>
-<td align=right valign=middle colspan=1 class=TableBody2>
+<td align=right valign=middle colspan=4 class=TableBody2>
 <?php
 			
 		if ($startNum > 0)
@@ -154,6 +150,11 @@ function main() {
 </td>
 </tr>
 </table>
+<form method="GET" action="friendlist.php">
+<table align=center><tr><td>
+<input type="text" name="addfriend">&nbsp;<input type="submit" name="submit" value="添加好友">
+</td></tr></table>
+</form>
 <?php
 }
 

@@ -122,7 +122,6 @@ function article_bar($boardName,$boardID,$articleID,$article,$threadID,$listType
 }
 
 function dispArticleTitle($boardName,$boardID,$articleID,$article, $threadID){
-	global $SiteURL, $SiteName;
 ?>
 <TABLE cellPadding=0 cellSpacing=1 align=center class=TableBorder1>
 	<tr align=middle> 
