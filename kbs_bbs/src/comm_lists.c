@@ -45,6 +45,7 @@ int Users();
 int Welcome();
 #ifdef FB2KPC
 int AddPCorpus();
+int Personal();
 #endif
 int t_www();
 int setcalltime();
@@ -287,6 +288,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
 
 #ifdef FB2KPC
 	{"AddFBPC", AddPCorpus},
+	{"Personal", Personal},
 #endif
     {NULL, NULL},
 };
@@ -351,9 +353,30 @@ int exec_mbem(char *s)
     oldmode = uinfo.mode;
     modify_user_mode(SERVICES);
     strcpy(buf,s);   
-    s=strstr(buf,"@mod:");   
+    s=strstr(buf,"@mod:");
+
     if(s)   
     {      
+		if(s-buf>1){
+#ifdef SSHBBS
+			if(buf[1]=='t' || buf[1]=='T'){
+            	clear();      
+            	prints("此功能只能在telnet下使用\n\n");      
+            	pressanykey();
+    			modify_user_mode(oldmode);
+				return 0;
+			}
+#else
+			if(buf[1]=='s' || buf[1]=='S'){
+            	clear();      
+            	prints("此功能只能在ssh下使用\n\n");      
+            	pressanykey();
+    			modify_user_mode(oldmode);
+				return 0;
+			}
+#endif
+		}
+
         c=strstr(s+5,"#");      
         if(c)      
         { 
