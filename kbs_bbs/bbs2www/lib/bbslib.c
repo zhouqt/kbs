@@ -3204,8 +3204,11 @@ int web_send_sms(char *dest,char *msgstr){
 	ret = DoSendSMS(ud.mobilenumber, uident, msgstr);
 
 	if( ret == CMD_ERR_SMS_VALIDATE_FAILED){
+		if( read_user_memo(currentuser->userid, &currentmemo) < 0) return -1;
 		ud.mobilenumber[0]=0;
 		ud.mobileregistered=0;
+		memcpy(&(currentmemo->ud), &ud, sizeof(ud));
+		end_mmapfile(currentmemo, sizeof(struct usermemo), -1);
 		write_userdata(currentuser->userid, &ud);
 	}
 
@@ -3246,7 +3249,8 @@ int web_register_sms_sendcheck(char *mnumber)
 	struct userdata ud;
 	int i;
 
-	read_userdata(currentuser->userid, &ud);
+	if( read_user_memo(currentuser->userid, &currentmemo) < 0) return -1;
+	memcpy(&ud, &(currentmemo->ud), sizeof(ud));
 
     sms_init_memory();
     smsuin = u_info;
@@ -3279,6 +3283,8 @@ int web_register_sms_sendcheck(char *mnumber)
     }
 
 	strcpy(ud.mobilenumber, mnumber);
+	memcpy(&(currentmemo->ud), &ud, sizeof(ud));
+	end_mmapfile(currentmemo, sizeof(struct usermemo), -1);
 	write_userdata(currentuser->userid, &ud);
     
 	shmdt(head);
@@ -3291,7 +3297,8 @@ int web_register_sms_docheck(char *valid)
     char buf2[80];
 	struct userdata ud;
 
-	read_userdata(currentuser->userid, &ud);
+	if( read_user_memo(currentuser->userid, &currentmemo) < 0) return -1;
+	memcpy(&ud, &(currentmemo->ud), sizeof(ud));
 
     sms_init_memory();
     smsuin = u_info;
@@ -3317,6 +3324,8 @@ int web_register_sms_docheck(char *valid)
     }
 
     ud.mobileregistered = 1;
+	memcpy(&(currentmemo->ud), &ud, sizeof(ud));
+	end_mmapfile(currentmemo, sizeof(struct usermemo), -1);
     write_userdata(currentuser->userid, &ud);
     
 	shmdt(head);
