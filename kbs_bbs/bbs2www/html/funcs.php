@@ -3,6 +3,8 @@
 	 * File included by all other php scripts.
 	 * $Id$
 	 */
+if (!isset($topdir))
+    $topdir=".";
 @dl("$topdir/../libexec/bbs/libphpbbslib.so");
 global $SQUID_ACCL;
 global $BBS_PERM_POSTMASK;

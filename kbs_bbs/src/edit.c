@@ -671,11 +671,11 @@ static long insert_from_fp(FILE *fp)
                 insertch_from_fp(*data);
             }
         }
-        return 0;
     }
     BBS_CATCH {
     }
     BBS_END end_mmapfile((void *) ptr, size, -1);
+    return 0;
 }
 
 long read_file(char *filename)
@@ -899,7 +899,7 @@ static int write_file(char* filename,int saveheader,long* effsize,long* pattachp
             int fsrc,fdst;
             snprintf(buf,MAXPATH,"%s.attach",filename);
             if ((fsrc = open(filename, O_RDONLY)) != NULL) {
-                if ((fdst = open(buf, O_WRONLY , 0600)) >= 0) {
+                if ((fdst = open(buf, O_WRONLY|O_CREAT , 0600)) >= 0) {
                     char* src=(char*)malloc(10240);
                     long ret;
                     lseek(fsrc,*pattachpos-1,SEEK_SET);
@@ -1028,7 +1028,7 @@ fsdfa
                     ret = read(fsrc, src, 10240);
                     if (ret <= 0)
                         break;
-                } while (write(fileno(fp), src, ret) > 0);
+                } while (fwrite(src, ret, 1, fp) > 0);
                 close(fsrc);
                 free(src);
             }
