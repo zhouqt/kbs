@@ -185,8 +185,8 @@ int main()
     }
 
     printdiv(6, "界面风格", "/images/folder.gif");
-    printf("<img src=\"/images/link.gif\"> <a href=\"/bbsstyle.php?s=0\">小字体</a><br>\n");
-    printf("<img src=\"/images/link.gif\"> <a href=\"/bbsstyle.php?s=1\">大字体</a><br>\n");
+    printf("<img src=\"/images/link.gif\"> <a href=\"/bbsstyle.php?s=1\">小字体</a><br>\n");
+    printf("<img src=\"/images/link.gif\"> <a href=\"/bbsstyle.php?s=0\">大字体</a><br>\n");
     /*printf("<img src=\"/images/link.gif\"><a target=\"f3\" href=\"bbsadl\">下载精华区</a><br>\n"); */
     printf("</div>\n");
     printmenuend();

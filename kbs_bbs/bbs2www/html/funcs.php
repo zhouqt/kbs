@@ -230,12 +230,12 @@ function html_init($charset,$title="",$otherheader="")
         }
 	switch ($css_style)
 	{
-	case 1:
+	case 0:
 ?>
 <link rel="stylesheet" type="text/css" href="/bbs-bf.css"/>
 <?php
 		break;
-	case 0:
+	case 1:
 	default:
 ?>
 <link rel="stylesheet" type="text/css" href="/bbs.css"/>

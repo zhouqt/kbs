@@ -6,13 +6,13 @@
 		settype($style, "integer");
 		switch ($style)
 		{
-		case 1:
-			setcookie("STYLE",1);
+		case 0:
+			setcookie("STYLE",0);
 			$colwidth="170,*";
 			break;
-		case 0:
+		case 1:
 		default:
-			setcookie("STYLE",0);
+			setcookie("STYLE",1);
 			$colwidth="144,*";
 		}
 		$charset = "gb2312";
@@ -28,7 +28,7 @@
 </head>
 <body>
 <script language="javascript">
-parent.mainframe.cols = "<?php echo $colwidth; ?>";
+top.mainframe.cols = "<?php echo $colwidth; ?>";
 top.f3.navigate(top.f3.location);
 top.f4.navigate(top.f4.location);
 </script>

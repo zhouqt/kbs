@@ -435,11 +435,11 @@ void html_init()
     printf("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=%s\">\n", CHARSET);
     style = atoi(getparm("STYLE"));
     switch (style) {
-    case 1:                    /* default color, big font */
+    case 0:                    /* default color, big font */
         printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n", CSS_FILE_BIGFONT);
         printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"/ansi-web-middle.css\">\n");
         break;
-    case 0:
+    case 1:
     default:                   /* default color, small font */
         printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n", CSS_FILE);
         printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"/ansi-web-small.css\">\n");
