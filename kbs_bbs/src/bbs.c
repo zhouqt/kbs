@@ -2864,6 +2864,24 @@ int Import_post(int ent, struct fileheader *fileinfo, char *direct)
         if (szBuf[0] != 'y' && szBuf[0] != 'Y')
             return FULLUPDATE;
     }
+
+    /*
+     * oldbug 2003.08.01
+     */
+    if (digestmode == 4 || digestmode == 5){
+            char *p;
+            int i;
+            if ((p = strrchr(fileinfo->title, '-')) != NULL) {
+                *p = 0;
+                for (i = strlen(fileinfo->title) - 1; i >= 0; i--) {
+                    if (fileinfo->title[i] != ' ')
+                        break;
+                    else
+                        fileinfo->title[i] = 0;
+                }
+            }
+    }
+
     /*
      * Leeward 98.04.15 
      */
