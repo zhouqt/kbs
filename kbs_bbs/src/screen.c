@@ -638,7 +638,31 @@ int n;
                                 str+=i+1;
                                 break;
                              }
-                             else if(*(str+i)=='m') {
+                             else if(*(str+i)=='s' && i==2) {
+                                str+=3;
+                                	if (slp && (begincol != reg_col)) {
+                                		if (slp->len < reg_col)
+                                			slp->len = reg_col;
+                                		DO_MODIFY;
+                                		cur_col = reg_col;
+                                	}
+                                good_getyx(&savey, &savex);
+                                break;
+                             }
+                             else if(*(str+i)=='u' && i==2) {
+                                str+=3;
+                                if(savey!=-1&&savex!=-1) {
+                                	if (slp && (begincol != reg_col)) {
+                                		if (slp->len < reg_col)
+                                			slp->len = reg_col;
+                                		DO_MODIFY;
+                                	}
+                                    good_move(savey,savex);
+                                    break;
+                                }
+                                continue;
+                             }
+                             else {
                                 register int j;
                                 for(j=slp->len-1;j>=reg_col;j--)
                                     slp->data[j+i+1]=slp->data[j];
@@ -650,30 +674,6 @@ int n;
                                 DO_MODIFY;
                                 continue;
                              }
-                      }
-                      if(*str == ''&&*(str+1)=='['&&*(str+2)=='s') {
-                        str+=3;
-                        	if (slp && (begincol != reg_col)) {
-                        		if (slp->len < reg_col)
-                        			slp->len = reg_col;
-                        		DO_MODIFY;
-                        		cur_col = reg_col;
-                        	}
-                        good_getyx(&savey, &savex);
-                        break;
-                      }
-                      else if(*str == ''&&*(str+1)=='['&&*(str+2)=='u') {
-                        str+=3;
-                        if(savey!=-1&&savex!=-1) {
-                        	if (slp && (begincol != reg_col)) {
-                        		if (slp->len < reg_col)
-                        			slp->len = reg_col;
-                        		DO_MODIFY;
-                        	}
-                            good_move(savey,savex);
-                            break;
-                        }
-                        continue;
                       }
               
 			if (*str == '\n' || *str == '\r') {
