@@ -35,6 +35,7 @@
 <body>
 <center><?php echo BBS_FULL_NAME; ?> -- 分类讨论区 [<?php echo $section_names[$group][0]; ?>]
 <?php
+	if( $group2 != -2 ){
 		if ($yank == 0)
 		{
 ?>
@@ -47,6 +48,7 @@
 [<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?group=<?php echo $group; ?>">本区已订阅看板</a>]
 <?php
 		}
+	}
 ?>
 [<a href="/bbssec.php">分类讨论区</a>]
 <hr class="default"/>
