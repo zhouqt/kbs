@@ -1837,7 +1837,7 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
             }
 
 
-            if (!chkusermail(lookupuser)) {   /*Haohamru.99.4.05 */
+            if (chkusermail(lookupuser)) {   /*Haohamru.99.4.05 */
                 prints("%s 信箱已满,无法收信\n", receiver);
                 return -4;
             }
