@@ -2068,6 +2068,10 @@ int post_article(char *q_file, struct fileheader *re_file)
         return FULLUPDATE;
 #endif
 
+#ifdef NINE_BUILD
+    bbs_zrecvfile();
+#endif
+
     modify_user_mode(POSTING);
     if (digestmode == 2 || digestmode == 3) {
         olddigestmode = digestmode;

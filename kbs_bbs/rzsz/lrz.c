@@ -145,29 +145,16 @@ int bbs_zrecvfile()
     unsigned int startup_delay = 0;
 
     Rxtimeout = 100;
-    setbuf(stderr, NULL);
     Restricted = 2;
-
-    /* make temporary and unfinished files */
-    umask(0077);
 
     protocol = ZM_ZMODEM;
 
 
     /* initialize zsendline tab */
     zsendline_init();
-#ifdef HAVE_SIGINTERRUPT
-    siginterrupt(SIGALRM, 1);
-#endif
 
     io_mode(0, 1);
-    readline_setup(0, HOWMANY, MAX_BLOCK * 2);
-    if (signal(SIGINT, bibi) == SIG_IGN)
-        signal(SIGINT, SIG_IGN);
-    else
-        signal(SIGINT, bibi);
-    signal(SIGTERM, bibi);
-    signal(SIGPIPE, bibi);
+    readline_setup(1, 128, 256);
     patts = &paths;
     if (wcreceive(npats, patts) == ERROR) {
         exitcode = 0200;
