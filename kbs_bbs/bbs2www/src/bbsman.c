@@ -49,45 +49,35 @@ int main()
     http_quit();
 }
 
-/* modified by stiger,use id */
+/* modified by stiger,20030414 */
 int do_del(char *board, int id)
 {
-    FILE *fp;
-    int num = 0;
-    //char path[256], buf[256], dir[256] ;
+    int fd;
+    int ent;
     char dir[256];
     struct fileheader f;
-    //struct userec *u = NULL;
-    bcache_t *brd = getbcache(board);
 
     sprintf(dir, "boards/%s/.DIR", board);
-    //sprintf(path, "boards/%s/%s", board, file);
-    fp = fopen(dir, "r");
-    if (fp == 0)
+    fd = open(dir, O_RDWR, 0644);
+    if (fd < 0)
         http_fatal("错误的参数");
-    while (1) {
-        if (fread(&f, sizeof(struct fileheader), 1, fp) <= 0)
+    if( get_records_from_id( fd, id, &f, 1, &ent) ){
+	close(fd);
+        switch (del_post(ent, &f, dir, board)) {
+        case DONOTHING:
+            http_fatal("你无权删除该文");
             break;
-        if (f.id==id) {
-            switch (del_post(num, &f, dir, board)) {
-            case DONOTHING:
-                http_fatal("你无权删除该文");
-                break;
-            default:
-                printf("<tr><td>%s  </td><td>标题:%s </td><td>删除成功.</td></tr>\n", f.owner, nohtml(f.title));
-            }
-            return;
-        }
-        num++;
+        default:
+            printf("<tr><td>%s  </td><td>标题:%s </td><td>删除成功.</td></tr>\n", f.owner, nohtml(f.title));
+	}
+	return;
     }
-    fclose(fp);
+
     printf("<tr><td></td><td></td><td>文件不存在.</td></tr>\n");
 }
 
 /* 加 G 时并没有 post 到文摘区 */
-/* modified by stiger,use id */
-/* modified by stiger,20030414,post到文摘区 */
-/* modified by stiger,20030414,使用二分法 */
+/* modified by stiger,20030414 */
 int do_set(char *board, int id, int flag)
 {
     int fd;
@@ -104,10 +94,10 @@ int do_set(char *board, int id, int flag)
 			printf("<tr><td>%s</td><td>标题:%s</td><td>标记成功.</td></tr>\n", f.owner, nohtml(f.title));
 		else
 			printf("<tr><td>%s</td><td>标题:%s</td><td>标记不成功.</td></tr>\n", f.owner, nohtml(f.title));
-    }
-	else
+    }else{
+        close(fd);
         printf("<tr><td></td><td></td><td></td><td>文件不存在.</td></tr>\n");
-
+    }
     
 }
 
