@@ -85,3 +85,29 @@ function adjustImg() {
 	}
 }
 window.onresize = adjustImg;
+
+
+
+var agt = navigator.userAgent.toLowerCase();
+var is_ie = ((agt.indexOf("msie") != -1) && (agt.indexOf("opera") == -1));
+function cancelEvent(ev) {
+	if (is_ie) {
+		ev.cancelBubble = true;
+		ev.returnValue = false;
+	} else {
+		ev.preventDefault();
+		ev.stopPropagation();
+	}
+}
+
+function textarea_okd(func, evt) {
+	evt = (evt) ? evt : ((window.event) ? event : null);
+	if (evt == null) return;
+	key = evt.keyCode ? evt.keyCode : evt.charCode;
+	if ((key == 87 && evt.ctrlKey) || (key == 13 && evt.ctrlKey)) {
+		cancelEvent(evt);
+		func();
+		return false;
+	}
+	return true;
+}
