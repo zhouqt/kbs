@@ -562,7 +562,7 @@ char *bname;
         break;
     }
     ball->opendate = time(NULL);
-    prints("按任何开始编辑此次 [投票的描述]: \n");
+    prints("按任何键开始编辑此次 [投票的描述]: \n");
     pressanykey();
     setvfile(genbuf, bname, "desc");
     sprintf(buf, "%s.%lu", genbuf, ball->opendate);
