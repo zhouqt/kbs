@@ -527,7 +527,7 @@ int apply_utmpuid(APPLY_UTMP_FUNC fptr, int uid, void *arg)
     return apply_utmp(fptr, 0, userid, arg);
 }
 
-int apply_utmp(APPLY_UTMP_FUNC fptr, int maxcount, char *userid, void *arg)
+int apply_utmp(APPLY_UTMP_FUNC fptr, int maxcount,const char *userid, void *arg)
 {
     int i, num;
     int hashkey;

@@ -860,7 +860,7 @@ int _t_search(struct user_info *uentp, struct _tag_t_search *data, int pos)
     UNUSED_ARG(pos);
     return 0;
 }
-struct user_info *t_search(char *sid, int pid)
+struct user_info *t_search(const char *sid, int pid)
 {
     struct _tag_t_search data;
 

@@ -100,7 +100,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     int get_utmpent_num(struct user_info *uent);        /* return utmp number */
 
     int t_cmpuids(int uid, struct user_info *up);
-    int apply_utmp(APPLY_UTMP_FUNC fptr, int maxcount, char *userid, void *arg);
+    int apply_utmp(APPLY_UTMP_FUNC fptr, int maxcount,const char *userid, void *arg);
     int getfriendstr(struct userec *user, struct user_info *puinfo);
     int myfriend(int uid, char *fexp);
     bool hisfriend(int uid, struct user_info *him);
@@ -163,7 +163,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     int bad_user_id(char *userid);      /* 检查.badname是否允许注册的 */
     int valid_ident(char *ident);       /* 检查合法的ident */
     int getunifopid(ARG_VOID);
-    struct user_info *t_search(char *sid, int pid);
+    struct user_info *t_search(const char *sid, int pid);
     int cmpinames(const char *userid, const char *uv);
     int cmpfnames(char *userid, struct friends *uv);
     int cmpfileinfoname(char *filename, struct fileheader *fi);
