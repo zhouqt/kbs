@@ -48,8 +48,10 @@ void save_board()
 
 int check_top(int score)
 {
-    int i,j;
+    int i,j,lasttopn;
+    lasttopn = topn;
     load_board();
+    if(topn<lasttopn) return -1;
     for(i=0;i<topn;i++)
     if(!strcmp(topid[i],currentuser->userid)) {
         if(score<=topscore[i]) return 0;
@@ -147,7 +149,7 @@ int quiz_test()
     char sql[100];
     score = 0;
     while(1) {
-        int level, style, anscount;
+        int level, style, anscount, order[100], order2[100];
         char question[200], ans[6][200], answer[100], now[100], input[6];
         do{
             j=rand()%10000+1;
@@ -160,10 +162,21 @@ int quiz_test()
         style = atoi(row[2]);
         strcpy(question, row[3]);
         anscount = atoi(row[4]);
+        for(j=0;j<anscount;j++) order2[j]=0;
         for(j=0;j<anscount;j++) {
-            strcpy(ans[j], row[5+j]);
+            do{
+                k=rand()%anscount;
+            }while(order2[k]==1);
+            order2[k]=1;
+            order[j]=k;
         }
-        strcpy(answer, row[11]);
+        for(j=0;j<anscount;j++) {
+            strcpy(ans[j], row[5+order[j]]);
+        }
+        answer[6]=0;
+        for(j=0;j<6;j++) answer[j]='0';
+        for(j=0;j<anscount;j++)
+            answer[j]=row[11][order[j]];
 
         clear();
         move(0,0);
@@ -229,7 +242,7 @@ int quiz_again()
     char ans[4];
     rank = check_top(score);
     move(t_lines-3, 0);
-    if(rank) {
+    if(rank==1) {
         setfcolor(RED, 1);
         prints("¹§Ï²Äã£¬ÄãÉÏÅÅÐÐ°ñÀ²!!!");
         save_board();
