@@ -308,7 +308,7 @@ int get_top(int type)
                     if (!strcmp(row[0], top[n].board))
                         m++;
                 }
-				if(m>2)
+				if(m>0)
 					continue;
 
 				/***分区十大里一个版面也最多3个***/
@@ -318,7 +318,7 @@ int get_top(int type)
                     	if (!strcmp(row[0], sectop[secid][n].board))
                         	m++;
                 	}
-					if(m>2)
+					if(m>0)
 						continue;
 				}
 			}else if(type==4){
