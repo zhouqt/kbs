@@ -206,7 +206,7 @@ void refresh()
         j = (i + roll)%scr_lns;
 
         ii=scr_cols-1;
-        while(ii>0&&(bp[j].data[ii]==0||bp[j].data[ii]==32)&&(bp[j].color[ii]/16)==(bp[j].color[scr_cols-1]/16)&&((bp[j].mode[ii]&~SCREEN_MODIFIED)==(bp[j].mode[scr_cols-1]&~SCREEN_MODIFIED))) ii--;
+        while(ii>=0&&(bp[j].data[ii]==0||bp[j].data[ii]==32)&&(bp[j].color[ii]/16)==(bp[j].color[scr_cols-1]/16)&&((bp[j].mode[ii]&~SCREEN_MODIFIED&~SCREEN_BRIGHT)==(bp[j].mode[scr_cols-1]&~SCREEN_MODIFIED&~SCREEN_BRIGHT))) ii--;
         p=ii+1;
 
         for (k = 0; k < scr_cols; k++)
