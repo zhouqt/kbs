@@ -29,7 +29,8 @@ int generate_board_title(struct boardheader *bh,void* arg)
 
     setbdir(0, olddirect, bh->filename);
     
-	gen_threadid = 1;
+    gen_threadid = bh->nowid+1;
+    if (gen_threadid<=0) gen_threadid=1;
     if ((fd2 = open(olddirect, O_RDWR, 0664)) == -1) {
         return 0;
     }
