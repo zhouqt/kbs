@@ -2,15 +2,15 @@
 	/*This file shows user tools. windinsn Oct 27,2003*/
 	
 	require("funcs.php");
-login_init();
+	login_init();
 	
-        $img_subdir = "/images/menuspring/";
+	$img_subdir = "/images/newstyle/";
+	$blog_index = defined("SITE_SMTH") ? "index.html" : "pcmain.php";
         
 	function display_board_list($section_names,$section_nums)
 	{
 ?>
-<table width="100%" border="0" cellspacing="0" cellpadding="1" class="b1">
-<col width="16px"/><col align="left"/>
+<div class="b1">
 <?php
 		$i = 0;
 		foreach ($section_names as $secname)
@@ -20,126 +20,69 @@ login_init();
 			$group2 = $yank = 0;
 			$level = 0;
 ?>
-<tr>
-<td align="right">
-<a href="javascript:submenu(0,0,<?php echo $group; ?>,0,0)">
-<img id="submenuimg_brd_<?php echo $group; ?>_0" src="/images/close.gif" border="0">
-</a>
-</td>
-<td>
-<a href="/bbsboa.php?group=<?php echo $group; ?>" target="f3"><img src="/images/kfolder1.gif" width="16" height="16" border="0" align="absmiddle"><?php echo $secname[0]; ?></a>
-</td>
-</tr>
-<tr id="submenu_brd_<?php echo $group; ?>_0" style="display:none">
-<td> </td>
-<td id="submenu_brd_<?php echo $group; ?>_0_td">
-<DIV></DIV>
-</td>
-</tr>
+<a href="javascript:submenu(0,0,<?php echo $group; ?>,0,0)" target="_self">
+<img id="submenuimg_brd_<?php echo $group; ?>_0" src="/images/close.gif" class="pm" alt="+"
+></a><a href="/bbsboa.php?group=<?php echo $group; ?>"><img src="/images/kfolder1.gif" class="s16x16"><?php echo $secname[0]; ?></a><br/>
+<div id="submenu_brd_<?php echo $group; ?>_0" class="lineback"></div>
 <?php
 		}
 ?>
-<tr>
-<td align="right">
-<img src="/images/open.gif" border="0">
-</td>
-<td>
-<a href="/bbsnewbrd.php" target="f3"><img src="/images/kfolder1.gif" width="16" height="16" border="0" align="absmiddle">新开讨论区</a>
-</td>
-</tr>
-</table>
+<img src="/images/open.gif" class="pm" alt="-"
+><a href="/bbsnewbrd.php"><img src="/images/kfolder1.gif" class="s16x16">新开讨论区</a>
+</div>
 <?php
 	}
 	
 	function display_my_favorite()
 	{
 ?>
-<table width="100%" border="0" cellspacing="0" cellpadding="0" class="b1">
-<col width="16px"/><col align="left"/>
+<div class="b1">
 <?php
- 		$select = 0; 
- 		$yank = 0;
+		$select = 0; 
+		$yank = 0;
  		 		
-                if( bbs_load_favboard($select)!=-1 && $boards = bbs_fav_boards($select, 1)) 
-                {
+		if( bbs_load_favboard($select)!=-1 && $boards = bbs_fav_boards($select, 1)) 
+		{
 			$brd_name = $boards["NAME"]; // 英文名
-	                $brd_desc = $boards["DESC"]; // 中文描述
-	                $brd_flag = $boards["FLAG"]; 
-	                $brd_bid = $boards["BID"];  //版 ID 或者 fav dir 的索引值 
-        		$rows = sizeof($brd_name);
-                	
-                	for ($j = 0; $j < $rows; $j++)	
-                        {
+			$brd_desc = $boards["DESC"]; // 中文描述
+			$brd_flag = $boards["FLAG"]; 
+			$brd_bid = $boards["BID"];  //版 ID 或者 fav dir 的索引值 
+			$rows = sizeof($brd_name);
+			
+			for ($j = 0; $j < $rows; $j++)
+			{
 				if ($brd_flag[$j]==-1)
 				{
 ?>
-<tr>
-<td align="right">
-<a href="javascript:submenu(1,<?php echo $brd_bid[$j]; ?>,0,0,0)">
-<img id="submenuimg_fav_<?php echo $brd_bid[$j]; ?>" src="/images/close.gif" border="0">
-</a>
-</td>
-<td>
-<a href="/bbsfav.php?select=<?php echo $brd_bid[$j]; ?>&up=-1" target="f3"><img src="/images/kfolder1.gif" width="16" height="16" border="0" align="absmiddle"><?php echo $brd_desc[$j]; ?></a>
-</td>
-</tr>
-<tr id="submenu_fav_<?php echo $brd_bid[$j]; ?>" style="display:none">
-<td background="/images/line3.gif"> </td>
-<td id="submenu_fav_<?php echo $brd_bid[$j]; ?>_td">
-<DIV></DIV>
-</td>
-</tr>
+<a href="javascript:submenu(1,<?php echo $brd_bid[$j]; ?>,0,0,0)" target="_self">
+<img id="submenuimg_fav_<?php echo $brd_bid[$j]; ?>" src="/images/close.gif" class="pm" alt="+"
+></a><a href="/bbsfav.php?select=<?php echo $brd_bid[$j]; ?>&up=-1"><img src="/images/kfolder1.gif" class="s16x16"><?php echo $brd_desc[$j]; ?></a><br/>
+<div id="submenu_fav_<?php echo $brd_bid[$j]; ?>" class="lineback"></div>
 <?php
 				}
 				else
 				{
-?>
-<tr>
-<td align="right">
-<?php			  		
 			  		$brd_link="/bbsdoc.php?board=" . urlencode($brd_name[$j]);
 
-					if( $j != $rows-1 )
-					{
+					$class = ( $j != $rows-1 ) ? "mi" : "lmi";
 ?>
-<img src="images/line.gif" width="11" height="16" align="absmiddle">
-<?php
-					}
-					else
-					{
-?>
-<img src="images/line1.gif" width="11" height="16" align="absmiddle">
-<?php
-					}
-?>
-</td><td>
-<A href="<?php echo $brd_link; ?>" target="f3"><?php echo $brd_desc[$j]; ?></A>
-</td></tr>
+<div class="<?php echo $class; ?>"><a href="<?php echo $brd_link; ?>"><?php echo $brd_desc[$j]; ?></a></div>
 <?php
 				}
 			}
-                        
-                }
+		}
 ?>
-</table>
+</div>
 <?php     
 	}
 	
 	function display_mail_menu($userid)
 	{
 ?>
-&nbsp;
-<img src="/images/line.gif" border="0" align="absmiddle">
-<a href="/bbsnewmail.php" target="f3">阅览新邮件</a><br>
-&nbsp;
-<img src="/images/line.gif" border="0" align="absmiddle">
-<a href="/bbsmailbox.php?path=.DIR&title=<?php echo rawurlencode("收件箱"); ?>" target="f3">收件箱</a><br>
-&nbsp;
-<img src="/images/line.gif" border="0" align="absmiddle">
-<a href="/bbsmailbox.php?path=.SENT&title=<?php echo rawurlencode("发件箱"); ?>" target="f3">发件箱</a><br>
-&nbsp;
-<img src="/images/line.gif" border="0" align="absmiddle">
-<a href="/bbsmailbox.php?path=.DELETED&title=<?php echo rawurlencode("垃圾箱"); ?>" target="f3">垃圾箱</a><br>
+<div class="mi"><a href="/bbsnewmail.php">阅览新邮件</a></div>
+<div class="mi"><a href="/bbsmailbox.php?path=.DIR&title=<?php echo rawurlencode("收件箱"); ?>">收件箱</a></div>
+<div class="mi"><a href="/bbsmailbox.php?path=.SENT&title=<?php echo rawurlencode("发件箱"); ?>">发件箱</a></div>
+<div class="mi"><a href="/bbsmailbox.php?path=.DELETED&title=<?php echo rawurlencode("垃圾箱"); ?>">垃圾箱</a></div>
 <?php
 		//custom mailboxs
 		$mail_cusbox = bbs_loadmaillist($userid);
@@ -147,15 +90,12 @@ login_init();
 		{
 			foreach ($mail_cusbox as $mailbox)
 			{
-				echo "&nbsp;\n".
-					"<img src=\"/images/line.gif\" border=\"0\" align=\"absmiddle\">\n".
-					"<a href=\"/bbsmailbox.php?path=".$mailbox["pathname"]."&title=".urlencode($mailbox["boxname"])."\" target=\"f3\">".htmlspecialchars($mailbox["boxname"])."</a><br>\n";
+				echo "<div class=\"mi\">".
+					"<a href=\"/bbsmailbox.php?path=".$mailbox["pathname"]."&title=".urlencode($mailbox["boxname"])."\">".htmlspecialchars($mailbox["boxname"])."</a></div>\n";
 			}
 		}
 ?>
-&nbsp;
-<img src="/images/line1.gif" border="0" align="absmiddle">
-<a href="/bbspstmail.php" target="f3">发送邮件</a>
+<div class="lmi"><a href="/bbspstmail.php">发送邮件</a></div>
 <?php		
 	}
 		
@@ -177,55 +117,32 @@ login_init();
 		if(!$rows)
 		{
 ?>
-&nbsp;
-<img src="images/line.gif" width="11" height="16" align="absmiddle">
-<A href="/pc/pcapp0.html" target="f3">申请BLOG</A><BR>
+<div class="mi"><a href="/pc/pcapp0.html">申请BLOG</a></div>
 <?php
 		}
 		else
 		{
 ?>
-&nbsp;
-<img src="images/line.gif" width="11" height="16" align="absmiddle">
-<A href="/pc/index.php?id=<?php echo $userid; ?>" target="f3">我的Blog</A><BR>
-&nbsp;
-<img src="images/line.gif" width="11" height="16" align="absmiddle">
-<A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=0" target="f3">公开区</A><BR>
-&nbsp;
-<img src="images/line.gif" width="11" height="16" align="absmiddle">
-<A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=1" target="f3">好友区</A><BR>
-&nbsp;
-<img src="images/line.gif" width="11" height="16" align="absmiddle">
-<A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=2" target="f3">私人区</A><BR>
-&nbsp;
-<img src="images/line.gif" width="11" height="16" align="absmiddle">
-<A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=3" target="f3">收藏区</A><BR>
-&nbsp;
-<img src="images/line.gif" width="11" height="16" align="absmiddle">
-<A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=4" target="f3">删除区</A><BR>
-&nbsp;
-<img src="images/line.gif" width="11" height="16" align="absmiddle">
-<A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=5" target="f3">好友管理</A><BR>
-&nbsp;
-<img src="images/line.gif" width="11" height="16" align="absmiddle">
-<A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=6" target="f3">分类管理</A><BR>
-&nbsp;
-<img src="images/line.gif" width="11" height="16" align="absmiddle">
-<A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=7" target="f3">参数设定</A><BR>
-&nbsp;
-<img src="images/line.gif" width="11" height="16" align="absmiddle">
-<A href="/pc/pcfile.php?userid=<?php echo $userid; ?>" target="f3">个人空间</A><BR>
-&nbsp;
-<img src="images/line.gif" width="11" height="16" align="absmiddle">
-<A href="/pc/pcmanage.php?userid=<?php echo $userid; ?>&act=post&tag=0&pid=0" target="_blank">添加文章</A><BR>
+<div class="mi"><a href="/pc/index.php?id=<?php echo $userid; ?>">我的Blog</a></div>
+<div class="mi"><a href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=0">公开区</a></div>
+<div class="mi"><a href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=1">好友区</a></div>
+<div class="mi"><a href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=2">私人区</a></div>
+<div class="mi"><a href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=3">收藏区</a></div>
+<div class="mi"><a href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=4">删除区</a></div>
+<div class="mi"><a href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=5">好友管理</a></div>
+<div class="mi"><a href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=6">分类管理</a></div>
+<div class="mi"><a href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=7">参数设定</a></div>
+<div class="mi"><a href="/pc/pcfile.php?userid=<?php echo $userid; ?>">个人空间</a></div>
+<div class="mi"><a href="/pc/pcmanage.php?userid=<?php echo $userid; ?>&act=post&tag=0&pid=0" target="_blank">添加文章</a></div>
 <?php		
 		}	
 	}
 		
-	if ($loginok != 1)
+	if ($loginok != 1) {
 		html_nologin();
-	else{
-		html_init("gb2312","","",9);
+		exit;
+	}
+	html_init("gb2312","","",9);
 
 ?>
 <script src="bbsleft.js"></script>
@@ -243,464 +160,237 @@ function bbs_auto_reload() {
 }
 setTimeout('bbs_auto_reload()',540000);
 </script>
-<body  TOPMARGIN="0" leftmargin="0">
-<iframe id="hiddenframe" name="hiddenframe" width="0" height="0"></iframe>
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
-<tr>
-	<td>
-		<table width="100%" border="0" cellspacing="0" cellpadding="0">
-		<tr>
-			<td colspan="2">
-			<img src="/images/t1.gif" border="0">
-			</td>
-		</tr>
+<!--[if IE]>
+<style type="text/css">
+.t2 {
+	width: 167px;
+}
+</style>
+<![endif]-->
+<base target="f3" />
+<body>
+<iframe id="hiddenframe" name="hiddenframe" width="0" height="0" src="" frameborder="0" scrolling="no"></iframe>
+<img src="/images/t1.gif" class="pm">
+
+<div class="t2">
+<form action="/bbslogin.php" method="post" name="form1" target="_top" onsubmit="return fillf3(this);" class="m0">
 <?php
 		if($currentuser["userid"]=="guest")
 		{
 ?>
-<form action="/bbslogin.php" method="post" name="form1" target="_top">
-<tr>
-			<td align="center" width="10%" class="t2" height="25" valign="middle">
-			&nbsp;&nbsp;
-			<img src="/images/u1.gif" border="0" alt="登录用户名" align="absmiddle" width="54" height="21">
-			</td>
-			<td align="left" class="t2">
-			<INPUT TYPE=text STYLE="width:80px;height:18px;font-size: 12px;color: #000D3C;border-color: #718BD6;border-style: solid;border-width: 1px;background-color:  #D2E1FE;" LENGTH="10" onMouseOver="this.focus()" onFocus="this.select()" name="id" >
-			</td>
-</tr>
-<tr>
-			<td align="center" width="10%" class="t2" height="25" valign="middle">
-			&nbsp;&nbsp;
-			<img src="/images/u3.gif" border="0" alt="用户密码" align="absmiddle" width="54" height="21">
-			</td>
-			<td align="left" class="t2">
-			<INPUT TYPE=password  STYLE="width:80px;height:18px;font-size: 12px;color: #000D3C;border-color: #718BD6;border-style: solid;border-width: 1px;background-color:  #D2E1FE;" LENGTH="10" name="passwd" maxlength="39">
-			</td>
-</tr>
-<tr>
-			<td align="center" width="10%" colspan="2" class="t2" height="25" valign="middle">
-			<input type="image" name="login" src="/images/l1.gif" alt="登录进站">
-			<a href="/bbsreg0.html" target="_top"><img src="/images/l3.gif" border="0" alt="注册新用户"></a>
-			</td>
-</tr>
+<nobr><img src="/images/u1.gif" alt="登录用户名" class="pm" width="54" height="21">
+<input type="text" class="upinput" LENGTH="10" onMouseOver="this.focus()" onFocus="this.select()" name="id" /></nobr><br/>
+
+<nobr><img src="/images/u3.gif" alt="用户密码" class="pm" width="54" height="21">
+<input type="password" class="upinput" LENGTH="10" name="passwd" maxlength="39" /></nobr><br />
+
+<div class="m9">
+<nobr><input type="image" name="login" src="/images/l1.gif" alt="登录进站" class="m10">
+<a href="/bbsreg0.html" target="_top"><img src="/images/l3.gif" border="0" alt="注册新用户" class="m10"></a></nobr>
+</div>
 </form>
 <?php
 		}
 		else
 		{
 ?>
-		<tr>
-			<td align="center" width="10%" class="t2" height="25" valign="middle">
-			&nbsp;&nbsp;
-			<img src="/images/u1.gif" border="0" alt="登录用户名" align="absmiddle" width="54" height="21">
-			</td>
-			<td align="left" class="t2">
-			&nbsp;&nbsp;
-			<?php	echo $currentuser["userid"];	?>
-			</td>
-		</tr>
+<nobr><img src="/images/u1.gif" alt="登录用户名" class="pm" width="54" height="21">
+&nbsp;&nbsp;<?php echo $currentuser["userid"]; ?></nobr><br/>
 <?php
 		}
 ?>
-		<tr>
-			<td colspan="2" class="t2">
-			<img src="/images/t2.gif" border="0">
-			</td>
-		</tr>
-		</table>
-	</td>
-</tr>
-<tr>
-	<td height="5"> </td>
-</tr>
-<tr>
-	<td align="center">
-		<table width="90%" border="0" cellspacing="0" cellpadding="1" class="b1">
-		<col width="16px"/><col align="left"/>
-		<tr>
-			<td><img src="/images/open.gif" border="0"></td>
-			<td><a href="<?php echo MAINPAGE_FILE; ?>" target="f3"><img src="<?php echo $img_subdir; ?>m1.gif" border="0" alt="首页" align="absmiddle"> 首页导读</a></td>
-		</tr>
-		<tr>
-			<td><img src="/images/open.gif" border="0"></td>
-			<td><a href="/bbs0an.php" target="f3"><img src="<?php echo $img_subdir; ?>m2.gif" border="0" alt="精华区" align="absmiddle"> 精华区</a></td>
-		</tr>
-		<tr>
-			<td>
-				<DIV class="r" id="divboarda">
-				<a href='javascript:changemn("board");'><img id="imgboard" src="/images/close.gif" border="0"></a>
-				</DIV>
-			</td>
-			<td><a href="/bbssec.php" target="f3"><img src="<?php echo $img_subdir; ?>mfolder0.gif" border="0" alt="分类讨论区" align="absmiddle"> 分类讨论区</a></td>
-		</tr>
-		<tr>
-			<td> </td>
-			<td>
-				<DIV class="s" id="divboard">
+<img src="/images/t2.gif" class="pm">
+</div>
+
+<div class="b1 m4">
+	<img src="/images/open.gif" class="pm" alt="-"
+	><a href="<?php echo MAINPAGE_FILE; ?>"><img src="<?php echo $img_subdir; ?>m0.gif" class="sfolder">首页导读</a><br/>
+	
+	<img src="/images/open.gif" class="pm" alt="-"
+	><a href="/bbs0an.php"><img src="<?php echo $img_subdir; ?>m1.gif" class="sfolder">精华区</a><br/>
+	
+	<a href='javascript:changemn("board");' target="_self"><img id="imgboard" src="/images/close.gif" class="pm" alt="+"
+	></a><a href="/bbssec.php"><img src="<?php echo $img_subdir; ?>mfolder0.gif" class="sfolder">分类讨论区</a><br/>
+	<div class="pp" id="divboard">
 <?php
 	display_board_list($section_names,$section_nums);
 ?>
-				</DIV>
-			</td>
-		</tr>
-		<tr>
-			<td><img src="/images/open.gif" border="0"></td>
-			<form action="/bbssel.php" method="get" target="f3">
-			<td><nobr>
-			<img src="<?php echo $img_subdir; ?>m5.gif" border="0" alt="搜索讨论区" align="absmiddle">
-			<input name="board" type="text" class="f2" value="搜索讨论区" size="12" onmouseover="this.focus()" onfocus="this.select()" /> 
-<input name="submit" type="submit" value="GO" style="width:25px;height:20px;font-size: 12px;color: #ffffff;border-style: none;background-color: #718BD6;" />
-			</nobr></td>
-			</form>
-		</tr>
+	</div>
+
+	<form action="/bbssel.php" method="get" class="m0"><nobr
+		><img src="/images/open.gif" class="pm" alt="-"><img src="<?php echo $img_subdir; ?>m5.gif" class="sfolder"
+		><input name="board" type="text" class="f2" value="搜索讨论区" size="12" onmouseover="this.focus()" onfocus="this.select()" /> 
+		<input name="submit" type="submit" value="GO" class="sgo" />
+		</nobr>
+	</form>
 <?php
 	if($currentuser["userid"]!="guest"){
 ?>
-		<tr>
-			<td>
-				<DIV class="r" id="divfava">
-				<a href='javascript:changemn("fav");'><img id="imgfav" src="/images/close.gif" border="0"></a>
-				</DIV>
-			</td>
-			<td><a href="bbsfav.php?select=0" target="f3"><img src="<?php echo $img_subdir; ?>mfolder3.gif" border="0" alt="我的收藏夹" align="absmiddle"> 我的收藏夹</a></td>
-		</tr>
-		<tr>
-			<td> </td>
-			<td>
-				<DIV class="s" id="divfav">
+	<a href='javascript:changemn("fav");' target="_self"><img id="imgfav" src="/images/close.gif" class="pm" alt="+"></a
+	><a href="bbsfav.php?select=0"><img src="<?php echo $img_subdir; ?>mfolder3.gif" class="sfolder">我的收藏夹</a><br/>
+
+	<div class="pp" id="divfav">
 <?php
-	display_my_favorite();
+		display_my_favorite();
 ?>
-				</DIV>
-			</td>
-		</tr>
-		<tr>
-			<td><img src="/images/open.gif" border="0"></td>
-			<td><a href="bbssfav.php?userid=<?php echo $currentuser['userid']; ?>" target="f3"><img src="<?php echo $img_subdir; ?>mfolder3.gif" border="0" alt="<?php echo FAVORITE_NAME; ?>" align="absmiddle"> <?php echo FAVORITE_NAME; ?></a></td>
-		</tr>
+	</div>
+
+	<img src="/images/open.gif" class="pm" alt="-"
+	><a href="bbssfav.php?userid=<?php echo $currentuser['userid']; ?>"><img src="<?php echo $img_subdir; ?>m18.gif" class="sfolder"><?php echo FAVORITE_NAME; ?></a><br/>
+
 <?php
-		}
-?>
-<?php
+	}
 	if (defined("HAVE_PC"))
 	{
 ?>
-		<tr>
-			<td>
-				<DIV class="r" id="divpca">
-				<a href='javascript:changemn("pc");'><img id="imgpc" src="/images/close.gif" border="0"></a>
-				</DIV>
-			</td>
-			<td>
-			<a href='/pc/pcmain.php' target='f3'>
-			<img src="<?php echo $img_subdir; ?>m3.gif" border="0" alt="<?php echo BBS_FULL_NAME; ?>Blog" align="absmiddle"> 水木Blog
-			</a>
-			</td>
-		</tr>
-		<tr>
-			<td> </td>
-			<td>
-				<DIV class="s" id="divpc">
+	<a href='javascript:changemn("pc");' target="_self"><img id="imgpc" src="/images/close.gif" class="pm" alt="+"
+	></a><a href='/pc/<?php echo $blog_index; ?>'><img src="<?php echo $img_subdir; ?>m3.gif" class="sfolder"
+	><?php echo BBS_FULL_NAME; ?>Blog</a><br/>
+
+	<div class="pp" id="divpc">
 <?php
 		if($currentuser["userid"]!="guest")
 			display_blog_menu($currentuser["userid"],$currentuser["firstlogin"]);
 ?>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/pc/pcmain.php" target="f3">Blog首页</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/pc/pc.php" target="f3">用户列表</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/pc/pcreco.php" target="f3">推荐文章</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/pc/pclist.php" target="f3">热门排行</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/pc/pcsec.php" target="f3">分类目录</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/pc/pcnew.php" target="f3">最新日志</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/pc/pcnew.php?t=c" target="f3">最新评论</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/pc/pcsearch2.php" target="f3">博客搜索</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/pc/pcnsearch.php" target="f3">日志搜索</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/bbsdoc.php?board=SMTH_blog" target="f3">Blog论坛</a><br>
-					&nbsp;
-					<img src="/images/line1.gif" border="0" align="absmiddle">
-					<a href="/pc/index.php?id=SYSOP" target="f3">帮助主题</a><br>
-				</DIV>
-			</td>
-		</tr>
-		
+		<div class="mi"><a href="/pc/<?php echo $blog_index; ?>">Blog首页</a></div>
+		<div class="mi"><a href="/pc/pc.php">用户列表</a></div>
+		<div class="mi"><a href="/pc/pcreco.php">推荐文章</a></div>
+		<div class="mi"><a href="/pc/pclist.php">热门排行</a></div>
+		<div class="mi"><a href="/pc/pcsec.php">分类目录</a></div>
+		<div class="mi"><a href="/pc/pcnew.php">最新日志</a></div>
+		<div class="mi"><a href="/pc/pcnew.php?t=c">最新评论</a></div>
+		<div class="mi"><a href="/pc/pcsearch2.php">博客搜索</a></div>
+		<div class="mi"><a href="/pc/pcnsearch.php">日志搜索</a></div>
+		<div class="mi"><a href="/bbsdoc.php?board=SMTH_blog">Blog论坛</a></div>
+		<div class="lmi"><a href="/pc/index.php?id=SYSOP">帮助主题</a></div>
+		</div>
 <?php
 	} // defined(HAVE_PC)
-?>
-<?php
+
 	if($currentuser["userid"]!="guest"){
 ?>
-		<tr>
-			<td>
-				<DIV class="r" id="divmaila">
-				<a href='javascript:changemn("mail");'><img id="imgmail" src="/images/close.gif" border="0"></a>
-				</DIV>
-			</td>
-			<td><a href="/bbsmail.php" target="f3"><img src="<?php echo $img_subdir; ?>m4.gif" border="0" alt="我的信箱" align="absmiddle"> 我的信箱</a></td>
-		</tr>
-		<tr>
-			<td> </td>
-			<td>
-				<DIV class="s" id="divmail">
+	<a href='javascript:changemn("mail");' target="_self"><img id="imgmail" src="/images/close.gif" class="pm" alt="+"
+	></a><a href="/bbsmail.php"><img src="<?php echo $img_subdir; ?>m4.gif" class="sfolder">我的信箱</a><br/>
+
+	<div class="pp" id="divmail">
 <?php
-	display_mail_menu($currentuser["userid"]);
+		display_mail_menu($currentuser["userid"]);
 ?>					
-				</DIV>
-			</td>
-		</tr>
+	</div>
 <?php
-		}
+	}
 ?>
-		<tr>
-			<td>
-				<DIV class="r" id="divchata">
-				<a href='javascript:changemn("chat");'><img id="imgchat" src="/images/close.gif" border="0"></a>
-				</DIV>
-			</td>
-			<td>
-			<a href='javascript:changemn("chat");'>
-			<img src="<?php echo $img_subdir; ?>m8.gif" border="0" alt="谈天说地" align="absmiddle"> 谈天说地
-			</a>
-			</td>
-		</tr>
-		<tr>
-			<td> </td>
-			<td>
-				<DIV class="s" id="divchat">
+	<a href='javascript:changemn("chat");' target="_self"><img id="imgchat" src="/images/close.gif" class="pm" alt="+"
+	><img src="<?php echo $img_subdir; ?>m10.gif" class="sfolder">谈天说地</a><br/>
+	<div class="pp" id="divchat">
 <?php
     if (!defined("SITE_SMTH")) { // Smth不提供在线用户列表 add by windinsn, May 5,2004
 ?>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="bbsuser.php" target="f3">在线用户</a><br>
+		<div class="mi"><a href="bbsuser.php">在线用户</a></div>
 <?php
-        }
+	}
 	if($currentuser["userid"]=="guest"){
 ?>					
-					&nbsp;
-					<img src="/images/line1.gif" border="0" align="absmiddle">
-					<a href="/bbsqry.php" target="f3">查询网友</a>
+		<div class="lmi"><a href="/bbsqry.php">查询网友</a></div>
 <?php
-		}					
+	}					
 	else{
 ?>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/bbsqry.php" target="f3">查询网友</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/bbsfriend.php" target="f3">在线好友</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/bbssendsms.php" target="f3">发送短信</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/bbsmsg.php" target="f3">查看所有讯息</a><br>
-					&nbsp;
-					<img src="/images/line1.gif" border="0" align="absmiddle">
-					<a href="/bbssendmsg.php" target="f3">发送讯息</a>
+		<div class="mi"><a href="/bbsqry.php">查询网友</a></div>
+		<div class="mi"><a href="/bbsfriend.php">在线好友</a></div>
+		<div class="mi"><a href="/bbsmsg.php">查看所有讯息</a></div>
+		<div class="lmi"><a href="/bbssendmsg.php">发送讯息</a></div>
 <?php
-		}
+	}
 ?>	
-				</DIV>
-			</td>
-		</tr>
-		<tr>
-			<td><img src="/images/open.gif" border="0"></td>
-			<td><a href="/bbsstyle0.php" target="f3"><img src="<?php echo $img_subdir; ?>m6.gif" border="0" alt="界面方案" align="absmiddle"> 界面方案</a>
-		</tr>
+	</div>
+
+	<img src="/images/open.gif" class="pm" alt="-"
+	><a href="/bbsstyle0.php"><img src="<?php echo $img_subdir; ?>m2.gif" class="sfolder">界面方案</a><br/>
+
 <?php
 	if($currentuser["userid"]!="guest")
 	{
 ?>
-		<tr>
-			<td>
-				<DIV class="r" id="divtoola">
-				<a href='javascript:changemn("tool");'><img id="imgtool" src="/images/close.gif" border="0"></a>
-				</DIV>
-			</td>
-			<td>
-			<a href='javascript:changemn("tool");'>
-			<img src="<?php echo $img_subdir; ?>m7.gif" border="0" alt="个人参数设置" align="absmiddle"> 个人参数设置
-			</a>
-			</td>
-		</tr>
-		<tr>
-			<td> </td>
-			<td>
-				<DIV class="s" id="divtool">
+	<a href='javascript:changemn("tool");' target="_self"><img id="imgtool" src="/images/close.gif" class="pm" alt="+"
+	><img src="<?php echo $img_subdir; ?>m11.gif" class="sfolder">个人参数设置</a><br/>
+
+	<div class="pp" id="divtool">
 <?php
-	if(!($currentuser["userlevel"]&BBS_PERM_LOGINOK) )
-	{
-?>					
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/bbsnew.php" target="f3">新用户须知</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/bbssendacode.php" target="f3">发送激活码</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/bbsfillform.html" target="f3">填写注册单</a><br>
+		if(!($currentuser["userlevel"]&BBS_PERM_LOGINOK) )
+		{
+?>
+		<div class="mi"><a href="/bbsnew.php">新用户须知</a></div>
+		<div class="mi"><a href="/bbssendacode.php">发送激活码</a></div>
+		<div class="mi"><a href="/bbsfillform.html">填写注册单</a></div>
+<?php
+		}
+?>
+		<div class="mi"><a href="/bbsinfo.php">个人资料</a></div>
+		<div class="mi"><a href="bbsplan.php">改说明档</a></div>
+		<div class="mi"><a href="bbssig.php">改签名档</a></div>
+		<div class="mi"><a href="/bbspwd.php">修改密码</a></div>
+		<div class="mi"><a href="/bbsparm.php">修改个人参数</a></div>
+		<div class="mi"><a href="/bbsal.php">通讯录</a></div>
+		<div class="mi"><a href="/bbsnick.php">临时改昵称</a></div>
+		<div class="lmi"><a href="/bbsfall.php">设定好友</a></div>
+	</div>
 <?php
 	}
 ?>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/bbsinfo.php" target="f3">个人资料</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="bbsplan.php" target="f3">改说明档</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="bbssig.php" target="f3">改签名档</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/bbspwd.php" target="f3">修改密码</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/bbsparm.php" target="f3">修改个人参数</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/bbsal.php" target="f3">通讯录</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/bbsrsmsmsg.php" target="f3">短信管理器</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/bbsnick.php" target="f3">临时改昵称</a><br>
-					&nbsp;
-					<img src="/images/line1.gif" border="0" align="absmiddle">
-					<a href="/bbsfall.php" target="f3">设定好友</a><br>
-				</DIV>
-			</td>
-		</tr>
+
+<?php
+    if (defined("SITE_SMTH")) {
+?>
+	<a href='javascript:changemn("exp");' target="_self"><img id="imgexp" src="/images/close.gif" class="pm" alt="+"
+	><img src="<?php echo $img_subdir; ?>m8.gif" class="sfolder">水木特刊Web版</a><br/>
+
+	<div class="pp" id="divexp">
+		<div class="mi"><a href="/express/1103/smth_express.htm">2003年11月号</a></div>
+		<div class="mi"><a href="/express/0903/smth_express.htm">2003年9月号</a></div>
+		<div class="mi"><a href="/express/0703/smth_express.htm">2003年7月号</a></div>
+		<div class="lmi"><a href="/express/0603/smth_express.htm">2003年6月号</a></div>
+	</div>
 <?php
 	}
 ?>
-		<tr>
-			<td>
-				<DIV class="r" id="divexpa">
-				<a href='javascript:changemn("exp");'><img id="imgexp" src="/images/close.gif" border="0"></a>
-				</DIV>
-			</td>
-			<td>
-			<a href='javascript:changemn("exp");'>
-			<img src="<?php echo $img_subdir; ?>m6.gif" border="0" alt="水木特刊Web版" align="absmiddle"> 水木特刊Web版
-			</a>
-			</td>
-		</tr>
-		<tr>
-			<td> </td>
-			<td>
-				<DIV class="s" id="divexp">
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/express/1103/smth_express.htm" target="f3">2003年11月号</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/express/0903/smth_express.htm" target="f3">2003年9月号</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/express/0703/smth_express.htm" target="f3">2003年7月号</a><br>
-					&nbsp;
-					<img src="/images/line1.gif" border="0" align="absmiddle">
-					<a href="/express/0603/smth_express.htm" target="f3">2003年6月号</a><br>
-				</DIV>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<DIV class="r" id="divsera">
-				<a href='javascript:changemn("ser");'><img id="imgser" src="/images/close.gif" border="0"></a>
-				</DIV>
-			</td>
-			<td>
-			<a href='javascript:changemn("ser");'>
-			<img src="<?php echo $img_subdir; ?>m7.gif" border="0" alt="文件下载及其他" align="absmiddle"> 文件下载及其他
-			</a>
-			</td>
-		</tr>
-		<tr>
-			<td> </td>
-			<td>
-				<DIV class="s" id="divser">
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/games/index.html" target="f3">休闲娱乐</a><br>
+
+	<a href='javascript:changemn("ser");' target="_self"><img id="imgser" src="/images/close.gif" class="pm" alt="+"
+	><img src="<?php echo $img_subdir; ?>m9.gif" class="sfolder">文件下载及其他</a><br/>
+
+	<div class="pp" id="divser">
+		<div class="mi"><a href="/games/index.html">休闲娱乐</a></div>
 <?php
     if (defined("SERVICE_QUIZ")) {
 ?>
-                    &nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/games/quiztop.php" target="f3">开心辞典</a><br>
+		<div class="mi"><a href="/games/quiztop.php">开心辞典</a></div>
 <?php
     }
 ?>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/data/fterm-smth.zip" target="_blank">Fterm下载</a><br>
-				<?php /*
-					&nbsp;
-					<img src="/images/line1.gif" border="0" align="absmiddle">
-					<a href="/data/FeedDemon-rc4a.exe" target="_blank">FeedDemon下载</a><br>
-				*/ ?>
-				</DIV>
-			</td>
-		</tr>
-		<tr>
-			<td><img src="/images/open.gif" border="0"></td>
-			<td><a href="telnet:smth.org"><img src="<?php echo $img_subdir; ?>m6.gif" border="0" alt="telnet登录" align="absmiddle"> Telnet登录</a>
-		</tr>
+		<div class="lmi"><a href="/data/fterm-2004memory.rar" target="_blank">Fterm下载</a></div>
+	</div>
+	
+	<img src="/images/open.gif" class="pm" alt="-"
+	><a href="telnet:smth.org"><img src="<?php echo $img_subdir; ?>m6.gif" class="sfolder">Telnet登录</a><br/>
 <?php
     if (defined("SITE_SMTH")) {
         if ($currentuser["userlevel"]&BBS_PERM_SYSOP) {
-?>
-<script src="/bbsleftmenu.js"></script>
-<?php
-        }
+			include_once ('bbsleftmenu.php');
+		}
     }
+	if($currentuser["userid"]!="guest"){
 ?>
-<!--
-		<tr>
-			<td><img src="/images/open.gif" border="0"></td>
-			<td><img src="/images/t10.gif" border="0" alt="查看帮助信息" align="absmiddle"> 查看帮助
-		</tr>
--->
-		<tr>
-			<td><img src="/images/open.gif" border="0"></td>
-			<td><a href="/bbslogout.php" target="_top"><img src="<?php echo $img_subdir; ?>m7.gif" border="0" alt="离开本站" align="absmiddle"> 离开本站</a>
-		</tr>
-		
-		</table>
-	</td>
-</tr>
-</table>
-<script type="text/javascript" src="/bbsleftad.js"> </script>
-<P aling="center">
+	<img src="/images/open.gif" class="pm" alt="-"
+	><a href="/bbslogout.php" target="_top"><img src="<?php echo $img_subdir; ?>m7.gif" class="sfolder">离开本站</a><br/>
+<?php
+	}
+?>
+</div>
+<script type="text/javascript" src="/bbsleftad.js"></script>
+<p align="center">
 <?php
 		powered_by_smth();
 ?>
-</P>
-<?php
-		html_normal_quit();
-		}
-?>
+</p>
+</body>
+</html>

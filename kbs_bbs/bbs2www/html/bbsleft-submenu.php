@@ -21,65 +21,49 @@ else
 		exit();
 	$boards = bbs_getboards($section_nums[$group], $group2, $yank | 2);
 }
-
 $brd_name = $boards["NAME"]; // 英文名
 $brd_desc = $boards["DESC"]; // 中文描述
 $brd_flag = $boards["FLAG"]; //flag
 $brd_bid = $boards["BID"]; //flag
 $brd_num = sizeof($brd_name);
 
-$innerHtml = "<table width=100% border=0 cellpadding=0 cellspacing=0>";
+$innerHtml = "";
 for($j = 0 ; $j < $brd_num ; $j ++ )
 {
 	if ($brd_flag[$j]&BBS_BOARD_GROUP)
 	{
 		if($boardList)
 		{
-			$innerHtml .= "<tr><td align='right' width='16'>".
-				"<a href='javascript:submenu(0,0,".$group.",".$brd_bid[$j].",0)'>".
-				"<img id='submenuimg_brd_".$group."_".$brd_bid[$j]."' src='/images/close.gif' border='0'>".
-				"</a></td><td align='left'>".
-				"<a href='/bbsboa.php?group=".$group."&group2=".$brd_bid[$j]."' target='f3'>".
-				"<img src='/images/kfolder1.gif' border='0'>".$brd_desc[$j]."</a>".
-				"</td></tr>".
-				"<tr id='submenu_brd_".$group."_".$brd_bid[$j]."' style='display:none'>".
-				"<td background='/images/line3.gif'> </td>".
-				"<td id='submenu_brd_".$group."_".$brd_bid[$j]."_td'><DIV></DIV>".
-				"</td></tr>";
+			$innerHtml .= "<div class='fi'>".
+				"<a href='javascript:submenu(0,0,".$group.",".$brd_bid[$j].",0)' target='_self'>".
+				"<img id='submenuimg_brd_".$group."_".$brd_bid[$j]."' src='/images/close.gif' class='pm' alt='+'>".
+				"</a><a href='/bbsboa.php?group=".$group."&group2=".$brd_bid[$j]."'>".
+				"<img src='/images/kfolder1.gif' class='s16x16'>".$brd_desc[$j]."</a></div>".
+				"<div id='submenu_brd_".$group."_".$brd_bid[$j]."' class='lineback'></div>";
+			continue;
 		}
-		elseif( bbs_load_favboard($brd_bid[$j])!=-1 && bbs_fav_boards($brd_bid[$j], 1) && $brd_bid[$j]!= -1)
-		{
-			$innerHtml .= "<tr><td align='right' width='16'>".
-				"<a href='javascript:submenu(1,".$brd_bid[$j].",0,0,0)'>".
-				"<img id='submenuimg_fav_".$brd_bid[$j]."' src='/images/close.gif' border='0'>".
-				"</a></td><td align='left'>".
-				"<a href='/bbsfav.php?select=".$brd_bid[$j]."&up=".$select."' target='f3'>".
-				"<img src='/images/kfolder1.gif' border='0'>".$brd_desc[$j]."</a>".
-				"</td></tr>".
-				"<tr id='submenu_fav_".$brd_bid[$j]."' style='display:none'>".
-				"<td background='/images/line3.gif'> </td>".
-				"<td id='submenu_fav_".$brd_bid[$j]."_td'><DIV></DIV>".
-				"</td></tr>";
-	        }
-		else
-		{
-			
+		elseif( $brd_bid[$j] == -1) { //空收藏目录
+			continue;
+		} elseif ($brd_flag[$i] ==-1) { //收藏目录
+			$innerHtml .= "".
+				"<a href='javascript:submenu(1,".$brd_bid[$j].",0,0,0)' target='_self'>".
+				"<img id='submenuimg_fav_".$brd_bid[$j]."' src='/images/close.gif' class='pm' alt='+'>".
+				"</a><a href='/bbsfav.php?select=".$brd_bid[$j]."&up=".$select."'>".
+				"<img src='/images/kfolder1.gif' class='s16x16'>".$brd_desc[$j]."</a><br/>".
+				"<div id='submenu_fav_".$brd_bid[$j]."' class='lineback'></div>";
+			continue;
+	    } else {
+			//普通目录版面！！
 		}
 	}
+	$brd_link="/bbsdoc.php?board=" . urlencode($brd_name[$j]);
+	if( $j != $brd_num - 1 )
+		$innerHtml .= "<div class='lb'><div class='mi'><a href='".$brd_link."'>".$brd_desc[$j]."</a></div></div>";
 	else
-	{
-		$brd_link="/bbsdoc.php?board=" . urlencode($brd_name[$j]);
-		$innerHtml .= "<tr><td width='16' align='right'>";
-		if( $j != $brd_num - 1 )
-			$innerHtml .= "<img src='/images/line.gif' align='absmiddle'>";
-		else
-			$innerHtml .= "<img src='/images/line1.gif' align='absmiddle'>";
-
-		$innerHtml .= "</td><td><A href='".$brd_link."' target='f3'>".$brd_desc[$j]."</A></td></tr>";
-	}
+		$innerHtml .= "<div class='lmi'><a href='".$brd_link."'>".$brd_desc[$j]."</a></div>";
 }
-$innerHtml .= "</table>";
-if(!$boards || !$brd_num) $innerHtml = "<font color=#eeeeee>-空目录-</font>"; 
+if (!$innerHtml) $innerHtml = "-空目录-";
+$innerHtml = "<div class='b1'>" . $innerHtml . "</div>";
 ?>
 <html>
 <head>
@@ -88,6 +72,6 @@ if(!$boards || !$brd_num) $innerHtml = "<font color=#eeeeee>-空目录-</font>";
 <script src="/bbsleft.js"></script>
 <body>
 <script language="javascript">
-parent.document.getElementById('<?php echo $subMenu; ?>_td').innerHTML = "<?php echo $innerHtml; ?>" ; 
+parent.document.getElementById('<?php echo $subMenu; ?>').innerHTML = "<?php echo $innerHtml; ?>" ; 
 </script>
 </body></html>
