@@ -164,6 +164,38 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
             return;
         }
     }
+    if (new_ln == was_ln && new_col>=was_col+1&&new_col<=was_col+9) {
+        char ss[20];
+        if(new_col==was_col+1)
+            sprintf(ss, "\x1b[D");
+        else
+            sprintf(ss, "\x1b%d[D", new_col-was_col);
+        output(ss, strlen(ss));
+    }
+    if (new_ln == was_ln && new_col<=was_col-1&&new_col>=was_col-9) {
+        char ss[20];
+        if(new_col==was_col-1)
+            sprintf(ss, "\x1b[C");
+        else
+            sprintf(ss, "\x1b%d[C", was_col-new_col);
+        output(ss, strlen(ss));
+    }
+    if (new_col == was_col && new_ln>=was_ln+1&&new_ln<=was_ln+9) {
+        char ss[20];
+        if(new_ln==was_ln+1)
+            sprintf(ss, "\x1b[B");
+        else
+            sprintf(ss, "\x1b%d[B", new_ln-was_ln);
+        output(ss, strlen(ss));
+    }
+    if (new_col == was_col && new_ln<=was_ln-1&&new_ln>=was_ln-9) {
+        char ss[20];
+        if(new_ln==was_ln-1)
+            sprintf(ss, "\x1b[A");
+        else
+            sprintf(ss, "\x1b%d[A", was_ln-new_ln);
+        output(ss, strlen(ss));
+    }
     if(new_ln == was_ln+1 && new_col<=5) {
         int p=1, q=(new_ln+roll)%scr_lns;
         for(i=0;i<new_col;i++)
