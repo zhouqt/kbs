@@ -98,7 +98,7 @@
 	function display_g_articles($brdarr,$articles,$start,$order=FALSE){
 ?>
 <table width="100%" border="0" cellspacing="0" cellpadding="3" class="t1">
-<tr><td class="t2" width="50">序号</td><td class="t2" width="40">标记</td><td class="t2" width="120">作者</td><td class="t2" width="80">日期</td><td class="t2">标题</td></tr>
+<tr><td class="t2" width="40">序号</td><td class="t2" width="30">标记</td><td class="t2" width="85">作者</td><td class="t2" width="50">日期</td><td class="t2">标题</td></tr>
 <?php
 		$brd_encode = urlencode($brdarr["NAME"]);
 		$i = 0;
@@ -111,7 +111,7 @@
 ?>
 <tr>
 <td class="t3"><?php echo $start + $i; ?></td>
-<td class="t4">&nbsp;
+<td class="t4">
 <?php
 			if ($flags[1] == 'y')
 			{
@@ -134,13 +134,17 @@
 <font color="#909090"><?php echo $flags[0]; ?></font>
 <?php
 			}
-			else
-				echo $flags[0];
+			else{
+				if($flags[0]==' ')
+					echo "&nbsp;";
+				else
+					echo $flags[0];
+			}
 ?>
-&nbsp;</td>
-<td class="t3"><a class="ts1" href="/bbsqry.php?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
+</td>
+<td class="t3"><a class="ts1" href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
 <td class="t4"><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
-<td class="t5">&nbsp;
+<td class="t5">
 <a class="ts2" href="/bbsgcon.php?board=<?php echo $brd_encode; ?>&file=<?php echo $article["FILENAME"]; ?>&num=<?php echo $start + $i; ?>"><?php echo htmlspecialchars($title); ?></a>
 </td>
 </tr>
@@ -205,7 +209,7 @@
 			{
 				foreach ($bms as $bm)
 				{
-					$bm_url .= sprintf("<a href=\"/bbsqry.php?userid=%s\" class=\"b3\">%s</a> ", $bm, $bm);
+					$bm_url .= sprintf("<a href=\"/cgi-bin/bbs/bbsqry?userid=%s\" class=\"b3\">%s</a> ", $bm, $bm);
 				}
 				$bm_url = trim($bm_url);
 			}
@@ -218,7 +222,7 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="3">
   <tr> 
     <td colspan="2" class="b2">
-	    <a href="bbssec.php" class="b2"><?php echo BBS_FULL_NAME; ?></a>
+	    <a href="mainpage.html" class="b2"><?php echo BBS_FULL_NAME; ?></a>
 	    -
 	    <?php
 	    	$sec_index = get_secname_index($brdarr["SECNUM"]);

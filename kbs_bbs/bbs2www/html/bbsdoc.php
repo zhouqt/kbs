@@ -102,7 +102,7 @@
 		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
 <table width="100%" border="0" cellspacing="0" cellpadding="3" class="t1">
-<tr><td class="t2" width="50">序号</td><td class="t2" width="40">标记</td><td class="t2" width="120">作者</td><td class="t2" width="80">日期</td><td class="t2">标题</td></tr>
+<tr><td class="t2" width="40">序号</td><td class="t2" width="30">标记</td><td class="t2" width="85">作者</td><td class="t2" width="50">日期</td><td class="t2">标题</td></tr>
 <?php
 		$ding_cnt = 0;
 		foreach ($articles as $article)
@@ -134,7 +134,7 @@
 			} else {
 ?>
 <td class="t3"><?php echo $start+$i; ?></td>
-<td class="t4">&nbsp;
+<td class="t4">
 <?php
 			if ($flags[1] == 'y')
 			{
@@ -143,19 +143,26 @@
 				else
 					echo $flags[0];
 			}
-			elseif ($flags[0] == 'N' || $flags[0] == '*')
-				echo $flags[0];
-			else
-				echo $flags[0];
+			elseif ($flags[0] == 'N' || $flags[0] == '*'){
+				if ($flags[0] == ' ')
+					echo "&nbsp;";
+				else
+					echo $flags[0];
+			}else{
+				if ($flags[0] == ' ')
+					echo "&nbsp;";
+				else
+					echo $flags[0];
+			}
 			echo $flags[3];
 ?>
-&nbsp;</td>
+</td>
 <?php
 	}//置顶
 ?>
-<td class="t3"><a class="ts1" href="/bbsqry.php?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
+<td class="t3"><a class="ts1" href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
 <td class="t4"><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
-<td class="t5">&nbsp;<strong>
+<td class="t5"><strong>
 <?php
 	switch ($default_dir_mode)
 	{
@@ -316,7 +323,7 @@
 			{
 				foreach ($bms as $bm)
 				{
-					$bm_url .= sprintf("<a class=\"b3\" href=\"/bbsqry.php?userid=%s\">%s</a> ", $bm, $bm);
+					$bm_url .= sprintf("<a class=\"b3\" href=\"/cgi-bin/bbs/bbsqry?userid=%s\">%s</a> ", $bm, $bm);
 				}
 				$bm_url = trim($bm_url);
 			}
@@ -338,7 +345,7 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="3">
   <tr> 
     <td colspan="2" class="b2">
-	    <a href="bbssec.php" class="b2"><?php echo BBS_FULL_NAME; ?></a>
+	    <a href="mainpage.html" class="b2"><?php echo BBS_FULL_NAME; ?></a>
 	    -
 	    <?php
 	    	$sec_index = get_secname_index($brdarr["SECNUM"]);
@@ -419,7 +426,7 @@
     <td colspan="2" align="center" class="b1">
     	[<a href="#listtop">返回顶部</a>]
     	[<a href="javascript:location=location">刷新</a>]
-    	[<a href="bbstdoc.php?board=<?php echo $brd_encode; ?>">同主题模式</a>]
+	[<a href="bbstdoc.php?board=<?php echo $brd_encode; ?>">同主题模式</a>]	
     	<?php
     		if (strcmp($currentuser["userid"], "guest") != 0)
 		{
