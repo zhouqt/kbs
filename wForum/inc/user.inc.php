@@ -57,7 +57,7 @@ function showSecs($secNum=0,$isFold) {
 <a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=Y" title="展开论坛列表"><img src="pic/plus.gif" border=0></a><a href="section.php?sec=<?php echo $secNum ; ?>" title=进入本分类论坛><?php echo $section_names[$secNum][0]; ?></a>
 <?php
 	}
-	$boards = bbs_getboards($section_nums[$secNum], 0, 1);
+	$boards = bbs_getboards($section_nums[$secNum], 0, bbs_is_yank()?0:1);
 	if ($boards == FALSE) {
 ?>
 		<TR><TD colspan="2" class=tablebody1>&nbsp;本分区尚无版面</td></tr>
@@ -139,7 +139,7 @@ function showSecs($secNum=0,$isFold) {
 <?php
 				} else {
 ?>
-<td width="50%">今日：<font color=#FF0000>N/A</font></td><td width="50%">发贴：<?php echo $brd_artcnt[$i] ; ?></td>
+<td width="50%">今日：<font color=#FF0000><?php echo bbs_get_today_article_num($brd_name[$i])?></font></td><td width="50%">发贴：<?php echo $brd_artcnt[$i] ; ?></td>
 <?php
 				}
 ?>
