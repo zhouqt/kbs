@@ -37,6 +37,21 @@ void release_favboard()
             free(favbrd_list[i].title);
 }
 
+int valid_brdname(brd)
+char *brd;
+{
+    char ch;
+
+    ch = *brd++;
+    if (!isalnum(ch) && ch != '_')
+        return 0;
+    while ((ch = *brd++) != '\0') {
+        if (!isalnum(ch) && ch != '_' && ch != '.')
+            return 0;
+    }
+    return 1;
+}
+
 void load_favboard(int dohelp)
 {
     char fname[STRLEN];
