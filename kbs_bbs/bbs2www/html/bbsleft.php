@@ -331,7 +331,6 @@
 		{
 ?>
 <form action="/bbslogin.php" method="post" name="form1" target="_top">
-<input type="hidden" name="pagereturn" value="1">
 <tr>
 			<td align="center" width="10%" class="t2" height="25" valign="middle">
 			&nbsp;&nbsp;
