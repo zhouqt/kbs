@@ -464,6 +464,10 @@ int delete_record(char *filename, int size, int id,
         return -1;
     case 1:
         ret = 0;
+	if (id*size>filesize) {
+		ret = -2;
+		break;
+	};
         if (filecheck) {
             if (!(*filecheck) (ptr + (id - 1) * size, arg)) {
                 for (id = 0; id * size < filesize; id++)
