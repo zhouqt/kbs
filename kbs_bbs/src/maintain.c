@@ -1326,7 +1326,6 @@ char *logfile, *regfile;
                     fprintf(fout, "您的昵称     : %s\n", uinfo.username);
                     fprintf(fout, "电子邮件信箱 : %s\n", uinfo.email);
                     fprintf(fout, "真实 E-mail  : %s\n", uinfo.realemail);
-                    fprintf(fout, "Ident 资料   : %s\n", uinfo.ident);
                     fprintf(fout, "注册日期     : %s\n", ctime(&uinfo.firstlogin));
                     fprintf(fout, "注册时的机器 : %s\n", uinfo.lasthost);
                     fprintf(fout, "Approved: %s\n", uid);
