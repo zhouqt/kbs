@@ -72,7 +72,7 @@
 	<?php
 		for($i=0;$i < $newBlogsNum;$i++)
 			echo "<tr>\n<td class=t4><a href='/bbsqry.php?userid=".$newBlogs[useretems][$i][pc][USER]."'>".$newBlogs[useretems][$i][pc][USER]."</a></td>\n".
-				"<td class=t3><span title='".$newBlogs[useretems][$i][pc][DESC]."'><a href='index.php?id=".$newBlogs[useretems][$i][pc][USER]."'>".$newBlogs[useretems][$i][pc][NAME]."</a>&nbsp;</span></td>\n".
+				"<td class=t3><span title=\"".$newBlogs[useretems][$i][pc][DESC]."\"><a href=\"index.php?id=".$newBlogs[useretems][$i][pc][USER]."\">".$newBlogs[useretems][$i][pc][NAME]."</a>&nbsp;</span></td>\n".
 				"<td class=t4>".$newBlogs[useretems][$i][pc][THEM]."&nbsp;</td>\n".
 				"<td class=t3>".$newBlogs[useretems][$i][pc][VISIT]."</td>\n".
 				"<td class=t4>".$newBlogs[useretems][$i][pc][NODES]."</td>\n".

@@ -69,11 +69,11 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
                         if (strlen($nodes[$i][body])>600) 
                         	echo " ......<A href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\">阅读全文</A>"; 
                         echo "</font></td></tr>\n". 
-			"<tr><td colspan=2 class=\"".$cellclass[2]."\"><font class=\"f7\">\nBy <a href=\"/bbsqry.php?userid=".$pc["USER"]."\">".$pc["USER"]."</a> at ".time_format($nodes[$i][created]).
-			"\n|\nViews[".$nodes[$i][visitcount]."]".
-			"\n|\n<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\">Comments[".$nodes[$i][commentcount]."]</a>";
+			"<tr><td colspan=2 class=\"".$cellclass[2]."\"><font class=\"f7\">\n&nbsp; <a href=\"/bbsqry.php?userid=".$pc["USER"]."\">".$pc["USER"]."</a> 发布于 ".time_format($nodes[$i][created]).
+			"\n|\n浏览[".$nodes[$i][visitcount]."]".
+			"\n|\n<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\">评论[".$nodes[$i][commentcount]."]</a>";
 			if($nodes[$i][trackback])
-				echo "\n|\n<a href=\"javascript:openScript('pctb.php?nid=".$nodes[$i][nid]."&uid=".$pc["UID"]."&subject=".base64_encode($nodes[$i][subject])."' , 460, 480)\">TrackBack[".$nodes[$i][trackbackcount]."]</a>";
+				echo "\n|\n<a href=\"javascript:openScript('pctb.php?nid=".$nodes[$i][nid]."&uid=".$pc["UID"]."&subject=".base64_encode($nodes[$i][subject])."' , 460, 480)\">引用[".$nodes[$i][trackbackcount]."]</a>";
 			echo "</font></td></tr>\n</table>\n";
 		}
 	}
@@ -270,8 +270,8 @@ PassWord:
 		</td></tr>
 		<tr><td class="t4">
 		<?php
-			foreach($pc["LINKS"] as $link)
-				echo "<a href='http://".$link["URL"]."'>".htmlspecialchars($link["LINK"])."</a>\n";
+			for($i = 0 ; $i < count($pc["LINKS"]) ; $i ++)
+				echo "<a href='http://".$pc["LINKS"][$i]["URL"]."'>".htmlspecialchars($pc["LINKS"][$i]["LINK"])."</a>\n";
 		?>
 		<br><br>
 		<a href="rss.php?userid=<?php echo $pc["USER"]; ?>" target="_blank">

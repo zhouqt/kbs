@@ -174,7 +174,7 @@
 				{
 					if($useHtmlTag)
 						$blogbody .= "<br /><br /><strong>相关文章</strong><br />\n".
-								"<a href='".str_replace("<?","&lt;?",$_POST["trackbackname"])."'>".htmlspecialchars($_POST["trackbackname"])."</a>";
+								"<a href='".$_POST["trackbackname"]."'>".$_POST["trackbackname"]."</a>";
 					else
 						$blogbody .= "\n\n[相关文章]\n".$_POST["trackbackname"];
 				}

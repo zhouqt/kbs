@@ -30,10 +30,10 @@
 	<tr>
 		<td class=t8><font class=content>
 		<strong>TrackBack Ping URL:</strong><br />
-		http://<?php echo $pcconfig["SITE"]; ?>/pc/tb.php?id=<?php echo $nid; ?><br /><br />
+		http://<?php echo $pcconfig["SITE"]; ?>/pc/tb.php?id=<?php echo $nid; ?><br />
 		<strong>文章链接:</strong><br />
-		<a href="http://<?php echo $pcconfig["SITE"]; ?>/pc/pccon.php?id=<?php echo $uid; ?>&nid=<?php echo $nid; ?>&s=all">
-		http://<?php echo $pcconfig["SITE"]; ?>/pc/pccon.php?id=<?php echo $uid; ?>&nid=<?php echo $nid; ?>&s=all</a><br /><br />
+		<a href="http://<?php echo $pcconfig["SITE"]; ?>/pc/pccon.php?id=<?php echo $uid; ?>&nid=<?php echo $nid; ?>&s=all" target="_blank">
+		http://<?php echo $pcconfig["SITE"]; ?>/pc/pccon.php?id=<?php echo $uid; ?>&amp;nid=<?php echo $nid; ?>&amp;s=all</a><br />
 		<strong>主题:</strong><br />
 		<?php echo $subject; ?>
 		</font></td>
@@ -42,7 +42,7 @@
 	foreach($tbarr as $tb)
 	{
 		echo "<tr>\n<td class=t5><font class=content>\n".
-			"<strong>主题:</strong>\n<a href='".html_format($tb[url])."'>".html_format($tb[title])."</a><br />\n".
+			"<strong>主题:</strong>\n<a href=\"".html_format($tb[url])."\" target=\"_blank\">".html_format($tb[title])."</a><br />\n".
 			"<strong>摘要:</strong>\n".html_format($tb[excerpt],TRUE)." \n <br />\n".
 			"<strong>Blog:</strong>\n".html_format($tb[blogname])."<br />\n".
 			"<strong>时间:</strong>\n".time_format($tb[time])."\n".
