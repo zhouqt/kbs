@@ -32,10 +32,13 @@ login_init();
 		} else {
 			$tmpl = 1;
 			$filename = "tmp/".$currentuser["userid"].".tmpl.tmp";
-			$handle = fopen($filename, "r");
-			$contents = fread($handle, filesize($filename));
-			fclose($handle);
-			unlink($filename);
+			if (($handle = @fopen($filename, "r")) !== false) {
+				$contents = fread($handle, filesize($filename));
+				fclose($handle);
+				unlink($filename);
+			} else {
+				html_error_quit("无法读取文件");
+			}
 		}
 		if (isset($_GET["reid"])) $reID = $_GET["reid"];
 		else
