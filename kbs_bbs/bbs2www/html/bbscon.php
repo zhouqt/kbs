@@ -193,6 +193,8 @@ function display_navigation_bar($brdarr, $articles, $num)
 				display_navigation_bar($brdarr, $articles, $num);
 			}
 		}
+		if ($currentuser["userid"] != "guest")
+			bbs_brcaddread($brdarr["NAME"], $articles[1]["ID"]);
 		html_normal_quit();
 	}
 ?>
