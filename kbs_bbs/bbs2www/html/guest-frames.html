@@ -12,16 +12,16 @@ else
 	mainurl='/mainpage.html';
 if(is_ie) document.write(""+
 "  <frameset name=mainframe frameborder=0 border=0 cols=\"180,*\">"+
-        "<frame name=menu marginwidth=0 marginheight=0 scrolling=no src=/menu.html>"+
+        "<frame name=menu scrolling=no src=/guest-menu.html>"+
         "<frameset name=viewfrm rows=*,20>"+
-              "<frame marginwidth=0 marginheight=0 framespacing=\"2\" name=\"f3\" src=\""+mainurl+"\">"+
-              "<frame scrolling=no marginwidth=4 marginheight=\"1\" framespacing=\"1\" name=\"f4\" src=\"bbsguestfoot.php\">");
+              "<frame framespacing=\"2\" name=\"f3\" src=\""+mainurl+"\">"+
+              "<frame scrolling=no marginwidth=4 marginheight=\"1\" framespacing=\"1\" name=\"f4\" src=\"bbsguestfoot.html\">");
 else document.write(""+
 "  <frameset cols=\"180,*\" frameborder=0 border=0 >"+
-    "<frame name=\"f2\" framespacing=\"0\" src=\"/bbsleft.php\">"+
+    "<frame name=\"f2\" framespacing=\"0\" src=\"/bbsguestleft.html\">"+
     "<frameset name=\"viewfrm\" rows=\"*, 20\">"+
       "<frame framespacing=\"2\" name=\"f3\" src=\""+mainurl+"\">"+
-      "<frame scrolling=\"no\" marginwidth=\"4\" marginheight=\"1\" framespacing=\"1\" name=\"f4\" src=\"bbsguestfoot.php\">");
+      "<frame scrolling=\"no\" marginwidth=\"4\" marginheight=\"1\" framespacing=\"1\" name=\"f4\" src=\"bbsguestfoot.html\">");
 </script>
     </frameset>
   </frameset>

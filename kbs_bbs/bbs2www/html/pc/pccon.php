@@ -11,17 +11,26 @@
 	{
 ?>
 <center>
-<form name="postform" action="pccom.php?act=add&nid=<?php echo $nid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入评论主题!');return false;}">
 <table cellspacing="0" cellpadding="5" width="500" border="0" class="t1">
 <tr>
 	<td class="t5"><strong>发表评论 </strong>
 	<?php if($alert){ ?>
 	<font class=f4>
-	注意：仅有本站登录用户才能发表评论[<a href="/" target="_top">点击登录</a>]。
+	注意：仅有本站登录用户才能发表评论<form name="loginform" action="/bbslogin.php?mainurl=<?php
+echo urlencode($_SERVER["REQUEST_URI"]); ?>" method="post">
+<TABLE WIDTH="60%" BORDER="0" CELLSPACING="2" CELLPADDING="3" ALIGN="CENTER"><TR valign="middle"><TD ALIGN="RIGHT"><B>
+<FONT SIZE="2" color="#333333">用户名:</FONT></B></TD><TD><INPUT TYPE=text STYLE="width:100px;height:20px;font-size: 12px;color: #555555;border-color: #ddaa66;border-style: solid;border-width: 1px;background-color: #feffff;" LENGTH="10" onMouseOver="this.focus()" onFocus="this.select()" name="id" >
+</TD></TR><TR valign="middle"><TD HEIGHT="30" ALIGN="RIGHT"><B><FONT SIZE="2" color="#333333">密 码:</FONT></B></TD><TD HEIGHT="30"><INPUT TYPE=password  STYLE="width:100px;height:20px;font-size: 12px;color: #555555;border-color: #ddaa66;border-style: solid;border-width: 1px;background-color: #feffff;" LENGTH="10" name="passwd" maxlength="39"></TD></TR></TABLE>
+<TABLE WIDTH="60%" BORDER="0" ALIGN="CENTER" CELLSPACING="2" CELLPADDING="2"><TR><TD>
+<input type="submit" value="登　录" style="width:60px;height:24px;font-size: 12px;color: #555555;border-color: #ddaa66;border-style: solid;border-width: 1px;background-color: #fffff8;" name="submit1"></TD><TD>
+<input type="button" name="guest" value="注  册" style="width:60px;height:24px;font-size: 12px;color: #555555;border-color: #ddaa66;border-style: solid;border-width: 1px;background-color: #fffff8;" onclick="location.href='https://www.smth.org/bbsreg0.html'")>
+</TD></TR></TABLE>
+</form>
 	</font>
 	<?php } ?>
 	</td>
 </tr>
+<form name="postform" action="pccom.php?act=add&nid=<?php echo $nid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入评论主题!');return false;}">
 <tr>
 	<td class="t8">
 	主题
@@ -48,8 +57,9 @@
 	<input type="button" value="返回上页" class="f1" onclick="history.go(-1)">
 	<input type="button" value="使用HTML编辑器" class="f1" onclick="window.location.href='pccom.php?act=pst&nid=<?php echo $nid; ?>';">
 </tr>
+</form>
 </table>
-</form></center>
+</center>
 <?php		
 	}
 	

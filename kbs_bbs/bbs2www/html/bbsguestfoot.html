@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312"/>
+<title></title>
+<link rel="stylesheet" type="text/css" href="/default-bf.css"/>
+<meta http-equiv="Refresh" content="1000; url=/bbsguestfoot.php"></head>
+<script language="JavaScript">
+<!--
+function Init() {
+  servertime=new Date()
+  servertime.setTime(1073381703*1000)
+  staytime=10.05
+  localtime=new Date()
+  Time()
+}
+function Time(){
+ var now=new Date()
+ var Timer=new Date()
+ Timer.setTime(servertime.getTime()+now.getTime()-localtime.getTime());
+ var hours=Timer.getHours()
+ var minutes=Timer.getMinutes()
+ if (hours==0)
+ hours=12
+ if (minutes<=9)
+ minutes="0"+minutes
+ var year=Timer.getYear();
+ if (year < 1900)   
+	 year = year + 1900; 
+ myclock=year+"年"+(Timer.getMonth()+1)+"月"+Timer.getDate()+"日"+hours+":"+minutes
+ var staysec=(now.getTime()-localtime.getTime())/60000+staytime;
+ stayclock=parseInt(staysec/60)+"小时"+parseInt(staysec%60)+"分钟"
+ document.clock.myclock.value=myclock
+ document.clock.stay.value=stayclock
+ setTimeout("Time()",58000)
+}
+//JavaScript End-->
+</script>
+<body onload="Init()" class="b2">
+<form name="clock">时间[<input class="b8" TYPE="text" NAME="myclock" size="18" READONLY>] 在线[<a href="bbsuser.php" target="f3" class="b8">11797</a>] 帐号[<a href="/bbsqry.php?userid=guest" target="f3" class="b8">guest</a>] 停留[<input class="b8" TYPE="text" NAME="stay" size="10" READONLY>]
+</form>
+</body>
+</html>

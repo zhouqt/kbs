@@ -9,7 +9,9 @@ $data = array ();
 @$id = $_POST["id"];
 @$passwd = $_POST["passwd"];
 @$kick_multi = $_POST["kick_multi"];
+@$mainurl = $_GET["mainurl"];
 $error=-1;
+if ($mainurl!="") $mainurl=urlencode($mainurl);
 if ($id!="") {
     if (($id!="guest")&&bbs_checkpasswd($id,$passwd)!=0)
       $loginok=6;
@@ -26,14 +28,28 @@ if ($id!="") {
       else {
         $loginok=0;
         $num=bbs_getcurrentuinfo($data);
+        setcookie("UTMPKEY",$data["utmpkey"],0,"");
+        setcookie("UTMPNUM",$num,0,"");
+        setcookie("UTMPUSERID",$data["userid"],0,"");
+        setcookie("LOGINTIME",$data["logintime"],0,"");
+/*
         setcookie("UTMPKEY",$data["utmpkey"],time()+360000,"");
         setcookie("UTMPNUM",$num,time()+360000,"");
         setcookie("UTMPUSERID",$data["userid"],time()+360000,"");
         setcookie("LOGINTIME",$data["logintime"],time()+360000,"");
-	if ($data["userid"]=="guest")
+*/
+        if ($data["userid"]=="guest") {
+            if ($mainurl!="")
+	    header("Location: /guest-frames.html" . $mainurl);
+            else
 	    header("Location: /guest-frames.html");
-        else
-	    header("Location: /frames.html");	
+        }
+        else  {
+            if ($mainurl!="")
+       	       header("Location: /frames.html?mainurl=" . $mainurl);
+            else
+	       header("Location: /frames.html");
+        }
 	return;
       }
     }
@@ -81,7 +97,17 @@ if ($loginok != 1) {
   } else {
 ?>
 <body >
+<?php
+  if ($mainurl!="") {
+?>
+<form name="infoform" action="bbslogin.php?mainurl=<?php echo $mainurl; ?>" method="post">
+<?php
+  } else {
+?>
 <form name="infoform" action="bbslogin.php" method="post">
+<?php
+  } //mainurl
+?>
 <input class="default" type="hidden" name="id" maxlength="12" size="8" value=<?php
 echo "\"$id\"";
 ?>
