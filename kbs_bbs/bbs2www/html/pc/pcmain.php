@@ -327,7 +327,7 @@ function pcmain_cache_header()
 	if ($oldmodified!="") {
                 $oldtime=strtotime($oldmodified);
 	} else $oldtime=0;
-	if ($modifytime - $oldtime < 3600) {
+	if ($modifytime - $oldtime < 1200) {
 		header("HTTP/1.1 304 Not Modified");
 	        header("Cache-Control: max-age=" . "$expiretime");
 		return TRUE;
@@ -338,7 +338,7 @@ function pcmain_cache_header()
 	return FALSE;
 }
 
-//一个小时更新一次
+//20min更新一次
 //if(pcmain_cache_header())
 //	return;
 
