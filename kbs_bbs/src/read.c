@@ -1540,7 +1540,7 @@ int             offset, aflag;
             }
         }
 	}
-	memcpy(&SR_fptr,pFh1,sizeof(struct fileheader));
+	memcpy(&SR_fptr,pFh+locmem->crs_line-1,sizeof(struct fileheader));
 	munmap(pFh,st.st_size);
 close_fd:
 	close(fd);
