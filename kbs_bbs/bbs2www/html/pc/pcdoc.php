@@ -68,7 +68,7 @@
 <input type="submit" value="GO" class="b1">
 </td>
 <td align="right">
-<a href="#" onclick="bbsconfirm('pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=clear','清空删除区的文章吗(无法恢复)?')">清空删除区</a>
+<a href="#" onclick="bbsconfirm('pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=clear&ret=<?php echo urlencode($_SERVER["REQUEST_URI"]); ?>','清空删除区的文章吗(无法恢复)?')">清空删除区</a>
 </td>
 </tr>
 </table>

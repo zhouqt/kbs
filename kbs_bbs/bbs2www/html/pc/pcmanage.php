@@ -180,11 +180,7 @@
 					pc_update_record($link,$pc["UID"]," + ".$j);
 			}
 			$log_action = "CUT/COPY NODE";
-?>
-<p align="center">
-<a href="javascript:history.go(-1);">操作成功,点击返回</a>
-</p>
-<?php
+			pc_return("pcdoc.php?userid=".$pc["USER"]."&tag=".$access."&tid=".intval($_GET["tid"]));
 		}
 		elseif($act == "post")
 		{
@@ -234,11 +230,7 @@
 				if($error_alert)
 					echo "<script language=\"javascript\">alert('".$error_alert."');</script>";
 				$log_action = "ADD NODE: ".$_POST["subject"];
-?>
-<script language="javascript">
-window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo $_GET["tag"]; ?>&tid=<?php echo $_POST["tid"]; ?>&pid=<?php echo $_GET["pid"]; ?>";
-</script>
-<?php
+				pc_return("pcdoc.php?userid=".$pc["USER"]."&tag=".intval($_GET["tag"])."&tid=".intval($_POST["tid"])."&pid=".intval($_GET["pid"]));
 			}
 			else
 			{
@@ -367,7 +359,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 		elseif($act == "edit")
 		{
 			$nid = (int)($_GET["nid"]);
-			$query = "SELECT `nodetype` , `subject` , `body` ,`comment`,`type`,`tid`,`access`,`htmltag`,`trackback` FROM nodes WHERE `nid` = '".$nid."' AND `uid` = '".$pc["UID"]."' LIMIT 0 , 1 ;";
+			$query = "SELECT `nodetype` , `subject` , `body` ,`comment`,`type`,`tid`,`access`,`htmltag`,`trackback`,`pid` FROM nodes WHERE `nid` = '".$nid."' AND `uid` = '".$pc["UID"]."' LIMIT 0 , 1 ;";
 			$result = mysql_query($query,$link);
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);
@@ -401,11 +393,10 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 					$log_action = "EDIT NODE: ".$_POST["subject"];
 					$log_content = "OLD SUBJECT: ".$rows[subject]."\nNEW SUBJECT: ".$_POST["subject"];
 				}
-?>
-<p align="center">
-<a href="javascript:history.go(-2);">操作成功,点击返回</a>
-</p>
-<?php
+				if($rows[type]==1)
+					pc_return("pcdoc.php?userid=".$pc["USER"]."&tag=3&pid=".$rows[pid]);
+				else
+					pc_return("pccon.php?id=".$pc["UID"]."&nid=".$nid);
 			}
 			else
 			{
@@ -510,7 +501,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 		elseif($act == "del")
 		{
 			$nid = (int)($_GET["nid"]);	
-			$query = "SELECT `access`,`type`,`nodetype`,`subject` FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `nid` = '".$nid."' ;";
+			$query = "SELECT `tid`,`pid`,`access`,`type`,`nodetype`,`subject` FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `nid` = '".$nid."' ;";
 			$result = mysql_query($query,$link);
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);
@@ -563,11 +554,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				}
 			}
 			pc_update_record($link,$pc["UID"]);
-?>
-<p align="center">
-<a href="javascript:history.go(-1);">操作成功,点击返回</a>
-</p>
-<?php		
+			pc_return("pcdoc.php?userid=".$pc["USER"]."&tag=".$rows[access]."&tid=".$rows[tid]."&pid=".$rows[pid]);	
 		}
 		elseif($act == "clear")
 		{
@@ -586,11 +573,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			mysql_query($query,$link);
 			$log_action = "EMPTY JUNK";
 			pc_update_record($link,$pc["UID"]);
-?>
-<p align="center">
-<a href="javascript:history.go(-1);">操作成功,点击返回</a>
-</p>
-<?php			
+			pc_return($_GET["ret"]);		
 		}
 		elseif($act == "tedit")
 		{
@@ -605,12 +588,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				pc_edit_topics($link,$tid,$_POST["topicname"]);
 				$log_action = "UPDATE TOPIC: ".$_POST["topicname"];
 				pc_update_record($link,$pc["UID"]);
-				
-?>
-<p align="center">
-<a href="javascript:history.go(-2);">操作成功,点击返回</a>
-</p>
-<?php			
+				pc_return("pcdoc.php?userid=".$pc["USER"]."&tag=6");		
 			}
 			else
 			{
@@ -661,11 +639,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			}
 			pc_update_record($link,$pc["UID"]);
 			$log_action = "DEL TOPIC: ".$topicname;
-?>
-<p align="center">
-<a href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=6">操作成功,点击返回</a>
-</p>
-<?php				
+			pc_return("pcdoc.php?userid=".$pc["USER"]."&tag=6");				
 		}
 		elseif($act == "tadd" && $_POST["topicname"])
 		{
@@ -675,11 +649,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				exit();
 			}
 			$log_action = "ADD TOPIC: ".$_POST["topicname"];
-?>
-<p align="center">
-<a href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=6">操作成功,点击返回</a>
-</p>
-<?php
+			pc_return("pcdoc.php?userid=".$pc["USER"]."&tag=6");	
 		}
 		elseif($act == "sedit" && $_POST["pcname"])
 		{
@@ -690,12 +660,8 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			mysql_query($query,$link);
 			
 			$log_action = "UPDATE SETTINGS";
+			pc_return("pcdoc.php?userid=".$pc["USER"]."&tag=7");	
 			
-?>
-<p align="center">
-<a href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>">操作成功,点击返回</a>
-</p>
-<?php
 		}
 		elseif($act == "adddir" && $_POST["dir"])
 		{
@@ -721,11 +687,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			}
 			pc_update_record($link,$pc["UID"]);
 			$log_action = "ADD DIR: ".$_POST["dir"];
-?>
-<script language="javascript">
-window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?php echo $pid; ?>";
-</script>
-<?php
+			pc_return("pcdoc.php?userid=".$pc["USER"]."&tag=3&pid=".intval($_POST["pid"]));
 		}
 		elseif($act == "favcut" || $act == "favcopy")
 		{
@@ -745,11 +707,11 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?ph
 			
 			pc_html_init("gb2312",stripslashes($pc["NAME"]));
 ?>
-<br>
-<p align="center">
-<a href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&tid=<?php echo $rows[tid]; ?>&pid=<?php echo $rows[pid]; ?>">操作成功,已将 <font class=f2><?php echo $rows[subject]; ?></font> 放入剪贴板，点击返回</a>
-</p>
-<?php			
+<script language="javascript">
+alert("已将 <?php echo htmlspecialchars($rows[subject]); ?> 放入剪切板!");
+</script>
+<?php			pc_return("pcdoc.php?userid=".$pc["USER"]."&tag=3&pid=".$rows[pid]);
+			
 		}
 		elseif($act == "favpaste")
 		{
@@ -797,11 +759,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?ph
 			pc_html_init("gb2312",stripslashes($pc["NAME"]));
 			pc_update_record($link,$pc["UID"]);
 			$log_action = "CUT/COPY FAV";
-?>
-<script language="javascript">
-window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?php echo $pid; ?>";
-</script>
-<?php		
+			pc_return("pcdoc.php?userid=".$pc["USER"]."&tag=3&pid=".$pid);	
 		}
 	
 		if(pc_is_groupwork($pc))

@@ -673,7 +673,7 @@ function pc_get_user_permission($currentuser,$pc)
 	global $loginok;
 	if(pc_is_admin($currentuser,$pc) && $loginok == 1)
 	{
-		$sec = array("公开区","好友区","私人区","收藏区","删除区","设定好友","Blog管理","参数设定");
+		$sec = array("公开区","好友区","私人区","收藏区","删除区","设定好友","分类管理","参数设定");
 		$pur = 3;
 		$tags = array(1,1,1,1,1,1,1,1);
 	}
@@ -1385,6 +1385,13 @@ function pc_fwd_getbody($node)
 	return $body;
 }
 
-
+function pc_return($url)
+{
+?>
+<script language="javascript">
+window.location.href="<?php echo $url; ?>";
+</script>
+<?php
+}
 
 ?>

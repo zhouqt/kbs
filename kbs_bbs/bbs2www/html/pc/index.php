@@ -347,7 +347,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	
 	function display_trackback_links($link,$pc)
 	{
-		$query = "SELECT * FROM trackback WHERE uid = '".$pc["UID"]."' ORDER BY tbid DESC LIMIT 0 , 10;";	
+		$query = "SELECT * FROM trackback WHERE uid = '".$pc["UID"]."' GROUP BY url ORDER BY tbid DESC LIMIT 0 , 10;";	
 		$result = mysql_query($query,$link);
 		while($rows = mysql_fetch_array($result))
 		{

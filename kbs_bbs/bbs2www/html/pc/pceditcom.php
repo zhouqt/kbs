@@ -21,14 +21,13 @@
 		$link =	pc_db_connect();
 		if($act == "del")
 		{
-			pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
 			$query = "SELECT `username` , `uid` ,`nid` FROM comments WHERE `cid` = '".$cid."' LIMIT 0 , 1 ;";
 			$result = mysql_query($query);
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);
 			if(strtolower($rows[username])==strtolower($currentuser["userid"]) || pc_is_manager($currentuser))
 			{
-				$query = "DELETE FROM comments WHERE `cid` = '".$cid."' ";
+				$query = "DELETE FROM comments WHERE `cid` = '".$cid."' LIMIT 1;";
 				mysql_query($query,$link);
 				$query = "UPDATE nodes SET commentcount = commentcount - 1 WHERE `nid` = '".$rows[nid]."' ;";
 				mysql_query($query,$link);
@@ -39,22 +38,18 @@
 				$result = mysql_query($query,$link);
 				if($rows1 = mysql_fetch_array($result))
 				{
-					$query = "DELETE FROM comments WHERE `cid` = '".$cid."' ";
+					$query = "DELETE FROM comments WHERE `cid` = '".$cid."' LIMIT 1;";
 					mysql_query($query,$link);
 					$query = "UPDATE nodes SET commentcount = commentcount - 1 WHERE `nid` = '".$rows[nid]."' ;";
 					mysql_query($query,$link);
 				}
 				@mysql_free_result($result);
 			}
-?>
-<p align="center">
-<a href="javascript:history.go(-1);">操作成功,点击返回</a>
-</p>
-<?php		
+			pc_return("pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all");
 		}
 		elseif($act == "edit")
 		{
-			$query = "SELECT `subject`,`body`,`htmltag`,`uid` FROM comments WHERE `cid` = '".$cid."' AND `username` = '".$currentuser["userid"]."' LIMIT 0 , 1 ;";
+			$query = "SELECT `subject`,`body`,`htmltag`,`uid`,`nid` FROM comments WHERE `cid` = '".$cid."' AND `username` = '".$currentuser["userid"]."' LIMIT 0 , 1 ;";
 			$result = mysql_query($query);
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);
@@ -77,7 +72,7 @@
 				pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
 ?>
 <br><center>
-<form name="postform" action="pceditcom.php?act=edit2&cid=<?php echo $cid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入评论主题!');return false;}">
+<form name="postform" action="pceditcom.php?act=edit2&cid=<?php echo $cid; ?>&id=<?php echo $rows[uid]; ?>&nid=<?php echo $rows[nid]; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入评论主题!');return false;}">
 <table cellspacing="0" cellpadding="5" width="90%" border="0" class="t1">
 <tr>
 	<td class="t2">修改评论</td>
@@ -100,12 +95,11 @@
 	</td>
 </tr>
 <tr>
-	<td class="t8"><textarea name="blogbody" class="f1" cols="100" rows="20" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
-	<?php
-		if($rows[htmltag]) echo $pcconfig["EDITORALERT"];
-	?>
-	<?php echo htmlspecialchars(stripslashes($rows[body]." ")); ?>
-	</textarea></td>
+	<td class="t8"><textarea name="blogbody" class="f1" cols="100" rows="20" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical"><?php
+		if($rows[htmltag])
+			echo $pcconfig["EDITORALERT"];
+		echo htmlspecialchars(stripslashes($rows[body]." ")); 
+	?></textarea></td>
 </tr>
 <tr>
 	<td class="t2">
@@ -120,15 +114,13 @@
 		}
 		elseif($act == "edit2")
 		{
-			$emote = (int)($_POST["emote"]);
+			$emote = intval($_POST["emote"]);
+			$uid = intval($_GET["id"]);
+			$nid = intval($_GET["nid"]);
 			$useHtmlTag = ($_POST["htmltag"]==1)?1:0;
 			$query = "UPDATE `comments` SET `subject` = '".addslashes($_POST["subject"])."',`changed` = '".date("YmdHis")."',`body` = '".addslashes(html_editorstr_format($_POST["blogbody"]))."' , `emote` = '".$emote."' , `htmltag` = '".$useHtmlTag."' WHERE `cid` = '".$cid."' AND `username` = '".$currentuser["userid"]."' LIMIT 1 ;";
 			mysql_query($query,$link);
-?>
-<p align="center">
-<a href="javascript:history.go(-2);">操作成功,点击返回</a>
-</p>
-<?php
+			pc_return("pccon.php?id=".$uid."&nid=".$nid."&s=all");
 		}
 		
 		pc_db_close($link);
