@@ -287,7 +287,7 @@ void newbbslog(int type, const char *fmt, ...)
     if (currentuser)
         strncpy(msg->userid, currentuser->userid, IDLEN);
     else
-        strncpy(msg->userid, "null", IDLEN);
+        strncpy(msg->userid, "[null]", IDLEN);
 
     vsnprintf(msg->mtext, sizeof(buf) - ((char *) msg->mtext - (char *) msg), fmt, v);
     msgsnd(msqid, msg, strlen(msg->mtext) + ((char *) msg->mtext - (char *) msg) - sizeof(msg->mtype) + 1, IPC_NOWAIT | MSG_NOERROR);
