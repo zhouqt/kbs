@@ -1387,7 +1387,6 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
 		return DONOTHING;
             } else {
                 digest.accessed[0] = 0;
-                digest.accessed[0] |= FILE_FORWARDED;
                 digest.accessed[1] = 0;
                 digest.accessed[1] |= FILE_READ;
                 sprintf(&genbuf[512], "%s%s", buf, fileinfo->filename);
