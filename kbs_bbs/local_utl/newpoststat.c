@@ -216,7 +216,7 @@ int get_top(int type)
 	}
 
 	bzero(top, TOPCOUNT * sizeof(struct postrec));
-	bzero(sectop, TOPCOUNT * sizeof(struct postrec));
+	bzero(sectop, SECNUM * SECTOPCOUNT * sizeof(struct postrec));
 
 	for(i=0;i<SECNUM;i++) sectopnum[i]=0;
 	sectopnumtotal=0;
@@ -247,6 +247,7 @@ int get_top(int type)
 			sprintf(sqlbuf,"SELECT bname,threadid,time,count,title,userid FROM toplog WHERE %s ORDER BY count desc LIMIT %d,%d",cmptime,start, INTERVAL);
 		
 		if( mysql_real_query( &s, sqlbuf, strlen(sqlbuf) )){
+			printf("%s\n", mysql_error(&s));
 			mysql_close(&s);
 			
 			return topnum;
