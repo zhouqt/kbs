@@ -401,14 +401,16 @@ void getcross(char* filepath,char* quote_file,struct userec* user,int in_mail,ch
     }
     fclose( inf );
     fclose( of);
+    /* don't know why 
     *quote_file = '\0';
+    */
 }
 
 /* Add by SmallPig */
 int post_cross(struct userec* user,char* toboard,char* fromboard,char* title,char* filename,int Anony,int in_mail,char islocal,int mode)    /* (自动生成文件名) 转贴或自动发信 */
 {
     struct fileheader postfile ;
-    char        filepath[STRLEN], fname[STRLEN];
+    char        filepath[STRLEN];
     char        buf[256],buf4[STRLEN],whopost[IDLEN],save_title[STRLEN],save_filename[STRLEN];
     int         fp,i;
     int aborted,local_article ;
@@ -426,7 +428,6 @@ int post_cross(struct userec* user,char* toboard,char* fromboard,char* title,cha
     }
 
     memset(&postfile,0,sizeof(postfile)) ;
-    strncpy(save_filename,fname,4096) ;
 
     if(!mode){
         if(!strstr(title,"(转载)"))
