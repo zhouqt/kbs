@@ -1747,7 +1747,8 @@ int gettmpfilename(char *retchar, char *fmt, ...){
 
 int setutmpmailcheck(struct user_info *uentp, char *arg, int count)
 {
-	uentp->mailcheck = 0;
+	if( uentp->mode != WWW )
+		uentp->mailcheck = 0;
     return 0;
 }
 

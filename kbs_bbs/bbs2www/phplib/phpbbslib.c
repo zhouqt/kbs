@@ -3754,7 +3754,7 @@ static PHP_FUNCTION(bbs_getwebmsg)
 {
     zval *retsrcid, *msgbuf, *srcutmpent, *z_sndtime;
     int ac = ZEND_NUM_ARGS();
-    int srcutmp;
+    int srcpid;
 	time_t sndtime;
     char buf[MSG_LEN + 1];
     char srcid[IDLEN + 1];
@@ -3772,10 +3772,10 @@ static PHP_FUNCTION(bbs_getwebmsg)
         RETURN_FALSE;
     }
 
-    if (receive_webmsg(currentuinfonum, currentuser->userid, &srcutmp, srcid, &sndtime, buf) == 0) {
+    if (receive_webmsg(currentuinfonum, currentuser->userid, &srcpid, srcid, &sndtime, buf) == 0) {
         ZVAL_STRING(retsrcid, srcid, 1);
         ZVAL_STRING(msgbuf, buf, 1);
-        ZVAL_LONG(srcutmpent, srcutmp);
+        ZVAL_LONG(srcutmpent, srcpid);
         ZVAL_LONG(z_sndtime, sndtime);
         RETURN_TRUE;
     }

@@ -136,7 +136,7 @@ int delfrom_msglist(int utmpnum, char *userid)
     close(msgbuf.sockfd);
     return -1;
 }
-
+/*
 int send_webmsg(int destutmp, char *destid, int srcutmp, char *srcid, 
 				time_t sndtime, char *msg)
 {
@@ -165,61 +165,37 @@ int send_webmsg(int destutmp, char *destid, int srcutmp, char *srcid,
     close(msgbuf.sockfd);
     return -1;
 }
-int receive_webmsg(int destutmp, char *destid, int *srcutmp, char *srcid, 
+*/
+int receive_webmsg(int destutmp, char *destid, int *srcpid, char *srcid, 
 				   time_t *sndtime, char *msg)
 {
-    bbsmsg_t msgbuf;
-    char *ptr;
-    char *ptr2;
+	int now,count;
+    struct msghead head;
+    char buf[MAX_MSG_SIZE+100];
 
-    if ((msgbuf.sockfd = get_sockfd()) < 0)
-        return -1;
-    msgbuf.type = MSGD_RCV;
-    snprintf(msgbuf.rawdata, sizeof(msgbuf.rawdata), "RCV %s %d\n", destid, destutmp);
-    write_peer(&msgbuf);
-    if (read_peer(msgbuf.sockfd, &msgbuf) < 0)
-        goto receive_failed;
-    if (msgbuf.type != MSGD_FRM)
-        goto receive_failed;
-	/* rawdata must be "FRM srcid srcutmp sndtime" */
-    if ((ptr = strchr(msgbuf.rawdata, ' ')) == NULL)
-        goto receive_failed;
-    *ptr++ = '\0';
-    if ((ptr2 = strchr(ptr, ' ')) == NULL)
-        goto receive_failed;
-    *ptr2++ = '\0';
-    strncpy(srcid, ptr, IDLEN+2);
+    count = get_msgcount(1, destid);
+    now = get_unreadmsg(destid);
+
+	if( now < 0 || now >= count )
+		return -1;
+
+	load_msghead(1, destid, now, &head);
+	while(head.topid!=1 && now<count-1){
+    	now = get_unreadmsg(destid);
+		load_msghead(1, destid, now, &head);
+	};
+	if(load_msgtext(destid, &head, buf)) return -1;
+
+	*srcpid = head.frompid;
+	*sndtime = head.time;
+    strncpy(srcid, head.id, IDLEN+2);
     srcid[IDLEN] = '\0';
-    *srcutmp = atoi(ptr2);
-	if ((ptr = strchr(ptr2, ' ')) == NULL)
-		goto receive_failed;
-	*ptr++ = '\0';
-	*sndtime = atoi(ptr);
-    msgbuf.type = MSGD_OK;
-    snprintf(msgbuf.rawdata, sizeof(msgbuf.rawdata), 
-			 "OK Ready to receive my message\n");
-    write_peer(&msgbuf);
-    
-	if (read_peer(msgbuf.sockfd, &msgbuf) < 0)
-        goto receive_failed;
-    if (msgbuf.type != MSGD_MSG)
-        goto receive_failed;
-    /*
-     * rawdata should be "MSG msgstr\n" 
-     */
-    if ((ptr = strchr(msgbuf.rawdata, ' ')) == NULL)
-        goto receive_failed;
-    *ptr++ = '\0';
-    if ((ptr2 = strrchr(ptr, '\n')) != NULL)
-        *ptr2 = '\0';
-    strncpy(msg, ptr, MSG_LEN);
+    strncpy(msg, buf, MSG_LEN);
     msg[MSG_LEN] = '\0';
-    close(msgbuf.sockfd);
-    return 0;
-  receive_failed:
-    close(msgbuf.sockfd);
-    return -1;
+
+	return 0;
 }
+
 int store_msgfile(char *uident, char *msgbuf)
 {
     char buf[STRLEN];
@@ -233,7 +209,7 @@ int store_msgfile(char *uident, char *msgbuf)
     return 0;
 }
 
-int msg_can_sendmsg(char *userid, int utmpnum)
+int msg_can_sendmsg(char *userid, int utmppid)
 {
     struct userec *x;
     struct user_info *uin;
@@ -242,10 +218,7 @@ int msg_can_sendmsg(char *userid, int utmpnum)
         return 0;
     if (strcmp(x->userid, "guest") && !HAS_PERM(currentuser, PERM_PAGE))
         return 0;
-    if (utmpnum == 0)
-        uin = t_search(userid, utmpnum);
-    else
-        uin = get_utmpent(utmpnum);
+    uin = t_search(userid, utmppid);
     if (uin == NULL)
         return 0;
     if (strcasecmp(uin->userid, userid))
@@ -637,7 +610,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
     memcpy(&head2, &head, sizeof(struct msghead));
     head2.sent = 1;
     strncpy(head2.id, uident, IDLEN+2);
-    
+    /*
     if (uin->mode == WEBEXPLORE) {
         if (send_webmsg(get_utmpent_num(uin), uident, utmpent, 
 						currentuser->userid, head.time, msgstr) < 0) {
@@ -654,7 +627,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
         }
         return 1;
     }
-
+*/
     uin = t_search(MsgDesUid, uentp->pid);
     if ((uin == NULL) || (uin->active == 0) || (uin->pid == 0) || ((kill(uin->pid, 0) != 0) && (uentp->pid != 1))
         || strncasecmp(MsgDesUid,uident,STRLEN)) {
@@ -672,6 +645,10 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
             return -2;
         //save_smsmsg(currentuser->userid, &head2, msgstr, 1) ;
     }
+	if( uin->mode == WWW ){
+		uin->mailcheck = 1;
+		return 1;
+	}
     if (uentp->pid != 1 && kill(uin->pid, SIGUSR2) == -1) {
         strcpy(msgerr, "对方已经离线.....");
         return -1;

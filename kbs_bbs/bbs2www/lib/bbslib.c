@@ -1020,7 +1020,7 @@ int setmsgfilelog(char *buf, char *id)
 }
 
 extern char MsgDesUid[14];
-int send_msg(char *srcid, int srcutmp, char *destid, int destutmp, char *msg)
+int send_msg(char *srcid, int srcutmp, char *destid, int destpid, char *msg)
 {
     int i;
     uinfo_t *uin;
@@ -1031,10 +1031,7 @@ int send_msg(char *srcid, int srcutmp, char *destid, int destutmp, char *msg)
     for (i = 0; i < (int) strlen(msg); i++)
         if ((0 < msg[i] && msg[i] <= 27) || msg[i] == -1)
             msg[i] = 32;
-    if (destutmp == 0)
-        uin = t_search(destid, destutmp);
-    else
-        uin = get_utmpent(destutmp);
+    uin = t_search(destid, destpid);
     if (uin == NULL)
         return -1;
     if (strcasecmp(uin->userid, destid))
