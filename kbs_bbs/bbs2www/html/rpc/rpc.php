@@ -106,18 +106,18 @@ int user.loginFromModule (struct $loginParams)
 [user_host] string 用户IP地址
 
 返回
-0 登陆成功
+* 0 登陆成功
 -1 系统处于非登陆状态
--2 用户不存在
--3 用户没有该模块的使用权限
+* -2 用户不存在
+* -3 用户没有该模块的使用权限
 -4 帐户已停用
 -5 IP地址限制
--6 密码错误
--7 参数错误
+* -6 密码错误
+* -7 参数错误
 1  用户需要到平台更改密码
 2  用户需要缺认注册信息
 3  用户有错误的登陆记录
-4  系统处于非登陆状态
+* 4  管理员登录
 </pre>
 ';
 function XMLRPC_SERVER_login_from_module_FUNC ($params) {
@@ -136,12 +136,18 @@ function XMLRPC_SERVER_login_from_module_FUNC ($params) {
         if (!bbs_getuser ($user_id, $account))
             return new XML_RPC_Response(new XML_RPC_Value(-2, 'int'));
         
-        $ret = $account->login ($user_password, $info, $currentModule, $user_host);
+        if (0 != bbs_checkpasswd ($user_id, $user_password)) 
+            return new XML_RPC_Response(new XML_RPC_Value(-6, 'int'));
+        else {
+            if (!($account["userlevel"]&BBS_PERM_LOGINOK))
+                return new XML_RPC_Response(new XML_RPC_Value(-3, 'int'));
+            else if ($account["userlevel"]&BBS_PERM_SYSOP)
+                return new XML_RPC_Response(new XML_RPC_Value(4, 'int'));
+            else
+                return new XML_RPC_Response(new XML_RPC_Value(0, 'int'));
+        }
         
-        if ($ret < 0)
-            return new XML_RPC_Response(new XML_RPC_Value($ret-2, 'int'));
-        
-        return new XML_RPC_Response(new XML_RPC_Value($ret, 'int'));
+        return new XML_RPC_Response(new XML_RPC_Value(-7, 'int'));
     }
     
 }
