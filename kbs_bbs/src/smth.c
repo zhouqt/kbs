@@ -201,7 +201,7 @@ int multilogin_user(struct userec* user,int usernum)
     if (logincount<1) RemoveMsgCountFile(user->userid);
 
     if (HAS_PERM(user,PERM_MULTILOG)) 
-        return;  /* don't check sysops */
+        return 0;  /* don't check sysops */
     curr_login_num = get_utmp_number();
     /* Leeward: 97.12.22 BMs may open 2 windows at any time */
     /* Bigman: 2000.8.17 智囊团能够开2个窗口 */

@@ -305,7 +305,7 @@ void multi_user_check()
     int ret=1;
 
 	while (ret!=0) {
-		ret = multilogin_user(usernum,currentuser);
+		ret = multilogin_user(currentuser,usernum);
 		if (ret==2) {
 	            prints( "^[[33m抱歉, 目前已有太多 ^[[36mguest, 请稍候再试。^[[m\n");
 	            pressreturn();
