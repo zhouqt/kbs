@@ -48,7 +48,10 @@ if (isErrFounded()) {
 <?php
 	showAnnounce(); 
 ?>
-	</TABLE>
+</TABLE>
+<script src="inc/loadThread.js"></script>
+<iframe width=0 height=0 src="" id="hiddenframe"></iframe>
+
 <?php
 	showBoardStaticsTop($boardArr);
 ?>

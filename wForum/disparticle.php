@@ -19,7 +19,8 @@ global $boardID;
 global $boardName;
 global $article;
 global $articleID;
-global $page;
+global $start;
+global $listType;
 
 preprocess();
 
@@ -44,11 +45,7 @@ if (isErrFounded()) {
 
 	board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
 
-	article_bar($boardName,$boardID,$articleID,$article);
-
-	dispArticleTitle($boardName,$boardID,$articleID,$article);
-
-	showArticleThreads($boardName,$boardID,$articleID,$article,$page);
+	showArticleThreads($boardName,$boardID,$articleID,$article,$start,$listType);
 }
 
 //showBoardSampleIcons();
@@ -62,7 +59,8 @@ function preprocess(){
 	global $article;
 	global $articleID;
 	global $dir_modes;
-	global $page;
+	global $listType;
+	global $start;
 	if (!isset($_GET['boardName'])) {
 		foundErr("未指定版面。");
 		return false;
@@ -86,11 +84,17 @@ function preprocess(){
 	} else {
 		$articleID=intval($_GET['ID']);
 	}
-	if (!isset($_GET['page'])) {
-		$page=1;
-	} else {
-		$page=intval($_GET['page']);
+	$listType=0;
+	if(isset($_GET['listType'])) {
+		if ($_GET['listType']=='1')
+			$listType=1;
 	}
+	if (!isset($_GET['start'])) {
+		$start=0;
+	} else {
+		$start=intval($_GET['start']);
+	}
+
 	bbs_set_onboard($boardID,1);
 	$articles = bbs_getarticles($boardName, $articleID, 1, $dir_modes["ORIGIN"]);
 	@$article=$articles[0];
@@ -101,7 +105,7 @@ function preprocess(){
 	return true;
 }
 
-function article_bar($boardName,$boardID,$articleID,$article){
+function article_bar($boardName,$boardID,$articleID,$article,$threadID,$listType){
 	global $dir_modes;
 ?>
 <table cellpadding=0 cellspacing=0 border=0 width=97% align=center>
@@ -111,15 +115,25 @@ function article_bar($boardName,$boardID,$articleID,$article){
 	</td>
 	<td align=right width="70%" valign=middle><a href="disparticle.php?boardName=<?php echo $boardName; ?>&ID=<?php echo $articleID>1?$articleID-1:1; ?>"><img src="pic/prethread.gif" border=0 alt=浏览上一篇主题 width=52 height=12></a>&nbsp;
 	<a href="javascript:this.location.reload()"><img src="pic/refresh.gif" border=0 alt=刷新本主题 width=40 height=12></a> &nbsp;
-	<a href="?BoardID=1&replyID=1&id=1&star=1&skin=1"><img src="pic/treeview.gif" width=40 height=12 border=0 alt=树形显示贴子></a>　<a href="disparticle.php?boardName=<?php 
-	echo $boardName; ?>&ID=<?php echo $articleID<bbs_countarticles($boardID, $dir_modes['ORIGIN'])?$articleID+1:$articleID; ?>"><img src="pic/nextthread.gif" border=0 alt=浏览下一篇主题 width=52 height=12></a>
+<?php
+	if ($listType==1) {
+?>
+	<a href="?boardName=<?php echo $boardName; ?>&ID=<?php echo $articleID; ?>&start=<?php echo (ceil(($threadID+1)/THREADSPERPAGE)-1)*THREADSPERPAGE;; ?>&listType=0"><img src="pic/flatview.gif" width=40 height=12 border=0 alt=平板显示贴子></a>
+<?php
+	} else {
+?>
+	<a href="?boardName=<?php echo $boardName; ?>&ID=<?php echo $articleID; ?>&start=<?php echo $threadID; ?>&listType=1"><img src="pic/treeview.gif" width=40 height=12 border=0 alt=树形显示贴子></a>
+<?php
+	}
+?>
+	　<a href="disparticle.php?boardName=<?php 	echo $boardName; ?>&ID=<?php echo $articleID<bbs_countarticles($boardID, $dir_modes['ORIGIN'])?$articleID+1:$articleID; ?>"><img src="pic/nextthread.gif" border=0 alt=浏览下一篇主题 width=52 height=12></a>
 	</td>
 	</tr>
 </table>
 <?php
 }
 
-function dispArticleTitle($boardName,$boardID,$articleID,$article){
+function dispArticleTitle($boardName,$boardID,$articleID,$article, $threadID){
 ?>
 <TABLE cellPadding=0 cellSpacing=1 align=center class=tableborder1>
 	<tr align=middle> 
@@ -145,28 +159,33 @@ function dispArticleTitle($boardName,$boardID,$articleID,$article){
 <?php
 }
 
-function showArticleThreads($boardName,$boardID,$articleID,$article,$page) {
+function showArticleThreads($boardName,$boardID,$articleID,$article,$start,$listType) {
 	global $dir_modes;
-?>
-<TABLE cellPadding=5 cellSpacing=1 align=center class=tableborder1 style=" table-layout:fixed;word-break:break-all">
-<?php
-	$threads=bbs_get_threads_from_id($boardID, intval($article['ID']), $dir_modes["NORMAL"], 100000);
+	$threads=bbs_get_threads_from_id($boardID, intval($article['ID']), $dir_modes["NORMAL"], 50000);
 	if ($threads!=NULL) {
 		$total=count($threads)+1;
 	} else {
 		$total=1;
 	}
 	$totalPages=ceil(($total)/THREADSPERPAGE);
-	if (($page>$totalPages)) {
-		$page=$totalPages;
-	} else if ($page<1) {
-		$page=1;
-	}
-	$start=($page-1)* THREADSPERPAGE;
 	$num=THREADSPERPAGE;
+	if ($start<0) {
+		$start=0;
+	} elseif ($start>=$total) {
+		$start=$total-1;
+	}
 	if (($start+$num)>$total) {
 		$num=$total-$start;
 	}
+	$page=ceil(($start+1)/THREADSPERPAGE);
+	article_bar($boardName,$boardID,$articleID, $article, $start, $listType);
+	dispArticleTitle($boardName,$boardID,$articleID,$article,$start);
+?>
+<TABLE cellPadding=5 cellSpacing=1 align=center class=tableborder1 style=" table-layout:fixed;word-break:break-all">
+<?php
+	if ($listType==1) {
+		$num=1;
+	} 
 	for($i=0;$i<$num;$i++) {
 		if (($i+$start)==0) {
 			showArticle($boardName,$boardID,intval($article['ID']), $article);
@@ -176,40 +195,49 @@ function showArticleThreads($boardName,$boardID,$articleID,$article,$page) {
 	}
 ?>
 </table>
-<table cellpadding=0 cellspacing=3 border=0 width=97% align=center><tr><td valign=middle nowrap>本主题贴数<b><?php echo $total ?></b>，分页： 
+<table cellpadding=0 cellspacing=3 border=0 width=97% align=center><tr><td valign=middle nowrap>本主题贴数<b><?php echo $total; ?></b>
 <?php
-	if ($page>4) {
-		echo "<a href=\"?boardName=".$boardName."&ID=".$articleID."&page=1\">[1]</a> ";
-		if ($page>5) {
-			echo "...";
-		}
-	} 
-
-	if ($totalPages>$page+3){
-		$endpage=$page+3;
-	}  else{
-		$endpage=$totalPages;
-	} 
-
-	for ($i=($page-3>0)?($page-3):1; $i<=$endpage; $i++){
-		if ($i==$page)   {
-			echo " <font color=#ff0000>[".$i."]</font>";
-		} else {
-			echo " <a href=\"?boardName=".$boardName."&ID=".$articleID."&page=".$i."\">[".$i."]</a>";
+	if ($listType!=1) {
+?>
+，分页： 
+<?php
+		if ($page>4) {
+			echo "<a href=\"?boardName=".$boardName."&ID=".$articleID."&start=0\">[1]</a> ";
+			if ($page>5) {
+				echo "...";
+			}
 		} 
-	} 
 
-	if ($endpage<$totalPages) {
-		if ($endpage<$totalPages-1){
-			echo "...";
-		}
-		echo " <a href=\"?boardName=".$boardName."&ID=".$articleID."&page=".$totalPages."\">[".$totalPages."]</a>";
-} 
+		if ($totalPages>$page+3){
+			$endpage=$page+3;
+		}  else{
+			$endpage=$totalPages;
+		} 
+
+		for ($i=($page-3>0)?($page-3):1; $i<=$endpage; $i++){
+			if ($i==$page)   {
+				echo " <font color=#ff0000>[".$i."]</font>";
+			} else {
+				echo " <a href=\"?boardName=".$boardName."&ID=".$articleID."&start=".($i-1)*THREADSPERPAGE."\">[".$i."]</a>";
+			} 
+		} 
+
+		if ($endpage<$totalPages) {
+			if ($endpage<$totalPages-1){
+				echo "...";
+			}
+			echo " <a href=\"?boardName=".$boardName."&ID=".$articleID."&start=".($totalPages-1)*THREADSPERPAGE."\">[".$totalPages."]</a>";
+		} 
+	}
 ?></td><td valign=middle nowrap align=right>
 <?php 
 	boardJump();
 ?></td></tr></table>
+<br>
 <?php
+	if ($listType==1) {
+		showArticleTree($boardName,$boardID,$articleID,$article,$threads,$total,$start);
+	}
 }
 
 function showArticle($boardName,$boardID,$threadID,$thread){
@@ -243,5 +271,47 @@ function showArticle($boardName,$boardID,$threadID,$thread){
 
 
 <?php
+}
+
+function showArticleTree($boardName,$boardID,$articleID,$article,$threads,$threadNum,$start) {
+?>
+<table cellpadding=3 cellspacing=1 class=tableborder1 align=center>
+<tr><th align=left width=90% valign=middle> &nbsp;*树形目录</th>
+<th width=10% align=right valign=middle height=24 id=tabletitlelink> <a href=#top><img src=pic/gotop.gif border=0>顶端</a>&nbsp;</th></tr>
+<?php
+	$flags=array();
+	showTreeItem($boardName,$articleID,$article,0,$start,$flags);
+	for ($i=1;$i<$threadNum;$i++){
+		showTreeItem($boardName,$articleID,$threads[$i-1],$i,$start,$flags);
+	}
+?>
+</table>
+<?php
+}
+
+function showTreeItem($boardName,$articleID,$thread,$threadID,$start,&$flags){
+	if (isset($flags[$thread['REID']]) ){
+		$flags[$thread['ID']]=$flags[$thread['REID']]+1;
+	} else {
+		$flags[$thread['ID']]=0;
+	}
+	echo '<TR><td class=tablebody2 width="100%" height=22 colspan=2>';
+	for ($i=0;$i<$flags[$thread['ID']];$i++) {
+		echo "&nbsp;&nbsp;";
+	}
+	if ($threadID==0) {
+		echo '主题';
+	} else {
+		echo '回复';
+	}
+	echo '：&nbsp;<img src=face/face1.gif height=16 width16>  <a href="disparticle.php?boardName='.$boardName.'&ID='.$articleID.'&start='.$threadID.'&listType=1">';
+	if ($start==$threadID) {
+		echo "<font color=#FF0000>";
+	}
+	echo $thread['TITLE'].'</a><I><font color=gray>(37字) － <a href=dispuser.php?name='.$thread['OWNER'].' target=_blank title="作者资料"><font color=gray>'.$thread['OWNER'].'</font></a>，'.strftime("%Y年%m月%d日",$thread['POSTTIME']);
+	if ($start==$threadID) {
+		echo "</font>";
+	}
+	echo '</I></td></tr>';	
 }
 ?>

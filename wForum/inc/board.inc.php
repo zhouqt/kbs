@@ -56,19 +56,26 @@ function showBoardContents($boardID,$boardName,$page){
 			$threads=bbs_get_threads_from_id($boardID, intval($articles[$i]['ID']), $dir_modes["NORMAL"], 50000);
 			$threadNum=count($threads);
 ?>
-<TR align=middle><TD class=tablebody2 width=32 height=27><img src="pic/blue/folder.gif" alt=开放主题></TD><TD align=left class=tablebody1 width=* ><img src="pic/nofollow.gif" id="followImg1"><a href="disparticle.php?boardName=<?php echo $boardName ;?>&ID=<?php echo $i+$start ;?>" title="<?php echo $articles[$i]['TITLE'] ;?><br>作者：<?php echo $articles[$i]['OWNER'] ;?><br>发表于<?php echo strftime("%Y-%m-%d %H:%M:%S", $articles[$i]['POSTTIME']); ?>"><?php echo $articles[$i]['TITLE'] ;?></a> 
+<TR align=middle><TD class=tablebody2 width=32 height=27><img src="pic/blue/folder.gif" alt=开放主题></TD><TD align=left class=tablebody1 width=* >
+<?php 
+	if ($threads==NULL) {
+		echo '<img src="pic/nofollow.gif" id="followImg'.($i+$start).'">';
+	} else {
+		echo '<img loaded="no" src="pic/plus.gif" id="followImg'.($i+$start).'" style="cursor:hand;" onclick="loadThreadFollow('.($start+$i).",'".$boardName."')\" title=展开贴子列表>";
+	}
+?><a href="disparticle.php?boardName=<?php echo $boardName ;?>&ID=<?php echo $i+$start ;?>" title="<?php echo $articles[$i]['TITLE'] ;?><br>作者：<?php echo $articles[$i]['OWNER'] ;?><br>发表于<?php echo strftime("%Y-%m-%d %H:%M:%S", $articles[$i]['POSTTIME']); ?>"><?php echo $articles[$i]['TITLE'] ;?></a> 
 <?php
 	$threadPages=ceil(($threadNum+1)/THREADSPERPAGE);
 	if ($threadPages>1) {
 		echo "<b>[<img src=\"pic/multipage.gif\"> ";
 		for ($t=1; ($t<7) && ($t<=$threadPages) ;$t++) {
-			echo "<a href=\"disparticle.php?boardName=".$boardName."&ID=".($i+$start). "&page=".$t."\">".$t."</a> ";
+			echo "<a href=\"disparticle.php?boardName=".$boardName."&ID=".($i+$start). "&start=".($t-1)*THREADSPERPAGE."\">".$t."</a> ";
 		}
 		if ($threadPages>7) {
 			if ($threadPages>8) {
 				echo "...";
 			}
-			echo "<a href=\"disparticle.php?boardName=".$boardName."&ID=".($i+$start). "&page=".$threadPages."\">".$threadPages."</a> ";
+			echo "<a href=\"disparticle.php?boardName=".$boardName."&ID=".($i+$start). "&start=".($threadPages-1)*THREADSPERPAGE."\">".$threadPages."</a> ";
 		}
 		echo " ]</b>";
 	}
@@ -88,8 +95,12 @@ function showBoardContents($boardID,$boardName,$page){
 				echo $threads[$threadNum-1]['OWNER'];
 			}
 ?></a></TD></TR>
-<tr style="display:none" id="follow<?php echo $i; ?>"><td colspan=5 id="<?php echo $articles[$i]['ID'];?>" style="padding:0px"><div style="width:240px;margin-left:18px;border:1px solid black;background-color:lightyellow;color:black;padding:2px" onclick="loadThreadFollow(<?php echo $i;?>,1)">正在读取关于本主题的跟贴，请稍侯……</div></td></tr>
 <?php
+			if ($threads!=NULL) {
+?>
+<tr style="display:none" id="follow<?php echo $i+$start; ?>"><td colspan=5 id="followTd<?php echo $i+$start;?>" style="padding:0px"><div style="width:240px;margin-left:18px;border:1px solid black;background-color:lightyellow;color:black;padding:2px" onclick="loadThreadFollow(<?php echo $i+$start;?>,'<?php echo $boardName; ?>')">正在读取关于本主题的跟贴，请稍侯……</div></td></tr>
+<?php
+			}
 		}
 ?>
 </form></table><table border=0 cellpadding=0 cellspacing=3 width=97% align=center >
