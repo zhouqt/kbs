@@ -100,7 +100,9 @@
 	        else
 	            $nowtitle = "Re: " . $articles[1]["TITLE"];
 ?>
-标题: <input type="text" name="title" size="40" maxlength="100" value="<?php echo $nowtitle; ?>"><br />
+标题: <input type="text" name="title" size="40" maxlength="100" value="<?php echo $nowtitle; ?>
+
+" /><br />
 <?php
 		}
 		else
