@@ -8235,7 +8235,7 @@ static int full_user_list(struct user_info *uentp, struct fulluserlistarg* arg,i
     }
     if (count+1<arg->start)
         return COUNT;
-    if (count+1-arg->start>arg->num)
+    if (count+1-arg->start>=arg->num)
         return QUIT;
     MAKE_STD_ZVAL ( element );
     array_init ( element );
