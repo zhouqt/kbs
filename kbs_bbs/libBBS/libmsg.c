@@ -606,6 +606,7 @@ int translate_msg(char* src, char* dest)
                 dest[len++]=' ';
         }
         dest[len++]=msg[i];
+        pos++;
     }
     for(;pos<=80;pos++)
         dest[len++]=' ';

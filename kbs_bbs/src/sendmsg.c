@@ -329,7 +329,7 @@ void r_msg()
             prints("%s", outmsg);
         getyx(&oy, &ox);
 
-        prints("  第%-3d/%3d条消息, R回复", count, now);
+        prints("  第%3d/%-3d条消息, R回复", now, count);
         clrtoeol();
         
         refresh();
@@ -342,6 +342,9 @@ void r_msg()
     } while(now!=-1);
 
     showansi = tmpansi;
+    move(y,x);
+    refresh();
+    return;
 }
 
 void r_lastmsg()
