@@ -238,7 +238,7 @@ void brc_update(char *userid) {
 		if (brc_cache_entry[i].changed) {
 			int j;
 			if (fd==-1) {
-				if ((fd=open(dirfile,O_RDWR|O_CREAT))==-1) {
+				if ((fd=open(dirfile,O_RDWR|O_CREAT,0600))==-1) {
 					bbslog("3user","can't %s open to readwrite:%s",dirfile,strerror(errno));
 					return;
 				};
@@ -284,7 +284,7 @@ static int brc_convert_struct(char* dirfile,char* data,int size) /* °Ñ¾ÉµÄbroard
     	        }
     	        memcpy( brc.list[bid-1], tmp, num * sizeof( int ) );
 	}
-   	if( (fd = open( dirfile, O_WRONLY|O_CREAT )) != -1 ) {
+   	if( (fd = open( dirfile, O_WRONLY|O_CREAT,0600 )) != -1 ) {
             write( fd, &brc, sizeof(brc));
             close( fd );
     	}
@@ -330,7 +330,7 @@ int brc_initial(char *userid, char *boardname ) /* ¶ÁÈ¡ÓÃ»§.boardrcÎÄ¼þ£¬È¡³ö±£´
     sethomefile( dirfile, userid, ".boardrc" );
     while (1) { /*Èç¹ûÊÇÀÏ°æµÄ.boardrc£¬ÐèÒªÖØÐÂ¶ÁÒ»±é*/
 	    struct stat st;
-	    if( (fd = open( dirfile, O_RDONLY )) != -1 ) {
+	    if( (fd = open( dirfile, O_RDONLY ,0600)) != -1 ) {
 		    fstat(fd,&st);
 		    brc_size=st.st_size;
 	    } else {
