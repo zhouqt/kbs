@@ -163,9 +163,10 @@ O MaxMessageSize=32000
 #define MAXMAILSIZE (32000L - 2000)
 /* 2000 bytes for sendmail header */
 
-#define VOTE_FLAG 0x1
-#define NOZAP_FLAG 0x2
+#define BOARD_VOTEFLAG 0x1
+#define BOARD_NOZAPFLAG 0x2
 #define BOARD_READONLY 0x4
+#define BOARD_JUNK	0x8
 
 #define ZAPPED  0x1           /* For boards...tells if board is Zapped */
 

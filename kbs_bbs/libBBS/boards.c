@@ -213,7 +213,7 @@ load_boards()
             ptr->name  = bptr->filename;
             ptr->title = bptr->title;
             ptr->BM    = bptr->BM;
-            ptr->flag  = bptr->flag|((bptr->level&PERM_NOZAP)?NOZAP_FLAG:0);
+            ptr->flag  = bptr->flag|((bptr->level&PERM_NOZAP)?BOARD_NOZAPFLAG:0);
             ptr->pos = n;
             ptr->total = -1;
             ptr->zap = (zapbuf[ n ] == 0);
@@ -493,7 +493,12 @@ void brc_clear_new_flag(char* filename)
 
 int junkboard(char* currboard)  /* 判断当前版是否为 junkboards */
 {
-    return seek_in_file("etc/junkboards",currboard);
+    struct boardheader* bh=getbcache(board);
+    if (bh&&(bh->flag & BOARD_JUNK)) /* Checking if DIR access mode is "555" */
+        return YEA;
+    else
+        return NA;
+/*    return seek_in_file("etc/junkboards",currboard);*/
 }
 
 int

@@ -445,6 +445,9 @@ int m_newbrd()
     getdata(7, 0, "是否加入匿名板 (Y/N)? [N]: ", ans, 4, DOECHO, NULL, YEA);
     if (ans[0] == 'Y' || ans[0] == 'y')
         addtofile("etc/anonymous", newboard.filename);
+    getdata(8, 0, "是否不记文章数(Y/N)? [N]: ", ans, 4, DOECHO, NULL, YEA);
+    if (ans[0] == 'Y' || ans[0] == 'y')
+        newboard.flag|=BOARD_JUNK;
     group = chgrp();
     if (group != NULL)
     {
@@ -553,12 +556,21 @@ enterbname:
             else
                 noidboard = 0;
         }
-        getdata(13, 0, "是否移动精华区的位置 (Y/N)? [N]: ", genbuf, 4, DOECHO, NULL, YEA);
+        sprintf(buf, "不记文章数 (Y/N)? [%c]: ", (newfh.flag&BOARD_JUNK) ? 'Y' : 'N');
+        getdata(13, 0, buf, genbuf, 4, DOECHO, NULL, YEA);
+        if (*genbuf == 'y' || *genbuf == 'Y' || *genbuf == 'N' || *genbuf == 'n')
+        {
+            if (*genbuf == 'y' || *genbuf == 'Y')
+        		newfh.flag|=BOARD_JUNK;
+            else
+        		newfh.flag&=~BOARD_JUNK;
+        };
+        getdata(14, 0, "是否移动精华区的位置 (Y/N)? [N]: ", genbuf, 4, DOECHO, NULL, YEA);
         if (*genbuf == 'Y' || *genbuf == 'y')
             a_mv = 2;
         else
             a_mv = 0;
-        getdata(14, 0, "是否更改存取权限 (Y/N)? [N]: ", genbuf, 4, DOECHO, NULL, YEA);
+        getdata(15, 0, "是否更改存取权限 (Y/N)? [N]: ", genbuf, 4, DOECHO, NULL, YEA);
         if (*genbuf == 'Y' || *genbuf == 'y')
         {
             char            ans[5];
@@ -580,7 +592,7 @@ enterbname:
             getdata(0, 0, "确定要更改吗? (Y/N) [N]: ", genbuf, 4, DOECHO, NULL, YEA);
         } else
         {
-            getdata(15, 0, "确定要更改吗? (Y/N) [N]: ", genbuf, 4, DOECHO, NULL, YEA);
+            getdata(16, 0, "确定要更改吗? (Y/N) [N]: ", genbuf, 4, DOECHO, NULL, YEA);
         }
         if (*genbuf == 'Y' || *genbuf == 'y')
         {

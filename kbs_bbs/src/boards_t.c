@@ -317,8 +317,8 @@ int     page, clsflag, newflag;
         }
         ptr = &nbrd[n];
         if( !newflag )
-            prints( " %4d %c", n+1, ptr->zap&&!(ptr->flag&NOZAP_FLAG) ? '-' : ' ' );/*zap±êÖ¾*/
-        else if( ptr->zap&&!(ptr->flag&NOZAP_FLAG) ) {
+            prints( " %4d %c", n+1, ptr->zap&&!(ptr->flag&BOARD_NOZAPFLAG) ? '-' : ' ' );/*zap±êÖ¾*/
+        else if( ptr->zap&&!(ptr->flag&BOARD_NOZAPFLAG) ) {
             /*ptr->total = ptr->unread = 0;
             prints( "    -    -" );*/
             /* Leeward: 97.12.15: extended display */
@@ -338,7 +338,7 @@ int     page, clsflag, newflag;
             sprintf(buf, "¡ôÖ»¶Á¡ô%s", ptr->title + 8);
         else
             sprintf(buf, " %s", ptr->title + 1);
-        prints("%c%-16s %s%-36s %-12s\n", ((newflag && ptr->zap && !(ptr->flag&NOZAP_FLAG)) ? '*' : ' '), ptr->name,(ptr->flag&VOTE_FLAG) ? "[31mV[m" : " ", buf, ptr->BM[0] <= ' ' ? "³ÏÕ÷°åÖ÷ÖÐ" : strtok(tmpBM," ")); /*µÚÒ»¸ö°æÖ÷*/
+        prints("%c%-16s %s%-36s %-12s\n", ((newflag && ptr->zap && !(ptr->flag&BOARD_NOZAPFLAG)) ? '*' : ' '), ptr->name,(ptr->flag&BOARD_VOTEFLAG) ? "[31mV[m" : " ", buf, ptr->BM[0] <= ' ' ? "³ÏÕ÷°åÖ÷ÖÐ" : strtok(tmpBM," ")); /*µÚÒ»¸ö°æÖ÷*/
     }
     refresh();
 }
@@ -443,8 +443,6 @@ static int choose_board(int  newflag ) /* Ñ¡Ôñ °æ£¬ readnew»òreadboard */
                     break; /* Leeward 98.04.01 */
 
 	 	if( strlen(nbrd[num].name) ){
-	               	sprintf(buf, "chmod 555 boards/%s", nbrd[num].name);
-                	system(buf);
 			board_setreadonly(nbrd[num].name,1);
 
                 	/* Bigman 2000.12.11:ÏµÍ³¼ÇÂ¼ */
@@ -463,9 +461,7 @@ static int choose_board(int  newflag ) /* Ñ¡Ôñ °æ£¬ readnew»òreadboard */
 
                 if (!HAS_PERM(currentuser,PERM_SYSOP) && !HAS_PERM(currentuser,PERM_OBOARDS)) break;
 
-                sprintf(buf, "chmod 755 boards/%s", nbrd[num].name);
-                system(buf);
-		board_setreadonly(nbrd[num].name,0);
+				board_setreadonly(nbrd[num].name,0);
 
                 /* Bigman 2000.12.11:ÏµÍ³¼ÇÂ¼ */
                 sprintf(genbuf,"½â¿ªÖ»¶ÁÌÖÂÛÇø %s ",nbrd[num].name);
@@ -613,7 +609,7 @@ case 'n': case 'j': case KEY_DOWN:
             break;
         case 'z': /* Zap*/
             if(yank_flag < 2) { /*--- Modified 4 FavBoard 2000-09-11	---*/
-                if( HAS_PERM(currentuser, PERM_BASIC )&&!(nbrd[num].flag&NOZAP_FLAG)) {
+                if( HAS_PERM(currentuser, PERM_BASIC )&&!(nbrd[num].flag&BOARD_NOZAPFLAG)) {
                     ptr = &nbrd[num];
                     ptr->zap = !ptr->zap;
                     ptr->total = -1;

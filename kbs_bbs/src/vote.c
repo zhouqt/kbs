@@ -54,9 +54,9 @@ setvoteflag(char* bname,int flag)
 	pos = getboardnum(bname,&fh);
 	if (pos) {
 	    if(flag==0)
-	        fh.flag = fh.flag&~VOTE_FLAG;
+	        fh.flag = fh.flag&~BOARD_VOTEFLAG;
 	    else
-	        fh.flag = fh.flag|VOTE_FLAG;
+	        fh.flag = fh.flag|BOARD_VOTEFLAG;
 		set_board(pos,&fh);
 	}
 	return 0;
