@@ -137,7 +137,7 @@ int get_nextid(char* boardname)
 
 void resolve_boards()
 {
-    int boardfd;
+    int boardfd=-1;
     int iscreate = 0;
 
     if (bcache == NULL) {
@@ -151,7 +151,6 @@ void resolve_boards()
             close(boardfd);
             exit(-1);
         }
-        close(boardfd);
     }
     if (brdshm == NULL) {
         brdshm = attach_shm("BCACHE_SHMKEY", 3693, sizeof(*brdshm), &iscreate); /* attach board share memory */
@@ -172,6 +171,8 @@ void resolve_boards()
             bcache_unlock(fd);
         }
     }
+    if (boardfd!=-1)
+        close(boardfd);
 }
 
 void detach_boards()
