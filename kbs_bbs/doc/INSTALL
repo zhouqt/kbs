@@ -10,7 +10,7 @@
   flyriver v1.0
 
 1. 需要的软件:
-autoconf >2.53
+autoconf >2.54
 automake >1.6
 libtool-1.4
 libesmtp-0.8.11 (最好编译成无pthread支持的)
