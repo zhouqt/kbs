@@ -459,9 +459,15 @@ int m_editbrd()
     noidboard = anonymousboard(bname);
     move(2, 0);
     memcpy(&newfh, &fh, sizeof(newfh));
-    prints("讨论区名称:   %s\n", fh.filename);
+    prints("讨论区名称:   %s ; 管理员:%s\n", fh.filename, fh.BM);
     prints("讨论区说明:   %s\n", fh.title);
-    prints("讨论区管理员: %s\n", fh.BM);
+
+	strncpy(vbuf, fh.des, 60);
+	vbuf[60]=0;
+	if((group=strchr(vbuf, '\n')) != NULL) *group=0;
+	if(strlen(fh.des) > strlen(vbuf)) strcat(vbuf, "...");
+    prints("讨论区描述: %s\n", vbuf);
+
     prints("匿名讨论区: %s  不记文章数: %s  不统计十大: %s  是否是目录: %s\n", 
         (noidboard) ? "Yes" : "No", (fh.flag & BOARD_JUNK) ? "Yes" : "No", (fh.flag & BOARD_POSTSTAT) ? "Yes" : "No", (fh.flag & BOARD_GROUP) ? "Yes" : "No");
     if (newfh.group) {
@@ -490,8 +496,21 @@ int m_editbrd()
         ,fh.title_level? get_user_title(fh.title_level):"无",fh.title_level
 #endif
         );
-    getdata(10, 0, "是否更改以上资讯? (Yes or No) [N]: ", genbuf, 4, DOECHO, NULL, true);
-    if (*genbuf == 'y' || *genbuf == 'Y') {
+    getdata(10, 0, "是否更改以上资讯(按S回车修改描述)? (Yes or No) [N]: ", genbuf, 4, DOECHO, NULL, true);
+	if (*genbuf == 's' || *genbuf == 'S'){
+
+		move(11,0);
+		prints("请输入新的描述:");
+		multi_getdata(12, 0, 79, NULL, newfh.des, 195, 8, false, 0);
+		if( newfh.des[0] ){
+        	getdata(21, 0, "确定要更改吗? (Y/N) [N]: ", genbuf, 4, DOECHO, NULL, true);
+        	if (*genbuf == 'Y' || *genbuf == 'y') {
+            	set_board(pos, &newfh, &fh);
+            	sprintf(genbuf, "更改讨论区 %s 的描述 --> %s", fh.filename, newfh.filename);
+            	bbslog("user", "%s", genbuf);
+			}
+		}
+	}else if (*genbuf == 'y' || *genbuf == 'Y') {
         move(9, 0);
         prints("直接按 <Return> 不修改此栏资讯\n");
       enterbname:
