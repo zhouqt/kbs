@@ -4133,7 +4133,7 @@ static PHP_FUNCTION(bbs_setwwwparameters)
 	char* wwwparameters;
 	int   wwwparameters_len;
 	FILE *fn;
-	char  buf[200];
+	char  buf[201];
 	
 	int ac = ZEND_NUM_ARGS();
 	
@@ -4142,6 +4142,8 @@ static PHP_FUNCTION(bbs_setwwwparameters)
 		WRONG_PARAM_COUNT;
 	}
 	
+	if(wwwparameters_len > 200)
+		RETURN_LONG(-1);
 	sethomefile(buf,currentuser->userid,"www");
 	if ((fn=fopen(buf,"w"))==NULL)
 		RETURN_LONG(-10);
@@ -5210,6 +5212,7 @@ static PHP_FUNCTION(bbs_createnewid)
 * function bbs_setactivation(string userid , string filebody)
 * return  0 : seccess
 *         -1: user not exist
+*         -2: registered
 *         -10:system error
 **/
 static PHP_FUNCTION(bbs_setactivation)
@@ -5231,6 +5234,8 @@ static PHP_FUNCTION(bbs_setactivation)
 	
 	if(getuser(userid,&uc)==0)
 		RETURN_LONG(-1);
+	if(HAS_PERM(uc,PERM_LOGINOK))
+		RETURN_LONG(-2);
 	sethomefile(afile,uc->userid,"activation");
 	if ((fn=fopen(afile,"w"))==NULL)
 		RETURN_LONG(-10);
@@ -5243,7 +5248,8 @@ static PHP_FUNCTION(bbs_setactivation)
 ** function bbs_getactivation(string userid,&string &activation)
 *  return  0 :seccess;
 *          -1:user not exist
-*          -2:can not find activation file
+*          -2:registered
+*          -3:can not find activation file
 *          -10:system error
 */
 static PHP_FUNCTION(bbs_getactivation)
@@ -5269,15 +5275,17 @@ static PHP_FUNCTION(bbs_getactivation)
     	}
 	if(getuser(userid,&uc)==0)
 		RETURN_LONG(-1);
+	if(HAS_PERM(uc,PERM_LOGINOK))
+		RETURN_LONG(-2);
 	sethomefile(afile,uc->userid,"activation");
 	if ((fn=fopen(afile,"r"))==NULL)
-		RETURN_LONG(-2);
+		RETURN_LONG(-3);
 	if(fgets(buf,200,fn)==NULL)
 	{
 		fclose(fn);
 		sprintf(buf,"rm -f %s",afile);
 		system(buf);
-		RETURN_LONG(-2);
+		RETURN_LONG(-3);
 	}
 	ZVAL_STRING(activation,buf,1);
 	fclose(fn);
