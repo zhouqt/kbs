@@ -3294,16 +3294,12 @@ char *direct ;*/
 }
 
 /* Added by netty to handle post saving into (0)Announce */
-int
-Save_post(ent,fileinfo,direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+int Save_post(int ent,struct fileheader *fileinfo,char *direct)
 {
     if(!HAS_PERM(PERM_SYSOP))
         if(!chk_currBM(currBM))
             return DONOTHING ;
-    return(a_Save( "0Announce", currboard, fileinfo ,NA));
+    return(a_Save( "0Announce", currboard, fileinfo ,NA,direct,ent));
 }
 
 /* Semi_save 用来把文章存到暂存档，同时删除文章的头尾 Life 1997.4.6 */

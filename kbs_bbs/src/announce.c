@@ -399,10 +399,9 @@ int    nomsg;
 
 /* added by netty to handle post saving into (0)Announce */
 int
-a_Save( path, key, fileinfo ,nomsg)  /* 将文件 放入 精华区暂存档 */
-char    *path, *key;
-struct fileheader *fileinfo;
-int    nomsg;
+a_Save(char    *path,char *key,struct fileheader *fileinfo,int nomsg,
+	char *direct,int ent)
+
 {
 
     char        board[ STRLEN ];
@@ -436,6 +435,8 @@ int    nomsg;
     system( genbuf );
     sprintf( genbuf, " 已将该文章存入暂存档, 请按任何键以继续 << " );
     sprintf(r_genbuf,"将 boards/%s/%s 存入暂存档",key,fileinfo->filename);
+    fileinfo->accessed[0] |= FILE_IMPORTED;
+    substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
     a_report(r_genbuf);
     if(!nomsg)
         a_prompt( -1, genbuf, ans );
@@ -1034,7 +1035,7 @@ int     ch;
                 char *ptr;
 
                 /* by zixia: 用相对路经 sprintf(genbuf, "%s/%s", BBSHOME,netty_path);*/
-		printf(genbuf, "%s", netty_path);
+		sprintf(genbuf, "%s", netty_path);
                 ptr = strstr(genbuf, ".faq/");
                 if (ptr)
                 {
