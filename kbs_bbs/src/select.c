@@ -215,7 +215,8 @@ static int do_select_internal(struct _select_def *conf, int key)
     if (conf->flag & LF_NUMSEL) { /*处理用数字跳转*/
         if (key>='0' && key<='9') {
             if (conf->tmpnum==-1) conf->tmpnum=0;
-            conf->tmpnum=conf->tmpnum*10+key-'0';
+            if (conf->tmpnum < 9999999) // added by atppp
+                conf->tmpnum=conf->tmpnum*10+key-'0';
 	    /* 显示提示条，其实这个地方应该是根据需要显示...*/
             if (conf->show_endline) (*conf->show_endline)(conf);
             return SHOW_CONTINUE;

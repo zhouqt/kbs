@@ -1573,7 +1573,7 @@ int invalidaddr(char *addr)
     if (*addr == '\0')
         return 1;               /* blank */
     while (*addr) {
-        if (!isalnum(*addr) && strchr("[].%!@:-_", *addr) == NULL)
+        if (!isalnum(*addr) && strchr("[].%!@:-+_", *addr) == NULL)
             return 1;
         addr++;
     }
