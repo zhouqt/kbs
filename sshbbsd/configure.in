@@ -1361,6 +1361,9 @@ for i in *.c; do
 	AC_LIBOBJ(`echo $i|sed 's/.c$//'`)
 done
 cd $OLDPWD
+AC_CONFIG_LINKS(mkinstalldirs:../mkinstalldirs)
+AC_CONFIG_LINKS(missing:../missing)
+AC_CONFIG_LINKS(depcomp:../depcomp)
 
 AC_SUBST(ETCDIR)
 AC_SUBST(PIDDIR)

@@ -9,22 +9,26 @@ AM_CONFIG_HEADER(config.h)
 
 AC_PREFIX_DEFAULT(/home/bbs)
 
-AC_ARG_WITH(icc,
-[  --with-icc
+AC_ARG_ENABLE(icc,
+[  --enable-icc
                           select intel compiler],
 [
-	if test "$withval"="yes"; then
-		withval=/opt/intel/compiler60/ia32
+	if test "$enableval"="yes"; then
+		enableval=/opt/intel/compiler60/ia32
 	fi
-    if test -d $withval; then
+    if test -d $enableval; then
 		CC=icc
 		CXX=icc
-		CFLAGS="$CFLAGS -tpp6 -axK -O3 -unroll256 -w1 -ipo -g -I$withval/include"
-		LDFLAGS="$LDFLAGS -ipo -static"
+		if test -z "$CFLAGS"; then
+			CFLAGS="$CFLAGS -tpp6 -axK -O3 -unroll256 -w1 -ipo -g -I$enableval/include"
+		fi
+		if test -z "$LDFLAGS"; then
+			LDFLAGS="$LDFLAGS -ipo -static"
+		fi
 		CONFIG_AR=xiar
 		EXTRA_CLEAN="*.il"
     else
-		echo "can't find intel compiler in $withval!"
+		echo "can't find intel compiler in $enableval!"
         exit 1
     fi
 ],[CONFIG_AR=ar; EXTRA_CLEAN=""])
@@ -94,12 +98,21 @@ AC_ARG_ENABLE(site,
     if test -f $srcdir/site/$enableval.c; then
         BBSSITE=$enableval
     else
-        echo "ERROR! Unknown site $enableval, see site/"
-        exit 1
+        AC_MSG_ERROR([ERROR! Unknown site $enableval, see site/])
     fi
 ],[BBSSITE="smth"])
 AC_SUBST(BBSSITE)
 
+AC_ARG_WITH(ssh,
+[  --with-ssh
+		enable ssh bbsd  support(need sshbbsd package)],
+[
+	if test -d sshbbsd; then
+		AC_CONFIG_SUBDIRS(sshbbsd)
+	else
+		AC_MSG_ERROR([can't find sshbbsd package,please get it first!])
+	fi
+])
 
 AC_CONFIG_LINKS(libBBS/site.c:site/$BBSSITE.c
 		libBBS/site.h:site/$BBSSITE.h

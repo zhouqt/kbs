@@ -1,3 +1,3 @@
 EXTRA_DIST = README INSTALL
-SUBDIRS=libsystem libBBS rzsz src daemon local_utl
+SUBDIRS=libsystem libBBS rzsz src daemon local_utl @subdirs@
 CLEANFILES=@EXTRA_CLEAN@

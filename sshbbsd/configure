@@ -13365,6 +13365,12 @@ for i in *.c; do
 	LIBOBJS="$LIBOBJS `echo $i|sed 's/.c$//'`.$ac_objext"
 done
 cd $OLDPWD
+ac_config_links="$ac_config_links mkinstalldirs:../mkinstalldirs"
+
+ac_config_links="$ac_config_links missing:../missing"
+
+ac_config_links="$ac_config_links depcomp:../depcomp"
+
 
 
 
@@ -13869,6 +13875,9 @@ do
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
   "$i" ) CONFIG_LINKS="$CONFIG_LINKS $i:../src/$i" ;;
+  "mkinstalldirs" ) CONFIG_LINKS="$CONFIG_LINKS mkinstalldirs:../mkinstalldirs" ;;
+  "missing" ) CONFIG_LINKS="$CONFIG_LINKS missing:../missing" ;;
+  "depcomp" ) CONFIG_LINKS="$CONFIG_LINKS depcomp:../depcomp" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
   "config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
