@@ -1353,7 +1353,7 @@ char *uid, *frm;
     int fd, len;
     char buf[256];
 
-    snprintf(buf, sizeof(buf), "%-12.12s  %-30s %s\n", uid, Ctime(bbstime(0)), frm);
+    snprintf(buf, sizeof(buf), "%-12.12s  %-30s %s\n", uid, Ctime(time(0)), frm);
     len = strlen(buf);
     if ((fd = open(BADLOGINFILE, O_WRONLY | O_CREAT | O_APPEND, 0644)) >= 0) {
         write(fd, buf, len);
