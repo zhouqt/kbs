@@ -1143,8 +1143,8 @@ void display_buffer()
     for (i=0; i<t_lines-1; i++) {
         move(i, 0); clrtoeol();
     }
+    move(0, 0);
     for (p = top_of_win, i = 0; i < t_lines - 1; i++) {
-        move(i, 0);
         if (p) {
             shift = (currpnt + 2 > STRLEN) ? (currpnt / (STRLEN - scrollen)) * (STRLEN - scrollen) : 0;
             if (editansi) {
@@ -1158,8 +1158,9 @@ void display_buffer()
                 if (p->len >= shift) {
                     showansi = 0;
                     strnput(p->data + shift);
-                } else
-                    clrtoeol();
+                } 
+//                else
+//                    clrtoeol();
             }
             p = p->next;
         } else

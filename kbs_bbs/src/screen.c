@@ -630,7 +630,6 @@ void outns(const char*str, int n)
       }
               
         if (*str == '\n' || *str == '\r') {
-            clrtoeol();
             if(cur_ln<scr_lns-1)
                 cur_ln++;
             cur_col=0;

@@ -712,7 +712,7 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
         return;
     }
     outns(ptr, len);
-//    outns("\n", 1);
+    outns("\n", 1);
 }
 
 static int mem_show(char *ptr, int size, int row, int numlines, char *fn)
@@ -781,7 +781,7 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
             if (shownflag) {
                 displayflag = 0;
             }
-            move(i, 0);
+//            move(i, 0);
             mem_printline(&l, fn, ptr);
             i++;
             if (i >= t_lines - 1)
@@ -1016,6 +1016,7 @@ int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
         move(i,0);
         clrtoeol();
     }
+    move(t_lines/2+1);
     curr_line = l.curr_line;
     for (i = 0, j = 0;;) {
         if (shownflag) {
@@ -1023,7 +1024,6 @@ int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
         }
         if (!header || (!((i == 0) && ((!strncmp(l.curr, "发信人: ", 8) || (!strncmp(l.curr, "寄信人: ", 8))))) &&
                         !((i == 1) && !strncmp(l.curr, "标  题: ", 8)) && !((i == 2) && !strncmp(l.curr, "发信站: ", 8)) && !((i == 3) && (l.currlen == 0)))) {
-            move(t_lines/2+1+j, 0);
             offsetln = t_lines/2+1;
             mem_printline(&l, fn, ptr);
             offsetln = 0;
