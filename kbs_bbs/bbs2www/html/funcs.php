@@ -109,7 +109,7 @@ if (($sessionid!='')&&($_SERVER['PHP_SELF']=='/bbscon.php')) {
 	@$userid = $_COOKIE["UTMPUSERID"];
 }
 // add by stiger, login as "guest" default.....
-if (($utmpkey == "")&&($needlogin)){
+if (($utmpkey == "")&&(!isset($needlogin) || ($needlogin!=0))){
 	$error = bbs_wwwlogin(0);
 	if($error == 2 || $error == 0){
 		$data = array();
@@ -447,7 +447,7 @@ function bbs_can_edit_article($board, $article, $user)
 		return 0;
 }
 
-if (!isset($needlogin)&&($loginok!=1)&&($_SERVER["PHP_SELF"]!="/bbslogin.php")) {
+if ((!isset($needlogin)||($needlogin!=0))&&($loginok!=1)&&($_SERVER["PHP_SELF"]!="/bbslogin.php")) {
 	error_nologin();
 	return;
 }

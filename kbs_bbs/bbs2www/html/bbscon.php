@@ -3,7 +3,7 @@
 	 * This file displays article to user.
 	 * $Id$
 	 */
-	$needlogin=0;
+	$needlogin=1;
 	require("funcs.php");
 function get_mimetype($name)
 {
@@ -126,7 +126,7 @@ function display_navigation_bar($brdarr, $articles, $num)
 	$total = bbs_countarticles($brdnum, $ftype);
 	if ($total <= 0) {
 		html_init("gb2312");
-		html_error_quit("本讨论区目前没有文章,$brdnum,$ftype");
+		html_error_quit("本讨论区目前没有文章,$brdnum,$board,$ftype,$total".$brdarr["NAME"]);
 	}
 	if (isset($_GET["id"]))
 		$id = $_GET["id"];
