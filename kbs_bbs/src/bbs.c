@@ -2647,7 +2647,7 @@ int Semi_save(int ent, struct fileheader *fileinfo, char *direct)
     if (!HAS_PERM(currentuser, PERM_SYSOP))
         if (!chk_currBM(currBM, currentuser))
             return DONOTHING;
-    return (a_SeSave("0Announce", currboard, fileinfo, false,direct,ent));
+    return (a_SeSave("0Announce", currboard, fileinfo, false,direct,ent,1));
 }
 
 /* Added by netty to handle post saving into (0)Announce */
