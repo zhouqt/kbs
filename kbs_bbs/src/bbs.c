@@ -575,9 +575,11 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         proceed = (ispost[0] == 's' || ispost[0] == 'S' || ispost[0] == 'L' || ispost[0] == 'l');
     } else {
         getdata(1, 0, "(L)±¾Õ¾ (A)È¡Ïû? [A]: ", ispost, 9, DOECHO, NULL, true);
-        proceed = (ispost[0] == 'L' || ispost[0] == 'l');
+        proceed = (ispost[0] == 's' || ispost[0] == 'S' || ispost[0] == 'L' || ispost[0] == 'l');
     }
     if (proceed) {
+		if(!outgo_board)
+			ispost[0]='l';
         /*add by stiger
         if(conf->pos<=arg->filecount) {
             int i=0;
