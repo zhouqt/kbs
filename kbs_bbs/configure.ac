@@ -9,32 +9,7 @@ AM_CONFIG_HEADER(config.h)
 
 AC_PREFIX_DEFAULT(/home/bbs)
 
-AC_ARG_WITH(icc,
-[  --with-icc=path
-                          select intel compiler],
-[
-	if test "$withval" = "yes"; then
-		withval=/opt/intel/compiler60/ia32
-	fi
-    if test -d $withval; then
-		CC=icc
-		CXX=icc
-		if test -z "$CFLAGS"; then
-			CFLAGS="$CFLAGS -tpp6 -axK -O3 -unroll256 -w1 -ipo -g -I$withval/include"
-		fi
-		if test -z "$LDFLAGS"; then
-			LDFLAGS="$LDFLAGS -ipo"
-		fi
-		CONFIG_AR=xiar
-		AR=xiar
-		EXTRA_CLEAN="*.il"
-    else
-		AC_MSG_ERROR([can't find intel compiler in $withval!])
-    fi
-],[CONFIG_AR=ar; EXTRA_CLEAN=""])
-
-AC_SUBST(CONFIG_AR)
-AC_SUBST(EXTRA_CLEAN)
+m4_include(config.icc)
 
 AC_ARG_ENABLE(ssh,
 [  --enable-ssh
@@ -47,7 +22,7 @@ AC_ARG_ENABLE(ssh,
 	fi
 ])
 
-enable-www=yes
+enable_www=yes
 AC_ARG_ENABLE(www,
 [  --enable-www
         enable web support(need bbs2www package)],

@@ -1645,22 +1645,23 @@ LIBS="-L/usr/local/lib $LIBS"
 if test "${with_icc+set}" = set; then
   withval="$with_icc"
 
-        if test "$withval" = "yes"; then
-                withval=/opt/intel/compiler60/ia32
-        fi
+    if test "$withval" = "yes"; then
+        withval=/opt/intel/compiler60/ia32
+    fi
     if test -d $withval; then
-                CC=icc
-                CXX=icc
-                if test -z "$CFLAGS"; then
-                        CFLAGS="$CFLAGS -tpp6 -axK -O3 -unroll256 -w1 -ipo -g -I$withval/include"
-                fi
-                if test -z "$LDFLAGS"; then
-                        LDFLAGS="$LDFLAGS -ipo -static"
-                fi
-                CONFIG_AR=xiar
-                EXTRA_CLEAN="*.il"
+        CC=icc
+        CXX=icc
+        if test -z "$CFLAGS"; then
+            CFLAGS="$CFLAGS -tpp6 -axK -O3 -unroll256 -w1 -ipo -g -I$withval/include"
+        fi
+        if test -z "$LDFLAGS"; then
+            LDFLAGS="$LDFLAGS -ipo"
+        fi
+        CONFIG_AR=xiar
+        AR=xiar
+        EXTRA_CLEAN="*.il"
     else
-                { { echo "$as_me:$LINENO: error: can't find intel compiler in $withval!" >&5
+        { { echo "$as_me:$LINENO: error: can't find intel compiler in $withval!" >&5
 echo "$as_me: error: can't find intel compiler in $withval!" >&2;}
    { (exit 1); exit 1; }; }
     fi
@@ -1668,6 +1669,7 @@ echo "$as_me: error: can't find intel compiler in $withval!" >&2;}
 else
   CONFIG_AR=ar; EXTRA_CLEAN=""
 fi;
+
 
 
 
