@@ -116,6 +116,7 @@ int exec_mbem(char *s);
 #ifdef SMS_SUPPORT
 int register_sms();
 int unregister_sms();
+int send_sms();
 #endif
 
 /*Add By Excellent */
@@ -236,6 +237,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
 #ifdef SMS_SUPPORT
     {"RegisterSMS",register_sms},
     {"UnRegisterSMS",unregister_sms},
+    {"SendSMS",send_sms},
 #endif
     {NULL, NULL},
 };

@@ -27,7 +27,7 @@ int line;
     move(line, 0);
     clrtoeol();
     prints("送音信给:%-12s    请输入音信内容，Ctrl+Q 换行:", uid);
-    memset(msg, 0, sizeof(msg));
+    msg[0] = 0;
     while (1) {
         i = multi_getdata(line+1, 0, 79, NULL, msg, MAX_MSG_SIZE, 11, false,0);
         if (msg[0] == '\0')
@@ -72,7 +72,6 @@ int mode;
         modify_user_mode(MSG);
     }
     if (uentp == NULL) {
-        prints("<输入使用者代号>\n");
         move(1, 0);
         clrtobot();
         prints("送讯息给: ");
@@ -965,5 +964,95 @@ int unregister_sms()
     buf=NULL;
 }
 
+int do_send_sms_func(char * dest, char * msgstr)
+{
+    char uident[STRLEN];
+    struct user_info *uin;
+    struct userdata * udata;
+    char buf[MAX_MSG_SIZE];
+    int oldmode;
+    int result;
+    bool cansend=true;
+
+    if(!curruserdata.mobileregistered) {
+        move(1, 0);
+        clrtoeol();
+        prints("你尚未注册手机号，无法给别人发送短信");
+        pressreturn();
+        move(1, 0);
+        clrtoeol();
+        return 0;
+    }
+    
+    inremsg = true;
+
+    oldmode = uinfo.mode;
+    modify_user_mode(MSG);
+    if (dest == NULL) {
+        move(1, 0);
+        clrtobot();
+        prints("送讯息给: ");
+        creat_list();
+        namecomplete(NULL, uident);
+        if (uident[0] == '\0') {
+            clear();
+            modify_user_mode(oldmode);
+            inremsg = false;
+            return 0;
+        }
+    }
+    else
+        strcpy(uident, dest);
+    if(isdigit(uident[0])) {
+        int i;
+        cansend=cansend&&(strlen(uident)==11);
+        for(i=0;i<strlen(uident);i++)
+            cansend=cansend&&(isdigit(uident[i]));
+        if(cansend)
+            strcpy(udata.mobilenumber, uident);
+    }
+    else {
+        if(read_userdata(uident,&udata))
+            cansend=false;
+        else {
+            cansend=udata.mobileregistered&&(strlen(udata.mobilenumber)==11);
+        }
+    }
+    if(!cansend) {
+        move(2, 0);
+        prints("对方尚未注册手机号，或是手机号码输入错误...");
+        pressreturn();
+        move(2, 0);
+        clrtoeol();
+        modify_user_mode(oldmode);
+        inremsg = false;
+        return -1;
+    }
+
+    if(msgstr==NULL) {
+        if(!get_msg(uident, buf, 1)) {
+            move(1, 0);
+            clrtoeol();
+            move(2, 0);
+            clrtoeol();
+            modify_user_mode(oldmode);
+            inremsg = false;
+            return 0;
+        }
+    }
+    else
+        strcpy(buf, msgstr);
+
+    DoSendSMS(curruserdata.mobilenumber, udata.mobilenumber, buf);
+
+    modify_user_mode(oldmode);
+    inremsg = false;
+    return 1;
+}
+
+int send_sms()
+{
+    do_send_sms_func(NULL, NULL);
+}
 
 #endif
