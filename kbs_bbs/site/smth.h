@@ -342,4 +342,6 @@ attach define
 
 #define SMS_SUPPORT
 
+#define NOT_USE_DEFAULT_SMS_FUNCTIONS
+
 #endif

@@ -530,6 +530,7 @@ int check_see_perm(struct userec* user,const struct boardheader* board)
 #endif /* USE_DEFAULT_SEE_PERM */
 
 #ifdef SMS_SUPPORT
+#ifndef NOT_USE_DEFAULT_SMS_FUNCTIONS
 int smsid2uid(char* smsid) {
 	return getuser(smsid,NULL);
 }
@@ -545,5 +546,6 @@ int uid2smsnumber(struct user_info* uin){
 int smsnumber2uid(byte number[4]){
 	return byte2long(number);
 }
+#endif
 	
 #endif
