@@ -11,6 +11,7 @@ int main()
     struct fileheader x, *oldx;
     bcache_t *brd;
     int local, anony;
+	int filtered = 0;
 
     init_all();
     if (!loginok)
@@ -44,6 +45,9 @@ int main()
     *(int *) (u_info->from + 36) = time(0);
     sprintf(filename, "tmp/%s.%d.tmp", getcurruserid(), getpid());
     f_append(filename, unix_string(content));
+	if (check_badword_str(title, strlen(title)) == 1 
+			|| check_badword(filename) == 1)
+		filtered = 1;
     if(oldfilename[0]){
     	int pos;
     	oldx = (struct fileheader*)malloc(sizeof(struct fileheader));
@@ -61,15 +65,18 @@ int main()
 		local = 0;
 	else
 		local = 1;
-    r = post_article(board, title, filename, currentuser, fromhost, sig, local, anony, oldx);
+	if (filtered == 1)
+		r = post_article(FILTER_BOARD, title, filename, currentuser, fromhost, sig, local, anony, oldx);
+	else
+		r = post_article(board, title, filename, currentuser, fromhost, sig, local, anony, oldx);
     if (r < 0)
         http_fatal("内部错误，无法发文");
     brc_update(currentuser->userid);
     if(oldx)
-    free(oldx);
+    	free(oldx);
     unlink(filename);
     sprintf(buf, "/bbsdoc.php?board=%s", board);
-    if (!junkboard(board)) {
+    if (!junkboard(board) && !filtered) {
         currentuser->numposts++;
         write_posts(currentuser->userid, board, title);
     }
