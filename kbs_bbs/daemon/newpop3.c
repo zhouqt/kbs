@@ -304,6 +304,7 @@ void outfile(filename, linenum)
     size_t size;
     long left;
 
+    sleep(20);
     if (linenum) {
         BBS_TRY {
             bool esc;
@@ -317,7 +318,7 @@ void outfile(filename, linenum)
                 long attach_len;
                 char* file,*attach;
                 if (NULL !=(file = checkattach(p, left, &attach_len, &attach))) {
-                    left-=(attach-p)-attach_len;
+                    left-=(attach-p)+attach_len;
                     p=attach+attach_len;
                     uuencode(attach, attach_len, file, outc);
                     continue;
