@@ -109,20 +109,20 @@ function html_init($charset)
 ?>
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="/ansi.css">
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>">
+<link rel="stylesheet" type="text/css" href="/ansi.css"/>
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>"/>
 <?php
 	switch ($css_style)
 	{
 	case 1:
 ?>
-<link rel="stylesheet" type="text/css" href="/bbs-bf.css">
+<link rel="stylesheet" type="text/css" href="/bbs-bf.css"/>
 <?php
 		break;
 	case 0:
 	default:
 ?>
-<link rel="stylesheet" type="text/css" href="/bbs.css">
+<link rel="stylesheet" type="text/css" href="/bbs.css"/>
 <?php
 	}
 ?>
