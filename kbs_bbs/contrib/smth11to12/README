@@ -1,0 +1,134 @@
+                    从smth1.1升级到smth1.2
+     1.升级需要转化的文件
+     smth1.1到smth1.2的升级主要涉及几个重要的struct的变化，需要转化一些数据文件。
+     列一个简单的清单如下：
+  struct定义所在的文件名            struct                     数据文件     
+     src/struct.h:               struct userec             ~bbs/.PASSWDS
+     
+     src/struct.h:               struct boardheader         ~bbs/.BOARDS
+     
+     site/site.h(default.h)      struct fileheader          各版面目录的.DIR,.DINGDIR,.DIGEST,DELETE等。 
+                                                            ~bbs/home下各用户目录的.DIR,.DELETED
+                                                            
+  如果原先站点的定义文件(site/site.h)里面没有#define HAVE_WFORUM 1
+  而在新的站点定义文件里面想增加#define HAVE_WFORUM 1那么还需要在转化完以上各个文件之后
+  参看2.7再转化一次.PASSWDS                                                            
+                                                            
+                                                            
+     
+     2.转化步骤：
+     
+     2.1备份老的bbs的数据和源程序
+     
+     2.2杀掉所有的bbs相关进程，包括转信和crontab里面的内容，清除共享内存，
+        最好重启一下服务器
+        
+     2.2以cvs取得最新的smth1.2的源码，并且按照里面的安装文档进行configure和make;
+     make install。推荐使用fb2k-v2.h进行修改作为自己站台的配置文件。
+     如果出错，请检查相关的site.h配置文件或者到smth bbs的BBSMan_Dev版求助。
+     特别的，新旧代码在site.h里面 HAVE_WFORM的定义必须一致。
+     同舟共济BBS编译时候采用的参数：
+     ./configure  --enable-site=tongji --with-www=/var/www --with-php=/usr/include/php4/ --with-mysql --enable-ssh --enable-innbbsd
+     tongji.h和tongji.c修改自fb2k-2.h fb2kv-2.c。见附录。
+     
+     2.3转换.PASSWDS文件。
+     
+     参考cnv_passwd_define2.c。
+     
+     注意，如果你的原先的site.h文件里面没有定义HAVE_WFORUM，那么在新的代码编译的
+     时候，指定的site.h文件里面也必须注释掉HAVE_WFORM 的宏定义，（/*#define HAVE_WFORUM	1*/）
+     
+     如果你原先的site.h文件里面已经定义了HAVE_WFORUM那么在新的代码编译的
+     时候，指定的site.h文件里面也必须有HAVE_WFORM 的宏定义。
+     
+     从老的代码的src/struct.h找到struct userec的定义，替换掉cnv_passwd_define2.c当中
+     struct userec1的定义；从最新的CVS代码的src/struct.h找到struct userec的定义，
+     替换掉cnv_passwd_define2.c当中struct userec2的定义。
+     
+     请核对struct userrec1和struct userrec2，根据他们的差异，核对修改main函数当中
+     转化的部分。
+     
+     以同舟共济BBS为例，原先的代码是2003年08月中旬左右的smth1.1代码，与最新CVS代码
+     相比，只需要 修改原先的unsigned int userdefine为unsigned int userdefine[2]，此修
+     改请参考 cnv_passwd_define2.c。如果你的struct userrec1和struct userrec2与此一致，
+     那么可以直接采用main函数中转化的部分。
+     
+     编译得到cnv_passwd_define2，复制原先的.PASSWDS为.PASSWDS.OLD
+     以bbs帐号执行 ./cnv_passwd_define2 .PASSWDS.OLD .PASSWDS并且以新的.PASSWDS文件覆
+     盖老的.PASSWDS文件。
+     
+     2.4转化.BOARDS文件
+     
+     参考cnv_bh_3.c。
+     
+     
+     从老的代码的src/struct.h找到struct boardheader的定义，替换掉cnv_bh_3.c当中
+     struct boardheader2的定义；从最新的CVS代码的src/struct.h找到struct boardheader的定义，
+     替换掉cnv_bh_3.c当中struct boardheader3的定义。
+     
+     请核对struct boardheader2和struct boardheader3，根据他们的差异，核对修改main函数当中
+     转化的部分。
+     
+     以同舟共济BBS为例，原先的代码是2003年08月中旬左右的smth1.1代码，与最新CVS代码
+     相比，转化的部分改请参考 cnv_bh_3.c。如果你的struct boardheader2和struct boardheader3
+     与此一致，那么可以直接采用main函数中转化的部分。
+     
+     编译得到cnv_bh_3，复制原先的.BOARDS为.BOARDS.OLD
+     以BBS帐号执行 ./cnv_bh_3 .BOARDS.OLD .BOARDS并且以新的.BOARDS文件覆
+     盖老的.BOARDS文件。
+     
+     2.5转化fileheader的数据结构
+     此转化请参考flyriver@SMTH在smth bbs BBSMan_dev 版，被m的文章958
+     《[更新] smthbbs 新版 fileheader 结构转换步骤》
+     注意此转换工作必须在完成2.3和2.4之后进行。smth1.1升级到smth1.2对strip_fh.c
+     做的修改请参考strip_fh.c，并核对您自己站台原先fileheader。
+     
+     2.6按照水木的安装文档启动bbsd，进行测试。检查各版面，转信各版面，
+     俱乐部等等有没有发文乱码的情况产生。如果没有乱码，恭喜你，转化成功。
+     
+     2.7如果原先没有定义HAVE_WFORM，想在新的代码当中启动对wForm的支持，请参考
+     下面的步骤转化.PASSWDS
+     
+     杀掉所有的bbs进程，清除共享内存，最好重启一下服务器。
+     
+     备份老的bbs系统。
+     
+     参考cnv_passwd_wofrm.c
+     
+     最新CVS代码的src/struct.h找到struct userec的定义，替换掉cnv_passwd_wofrm.c当中
+     struct userec1和当中struct userec2的定义，并且去掉struct userec1当中下列部分
+      #ifdef HAVE_USERMONEY
+        int money;
+        int score;
+        char unused[20];
+       #endif
+     
+     核对struct userec1 和struct userec2
+     他们在#ifdef HAVE_USERMONEY之前的部分应该是完全一致的，并且和最新CVS代码的
+     src/struct.h当中struct userec的定义那部分完全一致。
+     
+     编译得到cnv_passwd_wofrm，复制原先的.PASSWDS为.PASSWDS.OLD
+     以BBS帐号执行 ./cnv_passwd_wofrm .PASSWDS.OLD .PASSWDS并且以新的.PASSWDS文件覆
+     盖老的.PASSWDS文件。
+     
+     2.8按照水木安装文档启动bbsd，进行测试。如果各帐号登陆都没有问题，
+     恭喜，到此为止您已经升级到了最新的smth1.2的代码
+     
+     3文件列表：
+      cnv_bh_3.c            转化.BOARDS程序
+      cnv_passwd_define2.c  转化.PASSWDS程序
+      cnv_passwd_wform.c    转化到带wForm支持的.PASSWDS程序
+      README                本说明档
+      strip_fh.c            转化fileheader程序                            
+      define_file
+        |
+        ├─smthv11       smth1.1代码同舟共济用到的site.h,default.h,sturct.h 
+        |
+        └─smthv12       smth1.2代码同舟共济用到的site.h,site.c
+     
+     
+     
+     
+     
+     
+      
