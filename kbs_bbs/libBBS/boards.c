@@ -458,4 +458,13 @@ int junkboard(char* currboard)  /* 判断当前版是否为 junkboards */
     return seek_in_file("etc/junkboards",currboard);
 }
 
+int
+checkreadonly( char *board) /* 检查是否是只读版面 */
+{
+    struct boardheader* bh=getbcache(board);
+    if (bh&&(bh->flag & BOARD_READONLY)) /* Checking if DIR access mode is "555" */
+        return YEA;
+    else
+        return NA;
+}
 

@@ -294,9 +294,7 @@ char *checked;          /* 改动本函数必须同步 bbs.c 和 bbssnd.c (4 WWW) */
     struct stat st;
     char        buf[STRLEN];
 
-    sprintf(buf, "boards/%s", checked);
-    stat(buf, &st);
-    if (365 == (st.st_mode & 0X1FF)) /* Checking if DIR access mode is "555" */
+    if (checkreadonly(checked)) /* Checking if DIR access mode is "555" */
     {
         if (currboard == checked)
         {

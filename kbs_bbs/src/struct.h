@@ -47,10 +47,7 @@ struct user_info {              /* Structure used in UTMP file */
         char    chatid[ 16 ];   /* chat id, if in chat mode */
         char    from[ 60 ];     /* machine name the user called in from */
         time_t	freshtime;
-        union {
-		unsigned long wwwmagic; /* magic number for www , add by wwj 2001-6-20*/
-		int utmpkey;
-	};
+	int utmpkey;
         char    userid[ 20 ];
         char    realname[ 20 ];
         char    username[ 40 ];
@@ -76,7 +73,7 @@ struct boardheader {             /* This structure is used to hold data in */
         char flag;
         char title[STRLEN ];
         unsigned level;
-        unsigned char accessed[ 12 ];
+        unsigned char unused[ 12 ];
 };
 
 typedef struct fileheader {             /* This structure is used to hold data in */

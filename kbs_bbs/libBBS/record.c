@@ -482,21 +482,6 @@ int size, id ;
     return 0 ;
 }
 
-int
-checkreadonly(checked) /* Haohmaru 2000.3.19 */
-char *checked;
-{
-    struct stat st;
-    char        buf[STRLEN];
-
-    sprintf(buf, "boards/%s", checked);
-    stat(buf, &st);
-    if (365 == (st.st_mode & 0X1FF)) /* Checking if DIR access mode is "555" */
-        return YEA;
-    else
-        return NA;
-}
-
 void
 tmpfilename( filename, tmpfile, deleted )
 char    *filename, *tmpfile, *deleted;

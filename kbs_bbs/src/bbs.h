@@ -151,6 +151,7 @@ O MaxMessageSize=32000
 
 #define VOTE_FLAG 0x1
 #define NOZAP_FLAG 0x2
+#define BOARD_READONLY 0x4
 
 #define ZAPPED  0x1           /* For boards...tells if board is Zapped */
 

@@ -339,3 +339,17 @@ int set_board(int bid,struct boardheader* board)
     memcpy(&bcache[bid-1], board, sizeof(struct boardheader));
 }
 
+int board_setreadonly(char* board,int readonly)
+{
+    int fd;
+    struct boardheader* bh;
+    bh=getbcache(board);
+    if (!bh) return 0;
+    fd = bcache_lock();
+    if (readonly) 
+       bh->flag|=BOARD_READONLY;
+    else
+       bh->flag&=!BOARD_READONLY;
+    bcache_unlock(fd);
+}
+

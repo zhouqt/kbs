@@ -357,7 +357,7 @@ int     page, clsflag, newflag;
         strcpy(tmpBM,ptr->BM);
 
         /* Leeward 98.03.28 Displaying whether a board is READONLY or not */
-        if (YEA == check_readonly(ptr->name))
+        if (YEA == checkreadonly(ptr->name))
             sprintf(buf, "◆只读◆%s", ptr->title + 8);
         else
             sprintf(buf, " %s", ptr->title + 1);
@@ -466,6 +466,7 @@ int     newflag;
 	 	if( strlen(nbrd[num].name) ){
 	               	sprintf(buf, "chmod 555 boards/%s", nbrd[num].name);
                 	system(buf);
+			board_setreadonly(nbrd[num].name,1);
 
                 	/* Bigman 2000.12.11:系统记录 */
                 	sprintf(genbuf,"只读讨论区 %s ",nbrd[num].name);
@@ -485,6 +486,7 @@ int     newflag;
 
                 sprintf(buf, "chmod 755 boards/%s", nbrd[num].name);
                 system(buf);
+		board_setreadonly(nbrd[num].name,0);
 
                 /* Bigman 2000.12.11:系统记录 */
                 sprintf(genbuf,"解开只读讨论区 %s ",nbrd[num].name);
