@@ -436,16 +436,16 @@ int multilogin_user(struct userec *user, int usernum,int mode)
     	|| HAS_PERM(user, PERM_BMAMANGER) )
         && logincount < 3)
         return 0;
+
+    if (!strcmp("guest", user->userid)) {
+        if (logincount > MAX_GUEST_NUM) return 2;
+        return 0;
+    }
+
     /* 未通过注册的用户不能双登 added by bixnun 2003.5.30 */
     if((!HAS_PERM(user,PERM_LOGINOK)) && logincount >0)return 1; 
     
-    /* allow multiple guest user */
-    if (!strcmp("guest", user->userid)) {
-        if (logincount > MAX_GUEST_NUM) {
-            return 2;
-        }
-        return 0;
-    } else if (((curr_login_num < 700) && (logincount >= 3)) /*小于700可以三登*/
+    if (((curr_login_num < 700) && (logincount >= 3)) /*小于700可以三登*/
                || ((curr_login_num >= 700) && (logincount >= 2)  /*700人以上*/
                      && !(((arg.telnet_count==0)&&(mode==0))  /* telnet个数为零可以再登一个telnet */
                             || (((arg.www_count==0)&&(mode==1)) ))))       /*user login limit */
