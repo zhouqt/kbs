@@ -86,7 +86,7 @@
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h2 class="title" style="clear: both">
 <a name="install"></a>2. wForum 安装说明</h2></div></div>
-<p>首先到 <a href="http://dev.smth.org/" target="_blank">smthbbs 开发主页</a> 下载最新的 smthbbs 和 wForum 代码。请一定注意 wForum 必须配合同一个时间点 smthbbs 的 CVS 版本或者 snapshot 版本使用，比如下载同一天的 snapshot 就不会有问题，如果最新 wForum snapshot 配合 smthbbs 1.2.1 使用就会有这样那样的小问题。</p>
+<p>首先到 <a href="http://dev.smth.org/" target="_blank">smthbbs 开发主页</a> 下载最新的 smthbbs 和 wForum 代码。请一定注意 wForum 必须配合同一个时间点 smthbbs 的 CVS 版本或者 snapshot 版本使用，比如下载同一天的 snapshot 就不会有问题，如果最新 wForum snapshot 配合 smthbbs 1.2.1 使用就会有这样那样的小问题。另外，wForum 需要 PHP 支持 gd、dom 及 mysql。</p>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
 <a name="install_smthbbs"></a>2.1. smthbbs 安装</h3></div></div>
@@ -102,7 +102,7 @@
 cp inc/sites/site-example.php inc/sites/mcwy.php
 ln -s inc/sites/mcwy.php inc/site.php</pre>
 <p>
-				inc/site.php 就是你的站点定义文件。修改 inc/site.php 里面的各类参数，特别是分类讨论区，mysql 用户、密码和数据库名。数据库支持是可选的，可以用如下语句在 mysql 中建立一个数据表来支持小字报功能：
+				inc/site.php 就是你的站点定义文件。修改 inc/site.php 里面的各类参数，特别是分类讨论区，mysql 用户、密码和数据库名。数据库支持默认是开启的，可以在 site.php 中关掉。用如下语句在 mysql 中建立一个数据表来支持小字报功能：
 				</p>
 <pre class="programlisting">
 create table smallpaper_tb(
@@ -209,7 +209,7 @@ short_open_tag = off</pre>
 				</p>
 </li>
 <li>
-<p>PHP 编译说明: wForum 需要 PHP 支持 gd、dom 及 mysql。首先，确认你的 linux 系统已安装了 mysql、gd、libjpeg、libpng、freetype、libxml2 及各自相应的 devel 包，然后用下面的参数编译 PHP（假设 apache 1.3.x）：
+<p>PHP 编译说明: wForum 需要 PHP 支持 gd、dom 及 mysql。如果你是自己编译 PHP，首先，确认你的 linux 系统已安装了 mysql、gd、libjpeg、libpng、freetype、libxml2 及各自相应的 devel 包，然后用下面的参数编译 PHP（假设 apache 1.3.x）：
 					</p>
 <pre class="programlisting">
 ./configure  --prefix=/bbs/www --with-freetype-dir=/usr/lib --with-gd --with-jpeg-dir --with-png-dir 

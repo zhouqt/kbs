@@ -21,7 +21,7 @@
 	</section>
 	<section id="install">
 		<title>wForum 安装说明</title>
-		<para>首先到 <ulink url="http://dev.smth.org/">smthbbs 开发主页</ulink> 下载最新的 smthbbs 和 wForum 代码。请一定注意 wForum 必须配合同一个时间点 smthbbs 的 CVS 版本或者 snapshot 版本使用，比如下载同一天的 snapshot 就不会有问题，如果最新 wForum snapshot 配合 smthbbs 1.2.1 使用就会有这样那样的小问题。</para>
+		<para>首先到 <ulink url="http://dev.smth.org/">smthbbs 开发主页</ulink> 下载最新的 smthbbs 和 wForum 代码。请一定注意 wForum 必须配合同一个时间点 smthbbs 的 CVS 版本或者 snapshot 版本使用，比如下载同一天的 snapshot 就不会有问题，如果最新 wForum snapshot 配合 smthbbs 1.2.1 使用就会有这样那样的小问题。另外，wForum 需要 PHP 支持 gd、dom 及 mysql。</para>
 		<section id="install_smthbbs">
 			<title>smthbbs 安装</title>
 			<para>smthbbs 安装请参考其安装文档；必须打开 WWW 支持。站点文件请参考 site/zixia.h 和 site/zixia.c。</para>
@@ -33,7 +33,7 @@
 				<programlisting>
 cp inc/sites/site-example.php inc/sites/mcwy.php
 ln -s inc/sites/mcwy.php inc/site.php</programlisting>
-				inc/site.php 就是你的站点定义文件。修改 inc/site.php 里面的各类参数，特别是分类讨论区，mysql 用户、密码和数据库名。数据库支持是可选的，可以用如下语句在 mysql 中建立一个数据表来支持小字报功能：
+				inc/site.php 就是你的站点定义文件。修改 inc/site.php 里面的各类参数，特别是分类讨论区，mysql 用户、密码和数据库名。数据库支持默认是开启的，可以在 site.php 中关掉。用如下语句在 mysql 中建立一个数据表来支持小字报功能：
 				<programlisting>
 create table smallpaper_tb(
  ID int    not null auto_increment primary key,
@@ -104,7 +104,7 @@ short_open_tag = off</programlisting>
 #define TMPFSROOT   "cache" /*tmpfs的根在bbshome/cache */</programlisting>
 					如果 USE_TMPFS 原来是 0，修改后重新编译安装。同时在 ~bbs/ 下建立 cache 目录，重启动服务。可以在 ~bbs/cache/ mount 一个 tmpfs 文件系统提高性能。推荐 USE_TMPFS 定义成 1，否则的话两个 telnet 登录之间的未读记录都不会同步。
 				</para></listitem>
-				<listitem><para>PHP 编译说明: wForum 需要 PHP 支持 gd、dom 及 mysql。首先，确认你的 linux 系统已安装了 mysql、gd、libjpeg、libpng、freetype、libxml2 及各自相应的 devel 包，然后用下面的参数编译 PHP（假设 apache 1.3.x）：
+				<listitem><para>PHP 编译说明: wForum 需要 PHP 支持 gd、dom 及 mysql。如果你是自己编译 PHP，首先，确认你的 linux 系统已安装了 mysql、gd、libjpeg、libpng、freetype、libxml2 及各自相应的 devel 包，然后用下面的参数编译 PHP（假设 apache 1.3.x）：
 					<programlisting>
 ./configure  --prefix=/bbs/www --with-freetype-dir=/usr/lib --with-gd --with-jpeg-dir --with-png-dir 
 --with-config-file-path=/bbs/www/conf --with-zlib-dir --with-mysql --with-apxs=/bbs/www/bin/apxs --with-dom</programlisting>
