@@ -862,6 +862,8 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-icc=path
+                          select intel compiler
   --with-x                use the X Window System
   --with-idea             Use IDEA (default).
   --without-idea          Don't use IDEA: avoids patent problems in commercial use
@@ -1637,6 +1639,38 @@ ac_config_headers="$ac_config_headers config.h"
 
 # So many systems seem to need this that it is better do it here automatically.
 LIBS="-L/usr/local/lib $LIBS"
+
+
+# Check whether --with-icc or --without-icc was given.
+if test "${with_icc+set}" = set; then
+  withval="$with_icc"
+
+        if test "$withval" = "yes"; then
+                withval=/opt/intel/compiler60/ia32
+        fi
+    if test -d $withval; then
+                CC=icc
+                CXX=icc
+                if test -z "$CFLAGS"; then
+                        CFLAGS="$CFLAGS -tpp6 -axK -O3 -unroll256 -w1 -ipo -g -I$withval/include"
+                fi
+                if test -z "$LDFLAGS"; then
+                        LDFLAGS="$LDFLAGS -ipo -static"
+                fi
+                CONFIG_AR=xiar
+                EXTRA_CLEAN="*.il"
+    else
+                { { echo "$as_me:$LINENO: error: can't find intel compiler in $withval!" >&5
+echo "$as_me: error: can't find intel compiler in $withval!" >&2;}
+   { (exit 1); exit 1; }; }
+    fi
+
+else
+  CONFIG_AR=ar; EXTRA_CLEAN=""
+fi;
+
+
+
 
 # Make sure we can run config.sub.
 $ac_config_sub sun4 >/dev/null 2>&1 ||
@@ -13358,11 +13392,11 @@ fi
 
 OLDPWD=`pwd`
 cd ../src
-BBSSOURCES=
+BBSOBJS=
 for i in *.c; do
 	ac_config_links="$ac_config_links $i:../src/$i"
 
-	LIBOBJS="$LIBOBJS `echo $i|sed 's/.c$//'`.$ac_objext"
+	BBSOBJS="$BBSOBJS `echo $i|sed 's/.c$/.o/'`"
 done
 cd $OLDPWD
 ac_config_links="$ac_config_links mkinstalldirs:../mkinstalldirs"
@@ -13370,6 +13404,8 @@ ac_config_links="$ac_config_links mkinstalldirs:../mkinstalldirs"
 ac_config_links="$ac_config_links missing:../missing"
 
 ac_config_links="$ac_config_links depcomp:../depcomp"
+
+ac_config_links="$ac_config_links gmp-2.0.2-ssh-2/depcomp:../depcomp"
 
 
 
@@ -13878,6 +13914,7 @@ do
   "mkinstalldirs" ) CONFIG_LINKS="$CONFIG_LINKS mkinstalldirs:../mkinstalldirs" ;;
   "missing" ) CONFIG_LINKS="$CONFIG_LINKS missing:../missing" ;;
   "depcomp" ) CONFIG_LINKS="$CONFIG_LINKS depcomp:../depcomp" ;;
+  "gmp-2.0.2-ssh-2/depcomp" ) CONFIG_LINKS="$CONFIG_LINKS gmp-2.0.2-ssh-2/depcomp:../depcomp" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
   "config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
@@ -13980,6 +14017,8 @@ s,@ac_ct_STRIP@,$ac_ct_STRIP,;t t
 s,@INSTALL_STRIP_PROGRAM@,$INSTALL_STRIP_PROGRAM,;t t
 s,@AWK@,$AWK,;t t
 s,@SET_MAKE@,$SET_MAKE,;t t
+s,@CONFIG_AR@,$CONFIG_AR,;t t
+s,@EXTRA_CLEAN@,$EXTRA_CLEAN,;t t
 s,@build@,$build,;t t
 s,@build_cpu@,$build_cpu,;t t
 s,@build_vendor@,$build_vendor,;t t
@@ -14032,7 +14071,7 @@ s,@CONFOBJS@,$CONFOBJS,;t t
 s,@SSHCONFOBJS@,$SSHCONFOBJS,;t t
 s,@SSHDCONFOBJS@,$SSHDCONFOBJS,;t t
 s,@SSHINSTALLMODE@,$SSHINSTALLMODE,;t t
-s,@BBSSOURCES@,$BBSSOURCES,;t t
+s,@BBSOBJS@,$BBSOBJS,;t t
 CEOF
 
 _ACEOF

@@ -67,11 +67,13 @@ transform = @program_transform_name@
 AMTAR = @AMTAR@
 AR = @AR@
 AWK = @AWK@
-BBSSOURCES = @BBSSOURCES@
+BBSOBJS = @BBSOBJS@
 CC = @CC@
+CONFIG_AR = @CONFIG_AR@
 CONFOBJS = @CONFOBJS@
 DEPDIR = @DEPDIR@
 ETCDIR = @ETCDIR@
+EXTRA_CLEAN = @EXTRA_CLEAN@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 KERBEROS_INCS = @KERBEROS_INCS@
 KERBEROS_LIBS = @KERBEROS_LIBS@
@@ -142,11 +144,13 @@ EXTRA_DIST = COPYING README README.SECURID README.TIS README.SECURERPC \
 	RFC rfc-pg.c ChangeLog
 
 
+CLEANFILES = @EXTRA_CLEAN@
 bin_PROGRAMS = sshbbsd
-sshbbsd_LDADD = ../libsystem/libsystem.a ../rzsz/libzmodem.a $(GMPLIBS) $(ZLIBLIBS) $(WRAPLIBS) $(KERBEROS_LIBS) $(SSHLIBS) @LIBOBJ@
+sshbbsd_LDADD = @BBSOBJS@ @CONFOBJS@ @SSHDCONFOBJS@ ../libsystem/libsystem.a ../rzsz/libzmodem.a $(GMPLIBS) $(ZLIBLIBS) $(WRAPLIBS) $(KERBEROS_LIBS) $(SSHLIBS) -lbsd -lesmtp -lltdl -ldl
+sshbbsd_DEPENDENCIES = @BBSOBJS@ @CONFOBJS@ @SSHDCONFOBJS@ ../libsystem/libsystem.a ../rzsz/libzmodem.a $(GMPDEP)
 #EXTRA_sshbbsd_SOURCE = @BBSSOURCES@ @LIBOBJS@ @CONFOBJS@ @SSHDCONFOBJS@
 sshbbsd_SOURCES = $(SSHD_OBJS:.o=.c) $(KEYGEN_OBJS:.o=.c)
-AM_CFLAGS = -I. -I../src -I$(srcdir)/$(GMPDIR) -I$(srcdir)/$(ZLIBDIR) -DSAFE_KILL -DBBSMAIN -DSSHBBS -DHOST_KEY_FILE=\"$(HOST_KEY_FILE)\" -DHOST_CONFIG_FILE=\"$(HOST_CONFIG_FILE)\" -I.. -DSERVER_CONFIG_FILE=\"$(SERVER_CONFIG_FILE)\" -DSSH_PROGRAM=\"$(SSH_PROGRAM)\" -DETCDIR=\"$(etcdir)\" -DPIDDIR=\"$(piddir)\" -DSSH_BINDIR=\"$(bindir)\"
+AM_CFLAGS = -I. -I../src -DBBSMAIN -DINVISIBLE -DSAFE_KILL -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME -DSSHBBS -I$(srcdir)/$(GMPDIR) -I$(srcdir)/$(ZLIBDIR) -DSAFE_KILL -DBBSMAIN -DSSHBBS -DHOST_KEY_FILE=\"$(HOST_KEY_FILE)\" -DHOST_CONFIG_FILE=\"$(HOST_CONFIG_FILE)\" -I.. -DSERVER_CONFIG_FILE=\"$(SERVER_CONFIG_FILE)\" -DSSH_PROGRAM=\"$(SSH_PROGRAM)\" -DETCDIR=\"$(etcdir)\" -DPIDDIR=\"$(piddir)\" -DSSH_BINDIR=\"$(bindir)\"
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -167,7 +171,6 @@ am__objects_1 = sshd.$(OBJEXT) auth-passwd.$(OBJEXT) \
 	tildexpand.$(OBJEXT) serverloop.$(OBJEXT) $(am__objects_2)
 am_sshbbsd_OBJECTS = $(am__objects_1) $(am__objects_3)
 sshbbsd_OBJECTS = $(am_sshbbsd_OBJECTS)
-sshbbsd_DEPENDENCIES = ../libsystem/libsystem.a ../rzsz/libzmodem.a
 sshbbsd_LDFLAGS =
 
 DEFS = @DEFS@
@@ -204,7 +207,8 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive install-info-recursive \
 	uninstall-recursive check-recursive installcheck-recursive
 DIST_COMMON = README AUTHORS COPYING ChangeLog INSTALL Makefile.am \
 	Makefile.in NEWS TODO acconfig.h aclocal.m4 config.guess \
-	config.h.in config.sub configure configure.in install-sh
+	config.h.in config.sub configure configure.in depcomp \
+	install-sh missing mkinstalldirs
 DIST_SUBDIRS = $(SUBDIRS)
 SOURCES = $(sshbbsd_SOURCES)
 
@@ -543,6 +547,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-rm -f Makefile $(CONFIG_CLEAN_FILES) stamp-h stamp-h[0-9]*

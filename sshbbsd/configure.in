@@ -18,6 +18,32 @@ AC_PREREQ(2.10)
 # So many systems seem to need this that it is better do it here automatically.
 LIBS="-L/usr/local/lib $LIBS"
 
+AC_ARG_WITH(icc,
+[  --with-icc=path
+                          select intel compiler],
+[
+        if test "$withval" = "yes"; then
+                withval=/opt/intel/compiler60/ia32
+        fi
+    if test -d $withval; then
+                CC=icc
+                CXX=icc
+                if test -z "$CFLAGS"; then
+                        CFLAGS="$CFLAGS -tpp6 -axK -O3 -unroll256 -w1 -ipo -g -I$withval/include"
+                fi
+                if test -z "$LDFLAGS"; then
+                        LDFLAGS="$LDFLAGS -ipo -static"
+                fi
+                CONFIG_AR=xiar
+                EXTRA_CLEAN="*.il"
+    else
+                AC_MSG_ERROR([can't find intel compiler in $withval!])
+    fi
+],[CONFIG_AR=ar; EXTRA_CLEAN=""])
+
+AC_SUBST(CONFIG_AR)
+AC_SUBST(EXTRA_CLEAN)
+
 AC_CANONICAL_HOST
 AC_MSG_CHECKING(cached information)
 hostcheck="$host"
@@ -1355,15 +1381,16 @@ AH_TEMPLATE([_POSIX_SOURCE],
 
 OLDPWD=`pwd`
 cd ../src
-BBSSOURCES=
+BBSOBJS=
 for i in *.c; do
 	AC_CONFIG_LINKS($i:../src/$i)
-	AC_LIBOBJ(`echo $i|sed 's/.c$//'`)
+	BBSOBJS="$BBSOBJS `echo $i|sed 's/.c$/.o/'`"
 done
 cd $OLDPWD
 AC_CONFIG_LINKS(mkinstalldirs:../mkinstalldirs)
 AC_CONFIG_LINKS(missing:../missing)
 AC_CONFIG_LINKS(depcomp:../depcomp)
+AC_CONFIG_LINKS(gmp-2.0.2-ssh-2/depcomp:../depcomp)
 
 AC_SUBST(ETCDIR)
 AC_SUBST(PIDDIR)
@@ -1372,6 +1399,6 @@ AC_SUBST(CONFOBJS)
 AC_SUBST(SSHCONFOBJS)
 AC_SUBST(SSHDCONFOBJS)
 AC_SUBST(SSHINSTALLMODE)
-AC_SUBST(BBSSOURCES)
+AC_SUBST(BBSOBJS)
 
 AC_OUTPUT(Makefile)

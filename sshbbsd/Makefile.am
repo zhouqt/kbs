@@ -38,11 +38,13 @@ EXTRA_DIST= COPYING README README.SECURID README.TIS README.SECURERPC \
 	server_config.sample install-sh make-ssh-known-hosts.pl RFC.nroff \
 	RFC rfc-pg.c ChangeLog
 
+CLEANFILES=@EXTRA_CLEAN@
 bin_PROGRAMS = sshbbsd
-sshbbsd_LDADD = ../libsystem/libsystem.a ../rzsz/libzmodem.a $(GMPLIBS) $(ZLIBLIBS) $(WRAPLIBS) $(KERBEROS_LIBS) $(SSHLIBS) @LIBOBJ@
+sshbbsd_LDADD = @BBSOBJS@ @CONFOBJS@ @SSHDCONFOBJS@ ../libsystem/libsystem.a ../rzsz/libzmodem.a $(GMPLIBS) $(ZLIBLIBS) $(WRAPLIBS) $(KERBEROS_LIBS) $(SSHLIBS) -lbsd -lesmtp -lltdl -ldl
+sshbbsd_DEPENDENCIES = @BBSOBJS@ @CONFOBJS@ @SSHDCONFOBJS@ ../libsystem/libsystem.a ../rzsz/libzmodem.a $(GMPDEP)
 #EXTRA_sshbbsd_SOURCE = @BBSSOURCES@ @LIBOBJS@ @CONFOBJS@ @SSHDCONFOBJS@
 sshbbsd_SOURCES = $(SSHD_OBJS:.o=.c) $(KEYGEN_OBJS:.o=.c)
-AM_CFLAGS=-I. -I../src -I$(srcdir)/$(GMPDIR) -I$(srcdir)/$(ZLIBDIR) -DSAFE_KILL -DBBSMAIN -DSSHBBS -DHOST_KEY_FILE=\"$(HOST_KEY_FILE)\" -DHOST_CONFIG_FILE=\"$(HOST_CONFIG_FILE)\" -I.. -DSERVER_CONFIG_FILE=\"$(SERVER_CONFIG_FILE)\" -DSSH_PROGRAM=\"$(SSH_PROGRAM)\" -DETCDIR=\"$(etcdir)\" -DPIDDIR=\"$(piddir)\" -DSSH_BINDIR=\"$(bindir)\"
+AM_CFLAGS=-I. -I../src -DBBSMAIN -DINVISIBLE -DSAFE_KILL -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME -DSSHBBS -I$(srcdir)/$(GMPDIR) -I$(srcdir)/$(ZLIBDIR) -DSAFE_KILL -DBBSMAIN -DSSHBBS -DHOST_KEY_FILE=\"$(HOST_KEY_FILE)\" -DHOST_CONFIG_FILE=\"$(HOST_CONFIG_FILE)\" -I.. -DSERVER_CONFIG_FILE=\"$(SERVER_CONFIG_FILE)\" -DSSH_PROGRAM=\"$(SSH_PROGRAM)\" -DETCDIR=\"$(etcdir)\" -DPIDDIR=\"$(piddir)\" -DSSH_BINDIR=\"$(bindir)\"
 
 # Creates /etc/ssh_host_key
 generate-host-key:
