@@ -350,8 +350,6 @@ attach define
 
 #define CHECK_IP_LINK 1
 
-#define BOARD_SHOW_ONLINE 0
-
 #define SMS_SUPPORT
 
 #define PERSONAL_CORP
@@ -370,5 +368,6 @@ attach define
 
 #define QUOTED_LINES 3
 #define QUOTELEV 0
+#define BOARD_SHOW_ONLINE 1
 
 #endif
