@@ -788,12 +788,16 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
         strcpy(post_file.owner, "SYSOP");
     fp = fopen(filepath, "w");
     fp2 = fopen(file, "r");
+#ifndef RAW_ARTICLE
     write_header2(fp, board, title, user->userid, user->username, anony);
+#endif
     write_file2(fp, fp2);
     fclose(fp2);
+#ifndef RAW_ARTICLE
     if (!anony)
         addsignature(fp, user, sig);
     add_loginfo2(fp, board, user, anony);       /*添加最后一行 */
+#endif
 
     strncpy(post_file.title, title, STRLEN);
     if (local_save == 1) {      /* local save */
@@ -867,7 +871,11 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
         }
     }
     fclose(fp);
-    after_post(currentuser, &post_file, board, oldx);
+    if (after_post(currentuser, &post_file, board, oldx)==0) {
+#ifdef WWW_GENERATE_STATIC
+        generate_static(&post_file,board,oldx);
+#endif
+    }
 
     return post_file.id;
 }
