@@ -1067,9 +1067,13 @@ int generate_title()
 {
     struct fileheader mkpost, *ptr1, *ptr2;
     struct flock ldata, ldata2;
-    int fd, fd2, size = sizeof(fileheader), total, i, j, count = 0;
+    int fd, fd2, size = sizeof(fileheader), total, i, j, count = 0, hasht;
     char olddirect[PATHLEN];
-    char *ptr, *index, *t;
+    char *ptr, *t;
+    struct hashstruct {
+    	int index, data;
+    } *hashtable;
+    int *index, *next;
     struct stat buf;
 
     digestmode = 0;
@@ -1122,34 +1126,67 @@ int generate_title()
         return -1;
     }
     total = buf.st_size / size;
-    index = (char*)malloc(sizeof(char)*total);
-    memset(index, 0, sizeof(char)*total);
+    hasht = total*8/5;
+    hashtable = (struct hashstruct*) malloc(sizeof(*hashtable)*hasht);
+    index = (int*)malloc(sizeof(int)*total);
+    next = (int*)malloc(sizeof(int)*total);
+    memset(hashtable, 0xFF, sizeof(*hashtable)*hasht);
+    memset(index, 0, sizeof(int)*total);
+    ptr1 = (struct fileheader*)ptr;
+    for(i=0;i<total;i++,ptr1++){
+    	int l=0, m;
+    	if(ptr1->groupid==ptr1->id)
+    		l=i;
+    	else {
+    		l=ptr1->groupid%hasht;
+    		while(hashtable[l].index!=ptr1->groupid&&hashtable[l].index!=-1){
+    			l++;
+    			if(l>=hasht) l=0;
+    		}
+    		if(hashtable[l].index==-1) l=i;
+    		else l=hashtable[l].data;
+    	}
+    	if(l==i){
+    		l=ptr1->groupid%hasht;
+    		while(hashtable[l].index!=-1){
+    			l++;
+    			if(l>=hasht) l=0;
+    		}
+    		hashtable[l].index=ptr1->groupid;
+    		hashtable[l].data=i;
+    		index[i]=i;
+    		next[i]=0;
+    	}
+    	else {
+    		m=index[l];
+    		next[m]=i;
+    		next[i]=0;
+    		index[l]=i;
+    		index[i]=-1;
+    	}
+    }
     ptr1 = (struct fileheader*)ptr;
     for(i=0;i<total;i++,ptr1++) 
-    if (!index[i]) {
+    if (index[i]!=-1) {
     	int last;
     	write(fd, ptr1, size);
     	count++;
-    	for(last=total-1;last>i;last--){
-	    	ptr2 = (struct fileheader*)(ptr+last*size);
-    		if(!index[last]&&ptr1->groupid==ptr2->groupid) break;
-    	}
-    	if(i<total-1)
-    	ptr2 = (struct fileheader*)(ptr+(i+1)*size);
-    	if(last>i)
-    	for(j=i+1;j<=last;j++,ptr2++)
-    	if(!index[j]&&ptr1->groupid==ptr2->groupid){
-    		index[j]=1;
+    	j=next[i];
+    	while(j!=0){
+    		ptr2=(struct fileheader*)(ptr+j*size);
     		memcpy(&mkpost, ptr2, sizeof(mkpost));
     		t = ptr2->title;
     		if(!strncmp(t, "Re:", 3)) t+=4;
-		if(j==last) sprintf(mkpost.title, "©¸ %s", t);
+		if(next[j]==0) sprintf(mkpost.title, "©¸ %s", t);
 		else sprintf(mkpost.title, "©À %s", t);
     		write(fd, &mkpost, size);
     		count++;
+    		j=next[j];
     	}
     }
     free(index);
+    free(next);
+    free(hashtable);
     end_mmapfile((void *) ptr, buf.st_size, -1);
     ldata2.l_type = F_UNLCK;
     fcntl(fd2, F_SETLKW, &ldata2);
