@@ -1130,11 +1130,12 @@ int search_mode(int mode, char *index)
     return NEWDIRECT;
 }
 
-int change_mode()
+int change_mode(int ent, struct fileheader *fileinfo, char *direct)
 {
     extern char currdirect[STRLEN];
     char ans[4];
-    char buf[STRLEN];
+    char buf[STRLEN],buf2[STRLEN];
+    static char title[31]="";
 
     if (digestmode > 0) {
         if (digestmode == 7 || digestmode == 8)
@@ -1149,13 +1150,20 @@ int change_mode()
     if (ans[0] == '3') {
         move(t_lines - 1, 0);
         clrtoeol();
-        getdata(t_lines - 1, 0, "您想查找哪位网友的文章? ", buf, 13, DOECHO, NULL, true);
+	sprintf(buf, "您想查找哪位网友的文章[%s]: ", fileinfo->owner);
+        getdata(t_lines - 1, 0, buf, buf2, 13, DOECHO, NULL, true);
+	if (buf2[0]) strcpy(buf, buf2);
+	else strcpy(buf, fileinfo->owner);
         if (buf[0] == 0)
             return FULLUPDATE;
     } else if (ans[0] == '4') {
         move(t_lines - 1, 0);
         clrtoeol();
-        getdata(t_lines - 1, 0, "您想查找的文章标题关键字: ", buf, 30, DOECHO, NULL, true);
+        sprintf(buf, "您想查找的文章标题关键字[%s]: ", title);
+        getdata(t_lines - 1, 0, buf, buf2, 30, DOECHO, NULL, true);
+        if (buf2[0])
+            strcpy(title, buf2);
+	strcpy(buf, title);
         if (buf[0] == 0)
             return FULLUPDATE;
     }

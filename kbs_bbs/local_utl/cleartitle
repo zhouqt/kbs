@@ -1,0 +1,8 @@
+#! /bin/sh
+for i in boards/*
+do
+cd $i
+find . -name ".TITLE.*" -mtime 1 -exec rm -f {} \;
+find . -name ".AUTHOR.*" -mtime 1 -exec rm -f {} \;
+cd ../..
+done
