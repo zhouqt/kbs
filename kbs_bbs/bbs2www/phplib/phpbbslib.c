@@ -67,6 +67,7 @@ static PHP_FUNCTION(bbs_compute_user_value);
 static PHP_FUNCTION(bbs_checknewmail);
 static PHP_FUNCTION(bbs_user_level_char);
 static PHP_FUNCTION(bbs_getonlineuser);
+static PHP_FUNCTION(bbs_checkorigin);
 static PHP_FUNCTION(bbs_getonlinenumber);
 static PHP_FUNCTION(bbs_getonlineusernumber);
 static PHP_FUNCTION(bbs_getwwwguestnumber);
@@ -224,6 +225,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_checkpasswd, NULL)
         PHP_FE(bbs_getcurrentuser, NULL)
         PHP_FE(bbs_setonlineuser, NULL)
+        PHP_FE(bbs_checkorigin, NULL)
         PHP_FE(bbs_getcurrentuinfo, NULL)
         PHP_FE(bbs_wwwlogin, NULL)
         PHP_FE(bbs_wwwlogoff, NULL)
@@ -1518,6 +1520,103 @@ static PHP_FUNCTION(bbs_search_articles)
     ldata.l_type = F_UNLCK;
     fcntl(fd, F_SETLKW, &ldata);        /* ÍË³ö»¥³âÇøÓò*/
     close(fd);
+}
+
+static PHP_FUNCTION(bbs_checkorigin)
+{
+	char *board;
+    int board_len;
+    int ac = ZEND_NUM_ARGS();
+
+    struct fileheader *ptr1;
+    struct flock ldata, ldata2;
+    int fd, fd2, size = sizeof(fileheader), total, i, count = 0;
+    char olddirect[PATHLEN];
+	char newdirect[PATHLEN];
+    char *ptr;
+    struct stat buf;
+    bool init;
+
+    /*
+     * getting arguments 
+     */
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &board, &board_len) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+
+    setbdir(DIR_MODE_NORMAL, olddirect, board);
+    setbdir(DIR_MODE_ORIGIN, newdirect, board);
+    if (!setboardorigin(board, -1)) {
+    	RETURN_LONG(0);
+    }
+    if ((fd = open(newdirect, O_WRONLY | O_CREAT, 0664)) == -1) {
+        bbslog("3user", "%s", "recopen err");
+    	RETURN_LONG(-1);
+    }
+    ldata.l_type = F_WRLCK;
+    ldata.l_whence = 0;
+    ldata.l_len = 0;
+    ldata.l_start = 0;
+    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+        bbslog("3user", "%s", "reclock err");
+        close(fd);
+    	RETURN_LONG(-2);
+    }
+    if ( !setboardorigin(board, -1)) {
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+    	RETURN_LONG(1);
+    }
+
+    if ((fd2 = open(olddirect, O_RDONLY, 0664)) == -1) {
+        bbslog("3user", "%s", "recopen err");
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+    	RETURN_LONG(-3);
+    }
+    fstat(fd2, &buf);
+    ldata2.l_type = F_RDLCK;
+    ldata2.l_whence = 0;
+    ldata2.l_len = 0;
+    ldata2.l_start = 0;
+    fcntl(fd2, F_SETLKW, &ldata2);
+    total = buf.st_size / size;
+
+    init = false;
+    if ((i = safe_mmapfile_handle(fd2, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
+        if (i == 2)
+            end_mmapfile((void *) ptr, buf.st_size, -1);
+        ldata2.l_type = F_UNLCK;
+        fcntl(fd2, F_SETLKW, &ldata2);
+        close(fd2);
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+    	RETURN_LONG(-4);
+    }
+    ptr1 = (struct fileheader *) ptr;
+    for (i = 0; i < total; i++) {
+        if ( ptr1->id == ptr1->groupid ){
+            write(fd, ptr1, size);
+            count++;
+        }
+        ptr1++;
+    }
+    end_mmapfile((void *) ptr, buf.st_size, -1);
+    ldata2.l_type = F_UNLCK;
+    fcntl(fd2, F_SETLKW, &ldata2);
+    close(fd2);
+    ftruncate(fd, count * size);
+
+    setboardorigin(board, 0);
+
+    ldata.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &ldata);
+    close(fd);
+
+   	RETURN_LONG(3);
 }
 
 static PHP_FUNCTION(bbs_searchtitle)

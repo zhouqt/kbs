@@ -267,6 +267,7 @@
                 $isnormalboard=bbs_normalboard($board);
 
         	bbs_set_onboard($brdnum,1);
+			bbs_checkorigin($brdarr["NAME"]);
 		if ($isnormalboard&&($default_dir_mode == $dir_modes["NORMAL"])) {
                         $dotdirname=BBS_HOME . "/boards/" . $brdarr["NAME"] . "/.DIR";
        			if (cache_header("public, must-revalidate",filemtime($dotdirname),10))
