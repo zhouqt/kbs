@@ -161,7 +161,7 @@ int check_calltime()
         good_move(line, 0);
         clrtoeol();
         saveline(line, 1, NULL);
-        calltime = calc_calltime();
+        calltime = calc_calltime(0);
 		good_move(y,x);
 		return 1;
     }

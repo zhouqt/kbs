@@ -877,7 +877,7 @@ void main_bbs(int convit, char *argv)
 		pressanykey();
 	}
 
-	calc_calltime();
+	calc_calltime(1);
 	while(calltime != 0 && calltime < time(0)){
 		clear();
 		move(1,0);
@@ -887,10 +887,11 @@ void main_bbs(int convit, char *argv)
 		move(4,10);
 		calltimememo[39]='\0';
 		prints("[1;31m %s [m",calltimememo);
+		prints("\n%s",ctime(&(currentuser->lastlogin)));
 		move(t_lines-1,0);
 		prints("                          press any key to continue...");
 		refresh();
-		calc_calltime();
+		calc_calltime(0);
 		igetch();
 	}
 

@@ -7,6 +7,8 @@
 #define CLOCK_TYPE_YEAR 5
 #define CLOCK_TYPE_IMP_NOT 6
 #define CLOCK_TYPE_IMP_HAD 7
+#define CLOCK_TYPE_LOGIN 8
+#define CLOCK_TYPE_LOGIN_HAD 9
 
 #define MAX_CLOCK_DEF 100
 
@@ -101,7 +103,7 @@ static int del_clock(int num)
 	init_clock_data();
 	if(del_clock_data(num)){
 		save_clock_data();
-		calc_calltime();
+		calc_calltime(2);
 		return SHOW_DIRCHANGE;
 	}
 	return SHOW_CONTINUE;
@@ -135,6 +137,9 @@ static time_t get_realcalltime(struct clock_struct * ck)
 		if(newtmt <= now)
 			newtmt += 86400 ;
 		return newtmt;
+	}
+	else if( ck->type == CLOCK_TYPE_LOGIN || ck->type == CLOCK_TYPE_LOGIN_HAD ){
+		return (ck->clock_time + currentuser->lastlogin) ;
 	}
 	else if( ck->type == CLOCK_TYPE_WEEK ){
 		struct tm newtm;
@@ -204,12 +209,20 @@ static time_t get_realcalltime(struct clock_struct * ck)
 	return ck->clock_time;
 }
 
-time_t calc_calltime()
+/*
+ * mode:  1: 登陆第一次运行
+ *        2: 增加/减少 闹铃时重新计算,不用old_calltime
+ *        0: 闹铃过后重新计算
+ */
+time_t calc_calltime(int mode)
 {
 	int out=0;
 	int i;
 	time_t ret=0;
-	time_t old_calltime = calltime;
+	time_t old_calltime ;
+
+	if(mode==0) old_calltime = calltime;
+	else old_calltime = 0;
 
 	if(clock_data == NULL){
 		clock_data = (struct clock_struct *) malloc(sizeof(struct clock_struct) * MAX_CLOCK_DEF);
@@ -225,9 +238,24 @@ time_t calc_calltime()
 
 		realcalltime = get_realcalltime(clock_data + i);
 
+		if(mode==1 && (clock_data+i)->type == CLOCK_TYPE_LOGIN_HAD) 
+			(clock_data+i)->type = CLOCK_TYPE_LOGIN;
+
+		if((clock_data+i)->type == CLOCK_TYPE_LOGIN){
+			if(mode == 0 && old_calltime == realcalltime){
+				(clock_data+i)->type = CLOCK_TYPE_LOGIN_HAD;
+				continue;
+			}
+			if((ret == 0 || ret > realcalltime) && realcalltime > time(0) ){
+				ret = realcalltime;
+				strncpy(calltimememo,(clock_data+i)->memo,40);
+			}
+			continue;
+		}
+
 		if(realcalltime < time(0)){
 			if((clock_data+i)->type == CLOCK_TYPE_IMP_NOT ){
-				if(old_calltime == realcalltime){
+				if(mode == 0 && old_calltime == realcalltime){
 					(clock_data+i)->type = CLOCK_TYPE_IMP_HAD;
 					continue;
 				}
@@ -274,7 +302,8 @@ static int add_new_clock()
 	prints("3. 每日闹铃\n");
 	prints("4. 每周闹铃\n");
 	prints("5. 每月闹铃\n");
-	prints("6. 重要闹铃 (闹铃时未在线下次登陆时自动提示)");
+	prints("6. 重要闹铃 (闹铃时未在线下次登陆时自动提示)\n");
+	prints("7. 停留闹铃 (在BBS上停留到达几分钟时提醒)");
 	getdata(10,0,"请选择闹铃种类(1-6)? [0]:",ans,sizeof(ans),DOECHO,NULL,true);
 
 	switch( ans[0] ){
@@ -292,6 +321,24 @@ static int add_new_clock()
 		now=time(0);
 		ck.type = CLOCK_TYPE_NORMAL;
 		ck.clock_time = now + tt * 60 ;
+		strncpy(ck.memo,memo,40);
+		ck.memo[39]='\0';
+		setok = 1;
+		break;
+	}
+	case '7':
+	{
+		char tmp[6];
+		int tt;
+		getdata(11,0,"每次上站几分钟后系统闹铃:",tmp,4,DOECHO,NULL,true);
+		tt = atoi(tmp);
+		if(tt <= 0)
+			break;
+		getdata(12,0,"系统闹铃自定义提醒内容:",memo,40,DOECHO,NULL,true);
+		if(memo[0]=='\0' || memo[0]=='\r' || memo[0]=='\n')
+			strcpy(memo,"系统闹铃喽~~~~~~~~~~~~");
+		ck.type = CLOCK_TYPE_LOGIN;
+		ck.clock_time = tt * 60 ;
 		strncpy(ck.memo,memo,40);
 		ck.memo[39]='\0';
 		setok = 1;
@@ -573,7 +620,7 @@ static int add_new_clock()
 
 	add_clock_data(&ck);
 
-	calc_calltime();
+	calc_calltime(2);
 
 	return SHOW_DIRCHANGE;
 }
@@ -614,6 +661,14 @@ static void get_clock_string(struct clock_struct * ck, char *typestr, char * tim
 	case CLOCK_TYPE_IMP_HAD:
 		strcpy(typestr,"重要闹铃");
 		strcpy(timestr,ctime(&(ck->clock_time)));
+		break;
+	case CLOCK_TYPE_LOGIN:
+		strcpy(typestr,"停留闹钟");
+		sprintf(timestr,"上站停留%d分钟后",ck->clock_time/60);
+		break;
+	case CLOCK_TYPE_LOGIN_HAD:
+		strcpy(typestr,"停留闹铃");
+		sprintf(timestr,"上站停留%d分钟后",ck->clock_time/60);
 		break;
 	default:
 		strcpy(typestr,"普通闹钟");
