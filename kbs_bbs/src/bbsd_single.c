@@ -19,7 +19,8 @@ int proxy_getpeername(int csock,struct sockaddr* psaddr,int* plen)
     int ret=getpeername(csock,psaddr,plen);
 #ifdef SMTH
     struct sockaddr_in* psin=(struct sockaddr_in*)psaddr;
-    if (psin->sin_addr.s_addr==0xea086fa6) { //166.111.8.234
+    if ((psin->sin_addr.s_addr==0xea086fa6)||
+        (psin->sin_addr.s_addr==0xeb086fa6)) { //166.111.8.234
         int buf;
         read(csock,&buf,4);
         if (buf==0x330123) {
