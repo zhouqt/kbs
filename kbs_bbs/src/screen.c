@@ -672,8 +672,14 @@ int n;
                       }
                       if(*str == ''&&*(str+1)=='['&&*(str+2)=='s') {
                         str+=3;
+                        	if (slp && (begincol != reg_col)) {
+                        		if (slp->len < reg_col)
+                        			slp->len = reg_col;
+                        		DO_MODIFY;
+                        		cur_col = reg_col;
+                        	}
                         good_getyx(&savey, &savex);
-                        continue;
+                        break;
                       }
                       else if(*str == ''&&*(str+1)=='['&&*(str+2)=='u') {
                         str+=3;
