@@ -3002,12 +3002,6 @@ int www_generateOriginIndex(char* board)
         return -2;      /* lock error*/
     }
     /* 开始互斥过程*/
-    if (!setboardorigin(board, -1)) {
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-        return 0;
-    }
 
     if ((fd2 = open(olddirect, O_RDONLY, 0664)) == -1) {
         bbslog("user", "%s", "recopen err");
@@ -3049,7 +3043,7 @@ int www_generateOriginIndex(char* board)
 	if (threadList==NULL)
 		return -5;
 
-    if ((fd3 = open(dingdir, O_RDONLY, 0664)) == -1) {
+    if ((fd3 = open(dingdir, O_RDONLY, 0664)) != -1) {
 		fstat(fd3, &buf3);
 		ldata3.l_type = F_RDLCK;
 		ldata3.l_whence = 0;
@@ -3060,21 +3054,19 @@ int www_generateOriginIndex(char* board)
 			if (total3>MAX_DING)
 				total3=MAX_DING;
 
-			if ((i = safe_mmapfile_handle(fd3, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr3, (size_t*)&buf3.st_size)) != 1) {
+			if ((i = safe_mmapfile_handle(fd3, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr3, (size_t*)&buf3.st_size)) == 1) {
 				ptr1 = (struct fileheader *) ptr3;
 				ptrtemp = (struct fileheader *) ptr;
 
 				for (i=total3-1;i>=0;i--) {
 					if (ptr1[i].groupid!=ptr1[i].id) continue;
 					if (foundInWWWThreadList(ptr1[i].groupid,threadList,count)!=-1) continue;
-					if ((binarySearchInFileHeader(ptrtemp,total,ptr1[i].groupid))==-1) continue;
 					threadList[count].groupid=ptr1[i].groupid;
-					threadList[count].lastid=ptr1[i].id;
-					threadList[count].articlecount=0;
+					threadList[count].lastid=0;
+					threadList[count].articlecount=1;
 					threadList[count].flags=FILE_ON_TOP;
 					threadList[count].unused=0;
 					count++;
-					write(fd, ptr1, size);
 				}
 			    end_mmapfile((void *) ptr3, buf3.st_size, -1);
 			} else if (i == 2)
@@ -3089,26 +3081,28 @@ int www_generateOriginIndex(char* board)
     ptr1 = (struct fileheader *) ptr;
 
 	for (i=total-1;i>=0;i--) {
-		if ((binarySearchInFileHeader(ptr1,total,ptr1[i].groupid))==-1) continue;
 		if ((found=foundInWWWThreadList(ptr1[i].groupid,threadList,count))==-1)	{
+			if ((binarySearchInFileHeader(ptr1,total,ptr1[i].groupid))==-1) continue;
 			threadList[count].groupid=ptr1[i].groupid;
 			threadList[count].lastid=ptr1[i].id;
-			if (ptr1[i].id==ptr1[i].groupid)
-				threadList[count].articlecount=1;
-			else 
-				threadList[count].articlecount=2;
+			threadList[count].articlecount=1;
 			threadList[count].flags=0;
 			threadList[count].unused=0;
 			count++;
-            write(fd, ptr1, size);
 			if(count>=50000) 
 				break;
 		} else {
-			threadList[found].articlecount++;
+			if (threadList[found].lastid==0) {
+				threadList[found].lastid=ptr1[i].id;
+			} else {
+				if ((binarySearchInFileHeader(ptr1,total,ptr1[i].groupid))==-1) 
+					continue;
+				threadList[found].articlecount++;
+			}
 		}
 	}
-	for (i=0;i<count;i++) {
-		write(fd,threadList,size);
+	for (i=count-1;i>=0;i--) {
+		write(fd,threadList+i,size);
 	}
 	free(threadList);
     end_mmapfile((void *) ptr, buf.st_size, -1);
