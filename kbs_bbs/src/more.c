@@ -720,7 +720,7 @@ measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
 			continue;
 		} else if (*p == '\t') {
 			db = 0;
-			w = w / 8 * 8 + ((w + 1) % 8) ? 0 : 8;
+			w = (w + 8) / 8 * 8;
 			lastspace = i;
 		} else if (*p == '\033') {
 			db = 0;
