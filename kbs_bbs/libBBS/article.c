@@ -1530,9 +1530,9 @@ int add_edit_mark(char *fname, int mode, char *title)
         if (Origin2(buf) && (!added)) {
             now = time(0);
             if(mode & 1)
-                fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本信·[FROM: %15.15s]\033[m\n", currentuser->userid, ctime(&now) + 4, SHOW_USERIP(currentuser, fromhost));
+                fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本信·[FROM: %s]\033[m\n", currentuser->userid, ctime(&now) + 4, SHOW_USERIP(currentuser, fromhost));
             else
-                fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本文·[FROM: %15.15s]\033[m\n", currentuser->userid, ctime(&now) + 4, SHOW_USERIP(currentuser, fromhost));
+                fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本文·[FROM: %s]\033[m\n", currentuser->userid, ctime(&now) + 4, SHOW_USERIP(currentuser, fromhost));
             step = 3;
             added = 1;
         }
@@ -1543,9 +1543,9 @@ int add_edit_mark(char *fname, int mode, char *title)
     {
         now = time(0);
         if(mode & 1)
-            fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本信·[FROM: %15.15s]\033[m\n", currentuser->userid, ctime(&now) + 4, SHOW_USERIP(currentuser, fromhost));
+            fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本信·[FROM: %s]\033[m\n", currentuser->userid, ctime(&now) + 4, SHOW_USERIP(currentuser, fromhost));
         else
-            fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本文·[FROM: %15.15s]\033[m\n", currentuser->userid, ctime(&now) + 4, SHOW_USERIP(currentuser, fromhost));
+            fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本文·[FROM: %s]\033[m\n", currentuser->userid, ctime(&now) + 4, SHOW_USERIP(currentuser, fromhost));
     }
     fclose(fp);
     fclose(out);
