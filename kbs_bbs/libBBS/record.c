@@ -455,7 +455,7 @@ int size, id, number;
 int read_get_records(filename, filename1, rptr, size, id, number)
 char *filename;
 char *filename1;
-void *rptr;
+char *rptr;
 int size, id, number;
 {
     int fd;
