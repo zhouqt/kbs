@@ -16,6 +16,9 @@ global $groupID;
 global $start;
 global $listType;
 global $isbm;
+global $total;
+global $num;
+global $is_tex;
 
 setStat("文章阅读");
 
@@ -23,11 +26,11 @@ preprocess();
 
 setStat(htmlspecialchars($articles[0]['TITLE'] ,ENT_QUOTES) . " " );
 
-show_nav($boardName);
+show_nav($boardName,$is_tex);
 
 showUserMailBoxOrBR();
 board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
-showArticleThreads($boardName,$boardID,$groupID,$articles,$start,$listType);
+showArticleThreads($boardName,$boardID,$groupID,$articles,$start,$listType,$total,$num);
 
 show_footer();
 
@@ -42,6 +45,9 @@ function preprocess(){
 	global $listType;
 	global $start;
 	global $isbm;
+	global $total;
+	global $num;
+	global $is_tex;
 	if (!isset($_GET['boardName'])) {
 		foundErr("未指定版面。");
 	}
@@ -83,6 +89,32 @@ function preprocess(){
 	}
 	if ($start < 0) $start = 0;
 	if ($start >= $num) $start = $num - 1;
+
+	$total=count($articles);
+
+	$num=THREADSPERPAGE;
+	if ($start<0) {
+		$start=0;
+	} elseif ($start>=$total) {
+		$start=$total-1;
+	}
+	if (($start+$num)>$total) {
+		$num=$total-$start;
+	}
+	if ($listType==1) {
+		$num=1;
+	}
+	
+	$is_tex = 0;
+	if (SUPPORT_TEX) {
+		for($i=0;$i<$num;$i++) {
+			if ($articles[$i+$start]["IS_TEX"]) {
+				$is_tex = 1;
+				break;
+			}
+		}
+	}
+	
 	return true;
 }
 
@@ -165,23 +197,9 @@ function dispArticleTitle($boardName,$boardID,$groupID,$article, $startNum){
 <?php
 }
 
-function showArticleThreads($boardName,$boardID,$groupID,$articles,$start,$listType) {
+function showArticleThreads($boardName,$boardID,$groupID,$articles,$start,$listType,$total,$num) {
 	global $dir_modes;
-	$total=count($articles);
-
 	$totalPages=ceil(($total)/THREADSPERPAGE);
-	$num=THREADSPERPAGE;
-	if ($start<0) {
-		$start=0;
-	} elseif ($start>=$total) {
-		$start=$total-1;
-	}
-	if (($start+$num)>$total) {
-		$num=$total-$start;
-	}
-	if ($listType==1) {
-		$num=1;
-	} 
 	$page=ceil(($start+1)/THREADSPERPAGE);
 	article_bar($boardName,$boardID,$groupID, $articles[0], $start, $listType);
 	dispArticleTitle($boardName,$boardID,$groupID,$articles[0],$start);
@@ -369,7 +387,6 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 
 <table class="TableBody2" border="0" width="90%" style=" table-layout:fixed;word-break:break-all"><tr><td width="100%" style="font-size:9pt;line-height:12pt"><blockquote><img src="face/face1.gif" border="0" alt="发贴心情"/>&nbsp;<?php echo  htmlspecialchars($thread['TITLE'],ENT_QUOTES); ?> 
 <?php
-	if ($thread["IS_TEX"]) echo "tex-enabled (debugging)";
 	if ($isbm) {
 ?>
 &nbsp;[<a href="bmdeny.php?board=<?php echo $boardName; ?>&amp;userid=<?php echo $thread['OWNER']; ?>" title="封禁本文作者"><font color="red">封禁</font></a>]
@@ -377,13 +394,29 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 	}
 ?>
 <br/><?php 
-	 $isnormalboard=bbs_normalboard($boardName);
-	 $filename=bbs_get_board_filename($boardName, $thread["FILENAME"]);
-	 if ($loginok) {
-		 bbs_brcaddread($boardName, $thread['ID']);
-	 };
-	 echo dvbcode(bbs_printansifile($filename,1,'bbscon.php?bid='.$boardID.'&amp;id='.$thread['ID']),0,$fgstyle);
-	
+	$isnormalboard=bbs_normalboard($boardName);
+	$filename=bbs_get_board_filename($boardName, $thread["FILENAME"]);
+	if ($loginok) {
+		bbs_brcaddread($boardName, $thread['ID']);
+	};
+	$str = bbs_printansifile($filename,1,'bbscon.php?bid='.$boardID.'&amp;id='.$thread['ID']);
+	if (SUPPORT_TEX && $thread["IS_TEX"]) { //先用一个最最猥琐的办法
+		$tmpfile = BBS_HOME . "/tmp/" . mt_rand();
+		$handle = popen(BBS_HOME . "/bin/itex2MML > $tmpfile", "w");
+		if ($handle) {
+			fwrite($handle, $str);
+			pclose($handle);
+			$handle = fopen($tmpfile, "r");
+			if ($handle) {
+				$str = fread($handle, filesize($tmpfile));
+				fclose($handle);
+			}
+			@unlink($tmpfile);
+		}
+		echo $str;
+	} else {
+		echo dvbcode($str,0,$fgstyle);
+	}
 ?>
 </blockquote></td></tr></table>
 </td>

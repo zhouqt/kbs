@@ -308,7 +308,13 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 	}
 ?>
     <input type=checkbox name=emailflag value="1">有回复时使用邮件通知您？
+<?php
+	if (SUPPORT_TEX) {
+?>
     <input type=checkbox name=texflag value="1">使用 tex 发表</font>
+<?php
+	}
+?>
 <BR><BR></td>
 	</tr><tr>
 	<td valign=middle colspan=2 align=center class=TableBody2>
