@@ -79,7 +79,7 @@ function pc_file_showfiles($pc,$c_dir,$root_pid)
 	            $link_url = 'pcdownload.php?fid='.$file->fid;
 	        }
 	        
-    		echo '<td class="t5"><a href="'.$link_url.'" title="'.htmlspecialchars($file->remark).'">'.html_format($file->filename).'</a></td>'.
+    		echo '<td class="t5"><a href="'.$link_url.'" title="'.htmlspecialchars($file->remark).'" target="_blank">'.html_format($file->filename).'</a></td>'.
     		     '<td class="t3">'.$file_access[$file->access].'</td>'.
     		     '<td class="t4">'.sizestring($file->filesize).'</td>'.
     		     '<td class="t3">'.html_format($file->filetype).'</td>'.
