@@ -111,6 +111,8 @@ int mode;
 			}
 			return do_send_sms_func(uident, NULL);
 		}
+#else
+		        namecomplete(NULL, uident);
 #endif
 		in_do_sendmsg=0;
         if (uident[0] == '\0') {
