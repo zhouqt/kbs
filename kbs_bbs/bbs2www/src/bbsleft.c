@@ -114,6 +114,7 @@ int main()
     printf("<img src=\"/images/find.gif\"><a href=\"bbssel\" target=\"f3\">查找讨论区</a><br>\n");
     printf("<img src=\"/images/find.gif\"><a href=\"/games/index.html\" target=\"f3\">休闲娱乐区</a><br>\n");
     printf("<img src=\"/images/telnet.gif\"><a href=\"telnet:%s\">Telnet登录</a><br>\n", NAME_BBS_ENGLISH);
+    printf("<img src=\"/images/telnet.gif\"><a href=\"/data/fterm-smth.zip\">fterm下载</a><br>\n");
     /*if(!loginok) 
        printf("<img src=\"/images/link0.gif\"><a href=\"javascript:void open('bbsreg', '', 'width=620,height=550')\">新用户注册</a><br>\n"); */
     if (loginok) {

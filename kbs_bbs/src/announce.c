@@ -293,7 +293,7 @@ a_select_path_key(struct _select_def *conf, int key)
                     a_prompt2(-2, "ÐÂÃû³Æ: ", new_title);
                     if (new_title[0]!=0) {
                         free(import_title[conf->pos-1]);
-                        new_title[80]=0;
+                        new_title[STRLEN-1]=0;
                         import_title[conf->pos-1]=(char*)malloc(strlen(new_title)+1);
                         strcpy(import_title[conf->pos-1],new_title);
                         save_import_path();
