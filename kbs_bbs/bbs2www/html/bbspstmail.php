@@ -89,7 +89,6 @@
 				<td width="7" background="/images/m3.gif"><img src="/images/empty.gif"></td>
 				<td background="/images/m6.gif" height="400" align="center" valign="top">
 
-<center>
 <form name="postform" method="post" action="/cgi-bin/bbs/bbssndmail">
 <table>
 <tr>
@@ -183,7 +182,7 @@
 <input type="submit" value="·¢ËÍ" />
 <input type="reset" value="Çå³ý" />
 <input type="button" value="·µ»Ø" onclick="window.location.href='bbsmail.php'" />
-</form></div></table>
+</div></table></form>
 
 				</td>
 				<td width="7" background="/images/m4.gif"><img src="/images/empty.gif"></td>
