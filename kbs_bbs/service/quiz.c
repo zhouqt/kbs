@@ -49,16 +49,27 @@ void save_board()
 int check_top(int score)
 {
     int i,j;
+    load_board();
+    for(i=0;i<topn;i++)
+    if(!strcmp(topid[i],currentuser->userid)) {
+        if(score<=topscore[i]) return 0;
+        topn--;
+        for(j=i;j<topn;j++) {
+            strcpy(topid[j],topid[j+1]);
+            topscore[j] = topscore[j+1];
+        }
+        i--;
+    }
     for(i=0;i<topn;i++) {
         if(score>topscore[i]) {
             if(topn<100) topn++;
-            for(j=topn;j>i;j--) {
+            for(j=topn-1;j>i;j--) {
                 strcpy(topid[j], topid[j-1]);
                 topscore[j] = topscore[j-1];
-                strcpy(topid[i], currentuser->userid);
-                topscore[i] = score;
-                return 1;
             }
+            strcpy(topid[i], currentuser->userid);
+            topscore[i] = score;
+            return 1;
         }
     }
     if(topn<100) {
@@ -74,11 +85,10 @@ int init_quiz()
 {
     int i, k=0;
     char ans[4];
-    clear();
     load_board();
 
     while(1) {
-
+        clear();
         move(2,20);
         setfcolor(WHITE,0);
         prints("开心词典测试中心(");
@@ -90,35 +100,35 @@ int init_quiz()
         prints("作者: ");
         setfcolor(RED,0);
         prints("bad@smth.org");
-        move(4,13);
+        move(5,28);
         setfcolor(WHITE,1);
         prints("===排行榜(%d--%d)===", k*10+1, k*10+10);
-        move(6,15);
+        move(6,22);
         setfcolor(RED,1);
-        prints("╭───────╮");
+        prints("╭──────────────╮");
         for(i=0;i<10;i++){
-            move(7+i, 15);
+            move(7+i, 22);
             setfcolor(RED,1);
             prints("│");
             if (i+k*10>=topn) {
-                move(7+i, 20);
+                move(7+i, 34);
                 setfcolor(GREEN,1);
                 prints("--空--");
             }
             else {
                 char p[100];
-                move(7+i, 17);
+                move(7+i, 24);
                 setfcolor(GREEN,1);
-                sprintf(p, "%d %-12s %d", i+1+k*10, topid[i+k*10], topscore[i+k*10]);
+                sprintf(p, "%3d   %-12s %4d", i+1+k*10, topid[i+k*10], topscore[i+k*10]);
                 prints(p);
             }
-            move(7+i, 31);
+            move(7+i, 52);
             setfcolor(RED,1);
             prints("│");
         }
-        move(17,15);
+        move(17,22);
         setfcolor(RED,1);
-        prints("╰───────╯");
+        prints("╰──────────────╯");
 
         resetcolor();
         getdata(19, 22, "开始游戏(Y-开始,N-退出)", ans, 3, 1, NULL, 1);
@@ -137,16 +147,15 @@ int quiz_test()
     char sql[100];
     score = 0;
     while(1) {
-        int level, style, anscount, question[200], ans[6][200], answer[100], now[100], input[6];
+        int level, style, anscount;
+        char question[200], ans[6][200], answer[100], now[100], input[6];
         do{
-            j=rand()%10000;
-            sprintf(sql, "select * from quiz where id=%d", j);
+            j=rand()%10000+1;
+            sprintf(sql, "SELECT * FROM quiz WHERE id=%d", j);
             mysql_real_query(&s, sql, strlen(sql));
             res = mysql_store_result(&s);
-            row = mysql_fetch_row(&res);
+            row = mysql_fetch_row(res);
         }while(row==NULL);
-        prints(row[1]);
-        refresh(); sleep(1);
         level = atoi(row[1]);
         style = atoi(row[2]);
         strcpy(question, row[3]);
@@ -156,15 +165,17 @@ int quiz_test()
         }
         strcpy(answer, row[11]);
 
+        clear();
         move(0,0);
         setfcolor(YELLOW, 1);
         setbcolor(BLUE);
-        prints(" 开心词典测试(\x1b[31mHAPPYQUIZ\x1b[33m)        测试人:%s    目前得分:%d    题号:%d    分值:%d    类型:",
+        prints(" 开心词典测试(\x1b[31mHAPPYQUIZ\x1b[33m)    测试人:%s  目前得分:\x1b[31m%d\x1b[33m  题号:%d  分值:%d  类型:%s",
             currentuser->userid, score, i+1, level, (style==1)?"单选":"多选");
         clrtoeol();
         for(j=0;j<6;j++) now[j]='0';
         now[6]=0;
         while(1){
+            char bb[100];
             resetcolor();
             move(2,0);
             prints(question);
@@ -173,14 +184,20 @@ int quiz_test()
                 clrtoeol();
                 prints("%c. %s  %s", 'A'+j, ans[j], (now[j]=='1')?"*":"");
             }
-            getdata(anscount+6, 0, "请选择(多选题按回车结束):", input, 3, 1, NULL, 1);
+            sprintf(bb, "请选择:(A-%c,回车结束)", anscount+'A'-1);
+            getdata(anscount+6, 0, bb, input, 3, 1, NULL, 1);
             input[0] = toupper(input[0]);
             if(input[0]>='A'&&input[0]<anscount+'A') {
                 if(now[input[0]-'A']=='1') now[input[0]-'A']='0';
                 else now[input[0]-'A']='1';
                 if(style==1) break;
             }
-            if((input[0]=='\r'||input[0]=='\n')&&style==2) break;
+            else
+                if(input[0]==0&&style==2) break;
+            else {
+                getdata(anscount+7, 0, "退出测试:(Y/N)", input, 3, 1, NULL, 1);
+                if(toupper(input[0])=='Y') return;
+            }
         }
         if(strcmp(now, answer)) {
             move(anscount+8, 0);
@@ -215,6 +232,7 @@ int quiz_again()
     if(rank) {
         setfcolor(RED, 1);
         prints("恭喜你，你上排行榜啦!!!");
+        save_board();
     }
     resetcolor();
     getdata(t_lines-2, 0, "重新玩吗?", ans, 3, 1, NULL, 1);
