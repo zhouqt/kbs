@@ -18,7 +18,7 @@
 			html_error_quit("错误的讨论区");
 		if (bbs_checkreadperm($usernum,$brdnum)==0)
 			html_error_quit("错误的讨论区");
-		$top_file="vote/" . $board . "/notes";
+		$top_file= bbs_get_vote_filename($board, "notes");
 		$fp = fopen($top_file, "r");
 		if ($fp == FALSE) {
 		        html_init("gb2312");
@@ -31,11 +31,11 @@
 ?>
 <body>
 <center><?php echo $BBS_FULL_NAME; ?> -- 备忘录 [讨论区: <?php echo $board; ?>]<hr color=green>
-<table border=1 width=610><tr><td><pre>
+<table border=1 width=610><tr><td>
 <?php
 	bbs_printansifile($top_file);
 ?></tr></td>
-</pre></table>
+</table>
 [<a href=bbsdoc.php?board=<?php echo $board; ?>>本讨论区</a>]<?
     if (bbs_is_bm($brdnum,$usernum))
 	echo "[<a href=bbsmnote.php?board=" . $board . ">编辑进版画面</a>]";
