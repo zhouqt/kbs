@@ -40,8 +40,6 @@ static time_t old;
 static time_t lasttime = 0;
 
 extern int convcode;
-extern char *big2gb(char *, int *, int);
-extern char *gb2big(char *, int *, int);
 extern int ssh_sock;
 void oflush()
 {
@@ -49,7 +47,7 @@ void oflush()
         if (convcode) {
             char *out;
 
-            out = gb2big(outbuf, &obufsize, 0);
+            out = gb2big(outbuf, &obufsize, 0, getSession());
 #ifdef SSHBBS
             if (ssh_write(0, out, obufsize) < 0)
 #else
@@ -520,7 +518,7 @@ int igetch()
          * add by KCN for GB/BIG5 encode 
          */
         if (convcode) {
-            inbuf = big2gb(inbuffer + 1, &ibufsize, 0);
+            inbuf = big2gb(inbuffer + 1, &ibufsize, 0, getSession());
             if (ibufsize == 0) {
                 icurrchar = 0;
                 goto igetagain;

@@ -1176,6 +1176,7 @@ int resolve_guest_table()
     }
     return 0;
 }
+#endif //HAVE_WWW==1
 
 int lock_user(char* userid)
 {
@@ -1198,4 +1199,3 @@ void unlock_user(int fd)
     flock(fd, LOCK_UN);
     close(fd);
 }
-#endif
