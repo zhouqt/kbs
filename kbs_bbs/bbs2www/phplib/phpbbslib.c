@@ -3633,10 +3633,11 @@ static PHP_FUNCTION(bbs_get_records_from_id)
     setbdir(mode, dirpath, bp->filename);
     if(mode == DIR_MODE_ZHIDING){
         struct BoardStatus* bs=getbstatus(getboardnum(bp->filename,NULL));
+	num=0;
         for (i=0;i<bs->toptitle;i++) {
             if (bs->topfh[i].id==id) {
                 memcpy(&articles[1],&bs->topfh[i],sizeof(struct fileheader));
-                num=i;
+                num=i+1;
                 break;
             }
         }
