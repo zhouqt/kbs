@@ -1932,11 +1932,11 @@ int www_user_login(struct userec* user,int useridx,int kick_multi,char* fromhost
 	                if ( !(num=search_ulist( &uin, cmpuids2, useridx) ))
 	                        continue;  /* user isn't logged in */
 			if (uin.pid==1) {
-				clear_utmp(num,useridx);
+				clear_utmp(num,useridx,uin.pid);
 				continue;
 			}
 	                if (!uin.active || (kill(uin.pid,0) == -1)) {
-				clear_utmp(num,useridx);
+				clear_utmp(num,useridx,uin.pid);
 	                        continue;  /* stale entry in utmp file */
 			}
 	/*---	modified by period	first try SIGHUP	2000-11-08	---*/
@@ -1945,7 +1945,7 @@ int www_user_login(struct userec* user,int useridx,int kick_multi,char* fromhost
 			if(lres)
 	/*---	---*/
 	                  kill(uin.pid,9);
-			clear_utmp(num,useridx);
+			clear_utmp(num,useridx,uin.pid);
 		}
 
 		if(!HAS_PERM(user, PERM_BASIC))
@@ -2081,7 +2081,7 @@ int www_user_logoff(struct userec* user,int useridx,struct user_info* puinfo,int
 
 		if((HAS_PERM(user,PERM_CHATCLOAK) || HAS_PERM(user,PERM_CLOAK)))
 	        	setflags(user,CLOAK_FLAG, puinfo->invisible);
-    	clear_utmp(userinfoidx,useridx);
+    	clear_utmp(userinfoidx,useridx,1);
 	} else {
 		bbslog( "1system", "EXIT: Stay:%3ld (guest)[%d %d](www)", stay / 60, 
 			puinfo->destuid, useridx);
