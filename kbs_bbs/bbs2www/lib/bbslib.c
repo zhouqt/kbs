@@ -439,7 +439,9 @@ int user_init(struct userec **x, struct user_info **y)
 	key=atoi(getparm("utmpkey"));
 	//printf("utmpkey = %d\n", key);
 	i=atoi(num);
-	if(i<1 || i>=MAXACTIVE) return 0;
+	if(i<1 || i>=MAXACTIVE)
+		//return 0;
+		goto forguest;
 	//utmpshm_ptr = get_utmpshm_addr();
 	/* 这里有问题, (*y)在后面将一直指向&(utmpshm_ptr->uinfo[i]),
 	 * 不管后面的那些判断是否成功 */
@@ -449,43 +451,57 @@ int user_init(struct userec **x, struct user_info **y)
 		//printf("from is ->%s<-, len = %d\n", (*y)->from, strlen((*y)->from));
 		//printf("fromhost is ->%s<-, len = %d\n", fromhost, strlen(fromhost));
 		//printf("fromhost error!\n");
-		return 0;
+		//return 0;
+		goto forguest;
 	}
 	if((*y)->utmpkey != key)
 	{
 		//printf("utmpkey error!\n");
-		return 0;
+		//return 0;
+		goto forguest;
 	}
 	
 	if((*y)->active == 0)
 	{
 		//printf("user not active!\n");
-		return 0;
+		//return 0;
+		goto forguest;
 	}
 	if((*y)->userid[0] == 0)
 	{
 		//printf("userid error!\n");
-		return 0;
+		//return 0;
+		goto forguest;
 	}
 	if((*y)->mode!=10001)
 	{
 		//printf("mode error!\n");
-		return 0; /* faint, what does 10001 mean? */
+		//return 0; /* faint, what does 10001 mean? */
+		goto forguest;
 	}
 	if(!strcasecmp((*y)->userid, "new") || !strcasecmp((*y)->userid, "guest"))
-		return 0;
+		//return 0;
+		goto forguest;
 	getuser((*y)->userid, x);
 	if(*x==0)
 	{
 		//printf("getuser error!\n");
-		return 0;
+		//return 0;
+		goto forguest;
 	}
 	if(strcmp((*x)->userid, id))
 	{
 		//printf("userid not equal!\n");
-		return 0;
+		//return 0;
+		goto forguest;
 	}
 	return 1;
+
+forguest:
+	getuser("guest", x);
+	if (*x == NULL)
+		exit(-1);
+	return 0;
 }
 
 int post_mail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig) {

@@ -480,7 +480,7 @@ int chatrefresh(int pid) {
 		while(1) {
 			int i;
 			char buf2[512];
-			if(fgets(buf2, 255, fp)<=0) break;
+			if(fgets(buf2, 255, fp) == NULL) break;
 			sprintf(genbuf, "%s", cco(buf2));
 			for(i=0; genbuf[i]; i++) if(genbuf[i]==10 || genbuf[i]==13) genbuf[i]=0;
 			if(!strncmp(genbuf, "/init", 5)) {
@@ -532,7 +532,7 @@ void foo() {
 	fp=fopen(filename, "r");
 	if(fp) {
 		while(1) {
-			if(fgets(buf, 250, fp)<=0) break;
+			if(fgets(buf, 250, fp) == NULL) break;
 			write(chat_fd, buf, strlen(buf));
 		}
 		fclose(fp);

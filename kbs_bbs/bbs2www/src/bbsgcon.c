@@ -11,7 +11,7 @@ int main() {
 	strsncpy(file, getparm("file"), 32);
 	num=atoi(getparm("num"));
 	printf("<center>\n");
-	if(!has_read_perm(&currentuser, board)) http_fatal("错误的讨论区");
+	if(!has_read_perm(currentuser, board)) http_fatal("错误的讨论区");
 	strcpy(board, getbcache(board)->filename);
 	printf("%s -- 文章阅读 [讨论区: %s]<hr>", BBSNAME, board);
 	if(strncmp(file, "M.", 2) && strncmp(file, "G.", 2)) http_fatal("错误的参数1");

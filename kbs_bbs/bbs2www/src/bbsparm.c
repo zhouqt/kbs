@@ -48,6 +48,7 @@ int main() {
 	printf("</table>");
 	printf("<input type=submit value=确定修改></form><br>以上参数大多仅在telnet方式下才有作用\n");
 	http_quit();
+	return 0;
 }
 
 int read_form() {
@@ -59,6 +60,6 @@ int read_form() {
 		perm=perm*2;
 	}
 	currentuser->userdefine=def;
-	save_user_data(&currentuser);
+	//save_user_data(&currentuser);
 	printf("个人参数设置成功.<br><a href=bbsparm>返回个人参数设置选单</a>");
 }

@@ -166,7 +166,8 @@ int count_new_mails() {
         if(!loginok&&currentuser->userid[0]==0) return 0;
         sprintf(buf, "%s/mail/%c/%s/.DIR", BBSHOME, toupper(currentuser->userid[0]), currentuser->userid);
         fp=fopen(buf, "r");
-        if(fp==0) return;
+        if(fp==0)
+			return unread;
         while(fread(&x1, sizeof(x1), 1, fp)>0)
                 if(!(x1.accessed[0] & FILE_READ)) unread++;
         fclose(fp);

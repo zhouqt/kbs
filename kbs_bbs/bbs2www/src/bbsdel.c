@@ -214,7 +214,7 @@ int main()
 		http_fatal("错误的参数");
 	if(strstr(file, "..")) http_fatal("错误的参数");
 	if(brd==0) http_fatal("版面错误");
-	if(!has_post_perm(&currentuser, board)) http_fatal("错误的讨论区");
+	if(!has_post_perm(currentuser, board)) http_fatal("错误的讨论区");
 	sprintf(dir, "boards/%s/.DIR", board);
 	sprintf(path, "boards/%s/%s", board, file);
 	fp=fopen(dir, "r");

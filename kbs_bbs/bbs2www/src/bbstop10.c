@@ -12,16 +12,16 @@ int main() {
 	if(fp==0) http_fatal("can't read data");
 	fgets(s1, 255, fp);
 	fgets(s1, 255, fp);
-	printf("<table border=\"1\" width=610>\n");
+	printf("<table border=\"1\" width=\"610\">\n");
 	printf("<tr><td>名次<td>讨论区<td>标题<td>作者<td>人数\n");
 	for(n=1; n<=10; n++)
        	{
-		if(fgets(s1, 255, fp)<=0)
+		if(fgets(s1, 255, fp) == NULL)
 		       	break;
 		sscanf(s1+41, "%s", brd);
 		sscanf(s1+120, "%s", id);
 		sscanf(s1+99, "%s", num);
-		if(fgets(s1, 255, fp)<=0)
+		if(fgets(s1, 255, fp) == NULL)
 		       	break;
 		strsncpy(title, s1+27, 60);
 		printf("<tr><td>第 %d 名<td><a href=\"bbsdoc?board=%s\">%s</a><td><a href='bbstfind?board=%s&title=%s'>%42.42s</a><td><a href=bbsqry?userid=%s>%12s</a><td>%s\n",

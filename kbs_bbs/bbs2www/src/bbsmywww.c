@@ -26,7 +26,11 @@ int main() {
         ptr=getparm("def_mode");
         if(ptr[0]) def_mode=atoi(ptr);
 	printf("<center>%s -- WWW个人定制 [使用者: %s]<hr color=green>", BBSNAME, currentuser->userid);
-	if(type>0) return save_set(path, t_lines, link_mode, def_mode);
+	if(type>0)
+	{
+		save_set(path, t_lines, link_mode, def_mode);
+		return;
+	}
 	printf("<table>\n");
 	if(t_lines<10 || t_lines>40) t_lines=20;
 	if(link_mode<0 || link_mode>1) link_mode=0;

@@ -205,7 +205,7 @@ int main() {
 	brd=getbcache(board);
 	if(brd==0) http_fatal("错误的讨论区");
 	strcpy(board, brd->filename);
-	if(!has_BM_perm(&currentuser, board)) http_fatal("你无权访问本页");
+	if(!has_BM_perm(currentuser, board)) http_fatal("你无权访问本页");
 	if(mode<=0 || mode>5) http_fatal("错误的参数");
 	printf("<table>");
 	for(i=0; i<parm_num && i<40; i++) {

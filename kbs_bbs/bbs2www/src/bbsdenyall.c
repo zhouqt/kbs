@@ -43,8 +43,8 @@ int main() {
 	init_all();
    	if(!loginok) http_fatal("您尚未登录, 请先登录");
 	strsncpy(board, getparm("board"), 30);
-	if(!has_read_perm(&currentuser, board)) http_fatal("错误的讨论区");
-	if(!has_BM_perm(&currentuser, board)) http_fatal("你无权进行本操作");
+	if(!has_read_perm(currentuser, board)) http_fatal("错误的讨论区");
+	if(!has_BM_perm(currentuser, board)) http_fatal("你无权进行本操作");
 	loaddenyuser(board);
    	printf("<center>\n");
    	printf("%s -- 被封用户名单 [讨论区: %s]<hr color=green><br>\n", BBSNAME, board);

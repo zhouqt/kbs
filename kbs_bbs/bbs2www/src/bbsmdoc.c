@@ -12,8 +12,8 @@ int main() {
 	x1=getbcache(board);
 	if(x1==0) http_fatal("错误的讨论区");
 	strcpy(board, x1->filename);
-	if(!has_read_perm(&currentuser, board)) http_fatal("错误的讨论区");
-	if(!has_BM_perm(&currentuser, board)) http_fatal("您没有权限访问本页");
+	if(!has_read_perm(currentuser, board)) http_fatal("错误的讨论区");
+	if(!has_BM_perm(currentuser, board)) http_fatal("您没有权限访问本页");
 	sprintf(dir, "boards/%s/.DIR", board);
         fp=fopen(dir, "r");
         if(fp==0) http_fatal("错误的讨论区目录");

@@ -10,7 +10,7 @@ int main() {
 	strsncpy(file, getparm("file"), 30);
 	strsncpy(target, getparm("target"), 30);
 	if(!loginok) http_fatal("匆匆过客不能进行本项操作");
-	if(!has_read_perm(&currentuser, board)) http_fatal("错误的讨论区");
+	if(!has_read_perm(currentuser, board)) http_fatal("错误的讨论区");
 	x=get_file_ent(board, file);
 	if(x==0) http_fatal("错误的文件名");
 	printf("<center>%s -- 转寄/推荐给好友 [使用者: %s]<hr color=green>\n", BBSNAME, currentuser->userid);
@@ -32,6 +32,7 @@ int main() {
 	printf("把文章转寄给 <input name=target size=30 maxlength=30 value=%s> (请输入对方的id或email地址). <br>\n",
 		currentuser->email);
 	printf("<input type=submit value=确定转寄></form>");
+	return 0;
 }
 
 int do_fwd(struct fileheader *x, char *board, char *target) {

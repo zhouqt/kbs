@@ -13,7 +13,7 @@ int main() {
 	x1=getbcache(board);
 	if(x1==0) http_fatal("错误的讨论区");
 	strcpy(board, x1->filename);
-	if(!has_read_perm(&currentuser, board)) http_fatal("错误的讨论区");
+	if(!has_read_perm(currentuser, board)) http_fatal("错误的讨论区");
 	sprintf(buf, "bbsman?board=%s&mode=1", board);
 	sprintf(dir, "boards/%s/.DIR", board);
         fp=fopen(dir, "r");
@@ -45,7 +45,7 @@ int main() {
 	printf("<a href=bbsdoc?board=%s>本讨论区</a> ", board);
 	if(total>0) {
 		printf("<a href=bbstcon?board=%s&file=%s>本主题全部展开</a> ", board, first_file);
-		if(has_BM_perm(&currentuser, board)) 
+		if(has_BM_perm(currentuser, board)) 
 			printf("<a onclick='return confirm(\"确定同主题全部删除?\")' href=%s>同主题删除</a>", buf);
 	}
 	http_quit();

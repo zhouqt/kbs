@@ -50,8 +50,8 @@ int main() {
 	strsncpy(board, getparm("board"), 30);
 	strsncpy(exp, getparm("exp"), 30);
 	dt=atoi(getparm("dt"));
-	if(!has_read_perm(&currentuser, board)) http_fatal("错误的讨论区");
-	if(!has_BM_perm(&currentuser, board)) http_fatal("你无权进行本操作");
+	if(!has_read_perm(currentuser, board)) http_fatal("错误的讨论区");
+	if(!has_BM_perm(currentuser, board)) http_fatal("你无权进行本操作");
 	loaddenyuser(board);
 	userid=getparm("userid");
 	if(userid[0]==0) return show_form(board);
@@ -71,6 +71,7 @@ int main() {
 	inform(board, userid, exp, dt);
 	printf("[<a href=bbsdenyall?board=%s>返回被封帐号名单</a>]", board);
 	http_quit();
+	return 0;
 }
 
 int show_form(char *board) {

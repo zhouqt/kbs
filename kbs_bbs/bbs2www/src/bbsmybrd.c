@@ -47,7 +47,7 @@ int main()
 	bc = getbcacheaddr();
 	for(i=0; i<MAXBOARD; i++)
 	{
-		if(has_read_perm(&currentuser, bc[i].filename))
+		if(has_read_perm(currentuser, bc[i].filename))
 		{
 			//by zixia 
 			//memcpy(&data[total], &(bc[i]), sizeof(struct shortfile));
@@ -98,7 +98,7 @@ int read_submit()
 		{
 			if(mybrdnum >= FAVBOARDNUM)
 				http_fatal("您试图预定超过%d个讨论区", FAVBOARDNUM);
-			if(!has_read_perm(&currentuser, parm_name[i]))
+			if(!has_read_perm(currentuser, parm_name[i]))
 			{
 				printf("警告: 无法预定'%s'讨论区<br>\n", nohtml(parm_name[i]));
 				continue;

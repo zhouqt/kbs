@@ -26,7 +26,7 @@ int main()
 	//	http_fatal("您预定讨论区数目已达上限，不能增加预定");
 	//if(IsFavBoard(mybrdnum-1)>0)
 	//	http_fatal("你已经预定了这个讨论区");
-	if(!has_read_perm(&currentuser, x.filename))
+	if(!has_read_perm(currentuser, x.filename))
 		http_fatal("此讨论区不存在");
 	rv = add_favboard(x.filename);
 	switch (rv)

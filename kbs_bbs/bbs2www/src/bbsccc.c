@@ -240,7 +240,7 @@ int main()
 	local = atoi(getparm("outgo")) ? 0 : 1;
 	if(!loginok)
 		http_fatal("匆匆过客不能进行本项操作");
-	if(!has_read_perm(&currentuser, board))
+	if(!has_read_perm(currentuser, board))
 		http_fatal("错误的讨论区");
 	sprintf(dir, "boards/%s/.DIR", board);
 	fp=fopen(dir, "r");
@@ -264,9 +264,10 @@ int main()
 			BBSNAME, currentuser->userid);
 	if(target[0])
 	{
-		if(!has_post_perm(&currentuser, target))
+		if(!has_post_perm(currentuser, target))
 			http_fatal("错误的讨论区名称或你没有在该版发文的权限");
-		return do_ccc(num+1, &f, dir, board, target, local);
+		do_ccc(num+1, &f, dir, board, target, local);
+		return 0;
 	}
 	printf("<table><tr><td>\n");
 	printf("<font color=\"red\">转贴发文注意事项:<br>\n");
@@ -282,5 +283,6 @@ int main()
 	printf("<input type=\"checkbox\" name=\"outgo\" value=\"1\">转信<br>\n");
 	printf("<input type=\"submit\" value=\"确定\"></form></td></tr></table>");
 	http_quit();
+	return 0;
 }
 

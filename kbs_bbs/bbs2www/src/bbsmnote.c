@@ -8,7 +8,7 @@ int main() {
 	printf("<center>\n");
 	if(!loginok) http_fatal("匆匆过客，请先登录");
 	strsncpy(board, getparm("board"), 30);
-	if(!has_BM_perm(&currentuser, board)) http_fatal("你无权进行本操作");
+	if(!has_BM_perm(currentuser, board)) http_fatal("你无权进行本操作");
 	strsncpy(board, getbcache(board)->filename, 30);
 	sprintf(path, "vote/%s/notes", board);
 	if(!strcasecmp(getparm("type"), "update")) save_note(path);

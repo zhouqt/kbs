@@ -22,7 +22,7 @@ int main()
 	for(i=0; i<MAXBOARD; i++) {
 		x=&(bc[i]);
 		if(x->filename[0]<=32 || x->filename[0]>'z') continue;
-		if(!has_read_perm(&currentuser, x->filename)) continue;
+		if(!has_read_perm(currentuser, x->filename)) continue;
 		if(strchr(seccode[sec1], x->title[0]) == NULL) continue;
 		memcpy(&data[total], x, sizeof(struct boardheader));
 		total++;

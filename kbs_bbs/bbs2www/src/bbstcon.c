@@ -13,7 +13,7 @@ int main() {
 	strsncpy(board, getparm("board"), 32);
 	strsncpy(file, getparm("file"), 32);
 	printf("<center>\n");
-	if(!has_read_perm(&currentuser, board)) http_fatal("错误的讨论区");
+	if(!has_read_perm(currentuser, board)) http_fatal("错误的讨论区");
 	strcpy(board, getbcache(board)->filename);
 	if(loginok) brc_initial(currentuser->userid, board);
 	printf("%s -- 主题文章阅读 [讨论区: %s]<hr color=green>", BBSNAME, board);

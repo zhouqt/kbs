@@ -13,7 +13,8 @@ int main()
 	if(fp==0) http_fatal("没有任何讯息");
 	printf("<pre>\n");
 	while(1) {
-		if(fgets(buf, 256, fp)<=0) break;
+		if(fgets(buf, 256, fp) == NULL)
+			break;
 		hprintf("%s", buf);
 	}
 	fclose(fp);

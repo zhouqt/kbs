@@ -90,7 +90,7 @@ int main()
    	if(title[0]==0)
       	http_fatal("文章必须要有标题");
 	sprintf(dir, "boards/%s/.DIR", board);
-	if(YEA == check_readonly(board) || !has_post_perm(&currentuser, board))
+	if(YEA == check_readonly(board) || !has_post_perm(currentuser, board))
 		http_fatal("此讨论区是唯读的, 或是您尚无权限在此发表文章.");
 	if(deny_me(board) && !has_perm(PERM_SYSOP))
 		http_fatal("很抱歉, 你被版务人员停止了本版的post权利.");
@@ -103,7 +103,7 @@ int main()
 	sprintf(filename, "tmp/%d.tmp", getpid());
 	f_append(filename, content);
 	//r=post_article(board, title, filename, currentuser->userid, currentuser->username, fromhost, sig-1);
-	r = post_article(board, title, filename, &currentuser, fromhost, sig, local, anony);
+	r = post_article(board, title, filename, currentuser, fromhost, sig, local, anony);
 	if(r<=0)
 		http_fatal("内部错误，无法发文");
 	sprintf(buf, "M.%d.A", r);
@@ -115,7 +115,7 @@ int main()
 	if(!junkboard(board))
 	{
 		currentuser->numposts++;
-		save_user_data(&currentuser);
+		//save_user_data(&currentuser);
 		write_posts(currentuser->userid, board, title);
 	}
 	redirect(buf);

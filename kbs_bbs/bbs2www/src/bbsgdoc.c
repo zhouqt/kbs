@@ -12,7 +12,7 @@ int main() {
 	x1=getbcache(board);
 	if(x1==0) http_fatal("错误的讨论区");
 	strcpy(board, x1->filename);
-	if(!has_read_perm(&currentuser, board)) http_fatal("错误的讨论区");
+	if(!has_read_perm(currentuser, board)) http_fatal("错误的讨论区");
 	sprintf(dir, "boards/%s/.DIGEST", board);
         fp=fopen(dir, "r");
         if(fp==0) http_fatal("错误的讨论区目录");

@@ -48,7 +48,7 @@ int main() {
 	printf("[<a href=bbspstmail>发送信件</a>]");
 	if(start>0) {
 		i=start-19;
-		if(i<0) i==0;
+		if(i<0) i=0;
 		printf("[<a href=bbsmail?start=0>第一页</a>] ");
 		printf("[<a href=bbsmail?start=%d>上一页</a>] ", i);
 	}

@@ -42,7 +42,7 @@ int search(char *id, char *pat, char *pat2, char *pat3, int dt) {
 	for(i=0; i<MAXBOARD; i++) {
 		total=0;
 		strcpy(board, bc[i].filename);
-		if(!has_read_perm(&currentuser, board)) continue;
+		if(!has_read_perm(currentuser, board)) continue;
 		sprintf(dir, "boards/%s/.DIR", board);
 		fp=fopen(dir, "r");
 		if(fp==0) continue;

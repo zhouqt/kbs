@@ -24,7 +24,7 @@ int main() {
 	brd=getbcacheaddr(board);
 	if(brd==0) http_fatal("错误的讨论区");
 	strcpy(board, brd->filename);
-	if(!has_read_perm(&currentuser, board)) http_fatal("错误的讨论区名称");
+	if(!has_read_perm(currentuser, board)) http_fatal("错误的讨论区名称");
 	sprintf(dir, "boards/%s/.DIR", board);
 	fp=fopen(dir, "r");
 	if(fp==0) http_fatal("讨论区错误或没有目前文章");
@@ -60,6 +60,7 @@ int main() {
 	printf("<br>\n");
 	printf("[<a href=bbsdoc?board=%s>返回本讨论区</a>] [<a href='javascript:history.go(-1)'>返回上一页</a>]", board);
 	http_quit();
+	return 0;
 }
 
 int show_form(char *board) {

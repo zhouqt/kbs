@@ -24,7 +24,7 @@ int main() {
   	if(!checkpasswd2(pw1, getcurrusr())) http_fatal("密码不正确");
   	/*strcpy(currentuser->passwd, crypt1(pw2, pw2));*/
 	setpasswd(pw2, getcurrusr());
-  	save_user_data(&currentuser);
+  	//save_user_data(&currentuser);
   	printf("[%s] 密码修改成功.", currentuser->userid);
 }
 

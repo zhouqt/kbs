@@ -20,7 +20,7 @@ int main() {
 	{
 		for(i=0; i<MAXBOARD; i++) {
 			board1=bc[i].filename;
-			if(!has_read_perm(&currentuser, board1)) continue;
+			if(!has_read_perm(currentuser, board1)) continue;
 			if(!strcasecmp(board, board1)) {
 				sprintf(buf, "bbsdoc?board=%s", board1);
 				redirect(buf);
@@ -34,7 +34,7 @@ int main() {
 		for(i=0; i<MAXBOARD; i++) {
 			board1=bc[i].filename;
 			title=bc[i].title;
-			if(!has_read_perm(&currentuser, board1)) continue;
+			if(!has_read_perm(currentuser, board1)) continue;
 			if(strcasestr(board1, board) || strcasestr(title, board)) {
 				total++;
 				printf("<tr><td>%d", total);

@@ -19,7 +19,7 @@ int main()
 	strsncpy(userid, getparm("userid"), 40);
 	if(file[0]!='M' && file[0])
 		http_fatal("错误的文件名");
-	if(!has_post_perm(&currentuser, board))
+	if(!has_post_perm(currentuser, board))
 		http_fatal("错误的讨论区或者您无权在此讨论区发表文章");
    	printf("<center>\n");
 	printf("%s -- 发表文章 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser->userid);

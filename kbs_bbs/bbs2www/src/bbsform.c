@@ -29,7 +29,7 @@ int main() {
 }
 
 int check_if_ok() {
-  	if(user_perm(&currentuser, PERM_LOGINOK)) http_fatal("您已经通过本站的身份认证, 无需再次填写注册单.");
+  	if(user_perm(currentuser, PERM_LOGINOK)) http_fatal("您已经通过本站的身份认证, 无需再次填写注册单.");
   	if(has_fill_form()) http_fatal("目前站长尚未处理您的注册单，请耐心等待.");
 }
 
