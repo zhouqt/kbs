@@ -3,19 +3,20 @@
 
 void printdiv(int n, char *str)
 {
-	printf("<div id=div%da class=r><img id=img%d src=/folder.gif>", n, n);
-	printf("<A href='javascript:changemn(\"%d\");'>%s</A></div>\n", n, str);
-	printf("<div id=div%d class=s>\n", n);
+	printf("<div id=\"div%da\" class=\"r\"><img id=\"img%d\" src=\"/folder.gif\">", n, n);
+	printf("<A href=\"javascript:changemn('%d');\">%s</A></div>\n", n, str);
+	printf("<div id=\"div%d\" class=\"s\">\n", n);
 }
 
-int main() {
+int main()
+{
 	char buf[1024], *ptr;
 	int i;
 
   	init_all();
 	printf("<style type=\"text/css\">A {color: #000080} BODY {BACKGROUND-COLOR: #b0e0b0; FONT-SIZE: 14px;}</style><br>\n");
-	printf("<script src=/func.js></script>"
-	"<body leftmargin=1 topmargin=1 MARGINHEIGHT=1 MARGINWIDTH=1>");
+	printf("<script src=\"/func.js\"></script>"
+	"<body leftmargin=\"1\" topmargin=\"1\" MARGINHEIGHT=\"1\" MARGINWIDTH=\"1\">");
 
 	if(!loginok) {
                 printf("<center>"
@@ -99,7 +100,7 @@ int main() {
 "			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsmail\">所有邮件</a><br>\n"
 "			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbspstmail\">发送邮件</a><br>\n"
 "			</div>");
-  printdiv(6,"特别服务区");
+	printdiv(6,"特别服务区");
 	printf("<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsalluser\">所有使用者</a><br>\n");
 	/*printf("<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsadl\">下载精华区</a><br>\n");*/
 	printf("</div>\n");

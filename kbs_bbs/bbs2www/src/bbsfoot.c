@@ -1,15 +1,17 @@
 #include "bbslib.h"
 
-int main() {
+int main()
+{
 	int dt=0, mail_total, mail_unread;
 	char *id="guest";
 
 	init_all();
-        if(loginok) {
+	if(loginok)
+	{
 		id=currentuser->userid;
 		dt=abs(time(0) - *(int*)(u_info->from+32))/60;
-                set_idle_time(u_info, time(0));
-        }
+				set_idle_time(u_info, time(0));
+	}
 	printf("<script language=\"JavaScript\">\n\
 <!--\n\
 function Init() {\n\
@@ -56,21 +58,26 @@ setTimeout(\"Time()\",58000)\n\
  }\n\
  */
 
-	printf("<style type=text/css>\nA {color: #0000FF}\n</style>\n");
-  	printf("<body bgcolor=#c0c0f0 onload=\"Init()\"><form name=\"clock\">");
+	printf("<style type=\"text/css\">\nA {color: #0000FF}\n</style>\n");
+  	printf("<body bgcolor=\"#c0c0f0\" onload=\"Init()\"><form name=\"clock\">");
   	printf("时间[<INPUT TYPE=\"text\" NAME=\"myclock\" size=\"16\" style=\"border: 0\">] ");
 	/*
   	printf("时间[<span id=\"myclock\"></span>] ");
 	*/
-	printf("在线[<a href=bbsusr target=f3>%d</a>] ", count_online());
-	printf("帐号[<a href=bbsqry?userid=%s target=f3>%s</a>] ", id, id);
-	if(loginok) {
+	printf("在线[<a href=\"bbsusr\" target=\"f3\">%d</a>] ", count_online());
+	printf("帐号[<a href=\"bbsqry?userid=%s\" target=\"f3\">%s</a>] ", id, id);
+	if(loginok)
+	{
 		mail_total=mails(id, 0);
 		mail_unread=mails(id, 1);
-		if(mail_unread==0) {
-			printf("信箱[<a href=bbsmail target=f3>%d封</a>] ", mail_total);
-		} else {
-			printf("信箱[<a href=bbsmail target=f3>%d(新信<font color=red>%d</font>)</a>] ", 
+		if(mail_unread==0)
+		{
+			printf("信箱[<a href=\"bbsmail\" target=\"f3\">%d封</a>] ",
+					mail_total);
+		}
+		else
+		{
+			printf("信箱[<a href=\"bbsmail\" target=\"f3\">%d(新信<font color=\"red\">%d</font>)</a>] ", 
 				mail_total, mail_unread);
 		}
 	}
