@@ -237,6 +237,7 @@ do_userlist()
 	if (user_record[i+page]==NULL) {
 		clear();
 		prints("[1;31mœµÕ≥≥ˆœ÷Bug,«ÎµΩSysop∞Â±®∏Ê£¨–ª–ª![m");
+		oflush();
 		sleep(10);
 		exit(0);
 	}
