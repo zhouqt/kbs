@@ -54,7 +54,7 @@ NAME_BBS_CHINESE "用户登录<br>\n"
 	{
 		int i, mybrdnum=0;
 		const struct boardheader  *bptr;
-		printdiv(1,"个人定制区","/images/favorite.gif");
+		printdiv(1,"个人定制区","/images/folder.gif");
 		load_favboard(0);
 		mybrdnum = get_favboard_count();
  		for(i=0; i<mybrdnum; i++)
@@ -70,15 +70,15 @@ NAME_BBS_CHINESE "用户登录<br>\n"
 				"预定管理</a><br>\n");
 		printf("</div>\n");
 	}
-	printdiv(2,"分类讨论区","/images/closedfold.gif");
+	printdiv(2,"分类讨论区","/images/folder.gif");
 	for (i = 0; i < SECNUM; i++)
 		printf("<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsboa?group=%d\">%s</a><br>\n",
 				i, secname[i][0]);
 	printf("</div>\n");
 
-	printdiv(3,"谈天说地区","/images/closedfold.gif");
+	printdiv(3,"谈天说地区","/images/folder.gif");
   	if(loginok) {
-		printf("<img src=\"/images/friend.gif\"> <a href=\"bbsfriend\" target=\"f3\">在线好友</a><br>\n");
+		printf("<img src=\"/images/link.gif\"> <a href=\"bbsfriend\" target=\"f3\">在线好友</a><br>\n");
 	}
   	printf("<img src=\"/images/link.gif\"> <a href=\"bbsusr\" target=\"f3\">环顾四方</a><br>\n");
   	printf("<img src=\"/images/link.gif\"> <a href=\"bbsqry\" target=\"f3\">查询网友</a><br>\n");
@@ -92,7 +92,7 @@ NAME_BBS_CHINESE "用户登录<br>\n"
 		ptr="<img src=\"/images/link.gif\"> <a target=\"f3\" onclick=\"return confirm('确实切换隐身状态吗?')\" href=\"bbscloak\">切换隐身</a><br>\n";
 	if(loginok)
 	{
-		printdiv(4,"个人工具箱","/images/cntlpnl.gif");
+		printdiv(4,"个人工具箱","/images/folder.gif");
 			printf(
 "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsinfo\">个人资料</a><br>\n"
 "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsplan\">改说明档<a><br>\n"
@@ -104,14 +104,14 @@ NAME_BBS_CHINESE "用户登录<br>\n"
 /*"		<img src=\"/images/link.gif\"><a target=\"f3\" href=\"bbsstat\"> 排名统计</a><br>"*/
 "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsfall\">设定好友</a><br>\n"
 "			%s</div>",ptr);
-		printdiv(5,"处理信件区","/images/mailfold.gif");
+		printdiv(5,"处理信件区","/images/folder.gif");
 		printf("			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsnewmail\">阅览新邮件</a><br>\n"
 "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsmail\">所有邮件</a><br>\n"
 "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbspstmail\">发送邮件</a><br>\n"
 "			</div>");
 	}
 
-	printdiv(6,"特别服务区","/images/closedfold.gif");
+	printdiv(6,"特别服务区","/images/folder.gif");
 	printf("<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsalluser\">所有使用者</a><br>\n");
 	/*printf("<img src=\"/images/link.gif\"><a target=\"f3\" href=\"bbsadl\">下载精华区</a><br>\n");*/
 	printf("</div>\n");
@@ -119,16 +119,16 @@ NAME_BBS_CHINESE "用户登录<br>\n"
   	printf("<img src=\"/images/link0.gif\"><a href=\"bbsfind\" target=\"f3\">文章查询</a><br>\n");
 	printf("<img src=\"/images/find.gif\"><a href=\"bbssel\" target=\"f3\">查找讨论区</a><br>\n");
 	printf("<img src=\"/images/telnet.gif\"><a href=\"telnet:%s\">Telnet登录</a><br>\n", NAME_BBS_ENGLISH);
-	if(!loginok) 
-		printf("<img src=\"/images/link0.gif\"><a href=\"javascript:void open('bbsreg', '', 'width=620,height=550')\">新用户注册</a><br>\n");
+	/*if(!loginok) 
+		printf("<img src=\"/images/link0.gif\"><a href=\"javascript:void open('bbsreg', '', 'width=620,height=550')\">新用户注册</a><br>\n");*/
    	if(loginok) {
 		if(HAS_PERM(currentuser,PERM_LOGINOK) && !HAS_PERM(currentuser,PERM_POST))
 			printf("<script>alert('您被封禁了全站发表文章的权限, 请参看Announce版公告, 期满后在sysop版申请解封. 如有异议, 可在Complain版提出申诉.')</script>\n");
 		if(count_new_mails()>0) 
 			printf("<script>alert('您有新信件!')</script>\n");
 	}
-	if(loginok && !(currentuser->userlevel & PERM_LOGINOK) && !has_fill_form()) 
-		printf("<a target=\"f3\" href=\"bbsform\">填写注册单</a><br>\n");
+	/*if(loginok && !(currentuser->userlevel & PERM_LOGINOK) && !has_fill_form()) 
+		printf("<a target=\"f3\" href=\"bbsform\">填写注册单</a><br>\n");*/
 	if(loginok)
 		printf("<br><a href=\"javascript:openchat()\">["CHAT_SERVER"<font color=\"red\">测试中</font>]</a>");
 	printf("</div><script>if(isNS4) arrange();if(isOP)alarrangeO();</script>");
