@@ -34,13 +34,13 @@ int putout(char *path)
 	if((fp=fopen(path,"w"))==NULL)
 		return;
 
-	fprintf(fp,"%-15.15s %-30.30s %4s %6s\n","英文版面名", "中文","平均在线","文章数");
+	fprintf(fp,"    %-15.15s %-30.30s %4s %6s\n","英文版面名", "中文","平均在线","文章数");
 	for(i=0;i<n;i++){
-		fprintf(fp,"%-15.15s %-30.30s %4d %6d\n",x[i].filename,x[i].title,x[i].online/24,x[i].nowid-x[i].yesid);
+		fprintf(fp,"%3d %-15.15s %-30.30s %4d %6d\n",i+1,x[i].filename,x[i].title,x[i].online/24,x[i].nowid-x[i].yesid);
 		totalonline += x[i].online;
 		totalid+=x[i].nowid-x[i].yesid;
 	}
-	fprintf(fp,"%-15.15s %-30.30s %4d %6d\n","总计","",totalonline/24,totalid);
+	fprintf(fp,"    %-15.15s %-30.30s %4d %6d\n","总计","",totalonline/24,totalid);
 	fclose(fp);
 	return 1;
 }
