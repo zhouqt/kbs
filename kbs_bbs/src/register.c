@@ -136,7 +136,7 @@ void new_register()
         newuser.userdefine &= ~DEF_USEGB;
 
 #ifdef HAVE_WFORUM
-		currentuser->userdefine &= ~DEF_SHOWREALUSERDATA;
+	newuser.userdefine &= ~DEF_SHOWREALUSERDATA;
 #endif
 
     newuser.notemode = -1;
