@@ -1534,7 +1534,7 @@ struct user_info *urec;
 unsigned int load_mailbox_prop(char *userid)
 {
     char filename[256];
-    int prop = 0;
+    int prop = MBP_DEFAULT;
     int fd;
 
     sethomefile(filename, userid, ".mailbox.prop");

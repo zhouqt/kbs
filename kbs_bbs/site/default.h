@@ -707,6 +707,9 @@ typedef struct fileheader fileheader_t;
  * 
  * @author flyriver
  */
+#ifndef MBP_DEFAULT //其实最好放在#ifndef MBP_NUMS里面，希望以后会整理define的... - atppp 20040719
+#define MBP_DEFAULT           0x00000000  //默认（新注册用户）的邮箱属性
+#endif
 
 #ifndef MBP_NUMS
 #define MBP_SAVESENTMAIL      0x00000001
