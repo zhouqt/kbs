@@ -49,7 +49,7 @@ void load_msgs()
     int i;
     char filename[80], buf[80];
     msgst=0;
-    sprintf(filename, "home/%c/%s/.INROOMMSG", toupper(currentuser->userid[0]), currentuser->userid);
+    sprintf(filename, "home/%c/%s/.INROOMMSG%d", toupper(currentuser->userid[0]), currentuser->userid, uinfo.pid);
     fp = fopen(filename, "r");
     if(fp) {
         while(!feof(fp)) {
@@ -73,7 +73,7 @@ void send_msg(char* id, char* msg)
     FILE* fp;
     int i;
     char filename[80], buf[80];
-    sprintf(filename, "home/%c/%s/.INROOMMSG", toupper(id[0]), id);
+    sprintf(filename, "home/%c/%s/.INROOMMSG%d", toupper(id[0]), id, uinfo.pid);
     fp = fopen(filename, "a");
     if(fp) {
         fprintf(fp, "%s\n", msg);
@@ -260,7 +260,7 @@ void join_room(struct room_struct * r)
 {
     char buf[80];
     int i,j;
-    sprintf(buf, "home/%c/%s/.INROOMMSG", toupper(r->creator[0]), r->creator);
+    sprintf(buf, "home/%c/%s/.INROOMMSG%d", toupper(r->creator[0]), r->creator, uinfo.pid);
     unlink(buf);
     myroom = r;
     signal(SIGUSR1, room_refresh);
