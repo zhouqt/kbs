@@ -108,9 +108,12 @@ void load_favboard(int dohelp,int mode)
             favbrd_list_t = 1;
             favbrd_list[0].father = -1;
             for (k=0; k<MAXBOARDPERDIR; k++) {
-                read(fd, &j, sizeof(int));
+                if( read(fd, &j, sizeof(int)) <= 0)
+					break;
+				if(j<0) j=0;
                 favbrd_list[0].bid[k] = j;
             }
+			favbrd_list[0].bnum = k;
         } else if(sign==0x8080) {
             /*
              * We handle new version here. 
