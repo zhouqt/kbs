@@ -33,7 +33,7 @@ int dict_main()
     clear();
     move(3,0);
     if (word[0]==0) break;
-    if (strchr(word,"'")) break;
+    if (strchr(word,'\'')) break;
     if (word[0]&0x80)
         table="cedict";
     else
