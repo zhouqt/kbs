@@ -798,7 +798,7 @@ int (*read)();
     readplan=NA;
     (*title_show)();
     func_list_show=list_show;
-    signal(SIGALRM, SIG_IGN);
+    set_alarm(0,NULL,NULL);
     if(update==1)
         update_data(NULL);
     page=-1;
@@ -906,6 +906,6 @@ case '$':case KEY_END:
             number = 0;
         }
     }
-    signal(SIGALRM, SIG_IGN);
+    set_alarm(0,NULL,NULL);
     return -1 ;
 }

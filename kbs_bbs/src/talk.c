@@ -910,7 +910,7 @@ ntalkreply()
 
     if (setnpagerequest()) return 0;
 
-    signal(SIGALRM, SIG_IGN);
+    set_alarm(0,NULL,NULL);
     clear() ;
     move(1,0);
     prints("(N)【抱歉，我现在很忙，不能跟你聊。】(B)【我现在很烦，不想跟别人聊天。 】\n");
@@ -955,7 +955,7 @@ talkreply()
 #endif
     if (setpagerequest(0/*For Talk*/)) return 0;
     /*  added by netty  */
-    signal(SIGALRM, SIG_IGN);
+    set_alarm(0,NULL,NULL);
     clear() ;
 
     /* to show plan -cuteyu */
@@ -1372,7 +1372,7 @@ int fd ;
     }
     add_io(0,0) ;
     talkflush() ;
-    signal(SIGALRM, SIG_IGN);
+    set_alarm(0,NULL,NULL);
     add_flush(NULL) ;
     modify_user_mode(previous_mode);
 

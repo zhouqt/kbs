@@ -113,6 +113,7 @@ char *argv[];
   FILE *fp;
   FILE *op,*op1,*op2;
   char buf[256],buf1[256],buf2[256], *p,bname[20];
+  char *q;//added by Czz 010614
   char date[80];
   int mode;
   int c[3];
@@ -139,7 +140,7 @@ char *argv[];
   }
   if ((fp = fopen("/home0/bbs/boardusage.log", "r")) == NULL)
   {
-    printf("cann't open use_board\n");
+    printf("cann't open boardusage.log\n");
     return 1;
   }
   if(mode==1){
@@ -170,15 +171,24 @@ char *argv[];
       p+=4;
       p=strtok(p," ");
       strcpy(bname,p);
-*/
     if ( p = (char *)strstr(buf+46, "Stay: "))
     {
       sec=atoi( p + 6);
     }
     else
         sec=0;
+*/
+/* modified by Czz 010614 */
+    if ( p = (char *)strstr(buf, "Stay: "))
+    {
+	q = p-21;
+	q=strtok(q," ");
+	strcpy(bname,q);
+	sec=atoi( p + 6);
+    } 
     record_data(bname,sec);
     }
+/* modified end */
 /*
    }
 */

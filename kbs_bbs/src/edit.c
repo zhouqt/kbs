@@ -266,7 +266,7 @@ go()
 {
     char tmp[8];
     int line;
-    signal(SIGALRM, SIG_IGN);
+    set_alarm(0,NULL,NULL);
     getdata( 23,0,"请问要跳到第几行: ",tmp, 7, DOECHO, NULL );
     domsg();
     if(tmp[0]=='\0')
@@ -338,7 +338,7 @@ search()
 {
     char tmp[STRLEN];
 
-    signal(SIGALRM, SIG_IGN);
+    set_alarm(0,NULL,NULL);
     getdata( 23,0,"搜寻字串: ",tmp, 65, DOECHO, NULL );
     domsg();
     if(tmp[0]=='\0')
@@ -882,7 +882,7 @@ int saveheader ;
 
 #ifndef VEDITOR
     char p_buf[100];
-    signal(SIGALRM, SIG_IGN);
+    set_alarm(0,NULL,NULL);
     clear() ;
 
     if(uinfo.mode!=CCUGOPHER)

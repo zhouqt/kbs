@@ -125,7 +125,7 @@ check_calltime()
                       prints("请到主选单看备忘录......");
                       return;
                   }
-                signal(SIGALRM, SIG_IGN);
+		set_alarm(0,NULL,NULL);
                 showusernote();
                 pressreturn();
                 R_monitor();
