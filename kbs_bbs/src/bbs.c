@@ -1211,7 +1211,7 @@ int do_post()
     clear();
 
     /* edit, then send the mail */
-    switch (do_send(uid, title)) {
+    switch (do_send(uid, title,"")) {
     case -1:
         prints("系统无法送信\n");
         break;
@@ -2313,7 +2313,7 @@ int Goodbye()
             if (choose >= 1 && choose <= num_sysop) {
                 /*        do_send(sysoplist[choose-1], "使用者寄来的的建议信"); */
                 if (choose == 1)        /*modified by Bigman : 2000.8.8 */
-                    do_send(sysoplist[0], "【站务总管】使用者寄来的建议信");
+                    do_send(sysoplist[0], "【站务总管】使用者寄来的建议信","");
                 else if (choose == 2)
                     do_send(sysoplist[1], "【系统维护】使用者寄来的建议信","");
                 else if (choose == 3)

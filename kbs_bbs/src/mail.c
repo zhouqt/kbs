@@ -382,7 +382,7 @@ void m_init()
     setmailfile(currmaildir, currentuser->userid, DOT_DIR);
 }
 
-int do_send(char *userid, *title,char* q_file)
+int do_send(char *userid,char *title,char* q_file)
 {
     struct fileheader newmessage;
     struct stat st;
