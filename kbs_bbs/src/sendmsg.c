@@ -25,7 +25,7 @@ int line;
 
     move(line, 0);
     clrtoeol();
-    prints("送音信给:%-12.12s  音信: ", uid);
+    prints("送音信给:%-12s  音信: ", uid);
     memset(msg, 0, sizeof(msg));
     while (1) {
         i = multi_getdata(line, 29, 78, NULL, msg, MAX_MSG_SIZE, false);
