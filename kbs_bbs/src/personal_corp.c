@@ -688,15 +688,21 @@ int pc_conv_com_to_file( unsigned long nid ,char *fname)
 	char buf[256];
 	struct userec *lookupuser;
 
-	if(getuser(pc_u->username, &lookupuser) == 0)
-		return 0;
-
-	if ((fd = open(fname, O_WRONLY|O_CREAT , 0600)) < 0)
-		return 0;
-
 	ret = get_pc_a_com(&pn, nid);
 	if( ret <= 0 ){
 		close(fd);
+		return 0;
+	}
+
+	if(getuser(pn.username, &lookupuser) == 0){
+		if( pn.body )
+			free(pn.body);
+		return 0;
+	}
+
+	if ((fd = open(fname, O_WRONLY|O_CREAT , 0600)) < 0){
+		if( pn.body )
+			free(pn.body);
 		return 0;
 	}
 
@@ -876,6 +882,8 @@ int pc_add_a_node(unsigned long nid)
 	pn.subject[200]=0;
 
 	gettmpfilename(fpath, "pc.node");
+	unlink(fpath);
+
 	if( nid && pn.body ){
 		pc_conv_body_to_file(pn.body, fpath);
 		free(pn.body);
@@ -982,9 +990,10 @@ static int pc_dir_select(struct _select_def *conf)
 
 	/***先显示文章正文*****/
 	gettmpfilename(fpath, "pc.node");
+	unlink(fpath);
 	if( ! pc_conv_node_to_file(pc_n[conf->pos-conf->page_pos].nid, fpath) ){
 		move(3,0);
-		prints("error");
+		prints("没有内容");
 		pressanykey();
 		return SHOW_REFRESH;
 	}
@@ -1400,6 +1409,8 @@ int pc_add_a_com(unsigned long nid)
 	pn.subject[200]=0;
 
 	gettmpfilename(fpath, "pc.comments");
+	unlink(fpath);
+
 	if( nid && pn.body ){
 		pc_conv_body_to_file(pn.body, fpath);
 		free(pn.body);
@@ -1582,9 +1593,10 @@ static int pc_com_select(struct _select_def *conf)
 
 	/***先显示文章正文*****/
 	gettmpfilename(fpath, "pc.comments");
+	unlink(fpath);
 	if( ! pc_conv_com_to_file(pc_c[conf->pos-conf->page_pos].cid, fpath) ){
 		move(3,0);
-		prints("error");
+		prints("评论没有内容");
 		pressanykey();
 		return SHOW_REFRESH;
 	}
