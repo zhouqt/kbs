@@ -1827,12 +1827,16 @@ static int www_new_guest_entry()
         newbbslog(BBSLOG_USIES, "WWW guest:Clean guest table:%d", wwwguest_shm->uptime);
         wwwguest_shm->uptime = now;
         for (i = 0; i < MAX_WWW_GUEST; i++) {
+	    struct user_info guestinfo;
             if (!(wwwguest_shm->use_map[i / 32] & (1 << (i % 32))) || (now - wwwguest_shm->guest_entry[i].freshtime < MAX_WWW_GUEST_IDLE_TIME))
                 continue;
             newbbslog(BBSLOG_USIES, "EXIT: Stay:%3ld (guest)[%d %d](www)", now - wwwguest_shm->guest_entry[i].freshtime, wwwguest_shm->guest_entry[i].key);
             /*
              * Çå³ýuse_map 
              */
+	    guestinfo.currentboard=wwwguest_shm->guest_entry[i].currentboard;
+	    do_after_logout(currentuser, &guestinfo, i, 1);
+
             wwwguest_shm->use_map[i / 32] &= ~(1 << (i % 32));
             if (pub->www_guest_count > 0) {
                 pub->www_guest_count--;
