@@ -172,6 +172,12 @@ int mailall()
     while (1) {
         getdata(8, 0, "请输入模式 (0~4)? [0]: ", ans4, 2, DOECHO, NULL, true);
 
+        move(9,0);
+        clrtoeol();
+        if (!askyn("真的要群信么", 0)) {
+            clear();
+            return -1;
+        }
         if (ans4[0] - '0' >= 1 && ans4[0] - '0' <= 4) {
             sprintf(buf, "是否确定寄给%s (Y/N)? [N]: ", doc[ans4[0] - '0' - 1]);
             getdata(9, 0, buf, ans2, 2, DOECHO, NULL, true);

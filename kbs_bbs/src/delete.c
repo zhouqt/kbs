@@ -522,8 +522,8 @@ int d_user(cid)
         prints(" %s 将离开这里", cid);
 /*    clrtoeol(); */
     
-    getdata(24, 0, "(Yes, or No) [N]: ", genbuf, 4, DOECHO, NULL, true);
-    if (genbuf[0] != 'Y' && genbuf[0] != 'y') { /* if not yes quit */
+    getdata(24, 0, "(Yes, or No) [No](注意要输入全单词和大小写): ", genbuf, 5, DOECHO, NULL, true);
+    if (strcmp(genbuf,"Yes")) { /* if not yes quit */
         move(24, 0);
         if (uinfo.mode != OFFLINE)
             prints("取消删除使用者...\n");

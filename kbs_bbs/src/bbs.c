@@ -4685,6 +4685,49 @@ static int choose_tmpl_getdata(struct _select_def *conf, int pos, int len)
     return SHOW_CONTINUE;
 }
 
+static int convert_tmpl_string(char* buf,char* tmpletestr[MAX_CONTENT],char* result,int result_len)
+{
+    int l;
+    int ischinese=0;
+    char *pn,*pe;
+    int out_ptr;
+
+    out_ptr=0;
+    for(pn = buf; *pn!='\0'; pn++){
+    	if( *pn != '[' || ((*pn!=0)&&*(pn+1)!='$' )) {
+    	    result[out_ptr]=*pn;
+    	    out_ptr++;
+    	    if (out_ptr==result_len) break;
+    	}else{
+    		pe = strchr(pn,']');
+    		if(pe == NULL){
+    	            result[out_ptr]=*pn;
+    	            out_ptr++;
+    	            if (out_ptr==result_len) break;
+    		    continue;
+    		}
+    		l = atoi(pn+2);
+    		if( l<=0 || l > ptemplate[conf->pos-1].tmpl->content_num ){
+    	           result[out_ptr]='[';
+    	           out_ptr++;
+    	           if (out_ptr==result_len) break;
+    		    continue;
+    		}
+    		if (result_len-out_ptr<strlen(tmpletestr[l-1])) {
+    		    pn--;
+    		    break;
+    		}
+    		strcpy(result+out_ptr,tmpletestr[l-1]);
+    		out_ptr+=strlen(tmpletestr[l-1]);
+    		pn = pe;
+    		continue;
+    	}
+    }
+    result[out_ptr]=0;
+    if (*pn==0) return 0;
+    return pn-buf+1;
+}
+
 static int choose_tmpl_select(struct _select_def *conf)
 {
 	FILE *fp;
@@ -4721,43 +4764,26 @@ static int choose_tmpl_select(struct _select_def *conf)
 	}
 
 	if( ptemplate[conf->pos-1].tmpl->filename[0] ){
+	       int i,maxlen;
+	       char* result;
+	       maxlen=0;
+	       for (i=0;i<MAX_CONTENT;i++)
+	          if (strlen(tmp[i])>maxlen) maxlen=strlen(tmp[i]);
+	       result=malloc(maxlen+2);
 		setbfile( filepath,currboard->filename, ptemplate[conf->pos-1].tmpl->filename);
 		if( dashf( filepath )){
 			if((fpsrc = fopen(filepath,"r"))!=NULL){
 				char buf[256];
-
 				while(fgets(buf,255,fpsrc)){
-					int l;
-					int linex = 0;
-					int ischinese=0;
-					char *pn,*pe;
-
-					for(pn = buf; *pn!='\0'; pn++){
-						if( *pn != '[' || *(pn+1)!='$' ){
-							fputc(*pn, fp);
-							linex++;
-						}else{
-							pe = strchr(pn,']');
-							if(pe == NULL){
-								fputc(*pn, fp);
-								continue;
-							}
-							l = atoi(pn+2);
-							if( l<=0 || l > ptemplate[conf->pos-1].tmpl->content_num ){
-								fputc('[', fp);
-								continue;
-							}
-							fprintf(fp,"%s",tmp[l-1]);
-							pn = pe;
-							continue;
-						}
-					}
+				    int ret=0;
+				    while ((ret=convert_tmpl_string(buf+ret, tmp, result, maxlen+1))!=0);
 				}
 				fclose(fpsrc);
 
 				write_ok = 1;
 			}
 		}
+		free(result);
 	}
 	if(write_ok == 0){
 		for(i=0; i< ptemplate[conf->pos-1].tmpl->content_num; i++)
@@ -4874,11 +4900,11 @@ int choose_tmpl(char *title, char *fname)
 
     list_select_loop(&grouplist_conf);
 
-	if(t_now > 0){
+/*	if(t_now > 0){
 		strncpy(title, ptemplate[t_now-1].tmpl->title_prefix, 20);
 		title[19]='\0';
 	}
-
+*/
 	free(pts);
 	tmpl_free();
 

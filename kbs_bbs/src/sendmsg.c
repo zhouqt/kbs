@@ -394,6 +394,12 @@ int wall()
         clrtoeol();
         return 0;
     }
+    move(t_lines-1,0);
+    clrtoeol();
+    if (!askyn("真的要广播么", 0)) {
+        clear();
+        return 0;
+    }
     if (apply_ulist((APPLY_UTMP_FUNC) dowall, buf2) == -1) {
         move(2, 0);
         prints("没有任何使用者上线\n");
