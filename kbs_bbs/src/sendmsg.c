@@ -239,7 +239,7 @@ int show_allmsgs()
             load_msghead(all?2:0, currentuser->userid, i, &head);
             load_msgtext(currentuser->userid, &head, buf);
             j = translate_msg(buf, &head, showmsg);
-            while(y+j<=t_lines-1) {
+            while(y<=t_lines-1) {
                 y+=j; i++;
                 prints("%s", showmsg);
                 if(i>=count) break;
