@@ -33,12 +33,14 @@ static int utmp_lock()
     if (utmpfd < 0) {
         exit(-1);
     }
+/*
     signal(SIGALRM, longlock);
     alarm(10);
+*/
     if (flock(utmpfd, LOCK_EX) == -1) {
         exit(-1);
     }
-    signal(SIGALRM, SIG_IGN);
+//    signal(SIGALRM, SIG_IGN);
     return utmpfd;
 }
 
@@ -50,10 +52,12 @@ static void utmp_unlock(int fd)
 #else
 static int utmp_lock()
 {
+/*
     signal(SIGALRM, longlock);
     alarm(10);
+*/
     lock_sem(UTMP_SEMLOCK);
-    signal(SIGALRM, SIG_IGN);
+//    signal(SIGALRM, SIG_IGN);
     return 0;
 }
 
