@@ -142,7 +142,6 @@ AC_SUBST(WWWSRCDIR)
 
 if test -f "../wrapper.sh"; then
 abssrcdir=`cd $srcdir && pwd`
-CC="$abssrcdir/../wrapper.sh"
 LIBTOOL="$abssrcdir/../wrapper.sh"
 MAKEFLAG="-s"
 else

@@ -8181,10 +8181,17 @@ static PHP_FUNCTION(bbs_sysconf_str)
         int char_len;
         char *char_conf;
         char *char_result;
+		char *char_default="";
+		int default_len;
         if(ac !=1 || zend_parse_parameters(1 TSRMLS_CC,"s",&char_conf,&char_len) ==FAILURE){
+            if(ac !=2 || zend_parse_parameters(2 TSRMLS_CC,"ss",&char_conf,&char_len,&char_default,&default_len) ==FAILURE){
                 WRONG_PARAM_COUNT;
+			}
         }
         char_result=sysconf_str(char_conf);//获取配制参数
+		if (char_result==NULL) {
+          RETURN_STRING(char_default,1);
+        }
         RETURN_STRING(char_result,1);
 }
 
