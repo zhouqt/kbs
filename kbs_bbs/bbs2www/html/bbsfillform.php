@@ -43,7 +43,7 @@ login_init();
 	
 	//48小时后才让注册
 	if ( time() - $currentuser["firstlogin"] < MIN_REG_TIME * 3600 )
-		html_error_quit("请于第一次登录 ".MIN_REG_TIME." 后再填写注册单，先熟悉一下这里的环境吧。");
+		html_error_quit("请于第一次登录 ".MIN_REG_TIME."小时 后再填写注册单，先熟悉一下这里的环境吧。");
 	
 	//用户已经通过注册
 	//未满等待时间(先放到phplib里面做了)
