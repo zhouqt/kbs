@@ -1,0 +1,72 @@
+#!/usr/bin/perl -U
+# $Id$
+
+$bbsuid=30001;
+$bbsgid=504;
+$mail2bbs="/home/bbs/bin/qmail2bbs";
+$mailpost="/home/bbs/bin/qmailpost";
+require "/home/bbs/bin/mailgate.pl";
+
+$)=$bbsgid;
+$(=$bbsgid;
+$<=$bbsuid;
+$>=$bbsuid;
+$ENV{'PATH'}='/bin:/usr/etc:/usr/local/bin:/usr/ucb';
+#while ( $ARGV[0] =~ /^-/ ) {
+#	$_ = shift;
+#	if ( /^-d/ ) {
+#		$debug=1;
+#	} 
+#}
+#$normaluser = $ARGV[0];
+$normaluser = $ENV{'EXT'};
+$logdir="/home/bbs/log";
+mkdir($logdir,0700) unless -d $logdir;
+open(LOG,">> $logdir/mail-log") || warn "can't open warn file $!\n";
+print LOG "\n";
+print "\nMail to $normaluser \n";
+print LOG "Mail to $normaluser \n";
+&readmail;
+for ($n=0; $n < $MAILBODY; $n++) {
+        print LOG $MAIL[$n];
+}
+print LOG "\'$Header{'From'}\' \'$normaluser\'  \'$Header{'Subject'}\' \'$Header{'Received'}\'\n";
+$ENV{'TITLE'} = $Header{'Subject'};
+$ENV{'MSGID'} = $Header{'Received'};
+if (substr($normaluser, 0, 1) eq "_")
+{
+	$normaluser2 = substr($normaluser, 1);
+	#open(BBSGATE,"| $mailpost \'$Header{'From'}\' \'$normaluser2\'  \'$Header{'Subject'}\' \'$Header{'Received'}\'");
+	open(BBSGATE,"| $mailpost \'$Header{'From'}\' \'$normaluser2\'");
+}
+else
+{
+	open(BBSGATE,"| $mail2bbs \'$Header{'From'}\' \'$normaluser\'");
+}
+for ($n= $MAILBODY; $n <= $#MAIL; $n++) {
+	print BBSGATE $MAIL[$n];
+}
+close(BBSGATE);
+if ($? ==0 ) {
+     print LOG "$Header{'From'} mail to $normaluser successfully\n";
+     print "$Header{'From'} mail to $normaluser successfully\n";
+	close(LOG);
+	0;
+} elsif ($? ==767 ) {
+     print LOG "$Header{'From'} mail to $normaluser failed, return code $?\n";
+     print "$Header{From} mail to $normaluser failed, return code $?\n";
+     close(LOG);
+     die "Shared memory error\n";
+} elsif ($? ==768 ) {
+     print LOG "$Header{'From'} mail to $normaluser failed, return code $?\n";
+     print "$Header{From} mail to $normaluser failed, return code $?\n";
+     close(LOG);
+     print "Service refused\n";
+	 100;
+} else {
+     print LOG "$Header{'From'} mail to $normaluser failed, return code $?\n";
+     print "$Header{From} mail to $normaluser failed, return code $?\n";
+     close(LOG);
+     print "BBS user $normaluser unknown\n";
+	 100;
+}
