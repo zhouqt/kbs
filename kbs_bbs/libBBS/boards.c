@@ -793,6 +793,8 @@ int haspostperm(struct userec *user, char *bname)
             return 1;
         else if (!strcmp(bname, "Arbitration"))
             return 1;
+        else if (!strcmp(bname, "BBSHelp"))
+            return 1;
         return 0;
     }                           /* stephen 2000.10.27 */
     if (HAS_PERM(user, (bcache[i - 1].level & ~PERM_NOZAP) & ~PERM_POSTMASK)) {
