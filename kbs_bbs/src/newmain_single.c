@@ -1091,6 +1091,8 @@ void main_bbs(int convit, char *argv)
     if (HAS_PERM(currentuser, PERM_SYSOP) && dashf("new_register"))
         prints("有新使用者正在等您通过注册资料。\n");
 
+	chk_smsmsg(1);
+
     /*chk_friend_book(); */
     /* Leeward 98.12.03 */
     if (chk_friend_book()) {
@@ -1270,6 +1272,7 @@ void docmdtitle(char *title, char *prompt)
 {
     char middoc[30];
     int chkmailflag = 0;
+	int chksmsmsg = 0;
 
 /*    if (getbnum(DEFAULTBOARD)) 
     {
@@ -1279,6 +1282,7 @@ void docmdtitle(char *title, char *prompt)
          strcpy(bmstr," ");
 */
     chkmailflag = chkmail();
+	chksmsmsg = chk_smsmsg(0);
 
     if (chkmailflag == 2)       /*Haohmaru.99.4.4.对收信也加限制 */
         strcpy(middoc, "[信箱超容]");
@@ -1289,6 +1293,13 @@ void docmdtitle(char *title, char *prompt)
     else
         strcpy(middoc, BBS_FULL_NAME);
 
+	if( chksmsmsg ){
+		if( chkmailflag ){
+			strcat(middoc, "[您有短信]");
+		}else{
+			strcpy(middoc, "[您有短信]");
+		}
+	}
 
     showtitle(title, middoc);
     move(1, 0);
