@@ -260,9 +260,9 @@
 <p align="center" class="f1">
 <?php
 		if ($pno > 1)
-		    echo "[<a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=0&tid=".$tid."\">第一页</a>]&nbsp;[<a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=0&tid=".$tid."&pno=".($pno-1)."\">上一页</a>]&nbsp;";
+		    echo "[<a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=".$tag."&tid=".$tid."\">第一页</a>]&nbsp;[<a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=".$tag."&tid=".$tid."&pno=".($pno-1)."\">上一页</a>]&nbsp;";
 		if ($cnt == $i)
-		    echo "[<a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=0&tid=".$tid."&pno=".($pno+1)."\">下一页</a>]";
+		    echo "[<a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=".$tag."&tid=".$tid."&pno=".($pno+1)."\">下一页</a>]";
 ?>
 </p>
 <?php		    
