@@ -590,4 +590,14 @@ function pc_select_blogtheme($theme,$themeValue="pcthem")
 <?php
 }
 
+function pc_cache( $modifytime )
+{
+	$lastmodifytime = time_format( $modifytime );
+	$lastmodifytime = strtotime( $lastmodifytime );
+	if (cache_header("public",$lastmodifytime,300))
+		return TRUE;
+	else
+		return FALSE;
+}
+
 ?>

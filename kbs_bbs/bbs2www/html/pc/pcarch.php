@@ -39,7 +39,8 @@
 		exit();
 	}
 	
-	
+	if( pc_cache( $pc["MODIFY"] ) )
+		return;
 	
 	Header("Content-type: file/html");
 	Header("Content-Disposition: inline;filename=".$pc["USER"]."_blog_".substr($archDate[0],0,8)."_".substr($archDate[1],0,8).".html");

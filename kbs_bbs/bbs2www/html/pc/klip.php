@@ -19,6 +19,9 @@
 		exit();
 	}
 	
+	if( pc_cache( $pc["MODIFY"] ) )
+		return;
+	
 	header("Content-Type: text/Klip");
 	header("Content-Disposition: inline;filename=".$pc["USER"].".Klip");
 	

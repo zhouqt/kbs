@@ -56,7 +56,6 @@
 	}
 	$cid = (int)($_GET["cid"]);
 	
-	pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
 	$link = pc_db_connect();
 	$query = "SELECT * FROM comments WHERE `cid` = '".$cid."' LIMIT 0 , 1 ;";
 	$result = mysql_query($query,$link);
@@ -64,6 +63,7 @@
 	if(!$comment)
 	{
 		@mysql_free_result($result);
+		pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
 		html_error_quit("对不起，您要查看的评论不存在");
 		exit();
 	}
@@ -73,6 +73,7 @@
 	if(!$node)
 	{
 		@mysql_free_result($result);
+		pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
 		html_error_quit("对不起，您要查看的评论不存在");
 		exit();
 	}
@@ -81,7 +82,8 @@
 		$pc = pc_load_infor($link,"",$node[uid]);
 		if(!$pc)   
                 {   
-                	html_error_quit("对不起，您要查看的Blog不存在");   
+                	pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
+			html_error_quit("对不起，您要查看的Blog不存在");   
                 	exit();   
                 }
                 
@@ -91,10 +93,14 @@
 		$tags = $userPermission["tags"];
 		if(!$tags[$node[access]])
 		{
+			pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
 			html_error_quit("对不起，您不能查看本条记录!");
 			exit();
 		}
 	}
+	if( pc_cache( $comment[changed] ) )
+		return;
+	pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
 ?>
 <br>
 <center>
