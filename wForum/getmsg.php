@@ -10,9 +10,7 @@ html_init();
 <?php
 	$ret=bbs_getwebmsg($srcid,$msgbuf,$srcutmpnum,$sndtime);
 	if ($ret!=0)  {
-		$param=bbs_getuserparam();
-		$flag=1<<17;
-		if ($param & $flag) {
+		if ($currentuser['userdefine0'] & BBS_DEF_SOUNDMSG) {
 			echo '<bgsound src="/sound/msg.wav">';
 		}
 ?> 

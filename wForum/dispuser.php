@@ -41,8 +41,7 @@ function showUserData($user, $user_num) {
 	   默认设置是 1 开启 2 关闭。下面的资料可能需要调整一下以和 BBS 系统一致？比方该看到的信息就应该永远可以看到...
 	 */
 require("inc/userdatadefine.inc.php");
-$flag=1<<29; //ToDo: 这个写法太不 portable 了！！考虑 phpbbslib.c 加入相关 REGISTER_LONG_CONSTANT - atppp
-if ($user['userdefine0'] & $flag) {
+if ($user['userdefine0'] & BBS_DEF_SHOWDETAILUSERDATA) {
 	if ($user['userface_img']==-2) {
 		$user_pic = $user['userface_url'];
 	} else {
@@ -130,8 +129,7 @@ if ($user['userdefine0'] & $flag) {
 <br>
 <?php
 }
-$flag=1<<30; //ToDo: 这个写法太不 portable 了！！ - atppp
-if ($user['userdefine0'] & $flag) {
+if ($user['userdefine0'] & BBS_DEF_SHOWREALUSERDATA) {
 ?>
 <table cellspacing=1 cellpadding=3 align=center class=TableBorder1 style="table-layout:fixed;word-break:break-all">
   <col width=20% ><col width=*><col width=40% > 
