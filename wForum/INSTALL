@@ -62,7 +62,14 @@ make
 make install
 
 
-附2: 自定义头像的更多细节
+
+附2: 如果使用 apache2 需要注意的地方：
+*) php configure 命令中 --with-apxs 改成 --with-apxs2
+*) httpd.conf 建议加入 AddDefaultCharset gb2312
+
+
+
+附3: 自定义头像的更多细节
 自定义头像的存放位置是wForum主目录下面的uploadFace/目录。在备份和转移BBS数据的时候也要
 备份这个目录。有人可能会希望BBS的数据全部都在~bbs/目录下面以方便备份，这是可行的。
 下面提供一个方法：
