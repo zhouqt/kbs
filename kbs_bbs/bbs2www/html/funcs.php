@@ -514,6 +514,23 @@ function check_php_setting($name, $value) {
   }
 }
 
+function bbs_login_form()
+{
+?>
+<form name="loginform" target="_top" action="/bbslogin.php?mainurl=<?php echo urlencode($_SERVER["REQUEST_URI"]); ?>" method="post">
+<B><FONT SIZE="2" color="#333333">ÓÃ»§Ãû:</FONT></B>
+<INPUT TYPE=text STYLE="width:80px;height:16px;font-size: 12px;color: #555555;border-color: #000000;border-style: solid;border-width: 1px;background-color: #feffff;" LENGTH="10" onMouseOver="this.focus()" onFocus="this.select()" name="id" >
+&nbsp;&nbsp;
+<B><FONT SIZE="2" color="#333333">ÃÜ Âë:</FONT></B>
+<INPUT TYPE=password  STYLE="width:80px;height:16px;font-size: 12px;color: #555555;border-color: #000000;border-style: solid;border-width: 1px;background-color: #feffff;" LENGTH="10" name="passwd" maxlength="39">
+&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="submit" value="µÇÂ¼" style="width:40px;height:16px;font-size: 12px;color: #555555;border-color: #000000;border-style: solid;border-width: 1px;background-color: #fffff8;" name="submit1">
+&nbsp;
+<input type="button" name="guest" value="×¢²á" style="width:40px;height:16px;font-size: 12px;color: #555555;border-color: #000000;border-style: solid;border-width: 1px;background-color: #fffff8;" onclick="location.href='/bbsreg0.html'")>
+</form>
+<?php	
+}
+
 if ((!isset($needlogin)||($needlogin!=0))&&($loginok!=1)&&($_SERVER["PHP_SELF"]!="/bbslogin.php")) {
 	error_nologin();
 	return;
