@@ -536,6 +536,9 @@ void r_msg()
             refresh();
             prints("%s", msgbuf);
             refresh();
+#ifdef NINE_BUILD
+	    if (retcode !=1)
+#endif
             sleep(1);
 
             move(line + 1, 0);
