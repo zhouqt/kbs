@@ -88,12 +88,13 @@ function pcmain_recommend_blogger()
 	mt_srand();
 	$pos = mt_rand(0,50);//排名前50的博客随机抽取一个
 	if(defined("_PCMAIN_RECOMMEND_BLOGGER_"))
-		$query = "SELECT uid , username , corpusname , description FROM users WHERE uid = '".intval(_PCMAIN_RECOMMEND_BLOGGER_)."' LIMIT 1;";
+		$query = "SELECT uid , username , corpusname , description FROM users WHERE username = '".addslashes(_PCMAIN_RECOMMEND_BLOGGER_)."' LIMIT 1;";
 	else
 		$query = "SELECT uid , username , corpusname , description FROM users ORDER BY visitcount DESC LIMIT ".$pos.",1;";
 	$result = mysql_query($query,$link);
 	$pc = mysql_fetch_array($result);
 	mysql_free_result($result);
+	if (!$pc) return;
 	//提取该用户最热门的5篇文章
 	$query = "SELECT nid,subject FROM nodes WHERE access = 0 AND uid = '".$pc[uid]."' ORDER BY visitcount DESC LIMIT 0 , 5;";
 	$result = mysql_query($query,$link);
@@ -503,7 +504,7 @@ pcmain_html_init();
 		if (defined("_PCMAIN_RECOMMEND_")) 
 		{
 ?>
-                   <td align="center" valign="top" width="55%">
+                   <td align="center" valign="top" width="50%">
                    <?php
 			pcmain_recommend_blogger();  
                    ?>
