@@ -29,11 +29,11 @@ CREATE TABLE `comments` (
 
 CREATE TABLE `logs` (
   `lid` int(10) unsigned NOT NULL auto_increment,
-  `username` varchar(20) binary NOT NULL default '',
-  `hostname` varchar(20) binary NOT NULL default '',
+  `username` varchar(20) NOT NULL default '',
+  `hostname` varchar(20) NOT NULL default '',
   `ACTION` varchar(100) NOT NULL default '',
-  `pri_id` int(10) unsigned default NULL,
-  `sec_id` int(10) unsigned default NULL,
+  `pri_id` varchar(20) default NULL,
+  `sec_id` varchar(20) default NULL,
   `COMMENT` varchar(200) default NULL,
   `logtime` timestamp(14) NOT NULL,
   PRIMARY KEY  (`lid`),
@@ -139,3 +139,19 @@ CREATE TABLE `users` (
   UNIQUE KEY `username` (`username`),
   KEY `corpusname` (`corpusname`,`createtime`)
 ) TYPE=MyISAM COMMENT='用户表' AUTO_INCREMENT=2 ;
+
+CREATE TABLE `newapply` (
+  `naid` int(10) NOT NULL auto_increment,
+  `username` varchar(12) NOT NULL default '',
+  `appname` varchar(50) NOT NULL default '',
+  `appself` text NOT NULL,
+  `appdirect` text NOT NULL,
+  `hostname` varchar(15) NOT NULL default '',
+  `apptime` timestamp(14) NOT NULL,
+  `manager` varchar(12) default NULL,
+  `management` int(1) unsigned NOT NULL default '1',
+  UNIQUE KEY `naid_2` (`naid`),
+  KEY `naid` (`naid`),
+  KEY `username` (`username`),
+  KEY `management` (`management`)
+) TYPE=MyISAM COMMENT='新申请用户' AUTO_INCREMENT=2 ;
