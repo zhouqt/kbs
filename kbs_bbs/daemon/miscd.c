@@ -91,7 +91,8 @@ int dokilldir(char *board)
     strcat(hehe, "/");
     strcat(hehe, board);
     killed = killdir(hehe, ".DELETED") + killdir(hehe, ".JUNK");
-    newbbslog(BBSLOG_USIES, "deleted %d files in %s board", killed, board);
+    if (killed > 0)
+        newbbslog(BBSLOG_USIES, "deleted %d files in %s board", killed, board);
     return killed;
 }
 
@@ -133,6 +134,14 @@ char *sethomepath(buf, userid)  /* 取 某用户 的home */
 }
 #endif
 #ifndef SAVELIVE
+
+int kickuser(struct user_info *uentp, char *arg, int count)
+{
+    kill(uentp->pid, SIGHUP);
+    clear_utmp((uentp - utmpshm->uinfo) + 1, uentp->uid, uentp->pid);
+    return 0;
+}
+
 int killauser(struct userec *theuser, char *data)
 {
     int a;
@@ -143,6 +152,7 @@ int killauser(struct userec *theuser, char *data)
     a = compute_user_value(theuser);
     if ((a <= 0)&&strcmp(theuser->userid,"guest")) {
         newbbslog(BBSLOG_USIES, "kill user %s", theuser->userid);
+        apply_utmp((APPLY_UTMP_FUNC) kickuser, 0, theuser->userid, 0);
         a = getuser(theuser->userid, &ft);
         setmailpath(tmpbuf, theuser->userid);
         sprintf(genbuf1, "/bin/rm -rf %s", tmpbuf);
@@ -165,6 +175,7 @@ int killauser(struct userec *theuser, char *data)
 int dokilluser()
 {
 #ifndef SAVELIVE
+    resolve_utmp();
     newbbslog(BBSLOG_USIES, "Started kill users\n");
     apply_users(killauser, NULL);
     newbbslog(BBSLOG_USIES, "kill users done\n");
