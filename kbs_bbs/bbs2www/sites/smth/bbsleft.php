@@ -479,7 +479,7 @@ setTimeout('bbs_auto_reload()',540000);
 			<td>
 				<DIV class="s" id="divchat">
 					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">&nbsp;
+					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="bbsuser.php" target="f3">在线用户</a><br>
 <?php
 	if($currentuser["userid"]=="guest"){
