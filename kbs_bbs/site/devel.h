@@ -2,6 +2,7 @@
 #define __SYSNAME_H_
 
 #undef NINE_BUILD
+#undef NEW_COMERS		/* 注册后在 newcomers 版自动发文 */
 #undef SITE_HIGHCOLOR
 #undef HAVE_BIRTHDAY
 #undef HAPPY_BBS

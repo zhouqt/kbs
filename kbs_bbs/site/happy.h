@@ -3,6 +3,7 @@
 
 #define CONV_PASS
 #undef NINE_BUILD
+#undef NEW_COMERS		/* 注册后在 newcomers 版自动发文 */
 #define HAVE_BIRTHDAY
 #define HAPPY_BBS
 #define HAVE_COLOR_DATE

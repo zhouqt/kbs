@@ -501,7 +501,7 @@ void check_register_info()
 		}
 	}
 #endif
-#ifdef NINE_BUILD
+#ifdef NEW_COMERS
     if (currentuser->numlogins == 1)
     {
         time_t now;
