@@ -937,7 +937,7 @@ static ZEND_FUNCTION(bbs_getarticles)
         if (articles[i].attachment)
             flags[3] = '@';
         else
-            flags[3] = '';
+            flags[3] = ' ';
         bbs_make_article_array(element, articles + i, flags, sizeof(flags));
         zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
     }
