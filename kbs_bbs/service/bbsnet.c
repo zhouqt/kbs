@@ -173,7 +173,6 @@ int telnetopt(int fd, char* buf, int max)
 		{
 			d=buf[pp++];
 			e=buf[pp++];
-			fflush(stdout);
 			if((d==253)&&(e==3||e==24))
 			{
 				tmp[0]=255;
@@ -224,9 +223,9 @@ int telnetopt(int fd, char* buf, int max)
 			}
 		}
 		else
-			  raw_write(0,&c,1);
+			  outc(c);
 	}
-
+       oflush();
 	return 0;
 }
 
@@ -414,10 +413,11 @@ int bbsnet(int n)
 			else if (strchr(buf, 255))	/* ≤È’“ «∑Ò∫¨”–TELNET√¸¡ÓIAC */
 				telnetopt(sockfd, buf, rc);
 			else
-				outns(buf, rc);
+			{
+				output(buf, rc);
+				oflush();
+			}
 		}
-		else
-		    refresh();
 		if (FD_ISSET(0, &readset))
 		{
 			if ((rc = bbsnet_read(0, buf, BUFSIZ)) < 0)
