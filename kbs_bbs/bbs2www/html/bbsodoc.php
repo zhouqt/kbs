@@ -97,7 +97,7 @@ login_init();
 		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
 <table width="100%" border="0" cellspacing="0" cellpadding="3" class="t1">
-<col width="50px"/><col width="30px"/><col width="85px"/><col width="50px"/><col width="*" width="50px"/>
+<col width="50px"/><col width="30px"/><col width="85px"/><col width="50px"/><col width="*" align="left"/>
 <tbody><tr><td class="t2">序号</td><td class="t2">标记</td><td class="t2">作者</td><td class="t2">日期</td><td class="t2">标题</td></tr>
 </tbody>
 <?php
