@@ -728,7 +728,7 @@ function pc_get_user_permission($currentuser,$pc)
 	    }
 	    else {
 	        $sec = array(0=>"¾ãÀÖ²¿");
-    		$pur = 3;
+    		$pur = 0;
     		$tags = array(1,0,0,0,0,0,0,0);
 	    }
 	}
