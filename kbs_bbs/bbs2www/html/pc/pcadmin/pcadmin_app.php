@@ -94,7 +94,7 @@ function pc_reject_apply($link,$userid,$applyAgain)
 if($_GET["userid"])
 {
 	if($_GET["act"] == "y")
-		pc_add_users($link,$_GET["userid"],$corpusname);
+		pc_add_users($link,$_GET["userid"],$_GET["pcname"]);
 	elseif($_GET["act"] == "r")
 		pc_reject_apply($link,$_GET["userid"],2);
 	elseif($_GET["act"] == "d")
@@ -168,7 +168,7 @@ function bbsconfirm(url,infor){
 	if($type == 1)
 	{
 ?>	
-	[<a href="#" onclick="bbsconfirm('<?php echo $_SERVER["PHP_SELF"]."?pno=".$pno."&type=".$type."&act=y&userid=".rawurlencode($newApp[username]); ?>' , '通过<?php echo $newApp[username]; ?>的申请?')"><font color=red>通过</font></a>]
+	[<a href="#" onclick="bbsconfirm('<?php echo $_SERVER["PHP_SELF"]."?pno=".$pno."&type=".$type."&act=y&userid=".rawurlencode($newApp[username])."&pcname=".rawurlencode($newApp[appname]); ?>' , '通过<?php echo $newApp[username]; ?>的申请?')"><font color=red>通过</font></a>]
 	[<a href="#" onclick="bbsconfirm('<?php echo $_SERVER["PHP_SELF"]."?pno=".$pno."&type=".$type."&act=r&userid=".rawurlencode($newApp[username]); ?>' , '驳回<?php echo $newApp[username]; ?>的申请?')"><font color=red>驳回</font></a>]
 	[<a href="#" onclick="bbsconfirm('<?php echo $_SERVER["PHP_SELF"]."?pno=".$pno."&type=".$type."&act=d&userid=".rawurlencode($newApp[username]); ?>' , '驳回<?php echo $newApp[username]; ?>的申请(并不允许其再申请)?')"><font color=red>驳回并不允许再申请</font></a>]
 <?php
