@@ -55,8 +55,10 @@
 <a href=/cgi-bin/bbs/bbsqry?userid=<?php echo $maildata[$i]["OWNER"];?>><?php echo $maildata[$i]["OWNER"];?></a>
 <td><?php echo strftime("%b&nbsp;%e&nbsp;%H&nbsp;:%M",$maildata[$i]["POSTTIME"]);?>
 <td><a href=/cgi-bin/bbs/bbsmailcon?file=<?php echo $maildata[$i]["FILENAME"];?>&dir=<?php echo $mail_path;?>&num=<?php echo $i;?>&title=<?php echo $mail_title;?>><?php 
-if(strncmp($maildata[$i]["TITLE"],"Re: ",4)
+if(strncmp($maildata[$i]["TITLE"],"Re: ",4))
 	echo "бя" .  htmlspecialchars($maildata[$i]["TITLE"]);
+else
+    echo htmlspecialchars($maildata[$i]["TITLE"]);
 ?></a>
 </tr>
 <?php
