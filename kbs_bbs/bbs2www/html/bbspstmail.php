@@ -52,6 +52,13 @@ login_init();
 			}
 		$mailboxnum = $i + 1;
 ?>
+<script language=javascript>
+<!--
+function dosubmit() {
+    document.postform.submit();
+}
+//-->
+</script>
 <body topmargin="0">
 <p align="left" class="b2">
 <a href="bbssec.php" class="b2"><?php echo BBS_FULL_NAME; ?></a>
@@ -133,7 +140,7 @@ login_init();
     $bBackup = (bbs_is_save2sent() != 0);
 ?>
 <input type="checkbox" name="backup"<?php if ($bBackup) echo " checked=\"checked\""; ?>>保存到发件箱<br />
-<textarea class="sb1" name="text"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' rows="20" cols="80" wrap="physical">
+<textarea class="sb1" name="text" onkeydown='return textarea_okd(dosubmit, event);' rows="20" cols="80" wrap="physical">
 <?php
     if(isset($file)){
 		if(isset($board)){

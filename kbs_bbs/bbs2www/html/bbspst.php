@@ -191,7 +191,7 @@ function dosubmit() {
 	}
 ?>
 <br />
-<textarea class="sb1" name="text"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {dosubmit(); return false;}'  onkeypress='if(event.keyCode==10) return dosubmit()' rows="20" cols="80" wrap="physical">
+<textarea class="sb1" name="text" onkeydown='return textarea_okd(dosubmit, event);' rows="20" cols="80" wrap="physical">
 <?php
     if($reid > 0){
     $filename = $articles[1]["FILENAME"];
