@@ -79,7 +79,7 @@ int main()
     printf("</table>");
     if (total <= 0)
         printf("请先选定文章<br>\n");
-    printf("<br><a href=\"bbsmdoc?board=%s\">返回管理模式</a>", encode_url(buf, board, sizeof(buf)));
+    printf("<br><a href=\"/bbsmdoc.php?board=%s\">返回管理模式</a>", encode_url(buf, board, sizeof(buf)));
     http_quit();
 }
 

@@ -50,7 +50,7 @@ int main()
 				continue;
 			if (get_favboard_type(i))
      		printf("<img src=\"/images/link.gif\">"
-				" <a target=\"f3\" href=\"bbsdoc?board=%s\">%s</a><br>\n",
+				" <a target=\"f3\" href=\"/bbsdoc.php?board=%s\">%s</a><br>\n",
 				encode_url(buf, name, sizeof(buf)), name);
 			else
      		printf("<img src=\"/images/folder.gif\">"
