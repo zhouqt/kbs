@@ -47,6 +47,7 @@ struct userdata
 	unsigned char   birthmonth;
 	unsigned char   birthday;
 #endif
+     char reg_email[STRLEN]; /* registry email . added by binxun . 2003.6.6 */
 };
 
 struct user_info {              /* Structure used in UTMP file */
