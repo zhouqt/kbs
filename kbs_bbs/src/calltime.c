@@ -5,6 +5,8 @@
 #define CLOCK_TYPE_WEEK 3
 #define CLOCK_TYPE_MONTH 4
 #define CLOCK_TYPE_YEAR 5
+#define CLOCK_TYPE_IMP_NOT 6
+#define CLOCK_TYPE_IMP_HAD 7
 
 #define MAX_CLOCK_DEF 100
 
@@ -18,7 +20,7 @@ struct clock_struct
 struct clock_struct * clock_data = NULL;
 int clock_total = 0;
 
-extern int calltime;
+extern time_t calltime;
 extern char calltimememo[];
 
 static int default_clock_data()
@@ -207,6 +209,7 @@ time_t calc_calltime()
 	int out=0;
 	int i;
 	time_t ret=0;
+	time_t old_calltime = calltime;
 
 	if(clock_data == NULL){
 		clock_data = (struct clock_struct *) malloc(sizeof(struct clock_struct) * MAX_CLOCK_DEF);
@@ -217,22 +220,28 @@ time_t calc_calltime()
 
 	init_clock_data();
 
-	for(i=0;i<clock_total;){
+	for(i=0;i<clock_total;i++){
 		time_t realcalltime;
 
 		realcalltime = get_realcalltime(clock_data + i);
 
 		if(realcalltime < time(0)){
-			//if((clock_data+i)->type == CLOCK_TYPE_NORMAL && (clock_data+i)->clock_time != 0) del_clock_data(i);
-			//else i++;
-			i++;
+			if((clock_data+i)->type == CLOCK_TYPE_IMP_NOT ){
+				if(old_calltime == realcalltime){
+					(clock_data+i)->type = CLOCK_TYPE_IMP_HAD;
+					continue;
+				}
+				if(ret==0 || ret > realcalltime){
+					ret = realcalltime;
+					strncpy(calltimememo,(clock_data+i)->memo,40);
+				}
+			}
 			continue;
 		}
 		if(ret == 0 || realcalltime < ret ){
 			ret = realcalltime;
 			strncpy(calltimememo,(clock_data+i)->memo,40);
 		}
-		i++;
 	}
 
 	save_clock_data();
@@ -260,23 +269,24 @@ static int add_new_clock()
 
 	clear();
 	good_move(1,0);
-	prints("1. 普通闹铃 (设置系统几分钟后提醒您)\n");
-	prints("2. 定时闹铃 (某年某月某日某分提醒您)\n");
+	prints("1. 普通闹铃 (设置系统几分钟后提醒您,不在线忽略)\n");
+	prints("2. 定时闹铃 (某年某月某日某分提醒您,不在线忽略)\n");
 	prints("3. 每日闹铃\n");
 	prints("4. 每周闹铃\n");
-	prints("5. 每月闹铃");
-	getdata(7,0,"请选择闹铃种类(1-5)? [0]:",ans,sizeof(ans),DOECHO,NULL,true);
+	prints("5. 每月闹铃\n");
+	prints("6. 重要闹铃 (闹铃时未在线下次登陆时自动提示)");
+	getdata(10,0,"请选择闹铃种类(1-6)? [0]:",ans,sizeof(ans),DOECHO,NULL,true);
 
 	switch( ans[0] ){
 	case '1':
 	{
 		char tmp[6];
 		int tt;
-		getdata(8,0,"几分钟后系统闹铃:",tmp,4,DOECHO,NULL,true);
+		getdata(11,0,"几分钟后系统闹铃:",tmp,4,DOECHO,NULL,true);
 		tt = atoi(tmp);
 		if(tt <= 0)
 			break;
-		getdata(9,0,"系统闹铃自定义提醒内容:",memo,40,DOECHO,NULL,true);
+		getdata(12,0,"系统闹铃自定义提醒内容:",memo,40,DOECHO,NULL,true);
 		if(memo[0]=='\0' || memo[0]=='\r' || memo[0]=='\n')
 			strcpy(memo,"系统闹铃喽~~~~~~~~~~~~");
 		now=time(0);
@@ -288,6 +298,7 @@ static int add_new_clock()
 		break;
 	}
 	case '2':
+	case '6':
 	{
 		struct tm *ltime;
 		struct tm newtm;
@@ -299,7 +310,7 @@ static int add_new_clock()
 		newtm.tm_isdst = ltime->tm_isdst;
 		
 		sprintf(buf,"设定系统闹铃年份 [%d]:",ltime->tm_year+1900);
-		getdata(8,0,buf,tmp,5,DOECHO,NULL,true);
+		getdata(11,0,buf,tmp,5,DOECHO,NULL,true);
 		if(tmp[0]=='\0' || tmp[0]=='\r' || tmp[0]=='\n')
 			newtm.tm_year = ltime->tm_year;
 		else{
@@ -310,7 +321,7 @@ static int add_new_clock()
 		}
 
 		sprintf(buf,"设定系统闹铃月份 [%d]:",ltime->tm_mon+1);
-		getdata(9,0,buf,tmp,3,DOECHO,NULL,true);
+		getdata(12,0,buf,tmp,3,DOECHO,NULL,true);
 		if(tmp[0]=='\0' || tmp[0]=='\r' || tmp[0]=='\n')
 			newtm.tm_mon = ltime->tm_mon;
 		else{
@@ -321,7 +332,7 @@ static int add_new_clock()
 		}
 		
 		sprintf(buf,"设定系统闹铃日子 [%d]:",ltime->tm_mday);
-		getdata(10,0,buf,tmp,3,DOECHO,NULL,true);
+		getdata(13,0,buf,tmp,3,DOECHO,NULL,true);
 		if(tmp[0]=='\0' || tmp[0]=='\r' || tmp[0]=='\n')
 			newtm.tm_mday = ltime->tm_mday;
 		else{
@@ -332,7 +343,7 @@ static int add_new_clock()
 		}
 
 		sprintf(buf,"设定系统闹铃小时 [%d]:",ltime->tm_hour);
-		getdata(11,0,buf,tmp,3,DOECHO,NULL,true);
+		getdata(14,0,buf,tmp,3,DOECHO,NULL,true);
 		if(tmp[0]=='\0' || tmp[0]=='\r' || tmp[0]=='\n')
 			newtm.tm_hour = ltime->tm_hour;
 		else{
@@ -343,7 +354,7 @@ static int add_new_clock()
 		}
 
 		sprintf(buf,"设定系统闹铃分钟 [%d]:",ltime->tm_min);
-		getdata(12,0,buf,tmp,3,DOECHO,NULL,true);
+		getdata(15,0,buf,tmp,3,DOECHO,NULL,true);
 		if(tmp[0]=='\0' || tmp[0]=='\r' || tmp[0]=='\n')
 			newtm.tm_min = ltime->tm_min;
 		else{
@@ -355,7 +366,7 @@ static int add_new_clock()
 
 		newtm.tm_sec = 0;
 
-		getdata(13,0,"系统闹铃自定义提醒内容:",memo,40,DOECHO,NULL,true);
+		getdata(16,0,"系统闹铃自定义提醒内容:",memo,40,DOECHO,NULL,true);
 		if(memo[0]=='\0' || memo[0]=='\r' || memo[0]=='\n')
 			strcpy(memo,"系统闹铃喽~~~~~~~~~~~~");
 
@@ -363,7 +374,8 @@ static int add_new_clock()
 		if(ck.clock_time <= time(0))
 			break;
 
-		ck.type = CLOCK_TYPE_NORMAL;
+		if(ans[0]=='2') ck.type = CLOCK_TYPE_NORMAL ;
+		else ck.type = CLOCK_TYPE_IMP_NOT ;
 		strncpy(ck.memo,memo,40);
 		ck.memo[39]='\0';
 		setok = 1;
@@ -385,7 +397,7 @@ static int add_new_clock()
 		newtm.tm_mday = ltime->tm_mday;
 
 		sprintf(buf,"设定系统闹铃小时 [%d]:",ltime->tm_hour);
-		getdata(8,0,buf,tmp,3,DOECHO,NULL,true);
+		getdata(11,0,buf,tmp,3,DOECHO,NULL,true);
 		if(tmp[0]=='\0' || tmp[0]=='\r' || tmp[0]=='\n')
 			newtm.tm_hour = ltime->tm_hour;
 		else{
@@ -396,7 +408,7 @@ static int add_new_clock()
 		}
 
 		sprintf(buf,"设定系统闹铃分钟 [%d]:",ltime->tm_min);
-		getdata(9,0,buf,tmp,3,DOECHO,NULL,true);
+		getdata(12,0,buf,tmp,3,DOECHO,NULL,true);
 		if(tmp[0]=='\0' || tmp[0]=='\r' || tmp[0]=='\n')
 			newtm.tm_min = ltime->tm_min;
 		else{
@@ -438,7 +450,7 @@ static int add_new_clock()
 		newtm.tm_mday = ltime->tm_mday;
 
 		sprintf(buf,"设定系统闹铃在每周星期几 [%d]:",ltime->tm_wday?ltime->tm_wday:7);
-		getdata(8,0,buf,tmp,3,DOECHO,NULL,true);
+		getdata(11,0,buf,tmp,3,DOECHO,NULL,true);
 		if(tmp[0]=='\0' || tmp[0]=='\r' || tmp[0]=='\n'){
 			newtm.tm_wday = ltime->tm_wday;
 			wday = ltime->tm_wday;
@@ -452,7 +464,7 @@ static int add_new_clock()
 		}
 
 		sprintf(buf,"设定系统闹铃小时 [%d]:",ltime->tm_hour);
-		getdata(9,0,buf,tmp,3,DOECHO,NULL,true);
+		getdata(12,0,buf,tmp,3,DOECHO,NULL,true);
 		if(tmp[0]=='\0' || tmp[0]=='\r' || tmp[0]=='\n')
 			newtm.tm_hour = ltime->tm_hour;
 		else{
@@ -463,7 +475,7 @@ static int add_new_clock()
 		}
 
 		sprintf(buf,"设定系统闹铃分钟 [%d]:",ltime->tm_min);
-		getdata(10,0,buf,tmp,3,DOECHO,NULL,true);
+		getdata(13,0,buf,tmp,3,DOECHO,NULL,true);
 		if(tmp[0]=='\0' || tmp[0]=='\r' || tmp[0]=='\n')
 			newtm.tm_min = ltime->tm_min;
 		else{
@@ -475,7 +487,7 @@ static int add_new_clock()
 
 		newtm.tm_sec = 0;
 
-		getdata(13,0,"系统闹铃自定义提醒内容:",memo,40,DOECHO,NULL,true);
+		getdata(14,0,"系统闹铃自定义提醒内容:",memo,40,DOECHO,NULL,true);
 		if(memo[0]=='\0' || memo[0]=='\r' || memo[0]=='\n')
 			strcpy(memo,"系统闹铃喽~~~~~~~~~~~~");
 
@@ -505,7 +517,7 @@ static int add_new_clock()
 		newtm.tm_mday = ltime->tm_mday;
 
 		sprintf(buf,"设定系统闹铃在每月几号 [%d]:",ltime->tm_mday);
-		getdata(8,0,buf,tmp,3,DOECHO,NULL,true);
+		getdata(11,0,buf,tmp,3,DOECHO,NULL,true);
 		if(tmp[0]=='\0' || tmp[0]=='\r' || tmp[0]=='\n'){
 			newtm.tm_mday = ltime->tm_mday;
 		}
@@ -517,7 +529,7 @@ static int add_new_clock()
 		}
 
 		sprintf(buf,"设定系统闹铃小时 [%d]:",ltime->tm_hour);
-		getdata(9,0,buf,tmp,3,DOECHO,NULL,true);
+		getdata(12,0,buf,tmp,3,DOECHO,NULL,true);
 		if(tmp[0]=='\0' || tmp[0]=='\r' || tmp[0]=='\n')
 			newtm.tm_hour = ltime->tm_hour;
 		else{
@@ -528,7 +540,7 @@ static int add_new_clock()
 		}
 
 		sprintf(buf,"设定系统闹铃分钟 [%d]:",ltime->tm_min);
-		getdata(10,0,buf,tmp,3,DOECHO,NULL,true);
+		getdata(13,0,buf,tmp,3,DOECHO,NULL,true);
 		if(tmp[0]=='\0' || tmp[0]=='\r' || tmp[0]=='\n')
 			newtm.tm_min = ltime->tm_min;
 		else{
@@ -540,7 +552,7 @@ static int add_new_clock()
 
 		newtm.tm_sec = 0;
 
-		getdata(13,0,"系统闹铃自定义提醒内容:",memo,40,DOECHO,NULL,true);
+		getdata(14,0,"系统闹铃自定义提醒内容:",memo,40,DOECHO,NULL,true);
 		if(memo[0]=='\0' || memo[0]=='\r' || memo[0]=='\n')
 			strcpy(memo,"系统闹铃喽~~~~~~~~~~~~");
 
@@ -595,6 +607,14 @@ static void get_clock_string(struct clock_struct * ck, char *typestr, char * tim
 		sprintf(timestr,"每月%2d日%2d时%2d分",tmm.tm_mday,tmm.tm_hour,tmm.tm_min);
 		break;
 	}
+	case CLOCK_TYPE_IMP_NOT:
+		strcpy(typestr,"重要闹钟");
+		strcpy(timestr,ctime(&(ck->clock_time)));
+		break;
+	case CLOCK_TYPE_IMP_HAD:
+		strcpy(typestr,"重要闹铃");
+		strcpy(timestr,ctime(&(ck->clock_time)));
+		break;
 	default:
 		strcpy(typestr,"普通闹钟");
 		strcpy(timestr,ctime(&(ck->clock_time)));
