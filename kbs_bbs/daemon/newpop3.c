@@ -24,7 +24,8 @@
             (3) pop3 account : BBSID.bbs (For example: mine is "Leeward.bbs")
             (4) pop3 password: The same as the client's BBSID's password
 	 9. Filter the ANSI control characters(KCN)
-  Last modified: 99.07.12
+	 10. support POP3 via SSL (pop3s) (COMMAN)
+  Last modified: 2002.07
 */
 
 #undef BBSMAIN
@@ -230,23 +231,31 @@ int     protocol;
     }
 }
 */
+
 static int readstr(int sock,char *s,int size)
 {
-	/* COMMAN : this function is to be optimized since it reads one byte a time */
+	int retlen = 0;;
 	char c;
-	int ret,retlen = 0;;
+	static char myinbuf[1024];
+	static int bufsize = 0;
+	static int bufptr = 0;
 	do 
 	{
+	   /* read a char */
+	  if (bufptr >= bufsize ) {
 #ifdef USE_SSL
-     if (use_ssl) ret = SSL_read(ssl,&c,1);
-     else 
+         if (use_ssl) bufsize = SSL_read(ssl,myinbuf,1024);
+         else 
 #endif 	
-     ret = read(sock, &c,1);
-     if (ret <=0) return retlen;
-     retlen ++;
-     *s++ = c;
-     if (c == '\n' || retlen == size-1) { *s = '\0'; return retlen;}
-	}while (1);
+         bufsize = read(sock, myinbuf,1024); 
+         if (bufsize <=0) { *s = '\0'; return retlen;}
+         bufptr = 0;
+         }
+         retlen ++;
+         c = myinbuf[bufptr++];
+         *s++ = c;
+         if (c == '\n' || retlen == size-1) { *s = '\0'; return retlen;} 
+         }while (1);
 }
 static void
 outs(str)
@@ -657,7 +666,7 @@ int main( int argc, char **argv)
             setbuf(cfp, (char *) 0);
  */
 #ifdef USE_SSL
-            sprintf(genbuf, "+OK SMTH BBS POP3%s server at %s starting.", (use_ssl)?"S(SSL)":"",strchr(BBSNAME, '@') + 1);
+            sprintf(genbuf, "+OK SMTH BBS POP3/POP3S server at %s starting.", strchr(BBSNAME, '@') + 1);
 #else
             sprintf(genbuf, "+OK SMTH BBS POP3 server at %s starting.", strchr(BBSNAME, '@') + 1);
 #endif             
