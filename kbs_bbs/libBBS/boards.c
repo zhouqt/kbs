@@ -334,9 +334,9 @@ brc_initial(char *userid, char *boardname ) /* ¶ÁÈ¡ÓÃ»§.boardrcÎÄ¼ş£¬È¡³ö±£´æµÄµ
     return 0;
 }
 
-/*
+
 void
-bbs_addlist( filename )  BRClist °´Ë³Ğò²åÈë filetime (filetime=filename) 
+brc_addlist( filename )/*  BRClist °´Ë³Ğò²åÈë filetime (filetime=filename) */
 char    *filename;
 {
     int         ftime, n, i;
@@ -369,7 +369,7 @@ char    *filename;
         brc_list[ brc_num++ ] = ftime;
         brc_changed = 1;
     }
-}*/
+}
 
 int brc_unread_t( int ftime) 
 {

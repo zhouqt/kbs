@@ -38,7 +38,7 @@ CGI	= bbsusr bbstop10 bbssec bbsdoc bbscon bbsbrdadd bbsboa bbsall bbsanc bbs0an
 
 all: $(CGI)
 
-$(CGI): % : %.c
+$(CGI): % : %.o
 	$(CC) $^ -o $* $(LDFLAGS) -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' $(CFLAGS) $(DEFINES) 
 
 

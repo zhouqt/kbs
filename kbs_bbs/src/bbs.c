@@ -421,9 +421,12 @@ int ent;
 struct fileheader *fileinfo;
 char *direct;
 {
+#ifndef LEEWARD_X_FILTER
     if (!strcmp(currboard, "Filter"))
         return PassFilter(ent,fileinfo,direct);
-    else if (digestmode==4||digestmode==5||!strcmp(currboard, "deleted") || !strcmp(currboard, "xdeleted") || !strcmp(currboard, "junk") )
+    else
+#endif
+    if (digestmode==4||digestmode==5||!strcmp(currboard, "deleted") || !strcmp(currboard, "xdeleted") || !strcmp(currboard, "junk") )
         return UndeleteArticle(ent,fileinfo,direct);
     else
         return DONOTHING;
