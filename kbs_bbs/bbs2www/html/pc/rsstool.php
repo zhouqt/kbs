@@ -115,7 +115,7 @@
 	{
 ?>	
 		<item rdf:about="<?php echo $useretem[addr]; ?>">
-		<title><?php echo $useretem[title]; ?></title> 
+		<title><?php echo $useretem[subject]; ?></title> 
 		<link><?php echo $useretem[addr]; ?></link> 
 		<description>
 		<![CDATA[

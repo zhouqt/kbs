@@ -25,7 +25,7 @@ function getNewBlogs($link,$pno=1,$etemnum=0)
 			"creator" => $pcconfig["BBSNAME"],
 			"rights" => $pcconfig["BBSNAME"],
 			"date" => date("Y-m-d"),
-			"updatePeriod" => "20分钟更新一次",
+			"updatePeriod" => "10分钟更新一次",
 			"updateFrequency" => "最新的".$etemnum."个Blog日志",
 			"updateBase" => date("Y-m-d H:i:s"),
 			
@@ -42,7 +42,6 @@ function getNewBlogs($link,$pno=1,$etemnum=0)
 			
 		$body = "<br>\n".
 			"来自: ".$bloguser[$rows[uid]]["NAME"]."<br>\n".
-			"主题: ".$bloguser[$rows[uid]]["THEM"]."<br>\n".
 			"作者: ".$bloguser[$rows[uid]]["USER"]."<br>\n".
 			"发信站: ".$pcconfig["BBSNAME"]."<br>\n".
 			"时间: ".time_format($rows[created])."<br>\n".
@@ -133,7 +132,7 @@ function getRecommendBlogs($link,$pno=1,$etemnum=0)
 			"creator" => $pcconfig["BBSNAME"],
 			"rights" => $pcconfig["BBSNAME"],
 			"date" => date("Y-m-d"),
-			"updatePeriod" => "20分钟更新一次",
+			"updatePeriod" => "10分钟更新一次",
 			"updateFrequency" => "最新的".$etemnum."个推荐日志",
 			"updateBase" => date("Y-m-d H:i:s"),
 			);
@@ -142,7 +141,6 @@ function getRecommendBlogs($link,$pno=1,$etemnum=0)
 		$rows = mysql_fetch_array($result);
 		$body = "<br>\n".
 			"来自: ".$rows[corpusname]."<br>\n".
-			"主题: ".$rows[description]."<br>\n".
 			"作者: ".$rows[username]."<br>\n".
 			"发信站: ".$pcconfig["BBSNAME"]."<br>\n".
 			"时间: ".time_format($rows[created])."<br>\n".
