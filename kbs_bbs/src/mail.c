@@ -26,9 +26,7 @@
 #define         INTERNET_PRIVATE_EMAIL
 
 int G_SENDMODE = false;
-#ifdef ZIXIA
 int gShowSize = false;
-#endif
 int cmpinames();                /* added by Leeward 98.04.10 */
 
 extern char quote_user[];
@@ -988,16 +986,13 @@ char *maildoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
      *//*
      * * * * * added by alex, 96.9.7 
      */
-#ifdef ZIXIA
   if (!gShowSize) {
-#endif
     if (!strncmp("Re:", ent->title, 3)) {
         sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s %c%s%.50s\033[m", same ? c1 : "", num, reply_status, status, b2, date, attach, same ? c1 : "", ent->title);
     } /* modified by dong, 1998.9.19 */
     else {
         sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s %c¡ï %s%.47s\033[m", same ? c2 : "", num, reply_status, status, b2, date, attach, same ? c2 : "", ent->title);
     }                           /* modified by dong, 1998.9.19 */
-#ifdef ZIXIA
   } else {
     int size = 0;
     if (ent->eff_size > 0) size = (ent->eff_size-1) / 1024 + 1;
@@ -1008,7 +1003,6 @@ char *maildoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
         sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s %c¡ï %s%-42.42s%4dK\033[m", same ? c2 : "", num, reply_status, status, b2, date, attach, same ? c2 : "", ent->title, size);
     }                           /* modified by dong, 1998.9.19 */
   }
-#endif
     return buf;
 }
 
@@ -1183,13 +1177,11 @@ static int do_mail_reply(struct _select_def* conf, struct fileheader *fileinfo,v
     return DIRCHANGED;
 }
 
-#ifdef ZIXIA
 static int mail_showsize(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg)
 {
     gShowSize = !gShowSize;
     return FULLUPDATE;
 }
-#endif
 
 static int mail_del(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg)
 {
@@ -1540,9 +1532,7 @@ int mailreadhelp(struct _select_def* conf,void* data,void* extraarg)
 
 
 struct key_command mail_comms[] = {
-#ifdef ZIXIA
     {'s', (READ_KEY_FUNC)mail_showsize,NULL},
-#endif
     {'d', (READ_KEY_FUNC)mail_del,NULL},
     {'D', (READ_KEY_FUNC)mail_del_range,NULL},
 //added by bad 03-2-10
