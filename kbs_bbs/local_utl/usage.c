@@ -299,10 +299,10 @@ main()
 			exit(0);
 	}
 
-	sprintf(buf4, "%s/%d/%d/%d_%d_boarduse.visit", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour);
-	sprintf(buf1, "%s/%d/%d/%d_%d_boarduse.total", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour);
-	sprintf(buf2, "%s/%d/%d/%d_%d_boarduse.average", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour);
-	sprintf(buf3, "%s/%d/%d/%d_%d_boarduse.visittable", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour);
+	sprintf(buf4, "%s/%d/%d/%d_boarduse.visit", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday);
+	sprintf(buf1, "%s/%d/%d/%d_boarduse.total", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday);
+	sprintf(buf2, "%s/%d/%d/%d_boarduse.average", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday);
+	sprintf(buf3, "%s/%d/%d/%d_boarduse.visittable", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday);
 
     strcpy(weeklogfile, BBSHOME "/boardusage.week");
 
