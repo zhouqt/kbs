@@ -617,6 +617,11 @@ void outns(const char*str, int n)
                     continue;
                 }
              }
+             else if(*(str+i)=='K' && i==2) {
+                str+=3;
+                clrtoeol();
+                continue;
+             }
              else if(*(str+i)=='J') {
                 str+=i+1;
                 if(DEFINE(currentuser, DEF_COLOR))
