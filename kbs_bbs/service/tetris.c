@@ -289,7 +289,10 @@ start()
 		c = getch();
 		if (c==-1) return 0;
         if (c==27) pressanykey();
-    	if (c == Ctrl('D') || c == Ctrl('C') ) return 0;
+    	if (c == Ctrl('D') || c == Ctrl('C') ){
+        	win_checkrec(score,lines);
+			return 0;
+		}
         if (c==KEY_LEFT||c=='a'||c=='A') if(!crash2(x-1,y,k,n)){x--;sh2();}
         if (c==KEY_RIGHT||c=='s'||c=='S') if(!crash2(x+1,y,k,n)){x++;sh2();}
         if (c=='b'||c=='B'||c=='\n'||c=='\r') if(!crash2(x,y,k,(n+1)%4)){n=(n+1)%4;sh2();}
