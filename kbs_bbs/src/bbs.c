@@ -2501,58 +2501,6 @@ into_announce()
     return DONOTHING;
 }
 
-#ifdef INTERNET_EMAIL
-int
-forward_post(ent,fileinfo,direct) /*转寄*/
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
-    if( strcmp( "guest", currentuser->userid) == 0 )
-    {
-        clear();
-        move(3,10);
-        prints("很抱歉,想转寄文章请申请正式ID!");
-        pressreturn();
-        return FULLUPDATE;
-    }
-
-    /* 封禁Mail Bigman:2000.8.22 */
-    if (HAS_PERM(currentuser,PERM_DENYMAIL))
-    {
-        clear();
-        move(3,10);
-        prints("很抱歉,您目前没有Mail权限!");
-        pressreturn();
-        return FULLUPDATE;
-    }
-
-    return(mail_forward(ent, fileinfo, direct));
-}
-
-int
-forward_u_post(ent,fileinfo,direct) /*转寄*/
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
-    if( strcmp( "guest", currentuser->userid) == 0 )
-        return DONOTHING;
-
-    /* 封禁Mail Bigman:2000.8.22 */
-    if (HAS_PERM(currentuser,PERM_DENYMAIL))
-    {
-        clear();
-        move(3,10);
-        prints("很抱歉,您目前没有Mail权限!");
-        pressreturn();
-        return FULLUPDATE;
-    }
-    return(mail_uforward(ent, fileinfo, direct));
-}
-
-#endif
-
 extern int mainreadhelp() ;
 extern int b_results();
 extern int b_vote();
@@ -2698,8 +2646,8 @@ struct one_key  read_comms[] = { /*阅读状态，键定义 */
                                    'f', 	clear_all_new_flag, /* added by dong, 1999.1.25 */
                                    'S',        sequential_read,
 #ifdef INTERNET_EMAIL
-                                   'F',        forward_post,
-                                   'U',        forward_u_post,
+                                   'F',        mail_forward,
+                                   'U',        mail_uforward,
                                    Ctrl('R'),  post_reply,
 #endif
                                    'J',	Semi_save,

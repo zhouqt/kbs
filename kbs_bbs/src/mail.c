@@ -1154,15 +1154,30 @@ char *direct ;
 
 
 #ifdef INTERNET_EMAIL
-
 int
-mail_forward(ent,fileinfo,direct)
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
+mail_forward_internal(int ent,struct fileheader *fileinfo,char *direct ,int isuu)
 {
     char buf[STRLEN];
     char *p;
+    if( strcmp( "guest", currentuser->userid) == 0 )
+    {
+        clear();
+        move(3,10);
+        prints("ºÜ±§Ç¸,Ïë×ª¼ÄÎÄÕÂÇëÉêÇëÕıÊ½ID!");
+        pressreturn();
+        return FULLUPDATE;
+    }
+
+    /* ·â½ûMail Bigman:2000.8.22 */
+    if (HAS_PERM(currentuser,PERM_DENYMAIL))
+    {
+        clear();
+        move(3,10);
+        prints("ºÜ±§Ç¸,ÄúÄ¿Ç°Ã»ÓĞMailÈ¨ÏŞ!");
+        pressreturn();
+        return FULLUPDATE;
+    }
+
     if (!HAS_PERM(currentuser,PERM_FORWARD)) {
         return DONOTHING;
     }
@@ -1170,7 +1185,7 @@ char *direct ;
     if ((p = strrchr(buf, '/')) != NULL)
         *p = '\0';
     clear();
-    switch (doforward(buf, fileinfo, 0)) {
+    switch (doforward(buf, fileinfo, isuu)) {
     case 0:
         prints("ÎÄÕÂ×ª¼ÄÍê³É!\n");
         fileinfo->accessed[0] |= FILE_FORWARDED;  /*added by alex, 96.9.7 */
@@ -1191,40 +1206,14 @@ char *direct ;
     return FULLUPDATE;
 }
 
-int
-mail_uforward(ent,fileinfo,direct)
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
+int mail_uforward(int ent,struct fileheader *fileinfo,char *direct )
 {
-    char buf[STRLEN];
-    char *p;
-    if (!HAS_PERM(currentuser,PERM_FORWARD)) {
-        return DONOTHING;
-    }
-    strncpy(buf, direct, sizeof(buf));
-    if ((p = strrchr(buf, '/')) != NULL)
-        *p = '\0';
-    clear();
-    switch (doforward(buf, fileinfo, 1)) {
-    case 0:
-        prints("ÎÄÕÂ×ª¼ÄÍê³É!\n");
-        fileinfo->accessed[0] |= FILE_FORWARDED;  /*added by alex, 96.9.7 */
-        /* comment out by jjyang for direct mail delivery */
-        bbslog("1user", "forwarded file to %s", currentuser->email);
-        /* comment out by jjyang for direct mail delivery */
+	mail_forward_internal(ent,fileinfo,direct,1);
+}
 
-        break;
-    case -1: prints("Forward failed: system error.\n");
-        break;
-    case -2: prints("Forward failed: missing or invalid address.\n");
-        break;
-    case -552: prints("\n[1m[33mĞÅ¼ş³¬³¤£¨±¾Õ¾ÏŞ¶¨ĞÅ¼ş³¤¶ÈÉÏÏŞÎª %d ×Ö½Ú£©£¬È¡Ïû×ª¼Ä²Ù×÷[0m[0m\n\nÇë¸æÖªÊÕĞÅÈË£¨Ò²Ğí¾ÍÊÇÄú×Ô¼º°É:PP£©£º\n\n*1* Ê¹ÓÃ [1m[33mWWW[0m[0m ·½Ê½·ÃÎÊ±¾Õ¾£¬ËæÊ±¿ÉÒÔ±£´æÈÎÒâ³¤¶ÈµÄÎÄÕÂµ½×Ô¼ºµÄ¼ÆËã»ú£»\n*2* Ê¹ÓÃ [1m[33mpop3[0m[0m ·½Ê½´Ó±¾Õ¾ÓÃ»§µÄĞÅÏäÈ¡ĞÅ£¬Ã»ÓĞÈÎºÎ³¤¶ÈÏŞÖÆ¡£\n*3* Èç¹û²»ÊìÏ¤±¾Õ¾µÄ WWW »ò pop3 ·şÎñ£¬ÇëÔÄ¶Á [1m[33mAnnounce[0m[0m °æÓĞ¹Ø¹«¸æ¡£\n", MAXMAILSIZE); break;
-    default: prints("È¡Ïû×ª¼Ä...\n");
-    }
-    pressreturn();
-    clear();
-    return FULLUPDATE;
+int mail_forward(int ent,struct fileheader *fileinfo ,char *direct )
+{
+	mail_forward_internal(ent,fileinfo,direct,0);
 }
 
 #endif
