@@ -113,8 +113,8 @@ function  pcmain_blog_most_hot()
 		$rows = mysql_fetch_array($result);
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
 		echo "|&nbsp;<a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">";
-		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,20));
-		if(strlen($rows[subject]) > 20 )
+		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,25));
+		if(strlen($rows[subject]) > 25 )
 			$subject .= "...";
 		$subject .= "</span>";
 		echo $subject."</a>\n&nbsp;<a href=\"index.php?id=".$pcinfor[USER]."\">";
@@ -144,8 +144,8 @@ function  pcmain_blog_most_trackback()
 		$rows = mysql_fetch_array($result);
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
 		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">";
-		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,20));
-		if(strlen($rows[subject]) > 20 )
+		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,25));
+		if(strlen($rows[subject]) > 25 )
 			$subject .= "...";
 		$subject .= "</span>";
 		echo $subject."</a>\n&nbsp;<a href=\"index.php?id=".$pcinfor[USER]."\">";
@@ -176,8 +176,8 @@ function  pcmain_blog_most_view()
 		$rows = mysql_fetch_array($result);
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
 		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">";
-		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,20));
-		if(strlen($rows[subject]) > 20 )
+		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,25));
+		if(strlen($rows[subject]) > 25 )
 			$subject .= "...";
 		$subject .= "</span>";
 		echo $subject."</a>\n&nbsp;<a href=\"index.php?id=".$pcinfor[USER]."\">";
@@ -194,7 +194,7 @@ function  pcmain_blog_most_view()
 function pcmain_blog_new_nodes()
 {
 	global $link;
-	$newBlogs = getNewBlogs($link,1,90);
+	$newBlogs = getNewBlogs($link,1,60);
 	$newNum = count($newBlogs[useretems]);
 ?>
 <table cellspacing=0 cellpadding=3 width=98%>
@@ -211,12 +211,12 @@ function pcmain_blog_new_nodes()
 			echo "<tr>";
 			$tdclass ="td1";
 		}
-		echo "<td class=".$tdclass." width=\"33%\"><b>[<span title=\"".$newBlogs[useretems][$i][pc][DESC]."\"><a href=\"index.php?id=".$newBlogs[useretems][$i][pc][USER]."\">".$newBlogs[useretems][$i][pc][NAME]."</a></span>]</b>".
+		echo "<td class=".$tdclass." width=\"33%\">[<span title=\"".$newBlogs[useretems][$i][pc][DESC]."\"><a href=\"index.php?id=".$newBlogs[useretems][$i][pc][USER]."\"><font class=low2>".$newBlogs[useretems][$i][pc][NAME]."</font></a></span>]".
 			"&nbsp;<a href='/bbsqry.php?userid=".$newBlogs[useretems][$i][pc][USER]."'><font class=low>".$newBlogs[useretems][$i][pc][USER]."</font></a><br />".
 			"<a href='pccon.php?id=".$newBlogs[useretems][$i][pc][UID]."&tid=".$newBlogs[useretems][$i][tid]."&nid=".$newBlogs[useretems][$i][nid]."&s=all'>";
 			"<span title=\"".$newBlogs[useretems][$i][subject]."\">";
-		echo substr($newBlogs[useretems][$i][subject],0,20);
-		if(strlen($newBlogs[useretems][$i][subject])>20) echo "...";
+		echo substr($newBlogs[useretems][$i][subject],0,40);
+		if(strlen($newBlogs[useretems][$i][subject])>40) echo "...";
 		echo "</span></a></td>";
 		if($i % 2 == 1 ) echo "</tr>";
 	}
@@ -602,7 +602,7 @@ input {
   </tr>
   <tr><td height="5"> </td></tr>
          <tr>
-            <td align="center" bgcolor="#F6F6F6"><a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">博客论坛</a> | <a href="/pc/pc.php">用户列表</a> | <a href="/pc/pcreclist.php">水木推荐</a> | <a href="/pc/pcnew.php">最新日志</a> | <a href="/pc/pcnew.php?t=c">最新评论</a> | <a href="/pc/pcsec.php">分类列表</a> | <a href="/pc/pcnsearch.php">日志搜索</a> | <a href="/pc/pcmain_o.php">老版本</a></td>
+            <td align="center" bgcolor="#F6F6F6"><a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">博客论坛</a> | <a href="/pc/pc.php">用户列表</a> | <a href="/pc/pcreclist.php">水木推荐</a> | <a href="/pc/pcnew.php">最新日志</a> | <a href="/pc/pcnew.php?t=c">最新评论</a> | <a href="/pc/pcsec.php">分类列表</a> | <a href="/pc/pcnsearch.php">日志搜索</a> | <a href="/pc/pcmain_o.php">老版本</a> | <a href="/pc/pcapp0.html"><font color="red">申请BLOG</font></a></td>
           </tr>
           <tr><td height="5"> </td></tr>
   <tr>
