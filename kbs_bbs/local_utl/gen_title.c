@@ -29,7 +29,7 @@ int generate_board_title(struct boardheader *bh)
 
     setbdir(0, olddirect, bh->filename);
     
-	gen_threadid = 0;
+	gen_threadid = 1;
     if ((fd2 = open(olddirect, O_RDWR, 0664)) == -1) {
         report("recopen err");
         return 0;
@@ -106,7 +106,7 @@ int generate_all_title()
 
 int main(int argc,char** argv)
 {
-	int allflag;
+	int allflag=0;
 	struct boardheader bh;
 	char* name;
     while (1) {
@@ -116,7 +116,7 @@ int main(int argc,char** argv)
             break;
         switch (c) {
         case 'a':
-        	allflag = 0;
+        	allflag = 1;
         	break;
         case 'h':
         	printf("%s [-a|boardname]\n  generatate board thread index",argv[0]);
@@ -126,6 +126,8 @@ int main(int argc,char** argv)
         	return 0;
         }
     }
+	chdir(BBSHOME);
+	resolve_boards();
     if (optind < argc) {
     	name = argv[optind++];
     	if (optind < argc) {

@@ -685,7 +685,7 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
 #else
     ch = ansimore_withzmodem(genbuf, true, fileinfo->title);    /* 显示文章内容 */
 #endif
-    brc_add_read(fileinfo->filename);
+    brc_add_read(fileinfo->id);
 #ifndef NOREPLY
     move(t_lines - 1, 0);
     clrtoeol();                 /* 清屏到行尾 */
@@ -854,7 +854,7 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
 
 int skip_post(int ent, struct fileheader *fileinfo, char *direct)
 {
-    brc_add_read(fileinfo->filename);
+    brc_add_read(fileinfo->id);
     return GOTO_NEXT;
 }
 
@@ -2558,7 +2558,7 @@ int sequent_messages(struct fileheader *fptr, int idc, int *continue_flag)
     if (readpost) {
         if (idc < sequent_ent)
             return 0;
-        if (!brc_unread(FILENAME2POSTTIME(fptr->filename)))
+        if (!brc_unread(fptr->id))
             return 0;           /*已读 则 返回 */
         if (*continue_flag != 0) {
             genbuf[0] = 'y';
@@ -2618,7 +2618,7 @@ int sequent_messages(struct fileheader *fptr, int idc, int *continue_flag)
         clear();
     }
     setbdir(digestmode, genbuf, currboard);
-    brc_add_read(fptr->filename);
+    brc_add_read(fptr->id);
     /*
      * return 0;  modified by dong , for clear_new_flag(), 1999.1.20
      * if (strcmp(CurArticleFileName, fptr->filename) == 0)
@@ -2649,7 +2649,7 @@ int sequential_read(int ent, struct fileheader *fileinfo, char *direct)
 
 int clear_new_flag(int ent, struct fileheader *fileinfo, char *direct)
 {
-    brc_clear_new_flag(fileinfo->filename);
+    brc_clear_new_flag(fileinfo->id);
     return PARTUPDATE;
 }
 

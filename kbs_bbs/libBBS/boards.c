@@ -3,27 +3,20 @@
 */
 
 #include "bbs.h"
+#include <zlib.h>
 
 #define BRC_MAXNUM      50
-#define BRC_ITEMSIZE    (BRC_MAXNUM * sizeof( time_t ))
+#define BRC_ITEMSIZE    (BRC_MAXNUM * sizeof( unsigned int ))
 #define BRC_FILESIZE BRC_ITEMSIZE*MAXBOARD
 
 #define BRC_CACHE_NUM 60        /* 未读标记cache 20个版 */
 
 static struct _brc_cache_entry {
     int bid;
-    time_t list[BRC_MAXNUM];
+    unsigned int list[BRC_MAXNUM];
     int changed;
 } brc_cache_entry[BRC_CACHE_NUM];
 static int brc_currcache;
-
-/* .boardrc文件的结构。
-    这个结构比原来要费一点硬盘空间，但读写方便了
-    以后可以考虑加上zip压缩存储brc文件
-*/
-struct brc_struct {
-    time_t list[MAXBOARD][BRC_MAXNUM];
-};
 
 struct favbrd_struct {
     int flag;
@@ -453,69 +446,37 @@ int load_boards(char *boardprefix)
 void brc_update(char *userid)
 {
     int i;
-    int fd = -1;
+    gzFile fd = NULL;
     char dirfile[MAXPATH];
+    unsigned int data[MAXBOARD][BRC_MAXNUM];
 
-    sethomefile(dirfile, userid, ".boardrc");
+    sethomefile(dirfile, userid, ".boardrc.gz");
     for (i = 0; i < BRC_CACHE_NUM; i++) {
         if (brc_cache_entry[i].changed) {
-            if (fd == -1) {
-                if ((fd = open(dirfile, O_RDWR | O_CREAT, 0600)) == -1) {
-                    bbslog("3user", "can't %s open to readwrite:%s", dirfile, strerror(errno));
-                    return;
-                };
-            }
-            lseek(fd, (brc_cache_entry[i].bid - 1) * BRC_ITEMSIZE, SEEK_SET);
-            write(fd, &brc_cache_entry[i].list, BRC_ITEMSIZE);
-
+		break;
         }
     }
-    if (fd != -1)
-        close(fd);
+    if (i==BRC_CACHE_NUM) return;
+    if ((fd = gzopen(dirfile, "rb6")) == NULL) {
+        const char* errstr;
+        int gzerrno;
+        errstr=gzerror(fd,&gzerrno);
+        if (errno==Z_ERRNO)
+            errstr=strerror(errno);
+        bbslog("3user", "can't %s open to read:%s", dirfile, errstr);
+        return;
+    }
+    gzread(fd,&data,BRC_FILESIZE);
+    gzclose(fd);
+    fd = gzopen(dirfile, "w+b6");
+
+    for (i = 0; i < BRC_CACHE_NUM; i++) {
+        if (brc_cache_entry[i].changed) 
+		memcpy(&data[brc_cache_entry[i].bid-1],&brc_cache_entry[i].list,BRC_ITEMSIZE);
+    }
+    gzwrite(fd, &data, BRC_FILESIZE);
+    gzclose(fd);
     return;
-}
-
-
-#define BRC_OLD_MAXSIZE     32768
-#define BRC_OLD_MAXNUM      60
-#define BRC_OLD_STRLEN      15
-#define BRC_OLD_ITEMSIZE    (BRC_OLD_STRLEN + 1 + BRC_OLD_MAXNUM * sizeof( int ))
-
-static int brc_convert_struct(char *dirfile, char *data, int size)
-{                               /* 把旧的broardrc文件格式转换成新的 */
-    struct brc_struct brc;
-    char *ptr;
-    int fd;
-
-    ptr = data;
-    bzero(&brc, sizeof(brc));
-    while (ptr < &data[size] && (*ptr >= ' ' && *ptr <= 'z')) {
-        int num;
-        char *tmp;
-        char boardname[18];
-        int bid;
-
-        strncpy(boardname, ptr, BRC_OLD_STRLEN);
-        boardname[BRC_OLD_STRLEN] = 0;
-        bid = getbnum(boardname);
-        if (bid <= 0 || bid >= MAXBOARD)
-            break;
-        ptr += BRC_OLD_STRLEN;
-        num = (*ptr++) & 0xff;
-        tmp = ptr;
-        ptr += sizeof(int) * num;
-        if (num > BRC_OLD_MAXNUM) {
-            num = BRC_OLD_MAXNUM;
-        }
-        memcpy(brc.list[bid - 1], tmp, num * sizeof(int));
-    }
-    if ((fd = open(dirfile, O_WRONLY | O_CREAT, 0600)) != -1) {
-        write(fd, &brc, sizeof(brc));
-        close(fd);
-    } else
-        unlink(dirfile);
-
-    return 0;
 }
 
 static int brc_getcache(char *userid)
@@ -535,41 +496,50 @@ static int brc_getcache(char *userid)
     return 0;
 }
 
-void brc_addreaddirectly(char *userid, int bnum, int posttime)
+void brc_addreaddirectly(char *userid, int bnum, unsigned int postid)
 {
     char dirfile[MAXPATH];
-    int *ptr, *list;
     size_t filesize; 
     int fdr;
     int i, n;
+    int list[BRC_MAXNUM];
+    gzFile fd;
 
-    sethomefile(dirfile, userid, ".boardrc");
-    BBS_TRY {
-        if (safe_mmapfile(dirfile, O_RDWR | O_CREAT, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &ptr, &filesize, &fdr) == 0)
-            BBS_RETURN_VOID;
-        ftruncate(fdr, BRC_FILESIZE);
-        list = ptr + BRC_ITEMSIZE * (bnum - 1);
-        for (n = 0; (n < BRC_MAXNUM) && list[n]; n++) {
-            if (posttime == list[n]) {
-                end_mmapfile((void *) ptr, filesize, fdr);
-                BBS_RETURN_VOID;
-            } else if (posttime > list[n]) {
-                for (i = BRC_MAXNUM - 1; i > n; i--)
+    sethomefile(dirfile, userid, ".boardrc.gz");
+
+    if ((fd = gzopen(dirfile, "w+b6")) == NULL) {
+            const char* errstr;
+            int gzerrno;
+            errstr=gzerror(fd,&gzerrno);
+            if (errno==Z_ERRNO)
+	        errstr=strerror(errno);
+            bbslog("3user", "can't %s open to readwrite:%s", dirfile, errstr);
+            return;
+    }
+    gzseek(fd,BRC_ITEMSIZE * (bnum - 1),SEEK_SET);
+    gzread(fd,list,BRC_MAXNUM*sizeof(int));
+    for (n = 0; (n < BRC_MAXNUM) && list[n]; n++) {
+         if (postid == list[n]) {
+		 gzclose(fd);
+		 return;
+         } else if (postid > list[n]) {
+              for (i = BRC_MAXNUM - 1; i > n; i--)
                     list[i] = list[i - 1];
-                list[n] = posttime;
-                end_mmapfile((void *) ptr, filesize, fdr);
-                BBS_RETURN_VOID;
-            }
-        }
-        if (n == 0) {
-            for (n = 0; n < BRC_MAXNUM; n++)
-                list[n] = posttime;
-            list[n] = 0;
+              list[n] = postid ;
+              gzseek(fd,BRC_ITEMSIZE * (bnum - 1),SEEK_SET);
+              gzwrite(fd,list,BRC_MAXNUM*sizeof(int));
+              gzclose(fd);
+	      return;
         }
     }
-    BBS_CATCH {
+    if (n == 0) {
+        for (n = 0; n < BRC_MAXNUM; n++)
+            list[n] = postid;
+        list[n] = 0;
     }
-    BBS_END end_mmapfile((void *) ptr, filesize, fdr);
+    gzseek(fd,BRC_ITEMSIZE * (bnum - 1),SEEK_SET);
+    gzwrite(fd,list,BRC_MAXNUM*sizeof(int));
+    gzclose(fd);
     return;
 }
 
@@ -580,7 +550,7 @@ int brc_initial(char *userid, char *boardname)
     char dirfile[MAXPATH];
     int brc_size;
     int bid;
-    int fd;
+    gzFile brcfile;
     struct boardheader const *bptr;
 
     if (boardname == NULL)
@@ -596,38 +566,17 @@ int brc_initial(char *userid, char *boardname)
             return 1;           /* cache 中有 */
         }
 
-    sethomefile(dirfile, userid, ".boardrc");
-    while (1) {                 /*如果是老版的.boardrc，需要重新读一遍 */
-        struct stat st;
+    sethomefile(dirfile, userid, ".boardrc.gz");
 
-        if ((fd = open(dirfile, O_RDONLY, 0600)) != -1) {
-            fstat(fd, &st);
-            brc_size = st.st_size;
-        } else {
-            brc_size = 0;
-        }
-
-        if ((brc_size) && (brc_size < BRC_FILESIZE)) {
-            /*
-             * 老版的boardrc,因为应该只需要转化一次，不考虑效率啦 
-             */
-            char brc_buffer[BRC_OLD_MAXSIZE];
-
-            if (lseek(fd, 0, SEEK_SET) != -1) {
-                brc_size = read(fd, brc_buffer, sizeof(brc_buffer));
-                close(fd);
-                brc_size = brc_convert_struct(dirfile, brc_buffer, brc_size);
-            } else {
-                brc_size = 0;
-            }
-        } else
-            break;
-    }
+    if ((brcfile = gzopen(dirfile, "rb6")) == NULL) 
+        if ((brcfile = gzopen(dirfile, "w+b6")) == NULL) 
+	    return 0;
 
     entry = brc_getcache(userid);
     bptr = getboard(bid);
-    lseek(fd, (bid - 1) * BRC_ITEMSIZE, SEEK_SET);
-    read(fd, &brc_cache_entry[entry].list, BRC_ITEMSIZE);
+    bzero(&brc_cache_entry[entry].list,BRC_ITEMSIZE);
+    gzseek(brcfile, (bid - 1) * BRC_ITEMSIZE, SEEK_SET);
+    gzread(brcfile, &brc_cache_entry[entry].list, BRC_ITEMSIZE);
     /*
      * 先不加入版面的创建时间的判断
      * if (brc_cache_entry[entry].list[0])
@@ -642,12 +591,12 @@ int brc_initial(char *userid, char *boardname)
         brc_cache_entry[entry].bid = bid;
     }
     brc_currcache = entry;
-    close(fd);
+    gzclose(brcfile);
     return 1;
 }
 
 
-int brc_unread(int ftime)
+int brc_unread(unsigned int fid)
 {
     int n;
 
@@ -657,9 +606,9 @@ int brc_unread(int ftime)
                 return 1;
             return 0;
         }
-        if (ftime > brc_cache_entry[brc_currcache].list[n]) {
+        if (fid > brc_cache_entry[brc_currcache].list[n]) {
             return 1;
-        } else if (ftime == brc_cache_entry[brc_currcache].list[n]) {
+        } else if (fid == brc_cache_entry[brc_currcache].list[n]) {
             return 0;
         }
     }
@@ -672,22 +621,18 @@ int brc_has_read(char *file) {
 }
 */
 
-void brc_add_read(char *filename)
+void brc_add_read(unsigned int fid)
 {
-    int ftime, n, i;
-
-    ftime = atoi(&filename[2]);
-    if (filename[0] != 'M' && filename[0] != 'G')
-        return;
+    int n, i;
 
     for (n = 0; (n < BRC_MAXNUM) && brc_cache_entry[brc_currcache].list[n]; n++) {
-        if (ftime == brc_cache_entry[brc_currcache].list[n]) {
+        if (fid == brc_cache_entry[brc_currcache].list[n]) {
             return;
-        } else if (ftime > brc_cache_entry[brc_currcache].list[n]) {
+        } else if (fid > brc_cache_entry[brc_currcache].list[n]) {
             for (i = BRC_MAXNUM - 1; i > n; i--) {
                 brc_cache_entry[brc_currcache].list[i] = brc_cache_entry[brc_currcache].list[i - 1];
             }
-            brc_cache_entry[brc_currcache].list[n] = ftime;
+            brc_cache_entry[brc_currcache].list[n] = fid;
             brc_cache_entry[brc_currcache].changed = 1;
             return;
         }
@@ -706,31 +651,30 @@ void brc_add_read(char *filename)
      */
     if (n == 0) {
         for (n = 0; n < BRC_MAXNUM - 1; n++)
-            brc_cache_entry[brc_currcache].list[n] = ftime;
-        brc_cache_entry[brc_currcache].list[n] = 0;
+            brc_cache_entry[brc_currcache].list[n] = fid;
+        brc_cache_entry[brc_currcache].list[n] = 1;
         brc_cache_entry[brc_currcache].changed = 1;
     }
 }
 
 void brc_clear()
 {
-    brc_cache_entry[brc_currcache].list[0] = time(0);
+    struct boardheader* bh=getboard(brc_cache_entry[brc_currcache].bid);
+    brc_cache_entry[brc_currcache].list[0] = bh->nowid;
     brc_cache_entry[brc_currcache].list[1] = 0;
     brc_cache_entry[brc_currcache].changed = 1;
 }
 
-void brc_clear_new_flag(char *filename)
+void brc_clear_new_flag(unsigned int fid)
 {
-    int ftime, n;
+    int n;
 
-    ftime = atoi(&filename[2]);
-    if (filename[0] != 'M' && filename[0] != 'G')
-        return;
     for (n = 0; (n < BRC_MAXNUM) && brc_cache_entry[brc_currcache].list[n]; n++)
-        if (ftime >= brc_cache_entry[brc_currcache].list[n])
+        if (fid >= brc_cache_entry[brc_currcache].list[n])
             break;
-    if (n < BRC_MAXNUM) {
-        brc_cache_entry[brc_currcache].list[n] = ftime;
+    if ((n < BRC_MAXNUM)&&
+        ((brc_cache_entry[brc_currcache].list[n]!=0)||(n==0))) {
+        brc_cache_entry[brc_currcache].list[n] = fid;
         if (n + 1 < BRC_MAXNUM)
             brc_cache_entry[brc_currcache].list[n + 1] = 0;
         brc_cache_entry[brc_currcache].changed = 1;

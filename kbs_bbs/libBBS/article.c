@@ -625,7 +625,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
         return 1;
     }
     updatelastpost(boardname);
-    brc_add_read(fh->filename);
+    brc_add_read(fh->id);
     sprintf(buf, "posted '%s' on '%s'", fh->title, boardname);
     bbslog("1user", "%s", buf);
 
@@ -1082,7 +1082,7 @@ char get_article_flag(struct fileheader *ent, struct userec *user, int is_bm)
     char unread_mark = (DEFINE(user, DEF_UNREADMARK) ? '*' : 'N');
     char type;
 
-    type = brc_unread(FILENAME2POSTTIME(ent->filename)) ? unread_mark : ' ';
+    type = brc_unread(ent->id) ? unread_mark : ' ';
     if ((ent->accessed[0] & FILE_DIGEST)) {
         if (type == ' ')
             type = 'g';

@@ -76,7 +76,7 @@ int show_file(char *board,struct fileheader *x, int n, char* brdencode)
     char path[80], buf[512], board_url[80];
 
     if (loginok)
-        brc_add_read(x->filename);
+        brc_add_read(x->id);
     sprintf(path, "boards/%s/%s", board, x->filename);
     fp = fopen(path, "r");
     if (fp == 0)

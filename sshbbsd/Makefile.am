@@ -17,7 +17,7 @@ SERVER_CONFIG_FILE = etc/sshd_config
 GMPLIBS         = -L$(GMPDIR) -lgmp
 GMPDEP          = $(GMPDIR)/gmp.h $(GMPDIR)/libgmp.a
 
-ZLIBLIBS	= -L/usr/lib -lz
+ZLIBLIBS	= @ZLIB_LIBS@
 SSHLIBS         = -lnsl -lbsd -L/usr/local/lib
 
 noinst_HEADERS = cipher.h getput.h compress.h idea.h \
@@ -49,7 +49,7 @@ sshbbsd_LDADD = @BBSOBJS@ @CONFOBJS@ @SSHDCONFOBJS@ ../libsystem/.libs/libsystem
 sshbbsd_DEPENDENCIES = @BBSOBJS@ @CONFOBJS@ @SSHDCONFOBJS@ ../libsystem/.libs/libsystem.a ../rzsz/.libs/libzmodem.a $(GMPDEP)
 #EXTRA_sshbbsd_SOURCE = @BBSSOURCES@ @LIBOBJS@ @CONFOBJS@ @SSHDCONFOBJS@
 sshbbsd_SOURCES = $(SSHD_OBJS:.o=.c) $(KEYGEN_OBJS:.o=.c)
-AM_CFLAGS=-I. -I../src -DBBSMAIN -DINVISIBLE -DSAFE_KILL -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME -DSSHBBS -I$(srcdir)/$(GMPDIR) -I$(srcdir)/$(ZLIBDIR) -DSAFE_KILL -DBBSMAIN -DSSHBBS -DHOST_KEY_FILE=\"$(HOST_KEY_FILE)\" -DHOST_CONFIG_FILE=\"$(HOST_CONFIG_FILE)\" -I.. -DSERVER_CONFIG_FILE=\"$(SERVER_CONFIG_FILE)\" -DSSH_PROGRAM=\"$(SSH_PROGRAM)\" -DETCDIR=\"$(etcdir)\" -DPIDDIR=\"$(piddir)\" -DSSH_BINDIR=\"$(bindir)\"
+AM_CFLAGS=-I. -I../src -DBBSMAIN -DINVISIBLE -DSAFE_KILL -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME -DSSHBBS -I$(srcdir)/$(GMPDIR) -I$(srcdir)/$(ZLIBDIR) -DSAFE_KILL -DBBSMAIN -DSSHBBS -DHOST_KEY_FILE=\"$(HOST_KEY_FILE)\" -DHOST_CONFIG_FILE=\"$(HOST_CONFIG_FILE)\" -I.. -DSERVER_CONFIG_FILE=\"$(SERVER_CONFIG_FILE)\" -DSSH_PROGRAM=\"$(SSH_PROGRAM)\" -DETCDIR=\"$(etcdir)\" -DPIDDIR=\"$(piddir)\" -DSSH_BINDIR=\"$(bindir)\" @ZLIB_INC@
 
 # Creates /etc/ssh_host_key
 generate-host-key:

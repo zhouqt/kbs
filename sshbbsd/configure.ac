@@ -1356,6 +1356,7 @@ AH_TEMPLATE([SSH_LASTLOG],
 AH_TEMPLATE([_POSIX_SOURCE],
 			[Define if you need to in order for stat and other things to work.])
 
+m4_include(../config.lib)
 OLDPWD=`pwd`
 cd ../src
 BBSOBJS=

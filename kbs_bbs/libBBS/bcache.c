@@ -58,7 +58,7 @@ int getlastpost(char *board, int *lastpost, int *total)
     *total = atotal;
     lseek(fd, (atotal - 1) * sizeof(fh), SEEK_SET);
     if (read(fd, &fh, sizeof(fh)) > 0) {
-        *lastpost = atoi(fh.filename + 2);
+        *lastpost = fh.id;
     }
     close(fd);
     return 0;

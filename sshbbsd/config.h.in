@@ -505,6 +505,9 @@ Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>
 /* Define to 1 if you have the `waitpid' function. */
 #undef HAVE_WAITPID
 
+/* */
+#undef HAVE_ZLIB
+
 /* Define to 1 if you have the `_getpty' function. */
 #undef HAVE__GETPTY
 

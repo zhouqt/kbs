@@ -27,19 +27,19 @@ int chkusermail(struct userec *user)
 /*Arbitrator's mailbox has no limit, stephen 2001.11.1 */
     if ((!(user->userlevel & PERM_SYSOP)) && strcmp(user->userid, "Arbitrator")) {
         if (user->userlevel & PERM_CHATCLOAK) {
-            sumlimit = 2000;
-            numlimit = 2000;
+            sumlimit = 4000;
+            numlimit = 4000;
         } else
             /*
              * if (lookupuser->userlevel & PERM_BOARDS)
              * set BM, chatop, and jury have bigger mailbox, stephen 2001.10.31 
              */
         if (user->userlevel & PERM_MANAGER) {
-            sumlimit = 300;
-            numlimit = 300;
+            sumlimit = 600;
+            numlimit = 600;
         } else if (user->userlevel & PERM_LOGINOK) {
-            sumlimit = 120;
-            numlimit = 150;
+            sumlimit = 240;
+            numlimit = 300;
         } else {
             sumlimit = 15;
             numlimit = 15;

@@ -77,7 +77,7 @@ int unread_position(dirfile, ptr)
     struct newpostdata *ptr;
 {
     struct fileheader fh;
-    char filename[STRLEN];
+    int id;
     int fd, offset, step, num;
 
     num = ptr->total + 1;
@@ -85,12 +85,12 @@ int unread_position(dirfile, ptr)
         if (!brc_initial(currentuser->userid, ptr->name)) {
             num = 1;
         } else {
-            offset = (int) ((char *) &(fh.filename[0]) - (char *) &(fh));
+            offset = (int) ((char *) &(fh.id) - (char *) &(fh));
             num = ptr->total - 1;
             step = 4;
             while (num > 0) {
                 lseek(fd, offset + num * sizeof(fh), SEEK_SET);
-                if (read(fd, filename, STRLEN) <= 0 || !brc_unread(FILENAME2POSTTIME(filename)))
+                if (read(fd, &id, sizeof(unsigned int)) <= 0 || !brc_unread(id))
                     break;
                 num -= step;
                 if (step < 32)
@@ -100,7 +100,7 @@ int unread_position(dirfile, ptr)
                 num = 0;
             while (num < ptr->total) {
                 lseek(fd, offset + num * sizeof(fh), SEEK_SET);
-                if (read(fd, filename, STRLEN) <= 0 || brc_unread(FILENAME2POSTTIME(filename)))
+                if (read(fd, &id, sizeof(unsigned int)) <= 0 || brc_unread(id))
                     break;
                 num++;
             }

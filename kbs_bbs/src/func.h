@@ -182,7 +182,7 @@ extern "C" {
 /* define in boards.c */
     int anonymousboard(char *board);
     int load_boards(char *boardprefix);
-    void brc_clear_new_flag(char *filename);    /* 清除版面的到这篇文章未读标记 */
+    void brc_clear_new_flag(unsigned fid);    /* 清除版面的到这篇文章未读标记 */
 
     int getfavnum();
     void save_zapbuf();
@@ -206,10 +206,10 @@ extern "C" {
      * 保存一个版的brclist 
      */
     void brc_update(char *userid);      /* 保存当前的brclist到用户的.boardrc */
-    void brc_add_read(char *filename);
-    void brc_addreaddirectly(char *userid, int bnum, int posttime);
+    void brc_add_read(unsigned int fid);
+    void brc_addreaddirectly(char *userid, int bnum, unsigned int fid);
     void brc_clear();
-    int brc_unread(int ftime);
+    int brc_unread(unsigned int fid);
     int junkboard(char *currboard);     /* 判断是否为 junkboards */
     int checkreadonly(char *board);     /* 判断是不是只读版面 */
     int deny_me(char *user, char *board);       /* 判断用户 是否被禁止在当前版发文章 */

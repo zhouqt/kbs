@@ -106,10 +106,7 @@ AC_SUBST(CONFIG_AR)
 AC_SUBST(EXTRA_CLEAN)
 
 # Checks for libraries.
-AC_CHECK_LIB([bsd], [vfork], [LIBS="$LIBS -lbsd"])
-AC_CHECK_LIB([dl], [dlopen], [LIBS="$LIBS -ldl"])
-AC_CHECK_LIB([esmtp], [smtp_create_session], [LIBS="$LIBS -lesmtp"])
-AC_CHECK_LIB([ltdl], [lt_dlopen], [LIBS="$LIBS -lltdl"])
+m4_include(../config.lib)
 
 # Checks for header files.
 AC_HEADER_STDC

@@ -1029,14 +1029,14 @@ static ZEND_FUNCTION(bbs_wwwlogoff)
 
 static ZEND_FUNCTION(bbs_brcaddread)
 {
-    long posttime, boardnum;
+    long fid, boardnum;
 
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
     old_pwd[1023] = 0;
-    if (zend_parse_parameters(2 TSRMLS_CC, "ll", &boardnum, &posttime) != SUCCESS)
+    if (zend_parse_parameters(2 TSRMLS_CC, "ll", &boardnum, &fid) != SUCCESS)
         WRONG_PARAM_COUNT;
-    brc_addreaddirectly(getcurrentuser()->userid, boardnum, posttime);
+    brc_addreaddirectly(getcurrentuser()->userid, boardnum, fid);
 
     RETURN_NULL();
 }

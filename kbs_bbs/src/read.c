@@ -1230,7 +1230,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
             /*
              * ansimore(genbuf,false) ;  
              */
-            brc_add_read(SR_fptr.filename);
+            brc_add_read(SR_fptr.id);
             isstart = 0;
           redo:
             move(t_lines - 1, 0);

@@ -173,12 +173,9 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
+m4_include(config.lib)
 
 # Checks for libraries.
-AC_CHECK_LIB([bsd], [vfork], [LIBS="$LIBS -lbsd"])
-AC_CHECK_LIB([dl], [dlopen], [LIBS="$LIBS -ldl"])
-AC_CHECK_LIB([esmtp], [smtp_create_session], [LIBS="$LIBS -lesmtp"])
-AC_CHECK_LIB([ltdl], [lt_dlopen], [LIBS="$LIBS -lltdl"])
 AC_CONFIG_LINKS(libBBS/site.c:$SITEDIR/$BBSSITE.c
 		libBBS/site.h:$SITEDIR/$BBSSITE.h
 		src/site.c:$SITEDIR/$BBSSITE.c
