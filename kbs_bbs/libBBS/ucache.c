@@ -926,6 +926,19 @@ int giveup_addpost(char *userid)
 }
 #endif
 
+int getattachtmppath(char *buf, size_t buf_len)
+{
+#if USE_TMPFS==1 && ! defined(FREE)
+    /* setcachehomefile() 不接受 buf_len 参数，先直接这么写吧 */
+    snprintf(buf,buf_len,"%s/home/%c/%s/%d/upload",TMPFSROOT,toupper(getCurrentUser()->userid[0]),
+			getCurrentUser()->userid,getcurrentuinfo_num());
+#else
+    snprintf(buf,buf_len,"%s/%s_%d",ATTACHTMPPATH,getCurrentUser()->userid,getcurrentuinfo_num());
+#endif
+    buf[buf_len-1] = '\0';
+    return 0;
+}
+
 #if USE_TMPFS==1
 
 void setcachehomefile(char* path,const char* user,int unum,char* file)

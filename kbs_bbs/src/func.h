@@ -56,6 +56,7 @@ extern "C" {
     int do_after_login(struct userec* user,int unum,int mode);
     int do_after_logout(struct userec* user,struct user_info* uinfo,int unum, int mode,int locked);
 
+int getattachtmppath(char *buf, size_t buf_len);
 #if USE_TMPFS==1
 void setcachehomefile(char* path,const char* user,int unum, char* file);
 void init_cachedata(const char* userid,int unum);
