@@ -706,6 +706,7 @@ int igetkey()
                     continue;
                 }
         	else if(scrint&&ret==KEY_F6) {
+        	    mode=0;
         	    auto_chinese();
         	    continue;
         	}
