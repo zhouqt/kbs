@@ -53,7 +53,7 @@ retry2:
         	if (build_badwordimage()==0)
         		goto retry;
         }
-        BBS_RETURN(-1);
+        return -1;
       }
     }
     if (checkreload) {
@@ -62,6 +62,7 @@ retry2:
     	checkreload=0;
     	goto retry2;
     }
+    return 0;
 }
 
 static void default_setting()
