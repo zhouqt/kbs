@@ -2792,7 +2792,7 @@ int del_range(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     /*
      * Haohmaru.99.4.20.增加可以强制删除被mark文章的功能 
      */
-    getdata(1, 0, "删除模式 [0]标记删除 [1]普通删除 [2]强制删除(被mark的文章一起删) (0): ", del_mode, 10, DOECHO, NULL, true);
+    getdata(1, 0, "删除模式 [0]标记删除 [1]普通删除 [2]强制删除 [3]取消删除标记 (0): ", del_mode, 10, DOECHO, NULL, true);
     idel_mode = atoi(del_mode);
     /*
      * if (idel_mode!=0 || idel_mode!=1)
@@ -4897,6 +4897,7 @@ struct BMFunc_arg {
     int action;            /*版主操作，为BM_DELETE到BM_TOTAL其中之一*/
     bool saveorigin;    /*在合集操作的时候表明是否保存原文*/
     char* announce_path; /*收录精华区的时候的位置*/
+    bool setflag; /*设置还是取消*/
 };
 
 /*版主同主题函数，用于apply_record的回调函数*/
@@ -4918,7 +4919,10 @@ static int BM_thread_func(struct _select_def* conf, struct fileheader* fh,int en
             }
             break;
         case BM_MARK:
+	    if (func_arg->setflag)
             fh->accessed[0] |= FILE_MARKED;
+	    else
+            fh->accessed[0] &= ~FILE_MARKED;
             break;
         case BM_DIGEST: {
             struct fileheader data;
@@ -4929,12 +4933,18 @@ static int BM_thread_func(struct _select_def* conf, struct fileheader* fh,int en
             }
             break;
         case BM_MARKDEL:
+	    if (func_arg->setflag) {
             if (!(fh->accessed[0] & FILE_MARKED)) {
                 fh->accessed[1] |= FILE_DEL;
             }
+	    } else
+                fh->accessed[1] &= ~FILE_DEL;
             break;
         case BM_NOREPLY:
-            fh->accessed[1] |= FILE_READ;
+	    if (func_arg->setflag)
+                fh->accessed[1] |= FILE_READ;
+	    else
+                fh->accessed[1] &= ~FILE_READ;
             break;
         case BM_IMPORT:
             if (a_Import(func_arg->announce_path, 
@@ -4976,6 +4986,7 @@ static int SR_BMFunc(struct _select_def* conf, struct fileheader* fh, void* extr
     if (fh==NULL)
         return DONOTHING;
     func_arg.delpostnum=(bool)extraarg;
+    func_arg.setflag=true;
     if (!chk_currBM(currBM, currentuser)) {
         return DONOTHING;
     }
@@ -5025,7 +5036,24 @@ static int SR_BMFunc(struct _select_def* conf, struct fileheader* fh, void* extr
     /*
      * Leeward 98.04.16
      */
-    snprintf(buf, 256, "是否从此主题第一篇开始%s (Y)第一篇 (N)目前这篇 (C)取消 (Y/N/C)? [Y]: ", SR_BMitems[BMch - 1]);
+    switch (BMch) {
+        case BM_MARK:
+            if ((fh->accessed[0] & FILE_MARKED)!=0)
+		    func_arg.setflag=false;
+            break;
+        case BM_MARKDEL:
+            if ((fh->accessed[1] & FILE_DEL)!=0)
+		    func_arg.setflag=false;
+            break;
+        case BM_NOREPLY:
+            if ((fh->accessed[1] & FILE_DEL)!=0)
+		    func_arg.setflag=false;
+            break;
+        default:
+            break;
+    }
+    snprintf(buf, 256, "从主题第一篇开始%s%s (Y)第一篇 (N)目前这篇 (C)取消 (Y/N/C)? [Y]: ",
+              func_arg.setflag?"":"取消",SR_BMitems[BMch - 1]);
     getdata(t_lines - 3, 0, buf, ch, 3, DOECHO, NULL, true);
     switch (ch[0]) {
     case 'c':

@@ -1836,7 +1836,7 @@ int delete_range(struct write_dir_arg* dirarg,int id1,int id2,int del_mode,int c
     savefhdr = (struct fileheader *) malloc(DEL_RANGE_BUF * sizeof(struct fileheader));
     readfhdr = (struct fileheader *) malloc(DEL_RANGE_BUF * sizeof(struct fileheader));
     delfhdr = (struct fileheader *) malloc(DEL_RANGE_BUF * sizeof(struct fileheader));
-    if ((id1 != 0) && (del_mode == 0)) {        /*rangle mark del */
+    if ((id1 != 0) && ((del_mode == 0)||(del_mode==3))) {        /*rangle mark del */
         while (count <= id2) {
             int i;
             int readcount;
@@ -1846,8 +1846,12 @@ int delete_range(struct write_dir_arg* dirarg,int id1,int id2,int del_mode,int c
             for (i = 0; i < readcount; i++, count++) {
                 if (count > id2)
                     break;      /*del end */
+		if (del_mode==0) {
                 if (!(savefhdr[i].accessed[0] & FILE_MARKED))
                     savefhdr[i].accessed[1] |= FILE_DEL;
+		} else {
+                    savefhdr[i].accessed[1] &= ~FILE_DEL;
+                }
             }
             lseek(dirarg->fd, pos_write, SEEK_SET);
             write(dirarg->fd, savefhdr, i * sizeof(struct fileheader));

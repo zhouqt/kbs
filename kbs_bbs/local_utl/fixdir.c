@@ -163,7 +163,10 @@ getallpost(char *path, char prefix)
 #endif
 		if (ispostfilename(direntp->d_name)) {
 			char buf[200];
+			if (prefix!=0) 
 			sprintf(buf, "%c/%s", prefix, direntp->d_name );
+			else
+			sprintf(buf, "%s", direntp->d_name );
                     addfile(buf);
 			continue;
 		}
