@@ -193,13 +193,13 @@ int calendar_main()
             case 32:
                 sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, day);
                 sprintf(title, "%d/%02d/%02d", year, month, day);
-                ansimore_withzmodem(buf, false, title);
+                ansimore_withzmodem(buf, true, title);
                 break;
             case KEY_DEL:
                 sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, day);
                 if(stat(buf, &st)!=-1) {
-                    getdata(13, 48, "确认删除该日日记[y/N]", buf, 3, 1, 0, 1);
-                    if(toupper(buf[0])=='Y')
+                    getdata(13, 48, "确认删除该日日记[y/N]", title, 3, 1, 0, 1);
+                    if(toupper(title[0])=='Y')
                         unlink(buf);
                 }
                 break;
