@@ -237,6 +237,7 @@ struct room_struct * find_room(char * s)
 }
 
 struct room_struct * myroom;
+int selected = 0;
 
 void refreshit()
 {
@@ -250,10 +251,18 @@ void refreshit()
         myroom->name, inrooms.title, (inrooms.status==INROOM_STOP?"未开始":(inrooms.status==INROOM_NIGHT?"黑夜中":"大白天")));
     clrtoeol();
     resetcolor();
+    setfcolor(YELLOW, 1);
     move(1,0);
-    prints("———————————————————————————————————————");
+    prints("╭———————╮╭—————————————————————————————╮");
     move(t_lines-2,0);
-    prints("———————————————————————————————————————");
+    prints("╰———————╯╰—————————————————————————————╯");
+    for(i=2;i<=t_lines-3;i++) {
+        move(i,0); prints("│");
+        move(i,14); prints("│");
+        move(i,16); prints("│");
+        move(i,78); prints("│");
+    }
+    resetcolor();
     for(i=0;i<myroom->people;i++) {
         move(i+2,0);
         prints(inrooms.peoples[i].id);
