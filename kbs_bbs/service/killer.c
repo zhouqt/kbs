@@ -1582,6 +1582,7 @@ void show_top_board()
     for(i=1;i<=6;i++) {
         sprintf(buf, "service/killer.%d", i);
         fp=fopen(buf, "r");
+        if(!fp) return;
         for(j=0;j<7;j++) {
             if(feof(fp)) break;
             y=(i-1)%3*8+j; x=(i-1)/3*40;
