@@ -2,7 +2,7 @@
 #include "bbs.h"
 #include "/usr/include/mysql/mysql.h"
 
-void main()
+void dict_main()
 {
     MYSQL s;
     MYSQL_RES* res;
@@ -10,13 +10,11 @@ void main()
     int i;
     char sql[600], word[300];
     clear();
-    prints("Hello");
-    refresh();
-    i=igetkey();
     mysql_init(&s);
     if(!mysql_real_connect(&s, "166.111.8.235", "smth", "3s4m5t9h", "ciba2k", 9527, 0, 0))
     {
         prints("%s\n", mysql_error(&s));
+        pressanykey();
         return;
     }
     getdata(2, 0, "«Î ‰»Îµ•¥ :  ", word, 70, true, NULL, true);
