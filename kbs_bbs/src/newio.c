@@ -355,8 +355,10 @@ int igetch()
         if (sr < 0 && errno == EINTR) {
             if (talkrequest)
                 return KEY_TALK;
-            while (msg_count)
+            while (msg_count) {
+                msg_count--;
                 r_msg();
+            }
         }
         if (sr < 0 && errno != EINTR)
             abort_bbs(0);

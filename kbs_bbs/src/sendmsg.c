@@ -254,6 +254,7 @@ int msg_count;
 void r_msg_sig(int signo)
 {
     msg_count++;
+    signal(SIGUSR2,r_msg_sig);
 }
 
 void r_msg()
@@ -278,7 +279,6 @@ void r_msg()
     int good_id;
     char usid[STRLEN];
 
-	msg_count--;
     getyx(&y, &x);
     tmpansi = showansi;
     showansi = 1;
