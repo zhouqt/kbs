@@ -94,8 +94,10 @@
 	}
 	
 	if($pur != 3)
+	{
 		pc_counter($link);
-	pc_ncounter($link,$comment[nid]);
+		pc_ncounter($link,$comment[nid]);
+	}
 	
 	pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
 ?>

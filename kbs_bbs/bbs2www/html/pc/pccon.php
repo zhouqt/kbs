@@ -250,9 +250,11 @@
 	$tid = $rows[tid];
 	
 	if($pur != 3)
+	{
 		pc_counter($link);
-	pc_ncounter($link,$nid);
-
+		pc_ncounter($link,$nid);
+	}
+	
 	pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
 ?>
 <a name="top"></a>
