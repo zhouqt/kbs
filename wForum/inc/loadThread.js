@@ -77,10 +77,10 @@ function Board(isGroup,isUnread,boardName,boardDesc,lastID,lastTitle,lastOwner,l
 
 function showSec(isFold, isFav, boards, secNum) {
 	str = '<table cellspacing=1 cellpadding=0 align=center class=TableBorder1 style="width:100%">';
-	if (isFold && (boards.length == 0)) {
-		str += '<TR><TD class=TableBody1 align="center" height="25">本分区尚无版面</td></tr>';
-	} else if (!isFold && simplestBoardsList) {
+	if (!isFold && simplestBoardsList) {
 		str += '<TR><TD class=TableBody1>&nbsp;版面列表已关闭 [<a href="#" onclick="loadSecFollow('+secNum+')" title="展开版面列表">展开</a>]</td></tr>';
+	} else if ((boards.length == 0)) {
+		str += '<TR><TD class=TableBody1 align="center" height="25">尚无版面</td></tr>';
 	} else {
 		if (isFold) {
 			for (i = 0; i < boards.length; i++)	{

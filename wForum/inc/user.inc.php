@@ -107,6 +107,10 @@ function showSecsJS($secNum,$group,$isFold,$isFav) {
 					continue;
 				if ($brd_name[$i]=='undenypost')
 					continue;
+				
+				if ($isFav && ($brd_bid[$i] == -1)) {
+					continue;
+				}				
 
 				$isGroup = ((!$isFav) && ($brd_flag[$i] & BBS_BOARD_GROUP)) || ($isFav && ($brd_flag[$i] == -1));
 				echo "isGroup = ".($isGroup?"true":"false").";\n";
@@ -129,13 +133,13 @@ function showSecsJS($secNum,$group,$isFold,$isFav) {
 					$nArticles = $brd_artcnt[$i];
 				}
 				echo "nArticles = $nArticles;\n";
+				if ($isFav) {
+					echo "select = ".$select.";\n";
+					echo "npos = ".$brd_npos[$i].";\n";
+					echo "bid = ".$brd_bid[$i].";\n";
+				}
 				if ($isFold) {
 					echo "isUnread = ".($brd_unread[$i] == 1 ? "true" : "false").";\n";
-					if ($isFav) {
-						echo "select = ".$select.";\n";
-						echo "npos = ".$brd_npos[$i].";\n";
-						echo "bid = ".$brd_bid[$i].";\n";
-					}
 					if ($nArticles > 0) {
 						bbs_getthreadnum($brd_bid[$i]); //ToDo: this is only dirty fix: 触发必要的 .WEBTHREAD 更新
 						$articles = bbs_getthreads($brd_name[$i], 0, 1,0 ); //$brd_artcnt[$i], 1, $default_dir_mode);
