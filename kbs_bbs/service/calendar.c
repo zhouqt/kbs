@@ -11,6 +11,23 @@
 
 char save_scr[100][240];
 int save_y, save_x;
+unsigned long lunarInfo[]={
+0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,
+0x04ae0,0x0a5b6,0x0a4d0,0x0d250,0x1d255,0x0b540,0x0d6a0,0x0ada2,0x095b0,0x14977,
+0x04970,0x0a4b0,0x0b4b5,0x06a50,0x06d40,0x1ab54,0x02b60,0x09570,0x052f2,0x04970,
+0x06566,0x0d4a0,0x0ea50,0x06e95,0x05ad0,0x02b60,0x186e3,0x092e0,0x1c8d7,0x0c950,
+0x0d4a0,0x1d8a6,0x0b550,0x056a0,0x1a5b4,0x025d0,0x092d0,0x0d2b2,0x0a950,0x0b557,
+0x06ca0,0x0b550,0x15355,0x04da0,0x0a5d0,0x14573,0x052b0,0x0a9a8,0x0e950,0x06aa0,
+0x0aea6,0x0ab50,0x04b60,0x0aae4,0x0a570,0x05260,0x0f263,0x0d950,0x05b57,0x056a0,
+0x096d0,0x04dd5,0x04ad0,0x0a4d0,0x0d4d4,0x0d250,0x0d558,0x0b540,0x0b5a0,0x195a6,
+0x095b0,0x049b0,0x0a974,0x0a4b0,0x0b27a,0x06a50,0x06d40,0x0af46,0x0ab60,0x09570,
+0x04af5,0x04970,0x064b0,0x074a3,0x0ea50,0x06b58,0x055c0,0x0ab60,0x096d5,0x092e0,
+0x0c960,0x0d954,0x0d4a0,0x0da50,0x07552,0x056a0,0x0abb7,0x025d0,0x092d0,0x0cab5,
+0x0a950,0x0b4a0,0x0baa4,0x0ad50,0x055d9,0x04ba0,0x0a5b0,0x15176,0x052b0,0x0a930,
+0x07954,0x06aa0,0x0ad50,0x05b52,0x04b60,0x0a6e6,0x0a4e0,0x0d260,0x0ea65,0x0d530,
+0x05aa0,0x076a3,0x096d0,0x04bd7,0x04ad0,0x0a4d0,0x1d0b6,0x0d250,0x0d520,0x0dd45,
+0x0b5a0,0x056d0,0x055b2,0x049b0,0x0a577,0x0a4b0,0x0aa50,0x1b255,0x06d20,0x0ada0,
+0x14b63};
 char nums[11][3]={"〇", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"};
 char week[7][3]={"日", "一", "二", "三", "四", "五", "六"};
 int holiday_m[]={1, 2, 3, 3, 4, 5, 5, 6, 7, 8, 10, -1};
@@ -19,6 +36,27 @@ char holiday_s[][30]={"新年元旦", "情人节", "国际妇女节", "清华女生节", "愚人节"
     "中国五四青年节", "国际儿童节", "中国共产党建党日", "中国建军节", "国庆节"};
 
 int day,month,year;
+
+int leapMonth(int y) {
+    return(lunarInfo[y-1900] & 0xf);
+}
+
+int leapDays(int y)
+{
+    if(leapMonth(y))  return((lunarInfo[y-1900] & 0x10000)? 30: 29);
+    else return(0);
+}
+
+int lYearDays(int y) 
+{
+    unsigned long i, sum = 348;
+    for(i=0x8000; i>0x8; i>>=1) sum += (lunarInfo[y-1900] & i)? 1: 0;
+    return(sum+leapDays(y));
+}
+
+int monthDays(int y,int m) {
+    return( (lunarInfo[y-1900] & (0x10000>>m))? 30: 29 );
+}
 
 int get_day(int year, int month)
 {
@@ -33,6 +71,45 @@ int get_day2(int year)
     else return 365;
 }
 
+void Lunar(int day, int * lmonth, int * lday)
+{
+    int i, j, leap=0, temp=0;
+    int offset   = 0;
+    bool isLeap;
+    int lyear;
+
+    for(j=2;j<=12;j++) offset+=get_day(1900, j);
+    for(i=1901;i<year;i++) offset+=get_day2(i);
+    for(j=1;j<month;j++) offset+=get_day(year, j);
+    offset+=day;
+    for(i=1900; i<2050 && offset>0; i++) { temp=lYearDays(i); offset-=temp; }
+    if(offset<0) { offset+=temp; i--; }
+
+    lyear = i;
+    leap = leapMonth(i);
+    isLeap = false;
+
+    for(i=1; i<13 && offset>0; i++) {
+        if(leap>0 && i==(leap+1) && isLeap==false)
+            { --i; isLeap = true; temp = leapDays(lyear); }
+        else
+            { temp = monthDays(lyear, i); }
+        if(isLeap==true && i==(leap+1)) isLeap = false;
+        offset -= temp;
+    }
+
+    if(offset==0 && leap>0 && i==leap+1)
+        if(isLeap)
+            { isLeap = false; }
+        else
+            { isLeap = true; --i; }
+
+    if(offset<0){ offset += temp; --i; }
+
+    *lmonth = i;
+    *lday = offset + 1;
+}
+
 int get_week(int year, int month, int day)
 {
     int total=0,i;
@@ -44,7 +121,7 @@ int get_week(int year, int month, int day)
 
 void draw_main()
 {
-    int i,j,k,x,y;
+    int i,j,k,x,y,lmonth,lday;
     char buf[80];
     struct stat st;
     for(i=0;i<t_lines;i++)
@@ -101,7 +178,7 @@ void draw_main()
 
         if(j==6) k++;
     }
-    i=0;
+/*    i=0;
     while(holiday_m[i]!=-1) {
         if(month==holiday_m[i]&&day==holiday_d[i]) {
             strcpy(buf, holiday_s[i]);
@@ -110,7 +187,11 @@ void draw_main()
             prints("%s", buf);
         }
         i++;
-    }
+    }*/
+    move(12, 56);
+    resetcolor();
+    Lunar(day, &lmonth, &lday);
+    prints("农历:%d月%d日", lmonth, lday);
     move(t_lines-1, 80);
 }
 
