@@ -62,6 +62,7 @@ static void bcache_setreadonly(int readonly)
     else
         bcache = (struct boardheader*) mmap(NULL, MAXBOARD*sizeof(struct boardheader),
                   PROT_READ|PROT_WRITE,MAP_SHARED,boardfd,0);
+	close(boardfd);
 }
 
 int
