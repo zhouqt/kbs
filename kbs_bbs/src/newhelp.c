@@ -482,9 +482,6 @@ int newhelp(int mode){
 	int save_y, save_x;
 	int i;
 
-	if( ! HAS_PERM(currentuser, PERM_CLOAK) )
-		return -1;
-
     getyx(&save_y, &save_x);
     for(i=0;i<t_lines;i++)
         saveline(i, 0, save_scr[i]);
