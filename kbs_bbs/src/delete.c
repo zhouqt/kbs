@@ -626,6 +626,11 @@ int kick_user(struct user_info *userinfo)
             clear();
             return 0;
         }
+        if (strcmp(getCurrentUser()->userid, userid)) {
+            char buf[STRLEN];
+            sprintf(buf, "%s 剔出使用者 %s", getCurrentUser()->userid, userid);
+            securityreport(buf, NULL, NULL);
+        }
         return apply_utmp((APPLY_UTMP_FUNC) kickuser, 0, userid, 0);
     } else {
         uin = *userinfo;
@@ -648,6 +653,11 @@ int kick_user(struct user_info *userinfo)
         clear_utmp((userinfo - utmpshm->uinfo) + 1, uin.uid, uin.pid);
     }
     newbbslog(BBSLOG_USER, "kicked %s", userid);
+    if (strcmp(getCurrentUser()->userid, userid)) {
+        char buf[STRLEN];
+        sprintf(buf, "%s 剔出使用者 %s", getCurrentUser()->userid, userid);
+        securityreport(buf, NULL, NULL);
+    }
     /*sprintf( genbuf, "%s (%s)", kuinfo.userid, kuinfo.username );modified by dong, 1998.11.2 */
     /*bbslog( "1system", "KICK %s (%s)", uin.userid, uin.username ); */
     /*    uin.active = false;
