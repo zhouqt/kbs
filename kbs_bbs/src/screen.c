@@ -160,7 +160,8 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
             p=p&&(bp[q].color[i]==tc_color)&&(bp[q].mode[i]==tc_mode);
         if(p) {
             for(i=was_col;i<new_col;i++)
-                ochar(bp[q].data[i]);
+                if(bp[q].data[i]==0) ochar(32);
+                else ochar(bp[q].data[i]);
             return;
         }
     }
@@ -173,7 +174,8 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
             if (was_col != 0)
                 ochar('\r');
             for(i=0;i<new_col;i++)
-                ochar(bp[q].data[i]);
+                if(bp[q].data[i]==0) ochar(32);
+                else ochar(bp[q].data[i]);
             return;
         }
     }
