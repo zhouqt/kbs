@@ -218,7 +218,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
                 </tr>
 <tr>
 	<td valign=middle colspan=2 align=center class=tablebody2>
-	<input type=Submit value='发 表' name=Submit> &nbsp; <input type=button value='预 览' name=Button onclick=gopreview()>&nbsp;
+	<input type=Submit value='发 表' name=Submit> &nbsp; <input type=button value='预 览' name=Button onclick=gopreview() disabled>&nbsp;
 <input type=reset name=Submit2 value='清 除'>
                 </td></form></tr>
       </table>

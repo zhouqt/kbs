@@ -293,16 +293,16 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 ?>
 <option value="0">不使用签名档</option>
 <?php
-			for ($i = 1; $i < 6; $i++) {
-				if ($currentuser["signature"] == $i) {
+		}
+		for ($i = 1; $i <= bbs_getnumofsig(); $i++) {
+			if ($currentuser["signature"] == $i) {
 ?>
 <option value="<?php echo $i; ?>" selected="selected">第 <?php echo $i; ?> 个</option>
 <?php
-				}else{
+			}else{
 ?>
 <option value="<?php echo $i; ?>">第 <?php echo $i; ?> 个</option>
 <?php
-				}
 			}
 		}
 ?>
@@ -316,11 +316,11 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 		echo "<input type=\"checkbox\" name=\"annonymous\" value=\"1\" />匿名<br />";
 	}
 ?>
-    <input type=checkbox name=emailflag value=yes>有回复时使用邮件通知您？</font>
+    <input type=checkbox name=emailflag value=yes disabled>有回复时使用邮件通知您？</font>
 <BR><BR></td>
 	</tr><tr>
 	<td valign=middle colspan=2 align=center class=tablebody2>
-	<input type=Submit value='发 表' name=Submit> &nbsp; <input type=button value='预 览' name=Button onclick=gopreview()>&nbsp;
+	<input type=Submit value='发 表' name=Submit> &nbsp; <input type=button value='预 览' name=Button onclick=gopreview() disabled>&nbsp;
 <input type=reset name=Submit2 value='清 除'>
                 </td></form></tr>
       </table>

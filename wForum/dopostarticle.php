@@ -110,8 +110,7 @@ function preprocess(){
 }
 
 function 	doPostAritcles($boardID,$boardName,$boardArr,$reID){
-	global $_POST;
-	$ret=bbs_postarticle($boardName,preg_replace("/\\\(['|\"|\\\])/","$1",$_POST['subject']),preg_replace("/\\\(['|\"|\\\])/","$1",$_POST['Content']),intval($_POST['signature']), $reID,intval($_POST['outgo']),intval($_POST['anonymous']));
+	global $_POST;	$ret=bbs_postarticle($boardName,preg_replace("/\\\(['|\"|\\\])/","$1",$_POST['subject']),preg_replace("/\\\(['|\"|\\\])/","$1",$_POST['Content']),intval($_POST['signature']), $reID,intval($_POST['outgo']),intval($_POST['anonymous']));
 	switch ($ret) {
 		case -1:
 			foundErr("错误的讨论区名称。");
