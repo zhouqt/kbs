@@ -124,7 +124,7 @@ int requiretouser(struct RequireBindPacket * h)
     hh.mode = 6;
     hh.sent = 0;
     hh.time = time(0);
-    strncpy(hh.id, h->SrcMobileNo, IDLEN+2);
+    strncpy(hh.id, h->MobileNo, IDLEN+2);
     hh.id[IDLEN+1] = 0;
     if(h->Bind) strcpy(buf, "REQUIRE:BIND");
     else strcpy(buf, "REQUIRE:UNBIND");
