@@ -2,7 +2,6 @@
 	/*
 	** @id:windinsn dec 18,2003
 	*/
-	$needlogin=0;
 	require("pcfuncs.php");
 	function pc_get_trackback($link,$nid)
 	{
