@@ -1277,19 +1277,6 @@ int get_sql_al( struct addresslist * smdata, char *userid, char *dest, char *gro
 	return i;
 }
 
-char * deal_sql_string( char *old, char *new){
-	int i,j;
-
-	for(i=0,j=0; old[i]; i++){
-		if(old[i] =='\'' || old[i] =='\"' || old[i]=='\\')
-			new[j++]='\\';
-		new[j++]=old[i];
-	}
-	new[j]=0;
-
-	return new;
-}
-
 int add_sql_al(char *userid, struct addresslist *al, char *msgbuf)
 {
 	MYSQL s;
@@ -1319,10 +1306,24 @@ int add_sql_al(char *userid, struct addresslist *al, char *msgbuf)
 		return 0;
 	}
 
+	mysql_escape_string(newname, al->name, strlen(al->name));
+	mysql_escape_string(newbbsid, al->bbsid, strlen(al->bbsid));
+	mysql_escape_string(newschool, al->school, strlen(al->school));
+	mysql_escape_string(newzipcode, al->zipcode, strlen(al->zipcode));
+	mysql_escape_string(newhomeaddr, al->homeaddr, strlen(al->homeaddr));
+	mysql_escape_string(newcompanyaddr, al->companyaddr, strlen(al->companyaddr));
+	mysql_escape_string(newtel_o, al->tel_o, strlen(al->tel_o));
+	mysql_escape_string(newtel_h, al->tel_h, strlen(al->tel_h));
+	mysql_escape_string(newmobile, al->mobile, strlen(al->mobile));
+	mysql_escape_string(newemail, al->email, strlen(al->email));
+	mysql_escape_string(newqq, al->qq, strlen(al->qq));
+	mysql_escape_string(newmsgbuf, msgbuf, strlen(msgbuf));
+	mysql_escape_string(newgroup, al->group, strlen(al->group));
+
 	if( al->id <= 0 )
-		sprintf(sql,"INSERT INTO addr VALUES (NULL, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', \"%d-%d-%d\", '%s', '%s' );",userid, deal_sql_string(al->name, newname), deal_sql_string(al->bbsid, newbbsid), deal_sql_string(al->school, newschool), deal_sql_string(al->zipcode, newzipcode), deal_sql_string(al->homeaddr, newhomeaddr), deal_sql_string(al->companyaddr, newcompanyaddr), deal_sql_string(al->tel_o, newtel_o), deal_sql_string(al->tel_h, newtel_h), deal_sql_string(al->mobile,newmobile), deal_sql_string(al->email, newemail), deal_sql_string(al->qq, newqq), al->birth_year, al->birth_month, al->birth_day, deal_sql_string(msgbuf,newmsgbuf), deal_sql_string(al->group, newgroup) );
+		sprintf(sql,"INSERT INTO addr VALUES (NULL, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', \"%d-%d-%d\", '%s', '%s' );",userid, newname, newbbsid, newschool, newzipcode, newhomeaddr, newcompanyaddr, newtel_o, newtel_h,newmobile, newemail, newqq, al->birth_year, al->birth_month, al->birth_day, newmsgbuf, newgroup );
 	else
-		sprintf(sql,"UPDATE addr SET userid='%s', name='%s', bbsid='%s', school='%s', zipcode='%s', homeaddr='%s', companyaddr='%s', tel_o='%s', tel_h='%s', mobile='%s', email='%s', qq='%s', birthday=\"%d-%d-%d\", memo='%s', groupname='%s' WHERE id=%d ;",userid, deal_sql_string(al->name, newname), deal_sql_string(al->bbsid, newbbsid), deal_sql_string(al->school, newschool), deal_sql_string(al->zipcode, newzipcode), deal_sql_string(al->homeaddr, newhomeaddr), deal_sql_string(al->companyaddr, newcompanyaddr), deal_sql_string(al->tel_o, newtel_o), deal_sql_string(al->tel_h, newtel_h), deal_sql_string(al->mobile,newmobile), deal_sql_string(al->email, newemail), deal_sql_string(al->qq, newqq), al->birth_year, al->birth_month, al->birth_day, deal_sql_string(msgbuf,newmsgbuf), deal_sql_string(al->group, newgroup), al->id );
+		sprintf(sql,"UPDATE addr SET userid='%s', name='%s', bbsid='%s', school='%s', zipcode='%s', homeaddr='%s', companyaddr='%s', tel_o='%s', tel_h='%s', mobile='%s', email='%s', qq='%s', birthday=\"%d-%d-%d\", memo='%s', groupname='%s' WHERE id=%d ;",userid, newname, newbbsid, newschool, newzipcode, newhomeaddr, newcompanyaddr, newtel_o, newtel_h,newmobile, newemail, newqq, al->birth_year, al->birth_month, al->birth_day, newmsgbuf, newgroup, al->id );
 
 	if( mysql_real_query( &s, sql, strlen(sql) )){
 #ifdef BBSMAIN
