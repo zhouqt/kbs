@@ -75,9 +75,10 @@ int chkmail()
      */
     if (stat(curmaildir, &st) < 0)
         return (ismail = 0);
+	/*
     if (lasttime >= st.st_mtime)
         return ismail;
-
+	*/
 
     if (chkusermail(currentuser))
         return (ismail = 2);
@@ -632,7 +633,7 @@ int do_send(char *userid, char *title, char *q_file)
             return -2;
 
         setmailfile(genbuf, userid, DOT_DIR);
-		setmailcheck(userid);
+		/*setmailcheck(userid);*/
         if (append_record(genbuf, &newmessage, sizeof(newmessage)) == -1)
             return -1;
 
@@ -716,7 +717,6 @@ int read_mail(struct fileheader *fptr)
     setmailfile(genbuf, currentuser->userid, fptr->filename);
     ansimore_withzmodem(genbuf, false, fptr->title);
     fptr->accessed[0] |= FILE_READ;
-	setmailcheck( currentuser->userid );
     return 0;
 }
 
@@ -751,6 +751,7 @@ int del_mail(int ent, struct fileheader *fh, char *direct)
             strcpy(t, ".DELETED");
             append_record(buf, fh, sizeof(*fh));
         }
+		setmailcheck( currentuser->userid );
         return 0;
     }
     return 1;
@@ -839,6 +840,7 @@ int read_new_mail(struct fileheader *fptr, int idc, void *arg)
     }
     if (substitute_record(currdirect, fptr, sizeof(*fptr), idc))
         return -1;
+	setmailcheck( currentuser->userid );
     clear();
     return 0;
 }
@@ -853,11 +855,9 @@ int m_new()
         clear();
         move(0, 0);
         prints("No new messages\n\n\n");
-		setmailcheck(currentuser->userid);
         return -1;
     }
     apply_record(currdirect, (APPLY_FUNC_ARG) delete_new_mail, sizeof(struct fileheader), NULL, 1, true);
-	setmailcheck(currentuser->userid);
 /*    	
     if (delcnt) {
         while (delcnt--)
@@ -1054,6 +1054,7 @@ int mail_read(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 	{
         fileinfo->accessed[0] |= FILE_READ;
         substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), ent);
+		setmailcheck( currentuser->userid );
 	}
     if (readnext == true)
         return READ_NEXT;
@@ -1502,7 +1503,6 @@ int m_read()
     in_mail = true;
     new_i_read(DIR_MODE_MAIL, curmaildir, mailtitle, (READ_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
     in_mail = false;
-	setmailcheck(currentuser->userid);
     return FULLUPDATE /* 0 */ ;
 }
 
@@ -2256,7 +2256,6 @@ static int m_clean()
         }
     }
 	*/
-	setmailcheck(currentuser->userid);
     uinfo.mode = savemode;
 }
 
@@ -2664,7 +2663,6 @@ int MailProc()
     list_select_loop(&maillist_conf);
     free(pts);
     modify_user_mode(oldmode);
-	setmailcheck(currentuser->userid);
 }
 
 typedef struct {
