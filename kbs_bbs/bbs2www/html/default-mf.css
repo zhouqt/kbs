@@ -29,7 +29,7 @@ FONT.c37 {COLOR: #000000;}
 .b1 {font-size: 12px;color: #333333;text-decoration: none;}
 .b2 {font-size: 12px;color: #000000;background-color: #F6F6F6;text-decoration: none;}
 .b3 {font-weight: bolder;color: #CC3300;text-decoration: none;}
-.b4 {font-size: 16px;font-weight: bolder;color: #000000;line-height: 30px;}
+.b4 {font-size: 14px;font-weight: bolder;color: #000000;line-height: 30px;}
 .b5 {font-size: 12px;color: #333333;text-align: center;vertical-align: middle;}
 .b6 {font-size: 14px;color: #000000;text-decoration: none;background-color: #F6F6F6;}
 .b7 {font-size: 12px;color: #FFFFFF;text-decoration: none;background-color: 718BD6;}
@@ -54,7 +54,7 @@ A:active {COLOR: #006699; TEXT-DECORATION: underline}
 A:visited {COLOR: #5493b4; TEXT-DECORATION: none}
 A:hover {COLOR: #dd6900; TEXT-DECORATION: underline}
 
-.content{font-size:14px;line-height:22px;}
+.content{font-size:13px;line-height:20px;}
 .sb1 { /* 这名字没人用吧 single-border */
     padding: 1px;
     border: 1px solid #808080;
