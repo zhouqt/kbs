@@ -89,23 +89,3 @@ SMTH.Blog 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
 4. 其他
     最新版本的 smthbbs 已将 SMTH.Blog 作为正式的组成部分，安装时可参考相应的INSTALL文档。
 SMTH.Blog目前仍在开发和完善中，敬请关注BBS水木清华站BBSMan_Dev版。
-    	
-5. htmlarea 支持
-
-    SMTH.Blog 可以使用 htmlarea 作为编辑器，请从网上下载并解压缩到 pc/htmlarea/
-目录。目前 SMTH.Blog 推荐使用 HTMLArea-3.0-rc1 (2004.2.29) 版本，其它的版本会存在
-问题。并请对 htmlarea.js 作如下修改：
-（- 表示原来的内容，需要去掉；+ 表示修改后的内容，需要加上）
-
- f.onsubmit = function() { 
-    editor._textArea.value = editor.getHTML(); 
-    var a = this.__msh_prevOnSubmit; 
-    // call previous submit methods if they were there. 
-    if (typeof a != "undefined") { 
-        for (var i = a.length; --i >= 0;) { 
--           a[i](); 
-+           if (!a[i]()) return false; 
-        } 
-    } 
-+   return true; 
- };

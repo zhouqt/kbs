@@ -1,0 +1,91 @@
+diff -Naur htmlarea-beta-o/htmlarea.js htmlarea-beta/htmlarea.js
+--- htmlarea-beta-o/htmlarea.js	2003-08-11 14:30:12.000000000 -0700
++++ htmlarea-beta/htmlarea.js	2005-01-21 11:10:08.000000000 -0800
+@@ -567,8 +567,17 @@
+ 	if (textarea.form) {
+ 		// we have a form, on submit get the HTMLArea content and
+ 		// update original textarea.
++		var f = textarea.form;
++		if (typeof f.onsubmit == "function") {
++			var funcref = f.onsubmit;
++			f.__msh_prevOnSubmit = funcref;
++		}
+ 		textarea.form.onsubmit = function() {
+ 			editor._textArea.value = editor.getHTML();
++			var a = this.__msh_prevOnSubmit;
++			if (typeof a != "undefined") {
++				return (a());
++			}
+ 		};
+ 	}
+ 
+@@ -1083,6 +1092,8 @@
+ 			}
+ 			switch (field) {
+ 			    case "f_alt"    : img.alt	 = value; break;
++			    case "f_width"  : img.width  = value; break;
++			    case "f_height" : img.height = value; break;
+ 			    case "f_border" : img.border = parseInt(value); break;
+ 			    case "f_align"  : img.align	 = value; break;
+ 			    case "f_vert"   : img.vspace = parseInt(value); break;
+diff -Naur htmlarea-beta-o/popups/insert_image.html htmlarea-beta/popups/insert_image.html
+--- htmlarea-beta-o/popups/insert_image.html	2005-01-21 11:48:45.000000000 -0800
++++ htmlarea-beta/popups/insert_image.html	2005-01-21 11:53:15.000000000 -0800
+@@ -1,4 +1,4 @@
+-<html style="width: 398; height: 218">
++<html style="width: 405; height: 300">
+ 
+ <head>
+   <title>Insert Image</title>
+@@ -15,8 +15,7 @@
+ 
+ function onOK() {
+   var required = {
+-    "f_url": "You must enter the URL",
+-    "f_alt": "Please enter the alternate text"
++    "f_url": "You must enter the URL"
+   };
+   for (var i in required) {
+     var el = document.getElementById(i);
+@@ -27,7 +26,7 @@
+     }
+   }
+   // pass data back to the calling window
+-  var fields = ["f_url", "f_alt", "f_align", "f_border",
++  var fields = ["f_url", "f_alt", "f_width" , "f_height" , "f_align", "f_border",
+                 "f_horiz", "f_vert"];
+   var param = new Object();
+   for (var i in fields) {
+@@ -128,7 +127,7 @@
+ 
+ </head>
+ 
+-<body onload="Init()">
++<body onload="Init()" leftmargin="0" topmargin="0">
+ 
+ <div class="title">Insert Image</div>
+ 
+@@ -149,7 +148,13 @@
+     <td><input type="text" name="alt" id="f_alt" style="width:100%"
+       title="For browsers that don't support images" /></td>
+   </tr>
+-
++   <tr>
++    <td style="width: 7em; text-align: right">Image Size:</td>
++    <td>
++    Width:  <input type="text" name="width" id="f_width" style="width:20%" title="Width of the Image" />
++    Height: <input type="text" name="height" id="f_height" style="width:20%" title="Height of the Image" />
++    </td>
++  </tr>
+   </tbody>
+ </table>
+ 
+diff -Naur htmlarea-beta-o/popups/insert_table.html htmlarea-beta/popups/insert_table.html
+--- htmlarea-beta-o/popups/insert_table.html	2003-08-11 14:30:12.000000000 -0700
++++ htmlarea-beta/popups/insert_table.html	2005-01-21 11:54:50.000000000 -0800
+@@ -1,4 +1,4 @@
+-<html style="width: 398; height: 218">
++<html style="width: 415; height: 270">
+ 
+ <head>
+   <title>Insert Table</title>

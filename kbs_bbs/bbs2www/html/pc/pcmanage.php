@@ -52,7 +52,7 @@
 			html_error_quit("对不起，您要查看的Blog不存在");
 		}
 		
-		if($pc["EDITOR"] != 1)
+		if($pc["EDITOR"] != 1 || $pc["EDITOR"] != 3)
 			$pcconfig["EDITORALERT"] = NULL;
 			
 		$act = $_GET["act"]?$_GET["act"]:$_POST["act"];
@@ -60,7 +60,7 @@
 		if($act == "post" && !$_POST["subject"] && $pc["EDITOR"] != 0)
 			pc_html_init("gb2312",stripslashes($pc["NAME"]),"","","",$pc["EDITOR"]);
 		elseif($act == "edit" && !$_POST["subject"] && $pc["EDITOR"] != 0)
-			pc_html_init("gb2312",stripslashes($pc["NAME"]),"","","",1);
+			pc_html_init("gb2312",stripslashes($pc["NAME"]),"","","",$pc["EDITOR"]);
 		elseif($act != "favcut" && $act != "favcopy" && $act != "favpaste")
 			pc_html_init("gb2312",stripslashes($pc["NAME"]));
 		else

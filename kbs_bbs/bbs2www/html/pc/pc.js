@@ -104,7 +104,7 @@ function getBlogConfig() {
 		"╨злЕ":  '╨злЕ',
 		"свт╡":  'свт╡'
 	};
-	config.registerButton("code", "Code Fromat", "images/ed_format_code.gif", false,
+	config.registerButton("code", "Code Format", "images/ed_format_code.gif", false,
 		function(editor, id) {
 			editor.surroundHTML('<p><table style="BORDER-RIGHT: #999999 1px dashed; BORDER-TOP: #999999 1px dashed;BORDER-LEFT: #999999 1px dashed; WIDTH: 468px; BORDER-BOTTOM: #999999 1px dashed;background-color: #f0f0f0;font-family:courier new,courier,monospace;font-size: 12px; line-height: 12px;" cellspacing="0" cellpadding="10" border="0"><tr><td>', '</td></tr></table><p>');
 		}

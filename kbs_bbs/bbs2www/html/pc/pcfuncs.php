@@ -58,7 +58,7 @@ function pc_html_init($charset,$title="",$otherheader="",$cssfile="",$bkimg="",$
 <link rel="stylesheet" type="text/css" href="default.css"/>
 <?php
 	}
-	if($htmlEditor==1)//use htmlarea editor
+	if($htmlEditor==3)//use htmlarea editor rc1
 	{
 ?>
 <script type="text/javascript">
@@ -71,12 +71,29 @@ var editor = null;
 textarea { background-color: #fff; border: 1px solid 00f; }
 </style>
 <?php
+	} else if ($htmlEditor==1) //htmlarea beta
+	{
+?>
+<script type="text/javascript">
+var _editor_url = "htmlarea-beta/";
+var editor = null;
+</script>
+<!-- load the main HTMLArea files -->
+<script type="text/javascript" src="htmlarea-beta/htmlarea.js"></script>
+<script type="text/javascript" src="htmlarea-beta/lang/en.js"></script>
+<script type="text/javascript" src="htmlarea-beta/dialog.js"></script>
+<script type="text/javascript" src="htmlarea-beta/popupwin.js"></script>
+<style type="text/css">
+@import url(htmlarea/htmlarea.css);
+textarea { background-color: #fff; border: 1px solid 00f; }
+</style>
+<?php
 	}
 ?>
 </head>
 <body TOPMARGIN="0" leftmargin="0"
 <?php
-	if($htmlEditor==1)
+	if($htmlEditor==1 || $htmlEditor==3)
 	{
 ?>
  onload="initEditor()"
