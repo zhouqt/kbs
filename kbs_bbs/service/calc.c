@@ -749,7 +749,7 @@ int calc_main()
     set_var(vars+get_var("%pi"), Pi);
     set_var(vars+get_var("%e"), exp(1));
     clear();
-    outline("欢迎使用超级计算器1.0\n");
+    outline("欢迎使用超级计算器1.0    作者:bad@smth.org\n");
     outline("输入exit退出，输入help帮助\n\n");
     while(1) {
         getyx(&y, &x);
