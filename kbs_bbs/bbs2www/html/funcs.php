@@ -589,5 +589,25 @@ function bbs_login_form()
 <?php	
 }
 
+function powered_by_smth()
+{
+?>
+<STYLE TYPE="text/css">
+<!--
+.PoweredBySmth {font-size: 12px; font-family: "Verdana", "Arial", "Helvetica", "sans-serif";color: #000000; font-weight: bold;text-align:center;}
+.PoweredBySmth A {color: #CC0000; text-decoration: none;}
+.PoweredBySmth A:hover {text-decoration: underline;}
+-->
+</STYLE>
+<TABLE CLASS="PoweredBySmth">
+<TR><TD>
+Powered By <A HREF="http://dev.smth.org" TARGET="_blank">SmthBBS</A>
+</TD></TR><TR><TD>
+<A HREF="http://dev.smth.org" TARGET="_blank"><IMG SRC="/images/poweredby.gif" BORDER="0" ALT="Powered By SmthBBS" /></A>
+</TD></TR>
+</TABLE>
+<?php    
+}
+
 } // !define ('_BBS_FUNCS_PHP_')
 ?>

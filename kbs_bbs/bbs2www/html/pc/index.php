@@ -662,9 +662,21 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		<td width="80%" align="right" valign="top">
 		<?php display_nodes($link,$pc,$nodes,"99%",1,$totalnodes,$pno); ?>
 		<p align=center class=f1>
-		Powered By <a href="http://dev.smth.org" target="_blank"><font face=Verdana, Arial, Helvetica, sans-serif><b><font color="#CC0000">SmthBBS</font> </b></font></a>
-    <a href="http://www.smth.org"><font face=Verdana, Arial, Helvetica, sans-serif><b>Smth<font color="#CC0000">.Org</font></b></font></a>
-	<br />
+<?php
+    /**
+     *    水木的web代码bbslib和cgi部分是修改于NJUWWWBBS-0.9，此部分
+     * 代码遵循原有的nju www bbs的版权声明（GPL）。php部分的代码（
+     * phplib以及php页面）不再遵循GPL，正在考虑使用其他开放源码的版
+     * 权声明（BSD或者MPL之类）。
+     *
+     *   希望使用水木代码的Web站点加上powered by smth的图标.该图标
+     * 位于html/images/poweredby.gif目录,链接指向http://dev.smth.org
+     * 使用水木代码的站点可以通过dev.smth.org获得代码的最新信息.
+     *
+     */
+    powered_by_smth();
+?>		
+		<br />
 	更新时间: <?php echo time_format($pc["MODIFY"]); ?>
 		&nbsp;
 		&copy;All Rights Reserved
@@ -803,8 +815,20 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	更新时间:
 	<?php echo time_format($pc["MODIFY"]); ?>
 	<br />
-	Powered By <a href="http://dev.smth.org" target="_blank"><font face=Verdana, Arial, Helvetica, sans-serif><b><font color="#CC0000">SmthBBS</font> </b></font></a>
-    <a href="http://www.smth.org"><font face=Verdana, Arial, Helvetica, sans-serif><b>Smth<font color="#CC0000">.Org</font></b></font></a>
+<?php
+    /**
+     *    水木的web代码bbslib和cgi部分是修改于NJUWWWBBS-0.9，此部分
+     * 代码遵循原有的nju www bbs的版权声明（GPL）。php部分的代码（
+     * phplib以及php页面）不再遵循GPL，正在考虑使用其他开放源码的版
+     * 权声明（BSD或者MPL之类）。
+     *
+     *   希望使用水木代码的Web站点加上powered by smth的图标.该图标
+     * 位于html/images/poweredby.gif目录,链接指向http://dev.smth.org
+     * 使用水木代码的站点可以通过dev.smth.org获得代码的最新信息.
+     *
+     */
+    powered_by_smth();
+?>	
 	<br />
 &copy;All Rights Reserved
 &nbsp;&nbsp;
