@@ -2114,15 +2114,16 @@ void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
                 fprintf(outf, "\n【 在 %s 的来信中提到: 】\n", quser);
 
             if (op == 'A') {    /* 除第一行外，全部引用 */
+				int enterflag=1;
                 while (skip_attach_fgets(buf, 256, inf) != 0) {
-                    fprintf(outf, ": %s", buf);
-                    if(buf[strlen(buf)-1]!='\n') {
-                        char ch;
-                        while((ch=fgetc(inf))!=EOF){
-							fputc(ch,outf);
-                            if(ch=='\n') break;
-						}
-                    }
+					if(enterflag)
+                    	fprintf(outf, ": %s", buf);
+					else
+                    	fprintf(outf, "%s", buf);
+                    if(buf[strlen(buf)-1]!='\n')
+						enterflag=0;
+					else
+						enterflag=1;
                 }
             } else if (op == 'R') {
                 while (skip_attach_fgets(buf, 256, inf) != 0)
