@@ -137,7 +137,6 @@ int main()
     printmenuend();
     printf("<div class=\"r\">");
     /*printf("<img src=\"/images/link0.gif\"><a href=\"bbsfind\" target=\"f3\">文章查询</a><br>\n"); */
-    printmenu("<img src=\"/images/find.gif\"><a href=\"bbssel\" target=\"f3\">查找讨论区</a><br>\n");
     printmenu("<img src=\"/images/find.gif\"><a href=\"/games/index.html\" target=\"f3\">休闲娱乐区</a><br>\n");
     printmenubegin();
 	printf("<table><tr><form action=\"bbssel\" target=\"f3\"><td>&nbsp;&nbsp;"

@@ -15,7 +15,7 @@
 	else
 	{
 		html_init("gb2312","Õ³Ìù¸½¼þ");
-		$attachdir=ATTACHTMPPATH . "/" . $currentuser["userid"] . "_" . $utmpnum;
+		$attachdir=getattachtmppath($currentuser["userid"] ,$utmpnum);
 		if ($action=="delete") {
 			@$act_attachname=$_GET["attachname"];
 			$fp1=@fopen($attachdir . "/.index","r");
