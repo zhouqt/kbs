@@ -14,6 +14,9 @@ int delete_all_mail(int dfd, char *touser, char *filename, int size, RECORD_FUNC
 	char buf2[80];
 	char from[256];
 	char to[256];
+	struct stat st;
+	int subspace = 0;
+	struct userec *to_userec;
 
 	printf("Deleting mails of %s... \n", touser);
     BBS_TRY {
@@ -26,18 +29,24 @@ int delete_all_mail(int dfd, char *touser, char *filename, int size, RECORD_FUNC
 				setmailfile(from, touser, fname);
 				setmailfile(to, touser, buf2);
 				rename(from, to);
+				if (lstat(to, &st) == 0 && S_ISREG(st.st_mode) && st.st_nlink == 1) {
+					subspace += st.st_size;
+				}
 				continue;
-            }
+			}
 			write(dfd, buf1, size);
-        }
+		}
 		end_mmapfile((void *) buf, filesize, -1);
+		if (getuser(touser, &to_userec) != 0) {
+			to_userec->usedspace -= subspace;
+		}
 		BBS_RETURN(0);
-    }
-    BBS_CATCH {
-    }
-    BBS_END end_mmapfile((void *) buf, filesize, -1);
+	}
+	BBS_CATCH {
+	}
+	BBS_END end_mmapfile((void *) buf, filesize, -1);
 
-    return 0;
+	return 0;
 }
 
 int main(int argc, char **argv)
@@ -56,6 +65,7 @@ int main(int argc, char **argv)
 		return -1;
 	}
 	chdir(BBSHOME);
+	resolve_ucache();
 	while(!feof(stdin))
 	{
 		if (fgets(touser, sizeof(touser) - 1, stdin) == NULL)
