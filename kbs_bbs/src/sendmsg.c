@@ -769,6 +769,8 @@ int unregister_sms()
             prints("È¡Ïû×¢²áÊ§°Ü");
             pressreturn();
             shmdt(head);
+	    curruserdata.mobileregistered = 0;
+	    write_userdata(currentuser->userid, &curruserdata);
             smsbuf=NULL;
             return -1;
         }
@@ -840,7 +842,8 @@ checksmsagain:
     }
     else {
         getuser(uident, &ur);
-        strcpy(uident, ur->userid);
+        if(ur)
+            strcpy(uident, ur->userid);
         if(read_userdata(uident,&udata))
             cansend=false;
         else {
