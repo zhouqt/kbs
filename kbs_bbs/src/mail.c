@@ -1064,6 +1064,15 @@ char *direct;
     char *t;
 
     clear();
+	
+   	setmailfile(q_file, currentuser->userid, DOT_DIR);
+	if( strcmp(q_file,direct) ){
+		move(3, 10);
+		prints("很抱歉,此信箱内暂时不可以回复!");
+		pressreturn();
+		return FULLUPDATE;
+	}
+
     modify_user_mode(SMAIL);
     strncpy(uid, fileinfo->owner, OWNER_LEN);
     uid[OWNER_LEN - 1] = 0;
