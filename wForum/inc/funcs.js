@@ -50,7 +50,7 @@ function showPopupText(evt){
 	MouseX=event.x;
 	MouseY=event.y;
 	if(o.alt!=null && o.alt!=""){o.dypop=o.alt;o.alt=""};
-        if(o.title!=null && o.title!=""){o.dypop=o.title;o.title=""};
+		if(o.title!=null && o.title!=""){o.dypop=o.title;o.title=""};
 	if(o.dypop!=sPop) {
 		if (isIE4) {
 			sPop=o.dypop;
@@ -180,14 +180,14 @@ function HideMenu(evt)
 }
 
 function ShowMenu_Internal(vMnuCode,tWidth,evt,isTd) {
-    evt = (evt) ? evt : ((window.event) ? event : null);
-    if (evt) {
+	evt = (evt) ? evt : ((window.event) ? event : null);
+	if (evt) {
 		evt.cancelBubble = true;
 	   vSrc = (evt.target) ? evt.target :   ((evt.srcElement) ? evt.srcElement : null);
 	   
-       if (vSrc.nodeType == 3) {
-           vSrc = vSrc.parentNode;
-       }
+	   if (vSrc.nodeType == 3) {
+		   vSrc = vSrc.parentNode;
+	   }
 		if (isTd) vMnuCode = "<table id='submenu' cellspacing=1 cellpadding=3 style='width:"+tWidth+"' class=TableBorder1 onmouseout='HideMenu()'><tr height=23><td nowrap class=TableBody1 align=center>" + vMnuCode + "</td></tr></table>";
 		oDiv=getRawObject("menuDiv");
 
@@ -241,59 +241,50 @@ function makeRectangularDropShadow(el, color, size)
 var stylelist, manage, talk, query;
 
 function defineMenus() {
-    stylelist = ' \
-<a class=\"SMItem\" href=\"changestyle.php?style=defaultstyle\">默认模板</a><br> \
-<a class=\"SMItem\" href=\"changestyle.php?style=crystalpurplestyle\">水晶紫色</a><br> \
-<a class=\"SMItem\" href=\"changestyle.php?style=dotgreenstyle\">ｅ点小镇</a><br> \
-<a class=\"SMItem\" href=\"changestyle.php?style=emotiongraystyle\">心情灰色</a><br> \
-<a class=\"SMItem\" href=\"changestyle.php?style=autumnstyle\">秋意盎然</a><br> \
-<a class=\"SMItem\" href=\"changestyle.php?style=bluegrandstyle\">蓝色庄重</a><br> \
-<a class=\"SMItem\" href=\"changestyle.php?style=greenqieutlyelegantstyle\">绿色淡雅</a><br> \
-<a class=\"SMItem\" href=\"changestyle.php?style=bluegreenelegantstyle\">蓝雅绿</a><br> \
-<a class=\"SMItem\" href=\"changestyle.php?style=purpleqieutlyelegantstyle\">紫色淡雅</a><br> \
-<a class=\"SMItem\" href=\"changestyle.php?style=lightpurplestyle\">淡紫色</a><br> \
-<a class=\"SMItem\" href=\"changestyle.php?style=orangeredstyle\">橘子红了</a><br> \
-<a class=\"SMItem\" href=\"changestyle.php?style=rednightstyle\">红红夜思</a><br> \
-<a class=\"SMItem\" href=\"changestyle.php?style=pinkmemorystyle\">粉色回忆</a><br> \
-<a class=\"SMItem\" href=\"changestyle.php?style=greengrassstyle\">青青河草</a><br> \
-<a class=\"SMItem\" href=\"changestyle.php?style=thickgreenstyle\">浓浓绿意</a><br> \
-<a class=\"SMItem\" href=\"changestyle.php?style=brownredstyle\">棕红预览</a><br> \
-<a class=\"SMItem\" href=\"changestyle.php?style=littlecoffeestyle\">淡咖啡</a><br> \
-<a class=\"SMItem\" href=\"changestyle.php?style=seaskystyle\">碧海晴天</a><br> \
-<a class=\"SMItem\" href=\"changestyle.php?style=bluecrystalstyle\">蓝色水晶</a><br> \
-<a class=\"SMItem\" href=\"changestyle.php?style=snowstyle\">雪花飘飘</a><br> \
-';
+	stylelist = '<a class=\"SMItem\" href=\"changestyle.php?style=defaultstyle\">默认模板</a><br>';
+	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=crystalpurplestyle\">水晶紫色</a><br>';
+	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=dotgreenstyle\">ｅ点小镇</a><br>';
+	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=emotiongraystyle\">心情灰色</a><br>';
+	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=autumnstyle\">秋意盎然</a><br>';
+	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=bluegrandstyle\">蓝色庄重</a><br>';
+	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=greenqieutlyelegantstyle\">绿色淡雅</a><br>';
+	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=bluegreenelegantstyle\">蓝雅绿</a><br>';
+	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=purpleqieutlyelegantstyle\">紫色淡雅</a><br>';
+	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=lightpurplestyle\">淡紫色</a><br>';
+	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=orangeredstyle\">橘子红了</a><br>';
+	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=rednightstyle\">红红夜思</a><br>';
+	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=pinkmemorystyle\">粉色回忆</a><br>';
+	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=greengrassstyle\">青青河草</a><br>';
+	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=thickgreenstyle\">浓浓绿意</a><br>';
+	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=brownredstyle\">棕红预览</a><br>';
+	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=littlecoffeestyle\">淡咖啡</a><br>';
+	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=seaskystyle\">碧海晴天</a><br>';
+	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=bluecrystalstyle\">蓝色水晶</a><br>';
+	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=snowstyle\">雪花飘飘</a><br>';
 
-    manage= ' \
-<a class=\"MItem\" href="usermailbox.php?boxname=inbox">我的信箱</a><br> \
-<a class=\"MItem\" href="favboard.php">用户收藏版面</a><br> \
-<a class=\"MItem\" href="usermanagemenu.php">用户控制面板</a><br> \
-<a class=\"MItem\" href="modifyuserdata.php">基本资料修改</a><br> \
-<a class=\"MItem\" href="userparam.php">用户自定义参数</a><br> \
-<a class=\"MItem\" href="bbssig.php">用户签名档</a><br> \
-<a class=\"MItem\" href="changepasswd.php">修改昵称密码</a><br> \
-<a class=\"MItem\" href="alteryank.php">切换版面列表方式</a> \
-';
+	manage = '<a class=\"MItem\" href="usermailbox.php?boxname=inbox">我的信箱</a><br>';
+	manage += '<a class=\"MItem\" href="favboard.php">用户收藏版面</a><br>';
+	manage += '<a class=\"MItem\" href="usermanagemenu.php">用户控制面板</a><br>';
+	manage += '<a class=\"MItem\" href="modifyuserdata.php">基本资料修改</a><br>';
+	manage += '<a class=\"MItem\" href="userparam.php">用户自定义参数</a><br>';
+	manage += '<a class=\"MItem\" href="bbssig.php">用户签名档</a><br>';
+	manage += '<a class=\"MItem\" href="changepasswd.php">修改昵称密码</a><br>';
+	manage += '<a class=\"MItem\" href="alteryank.php">切换版面列表方式</a>';
 
-    talk = ' \
-<a class=\"MItem\" href="showmsgs.php">察看在线短信</a><br> \
-<a class=\"MItem\" href="javascript:sendMsg()">发短信</a><br>';
+	talk = '<a class=\"MItem\" href="showmsgs.php">察看在线短信</a><br>';
+	talk += '<a class=\"MItem\" href="javascript:sendMsg()">发短信</a><br>';
 if (siteconf_SMS_SUPPORT) {
 	talk += '<a class=\"MItem\" href="javascript:sendSMSMsg()">发送手机短信</a><br>';
 }
-talk += ' \
-<a class=\"MItem\" href="friendlist.php">编辑好友列表</a><br> \
-<a class=\"MItem\" href="showonlinefriend.php">在线好友</a><br> \
-<a class=\"MItem\" href="showonlineuser.php">在线用户</a><br> \
-<a class=\"MItem\" href="dispuser.php">查询用户</a> \
-';
+	talk += '<a class=\"MItem\" href="friendlist.php">编辑好友列表</a><br>';
+	talk += '<a class=\"MItem\" href="showonlinefriend.php">在线好友</a><br>';
+	talk += '<a class=\"MItem\" href="showonlineuser.php">在线用户</a><br>';
+	talk += '<a class=\"MItem\" href="dispuser.php">查询用户</a>';
 
-    query = ' \
-<a href="searchboard.php">搜索版面</a><br> \
-<form action="searchboard.php" method="get" style="margin: 0px;"> \
-<input class="TableBorder2" name="board" value="输入关键字" size="12" onmouseover="this.focus()" onfocus="this.select()" /></form> \
-<hr class="TableBorder2"><a class="MItem" href="query.php" title="直接点上面的“搜索”菜单将会搜索当前版面">搜索文章</a> \
-';
+	query = '<a href="searchboard.php">搜索版面</a><br>';
+	query += '<form action="searchboard.php" method="get" style="margin: 0px;">';
+	query += '<input class="TableBorder2" name="board" value="输入关键字" size="12" onmouseover="this.focus()" onfocus="this.select()" /></form>';
+	query += '<hr class="TableBorder2"><a class="MItem" href="query.php" title="直接点上面的“搜索”菜单将会搜索当前版面">搜索文章</a>';
 }
 
 var timerID=0;
@@ -383,8 +374,8 @@ function resizeImg(obj) {
 }
 
 function refreshLeft() {
-    if (top != self) {
-        top.menu.doShowLeft();
-        top.menu.location.href = "bbsleft.php";
-    }
+	if (top != self) {
+		top.menu.doShowLeft();
+		top.menu.location.href = "bbsleft.php";
+	}
 }
