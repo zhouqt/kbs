@@ -157,10 +157,10 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
     }
     if (new_ln == was_ln && new_col>=was_col+1&&new_col<=was_col+5) {
         int p=1, q=(new_ln+roll)%scr_lns;
-        for(i=was_ln;i<new_col;i++)
+        for(i=was_col;i<new_col;i++)
             p=p&&(bp[q].color[i]==cur_color)&&(bp[q].mode[i]==cur_mode);
         if(p) {
-            for(i=was_ln;i<new_col;i++)
+            for(i=was_col;i<new_col;i++)
                 ochar(bp[q].data[i]);
             return;
         }
