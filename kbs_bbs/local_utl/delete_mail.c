@@ -5,14 +5,17 @@ static int cmpauthor(struct fileheader *fhdr, char *name)
 	return !strcmp(fhdr->owner, name);
 }
 
-int delete_all_mail(int dfd, char *filename, int size, RECORD_FUNC_ARG fptr, void *farg)
+int delete_all_mail(int dfd, char *touser, char *filename, int size, RECORD_FUNC_ARG fptr, void *farg)
 {
     int i;
     char *buf, *buf1;
     off_t filesize;
 	char *fname;
-	char buf2[256];
+	char buf2[80];
+	char from[256];
+	char to[256];
 
+	printf("Deleting mails of %s... \n", touser);
     BBS_TRY {
         if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &buf, &filesize, NULL) == 0)
             BBS_RETURN(0);
@@ -20,7 +23,9 @@ int delete_all_mail(int dfd, char *filename, int size, RECORD_FUNC_ARG fptr, voi
             if ((*fptr) (buf1, farg)) {
 				fname = ((struct fileheader *)buf1)->filename;
 				sprintf(buf2, "SMTH.DM%s", fname);
-				rename(fname, buf2);
+				setmailfile(from, touser, fname);
+				setmailfile(to, touser, buf2);
+				rename(from, to);
 				continue;
             }
 			write(dfd, buf1, size);
@@ -46,7 +51,7 @@ int main(int argc, char **argv)
 
 	if (argc != 2)
 	{
-		fprintf(stderr, "Usage: %s fromuser\n");
+		fprintf(stderr, "Usage: %s fromuser\n", argv[0]);
 		return -1;
 	}
 	chdir(BBSHOME);
@@ -60,13 +65,16 @@ int main(int argc, char **argv)
 			touser[len - 1] = '\0';
 		setmailfile(mdir, touser, ".DIR");
 		if (stat(mdir, &st) < 0)
-			return -1;
+		{
+			fprintf("User '%s' not found.\n", touser);
+			continue;
+		}
 		sprintf(mdir_bak, "%s.BAK", mdir);
 		f_cp(mdir, mdir_bak, 0);
 		sprintf(mdir_new, "%s.NEW", mdir);
 		if ((fd = open(mdir_new, O_RDWR | O_CREAT, 0644)) > 0)
 		{
-			delete_all_mail(fd, mdir, sizeof(struct fileheader), 
+			delete_all_mail(fd, touser, mdir, sizeof(struct fileheader), 
 								cmpauthor, argv[1]);
 			close(fd);
 			f_mv(mdir_new, mdir);
