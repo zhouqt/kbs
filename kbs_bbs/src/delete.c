@@ -360,19 +360,20 @@ int kick_user(struct user_info *userinfo)
     int id, ind ;
     struct user_info uin;
     struct userec kuinfo;
-    char kickuser[40], buffer [40];
+    char buffer [40];
+   	char userid[40];
 
     if(uinfo.mode!=LUSERS&&uinfo.mode!=OFFLINE&&uinfo.mode!=FRIEND)
     {
         modify_user_mode( ADMIN );
         stand_title( "Kick User" );
         move(1,0) ;
-        usercomplete("Enter userid to be kicked: ",kickuser) ;
-        if(*kickuser == '\0') {
+        usercomplete("Enter userid to be kicked: ",userid) ;
+        if(*userid == '\0') {
             clear() ;
             return 0 ;
         }
-        if(!(id = searchuser(kickuser))) { /* change getuser -> searchuser, by dong, 1999.10.26 */
+        if(!(id = searchuser(userid))) { /* change getuser -> searchuser, by dong, 1999.10.26 */
             move(3,0) ;
             prints("Invalid User Id") ;
             clrtoeol() ;
@@ -381,7 +382,7 @@ int kick_user(struct user_info *userinfo)
             return 0 ;
         }
         move(1,0) ;
-        prints("Kick User '%s'.",kickuser) ;
+        prints("Kick User '%s'.",userid) ;
         clrtoeol();
         getdata(2,0,"(Yes, or No) [N]: ",genbuf,4,DOECHO,NULL,YEA) ;
         if(genbuf[0] != 'Y' && genbuf[0] != 'y') { /* if not yes quit */
@@ -391,11 +392,11 @@ int kick_user(struct user_info *userinfo)
             clear() ;
             return 0 ;
         }
-        ind = search_ulist( &uin, t_cmpuids, id );
+    	return apply_utmp(kickuser,0,userid,0);
     }else
     {
         uin=*userinfo;
-        strcpy(kickuser,uin.userid);
+        strcpy(userid,uin.userid);
         ind=YEA;
     }
     if (!ind || !uin.active || (kill(uin.pid,0) == -1)) {
@@ -413,7 +414,7 @@ int kick_user(struct user_info *userinfo)
     {
     	clear_utmp2(userinfo);
     }
-    sprintf(buffer, "kicked %s", kickuser);
+    sprintf(buffer, "kicked %s", userid);
     report(buffer);
     /*sprintf( genbuf, "%s (%s)", kuinfo.userid, kuinfo.username );modified by dong, 1998.11.2 */
     /*log( "1system", "KICK %s (%s)", uin.userid, uin.username );*/
