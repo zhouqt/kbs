@@ -85,7 +85,9 @@ struct user_info {              /* Structure used in UTMP file */
 struct friends {
     char id[13];
     char exp[15];
+#ifdef FRIEND_MULTI_GROUP
     int groupid;
+#endif
 };
 struct friends_info {
     char exp[15];
