@@ -540,6 +540,8 @@ void init_brc_cache(char* userid,bool replace) {
 	struct stat st;
 	if (brc_cache_entry)
 		munmap(brc_cache_entry,BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
+        setcachehomefile(temp, userid, -1, NULL);
+        mkdir(temp, 0700);
         setcachehomefile(temp, userid, -1, "entry");
 	sprintf(dirfile,BBSHOME "/%s",temp);
         if(stat(dirfile, &st)<0) {
