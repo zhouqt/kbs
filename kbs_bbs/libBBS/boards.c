@@ -788,6 +788,8 @@ int haspostperm(struct userec *user, char *bname)
      */
     if ((i = getbnum(bname)) == 0)
         return 0;
+    if (bcache[i-1].flag&BOARD_GROUP) //目录先不能写
+        return 0;
     if (!HAS_PERM(user, PERM_POST)) {
         if(!strcasecmp(user->userid, "guest"))
             return 0;
