@@ -22,7 +22,8 @@
 		$usernum = $currentuser["index"];
 		if (bbs_checkreadperm($usernum, $brdnum) == 0)
 			html_error_quit("错误的讨论区");
-		// TODO: Added bbs_check_post_perm();
+		if(bbs_checkpostperm($usernum, $brdnum) == 0)
+		    html_error_quit("错误的讨论区或者您无权在此讨论区发表文章");
 		if (bbs_is_readonly_board($brdarr))
 			html_error_quit("不能在只读讨论区发表文章");
 		if (isset($_GET["reid"]))
@@ -31,11 +32,11 @@
 			$reid = 0;
 		}
 		settype($reid, "integer");
+		$articles = array();
 		if ($reid > 0)
 		{
-			$articles = bbs_get_records_from_id($brdarr["NAME"], $reid, 
-					$dir_modes["NORMAL"]);
-			if ($articles == FALSE)
+			$num = bbs_get_records_from_id($brdarr["NAME"], $reid,$dir_modes["NORMAL"],$articles);
+			if ($num == 0)
 			{
 				html_error_quit("错误的 Re 文编号");
 			}
@@ -53,23 +54,27 @@
 <td>
 <?php
 		$notes_file = bbs_get_vote_filename($brdarr["NAME"], "notes");
-		$fp = fopen($notes_file, "r");
-		if ($fp == FALSE)
+		$fp = FALSE;
+		if(file_exists($notes_file))
 		{
-			//html_error_quit("现在没有备忘录");
-			$notes_file = "vote/notes";
-			$fp = fopen($notes_file, "r");
-			if ($fp == FALSE)
-			{
+		    $fp = fopen($notes_file, "r");
+		    if ($fp == FALSE)
+		    {
+    	    	$notes_file = "vote/notes";
+                if(file_exists($notes_file))
+	    		    $fp = fopen($notes_file, "r");
+    		}
+		}
+		if ($fp == FALSE)
+    	{
 ?>
 <font color="green">发文注意事项: <br />
 发文时应慎重考虑文章内容是否适合公开场合发表，请勿肆意灌水。谢谢您的合作。<br/></font>
 <?php
-			}
 		}
-		if ($fp != FALSE)
+        else
 		{
-			fclose($fp);
+		    fclose($fp);
 			bbs_printansifile($notes_file);
 		}
 ?>
@@ -80,8 +85,11 @@
 <?php
 		if ($reid)
 		{
+	        if(!strncmp($articles[1]["TITLE"],"Re: ",4))$nowtitle = $articles[1]["TITLE"];
+	        else
+	            $nowtitle = "Re: " . $articles[1]["TITLE"];
 ?>
-标题: <input type="text" name="title" size="40" maxlength="100" value="Re: <?php echo $articles[1]["TITLE"]; ?>"><br />
+标题: <input type="text" name="title" size="40" maxlength="100" value="<?php echo $nowtitle; ?>"><br />
 <?php
 		}
 		else
@@ -131,13 +139,56 @@
 		}
 ?>
 </select>
- [<a target="_balnk" href="bbssig.php">查看签名档</a>] 
+ [<a target="_balnk" href="bbssig.php">查看签名档</a>]
 <input type="checkbox" name="outgo" value="1" />转信<br />
 <textarea name="text" rows="20" cols="80" wrap="physical">
+<?php
+    if($reid > 0){
+    $filename = $articles[1]["FILENAME"];
+    $filename = "boards/" . $board . "/" . $filename;
+	if(file_exists($filename))
+	{
+	    $fp = fopen($filename, "r");
+        if ($fp) {
+		    $lines = 0;
+            $buf = fgets($fp,256);       /* 取出第一行中 被引用文章的 作者信息 */
+			$end = strrpos($buf,")");
+			$start = strpos($buf,":");
+			if($start != FALSE && $end != FALSE)
+			    $quser=substr($buf,$start+2,$end-$start-1);
 
+            echo "\n【 在 " . $quser . " 的大作中提到: 】\n";
+            for ($i = 0; $i < 3; $i++) {
+                if (($buf = fgets($fp,500)) == FALSE)
+                    break;
+            }
+            while (1) {
+                if (($buf = fgets($fp,500)) == FALSE)
+                    break;
+                if (strncmp($buf, ": 【", 4) == 0)
+                    continue;
+                if (strncmp($buf, ": : ", 4) == 0)
+                    continue;
+                if (strncmp($buf, "--\n", 3) == 0)
+                    break;
+                if (strncmp($buf,'\n',1) == 0)
+                    continue;
+                if (++$lines > 10) {
+                    echo ": ...................\n";
+                    break;
+                }
+                /* */
+                if (stristr($buf, "</textarea>") == FALSE)  //filter </textarea> tag in the text
+                    echo ": ". $buf;
+            }
+            fclose($fp);
+        }
+    }
+}
+?>
 </textarea></td></tr>
 <tr><td class="post" align="center">
-<input type="submit" value="发表" /> 
+<input type="submit" value="发表" />
 <input type="reset" value="清除" />
 <?php
 		if (bbs_is_attach_board($brdarr))
@@ -149,19 +200,19 @@
 ?>
 <script language="JavaScript">
 <!--
-   function GoAttachWindow(){     
-	
-   	var hWnd = window.open("bbsupload.php","_blank","width=600,height=300,scrollbars=yes");  
+   function GoAttachWindow(){
 
-	if ((document.window != null) && (!hWnd.opener))  
+   	var hWnd = window.open("bbsupload.php","_blank","width=600,height=300,scrollbars=yes");
 
-		   hWnd.opener = document.window;  
+	if ((document.window != null) && (!hWnd.opener))
 
-	hWnd.focus();  
+		   hWnd.opener = document.window;
 
-   	return false;  
+	hWnd.focus();
 
-   }  
+   	return false;
+
+   }
 -->
 </script>
 </td></tr>
