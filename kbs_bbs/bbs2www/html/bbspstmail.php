@@ -81,7 +81,7 @@
 </select>
  [<a target="_balnk" href="bbssig.php">查看签名档</a>]
 <input type="checkbox" name="backup">备份<br />
-<textarea name="text" rows="20" cols="80" wrap="physical">
+<textarea name="text"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' rows="20" cols="80" wrap="physical">
 <?php
     if(isset($file)){
 		if(isset($board)){
