@@ -2131,7 +2131,8 @@ int post_article(char *q_file, struct fileheader *re_file)
         } else if (ans[0] == 'T') {
             buf4[0] = '\0';
 		} else if (ans[0] == 'P') {
-			use_tmpl = use_tmpl ? 0 : 1;
+			if( use_tmpl >= 0)
+				use_tmpl = use_tmpl ? 0 : 1;
 				/*
 			if( replymode == 0 ){
 				choose_tmpl( tmplate );
@@ -2159,11 +2160,12 @@ int post_article(char *q_file, struct fileheader *re_file)
             }
         } else if (ans[0] == 'U') {
             struct boardheader* b=currboard;
-            if(b->flag&BOARD_ATTACH) {
+            if(b->flag&BOARD_ATTACH && use_tmpl<=0) {
                 int i;
                 chdir("tmp");
                 upload = bbs_zrecvfile();
                 chdir("..");
+				use_tmpl = -1;
             }
         } else {
             /*
@@ -2242,7 +2244,7 @@ int post_article(char *q_file, struct fileheader *re_file)
 
     modify_user_mode(POSTING);
 
-	if( use_tmpl ){
+	if( use_tmpl > 0 ){
 		FILE *fp,*fp1;
 		char filepath1[STRLEN];
 		char buff[256];
@@ -2296,7 +2298,7 @@ int post_article(char *q_file, struct fileheader *re_file)
     strcpy(quote_title, save_title);
     strcpy(quote_board, currboard->filename);
 
-	if( ! use_tmpl )
+	if( use_tmpl <= 0 )
 	    aborted = vedit(filepath, true, &eff_size, NULL);    /* ½øÈë±à¼­×´Ì¬ */
 	else{
     	struct stat st;
