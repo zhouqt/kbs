@@ -44,7 +44,6 @@ unsigned char cur_ln = 0, cur_col = 0;
 int roll, scrollcnt;
 unsigned char docls;
 unsigned char downfrom;
-int standing = false;
 int inansi = false;
 int tc_col, tc_line;
 struct screenline *big_picture = NULL;
@@ -202,11 +201,7 @@ redoscr()
 		if (bp[j].len == 0)
 			continue;
 		rel_move(tc_col, tc_line, 0, i);
-		if (bp[j].mode & STANDOUT)
-			standoutput(bp[j].data, 0, bp[j].len, bp[j].sso,
-				    bp[j].eso);
-		else
-			output(bp[j].data, bp[j].len);
+		output(bp[j].data, bp[j].len);
 		tc_col += bp[j].len;
 		if (tc_col >= t_columns) {
 			if (!automargins) {
@@ -291,12 +286,7 @@ refresh()
 			if (bp[j].emod >= bp[j].len)
 				bp[j].emod = bp[j].len - 1;
 			rel_move(tc_col, tc_line, bp[j].smod, i);
-			if (bp[j].mode & STANDOUT)
-				standoutput(bp[j].data, bp[j].smod,
-					    bp[j].emod + 1, bp[j].sso,
-					    bp[j].eso);
-			else
-				output(&bp[j].data[bp[j].smod],
+			output(&bp[j].data[bp[j].smod],
 				       bp[j].emod - bp[j].smod + 1);
 			tc_col = bp[j].emod + 1;
 			if (tc_col >= t_columns) {
@@ -347,7 +337,6 @@ good_move(int y, int x)
 	
 	}
 	cur_ln = y;
-	standing = false;
 	ln = cur_ln + roll;
 	while (ln >= scr_lns)
 		ln -= scr_lns;
@@ -445,13 +434,10 @@ clrtoeol()
             o_cleol();
             return;
         }
-	standing = false;
 	ln = cur_ln + roll;
 	while (ln >= scr_lns)
 		ln -= scr_lns;
 	slp = &big_picture[ln];
-	if (cur_col <= slp->sso)
-		slp->mode &= ~STANDOUT;
 	if (cur_col > slp->oldlen) {
 		register int i;
 
@@ -477,15 +463,6 @@ clrtobot()
 		if (slp->oldlen > 0)
 			slp->oldlen = 255;
 	}
-}
-
-void
-clrstandout()
-{
-	register int i;
-
-	for (i = 0; i < scr_lns; i++)
-		big_picture[i].mode &= ~(STANDOUT);
 }
 
 void
@@ -523,10 +500,6 @@ outc(unsigned char c)
 	/* deal with non-printables */
 	if (!isprint2(c)) {
 		if (c == '\n' || c == '\r') {	/* do the newline thing */
-			if (standing) {
-				slp->eso = Max(slp->eso, reg_col);
-				standing = false;
-			}
 			if (reg_col > slp->len) {
 				register int i;
 
@@ -573,10 +546,6 @@ outc(unsigned char c)
 	slp->data[reg_col] = c;
 	reg_col++;
 	if (reg_col >= scr_cols) {
-		if (standing && slp->mode & STANDOUT) {
-			standing = false;
-			slp->eso = Max(slp->eso, reg_col);
-		}
 		reg_col = 0;
 		if (cur_ln < scr_lns)
 			cur_ln++;
@@ -600,21 +569,14 @@ int n;
 
 #define DO_MODIFY { if (slp->smod > begincol) slp->smod=begincol; \
                     if (slp->emod < reg_col) slp->emod=reg_col; \
-                    if(standing && slp->mode&STANDOUT) { \
-                        standing = false ; \
-                        slp->eso = Max(slp->eso,reg_col) ; \
-		    } \
-		    if(!(slp->mode & MODIFIED)) { \
 		    	slp->mode |= MODIFIED ; \
-		    } \
 	          }
 
-#define DO_CRLF   {	slp->len=reg_col; \
-                        if(cur_col < slp->sso) \
-                             slp->mode&=~STANDOUT; \
+#define DO_CRLF   { if (slp->len < reg_col) \
+                        slp->len=reg_col; \
                         cur_col = 0 ; \
                         cur_ln = (cur_ln+1)%scr_lns;\
-			reg_col=begincol; \
+                        reg_col=begincol; \
                   }
 	if (!scrint) {
 		for (; *begin_str && (reg_col < n); reg_col++, begin_str++)
@@ -926,52 +888,6 @@ void noscroll()
     for(i=0;i<scr_lns;i++)
         memcpy(big_picture+i,bp+i,sizeof(struct screenline));
     roll = 0;
-}
-
-void
-standout()
-{
-	register struct screenline *slp;
-	register int ln;
-
-	if (!scrint) {
-	    if (!standing)
-		o_standup();
-	    return;
-	
-	}
-	if (!standing) {
-		ln = cur_ln + roll;
-		while (ln >= scr_lns)
-			ln -= scr_lns;
-		slp = &big_picture[ln];
-		standing = true;
-		slp->sso = cur_col;
-		slp->eso = cur_col;
-		slp->mode |= STANDOUT;
-	}
-}
-
-void
-standend()
-{
-	register struct screenline *slp;
-	register int ln;
-
-	if (!scrint) {
-	    if (standing)
-		o_standdown();
-	    return;
-	
-	}
-	if (standing) {
-		ln = cur_ln + roll;
-		while (ln >= scr_lns)
-			ln -= scr_lns;
-		slp = &big_picture[ln];
-		standing = false;
-		slp->eso = Max(slp->eso, cur_col);
-	}
 }
 
 void

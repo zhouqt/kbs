@@ -25,7 +25,6 @@ void clrtoeol();
 int pressanykey();
 int askyn(char str[STRLEN], int defa);
 void saveline(int line, int mode, char *buffer);
-void standend();
 void redoscr();
 void initscr();
 void bell();
