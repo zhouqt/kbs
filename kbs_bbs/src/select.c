@@ -393,6 +393,10 @@ int list_select(struct _select_def *conf, int key)
                         getkey=false;
 			continue;
                     }
+		    if (ret==SHOW_SELCHANGE) {
+                        getkey=false;
+			continue;
+                    }
 	            if (ret==SHOW_QUIT)
 	        	return ret;
 	            if ((ret=check_valid(conf)) == SHOW_QUIT)
