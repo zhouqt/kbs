@@ -16,13 +16,16 @@ int release_key()
     return 0;
 }
 
-int load_key()
+int load_key(char * fn)
 {
     FILE* fp;
     char fname[STRLEN];
     struct stat st;
     release_key();
-    sethomefile(fname, currentuser->userid, "definekey");
+    if(fn==NULL)
+        sethomefile(fname, currentuser->userid, "definekey");
+    else
+        strcpy(fname, fn);
     stat(fname, &st);
     fp=fopen(fname, "rb");
     if(fp==NULL) return -1;
@@ -31,6 +34,37 @@ int load_key()
     fread(keymem, st.st_size, 1, fp);
     fclose(fp);
     return 0;
+}
+
+void ask_define()
+{
+    struct _select_item *sel;
+    int j;
+    char sname[4][14]={"±¾Õ¾Ä¬ÈÏ", "Ò»ËúºıÍ¿", "±±´óÎ´Ãû", "ÄÏ´óĞ¡°ÙºÏ"};
+    char fname[4][30]={"", "service/definekey.ytht", "service/definekey.pku", "service/definekey.nju"};
+    char root[18]="¶¨ÖÆÇøÖ÷Ä¿Â¼";
+    clear();
+    move(5, 3);
+    prints("ÇëÑ¡ÔñÄãÏ°¹ßµÄ°´¼üÄ£Ê½:");
+    sel = (struct _select_item *) malloc(sizeof(struct _select_item) * 5);
+    for(j=0;j<4;j++) {
+        sel[j].x = 3;
+        sel[j].y = 6+j;
+        sel[j].hotkey = '0'+j;
+        sel[j].type = SIT_SELECT;
+        sel[j].data = sname[j];
+    }
+    j=4;
+    sel[j].x = -1;
+    sel[j].y = -1;
+    sel[j].hotkey = -1;
+    sel[j].type = 0;
+    sel[j].data = NULL;
+    clear();
+    j = simple_select_loop(sel, SIF_NUMBERKEY | SIF_SINGLE | SIF_ESCQUIT, 0, 6, NULL) - 1;
+    free(sel);
+    if(j>=1&&j<=3)
+        load_key(fname[j]);
 }
 
 int save_key()
@@ -342,6 +376,9 @@ static int set_keydefine_key(struct _select_def *conf, int key)
         return SHOW_CONTINUE;
     }
     switch (key) {
+    case KEY_TAB:
+        ask_define();
+        return SHOW_DIRCHANGE;
     case 'a':                  /* add new user */
         if (keymem_total < MAX_KEY_DEFINE) {
             int i,j;
@@ -472,7 +509,7 @@ static int set_keydefine_refresh(struct _select_def *conf)
 {
     clear();
     docmdtitle("[ÉèÖÃ×Ô¶¨Òå¼ü]",
-               "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ı\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ĞŞ¸ÄÄ£Ê½[\x1b[1;32me\x1b[0;37m] ĞŞ¸Ä¼ü¶¨Òå[\x1b[1;32ms\x1b[0;37m] É¾³ı[\x1b[1;32md\x1b[0;37m]\x1b[m");
+               "\x1b[1;31mÔ¤¶¨Òå\x1b[m[\x1b[1;32mTab\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ı\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ĞŞ¸ÄÄ£Ê½[\x1b[1;32me\x1b[0;37m] ĞŞ¸Ä¼ü¶¨Òå[\x1b[1;32ms\x1b[0;37m] É¾³ı[\x1b[1;32md\x1b[0;37m]\x1b[m");
     move(2, 0);
     prints("[0;1;37;44m  %-6s  %-36s  %-32s[m", "°´¼ü", "Ìæ»»ĞòÁĞ", "Ä£Ê½");
     update_endline();
@@ -519,6 +556,7 @@ int define_key()
         key.mapped[1] = 0;
         key.status[0] = 0;
         add_key(&key);
+        ask_define();
     }
     
     bzero(&group_conf, sizeof(struct _select_def));

@@ -1009,7 +1009,7 @@ void main_bbs(int convit, char *argv)
     user_login();
     m_init();
     clear();
-    load_key();
+    load_key(NULL);
 
 #ifndef DEBUG
 #ifdef SSHBBS
