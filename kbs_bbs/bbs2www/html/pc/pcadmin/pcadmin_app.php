@@ -36,35 +36,35 @@ function pc_add_users($link,$userid,$corpusname,$manual,$blogtype="normal",$grou
 {
 	global $pcconfig , $currentuser , $bbsman_modes;
 	if(!$userid || !$corpusname)
-		return FALSE;
+		return -1;
 	
 	if ($blogtype=="normal") {
     	$lookupuser=array ();
     	if(bbs_getuser($userid, $lookupuser) == 0 )
-    		return FALSE;
+    		return -2;
 	    $userid = $lookupuser["userid"];
 	}
 	else {
 	    if (!$pcconfig["TYPES"][$blogtype])
-	        return FALSE;
+	        return -3;
 	    $userid = $pcconfig["TYPES"][$blogtype] . '.' . $userid;
 	    if (!$groupmanager)
-	        return FALSE;
+	        return -4;
 	    $lookupuser=array ();
     	if(bbs_getuser($groupmanager, $lookupuser) == 0 )
-    		return FALSE;
+    		return -4;
 	    $groupmanager = $lookupuser["userid"];
 	}
 	
 	if(pc_load_infor($link,$userid))
-		return FALSE;
+		return -5;
 	
 	if($manual)
 	{
 		$query = "SELECT username FROM newapply WHERE management != 1 AND management != 3  AND management != 0 AND username = '".addslashes($userid)."' LIMIT 0 , 1;";	
 		$result = mysql_query($query,$link);
 		if($rows = mysql_fetch_array($result))
-			return FALSE;
+			return -6;
 	}
 	
 	//分配个人空间
@@ -123,19 +123,20 @@ function pc_add_users($link,$userid,$corpusname,$manual,$blogtype="normal",$grou
 	
 	$ret = bbs_postarticle($pcconfig["APPBOARD"], preg_replace("/\\\(['|\"|\\\])/","$1",$annTitle), preg_replace("/\\\(['|\"|\\\])/","$1",$annBody), 0 , 0 , 0 , 0);
 	if($ret != 0)
-		return FALSE;
+		return -7;
 	//发信件给用户
   	$ret = bbs_postmail(($blogtype=="normal")?$userid:$groupmanager,preg_replace("/\\\(['|\"|\\\])/","$1",$annTitle), preg_replace("/\\\(['|\"|\\\])/","$1",$annBody),0,0);
     if($ret < 0)
-	    return FALSE;
+	    return -8;
 	//标记公告
 	//bbs_bmmanage($pcconfig["APPBOARD"],$ret,$bbsman_modes["MARK"],0);
 	if($manual && $blogtype!="normal") {
 	    $pcc = pc_load_infor($link,$userid);
+	    if (!$pcc) return -9;
 	    pc_convertto_group($link,$pcc);
 	    pc_add_member($link,$pcc,$groupmanager);
 	}
-	return TRUE;
+	return 0;
 }
 
 function pc_reject_apply($link,$userid,$applyAgain)
