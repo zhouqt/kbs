@@ -43,3 +43,4 @@ md $1/tmp/email
 md $1/tmp/clip
 md $1/tmp/bbs-internet-gw
 md $1/var
+md $1/xml
