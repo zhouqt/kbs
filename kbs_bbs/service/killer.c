@@ -108,9 +108,9 @@ int del_room(struct room_struct * r)
     return 0;
 }
 
-void load_inroom(struct room_struct * r)
+int load_inroom(struct room_struct * r)
 {
-    int fd;
+    int fd, res=-1;
     struct flock ldata;
     char filename[80];
     sprintf(filename, "home/%c/%s/.INROOM", toupper(r->creator[0]), r->creator);
@@ -120,6 +120,7 @@ void load_inroom(struct room_struct * r)
         ldata.l_len=0;
         ldata.l_start=0;
         if(fcntl(fd, F_SETLKW, &ldata)!=-1){
+            res=0;
             read(fd, &inrooms, sizeof(struct inroom_struct));
             	
             ldata.l_type = F_UNLCK;
@@ -127,6 +128,7 @@ void load_inroom(struct room_struct * r)
         }
         close(fd);
     }
+    return res;
 }
 
 void clear_inroom(struct room_struct * r)
@@ -182,6 +184,7 @@ void end_change_inroom()
     ldata.l_whence=0;
     ldata.l_len=0;
     ldata.l_start=0;
+    if(change_fd==-1) return;
     lseek(change_fd, 0, SEEK_SET);
     write(change_fd, &inrooms, sizeof(struct inroom_struct));
     	
@@ -240,7 +243,7 @@ struct room_struct * find_room(char * s)
 }
 
 struct room_struct * myroom;
-int selected = 0, ipage=0;
+int selected = 0, ipage=0, kicked=0;
 
 void refreshit()
 {
@@ -310,7 +313,10 @@ void room_refresh(int signo)
     int y,x;
     signal(SIGUSR1, room_refresh);
 
-    load_inroom(myroom);
+    if(load_inroom(myroom)==-1) {
+        kicked = 1;
+        return;
+    }
     load_msgs();
     getyx(&y, &x);
     refreshit();
@@ -477,6 +483,7 @@ void join_room(struct room_struct * r)
         do{
             int ch;
             ch=-getdata(t_lines-1, 0, "输入:", buf, 75, 1, NULL, 1);
+            if(kicked) goto quitgame;
             if(ch==KEY_UP) {
                 selected--;
                 if(selected<0) selected = myroom->people-1;
@@ -699,30 +706,40 @@ void join_room(struct room_struct * r)
     }
 
 quitgame:
-    killer=0;
-    start_change_inroom(r);
-    for(i=0;i<myroom->people;i++)
-        if(inrooms.peoples[i].pid==uinfo.pid) {
-            if(inrooms.peoples[i].flag&PEOPLE_KILLER) killer=1;
-            strcpy(buf2, inrooms.peoples[i].nick);
-            if(!buf2[0])
-                strcpy(buf2, inrooms.peoples[i].id);
-            for(j=i;j<myroom->people-1;j++)
-                memcpy(inrooms.peoples+j, inrooms.peoples+j+1, sizeof(struct people_struct));
-            break;
+    if(!kicked) {
+        killer=0;
+        start_change_inroom(r);
+        for(me=0;me<myroom->people;me++)
+            if(inrooms.peoples[me].pid == uinfo.pid) break;
+        if(inrooms.peoples[me].flag&PEOPLE_ROOMOP) {
+            end_change_inroom();
+            clear_inroom(myroom);
+            goto quitgame2;
         }
-    r->people--;
-    end_change_inroom();
+        for(i=0;i<myroom->people;i++)
+            if(inrooms.peoples[i].pid==uinfo.pid) {
+                if(inrooms.peoples[i].flag&PEOPLE_KILLER) killer=1;
+                strcpy(buf2, inrooms.peoples[i].nick);
+                if(!buf2[0])
+                    strcpy(buf2, inrooms.peoples[i].id);
+                for(j=i;j<myroom->people-1;j++)
+                    memcpy(inrooms.peoples+j, inrooms.peoples+j+1, sizeof(struct people_struct));
+                break;
+            }
+        r->people--;
+        end_change_inroom();
 
-    if(killer)
-        sprintf(buf, "杀手%s潜逃了", buf2);
-    else
-        sprintf(buf, "%s离开房间", buf2);
-    for(i=0;i<myroom->people;i++) {
-        send_msg(inrooms.peoples+i, buf);
-        kill(inrooms.peoples[i].pid, SIGUSR1);
+        if(killer)
+            sprintf(buf, "杀手%s潜逃了", buf2);
+        else
+            sprintf(buf, "%s离开房间", buf2);
+        for(i=0;i<myroom->people;i++) {
+            send_msg(inrooms.peoples+i, buf);
+            kill(inrooms.peoples[i].pid, SIGUSR1);
+        }
     }
-
+quitgame2:
+    
     signal(SIGUSR1, talk_request);
 }
 
