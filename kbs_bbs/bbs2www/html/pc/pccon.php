@@ -71,8 +71,10 @@
 			echo "<a href=\"/pc/pcmanage.php?userid=".$currentuser["userid"]."&act=post&tag=0&tbArtAddr=".urlencode("http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$pc["UID"]."&nid=".$nid."&s=all")."&tbTBP=".urlencode("http://".$pcconfig["SITE"]."/pc/tb.php?id=".$nid)."\"><font color=red>拿该日志来写BLOG</font></a>\n";
 		if($pur == 3)
 			echo "<a href=\"pcmanage.php?userid=".$pc["USER"]."&act=edit&nid=".$nid."\">修改</a>\n";
-		if((pc_is_manager($currentuser) || pc_is_admin($currentuser,$pc)) && $recommend == 0)
+		if((pc_is_manager($currentuser) || pc_is_admin($currentuser,$pc)) && $recommend == 0 && $tag == 0)
 			echo "<a href=\"pcrec.php?nid=".$nid."\">推荐</a>\n";
+		if($tag==0)
+			echo "<a href=\"pcfwd.php?nid=".$nid."\">转载</a>\n";
 		if($trackback && $tag == 0)
 			echo 	"<a href=\"javascript:openScript('pctb.php?nid=".$nid."&uid=".$pc["UID"]."&subject=".base64_encode($subject)."',460 , 480)\">引用</a>\n";
 		echo 	"<a href=\"";

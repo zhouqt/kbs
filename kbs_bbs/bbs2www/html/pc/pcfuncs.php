@@ -1366,4 +1366,27 @@ function pc_ubb_content($txt="")
                 </SPAN></TD></TR></TBODY></TABLE></SPAN>
 <?php
 }
+
+function pc_fwd_getsubject($node)
+{
+	if(!$node || !is_array($node) || !$node[subject])
+		return "无主题(转自BLOG)";	
+	return $node[subject]."(转自BLOG)";
+}
+
+function pc_fwd_getbody($node)
+{
+	$body = "【以下文章转自 ".$node[username]." 的BLOG：".$node[corpusname]."】\n";
+	$body.= "BLOG地址：http://".$pcconfig["SITE"]."/pc/index.php?id=".$node[username]."\n";
+	$body.= "日志地址：http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$node[uid]."&nid=".$node[nid]."&s=all\n\n\n";
+	
+	if($node[htmltag])
+		$body.= undo_html_format(strip_tags($node[body]));
+	else
+		$body.= $node[body];
+	return $body;
+}
+
+
+
 ?>
