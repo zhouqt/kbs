@@ -311,6 +311,10 @@ Making a local copy of prot.h and patching it.])
     # pw_passwd automatically when running as root.
     no_shadow_password_checking=yes
     ;;
+  *-*-cygwin*)
+    CFLAGS="$CFLAGS -DCYGWIN"
+	LIBS="$LIBS -lcygipc"
+	;;
   *)
     ;;
 esac
