@@ -382,7 +382,7 @@ static function_entry smth_bbs_functions[] = {
 #endif
 		PHP_FE(bbs_ext_initialized, NULL)
 		PHP_FE(bbs_init_ext, NULL)
-	PHP_FE(bbs_x_search,NULL)
+	PHP_FE(bbs_x_search,third_arg_force_ref_001)
         {NULL, NULL, NULL}
 };
 
@@ -8314,6 +8314,7 @@ static PHP_FUNCTION(bbs_x_search)
     int pos;
     char *qn;
     zval* element;
+    zval *total_records;
     struct sockaddr_in addr;
     FILE* sockfp;
     int sockfd, i, j, k, ttt;
@@ -8326,9 +8327,18 @@ static PHP_FUNCTION(bbs_x_search)
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
 
-    if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC,"sl",&qn,&char_len,&pos) ==FAILURE){
+    if(ac != 3 || zend_parse_parameters(3 TSRMLS_CC,"slz",&qn,&char_len,&pos,&total_records) ==FAILURE){
         WRONG_PARAM_COUNT;
     }
+
+    /*
+     * check for parameter being passed by reference 
+     */
+    if (!PZVAL_IS_REF(total_records)) {
+        zend_error(E_WARNING, "Parameter wasn't passed by reference");
+        RETURN_FALSE;
+    }
+
     if (array_init(return_value) == FAILURE)
         RETURN_FALSE;
 
@@ -8571,6 +8581,7 @@ static PHP_FUNCTION(bbs_x_search)
 
         zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
     }
+    ZVAL_LONG(total_records, toomany);
 }
 
 /**
