@@ -2024,9 +2024,9 @@ int gen_title(const char *boardname )
                     if (!strncmp(t, "Re:", 3))
                         t += 4;
                     if (next[j] == 0)
-                        sprintf(mkpost.title, "©¸ %s", t);
+                        snprintf(mkpost.title, ARTICLE_TITLE_LEN, "©¸ %s", t);
                     else
-                        sprintf(mkpost.title, "©À %s", t);
+                        snprintf(mkpost.title, ARTICLE_TITLE_LEN, "©À %s", t);
                     write(fd, &mkpost, size);
                     count++;
                     j = next[j];

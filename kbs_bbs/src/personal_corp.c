@@ -2035,7 +2035,7 @@ int import_to_pc(int ent, struct fileheader *fileinfo, char *direct)
 
     bzero(&pn, sizeof(pn));
 
-    strncpy(pn.subject, fileinfo->title, STRLEN);
+    strncpy(pn.subject, fileinfo->title, ARTICLE_TITLE_LEN);
     pn.subject[STRLEN - 1] = 0;
 
     strcpy(buf1, direct);

@@ -53,9 +53,9 @@ int bbsnet_report(char *station, char *addr, long id, int mode)
 	fh.innflag[0] = 'L';
 	fh.innflag[1] = 'L';
 	if (mode == 0)
-		snprintf(fh.title, STRLEN, "[%ld]%s穿梭到%s", id, user, station);
+		snprintf(fh.title, ARTICLE_TITLE_LEN, "[%ld]%s穿梭到%s", id, user, station);
 	else
-		snprintf(fh.title, STRLEN, "[%ld]%s结束到%s的穿梭", id, user, station);
+		snprintf(fh.title, ARTICLE_TITLE_LEN, "[%ld]%s结束到%s的穿梭", id, user, station);
 	
 	if ((fp = fopen(fname, "w")) == NULL)
 		return -1;

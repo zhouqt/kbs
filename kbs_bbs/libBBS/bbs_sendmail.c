@@ -156,8 +156,8 @@ int mail_file_sent(char *fromid, char *tmpfile, char *userid, char *title, int u
     strcpy(buf, fromid);        /* Leeward 98.04.14 */
     strncpy(newmessage.owner, buf, OWNER_LEN);
     newmessage.owner[OWNER_LEN-1] = 0;
-    strncpy(newmessage.title, title, STRLEN);
-    newmessage.title[STRLEN-1] = 0;
+    strncpy(newmessage.title, title, ARTICLE_TITLE_LEN);
+    newmessage.title[ARTICLE_TITLE_LEN-1] = 0;
     setmailpath(filepath, userid);
     if (stat(filepath, &st) == -1) {
         if (mkdir(filepath, 0755) == -1)
@@ -210,7 +210,7 @@ int mail_buf(struct userec*fromuser, char *mail_buf, char *userid, char *title)
     strcpy(buf, fromuser->userid);        /* Leeward 98.04.14 */
     strncpy(newmessage.owner, buf, OWNER_LEN);
     newmessage.owner[OWNER_LEN - 1] = 0;
-    strncpy(newmessage.title, title, STRLEN);
+    strncpy(newmessage.title, title, ARTICLE_TITLE_LEN);
     setmailpath(filepath, userid);
     if (stat(filepath, &st) == -1) {
         if (mkdir(filepath, 0755) == -1)
@@ -269,7 +269,7 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
     strcpy(buf, fromid);        /* Leeward 98.04.14 */
     strncpy(newmessage.owner, buf, OWNER_LEN);
     newmessage.owner[OWNER_LEN - 1] = 0;
-    strncpy(newmessage.title, title, STRLEN);
+    strncpy(newmessage.title, title, ARTICLE_TITLE_LEN);
     setmailpath(filepath, userid);
     if (stat(filepath, &st) == -1) {
         if (mkdir(filepath, 0755) == -1)

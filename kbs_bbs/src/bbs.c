@@ -1023,7 +1023,7 @@ int read_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     strcpy(quote_file, genbuf);
 */
     strcpy(quote_board, currboard->filename);
-    strncpy(quote_title, fileinfo->title, 118);
+    strncpy(quote_title, fileinfo->title, ARTICLE_TITLE_LEN);
 /*    quote_file[119] = fileinfo->filename[STRLEN - 2];
 */
     strncpy(quote_user, fileinfo->owner, OWNER_LEN);
@@ -2043,7 +2043,7 @@ int post_reply(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
         strcpy(title, "Re: ");
     else
         title[0] = '\0';
-    strncat(title, fileinfo->title, STRLEN - 5);
+    strncat(title, fileinfo->title, ARTICLE_TITLE_LEN - 5);
 
     clear();
 
@@ -2318,7 +2318,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
             {
                 unsigned int i;
 
-                for (i = 0; (i < strlen(buf)) && (i < STRLEN - 1); i++)
+                for (i = 0; (i < strlen(buf)) && (i < ARTICLE_TITLE_LEN - 1); i++)
                     if (buf[i] == 0x1b)
                         post_file.title[i] = ' ';
                     else
@@ -2328,7 +2328,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
             /*
              * strcpy(post_file.title, buf); 
              */
-            strncpy(save_title, post_file.title, STRLEN);
+            strncpy(save_title, post_file.title, ARTICLE_TITLE_LEN );
             if (save_title[0] == '\0') {
                 return FULLUPDATE;
             }
@@ -2387,9 +2387,9 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 		char title_prefix[STRLEN];
 
 		if( ! strncmp(post_file.title, "Re: ",4) )
-			strncpy(title_prefix, post_file.title+4, STRLEN);
+			strncpy(title_prefix, post_file.title+4, ARTICLE_TITLE_LEN);
 		else
-			strncpy(title_prefix, post_file.title, STRLEN);
+			strncpy(title_prefix, post_file.title, ARTICLE_TITLE_LEN);
 
 		title_prefix[STRLEN-1]='\0';
 
@@ -2416,12 +2416,12 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
                         		post_file.title[i] = title_prefix[i];
 								*/
 						if( ! strncmp(post_file.title, "Re: ",4) )
-							snprintf(save_title, STRLEN, "Re: %s", title_prefix );
+							snprintf(save_title, ARTICLE_TITLE_LEN, "Re: %s", title_prefix );
 						else
-							snprintf(save_title, STRLEN, "%s", title_prefix );
+							snprintf(save_title, ARTICLE_TITLE_LEN , "%s", title_prefix );
 
-						save_title[STRLEN-1]='\0';
-            			strncpy(post_file.title, save_title, STRLEN);
+						save_title[ARTICLE_TITLE_LEN-1]='\0';
+            			strncpy(post_file.title, save_title, ARTICLE_TITLE_LEN);
 					}
 
 					write_header(fp, currentuser, 0, currboard->filename, post_file.title, Anony, 0);
@@ -2461,7 +2461,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 
     add_loginfo(filepath, currentuser, currboard->filename, Anony);       /*添加最后一行 */
 
-    strncpy(post_file.title, save_title, STRLEN);
+    strncpy(post_file.title, save_title, ARTICLE_TITLE_LEN);
     if (aborted == 1 || !(bp->flag & BOARD_OUTFLAG)) {  /* local save */
         post_file.innflag[1] = 'L';
         post_file.innflag[0] = 'L';
@@ -2671,16 +2671,13 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
         {
             unsigned int i;
 
-            for (i = 0; (i < strlen(buf)) && (i < STRLEN - 1); i++)
+            for (i = 0; (i < strlen(buf)) && (i < ARTICLE_TITLE_LEN - 1); i++)
                 if (buf[i] == 0x1b)
                     fileinfo->title[i] = ' ';
                 else
                     fileinfo->title[i] = buf[i];
             fileinfo->title[i] = 0;
         }
-        /*
-         * strcpy(fileinfo->title,buf);
-         */
         strcpy(tmp, arg->direct);
         if ((t = strrchr(tmp, '/')) != NULL)
             *t = '\0';

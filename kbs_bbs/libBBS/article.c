@@ -361,8 +361,8 @@ void cancelpost(const char *board,const char *userid,struct fileheader *fh, int 
         set_posttime2(&postfile, fh);
     };
     sprintf(oldpath, "%-32.32s - %s", fh->title, userid);
-    strncpy(ph->title, oldpath, STRLEN);
-    ph->title[STRLEN - 1] = 0;
+    strncpy(ph->title, oldpath, ARTICLE_TITLE_LEN);
+    ph->title[ARTICLE_TITLE_LEN - 1] = 0;
     ph->accessed[11] = now / (3600 * 24) % 100; /*localtime(&now)->tm_mday; */
     if (autoappend) {
         setbdir((owned) ? 5 : 4, oldpath, board);
@@ -785,14 +785,14 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
     if (mode != 1) {
         int i;
 
-        for (i = 0; (i < strlen(save_title)) && (i < STRLEN - 1); i++)
+        for (i = 0; (i < strlen(save_title)) && (i < ARTICLE_TITLE_LEN - 1); i++)
             if (save_title[i] == 0x1b)
                 postfile.title[i] = ' ';
             else
                 postfile.title[i] = save_title[i];
         postfile.title[i] = 0;
     } else
-        strncpy(postfile.title, save_title, STRLEN);
+        strncpy(postfile.title, save_title, ARTICLE_TITLE_LEN);
     if (local_article == 1) {   /* local save */
         postfile.innflag[1] = 'L';
         postfile.innflag[0] = 'L';
@@ -850,7 +850,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
 #endif
 
     if ((re == NULL) && (!strncmp(fh->title, "Re:", 3))) {
-        strncpy(fh->title, fh->title + 4, STRLEN);
+        strncpy(fh->title, fh->title + 4, ARTICLE_TITLE_LEN);
     }
 #ifdef FILTER
     setbfile(oldpath, boardname, fh->filename);
@@ -976,7 +976,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
 				if(getuser(re->owner, &lookupuser) != 0){
 					if(( false != canIsend2(currentuser, re->owner)) && !(lookupuser->userlevel & PERM_SUICIDE) && (lookupuser->userlevel & PERM_READMAIL) && !chkusermail(lookupuser)){
 						setbfile(buf, boardname, fh->filename);
-						snprintf(newtitle, STRLEN, "[回文转寄]%s", fh->title);
+						snprintf(newtitle, ARTICLE_TITLE_LEN, "[回文转寄]%s", fh->title);
 						mail_file(currentuser->userid, buf, re->owner, newtitle, 0, fh);
 					}
 				}
@@ -2214,8 +2214,8 @@ int change_post_flag(struct write_dir_arg* dirarg,int currmode, struct boardhead
         if (!strcmp(board->filename, SYSMAIL_BOARD)) {
             char ans[STRLEN];
             sprintf(ans, "〖%s〗 处理: %s", currentuser->userid, fileinfo->title);
-            strncpy(originFh->title, ans, STRLEN);
-            originFh->title[STRLEN - 1] = 0;
+            strncpy(originFh->title, ans, ARTICLE_TITLE_LEN);
+            originFh->title[ARTICLE_TITLE_LEN - 1] = 0;
         }
         if (data->accessed[1] & FILE_READ) {
             originFh->accessed[1] |= FILE_READ;

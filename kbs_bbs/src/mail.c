@@ -499,16 +499,16 @@ int do_send(char *userid, char *title, char *q_file)
             chdir("..");
          }
         else {
-            strncpy(newmessage.title, title, STRLEN);
-            newmessage.title[STRLEN-1] = 0;
-            strncpy(save_title, newmessage.title, STRLEN);
-            save_title[STRLEN-1] = 0;
+            strncpy(newmessage.title, title, ARTICLE_TITLE_LEN);
+            newmessage.title[ARTICLE_TITLE_LEN -1] = 0;
+            strncpy(save_title, newmessage.title, ARTICLE_TITLE_LEN);
+            save_title[ARTICLE_TITLE_LEN-1] = 0;
             break;
         }
     }
 
     do_quote(filepath, include_mode, q_file, quote_user);
-    strncpy(quote_title, newmessage.title, STRLEN);
+    strncpy(quote_title, newmessage.title, ARTICLE_TITLE_LEN);
     quote_title[STRLEN-1] = 0;
 
 #ifdef INTERNET_PRIVATE_EMAIL
@@ -1084,7 +1084,7 @@ int mail_read(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
         strcpy(title, "Re: ");
     else
         title[0] = '\0';
-    strncat(title, fileinfo->title, STRLEN - 5);
+    strncat(title, fileinfo->title, ARTICLE_TITLE_LEN - 5);
 
     setmailfile(q_file, currentuser->userid, fileinfo->filename);
     strncpy(quote_user, fileinfo->owner, IDLEN);
@@ -1222,7 +1222,7 @@ static int mail_edit_title(struct _select_def* conf, struct fileheader *fileinfo
 
 	if(strcmp(buf,fileinfo->title))
 	{
-		for(i = 0; (i < strlen(buf)) && (i < STRLEN -1); i++)  /* disable color title */
+		for(i = 0; (i < strlen(buf)) && (i < ARTICLE_TITLE_LEN -1); i++)  /* disable color title */
 			if(buf[i] == 0x1b)
 				fileinfo->title[i]=' ';
 			else

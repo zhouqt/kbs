@@ -56,7 +56,7 @@ int gen_commend_xml()
 			fprintf(fp, "<time>%d</time>\n", get_posttime(&dirfh));
 			fprintf(fp, "<board>%s</board>\n", COMMEND_ARTICLE);
 			fprintf(fp, "<id>%d</id>\n", dirfh.id);
-			fprintf(fp, "<o_board>%s</o_board>\n", dirfh.o_board);
+			fprintf(fp, "<o_board>%s</o_board>\n", getboard(dirfh.o_bid)->filename);
 			fprintf(fp, "<o_id>%d</o_id>\n", dirfh.o_id);
 			if( fgets(buf, 255, fp1) ){
 				if( ! strncmp(buf, "∑¢–≈»À: ", 8) ){

@@ -53,7 +53,7 @@ int generate_board_title(struct boardheader *bh,void* arg)
             } else
                 index[i].has_pre = false;
             index[i].thread_id = 0;
-            index[i].digest = simple_digest(t2, STRLEN);
+            index[i].digest = simple_digest(t2, ARTICLE_TITLE_LEN);
             for (j = i - 1; j >= 0; j--) {
                 struct fileheader *tmppost;
 

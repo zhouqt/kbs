@@ -195,7 +195,8 @@ convert_board_articles(struct boardheader *brd)
 		bzero(&fh, sizeof (fh));
 		strncpy(fh.filename, ptr->filename, FILENAME_LEN - 1);
 		fh.filename[FILENAME_LEN - 1] = '\0';
-		strcpy(fh.title, ptr->title);
+		strncpy(fh.title, ptr->title,ARTICLE_TITLE_LEN-1);
+		fh.title[ARTICLE_TITLE_LEN-1]=0;
 		set_article_ids(oldfh, i + 1, &fh, ptr);
 		fh.innflag[0] = ptr->filename[STRLEN - 2];
 		fh.innflag[1] = ptr->filename[STRLEN - 1];
