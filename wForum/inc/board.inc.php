@@ -94,9 +94,7 @@ function bbs_is_readonly_board($board)
  */
 function print_file_display_javascript($boardName) {
 ?>
-	boardName = '<?php echo $boardName; ?>';
-	THREADSPERPAGE = <?php echo THREADSPERPAGE; ?>;
-	
+
 	function Post(id, owner, posttime, flags) {
 		this.ID = id;
 		this.OWNER = owner;
@@ -177,7 +175,7 @@ function showBoardStaticsTop($boardArr){
 本版当前共有<b><?php echo $boardArr['CURRENTUSERS'];?></b>人在线。今日帖子<?php echo bbs_get_today_article_num($boardArr['NAME'] ); ?>。
 [<a href="favboard.php?bname=<?php echo $boardArr["NAME"]; ?>" title="收藏本版面到收藏夹顶层目录">收藏本版</a>]</Th></TR></td></tr></TABLE>
 <BR>
-<table cellpadding=0 cellspacing=0 border=0 width=97% align=center valign=middle><tr><td align=center width=2> </td>
+<table cellpadding=2 cellspacing=0 border=0 width=97% align=center valign=middle><tr><td align=center width=2> </td>
 <td align=left style="height:27" valign="center"><table cellpadding=0 cellspacing=0 border=0 ><tr>
 <td width="110"><a href=postarticle.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass1" border=0 alt=发新帖></div></a></td>
 <td width="110"><a href=# onclick="alert('本功能尚在开发中！')"><div class="buttonClass2" border=0 alt=发起新投票></div></a></td>
