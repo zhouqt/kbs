@@ -6,13 +6,15 @@
 */
 struct userec {                 /* Structure used to hold information in */
     char userid[IDLEN + 2];     /* PASSFILE */
-    char fill[30];
+    /*char fill[30];*/
     time_t firstlogin;
     char lasthost[16];
     unsigned int numlogins;
     unsigned int numposts;
     char flags[2];
+#ifdef CONV_PASS
     char passwd[OLDPASSLEN];
+#endif
     char username[NAMELEN];
     char ident[NAMELEN];
     unsigned char md5passwd[MD5PASSLEN];

@@ -1,3 +1,4 @@
+#include "bbs.h"
 struct userec2 {                /* Structure used to hold information in */
     char userid[IDLEN + 2];     /* PASSFILE */
     char fill[30];
@@ -6,47 +7,66 @@ struct userec2 {                /* Structure used to hold information in */
     unsigned int numlogins;
     unsigned int numposts;
     char flags[2];
-    char passwd[PASSLEN];
+    char passwd[OLDPASSLEN];
     char username[NAMELEN];
     char ident[NAMELEN];
-    char termtype[STRLEN];
+    unsigned char md5passwd[MD5PASSLEN];
+    char realemail[STRLEN - 16];
     unsigned userlevel;
     time_t lastlogin;
-    time_t unused_time;
+    time_t stay;
     char realname[NAMELEN];
     char address[STRLEN];
     char email[STRLEN];
-};
-struct adduserec {              /* Structure used to add .PASSWDS */
     int signature;
-    int userdefine;
-    time_t notetime;
+    unsigned int userdefine;
+    time_t notedate;
     int noteline;
     int notemode;
-    int unuse1;
-    int unuse2;
-} main()
+    time_t exittime;
+    int unuse2;                 /* no use */
+};
+
+main()
 {
     FILE *rec, *rec2;
     int i = 0;
     struct userec2 user;
-    struct adduserec add;
+    struct userec newuser;
 
     rec = fopen("./.PASSWDS", "rb");
     rec2 = fopen("./.PASSWDS.tmp", "wb");
-    add.userdefine = -1;
-    add.signature = -1;
-    add.notemode = -1;
-    add.unuse1 = -1;
-    add.unuse2 = -1;
 
     printf("Records transfer...");
     while (1) {
         i++;
         if (fread(&user, sizeof(user), 1, rec) <= 0)
             break;
-        fwrite(&user, sizeof(user), 1, rec2);
-        fwrite(&add, sizeof(add), 1, rec2);
+	memcpy(newuser.userid,user.userid,IDLEN+2);
+	newuser.firstlogin=user.firstlogin;
+	memcpy(newuser.lasthost,user.lasthost,16);
+	newuser.numlogins=user.numlogins;
+	newuser.numposts=user.numposts;
+	memcpy(newuser.flags,user.flags,2);
+	memcpy(newuser.username,user.username,NAMELEN);
+	memcpy(newuser.ident,user.ident,NAMELEN);
+	memcpy(newuser.md5passwd,user.md5passwd,MD5PASSLEN);
+	memcpy(newuser.realemail,user.realemail,STRLEN-16);
+	newuser.userlevel=user.userlevel;
+	newuser.lastlogin=user.lastlogin;
+	newuser.stay=user.stay;
+	memcpy(newuser.realname,user.realname,NAMELEN);
+	memcpy(newuser.address,user.address,STRLEN);
+	memcpy(newuser.email,user.email,STRLEN);
+	newuser.signature=user.signature;
+	newuser.userdefine=user.userdefine;
+	newuser.notedate=user.notedate;
+	newuser.noteline=user.noteline;
+	newuser.notemode=user.notemode;
+	newuser.exittime=user.exittime;
+	newuser.unuse2=user.unuse2;
+
+        fwrite(&newuser, sizeof(newuser), 1, rec2);
     }
     printf("\n%d records changed...\n", i);
     fclose(rec);

@@ -63,15 +63,20 @@ void igenpass(const char *passwd, const char *userid, unsigned char md5passwd[])
 int setpasswd(const char *passwd, struct userec *user)
 {
     igenpass(passwd, user->userid, user->md5passwd);
+#ifdef CONV_PASS
     user->passwd[0] = 0;
+#endif
     return 1;
 }
 
 int checkpasswd2(const char *passwd, const struct userec *user)
 {
+#ifdef CONV_PASS
     if (user->passwd[0]) {
         return checkpasswd(user->passwd, passwd);
-    } else {
+    } else
+#endif
+    {
         unsigned char md5passwd[MD5_DIGEST_LENGTH];
 
         igenpass(passwd, user->userid, md5passwd);

@@ -559,10 +559,12 @@ void login_query()
                     getdata(0, 0, "°´ [RETURN] ¼ÌÐø", genbuf, 10, NOECHO, NULL, true);
                 }
                 /* passwd ok, covert to md5 --wwj 2001/5/7 */
+#ifdef CONV_PASS
                 if (currentuser->passwd[0]) {
                     bbslog("covert", "for md5passwd");
                     setpasswd(passbuf, currentuser);
                 }
+#endif
                 break;
             }
         }

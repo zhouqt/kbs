@@ -412,8 +412,41 @@ void readtitle()
     if (currBM[0] == '\0' || currBM[0] == ' ') {
         strcpy(header, "诚征板主中");
     } else {
-        sprintf(header, "板主: %s", currBM);
-    }
+        if (HAS_PERM(currentuser,PERM_OBOARDS)) {
+    		char * p1,*p2;
+    		strcpy(header,"板主: ");
+    		p1=currBM;
+    		p2=p1;
+    		while (1) {
+    			if ((*p2==' ')||(*p2==0)) {
+				int end;
+				end=0;
+    				if (p1==p2) {
+					if (*p2==0) break;
+    					p1++;
+    					p2++;
+    					continue;
+    				}
+				if (*p2==0)
+					end=1;
+    				*p2=0;
+    				if (apply_utmp(NULL,1,p1,NULL)) {
+    					sprintf(genbuf,"\x1b[32m%s\x1b[33m ",p1);
+    					strcat(header,genbuf);
+    				} else {
+    					strcat(header,p1);
+    					strcat(header," ");
+				}
+				if (end) break;
+    				p1=p2+1;
+    				*p2= ' ';
+    			}
+    			p2++;
+    		}
+    	} else {
+        	sprintf(header, "板主: %s", currBM);
+    	}
+ }
     chkmailflag = chkmail();
     if (chkmailflag == 2)       /*Haohmaru.99.4.4.对收信也加限制 */
         strcpy(title, "[您的信箱超过容量,不能再收信!]");
