@@ -963,12 +963,12 @@ checksmsagain:
         h.time = time(0);
         strcpy(h.id, uident);
         save_msgtext(currentuser->userid, &h, buf);
-        save_smsmsg(uident, &head, msgstr, 1);
+        save_smsmsg(uident, &head, buf, 1);
         if(!isdigit(uident[0])) {
             h.sent = 0;
             strcpy(h.id, currentuser->userid);
             save_msgtext(uident, &h, buf);
-        	save_smsmsg(uident, &head, msgstr, 1);
+        	save_smsmsg(uident, &head, buf, 1);
             if(uin) kill(uin->pid, SIGUSR2);
         }
     }
