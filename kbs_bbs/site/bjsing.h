@@ -7,17 +7,19 @@
 
 #define SMTH 1
 #define DQPI 1
+#define	SAVELIVE	1
 #define NEW_COMERS		1
 #define HAVE_BIRTHDAY		1
+#define CONV_PASS 		1
 #define HAVE_COLOR_DATE		1
 #define HAVE_TEMPORARY_NICK	0
 #define HAVE_FRIENDS_NUM	1
 #define HAVE_REVERSE_DNS	0
-
+#define BUILD_PHP_EXTENSION	1 /*将php lib编成php extension*/
 #define HAVE_WFORUM		1
 #define RAW_ARTICLE		1
 
-#define HAVE_USERMONEY 		0
+#define HAVE_USERMONEY 		1
 #define CHINESE_CHARACTER	0
 #define ANTISPAM_MAILADDR       /* 转信后的文章隐藏真实 MAIL */
 #define CNBBS_TOPIC		1       /* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
@@ -39,9 +41,7 @@
 
 #define FILTER			0
 
-#if HAVE_TSINGHUA_INFO_REGISTER == 0    /* 从清华信息系统注册 */
 #undef HAVE_TSINGHUA_INFO_REGISTER
-#endif
 
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
@@ -81,7 +81,7 @@
 
 #define MAXCLUB			128
 
-#define MAXBOARD  		400
+#define MAXBOARD  		256
 
 #define MAXACTIVE 		800
 /* remeber: if MAXACTIVE>46656 need change get_telnet_sessionid,
@@ -90,7 +90,7 @@
 
 #define MAX_GUEST_NUM		20
 
-#define WWW_MAX_LOGIN		200
+#define WWW_MAX_LOGIN		128
 
 #define MAX_WWW_GUEST		300
 
@@ -100,6 +100,7 @@
 /* ASCIIArt, by czz, 2002.7.5 */
 #define       LENGTH_SCREEN_LINE      255
 #define       LENGTH_FILE_BUFFER      255
+#define	      LENGTH_ACBOARD_BUFFER   200
 #define       LENGTH_ACBOARD_LINE     300
 
 /*版面垃圾箱和回收站的清除天数*/
@@ -178,7 +179,6 @@
 #define PASSWD_PROMPT		"请输入密码"
 
 
-#ifndef NUMPERMS
 /* 权限位定义 */
 /*
    These are the 16 basic permission bits. 
@@ -259,14 +259,10 @@ bigger mailbox. --stephen 2001.10.31*/
 #define HAS_PERM(user,x) ((x)?((user)->userlevel)&(x):1)
 #define DEFINE(user,x)     ((x)?((user)->userdefine)&(x):1)
 
-#endif                          //permission define NUMPERMS
 
-#ifndef PERM_AUTOSET
 #define PERM_AUTOSET	PERM_BASIC
-#endif
 
 
-#ifndef TDEFINE
 #define TDEFINE(x) ((x)?(tmpuser)&(x):1)
 
 /* 用户自订参数定义 */
@@ -311,7 +307,6 @@ bigger mailbox. --stephen 2001.10.31*/
 #define NUMDEFINES 31
 
 #define TDEF_SPLITSCREEN 000001
-#endif
 
 
 extern const char *permstrings[];
@@ -406,10 +401,12 @@ attach define
 
 #define WWW_PAGE_SIZE		20
 
-#undef CHECK_IP_LINK
+#define CHECK_IP_LINK		1
 
 #define ID_CONNECT_CON_THRESHOLD 20.0/60/60
 #define ID_CONNECT_CON_THRESHOLD2 30.0
 
 #define BOARD_SHOW_ONLINE	1
+#define PERSONAL_CORP
+
 #endif
