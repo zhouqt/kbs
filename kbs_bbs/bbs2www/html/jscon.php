@@ -61,6 +61,6 @@
        			if (cache_header("public",filemtime($filename),300))
                			return;
                	}
-		bbs_print_article($filename,1, "/bbscon.php?" . $_SERVER["QUERY_STRING"]);
+		bbs_print_article_js($filename,1, "/bbscon.php?" . $_SERVER["QUERY_STRING"]);
 	}
 ?>
