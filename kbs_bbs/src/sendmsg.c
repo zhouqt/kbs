@@ -526,10 +526,10 @@ void r_msg()
                 if(canreply) {
                     if(buf[0]) {
                         strcpy(MsgDesUid, uid);
-                        i = do_sendmsg(uin, buf, 4);
+                        i = sendmsgfunc(uin, buf, 4);
                         buf[0]=0;
                         if(i==1) strcpy(buf, "[1m∞Ôƒ„ÀÕ≥ˆ—∂œ¢¡À[m");
-                        else if(i==-1) strcpy(buf, "[1m∂‘∑Ω“—æ≠¿Îœﬂ¡À...[m");
+                        else if(i!=0) strcpy(buf, msgerr);
                         if(buf[0]) {
                             good_move(0,0);
                             clrtoeol();

@@ -543,10 +543,22 @@ void outns(const char*str, int n)
                 if(s1[0]) k=atoi(s1);
                 else k=1;
                 
-                if(*(str+i)=='A') cur_ln-=k;
-                else if(*(str+i)=='B') cur_ln+=k;
-                else if(*(str+i)=='C') cur_col+=k;
-                else if(*(str+i)=='D') cur_col-=k;
+                if(*(str+i)=='A') {
+                    if(cur_ln>=k) cur_ln-=k;
+                    else cur_ln=0;
+                }
+                else if(*(str+i)=='B') {
+                    if(cur_ln<scr_lns-k) cur_ln+=k;
+                    else cur_ln = scr_cols;
+                }
+                else if(*(str+i)=='C') {
+                    if(cur_col<scr_cols-k) cur_col+=k;
+                    else cur_col=scr_cols;
+                }
+                else if(*(str+i)=='D') {
+                    if(cur_col>=k) cur_col-=k;
+                    else cur_col=0;
+                }
 
                 if(cur_col<0) cur_col=0;
                 if(cur_col>=scr_cols) cur_col=scr_cols;

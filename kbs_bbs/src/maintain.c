@@ -1318,6 +1318,7 @@ char *logfile, *regfile;
                 /*
                  * Bigman, 2001.11.9 
                  */
+                clrtoeol();
                 if (n == 1) {
                     if (check_proxy_IP(uinfo.lasthost, buf) > 0)
                         prints("%s     : %s \033[33m%s\033[m\n", finfo[n], fdata[n], buf);
