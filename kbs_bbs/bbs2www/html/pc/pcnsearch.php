@@ -65,7 +65,7 @@ http://<?php echo $pcconfig["SITE"]; ?>/pc/pccon.php?<?php echo "id=".$rows[uid]
 <?php echo time_format($rows[created]); ?>-
 </font>
 </td></tr>
-</table>	
+</table><br><br>	
 <?php		
 	}
 	
