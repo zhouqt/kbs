@@ -128,7 +128,6 @@ int     real, unum;
         sprintf( genbuf, "êÇ³Æ [%s]: ", u->username );
         getdata( i++, 0, genbuf, buf, NAMELEN, DOECHO, NULL ,YEA);
         if( buf[0] ) strncpy( newinfo.username, buf, NAMELEN );
-        if(!real && buf[0]) strncpy(uinfo.username,buf,40);
 
         sprintf( genbuf, "ÕæÊµÐÕÃû [%s]: ", u->realname );
         getdata( i++, 0, genbuf, buf, NAMELEN, DOECHO, NULL,YEA);
