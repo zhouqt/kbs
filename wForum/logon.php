@@ -83,12 +83,11 @@ function doLogon(){
 		$time=time()+31536000; //365*24*60*60 sec
 		break;
 	}
-	$path='';
-	setcookie(COOKIE_PREFIX."UTMPKEY",$data["utmpkey"],time()+360000,$path);
-	setcookie(COOKIE_PREFIX."UTMPNUM",$num,time()+360000,$path);
-	setcookie(COOKIE_PREFIX."UTMPUSERID",$data["userid"],$time,$path);
-	setcookie(COOKIE_PREFIX."LOGINTIME",$data["logintime"],0,$path);
-	if ($time!=0) setcookie(COOKIE_PREFIX."PASSWORD",$passwd,$time,$path);
+	setcookie(COOKIE_PREFIX."UTMPKEY",$data["utmpkey"],time()+360000,COOKIE_PATH);
+	setcookie(COOKIE_PREFIX."UTMPNUM",$num,time()+360000,COOKIE_PATH);
+	setcookie(COOKIE_PREFIX."UTMPUSERID",$data["userid"],$time,COOKIE_PATH);
+	setcookie(COOKIE_PREFIX."LOGINTIME",$data["logintime"],0,COOKIE_PATH);
+	if ($time!=0) setcookie(COOKIE_PREFIX."PASSWORD",$passwd,$time,COOKIE_PATH);
 
 	show_nav(false);
 	echo "<br>";

@@ -47,5 +47,6 @@ define("ALLOW_SYSOP_MULTIQUERY", true);
 define("SUPPORT_TEX", true);
 
 /* Ä¬ÈÏÅäÖÃ */
+define('COOKIE_PREFIX', '');
 require "default.php";
 ?>

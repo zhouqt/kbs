@@ -84,6 +84,9 @@ $HTMLCharset = "GB2312"; //Õâ¸öÎÒ¾õµÃ¿Ï¶¨ÊÇ gb2312 °É£¬ÒÔºóÒª±äµÄ»°ÔÙ×ö³É¿É×Ô¶¨Ò
 if (!defined('COOKIE_PREFIX')) { //cookieÃû³ÆµÄÇ°×º
     define('COOKIE_PREFIX', "W_");
 }
+if (!defined('COOKIE_PATH')) {
+    define('COOKIE_PATH', "");
+}
 
 if (!isset($HTMLTitle)) {
 	$HTMLTitle = $SiteName;
