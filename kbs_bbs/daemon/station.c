@@ -6,6 +6,8 @@
 #ifdef lint
 #include <sys/uio.h>
 #endif  
+typedef unsigned int socklen_t;
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>

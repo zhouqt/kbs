@@ -22,15 +22,15 @@ BBSHOME=/home/system/bbs
 BBSUID=9999
 # by zixia: remove to sysname.h
 
-#OS_DEF   = -DAIX -DSYSV 
-OS_DEF   = -DLINUX -DSYSV 
+OS_DEF   = -DAIX -DSYSV 
+#OS_DEF   = -DLINUX -DSYSV 
 
 CC       = gcc
 #CC       = cc
 CFLAGS   = -W -g -Ilibesmtp -static 
 #CFLAGS   = -g -O3 -qstrict -qcompact -qarch=ppc
-LIBS     = -lbsd -lcrypt -L. -lesmtp 
-	#-lpthread -lltdl -ldl
+LIBS     = -lbsd -L. -lesmtp 
+	#-lcrypt -lpthread -lltdl -ldl
 
 #CFLAGS   = -O3
 #LIBS     = -ltermcap -lbsd -lcrypt
