@@ -775,6 +775,14 @@ int wait_for_result()
         clrtoeol();
         prints("·¢ËÍÖĞ....%d%%", count*100/30);
         refresh();
+#else
+		{
+    		struct stat st;
+    		if(stat(fn, &st)!=-1 && st.st_size > 0){
+				smsresult = 1;
+				break;
+			}
+		}
 #endif
         sleep(1);
         count++;
