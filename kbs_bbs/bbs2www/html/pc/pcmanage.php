@@ -49,7 +49,7 @@
 				$target = 2;//如果参数错误先移入私人区
 			if($target == 3)
 			{
-				$query = "SELECT `nid` FROM nodes WHERE `access` = '3' AND  `uid` = '".$pc["UID"]."' AND `pid` = '0' AND `type` = '1' LIMIT 0 , 1 ; ";
+				$query = "SELECT `nid` FROM nodes WHERE `access` = '3' AND  `uid` = '".$pc["UID"]."' AND `pid` = '0' AND `type` = '1' LIMIT 0 , 1 ;";
 				$result = mysql_query($query,$link);
 				if($rows = mysql_fetch_array($result))
 				{
@@ -68,7 +68,7 @@
 			elseif($act == "cut")
 				$query = "UPDATE nodes SET `access` = '".$target."' , `changed` = '".date("YmdHis")."' , `pid` = '0' , `tid` = 0 WHERE `uid` = '".$pc["UID"]."' AND `type` = 0  AND ( `nid` = '0' ";
 			else
-				$query = "SELECT `source`,`hostname`,`created`,`comment`,`commentcount`,`subject`,`body`,`visitcount`,`access` FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `type` = 0 AND ( `nid` = '0' ";
+				$query = "SELECT * FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `type` = 0 AND ( `nid` = '0' ";
 			
 			$j = 0;
 			for($i = 1 ;$i < $pc["NLIM"]+1 ; $i ++)
@@ -95,7 +95,9 @@
 			else
 			{
 				$result = mysql_query($query,$link);
-				$j = $num_rows = mysql_num_rows($result);
+				$num_rows = mysql_num_rows($result);
+				$j = $num_rows;
+				
 				if(pc_used_space($link,$pc["UID"],$target)+$num_rows > $pc["NLIM"])
 				{
 					html_error_quit("目标区域文章数超过上限 (".$pc["NLIM"]." 篇)!");
@@ -166,7 +168,7 @@
 					$c = 1;
 				$emote = (int)($_POST["emote"]);
 				$query = "INSERT INTO `nodes` (  `pid` , `tid` , `type` , `source` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` ) ".
-					"VALUES ( '".$pid."', '".(int)($_POST["tid"])."' , '0', '', '".$emote."' ,  '".$_SERVER["REMOTE_ADDR"]."','".date("YmdHis")."' , '".date("YmdHis")."', '".$pc["UID"]."', '".$c."', '0', '".addslashes($_POST["subject"])."', '".addslashes($_POST["body"])."', '".$tag."', '0');";
+					"VALUES ( '".$pid."', '".(int)($_POST["tid"])."' , '0', '', '".$emote."' ,  '".$_SERVER["REMOTE_ADDR"]."','".date("YmdHis")."' , '".date("YmdHis")."', '".$pc["UID"]."', '".$c."', '0', '".addslashes($_POST["subject"])."', '".addslashes($_POST["nodebody"])."', '".$tag."', '0');";
 				mysql_query($query,$link);
 				if($tag == 0)
 					pc_update_record($link,$pc["UID"]," + 1");
@@ -179,6 +181,20 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			else
 			{
 ?>
+<script language="Javascript1.2"><!-- // load htmlarea
+_editor_url = "htmlarea/";                     // URL to htmlarea files
+var win_ie_ver = parseFloat(navigator.appVersion.split("MSIE")[1]);
+if (navigator.userAgent.indexOf('Mac')        >= 0) { win_ie_ver = 0; }
+if (navigator.userAgent.indexOf('Windows CE') >= 0) { win_ie_ver = 0; }
+if (navigator.userAgent.indexOf('Opera')      >= 0) { win_ie_ver = 0; }
+if (win_ie_ver >= 5.5) {
+ document.write('<scr' + 'ipt src="' +_editor_url+ 'editor.js"');
+ document.write(' language="Javascript1.2"></scr' + 'ipt>');  
+} else { document.write('<scr'+'ipt>function editor_generate() { return false; }</scr'+'ipt>'); }
+// --></script> 
+<script language="JavaScript1.2" defer>
+editor_generate('nodebody');
+</script>
 <br><center>
 <form name="postform" action="pcmanage.php?act=post&<?php echo "tag=".$tag."&pid=".$pid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
 <table cellspacing="0" cellpadding="5" border="0" width="90%" class="t1">
@@ -219,8 +235,20 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 	<td class="t11">内容</td>
 </tr>
 <tr>
-	<td class="t8"><textarea name="body" class="f1" cols="100" rows="20" id="body"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical"></textarea></td>
+	<td class="t8"><textarea name="nodebody" class="f1" cols="100" rows="20" id="nodebody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical"></textarea></td>
 </tr>
+<!--
+<tr>
+	<td class="t13">
+	引用通告
+	</td>
+</tr>
+<tr>
+	<td class="t5">
+	<textarea name="tb" class="f1" cols="100" rows="3" id="tb"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical"></textarea>
+	</td>
+</tr>
+-->
 <tr>
 	<td class="t2">
 		<input type="submit" value="发表本文" class="b1">
@@ -251,7 +279,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				else
 					$c = 1;
 				$emote = (int)($_POST["emote"]);
-				$query = "UPDATE nodes SET `subject` = '".addslashes($_POST["subject"])."' , `body` = '".addslashes($_POST["body"])."' , `changed` = '".date("YmdHis")."' , `comment` = '".$c."' , `tid` = '".(int)($_POST["tid"])."' , `emote` = '".$emote."' WHERE `nid` = '".$nid."' ; ";
+				$query = "UPDATE nodes SET `subject` = '".addslashes($_POST["subject"])."' , `body` = '".addslashes($_POST["nodebody"])."' , `changed` = '".date("YmdHis")."' , `comment` = '".$c."' , `tid` = '".(int)($_POST["tid"])."' , `emote` = '".$emote."' WHERE `nid` = '".$nid."' ; ";
 				mysql_query($query,$link);
 				pc_update_record($link,$pc["UID"]);
 ?>
@@ -263,6 +291,20 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			else
 			{
 ?>
+<script language="Javascript1.2"><!-- // load htmlarea
+_editor_url = "htmlarea/";                     // URL to htmlarea files
+var win_ie_ver = parseFloat(navigator.appVersion.split("MSIE")[1]);
+if (navigator.userAgent.indexOf('Mac')        >= 0) { win_ie_ver = 0; }
+if (navigator.userAgent.indexOf('Windows CE') >= 0) { win_ie_ver = 0; }
+if (navigator.userAgent.indexOf('Opera')      >= 0) { win_ie_ver = 0; }
+if (win_ie_ver >= 5.5) {
+ document.write('<scr' + 'ipt src="' +_editor_url+ 'editor.js"');
+ document.write(' language="Javascript1.2"></scr' + 'ipt>');  
+} else { document.write('<scr'+'ipt>function editor_generate() { return false; }</scr'+'ipt>'); }
+// --></script> 
+<script language="JavaScript1.2" defer>
+editor_generate('nodebody');
+</script>
 <br><center>			
 <form name="postform" action="pcmanage.php?act=edit&nid=<?php echo $nid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
 <table cellspacing="0" cellpadding="5" border="0" width="90%" class="t1">
@@ -301,7 +343,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 <tr>
 	<td class="t5">
 	评论
-	<input type="radio" name="comment" class="f1" value="0" <?php if($rows[comment]!=0) echo "checked"; ?>>允许
+	<input type="radio" name="comment" class="f1" value="0" <?php if($rows[comment]!=0) echo "checked"; ?>允许
 	<input type="radio" name="comment" class="f1" value="1" <?php if($rows[comment]==0) echo "checked"; ?>>不允许
 	</td>
 </tr>
@@ -333,7 +375,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 </tr>
 <tr>
 	<td class="t8">
-	<textarea name="body" class="f1" cols="100" rows="20" id="body"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
+	<textarea name="nodebody" class="f1" cols="100" rows="20" id="nodebody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
 	<?php echo htmlspecialchars(stripslashes($rows[body]." ")); ?>
 	</textarea></td>
 </tr>
@@ -391,7 +433,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				{
 					$query = "UPDATE nodes SET `access` = '4' , `changed` = '".date("YmdHis")."' , `tid` = '0' WHERE `nid` = '".$nid."' ;";
 					mysql_query($query,$link);
-					if($rows[access]==0)
+					if($rows[access] == 0)
 						pc_update_record($link,$pc["UID"]," - 1");
 				}
 			}

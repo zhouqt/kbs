@@ -594,23 +594,6 @@
 			);
 	mysql_free_result($result);
 	
-	/*visit count start*/
-	if(!session_is_registered("visitcount"))
-	{
-		pc_visit_counter($link,$pc["UID"]);//计数器加1
-		$pc["VISIT"] ++;
-		$visitcount = ",".$pc["UID"].",";
-		session_register("visitcount");
-	}
-	elseif(!stristr($visitcount,",".$pc["UID"].","))
-	{
-		pc_visit_counter($link,$pc["UID"]);//计数器加1
-		$pc["VISIT"] ++;
-		$visitcount .= $pc["UID"].",";
-		$_SESSION["visitcount"] .= $pc["UID"].",";
-	}
-	/*visit count end*/
-	
 	$isfriend = pc_is_friend($currentuser["userid"],$pc["USER"]);
 	if(pc_is_admin($currentuser,$pc) && $loginok == 1)
 	{
@@ -641,6 +624,26 @@
 	$secnum = count($sec);
 	if($tag < 0 || $tag > $secnum )
 		$tag = 0;
+	
+	/*visit count start*/
+	if($pur != 3)//文集所有者的访问不进行计数  windinsn dec 10,2003
+	{
+		if(!session_is_registered("visitcount"))
+		{
+			pc_visit_counter($link,$pc["UID"]);//计数器加1
+			$pc["VISIT"] ++;
+			$visitcount = ",".$pc["UID"].",";
+			session_register("visitcount");
+		}
+		elseif(!stristr($visitcount,",".$pc["UID"].","))
+		{
+			pc_visit_counter($link,$pc["UID"]);//计数器加1
+			$pc["VISIT"] ++;
+			$visitcount .= $pc["UID"].",";
+			$_SESSION["visitcount"] .= $pc["UID"].",";
+		}
+	}
+	/*visit count end*/
 	
 	pc_html_init("gb2312",stripslashes($rows[corpusname]),"","",$pc["BKIMG"]);
 ?>
