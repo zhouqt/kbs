@@ -1209,7 +1209,7 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
 	    else
 		favlevel=selectlevel; /*退回到∠一次的目录*/
             if (favmode) {
-                if (nbrd[favboard_conf.pos - favboard_conf.page_pos].flag!=-1) {
+                if (arg.select_group||(nbrd[favboard_conf.pos - favboard_conf.page_pos].flag!=-1)) {
                     //进入版面目录
                     if (arg.select_group) //select进入的 
                         favlist[favlevel] = currboardent;
