@@ -52,7 +52,7 @@
 			html_error_quit("对不起，您要查看的Blog不存在");
 		}
 		
-		if($pc["EDITOR"] != 1 || $pc["EDITOR"] != 3)
+		if($pc["EDITOR"] != 1 && $pc["EDITOR"] != 3)
 			$pcconfig["EDITORALERT"] = NULL;
 			
 		$act = $_GET["act"]?$_GET["act"]:$_POST["act"];
