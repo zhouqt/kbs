@@ -1051,9 +1051,10 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
 #ifdef FILTER
     }
 #endif
-    newbbslog(BBSLOG_USER, "%s", buf);
 #ifdef NEWPOSTLOG
 	newpostlog(user->userid, boardname, fh->title, fh->groupid);
+#else
+    newbbslog(BBSLOG_USER, "%s", buf);
 #endif
 
     if (fh->id == fh->groupid) {
