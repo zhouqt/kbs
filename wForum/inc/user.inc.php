@@ -140,7 +140,7 @@ function showSecsJS($secNum,$group,$isFold,$isFav,$isHide) {
 				} else {
 					$j_npos = $j_bid = 0;
 				}
-				$j_currentusers = $brd_currentusers[$i];
+				$j_currentusers = intval($brd_currentusers[$i]);
 				if ($isFold) {
 					$j_isUnread = ($brd_unread[$i] == 1 ? "true" : "false");
 					if ($j_nArticles > 0) {
