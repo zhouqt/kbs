@@ -1031,6 +1031,13 @@ static ZEND_FUNCTION(bbs_get_records_from_id)
 		RETURN_LONG(0);
 	}*/
 	setbdir(mode, dirpath, board);
+  if(mode == DIR_MODE_ZHIDING){
+		num = search_record(dirpath, articles+1, sizeof(struct fileheader), (RECORD_FUNC_ARG) cmpfileid, &id);
+		if(num == 0) RETURN_LONG(0);
+		memset(articles,0,sizeof(struct fileheader));
+		memset(articles+2,0,sizeof(struct fileheader));
+  }else{
+
 	if ((fd = open(dirpath, O_RDWR, 0644)) < 0)
 	{
 		RETURN_LONG(0);
@@ -1040,6 +1047,8 @@ static ZEND_FUNCTION(bbs_get_records_from_id)
 		close(fd);
 		RETURN_LONG(0);
 	}
+	close(fd);
+  }
 	//MAKE_STD_ZVAL(articlearray);
 	if(array_init(articlearray) != SUCCESS)
 	{
@@ -1049,6 +1058,7 @@ static ZEND_FUNCTION(bbs_get_records_from_id)
 	{
 		MAKE_STD_ZVAL(element);
 		array_init(element);
+	  if(articles[i].id){
 		flags[0] = get_article_flag(articles + i, currentuser, board, is_bm);
 		if (is_bm && (articles[i].accessed[0] & FILE_IMPORTED))
 			flags[1] = 'y';
@@ -1058,11 +1068,15 @@ static ZEND_FUNCTION(bbs_get_records_from_id)
 			flags[2] = 'y';
 		else
 			flags[2] = 'n';
+	  }else{
+		flags[0]=0;
+		flags[1]=0;
+		flags[2]=0;
+	  }
 		bbs_make_article_array(element, articles + i, flags, sizeof(flags));
 		zend_hash_index_update(Z_ARRVAL_P(articlearray), i,
 				(void*) &element, sizeof(zval*), NULL);
 	}
-	close(fd);
 	RETURN_LONG(num);
 }
 

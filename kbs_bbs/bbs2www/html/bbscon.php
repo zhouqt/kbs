@@ -124,7 +124,14 @@ function display_navigation_bar($brdarr, $articles, $num)
 			html_init("gb2312");
 			html_error_quit("错误的讨论区");
 		}
-		$total = bbs_countarticles($brdnum, $dir_modes["NORMAL"]);
+		if (isset($_GET["ftype"])){
+			$ftype = $_GET["ftype"];
+			if($ftype != $dir_modes["ZHIDING"])
+				$ftype = $dir_modes["NORMAL"];
+		}
+		else
+			$ftype = $dir_modes["NORMAL"];
+		$total = bbs_countarticles($brdnum, $ftype);
 		if ($total <= 0) {
 			html_init("gb2312");
 			html_error_quit("本讨论区目前没有文章");
@@ -138,7 +145,7 @@ function display_navigation_bar($brdarr, $articles, $num)
 		settype($id, "integer");
 		$articles = array ();
 		$num = bbs_get_records_from_id($brdarr["NAME"], $id, 
-				$dir_modes["NORMAL"], $articles);
+				$ftype, $articles);
 		if ($num == 0)
 		{
 			html_init("gb2312");

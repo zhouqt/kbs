@@ -36,7 +36,8 @@ $dir_modes = array(
 	"JUNK" => 5,
 	"ORIGIN" => 6,
 	"AUTHOR" => 7,
-	"TITLE" => 8
+	"TITLE" => 8,
+	"ZHIDING" => 9
 );
 /**
  * Constants of board flags, packed in an array.

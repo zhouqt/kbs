@@ -128,6 +128,7 @@ extern "C" {
     int cmpinames(const char *userid, const char *uv);
     int cmpfnames(char *userid, struct friends *uv);
     int cmpfileinfoname(char *filename, struct fileheader *fi);
+	int cmpfileid(int *id, struct fileheader *fi);
     int dodaemon(char *daemonname, bool single, bool closefd);
 
     int canIsend2(struct userec *user, char *userid);

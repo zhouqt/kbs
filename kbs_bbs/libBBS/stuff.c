@@ -569,6 +569,9 @@ char *setbdir(int digestmode, char *buf, char *boardname)
     case DIR_MODE_TITLE:
         sprintf(dir, ".TITLE.%s", currentuser->userid);
         break;
+	case DIR_MODE_ZHIDING:
+		strcpy(dir, ".DINGDIR");
+		break;
     case DIR_MODE_NORMAL:
     default:
         strcpy(dir, DOT_DIR);
@@ -870,6 +873,10 @@ int cmpfnames(char *userid, struct friends *uv)
 int cmpfileinfoname(char *filename, struct fileheader *fi)
 {
     return !strncmp(filename, fi->filename, FILENAME_LEN);
+}
+int cmpfileid(int *id, struct fileheader *fi)
+{
+	return (*id==fi->id);
 }
 
 int canIsend2(struct userec *user, char *userid)
