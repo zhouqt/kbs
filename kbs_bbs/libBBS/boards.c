@@ -569,6 +569,7 @@ int brc_initial(char *userid, char *boardname)
     int bid;
     gzFile brcfile;
     struct boardheader const *bptr;
+    size_t count;
 
     if (boardname == NULL)
         return 0;
@@ -593,7 +594,13 @@ int brc_initial(char *userid, char *boardname)
     bptr = getboard(bid);
     bzero(&brc_cache_entry[entry].list,BRC_ITEMSIZE);
     gzseek(brcfile, (bid - 1) * BRC_ITEMSIZE, SEEK_SET);
-    gzread(brcfile, &brc_cache_entry[entry].list, BRC_ITEMSIZE);
+    count=0;
+    while (count<BRC_ITEMSIZE) {
+    	int ret;
+    	ret=gzread(brcfile, (char*)(&brc_cache_entry[entry].list)+count, BRC_ITEMSIZE);
+    	if (ret==0) break;
+    	count+=ret;
+    }
     /*
      * 先不加入版面的创建时间的判断
      * if (brc_cache_entry[entry].list[0])
