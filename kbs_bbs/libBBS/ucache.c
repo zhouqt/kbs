@@ -252,6 +252,17 @@ fillucache(struct userec *uentp ,int* number)
 		}
 		prev=*number;
 	} else {
+/* add by KCN,should check the multi entry 
+        if (uidshm->hashhead[hashkey]) {
+           int i;
+           i = uidshm->hashhead[hashkey];
+           while (i!=0) {
+               if (!strcasecmp(passwd[*number].userid,uentp->userid) {
+                   if (passwd[*number].login
+               }
+           }
+        }
+*/
         uidshm->next[*number] = uidshm->hashhead[hashkey];
         uidshm->hashhead[hashkey] = ++(*number);
 	}

@@ -1575,7 +1575,8 @@ isJury()
 {
     char buf[STRLEN];
     if(!HAS_PERM(PERM_JURY)) return 0;
-    setbfile(buf,currboard,"jury");
+    makevdir(currboard);
+    setvfile(buf,currboard,"jury");
     return seek_in_file(buf,currentuser->userid);
 }
 
@@ -1583,7 +1584,7 @@ int
 deleted_mode()
 {
     extern  char  currdirect[ STRLEN ];
-/* Allow user in file "jury" to see deleted area. Stephen 2001.11.1 */
+/* Allow user in file "jury" to see deleted area. stephen 2001.11.1 */
   if (!chk_currBM(currBM) && !isJury()) {
     return DONOTHING;
   }
@@ -2342,13 +2343,13 @@ post_article()                         /*ÓÃ»§ POST ÎÄÕÂ */
     if(currentuser->signature>numofsig||currentuser->signature<0) /*Ç©ÃûµµNo.¼ì²é*/
         currentuser->signature=1;
     anonyboard=seek_in_file("etc/anonymous",currboard); /* ÊÇ·ñÎªÄäÃû°æ */
-    /*
     if(anonyboard==1)
         Anony=1;
     else
         Anony=0;
-	*/
+	/*
     Anony = 0;
+	*/
     while(1) /* ·¢±íÇ°ÐÞ¸Ä²ÎÊý£¬ ¿ÉÒÔ¿¼ÂÇÌí¼Ó'ÏÔÊ¾Ç©Ãûµµ' */
     {
         sprintf(buf3,"ÒýÑÔÄ£Ê½ [%c]",include_mode);
@@ -3792,9 +3793,9 @@ Goodbye()    /*ÀëÕ¾ Ñ¡µ¥*/
     move(1,0);
     clear() ;
     move(0,0);
-    prints("Äã¾ÍÒªÀë¿ª %s £¬¸ø"NAME_SYSOP_GROUP"Ò»Ð©½¨ÒéÂð£¿\n",BoardName);
+    prints("Äã¾ÍÒªÀë¿ª %s £¬¸ø %s Ò»Ð©½¨ÒéÂð£¿\n",BoardName, BoardName);
     if(strcmp(currentuser->userid,"guest")!=0)
-        prints("[[33m1[m] ¼ÄÐÅ¸ø"NAME_SYSOP_GROUP"\n");
+        prints("[[33m1[m] ¼ÄÐÅ¸ø"NAME_BBS_CHINESE"\n");
     prints("[[33m2[m] ·µ»Ø[32m*"NAME_BBS_CHINESE" BBS*[m\n");
     if(strcmp(currentuser->userid,"guest")!=0){
         if( USE_NOTEPAD == 1)
@@ -3808,7 +3809,7 @@ Goodbye()    /*ÀëÕ¾ Ñ¡µ¥*/
     if(strcmp(currentuser->userid,"guest")&&choose==1){ /* Ð´ÐÅ¸øÕ¾³¤ */
         if ( PERM_LOGINOK & currentuser->userlevel )/*Haohmaru.98.10.05.Ã»Í¨¹ý×¢²áµÄÖ»ÄÜ¸ø×¢²áÕ¾³¤·¢ÐÅ*/
         {
-            prints("     Õ¾³¤µÄ ID   ¸ºÔðµÄÖ°Îñ\n");
+            prints("        ID        ¸ºÔðµÄÖ°Îñ\n");
             prints("   ============ =============\n");
             for(i=1;i<=num_sysop;i++){
                 prints("[[33m%1d[m] [1m%-12s %s[m\n",
@@ -3831,7 +3832,10 @@ Goodbye()    /*ÀëÕ¾ Ñ¡µ¥*/
                     do_send(sysoplist[2], "¡¾°æÃæ¹ÜÀí¡¿Ê¹ÓÃÕß¼ÄÀ´µÄ½¨ÒéÐÅ");
                 else if(choose==4)
                     do_send(sysoplist[3], "¡¾Éí·ÝÈ·ÈÏ¡¿Ê¹ÓÃÕß¼ÄÀ´µÄ½¨ÒéÐÅ");
-            choose=-1;
+    		else if(choose==5)
+		    do_send(sysoplist[4], "¡¾ÖÙ²ÃÊÂÒË¡¿Ê¹ÓÃÕß¼ÄÀ´µÄ½¨ÒéÐÅ");
+// added by stephen 11/13/01
+	        choose=-1;
         }
         else
         {

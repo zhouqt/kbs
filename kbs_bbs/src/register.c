@@ -91,8 +91,12 @@ new_register()
     struct userec       newuser;
     int    allocid, do_try,flag,lockfd;
     char   buf[STRLEN];
-
-
+/* temp !!!!!*/
+/*    prints("Sorry, we don't accept newusers due to system problem, we'll fixit ASAP\n");
+    oflush();
+    sleep(2);
+    exit(-1);
+*/
     memset( &newuser, 0, sizeof(newuser) );
     getdata(0, 0, "Ê¹ÓÃGB±àÂëÔÄ¶Á?(\xa8\xcf\xa5\xce BIG5\xbd\x58\xbe\x5c\xc5\xaa\xbd\xd0\xbf\xefN)(Y/N)? [Y]: ", buf, 4, DOECHO, NULL, YEA);
     if (*buf == 'n' || *buf == 'N')
@@ -175,7 +179,7 @@ new_register()
     newuser.flags[1] = 0;
     newuser.firstlogin = newuser.lastlogin = time(NULL) ;
 
-    allocid = getnewuserid(newuser.userid)  ;
+    allocid = getnewuserid2(newuser.userid)  ;
     if(allocid > MAXUSERS || allocid <= 0) {
         prints("No space for new users on the system!\n\r") ;
         oflush();

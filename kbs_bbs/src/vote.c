@@ -146,7 +146,7 @@ b_jury_edit()   /* stephen 2001.11.1: 编辑版面仲裁名单 */
         return 0 ;
     }
     clear();
-    makevdir( currboard );
+    makevdir(currboard);
     setvfile( buf, currboard, "jury" );
     getdata(1,0,"(E)编辑 (D)删除 本讨论区仲裁委员名单? (C)取消 [C]: ",ans,2,DOECHO,NULL,YEA);
     if (ans[0] == 'D' || ans[0] == 'd')
@@ -175,11 +175,16 @@ b_jury_edit()   /* stephen 2001.11.1: 编辑版面仲裁名单 */
     {
 	char secu[STRLEN];
 	if (aborted==111)
-	  sprintf(secu, "删除 %s 版的仲裁委员名单",currboard);
+	{  sprintf(secu, "删除 %s 版的仲裁委员名单",currboard);
+	   securityreport(secu, NULL);
+	   postfile(buf, "JuryMail", secu, 2);
+	}
 	else 
-	  sprintf(secu, "修改 %s 版的仲裁委员名单",currboard);
-	securityreport(secu, NULL);
-
+	{  sprintf(secu, "修改 %s 版的仲裁委员名单",currboard);
+	//securityreport(secu, NULL);
+	   postfile(buf, "syssecurity", secu, 2);
+	   postfile(buf, "JuryMail", secu, 2);
+	}
         setvfile( buf, currboard, "juryrec" );
         unlink(buf);
     }

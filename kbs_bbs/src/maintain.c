@@ -927,7 +927,45 @@ char    *ident;
         return 1;
     return 0;
 }
+int check_proxy_IP(ip, buf) /* added for rejection of register from proxy,
+			Bigman, 2001.11.9 */
+	/* 与bbsd_single里面得local_check_ban_IP基本一样，可以考虑共用*/
+char *ip;
+char *buf;
+{ /* Leeward 98.07.31
+      RETURN:
+                     - 1: No any banned IP is defined now
+                       0: The checked IP is not banned
+      other value over 0: The checked IP is banned, the reason is put in buf
+      */
+    FILE *Ban = fopen("etc/proxyIP", "r");
+    char IPBan[64];
+    int  IPX = - 1;
+    char *ptr;
 
+    if (!Ban)
+        return IPX;
+    else
+        IPX ++;
+
+    while (fgets(IPBan, 64, Ban))
+       {
+        if (ptr = strchr(IPBan, '\n'))
+            *ptr = 0;
+        if (ptr = strchr(IPBan, ' '))
+        {
+            *ptr ++ = 0;
+            strcpy(buf, ptr);
+        }
+        IPX = strlen(ip);
+        if (!strncmp(ip, IPBan, IPX))
+            break;
+        IPX = 0;
+    }
+
+    fclose(Ban);
+    return IPX;
+}  
 int scan_register_form(logfile, regfile)
 char           *logfile, *regfile;
 {
@@ -1018,7 +1056,13 @@ char           *logfile, *regfile;
             move(15, 0);
             printdash(NULL);
             for (n = 0; field[n] != NULL; n++)
-                prints("%s     : %s\n", finfo[n], fdata[n]);
+		/* added for rejection of register from proxy */
+		/* Bigman, 2001.11.9 */
+		if (n==1)	{
+			if (check_proxy_IP(uinfo.lasthost,buf) > 0)
+				prints("%s     : %s \033[33m%s\033[0m\n", finfo[n], fdata[n], buf);
+			else prints("%s     : %s\n", finfo[n], fdata[n]);
+		} else prints("%s     : %s\n", finfo[n], fdata[n]);
             /* if (uinfo.userlevel & PERM_LOGINOK) modified by dong, 1999.4.18*/
             if ((uinfo.userlevel & PERM_LOGINOK) || valid_userid(uinfo.realemail))
             {
@@ -1060,7 +1104,6 @@ char           *logfile, *regfile;
                 }
 
                 update_user(&uinfo,unum,0);
-                
                 mail_file("etc/s_fill", uinfo.userid, "恭禧你，你已经完成注册。");
                 sprintf(genbuf, "%s 让 %s 通过身份确认.", uid, uinfo.userid);
                 securityreport(genbuf,lookupuser);
@@ -1077,6 +1120,23 @@ char           *logfile, *regfile;
                 }
                 /* user_display( &uinfo, 1 ); */
                 /* pressreturn(); */
+
+               /* 增加注册信息记录 2001.11.11 Bigman */
+                sethomefile( buf, uinfo.userid, "/register");
+               if ((fout = fopen(buf, "w")) != NULL)
+                {
+			for (n = 0; field[n] != NULL; n++)
+				fprintf(fout, "%s     : %s\n", finfo[n], fdata[n]);
+			fprintf(fout,"您的昵称     : %s\n", uinfo.username);
+			fprintf(fout,"电子邮件信箱 : %s\n", uinfo.email);
+			fprintf(fout,"真实 E-mail  : %s\n", uinfo.realemail );
+			fprintf(fout,"Ident 资料   : %s\n", uinfo.ident );
+			fprintf(fout,"注册日期     : %s\n", ctime( &uinfo.firstlogin));
+			fprintf(fout,"注册时的机器 : %s\n", uinfo.lasthost );
+			fprintf(fout, "Approved: %s\n",uid);
+			fclose(fout);
+                }
+
                 break;
             case 'Q':
             case 'q':

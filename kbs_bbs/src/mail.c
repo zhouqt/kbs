@@ -163,7 +163,9 @@ chkmail()
         return ismail ;
     
 
-    if ( !HAS_PERM(PERM_SYSOP) ) {/*Haohmaru.99.4.4.对收信也加限制,改动下面的数字时请同时改动chkreceiver函数*/
+    if ( !HAS_PERM(PERM_SYSOP)|| !strcmp(currentuser->userid, "Arbitrator") )
+    /*Arbitrator's mailbox has no limit, stephen 2001.11.1 */
+    {/*Haohmaru.99.4.4.对收信也加限制,改动下面的数字时请同时改动chkreceiver函数*/
         if (HAS_PERM(PERM_CHATCLOAK))
             /* Bigman:2000.8.17 智囊团修改 */
         {
@@ -329,7 +331,7 @@ mailall()
             }
             in_mail = YEA;
             /* Leeward 98.01.17 Prompt whom you are writing to */
-            /*strcpy(lookupuser->userid, doc[ans4[0]-'0'-1] + 4);*/
+            /*strcpy(currentlookupuser->userid, doc[ans4[0]-'0'-1] + 4);*/
 
             if(currentuser->signature>numofsig||currentuser->signature<0)
                 currentuser->signature=1;
@@ -484,7 +486,8 @@ char *userid, *title ;
         return -5;
     /* SYSOP也能给自杀的人发信 */
 
-    if ( !HAS_PERM(PERM_SYSOP) ) {
+    if ( !HAS_PERM(PERM_SYSOP) || !strcmp(currentuser->userid, "Arbitrator")){
+/*Arbitrator's mailbox has no limit, stephen 2001.11.1 */ 
         if ( HAS_PERM(PERM_CHATCLOAK))
             /* Bigman: 2000.8.17, 智囊团信箱*/
         {
@@ -911,7 +914,7 @@ void
 mailtitle()
 {
     /* Leeward 98.01.19 adds below codes for statistics */
-    int MailSpace = (HAS_PERM(PERM_SYSOP) ? 9999 : (HAS_PERM(PERM_CHATCLOAK) ? 2000: (HAS_PERM(PERM_MANAGER) ? 300 : (HAS_PERM(PERM_LOGINOK) ? 120 : 15) ) ) ) ;
+    int MailSpace = ((HAS_PERM(PERM_SYSOP)||!strcmp(currentuser->userid, "Arbitrator") )  ? 9999 : (HAS_PERM(PERM_CHATCLOAK) ? 2000: (HAS_PERM(PERM_MANAGER) ? 300 : (HAS_PERM(PERM_LOGINOK) ? 120 : 15) ) ) ) ;
     int UsedSpace = get_sum_records(currmaildir, sizeof(fileheader));
 
     showtitle( "邮件选单    ", BoardName );
