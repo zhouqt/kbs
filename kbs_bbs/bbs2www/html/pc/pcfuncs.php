@@ -1210,10 +1210,12 @@ function pc_groupwork_addhead($pc,$body,$htmltag) {
     else
         $ret = '                                 ·¢²¼Õß: '.$currentuser['userid'].'   \n';
     $ret .= $body;
+    /*
     if ($htmltag)
         $ret .= '<p align="center">[<a href="/bbsqry.php?userid='.$currentuser['userid'].'">'.$currentuser['userid'].'</a>@<a href="index.php?id='.$pc['USER'].'">'.html_format($pc['NAME']).'</a>]</p>';
     else
         $ret .= '          '.$currentuser['userid'].'@'.$pc['NAME'].'   \n';
+    */
     return $ret;
 }
 
