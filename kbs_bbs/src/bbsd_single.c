@@ -205,7 +205,7 @@ static void start_daemon(inetd, port)
     int port;                   /* Thor.981206: 取 0 代表 *没有参数* */
 {
     int n;
-#ifdef HAVE_IPV6
+#ifdef HAVE_IPV6_SMTH
     struct sockaddr_in6 sin;
 #else
     struct sockaddr_in sin;
@@ -269,7 +269,7 @@ static void start_daemon(inetd, port)
       		fprintf(stderr,"can't lock pid file:var/%s.pid\n",buf);
       		exit(0);
       }
-#ifdef HAVE_IPV6
+#ifdef HAVE_IPV6_SMTH
       sin.sin6_family = AF_INET6;
       sin.sin6_addr = in6addr_any;
       n = socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP);
@@ -294,7 +294,7 @@ static void start_daemon(inetd, port)
         strcpy(code, "e");
       else
         strcpy(code, "d");
-#ifdef HAVE_IPV6
+#ifdef HAVE_IPV6_SMTH
       sin.sin6_port = htons(port);
 #else
       sin.sin_port = htons(port);
@@ -386,7 +386,7 @@ static void getremotehost(int sockfd, char *rhost, int buf_len)
 {
 	struct hostent *hp;
 	char *ptr;
-#ifdef HAVE_IPV6
+#ifdef HAVE_IPV6_SMTH
 	struct sockaddr_in6 sin;
 #else
 	struct sockaddr_in sin;
@@ -401,7 +401,7 @@ static void getremotehost(int sockfd, char *rhost, int buf_len)
 		signal(SIGALRM, dns_query_timeout);
 		alarm(5);
 		hp = NULL;
-#ifdef HAVE_IPV6
+#ifdef HAVE_IPV6_SMTH
 		hp = gethostbyaddr((char *) &(sin.sin6_addr), sizeof(struct in6_addr),
 		                   sin.sin6_family);
 #else
@@ -410,7 +410,7 @@ static void getremotehost(int sockfd, char *rhost, int buf_len)
 #endif
 		alarm(0);
 	}
-#ifdef HAVE_IPV6
+#ifdef HAVE_IPV6_SMTH
 	strncpy(buf, ((hp)&&(strchr(hp->h_name, ':')==0)) ? hp->h_name : 
 #ifdef LEGACY_IPV4_DISPLAY
 	ISV4ADDR(sin.sin6_addr) ?
@@ -690,7 +690,7 @@ enum bbs_handlers{
   BBS_HANDLERS
 };
 
-#ifdef HAVE_IPV6
+#ifdef HAVE_IPV6_SMTH
 #ifdef LEGACY_IPV4_DISPLAY
 #define FROMHOST(sin) \
   {\
@@ -720,7 +720,7 @@ static int bbs_standalone_main(char* argv)
 {
   int csock;                  /* socket for Master and Child */
   int value;
-#ifdef HAVE_IPV6
+#ifdef HAVE_IPV6_SMTH
   struct sockaddr_in6 sin;
   char addr_buf[IPLEN];
 #else
@@ -768,7 +768,7 @@ if (!no_fork){
     }
 }
     /* sanshao@10.24: why next line is originally sizeof(sin) not &value */
-#ifdef HAVE_IPV6
+#ifdef HAVE_IPV6_SMTH
     addr_buf[0]='\0';
     inet_ntop(AF_INET6, &sin.sin6_addr, addr_buf, IPLEN);
     bbslog("0connect", "connect from %s(%d) in port %d", addr_buf, htons(sin.sin6_port), mport);
@@ -796,7 +796,7 @@ if (!no_fork){
 
 static int bbs_inet_main(char* argv)
 {
-#ifdef HAVE_IPV6
+#ifdef HAVE_IPV6_SMTH
   struct sockaddr_in6 sin;
 #else
   struct sockaddr_in sin;
@@ -910,7 +910,7 @@ int bbs_entry(void)
 {
     /* 本函数供 SSH 使用 */
     int sinlen;
-#ifdef HAVE_IPV6
+#ifdef HAVE_IPV6_SMTH
     struct sockaddr_in6 sin;
 #else
     struct sockaddr_in sin;
@@ -922,7 +922,7 @@ int bbs_entry(void)
     atexit(ssh_exit);
     proxy_getpeername(0, (struct sockaddr *) &sin, (void *) &sinlen);
     {
-#ifdef HAVE_IPV6
+#ifdef HAVE_IPV6_SMTH
 	char host[IPLEN];
 	host[0]='\0';
 #ifdef LEGACY_IPV4_DISPLAY
