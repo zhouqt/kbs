@@ -1,0 +1,164 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<title>wForum 文档</title>
+<link rel="stylesheet" href="wForum.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.58.1">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article" lang="zh_cn">
+<div class="titlepage">
+<div><h2 class="title">
+<a name="id2745059"></a>wForum 文档</h2></div>
+<hr>
+</div>
+<div class="toc">
+<p><b>目录</b></p>
+<dl>
+<dt>1. <a href="#id2853366">wForum 安装说明</a>
+</dt>
+<dd><dl>
+<dt>1.1. <a href="#id2791382">smthbbs 安装</a>
+</dt>
+<dt>1.2. <a href="#id2840408">安装 wForum</a>
+</dt>
+<dt>1.3. <a href="#id2840471">自定义头像功能</a>
+</dt>
+<dt>1.4. <a href="#id2791438">升级 wForum 的操作</a>
+</dt>
+<dt>1.5. <a href="#id2791460">附加说明</a>
+</dt>
+<dt>1.6. <a href="#id2791690">PHP 编译说明</a>
+</dt>
+</dl></dd>
+</dl>
+</div>
+<div class="section" lang="zh_cn">
+<div class="titlepage">
+<div><h2 class="title" style="clear: both">
+<a name="id2853366"></a>1. wForum 安装说明</h2></div>
+<div><div class="author"><h3 class="author"></h3></div></div>
+</div>
+<p>首先下载最新的 smthbbs 和 wForum 代码。</p>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h3 class="title">
+<a name="id2791382"></a>1.1. smthbbs 安装</h3></div></div>
+<p>smthbbs 安装请参考其安装文档；必须打开 WWW 支持。站点文件请参考 site/wforum.h 和 site/wforum.c。</p>
+<p>原先安装了 smthbbs 系统的站点需要升级 .PASSWDS 文件。请参考 documents/smth_update.txt 文件。</p>
+</div>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h3 class="title">
+<a name="id2840408"></a>1.2. 安装 wForum</h3></div></div>
+<p>解压 wForum。给你的站点取个名字，比方叫 mcwy。进入 wForum 目录，执行下面几个命令：
+				</p>
+<pre class="programlisting">
+cp inc/sites/site-example.php inc/sites/mcwy.php
+ln -s inc/sites/mcwy.php inc/site.php</pre>
+<p>
+				inc/site.php 就是你的站点定义文件。修改 inc/site.php 里面的各类参数，特别是分类讨论区，mysql 用户、密码和数据库名。然后按照 documents/smallpaper_tb.sql 里的定义在 mysql 中建立一个数据表。inc/reg_txt.php 是注册用户的时候看到的网站协议，可以换成站点站规。:p
+			</p>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">警告</h3>
+<p>以后如果需要修改站点配置，可以用 SYSOP 权限的用户登录直接用浏览器请求	admin.site_defines.php 来设置 site.php。这个功能默认是开启的！特别提醒！！如果你担心你站上别的管理员会恶意修改 site.php，请在 admin.site_defines.php 最开始加上
+					</p>
+<pre class="programlisting">die(&quot;disabled, heihei&quot;);</pre>
+<p>
+					或者干脆删除该文件。
+				</p>
+</div>
+</div>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h3 class="title">
+<a name="id2840471"></a>1.3. 自定义头像功能</h3></div></div>
+<p>如果开启自定义头像功能，确认一下 wForum 主目录下面有 uploadFace/ 目录，如果没有的话就建立一下。</p>
+<div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">自定义头像的更多细节</h3>
+<p>自定义头像的存放位置是 wForum 主目录下面的 uploadFace/ 目录。在备份和转移 BBS 数据的时候也要备份这个目录。有人可能会希望 BBS 的数据全部都在 ~bbs/ 目录下面以方便备份，这是可行的。下面提供一个方法：
+					</p>
+<div class="orderedlist"><ol type="1">
+<li><p>在 ~bbs/ 目录下建立 uploadFace 目录。</p></li>
+<li>
+<p>在 wForum 主目录下面删除 uploadFace 目录，并且建立一个符号连接：
+							</p>
+<pre class="programlisting">ln -s ~bbs/uploadFace uploadFace</pre>
+<p>
+						</p>
+</li>
+<li>
+<p>确认在 httpd.conf 中，wForum主目录允许 FollowSymLinks，例如如下：
+							</p>
+<pre class="programlisting">
+&lt;Directory &quot;/var/www/html/wForum&quot;&gt;
+    Options FollowSymLinks
+&lt;/Directory&gt;</pre>
+<p>
+							具体的细节请参考 apache 的配置说明。注意：允许 FollowSymLinks 会有潜在的安全问题。
+						</p>
+</li>
+</ol></div>
+<p>
+				</p>
+</div>
+</div>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h3 class="title">
+<a name="id2791438"></a>1.4. 升级 wForum 的操作</h3></div></div>
+<p>如果是升级 wForum，推荐升级之后删除 ~bbs/boards/ 目录下所有的 .WEBTHREAD 强制让系统重新生成索引。可以在 ~bbs/boards/ 下执行这样一个命令：
+				</p>
+<pre class="programlisting">ls -d1 * | awk '{system(sprintf(&quot;rm %s/.WEBTHREAD&quot;, $1));}'</pre>
+<p>
+			</p>
+</div>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h3 class="title">
+<a name="id2791460"></a>1.5. 附加说明</h3></div></div>
+<div class="orderedlist"><ol type="1">
+<li>
+<p>httpd.conf 设置 wForum 所在的目录 index.php 也是 DirectoryIndex。可以在 httpd.conf 里面设置
+					</p>
+<pre class="programlisting">DirectoryIndex index.html index.html.var index.php</pre>
+<p>
+				</p>
+</li>
+<li>
+<p>php.ini 要关掉自动给引号加前导反斜杠
+					</p>
+<pre class="programlisting">magic_quotes_gpc = off</pre>
+<p>
+				</p>
+</li>
+<li>
+<p>要保证 wForum 下的未读记录正常工作，你的 site.h 必须设置
+					</p>
+<pre class="programlisting">
+#define USE_TMPFS           1   /*使用内存文件系统加速*/
+#define TMPFSROOT   &quot;cache&quot; /*tmpfs的根在bbshome/cache */</pre>
+<p>
+					如果 USE_TMPFS 原来是 0，修改后重新编译安装。同时在 ~bbs/ 下建立 cache 目录，重启动服务。可以在 ~bbs/cache/ mount 一个 tmpfs 文件系统提高性能。推荐 USE_TMPFS 定义成 1，否则的话两个 telnet 登录之间的未读记录都不会同步。
+				</p>
+</li>
+<li>
+<p>如果使用 apache2 需要注意的地方：
+					</p>
+<div class="itemizedlist"><ul type="disc">
+<li><p>php configure 命令中 --with-apxs 改成 --with-apxs2</p></li>
+<li><p>httpd.conf 建议加入 AddDefaultCharset gb2312</p></li>
+</ul></div>
+<p>
+				</p>
+</li>
+</ol></div>
+</div>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h3 class="title">
+<a name="id2791690"></a>1.6. PHP 编译说明</h3></div></div>
+<p>wForum 需要 PHP 支持 gd 及 mysql。首先，确认你的linux系统已安装了mysql、gd、libjpeg、libpng、freetype、libxml2 及各自相应的devel包，然后用下面的参数编译 PHP（假设 apache 1.3.x）：
+				</p>
+<pre class="programlisting">
+./configure  --prefix=/bbs/www --with-freetype-dir=/usr/lib --with-gd --with-jpeg-dir --with-png-dir 
+--with-config-file-path=/bbs/www/conf --with-zlib-dir --with-mysql --with-apxs=/bbs/www/bin/apxs --with-dom</pre>
+<p>
+			</p>
+</div>
+</div>
+</div></body>
+</html>

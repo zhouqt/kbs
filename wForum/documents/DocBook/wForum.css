@@ -1,0 +1,11 @@
+body {
+	font-family: Verdana,ËÎÌו;
+}
+h2.title {
+}
+pre.programlisting {
+	background-color: #FFFF99 ;
+	border: 1px solid #006600 ;
+	padding: 4px 10px;
+	font-family: 'Courier New',Courier;
+}

@@ -1,2 +1,2 @@
 all:
-	xsltproc -o documentation.html ./docbook-utf8.xsl documentation.xml
+	xsltproc --stringparam html.stylesheet wForum.css -o wForum.html wForum.xsl wForum.xml

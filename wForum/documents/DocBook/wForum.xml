@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="gb2312"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
                   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
-<book>
+<article lang="zh_cn">
 	<title>wForum 文档</title>
-	<chapter>
-		<chapterinfo>
-			<author><firstname>roy@zixia.net</firstname></author>
-		</chapterinfo>
-		<title>wforum安装说明</title>
-		<para>首先下载最新的 smth 和 wForum 代码。</para>
+	<section>
+		<sectioninfo>
+			<author><email>roy@zixia.net</email></author>
+		</sectioninfo>
+		<title>wForum 安装说明</title>
+		<para>首先下载最新的 smthbbs 和 wForum 代码。</para>
 		<section>
 			<title>smthbbs 安装</title>
 			<para>smthbbs 安装请参考其安装文档；必须打开 WWW 支持。站点文件请参考 site/wforum.h 和 site/wforum.c。</para>
@@ -88,5 +88,5 @@ ln -s inc/sites/mcwy.php inc/site.php</programlisting>
 --with-config-file-path=/bbs/www/conf --with-zlib-dir --with-mysql --with-apxs=/bbs/www/bin/apxs --with-dom</programlisting>
 			</para>
 		</section>
-	</chapter>
-</book>
+	</section>
+</article>
