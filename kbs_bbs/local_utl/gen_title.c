@@ -35,7 +35,7 @@ int generate_board_title(struct boardheader *bh,void* arg)
     }
 
     BBS_TRY {
-        if (safe_mmapfile_handle(fd2, O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size) == 0) {
+        if (safe_mmapfile_handle(fd2, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size) == 0) {
             close(fd2);
             return 0;
         }

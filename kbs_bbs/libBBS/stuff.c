@@ -923,10 +923,44 @@ void sigbus(int signo)
 {
     siglongjmp(bus_jump, 1);
 };
-int safe_mmapfile_handle(int fd, int openflag, int prot, int flag, void **ret_ptr, size_t * size)
+
+/**
+    将文件描述符fd mmap到内存中
+    如果失败，返回0并且*ret_ptr=MAP_FAILED  (-1)
+    @param fd 需要mmap的文件描述符
+    @param prot mmap的权限设置
+      PROT_EXEC  Pages may be executed.
+      PROT_READ  Pages may be read.
+      PROT_WRITE Pages may be written.
+      PROT_NONE  Pages may not be accessed.
+    @param flag mmap的设置
+  MAP_FIXED  Do  not select a different address than the one
+             specified.  If the specified address cannot  be
+             used,  mmap  will fail.  If MAP_FIXED is speci
+             fied, start must be a multiple of the pagesize.
+             Use of this option is discouraged.
+  
+  MAP_SHARED Share  this  mapping  with  all other processes
+             that map this object.  Storing to the region is
+             equivalent  to  writing  to the file.  The file
+             may not actually be updated until  msync(2)  or
+             munmap(2) are called.
+  
+  MAP_PRIVATE
+             Create a private copy-on-write mapping.  Stores
+             to the region do not affect the original  file.
+             It  is  unspecified whether changes made to the
+             file after the mmap call  are  visible  in  the
+             mapped region.
+    @param ret_ptr mmap返回的指针，如果mmap失败，返回*ret_ptr=NULL
+    @param size mmap的大小
+    @return 是否成功
+  */
+int safe_mmapfile_handle(int fd, int prot, int flag, void **ret_ptr, size_t * size)
 {
     struct stat st;
 
+    *ret_ptr=MAP_FAILED;
     if (fd < 0)
         return 0;
     if (fstat(fd, &st) < 0) {
@@ -942,8 +976,9 @@ int safe_mmapfile_handle(int fd, int openflag, int prot, int flag, void **ret_pt
         return 0;
     }
     *ret_ptr = mmap(NULL, st.st_size, prot, flag, fd, 0);
-    if (*ret_ptr == NULL)
+    if (*ret_ptr == MAP_FAILED)  {
         return 0;
+    }
     /*
      * signal(SIGSEGV,sigbus);
      */
@@ -978,7 +1013,7 @@ int safe_mmapfile(char *filename, int openflag, int prot, int flag, void **ret_p
         *ret_fd = fd;
         flock(fd, LOCK_EX);
     }
-    if (*ret_ptr == NULL)
+    if (*ret_ptr == MAP_FAILED)
         return 0;
     *size = st.st_size;
     return 1;
@@ -1132,7 +1167,7 @@ size_t read_user_memo( char *userid, struct usermemo ** ppum )
 		return 0;
 	}
 
-	if (safe_mmapfile_handle(fileno(fp), O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, (void **)ppum , (size_t *) & size) == 1) {
+	if (safe_mmapfile_handle(fileno(fp), PROT_READ | PROT_WRITE, MAP_SHARED, (void **)ppum , (size_t *) & size) == 1) {
 		fclose(fp);
 
 		if(size < sizeof(struct usermemo) ){
@@ -1810,7 +1845,7 @@ int gen_title(char *boardname )
     hashtable = NULL;
     next = NULL;
     BBS_TRY {
-        if (safe_mmapfile_handle(fd2, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &f_size) == 0) {
+        if (safe_mmapfile_handle(fd2, PROT_READ, MAP_SHARED, (void **) &ptr, &f_size) == 0) {
             ldata2.l_type = F_UNLCK;
             fcntl(fd2, F_SETLKW, &ldata2);
             close(fd2);

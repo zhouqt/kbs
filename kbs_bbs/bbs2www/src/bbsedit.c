@@ -70,7 +70,7 @@ int get_file_attach( char *infile, long *attach_pt, long * attach_length){
 	*attach_length=0;
     matched=0;
 
-        if (safe_mmapfile_handle(fd, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & size) == 1) {
+        if (safe_mmapfile_handle(fd,  PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & size) == 1) {
             char* data;
             long not;
             data=ptr;

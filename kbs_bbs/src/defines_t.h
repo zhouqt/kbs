@@ -5,8 +5,8 @@
 #include "select.h"
 
 #ifdef INTERNET_EMAIL
-int mail_uforward(int ent, struct fileheader *fileinfo, char *direct);
-int mail_forward(int ent, struct fileheader *fileinfo, char *direct);
+int mail_forward(struct _select_def* conf,struct fileheader* data,void* extradata);
+int mail_uforward(struct _select_def* conf,struct fileheader* data,void* extradata);
 #endif
 
 /*screen.c*/

@@ -4,20 +4,35 @@
 */
 #include "bbs.h"
 #include "select.h"
+
+static struct _select_def* current_conf;
+
+struct _select_def* select_get_current_conf()
+{
+    return current_conf;
+}
+
+struct _select_def* select_set_current_conf(struct _select_def* conf)
+{
+    struct _select_def* oldconf=current_conf;
+    current_conf=conf;
+    return oldconf;
+}
+
 static int check_valid(struct _select_def *conf)
 {
     int ret = SHOW_CONTINUE;;
     if (conf->item_count <= 0)
         return SHOW_QUIT;
     if (conf->page_pos > conf->item_count) {
-        conf->page_pos -= conf->item_per_page;
+        conf->page_pos = (conf->item_count / conf->item_per_page)* conf->item_per_page +1;
         ret = SHOW_DIRCHANGE;
     }
     if (conf->pos > conf->item_count)
         conf->pos = conf->item_count;
     if (conf->pos <= 1)
         conf->pos = 1;
-    if (conf->page_pos <= 1) {
+    if ((conf->page_pos <= 1)||(conf->page_pos > conf->pos)||(conf->page_pos+conf->item_per_page<=conf->pos)) {
         int i;
         i = ((conf->pos-1)/conf->item_per_page)*conf->item_per_page+1;
         if(i!=conf->page_pos) {
@@ -72,8 +87,6 @@ static int refresh_select(struct _select_def *conf)
 {
     int i;
 
-    /*TODO:
-    //目前应该清除的区域尚未定义，所以先清全部*/
     move(conf->title_pos.y, conf->title_pos.x);
     /*clrtobot();*/
     if (conf->show_title) {
@@ -111,7 +124,6 @@ static int select_change(struct _select_def *conf, int new_pos)
             return ret;
     }
     if (conf->flag & LF_MULTIPAGE) {
-        /*TODO multi page*/
         if (new_pos<conf->page_pos || new_pos>=conf->page_pos+conf->item_per_page)
         { /*需要换页了*/
             conf->page_pos=((new_pos-1)/conf->item_per_page)*conf->item_per_page+1;
@@ -158,6 +170,12 @@ static int do_select_internal(struct _select_def *conf, int key)
     int ret = SHOW_CONTINUE;
 
     if (!(conf->flag & LF_INITED)) { /*初始化工作*/
+        if (conf->on_size) { //初始化界面
+            (*conf->on_size)(conf);
+        }
+        if (conf->get_data)
+            if ((*conf->get_data)(conf,conf->pos,conf->item_per_page)==SHOW_QUIT)
+                return SHOW_QUIT;;
         if ((ret=check_valid(conf)) == SHOW_QUIT)
             return SHOW_QUIT;
         if (conf->init)
@@ -206,9 +224,14 @@ static int do_select_internal(struct _select_def *conf, int key)
     			key=p->command;
     			break;
     		}
+    		p++;
     	}
     }
     switch (key) {
+    case KEY_ONSIZE: /*处理窗口大小变化事件*/
+        if (conf->on_size)
+            return (*conf->on_size)(conf);
+        return SHOW_DIRCHANGE;
     case KEY_REFRESH:
         return refresh_select(conf);
     case KEY_UP:
@@ -374,18 +397,42 @@ checkret:
 	}
     return SHOW_CONTINUE;
 }
+
+int list_select_add_key(struct _select_def* conf,int key)
+{
+    if ((conf->keybuflen<KEY_BUF_LEN)&&(key!=KEY_INVALID)) {
+        conf->keybuf[conf->keybuflen]=key;
+        conf->keybuflen++;
+        return 0;
+    }
+    return -1;
+}
+
+int list_select_remove_key(struct _select_def* conf)
+{
+    if (conf->keybuflen>0) {
+        conf->keybuflen--;
+        return conf->keybuf[conf->keybuflen];
+    }
+    return KEY_INVALID;
+}
+
 int list_select_loop(struct _select_def *conf)
 {
     int ch;
+    int ret;
 
+    select_set_current_conf(conf);
     list_select(conf, KEY_INIT);
     while (1) {
-    	int ret;
-        ch = igetkey();
+        if ((ch=list_select_remove_key(conf))==KEY_INVALID)
+            ch = igetkey();
         ret=list_select(conf, ch);
         if ((ret == SHOW_QUIT)||(ret == SHOW_SELECT))
-            return ret;
+            break;
     }
+    select_set_current_conf(conf);
+    return ret;
 }
 
 struct _simple_select_arg{

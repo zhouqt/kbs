@@ -717,9 +717,10 @@ int getnewuserid(char *userid)
         strcpy(utmp.userid, userid);
         utmp.lastlogin = time(NULL);
         ret = setuserid_internal(i, userid);    /* added by dong, 1998.12.2 */
-        if (ret == 0)
+        if (ret == 0) {
             break;
-        uidshm->passwd[i - 1].userid[0] = 0;
+        }
+        ucache_unlock(fd);
     }
     update_user(&utmp, i, 0);
     ucache_unlock(fd);

@@ -185,7 +185,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
 #define BBS_RETURN_VOID {signal(SIGBUS, SIG_IGN);return;}
 
     int safe_mmapfile(char *filename, int openflag, int prot, int flag, void **ret_ptr, size_t * size, int *ret_fd);
-    int safe_mmapfile_handle(int fd, int openflag, int prot, int flag, void **ret_ptr, size_t * size);
+    int safe_mmapfile_handle(int fd, int prot, int flag, void **ret_ptr, size_t * size);
     void end_mmapfile(void *ptr, int size, int fd);
     void set_proc_title(char *argv0, char *title);
 

@@ -53,12 +53,6 @@ int mainreadhelp()
     return FULLUPDATE;
 }
 
-int mailreadhelp()
-{
-    show_help("help/mailreadhelp");
-    return FULLUPDATE;
-}
-
 void Help()
 {
     currentuser->flags ^= CURSOR_FLAG;

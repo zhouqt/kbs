@@ -827,7 +827,7 @@ int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)
     if (flock(fd, LOCK_EX) == -1)
         return 0;
     BBS_TRY {
-        if (safe_mmapfile_handle(fd, O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &data, &filesize) == 0) {
+        if (safe_mmapfile_handle(fd, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &data, &filesize) == 0) {
             flock(fd, LOCK_UN);
             BBS_RETURN(0);
         }
@@ -871,7 +871,7 @@ int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, voi
     if (flock(fd, LOCK_EX) == -1)
         return 0;
     BBS_TRY {
-        if (safe_mmapfile_handle(fd, O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &data, &filesize) == 0) {
+        if (safe_mmapfile_handle(fd,  PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &data, &filesize) == 0) {
             flock(fd, LOCK_UN);
             BBS_RETURN(0);
         }
@@ -1894,7 +1894,7 @@ long calc_effsize(char *fname)
     matched=0;
 
     BBS_TRY {
-        if (safe_mmapfile_handle(fileno(fp), O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & size) == 1) {
+        if (safe_mmapfile_handle(fileno(fp),  PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & size) == 1) {
             char* data;
             long not;
             data=ptr;

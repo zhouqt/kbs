@@ -114,59 +114,6 @@ struct newpostdata *ptr;
 #endif
 }
 
-int show_authorBM(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
-    struct boardheader *bptr;
-    int tuid = 0;
-    int n;
-
-    if (!HAS_PERM(currentuser, PERM_ACCOUNTS) || !strcmp(fileinfo->owner, "Anonymous") || !strcmp(fileinfo->owner, "deliver"))
-        return DONOTHING;
-    else {
-        struct userec *lookupuser;
-
-        if (!(tuid = getuser(fileinfo->owner, &lookupuser))) {
-            clrtobot();
-            prints("不正确的使用者代号\n");
-            pressanykey();
-            move(2, 0);
-            clrtobot();
-            return FULLUPDATE;
-        }
-
-        move(3, 0);
-        if (!(lookupuser->userlevel & PERM_BOARDS)) {
-            clrtobot();
-            prints("用户%s不是版主!\n", lookupuser->userid);
-            pressanykey();
-            move(2, 0);
-            clrtobot();
-            return FULLUPDATE;
-        }
-        clrtobot();
-        prints("用户%s为以下版的版主\n\n", lookupuser->userid);
-
-        prints("┏━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┓\n");
-        prints("┃            版英文名            ┃            版中文名            ┃\n");
-
-        for (n = 0; n < get_boardcount(); n++) {
-            bptr = (struct boardheader *) getboard(n + 1);
-            if (chk_BM_instr(bptr->BM, lookupuser->userid) == true) {
-                prints("┣━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━┫\n");
-                prints("┃%-32s┃%-32s┃\n", bptr->filename, bptr->title + 12);
-            }
-        }
-        prints("┗━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━┛\n");
-        pressanykey();
-        move(2, 0);
-        clrtobot();
-        return FULLUPDATE;
-    }
-}
-
 /* inserted by cityhunter to query BM */
 int query_bm()
 {
@@ -1104,6 +1051,7 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
     oldmode = uinfo.mode;
     modify_user_mode(SELECT);
     clear();
+    //TODO: 窗口大小动态改变的情况？这里有bug
     pts = (POINT *) malloc(sizeof(POINT) * BBS_PAGESIZE);
 
     for (i = 0; i < BBS_PAGESIZE; i++) {

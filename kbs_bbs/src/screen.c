@@ -1025,6 +1025,7 @@ void saveline(int line, int mode, char* buffer)	/* 0 : save, 1 : restore */
 
 void do_naws(int ln, int col)
 {
+   struct _select_def* conf;
     t_lines = ln;
     t_columns = col;
     if(t_lines<24)
@@ -1036,4 +1037,8 @@ void do_naws(int ln, int col)
     if(t_columns>LINELEN)
         t_columns = LINELEN;
     initscr();
+    conf=select_get_current_conf();
+    if (conf!=NULL) {
+        list_select_add_key(conf, KEY_ONSIZE);
+    }
 }

@@ -99,7 +99,7 @@ int show_article(char *filename,char *www_url)
 		}
 		BBS_TRY
 		{
-			if (safe_mmapfile_handle(fd, O_RDONLY, PROT_READ, MAP_SHARED,
+			if (safe_mmapfile_handle(fd,  PROT_READ, MAP_SHARED,
 						(void **)&ptr, &filesize) == 0)
 			{
 				flock(fd, LOCK_UN);

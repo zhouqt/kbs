@@ -702,19 +702,6 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
     return buf;
 }
 
-int add_author_friend(int ent, struct fileheader *fileinfo, char *direct)
-{
-    if (!strcmp("guest", currentuser->userid))
-        return DONOTHING;;
-
-    if (!strcmp(fileinfo->owner, "Anonymous") || !strcmp(fileinfo->owner, "deliver"))
-        return DONOTHING;
-    else {
-        clear();
-        addtooverride(fileinfo->owner);
-    }
-    return FULLUPDATE;
-}
 extern int zsend_file(char *filename, char *title);
 int zsend_post(int ent, struct fileheader *fileinfo, char *direct)
 {
@@ -1201,7 +1188,7 @@ int generate_mark()
     total = buf.st_size / size;
 
     BBS_TRY {
-        if (safe_mmapfile_handle(fd2, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & buf.st_size) == 0) {
+        if (safe_mmapfile_handle(fd2,  PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & buf.st_size) == 0) {
             ldata2.l_type = F_UNLCK;
             fcntl(fd2, F_SETLKW, &ldata2);
             close(fd2);
@@ -1358,7 +1345,7 @@ int search_mode(int mode, char *index)
     total = buf.st_size / size;
 
     init = false;
-    if ((i = safe_mmapfile_handle(fd2, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size)) != 1) {
+    if ((i = safe_mmapfile_handle(fd2, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size)) != 1) {
         if (i == 2)
             end_mmapfile((void *) ptr, buf.st_size, -1);
         ldata2.l_type = F_UNLCK;
@@ -3064,6 +3051,7 @@ struct one_key read_comms[] = { /*阅读状态，键定义 */
     {'f', clear_all_new_flag},  /* added by dong, 1999.1.25 */
     {'S', sequential_read},
 #ifdef INTERNET_EMAIL
+//TODO: change interface
     {'F', mail_forward},
     {'U', mail_uforward},
     {Ctrl('R'), post_reply},
@@ -3944,6 +3932,7 @@ int set_ip_acl()
     clear();
     oldmode = uinfo.mode;
     modify_user_mode(SETACL);
+    //TODO: 窗口大小动态改变的情况？这里有bug
     pts = (POINT *) malloc(sizeof(POINT) * BBS_PAGESIZE);
     for (i = 0; i < BBS_PAGESIZE; i++) {
         pts[i].x = 2;

@@ -22,30 +22,10 @@
 */
 
 #include "bbs.h"
+#include "read.h"
 #define         INTERNET_PRIVATE_EMAIL
 
-/*For read.c*/
-int auth_search_down();
-int auth_search_up();
-int do_cross();
-int t_search_down();
-int t_search_up();
-int thread_up();
-int thread_down();
-int deny_user();
-int show_author();
-int show_authorinfo();          /*Haohmaru.98.12.19 */
-int show_authorBM();            /*cityhunter 00.10.18 */
-int SR_first_new();
-int SR_last();
-int import_to_pc();
-int SR_first();
-int SR_read();
-int SR_readX();                 /* Leeward 98.10.03 */
-int SR_author();
-int SR_authorX();               /* Leeward 98.10.03 */
 int G_SENDMODE = false;
-extern int add_author_friend();
 int cmpinames();                /* added by Leeward 98.04.10 */
 
 extern int numofsig;
@@ -56,8 +36,8 @@ extern char currdirect[];
 
 #define maxrecp 300
 
-static int mail_reply(int ent, struct fileheader *fileinfo, char *direct);
-static int mail_del(int ent, struct fileheader *fileinfo, char *direct);
+static int mail_reply(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg);
+static int mail_del(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg);
 static int do_gsend(char *userid[], char *title, int num);
 
 int chkmail()
@@ -788,6 +768,10 @@ int read_new_mail(struct fileheader *fptr, int idc, void *arg)
 {
     char done = false, delete_it;
     char fname[256];
+    struct _select_def conf;
+    struct read_arg readarg;
+
+    conf.arg=&readarg;
 
     if (fptr->accessed[0])
         return 0;
@@ -826,7 +810,10 @@ int read_new_mail(struct fileheader *fptr, int idc, void *arg)
                 pressreturn();
                 break;
             }
-            mail_reply(idc, fptr, currdirect);
+
+            conf.pos=idc;
+            readarg.direct=currdirect;
+            mail_reply(&conf, fptr,NULL);
             /*
              * substitute_record(currmaildir, fptr, sizeof(*fptr), dc);
              */
@@ -990,21 +977,20 @@ char *maildoent(char *buf, int num, struct fileheader *ent)
 extern int bug_possible;
 #endif
 
-int mail_read(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+int mail_read(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     char buf[512], notgenbuf[128];
     char *t;
     int readnext,readprev;
     char done = false, delete_it, replied;
+    int ent=conf->pos;
+    struct read_arg* arg=conf->arg;
 
     clear();
     readnext = false;
     readprev = false;
     setqtitle(fileinfo->title);
-    strcpy(buf, direct);
+    strcpy(buf, arg->direct);
     if ((t = strrchr(buf, '/')) != NULL)
         *t = '\0';
     sprintf(notgenbuf, "%s/%s", buf, fileinfo->filename);
@@ -1015,7 +1001,7 @@ char *direct;
         prints("(R)回信, (D)删除, (G)继续? [G]: ");
         switch (igetkey()) {
         case Ctrl('Y'):
-            zsend_post(ent, fileinfo, direct);
+            zsend_post(ent, fileinfo, arg->direct);
 	    break;
         case 'R':
         case 'r':
@@ -1031,7 +1017,7 @@ char *direct;
                 break;
             }
             replied = true;
-            mail_reply(ent, fileinfo, direct);
+            mail_reply(conf, fileinfo,NULL);
             break;
         case ' ':
         case 'j':
@@ -1048,7 +1034,7 @@ char *direct;
         	break;
         	
         case Ctrl('D'):
-            zsend_attach(ent, fileinfo, direct);
+            zsend_attach(ent, fileinfo, arg->direct);
             done=true;
             break;
         case 'D':
@@ -1060,11 +1046,11 @@ char *direct;
         }
     }
     if (delete_it)
-        return mail_del(ent, fileinfo, direct);
+        return mail_del(conf, fileinfo,NULL);
     else if ((fileinfo->accessed[0] & FILE_READ) != FILE_READ)
 	{
         fileinfo->accessed[0] |= FILE_READ;
-        substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
+        substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), ent);
 	}
     if (readnext == true)
         return READ_NEXT;
@@ -1076,12 +1062,14 @@ char *direct;
     return FULLUPDATE;
 }
 
- /*ARGSUSED*/ static int mail_reply(int ent, struct fileheader *fileinfo, char *direct)
+ /*ARGSUSED*/ static int mail_reply(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg)
 {
     char uid[STRLEN];
     char title[STRLEN];
     char q_file[STRLEN];
     char *t;
+    int ent=conf->pos;
+    struct read_arg* arg=conf->arg;
 
     clear();
     modify_user_mode(SMAIL);
@@ -1121,14 +1109,16 @@ char *direct;
     default:
         prints("信件已寄出\n");
         fileinfo->accessed[0] |= FILE_REPLIED;  /*added by alex, 96.9.7 */
-        substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
+        substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), ent);
     }
     pressreturn();
     return FULLUPDATE;
 }
 
-static int mail_del(int ent, struct fileheader *fileinfo, char *direct)
+static int mail_del(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg)
 {
+    int ent=conf->pos;
+    struct read_arg* arg=conf->arg;
     clear();
     prints("删除此信件 '%s' ", fileinfo->title);
     getdata(1, 0, "(Yes, or No) [N]: ", genbuf, 2, DOECHO, NULL, true);
@@ -1140,7 +1130,7 @@ static int mail_del(int ent, struct fileheader *fileinfo, char *direct)
         return FULLUPDATE;
     }
 
-    if (del_mail(ent, fileinfo, direct) == 0) {
+    if (del_mail(ent, fileinfo, arg->direct) == 0) {
         return DIRCHANGED;
     }
     move(2, 0);
@@ -1151,7 +1141,7 @@ static int mail_del(int ent, struct fileheader *fileinfo, char *direct)
 }
 
 /*added by bad 03-2-10*/
-static int mail_edit(int ent, struct fileheader *fileinfo, char *direct)
+static int mail_edit(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg)
 {
     char buf[512];
     char *t;
@@ -1159,8 +1149,10 @@ static int mail_edit(int ent, struct fileheader *fileinfo, char *direct)
     long attachpos;
     struct stat st;
     int before = 0;
+    int ent=conf->pos;
+    struct read_arg* arg=conf->arg;
 
-    strcpy(buf, direct);
+    strcpy(buf, arg->direct);
     if ((t = strrchr(buf, '/')) != NULL)
         *t = '\0';
 
@@ -1183,7 +1175,7 @@ static int mail_edit(int ent, struct fileheader *fileinfo, char *direct)
             add_edit_mark(genbuf, 1, /*NULL*/ fileinfo->title);
         if (attachpos!=fileinfo->attachment) {
             fileinfo->attachment=attachpos;
-            substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
+            substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), ent);
         }
     }
     if(stat(genbuf,&st) != -1) currentuser->usedspace -= (before - st.st_size);
@@ -1192,13 +1184,15 @@ static int mail_edit(int ent, struct fileheader *fileinfo, char *direct)
     return FULLUPDATE;
 }
 
-static int mail_edit_title(int ent, struct fileheader *fileinfo, char *direct)
+static int mail_edit_title(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg)
 {
 	char buf[STRLEN];
 	char tmp[STRLEN*2];
 	char genbuf[1024];
 	char * t = NULL;
 	unsigned int i;
+    int ent=conf->pos;
+    struct read_arg* arg=conf->arg;
 
 	strcpy(buf,fileinfo->title);
 	getdata(t_lines-1,0,"新信件标题:",buf,50,DOECHO,NULL,false);
@@ -1212,32 +1206,31 @@ static int mail_edit_title(int ent, struct fileheader *fileinfo, char *direct)
 				fileinfo->title[i] = buf[i];
 		fileinfo->title[i] = 0;
 
-		strcpy(tmp,direct);
+		strcpy(tmp,arg->direct);
 		if((t = strrchr(tmp,'/')) != NULL)*t='\0';
 		sprintf(genbuf,"%s/%s",tmp,fileinfo->filename);
 		add_edit_mark(genbuf,3,buf); /* 3 means edit mail and title */
-		substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
+		substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), ent);
 	    newbbslog(BBSLOG_USER, "edited mail '%s' ", fileinfo->title);
 	}
 	return FULLUPDATE;
 }
 
 /** Added by netty to handle mail to 0Announce */
-int mail_to_tmp(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+int mail_to_tmp(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg)
 {
     char buf[STRLEN];
     char *p;
     char fname[STRLEN];
     char board[STRLEN];
     char ans[STRLEN];
+    int ent=conf->pos;
+    struct read_arg* arg=conf->arg;
 
     if (!HAS_PERM(currentuser, PERM_BOARDS)) {
         return DONOTHING;
     }
-    strncpy(buf, direct, sizeof(buf));
+    strncpy(buf, arg->direct, sizeof(buf));
     if ((p = strrchr(buf, '/')) != NULL)
         *p = '\0';
     clear();
@@ -1272,10 +1265,13 @@ char *direct;
 
 
 #ifdef INTERNET_EMAIL
-int mail_forward_internal(int ent, struct fileheader *fileinfo, char *direct, int isuu)
+int mail_forward_internal(struct _select_def* conf, struct fileheader *fileinfo, int isuu)
 {
     char buf[STRLEN];
     char *p;
+    int ent=conf->pos;
+    struct read_arg* arg=conf->arg;
+    
 
     if (strcmp("guest", currentuser->userid) == 0) {
         clear();
@@ -1299,7 +1295,7 @@ int mail_forward_internal(int ent, struct fileheader *fileinfo, char *direct, in
     if (!HAS_PERM(currentuser, PERM_FORWARD) || !HAS_PERM(currentuser,PERM_LOGINOK)) {
         return DONOTHING;
     }
-    strncpy(buf, direct, sizeof(buf));
+    strncpy(buf, arg->direct, sizeof(buf));
     if ((p = strrchr(buf, '/')) != NULL)
         *p = '\0';
     clear();
@@ -1327,53 +1323,53 @@ int mail_forward_internal(int ent, struct fileheader *fileinfo, char *direct, in
     return FULLUPDATE;
 }
 
-int mail_uforward(int ent, struct fileheader *fileinfo, char *direct)
+int mail_uforward(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg)
 {
-    return mail_forward_internal(ent, fileinfo, direct, 1);
+    return mail_forward_internal(conf,fileinfo,1);
 }
 
-int mail_forward(int ent, struct fileheader *fileinfo, char *direct)
+int mail_forward(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg)
 {
-    return mail_forward_internal(ent, fileinfo, direct, 0);
+    return mail_forward_internal(conf, fileinfo, 0);
 }
 
 #endif
 
-int mail_del_range(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+int mail_del_range(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     int ret;
+    int ent=conf->pos;
+    struct read_arg* arg=conf->arg;
 
-    ret = (del_range(ent, fileinfo, direct, 0));        /*Haohmaru.99.5.14.修改一个bug,
+    ret = (del_range(ent, fileinfo, arg->direct, 0));        /*Haohmaru.99.5.14.修改一个bug,
                                                          * * 否则可能会因为删信件的.tmpfile而错删版面的.tmpfile */
-    if (!strcmp(direct, ".DELETED"))
+    if (!strcmp(arg->direct, ".DELETED"))
         get_mailusedspace(currentuser, 1);
     return ret;
 }
 
-int mail_mark(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+int mail_mark(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg)
 {
+    int ent=conf->pos;
+    struct read_arg* arg=conf->arg;
     if (fileinfo->accessed[0] & FILE_MARKED)
         fileinfo->accessed[0] &= ~FILE_MARKED;
     else
         fileinfo->accessed[0] |= FILE_MARKED;
-    substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
+    substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), ent);
     return (PARTUPDATE);
 }
 
 
-int mail_move(int ent, struct fileheader *fileinfo, char *direct)
+int mail_move(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg)
 {
     struct _select_item *sel;
     int i, j;
     char buf[PATHLEN];
     char *t;
     char menu_char[3][10] = { "I) 收件箱", "J) 垃圾箱", "Q) 退出" };
+    int ent=conf->pos;
+    struct read_arg* arg=conf->arg;
 
     clear();
     move(5, 3);
@@ -1408,7 +1404,7 @@ int mail_move(int ent, struct fileheader *fileinfo, char *direct)
     sel[user_mail_list.mail_list_t + 3].data = NULL;
     i = simple_select_loop(sel, SIF_NUMBERKEY | SIF_SINGLE | SIF_ESCQUIT, 0, 6, NULL) - 1;
     if (i >= 0 && i < user_mail_list.mail_list_t + 2) {
-        strcpy(buf, direct);
+        strcpy(buf, arg->direct);
         t = strrchr(buf, '/') + 1;
         *t = '.';
         t++;
@@ -1418,8 +1414,8 @@ int mail_move(int ent, struct fileheader *fileinfo, char *direct)
             strcpy(t, "DIR");
         else if (i == 1)
             strcpy(t, "DELETED");
-        if (strcmp(buf, direct))
-            if (!delete_record(direct, sizeof(*fileinfo), ent, (RECORD_FUNC_ARG) cmpname, fileinfo->filename)) {
+        if (strcmp(buf, arg->direct))
+            if (!delete_record(arg->direct, sizeof(*fileinfo), ent, (RECORD_FUNC_ARG) cmpname, fileinfo->filename)) {
                 append_record(buf, fileinfo, sizeof(*fileinfo));
             }
     }
@@ -1427,53 +1423,59 @@ int mail_move(int ent, struct fileheader *fileinfo, char *direct)
     return (DIRCHANGED);
 }
 
-extern int mailreadhelp();
+int mailreadhelp(struct _select_def* conf,void* data,void* extraarg)
+{
+    show_help("help/mailreadhelp");
+    return FULLUPDATE;
+}
 
-struct one_key mail_comms[] = {
-    {'d', mail_del},
-    {'D', mail_del_range},
+
+struct key_command mail_comms[] = {
+    {'d', (READ_KEY_FUNC)mail_del,NULL},
+    {'D', (READ_KEY_FUNC)mail_del_range,NULL},
 //added by bad 03-2-10
-    {'E', mail_edit},
-	{'T', mail_edit_title},
-    {'r', mail_read},
-    {'R', mail_reply},
-    {'m', mail_mark},
-    {'M', mail_move},
-    {'i', mail_to_tmp},
+    {'E', (READ_KEY_FUNC)mail_edit,NULL},
+	{'T', (READ_KEY_FUNC)mail_edit_title,NULL},
+    {'r', (READ_KEY_FUNC)mail_read,NULL},
+    {'R', (READ_KEY_FUNC)mail_reply,NULL},
+    {'m', (READ_KEY_FUNC)mail_mark,NULL},
+    {'M', (READ_KEY_FUNC)mail_move,NULL},
+    {'i', (READ_KEY_FUNC)mail_to_tmp,NULL},
 #ifdef INTERNET_EMAIL
-    {'F', mail_forward},
-    {'U', mail_uforward},
+    {'F', (READ_KEY_FUNC)mail_forward,NULL},
+    {'U', (READ_KEY_FUNC)mail_uforward,NULL},
 #endif
     /*
      * Added by ming, 96.10.9
      */
-    {'a', auth_search_down},
-    {'A', auth_search_up},
-    {'/', t_search_down},
-    {'?', t_search_up},
-    {']', thread_down},
-    {'[', thread_up},
-	{'z', sendmsgtoauthor},
-    {Ctrl('A'), show_author},
-    {Ctrl('Q'), show_authorinfo},       /*Haohmaru.98.12.19 */
-    {Ctrl('W'), show_authorBM}, /*cityhunter 00.10.18 */
-    {Ctrl('N'), SR_first_new},
-    {'\\', SR_last},
+    {'a', (READ_KEY_FUNC)auth_search,(void*)false},
+    {'A', (READ_KEY_FUNC)auth_search,(void*)true},
+    {'/', (READ_KEY_FUNC)title_search,(void*)false},
+    {'?', (READ_KEY_FUNC)title_search,(void*)true},
+    {']', (READ_KEY_FUNC)thread_search,(void*)false},
+    {'[', (READ_KEY_FUNC)thread_search,(void*)true},
+
+    {Ctrl('N'), (READ_KEY_FUNC)thread_read,(void*)SR_FIRSTNEW},
+    {'\\', (READ_KEY_FUNC)thread_read,(void*)SR_LAST},
+    {'=', (READ_KEY_FUNC)thread_read,(void*)SR_FIRST},
+    {'z', (READ_KEY_FUNC)read_sendmsgtoauthor,NULL},
+    
+    {Ctrl('A'), (READ_KEY_FUNC)read_showauthor,NULL},
+    {Ctrl('Q'), (READ_KEY_FUNC)read_showauthorinfo,NULL},     
+    {Ctrl('W'), (READ_KEY_FUNC)read_showauthorBM,NULL}, 
+    {Ctrl('O'), (READ_KEY_FUNC)read_addauthorfriend,NULL},
+
+    {Ctrl('Y'), (READ_KEY_FUNC)read_zsend,NULL},
+    {Ctrl('C'), (READ_KEY_FUNC)read_cross,NULL}, 
+
 #ifdef PERSONAL_CORP
-	{'y', import_to_pc},
+	{'y', (READ_KEY_FUNC)read_importpc,NULL},
 #endif
-    {'=', SR_first},
-    {Ctrl('C'), do_cross},
-/*    {Ctrl('S'), SR_read},
-    {'n', SR_first_new},
-    {'p', SR_read},
-    {Ctrl('X'), SR_readX},   */   /* Leeward 98.10.03 */
-/*    {Ctrl('U'), SR_author},
-    {Ctrl('H'), SR_authorX}, */   /* Leeward 98.10.03 */
-    {'h', mailreadhelp},
-    {Ctrl('J'), mailreadhelp},
-    {Ctrl('O'), add_author_friend},
-    {Ctrl('Y'), zsend_post},    /* COMMAN 2002 */    
+    {Ctrl('C'), (READ_KEY_FUNC)read_cross,NULL}, 
+    
+    {'h', (READ_KEY_FUNC)mailreadhelp,NULL},
+    {Ctrl('J'), (READ_KEY_FUNC)mailreadhelp,NULL},
+    
     {'\0', NULL},
 };
 
@@ -1483,7 +1485,7 @@ int m_read()
 
     setmailfile(curmaildir, currentuser->userid, DOT_DIR);
     in_mail = true;
-    i_read(RMAIL, curmaildir, mailtitle, (READ_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
+    new_i_read(DIR_MODE_MAIL, curmaildir, mailtitle, (READ_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
     in_mail = false;
 	setmailcheck(currentuser->userid);
     return FULLUPDATE /* 0 */ ;
@@ -2361,7 +2363,7 @@ static int maillist_onselect(struct _select_def *conf)
         sel = conf->pos - arg->cmdnum - 1;
         setmailfile(curmaildir,currentuser->userid, mail_sysbox[sel]);
         in_mail = true;
-        i_read(RMAIL, curmaildir, mailtitle, (READ_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
+        new_i_read(DIR_MODE_MAIL, curmaildir, mailtitle, (READ_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
         in_mail = false;
         /*
          * 系统邮箱
@@ -2376,7 +2378,7 @@ static int maillist_onselect(struct _select_def *conf)
         sprintf(buf, ".%s", user_mail_list.mail_list[sel] + 30);
         setmailfile(curmaildir, currentuser->userid, buf);
         in_mail = true;
-        i_read(RMAIL, curmaildir, mailtitle, (READ_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
+        new_i_read(RMAIL, curmaildir, mailtitle, (READ_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
         in_mail = false;
     }
     modify_user_mode(MAIL);
@@ -2434,7 +2436,7 @@ static int maillist_key(struct _select_def *conf, int command)
         return SHOW_SELCHANGE;
     }
     if (toupper(command) == 'H') {
-        mailreadhelp();
+        mailreadhelp(NULL,NULL,NULL);
         return SHOW_REFRESH;
     }
 
@@ -2755,6 +2757,20 @@ typedef struct {
     mailgroup_t *users;
 } mailgroup_arg;
 
+const static struct key_translate mail_key_table[]= {
+        {'$',KEY_END},
+        {'q',KEY_LEFT},
+        {'e',KEY_LEFT},
+        {'k',KEY_UP},
+        {'j',KEY_DOWN},
+        {'N',KEY_PGDN},
+        {Ctrl('F'),KEY_PGDN},
+        {' ',KEY_PGDN},
+        {'p',KEY_PGDN},
+        {Ctrl('B'),KEY_PGUP},
+        {-1,-1}
+};
+
 static int set_mailgroup_select(struct _select_def *conf)
 {
     mailgroup_arg *arg = (mailgroup_arg *) conf->arg;
@@ -2772,31 +2788,6 @@ static int set_mailgroup_show(struct _select_def *conf, int i)
     mailgroup_arg *arg = (mailgroup_arg *) conf->arg;
 
     prints(" %3d  %-12s  %-14s", i, arg->users[i - 1].id, arg->users[i - 1].exp);
-    return SHOW_CONTINUE;
-}
-
-static int set_mailgroup_prekey(struct _select_def *conf, int *key)
-{
-    mailgroup_arg *arg = (mailgroup_arg *) conf->arg;
-
-    switch (*key) {
-    case 'e':
-    case 'q':
-        *key = KEY_LEFT;
-        break;
-    case 'p':
-    case 'k':
-        *key = KEY_UP;
-        break;
-    case ' ':
-    case 'N':
-        *key = KEY_PGDN;
-        break;
-    case 'n':
-    case 'j':
-        *key = KEY_DOWN;
-        break;
-    }
     return SHOW_CONTINUE;
 }
 
@@ -2987,11 +2978,13 @@ int set_mailgroup(mailgroup_list_t * mgl, int entry, mailgroup_t * users)
     }
 
     clear();
+    //TODO: 窗口大小动态改变的情况？这里有bug
     pts = (POINT *) malloc(sizeof(POINT) * BBS_PAGESIZE);
     for (i = 0; i < BBS_PAGESIZE; i++) {
         pts[i].x = 2;
         pts[i].y = i + 3;
     }
+    group_conf.key_table = &mail_key_table[0];
     group_conf.item_per_page = BBS_PAGESIZE;
     /*
      * 加上 LF_VSCROLL 才能用 LEFT 键退出 
@@ -3007,7 +3000,6 @@ int set_mailgroup(mailgroup_list_t * mgl, int entry, mailgroup_t * users)
 
     group_conf.on_select = set_mailgroup_select;
     group_conf.show_data = set_mailgroup_show;
-    group_conf.pre_key_command = set_mailgroup_prekey;
     group_conf.key_command = set_mailgroup_key;
     group_conf.show_title = set_mailgroup_refresh;
     group_conf.get_data = set_mailgroup_getdata;
@@ -3039,31 +3031,6 @@ static int set_mailgroup_list_show(struct _select_def *conf, int i)
     mailgroup_list_arg *arg = (mailgroup_list_arg *) conf->arg;
 
     prints("  %2d  %-40s  %3d", i, arg->mail_group.groups[i - 1].group_desc, arg->mail_group.groups[i - 1].users_num);
-    return SHOW_CONTINUE;
-}
-
-static int set_mailgroup_list_prekey(struct _select_def *conf, int *key)
-{
-    mailgroup_list_arg *arg = (mailgroup_list_arg *) conf->arg;
-
-    switch (*key) {
-    case 'e':
-    case 'q':
-        *key = KEY_LEFT;
-        break;
-    case 'p':
-    case 'k':
-        *key = KEY_UP;
-        break;
-    case ' ':
-    case 'N':
-        *key = KEY_PGDN;
-        break;
-    case 'n':
-    case 'j':
-        *key = KEY_DOWN;
-        break;
-    }
     return SHOW_CONTINUE;
 }
 
@@ -3295,6 +3262,7 @@ int set_mailgroup_list()
     /*
      * 加上 LF_VSCROLL 才能用 LEFT 键退出 
      */
+    grouplist_conf.key_table=&mail_key_table[0];
     grouplist_conf.flag = LF_NUMSEL | LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;
     grouplist_conf.prompt = "◆";
     grouplist_conf.item_pos = pts;
@@ -3306,7 +3274,6 @@ int set_mailgroup_list()
 
     grouplist_conf.on_select = set_mailgroup_list_select;
     grouplist_conf.show_data = set_mailgroup_list_show;
-    grouplist_conf.pre_key_command = set_mailgroup_list_prekey;
     grouplist_conf.key_command = set_mailgroup_list_key;
     grouplist_conf.show_title = set_mailgroup_list_refresh;
     grouplist_conf.get_data = set_mailgroup_list_getdata;

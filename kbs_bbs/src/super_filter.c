@@ -435,7 +435,7 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
     fcntl(fd2, F_SETLKW, &ldata2);
     total = buf.st_size / size;
 
-    if ((i = safe_mmapfile_handle(fd2, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size)) != 1) {
+    if ((i = safe_mmapfile_handle(fd2, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size)) != 1) {
         if (i == 2)
             end_mmapfile((void *) ptr, buf.st_size, -1);
         ldata2.l_type = F_UNLCK;

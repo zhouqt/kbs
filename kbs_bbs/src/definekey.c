@@ -280,6 +280,7 @@ int set_modes(int *res)
     bzero(&group_conf, sizeof(struct _select_def));
     group_conf.item_count = n;
 
+    //TODO: 窗口大小动态改变的情况？这里有bug
     pts = (POINT *) malloc(sizeof(POINT) * n);
     for (i = 0; i < n; i++) {
         pts[i].x = 2+20*(i/BBS_PAGESIZE);

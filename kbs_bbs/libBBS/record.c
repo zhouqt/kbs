@@ -327,7 +327,7 @@ int search_record_back(int fd,  /* file handle */
     size_t filesize;
 
     BBS_TRY {
-        if (safe_mmapfile_handle(fd, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &buf, &filesize) == 0)
+        if (safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, (void **) &buf, &filesize) == 0)
             BBS_RETURN(0);
         if (start > filesize / size)
             start = filesize / size;
@@ -355,7 +355,7 @@ int search_record_back_lite(int fd, int size, int start, int num, RECORD_FUNC_AR
 	size_t filesize;
 
 	BBS_TRY {
-		if (safe_mmapfile_handle(fd, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &buf, &filesize) == 0)
+		if (safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, (void **) &buf, &filesize) == 0)
 			BBS_RETURN(0);
 		if (start > filesize / size)
 			start = filesize / size;

@@ -1698,7 +1698,7 @@ int conv_csv_to_al(char *fname)
 	for( i=0; i< CSV_LIST_MAX_KEYNUM; i++)
 		csv_hash[i]=0;
 
-	if (safe_mmapfile_handle(fileno(fp), O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, (void **)(&ptr) , (size_t *) & size) == 1) {
+	if (safe_mmapfile_handle(fileno(fp), PROT_READ | PROT_WRITE, MAP_SHARED, (void **)(&ptr) , (size_t *) & size) == 1) {
 
 		sz = size;
 		p=ptr;

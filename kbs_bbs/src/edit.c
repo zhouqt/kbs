@@ -652,7 +652,7 @@ long insert_from_fp(FILE *fp, long * attach_length)
 	if( attach_length ) *attach_length=0;
     matched=0;
     BBS_TRY {
-        if (safe_mmapfile_handle(fileno(fp), O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & size) == 1) {
+        if (safe_mmapfile_handle(fileno(fp), PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & size) == 1) {
             char* data;
             long not;
             data=ptr;

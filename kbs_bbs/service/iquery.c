@@ -519,6 +519,7 @@ int choose_file()
 
     bzero(&grouplist_conf, sizeof(struct _select_def));
     grouplist_conf.item_count = res_total;
+    //TODO: 窗口大小动态改变的情况？这里有bug
     pts = (POINT *) malloc(sizeof(POINT) * BBS_PAGESIZE);
     for (i = 0; i < BBS_PAGESIZE; i++) {
         pts[i].x = 2;

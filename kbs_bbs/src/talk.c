@@ -45,8 +45,8 @@ static int do_talk(int fd);
 void do_log();
 int talkrec = -1;
 char partner[IDLEN + 1];
-#endif                          /* 
-                                 */
+#endif
+                                 
 struct one_key friend_list[] = {
     {'r', friend_query},
     {'m', friend_mail},

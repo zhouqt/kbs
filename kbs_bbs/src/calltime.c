@@ -769,6 +769,7 @@ int set_clock()
 	bzero(&group_conf,sizeof(struct _select_def));
 	group_conf.item_count = clock_total;
 
+    //TODO: 窗口大小动态改变的情况？这里有bug
     pts = (POINT *) malloc(sizeof(POINT) * BBS_PAGESIZE);
     for (i = 0; i < BBS_PAGESIZE; i++) {
         pts[i].x = 2;

@@ -306,6 +306,7 @@ O MaxMessageSize=32000
 #define DIRCHANGED      8       /* Index file was changed */
 #define NEWSCREEN	9	/* split the screen */
 #define CHANGEMODE  10  /* 换版面了或者是换模式了*/
+#define SELCHANGE   11 /*选择变了,对应SHOW_SELCHANGE*/ 
 
 #define I_TIMEOUT   (-2)        /* Used for the getchar routine select call */
 #define I_OTHERDATA (-333)      /* interface, (-3) will conflict with chinese */
@@ -443,7 +444,8 @@ enum BBS_DIR_MODE
     DIR_MODE_AUTHOR  = 7, /** .AUTHOR.userid */
     DIR_MODE_TITLE   = 8, /** .TITLE.userid */
 	DIR_MODE_ZHIDING = 9,  /** .DINGDIR */
-	DIR_MODE_WEB_THREAD = 10 /** .WEBTHREAD */
+	DIR_MODE_WEB_THREAD = 10, /** .WEBTHREAD */
+	DIR_MODE_MAIL /* mail mode */
 };
 
 enum BBSLOG_TYPE
