@@ -324,8 +324,8 @@ char q_id[IDLEN];
     clrtobot();
     setmailfile(qry_mail_dir, lookupuser->userid, DOT_DIR);
 
-    exp=countexp(*lookupuser);
-    perf=countperf(*lookupuser);
+    exp=countexp(lookupuser);
+    perf=countperf(lookupuser);
     /*---	modified by period	2000-11-02	hide posts/logins	---*/
 #ifndef _DETAIL_UINFO_
     if((!HAS_PERM(PERM_ADMINMENU)) && strcmp(lookupuser->userid, currentuser->userid))

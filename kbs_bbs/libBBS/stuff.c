@@ -485,3 +485,82 @@ attach_shm( char    *shmstr,int     defaultkey, int shmsize,int* iscreate)
     return shmptr;
 }
 #endif
+
+/*
+char *
+cexp(exp)
+int exp;
+{
+        int expbase=0;
+
+        if(exp==-9999)
+                return "没等级";
+        if(exp<=100+expbase)
+                return "新手上路";
+        if(exp>100+expbase&&exp<=450+expbase)
+                return "一般站友";
+        if(exp>450+expbase&&exp<=850+expbase)
+                return "中级站友";
+        if(exp>850+expbase&&exp<=1500+expbase)
+                return "高级站友";
+        if(exp>1500+expbase&&exp<=2500+expbase)
+                return "老站友";
+        if(exp>2500+expbase&&exp<=3000+expbase)
+                return "长老级";
+        if(exp>3000+expbase&&exp<=5000+expbase)
+                return "本站元老";
+        if(exp>5000+expbase)
+                return "开国大老";
+        
+}
+
+char *
+cperf(perf)
+int perf;
+{        
+        
+        if(perf==-9999)
+                return "没等级";
+        if(perf<=5)
+                return "赶快加油";
+        if(perf>5&&perf<=12)
+                return "努力中";
+        if(perf>12&&perf<=35)
+                return "还不错";
+        if(perf>35&&perf<=50)
+                return "很好";
+        if(perf>50&&perf<=90)
+                return "优等生";
+        if(perf>90&&perf<=140)
+                return "太优秀了";
+        if(perf>140&&perf<=200)
+                return "本站支柱";
+        if(perf>200)
+                return "神～～";
+
+}
+*/
+int countexp(struct userec *udata)
+{
+    int exp;
+
+    if(!strcmp(udata->userid,"guest"))
+        return -9999;
+    exp=udata->numposts+post_in_tin( udata->userid )+udata->numlogins/5+(time(0)-udata->firstlogin)/86400+udata->stay/3600;
+    return exp>0?exp:0;
+}
+
+int countperf(struct userec *udata)
+{
+    int perf;
+    int reg_days;
+
+    if(!strcmp(udata->userid,"guest"))
+        return -9999;
+    reg_days=(time(0)-udata->firstlogin)/86400+1;
+    perf=((float)(udata->numposts+post_in_tin( udata->userid ))/(float)udata->numlogins+
+          (float)udata->numlogins/(float)reg_days)*10;
+    return perf>0?perf:0;
+}
+
+
