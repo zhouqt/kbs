@@ -2621,9 +2621,9 @@ static PHP_FUNCTION(bbs_set_onboard)
     if (currentuinfo==NULL) RETURN_FALSE;
     if (!strcmp(currentuser->userid,"guest")) {
         guestinfo=www_get_guest_entry(currentuinfonum);
-        oldboard=guestinfo.currentboard;
+        oldboard=guestinfo->currentboard;
     } else
-        oldboard=currentuinfo.currentboard;
+        oldboard=currentuinfo->currentboard;
     if (oldboard)
         board_setcurrentuser(oldboard, -1);
     
@@ -2632,6 +2632,7 @@ static PHP_FUNCTION(bbs_set_onboard)
             guestinfo->currentboard = boardnum;
         else
             guestinfo->currentboard = 0;
+    }
     else {
         if (count>0)
             currentuinfo->currentboard = boardnum;

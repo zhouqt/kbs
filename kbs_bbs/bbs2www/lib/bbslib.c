@@ -1759,12 +1759,7 @@ int get_curr_utmpent()
 
 
 /* 以下的代码是cgi和php都使用的*/
-#define MAX_WWW_GUEST 30000
-
 static struct user_info www_guest_uinfo;
-
-#define MAX_WWW_MAP_ITEM (MAX_WWW_GUEST/32)     /* 除以32 */
-#define MAX_WWW_GUEST_IDLE_TIME 3600    /* www guest发呆时间设为1小时 */
 
 /* WWW GUEST这样做有个同步问题，就是当被清除一个
   GUEST的时候如果正好这个guest刷新了，那么会重写数据结构

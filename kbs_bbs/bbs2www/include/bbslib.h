@@ -325,6 +325,11 @@ char *http_encode_string(char *str, size_t len);
 char *unix_string(char *str);
 void output_ansi_html(char *buf, size_t buflen, buffered_output_t *output,char* attachlink);
 
+#define MAX_WWW_GUEST 30000
+
+#define MAX_WWW_MAP_ITEM (MAX_WWW_GUEST/32)
+#define MAX_WWW_GUEST_IDLE_TIME 3600    
+
 struct WWW_GUEST_S {
     int key;
     time_t freshtime;
