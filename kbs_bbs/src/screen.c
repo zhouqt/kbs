@@ -833,6 +833,36 @@ void prints(char *format, ...)
 	return;
 }
 
+void outline(char *s)
+{
+    int y,x;
+    while(*s) {
+        if(*s=='\n') {
+            getyx(&y, &x);
+            if(y+1>=scr_lns) {
+                scroll();
+                move(y, 0);
+            }
+            else
+                move(y+1, 0);
+            s++;
+            continue;
+        }
+        outc(*s);
+        s++;
+        getyx(&y, &x);
+        if(x>=scr_cols) {
+            if(y+1>=scr_lns) {
+                scroll();
+                move(y, 0);
+            }
+            else
+                move(y+1, 0);
+        }
+    }
+}
+
+
 void scroll()
 {
     int ln,k;

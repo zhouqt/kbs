@@ -1050,8 +1050,14 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
             }
             else {
                 clrtoeol();
-                x = col;
+                x = 0;
                 y++;
+                if(y>=scr_lns) {
+                    scroll();
+                    starty--;
+                    cursory--;
+                    y--;
+                }
                 move(y, x);
             }
             if(i==now-1) {

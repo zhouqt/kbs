@@ -33,6 +33,8 @@ void outs(register const char *str);
 void printdash(char *mesg);
 void scroll();
 void rscroll();
+void outline(char *s);
+
 
 /* newio.c */
 void ochar(char c);
