@@ -293,7 +293,7 @@ void save_msgs(char * s)
     fp=fopen(s, "w");
     if(fp==NULL) return;
     for(i=0;i<get_msgt();i++)
-        fprintf(fp, get_msgs(i));
+        fprintf(fp, "%s\n", get_msgs(i));
     fclose(fp);
 }
 
