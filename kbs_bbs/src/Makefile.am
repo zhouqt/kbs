@@ -6,7 +6,10 @@ bbsd_SOURCES=bbs.c record.c delete.c stuff.c mail.c register.c \
            screen.c userinfo.c vote.c announce.c sendmsg.c boards_t.c\
 	   bm.c list.c goodbye.c fileshm.c bbsd_single.c lvars.c\
 	   newmain_single.c newio.c newterm.c convcode.c bbs_sendmail.c crypt.c \
-	   ucache.c utmp.c log.c md5.c libmsg.c article.c sysconf.c site.c
+	   ucache.c utmp.c log.c md5.c libmsg.c article.c sysconf.c site.c 
+noinst_HEADERS = bbsconfig.h ann.h bbs.h chat.h defines_t.h edit.h func.h ioctl.h \
+           md5.h modes.h permissions.h prototype.h screen.h struct.h system.h \
+           systemexp.h uhashgen.h vars.h vote.h webmsg.h
 LDADD=../libsystem/libsystem.a ../rzsz/libzmodem.a -lbsd -lesmtp -lltdl -ldl
 AM_CFLAGS=-DBBSMAIN -DINVISIBLE -DSAFE_KILL -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME
 CLEANFILES=@EXTRA_CLEAN@

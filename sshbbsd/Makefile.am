@@ -20,6 +20,12 @@ GMPDEP          = $(GMPDIR)/gmp.h $(GMPDIR)/libgmp.a
 ZLIBLIBS	= -L/usr/lib -lz
 SSHLIBS         = -lnsl -lbsd -L/usr/local/lib
 
+noinst_HEADERS = cipher.h getput.h compress.h idea.h \
+    randoms.h crc32.h includes.h \
+    userfile.h blowfish.h des.h md5.h rsa.h version.h bufaux.h \
+    mpaux.h servconf.h xmalloc.h buffer.h emulate.h packet.h ssh.h \
+    deattack.h snprintf.h
+
 COMMON_OBJS = rsa.o randoms.o buffer.o emulate.o packet.o compress.o \
 	xmalloc.o bufaux.o authfile.o \
 	crc32.o rsaglue.o cipher.o des.o match.o mpaux.o \
@@ -34,7 +40,8 @@ EXTRA_DIST= COPYING README README.SECURID README.TIS README.SECURERPC \
 	README.CIPHERS README.DEATTACK INSTALL TODO libdes-README \
 	libdes-COPYING libdes-ARTISTIC gnu-COPYING-GPL OVERVIEW \
 	configure configure.in config.guess config.sub Makefile.in \
-	config.sample acconfig.h config.h.in install-sh ChangeLog
+	config.sample acconfig.h config.h.in install-sh ChangeLog \
+	idea.c
 
 CLEANFILES=@EXTRA_CLEAN@
 bin_PROGRAMS = sshbbsd
