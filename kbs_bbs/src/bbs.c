@@ -1601,6 +1601,76 @@ int garbage_line(char *str)
 }
 
 /* When there is an old article that can be included -jjyang */
+#ifdef NINE_BUILD
+void
+do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
+{
+    FILE        *inf, *outf;
+    char        *qfile, *quser;
+    char        buf[256], *ptr;
+    char        op;
+    int         bflag;
+
+    qfile = q_file;
+    quser = q_user;
+    bflag = strncmp( qfile, "mail", 4 );
+    outf = fopen( filepath, "w" );
+    if( *qfile != '\0' && (inf = fopen( qfile, "r" )) != NULL ) {
+        op = quote_mode;
+        if( op != 'N' ) {
+            fgets( buf, 256, inf );
+            if( (ptr = strrchr( buf, ')' )) != NULL ) {
+                ptr[1] = '\0';
+                if( (ptr = strchr( buf, ':' )) != NULL ) {
+                    quser = ptr + 1;
+                    while( *quser == ' ' )  quser++;
+                }
+            }
+
+            if( bflag ) fprintf( outf, "【 在 %-.55s 的大作中提到: 】\n", quser );
+            else fprintf( outf, "【 在 %-.55s 的来信中提到: 】\n", quser );
+
+            if( op == 'A' ) {
+                while( fgets( buf, 256, inf ) != NULL )
+                {
+                fprintf( outf, ": %s", buf );
+                }
+            } else if( op == 'R' ) {
+                while (fgets( buf, 256, inf ) != NULL)
+                    if( buf[0] == '\n' )  break;
+                while( fgets( buf, 256, inf ) != NULL )
+                {
+                    if(Origin2(buf))
+                        continue;
+                    fprintf( outf, "%s", buf );
+                }
+            } else {
+                while (fgets( buf, 256, inf ) != NULL)
+                    if( buf[0] == '\n' )  break;
+                while (fgets( buf, 256, inf ) != NULL) {
+                    if( strcmp( buf, "--\n" ) == 0 )
+                        break;
+                    if( buf[ 250 ] != '\0' )
+                        strcpy( buf+250, "\n" );
+                    if( !garbage_line( buf ) )
+                        fprintf( outf, ": %s", buf );
+                }
+            }
+        }
+        fprintf(outf,"\n");
+        fclose( inf ); 
+    }
+
+    if ((numofsig > 0) && !(currentuser->signature == 0 || Anony == 1)) {       /* 签名档为0则不添加 */
+        if (currentuser->signature < 0)
+            addsignature(outf, currentuser, (rand() % numofsig) + 1);
+        else
+            addsignature(outf, currentuser, currentuser->signature);
+    }
+    fclose(outf); 
+}
+
+#else
 void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
 {                               /* 引用文章， 全局变量quote_file,quote_user, */
     FILE *inf, *outf;
@@ -1685,7 +1755,7 @@ void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
     }
     fclose(outf);
 }
-
+#endif
 int do_post()
 {                               /* 用户post */
     *quote_user = '\0';
