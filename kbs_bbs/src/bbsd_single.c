@@ -170,10 +170,6 @@ telnet_init()
     /* init telnet protocol				 */
     /* --------------------------------------------------- */
 
-#ifndef	LINUX
-    to.tv_sec = 1;
-    to.tv_usec = 1;
-#endif
     cmd = svr;
 
     for (n = 0; n < 4; n++)
