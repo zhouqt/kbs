@@ -289,12 +289,13 @@ Here:
     
 	if (*ans == 'A' || *ans == 'O' ) {
             struct userec saveuser;
+            struct userec* denyuser;
             move(1,0);
             if (*ans=='A')
 		    	usercomplete("增加无法 POST 的使用者: ", uident);
 		    else strncpy(uident, fileinfo->owner, STRLEN-4);
             /*Haohmaru.99.4.1,增加被封ID正确性检查*/
-            if(!(id = getuser(uident,&saveuser)))  /* change getuser -> searchuser , by dong, 1999.10.26 */
+            if(!(id = getuser(uident,&denyuser)))  /* change getuser -> searchuser , by dong, 1999.10.26 */
             {
                 move(3,0) ;
                 prints("非法 ID") ;
@@ -302,7 +303,7 @@ Here:
                 pressreturn() ;
                 goto Here;
             }
-            strncpy(uident,saveuser.userid,IDLEN);
+            strncpy(uident,denyuser->userid,IDLEN);
             uident[IDLEN]=0;
             
             if( *uident != '\0' )
