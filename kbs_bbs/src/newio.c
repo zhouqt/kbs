@@ -363,7 +363,6 @@ int igetch()
                 r_msg();
                 inremsg = false;
             }
-            goto igetagain;
         }
         sr = select(hifd, &readfds, NULL, NULL, &to);
         if (sr < 0 && errno == EINTR) {
