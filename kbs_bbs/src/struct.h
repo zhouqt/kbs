@@ -36,7 +36,6 @@ struct userec {                 /* Structure used to hold information in */
 	unsigned char   birthyear;
 	unsigned char   birthmonth;
 	unsigned char   birthday;
-#else
 #endif
     unsigned int usedspace;                 /* no use */
 };
