@@ -808,7 +808,7 @@ char *direct ;
         buf[76]=0;
         prints("%s",buf);
         buf[76]=savech;
-//        strcpy(buf,buf+76);
+/*        strcpy(buf,buf+76);*/
         getdata(t_lines-2, 0,buf+76,ch,3,DOECHO,NULL,YEA);
     } else
         getdata(t_lines-3, 0,buf,ch,3,DOECHO,NULL,YEA);

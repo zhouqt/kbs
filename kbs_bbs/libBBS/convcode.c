@@ -72,8 +72,9 @@ void(*resolv_file)(char*);
     int		shmkey;
 
 #ifndef STANDCONV
-    //shmkey = sysconf_eval( shmstr );
-    //if( shmkey < 1024 )
+    /*shmkey = sysconf_eval( shmstr );
+    if( shmkey < 1024 )
+*/
     shmkey = get_shmkey( shmstr );
     if( shmkey < 1024 )
 #endif

@@ -81,8 +81,9 @@ static void utmp_unlock(int fd)
 
 static void utmp_setreadonly(int readonly)
 {
+	int iscreate;
 	shmdt(utmphead);
-   	utmphead = (struct UTMPHEAD*)attach_shm( "UTMPHEAD_SHMKEY", 3697, sizeof( *utmpshm ),&iscreate ,readonly, utmphead);/*attach user tmp head */
+   	utmphead = (struct UTMPHEAD*)attach_shm1( "UTMPHEAD_SHMKEY", 3698, sizeof(struct UTMPHEAD),&iscreate ,readonly, utmphead);/*attach user tmp head */
 }
 
 void resolve_utmp()
@@ -92,7 +93,7 @@ void resolve_utmp()
         utmpshm = (struct UTMPFILE*)attach_shm( "UTMP_SHMKEY", 3699, sizeof( *utmpshm ),&iscreate );/*attach user tmp cache */
         if (iscreate) {
         	int i,utmpfd;
-        	utmphead = (struct UTMPHEAD*)attach_shm( "UTMPHEAD_SHMKEY", 3697, sizeof( *utmpshm ),&iscreate );/*attach user tmp cache */
+        	utmphead = (struct UTMPHEAD*)attach_shm( "UTMPHEAD_SHMKEY", 3698, sizeof( struct UTMPHEAD),&iscreate );/*attach user tmp cache */
 			utmpfd = utmp_lock();
         	bzero(utmpshm,sizeof(struct UTMPFILE));
         	bzero(utmphead,sizeof(struct UTMPHEAD));
@@ -106,7 +107,7 @@ void resolve_utmp()
 */
         	utmp_unlock(utmpfd);
         } else 
-        	utmphead = (struct UTMPHEAD*)attach_shm( "UTMPHEAD_SHMKEY", 3697, sizeof( *utmpshm ),&iscreate ,1,NULL);/*attach user tmp head */
+        	utmphead = (struct UTMPHEAD*)attach_shm1( "UTMPHEAD_SHMKEY", 3698, sizeof( struct UTMPHEAD),&iscreate ,1,NULL);/*attach user tmp head */
     }
 }
 
@@ -128,6 +129,7 @@ struct requesthdr {
 	}u_info;
 }utmpreq;
 
+/* disable KCN
 int sendutmpreq(struct requesthdr *req)
 {
 
@@ -161,6 +163,7 @@ int sendutmpreq(struct requesthdr *req)
         close(m_socket);
         return -1;
 }
+*/
 
 static void logloop()
 {   
@@ -169,7 +172,7 @@ static void logloop()
    int data[USHM_SIZE];
    char buf[255];
    buf[0]=0;
-   ptr=utmpshm->listhead;
+   ptr=utmphead->listhead;
    for (i=0;i<USHM_SIZE;i++) {
      int j;
      char buf1[20];
@@ -178,14 +181,19 @@ static void logloop()
      data[i]=ptr-1;
         for (j=0;j<i;j++) {
 			if (data[j]==data[i]){
-				log("3system",buf);
-				log("3system","find loop!");
+				bbslog("3system",buf);
+				bbslog("3system","find loop!");
 				exit(0);
 			}
 		}
      if ((i-1)%10==0) {
-		log("3system",buf);
+		bbslog("3system",buf);
 		buf[0]=0;
+     }
+     ptr=utmphead->list_next[ptr-1];
+     if (ptr==utmphead->listhead) {
+	bbslog("3system","ok!");
+	break;
      }
    }
 }
@@ -278,11 +286,11 @@ int getnewutmpent(struct user_info *up)
 
 	utmphead->number++;
     now = time( NULL );
-    if(( now > utmpshm->uptime + 120 )||(now < utmpshm->uptime-120)) {
-        utmpshm->uptime = now;
+    if(( now > utmphead->uptime + 120 )||(now < utmphead->uptime-120)) {
+        utmphead->uptime = now;
         bbslog( "1system", "UTMP:Clean user utmp cache");
         for( n = 0; n < USHM_SIZE; n++ ) {
-            utmpshm->uptime = now;
+            utmphead->uptime = now;
             uentp = &(utmpshm->uinfo[ n ]);
             if( uentp->active && uentp->pid && kill( uentp->pid, 0 ) == -1 ) /*uentp检查*/
             {
@@ -438,22 +446,6 @@ int apply_ulist_addr( APPLY_UTMP_FUNC fptr,char* arg) /* apply func on user list
 		};
 	}
 	return 0;
-/*
-    int         i, max;
-    int         num;
-
-    max = USHM_SIZE - 1;
-    while( max > 0 && utmpshm->uinfo[ max ].active == 0 ) /*跳过后段 非active的user
-        max--;
-    for( i = 0; i <= max; i++ ) {
-        int ret;
-        ret=(*fptr)( &utmpshm->uinfo[i],arg,i );
-	if (ret==QUIT) return num;
-	if (ret==COUNT) num++;
-    }
-
-    return num;
-*/
 }
 
 int apply_utmpuid(APPLY_UTMP_FUNC fptr,int uid,char* arg)
