@@ -5,13 +5,15 @@
 
 #ifndef AIX
 #define CONV_LONG(x) ( ((x)>>24) | (((x)&0x00ff0000)>>8) | (((x)&0x0000ff00)<<8) | (((x)&0x000000ff)<<24) )
+#else
+#define CONV_LONG(x) (x)
 #endif
 int printboard(struct boardheader* bh)
 {
   if (bh->filename[0]) {
     unsigned long level = CONV_LONG(bh->level);
-    if (!((level&PERM_POSTMASK)||(level==0)))
-      printf("%-16s\n",bh->filename);
+    if ((level&PERM_POSTMASK)||(level==0))
+      printf("%s\n",bh->filename);
   }
   return 0;
 }

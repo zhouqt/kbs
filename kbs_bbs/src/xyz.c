@@ -568,12 +568,12 @@ a_edits()
     /* Leeward 98.07.31 added: .badIP */
     /* stephen 2000.10.17 added: /usr/share/apache/htdocs/script/menucontext.js */
     /* period  2000.10.17 link /backup/www/htdocs/script/menucontext.js --> /home0/bbs/etc/www_menu.js */
-    char *e_file[]={"../Welcome","../vote/notes","issue","movie","logout","menu.ini", "mailcheck","s_fill","f_fill.realname","f_fill.unit","f_fill.address","f_fill.telephone","f_fill.real","f_fill.chinese","f_fill.toomany","f_fill.reply","smail","fmail","../.badname", "../.badIP", "../.badword", "sysconf.ini", "www_menu.js", NULL};
+    char *e_file[]={"../Welcome","../vote/notes","issue","movie","logout","menu.ini", "mailcheck","s_fill","f_fill.realname","f_fill.unit","f_fill.address","f_fill.telephone","f_fill.real","f_fill.chinese","f_fill.toomany","f_fill.reply","smail","fmail","../.badname", "../.badIP", "../.badword", "sysconf.ini", "www_menu.js", "../0Announce/hotinfo", NULL};
     /* "/usr/share/apache/htdocs/script/menucontext.js", NULL};    */
 #ifndef LEEWARD_X_FILTER
-    char *explain_file[]={"Welcome","¹«ÓÃ±¸ÍüÂ¼","½øÕ¾»¶Ó­µµ","»î¶¯¿´°æ","ÀëÕ¾»­Ãæ", "menu.ini","Éí·İÈ·ÈÏµµ","×¢²áµ¥Íê³Éµµ","×¢²áµ¥Ê§°Üµµ(ÕæÊµĞÕÃû)","×¢²áµ¥Ê§°Üµµ(·şÎñµ¥Î»)","×¢²áµ¥Ê§°Üµµ(¾Ó×¡µØÖ·)","×¢²áµ¥Ê§°Üµµ(ÁªÂçµç»°)","×¢²áµ¥Ê§°Üµµ(ÕæÊµ×ÊÁÏ)","×¢²áµ¥Ê§°Üµµ(ÖĞÎÄÌîĞ´)","×¢²áµ¥Ê§°Üµµ(¹ı¶àµÄID)","×¢²áµ¥Ê§°Üµµ(Mail Reply)" ,"Éí·İÈ·ÈÏÍê³Éµµ        ","Éí·İÈ·ÈÏÊ§°Üµµ","²»¿É×¢²áµÄ ID         ", "²»¿ÉµÇÂ¼µÄ IP", "ÏµÍ³×Ô¶¯¹ıÂËµÄ´ÊÓï", "sysconf.ini", "WWWÖ÷²Ëµ¥",  NULL};
+    char *explain_file[]={"Welcome","¹«ÓÃ±¸ÍüÂ¼","½øÕ¾»¶Ó­µµ","»î¶¯¿´°æ","ÀëÕ¾»­Ãæ", "menu.ini","Éí·İÈ·ÈÏµµ","×¢²áµ¥Íê³Éµµ","×¢²áµ¥Ê§°Üµµ(ÕæÊµĞÕÃû)","×¢²áµ¥Ê§°Üµµ(·şÎñµ¥Î»)","×¢²áµ¥Ê§°Üµµ(¾Ó×¡µØÖ·)","×¢²áµ¥Ê§°Üµµ(ÁªÂçµç»°)","×¢²áµ¥Ê§°Üµµ(ÕæÊµ×ÊÁÏ)","×¢²áµ¥Ê§°Üµµ(ÖĞÎÄÌîĞ´)","×¢²áµ¥Ê§°Üµµ(¹ı¶àµÄID)","×¢²áµ¥Ê§°Üµµ(Mail Reply)" ,"Éí·İÈ·ÈÏÍê³Éµµ        ","Éí·İÈ·ÈÏÊ§°Üµµ","²»¿É×¢²áµÄ ID         ", "²»¿ÉµÇÂ¼µÄ IP", "ÏµÍ³×Ô¶¯¹ıÂËµÄ´ÊÓï", "sysconf.ini", "WWWÖ÷²Ëµ¥",  "½üÆÚÈÈµã",NULL};
 #else
-char *explain_file[]={"Welcome","¹«ÓÃ±¸ÍüÂ¼","½øÕ¾»¶Ó­µµ","»î¶¯¿´°æ","ÀëÕ¾»­Ãæ", "menu.ini","Éí·İÈ·ÈÏµµ","×¢²áµ¥Íê³Éµµ","×¢²áµ¥Ê§°Üµµ(ÕæÊµĞÕÃû)","×¢²áµ¥Ê§°Üµµ(·şÎñµ¥Î»)","×¢²áµ¥Ê§°Üµµ(¾Ó×¡µØÖ·)","×¢²áµ¥Ê§°Üµµ(ÁªÂçµç»°)","×¢²áµ¥Ê§°Üµµ(ÕæÊµ×ÊÁÏ)","×¢²áµ¥Ê§°Üµµ(ÖĞÎÄÌîĞ´)","×¢²áµ¥Ê§°Üµµ(¹ı¶àµÄID)","×¢²áµ¥Ê§°Üµµ(Mail Reply)" ,"Éí·İÈ·ÈÏÍê³Éµµ        ","Éí·İÈ·ÈÏÊ§°Üµµ","²»¿É×¢²áµÄ ID         ", "²»¿ÉµÇÂ¼µÄ IP", "ÏµÍ³×Ô¶¯¹ıÂËµÄ´ÊÓï£¨[1m[31m´Ëµµ°¸Ä¿Ç°ÎŞĞ§£¬²»±ØÉè¶¨»òĞŞ¸Ä[m£©", "sysconf.ini", "WWWÖ÷²Ëµ¥", NULL};
+char *explain_file[]={"Welcome","¹«ÓÃ±¸ÍüÂ¼","½øÕ¾»¶Ó­µµ","»î¶¯¿´°æ","ÀëÕ¾»­Ãæ", "menu.ini","Éí·İÈ·ÈÏµµ","×¢²áµ¥Íê³Éµµ","×¢²áµ¥Ê§°Üµµ(ÕæÊµĞÕÃû)","×¢²áµ¥Ê§°Üµµ(·şÎñµ¥Î»)","×¢²áµ¥Ê§°Üµµ(¾Ó×¡µØÖ·)","×¢²áµ¥Ê§°Üµµ(ÁªÂçµç»°)","×¢²áµ¥Ê§°Üµµ(ÕæÊµ×ÊÁÏ)","×¢²áµ¥Ê§°Üµµ(ÖĞÎÄÌîĞ´)","×¢²áµ¥Ê§°Üµµ(¹ı¶àµÄID)","×¢²áµ¥Ê§°Üµµ(Mail Reply)" ,"Éí·İÈ·ÈÏÍê³Éµµ        ","Éí·İÈ·ÈÏÊ§°Üµµ","²»¿É×¢²áµÄ ID         ", "²»¿ÉµÇÂ¼µÄ IP", "ÏµÍ³×Ô¶¯¹ıÂËµÄ´ÊÓï£¨[1m[31m´Ëµµ°¸Ä¿Ç°ÎŞĞ§£¬²»±ØÉè¶¨»òĞŞ¸Ä[m£©", "sysconf.ini", "WWWÖ÷²Ëµ¥", "½üÆÚÈÈµã",NULL};
 #endif
 
     modify_user_mode( ADMIN );
@@ -658,7 +658,7 @@ ent_bnet()  /* Bill Schwartz */
     do_exec("bbsnet.sh",NULL) ;
     restore_tty() ;
     uinfo.pager = save_pager;
-    report("BBSNet Exit") ;
+    report("BBSNet Exit");
     clear() ;
 }
 

@@ -4,8 +4,9 @@
 #CC       = cc -DAIX -DSYSV -DLEEWARD_X_RECORD
 CC       = cc -g -DLINUX -DSYSV -DLEEWARD_X_RECORD -I../include -I..
 CPP       = gcc -g -DLINUX -DSYSV -DLEEWARD_X_RECORD -I../include -I..
+include Makefile.spec
 
-BINFILE= poststat static usage bfinger Xclean Xhtml Bhtml bfinger refriend chlevel listonline syncann printboards
+BINFILE= poststat static usage bfinger Xclean Xhtml Bhtml bfinger refriend chlevel listonline syncann printboards MakeTar
 
 .SUFFIXES: .o .c .cpp .ln
 
@@ -65,5 +66,14 @@ PrintBoards.o:PrintBoards.cpp
 RecordFile.o:RecordFile.cpp
 	$(CPP) $(CFLAGS) $(SITE_DEF) $(DEFINES) -c RecordFile.cpp
 
+Mutex.o:Mutex.cpp
+	$(CPP) $(CFLAGS) $(SITE_DEF) $(DEFINES) -c Mutex.cpp
+
 printboards:PrintBoards.o RecordFile.o
-	gcc -o printboards PrintBoards.o RecordFile.o
+	$(CPP) -o printboards PrintBoards.o RecordFile.o
+
+MakeTar.o:MakeTar.cpp
+	$(CPP) $(CFLAGS) $(SITE_DEF) $(DEFINES) -c MakeTar.cpp
+
+MakeTar:MakeTar.o Mutex.o
+	$(CPP) -o MakeTar MakeTar.o Mutex.o -lpthread

@@ -482,8 +482,11 @@ char    *prompt,        *buf;
                 ochar(Ctrl('H'));
                 ochar(' ');
                 ochar(Ctrl('H'));
+#ifndef DEBUG
+/*--- strange code, maybe should call move() after refresh() ---*/
                 move(line, col + clen); /* Leeward 98.02.23 */
                 refresh();
+#endif
                 continue;
             }
             if (!isprint2(ch))

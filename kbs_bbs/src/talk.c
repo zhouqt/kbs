@@ -1924,12 +1924,12 @@ char filename[STRLEN],str[STRLEN];
 {
     FILE *fp, *nfp;
     int deleted = NA;
-    char fnnew[STRLEN];
+    char fnnew[256/*STRLEN*/];
 
     if ((fp = fopen(filename, "r")) == NULL) return -1;
     sprintf( fnnew, "%s.%d", filename, getuid());
     if ((nfp = fopen(fnnew, "w")) == NULL) return -1;
-    while(fgets(genbuf, STRLEN, fp) != NULL) {
+    while(fgets(genbuf, 256/*STRLEN*/, fp) != NULL) {
         if( strncmp(genbuf, str, strlen(str)) == 0 && genbuf[strlen(str)] <= 32)
             deleted = YEA;
         else if( *genbuf > ' ' )

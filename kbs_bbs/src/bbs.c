@@ -595,6 +595,9 @@ set_safe_record()
     currentuser.numlogins=tmp.numlogins;
     currentuser.stay=tmp.stay;
     currentuser.userlevel=tmp.userlevel;
+/*---	---*/
+if(currentuser.stay < 0) currentuser.stay = 0;
+/*---	---*/
 }
 
 char *
@@ -1073,7 +1076,8 @@ char *direct;
 
     clear();
     move(4, 0); /* Leeward 98.02.25 */
-    prints("[1m[33mÇë×¢Òâ£º[31m±¾Õ¾Õ¾¹æ¹æ¶¨£ºÍ¬ÑùÄÚÈİµÄÎÄÕÂÑÏ½ûÔÚ 5 (º¬) ¸öÒÔÉÏÌÖÂÛÇøÄÚÖØ¸´ÕÅÌù¡£\n\nÎ¥·´Õß[33m³ıËùÌùÎÄÕÂ»á±»É¾³ıÖ®Íâ£¬»¹½«±»[31m°ş¶á¼ÌĞø·¢±íÎÄÕÂµÄÈ¨Á¦¡£[33mÏêÏ¸¹æ¶¨Çë²ÎÕÕ£º\n\n    Announce °æµÄÕ¾¹æ£º¡°¹ØÓÚ×ªÌùºÍÕÅÌùÎÄÕÂµÄ¹æ¶¨¡±¡£\n\nÇë´ó¼Ò¹²Í¬Î¬»¤ BBS µÄ»·¾³£¬½ÚÊ¡ÏµÍ³×ÊÔ´¡£Ğ»Ğ»ºÏ×÷¡£\n\n[0m");
+    prints("[1m[33mÇë×¢Òâ£º[31m±¾Õ¾Õ¾¹æ¹æ¶¨£ºÍ¬ÑùÄÚÈİµÄÎÄÕÂÑÏ½ûÔÚ 5 (º¬) ¸öÒÔÉÏÌÖÂÛÇøÄÚÖØ¸´ÕÅÌù¡£\n\nÎ¥·´Õß[33m³ıËùÌùÎÄÕÂ»á±»É¾³ıÖ®Íâ£¬»¹½«±»[31m°ş¶á¼ÌĞø·¢±íÎÄÕÂµÄÈ¨Á¦¡£[33mÏêÏ¸¹æ¶¨Çë²ÎÕÕ£º\n\n    Announce °æµÄÕ¾¹æ£º¡°¹ØÓÚ×ªÌùºÍÕÅÌùÎÄÕÂµÄ¹æ¶¨¡±¡£\n\nÇë´ó¼Ò¹²Í¬Î¬»¤ BBS µÄ»·¾³£¬½ÚÊ¡ÏµÍ³×ÊÔ´¡£Ğ»Ğ»ºÏ×÷¡£[0m\n\n");
+    move(0,0);
     if(!get_a_boardname(bname,"ÇëÊäÈëÒª×ªÌùµÄÌÖÂÛÇøÃû³Æ: "))
     {
         return FULLUPDATE;
@@ -1441,11 +1445,19 @@ char *direct ;
                                    };
     char counterfile[STRLEN],chen;
 
+    if(! fileinfo->filename[0]) { /*--- ¼Ó¸östat()¸üºÏÀíÒ»Ğ©(?) ---*/
+        move(1, 0);
+        prints("¸ÃÎÄÕÂµÄË÷ÒıÎŞĞ§»òÒÑ¾­Ëğ»µ£¬ÎŞ·¨ÔÄ¶ÁÆäÄÚÈİ");
+        clrtoeol();
+        pressreturn();
+        return FULLUPDATE ;
+    }
     clear() ;
     strcpy(buf,direct) ;
     if( (t = strrchr(buf,'/')) != NULL )
         *t = '\0' ;
     sprintf(genbuf,"%s/%s",buf,fileinfo->filename) ;
+
     strcpy( quote_file, genbuf );
     strcpy( quote_board, currboard );
     strcpy(quote_title,fileinfo->title);
@@ -1464,13 +1476,13 @@ char *direct ;
     if( (fd = open(counterfile,O_WRONLY|O_CREAT,0664)) == -1 )
     	return(-1);
     if( lseek(fd,sizeof(char),SEEK_END) == -1 )
-{
-    	close(fd);
-    	return(-1);
-}
+    {
+        close(fd);
+        return(-1);
+    }
     ch = 'K';
     write(fd,ch,sizeof(char));
-    close(fd);*/
+    close(fd); */
 
 #ifndef NOREPLY
     ch = ansimore(genbuf,NA) ;  /* ÏÔÊ¾ÎÄÕÂÄÚÈİ */
@@ -3930,9 +3942,19 @@ Goodbye()    /*ÀëÕ¾ Ñ¡µ¥*/
     /*Haohmaru.98.11.10.¼òµ¥ÅĞ¶ÏÊÇ·ñÓÃÉÏÕ¾»ú*/
     if(/*strcmp(currentuser.username,"guest")&&*/stay<=Time) {
         char lbuf[256];
-        strcpy(lbuf, "×ÔÊ×-");
+        char tmpfile[256];
+        FILE* fp;
+        
+        strcpy(lbuf,"×ÔÊ×-");
         strftime(lbuf+5, 30, "%Y%m%d%y%H%M", localtime(&login_start_time));
-        mail_file("etc/surrender","SYSOP",lbuf);
+        sprintf(tmpfile,"tmp/.tmp%d",getpid());
+        fp = fopen(tmpfile,"w");
+        if (fp) {
+            fputs(lbuf,fp);
+            fclose(fp);
+            mail_file(tmpfile,"SYSOP","×ÔÊ×");
+        }
+        unlink(tmpfile);
     }
     if(started) {
         record_exit_time(); /* ¼ÇÂ¼ÓÃ»§µÄÍË³öÊ±¼ä Luzi 1998.10.23*/
@@ -4304,7 +4326,7 @@ int     owned;
 
     bzero(&postfile,sizeof(postfile));
     now=time(NULL);
-    postfile.accessed[11]=now/(3600*24)%100; //localtime(&now)->tm_mday;
+    postfile.accessed[11]=now/(3600*24)%100; /*localtime(&now)->tm_mday;*/
     sprintf( genbuf, "%-32.32s - %s", fh->title, userid );
     strcpy( postfile.filename, fh->filename );
     strncpy( postfile.owner, fh->owner, IDLEN+2 );

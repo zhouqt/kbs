@@ -258,6 +258,7 @@ char *chatid;
                 break;
             case 'n':
                 strncpy(chatid, bptr + 2, 8);
+                chatid[8] = 0;
                 print_chatid(chatid);
                 clrtoeol();
                 break;
@@ -1099,7 +1100,12 @@ int fd;
         printchatline(genbuf);
         chat_status( &uin, c_cmpuids, tuid ,fd);
     }
-
+#ifdef DEBUG
+    if(HAS_PERM(PERM_SYSOP)) {
+	sprintf(genbuf, "%d", tuid);
+	printchatline(genbuf);
+    }
+#endif
 }
 
 void
@@ -1280,7 +1286,9 @@ set_rec() /* set recorder */
         sprintf(genbuf, "∑øº‰£∫ [36m%s", chatroom);
         prints("[44m[33m %-21s  [33mª∞Ã‚£∫[36m%-51s[31m%2s[m", genbuf, buftopic ,(recflag==1)?"¬º":"  ");
 
-        fprintf(rec,"±æ∂Œ”… %s",currentuser.userid);
+        fprintf(rec,"∑¢–≈»À: %s (%s) ∑øº‰: %s\nª∞  Ã‚: %s\x1b[m\n\n",
+            currentuser.userid, currentuser.username, chatroom, buftopic);
+	fprintf(rec, "±æ∂Œ”… %s",currentuser.userid);
         fprintf(rec,"À˘¬ºœ¬£¨ ±º‰£∫ %s",ctime(&now));
     }else
     {

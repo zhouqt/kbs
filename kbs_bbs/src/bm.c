@@ -76,8 +76,9 @@ listdeny(int page)  /* Haohmaru.12.18.98.为那些变态得封人超过一屏的板主而写 */
         }
         if( (len = strlen( line )) > max )
             max = len;
-        if( x + len > 90 )
-            line[ 90 - x ] = '\0';
+/*        if( x + len > 90 )
+            line[ 90 - x ] = '\0';*-P-*/
+        if( x + len > 79 ) line[ 79 ] = '\0';
         if (cnt<20)/*haohmaru.12.19.98*/
             prints( "%s", line );
         cnt++;
@@ -107,56 +108,85 @@ char *uident;
     char buffer[STRLEN];
     FILE *fn;
     char filename[STRLEN];
-    int day;
+    int day, autofree = 0;
+
     now=time(0);
     strncpy(date,ctime(&now)+4,7);
     setbfile( genbuf, currboard,"deny_users" );
-    if( seek_in_file(genbuf,uident) || !strcmp(currboard,"denypost"))
+    if( seek_in_file(genbuf, uident) || !strcmp(currboard, "denypost"))
         return -1;
     if (HAS_PERM(PERM_SYSOP)||HAS_PERM(PERM_OBOARDS))
         maxdeny=70;
     else
         maxdeny=14;
 
-MUST:
-    getdata(2,0,"输入说明(按*取消): ", denymsg,30,DOECHO,NULL,YEA);
-    if (0==strlen(denymsg))
-        goto MUST;
+/*MUST:*/
+    *denymsg = 0;
+    while(0 == strlen(denymsg)) {
+	    getdata(2,0,"输入说明(按*取消): ", denymsg,30,DOECHO,NULL,YEA);
+    }
+/*	  if (0==strlen(denymsg)) goto MUST;*/
     if (denymsg[0]=='*')
         return 0;
+#ifdef DEBUG
+    autofree = askyn("该封禁是否自动解封？", YEA);
+#else
     if (HAS_PERM(PERM_SYSOP)||HAS_PERM(PERM_OBOARDS))
         sprintf(filebuf,"输入天数(0-手动解封，最长%d天)",maxdeny);
     else
+#endif /*DEBUG*/
         sprintf(filebuf,"输入天数(最长%d天)",maxdeny);
-MUST1:
-    getdata(3,0,filebuf, buf2,4,DOECHO,NULL,YEA);
-    if ((buf2[0]<'0')||(buf2[0]>'9')) goto MUST1;
-    denyday=atoi(buf2);
-    if ((denyday<0)||(denyday>maxdeny)) goto MUST1;
-    if (!(HAS_PERM(PERM_SYSOP)||HAS_PERM(PERM_OBOARDS))&&!denyday) goto MUST1;
-
-    if (denyday) {
-        struct tm* tmtime;
-        time_t daytime=now+(day+1)*24*60*60;
-        time_t undenytime=now+denyday*24*60*60;
-        now=time(0);
-        tmtime=gmtime(&undenytime);
-
-        sprintf( strtosave, "%-12.12s %-30.30s%-12s %2d月%2d日解\x1b[%um", uident,denymsg ,currentuser.userid,tmtime->tm_mon+1,tmtime->tm_mday, undenytime);/*Haohmaru 98,09,25,显示是谁什么时候封的 */
-    } else {
-        struct tm* tmtime;
-        now=time(0);
-        tmtime=gmtime(&now);
-        sprintf( strtosave, "%-12s %-30.30s%-12s  at %2d月%2d日 手动解封", uident, denymsg,currentuser.userid,tmtime->tm_mon+1,tmtime->tm_mday);
+/*MUST1:*/
+    denyday = 0;
+    while(!denyday) {
+        getdata(3,0,filebuf, buf2,4,DOECHO,NULL,YEA);
+        if ((buf2[0]<'0')||(buf2[0]>'9')) continue; /*goto MUST1;*/
+        denyday=atoi(buf2);
+        if ((denyday<0)||(denyday>maxdeny)) denyday = 0; /*goto MUST1;*/
+        else if (!(HAS_PERM(PERM_SYSOP)||HAS_PERM(PERM_OBOARDS))&&!denyday)
+            denyday = 0; /*goto MUST1;*/
+        else if ((HAS_PERM(PERM_SYSOP)||HAS_PERM(PERM_OBOARDS)) && !denyday && !autofree)
+            break;
     }
 
-    /*
-    MUST2:
-        getdata(4,0,"输入补充说明: ", buf,60,DOECHO,NULL,YEA);
-        if (0==strlen(buf))
-    	goto MUST2;
-        sprintf(deadline,"%-60s",buf);
-    */
+#ifdef DEBUG
+    if(denyday && autofree) {
+#else
+    if (denyday) {
+#endif /*DEBUG*/
+        struct tm* tmtime;
+        time_t undenytime=now+denyday*24*60*60;
+/*        time_t daytime=now+(day+1)*24*60*60;
+        now=time(0);*/
+        tmtime=gmtime(&undenytime);
+
+        sprintf( strtosave, "%-12.12s %-30.30s%-12.12s %2d月%2d日解\x1b[%um",
+                uident, denymsg ,currentuser.userid,
+                tmtime->tm_mon+1,tmtime->tm_mday, undenytime);/*Haohmaru 98,09,25,显示是谁什么时候封的 */
+    } else {
+        struct tm* tmtime;
+#ifdef DEBUG
+        time_t undenytime = now+denyday*24*60*60;
+        tmtime=gmtime(&undenytime);
+        sprintf( strtosave, "%-12.12s %-30.30s%-12.12s %2d月%2d日后手动解封\x1b[%um",
+                uident, denymsg, currentuser.userid,
+                tmtime->tm_mon+1,tmtime->tm_mday, undenytime);
+#else
+        now=time(0);
+        tmtime=gmtime(&now);
+        sprintf( strtosave, "%-12.12s %-30.30s%-12.12s at %2d月%2d日 手动解封",
+                uident, denymsg, currentuser.userid,
+                tmtime->tm_mon+1,tmtime->tm_mday);
+#endif
+    }
+
+/*
+MUST2:
+    getdata(4,0,"输入补充说明: ", buf,60,DOECHO,NULL,YEA);
+    if (0==strlen(buf))
+	goto MUST2;
+    sprintf(deadline,"%-60s",buf);
+*/
     return addtofile(genbuf,strtosave);
 }
 
@@ -356,7 +386,7 @@ Here:
                 prints("(none)\n");
                 return 0;
             }
-            while(fgets(genbuf, STRLEN, fp) != NULL)
+            while(fgets(genbuf, 256/*STRLEN*/, fp) != NULL)
             {
                 idindex = strstr(genbuf,uident);
                 find = idindex - genbuf + 1;
@@ -385,7 +415,7 @@ Here:
                 if(ldenytime > now) {
                     move(3, 0);
                     prints(genbuf);
-                    if(NA == askyn("该用户封禁时限未到，确认要解封？", NA, NA))
+                    if(NA == askyn("该用户封禁时限未到，确认要解封？", NA/*, NA*/))
                         goto Here;	/* I hate Goto!!! */
                 }
             }
@@ -410,7 +440,7 @@ Here:
             pressanykey();
         }
         else  break;
-    }
+    } /*end of while*/
     clear();
     return FULLUPDATE;
 }

@@ -486,7 +486,8 @@ char    *filename, *tmpfile, *deleted;
     }
     else{
         sprintf(delfname , ".deleted");
-        sprintf(tmpfname , ".tmpfile");}
+        sprintf(tmpfname , ".tmpfile");
+    }
 
     /*    if( (ptr = strchr( tmpfile, '/' )) != NULL ) {
      changed by alex , 97.5.2 , 修正不能删除friends的bug */ 
@@ -505,7 +506,7 @@ delete_record(filename,size,id)
 char *filename ;
 int size, id ;
 {
-    char        tmpfile[ STRLEN ], deleted[ STRLEN ];
+    char        tmpfile[ STRLEN ], deleted[ STRLEN ], lockfile[256];
     char        abuf[BUFSIZE] ;
     int         fdr, fdw, fd ;
     int         count ;
@@ -514,10 +515,23 @@ int size, id ;
         toobigmesg();
         return -1;
     }
-    tmpfilename( filename, tmpfile, deleted );
+/*
+#ifdef DEBUG
+    {
+    	char * ptr;
+	strcpy(lockfile, filename);
+	if(NULL != (ptr = strchr(lockfile, '/'))) *(ptr+1) = 0;
+	else *lockfile = 0;
+	strcat(lockfile, ".dellock");
+    }
+    if((fd = open(lockfile,O_RDWR|O_CREAT|O_APPEND, 0644)) == -1)
+        return -1 ;
+#else*/
     if((fd = open(".dellock",O_RDWR|O_CREAT|O_APPEND, 0644)) == -1)
         return -1 ;
+/*#endif DEBUG*/
     flock(fd,LOCK_EX) ;
+    tmpfilename( filename, tmpfile, deleted );
 
     if((fdr = open(filename,O_RDONLY,0)) == -1) {
         report("delrec open err");
@@ -563,10 +577,25 @@ char *filename ;
 int id1,id2,del_mode ;
 {
     struct fileheader fhdr;
-    char        tmpfile[ STRLEN ], deleted[ STRLEN ], buf[STRLEN];
+    char        tmpfile[ STRLEN ], deleted[ STRLEN ], buf[STRLEN], lockfile[256];
     int         fdr, fdw, fd;
     int         count;
 
+/*#ifdef DEBUG
+    {
+    	char * ptr;
+	strcpy(lockfile, filename);
+	if(NULL != (ptr = strchr(lockfile, '/'))) *(ptr+1) = 0;
+	else *lockfile = 0;
+	strcat(lockfile, ".dellock");
+    }
+    if((fd = open(lockfile,O_RDWR|O_CREAT|O_APPEND, 0644)) == -1)
+        return -1 ;
+#else*/
+    if((fd = open(".dellock",O_RDWR|O_CREAT|O_APPEND, 0644)) == -1)
+        return -1;
+/*#endif DEBUG*/
+    flock(fd,LOCK_EX);
     tmpfilename( filename, tmpfile, deleted );
     /*digestmode=4, 5的情形或者允许区段删除,或者不允许,这可以在
     调用函数中或者任何地方给定, 这里的代码是按照不允许删除写的,
