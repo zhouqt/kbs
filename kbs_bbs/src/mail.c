@@ -148,6 +148,7 @@ chkmail()
     extern char currmaildir[ STRLEN ] ;
     int sum,sumlimit, numlimit;/*Haohmaru.99.4.4.对收信也加限制*/
 
+    m_init();
     if( !HAS_PERM( PERM_BASIC ) ) {
         return 0;
     }
