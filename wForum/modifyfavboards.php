@@ -29,7 +29,7 @@ function showBoardGroup($secNum, $group, $boardName, $boardDesc = "") {
 ?></th></tr>
 <tr><td class=TableBody2 align=left valign=middle>
 <?php
-		$boards = bbs_getboards($section_nums[$secNum], $group, $yank);
+		$boards = bbs_getboards($section_nums[$secNum], $group, $yank | 2);
 		if ($boards != FALSE) {
 			$brd_desc = $boards["DESC"]; // ÖÐÎÄÃèÊö
 			$brd_name = $boards["NAME"];

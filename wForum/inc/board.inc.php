@@ -192,7 +192,7 @@ function board_head_var($boardDesc,$boardName,$secNum)
 <br>
 <?php 
 } 
-function boardJump(){ /* 这里占了很多运行时间和网络传输，用cache或者js优化是可能的，但是要小心权限问题。 - atppp */
+function boardJump(){
 	global $section_names;
 	global $sectionCount;
 	global $section_nums;
@@ -203,7 +203,7 @@ function boardJump(){ /* 这里占了很多运行时间和网络传输，用cache或者js优化是可能
 <?php
 	for ($i=0;$i<$sectionCount;$i++){
 		echo "<option value=\"section.php?sec=".$i."\">╋".$section_names[$i][0]."</option>";
-		$boards = bbs_getboards($section_nums[$i], 0, $yank);
+		$boards = bbs_getboards($section_nums[$i], 0, $yank | 2);
 		if ($boards != FALSE) {
 			$brd_desc = $boards["DESC"]; // 中文描述
 			$brd_name = $boards["NAME"];

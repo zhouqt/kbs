@@ -54,6 +54,7 @@ function showSearchMenu(){
 	global $section_names;
 	global $sectionCount;
 	global $section_nums;
+	global $yank;
 	global $_GET;
 	$allow_multi_query = isMultiQueryAllowed();
 	if (isset($_GET["boardName"])) $s_board = $_GET["boardName"];
@@ -76,7 +77,7 @@ function showSearchMenu(){
 <?php
 	$selectedIndex = $j = -1;
 	for ($i=0;$i<$sectionCount;$i++){
-		$boards = bbs_getboards($section_nums[$i], 0, 0); //ToDo: 二级版面没显示出来？ - atppp
+		$boards = bbs_getboards($section_nums[$i], 0, $yank | 2); //ToDo: 二级版面没显示出来？ - atppp
 		if ($boards != FALSE) {
 			$brd_desc = $boards["DESC"]; // 中文描述
 			$brd_name = $boards["NAME"];

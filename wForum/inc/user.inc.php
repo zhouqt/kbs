@@ -76,7 +76,9 @@ function showSecsJS($secNum,$group,$isFold,$isFav) {
 		// hehe 
 	} else {
 		if (!$isFav) {
-			$boards = bbs_getboards($section_nums[$secNum], $group, $yank);
+			if (!$isFold) $flag = $yank | 2;
+			else $flag = $yank;
+			$boards = bbs_getboards($section_nums[$secNum], $group, $flag);
 		} else {
 			$boards = bbs_fav_boards($select, 1);
 			if ($boards == FALSE) {
