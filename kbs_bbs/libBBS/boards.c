@@ -399,6 +399,7 @@ void brc_update(char *userid)
     unsigned int data[MAXBOARD][BRC_MAXNUM];
     size_t count;
 
+    if (brc_cache_entry==NULL) return;
     /*干脆不搞guest的这个算了*/
     if (!strcmp(userid,"guest")) return;
     sethomefile(dirfile, userid, BRCFILE);
