@@ -251,7 +251,7 @@ static int choose_file_show(struct _select_def *conf, int ii)
     if(show_mode) {
         char buf[10*1024],out[10*1024],out2[10*1024];
         FILE* fp;
-        int i,j,k,l,fsize=0,t=0;
+        int i,j,k,l,fsize=0,t=0,p=0;
         fp = fopen(res_filename[ii-1], "rb");
         if(!fp) {
             prints("\n"); clrtoeol();
@@ -261,7 +261,7 @@ static int choose_file_show(struct _select_def *conf, int ii)
         }
         fsize = fread(buf, 1, 10*1024, fp);
         fclose(fp);
-        memset(out, 0, sizeof(out));
+        memset(out, 0, fsize);
         i=0;
         if(qn[i]=='=') {
             while(i<strlen(qn)&&qn[i]!=' ') i++;
@@ -348,8 +348,10 @@ static int choose_file_show(struct _select_def *conf, int ii)
                 resetcolor();
             if(buf[i]=='\n') prints(" ");
             else prints("%c",buf[i]);
+            if(p) p=0;
+            else if(buf[i]<0) p=1;
             j++;
-            if(j>=69) {
+            if(j>=69&&p==0) {
                 t++;
                 if(t>=3) break;
                 prints("\n          ");
