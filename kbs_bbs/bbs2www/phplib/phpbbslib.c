@@ -71,6 +71,7 @@ static PHP_FUNCTION(bbs_getcurrentuinfo);
 static PHP_FUNCTION(bbs_wwwlogin);
 static PHP_FUNCTION(bbs_wwwlogoff);
 static PHP_FUNCTION(bbs_printansifile);
+static PHP_FUNCTION(bbs_print_article);
 static PHP_FUNCTION(bbs_getboard);
 static PHP_FUNCTION(bbs_checkreadperm);
 static PHP_FUNCTION(bbs_getbname);
@@ -218,6 +219,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_wwwlogin, NULL)
         PHP_FE(bbs_wwwlogoff, NULL)
         PHP_FE(bbs_printansifile, NULL)
+        PHP_FE(bbs_print_article, NULL)
 		PHP_FE(bbs_printoriginfile, NULL)
 		PHP_FE(bbs_caneditfile,NULL)
         PHP_FE(bbs_checkreadperm, NULL)
@@ -1220,6 +1222,81 @@ static PHP_FUNCTION(bbs_printansifile)
     signal(SIGSEGV, SIG_IGN);
     munmap(ptr, st.st_size);
 	RETURN_STRINGL(get_output_buffer(), get_output_buffer_len(),1);
+}
+
+static PHP_FUNCTION(bbs_print_article)
+{
+    char *filename;
+    long filename_len;
+    long linkmode;
+    char *ptr;
+    int fd;
+    struct stat st;
+    const int outbuf_len = 4096;
+    buffered_output_t *out;
+    char* attachlink;
+    long attachlink_len;
+    sigjmp_buf bus_jump;
+
+    getcwd(old_pwd, 1023);
+    chdir(BBSHOME);
+    old_pwd[1023] = 0;
+    if (ZEND_NUM_ARGS() == 1) {
+        if (zend_parse_parameters(1 TSRMLS_CC, "s", &filename, &filename_len) != SUCCESS) {
+            WRONG_PARAM_COUNT;
+        }
+        linkmode = 1;
+        attachlink=NULL;
+    } else if (ZEND_NUM_ARGS() == 2) {
+        if (zend_parse_parameters(2 TSRMLS_CC, "sl", &filename, &filename_len, &linkmode) != SUCCESS) {
+            WRONG_PARAM_COUNT;
+        }
+        attachlink=NULL;
+    } else 
+        if (zend_parse_parameters(3 TSRMLS_CC, "sls", &filename, &filename_len, &linkmode,&attachlink,&attachlink_len) != SUCCESS) {
+            WRONG_PARAM_COUNT;
+        }
+    fd = open(filename, O_RDONLY);
+    if (fd < 0)
+        RETURN_LONG(2);
+    if (fstat(fd, &st) < 0) {
+        close(fd);
+        RETURN_LONG(2);
+    }
+    if (!S_ISREG(st.st_mode)) {
+        close(fd);
+        RETURN_LONG(2);
+    }
+    if (st.st_size <= 0) {
+        close(fd);
+        RETURN_LONG(2);
+    }
+
+    ptr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
+    close(fd);
+    if (ptr == NULL)
+        RETURN_LONG(-1);
+	if ((out = alloc_output(outbuf_len)) == NULL)
+	{
+		munmap(ptr, st.st_size);
+        RETURN_LONG(2);
+	}
+
+	override_default_write(out, zend_write);
+
+    if (!sigsetjmp(bus_jump, 1)) 
+	{
+        signal(SIGBUS, sigbus);
+        signal(SIGSEGV, sigbus);
+		output_ansi_javascript(ptr, st.st_size, out, attachlink);
+		free_output(out);
+		out = NULL;
+    }
+	if (out != NULL)
+		free_output(out);
+    signal(SIGBUS, SIG_IGN);
+    signal(SIGSEGV, SIG_IGN);
+    munmap(ptr, st.st_size);
 }
 
 static void bbs_make_article_array(zval * array, struct fileheader *fh, char *flags, size_t flags_len)
