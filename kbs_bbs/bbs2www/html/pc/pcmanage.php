@@ -391,7 +391,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				{
 					$query = "UPDATE nodes SET `access` = '4' , `changed` = '".date("YmdHis")."' , `tid` = '0' WHERE `nid` = '".$nid."' ;";
 					mysql_query($query,$link);
-					if($_GET["tag"]==0)
+					if($rows[access]==0)
 						pc_update_record($link,$pc["UID"]," - 1");
 				}
 			}
