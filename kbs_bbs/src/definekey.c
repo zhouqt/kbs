@@ -491,12 +491,16 @@ static int set_keydefine_select(struct _select_def *conf)
     return SHOW_REFRESH;
 }
 
+extern int skip_key;
+
 int define_key()
 {
     struct _select_def group_conf;
     struct key_struct key;
     POINT *pts;
     int i;
+
+    skip_key = 1;
 
     if(keymem_total==0) {
         key.key = 'A';
@@ -537,6 +541,7 @@ int define_key()
     list_select_loop(&group_conf);
     save_key();
     free(pts);
+    skip_key = 0;
 
     return 0;
 }

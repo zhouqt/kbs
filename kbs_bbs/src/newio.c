@@ -579,6 +579,7 @@ int igetch()
 
 int* keybuffer;
 int keybuffer_count=0;
+int skip_key=0;
 
 int igetkey()
 {
@@ -652,7 +653,7 @@ int igetkey()
         last = ch;
     }
 
-    if(scrint&&keymem_total) {
+    if(scrint&&keymem_total&&!skip_key) {
         int i,j,k,p;
         for(i=0;i<keymem_total;i++) {
             p=!keymem[i].status[0];
