@@ -298,7 +298,7 @@ int main(int argc, char ** argv)
 		apply_boards(rollback_board, NULL);
 		apply_users(rollback_mail, NULL);
 	}
-	else if (argc == 3 && strcmp(argv[1], "-b"))
+	else if (argc == 3 && strcmp(argv[1], "-b") == 0)
 	{
 		struct boardheader *bh;
 		if ((bh = getbcache(argv[2])) == NULL)
@@ -308,7 +308,7 @@ int main(int argc, char ** argv)
 		}
 		strip_board(bh, NULL);
 	}
-	else if (argc == 3 && strcmp(argv[1], "-m"))
+	else if (argc == 3 && strcmp(argv[1], "-m") == 0)
 	{
 		struct userec *user;
 		if (!getuser(argv[2], &user))
@@ -318,7 +318,7 @@ int main(int argc, char ** argv)
 		}
 		strip_mail(user, NULL);
 	}
-	else if (argc == 3 && strcmp(argv[1], "--rollback-board"))
+	else if (argc == 3 && strcmp(argv[1], "--rollback-board") == 0)
 	{
 		struct boardheader *bh;
 		if ((bh = getbcache(argv[2])) == NULL)
@@ -328,7 +328,7 @@ int main(int argc, char ** argv)
 		}
 		rollback_board(bh, NULL);
 	}
-	else if (argc == 3 && strcmp(argv[1], "--rollback-mail"))
+	else if (argc == 3 && strcmp(argv[1], "--rollback-mail") == 0)
 	{
 		struct userec *user;
 		if (!getuser(argv[2], &user))
@@ -341,12 +341,12 @@ int main(int argc, char ** argv)
 	else
 	{
 		fprintf(stderr, "Usage:\n", argv[0]);
-		fprintf(stderr, "\t%s                        Strip all fileheaders.\n", argv[0]);
-		fprintf(stderr, "\t%s --rollback             Rollback all fileheaders.\n", argv[0]);
-		fprintf(stderr, "\t%s -b board               Strip fileheaders of a board.\n", argv[0]);
-		fprintf(stderr, "\t%s -m user                Strip fileheaders of a user's mailbox.\n", argv[0]);
-		fprintf(stderr, "\t%s --rollback-board board Rollback fileheaders of a board.\n", argv[0]);
-		fprintf(stderr, "\t%s --rollback-mail user   Rollback fileheaders of a user's mailbox.\n", argv[0]);
+		fprintf(stderr, "  %s                        Strip all fileheaders.\n", argv[0]);
+		fprintf(stderr, "  %s --rollback             Rollback all fileheaders.\n", argv[0]);
+		fprintf(stderr, "  %s -b board               Strip fileheaders of a board.\n", argv[0]);
+		fprintf(stderr, "  %s -m user                Strip fileheaders of a user's mailbox.\n", argv[0]);
+		fprintf(stderr, "  %s --rollback-board board Rollback fileheaders of a board.\n", argv[0]);
+		fprintf(stderr, "  %s --rollback-mail user   Rollback fileheaders of a user's mailbox.\n", argv[0]);
 		exit(-1);
 	}
 
