@@ -70,6 +70,8 @@ int DealParameters(int argc, char **argv)
         case 'w':
             printf("Set Work Directory:%s\n", optarg);
             strncpy(WorkDir, optarg, MAX_PATH - 1);
+            if (WorkDir[strlen(WorkDir)-1]!='/')
+		strcat(WorkDir,"/");
             break;
         case 'o':
             printf("Set OutputDirectory:%s\n", optarg);
@@ -121,7 +123,7 @@ int DealParameters(int argc, char **argv)
         task_head->next = NULL;
     }
     if (!task_head) {
-        printf("usage:%s -o out_directory -d announce_dir directory_need_deal_with\n", argv[0]);
+        printf("usage:%s -w tmp_directory -o out_directory -d announce_dir directory_need_deal_with\n", argv[0]);
         return -1;
     }
     return 0;
@@ -221,9 +223,13 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
             char *attach_ptr, *attach_filename, *p;
             char dirname[MAXLINELEN];
 	    int asize;
+            int ret;
 
-            if (fgets(srcLine, MAXLINELEN, psrcFile) == 0)
+            ret=attach_fgets(srcLine, MAXLINELEN, psrcFile);
+            if (ret==0)
                 break;
+            if (ret<0)
+                is_attach=1;
             if (fputs(srcLine, pBBSFile) == EOF)
                 perror("fputs error bbs file:");
 
