@@ -752,20 +752,6 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
     temp_numposts=0;/*Haohmaru.99.4.02.让爱灌水的人哭去吧//grin*/
 }
 
-int
-valid_ident( ident )
-char *ident;
-{
-    static char *invalid[] = { "unknown@", "root@", "gopher@", "bbs@",
-        "guest@", NULL };
-    int         i;
-
-    for( i = 0; invalid[i] != NULL; i++ )
-        if( strstr( ident, invalid[i] ) != NULL )
-            return 0;
-    return 1;
-}
-
 void
 write_defnotepad()
 {

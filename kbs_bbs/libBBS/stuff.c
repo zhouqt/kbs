@@ -892,3 +892,17 @@ char    *userid;
     return 0;
 }
 
+int
+valid_ident( ident )
+char *ident;
+{
+    static char *invalid[] = { "unknown@", "root@", "gopher@", "bbs@",
+        "guest@", NULL };
+    int         i;
+
+    for( i = 0; invalid[i] != NULL; i++ )
+        if( strstr( ident, invalid[i] ) != NULL )
+            return 0;
+    return 1;
+}
+
