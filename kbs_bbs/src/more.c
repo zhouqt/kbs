@@ -761,14 +761,17 @@ void mem_printbotline(int l1, int l2, int total, int read, int size)
 	else
 		n %= 3;*/
     move(t_lines - 1, 0);
+    resetcolor();
 /*	prints
 	    ("\033[1;44;32m%s (%d%%) µÚ(%d-%d)ĞĞ \033[33m| %s | h ¸¨ÖúËµÃ÷\033[m",
 	     (read >= size) ? "¿´µ½Ä©Î²À²" : "ÏÂÃæ»¹ÓĞà¸",
 	     total ? (100 * l2 / total) : (100 * read / size), l1, l2, s[n]);*/
     if (currentuser != NULL && DEFINE(currentuser, DEF_HIGHCOLOR))
-        prints("[1;44m[32mÏÂÃæ»¹ÓĞà¸ (%d%%)[33m   ©¦ ½áÊø ¡û <q> ©¦ ¡ü/¡ı/PgUp/PgDn ÒÆ¶¯ ©¦ ? ¸¨ÖúËµÃ÷ ©¦     [m", total ? (100 * l2 / total) : (100 * read / size));
+        prints("[1;44m[32mÏÂÃæ»¹ÓĞà¸ (%d%%)  µÚ(%d-%d)ĞĞ  ¹²%dĞĞ[33m | gÌø×ª | jkÉÏÏÂÆª | /?ËÑË÷ |", total ? (100 * l2 / total) : (100 * read / size), l1, l2, total);
     else
-        prints("[44m[32mÏÂÃæ»¹ÓĞà¸ (%d%%)[33m   ©¦ ½áÊø ¡û <q> ©¦ ¡ü/¡ı/PgUp/PgDn ÒÆ¶¯ ©¦ ? ¸¨ÖúËµÃ÷ ©¦     [m", total ? (100 * l2 / total) : (100 * read / size));
+        prints("[44m[32mÏÂÃæ»¹ÓĞà¸ (%d%%)  µÚ(%d-%d)ĞĞ  ¹²%dĞĞ[33m | gÌø×ª | jkÉÏÏÂÆª | /?ËÑË÷ |", total ? (100 * l2 / total) : (100 * read / size), l1, l2, total);
+    clrtoeol();
+    resetcolor();
 }
 
 int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)

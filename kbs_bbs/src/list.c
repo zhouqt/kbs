@@ -203,7 +203,7 @@ char msgchar(struct user_info *uin, int *isfriend)
 
 int do_userlist()
 {
-    int i;
+    int i,y,x;
     char user_info_str[256 /*STRLEN*2 */ ], pagec;
     char tbuf[80];
     int override;
@@ -289,22 +289,19 @@ int do_userlist()
         pagec = pagerchar(usernum,&uentp, uentp.pager, &isfriend);
         strncpy(tbuf, (real_user_names) ? uentp.realname : (showexplain && override) ? fexp : uentp.username, 80);
         tbuf[80]=0;
-        while(num_noans_chr(tbuf)<16) {
-            int i=strlen(tbuf);
-            tbuf[i+1]=0;
-            tbuf[i]=32;
-        }
-        while(num_noans_chr(tbuf)>16) {
-            int i=strlen(tbuf);
-            tbuf[i-1]=0;
-        }
+        getyx(&y, &x);
+        move(y, 20);
+        disable_move = false;
+        prints(tbuf);
+        disable_move = true;
+        move(y, x);
         sprintf(user_info_str,
                  /*---	modified by period	2000-10-21	ÔÚÏßÓÃ»§Êı¿ÉÒÔ´óÓÚ1000µÄ
                          " %3d%2s%s%-12.12s%s%s %-16.16s%s %-16.16s %c %c %s%-17.17s[m%5.5s\n",
                  ---*/
-                " %4d%2s%s%-12.12s%s%s %s%s %-16.16s %c %c %s%-16.16s[m%5.5s\n", i + 1 + page, (override) ? (uentp.invisible ? "££" : FRIENDSIG) : (uentp.invisible ? "£ª" : ""), 
+                " %4d%2s%s%-12.12s%s%s [16C%s %-16.16s %c %c %s%-16.16s[m%5.5s\n", i + 1 + page, (override) ? (uentp.invisible ? "££" : FRIENDSIG) : (uentp.invisible ? "£ª" : ""), 
                 (override) ? "[1;32m" : "", uentp.userid, (override) ? "[m" : "", 
-                (override && showexplain) ? "[1;31m" : "", tbuf, "[m", 
+                (override && showexplain) ? "[1;31m" : "", "[m", 
                 (((pagec == ' ' || pagec == 'O')) || HAS_PERM(currentuser, PERM_SYSOP)) ? uentp.from : FROMSTR,
                 pagec, msgchar(&uentp, &isfriend), 
                 (uentp.invisible == true)? "[34m" : "", modestring(uentp.mode, uentp.destuid, 0,        /* 1->0 ²»ÏÔÊ¾ÁÄÌì¶ÔÏóµÈ modified by dong 1996.10.26 */
@@ -317,9 +314,7 @@ int do_userlist()
 
 #endif                          /*  */
         clrtoeol();
-        disable_move = false;
         prints("%s", user_info_str);
-        disable_move = true;
     }
 #undef FROMSTR    
 #undef FRIENDSIG    
