@@ -3,7 +3,7 @@
 
 # 修改这里的参数定制您的站点
 # BBSHOME 表示您的 BBS 所在的目录
-BBSHOME=/home/bbs
+BBSHOME=/usr/local/bbs
 
 # BBSSITE 表示您采用的站点定制文件
 BBSSITE=fb2k-v2
