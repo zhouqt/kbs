@@ -5,10 +5,6 @@
 	 */
   require("funcs.php");
   if ($loginok!=1) {
-        setcookie("UTMPKEY","",time() - 360000,"");
-        setcookie("UTMPNUM","",time() - 360000,"");
-        setcookie("UTMPUSERID","",time() - 360000,"");
-        setcookie("LOGINTIME","",time() - 360000,"");
 ?>
 <html>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
