@@ -84,6 +84,7 @@ int tt_game() {
   int m, n, score, round;
   int t;
   int ch;
+  int wrong=0;
 
   srand(getpid() + time(NULL));
   tt_load_record();
@@ -127,11 +128,13 @@ start:
       }
       m++;
       usleep(60000);
-    }
+    }else
+	  wrong++;
   }
-  score = 360000/(times(NULL) - t);
+  score = 18000 * CLK_TCK /(times(NULL) - t);
   snprintf(fbuf, 10, "%5.2f", score/10.0);
   prints("\n\nSpeed=%-5s WPMs\n\n", fbuf);
-  if(tt_check_record(score)) prints("\033[1;33m祝贺！您刷新了自己的纪录！\033[m\n\n");
+  if(wrong > 30) prints("\033[1;32m你错的太多了！成绩无效\n\n");
+  else if(tt_check_record(score)) prints("\033[1;33m祝贺！您刷新了自己的纪录！\033[m\n\n");
   goto start;
 }
