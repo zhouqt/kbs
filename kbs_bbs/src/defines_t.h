@@ -69,15 +69,14 @@ int mark_post(int ent,struct fileheader *fhdr,char *direct);
 int post_article();                         /*ÓÃ»§ POST ÎÄÕÂ */
 int do_send(char* userid,char* title);
 int post_cross(char islocal,int mode);
-int a_Save(char    *path,char *key,struct fileheader *fileinfo,int nomsg,
-	char *direct,int ent);
-int a_Import(char *path,char *key,struct fileheader *fileinfo,int nomsg,char *direct,int ent);  /* Leeward 98.04.15 */
 int digest_mode();
 int thread_mode();
 int deleted_mode();
 int junk_mode();
 int Goodbye();
-
+int post_reply(int ent,struct fileheader *fileinfo,char *direct );
+int sequential_read2(int ent);
+void setquotefile(char filepath[]);
 
 /*vote.c*/
 void makevdir(char* bname);
@@ -87,6 +86,8 @@ int vote_flag(char* bname,char val,int mode);
 
 /* mail.c */
 int chkmail();
+int getmailnum(char recmaildir[STRLEN]);
+int get_mailnum();
 
 /* maintain.c */
 int check_systempasswd();
@@ -106,10 +107,13 @@ int getfriendstr();
 /* delete.c */
 int kick_user(struct user_info *userinfo);
 int d_user(char cid[IDLEN]);
+void getuinfo(FILE *fn,struct userec *ptr_urec);
 
 /* read.c */
 int sread(int passonly,int readfirst,int auser,int pnum,struct fileheader *ptitle);
 void fixkeep(char* s,int first,int last);
+void i_read( int cmdmode,char *direct ,int (*dotitle)() ,char *(*doentry)(char*,int,char*),struct one_key *rcmdlist,int ssize);
+void u_exit();
 
 /* sendmsg.c */
 void s_msg();
@@ -127,6 +131,11 @@ int vedit_post(char *filename,int saveheader );
 
 /* Announce.c */
 void a_prompt(int bot,char* pmt,char* buf);
+int a_SeSave(char    *path,char*key,struct fileheader *fileinfo,int    nomsg);
+int a_menusearch(char* path,char* key,int level);
+int a_Save(char    *path,char *key,struct fileheader *fileinfo,int nomsg,
+	char *direct,int ent);
+int a_Import(char *path,char *key,struct fileheader *fileinfo,int nomsg,char *direct,int ent);  /* Leeward 98.04.15 */
 
 /* goodbye.c */
 void showstuff(char buf[256]);

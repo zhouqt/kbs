@@ -199,9 +199,7 @@ offline()
     }
 }
 
-getuinfo(fn, ptr_urec)
-FILE *fn;
-struct userec *ptr_urec;
+void getuinfo(FILE *fn,struct userec *ptr_urec)
 {
     fprintf(fn,"\n\nÄúµÄ´úºÅ     : %s\n", ptr_urec->userid);
     fprintf(fn,"ÄúµÄêÇ³Æ     : %s\n", ptr_urec->username);
@@ -318,7 +316,7 @@ char cid[IDLEN];
     f_rm(tmpbuf);
     sprintf(genbuf,"tmp/email/%s", lookupuser->userid) ;
     f_rm(genbuf);
-    apply_utmp(kickuser,0,userid,0);
+    apply_utmp((APPLY_UTMP_FUNC)kickuser,0,userid,0);
     setuserid( id, "" );
     lookupuser->userlevel = 0;
     strcpy(lookupuser->address, "");
@@ -371,7 +369,7 @@ int kick_user(struct user_info *userinfo)
             clear() ;
             return 0 ;
         }
-    	return apply_utmp(kickuser,0,userid,0);
+    	return apply_utmp((APPLY_UTMP_FUNC)kickuser,0,userid,0);
     }else
     {
         uin=*userinfo;

@@ -895,7 +895,7 @@ int  pid;
     data.pid=pid;
     data.result=NULL;
 
-    apply_utmp(_t_search,20,sid,&data);
+    apply_utmp((APPLY_UTMP_FUNC)_t_search,20,sid,&data);
     
     return data.result;
 }
@@ -929,10 +929,10 @@ char *userid;
     if (HAS_PERM(currentuser,PERM_SYSOP)) return YEA;
 
     sethomefile( path, userid , "/ignores");
-    if (search_record(path, buf, IDLEN+1, cmpinames, currentuser->userid))
+    if (search_record(path, buf, IDLEN+1, (RECORD_FUNC_ARG)cmpinames, currentuser->userid))
         return NA;
     sethomefile( path, userid , "/bads");
-    if (search_record(path, buf, IDLEN+1, cmpinames, currentuser->userid))
+    if (search_record(path, buf, IDLEN+1, (RECORD_FUNC_ARG)cmpinames, currentuser->userid))
         return NA;
     else
         return YEA;

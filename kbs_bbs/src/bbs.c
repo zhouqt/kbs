@@ -1113,12 +1113,12 @@ char *direc;
     digest_name[0]='G';
     ptr = strrchr(new_dir, '/') + 1;
     strcpy(ptr, DIGEST_DIR);
-    pos=search_record(new_dir, &fh, sizeof(fh), cmpname, digest_name); /* 文摘目录下 .DIR中 搜索 该POST */
+    pos=search_record(new_dir, &fh, sizeof(fh),(RECORD_FUNC_ARG)cmpname, digest_name); /* 文摘目录下 .DIR中 搜索 该POST */
     if(pos<=0)
     {
         return;
     }
-    delete_record(new_dir,sizeof(struct fileheader),pos,cmpname,digest_name);
+    delete_record(new_dir,sizeof(struct fileheader),pos,(RECORD_FUNC_ARG)cmpname,digest_name);
     *ptr='\0';
     sprintf(buf,"%s%s",new_dir,digest_name);
     unlink(buf);
@@ -1379,9 +1379,7 @@ char *direct ;
 
 /* Add by SmallPig */
 int
-post_cross(islocal,mode)    /* (自动生成文件名) 转贴或自动发信 */
-char islocal;
-int mode;
+post_cross(char islocal,int mode)    /* (自动生成文件名) 转贴或自动发信 */
 {
     struct fileheader postfile ;
     char        filepath[STRLEN], fname[STRLEN];
