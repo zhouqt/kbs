@@ -78,7 +78,8 @@ struct boardheader {            /* This structure is used to hold data in */
 typedef struct fileheader {     /* This structure is used to hold data in */
     char filename[FILENAME_LEN];      /* the DIR files */
     int id, groupid, reid;
-    char unused1[48];
+    char unused1[46];
+    char innflag[2];
     char owner[STRLEN];
     char title[STRLEN];
     unsigned level;

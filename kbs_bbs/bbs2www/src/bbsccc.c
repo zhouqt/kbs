@@ -128,16 +128,16 @@ int post_cross2(char islocal, char *board)
     strncpy(postfile.title, save_title, STRLEN);
     if (local_article == 1)    /* local save */
          {
-        postfile.filename[FILENAME_LEN - 1] = 'L';
-        postfile.filename[FILENAME_LEN - 2] = 'L';
+        postfile.innflag[1] = 'L';
+        postfile.innflag[0] = 'L';
         }
     
     else
          {
         struct userec *user = getcurrusr();
 
-        postfile.filename[FILENAME_LEN - 1] = 'S';
-        postfile.filename[FILENAME_LEN - 2] = 'S';
+        postfile.innflag[1] = 'S';
+        postfile.innflag[0] = 'S';
         outgo_post2(&postfile, board, user->userid, user->username, save_title);
         } sprintf(buf, "boards/%s/%s", board, DOT_DIR);
     if (!strcmp(board, "syssecurity")  &&strstr(quote_title, "修改 ")  &&strstr(quote_title, " 的权限"))

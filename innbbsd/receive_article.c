@@ -766,7 +766,7 @@ char   *pathname, *firstpath;
 	str_decode(conv_buf, SUBJECT);
 	strncpy(header.title, conv_buf, STRLEN);
 	header.title[STRLEN - 1] = '\0';
-	header.filename[FILENAME_LEN - 1] = 'M';
+	header.innflag[1] = 'M';
 	/* if append record record, should return fail message */
 	after_post(NULL, &header, board, NULL);
 	return name;

@@ -2042,11 +2042,11 @@ int post_article(char *q_file, struct fileheader *re_file)
 
     strncpy(post_file.title, save_title, STRLEN);
     if (aborted == 1 || !(bp->flag & BOARD_OUTFLAG)) {  /* local save */
-        post_file.filename[FILENAME_LEN - 1] = 'L';
-        post_file.filename[FILENAME_LEN - 2] = 'L';
+        post_file.innflag[1] = 'L';
+        post_file.innflag[0] = 'L';
     } else {
-        post_file.filename[FILENAME_LEN - 1] = 'S';
-        post_file.filename[FILENAME_LEN - 2] = 'S';
+        post_file.innflag[1] = 'S';
+        post_file.innflag[0] = 'S';
         outgo_post(&post_file, currboard, save_title);
     }
     Anony = 0;                  /*Inital For ShowOut Signature */

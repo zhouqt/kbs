@@ -2,19 +2,20 @@
 #
 # $Id$
 
+BBS_SRC=../../src
 DATE = parsedate.o timefmt.o
 
 OBJ  = bbspost.o ${BBS_SRC}/src/record.c
 
 all:	parsedate bbspost fillperl
 
-.c.o:   ;   $(CC) ${CFLAGS} -I${BBS_SRC}/include -c $*.c
+.c.o:   ;   $(CC) ${CFLAGS} -I${BBS_SRC} -c $*.c
 
 parsedate: ${DATE}
 	${CC} -o parsedate ${DATE}
 
 bbspost: ${OBJ}
-	${CC} ${CFLAGS} -I${BBS_SRC}/include -o bbspost ${OBJ} ${LIBCRYPT} -L${BBS_SRC}/lib -lBBS
+	${CC} ${CFLAGS} -I${BBS_SRC} -o bbspost ${OBJ} ${LIBCRYPT} -L${BBS_SRC}/lib -lBBS
 
 clean:
 	rm -rf *.o *~ bbspost parsedate

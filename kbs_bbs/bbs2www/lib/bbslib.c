@@ -736,11 +736,11 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
 
     strncpy(post_file.title, title, STRLEN);
     if (local_save == 1) {      /* local save */
-        post_file.filename[FILENAME_LEN - 1] = 'L';
-        post_file.filename[FILENAME_LEN - 2] = 'L';
+        post_file.innflag[1] = 'L';
+        post_file.innflag[0] = 'L';
     } else {
-        post_file.filename[FILENAME_LEN - 1] = 'S';
-        post_file.filename[FILENAME_LEN - 2] = 'S';
+        post_file.innflag[1] = 'S';
+        post_file.innflag[0] = 'S';
         outgo_post2(&post_file, board, user->userid, user->username, title);
     }
 

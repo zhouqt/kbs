@@ -167,8 +167,8 @@ void cancelpost(board, userid, fh, owned, autoappend)
         setbdir((owned) ? 5 : 4, oldpath, board);
         append_record(oldpath, &postfile, sizeof(postfile));
     }
-    if ((fh->filename[FILENAME_LEN - 1] == 'S')
-        && (fh->filename[FILENAME_LEN - 2] == 'S')
+    if ((fh->innflag[1] == 'S')
+        && (fh->innflag[0] == 'S')
         && (atoi(fh->filename + 2) > now - 14 * 86400)) {
         FILE *fp;
         char buf[256];
@@ -518,11 +518,11 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
     } else
         strncpy(postfile.title, save_title, STRLEN);
     if (local_article == 1) {   /* local save */
-        postfile.filename[FILENAME_LEN - 1] = 'L';
-        postfile.filename[FILENAME_LEN - 2] = 'L';
+        postfile.innflag[1] = 'L';
+        postfile.innflag[0] = 'L';
     } else {
-        postfile.filename[FILENAME_LEN - 1] = 'S';
-        postfile.filename[FILENAME_LEN - 2] = 'S';
+        postfile.innflag[1] = 'S';
+        postfile.innflag[0] = 'S';
         outgo_post(&postfile, toboard, save_title);
     }
     /*   setbdir(digestmode, buf, currboard );Haohmaru.99.11.26.改成下面一行，因为不管是转贴还是自动发文都不会用到文摘模式 */
