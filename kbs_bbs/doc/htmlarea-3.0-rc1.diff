@@ -1,6 +1,6 @@
-diff -u -r HTMLArea-3.0-rc1/htmlarea.js htmlarea/htmlarea.js
---- HTMLArea-3.0-rc1/htmlarea.js	2004-03-01 11:37:54.000000000 -0800
-+++ htmlarea/htmlarea.js	2005-01-04 22:18:32.000000000 -0800
+diff -Naur htmlarea3rc1/htmlarea.js htmlarea/htmlarea.js
+--- htmlarea3rc1/htmlarea.js	2004-03-01 11:37:54.000000000 -0800
++++ htmlarea/htmlarea.js	2005-01-16 17:31:48.000000000 -0800
 @@ -654,9 +654,10 @@
  			// call previous submit methods if they were there.
  			if (typeof a != "undefined") {
@@ -22,8 +22,8 @@ diff -u -r HTMLArea-3.0-rc1/htmlarea.js htmlarea/htmlarea.js
  			    case "f_border" : img.border = parseInt(value || "0"); break;
  			    case "f_align"  : img.align	 = value; break;
  			    case "f_vert"   : img.vspace = parseInt(value || "0"); break;
-diff -u -r HTMLArea-3.0-rc1/popups/insert_image.html htmlarea/popups/insert_image.html
---- HTMLArea-3.0-rc1/popups/insert_image.html	2004-03-01 11:37:56.000000000 -0800
+diff -Naur htmlarea3rc1/popups/insert_image.html htmlarea/popups/insert_image.html
+--- htmlarea3rc1/popups/insert_image.html	2004-03-01 11:37:56.000000000 -0800
 +++ htmlarea/popups/insert_image.html	2005-01-03 13:19:28.000000000 -0800
 @@ -37,7 +37,7 @@
      }
