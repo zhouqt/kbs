@@ -996,7 +996,7 @@ int mail_read(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     sprintf(notgenbuf, "%s/%s", buf, fileinfo->filename);
     delete_it = replied = false;
 
-    if(stat(notgenbuf,&st) != -1){
+    if(lstat(notgenbuf,&st) != -1){
 		if (S_ISLNK(st.st_mode)){
 			stuffmode = 1;
 		}
