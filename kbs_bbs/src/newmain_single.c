@@ -445,7 +445,6 @@ void login_query()
             uid[strlen(uid) - 1] = 0;
         }
         if (strcmp(uid, "new") == 0) {
-#ifdef LOGINASNEW
             if (check_ban_IP(fromhost, buf) <= 0) {
                 new_register();
                 sethomepath(tmpstr, currentuser->userid);
@@ -456,6 +455,7 @@ void login_query()
                 system(buf);
                 break;
             }
+#ifdef LOGINASNEW
             prints("±¾ÏµÍ³ÒòÎª %s µÄÔ­Òò½ûÖ¹ÄúËùÔÚÍø¶Î×¢²áĞÂÓÃ»§\n", buf);
 #else
             prints("[37m±¾ÏµÍ³Ä¿Ç°ÎŞ·¨ÒÔ new ×¢²á, ÇëÓÃ guest ½øÈë.[m\n");
