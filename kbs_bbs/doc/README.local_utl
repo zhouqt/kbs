@@ -35,7 +35,7 @@ gen_title       升级为smth系统需要用到的，调整版面列表里面所有的版面文章都是文章
 cnv_bh2         升级代码用到，把 .Search 放入 .BOARDS 文件
 resetMailTotal.c 校正usedspace /* used space of user's mailbox, in bytes */ 错误
 idx0Ann.c       制作精华区索引需要用到的程序，脚本在cn.bbs.smth组里。
-Xclean          清理某些文件的
+Xclean          清理某些文件的 (这个程序有问题，大家不要用！！- atppp)
 find_rm_lost    查找和删除丢失到board目录下的文章
 statkiller.c    杀手游戏的排行榜，可惜我执行的时候Segmentation fault :(
 fixdir.c        修复.DIR文件的错误
@@ -45,3 +45,4 @@ fixwebmsg.c     fixwebmsg 用来修正 webmsg 的一些错误
 showipdeny.c    查看因为短时间重复上站被封ID IP记录，修改里面的"surrender"为任
                 意已有的版名就可以用了
 calc_effsize    计算文章实际大小的，就是除去开头结尾的垃圾信息(作用不大)
+settoptitle     同步共享内存里面的版面置顶数目，如果版面置顶消失就运行一下这个程序
