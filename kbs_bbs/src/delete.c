@@ -287,7 +287,7 @@ PERM_DENYMAIL发信
     j=atoi(day);
     if(j<=0) return;
     
-    if(ans[0]=='1'&&compute_user_value(currentuser)<=j){
+    if(compute_user_value(currentuser)<=j){
     	prints("\n\n对不起，天数不可以大于生命力...");
     	pressanykey();
     	return;
