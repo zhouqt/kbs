@@ -617,7 +617,7 @@ static int procheader(char *name, struct zm_fileinfo *zi)
             }
             /* try to rename */
             namelen = strlen(name);
-            tmpname = alloca(namelen + 5);
+            tmpname = malloc(namelen + 5);
             memcpy(tmpname, name, namelen);
             ptr = tmpname + namelen;
             *ptr++ = '.';
@@ -625,14 +625,17 @@ static int procheader(char *name, struct zm_fileinfo *zi)
             do {
                 sprintf(ptr, "%d", i++);
             } while (i < 1000 && stat(tmpname, &sta) == 0);
-            if (i == 1000)
+            if (i == 1000) {
+                free(tmpname);
                 return ERROR;
+            }
             free(name_static);
             name_static = malloc(strlen(tmpname) + 1);
             if (!name_static)
                 zmodem_error(1, 0, "out of memory");
             strcpy(name_static, tmpname);
             zi->fname = name_static;
+            free(tmpname);
         }
     }
 

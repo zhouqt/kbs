@@ -621,6 +621,10 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
     else
         attachch=' ';
     TITLE = ent->title;         /*文章标题TITLE */
+    if ((type=='d')||(type=='D')) { //置顶文章
+        sprintf(buf, " \x1b[1;31m[置顶]\x1b[m %-12.12s %s %c● %-44.44s ", ent->owner, date, attachch, TITLE);
+        return buf;
+    }
 
     if (uinfo.mode != RMAIL && digestmode != 1 && digestmode != 4 && digestmode != 5) { /* 新方法比较*/
             if ((ent->groupid != ent->id)&&(digestmode==DIR_MODE_THREAD||!strncasecmp(TITLE,"Re:",3)||!strncmp(TITLE,"回复:",5))) {      /*Re的文章 */
