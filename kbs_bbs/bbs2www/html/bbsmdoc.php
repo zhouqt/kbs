@@ -141,6 +141,16 @@ else echo "box";
 <input type="button" value="ÇÐ»»G" onclick="document.form1.mode.value=3; document.form1.submit();">
 <input type="button" value="ÇÐ»»²»¿ÉRe" onclick="document.form1.mode.value=4; document.form1.submit();">
 <input type="button" value="ÇÐ»»ÖÃ¶¥" onclick="document.form1.mode.value=5; document.form1.submit();">
+<input type="button" value="ÊÕÂ¼¾«»ª" onclick="document.form1.mode.value=6; document.form1.submit();">
+Ë¿Â·ÐòºÅ:<select name="num" class="input"  style="WIDTH: 40px">
+<?php
+		for($ii = 0; $ii < 40; $ii++){
+?>
+<option value=<?php echo $ii;?>><?php echo $ii;?>
+<?php
+		}
+?>
+</option></select> 
 </form>
 <?php
 		if ($start > 0)
