@@ -75,7 +75,7 @@ int ov_send(), m_internet(), mailall(), suicide();
 
 int t_users(), t_friends(), t_rusers(), t_list(), t_monitor();
 int wait_friend();
-int t_query(), t_talk(), t_pager(), t_override(), x_cloak();
+int t_talk(), t_pager(), t_override(), x_cloak();
 
 #ifdef IRC
 int t_irc()
@@ -134,6 +134,11 @@ int pc_add_user();
 int pc_choose_user();
 #endif
 
+int t_query_null()
+{
+    return t_query(NULL);
+}
+
 /*Add By Excellent */
 struct scommandlist {
     char *name;
@@ -175,7 +180,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"UserDefine", x_userdefine},
     {"ShowFriends", t_friends},
     {"ShowLogins", t_users},
-    {"QueryUser", t_query},
+    {"QueryUser", t_query_null},
     {"WaitFriend", wait_friend},
     {"Talk", t_talk},
     {"SetPager", t_pager},
