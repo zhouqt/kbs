@@ -199,7 +199,7 @@ int main(int argc, char **argv)
 			   }
 			   prints(buf);
                         move(23, 0);
-                        cleartoeol();
+                        clrtoeol();
                         prints("\x1b[m                                \x1b[5;1;33m按任何键继续 ..\x1b[m");
                         igetkey();
                         break;
