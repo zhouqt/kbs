@@ -699,14 +699,6 @@ int n;
                                 str+=i+1;
                                 break;
                              }
-                             else if(*(str+i)=='m') {
-                                memcpy(slp->data+reg_col+i+1, slp->data+reg_col, LINELEN-reg_col-i-1);
-                                memcpy(slp->data, str, i+1);
-                                slp->len+=i+1;
-                                str+=i+1;
-                                reg_col+=i+1;
-                                continue;
-                             }
                       }
                       if(*str == ''&&*(str+1)=='['&&*(str+2)=='s') {
                         str+=3;
