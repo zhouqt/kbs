@@ -21,6 +21,8 @@
 			$start = $_GET["start"];
 		else
 			$start = 999999;   //default*/
+                if (strstr($mail_path,'..'))
+			html_error_quit("读取邮件数据失败!");
 		$mail_fullpath = bbs_setmailfile($currentuser["userid"],$mail_path);
 		$mail_num = bbs_getmailnum2($mail_fullpath);
 		if($mail_num < 0 || $mail_num > 30000)http_error_quit("Too many mails!");

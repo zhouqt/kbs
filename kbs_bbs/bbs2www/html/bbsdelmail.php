@@ -12,6 +12,9 @@
 		$dirname = $_GET["dir"];
 		$title = $_GET["title"];
 
+                if (strstr($dirname,'..'))
+                        html_error_quit("读取邮件数据失败!");
+
 		$ret = bbs_delmail($dirname,$filename);
 		switch($ret)
 		{
