@@ -89,7 +89,8 @@ static void create_userdata(olduserec * olduser)
 static void convert_userec(struct olduserec *olduser, struct userec *user)
 {
     memcpy(user->userid, olduser->userid, IDLEN + 2);
-    memcpy(user->flags, olduser->flags, 2);
+    user->flags=olduser->flags[0];
+    user->title=0;
     user->firstlogin = olduser->firstlogin;
     memcpy(user->lasthost, olduser->lasthost, 16);
     user->numlogins = olduser->numlogins;

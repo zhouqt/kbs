@@ -18,13 +18,13 @@ int login(struct userec *user)
     ui.active = true;
 
     /* Bigman 2000.8.29 ÖÇÄÒÍÅÄÜ¹»ÒþÉí */
-    if ((HAS_PERM(user, PERM_CHATCLOAK) || HAS_PERM(user, PERM_CLOAK)) && (user->flags[0] & CLOAK_FLAG))
+    if ((HAS_PERM(user, PERM_CHATCLOAK) || HAS_PERM(user, PERM_CLOAK)) && (user->flags & CLOAK_FLAG))
         ui.invisible = true;
     ui.pager = 0;
     if (DEFINE(user, DEF_FRIENDCALL)) {
         ui.pager |= FRIEND_PAGER;
     }
-    if (user->flags[0] & PAGER_FLAG) {
+    if (user->flags & PAGER_FLAG) {
         ui.pager |= ALL_PAGER;
         ui.pager |= FRIEND_PAGER;
     }

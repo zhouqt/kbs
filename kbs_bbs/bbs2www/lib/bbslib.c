@@ -2089,13 +2089,13 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
          */
         if ((HAS_PERM(user, PERM_CHATCLOAK)
              || HAS_PERM(user, PERM_CLOAK))
-            && (user->flags[0] & CLOAK_FLAG))
+            && (user->flags & CLOAK_FLAG))
             ui.invisible = true;
         ui.pager = 0;
         if (DEFINE(user, DEF_FRIENDCALL)) {
             ui.pager |= FRIEND_PAGER;
         }
-        if (user->flags[0] & PAGER_FLAG) {
+        if (user->flags & PAGER_FLAG) {
             ui.pager |= ALL_PAGER;
             ui.pager |= FRIEND_PAGER;
         }
@@ -2175,11 +2175,11 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
 
 static void setflags(struct userec *u, int mask, int value)
 {
-    if (((u->flags[0] & mask) && 1) != value) {
+    if (((u->flags & mask) && 1) != value) {
         if (value)
-            u->flags[0] |= mask;
+            u->flags |= mask;
         else
-            u->flags[0] &= ~mask;
+            u->flags &= ~mask;
     }
 }
 int www_user_logoff(struct userec *user, int useridx, struct user_info *puinfo, int userinfoidx)

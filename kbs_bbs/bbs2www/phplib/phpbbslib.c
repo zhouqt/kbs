@@ -215,8 +215,8 @@ static void assign_user(zval * array, struct userec *user, int num)
     add_assoc_stringl(array, "lasthost", user->lasthost, IPLEN, 1);
     add_assoc_long(array, "numlogins", user->numlogins);
     add_assoc_long(array, "numposts", user->numposts);
-    add_assoc_long(array, "flag1", user->flags[0]);
-    add_assoc_long(array, "flag2", user->flags[1]);
+    add_assoc_long(array, "flag1", user->flags);
+    add_assoc_long(array, "title", user->title);
     add_assoc_string(array, "username", user->username, 1);
     add_assoc_stringl(array, "md5passwd", (char *) user->md5passwd, 16, 1);
     add_assoc_string(array, "realemail", ud.realemail, 1);
@@ -727,7 +727,7 @@ static int bbs_cmpboard(const struct newpostdata *brd, const struct newpostdata 
 {
     register int type = 0;
 
-    if (!(currentuser->flags[0] & BRDSORT_FLAG)) {
+    if (!(currentuser->flags & BRDSORT_FLAG)) {
         type = brd->title[0] - tmp->title[0];
         if (type == 0)
             type = strncasecmp(brd->title + 1, tmp->title + 1, 6);

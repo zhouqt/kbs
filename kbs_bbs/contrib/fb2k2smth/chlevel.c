@@ -56,9 +56,9 @@ main()
 	if (perm & PERM_JURY)
 	        user.userlevel &=~PERM_JURY;
 	user.userdefine = -1;
-        user.flags[0] = CURSOR_FLAG;
-        user.flags[0] |= PAGER_FLAG;
-        user.flags[1] = 0;	
+        user.flags = CURSOR_FLAG;
+        user.flags |= PAGER_FLAG;
+        user.title = 0;	
 /*	
         user.userdefine |= DEF_ALLMSG;
         user.userdefine |= DEF_FRIENDMSG;
