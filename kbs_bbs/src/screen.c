@@ -242,7 +242,7 @@ void refresh()
             stackt=0;
             rel_move(tc_col, tc_line, k, i);
             bp[j].mode[k]&=SCREEN_NOTMOD;
-            if(~(bp[j].mode[k])&tc_mode!=0) {
+            if((SCREEN_ALL-bp[j].mode[k])&tc_mode!=0) {
                 tc_mode = 0;
                 tc_color = 7;
                 push(0);
