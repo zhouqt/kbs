@@ -179,7 +179,7 @@
 		else
 		{
 ?>
-<a href="/cgi-bin/bbs/bbstcon?board=<?php echo $brd_encode; ?>&gid=<?php echo $article["GROUPID"]; ?>"><?php echo htmlspecialchars($title); ?>
+<a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $article["GROUPID"]; ?>"><?php echo htmlspecialchars($title); ?>
 
 </a></strong>
 <?php
