@@ -414,7 +414,12 @@ void move(int y, int x)
 	}
 	if(x<0) cur_col = scr_cols-x;
 	else cur_col = x;
+	if(x<0) x=0;
 	cur_ln = y;
+	if(x<0) x=0;
+	if(x>scr_cols) x=scr_cols;
+	if(y<0) y=0;
+	if(y>=scr_lns) y=scr_lns-1;
 }
 
 void getyx(int *y, int *x)
