@@ -20,7 +20,7 @@ cpfile $1 $i
 done
 md $1/home
 md $1/mail
-for i in A B C D E F G H I J K L M N O P R S T U V W X Y Z; do
+for i in A B C D E F G H I J K L M N O P Q R S T U V W X Y Z; do
 md $1/home $i
 md $1/mail $i
 done
