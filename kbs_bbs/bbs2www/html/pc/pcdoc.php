@@ -582,11 +582,18 @@
 	</td>
 </tr>
 <tr>
+	<td class="t3">Blog模板</td>
+	<td class="t5">
+	<input type="radio" name="template" value="0" <?php if($pc["STYLE"]["SID"]==0) echo "checked"; ?>>默认模板
+	<input type="radio" name="template" value="1" <?php if($pc["STYLE"]["SID"]==1) echo "checked"; ?>>水木清华
+	</td>
+</tr><tr>
 	<td class="t4" colspan="2">
 	<input type="submit" value="修改文集参数" class="b1">
 	<input type="reset" value="恢复原始参数" class="b1">
 	</td>
 </tr>
+<tr>
 </table>
 </form>
 <br>

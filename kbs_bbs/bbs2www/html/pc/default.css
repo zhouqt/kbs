@@ -179,6 +179,15 @@ BODY
 .t16 {
 	background-color: #FFFFFF;
 }
+.t17{
+background-color:#F6F6F6;
+border-width:3px;
+border-color:#FFFFFF;
+border-bottom-style:solid;
+text-align: center;
+font-size:12px;
+font-weight: bold;
+}
 .t9 {
 	font-weight: bold;
 	font-size: 14px;

@@ -52,7 +52,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 		return $nodes;
 	}
 	
-	function display_nodes($link,$pc,$nodes)
+	function display_nodes($link,$pc,$nodes,$tablewidth="100%")
 	{
 		for($i=0;$i<min(5,count($nodes));$i++)
 		{
@@ -61,7 +61,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 				$cellclass=array("t14","t11","t8");
 			else
 				$cellclass=array("t16","t13","t5");
-			echo "<table cellspacing=0 cellpadding=5 width=650 class=t15>\n".
+			echo "<table cellspacing=0 cellpadding=5 width=\"".$tablewidth."\" class=t15>\n".
 			"<tr><td class=\"".$cellclass[0]."\"><img src=\"icon/".$nodes[$i][emote].".gif\" border=0 align=absmiddle>\n".
 			"<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\" class=f2>".html_format($nodes[$i][subject])."</a></td>".
 			"<td class=\"".$cellclass[1]."\" align=right>[<a href=\"pccom.php?act=pst&nid=".$nodes[$i][nid]."\">评论</a>]\n[<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\">写信问候</a>]</td></tr>\n".
@@ -98,25 +98,10 @@ More Articles
 <?php
 	}
 	
-	function display_top_bar($link,$pc,$sec,$nodes,$blogs,$pur)
+	function display_blog_area_links($sec,$pc)
 	{
 		global $loginok,$currentuser,$pcconfig;
-		
 ?>
-<table cellpadding=0 cellspacing=0 width=650 border=0 class=f1>
-<tr><td valign=middle align=center>
-<!--
-<img src="<?php echo $pc["STYLE"]["TOPIMG"]; ?>" alt="<?php echo $pc["NAME"]; ?>" border=0>
--->
-<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0" width="700" height="80">
-              <param name="movie" value="images/SMTH2.swf">
-              <param name="quality" value="high">
-              <embed src="images/SMTH2.swf" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash" width="805" height="90"></embed>
-</object>
-</td></tr></table>
-<table cellpadding=0 cellspacing=0 width=650 border=0 class=f1>
-<tr>
-	<td align="center">
 	<table cellpadding=5 cellspacing=0 border=0 class=t1>
 		<tr>
 <?php
@@ -137,13 +122,14 @@ More Articles
 			</td>
 		</tr>
 	</table>
-	</td>
-</tr>
-</table>
-<table cellpadding=10 cellspacing=0 width=650 border=0 class=t1>
-	<tr>
-		<td align="center" class="t11" colspan="2">
-		<table cellpadding=5 cellspacing=0 width="100%" border=0 class=t1>
+<?php
+	}
+
+	function display_blog_intro()
+	{
+		global $pc;
+?>	
+<table cellpadding=5 cellspacing=0 width="100%" border=0 class=t1>
 			<tr><td align="left" class="t2">
 			.: Introduction :.
 			</td></tr>
@@ -153,28 +139,18 @@ More Articles
 					echo "<img alt=\"".$pc["DESC"]."\" hspace=\"5\" src=\"".$pc["LOGO"]."\" align=\"left\" vspace=\"5\" border=\"0\" />";
 				echo $pc["DESC"]; 
 			?>
-			</td></tr>
-		</table>
-		</td>
-	</tr>
-	<tr>
-		<td align="center" class="t14" width="400" valign="TOP">
-		<table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
-			<tr><td align="left" class="t2">
-			.: What's New :.
-			</td></tr>
-			<tr><td class="t8">
-			<?php display_newnodes_list($link,$pc,$nodes); ?>
-			</td></tr>
-		</table>
-		</td>
-		<td align="center" class="t11" valign="TOP">
-		<table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
+	</td></tr>
+</table>	
+<?php		
+	}
+	
+	function display_blog_tools($pc,$pur)
+	{
+		global $loginok,$currentuser,$pcconfig;
+?>
+<table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
 			<form action="pcnsearch.php" method="get" onsubmit="if(this.keyword.value==''){alert('请输入关键字');return false;}">
 			<input type="hidden" name="area" value="<?php echo $pc["USER"]; ?>">
-			<tr><td align="left" class="t2">
-			.: Blog Tools :.
-			</td></tr>
 			<tr><td align="left" class="t3">
 			:: Blog Search ::
 			</td></tr>
@@ -194,6 +170,7 @@ More Articles
 <strong><?php echo $currentuser["userid"]; ?></strong>
 &nbsp;
 [<a href="/bbslogout.php" target="_top" class="f1">Logout</a>]
+</td></tr>
 <?php
 				}
 				else
@@ -207,11 +184,12 @@ UserName:
 PassWord:
 <INPUT TYPE=password  class="f1" size="12" name="passwd" maxlength="39">
 <br>
-<INPUT TYPE=submit value="Login" class="f1">
+<INPUT TYPE=submit value="Login" class="f1"></form>
+</td></tr>
 <?php					
 				}
 			?>
-			</td></tr>
+			
 <?php
 			if($pur == 3)
 			{
@@ -220,20 +198,20 @@ PassWord:
 			[
 			<a href="pcmanage.php?act=post&tag=0&pid=0">添加文章</a>
 			]
+			[
+			<a href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=7">参数设定</a>
+			]
 			</td></tr>
 <?php
 			}
 ?>
 		</table>
-		</td>
-	</tr>
-	<tr>
-		<td align="center" class="t10" valign="top">
-		<table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
-			<tr><td class=t2>
-			.:Blog List:.
-			</td></tr>
-			<tr><td class=t5 align=left>
+<?php
+	}
+	
+	function display_blog_list($pc,$blogs)
+	{
+?>
 			<ul>
 <?php
 		for($i=0;$i<( count($blogs) - 1);$i++)
@@ -244,41 +222,201 @@ PassWord:
 		
 ?>			
 			</ul>
+<?php		
+	}
+	
+	function display_blog_calendar()
+	{
+?>
+<span id='bc'></span>
+<script language=javascript>
+blogCalendar(<?php echo date("Y,m,d"); ?>);
+</script>
+<?php		
+	}
+	
+	function display_blog_friend_links($pc,$wrap=FALSE)
+	{
+
+			if($wrap) echo "<ul>";
+			for($i = 0 ; $i < count($pc["LINKS"]) ; $i ++)
+			{
+				if($wrap) echo "<li>";
+				echo "<a href='http://".htmlspecialchars($pc["LINKS"][$i]["LINK"])."'>".htmlspecialchars($pc["LINKS"][$i]["LINK"])."</a>\n";
+				if($wrap) echo "</li>";
+			}
+			if($wrap) echo "</ul>";
+	}
+
+	function display_blog_out_rss($pc)
+	{
+?>
+<a href="rss.php?userid=<?php echo $pc["USER"]; ?>" target="_blank">
+<img src="images/xml.gif" align="absmiddle" alt="XML" border="0">
+</a>
+<?php
+	}
+	
+	function display_blog_smth($link,$pc,$sec,$nodes,$blogs,$pur)
+	{
+?>	
+<table cellspacing=0 cellpadding=0 width=100% border=0 class=f1>
+	<tr><td colspan=2 bgcolor="#718BD6" height="5" align=right>
+	<?php display_blog_area_links($sec,$pc); ?>
+	</td></tr>
+	<tr>
+		<td colspan=2 bgcolor="#BCCAF2" style="border-width: 2px;border-top-style: solid;border-color: #999999;"><img src="<?php echo $pc["LOGO"]?$pc["LOGO"]:"style/smth/topimg.gif"; ?>" border=0 alt="Welcome to <?php echo $pc["USER"]; ?>'s Blog" align=absmiddle></td>
+	</tr>
+	<tr>
+		<td colspan=2 valign=middle bgcolor="#F6F6F6" style="border-bottom-width: 1px;border-top-width: 2px;border-top-style: solid;border-bottom-style: dashed;border-color: #718BD6;" height="30">
+		&nbsp;&nbsp;
+		<?php echo ($pc["DESC"]=="")?$pc["DESC"]:"惠风荡繁囿,白云屯曾阿,景昃鸣禽集,水木湛清华"; ?>
+		</td>
+	</tr>
+	<tr>
+		<td width="30%" align="middle" valign="top" style="border-width: 1px;border-right-style: dashed;border-color: #336699;">
+			<table width="98%" cellpadding=5 cellspacing=0 border=0>
+				<tr><td height=10> </td></tr>
+				<tr><td class=t17>
+				::Calendar::
+				</td></tr>
+				<tr>
+					<td align=middle class=t14><?php display_blog_calendar(); ?></td>
+				</tr>
+				<tr><td height=10> </td></tr>
+				<tr><td class=t17>
+				::Blog List::
+				</td></tr>
+				<tr>
+					<td align=middle class=t14>
+					<table cellspacing=0 cellpadding=3 width=100% border=0 style="line-height:20px;font-size:12px"><tr><td>
+					<?php display_blog_list($pc,$blogs); ?>
+					</td></tr></table>
+					</td>
+				</tr>
+				<tr><td height=10> </td></tr>
+				<tr><td class=t17>
+				::New Articles::
+				</td></tr>
+				<tr>
+					<td align=middle class=t14>
+					<table cellspacing=0 cellpadding=3 width=100% border=0 style="line-height:20px;font-size:12px"><tr><td>
+					<?php display_newnodes_list($link,$pc,$nodes); ?>
+					</td></tr></table>
+					</td>
+				</tr>
+				<tr><td height=10> </td></tr>
+				<tr><td>
+				<?php display_blog_tools($pc,$pur); ?>
+				</tr></tr>
+				<tr><td height=10> </td></tr>
+				<tr><td class=t17>
+				::Links::
+				</td></tr>
+				<tr>
+					<td class=t14><font class=f1>
+					<?php display_blog_friend_links($pc,TRUE); ?>
+					</font></td>
+				</tr>
+				<tr><td height=10> </td></tr>
+				<tr><td class=t17>
+				::Visit Count::
+				</td></tr>
+				<tr><td style="text-align:center;color:#FF6600;font-weight:bolder;background-color:#F6F6F6;font-family: Verdana, Arial, Helvetica, sans-serif;font-size: 14px;font-style: italic;line-height: 22px;">
+				<?php echo $pc["VISIT"]; ?>
+				</td></tr>
+				<tr><td height=40 align=middle>
+				<?php display_blog_out_rss($pc); ?>
+				</td></tr>
+			</table>
+		</td>
+		<td width="80%" align="middle" valign="top">
+		<?php display_nodes($link,$pc,$nodes,"95%"); ?>
+		<p align=middle class=f1>
+		Update: <?php echo time_format($pc["MODIFY"]); ?>
+		<br />
+		&copy;All Rights Reserved
+		&nbsp;&nbsp;
+		http://<?php echo $pc["USER"]; ?>.mysmth.net
+		</p>
+		</td>
+	</tr>
+</table>	
+<?php		
+	}
+		
+	function display_blog_default($link,$pc,$sec,$nodes,$blogs,$pur)
+	{
+		global $loginok,$currentuser,$pcconfig;
+		
+?>
+<table cellpadding=0 cellspacing=0 width=700 border=0 class=f1>
+<tr><td valign=middle align=center>
+<!--
+<img src="<?php echo $pc["STYLE"]["TOPIMG"]; ?>" alt="<?php echo $pc["NAME"]; ?>" border=0>
+-->
+<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0" width="700" height="80">
+              <param name="movie" value="images/SMTH2.swf">
+              <param name="quality" value="high">
+              <embed src="images/SMTH2.swf" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash" width="805" height="90"></embed>
+</object>
+</td></tr></table>
+<table cellpadding=0 cellspacing=0 width=700 border=0 class=f1>
+<tr>
+	<td align="center">
+	<?php display_blog_area_links($sec,$pc); ?>
+	</td>
+</tr>
+</table>
+<table cellpadding=10 cellspacing=0 width=700 border=0 class=t1>
+	<tr>
+		<td align="center" class="t11" colspan="2">
+		<?php display_blog_intro(); ?>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="t14" width="400" valign="TOP">
+		<table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
+<tr><td align="left" class="t2">
+.: What's New :.
+</td></tr>
+<tr><td class="t8">
+		<?php display_newnodes_list($link,$pc,$nodes); ?>
+		</td></tr></table>
+		</td>
+		<td align="center" class="t11" valign="TOP">
+		<?php display_blog_tools($pc,$pur); ?>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="t10" valign="top">
+		<table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
+			<tr><td class=t2>
+			.:Blog List:.
 			</td></tr>
-		</table>
+			<tr><td class=t5 align=left>
+		<?php display_blog_list($pc,$blogs); ?>
+		</td></tr></table>
 		</td>
 		<td align="center" class="t3" valign="top">
-		<span id='bc'></span>
-		<script language=javascript>
-		blogCalendar(<?php echo date("Y,m,d"); ?>);
-		</script>
+		<?php display_blog_calendar(); ?>
 		</td>
 	</tr>
 </table>		
 <?php		
-	}
-
-	function display_bottom_bar($pc)
-	{
-		global $pcconfig;
-?>	
-<table cellpadding=10 cellspacing=0 width=650 border=0 class=t15>
+		display_nodes($link,$pc,$nodes,700);
+?>
+<table cellpadding=10 cellspacing=0 width=700 border=0 class=t15>
 <tr><td align="center" class="t11">
-	<table cellpadding=3 cellspacing=0 width=100% border=0 class=t1>
+<table cellpadding=3 cellspacing=0 width=100% border=0 class=t1>
 		<tr><td class="t2">
 		.: Links :. 
 		</td></tr>
 		<tr><td class="t4">
-		<?php
-			for($i = 0 ; $i < count($pc["LINKS"]) ; $i ++)
-				echo "<a href='http://".htmlspecialchars($pc["LINKS"][$i]["LINK"])."'>".htmlspecialchars($pc["LINKS"][$i]["LINK"])."</a>\n";
-		?>
-		<br><br>
-		<a href="rss.php?userid=<?php echo $pc["USER"]; ?>" target="_blank">
-		<img src="images/xml.gif" align="absmiddle" alt="XML" border="0">
-		</a>
-		</td></tr>
-	</table>
+	<?php display_blog_friend_links($pc); ?>
+	<br />
+	<?php display_blog_out_rss($pc); ?>
+		</td></tr></table>
 </td></tr>
 <tr><td class="t3">
 	访问量 
@@ -296,8 +434,7 @@ http://<?php echo $pc["USER"]; ?>.mysmth.net
 </table>	
 <?php		
 	}
-	
-	
+
 	$userid = addslashes($_GET["id"]);
 	$uid = (int)($_GET["id"]);
 	
@@ -354,9 +491,7 @@ http://<?php echo $pc["USER"]; ?>.mysmth.net
 <script src="bc.js"></script>
 <center>
 <?php
-	display_top_bar($link,$pc,$sec,$nodes,$blogs,$pur);
-	display_nodes($link,$pc,$nodes);
-	display_bottom_bar($pc)
+	$pc["STYLE"]["INDEXFUNC"]($link,$pc,$sec,$nodes,$blogs,$pur);
 ?>
 </center>
 <?php

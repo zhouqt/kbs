@@ -109,7 +109,7 @@ function initEditor() {
 ?>
 <script src="pc.js"></script>
 </head>
-<body TOPMARGIN="0"
+<body TOPMARGIN="0" leftmargin="0"
 <?php
 	if($loadhtmlarea)
 	{
@@ -338,7 +338,7 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 			"NODES" => $rows[nodescount],
 			"NLIM" => $rows[nodelimit],
 			"DLIM" => $rows[dirlimit],
-			"STYLE" => pc_style_array($rows[stype]),
+			"STYLE" => pc_style_array($rows[style]),
 			"LOGO" => str_replace("<","&lt;",stripslashes($rows[logoimage])),
 			"BKIMG" => str_replace("<","&lt;",stripslashes($rows[backimage])),
 			"LINKS" => pc_get_links(stripslashes($rows[links])),
@@ -432,9 +432,17 @@ function pc_style_array($i)
 	switch($i)
 	{
 		case 1:
+			$style = array(
+				"SID" => 1,
+				"INDEXFUNC" => "display_blog_smth",
+				"TOPIMG" => "style/default/p1.jpg",
+				"CSSFILE" => "style/default/default.css"
+				);
 			break;
 		default:		
 			$style = array(
+				"SID" => 0,
+				"INDEXFUNC" => "display_blog_default",
 				"TOPIMG" => "style/default/p1.jpg",
 				"CSSFILE" => "style/default/default.css"
 				);	
