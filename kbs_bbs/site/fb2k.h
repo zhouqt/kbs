@@ -93,7 +93,7 @@
 #define MAIL_BBSDOMAIN      "bbs.mysite.net"
 #define MAIL_MAILSERVER     "127.0.0.1:25"
 
-#define NAME_BBS_ENGLISH	"FB2000"
+#define NAME_BBS_ENGLISH	"bbs.mysite.net"
 #define	NAME_BBS_CHINESE	"FB2000"
 #define NAME_BBS_NICK		"BBS վ"
 
