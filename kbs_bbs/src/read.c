@@ -324,6 +324,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
             }
             move(0, 0);
             (*dotitle) ();
+	    continue;
     	} else if (ch == KEY_REFRESH) {
             mode = FULLUPDATE;
 
