@@ -356,8 +356,15 @@ setuserid_internal( int     num,const char    *userid) /* ÉèÖÃuser numµÄidÎªuser
 
 	        if (find==num) uidshm->hashhead[oldkey]=uidshm->next[find-1];
 	        else { /* find and remove the hash node */
-	          while (uidshm->next[find-1]&&uidshm->next[find-1]!=num)
+	          int i=0;
+	          while (uidshm->next[find-1]&&uidshm->next[find-1]!=num) {
 	      			find=uidshm->next[find-1];
+	      			i++;
+	      			if (i>MAXUSERS) {
+		          	    log("3system","UCACHE:uhash loop???! find %d,%s",num,userid);
+		          	    exit(0);
+	      			}
+	      	  }
 	          if (!uidshm->next[find-1]) {
 			if (oldkey!=0) {
 		          	log("3system","UCACHE:can't find %s in hash table",passwd[ num - 1 ].userid);
