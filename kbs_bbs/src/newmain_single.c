@@ -488,7 +488,7 @@ login_query()
     }*/
     /*ansimore(fname,NA); Leeward: disable the old code */
 
-    prints( "\033[1mª∂”≠π‚¡Ÿ [31m%s[37m °Ù"ISSUE_LOGIN"°Ù [36mƒø«∞…œœﬂ»À ˝ \033[1m%d[m", BBS_FULL_NAME, curr_login_num);
+    prints( "\033[1mª∂”≠π‚¡Ÿ [31m%s[37m °Ù"ISSUE_LOGIN"°Ù [36mƒø«∞…œœﬂ»À ˝ \033[1m%d+%d[m", BBS_FULL_NAME, curr_login_num,getwwwguestcount());
 
     if ((curr_http_num != -1) && (curr_http_num != 0)) /* dong 2000.4.18 */ 
       prints("[1m[36m+%d[m", curr_http_num); /* Leeward 99.03.06 */

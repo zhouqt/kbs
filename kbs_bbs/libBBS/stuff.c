@@ -745,6 +745,11 @@ struct public_data* get_publicshm()
     return publicshm;
 }
 
+int getwwwguestcount()
+{
+	return publicshm->www_guest_count;
+}
+
 void bbssettime(time_t now)
 {
     int iscreate;
