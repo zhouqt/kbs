@@ -1,6 +1,7 @@
 /*bbsnet.c*/
 // NJU bbsnet, preview version, zhch@dii.nju.edu.cn, 2000.3.23 //
 // HIT bbsnet, Changed by Sunner, sun@bbs.hit.edu.cn, 2000.6.11
+// zixia bbsnet, Changed by zdh, dh_zheng@hotmail.com,2001.12.04
 
 #include <stdio.h>
 #include <termios.h>
@@ -27,6 +28,8 @@
 #include <sys/file.h>
 
 char host1[100][40], host2[100][40], ip[100][40];
+char ip_zdh[40];//”√¿¥Ω” ‹”√ªßµƒip
+static char buf[100]; // output buffer
 int port[100], counts= 0;
 char str[]= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
 
@@ -61,15 +64,21 @@ sh(int n) {
         printf("[1;32m %c.[m%s", str[oldn], host2[oldn]);
     }
     oldn= n;
+    if (strcmp(host2[n],"∞„»Ù≤®¡_√‹")==0){  //≈–∂œ◊‘∂®“Â’æµ„
+    printf("[22;3H[1;37m π”√∑Ω∑®: ∞¥ªÿ≥µ∫Û ‰»Îip°£[1;33m[22;32H[1;37m ’æ√˚: [1;33m∞„»Ù≤®¡_√‹\r\n" );
+    printf("[1;37m[23;3H¡¨Õ˘: [1;33m__________                   [21;1H");
+    }
+    else{
     printf("[22;3H[1;37mµ•Œª: [1;33m%s                   [22;32H[1;37m ’æ√˚: [1;33m%s              \r\n", host1[n], host2[n]);
-    printf("[1;37m[23;3H¡¨Õ˘: [1;33m%s                   [23;1H", ip[n]);
+    printf("[1;37m[23;3H¡¨Õ˘: [1;33m%s                   [21;1H", ip[n]);
+    }
     locate(n);
     printf("[%c][1;42m%s[m", str[n], host2[n]);
 }
 
 show_all() {
     int n;
-    printf("[H[2J[m");
+    printf("[1H[2J[m");
     printf("©≥©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•[1;35m ‘¬  π‚  ±¶  ∫– [m©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©∑\r\n");
     for(n= 1; n< 22; n++)
         printf("©ß                                                                            ©ß\r\n");
@@ -151,8 +160,32 @@ L:
 }
 
 bbsnet(int n) {
+    char buf1[40],buf2[39],c,buf3[2];//‘ˆº”µƒ±‰¡ø
+    int i;//	
     if(n>= counts) return;
-    printf("[H[2J[1;32mo ¡¨Õ˘: %s (%s)\r\n", host2[n], ip[n]);
+    
+    if (strcmp(host2[n],"∞„»Ù≤®¡_√‹")==0){//»Áπ˚ «◊‘∂®“Â’æµ„£¨µ»¥˝ ‰»ÎipªÚ”Ú√˚
+    for (i=0;i<20;i++) {buf1[i]='\0';buf2[i]='\0';}
+    prints("[23;9H");
+    for (i=0;i<15;i++){
+        c= getch();
+        if (c==' '||c=='\015'||c=='\0'||c=='\n') break;
+        if ((c>='0'&&c<='9')||(c=='.')||(c>='A'&&c<='Z')||(c>='a'&&c<='z'))
+        {
+    
+        sprintf(buf3,"%c",c);
+        sprintf(buf2,"%s%c",buf1,c);
+        sprintf(buf1,"%s",buf2);
+        prints(buf3);
+        refresh();
+        }
+        refresh();
+        i--;
+     }
+        strcpy(ip_zdh,buf1);
+    	strcpy(ip[n],ip_zdh);
+    	}
+    printf("[1H[2J[1;32mo ¡¨Õ˘: %s (%s)\r\n", host2[n], ip[n]);
     printf("%s\r\n\r\n[m", "o ¡¨≤ª…œ ±«Î…‘∫Ú£¨30 √Î∫ÛΩ´◊‘∂ØÕÀ≥ˆ");
     fflush(stdout);
     proc(host2[n],ip[n], port[n]);
@@ -238,6 +271,11 @@ proc(char *hostname, char *server,int port)
         unsigned char buf[2048];
         fd_set readfds;
         struct timeval tv;
+
+ 	struct sockaddr_in tmpsin;
+ 	int tmplen = sizeof(struct sockaddr_in);
+ 	getpeername(0, &tmpsin,(int *) &tmplen);
+
         signal(SIGALRM, QuitTime);
         alarm(30);
         bzero((char *)&blah,sizeof(blah));
@@ -246,11 +284,18 @@ proc(char *hostname, char *server,int port)
         blah.sin_port=htons(port);
         fflush(stdout);
         fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-            if ((he = gethostbyname(server)) != NULL)
-                bcopy(he->h_addr, (char *)&blah.sin_addr, he->h_length);
-            else
-                if ((blah.sin_addr.s_addr = inet_addr(server)) < 0) return;
-            if(connect(fd,(struct sockaddr *)&blah,16)<0) return;
+        if ((he = gethostbyname(server)) != NULL)
+            bcopy(he->h_addr, (char *)&blah.sin_addr, he->h_length);
+        else
+            if ((blah.sin_addr.s_addr = inet_addr(server)) < 0) return;
+
+ 	if( (tmpsin.sin_addr.s_addr&0xff00)==(blah.sin_addr.s_addr&0xff00) ){
+         	printf("\n\n\n[1;31m∞›Õ–~ ‘¬π‚±¶∫–‘ı√¥Àµ“≤ «±¶ŒÔ£¨ƒ˙ƒ‹÷±Ω”»•µƒµÿ∑Ωªπ «÷±Ω”»•∞…... :P[m\n\n\n\n\n");
+ 		fflush(stdout);
+ 		sleep( 3 );
+ 		return;
+ 	}
+       if(connect(fd,(struct sockaddr *)&blah,16)<0) return;
 
         signal(SIGALRM, SIG_IGN);
         printf("“—æ≠¡¨Ω”…œ÷˜ª˙£¨∞¥'ctrl+]'øÏÀŸÕÀ≥ˆ°£\n");
@@ -324,4 +369,11 @@ int telnetopt(int fd, char* buf, int max)
                       write(0,&c,1);
                 }
 }
+int refresh() {
+    write(0, buf, strlen(buf));
+    buf[0]= 0;
+}
 
+int prints(char* b) {
+    strcat(buf, b);
+}
