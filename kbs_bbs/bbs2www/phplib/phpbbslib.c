@@ -84,6 +84,7 @@ static PHP_FUNCTION(bbs_is_favboard);
 static PHP_FUNCTION(bbs_add_favboarddir);
 static PHP_FUNCTION(bbs_add_favboard);
 static PHP_FUNCTION(bbs_del_favboard);
+static PHP_FUNCTION(bbs_sysconf_str);
 
 /*
  * define what functions can be used in the PHP embedded script
@@ -134,22 +135,22 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_mail_file, NULL)
         PHP_FE(bbs_update_uinfo, NULL)
         PHP_FE(bbs_createnewid,NULL)
-		PHP_FE(bbs_createregform,NULL)
-		PHP_FE(bbs_findpwd_check,NULL)
+	PHP_FE(bbs_createregform,NULL)
+	PHP_FE(bbs_findpwd_check,NULL)
         PHP_FE(bbs_fillidinfo,NULL)
         PHP_FE(bbs_delfile,NULL)
         PHP_FE(bbs_delmail,NULL)
         PHP_FE(bbs_normalboard,NULL)
         PHP_FE(bbs_setmailreaded,NULL)
-		PHP_FE(bbs_add_import_path,NULL)
-		PHP_FE(bbs_get_import_path,NULL)
-		PHP_FE(bbs_new_board,NULL)
-		PHP_FE(bbs_set_onboard,NULL)
-		PHP_FE(bbs_get_votes,NULL)
-		PHP_FE(bbs_get_vote_from_num,NULL)
-		PHP_FE(bbs_vote_num,NULL)
-		PHP_FE(bbs_get_explain,NULL)
-		PHP_FE(bbs_start_vote,NULL)
+	PHP_FE(bbs_add_import_path,NULL)
+	PHP_FE(bbs_get_import_path,NULL)
+	PHP_FE(bbs_new_board,NULL)
+	PHP_FE(bbs_set_onboard,NULL)
+	PHP_FE(bbs_get_votes,NULL)
+	PHP_FE(bbs_get_vote_from_num,NULL)
+	PHP_FE(bbs_vote_num,NULL)
+	PHP_FE(bbs_get_explain,NULL)
+	PHP_FE(bbs_start_vote,NULL)
 	/* favboard operation. by caltary  */
 	PHP_FE(bbs_load_favboard,NULL)
 	PHP_FE(bbs_fav_boards,NULL)
@@ -158,7 +159,7 @@ static function_entry smth_bbs_functions[] = {
 	PHP_FE(bbs_add_favboarddir,NULL)
 	PHP_FE(bbs_add_favboard,NULL)
 	PHP_FE(bbs_del_favboard,NULL)
-
+       PHP_FE(bbs_sysconf_str,NULL)
         {NULL, NULL, NULL}
 };
 
@@ -2141,6 +2142,7 @@ PHP_MINIT_FUNCTION(smth_bbs)
     REGISTER_LONG_CONSTANT("BBS_PERM_NOZAP", PERM_NOZAP, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_PERM_BOARDS", PERM_BOARDS, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_PERM_CLOAK", PERM_CLOAK, CONST_CS | CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("BBS_PERM_BMAMANGER", PERM_BMAMANGER, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_BOARD_ATTACH", BOARD_ATTACH, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_BOARD_ANNONY", BOARD_ANNONY, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_BOARD_JUNK", BOARD_JUNK, CONST_CS | CONST_PERSISTENT);
@@ -2488,6 +2490,7 @@ static PHP_FUNCTION(bbs_findpwd_check)
     struct userdata ud;
 	struct userec* uc;
 
+    chdir(BBSHOME);
 	int ac = ZEND_NUM_ARGS();
 
     if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sss", &userid,&userid_len,&realname,&realname_len,&email,&email_len) == FAILURE) {
@@ -3845,5 +3848,23 @@ static PHP_FUNCTION(bbs_fav_boards)
 static PHP_FUNCTION(bbs_release_favboard)
 {
         release_favboard();
+}
+
+
+/*
+ * bbs_sysconf_str
+ 获取系统参数
+*/
+static PHP_FUNCTION(bbs_sysconf_str)
+{
+         int ac = ZEND_NUM_ARGS();
+        int char_len;
+        char *char_conf;
+        char *char_result;
+        if(ac !=1 || zend_parse_parameters(1 TSRMLS_CC,"s",&char_conf,&char_len) ==FAILURE){
+                WRONG_PARAM_COUNT;
+        }
+        char_result=sysconf_str(char_conf);//获取配制参数
+        RETURN_STRING(char_result,1);
 }
 

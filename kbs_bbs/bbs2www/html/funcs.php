@@ -447,6 +447,12 @@ function bbs_can_edit_article($board, $article, $user)
 		return 0;
 }
 
+function check_php_setting($name, $value) {
+  if (ini_get($name) != $value) {
+    print "<p>Note that the value of PHP's configuration option <code><b>$name</b></code> is incorrect.  It should be set to '$value' for Drupal to work properly.</p>";
+  }
+}
+
 if ((!isset($needlogin)||($needlogin!=0))&&($loginok!=1)&&($_SERVER["PHP_SELF"]!="/bbslogin.php")) {
 	error_nologin();
 	return;
