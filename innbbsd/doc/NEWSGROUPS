@@ -43,3 +43,22 @@ cnbbs.smth.dev.cvs	SMTH cvs log(只读)
 ┠──────┼──────────────────────────────┨
 ┃是否遵守规则│                                                            ┃
 ┗━━━━━━┷━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+加入讨论
+--------
+
+申请成功后，请检查以下文件的相应部分是否已修改：
+
+    o ~bbs/innd/nodelist.bbs
+smthnews        166.111.4.19    POST(119)       SMTH News
+
+    o ~bbs/innd/newsfeeds.bbs
+cnbbs.smth.dev	                SMTHDev         smthnews
+cnbbs.smth.dev.cvs              SMTHDev,        null
+
+    o ~bbs/innd/smthnews.active
+cnbbs.smth.dev  0000000000      0000000001      y
+cnbbs.smth.dev.cvs      0000000000      0000000001      y
+control.cancel  0000000000      0000000001      y
+
+运行 ctlinnbbsd reload 之后，即可加入讨论。
