@@ -13,6 +13,7 @@ smthbbs 代码系统常见站务问题 (doc/README.SYSOP)
 2004.3.23
     atppp - add to CVS
 
+说明：文中用 $(BBSMAIN) 表示 bbs 的安装目录，也就是 configure 的 --prefix 参数
 
 1. 开版，版面设置
 
@@ -110,10 +111,11 @@ V      Recommend    推荐文章。
 L      Registry     帐号管理员审核 ID 的记录。
 V      syssecurity  系统安全记录，包括任免版主、用户权限更改、版面设置更改等。
 V      undenypost   各版面解封记录。
-V      vote         各项投票与结果。
-V      sysmail      该版面建立以后，应该到 ~bbs/boards/ 下面删除这个目录，然后
-                    建立同名符号连接到 ~bbs/mail/S/SYSOP。这个版面应该设置只有
-                    站务可读，那么所有站务就都可以看到网友给 SYSOP 发送的信件了。
+X      vote         各项投票与结果。
+V      sysmail      该版面建立以后，应该到 $(BBSMAIN)/boards/ 下面删除这个目
+                    录，然后建立同名符号连接到 $(BBSMAIN)/mail/S/SYSOP。这个版
+                    面应该设置只有站务可读，那么所有站务就都可以看到网友给
+                    SYSOP 发送的信件了。
 
     在开站的时候可以开启这些版面，部分版面应该限制读取权限或者设置只读。上面第一
 列的符号表示推荐的最保守的权限设置，具体说明如下：
@@ -242,7 +244,7 @@ menu.ini），或者增加一些文件供站务修改（比方说穿梭配置 bbsnet.ini）。
 
 4.1 sysconf.ini
 
-    sysconf.ini 和 menu.ini 这两个文件位于 ~bbs/etc/ 下面，是系统最重要的
+    sysconf.ini 和 menu.ini 这两个文件位于 $(BBSMAIN)/etc/ 下面，是系统最重要的
 配置文件。
     sysconf.ini 设置一些比较基本的系统参数，而且大部分参数应该由技术站务来设置。
 管理技术的站务一定要注意，这个文件里面的 PERM_数字设置要和 site.h（如果这个站
@@ -280,7 +282,7 @@ PERM_ACCOUNTS 企图让账号管理员拥有更改使用者权限的权利，这样做是不够的，因为
 
 4.4 这些系统档案都是干嘛的？？
 
-    下面括号里面的文件名都是以 ~bbs/etc/ 起始。
+    下面括号里面的文件名都是以 $(BBSMAIN)/etc/ 起始。
 
 4.4.1 Welcome (../Welcome) 新站友注册的时候会看到
 4.4.2 进站欢迎档 (issue) 这个就是进站画面，输入用户名之前就看到的那个东东
@@ -315,25 +317,25 @@ PERM_ACCOUNTS 企图让账号管理员拥有更改使用者权限的权利，这样做是不够的，因为
 5. 一些杂问
 
 5.1 系统管理菜单里面我选择了停止登录，现在连我都进不去了！
-    登录 BBS 主机，删掉文件 ~bbs/NOLOGIN
+    登录 BBS 主机，删掉文件 $(BBSMAIN)/NOLOGIN
 
 5.2 怎么更改版名大小写？
     不能直接改，先改名为别的，再改回来。
 
 5.3 删掉了版面，再新开同名版面开不了！
-    smth 为了安全，删除了版面其实不删除数据。登录 BBS 主机，到 ~bbs/boards/ 和
-    ~bbs/vote/ 下面删除对应的目录即可。
+    smth 为了安全，删除了版面其实不删除数据。登录 BBS 主机，到
+    $(BBSMAIN)/boards/ 和 $(BBSMAIN)/vote/ 下面删除对应的目录即可。
 
 5.4 十大话题，十大祝福什么的都显示不出来。
     参考 contrib/crontab.SMTH，doc/README.utils 和 doc/README.local_utl，登录
     BBS 主机给 bbs 用户配置 crontab 文件。
 
 5.5 进入系统管理选单的时候提示 请输入系统密码，可是我忘了啊！
-    登录 BBS 主机，删掉文件 ~bbs/etc/systempassword
+    登录 BBS 主机，删掉文件 $(BBSMAIN)/etc/systempassword
 
 5.6 telnet 下显示附件链接的域名怎么改？
-    改 ~bbs/etc/sysconf.ini 里面的 BBS_WEBDOMAIN 或者 BBSDOMAIN。改完别忘了在
-    主菜单按 shift+~
+    改 $(BBSMAIN)/etc/sysconf.ini 里面的 BBS_WEBDOMAIN 或者 BBSDOMAIN。改完别
+    忘了在主菜单按 shift+~
 
 5.7 站务修改用户 ID 大小写之后用户不能登录了
 	用户加密的密码是和 ID 相关的，所以修改 ID 之后原来的密码就失效了。正确的
@@ -342,7 +344,7 @@ PERM_ACCOUNTS 企图让账号管理员拥有更改使用者权限的权利，这样做是不够的，因为
 
 5.8 其它一些有用的系统档案
     这些系统档案在默认情况下都是不能用系统管理菜单编辑或者本来就是系统自动产生
-没有必要编辑的。下面的文件名以 ~bbs/ 起始。
+没有必要编辑的。下面的文件名以 $(BBSMAIN)/ 起始。
 
     login.bad           所有的密码错误记录。
     register.list       所有的通过认证用户的注册信息。
@@ -350,7 +352,7 @@ PERM_ACCOUNTS 企图让账号管理员拥有更改使用者权限的权利，这样做是不够的，因为
     user.log            主要是用户发文和发信记录。
     usies               主要是用户上站记录。
     etc/autopost        系统每天自动张贴的配置。每行一条，格式是：
-                        文件名 （ ~bbs/ 起始的话可以省略）  版名    帖子标题
+                        文件名 （$(BBSMAIN)/ 起始的话可以省略） 版名  帖子标题
     etc/bbsnet.ini      穿梭配置。具体的格式参见源代码目录下
                         bbshome/etc/bbsnet.ini 的例子
     etc/sysops          离站的时候选择第一个会显示站务管理员名单，这个文件就是
@@ -392,8 +394,8 @@ bbslogd 启动不带参数，但是可以给 bbslogd 进程发信号来指定需要的操作，有用的信
 
 6.1 修改站点配置文件
 
-    需要改动的文件是 ~bbs/etc/menu.ini 和 web 主目录下面的 site.php。下面是
-menu.ini 分类讨论区子菜单的一个简略形式，后面的讲解将都以此为例：
+    需要改动的文件是 $(BBSMAIN)/etc/menu.ini 和 web 主目录下面的 site.php。下
+面是 menu.ini 分类讨论区子菜单的一个简略形式，后面的讲解将都以此为例：
 
 #------------------------------------------------------------------
 %menu M_EGROUP
@@ -432,12 +434,13 @@ $section_names = array(
 6.2 修改源代码
     修改分类讨论区需要修改站点的 site.c 和 site.h 文件。不推荐直接修改
 default.h 和 default.c 文件。
-    smthbbs 系统有一个 ~bbs/0Announce/groups/ 目录，这是版面精华区的总目录，该
-目录下存放所有版面的精华区。一般站点希望版面分区结构和精华区分区结构完全一致。
-以上面的例子为例，一共三个分类讨论区，那么讨论区精华的总目录下应该有三个目录，
-我们把它们分别取名为 GROUP_0 GROUP_1 GROUP_2。修改分类讨论区往往会需要修改精华
-区结构，所以修改完分类讨论区之后站务应该进入精华区调整，比如建立目录，修改
-.Names 文件等。特别是 ~bbs/0Announce/groups/.Names 文件应该是类似这样的内容：
+    smthbbs 系统有一个 $(BBSMAIN)/0Announce/groups/ 目录，这是版面精华区的总目
+录，该目录下存放所有版面的精华区。一般站点希望版面分区结构和精华区分区结构完全
+一致。以上面的例子为例，一共三个分类讨论区，那么讨论区精华的总目录下应该有三个
+目录，我们把它们分别取名为 GROUP_0 GROUP_1 GROUP_2。修改分类讨论区往往会需要修
+改精华区结构，所以修改完分类讨论区之后站务应该进入精华区调整，比如建立目录，修
+改 .Names 文件等。特别是 $(BBSMAIN)/0Announce/groups/.Names 文件应该是类似这样
+的内容：
 
 #
 # Title=讨论区精华
