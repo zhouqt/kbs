@@ -1,3 +1,4 @@
+
 CREATE TABLE `blacklist` (
   `userid` varchar(12) NOT NULL default '',
   `uid` int(10) unsigned NOT NULL default '0',
@@ -15,16 +16,15 @@ CREATE TABLE `comments` (
   `username` varchar(20) NOT NULL default '',
   `subject` varchar(200) NOT NULL default 'null',
   `created` timestamp(14) NOT NULL,
-  `changed` timestamp(14) NOT NULL,
+  `changed` timestamp(14) NOT NULL default '00000000000000',
   `body` text,
   `emote` int(2) NOT NULL default '0',
   `htmltag` int(1) NOT NULL default '0',
   PRIMARY KEY  (`cid`),
   KEY `nid` (`nid`),
   KEY `created` (`created`),
-  KEY `changed` (`changed`),
-  FULLTEXT KEY `body` (`body`)
-) TYPE=MyISAM COMMENT='评论表' ;
+  KEY `changed` (`changed`)
+) TYPE=MyISAM COMMENT='评论表';
 
 CREATE TABLE `filter` (
   `fid` int(10) unsigned NOT NULL auto_increment,
@@ -35,7 +35,7 @@ CREATE TABLE `filter` (
   `source` varchar(10) NOT NULL default '',
   `hostname` varchar(20) NOT NULL default '',
   `changed` timestamp(14) NOT NULL,
-  `created` timestamp(14) NOT NULL,
+  `created` timestamp(14) NOT NULL default '00000000000000',
   `uid` int(10) default NULL,
   `username` varchar(13) NOT NULL default '',
   `comment` int(4) NOT NULL default '0',
@@ -50,21 +50,23 @@ CREATE TABLE `filter` (
   `trackback` int(1) NOT NULL default '1',
   `trackbackcount` int(10) NOT NULL default '0',
   `recommend` int(1) NOT NULL default '0',
-  `updatetime` timestamp(14) NOT NULL,
+  `updatetime` timestamp(14) NOT NULL default '00000000000000',
   `nodetype` int(1) NOT NULL default '0',
   `recuser` varchar(12) NOT NULL default '',
   `tbp_url` varchar(255) NOT NULL default '',
   `tbp_art` varchar(255) NOT NULL default '',
   `auto_tbp` int(1) NOT NULL default '0',
+  `tbpencoding` varchar(20) NOT NULL default '',
   `theme` varchar(20) NOT NULL default '',
-  `publisher` varchar(20) NOT NULL default '',
+  `publisher` varchar(14) NOT NULL default '',
   PRIMARY KEY  (`fid`),
   KEY `pid` (`pid`),
   KEY `created` (`changed`),
   KEY `changed` (`created`),
   KEY `state` (`state`),
-  FULLTEXT KEY `body` (`body`)
-) TYPE=MyISAM COMMENT='过滤器' ;
+  FULLTEXT KEY `body` (`body`),
+  FULLTEXT KEY `publisher` (`publisher`)
+) TYPE=MyISAM COMMENT='过滤器';
 
 CREATE TABLE `logs` (
   `lid` int(10) unsigned NOT NULL auto_increment,
@@ -77,12 +79,11 @@ CREATE TABLE `logs` (
   `logtime` timestamp(14) NOT NULL,
   PRIMARY KEY  (`lid`),
   KEY `username` (`username`,`hostname`,`ACTION`,`pri_id`,`sec_id`,`logtime`)
-) TYPE=MyISAM COMMENT='日志表' ;
+) TYPE=MyISAM COMMENT='日志表';
 
 CREATE TABLE `members` (
   `uid` int(10) unsigned NOT NULL default '0',
   `username` varchar(12) NOT NULL default '',
-  KEY `username` (`username`),
   KEY `uid` (`uid`)
 ) TYPE=MyISAM COMMENT='公有blog成员表';
 
@@ -100,7 +101,7 @@ CREATE TABLE `newapply` (
   KEY `naid` (`naid`),
   KEY `username` (`username`),
   KEY `management` (`management`)
-) TYPE=MyISAM COMMENT='新申请用户' ;
+) TYPE=MyISAM COMMENT='新申请用户';
 
 CREATE TABLE `nodes` (
   `nid` int(10) unsigned NOT NULL auto_increment,
@@ -109,7 +110,7 @@ CREATE TABLE `nodes` (
   `source` varchar(10) NOT NULL default '',
   `hostname` varchar(20) NOT NULL default '',
   `changed` timestamp(14) NOT NULL,
-  `created` timestamp(14) NOT NULL,
+  `created` timestamp(14) NOT NULL default '00000000000000',
   `uid` int(10) default NULL,
   `comment` int(4) NOT NULL default '0',
   `commentcount` int(10) NOT NULL default '0',
@@ -123,26 +124,22 @@ CREATE TABLE `nodes` (
   `trackback` int(1) NOT NULL default '1',
   `trackbackcount` int(10) NOT NULL default '0',
   `recommend` int(1) NOT NULL default '0',
-  `updatetime` timestamp(14) NOT NULL,
+  `updatetime` timestamp(14) NOT NULL default '00000000000000',
   `nodetype` int(1) NOT NULL default '0',
   `recuser` varchar(12) NOT NULL default '',
-  `rectopic` varchar(20) NOT NULL default '',
+  `rectopic` varchar(20) NOT NULL default '0',
   `theme` varchar(20) NOT NULL default 'others',
-  `publisher` varchar(20) NOT NULL default '',
+  `publisher` varchar(14) NOT NULL default '',
   PRIMARY KEY  (`nid`),
   KEY `pid` (`pid`),
   KEY `created` (`changed`),
   KEY `changed` (`created`),
-  KEY `tid` (`tid`),
   KEY `nodetype` (`nodetype`),
   KEY `rectopic` (`rectopic`),
-  KEY `trackbackcount` (`trackbackcount`),
-  KEY `visitcount` (`visitcount`),
   KEY `commentcount` (`commentcount`),
   KEY `theme` (`theme`),
-  FULLTEXT KEY `body` (`body`),
-  FULLTEXT KEY `subject` (`subject`)
-) TYPE=MyISAM COMMENT='文章表' ;
+  FULLTEXT KEY `publisher` (`publisher`)
+) TYPE=MyISAM COMMENT='文章表';
 
 CREATE TABLE `recommend` (
   `rid` int(10) unsigned NOT NULL auto_increment,
@@ -161,16 +158,16 @@ CREATE TABLE `recommend` (
   KEY `rid` (`rid`),
   KEY `topic` (`topic`),
   FULLTEXT KEY `body` (`body`)
-) TYPE=MyISAM COMMENT='推荐文章' ;
+) TYPE=MyISAM COMMENT='推荐文章';
 
 CREATE TABLE `topics` (
   `tid` int(10) NOT NULL auto_increment,
   `uid` int(10) NOT NULL default '0',
   `access` int(1) NOT NULL default '0',
-  `topicname` varchar(100) NOT NULL default '',
+  `topicname` varchar(200) NOT NULL default '',
   `sequen` int(2) NOT NULL default '0',
   KEY `tid` (`tid`)
-) TYPE=MyISAM COMMENT='用户文集分类' ;
+) TYPE=MyISAM COMMENT='用户文集分类';
 
 CREATE TABLE `trackback` (
   `tbid` int(10) unsigned NOT NULL auto_increment,
@@ -183,7 +180,7 @@ CREATE TABLE `trackback` (
   `time` timestamp(14) NOT NULL,
   `address` varchar(15) NOT NULL default '',
   PRIMARY KEY  (`tbid`)
-) TYPE=MyISAM COMMENT='引用通告' ;
+) TYPE=MyISAM COMMENT='引用通告';
 
 CREATE TABLE `userfiles` (
   `fid` int(10) unsigned NOT NULL auto_increment,
@@ -203,14 +200,14 @@ CREATE TABLE `userfiles` (
   KEY `pid` (`pid`),
   KEY `type` (`type`),
   KEY `access` (`access`)
-) TYPE=MyISAM COMMENT='用户文件夹' ;
+) TYPE=MyISAM COMMENT='用户文件夹';
 
 CREATE TABLE `users` (
   `uid` int(10) unsigned NOT NULL auto_increment,
-  `username` varchar(20) NOT NULL default '',
+  `username` varchar(30) NOT NULL default '',
   `corpusname` varchar(40) NOT NULL default '',
   `description` varchar(200) default NULL,
-  `theme` varchar(20) default NULL,
+  `theme` varchar(10) default NULL,
   `nodelimit` int(8) NOT NULL default '300',
   `dirlimit` int(8) NOT NULL default '100',
   `createtime` timestamp(14) NOT NULL,
@@ -219,26 +216,26 @@ CREATE TABLE `users` (
   `visitcount` int(10) NOT NULL default '0',
   `nodescount` int(10) NOT NULL default '0',
   `logoimage` varchar(255) default NULL,
-  `modifytime` timestamp(14) NOT NULL,
+  `modifytime` timestamp(14) NOT NULL default '00000000000000',
   `links` text NOT NULL,
   `htmleditor` int(1) NOT NULL default '0',
-  `indexnodechars` int(5) NOT NULL default '600',
-  `indexnodes` int(1) NOT NULL default '5',
+  `indexnodechars` int(4) NOT NULL default '600',
+  `indexnodes` int(3) NOT NULL default '5',
   `useremail` varchar(200) NOT NULL default '',
   `favmode` int(1) NOT NULL default '0',
-  `updatetime` timestamp(14) NOT NULL,
+  `updatetime` timestamp(14) NOT NULL default '00000000000000',
   `userinfor` text NOT NULL,
   `pctype` int(1) NOT NULL default '0',
-  `tempsave` int(1) NOT NULL default '1',
+  `logtid` int(10) NOT NULL default '0',
   `defaulttopic` varchar(100) NOT NULL default '',
-  `userfile` int(10) NOT NULL default '0',
+  `userfile` int(4) NOT NULL default '0',
   `filelimit` int(10) NOT NULL default '0',
   PRIMARY KEY  (`uid`),
   UNIQUE KEY `username` (`username`),
   KEY `corpusname` (`corpusname`,`createtime`),
   KEY `pctype` (`pctype`),
-  KEY `theme` (`theme`)
-) TYPE=MyISAM COMMENT='用户表' ;
+  FULLTEXT KEY `corpusname_2` (`corpusname`,`description`)
+) TYPE=MyISAM COMMENT='用户表';
 
 CREATE TABLE `userstyle` (
   `uid` int(10) unsigned NOT NULL default '0',
@@ -254,4 +251,3 @@ CREATE TABLE `userstyle` (
   KEY `username` (`username`)
 ) TYPE=MyISAM COMMENT='自定义界面';
 
-    
