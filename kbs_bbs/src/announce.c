@@ -1784,7 +1784,7 @@ int lastlevel, lastbmonly;
             me.page = 9999;
             break;              /*Haohmaru 98.09.22 */
         case 'v':
-            i_read_mail;
+            i_read_mail();
             me.page = 9999;
             break;
         case 'u':

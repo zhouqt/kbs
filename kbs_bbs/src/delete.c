@@ -69,7 +69,6 @@ int d_board()
             char lookgrp[30];
 
             del_grp(bname, title + 13);
-			ann_delfrom_search(bname);
         }
     }
     if (!bname[0]) {

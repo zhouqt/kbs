@@ -147,7 +147,7 @@ struct _tmp_findboard {
     char *path;
     char *board;
     size_t len;
-}
+};
 
 static int findboard(struct boardheader* bh,struct _tmp_findboard* arg)
 {
@@ -173,7 +173,7 @@ int ann_get_board(char *path, char *board, size_t len)
         return -1;
     if (ptr[0] == '/')
         ptr++;
-    if (strncmp(path,"0Announce/groups/",strlen("0Announce/groups/"))
+    if (strncmp(path,"0Announce/groups/",strlen("0Announce/groups/")))
         return -1;
     arg.path=path+strlen("0Announce/groups/");
     arg.board=board;
