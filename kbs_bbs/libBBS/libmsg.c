@@ -1213,6 +1213,9 @@ int get_sql_al( struct addresslist * smdata, char *userid, char *dest, char *gro
 	}else if( order == AL_ORDER_BBSID ){
 		snprintf(qtmp, 99, " ORDER BY bbsid");
 		strcat(sql, qtmp);
+	}else if( order == AL_ORDER_GROUPNAME ){
+		snprintf(qtmp, 99, " ORDER BY groupname");
+		strcat(sql, qtmp);
 	}
 
 	snprintf(qtmp, 99, " LIMIT %d,%d", start, num);
