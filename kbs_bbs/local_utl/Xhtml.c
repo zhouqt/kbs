@@ -217,7 +217,7 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
             printf("Unexpected error: Can not open file \"%s\"\n", filename);
 
         while (!feof(psrcFile) && (is_attach != 1)) {
-            long attach_len, size, left;
+            off_t attach_len, size, left;
             char *attach_ptr, *attach_filename, *p;
             char dirname[MAXLINELEN];
 	    int asize;
@@ -230,7 +230,7 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
             if (is_attach != -1) {
                 is_attach = -1;
                 sprintf(filename, "%s/%s", directory, Link);
-                if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (off_t *) & size, NULL) == 0) {
+                if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, & size, NULL) == 0) {
                     BBS_RETURN_VOID;
                 }
                 for (p = ptr, left = size; left > 0; p++, left--) {
