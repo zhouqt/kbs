@@ -20,6 +20,9 @@ agent connections.
 /*
  * $Id$
  * $Log$
+ * Revision 1.6  2003/04/18 14:45:45  bad
+ * ssh多行
+ *
  * Revision 1.5  2003/04/18 14:30:02  bad
  * ssh多行
  *
@@ -1525,6 +1528,15 @@ void do_authentication(char *user, int privileged_port, int cipher_type)
             xfree(password);
             break;
 
+        case SSH_CMSG_WINDOW_SIZE:
+            debug("Window change received.");
+            row = packet_get_int();
+            col = packet_get_int();
+            xpixel = packet_get_int();
+            ypixel = packet_get_int();
+            do_naws(row, col);
+            break;
+            
         default:
             /* Any unknown messages will be ignored (and failure returned)
                during authentication. */
