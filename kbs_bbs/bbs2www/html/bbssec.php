@@ -28,8 +28,11 @@
 ?>
 </table>
 <hr class="default">
+[<a href="/mainpage.html">首页导读</a>]
+[<a href="/bbsnewbrd.php">新开讨论区</a>]
 [<a href="/cgi-bin/bbs/bbsall">全部讨论区</a>]
 [<a href="/cgi-bin/bbs/bbs0an">精华公布栏</a>]
+[<a href="javascript:history.go(-1)">快速返回</a>]
 </center>
 <?php
 	}

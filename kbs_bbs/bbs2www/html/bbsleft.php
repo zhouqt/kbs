@@ -37,6 +37,14 @@
 <?php
 		}
 ?>
+<tr>
+<td align="right" width="16">
+<img src="/images/open.gif" border="0">
+</td>
+<td>
+<a href="/bbsnewbrd.php" target="f3"><img src="/images/kfolder1.gif" width="16" height="16" border="0" align="absmiddle">新开讨论区</a>
+</td>
+</tr>
 </table>
 <?php
 	}
@@ -618,9 +626,11 @@
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/data/fterm-smth.zip" target="_blank">Fterm下载</a><br>
+				<?php /*
 					&nbsp;
 					<img src="/images/line1.gif" border="0" align="absmiddle">
 					<a href="/data/FeedDemon-rc4a.exe" target="_blank">FeedDemon下载</a><br>
+				*/ ?>
 				</DIV>
 			</td>
 		</tr>

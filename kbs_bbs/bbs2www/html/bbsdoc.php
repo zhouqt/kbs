@@ -4,7 +4,6 @@
 	 * $Id$
 	 */
 	require("funcs.php");
-	$visitedboard = $_COOKIE["BBSVISITEDBRD"];
 	
 	function display_navigation_bar($brdarr,$brdnum,$start,$total,$page,$order=FALSE)
 	{
@@ -225,7 +224,8 @@
 		        html_init("gb2312","","",1);
 			html_error_quit("´íÎóµÄÌÖÂÛÇø");
 			$board_list_error=TRUE;
-			}
+		}
+		$board = $brdarr["NAME"];
 		$usernum = $currentuser["index"];
 		if (bbs_checkreadperm($usernum, $brdnum) == 0){
 		        html_init("gb2312","","",1);
@@ -252,9 +252,9 @@
 		{
 			if( bbs_board_have_envelop($board))
 			{
-				if( !stristr($visitedboard,"|".$board."|") )
+				if( !stristr($_COOKIE["BBSVISITEDBRD"],"|".$board."|") )
 				{
-					setcookie("BBSVISITEDBRD" , $visitedboard.$board."|");
+					setcookie("BBSVISITEDBRD",$_COOKIE["BBSVISITEDBRD"]."|".$board."|",time()+360000,"");
 					header("Location: /bbsenv.php?board=".$brd_encode);
 				}
 			}

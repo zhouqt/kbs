@@ -20,6 +20,7 @@ if ($brdnum == 0)
 	html_error_quit("´íÎóµÄÌÖÂÛÇø");
 	exit();
 }
+$board = $brdarr["NAME"];
 $usernum = $currentuser["index"];
 if (bbs_checkreadperm($usernum, $brdnum) == 0)
 {

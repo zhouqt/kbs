@@ -32,7 +32,7 @@
 			html_error_quit("该目录尚未有版面");
 	
 ?>
-<body>
+<body topmargin="0">
 <table width="100%" border="0" cellspacing="0" cellpadding="3" >
   <tr> 
     <td colspan="2" class="kb2" colspan=2>
@@ -207,6 +207,13 @@ else
   </tr>
   </table>
 </center>
+<p align="center">
+[<a href="/mainpage.html">首页导读</a>]
+[<a href="/bbssec.php">分类讨论区</a>]
+[<a href="/bbsnewbrd.php">新开讨论区</a>]
+[<a href="javascript:history.go(-1)">快速返回</a>]
+<br />
+</p>
 <?php
 		html_normal_quit();
 	}
