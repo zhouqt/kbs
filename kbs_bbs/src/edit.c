@@ -621,32 +621,67 @@ void insert_to_fp(fp)
         fprintf(fp, "%s\n", ANSI_RESET);
 }
 
-void insert_from_fp(fp)
-    FILE *fp;
+static void insertch_from_fp(int ch)
+{
+    if (isprint2(ch) || ch == 27) {
+        if (currpnt < 254)
+            insert_char(ch);
+        else if (ch < 255)
+            insert_char('.');
+    } else if (ch == Ctrl('I')) {
+        do {
+            insert_char(' ');
+        } while (currpnt & 0x7);
+    } else if (ch == '\n')
+        split(currline, currpnt);
+    }
+}
+static long insert_from_fp(FILE *fp)
 {
     int ch;
+    char* attachpad;
+    int matched;
+    char* ptr;
+    long size;
 
-#ifdef VEDITOR
-    bkfile = 1;
-#endif
-    while ((ch = getc(fp)) != EOF)
-        if (isprint2(ch) || ch == 27) {
-            if (currpnt < 254)
-                insert_char(ch);
-            else if (currpnt < 255)
-                insert_char('.');
-        } else if (ch == Ctrl('I')) {
-            do {
-                insert_char(' ');
-            } while (currpnt & 0x7);
-        } else if (ch == '\n')
-            split(currline, currpnt);
+    attachpad=ATTACHMMENT_PAD;
+    matched=0;
+    BBS_TRY {
+        if (safe_mmapfile_handle(fileno(fp), O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & size) == 0) {
+            char* data;
+            long not;
+            data=ptr;
+            for (not=0;not<size;not++,data++) {
+                if (*ch==*attachpad) {
+                    matched++;
+                    if (matched==sizeof(ATTACHMMENT_PAD)-1) {
+                        BBS_RETURN(not-(sizeof(ATTACHMMENT_PAD)-1)+1);
+                    } else {
+                        attachpad++;
+                        continue;
+                    }
+                }
+                if (matched) {
+                    int i;
+                    attachpad=ATTACHMMENT_PAD;
+                    matched=0;
+                    for (i=0;i<matched;i++)
+                        insertch_from_fp(*(attachpad+i));
+                }
+                insertch_from_fp(*data);
+            }
+        }
+        return 0;
+    }
+    BBS_CATCH {
+    }
+    BBS_END end_mmapfile((void *) ptr, size, -1);
 }
 
-void read_file(filename)
-    char *filename;
+long read_file(char *filename)
 {
     FILE *fp;
+    long ret;
 
     if (currline == NULL)
         vedit_init();
@@ -658,8 +693,9 @@ void read_file(filename)
         indigestion(4);
         abort_bbs(0);
     }
-    insert_from_fp(fp);
+    ret=insert_from_fp(fp);
     fclose(fp);
+    return ret;
 }
 
 #define KEEP_EDITING -2
@@ -731,7 +767,7 @@ int valid_article(pmt, abort)
 
 }
 
-static int write_file(char* filename,int saveheader,long* effsize)
+static int write_file(char* filename,int saveheader,long* effsize,long* pattachpos)
 {
     struct textline *p = firstline;
     FILE *fp;
@@ -852,33 +888,43 @@ static int write_file(char* filename,int saveheader,long* effsize)
     }
     } else if (abort[0] == 's' || abort[0] == 'S' || abort[0] == 'f' || abort[0] == 'F') {
         local_article = 0;
-#ifdef VEDITOR
-        if (bkfile == 1) {
-            /*
-               sprintf(buf,"cp %s %s",filename,bkfname);
-             */
-            f_cp(filename, bkfname, 0);
-        }
-#endif
     } else {                    /* Added by flyriver, 2002.7.1, local save */
         abort[0] = 'l';
         local_article = 1;
     }
     firstline = NULL;
     if (!aborted) {
+        if (*pattachpos) {
+            char buf[MAXPATH];
+            int fsrc,fdst;
+            snprintf(buf,MAXPATH,"%s.attach",filename);
+            if ((fsrc = open(filename, O_RDONLY)) != NULL) {
+                if ((fdst = open(buf, O_WRONLY , 0600)) >= 0) {
+                    char* src=(char*)malloc(10240);
+                    long ret;
+                    lseek(fsrc,*pattachpos-1,SEEK_SET);
+                    do {
+                        ret = read(fsrc, src, 10240);
+                        if (ret <= 0)
+                            break;
+                    } while (write(fdst, src, ret) > 0);
+                    close(fdst);
+                    free(src);
+                }
+                close(fsrc);
+            }
+        }
         if ((fp = fopen(filename, "w")) == NULL) {
             indigestion(5);
             abort_bbs(0);
         }
-#ifndef VEDITOR
     /* 增加转信标记 czz 020819 */
         if (saveheader) {
-        if (local_article == 1)
-            write_header(fp, currentuser, in_mail, quote_board, quote_title, Anony, 0);
-        else
-            write_header(fp, currentuser, in_mail, quote_board, quote_title, Anony, 2);
-    }
-#endif
+            if (local_article == 1)
+                write_header(fp, currentuser, in_mail, quote_board, quote_title, Anony, 0);
+            else
+                write_header(fp, currentuser, in_mail, quote_board, quote_title, Anony, 2);
+        }
     }
     if (effsize)
         *effsize=0;
@@ -967,8 +1013,29 @@ fsdfa
         free(p);
         p = v;
     }
-    if (!aborted)
+    if (!aborted) {
+        if (*pattachpos) {
+            char buf[MAXPATH];
+            int fsrc;
+            struct stat st;
+            snprintf(buf,MAXPATH,"%s.attach",filename);
+            fstat(fileno(fp,&st));
+            *pattachpos=st.st_size+1;
+            if ((fsrc = open(buf, O_RDONLY)) >= 0) {
+                char* src=(char*)malloc(10240);
+                long ret;
+                do {
+                    ret = read(fsrc, src, 10240);
+                    if (ret <= 0)
+                        break;
+                } while (write(fileno(fp), src, ret) > 0);
+                close(fsrc);
+                free(src);
+            }
+            f_rm(buf);
+        }
         fclose(fp);
+    }
     currline = NULL;
     lastline = NULL;
     firstline = NULL;
@@ -1884,12 +1951,16 @@ void vedit_key(ch)
     clrtoeol();
 }
 
-static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size)
+static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,long* pattachpos)
 {
     int newch, ch = 0, foo, shift;
     struct textline *st_tmp, *st_tmp2;
 
-    read_file(filename);
+    if (*pattachpos!=0) {
+        *pattachpos=read_file(filename);
+    } else
+        // TODO: add zmodem upload
+        read_file(filename);
     top_of_win = firstline;
     for (newch = 0; newch < headlines; newch++)
         if (top_of_win->next)
@@ -1917,7 +1988,7 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size)
                 firstline->prev = st_tmp;
                 firstline = st_tmp2;
             }
-            foo = write_file(filename, saveheader, eff_size);
+            foo = write_file(filename, saveheader, eff_size,pattachpos);
             if (foo != KEEP_EDITING)
                 return foo;
             if (headlines) {
@@ -1953,28 +2024,21 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size)
     return 1;
 }
 
-int vedit(char *filename,int saveheader,long* eff_size)
+int vedit(char *filename,int saveheader,long* eff_size,long *pattachpos)
 {
     int ans, t;
+    long attachpos=0;
 
     t = showansi;
     showansi = 0;
-#ifndef VEDITOR
     ismsgline = (DEFINE(currentuser, DEF_EDITMSG)) ? 1 : 0;
-#else
-    ismsgline = 1;
-#endif
     domsg();
-#ifdef VEDITOR
-    sprintf(bkfname, "%s~", filename);
-    sprintf(currfname, "%s", filename);
-#endif
-    ans = raw_vedit(filename, saveheader, 0,eff_size);
+    ans = raw_vedit(filename, saveheader, 0,eff_size,pattachpos?pattachpos:&attachpos);
     showansi = t;
     return ans;
 }
 
-int vedit_post(char *filename,int saveheader,long* eff_size)
+int vedit_post(char *filename,int saveheader,long* eff_size,long* pattachpos)
 {
     int ans, t;
 
@@ -1982,7 +2046,7 @@ int vedit_post(char *filename,int saveheader,long* eff_size)
     showansi = 0;
     ismsgline = (DEFINE(currentuser, DEF_EDITMSG)) ? 1 : 0;
     domsg();
-    ans = raw_vedit(filename, saveheader, 4, eff_size);   /*Haohmaru.99.5.5.应该保留一个空行 */
+    ans = raw_vedit(filename, saveheader, 4, eff_size,pattachpos);   /*Haohmaru.99.5.5.应该保留一个空行 */
     showansi = t;
     return ans;
 }

@@ -739,7 +739,7 @@ int searchtrace()
     sprintf(tmp_command, "grep -a -w %s user.log | grep posted > tmp/searchresult.%d", tmp_id, getpid());
     system(tmp_command);
     sprintf(tmp_command, "tmp/searchresult.%d", getpid());
-    mail_file(currentuser->userid, tmp_command, currentuser->userid, "系统查询结果", BBSPOST_MOVE);
+    mail_file(currentuser->userid, tmp_command, currentuser->userid, "系统查询结果", BBSPOST_MOVE, NULL);
 
     sprintf(buf, "查询用户 %s 的发文情况", tmp_id);
     securityreport(buf, lookupuser, NULL);      /*写入syssecurity版, stephen 2000.12.21 */
@@ -1372,7 +1372,7 @@ char *logfile, *regfile;
 
                 update_user(&uinfo, unum, 0);
                 write_userdata(uinfo.userid, &ud);
-                mail_file(currentuser->userid, "etc/s_fill", uinfo.userid, "恭禧你，你已经完成注册。", 0);
+                mail_file(currentuser->userid, "etc/s_fill", uinfo.userid, "恭禧你，你已经完成注册。", 0, NULL);
                 sprintf(genbuf, "%s 让 %s 通过身份确认.", uid, uinfo.userid);
                 securityreport(genbuf, lookupuser, fdata);
                 if ((fout = fopen(logfile, "a")) != NULL) {
@@ -1451,31 +1451,31 @@ char *logfile, *regfile;
                      */
                     switch (buff) {
                     case '0':
-                        mail_file(currentuser->userid, "etc/f_fill.realname", uinfo.userid, ud.address, BBSPOST_LINK);
+                        mail_file(currentuser->userid, "etc/f_fill.realname", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                         break;
                     case '1':
-                        mail_file(currentuser->userid, "etc/f_fill.unit", uinfo.userid, ud.address, BBSPOST_LINK);
+                        mail_file(currentuser->userid, "etc/f_fill.unit", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                         break;
                     case '2':
-                        mail_file(currentuser->userid, "etc/f_fill.address", uinfo.userid, ud.address, BBSPOST_LINK);
+                        mail_file(currentuser->userid, "etc/f_fill.address", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                         break;
                     case '3':
-                        mail_file(currentuser->userid, "etc/f_fill.telephone", uinfo.userid, ud.address, BBSPOST_LINK);
+                        mail_file(currentuser->userid, "etc/f_fill.telephone", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                         break;
                     case '4':
-                        mail_file(currentuser->userid, "etc/f_fill.real", uinfo.userid, ud.address, BBSPOST_LINK);
+                        mail_file(currentuser->userid, "etc/f_fill.real", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                         break;
                     case '5':
-                        mail_file(currentuser->userid, "etc/f_fill.chinese", uinfo.userid, ud.address, BBSPOST_LINK);
+                        mail_file(currentuser->userid, "etc/f_fill.chinese", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                         break;
                     case '6':
-                        mail_file(currentuser->userid, "etc/f_fill.proxy", uinfo.userid, ud.address, BBSPOST_LINK);
+                        mail_file(currentuser->userid, "etc/f_fill.proxy", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                         break;
                     case '7':
-                        mail_file(currentuser->userid, "etc/f_fill.toomany", uinfo.userid, ud.address, BBSPOST_LINK);
+                        mail_file(currentuser->userid, "etc/f_fill.toomany", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                         break;
                     default:
-                        mail_file(currentuser->userid, "etc/f_fill.real", uinfo.userid, ud.address, BBSPOST_LINK);
+                        mail_file(currentuser->userid, "etc/f_fill.real", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                         break;
                     }
                     /*
@@ -1585,7 +1585,7 @@ int m_stoplogin()
         return -1;
     getdata(t_lines - 1, 0, "禁止登陆吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y') {
-        if (vedit("NOLOGIN", false, NULL) == -1)
+        if (vedit("NOLOGIN", false, NULL, NULL) == -1)
             unlink("NOLOGIN");
     }
     return 0;
@@ -1867,7 +1867,7 @@ int set_BM()
                             strcat(newfh.BM, " ");
                         strcat(newfh.BM, lookupuser->userid);
                         newlevel |= PERM_BOARDS;
-                        mail_file(currentuser->userid, "etc/forbm", lookupuser->userid, "新任" NAME_BM "必读", BBSPOST_LINK);
+                        mail_file(currentuser->userid, "etc/forbm", lookupuser->userid, "新任" NAME_BM "必读", BBSPOST_LINK, NULL);
                     } else if (flag == 2) {
                         m = 0;
                         newfh.BM[0] = '\0';

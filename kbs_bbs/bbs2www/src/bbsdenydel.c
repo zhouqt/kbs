@@ -129,7 +129,7 @@ int inform(char *board, char *user)
     else
         fprintf(fn1, "您被 %s 版版主 %s 解除封禁\n", board, usr->userid);
     fclose(fn1);
-    mail_file(getcurruserid(), filename, user, buffer, 0);
+    mail_file(getcurruserid(), filename, user, buffer, 0, NULL);
 
     /*解封同样发文到undenypost版  Bigman:2000.6.30 */
     getuser(user, &lookupuser);

@@ -24,23 +24,20 @@ int get_postfilename(char *filename, char *direct, int use_subdir)
     int i;
     char fname[255];
     int pid = getpid();
-	int rn;
-	int len;
+    int rn;
+    int len;
 
     /*
      * 自动生成 POST 文件名 
      */
     now = time(NULL);
-	len = strlen(alphabet);
-    for (i = 0; i < 10; i++)
-	{
-		if (use_subdir)
-		{
-			rn = 0 + (int) (len * 1.0 * rand() / (RAND_MAX + 1.0));
-			sprintf(filename, "%c/M.%lu.%c%c", alphabet[rn], now, post_sufix[(pid + i) % 62], post_sufix[(pid * i) % 62]);
-		}
-		else
-			sprintf(filename, "M.%lu.%c%c", now, post_sufix[(pid + i) % 62], post_sufix[(pid * i) % 62]);
+    len = strlen(alphabet);
+    for (i = 0; i < 10; i++) {
+        if (use_subdir) {
+            rn = 0 + (int) (len * 1.0 * rand() / (RAND_MAX + 1.0));
+            sprintf(filename, "%c/M.%lu.%c%c", alphabet[rn], now, post_sufix[(pid + i) % 62], post_sufix[(pid * i) % 62]);
+        } else
+            sprintf(filename, "M.%lu.%c%c", now, post_sufix[(pid + i) % 62], post_sufix[(pid * i) % 62]);
         sprintf(fname, "%s/%s", direct, filename);
         if ((fp = open(fname, O_CREAT | O_EXCL | O_WRONLY, 0644)) != -1) {
             break;
@@ -88,7 +85,9 @@ postbbslog("user","%s",fileinfo->title, -1, currboard); added by alex, 96.9.12 *
     if (fileinfo->id == fileinfo->groupid)
         setboardorigin(board, 1);
     setboardtitle(board, 1);
-    /*added by bad 2002.8.12*/
+    /*
+     * added by bad 2002.8.12
+     */
     fail = delete_record(direct, sizeof(struct fileheader), ent, (RECORD_FUNC_ARG) cmpname, fileinfo->filename);
 /*
     } else {
@@ -122,7 +121,7 @@ postbbslog("user","%s",fileinfo->title, -1, currboard); added by alex, 96.9.12 *
                 struct userec *lookupuser;
                 int id = getuser(fileinfo->owner, &lookupuser);
 
-                if (id && (int) lookupuser->numposts > 0 && !junkboard(board) && strcmp(board, SYSMAIL_BOARD)) {    /* SYSOP MAIL版删文不减文章 Bigman: 2000.8.12 *//* Leeward 98.06.21 adds above later 2 conditions */
+                if (id && (int) lookupuser->numposts > 0 && !junkboard(board) && strcmp(board, SYSMAIL_BOARD)) {        /* SYSOP MAIL版删文不减文章 Bigman: 2000.8.12 *//* Leeward 98.06.21 adds above later 2 conditions */
                     lookupuser->numposts--;
                 }
             }
@@ -208,24 +207,24 @@ int autoappend;
             fclose(fp);
         }
     }
-    
+
     strcpy(postfile.filename, fh->filename);
-	if (fh->filename[1] == '/')
-    	fh->filename[2] = (owned) ? 'J':'D';
-	else
-    	fh->filename[0] = (owned) ? 'J':'D';
-    setbfile(oldpath,board,postfile.filename);
-    setbfile(newpath,board,fh->filename);
-    f_mv(oldpath,newpath);
+    if (fh->filename[1] == '/')
+        fh->filename[2] = (owned) ? 'J' : 'D';
+    else
+        fh->filename[0] = (owned) ? 'J' : 'D';
+    setbfile(oldpath, board, postfile.filename);
+    setbfile(newpath, board, fh->filename);
+    f_mv(oldpath, newpath);
     if (autoappend) {
         bzero(&postfile, sizeof(postfile));
         strcpy(postfile.filename, fh->filename);
-        strncpy(postfile.owner, fh->owner, OWNER_LEN-1);
-        postfile.owner[OWNER_LEN-1] = 0;
+        strncpy(postfile.owner, fh->owner, OWNER_LEN - 1);
+        postfile.owner[OWNER_LEN - 1] = 0;
         postfile.id = fh->id;
         postfile.groupid = fh->groupid;
         postfile.reid = fh->reid;
-		set_posttime2(&postfile, fh);
+        set_posttime2(&postfile, fh);
     };
     now = time(NULL);
     sprintf(oldpath, "%-32.32s - %s", fh->title, userid);
@@ -305,8 +304,9 @@ int write_posts(char *id, char *board, char *title)
     char *ptr;
     time_t now;
     struct posttop postlog, pl;
+
 #ifdef BLESS_BOARD
-    if (strcasecmp(board,BLESS_BOARD)&&(junkboard(board) || normal_board(board) != 1))
+    if (strcasecmp(board, BLESS_BOARD) && (junkboard(board) || normal_board(board) != 1))
 #else
     if (junkboard(board) || normal_board(board) != 1)
 #endif
@@ -386,16 +386,16 @@ void write_header(FILE * fp, struct userec *user, int in_mail, char *board, char
         fprintf(fp, "寄信人: %s (%s)\n", uid, uname);
     else {
         noname = anonymousboard(board);
-        if (((mode == 0)||(mode == 2)) && !(noname && Anony)) {
-		/* mode=0是正常的发文并且local save 
-		 * mode=1是不需要记录的
-		 * mode=2是非local save的
-		 */
+        if (((mode == 0) || (mode == 2)) && !(noname && Anony)) {
+            /*
+             * mode=0是正常的发文并且local save 
+             * * mode=1是不需要记录的
+             * * mode=2是非local save的
+             */
             write_posts(user->userid, board, title);
         }
-
 #ifdef SMTH
-        if (!strcmp(board, "Announce")&&Anony)
+        if (!strcmp(board, "Announce") && Anony)
             /*
              * added By Bigman 
              */
@@ -409,9 +409,9 @@ void write_header(FILE * fp, struct userec *user, int in_mail, char *board, char
     /*
      * 增加转信标记 czz 020819 
      */
-	if (in_mail)
-		fprintf(fp, "发信站: %s (%24.24s)\n", BBS_FULL_NAME, ctime(&now));
-	else if (mode != 2)
+    if (in_mail)
+        fprintf(fp, "发信站: %s (%24.24s)\n", BBS_FULL_NAME, ctime(&now));
+    else if (mode != 2)
         fprintf(fp, "发信站: %s (%24.24s), 站内\n", BBS_FULL_NAME, ctime(&now));
     else
         fprintf(fp, "发信站: %s (%24.24s), 转信\n", BBS_FULL_NAME, ctime(&now));
@@ -440,7 +440,7 @@ void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail
             fclose(of);
         /*---	---*/
 #ifdef BBSMAIN
-        bbslog("user","%s","Cross Post error");
+        bbslog("user", "%s", "Cross Post error");
 #endif
         return;
     }
@@ -505,7 +505,7 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
     char buf4[STRLEN], whopost[IDLEN], save_title[STRLEN];
     int aborted, local_article;
 
-    if (!mode&&!haspostperm(user, toboard)) {
+    if (!mode && !haspostperm(user, toboard)) {
 #ifdef BBSMAIN
         move(1, 0);
         prints("您尚无权限在 %s 发表文章.\n", toboard);
@@ -546,16 +546,14 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
         strcpy(whopost, user->userid);
 
     strncpy(postfile.owner, whopost, OWNER_LEN);
-    postfile.owner[OWNER_LEN-1]=1;
+    postfile.owner[OWNER_LEN - 1] = 1;
     setbfile(filepath, toboard, postfile.filename);
 
-    local_article = 1; /* default is local article */
-    if (islocal != 'l' && islocal != 'L')
-	{
-		if (is_outgo_board(toboard))
-			local_article = 0;
-	}
-
+    local_article = 1;          /* default is local article */
+    if (islocal != 'l' && islocal != 'L') {
+        if (is_outgo_board(toboard))
+            local_article = 0;
+    }
 #ifdef BBSMAIN
     modify_user_mode(POSTING);
 #endif
@@ -592,8 +590,14 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
         postfile.accessed[0] |= FILE_MARKED;    /* Leeward 98.03.29 */
     if (strstr(title, "发文权限") && mode == 2) {
 #ifndef NINE_BUILD
-	/* disable here to avoid Mark deny articles on the board Bigman.2002.11.17*/
-        /*postfile.accessed[0] |= FILE_MARKED;*/   /* Haohmaru 99.11.10 */
+        /*
+         * disable here to avoid Mark deny articles on the board Bigman.2002.11.17
+         */
+        /*
+         * postfile.accessed[0] |= FILE_MARKED;
+         *//*
+         * Haohmaru 99.11.10 
+         */
         postfile.accessed[1] |= FILE_READ;
 #endif
         postfile.accessed[0] |= FILE_FORWARDED;
@@ -617,41 +621,43 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
 {
     char buf[256];
     int fd, err = 0, nowid = 0;
-    char* p;
+    char *p;
+
 #ifdef FILTER
     char oldpath[50], newpath[50];
     int filtered;
-    struct boardheader* bh;
+    struct boardheader *bh;
 #endif
 
     if ((re == NULL) && (!strncmp(fh->title, "Re:", 3))) {
         strncpy(fh->title, fh->title + 4, STRLEN);
     }
 #ifdef FILTER
-	setbfile(oldpath, boardname, fh->filename);
-    filtered=0;
-    bh=getbcache(boardname);
-    if (strcmp(fh->owner,"deliver")) {
-	if (((bh&&bh->level & PERM_POSTMASK) || normal_board(boardname)) && strcmp(boardname, FILTER_BOARD))
-	{
-	    if (check_badword_str(fh->title,strlen(fh->title))||check_badword(oldpath)) {
-			/* FIXME: There is a potential bug here. */
-			setbfile(newpath, FILTER_BOARD, fh->filename);
-			f_mv(oldpath, newpath);
-			strncpy(fh->o_board, boardname, STRLEN - BM_LEN);
-			nowid = get_nextid(boardname);
-			fh->o_id = nowid;
-			if (re == NULL) {
-				fh->o_groupid = fh->o_id;
-				fh->o_reid = fh->o_id;
-			} else {
-				fh->o_groupid = re->groupid;
-				fh->o_reid = re->id;
-			}
-			boardname = FILTER_BOARD;
-			filtered=1;
-	    };
-	}
+    setbfile(oldpath, boardname, fh->filename);
+    filtered = 0;
+    bh = getbcache(boardname);
+    if (strcmp(fh->owner, "deliver")) {
+        if (((bh && bh->level & PERM_POSTMASK) || normal_board(boardname)) && strcmp(boardname, FILTER_BOARD)) {
+            if (check_badword_str(fh->title, strlen(fh->title)) || check_badword(oldpath)) {
+                /*
+                 * FIXME: There is a potential bug here. 
+                 */
+                setbfile(newpath, FILTER_BOARD, fh->filename);
+                f_mv(oldpath, newpath);
+                strncpy(fh->o_board, boardname, STRLEN - BM_LEN);
+                nowid = get_nextid(boardname);
+                fh->o_id = nowid;
+                if (re == NULL) {
+                    fh->o_groupid = fh->o_id;
+                    fh->o_reid = fh->o_id;
+                } else {
+                    fh->o_groupid = re->groupid;
+                    fh->o_reid = re->id;
+                }
+                boardname = FILTER_BOARD;
+                filtered = 1;
+            };
+        }
     }
 #endif
     setbfile(buf, boardname, DOT_DIR);
@@ -662,9 +668,13 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
 #endif
         err = 1;
     }
-    /*过滤彩色标题*/
-    for (p=fh->title;*p;p++) if (*p=='\x1b') *p=' ';
-	  
+    /*
+     * 过滤彩色标题
+     */
+    for (p = fh->title; *p; p++)
+        if (*p == '\x1b')
+            *p = ' ';
+
     if (!err) {
         flock(fd, LOCK_EX);
         nowid = get_nextid(boardname);
@@ -676,10 +686,10 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
             fh->groupid = re->groupid;
             fh->reid = re->id;
         }
-		set_posttime(fh);
+        set_posttime(fh);
         lseek(fd, 0, SEEK_END);
         if (safewrite(fd, fh, sizeof(fileheader)) == -1) {
-            bbslog("user","%s","apprec write err!");
+            bbslog("user", "%s", "apprec write err!");
             err = 1;
         }
         flock(fd, LOCK_UN);
@@ -698,11 +708,11 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     updatelastpost(boardname);
 #ifdef FILTER
     if (filtered)
-    	sprintf(buf, "posted '%s' on '%s' filtered", fh->title, fh->o_board);
+        sprintf(buf, "posted '%s' on '%s' filtered", fh->title, fh->o_board);
     else {
 #endif
-    brc_add_read(fh->id);
-    sprintf(buf, "posted '%s' on '%s'", fh->title, boardname);
+        brc_add_read(fh->id);
+        sprintf(buf, "posted '%s' on '%s'", fh->title, boardname);
 #ifdef FILTER
     }
 #endif
@@ -717,10 +727,10 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
         bmlog(user->userid, boardname, 2, 1);
 #ifdef FILTER
     if (filtered)
-	    return 2;
+        return 2;
     else
 #endif
-    return 0;
+        return 0;
 }
 
 int dele_digest(char *dname, char *direc)
@@ -787,104 +797,94 @@ int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)
     BBS_CATCH {
     }
     BBS_END end_mmapfile((void *) data, filesize, -1);
+
     flock(fd, LOCK_UN);
     return ret;
 }
 
-int mmap_dir_search(int fd, const fileheader_t *key, search_handler_t func, void *arg)
+int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, void *arg)
 {
     struct fileheader *data;
     size_t filesize;
     int total;
     int low, high;
-	int mid, comp;
+    int mid, comp;
     int ret;
 
     if (flock(fd, LOCK_EX) == -1)
         return 0;
-    BBS_TRY 
-	{
-        if (safe_mmapfile_handle(fd, O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &data, &filesize) == 0)
-		{
+    BBS_TRY {
+        if (safe_mmapfile_handle(fd, O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &data, &filesize) == 0) {
             flock(fd, LOCK_UN);
             BBS_RETURN(0);
         }
         total = filesize / sizeof(fileheader_t);
         low = 0;
         high = total - 1;
-        while (low <= high)
-		{
+        while (low <= high) {
             mid = (high + low) / 2;
             comp = (key->id) - ((data + mid)->id);
-            if (comp == 0)
-			{
+            if (comp == 0) {
                 ret = (*func) (fd, data, mid + 1, total, true, arg);
                 end_mmapfile((void *) data, filesize, -1);
                 flock(fd, LOCK_UN);
                 BBS_RETURN(ret);
-            }
-			else if (comp < 0)
+            } else if (comp < 0)
                 high = mid - 1;
             else
                 low = mid + 1;
         }
         ret = (*func) (fd, data, low + 1, total, false, arg);
     }
-    BBS_CATCH 
-	{
+    BBS_CATCH {
     }
     BBS_END end_mmapfile((void *) data, filesize, -1);
+
     flock(fd, LOCK_UN);
 
-	return ret;
+    return ret;
 }
 
-struct dir_record_set
-{
-	fileheader_t *records;
-	int num;
+struct dir_record_set {
+    fileheader_t *records;
+    int num;
 };
 
-static int 
-get_dir_records(int fd, fileheader_t *base, int ent, int total, bool match, void *arg)
+static int get_dir_records(int fd, fileheader_t * base, int ent, int total, bool match, void *arg)
 {
-	if (match)
-	{
-		struct dir_record_set *rs = (struct dir_record_set *)arg;
-		int i;
-		int off;
-		int count = 0;
-		
-		off = ent - rs->num / 2;
-		for (i = 0; i < rs->num; i++)
-		{
-			if (off < 1 || off > total)
-				bzero(rs->records + i, sizeof(fileheader_t));
-			else
-			{
-				memcpy(rs->records + i, base + off - 1, sizeof(fileheader_t));
-				count++;
-			}
-			off++;
-		}
-		return count;
-	}
+    if (match) {
+        struct dir_record_set *rs = (struct dir_record_set *) arg;
+        int i;
+        int off;
+        int count = 0;
 
-	return 0;
+        off = ent - rs->num / 2;
+        for (i = 0; i < rs->num; i++) {
+            if (off < 1 || off > total)
+                bzero(rs->records + i, sizeof(fileheader_t));
+            else {
+                memcpy(rs->records + i, base + off - 1, sizeof(fileheader_t));
+                count++;
+            }
+            off++;
+        }
+        return count;
+    }
+
+    return 0;
 }
 
-int 
-get_records_from_id(int fd, int id, fileheader_t *buf, int num)
+int get_records_from_id(int fd, int id, fileheader_t * buf, int num)
 {
-	struct dir_record_set rs;
-	fileheader_t key;
+    struct dir_record_set rs;
+    fileheader_t key;
 
-	rs.records = buf;
-	rs.num = num;
-	bzero(&key, sizeof(key));
-	key.id = id;
-	
-	return mmap_dir_search(fd, &key, get_dir_records, &rs);
+    rs.records = buf;
+    rs.num = num;
+    bzero(&key, sizeof(key));
+    key.id = id;
+
+    return mmap_dir_search(fd, &key, get_dir_records, &rs);
 }
 
 int change_dir_post_flag(struct userec *currentuser, char *currboard, int ent, struct fileheader *fileinfo, int flag)
@@ -915,7 +915,7 @@ int change_dir_post_flag(struct userec *currentuser, char *currboard, int ent, s
         ldata.l_len = size;
         ldata.l_start = size * (ent - 1);
         if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-            bbslog("user","%s","reclock error");
+            bbslog("user", "%s", "reclock error");
             close(fd);
                                 /*---	period	2000-10-20	file should be closed	---*/
             ret = 0;
@@ -923,7 +923,7 @@ int change_dir_post_flag(struct userec *currentuser, char *currboard, int ent, s
     }
     if (ret) {
         if (lseek(fd, size * (ent - 1), SEEK_SET) == -1) {
-            bbslog("user","%s","subrec seek err");
+            bbslog("user", "%s", "subrec seek err");
             /*---	period	2000-10-24	---*/
             ldata.l_type = F_UNLCK;
             fcntl(fd, F_SETLK, &ldata);
@@ -933,7 +933,7 @@ int change_dir_post_flag(struct userec *currentuser, char *currboard, int ent, s
     }
     if (ret) {
         if (get_record_handle(fd, &mkpost, sizeof(mkpost), ent) == -1) {
-            bbslog("user","%s","subrec read err");
+            bbslog("user", "%s", "subrec read err");
             ret = 0;
         }
         if (ret)
@@ -963,11 +963,11 @@ int change_dir_post_flag(struct userec *currentuser, char *currboard, int ent, s
         break;
 #ifdef FILTER
     case FILE_CENSOR_FLAG:
-	if (fileinfo->accessed[1] & FILE_CENSOR)
-	    fileinfo->accessed[1] &= ~FILE_CENSOR;
-	else
-	    fileinfo->accessed[1] |= FILE_CENSOR;
-	break;
+        if (fileinfo->accessed[1] & FILE_CENSOR)
+            fileinfo->accessed[1] &= ~FILE_CENSOR;
+        else
+            fileinfo->accessed[1] |= FILE_CENSOR;
+        break;
 #endif
     case FILE_NOREPLY_FLAG:
         if (fileinfo->accessed[1] & FILE_READ)
@@ -999,14 +999,14 @@ int change_dir_post_flag(struct userec *currentuser, char *currboard, int ent, s
     }
 
     if (lseek(fd, size * (ent - 1), SEEK_SET) == -1) {
-        bbslog("user","%s","subrec seek err");
+        bbslog("user", "%s", "subrec seek err");
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLK, &ldata);
         close(fd);
         return DONOTHING;
     }
     if (safewrite(fd, fileinfo, size) != size) {
-        bbslog("user","%s","subrec write err");
+        bbslog("user", "%s", "subrec write err");
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLK, &ldata);
         close(fd);
@@ -1030,6 +1030,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
     struct fileheader mkpost, mkpost2;
     struct flock ldata;
     int fd, size = sizeof(fileheader), orgent;
+
 #ifdef FILTER
     int filedes;
     int nowid = 0;
@@ -1051,7 +1052,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
     if (flag == FILE_DELETE_FLAG && (digestmode == 4 || digestmode == 5))
         return DONOTHING;
     if ((flag == FILE_MARK_FLAG || flag == FILE_DELETE_FLAG) && (!strcmp(currboard, "syssecurity")
-		 || !strcmp(currboard, FILTER_BOARD)))
+                                                                 || !strcmp(currboard, FILTER_BOARD)))
         return DONOTHING;       /* Leeward 98.03.29 */
     /*
      * Haohmaru.98.10.12.主题模式下不允许mark文章 
@@ -1090,15 +1091,15 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
         ldata.l_len = size;
         ldata.l_start = size * (ent - 1);
         if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-            bbslog("user","%s","reclock error");
+            bbslog("user", "%s", "reclock error");
             close(fd);
-                                /*---	period	2000-10-20	file should be closed	---*/
+                                /*---period	2000-10-20 file should be closed	---*/
             ret = 0;
         }
     }
     if (ret) {
         if (lseek(fd, size * (ent - 1), SEEK_SET) == -1) {
-            bbslog("user","%s","subrec seek err");
+            bbslog("user", "%s", "subrec seek err");
             /*---	period	2000-10-24	---*/
             ldata.l_type = F_UNLCK;
             fcntl(fd, F_SETLK, &ldata);
@@ -1108,7 +1109,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
     }
     if (ret) {
         if (get_record_handle(fd, &mkpost, sizeof(mkpost), ent) == -1) {
-            bbslog("user","%s","subrec read err");
+            bbslog("user", "%s", "subrec read err");
             ret = 0;
         }
         if (ret)
@@ -1138,7 +1139,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
     }
     switch (flag) {
     case FILE_MARK_FLAG:
-        if (fileinfo->accessed[0] & FILE_MARKED) {      /*added by bad 2002.8.7 mark file mode added*/
+        if (fileinfo->accessed[0] & FILE_MARKED) {      /*added by bad 2002.8.7 mark file mode added */
             fileinfo->accessed[0] = (fileinfo->accessed[0] & ~FILE_MARKED);
             bmlog(currentuser->userid, currboard, 7, 1);
         } else {
@@ -1187,51 +1188,50 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
         break;
 #ifdef FILTER
     case FILE_CENSOR_FLAG:
-	if (!strcmp(currboard, FILTER_BOARD))
-	{
-		if (fileinfo->accessed[1] & FILE_CENSOR || fileinfo->o_board[0]==0) {
+        if (!strcmp(currboard, FILTER_BOARD)) {
+            if (fileinfo->accessed[1] & FILE_CENSOR || fileinfo->o_board[0] == 0) {
 #ifdef BBSMAIN
-			if (prompt)
-			a_prompt(-1, " 该文章已经通过审核或者无需审核, 请按 Enter 继续 << ", ans);
+                if (prompt)
+                    a_prompt(-1, " 该文章已经通过审核或者无需审核, 请按 Enter 继续 << ", ans);
 #endif
-		} else {
-			fileinfo->accessed[1] |= FILE_CENSOR;
-			setbfile(oldpath, FILTER_BOARD, fileinfo->filename);
-			setbfile(newpath, fileinfo->o_board, fileinfo->filename);
-			f_cp(oldpath, newpath, 0);
+            } else {
+                fileinfo->accessed[1] |= FILE_CENSOR;
+                setbfile(oldpath, FILTER_BOARD, fileinfo->filename);
+                setbfile(newpath, fileinfo->o_board, fileinfo->filename);
+                f_cp(oldpath, newpath, 0);
 
-			setbfile(buffer, fileinfo->o_board, DOT_DIR);
-			if ((filedes = open(buffer, O_WRONLY | O_CREAT, 0664)) == -1) {
+                setbfile(buffer, fileinfo->o_board, DOT_DIR);
+                if ((filedes = open(buffer, O_WRONLY | O_CREAT, 0664)) == -1) {
 #ifdef BBSMAIN
-                perror(buffer);
-#endif  
-			}
-			flock(filedes, LOCK_EX);
-			nowid = get_nextid(fileinfo->o_board);
-			newfh->id = nowid;
-			if (fileinfo->o_id == fileinfo->o_groupid)
-				newfh->groupid = newfh->reid = newfh->id;
-			else {
-				newfh->groupid = fileinfo->o_groupid;
-				newfh->reid = fileinfo->o_reid;
-			}
-			lseek(filedes, 0, SEEK_END);
-			if (safewrite(filedes, newfh, sizeof(fileheader)) == -1) {
-				bbslog("user","%s","apprec write err!");
-			}
-			flock(filedes, LOCK_UN);
-			close(filedes);
-			updatelastpost(fileinfo->o_board);
-			brc_add_read(newfh->id);
-			if (newfh->id == newfh->groupid)
-				setboardorigin(fileinfo->o_board, 1);
-			setboardtitle(fileinfo->o_board, 1);
-			if (newfh->accessed[0] & FILE_MARKED)
-				setboardmark(fileinfo->o_board, 1);
-		}
-	}
-	break;
-#endif /* FILTER */
+                    perror(buffer);
+#endif
+                }
+                flock(filedes, LOCK_EX);
+                nowid = get_nextid(fileinfo->o_board);
+                newfh->id = nowid;
+                if (fileinfo->o_id == fileinfo->o_groupid)
+                    newfh->groupid = newfh->reid = newfh->id;
+                else {
+                    newfh->groupid = fileinfo->o_groupid;
+                    newfh->reid = fileinfo->o_reid;
+                }
+                lseek(filedes, 0, SEEK_END);
+                if (safewrite(filedes, newfh, sizeof(fileheader)) == -1) {
+                    bbslog("user", "%s", "apprec write err!");
+                }
+                flock(filedes, LOCK_UN);
+                close(filedes);
+                updatelastpost(fileinfo->o_board);
+                brc_add_read(newfh->id);
+                if (newfh->id == newfh->groupid)
+                    setboardorigin(fileinfo->o_board, 1);
+                setboardtitle(fileinfo->o_board, 1);
+                if (newfh->accessed[0] & FILE_MARKED)
+                    setboardmark(fileinfo->o_board, 1);
+            }
+        }
+        break;
+#endif                          /* FILTER */
     case FILE_DELETE_FLAG:
         if (fileinfo->accessed[1] & FILE_DEL)
             fileinfo->accessed[1] &= ~FILE_DEL;
@@ -1292,17 +1292,19 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
     case FILE_IMPORT_FLAG:
         fileinfo->accessed[0] |= FILE_IMPORTED;
         break;
+    case FILE_ATTACHPOS_FLAG:
+        break;
     }
 
     if (lseek(fd, size * (ent - 1), SEEK_SET) == -1) {
-        bbslog("user","%s","subrec seek err");
+        bbslog("user", "%s", "subrec seek err");
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLK, &ldata);
         close(fd);
         return DONOTHING;
     }
     if (safewrite(fd, fileinfo, size) != size) {
-        bbslog("user","%s","subrec write err");
+        bbslog("user", "%s", "subrec write err");
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLK, &ldata);
         close(fd);
@@ -1318,12 +1320,12 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
     return newent ? DIRCHANGED : PARTUPDATE;
 }
 
-char get_article_flag(struct fileheader *ent, struct userec *user, char* boardname,int is_bm)
+char get_article_flag(struct fileheader *ent, struct userec *user, char *boardname, int is_bm)
 {
     char unread_mark = (DEFINE(user, DEF_UNREADMARK) ? '*' : 'N');
     char type;
 
-    if (strcmp(user->userid,"guest"))
+    if (strcmp(user->userid, "guest"))
         type = brc_unread(ent->id) ? unread_mark : ' ';
     else
         type = ' ';
@@ -1374,8 +1376,8 @@ char get_article_flag(struct fileheader *ent, struct userec *user, char* boardna
     } else if ((is_bm || HAS_PERM(user, PERM_OBOARDS)) && (ent->accessed[0] & FILE_SIGN)) {
         type = '#';
 #ifdef FILTER
-    } else if (HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[1] & FILE_CENSOR)&&!strcmp(boardname,FILTER_BOARD)) {
-	type = '@';
+    } else if (HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[1] & FILE_CENSOR) && !strcmp(boardname, FILTER_BOARD)) {
+        type = '@';
 #endif
     }
 

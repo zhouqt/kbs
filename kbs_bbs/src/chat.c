@@ -1140,7 +1140,7 @@ void set_rec(chatcontext * pthis, const char *arg)
         fclose(pthis->rec);
         pthis->rec = NULL;
         mail_file(currentuser->userid, fname, currentuser->userid,
-                  "录音结果", 1);
+                  "录音结果", 1, NULL);
         bbslog("user", "stop record room %s", pthis->chatroom);
     }
 }

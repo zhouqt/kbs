@@ -135,7 +135,7 @@ static int mailto(struct userec *uentp, char *arg)
     sprintf(filename, "etc/%s.mailtoall", currentuser->userid);
     if ((uentp->userlevel == PERM_BASIC && mailmode == 1) ||
         (!HAS_PERM(uentp, PERM_DENYMAIL) && mailmode == 2) || (uentp->userlevel & PERM_BOARDS && mailmode == 3) || (uentp->userlevel & PERM_CHATCLOAK && mailmode == 4)) {
-        mail_file(currentuser->userid, filename, uentp->userid, save_title, 0);
+        mail_file(currentuser->userid, filename, uentp->userid, save_title, 0, NULL);
     }
     return 1;
 }
@@ -247,7 +247,7 @@ int mailall()
                 }
             }
             do_quote(fname, include_mode, "", quote_user);
-            if (vedit(fname, true, NULL) == -1) {
+            if (vedit(fname, true, NULL, NULL) == -1) {
                 in_mail = false;
                 unlink(fname);
                 clear();
@@ -495,7 +495,7 @@ int do_send(char *userid, char *title, char *q_file)
     if (internet_mail) {
         int res, ch;
 
-        if (vedit(filepath, false, NULL) == -1) {
+        if (vedit(filepath, false, NULL, NULL) == -1) {
             unlink(filepath);
             clear();
             return -2;
@@ -527,7 +527,7 @@ int do_send(char *userid, char *title, char *q_file)
 
                 prints("%c\n", 'Y');
                 if (askyn("ÊÇ·ñ±¸·Ý¸ø×Ô¼º", false) == true)
-                    mail_file(currentuser->userid, tmp_fname, currentuser->userid, save_title, 0);
+                    mail_file(currentuser->userid, tmp_fname, currentuser->userid, save_title, 0, NULL);
 
                 prints("ÈôÄúÒª×ª¼ÄµÄµØÖ·ÎÞ·¨´¦ÀíÖÐÎÄÇëÊäÈë Y »ò y\n");
                 getdata(5, 0, "Uuencode? [N]: ", data, 2, DOECHO, 0, 0);
@@ -565,7 +565,7 @@ int do_send(char *userid, char *title, char *q_file)
     } else
 #endif
     {
-        if (vedit(filepath, true, NULL) == -1) {
+        if (vedit(filepath, true, NULL, NULL) == -1) {
             unlink(filepath);
             clear();
             return -2;
@@ -582,7 +582,7 @@ int do_send(char *userid, char *title, char *q_file)
         if (false == canIsend2(currentuser, userid)) {  /* Leeward 98.04.10 */
             prints("[1m[33mºÜ±§Ç¸¡ÃÏµÍ³ÎÞ·¨·¢³ö´ËÐÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®[m[m\n\n", userid);
             sprintf(save_title, "ÍËÐÅ¡Ã %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®", userid);
-            mail_file(currentuser->userid, filepath, currentuser->userid, save_title, BBSPOST_MOVE);
+            mail_file(currentuser->userid, filepath, currentuser->userid, save_title, BBSPOST_MOVE, NULL);
             return -2;
         }
         /*
@@ -1048,6 +1048,7 @@ char *direct;
     default:
         prints("ÐÅ¼þÒÑ¼Ä³ö\n");
         fileinfo->accessed[0] |= FILE_REPLIED;  /*added by alex, 96.9.7 */
+        substitute_record(currmaildir, fileinfo, sizeof(*fileinfo), ent);
     }
     pressreturn();
     return FULLUPDATE;
@@ -1076,39 +1077,31 @@ static int mail_del(int ent, struct fileheader *fileinfo, char *direct)
     return FULLUPDATE;
 }
 
-//added by bad 03-2-10
-//#ifdef NINE_BUILD
+/*added by bad 03-2-10*/
 static int mail_edit(int ent, struct fileheader *fileinfo, char *direct)
 {
     char buf[512];
     char *t;
     long eff_size;
+    long attachpos;
 
     clear();
     strcpy(buf, direct);
     if ((t = strrchr(buf, '/')) != NULL)
         *t = '\0';
-#ifndef LEEWARD_X_FILTER
-    sprintf(genbuf, "/bin/cp -f %s/%s tmp/%d.editpost.bak", buf, fileinfo->filename, getpid()); /* Leeward 98.03.29 */
-    system(genbuf);
-#endif
-
-    /*
-     * Leeward 2000.01.23: Cache 
-     * sprintf(genbuf, "/board/%s/%s.html", currboard,fileinfo->filename);
-     * ca_expire(genbuf); 
-     */
 
     sprintf(genbuf, "%s/%s", buf, fileinfo->filename);
-    if (vedit_post(genbuf, false, &eff_size) != -1) {
+    if (vedit_post(genbuf, false, &eff_size,&attachpos) != -1) {
         if (ADD_EDITMARK)
             add_edit_mark(genbuf, 1, /*NULL*/ fileinfo->title);
+        if (attachpos!=fileinfo->attachment) {
+            fileinfo->attachment=attachpos;
+            substitute_record(currmaildir, fileinfo, sizeof(*fileinfo), ent);
+        }
     }
     newbbslog(BBSLOG_USER, "edited mail '%s' on %s", fileinfo->title, currboard);
     return FULLUPDATE;
 }
-
-//#endif
 
 /** Added by netty to handle mail to 0Announce */
 int mail_to_tmp(ent, fileinfo, direct)
@@ -1730,7 +1723,7 @@ static int do_gsend(char *userid[], char *title, int num)
      */
 
     strcpy(quote_title, save_title);
-    if (vedit(tmpfile, true, NULL) == -1) {
+    if (vedit(tmpfile, true, NULL, NULL) == -1) {
         unlink(tmpfile);
         clear();
         return -2;
@@ -1803,10 +1796,10 @@ static int do_gsend(char *userid[], char *title, int num)
             clear();
             strcpy(save_title_bak, save_title);
             sprintf(tmp_title, "ÍËÐÅ¡Ã %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®", uid);
-            mail_file(currentuser->userid, tmpfile, currentuser->userid, tmp_title, 0);
+            mail_file(currentuser->userid, tmpfile, currentuser->userid, tmp_title, 0, NULL);
             strcpy(save_title, save_title_bak);
         } else {
-            mail_file(currentuser->userid, tmpfile, uid, save_title, 0);
+            mail_file(currentuser->userid, tmpfile, uid, save_title, 0, NULL);
         }
     }
     mail_file_sent(".group", tmpfile, currentuser->userid, save_title, 0);
@@ -1955,7 +1948,7 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
     f_cp(tmp_buf, fname, 0);
     sprintf(title, "%.50s(×ª¼Ä)", fh->title);   /*Haohmaru.00.05.01,moved here */
     if (askyn("ÊÇ·ñÐÞ¸ÄÎÄÕÂÄÚÈÝ", 0) == 1) {
-        if (vedit(fname, false, NULL) != -1) {
+        if (vedit(fname, false, NULL, &fh->attachment) != -1) {
             if (ADD_EDITMARK)
                 add_edit_mark(fname, 1, fh->title);
         }
@@ -2020,10 +2013,10 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
             if (false == canIsend2(currentuser, receiver)) {    /* Leeward 98.04.10 */
                 prints("[1m[33mºÜ±§Ç¸¡ÃÏµÍ³ÎÞ·¨×ª¼Ä´ËÐÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®[m[m\n\n", receiver);
                 sprintf(title, "ÍËÐÅ¡Ã %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®", receiver);
-                mail_file(currentuser->userid, fname, currentuser->userid, title, 0);
+                mail_file(currentuser->userid, fname, currentuser->userid, title, 0, NULL);
                 return -4;
             }
-            return_no = mail_file(currentuser->userid, fname, lookupuser->userid, title, 0);
+            return_no = mail_file(currentuser->userid, fname, lookupuser->userid, title, 0, fh);
         }
     } else {
         /*

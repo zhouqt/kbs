@@ -799,7 +799,7 @@ int deldeny(struct userec *user, char *board, char *uident, int notice_only)
             sprintf(buffer, "%s 解封某版版主 %s 在 %s ", user->userid, lookupuser->userid, board);
         else
             sprintf(buffer, "%s 解封 %s 在 %s", user->userid, lookupuser->userid, board);
-        mail_file(user->userid, filename, uident, buffer, 0);
+        mail_file(user->userid, filename, uident, buffer, 0, NULL);
     }
     post_file(user, "", filename, "undenypost", buffer, 0, 1);
     unlink(filename);

@@ -1059,7 +1059,7 @@ int mode;
         a_report(buf);
         switch (mode) {
         case ADDITEM:
-            if (-1 == vedit(fpath, 0, NULL))
+            if (-1 == vedit(fpath, 0, NULL,NULL))
                 return;         /* Leeward 98.06.12 fixes bug */
             chmod(fpath, 0644);
             break;
@@ -1083,8 +1083,8 @@ int mode;
                         fstat(fdst,&st);
                         if (st.st_size>1) {
                             lseek(fdst,st.st_size-1,SEEK_SET);
-			    read(fdst,src,1);
-			    if (src[0]!='\n')
+                            read(fdst,src,1);
+                            if (src[0]!='\n')
                                 write(fdst, "\n", 1);
                         }
                         do {
@@ -1517,9 +1517,7 @@ MENU *pm;
     pressanykey();
 }
 
-void a_manager(pm, ch)
-MENU *pm;
-int ch;
+void a_manager(MENU *pm,int ch)
 {
     char uident[STRLEN];
     ITEM *item;
@@ -1594,7 +1592,7 @@ int ch;
 
                 if (dashf(fpath)) {
                     modify_user_mode(EDITANN);
-                    vedit(fpath, 0, NULL);
+                    vedit(fpath, 0, NULL,NULL);
                     modify_user_mode(CSIE_ANNOUNCE);
                 }
                 pm->page = 9999;
@@ -1658,8 +1656,26 @@ int ch;
             break;
         case 'e':
             if (dashf(fpath)) {
+                long attachpos;
                 modify_user_mode(EDITANN);
-                vedit(fpath, 0, NULL);
+                vedit(fpath, 0, NULL,&attachpos);
+                if (item->attachpos!=attachpos) {
+                    item->attachpos=attachpos;
+                    if (a_savenames(pm) != 0) {
+                        int i;
+                        ITEM saveitem;
+                        saveitem=*item;
+                        /* retry */
+                        a_loadnames(pm);
+                        for (i=0;i<pm->num;i++) {
+                            if (!strcmp(pm->item[i].fname,saveitem.fname)) {
+                                pm->item[i].attachpos=attachpos;
+                                a_savenames(pm);
+                                break;
+                            }
+                        }
+                    }
+                }
                 modify_user_mode(CSIE_ANNOUNCE);
                 sprintf(genbuf, "修改文章 %s 的内容", pm->path + 17);
                 a_report(genbuf);

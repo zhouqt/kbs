@@ -1209,7 +1209,7 @@ static int do_talk(int fd)
          *---	also '||' used above is wrong...	---*/
         sethomefile(buf, currentuser->userid, "talklog");
         sprintf(mywords, "¸ú %s µÄÁÄÌì¼ÇÂ¼ [%12.12s]", partner, Ctime(now) + 6);
-        mail_file(currentuser->userid, buf, currentuser->userid, mywords, 0);
+        mail_file(currentuser->userid, buf, currentuser->userid, mywords, 0, NULL);
     }
     sethomefile(buf, currentuser->userid, "talklog");
     unlink(buf);

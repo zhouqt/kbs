@@ -184,8 +184,8 @@ int choose(int update, int defaultn, int (*title_show) (), int (*key_deal) (), i
 
 /* edit.c */
 int Origin2(char text[256]);
-int vedit(char *filename, int saveheader,long* eff_size);
-int vedit_post(char *filename, int saveheader,long* eff_size);
+int vedit(char *filename, int saveheader,long* eff_size,long* pattachpos);
+int vedit_post(char *filename, int saveheader,long* eff_size,long* pattachpos);
 void keep_fail_post();
 
 /* Announce.c */

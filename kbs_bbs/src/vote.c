@@ -109,7 +109,7 @@ int b_notes_edit()
         } else
             aborted = -1;
     } else
-        aborted = vedit(buf, false,NULL);
+        aborted = vedit(buf, false,NULL, NULL);
     if (aborted == -1) {
         pressreturn();
     } else {
@@ -144,7 +144,7 @@ int b_sec_notes_edit()
         } else
             aborted = -1;
     } else
-        aborted = vedit(buf, false,NULL);
+        aborted = vedit(buf, false,NULL, NULL);
     if (aborted == -1) {
         pressreturn();
     } else {
@@ -181,7 +181,7 @@ int b_jury_edit()
         } else
             aborted = -1;
     } else if (ans[0] == 'E' || ans[0] == 'e')
-        aborted = vedit(buf, false,NULL);
+        aborted = vedit(buf, false,NULL, NULL);
     else {
         prints("取消");
         aborted = -1;
@@ -414,12 +414,13 @@ static int mk_result(int num)
     fclose(sug);
     sug = NULL;
     sprintf(title, "[公告] %s 版的投票结果", currboard);
-    mail_file(currentuser->userid, nname, currvote.userid, title, 0);
+    mail_file(currentuser->userid, nname, currvote.userid, title, 0, NULL);
 #ifdef NINE_BUILD
-    if (1) {
+    if (1)
 #else
-    if (normal_board(currboard)) {
+    if (normal_board(currboard))
 #endif
+    {
         post_file(currentuser, "", nname, "vote", title, 0, 1);
     }
     post_file(currentuser, "", nname, currboard, title, 0, 1);
@@ -495,7 +496,7 @@ int check_result(int num)
     fclose(sug);
     sug = NULL;
     sprintf(title, "[检查] %s 版的投票结果", currboard);
-    mail_file(currentuser->userid, nname, currentuser->userid, title, BBSPOST_MOVE);
+    mail_file(currentuser->userid, nname, currentuser->userid, title, BBSPOST_MOVE, NULL);
     return 0;
 }
 
@@ -557,7 +558,7 @@ char *bname;
     pressanykey();
     setvfile(genbuf, bname, "desc");
     sprintf(buf, "%s.%lu", genbuf, ball->opendate);
-    aborted = vedit(buf, false, NULL);
+    aborted = vedit(buf, false, NULL, NULL);
     if (aborted) {
         clear();
         prints("取消此次投票\n");

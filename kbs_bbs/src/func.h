@@ -268,7 +268,7 @@ extern "C" {
 	int get_records_from_id(int fd, int id, fileheader_t *buf, int num);
 
     int get_postfilename(char *filename, char *direct, int use_subdir);
-    int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink);
+    int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink, struct fileheader* fh);
     int mail_file_sent(char *fromid, char *tmpfile, char *userid, char *title, int unlink);/*peregrine*/
     int update_user_usedspace(int delta,struct userec *user);
     int getmailnum(char* recmaildir);

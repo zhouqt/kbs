@@ -245,7 +245,7 @@ int mail_buf(struct userec*fromuser, char *mail_buf, char *userid, char *title)
 }
 
 /*peregrine*/
-int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlinkmode)
+int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlinkmode, struct fileheader* fh)
 {
     struct fileheader newmessage;
     struct stat st;
@@ -258,6 +258,9 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
     if (touser == NULL)         /* flyriver, 2002.9.8 */
         return -1;
     memset(&newmessage, 0, sizeof(newmessage));
+    if (fh) {
+        newmessage.attachment=fh->attachment;
+    }
     strcpy(buf, fromid);        /* Leeward 98.04.14 */
     strncpy(newmessage.owner, buf, OWNER_LEN);
     newmessage.owner[OWNER_LEN - 1] = 0;
@@ -277,17 +280,17 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
 
     switch (unlinkmode) {
     case 2:
-	unlink(filepath);
-	sprintf(buf,"%s/%s",BBSHOME,tmpfile);
-    	if (symlink(buf,filepath)==-1)
+        unlink(filepath);
+        sprintf(buf,"%s/%s",BBSHOME,tmpfile);
+        if (symlink(buf,filepath)==-1)
 		bbslog("3bbs","symlink %s to %s:%s",tmpfile,filepath,strerror(errno));
-    	break;
+        break;
     case 1:
         f_mv(tmpfile, filepath);
-    	break;
+        break;
     case  0:
         f_cp(tmpfile, filepath, 0);
-    	break;
+        break;
     }
     /*
      * peregrine update used space

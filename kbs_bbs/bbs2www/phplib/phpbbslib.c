@@ -1678,7 +1678,7 @@ static ZEND_FUNCTION(bbs_mail_file)
     if (ac != 5 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "ssssl", &srcid, &srcid_len, &filename, &filename_len, &destid, &destid_len, &title, &title_len, &is_move) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
-    if (mail_file(srcid, filename, destid, title, is_move) < 0)
+    if (mail_file(srcid, filename, destid, title, is_move, NULL) < 0)
         RETURN_FALSE;
     RETURN_TRUE;
 }

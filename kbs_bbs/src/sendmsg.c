@@ -331,7 +331,7 @@ reenter:
 
                 now = time(0);
                 sprintf(title, "[%12.12s] 所有讯息备份", ctime(&now) + 4);
-                mail_file(currentuser->userid, fname, currentuser->userid, title, BBSPOST_MOVE);
+                mail_file(currentuser->userid, fname, currentuser->userid, title, BBSPOST_MOVE, NULL);
                 unlink(fname);
                 clear_msg(currentuser->userid);
                 goto outofhere;

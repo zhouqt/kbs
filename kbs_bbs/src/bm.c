@@ -280,7 +280,7 @@ int addtodeny(char *uident)
             fprintf(fn, "                              %s\n", ctime(&now));
         }
         fclose(fn);
-        mail_file(currentuser->userid, filename, uident, buffer, 0);
+        mail_file(currentuser->userid, filename, uident, buffer, 0, NULL);
         fn = fopen(filename, "w+");
         fprintf(fn, "由于 \x1b[4m%s\x1b[m 在 \x1b[4m%s\x1b[m 版的 \x1b[4m%s\x1b[m 行为，\n", uident, currboard, denymsg);
         if (denyday)

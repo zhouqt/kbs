@@ -2143,7 +2143,7 @@ int post_article(char *q_file, struct fileheader *re_file)
 
     strcpy(quote_title, save_title);
     strcpy(quote_board, currboard);
-    aborted = vedit(filepath, true, &eff_size);    /* 进入编辑状态 */
+    aborted = vedit(filepath, true, &eff_size, NULL);    /* 进入编辑状态 */
 
     add_loginfo(filepath, currentuser, currboard, Anony);       /*添加最后一行 */
 
@@ -2275,6 +2275,7 @@ int add_edit_mark(char *fname, int mode, char *title)
     char buf[512];
     char *t;
     long eff_size;
+    long attachpos;
 
     if (!strcmp(currboard, "syssecurity")
         || !strcmp(currboard, "junk")
@@ -2326,9 +2327,14 @@ int add_edit_mark(char *fname, int mode, char *title)
      */
 
     sprintf(genbuf, "%s/%s", buf, fileinfo->filename);
-    if (vedit_post(genbuf, false, &eff_size) != -1) {
+    if (vedit_post(genbuf, false, &eff_size,&attachpos) != -1) {
         if (ADD_EDITMARK)
             add_edit_mark(genbuf, 1, /*NULL*/ fileinfo->title);
+        if (attachpos!=fileinfo->attachment) {
+            fileinfo->attachment=attachpos;
+            change_post_flag(currBM, currentuser, digestmode, currboard, ent, 
+                fileinfo, direct, FILE_ATTACHPOS_FLAG, 0);
+        }
     }
     newbbslog(BBSLOG_USER, "edited post '%s' on %s", fileinfo->title, currboard);
     return FULLUPDATE;
@@ -3314,7 +3320,7 @@ int Goodbye()
         if (fp) {
             fputs(lbuf, fp);
             fclose(fp);
-            mail_file(currentuser->userid, tmpfile, "surr", "自首", BBSPOST_MOVE);
+            mail_file(currentuser->userid, tmpfile, "surr", "自首", BBSPOST_MOVE, NULL);
         }
     }
     /*

@@ -358,8 +358,9 @@ typedef size_t socklen_t;
 #define FILE_TITLE_FLAG 5
 #define FILE_IMPORT_FLAG 6
 #ifdef FILTER
-#define	FILE_CENSOR_FLAG 7
+#define FILE_CENSOR_FLAG 7
 #endif
+#define FILE_ATTACHPOS_FLAG 8
 
 /**
  * Enumeration values for the so-called board .DIR file.

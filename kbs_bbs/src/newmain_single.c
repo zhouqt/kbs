@@ -546,7 +546,7 @@ void login_query()
     sethomepath(tmpstr, currentuser->userid);
     sprintf(fname, "%s/%s.deadve", tmpstr, currentuser->userid);
     if ((fn = fopen(fname, "r")) != NULL) {
-        mail_file(currentuser->userid, fname, currentuser->userid, "不正常断线所保留的部份...", BBSPOST_MOVE);
+        mail_file(currentuser->userid, fname, currentuser->userid, "不正常断线所保留的部份...", BBSPOST_MOVE, NULL);
         fclose(fn);
     }
     sethomepath(genbuf, currentuser->userid);
@@ -1087,7 +1087,7 @@ int tBBSlog_recover()
     getdata(0, 0, "\033[1;32m您有一个不正常断线所留下来的聊天记录, 您要 .. (M) 寄回信箱 (Q) 算了？[Q]：\033[m", genbuf, 4, DOECHO, NULL, true);
 
     if (genbuf[0] == 'M' || genbuf[0] == 'm')
-        mail_file(currentuser->userid, buf, currentuser->userid, "聊天记录", BBSPOST_MOVE);
+        mail_file(currentuser->userid, buf, currentuser->userid, "聊天记录", BBSPOST_MOVE, NULL);
     else
         unlink(buf);
     return;

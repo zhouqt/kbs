@@ -68,7 +68,7 @@ int do_fwd(struct fileheader *x, char *board, char *target, int big5, int noansi
     if (!strchr(target, '@')) {
         /*post_mail(target, title, path, currentuser->userid,
            currentuser->username, fromhost, -1); */
-        mail_file(getcurruserid(), path, target, title, 0);
+        mail_file(getcurruserid(), path, target, title, 0, NULL);
         printf("文章已转寄给'%s'<br>\n", nohtml(target));
         rv = 0;
     } else {
