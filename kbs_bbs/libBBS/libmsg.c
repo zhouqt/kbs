@@ -291,17 +291,48 @@ int save_msgtext(char *uident, char *msgbuf)
     ldata.l_type = F_UNLCK;
     fcntl(fd, F_SETLKW, &ldata);
     close(fd);
+
+    if(msgbuf[0]=='0') {
+        sethomefile(fname, uident, "msgindex2");
+        if ((fd = open(fname, O_WRONLY | O_CREAT, 0664)) == -1) {
+            bbslog("user", "%s", "msgopen err");
+            return -1;              /* 创建文件发生错误*/
+        }
+        ldata.l_type = F_WRLCK;
+        ldata.l_whence = 0;
+        ldata.l_len = 0;
+        ldata.l_start = 0;
+        if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+            bbslog("user", "%s", "msglock err");
+            close(fd);
+            return -1;              /* lock error*/
+        }
+        fstat(fd, &buf);
+        count = buf.st_size/4-1;
+        if(count<0) {
+            i = 0;
+            write(fd, &i, 4);
+            count = 0;
+        }
+        lseek(fd, (count+1)*4, SEEK_SET);
+        write(fd, &size, 4);
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+    }
+
     return 0;
 }
 
-int get_msgcount(char *uident)
+int get_msgcount(int id, char *uident)
 {
     char fname[STRLEN];
     int fd, i, j, count;
     struct flock ldata;
     struct stat buf;
 
-    sethomefile(fname, uident, "msgindex");
+    if(id) sethomefile(fname, uident, "msgindex2");
+    else sethomefile(fname, uident, "msgindex");
 
     if ((fd = open(fname, O_RDONLY, 0664)) == -1) {
         bbslog("user", "%s", "msgopen err");
@@ -328,13 +359,14 @@ int get_msgcount(char *uident)
 
 int clear_msg(char *uident)
 {
-    char fname[STRLEN], fname2[STRLEN];
+    char fname[STRLEN];
 
     sethomefile(fname, uident, "msgindex");
-    sethomefile(fname2, uident, "msgcontent");
-
     unlink(fname);
-    unlink(fname2);
+    sethomefile(fname, uident, "msgindex2");
+    unlink(fname);
+    sethomefile(fname, uident, "msgcontent");
+    unlink(fname);
 
     return 0;
 }
@@ -346,7 +378,7 @@ int get_unreadmsg(char *uident)
     struct flock ldata;
     struct stat buf;
 
-    sethomefile(fname, uident, "msgindex");
+    sethomefile(fname, uident, "msgindex2");
 
     if ((fd = open(fname, O_RDWR | O_CREAT, 0664)) == -1) {
         bbslog("user", "%s", "msgopen err");
@@ -387,7 +419,7 @@ int get_unreadcount(char *uident)
     struct flock ldata;
     struct stat buf;
 
-    sethomefile(fname, uident, "msgindex");
+    sethomefile(fname, uident, "msgindex2");
 
     if ((fd = open(fname, O_RDONLY, 0664)) == -1) {
         return 0;              /* 创建文件发生错误*/
@@ -417,14 +449,15 @@ int get_unreadcount(char *uident)
     return ret;
 }
 
-int load_msgtext(char *uident, int index, char *msgbuf)
+int load_msgtext(int id, char *uident, int index, char *msgbuf)
 {
     char fname[STRLEN], fname2[STRLEN];
     int fd, fd2, i, j, count, size, now, next;
     struct flock ldata;
     struct stat buf;
 
-    sethomefile(fname, uident, "msgindex");
+    if(id) sethomefile(fname, uident, "msgindex2");
+    else sethomefile(fname, uident, "msgindex");
     sethomefile(fname2, uident, "msgcontent");
 
     msgbuf[0] = 0;

@@ -304,8 +304,8 @@ void r_msg()
         saveline(0, 1, savebuffer[0]);
         return;
     }
-    count = get_msgcount(currentuser->userid);
-    if (!count) {        /* Leeward 98.07.30 */
+    count = get_msgcount(1, currentuser->userid);
+    if (!count) {
         move(0, 0);
         clrtoeol();
         refresh();
@@ -321,16 +321,16 @@ void r_msg()
     if(now==-1) now = get_msgcount(currentuser->userid)-1;
     do {
         while(1){
-            load_msgtext(currentuser->userid, now, buf);
+            load_msgtext(1, currentuser->userid, now, buf);
             translate_msg(buf, outmsg);
             uid[12] = 0;
             memcpy(uid, buf+2, 12);
             i=strlen(uid);
             while(i>0&&uid[i-1]==' ') i--;
             uid[i] = 0;
-            buf[29]=0;
-            i=19;
-            while(buf[i]=='0'&&i<28) i++;
+            buf[39]=0;
+            i=29;
+            while(buf[i]=='0'&&i<38) i++;
             pid = atoi(buf+i);
             uin = t_search(uid, pid);
             if(buf[1]=='3'||uin==NULL) canreply = 0;
@@ -353,11 +353,11 @@ void r_msg()
             
 
             prints("[m  µÚ%3d/%-3dÌõÏûÏ¢, °´¡ü»ò¡ýÇÐ»»Ñ¶Ï¢, »ò°´ Enter ½áÊø, %s", now+1, count, canreply?"»Ø¸´:":(uin?"¸ÃÏûÏ¢ÎÞ·¨»Ø¸´":"ÓÃ»§ÒÑÏÂÕ¾,ÎÞ·¨»Ø¸´"));
+            clrtoeol();
             good_getyx(&oy, &ox);
             
             refresh();
             oflush();
-            clrtoeol();
             if(canreply)
                 ch = -getdata(oy, ox, NULL, buf, 1024, DOECHO, NULL, true);
             else
