@@ -11,7 +11,7 @@ html_init();
 	$ret=bbs_getwebmsg($srcid,$msgbuf,$srcutmpnum,$sndtime);
 	if ($ret!=0)  {
 		if ($currentuser['userdefine0'] & BBS_DEF_SOUNDMSG) {
-			echo '<bgsound src="/sound/msg.wav">';
+			echo '<bgsound src="sound/msg.wav">';
 		}
 ?> 
 	<div id="msgcontent">

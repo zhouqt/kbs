@@ -42,7 +42,7 @@ function showUserData($user, $user_num) {
 	 */
 require("inc/userdatadefine.inc.php");
 if ($user['userdefine0'] & BBS_DEF_SHOWDETAILUSERDATA) {
-	if ($user['userface_img']==-2) {
+	if ($user['userface_img'] == -1) {
 		$user_pic = $user['userface_url'];
 	} else {
 		$user_pic = 'userface/image'.$user['userface_img'].'.gif';

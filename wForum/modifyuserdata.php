@@ -71,12 +71,10 @@ function main(){
 <TR> 
 <TD width=40% valign=top class=TableBody1><B>自定义头像</B>：<br>如果图像位置中有连接图片将以自定义的为主</TD>
 <TD width=60%  class=TableBody1>
-
-<iframe name=ad frameborder=0 width=300 height=40 scrolling=no src=reg_upload.php></iframe> 
-<br>
-
+<!-- 这个地方似乎用来上传自定义头像，先禁止了吧 - atppp
+<iframe name=ad frameborder=0 width=300 height=40 scrolling=no src=reg_upload.php></iframe> -->
 图像位置： 
-<input type=TEXT name=myface size=20 maxlength=100 value="<?php echo htmlEncode($currentuser['userface_url']); ?>">
+<input type=TEXT name=myface size=60 maxlength=100 value="<?php echo htmlEncode($currentuser['userface_url']); ?>">
 &nbsp;完整Url地址<br>
 宽&nbsp;&nbsp;&nbsp;&nbsp;度： 
 <input type=TEXT name=width size=3 maxlength=3 value="<?php echo $currentuser['userface_width'];  ?>" >
@@ -141,7 +139,8 @@ function main(){
           <br>   
           文字将出现在您发表的文章的结尾处。</td>   
         <td width="60%" class=TableBody1>    
-          <textarea name="Signature" rows=5 cols=60 wrap=PHYSICAL><?php
+          <textarea name="Signature" rows=5 cols=60 wrap=PHYSICAL>
+<?php
 	$filename=bbs_sethomefile($currentuser["userid"],"signatures");
     $fp = @fopen ($filename, "r");
     if ($fp!=false) {
@@ -183,7 +182,8 @@ function main(){
 </tr>
 <tr>
 <td class=TableBody1><b>个人简介： &nbsp;</b><br>
-<textarea name=personal rows=6 cols=90% ><?php
+<textarea name=personal rows=6 cols=90% >
+<?php
 	$filename=bbs_sethomefile($currentuser["userid"],"plans");
     $fp = @fopen ($filename, "r");
     if ($fp!=false) {

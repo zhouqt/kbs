@@ -138,12 +138,10 @@ function do_apply(){
 <TR> 
 <TD width=40% valign=top class=TableBody1><B>自定义头像</B>：<br>如果图像位置中有连接图片将以自定义的为主</TD>
 <TD width=60%  class=TableBody1>
-
-<iframe name=ad frameborder=0 width=300 height=40 scrolling=no src=reg_upload.php></iframe> 
-<br>
-
+<!-- 这个地方似乎用来上传自定义头像，先禁止了吧 - atppp
+<iframe name=ad frameborder=0 width=300 height=40 scrolling=no src=reg_upload.php></iframe> -->
 图像位置： 
-<input type=TEXT name=myface size=20 maxlength=100>
+<input type=TEXT name=myface size=60 maxlength=100>
 &nbsp;完整Url地址<br>
 宽&nbsp;&nbsp;&nbsp;&nbsp;度： 
 <input type=TEXT name=width size=3 maxlength=3 value="32">
