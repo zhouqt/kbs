@@ -117,7 +117,7 @@
 			$query = "INSERT INTO `comments` ( `cid` , `nid` , `uid` , `emote` , `hostname` , `username` , `subject` , `created` , `changed` , `body`  , `htmltag`)". 
 				"VALUES ('', '".$nid."', '".$uid."', '".$emote."' , '".$_SERVER["REMOTE_ADDR"]."', '".$currentuser["userid"]."', '".addslashes($_POST["subject"])."', '".date("YmdHis")."' , '".date("YmdHis")."', '".addslashes(html_editorstr_format($_POST["blogbody"]))."' , '".$useHtmlTag."' );";
 			mysql_query($query,$link);
-			$query = "UPDATE nodes SET commentcount = commentcount + 1 WHERE `nid` = '".$nid."' ;";
+			$query = "UPDATE nodes SET commentcount = commentcount + 1 , changed = changed  WHERE `nid` = '".$nid."' ;";
 			mysql_query($query,$link);
 ?>
 <script language="javascript">

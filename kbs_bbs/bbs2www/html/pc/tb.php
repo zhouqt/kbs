@@ -45,7 +45,7 @@
 	function pc_tb_add_trackback($link,$tbarr)
 	{
 		global $_SERVER;
-		$query = "UPDATE nodes SET `trackbackcount` = `trackbackcount` + 1 , `visitcount` = `visitcount` + 1 WHERE `nid` = '".$tbarr[nid]."';";	
+		$query = "UPDATE nodes SET `trackbackcount` = `trackbackcount` + 1 , `visitcount` = `visitcount` + 1 , `changed` = `changed` WHERE `nid` = '".$tbarr[nid]."';";	
 		mysql_query($query,$link);
 		$query = "INSERT INTO `trackback` ( `tbid` , `uid` , `nid` , `title` , `excerpt` , `url` , `blogname` , `time` ,`address`) ".
 			"VALUES ('', '".$tbarr[uid]."', '".$tbarr[nid]."', '".addslashes($tbarr[title])."', '".addslashes($tbarr[excerpt])."', '".addslashes($tbarr[url])."', '".addslashes($tbarr[blogname])."', NOW( ) , '".$_SERVER["REMOTE_ADDR"]."' );";
