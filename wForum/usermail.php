@@ -20,7 +20,6 @@ main();
 show_footer();
 
 function main(){
-	global $_GET;
 	global $boxDesc;
 	$boxName=$_GET['boxname'];
 	if (!isset($_GET['num'])) {
@@ -48,8 +47,7 @@ function showmail($boxName, $boxPath, $boxDesc, $num){
 <?php
 	$dir = bbs_setmailfile($currentuser["userid"],$boxPath);
 
-	$total = filesize( $dir ) / 256 ;
-	if( $total <= 0 ){
+	if( filesize( $dir ) <= 0 ){
 ?>
 <tr><td>您所指定的信件不存在。
 </td></tr>
@@ -94,7 +92,7 @@ function showmail($boxName, $boxPath, $boxDesc, $num){
                     <td  class=TableBody1 valign=top align=left>
 					<b>
 <?php
-					echo dvbcode(bbs_printansifile($filename),0,'TableBody2');
+					echo dvbcode(bbs_printansifile($filename,1,"bbsmailcon.php?" . $_SERVER['QUERY_STRING']),0,'TableBody2');
 ?>
 	</b>
 	&nbsp;
