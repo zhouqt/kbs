@@ -516,6 +516,7 @@ void gen_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE])
 
 void gen_blessing_list_xml(struct postrec *dobucket[HASHSIZE])
 {
+	gen_hot_subjects_xml(4, dobucket);
 }
 
 void poststat(int mytype, time_t now, struct tm *ptime)
