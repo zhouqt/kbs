@@ -2071,10 +2071,10 @@ static int m_clean()
 const static struct command_def mail_cmds[] = {
     {"N) 览阅新信件", 0, m_new, NULL},
     {"R) 览阅全部信件", 0, m_read, NULL},
-    {"S) 寄信", 0, m_send, NULL},
-    {"G) 寄给 / 设定寄信名单", 0, g_send, NULL},
+    {"S) 寄信", PERM_LOGINOK, m_send, NULL},
+    {"G) 寄给 / 设定寄信名单", PERM_LOGINOK, g_send, NULL},
     {"O)┌设定好友名单", 0, t_override, NULL},
-    {"F)└寄信给好友名单", 0, ov_send, NULL},
+    {"F)└寄信给好友名单", PERM_LOGINOK, ov_send, NULL},
     {"C) 清空备份的邮箱", 0, m_clean, NULL},
     {"M) 寄信给所有人", PERM_SYSOP, mailall, NULL},
 };
@@ -2086,6 +2086,8 @@ struct mail_proc_arg {
     int sysboxnum;
     int numbers;
     int tmpnum;
+
+    int cmdptr[sizeof(mail_cmds) / sizeof(struct command_def)];
 };
 
 static void maillist_refresh(struct _select_def *conf)
@@ -2093,8 +2095,6 @@ static void maillist_refresh(struct _select_def *conf)
     int i;
 
     clear();
-//    docmdtitle("[处理信笺选单]",
- //              "  主选单[\x1b[1;32m←\x1b[0;37m,\x1b[1;32me\x1b[0;37m] 进入[\x1b[1;32m→\x1b[0;37m,\x1b[1;32mr\x1b[0;37m] 选择[\x1b[1;32m↑\x1b[0;37m,\x1b[1;32m↓\x1b[0;37m] 添加[\x1b[1;32ma\x1b[0;37m] 改名[\x1b[1;32mT\x1b[0;37m] 删除[\x1b[1;32md\x1b[0;37m]                   \x1b[m");
     docmdtitle("[处理信笺选单]",
                "主选单[\x1b[1;32m←\x1b[0;37m,\x1b[1;32me\x1b[0;37m] 进入[\x1b[1;32mEnter\x1b[0;37m] 选择[\x1b[1;32m↑\x1b[0;37m,\x1b[1;32m↓\x1b[0;37m] 左右切换[\x1b[1;32mTab\x1b[m] 添加[\x1b[1;32ma\x1b[0;37m] 改名[\x1b[1;32mT\x1b[0;37m] 删除[\x1b[1;32md\x1b[0;37m]\x1b[m");
 
@@ -2121,7 +2121,7 @@ static void maillist_show(struct _select_def *conf, int pos)
         /*
          * 邮箱命令
          */
-        outs(mail_cmds[pos - 1].prompt);
+        outs(mail_cmds[arg->cmdptr[pos - 1]].prompt);
     } else if (pos <= arg->sysboxnum + arg->cmdnum) {
         int sel;
 
@@ -2156,7 +2156,7 @@ static int maillist_onselect(struct _select_def *conf)
         /*
          * 邮箱命令
          */
-        (*mail_cmds[conf->pos - 1].func) ();
+        (*mail_cmds[arg->cmdptr[conf->pos - 1]].func) ();
     } else if (conf->pos <= arg->sysboxnum + arg->cmdnum) {
         int sel;
 
@@ -2261,7 +2261,7 @@ static int maillist_key(struct _select_def *conf, int command)
                 break;
         }
         sprintf(bname, "MAILBOX%d", i);
-	f_touch(buf);
+        f_touch(buf);
         strncpy(mail_list[mail_list_t] + 30, bname, 9);
         mail_list_t++;
         save_mail_list();
@@ -2367,14 +2367,17 @@ int MailProc()
 
     clear();
     arg.tmpnum = -1;
-    arg.cmdnum = sizeof(mail_cmds) / sizeof(struct command_def);
-    if (!HAS_PERM(currentuser,PERM_SYSOP))
-	    arg.cmdnum--;
+    for (i=0;i<sizeof(mail_cmds) / sizeof(struct command_def);i++) {
+        if (HAS_PERM(currentuser,mail_cmds[i].permission)) {
+        	arg.cmdptr[arg.cmdnum]=i;
+	        arg.cmdnum++;
+        }
+    }
     arg.sysboxnum = sizeof(mail_sysbox) / sizeof(char *);
     arg.numbers = mail_list_t + arg.cmdnum + arg.sysboxnum;
     arg.leftpos=2;
     arg.rightpos=arg.cmdnum + arg.sysboxnum+1;
-    pts = (POINT *) malloc(sizeof(POINT) * (arg.numbers+20));
+    pts = (POINT *) malloc(sizeof(POINT) * (arg.numbers+MAILBOARDNUM));
 
     /*
      * 计算邮箱命令地位置
