@@ -766,12 +766,12 @@ int calc_main()
         if(!strncasecmp(cmd, "help", 5)||!strncasecmp(cmd, "?", 2)) {
             outline("变量: 1到6个字母,例如x=3\n");
             outline("常量: %pi, %e\n");
-            outline("矩阵: [3,4;5,6] a(3:4,1:5:2)\n");
+            outline("矩阵: [3,4;5,6] a(3:4,1:5:2) 1:5:0.5\n");
             outline("函数: sin,cos,tan,asin,acos,atan,log,exp,ln,fact,\n");
             outline("      sinh,cosh,tanh,asinh,acosh,atanh\n");
             outline("      abs,sign,sqr,sqrt,round,floor,ceil\n");
             outline("      det,inv\n");
-            outline("操作: + - * / ^ '(转置) \n");
+            outline("操作: + - * / ^ '(转置) .*(矩阵乘) ./(矩阵除) \n");
             continue;
         }
         if(strchr(cmd, '=')) {
