@@ -342,10 +342,16 @@ int do_send(char *userid, char *title, char *q_file)
         if (getuser(userid, &user) == 0)
             return -4;
         ret = chkreceiver(currentuser, user);
+
+	if (false == canIsend2(currentuser, userid)) {  /* Leeward 98.04.10 */
+            prints("[1m[33mºÜ±§Ç¸¡ÃÄúÎŞ·¨¸ø %s ·¢ĞÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄĞÅ¼ş£®[m[m\n\n", userid,userid);
+            return -2;
+        }
+
         if (ret == 1)
             return -3;
         /*
-         * SYSOPÒ²ÄÜ¸ø×ÔÉ±µÄÈË·¢ĞÅ 
+         * SYSOPÒ²ÄÜ¸ø×ÔÉ±µÄÈË·¢ĞÅ
          */
 
 
@@ -358,7 +364,7 @@ int do_send(char *userid, char *title, char *q_file)
     }
 #ifdef INTERNET_PRIVATE_EMAIL
     /*
-     * I hate go to , but I use it again for the noodle code :-) 
+     * I hate go to , but I use it again for the noodle code :-)
      */
     else {
         /*
@@ -366,7 +372,7 @@ int do_send(char *userid, char *title, char *q_file)
          * if(strstr(userid,"@bbs.ee.nthu."))
          * strcat(userid,"edu.tw");
          * else
-         * strcat(userid,".edu.tw");} 
+         * strcat(userid,".edu.tw");}
          */
         if (chkusermail(currentuser)) {
             move(1, 0);
@@ -382,7 +388,7 @@ int do_send(char *userid, char *title, char *q_file)
         goto edit_mail_file;
     }
     /*
-     * end of kludge for internet mail 
+     * end of kludge for internet mail
      */
 #endif
 
@@ -404,7 +410,7 @@ int do_send(char *userid, char *title, char *q_file)
 
 
     /*
-     * strncpy(newmessage.title,title,STRLEN) ; 
+     * strncpy(newmessage.title,title,STRLEN) ;
      */
     in_mail = true;
 #if defined(MAIL_REALNAMES)
