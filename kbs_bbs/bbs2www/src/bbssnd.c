@@ -6,8 +6,9 @@
 int main()
 {
     FILE *fp;
-    char filename[80], dir[80], board[80], title[80], buf[80], oldfilename[80], *content;
+    char filename[80], dir[80], board[80], title[80], buf[80], oldfilename[80], *content,path[80];
     int r, i, sig;
+	int reid;
     struct fileheader x, *oldx;
     bcache_t *brd;
     int local, anony;
@@ -28,6 +29,7 @@ int main()
             title[i] = ' ';
     }
     sig = atoi(getparm("signature"));
+	reid = atoi(getparm("reid"));
     local = atoi(getparm("outgo")) ? 0 : 1;
     anony = atoi(getparm("anony")) ? 1 : 0;
     content = getparm("text");
@@ -45,11 +47,18 @@ int main()
     *(int *) (u_info->from + 36) = time(0);
     sprintf(filename, "tmp/%s.%d.tmp", getcurruserid(), getpid());
     f_append(filename, unix_string(content));
-    if(oldfilename[0]){
-        int pos;
+
+    if(reid > 0){
+        int pos;int fd;
         oldx = (struct fileheader*)malloc(sizeof(struct fileheader));
-        pos = get_file_ent(board, oldfilename, oldx);
-        if (pos <= 0) {
+
+		setbfile(path,board,DOT_DIR);
+		fd =open(path,O_RDWR);
+		if(fd < 0)http_fatal("索引文件不存在");
+		get_records_from_id(fd,reid,oldx,1,&pos);
+
+		close(fd);
+        if (pos < 0) {
     		free(oldx);
     		oldx = NULL;
         }
