@@ -1972,6 +1972,8 @@ int garbage_line(const char *str)
         str++;
         if (*str == ' ')
             str++;
+        else
+            break;
         if (qlevel++ >= QUOTELEV)
             return 1;
     }
@@ -4405,9 +4407,9 @@ static int content_key(struct _select_def *conf, int key)
 	switch (key) {
 	case 'm':
 		{
-			char ans[3];
+			char ans[5];
 			int newm;
-			getdata(t_lines-1, 0, "移动到新次序:", ans, 2, DOECHO, NULL, true);
+			getdata(t_lines-1, 0, "移动到新次序:", ans, 4, DOECHO, NULL, true);
 			if( ans[0]=='\0' || ans[0]=='\n' || ans[0]=='\r' )
 				return SHOW_REFRESH;
 			newm=atoi(ans);
