@@ -1410,7 +1410,7 @@ void a_manager(MENU *pm,int ch)
             break;
         case 't':
             strncpy(changed_T, item->title, 39);
-            changed_T[39] = 0;
+            changed_T[38] = 0;
             {
                 char *p;
 
