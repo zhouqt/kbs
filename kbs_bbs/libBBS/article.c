@@ -2,7 +2,7 @@
 #include <utime.h>
 #define DEBUG
 
-int get_effsize_attach(char *ffn, long *att);
+int get_effsize_attach(char *ffn, unsigned int *att);
 int outgo_post(struct fileheader *fh, char *board, char *title, session_t* session)
 {
     FILE *foo;
@@ -1783,7 +1783,7 @@ int get_effsize(char *ffn)
     return abssize;
 }
 
-int get_effsize_attach(char *ffn, long *att)
+int get_effsize_attach(char *ffn, unsigned int *att)
 {
     char *p, *op, *attach;
     long attach_len;

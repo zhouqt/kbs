@@ -2204,8 +2204,10 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
     sprintf(title, "%.50s(转寄)", fh->title);   /*Haohmaru.00.05.01,moved here */
     if (askyn("是否修改文章内容", 0) == 1) {
 		int oldmode = uinfo.mode;
+		long attachpos = fh->attachment;
 		modify_user_mode(SMAIL);
-        if (vedit(fname, false, NULL, &fh->attachment,0) != -1) {
+		if (vedit(fname, false, NULL, &attachpos,0) != -1) {
+			fh->attachment = attachpos;
             if (ADD_EDITMARK)
                 add_edit_mark(fname, 1, fh->title,getSession());
         }
