@@ -553,7 +553,7 @@ int     numlines;
                     int oldmode = uinfo.mode;
                     clear();
                     modify_user_mode(QUERY);
-                    t_query();
+                    t_query(NULL);
                     clear();
                     modify_user_mode(oldmode);
                     i = pos = 0;

@@ -1310,7 +1310,7 @@ case KEY_PGDN: case Ctrl( 'F' ): case ' ':
             }
             break;
         case 'o': t_friends(); me.page=9999; break;/*Haohmaru 98.09.22*/
-        case 'u': clear(); modify_user_mode(QUERY); t_query(); modify_user_mode( CSIE_ANNOUNCE ); me.page=9999; break;/*Haohmaru.99.11.29*/
+        case 'u': clear(); modify_user_mode(QUERY); t_query(NULL); modify_user_mode( CSIE_ANNOUNCE ); me.page=9999; break;/*Haohmaru.99.11.29*/
         case '!': Goodbye(); me.page=9999;break;/*Haohmaru 98.09.24*/
             /*
                         case 'Z':

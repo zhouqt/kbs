@@ -869,7 +869,7 @@ case 'O': case 'o':         /* Luzi 1997.11.1 */
     case 'u':		    /* Haohmaru 1999.11.28*/
         clear();
         modify_user_mode(QUERY);
-        t_query();
+        t_query(NULL);
         break;
     }
 #endif

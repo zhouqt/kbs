@@ -499,7 +499,7 @@ case 'W':case 'w':       /* Luzi 1997.10.31 */
             {	int oldmode = uinfo.mode;
                 clear();
                 modify_user_mode(QUERY);
-                t_query();
+                t_query(NULL);
                 page=-1;
                 modify_user_mode(oldmode);
                 break;

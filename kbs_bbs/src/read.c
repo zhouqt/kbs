@@ -532,7 +532,7 @@ case 'L': case 'l':  /* Luzi 1997.10.31 */
     case 'u':	/* Haohmaru. 99.11.29*/
         clear();
         modify_user_mode(QUERY);
-        t_query();
+        t_query(NULL);
         return FULLUPDATE;
         break;
 case 'O': case 'o':       /* Luzi 1997.10.31 */

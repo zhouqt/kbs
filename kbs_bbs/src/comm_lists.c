@@ -60,7 +60,7 @@ int x_userdefine();
 int confirm_delete_id();	/* Added by Bigman 2001.7.14 */
 /*Add by SmallPig*/
 int     m_new(), m_read(), m_send(), g_send();
-int     ov_send(), m_internet(),s_msg(),mailall(),suicide();
+int     ov_send(), m_internet(),mailall(),suicide();
 
 
 int     t_users(), t_friends(), t_rusers(), t_list(), t_monitor();
