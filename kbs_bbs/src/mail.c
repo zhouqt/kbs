@@ -1477,9 +1477,10 @@ case 'I':case 'i':
                 clrtoeol();
                 move(3,0);
                 n++;
-                prints("(A)È«²¿¼ÓÈë (Y)¼ÓÈë (N)²»¼ÓÈë (Q)½áÊø? [Y]:");
-                if(!fmode)
+                if(!fmode) {
+                    prints("(A)Ê£ÏÂµÄÈ«²¿¼ÓÈë (Y)¼ÓÈë (N)²»¼ÓÈë (Q)½áÊø? [Y]:");
                     key=igetkey();
+		}
                 else
                     key='Y';
                 if(key=='q'||key=='Q')
@@ -1492,27 +1493,36 @@ case 'I':case 'i':
                 if(key=='\0'||key=='\n'||key=='y'||key=='Y' || '\r' == key)
                 {
                     struct userec* lookupuser;
-                    strcpy(uident,getuserid2(topfriend[n-1].uid));
-                    if(!getuser(uident,&lookupuser))
-                    {
-                        move(4,0);
-                        prints("Õâ¸öÊ¹ÓÃÕß´úºÅÊÇ´íÎóµÄ.\n");
-                        pressreturn();
-                        i--;
-                        continue;
-                    }else
+                    char* errstr;
+		    char* touserid=getuserid2(topfriend[n-1].uid);
+		    errstr=NULL;
+		    if (!touserid) {
+                        errstr="Õâ¸öÊ¹ÓÃÕß´úºÅÊÇ´íÎóµÄ.\n";
+		    } else {
+                    	strcpy(uident,getuserid2(topfriend[n-1].uid));
+                    	if(!getuser(uident,&lookupuser))
+                    	{
+                        	errstr="Õâ¸öÊ¹ÓÃÕß´úºÅÊÇ´íÎóµÄ.\n";
+                    	}else
                         if (!(lookupuser->userlevel & PERM_READMAIL))
                         {
-                            move(4,0);
-                            prints("ÐÅ¼þÎÞ·¨±»¼Ä¸ø: [1m%s[m\n", lookupuser);
-                            i--;
-                            continue;
+                            errstr="ÐÅ¼þÎÞ·¨±»¼Ä¸øËû\n";
                         }else
                             if ( seek_in_file(maillists,uident) )
                             {
                                 i--;
                                 continue;
                             }
+                    }
+		    if (errstr) {
+			if (fmode!=YEA) {
+                        	move(4,0);
+				prints(errstr);
+                        	pressreturn();
+			}
+                        i--;
+                        continue;
+		    }
                     addtofile(maillists,uident);
                     cnt++;
                 }

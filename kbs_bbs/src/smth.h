@@ -8,7 +8,7 @@
 #define MAXUSERS  		150000
 #define MAXBOARD  		400
 #define MAXACTIVE 		4000
-#define MAX_GUEST_NUM		24
+#define MAX_GUEST_NUM		400
 
 #define POP3PORT		110
 #define	LENGTH_SCREEN_LINE	220

@@ -560,7 +560,7 @@ int num_active_http_users()
 void
 login_query()
 {
-    char        uid[STRLEN], passbuf[OLDPASSLEN], *ptr;
+    char        uid[STRLEN], passbuf[40], *ptr;
     int         curr_login_num;
     int 	curr_http_num; /* Leeward 99.03.06 */
     int         attempts;
