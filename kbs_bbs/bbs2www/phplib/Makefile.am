@@ -1,4 +1,4 @@
-prefix=@PHPBBSLIBPATH@
+libdir=@PHPBBSLIBPATH@
 lib_LTLIBRARIES = libphpbbslib.la
 phpdir=@PHPBBSLIBPATH@
 php_DATA=funcs.php
