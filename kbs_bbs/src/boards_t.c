@@ -492,6 +492,8 @@ static int fav_onselect(struct _select_def *conf)
 
     if (arg->select_group) return SHOW_SELECT; //select a group
     arg->select_group=false;
+	if (ptr->dir==1 && ptr->pos==-1 && ptr->flag==-1 && ptr->tag==-1)
+		return SHOW_CONTINUE;
     if ((ptr->dir == 1)||((arg->favmode)&&(ptr->flag&BOARD_GROUP))) {        /* added by bad 2002.8.3*/
         return SHOW_SELECT;
     } else {
