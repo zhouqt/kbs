@@ -1381,7 +1381,7 @@ void show_helpmenu(helptext)
     clear();
 }
 
-char *vedithelp[] = {
+static const char *vedithelp[] = {
     "\01编辑功能指令说明",
     "",
     "\01一般命令:",

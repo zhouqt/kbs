@@ -6,60 +6,34 @@
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
     any later version.
-
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/  
-    
+*/
 #include "bbs.h"
-    
-/*#include <varargs.h>*/ 
+/*#include <varargs.h>*/
 #include <arpa/telnet.h>
-
 int t_lines = 24;
-
 int t_columns = 80;
-
-
 int automargins = 1;
-
-
-void term_init() 
+void term_init()
 {
-    
-extern int obufsize, ibufsize, icurrchar;
+    extern int obufsize, ibufsize, icurrchar;
 
-    
-obufsize = 0;
-    
-ibufsize = 0;
-    
-icurrchar = 0;
-
-} 
-
-void do_move(int destcol, int destline, void (*outc) (char)) 
-{
-    
-char buf[30];
-    
-char *p;
-
-    
-sprintf(buf, "\033[%d;%dH", destline + 1, destcol + 1);
-    
-for (p = buf; *p != 0; p++)
-        
-(*outc) (*p);
-
+    obufsize = 0;
+    ibufsize = 0;
+    icurrchar = 0;
 }
+void do_move(int destcol, int destline, void (*outc) (char))
+{
+    char buf[30];
+    char *p;
 
-
-
-
+    sprintf(buf, "\033[%d;%dH", destline + 1, destcol + 1);
+    for (p = buf; *p != 0; p++)
+        (*outc) (*p);
+}
