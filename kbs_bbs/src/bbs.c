@@ -3581,7 +3581,8 @@ static int set_acl_list_show(struct _select_def *conf, int i)
     unsigned int ip,ip2;
     ip = acl[i-1].ip;
     if(i-1<aclt) {
-        ip2=ip+((1<<(32-acl[i-1].len))-1);
+        if(acl[i-1].len==0) ip2=ip+0xffffffff;
+        else ip2=ip+((1<<(32-acl[i-1].len))-1);
         sprintf(buf, "%d.%d.%d.%d--%d.%d.%d.%d", ip>>24, (ip>>16)%0x100, (ip>>8)%0x100, ip%0x100, ip2>>24, (ip2>>16)%0x100, (ip2>>8)%0x100, ip2%0x100);
         prints("  %2d  %-40s  %4s", i, buf, acl[i-1].deny?"¾Ü¾ø":"ÔÊÐí");
     }
