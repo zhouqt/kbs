@@ -226,7 +226,7 @@ function gen_system_vote_html()
 {
 $vote_file = BBS_HOME."/vote/sysvote.html";
 if(!file_exists($vote_file)) return;
-require($vote_file);
+include($vote_file);
 ?>
 <br />	
 <?php
