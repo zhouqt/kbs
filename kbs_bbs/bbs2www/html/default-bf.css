@@ -9,7 +9,7 @@ BODY {background-color: #FFFFFF; font-size: 12px;scrollbar-3dlight-color:#170708
 .b1 {font-size: 12px;color: #333333;text-decoration: none;}
 .b2 {font-size: 12px;color: #000000;background-color: #F6F6F6;text-decoration: none;}
 .b3 {font-family: "Arial", "Helvetica", "sans-serif";font-weight: bolder;color: #CC3300;text-decoration: none;}
-.b4 {font-family: "Arial", "Helvetica", "sans-serif";font-size: 16px;font-weight: bolder;color: #000000;line-height: 50px;}
+.b4 {font-family: "Arial", "Helvetica", "sans-serif";font-size: 16px;font-weight: bolder;color: #000000;line-height: 30px;}
 .b5 {font-size: 12px;color: #333333;text-align: center;vertical-align: middle;}
 .b6 {font-size: 14px;color: #000000;text-decoration: none;background-color: #F6F6F6;}
 .b7 {font-size: 12px;color: #FFFFFF;text-decoration: none;background-color: 718BD6;}
@@ -28,15 +28,8 @@ a:hover {color: #FF0000;text-decoration: underline;}
 .bt2 {COLOR: #000066; BACKGROUND-COLOR: #d6e7ef; font-size: 12px}
 .mb1 {COLOR: #666666; FONT-SIZE: 12px;TEXT-DECORATION: none;FONT-WEIGHT:bolder; }
 .mb2 {COLOR: #CC3300; FONT-SIZE: 12px;TEXT-DECORATION: none;FONT-WEIGHT:bolder; }
-A:link {
-	COLOR: #006699; TEXT-DECORATION: underline
-}
-A:active {
-	COLOR: #006699; TEXT-DECORATION: underline
-}
-A:visited {
-	COLOR: #5493b4; TEXT-DECORATION: none
-}
-A:hover {
-	COLOR: #dd6900; TEXT-DECORATION: underline
-}
+A:link {COLOR: #006699; TEXT-DECORATION: underline}
+A:active {COLOR: #006699; TEXT-DECORATION: underline}
+A:visited {COLOR: #5493b4; TEXT-DECORATION: none}
+A:hover {COLOR: #dd6900; TEXT-DECORATION: underline}
+.content{font-size:14px;line-height:22px;}
