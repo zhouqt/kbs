@@ -102,7 +102,7 @@
 		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
 <table width="100%" border="0" cellspacing="0" cellpadding="3" class="t1">
-<tr><td class="t2" width="40">序号</td><td class="t2" width="30">标记</td><td class="t2" width="85">作者</td><td class="t2" width="50">日期</td><td class="t2">标题</td></tr>
+<tr><td class="t2" width="50">序号</td><td class="t2" width="40">标记</td><td class="t2" width="120">作者</td><td class="t2" width="80">日期</td><td class="t2">标题</td></tr>
 <?php
 		$ding_cnt = 0;
 		foreach ($articles as $article)
@@ -134,7 +134,7 @@
 			} else {
 ?>
 <td class="t3"><?php echo $start+$i; ?></td>
-<td class="t4">
+<td class="t4">&nbsp;
 <?php
 			if ($flags[1] == 'y')
 			{
@@ -143,26 +143,19 @@
 				else
 					echo $flags[0];
 			}
-			elseif ($flags[0] == 'N' || $flags[0] == '*'){
-				if ($flags[0] == ' ')
-					echo "&nbsp;";
-				else
-					echo $flags[0];
-			}else{
-				if ($flags[0] == ' ')
-					echo "&nbsp;";
-				else
-					echo $flags[0];
-			}
+			elseif ($flags[0] == 'N' || $flags[0] == '*')
+				echo $flags[0];
+			else
+				echo $flags[0];
 			echo $flags[3];
 ?>
-</td>
+&nbsp;</td>
 <?php
 	}//置顶
 ?>
 <td class="t3"><a class="ts1" href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
 <td class="t4"><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
-<td class="t5"><strong>
+<td class="t5">&nbsp;<strong>
 <?php
 	switch ($default_dir_mode)
 	{
@@ -170,7 +163,7 @@
 		if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1))
 		{
 ?>
-<a href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?>&ftype=<?php echo $dir_modes["ZHIDING"]; ?>"><?php echo htmlspecialchars($title); ?>
+<a href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?>&ftype=9"><?php echo htmlspecialchars($title); ?>
 
 </a>
 <?php
@@ -187,7 +180,7 @@
 	case $dir_modes["NORMAL"]:
 	default:
 ?>
-<a href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?><?php if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1)) echo "&ftype=" . $dir_modes["ZHIDING"]; ?>"><?php echo htmlspecialchars($title); ?>
+<a href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?><?php if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1)) echo "&ftype=9"; ?>"><?php echo htmlspecialchars($title); ?>
 
 </a>
 <?php
@@ -323,7 +316,7 @@
 			{
 				foreach ($bms as $bm)
 				{
-					$bm_url .= sprintf("<a class=\"b3\" href=\"/cgi-bin/bbs/bbsqry?userid=%s\">%s</a> ", $bm, $bm);
+					$bm_url .= sprintf("<a class=\"b3\" href=\"/cgi-bin/bbs/bbsqry?userid=%s\"><font class=\"b3\">%s</font></a> ", $bm, $bm);
 				}
 				$bm_url = trim($bm_url);
 			}
@@ -345,19 +338,19 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="3">
   <tr> 
     <td colspan="2" class="b2">
-	    <a href="mainpage.html" class="b2"><?php echo BBS_FULL_NAME; ?></a>
+	    <a href="mainpage.html" class="b2"><font class="b2"><?php echo BBS_FULL_NAME; ?></font></a>
 	    -
 	    <?php
 	    	$sec_index = get_secname_index($brdarr["SECNUM"]);
 		if ($sec_index >= 0)
 		{
 	    ?>
-		<a href="/bbsboa.php?group=<?php echo $sec_index; ?>" class="b2"><?php echo $section_names[$sec_index][0]; ?></a>
+		<a href="/bbsboa.php?group=<?php echo $sec_index; ?>" class="b2"><font class="b2"><?php echo $section_names[$sec_index][0]; ?></font></a>
 	    <?php
 		}
 	    ?>
 	    -
-	    <?php echo $brdarr["NAME"]; ?>版(<a href="bbsnot.php?board=<?php echo $brd_encode; ?>" class="b2">进版画面</a>|<a href="/cgi-bin/bbs/bbsbrdadd?board=<?php echo $brdarr["NAME"]; ?>" class="b2">预定本版</a>)
+	    <?php echo $brdarr["NAME"]; ?>版(<a href="bbsnot.php?board=<?php echo $brd_encode; ?>" class="b2"><font class="b2">进版画面</font></a>|<a href="/cgi-bin/bbs/bbsbrdadd?board=<?php echo $brdarr["NAME"]; ?>" class="b2"><font class="b2">预定本版</font></a>)
     </td>
   </tr>
   <tr> 
@@ -372,7 +365,7 @@
     <img src="images/postno.gif" alt="本版文章数" align="absmiddle">文章 <font class="b3"><?php echo $total; ?></font> 篇
     </td>
     <td align="right" class="b1">
-	    <img src="images/gmode.gif" align="absmiddle" alt="文摘区"><a class="b1" href="bbsgdoc.php?board=<?php echo $brd_encode; ?>">文摘区</a> 
+	    <img src="images/gmode.gif" align="absmiddle" alt="文摘区"><a class="b1" href="bbsgdoc.php?board=<?php echo $brd_encode; ?>"><font class="b1">文摘区</font></a> 
 	    <?php
   	    	if ($ann_path != FALSE)
 		{
@@ -380,20 +373,20 @@
 			$ann_path=substr($ann_path,9);
 	    ?>
 	    | 
-  	    <img src="images/soul.gif" align="absmiddle" alt="精华区"><a class="b1" href="/cgi-bin/bbs/bbs0an?path=<?php echo urlencode($ann_path); ?>">精华区</a>
+  	    <img src="images/soul.gif" align="absmiddle" alt="精华区"><a class="b1" href="/cgi-bin/bbs/bbs0an?path=<?php echo urlencode($ann_path); ?>"><font class="b1">精华区</font></a>
 	    <?php
 		}
 	    ?>
 	    | 
-  	    <img src="images/search.gif" align="absmiddle" alt="版内查询"><a class="b1" href="/bbsbfind.php?board=<?php echo $brd_encode; ?>">版内查询</a>
+  	    <img src="images/search.gif" align="absmiddle" alt="版内查询"><a class="b1" href="/bbsbfind.php?board=<?php echo $brd_encode; ?>"><font class="b1">版内查询</font></a>
 	    <?php
     		if (strcmp($currentuser["userid"], "guest") != 0)
 		{
     	    ?>
 	    | 
-  	    <img src="images/vote.gif" align="absmiddle" alt="本版投票"><a class="b1" href="/bbsshowvote.php?board=<?php echo $brd_encode; ?>">本版投票</a>
+  	    <img src="images/vote.gif" align="absmiddle" alt="本版投票"><a class="b1" href="/bbsshowvote.php?board=<?php echo $brd_encode; ?>"><font class="b1">本版投票</font></a>
 	    | 
-  	    <img src="images/model.gif" align="absmiddle" alt="发文模板"><a class="b1" href="/bbsshowtmpl.php?board=<?php echo $brd_encode; ?>">发文模板</a>
+  	    <img src="images/model.gif" align="absmiddle" alt="发文模板"><a class="b1" href="/bbsshowtmpl.php?board=<?php echo $brd_encode; ?>"><font class="b1">发文模板</font></a>
     	    <?php
     		}
     	    ?>	
@@ -426,7 +419,7 @@
     <td colspan="2" align="center" class="b1">
     	[<a href="#listtop">返回顶部</a>]
     	[<a href="javascript:location=location">刷新</a>]
-	[<a href="bbstdoc.php?board=<?php echo $brd_encode; ?>">同主题模式</a>]	
+    	[<a href="bbstdoc.php?board=<?php echo $brd_encode; ?>">同主题模式</a>]
     	<?php
     		if (strcmp($currentuser["userid"], "guest") != 0)
 		{

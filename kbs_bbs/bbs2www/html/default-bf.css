@@ -28,13 +28,13 @@ a:hover {color: #FF0000;text-decoration: underline;}
 .mb1 {COLOR: #666666; FONT-SIZE: 12px;TEXT-DECORATION: none;FONT-WEIGHT:bolder; }
 .mb2 {COLOR: #CC3300; FONT-SIZE: 12px;TEXT-DECORATION: none;FONT-WEIGHT:bolder; }
 A:link {
-	COLOR: #006699
+	COLOR: #006699; TEXT-DECORATION: underline
 }
 A:active {
-	COLOR: #006699
+	COLOR: #006699; TEXT-DECORATION: underline
 }
 A:visited {
-	COLOR: #006699
+	COLOR: #006699; TEXT-DECORATION: none
 }
 A:hover {
 	COLOR: #dd6900; TEXT-DECORATION: underline

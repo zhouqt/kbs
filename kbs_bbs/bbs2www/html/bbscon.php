@@ -61,10 +61,10 @@ function display_navigation_bar_in($brdarr, $articles, $num, $brdnum )
 <a href="/bbspst.php?board=<?php echo $brd_encode; ?>&reid=<?php echo $articles[1]["ID"];?>"><img src="images/reply.gif" border="0" alt="回复帖子" align="absmiddle"></a>
 <a href="bbspst.php?board=<?php echo $brd_encode; ?>"><img src="images/postnew.gif" border="0" alt="发表话题" align="absmiddle"></a>
 </td><td align="right">
-[<a class="b7" href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=p">上一篇</a>]
-[<a class="b7" href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=n">下一篇</a>]
-[<a class="b7" href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=tp">同主题上篇</a>]
-[<a class="b7" href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=tn">同主题下篇</a>]
+[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=p" class="b7"><font class="b7">上一篇</font></a>]
+[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=n" class="b7"><font class="b7">下一篇</font></a>]
+[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=tp" class="b7"><font class="b7">同主题上篇</font></a>]
+[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=tn" class="b7"><font class="b7">同主题下篇</font></a>]
 </td></tr></table>
 <?php
 }
