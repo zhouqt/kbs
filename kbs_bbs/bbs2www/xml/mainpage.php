@@ -156,9 +156,10 @@ for ($i = 0; $i < $sec_count; $i++)
 	$sec_boards_num[$i] = 0;
 }
 $t = array(); // 分区序号变换表
-for ($i = 0; $i < $sec_count - 1; $i++)
-	$t[$i] = $i + 1;
+for ($i = 0; $i < $sec_count - 2; $i++)
+	$t[$i] = $i + 2;
 $t[$i] = 0;
+$t[$i+1] = 1;
 
 # shift through the array
 while($board = array_shift($boards))
@@ -191,7 +192,7 @@ while($board = array_shift($boards))
 ?>
 <tr> 
   <td valign="top" class="MainContentText"> 
-<strong><?php echo $section_nums[$t[$i]]; ?>. [<a href="bbsboa.php?group=<?php echo $t[$i]; ?>"><?php echo htmlspecialchars($section_names[$t[$i]][0]); ?></a>]</strong>&nbsp;&nbsp;
+★<strong>[<a href="bbsboa.php?group=<?php echo $t[$i]; ?>"><?php echo htmlspecialchars($section_names[$t[$i]][0]); ?></a>]</strong>&nbsp;&nbsp;
 <?php
 		$brd_count = $sec_boards_num[$t[$i]] > 5 ? 5 : $sec_boards_num[$t[$i]];
 		for ($k = 0; $k < $brd_count; $k++)
