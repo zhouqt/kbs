@@ -124,6 +124,7 @@ function html_normal_quit()
 </body>
 </html>
 <?php
+	exit;
 }
 
 function html_nologin()
@@ -149,6 +150,7 @@ function html_error_quit($err_msg)
 </body>
 </html>
 <?php
+	exit;
 }
 
 function get_bbsfile($relative_name)
