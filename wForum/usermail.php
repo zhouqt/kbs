@@ -43,16 +43,8 @@ function main(){
 	if ($boxName=='') {
 		$boxName='inbox';
 	}
-	if ($boxName=='inbox') {
-		showmail('inbox','.DIR','收件箱', $num);
-		return true;
-	}
-	if ($boxName=='sendbox') {
-		showmail('sendbox','.SENT','发件箱',$num );
-		return true;
-	}
-	if ($boxName=='deleted') {
-		showmail('deleted','.DELETED','垃圾箱',$num);
+	if (getMailBoxPathDesc($boxName, $path, $desc)) {
+		showmail($boxName, $path, $desc, $num);
 		return true;
 	}
 	foundErr("您指定了错误的邮箱名称！");

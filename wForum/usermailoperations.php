@@ -40,28 +40,18 @@ function main(){
 		return false;
 	}
 	$boxName=$_POST['boxname'];
+	if (getMailBoxPathDesc($boxName, $path, $desc) === false) {
+		foundErr("您指定了错误的邮箱名称！");
+		return false;
+	}
 	if (!isset($_POST['nums'])) {
 		foundErr("您所指定的信件不存在!");
 		return false;
 	}
 	$action=$_POST['action'];
 	if ($action=='deleteAll') {
-		if ($boxName=='inbox') {
-
-			deleteAllMails('inbox','.DIR','收件箱');
-			return true;
-		}
-		if ($boxName=='sendbox') {
-
-			deleteAllMails('sendbox','.SENT','发件箱');
-			return true;
-		}
-		if ($boxName=='deleted') {
-			deleteAllMails('deleted','.DELETED','垃圾箱');
-			return true;
-		}
-		foundErr("您指定了错误的邮箱名称！");
-		return false;
+		deleteAllMails($boxName, $path, $desc);
+		return true;
 	}
 	if ($action=='delete'){
 		if ($_POST['nums'] == "") {
@@ -69,22 +59,8 @@ function main(){
 			return false;			
 		}
 		$nums=split(',',$_POST['nums']);
-		if ($boxName=='inbox') {
-
-			deleteMails('inbox','.DIR','收件箱', $nums);
-			return true;
-		}
-		if ($boxName=='sendbox') {
-
-			deleteMails('sendbox','.SENT','发件箱',$nums );
-			return true;
-		}
-		if ($boxName=='deleted') {
-			deleteMails('deleted','.DELETED','垃圾箱',$nums);
-			return true;
-		}
-		foundErr("您指定了错误的邮箱名称！");
-		return false;
+		deleteMails($boxName, $path, $desc, $nums);
+		return true;
 	}
 	if ($action=='lock'){
 		if ($_POST['nums'] == "") {
@@ -92,22 +68,8 @@ function main(){
 			return false;			
 		}
 		$nums=split(',',$_POST['nums']);
-		if ($boxName=='inbox') {
-
-			lockMails('inbox','.DIR','收件箱', $nums);
-			return true;
-		}
-		if ($boxName=='sendbox') {
-
-			lockMails('sendbox','.SENT','发件箱',$nums );
-			return true;
-		}
-		if ($boxName=='deleted') {
-			lockMails('deleted','.DELETED','垃圾箱',$nums);
-			return true;
-		}
-		foundErr("您指定了错误的邮箱名称！");
-		return false;
+		lockMails($boxName, $path, $desc, $nums);
+		return true;
 	}
 	foundErr("参数错误！");
 	return false;

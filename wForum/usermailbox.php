@@ -39,22 +39,10 @@ function main() {
 	if ($boxName=='') {
 		$boxName='inbox';
 	}
-	if ($boxName=='inbox') {
+	if (getMailBoxPathDesc($boxName, $path, $desc)) {
 		showUserManageMenu();
 		showmailBoxes();
-		showmailBox('inbox','.DIR','收件箱', $startNum);
-		return true;
-	}
-	if ($boxName=='sendbox') {
-		showUserManageMenu();
-		showmailBoxes();
-		showmailBox('sendbox','.SENT','发件箱',$startNum );
-		return true;
-	}
-	if ($boxName=='deleted') {
-		showUserManageMenu();
-		showmailBoxes();
-		showmailBox('deleted','.DELETED','垃圾箱',$startNum);
+		showmailBox($boxName, $path, $desc, $startNum);
 		return true;
 	}
 	foundErr("您指定了错误的邮箱名称！");

@@ -45,14 +45,9 @@ function preprocess() {
 		setstat("回复信件");
 		$action=2;
 		$num=intval($_GET['num']);
-		if ($_GET['boxname']=='inbox') {
-			return getmail('inbox','.DIR','收件箱', $num);
-		}
-		if ($_GET['boxname']=='sendbox') {
-			return getmail('sendbox','.SENT','发件箱',$num );
-		}
-		if ($_GET['boxname']=='deleted') {
-			return getmail('deleted','.DELETED','垃圾箱',$num);
+		$boxName = $_GET['boxname'];
+		if (getMailBoxPathDesc($boxName, $path, $desc)) {
+			return getmail($boxName, $path, $num);
 		}
 	}
 	if (isset($_GET['board'])) {
@@ -100,16 +95,11 @@ function getarticle($boardName,$reID){
 }
 
 
-function getmail($boxName, $boxPath, $boxDesc, $num){
+function getmail($boxName, $boxPath, $num){
 	global $article;
 	global $currentuser;
 	$dir = bbs_setmailfile($currentuser["userid"],$boxPath);
 
-	$total = filesize( $dir ) / 256 ;
-	if( $total <= 0 ){
-		foundErr("您所指定的信件不存在");
-		return false;
-	}
 	$articles = array ();
 	if( bbs_get_records_from_num($dir, $num, $articles) ) {
 		$file = $articles[0]["FILENAME"];

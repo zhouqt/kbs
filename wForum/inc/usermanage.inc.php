@@ -23,15 +23,37 @@ function showmailBoxes() {
 }
 
 function getMailBoxName($name){
+	if (getMailBoxPathDesc($name, $path, $desc)) return $desc;
+	return "未知邮箱";
+}
+
+function getMailBoxPath($name) {
+	if (getMailBoxPathDesc($name, $path, $desc)) return $path;
+	return false;
+}
+
+/*
+ * return true if $name is a valid mailbox name
+ * $name: the mailbox name used in the URL
+ * $path: return the mailbox index file name
+ * $desc: return the description of the mailbox
+ */
+function getMailBoxPathDesc($name, &$path, &$desc) { //其实还是很丑陋，先这样写算了... - atppp
 	if ($name=='inbox') {
-		return "收件箱";
+		$path = ".DIR";
+		$desc = "收件箱";
+		return true;
 	}
 	if ($name=='sendbox') {
-		return "收件箱";
+		$path = ".SENT";
+		$desc = "发件箱";
+		return true;
 	}
 	if ($name=='deleted') {
-		return "收件箱";
+		$path = ".DELETED";
+		$desc = "废件箱";
+		return true;
 	}
-	return "未知邮箱";
+	return false;
 }
 ?>

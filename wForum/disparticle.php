@@ -352,7 +352,12 @@ function showTreeItem($boardName,$articleID,$thread,$threadID,$start,$level){
 	if ($start==$threadID) {
 		echo "<font color=#FF0000>";
 	}
-	echo htmlspecialchars($thread['TITLE'],ENT_QUOTES).' </a><I><font color=gray>(37字) － <a href=dispuser.php?id='.$thread['OWNER'].' target=_blank title="作者资料"><font color=gray>'.$thread['OWNER'].'</font></a>，'.strftime("%Y年%m月%d日",$thread['POSTTIME']);
+	echo htmlspecialchars($thread['TITLE'],ENT_QUOTES).' </a><I><font color=gray>(';
+	if ($thread["EFFSIZE"] < 1000) echo $thread["EFFSIZE"];
+	else {
+		printf("%.1f",$thread["EFFSIZE"]/1000.0); echo "k";
+	}
+	echo '字) － <a href=dispuser.php?id='.$thread['OWNER'].' target=_blank title="作者资料"><font color=gray>'.$thread['OWNER'].'</font></a>，'.strftime("%Y年%m月%d日",$thread['POSTTIME']);
 	if ($start==$threadID) {
 		echo "</font>";
 	}

@@ -87,7 +87,7 @@ function showSecs($secNum,$group,$isFold,$loadFav=0) {
 			}
 	}
 ?>
-</th></tr>
+&nbsp;[<a href="modifyfavboards.php">π‹¿Ì ’≤ÿº–</a>]</th></tr>
 <?php
 	if (! $isFold && (BOARDLISTSTYLE=='simplest')) {
 ?>
