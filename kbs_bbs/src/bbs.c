@@ -4388,38 +4388,28 @@ char *direct ;
         fileinfo->accessed[1]&=!FILE_DEL;
     else
         fileinfo->accessed[1]|=FILE_DEL;
-    /*    if ( strncmp(fileinfo->title,"Re: ",4)&&strncmp(fileinfo->title,"RE: ",4) )
-            sprintf(fileinfo->title,"Re: %s",&(fileinfo->title)+2);
-     */
-    /*---   Added by period   2000-10-26  add verify when doing idx operation ---*/
-    /*#ifdef _DEBUG_*/
+
     strcpy(buf, direct);
     ptr = strrchr(buf, '/') + 1;
     ptr[0] = '\0';
     sprintf( &genbuf[512], "%s%s", buf, fileinfo->filename);
-    if(!dashf( &genbuf[512]) ) newent = 0; /* 借用一下newent :PP   */
-    if(!newent || get_record(direct, &mkpost, sizeof(mkpost), ent) < 0
-            || strcmp(mkpost.filename, fileinfo->filename)) {
-        if(newent) /* newent = 0 说明文件已被删除,不用再search了   */
-            newent = search_record_back(direct, sizeof(struct fileheader),
-                                        ent, strcmp, fileinfo, &mkpost, 1);
-        if(newent <= 0) {
+    if(!dashf( genbuf) ) 
+    {
             move(2,0) ;
-            prints(" 文章列表发生变动，文章[%s]可能已被删除．\n", fileinfo->title) ;
+            prints(" 文章列表发生变动，文章[%s]垦被删除．\n", fileinfo->title) ;
             clrtobot();
             pressreturn() ;
             return DIRCHANGED;
-        }
-        ent = newent;
-        /* file status may be changed by other BM, so use data *
-         * returned from search_record_back()                  */
-        if(fileinfo->accessed[1] & FILE_DEL) mkpost.accessed[1] |= FILE_DEL;
-        else mkpost.accessed[1] &= ~FILE_DEL;
-        memcpy(fileinfo, &mkpost, sizeof(mkpost));
-    } else newent = 0;
-    /*#endif*/ /* _DEBUG_ */
-    /*---	---*/
+    }
+    newent=substitute_record_comp(direct, fileinfo, sizeof(*fileinfo), ent,fileinfo,strcmp,&mkpost);
+    if (newent)
+    {
+            move(2,0) ;
+            prints(" 文章列表发生变动，文章[%s]垦被删除．\n", fileinfo->title) ;
+            clrtobot();
+            pressreturn() ;
+            return DIRCHANGED;
+    }
 
-    substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
-    return (ent == newent) ? DIRCHANGED : PARTUPDATE;
+    return DIRCHANGED;
 }

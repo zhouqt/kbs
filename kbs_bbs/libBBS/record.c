@@ -418,7 +418,7 @@ char* tmpbuf;  /* temp buffer for use*/
     }
     if (read(fd,tmpbuf,size)==size) {
         if ((*fptr)(comptr,tmpbuf)) {
-            newent = search_record_back(filename,size,id,fptr,comptr,tmpbuf);
+            newent = search_record_back(filename,size,id,fptr,comptr,tmpbuf,0);
             if (newent<=0) {
                 close(fd);
                 return -1;
