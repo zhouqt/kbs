@@ -767,7 +767,7 @@ static int write_file(char* filename,int saveheader,long* effsize)
                 ("请注意：本站站规规定：同样内容的文章严禁在 5 (含)个以上讨论区内重复张贴。\n\n违反者除所贴文章会被删除之外，还将被剥夺继续发表文章的权力。详细规定请参照：\n\n    Announce 版的站规：“关于转贴和张贴文章的规定”。\n\n请大家共同维护 BBS 的环境，节省系统资源。谢谢合作。\n\n");
 #endif
         } else if (uinfo.mode == SMAIL)
-            strcpy(p_buf, "(S)寄出, (A)取消, or (E)再编辑? [S]: ");
+            strcpy(p_buf, "(S)寄出, (F)自动换行寄出, (A)取消, or (E)再编辑? [S]: ");
         else if (uinfo.mode == IMAIL)
             strcpy(p_buf, NAME_BBS_NICK " Internet 信笺：(S)寄出, (F)自动换行寄出, (A)取消, or (E)再编辑? [S]: ");      /* Leeward 98.01.17 Prompt whom you are writing to */
         /*    sprintf(p_buf,"给 %s 的信：(S)寄出, (F)自动换行寄出, (A)取消, or (E)再编辑? [S]: ", lookupuser->userid ); 
