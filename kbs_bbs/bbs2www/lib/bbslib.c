@@ -2939,24 +2939,55 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
 
 }
 
+unsigned int binarySearchInFileHeader(struct fileheader *start,int total, unsigned int key){
+	unsigned int low, high ,mid, found;
+	int comp;
+	low = 0;
+	high = total - 1;
+	found=-1;
+	while (low <= high) {
+		mid = (high + low) / 2;
+		comp = (key) - (start[mid].id);
+		if (comp == 0) {
+			found=mid;
+			break;
+		} else if (comp < 0)
+			high = mid - 1;
+		else
+			low = mid + 1;
+	}
+	return found;
+}
+
+//以后改成更有效率的算法吧……
+static int foundInWWWThreadList(unsigned int groupid, struct wwwthreadheader* list, unsigned int len){
+	int i;
+	for (i=0;i<len;i++){
+		if (list[i].groupid==groupid)	{
+			return i;
+		}
+	}
+	return -1;
+}
+
 int www_generateOriginIndex(char* board)
 /* added by roy 2003.7.17 generate .ORIGIN index file*/
 {
-    struct fileheader *ptr1;
-    struct flock ldata, ldata2;
-    int fd, fd2, size = sizeof(fileheader), total, i, count = 0;
+    struct fileheader *ptr1,*ptrtemp;
+    struct flock ldata, ldata2 , ldata3;
+    int fd, fd2, fd3,  size , total3, total, i, count = 0;
     char olddirect[PATHLEN];
 	char currdirect[PATHLEN];
-    char *ptr;
-    struct stat buf;
-    bool init;
+	char dingdir[PATHLEN];
+    char *ptr,*ptr3;
+    struct stat buf,buf3;
+	struct wwwthreadheader * threadList=NULL;
     size_t bm_search[256];
+	int found;
 
     setbdir(DIR_MODE_NORMAL, olddirect, board);
-    setbdir(DIR_MODE_ORIGIN, currdirect, board);
-    if (!setboardorigin(board, -1)) {
-        return 0;
-    }
+    setbdir(DIR_MODE_WEB_THREAD, currdirect, board);
+	setbdir(DIR_MODE_ZHIDING, dingdir, board);
     if ((fd = open(currdirect, O_WRONLY | O_CREAT, 0664)) == -1) {
         bbslog("user", "%s", "recopen err");
         return -1;      /* 创建文件发生错误*/
@@ -2990,10 +3021,16 @@ int www_generateOriginIndex(char* board)
     ldata2.l_whence = 0;
     ldata2.l_len = 0;
     ldata2.l_start = 0;
-    fcntl(fd2, F_SETLKW, &ldata2);
-    total = buf.st_size / size;
+    if (fcntl(fd2, F_SETLKW, &ldata2) == -1) {
+        bbslog("user", "%s", "reclock err");
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+        close(fd2);
+        return -4;      /* lock error*/
+    }
+    total = buf.st_size /sizeof(fileheader);
 
-    init = false;
     if ((i = safe_mmapfile_handle(fd2, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size)) != 1) {
         if (i == 2)
             end_mmapfile((void *) ptr, buf.st_size, -1);
@@ -3003,16 +3040,77 @@ int www_generateOriginIndex(char* board)
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
-        return -4;
+        return -5;
     }
+
+	size=sizeof(struct wwwthreadheader);
+
+	threadList	= malloc((50000)*size);
+	if (threadList==NULL)
+		return -5;
+
+    if ((fd3 = open(dingdir, O_RDONLY, 0664)) == -1) {
+		fstat(fd3, &buf3);
+		ldata3.l_type = F_RDLCK;
+		ldata3.l_whence = 0;
+		ldata3.l_len = 0;
+		ldata3.l_start = 0;
+		if (fcntl(fd3, F_SETLKW, &ldata3) != -1) {
+			total3 = buf3.st_size / sizeof(fileheader);
+			if (total3>MAX_DING)
+				total3=MAX_DING;
+
+			if ((i = safe_mmapfile_handle(fd3, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr3, (size_t*)&buf3.st_size)) != 1) {
+				ptr1 = (struct fileheader *) ptr3;
+				ptrtemp = (struct fileheader *) ptr;
+
+				for (i=total3-1;i>=0;i--) {
+					if (ptr1[i].groupid!=ptr1[i].id) continue;
+					if (foundInWWWThreadList(ptr1[i].groupid,threadList,count)!=-1) continue;
+					if ((binarySearchInFileHeader(ptrtemp,total,ptr1[i].groupid))==-1) continue;
+					threadList[count].groupid=ptr1[i].groupid;
+					threadList[count].lastid=ptr1[i].id;
+					threadList[count].articlecount=0;
+					threadList[count].flags=FILE_ON_TOP;
+					threadList[count].unused=0;
+					count++;
+					write(fd, ptr1, size);
+				}
+			    end_mmapfile((void *) ptr3, buf3.st_size, -1);
+			} else if (i == 2)
+				end_mmapfile((void *) ptr3, buf3.st_size, -1);
+			ldata3.l_type = F_UNLCK;
+			fcntl(fd3, F_SETLKW, &ldata3);	
+		} 
+		close(fd3);
+    }
+
+
     ptr1 = (struct fileheader *) ptr;
-    for (i = 0; i < total; i++) {
-        if (ptr1->id == ptr1->groupid ) {
+
+	for (i=total-1;i>=0;i--) {
+		if ((binarySearchInFileHeader(ptr1,total,ptr1[i].groupid))==-1) continue;
+		if ((found=foundInWWWThreadList(ptr1[i].groupid,threadList,count))==-1)	{
+			threadList[count].groupid=ptr1[i].groupid;
+			threadList[count].lastid=ptr1[i].id;
+			if (ptr1[i].id==ptr1[i].groupid)
+				threadList[count].articlecount=1;
+			else 
+				threadList[count].articlecount=2;
+			threadList[count].flags=0;
+			threadList[count].unused=0;
+			count++;
             write(fd, ptr1, size);
-            count++;
-        }
-        ptr1++;
-    }
+			if(count>=50000) 
+				break;
+		} else {
+			threadList[found].articlecount++;
+		}
+	}
+	for (i=0;i<count;i++) {
+		write(fd,threadList,size);
+	}
+	free(threadList);
     end_mmapfile((void *) ptr, buf.st_size, -1);
     ldata2.l_type = F_UNLCK;
     fcntl(fd2, F_SETLKW, &ldata2);
