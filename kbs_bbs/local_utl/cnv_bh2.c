@@ -73,7 +73,7 @@ int main(int argc , char* argv[])
                 strncpy(bhnew[i].BM,bh[i].BM,BM_LEN);
                 strncpy(bhnew[i].title,bh[i].title,STRLEN);
                 bhnew[i].level = bh[i].level;
-                bhnew[i].nowid = bh[i].nowid;
+                bhnew[i].nowid = bh[i].nowid+1000;
                 bhnew[i].clubnum = bh[i].clubnum;
                 bhnew[i].flag = bh[i].flag;
 		bhnew[i].adv_club = bh[i].adv_club;
