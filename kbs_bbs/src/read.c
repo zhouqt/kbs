@@ -1358,7 +1358,7 @@ char *query;
 /* COMMAN : use mmap to speed up searching */
 static int search_articles( struct keeploc  *locmem,char *query,int offset,int aflag)
 {
-    char        *ptr;
+    char        ptr[STRLEN];
     int         now, match = 0;
     int         complete_search;
     char upper_ptr[STRLEN],upper_query[STRLEN];
@@ -1416,15 +1416,17 @@ static int search_articles( struct keeploc  *locmem,char *query,int offset,int a
 		                }else
 		                    continue;
 		        }
-	            ptr = aflag ? pFh1->owner : pFh1->title;
+	            strncpy(ptr , aflag ? pFh1->owner : pFh1->title,STRLEN-1);
+	            ptr[STRLEN-1]=0;
 	            if(complete_search==1)
 	            {
+	            	char* ptr2=ptr;
 	                if((*ptr=='R'||*ptr=='r')&&(*(ptr+1)=='E'||*(ptr+1)=='e')
 	                    &&(*(ptr+2)==':')&&(*(ptr+3)==' '))
 	                {
-	                    ptr=ptr+4;
+	                    ptr2=ptr+4;
 	                }
-	                if( !strcmp( ptr, query )) {
+	                if( !strcmp( ptr2, query )) {
 	                    match = cursor_pos( locmem, now, 10 );
 	                    break;
 	                }
