@@ -2,13 +2,13 @@
 /* automatically generated site configuration file */
 
 /* 分类讨论区 */
-$section_nums = array("0", "1", "2", "3", "4", "5", "6");
+$section_nums = array("1", "2", "3", "4", "0");
 $section_names = array(
-	array("本站系统", "[本站]"),
 	array("人在美国", "[校园][创业]"),
 	array("大话西游", "[留学][学校][团体]"),
 	array("学术研讨", "[学术][科学][电脑]"),
-	array("感性生活", "[休闲][生活][感性]")
+	array("感性生活", "[休闲][生活][感性]"),
+	array("本站系统", "[本站]")
 );
 
 /* 特殊的个人自定义参数 */
@@ -20,11 +20,13 @@ $user_define1 = array(
 $SiteURL = "http://bbs.stanford.edu/wForum/";
 $SiteName = "牧场物语";
 $Banner = "/mcwy/bm3_08.jpg";
-define("MAINTITLE", "&nbsp;");
+define("MAINTITLE", "本站 wForum 永远可能处于调试状态。请小心使用<img src=\"emot/em17.gif\" border=0>");
+define("OLD_REPLY_STYLE", true);
 $AnnounceBoard = "Announcement";
 define("SERVERTIMEZONE", "美西时间");
 
 /* 页面参数 */
+define("TREEVIEW_MAXITEM", 201);
 
 /* 附件相关 */
 define("ATTACHMAXSIZE", "8388608");
@@ -39,7 +41,8 @@ $dbpasswd = "fuckatp";
 $dbname = "wForum";
 
 /* 其他附加功能 */
-define("ALLOWMULTIQUERY", true);
+define("SHOWTELNETPARAM", false);
+define("ALLOW_SYSOP_MULTIQUERY", true);
 
 /* 默认配置 */
 require "default.php";
