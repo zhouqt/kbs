@@ -34,6 +34,10 @@ function preprocess(){
 	global $exact;
 	global $boards;
 	@$keywords = $_REQUEST['board'];
+	if (!$keywords) {
+		$boards = false;
+		return;
+	}
 	if (isset($_REQUEST['exact'])) {
 		$exact = $_REQUEST['exact'] ? 1 : 0;
 	} else {
