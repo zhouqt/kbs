@@ -348,7 +348,7 @@ void clear_utmp(int uent)
 	utmpshm->list_prev[utmpshm->list_next[uent-1]-1]=utmpshm->list_prev[uent-1];
 	*/
 
-  	log("1system","UTMP:clean %s",utmpshm->uinfo[ uent - 1 ].userid);
+  	log("1system","UTMP:clean %s(%d)",utmpshm->uinfo[ uent - 1 ].userid,uent);
 	utmpshm->next[uent-1]=utmpshm->hashhead[0];
 	utmpshm->hashhead[0]=uent;
     zeroinfo.active = NA ;
