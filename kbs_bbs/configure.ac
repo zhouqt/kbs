@@ -35,6 +35,17 @@ AC_ARG_WITH(icc,
 AC_SUBST(CONFIG_AR)
 AC_SUBST(EXTRA_CLEAN)
 
+AC_ARG_ENABLE(ssh,
+[  --enable-ssh
+		enable ssh bbsd  support(need sshbbsd package)],
+[
+	if test -d sshbbsd; then
+		AC_CONFIG_SUBDIRS(sshbbsd)
+	else
+		AC_MSG_ERROR([can't find sshbbsd package,please get it first!])
+	fi
+])
+
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_AWK
@@ -102,17 +113,6 @@ AC_ARG_ENABLE(site,
 ],[BBSSITE="smth"])
 AC_SUBST(BBSSITE)
 
-AC_ARG_ENABLE(ssh,
-[  --enable-ssh
-		enable ssh bbsd  support(need sshbbsd package)],
-[
-	if test -d sshbbsd; then
-		AC_CONFIG_SUBDIRS(sshbbsd)
-	else
-		AC_MSG_ERROR([can't find sshbbsd package,please get it first!])
-	fi
-])
-
 AC_CONFIG_LINKS(libBBS/site.c:site/$BBSSITE.c
 		libBBS/site.h:site/$BBSSITE.h
 		src/site.c:site/$BBSSITE.c
@@ -129,6 +129,7 @@ AC_CONFIG_FILES([Makefile
                  libsystem/Makefile
                  rzsz/Makefile
                  daemon/Makefile
+                 mail2bbs/Makefile
                  local_utl/Makefile
                  src/bbsconfig.h
                  src/Makefile])

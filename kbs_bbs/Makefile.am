@@ -1,5 +1,5 @@
 EXTRA_DIST = README INSTALL
-SUBDIRS=libsystem libBBS rzsz src daemon local_utl @subdirs@
+SUBDIRS=libsystem libBBS rzsz src daemon local_utl mail2bbs @subdirs@
 CLEANFILES=@EXTRA_CLEAN@
 
 dist-hook:
