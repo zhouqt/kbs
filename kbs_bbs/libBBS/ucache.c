@@ -1,25 +1,3 @@
-/*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Copyright (C) 2001, Zhou Lin, KCN@cic.tsinghua.edu.cn
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
 /* user cache 处理
    用hask table 保存所有ID的id名,加快查找速度
    2001.5.4 KCN
@@ -368,8 +346,7 @@ int getuserid(char * userid, int uid)
     return uid;
 }
 
-void
-setuserid_internal( int     num,const char    *userid) /* 设置user num的id为user id*/
+static int setuserid_internal( int     num,const char    *userid) /* 设置user num的id为user id*/
 {
     if( num > 0 && num <= MAXUSERS ) {
     	int oldkey,newkey,find;
@@ -392,10 +369,11 @@ setuserid_internal( int     num,const char    *userid) /* 设置user num的id为user
 	      			}
 	      	  }
 	          if (!uidshm->next[find-1]) {
-			if (oldkey!=0) {
+				if (oldkey!=0) {
 		          	bbslog("3system","UCACHE:can't find %s in hash table",passwd[ num - 1 ].userid);
 /*		          	exit(0);*/
-			}
+				}
+				return -1;
 	          }
 	          else uidshm->next[find-1] = uidshm->next[num-1];
 	        }
@@ -405,14 +383,16 @@ setuserid_internal( int     num,const char    *userid) /* 设置user num的id为user
 /*        }	        */
         strncpy( passwd[ num - 1 ].userid, userid, IDLEN+1 );
     }
+    return 0;
 }
 
-void setuserid2( int num,const char * userid)
+int setuserid2( int num,const char * userid)
 {
-    int lockfd;
+    int lockfd,ret;
     lockfd=ucache_lock();
-    setuserid_internal(num,userid);
+    ret=setuserid_internal(num,userid);
     ucache_unlock(lockfd);
+    return ret;
 }
 
 void setuserid(int num,const char * userid)
@@ -454,8 +434,7 @@ void setuserid(int num,const char * userid)
         return;
 }
 
-int
-searchnewuser() /* 找cache中 空闲的 user num */
+static int searchnewuser() /* 找cache中 空闲的 user num */
 {
     if (uidshm->hashhead[0]) return uidshm->hashhead[0];
     if (uidshm->number<MAXUSERS) return uidshm->number+1;
@@ -651,34 +630,20 @@ int getnewuserid(char* userid)
 */
     fd=ucache_lock();
 
-    i = searchnewuser();
-#ifdef BBSMAIN
-    bbslog( "1system", "APPLY: uid %d from %s", i, fromhost );
-#endif
-
-    if( i <= 0 || i > MAXUSERS ) {
-        ucache_unlock(fd);
-#ifdef BBSMAIN
-        if( dashf( "etc/user_full" ) ) {
-            ansimore( "etc/user_full", NA );
-            oflush();
-        } else {
-            prints( "抱歉, 使用者帐号已经满了, 无法注册新的帐号.\n\r" );
-            oflush();
-        }
-/*
-        val = (st.st_mtime - system_time + 3660) / 60;
-        prints( "请等待 %d 分钟後再试一次, 祝你好运.\n\r", val );
-*/
-        oflush();
-        sleep( 2 );
-#endif
-        return -1;
-    }
-    memset( &utmp, 0, sizeof( utmp ) );
-    strcpy( utmp.userid, userid );
-    utmp.lastlogin = time( NULL );
-    setuserid_internal( i, userid ); /* added by dong, 1998.12.2 */
+	while (1) {
+		int ret;
+	    i = searchnewuser();
+	    if( i <= 0 || i > MAXUSERS ) {
+       		ucache_unlock(fd);
+        	return -1;
+    	}
+    	memset( &utmp, 0, sizeof( utmp ) );
+    	strcpy( utmp.userid, userid );
+    	utmp.lastlogin = time( NULL );
+    	ret=setuserid_internal( i, userid ); /* added by dong, 1998.12.2 */
+    	if (ret==0) break;
+    	passwd[i-1].userid[0]=0;
+	}
     update_user(&utmp,i,0);
     ucache_unlock(fd);
     return i;
@@ -691,7 +656,6 @@ int update_user(struct userec* user,int num,int all)
 		if (strncasecmp(user->userid,passwd[num-1].userid,IDLEN)) 
 			return -1;
 		tmpuser=*user;
-		memcpy(tmpuser.userid,passwd[num-1].userid,IDLEN+2);
 		memcpy(tmpuser.passwd,passwd[num-1].passwd,IDLEN+2);
 		memcpy(tmpuser.md5passwd,passwd[num-1].md5passwd,IDLEN+2);
 	} else {
