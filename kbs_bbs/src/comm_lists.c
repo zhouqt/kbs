@@ -118,6 +118,8 @@ int exec_mbem(char *s);
 int register_sms();
 int unregister_sms();
 int send_sms();
+int smsmsg_read();
+int al_read();
 #endif
 
 /*Add By Excellent */
@@ -240,7 +242,9 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"RegisterSMS",register_sms},
     {"UnRegisterSMS",unregister_sms},
     {"SendSMS",send_sms},
+	{"SMSmsg",smsmsg_read},
 #endif
+	{"Addrlist", al_read},
     {NULL, NULL},
 };
 

@@ -413,6 +413,12 @@ int clean_cachedata(char* userid,int unum);
     int can_override(char *userid, char *whoasks);
     int delfrom_msglist(int utmpnum, char *userid);
     int msg_can_sendmsg(char *userid, int utmpnum);
+int get_sql_smsmsg( struct smsmsg * smdata, char *userid, char *dest, time_t start_time, time_t end_time, int type, 					int level, int start, int num, char *msgtxt);
+
+int get_sql_al( struct addresslist * smdata, char *userid, char *dest, char *group,int start, int num, int order, char *msgtxt);
+int add_sql_al(char *userid, struct addresslist *al, char *msgbuf);
+int sign_smsmsg_read(int id );
+int chk_smsmsg(int force );
 
 /* site.c */
     char *ModeType(int mode);
