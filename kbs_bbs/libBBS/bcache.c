@@ -385,6 +385,7 @@ int set_board(int bid, struct boardheader *board,struct boardheader *oldbh)
     	    	board->flag&=(~BOARD_CLUB_READ) & (~BOARD_CLUB_WRITE);
     	    } else board->clubnum=i+1;
        }
+       board->nowid=bcache[bid-1].nowid;
     }
     memcpy(&bcache[bid - 1], board, sizeof(struct boardheader));
     bcache_setreadonly(1);

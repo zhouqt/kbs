@@ -1283,14 +1283,6 @@ int mail_forward_internal(int ent, struct fileheader *fileinfo, char *direct, in
     case 0:
         prints("文章转寄完成!\n");
         fileinfo->accessed[0] |= FILE_FORWARDED;        /*added by alex, 96.9.7 */
-        /*
-         * comment out by jjyang for direct mail delivery 
-         */
-        newbbslog(BBSLOG_USER, "forwarded file to %s", curruserdata.email);
-        /*
-         * comment out by jjyang for direct mail delivery 
-         */
-
         break;
     case -1:
         prints("Forward failed: system error.\n");
@@ -2136,7 +2128,8 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
 
         return_no = bbs_sendmail(fname, title, receiver, isuu, isbig5, noansi);
     }
-
+    if (return_no==0)
+        newbbslog(BBSLOG_USER, "forwarded file to %s", receiver);
     unlink(fname);
     return (return_no);
 }
