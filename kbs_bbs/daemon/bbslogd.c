@@ -48,10 +48,12 @@ static struct taglogconfig logconfig[] = {
     {"debug.log", 10 * 1024, 0, NULL, 0}
 };
 
-static void openbbslog()
+static void openbbslog(int first)
 {
     int i;
     for (i = 0; i < sizeof(logconfig) / sizeof(struct taglogconfig); i++) {
+		if (!first && !strcmp(logconfig[i].filename,"boardusage.log") && logconfig[i].fd )
+			continue;
         if (logconfig[i].filename) {
             logconfig[i].fd = open(logconfig[i].filename, O_WRONLY);
             if (logconfig[i].fd < 0)
@@ -135,6 +137,8 @@ static void trunclog(int signo)
     for (i = 0; i < sizeof(logconfig) / sizeof(struct taglogconfig); i++) {
         struct taglogconfig *pconf;
 
+		if (! strcmp(logconfig[i].filename,"boardusage.log"))
+			continue;
         pconf = &logconfig[i];
         if (pconf->fd>=0) {
         	char buf[MAXPATH];
@@ -150,7 +154,7 @@ static void trunclog(int signo)
         	f_mv(pconf->filename,buf);
         }
     }
-    openbbslog();
+    openbbslog(0);
     trunc=true;
 }
 
@@ -231,7 +235,7 @@ int main()
 
     trunc=false;
     truncboard=false;
-    openbbslog();
+    openbbslog(1);
     while (1) {
         if ((msg = rcvlog(msqid)) != NULL)
             writelog(msg);
