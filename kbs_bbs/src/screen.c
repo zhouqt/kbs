@@ -494,6 +494,7 @@ void outns(const char*str, int n)
                     cur_mode=0;
                     cur_color=7;
                 }
+                str+=i+1;
                 continue;
              }
              else if(isalpha(*(str+i))) {
