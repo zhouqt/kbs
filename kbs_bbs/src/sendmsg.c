@@ -247,6 +247,8 @@ reenter:
             case 'q':
             case 'Q':
             case KEY_LEFT:
+            case '\r':
+            case '\n':
                 goto outofhere;
             case KEY_UP:
                 if(page>0) page--;
@@ -475,11 +477,6 @@ void r_msg()
         load_msghead(1, currentuser->userid, now, &head);
         load_msgtext(currentuser->userid, &head, buf);
         translate_msg(buf, &head, outmsg);
-        strncpy(uid, head.id, IDLEN);
-        pid = head.frompid;
-        uin = t_search(uid, pid);
-        if(head.mode==3||uin==NULL) canreply = 0;
-        else canreply = 1;
         
         if (DEFINE(currentuser, DEF_SOUNDMSG))
             bell();
@@ -494,6 +491,12 @@ void r_msg()
             }while(!DEFINE(currentuser, DEF_IGNOREMSG)&&ch!=Ctrl('Z')&&ch!='r'&&ch!='R');
             first = 0;
         }
+        
+        strncpy(uid, head.id, IDLEN);
+        pid = head.frompid;
+        uin = t_search(uid, pid);
+        if(head.mode==3||uin==NULL) canreply = 0;
+        else canreply = 1;
         
         clrtoeol();
         if(canreply)
