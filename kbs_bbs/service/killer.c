@@ -24,6 +24,7 @@ struct people_struct {
     char nick[NAMELEN];
     int flag;
     int pid;
+    int vote;
 };
 
 #define INROOM_STOP 1
@@ -33,6 +34,7 @@ struct people_struct {
 struct inroom_struct {
     char title[NAMELEN];
     int status;
+    int killernum;
     struct people_struct peoples[100];
 };
 
@@ -285,7 +287,7 @@ void refreshit()
         move(i,4);
         if(j==selected) {
             setbcolor(GREEN);
-            setfcolor(YELLOW, 1);
+            setfcolor(BLUE, 0);
         }
         if(inrooms.peoples[j].nick[0])
             prints(inrooms.peoples[j].nick);
@@ -312,6 +314,76 @@ void room_refresh(int signo)
     refreshit();
     move(y, x);
     refresh();
+}
+
+void start_game()
+{
+    int i;
+    char buf[80];
+    start_change_inroom(myroom);
+    inrooms.status = INROOM_NIGHT;
+    end_change_inroom();
+    sprintf(buf, "\x1b[31m游戏开始啦!\x1b[m\n");
+    for(i=0;i<myroom->people;i++) {
+        send_msg(inrooms.peoples+i, buf);
+        kill(inrooms.peoples[i].pid, SIGUSR1);
+    }
+}
+
+#define menust 8
+int do_com_menu()
+{
+    char menus[menust][10]=
+        {"0-返回","1-退出游戏","2-改名字", "3-玩家列表", "4-改话题", "5-设置房间", "6-踢玩家", "7-开始游戏"};
+    int menupos[menust],i,j,sel=0,ch;
+    menupos[0]=0;
+    for(i=1;i<menust;i++)
+        menupos[i]=menupos[i-1]+strlen(menus[i-1])+1;
+    do{
+        resetcolor();
+        move(t_lines-1,0);
+        clrtoeol();
+        for(j=0;j<myroom->people;j++)
+            if(inrooms.peoples[j].pid == uinfo.pid) break;
+        for(i=0;i<menust;i++) 
+        if(inrooms.peoples[j].flag&PEOPLE_ROOMOP||i<=3)
+        if(i!=7||inrooms.status==INROOM_STOP) {
+            resetcolor();
+            move(t_lines-1, menupos[i]);
+            if(i==sel) {
+                setbcolor(GREEN);
+                setfcolor(BLUE, 0);
+            }
+            prints(menus[i]);
+        }
+        ch=igetkey();
+        switch(ch){
+        case KEY_LEFT:
+            sel--;
+            if(sel<0) sel=menust-1;
+            break;
+        case KEY_RIGHT:
+            sel++;
+            if(sel>=menust) sel=0;
+            break;
+        case '\n':
+        case '\r':
+            switch(sel) {
+                case 0:
+                    return 0;
+                case 1:
+                    return 1;
+                case 7:
+                    start_game();
+                    return 0;
+            }
+            break;
+        default:
+            for(i=0;i<menust;i++)
+                if(ch==menus[i][0]) sel=i;
+            break;
+        }
+    }while(1);
 }
 
 void join_room(struct room_struct * r)
@@ -345,8 +417,12 @@ void join_room(struct room_struct * r)
 
     room_refresh(0);
     while(1){
-        getdata(t_lines-1, 0, "输入:", buf, 75, 1, NULL, 1);
-        if(!buf[0]) break;
+        do{
+            getdata(t_lines-1, 0, "输入:", buf, 75, 1, NULL, 1);
+            if(!buf[0]) {
+                do_com_menu();
+            }
+        }while(!buf[0]);
         for(i=0;i<myroom->people;i++) {
             send_msg(inrooms.peoples+i, buf);
             kill(inrooms.peoples[i].pid, SIGUSR1);
