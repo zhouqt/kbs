@@ -208,7 +208,7 @@ if (!$isGroup) {
 						echo "<tr>";
 					}
 ?>
-<td class=TableBody1 width="50%"><TABLE cellSpacing=2 cellPadding=2 width=100% border=0><tr><td width="100%" title="<?php echo $brd_desc[$i] ; ?>" colspan=2><a href="board.php?name=<?php echo $brd_name[$i]; ?>"><font color=#000066><?php echo $brd_name[$i] ; ?></font></a></td></tr><tr>
+<td class=TableBody1 width="50%"><TABLE cellSpacing=2 cellPadding=2 width=100% border=0><tr><td width="100%" colspan=2><a href="board.php?name=<?php echo $brd_name[$i]; ?>"><font color=#000066><?php echo $brd_desc[$i] ; ?>&nbsp;[<?php echo $brd_name[$i] ; ?>]</font></a></td></tr><tr>
 <?php
 					if ($isGroup) {
 ?>
