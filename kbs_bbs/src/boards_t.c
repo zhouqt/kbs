@@ -1213,6 +1213,8 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
     return 0;
 }
 
+extern int mybrd_list_t;
+
 void FavBoard()
 {
 	if(mybrd_list_t <= 0)
