@@ -1,4 +1,7 @@
-BBSINCLUDE2 = ../include
+BBSINCLUDE = ../include
+BBSINCLUDE2 = ../../
+BBSLIBRARY = ../lib
+BBSLIBRARY2 = ../../
 
 #ifeq (Makefile.spec ,$(wildcard Makefile.spec))
 include	../Makefile.spec
@@ -7,7 +10,7 @@ include	../Makefile.spec
 MAKE = make
 CC 	= gcc
 CFLAGS = -g -I$(BBSINCLUDE) -I$(BBSINCLUDE2) -W
-LDFLAGS = -L$(BBSLIBRARY) -L$(BBSINCLUDE)  -lbbslib -lBBS
+LDFLAGS = -L$(BBSLIBRARY) -L$(BBSLIBRARY2) -lbbslib -lBBS
 OS_DEF = -DLINUX
 SITE_DEF = -DINVISIBLE -DSMTH -DNJU_WWWBBS -DBBS2WWW
 #DEFINES = $(OS_DEF) $(SITE_DEF)

@@ -4,6 +4,7 @@
 typedef struct user_info   uinfo_t;
 #ifdef SMTH
 typedef struct boardheader bcache_t;
+#define shortfile boardheader
 typedef struct friends     friends_t;
 #else
 typedef struct shortfile bcache_t;

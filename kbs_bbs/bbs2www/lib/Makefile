@@ -5,7 +5,7 @@
 BBSLIBOBJS = bbslib.o 
 BBSLIBRARY = libbbslib.a
 DEFINES = $(OS_DEF) $(SITE_DEF)
-.c.o:   ;   $(CC) -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' -Iinclude $(CFLAGS) $(DEFINES) -c $*.c
+.c.o:   ;   $(CC) -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' -I../include -I../.. $(CFLAGS) $(DEFINES) -c $*.c
 
 all: $(BBSLIBRARY)
 
