@@ -308,7 +308,7 @@ char *prompt, *data;
              * for (x=1; x<500; x++);  delay 
              */
         }
-        ingetdata = true;
+        ingetdata = false;
         return 0;
     }
     if (prompt != NULL) {
@@ -319,7 +319,7 @@ char *prompt, *data;
         longjmp(byebye, -1);
     if ((temp = strchr(data, '\n')) != NULL)
         *temp = '\0';
-    ingetdata = true;
+    ingetdata = false;
     return 0;
 }
 
@@ -363,6 +363,8 @@ int cwnum, key, pos;
 int usercomplete(prompt, data)
 char *prompt, *data;
 {
+    extern bool ingetdata;
+    ingetdata = true;
     if (scrint) {
         char *cwbuf, *cwlist, *temp;
         int cwnum, x, y, origx, origy;
@@ -501,6 +503,7 @@ char *prompt, *data;
             move(origy, origx);
             prints("%s\n", data);
         }
+        ingetdata = false;
         return 0;
     } else {
         char *temp;
@@ -513,6 +516,7 @@ char *prompt, *data;
             longjmp(byebye, -1);
         if ((temp = strchr(data, '\n')) != NULL)
             *temp = '\0';
+        ingetdata = false;
         return 0;
     }
 }
