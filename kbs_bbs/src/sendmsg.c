@@ -124,7 +124,7 @@ int mode;
     int Gmode = 0;
 
     *msgbak = 0;	/* period 2000-11-20 may be used without init */
-    if(mode==0)
+    if((mode==0)||(mode==3))
     {
         modify_user_mode( MSG );
         move(2,0) ; clrtobot();
@@ -184,8 +184,11 @@ int mode;
         strcpy(uident,uin->userid);
         /*   strcpy(MsgDesUid, uin->userid); change by KCN,is wrong*/
     }
+    if(!HAS_PERM(PERM_SEECLOAK) && uin->invisible && strcmp(uin->userid,currentuser->userid) && mode!=4)
+        return -2;
 
-    if((mode!=0)&&(LOCKSCREEN == uin->mode)) /* Leeward 98.02.28 */
+
+    if((mode!=3)&&(LOCKSCREEN == uin->mode)) /* Leeward 98.02.28 */
     {
         move(2,0) ;
         prints("¶Ô·½ÒÑ¾­Ëø¶¨ÆÁÄ»£¬ÇëÉÔºòÔÙ·¢»ò¸øËû(Ëı)Ğ´ĞÅ...\n");
@@ -195,7 +198,7 @@ int mode;
         return -1 ;
     }
 
-    if ((mode!=0)&&(NA==canIsend2(uin->userid)))/*Haohmaru.06.06.99.¼ì²é×Ô¼ºÊÇ·ñ±»ignore*/
+    if ((mode!=3)&&(NA==canIsend2(uin->userid)))/*Haohmaru.06.06.99.¼ì²é×Ô¼ºÊÇ·ñ±»ignore*/
     {
         move(2,0) ;
         prints("¶Ô·½¾Ü¾ø½ÓÊÜÄãµÄÑ¶Ï¢...\n");
@@ -206,7 +209,7 @@ int mode;
     }
 
 
-    if (mode!=0) {
+    if (mode!=3) {
     sethomefile(buf,uident,"msgcount");
     fp=fopen(buf, "rb");
     if (fp!=NULL)
@@ -239,14 +242,14 @@ int mode;
     timestr=ctime(&now)+11;
     *(timestr+8)='\0';
     strcpy(ret_str,"R »ØÑ¶Ï¢");
-    if(msgstr==NULL||mode==2)
+    if(msgstr==NULL||mode==2||mode==4)
     {
         sprintf(msgbuf,"[44m[36m%-12.12s[33m(%-5.5s):[37m%-59.59s[m[%dm\033[%dm\n", currentuser->userid,
                 timestr, (msgstr==NULL)?buf:msgstr,uinfo.pid+100,uin->pid+100);
         sprintf(msgbak,"[44m[0;1;32m=>[37m%-10.10s[33m(%-5.5s):[36m%-59.59s[m[%dm\033[%dm\n", uident,timestr, (msgstr==NULL)?buf:msgstr,uinfo.pid+100,uin->pid+100);
     }else
     {
-        if(mode==0) {
+        if(mode==3) {
             sprintf(msgbuf,"[44m[33mÕ¾³¤ì¶ %8.8s Ê±¹ã²¥£º"
                     "[37m%-55.55s[m\033[%dm\n",
                     /*				"[37m%-59.59s[m\033[%dm\n",*/
@@ -336,7 +339,7 @@ dowall(struct user_info *uin,char* arg)
         /* ±£´æËù·¢msgµÄÄ¿µÄuid 1998.7.5 by dong*/
         strcpy(MsgDesUid, uin->userid);
 
-        do_sendmsg(uin,buf2,0); /* ¹ã²¥Ê±±ÜÃâ±»¹ı¶àµÄ guest ´ò¶Ï */
+        do_sendmsg(uin,buf2,3); /* ¹ã²¥Ê±±ÜÃâ±»¹ı¶àµÄ guest ´ò¶Ï */
     }
     return 0;
 }
@@ -588,7 +591,7 @@ MSGX2:
                     {
                         /* ±£´æËù·¢msgµÄÄ¿µÄuid 1998.7.5 by dong*/
                         strcpy(MsgDesUid, usid);
-                        retcode = do_sendmsg(uin,buf,2);
+                        retcode = do_sendmsg(uin,buf,4);
                         if (retcode  == 1)
                             sprintf(msgbuf,"[1m°ïÄãËÍ³öÑ¶Ï¢ÁË[m");
                         else if (retcode == -2)

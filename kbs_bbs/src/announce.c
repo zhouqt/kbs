@@ -567,14 +567,31 @@ char    *path, *key;
 int     level;
 {
     FILE        *fn;
-    char        bname[ STRLEN ];
+    char        bname[ STRLEN ],bpath[ STRLEN ];
     char        buf[ PATHLEN ], *ptr;
     int         len;
+    struct  stat st;
+    struct boardheader fhdr;
 
     if( key == NULL ) {
         key = bname;
         a_prompt( -1, "输入欲搜寻之讨论区名称: ", key );
     }
+
+    setbpath( bpath, key);
+    if((*key== '\0') || (stat(bpath,&st) == -1)) /* 判断board是否存在 */
+        return 0;
+    if(!(st.st_mode & S_IFDIR)) 
+        return 0;
+    if (getboardnum(key,&fhdr)==0) return 0;
+
+
+    if (!((fhdr.level & PERM_POSTMASK) || HAS_PERM(fhdr.level)
+            ||(fhdr.level & PERM_NOZAP))) {
+	return 0;
+    }
+
+
     len = strlen( key );
     sprintf( buf, "%s/.Search", path );
     if( len > 0 && (fn = fopen( buf, "r" )) != NULL ) {

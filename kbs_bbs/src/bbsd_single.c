@@ -604,7 +604,7 @@ char *argv[];
 	    
 	    /* sanshao@10.24: why next line is originally sizeof(sin) not &value */	
             getpeername(csock,(struct sockaddr*)&sin,&value);
-            log("1connect","connect from %s(%d) in port %d",inet_ntoa(sin.sin_addr),htons(sin.sin_port),port);
+            log("0connect","connect from %s(%d) in port %d",inet_ntoa(sin.sin_addr),htons(sin.sin_port),port);
             setsid();
 
             close(0);

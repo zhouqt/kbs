@@ -7,7 +7,7 @@
 #define DEFAULTBOARD    	"test"
 #define MAXUSERS  		150000
 #define MAXBOARD  		400
-#define MAXACTIVE 		3000
+#define MAXACTIVE 		4000
 
 #define POP3PORT		110
 #define	LENGTH_SCREEN_LINE	220

@@ -856,6 +856,8 @@ void call_user(chatcontext *pthis,const char *arg) /* invite user online to chat
                         sprintf(msg,"[37mÒÑ¾­°ïÄãÑûÇë %s ÁË[m",uin->userid);
                     else if(state == -2)
                         sprintf(msg,"[37m¶Ô·½ÒÑ¾­ÀëÏßÁË...[m");
+                    else 
+                        sprintf(msg,"[37¶Ô·½²»½ÓÊÜÄãµÄÏûÏ¢...[m");
                 }
             }
     }
@@ -917,6 +919,8 @@ void chat_sendmsg(chatcontext *pthis,const char *arg) /* send msg in chatroom , 
 					    sprintf(msg,"\x1b[37mÒÑ¾­·¢ÏûÏ¢¸ø \x1b[32m%s\x1b[37m ÁË\x1b[m",uin->userid);
 				    else if (state == -2)
 					    sprintf(msg,"\x1b[37m¶Ô·½ÒÑ¾­ÀëÏßÁË...\x1b[m");
+                                    else 
+                                            sprintf(msg,"[37¶Ô·½²»½ÓÊÜÄãµÄÏûÏ¢...[m");
 			    }
 			}
 		}

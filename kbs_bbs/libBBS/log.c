@@ -147,6 +147,10 @@ int log(const char * from,const char *fmt,...)
         prio=from[0]-'0';
         from++;
     }
+// temp disable log
+#ifdef BBSMAIN
+    if (prio==0&&strcasecmp(from,"boardusage")) return 0;
+#endif
     if(strlen(from)>16)return -3;
     if(!fmt || !*fmt)return 0;
     

@@ -249,7 +249,7 @@ reaper()
 }
 
 
-int dodaemon(char* argv1)
+int dodaemon(char* argv1,char* daemon)
 {
     struct sigaction act;
     
@@ -280,10 +280,7 @@ int dodaemon(char* argv1)
     sigaction(SIGCHLD, &act, NULL);
 #endif
 
-    switch(fork()) {
-     case -1:
-               log("3miscd","fork failed\n");
-     case 0:
+    if (((daemon==NULL)||(!strcmp(daemon,"killd")))&&fork()) {
      strcpy(argv1,"killd");
      while (1) {
      	sleep(getnextday4am() - time( 0 ));
@@ -312,15 +309,14 @@ int dodaemon(char* argv1)
     	    } 
     	 }
      };
-     default:
-        if (fork()) {
+    }
+    if (((daemon==NULL)||(!strcmp(daemon,"userd")))&&fork()) {
           strcpy(argv1,"userd");
           userd();
-        }
-        else {
+    }
+    if ((daemon==NULL)||(!strcmp(daemon,"flushd"))) {
           strcpy(argv1,"flushd");
           flushd();
-        }
     }
 }
 int main (int argc,char *argv[])
@@ -334,7 +330,7 @@ int main (int argc,char *argv[])
      if (argc>1) {
          if (strcasecmp(argv[1],"killuser") == 0)  return dokilluser();
          if (strcasecmp(argv[1],"allboards") == 0) return dokillalldir();
-         if (strcasecmp(argv[1],"daemon") == 0) return dodaemon(argv[1]);
+         if (strcasecmp(argv[1],"daemon") == 0) return dodaemon(argv[1],argv[2]);
          return dokilldir(argv[1]);
      }
      printf("Usage : %s killuser to kill old users\n",argv[0]);

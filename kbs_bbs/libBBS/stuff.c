@@ -479,17 +479,17 @@ void *attach_shm1( char    *shmstr,int     defaultkey, int shmsize,int* iscreate
     shmkey = defaultkey;
     shmid = shmget( shmkey, shmsize, 0 );
     if( shmid < 0 ) {
+        if (readonly) {
+            attach_err( shmkey, "shmget:readonly" );
+            return 0;
+        }
         shmid = shmget( shmkey, shmsize, IPC_CREAT | 0600 );
         if( shmid < 0 )
             attach_err( shmkey, "shmget" );
-        if (readonly)
-            shmptr = (void *) shmat( shmid, NULL, SHM_RDONLY);
-        else
-            shmptr = (void *) shmat( shmid, NULL, 0 );
+        shmptr = (void *) shmat( shmid, NULL, 0 );
         if( shmptr == (void *)-1 )
             attach_err( shmkey, "shmat" );
 	else
-	if (!readonly)
             memset( shmptr, 0, shmsize );
         *iscreate=1;
     } else {
@@ -526,21 +526,21 @@ void *attach_shm1( char    *shmstr,int     defaultkey, int shmsize,int* iscreate
         shmkey = defaultkey;
     shmid = shmget( shmkey, shmsize, 0 );
     if( shmid < 0 ) {
+        if (readonly) {
+            attach_err( shmkey, "shmget:readonly" );
+            return 0;
+        }
         shmid = shmget( shmkey, shmsize, IPC_CREAT | 0660 ); /* modified by dong , for web application , 1998.12.1 */
         *iscreate=YEA;
         if( shmid < 0 ) {
             attach_err( shmkey, "shmget" );
             exit(0);
         }
-        if (readonly)
-            shmptr = (void *) shmat( shmid, NULL, SHM_RDONLY);
-        else
-            shmptr = (void *) shmat( shmid, NULL, 0 );
+        shmptr = (void *) shmat( shmid, NULL, 0 );
         if( shmptr == (void *)-1 ) {
             attach_err( shmkey, "shmat" );
             exit(0);
     	} else
-        if (!readonly)
             memset( shmptr, 0, shmsize );
     } else {
     	*iscreate=0;

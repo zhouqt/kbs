@@ -2189,13 +2189,12 @@ int mode;
     if (append_record( buf, &postfile, sizeof(postfile)) == -1) { /* 添加POST信息到当前版.DIR */
         if(!mode)
         {
-            sprintf(buf, "cross_posting '%s' on '%s': append_record failed!",
+            log("1user", "cross_posting '%s' on '%s': append_record failed!",
                     postfile.title, quote_board);
         }else{
-            sprintf(buf, "Posting '%s' on '%s': append_record failed!",
+            log("1user", "Posting '%s' on '%s': append_record failed!",
                     postfile.title, quote_board);
         }
-        report(buf);
         pressreturn() ;
         clear() ;
         return 1 ;
@@ -2511,8 +2510,7 @@ post_article()                         /*用户 POST 文章 */
     }
     brc_addlist( post_file.filename ) ;
 
-    sprintf(buf,"posted '%s' on '%s'", post_file.title, currboard) ;
-    report(buf) ; /* log */
+    log("1user","posted '%s' on '%s'", post_file.title, currboard) ;
     /*      postreport(post_file.title, 1);*/ /*added by alex, 96.9.12*/
     if ( !junkboard() )
     {
@@ -2672,8 +2670,7 @@ char *direct ;
 add_edit_mark(genbuf,1,/*NULL*/fileinfo->title);
 #endif
     }
-    sprintf(genbuf, "edited post '%s' on %s", fileinfo->title, currboard);
-    report(genbuf);
+    log("1user","edited post '%s' on %s", fileinfo->title, currboard);
     return FULLUPDATE ;
 }
 
