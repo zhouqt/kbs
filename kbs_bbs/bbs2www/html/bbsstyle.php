@@ -1,4 +1,5 @@
 <?php
+	// $Id$
 	if (isset($_GET["s"]))
 	{
 		$style = $_GET["s"];
@@ -23,11 +24,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>"/>
+<meta http-equiv="Refresh" content="0; url=/cgi-bin/bbs/bbsleft" />
 </head>
 <body>
 <script language="javascript">
 parent.mainframe.cols = "<?php echo $colwidth; ?>";
-top.f2.navigate('/cgi-bin/bbs/bbsleft');
 top.f3.navigate(top.f3.location);
 top.f4.navigate(top.f4.location);
 </script>
