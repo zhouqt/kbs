@@ -555,6 +555,9 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     char buf[256];
     int fd, err=0, nowid=0;
 
+    if ((re==NULL)&&(!strncasecmp(fh->title,"Re:",3))) {
+	    strncpy(fh->title,fh->title+4,STRLEN);
+    }
     setbfile(buf, boardname, DOT_DIR);
 
     if ((fd = open(buf, O_WRONLY | O_CREAT, 0664)) == -1) {
