@@ -2941,7 +2941,7 @@ int clear_all_new_flag(int ent, struct fileheader *fileinfo, char *direct)
 
 int range_flag(int ent, struct fileheader *fileinfo, char *direct)
 {
-    char ans[4];
+    char ans[4], buf[80];
     char num1[10], num2[10];
     int inum1, inum2, total=0;
     struct stat st;
@@ -2966,11 +2966,19 @@ int range_flag(int ent, struct fileheader *fileinfo, char *direct)
         pressreturn();
         return FULLUPDATE;
     }
-    getdata(4, 0, "1-保留标记m  2-删除标记t:  [0]", ans, 4, DOECHO, NULL, true);
-    if(ans[0]<'1'||ans[0]>'2') return FULLUPDATE;
+    sprintf(buf, "1-保留标记m  2-删除标记t  3-文摘标记g  4-不可Re标记  5-标记#%s:  [0]",
+        HAS_PERM(currentuser, PERM_SYSOP)?"  6-审查标记@":"");
+    getdata(4, 0, buf, ans, 4, DOECHO, NULL, true);
+    if(ans[0]=='6'&&!HAS_PERM(currentuser, PERM_SYSOP)) return FULLUPDATE;
+    if(ans[0]<'1'||ans[0]>'6') return FULLUPDATE;
+    if(askyn("请慎重考虑, 确认操作吗?", 0)==0) return FULLUPDATE;
     k=ans[0]-'0';
-    if(ans[0]=='1') fflag=FILE_MARK_FLAG;
-    else if(ans[0]=='2') fflag=FILE_DELETE_FLAG;
+    if(k==1) fflag=FILE_MARK_FLAG;
+    else if(k==2) fflag=FILE_DELETE_FLAG;
+    else if(k==3) fflag=FILE_DIGEST_FLAG;
+    else if(k==4) fflag=FILE_NOREPLY_FLAG;
+    else if(k==5) fflag=FILE_SIGN_FLAG;
+    else if(k==6) fflag=FILE_CENSOR_FLAG;
     for(i=inum1;i<=inum2;i++) 
     if(i>=1&&i<=total) {
         f.filename[0]=0;
