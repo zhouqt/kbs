@@ -696,6 +696,7 @@ int getnewuserid(char *userid)
     struct userec utmp;
     int fd, i;
     time_t system_time;
+    int ret;
 
     system_time = time(NULL);
 /*
@@ -706,7 +707,6 @@ int getnewuserid(char *userid)
     fd = ucache_lock();
 
     while (1) {
-        int ret;
 
         i = searchnewuser();
         if (i <= 0 || i > MAXUSERS) {
@@ -717,12 +717,13 @@ int getnewuserid(char *userid)
         strcpy(utmp.userid, userid);
         utmp.lastlogin = time(NULL);
         ret = setuserid_internal(i, userid);    /* added by dong, 1998.12.2 */
-        if (ret == 0) {
+        if (ret <= 0) {
             break;
         }
         ucache_unlock(fd);
     }
-    update_user(&utmp, i, 0);
+    if (ret==0)
+        update_user(&utmp, i, 0);
     ucache_unlock(fd);
     return i;
 }

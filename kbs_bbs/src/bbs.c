@@ -304,7 +304,7 @@ int Post()
 #ifndef NOREPLY
     *replytitle = '\0';
 #endif
-    do_post();
+    do_post(NULL,NULL,NULL);
     return 0;
 }
 
@@ -1981,8 +1981,16 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     char* upload = NULL;
     int mailback = 0;		/* stiger,»Ø¸´µ½ÐÅÏä */
 
-    struct read_arg* arg=(struct read_arg*)conf->arg;
     char direct[PATHLEN];
+    int cmdmode;
+    if (conf!=NULL)  {
+        struct read_arg* arg;
+        arg=(struct read_arg*)conf->arg;
+        cmdmode=arg->mode;
+    }
+    else {
+	cmdmode=DIR_MODE_NORMAL;
+    }
 
 #ifdef FILTER
     int returnvalue;
@@ -1998,7 +2006,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 
     modify_user_mode(POSTING);
     setbdir(DIR_MODE_NORMAL, direct, currboard->filename);
-    if (!((arg->mode == DIR_MODE_MARK)||( arg->mode == DIR_MODE_THREAD)||( arg->mode == DIR_MODE_NORMAL)))
+    if (!((cmdmode == DIR_MODE_MARK)||( cmdmode == DIR_MODE_THREAD)||( cmdmode == DIR_MODE_NORMAL)))
     {
         move(3, 0);
         clrtobot();
@@ -2357,7 +2365,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         return FULLUPDATE;
     }
 #endif
-    switch (arg->mode) {
+    switch (cmdmode) {
     case 2:
         title_mode(conf,NULL,NULL);
         break;
