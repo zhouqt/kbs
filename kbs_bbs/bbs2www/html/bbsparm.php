@@ -78,10 +78,10 @@ function showOptions($var_name, $userparam, $isWWW) {
 		$flag=1<<$i;
 ?>
 <tr><td align="left" class="t3"><B><?php echo $userdefine[$i][1]; ?></B>£º<BR><?php echo $userdefine[$i][2]; ?></td>   
-        <td class="t3">    
+        <td class="t3"><nobr>
 			<input type="radio" name="<?php echo $var_name."_".$i; ?>" value="1" <?php if ($userparam & $flag) echo "checked"; ?> ><?php echo $userdefine[$i][3]; ?>
 			<input type="radio" name="<?php echo $var_name."_".$i; ?>" value="0" <?php if (!($userparam & $flag)) echo "checked"; ?> ><?php echo $userdefine[$i][4]; ?>
-        </td>   
+        </nobr></td>
 </tr>
 <?php
 	}	
