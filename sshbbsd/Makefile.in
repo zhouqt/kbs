@@ -182,8 +182,22 @@ DEFAULT_INCLUDES =  -I. -I$(srcdir) -I.
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
-depcomp =
-am__depfiles_maybe =
+depcomp = $(SHELL) $(top_srcdir)/depcomp
+am__depfiles_maybe = depfiles
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/auth-passwd.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/authfile.Po ./$(DEPDIR)/blowfish.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/bufaux.Po ./$(DEPDIR)/buffer.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/canohost.Po ./$(DEPDIR)/cipher.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/compress.Po ./$(DEPDIR)/crc32.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/deattack.Po ./$(DEPDIR)/des.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/emulate.Po ./$(DEPDIR)/log-server.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/match.Po ./$(DEPDIR)/mpaux.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/packet.Po ./$(DEPDIR)/randoms.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/rsa.Po ./$(DEPDIR)/rsaglue.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/servconf.Po ./$(DEPDIR)/serverloop.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/signals.Po ./$(DEPDIR)/sshd.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/tildexpand.Po ./$(DEPDIR)/userfile.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/xmalloc.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -211,7 +225,7 @@ all: config.h
 .SUFFIXES: .c .o .obj
 $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  --ignore-deps Makefile
+	  $(AUTOMAKE) --gnu  Makefile
 Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe)
 
@@ -275,11 +289,48 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/auth-passwd.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/authfile.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/blowfish.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bufaux.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/buffer.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/canohost.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cipher.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/compress.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crc32.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/deattack.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/des.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/emulate.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log-server.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/match.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mpaux.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/packet.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/randoms.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rsa.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rsaglue.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/servconf.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/serverloop.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/signals.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sshd.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tildexpand.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/userfile.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xmalloc.Po@am__quote@
+
+distclean-depend:
+	-rm -rf ./$(DEPDIR)
+
 .c.o:
+@AMDEP_TRUE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(COMPILE) -c `test -f '$<' || echo '$(srcdir)/'`$<
 
 .c.obj:
+@AMDEP_TRUE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(COMPILE) -c `cygpath -w $<`
+CCDEPMODE = @CCDEPMODE@
 uninstall-info-am:
 
 # This directory's subdirectories are mostly independent; you can cd
@@ -516,8 +567,8 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -f config.status config.cache config.log
-distclean-am: clean-am distclean-compile distclean-generic distclean-hdr \
-	distclean-tags
+distclean-am: clean-am distclean-compile distclean-depend \
+	distclean-generic distclean-hdr distclean-tags
 
 dvi: dvi-recursive
 
@@ -552,10 +603,10 @@ uninstall-info: uninstall-info-recursive
 .PHONY: $(RECURSIVE_TARGETS) GTAGS all all-am check check-am clean \
 	clean-binPROGRAMS clean-generic clean-recursive dist dist-all \
 	dist-gzip distcheck distclean distclean-compile \
-	distclean-generic distclean-hdr distclean-recursive \
-	distclean-tags distcleancheck distdir dvi dvi-am dvi-recursive \
-	info info-am info-recursive install install-am \
-	install-binPROGRAMS install-data install-data-am \
+	distclean-depend distclean-generic distclean-hdr \
+	distclean-recursive distclean-tags distcleancheck distdir dvi \
+	dvi-am dvi-recursive info info-am info-recursive install \
+	install-am install-binPROGRAMS install-data install-data-am \
 	install-data-recursive install-exec install-exec-am \
 	install-exec-recursive install-info install-info-am \
 	install-info-recursive install-man install-recursive \
