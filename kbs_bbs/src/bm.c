@@ -211,7 +211,7 @@ int addtodeny(char *uident)
             break;
     }
 
-    if (denyday && (autofree == 0)) {
+    if (denyday && autofree) {
         struct tm *tmtime;
         time_t undenytime = now + denyday * 24 * 60 * 60;
 
