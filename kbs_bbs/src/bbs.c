@@ -2540,8 +2540,8 @@ int del_range(int ent, struct fileheader *fileinfo, char *direct, int mailmode)
             fixkeep(direct, 1, 1);
         if (uinfo.mode != RMAIL) {
             updatelastpost(currboard);
-            sprintf(genbuf, "del %d-%d on %s", inum1, inum2, currboard);
-            bbslog("user", "%s", genbuf);       /*bbslog */
+            bmlog(currentuser->userid, currboard, 8, inum2-inum1);
+            newbbslog(BBSLOG_USER, "del %d-%d on %s", inum1, inum2, currboard);
         }
         prints("É¾³ý%s\n", result ? "Ê§°Ü£¡" : "Íê³É"); /* Leeward: 97.12.15 */
         pressreturn();
