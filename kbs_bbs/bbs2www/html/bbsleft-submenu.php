@@ -82,6 +82,9 @@ $innerHtml .= "</table>";
 if(!$boards || !$brd_num) $innerHtml = "<font color=#eeeeee>-空目录-</font>"; 
 ?>
 <html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+</head>
 <script src="/bbsleft.js"></script>
 <body>
 <script language="javascript">
