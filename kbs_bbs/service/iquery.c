@@ -340,7 +340,8 @@ static int choose_file_show(struct _select_def *conf, int ii)
                 setfcolor(RED,1);
             else
                 resetcolor();
-            prints("%c",buf[i]);
+            if(buf[i]=='\n') prints(" ");
+            else prints("%c",buf[i]);
             j++;
             if(j>=69) {
                 prints("\n          ");
