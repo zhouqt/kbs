@@ -221,6 +221,27 @@ char *prompt, *data;
                         continue;
                     }
                 }
+                if (NumInList(cwlist)) {
+                    int i, j;
+                    struct word *list;
+                    j = temp-data;
+                    while(1) {
+                        int ok=1;
+                        j++;
+                        for (list = cwlist; list != NULL; list = list->next)
+                            if (strncasecmp(cwlist->word, list->word, j) != 0) {
+                                ok=0;
+                                break;
+                            }
+                        if(!ok) break;
+                    }
+                    j--;
+                    while(temp-data<j) {
+                        *temp = cwlist->word[temp-data];
+                        temp++;
+                    }
+                    *temp = 0;
+                }
                 clearbot = true;
                 col = 0;
                 if (!morelist)
@@ -231,7 +252,7 @@ char *prompt, *data;
                 prints("\x1b[7m");
                 printdash(" 列表 ");
                 prints("\x1b[m");
-                while (len + col < 80) {
+                while (len + col < scr_cols) {
                     int i;
 
                     for (i = NUMLINES; (morelist) && (i > 0); i--) {
@@ -400,8 +421,8 @@ char *prompt, *data;
                             strcpy(data, ptr);
                             break;
                         }
+                        ptr += IDLEN + 1;
                     }
-                    ptr += IDLEN + 1;
                 } else {
                     i = getuser(data, &lookupuser);
                     if (i != 0)
@@ -423,6 +444,30 @@ char *prompt, *data;
                     getyx(&y, &x);
                     continue;
                 }
+                if (cwnum) {
+                    int i, j;
+                    char * ptr;
+                    j = temp-data;
+                    while(1) {
+                        int ok=1;
+                        j++;
+                        ptr = cwlist;
+                        for (i = 0; i < cwnum; i++) {
+                            if (strncasecmp(cwlist, ptr, j) != 0) {
+                                ok=0;
+                                break;
+                            }
+                            ptr += IDLEN + 1;
+                        }
+                        if(!ok) break;
+                    }
+                    j--;
+                    while(temp-data<j) {
+                        *temp = cwlist[temp-data];
+                        temp++;
+                    }
+                    *temp = 0;
+                }
                 if (count < 2)
                     continue;
                 cwlist = u_namearray((char (*)[13]) cwbuf, &cwnum, data);
@@ -432,7 +477,7 @@ char *prompt, *data;
                 move(2, 0);
                 clrtobot();
                 printdash(" 所有使用者列表 ");
-                while (len + col < 79) {
+                while (len + col < scr_cols-1) {
                     int i;
 
                     for (i = 0; morenum < cwnum && i < NUMLINES; i++) {
