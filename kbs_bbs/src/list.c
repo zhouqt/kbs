@@ -307,12 +307,10 @@ int do_userlist()
         }
         pagec = pagerchar(usernum,&uentp, uentp.pager, &isfriend);
         strncpy(tbuf, (real_user_names) ? uentp.realname : (showexplain && override) ? fexp : uentp.username, 80);
-#ifdef NINE_BUILD
 //昵称在列表中最后一字消除乱码，shiyao  2003.6.1
 	j = 15;
 	while (j>=0 && tbuf[j]<0) j--;
 	if ((15-j)%2)  tbuf[15] = 0;
-#endif
         tbuf[80]=0;
         resetcolor();
         clrtoeol();
