@@ -1,8 +1,9 @@
 SUBDIRS=pip worker
 noinst_HEADERS = tcplib.h
-lib_LTLIBRARIES = libfriendtest.la libbbsnet.la
+lib_LTLIBRARIES = libfriendtest.la libbbsnet.la libpandora.la
 libfriendtest_la_SOURCES = friendtest.c
 libbbsnet_la_SOURCES = bbsnet.c tcplib.c
+libpandora_la_SOURCES = pandora.c tcplib.c
 libdir=${prefix}/service
 AM_CFLAGS = -DINVISIBLE -DSAFE_KILL -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME -I$(top_builddir)/src
 CLEANFILES=@EXTRA_CLEAN@
