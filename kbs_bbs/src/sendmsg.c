@@ -399,7 +399,7 @@ againmsg:
     if(now==-1) now = get_msgcount(currentuser->userid)-1;
     while(1){
         load_msghead(1, currentuser->userid, now, &head);
-        if (head->topid!=getuinfopid()) goto againmsg;
+        if (head.topid!=getuinfopid()) goto againmsg;
         load_msgtext(currentuser->userid, &head, buf);
         translate_msg(buf, &head, outmsg);
         strncpy(uid, head.id, IDLEN);

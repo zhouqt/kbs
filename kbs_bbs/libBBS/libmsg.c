@@ -242,15 +242,6 @@ int msg_can_sendmsg(char *userid, int utmpnum)
     return 1;
 }
 
-struct msghead {
-    int pos, len;
-    char sent;
-    int mode;
-    char id[IDLEN+2];
-    time_t time;
-    int frompid, topid;
-};
-
 int save_msgtext(char *uident, struct msghead * head, char *msgbuf)
 {
     char fname[STRLEN], fname2[STRLEN];
