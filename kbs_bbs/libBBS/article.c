@@ -877,7 +877,17 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
 #endif
         postfile.accessed[0] |= FILE_FORWARDED;
     }
-    after_post(user, &postfile, toboard, NULL, !(Anony), session);
+#ifdef HAVE_BRC_CONTROL
+    { //added by atppp, ·ÀÖ¹×ªÔØµÈÆÆ»µBRC 20070719
+        int save;
+        save = session->brc_currcache;
+        session->brc_currcache = -1;
+#endif
+        after_post(user, &postfile, toboard, NULL, !(Anony), session);
+#ifdef HAVE_BRC_CONTROL
+        session->brc_currcache = save;
+    }
+#endif
 #ifdef BBSMAIN
     modify_user_mode(oldmode);
 #endif
