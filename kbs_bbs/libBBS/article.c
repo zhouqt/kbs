@@ -222,6 +222,7 @@ int autoappend;
         postfile.id = fh->id;
         postfile.groupid = fh->groupid;
         postfile.reid = fh->reid;
+		postfile.attachment=fh->attachment;
         set_posttime2(&postfile, fh);
     };
     now = time(NULL);
