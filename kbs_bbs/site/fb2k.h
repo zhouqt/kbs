@@ -90,7 +90,7 @@
 #define	REGISTER_WAIT_TIME_NAME	"1 ∑÷÷”"
 
 #ifdef SMTH
-#define REGISTER_TSINGHUA_WAIT_TIME (240*60)
+#define REGISTER_TSINGHUA_WAIT_TIME (24*60*60)
 #endif
 #define MAIL_BBSDOMAIN      "bbs.mysite.net"
 #define MAIL_MAILSERVER     "127.0.0.1:25"
@@ -287,36 +287,26 @@ extern const char *mailbox_prop_str[];
 #define STRLEN          80
 #define BM_LEN 60
 #define FILENAME_LEN 20
-#define OWNER_LEN 30
+#define OWNER_LEN 14
+#define ARTICLE_TITLE_LEN 60
 typedef struct fileheader {     /* This structure is used to hold data in */
     char filename[FILENAME_LEN];      /* the DIR files */
     unsigned int id, groupid, reid;
-#ifdef FILTER
-    char o_board[STRLEN - BM_LEN];
+#if defined(FILTER) || defined(COMMEND_ARTICLE)
+	int o_bid;
     unsigned int o_id;
     unsigned int o_groupid;
     unsigned int o_reid;
-    char unused1[14];
 #else
-#ifdef COMMEND_ARTICLE
-    char o_board[STRLEN - BM_LEN];
-    unsigned int o_id;
-    unsigned int o_groupid;
-    unsigned int o_reid;
-    char unused1[14];
-#else
-    char unused1[46];
-#endif
+    char unused1[16];
 #endif
     char innflag[2];
     char owner[OWNER_LEN];
-    char unused2[42];
     unsigned int eff_size;
-
+    time_t posttime;
     long attachment;
-    char title[STRLEN];
-    unsigned level;
-    unsigned char accessed[12]; /* struct size = 256 bytes */
+    char title[ARTICLE_TITLE_LEN];
+    unsigned char accessed[4];
 } fileheader;
 
 typedef struct fileheader fileheader_t;
