@@ -1240,6 +1240,7 @@ void a_copypaste(pm, paste)
 				       sprintf(buf, " 删除失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
 				       a_prompt(-1, buf, ans);
 				   }
+				   a_freenames(&pm2);
 
             	}
                 a_additem(pm, title, filename, NULL, 0);
