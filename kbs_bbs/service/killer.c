@@ -286,7 +286,7 @@ void refreshit()
         resetcolor();
         move(i,4);
         if(j==selected) {
-            setbcolor(BLUE);
+            setfcolor(RED, 1);
         }
         if(inrooms.peoples[j].nick[0])
             prints(inrooms.peoples[j].nick);
@@ -317,16 +317,47 @@ void room_refresh(int signo)
 
 void start_game()
 {
-    int i;
+    int i,j,totalk=0,total=0, me;
     char buf[80];
     start_change_inroom(myroom);
-    inrooms.status = INROOM_NIGHT;
-    end_change_inroom();
-    sprintf(buf, "\x1b[31m游戏开始啦!\x1b[m\n");
-    for(i=0;i<myroom->people;i++) {
-        send_msg(inrooms.peoples+i, buf);
-        kill(inrooms.peoples[i].pid, SIGUSR1);
+    for(me=0;me<myroom->people;me++)
+        if(inrooms.peoples[me].pid==uinfo.pid) break;
+    totalk=inrooms.killernum;
+    for(i=0;i<myroom->people;i++)
+        if(!(inrooms.peoples[i].flag&PEOPLE_SPECTATOR)) 
+            total++;
+    if(total<6) {
+        send_msg(inrooms.peoples+me, "\x1b[31m至少6人参加才能开始游戏\x1b[m");
+        killer(inrooms.peoples[me].pid, SIGUSR1);
+        end_change_inroom();
+        return;
     }
+    if(totalk==0) totalk=total*3/10+0.5;
+    if(totalk>total) {
+        send_msg(inrooms.peoples+me, "\x1b[31m总人数少于要求的坏人人数,无法开始游戏\x1b[m");
+        killer(inrooms.peoples[me].pid, SIGUSR1);
+        end_change_inroom();
+        return;
+    }
+    inrooms.status = INROOM_NIGHT;
+    sprintf(buf, "\x1b[31m游戏开始啦!\x1b[m\n");
+    for(i=0;i<myroom->people;i++)
+        send_msg(inrooms.peoples+i, buf);
+    for(i=0;i<totalk;i++) {
+        do{
+            j=rand()%myroom->people;
+        }while(inrooms.peoples[j].flag!=0);
+        inrooms.peoples[j].flag = PEOPLE_KILLER;
+        send_msg(inrooms.peoples+j, "你做了一个无耻的坏人\n下面用你的尖刀(\x1b[31;1mCtrl+S\x1b[m)选择你要残害的人吧...");
+    }
+    for(i=0;i<totalk;i++) {
+        inrooms.peoples[j].flag |= PEOPLE_ALIVE;
+        if(!(inrooms.peoples[j].flag&PEOPLE_KILLER))
+            send_msg(inrooms.peoples+j, "黑色的夜幕降临了...");
+    }
+    for(i=0;i<myroom->people;i++)
+        kill(inrooms.peoples[i].pid, SIGUSR1);
+    end_change_inroom();
 }
 
 #define menust 8
@@ -334,7 +365,7 @@ int do_com_menu()
 {
     char menus[menust][15]=
         {"0-返回","1-退出游戏","2-改名字", "3-玩家列表", "4-改话题", "5-设置房间", "6-踢玩家", "7-开始游戏"};
-    int menupos[menust],i,j,sel=0,ch;
+    int menupos[menust],i,j,sel=0,ch,max=0;
     menupos[0]=0;
     for(i=1;i<menust;i++)
         menupos[i]=menupos[i-1]+strlen(menus[i-1])+1;
@@ -352,17 +383,20 @@ int do_com_menu()
             if(i==sel) {
                 setfcolor(RED,1);
             }
+            if(i>=max-1) max=i+1;
             prints(menus[i]);
         }
         ch=igetkey();
         switch(ch){
         case KEY_LEFT:
+        case KEY_UP:
             sel--;
-            if(sel<0) sel=menust-1;
+            if(sel<0) sel=max-1;
             break;
         case KEY_RIGHT:
+        case KEY_DOWN:
             sel++;
-            if(sel>=menust) sel=0;
+            if(sel>=max) sel=0;
             break;
         case '\n':
         case '\r':
@@ -387,7 +421,7 @@ int do_com_menu()
 void join_room(struct room_struct * r)
 {
     char buf[80],buf2[80];
-    int i,j,killer;
+    int i,j,killer,me;
     clear();
     sprintf(buf, "home/%c/%s/.INROOMMSG%d", toupper(r->creator[0]), r->creator, uinfo.pid);
     unlink(buf);
@@ -401,6 +435,7 @@ void join_room(struct room_struct * r)
     inrooms.peoples[i].pid = uinfo.pid;
     if(i==0) {
         inrooms.status = INROOM_STOP;
+        inrooms.killernum = 0;
         strcpy(inrooms.title, "我杀我杀我杀杀杀");
         inrooms.peoples[i].flag = PEOPLE_ROOMOP;
     }
@@ -421,9 +456,26 @@ void join_room(struct room_struct * r)
                 if(do_com_menu()) goto quitgame;
             }
         }while(!buf[0]);
-        for(i=0;i<myroom->people;i++) {
-            send_msg(inrooms.peoples+i, buf);
-            kill(inrooms.peoples[i].pid, SIGUSR1);
+        if(inrooms.status==INROOM_NIGHT) {
+            for(me=0;me<myroom->people;me++)
+                if(inrooms.peoples[me].pid == uinfo.pid) break;
+            if(inrooms.peoples[me].flag&PEOPLE_KILLER)
+            for(i=0;i<myroom->people;i++) {
+                if(inrooms.peoples[i].flag&PEOPLE_KILLER||
+                    inrooms.peoples[i].flag&PEOPLE_SPECTATOR) {
+                    send_msg(inrooms.peoples+i, buf);
+                    kill(inrooms.peoples[i].pid, SIGUSR1);
+                }
+            }
+        }
+        else {
+            for(me=0;me<myroom->people;me++)
+                if(inrooms.peoples[me].pid == uinfo.pid) break;
+            if(!(inrooms.peoples[me].flag&PEOPLE_SPECTATOR))
+            for(i=0;i<myroom->people;i++) {
+                send_msg(inrooms.peoples+i, buf);
+                kill(inrooms.peoples[i].pid, SIGUSR1);
+            }
         }
     }
 
