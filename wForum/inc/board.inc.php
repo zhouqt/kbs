@@ -94,7 +94,9 @@ function showBoardStaticsTop($boardArr, $is_ann=false){
 <TABLE cellpadding=3 cellspacing=1 class=TableBorder1 align=center>
 <TR><Th height=25 width=100% align=left id=TableTitleLink style="font-weight:normal">
 本版当前共有<b><?php echo $boardArr['CURRENTUSERS'];?></b>人在线。今日帖子<?php echo bbs_get_today_article_num($boardArr['NAME'] ); ?>。
-[<a href="favboard.php?bname=<?php echo $boardArr["NAME"]; ?>" title="收藏本版面到收藏夹顶层目录">收藏本版</a>]</Th></TR></td></tr></TABLE>
+[<a href="favboard.php?bname=<?php echo $boardArr["NAME"]; ?>" title="收藏本版面到收藏夹顶层目录">收藏本版</a>]&nbsp;
+[<a href="doclear.php?boardName=<?php echo $boardArr["NAME"]; ?>" title="将本版所有文章标记成已读">清除未读</a>]
+</Th></TR></TABLE>
 <BR>
 <table cellpadding=2 cellspacing=0 border=0 width=97% align=center valign=middle><tr><td align=center width=2> </td>
 <td align=left style="height:27" valign="center"><table cellpadding=0 cellspacing=0 border=0 ><tr>

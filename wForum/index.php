@@ -5,6 +5,8 @@ $setboard=1;
 require("inc/funcs.php");
 require("inc/user.inc.php");
 
+setStat("ª∂”≠π‚¡Ÿ");
+
 show_nav();
 
 showUserMailBoxOrBR();
