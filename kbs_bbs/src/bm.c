@@ -548,6 +548,8 @@ int clubmember(int ent, struct fileheader *fh, char *direct)
     char ans[8], buf[STRLEN];
     int count, i;
     int readperm;
+    static char comment[STRLEN]={0};    /* add an additional comment for club .added by binxun . 2003.7.7*/
+    char tempbuf[256];
 
     if (!(chk_currBM(currBM, currentuser))) {
         return DONOTHING;
@@ -594,10 +596,18 @@ int clubmember(int ent, struct fileheader *fh, char *direct)
             usercomplete("增加俱乐部成员: ", uident);
             if (*uident != '\0') {
                 if (addclubmember(uident, readperm) == 1) {
+			 /* add an additional comment for club .added by binxun . 2003.7.7*/                	
+                    sprintf(genbuf,"附加说明:[%s]\n",comment);
+                    getdata(2,0,genbuf,tempbuf,STRLEN,DOECHO,NULL,true);
+                    if(tempbuf[0]){
+	                    strncpy(comment,tempbuf,STRLEN-1);
+       	             comment[STRLEN-1] = 0;
+                    	}
+                    sprintf(tempbuf,"附加说明:[%s]",comment);
                     sprintf(genbuf, "%s由%s授予%s俱乐部权力\n", uident, currentuser->userid, currboard->filename);
                     securityreport(genbuf, NULL, NULL);
-                    mail_buf(currentuser, genbuf, uident, genbuf);
-                    deliverreport(genbuf, genbuf);
+                    mail_buf(currentuser, tempbuf, uident, genbuf);
+                    deliverreport(genbuf, tempbuf);
                 }
             }
         } else if ((*ans == 'D' || *ans == 'd') && count) {
@@ -609,10 +619,19 @@ int clubmember(int ent, struct fileheader *fh, char *direct)
                 sprintf(genbuf, "真的要取消%s的俱乐部权力么？", uident);
                 if (askyn(genbuf, true))
                     if (delclubmember(uident, readperm)) {
-                        sprintf(genbuf, " %s 被%s 取消 %s 俱乐部 权力\n", uident, currentuser->userid, currboard->filename);
-                        securityreport(genbuf, NULL, NULL);
-                        mail_buf(currentuser, genbuf, uident, genbuf);
-                        deliverreport(genbuf, genbuf);
+                    		 /* add an additional comment for club .added by binxun . 2003.7.7*/                	
+	                    sprintf(genbuf,"附加说明:[%s]\n",comment);
+	   	             getdata(2,0,genbuf,tempbuf,STRLEN,DOECHO,NULL,true);
+	          	      if(tempbuf[0]){
+	              	      strncpy(comment,tempbuf,STRLEN-1);
+	       	             comment[STRLEN-1] = 0;
+	   	          	}
+	              	sprintf(tempbuf,"附加说明:[%s]",comment);
+
+	                     sprintf(genbuf, " %s 被%s 取消 %s 俱乐部 权力\n", uident, currentuser->userid, currboard->filename);
+	                     securityreport(genbuf, NULL, NULL);
+	                    	mail_buf(currentuser, tempbuf, uident, genbuf);
+	                    	deliverreport(genbuf, tempbuf);
                     }
             }
         }
