@@ -5,7 +5,9 @@
 #include <sys/select.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#ifndef CYGWIN
 #include <sys/socketvar.h>
+#endif
 #include <errno.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>

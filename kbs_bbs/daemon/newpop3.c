@@ -602,6 +602,7 @@ int main(int argc, char **argv)
     if (fork())
         exit(0);
 #endif
+#ifndef CYGWIN
     for (n = 0; n < 10; n++)
         close(n);
     open("/dev/null", O_RDONLY);
@@ -611,6 +612,11 @@ int main(int argc, char **argv)
         ioctl(n, TIOCNOTTY, 0);
         close(n);
     }
+#else /* !CYGWIN */
+    n = getdtablesize();
+	while (n > 3)
+			close(--n);
+#endif
 #ifdef USE_SSL
     switch (fork()) {
     case 0:
