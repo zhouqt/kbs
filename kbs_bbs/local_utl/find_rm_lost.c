@@ -2,7 +2,7 @@
 
 #include "bbs.h"
 
-#define MAXFILE 30000
+#define MAXFILE 20000
 #define MINAGE 50000		//at least 50000 sec old
 #ifdef NUMBUFFER
 #undef NUMBUFFER
@@ -28,6 +28,7 @@ int
 hash(char *postname)
 {
 	int i = atoi(postname + 2);
+	if( i<0 ) i=0-i;
 	return i % HASHSIZE;
 }
 
@@ -125,9 +126,10 @@ getallpost(char *path, char prefix)
 #ifndef SMTH
 			strcpy(allpost[h][nfile[h]++], direntp->d_name);
 #else
-			if( prefix == NULL )
-				strcpy(allpost[h][nfile[h]++], direntp->d_name);
-			else
+			if( prefix == NULL ){
+				strncpy(allpost[h][nfile[h]++], direntp->d_name, 20);
+				allpost[h][nfile[h]][19]=0;
+			}else
 				snprintf(allpost[h][nfile[h]++], 20, "%c/%s", prefix, direntp->d_name);
 #endif
 			continue;
