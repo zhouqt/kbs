@@ -2,9 +2,6 @@
 	/*
 	** @id:windinsn dec 18,2003
 	*/
-	if (!defined('_IN_SYSTEM_'))
-    header('Location: http://www.smth.org');
-    
 	function pc_tbp_check_url($url)
 	{
 		$arr = array();
