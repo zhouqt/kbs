@@ -295,7 +295,7 @@ setuserid( int     num,const char    *userid) /* 设置user num的id为user id*/
     	int oldkey,newkey,find;
         if( num > uidshm->number )
             uidshm->number = num;
-        oldkey=ucache_hash((char*)uidshm->users[ num - 1 ]);
+        oldkey=ucache_hash((char*)passwd[ num - 1 ].userid);
         newkey=ucache_hash(userid);
         if (oldkey!=newkey) {
 		int lockfd = ucache_lock();
@@ -307,7 +307,7 @@ setuserid( int     num,const char    *userid) /* 设置user num的id为user id*/
 	      			find=uidshm->next[find-1];
 	          if (!uidshm->next[find-1]) {
 			if (oldkey!=0) {
-		          	log("3system","UCACHE:can't find %s in hash table",uidshm->users[ num - 1 ]);
+		          	log("3system","UCACHE:can't find %s in hash table",passwd[ num - 1 ].userid);
 		          	exit(0);
 			}
 	          }
@@ -318,7 +318,7 @@ setuserid( int     num,const char    *userid) /* 设置user num的id为user id*/
 	        uidshm->hashhead[newkey]=num;
 		    ucache_unlock(lockfd);
         }	        
-        strncpy( (char*)uidshm->users[ num - 1 ], userid, IDLEN+1 );
+        strncpy( passwd[ num - 1 ].userid, userid, IDLEN+1 );
     }
 }
 
@@ -337,7 +337,7 @@ searchuser(const char *userid )
 
 	i = uidshm->hashhead[ucache_hash(userid)];
 	while (i)
-		if (!strcasecmp(userid,uidshm->users[i-1]))
+		if (!strcasecmp(userid,passwd[ i - 1 ].userid))
 			return i;
 		else
 			i=uidshm->next[i-1];
@@ -371,8 +371,7 @@ char *u_namearray( char    buf[][ IDLEN+1 ],int     *pnum, char * tag)
 
     len=strlen(tag);
     if(!len){
-        *pnum=MAXUSERS;
-        return (char*)reg_ushm->users;
+        return NULL;
     }
     ksz=ucache_hash_deep(tag);
 
@@ -385,8 +384,8 @@ char *u_namearray( char    buf[][ IDLEN+1 ],int     *pnum, char * tag)
         for( n = 0; n < UCACHE_HASHBSIZE; n++ ) {
             num=reg_ushm->hashhead[(hash+n%UCACHE_HASHBSIZE)%UCACHE_HASHSIZE+1];
             while(num){
-                if(! strncasecmp(reg_ushm->users[num-1],tag,len)){
-                    strcpy( buf[ (*pnum)++ ], reg_ushm->users[num-1] ); /*如果匹配, add into buf */
+                if(! strncasecmp(passwd[ num - 1 ].userid,tag,len)){
+                    strcpy( buf[ (*pnum)++ ], passwd[ num - 1 ].userid ); /*如果匹配, add into buf */
                 }
                 num=reg_ushm->next[num-1];
             }
@@ -401,8 +400,8 @@ char *u_namearray( char    buf[][ IDLEN+1 ],int     *pnum, char * tag)
             for( n = 0; n < UCACHE_HASHBSIZE; n++ ) {
                 num=reg_ushm->hashhead[(hash+n%UCACHE_HASHBSIZE)%UCACHE_HASHSIZE+1]; /* see hash() */
                 while(num){
-                    if(! strncasecmp(reg_ushm->users[num-1],tagv,ksz)){
-                        strcpy( buf[ (*pnum)++ ], reg_ushm->users[num-1] ); /*如果匹配, add into buf */
+                    if(! strncasecmp(passwd[ num - 1 ].userid,tagv,ksz)){
+                        strcpy( buf[ (*pnum)++ ], passwd[ num - 1 ].userid ); /*如果匹配, add into buf */
                     }
                     num=reg_ushm->next[num-1];
                 }
