@@ -528,7 +528,7 @@ soverview_t *sover;
 
         if (end)
             *end = '\0';
-        strncpy(times, baseN(atol(filename + 2), 48, 6), sizeof times);
+        strncpy(times, baseN(atol(filename + 4), 48, 6), sizeof times);
         if (end)
             *end = '.';
         hash = hash_value(fileglue("%s.%s", filename, board));
