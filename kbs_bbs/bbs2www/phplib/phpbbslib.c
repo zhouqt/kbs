@@ -6838,7 +6838,7 @@ static PHP_FUNCTION(bbs_x_search)
     char res_title[MAX_KEEP][80],res_filename[MAX_KEEP][200],res_path[MAX_KEEP][200];
     int res_flag[MAX_KEEP];
 
-    if(ac != 1 || zend_parse_parameters(2 TSRMLS_CC,"sl",&char_dname,&char_len,&pos) ==FAILURE){
+    if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC,"sl",&char_dname,&char_len,&pos) ==FAILURE){
         WRONG_PARAM_COUNT;
     }
     if (array_init(return_value) == FAILURE)
