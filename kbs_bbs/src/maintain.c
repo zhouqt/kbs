@@ -154,7 +154,7 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
                 fprintf(se, "真实姓名     : %s\n", fdata[2]);
                 fprintf(se, "电子邮件信箱 : %s\n", ud.email);
                 if (strstr(str, "自动处理程序"))
-                	fprintf(se, "真实 E-mail  : %s$%s@自动注册\n", fdata[3], fdata[5]);
+                	fprintf(se, "真实 E-mail  : %s$%s@SYSOP\n", fdata[3], fdata[5]);
 		else	
                 	fprintf(se, "真实 E-mail  : %s$%s@%s\n", fdata[3], fdata[5], currentuser->userid);
                 fprintf(se, "服务单位     : %s\n", fdata[3]);
@@ -1468,7 +1468,7 @@ if (ret==-2) {
                 sprintf(genbuf, "%s$%s@%s", fdata[3], fdata[5], uid);
 #ifdef AUTO_CHECK_REGISTER_FORM
 	else
-		sprintf(genbuf, "%s$%s@自动注册", fdata[3], fdata[5]);
+		sprintf(genbuf, "%s$%s@SYSOP", fdata[3], fdata[5]);
 #endif
 
 		if(strlen(genbuf) >= STRLEN-16)
