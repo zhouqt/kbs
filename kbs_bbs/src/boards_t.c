@@ -1319,7 +1319,7 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
 				}else
                 favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].pos+1;
             }
-            if (arg.select_group > 0 ) //select进入的
+            if (arg.select_group != 0 ) //select进入的
 		    selectlevel=favlevel;
             sellist[favlevel] = 1;
         };
