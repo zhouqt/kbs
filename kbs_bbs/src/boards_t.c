@@ -256,7 +256,7 @@ char *direct ;
 int
 query_bm( )
 {
-    struct shortfile    *bptr;
+    struct boardheader *bptr;
     int         n;
     char        tmpBM[BM_LEN-1];
     char        uident[STRLEN];
@@ -300,7 +300,7 @@ query_bm( )
     prints("┃            版英文名            ┃            版中文名            ┃\n");
 
     for( n = 0; n < get_boardcount(); n++ ) {
-        bptr = (struct shortfile*) getboard(n+1);
+        bptr = getboard(n+1);
         if( chk_BM_instr(bptr->BM,lookupuser->userid) == YEA)
         {
             prints("┣━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━┫\n");
@@ -703,33 +703,23 @@ int
 check_newpost( ptr )
 struct newpostdata *ptr;
 {
-    struct fileheader fh ;
-    struct stat st;
-    char        filename[ STRLEN ];
-    int         fd, offset, total;
+	struct BoardStatus bptr;
+	ptr->total = ptr->unread = 0;
 
-    ptr->total = ptr->unread = 0;
-    setbdir( genbuf, ptr->name );
-    if( (fd = open( genbuf, O_RDWR )) < 0 ) /* 读board目录时间文件*/
-        return 0;
-    fstat( fd, &st );
-    total = st.st_size / sizeof( fh );
-    if( total <= 0 ) {
-        close( fd );
-        return 0;
-    }
-    ptr->total = total;
-    if( !brc_initial( currentuser->userid,ptr->name ) ) {/*装入本版brc list */
-        ptr->unread = 1;
-    } else {
-        offset = (int)((char *)&(fh.filename[0]) - (char *)&(fh));/*fh无用，仅仅是获取各种size和offset用*/
-        lseek( fd, offset + (total-1) * sizeof(fh), SEEK_SET );/*最后一个文件名*/
-        if( read( fd, filename, STRLEN ) > 0 && brc_unread( filename ) ) {
-            ptr->unread = 1;
-        }
-    }
-    close( fd );
-    return 1;
+	//getlastpost(ptr->name, &lastpost,&ptr->total);
+	bptr = getbstatus(ptr->pos);
+	if (bptr == NULL)
+		return 0;
+	ptr->total = bptr->total;
+
+	if (!brc_initial(ptr->name)) {
+		ptr->unread = 1;
+	} else {
+		if (brc_unread_t(bptr->lastpost)) {
+			ptr->unread = 1;
+		}
+	}
+	return 1;
 }
 
 /*---   Added by period 2000-09-11      Favorate Board List     ---*

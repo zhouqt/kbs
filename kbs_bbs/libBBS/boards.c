@@ -386,6 +386,22 @@ char    *filename;
     return 0;
 }
 
+int brc_unread_t( int ftime) 
+{
+    int         ftime, n;
+
+    if( brc_num <= 0 )
+        return 1;
+    for( n = 0; n < brc_num; n++ ) {
+        if( ftime > brc_list[n] ) {
+            return 1;
+        } else if( ftime == brc_list[n] ) {
+            return 0;
+        }
+    }
+    return 0;
+}
+
 int brc_has_read(char *file) {
 	return !brc_unread(file);
 }

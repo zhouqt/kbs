@@ -184,7 +184,7 @@ int allnum,pagenum;
     int  rc;
     char fname[STRLEN],chr,fpath[STRLEN];
     FILE *fp;
-    struct shortfile    fhdr;
+    struct boardheader   fhdr;
 
 
     switch(ch)

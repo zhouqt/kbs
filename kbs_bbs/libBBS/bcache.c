@@ -50,6 +50,44 @@ reload_boards()
 {
 }
 
+int
+getlastpost(char *board, int *lastpost, int *total)
+{
+	struct fileheader fh;
+	struct stat st;
+	char filename[STRLEN * 2];
+	int fd, atotal, ftime;
+
+	sprintf(filename, "boards/%s/" DOT_DIR, board);
+	if ((fd = open(filename, O_RDWR)) < 0)
+		return 0;
+	fstat(fd, &st);
+	atotal = st.st_size / sizeof (fh);
+	if (atotal <= 0) {
+		*lastpost = 0;
+		*total = 0;
+		close(fd);
+		return 0;
+	}
+	*total = atotal;
+	lseek(fd, (atotal - 1) * sizeof (fh), SEEK_SET);
+	if (read(fd, &fh, sizeof (fh)) > 0) {
+		*lastpost = atoi(fh.filename + 2);
+	}
+	close(fd);
+	return 0;
+}
+
+int updatelastpost(char *board)
+{
+	int pos;
+	pos = getbnum( board ) /* board name --> board No. */
+	if (pos>=0) {
+		getlastpost(board, &brdshm->bstatus[pos].lastpost, &brdshm->bstatus[pos].total);
+		return 0;
+	} else return -1;
+}
+
 void resolve_boards()
 {
 	int boardfd;
@@ -78,11 +116,20 @@ void resolve_boards()
 		fd = bcache_lock();
 		ftruncate(boardfd,MAXBOARD*sizeof(struct boardheader));
 		for (i=0;i<MAXBOARD;i++)
-			if (bcache[i].filename[0])
+			if (bcache[i].filename[0]) {
 				brdshm->numboards=i+1;
+				getlastpost(bcache[i].filename, 
+					&brdshm->bstatus[i].lastpost, 
+					&brdshm->bstatus[i].total);
+			}
 		bcache_unlock(fd);
 	}
    	close(boardfd);
+}
+
+struct BoardStatus* getbstatus(int index)
+{
+	return &brdshm->bstatus[i];
 }
 
 int apply_boards(int (*func)()) /* 对所有版 应用 func函数*/

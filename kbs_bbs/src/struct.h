@@ -87,16 +87,6 @@ typedef struct fileheader {             /* This structure is used to hold data i
         unsigned char accessed[ 12 ];   /* struct size = 256 bytes */
 } fileheader;
 
-struct shortfile {               /* used for caching files and boards */
-        char filename[STRLEN];      /* also will do for mail directories */
-        char owner[STRLEN - BM_LEN];
-        char BM[ BM_LEN - 1];
-        char flag;
-        char title[STRLEN];
-        unsigned level;
-        unsigned char accessed;
-};
-
 struct one_key {                  /* Used to pass commands to the readmenu */
         int key ;
         int (*fptr)() ;
@@ -115,7 +105,14 @@ struct UTMPFILE {
     int list_next[USHM_SIZE];  /* sorted list next ptr*/
     time_t              uptime;
 };
+
+struct BoardStatus { /* use this to speed up board list */
+        int total;
+        int lastpost;
+};
+
 struct BCACHE {
 	int numboards;
+	struct BoardStatus bstatus[MAXBOARD];
 };
 #endif

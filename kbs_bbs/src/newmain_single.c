@@ -1310,8 +1310,6 @@ void
 docmdtitle( title, prompt )
 char    *title, *prompt;
 {
-/*    char   middoc[30],bmstr[BM_LEN -1 ];
-    struct shortfile    *bp; */
         char middoc[30];
     int chkmailflag=0;
 

@@ -522,6 +522,7 @@ char *direct;
 
     sprintf(buf, "boards/%s/.DIR", currboard);
     append_record(buf, &UFile, sizeof(UFile));
+	updatelastpost(currboard);
     fileinfo->filename[0]='\0';
     substitute_record(direct, fileinfo, sizeof(*fileinfo),ent) ;
     sprintf(buf,"undeleted %s's “%s” on %s", UFile.owner, UFile.title, currboard);
@@ -2177,6 +2178,7 @@ int mode;
         return 1 ;
     }
     /* brc_addlist( postfile.filename ) ;*/
+	updatelastpost(currboard);
     if(!mode)       /* 用户post还是自动发信*/
         sprintf(buf,"cross_posted '%s' on '%s'", postfile.title, currboard) ;
     else
@@ -2490,6 +2492,7 @@ post_article()                         /*用户 POST 文章 */
         clear() ;
         return FULLUPDATE ;
     }
+	updatelastpost(currboard);
     brc_addlist( post_file.filename ) ;
 
     log("1user","posted '%s' on '%s'", post_file.title, currboard) ;
@@ -2983,6 +2986,7 @@ THERE:
         if(inum1!=0) fixkeep(direct, inum1, inum2);
         else fixkeep(direct, 1, 1);
         if(uinfo.mode!=RMAIL) {
+			updatelastpost(currboard);
             sprintf(genbuf, "del %d-%d on %s", inum1, inum2, currboard);
             report(genbuf); /*log*/
         }
@@ -3109,6 +3113,7 @@ char *direct ;
     }
     if( !fail ) {
         cancelpost( currboard, currentuser->userid, fileinfo, owned ,1);
+		updatelastpost(currboard);
         sprintf(genbuf,"%s/%s",buf,fileinfo->filename) ;
         if(keep >0)  if/*保留title*/( (fn = fopen( genbuf, "w" )) != NULL ) {
             fprintf( fn, "\n\n\t\t本文章已被 %s 删除.\n",

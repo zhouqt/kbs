@@ -1917,10 +1917,7 @@ int cnt;
 }
 
 int
-doforward(direct, fh, isuu)
-char *direct;
-struct shortfile *fh;
-int isuu;
+doforward(char *direct,struct boardheader*fh,int isuu)
 {
     static char address[ STRLEN ];
     char        fname[STRLEN];
