@@ -63,10 +63,11 @@ int use_ssl = 0;
 #define BUFSIZE         1024
 /*#define POP3PORT 110 remote to sysname.h*/
 
+/* 将 MAIL_BBSDOMAIN 和 NAME_BBS_ENGLISH 分开 czz 03.03.08 */
 #ifdef BBSNAME
 #undef BBSNAME
 #endif
-#define BBSNAME "@"NAME_BBS_ENGLISH
+#define BBSNAME "@"MAIL_BBSDOMAIN
 
 struct fileheader currentmail;
 struct userec alluser;
@@ -690,9 +691,9 @@ int main(int argc, char **argv)
                setbuf(cfp, (char *) 0);
              */
 #ifdef USE_SSL
-            sprintf(genbuf, "+OK SMTH BBS POP3/POP3S server at %s starting.", strchr(BBSNAME, '@') + 1);
+            sprintf(genbuf, "+OK SMTH BBS POP3/POP3S server at %s starting.", NAME_BBS_ENGLISH);
 #else
-            sprintf(genbuf, "+OK SMTH BBS POP3 server at %s starting.", strchr(BBSNAME, '@') + 1);
+            sprintf(genbuf, "+OK SMTH BBS POP3 server at %s starting.", NAME_BBS_ENGLISH);
 #endif
             outs(genbuf);
 
@@ -857,8 +858,9 @@ void BBSlog_usies(char *buf)
 
         time(&now);
         p = localtime(&now);
-        fprintf(fp, "%02d/%02d/%02d %02d:%02d:%02d [%s](%s) %s\n",
-                p->tm_year, p->tm_mon + 1, p->tm_mday, p->tm_hour, p->tm_min, p->tm_sec, currentuser->userid ? currentuser->userid : "", remote_userid, buf);
+	/* log的Y2K czz 2003.3.8 */
+        fprintf(fp, "%04d/%02d/%02d %02d:%02d:%02d [%s](%s) %s\n",
+                p->tm_year+1900, p->tm_mon + 1, p->tm_mday, p->tm_hour, p->tm_min, p->tm_sec, currentuser->userid ? currentuser->userid : "", remote_userid, buf);
         fflush(fp);
         fclose(fp);
     }
@@ -1238,7 +1240,7 @@ void Quit()
         }
     }
     BBSlog_usies("EXIT");
-    sprintf(genbuf, "+OK SMTH BBS POP3/POP3S server at %s signing off.", strchr(BBSNAME, '@') + 1);
+    sprintf(genbuf, "+OK SMTH BBS POP3/POP3S server at %s signing off.", NAME_BBS_ENGLISH);
     outs(genbuf);
     fclose(cfp);
     close(sock);
