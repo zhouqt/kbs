@@ -57,7 +57,7 @@ function display_navigation_bar($brdarr, $articles, $num)
 	if ($articles[0]["ID"] != 0)
 	{
 ?>
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[0]["ID"]; ?>&num=<?php echo $num - 1; ?>">上一篇</a>]
+[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[0]["ID"]; ?>">上一篇</a>]
 <?php
 	}
 	else
@@ -69,7 +69,7 @@ function display_navigation_bar($brdarr, $articles, $num)
 	if ($articles[2]["ID"] != 0)
 	{
 ?>
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[2]["ID"]; ?>&num=<?php echo $num + 1; ?>">下一篇</a>]
+[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[2]["ID"]; ?>">下一篇</a>]
 <?php
 	}
 	else
