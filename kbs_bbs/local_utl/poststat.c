@@ -781,11 +781,21 @@ void poststat(int mytype, time_t now, struct tm *ptime)
             sprintf(buf, "etc/posts/%s.%d", p, i);
             sprintf(curfile, "etc/posts/%s.%d", p, --i);
             load_stat(curfile);
-            rename(curfile, buf);
+            //rename(curfile, buf);
         }
         mytype++;
     }
 
+	if( mytype > 0 && mytype < 3){
+		char *p;
+		i = mycount[mytype];
+        p = myfile[mytype];
+        while (i) {
+            sprintf(buf, "etc/posts/%s.%d", p, i);
+            sprintf(curfile, "etc/posts/%s.%d", p, --i);
+            rename(curfile, buf);
+        }
+	}
 
     /*
      * free statistics 
@@ -827,6 +837,7 @@ int main(int argc, char **argv)
     time_t now;
     struct tm ptime;
     int i;
+    char buf[80], curfile[80] ;
 
     chdir(BBSHOME);
 
@@ -848,7 +859,13 @@ int main(int argc, char **argv)
             poststat(1, now, &ptime);
         if (ptime.tm_wday == 0)
             poststat(0, now, &ptime);
-		unlink("etc/posts/day.0");
+		//unlink("etc/posts/day.0");
+		i=7;
+        while (i) {
+            sprintf(buf, "etc/posts/day.%d", i);
+            sprintf(curfile, "etc/posts/day.%d", --i);
+            rename(curfile, buf);
+		}
 #ifdef BLESS_BOARD
         unlink("etc/posts/bless.0");
         post_file(NULL, "", "etc/posts/bless", BLESS_BOARD, "Ê®´ó×£¸£", 0, 1);
