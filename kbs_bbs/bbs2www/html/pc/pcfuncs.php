@@ -708,14 +708,16 @@ function pc_counter($link)
 			$visitcount = ",".$pc["UID"].",";
 			setcookie("BLOGVISITCOUNT",$visitcount);
 			session_register("visitcount");
+			return;
 		}
 		elseif(!stristr($visitcountinsession,",".$pc["UID"].","))
 		{
 			pc_visit_counter($link,$pc["UID"]);//计数器加1
 			pc_logs($link,$action,"",$pc["USER"]);//记一下访问日志
 			$pc["VISIT"] ++;
-			$visitcount .= $pc["UID"].",";
-			session_register("visitcount");
+			$visitcountinsession .= $pc["UID"].",";
+			$_SESSION["visitcount"]=$visitcountinsession;
+			return;
 		}
 		else
 			return;
@@ -727,6 +729,7 @@ function pc_counter($link)
 		$pc["VISIT"] ++;
 		$visitcount .= $pc["UID"].",";
 		setcookie("BLOGVISITCOUNT",$visitcount);
+		return;
 	}	
 }
 
