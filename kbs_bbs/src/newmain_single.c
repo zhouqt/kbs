@@ -603,6 +603,9 @@ void login_query()
         exit(1);
     }
 
+	/* We must create home directory before initializing current userdata */
+    sethomepath(genbuf, currentuser->userid);
+    mkdir(genbuf, 0755);
 /* init user data */
     read_userdata(currentuser->userid, &curruserdata);
 
@@ -654,8 +657,6 @@ void login_query()
 			unlink(fname);
         }
     }
-    sethomepath(genbuf, currentuser->userid);
-    mkdir(genbuf, 0755);
     temp_numposts = 0;          /*Haohmaru.99.4.02.让爱灌水的人哭去吧//grin */
 }
 
