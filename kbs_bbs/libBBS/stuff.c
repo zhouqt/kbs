@@ -1221,7 +1221,7 @@ int check_IP_lists(char *IP)
             }
             break;
         }
-        if(ips[i].t<ips[min].t) min = i;
+        if(ips[i].last<ips[min].last) min = i;
     }
     if(!found) {
         ips[min].ip[0]=ip[0];
@@ -1248,7 +1248,7 @@ int check_ban_IP(char *IP, char *buf)
                                  * 0: The checked IP is not banned
                                  * other value over 0: The checked IP is banned, the reason is put in buf
                                  */
-    FILE *Ban = fopen(".badIP", "r");
+    FILE *Ban;
     char IPBan[64];
     int IPX = -1;
     char *ptr;
@@ -1257,6 +1257,7 @@ int check_ban_IP(char *IP, char *buf)
         strcpy(buf, "太多来自该IP的访问。请过一会儿再访问本站");
         return -1;
     }
+    Ban = fopen(".badIP", "r");
     if (!Ban)
         return IPX;
 
