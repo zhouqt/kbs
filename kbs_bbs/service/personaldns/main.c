@@ -30,7 +30,7 @@ int getconf(char* key,char* value,int len) {
 
 int readconfig() {
     if (nsupdate_pipe!=NULL) {
-        fprintf(nsupdate_pipe,"quit\n",dns_server);
+        fprintf(nsupdate_pipe,"quit\n");
         pclose(nsupdate_pipe); 
     }
     if (getconf("DNS_UPDATE_ZONE",dns_zone,50)!=0) {
@@ -53,7 +53,7 @@ int readconfig() {
     }
     dns_ttl=sysconf_eval("DNS_TTL", 60);
 
-    nsupdate_pipe=popen("nsupdate", "w");
+    nsupdate_pipe=popen("nsupdate 2>&1 > reclog/nsupdate.log", "w");
     if (nsupdate_pipe==NULL) {
         printf("can't open nsupdate:%s",strerror(errno));
         return -1;
@@ -61,6 +61,7 @@ int readconfig() {
     fprintf(nsupdate_pipe,"server %s\n",dns_server);
     fprintf(nsupdate_pipe,"zone %s\n",dns_zone);
     fprintf(nsupdate_pipe,"key %s %s\n",update_keyname,update_key);
+    fflush(nsupdate_pipe);
     return 0;
 }
 
@@ -129,7 +130,8 @@ int main()
 
         fprintf(nsupdate_pipe,"update delete %s A\n",msg.userid);
         fprintf(nsupdate_pipe,"update add %s %d A %s\n",msg.userid,dns_ttl,msg.ip);
-        fprintf(nsupdate_pipe,"send\n",msg.userid,dns_ttl,msg.ip);
+        fprintf(nsupdate_pipe,"send\n");
+        fflush(nsupdate_pipe);
 	bbslog("3error","update dns %s %s",msg.userid,msg.ip);
 
         if (reread) 
