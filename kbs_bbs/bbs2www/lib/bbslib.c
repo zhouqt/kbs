@@ -435,10 +435,12 @@ void html_init()
     switch (style) {
     case 1:                    /* default color, big font */
         printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n", CSS_FILE_BIGFONT);
+        printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"/ansi-web-middle.css\">\n");
         break;
     case 0:
     default:                   /* default color, small font */
         printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n", CSS_FILE);
+        printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"/ansi-web-small.css\">\n");
     }
     printf("</head>");
 }
