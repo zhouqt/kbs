@@ -58,10 +58,6 @@ extern int parm_num;
 extern friends_t bbb[MAXREJECTS];
 extern int badnum;
 
-extern struct user_info *user_record[USHM_SIZE];
-extern struct userec *user_data;
-extern int friendmode, range;
-
 struct post_log {
     char author[IDLEN + 1];
     char board[18];

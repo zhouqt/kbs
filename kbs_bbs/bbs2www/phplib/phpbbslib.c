@@ -6275,21 +6275,20 @@ static int cmpuser(a, b)
 static PHP_FUNCTION(bbs_getonlinefriends)
 {
     int i = 0,total = 0;
-    uinfo_t** usr;
     uinfo_t* x;
-    uinfo_t user[MAXFRIENDS];
+    uinfo_t user[MAXFRIENDS]; //local copy from shm, for sorting, etc.
     zval* element;
+    int range;
+    uinfo_t *usr[MAXFRIENDS]; //指向共享内存内容
     
     int ac = ZEND_NUM_ARGS();
 
     if (ac != 0) {
-	WRONG_PARAM_COUNT;
-	}
+        WRONG_PARAM_COUNT;
+    }
 
-    set_friendmode(1);
     getSession()->utmpent = get_curr_utmpent();    //I hate the global variable!!
-    fill_userlist();
-    usr = get_ulist_addr();
+    fill_friendlist(&range, &usr);
     
     if (array_init(return_value) == FAILURE) {
         RETURN_FALSE;
@@ -6298,13 +6297,13 @@ static PHP_FUNCTION(bbs_getonlinefriends)
     
     for (i = 0; i < range; i++) {
         x = usr[i];
-	if (x == NULL)continue;
-	if (x->active == 0) continue;
+        if (x == NULL)continue;
+        if (x->active == 0) continue;
         if (x->invisible && !HAS_PERM(getCurrentUser(), PERM_SEECLOAK)) continue;
 	
         memcpy(&user[total], x , sizeof(uinfo_t));
-	total++;
-	if(total >= MAXFRIENDS) break;
+    	total++;
+        if(total >= MAXFRIENDS) break;
     }
     if(total == 0) RETURN_LONG(0);
     
@@ -6313,14 +6312,14 @@ static PHP_FUNCTION(bbs_getonlinefriends)
     for (i = 0; i < total; i++) {
         MAKE_STD_ZVAL(element);
         array_init(element);
-	add_assoc_bool ( element, "invisible", user[i].invisible );
-	add_assoc_bool ( element, "isfriend", isfriend(user[i].userid) );
-	add_assoc_long ( element, "idle", (long)(time(0) - get_idle_time(&user[i]))/60 );
-	add_assoc_string ( element, "userid", user[i].userid, 1 );       
-	add_assoc_string ( element, "username", user[i].username, 1 );   
-	add_assoc_string ( element, "userfrom", HAS_PERM(getCurrentUser(), PERM_SYSOP)?user[i].from:SHOW_USERIP(NULL, user[i].from), 1 );
-	add_assoc_string ( element, "mode", ModeType(user[i].mode), 1 );
-	zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
+        add_assoc_bool ( element, "invisible", user[i].invisible );
+        add_assoc_bool ( element, "isfriend", isfriend(user[i].userid) );
+        add_assoc_long ( element, "idle", (long)(time(0) - get_idle_time(&user[i]))/60 );
+        add_assoc_string ( element, "userid", user[i].userid, 1 );       
+        add_assoc_string ( element, "username", user[i].username, 1 );   
+        add_assoc_string ( element, "userfrom", HAS_PERM(getCurrentUser(), PERM_SYSOP)?user[i].from:SHOW_USERIP(NULL, user[i].from), 1 );
+        add_assoc_string ( element, "mode", ModeType(user[i].mode), 1 );
+        zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
 	}
 }		
 /**

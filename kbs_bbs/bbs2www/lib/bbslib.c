@@ -8,12 +8,8 @@
 time_t update_time = 0;
 int showexplain = 0, freshmode = 0;
 int mailmode, numf;
-int friendmode = 0;
 int usercounter, real_user_names = 0;
-int range, page, readplan, num;
-
-struct user_info *user_record[USHM_SIZE];
-struct userec *user_data;
+int page, readplan, num;
 
 time_t set_idle_time(struct user_info * uentp, time_t t);
 int loginok = 0;
@@ -1114,21 +1110,12 @@ int count_online()
     return get_utmp_number();
 }
 
-struct user_info **get_ulist_addr()
-{
-    return user_record;
-}
+typedef struct _frienduserlistarg{
+    int count;
+    uinfo_t** user_record;
+} frienduserlistarg;
 
-/* from list.c */
-
-int set_friendmode(int mode)
-{
-    friendmode = mode;
-
-    return friendmode;
-}
-
-int full_utmp(struct user_info *uentp, int *count)
+int full_utmp_friend(struct user_info *uentp, frienduserlistarg *pful)
 {
     if (!uentp->active || !uentp->pid) {
         return 0;
@@ -1136,31 +1123,31 @@ int full_utmp(struct user_info *uentp, int *count)
     if (!HAS_PERM(getCurrentUser(), PERM_SEECLOAK) && uentp->invisible && strcmp(uentp->userid, getcurruserid())) {  /*Haohmaru.99.4.24.让隐身者能看见自己 */
         return 0;
     }
-    if (friendmode && !myfriend(uentp->uid, NULL, getSession())) {
+    if (!myfriend(uentp->uid, NULL, getSession())) {
         return 0;
     }
-    user_record[*count] = uentp;
-    (*count)++;
+    if (pful->count < MAXFRIENDS) {
+        pful->user_record[pful->count] = uentp;
+        pful->count++;
+    }
     return COUNT;
 }
 
-int fill_userlist()
+int fill_friendlist(int* range, uinfo_t** user_record)
 {
-    static int i, i2;
+    int i;
+    frienduserlistarg ful;
     struct user_info *u;
 
-    i2 = 0;
-    if (!friendmode) {
-        apply_ulist_addr((APPLY_UTMP_FUNC) full_utmp, (char *) &i2);
-    } else {
-        u = get_utmpent(getSession()->utmpent);
-        for (i = 0; i < u->friendsnum; i++) {
-            if (u->friends_uid[i])
-                apply_utmpuid((APPLY_UTMP_FUNC) full_utmp, u->friends_uid[i], (char *) &i2);
-        }
+    ful.count = 0;
+    ful.user_record = user_record;
+    u = get_utmpent(getSession()->utmpent);
+    for (i = 0; i < u->friendsnum; i++) {
+        if (u->friends_uid[i])
+            apply_utmpuid((APPLY_UTMP_FUNC) full_utmp_friend, u->friends_uid[i], &ful);
     }
-    range = i2;
-    return i2 == 0 ? -1 : 1;
+    *range = ful.count;
+    return ful.count == 0 ? -1 : 1;
 }
 
 int add_favboard(char *brdname)
