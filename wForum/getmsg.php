@@ -16,6 +16,7 @@ html_init();
 		}
 ?> 
 	<div id="msgcontent">
+<div onkeydown="if(event.keyCode==13 && event.ctrlKey) { replyMsg('<?php echo $srcid; ?>'); };if(event.keyCode==13 && ! event.ctrlKey) { closeWindow(); } ">
 	<table cellspacing=1 cellpadding=0 align=center width="100%" class=tableBorder1 >
 	<thead>
 	<TR><Th height=20 align=left id=TableTitleLink align="center"><a href="dispuser.php?id=><?php echo $srcid; ?>" target=_blank><?php echo $srcid; ?></a>于(<?php echo strftime("%b %e %H:%M", $sndtime); ?>)发送给您的短信：
@@ -30,6 +31,7 @@ html_init();
 	  </tr>
 	 </tbody>
 	</table>
+</div>
 	</div>
 	<script>
 	parent.document.all.floater.innerHTML=msgcontent.innerHTML;

@@ -29,15 +29,15 @@ function showAllSecs(){
 
 	for ($i=0;$i<$sectionCount;$i++){
 		if ($_COOKIE['ShowSecBoards'.$i]=='Y') {
-			showSecs($i,true);
+			showSecs($i,0,true);
 		} else {
-			showSecs($i,false);
+			showSecs($i,0,false);
 		}
 	}
 	return false;
 }
 
-function showSecs($secNum=0,$isFold) {
+function showSecs($secNum=0,$group,$isFold) {
 	global $yank;
 	extract($GLOBALS);
 	if ( ($secNum<0)  || ($secNum>=$sectionCount)) {
@@ -58,7 +58,7 @@ function showSecs($secNum=0,$isFold) {
 <a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=Y" title="展开论坛列表"><img src="pic/plus.gif" border=0></a><a href="section.php?sec=<?php echo $secNum ; ?>" title=进入本分类论坛><?php echo $section_names[$secNum][0]; ?></a>
 <?php
 	}
-	$boards = bbs_getboards($section_nums[$secNum], 0, $yank);
+	$boards = bbs_getboards($section_nums[$secNum], $group, $yank);
 	if ($boards == FALSE) {
 ?>
 		<TR><TD colspan="2" class=tablebody1>&nbsp;本分区尚无版面</td></tr>
@@ -93,8 +93,11 @@ function showSecs($secNum=0,$isFold) {
 		<TD vAlign=top width=* class=tablebody1>
 		
 		<TABLE cellSpacing=0 cellPadding=2 width=100% border=0>
-		<tr><td class=tablebody1 width=*><a href="board.php?name=<?php echo $brd_name[$i]; ?> ">
-		<font color=#000066><?php echo $brd_name[$i] ?> </font></a>
+		<tr><td class=tablebody1 width=*>
+<?php
+				echo '<a href="board.php?name='.$brd_name[$i].'">';
+
+?>		<font color=#000066><?php echo $brd_name[$i] ?> </font></a>
 				</td>
 		<td width=40 rowspan=2 align=center class=tablebody1></td><td width=200 rowspan=2 class=tablebody1><?php
 				if ($brd_flag[$i] & BBS_BOARD_GROUP) {

@@ -9,6 +9,7 @@ html_init();
 
 ?>
 <div id="msgcontent">
+<div onkeydown="if(event.keyCode==13 ) { closeWindow(); } ">
 <?php
 if ($loginok==1) {
 	main();

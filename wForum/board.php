@@ -50,24 +50,31 @@ if (isErrFounded()) {
 	showAnnounce(); 
 ?>
 </TABLE>
+<?php
+	if ($boardArr['FLAG'] & BBS_BOARD_GROUP ) {
+		showSecs($boardArr['SECNUM'],$boardID,true);
+	} else {
+?>
 <script src="inc/loadThread.js"></script>
 <iframe width=0 height=0 src="" id="hiddenframe"></iframe>
 
 <?php
-	showBoardStaticsTop($boardArr);
+		showBoardStaticsTop($boardArr);
 ?>
 <TABLE cellPadding=1 cellSpacing=1 class=tableborder1 align=center>
 <?php
-	showBroadcast($boardID,$boardName);
 
-	showBoardContents($boardID,$boardName,$page);
+		showBroadcast($boardID,$boardName);
 
-	boardSearchAndJump($boardName, $boardID);
+		showBoardContents($boardID,$boardName,$page);
 
-	showBoardSampleIcons();
+		boardSearchAndJump($boardName, $boardID);
+
+		showBoardSampleIcons();
 ?>
 </table>
 <?php
+	}
 }
 
 //showBoardSampleIcons();
@@ -104,6 +111,7 @@ function preprocess(){
 	} else {
 		$page=intval($_GET['page']);
 	}
+
 	bbs_set_onboard($boardID,1);
 	return true;
 }

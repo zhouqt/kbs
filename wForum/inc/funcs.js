@@ -196,7 +196,7 @@ function closeWindow(){
 	document.frames('webmsg').document.location.href='getmsg.php';
 }
 function refreshWindow(){
-	timerID=window.setTimeout("document.frames('webmsg').document.location.href='getmsg.php';", 10000);
+	timerID=window.setTimeout("document.frames('webmsg').document.location.href='getmsg.php';", 60000);
 }
 function pauseMsg(){
 	window.clearTimeout(timerID);
