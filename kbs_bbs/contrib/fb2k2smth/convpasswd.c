@@ -10,7 +10,7 @@
 #undef perror
 
 #define HAVE_BIRTHDAY 1
-#define CONV_PASS     1
+//#define CONV_PASS     1
 typedef struct olduserec {      /* Structure used to hold information in */
     char userid[IDLEN + 2];     /* PASSFILE */
     time_t firstlogin;

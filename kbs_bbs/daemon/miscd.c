@@ -733,6 +733,7 @@ int main(int argc, char *argv[])
         if (strcasecmp(argv[1], "flush") == 0) {
             flush_ucache();
             flush_bcache();
+			bbslog("4miscdaemon", "flush passwd file");
             return 0;
         }
         return miscd_dodaemon(NULL, argv[1]);
