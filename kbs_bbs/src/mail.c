@@ -1733,6 +1733,7 @@ static int do_gsend(char *userid[], char *title, int num)
     int cnt;
     FILE *mp;
     extern char quote_title[120];
+    int oldmode;
 
     /*
      * 添加在好友寄信时的发信上限限制 Bigman 2000.12.11 
@@ -1745,6 +1746,8 @@ static int do_gsend(char *userid[], char *title, int num)
     }
 
     in_mail = true;
+    oldmode = uinfo.mode;
+    modify_user_mode(SMAIL);
 #if defined(MAIL_REALNAMES)
     sprintf(genbuf, "%s (%s)", currentuser->userid, currentuser->realname);
 #else
@@ -1842,6 +1845,7 @@ static int do_gsend(char *userid[], char *title, int num)
     if (vedit(tmpfile, true, NULL, NULL) == -1) {
         unlink(tmpfile);
         clear();
+        modify_user_mode(oldmode);
         return -2;
     }
     clear();
@@ -1850,6 +1854,7 @@ static int do_gsend(char *userid[], char *title, int num)
 
         sethomefile(maillists, currentuser->userid, "maillist");
         if ((mp = fopen(maillists, "r")) == NULL) {
+            modify_user_mode(oldmode);
             return -3;
         }
     }
@@ -1878,12 +1883,14 @@ static int do_gsend(char *userid[], char *title, int num)
             if (mkdir(filepath, 0755) == -1) {
                 if (G_SENDMODE == 2)
                     fclose(mp);
+                modify_user_mode(oldmode);
                 return -1;
             }
         } else {
             if (!(st.st_mode & S_IFDIR)) {
                 if (G_SENDMODE == 2)
                     fclose(mp);
+                modify_user_mode(oldmode);
                 return -1;
             }
         }
@@ -1922,6 +1929,7 @@ static int do_gsend(char *userid[], char *title, int num)
     unlink(tmpfile);
     if (G_SENDMODE == 2)
         fclose(mp);
+    modify_user_mode(oldmode);
     return 0;
 }
 
