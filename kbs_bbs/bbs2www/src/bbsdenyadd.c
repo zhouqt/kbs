@@ -92,10 +92,11 @@ int inform(bcache_t *bp, char *user, char *exp, int dt)
 	struct userec saveusr;
 	int my_flag;
 	char *board;
-	postinfo_t pi;
+	/*postinfo_t pi;*/
 	time_t now;
+	struct userec* lookupuser;
 
-	bzero(&pi, sizeof(pi));
+	/*bzero(&pi, sizeof(pi));*/
 	board = bp->filename;
 	usr = getcurrusr();
 	now = time(0);
@@ -177,8 +178,16 @@ int inform(bcache_t *bp, char *user, char *exp, int dt)
 	pi.anony = 0;
 	pi.access = (FILE_READ << 8) | (FILE_MARKED | FILE_FORWARDED);
 	*/
-	post_file(user,"",buf,board,title,0,0);
+	post_file(usr,"",buf,board,title,0,8);
 	memcpy(usr, &saveusr, sizeof(saveusr));
+	sprintf(title,"%s 被 %s 封禁本板POST权",user,usr->userid);
+	getuser(user,&lookupuser);
+
+	if(HAS_PERM(lookupuser, PERM_BOARDS))
+		sprintf(title,"%s 封某板"NAME_BM" %s 在 %s", usr->userid,user,board);
+	else
+		sprintf(title,"%s 封 %s 在 %s",usr->userid,user,board);
+	post_file(usr,"",buf,"denypost",title,0,8);
 
 	unlink(buf);
 	printf("系统已经发信通知了%s.<br>\n", user);

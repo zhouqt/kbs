@@ -115,11 +115,11 @@ int inform(char *board, char *user)
     time_t now;
     struct userec* lookupuser;
 	struct userec* usr;
-	postinfo_t pi;
+	/*postinfo_t pi;*/
 
     now = time(0);
 	usr = getcurrusr();
-	bzero(&pi, sizeof(pi));
+	/*bzero(&pi, sizeof(pi));*/
     /*Haohmaru.4.1.自动发信通知*/
     sprintf(filename,"etc/%s.dny", usr->userid);
     fn1 = fopen(filename,"w");
@@ -153,7 +153,7 @@ int inform(char *board, char *user)
 	pi.access = 0;
 	post_file(filename, &pi);
 	*/
-	post_file(user,"",filename,board,buffer,0,0);
+	post_file(usr,"",filename,"undenypost",buffer,0,1);
     unlink(filename);
 
 	printf("系统已经发信通知了%s.<br>\n", user);
