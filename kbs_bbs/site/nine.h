@@ -1,7 +1,7 @@
 #ifndef __SYSNAME_H_
 #define __SYSNAME_H_
 
-//#define CONV_PASS
+#define CONV_PASS
 #define NINE_BUILD
 #define SITE_HIGHCOLOR
 #undef HAVE_BIRTHDAY
