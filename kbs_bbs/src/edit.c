@@ -977,7 +977,7 @@ static int Origin(struct textline *text)
         return 0;
     if(!text)
         return 0;
-    sprintf(tmp,"※ 来源:·%s %s·[FROM:",BBS_FULL_NAME,email_domain());
+    sprintf(tmp,"※ 来源:·%s ",BBS_FULL_NAME);
     if(strstr(text->data,tmp)&&*text->data!=':')
         return 1;
     else
@@ -994,7 +994,7 @@ char text[256];
 {
     char tmp[STRLEN];
 
-    sprintf(tmp,"※ 来源:·%s %s·[FROM:",BBS_FULL_NAME,email_domain());
+    sprintf(tmp,"※ 来源:·%s ",BBS_FULL_NAME);
     if(strstr(text,tmp))
         return 1;
     else

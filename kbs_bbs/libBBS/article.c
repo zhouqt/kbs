@@ -390,7 +390,7 @@ void getcross(char* filepath,char* quote_file,struct userec* user,int in_mail,ch
         fprintf( of,"【此篇文章是由自动发信系统所张贴】\n\n");
     }else if(mode==2)
     {
-        write_header(of,user,in_mail,board,title,Anony,0/*写入 .posts*/);
+        write_header(of,user,in_mail,sourceboard,title,Anony,0/*写入 .posts*/);
     }
     while( fgets( buf, 256, inf ) != NULL)
     {
