@@ -3,6 +3,7 @@
 
 #define ROOM_LOCKED 01
 #define ROOM_SECRET 02
+#define ROOM_DENYSPEC 04
 
 struct room_struct {
     char name[14];
@@ -571,6 +572,15 @@ int do_com_menu()
                         if(buf[0]=='Y') myroom->flag|=ROOM_LOCKED;
                         else myroom->flag&=~ROOM_LOCKED;
                     }
+                    move(t_lines-1, 0);
+                    clrtoeol();
+                    getdata(t_lines-1, 0, "设置为拒绝旁观者的房间? [Y/N]", buf, 30, 1, 0, 1);
+                    if(kicked) return 0;
+                    buf[0]=toupper(buf[0]);
+                    if(buf[0]=='Y'||buf[0]=='N') {
+                        if(buf[0]=='Y') myroom->flag|=ROOM_DENYSPEC;
+                        else myroom->flag&=~ROOM_DENYSPEC;
+                    }
                     for(i=0;i<myroom->people;i++)
                         kill(inrooms.peoples[i].pid, SIGUSR1);
                     return 0;
@@ -1029,6 +1039,13 @@ static int room_list_select(struct _select_def *conf)
         return SHOW_REFRESH;
     }
     getdata(0, 0, "是否以旁观者身份进入? [y/N]", ans, 3, 1, NULL, 1);
+    if(toupper(ans[0])=='Y')&&r2->flag&ROOM_DENYSPEC) {
+        move(0, 0);
+        clrtoeol();
+        prints(" 该房间拒绝旁观者");
+        refresh(); sleep(1);
+        return SHOW_REFRESH;
+    }
     join_room(find_room(r2->name), toupper(ans[0])=='Y');
     return SHOW_DIRCHANGE;
 }
@@ -1112,6 +1129,13 @@ static int room_list_key(struct _select_def *conf, int key)
             return SHOW_REFRESH;
         }
         getdata(0, 0, "是否以旁观者身份进入? [y/N]", ans, 3, 1, NULL, 1);
+        if(toupper(ans[0])=='Y')&&r2->flag&ROOM_DENYSPEC) {
+            move(0, 0);
+            clrtoeol();
+            prints(" 该房间拒绝旁观者");
+            refresh(); sleep(1);
+            return SHOW_REFRESH;
+        }
         join_room(find_room(name), toupper(ans[0])=='Y');
         return SHOW_DIRCHANGE;
     case 'K':
