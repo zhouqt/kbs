@@ -535,7 +535,7 @@ soverview_t *sover;
         strncpy(MSGID_BUF, msgid, sizeof MSGID_BUF);
     }
     sover->msgid = MSGID;
-    if (mtime == -1) {
+    if (mtime == 0) {
         static char BODY_BUF[MAXBUFLEN];
 
         strncpy(BODY_BUF, fileglue("%s\r\n", subject), sizeof BODY_BUF);
@@ -921,7 +921,7 @@ char *board, *filename, *userid, *nickname, *subject;
     if (!userid || !*userid) {
         return;
     }
-    mtime = -1;
+    mtime = 0;
     //ÐÞ¸Ämail¸ñÊ½ modified by Czz 020419
     strncpy(FROM_BUF, fileglue("%s@%s-SPAM.no (%s)", userid, MAIL_BBSDOMAIN, nickname), sizeof FROM_BUF);
     //modified end
@@ -934,7 +934,7 @@ char *board, *filename, *userid, *nickname, *subject;
     /*
      * save_outgoing(&sover, filename, userid, poster, -1); 
      */
-    save_outgoing(&sover, filename, userid, userid, -1);
+    save_outgoing(&sover, filename, userid, userid, 0);
 }
 
 open_link(hostname, hostprot, hostport)
