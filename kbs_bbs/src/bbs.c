@@ -2311,6 +2311,10 @@ int post_article(char *q_file, struct fileheader *re_file)
         char sbuf[PATHLEN];
         strcpy(sbuf,"tmp/");
         strcpy(sbuf+strlen(sbuf), upload);
+#ifdef FILTER
+        if(returnvalue==2)
+            setbfile(filepath, FILTER_BOARD, postfile.filename);
+#endif
         add_attach(filepath, sbuf, upload);
     }
     
