@@ -78,6 +78,7 @@ search_file(char *filename) /* Leeward 98.10.02 */
 					return i;
 			    }
 		case 2:
+			break;
 	}
 	end_mmapfile((void*)rptr,size,-1);
     return - 1;
@@ -1320,7 +1321,7 @@ char *ptr1,*ptr2;
 {
     int ln,i;
 
-    ln=strlen(ptr1);
+	for (ln=0;(ln<STRLEN)&&(ptr1[ln]!=0);ln++);
     for(i=0;i<ln;i++)
     {
         ptr2[i]=toupper(ptr1[i]);
