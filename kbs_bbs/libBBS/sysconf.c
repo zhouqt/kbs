@@ -317,7 +317,6 @@ void build_sysconf(char *configfile, char *imgfile)
 int load_sysconf_image(char *imgfile)
 {
     struct public_data *p;
-    char buf[255];
     struct sysheader *shead;
     int fd;
     char *ptr;
