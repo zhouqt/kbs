@@ -32,7 +32,7 @@
 		if ($start > $mail_num - 19)$start = $mail_num - 19;
     		if ($start < 0)$start = 0;
 ?>
-<center>信件列表 - 邮箱 - <?php echo $mail_title;?>[使用者: <? echo $currentuser["userid"] ?>]<hr color=green>
+<center>信件列表 - 邮箱 - <?php echo $mail_title;?>[使用者: <?php echo $currentuser["userid"] ?>]<hr color=green>
 <?php
 	if($mail_num == 0)
 	{
