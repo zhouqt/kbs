@@ -144,6 +144,7 @@ int mode;
         }
         /* 保存所发msg的目的uid 1998.7.5 by dong*/
         strcpy(MsgDesUid, uident);
+       /* uentp = uin; */
 
     }else
     {
@@ -155,7 +156,7 @@ int mode;
     }
     
     /* try to send the msg*/
-    result = sendmsgfunc(uentp,msgstr,mode);
+    result = sendmsgfunc(uin,msgstr,mode);
  
     switch (result) {
     	 case 1: /* success */
@@ -187,7 +188,7 @@ int mode;
     	 break;
     }	   
     /* resend the message */
-    result = sendmsgfunc(uentp,buf,mode);
+    result = sendmsgfunc(uin,buf,mode);
  
     switch (result) {
     	 case 1: /* success */
