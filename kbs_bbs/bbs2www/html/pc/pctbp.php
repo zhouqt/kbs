@@ -5,11 +5,11 @@
 	function pc_tbp_check_url($url)
 	{
 		$arr = array();
-		if(!eregi("^http://([a-zA-Z0-9_\.\-]{1,}):{0,1}([0-9]{0,})\/([a-zA-Z0-9_\.\-\/]{0,})\?{0,1}(.+){0,}$",$url,$arr))
+		if(!eregi("^http://([a-zA-Z0-9_\.\-]{1,}):{0,1}([0-9]{0,})\/([a-zA-Z0-9_\.\-\/]{0,})\?{0,1}(.+){0,}$",trim(ltrim($url)),$arr))
 			return FALSE;
 		$url = array(
 				"URL" => $arr[0],
-				"SERVER" => $arr[1],
+				"HOST" => $arr[1],
 				"PORT" => $arr[2],
 				"FILE" => $arr[3],
 				"VARS" => $arr[4]
@@ -17,59 +17,78 @@
 		return $url;
 	}
 	
-	function pc_tbp_connect($url)
+	/*
+	** use php fsockopen function to do a http post action
+	** return 0 : success;
+	**        -1: url wrong;
+	**        -2: can not connect to host
+	**        -3: page is not exist
+	*/
+	function pc_tbp_http_post($url, $data)
 	{
-		$host = gethostbyname($url[SERVER]);
-		$port = $url[PORT]?$url[PORT]:80;
-		$timeout = 30;
+		$url = parse_url($url);
+		if (!$url) return -1;
+		if (!isset($url['port'])) { $url['port'] = ""; }
+		if (!isset($url['query'])) { $url['query'] = ""; }
 		
-		$fp = fsockopen($host,$port,&$err_num,&$err,$timeout);
-		if(!$fp)
-			return FALSE;
-		else
+		$encoded = "";
+		
+		while (list($k,$v) = each($data)) 
 		{
-			set_socket_blocking($fp,FALSE);
-			return $fp;
+			$encoded .= ($encoded ? "&" : "");
+			$encoded .= rawurlencode($k)."=".rawurlencode($v);
 		}
+		
+		$fp = fsockopen($url['host'], $url['port'] ? $url['port'] : 80);
+		if (!$fp) return -2;
+		
+		fputs($fp, sprintf("POST %s%s%s HTTP/1.0\n", $url['path'], $url['query'] ? "?" : "", $url['query']));
+		fputs($fp, "Host: $url[host]\n");
+		fputs($fp, "Content-type: application/x-www-form-urlencoded\n");
+		fputs($fp, "Content-length: " . strlen($encoded) . "\n");
+		fputs($fp, "Connection: close\n\n");
+		
+		fputs($fp, "$encoded\n");
+		
+		$line = fgets($fp,1024);
+		if (!eregi("^HTTP/1\.. 200", $line)) return -3;
+		
+		$results = ""; $inheader = 1;
+		while(!feof($fp)) 
+		{
+			$line = fgets($fp,1024);
+			if ($inheader && ($line == "\n" || $line == "\r\n")) 
+			{
+				$inheader = 0;
+			}
+			elseif (!$inheader) 
+			{
+				$results .= $line;
+			}
+		}
+		fclose($fp);
+		
+		return 0;
 	}
 	
-	function pc_tbp_close($fp)
-	{
-		fclose($fp);	
-	}
-	
-	function pc_tbp_send_cmd($fp,$cmd)
-	{
-		fputs($fp,$cmd);	
-	}
-	
-	function pc_tbp_get_infor($fp)
-	{
-		fgets($fp,4096);
-	}
-	
+	/*
+	** return 0 : success;
+	**        -1: url wrong;
+	**        -2: can not connect to host
+	**        -3: page is not exist
+	*/
 	function pc_tbp_trackback_ping($url,$tbarr)
 	{
 		$url = pc_tbp_check_url($url);
 		if(!$url)
 			return -1;
-		else
-		{
-			$fp = pc_tbp_connect($url);
-			if(!$fp)
-				return -2;
-			else
-			{
-				$cmd = "POST ".$url[URL]."\n".
-					"Content-Type: application/x-www-form-urlencoded\n".
-					"title=".urlencode($tbarr[title])."&url=".urlencode($tbarr[url])."&excerpt=".urlencode(substr($tbarr[excerpt],0,255))."&blog_name=".urlencode($tbarr[blogname]);
-				
-				pc_tbp_send_cmd($fp,$cmd);
-				$infor = pc_tbp_get_infor($fp);
-				pc_tbp_close($fp);
-				return $infor;
-			}
-		}
+		$data = array(
+			"title" => $tbarr[title],
+			"url" => $tbarr[url],
+			"excerpt" => substr($tbarr[excerpt],0,255),
+			"blog_name" => $tbarr[blogname]
+			);
+		$r = pc_tbp_http_post($url[URL],$data);
+		return $r;
 	}
-	
 ?>

@@ -17,7 +17,7 @@
 	
 	
 	$nid = (int)($_GET["nid"]);
-	$subject = $_GET["subject"];
+	$subject = html_format(urldecode($_GET["subject"]));
 	$link = pc_db_connect();
 	$tbarr = pc_get_trackback($link,$nid);
 	pc_html_init("gb2312",$subject);
@@ -38,9 +38,9 @@
 	foreach($tbarr as $tb)
 	{
 		echo "<tr>\n<td class=t5><font class=content>\n".
-			"<strong>主题:</strong>\n".html_format($tb[title])."<br />\n".
+			"<strong>主题:</strong>\n<a href='".html_format($tb[url])."'>".html_format($tb[title])."</a><br />\n".
 			"<strong>摘要:</strong>\n".html_format($tb[excerpt],TRUE)."<br />\n".
-			"<strong>链接:</strong>\n<a href='".html_format($tb[url])."'>".html_format($tb[blogname])."</a><br />\n".
+			"<strong>Blog:</strong>\n".html_format($tb[blogname])."<br />\n".
 			"<strong>时间:</strong>\n".time_format($tb[time])."\n".
 			"</font></td></tr>\n";	
 	}

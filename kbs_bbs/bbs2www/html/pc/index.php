@@ -73,7 +73,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 			"\n|\nViews[".$nodes[$i][visitcount]."]".
 			"\n|\n<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\">Comments[".$nodes[$i][commentcount]."]</a>";
 			if($nodes[$i][trackback])
-				echo "\n|\n<a href=\"javascript:openScript('pctb.php?nid=".$nodes[$i][nid]."&subject=".urlencode(html_format($nodes[$i][subject]))."' , 460, 480)\">TrackBack[".$nodes[$i][trackbackcount]."]</a>";
+				echo "\n|\n<a href=\"javascript:openScript('pctb.php?nid=".$nodes[$i][nid]."&subject=".urlencode($nodes[$i][subject])."' , 460, 480)\">TrackBack[".$nodes[$i][trackbackcount]."]</a>";
 			echo "</font></td></tr>\n</table>\n";
 		}
 	}

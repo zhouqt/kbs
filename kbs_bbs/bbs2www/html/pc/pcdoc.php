@@ -77,7 +77,7 @@
 	
 	function display_art_list($link,$pc,$tag,$pur,$tid=0,$order="")
 	{
-		$query = "SELECT `nid` , `pid` ,  `created` , `emote` , `changed` , `comment` , `commentcount` , `subject` , `visitcount` , `htmltag` ".
+		$query = "SELECT `nid` , `pid` ,  `created` , `emote` , `changed` , `comment` , `commentcount` , `subject` , `visitcount` , `htmltag` ,`trackbackcount` , `trackback` ".
 			" FROM nodes WHERE `access` = '".$tag."' AND `uid` = '".$pc["UID"]."'  AND `tid` = '".$tid."' ";
 		switch($order)
 		{
@@ -95,6 +95,9 @@
 				break;
 			case "co":
 				$query.=" ORDER BY `comment`  ASC , ";
+				break;
+			case "tb":
+				$query.=" ORDER BY `trackbackcount` DESC , ";
 				break;
 			default:
 				$query.=" ORDER BY ";
@@ -122,6 +125,14 @@
 	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=u"; ?>" class="f3">更新时间</a></td>
 	<td class="t2" width="40"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=v&tid=".$tid; ?>" class="f3">浏览</a></td>
 	<td class="t2" width="40"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=r&tid=".$tid; ?>" class="f3">评论</a></td>
+<?php
+	if($tag == 0)
+	{
+?>
+	<td class="t2" width="40"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=tb&tid=".$tid; ?>" class="f3">引用</td>
+<?php
+	}
+?>	
 	<td class="t2" width="30">修改</td>
 	<td class="t2" width="30">删除</td>
 </tr>
@@ -139,6 +150,14 @@
 	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=u"; ?>" class="f3">更新时间</a></td>
 	<td class="t2" width="40"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=v&tid=".$tid; ?>" class="f3">浏览</a></td>
 	<td class="t2" width="40"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=r&tid=".$tid; ?>" class="f3">评论</a></td>
+<?php
+	if($tag == 0)
+	{
+?>
+	<td class="t2" width="40"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=tb&tid=".$tid; ?>" class="f3">引用</td>
+<?php
+	}
+?>
 </tr>
 <?php
 		}
@@ -159,19 +178,35 @@
 				echo "<img src=\"icon/".$rows[emote].".gif\" border=\"0\" align=\"absmiddle\">\n<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$rows[nid]."&order=".$order."&tid=".$tid."\">".html_format($rows[subject])."</a></td>\n".
 					"<td class='t3'>\n".time_format($rows[created])."\n|\n".time_format($rows[changed])."\n</td>\n".
 					"<td class='t4'>".$rows[visitcount]."</td>\n".
-					"<td class='t3'>".$rows[commentcount]."</td>\n".
-					"<td class='t4'><a href=\"pcmanage.php?act=edit&nid=".$rows[nid]."\">修改</a></td>\n".
-					"<td class='t3'><a href=\"#\" onclick=\"bbsconfirm('pcmanage.php?act=del&nid=".$rows[nid]."','确认删除?')\">删除</a></td>\n".
+					"<td class='t3'>".$rows[commentcount]."</td>\n";
+				if($tag == 0)
+				{
+					
+					echo "<td class='t4'>";
+					echo $rows[trackback]?$rows[trackbackcount]:"-";
+					echo "</td>\n";
+				}
+				echo	"<td class='t3'><a href=\"pcmanage.php?act=edit&nid=".$rows[nid]."\">修改</a></td>\n".
+					"<td class='t4'><a href=\"#\" onclick=\"bbsconfirm('pcmanage.php?act=del&nid=".$rows[nid]."','确认删除?')\">删除</a></td>\n".
 					"</tr>\n";
 			}
 			else
+			{
 				echo "<tr>\n<td class='t3'>".$i."</td>\n".
 					"<td class='t4'>".$c."</td>\n".
 					"<td class='t8'>&nbsp;<img src=\"icon/".$rows[emote].".gif\" border=\"0\ align=\"absmiddle\">\n<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$rows[nid]."&order=".$order."&tid=".$tid."\">".html_format($rows[subject])."</a></td>\n".
 					"<td class='t4'>\n".time_format($rows[created])."\n|\n".time_format($rows[changed])."\n</td>\n".
 					"<td class='t3'>".$rows[visitcount]."</td>\n".
-					"<td class='t4'>".$rows[commentcount]."</td>\n".
-					"</tr>\n";
+					"<td class='t4'>".$rows[commentcount]."</td>\n";
+				if($tag == 0)
+				{
+					
+					echo "<td class='t3'>";
+					echo $rows[trackback]?$rows[trackbackcount]:"-";
+					echo "</td>\n";
+				}
+				echo	"</tr>\n";
+			}
 		}
 ?>
 </table>

@@ -44,10 +44,11 @@
 	
 	function pc_tb_add_trackback($link,$tbarr)
 	{
+		global $_SERVER;
 		$query = "UPDATE nodes SET `trackbackcount` = `trackbackcount` + 1 , `visitcount` = `visitcount` + 1 WHERE `nid` = '".$tbarr[nid]."';";	
 		mysql_query($query,$link);
-		$query = "INSERT INTO `trackback` ( `tbid` , `uid` , `nid` , `title` , `excerpt` , `url` , `blogname` , `time` ) ".
-			"VALUES ('', '".$tbarr[uid]."', '".$tbarr[nid]."', '".addslashes($tbarr[title])."', '".addslashes($tbarr[excerpt])."', '".addslashes($tbarr[url])."', '".addslashes($tbarr[blogname])."', NOW( ) );";
+		$query = "INSERT INTO `trackback` ( `tbid` , `uid` , `nid` , `title` , `excerpt` , `url` , `blogname` , `time` ,`address`) ".
+			"VALUES ('', '".$tbarr[uid]."', '".$tbarr[nid]."', '".addslashes($tbarr[title])."', '".addslashes($tbarr[excerpt])."', '".addslashes($tbarr[url])."', '".addslashes($tbarr[blogname])."', NOW( ) , '".$_SERVER["REMOTE_ADDR"]."' );";
 		mysql_query($query,$link);
 	}
 	
@@ -79,7 +80,6 @@
 			"url" => $url,
 			"blogname" => $blog_name?$blog_name:$url
 			);
-	die("dd=".$_SERVER["REMOTEADDR"]);
 	pc_tb_add_trackback($link,$tbarr);
 	pc_db_close($link);
 	pc_tb_return_succeed();
