@@ -334,6 +334,7 @@ int load_ucache()
         exit(-1);
     }
     ftruncate(passwdfd, MAXUSERS * sizeof(struct userec));
+	close(passwdfd);
     if (get_records(PASSFILE, uidshm->passwd, sizeof(struct userec), 1, MAXUSERS) != MAXUSERS) {
         bbslog("4system", "PASS file!");
         ucache_unlock(fd);
