@@ -958,7 +958,7 @@ fsdfa
 的情况*/
                         *effsize+=sign_size;
                         sign_size=2;
-                    } else {
+                    } else if( strncmp(p->data,"\xa1\xbe \xd4\xda",5) && strncmp(p->data,": ",2)){
                     /*如果不是签名档分隔符*/
                         if (sign_size!=0) /*在可能的签名档中*/
                             sign_size+=strlen(p->data);
