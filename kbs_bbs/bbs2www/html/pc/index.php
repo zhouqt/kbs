@@ -141,12 +141,16 @@ More Articles
 <table cellpadding=10 cellspacing=0 width=650 border=0 class=t1>
 	<tr>
 		<td align="center" class="t11" colspan="2">
-		<table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
+		<table cellpadding=5 cellspacing=0 width="100%" border=0 class=t1>
 			<tr><td align="left" class="t2">
 			.: Introduction :.
 			</td></tr>
 			<tr><td class="t8">
-			<?php echo $pc["DESC"]; ?>
+			<?php 
+				if($pc["LOGO"])
+					echo "<img alt=\"".$pc["DESC"]."\" hspace=\"5\" src=\"".$pc["LOGO"]."\" align=\"left\" vspace=\"5\" border=\"0\" />";
+				echo $pc["DESC"]; 
+			?>
 			</td></tr>
 		</table>
 		</td>
