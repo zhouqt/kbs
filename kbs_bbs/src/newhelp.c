@@ -198,6 +198,7 @@ int add_help(int mode, int num)
 {
 	struct helps pn;
 	char ans[501];
+    extern bool enableESC;
 
 	bzero( &pn, sizeof(pn) );
 
@@ -220,7 +221,9 @@ int add_help(int mode, int num)
 		ans[0] = 0;
 	else
 		strcpy(ans, s_help[num].desc);
+    enableESC = true;
 	getdata(3,0,"简单描述(40字节最多):",ans,41,DOECHO,NULL,false);
+    enableESC = false;
 	if(! ans[0])
 		return -1;
 	strncpy(pn.desc, ans, 40);
