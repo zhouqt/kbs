@@ -27,6 +27,10 @@
    
 
 #include "bbs.h"
+#include "sys/socket.h"
+#include "netinet/in.h"
+#include <signal.h>
+
 
 struct userec* currentuser;
 /*static int passwdfd=-1;*/
@@ -548,8 +552,6 @@ set_safe_record()
 }
 */
 
-static int m_socket;
-static char cmdbuf[255];
 int getnewuserid2(char * userid)
 {
        int result = getnewuserid3(userid);
@@ -567,11 +569,13 @@ int getnewuserid2(char * userid)
 int getnewuserid3(char * userid)
 {
 
+        int m_socket;
+        char cmdbuf[255];
         struct sockaddr_in sin;
         fd_set rfds;
         int result;
         struct  timeval tv;
-      m_socket = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
+        m_socket = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
         if (m_socket<0) return -1;
         sin.sin_family=AF_INET;
         sin.sin_port=htons(60000);
@@ -593,7 +597,6 @@ int getnewuserid3(char * userid)
                 close(m_socket);
                 if (len!=sizeof(result)) return -1;
                 return result;
-        }
         }
         close(m_socket);
         return -1;

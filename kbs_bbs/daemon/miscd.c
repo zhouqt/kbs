@@ -1,5 +1,9 @@
 #include <sys/types.h>
 #include <sys/wait.h>
+#include "sys/socket.h"
+#include "netinet/in.h"
+#include <signal.h>
+
 
 #include "bbs.h"
 
@@ -155,20 +159,27 @@ int ismonday()
      return tm -> tm_wday == 1;
 }
 
+static char* username;
 int getrequest(int m_socket)
 {
         int len;
         struct sockaddr_in sin;
         int s;
+        len = sizeof(sin);
+
         for (s = accept(m_socket,&sin,&len);;s = accept(m_socket,&sin,&len)) {
-                if (s<=0) exit(-1);
+                if ((s<=0)&&errno!=EINTR){
+    	            log("3system","userd:accept %s",strerror(errno));
+                    exit(-1);
+                }
+                if (s<=0) continue;
                 memset(tmpbuf,0,255);
                 len = read(s,tmpbuf,255);
                 if (len<=0) {close (s) ;continue;}
                 strtok(tmpbuf," ");
                 username = strtok(NULL," ");
-                if (strcmp(tmdbuf,"QUIT")==0) exit(0);
-                if (strcmp(tmdbuf,"NEW") == 0) break;
+                if (strcmp(tmpbuf,"QUIT")==0) exit(0);
+                if (strcmp(tmpbuf,"NEW") == 0) break;
                 close(s);
         }
         return s;
@@ -183,7 +194,6 @@ void putrequest(int sock,int id)
 void userd()
 {
     int m_socket;
-    char *username;
 
     struct sockaddr_in sin;
     int sinlen = sizeof(sin);
@@ -205,7 +215,9 @@ void userd()
     	exit(-1);
     }
     while (1) {
-        sock = getrequest();
+        int sock,id;
+     
+        sock = getrequest(m_socket);
         id = getnewuserid(username);
         putrequest(sock,id);
     }
@@ -237,7 +249,7 @@ reaper()
 }
 
 
-int dodaemon()
+int dodaemon(char* argv1)
 {
     struct sigaction act;
     
@@ -271,6 +283,7 @@ int dodaemon()
      case -1:
                log("3miscd","fork failed\n");
      case 0:
+     strcpy(argv1,"killd");
      while (1) {
      	sleep(getnextday4am() - time( 0 ));
     	 switch(fork()) {
@@ -299,8 +312,14 @@ int dodaemon()
     	 }
      };
      default:
-        if (fork()) userd();
-        else flushd();
+        if (fork()) {
+          strcpy(argv1,"userd");
+          userd();
+        }
+        else {
+          strcpy(argv1,"flushd");
+          flushd();
+        }
     }
 }
 int main (int argc,char *argv[])
@@ -314,7 +333,7 @@ int main (int argc,char *argv[])
      if (argc>1) {
          if (strcasecmp(argv[1],"killuser") == 0)  return dokilluser();
          if (strcasecmp(argv[1],"allboards") == 0) return dokillalldir();
-         if (strcasecmp(argv[1],"daemon") == 0) return dodaemon();
+         if (strcasecmp(argv[1],"daemon") == 0) return dodaemon(argv[1]);
          return dokilldir(argv[1]);
      }
      printf("Usage : %s killuser to kill old users\n",argv[0]);
