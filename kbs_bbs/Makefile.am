@@ -1,4 +1,4 @@
-EXTRA_DIST = lib/* README INSTALL site/devel.c site/devel.h site/default.c site/default.h bbshome innbbsd config.icc config.lib doc/* makedist.sh
+EXTRA_DIST = lib/* README INSTALL site/wforum.c site/wforum.h site/devel.c site/devel.h site/default.c site/default.h bbshome innbbsd config.icc config.lib doc/* makedist.sh
 SUBDIRS=libsystem libBBS rzsz src daemon local_utl mail2bbs service contrib @subdirs@
 CLEANFILES=@EXTRA_CLEAN@
 
