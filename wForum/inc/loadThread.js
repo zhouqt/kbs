@@ -149,7 +149,7 @@ function showSec(isFold, isFav, boards, secNum, isHide) {
 				} else if (boards[i].nArticles <= 0) {
 					str += '<B>本版尚无文章</B>';
 				} else {
-					str += '主题：<a href="disparticle.php?boardName=' + boards[i].boardName + '&ID=' + boards[i].lastID + '">' + boards[i].lastTitle + ' &nbsp;</a><BR>作者：<a href="dispuser.php?id=' + boards[i].lastOwner + '" target=_blank>' + boards[i].lastOwner + ' </a><BR>日期：' + boards[i].lastPosttime + '&nbsp;<a href="disparticle.php?boardName=' + boards[i].boardName + '&ID=' + boards[i].lastID + '"><IMG border=0 src="pic/lastpost.gif" title="转到：' + boards[i].lastTitle + ' "> </a>';
+					str += '主题：<a href="disparticle.php?boardName=' + boards[i].boardName + '&ID=' + boards[i].lastID + '">' + boards[i].lastTitle + ' &nbsp;</a><BR>回复：<a href="dispuser.php?id=' + boards[i].lastOwner + '" target=_blank>' + boards[i].lastOwner + ' </a><BR>日期：' + boards[i].lastPosttime + '&nbsp;<a href="disparticle.php?boardName=' + boards[i].boardName + '&ID=' + boards[i].lastID + '"><IMG border=0 src="pic/lastpost.gif" title="转到：' + boards[i].lastTitle + ' "> </a>';
 				}
 				str += '</TD></TR><TR><TD width=*><FONT face=Arial><img src=pic/forum_readme.gif align=middle> ' + boards[i].boardName + '</FONT>';
 				if (!boards[i].isBoardGroup && !boards[i].isFavGroup) {
