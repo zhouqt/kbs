@@ -1007,9 +1007,9 @@ function pc_detect_trackbackpings($body,&$detecttbps)
 **         -8 :引用通告目标服务器连接超时
 **         -9 :被审核
 */
-function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$trackback,$subject,$body,$nodeType,$autodetecttbp=FALSE,$tbpUrl="",$tbpArt="",$filtered=false,$address=NULL)
+function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$trackback,$subject,$body,$nodeType,$autodetecttbp,$tbpUrl,$tbpArt,$convert_encoding,$filtered,$address)
 {
-	global $pcconfig;
+	global $pcconfig,$support_encodings,$sending_encoding;
 	
 	$pid = intval($pid);
 	$tid = intval($tid);
@@ -1022,6 +1022,13 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
 	$body = html_editorstr_format(trim($body));
 	$nodeType = intval($nodeType); //0: 普通;1: log,不可删除
 	
+    if ($convert_encoding) {
+	    if (!strstr($support_encodings,$convert_encoding))
+	        $convert_encoding = $sending_encoding;
+	}
+	else
+	    $convert_encoding = $sending_encoding;
+	    
 	if(!$pc || !is_array($pc))
 		return FALSE;
 	
@@ -1076,8 +1083,8 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
 	if (!$address) $address = $_SERVER["REMOTE_ADDR"];
 	//日志入库
 	if ($into_filter)
-	    $query = "INSERT INTO `filter` (  `pid` , `nid` , `tid` , `type` , `state` , `recuser` , `emote` , `hostname` , `changed` , `created` , `uid` , `username` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`,`tbp_url`,`tbp_art`,`auto_tbp`) ".
-	   	     "VALUES ( '".$pid."', 0 , '".$tid."' , '0', '0' , '', '".$emote."' ,  '".addslashes($_SERVER["REMOTE_ADDR"])."',NOW( ) , NOW( ), '".$pc["UID"]."' , '".addslashes($pc["USER"])."' , '".$comment."', '0', '".$subject."', '".$body."', '".$access."', '0' , '".$htmlTag."' ,'".$trackback."','0','".$nodeType."','".addslashes($tbpUrl)."','".addslashes($tbpArt)."','".intval($autodetecttbp)."');";
+	    $query = "INSERT INTO `filter` (  `pid` , `nid` , `tid` , `type` , `state` , `recuser` , `emote` , `hostname` , `changed` , `created` , `uid` , `username` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`,`tbp_url`,`tbp_art`,`auto_tbp`,`tbpencoding`) ".
+	   	     "VALUES ( '".$pid."', 0 , '".$tid."' , '0', '0' , '', '".$emote."' ,  '".addslashes($_SERVER["REMOTE_ADDR"])."',NOW( ) , NOW( ), '".$pc["UID"]."' , '".addslashes($pc["USER"])."' , '".$comment."', '0', '".$subject."', '".$body."', '".$access."', '0' , '".$htmlTag."' ,'".$trackback."','0','".$nodeType."','".addslashes($tbpUrl)."','".addslashes($tbpArt)."','".intval($autodetecttbp)."','".addslashes($convert_encoding)."');";
 	else
 	    $query = "INSERT INTO `nodes` (  `pid` , `tid` , `type` , `recuser` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`) ".
 	   	     "VALUES ( '".$pid."', '".$tid."' , '0', '', '".$emote."' ,  '".addslashes($address)."',NOW( ) , NOW( ), '".$pc["UID"]."', '".$comment."', '0', '".$subject."', '".$body."', '".$access."', '0' , '".$htmlTag."' ,'".$trackback."','0','".$nodeType."');";
@@ -1100,29 +1107,29 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
     	if($tbpUrl || $detectnum) //发送引用通告前提取NID
     	{
     		//提取日志的nid
-    		$query = "SELECT `nid` FROM nodes WHERE `subject` = '".$subject."' AND `body` = '".$body."' AND `uid` = '".$pc["UID"]."' AND `access` = '".$access."' AND `pid` = '".$pid."' AND `tid` = '".$tid."' ORDER BY nid DESC LIMIT 0,1;";
-    		$result = mysql_query($query,$link);
-    		$rows = mysql_fetch_array($result);
-    		
-    		if(!$rows)
-    			return -6;
-    		
-    		$thisNid = $rows[nid];
-    		mysql_free_result($result);
-    		
+            $thisNid = mysql_insert_id($link);
     		if($htmlTag)
-    			$tbbody = undo_html_format(strip_tags($body));
+    			$tbbody = undo_html_format(strip_tags(stripslashes($body)));
     		else
-    			$tbbody = $body;
+    			$tbbody = stripslashes($body);
     		
     		if(strlen($tbbody) > 255 )
     			$tbbody = substr($tbbody,0,251)." ...";
     		
+    		$subject = stripslashes($subject);
+    		$blogname = undo_html_format($pc["NAME"]);
+    		
+    		if ($pcconfig["ENCODINGTBP"]) {
+    		    $subject = mb_convert_encoding ($subject,$convert_encoding,$support_encodings);
+    		    $tbbody  = mb_convert_encoding ($tbbody,$convert_encoding,$support_encodings);
+                $blogname = mb_convert_encoding ($blogname,$convert_encoding,$support_encodings);
+    		}
+    		
     		$tbarr = array(
-    				"title" => stripslashes($subject),
-    				"excerpt" => stripslashes($tbbody),
+    				"title" => $subject,
+    				"excerpt" => $tbbody,
     				"url" => "http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$pc["UID"]."&tid=".$tid."&nid=".$thisNid."&s=all",
-    				"blogname" => undo_html_format($pc["NAME"])
+    				"blogname" => $blogname
     				);	
     		
     		if($tbpUrl) //发送引用通告

@@ -208,7 +208,12 @@
 				else
 					$blogbody = $_POST["blogbody"];
 				
-				$ret = pc_add_node($link,$pc,$_GET["pid"],$_POST["tid"],$_POST["emote"],$_POST["comment"],$_GET["tag"],$_POST["htmltag"],$_POST["trackback"],$_POST["subject"],$blogbody,0,$_POST["autodetecttbps"],$_POST["trackbackurl"],$_POST["trackbackname"]);
+				if ($pcconfig["ENCODINGTBP"]) 
+				    $convert_encoding = $_POST['tbpencoding'];
+				else
+				    $convert_encoding = '';
+				    
+				$ret = pc_add_node($link,$pc,$_GET["pid"],$_POST["tid"],$_POST["emote"],$_POST["comment"],$_GET["tag"],$_POST["htmltag"],$_POST["trackback"],$_POST["subject"],$blogbody,0,$_POST["autodetecttbps"],$_POST["trackbackurl"],$_POST["trackbackname"],$convert_encoding,0,0);
 				$error_alert = "";
 				switch($ret)
 				{
@@ -346,6 +351,19 @@
 <tr>
 	<td class="t8">
 	引用通告
+<?php
+    if ($pcconfig["ENCODINGTBP"]) { //支持选择不同的发送编码
+        echo '使用<select name="tbpencoding" class="f1">';
+        $encodings = explode(',',$support_encodings);
+        for ($i = 0 ; $i < sizeof($encodings) ; $i ++) {
+            if ($encodings[$i] == $sending_encoding)
+                echo '<option value="'.$encodings[$i].'" selected>'.htmlspecialchars($encodings[$i]).'</option>';
+            else
+                echo '<option value="'.$encodings[$i].'">'.htmlspecialchars($encodings[$i]).'</option>';
+        }
+        echo '</select>编码发送引用通告';
+    }
+?>
 	</td>
 </tr>
 <tr>
