@@ -183,6 +183,7 @@ int addtodeny(char *uident)
                     }
                 }
                 move(3, 0);
+				clrtoeol();
                 prints("%s", " ‰»Î¥ÌŒÛ!");
             }
             free(file_buf);
