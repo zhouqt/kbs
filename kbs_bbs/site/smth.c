@@ -79,7 +79,7 @@ const char *user_definestr[] = {
     "显示详细用户数据",         /*DEF_SHOWDETAILUSERDATA 2003.7.31 */
     "显示真实用户数据",          /*DEF_REALDETAILUSERDATA 2003.7.31 */
 	"",
-    "不隐藏ip"                 /* DEF_SHOWALLIP */
+    "隐藏ip"                 /* DEF_SHOWALLIP */
 };
 
 const char *explain[] = {
