@@ -681,11 +681,11 @@ int n;
 				str++;
 				break;
 			}
-                     if (slp->data[reg_col]=='') {
+                     if (slp->data[reg_col]==''&&reg_col<slp->len) {
                         register int i,j;
                         i=reg_col+1;
                         while(!isalpha(slp->data[reg_col+i])&&i<slp->len) i++;
-                        if(isalpha(slp->data[reg_col+i])) {
+                        if(isalpha(slp->data[reg_col+i])&&reg_col+i<slp->len) {
                             for(j=reg_col;j<slp->len;j++)
                                 slp->data[j]=slp->data[j+i+1];
                             slp->len-=i+1;
