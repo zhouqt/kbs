@@ -685,7 +685,13 @@ void login_query()
 #endif
     multi_user_check();
 
-	if( read_user_memo( currentuser->userid, & currentmemo ) < 0 ) exit(1);
+	if( read_user_memo( currentuser->userid, & currentmemo ) <= 0 ){
+		prints("由于程序更新，请先退出此帐号所有连接再重新登陆\n");
+	 	oflush();
+		sleep(1);
+		igetkey();
+		exit(1);
+	}
 
     alarm(0);
     signal(SIGALRM, SIG_IGN);   /*Haohmaru.98.11.12 */
