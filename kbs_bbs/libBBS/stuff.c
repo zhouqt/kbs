@@ -735,6 +735,7 @@ int seek_in_file(char filename[STRLEN],char seekstr[STRLEN])
 static struct public_data *publicshm;
 struct public_data* get_publicshm()
 {
+   int iscreate;
     if (publicshm==NULL) {
         publicshm = attach_shm1( NULL, PUBLIC_SHMKEY, sizeof( *publicshm) ,&iscreate,1,NULL); /* attach public share memory readonly*/
 		if (iscreate) {
