@@ -664,7 +664,7 @@ void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail
             fseek(inf, 0, SEEK_SET);
 
     } else if (mode == 1 /*自动发信 */ ) {
-        fprintf(of, "发信人: deliver (自动发信系统), 信区: %s\n", board);
+        fprintf(of, "发信人: "DELIVER" (自动发信系统), 信区: %s\n", board);
         fprintf(of, "标  题: %s\n", title);
         fprintf(of, "发信站: %s自动发信系统 (%24.24s)\n\n", BBS_FULL_NAME, ctime(&now));
         fprintf(of, "【此篇文章是由自动发信系统所张贴】\n\n");
@@ -815,7 +815,7 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
     }
 
     if (mode == 1)
-        strcpy(whopost, "deliver");     /* mode==1为自动发信 */
+        strcpy(whopost, DELIVER);     /* mode==1为自动发信 */
     else
         strcpy(whopost, user->userid);
 
@@ -914,7 +914,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     setbfile(oldpath, boardname, fh->filename);
     filtered = 0;
     bh = getbcache(boardname);
-    if (strcmp(fh->owner, "deliver")) {
+    if (strcmp(fh->owner, DELIVER) {
         if (((bh && bh->level & PERM_POSTMASK) || normal_board(boardname)) && strcmp(boardname, FILTER_BOARD)
 #if 0
             && strcmp(boardname, "NewsClub")
@@ -1075,7 +1075,8 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     }
 #endif
 #ifdef NEWPOSTLOG
-	newpostlog(user->userid, boardname, fh->title, fh->groupid);
+	if(user)
+		newpostlog(user->userid, boardname, fh->title, fh->groupid);
 #else
     newbbslog(BBSLOG_USER, "%s", buf);
 #endif
@@ -1444,7 +1445,7 @@ char get_article_flag(struct fileheader *ent, struct userec *user, char *boardna
         case ' ':
             type = 'm';
             break;
-        case '*':
+        case UNREAD_SIGN:
         case 'N':
             type = 'M';
             break;
@@ -1456,7 +1457,9 @@ char get_article_flag(struct fileheader *ent, struct userec *user, char *boardna
             break;
         }
     }
-#ifdef OPEN_NOREPLY
+#ifdef FREE
+	if (0) {
+#elif defined(OPEN_NOREPLY)
     if (ent->accessed[1] & FILE_READ) {
 #else
     if (is_bm && (ent->accessed[1] & FILE_READ)) {
@@ -2019,7 +2022,11 @@ int delete_range(struct write_dir_arg *dirarg, int id1, int id2, int del_mode, i
         for (i = 0; i < readcount; i++, count++) {
             if (count > id2)
                 break;          /*del end */
-            if (((savefhdr[i].accessed[0] & FILE_MARKED) && del_mode != 2)
+            if (((savefhdr[i].accessed[0] & FILE_MARKED
+#ifdef FREE
+				|| savefhdr[i].accessed[0] & FILE_DIGEST
+#endif
+											) && del_mode != 2)
                 || ((id1 == 0) && (!(savefhdr[i].accessed[1] & FILE_DEL)))) {
                 memcpy(&readfhdr[keepcount], &savefhdr[i], sizeof(struct fileheader));
                 readfhdr[keepcount].accessed[1] &= ~FILE_DEL;
