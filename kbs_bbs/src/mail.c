@@ -739,7 +739,7 @@ int m_new()
         return -1;
     }
     idc=0;
-    apply_record(currmaildir, (RECORD_FUNC_ARG) delete_new_mail, sizeof(struct fileheader), &idc, 1,true));
+    apply_record(currmaildir, (RECORD_FUNC_ARG) delete_new_mail, sizeof(struct fileheader), &idc, 1,true);
 /*    	
     if (delcnt) {
         while (delcnt--)

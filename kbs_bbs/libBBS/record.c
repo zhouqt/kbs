@@ -198,7 +198,7 @@ int apply_record(char *filename, RECORD_FUNC_ARG fptr, int size, void *arg,
     		buf1=buf+((file_size/size)-1)*size;
     	else
     		buf1=buf;
-        for (i = 0; i < file_size / size; i++, reverse?buf1-=size:buf1 += size) {
+        for (i = 0; i < file_size / size; i++) {
             if (applycopy)
                 memcpy(buf2, buf1, size);
             else
@@ -209,6 +209,10 @@ int apply_record(char *filename, RECORD_FUNC_ARG fptr, int size, void *arg,
                     free(buf2);
                 return QUIT;
             }
+	    if (reverse)
+		    buf1 -= size;
+	    else
+		    buf1 += size;
         }
         break;
     }

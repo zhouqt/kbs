@@ -247,11 +247,38 @@ int DelFavBoard(int i)
     for (j = 0; j < favbrd_list_t; j++)
         if (favbrd_list[j].father >= i)
             favbrd_list[j].father--;
+    if(favnow>=i) favnow--;
     if (!favbrd_list_t) {
         favbrd_list_t = 1;      /*  favorite board count    */
         favbrd_list[0].flag = 0;        /*  default sysop board     */
     }
     return 0;
+}
+
+void MoveFavBoard(int p, int q)
+{
+	struct favbrd_struct temp;
+	int i;
+	if (p==q) return;
+	if (p<0||p>=favbrd_list_t) return;
+	if (q<0||q>=favbrd_list_t) return;
+	for(i=0;i<favbrd_list_t;i++)
+		if(favbrd_list[i].father==p)
+			favbrd_list[i].father = q;
+		else if(p>q&&favbrd_list[i].father>=q&&favbrd_list[i].father<p)
+			favbrd_list[i].father++;
+		else if(p<q&&favbrd_list[i].father<=q&&favbrd_list[i].father>p)
+			favbrd_list[i].father--;
+	if(p>q&&favnow>=q&&favnow<p) favnow++;
+	if(p<q&&favnow<=q&&favnow>p) favnow--;
+	temp=favbrd_list[p];
+	if(p>q)
+	for(i=p;i>q;i--)
+		favbrd_list[i]=favbrd_list[i-1];
+	else
+	for(i=p;i<q;i++)
+		favbrd_list[i]=favbrd_list[i+1];
+	favbrd_list[q]=temp;
 }
 
 /*---   ---*/
@@ -337,7 +364,36 @@ int load_boards(char *boardprefix)
                         ptr->total++;
                 ptr->zap = 0;
             }
+            else if (favbrd_list[n].father == favnow) {
+	        bptr = (struct boardheader *) getboard(favbrd_list[n].flag + 1);
+	        if (!bptr)
+	            continue;
+#ifndef _DEBUG_
+	        if (!*bptr->filename)
+	            continue;
+#endif /*_DEBUG_*/
+	        if (!(bptr->level & PERM_POSTMASK) && !HAS_PERM(currentuser, bptr->level) && !(bptr->level & PERM_NOZAP))
+	            continue;
+	        if (boardprefix != NULL && strchr(boardprefix, bptr->title[0]) == NULL && boardprefix[0] != '*')
+	            continue;
+	        if (boardprefix != NULL && boardprefix[0] == '*')
+	            if (!strstr(bptr->title, "¡ñ") && !strstr(bptr->title, "¡Ñ")
+	                && bptr->title[0] != '*')
+	                continue;
+	        if (boardprefix == NULL && bptr->title[0] == '*')
+	            continue;
+	        
+	            ptr = &nbrd[brdnum++];
+	            ptr->name = bptr->filename;
+	            ptr->title = bptr->title;
+	            ptr->BM = bptr->BM;
+	            ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
+	            ptr->pos = favbrd_list[n].flag;
+	            ptr->total = -1;
+	            ptr->zap = (zapbuf[favbrd_list[n].flag] == 0);
+            }
     }
+    else
     for (n = 0; n < get_boardcount(); n++) {
         bptr = (struct boardheader *) getboard(n + 1);
         if (!bptr)
@@ -359,8 +415,7 @@ int load_boards(char *boardprefix)
         if (boardprefix == NULL && bptr->title[0] == '*')
             continue;
         /*---	period	2000-09-11	4 FavBoard	---*/
-        if ((1 == yank_flag || (!yank_flag && (zapbuf[n] != 0 || (bptr->level & PERM_NOZAP))))
-            || (2 == yank_flag && IsFavBoard(n))) {
+        if ((1 == yank_flag || (!yank_flag && (zapbuf[n] != 0 || (bptr->level & PERM_NOZAP))))) {
             ptr = &nbrd[brdnum++];
             ptr->name = bptr->filename;
             ptr->title = bptr->title;

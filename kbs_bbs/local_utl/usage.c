@@ -81,7 +81,7 @@ int fillbcache(fptr)
 
 int fillboard()
 {
-    apply_record(BOARDS, fillbcache, sizeof(struct boardheader), NULL, 0);
+    apply_record(BOARDS, fillbcache, sizeof(struct boardheader), NULL, 0,false);
 }
 
 char *timetostr(i)

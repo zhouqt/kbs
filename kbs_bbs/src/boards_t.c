@@ -368,6 +368,7 @@ static int choose_board(int newflag, char *boardprefix)
         if (brdnum <= 0) {      /*初始化 */
             if (load_boards(boardprefix) == -1)
                 continue;
+            if(yank_flag!=2)
             qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);
             page = -1;
             if (brdnum <= 0)
@@ -594,9 +595,18 @@ static int choose_board(int newflag, char *boardprefix)
             }
             break;
         case 's':              /* sort/unsort -mfchen */
-            currentuser->flags[0] ^= BRDSORT_FLAG;      /*排序方式 */
-            qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);       /*排序 */
-            page = 999;
+            if(yank_flag!=2){
+	            currentuser->flags[0] ^= BRDSORT_FLAG;      /*排序方式 */
+	            qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);       /*排序 */
+	            page = 999;
+            }
+            else {
+            	modify_user_mode(SELECT);
+		do_select(0, NULL, genbuf);
+            	Read();
+              show_brdlist(page, 1, newflag);     /*  refresh screen */
+              modify_user_mode(newflag ? READNEW : READBRD);
+            }
             break;
             /*---	added period 2000-09-11	4 FavBoard	---*/
         case 'a':
@@ -626,6 +636,11 @@ static int choose_board(int newflag, char *boardprefix)
                     addFavBoard(i - 1);
                     save_favboard();
                     brdnum = -1;        /*  force refresh board list */
+                } else if (IsFavBoard(i - 1)) {
+                    move(2, 0);
+                    prints("已存在该讨论区.\n");
+                    pressreturn();
+                    show_brdlist(page, 1, newflag);     /*  refresh screen */
                 } else {
                     move(2, 0);
                     prints("不正确的讨论区.\n");
@@ -674,6 +689,36 @@ static int choose_board(int newflag, char *boardprefix)
                 }
             }
             break;
+        case 'm':
+        	if (nbrd[num].flag != -1 || nbrd[num].pos != -1){
+        		int p,q;
+        		char ans[5];
+                     if (nbrd[num].flag == -1)
+                         p = nbrd[num].pos;
+                     else
+                         p = IsFavBoard(nbrd[num].pos) - 1;
+                    move(0, 0);
+                    clrtoeol();
+                    getdata(0, 0, "请输入移动到的位置:", ans, 4, DOECHO, NULL, true);
+                    q=atoi(ans)-1;
+                    if (q<0||q>=brdnum) {
+	                    move(2, 0);
+	                    clrtoeol();
+	                    prints("非法的移动位置！");
+	                    pressreturn();
+	                    show_brdlist(page, 1, newflag);     /*  refresh screen */
+                    }
+                    else {
+                          if (q==0) q=1;
+                          else 
+                          	if (nbrd[q].flag == -1) q=nbrd[q].pos;
+                          	else q=IsFavBoard(nbrd[q].pos)-1;
+                          MoveFavBoard(p,q);
+                          save_favboard();
+                          brdnum = -1;
+                    }
+        	}
+        	break;
         case 'd':
             if (2 == yank_flag) {
                 int p = 1;
