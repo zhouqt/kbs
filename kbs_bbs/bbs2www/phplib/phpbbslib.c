@@ -4873,11 +4873,9 @@ PHP_RSHUTDOWN_FUNCTION(smth_bbs)
 #endif
     chdir(old_pwd);
 
-#ifdef HAVE_BRC_CONTROL
-#ifdef USE_TMPFS
+#if defined(HAVE_BRC_CONTROL) && USE_TMPFS == 1
     if (currentuser&&(currentuser->userid[0]))
 	free_brc_cache( currentuser->userid );
-#endif
 #endif
 
     currentuser = NULL;
@@ -8081,10 +8079,10 @@ static PHP_FUNCTION(bbs_get_threads_from_gid)
                                  * flags[2]: no reply flag
                                  * flags[3]: attach flag
                                  */
-   if( start < 0 )
-    	start = 0;
-    
     int ac = ZEND_NUM_ARGS();
+	if( start < 0 )
+		start = 0;
+    
 
     if (ac != 5 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "lllzz", &bid , &gid, &start , &z_threads , &retprev) == FAILURE) {
         WRONG_PARAM_COUNT;
