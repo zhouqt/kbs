@@ -24,6 +24,30 @@ char *mytitle[] = { "»’ Æ¥Û»»√≈ª∞Ã‚",
 
 #define HASHSIZE 1024
 #define TOPCOUNT 200
+#ifdef BLESS_BOARD
+const char* surfix_bless[21]={
+"  \x1b[1;34m°Ù  ",
+"\x1b[1;32m©≥\x1b[0;32m©ÿ\x1b[1m©∑",
+"\x1b[32m©»\x1b[1m…Ó\x1b[0;32m©¿",
+"\x1b[1;32m©ª\x1b[0;32m©–\x1b[1m©ø",
+"  \x1b[32m©¶  ",
+"\x1b[1;32m©≥\x1b[0;32m©ÿ\x1b[1m©∑",
+"\x1b[32m©»\x1b[1m«È\x1b[0;32m©¿",
+"\x1b[1;32m©ª\x1b[0;32m©–\x1b[1m©ø",
+"  \x1b[32m©¶  ",
+"\x1b[1;32m©≥\x1b[0;32m©ÿ\x1b[1m©∑",
+"\x1b[32m©»\x1b[1mµƒ\x1b[0;32m©¿",
+"\x1b[1;32m©ª\x1b[0;32m©–\x1b[1m©ø",
+"  \x1b[32m©¶  ",
+"\x1b[1;32m©≥\x1b[0;32m©ÿ\x1b[1m©∑",
+"\x1b[32m©»\x1b[1m◊£\x1b[0;32m©¿",
+"\x1b[1;32m©ª\x1b[0;32m©–\x1b[1m©ø",
+"  \x1b[32m©¶  ",
+"\x1b[1;32m©≥\x1b[0;32m©ÿ\x1b[1m©∑",
+"\x1b[32m©»\x1b[1m∏£\x1b[0;32m©¿",
+"\x1b[1;32m©ª\x1b[0;32m©–\x1b[1m©ø",
+"  \x1b[1;34m°Ù  "};
+#endif
 
 struct fileheader               /* This structure is used to hold data in */
  fh[1];
@@ -172,6 +196,11 @@ void writestat(int mytype,struct postrec* dobucket[HASHSIZE])
 
     sprintf(curfile, "etc/posts/%s", p);
     if (fp = fopen(curfile, "w")) {
+#ifdef BLESS_BOARD
+        if (mytype==4)
+        fprintf(fp,"\x1b[1;33m©§©§ \x1b[31m°Ó\x1b[33m°Ó\x1b[32m°Ó \x1b[41;32m  \x1b[33m±æ»’ Æ¥Û÷‘–ƒ◊£∏£  \x1b[40m \x1b[32m°Ó\x1b[31m°Ó\x1b[33m°Ó ©§©§\x1b[m\n\n");
+        else
+#endif
         fprintf(fp, "                [34m-----[37m=====[41m ±æ%s [40m=====[34m-----[m\n\n", mytitle[mytype]);
 
         i = mytop[mytype];
@@ -217,10 +246,21 @@ void writestat(int mytype,struct postrec* dobucket[HASHSIZE])
             }
             real++;
 #endif
+#ifdef BLESS_BOARD
+	     if (mytype==4)
+            fprintf(fp,
+                    "                                            %s \x1b[1;31m%4d\x1b[0;37m»À      %s\x1b[m\n"
+                    "\x1b[1mµ⁄ \x1b[31m%3d\x1b[37m√˚ \x1b[4%dm%-60.60s\x1b[40m \x1b[33m%-12s%s\x1b[m\n", 
+                    p , top[i].number, surfix_bless[(real-1)*2], real,  (real-1)/2+1, top[i].title, top[i].author,surfix_bless[(real-1)*2+1]);
+            else
+#endif
             fprintf(fp,
                     "[37mµ⁄[31m%3d[37m √˚ [37m–≈«¯ : [33m%-16s[37m°æ[32m%s[37m°ø[36m%4d [37m»À[35m%+16s\n"
                     "     [37m±ÍÃ‚ : [44m[37m%-60.60s[40m\n", !mytype ? real : (i + 1), top[i].board, p, top[i].number, top[i].author, top[i].title);
         }
+#ifdef BLESS_BOARD
+	fprintf(fp,"                                                                         %s\x1b[m",surfix_bless[20]);
+#endif
         fclose(fp);
     }
 }
