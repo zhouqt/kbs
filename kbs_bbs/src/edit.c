@@ -633,14 +633,21 @@ static void insertch_from_fp(int ch)
         split(currline, currpnt);
     }
 }
-static long insert_from_fp(FILE *fp)
+static long insert_from_fp(FILE *fp, char *tmpattachfile)
 {
     int ch;
     char attachpad[10];
     int matched;
     char* ptr;
     long size;
+	int ret=0;
+	int fdst=0;
 
+	if( tmpattachfile && tmpattachfile[0] ){
+        if ((fdst = open(tmpattachfile, O_WRONLY | O_CREAT, 0600)) == NULL) 
+			ret = -1;
+	}
+	
     matched=0;
     BBS_TRY {
         if (safe_mmapfile_handle(fileno(fp), O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & size) == 1) {
@@ -653,11 +660,42 @@ static long insert_from_fp(FILE *fp)
                     if (matched==ATTACHMENT_SIZE) {
                         int d, size;
                         data++; not++;
-                        while(*data) {data++; not++;}
+						if( fdst != NULL ){
+    						char o[8]={0,0,0,0,0,0,0,0};
+							write(fdst, o, 8);
+						}
+						if(ret == 0)
+							ret = data - ptr - ATTACHMENT_SIZE + 1;
+                        while(*data){
+							if( fdst != NULL ){
+								write(fdst, data, 1);
+							}
+							data++;
+							not++;
+						}
+						if( fdst != NULL ){
+							write(fdst, data, 5);
+						}
                         data++;
                         not++;
                         memcpy(&d, data, 4);
                         size = htonl(d);
+						if( fdst != NULL ){
+							char *atmp = data + 4;
+							int i=size;
+							int rd,wt;
+							for(; i>0;){
+								if( i > 10240 )
+									rd = 10240;
+								else
+									rd = i;
+                    			wt = write(fdst, atmp, rd);
+								if( wt <= 0)
+									break;
+								atmp += wt;
+								i -= wt;
+							}
+						}
                         data+=4+size-1;
                         not+=4+size-1;
                         matched = 0;
@@ -675,10 +713,15 @@ static long insert_from_fp(FILE *fp)
     BBS_CATCH {
     }
     BBS_END end_mmapfile((void *) ptr, size, -1);
-    return 0;
+
+	if( fdst != NULL )
+		close(fdst);
+
+	if(ret <= 0) return 0;
+    return ret;
 }
 
-long read_file(char *filename)
+long read_file(char *filename,char *tmpattachfile)
 {
     FILE *fp;
     long ret;
@@ -693,7 +736,7 @@ long read_file(char *filename)
         indigestion(4);
         abort_bbs(0);
     }
-    ret=insert_from_fp(fp);
+    ret=insert_from_fp(fp, tmpattachfile);
     fclose(fp);
     return ret;
 }
@@ -767,7 +810,7 @@ int valid_article(pmt, abort)
 
 }
 
-static int write_file(char* filename,int saveheader,long* effsize,long* pattachpos)
+static int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, char *tmpattachfile)
 {
     struct textline *p = firstline;
     FILE *fp;
@@ -863,6 +906,8 @@ static int write_file(char* filename,int saveheader,long* effsize,long* pattachp
 #endif
         if (stat(filename, &stbuf) || stbuf.st_size == 0)
             unlink(filename);
+		if( pattachpos && *pattachpos )
+			unlink(tmpattachfile);
         aborted = -1;
     } else if (abort[0] == 'e' || abort[0] == 'E') {
 #ifdef FILTER
@@ -897,6 +942,8 @@ static int write_file(char* filename,int saveheader,long* effsize,long* pattachp
     }
     firstline = NULL;
     if (!aborted) {
+				/* old source */
+				/*
         if (*pattachpos) {
             char buf[MAXPATH];
             int fsrc,fdst;
@@ -917,6 +964,8 @@ static int write_file(char* filename,int saveheader,long* effsize,long* pattachp
                 close(fsrc);
             }
         }
+				*/
+				/* ols source end */
         if ((fp = fopen(filename, "w")) == NULL) {
             indigestion(5);
             abort_bbs(0);
@@ -1033,7 +1082,8 @@ fsdfa
     }
     if (!aborted) {
         fclose(fp);
-        if (*pattachpos) {
+        if (pattachpos && *pattachpos) {
+				/* old source
             char buf[MAXPATH];
             int fsrc,fdst;
             struct stat st;
@@ -1043,6 +1093,12 @@ fsdfa
             if (aborted!=-1)
                 f_catfile(buf,filename);
             f_rm(buf);
+				*/
+            struct stat st;
+            stat(filename,&st);
+            *pattachpos=st.st_size+1;
+            f_catfile(tmpattachfile,filename);
+            f_rm(tmpattachfile);
         }
     }
     currline = NULL;
@@ -1428,7 +1484,7 @@ static int process_ESC_action(int action, int arg)
     case 'I':
         sprintf(filename, "tmp/clip/%s.%c", currentuser->userid, arg);
         if ((fp = fopen(filename, "r")) != NULL) {
-            insert_from_fp(fp);
+            insert_from_fp(fp,NULL);
             fclose(fp);
             sprintf(msg, "已取出剪贴簿第 %c 页", arg);
         } else
@@ -1954,12 +2010,14 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,
 {
     int newch, ch = 0, foo, shift;
     struct textline *st_tmp, *st_tmp2;
+	char tmpattachfile[STRLEN];
 
     if (pattachpos != NULL && *pattachpos!=0) {
-        *pattachpos=read_file(filename);
+		snprintf(tmpattachfile, STRLEN, "tmp/%s.%d.attedit.bak", currentuser->userid, getpid());
+        *pattachpos=read_file(filename,tmpattachfile);
     } else
         // TODO: add zmodem upload
-        read_file(filename);
+        read_file(filename,NULL);
     top_of_win = firstline;
     for (newch = 0; newch < headlines; newch++)
         if (top_of_win->next)
@@ -1987,7 +2045,7 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,
                 firstline->prev = st_tmp;
                 firstline = st_tmp2;
             }
-            foo = write_file(filename, saveheader, eff_size,pattachpos);
+            foo = write_file(filename, saveheader, eff_size,pattachpos,tmpattachfile);
             if (foo != KEEP_EDITING)
                 return foo;
             if (headlines) {

@@ -1159,6 +1159,7 @@ static int mail_edit(int ent, struct fileheader *fileinfo, char *direct)
 		return DONOTHING;
 
     clear();
+	attachpos = fileinfo->attachment;
     if (vedit_post(genbuf, false, &eff_size,&attachpos) != -1) {
         fileinfo->eff_size = eff_size;
         if (ADD_EDITMARK)

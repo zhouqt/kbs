@@ -2449,6 +2449,7 @@ int post_article(char *q_file, struct fileheader *re_file)
 #endif
 
     sprintf(genbuf, "%s/%s", buf, fileinfo->filename);
+	attachpos = fileinfo->attachment;
     if (vedit_post(genbuf, false, &eff_size,&attachpos) != -1) {
         fileinfo->eff_size = eff_size;
         if (ADD_EDITMARK)
