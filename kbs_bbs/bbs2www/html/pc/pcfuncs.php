@@ -23,7 +23,7 @@ $pcconfig["HOME"] = BBS_HOME;
 $pcconfig["ETEMS"] = 20;
 $pcconfig["NEWS"] = 20;
 $pcconfig["SITE"] = "smth.org";
-$pcconfig["BOARD"] = "PersonalCorpus";
+$pcconfig["BOARD"] = "SMTH_blog";
 $pcconfig["SEARCHFILTER"] = " µÄ";
 $pcconfig["SEARCHNUMBER"] = 10;
 /* personal corp. configure end */

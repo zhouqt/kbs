@@ -602,8 +602,7 @@
 		$visitcount = ",".$pc["UID"].",";
 		session_register("visitcount");
 	}
-	
-	if(!stristr($visitcount,",".$pc["UID"].","))
+	elseif(!stristr($visitcount,",".$pc["UID"].","))
 	{
 		pc_update_record($link,$pc["UID"],"+0",TRUE);//¼ÆÊýÆ÷¼Ó1
 		$pc["VISIT"] ++;
