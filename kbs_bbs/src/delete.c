@@ -118,15 +118,6 @@ void suicide()
         pressanykey();
         return;
     }
-#else
-    if (HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_BOARDS)) {
-        clear();
-        move(11, 28);
-        prints("[1m[33mÄãÓÐÖØÈÎÔÚÉí£¬²»ÄÜ×ÔÉ±£¡[m");
-        pressanykey();
-        return;
-    }
-#endif
 
     clear();
     move(1, 0);
@@ -179,6 +170,64 @@ void suicide()
            exit(0); */
         abort_bbs(0);
     }
+#else
+    if (HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_BOARDS)) {
+        clear();
+        move(11, 28);
+        prints("[1m[33mÄãÓÐÖØÈÎÔÚÉí£¬²»ÄÜ×ÔÉ±£¡[m");
+        pressanykey();
+        return;
+    }
+
+    clear();
+    move(1, 0);
+    prints("Ò»µ©×ÔÉ±£¬¾ÍÎÞ·¨Íì»Ø");
+    move(3, 0);
+    prints("ÕæµÄÏëÒªÒ»ËÀÁËÖ®Âð? ");
+    move(5, 0);
+
+    if (askyn("ÄãÈ·¶¨Òª×ÔÉ±Âð£¿", 0) == 1) {
+        char buf2[STRLEN], tmpbuf[PATHLEN], genbuf[PATHLEN];
+	 int id;
+        clear();
+	 getdata(0, 0, "ÇëÊäÈëÒ»¾ä¼ò¶ÌµÄ×ÔÉ±ÁôÑÔ: ", buf2, 75, DOECHO, NULL, true);
+        getdata(0, 0, "ÇëÊäÈëÔ­ÃÜÂë(ÊäÈëÕýÈ·µÄ»°»áÁ¢¿Ì¶ÏÏß²¢ÇÒÎÞ·¨Íì»Ø): ", buf, 39, NOECHO, NULL, true);   /*Haohmaru,98.10.12,check the passwds */
+        if (*buf == '\0' || !checkpasswd2(buf, currentuser)) {
+            prints("\n\nºÜ±§Ç¸, ÄúÊäÈëµÄÃÜÂë²»ÕýÈ·¡£\n");
+            pressanykey();
+            return;
+        }
+
+        now = time(0);
+        sprintf(filename, "etc/%s.tmp", currentuser->userid);
+        fn = fopen(filename, "w");
+        fprintf(fn, "[1m%s[m ÒÑ¾­ÔÚ [1m%24.24s[m ×ÔÉ±ÁË!", currentuser->userid, ctime(&now));
+        fprintf(fn, "\n\n×ÔÉ±ÕßµÄÁôÑÔ: %s", buf2);
+        sprintf(buf, "%s µÄ×ÔÉ±Í¨Öª", currentuser->userid);
+        post_file(currentuser, "", filename, "Goodbye", buf, 0, 1);
+        unlink(filename);
+
+    setmailpath(tmpbuf, currentuser->userid);
+    f_rm(tmpbuf);
+    sethomepath(tmpbuf, currentuser->userid);
+    f_rm(tmpbuf);
+    sprintf(genbuf, "tmp/email/%s", lookupuser->userid);
+    f_rm(genbuf);
+    currentuser->userlevel = 0;
+    id = searchuser(currentuser->userid);
+    setuserid(id, "");
+    /*strcpy(lookupuser->address, "");*/
+    strcpy(currentuser->username, "");
+    /*strcpy(lookupuser->realname, "");*/
+	/*read_userdata(lookupuser->userid, &ud);
+	strcpy(ud.address, "");
+	strcpy(ud.realname, "");
+	write_userdata(lookupuser->userid, &ud);*/
+/*    lookupuser->userid[0] = '\0' ; */
+        abort_bbs(0);
+    }
+
+#endif
 }
 
 int giveupnet()
