@@ -431,7 +431,7 @@ int multilogin_user(struct userec *user, int usernum,int mode)
     if ((HAS_PERM(user, PERM_BOARDS) || HAS_PERM(user, PERM_CHATOP) 
     	|| HAS_PERM(user, PERM_JURY) || HAS_PERM(user, PERM_CHATCLOAK)
     	|| HAS_PERM(user, PERM_BMAMANGER) )
-        && logincount < 2)
+        && logincount < 3)
         return 0;
     /* allow multiple guest user */
     if (!strcmp("guest", user->userid)) {
@@ -439,8 +439,8 @@ int multilogin_user(struct userec *user, int usernum,int mode)
             return 2;
         }
         return 0;
-    } else if (((curr_login_num < 700) && (logincount >= 2)) /*小于700可以双登*/
-               || ((curr_login_num >= 700) && (logincount >= 1)  /*700人以上*/
+    } else if (((curr_login_num < 700) && (logincount >= 3)) /*小于700可以三登*/
+               || ((curr_login_num >= 700) && (logincount >= 2)  /*700人以上*/
                      && !(((arg.telnet_count==0)&&(mode==0))  /* telnet个数为零可以再登一个telnet */
                             || (((arg.www_count==0)&&(mode==1)) ))))       /*user login limit */
         return 1;
