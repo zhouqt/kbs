@@ -297,7 +297,7 @@ setuserid( int     num,const char    *userid) /* 设置user num的id为user id*/
             uidshm->number = num;
         oldkey=ucache_hash((char*)passwd[ num - 1 ].userid);
         newkey=ucache_hash(userid);
-        if (oldkey!=newkey) {
+/*        if (oldkey!=newkey) { disable,为了加强兼容性*/
 		int lockfd = ucache_lock();
 	        find=uidshm->hashhead[oldkey];
 
@@ -308,7 +308,7 @@ setuserid( int     num,const char    *userid) /* 设置user num的id为user id*/
 	          if (!uidshm->next[find-1]) {
 			if (oldkey!=0) {
 		          	log("3system","UCACHE:can't find %s in hash table",passwd[ num - 1 ].userid);
-		          	exit(0);
+/*		          	exit(0);*/
 			}
 	          }
 	          else uidshm->next[find-1] = uidshm->next[num-1];
@@ -317,7 +317,7 @@ setuserid( int     num,const char    *userid) /* 设置user num的id为user id*/
 	        uidshm->next[num-1]=uidshm->hashhead[newkey];
 	        uidshm->hashhead[newkey]=num;
 		    ucache_unlock(lockfd);
-        }	        
+/*        }	        */
         strncpy( passwd[ num - 1 ].userid, userid, IDLEN+1 );
     }
 }

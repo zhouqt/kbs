@@ -685,7 +685,6 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
             /*prints( "\033[32m错误的使用者代号...\033[m\n" );*/
             if (check_ban_IP(fromhost,buf)<=0)
 	    {
-	        memset( currentuser, 0, sizeof( currentuser ) );
 		new_register();
 		sethomepath(tmpstr, currentuser->userid);
 		sprintf( buf, "/bin/mv -f %s /home0/bbs/homeback/%s", tmpstr,currentuser->userid);
