@@ -907,6 +907,8 @@ void Retr()
     /*      Wed Jan 21 17:42:14 1998            -- ctime returns
        012345678901234567890123            -- offsets
        Date: Wed, 21 Jan 1998 17:54:33 +0800     -- RFC wants     */
+    sprintf(genbuf, "Received: from insidesmtp (unknown [127.0.0.1]); %3.3s, %2.2s %3.3s %4.4s %8.8s +0800", ptr + 0, ptr + 8, ptr + 4, ptr + 20, ptr + 11);
+    outs(genbuf);
     sprintf(genbuf, "Date: %3.3s, %2.2s %3.3s %4.4s %8.8s +0800", ptr + 0, ptr + 8, ptr + 4, ptr + 20, ptr + 11);
     outs(genbuf);
     if (index(fcache[num].owner, '@') == NULL) {
@@ -1051,6 +1053,8 @@ void Top()
     /*      Wed Jan 21 17:42:14 1998            -- ctime returns
        012345678901234567890123            -- offsets
        Date: Wed, 21 Jan 1998 17:54:33 +0800     -- RFC wants     */
+    sprintf(genbuf, "Received: from insidesmtp (unknown [127.0.0.1]); %3.3s, %2.2s %3.3s %4.4s %8.8s +0800", ptr + 0, ptr + 8, ptr + 4, ptr + 20, ptr + 11);
+    outs(genbuf);
     sprintf(genbuf, "Date: %3.3s, %2.2s %3.3s %4.4s %8.8s +0800", ptr + 0, ptr + 8, ptr + 4, ptr + 20, ptr + 11);
     outs(genbuf);
     if (index(fcache[num].owner, '@') == NULL) {
