@@ -552,8 +552,6 @@ void r_msg()
 
 
 outhere:
-    for(i=0;i<=23;i++)
-        saveline(i, 1, savebuffer[i]);
     showansi = tmpansi;
     good_move(y,x);
     if(oldi)
