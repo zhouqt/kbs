@@ -129,13 +129,13 @@ char *uident;
 /*	  if (0==strlen(denymsg)) goto MUST;*/
     if (denymsg[0]=='*')
         return 0;
-#ifdef DEBUG
     autofree = askyn("该封禁是否自动解封？", YEA);
+    /*
 #else
     if (HAS_PERM(currentuser,PERM_SYSOP)||HAS_PERM(currentuser,PERM_OBOARDS))
         sprintf(filebuf,"输入天数(0-手动解封，最长%d天)",maxdeny);
     else
-#endif /*DEBUG*/
+#endif DEBUG*/
         sprintf(filebuf,"输入天数(最长%d天)",maxdeny);
 /*MUST1:*/
     denyday = 0;
@@ -150,15 +150,13 @@ char *uident;
             break;
     }
 
-#ifdef DEBUG
     if(denyday && autofree) {
+	    /*
 #else
     if (denyday) {
-#endif /*DEBUG*/
+#endif DEBUG*/
         struct tm* tmtime;
         time_t undenytime=now+denyday*24*60*60;
-/*        time_t daytime=now+(day+1)*24*60*60;
-        now=time(0);*/
         tmtime=gmtime(&undenytime);
 
         sprintf( strtosave, "%-12.12s %-30.30s%-12.12s %2d月%2d日解\x1b[%um",
@@ -166,19 +164,18 @@ char *uident;
                 tmtime->tm_mon+1,tmtime->tm_mday, undenytime);/*Haohmaru 98,09,25,显示是谁什么时候封的 */
     } else {
         struct tm* tmtime;
-#ifdef DEBUG
         time_t undenytime = now+denyday*24*60*60;
         tmtime=gmtime(&undenytime);
-        sprintf( strtosave, "%-12.12s %-30.30s%-12.12s %2d月%2d日后手动解封\x1b[%um",
+        sprintf( strtosave, "%-12.12s %-30.30s%-12.12s %2d月%2d日后\x1b[%um",
                 uident, denymsg, currentuser->userid,
                 tmtime->tm_mon+1,tmtime->tm_mday, undenytime);
-#else
+	/*
         now=time(0);
         tmtime=gmtime(&now);
         sprintf( strtosave, "%-12.12s %-30.30s%-12.12s at %2d月%2d日 手动解封",
                 uident, denymsg, currentuser->userid,
                 tmtime->tm_mon+1,tmtime->tm_mday);
-#endif
+		*/
     }
 
 /*

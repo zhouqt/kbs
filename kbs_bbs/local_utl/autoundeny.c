@@ -24,6 +24,7 @@ int canundeny(char* linebuf,unsigned long nowtime)
 	p=linebuf;
 	while ((*p!=0)&&(*p!=0x1b)) p++;
 	if (*p==0) return 0;
+	if (!strncmp(p-2,"ºó",2)) return 0;
 	p++;
 	if (*p==0) return 0;
 	p++;
