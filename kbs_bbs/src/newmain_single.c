@@ -669,6 +669,9 @@ void login_query()
     multi_user_check();
     if(check_ip_acl(currentuser->userid, fromhost)) {
         prints("该 ID 不欢迎来自 %s 的用户，byebye!", fromhost);
+        oflush();
+        sleep(1);
+        exit(1);
     }
     alarm(0);
     signal(SIGALRM, SIG_IGN);   /*Haohmaru.98.11.12 */
