@@ -568,17 +568,13 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
 	filetime = get_posttime(ent);
     if (filetime > 740000000) {
 #ifdef HAVE_COLOR_DATE
+		struct tm *mytm;
         char* datestr = ctime( &filetime ) + 4;
+		mytm = localtime(&filetime);
+		sprintf(date, "[1;%dm%6.6s[m", mytm->tm_wday + 31, datestr);
 #else
         strncpy(date, ctime(&filetime) + 4, 6);
-	date[6]=0;
-#endif
-        
-#ifdef HAVE_COLOR_DATE
-	    strcpy(date,"[1;30m      [m");
-	    strncpy(date+7,datestr,6);
-		date[5]='1'+(atoi(datestr+4)%7);
-		if (date[5]=='6') date[5]='7';
+		date[6]=0;
 #endif
     }
     /*
