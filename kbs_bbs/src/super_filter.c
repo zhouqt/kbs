@@ -340,7 +340,7 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
         return;
     }
     fmakesure(r-l+2+libptr<libs+LIBLEN,4);
-    strncpy(libptr, s+l+1, r-l+1);
+    strncpy(libptr, s+l, r-l+1);
     libptr[r-l+1]=0;
     p->num=false;
     p->p=libptr;
@@ -356,6 +356,7 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
     char *ptr;
     struct stat buf;
     int mode=8, load_content=0, found=0, load_stat=0;
+    int gid = fileinfo->groupid;
     extern int scr_cols;
     static char index[1024]="";
 
@@ -449,6 +450,7 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
         set_vard(fvars+fget_var("id"), ptr1->id);
         set_vard(fvars+fget_var("reid"), ptr1->reid);
         set_vard(fvars+fget_var("groupid"), ptr1->groupid);
+        set_vard(fvars+fget_var("thread"), ptr1->groupid==gid); set_vard(fvars+fget_var("本主题"), ptr1->groupid==gid);
         set_vard(fvars+fget_var("origin"), ptr1->id==ptr1->groupid); set_vard(fvars+fget_var("原作"), ptr1->id==ptr1->groupid);
         set_vard(fvars+fget_var("m"), ptr1->accessed[0]&FILE_MARKED); set_vard(fvars+fget_var("保留"), ptr1->accessed[0]&FILE_MARKED);
         set_vard(fvars+fget_var("g"), ptr1->accessed[0]&FILE_DIGEST); set_vard(fvars+fget_var("文摘"), ptr1->accessed[0]&FILE_DIGEST);
@@ -472,19 +474,24 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
 #endif
         setbfile(ffn, currboard, ptr1->filename);
         set_vard(fvars+fget_var("ftime"), get_posttime(ptr1)); set_vard(fvars+fget_var("时间"), get_posttime(ptr1));
-        set_vard(fvars+fget_var("effsize"), ptr1->eff_size); set_vard(fvars+fget_var("长度"), ptr1->eff_size);
+        set_vard(fvars+fget_var("effsize"), ptr1->eff_size); set_vard(fvars+fget_var("有效长度"), ptr1->eff_size);
         if(load_stat) {
-            if(stat(ffn, &st)!=-1)
-                set_vard(fvars+fget_var("asize"), st.st_size);
-            else
-                set_vard(fvars+fget_var("asize"), 0);
+            if(stat(ffn, &st)!=-1) {
+                set_vard(fvars+fget_var("asize"), st.st_size); set_vard(fvars+fget_var("总长度"), st.st_size);
+            }
+            else {
+                set_vard(fvars+fget_var("asize"), 0); set_vard(fvars+fget_var("总长度"), 0);
+            }
         }
         if(load_content) {
             int k,abssize=0,entercount=0,ignoreline=0;
             set_vars(fvars+fget_var("content"), ptr1->filename);
+            set_vars(fvars+fget_var("内容"), ptr1->filename);
             j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize, NULL);
-            if(j)
+            if(j) {
                 set_vars(fvars+fget_var("content"), p);
+                set_vars(fvars+fget_var("内容"), p);
+            }
         }
         ferr=0;
         feval(fvars+fget_var("res"), index, 0, strlen(index)-1);
