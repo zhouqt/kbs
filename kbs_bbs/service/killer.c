@@ -409,6 +409,7 @@ int do_com_menu()
             prints(menus[i]);
         }
         ch=igetkey();
+        if(kicked) return 0;
         switch(ch){
         case KEY_LEFT:
         case KEY_UP:
@@ -831,6 +832,8 @@ quitgame:
     }
 quitgame2:
     
+    sprintf(buf, "home/%c/%s/.INROOMMSG%d", toupper(currentuser->userid[0]), currentuser->userid, uinfo.pid);
+    unlink(buf);
     signal(SIGUSR1, talk_request);
 }
 
