@@ -3154,7 +3154,7 @@ int Goodbye()
     move(top + 9, left);
     outs("\x1b[1;47;37m¨U          \x1b[0;40;37m¨z¨z¨z¨z¨z¨z¨z¨z\x1b[1;47;37m      ¨U\x1b[m");
     move(top + 10, left);
-    outs("\x1b[1;47;37m¨^¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨a\x1b[m");
+    outs("\x1b[1;47;37m¨^¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨a");
 
     choose = simple_select_loop(level_conf, SIF_SINGLE | SIF_ESCQUIT | SIF_NUMBERKEY, t_columns, t_lines, NULL);
     if (choose == 0)
