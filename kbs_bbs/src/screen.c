@@ -424,7 +424,7 @@ void move(int y, int x)
 	    do_move(x, y, ochar);
 	    return;
 	}
-	if(x<0) cur_col = scr_cols-x;
+	if(x<0) cur_col = scr_cols+x;
 	else cur_col = x;
 	cur_ln = y;
 	if(cur_col<0) cur_col=0;
