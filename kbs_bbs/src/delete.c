@@ -48,7 +48,6 @@ d_board()
 {
     char bname[STRLEN];
     char title[STRLEN];
-    extern char lookgrp[];
 
     modify_user_mode( ADMIN );
     if(!check_systempasswd())
@@ -71,7 +70,8 @@ d_board()
         if( genbuf[0] != 'N' && genbuf[0] != 'n')
         {
 #endif
-            get_grp(bname);
+    		char lookgrp[30];
+            ann_get_board(lookgrp,bname,29);
             del_grp(lookgrp,bname,title+13);
 
         }

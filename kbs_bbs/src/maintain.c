@@ -23,7 +23,6 @@
 
 char            cexplain[STRLEN];
 char           *Ctime();
-char            lookgrp[30];
 static	int sysoppassed=0;
 
 /* modified by wwj, 2001/5/7, for new md5 passwd */
@@ -213,31 +212,6 @@ void securityreport(char *str,struct userec* lookupuser,char fdata[ 7 ][ STRLEN 
         unlink(fname);
         modify_user_mode(savemode);
     }
-}
-
-int get_grp(seekstr)
-char            seekstr[STRLEN];
-{
-    FILE           *fp;
-    char            buf[STRLEN];
-    char           *namep;
-
-    if ((fp = fopen("0Announce/.Search", "r")) == NULL)
-        return 0;
-    while (fgets(buf, STRLEN, fp) != NULL)
-    {
-        namep = strtok(buf, ": \n\r\t");
-        if (namep != NULL && strcasecmp(namep, seekstr) == 0)
-        {
-            fclose(fp);
-            strtok(NULL, "/");
-            namep = strtok(NULL, "/");
-            strcpy(lookgrp, namep);
-            return 1;
-        }
-    }
-    fclose(fp);
-    return 0;
 }
 
 void stand_title(title)
@@ -612,6 +586,7 @@ enterbname:
         }
         if (*genbuf == 'Y' || *genbuf == 'y')
         {
+			char            lookgrp[30];
             {
                 char            secu[STRLEN];
                 sprintf(secu, "ÐÞ¸ÄÌÖÂÛÇø£º%s(%s)", fh.filename, newfh.filename);
@@ -632,12 +607,12 @@ enterbname:
                 sprintf(vbuf, "%-38.38s(BM: %s)", newfh.title + 13, newfh.BM);
             else
                 sprintf(vbuf, "%-38.38s", newfh.title + 13);
-            get_grp(fh.filename);
+            ann_get_board(lookgrp,fh.filename,29);
             edit_grp(fh.filename, lookgrp, oldtitle + 13, vbuf);
             if (a_mv >= 1)
             {
                 group = chgrp();
-                get_grp(fh.filename);
+            	ann_get_board(lookgrp,fh.filename,29);
                 strcpy(tmp_grp, lookgrp);
                 if (strcmp(tmp_grp, group) || a_mv != 2)
                 {
