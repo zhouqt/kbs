@@ -28,7 +28,7 @@
 /*#include <varargs.h>*/
 #include <stdarg.h>
 
-#define o_clear() {output("\x1b[m\x1b[H\x1b[J",9); tc_mode=0; tc_color=7;  tc_col=0; tc_line=0; }
+#define o_clear() {if(tc_color!=7||tc_mode!=0) output("\x1b[m",3);output("\x1b[H\x1b[J",6); tc_mode=0; tc_color=7;  tc_col=0; tc_line=0; }
 #define o_cleol() output("\x1b[K",3)
 
 unsigned char scr_lns, scr_cols;
@@ -160,6 +160,19 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
             p=p&&(bp[q].color[i]==tc_color)&&(bp[q].mode[i]==tc_mode);
         if(p) {
             for(i=was_col;i<new_col;i++)
+                ochar(bp[q].data[i]);
+            return;
+        }
+    }
+    if(new_ln == was_ln+1 && new_col<=5) {
+        int p=1, q=(new_ln+roll)%scr_lns;
+        for(i=0;i<new_col;i++)
+            p=p&&(bp[q].color[i]==tc_color)&&(bp[q].mode[i]==tc_mode);
+        if(p) {
+            ochar('\n');
+            if (was_col != 0)
+                ochar('\r');
+            for(i=0;i<new_col;i++)
                 ochar(bp[q].data[i]);
             return;
         }
