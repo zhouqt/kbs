@@ -301,6 +301,8 @@ int     mode;
 	case CALENDAR:  return "万年历";
 	case CALENEDIT:  return "日记本";
 	case DICT: return "查字典";
+    case CALC: return "计算器";
+    case SETACL: return "登录控制";
     default: return "去了那里!?" ;
     }
 }
