@@ -1694,6 +1694,7 @@ int lastlevel, lastbmonly;
                      * £¬ÓÃÉÏ£¯ÏÂ¼ıÍ·Ö±½ÓÌø×ªµ½Ç°£¯ºóÒ»Ïî 
                      */
                     ansimore_withzmodem(fname, false, me.item[me.now]->title);
+                    move(t_lines - 1, 0);
                     prints("[1m[44m[31m[ÔÄ¶Á¾«»ªÇø×ÊÁÏ]  [33m½áÊø Q,¡û ©¦ ÉÏÒ»Ïî×ÊÁÏ U,¡ü©¦ ÏÂÒ»Ïî×ÊÁÏ <Enter>,<Space>,¡ı [m");
                     switch (ch = igetkey()) {
                     case KEY_DOWN:
