@@ -24,6 +24,9 @@ char otherfile[200];
 int allfile = 0, allref = 0, alllost = 0, unknownfn = 0, nindexitem = 0,
     nstrangeitem = 0;
 
+struct a_template *tpl;
+int tpl_num;
+
 int
 hash(char *postname)
 {
@@ -58,8 +61,14 @@ isspcname(char *file)
 int
 countfile(struct fileheader *fhdr, int index, void *farg)
 {
-	int i, h;
-	char *fname = fhdr->filename;
+	return countfile_new( fhdr->filename) ;
+
+}
+
+int countfile_new( char *fname){
+	
+	int i,h;
+
 	nindexitem++;
 #ifndef SMTH
 	h = hash(fname);
@@ -178,7 +187,7 @@ rm_lost(char *path)
 					continue;
 				}
 				sprintf(buf, "%s/%s", path, allpost[h][i]);
-				//printf("--%s\n", buf);
+				printf("--%s\n", buf);
 				unlink(buf);
 			}
 		}
@@ -226,6 +235,16 @@ find_rm_lost(struct boardheader *bhp,void* arg)
 	if (dashf(buf))
 		if (useindexfile(buf) < 0)
 			return -1;
+
+	tpl_num = orig_tmpl_init(bhp->filename, 1, &tpl);
+	if( tpl_num > 0 ){
+		for(i=0; i<tpl_num; i++){
+			if( tpl[i].tmpl->filename[0] )
+				countfile_new(tpl[i].tmpl->filename);
+		}
+	}
+	if( tpl_num >= 0) orig_tmpl_free(&tpl, tpl_num);
+
 	sprintf(buf, "boards/%s", bhp->filename);
 	rm_lost(buf);
 	return 0;
