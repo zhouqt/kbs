@@ -90,7 +90,9 @@ int num_conns;                  /* current number of connections */
 fd_set allfds;                  /* fd set for selecting */
 struct timeval zerotv;          /* timeval for selecting */
 char chatbuf[256];              /* general purpose buffer */
-
+#ifdef FILTER
+static int filtering=1;
+#endif
 /* name of the main room (always exists) */
 
 char mainroom[] = CHAT_MAIN_ROOM;
@@ -101,6 +103,29 @@ char maintopic[] = CHAT_TOPIC;
 char *msg_not_op = CHAT_MSG_NOT_OP;
 char *msg_no_such_id = "*** [1m%s[m ²»ÔÚ±¾" CHAT_ROOM_NAME "Àï ***";
 char *msg_not_here = "*** [1m%s[m ²¢Ã»ÓĞÇ°À´" CHAT_SERVER " ***";
+
+#ifdef FILTER
+void filter_report(char* title,char *str)
+{
+	FILE *se;
+	char fname[STRLEN];
+	int savemode;
+	struct userec chatuser;
+
+       bzero(&chatuser,sizeof(chatuser));
+       strcpy(chatuser.userid,"ÁÄÌìÊÒ±¨¸æ");
+       strcpy(chatuser.username,"ÁÄÌìÊÒÃÜÌ½");
+       chatuser.userlevel=-1;
+	sprintf(fname, "tmp/deliver.chatd-report");
+	if ((se = fopen(fname, "w")) != NULL) {
+		fprintf(se, "%s", str);
+		fclose(se);
+              post_file(&chatuser, "", fname, FILTER_BOARD, title, 0, 1);
+		unlink(fname);
+		modify_user_mode(savemode);
+	}
+}
+#endif
 
 int can_send(int myunum, int unum)
 {                               /* added by Luzi 1997.11.30 */
@@ -316,6 +341,21 @@ void send_to_room(room, str, unum)
     fd_set writefds;
 
     FD_ZERO(&writefds);
+#ifdef FILTER
+    if (filtering) {
+    	if (check_badword_str(str, strlen(str))) {
+    		char title[80];
+    		char content[80];
+    		sprintf(title,"%s ÔÚÁÄÌìÊÒËµ»µ»°",users[unum].userid);
+    		sprintf(content,"%s(ÁÄÌì´úºÅ %s )Ëµ:%s",users[unum].userid,
+    			users[unum].chatid.str);
+    		filter_report(title, content);
+              FD_SET(users[unum].sockfd, &writefds);
+              do_send(&writefds, str);
+    		return;
+    	}
+    }
+#endif
     for (i = 0; i < CHATMAXACTIVE; i++) {
         if (users[i].sockfd == -1)
             continue;
@@ -1034,6 +1074,22 @@ void chat_setroom(unum, msg)
     while (*modestr) {
         flag = 0;
         switch (*modestr) {
+#ifdef FILTER
+       case 'F':
+       case 'f': {
+       	char buf[80];
+       	char title[80];
+       	filtering=!filtering;
+       	if (filtering)
+                sprintf(buf, "¹ıÂËÆ÷ÒÑ¾­´ò¿ª");
+       	else
+                sprintf(buf, "¹ıÂËÆ÷ÒÑ¾­¹Ø±Õ");
+       	send_to_unum(unum,buf);
+       	sprintf(title,"%s:%s",users[unum].userid, buf);
+       	filter_report(title,buf)
+       	return;
+       	}
+#endif
         case 'l':
         case 'L':
             if (!rnum && !SYSOP(unum)) {        /*added by Haohmaru,98.9.6 */

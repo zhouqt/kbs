@@ -1079,10 +1079,10 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
     case FILE_CENSOR_FLAG:
 	if (!strcmp(currboard, FILTER_BOARD))
 	{
-		if (fileinfo->accessed[1] & FILE_CENSOR) {
+		if (fileinfo->accessed[1] & FILE_CENSOR || fileinfo->o_board[0]==0) {
 #ifdef BBSMAIN
 			if (prompt)
-			a_prompt(-1, " 该文章已经通过审核, 请按 Enter 继续 << ", ans);
+			a_prompt(-1, " 该文章已经通过审核或者无需审核, 请按 Enter 继续 << ", ans);
 #endif
 		} else {
 			fileinfo->accessed[1] |= FILE_CENSOR;
