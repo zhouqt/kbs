@@ -214,7 +214,7 @@ struct textline *alloc_line()
     }
     p->next = NULL;
     p->prev = NULL;
-    p->data = malloc(WRAPMARGIN+1);
+    p->data = malloc(WRAPMARGIN+5);
     p->maxlen = WRAPMARGIN;
     p->data[0] = '\0';
     p->len = 0;
@@ -233,7 +233,7 @@ struct textline *alloc_line_w(int w)
     }
     p->next = NULL;
     p->prev = NULL;
-    p->maxlen = w/WRAPMARGIN*WRAPMARGIN+1;
+    p->maxlen = w/WRAPMARGIN*WRAPMARGIN+5;
     if (p->maxlen<WRAPMARGIN) p->maxlen = WRAPMARGIN;
     p->data = malloc(p->maxlen+1);
     p->data[0] = '\0';
@@ -474,7 +474,7 @@ int join(struct textline * line)
     if (line->maxlen<=line->len+line->next->len+5) {
         int ml;
         char *q;
-        ml = ((line->len+line->next->len)/WRAPMARGIN+1)*WRAPMARGIN;
+        ml = ((line->len+line->next->len)/WRAPMARGIN+5)*WRAPMARGIN;
         if (ml<WRAPMARGIN) ml = WRAPMARGIN;
         q = (char *) malloc(ml+1);
         memcpy(q, line->data, line->len+1);
@@ -535,7 +535,7 @@ void insert_char(int ch)
         currpnt++;
     }
     if (p->len >= p->maxlen-5) {
-        char *q = (char *)malloc(p->maxlen+WRAPMARGIN+1);
+        char *q = (char *)malloc(p->maxlen+WRAPMARGIN+5);
         memcpy(q, p->data, p->len+1);
         free(p->data);
         p->data = q;
