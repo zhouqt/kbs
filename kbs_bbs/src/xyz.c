@@ -719,7 +719,7 @@ static void escape_filename(char *fn)
 int zsend_file( char *filename, char *title )
 {
 	char *t;
-	char buf[512];
+	char buf[100],buf1[100];
 	int i;
 	ansimore("etc/zmodem",0);
        move(t_lines-1, 0);
@@ -727,7 +727,8 @@ int zsend_file( char *filename, char *title )
        strcpy(buf,"N");
        getdata( t_lines-1, 0, "您确定要使用Zmodem传输文件么?[y/N]", buf, 2, DOECHO, NULL ,YEA);
        if (toupper(buf[0])  != 'Y') return FULLUPDATE;
-       strncpy(buf,title,80) ;
+       strncpy(buf,title,76) ;
+       buf[80] = '\0';
        escape_filename(buf);
        strcat(buf,".TXT");
        move(t_lines-2, 0);
@@ -739,7 +740,9 @@ int zsend_file( char *filename, char *title )
        if (buf[0] == '\0') return FULLUPDATE;
        buf[78] = '\0';
        escape_filename(buf);
-	bbs_zsendfile(filename,buf);
+       strcpy(buf1,"SMTH-%s-");
+       strcat(buf1,buf);
+	bbs_zsendfile(filename,buf1);
 	return FULLUPDATE;
 }
 
