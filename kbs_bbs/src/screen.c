@@ -53,7 +53,7 @@ void setfcolor(int i,int j)
 void setbcolor(int i)
 {
     if(i==0) i=8;
-    cur_color = cur_color&0x0f+i<<4;
+    cur_color = cur_color&0x0f+(i<<4);
 }
 
 void resetcolor()
@@ -317,7 +317,7 @@ void refresh()
             if((!(s&SCREEN_BRIGHT)&&tc_mode&SCREEN_BRIGHT&&bp[j].data[k]!=' '||
                 !(s&SCREEN_LINE)&&tc_mode&SCREEN_LINE||
                 !(s&SCREEN_BLINK)&&tc_mode&SCREEN_BLINK&&bp[j].data[k]!=' '||
-                !(s&SCREEN_BACK)&&tc_mode&SCREEN_BACK)||(tc_color>>4!=0&&bp[j].color[k]>>4==0)) {
+                !(s&SCREEN_BACK)&&tc_mode&SCREEN_BACK)||((tc_color>>4)!=0&&(bp[j].color[k]>>4)==0)) {
                 char buf[10];
                 tc_mode = 0;
                 tc_color = 7;
@@ -345,7 +345,7 @@ void refresh()
                 if(DEFINE(currentuser, DEF_COLOR))
                     stack[stackt++]=30+bp[j].color[k]&0x0f;
             }
-            if(tc_color>>4!=bp[j].color[k]>>4) {
+            if((tc_color>>4)!=(bp[j].color[k]>>4)) {
                 tc_color=bp[j].color[k]&0xf0+tc_color&0x0f;
                 if(DEFINE(currentuser, DEF_COLOR)) {
                     if((bp[j].color[k]>>4)==8)
@@ -624,7 +624,7 @@ void outns(const char*str, int n)
                             cur_color = m-30+cur_color&0xf0;
                         else if(m>=40&&m<=47) {
                             if(m==40) m=48;
-                            cur_color = (m-40)<<4+cur_color&0x0f;
+                            cur_color = ((m-40)<<4)+cur_color&0x0f;
                         }
                     }
                     j++;
