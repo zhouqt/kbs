@@ -32,12 +32,18 @@ static int clear_all_board_read_flag_func(struct boardheader *bh)
 
 int clear_all_board_read_flag()
 {
-	char save_board[BOARDNAMELEN];
+	char save_board[BOARDNAMELEN],ans[4];
+	getdata(t_lines - 1, 0, "清除所有的未读标记么(Y/N)? [N]: ", ans, 2, DOECHO, NULL, YEA);
+	if (ans[0] == 'Y' || ans[0] == 'y')
+	{
+
 	strncpy(save_board,currboard,BOARDNAMELEN);
 	save_board[BOARDNAMELEN-1]=0;
 
 	apply_boards(clear_all_board_read_flag_func);
 	strcpy(currboard,save_board);
+	}
+	return 0;
 }
 
 void
