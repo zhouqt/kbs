@@ -180,8 +180,17 @@ int len;
      */
     int i;
 
-    for (i = 0; i < len; i++)
-        ochar(s[i]);
+    while(obufsize+len>OBUFSIZE - 1) {
+        i=OBUFSIZE-obufsize;
+        memcpy(outbuf+obufsize, s, i);
+        obufsize += i;
+        s+=i;
+        len-=i;
+        oflush();
+    }
+    i=len;
+    memcpy(outbuf+obufsize, s, i);
+    obufsize += i;
 }
 
 
