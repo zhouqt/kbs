@@ -17,6 +17,7 @@ main();
 show_footer();
 
 function main() {
+	global $loginok;
 ?>
 <form action="" method=post id="oForm">
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
@@ -55,10 +56,16 @@ function main() {
 <td align=center class=TableBody1 style="font-weight:normal"><?php echo $friend['userfrom']; ?></td>
 <td align=center class=TableBody1 style="font-weight:normal"><?php printf('%02d:%02d',intval($friend['idle']/60), ($friend['idle']%60)); ?></td>
 <td align=center valign=middle width=220 class=TableBody1><nobr>
-<a target="_blank" href="friendlist.php?addfriend=<?php echo $friend['userid']; ?>">添加好友</a> | 
-<a href="sendmail.php?receiver=<?php echo $friend['userid']; ?>">发信问候</a> | 
-<a href="javascript:replyMsg('<?php echo $friend['userid'] ; ?>')">发送消息</a> | 
-<a href="#">发送短信</a>
+<a target="_blank" href="friendlist.php?addfriend=<?php echo $friend['userid']; ?>">添加好友</a>
+| <a href="sendmail.php?receiver=<?php echo $friend['userid']; ?>">发信问候</a>
+<?php
+	if ($loginok) {
+?>
+| <a href="javascript:replyMsg('<?php echo $friend['userid'] ; ?>')">发送消息</a>
+<!-- | <a href="#">发送短信</a> -->
+<?php
+	}
+?>
 </nobr></td>
 </tr>
 <?php

@@ -282,14 +282,24 @@ if ( chr($user['gender'])=='M' ){
 &nbsp;&nbsp;注册：<?php echo strftime('%Y-%m-%d',$user['firstlogin']); ?><BR>
 <?php
 	}
+	if ($user['userdefine0'] & BBS_DEF_SHOWDETAILUSERDATA) {
 ?>
 &nbsp;&nbsp;星座：<?php echo get_astro($user['birthmonth'],$user['birthday']); ?>
+<?php
+	}
+?>
 </td>
 
 <td class=<?php echo $bgstyle ;?> valign=top width=*>
 
 <table width=100% ><tr><td width=* valign='center'>
+<?php
+	if ($loginok) {
+?>
 <a href="javascript:replyMsg('<?php echo $thread['OWNER']; ?>')"><img src="pic/message.gif" border=0 alt="给<?php echo $thread['OWNER']; ?>发送一个短消息"></a>&nbsp;
+<?php
+	}
+?>
 <a href="friendlist.php?addfriend=<?php echo $thread['OWNER']; ?>" target=_blank><img src="pic/friend.gif" border=0 alt="把<?php echo $thread['OWNER']; ?>加入好友"></a>&nbsp;
 <a href="dispuser.php?id=<?php echo $thread['OWNER']; ?>" target=_blank><img src="pic/profile.gif" border=0 alt="查看<?php echo $thread['OWNER']; ?>的个人资料"></a>&nbsp;
 <a href=# onclick="alert('本功能尚未实现');" target=_blank><img src="pic/find.gif" border=0 alt="搜索<?php echo $thread['OWNER']; ?>在测试的所有贴子"></a>&nbsp;
