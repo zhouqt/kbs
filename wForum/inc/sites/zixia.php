@@ -14,11 +14,11 @@ define("ARTICLESPERPAGE",20); //目录列表下每页显示的主题数
 
 define("THREADSPERPAGE",5); //文章阅读时每页显示的文章数
 
-$SiteName="测试BBS";
+$SiteName="大话西游论坛";
 
-$SiteURL="http://news.zixia.net:8080";
+$SiteURL="http://bbs.zixia.net";
 
-$HTMLTitle="测试BBS";
+$HTMLTitle="大话西游论坛";
 
 $HTMLCharset="GB2312";
 
@@ -26,7 +26,7 @@ $DEFAULTStyle="defaultstyle";
 
 $Banner="pic/ws.jpg";
 
-$BannerURL="http://aka.com.cn";
+$BannerURL="http://wforum.aka.cn";
 
 define("ATTACHMAXSIZE","5242880");
 define ("ATTACHMAXTOTALSIZE","20971520");

@@ -1,11 +1,10 @@
 <?php 
 require 'DB.php';
-$host='localhost';
-$user='root';
-//$passwd='phpsql';
-$dbname='wbbs';
-//$dsn = "mysql://$user:$passwd@$host/$dbname";
-$dsn = "mysql://$user@$host/$dbname";
+$host='aka.com.cn';
+$user='aka';
+$passwd='aA3$;G(~cjKK';
+$dbname='AKA';
+$dsn = "mysql://$user:$passwd@$host/$dbname";
 
 $conn = DB::connect($dsn);
 if (DB::isError($conn)) { die ($conn->getMessage()); }
