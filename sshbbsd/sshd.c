@@ -20,8 +20,11 @@ agent connections.
 /*
  * $Id$
  * $Log$
- * Revision 1.1  2002/04/27 05:47:26  kxn
- * Initial revision
+ * Revision 1.2  2002/05/25 02:06:27  kcn
+ * do sshbbsd autoconf
+ *
+ * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
+ * no message
  *
  * Revision 1.4  2002/04/25 10:47:37  kxn
  * removed libBBS.a
@@ -730,7 +733,7 @@ int main(int ac, char **av)
 #endif /* SO_LINGER */
   int done;
 
-  chdir(BBS_HOME);  
+  chdir(BBSHOME);  
   /* Save argv[0]. */
   saved_argv = av;
   if (strchr(av[0], '/'))

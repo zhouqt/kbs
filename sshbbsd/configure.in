@@ -1329,11 +1329,36 @@ if test '!' -d ../src && '!' -d ../libBBS; then
 	AC_MSG_ERROR([can't find bbs source directory])
 fi
 
+AH_TEMPLATE([LASTLOG_IS_DIR],
+			[Define if /var/adm/lastlog or whatever it is called is a directory
+   			(e.g. SGI IRIX).])
+
+AH_TEMPLATE([RSAREF],
+			[Define to use RSAREF.])
+
+AH_TEMPLATE([RSH_PATH],
+			[Define this to be the path of the rsh program to support executing rsh.])
+
+AH_TEMPLATE([XAUTH_PATH],
+			[Define this to be the path of the xauth program.])
+
+AH_TEMPLATE([SSH_UTMP],
+			[Default path for utmp.  Determined by configure.])
+
+AH_TEMPLATE([SSH_WTMP],
+			[Default path for wtmp.  Determined by configure.])
+
+AH_TEMPLATE([SSH_LASTLOG],
+			[Default path for lastlog.  Determined by configure.])
+AH_TEMPLATE([_POSIX_SOURCE],
+			[Define if you need to in order for stat and other things to work.])
+
 OLDPWD=`pwd`
 cd ../src
-for i in *.c do
+BBSSOURCES=
+for i in *.c; do
 	AC_CONFIG_LINKS($i:../src/$i)
-	BBSSOURCES="$BBSSOURCES $i"
+	AC_LIBOBJ(`echo $i|sed 's/.c$//'`)
 done
 cd $OLDPWD
 

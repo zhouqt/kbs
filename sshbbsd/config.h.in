@@ -1,4 +1,4 @@
-/* config.h.in.  Generated automatically from configure.in by autoheader.  */
+/* config.h.in.  Generated from configure.in by autoheader.  */
 /*
 
 acconfig.h - template used by autoheader to create config.h.in
@@ -9,61 +9,6 @@ Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>
 
 */
 
-
-/* Define to empty if the keyword does not work.  */
-#undef const
-
-/* Define to `int' if <sys/types.h> doesn't define.  */
-#undef gid_t
-
-/* Define if your struct stat has st_blksize.  */
-#undef HAVE_ST_BLKSIZE
-
-/* Define if you have <sys/wait.h> that is POSIX.1 compatible.  */
-#undef HAVE_SYS_WAIT_H
-
-/* Define as __inline if that's what the C compiler calls it.  */
-#undef inline
-
-/* Define if major, minor, and makedev are declared in <mkdev.h>.  */
-#undef MAJOR_IN_MKDEV
-
-/* Define if major, minor, and makedev are declared in <sysmacros.h>.  */
-#undef MAJOR_IN_SYSMACROS
-
-/* Define to `int' if <sys/types.h> doesn't define.  */
-#undef mode_t
-
-/* Define to `long' if <sys/types.h> doesn't define.  */
-#undef off_t
-
-/* Define if you need to in order for stat and other things to work.  */
-#undef _POSIX_SOURCE
-
-/* Define as the return type of signal handlers (int or void).  */
-#undef RETSIGTYPE
-
-/* Define to `unsigned' if <sys/types.h> doesn't define.  */
-#undef size_t
-
-/* Define if the `S_IS*' macros in <sys/stat.h> do not work properly.  */
-#undef STAT_MACROS_BROKEN
-
-/* Define if you have the ANSI C header files.  */
-#undef STDC_HEADERS
-
-/* Define if you can safely include both <sys/time.h> and <time.h>.  */
-#undef TIME_WITH_SYS_TIME
-
-/* Define to `int' if <sys/types.h> doesn't define.  */
-#undef uid_t
-
-/* Define if your processor stores words with the most significant
-   byte first (like Motorola and SPARC, unlike Intel and VAX).  */
-#undef WORDS_BIGENDIAN
-
-/* Define if the X Window System is missing or not being used.  */
-#undef X_DISPLAY_MISSING
 
 /* Define this to the canonical name of your host type (e.g., 
    "sparc-sun-sunos4.0.3"). */
@@ -81,7 +26,6 @@ Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>
 /* Define if you have shadow passwords in /etc/security/passwd.adjunct
    (SunOS style). */
 #undef HAVE_ETC_SECURITY_PASSWD_ADJUNCT
-
   
 /* Define if you have SIA, Security Integration Architecture (as in
    Tru64 UNIX). */
@@ -212,6 +156,10 @@ Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>
    client program.  Socketpairs do not seem to work on all systems. */
 #undef USE_PIPES
 
+/* Directory containing ssh_config, ssh_known_hosts, sshd_pid, etc.  Normally
+   /etc. */
+#undef ETCDIR
+
 /* Define this if speed_t is defined in stdtypes.h or otherwise gets included
    into ttymodes.c from system headers. */
 #undef SPEED_T_IN_STDTYPES_H
@@ -237,6 +185,9 @@ Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>
 
 /* Define this if you have sco-style pty:s (ptyp0, ..., ptyp9, ptyp10...) */
 #undef HAVE_DEV_PTYP10
+
+/* Define this if you have setpgid() (replaces setpgrp) */
+#undef HAVE_SETPGID
 
 /* Define this for HP-UX 10.x shadow passwords */
 #undef HAVE_HPUX_TCB_AUTH
@@ -345,263 +296,396 @@ Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>
    file */
 #undef SCP_ALL_STATISTICS_ENABLED
 
-/* The number of bytes in a int.  */
-#undef SIZEOF_INT
 
-/* The number of bytes in a long.  */
-#undef SIZEOF_LONG
-
-/* The number of bytes in a short.  */
-#undef SIZEOF_SHORT
-
-/* Define if you have the _getpty function.  */
-#undef HAVE__GETPTY
-
-/* Define if you have the authenticate function.  */
+/* Define to 1 if you have the `authenticate' function. */
 #undef HAVE_AUTHENTICATE
 
-/* Define if you have the clock function.  */
+/* Define to 1 if you have the `clock' function. */
 #undef HAVE_CLOCK
 
-/* Define if you have the crypt function.  */
+/* Define to 1 if you have the `crypt' function. */
 #undef HAVE_CRYPT
 
-/* Define if you have the daemon function.  */
+/* Define to 1 if you have the `daemon' function. */
 #undef HAVE_DAEMON
 
-/* Define if you have the fchmod function.  */
-#undef HAVE_FCHMOD
-
-/* Define if you have the ftruncate function.  */
-#undef HAVE_FTRUNCATE
-
-/* Define if you have the getdtablesize function.  */
-#undef HAVE_GETDTABLESIZE
-
-/* Define if you have the gethostname function.  */
-#undef HAVE_GETHOSTNAME
-
-/* Define if you have the getpseudotty function.  */
-#undef HAVE_GETPSEUDOTTY
-
-/* Define if you have the getpt function.  */
-#undef HAVE_GETPT
-
-/* Define if you have the getrusage function.  */
-#undef HAVE_GETRUSAGE
-
-/* Define if you have the gettimeofday function.  */
-#undef HAVE_GETTIMEOFDAY
-
-/* Define if you have the initgroups function.  */
-#undef HAVE_INITGROUPS
-
-/* Define if you have the innetgr function.  */
-#undef HAVE_INNETGR
-
-/* Define if you have the isastream function.  */
-#undef HAVE_ISASTREAM
-
-/* Define if you have the makeutx function.  */
-#undef HAVE_MAKEUTX
-
-/* Define if you have the memcpy function.  */
-#undef HAVE_MEMCPY
-
-/* Define if you have the memmove function.  */
-#undef HAVE_MEMMOVE
-
-/* Define if you have the openpty function.  */
-#undef HAVE_OPENPTY
-
-/* Define if you have the putenv function.  */
-#undef HAVE_PUTENV
-
-/* Define if you have the pw_encrypt function.  */
-#undef HAVE_PW_ENCRYPT
-
-/* Define if you have the random function.  */
-#undef HAVE_RANDOM
-
-/* Define if you have the remove function.  */
-#undef HAVE_REMOVE
-
-/* Define if you have the revoke function.  */
-#undef HAVE_REVOKE
-
-/* Define if you have the setlogin function.  */
-#undef HAVE_SETLOGIN
-
-/* Define if you have the setluid function.  */
-#undef HAVE_SETLUID
-
-/* Define if you have the setpgid function.  */
-#undef HAVE_SETPGID
-
-/* Define if you have the setpgrp function.  */
-#undef HAVE_SETPGRP
-
-/* Define if you have the setsid function.  */
-#undef HAVE_SETSID
-
-/* Define if you have the snprintf function.  */
-#undef HAVE_SNPRINTF
-
-/* Define if you have the socketpair function.  */
-#undef HAVE_SOCKETPAIR
-
-/* Define if you have the strchr function.  */
-#undef HAVE_STRCHR
-
-/* Define if you have the strerror function.  */
-#undef HAVE_STRERROR
-
-/* Define if you have the times function.  */
-#undef HAVE_TIMES
-
-/* Define if you have the ttyslot function.  */
-#undef HAVE_TTYSLOT
-
-/* Define if you have the ulimit function.  */
-#undef HAVE_ULIMIT
-
-/* Define if you have the umask function.  */
-#undef HAVE_UMASK
-
-/* Define if you have the vhangup function.  */
-#undef HAVE_VHANGUP
-
-/* Define if you have the waitpid function.  */
-#undef HAVE_WAITPID
-
-/* Define if you have the <dirent.h> header file.  */
+/* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
+   */
 #undef HAVE_DIRENT_H
 
-/* Define if you have the <lastlog.h> header file.  */
+/* Define to 1 if you have the `fchmod' function. */
+#undef HAVE_FCHMOD
+
+/* Define to 1 if you have the `ftruncate' function. */
+#undef HAVE_FTRUNCATE
+
+/* Define to 1 if you have the `getdtablesize' function. */
+#undef HAVE_GETDTABLESIZE
+
+/* Define to 1 if you have the `gethostname' function. */
+#undef HAVE_GETHOSTNAME
+
+/* Define to 1 if you have the `getpseudotty' function. */
+#undef HAVE_GETPSEUDOTTY
+
+/* Define to 1 if you have the `getpt' function. */
+#undef HAVE_GETPT
+
+/* Define to 1 if you have the `getrusage' function. */
+#undef HAVE_GETRUSAGE
+
+/* Define to 1 if you have the `gettimeofday' function. */
+#undef HAVE_GETTIMEOFDAY
+
+/* Define to 1 if you have the `initgroups' function. */
+#undef HAVE_INITGROUPS
+
+/* Define to 1 if you have the `innetgr' function. */
+#undef HAVE_INNETGR
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the `isastream' function. */
+#undef HAVE_ISASTREAM
+
+/* Define to 1 if you have the <lastlog.h> header file. */
 #undef HAVE_LASTLOG_H
 
-/* Define if you have the <login_cap.h> header file.  */
-#undef HAVE_LOGIN_CAP_H
-
-/* Define if you have the <machine/endian.h> header file.  */
-#undef HAVE_MACHINE_ENDIAN_H
-
-/* Define if you have the <ndir.h> header file.  */
-#undef HAVE_NDIR_H
-
-/* Define if you have the <netinet/in_system.h> header file.  */
-#undef HAVE_NETINET_IN_SYSTEM_H
-
-/* Define if you have the <netinet/in_systm.h> header file.  */
-#undef HAVE_NETINET_IN_SYSTM_H
-
-/* Define if you have the <netinet/ip.h> header file.  */
-#undef HAVE_NETINET_IP_H
-
-/* Define if you have the <netinet/tcp.h> header file.  */
-#undef HAVE_NETINET_TCP_H
-
-/* Define if you have the <paths.h> header file.  */
-#undef HAVE_PATHS_H
-
-/* Define if you have the <rusage.h> header file.  */
-#undef HAVE_RUSAGE_H
-
-/* Define if you have the <sgtty.h> header file.  */
-#undef HAVE_SGTTY_H
-
-/* Define if you have the <shadow.h> header file.  */
-#undef HAVE_SHADOW_H
-
-/* Define if you have the <sys/conf.h> header file.  */
-#undef HAVE_SYS_CONF_H
-
-/* Define if you have the <sys/dir.h> header file.  */
-#undef HAVE_SYS_DIR_H
-
-/* Define if you have the <sys/ioctl.h> header file.  */
-#undef HAVE_SYS_IOCTL_H
-
-/* Define if you have the <sys/ndir.h> header file.  */
-#undef HAVE_SYS_NDIR_H
-
-/* Define if you have the <sys/resource.h> header file.  */
-#undef HAVE_SYS_RESOURCE_H
-
-/* Define if you have the <sys/select.h> header file.  */
-#undef HAVE_SYS_SELECT_H
-
-/* Define if you have the <sys/stream.h> header file.  */
-#undef HAVE_SYS_STREAM_H
-
-/* Define if you have the <sys/time.h> header file.  */
-#undef HAVE_SYS_TIME_H
-
-/* Define if you have the <termios.h> header file.  */
-#undef HAVE_TERMIOS_H
-
-/* Define if you have the <ulimit.h> header file.  */
-#undef HAVE_ULIMIT_H
-
-/* Define if you have the <unistd.h> header file.  */
-#undef HAVE_UNISTD_H
-
-/* Define if you have the <usersec.h> header file.  */
-#undef HAVE_USERSEC_H
-
-/* Define if you have the <utime.h> header file.  */
-#undef HAVE_UTIME_H
-
-/* Define if you have the <utmp.h> header file.  */
-#undef HAVE_UTMP_H
-
-/* Define if you have the <utmpx.h> header file.  */
-#undef HAVE_UTMPX_H
-
-/* Define if you have the aud library (-laud).  */
+/* Define to 1 if you have the `aud' library (-laud). */
 #undef HAVE_LIBAUD
 
-/* Define if you have the auth library (-lauth).  */
+/* Define to 1 if you have the `auth' library (-lauth). */
 #undef HAVE_LIBAUTH
 
-/* Define if you have the bsd library (-lbsd).  */
+/* Define to 1 if you have the `bsd' library (-lbsd). */
 #undef HAVE_LIBBSD
 
-/* Define if you have the crypt library (-lcrypt).  */
+/* Define to 1 if you have the `crypt' library (-lcrypt). */
 #undef HAVE_LIBCRYPT
 
-/* Define if you have the db library (-ldb).  */
+/* Define to 1 if you have the `db' library (-ldb). */
 #undef HAVE_LIBDB
 
-/* Define if you have the gen library (-lgen).  */
+/* Define to 1 if you have the `gen' library (-lgen). */
 #undef HAVE_LIBGEN
 
-/* Define if you have the inet library (-linet).  */
+/* Define to 1 if you have the `inet' library (-linet). */
 #undef HAVE_LIBINET
 
-/* Define if you have the m library (-lm).  */
+/* Define to 1 if you have the `m' library (-lm). */
 #undef HAVE_LIBM
 
-/* Define if you have the nsl library (-lnsl).  */
+/* Define to 1 if you have the `nsl' library (-lnsl). */
 #undef HAVE_LIBNSL
 
-/* Define if you have the s library (-ls).  */
+/* Define to 1 if you have the `s' library (-ls). */
 #undef HAVE_LIBS
 
-/* Define if you have the sec library (-lsec).  */
+/* Define to 1 if you have the `sec' library (-lsec). */
 #undef HAVE_LIBSEC
 
-/* Define if you have the security library (-lsecurity).  */
+/* Define to 1 if you have the `security' library (-lsecurity). */
 #undef HAVE_LIBSECURITY
 
-/* Define if you have the seq library (-lseq).  */
+/* Define to 1 if you have the `seq' library (-lseq). */
 #undef HAVE_LIBSEQ
 
-/* Define if you have the shadow library (-lshadow).  */
+/* Define to 1 if you have the `shadow' library (-lshadow). */
 #undef HAVE_LIBSHADOW
 
-/* Define if you have the socket library (-lsocket).  */
+/* Define to 1 if you have the `socket' library (-lsocket). */
 #undef HAVE_LIBSOCKET
 
-/* Define if you have the sun library (-lsun).  */
+/* Define to 1 if you have the `sun' library (-lsun). */
 #undef HAVE_LIBSUN
+
+/* Define to 1 if you have the <login_cap.h> header file. */
+#undef HAVE_LOGIN_CAP_H
+
+/* Define to 1 if you have the <machine/endian.h> header file. */
+#undef HAVE_MACHINE_ENDIAN_H
+
+/* Define to 1 if you have the `makeutx' function. */
+#undef HAVE_MAKEUTX
+
+/* Define to 1 if you have the `memcpy' function. */
+#undef HAVE_MEMCPY
+
+/* Define to 1 if you have the `memmove' function. */
+#undef HAVE_MEMMOVE
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
+#undef HAVE_NDIR_H
+
+/* Define to 1 if you have the <netinet/in_system.h> header file. */
+#undef HAVE_NETINET_IN_SYSTEM_H
+
+/* Define to 1 if you have the <netinet/in_systm.h> header file. */
+#undef HAVE_NETINET_IN_SYSTM_H
+
+/* Define to 1 if you have the <netinet/ip.h> header file. */
+#undef HAVE_NETINET_IP_H
+
+/* Define to 1 if you have the <netinet/tcp.h> header file. */
+#undef HAVE_NETINET_TCP_H
+
+/* Define to 1 if you have the `openpty' function. */
+#undef HAVE_OPENPTY
+
+/* Define to 1 if you have the <paths.h> header file. */
+#undef HAVE_PATHS_H
+
+/* Define to 1 if you have the `putenv' function. */
+#undef HAVE_PUTENV
+
+/* Define to 1 if you have the `pw_encrypt' function. */
+#undef HAVE_PW_ENCRYPT
+
+/* Define to 1 if you have the `random' function. */
+#undef HAVE_RANDOM
+
+/* Define to 1 if you have the `remove' function. */
+#undef HAVE_REMOVE
+
+/* Define to 1 if you have the `revoke' function. */
+#undef HAVE_REVOKE
+
+/* Define to 1 if you have the <rusage.h> header file. */
+#undef HAVE_RUSAGE_H
+
+/* Define to 1 if you have the `setlogin' function. */
+#undef HAVE_SETLOGIN
+
+/* Define to 1 if you have the `setluid' function. */
+#undef HAVE_SETLUID
+
+/* Define to 1 if you have the `setpgid' function. */
+#undef HAVE_SETPGID
+
+/* Define to 1 if you have the `setpgrp' function. */
+#undef HAVE_SETPGRP
+
+/* Define to 1 if you have the `setsid' function. */
+#undef HAVE_SETSID
+
+/* Define to 1 if you have the <sgtty.h> header file. */
+#undef HAVE_SGTTY_H
+
+/* Define to 1 if you have the <shadow.h> header file. */
+#undef HAVE_SHADOW_H
+
+/* Define to 1 if you have the `snprintf' function. */
+#undef HAVE_SNPRINTF
+
+/* Define to 1 if you have the `socketpair' function. */
+#undef HAVE_SOCKETPAIR
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the `strchr' function. */
+#undef HAVE_STRCHR
+
+/* Define to 1 if you have the `strerror' function. */
+#undef HAVE_STRERROR
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* Define to 1 if `st_blksize' is member of `struct stat'. */
+#undef HAVE_STRUCT_STAT_ST_BLKSIZE
+
+/* Define to 1 if your `struct stat' has `st_blksize'. Deprecated, use
+   `HAVE_STRUCT_STAT_ST_BLKSIZE' instead. */
+#undef HAVE_ST_BLKSIZE
+
+/* Define to 1 if you have the <sys/conf.h> header file. */
+#undef HAVE_SYS_CONF_H
+
+/* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
+   */
+#undef HAVE_SYS_DIR_H
+
+/* Define to 1 if you have the <sys/ioctl.h> header file. */
+#undef HAVE_SYS_IOCTL_H
+
+/* Define to 1 if you have the <sys/ndir.h> header file, and it defines `DIR'.
+   */
+#undef HAVE_SYS_NDIR_H
+
+/* Define to 1 if you have the <sys/resource.h> header file. */
+#undef HAVE_SYS_RESOURCE_H
+
+/* Define to 1 if you have the <sys/select.h> header file. */
+#undef HAVE_SYS_SELECT_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/stream.h> header file. */
+#undef HAVE_SYS_STREAM_H
+
+/* Define to 1 if you have the <sys/time.h> header file. */
+#undef HAVE_SYS_TIME_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have <sys/wait.h> that is POSIX.1 compatible. */
+#undef HAVE_SYS_WAIT_H
+
+/* Define to 1 if you have the <termios.h> header file. */
+#undef HAVE_TERMIOS_H
+
+/* Define to 1 if you have the `times' function. */
+#undef HAVE_TIMES
+
+/* Define to 1 if you have the `ttyslot' function. */
+#undef HAVE_TTYSLOT
+
+/* Define to 1 if you have the `ulimit' function. */
+#undef HAVE_ULIMIT
+
+/* Define to 1 if you have the <ulimit.h> header file. */
+#undef HAVE_ULIMIT_H
+
+/* Define to 1 if you have the `umask' function. */
+#undef HAVE_UMASK
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
+
+/* Define to 1 if you have the <usersec.h> header file. */
+#undef HAVE_USERSEC_H
+
+/* Define to 1 if you have the <utime.h> header file. */
+#undef HAVE_UTIME_H
+
+/* Define to 1 if you have the <utmpx.h> header file. */
+#undef HAVE_UTMPX_H
+
+/* Define to 1 if you have the <utmp.h> header file. */
+#undef HAVE_UTMP_H
+
+/* Define to 1 if you have the `vhangup' function. */
+#undef HAVE_VHANGUP
+
+/* Define to 1 if you have the `waitpid' function. */
+#undef HAVE_WAITPID
+
+/* Define to 1 if you have the `_getpty' function. */
+#undef HAVE__GETPTY
+
+/* Define if /var/adm/lastlog or whatever it is called is a directory (e.g.
+   SGI IRIX). */
+#undef LASTLOG_IS_DIR
+
+/* Define to 1 if `major', `minor', and `makedev' are declared in <mkdev.h>.
+   */
+#undef MAJOR_IN_MKDEV
+
+/* Define to 1 if `major', `minor', and `makedev' are declared in
+   <sysmacros.h>. */
+#undef MAJOR_IN_SYSMACROS
+
+/* Name of package */
+#undef PACKAGE
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* Define as the return type of signal handlers (`int' or `void'). */
+#undef RETSIGTYPE
+
+/* Define to use RSAREF. */
+#undef RSAREF
+
+/* Define this to be the path of the rsh program to support executing rsh. */
+#undef RSH_PATH
+
+/* The size of a `int', as computed by sizeof. */
+#undef SIZEOF_INT
+
+/* The size of a `long', as computed by sizeof. */
+#undef SIZEOF_LONG
+
+/* The size of a `short', as computed by sizeof. */
+#undef SIZEOF_SHORT
+
+/* Default path for lastlog. Determined by configure. */
+#undef SSH_LASTLOG
+
+/* Default path for utmp. Determined by configure. */
+#undef SSH_UTMP
+
+/* Default path for wtmp. Determined by configure. */
+#undef SSH_WTMP
+
+/* Define to 1 if the `S_IS*' macros in <sys/stat.h> do not work properly. */
+#undef STAT_MACROS_BROKEN
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
+
+/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
+#undef TIME_WITH_SYS_TIME
+
+/* Version number of package */
+#undef VERSION
+
+/* Define to 1 if your processor stores words with the most significant byte
+   first (like Motorola and SPARC, unlike Intel and VAX). */
+#undef WORDS_BIGENDIAN
+
+/* Define this to be the path of the xauth program. */
+#undef XAUTH_PATH
+
+/* Define to 1 if the X Window System is missing or not being used. */
+#undef X_DISPLAY_MISSING
+
+/* Define if you need to in order for stat and other things to work. */
+#undef _POSIX_SOURCE
+
+/* Define to empty if `const' does not conform to ANSI C. */
+#undef const
+
+/* Define to `int' if <sys/types.h> doesn't define. */
+#undef gid_t
+
+/* Define as `__inline' if that's what the C compiler calls it, or to nothing
+   if it is not supported. */
+#undef inline
+
+/* Define to `int' if <sys/types.h> does not define. */
+#undef mode_t
+
+/* Define to `long' if <sys/types.h> does not define. */
+#undef off_t
+
+/* Define to `unsigned' if <sys/types.h> does not define. */
+#undef size_t
+
+/* Define to `int' if <sys/types.h> doesn't define. */
+#undef uid_t
