@@ -496,11 +496,6 @@ static int ent_chat(int chatnum)
             inbuf[69] = ch;
             currchar = strlen(inbuf);
             continue;
-#ifdef CHINESE_CHARACTER
-        case Ctrl('R'):
-			currentuser->userdefine = currentuser->userdefine ^ DEF_CHCHAR;
-        	break;
-#endif        	
         case KEY_LEFT:
             if (currchar)
                 --currchar;
@@ -528,7 +523,6 @@ static int ent_chat(int chatnum)
 				if(j) {
 		            if (inbuf[currchar])
         		        ++currchar;
-					currchar++;
 				}
 			}
 #endif

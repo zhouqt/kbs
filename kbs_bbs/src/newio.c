@@ -681,12 +681,6 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 #endif
         if (ch == '\n' || ch == '\r')
             break;
-#ifdef CHINESE_CHARACTER
-        if (ch == Ctrl('R')) {
-			currentuser->userdefine = currentuser->userdefine ^ DEF_CHCHAR;
-        	break;
-        }
-#endif        	
         if (ch == '\177' || ch == Ctrl('H')) {
             if (curr == 0) {
                 continue;
