@@ -1309,4 +1309,30 @@ int inn_start()
 		system(tmp_command);
 	}
 }
+
+int inn_reload()
+{
+	char ans[4], tmp_command[80];
+	if (!HAS_PERM(PERM_ADMIN))
+		return;
+	getdata(t_lines - 1, 0, "ÖØ¶ÁÅäÖÃÂğ (Y/N)? [N]: ", ans, 2, DOECHO, NULL, YEA);
+	if (ans[0] == 'Y' || ans[0] == 'y')
+	{
+		sprintf(tmp_command, "~bbs/innd/ctlinnbbsd reload");
+		system(tmp_command);
+	}
+}
+
+int inn_stop()
+{
+	char ans[4], tmp_command[80];
+	if (!HAS_PERM(PERM_ADMIN))
+		return;
+	getdata(t_lines - 1, 0, "Í£Ö¹×ªĞÅÂğ (Y/N)? [N]: ", ans, 2, DOECHO, NULL, YEA);
+	if (ans[0] == 'Y' || ans[0] == 'y')
+	{
+		sprintf(tmp_command, "~bbs/innd/ctlinnbbsd shutdown");
+		system(tmp_command);
+	}
+}
 /* added end */
