@@ -186,7 +186,7 @@ extern "C" {
 /* define in boards.c */
     void detach_boards();
     int anonymousboard(char *board);
-    int load_boards(struct newpostdata *nbrd,char *boardprefix,int pos,int len,bool sort,bool yank_flag);
+    int load_boards(struct newpostdata *nbrd,char *boardprefix,int pos,int len,bool sort,bool yank_flag,char** input_namelist);
     void brc_clear_new_flag(unsigned fid);    /* 清除版面的到这篇文章未读标记 */
 
     int getfavnum();
@@ -203,10 +203,10 @@ extern "C" {
     int MoveFavBoard(int p, int q, int fav_father);
     int DelFavBoard(int i);
     int SetFav(int i);
-    int cmpboard(struct newpostdata *brd, struct newpostdata *tmp);
 
     int brc_initial(char *userid, char *boardname);
     char *brc_putrecord(char *ptr, char *name, int num, int *list);
+    int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,char** input_namelist);
     /*
      * 保存一个版的brclist 
      */

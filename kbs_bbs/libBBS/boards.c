@@ -861,15 +861,15 @@ int normal_board(char *bname)
     return (bh.level == 0)&&!(bh.flag&BOARD_CLUB_HIDE)&&!(bh.flag&BOARD_CLUB_READ);
 }
 
-int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort)
+int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,char** input_namelist)
 {
     int n, k;
     struct boardheader *bptr;
     int brdnum;
     struct newpostdata *ptr;
     int curcount;
-    char** namelist;
     int* indexlist;
+    char** namelist;
 
     brdnum = 0;
     curcount=0;
@@ -877,7 +877,10 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort)
         load_zapbuf();
     }
     if (sort) {
-    	namelist=(char**)malloc(sizeof(char**)*(pos+len-1));
+    	if (input_namelist==NULL)
+    	    namelist=(char**)malloc(sizeof(char**)*(pos+len-1));
+    	else
+    	    namelist=input_namelist;
     	indexlist=(int*)malloc(sizeof(int*)*(pos+len-1));
     }
     for (n = 0; n < favbrd_list_t; n++) {
@@ -897,32 +900,34 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort)
         if (!sort) {
             if (brdnum<pos||brdnum>=pos+len)
             	continue;
-            ptr = &nbrd[brdnum-pos];
-            if (favbrd_list[n].flag == -1) {
-                ptr->name = NullChar;
-                ptr->title = favbrd_list[n].title;
-                ptr->dir = 1;
-                ptr->BM = NullChar;
-                ptr->flag = -1;
-                ptr->tag = n;
-                ptr->pos = 0;
-                ptr->total = 0;
-                ptr->unread = 1;
-                for (k = 0; k < favbrd_list_t; k++)
-                    if (favbrd_list[k].father == n)
-                        ptr->total++;
-                ptr->zap = 0;
-            } else {
-                ptr->name = bptr->filename;
-                ptr->dir = 0;
-                ptr->title = bptr->title;
-                ptr->BM = bptr->BM;
-                ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
-                ptr->tag = n;
-                ptr->pos = favbrd_list[n].flag;
-                ptr->total = -1;
-                ptr->zap = (zapbuf[favbrd_list[n].flag] == 0);
-            }
+            if (nbrd) {
+                ptr = &nbrd[brdnum-pos];
+                if (favbrd_list[n].flag == -1) {
+                    ptr->name = NullChar;
+                    ptr->title = favbrd_list[n].title;
+                    ptr->dir = 1;
+                    ptr->BM = NullChar;
+                    ptr->flag = -1;
+                    ptr->tag = n;
+                    ptr->pos = 0;
+                    ptr->total = 0;
+                    ptr->unread = 1;
+                    for (k = 0; k < favbrd_list_t; k++)
+                        if (favbrd_list[k].father == n)
+                            ptr->total++;
+                    ptr->zap = 0;
+                } else {
+                    ptr->name = bptr->filename;
+                    ptr->dir = 0;
+                    ptr->title = bptr->title;
+                    ptr->BM = bptr->BM;
+                    ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
+                    ptr->tag = n;
+                    ptr->pos = favbrd_list[n].flag;
+                    ptr->total = -1;
+                    ptr->zap = (zapbuf[favbrd_list[n].flag] == 0);
+                }
+            	}
         } else {  //如果是要排序，那么应该先排序缓存一下
             int i;
             char* title;
@@ -947,6 +952,7 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort)
         }
     }
     if (brdnum == 0) {
+    	if (nbrd) {
         ptr = &nbrd[brdnum++];
         ptr->name = NullChar;
         ptr->dir = 1;
@@ -958,46 +964,50 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort)
         ptr->total = 0;
         ptr->unread = 0;
         ptr->zap = 0;
+    	}
     }
     else if (sort) {
-        for (n=pos-1;n<curcount;n++) {
-	    ptr=&nbrd[n-(pos-1)];
-            if (favbrd_list[indexlist[n]].flag != -1) {
-                bptr = (struct boardheader *) getboard(favbrd_list[indexlist[n]].flag + 1);
-                ptr->name = bptr->filename;
-                ptr->dir = 0;
-                ptr->title = bptr->title;
-                ptr->BM = bptr->BM;
-                ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
-                ptr->tag = indexlist[n];
-                ptr->pos = favbrd_list[indexlist[n]].flag;
-                ptr->total = -1;
-                ptr->zap = (zapbuf[favbrd_list[indexlist[n]].flag] == 0);
-            } else {
-                ptr->name = NullChar;
-                ptr->title = favbrd_list[indexlist[n]].title;
-                ptr->dir = 1;
-                ptr->BM = NullChar;
-                ptr->flag = -1;
-                ptr->tag = indexlist[n];
-                ptr->pos = 0;
-                ptr->total = 0;
-                ptr->unread = 1;
-                for (k = 0; k < favbrd_list_t; k++)
-                    if (favbrd_list[k].father == indexlist[n])
-                        ptr->total++;
-                ptr->zap = 0;
+        if (nbrd) {
+            for (n=pos-1;n<curcount;n++) {
+    	    ptr=&nbrd[n-(pos-1)];
+                if (favbrd_list[indexlist[n]].flag != -1) {
+                    bptr = (struct boardheader *) getboard(favbrd_list[indexlist[n]].flag + 1);
+                    ptr->name = bptr->filename;
+                    ptr->dir = 0;
+                    ptr->title = bptr->title;
+                    ptr->BM = bptr->BM;
+                    ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
+                    ptr->tag = indexlist[n];
+                    ptr->pos = favbrd_list[indexlist[n]].flag;
+                    ptr->total = -1;
+                    ptr->zap = (zapbuf[favbrd_list[indexlist[n]].flag] == 0);
+                } else {
+                    ptr->name = NullChar;
+                    ptr->title = favbrd_list[indexlist[n]].title;
+                    ptr->dir = 1;
+                    ptr->BM = NullChar;
+                    ptr->flag = -1;
+                    ptr->tag = indexlist[n];
+                    ptr->pos = 0;
+                    ptr->total = 0;
+                    ptr->unread = 1;
+                    for (k = 0; k < favbrd_list_t; k++)
+                        if (favbrd_list[k].father == indexlist[n])
+                            ptr->total++;
+                    ptr->zap = 0;
+                }
             }
         }
     }
     if (sort) {
-    	free(namelist);
+    	if (input_namelist==NULL)
+    	    free(namelist);
     	free(indexlist);
     }
     return brdnum;
 }
 
-int load_boards(struct newpostdata *nbrd,char *boardprefix,int pos,int len,bool sort,bool yank_flag)
+int load_boards(struct newpostdata *nbrd,char *boardprefix,int pos,int len,bool sort,bool yank_flag,char** input_namelist)
 {
     int n, k;
     struct boardheader *bptr;
@@ -1013,7 +1023,10 @@ int load_boards(struct newpostdata *nbrd,char *boardprefix,int pos,int len,bool 
     if (zapbuf == NULL) {
         load_zapbuf();
     }
-    namelist=(char**)malloc(sizeof(char**)*(pos+len-1));
+    if (input_namelist==NULL)
+        namelist=(char**)malloc(sizeof(char**)*(pos+len-1));
+    else
+    	namelist=input_namelist;
     titlelist=(char**)malloc(sizeof(char**)*(pos+len-1));
     indexlist=(int*)malloc(sizeof(int*)*(pos+len-1));
     for (n = 0; n < get_boardcount(); n++) {
@@ -1060,20 +1073,23 @@ int load_boards(struct newpostdata *nbrd,char *boardprefix,int pos,int len,bool 
             if (curcount<pos+len-1) curcount++;
         }
     }
-    for (n=pos-1;n<curcount;n++) {
-        ptr=&nbrd[n-(pos-1)];
-        bptr = getboard(indexlist[n]+1);
-        ptr->dir = 0;
-        ptr->name = bptr->filename;
-        ptr->title = bptr->title;
-        ptr->BM = bptr->BM;
-        ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
-        ptr->pos = indexlist[n];
-        ptr->total = -1;
-        ptr->zap = (zapbuf[indexlist[n]] == 0);
+    if (nbrd) {
+        for (n=pos-1;n<curcount;n++) {
+            ptr=&nbrd[n-(pos-1)];
+            bptr = getboard(indexlist[n]+1);
+            ptr->dir = 0;
+            ptr->name = bptr->filename;
+            ptr->title = bptr->title;
+            ptr->BM = bptr->BM;
+            ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
+            ptr->pos = indexlist[n];
+            ptr->total = -1;
+            ptr->zap = (zapbuf[indexlist[n]] == 0);
+        }
     }
     free(titlelist);
-    free(namelist);
+    if (input_namelist==NULL)
+        free(namelist);
     free(indexlist);
     return brdnum;
 }

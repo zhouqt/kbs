@@ -812,7 +812,7 @@ static ZEND_FUNCTION(bbs_getboards)
 	brdnum = 0;
 	/* TODO: replace load_board() with a new one, without accessing
 	 * global variables. */
-	if ((brdnum=load_boards(nbrd,prefix,1,MAXBOARD,1,yank_flag)) <= 0)
+	if ((brdnum=load_boards(nbrd,prefix,1,MAXBOARD,1,yank_flag,NULL)) <= 0)
 	{
 		RETURN_FALSE;
 	}
