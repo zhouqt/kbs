@@ -531,7 +531,7 @@ void outns(const char*str, int n)
                 cur_ln++;
             cur_col=0;
             str++;
-            break;
+            continue;
         }
         if (!isprint2(*str)) ch=(unsigned char) '*';
         else ch=*str;
