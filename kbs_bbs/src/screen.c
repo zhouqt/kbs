@@ -617,8 +617,14 @@ void outns(const char*str, int n)
              else if(*(str+i)=='J') {
                 str+=i+1;
                 if(DEFINE(currentuser, DEF_COLOR))
-                if(!disable_move)
-                    clear();
+                if(!disable_move) {
+                    if(minln) {
+                        move(minln, 0);
+                        clrtobot();
+                    }
+                    else
+                        clear();
+                }
                 continue;
              }
              else if(*(str+i)=='m') {

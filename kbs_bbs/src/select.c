@@ -9,7 +9,7 @@ static int check_valid(struct _select_def *conf)
     if (conf->item_count <= 0)
         return SHOW_QUIT;
     if (conf->page_pos > conf->item_count)
-        conf->page_pos = conf->item_count;
+        conf->page_pos -= conf->item_per_page;
     if (conf->pos > conf->item_count)
         conf->pos = conf->item_count;
     if (conf->pos <= 1)
