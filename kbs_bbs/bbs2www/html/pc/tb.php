@@ -35,7 +35,7 @@
 
 	function pc_tb_check_node($link,$nid)
 	{
-		$query = "SELECT `uid` FROM nodes WHERE `nid` = '".$nid."' AND `access` = 0 AND `trackback` = 1 LIMIT 0,1;";	
+		$query = "SELECT `uid` FROM nodes WHERE `nid` = '".intval($nid)."' AND `access` = 0 AND `trackback` = 1 LIMIT 0,1;";	
 		$result = mysql_query($query,$link);
 		$rows = mysql_fetch_array($result);
 		mysql_free_result($result);
@@ -48,20 +48,20 @@
 	function pc_tb_add_trackback($link,$tbarr)
 	{
 		global $_SERVER;
-		$query = "UPDATE nodes SET `trackbackcount` = `trackbackcount` + 1 , `visitcount` = `visitcount` + 1 , `changed` = `changed` WHERE `nid` = '".$tbarr[nid]."';";	
+		$query = "UPDATE nodes SET `trackbackcount` = `trackbackcount` + 1 , `visitcount` = `visitcount` + 1 , `changed` = `changed` WHERE `nid` = '".intval($tbarr[nid])."';";	
 		mysql_query($query,$link);
 		$query = "INSERT INTO `trackback` ( `tbid` , `uid` , `nid` , `title` , `excerpt` , `url` , `blogname` , `time` ,`address`) ".
-			"VALUES ('', '".$tbarr[uid]."', '".$tbarr[nid]."', '".addslashes($tbarr[title])."', '".addslashes($tbarr[excerpt])."', '".addslashes($tbarr[url])."', '".addslashes($tbarr[blogname])."', NOW( ) , '".$_SERVER["REMOTE_ADDR"]."' );";
+			"VALUES ('', '".intval($tbarr[uid])."', '".intval($tbarr[nid])."', '".addslashes($tbarr[title])."', '".addslashes($tbarr[excerpt])."', '".addslashes($tbarr[url])."', '".addslashes($tbarr[blogname])."', NOW( ) , '".addslashes($_SERVER["REMOTE_ADDR"])."' );";
 		mysql_query($query,$link);
 	}
 	
 		
-	$title = ($_POST["title"])?($_POST["title"]):($_GET["title"]);
-	$excerpt = ($_POST["excerpt"])?($_POST["excerpt"]):($_GET["excerpt"]);
-	$url = ($_POST["url"])?($_POST["url"]):($_GET["url"]);
-	$blog_name = ($_POST["blog_name"])?($_POST["blog_name"]):($_GET["blog_name"]);
-	//部分blog站点还使用老的trackback规范，因此判断_GET传输来的参数 windinsn
-	$nid = $_GET["id"];
+	$title = $_POST["title"];
+	$excerpt = $_POST["excerpt"];
+	$url = $_POST["url"];
+	$blog_name = $_POST["blog_name"];
+	
+	$nid = intval($_GET["id"]);
 	$link = pc_db_connect();
 	if(!$url)
 	{
