@@ -212,7 +212,7 @@ char *uident;
         fprintf(fn1,"寄信人: %s \n",currentuser->userid) ;
         fprintf(fn1,"标  题: %s\n",buffer) ;
         fprintf(fn1,"发信站: %s (%24.24s)\n","BBS "NAME_BBS_CHINESE"站",ctime(&now)) ;
-        fprintf(fn1,"来  源: %s \n",currentuser->lasthost) ;
+        fprintf(fn1,"来  源: %s \n",fromhost) ;
         fprintf(fn1,"\n");
         fprintf(fn1,"您被站务人员 %s 解除在 %s 板的封禁\n",currentuser->userid,currboard);
     }
@@ -222,7 +222,7 @@ char *uident;
         fprintf(fn1,"寄信人: %s \n",currentuser->userid) ;
         fprintf(fn1,"标  题: %s\n",buffer) ;
         fprintf(fn1,"发信站: %s (%24.24s)\n","BBS "NAME_BBS_CHINESE"站",ctime(&now)) ;
-        fprintf(fn1,"来  源: %s \n",currentuser->lasthost) ;
+        fprintf(fn1,"来  源: %s \n",fromhost) ;
         fprintf(fn1,"\n");
         fprintf(fn1,"您被 %s 板板主 %s 解除封禁\n",currboard,currentuser->userid);
     }
@@ -344,7 +344,7 @@ Here:
                         fprintf(fn,"寄信人: %s \n",currentuser->userid) ;
                         fprintf(fn,"标  题: %s\n",buffer) ;
                         fprintf(fn,"发信站: %s (%24.24s)\n","BBS "NAME_BBS_CHINESE"站",ctime(&now)) ;
-                        fprintf(fn,"来  源: %s \n",currentuser->lasthost) ;
+                        fprintf(fn,"来  源: %s \n",fromhost) ;
                         fprintf(fn,"\n");
                         fprintf(fn,"由于您在 \x1b[4m%s\x1b[0m 版 \x1b[4m%s\x1b[0m，我很遗憾地通知您， \n",currboard,denymsg);
                         if (denyday)

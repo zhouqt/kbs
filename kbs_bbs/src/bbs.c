@@ -1911,7 +1911,7 @@ char *filepath;
                 NAME_BBS_CHINESE" BBSÕ¾");
     else
         fprintf(fp, "\n[m[%2dm¡ù À´Ô´:¡¤%s %s¡¤[FROM: %s][m\n"
-                ,color,BoardName,email_domain(),(noidboard)?NAME_ANONYMOUS_FROM:currentuser->lasthost);
+                ,color,BoardName,email_domain(),(noidboard)?NAME_ANONYMOUS_FROM:fromhost);
 
     if (fp2) fclose(fp2);
     fclose(fp);
@@ -2234,7 +2234,7 @@ char *title;
             if(Origin2(buf))
             {
                 now=time(0);
-                fprintf(out,"[36m¡ù ÐÞ¸Ä:¡¤%s ì¶ %15.15s ÐÞ¸Ä±¾ÎÄ¡¤[FROM: %15.15s][m\n",currentuser->userid,ctime(&now)+4,currentuser->lasthost);
+                fprintf(out,"[36m¡ù ÐÞ¸Ä:¡¤%s ì¶ %15.15s ÐÞ¸Ä±¾ÎÄ¡¤[FROM: %15.15s][m\n",currentuser->userid,ctime(&now)+4,fromhost);
                 step=3;
             }
             fputs(buf,out);
