@@ -70,6 +70,8 @@ int main()
                 do_set(board, parm_name[i] + 3, FILE_MARKED);
             if (mode == 3)
                 do_set(board, parm_name[i] + 3, FILE_DIGEST);
+            if (mode==4)
+                do_set(board, parm_name[i] + 3, FILE_READ);
             if (mode == 5)
                 do_set(board, parm_name[i] + 3, 0);
         }
@@ -130,9 +132,14 @@ int do_set(char *board, char *file, int flag)
         if (fread(&f, sizeof(struct fileheader), 1, fp) <= 0)
             break;
         if (!strcmp(f.filename, file)) {
+        	if (flag==FILE_READ)
             f.accessed[0] |= flag;
-            if (flag == 0)
-                f.accessed[0] = 0;
+        	else
+            f.accessed[1] |= flag;
+            if (flag == 0) {
+                f.accessed[0] &= ~(FILE_MARKED|FILE_DIGEST|FILE_SIGN);
+                f.accessed[1] &= ~(FILE_READ);
+            }
             fseek(fp, -1 * sizeof(struct fileheader), SEEK_CUR);
             fwrite(&f, sizeof(struct fileheader), 1, fp);
             fclose(fp);

@@ -347,12 +347,14 @@ static ZEND_FUNCTION(bbs_checkpasswd)
         s[IDLEN] = 0;
     if (pw_len > PASSLEN)
         pw[PASSLEN] = 0;
-    if (!(unum = getuser(s, &user)))
+    if ((s[0]!=0)&&!(unum = getuser(s, &user)))
         ret = 2;
     else {
+    	if (s[0]==0) user=currentuser;
         if (checkpasswd2(pw, user)) {
             ret = 0;
-            setcurrentuser(user, unum);
+            if (s[0]!=0)
+            	setcurrentuser(user, unum);
         } else {
             ret = 1;
             logattempt(user->userid, php_fromhost);
@@ -1624,6 +1626,40 @@ static ZEND_FUNCTION(bbs_mail_file)
 	if (mail_file(srcid, filename, destid, title, is_move) < 0)
 		RETURN_FALSE;
 	RETURN_TRUE;
+}
+	
+/**
+ * set password for user.
+ * prototype:
+ * string bbs_setpassword(string userid, string password)
+ * @if userid=="" then user=currentuser
+ * @return TRUE on success,
+ *       FALSE on failure.
+ * @author kcn
+ */
+ static ZEND_FUNCTION(bbs_setpassword)
+{
+	char *userid;
+	int userid_len;
+	char *password;
+	int password_len;
+	int ac = ZEND_NUM_ARGS();
+	struct userec* user;
+
+    if (ac != 2
+        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &userid, &userid_len, &password, &password_len) == FAILURE)
+    {
+        WRONG_PARAM_COUNT;
+    }
+    if (userid!=0)
+    {
+        if (getuser(userid,&user)==0)
+            RETURN_FALSE;
+    } else
+        user=currentuser;
+    if (setpasswd(password, user)!= 1)
+        RETURN_FALSE;
+    RETURN_TRUE;
 }
 	
 static ZEND_MINIT_FUNCTION(bbs_module_init)
