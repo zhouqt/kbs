@@ -1026,7 +1026,7 @@ void load_user_title()
 {
     FILE* titlefile;
     bzero(uidshm->user_title,sizeof(uidshm->user_title));
-    if ((titlefile = fopen(USER_TITLE_FILE, "r")) == -1) {
+    if ((titlefile = fopen(USER_TITLE_FILE, "r")) == NULL) {
         bbslog("3system", "Can't open " USER_TITLE_FILE "file %s", strerror(errno));
     } else {
         int i;

@@ -54,7 +54,14 @@
 #endif
 
 #ifdef HAVE_WFORUM
+#ifndef RAW_ARTICLE
 #define RAW_ARTICLE 1
+#endif
+
+#if RAW_ARTICLE == 0
+#undef RAW_ARTICLE
+#endif
+
 #define HAVE_USERMONEY 1
 #define HAVE_BIRTHDAY 1
 #endif

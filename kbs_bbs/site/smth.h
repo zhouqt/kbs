@@ -25,6 +25,7 @@
 #define BUILD_PHP_EXTENSION 1 /*½«php lib±à³Éphp extension*/
 
 #define HAVE_WFORUM	1
+#define RAW_ARTICLE 0
 #define SMTH			1
 #define FILTER			1
 /* 
