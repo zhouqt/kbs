@@ -1,37 +1,7 @@
-#!/usr/local/bin/perl
-sub getremoteinfo {
-  require "/home/bbs/bin/rfc931.pl";
-  ($there,$here)=(getpeername(STDOUT),getsockname(STDOUT));
-  ($sockaddr)= 'S n a4 x8';
-  ($family,$thisport,$thisaddr)=unpack($sockaddr,$here);
-  ($family,$thatport,$thataddr)=unpack($sockaddr,$there);
-  (@localaddr)=unpack('C4',$thisaddr);
-  (@remoteaddr)=unpack('C4',$thataddr);
-  ($hostname)=gethostbyaddr($thisaddr,2);
-  ($remotehostname)=gethostbyaddr($thataddr,2);
-  $username=&rfc931_name($there,$here);
-
-  if (! $username) {
-        $username="unknown";
-  }
-  if (index($hostname,".")<0 && index($remotehostname,".")>=0) {
-        $hostname = "${hostname}.cs.ccu.edu.tw";
-  }
-  return ($username,$hostname);
-}
-
+#!/usr/bin/perl
 sub readmail {
-	($newsgroups) = @_;
-	$bbscheck = "/usr/spool/news/bbsaccess/bbscheck";
 	@MAIL = <STDIN>;
 	&decode_mail;
-	&parse_header;
-}
-
-sub ndreadmail {
-	($newsgroups) = @_;
-	$bbscheck = "/usr/spool/news/bbsaccess/bbscheck";
-	@MAIL = <STDIN>;
 	&parse_header;
 }
 
@@ -54,11 +24,7 @@ sub uudecode
     $line = $MAIL[ $begin + 1 ];
     $ch = substr( $line, 0 , 1);
     $len=int((ord($ch) - ord(' ')+2)/3) * 4 ;
-#    print "ch $ch len $len length ",length($line),"\n";
     return if ($len != (length($line)-2));
-#    if( substr( $line, 0, 1 ) ne "M" ) {
-#        return;
-#    }
     $tmpfile = "/tmp/mail2newsdecode.$$";
     open( FN, "| /bin/uudecode" );
     print FN "begin 644 $tmpfile\n";
@@ -75,7 +41,6 @@ sub uudecode
     unlink( $tmpfile );
 }
 
-
 sub parse_header {
   local($index);
   for ($index=0; $index <= $#MAIL; $index++) {
@@ -85,7 +50,12 @@ sub parse_header {
 	if (/^(\S+): (.*)$/) {
 		$hhh = $Header{$1};
 		if ( $1 eq "Received" && $hhh ) {
-		  $Header{'Received'}="$hhh\t$2";
+		    $tmp = "$2";
+		    if ( $tmp =~ /localhost/ ) {
+		     $Header{'Received'} = $hhh;
+		    } else {
+		       $Header{'Received'} = $tmp;
+		    }
 		} else {
 		  $Header{$1} = $2;
 		}
@@ -99,9 +69,9 @@ sub parse_header {
   }
   if( index( $from, "@" ) < 0 ) {
     if( $from =~ /^(\S*) \((.*)\)$/ ) {
-	$from = "$1@cs.ccu.edu.tw ($2)";
+	$from = "$1\@bbs.feeling.smth.org ($2)";
     } else {
-	$from = "${from}@cs.ccu.edu.tw";
+	$from = "${from}\@bbs.feeling.smth.org";
     }
   }
   $from =~ s/\'/\"/g;
@@ -135,30 +105,9 @@ sub parse_header {
   $title = $BBSHeader{'subject'} unless $title;
   $passwd = $BBSHeader{'password'};
   $passwd = $BBSHeader{'passwd'} unless $passwd;
-  $passwd = $BBSHeader{'passward'} unless $passwd;
   $subject = $title if ($title);
   if ($name && $passwd) {
-	open(CHECK,"$bbscheck $name $passwd |");	
-	chop($nickname = <CHECK>);
-	close(CHECK);
-        if ($? == 0) {
-		if ($newsgroups) {
-			@groups = split(/\,/,$newsgroups);
-			foreach $group (@groups) {
-				if (substr($group,0,9) ne 'csie.bbs.' &&
-                                    substr($group,0,7) ne 'tw.bbs.'){
-					die "trying to post by BBS user $name, \nbut BBS user can't post to one of the following newsgroups:\n$newsgroups\n";
-				}
-			}
-			$realfrom = $from unless $realfrom;
-			$from="${name}.bbs@firebird.cs.ccu.edu.tw (${nickname})";
-		} else {
-			$realfrom = $from unless $realfrom;
-			$from="${name}.bbs@firebird.cs.ccu.edu.tw (${nickname})";
-		}
-	} else {
-		die "$nickname $!\n";
-	}
+	die "$nickname $!\n";
   }
   $Header{'from'} = $from;
   $Header{'subject'} = $subject;
