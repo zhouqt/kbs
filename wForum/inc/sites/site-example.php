@@ -50,7 +50,7 @@ define('ALLOW_SELF_MULTIQUERY', false); //是否允许全站查询自己发表的文章
 
 //define('AUDIO_CHAT', 0); //是否显示语音聊天室的 link
 	
-$SiteURL="http://172.16.50.79"; //站点 URL，也就是本站首页地址
+$SiteURL = "http://localhost/wForum/"; //站点根地址，注意最后一个字符必须是 '/'
 
 $SiteName="大运村BBS";   //站点名称
 

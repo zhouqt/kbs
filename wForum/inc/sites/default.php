@@ -11,7 +11,7 @@
  */
 $site_defines = array(
 "网站基本配置",
-array(1, "SiteURL", 's', "http://localhost/", "站点 URL，也就是本站首页地址"),
+array(1, "SiteURL", 's', "http://localhost/", "站点根地址，注意最后一个字符必须是 /"),
 array(1, "SiteName", 's', "测试站", "站点名称"),
 array(1, "Banner", 's', "pic/ws.jpg", "页面左上角显示的站点标题图片"),
 array(0, "MAINTITLE", 's', "<img src=\"bar/title.jpg\" />", "页面正上方显示的站点标题"),
@@ -52,6 +52,7 @@ array(0, "SHOWTELNETPARAM", 'b', true, "是否允许配置 telnet 下专用的个人参数"),
 array(0, "ALLOWMULTIQUERY", 'b', false, "是否允许一般用户进行全站/多版面查询"),
 array(0, "ALLOW_SYSOP_MULTIQUERY", 'b', false, "是否允许管理员进行全站/多版面查询"),
 array(0, "ALLOW_SELF_MULTIQUERY", 'b', false, "是否允许全站查询自己发表的文章"),
+array(0, "RSS_SUPPORT", 'b', true, "是否允许 RSS"),
 array(0, "SMS_SUPPORT", 'b', false, "是否允许手机短信"),
 array(0, "AUDIO_CHAT", 'b', false, "是否显示语音聊天室的 link"),
 false
