@@ -66,7 +66,7 @@ char    *userid;
                     {
                         char timebuf[12];
                         time_t	t,now;
-                        strcpy(timebuf,ptr+13);
+                        strncpy(timebuf,ptr+13,11);
                         ptr = timebuf;
                         while (isdigit(*ptr)) ptr++;
 			*ptr=0;

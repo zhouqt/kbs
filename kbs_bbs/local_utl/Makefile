@@ -20,7 +20,7 @@ SITE_DEF = -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' -DINVISIBLE
 DEFINES	=  $(CSIE_DEF) $(OS_DEF)
 CFLAGS += -I.. -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' 
 
-BINFILE= poststat static usage Xclean Xhtml Bhtml refriend chlevel listonline syncann printboards MakeTar 
+BINFILE= poststat static usage Xclean Xhtml Bhtml refriend chlevel listonline syncann printboards MakeTar  showBM
 
 .SUFFIXES: .o .c .ln
 
@@ -62,6 +62,9 @@ install: all
 	cp -f $(BINFILE) ../../bin
 
 listonline:listonline.o ../libBBS.a
+	$(CC) -o $@ $^
+
+showBM:showBM.o ../libBBS.a
 	$(CC) -o $@ $^
 
 #bcache.o:bcache.c
