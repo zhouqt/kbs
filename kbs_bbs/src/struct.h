@@ -107,7 +107,7 @@ struct one_key {                  /* Used to pass commands to the readmenu */
 struct UTMPFILE {
     struct user_info    uinfo[ USHM_SIZE ];
     int next[USHM_SIZE];
-    int hashhead[UTMP_HASHSIZE]; /* use UCACHE_HASHSIZE/32 */
+    int hashhead[UTMP_HASHSIZE+1]; /* use UCACHE_HASHSIZE/32 */
     int number;
     int listhead;
     int list_prev[USHM_SIZE];  /* sorted list prev ptr*/
