@@ -762,7 +762,7 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
     }
 
     if (mailback) post_file.accessed[1] |= FILE_MAILBACK;
-    if (is_tex) post_file.accessed[0] |= FILE_TEX;
+    if (is_tex) post_file.accessed[1] |= FILE_TEX;
     
     setbfile(buf, board, DOT_DIR);
 

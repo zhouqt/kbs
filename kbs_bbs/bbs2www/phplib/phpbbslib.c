@@ -9379,7 +9379,7 @@ static PHP_FUNCTION(bbs_get_threads_from_gid)
 		flags[2]=0;
 	  }
 		bbs_make_article_array(element, articles + i, flags, sizeof(flags));
-                add_assoc_long(element, "IS_TEX", articles[i].accessed[0] & FILE_TEX);
+                add_assoc_long(element, "IS_TEX", articles[i].accessed[1] & FILE_TEX);
 		zend_hash_index_update(Z_ARRVAL_P(z_threads), i,
 				(void*) &element, sizeof(zval*), NULL);
 	}
