@@ -15,7 +15,8 @@ php-devel-xxx          必须
 libxml2                必须
 libiconv               必须
 zlib                   必须
-openssl		       必须
+openssl	               必须
+libesmtp > 0.8         必须
 gmp-4.1.2              必须
 mysql                  必须
      (以上软件可直接用 RedHat 光盘里的安装)
@@ -23,9 +24,8 @@ mysql                  必须
 
 autoconf-2.57          必须
 automake-1.6.X         必须
-libtool-1.4.3          必须
-libesmtp > 0.8         必须      编译时必须加上 --disable-pthreads 选项
-     (以上 4 个可以从 dev.smth.org 下载 rpm 包安装或者下载源代码自己编译安装)
+libtool-1.4.X          必须
+     (以上 3 个可以从 dev.smth.org 下载 rpm 包安装或者下载源代码自己编译安装)
 
 2. 编译安装 smthbbs
     下载 smthbbs 的源代码有两种方法，一种是通过 cvs 方式获取，另一种是下载每

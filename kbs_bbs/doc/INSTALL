@@ -1,3 +1,4 @@
+$Id$
                               水木代码安装指南
 
     本文由 BBS 水木清华站(http://www.smth.org)系统维护组负责维护，介绍了
@@ -19,10 +20,10 @@ smthbbs 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
   flyriver v1.0
 
 1. 需要的软件:
-libesmtp > 0.8         必须      编译时必须加上 --disable-pthreads 选项
+libesmtp > 0.8         必须      编译时建议加上 --disable-pthreads 选项
 autoconf-2.57          可选      如果从 cvs 下载源代码编译安装则必需
 automake-1.6.X         可选      如果从 cvs 下载源代码编译安装则必需
-libtool-1.4.3          可选      如果从 cvs 下载源代码编译安装则必需
+libtool-1.4.X          可选      如果从 cvs 下载源代码编译安装则必需
 apache_1.3.X           可选      选择 web 界面支持才需要
   or apache2
 php > 4.2.0            可选      选择 web 界面支持才需要
@@ -46,8 +47,8 @@ mysql                  可选      选择个人文集等功能支持才需要
                        定一个，例如放在自己 home 目录的某个子目录下
 
 2.2 安装 libesmtp 和 gmp
-    libesmtp 建议从源代码编译安装，configure 的时候要加上 --disable-pthreads
-参数，然后运行 make 和 make install 命令。
+    libesmtp 建议从源代码编译安装，configure 的时候建议加上 --disable-pthreads
+参数，但不加也可以，然后运行 make 和 make install 命令。
 
     gmp 可以直接使用操作系统自带的软件包。
 
