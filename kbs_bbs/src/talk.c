@@ -53,17 +53,17 @@ int     talkrec = -1;
 char    partner[IDLEN + 1];
 #endif
 struct one_key  friend_list[] = {
-                                    'r',        friend_query,
-                                    'm',        friend_mail,
-                                    'M',        friend_mail,
-                                    'a',        friend_add,
-                                    'A',        friend_add,
-                                    'd',        friend_dele,
-                                    'D',        friend_dele,
-                                    'E',        friend_edit,
-                                    'h',        friend_help,
-                                    'H',        friend_help,
-                                    '\0',       NULL
+                                    {'r',        friend_query},
+                                    {'m',        friend_mail},
+                                    {'M',        friend_mail},
+                                    {'a',        friend_add},
+                                    {'A',        friend_add},
+                                    {'d',        friend_dele},
+                                    {'D',        friend_dele},
+                                    {'E',        friend_edit},
+                                    {'h',        friend_help},
+                                    {'H',        friend_help},
+                                    {'\0',       NULL},
                                 } ;
 
 
@@ -228,7 +228,6 @@ char q_id[IDLEN];
     char        uident[STRLEN], *newline ;
     int         tuid=0;
     int         exp,perf;/*Add by SmallPig*/
-    struct user_info uin;
     char qry_mail_dir[STRLEN];
     char planid[IDLEN+2];
     char permstr[10];
@@ -297,7 +296,7 @@ char q_id[IDLEN];
     if( (newline = strchr(exittime, '\n')) != NULL )
         *newline = '\0';
 
-    if (exit_time <= lookupuser->lastlogin)
+    if (exit_time <= lookupuser->lastlogin) {
     	if (logincount!=seecount)
 	    {
     	    temp=lookupuser->lastlogin+((lookupuser->numlogins+lookupuser->numposts)%100)+60;
@@ -306,6 +305,7 @@ char q_id[IDLEN];
     	        *newline = '\0';
 	    } else
     	    strcpy(exittime,"因在线上或非常断线不详");
+    }
     prints( "\n上次在  [%s] 从 [%s] 到本站一游。\n离线时间[%s] ", Ctime(lookupuser->lastlogin),
             ((lookupuser->lasthost[0] == '\0') /*|| DEFINE(currentuser,DEF_HIDEIP)*/ ? "(不详)" : lookupuser->lasthost),/*Haohmaru.99.12.18. hide ip*/
             exittime);
@@ -376,7 +376,7 @@ int num_alcounter()
 	count_friends=0;
 	count_users=0;
     apply_ulist_addr( (APPLY_UTMP_FUNC)alcounter,0 ) ;
-    return;
+    return count_users;
 }
 
 int
@@ -431,7 +431,7 @@ ttt_talk( struct user_info *userinfo )
 
     move(1,0);
     clrtobot();
-    if(uinfo.mode!=LUSERS&&uinfo.mode!=FRIEND||userinfo==NULL)
+    if(((uinfo.mode!=LUSERS)&&(uinfo.mode!=FRIEND))||userinfo==NULL)
     {
         move(2,0) ;
         prints("<输入使用者代号>\n") ;
@@ -804,10 +804,8 @@ int
 talkreply()
 {
     int a ;
-    struct hostent *h ;
     char buf[512] ;
     char reason[51];
-    char hostname[STRLEN] ;
     struct sockaddr_in sin ;
     char inbuf[STRLEN*2];
 
@@ -1030,10 +1028,7 @@ talkflush()
     talkobuflen = 0 ;
 }
 
-int
-moveto(mode,twin)
-int mode;
-struct talk_win *twin;
+static void moveto(int mode,struct talk_win *twin)
 {
     if(mode==1)
         twin->curln--;

@@ -43,7 +43,7 @@ void
 new_register()
 {
     struct userec       newuser;
-    int    allocid, do_try,flag,lockfd;
+    int    allocid, do_try,flag;
     char   buf[STRLEN];
 /* temp !!!!!*/
 /*    prints("Sorry, we don't accept newusers due to system problem, we'll fixit ASAP\n");
@@ -209,10 +209,7 @@ check_register_info()
 {
     char        *newregfile;
     int         perm;
-    time_t      code;
-    FILE        *fin, *fout,*dp;
-    char        ans[4],buf[STRLEN];
-    extern int showansi;
+    char        buf[STRLEN];
 
     clear();
     sprintf(buf,"%s",email_domain());

@@ -96,96 +96,96 @@ struct scommandlist {
     int         (*fptr)();
 } ;
 static const struct scommandlist sysconf_cmdlist[] = {
-    "domenu",       domenu,
-    "EGroups",      EGroup,
-    "BoardsAll",    Boards,
-    "BoardsNew",    New,
-    "LeaveBBS",     Goodbye,
-    "Announce",     Announce,
-    /*        "ExecTin",      t_tin,
-            "ExecGopher",   t_gopher,*/
-    "SelectBoard",  Select,
-    "ReadBoard",    Read,
-    "PostArticle",  Post,
-    "SetHelp",      Help,
-    "SetAlarm",     setcalltime,
-    "MailAll",     mailall,
-    /*"ExecMJ",       x_excemj,
-    "ExecBIG2",     x_excebig2,
-    "ExecCHESS",    x_excechess,
-    "WWW",          t_www,        */
-    "OffLine",      suicide,
-    "ReadNewMail",  m_new,
-    "ReadMail",     m_read,
-    "SendMail",     m_send,
-    "GroupSend",    g_send,
-    "OverrideSend", ov_send,
-    "SendNetMail",  m_internet,
-    "UserDefine",   x_userdefine,
-    "ShowFriends",  t_friends,
-    "ShowLogins",   t_users,
-    "QueryUser",    t_query,
-    "WaitFriend",   wait_friend,
-    "Talk",         t_talk,
-    "SetPager",     t_pager,
-    "SetCloak",     x_cloak,
-    "SendMsg",      s_msg,
-    "ShowMsg",      show_allmsgs,
-    "SetFriends",   t_override,
-    "EnterChat",    ent_chat1,
-    "EnterChat2",    ent_chat2,
+    {"domenu",       domenu},
+    {"EGroups",      EGroup},
+    {"BoardsAll",    Boards},
+    {"BoardsNew",    New},
+    {"LeaveBBS",     Goodbye},
+    {"Announce",     Announce},
+    /*        {"ExecTin",      t_tin},
+            {"ExecGopher",   t_gopher},*/
+    {"SelectBoard",  Select},
+    {"ReadBoard",    Read},
+    {"PostArticle",  Post},
+    {"SetHelp",      Help},
+    {"SetAlarm",     setcalltime},
+    {"MailAll",     mailall},
+    /*{"ExecMJ",       x_excemj},
+    {"ExecBIG2",     x_excebig2},
+    {"ExecCHESS",    x_excechess},
+    {"WWW",          t_www},        */
+    {"OffLine",      suicide},
+    {"ReadNewMail",  m_new},
+    {"ReadMail",     m_read},
+    {"SendMail",     m_send},
+    {"GroupSend",    g_send},
+    {"OverrideSend", ov_send},
+    {"SendNetMail",  m_internet},
+    {"UserDefine",   x_userdefine},
+    {"ShowFriends",  t_friends},
+    {"ShowLogins",   t_users},
+    {"QueryUser",    t_query},
+    {"WaitFriend",   wait_friend},
+    {"Talk",         t_talk},
+    {"SetPager",     t_pager},
+    {"SetCloak",     x_cloak},
+    {"SendMsg",      s_msg},
+    {"ShowMsg",      show_allmsgs},
+    {"SetFriends",   t_override},
+    {"EnterChat",    ent_chat1},
+    {"EnterChat2",    ent_chat2},
 #ifdef IRC
-    "ExecIrc",      t_irc,
+    {"ExecIrc",      t_irc},
 #endif
-    "ListLogins",   t_list,
-    "Monitor",      t_monitor,
-    "RealLogins",   t_rusers,
-    "FillForm",     x_fillform,
-    "SetInfo",      x_info,
-    "EditUFiles",   x_edits,
-    "ShowLicense",  Conditions,
-    "ShowVersion",  Info,
-    "Notepad",      shownotepad,
-    "ShowDate",     x_date,
-    "DoVote",       x_vote,
-    "VoteResult",   x_results,
-    "ExecBBSNet",   ent_bnet,
-    "ShowWelcome",  Welcome,
-    "ReadWeather",	ShowWeather, /*Bigman 2001.6.12 */
-    "SpecialUser",  Users,
-    /*"ExecViewer",   t_announce,*/
-    "LockScreen",   lock_scr, /* Leeward 98.02.22 */
-    "ConvCode",     switch_code, /* KCN 99.09.03 */
-    "FavBoard",	FavBoard,	/* added period 2000-09-11 */
-    "BadList",	badlist,	/* added Bigman 2000.12.26 */
-    "CheckForm",    m_register,
-    "ModifyInfo",   m_info,
-    "ModifyLevel",  x_level,
+    {"ListLogins",   t_list},
+    {"Monitor",      t_monitor},
+    {"RealLogins",   t_rusers},
+    {"FillForm",     x_fillform},
+    {"SetInfo",      x_info},
+    {"EditUFiles",   x_edits},
+    {"ShowLicense",  Conditions},
+    {"ShowVersion",  Info},
+    {"Notepad",      shownotepad},
+    {"ShowDate",     x_date},
+    {"DoVote",       x_vote},
+    {"VoteResult",   x_results},
+    {"ExecBBSNet",   ent_bnet},
+    {"ShowWelcome",  Welcome},
+    {"ReadWeather",	ShowWeather}, /*Bigman 2001.6.12 */
+    {"SpecialUser",  Users},
+    /*{"ExecViewer",   t_announce},*/
+    {"LockScreen",   lock_scr}, /* Leeward 98.02.22 */
+    {"ConvCode",     switch_code}, /* KCN 99.09.03 */
+    {"FavBoard",	FavBoard},	/* added period 2000-09-11 */
+    {"BadList",	badlist},	/* added Bigman 2000.12.26 */
+    {"CheckForm",    m_register},
+    {"ModifyInfo",   m_info},
+    {"ModifyLevel",  x_level},
     /*added by cityhunter */
-    "ModifypLevel", p_level,
-    "QueryBUser",   query_bm,
+    {"ModifypLevel", p_level},
+    {"QueryBUser",   query_bm},
     /* end of addin */
-    "XCheckLevel",  XCheckLevel,
-    "KickUser",     kick_user,
-    "DelUser",      d_user,
-    "OpenVote",     m_vote,
-    "NewBoard",     m_newbrd,
-    "EditBoard",    m_editbrd,
-    "DelBoard",     d_board,
-    "SetTrace",     m_trace,
-    "CleanMail",    m_mclean,
-    "EditSFiles",   a_edits,
-    "Announceall",  wall,
-    "Setsyspass",   setsystempasswd,
-    "SearchTrace",	searchtrace,	/*stephen 2000.12.15*/
-    "StopLogin",	m_stoplogin,	/*stephen 2000.12.15*/
-    "ConfirmDelete",	confirm_delete_id, /*Bigman 2001.7.14 */
-    "InnStart",		inn_start,	/* czz 2002.01.15 */
-    "InnReload",	inn_reload,	/* czz 2002.01.15 */
-    "InnStop",		inn_stop,	/* czz 2002.01.15 */
-    NULL,           NULL
-};
-
+    {"XCheckLevel",  XCheckLevel},
+    {"KickUser",     kick_user},
+    {"DelUser",      d_user},
+    {"OpenVote",     m_vote},
+    {"NewBoard",     m_newbrd},
+    {"EditBoard",    m_editbrd},
+    {"DelBoard",     d_board},
+    {"SetTrace",     m_trace},
+    {"CleanMail",    m_mclean},
+    {"EditSFiles",   a_edits},
+    {"Announceall",  wall},
+    {"Setsyspass",   setsystempasswd},
+    {"SearchTrace",	searchtrace},	/*stephen 2000.12.15*/
+    {"StopLogin",	m_stoplogin},	/*stephen 2000.12.15*/
+    {"ConfirmDelete",	confirm_delete_id}, /*Bigman 2001.7.14 */
+    {"InnStart",		inn_start},	/* czz 2002.01.15 */
+    {"InnReload",	inn_reload},	/* czz 2002.01.15 */
+    {"InnStop",		inn_stop},	/* czz 2002.01.15 */
+    {NULL,           NULL},
+};  
+    
 void
 decodestr( register char *str )
 {

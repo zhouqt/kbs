@@ -127,8 +127,7 @@ unsigned int setperms(unsigned int pbits,char *prompt,int numbers,int (*showfunc
 /* Bigman 2001.7.14 */
 int confirm_delete_id()
 {	
-   char commd[STRLEN],buff[STRLEN];
-	int num;
+   char buff[STRLEN];
 
    if (!HAS_PERM(currentuser,PERM_ADMIN) )
     {
@@ -180,10 +179,7 @@ int
 p_level()
 {
     int id ;
-    unsigned int newlevel;
-    char ulbuf[40];
     char secu[STRLEN];
-    int num;
     struct userec* lookupuser;
 
     if (!HAS_PERM(currentuser,PERM_OBOARDS) )
@@ -535,7 +531,6 @@ int
 x_date()
 {
     time_t t;
-    char        ans[3];
 
     modify_user_mode( XMENU );
     clear();

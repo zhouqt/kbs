@@ -300,8 +300,8 @@ void i_read( int     cmdmode,char    *direct ,void (*dotitle)() ,
                         if( lbc < 9 )
                             lbuf[ lbc++ ] = ch;
             */	/*---	Modified by period	2000-09-11	---*/
-        } else if( ch >= '0' && ch <= '9' ||
-                   ((Ctrl('H') == ch || '\177' == ch) && lbc > 0) ) {
+        } else if( (ch >= '0' && ch <= '9') ||
+                   ((Ctrl('H') == ch || '\177' == ch) && (lbc > 0)) ) {
             if(Ctrl('H') == ch || '\177' == ch)
                 lbuf[lbc--] = 0;
             else if( lbc < 9 )
@@ -314,10 +314,12 @@ void i_read( int     cmdmode,char    *direct ,void (*dotitle)() ,
                 char pntbuf[256], nullbuf[2] = " ";
                 allstay = (time(0) - login_start_time)/60;
                 snprintf(pntbuf, 256, "\033[33;44m转到∶[\033[36m%9.9s\033[33m]"
-                        "  呼叫器[好友:%3s∶一般:%3s] 使用者[\033[36m%.12s\033[33m]%*s停留[%3d:%2d]\033[m",
+                        "  呼叫器[好友:%3s∶一般:%3s] 使用者[\033[36m%.12s\033[33m]%s停留[%3d:%2d]\033[m",
                         lbuf, (!(uinfo.pager&FRIEND_PAGER)) ? "NO " : "YES",
                         (uinfo.pager&ALL_PAGER) ? "YES" : "NO ",
-                        currentuser->userid, /*IDLEN+1*/13-strlen(currentuser->userid), nullbuf,
+                        currentuser->userid, /*13-strlen(currentuser->userid)
+                        	TODO:这个地方有问题，他想对齐，但是代码不对
+                        ,*/ nullbuf,
                         (allstay/60)%1000, allstay%60, nullbuf);
                 move(t_lines-1, 0);
                 clrtoeol();
@@ -454,7 +456,6 @@ int     ch,ssize;
 static int i_read_key(struct one_key * rcmdlist, struct keeploc * locmem,int ch, int ssize, char * pnt)
 {
     int         i, mode = DONOTHING;
-    char buf[STRLEN];
 
     switch( ch ) {
     case Ctrl('Z'): r_lastmsg(); /* Leeward 98.07.30 support msgX */
@@ -684,7 +685,6 @@ struct fileheader *fileinfo ;
 char *direct ;
 {
     struct user_info *uin ;
-    int id;
     if(!HAS_PERM(currentuser,PERM_PAGE))
         return DONOTHING;
     clear();
@@ -1366,16 +1366,11 @@ char *query;
 }
 
 /* COMMAN : use mmap to speed up searching */
-static int
-search_articles( locmem, query, offset, aflag )
-struct keeploc  *locmem;
-char            *query;
-int             offset, aflag;
+static int search_articles( struct keeploc  *locmem,char *query,int offset,int aflag)
 {
     char        *ptr;
     int         now, match = 0;
     int         complete_search;
-    int         ssize = sizeof(struct fileheader);
     int 		fd;
     char upper_ptr[STRLEN],upper_query[STRLEN];
 /*	int mmap_offset,mmap_length; */
