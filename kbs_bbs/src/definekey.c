@@ -2,7 +2,7 @@
 
 extern struct key_struct *keymem;
 extern int keymem_total;
-int tmpnum;
+int tmpnum = 0;
 
 #define MAX_KEY_DEFINE 100
 
