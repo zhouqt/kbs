@@ -966,6 +966,7 @@ int do_com_menu()
                         i = atoi(buf)-1;
                         if(i>=0&&i<MAX_PEOPLE&&inrooms[myroom].peoples[i].style!=-1&&inrooms[myroom].peoples[i].pid!=uinfo.pid) {
                             inrooms[myroom].peoples[i].flag&=~PEOPLE_ALIVE;
+                            inrooms[myroom].peoples[i].flag|=PEOPLE_SPECTATOR;
                             send_msg(i, "Äã±»ÌßÁË");
                             kill_msg(i);
                             return 2;
@@ -991,6 +992,8 @@ int do_com_menu()
                             return 0;
                         }
                     }
+                    return 0;
+                case 8:
                     return 0;
                 case 9:
                     start_change_inroom();
