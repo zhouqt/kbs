@@ -797,7 +797,7 @@ int zsend_attach(int ent, struct fileheader *fileinfo, char *direct)
 #if USE_TMPFS==1
                 setcachehomefile(name, currentuser->userid,utmpent, "attach.tmp");
 #else
-                sprintf(name, "tmp/attach%06d", rand()%100000);
+                gettmpfilename(name, "attach%06d", rand()%100000);
 #endif
                 fp=fopen(name, "wb");
                 fwrite(attach, 1, attach_len, fp);
