@@ -1,5 +1,4 @@
 #include "bbs.h"
-extern char *gb2big(char *, int *, int);
 extern char *sysconf_str();
 
 #ifdef HAVE_LIBESMTP
@@ -367,7 +366,7 @@ char *bbs_readmailfile(char **buf, int *len, void *arg)
     }
     *len = fread(getbuf, 1, MAILBUFLEN / 2, pmo->fin);
     if (pmo->isbig5) {
-        retbuf = gb2big(getbuf, len, 1);
+        retbuf = gb2big(getbuf, len, 1, getSession());
     } else {
         retbuf = getbuf;
     }
@@ -518,7 +517,7 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5,
     newbuf[STRLEN-1]=0;
     if (isbig5) {
        len=strlen(newbuf);
-       encodestr=gb2big(newbuf,&len,1);
+       encodestr=gb2big(newbuf,&len,1, getSession());
        encodestr=encodestring(encodestr,"BIG5");
     } else {
        encodestr=encodestring(newbuf,"GBK");
@@ -533,7 +532,7 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5,
     smtp_set_header(message, "Message-Id", NULL);
     if (isbig5) {
         len=strlen(title);
-		encodestr=gb2big(title,&len,1);
+		encodestr=gb2big(title,&len,1, getSession());
 		encodestr=encodestring(encodestr,"BIG5");
     } else {
 		encodestr=encodestring(title,"GBK");

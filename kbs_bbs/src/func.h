@@ -13,6 +13,9 @@ extern "C" {
 	int def_list(long long XX);
 	char *get_my_webdomain(int force);
 
+char *gb2big(char *s, int *plen, int inst, session_t* session);
+char *big2gb( char *s, int *plen, int inst, session_t* session);
+
 /* defined in pass.c */
     int checkpasswd(const char *passwd, const char *test);
     int checkpasswd2(const char *passwd, const struct userec *user);

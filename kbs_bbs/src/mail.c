@@ -1998,7 +1998,7 @@ static int do_gsend(char *userid[], char *title, int num)
 		sethomefile(genbuf, uid, "autoremail");
 		if(dashf(genbuf)){
 			sprintf(buf2, "[自动回复]%s的信件自动回复",uid);
-            mail_file(userid, genbuf, getCurrentUser()->userid, buf2, BBSPOST_COPY, NULL);
+            mail_file(uid, genbuf, getCurrentUser()->userid, buf2, BBSPOST_COPY, NULL);
 		}
 		setmailcheck(getCurrentUser()->userid);
 #endif

@@ -23,6 +23,7 @@ struct header h;
 int running;
 #if HAVE_MYSQL_SMTH == 1
 MYSQL mysql_s;
+extern int save_smsmsg_nomysqlconnect(MYSQL *s, char *uident, struct msghead *head, char *msgbuf, int readed);
 #endif
 
 #define THRESHHOLE 60
@@ -370,6 +371,7 @@ int sms_init_mysql(){
 		mysql_close(&mysql_s);
 		exit(0);
 	}
+	return 1;
 }
 #endif
 
