@@ -169,11 +169,6 @@ int bbs_zrecvfile()
     return 0;
 }
 
-static void usage(int exitcode, const char *what)
-{
-    exit(exitcode);
-}
-
 /*
  * Let's receive something already.
  */
@@ -248,9 +243,9 @@ static int wcreceive(int argc, char **argp)
     if (fout)
         fclose(fout);
 
-    if (Pathname) {
-        unlink(Pathname);
-    }
+//    if (Pathname) {
+//        unlink(Pathname);
+//    }
     return ERROR;
 }
 
