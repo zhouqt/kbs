@@ -108,9 +108,15 @@ struct BCACHE {
     time_t      uptime;
 };
 
+struct UCACHE_hashnode {
+    char        userid[ IDLEN + 1];
+    int         next;
+}
+
+#define UCACHE_HASHSIZE 10240
+
 struct UCACHE {
-    int   	userlist[MAXUSERS];
-    char        userid[ MAXUSERS ][ IDLEN + 1 ];
-    int         number;
+	int	hashhead[UCACHE_HASHSIZE];
+	struct UCACHE_hashnode users[MAXUSER];
     time_t      uptime;
 };
