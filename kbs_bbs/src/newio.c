@@ -845,7 +845,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 
 int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len, int maxline, int clearlabel)
 {
-    int ch, clen = 0, curr = 0, x, y, startx, starty, now, i, j, k, chk, cursorx, cursory;
+    int ch, clen = 0, curr = 0, x, y, startx, starty, now, i, j, k, i0, chk, cursorx, cursory;
     char savebuffer[25][256];
     char tmp[STRLEN];
     extern int RMSG;
@@ -1059,15 +1059,17 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 now = strlen(buf);
                 break;
             case Ctrl('Y'):
+                i0 = strlen(buf);
                 i=now-1;
                 while(i>=0&&buf[i]!='\n'&&buf[i]!='\r') i--;
                 i++;
                 if(!buf[i]) break;
                 j=now;
-                while(j<strlen(buf)-1&&buf[j]!='\n'&&buf[j]!='\r') j++;
+                while(j<i0-2&&buf[j]!='\n'&&buf[j]!='\r') j++;
+                if(j>=i0-1) j=i0-1;
                 j=j-i+1;
                 if(j<0) j=0;
-                for(k=0;k<strlen(buf)-i-j+1;k++)
+                for(k=0;k<i0-i-j+1;k++)
                     buf[i+k]=buf[i+j+k];
                 if(now>strlen(buf)) now=strlen(buf);
                 break;
