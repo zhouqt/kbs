@@ -50,7 +50,7 @@
 <tr><td><?php echo $start+$i;?></td>
 <td><a href="/bbsqry.php?userid=<?php echo $friend["ID"];?>"><?php echo $friend["ID"];?></a></td>
 <td><?php echo $friend["EXP"];?></td>
-<td>[<a onclick="return confirm('È·ÊµÉ¾³ýÂð?')" href="bbsfdel?userid=<?php echo $friend["ID"];?>">É¾³ý</a>]</td>
+<td>[<a onclick="return confirm('È·ÊµÉ¾³ýÂð?')" href="/bbsfdel.php?userid=<?php echo $friend["ID"];?>">É¾³ý</a>]</td>
 </tr>
 <?php
 			}
