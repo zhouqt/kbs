@@ -68,6 +68,21 @@
 			}else
 				$battach = 0;
 
+			if(isset($_GET["bclubread"])){
+				$bclubread = 1;
+			}else
+				$bclubread = 0;
+
+			if(isset($_GET["bclubwrite"])){
+				$bclubwrite = 1;
+			}else
+				$bclubwrite = 0;
+
+			if(isset($_GET["bclubhide"])){
+				$bclubhide = 1;
+			}else
+				$bclubhide = 0;
+
 			if(isset($_GET["bgroup"])){
 				$bgroup = $_GET["bgroup"];
 			}else
@@ -79,7 +94,7 @@
 				html_error_quit("参数的错误");
 			settype($bnum,"integer");
 
-			$ret = bbs_new_board($bnum,$bname,$section,$desp,$btitle,$bbm,$blevel,$banony,$bjunk,$bout,$bgroup,$battach);
+			$ret = bbs_new_board($bnum,$bname,$section,$desp,$btitle,$bbm,$blevel,$banony,$bjunk,$bout,$bgroup,$battach,$bclubread,$bclubwrite,$bclubhide);
 
 			if($ret < 0)
 				html_error_quit("加入/修改讨论区失败".$ret);
@@ -150,16 +165,16 @@
 ?>
 </select><br>
 <?php } ?>
-<input type="checkbox" name="banony">匿名版面<br>
-<input type="checkbox" name="bjunk">版面不计文章数<br>
-<input type="checkbox" name="bout">转信版面<br>
-<input type="checkbox" name="battach">可粘贴附件<br>
+<input type="checkbox" name="banony" <?php if( $nowbh["FLAG"] & BBS_BOARD_ANNONY) echo "checked";?>>匿名版面<br>
+<input type="checkbox" name="bjunk" <?php if( $nowbh["FLAG"] & BBS_BOARD_JUNK) echo "checked";?>>版面不计文章数<br>
+<input type="checkbox" name="bout" <?php if( $nowbh["FLAG"] & BBS_BOARD_OUTFLAG) echo "checked";?>>转信版面<br>
+<input type="checkbox" name="battach" <?php if( $nowbh["FLAG"] & BBS_BOARD_ATTACH) echo "checked";?>>可粘贴附件<br>
 <?php
 			if($bnum){
 ?>
-<input type="checkbox" name="bclubread">读限制俱乐部<br>
-<input type="checkbox" name="bclubwrite">写限制俱乐部<br>
-<input type="checkbox" name="bclubhide">隐藏限制俱乐部<br>
+<input type="checkbox" name="bclubread" <?php if( $nowbh["FLAG"] & BBS_BOARD_CLUB_READ) echo "checked";?>>读限制俱乐部<br>
+<input type="checkbox" name="bclubwrite" <?php if( $nowbh["FLAG"] & BBS_BOARD_CLUB_WRITE) echo "checked";?>>写限制俱乐部<br>
+<input type="checkbox" name="bclubhide" <?php if( $nowbh["FLAG"] & BBS_BOARD_CLUB_HIDE) echo "checked";?>>隐藏限制俱乐部<br>
 <?php
 			}
 ?>
