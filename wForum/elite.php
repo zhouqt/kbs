@@ -37,6 +37,7 @@ showUserMailBoxOrBR();
 if ($boardID) {
 	board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
 	if ($file === false) {
+		require("inc/conn.php"); //只有这个时候才需要
 ?>
 <table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
 <?php
@@ -44,12 +45,11 @@ if ($boardID) {
 ?>
 </table>
 <?php
-		showBoardStaticsTop($boardArr);
+		showBoardStaticsTop($boardArr, true);
 ?>
 <table cellPadding=1 cellSpacing=1 class=TableBorder1 align=center>
 <?php
-		require("inc/conn.php");
-		showBroadcast($boardID,$boardName, true);
+		showBroadcast($boardID,$boardName);
 ?>
 </table>
 <?php

@@ -72,8 +72,12 @@ function boardeven($boardID,$boardName){
 <?php
 	$sql="select * from smallpaper_tb where boardID=".$boardID." order by Addtime desc";
 
-	$sth=$conn->query($sql);
-	$totalrec=$sth->numRows();
+	if ($conn !== false) {
+		$sth=$conn->query($sql);
+		$totalrec=$sth->numRows();
+	} else {
+		$totalrec = 0;
+	}
 	if ($totalrec==0) {
 		echo  "<tr> <td class=TableBody1 align=center colspan=5 height=25>本版还没有小字报</td></tr>";
 	} else {
@@ -141,6 +145,9 @@ function batch()
 	}
 	if ($_POST["nums"]=="") {
 		foundErr("请指定相关小字报。");
+	}
+	if ($conn === false) {
+		foundErr("数据库故障。");
 	}
 	$query = "delete from smallpaper_tb where boardID=".$boardID." and ID in (".$_POST["nums"].")";
 	if (!bbs_is_bm($boardID,$usernum)) {

@@ -53,7 +53,11 @@ function preprocess(){
 function showpaper($boardID,$boardName){
 	global $conn;
 	global $id;
-	$rs=$conn->getRow("select * from smallpaper_tb where ID=".$id,DB_FETCHMODE_ASSOC);
+	if ($conn !== false) {
+		$rs=$conn->getRow("select * from smallpaper_tb where ID=".$id,DB_FETCHMODE_ASSOC);
+	} else {
+		foundErr("数据库故障", true, false);
+	}
 	if (count($rs)==0) {
 		foundErr("没有找到相关信息。", true, false);
 	}	else  {

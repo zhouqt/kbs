@@ -1,13 +1,19 @@
 <?php 
+/* 数据库连接基础文件。$conn 为当前数据库连接类。如果数据库连接出现错误，$conn 为 false。 */
+
 /*
 require 'DB.php';
 $dsn = "mysql://$dbuser:$dbpasswd@$dbhost/$dbname";
 
 $conn = DB::connect($dsn);
-if (DB::isError($conn)) { die ($conn->getMessage()); }
+if (DB::isError($conn)) {
+	//die ($conn->getMessage());
+	$conn = false;
+}
 function CloseDatabase()
 {
 	global $conn;
+	if ($conn === false) return;
 	$conn->disconnect();
 	//unset($conn); //这是不对的，因为 function 内 unset 不会 destroy 全局变量 - atppp
 	$conn = false;
@@ -41,10 +47,12 @@ class my_result {
 
 class my_mysql {
 	var $my_conn;
+	var $my_err;
 	
 	function my_mysql($dbhost, $dbuser, $dbpasswd, $dbname) {
-		@$this->my_conn = @mysql_connect($dbhost, $dbuser, $dbpasswd) or die("MYSQL connection failure.");
-		@mysql_select_db($dbname) or die("MYSQL: cannot select database.");
+		$this->my_err = false;
+		@$this->my_conn = @mysql_connect($dbhost, $dbuser, $dbpasswd) or $this->my_err = true;
+		if (!$this->my_err) @mysql_select_db($dbname) or $this->my_err = true;
 	}
 	
 	function query($sql) {
@@ -62,6 +70,7 @@ class my_mysql {
 }
 
 $conn = new my_mysql($dbhost, $dbuser, $dbpasswd, $dbname);
+if ($conn->my_err) $conn = false;
 function CloseDatabase()
 {
 	global $conn;

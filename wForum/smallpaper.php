@@ -27,8 +27,11 @@ function preprocess(){
 	global $boardName;
 	global $currentuser;
 	global $boardArr;
-	global $loginok;
+	global $conn;
 
+	if ($conn === false) {
+		foundErr("数据库故障。");
+	}
 	if (!isset($_GET['board'])) {
 		foundErr("未指定版面。");
 	}

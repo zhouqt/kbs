@@ -28,10 +28,13 @@ function preprocess(){
 	global $boardName;
 	global $currentuser;
 	global $boardArr;
-	global $loginok;
+	global $conn;
 	global $title;
 	global $Content;
 	
+	if ($conn === false) {
+		foundErr("Êý¾Ý¿â¹ÊÕÏ¡£");
+	}
 	$title=trim($_POST["title"]);
 	$Content=trim($_POST["Content"]);
 

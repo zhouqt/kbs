@@ -168,7 +168,8 @@ function print_file_display_javascript($boardName) {
 }
 
 
-function showBoardStaticsTop($boardArr){
+function showBoardStaticsTop($boardArr, $is_ann=false){
+	global $conn;
 ?>
 <TABLE cellpadding=3 cellspacing=1 class=TableBorder1 align=center>
 <TR><Th height=25 width=100% align=left id=TableTitleLink style="font-weight:normal">
@@ -179,44 +180,22 @@ function showBoardStaticsTop($boardArr){
 <td align=left style="height:27" valign="center"><table cellpadding=0 cellspacing=0 border=0 ><tr>
 <td width="110"><a href=postarticle.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass1" border=0 alt=发新帖></div></a></td>
 <!--<td width="110"><a href=# onclick="alert('本功能尚在开发中！')"><div class="buttonClass2" border=0 alt=发起新投票></div></a></td>-->
-<td width="110"><a href=smallpaper.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass3" border=0 alt=发布小字报></div></a></td>
-</tr></table></td>
-<td align=right><img src=pic/team2.gif align=absmiddle>
-<?php 
-	$bms=split(' ',$boardArr['BM']);
-	foreach($bms as $bm) {
+<?php
+	if ($conn !== false) {
 ?>
-<a href="dispuser.php?id=<?php echo $bm; ?>" target=_blank title=点击查看该版主资料><?php echo $bm; ?></a>
+<td width="110"><a href=smallpaper.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass3" border=0 alt=发布小字报></div></a></td>
 <?php
 	}
 ?>
-</td></tr></table>
-<?php
-}
-
-
-function showBroadcast($boardID,$boardName,$is_ann=false){
-	global $conn;
-?>
-<tr><td class=TableBody1 colspan=5 height=20>
-	<table width=100% ><tr><td valign=middle height=20 width=50><a href=allpaper.php?board=<?php echo $boardName; ?> title=点击查看本论坛所有小字报><b>广播</b></a>：</td><td width=*> <marquee scrolldelay=150 scrollamount=4 onmouseout="if (document.all!=null){this.start()}" onmouseover="if (document.all!=null){this.stop()}">
-<?php
-	$sth = $conn->query("SELECT ID,Owner,Title FROM smallpaper_tb where Addtime>=subdate(Now(),interval 1 day) and boardID=" . $boardID . " ORDER BY Addtime desc limit 5");
-	while($rs = $sth->fetchRow(DB_FETCHMODE_ASSOC)) {
-		print "<font color=#ff0000>".$rs['Owner']."</font>说：<a href=javascript:openScript('viewpaper.php?id=".$rs['ID']."&boardname=".$boardName."',500,400)>".htmlspecialchars($rs['Title'],ENT_QUOTES)."</a>";
-  } 
-  unset($rs);
-  $sth->free();
-?>
-	</marquee>
-	<td align=right width=240>
+</tr></table></td>
+<td align=right>
 <?php
 	if ($is_ann) {
 ?>
-	<a href="board.php?name=<?php echo $boardName; ?>" title=查看本版文章><font color=blue><B>讨论区</B></font></a> 
+	<a href="board.php?name=<?php echo $boardArr['NAME']; ?>" title=查看本版文章><font color=blue><B>讨论区</B></font></a> 
 <?php
 	} else {
-		$ann_path = bbs_getannpath($boardName);
+		$ann_path = bbs_getannpath($boardArr['NAME']);
 		if ($ann_path != FALSE) {
 	    	if (!strncmp($ann_path,"0Announce/",10))
 			$ann_path=substr($ann_path,9);
@@ -232,6 +211,36 @@ function showBroadcast($boardID,$boardName,$is_ann=false){
 	| <a href=# onclick="alert('本功能尚在开发中！')" title=查看本版用户组权限>权限</a>
     | <a href=# onclick="alert('本功能尚在开发中！')">管理</a>
 -->
+<?php 
+	$bms=split(' ',$boardArr['BM']);
+	foreach($bms as $bm) {
+?>
+&nbsp;&nbsp;<img src=pic/team2.gif align=absmiddle><a href="dispuser.php?id=<?php echo $bm; ?>" target=_blank title=点击查看该版主资料><?php echo $bm; ?></a>
+<?php
+	}
+?>
+</td></tr></table>
+<?php
+}
+
+
+function showBroadcast($boardID,$boardName){
+	global $conn;
+	if ($conn === false) return;
+?>
+<tr><td class=TableBody1 colspan=5 height=20>
+	<table width=100% ><tr><td valign=middle height=20 width=50><a href=allpaper.php?board=<?php echo $boardName; ?> title=点击查看本论坛所有小字报><b>广播</b></a>：</td><td width=*> <marquee scrolldelay=150 scrollamount=4 onmouseout="if (document.all!=null){this.start()}" onmouseover="if (document.all!=null){this.stop()}">
+<?php
+	$sth = $conn->query("SELECT ID,Owner,Title FROM smallpaper_tb where Addtime>=subdate(Now(),interval 1 day) and boardID=" . $boardID . " ORDER BY Addtime desc limit 5");
+	while($rs = $sth->fetchRow(DB_FETCHMODE_ASSOC)) {
+		print "<font color=#ff0000>".$rs['Owner']."</font>说：<a href=javascript:openScript('viewpaper.php?id=".$rs['ID']."&boardname=".$boardName."',500,400)>".htmlspecialchars($rs['Title'],ENT_QUOTES)."</a>";
+  } 
+  unset($rs);
+  $sth->free();
+?>
+	</marquee>
+	<td align=right width=240>
+
 </td></tr></table>
 </td></tr>
 <?php
