@@ -774,6 +774,8 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
 {
     extern int t_lines;
     struct MemMoreLines l;
+    static char searchstr[30] = "";
+    char buf[256];
     int i, ch = 0, curr_line, last_line, change;
 
     displayflag = 0;
@@ -851,7 +853,7 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
                 break;
             case 'g':
 		getdata(t_lines - 1, 0, "跳转到的行号:", buf, 9,
-			DOECHO, YEA);
+			1, 0, 1);
 		if (isdigit(buf[0])) {
 			change = atoi(buf) - curr_line;
 		}
@@ -862,7 +864,7 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
 			ch ==
 			'/' ? "向下查找字符串:" :
 			"向上查找字符串:", searchstr, 29,
-			DOECHO, NA);
+			1, 0, 0);
 		if (strlen(searchstr) > 0) {
 			int i = curr_line;
 			while (1) {
