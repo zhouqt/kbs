@@ -123,6 +123,9 @@ static PHP_FUNCTION(bbs_getusermode);
 static PHP_FUNCTION(bbs_compute_user_value);
 static PHP_FUNCTION(bbs_user_level_char);
 static PHP_FUNCTION(bbs_checkpasswd);
+#ifdef HAVE_WFORUM
+static PHP_FUNCTION(bbs_isonline);
+#endif
 
 //Friends
 static PHP_FUNCTION(bbs_getfriends);
@@ -341,6 +344,9 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_countuser, NULL)
         PHP_FE(bbs_setfromhost, NULL)
         PHP_FE(bbs_checkpasswd, NULL)
+#ifdef HAVE_WFORUM
+		PHP_FE(bbs_isonline, NULL)
+#endif
         PHP_FE(bbs_getcurrentuser, one_arg_force_ref_1)
         PHP_FE(bbs_setonlineuser, fifth_arg_force_ref_00011)
         PHP_FE(bbs_checkorigin, NULL)
@@ -937,6 +943,38 @@ static PHP_FUNCTION(bbs_checkpasswd)
     }
     RETURN_LONG(ret);
 }
+
+#ifdef HAVE_WFORUM
+int count_online(struct user_info *uentp, int *arg, int pos)
+{
+     if (uentp->invisible == 1) {
+         return COUNT;
+     }
+     (*arg) = 1;
+     UNUSED_ARG(pos);
+     return QUIT;
+}
+/*
+ * bbs_isonline(userid), return if this userid is online. If cloak, return false
+ */
+static PHP_FUNCTION(bbs_isonline)
+{
+    int can_see = 0;
+    struct userec *lookupuser;
+    char *s;
+    int s_len;
+
+    if (ZEND_NUM_ARGS() != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &s, &s_len) != SUCCESS) {
+        WRONG_PARAM_COUNT;
+    }
+    if( ! getuser(s,&lookupuser) ) {
+        RETURN_FALSE;
+    }
+    apply_utmp((APPLY_UTMP_FUNC) count_online, 0, lookupuser->userid, &can_see);
+    if (can_see) RETURN_TRUE;
+    RETURN_FALSE;
+}
+#endif
 
 static PHP_FUNCTION(bbs_getuserparam){//这个函数总有一天要被我杀掉！！ - atppp
 	if (ZEND_NUM_ARGS() != 0) {
