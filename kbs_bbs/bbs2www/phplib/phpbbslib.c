@@ -36,6 +36,7 @@ static PHP_FUNCTION(bbs_ann_get_board);
 static PHP_FUNCTION(bbs_getboards);
 static PHP_FUNCTION(bbs_getarticles);
 static PHP_FUNCTION(bbs_get_records_from_id);
+static PHP_FUNCTION(bbs_get_records_from_num);
 static PHP_FUNCTION(bbs_get_filename_from_num);
 static PHP_FUNCTION(bbs_countarticles);
 static PHP_FUNCTION(bbs_is_bm);
@@ -87,6 +88,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_getboards, NULL)
         PHP_FE(bbs_getarticles, NULL)
         PHP_FE(bbs_get_records_from_id, NULL)
+        PHP_FE(bbs_get_records_from_num, NULL)
         PHP_FE(bbs_get_filename_from_num, NULL)
         PHP_FE(bbs_countarticles, NULL)
         PHP_FE(bbs_is_bm, NULL)
@@ -1052,6 +1054,70 @@ static PHP_FUNCTION(bbs_get_filename_from_num)
 	fclose(fp);
 
 	RETURN_STRING(fh.filename,1);
+}
+
+/**
+ * Get a article records from the article num.
+ * prototype:
+ * int bbs_get_records_from_num(string dirpath, long num, arrary articles);
+ *
+ * @return Record index on success,
+ *       0 on failure.
+ * @author stiger
+ */
+static PHP_FUNCTION(bbs_get_records_from_num)
+{
+	int num;
+	FILE *fp;
+	char *dirpath;
+	int dlen;
+	fileheader_t articles;
+	int i;
+	zval *element,*articlearray;
+	char flags[3]; /* flags[0]: flag character
+					* flags[1]: imported flag
+					* flags[2]: no reply flag
+					*/
+    int ac = ZEND_NUM_ARGS();
+    int retnum;
+    if (ac != 3
+        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sla", &dirpath, &dlen, &num, &articlearray) == FAILURE)
+    {
+        WRONG_PARAM_COUNT;
+    }
+
+	if (currentuser == NULL)
+	{
+		RETURN_LONG(0);
+	}
+
+	if ((fp = fopen(dirpath, "r")) == NULL )
+	{
+		RETURN_LONG(0);
+	}
+	fseek(fp, sizeof(articles) * num, SEEK_SET);
+	if( fread(&articles, sizeof(articles), 1, fp) < 1 )
+	{
+		fclose(fp);
+		RETURN_LONG(0);
+	}
+	fclose(fp);
+
+	if(array_init(articlearray) != SUCCESS)
+	{
+                RETURN_LONG(0);
+	}
+
+	MAKE_STD_ZVAL(element);
+	array_init(element);
+	flags[0]=0;
+	flags[1]=0;
+	flags[2]=0;
+	bbs_make_article_array(element, &articles, flags, sizeof(flags));
+	zend_hash_index_update(Z_ARRVAL_P(articlearray), 0,
+				(void*) &element, sizeof(zval*), NULL);
+
+	RETURN_LONG(1);
 }
 
 /**
