@@ -1458,7 +1458,7 @@ int             offset, aflag;
     int         ssize = sizeof(struct fileheader);
     int 		fd;
     char upper_ptr[STRLEN],upper_query[STRLEN];
-//	int mmap_offset,mmap_length;
+/*	int mmap_offset,mmap_length; */
 	struct fileheader *pFh,*pFh1;
 	struct stat st;
 	get_upper_str(upper_query,query); 
