@@ -163,6 +163,8 @@ int main()
                "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"/bbssig.php\">改签名档</a><br>\n"
                "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbspwd\">修改密码</a><br>\n"
                "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsparm\">修改个人参数</a><br>\n"
+               "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"/bbsal.php\">通讯录</a><br>\n"
+               "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"/bbsrsmsmsg.php\">短信管理器</a><br>\n"
 /*
 "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsmywww\">WWW个人定制</a><br>\n"
 */
