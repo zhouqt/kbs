@@ -67,7 +67,7 @@ int updatelastpost(char *board)
 {
     int pos;
 
-    pos = getbnum(board);       /* board name --> board No. */
+    pos = getboardnum(board,NULL);       /* board name --> board No. */
     if (pos > 0) {
         getlastpost(board, &brdshm->bstatus[pos - 1].lastpost, &brdshm->bstatus[pos - 1].total);
         return 0;

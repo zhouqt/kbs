@@ -682,13 +682,14 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
         return 1;
     }
     updatelastpost(boardname);
-    brc_add_read(fh->id);
 #ifdef FILTER
     if (filtered)
-    	sprintf(buf, "posted '%s' on '%s'", fh->title, fh->o_board);
-    else
+    	sprintf(buf, "posted '%s' on '%s' filtered", fh->title, fh->o_board);
+    else {
 #endif
+    brc_add_read(fh->id);
     sprintf(buf, "posted '%s' on '%s'", fh->title, boardname);
+    }
     newbbslog(BBSLOG_USER, "%s", buf);
 
     if (fh->id == fh->groupid)

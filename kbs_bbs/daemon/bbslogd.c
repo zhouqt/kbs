@@ -69,7 +69,7 @@ static void writelog(struct bbs_msgbuf *msg)
     struct taglogconfig *pconf;
     char ch;
 
-    if ((msg->mtype < 0) || (msg->mtype >= sizeof(logconfig) / sizeof(struct taglogconfig)))
+    if ((msg->mtype < 0) || (msg->mtype > sizeof(logconfig) / sizeof(struct taglogconfig)))
         return;
     pconf = &logconfig[msg->mtype-1];
 
