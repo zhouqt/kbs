@@ -604,7 +604,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
 
     if (uinfo.mode != RMAIL && digestmode != 1 && digestmode != 4 && digestmode != 5) { // 新方法比较
         if (FFLL == 0) {
-            if (ent->groupid != ent->id)
+            if ((ent->groupid != ent->id)&&(!strncasecmp(TITLE,"Re:",3)||!strncmp(TITLE,"回复:",5))
                 sprintf(buf, " %4d %s%c%s %-12.12s %s  %-47.47s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
             else                /* 非Re的文章 */
                 sprintf(buf, " %4d %s%c%s %-12.12s %s  ● %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
