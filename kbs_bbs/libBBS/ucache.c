@@ -1032,6 +1032,7 @@ int do_after_logout(struct userec* user,struct user_info* userinfo,int unum,int 
 #endif
         unlock_user(lockfd);
     }
+	return 0;
 }
 
 #ifdef HAVE_CUSTOM_USER_TITLE
@@ -1179,7 +1180,7 @@ int resolve_guest_table()
 int lock_user(char* userid)
 {
     int fd = 0;
-    char buf[MAX_PATH];
+    char buf[MAXPATH];
 
     sethomefile(buf,userid,"lock");
     fd = open(buf, O_RDWR | O_CREAT, 0600);

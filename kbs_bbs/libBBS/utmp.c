@@ -210,9 +210,7 @@ int getnewutmpent(struct user_info *up)
 #endif
 int getnewutmpent(struct user_info *up)
 {
-    struct user_info *uentp;
-    time_t now;
-    int pos, n, i,ret;
+    int pos, i,ret;
     int utmpfd, hashkey;
 
     utmpfd = utmp_lock();
@@ -781,7 +779,7 @@ void kick_idle_user()
                         ((uentp->mode != WEBEXPLORE)&&uentp->pid && kill(uentp->pid, 0) == -1))
                         /*不是WWW的要检查进程是否退出了*/
                     {     /*uentp检查 */
-                        clear_utmp(n + 1);
+                        clear_utmp(n + 1,utmpshm->uinfo[n].uid,utmpshm->uinfo[n].pid);
                     }
                 }
                 exit(0);

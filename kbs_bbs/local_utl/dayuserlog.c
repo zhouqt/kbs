@@ -36,7 +36,7 @@ static int is_school(char *ip)
 int do_userlist(struct user_info *uentp, char *arg, int t)
 {
 
-	if( uentp->mode == WWW ){
+	if( uentp->mode == WEBEXPLORE){
 		/* www */
 		wwwnotguestonline++;
 		if( is_school(uentp->from) )
