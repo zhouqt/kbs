@@ -7925,7 +7925,7 @@ static PHP_FUNCTION(bbs_is_favboard)
         if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l" ,&position) == FAILURE){
                 WRONG_PARAM_COUNT;
         }
-        RETURN_LONG(IsFavBoard(position, getSession()));
+        RETURN_LONG(IsFavBoard(position-1, getSession())); //position是bid，但是fav数据结构里头的是-1的. - atppp
 }
 
 static PHP_FUNCTION(bbs_del_favboarddir)
