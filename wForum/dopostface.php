@@ -6,7 +6,6 @@ html_init();
 if ($loginok != 1) die("сн©мё©");
 ?>
 <body style="margin: 0pt;">
-<script src="inc/browser.js"  language="javascript"></script>
 <script language="javascript">
 	oSubmit=getParentRawObject("oSubmit");
 	oSubmit2=getParentRawObject("oSubmit2");

@@ -9,7 +9,6 @@ html_init();
 
 ?>
 <body>
-<script language="javascript" type="text/javascript" src="inc/browser.js"></script>
 <div id="msgcontent">
 <div onkeydown="if(event.keyCode==13 ) { closeWindow(); } ">
 <?php

@@ -8,8 +8,6 @@ $is_tex = SUPPORT_TEX ? intval($_POST["texflag"]) : 0;
 html_init("","",$is_tex);
 ?>
 <body>
-<script src="inc/browser.js"  language="javascript"></script>
-<script src="inc/funcs.js"  language="javascript"></script>
 <table cellpadding="3" cellspacing="1" align="center" class="TableBorder1">
 	<tr><th height="25">ЬћзгдЄРР</th></tr>
 	<tr><td class="TableBody1" 

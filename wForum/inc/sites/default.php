@@ -106,11 +106,6 @@ if (!defined('USEBROWSCAP')) { //ÊÇ·ñÊ¹ÓÃ browscap º¯ÊıÀ´¸ü×¼È·µØÅĞ¶Ïä¯ÀÀÆ÷ºÍ²Ù×
 
 $sectionCount=count($section_names);
 
-if (!isset($DEFAULTStyle)) {
-	$DEFAULTStyle="defaultstyle";  //Ä¬ÈÏCSS·ç¸ñ£¬Èç¹ûÒª¸Ä¶¯Ç§ÍòÒªÈ·ÈÏ¸ÃCSS´æÔÚ¡£
-}
-
-
 /*
  * ÓÃ»§×Ô¶¨Òå²ÎÊı
  *

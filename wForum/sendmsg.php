@@ -21,7 +21,6 @@ function main() {
 	settype($destutmp, "integer");
 ?>
 <body>
-<script language="javascript" type="text/javascript" src="inc/browser.js"></script>
 <script language="javascript">
 parent.pauseMsg();
 </script>

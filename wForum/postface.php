@@ -4,7 +4,6 @@ if (!USER_FACE) exit;
 html_init();
 ?>
 <body style="margin:0px;">
-<script src="inc/browser.js"  language="javascript"></script>
 <script language="javascript">
 function disableEdit(){
 	oSubmit=getParentRawObject("oSubmit");

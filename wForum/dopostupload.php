@@ -5,7 +5,6 @@ require("inc/board.inc.php");
 html_init();
 ?>
 <body style="margin: 0pt;">
-<script src="inc/browser.js"  language="javascript"></script>
 <table width="100%" border=0 cellspacing=0 cellpadding=0>
 <tr><td class=TableBody2 valign=middle height=28>
 <?php 
@@ -52,6 +51,8 @@ if ($errno==UPLOAD_ERR_OK) {
 		$errno=100;
 }
 $filecount=0;
+$filenames=array();
+$filesizes=array();
 if (($fp=@fopen($attachdir . "/.index","r"))!=FALSE) {
 	while (!feof($fp)) {
 		$buf=fgets($fp);
@@ -73,7 +74,7 @@ if (($fp=@fopen($attachdir . "/.index","r"))!=FALSE) {
 }
 if ($_FILES['upfile']['size']+$totalsize>ATTACHMAXTOTALSIZE) {
 	unlink($attachdir . "/" . $act_attachname);
-	unset($filenames,$act_attachname);
+	//unset($filenames,$act_attachname);
 	$errno=UPLOAD_ERR_FORM_SIZE;
 }
 if ($filecount>ATTACHMAXCOUNT) {

@@ -5,7 +5,6 @@ require("inc/userdatadefine.inc.php");
 html_init();
 ?>
 <body>
-<script src="inc/browser.js"  language="javascript"></script>
 <script language="JavaScript">
 	function setimg(i) {
 		if (self.opener == null) return;

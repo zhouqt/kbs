@@ -145,8 +145,6 @@ function viewArticle($article, $boardID, $boardName, $this_link) {
 	$full_link = 'disparticle.php?boardName='.$boardName.'&amp;ID='.$article["GROUPID"];
 ?>
 <body>
-<script src="inc/browser.js"  language="javascript"></script>
-<script src="inc/funcs.js"  language="javascript"></script>
 <table cellpadding="0" cellspacing="0" class="TableBorder1" style="table-layout:fixed;word-break:break-all">
 <tr><td class="TableBody1"><?php
 	$filename = bbs_get_board_filename($boardName, $article["FILENAME"]);

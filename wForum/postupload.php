@@ -26,7 +26,6 @@ if (bbs_checkpostperm($usernum, $boardID) == 0) {
 }
 ?>
 <body style="margin: 0pt;">
-<script src="inc/browser.js"  language="javascript"></script>
 <script language="javascript">
 function disableEdit(){
 	oSubmit=getRawObject("Submit");

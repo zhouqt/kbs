@@ -31,10 +31,9 @@ if (SECTION_DEF_CLOSE) {
 		setcookie($cn, $ssb ,time() + 604800);
 	}
 }
+html_init();
 ?>
-<html>
 <body>
-<script language="javascript" type="text/javascript" src="inc/browser.js"></script>
 <script src="inc/loadThread.js"></script>
 <?php
 	showSecsJS($secNum,0,$isFold,$fav, false);

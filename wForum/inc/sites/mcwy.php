@@ -25,6 +25,7 @@ define("OLD_REPLY_STYLE", true);
 define("ENABLE_UBB", true);
 $AnnounceBoard = "Announcement";
 define("SERVERTIMEZONE", "美西时间");
+define('SHOW_REGISTER_TIME', false); //是否支持显示真实用户信息（包括用户注册时间）
 
 /* 页面参数 */
 define("TREEVIEW_MAXITEM", 201);

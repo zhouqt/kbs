@@ -247,10 +247,6 @@ function html_init($charset="",$otherheader="",$is_mathml=false)
 	if ($cachemode=="") {
 		cache_header("nocache");
 	}
-	@$css_style = $_COOKIE["style"];
-	if ($css_style==''){
-		$css_style=$DEFAULTStyle;
-	}
 	if ($is_mathml) {
 		if (strpos($_SERVER["HTTP_USER_AGENT"], "MSIE") === false) {
 			$eee = " encoding=\"$charset\"";
@@ -285,7 +281,13 @@ xmlns:math="http://www.w3.org/1998/Math/MathML">
 <title><?php echo $title; ?></title>
 <link rel="stylesheet" type="text/css" href="css/ansi.css"/>
 <link rel="stylesheet" type="text/css" href="css/common.css"/>
-<link rel="stylesheet" type="text/css" href="css/<?php echo $css_style; ?>.css"/>
+<script src="inc/browser.js"  language="javascript"></script>
+<script src="inc/funcs.js"  language="javascript"></script>
+<script type="text/javascript">
+<!--
+	writeStyleSheets();
+//-->
+</script>
 <?php echo($otherheader); ?>
 </head>
 <?php
@@ -478,13 +480,7 @@ function show_nav($boardName='',$is_mathml=false,$other_headers="")
 	var siteconf_BOARDS_PER_ROW = <?php echo BOARDS_PER_ROW; ?>;
 	var siteconf_SHOW_POST_UNREAD = <?php echo SHOW_POST_UNREAD  ? 1 : 0; ?>;
 	var siteconf_THREADSPERPAGE = <?php echo THREADSPERPAGE; ?>;
-//-->
-</script>
-<script src="inc/browser.js"  language="javascript"></script>
-<script src="inc/funcs.js"  language="javascript"></script>
-<script language="javascript">
-<!--
-    defineMenus();
+	defineMenus();
 //-->
 </script>
 <body style="margin: 1px;" onmouseover="HideMenu(event);">

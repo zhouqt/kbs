@@ -203,29 +203,58 @@ function makeRectangularDropShadow(el, color, size)
 	}
 }
 
+
+function createCookie(name,value,days) {
+	if (days) {
+		var date = new Date();
+		date.setTime(date.getTime()+(days*24*60*60*1000));
+		var expires = "; expires="+date.toGMTString();
+	}
+	else expires = "";
+	document.cookie = name+"="+value+expires+"; path=/";
+}
+function readCookie(name) {
+	var nameEQ = name + "=";
+	var ca = document.cookie.split(';');
+	for(var i=0;i < ca.length;i++) {
+	var c = ca[i];
+	while (c.charAt(0)==' ') c = c.substring(1,c.length);
+		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+	}
+	return null;
+}
+
 var stylelist, manage, talk, query;
 
+var stylesheets = new Array(
+	new Array("defaultstyle", "默认模板"),
+	new Array("crystalpurplestyle", "水晶紫色"),
+	new Array("dotgreenstyle", "ｅ点小镇"),
+	new Array("emotiongraystyle", "心情灰色"),
+	new Array("autumnstyle", "秋意盎然"),
+	new Array("bluegrandstyle", "蓝色庄重"),
+	new Array("greenqieutlyelegantstyle", "绿色淡雅"),
+	new Array("bluegreenelegantstyle", "蓝雅绿"),
+	new Array("purpleqieutlyelegantstyle", "紫色淡雅"),
+	new Array("lightpurplestyle", "淡紫色"),
+	new Array("orangeredstyle", "橘子红了"),
+	new Array("rednightstyle", "红红夜思"),
+	new Array("pinkmemorystyle", "粉色回忆"),
+	new Array("greengrassstyle", "青青河草"),
+	new Array("thickgreenstyle", "浓浓绿意"),
+	new Array("brownredstyle", "棕红预览"),
+	new Array("littlecoffeestyle", "淡咖啡"),
+	new Array("seaskystyle", "碧海晴天"),
+	new Array("bluecrystalstyle", "蓝色水晶"),
+	new Array("snowstyle", "雪花飘飘")
+);
+
 function defineMenus() {
-	stylelist = '<a class=\"SMItem\" href=\"changestyle.php?style=defaultstyle\">默认模板</a><br>';
-	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=crystalpurplestyle\">水晶紫色</a><br>';
-	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=dotgreenstyle\">ｅ点小镇</a><br>';
-	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=emotiongraystyle\">心情灰色</a><br>';
-	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=autumnstyle\">秋意盎然</a><br>';
-	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=bluegrandstyle\">蓝色庄重</a><br>';
-	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=greenqieutlyelegantstyle\">绿色淡雅</a><br>';
-	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=bluegreenelegantstyle\">蓝雅绿</a><br>';
-	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=purpleqieutlyelegantstyle\">紫色淡雅</a><br>';
-	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=lightpurplestyle\">淡紫色</a><br>';
-	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=orangeredstyle\">橘子红了</a><br>';
-	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=rednightstyle\">红红夜思</a><br>';
-	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=pinkmemorystyle\">粉色回忆</a><br>';
-	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=greengrassstyle\">青青河草</a><br>';
-	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=thickgreenstyle\">浓浓绿意</a><br>';
-	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=brownredstyle\">棕红预览</a><br>';
-	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=littlecoffeestyle\">淡咖啡</a><br>';
-	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=seaskystyle\">碧海晴天</a><br>';
-	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=bluecrystalstyle\">蓝色水晶</a><br>';
-	stylelist += '<a class=\"SMItem\" href=\"changestyle.php?style=snowstyle\">雪花飘飘</a><br>';
+	stylelist = '';
+	for (i = 0; i < stylesheets.length; i++) {
+		stylelist += '<a class=\"SMItem\" href=\"javascript:setActiveStyleSheet('
+		             + i + ')\">' + stylesheets[i][1] + '</a><br/>';
+	}
 
 	manage = '<a class=\"MItem\" href="usermailbox.php?boxname=inbox">我的信箱</a><br>';
 	manage += '<a class=\"MItem\" href="favboard.php">用户收藏版面</a><br>';
@@ -250,6 +279,40 @@ if (siteconf_SMS_SUPPORT) {
 	query += '<form action="searchboard.php" method="get" style="margin: 0px;">';
 	query += '<input class="TableBorder2" name="board" value="输入关键字" size="12" onmouseover="this.focus()" onfocus="this.select()" /></form>';
 	query += '<hr class="TableBorder2"><a class="MItem" href="query.php" title="直接点上面的“搜索”菜单将会搜索当前版面">搜索文章</a>';
+}
+
+function setActiveStyleSheet(index) {
+	var i, a, main;
+	title = stylesheets[index][1];
+	for(i=0; (a = document.getElementsByTagName("link")[i]); i++) {
+		if((a.getAttribute("rel").indexOf("style") != -1) && a.getAttribute("title")) {
+			a.disabled = true;
+			if(a.getAttribute("title") == title) {
+				a.disabled = false;
+				createCookie("style", stylesheets[index][0], 7);
+			}
+		}
+	}
+}
+
+function writeStyleSheets() {
+	currentStyle = readCookie("style");
+	currentIndex = -1;
+	for (i = 0; i < stylesheets.length; i++) {
+		if (stylesheets[i][0] == currentStyle) {
+			currentIndex = i;
+			break;
+		}
+	}
+	if (currentIndex == -1) currentIndex = 0; //default
+	document.write('<link rel="stylesheet" type="text/css" href="css/' 
+	               + stylesheets[currentIndex][0] + '.css" title="' + stylesheets[currentIndex][1] + '" />');
+	for (i = 0; i < stylesheets.length; i++) {
+		if (i != currentIndex) {
+			document.write('<link rel="alternate stylesheet" type="text/css" href="css/' 
+	               + stylesheets[i][0] + '.css" title="' + stylesheets[i][1] + '" />');
+		}
+	}	
 }
 
 var timerID=0;
