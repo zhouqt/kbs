@@ -273,6 +273,9 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 	global $loginok;
 	global $isbm;
 
+	$bgstyle='TableBody'.($type+1);
+	$fgstyle='TableBody'.(2-$type);
+
 	/* 文章内容处理部分 */
 	$filename=bbs_get_board_filename($boardName, $thread["FILENAME"]);
 	if ($loginok) {
@@ -310,8 +313,6 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 	} else if ($thread['POSTTIME'] < $user['firstlogin']) {
 		$user = false; //前人发的帖子
 	}
-	$bgstyle='TableBody'.($type+1);
-	$fgstyle='TableBody'.(2-$type);
 ?>
 <tr><td class="<?php echo $bgstyle ;?>" valign="top" width="175" >
 <table width="100%" cellpadding="2" cellspacing="0" >
@@ -412,7 +413,7 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 <b><?php echo $num==0?'楼主':'第<font color="#ff0000">'.$num.'</font>楼'; ?></b></td></tr><tr><td bgcolor="#D8C0B1" height="1" colspan="2"></td></tr>
 </table>
 
-<table class="TableBody2" border="0" width="98%" style=" table-layout:fixed;word-break:break-all"><tr><td width="100%" style="font-size:9pt;line-height:12pt;padding: 0px 5px;"><?php echo $articleContents; ?></td></tr></table>
+<table border="0" width="98%" style=" table-layout:fixed;word-break:break-all"><tr><td width="100%" style="font-size:9pt;line-height:12pt;padding: 0px 5px;"><?php echo $articleContents; ?></td></tr></table>
 </td>
 
 </tr>
