@@ -535,10 +535,9 @@ void decipher(char* buf,size_t len,unsigned long *k)
     memcpy(buf,l,8);
 }
 
-void encode_file(char * s)
+void encode_file(char * s, char * s2)
 {
     char buf[1024*16];
-    char fn[80];
     unsigned long k[4];
     int o, i;
     FILE *fp1, *fp2;
@@ -546,9 +545,8 @@ void encode_file(char * s)
     k[1] = sysconf_eval("CALENDAR_KEY1", 0x1234251);
     k[2] = sysconf_eval("CALENDAR_KEY2", 0x2234251);
     k[3] = sysconf_eval("CALENDAR_KEY3", 0x3234251);
-    sprintf(fn, "tmp/%s.%d.cal", currentuser->userid, rand());
     fp1 = fopen(s, "rb");
-    fp2 = fopen(fn, "wb");
+    fp2 = fopen(s2, "wb");
     while((o=fread(buf, 1, 1024*16, fp1))>0) {
         if(o%8!=0) {
             for(i=o;i<(o/8+1)*8;i++)
@@ -560,17 +558,9 @@ void encode_file(char * s)
     }
     fclose(fp1);
     fclose(fp2);
-    fp1 = fopen(s, "wb");
-    fp2 = fopen(fn, "rb");
-    while((o=fread(buf, 1, 1024*16, fp2))>0) {
-        fwrite(buf, 1, o, fp1);
-    }
-    fclose(fp1);
-    fclose(fp2);
-    unlink(fn);
 }
 
-void decode_file(char * s)
+void decode_file(char * s, char * s2)
 {
     char buf[1024*16];
     char fn[80];
@@ -581,9 +571,8 @@ void decode_file(char * s)
     k[1] = sysconf_eval("CALENDAR_KEY1", 0x1234251);
     k[2] = sysconf_eval("CALENDAR_KEY2", 0x2234251);
     k[3] = sysconf_eval("CALENDAR_KEY3", 0x3234251);
-    sprintf(fn, "tmp/%s.%d.cal", currentuser->userid, rand());
     fp1 = fopen(s, "rb");
-    fp2 = fopen(fn, "wb");
+    fp2 = fopen(s2, "wb");
     while((o=fread(buf, 1, 1024*16, fp1))>0) {
         if(o%8!=0) {
             for(i=o;i<(o/8+1)*8;i++)
@@ -595,14 +584,6 @@ void decode_file(char * s)
     }
     fclose(fp1);
     fclose(fp2);
-    fp1 = fopen(s, "wb");
-    fp2 = fopen(fn, "rb");
-    while((o=fread(buf, 1, 1024*16, fp2))>0) {
-        fwrite(buf, 1, o, fp1);
-    }
-    fclose(fp1);
-    fclose(fp2);
-    unlink(fn);
 }
 
 extern int incalendar;
@@ -612,7 +593,7 @@ int calendar_main()
     int i,j,ch,oldmode,cc;
     struct tm nowr;
     struct stat st;
-    char buf[80], title[80];
+    char buf[80], buf2[80], title[80];
     long eff_size;
     time_t now;
     noscroll();
@@ -668,21 +649,24 @@ int calendar_main()
                 cc = 0;
                 modify_user_mode(CALENEDIT);
                 sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, day);
+                sprintf(buf2, "tmp/%s.%d.cal", currentuser->userid, rand());
                 if(stat(buf, &st)!=-1)
-                    decode_file(buf);
+                    decode_file(buf, buf2);
                 else
-                    cc = newfile(buf);
-                if(vedit(buf, 0, &eff_size, 0)&&cc) unlink(buf);
-                else encode_file(buf);
+                    cc = newfile(buf2);
+                if(!vedit(buf2, 0, &eff_size, 0)) 
+                    encode_file(buf2, buf);
+                unlink(buf2);
                 modify_user_mode(CALENDAR);
                 break;
             case 32:
                 sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, day);
-                sprintf(title, "%d/%02d/%02d", year, month, day);
+                sprintf(title, "%d-%02d-%02d", year, month, day);
+                sprintf(buf2, "tmp/%s.%d.cal", currentuser->userid, rand());
                 if(stat(buf, &st)!=-1) {
-                    decode_file(buf);
-                    ansimore_withzmodem(buf, true, title);
-                    encode_file(buf);
+                    decode_file(buf, buf2);
+                    ansimore_withzmodem(buf2, true, title);
+                    unlink(buf2);
                 }
                 break;
             case KEY_HOME:
