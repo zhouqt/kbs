@@ -22,7 +22,7 @@ int main()
     if (title[0] && strncmp(title, "Re: ", 4))
         sprintf(title, "Re: %s", getparm("title"));
     strsncpy(userid, getparm("userid"), 40);
-    if (VALID_FILENAME(file) < 0)
+    if (file[0]&&(VALID_FILENAME(file) < 0))
         http_fatal("错误的文件名");
     if (!haspostperm(currentuser, board))
         http_fatal("错误的讨论区或者您无权在此讨论区发表文章");
