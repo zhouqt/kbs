@@ -585,7 +585,8 @@ int main( int argc, char **argv)
     	case -1: 
     	    exit(-1);
     	    break;
-    	default:  
+    	default: 
+	    use_ssl = 0; 
     	    break;      
     }
 #endif
