@@ -1214,7 +1214,7 @@ struct fileheader *ent ;
         type='#';
     }
 
-    if((HAS_PERM(PERM_OBOARDS)||(chk_currBM(currBM))) && ent->accessed[1] & FILE_MARKED) /* 如果文件被mark delete住了，显示X*/
+    if((HAS_PERM(PERM_OBOARDS)||(chk_currBM(currBM))) && ent->accessed[1] & FILE_DEL) /* 如果文件被mark delete住了，显示X*/
     {
         type = 'X';
     }
