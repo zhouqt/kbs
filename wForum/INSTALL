@@ -19,7 +19,7 @@ wForum部分安装
 6.确认一下wForum主目录下面有uploadFace/目录，如果没有的话就建立一下，否则自定义头像
 的功能将不能正常工作
 
-附：php编译说明
+附1：php编译说明
 wForum需要php支持gd及mysql。
 首先，确认你的linux系统已安装了mysql、gd、libjpeg、libpng、freetype
 及各自相应的devel包
@@ -31,3 +31,20 @@ wForum需要php支持gd及mysql。
 
 make
 make install
+
+
+附2: 自定义头像的更多细节
+自定义头像的存放位置是wForum主目录下面的uploadFace/目录。在备份和转移BBS数据的时候也要
+备份这个目录。有人可能会希望BBS的数据全部都在~bbs/目录下面以方便备份，这是可行的。
+下面提供一个方法：
+
+a) 在~bbs/目录下建立uploadFace目录
+b) 在wForum主目录下面删除uploadFace目录，并且建立一个符号连接：
+   ln -s ~bbs/uploadFace uploadFace
+c) 确认在httpd.conf中，wForum主目录允许FollowSymLinks，例如如下：
+
+<Directory "/var/www/html/wForum">
+    Options FollowSymLinks
+</Directory>
+
+具体的细节请参考apache的配置说明。注意：允许FollowSymLinks会有潜在的安全问题。
