@@ -309,11 +309,6 @@ typedef struct fileheader fileheader_t;
 #define POSTFILE_BASENAME(x) (((char *)(x))+2)
 #define MAILFILE_BASENAME(x) (x)
 
-// WWW部分
-
-//修改密码之类的页面使用https
-#define SECURE_HTTPS
-
 /**
  * Mailbox properties.
  * 

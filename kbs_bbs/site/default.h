@@ -695,13 +695,6 @@ typedef struct fileheader fileheader_t;
 #define SHOW_USERIP(y,x) x
 #endif
 
-// WWW部分
-
-//修改密码之类的页面使用https
-#ifndef SECURE_HTTPS
-#define SECURE_HTTPS
-#endif
-
 /**
  * Mailbox properties.
  * 
