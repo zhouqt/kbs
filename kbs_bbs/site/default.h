@@ -9,7 +9,7 @@
 #undef NINE_BUILD
 #endif
 
-#ifndef SMTH /*水木清华专有代码,缺省使能*/
+#ifndef SMTH /*水木清华专有代码，缺省使能*/
 #define SMTH 1
 #endif
 
