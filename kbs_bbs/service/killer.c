@@ -325,6 +325,9 @@ void start_game()
     start_change_inroom(myroom);
     for(me=0;me<myroom->people;me++)
         if(inrooms.peoples[me].pid==uinfo.pid) break;
+    for(i=0;i<myroom->people;i++) {
+        inrooms.peoples[i].flag &= ~PEOPLE_KILLER;
+    }
     totalk=inrooms.killernum;
     for(i=0;i<myroom->people;i++)
         if(!(inrooms.peoples[i].flag&PEOPLE_SPECTATOR)) 
