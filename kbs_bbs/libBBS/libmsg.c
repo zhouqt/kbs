@@ -549,14 +549,14 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
 //    *(timestr + 8) = '\0';
 #ifdef BBSMAIN
     if (uin->mode == WEBEXPLORE) {
-        if (send_webmsg(get_utmpent_num(uin), uident, utmpent, currentuser->userid, msgbuf) < 0) {
+        if (send_webmsg(get_utmpent_num(uin), uident, utmpent, currentuser->userid, msgstr) < 0) {
             strcpy(msgerr, "无法发送Web消息...\n");
             return -1;
         }
-        if (save_msgtext(uident, msgbuf) < 0)
+        if (save_msgtext(uident, &head, msgstr) < 0)
             return -2;
         if (strcmp(currentuser->userid, uident)) {
-            if (save_msgtext(currentuser->userid, msgbak) < 0)
+            if (save_msgtext(currentuser->userid, &head2, msgstr) < 0)
                 return -2;
         }
         return 1;
