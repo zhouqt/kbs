@@ -52,7 +52,7 @@ main(int argc, char ** argv)
 			fprintf(stderr, "User %s not found.\n", argv[1]);
 			return -1;
 		}
-		printf("User %s usedspace: %d bytes.\n", user->userid, user->usedspace);
+		printf("User %s usedspace: %u bytes.\n", user->userid, user->usedspace);
 	}	else
 		usage();
 
