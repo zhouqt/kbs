@@ -44,9 +44,9 @@
 				echo "<td>" . $friends[$i]["mode"];
 			if($friends[$i]["idle"] == 0) echo "<td> ";
 			else
-				echo "<td>" . $friends[$i]["idle"];
-			echo "</table>";
+				echo "<td>" . $friends[$i]["idle"];			
 		}
+		echo "</table>";
 	}
 ?>
 <hr>
