@@ -281,6 +281,8 @@ void r_msg()
     getyx(&y, &x);
     tmpansi = showansi;
     showansi = 1;
+    RMSG = true;
+    RMSGCount++;
     for(i=0;i<=24;i++)
         saveline(i, 0, savebuffer[i]);
 
@@ -390,6 +392,9 @@ void r_msg()
     showansi = tmpansi;
     move(y,x);
     refresh();
+    RMSGCount--;
+    if (0 == RMSGCount)
+        RMSG = false;
     return;
 }
 

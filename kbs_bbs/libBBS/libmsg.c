@@ -598,17 +598,17 @@ int translate_msg(char* src, char* dest)
     for(i=0;i<strlen(msg);i++){
         if(j) j=0;
         else if(msg[i]<0) j=1;
-        if(j==0&&pos>=79||j==1&&pos>=78) {
-            for(;pos<=79;pos++)
+        if(j==0&&pos>=78||j==1&&pos>=77) {
+            for(;pos<78;pos++)
                 dest[len++]=' ';
             dest[len++]='\n';
-            for(pos=1;pos<=space;pos++)
+            for(pos=0;pos<space;pos++)
                 dest[len++]=' ';
         }
         dest[len++]=msg[i];
         pos++;
     }
-    for(;pos<=79;pos++)
+    for(;pos<78;pos++)
         dest[len++]=' ';
     dest[len++]='\n';
     dest[len]=0;
