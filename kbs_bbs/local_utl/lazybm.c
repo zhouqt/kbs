@@ -179,6 +179,8 @@ int main(int argc, char **argv)
     char passfile[256], bhome[256];
     char *ptr;
 
+    chdir(BBSHOME);
+
     pBMInfo = bmusr;
     resolve_utmp();
     resolve_boards();
