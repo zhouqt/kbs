@@ -239,6 +239,16 @@ void send_msg(int u, char* msg)
 
     strcpy(buf, msg);
 
+    for(i=0;i<=6;i++) {
+        buf3[0]='%'; buf3[1]=i+48; buf3[2]=0;
+        while(strstr(buf, buf3)!=NULL) {
+            strcpy(buf2, buf);
+            k=strstr(buf, buf3)-buf;
+            buf2[k]=0; k+=2;
+            sprintf(buf, "%s\x1b[3%dm%s", buf2, (i>0)?i:7, buf2+k);
+        }
+    }
+    
     while(strchr(buf, '\n')!=NULL) {
         i = strchr(buf, '\n')-buf;
         buf[i]=0;
@@ -265,16 +275,7 @@ void send_msg(int u, char* msg)
             send_msg(u, buf);
             strcpy(buf, buf2+i);
         }
-        else return;
-    }
-    for(i=0;i<=6;i++) {
-        buf3[0]='%'; buf3[1]=i+48; buf3[2]=0;
-        while(strstr(buf, buf3)!=NULL) {
-            strcpy(buf2, buf);
-            k=strstr(buf, buf3)-buf;
-            buf2[k]=0; k+=2;
-            sprintf(buf, "%s\x1b[3%dm%s", buf2, (i>0)?i:7, buf2+k);
-        }
+        else break;
     }
     j=MAX_MSG;
     if(inrooms[myroom].msgs[(MAX_MSG-1+inrooms[myroom].msgi)%MAX_MSG][0]==0)
