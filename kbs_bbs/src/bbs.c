@@ -2345,12 +2345,18 @@ int sequent_messages(struct fileheader *fptr, int idc, int *continue_flag)
         }
         strncpy(quote_user, fptr->owner, IDLEN);
         quote_user[IDLEN] = 0;
-        ansimore(genbuf, false);
+	setbfile(genbuf,currboard,fptr->filename);
+        ansimore_withzmodem(genbuf, false, fptr->title);
+redo:
         move(t_lines - 1, 0);
         clrtoeol();
         prints("\033[1;44;31m[连续读信]  \033[33m回信 R │ 结束 Q,← │下一封 ' ',↓ │^R 回信给作者                \033[m");
         *continue_flag = 0;
         switch (igetkey()) {
+	case Ctrl('Y'):
+            zsend_post(0,fptr,currdirect);
+	    clear();
+	    goto redo;
         case Ctrl('Z'):
             r_lastmsg();        /* Leeward 98.07.30 support msgX */
             break;

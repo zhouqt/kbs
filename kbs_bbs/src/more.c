@@ -211,6 +211,8 @@ int morekey()
 {
     while (1) {
         switch (igetkey()) {
+        case Ctrl('Y'):
+            return Ctrl('Y');
         case Ctrl('Z'):
             return 'M';         /* Leeward 98.07.30 support msgX */
         case '!':

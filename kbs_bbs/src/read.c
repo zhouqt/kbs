@@ -1181,10 +1181,11 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
             int lch;            /* period 2000-09-11    ·½°¸1:                          *
                                    * ½â¾ö:Í¬Ö÷ÌâÏòÉÏ²éÕÒ,ÎÄÕÂ´óÓÚÒ»ÆÁÊ±°´Ò»´ÎUP¼üÆÁÄ»ÎŞÄÚÈİ *
                                    * ·½°¸2: rawmore()º¯ÊıÖĞ, ÅĞ¶ÏKEY_UP==ch´¦²»Ó¦¸ÃÇåÆÁ */
-            lch = ansimore(genbuf, false);
+            lch = ansimore_withzmodem(genbuf, false, SR_fptr.title);
             /*    ansimore(genbuf,false) ;  */
             brc_add_read(SR_fptr.filename);
             isstart = 0;
+redo:
             move(t_lines - 1, 0);
             clrtoeol();
             prints("[1m[44m[31m[%8s] [33m»ØĞÅ R ©¦ ½áÊø Q,¡û ©¦ÏÂÒ»·â ¡ı,Enter©¦ÉÏÒ»·â ¡ü,U ©¦ ^R »Ø¸ø×÷Õß   \033[m", auser ? "ÏàÍ¬×÷Õß" : "Ö÷ÌâÔÄ¶Á");
@@ -1193,7 +1194,10 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
                 lch = igetkey();
         	/* TODO: add KEY_REFRESH support */
             switch (lch) {
-
+            case Ctrl('Y'):
+		zsend_post(0,&SR_fptr,currdirect);
+		clear();
+		goto redo;
             case Ctrl('Z'):
                 r_lastmsg();    /* Leeward 98.07.30 support msgX */
                 break;
