@@ -70,8 +70,8 @@ int undenyboard(struct boardheader *bh)
 {
     int d_fd;
     char denyfile[256];
-    char *buf;
-    int bufsize;
+    static char *buf;
+    static int bufsize;
     struct stat st;
     time_t nowtime;
     int idx1, idx2;
