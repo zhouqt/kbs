@@ -19,6 +19,8 @@ MAILTO=bbs
 1,7,13,19,25,31,37,43,49,55 * * * * /home/bbs/bin/dayuserlog
 # 每天凌晨生成dayonline.png
 56 23 * * * /home/bbs/bin/mkonlinepng.sh
+# 每天晚上把今天的平均在线写入allonline
+58 23 * * * /home/bbs/bin/alluserlog
 # 每小时 59 分更新版主统计排行
 59 * * * * /home/bbs/bin/stat.day
 10 0 * * * /home/bbs/bin/stat.other
