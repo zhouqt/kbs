@@ -36,7 +36,9 @@ CFLAGS=${CDEBUGFLAGS} ${DEFINES} ${MODULES_DEF} -I.
 PROG = hztty
 LIBS=
 
-all:	
+all: linux
+
+help:
 	@echo "Choose one of the make command according to your system type:"
 	@echo "	DEC Alpha (OSF/1):		make osf"
 	@echo "	DEC (Ultrix):			make ultrix"
