@@ -393,6 +393,8 @@ int     numlines;
         close(fd);  /*---   period 2000-10-20 file should be closed here   ---*/
         return -1;
     }
+    if(!S_ISREG(st.st_mode))
+	return-1;
     tsize = st.st_size ;
     more_size = more_num = 0;
 
