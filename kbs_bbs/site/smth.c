@@ -270,10 +270,10 @@ char *ModeType(mode)
         return "进入本站";
     case CSIE_ANNOUNCE:
         return "汲取精华";
-    case CSIE_TIN:
-        return "使用TIN";
-    case CSIE_GOPHER:
-        return "使用Gopher";
+//    case CSIE_TIN:
+//        return "使用TIN";
+//    case CSIE_GOPHER:
+//        return "使用Gopher";
     case MMENU:
         return "主菜单";
     case ADMIN:
@@ -300,24 +300,24 @@ char *ModeType(mode)
         return "看谁在线上";
     case FRIEND:
         return "找线上好友";
-    case MONITOR:
-        return "监看中";
+//    case MONITOR:
+//        return "监看中";
     case QUERY:
         return "查询网友";
     case TALK:
         return "聊天";
     case PAGE:
         return "呼叫网友";
-    case CHAT2:
-        return "梦幻国度";
+//    case CHAT2:
+//        return "梦幻国度";
     case CHAT1:
         return "聊天室中";
-    case CHAT3:
-        return "快哉亭";
-    case CHAT4:
-        return "老大聊天室";
-    case IRCCHAT:
-        return "会谈IRC";
+//    case CHAT3:
+//        return "快哉亭";
+//    case CHAT4:
+//        return "老大聊天室";
+//    case IRCCHAT:
+//        return "会谈IRC";
     case LAUSERS:
         return "探视网友";
     case XMENU:
@@ -329,30 +329,30 @@ char *ModeType(mode)
 	/*
         return "穿梭银河";
 	*/
-    case EDITWELC:
-        return "编辑 Welc";
+//    case EDITWELC:
+//        return "编辑 Welc";
     case EDITUFILE:
         return "编辑档案";
     case EDITSFILE:
         return "系统管理";
         /*        case  EDITSIG:  return "刻印";
            case  EDITPLAN: return "拟计画"; */
-    case ZAP:
-        return "订阅讨论区";
-    case EXCE_MJ:
-        return "围城争霸";
-    case EXCE_BIG2:
-        return "比大营";
-    case EXCE_CHESS:
-        return "楚河汉界";
+//    case ZAP:
+//        return "订阅讨论区";
+//    case EXCE_MJ:
+//        return "围城争霸";
+//    case EXCE_BIG2:
+//        return "比大营";
+//    case EXCE_CHESS:
+//        return "楚河汉界";
     case NOTEPAD:
         return "留言板";
     case GMENU:
         return "工具箱";
-    case FOURM:
-        return "4m Chat";
-    case ULDL:
-        return "UL/DL";
+//    case FOURM:
+//        return "4m Chat";
+//    case ULDL:
+//        return "UL/DL";
     case MSG:
         return "送讯息";
     case USERDEF:
@@ -365,8 +365,8 @@ char *ModeType(mode)
         return "编修精华";
     case WEBEXPLORE:
         return "Web浏览";
-    case CCUGOPHER:
-        return "他站精华";
+//    case CCUGOPHER:
+//        return "他站精华";
     case LOOKMSGS:
         return "察看讯息";
     case WFRIEND:
