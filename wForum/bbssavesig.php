@@ -43,6 +43,7 @@ function main(){
 	}
 	fwrite($fp,str_replace("\r\n", "\n", $_POST["text"]));
 	fclose($fp);
+	bbs_recalc_sig();
 	setSucMsg("签名档已成功修改！");
 	return html_success_quit();
 }
