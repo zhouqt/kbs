@@ -30,7 +30,7 @@
 
 static sigjmp_buf bus_jump;
 
-void sigbus(int signo)
+static void sigbus(int signo)
 {
   siglongjmp(bus_jump,1);
 };
