@@ -162,12 +162,12 @@ function main() {
 		{
 		    $fp = fopen($filename, "r");
 	        if ($fp) {
-				$buf = fgets($fp,500);
+				$buf = fgets($fp,5000);
 				$prefix = "";
 				if ($action != 4) {
-					if(strncmp($buf, "发信人", 6) == 0) {
-						for ($i = 0; $i < 4; $i++) {
-							if (($buf = fgets($fp,500)) == FALSE)
+					if(strncmp($buf, "寄信人", 6) == 0) {
+						for ($i = 0; $i < 3; $i++) {
+							if (($buf = fgets($fp,5000)) == FALSE)
 								break;
 						}
 					}
@@ -175,6 +175,8 @@ function main() {
 				}
 				while (1) {
 					if ($action != 4) {
+						if (($buf = fgets($fp,5000)) == FALSE)
+							break;
 						if (strncmp($buf, ": 【", 4) == 0)
 							continue;
 						if (strncmp($buf, ": : ", 4) == 0)
@@ -185,7 +187,7 @@ function main() {
 							break;
 						if (strncmp($buf, "--\n", 3) == 0)
 							break;
-						if (strncmp($buf,'\n',1) == 0)
+						if (strncmp($buf,"\n",1) == 0)
 							continue;
 						if (++$lines > 10) {
 							echo ": ...................\n";
@@ -194,8 +196,6 @@ function main() {
 					}
 					//if (stristr($buf, "</textarea>") == FALSE)  //filter </textarea> tag in the text
 						echo $prefix . htmlspecialchars($buf);
-					if (($buf = fgets($fp,500)) == FALSE)
-						break;
 				}
 				fclose($fp);
 	        }

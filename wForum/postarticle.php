@@ -194,25 +194,34 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 <?php require_once("inc/ubbmenu.php"); ?>
 <textarea class=smallarea cols=95 name=Content id="oArticleContent" rows=12 wrap=VIRTUAL title="可以使用Ctrl+Enter直接提交贴子" class=FormClass onkeydown=ctlent()>
 <?php
-    if (($reID > 0) && ($_GET['quote']==1)){
+    if (($reID > 0) && ($_GET['quote']==1 || OLD_REPLY_STYLE)){
+    	$isquote = ($_GET['quote']==1);
 		$filename = $reArticles[1]["FILENAME"];
 		$filename = "boards/" . $boardName. "/" . $filename;
 		if(file_exists($filename))	{
 			$fp = fopen($filename, "r");
 			if ($fp) {
-				$buf = fgets($fp,5000);
-				echo "[quote][b]以下是引用[i]".$reArticles[1]['OWNER']."在".strftime("%Y-%m-%d %H:%M:%S",$reArticles[1]['POSTTIME'])."[/i]的发言：[/b]\n";
+				if ($isquote) {
+					echo "[quote][b]以下是引用[i]".$reArticles[1]['OWNER']."在".strftime("%Y-%m-%d %H:%M:%S",$reArticles[1]['POSTTIME'])."[/i]的发言：[/b]\n";
+					$prefix = "";
+				} else {
+					echo "\n【 在 " . $reArticles[1]['OWNER'] . " 的大作中提到: 】\n";
+					$prefix = ": ";
+				}
 				$buf2='';
+				$buf = fgets($fp, 5000);
 				if(strncmp($buf, "发信人", 6) == 0) {
-					for ($i = 0; $i < 4; $i++) {
+					for ($i = 0; $i < 3; $i++) {
 						if (($buf = fgets($fp,5000)) == FALSE)
 							break;
 					}
 				}
 				while (1) {
-					if (strncmp($buf, ": 【", 4) == 0)
+					if (($buf = fgets($fp,5000)) == FALSE)
+						break;
+					if (strncmp($buf, "【", 2) == 0)
 						continue;
-					if (strncmp($buf, ": : ", 4) == 0)
+					if (strncmp($buf, ": ", 2) == 0)
 						continue;
 					if (strpos($buf, "※ 来源") !== FALSE)
 						break;
@@ -220,20 +229,18 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 						break;
 					if (strncmp($buf, "--\n", 3) == 0)
 						break;
-					if (strncmp($buf,'\n',1) == 0)
+					if (strncmp($buf, "\n", 1) == 0)
 						continue;
 					if (++$lines > 10) {
-						echo "...................\n";
+						$buf2 .= "...................\n";
 						break;
 					}
 					/* */
 					//if (stristr($buf, "</textarea>") == FALSE)  //filter </textarea> tag in the text
-						$buf2 .= htmlspecialchars($buf);
-					if (($buf = fgets($fp,5000)) == FALSE)
-						break;
+						$buf2 .= $prefix . htmlspecialchars($buf);
 				}
 				echo reUBBCode($buf2);
-				echo "[/quote]\n";
+				if ($isquote) echo "[/quote]\n";
 				fclose($fp);
 			}
 		}

@@ -16,6 +16,8 @@ define("THREADSPERPAGE",10); //文章阅读时每页显示的文章数
 
 define ('MAINTITLE','<IMG SRC="bar/title.jpg">'); //页面正上方显示的站点标题
 
+define('OLD_REPLY_STYLE', true); //使用传统 telnet re 文方式
+
 /* 附件：每个最大尺寸，总最大尺寸，总最大数量 */
 define("ATTACHMAXSIZE","5242880");
 define ("ATTACHMAXTOTALSIZE","20971520");

@@ -92,6 +92,10 @@ if (!defined('AUDIO_CHAT')) { //是否显示语音聊天室的 link
 	define('AUDIO_CHAT', 0); //默认关闭
 }
 
+if (!defined('OLD_REPLY_STYLE')) { //是否使用传统 telnet re 文方式
+	define('OLD_REPLY_STYLE', true); //默认关闭
+}
+
 /* 格式：每项五个参数，第一个 0 表示 telnet 下专用参数；第二个是参数名称；第三个是参数具体解释；第四五是参数 ON 和 OFF 所代表的具体含义 */
 if (!isset($user_define)) {
 	$user_define=array(array(0,"显示活动看版", "在telnet方式下是否显示活动看板","显示","不显示"), /* DEF_ACBOARD */
