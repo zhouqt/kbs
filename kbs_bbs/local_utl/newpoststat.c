@@ -187,7 +187,7 @@ int get_top(int type)
 		}
 
 		res = mysql_store_result(&s);
-	
+
 		while(1){
 			row = mysql_fetch_row(res);
 			if(row==NULL)
@@ -249,7 +249,7 @@ int get_top(int type)
 				if(strcasecmp(row[0], BLESS_BOARD)){
                 	m = 0;
                 	for (n = 0; n < topnum1; n++) {
-                    	if (!strcmp(row[0], top[n].board))
+                    	if (!strcmp(row[0], top[5+n].board))
                         	m++;
                 	}
 					if(m>1)
