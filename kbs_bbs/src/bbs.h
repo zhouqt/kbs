@@ -183,7 +183,6 @@ extern long ti;
 #endif
 #define FILE_SIGN 0x1           /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[0] */
 #define FILE_DEL  0x2           /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[1] */
-#define FILE_DING 0x4		/* 已经置顶的文章, stiger 20030409, in accessed[1] */
 
 /* Leeward 98.05.11:
 In /etc/sendmail.cf:
