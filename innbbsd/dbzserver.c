@@ -515,7 +515,7 @@ char   *port;
 {
 	int     ndescriptors;
 	FILE   *pf;
-	char    pidfile[24];
+	char    pidfile[30];
 	ndescriptors = getdtablesize();
 /*#ifndef NOFORK*/
 	if (!inetdstart)
@@ -523,7 +523,7 @@ char   *port;
 			exit(0);
 /*#endif*/
 
-	sprintf(pidfile, "/usr/tmp/innbbsd-%s.pid", port);
+	snprintf(pidfile,30, "/usr/tmp/innbbsd-%s.pid", port);
 	if (!inetdstart)
 		fprintf(stderr, "PID file is in %s\n", pidfile);
 
