@@ -144,6 +144,7 @@ char *strright(char *s, int len) {
 	return s+(l-len);
 }
 
+#ifndef FREEBSD
 char *strcasestr(char *s1, char *s2) {
 	int l;
 	l=strlen(s2);
@@ -153,6 +154,7 @@ char *strcasestr(char *s1, char *s2) {
 	}
 	return 0;
 }
+#endif /* not FREEBSD */
 
 int strsncpy(char *s1, char *s2, int n) {
 	int l=strlen(s2);

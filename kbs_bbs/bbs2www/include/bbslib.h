@@ -82,7 +82,6 @@ struct post_log {
 	int value;
 };*/
 
-char *strcasestr();
 char *ModeType();
 
 int file_has_word(char *file, char *word);
@@ -118,7 +117,9 @@ char *nohtml(char *s);
 
 char *strright(char *s, int len);
 
+#ifndef FREEBSD
 char *strcasestr(char *s1, char *s2);
+#endif /* not FREEBSD */
 
 int strsncpy(char *s1, char *s2, int n);
 

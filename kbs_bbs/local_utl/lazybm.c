@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#ifndef __LINUX__
+#if !defined __LINUX__ && !defined FREEBSD
   #include <sys/ipc.h>
   #include <sys/shm.h>
 #endif
