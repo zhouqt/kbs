@@ -34,6 +34,7 @@ struct room_struct {
 #define PEOPLE_ALIVE 04
 #define PEOPLE_ROOMOP 010
 #define PEOPLE_POLICE 020
+#define PEOPLE_TESTED 040
 
 struct people_struct {
     int style;
@@ -974,7 +975,7 @@ int do_com_menu()
 void join_room(int w, int spec)
 {
     char buf[200],buf2[200],buf3[200],msg[200],roomname[80];
-    int i,j,k,killer,me,tested=0;
+    int i,j,k,killer,me;
     clear();
     myroom = w;
     start_change_inroom();
@@ -1035,23 +1036,28 @@ void join_room(int w, int spec)
                 if(jpage<=0) jpage=0;
                 refreshit();
             }
-            else if(ch==Ctrl('T')&&!tested&&inrooms[myroom].status == INROOM_DAY) {
+            else if(ch==Ctrl('T')&&inrooms[myroom].status == INROOM_DAY&&inrooms[myroom].flag&PEOPLE_POLICE) {
                 int pid;
                 int sel;
                 sel = getpeople(selected);
                 if(sel==-1) continue;
                 me = mypos;
                 pid = inrooms[myroom].peoples[me].pid;
+                if(inrooms[myroom].peoples[me].flag&PEOPLE_TESTED) {
+                    send_msg(pid, "\x1b[31;1m本轮你已经侦查过了\x1b[m");
+                    refreshit();
+                    continue;
+                }
                 if(inrooms[myroom].peoples[sel].flag&PEOPLE_SPECTATOR)
                     send_msg(pid, "\x1b[31;1m此人是旁观者\x1b[m");
                 else if(!(inrooms[myroom].peoples[sel].flag&PEOPLE_ALIVE))
                     send_msg(pid, "\x1b[31;1m此人已死\x1b[m");
                 else if(!(inrooms[myroom].peoples[sel].flag&PEOPLE_KILLER)) {
-                    tested = 1;
+                    inrooms[myroom].peoples[me].flag|=PEOPLE_TESTED;
                     send_msg(pid, "\x1b[31;1m经过你的侦测, 发现此人是坏人!!!\x1b[m");
                 }
                 else {
-                    tested = 1;
+                    inrooms[myroom].peoples[me].flag|=PEOPLE_TESTED;
                     send_msg(pid, "\x1b[31;1m经过你的侦测, 发现此人是好人\x1b[m");
                 }
                 refreshit();
@@ -1248,7 +1254,8 @@ checkvote:
                                             send_msg(i, "请抓紧你的宝贵时间用\x1b[31;1mCtrl+S\x1b[m杀人...");
                                 }
                                 else {
-                                    tested = 0;
+                                    for(i=0;i<MAX_PEOPLE;i++)
+                                        inrooms[myroom].peoples[i].flag&=(~PEOPLE_TESTED);
                                     inrooms[myroom].status = INROOM_DAY;
                                     send_msg(-1, "天亮了...");
                                 }
