@@ -239,6 +239,8 @@ u_exit()
 	if((HAS_PERM(currentuser,PERM_CHATCLOAK) || HAS_PERM(currentuser,PERM_CLOAK)))
         setflags(CLOAK_FLAG, uinfo.invisible);
 
+    brc_update(currentuser->userid);
+
     clear_utmp(0);
 }
 

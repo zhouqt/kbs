@@ -72,7 +72,7 @@ int main() {
 		/* 去掉人气值功能 */
 		brc_initial(currentuser->userid, board);
 		brc_add_read(x.filename);
-		brc_update(currentuser->userid, board);
+		brc_update(currentuser->userid);
 	}
 	fclose(fp);
      	ptr=x.title;

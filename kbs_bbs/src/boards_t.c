@@ -1,25 +1,5 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-    Copyright (C) 2002, Zhou Lin, kcn@cic.tsinghua.edu.cn
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+		scan complete for global variable
 */
 
 #include "bbs.h"
@@ -30,8 +10,6 @@ extern int	zapbuf_changed;
 extern int     brdnum;
 extern int yank_flag;
 extern char    *boardprefix;
-extern int     favbrd_list[FAVBOARDNUM+1];
-extern int     brc_list[ BRC_MAXNUM ], brc_num;
 
 void
 EGroup( cmd )
@@ -97,7 +75,7 @@ struct newpostdata *ptr;
             while( num > 0 ) {
                 lseek( fd, offset + num * sizeof(fh), SEEK_SET );
                 if( read( fd, filename, STRLEN ) <= 0 ||
-                        !brc_unread( filename ) )  break;
+                        !brc_unread(FILENAME2POSTTIME(  filename ) ))  break;
                 num -= step;
                 if( step < 32 )  step += step / 2;
             }
@@ -105,7 +83,7 @@ struct newpostdata *ptr;
             while( num < ptr->total ) {
                 lseek( fd, offset + num * sizeof(fh), SEEK_SET );
                 if( read( fd, filename, STRLEN ) <= 0 ||
-                        brc_unread( filename ) )  break;
+                        brc_unread(FILENAME2POSTTIME(  filename )) )  break;
                 num ++;
             }
         }
@@ -592,7 +570,7 @@ case 'n': case 'j': case KEY_DOWN:
             if(2 == yank_flag) {
                 char bname[STRLEN];
                 int i = 0;
-                if(*favbrd_list >= FAVBOARDNUM) {
+                if(getfavnum()>= FAVBOARDNUM) {
                     move(2, 0);
                     clrtoeol();
                     prints("个人热门版数已经达上限(%d)！", FAVBOARDNUM);
@@ -610,9 +588,7 @@ case 'n': case 'j': case KEY_DOWN:
                 CreateNameList() ;             /*  free list memory. */
                 if(*bname) i = getbnum(bname);
                 if( i > 0 && !IsFavBoard(i-1) ) {
-                    int llen;
-                    llen = ++(*favbrd_list);
-                    favbrd_list[llen] = i-1;
+		    addFavBoard(i-1);
                     save_favboard();
                     brdnum = -1;    /*  force refresh board list */
                 } else {
@@ -680,9 +656,10 @@ case 'n': case 'j': case KEY_DOWN:
                 /* if (-1 != load_boards())
                    qsort( nbrd, brdnum, sizeof( nbrd[0] ), cmpboard ); */
 
-                if( zapbuf[ ptr->pos ] > 0 && brc_num > 0 ) {
+		/* 他想把zap版面的时间定义为上次阅读的时间，但是没有使用
+                if( zapbuf[ ptr->pos ] > 0 ) 
                     zapbuf[ ptr->pos ] = brc_list[0];
-                }
+		    	*/
                 ptr->total = page = -1;
                 modify_user_mode( newflag ? READNEW : READBRD );
                 break;
@@ -722,7 +699,7 @@ struct newpostdata *ptr;
 	if (!brc_initial(currentuser->userid,ptr->name)) {
 		ptr->unread = 1;
 	} else {
-		if (brc_unread_t(bptr->lastpost)) {
+		if (brc_unread(bptr->lastpost)) {
 			ptr->unread = 1;
 		}
 	}
@@ -740,7 +717,7 @@ void FavBoard()
     yanksav = yank_flag;
     yank_flag = 2;
     boardprefix = NULL;
-    if(!*favbrd_list) load_favboard(1);
+    if(!getfavnum()) load_favboard(1);
     choose_board(ifnew);
     yank_flag = yanksav;
 }

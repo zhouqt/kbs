@@ -1,5 +1,6 @@
 #include "bbs.h"
 
+void cancelpost(char    *board,char *userid,struct fileheader *fh,int     owned,int     autoappend);
 int get_postfilename(char* filename,char* direct)
 {
     static const char post_sufix[]="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";

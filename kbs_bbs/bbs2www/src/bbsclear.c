@@ -9,7 +9,7 @@ int main() {
 	if(!has_read_perm(currentuser, board)) http_fatal("´íÎóµÄÌÖÂÛÇø");
 	brc_initial(currentuser->userid, board);
 	brc_clear();
-	brc_update(currentuser->userid, board);
+	brc_update(currentuser->userid);
 	sprintf(buf, "bbsdoc?board=%s&start=%s", board, start);
 	refreshto(buf, 0);
 	http_quit();

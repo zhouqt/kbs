@@ -1164,7 +1164,7 @@ case KEY_UP:case 'u':case'U':
 case 0: case 1: case 2:
             break;
         case 3:
-            if(brc_unread( SR_fptr.filename ))
+            if(brc_unread( FILENAME2POSTTIME(SR_fptr.filename) ))
                 return -1;
             else
                 break;
@@ -1246,7 +1246,7 @@ case 0: case 1: case 2:
             * 方案2: rawmore()函数中, 判断KEY_UP==ch处不应该清屏	*/
             lch = ansimore(genbuf,NA) ;
             /*    ansimore(genbuf,NA) ;  */
-            brc_addlist( SR_fptr.filename ) ;
+            brc_add_read( SR_fptr.filename ) ;
             isstart=0;
             move(t_lines-1, 0);
             clrtoeol();

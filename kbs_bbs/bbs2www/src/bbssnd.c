@@ -106,7 +106,7 @@ int main()
 	sprintf(buf, "M.%d.A", r);
 	brc_initial(currentuser->userid, board);
 	brc_add_read(buf);
-	brc_update(currentuser->userid, board);
+	brc_update(currentuser->userid);
 	unlink(filename);
 	sprintf(buf, "bbsdoc?board=%s", board);
 	if(!junkboard(board))

@@ -39,7 +39,7 @@ int main() {
 		char filename[80];
 		char *ptr, *font1="", *font2="";
 		if(fread(&x, sizeof(x), 1, fp)<=0) break;
-		ptr=flag_str2(x.accessed[0], brc_has_read(x.filename));
+		ptr=flag_str2(x.accessed[0], !brc_unread(FILENAME2POSTTIME(x.filename)));
 		if(ptr[0]=='N') {
 			font1="<font color=\"#909090\">";
 			font2="</font>";

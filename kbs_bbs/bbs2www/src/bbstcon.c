@@ -52,7 +52,7 @@ int main() {
      	ptr=x.title;
      	if(!strncmp(ptr, "Re: ", 4)) ptr+=4;
    	printf("</center>\n"); 
-	if(loginok) brc_update(currentuser->userid, board);
+	if(loginok) brc_update(currentuser->userid);
 	http_quit();
 }
 

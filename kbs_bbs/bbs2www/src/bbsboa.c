@@ -70,5 +70,5 @@ int board_read(char *board) {
 	fread(&x, sizeof(x), 1, fp);
 	fclose(fp);
 	brc_initial(currentuser->userid, board);
-	return brc_has_read(x.filename);
+	return brc_unread(FILENAME2POSTTIME(x.filename));
 }
