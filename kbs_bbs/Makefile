@@ -170,7 +170,7 @@ $(BBSHOME)/bin/chatd: chatd
 clean: /tmp
 	-rm -fr $(GARBAGE) $(COBJS) $(PROGNAME) $(LNFILES) chatd
 	-rm -rf *.o
-	-rm -rf *.a
+	-rm -rf *.a *.il
 
 dist_clean: clean
 	-rm -f CONFIG/config.log
