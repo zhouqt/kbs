@@ -300,7 +300,7 @@ typedef struct fileheader {     /* This structure is used to hold data in */
     char owner[OWNER_LEN];
     unsigned int eff_size;
     int posttime;
-    long attachment;
+    unsigned int attachment;
     char title[ARTICLE_TITLE_LEN];
     unsigned char accessed[4];
 } fileheader;
