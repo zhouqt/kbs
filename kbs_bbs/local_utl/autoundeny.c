@@ -57,13 +57,12 @@ int sgetline(char* buf,char* linebuf,int *idx,int maxlen)
 	return len;
 }
 
-int undenyboardy(struct boardheader* bh)
+int undenyboard(struct boardheader* bh)
 {
 	int d_fd;
 	char denyfile[256];
 	char* buf;
 	int bufsize;
-	int size;
 	struct stat st;
 	time_t nowtime;
 	int idx1,idx2;
@@ -119,9 +118,10 @@ int undenyboardy(struct boardheader* bh)
 			}
 		}
 	}
+	return 0;
 }
 
-main()
+int main(int argc,char** argv)
 {
 	chdir(BBSHOME);
 	resolve_boards();
@@ -132,6 +132,7 @@ main()
 	strcpy(deliveruser.username,"自动发信系统");
 	currentuser=&deliveruser;
 	strcpy(fromhost,"天堂");
-	apply_boards(undenyboardy);
+	apply_boards(undenyboard);
+	return 0;
 }
 

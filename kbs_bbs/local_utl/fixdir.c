@@ -57,6 +57,7 @@ examples:\n\
 notice:\n\
 	In mailmode it will set all the mail readed.\n\
 ",prog,prog);
+	return 0;
 }
 
 int main(int argc,char** argv)
@@ -131,7 +132,7 @@ int main(int argc,char** argv)
 	    return -1;
 	}
 	i=1;
-        while (ent=readdir(pdir)) {
+        while ((ent=readdir(pdir))!=NULL) {
 	  if ((strcmp(ent->d_name,".DIR"))
 	     &&(strcmp(ent->d_name,"."))
 	     &&(strcmp(ent->d_name,".."))
@@ -139,7 +140,7 @@ int main(int argc,char** argv)
 	  {
 		struct stat st;
 		if (stat(ent->d_name,&st)) continue;
-		if (art=fopen(ent->d_name,"r")) {
+		if ((art=fopen(ent->d_name,"r"))!=NULL) {
 			char* p;
 			bzero(&fh,sizeof(fh));
 			fgets(buf1,256,art);

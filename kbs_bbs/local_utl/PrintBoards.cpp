@@ -18,7 +18,7 @@ int printboard(struct boardheader* bh)
   return 0;
 }
 
-main(int argc,char** argv)
+int main(int argc,char** argv)
 {
   char* filename;
   if (argc<=1) filename=".BOARDS";

@@ -35,7 +35,7 @@ int CRecordFile::ApplyRecord(int len,APPLY_FUNC func)
   if((fd = open(m_strFileName,O_RDONLY,0)) == -1)
         return -1 ;
   while(read(fd,data,len) == len) {
-      if(ret=(*func)(data)) {
+      if((ret=(*func)(data))!=NULL) {
           break;
       }
   }

@@ -53,7 +53,7 @@ void __dochild2(int t)
   }
 }
 
-main(int argc,char** argv)
+int main(int argc,char** argv)
 {
   FILE* filein;
   char* filename="boardlist";
@@ -61,7 +61,7 @@ main(int argc,char** argv)
   char  buf[1024];
 
   if ((argc>1)&&!strcmp(argv[1],"-h")) {
-	printf("usage:%s tgzpath boardlistfile");
+	printf("usage:%s tgzpath boardlistfile",argv[0]);
 	return 0;
   }
   if (argc>1)  savepath=argv[1];
