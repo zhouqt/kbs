@@ -214,7 +214,7 @@ void check_register_info()
     clear();
     sprintf(buf, "%s", email_domain());
     if (!(currentuser->userlevel & PERM_BASIC)) {
-        currentuser->userlevel = 0;
+        currentuser->userlevel = PERM_DENYMAIL;
         return;
     }
     /*urec->userlevel |= PERM_DEFAULT; */
