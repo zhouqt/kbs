@@ -1387,7 +1387,7 @@ int search_mode(int mode, char *index)
     }
     ptr1 = (struct fileheader *) ptr;
     for (i = 0; i < total; i++) {
-        if (mode == 6 && ptr1->id == ptr1->groupid || mode == 7 && strcasecmp(ptr1->owner, index) == 0 || mode == 8 && bm_strstr_rp(ptr1->title, index, bm_search, &init) != NULL) {
+        if (mode == 6 && ptr1->id == ptr1->groupid || mode == 7 && strcasecmp(ptr1->owner, index) == 0 || mode == 8 && bm_strcasestr_rp(ptr1->title, index, bm_search, &init) != NULL) {
             write(fd, ptr1, size);
             count++;
         }
