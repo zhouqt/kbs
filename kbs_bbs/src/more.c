@@ -938,6 +938,7 @@ int draw_content_more(char *ptr, int size, char *fn,struct fileheader* fh)
     struct MemMoreLines l;
     int i, ch = 0, curr_line, last_line, change;
     bool header=true;
+    char buf[256];
 
     displayflag = 0;
     shownflag = 1;
@@ -946,10 +947,11 @@ int draw_content_more(char *ptr, int size, char *fn,struct fileheader* fh)
     move(t_lines/2, 0);
 //    prints("\033[34m——————————————————预览窗口—————————————————");
 //    move(t_lines/2+1, 0);
-    prints("\033[1;33m预览  \033[1;32m作者:\033[1;34m%13.13s   \033[1;32m标题:\033[1;34m%50.50s       \033[1;32m%4.4s\033[m",
+    sprintf(buf,"\033[1;33m预览 \033[1;32m作者:\033[1;33m%-13.13s \033[1;32m标题:\033[1;33m%-50.50s       \033[1;32m%4.4s\033[m",
     	fh->owner,
     	fh->title,
     	fh->innflag[1]=='S'?"转信":"");
+    outs(buf);
     prints("\n\033[m");
     curr_line = l.curr_line;
     for (i = 0;;) {
