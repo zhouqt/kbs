@@ -590,7 +590,14 @@ void start_listen()
         csock = accept(sockfd, (struct sockaddr *) &sin, (socklen_t *) &value);
         if(csock<0) continue;
         fp = fdopen(csock, "r+");
-        fscanf(fp, "%d\n", &di);
+        fgets(cmd, 512, fp);
+        if(cmd[0]=='\n') fgets(cmd, 512, fp);
+        if(cmd[0]>='0'&&cmd[0]<='9') {
+            cmd[strlen(cmd)-1] = 0;
+            di=atoi(cmd);
+        }
+        else
+            di=0;
         fgets(cmd, 512, fp);
         do_query_all(cmd);
         fprintf(fp, "%d %d %d\n", res_total, di*MAX_KEEP, dj);
