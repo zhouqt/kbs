@@ -102,7 +102,7 @@
 		else
 			$agon=0;
 
-		$articles = bbs_search_articles($board, $title, $title2, $title3, $userid, $dt, $mgon, $ogon, $agon);
+		$articles = bbs_search_articles($board, $title, $title2, $title3, $userid, $dt, $mgon, $agon, $ogon);
 
 		if( $articles <= 0 ){
 			html_error_quit("ÏµÍ³´íÎó:".$articles);

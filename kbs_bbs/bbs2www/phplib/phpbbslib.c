@@ -1345,7 +1345,7 @@ static PHP_FUNCTION(bbs_search_articles)
 			continue;
 		if (origin && (ptr1[i].groupid!=ptr1[i].id) )
 			continue;
-		if (origin && ptr1[i].attachment==0)
+		if (attach && ptr1[i].attachment==0)
 			continue;
 
 			MAKE_STD_ZVAL(element);
