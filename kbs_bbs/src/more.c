@@ -789,6 +789,7 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
             if (next_MemMoreLines(&l) < 0)
                 break;
         }
+        move(i, 0);
         last_line = l.curr_line;
         if (l.total && l.total <= t_lines - 1)
             return 0;
