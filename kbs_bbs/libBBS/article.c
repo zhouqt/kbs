@@ -238,7 +238,7 @@ int del_origin(char *board, struct fileheader *fileinfo)
 
     BBS_TRY {
         fh=*(dirarg.fileptr + (dirarg.ent - 1));
-        memcpy(dirarg.fileptr + (dirarg.ent - 1), 
+        memmove(dirarg.fileptr + (dirarg.ent - 1), 
 				dirarg.fileptr + dirarg.ent, 
 				dirarg.size - sizeof(struct fileheader) * dirarg.ent);
     }
@@ -269,7 +269,7 @@ int do_del_post(struct userec *user, struct write_dir_arg*dirarg,struct filehead
         return-1;
     BBS_TRY {
         fh=*(dirarg->fileptr + (dirarg->ent - 1));
-        memcpy(dirarg->fileptr + (dirarg->ent - 1), 
+        memmove(dirarg->fileptr + (dirarg->ent - 1), 
             dirarg->fileptr + dirarg->ent, 
             dirarg->size - sizeof(struct fileheader) * dirarg->ent);
 #ifdef DEBUG
