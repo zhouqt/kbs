@@ -31,7 +31,7 @@ $pcconfig["SECTION"] = array(
 			"game" => "游戏乐园" ,
 			"sports" => "体育竞技" ,
 			"publish" => "新闻出版" ,
-			"others" => "其它类别"
+			"others" => "其他类别"
 			);
 
 /* personal corp. configure end */
