@@ -1,6 +1,6 @@
 <?php
 
-//$needlogin = 0;
+$needlogin = 0;
 $nocookie = 1;
 
 require("inc/funcs.php");
@@ -33,6 +33,7 @@ function preprocess(){
 	if ($boardID == 0) {
 		exit;
 	}
+	if (!$loginok) bbs_setguest_nologin();
 	if (!bbs_normalboard($boardName)) {
 		if($loginok == 1) {
 			$usernum = $currentuser["index"];

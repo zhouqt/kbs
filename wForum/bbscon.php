@@ -7,6 +7,8 @@
 	require("inc/funcs.php");
 	require("inc/attachment.inc.php");
 
+	if (!$loginok && $attachpos!=0) bbs_setguest_nologin();
+	
 	$brdarr = array();
 	if( isset( $_GET["bid"] ) ){
 		$brdnum = $_GET["bid"] ;

@@ -1,6 +1,4 @@
 <?php
-
-$needlogin = 0;
 require("inc/funcs.php");
 require("inc/ubbcode.php");
 
