@@ -235,7 +235,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"SetTrace", m_trace},
     {"Xlevel", x_deny},
     {"XBoardManager", set_BM},
-    {"Xdelipacl", Xdelipacl}
+    {"Xdelipacl", Xdelipacl},
     {"Xdeljunk", Xdeljunk},
 /*    
     {"CleanMail", m_mclean},
