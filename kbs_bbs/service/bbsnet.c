@@ -224,7 +224,7 @@ int telnetopt(int fd, char* buf, int max)
 			}
 		}
 		else
-			  outc(c);
+			  ochar(c);
 	}
        oflush();
 	return 0;
@@ -371,7 +371,7 @@ int bbsnet(int n)
 	prints("[1;31m¡¨Ω”≥…π¶£°[m\n");
 	bbsnet_report(host1[n], ip[n], now, 0);
 	clear();
-	redoscr();
+	refresh();
 	for (;;)
 	{
 		FD_ZERO(&readset);
@@ -435,6 +435,8 @@ int bbsnet(int n)
 	ret = 0;
 on_error:
 	close(sockfd);
+	clear();
+	redoscr();
 	return ret;
 }
 
