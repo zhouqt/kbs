@@ -83,7 +83,7 @@ int gen_commend_xml()
 				}else
 					break;
 			}
-			fprintf(fp, "</brief>\n</hotsubject>\n");
+			fprintf(fp, " </brief>\n</hotsubject>\n");
 
 			fclose(fp1);
         }
