@@ -427,6 +427,7 @@ void x_fillform()
     getdata(t_lines - 1, 0, "您确定要填写注册单吗 (Y/N)? [N]: ", ans, 3, DOECHO, NULL, true);
     if (ans[0] != 'Y' && ans[0] != 'y')
         return;
+    memcpy(&ud,&curruserdata,sizeof(ud));
     strncpy(rname, ud.realname, NAMELEN);
     strncpy(addr, ud.address, STRLEN);
     career[0] = phone[0] = birth[0] = '\0';
