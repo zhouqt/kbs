@@ -1005,6 +1005,10 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
             saveline(i, 1, savebuffer[i]);
         if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch) && (!buf[0]))
             return -ch;
+#ifdef NINE_BUILD
+        if (RMSG && (ch == Ctrl('Z')) && (!buf[0]))
+            return -ch;
+#endif
 #ifdef CHINESE_CHARACTER
         if (ch == Ctrl('R')) {
 		currentuser->userdefine = currentuser->userdefine ^ DEF_CHCHAR;

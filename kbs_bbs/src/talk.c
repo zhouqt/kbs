@@ -184,10 +184,13 @@ int t_printstatus(struct user_info *uentp, int *arg, int pos)
     if (uentp->invisible)
         strcat(genbuf, "[32mÒþÉíÖÐ   [m");
     else {
-        char buf[80];
-
-        sprintf(buf, "[1m%s[m ", modestring(uentp->mode, uentp->destuid, 0,   /* 1->0 ²»ÏÔÊ¾ÁÄÌì¶ÔÏóµÈ modified by dong 1996.10.26 */
-                                              (uentp->in_chat ? uentp->chatid : NULL)));
+        char buf[80],buf2[20];
+        char* p;
+        p = idle_str(uentp);
+        if(p[0]==' ') buf2[0]=0;
+        else sprintf(buf2, "[%s]", p);
+        sprintf(buf, "[1m%s[m%s ", modestring(uentp->mode, uentp->destuid, 0,   /* 1->0 ²»ÏÔÊ¾ÁÄÌì¶ÔÏóµÈ modified by dong 1996.10.26 */
+                                              (uentp->in_chat ? uentp->chatid : NULL)), buf2);
         strcat(genbuf, buf);
     }
     if ((*arg) % 8 == 0)

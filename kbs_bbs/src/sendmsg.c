@@ -490,13 +490,6 @@ void r_msg()
             }while(!DEFINE(currentuser, DEF_IGNOREMSG)&&ch!=Ctrl('Z')&&ch!='r'&&ch!='R');
             first = 0;
             move(y, x);
-#ifdef NINE_BUILD
-            if(DEFINE(currentuser, DEF_IGNOREMSG)&&ch==Ctrl('Z')) {
-                for(i=0;i<=y;i++)
-                    saveline(i, 1, savebuffer[i]);
-                break;
-            }
-#endif
         }
         
         clrtoeol();
@@ -521,6 +514,9 @@ void r_msg()
         for(i=0;i<=oy;i++)
             saveline(i, 1, savebuffer[i]);
         switch(ch) {
+            case Ctrl('Z'):
+                ch = '\n';
+                break;
             case KEY_UP:
                 now--;
                 if(now<0) now=count-1;
