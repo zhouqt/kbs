@@ -83,27 +83,36 @@ int     totalnum, totalbyte, markdel, idletime;
 int     *postlen;
 
 void    log_usies();
-int     Quit(), User(), Pass(), Noop(), Stat(), List(), Retr(), Rset();
-int     Last(), Dele(), Uidl();
-int     Top(); /* Leeward adds, 98.01.21 */
+void    Quit();
+void 	User();
+void	Pass();
+void	Noop();
+void 	Stat();
+void	List();
+void	Retr();
+void	Rset();
+void    Last();
+void	Dele();
+void	Uidl();
+void    Top(); /* Leeward adds, 98.01.21 */
 
 struct commandlist {
     char        *name;
-    int         (*fptr)();
+    void         (*fptr)();
 } cmdlists[] = {
-    "retr",       Retr,
-    "dele",       Dele,
-    "user",       User,
-    "pass",       Pass,
-    "stat",       Stat,
-    "list",       List,
-    "uidl",       Uidl,
-    "quit",       Quit,
-    "rset",       Rset,
-    "last",       Last,
-    "noop",       Noop,
-    "top",        Top,  /* Leeward adds, 98.01.21 */
-    NULL,         NULL
+    {"retr",       Retr},
+    {"dele",       Dele},
+    {"user",       User},
+    {"pass",       Pass},
+    {"stat",       Stat},
+    {"list",       List},
+    {"uidl",       Uidl},
+    {"quit",       Quit},
+    {"rset",       Rset},
+    {"last",       Last},
+    {"noop",       Noop},
+    {"top",        Top},  /* Leeward adds, 98.01.21 */
+    {NULL,         NULL},
 };
 
 char *crypt();
@@ -182,7 +191,6 @@ int linenum;
 {
     FILE *fp;
     char linebuf[ 256 ];
-    int  i,j;/*Haohmaru.99.07.12*/
     char* buf,*p;/* KCN.99.09.01*/
     char newbuf[256];
 
@@ -317,7 +325,7 @@ char   *dest;
                      * protocol, not part of the data.
                      */
 
-                    if (cp = strchr(user, '\r'))
+                    if ((cp = strchr(user, '\r'))!=NULL)
                         *cp = 0;
                     result = user;
                 }
@@ -433,7 +441,7 @@ Login_init()
 
     for (i = 0; i < totalnum; i++) {
         if (index(fcache[i].owner, '@') == NULL) {
-            if (ptr = strchr(fcache[i].owner, ' '))
+            if ((ptr = strchr(fcache[i].owner, ' '))!=NULL)
                 *ptr = '\0';
             strcat(fcache[i].owner, BBSNAME);
         }
@@ -467,7 +475,7 @@ int main( int argc, char **argv)
 
     struct sockaddr_in fsin,our;
     int on,alen,len,i, n;
-    char *str, flag;
+    char *str;
     int portnum = POP3PORT;
     int childpid;
 
@@ -611,11 +619,10 @@ static void reaper(int signo)
     while (( pid = waitpid(-1, &state, WNOHANG|WUNTRACED)) > 0);
 }
 
-int
-Noop()
+void Noop()
 {
     outs("+OK");
-    return;
+    return 0;
 }
 
 int
@@ -659,8 +666,7 @@ char *user;
 */
 }
 
-int
-User()
+void User()
 {
     char *ptr;
 
@@ -705,12 +711,9 @@ User()
     return;
 }
 
-void
-log_usies(buf)
-char *buf;
+void log_usies(char *buf)
 {
     FILE *fp;
-    long ti;
 
     if ((fp = fopen("reclog/pop3d.log","a")) != NULL) {
         time_t now;
@@ -727,8 +730,7 @@ char *buf;
     }
 }
 
-int
-Retr()
+void Retr()
 {
     int num;
 
@@ -783,8 +785,7 @@ Retr()
 }
 
 
-int
-Stat()
+void Stat()
 {
     if (State != S_LOGIN) {
         outs("-ERR Unknown command: \"stat\".");
@@ -795,8 +796,7 @@ Stat()
 }
 
 
-int
-Rset()
+void Rset()
 {
     int i;
 
@@ -813,8 +813,7 @@ Rset()
     outs(genbuf);
 }
 
-int
-List()
+void List()
 {
     int i;
 
@@ -852,8 +851,7 @@ List()
 
 }
 
-int
-Top() /* Leeward adds, 98.01.21 */
+void Top() /* Leeward adds, 98.01.21 */
 {
     int num;
     int ln;
@@ -926,8 +924,7 @@ Top() /* Leeward adds, 98.01.21 */
 }
 
 
-int
-Uidl()
+void Uidl()
 {
     int i;
 
@@ -958,15 +955,14 @@ Uidl()
             outs(genbuf);
             return;
         }
-        sprintf(genbuf, "+OK %d %d", i, fcache[i-1].filename);
+        sprintf(genbuf, "+OK %d %s", i, fcache[i-1].filename);
         outs(genbuf);
     }
 
 }
 
 
-int
-Pass()
+void Pass()
 {
     if (State == S_LOGIN) {
         outs("-ERR Unknown command: \"pass\".");
@@ -1006,8 +1002,7 @@ Pass()
     outs(genbuf);
 }
 
-int
-Last()
+void Last()
 {
     if (State != S_LOGIN) {
         outs("-ERR Unknown command: \"last\".");
@@ -1018,8 +1013,7 @@ Last()
     outs(genbuf);
 }
 
-int
-Dele()
+void Dele()
 {
     int num;
 
@@ -1090,8 +1084,7 @@ do_delete()
         unlink(fnew);
 }
 
-int
-Quit()
+void Quit()
 {
     if (State == S_LOGIN) {
         free(fcache);
