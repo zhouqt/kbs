@@ -1201,6 +1201,41 @@ int showinfo(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     pressanykey();
     return FULLUPDATE;
 }
+
+int jumpReID(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
+{
+    int now; // 1-based
+    struct fileheader *pFh, *pFh1;
+    off_t size;
+    struct read_arg *arg = (struct read_arg *) conf->arg;
+
+    if (fileinfo->reid == fileinfo->id) return DONOTHING;
+
+    BBS_TRY {
+        if (safe_mmapfile_handle(arg->fd, PROT_READ, MAP_SHARED, (void **) &pFh, &size) == 0)
+            BBS_RETURN(0);
+        now = arg->filecount = size/sizeof(struct fileheader);
+        if (now >= conf->pos) now = conf->pos - 1;
+        for(;now>=1;now--) { /* Ë³ÐòÕÒÄØ£¬»¹ÊÇ yuhuan mm µÄ Search_Bin ÄØ... */
+            pFh1 = pFh + now - 1;
+            if (fileinfo->reid == pFh1->id) break;
+            if (fileinfo->reid > pFh1->id) {
+                now = -1;
+                break;
+            }
+        }
+    }
+    BBS_CATCH {
+        now = -1;
+    }
+    BBS_END
+    end_mmapfile((void *) pFh, size, -1);
+    if(now > 0) {
+        conf->new_pos = now;
+        return SELCHANGE;
+    }
+    return DONOTHING;
+}
 #endif
 
 int read_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
@@ -5898,6 +5933,7 @@ static struct key_command read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
     {'!', (READ_KEY_FUNC)Goodbye,NULL},
 #ifdef ZIXIA
     {'~', (READ_KEY_FUNC)showinfo,NULL},
+    {'^', (READ_KEY_FUNC)jumpReID,NULL},
 #endif
     {'\0', NULL},
 };
