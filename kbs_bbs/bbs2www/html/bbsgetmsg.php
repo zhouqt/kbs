@@ -53,8 +53,10 @@ echo $srcutmpnum; ?>">[»ØÑ¶Ï¢]</a> <a href="bbsgetmsg.php?refresh">[ºöÂÔ]</a></t
 		}
 ?>
 <script language="javascript">
-if (top.document.getElementsByName("viewfrm").item(0))
-	top.document.getElementsByName("viewfrm").item(0).rows = "<?php echo $frameheight; ?>,*,20";
+<!--
+if (ff = top.document.getElementById("viewfrm"))
+	ff.rows = "<?php echo $frameheight; ?>,*,20";
+//-->
 </script>
 <?php	
 		html_normal_quit();

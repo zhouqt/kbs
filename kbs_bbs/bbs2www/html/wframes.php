@@ -6,6 +6,8 @@
 		return;
 	}
 	$isguest = ($currentuser["userid"] == "guest"); //可以永远设成 TRUE
+	cache_header("no-cache");
+	header("Cache-Control: no-cache");
 ?>
 <html>
 <head>
@@ -15,7 +17,9 @@
 <frameset name=mainframe frameborder=0 border=0 cols="167,11,*">
 	<frame name=menu noresize="true" marginwidth=0 marginheight=0 src="/bbsleft.php">
 	<frame scrolling=no noresize="true" name=toogle marginwidth=0 marginheight=0 src="/wtoogle.html">
-	<frameset name="viewfrm" rows="<?php if (!$isguest) echo "18,"; ?>*,20">
+	<frameset name="viewfrm" <?php 
+		if (!$isguest) echo "rows=\"18,*,20\" id=\"viewfrm\"";
+		else echo "rows=\"*,20\""; ?>>
 <?php
 	if (!$isguest) {
 ?>
@@ -24,7 +28,7 @@
 	}
 ?>
 		<frame marginwidth=0 marginheight=0 name="f3" src="<?php
-			echo (isset($_GET["mainurl"])) ? $_GET["mainurl"] : MAINPAGE_FILE; ?>">
+			echo (isset($_GET["mainurl"])) ? htmlspecialchars($_GET["mainurl"],ENT_QUOTES) : MAINPAGE_FILE; ?>">
 		<frame scrolling=no noresize="true" marginwidth=4 marginheight="1" name="f4" src="bbsfoot.php">
 	</frameset>
 </frameset>
