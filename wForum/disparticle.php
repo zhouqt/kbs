@@ -405,10 +405,6 @@ function showArticle($boardName,$boardID, $startNum, $articleID,$article,$type){
 &nbsp;&nbsp;ÐÇ×ù£º<?php echo get_astro($user['birthmonth'],$user['birthday']); ?>
 <?php
 		}
-	} else {
-?>
-&nbsp;&nbsp;<img src="userface/image.gif" align="absmiddle" title="Î´ÖªÓÃ»§"/>
-<?php
 	}
 ?>
 </td>
