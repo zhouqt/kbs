@@ -99,7 +99,7 @@ int sendtouser(struct GWSendSMS * h, char* buf)
     hh.time = time(0);
     strcpy(hh.id, h->SrcMobileNo);
     save_msgtext(uident, &hh, buf);
-    kill(ur->pid, SIGUSR2);
+    kill(uin->pid, SIGUSR2);
     return 0;
 }
 
