@@ -2876,6 +2876,7 @@ static void bbs_make_detail_vote_array(zval * array, struct votebal *vbal)
     add_assoc_long(array, "DATE", vbal->opendate);
     if(vbal->type < 5 && vbal->type >= 1) add_assoc_string(array, "TYPE", vote_type[vbal->type-1], 1);
     add_assoc_long(array, "MAXDAY", vbal->maxdays);
+    add_assoc_long(array, "MAXTKT", vbal->maxtkt);
     add_assoc_long(array, "TOTALITEMS", vbal->totalitems);
 
 	for(i=0; i < vbal->totalitems; i++){
@@ -3040,6 +3041,9 @@ static PHP_FUNCTION(bbs_vote_num)
 	sprintf(controlfile,"vote/%s/limit.%lu",bname,vbal.opendate);
 	if(! bbs_can_access_vote(controlfile))
 		RETURN_LONG(-8);
+
+	if(vbal.type == 4 && votevalue > vbal.maxtkt)
+		RETURN_LONG(-12);
 
 	bzero( &uservote, sizeof(uservote) );
 	strcpy(uservote.uid,currentuser->userid);
