@@ -19,6 +19,10 @@ function blogCalendarLink(thisYear,thisMonth,thisDay)
 		return thisDay;
 }
 
+var theYear; 
+var theMonth; 
+var theDay=-1; 
+
 function blogCalendar(thisYear,thisMonth,thisDay)
 {
 	var monthDay = new Array();
@@ -44,14 +48,15 @@ function blogCalendar(thisYear,thisMonth,thisDay)
 		thisDay = monthDay[thisMonth] ;
 	if( thisDay < 1 )
 		thisDay = 1;
+
+       if (theDay==-1) { 
+               theYear=thisYear; 
+               theMonth=thisMonth; 
+               theDay=thisDay; 
+       } 
 		
 	tmpDay = new Date( thisYear ,thisMonth,1);
 	firstDay = tmpDay.getDay();
-	
-	today = new Date( );
-	todayYear = today.getYear();
-	todayMonth = today.getMonth();
-	todayDay = today.getDate();
 	
 	tmpMonthDay = firstDay + monthDay[thisMonth] ;
 	leftMonthDay = 6 - (tmpMonthDay - 1)% 7 ;
@@ -83,7 +88,7 @@ function blogCalendar(thisYear,thisMonth,thisDay)
 		else
 		{
 			linkStr = blogCalendarLink(thisYear,thisMonth,( i - firstDay + 1 ));
-			if( ( i - firstDay + 1 ) == todayDay && thisYear == todayYear && thisMonth == todayMonth )
+			if( ( i - firstDay + 1 ) == theDay && thisYear == theYear && thisMonth == theMonth )
 				linkStr = "<font class=f2>" + linkStr + "</font>";
 			cStr += "<td class=" + cellClass + ">" + linkStr + "</td>";
 		}
