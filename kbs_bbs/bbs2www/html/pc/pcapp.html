@@ -8,13 +8,22 @@
 <title>申请Blog</title>
 <link rel="stylesheet" type="text/css" href="default.css"/>
 <script src="pc.js"></script>
+<script language=javascript>
+	<!--
+	function dosubmit() {
+		    document.postform.post.value= '提交中，请稍后……';
+			    document.postform.post.disabled=true;
+				    document.postform.submit();
+				}
+				//-->
+			</script>
 </head>
 <body TOPMARGIN="0" leftmargin="0">
 <br/><br/>
 <p align=center><strong>
 BBS 水木清华站Blog申请表
 </strong></p>
-<center><form action="pcapp.php" method="post">
+<center><form action="pcapp.php" name="postform" id="postform" method="post">
 <table cellspacing=0 cellpadding=5 width=90% border=0 class=t1>
 	<tr>
 		<td class=t8 colspan="2">
@@ -35,7 +44,7 @@ BBS 水木清华站Blog申请表
 	</tr>
 	<tr>
 		<td class=t3 colspan=2>
-		<input type="submit" value="提交申请" class="f1">
+		<input type="submit" value="提交申请" name="post" id="post" onclick="dosubmit()" class="f1">
 		<input type="button" value="返回" class="f1" onclick="window.location.href='pcmain.php'">
 		</td>
 	</tr>
