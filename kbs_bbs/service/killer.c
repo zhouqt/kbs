@@ -603,6 +603,7 @@ void join_room(struct room_struct * r)
         do{
             int ch;
             ch=-getdata(t_lines-1, 0, "ÊäÈë:", buf, 30, 1, NULL, 1);
+            if(myroom->style!=1) kicked = 1;
             if(kicked) goto quitgame;
             if(ch==KEY_UP) {
                 selected--;
@@ -1036,6 +1037,7 @@ static int room_list_key(struct _select_def *conf, int key)
         if(!HAS_PERM(currentuser, PERM_SYSOP)) return SHOW_CONTINUE;
         r2 = room_get(conf->pos-1);
         r2->style = -1;
+        clear_inroom(r2);
         return SHOW_DIRCHANGE;
     }
     return SHOW_CONTINUE;
