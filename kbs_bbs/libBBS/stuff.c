@@ -62,42 +62,42 @@ pressanykey()
 
 int
 pressreturn()
-{
-    extern int showansi;        
-    char buf[3] ;
-    
-    showansi=1;
-    move(t_lines-1,0);
-    clrtoeol();
-    getdata(t_lines-1,0,"                              [33mÇë°´ ¡ô[36mEnter[33m¡ô ¼ÌÐø[m",buf,2,NOECHO,NULL,YEA);
-    move(t_lines-1,0) ;
-    clrtoeol() ;
-    refresh() ;
-    return 0 ;
-}
+           {
+               extern int showansi;
+               char buf[3] ;
 
-askyn(str,defa)
-char str[STRLEN];
+               showansi=1;
+               move(t_lines-1,0);
+               clrtoeol();
+               getdata(t_lines-1,0,"                              [33mÇë°´ ¡ô[36mEnter[33m¡ô ¼ÌÐø[m",buf,2,NOECHO,NULL,YEA);
+               move(t_lines-1,0) ;
+               clrtoeol() ;
+               refresh() ;
+               return 0 ;
+           }
+
+           askyn(str,defa)
+           char str[STRLEN];
 int defa;
 {
-        int x,y;
-        char realstr[STRLEN*2];
-        char ans[6];
+    int x,y;
+    char realstr[STRLEN*2];
+    char ans[6];
 
-        sprintf(realstr,"%s (Y/N)? [%c]: ",str,(defa)?'Y':'N');
-        getyx(&x,&y);
-        getdata( x, y, realstr, ans,3,DOECHO,NULL,YEA);
-        if(ans[0]!='Y' && ans[0]!='y' && 
-           ans[0]!='N' && ans[0]!='n')
-        {
-                return defa;
-        }else if(ans[0]=='Y' || ans[0]=='y')
-                return 1;
-         else if(ans[0]=='N' || ans[0]=='n')
-                return 0;
+    sprintf(realstr,"%s (Y/N)? [%c]: ",str,(defa)?'Y':'N');
+    getyx(&x,&y);
+    getdata( x, y, realstr, ans,3,DOECHO,NULL,YEA);
+    if(ans[0]!='Y' && ans[0]!='y' &&
+            ans[0]!='N' && ans[0]!='n')
+    {
+        return defa;
+    }else if(ans[0]=='Y' || ans[0]=='y')
+        return 1;
+    else if(ans[0]=='N' || ans[0]=='n')
+        return 0;
 }
-        
-                
+
+
 
 
 void
@@ -123,11 +123,11 @@ char    *mesg;
 void
 bell()
 {
-/* change by KCN 1999.09.08    fprintf(stderr,"%c",Ctrl('G')) ;*/
-  char sound;
+    /* change by KCN 1999.09.08    fprintf(stderr,"%c",Ctrl('G')) ;*/
+    char sound;
 
-  sound= Ctrl('G');
-  output( &sound, 1);
+    sound= Ctrl('G');
+    output( &sound, 1);
 
 }
 
@@ -138,7 +138,7 @@ touchnew()
 
     sprintf( genbuf, "touch by: %s", currentuser.userid );
     if((fd = open(FLUSH,O_WRONLY|O_CREAT,0644)) == -1)
-      return ;
+        return ;
     write(fd, genbuf, strlen(genbuf) );
     close(fd) ;
 }
@@ -207,17 +207,17 @@ char *env, *val ;
     register int i,len ;
 
     if(numbbsenvs == 0)
-      bbsenv[0] = NULL ;
+        bbsenv[0] = NULL ;
     len = strlen(env) ;
     for(i=0;bbsenv[i];i++)
-      if(!ci_strncmp(env,bbsenv[i],len))
-        break ;
+        if(!ci_strncmp(env,bbsenv[i],len))
+            break ;
     if(i>=MAXENVS)
-      return -1 ;
+        return -1 ;
     if(bbsenv[i])
-      free(bbsenv[i]) ;
+        free(bbsenv[i]) ;
     else
-      bbsenv[++numbbsenvs] = NULL ;
+        bbsenv[++numbbsenvs] = NULL ;
     bbsenv[i] = malloc(strlen(env)+strlen(val)+2) ;
     strcpy(bbsenv[i],env) ;
     strcat(bbsenv[i],"=") ;
@@ -245,7 +245,7 @@ char *com, *wd ;
     pmode = LOOKFIRST ;
     for(i=0,argptr=0;i<len;i++) {
         if(pcom[i] == '\0')
-          break ;
+            break ;
         if(pmode == QUOTEMODE) {
             if(pcom[i] == '\001') {
                 pmode = LOOKFIRST ;
@@ -258,16 +258,16 @@ char *com, *wd ;
             pmode = QUOTEMODE ;
             arglist[argptr++] = &pcom[i+1] ;
             if(argptr+1 == MAXARGS)
-              break ;
+                break ;
             continue ;
         }
         if(pmode == LOOKFIRST)
-          if(pcom[i] != ' ') {
-              arglist[argptr++] = &pcom[i] ;
-              if(argptr+1 == MAXARGS)
-                break ;
-              pmode = LOOKLAST ;
-          } else continue ;
+            if(pcom[i] != ' ') {
+                arglist[argptr++] = &pcom[i] ;
+                if(argptr+1 == MAXARGS)
+                    break ;
+                pmode = LOOKLAST ;
+            } else continue ;
         if(pcom[i] == ' ') {
             pmode = LOOKFIRST ;
             pcom[i] = '\0' ;
@@ -275,56 +275,56 @@ char *com, *wd ;
     }
     arglist[argptr] = NULL ;
     if(argptr == 0)
-      return -1 ;
+        return -1 ;
     if(*arglist[0] == '/')
-      strncpy(path,arglist[0],MAXPATHLEN) ;
+        strncpy(path,arglist[0],MAXPATHLEN) ;
     else
-      strncat(path,arglist[0],MAXPATHLEN) ;
+        strncat(path,arglist[0],MAXPATHLEN) ;
     reset_tty() ;
     alarm(0) ;
 #ifdef IRIX
     if((pid = fork()) == 0) {
 #else
-    if((pid = vfork()) == 0) {
+if((pid = vfork()) == 0) {
 #endif
         if(wd)
-          if(chdir(wd)) {
-/* change by KCN 1999.09.08 
-              fprintf(stderr,"Unable to chdir to '%s'\n",wd) ;
-*/
-	      prints("Unable to chdir to '%s'\n",wd) ;
-	      oflush();
-              exit(-1) ;
-          }
+            if(chdir(wd)) {
+                /* change by KCN 1999.09.08
+                              fprintf(stderr,"Unable to chdir to '%s'\n",wd) ;
+                */
+                prints("Unable to chdir to '%s'\n",wd) ;
+                oflush();
+                exit(-1) ;
+            }
         bbssetenv("PATH", "/bin:.");
         bbssetenv("TERM", currentuser.termtype);
         bbssetenv("USER", currentuser.userid);
         bbssetenv("USERNAME", currentuser.username);
-/* added for tin's reply to */
+        /* added for tin's reply to */
         bbssetenv("REPLYTO", currentuser.email);
         bbssetenv("FROMHOST", fromhost);
-/* end of insertion */
+        /* end of insertion */
         if ((tz = getenv("TZ")) != NULL)
-          bbssetenv("TZ", tz);  
+            bbssetenv("TZ", tz);
         if(numbbsenvs == 0)
-          bbsenv[0] = NULL ;
+            bbsenv[0] = NULL ;
         execve(path,arglist,bbsenv) ;
-/* change by KCN 1999.09.08
-        fprintf(stderr,"EXECV FAILED... path = '%s'\n",path) ;
-	*/
-	prints("EXECV FAILED... path = '%s'\n",path) ;
-	oflush();
+        /* change by KCN 1999.09.08
+                fprintf(stderr,"EXECV FAILED... path = '%s'\n",path) ;
+        	*/
+        prints("EXECV FAILED... path = '%s'\n",path) ;
+        oflush();
         exit(-1) ;
     }
     isig = signal(SIGINT, SIG_IGN) ;
     qsig = signal(SIGQUIT, SIG_IGN) ;
     while((w = wait(&status)) != pid && w != 1)
-      /* NULL STATEMENT */ ;
+        /* NULL STATEMENT */ ;
     signal(SIGINT, isig) ;
     signal(SIGQUIT, qsig) ;
     restore_tty() ;
 #ifdef DOTIMEOUT
-    alarm(IDLE_TIMEOUT) ; 
+    alarm(IDLE_TIMEOUT) ;
 #endif
     return((w == -1)? w: status) ;
 }

@@ -1,4 +1,4 @@
-/* share memory ´¦Àí 
+/* share memory ´¦Àí
                             bcache:°æ , ucache:ËùÓÐ×¢²áÓÃ»§, utmp cache:ÔÚÏßuser 
 */
 
@@ -107,8 +107,8 @@ resolve_boards()
     lockfd = open( "bcache.lock", O_RDWR|O_CREAT, 0600 );
 
     if( lockfd < 0 ) {
-            log_usies( "CACHE", "reload bcache lock error!!!!" );
-            return;
+        log_usies( "CACHE", "reload bcache lock error!!!!" );
+        return;
     }
 
     flock(lockfd,LOCK_EX);
@@ -143,8 +143,8 @@ int (*func)() ;
 }
 
 struct shortfile *
-getbcache( bname ) /* get board cache, Í¨¹ýboard name */
-char *bname ;
+            getbcache( bname ) /* get board cache, Í¨¹ýboard name */
+            char *bname ;
 {
     register int i ;
 
@@ -178,8 +178,8 @@ char    *bname;
 
     resolve_boards();/* attach shm*/
     for(i=0;i<numboards;i++)
-            if(!ci_strncmp( bname, bcache[i].filename, STRLEN ) )
-                return i+1 ;
+        if(!ci_strncmp( bname, bcache[i].filename, STRLEN ) )
+            return i+1 ;
     return 0 ;
 } /*---	---*/
 
@@ -191,15 +191,15 @@ char *bname;
 
     if(digestmode)
         return 0;
-/*    if( strcmp( bname, DEFAULTBOARD ) == 0 )  return 1; change by KCN 2000.09.01 */
+    /*    if( strcmp( bname, DEFAULTBOARD ) == 0 )  return 1; change by KCN 2000.09.01 */
     if ((i = getbnum(bname)) == 0) return 0;
     if (HAS_PERM(PERM_DENYPOST))
-	/*if(!strcmp(bname, "sysop"))
-        return 1;*/ /* Leeward 98.05.21 revised by stephen 2000.10.27*/ 
- /* let user denied post right post at Complain*/
-     {if (!strcmp(bname, "Complain")) return 1;/* added by stephen 2000.10.27*/
-	else if(!strcmp(bname, "sysop"))
-        return 1;} /* stephen 2000.10.27 */
+        /*if(!strcmp(bname, "sysop"))
+               return 1;*/ /* Leeward 98.05.21 revised by stephen 2000.10.27*/ 
+        /* let user denied post right post at Complain*/
+    {if (!strcmp(bname, "Complain")) return 1;/* added by stephen 2000.10.27*/
+        else if(!strcmp(bname, "sysop"))
+            return 1;} /* stephen 2000.10.27 */
     if (!HAS_PERM(PERM_POST)) return 0;
     return (HAS_PERM((bcache[i-1].level&~PERM_NOZAP) & ~PERM_POSTMASK));
 }
@@ -238,7 +238,7 @@ resolve_ucache()
     if( uidshm == NULL ) {
         uidshm = attach_shm( "UCACHE_SHMKEY", 3696, sizeof( *uidshm ) ); /*attach to user shm */
     }
-    /* modified by dong, for relaod ucache, 1998.12.2 
+    /* modified by dong, for relaod ucache, 1998.12.2
     now = time( NULL );
 
     if( (stat( WWWFLUSH,&st ) >= 0 ) || (uidshm->uptime < now - 3600)) {
@@ -250,12 +250,12 @@ resolve_ucache()
         uidshm->uptime = now;
         if (stat( WWWFLUSH,&st ) >= 0 )
            unlink(WWWFLUSH);
-    }
-*/
+}
+    */
     lockfd = open( "ucache.lock", O_RDWR|O_CREAT, 0600 );
     if( lockfd < 0 ) {
-            log_usies( "CACHE", "reload ucache lock error!!!!" );
-            return;
+        log_usies( "CACHE", "reload ucache lock error!!!!" );
+        return;
     }
     flock(lockfd,LOCK_EX);
 
@@ -297,14 +297,14 @@ searchnewuser() /* ÕÒcacheÖÐ ¿ÕÏÐµÄ user num */
 
     num = uidshm->number; /* cache ÖÐ user ×ÜÊý*/
     for(i=0; i < num; i++)
-        if( uidshm->userid[i][0] == '\0' )                
+        if( uidshm->userid[i][0] == '\0' )
             return i+1 ;
-    if( num < MAXUSERS )           
+    if( num < MAXUSERS )
         return( num + 1 );
     return 0 ;
 }
 int
-searchuser(userid)  
+searchuser(userid)
 char *userid ;
 {
     register int i ;
@@ -315,7 +315,7 @@ char *userid ;
             return i+1 ;
     return 0 ;
 }
-	
+
 int
 apply_users(func) /* ËùÓÐÔÚÏßuser Ó¦ÓÃ func */
 void (*func)() ;
@@ -364,7 +364,7 @@ int     *pnum;
         ptr = reg_ushm->userid[n];
         tmp = *ptr;
         if( tmp == ch || tmp == ch - 'A' + 'a' ) /* ÅÐ¶ÏµÚÒ»¸ö×Ö·ûÊÇ·ñÏàÍ¬*/
-            if( chkstr( tag, tagbuf, ptr ) ) 
+            if( chkstr( tag, tagbuf, ptr ) )
                 strcpy( buf[ num++ ], ptr ); /*Èç¹ûÆ¥Åä, add into buf */
     }
     *pnum = num;
@@ -394,16 +394,16 @@ struct user_info *up;
         if( utmpfd < 0 )
             return -1;
     }
-/*    if (tmpfd ==0){  by dong 1998.7.6 */
-/*       tmpfd = open( ".tmpfile",  O_RDWR|O_CREAT, 0600 );
-       if (tmpfd < 0)
-          return -1;
-    }
-*/
+    /*    if (tmpfd ==0){  by dong 1998.7.6 */
+    /*       tmpfd = open( ".tmpfile",  O_RDWR|O_CREAT, 0600 );
+           if (tmpfd < 0)
+              return -1;
+        }
+    */
     resolve_utmp();
 
     while (flock( utmpfd, LOCK_EX ) ==-1)  sleep(2); /* lock it, 1999.9.17, change to while, by dong */
-/*    while (flock( tmpfd, LOCK_EX ) == -1); * lock it*/
+    /*    while (flock( tmpfd, LOCK_EX ) == -1); * lock it*/
 
     for( i = 0; i < USHM_SIZE; i++ ) { /* ÕÒ¿ÕµÄuser tmp shm */
         uentp = &(utmpshm->uinfo[ i ]);
@@ -411,7 +411,7 @@ struct user_info *up;
     }
     if( i >= USHM_SIZE ) {
         flock( utmpfd, LOCK_UN );
-	close(utmpfd);
+        close(utmpfd);
         return -1;
     }
     utmpshm->uinfo[i] = *up;
@@ -419,25 +419,25 @@ struct user_info *up;
     now = time( NULL );
     if(( now > utmpshm->uptime + 120 )||(now < utmpshm->uptime-120)) {
         utmpshm->uptime = now;
-         log_usies( "CACHE", "Clean user utmp cache");
-       	 for( n = 0; n < USHM_SIZE; n++ ) {
+        log_usies( "CACHE", "Clean user utmp cache");
+        for( n = 0; n < USHM_SIZE; n++ ) {
             utmpshm->uptime = now;
             uentp = &(utmpshm->uinfo[ n ]);
             if( uentp->active && uentp->pid && kill( uentp->pid, 0 ) == -1 ) /*uentp¼ì²é*/
-               {
-                   char buf[STRLEN];
-		   strncpy(buf, uentp->userid, IDLEN+2);
-                   memset( uentp, 0, sizeof( struct user_info ) );/*uentpÓÐ´íÎó£¬ÔòÇåÁã*/
-		   RemoveMsgCountFile2(buf);
-               }
+            {
+                char buf[STRLEN];
+                strncpy(buf, uentp->userid, IDLEN+2);
+                memset( uentp, 0, sizeof( struct user_info ) );/*uentpÓÐ´íÎó£¬ÔòÇåÁã*/
+                RemoveMsgCountFile2(buf);
+            }
         }
         n = USHM_SIZE - 1;
         while( n > 0 && utmpshm->uinfo[ n ].active == 0 )
             n--;
         ftruncate( utmpfd, 0 );
         write( utmpfd, utmpshm->uinfo, (n+1) * sizeof(struct user_info) );
-    } 
-/*   flock( tmpfd, LOCK_UN );* unlock */
+    }
+    /*   flock( tmpfd, LOCK_UN );* unlock */
     flock( utmpfd, LOCK_UN );/* unlock */
     close(utmpfd); /* add by dong , 1999.9.12 */
     utmpfd = 0;
@@ -476,8 +476,8 @@ int (*fptr)();
     while( max > 0 && utmpshm->uinfo[ max ].active == 0 )
         max--;
     for( i = 0; i <= max; i++ ) {
-/*        uentp = &(utmpshm->uinfo[ i ]);
-        utmp = *uentp;*/
+        /*        uentp = &(utmpshm->uinfo[ i ]);
+                utmp = *uentp;*/
         if( (*fptr)( &(utmpshm->uinfo[ i ]) ) == QUIT )
             return QUIT;
     }
@@ -512,14 +512,14 @@ int unum;
     j = 1;
     resolve_utmp();
     for( i = 0; i < USHM_SIZE; i++ ) {
-    *uentp = utmpshm->uinfo[ i ];
-    if( (*fptr)( farg, uentp ) ) {
-           if (j == unum) return i+1;
-           else j++; }
-          
+        *uentp = utmpshm->uinfo[ i ];
+        if( (*fptr)( farg, uentp ) ) {
+            if (j == unum) return i+1;
+            else j++; }
+
     }
-  return 0;
-}         
+    return 0;
+}
 
 /*Function Add by SmallPig*/
 int
@@ -530,26 +530,26 @@ int farg;
 int show;
 {
     int         i, j;
-    
+
     j = 0;
     resolve_utmp();
     for( i = 0; i < USHM_SIZE; i++ ) {
-    *uentp = utmpshm->uinfo[ i ];
-    if( (*fptr)( farg, uentp ) )
+        *uentp = utmpshm->uinfo[ i ];
         if( (*fptr)( farg, uentp ) )
-    if(show == 0) j++;
-    else if(show == 1) {
-            j++;
-            prints("(%d) Ä¿Ç°×´Ì¬: %s, À´×Ô: %s \n", j,
-            modestring(uentp->mode, uentp->destuid, 0, /* 1->0 ²»ÏÔÊ¾ÁÄÌì¶ÔÏóµÈ modified by dong 1996.10.26 */
-            uentp->in_chat ? uentp->chatid : NULL), uentp->from );
-                                              
-          }
+            if( (*fptr)( farg, uentp ) )
+                if(show == 0) j++;
+                else if(show == 1) {
+                    j++;
+                    prints("(%d) Ä¿Ç°×´Ì¬: %s, À´×Ô: %s \n", j,
+                           modestring(uentp->mode, uentp->destuid, 0, /* 1->0 ²»ÏÔÊ¾ÁÄÌì¶ÔÏóµÈ modified by dong 1996.10.26 */
+                                      uentp->in_chat ? uentp->chatid : NULL), uentp->from );
+
+                }
     }
-       return j;
+    return j;
 }
-                                                                                    
-            
+
+
 
 /* Written By Excellent *//*Modify by SmallPig*/
 int
@@ -564,29 +564,29 @@ int farg;
     num=0;
     for( i = 0; i < USHM_SIZE; i++ ) {
         *uentp = utmpshm->uinfo[ i ];
-    if( (*fptr)( farg, uentp ) )
-    {
-     if( !uentp->active || !uentp->pid )
-        continue;
-     if(uentp->invisible==1)
-     { 
-        if(HAS_PERM(PERM_SEECLOAK))
+        if( (*fptr)( farg, uentp ) )
         {
-                prints("[32mÒþÉíÖÐ   [m");     
+            if( !uentp->active || !uentp->pid )
                 continue;
+            if(uentp->invisible==1)
+            {
+                if(HAS_PERM(PERM_SEECLOAK))
+                {
+                    prints("[32mÒþÉíÖÐ   [m");
+                    continue;
+                }
+                else
+                    continue;
+            }
+            num++;
+            if(num==1)
+                prints("Ä¿Ç°ÔÚÕ¾ÉÏ£¬×´Ì¬ÈçÏÂ£º\n");
+            prints("[1m%s[m ", modestring(uentp->mode,
+                                            uentp->destuid, 0,/* 1->0 ²»ÏÔÊ¾ÁÄÌì¶ÔÏóµÈ modified by dong 1996.10.26 */
+                                            (uentp->in_chat ? uentp->chatid : NULL)));
+            if((num)%8==0)
+                prints("\n");
         }
-        else
-                continue;
-     }
-     num++;
-     if(num==1)
-        prints("Ä¿Ç°ÔÚÕ¾ÉÏ£¬×´Ì¬ÈçÏÂ£º\n");
-     prints("[1m%s[m ", modestring(uentp->mode, 
-     uentp->destuid, 0,/* 1->0 ²»ÏÔÊ¾ÁÄÌì¶ÔÏóµÈ modified by dong 1996.10.26 */
-     (uentp->in_chat ? uentp->chatid : NULL)));
-     if((num)%8==0)
-        prints("\n");
-    }     
     }
     prints("\n");
     /*return 0;*/

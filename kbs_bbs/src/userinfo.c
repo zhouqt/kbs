@@ -53,22 +53,22 @@ int     real;
     if( real ) {
         prints("◊ÓΩ¸π‚¡Ÿª˙∆˜ : %s\n", u->lasthost );
     }
-/*---	added by period		hide posts/logins	2000-11-02	---*/
-/*    if(HAS_PERM(PERM_ADMINMENU)) {*/ /* removed to let user can see his own data */
-        prints("…œ’æ¥Œ ˝     : %d ¥Œ\n", u->numlogins);
-	if(real) prints("Œƒ’¬ ˝ƒø     : %d ∆™\n", u->numposts);
- /*       if( real ) {   
-            prints("Œƒ’¬ ˝ƒø     : %d / %d (Board/1Discuss)\n",
-               u->numposts, post_in_tin( u->userid ));
-        }  removed by stephen 2000-11-02*/
-/*    }*/
- /* move these things, alex , 97.6 
-    exp=countexp(u);
-    prints("æ≠—È÷µ       : %d(%s)\n",exp,cexp(exp));
-    exp=countperf(u);
-    prints("±Ìœ÷÷µ       : %d(%s)\n",exp,cperf(exp));  */
+    /*---	added by period		hide posts/logins	2000-11-02	---*/
+    /*    if(HAS_PERM(PERM_ADMINMENU)) {*/ /* removed to let user can see his own data */
+    prints("…œ’æ¥Œ ˝     : %d ¥Œ\n", u->numlogins);
+    if(real) prints("Œƒ’¬ ˝ƒø     : %d ∆™\n", u->numposts);
+    /*       if( real ) {
+               prints("Œƒ’¬ ˝ƒø     : %d / %d (Board/1Discuss)\n",
+                  u->numposts, post_in_tin( u->userid ));
+           }  removed by stephen 2000-11-02*/
+    /*    }*/
+    /* move these things, alex , 97.6
+       exp=countexp(u);
+       prints("æ≠—È÷µ       : %d(%s)\n",exp,cexp(exp));
+       exp=countperf(u);
+       prints("±Ìœ÷÷µ       : %d(%s)\n",exp,cperf(exp));  */
     prints("…œ’æ◊‹ ± ˝   : %d –° ± %d ∑÷÷”\n",u->stay/3600,(u->stay/60)%60);
-        setmailfile(genbuf, u->userid, DOT_DIR);
+    setmailfile(genbuf, u->userid, DOT_DIR);
     if( stat( genbuf, &st ) >= 0 )
         num = st.st_size / (sizeof( struct fileheader ));
     else
@@ -111,9 +111,9 @@ int     real, unum;
 
     memcpy( &newinfo, u, sizeof(currentuser));
     getdata( t_lines-1, 0, real ?
-        "«Î—°‘Ò (0)Ω· ¯ (1)–ﬁ∏ƒ◊ ¡œ (2)…Ë∂®√‹¬Î (3) ∏ƒ ID ==> [0]" :
-        "«Î—°‘Ò (0)Ω· ¯ (1)–ﬁ∏ƒ◊ ¡œ (2)…Ë∂®√‹¬Î ==> [0]",
-        ans, 2, DOECHO, NULL,YEA);
+             "«Î—°‘Ò (0)Ω· ¯ (1)–ﬁ∏ƒ◊ ¡œ (2)…Ë∂®√‹¬Î (3) ∏ƒ ID ==> [0]" :
+             "«Î—°‘Ò (0)Ω· ¯ (1)–ﬁ∏ƒ◊ ¡œ (2)…Ë∂®√‹¬Î ==> [0]",
+             ans, 2, DOECHO, NULL,YEA);
     clear();
     refresh();
 
@@ -123,35 +123,35 @@ int     real, unum;
         prints(" π”√’ﬂ¥˙∫≈: %s\n", u->userid );
 
     switch( ans[0] ) {
-        case '1':
-            move( 1, 0 );
-            prints("«Î÷œÓ–ﬁ∏ƒ,÷±Ω”∞¥ <ENTER> ¥˙±Ì π”√ [] ƒ⁄µƒ◊ ¡œ°£\n");
+    case '1':
+        move( 1, 0 );
+        prints("«Î÷œÓ–ﬁ∏ƒ,÷±Ω”∞¥ <ENTER> ¥˙±Ì π”√ [] ƒ⁄µƒ◊ ¡œ°£\n");
 
-            sprintf( genbuf, "Í«≥∆ [%s]: ", u->username );
-            getdata( i++, 0, genbuf, buf, NAMELEN, DOECHO, NULL ,YEA);
-            if( buf[0] ) strncpy( newinfo.username, buf, NAMELEN );
-            if(!real && buf[0]) strncpy(uinfo.username,buf,40);            
+        sprintf( genbuf, "Í«≥∆ [%s]: ", u->username );
+        getdata( i++, 0, genbuf, buf, NAMELEN, DOECHO, NULL ,YEA);
+        if( buf[0] ) strncpy( newinfo.username, buf, NAMELEN );
+        if(!real && buf[0]) strncpy(uinfo.username,buf,40);
 
-            sprintf( genbuf, "’Ê µ–’√˚ [%s]: ", u->realname );
-            getdata( i++, 0, genbuf, buf, NAMELEN, DOECHO, NULL,YEA);
-            if( buf[0] ) strncpy( newinfo.realname, buf, NAMELEN );
+        sprintf( genbuf, "’Ê µ–’√˚ [%s]: ", u->realname );
+        getdata( i++, 0, genbuf, buf, NAMELEN, DOECHO, NULL,YEA);
+        if( buf[0] ) strncpy( newinfo.realname, buf, NAMELEN );
 
-            sprintf( genbuf, "æ”◊°µÿ÷∑ [%s]: ", u->address );
-            getdata( i++, 0, genbuf, buf, STRLEN, DOECHO, NULL,YEA);
-            if( buf[0] ) strncpy( newinfo.address, buf, NAMELEN );
+        sprintf( genbuf, "æ”◊°µÿ÷∑ [%s]: ", u->address );
+        getdata( i++, 0, genbuf, buf, STRLEN, DOECHO, NULL,YEA);
+        if( buf[0] ) strncpy( newinfo.address, buf, NAMELEN );
 
-            sprintf( genbuf, "µÁ◊”–≈œ‰ [%s]: ", u->email );
-            getdata( i++, 0, genbuf, buf, STRLEN, DOECHO, NULL,YEA);
-            if ( buf[0] )
-            { 
-                 /*netty_check = 1;*/
-                 /* »°œ˚email »œ÷§, alex , 97.7 */
-                 strncpy( newinfo.email, buf, STRLEN );
-                 
-            }
-            sprintf( genbuf, "÷’∂Àª˙–ŒÃ¨ [%s]: ", u->termtype );
-            getdata( i++, 0, genbuf, buf, 16, DOECHO, NULL ,YEA);
-            if( buf[0] ) strncpy( newinfo.termtype, buf, 16 );
+        sprintf( genbuf, "µÁ◊”–≈œ‰ [%s]: ", u->email );
+        getdata( i++, 0, genbuf, buf, STRLEN, DOECHO, NULL,YEA);
+        if ( buf[0] )
+        {
+            /*netty_check = 1;*/
+            /* »°œ˚email »œ÷§, alex , 97.7 */
+            strncpy( newinfo.email, buf, STRLEN );
+
+        }
+        sprintf( genbuf, "÷’∂Àª˙–ŒÃ¨ [%s]: ", u->termtype );
+        getdata( i++, 0, genbuf, buf, 16, DOECHO, NULL ,YEA);
+        if( buf[0] ) strncpy( newinfo.termtype, buf, 16 );
 
         if( real ) {
             sprintf( genbuf, "’Ê µEmail[%s]: ", u->termtype+16 );
@@ -170,8 +170,8 @@ int     real, unum;
                 if(lres > 0 || ('\0' == buf[1] && '0' == *buf))
                     newinfo.numposts = lres;
             }
-/*            if( atoi( buf ) > 0 ) newinfo.numposts = atoi( buf );*/
-         
+            /*            if( atoi( buf ) > 0 ) newinfo.numposts = atoi( buf );*/
+
             sprintf( genbuf, "Ω´◊¢≤·»’∆⁄Ã·«∞»˝ÃÏ [Y/N]");
             getdata( i++, 0, genbuf, buf, 16, DOECHO, NULL, YEA);
             if(buf[0]=='y'||buf[0]=='Y') newinfo.firstlogin-=3*86400;
@@ -182,61 +182,61 @@ int     real, unum;
 
         }
 
-            break;
-        case '2':
-            if( ! real ) {
-                getdata(i++,0,"«Î ‰»Î‘≠√‹¬Î: ",buf,PASSLEN,NOECHO,NULL,YEA);
-                if( *buf == '\0' || !checkpasswd( u->passwd, buf )) {
-                    prints("\n\n∫‹±ß«∏, ƒ˙ ‰»Îµƒ√‹¬Î≤ª’˝»∑°£\n");
-                    fail++;
-                    break;
-                }
-            }
-            getdata(i++,0,"«Î…Ë∂®–¬√‹¬Î: ",buf,PASSLEN,NOECHO,NULL,YEA);
-            if( buf[0] == '\0' ) {
-                prints("\n\n√‹¬Î…Ë∂®»°œ˚, ºÃ–¯ π”√æ…√‹¬Î\n");
+        break;
+    case '2':
+        if( ! real ) {
+            getdata(i++,0,"«Î ‰»Î‘≠√‹¬Î: ",buf,PASSLEN,NOECHO,NULL,YEA);
+            if( *buf == '\0' || !checkpasswd( u->passwd, buf )) {
+                prints("\n\n∫‹±ß«∏, ƒ˙ ‰»Îµƒ√‹¬Î≤ª’˝»∑°£\n");
                 fail++;
                 break;
             }
-            strncpy(genbuf,buf,PASSLEN) ;
+        }
+        getdata(i++,0,"«Î…Ë∂®–¬√‹¬Î: ",buf,PASSLEN,NOECHO,NULL,YEA);
+        if( buf[0] == '\0' ) {
+            prints("\n\n√‹¬Î…Ë∂®»°œ˚, ºÃ–¯ π”√æ…√‹¬Î\n");
+            fail++;
+            break;
+        }
+        strncpy(genbuf,buf,PASSLEN) ;
 
-            getdata(i++,0,"«Î÷ÿ–¬ ‰»Î–¬√‹¬Î: ",buf,PASSLEN,NOECHO,NULL,YEA);
-            if(strncmp(buf,genbuf,PASSLEN)) {
-                prints("\n\n–¬√‹¬Î»∑»œ ß∞‹, Œﬁ∑®…Ë∂®–¬√‹¬Î°£\n");
-                fail++;
-                break;
-            }
-            buf[8] = '\0';
-/*	Added by cityhunter to deny others to modify SYSOP's passwd */
-	    if( real && (strcmp(u->userid,"SYSOP") ==0) )
-            {
-		prints("\n\n¥ÌŒÛ!œµÕ≥Ω˚÷π–ﬁ∏ƒSYSOPµƒ√‹¬Î,æØ≤Ï’˝‘⁄¿¥µƒ¬∑…œ :)");
-		pressreturn();
-        	clear();
-        	return 0;
-	    }
-/* end of this addin */
-            strncpy( newinfo.passwd, genpasswd( buf ), PASSLEN );
+        getdata(i++,0,"«Î÷ÿ–¬ ‰»Î–¬√‹¬Î: ",buf,PASSLEN,NOECHO,NULL,YEA);
+        if(strncmp(buf,genbuf,PASSLEN)) {
+            prints("\n\n–¬√‹¬Î»∑»œ ß∞‹, Œﬁ∑®…Ë∂®–¬√‹¬Î°£\n");
+            fail++;
             break;
-        case '3':
-            if( ! real ) {
-                    clear();
-                        return 0;
-            }
-/* Bigman 2000.10.2 –ﬁ∏ƒ π”√’ﬂIDŒª ˝≤ªπª */
-            getdata(i++,0,"–¬µƒ π”√’ﬂ¥˙∫≈: ",genbuf,IDLEN+1,DOECHO,NULL,YEA);
-            if(*genbuf != '\0') {
-                if(getuser(genbuf)) {
-                    prints("\n¥ÌŒÛ! “—æ≠”–Õ¨—˘ ID µƒ π”√’ﬂ\n") ;
-                    fail++;
-                } else {
-                    strncpy(newinfo.userid, genbuf,IDLEN+2) ;
-                }
-            }
-            break;
-        default:
+        }
+        buf[8] = '\0';
+        /*	Added by cityhunter to deny others to modify SYSOP's passwd */
+        if( real && (strcmp(u->userid,"SYSOP") ==0) )
+        {
+            prints("\n\n¥ÌŒÛ!œµÕ≥Ω˚÷π–ﬁ∏ƒSYSOPµƒ√‹¬Î,æØ≤Ï’˝‘⁄¿¥µƒ¬∑…œ :)");
+            pressreturn();
             clear();
             return 0;
+        }
+        /* end of this addin */
+        strncpy( newinfo.passwd, genpasswd( buf ), PASSLEN );
+        break;
+    case '3':
+        if( ! real ) {
+            clear();
+            return 0;
+        }
+        /* Bigman 2000.10.2 –ﬁ∏ƒ π”√’ﬂIDŒª ˝≤ªπª */
+        getdata(i++,0,"–¬µƒ π”√’ﬂ¥˙∫≈: ",genbuf,IDLEN+1,DOECHO,NULL,YEA);
+        if(*genbuf != '\0') {
+            if(getuser(genbuf)) {
+                prints("\n¥ÌŒÛ! “—æ≠”–Õ¨—˘ ID µƒ π”√’ﬂ\n") ;
+                fail++;
+            } else {
+                strncpy(newinfo.userid, genbuf,IDLEN+2) ;
+            }
+        }
+        break;
+    default:
+        clear();
+        return 0;
     }
     if( fail != 0 ) {
         pressreturn();
@@ -244,107 +244,107 @@ int     real, unum;
         return 0;
     }
     for(;;)
-     {
-    getdata(t_lines-1,0,"»∑∂®“™∏ƒ±‰¬?  (Yes or No): ",ans,2,DOECHO,NULL,YEA);
-    if (*ans=='n'||*ans=='N') break;
-    if( *ans == 'y' || *ans == 'Y' ) {
-       if(real)
-       {
-        char        secu[STRLEN];
-        sprintf(secu,"–ﬁ∏ƒ %s µƒª˘±æ◊ ¡œªÚ√‹¬Î°£",u->userid);
-	if(strcmp(u->userid, newinfo.userid ))
-		sprintf(secu,"%s µƒ ID ±ª %s ∏ƒŒ™ %s",u->userid,currentuser.userid,newinfo.userid);/*Haohmaru.99.5.6*/
-        securityreport(secu);
-       }
-        if( strcmp( u->userid, newinfo.userid ) ) {
-            char src[ STRLEN ], dst[ STRLEN ];
+    {
+        getdata(t_lines-1,0,"»∑∂®“™∏ƒ±‰¬?  (Yes or No): ",ans,2,DOECHO,NULL,YEA);
+        if (*ans=='n'||*ans=='N') break;
+        if( *ans == 'y' || *ans == 'Y' ) {
+            if(real)
+            {
+                char        secu[STRLEN];
+                sprintf(secu,"–ﬁ∏ƒ %s µƒª˘±æ◊ ¡œªÚ√‹¬Î°£",u->userid);
+                if(strcmp(u->userid, newinfo.userid ))
+                    sprintf(secu,"%s µƒ ID ±ª %s ∏ƒŒ™ %s",u->userid,currentuser.userid,newinfo.userid);/*Haohmaru.99.5.6*/
+                securityreport(secu);
+            }
+            if( strcmp( u->userid, newinfo.userid ) ) {
+                char src[ STRLEN ], dst[ STRLEN ];
 
-                        setmailpath( src, u->userid );
-            setmailpath( dst, newinfo.userid );
-	    sprintf(genbuf,"mv %s %s",src, dst);
-	    system(genbuf);/*
-            rename( src, dst );*/
-            sethomepath( src, u->userid );
-            sethomepath( dst, newinfo.userid );
-	    sprintf(genbuf,"mv %s %s",src ,dst);
-	    system(genbuf);/*
-            rename( src, dst );*/
-            sprintf(src,"tmp/email_%s",u->userid);
-            unlink(src);
-            setuserid( unum, newinfo.userid );
+                setmailpath( src, u->userid );
+                setmailpath( dst, newinfo.userid );
+                sprintf(genbuf,"mv %s %s",src, dst);
+                system(genbuf);/*
+                       rename( src, dst );*/
+                sethomepath( src, u->userid );
+                sethomepath( dst, newinfo.userid );
+                sprintf(genbuf,"mv %s %s",src ,dst);
+                system(genbuf);/*
+                       rename( src, dst );*/
+                sprintf(src,"tmp/email_%s",u->userid);
+                unlink(src);
+                setuserid( unum, newinfo.userid );
+            }
+            /* added by netty to automatically send a mail to new user. */
+
+            if ((netty_check == 1))
+            {
+                if((strchr( newinfo.email, '@' ) != NULL ) &&
+                        (!strstr( newinfo.email, "@firebird.cs") ) &&
+                        (!strstr( newinfo.email, "@bbs.") ) &&
+                        (!invalidaddr(newinfo.email) ) &&
+                        (!strstr( newinfo.email, ".bbs@") )) {
+                    if( (emailfile = sysconf_str( "EMAILFILE" )) != NULL )
+                    {
+                        code=(time(0)/2)+(rand()/10);
+                        sethomefile(genbuf, u->userid, "mailcheck");
+                        if((dp=fopen(genbuf,"w"))==NULL)
+                        {
+                            fclose(dp);
+                            return;
+                        }
+                        fprintf(dp,"%9.9d\n",code);
+                        fclose(dp);
+                        sprintf( genbuf, "/usr/lib/sendmail -f SYSOP.bbs@%s %s ",
+                                 email_domain(), newinfo.email );
+                        fout = popen( genbuf, "w" );
+                        fin  = fopen( emailfile, "r" );
+                        if (fin == NULL || fout == NULL) return -1;
+                        fprintf( fout, "Reply-To: SYSOP.bbs@%s\n", email_domain());
+                        fprintf( fout, "From: SYSOP.bbs@%s\n",  email_domain() );
+                        fprintf( fout, "To: %s\n", newinfo.email);
+                        fprintf( fout, "Subject: @%s@[-%9.9d-]firebird mail check.\n", u->userid,code );
+                        fprintf( fout, "X-Forwarded-By: SYSOP \n" );
+                        fprintf( fout, "X-Disclaimer: None\n");
+                        fprintf( fout, "\n");
+                        fprintf(fout,"ƒ˙µƒª˘±æ◊ ¡œ»Áœ¬£∫\n",u->userid);
+                        fprintf(fout," π”√’ﬂ¥˙∫≈£∫%s (%s)\n",u->userid,u->username);
+                        fprintf(fout,"–’      √˚£∫%s\n",u->realname);
+                        fprintf(fout,"…œ’æŒª÷√  £∫%s\n",u->lasthost);
+                        fprintf(fout,"µÁ◊”” º˛  £∫%s\n\n",u->email);
+                        fprintf(fout,"«◊∞Æµƒ %s(%s):\n",u->userid,u->username);
+
+                        while (fgets( genbuf, 255, fin ) != NULL ) {
+                            if (genbuf[0] == '.' && genbuf[ 1 ] == '\n')
+                                fputs( ". \n", fout );
+                            else fputs( genbuf, fout );
+                        }
+                        fprintf(fout, ".\n");
+                        fclose( fin );
+                        pclose( fout );
+                    }
+                }else
+                {
+                    if(sysconf_str( "EMAILFILE" )!=NULL)
+                    {
+                        move(t_lines-5,0);
+                        prints("\nƒ„µƒµÁ◊”” º˛µÿ÷∑ °æ[33m%s[m°ø\n",newinfo.email);
+                        prints("≤¢∑« Unix ’ ∫≈£¨œµÕ≥≤ªª·Õ∂µ›…Ì∑›»∑»œ–≈£¨«ÎµΩ[32mπ§æﬂœ‰[m÷––ﬁ∏ƒ..\n");
+                        pressanykey();
+                    }
+                }
+            }
+            memcpy( u, &newinfo, sizeof(newinfo) );
+            set_safe_record();
+            substitute_record( PASSFILE, &newinfo, sizeof(newinfo), unum );
+            break;/*Haohmaru.98.01.10.faint...Luziº”∏ˆfor—≠ª∑“≤≤ªbreak!*/
         }
-/* added by netty to automatically send a mail to new user. */
-
-if ((netty_check == 1))
-{
- if((strchr( newinfo.email, '@' ) != NULL ) &&
-    (!strstr( newinfo.email, "@firebird.cs") ) &&
-    (!strstr( newinfo.email, "@bbs.") ) &&
-        (!invalidaddr(newinfo.email) ) &&
-    (!strstr( newinfo.email, ".bbs@") )) {
-if( (emailfile = sysconf_str( "EMAILFILE" )) != NULL )
-{
-           code=(time(0)/2)+(rand()/10);
-                   sethomefile(genbuf, u->userid, "mailcheck"); 
-           if((dp=fopen(genbuf,"w"))==NULL)
-           {
-                fclose(dp);
-                return;
-           }
-           fprintf(dp,"%9.9d\n",code);
-           fclose(dp);
-sprintf( genbuf, "/usr/lib/sendmail -f SYSOP.bbs@%s %s ", 
-email_domain(), newinfo.email );
-fout = popen( genbuf, "w" );
-fin  = fopen( emailfile, "r" );
-if (fin == NULL || fout == NULL) return -1;
-fprintf( fout, "Reply-To: SYSOP.bbs@%s\n", email_domain());
-fprintf( fout, "From: SYSOP.bbs@%s\n",  email_domain() ); 
-fprintf( fout, "To: %s\n", newinfo.email);
-fprintf( fout, "Subject: @%s@[-%9.9d-]firebird mail check.\n", u->userid,code );
-fprintf( fout, "X-Forwarded-By: SYSOP \n" );
-fprintf( fout, "X-Disclaimer: None\n");
-fprintf( fout, "\n");
-fprintf(fout,"ƒ˙µƒª˘±æ◊ ¡œ»Áœ¬£∫\n",u->userid);
-fprintf(fout," π”√’ﬂ¥˙∫≈£∫%s (%s)\n",u->userid,u->username);
-fprintf(fout,"–’      √˚£∫%s\n",u->realname);
-fprintf(fout,"…œ’æŒª÷√  £∫%s\n",u->lasthost);
-fprintf(fout,"µÁ◊”” º˛  £∫%s\n\n",u->email);
-fprintf(fout,"«◊∞Æµƒ %s(%s):\n",u->userid,u->username);
-
-while (fgets( genbuf, 255, fin ) != NULL ) {
-        if (genbuf[0] == '.' && genbuf[ 1 ] == '\n')
-                fputs( ". \n", fout );
-        else fputs( genbuf, fout );
-}
-fprintf(fout, ".\n");                                    
-fclose( fin );
-pclose( fout );                                     
-}
-}else
-{
-   if(sysconf_str( "EMAILFILE" )!=NULL)
-   {
-        move(t_lines-5,0);
-        prints("\nƒ„µƒµÁ◊”” º˛µÿ÷∑ °æ[33m%s[m°ø\n",newinfo.email);
-        prints("≤¢∑« Unix ’ ∫≈£¨œµÕ≥≤ªª·Õ∂µ›…Ì∑›»∑»œ–≈£¨«ÎµΩ[32mπ§æﬂœ‰[m÷––ﬁ∏ƒ..\n");
-        pressanykey();
-   }
-}
-}
-        memcpy( u, &newinfo, sizeof(newinfo) );
-        set_safe_record();
-        substitute_record( PASSFILE, &newinfo, sizeof(newinfo), unum );
-	break;/*Haohmaru.98.01.10.faint...Luziº”∏ˆfor—≠ª∑“≤≤ªbreak!*/
-   }
- }clear();
+    }clear();
     return 0;
 }
 
 void
 x_info()
 {
-    modify_user_mode( GMENU ); 
+    modify_user_mode( GMENU );
     disply_userinfo( &currentuser, 1 );
     if (!strcmp("guest", currentuser.userid)) {
         pressreturn();
@@ -360,8 +360,8 @@ char    *info, *desc, *buf;
 {
     char        prompt[ STRLEN ];
 
-/*    sprintf( genbuf, "  ‘≠œ»…Ë∂®: %-46.46s (%s)", buf, info ); */
-    sprintf( genbuf, "  ‘≠œ»…Ë∂®: %-20.20s (%s)", buf, info ); 
+    /*    sprintf( genbuf, "  ‘≠œ»…Ë∂®: %-46.46s (%s)", buf, info ); */
+    sprintf( genbuf, "  ‘≠œ»…Ë∂®: %-20.20s (%s)", buf, info );
     move( line, 0 );
     prints( genbuf );
     sprintf( prompt, "  %s: ", desc );
@@ -398,7 +398,7 @@ x_fillform()
         pressreturn();
         return;
     }
-    if ((time(0)-currentuser.firstlogin) < 3*86400) 
+    if ((time(0)-currentuser.firstlogin) < 3*86400)
     {
         prints( "ƒ˙ ◊¥Œµ«»Î±æ’æŒ¥¬˙3ÃÏ(72∏ˆ–° ±)..." );
         prints( "«Îœ»Àƒ¥¶ Ïœ§“ªœ¬£¨‘⁄¬˙3ÃÏ“‘∫Û‘ŸÃÓ–¥◊¢≤·µ•°£");
@@ -416,7 +416,7 @@ x_fillform()
             if( (ptr = strchr( genbuf, '\n' )) != NULL )
                 *ptr = '\0';
             if( strncmp( genbuf, "userid: ", 8 ) == 0 &&
-                strcmp( genbuf + 8, currentuser.userid ) == 0 ) {
+                    strcmp( genbuf + 8, currentuser.userid ) == 0 ) {
                 fclose( fn );
                 prints( "’æ≥§…–Œ¥¥¶¿Ìƒ˙µƒ◊¢≤·…Í«Îµ•, «ÎƒÕ–ƒµ»∫Ú." );
                 pressreturn();
@@ -425,7 +425,7 @@ x_fillform()
         }
         fclose( fn );
     }
-/* added by KCN 1999.10.25 */
+    /* added by KCN 1999.10.25 */
     ansimore("etc/register.note",NA);
     getdata(t_lines-1,8,"ƒ˙»∑∂®“™ÃÓ–¥◊¢≤·µ•¬ (Y/N)? [N]: ",ans,3,DOECHO,NULL,YEA);
     if( ans[0] != 'Y' && ans[0] != 'y' )
@@ -437,19 +437,19 @@ x_fillform()
     while( 1 ) {
         move( 3, 0 );
         clrtoeol();
-        prints( "%s ƒ˙∫√, «Îæ› µÃÓ–¥“‘œ¬µƒ◊ ¡œ(«Î π”√÷–Œƒ):\n", currentuser.userid ); 
-	genbuf[0] = '\0';/*Haohmaru.99.09.17.“‘œ¬ƒ⁄»›≤ªµ√π˝∂Ã*/
-	while ( strlen( genbuf ) < 3 ) {
-        getfield(  6, "«Î”√÷–Œƒ,≤ªƒ‹ ‰»Îµƒ∫∫◊÷«Î”√∆¥“Ù", "’Ê µ–’√˚", rname, NAMELEN ); }
-	genbuf[0] = '\0';
-	while ( strlen( genbuf ) < 2 ) {
-        getfield(  8, "—ß–£œµº∂ªÚµ•Œª»´≥∆", "∑˛ŒÒµ•Œª", career,STRLEN ); }
-	genbuf[0] = '\0';
-	while ( strlen( genbuf ) < 6 ) {
-        getfield( 10, "«ÎæﬂÃÂµΩ«ﬁ “ªÚ√≈≈∆∫≈¬Î", "ƒø«∞◊°÷∑", addr,  STRLEN ); }
-	genbuf[0] = '\0';
-	while ( strlen( genbuf ) < 2 ) {
-        getfield( 12, "∞¸¿®ø…¡¨¬Á ±º‰,»ÙŒﬁø…”√∫Ùª˙ªÚEmailµÿ÷∑¥˙ÃÊ",     "¡¨¬ÁµÁª∞", phone, STRLEN ); }
+        prints( "%s ƒ˙∫√, «Îæ› µÃÓ–¥“‘œ¬µƒ◊ ¡œ(«Î π”√÷–Œƒ):\n", currentuser.userid );
+        genbuf[0] = '\0';/*Haohmaru.99.09.17.“‘œ¬ƒ⁄»›≤ªµ√π˝∂Ã*/
+        while ( strlen( genbuf ) < 3 ) {
+            getfield(  6, "«Î”√÷–Œƒ,≤ªƒ‹ ‰»Îµƒ∫∫◊÷«Î”√∆¥“Ù", "’Ê µ–’√˚", rname, NAMELEN ); }
+        genbuf[0] = '\0';
+        while ( strlen( genbuf ) < 2 ) {
+            getfield(  8, "—ß–£œµº∂ªÚµ•Œª»´≥∆", "∑˛ŒÒµ•Œª", career,STRLEN ); }
+        genbuf[0] = '\0';
+        while ( strlen( genbuf ) < 6 ) {
+            getfield( 10, "«ÎæﬂÃÂµΩ«ﬁ “ªÚ√≈≈∆∫≈¬Î", "ƒø«∞◊°÷∑", addr,  STRLEN ); }
+        genbuf[0] = '\0';
+        while ( strlen( genbuf ) < 2 ) {
+            getfield( 12, "∞¸¿®ø…¡¨¬Á ±º‰,»ÙŒﬁø…”√∫Ùª˙ªÚEmailµÿ÷∑¥˙ÃÊ",     "¡¨¬ÁµÁª∞", phone, STRLEN ); }
         getfield( 14, "ƒÍ.‘¬.»’(π´‘™)(—°‘ÒÃÓ–¥)",     "≥ˆ…˙ƒÍ‘¬", birth, STRLEN );
         mesg = "“‘…œ◊ ¡œ «∑Ò’˝»∑, ∞¥ Q ∑≈∆˙◊¢≤· (Y/N/Quit)? [N]: ";
         getdata(t_lines-1,0,mesg,ans,3,DOECHO,NULL,YEA);

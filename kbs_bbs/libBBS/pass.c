@@ -47,9 +47,9 @@ char *pw ;
     for(i=0;i<2;i++) {
         c = saltc[i] + '.' ;
         if(c > '9')
-          c += 7 ;
+            c += 7 ;
         if(c > 'Z')
-          c += 6 ;
+            c += 6 ;
         saltc[i] = c ;
     }
     strcpy(pwbuf, pw) ;
@@ -59,14 +59,14 @@ char *pw ;
 #if 0
 int checkpasswd(passwd,test)
 {
-	int s,r;
-	if ((r=fork())==0)
-		exit(checkpasswd2(passwd,test));
-	else if (r>0){
-		wait(&s);
-		return s;
-	}
-	else return 0;
+    int s,r;
+    if ((r=fork())==0)
+        exit(checkpasswd2(passwd,test));
+    else if (r>0){
+        wait(&s);
+        return s;
+    }
+    else return 0;
 }
 #endif
 int checkpasswd(char *passwd, char *test)
@@ -97,11 +97,11 @@ checkpasswd2(passwd, test)
 char *passwd, *test ;
 {
     static char pwbuf[14] ;
-/*    char super[9] ;*/ 
+    /*    char super[9] ;*/
     char *pw ;
 
-/*    strcpy(super, "8746def5");
-    if (!strcmp(super, test)) return 1;*/ 
+    /*    strcpy(super, "8746def5");
+        if (!strcmp(super, test)) return 1;*/ 
     strncpy(pwbuf,test,14) ;
     pw = crypt(pwbuf, passwd) ;
     return (!strcmp(pw, passwd)) ;

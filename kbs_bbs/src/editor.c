@@ -80,7 +80,7 @@ char *argv[] ;
 
     clear();                    /* clear screen */
     redoscr();                  /* make clear() happen */
-    reset_tty();    
+    reset_tty();
     exit(0);
 }
 

@@ -70,16 +70,16 @@ int     pbits, i;
 
     if ( 16 == i || 11 == i || 20==i || 10 == i || 14 == i || 17 == i || 21 == i || 29==i || 28==i || 26==i)
     {
-      sprintf( buf, "%c. %-30s %3s", 'A' + i, (use_define)?user_definestr[i]:permstrings[i], ((pbits >> i) & 1 ? "ON" : "OFF"));
-      move(6 + (i >= 16) + (i >= 10) + (i >=11) + (i >= 14) + (i >= 17) + (i >=20) + (i >= 21) + (i>=29) + (i>=28) + (i>=26), 0);
-      prints( buf );
-      refresh();
-      return YEA;
+        sprintf( buf, "%c. %-30s %3s", 'A' + i, (use_define)?user_definestr[i]:permstrings[i], ((pbits >> i) & 1 ? "ON" : "OFF"));
+        move(6 + (i >= 16) + (i >= 10) + (i >=11) + (i >= 14) + (i >= 17) + (i >=20) + (i >= 21) + (i>=29) + (i>=28) + (i>=26), 0);
+        prints( buf );
+        refresh();
+        return YEA;
     }
     else
     {
-      if (pbits) bell();
-      return NA;
+        if (pbits) bell();
+        return NA;
     }
 }
 
@@ -90,7 +90,7 @@ int     pbits, i;
     char        buf[ STRLEN ];
 
     sprintf( buf, "%c. %-30s %3s", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
-            ((pbits >> i) & 1 ? "ON" : "OFF"));
+             ((pbits >> i) & 1 ? "ON" : "OFF"));
     move( i+6-(( i>15)? 16:0) , 0+(( i>15)? 40:0) );
     prints( buf );
     refresh();
@@ -112,7 +112,7 @@ int (*showfunc)();
     prints("Çë°´ÏÂÄãÒªµÄ´úÂëÀ´Éè¶¨%s£¬°´ Enter ½áÊø.\n",prompt);
     move(6,0);
     clrtobot();
-/*    pbits &= (1 << numbers) - 1;*/
+    /*    pbits &= (1 << numbers) - 1;*/
     for (i=0; i<=lastperm; i++) {
         (*showfunc)( pbits, i,NA);
     }
@@ -126,7 +126,7 @@ int (*showfunc)();
             pbits ^= (1 << i);
             if((*showfunc)( pbits, i ,YEA)==NA)
             {
-                   pbits ^= (1 << i);
+                pbits ^= (1 << i);
             }
         }
     }
@@ -141,7 +141,7 @@ p_level()
     char ulbuf[40];
     char secu[STRLEN];
     int num;
-    
+
     if (!HAS_PERM(PERM_OBOARDS) )
     {
         move( 3, 0 );
@@ -179,13 +179,13 @@ p_level()
         return 0 ;
     }
 
-   move(11,0);
-   if(lookupuser.userlevel & PERM_POST)
-   {
-       prints("ÓÃ»§ '%s' ÏÖÔÚ¾ßÓĞ·¢ÎÄÈ¨ÏŞ\n",lookupuser.userid) ;
-   }
-   else
-   {
+    move(11,0);
+    if(lookupuser.userlevel & PERM_POST)
+    {
+        prints("ÓÃ»§ '%s' ÏÖÔÚ¾ßÓĞ·¢ÎÄÈ¨ÏŞ\n",lookupuser.userid) ;
+    }
+    else
+    {
         prints("ÓÃ»§ '%s' ÏÖÔÚÃ»ÓĞ·¢ÎÄÈ¨ÏŞ\n",lookupuser.userid) ;
     }
     getdata(12,0,"È·¶¨ÒªĞŞ¸Ä¸ÃÓÃ»§µÄ·¢ÎÄÈ¨ÏŞ (Y/N)? [N]: ",genbuf,4,DOECHO,NULL,YEA);
@@ -193,16 +193,16 @@ p_level()
     if(*genbuf=='y'||*genbuf=='Y'){
         lookupuser.userlevel ^= PERM_POST;/* ¸Ä±ä¸ÃÓÃ»§È¨ÏŞ */
         sprintf(secu,"ĞŞ¸Ä %s µÄ·¢ÎÄÈ¨ÏŞ",lookupuser.userid);
-	securityreport(secu);
+        securityreport(secu);
         substitute_record(PASSFILE,&lookupuser,sizeof(struct userec),id) ;
         move(13,0);
         if(lookupuser.userlevel & PERM_POST)
         {
-         prints("ÓÃ»§ '%s' ÒÑ±»»Ö¸´·¢ÎÄÈ¨ÏŞ\n",lookupuser.userid) ;
+            prints("ÓÃ»§ '%s' ÒÑ±»»Ö¸´·¢ÎÄÈ¨ÏŞ\n",lookupuser.userid) ;
         }
         else
         {
-        prints("ÒÑÈ¡ÏûÓÃ»§ '%s' µÄ·¢ÎÄÈ¨ÏŞ\n",lookupuser.userid) ;
+            prints("ÒÑÈ¡ÏûÓÃ»§ '%s' µÄ·¢ÎÄÈ¨ÏŞ\n",lookupuser.userid) ;
         }
     }
     clrtoeol() ;
@@ -217,7 +217,7 @@ x_level()
     int id ;
     int newlevel;
     int flag=0;/*Haohmaru,98.10.05*/
-	int flag1=0,flag2=0; /* bigman 2000.1.5 */
+    int flag1=0,flag2=0; /* bigman 2000.1.5 */
 
     /* add by alex, 97.7 , strict the power of sysop */
     if (!HAS_PERM(PERM_ADMIN) || !HAS_PERM(PERM_SYSOP))
@@ -254,16 +254,16 @@ x_level()
     }
     if ((lookupuser.userlevel & PERM_BOARDS ))/*Haohmaru.98.10.05*/
         flag=1;
-   if ((lookupuser.userlevel & PERM_CLOAK ))/* Bigman 2000.1.5 */
+    if ((lookupuser.userlevel & PERM_CLOAK ))/* Bigman 2000.1.5 */
         flag1=1;
-   if ((lookupuser.userlevel & PERM_XEMPT ))
+    if ((lookupuser.userlevel & PERM_XEMPT ))
         flag2=1;
 
     move(1,0);
     clrtobot();
     move(2,0);
     prints("ÇëÉè¶¨Ê¹ÓÃÕß '%s' µÄÈ¨ÏŞ\n", genbuf);
-    newlevel = setperms(lookupuser.userlevel,"È¨ÏŞ",NUMPERMS,showperminfo);  
+    newlevel = setperms(lookupuser.userlevel,"È¨ÏŞ",NUMPERMS,showperminfo);
     move(2,0);
     if (newlevel == lookupuser.userlevel)
         prints("Ê¹ÓÃÕß '%s' µÄÈ¨ÏŞÃ»ÓĞ¸ü¸Ä\n", lookupuser.userid);
@@ -274,20 +274,20 @@ x_level()
                 lookupuser.userid, lookupuser.userlevel, newlevel);
         securityreport(secu);
         lookupuser.userlevel = newlevel;
-/* Leeward: 1997.12.02 : Modification stops */
+        /* Leeward: 1997.12.02 : Modification stops */
 
         substitute_record(PASSFILE,&lookupuser,sizeof(struct userec),id) ;
         prints("Ê¹ÓÃÕß '%s' µÄÈ¨ÏŞÒÑ¸ü¸Ä\n",lookupuser.userid) ;
         sprintf(genbuf, "changed permissions for %s", lookupuser.userid);
         report(genbuf);
-/*Haohmaru.98.10.03.¸øĞÂÈÎ°åÖ÷×Ô¶¯·¢ĞÅ*/
-	if ((lookupuser.userlevel & PERM_BOARDS ) && flag==0 )
-		mail_file("etc/forbm",lookupuser.userid,"ĞÂÈÎ°åÖ÷±Ø¶Á");
-/* Bigman 2000.1.5 ĞŞ¸ÄÈ¨ÏŞ×Ô¶¯·¢ĞÅ */
+        /*Haohmaru.98.10.03.¸øĞÂÈÎ°åÖ÷×Ô¶¯·¢ĞÅ*/
+        if ((lookupuser.userlevel & PERM_BOARDS ) && flag==0 )
+            mail_file("etc/forbm",lookupuser.userid,"ĞÂÈÎ°åÖ÷±Ø¶Á");
+        /* Bigman 2000.1.5 ĞŞ¸ÄÈ¨ÏŞ×Ô¶¯·¢ĞÅ */
         if ((lookupuser.userlevel & PERM_CLOAK ) && flag1==0 )
-                mail_file("etc/forcloak",lookupuser.userid,"Åú×¼ÄúµÄÒşÉíÉêÇë");
+            mail_file("etc/forcloak",lookupuser.userid,"Åú×¼ÄúµÄÒşÉíÉêÇë");
         if ((lookupuser.userlevel & PERM_XEMPT ) && flag2==0 )
-                mail_file("etc/forlongid",lookupuser.userid,"Åú×¼ÄúµÄ³¤ÆÚÕÊºÅ");
+            mail_file("etc/forlongid",lookupuser.userid,"Åú×¼ÄúµÄ³¤ÆÚÕÊºÅ");
     }
     pressreturn() ;
     clear() ;
@@ -320,12 +320,12 @@ XCheckLevel() /* Leeward 98.06.05 */
     move(2,0);
     prints("ÇëÉè¶¨ĞèÒª¼ì²éµÄÈ¨ÏŞ\n");
     lookupuser.userlevel = 0;
-    newlevel = setperms(lookupuser.userlevel,"È¨ÏŞ",NUMPERMS,showperminfoX);  
+    newlevel = setperms(lookupuser.userlevel,"È¨ÏŞ",NUMPERMS,showperminfoX);
     move(2,0);
     if (newlevel == lookupuser.userlevel)
         prints("ÄãÃ»ÓĞÉè¶¨ÈÎºÎÈ¨ÏŞ\n");
     else
-    { 
+    {
         char        secu[STRLEN];
         char        buffer[256];
         int         fhp;
@@ -335,69 +335,69 @@ XCheckLevel() /* Leeward 98.06.05 */
         sprintf(buffer, "tmp/XCL.%s%d", currentuser.userid, getpid());
         if (- 1 == (fhp = open(".PASSWDS", O_RDONLY)))
         {
-           prints("ÏµÍ³´íÎó: ÎŞ·¨´ò¿ª¿ÚÁîÎÄ¼ş\n");
+            prints("ÏµÍ³´íÎó: ÎŞ·¨´ò¿ª¿ÚÁîÎÄ¼ş\n");
         }
         else if (NULL == (fpx = fopen(buffer, "w")))
         {
-           close(fhp);
-           prints("ÏµÍ³´íÎó: ÎŞ·¨´ò¿ªÁÙÊ±ÎÄ¼ş\n");
+            close(fhp);
+            prints("ÏµÍ³´íÎó: ÎŞ·¨´ò¿ªÁÙÊ±ÎÄ¼ş\n");
         }
         else
         {
-          prints("ÁĞÊ¾²Ù×÷¿ÉÄÜĞèÒª½Ï³¤Ê±¼ä²ÅÄÜÍê³É, ÇëÄÍĞÄµÈ´ı. ");
-          clrtoeol();
-          if (askyn("ÄãÈ·¶¨Òª½øĞĞÁĞÊ¾Âğ", 0))
-          {
-             while (read(fhp, &lookupuser, sizeof(struct userec)) > 0)
-             {
-               if ((lookupuser.userlevel & newlevel) == newlevel
-               &&  strcmp("SYSOP", lookupuser.userid))
-               {
-                 count ++;
-                 fprintf(fpx,"[1m[33mÇë±£³ÖÕâÒ»ĞĞÎ»ÓÚÆÁÄ»µÚÒ»ĞĞ£¬´ËÊ±°´ X ¼ü¿É¸øÏÂÁĞÓÃ»§·¢ĞÅÒªÇóÆä²¹Æë¸öÈË×¢²á×ÊÁÏ[m\n\n");
-                 fprintf(fpx,"ÓÃ»§´úºÅ(êÇ³Æ) : %s(%s)\n\n", lookupuser.userid, lookupuser.username);
-                 fprintf(fpx,"Õæ  Êµ  ĞÕ  Ãû : %s\n\n", lookupuser.realname);
-                 fprintf(fpx,"¾Ó  ×¡  ×¡  Ö· : %s\n\n", lookupuser.address);
-                 fprintf(fpx,"µç  ×Ó  ÓÊ  ¼ş : %s\n\n", lookupuser.email);
-                 fprintf(fpx,"µ¥Î»$µç»°@ÈÏÖ¤ : %s\n\n", lookupuser.termtype + 16);
-                 fprintf(fpx,"×¢  ²á  ÈÕ  ÆÚ : %s\n", ctime(&lookupuser.firstlogin));
-                 fprintf(fpx,"×îºóµÄµÇÂ¼ÈÕÆÚ : %s\n", ctime(&lookupuser.lastlogin));
-                 fprintf(fpx,"×îºóµÄµÇÂ¼»úÆ÷ : %s\n\n", lookupuser.lasthost );
-                 fprintf(fpx,"ÉÏ  Õ¾  ´Î  Êı : %d ´Î\n\n", lookupuser.numlogins);
-                 fprintf(fpx,"ÎÄ  ÕÂ  Êı  Ä¿ : %d Æª\n\n", lookupuser.numposts);
-               }
-             }            
-             fprintf(fpx, "[1m[33mÒ»¹²ÁĞ³öÁË %ld Ïî¾ßÓĞ´ËÈ¨ÏŞµÄÓÃ»§×ÊÁÏ[m\n\n*** ÕâÊÇÁĞÊ¾½á¹ûµÄ×îºóÒ»ĞĞ£®Èç¹û¼ì²éÍê±Ï£¬Çë°´ q ¼ü½áÊø *** (ÒÔÏÂ¾ùÎª¿ÕĞĞ)", count);
-             { int dummy; /* process the situation of a too high screen :PP */
-               for (dummy = 0; dummy < t_lines * 4; dummy ++) fputs("\n", fpx);
-             }
-             close(fhp);
-             fclose(fpx);
-
-             sprintf(secu, "[1m[33mÒ»¹²ÁĞ³öÁË %ld Ïî¾ßÓĞ´ËÈ¨ÏŞµÄÓÃ»§×ÊÁÏ[m", count);
-             move(2, 0);
-             prints(secu);
-             clrtoeol();
-             sprintf(genbuf, "listed %ld userlevel of %d", count, newlevel);
-             report(genbuf);
-             pressanykey();
-
-             /*sprintf(secu, "ÁĞÊ¾¾ßÓĞÌØ¶¨È¨ÏŞµÄ %ld ¸öÓÃ»§µÄ×ÊÁÏ", count);*/
-             clear();
-             ansimore(buffer, NA);
-             clear();
-             move(2, 0);
-             prints("ÁĞÊ¾²Ù×÷Íê³É");
-             clrtoeol();
-
-             unlink(buffer);
-          }
-          else
-          {
-            move(2, 0);
-            prints("È¡ÏûÁĞÊ¾²Ù×÷");
+            prints("ÁĞÊ¾²Ù×÷¿ÉÄÜĞèÒª½Ï³¤Ê±¼ä²ÅÄÜÍê³É, ÇëÄÍĞÄµÈ´ı. ");
             clrtoeol();
-          }
+            if (askyn("ÄãÈ·¶¨Òª½øĞĞÁĞÊ¾Âğ", 0))
+            {
+                while (read(fhp, &lookupuser, sizeof(struct userec)) > 0)
+                {
+                    if ((lookupuser.userlevel & newlevel) == newlevel
+                            &&  strcmp("SYSOP", lookupuser.userid))
+                    {
+                        count ++;
+                        fprintf(fpx,"[1m[33mÇë±£³ÖÕâÒ»ĞĞÎ»ÓÚÆÁÄ»µÚÒ»ĞĞ£¬´ËÊ±°´ X ¼ü¿É¸øÏÂÁĞÓÃ»§·¢ĞÅÒªÇóÆä²¹Æë¸öÈË×¢²á×ÊÁÏ[m\n\n");
+                        fprintf(fpx,"ÓÃ»§´úºÅ(êÇ³Æ) : %s(%s)\n\n", lookupuser.userid, lookupuser.username);
+                        fprintf(fpx,"Õæ  Êµ  ĞÕ  Ãû : %s\n\n", lookupuser.realname);
+                        fprintf(fpx,"¾Ó  ×¡  ×¡  Ö· : %s\n\n", lookupuser.address);
+                        fprintf(fpx,"µç  ×Ó  ÓÊ  ¼ş : %s\n\n", lookupuser.email);
+                        fprintf(fpx,"µ¥Î»$µç»°@ÈÏÖ¤ : %s\n\n", lookupuser.termtype + 16);
+                        fprintf(fpx,"×¢  ²á  ÈÕ  ÆÚ : %s\n", ctime(&lookupuser.firstlogin));
+                        fprintf(fpx,"×îºóµÄµÇÂ¼ÈÕÆÚ : %s\n", ctime(&lookupuser.lastlogin));
+                        fprintf(fpx,"×îºóµÄµÇÂ¼»úÆ÷ : %s\n\n", lookupuser.lasthost );
+                        fprintf(fpx,"ÉÏ  Õ¾  ´Î  Êı : %d ´Î\n\n", lookupuser.numlogins);
+                        fprintf(fpx,"ÎÄ  ÕÂ  Êı  Ä¿ : %d Æª\n\n", lookupuser.numposts);
+                    }
+                }
+                fprintf(fpx, "[1m[33mÒ»¹²ÁĞ³öÁË %ld Ïî¾ßÓĞ´ËÈ¨ÏŞµÄÓÃ»§×ÊÁÏ[m\n\n*** ÕâÊÇÁĞÊ¾½á¹ûµÄ×îºóÒ»ĞĞ£®Èç¹û¼ì²éÍê±Ï£¬Çë°´ q ¼ü½áÊø *** (ÒÔÏÂ¾ùÎª¿ÕĞĞ)", count);
+                { int dummy; /* process the situation of a too high screen :PP */
+                    for (dummy = 0; dummy < t_lines * 4; dummy ++) fputs("\n", fpx);
+                }
+                close(fhp);
+                fclose(fpx);
+
+                sprintf(secu, "[1m[33mÒ»¹²ÁĞ³öÁË %ld Ïî¾ßÓĞ´ËÈ¨ÏŞµÄÓÃ»§×ÊÁÏ[m", count);
+                move(2, 0);
+                prints(secu);
+                clrtoeol();
+                sprintf(genbuf, "listed %ld userlevel of %d", count, newlevel);
+                report(genbuf);
+                pressanykey();
+
+                /*sprintf(secu, "ÁĞÊ¾¾ßÓĞÌØ¶¨È¨ÏŞµÄ %ld ¸öÓÃ»§µÄ×ÊÁÏ", count);*/
+                clear();
+                ansimore(buffer, NA);
+                clear();
+                move(2, 0);
+                prints("ÁĞÊ¾²Ù×÷Íê³É");
+                clrtoeol();
+
+                unlink(buffer);
+            }
+            else
+            {
+                move(2, 0);
+                prints("È¡ÏûÁĞÊ¾²Ù×÷");
+                clrtoeol();
+            }
         }
     }
     pressreturn() ;
@@ -425,37 +425,37 @@ x_userdefine()
     clrtobot();
     move(2,0);
     use_define=1;
-    newlevel = setperms(lookupuser.userdefine,"²ÎÊı",NUMDEFINES,showperminfo);  
+    newlevel = setperms(lookupuser.userdefine,"²ÎÊı",NUMDEFINES,showperminfo);
     move(2,0);
     if (newlevel == lookupuser.userdefine)
         prints("²ÎÊıÃ»ÓĞĞŞ¸Ä...\n");
     else {
         lookupuser.userdefine = newlevel;
         currentuser.userdefine=newlevel;
-	if (((convcode)&&(newlevel&DEF_USEGB))  /* KCN,99.09.05 */
-		||((!convcode)&&!(newlevel&DEF_USEGB)))
- 		switch_code();
+        if (((convcode)&&(newlevel&DEF_USEGB))  /* KCN,99.09.05 */
+                ||((!convcode)&&!(newlevel&DEF_USEGB)))
+            switch_code();
         substitute_record(PASSFILE,&lookupuser,sizeof(struct userec),id) ;
         uinfo.pager|=FRIEND_PAGER;
         if(!(uinfo.pager&ALL_PAGER))
         {
-                if(!DEFINE(DEF_FRIENDCALL))
-                        uinfo.pager&=~FRIEND_PAGER;
+            if(!DEFINE(DEF_FRIENDCALL))
+                uinfo.pager&=~FRIEND_PAGER;
         }
         uinfo.pager&=~ALLMSG_PAGER;
         uinfo.pager&=~FRIENDMSG_PAGER;
         if(DEFINE(DEF_FRIENDMSG))
         {
-                uinfo.pager|=FRIENDMSG_PAGER;
+            uinfo.pager|=FRIENDMSG_PAGER;
         }
         if(DEFINE(DEF_ALLMSG))
         {
-                uinfo.pager|=ALLMSG_PAGER;
-                uinfo.pager|=FRIENDMSG_PAGER;
+            uinfo.pager|=ALLMSG_PAGER;
+            uinfo.pager|=FRIENDMSG_PAGER;
         }
         update_utmp();
         if(DEFINE(DEF_ACBOARD))
-                nettyNN=NNread_init();
+            nettyNN=NNread_init();
         prints("ĞÂµÄ²ÎÊıÉè¶¨Íê³É...\n\n") ;
     }
     iscolor=(DEFINE(DEF_COLOR))?1:0;
@@ -471,7 +471,7 @@ x_userdefine()
 int
 x_cloak()
 {
-    modify_user_mode( GMENU ); 
+    modify_user_mode( GMENU );
     report("toggle cloak");
     uinfo.invisible = (uinfo.invisible)?NA:YEA ;
     update_utmp();
@@ -491,14 +491,14 @@ x_date()
     time_t t;
     char        ans[3];
 
-    modify_user_mode( XMENU ); 
+    modify_user_mode( XMENU );
     clear();
-        move(8,0);
-        time(&t);
-        prints("Ä¿Ç°ÏµÍ³ÈÕÆÚÓëÊ±¼ä: %s", ctime(&t));
-        clrtoeol();
-        pressreturn();
-        return 0;
+    move(8,0);
+    time(&t);
+    prints("Ä¿Ç°ÏµÍ³ÈÕÆÚÓëÊ±¼ä: %s", ctime(&t));
+    clrtoeol();
+    pressreturn();
+    return 0;
 }
 
 void
@@ -507,10 +507,10 @@ x_edits()
     int aborted;
     char ans[7],buf[STRLEN];
     int ch,num;
-    char *e_file[]={"plans","signatures","notes","logout",NULL};    
+    char *e_file[]={"plans","signatures","notes","logout",NULL};
     char *explain_file[]={"¸öÈËËµÃ÷µµ","Ç©Ãûµµ","×Ô¼ºµÄ±¸ÍüÂ¼","ÀëÕ¾µÄ»­Ãæ",NULL};
 
-    modify_user_mode( GMENU ); 
+    modify_user_mode( GMENU );
     clear();
     move(1,0);
     prints("±àĞŞ¸öÈËµµ°¸\n\n");
@@ -518,7 +518,7 @@ x_edits()
     {
         prints("[[32m%d[m] %s\n",num+1,explain_file[num]);
     }
-        prints("[[32m%d[m] ¶¼²»Ïë¸Ä\n",num+1);
+    prints("[[32m%d[m] ¶¼²»Ïë¸Ä\n",num+1);
 
     getdata(num+5,0,"ÄãÒª±àĞŞÄÄÒ»Ïî¸öÈËµµ°¸: ",ans,2,DOECHO,NULL,YEA);
     if(ans[0]-'0'<=0 || ans[0]-'0'>num|| ans[0]=='\n'|| ans[0]=='\0')
@@ -564,19 +564,19 @@ a_edits()
     char ans[7],buf[STRLEN];
     int ch,num;
 
-/* Leeward 98.04.01 added: sysconf.ini */
-/* Leeward 98.07.31 added: .badIP */
-/* stephen 2000.10.17 added: /usr/share/apache/htdocs/script/menucontext.js */
-/* period  2000.10.17 link /backup/www/htdocs/script/menucontext.js --> /home0/bbs/etc/www_menu.js */
+    /* Leeward 98.04.01 added: sysconf.ini */
+    /* Leeward 98.07.31 added: .badIP */
+    /* stephen 2000.10.17 added: /usr/share/apache/htdocs/script/menucontext.js */
+    /* period  2000.10.17 link /backup/www/htdocs/script/menucontext.js --> /home0/bbs/etc/www_menu.js */
     char *e_file[]={"../Welcome","../vote/notes","issue","movie","logout","menu.ini", "mailcheck","s_fill","f_fill.realname","f_fill.unit","f_fill.address","f_fill.telephone","f_fill.real","f_fill.chinese","f_fill.toomany","f_fill.reply","smail","fmail","../.badname", "../.badIP", "../.badword", "sysconf.ini", "www_menu.js", NULL};
-/* "/usr/share/apache/htdocs/script/menucontext.js", NULL};    */
+    /* "/usr/share/apache/htdocs/script/menucontext.js", NULL};    */
 #ifndef LEEWARD_X_FILTER
     char *explain_file[]={"Welcome","¹«ÓÃ±¸ÍüÂ¼","½øÕ¾»¶Ó­µµ","»î¶¯¿´°æ","ÀëÕ¾»­Ãæ", "menu.ini","Éí·İÈ·ÈÏµµ","×¢²áµ¥Íê³Éµµ","×¢²áµ¥Ê§°Üµµ(ÕæÊµĞÕÃû)","×¢²áµ¥Ê§°Üµµ(·şÎñµ¥Î»)","×¢²áµ¥Ê§°Üµµ(¾Ó×¡µØÖ·)","×¢²áµ¥Ê§°Üµµ(ÁªÂçµç»°)","×¢²áµ¥Ê§°Üµµ(ÕæÊµ×ÊÁÏ)","×¢²áµ¥Ê§°Üµµ(ÖĞÎÄÌîĞ´)","×¢²áµ¥Ê§°Üµµ(¹ı¶àµÄID)","×¢²áµ¥Ê§°Üµµ(Mail Reply)" ,"Éí·İÈ·ÈÏÍê³Éµµ        ","Éí·İÈ·ÈÏÊ§°Üµµ","²»¿É×¢²áµÄ ID         ", "²»¿ÉµÇÂ¼µÄ IP", "ÏµÍ³×Ô¶¯¹ıÂËµÄ´ÊÓï", "sysconf.ini", "WWWÖ÷²Ëµ¥",  NULL};
 #else
-    char *explain_file[]={"Welcome","¹«ÓÃ±¸ÍüÂ¼","½øÕ¾»¶Ó­µµ","»î¶¯¿´°æ","ÀëÕ¾»­Ãæ", "menu.ini","Éí·İÈ·ÈÏµµ","×¢²áµ¥Íê³Éµµ","×¢²áµ¥Ê§°Üµµ(ÕæÊµĞÕÃû)","×¢²áµ¥Ê§°Üµµ(·şÎñµ¥Î»)","×¢²áµ¥Ê§°Üµµ(¾Ó×¡µØÖ·)","×¢²áµ¥Ê§°Üµµ(ÁªÂçµç»°)","×¢²áµ¥Ê§°Üµµ(ÕæÊµ×ÊÁÏ)","×¢²áµ¥Ê§°Üµµ(ÖĞÎÄÌîĞ´)","×¢²áµ¥Ê§°Üµµ(¹ı¶àµÄID)","×¢²áµ¥Ê§°Üµµ(Mail Reply)" ,"Éí·İÈ·ÈÏÍê³Éµµ        ","Éí·İÈ·ÈÏÊ§°Üµµ","²»¿É×¢²áµÄ ID         ", "²»¿ÉµÇÂ¼µÄ IP", "ÏµÍ³×Ô¶¯¹ıÂËµÄ´ÊÓï£¨[1m[31m´Ëµµ°¸Ä¿Ç°ÎŞĞ§£¬²»±ØÉè¶¨»òĞŞ¸Ä[m£©", "sysconf.ini", "WWWÖ÷²Ëµ¥", NULL};
+char *explain_file[]={"Welcome","¹«ÓÃ±¸ÍüÂ¼","½øÕ¾»¶Ó­µµ","»î¶¯¿´°æ","ÀëÕ¾»­Ãæ", "menu.ini","Éí·İÈ·ÈÏµµ","×¢²áµ¥Íê³Éµµ","×¢²áµ¥Ê§°Üµµ(ÕæÊµĞÕÃû)","×¢²áµ¥Ê§°Üµµ(·şÎñµ¥Î»)","×¢²áµ¥Ê§°Üµµ(¾Ó×¡µØÖ·)","×¢²áµ¥Ê§°Üµµ(ÁªÂçµç»°)","×¢²áµ¥Ê§°Üµµ(ÕæÊµ×ÊÁÏ)","×¢²áµ¥Ê§°Üµµ(ÖĞÎÄÌîĞ´)","×¢²áµ¥Ê§°Üµµ(¹ı¶àµÄID)","×¢²áµ¥Ê§°Üµµ(Mail Reply)" ,"Éí·İÈ·ÈÏÍê³Éµµ        ","Éí·İÈ·ÈÏÊ§°Üµµ","²»¿É×¢²áµÄ ID         ", "²»¿ÉµÇÂ¼µÄ IP", "ÏµÍ³×Ô¶¯¹ıÂËµÄ´ÊÓï£¨[1m[31m´Ëµµ°¸Ä¿Ç°ÎŞĞ§£¬²»±ØÉè¶¨»òĞŞ¸Ä[m£©", "sysconf.ini", "WWWÖ÷²Ëµ¥", NULL};
 #endif
 
-    modify_user_mode( ADMIN ); 
+    modify_user_mode( ADMIN );
     if(!check_systempasswd())
     {
         return;
@@ -586,8 +586,8 @@ a_edits()
     prints("±àĞŞÏµÍ³µµ°¸\n\n");
     for(num=0;e_file[num]!=NULL&&explain_file[num]!=NULL;num++)
     {
-        prints("[[32m%2d[m] %s%s",num+1,explain_file[num], 
-          (num + 1 >= 9 && num + 1 <= 20 && (num + 1) % 2) ? "      " : "\n");
+        prints("[[32m%2d[m] %s%s",num+1,explain_file[num],
+               (num + 1 >= 9 && num + 1 <= 20 && (num + 1) % 2) ? "      " : "\n");
         /* Leeward 98.03.29 µ÷ÕûÏÔÊ¾²¼¾Ö£¬ÒÔ±ã¼ÓÈë¡°ÏµÍ³×Ô¶¯¹ıÂËµÄ´ÊÓï¡±Ò»Ïî */
         /* Leeward 98.07.31 µ÷ÕûÏÔÊ¾²¼¾Ö£¬ÒÔ±ã¼ÓÈë¡°²»¿ÉµÇÂ¼µÄ IP¡±Ò»Ïî */
     }
@@ -604,11 +604,11 @@ a_edits()
     sprintf(buf,"(E)±à¼­ (D)É¾³ı %s? [E]: ",explain_file[ch]);
     getdata(3,0,buf,ans,2,DOECHO,NULL,YEA);
     if (ans[0] == 'D' || ans[0] == 'd') {
-      {
-          char        secu[STRLEN];
-          sprintf(secu,"É¾³ıÏµÍ³µµ°¸£º%s",explain_file[ch]);
-          securityreport(secu);
-      }
+        {
+            char        secu[STRLEN];
+            sprintf(secu,"É¾³ıÏµÍ³µµ°¸£º%s",explain_file[ch]);
+            securityreport(secu);
+        }
         unlink(genbuf);
         move(5,0);
         prints("%s ÒÑÉ¾³ı\n",explain_file[ch]);
@@ -626,15 +626,15 @@ a_edits()
         sprintf(buf,"edit %s",explain_file[ch]);
         report(buf);
         {
-          char        secu[STRLEN];
-          sprintf(secu,"ĞŞ¸ÄÏµÍ³µµ°¸£º%s",explain_file[ch]);
-          securityreport(secu);
+            char        secu[STRLEN];
+            sprintf(secu,"ĞŞ¸ÄÏµÍ³µµ°¸£º%s",explain_file[ch]);
+            securityreport(secu);
         }
 
         if(!strcmp(e_file[ch],"../Welcome"))
         {
-                unlink("Welcome.rec");
-                prints("\nWelcome ¼ÇÂ¼µµ¸üĞÂ");
+            unlink("Welcome.rec");
+            prints("\nWelcome ¼ÇÂ¼µµ¸üĞÂ");
         }
     }
     pressreturn();

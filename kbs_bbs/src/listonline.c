@@ -7,8 +7,8 @@ void show_online_user()
     if( uidshm == NULL ) {
         uidshm = attach_shm( "UCACHE_SHMKEY", 7912, sizeof( *uidshm ) );
         if( uidshm !=NULL) {
-  		printf("%d",uidshm->number); 
-	}
+            printf("%d",uidshm->number);
+        }
     }
 }
 
