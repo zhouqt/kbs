@@ -1,5 +1,8 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(FULL-PACKAGE-NAME, VERSION, BUG-REPORT-ADDRESS)
+#AC_INIT(FULL-PACKAGE-NAME, VERSION, BUG-REPORT-ADDRESS)
+AC_INIT(smthbbs, 1.0.1, SYSOP@smth.org)
+AM_INIT_AUTOMAKE([foreign dist-bzip2])
+
 AC_CANONICAL_SYSTEM
 case "${host}" in
   i*86-*-freebsd4*)
@@ -8,7 +11,6 @@ case "${host}" in
   *)
 	;;
 esac
-AM_INIT_AUTOMAKE(smthbbs, 1.0.1)
 
 AC_CONFIG_SRCDIR([config.h.in])
 AM_CONFIG_HEADER(config.h)
@@ -76,6 +78,7 @@ AC_HEADER_TIME
 AC_STRUCT_TM
 
 # Checks for library functions.
+AC_CONFIG_LIBOBJ_DIR(lib)
 AC_FUNC_ALLOCA
 AC_FUNC_FORK
 AC_FUNC_GETLOADAVG

@@ -12,7 +12,7 @@
 #if USE_TMPFS==0
 #define BRC_CACHE_NUM 20        /* 未读标记cache 20个版 */
 #else
-#define BRC_CACHE_NUM 1        /* 未读标记被cache在tmpfs中了 */
+#define BRC_CACHE_NUM 20        /* 未读标记被cache在tmpfs中了 */
 #endif
 
 #define BRCFILE ".boardrc.gz"
@@ -394,7 +394,7 @@ void brc_update(char *userid)
         errstr = gzerror(fd, &gzerrno);
         if (errno == Z_ERRNO)
             errstr = strerror(errno);
-        bbslog("3error", "can't %s open to read:%s", dirfile, errstr);
+//        bbslog("3error", "can't %s open to read:%s", dirfile, errstr);
 	f_rm(dirfile);
 //        return;
     } else {
@@ -409,7 +409,19 @@ void brc_update(char *userid)
     }
     gzclose(fd);
     }
-    fd = gzopen(dirfile, "w+b6");
+
+    if ((fd = gzopen(dirfile, "w+b6")) == NULL) {
+        const char *errstr;
+        int gzerrno;
+
+        errstr = gzerror(fd, &gzerrno);
+        if (errno == Z_ERRNO)
+            errstr = strerror(errno);
+        bbslog("3error", "can't %s open to write:%s", dirfile, errstr);
+        f_rm(dirfile);
+    }
+//        return;
+//            } else {
 
     for (i = 0; i < BRC_CACHE_NUM; i++) {
         if (brc_cache_entry[i].changed)
