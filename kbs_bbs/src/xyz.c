@@ -589,7 +589,7 @@ void x_edits()
     sprintf(buf, "(E)编辑 (D)删除 %s? [E]: ", explain_file[ch]);
     getdata(3, 0, buf, ans, 2, DOECHO, NULL, true);
     if (ans[0] == 'D' || ans[0] == 'd') {
-        unlink(genbuf);
+        my_unlink(genbuf);
         move(5, 0);
         prints("%s 已删除\n", explain_file[ch]);
         sprintf(buf, "delete %s", explain_file[ch]);
@@ -709,7 +709,7 @@ void a_edits()
             sprintf(secu, "删除系统档案：%s", explain_file[ch]);
             securityreport(secu, NULL, NULL);
         }
-        unlink(genbuf);
+        my_unlink(genbuf);
         move(5, 0);
         prints("%s 已删除\n", explain_file[ch]);
         sprintf(buf, "delete %s", explain_file[ch]);
@@ -733,12 +733,12 @@ void a_edits()
         }
 
         if (!strcmp(e_file[ch], "../Welcome")) {
-            unlink("Welcome.rec");
+            my_unlink("Welcome.rec");
             prints("\nWelcome 记录档更新");
         }
 #ifdef FILTER
 	if (!strcmp(e_file[ch], "badword")) {
-            unlink(BADWORD_IMG_FILE);
+            my_unlink(BADWORD_IMG_FILE);
             prints("\n过滤词表更新");
 	}
 #endif

@@ -440,11 +440,11 @@ int clear_msg(char *uident)
     char fname[STRLEN];
 
     sethomefile(fname, uident, "msgindex");
-    unlink(fname);
+    my_unlink(fname);
     sethomefile(fname, uident, "msgindex2");
-    unlink(fname);
+    my_unlink(fname);
     sethomefile(fname, uident, "msgcontent");
-    unlink(fname);
+    my_unlink(fname);
 
     return 0;
 }

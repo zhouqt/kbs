@@ -2216,7 +2216,7 @@ int post_article(char *q_file, struct fileheader *re_file)
     Anony = 0;                  /*Inital For ShowOut Signature */
 
     if (aborted == -1) {        /* 取消POST */
-        unlink(filepath);
+        my_unlink(filepath);
         clear();
         if (olddigestmode) {
             digestmode = olddigestmode;
@@ -2624,7 +2624,7 @@ int del_ding(int ent, struct fileheader *fileinfo, char *direct)
 		return FULLUPDATE;
 	}else{
 		snprintf(tmpname,100,"boards/%s/%s",currboard->filename,fileinfo->filename);
-		unlink(tmpname);
+		my_unlink(tmpname);
 	}
 
 	return DIRCHANGED;
@@ -3188,7 +3188,7 @@ int Read()
 	    */
             f_touch(notename);
             setvfile(genbuf, currboard->filename, "noterec");
-            unlink(genbuf);
+            my_unlink(genbuf);
         }
     }
     if (vote_flag(currboard->filename, '\0', 1 /*检查读过新的备忘录没 */ ) == 0) {
@@ -4287,7 +4287,7 @@ static int tmpl_key(struct _select_def *conf, int key)
 				if( ptemplate[conf->pos-1].tmpl->filename[0] ){
 					setbfile(filepath,currboard->filename, ptemplate[conf->pos-1].tmpl->filename);
 					if(dashf(filepath))
-						unlink(filepath);
+						my_unlink(filepath);
 				}
 
 				if( ptemplate[conf->pos-1].tmpl != NULL)

@@ -1152,7 +1152,7 @@ void set_rec(chatcontext * pthis, const char *arg)
         pthis->rec = NULL;
         mail_file(currentuser->userid, fname, currentuser->userid,
                   "Â¼Òô½á¹û", 1, NULL);
-	unlink(fname);
+	my_unlink(fname);
         bbslog("user", "stop record room %s", pthis->chatroom);
     }
 }

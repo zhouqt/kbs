@@ -104,7 +104,7 @@ int b_notes_edit()
             move(3, 0);
             prints("备忘录已经删除...\n");
             pressanykey();
-            unlink(buf);
+            my_unlink(buf);
             aborted = 1;
         } else
             aborted = -1;
@@ -118,7 +118,7 @@ int b_notes_edit()
         pressreturn();
     } else {
         setvfile(buf, currboard->filename, "noterec");
-        unlink(buf);
+        my_unlink(buf);
     }
     return FULLUPDATE;
 }
@@ -143,7 +143,7 @@ int b_sec_notes_edit()
             move(3, 0);
             prints("秘密备忘录已经删除...\n");
             pressanykey();
-            unlink(buf);
+            my_unlink(buf);
             aborted = 1;
         } else
             aborted = -1;
@@ -153,7 +153,7 @@ int b_sec_notes_edit()
         pressreturn();
     } else {
         setvfile(buf, currboard->filename, "noterec");
-        unlink(buf);
+        my_unlink(buf);
     }
     return FULLUPDATE;
 }
@@ -180,7 +180,7 @@ int b_jury_edit()
             move(3, 0);
             prints("仲裁委员名单已经删除...\n");
             pressanykey();
-            unlink(buf);
+            my_unlink(buf);
             aborted = 111;
         } else
             aborted = -1;
@@ -206,7 +206,7 @@ int b_jury_edit()
             post_file(currentuser, "", buf, "JuryMail", secu, 0, 2);
         }
         setvfile(buf, currboard->filename, "juryrec");
-        unlink(buf);
+        my_unlink(buf);
     }
     return FULLUPDATE;
 }

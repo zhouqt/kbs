@@ -1949,3 +1949,56 @@ void long2byte(unsigned int num, byte* arg) {
     (arg)[3]=(num<<24)>>24;
 }
 
+int my_unlink(char *fname)
+{
+#ifndef MYUNLINK_BACKUPDIR
+	return unlink(fname);
+#else
+	char *buf;
+	char *cmd;
+	char *c;
+    struct stat st;
+
+	if(fname==NULL) return -1;
+	if (strstr(fname, "..") || strchr(fname, ' ') || strchr(fname, ';') || strchr(fname, '&') )
+		return -1;
+
+    if (stat(fname, &st))
+        return -1;
+
+	buf=(char *)malloc(strlen(fname) + strlen(MYUNLINK_BACKUPDIR) + 15);
+	if(buf==NULL)
+		return -1;
+
+	cmd=(char *)malloc(2* strlen(fname) + strlen(MYUNLINK_BACKUPDIR) + 50);
+	if(cmd==NULL){
+		free(buf);
+		return -1;
+	}
+
+	sprintf(buf, "%s/%s", MYUNLINK_BACKUPDIR, fname);
+	if( buf[strlen(buf)-1] == '/' )
+		buf[strlen(buf)-1] = 0;
+
+	if((c=strrchr(buf, '/'))!=NULL){
+		*c=0;
+		if( ! dashd(buf) ){
+			sprintf(cmd, "mkdir -p %s",buf);
+			system(cmd);
+		}
+	}
+
+	sprintf(cmd, "%s/%s", MYUNLINK_BACKUPDIR, fname);
+	if( cmd[strlen(cmd)-1] == '/' )
+		cmd[strlen(cmd)-1] = 0;
+	sprintf(buf, "%s_%d", cmd, time(0));
+
+	sprintf(cmd, "mv -f %s %s", fname, buf);
+	system(cmd);
+
+	free(buf);
+	free(cmd);
+
+	return 0;
+#endif
+}

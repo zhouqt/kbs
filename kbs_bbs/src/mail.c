@@ -762,7 +762,7 @@ int del_mail(int ent, struct fileheader *fh, char *direct)
         sprintf(genbuf, "%s/%s", buf, fh->filename);
         if (strstr(direct, ".DELETED")
             || HAS_MAILBOX_PROP(&uinfo, MBP_FORCEDELETEMAIL))
-            unlink(genbuf);
+            my_unlink(genbuf);
         else {
             strcpy(buf, direct);
             t = strrchr(buf, '/') + 1;

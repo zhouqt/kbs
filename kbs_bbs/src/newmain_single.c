@@ -908,7 +908,7 @@ void user_login()
     if (ansimore(fname, false) != -1) {
         getdata(t_lines - 1, 0, "您要删除以上密码输入错误的记录吗 (Y/N)? [Y] ", ans, 4, DOECHO, NULL, true);
         if (*ans != 'N' && *ans != 'n')
-            unlink(fname);
+            my_unlink(fname);
     }
 
     strncpy(currentuser->lasthost, fromhost, IPLEN);
@@ -1343,7 +1343,7 @@ int tBBSlog_recover()
     if (genbuf[0] == 'M' || genbuf[0] == 'm')
         mail_file(currentuser->userid, buf, currentuser->userid, "聊天记录", BBSPOST_MOVE, NULL);
     else
-        unlink(buf);
+        my_unlink(buf);
     return;
 
 }

@@ -841,7 +841,7 @@ int mode;
                         }
                     close(fsrc);
                 }
-                unlink(fpath2);
+                my_unlink(fpath2);
             }
             break;
         }
@@ -1067,7 +1067,7 @@ int paste;
                     int n, k;
 
                     sprintf(genbuf, "home/%c/%s/.CP", toupper(currentuser->userid[0]), currentuser->userid);
-                    unlink(genbuf);
+                    my_unlink(genbuf);
                     bzero(&pm2, sizeof(pm2));
 
                     strncpy(uppath, fpath, PATHLEN);
@@ -1078,9 +1078,10 @@ int paste;
                     pnt++;
 
                     if (dashf(fpath)) {
-                        unlink(fpath);
+                        my_unlink(fpath);
                     } else if (dashd(fpath)) {
-                        f_rm(fpath);
+                        /*f_rm(fpath);*/
+        				my_unlink(fpath);
                     }
 
                     pm2.path = uppath;
@@ -1192,7 +1193,7 @@ MENU *pm;
         a_prompt(-1, "删除此文件, 确定吗?(Y/N) [N]：", ans);
         if (ans[0] != 'Y' && ans[0] != 'y')
             return;
-        unlink(fpath);
+        my_unlink(fpath);
     } else if (dashd(fpath)) {
         a_prompt(-1, "删除整个子目录, 别开玩笑哦, 确定吗?(Y/N) [N]: ", ans);
         if (ans[0] != 'Y' && ans[0] != 'y')
@@ -1200,7 +1201,8 @@ MENU *pm;
         /*
          * sprintf( genbuf, "/bin/rm -rf %s", fpath ); 
          */
-        f_rm(fpath);
+        /*f_rm(fpath);*/
+        my_unlink(fpath);
     }
     free(item);
     (pm->num)--;
@@ -1814,7 +1816,8 @@ char bname[STRLEN], title[STRLEN];
         return 0;
     *ptr = '\0';
 
-    f_rm(bpath);
+    /*f_rm(bpath);*/
+    my_unlink(bpath);
 
     pm.path = gpath;
     a_loadnames(&pm);

@@ -155,7 +155,7 @@ int autoappend;
 #ifdef BBSMAIN
     if (uinfo.mode == RMAIL) {
         sprintf(oldpath, "mail/%c/%s/%s", toupper(currentuser->userid[0]), currentuser->userid, fh->filename);
-        unlink(oldpath);
+        my_unlink(oldpath);
         return;
     }
 #endif
@@ -306,9 +306,9 @@ int write_posts(char *id, char *board, unsigned int groupid)
 	char xpostfile[PATHLEN];
 
 #ifdef BLESS_BOARD
-    if (strcasecmp(board, BLESS_BOARD) && (junkboard(board) || normal_board(board) != 1))
+    if (strcasecmp(board, BLESS_BOARD) && (!poststatboard(board) || normal_board(board) != 1))
 #else
-    if (junkboard(board) || normal_board(board) != 1)
+    if (!poststatboard(board) || normal_board(board) != 1)
 #endif
         return 0;
     now = time(0);
@@ -733,7 +733,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     if (err) {
         bbslog("3error", "Posting '%s' on '%s': append_record failed!", fh->title, boardname);
         setbfile(buf, boardname, fh->filename);
-        unlink(buf);
+        my_unlink(buf);
 #ifdef BBSMAIN
         pressreturn();
         clear();
@@ -812,7 +812,7 @@ int dele_digest(char *dname, char *direc)
     delete_record(new_dir, sizeof(struct fileheader), pos, (RECORD_FUNC_ARG) cmpname, digest_name);
     *ptr = '\0';
     sprintf(buf, "%s%s", new_dir, digest_name);
-    unlink(buf);
+    my_unlink(buf);
     return 0;
 }
 
