@@ -506,8 +506,8 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
                 locmem = getkeep(currdirect, num < 1 ? 1 : num, last_line);
             }
         case FULLUPDATE:
-            draw_title(dotitle);
         case PARTUPDATE:
+            draw_title(dotitle);
             if (last_line < locmem->top_line + screen_len) {
                 num = get_num_records(currdirect, ssize);
     /* add by stiger */

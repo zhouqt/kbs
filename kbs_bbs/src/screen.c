@@ -179,8 +179,9 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
         return;
     }
     if (new_col <= was_col - 1 && new_col>=was_col-5 && new_ln == was_ln) {
-        for(i=0;i<was_col-new_col;i++)
-            ochar(Ctrl('H'));
+        char s[LINELEN];
+        memset(s, Ctrl('H'), was_col-new_col);
+        output(s, was_col-new_col);
         return;
     }
     if (new_ln == was_ln && new_col>=was_col+1&&new_col<=was_col+5) {
@@ -262,7 +263,7 @@ void refresh()
     int i, j, k, ii, p, s;
     struct screenline *bp = big_picture;
     int count=0;
-    int stack[100],stackt=0;
+    int stack[10],stackt=0;
 
     if (!scrint) {
         oflush();
@@ -279,12 +280,11 @@ void refresh()
         scrollcnt = 0;
     }
     if (scrollcnt > 0) {
-        do_move(0, t_lines - 1, ochar);
+        rel_move(tc_col, tc_line, 0, t_lines - 1);
         while (scrollcnt > 0) {
             ochar('\n');
             scrollcnt--;
         }
-        tc_col = 0; tc_line = t_lines-1;
     }
     if(can_clrscr) {
         o_clear();
@@ -413,7 +413,8 @@ void move(int y, int x)
 	    do_move(x, y, ochar);
 	    return;
 	}
-	cur_col = x /*+c_shift(y,x) */ ;
+	if(x<0) cur_col = scr_cols-x;
+	else cur_col = x;
 	cur_ln = y;
 }
 
