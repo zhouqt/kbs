@@ -1,7 +1,7 @@
-{TEXT-DECORATION: none;}
-A:HOVER {COLOR: #ff0000;}
+a {TEXT-DECORATION: none;}
+a:hover {color: #FF4400;background-color:#ffffff; text-decoration: none; }
 TABLE.BODY {BORDER: 1px solid; BORDER-COLOR: #CCCCCC}
-BODY {BACKGROUND-COLOR: #F6F6F6; FONT-SIZE: 14px; }
+BODY {BACKGROUND-COLOR: #FFFFFF; FONT-SIZE: 14px; }
 body.dark {BACKGROUND-COLOR: #BBD0BB}
 TABLE,TH,TD,P,INPUT,TEXTAREA,SELECT {FONT-SIZE: 14px;}
 TABLE.dark {BACKGROUND-COLOR: #BBD0BB}
@@ -22,3 +22,49 @@ FONT.c37 {COLOR: #000000;}
 .b1 {font-size: 12px;color: #000000;text-decoration: none;}
 .t1 {border-top-width: 1px;border-left-width: 1px;border-top-style: solid;border-left-style: solid;border-top-color: #BBD0BB;border-left-color: #BBD0BB;}
 .t2 {border-right-width: 1px;border-bottom-width: 1px;border-right-style: solid;border-bottom-style: solid;border-right-color: #BBD0BB;border-bottom-color: #BBD0BB;}
+
+/*new css added by kwm for test */
+
+.kt1 {	color: #555555;
+	background-color: #FFFFFF;
+	border-top:solid #516Bb6 1px;
+	border-left:solid #516Bb6 1px;
+	border-right:0px;
+	border-bottom:0px;
+	}
+	
+.kt2 {  color: #FFFFFF;
+	height:25px;
+	background-color: #516Bb6;
+	text-align: center;
+	border-right:solid #f0f0f0 1px;
+	border-bottom:solid #f0f0f0 1px;
+	border-left:0px;
+	border-top:0px;}
+.kt3 {	color: #555555;
+	border-right:solid #cccccc 1px;
+	border-bottom:solid #cccccc 1px;
+	border-left:0px;
+	border-top:0px;
+	}
+.kt4 {	padding-top:0px;
+	padding-bottom:0px;
+	border-right:0px;
+	border-bottom:solid #cccccc 1px;
+	border-left:0px;
+	border-top:0px;
+	text-align: left;
+	}	
+.c1{background-color: #FFFFFF;}
+.c2{background-color: #FBFBFB;text-align:center;}
+.c3{background-color: #F6F6F6;}
+	
+.kb1 {color: #000000;}
+.kb2 {color: #000000;background-color: #F6F6F6;}
+.kb4 {  font-family: "Arial", "Helvetica", "sans-serif";
+	font-size: 20px;
+	font-weight: bolder;
+	color: #000000;
+	line-height: 50px;
+	}
+.kts1 {color: #000088;}
