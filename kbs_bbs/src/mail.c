@@ -591,7 +591,7 @@ int do_send(char *userid, char *title, char *q_file)
         char sbuf[PATHLEN];
         strcpy(sbuf,"tmp/");
         strcpy(sbuf+strlen(sbuf), upload);
-        post_file.attachment = add_attach(filepath, sbuf, upload);
+        newmessage.attachment = add_attach(filepath, sbuf, upload);
     }
     
         clear();
