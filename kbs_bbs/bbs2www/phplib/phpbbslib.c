@@ -33,6 +33,7 @@ static ZEND_FUNCTION(bbs_getwebmsg);
 static ZEND_FUNCTION(bbs_sendwebmsg);
 static ZEND_FUNCTION(bbs_sethomefile);
 static ZEND_FUNCTION(bbs_mail_file);
+static ZEND_FUNCTION(bbs_loadmaillist);
 
 static ZEND_MINIT_FUNCTION(bbs_module_init);
 static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown);
@@ -70,6 +71,7 @@ static function_entry bbs_php_functions[] = {
     ZEND_FE(bbs_sendwebmsg, fourth_arg_force_ref_0001)
 	ZEND_FE(bbs_sethomefile, NULL)
     ZEND_FE(bbs_mail_file, NULL)
+    ZEND_FE(bbs_loadmaillist, NULL)
 	{NULL, NULL, NULL}
 };
 
@@ -1340,7 +1342,66 @@ static ZEND_FUNCTION(bbs_mail_file)
 		RETURN_FALSE;
 	RETURN_TRUE;
 }
-	
+
+
+static void assign_maillist(zval* array, char* boxname, char*pathname)
+{
+	add_assoc_string(array,"boxname",boxname,1);
+	add_assoc_string(array,"pathname",pathname,1);
+}
+
+/**
+ * load mail list. user custom mailboxs.
+ * prototype:
+ * array bbs_loadmaillist(char *userid);
+ * 
+ * @return array of loaded mails on success,
+ *         FALSE on failure.
+ * @author binxun
+ */
+static ZEND_FUNCTION(bbs_loadmaillist)
+{
+	char* userid;
+	int userid_len;
+	char buf[10];
+	struct _mail_list maillist;
+	struct userec* user;
+	int i;
+	zval *element;
+	int ac = ZEND_NUM_ARGS();
+	/* getting arguments */
+	if (ac != 1
+	|| zend_parse_parameters(1 TSRMLS_CC, "s", &userid,&userid_len) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+	if (userid_len > IDLEN)
+		RETURN_FALSE;
+	if (!getuser(userid,&user))
+		RETURN_FALSE;
+	load_mail_list(user,&maillist);
+	if(maillist.mail_list_t <= 0 || maillist.mail_list_t > MAILBOARDNUM)//no custom mail box
+	{
+		RETURN_FALSE;
+	}
+	if (array_init(return_value) == FAILURE)
+	{
+		RETURN_FALSE;
+	}
+	for (i = 0; i < maillist.mail_list_t; i++)
+	{
+		MAKE_STD_ZVAL(element);
+		array_init(element);
+		sprintf(buf,".%s",maillist.mail_list[i]+30);
+		assign_maillist(element,maillist.mail_list[i],buf);
+		//按我的设想应该是用上面这句，结果现在只好用下面两句代替之。
+		//add_assoc_string(element,"boxname",maillist.mail_list[i],1);
+		//add_assoc_string(element,"pathname",buf,1);
+		zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void*) &element, 
+				sizeof(zval*), NULL);
+	}
+}
+
 static ZEND_MINIT_FUNCTION(bbs_module_init)
 {
     zval *bbs_home;
