@@ -12,7 +12,6 @@
 #undef HAVE_REVERSE_DNS
 #undef FILTER
 
-#define LOCAL_ARTICLE_DEFAULT 0
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
  *       Then decide how long to let them stay: MONITOR_TIMEOUT is the time in
