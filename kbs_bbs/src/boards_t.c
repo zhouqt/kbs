@@ -386,7 +386,7 @@ int page, clsflag, newflag;
             sprintf(buf, " %s", ptr->title + 1);
 
         if (ptr->dir >= 1)    // added by bad 2002.8.3
-            prints("%-20s\n", buf);
+            prints("%-50s\n", buf);
         else {
             strncpy(tmpBM, ptr->BM, BM_LEN);
             prints("%c%-16s %s%-36s %-12s\n", ((newflag && ptr->zap && !(ptr->flag & BOARD_NOZAPFLAG)) ? '*' : ' '), ptr->name, (ptr->flag & BOARD_VOTEFLAG) ? "[31mV[m" : " ", buf, ptr->BM[0] <= ' ' ? "³ÏÕ÷°æÖ÷ÖÐ" : strtok(tmpBM, " "));  /*µÚÒ»¸ö°æÖ÷ */
@@ -745,7 +745,7 @@ int choose_board(int newflag, char *boardprefix)
                 clrtoeol();
                 getdata(0, 0, "ÊäÈëÓÊÏäÓ¢ÎÄÃû: ", bname, 10, DOECHO, NULL, true);
                 sprintf(buf, ".%s", bname);
-		if (buf[0]==0) break;
+		  if (bname[0]==0) break;
                 if (!valid_fname(bname)) {
                     move(2, 0);
                     clrtoeol();
