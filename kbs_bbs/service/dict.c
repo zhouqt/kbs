@@ -39,6 +39,7 @@ int dict_main()
     sprintf(sql, "SELECT * FROM %s WHERE word='%s'", table, word);
     if (mysql_real_query(&s, sql, strlen(sql))) {
         prints("%s\n", mysql_error(&s));
+        pressanykey();
         return;
     }
     res = mysql_store_result(&s);
