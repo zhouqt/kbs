@@ -255,6 +255,7 @@ int clean_cachedata(char* userid,int unum);
     int check_read_perm(struct userec *user, const struct boardheader *board);
     int check_see_perm(struct userec *user, const struct boardheader *board);
     int is_outgo_board(char *board);
+    int is_emailpost_board(char *board);
 
 /* define in article.c */
     /*
