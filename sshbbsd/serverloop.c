@@ -16,6 +16,9 @@ Server main loop for handling the interactive session.
 /*
  * $Id$
  * $Log$
+ * Revision 1.8  2004/05/19 02:53:56  yuhuan
+ * ssh_select
+ *
  * Revision 1.7  2003/12/26 13:20:10  stiger
  * 除了config.h中的部分redefined外没有其他warning了
  *
@@ -147,6 +150,12 @@ int ssh_read(int fd, void *buf, size_t count)
     retlen = retlen > count ? count : retlen;
     buffer_get(&NetworkBuf, buf, retlen);
     return retlen;
+}
+int ssh_select(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout)
+{
+	if (buffer_len(&NetworkBuf) > 0)
+		return 1;
+	return select(n, readfds, writefds, exceptfds, timeout);
 }
 int ssh_init(void)
 {

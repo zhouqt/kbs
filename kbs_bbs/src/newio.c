@@ -390,7 +390,11 @@ int igetch()
             }
         }
         if(kicked) return KEY_TIMEOUT;
+#ifdef SSHBBS
+	sr = ssh_select(hifd, &readfds, NULL, NULL, &to);
+#else
         sr = select(hifd, &readfds, NULL, NULL, &to);
+#endif
         if (sr < 0 && errno == EINTR) {
             if (talkrequest)
                 return KEY_TALK;
@@ -448,7 +452,11 @@ int igetch()
                     if (!alarm_timeout)
                         to.tv_sec = IDLE_TIMEOUT;
                 }
+#ifdef SSHBBS
+		sr = ssh_select(hifd, &readfds, NULL, &xds, &to);
+#else
                 sr = select(hifd, &readfds, NULL, &xds, &to);
+#endif
                 if (sr < 0 && errno == EINTR) {
                     if (talkrequest)
                         return KEY_TALK;
