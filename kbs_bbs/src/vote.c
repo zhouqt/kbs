@@ -53,7 +53,7 @@ int setvoteflag(char *bname, int flag)
     return 0;
 }
 
-void b_bbslog("user","%s",str)
+void b_report(str)
 char *str;
 {
     char buf[STRLEN];
@@ -624,7 +624,7 @@ char *bname;
     sprintf(limitfile, "vote/%s/limit.%lu", currboard, ball->opendate);
     if (append_record(limitfile, v_limit, sizeof(struct votelimit)) == -1) {
         prints("发生严重的错误，无法写入限制文件，请通告站长");
-        b_bbslog("user","%s","Append limit file Error!!");
+        b_report("Append limit file Error!!");
     }
     /*Haohmaru.99.10.26.add below 8 lines */
     getdata(1, 0, "确定开启投票?[Y] :", buf, 3, DOECHO, NULL, true);
@@ -638,12 +638,12 @@ char *bname;
     strcpy(ball->userid, currentuser->userid);
     if (append_record(controlfile, ball, sizeof(*ball)) == -1) {
         prints("发生严重的错误，无法开启投票，请通告站长");
-        b_bbslog("user","%s","Append Control file Error!!");
+        b_report("Append Control file Error!!");
     } else {
         char votename[STRLEN];
         int i;
 
-        b_bbslog("user","%s","OPEN VOTE");
+        b_report("OPEN VOTE");
         prints("投票箱已经开启了！\n");
         range++;
         sprintf(votename, "tmp/votetmp.%d", getpid());
