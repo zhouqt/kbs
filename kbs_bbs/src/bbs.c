@@ -1454,6 +1454,9 @@ int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 	}
 	in_do_sendmsg=0;
 
+    if (*bname == '\0')
+    	return FULLUPDATE;
+
 	if(addfav){
 		bid = EnameInFav(bname);
 
@@ -1468,8 +1471,6 @@ int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 	}
 
     setbpath(bpath, bname);
-    if (*bname == '\0')
-    	return FULLUPDATE;
     if (stat(bpath, &st) == -1) { /* 判断board是否存在 */
         move(2, 0);
         prints("不正确的讨论区.");
