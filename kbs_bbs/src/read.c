@@ -991,10 +991,12 @@ int SR_BMfunc(int ent, struct fileheader *fileinfo, char *direct)
             return DONOTHING;
     	}
         //create new title
-		if(!strncmp(fileinfo->title,"Re: ",4))strcpy(title,fileinfo->title + 4);
+		strcpy(buf,"[合集] ");
+		if(!strncmp(fileinfo->title,"Re: ",4))strcpy(buf+7,fileinfo->title + 4);
 		else
-		    strcpy(title,fileinfo->title);
-        if(strlen(title) < STRLEN - 8)strcat(title," [合集]");
+		    strcpy(buf+7,fileinfo->title);
+        if(strlen(buf) >= STRLEN )buf[STRLEN-1] = 0;
+		strcpy(title,buf);
         //post file to the board
 		if(post_file(currentuser,"",filepath,currboard,title,0,2) < 0) {//fail
             sprintf(buf,"发表文章到版面出错!请按任意键退出 << ");
@@ -1115,10 +1117,12 @@ int SR_BMfuncX(int ent, struct fileheader *fileinfo, char *direct)
             return DONOTHING;
     	}
         //create new title
-		if(!strncmp(fileinfo->title,"Re: ",4))strcpy(title,fileinfo->title + 4);
+		strcpy(buf,"[合集] ");
+		if(!strncmp(fileinfo->title,"Re: ",4))strcpy(buf+7,fileinfo->title + 4);
 		else
-		    strcpy(title,fileinfo->title);
-        if(strlen(title) < STRLEN - 8)strcat(title," [合集]");
+		    strcpy(buf+7,fileinfo->title);
+        if(strlen(buf) >= STRLEN )buf[STRLEN-1] = 0;
+		strcpy(title,buf);
         //post file to the board
 		if(post_file(currentuser,"",filepath,currboard,title,0,2) < 0) {//fail
             sprintf(buf,"发表文章到版面出错!请按任意键退出 << ");
