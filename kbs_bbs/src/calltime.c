@@ -1,0 +1,519 @@
+#include "bbs.h"
+
+#define CLOCK_TYPE_NORMAL 1
+#define CLOCK_TYPE_DAY 2
+#define CLOCK_TYPE_WEEK 3
+#define CLOCK_TYPE_MONTH 4
+#define CLOCK_TYPE_YEAR 5
+
+#define MAX_CLOCK_DEF 100
+
+struct clock_struct
+{
+	int type;
+	time_t clock_time;
+	char memo[40];
+};
+
+struct clock_struct * clock_data = NULL;
+int clock_total = 0;
+
+extern int calltime;
+extern char calltimememo[];
+
+static int default_clock_data()
+{
+	clock_total=1;
+	clock_data->type=1;
+	clock_data->clock_time=0;
+	clock_data->memo[0]='\0';
+	return save_clock_data();
+}
+
+static int init_clock_data()
+{
+	FILE *fp;
+	char fname[STRLEN];
+	struct stat st;
+
+	sethomefile(fname,currentuser->userid,"clock.data");
+	stat(fname,&st);
+	if((fp=fopen(fname,"rb"))==NULL){
+		return default_clock_data();
+	}
+	if(st.st_size > MAX_CLOCK_DEF * sizeof(struct clock_struct) ){
+		fclose(fp);
+		return default_clock_data();
+	}
+	clock_total = st.st_size/sizeof(struct clock_struct);
+	if(clock_total < 1){
+		fclose(fp);
+		return default_clock_data();
+	}
+	fread(clock_data,st.st_size,1,fp);
+	fclose(fp);
+	return 1;
+}
+
+static int save_clock_data()
+{
+	FILE *fp;
+	char fname[STRLEN];
+	struct stat st;
+
+	sethomefile(fname,currentuser->userid,"clock.data");
+	fp=fopen(fname,"wb");
+	if(fp==NULL) return 0;
+	fwrite(clock_data,clock_total*sizeof(struct clock_struct),1,fp);
+	fclose(fp);
+	truncate(fname,clock_total*sizeof(struct clock_struct));
+	return 1;
+}
+
+static int add_clock_data(struct clock_struct * ck)
+{
+	init_clock_data();
+	if( clock_total >= MAX_CLOCK_DEF )
+		return 0;
+	memcpy(clock_data + clock_total, ck, sizeof(struct clock_struct));
+	clock_total ++;
+	save_clock_data();
+	return 1;
+}
+
+static int del_clock_data(int num)
+{
+	int i;
+
+	if(num >= clock_total) return 0;
+
+	for(i=num;i<clock_total-1;i++){
+		memcpy(clock_data+i,clock_data+i+1,sizeof(struct clock_struct));
+	}
+	clock_total --;
+	return 1;
+}
+
+static int del_clock(int num)
+{
+	init_clock_data();
+	if(del_clock_data(num)){
+		save_clock_data();
+		calc_calltime();
+		return SHOW_DIRCHANGE;
+	}
+	return SHOW_CONTINUE;
+}
+
+static time_t get_realcalltime(struct clock_struct * ck)
+{
+
+	if( ck->type == CLOCK_TYPE_DAY ){
+		struct tm newtm;
+		struct tm ltime;
+		struct tm nowtm;
+		time_t now;
+		time_t newtmt;
+
+		now = time(0);
+
+		memcpy(&ltime, localtime( & (ck->clock_time) ), sizeof(struct tm));
+		memcpy(&nowtm, localtime( & now ), sizeof(struct tm));
+
+		newtm.tm_isdst = nowtm.tm_isdst;
+		newtm.tm_year = nowtm.tm_year;
+		newtm.tm_mon = nowtm.tm_mon;
+		newtm.tm_mday = nowtm.tm_mday;
+		newtm.tm_hour = ltime.tm_hour;
+		newtm.tm_min = ltime.tm_min;
+		newtm.tm_sec = ltime.tm_sec;
+
+		newtmt = mktime( & newtm );
+
+		if(newtmt <= now)
+			newtmt += 86400 ;
+		return newtmt;
+	}
+	return ck->clock_time;
+}
+
+time_t calc_calltime()
+{
+	int out=0;
+	int i;
+	time_t ret=0;
+
+	if(clock_data == NULL){
+		clock_data = (struct clock_struct *) malloc(sizeof(struct clock_struct) * MAX_CLOCK_DEF);
+		if(clock_data ==NULL)
+			return 0;
+		out = 1;
+	}
+
+	init_clock_data();
+
+	for(i=0;i<clock_total;){
+		time_t realcalltime;
+
+		realcalltime = get_realcalltime(clock_data + i);
+
+		if(realcalltime < time(0)){
+			//del_clock_data(i);
+				i++;
+			continue;
+		}
+		if(ret == 0 || realcalltime < ret ){
+			ret = realcalltime;
+			strncpy(calltimememo,(clock_data+i)->memo,40);
+		}
+		i++;
+	}
+
+	save_clock_data();
+	if(out){
+		free(clock_data);
+		clock_data=NULL;
+	}
+
+	calltime = ret;
+
+	return ret;
+}
+
+static int add_new_clock()
+{
+
+	char ans[3];
+	int setok=0;
+	char memo[40];
+	time_t now;
+	struct clock_struct ck;
+
+	if( clock_total >= MAX_CLOCK_DEF )
+		return SHOW_CONTINUE;
+
+	clear();
+	good_move(1,0);
+	prints("1. ÆÕÍ¨ÄÖÁå (ÉèÖÃÏµÍ³¼¸·ÖÖÓºóÌáĞÑÄú)\n");
+	prints("2. ¶¨Ê±ÄÖÁå (Ä³ÄêÄ³ÔÂÄ³ÈÕÄ³·ÖÌáĞÑÄú)\n");
+	prints("3. Ã¿ÈÕÄÖÁå");
+	//prints("4. Ã¿ÖÜÄÖÁå");
+	//prints("5. Ã¿ÔÂÄÖÁå");
+	getdata(7,0,"ÇëÑ¡ÔñÄÖÁåÖÖÀà(1-5)? [0]:",ans,sizeof(ans),DOECHO,NULL,true);
+
+	switch( ans[0] ){
+	case '1':
+	{
+		char tmp[6];
+		int tt;
+		getdata(8,0,"¼¸·ÖÖÓºóÏµÍ³ÄÖÁå:",tmp,4,DOECHO,NULL,true);
+		tt = atoi(tmp);
+		if(tt <= 0)
+			break;
+		getdata(9,0,"ÏµÍ³ÄÖÁå×Ô¶¨ÒåÌáĞÑÄÚÈİ:",memo,40,DOECHO,NULL,true);
+		if(memo[0]=='\0' || memo[0]=='\r' || memo[0]=='\n')
+			strcpy(memo,"ÏµÍ³ÄÖÁåà¶~~~~~~~~~~~~");
+		now=time(0);
+		ck.type = CLOCK_TYPE_NORMAL;
+		ck.clock_time = now + tt * 60 ;
+		strncpy(ck.memo,memo,40);
+		ck.memo[39]='\0';
+		setok = 1;
+		break;
+	}
+	case '2':
+	{
+		struct tm *ltime;
+		struct tm newtm;
+		char buf[80];
+		char tmp[6];
+		int tt;
+		now = time(0);
+		localtime_r( &now , ltime );
+		newtm.tm_isdst = ltime->tm_isdst;
+		
+		sprintf(buf,"Éè¶¨ÏµÍ³ÄÖÁåÄê·İ [%d]:",ltime->tm_year+1900);
+		getdata(8,0,buf,tmp,5,DOECHO,NULL,true);
+		if(tmp[0]=='\0' || tmp[0]=='\r' || tmp[0]=='\n')
+			newtm.tm_year = ltime->tm_year;
+		else{
+			tt = atoi(tmp);
+			if( tt <= 1900 )
+				break;
+			newtm.tm_year = tt-1900;
+		}
+
+		sprintf(buf,"Éè¶¨ÏµÍ³ÄÖÁåÔÂ·İ [%d]:",ltime->tm_mon+1);
+		getdata(9,0,buf,tmp,3,DOECHO,NULL,true);
+		if(tmp[0]=='\0' || tmp[0]=='\r' || tmp[0]=='\n')
+			newtm.tm_mon = ltime->tm_mon;
+		else{
+			tt = atoi(tmp);
+			if(tt <= 0 || tt > 12)
+				break;
+			newtm.tm_mon = tt-1;
+		}
+		
+		sprintf(buf,"Éè¶¨ÏµÍ³ÄÖÁåÈÕ×Ó [%d]:",ltime->tm_mday);
+		getdata(10,0,buf,tmp,3,DOECHO,NULL,true);
+		if(tmp[0]=='\0' || tmp[0]=='\r' || tmp[0]=='\n')
+			newtm.tm_mday = ltime->tm_mday;
+		else{
+			tt = atoi(tmp);
+			if(tt <= 0 || tt > 31)
+				break;
+			newtm.tm_mday = tt;
+		}
+
+		sprintf(buf,"Éè¶¨ÏµÍ³ÄÖÁåĞ¡Ê± [%d]:",ltime->tm_hour);
+		getdata(11,0,buf,tmp,3,DOECHO,NULL,true);
+		if(tmp[0]=='\0' || tmp[0]=='\r' || tmp[0]=='\n')
+			newtm.tm_hour = ltime->tm_hour;
+		else{
+			tt = atoi(tmp);
+			if(tt <= 0 || tt > 23)
+				break;
+			newtm.tm_hour = tt;
+		}
+
+		sprintf(buf,"Éè¶¨ÏµÍ³ÄÖÁå·ÖÖÓ [%d]:",ltime->tm_min);
+		getdata(12,0,buf,tmp,3,DOECHO,NULL,true);
+		if(tmp[0]=='\0' || tmp[0]=='\r' || tmp[0]=='\n')
+			newtm.tm_min = ltime->tm_min;
+		else{
+			tt = atoi(tmp);
+			if(tt <= 0 || tt > 59)
+				break;
+			newtm.tm_min = tt;
+		}
+
+		newtm.tm_sec = 0;
+
+		getdata(13,0,"ÏµÍ³ÄÖÁå×Ô¶¨ÒåÌáĞÑÄÚÈİ:",memo,40,DOECHO,NULL,true);
+		if(memo[0]=='\0' || memo[0]=='\r' || memo[0]=='\n')
+			strcpy(memo,"ÏµÍ³ÄÖÁåà¶~~~~~~~~~~~~");
+
+		ck.clock_time = mktime(&newtm);
+		if(ck.clock_time <= time(0))
+			break;
+
+		ck.type = CLOCK_TYPE_NORMAL;
+		strncpy(ck.memo,memo,40);
+		ck.memo[39]='\0';
+		setok = 1;
+	}
+	case '3':
+	{
+		struct tm *ltime;
+		struct tm newtm;
+		char buf[80];
+		char tmp[6];
+		int tt;
+
+		now = time(0);
+		ltime = localtime( &now );
+		newtm.tm_isdst = ltime->tm_isdst;
+		newtm.tm_year = ltime->tm_year;
+		newtm.tm_mon = ltime->tm_mon;
+		newtm.tm_mday = ltime->tm_mday;
+
+		sprintf(buf,"Éè¶¨ÏµÍ³ÄÖÁåĞ¡Ê± [%d]:",ltime->tm_hour);
+		getdata(8,0,buf,tmp,3,DOECHO,NULL,true);
+		if(tmp[0]=='\0' || tmp[0]=='\r' || tmp[0]=='\n')
+			newtm.tm_hour = ltime->tm_hour;
+		else{
+			tt = atoi(tmp);
+			if(tt <= 0 || tt > 23)
+				break;
+			newtm.tm_hour = tt;
+		}
+
+		sprintf(buf,"Éè¶¨ÏµÍ³ÄÖÁå·ÖÖÓ [%d]:",ltime->tm_min);
+		getdata(9,0,buf,tmp,3,DOECHO,NULL,true);
+		if(tmp[0]=='\0' || tmp[0]=='\r' || tmp[0]=='\n')
+			newtm.tm_min = ltime->tm_min;
+		else{
+			tt = atoi(tmp);
+			if(tt <= 0 || tt > 59)
+				break;
+			newtm.tm_min = tt;
+		}
+
+		newtm.tm_sec = 0;
+
+		getdata(13,0,"ÏµÍ³ÄÖÁå×Ô¶¨ÒåÌáĞÑÄÚÈİ:",memo,40,DOECHO,NULL,true);
+		if(memo[0]=='\0' || memo[0]=='\r' || memo[0]=='\n')
+			strcpy(memo,"ÏµÍ³ÄÖÁåà¶~~~~~~~~~~~~");
+
+		ck.clock_time = mktime(&newtm);
+		if(ck.clock_time <= 0)
+			break;
+		ck.type = CLOCK_TYPE_DAY;
+		strncpy(ck.memo,memo,40);
+		ck.memo[39]='\0';
+		setok = 1;
+	}
+	default:
+		break;
+	}
+
+	if(!setok) return SHOW_DIRCHANGE;
+
+	add_clock_data(&ck);
+
+	calc_calltime();
+
+	return SHOW_DIRCHANGE;
+}
+
+static void get_clock_string(struct clock_struct * ck, char *typestr, char * timestr)
+{
+	char *c;
+
+	switch(ck->type){
+	case CLOCK_TYPE_DAY:
+	{
+		struct tm tmm;
+		localtime_r(&(ck->clock_time),&tmm);
+		strcpy(typestr,"Ã¿ÈÕÄÖÖÓ");
+		sprintf(timestr,"Ã¿ÈÕ%2dÊ±%2d·Ö",tmm.tm_hour,tmm.tm_min);
+		break;
+	}
+	default:
+		strcpy(typestr,"ÆÕÍ¨ÄÖÖÓ");
+		strcpy(timestr,ctime(&(ck->clock_time)));
+		break;
+	}
+
+	if((c=strchr(timestr,'\r'))!=NULL) *c='\0';
+	if((c=strchr(timestr,'\n'))!=NULL) *c='\0';
+}
+
+static int set_clock_select(struct _select_def *conf)
+{
+	char clocktypestring[10];
+	char clocktimestring[50];
+
+	get_clock_string(clock_data+conf->pos-1,clocktypestring,clocktimestring);
+
+	clear();
+	good_move(1,0);
+
+	prints("%s\n\n",clocktypestring);
+	prints("%s\n\n",clocktimestring);
+	prints("memo:%s\n",(clock_data+conf->pos-1)->memo);
+		
+	pressanykey();
+
+	return SHOW_REFRESH;
+}
+
+static int set_clock_show(struct _select_def *conf, int i)
+{
+	char typestr[10];
+	char timestr[50];
+
+	get_clock_string(clock_data+i-1,typestr,timestr);
+	typestr[4]=='\0';
+	prints(" %-4s %-25s %-40s",typestr,timestr,(clock_data+i-1)->memo);
+	return SHOW_CONTINUE;
+}
+
+static int set_clock_prekey(struct _select_def *conf, int *key)
+{
+	switch (*key) {
+	case 'q':
+		*key = KEY_LEFT;
+		break;
+	case 'p':
+	case 'k':
+		*key = KEY_UP;
+		break;
+	case ' ':
+	case 'N':
+		*key = KEY_PGDN;
+		break;
+	case 'n':
+	case 'j':
+		*key = KEY_DOWN;
+		break;
+	}
+	return SHOW_CONTINUE;
+}
+
+static int set_clock_refresh(struct _select_def *conf)
+{
+	clear();
+	docmdtitle("[ÏµÍ³ÄÖÖÓÉèÖÃ]","[a Ôö¼Ó] [d É¾³ı]");
+	move(2,0);
+	prints("[0;1;37;44m   %-4s %-25s %-40s[m","ÀàĞÍ¡","ÄÖÁåÊ±¼ä","ÄÖÁåËµÃ÷");
+	update_endline();
+	return SHOW_CONTINUE;
+}
+
+static int set_clock_getdata(struct _select_def *conf,int pos,int len)
+{
+	conf->item_count = clock_total;
+
+	return SHOW_CONTINUE;
+}
+
+static int set_clock_key(struct _select_def *conf, int key)
+{
+	switch (key){
+
+	case 'a':
+		return add_new_clock();
+		break;
+	case 'd':
+		return del_clock(conf->pos-1);
+		break;
+	}
+
+	return SHOW_CONTINUE;
+}
+
+int set_clock()
+{
+
+	struct _select_def group_conf;
+	int i;
+	POINT *pts;
+
+	clock_data = (struct clock_struct *) malloc(sizeof(struct clock_struct) * MAX_CLOCK_DEF);
+	if(clock_data==NULL) return -1;
+
+	if(init_clock_data()==0) return -2;
+
+	bzero(&group_conf,sizeof(struct _select_def));
+	group_conf.item_count = clock_total;
+
+    pts = (POINT *) malloc(sizeof(POINT) * BBS_PAGESIZE);
+    for (i = 0; i < BBS_PAGESIZE; i++) {
+        pts[i].x = 2;
+        pts[i].y = i + 3;
+    }
+	group_conf.item_per_page = BBS_PAGESIZE;
+    group_conf.flag = LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;
+    group_conf.prompt = "¡ô";
+    group_conf.item_pos = pts;
+	group_conf.title_pos.x = 0;
+	group_conf.title_pos.y = 0;
+	group_conf.pos=1;
+	group_conf.page_pos=1;
+
+	group_conf.on_select = set_clock_select;
+	group_conf.show_data = set_clock_show;
+	group_conf.pre_key_command = set_clock_prekey;
+	group_conf.show_title = set_clock_refresh;
+	group_conf.get_data = set_clock_getdata;
+	group_conf.key_command = set_clock_key;
+
+	list_select_loop(&group_conf);
+	save_clock_data();
+	free(pts);
+	free(clock_data);
+	clock_data=NULL;
+
+	return 1;
+}

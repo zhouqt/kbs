@@ -25,6 +25,7 @@
 #include "screen.h"             /* Leeward 98.06.05 */
 
 time_t calltime = 0;
+char calltimememo[40];
 static int stuffmode = 0;
 
 static int mem_show(char *ptr, int size, int row, int numlines, char *fn);
@@ -153,13 +154,14 @@ int check_calltime()
         bell();
         good_move(line, 0);
         clrtoeol();
-        prints("[44m[32mBBS ÏµÍ³Í¨¸æ: [37m%-65s[m", "ÏµÍ³ÄÖÖÓ Áå¡«¡«¡«¡«¡«¡«»Ø³µ¼ÌÐø");
+		calltimememo[39]='\0';
+        prints("[44m[32mBBS ÏµÍ³ÄÖÁå: [37m%-40s[m»Ø³µ¼ÌÐø",calltimememo);
 		refresh();
 		for( ch=igetch(); ch!='\r' && ch!='\n'; ch=igetch() ) ;
         good_move(line, 0);
         clrtoeol();
         saveline(line, 1, NULL);
-        calltime = 0;
+        calltime = calc_calltime();
 		good_move(y,x);
 		return 1;
     }
