@@ -136,7 +136,7 @@ search_board( int *num,int *i,int *find,char* bname)
 
         if (isprint2(ch))
         {
-            bname[*i++] = ch;
+            bname[(*i)++] = ch;
             for (n = 0; n < brdnum; n++)
             {
                 if (!strncasecmp(nbrd[n].name, bname, *i))
@@ -151,14 +151,14 @@ search_board( int *num,int *i,int *find,char* bname)
                 return 1;
             if (*find == NA)
             {
-                bname[--*i] = '\0';
+                bname[--(*i)] = '\0';
             }
             continue;
         }
         else if (ch == Ctrl('H') || ch == KEY_LEFT || ch == KEY_DEL ||
                  ch == '\177')
         {
-            *i--;
+            (*i)--;
             if (*i < 0)
             {
                 *find = YEA;
@@ -374,6 +374,8 @@ int     newflag;
     struct newpostdata *ptr;
     int         page, ch, tmp, number,tmpnum;
     int         loop_mode=0;
+    int     i = 0,find = YEA;
+    char    bname[STRLEN];
 
     if( !strcmp( currentuser->userid, "guest" ) )
         yank_flag = 1;
@@ -566,9 +568,6 @@ case 'n': case 'j': case KEY_DOWN:
             page = -1;
             break;
         case '/': /*À—À˜board */ 
-        	{
-	    		int     i = 0,find = YEA;
-	    		char    bname[STRLEN];
 	            move( 3+num-page,0 ); prints( ">", number );
 	            tmpnum=num;
 	            tmp = search_board( &num,&i,&find,bname );
@@ -577,10 +576,11 @@ case 'n': case 'j': case KEY_DOWN:
 	                loop_mode=1;
 	            else
 	            {
+			find=YEA;
+			i=0;
 	                loop_mode=0;
 	                update_endline();
 	            }
-        	}
             break;
         case 's':   /* sort/unsort -mfchen */
             currentuser->flags[0] ^= BRDSORT_FLAG; /*≈≈–Ú∑Ω Ω*/
