@@ -554,8 +554,8 @@ char *argv[];
     int inetd,port,listprocess;
 
     inetd = 0;
-    if ((argc<=1) || !strcmp(argv[1],"-i") )
-       inetd=1;
+    if ((argc<=1) || !strcmp(argv[1],"-i") )  //如果只有文件名或者第一个参数是“-i”
+       inetd=1;                               //则用inetd启动 
     else {
        if (argc<=1) port = 23;
        else
