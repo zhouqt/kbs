@@ -34,7 +34,7 @@ u_exit()
 	/*if (delfrom_msglist(get_utmpent_num(ui), getcurruserid()) < 0)
 		http_fatal("无法从消息列表中删除当前用户");*/
 
-    clear_utmp(get_utmpent_num(ui),,ui->uid);
+    clear_utmp(get_utmpent_num(ui),ui->uid);
 }
 
 void abort_program()
