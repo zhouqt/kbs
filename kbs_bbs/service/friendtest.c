@@ -10,7 +10,7 @@ struct usertype {
     char userid[IDLEN+2];
     int tried;
     int got;
-    time_t create;
+    int create;
 } * users;
 int userst=0;
 
