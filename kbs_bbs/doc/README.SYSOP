@@ -98,19 +98,19 @@ LinuxKernel 版面。
 但又有不少改进。这些系统版面在默认情况下包括（千万注意版名大小写）：
 
 第一列表示推荐的版面权限设置，下面有具体说明
-VX     bbsnet       用户使用穿梭的记录。
-oX     BBSLists     各类统计列表。
+V      bbsnet       用户使用穿梭的记录。
+X      BBSLists     各类统计列表。
 o      Blessing     祝福版面。祝福榜排名将从这个版面产生。
-VX     denypost     各版面封禁记录。
+V      denypost     各版面封禁记录。
 V      Filter       出现了系统自动过滤词语的文章将出现在这个版面。站务按 @ 审核
-VX     Goodbye      ID 自杀记录。
-oX     newcomers    新手上路，这个最古老了。新 ID 注册会自动在这个版面发文。
-oX     notepad      留言版记录。
-VX     Recommend    推荐文章。
-LX     Registry     帐号管理员审核 ID 的记录。
-VX     syssecurity  系统安全记录，包括任免版主、用户权限更改、版面设置更改等。
-VX     undenypost   各版面解封记录。
-VX     vote         各项投票与结果。
+V      Goodbye      ID 自杀记录。
+X      newcomers    新手上路，这个最古老了。新 ID 注册会自动在这个版面发文。
+X      notepad      留言版记录。
+V      Recommend    推荐文章。
+L      Registry     帐号管理员审核 ID 的记录。
+V      syssecurity  系统安全记录，包括任免版主、用户权限更改、版面设置更改等。
+V      undenypost   各版面解封记录。
+V      vote         各项投票与结果。
 V      sysmail      该版面建立以后，应该到 ~bbs/boards/ 下面删除这个目录，然后
                     建立同名符号连接到 ~bbs/mail/S/SYSOP。这个版面应该设置只有
                     站务可读，那么所有站务就都可以看到网友给 SYSOP 发送的信件了。
@@ -119,8 +119,8 @@ V      sysmail      该版面建立以后，应该到 ~bbs/boards/ 下面删除这个目录，然后
 列的符号表示推荐的最保守的权限设置，具体说明如下：
         V   仅最高站务（一般是 V 权限和 O 权限的 ID）可以阅读
         L   最高站务和 L 权限的账号管理员都可以阅读
-        X   应该设置只读，参考下面的 2.3 节
-        o   可以对所有用户开放
+        X   可以对普通用户开放，但是应该设置只读，参考下面的 2.3 节
+        o   可以对所有用户开放读写权限
     关于设置权限请参考下面的第 2 部分。这里的权限只是最保守的推荐，一般来说放宽
 这些权限设置不会影响站点的正常使用，但是可能会公开一些站点内部的机密。所以推荐
 开站一段时间看有必要的话再放宽一部分版面的权限，比如 denypost 和 undenypost 这
