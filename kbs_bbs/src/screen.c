@@ -877,3 +877,28 @@ char *buffer;
 		refresh();
 	}
 };
+
+void norefresh_saveline(line, mode, buffer)	/* 0 : save, 1 : restore */
+int line, mode;
+char *buffer;
+{
+	register struct screenline *bp = big_picture;
+	char *tmp = tmpbuffer;
+	int x, y;
+
+	if (buffer)
+		tmp = buffer;
+	switch (mode) {
+	case 0:
+		strncpy(tmp /*old_line.data */ , bp[line].data, LINELEN);
+		tmp[bp[line].len] = '\0';
+		break;
+	case 1:
+		getyx(&x, &y);
+		move(line, 0);
+		clrtoeol();
+		prints("%s", tmp);
+		move(x, y);
+	}
+};
+

@@ -640,6 +640,8 @@ int translate_msg(char* src, struct msghead *head, char* dest)
             dest[len++]='m';
             dest[len++]='\n';
             ret++;
+            for(pos=0;pos<strlen(attstr);pos++)
+                dest[len++]=attstr[pos];
             for(pos=0;pos<space;pos++)
                 dest[len++]=' ';
         }

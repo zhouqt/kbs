@@ -501,17 +501,17 @@ void r_msg()
                 prints("[m %3d/%-3d,¡ü¡ýÇÐ»»,Enter½áÊø, ÓÃ»§%sÒÑÏÂÕ¾,ÎÞ·¨»Ø¸´", now+1, count, uid);
         good_getyx(&oy, &ox);
         
-        refresh();
-        oflush();
         if(canreply)
             ch = -multi_getdata(oy, ox, 78, NULL, buf, 1024, true);
         else {
+            refresh();
+            oflush();
             do {
                 ch = igetkey();
             } while(ch!=KEY_UP&&ch!=KEY_DOWN&&ch!='\r'&&ch!='\n');
         }
         for(i=0;i<=oy;i++)
-            saveline(i, 1, savebuffer[i]);
+            norefresh_saveline(i, 1, savebuffer[i]);
         switch(ch) {
             case KEY_UP:
                 now--;

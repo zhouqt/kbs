@@ -896,7 +896,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
         refresh();
         ch = igetkey();
         for(i=starty;i<=y;i++)
-            saveline(i, 1, savebuffer[i]);
+            norefresh_saveline(i, 1, savebuffer[i]);
         if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch))
             return -ch;
         if (ch == '\n' || ch == '\r')
@@ -921,10 +921,11 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                             if(chk) chk=0;
                             else if(buf[i]<0) chk=1;
                         }
-                        if(chk)
+                        if(chk) {
                             for(i=now-1;i<strlen(buf)-1;i++)
                                 buf[i]=buf[i+1];
                             now--;
+                        }
                     }
 #endif
                 }
