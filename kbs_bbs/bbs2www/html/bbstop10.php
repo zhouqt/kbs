@@ -32,7 +32,7 @@
 			if ($one_line == FALSE)
 				break;
 			$r_board = trim(substr($one_line, 41, 16));
-			$r_num = trim(substr($one_line, 98, 4));
+			$r_num = trim(substr($one_line, 97, 4));
 			$r_id = trim(substr($one_line, 118, 12));
 			$one_line = fgets($fp, 256);
 			if ($one_line == FALSE)
