@@ -118,6 +118,8 @@
 		}
 ?>
 </table>
+<hr class="default"/>
+[<a href="javascript:history.go(-1)">∑µªÿ…œ“ª“≥</a>]
 <?php
 		html_normal_quit();
 	}
