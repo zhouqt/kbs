@@ -143,6 +143,10 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct, char *board, ch
 	{
 		http_fatal("本文章已经转贴过一次，无法再次转贴");
 	}
+	if(fileinfo->attachment)
+	{
+		http_fatal("带附件文章暂时不支持转贴");
+	}
 	setbfile(quote_file, board, fileinfo->filename);
 	strcpy(quote_title, fileinfo->title);
 	if(!strcmp(board2, board))
