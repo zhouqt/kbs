@@ -24,6 +24,7 @@
 #include "bbs.h"
 
 #define BUFSIZE (MAXUSERS + 244)
+#define NUMBUFFER 20
 
 #ifdef SYSV
 int
@@ -200,26 +201,34 @@ toobigmesg()
     */
 }
 
+/* apply_record进行了预读优化,以减少系统调用次数,提高速度. ylsdd 2001.4.24 */
 int
 apply_record(filename,fptr,size)
 char *filename ;
 int (*fptr)() ;
 int size ;
 {
-    char abuf[BUFSIZE] ;
-    int fd ;
+    char *buf;
+    int fd, sizeread, n, i;
 
-    if( size > BUFSIZE ) {
+    if((buf=malloc(size*NUMBUFFER))==NULL) {
         toobigmesg();
         return -1;
     }
     if((fd = open(filename,O_RDONLY,0)) == -1)
         return -1 ;
-    while(read(fd,abuf,size) == size)
-        if((*fptr)(abuf) == QUIT) {
-            close(fd) ;
-            return QUIT ;
+    while((sizeread=read(fd, buf, size*NUMBUFFER))>0) {
+        n=sizeread/size;
+        for(i=0;i<n;i++) {
+            if((*fptr)(buf+i*size) == QUIT) {
+                free(buf);
+                close(fd);
+                return QUIT;
+            }
         }
+        if(sizeread%size!=0) break;
+    }
+    free(buf);
     close(fd) ;
     return 0 ;
 }
@@ -323,6 +332,8 @@ id = npos;
 }
 /*#endif*/ /*_DEBUG_*/
 /*---   End of Addition     ---*/
+
+/* search_record进行了预读优化,以减少系统调用次数,提高速度. ylsdd, 2001.4.24 */
 int
 search_record(filename,rptr,size,fptr,farg)
 char *filename ;
@@ -331,18 +342,36 @@ int size ;
 int (*fptr)() ;
 char *farg ;
 {
-    int fd ;
+    int fd, sizeread, n, i;
     int id = 1 ;
+    char *buf;
 
     if((fd = open(filename,O_RDONLY,0)) == -1)
         return 0 ;
-    while(read(fd,rptr,size) == size) {
-        if((*fptr)(farg,rptr)) {
-            close(fd) ;
-            return id ;
+    if((buf=malloc(size*NUMBUFFER))==NULL) {
+        while(read(fd,rptr,size) == size) {
+            if((*fptr)(farg,rptr)) {
+                close(fd) ;
+                return id ;
+            }
+            id++ ;
         }
-        id++ ;
-    }
+    } else {
+        while((sizeread=read(fd,rptr,size*NUMBUFFER))>0) {
+            n=sizeread/size;
+            for(i=0;i<n;i++) {
+                if((*fptr)(farg,buf+i*size)) {
+                    memcpy(rptr,buf+i*size,size);
+                    free(buf);
+                    close(fd);
+                    return id;
+                }
+                id++;
+            }
+            if(sizeread%size!=0) break;
+        }
+        free(buf);
+    } 
     close(fd) ;
     return 0 ;
 }
