@@ -176,7 +176,7 @@ int mail_file_sent(char *fromid, char *tmpfile, char *userid, char *title, int u
     newmessage.accessed[0] |= FILE_READ;
     if (append_record(buf, &newmessage, sizeof(newmessage)) == -1)
         return -1;
-    bbslog("1user", "mailed %s ", userid);
+    newbbslog("1user", "mailed %s ", userid);
     if (!strcasecmp(userid, "SYSOP"))
         updatelastpost("sysmail");
     return 0;

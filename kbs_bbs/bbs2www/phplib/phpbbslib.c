@@ -1272,6 +1272,7 @@ static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown)
     detach_utmp();
     detach_boards();
     detach_ucache();
+    detach_publicshm();
 
 #ifdef DEBUG
     zend_error(E_WARNING, "module shutdown");
