@@ -4691,6 +4691,7 @@ static int choose_tmpl_select(struct _select_def *conf)
 	FILE *fpsrc;
 	char filepath[STRLEN];
 	int i;
+	int write_ok = 0;
 	char * tmp[ MAX_CONTENT ];
 
 	if( ptemplate[conf->pos-1].tmpl->content_num <= 0 )
@@ -4717,17 +4718,6 @@ static int choose_tmpl_select(struct _select_def *conf)
 		prints("Ä£°å»Ø´ð(×î³¤%d×Ö·û):",ptemplate[conf->pos-1].cont[i].length);
         multi_getdata(6, 0, 79, NULL, ans, ptemplate[conf->pos-1].cont[i].length+1, 11, true, 0);
 		tmp[i] = ans;
-	}
-	{
-		char ans[3];
-		clear();
-        getdata(t_lines - 1, 0, "È·ÊµÒª·¢±íÂð(Y/N)? [Y]: ", ans, sizeof(ans), DOECHO, NULL, true);
-        if (ans[0] == 'N' || ans[0] == 'n') {
-			for(i=0; i< ptemplate[conf->pos-1].tmpl->content_num; i++)
-				free( tmp[i] );
-			fclose(fp);
-			return SHOW_QUIT;
-		}
 	}
 
 	if( ptemplate[conf->pos-1].tmpl->filename[0] ){
@@ -4764,25 +4754,29 @@ static int choose_tmpl_select(struct _select_def *conf)
 					}
 				}
 				fclose(fpsrc);
-				fclose(fp);
 
-				t_now = conf->pos;
-				for(i=0; i< ptemplate[conf->pos-1].tmpl->content_num; i++)
-					free( tmp[i] );
-
-				return SHOW_QUIT;
+				write_ok = 1;
 			}
+		}
+	}
+	if(write_ok == 0){
+		for(i=0; i< ptemplate[conf->pos-1].tmpl->content_num; i++)
+			fprintf(fp,"[1;32m%s:[m\n%s\n\n",ptemplate[conf->pos-1].cont[i].text, tmp[i]);
+	}
+	fclose(fp);
+
+	{
+		char ans[3];
+		clear();
+        ansimore2(conf->arg, false, 0, 19 /*19 */ );
+        getdata(t_lines - 1, 0, "È·ÊµÒª·¢±íÂð(Y/N)? [Y]: ", ans, sizeof(ans), DOECHO, NULL, true);
+        if (ans[0] != 'N' && ans[0] != 'n') {
+			t_now = conf->pos;
 		}
 	}
 
 	for(i=0; i< ptemplate[conf->pos-1].tmpl->content_num; i++)
-		fprintf(fp,"[1;32m%s:[m\n%s\n\n",ptemplate[conf->pos-1].cont[i].text, tmp[i]);
-	fclose(fp);
-
-	for(i=0; i< ptemplate[conf->pos-1].tmpl->content_num; i++)
 		free( tmp[i] );
-
-	t_now = conf->pos;
 
 	return SHOW_QUIT;
 }
