@@ -1165,6 +1165,7 @@ void display_buffer()
             p = p->next;
         } else
             prints("%s~", editansi ? ANSI_RESET : "");
+        prints("\n");
     }
 
     showansi = temp_showansi;
