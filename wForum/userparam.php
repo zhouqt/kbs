@@ -40,7 +40,7 @@ function main(){
 	require("inc/userdatadefine.inc.php");
 ?>
 <form action="saveuserparam.php" method=POST name="theForm">
-<table cellpadding=3 cellspacing=1 border=0 align=center class=tableborder1>
+<table cellpadding=3 cellspacing=1 border=0 align=center class=TableBorder1>
 <tr> 
       <th colspan="2" width="100%">用户个人参数（www方式）</th>
  </tr> 
@@ -51,8 +51,8 @@ function main(){
 			continue;
 		$flag=1<<$i;
 ?>
-<tr><td width="40%" class=tablebody1><B><?php echo $user_define[$i][1]; ?></B>：<BR><?php echo $user_define[$i][2]; ?></td>   
-        <td width="60%" class=tablebody1>    
+<tr><td width="40%" class=TableBody1><B><?php echo $user_define[$i][1]; ?></B>：<BR><?php echo $user_define[$i][2]; ?></td>   
+        <td width="60%" class=TableBody1>    
 			<input type="radio" name="param<?php echo $i; ?>" value="1" <?php if ($userparam & $flag) echo "checked"; ?> ><?php echo $user_define[$i][3]; ?>
 			<input type="radio" name="param<?php echo $i; ?>" value="0" <?php if (!($userparam & $flag)) echo "checked"; ?> ><?php echo $user_define[$i][4]; ?>
         </td>   
@@ -70,8 +70,8 @@ function main(){
 			continue;
 		$flag=1<<$i;
 ?>
-<tr><td width="40%" class=tablebody1><B><?php echo $user_define[$i][1]; ?></B>：<BR><?php echo $user_define[$i][2]; ?></td>   
-        <td width="60%" class=tablebody1>    
+<tr><td width="40%" class=TableBody1><B><?php echo $user_define[$i][1]; ?></B>：<BR><?php echo $user_define[$i][2]; ?></td>   
+        <td width="60%" class=TableBody1>    
 			<input type="radio" name="param<?php echo $i; ?>" value="1" <?php if ($userparam & $flag) echo "checked"; ?> ><?php echo $user_define[$i][3]; ?>
 			<input type="radio" name="param<?php echo $i; ?>" value="0" <?php if (!($userparam & $flag)) echo "checked"; ?> ><?php echo $user_define[$i][4]; ?>
         </td>   
@@ -80,7 +80,7 @@ function main(){
 	}
 ?>
 <tr align="center"> 
-<td colspan="2" width="100%" class=tablebody2>
+<td colspan="2" width="100%" class=TableBody2>
 <input type=Submit value="更 新" name="Submit"> &nbsp; <input type="reset" name="Submit2" value="清 除">
 </td></tr>
 </table></form>

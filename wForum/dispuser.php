@@ -70,11 +70,11 @@ if ($user['userdefine'] & $flag) {
   </tr>
 </table>
 
-<table cellspacing=1 cellpadding=3 align=center  style="table-layout:fixed;word-break:break-all" class=tableborder1>
+<table cellspacing=1 cellpadding=3 align=center  style="table-layout:fixed;word-break:break-all" class=TableBorder1>
   <col width=20% ><col width=*><col width=40% > 
   <tr> 
     <th colspan=2 align=left height=25>基本资料</th>
-    <td rowspan=7 align=center class=tablebody1 width=40% valign=top>
+    <td rowspan=7 align=center class=TableBody1 width=40% valign=top>
 <?php
 	$photo_url=htmlspecialchars(trim($user['photo_url']),ENT_QUOTES);
 	if ($photo_url!='') {
@@ -86,37 +86,37 @@ if ($user['userdefine'] & $flag) {
     </td>
   </tr>   
   <tr> 
-    <td class=tablebody1 width=20% align=right>性 别：</td>
-    <td class=tablebody1><?php echo chr($user['gender'])=='M'?'男':'女'; ?> </td>
+    <td class=TableBody1 width=20% align=right>性 别：</td>
+    <td class=TableBody1><?php echo chr($user['gender'])=='M'?'男':'女'; ?> </td>
   </tr>
   <tr> 
-    <td class=tablebody1 width=20% align=right>星 座：</td>
-    <td class=tablebody1>
+    <td class=TableBody1 width=20% align=right>星 座：</td>
+    <td class=TableBody1>
 <?php
 	echo get_astro($user['birthmonth'],$user['birthday']);
 ?></td>
   </tr>
   <tr> 
-    <td class=tablebody1 width=20% align=right>Ｑ Ｑ：</td>
-    <td class=tablebody1>
+    <td class=TableBody1 width=20% align=right>Ｑ Ｑ：</td>
+    <td class=TableBody1>
 	<?php echo showIt($user['OICQ']); ?>
 </td>
   </tr>
   <tr> 
-    <td class=tablebody2 width=20% align=right>ＩＣＱ：</td>
-    <td class=tablebody2>
+    <td class=TableBody2 width=20% align=right>ＩＣＱ：</td>
+    <td class=TableBody2>
 	<?php echo showIt($user['ICQ']); ?>
 </td>
   </tr>
   <tr> 
-    <td class=tablebody1 width=20% align=right>ＭＳＮ：</td>
-    <td class=tablebody1>
+    <td class=TableBody1 width=20% align=right>ＭＳＮ：</td>
+    <td class=TableBody1>
 	<?php echo showIt($user['MSN']); ?>
  </td>
   </tr>
   <tr> 
-    <td class=tablebody2 width=20% align=right>主 页：</td>
-    <td class=tablebody2>
+    <td class=TableBody2 width=20% align=right>主 页：</td>
+    <td class=TableBody2>
 	<?php 
 	$homepage=htmlspecialchars(trim($user['homepage']),ENT_QUOTES);
 	if ($homepage!='') {
@@ -128,9 +128,9 @@ if ($user['userdefine'] & $flag) {
 </td>
   </tr>
   <tr> 
-    <td class=tablebody1 width=20% align=right valign=top>&nbsp;</td>
-    <td class=tablebody1>&nbsp;</td>
-    <td class=tablebody1 align=center width=40% >
+    <td class=TableBody1 width=20% align=right valign=top>&nbsp;</td>
+    <td class=TableBody1>&nbsp;</td>
+    <td class=TableBody1 align=center width=40% >
       <b><a href="javascript:openScript('messanger.asp?action=new&touser=admin',500,400)">给他留言</a> | <a href="friendlist.asp?action=addF&myFriend=admin" target=_blank>加为好友</a></b></td>
   </tr>
 </table>
@@ -140,12 +140,12 @@ if ($user['userdefine'] & $flag) {
 $flag=1<<30;
 if ($user['userdefine'] & $flag) {
 ?>
-<table cellspacing=1 cellpadding=3 align=center class=tableborder1 style="table-layout:fixed;word-break:break-all">
+<table cellspacing=1 cellpadding=3 align=center class=TableBorder1 style="table-layout:fixed;word-break:break-all">
   <col width=20% ><col width=*><col width=40% > 
   <tr> 
     <th colspan=2 align=left height=25>
       用户详细资料</th>
-    <td rowspan=16 class=tablebody1 width=40% valign=top>
+    <td rowspan=16 class=TableBody1 width=40% valign=top>
 <b>性格：</b>
 <br>
 <?php   echo $character[$user['character']]; ?>
@@ -173,16 +173,16 @@ if ($user['userdefine'] & $flag) {
 </td>
   </tr>   
   <tr> 
-    <td class=tablebody1 width=20% align=right>真实姓名：</td>
-    <td class=tablebody1><?php echo showIt($user['realname']);	?></td>
+    <td class=TableBody1 width=20% align=right>真实姓名：</td>
+    <td class=TableBody1><?php echo showIt($user['realname']);	?></td>
   </tr>
   <tr> 
-    <td class=tablebody2 width=20% align=right>国　　家：</td>
-    <td class=tablebody2><?php echo showIt($user['country']); ?> </td>
+    <td class=TableBody2 width=20% align=right>国　　家：</td>
+    <td class=TableBody2><?php echo showIt($user['country']); ?> </td>
   </tr>
   <tr> 
-    <td class=tablebody2 width=20% align=right>出 生：</td>
-    <td class=tablebody2>
+    <td class=TableBody2 width=20% align=right>出 生：</td>
+    <td class=TableBody2>
 <?php
 	if ( ($user['birthyear']!=0) && ($user['birthmonth']!=0) && ($user['birthday']!=0)) {
 		echo '19'.$user['birthyear'].'年'.$user['birthmonth'].'月'.$user['birthday'].'日';
@@ -192,24 +192,24 @@ if ($user['userdefine'] & $flag) {
  </td>
   </tr>
   <tr> 
-    <td class=tablebody1 width=20% align=right>省　　份：</td>
-    <td class=tablebody1><?php echo showIt($user['province']); ?></td>
+    <td class=TableBody1 width=20% align=right>省　　份：</td>
+    <td class=TableBody1><?php echo showIt($user['province']); ?></td>
   </tr>
   <tr> 
-    <td class=tablebody2 width=20% align=right>城　　市：</td>
-    <td class=tablebody2><?php  echo showIt($user['city']); ?></td>
+    <td class=TableBody2 width=20% align=right>城　　市：</td>
+    <td class=TableBody2><?php  echo showIt($user['city']); ?></td>
   </tr>
   <tr> 
-    <td class=tablebody1 width=20% align=right>联系电话：</td>
-    <td class=tablebody1>	<?php echo showIt($user['telephone']); ?></td>
+    <td class=TableBody1 width=20% align=right>联系电话：</td>
+    <td class=TableBody1>	<?php echo showIt($user['telephone']); ?></td>
   </tr>
   <tr> 
-    <td class=tablebody2 width=20% align=right>通信地址：</td>
-    <td class=tablebody2><?php   echo showIt($user['address']); ?></td>
+    <td class=TableBody2 width=20% align=right>通信地址：</td>
+    <td class=TableBody2><?php   echo showIt($user['address']); ?></td>
   </tr>
   <tr> 
-    <td class=tablebody2 width=20% align=right>Ｅｍａｉｌ：</td>
-    <td class=tablebody2>
+    <td class=TableBody2 width=20% align=right>Ｅｍａｉｌ：</td>
+    <td class=TableBody2>
 	<?php 
 	$reg_email=htmlspecialchars(trim($user['reg_email']),ENT_QUOTES);
 	if ($reg_email!='') {
@@ -222,126 +222,126 @@ if ($user['userdefine'] & $flag) {
   </tr>
 
   <tr> 
-    <td class=tablebody1 width=20% align=right>生　　肖：</td>
-    <td class=tablebody1><?php echo showIt($shengxiao[$user['shengxiao']]); ?> </td>
+    <td class=TableBody1 width=20% align=right>生　　肖：</td>
+    <td class=TableBody1><?php echo showIt($shengxiao[$user['shengxiao']]); ?> </td>
   </tr>
   <tr> 
-    <td class=tablebody2 width=20% align=right>血　　型：</td>
-    <td class=tablebody2><?php    echo showIt($bloodtype[$user['bloodtype']]); ?></td>
+    <td class=TableBody2 width=20% align=right>血　　型：</td>
+    <td class=TableBody2><?php    echo showIt($bloodtype[$user['bloodtype']]); ?></td>
   </tr>
   <tr> 
-    <td class=tablebody1 width=20% align=right>信　　仰：</td>
-    <td class=tablebody1><?php    echo showIt($religion[$user['religion']]) ?></td>
+    <td class=TableBody1 width=20% align=right>信　　仰：</td>
+    <td class=TableBody1><?php    echo showIt($religion[$user['religion']]) ?></td>
   </tr>
   <tr> 
-    <td class=tablebody2 width=20% align=right>职　　业：</td>
-    <td class=tablebody2><?php    echo showIt($profession[$user['profession']]); ?></td>
+    <td class=TableBody2 width=20% align=right>职　　业：</td>
+    <td class=TableBody2><?php    echo showIt($profession[$user['profession']]); ?></td>
   </tr>
   <tr> 
-    <td class=tablebody1 width=20% align=right>婚姻状况：</td>
-    <td class=tablebody1><?php    echo showIt($married[$user['married']]); ?></td>
+    <td class=TableBody1 width=20% align=right>婚姻状况：</td>
+    <td class=TableBody1><?php    echo showIt($married[$user['married']]); ?></td>
   </tr>
   <tr> 
-    <td class=tablebody2 width=20% align=right>最高学历：</td>
-    <td class=tablebody2><?php    echo showIt($education[$user['education']]); ?></td>
+    <td class=TableBody2 width=20% align=right>最高学历：</td>
+    <td class=TableBody2><?php    echo showIt($education[$user['education']]); ?></td>
   </tr>
   <tr> 
-    <td class=tablebody1 width=20% align=right>毕业院校：</td>
-    <td class=tablebody1><?php    echo showIt($user['graduateschool']); ?></td>
+    <td class=TableBody1 width=20% align=right>毕业院校：</td>
+    <td class=TableBody1><?php    echo showIt($user['graduateschool']); ?></td>
   </tr></table>
 <br>
 <?php
 }
 ?>
-<table cellspacing=1 cellpadding=3 align=center class=tableborder1>
+<table cellspacing=1 cellpadding=3 align=center class=TableBorder1>
   <tr>
     <th align=left colspan=6 height=25> 论坛属性</th>
   </tr>
   <tr>
-    <td class=tablebody1 width=15% align=right>积分：</td>
+    <td class=TableBody1 width=15% align=right>积分：</td>
 
-    <td  width=35%  class=tablebody1><b><?php echo $user['score']; ?> </b></td>
-    <td width=15% align=right class=tablebody1>精华帖子：</td>
-    <td width=35%  class=tablebody1> <b>N/A</b>篇</td>
+    <td  width=35%  class=TableBody1><b><?php echo $user['score']; ?> </b></td>
+    <td width=15% align=right class=TableBody1>精华帖子：</td>
+    <td width=35%  class=TableBody1> <b>N/A</b>篇</td>
   </tr>
   <tr> 
-    <td class=tablebody1 width=15% align=right>魅力值：</td>
-    <td  width=35%  class=tablebody1><b>N/A </b></td>
-    <td width=15% align=right class=tablebody1>帖子总数：</td>
-    <td width=35%  class=tablebody1><b><?php echo $user['numposts']; ?></b> 篇</td>
+    <td class=TableBody1 width=15% align=right>魅力值：</td>
+    <td  width=35%  class=TableBody1><b>N/A </b></td>
+    <td width=15% align=right class=TableBody1>帖子总数：</td>
+    <td width=35%  class=TableBody1><b><?php echo $user['numposts']; ?></b> 篇</td>
   </tr>
   <tr> 
-    <td class=tablebody1 width=15% align=right>论坛等级：</td>
-    <td  width=35%  class=tablebody1><b><?php echo bbs_getuserlevel($user['userid']); ?> </b></td>
-    <td width=15% align=right class=tablebody1>被删主题：</td>
-    <td width=35%  class=tablebody1><b><font color=#FF0000>N/A</font></b> 
+    <td class=TableBody1 width=15% align=right>论坛等级：</td>
+    <td  width=35%  class=TableBody1><b><?php echo bbs_getuserlevel($user['userid']); ?> </b></td>
+    <td width=15% align=right class=TableBody1>被删主题：</td>
+    <td width=35%  class=TableBody1><b><font color=#FF0000>N/A</font></b> 
       篇</td>
   </tr>
   <tr> 
-    <td class=tablebody1 width=15% align=right>威望值：</td>
-    <td  width=35%  class=tablebody1><b><font color=#FF0000>N/A</font> </b></td>
-    <td width=15% align=right class=tablebody1>被删除率：</td>
-<td width=35%  class=tablebody1><b></b> <font color=#FF0000><b>
+    <td class=TableBody1 width=15% align=right>威望值：</td>
+    <td  width=35%  class=TableBody1><b><font color=#FF0000>N/A</font> </b></td>
+    <td width=15% align=right class=TableBody1>被删除率：</td>
+<td width=35%  class=TableBody1><b></b> <font color=#FF0000><b>
 N/A
 </b></font> 
     </td>
   </tr>
   <tr> 
-    <td class=tablebody1 width=15% align=right>门  派：</td>
-    <td  width=35%  class=tablebody1><b>
+    <td class=TableBody1 width=15% align=right>门  派：</td>
+    <td  width=35%  class=TableBody1><b>
 <?php echo showIt($groups[$user['group']]); ?>
  </b></td>
-    <td class=tablebody1 width=15% align=right>登陆次数：</td>
-    <td width=35%  class=tablebody1><b><?php echo $user['numlogins']; ?></b> 
+    <td class=TableBody1 width=15% align=right>登陆次数：</td>
+    <td width=35%  class=TableBody1><b><?php echo $user['numlogins']; ?></b> 
     </td>
   </tr>
   <tr> 
-    <td class=tablebody1 width=15% align=right>注册日期：</td>
-    <td  width=35%  class=tablebody1><b><?php echo strftime("%Y-%m-%d %H:%M:%S", $user['firstlogin']); ?></b></td>
-    <td width=15% align=right class=tablebody1>上次登录：</td>
-    <td width=35%  class=tablebody1><b><?php echo strftime("%Y-%m-%d %H:%M:%S", $user['lastlogin']); ?></b></td>
+    <td class=TableBody1 width=15% align=right>注册日期：</td>
+    <td  width=35%  class=TableBody1><b><?php echo strftime("%Y-%m-%d %H:%M:%S", $user['firstlogin']); ?></b></td>
+    <td width=15% align=right class=TableBody1>上次登录：</td>
+    <td width=35%  class=TableBody1><b><?php echo strftime("%Y-%m-%d %H:%M:%S", $user['lastlogin']); ?></b></td>
   </tr>
 </table>
 <br>
-<table cellspacing=1 cellpadding=3 align=center class=tableborder1>
+<table cellspacing=1 cellpadding=3 align=center class=TableBorder1>
   <tr> 
     <th align=left colspan=4>
       资产情况</th>
   </tr>
   <tr> 
-    <td class=tablebody1 width=15% align=right>现金货币：</td>
-    <td width=35%  class=tablebody1><b><?php echo $user['money']; ?></b></td>
-    <td colspan=2 valign=top rowspan=4 class=tablebody1>论坛职务：
+    <td class=TableBody1 width=15% align=right>现金货币：</td>
+    <td width=35%  class=TableBody1><b><?php echo $user['money']; ?></b></td>
+    <td colspan=2 valign=top rowspan=4 class=TableBody1>论坛职务：
       <hr size=1 width=100 align=left>
 <?php echo bbs_getuserlevel($user['userid']); ?><br>
       </td>
   </tr>
   <tr> 
-    <td class=tablebody1 width=15% align=right>股票市值：</td>
-    <td  width=35%  class=tablebody1><b>N/A</b></td>
+    <td class=TableBody1 width=15% align=right>股票市值：</td>
+    <td  width=35%  class=TableBody1><b>N/A</b></td>
   </tr>
 
   <tr> 
-    <td class=tablebody1 width=15% align=right>银行存款：</td>
-    <td width=35%  class=tablebody1><b>N/A</b></td>
+    <td class=TableBody1 width=15% align=right>银行存款：</td>
+    <td width=35%  class=TableBody1><b>N/A</b></td>
   </tr>
   <tr> 
-    <td class=tablebody1 width=15% align=right>总 资 产：</td>
-    <td width=35%  class=tablebody1><b>N/A</b></td>
+    <td class=TableBody1 width=15% align=right>总 资 产：</td>
+    <td width=35%  class=TableBody1><b>N/A</b></td>
   </tr>
 </table>
 <br>
 
-<table class=tableborder1 cellspacing=1 cellpadding=3 align=center>
+<table class=TableBorder1 cellspacing=1 cellpadding=3 align=center>
 <tr><th height="25" align=left colspan=2>快捷管理选项</th></tr>
 
-<tr><td class=tablebody1 height=25 colspan=2>
+<tr><td class=TableBody1 height=25 colspan=2>
 <B>用户管理选项</B>：   『 <a href=# onclick="alert('该功能尚在开发中。');" title=锁定该用户不允许登陆和发言>锁定</a> | <a href=# onclick="alert('该功能尚在开发中。');" title=屏蔽该用户在论坛的发言>屏蔽</a> | <a href=# onclick="alert('该功能尚在开发中。');" title=解除该用户在论坛的锁定和屏蔽>解除</a> | <a href=# onclick="alert('该功能尚在开发中。');" title=对用户进行分值奖励>奖励</a> | <a href=# onclick="alert('该功能尚在开发中。');">编辑该用户论坛权限</a> 』
 </td></tr>
 
 
 
-<tr><td class=tablebody1 valign=middle height=25 colspan=2>
+<tr><td class=TableBody1 valign=middle height=25 colspan=2>
 <B>用户最后来访IP</B>：   <a href=# onclick="alert('该功能尚在开发中。');"><?php echo $user['lasthost']; ?></a>&nbsp;&nbsp;点击IP查看用户来源及操作
 </td></tr>
 

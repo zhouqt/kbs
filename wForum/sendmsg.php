@@ -33,13 +33,13 @@ parent.pauseMsg();
 <div onkeydown="if(event.keyCode==13 && event.ctrlKey) { document.all.oSend.focus();document.all.oSend.click();} ">
 <form action="dosendmsg.php" method=post name=messager id=messager >
 <input type="hidden" name="destutmp" value="<?php echo $destutmp; ?>"/>
-<table cellpadding=3 cellspacing=1 align=center class=tableborder1>
+<table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
           <tr> 
             <th colspan=3>发送短消息（请输入完整信息）</th>
           </tr>
           <tr> 
-            <td class=tablebody1 valign=middle><b>送讯息给:</b></td>
-            <td class=tablebody1 valign=middle>
+            <td class=TableBody1 valign=middle><b>送讯息给:</b></td>
+            <td class=TableBody1 valign=middle>
               <input id="odestid" name="destid" maxlength="12" value="<?php echo $destid; ?>" size="12" onchange="msg_idchange(this.value);"/>
 <?php
 		if (!isset($_GET["destid"])) {
@@ -54,13 +54,13 @@ parent.pauseMsg();
             </td>
           </tr>
            <tr> 
-            <td class=tablebody1 valign=top width=15%><b>内容：</b></td>
-            <td  class=tablebody1 valign=middle>
+            <td class=TableBody1 valign=top width=15%><b>内容：</b></td>
+            <td  class=TableBody1 valign=middle>
               <input id="oMsgText" name="msg" maxlength="50" size="50" onchange="msg_textchange(this.value);" />
             </td>
           </tr>
           <tr> 
-            <td  class=tablebody1 colspan=2>
+            <td  class=TableBody1 colspan=2>
 <b>说明</b>：<br>
 ① 您可以使用<b>Ctrl+Enter</b>键快捷发送短信<br>
 <!--
@@ -71,7 +71,7 @@ parent.pauseMsg();
             </td>
           </tr>
           <tr> 
-            <td  class=tablebody2 valign=middle colspan=2 align=center> 
+            <td  class=TableBody2 valign=middle colspan=2 align=center> 
               <input type=button value="发送" name=Submit id="oSend" onclick="dosendmsg();">
              &nbsp;
 <!--

@@ -56,12 +56,12 @@ function boardeven($boardID,$boardName){
 	<form action=allpaper.php method=post name=paper>
 	<input type="hidden" name="action" value="delpaper" />
 	<input type=hidden name=board value="<?php   echo $boardName; ?>" />
-	<table class=tableborder1 cellspacing="1" cellpadding="3" align="center">
+	<table class=TableBorder1 cellspacing="1" cellpadding="3" align="center">
 	<tr align=center> 
 	<th width="15%" height=25>用户</th>
 	<th width="50%">标题</th>
 	<th width="20%">发布时间</th>
-	<th width="15%" id=tabletitlelink><?php   if (bbs_is_bm($boardID,$usernum))
+	<th width="15%" id=TableTitleLink><?php   if (bbs_is_bm($boardID,$usernum))
 	{
 	?><a href="allpaper.php?action=batch&board=<?php     echo $boardName; ?>"><?php   } ?>人气</a></th>
 	</tr> 
@@ -72,19 +72,19 @@ function boardeven($boardID,$boardName){
 	$sth=$conn->query($sql);
 	$totalrec=$sth->numRows();
 	if ($totalrec==0) {
-		echo  "<tr> <td class=tablebody1 colspan=4 height=25>本版还没有小字报</td></tr>";
+		echo  "<tr> <td class=TableBody1 colspan=4 height=25>本版还没有小字报</td></tr>";
 	}else{
 		$page_count=0;
 		while($rs=$sth->fetchRow(DB_FETCHMODE_ASSOC)) {
 			echo '<tr>';
-			echo '<td class=tablebody1 align=center height=24>';
+			echo '<td class=TableBody1 align=center height=24>';
 			echo '<a href=dispuser.php?id='.$rs['Owner'].' target=_blank>'.$rs['Owner'].'</a>';
 			echo '</td>';
-			echo '<td class=tablebody1>';
+			echo '<td class=TableBody1>';
 			echo "<a href=javascript:openScript('viewpaper.php?id=".$rs["ID"]."&boardname=".$boardName."',500,400)>".htmlspecialchars($rs['Title'],ENT_QUOTES).'</a>';
 			echo '</td>';
-			echo '<td class=tablebody1>'.$rs['Addtime'].'</td>';
-			echo '<td align=center class=tablebody1>';
+			echo '<td class=TableBody1>'.$rs['Addtime'].'</td>';
+			echo '<td align=center class=TableBody1>';
 			if ($_REQUEST['action']=="batch")	{
 				echo "<input type=checkbox name=sid value=".$rs["ID"].">";
 			}else{
@@ -96,7 +96,7 @@ function boardeven($boardID,$boardName){
 	} 
 	if ($_REQUEST['action']=="batch")
 	{
-	  echo "<tr><td class=tablebody2 colspan=4 align=right>请选择要删除的小字报，<input type=checkbox name=chkall value=on onclick=\"CheckAll(this.form)\">全选 <input type=submit name=Submit value=执行  onclick=\"{if(confirm('您确定执行的操作吗?')){this.document.paper.submit();return true;}return false;}\"></td></tr>";
+	  echo "<tr><td class=TableBody2 colspan=4 align=right>请选择要删除的小字报，<input type=checkbox name=chkall value=on onclick=\"CheckAll(this.form)\">全选 <input type=submit name=Submit value=执行  onclick=\"{if(confirm('您确定执行的操作吗?')){this.document.paper.submit();return true;}return false;}\"></td></tr>";
 	} 
 
 	echo "</table>";

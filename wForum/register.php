@@ -25,13 +25,13 @@ show_footer();
 
 function do_show() {
 ?>
-<table cellpadding=3 cellspacing=1 align=center class=tableborder1>
+<table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
     <tr><th align=center><form action="<?php echo $_SERVER['PHP_SELF'] ?>" method=post>服务条款和声明</td></tr>
 	<input type="hidden" name="action" value="apply">
-    <tr><td class=tablebody1 align=left>
+    <tr><td class=TableBody1 align=left>
 <?php	require("inc/reg_txt.php") ; ?>
 	</td></tr>
-    <tr><td align=center class=tablebody2><input type=submit value=我同意></td></form></tr>
+    <tr><td align=center class=TableBody2><input type=submit value=我同意></td></form></tr>
 </table>
 <?php
 
@@ -46,84 +46,84 @@ function do_apply(){
 
 <form method=post action="<?php echo $_SERVER['PHP_SELF'] ?>" name="theForm">
 <input type="hidden" name="action" value="save">
-<table cellpadding=3 cellspacing=1 align=center class=tableborder1>
+<table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
 <thead>
 <Th colSpan=2 height=24><?php echo $SiteName; ?> -- 新用户注册</Th>
 </thead>
 <TBODY> 
 <TR> 
-<TD width=40% class=tablebody1><B>代号</B>：<BR>2-12字符，可用英文字母或数字，首字符必须是字母</TD>
-<TD width=60%  class=tablebody1> 
+<TD width=40% class=TableBody1><B>代号</B>：<BR>2-12字符，可用英文字母或数字，首字符必须是字母</TD>
+<TD width=60%  class=TableBody1> 
 <input name=userid size=12 maxlength=12></TD>
 </TR>
 <TR> 
-<TD width=40% class=tablebody1><B>密码</B>：<BR>请输入密码，5-39字符，区分大小写。<BR>
+<TD width=40% class=TableBody1><B>密码</B>：<BR>请输入密码，5-39字符，区分大小写。<BR>
 请不要使用任何类似 '*'、' ' 或 HTML 字符</TD>
-<TD width=60%  class=tablebody1> 
+<TD width=60%  class=TableBody1> 
 <input type=password name=pass1 size=12 maxlength=12></TD>
 </TR>
 <TR> 
-<TD width=40% class=tablebody1><B>密码</B>：<BR>请再输一遍确认</TD>
-<TD width=60%  class=tablebody1> 
+<TD width=40% class=TableBody1><B>密码</B>：<BR>请再输一遍确认</TD>
+<TD width=60%  class=TableBody1> 
 <input type=password name=pass2 size=12 maxlength=12></TD>
 </TR>
 <TR> 
-<TD width=40% class=tablebody1><B>验证码</B>：请输入下面图片中字符串<br>
+<TD width=40% class=TableBody1><B>验证码</B>：请输入下面图片中字符串<br>
 <IMG src="img_rand/img_rand.php"></TD>
-<TD width=60%  class=tablebody1> 
+<TD width=60%  class=TableBody1> 
 <input type=text name=validCode size=12 maxlength=12></TD>
 </TR>
 <TR> 
-<TD width=40% class=tablebody1><B>昵称</B>：<BR>您在BBS上的昵称，2-39字符，中英文不限</TD>
-<TD width=60%  class=tablebody1> 
+<TD width=40% class=TableBody1><B>昵称</B>：<BR>您在BBS上的昵称，2-39字符，中英文不限</TD>
+<TD width=60%  class=TableBody1> 
 <input name=username size=20 maxlength=32></TD>
 </TR>
 <TR> 
-<TD width=40% class=tablebody1><B>真实姓名</B>：<BR>请用中文, 至少2个汉字</TD>
-<TD width=60%  class=tablebody1> 
+<TD width=40% class=TableBody1><B>真实姓名</B>：<BR>请用中文, 至少2个汉字</TD>
+<TD width=60%  class=TableBody1> 
 <input name=realname size=20></TD>
 </TR>
 <TR> 
-<TD width=40% class=tablebody1><B>性别</B>：<BR>请选择您的性别</TD>
-<TD width=60%  class=tablebody1> <INPUT type=radio CHECKED value=1 name=gender>
+<TD width=40% class=TableBody1><B>性别</B>：<BR>请选择您的性别</TD>
+<TD width=60%  class=TableBody1> <INPUT type=radio CHECKED value=1 name=gender>
 <IMG  src=pic/Male.gif align=absMiddle>男孩 &nbsp;&nbsp;&nbsp;&nbsp; 
 <INPUT type=radio value=2 name=gender>
 <IMG  src=pic/Female.gif align=absMiddle>女孩</font></TD>
 </TR>
 <TR> 
-<TD width=40% class=tablebody1><B>Email</B>：<BR>您的有效电子邮件地址</TD>
-<TD width=60%  class=tablebody1> 
+<TD width=40% class=TableBody1><B>Email</B>：<BR>您的有效电子邮件地址</TD>
+<TD width=60%  class=TableBody1> 
 <input name=email size=40></TD>
 </TR>
 <TR> 
-<TD width=40% class=tablebody1><B>学校系级或工作单位</B>：<BR>请用中文，至少6个字符</TD>
-<TD width=60%  class=tablebody1> 
+<TD width=40% class=TableBody1><B>学校系级或工作单位</B>：<BR>请用中文，至少6个字符</TD>
+<TD width=60%  class=TableBody1> 
 <input name=dept size=40></TD>
 </TR>
 <TR> 
-<TD width=40% class=tablebody1><B>详细通讯地址</B>：<BR>请用中文，至少6个字符</TD>
-<TD width=60%  class=tablebody1> 
+<TD width=40% class=TableBody1><B>详细通讯地址</B>：<BR>请用中文，至少6个字符</TD>
+<TD width=60%  class=TableBody1> 
 <input name=address size=40></TD>
 </TR>
 <TR> 
-<TD width=40% class=tablebody1><B>联络电话</B>：<BR>您的联络电话，请写明区号</TD>
-<TD width=60%  class=tablebody1> 
+<TD width=40% class=TableBody1><B>联络电话</B>：<BR>您的联络电话，请写明区号</TD>
+<TD width=60%  class=TableBody1> 
 <input name=phone size=40> </TD>
 </TR>
 <TR> 
-<TD width=40% class=tablebody1><B>手机</B>：<BR>您的手机号码（如果没有可以不填）</TD>
-<TD width=60%  class=tablebody1> 
+<TD width=40% class=TableBody1><B>手机</B>：<BR>您的手机号码（如果没有可以不填）</TD>
+<TD width=60%  class=TableBody1> 
 <input name=mobile size=40>&nbsp; <input type=button value='检测帐号' name=Button onclick=gopreview() disabled> </TD>
 </TR>
 </table>
- <table cellpadding=3 cellspacing=1 align=center class=tableborder1 id=adv style="DISPLAY: none">
+ <table cellpadding=3 cellspacing=1 align=center class=TableBorder1 id=adv style="DISPLAY: none">
 <TBODY> 
 <TR align=middle> 
 <Th colSpan=2 height=24 align=left>填写详细资料</TD>
 </TR>
 <TR> 
-<TD width=40%  class=tablebody1><B>头像</B>：<BR>选择的头像将出现在您的资料和发表的帖子中，您也可以选择下面的自定义头像</TD>
-<TD width=60%  class=tablebody1> 
+<TD width=40%  class=TableBody1><B>头像</B>：<BR>选择的头像将出现在您的资料和发表的帖子中，您也可以选择下面的自定义头像</TD>
+<TD width=60%  class=TableBody1> 
 <select name=face size=1 onChange="document.images['face'].src='userface/image'+options[selectedIndex].value+'.gif';" style="BACKGROUND-COLOR: #99CCFF; BORDER-BOTTOM: 1px double; BORDER-LEFT: 1px double; BORDER-RIGHT: 1px double; BORDER-TOP: 1px double; COLOR: #000000">
 <?php 
 	for ($i=1;$i<=USERFACE_IMG_NUMS;$i++) {
@@ -136,8 +136,8 @@ function do_apply(){
 </TR>
 
 <TR> 
-<TD width=40% valign=top class=tablebody1><B>自定义头像</B>：<br>如果图像位置中有连接图片将以自定义的为主</TD>
-<TD width=60%  class=tablebody1>
+<TD width=40% valign=top class=TableBody1><B>自定义头像</B>：<br>如果图像位置中有连接图片将以自定义的为主</TD>
+<TD width=60%  class=TableBody1>
 
 <iframe name=ad frameborder=0 width=300 height=40 scrolling=no src=reg_upload.php></iframe> 
 <br>
@@ -154,14 +154,14 @@ function do_apply(){
 </TD>
 </TR>
 <tr>    
-<td width=40%  class=tablebody1><B>生日</B><BR>如不想填写，请全部留空</td>   
-<td width=60%  class=tablebody1 valign=center>
+<td width=40%  class=TableBody1><B>生日</B><BR>如不想填写，请全部留空</td>   
+<td width=60%  class=TableBody1 valign=center>
 <input maxlength="4" size="4" name="year" /> 年 <input maxlength="2" size="2" name="month" /> 月 <input size="2" maxlength="2" name="day" /> 日
 </td>   
 </tr>
 <tr> 
-<td width=40%  class=tablebody1><B>回复提示</B>：<BR>当您发表的帖子有人回复时，使用论坛信息通知您。</td>
-<td width=60%  class=tablebody1>
+<td width=40%  class=TableBody1><B>回复提示</B>：<BR>当您发表的帖子有人回复时，使用论坛信息通知您。</td>
+<td width=60%  class=TableBody1>
 <input type=radio name=showRe value=1 checked>
 提示我
 <input type=radio name=showRe value=0>
@@ -169,8 +169,8 @@ function do_apply(){
 </tr>
 
 <TR> 
-<TD width=40% class=tablebody1><B>门派</B>：<BR>您可以自由选择要加入的门派</TD>
-<TD width=60% class=tablebody1> 
+<TD width=40% class=TableBody1><B>门派</B>：<BR>您可以自由选择要加入的门派</TD>
+<TD width=60% class=TableBody1> 
 <select name=groupname>
 <?php 
 	for($i=0;$i<count($groups);$i++) {
@@ -182,33 +182,33 @@ function do_apply(){
 </TR>
 
 <TR> 
-<TD width=40%  class=tablebody1><B>OICQ号码</B>：<BR>填写您的QQ地址，方便与他人的联系</TD>
-<TD width=60%  class=tablebody1> 
+<TD width=40%  class=TableBody1><B>OICQ号码</B>：<BR>填写您的QQ地址，方便与他人的联系</TD>
+<TD width=60%  class=TableBody1> 
 <INPUT maxLength=20 size=44 name=OICQ>
 </TD>
 </TR>
 <TR> 
-<TD width=40%  class=tablebody1><B>ICQ号码</B>：<BR>填写您的ICQ地址，方便与他人的联系</font></TD>
-<TD width=60%  class=tablebody1> 
+<TD width=40%  class=TableBody1><B>ICQ号码</B>：<BR>填写您的ICQ地址，方便与他人的联系</font></TD>
+<TD width=60%  class=TableBody1> 
 <INPUT maxLength=20 size=44 name=ICQ>
 </TD>
 </TR>
 <TR > 
-<TD width=40%  class=tablebody1><B>MSN</B>：<BR>填写您的MSN地址，方便与他人的联系</TD>
-<TD width=60%  class=tablebody1> 
+<TD width=40%  class=TableBody1><B>MSN</B>：<BR>填写您的MSN地址，方便与他人的联系</TD>
+<TD width=60%  class=TableBody1> 
 <INPUT maxLength=70 size=44 name=MSN>
 </TD>
 </TR>
 <TR > 
-<TD width=40%  class=tablebody1><B>主页</B>：<BR>填写您的个人主页地址，展示您的网上风采</TD>
-<TD width=60%  class=tablebody1> 
+<TD width=40%  class=TableBody1><B>主页</B>：<BR>填写您的个人主页地址，展示您的网上风采</TD>
+<TD width=60%  class=TableBody1> 
 <INPUT maxLength=70 size=44 name=homepage>
 </TD>
 </TR>
 <TR> 
-<TD width=40%  class=tablebody1><B>签名档</B>：<BR>最多300字节<BR>
+<TD width=40%  class=TableBody1><B>签名档</B>：<BR>最多300字节<BR>
 文字将出现在您发表的文章的结尾处。体现您的个性。 </TD>
-<TD width=60%  class=tablebody1> 
+<TD width=60%  class=TableBody1> 
 <TEXTAREA name=Signature rows=5 wrap=PHYSICAL cols=60></TEXTAREA>
 </TD>
 </TR>
@@ -216,14 +216,14 @@ function do_apply(){
 <th height=25 align=left valign=middle colspan=2><b>&nbsp;个人真实信息</b>（以下内容建议填写）</th>
 </tr>
 <tr>
-<td valign=top  class=tablebody1 width=40% >　<b>国　　家：</b>
+<td valign=top  class=TableBody1 width=40% >　<b>国　　家：</b>
 <b>
 <input type=text name=country size=18>
 </b> </td>
-<td height=71 align=left valign=top  class=tablebody1 rowspan=14 width=60% >
+<td height=71 align=left valign=top  class=TableBody1 rowspan=14 width=60% >
 <table width=100% border=0 cellspacing=0 cellpadding=5>
 <tr>
-<td class=tablebody1><b>性　格： &nbsp; </b>
+<td class=TableBody1><b>性　格： &nbsp; </b>
 <br>
 <?php
 	for ($i=1;$i<count($character);$i++) {
@@ -237,7 +237,7 @@ function do_apply(){
  </td>
 </tr>
 <tr>
-<td class=tablebody1><b>个人简介： &nbsp;</b><br>
+<td class=TableBody1><b>个人简介： &nbsp;</b><br>
 <textarea name=personal rows=6 cols=90% ></textarea>
 </td>
 </tr>
@@ -245,18 +245,18 @@ function do_apply(){
 </td>
 </tr>
 <tr>
-<td valign=top  class=tablebody1 width=40% >　<b>省　　份：</b>
+<td valign=top  class=TableBody1 width=40% >　<b>省　　份：</b>
 <input type=text name=province size=18>
 </td>
 </tr>
 <tr>
-<td valign=top  class=tablebody1 width=40% >　<b>城　　市：
+<td valign=top  class=TableBody1 width=40% >　<b>城　　市：
 </b>
 <input type=text name=city size=18>
 </td>
 </tr>
 <tr>
-<td valign=top  class=tablebody1 width=40% >　<b>生　　肖：
+<td valign=top  class=TableBody1 width=40% >　<b>生　　肖：
 </b>
 <select size=1 name=shengxiao>
 <?php
@@ -268,7 +268,7 @@ function do_apply(){
 </td>
 </tr>
 <tr>
-<td valign=top  class=tablebody1 width=40% >　<b>血　　型：</b>
+<td valign=top  class=TableBody1 width=40% >　<b>血　　型：</b>
 <select size=1 name=blood>
 <?php
 	for($i=0;$i<count($bloodtype);$i++){
@@ -279,7 +279,7 @@ function do_apply(){
 </td>
 </tr>
 <tr>
-<td valign=top  class=tablebody1 width=40% >　<b>信　　仰：</b>
+<td valign=top  class=TableBody1 width=40% >　<b>信　　仰：</b>
 <select size=1 name=belief>
 <?php
 	for($i=0;$i<count($religion);$i++){
@@ -289,7 +289,7 @@ function do_apply(){
 </select></td>
 </tr>
 <tr>
-<td valign=top class=tablebody1 width=40% >　<b>职　　业： </b>
+<td valign=top class=TableBody1 width=40% >　<b>职　　业： </b>
 <select name=occupation>
 <?php
 	for($i=0;$i<count($profession);$i++){
@@ -299,7 +299,7 @@ function do_apply(){
 </select></td>
 </tr>
 <tr>
-<td valign=top class=tablebody1 width=40% >　<b>婚姻状况：</b>
+<td valign=top class=TableBody1 width=40% >　<b>婚姻状况：</b>
 <select size=1 name=marital>
 <?php
 	for($i=0;$i<count($married);$i++){
@@ -309,7 +309,7 @@ function do_apply(){
 </select></td>
 </tr>
 <tr>
-<td valign=top class=tablebody1 width=40% >　<b>最高学历：</b>
+<td valign=top class=TableBody1 width=40% >　<b>最高学历：</b>
 <select size=1 name=education>
 <?php
 	for($i=0;$i<count($graduate);$i++){
@@ -319,7 +319,7 @@ function do_apply(){
 </select></td>
 </tr>
 <tr>
-<td valign=top class=tablebody1 width=40% >　<b>毕业院校：</b>
+<td valign=top class=TableBody1 width=40% >　<b>毕业院校：</b>
 <input type=text name=college size=18></td>
 </tr>
 </TBODY> 
@@ -468,11 +468,11 @@ $ret=bbs_createregform($userid,$realname,$dept,$address,$gender,$year,$month,$da
 		}
 	}
 ?>
-<table cellpadding=3 cellspacing=1 align=center class=tableborder1>
+<table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
 <tr>
 <th height=24>注册单已成功：<?php echo $SiteName; ?>欢迎您的到来</th>
 </tr>
-<tr><td class=tablebody1><br>
+<tr><td class=TableBody1><br>
 <ul>
 <li>你现在还没有通过身份认证，,只有最基本的权限，不能发文、发信、聊天等。</li>
 <li>系统会自动生成注册单，待站长审核通过后,你将获得合法用户权限！</li>

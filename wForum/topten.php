@@ -38,11 +38,11 @@ function showTopTen(){
 	}
 	$modifytime=filemtime($top_file);
 ?>
-<table cellspacing=1 cellpadding=0 align=center width="97%" class=tableBorder1>
+<table cellspacing=1 cellpadding=0 align=center width="97%" class=TableBorder1>
 <thead><tr><th align="center" colspan=5 height=25>今日十大热门话题</th></tr></thead>
 </table>
 <br>
-<table cellspacing=1 cellpadding=0 align=center width="97%" class=tableBorder1>
+<table cellspacing=1 cellpadding=0 align=center width="97%" class=TableBorder1>
 <thead><tr><th height="25" width=50>名次</td><th>讨论区</td><th>标题</td><th>作者</td><th>人数</td></tr></thead>
 <?php
 	fgets($fp, 256);
@@ -59,7 +59,7 @@ function showTopTen(){
 		if ($one_line == FALSE)
 			break;
 		$r_title = trim(substr($one_line, 27, 60));
-		$class='tablebody'.($i%2 +1);
+		$class='TableBody'.($i%2 +1);
 ?>
 <tr>
 <td class=<?php echo $class; ?>  align=center><?php echo $i+1; ?></td>

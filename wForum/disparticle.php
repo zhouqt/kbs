@@ -107,7 +107,7 @@ function article_bar($boardName,$boardID,$articleID,$article,$threadID,$listType
 <table cellpadding=0 cellspacing=0 border=0 width=97% align=center>
 	<tr>
 	<td align=left valign=middle style="height:27">&nbsp; 
-	<a href="postarticle.php?board=<?php echo $boardName; ?>"><span class="buttonclass1" border=0 alt=发表一个新主题></span></a>&nbsp;&nbsp;<a href="vote.php?name=<?php echo $boardName; ?>"><span class="buttonclass2" border=0 alt=发表一个新投票></span>&nbsp;&nbsp;<a href="postarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $article['ID']; ?>"><span class="buttonclass4" border=0 alt=回复本主题></span></a>
+	<a href="postarticle.php?board=<?php echo $boardName; ?>"><span class="buttonClass1" border=0 alt=发表一个新主题></span></a>&nbsp;&nbsp;<a href="vote.php?name=<?php echo $boardName; ?>"><span class="buttonClass2" border=0 alt=发表一个新投票></span>&nbsp;&nbsp;<a href="postarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $article['ID']; ?>"><span class="buttonClass4" border=0 alt=回复本主题></span></a>
 	</td>
 	<td align=right valign=middle><a href="disparticle.php?boardName=<?php echo $boardName; ?>&ID=<?php echo $articleID>1?$articleID-1:1; ?>"><img src="pic/prethread.gif" border=0 alt=浏览上一篇主题 width=52 height=12></a>&nbsp;
 	<a href="javascript:this.location.reload()"><img src="pic/refresh.gif" border=0 alt=刷新本主题 width=40 height=12></a> &nbsp;
@@ -132,7 +132,7 @@ function article_bar($boardName,$boardID,$articleID,$article,$threadID,$listType
 function dispArticleTitle($boardName,$boardID,$articleID,$article, $threadID){
 	global $SiteURL, $SiteName;
 ?>
-<TABLE cellPadding=0 cellSpacing=1 align=center class=tableborder1>
+<TABLE cellPadding=0 cellSpacing=1 align=center class=TableBorder1>
 	<tr align=middle> 
 	<td align=left valign=middle width="100%" height=25>
 		<table width=100% cellPadding=0 cellSpacing=0 border=0>
@@ -182,7 +182,7 @@ function showArticleThreads($boardName,$boardID,$articleID,$article,$start,$list
 	article_bar($boardName,$boardID,$articleID, $article, $start, $listType);
 	dispArticleTitle($boardName,$boardID,$articleID,$article,$start);
 ?>
-<TABLE cellPadding=5 cellSpacing=1 align=center class=tableborder1 style=" table-layout:fixed;word-break:break-all">
+<TABLE cellPadding=5 cellSpacing=1 align=center class=TableBorder1 style=" table-layout:fixed;word-break:break-all">
 <?php
 	for($i=0;$i<$num;$i++) {
 			if (($i+$start)==0) 
@@ -244,8 +244,8 @@ function showArticleThreads($boardName,$boardID,$articleID,$article,$start,$list
 function showArticle($boardName,$boardID,$num, $threadID,$thread,$type){
 	$user=array();
 	$user_num=bbs_getuser($thread['OWNER'],$user);
-	$bgstyle='tablebody'.($type+1);
-	$fgstyle='tablebody'.(2-$type);
+	$bgstyle='TableBody'.($type+1);
+	$fgstyle='TableBody'.(2-$type);
 ?>
 <tr><td class=<?php echo $bgstyle ;?> valign=top width=175 >
 <table width=100% cellpadding=4 cellspacing=0 >
@@ -274,7 +274,7 @@ if ( chr($user['gender'])=='M' ){
 <table width=100% ><tr><td width=* valign='center'><a href="javascript:replyMsg('<?php echo $thread['OWNER']; ?>')"><img src="pic/message.gif" border=0 alt="给Roy发送一个短消息"></a>&nbsp;<a href=# onclick="alert('本功能尚未实现');" target=_blank><img src="pic/friend.gif" border=0 alt="把<?php echo $thread['OWNER']; ?>'加入好友"></a>&nbsp;<a href="dispuser.php?id=<?php echo $thread['OWNER']; ?>" target=_blank><img src="pic/profile.gif" border=0 alt="查看<?php echo $thread['OWNER']; ?>的个人资料"></a>&nbsp;<a href=# onclick="alert('本功能尚未实现');" target=_blank><img src="pic/find.gif" border=0 alt="搜索<?php echo $thread['OWNER']; ?>'在测试的所有贴子"></a>&nbsp;<A href="sendmail.php?board=<?php echo $boardName; ?>&reID=<?php echo $thread['ID']; ?>"><IMG alt="点击这里发送电邮给<?php echo $thread['OWNER']; ?>'" border=0 src=pic/email.gif></A>&nbsp;<a href="editarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $thread['ID']; ?>"><img src="pic/edit.gif" border=0 alt=编辑></a>&nbsp;<a href="deletearticle.php?board=<?php echo $boardName; ?>&ID=<?php echo $thread['ID']; ?>" onclick="return confirm('你真的要删除本文吗?')"><img src="pic/delete.gif" border=0 alt=删除>删除</a>&nbsp;<a href="postarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $thread['ID']; ?>&quote=1"><img src="pic/reply.gif" border=0 alt=引用回复这个贴子>&nbsp;<a href="postarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $thread['ID']; ?>"><img src="pic/reply_a.gif" border=0 alt=回复这个贴子></a></td><td width=50><b><?php echo $num==0?'楼主':'第<font color=#ff0000>'.$num.'</font>楼'; ?></b></td></tr><tr><td bgcolor=#D8C0B1 height=1 colspan=2></td></tr>
 </table>
 
-<blockquote><table class=tablebody2 border=0 width=90% style=" table-layout:fixed;word-break:break-all"><tr><td width="100%" style="font-size:9pt;line-height:12pt"><img src=face/face1.gif border=0 alt=发贴心情>&nbsp;<?php echo  htmlspecialchars($thread['TITLE'],ENT_QUOTES); ?> <b></b><br><?php 
+<blockquote><table class=TableBody2 border=0 width=90% style=" table-layout:fixed;word-break:break-all"><tr><td width="100%" style="font-size:9pt;line-height:12pt"><img src=face/face1.gif border=0 alt=发贴心情>&nbsp;<?php echo  htmlspecialchars($thread['TITLE'],ENT_QUOTES); ?> <b></b><br><?php 
 	 $isnormalboard=bbs_normalboard($boardName);
 	 $filename=bbs_get_board_filename($boardName, $thread["FILENAME"]);
 	 if ($loginok) {
@@ -298,9 +298,9 @@ if ( chr($user['gender'])=='M' ){
 
 function showArticleTree($boardName,$boardID,$articleID,$article,$threads,$threadNum,$start) {
 ?>
-<table cellpadding=3 cellspacing=1 class=tableborder1 align=center>
+<table cellpadding=3 cellspacing=1 class=TableBorder1 align=center>
 <tr><th align=left width=90% valign=middle> &nbsp;*树形目录</th>
-<th width=10% align=right valign=middle height=24 id=tabletitlelink> <a href=#top><img src=pic/gotop.gif border=0>顶端</a>&nbsp;</th></tr>
+<th width=10% align=right valign=middle height=24 id=TableTitleLink> <a href=#top><img src=pic/gotop.gif border=0>顶端</a>&nbsp;</th></tr>
 <?php
 	$IDs=array();
 	$nodes=array();
@@ -337,7 +337,7 @@ function showArticleTree($boardName,$boardID,$articleID,$article,$threads,$threa
 
 function showTreeItem($boardName,$articleID,$thread,$threadID,$start,$level){
 
-	echo '<TR><td class=tablebody2 width="100%" height=22 colspan=2>';
+	echo '<TR><td class=TableBody2 width="100%" height=22 colspan=2>';
 	for ($i=0;$i<$level;$i++) {
 		echo "&nbsp;&nbsp;";
 	}

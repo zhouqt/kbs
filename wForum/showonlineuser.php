@@ -40,7 +40,7 @@ function main() {
 <br>
 <form action="usermailoperations.php" method=post id="oForm">
 <input type="hidden" name="boxname" value="<?php echo $boxName; ?>">
-<table cellpadding=3 cellspacing=1 align=center class=tableborder1>
+<table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
 <tr>
 <th valign=middle width=30 height=25>序号</th>
 <th valign=middle width=100>用户账号</th>
@@ -57,17 +57,17 @@ function main() {
 	for ( $i=0; $i<$num ; $i++ ) {
 ?>
 <tr>
-<td class=tablebody1 align=center valign=middle>
+<td class=TableBody1 align=center valign=middle>
 <?php echo $i+1 ?>
 </td>
-<td class=tablebody1 align=center valign=middle style="font-weight:normal">
+<td class=TableBody1 align=center valign=middle style="font-weight:normal">
 <a href="dispuser.php?id=<?php echo $online_user_list[$i]['userid'] ; ?>" target=_blank>
 <?php echo $online_user_list[$i]['userid'] ?></a>
 </td>
-<td class=tablebody1 align=left style="font-weight:normal"><a href="usermail.php?boxname=<?php echo $boxName; ?>&num=<?php echo $i+$startNum; ?>" > <?php       echo htmlspecialchars($online_user_list[$i]['username'],ENT_QUOTES); ?></a>	</td>
-<td class=tablebody1 style="font-weight:normal"><?php echo $online_user_list[$i]['userfrom']; ?></td>
-<td class=tablebody1 style="font-weight:normal"><?php printf('%02d:%02d',intval($online_user_list[$i]['idle']/60), ($online_user_list[$i]['idle']%60)); ?></td>
-<td align=center valign=middle width=130 class=tablebody1>
+<td class=TableBody1 align=left style="font-weight:normal"><a href="usermail.php?boxname=<?php echo $boxName; ?>&num=<?php echo $i+$startNum; ?>" > <?php       echo htmlspecialchars($online_user_list[$i]['username'],ENT_QUOTES); ?></a>	</td>
+<td class=TableBody1 style="font-weight:normal"><?php echo $online_user_list[$i]['userfrom']; ?></td>
+<td class=TableBody1 style="font-weight:normal"><?php printf('%02d:%02d',intval($online_user_list[$i]['idle']/60), ($online_user_list[$i]['idle']%60)); ?></td>
+<td align=center valign=middle width=130 class=TableBody1>
 <a href="#">添加好友</a> <a href="#">删除好友</a> <a href="#">发送消息</a> <a href="#">发送短信</a>
 </td>
 </tr>
@@ -75,7 +75,7 @@ function main() {
 	}
 ?>
 <tr> 
-<td align=right valign=middle colspan=6 class=tablebody2>您现在已使用了<?php echo bbs_getmailusedspace() ;?>K邮箱空间，共有<?php echo $mail_num; ?>封信&nbsp;
+<td align=right valign=middle colspan=6 class=TableBody2>您现在已使用了<?php echo bbs_getmailusedspace() ;?>K邮箱空间，共有<?php echo $mail_num; ?>封信&nbsp;
 <?php
 			
 		if ($startNum > 0)

@@ -134,7 +134,7 @@ function HideMenu()
 
 function ShowMenu(vMnuCode,tWidth) {
 	vSrc = window.event.srcElement;
-	vMnuCode = "<table id='submenu' cellspacing=1 cellpadding=3 style='width:"+tWidth+"' class=tableborder1 onmouseout='HideMenu()'><tr height=23><td nowrap align=left class=tablebody1>" + vMnuCode + "</td></tr></table>";
+	vMnuCode = "<table id='submenu' cellspacing=1 cellpadding=3 style='width:"+tWidth+"' class=TableBorder1 onmouseout='HideMenu()'><tr height=23><td nowrap align=left class=TableBody1>" + vMnuCode + "</td></tr></table>";
 
 	h = vSrc.offsetHeight;
 	w = vSrc.offsetWidth;

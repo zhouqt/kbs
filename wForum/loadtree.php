@@ -104,7 +104,7 @@ function showTree($boardName,$boardID,$articleID,$article,$threads,$threadNum) {
 }
 
 function showTreeItem($boardName,$articleID,$thread,$threadID,$level){
-	echo '<TR><TD class=tablebody1 width="100%" height=25>гагага';
+	echo '<TR><TD class=TableBody1 width="100%" height=25>гагага';
 	for ($i=0;$i<$level;$i++) {
 		echo "&nbsp;&nbsp;";
 	}

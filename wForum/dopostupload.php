@@ -13,7 +13,7 @@ parent.document.forms[0].Submit2.disabled=false;
 ?>
 <body topmargin=0 leftmargin=0>
 <table width="100%" border=0 cellspacing=0 cellpadding=0>
-<tr><td class=tablebody2 valign=top height=40>
+<tr><td class=TableBody2 valign=top height=40>
 <?php 
 if (!isset($_GET['board'])) {
 	errorQuit("Î´Ö¸¶¨°æÃæ¡£");

@@ -279,7 +279,7 @@ e=1>\\4";
                 //WWW替换结果
                 //Email替换结果
 				"<table width='100%' border='0' cellspacing='0' cellpadding='6' class='".$abgcolor."'><td><b>以下内容为程序代码:</b><br>\\1</td></table>'i",
-				"<table style=\"width:100%\" cellpadding=5 cellspacing=1 class=tableborder1><TR><TD class=".$abgcolor." width=\"100%\">\\1</td></tr></table><br>",
+				"<table style=\"width:100%\" cellpadding=5 cellspacing=1 class=TableBorder1><TR><TD class=".$abgcolor." width=\"100%\">\\1</td></tr></table><br>",
 				"<marquee width=90% behavior=alternate scrollamount=3>\\1</marquee>",
 				"<MARQUEE scrollamount=3>\\1</marquee>",
                 "<font \\1=\\2>\\3</font>",

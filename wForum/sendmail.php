@@ -134,13 +134,13 @@ function main() {
 ?>
 <br>
 <form action="dosendmail.php" method=post name=messager onkeydown="if(event.keyCode==13 && event.ctrlKey)messager.submit()">
-<table cellpadding=3 cellspacing=1 align=center class=tableborder1>
+<table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
           <tr> 
             <th colspan=3><?php echo $action==0?"撰写新邮件":"回复邮件"; ?></td>
           </tr>
           <tr> 
-            <td class=tablebody1 valign=middle><b>收件人:</b></td>
-            <td class=tablebody1 valign=middle>
+            <td class=TableBody1 valign=middle><b>收件人:</b></td>
+            <td class=TableBody1 valign=middle>
               <input name="destid" maxlength="12" value="<?php if ($action!=0) 
 			echo $article['OWNER'].'" size="12" readonly />'; 
 					else { ?>" size="12" />			 
@@ -150,8 +150,8 @@ function main() {
             </td>
           </tr>
            <tr> 
-            <td class=tablebody1 valign=top width=15%><b>标题：</b></td>
-            <td  class=tablebody1 valign=middle>
+            <td class=TableBody1 valign=top width=15%><b>标题：</b></td>
+            <td  class=TableBody1 valign=middle>
 <?php
 		if ($action!=0)	{
 	        if(!strncmp($article["TITLE"],"Re: ",4)) $nowtitle = $article["TITLE"];
@@ -165,8 +165,8 @@ function main() {
             </td>
           </tr>
            <tr> 
-            <td class=tablebody1 valign=top width=15%><b>内容：</b></td>
-            <td  class=tablebody1 valign=middle>
+            <td class=TableBody1 valign=top width=15%><b>内容：</b></td>
+            <td  class=TableBody1 valign=middle>
               <textarea style="width:500;height:300" name="content"><?php
     if($action!=0){
 		if ($action==2){
@@ -218,8 +218,8 @@ function main() {
             </td>
           </tr>
 		 <tr>
-                <td valign=top class=tablebody1><b>选项：</b></td>
-                <td valign=middle class=tablebody1>&nbsp;<select name="signature">
+                <td valign=top class=TableBody1><b>选项：</b></td>
+                <td valign=middle class=TableBody1>&nbsp;<select name="signature">
 <?php
 		if ($currentuser["signature"] == 0)	{
 ?>
@@ -248,7 +248,7 @@ function main() {
 			</td>
 		  </tr>
           <tr> 
-            <td  class=tablebody1 colspan=2>
+            <td  class=TableBody1 colspan=2>
 <b>说明</b>：<br>
 ① 您可以使用<b>Ctrl+Enter</b>键快捷发送短信<br>
 <!--
@@ -260,7 +260,7 @@ function main() {
           </tr>
 
           <tr> 
-            <td  class=tablebody2 valign=middle colspan=2 align=center> 
+            <td  class=TableBody2 valign=middle colspan=2 align=center> 
 			  
 			  &nbsp;
               <input type=Submit value="发送信件" name=Submit>

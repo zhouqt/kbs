@@ -70,13 +70,13 @@ function showpaper($boardID,$boardName){
 	}	else  {
 		$conn->query("update smallpaper_tb set Hits=Hits+1 where ID=".$id);
 ?>
-<table cellpadding=3 cellspacing=1 align=center class=tableborder1>
+<table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
 <TBODY> 
 <TR> 
 <Th height=24><?php echo htmlspecialchars($rs["Title"],ENT_QUOTES); ?></Th>
 </TR>
 <TR> 
-<TD class=tablebody1>
+<TD class=TableBody1>
 <p align=center><a href=dispuser.php?id=<?php echo $rs["Owner"]; ?> target=_blank><?php echo $rs["Owner"]; ?></a> 发布于 <?php  echo $rs["Addtime"]; ?></p>
     <blockquote>   
       <br>   
@@ -87,7 +87,7 @@ function showpaper($boardID,$boardName){
 </TD>
 </TR>
 <TR align=middle> 
-<TD height=24 class=tablebody2><a href=# onclick="window.close();">『 关闭窗口 』</a></TD>
+<TD height=24 class=TableBody2><a href=# onclick="window.close();">『 关闭窗口 』</a></TD>
 </TR>
 </TBODY>
 </TABLE>

@@ -29,7 +29,7 @@ if (bbs_checkpostperm($usernum, $boardID) == 0) {
 <body topmargin=0 leftmargin=0>
 <form name="form" method="post" action="dopostupload.php?board=<?php echo $_GET['board']; ?>" enctype="multipart/form-data">
 <table width="100%" border=0 cellspacing=0 cellpadding=0>
-<tr><td class=tablebody2 valign=top height=30>
+<tr><td class=TableBody2 valign=top height=30>
 <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo ATTACHMAXSIZE; ?>">
 <input type="file" name="upfile">
 <input type="submit" name="Submit" value="ÉÏ´«" onclick="parent.document.forms[0].Submit.disabled=true,
@@ -76,7 +76,7 @@ function errorQuit($str){
 ?>
 <body topmargin=0 leftmargin=0>
 <table width="100%" border=0 cellspacing=0 cellpadding=0>
-<tr><td class=tablebody2 valign=top height=30>
+<tr><td class=TableBody2 valign=top height=30>
 &nbsp; <?php echo $str; ?>
 </td></tr>
 </body>

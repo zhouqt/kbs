@@ -88,7 +88,7 @@ function doSearch($boardID,$boardName){
 <table cellpadding=0 cellspacing=0 border=0 width="97%" align=center>
 <tr><td>搜索主题共查询到<font color=#FF0000><?php echo$num; ?></font>个结果
 </td></tr></table>
-<TABLE cellPadding=3 cellSpacing=1 class=tableborder1 align=center>
+<TABLE cellPadding=3 cellSpacing=1 class=TableBorder1 align=center>
 <TR valign=middle>
 <Th height=25 width=32>状态</Th>
 <Th width=*>主 题</Th>
@@ -98,13 +98,13 @@ function doSearch($boardID,$boardName){
 <?php
 	for ($i=1;$i<=$num;$i++) {
 ?>
-  <TR><TD align=middle class=tablebody2 width=32><img src=pic/blue/folder.gif alt=开放主题或回帖>
+  <TR><TD align=middle class=TableBody2 width=32><img src=pic/blue/folder.gif alt=开放主题或回帖>
   </TD>
-  <TD  class=tablebody1 width=*><a href='disparticle.php?boardName=<?php echo $boardName; ?>&ID=<?php echo $result[$i]['threadsnum']; ?>' target=_blank><img src='face/face1.gif' border=0 alt="开新窗口浏览此主题"></a> <a href='disparticle.php?boardName=<?php echo $boardName; ?>&ID=<?php echo $result[$i]['threadsnum']; ?>'>
+  <TD  class=TableBody1 width=*><a href='disparticle.php?boardName=<?php echo $boardName; ?>&ID=<?php echo $result[$i]['threadsnum']; ?>' target=_blank><img src='face/face1.gif' border=0 alt="开新窗口浏览此主题"></a> <a href='disparticle.php?boardName=<?php echo $boardName; ?>&ID=<?php echo $result[$i]['threadsnum']; ?>'>
 <?php echo $result[$i]['TITLE']; ?>
 </a>    </TD> 
-    <TD align=middle  class=tablebody2  width=80><a href="dispuser.php?id=<?php echo $result[$i]['OWNER']; ?>"><?php echo $result[$i]['OWNER']; ?></a></TD> 
-    <TD  class=tablebody1 width=195><?php echo strftime("%y-%m-%d %H:%M", $result[$i]['POSTTIME']); ?>
+    <TD align=middle  class=TableBody2  width=80><a href="dispuser.php?id=<?php echo $result[$i]['OWNER']; ?>"><?php echo $result[$i]['OWNER']; ?></a></TD> 
+    <TD  class=TableBody1 width=195><?php echo strftime("%y-%m-%d %H:%M", $result[$i]['POSTTIME']); ?>
 &nbsp;<font color="#FF0000">|</font>&nbsp;
 <a href="dispuser.php?id=<?php echo $result[$i]['OWNER']; ?>"><?php echo $result[$i]['OWNER']; ?></a>
 </TD>

@@ -89,9 +89,9 @@ function bbs_is_readonly_board($board)
 
 function showBoardStaticsTop($boardArr){
 ?>
-<TABLE cellpadding=3 cellspacing=1 class=tableborder1 align=center><TR><Th height=25 width=100% align=left id=tabletitlelink style="font-weight:normal">本版当前共有<b><?php echo $boardArr['CURRENTUSERS'];?></b>人在线。今日帖子<?php echo bbs_get_today_article_num($boardArr['NAME'] ); ?></Th></TR></td></tr></TABLE>
+<TABLE cellpadding=3 cellspacing=1 class=TableBorder1 align=center><TR><Th height=25 width=100% align=left id=TableTitleLink style="font-weight:normal">本版当前共有<b><?php echo $boardArr['CURRENTUSERS'];?></b>人在线。今日帖子<?php echo bbs_get_today_article_num($boardArr['NAME'] ); ?></Th></TR></td></tr></TABLE>
 <BR>
-<table cellpadding=0 cellspacing=0 border=0 width=97% align=center valign=middle><tr><td align=center width=2> </td><td align=left style="height:27" valign="center"><a href=postarticle.php?board=<?php echo $boardArr['NAME']; ?>><span class="buttonclass1" border=0 alt=发新帖></span></a>&nbsp;&nbsp;<a href=vote.php?board=2><span class="buttonclass2" border=0 alt=发起新投票></span>&nbsp;&nbsp;<a href=smallpaper.php?board=<?php echo $boardArr['NAME']; ?>><span class="buttonclass3" border=0 alt=发布小字报></span></a></td><td align=right><img src=pic/team2.gif align=absmiddle>
+<table cellpadding=0 cellspacing=0 border=0 width=97% align=center valign=middle><tr><td align=center width=2> </td><td align=left style="height:27" valign="center"><a href=postarticle.php?board=<?php echo $boardArr['NAME']; ?>><span class="buttonClass1" border=0 alt=发新帖></span></a>&nbsp;&nbsp;<a href=vote.php?board=2><span class="buttonClass2" border=0 alt=发起新投票></span>&nbsp;&nbsp;<a href=smallpaper.php?board=<?php echo $boardArr['NAME']; ?>><span class="buttonClass3" border=0 alt=发布小字报></span></a></td><td align=right><img src=pic/team2.gif align=absmiddle>
 <?php 
 	$bms=split(' ',$boardArr['BM']);
 	foreach($bms as $bm) {
@@ -118,7 +118,7 @@ function showBoardContents($boardID,$boardName,$page){
 <?php
 	} else {
 ?>
-<form action=admin_batch.asp method=post name=batch><TR align=middle><Th height=25 width=32 id=tabletitlelink><a href=list.asp?name=<?php echo $boardName; ?>&page=&action=batch>状态</a></th><Th width=* id=tabletitlelink>主 题  (点<img src=pic/plus.gif align=absmiddle>即可展开贴子列表)</Th><Th width=80 id=tabletitlelink>作 者</Th><Th width=64 id=tabletitlelink>回复</Th><Th width=195 id=tabletitlelink>最后更新 | 回复人</Th></TR>
+<form action=admin_batch.asp method=post name=batch><TR align=middle><Th height=25 width=32 id=TableTitleLink><a href=list.asp?name=<?php echo $boardName; ?>&page=&action=batch>状态</a></th><Th width=* id=TableTitleLink>主 题  (点<img src=pic/plus.gif align=absmiddle>即可展开贴子列表)</Th><Th width=80 id=TableTitleLink>作 者</Th><Th width=64 id=TableTitleLink>回复</Th><Th width=195 id=TableTitleLink>最后更新 | 回复人</Th></TR>
 <?php
 		
 		$totalPages=ceil($total/ARTICLESPERPAGE);
@@ -146,7 +146,7 @@ function showBoardContents($boardID,$boardName,$page){
 			$threadNum=$articles[$i]['articlenum']-1;
 
 ?>
-<TR align=middle><TD class=tablebody2 width=32 height=27>
+<TR align=middle><TD class=TableBody2 width=32 height=27>
 <?php
 //print_r($articles[$i]);
 	if (strtoupper($origin['FLAGS'][0])=='D') {
@@ -160,7 +160,7 @@ function showBoardContents($boardID,$boardName,$page){
 	} else {
 		echo "<img src=\"pic/blue/folder.gif\" alt=开放主题>";
 	}
-?></TD><TD align=left class=tablebody1 width=* >
+?></TD><TD align=left class=TableBody1 width=* >
 <?php 
 	if ($threadNum==0) {
 		echo '<img src="pic/nofollow.gif" id="followImg'.($i+$start).'">';
@@ -184,7 +184,7 @@ function showBoardContents($boardID,$boardName,$page){
 		echo " ]</b>";
 	}
 ?>
-</TD><TD class=tablebody2 width=80><a href="dispuser.php?id=<?php echo $origin['OWNER'] ;?>" target=_blank><?php echo $origin['OWNER'] ;?></a></TD><TD class=tablebody1 width=64><?php echo $threadNum; ?></TD><TD align=left class=tablebody2 width=195>&nbsp;<a href="disparticle.php?boardName=<?php echo $boardName ;?>&ID=<?php echo $origin['ID'];?>&start=<?php echo $total; ?>">
+</TD><TD class=TableBody2 width=80><a href="dispuser.php?id=<?php echo $origin['OWNER'] ;?>" target=_blank><?php echo $origin['OWNER'] ;?></a></TD><TD class=TableBody1 width=64><?php echo $threadNum; ?></TD><TD align=left class=TableBody2 width=195>&nbsp;<a href="disparticle.php?boardName=<?php echo $boardName ;?>&ID=<?php echo $origin['ID'];?>&start=<?php echo $total; ?>">
 <?php
 			echo strftime("%Y-%m-%d %H:%M", $lastreply['POSTTIME']);
 ?></a>&nbsp;<font color=#FF0000>|</font>&nbsp;<a href=dispuser.php?id=<?php echo $lastreply['OWNER']; ?>  target=_blank>
@@ -245,7 +245,7 @@ function showBoardContents($boardID,$boardName,$page){
 function showBroadcast($boardID,$boardName){
 	global $conn;
 ?>
-<tr><td class=tablebody1 colspan=5 height=20>
+<tr><td class=TableBody1 colspan=5 height=20>
 	<table width=100% ><tr><td valign=middle height=20 width=50><!-- <a href=allpaper.php?board=<?php echo $boardName; ?> title=点击查看本论坛所有小字报>--><a href=# title=点击查看本论坛所有小字报 ><b>广播：</b></a> </td><td width=*> <marquee scrolldelay=150 scrollamount=4 onmouseout="if (document.all!=null){this.start()}" onmouseover="if (document.all!=null){this.stop()}">
 <?php
 	$sth = $conn->query("SELECT ID,Owner,Title FROM smallpaper_tb where Addtime>=subdate(Now(),interval 1 day) and boardID=" . $boardID . " ORDER BY Addtime desc limit 5");
@@ -272,7 +272,7 @@ function board_head_var($boardDesc,$boardName,$secNum)
 	  $URL=$_SERVER['PHP_SELF'];
   }
 ?>
-<table cellspacing=1 cellpadding=3 align=center class=tableBorder2>
+<table cellspacing=1 cellpadding=3 align=center class=TableBorder2>
 <tr><td height=25 valign=middle>
 <img src="pic/forum_nav.gif" align=absmiddle> <a href="<?php echo $SiteURL; ?>"><?php   echo $SiteName; ?></a> → 
 <a href="section.php?sec=<?php echo $secNum; ?>"><?php echo $section_names[intval($secNum)][0] ; ?></a> → <a href="board.php?name=<?php echo $boardName; ?>"><?php echo $boardDesc; ?></a> → <?php echo $stats; ?> 
@@ -327,7 +327,7 @@ function boardSearchAndJump($boardName, $boardID){
 function showBoardSampleIcons(){
 	global $SiteName;
 ?>
-<table cellspacing=1 cellpadding=3 width=100% class=tableborder1 align=center><tr><th width=80% align=left>　-=> <?php echo $SiteName; ?>图例</th><th noWrap width=20% align=right>所有时间均为 - 北京时间 &nbsp;</th></tr><tr><td colspan=2 class=tablebody1><table cellspacing=4 cellpadding=0 width=92% border=0 align=center><tr><td><img src=pic/blue/folder.gif> 开放的主题</td><td><img src=pic/blue/hotfolder.gif> 回复超过10贴</td><td><img src=pic/blue/lockfolder.gif> 锁定的主题</td><td><img src=pic/istop.gif> 固顶的主题 </td><td><img src=pic/ztop.gif> 总固顶的主题 </td><td> <img src=pic/isbest.gif> 精华帖子 </td><td> <img src=pic/closedb.gif> 投票帖子 </td></tr></table></td></tr></table>
+<table cellspacing=1 cellpadding=3 width=100% class=TableBorder1 align=center><tr><th width=80% align=left>　-=> <?php echo $SiteName; ?>图例</th><th noWrap width=20% align=right>所有时间均为 - 北京时间 &nbsp;</th></tr><tr><td colspan=2 class=TableBody1><table cellspacing=4 cellpadding=0 width=92% border=0 align=center><tr><td><img src=pic/blue/folder.gif> 开放的主题</td><td><img src=pic/blue/hotfolder.gif> 回复超过10贴</td><td><img src=pic/blue/lockfolder.gif> 锁定的主题</td><td><img src=pic/istop.gif> 固顶的主题 </td><td><img src=pic/ztop.gif> 总固顶的主题 </td><td> <img src=pic/isbest.gif> 精华帖子 </td><td> <img src=pic/closedb.gif> 投票帖子 </td></tr></table></td></tr></table>
 <?php
 }
 ?>

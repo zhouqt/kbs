@@ -79,7 +79,7 @@ function showmailBox($boxName, $path, $desc, $startNum){
 <br>
 <form action="usermailoperations.php" method=post id="oForm">
 <input type="hidden" name="boxname" value="<?php echo $boxName; ?>">
-<table cellpadding=3 cellspacing=1 align=center class=tableborder1>
+<table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
 <tr>
 <th valign=middle width=30 height=25>已读</th>
 <th valign=middle width=100>
@@ -103,7 +103,7 @@ function showmailBox($boxName, $path, $desc, $startNum){
 	if($mail_num == 0) {
 ?>
 <tr>
-<td class=tablebody1 align=center valign=middle colspan=6>您的<?php echo $desc; ?>中没有信件。</td>
+<td class=TableBody1 align=center valign=middle colspan=6>您的<?php echo $desc; ?>中没有信件。</td>
 </tr>
 </table>
 <?php
@@ -124,7 +124,7 @@ function showmailBox($boxName, $path, $desc, $startNum){
 	for ($i = $num-1; $i >= 0; $i--){
 ?>
 <tr>
-<td class=tablebody1 align=center valign=middle>
+<td class=TableBody1 align=center valign=middle>
 <?php 
 		
 		if ($maildata[$i]["FLAGS"][1]=='R') {
@@ -154,19 +154,19 @@ function showmailBox($boxName, $path, $desc, $startNum){
 		}
 ?>
 </td>
-<td class=tablebody1 align=center valign=middle style="font-weight:normal">
+<td class=TableBody1 align=center valign=middle style="font-weight:normal">
 <a href="dispuser.php?id=<?php echo $maildata[$i]['OWNER'] ; ?>" target=_blank><?php echo $maildata[$i]['OWNER'] ; ?></a>
 </td>
-<td class=tablebody1 align=left style="font-weight:normal"><a href="usermail.php?boxname=<?php echo $boxName; ?>&num=<?php echo $i+$startNum; ?>" > <?php       echo htmlspecialchars($maildata[$i]['TITLE'],ENT_QUOTES); ?></a>	</td>
-<td class=tablebody1 style="font-weight:normal"><?php echo strftime("%Y-%m-%d %H:%M:%S", $maildata[$i]['POSTTIME']); ?></td>
-<td class=tablebody1 style="font-weight:normal"> N/A Byte</td>
-<td align=center valign=middle width=30 class=tablebody1><input type=checkbox name=num id="oNum" value=<?php echo $i+$startNum; ?>></td>
+<td class=TableBody1 align=left style="font-weight:normal"><a href="usermail.php?boxname=<?php echo $boxName; ?>&num=<?php echo $i+$startNum; ?>" > <?php       echo htmlspecialchars($maildata[$i]['TITLE'],ENT_QUOTES); ?></a>	</td>
+<td class=TableBody1 style="font-weight:normal"><?php echo strftime("%Y-%m-%d %H:%M:%S", $maildata[$i]['POSTTIME']); ?></td>
+<td class=TableBody1 style="font-weight:normal"> N/A Byte</td>
+<td align=center valign=middle width=30 class=TableBody1><input type=checkbox name=num id="oNum" value=<?php echo $i+$startNum; ?>></td>
 </tr>
 <?php
 	}
 ?>
 <tr> 
-<td align=right valign=middle colspan=6 class=tablebody2>您现在已使用了<?php echo bbs_getmailusedspace() ;?>K邮箱空间，共有<?php echo $mail_num; ?>封信&nbsp;
+<td align=right valign=middle colspan=6 class=TableBody2>您现在已使用了<?php echo bbs_getmailusedspace() ;?>K邮箱空间，共有<?php echo $mail_num; ?>封信&nbsp;
 <?php
 			
 		if ($startNum > 0)

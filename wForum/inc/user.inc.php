@@ -45,7 +45,7 @@ function showSecs($secNum=0,$group,$isFold) {
 		return false;
 	}
 ?>
-<table cellspacing=1 cellpadding=0 align=center width="97%" class=tableBorder1>
+<table cellspacing=1 cellpadding=0 align=center width="97%" class=TableBorder1>
 <TR><Th colSpan=2 height=25 align=left id=TableTitleLink>&nbsp;
 <?php
 	if ($isFold) {
@@ -61,7 +61,7 @@ function showSecs($secNum=0,$group,$isFold) {
 	$boards = bbs_getboards($section_nums[$secNum], $group, $yank);
 	if ($boards == FALSE) {
 ?>
-		<TR><TD colspan="2" class=tablebody1>&nbsp;本分区尚无版面</td></tr>
+		<TR><TD colspan="2" class=TableBody1>&nbsp;本分区尚无版面</td></tr>
 <?php
 	} else {
 		$brd_name = $boards["NAME"]; // 英文名
@@ -79,8 +79,8 @@ function showSecs($secNum=0,$group,$isFold) {
 			$isFirst=!$isFirst;
 			if ($isFold){
 ?>
-			<TR><TD align=middle width="100%" class=tablebody1>
-		<table width="100%" cellspacing=0 cellpadding=0><TR><TD align=middle width=46 class=tablebody1>
+			<TR><TD align=middle width="100%" class=TableBody1>
+		<table width="100%" cellspacing=0 cellpadding=0><TR><TD align=middle width=46 class=TableBody1>
 <?php	
 				if ( $brd_unread[$i] == 1) {
 					echo "<img src=pic/forum_isnews.gif alt=有新帖子>";
@@ -90,16 +90,16 @@ function showSecs($secNum=0,$group,$isFold) {
 ?>
 		</TD>
 		<TD width=1 bgcolor=#7a437a>
-		<TD vAlign=top width=* class=tablebody1>
+		<TD vAlign=top width=* class=TableBody1>
 		
 		<TABLE cellSpacing=0 cellPadding=2 width=100% border=0>
-		<tr><td class=tablebody1 width=*>
+		<tr><td class=TableBody1 width=*>
 <?php
 				echo '<a href="board.php?name='.$brd_name[$i].'">';
 
 ?>		<font color=#000066><?php echo $brd_name[$i] ?> </font></a>
 				</td>
-		<td width=40 rowspan=2 align=center class=tablebody1></td><td width=200 rowspan=2 class=tablebody1><?php
+		<td width=40 rowspan=2 align=center class=TableBody1></td><td width=200 rowspan=2 class=TableBody1><?php
 				if ($brd_flag[$i] & BBS_BOARD_GROUP) {
 		?>
 				<B>本版为二级目录版</B>
@@ -124,7 +124,7 @@ function showSecs($secNum=0,$group,$isFold) {
 				}
 	?>
 </TD></TR><TR><TD width=*><FONT face=Arial><img src=pic/forum_readme.gif align=middle> <?php echo $brd_desc[$i] ?></FONT>
-</TD></TR><TR><TD class=tablebody2 height=20 width=*>版主：<?php echo $brd_bm[$i]==''?'暂无':$brd_bm[$i] ; ?> </TD><td width=40 align=center class=tablebody2>&nbsp;</td><TD vAlign=middle class=tablebody2 width=200>
+</TD></TR><TR><TD class=TableBody2 height=20 width=*>版主：<?php echo $brd_bm[$i]==''?'暂无':$brd_bm[$i] ; ?> </TD><td width=40 align=center class=TableBody2>&nbsp;</td><TD vAlign=middle class=TableBody2 width=200>
 		<table width=100% border=0><tr><td width=25% vAlign=middle><img src=pic/forum_today.gif alt=今日帖 align=absmiddle>&nbsp;<font color=#FF0000><?php echo bbs_get_today_article_num($brd_name[$i]) ?></font></td><td width=30% vAlign=middle><img src=pic/forum_topic.gif alt=主题 border=0  align=absmiddle>&nbsp;<?php echo bbs_getthreadnum($brd_bid[$i]) ?></td><td width=45% vAlign=middle><img src=pic/forum_post.gif alt=文章 border=0 align=absmiddle>&nbsp;<?php echo $brd_artcnt[$i]; ?></td></tr>
 		</table></TD></TR></TBODY></TABLE></td></tr></table></td></tr>
 <?php
@@ -133,7 +133,7 @@ function showSecs($secNum=0,$group,$isFold) {
 					echo "<tr>";
 				}
 ?>
-<td class=tablebody1 width="50%"><TABLE cellSpacing=2 cellPadding=2 width=100% border=0><tr><td width="100%" title="<?php echo $brd_desc[$i] ; ?>" colspan=2><a href="board.php?name=<?php echo $brd_name[$i]; ?>"><font color=#000066><?php echo $brd_name[$i] ; ?></font></a></td></tr><tr>
+<td class=TableBody1 width="50%"><TABLE cellSpacing=2 cellPadding=2 width=100% border=0><tr><td width="100%" title="<?php echo $brd_desc[$i] ; ?>" colspan=2><a href="board.php?name=<?php echo $brd_name[$i]; ?>"><font color=#000066><?php echo $brd_name[$i] ; ?></font></a></td></tr><tr>
 <?php
 				if ($brd_flag[$i] & BBS_BOARD_GROUP) {
 ?>
@@ -154,7 +154,7 @@ function showSecs($secNum=0,$group,$isFold) {
 		}
 		if ($isFirst) {
 ?>
-<td class=tablebody1 width="50%"></td></tr>
+<td class=TableBody1 width="50%"></td></tr>
 <?php
 		}
 	}
@@ -207,17 +207,17 @@ function FastLogin()
 {
 extract($GLOBALS);
 ?>
-<table cellspacing=1 cellpadding=3 align=center class=tableBorder1>
+<table cellspacing=1 cellpadding=3 align=center class=TableBorder1>
 <form action="logon.php" method=post>
 <input type="hidden" name="action" value="doLogon">
 <tr>
-<th align=left id=tabletitlelink height=25 style="font-weight:normal">
+<th align=left id=TableTitleLink height=25 style="font-weight:normal">
 <b>-=> 快速登录入口</b>
 [<a href=register.php>注册用户</a>]　[<a href=lostpass.php style="CURSOR: help">忘记密码</a>]
 </th>
 </tr>
 <tr>
-<td class=tablebody1 height=40 width="100%">
+<td class=TableBody1 height=40 width="100%">
 &nbsp;用户名：<input maxLength=16 name=id size=12>　　密码：<input maxLength=20 name=password size=12 type=password>　　<select name=CookieDate><option selected value=0>不保存</option><option value=1>保存一天</option><option value=2>保存一月</option><option value=3>保存一年</option></select><input type=hidden name=comeurl value="<?php echo $_SERVER['PHP_SELF']; ?>"><input type=submit name=submit value="登 陆">
 </td>
 </tr>
@@ -251,9 +251,9 @@ function usersysinfo($info){
 
 function showUserInfo(){
 ?>
-<table cellpadding=5 cellspacing=1 class=tableborder1 align=center style="word-break:break-all;">
+<table cellpadding=5 cellspacing=1 class=TableBorder1 align=center style="word-break:break-all;" width="97%">
 <TR><Th align=left colSpan=2 height=25>-=> 用户来访信息</Th></TR>
-<TR><TD vAlign=top class=tablebody1 height=25 width=100% >
+<TR><TD vAlign=top class=TableBody1 height=25 width=100% >
 <?php
 $userip = $_SERVER["HTTP_X_FORWARDED_FOR"];
 $userip2 = $_SERVER["REMOTE_ADDR"];
@@ -272,9 +272,9 @@ echo usersysinfo($_SERVER["HTTP_USER_AGENT"]);
 
 function showOnlineUsers(){
 ?>
-<table cellpadding=5 cellspacing=1 class=tableborder1 align=center style="word-break:break-all;">
-<TR><Th colSpan=2 align=left id=tabletitlelink height=25 style="font-weight:normal"><b>-=> 论坛在线统计</b>&nbsp;[<a href=showOnlineUsers.php?action=show>显示详细列表</a>] [<a href=boardstat.php?reaction=online>查看在线用户位置</a>]</Th></TR>
-<TR><TD width=100% vAlign=top class=tablebody1>  目前论坛上总共有 <b><?php echo bbs_getonlinenumber() ; ?></b> 人在线，其中注册用户 <b><?php echo bbs_getonlineusernumber(); ?></b> 人，访客 <b><?php echo bbs_getwwwguestnumber() ; ?></b> 人。<br>
+<table cellpadding=5 cellspacing=1 class=TableBorder1 align=center style="word-break:break-all;" width="97%">
+<TR><Th colSpan=2 align=left id=TableTitleLink height=25 style="font-weight:normal"><b>-=> 论坛在线统计</b>&nbsp;[<a href=showOnlineUsers.php?action=show>显示详细列表</a>] [<a href=boardstat.php?reaction=online>查看在线用户位置</a>]</Th></TR>
+<TR><TD width=100% vAlign=top class=TableBody1>  目前论坛上总共有 <b><?php echo bbs_getonlinenumber() ; ?></b> 人在线，其中注册用户 <b><?php echo bbs_getonlineusernumber(); ?></b> 人，访客 <b><?php echo bbs_getwwwguestnumber() ; ?></b> 人。<br>
 历史最高在线纪录是 <b><?php echo  $Maxonline ?></b> 人同时在线
 </td></tr>
 </table><br>

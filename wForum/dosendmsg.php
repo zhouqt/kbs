@@ -18,7 +18,7 @@ if ($loginok==1) {
 }
 
 ?>
-<table cellpadding=3 cellspacing=1 align=center class=tableborder1>
+<table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
 <?php
 if (isErrFounded()) {
 ?>
@@ -26,7 +26,7 @@ if (isErrFounded()) {
             <th colspan=3>发送短消息失败</th>
          </tr>
 		<tr>
-		<td width="100%" class=tablebody1 colspan=2>
+		<td width="100%" class=TableBody1 colspan=2>
 		<?php echo $errMsg; ?>
 		</td></tr>
 <?php
@@ -35,14 +35,14 @@ if (isErrFounded()) {
          <tr> 
             <th colspan=3>发送短消息成功</th>
          </tr>
-		<td width="100%" class=tablebody1 colspan=2>
+		<td width="100%" class=TableBody1 colspan=2>
 		<?php echo $sucmsg; ?>
 		</td></tr>
 <?php
 }
 ?>
          </tr>
-		<td width="100%" class=tablebody2 colspan=2 align="center">
+		<td width="100%" class=TableBody2 colspan=2 align="center">
 		<a href="#" onclick="closeWindow();">[关闭]</a>
 		</td></tr>
 		</table>

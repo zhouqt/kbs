@@ -116,23 +116,23 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 <form action="dopostarticle.php" method=POST onSubmit=submitonce(this) name=frmAnnounce>
 <input type="hidden" value="<?php echo $boardName; ?>" name="board">
 <input type="hidden" value="<?php echo $reID; ?>" name="reID">
-<table cellpadding=3 cellspacing=1 class=tableborder1 align=center>
+<table cellpadding=3 cellspacing=1 class=TableBorder1 align=center>
     <tr>
       <th width=100% height=25 colspan=2 align=left>&nbsp;&nbsp;发表新帖子</th>
     </tr>
 <!--
         <tr>
-          <td width=20% class=tablebody2><b>用户名</b></td>
-          <td width=80% class=tablebody2><input name=username value="<?php   echo $currentuser['userid']; ?>" class=FormClass>&nbsp;&nbsp;<font color=#ff0000><b>*</b></font><a href=register.php>您没有注册？</a> 
+          <td width=20% class=TableBody2><b>用户名</b></td>
+          <td width=80% class=TableBody2><input name=username value="<?php   echo $currentuser['userid']; ?>" class=FormClass>&nbsp;&nbsp;<font color=#ff0000><b>*</b></font><a href=register.php>您没有注册？</a> 
           </td>
         </tr>
         <tr>
-          <td width=20% class=tablebody1><b>密&nbsp;&nbsp;码</b></td>
-          <td width=80% class=tablebody1><input name=passwd type=password value=<?php   echo $_COOKIE['PASSWORD']; ?> class=FormClass><font color=#ff0000>&nbsp;&nbsp;<b>*</b></font><a href=lostpass.php>忘记密码？</a></td>
+          <td width=20% class=TableBody1><b>密&nbsp;&nbsp;码</b></td>
+          <td width=80% class=TableBody1><input name=passwd type=password value=<?php   echo $_COOKIE['PASSWORD']; ?> class=FormClass><font color=#ff0000>&nbsp;&nbsp;<b>*</b></font><a href=lostpass.php>忘记密码？</a></td>
         </tr>
 -->
         <tr>
-          <td width=20% class=tablebody2><b>主题标题</b>
+          <td width=20% class=TableBody2><b>主题标题</b>
               <SELECT name=font onchange=DoTitle(this.options[this.selectedIndex].value)>
               <OPTION selected value="">选择话题</OPTION> <OPTION value=[原创]>[原创]</OPTION> 
               <OPTION value=[转帖]>[转帖]</OPTION> <OPTION value=[灌水]>[灌水]</OPTION> 
@@ -142,7 +142,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
               <OPTION value=[建议]>[建议]</OPTION> <OPTION value=[下载]>[下载]</OPTION>
               <OPTION value=[分享]>[分享]</OPTION></SELECT>
           </td>
-          <td width=80% class=tablebody2>
+          <td width=80% class=TableBody2>
 <?php
 		if ($reID>0)	{
 	        if(!strncmp($reArticles[1]["TITLE"],"Re: ",4)) $nowtitle = $reArticles[1]["TITLE"];
@@ -156,8 +156,8 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 	 </td>
         </tr>
         <tr>
-          <td width=20% valign=top class=tablebody1><b>当前心情</b><br><li>将放在帖子的前面</td>
-          <td width=80% class=tablebody1>
+          <td width=20% valign=top class=TableBody1><b>当前心情</b><br><li>将放在帖子的前面</td>
+          <td width=80% class=TableBody1>
 <?php
 	for ($i=0; $i<=18; $i++) {
 ?>
@@ -179,7 +179,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 	if (bbs_is_attach_board($boardArr)) {
 ?>
 <tr>
-<td width=20% valign=middle class=tablebody2>
+<td width=20% valign=middle class=TableBody2>
 <b>文件上传</b>
 <!--
 <select size=1>
@@ -198,12 +198,12 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 ?>
 </select>
 -->
-</td><td width=80% class=tablebody2>
+</td><td width=80% class=TableBody2>
 <iframe name="ad" frameborder=0 width=100% height=24 scrolling=no src="postupload.php?board=<?php echo $boardName; ?>"></iframe>
 </td></tr>
 <?php   } ?>
         <tr>
-          <td width=20% valign=top class=tablebody1>
+          <td width=20% valign=top class=TableBody1>
 <b>内容</b><br>
 <li>HTML标签： <?php   echo $Board_Setting[5]?"可用":"不可用"; ?>
 <li>UBB标签： <?php   echo $Board_Setting[6]?"可用":"不可用"; ?>
@@ -221,7 +221,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 <li><?php   echo $Board_Setting[15]?"<a href=\"javascript:replyview()\" title=\"使用语法：[replyview]该部分内容回复后可见[/replyview]\">回复帖</a>":"回复帖：不可用"; ?>
 <li><?php   echo $Board_Setting[23]?"<a href=\"javascript:usemoney()\" title=\"使用语法：[usemoney=浏览该部分内容需要消耗的金钱数]内容[/usemoney]\">出售帖</a>":"出售帖：不可用"; ?>
 	  </td>
-          <td width=80% class=tablebody1>
+          <td width=80% class=TableBody1>
 <?php require_once("inc/ubbmenu.php"); ?>
 <textarea class=smallarea cols=95 name=Content rows=12 wrap=VIRTUAL title="可以使用Ctrl+Enter直接提交贴子" class=FormClass onkeydown=ctlent()>
 <?php
@@ -274,7 +274,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
         </tr>
 
 		<tr>
-                <td class=tablebody1 valign=top colspan=2 style="table-layout:fixed; word-break:break-all"><b>点击表情图即可在帖子中加入相应的表情</B><br>
+                <td class=TableBody1 valign=top colspan=2 style="table-layout:fixed; word-break:break-all"><b>点击表情图即可在帖子中加入相应的表情</B><br>
 <?php 
 	for ($i=1; $i<=69; $i++) {
 		if (strlen($i)==1)   {
@@ -291,8 +291,8 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
     		</td>
                 </tr>
                 <tr>
-                <td valign=top class=tablebody1><b>选项</b></td>
-                <td valign=middle class=tablebody1>&nbsp;<select name="signature">
+                <td valign=top class=TableBody1><b>选项</b></td>
+                <td valign=middle class=TableBody1>&nbsp;<select name="signature">
 <?php
 		if ($currentuser["signature"] == 0)	{
 ?>
@@ -328,7 +328,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
     <input type=checkbox name=emailflag value=yes disabled>有回复时使用邮件通知您？</font>
 <BR><BR></td>
 	</tr><tr>
-	<td valign=middle colspan=2 align=center class=tablebody2>
+	<td valign=middle colspan=2 align=center class=TableBody2>
 	<input type=Submit value='发 表' name=Submit> &nbsp; <input type=button value='预 览' name=Button onclick=gopreview() disabled>&nbsp;
 <input type=reset name=Submit2 value='清 除'>
                 </td></form></tr>

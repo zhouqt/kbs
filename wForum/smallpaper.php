@@ -88,14 +88,14 @@ function main($boardID,$boardName) {
 ?>
 <form action="savesmallpaper.php" method="post"> 
 <input type="hidden" name="action" value="savepaper">
-    <table cellpadding=6 cellspacing=1 align=center class=tableborder1>
+    <table cellpadding=6 cellspacing=1 align=center class=TableBorder1>
     <tr>
     <th valign=middle colspan=2>
     发布小字报</th></tr>
-    <td class=tablebody1 valign=middle><b>标 题</b>(最多30字)</td>
-    <td class=tablebody1 valign=middle><INPUT name="title" type=text size=60></td></tr>
+    <td class=TableBody1 valign=middle><b>标 题</b>(最多30字)</td>
+    <td class=TableBody1 valign=middle><INPUT name="title" type=text size=60></td></tr>
     <tr>
-    <td class=tablebody1 valign=top width=30%>
+    <td class=TableBody1 valign=top width=30%>
 <b>内 容</b><BR>
 <!--
 在本版发布小字报将您将付<font color="<?php   echo $Forum_body[8]; ?>"><b><?php   echo $GroupSetting[46]; ?></b></font>元费用<br>
@@ -105,12 +105,12 @@ function main($boardID,$boardName) {
 <li>UBB 标签：允许
 <li>内容不得超过500字
 </td>
-<td class=tablebody1 valign=middle>
+<td class=TableBody1 valign=middle>
 <textarea class="smallarea" cols="60" name="Content" rows="8" wrap="VIRTUAL"></textarea>
 <INPUT name="board" type=hidden value="<?php   echo $boardName; ?>">
                 </td></tr>
     <tr>
-    <td class=tablebody2 valign=middle colspan=2 align=center><input type=submit name="submit" value="发 布"></td></tr></table>
+    <td class=TableBody2 valign=middle colspan=2 align=center><input type=submit name="submit" value="发 布"></td></tr></table>
 </form>
 <?php   
 } 

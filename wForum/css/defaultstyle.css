@@ -55,13 +55,13 @@ td.TopLighNav2
 {
 background-color:#FFFFFF
 }
-.tableBorder1
+.TableBorder1
 {
 width:97%;
 border: 1px; 
 background-color: #6595D6;
 }
-.tableBorder2
+.TableBorder2
 {
 width:97%;
 border: 1px #DEDEDE solid; 
@@ -86,20 +86,20 @@ font-family:Tahoma,Verdana,ËÎÌו; font-size: 12px; line-height: 15px;}
     font-family: Verdana, Arial, Helvetica, sans-serif;
 }
 
-.navclass1
+.navClass1
 {Z-INDEX: 2; VISIBILITY: hidden; WIDTH: 1px; POSITION: absolute; HEIGHT: 1px; BACKGROUND-COLOR: #9cc5f8; }
 
-.navclass2
+.navClass2
 {border:1px #6595D6 solid; border-top-width: 0px; border-right-width: 1px; border-bottom-width: 0px; border-left-width: 1px;width:97%;}
 
-.buttonclass1
+.buttonClass1
 {width:72;height:21;background-image:url(../pic/blue/postnew.gif)}
 
-.buttonclass2
+.buttonClass2
 {width:72;height:21;background-image:url(../pic/blue/votenew.gif)}
 
-.buttonclass3
+.buttonClass3
 {width:72;height:21;background-image:url(../pic/blue/xzb.gif)}
 
-.buttonclass4
+.buttonClass4
 {width:72;height:21;background-image:url(../pic/blue/reply.gif)}

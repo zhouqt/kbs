@@ -328,13 +328,13 @@ function html_error_quit()
 	global $loginok;
 ?>
 <br>
-<table cellpadding=3 cellspacing=1 align=center class=tableborder1 style="width:75%">
+<table cellpadding=3 cellspacing=1 align=center class=TableBorder1 width="75%">
 <tr align=center>
 <th width="100%" height=25 colspan=2>论坛错误信息
 </td>
 </tr>
 <tr>
-<td width="100%" class=tablebody1 colspan=2>
+<td width="100%" class=TableBody1 colspan=2>
 <b>产生错误的可能原因：</b><br><br>
 <li>您是否仔细阅读了<a href="boardhelp.php">帮助文件</a>，可能您还没有登陆或者不具有使用当前功能的权限。
 <?php   echo $errMsg; ?>
@@ -347,27 +347,27 @@ function html_error_quit()
     <tr>
     <th valign=middle colspan=2 align=center height=25>请输入您的用户名、密码登陆</td></tr>
     <tr>
-    <td valign=middle class=tablebody1>请输入您的用户名</td>
-    <td valign=middle class=tablebody1><INPUT name=id type=text> &nbsp; <a href=reg.php>没有注册？</a></td></tr>
+    <td valign=middle class=TableBody1>请输入您的用户名</td>
+    <td valign=middle class=TableBody1><INPUT name=id type=text> &nbsp; <a href=reg.php>没有注册？</a></td></tr>
     <tr>
-    <td valign=middle class=tablebody1>请输入您的密码</font></td>
-    <td valign=middle class=tablebody1><INPUT name=password type=password> &nbsp; <a href=lostpass.php>忘记密码？</a></td></tr>
+    <td valign=middle class=TableBody1>请输入您的密码</font></td>
+    <td valign=middle class=TableBody1><INPUT name=password type=password> &nbsp; <a href=lostpass.php>忘记密码？</a></td></tr>
     <tr>
-    <td class=tablebody1 valign=top width=30% ><b>Cookie 选项</b><BR> 请选择你的 Cookie 保存时间，下次访问可以方便输入。</td>
-    <td valign=middle class=tablebody1>                <input type=radio name=CookieDate value=0 checked>不保存，关闭浏览器就失效<br>
+    <td class=TableBody1 valign=top width=30% ><b>Cookie 选项</b><BR> 请选择你的 Cookie 保存时间，下次访问可以方便输入。</td>
+    <td valign=middle class=TableBody1>                <input type=radio name=CookieDate value=0 checked>不保存，关闭浏览器就失效<br>
                 <input type=radio name=CookieDate value=1>保存一天<br>
                 <input type=radio name=CookieDate value=2>保存一月<br>
                 <input type=radio name=CookieDate value=3>保存一年<br>                </td></tr>
 	<input type=hidden name=comeurl value="<?php     echo $_SERVER['HTTP_REFERER']; ?>">
     <tr>
-    <td class=tablebody2 valign=middle colspan=2 align=center><input type=submit name=submit value="登 陆">&nbsp;&nbsp;<input type=button name="back" value="返 回" onclick="location.href='<?php  echo $_SERVER['HTTP_REFERER']; ?>'"></td></tr>
+    <td class=TableBody2 valign=middle colspan=2 align=center><input type=submit name=submit value="登 陆">&nbsp;&nbsp;<input type=button name="back" value="返 回" onclick="location.href='<?php  echo $_SERVER['HTTP_REFERER']; ?>'"></td></tr>
 </form>
 <?php   }
     else
   {
 ?>
     <tr>
-    <td class=tablebody2 valign=middle colspan=2 align=center><a href="<?php echo $_SERVER['HTTP_REFERER']; ?>"> <<返回上一页 </a></td></tr>
+    <td class=TableBody2 valign=middle colspan=2 align=center><a href="<?php echo $_SERVER['HTTP_REFERER']; ?>"> <<返回上一页 </a></td></tr>
 <?php   } ?>
 </table>
 <?php 
@@ -378,17 +378,17 @@ function html_success_quit($Desc='',$URL='')
   global $sucmsg;
 ?>
 <br>
-<table cellpadding=3 cellspacing=1 align=center class=tableborder1>
+<table cellpadding=3 cellspacing=1 align=center class=TableBorder1 width="75%">
 <tr align=center>
 <th width="100%">论坛成功信息
 </td>
 </tr>
 <tr>
-<td width="100%" class=tablebody1>
+<td width="100%" class=TableBody1>
 <b>操作成功：</b><br><br>
 <?php   echo $sucmsg; ?>
 </td></tr>
-<tr align=center><td width="100%" class=tablebody2>
+<tr align=center><td width="100%" class=TableBody2>
 <?php
 	if ($Desc=='') {
 ?>
@@ -595,8 +595,8 @@ function show_nav($boardName='')
   }
 ?>
 <body topmargin=0 leftmargin=0 onmouseover="HideMenu();">
-<div id=menuDiv class="navclass1"></div>
-<table cellspacing=0 cellpadding=0 align=center class="navclass2">
+<div id=menuDiv class="navClass1"></div>
+<table cellspacing=0 cellpadding=0 align=center class="navClass2">
 <tr><td width=100% >
 <table width=100% align=center border=0 cellspacing=0 cellpadding=0>
 <tr><td class=TopDarkNav height=9></td></tr>
@@ -674,7 +674,7 @@ function head_var($Title='', $URL='',$showWelcome=0)
 <?php
   } 
 ?>
-<table cellspacing=1 cellpadding=3 align=center class=tableBorder2>
+<table cellspacing=1 cellpadding=3 align=center class=TableBorder2>
 <tr><td height=25 valign=middle>
 <img src="pic/forum_nav.gif" align=absmiddle> <a href="<?php echo $SiteURL; ?>"><?php   echo $SiteName; ?></a> → 
 <?php 

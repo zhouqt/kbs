@@ -54,7 +54,7 @@ if (isErrFounded()) {
 <?php
 		showBoardStaticsTop($boardArr);
 ?>
-<TABLE cellPadding=1 cellSpacing=1 class=tableborder1 align=center>
+<TABLE cellPadding=1 cellSpacing=1 class=TableBorder1 align=center>
 <?php
 
 		showBroadcast($boardID,$boardName);
