@@ -391,7 +391,8 @@ good_getyx(int *y, int *x)
 	*x = j + cur_col - i;
 }
 
-void clear()
+void
+clear()
 {
 	register int i;
 	register struct screenline *slp;
@@ -404,21 +405,6 @@ void clear()
 		slp->mode = 0;
 		slp->len = 0;
 		slp->oldlen = 0;
-	}
-	move(0, 0);
-}
-
-void unrefresh_clear()
-{
-	register int i;
-	register struct screenline *slp;
-
-	roll = 0;
-	docls = true;
-	downfrom = 0;
-	for (i = 0; i < scr_lns; i++) {
-		slp = &big_picture[i];
-		slp->len = 0;
 	}
 	move(0, 0);
 }

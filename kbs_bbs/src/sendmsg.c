@@ -209,9 +209,8 @@ int show_allmsgs()
             page = 0;
             count = get_msgcount(all?2:0, currentuser->userid);
         }
-        unrefresh_clear();
         if(count==0) {
-            clrtoeol();
+            clear();
             good_move(5,30);
             prints("没有任何的讯息存在！！");
             i = 0;
@@ -229,6 +228,10 @@ int show_allmsgs()
                 load_msghead(all?2:0, currentuser->userid, i, &head);
                 load_msgtext(currentuser->userid, &head, buf);
                 j = translate_msg(buf, &head, showmsg);
+            }
+            for(j=y+1;j<23;j++) {
+                good_move(j, 0);
+                clrtoeol();
             }
         }
         good_move(23,0);
