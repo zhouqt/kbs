@@ -1051,10 +1051,10 @@ int read_userdata(const char *userid, struct userdata *ud)
     if ((userid == NULL || userid[0] == '\0') || ud == NULL)
         return -1;
     sethomefile(datafile, userid, USERDATA);
+    bzero(ud, sizeof(struct userdata));
     if ((fd = open(datafile, O_RDONLY, 0644)) < 0) {
         if ((fd = open(datafile, O_WRONLY | O_CREAT, 0644)) < 0)
             return -1;
-        bzero(ud, sizeof(struct userdata));
         strncpy(ud->userid, userid, sizeof(ud->userid) - 1);
         ud->userid[sizeof(ud->userid) - 1] = '\0';
         write(fd, ud, sizeof(struct userdata));
