@@ -41,6 +41,7 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 <?php
 	}
 ?>
+[<a href="bbscommend.php?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[1]["ID"]; ?>">推荐</a>]
 [<?php bbs_add_super_fav ($articles[1]['TITLE'], "/bbscon.php?bid=" . $brdnum . "&id=" . $articles[1]["ID"]); ?>]
 [<a href="/bbspstmail.php?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>&userid=<?php echo $articles[1]["OWNER"]; ?>&title=<?php if(strncmp($articles[1]["TITLE"],"Re:",3)) echo "Re: "; ?><?php echo urlencode($articles[1]["TITLE"]); ?>">回信</a>]
 [<a href="/bbsedit.php?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[1]["ID"]; ?>">修改</a>]
