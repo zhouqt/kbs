@@ -502,12 +502,13 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
         getyx(&y, &x);
         getdata(y, x, 0, ans, 3, 1, 0, 1);
         if(ans[0]>='1'&&ans[0]<='3') {
+            struct fileheader f;
             k=ans[0]-'0';
             if(ans[0]=='1') fflag=FILE_MARK_FLAG;
             else if(ans[0]=='2') fflag=FILE_DELETE_FLAG;
             else if(ans[0]=='3') fflag=FILE_NOREPLY_FLAG;
             for(i=0;i<count;i++)
-                change_post_flag(currBM, currentuser, digestmode, currboard, i+1, currdirect, fflag, 0);
+                change_post_flag(currBM, currentuser, digestmode, currboard, i+1, &f, currdirect, fflag, 0);
         }
     }
     return NEWDIRECT;
