@@ -875,6 +875,9 @@ void scroll()
     ln = (cur_ln + roll)%scr_lns;
     slp = &big_picture[ln];
     memset(slp->ldata, 255, scr_cols);
+    memset(slp->data, 32, scr_cols);
+    memset(slp->mode, 0, scr_cols);
+    memset(slp->color, 7, scr_cols);
 }
 
 void rscroll()
@@ -888,6 +891,9 @@ void rscroll()
     ln = (cur_ln + roll)%scr_lns;
     slp = &big_picture[ln];
     memset(slp->ldata, 255, scr_cols);
+    memset(slp->data, 32, scr_cols);
+    memset(slp->mode, 0, scr_cols);
+    memset(slp->color, 7, scr_cols);
 }
 
 void noscroll()
