@@ -103,9 +103,16 @@ static void free_import_path()
 {
     int i;
     for (i=0;i<ANNPATH_NUM;i++) {
-    	free(import_path[i]);
-    	free(import_title[i]);
+    	if (import_path[i]!=NULL){
+    	    free(import_path[i]);
+    	    import_path[i]=NULL;
+    	}
+    	if (import_title[i]!=NULL){
+    	    free(import_title[i]);
+    	    import_title[i]=NULL;
+    	}
     }
+    import_path_time=0;
 }
 static int save_import_path()
 {
