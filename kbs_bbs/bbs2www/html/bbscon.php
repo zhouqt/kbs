@@ -58,6 +58,8 @@ function display_navigation_bar($brdarr, $articles, $num, $brdnum)
 ?>
 [<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=p">上一篇</a>]
 [<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=n">下一篇</a>]
+[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=tp">同主题上篇</a>]
+[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=tn">同主题下篇</a>]
 <?php
 	if( $articles[1]["ATTACHPOS"] == 0)
 	{
@@ -94,16 +96,16 @@ function display_navigation_bar($brdarr, $articles, $num, $brdnum)
 			html_error_quit("错误的讨论区");
 		}
 	}
-	elseif (isset($_SERVER['argv'])){
-		$board = $_SERVER['argv'][1];
+	elseif (isset($_GET["board"])){
+		$board = $_GET["board"];
 		$brdnum = bbs_getboard($board, $brdarr);
 		if ($brdnum == 0) {
 			html_init("gb2312");
 			html_error_quit("错误的讨论区");
 		}
 	}
-	elseif (isset($_GET["board"])){
-		$board = $_GET["board"];
+	elseif (isset($_SERVER['argv'])){
+		$board = $_SERVER['argv'][1];
 		$brdnum = bbs_getboard($board, $brdarr);
 		if ($brdnum == 0) {
 			html_init("gb2312");
@@ -128,6 +130,43 @@ function display_navigation_bar($brdarr, $articles, $num, $brdnum)
 		html_init("gb2312");
 		html_error_quit("错误的讨论区");
 	}
+	if (isset($_GET["id"]))
+		$id = $_GET["id"];
+	elseif (isset($_SERVER['argv'][2]))
+		$id = $_SERVER['argv'][2];
+	else {
+		html_init("gb2312");
+		html_error_quit("错误的文章号");
+	}
+	settype($id, "integer");
+	// 获取上一篇或下一篇，同主题上一篇或下一篇的指示
+	@$ptr=$_GET["p"];
+	// 同主题的指示在这里处理
+	if ($ptr == "tn")
+	{
+		$articles = bbs_get_threads_from_id($brdnum, $id, $dir_modes["NORMAL"],1);
+		if ($articles == FALSE)
+			$redirt_id = $id;
+		else
+			$redirt_id = $articles[0]["ID"];
+		if (($loginok == 1) && $currentuser["userid"] != "guest")
+			bbs_brcaddread($brdarr["NAME"], $redirt_id);
+		header("Location: " . "/bbscon.php?bid=" . $brdnum . "&id=" . $redirt_id);
+		exit;
+	}
+	elseif ($ptr == "tp")
+	{
+		$articles = bbs_get_threads_from_id($brdnum, $id, $dir_modes["NORMAL"],-1);
+		if ($articles == FALSE)
+			$redirt_id = $id;
+		else
+			$redirt_id = $articles[0]["ID"];
+		if (($loginok == 1) && $currentuser["userid"] != "guest")
+			bbs_brcaddread($brdarr["NAME"], $redirt_id);
+		header("Location: " . "/bbscon.php?bid=" . $brdnum . "&id=" . $redirt_id);
+		exit;
+	}
+
 	if (isset($_GET["ftype"])){
 		$ftype = $_GET["ftype"];
 		if($ftype != $dir_modes["ZHIDING"])
@@ -140,15 +179,6 @@ function display_navigation_bar($brdarr, $articles, $num, $brdnum)
 		html_init("gb2312");
 		html_error_quit("本讨论区目前没有文章,$brdnum,$board,$ftype,$total".$brdarr["NAME"]);
 	}
-	if (isset($_GET["id"]))
-		$id = $_GET["id"];
-	elseif (isset($_SERVER['argv'][2]))
-		$id = $_SERVER['argv'][2];
-	else {
-		html_init("gb2312");
-		html_error_quit("错误的文章号");
-	}
-	settype($id, "integer");
 	$articles = array ();
 	$num = bbs_get_records_from_id($brdarr["NAME"], $id, 
 			$ftype, $articles);
@@ -187,9 +217,6 @@ function display_navigation_bar($brdarr, $articles, $num, $brdnum)
 			exit;
 		} else
 		{
-			// 检查上一篇或下一篇
-			@$ptr=$_GET["p"];
-			$brd_encode = urlencode($brdarr["NAME"]);
 			//$http_uri = "http" . ($_SERVER["HTTPS"] == "on" ? "s" : "") . "://";
 			if ($ptr == 'p' && $articles[0]["ID"] != 0)
 		{
