@@ -64,7 +64,8 @@ int     wait_friend();
 int     t_query(), t_talk(), t_pager(), t_override(), x_cloak();
 int     t_irc(), kick_user();
 /* add by KCN */
-void ent_chat1(), ent_chat2();
+/* Modified by sanshao, sb KCN */
+int	ent_chat1(), ent_chat2();
 int     switch_code(); /* add by KCN */
 
 

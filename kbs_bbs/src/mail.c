@@ -2020,7 +2020,7 @@ int isuu;
         char *ptrX;
         //ptrX = strstr(receiver, ".bbs@smth.org");
 	// @smth.org @zixia.net 取到前面的用户即可
-        ptrX = strstr(receiver, email_domain() );
+        ptrX = strstr(receiver, (const char*)email_domain() );
 
         /*disable by KCN      if (!ptrX) ptrX = strstr(receiver, ".bbs@"); */
         if ( ptrX && '@'==*(ptrX-1) )  *(ptrX-1) = 0;

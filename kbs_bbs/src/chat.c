@@ -339,12 +339,12 @@ int chat_checkparse(chatcontext * pthis)
 
 
 /* KCN add chat 2 */
-void ent_chat2()  /* 进入聊天室*/
+ent_chat2()  /* 进入聊天室*/
 {
     ent_chat(2);
 }
 
-void ent_chat1()  /* 进入聊天室*/
+ent_chat1()  /* 进入聊天室*/
 {
     ent_chat(1);
 }

@@ -185,21 +185,21 @@ char *modestring(int mode,int towho,int complete,char *chatid)
     /* Leeward: 97.12.18: Below removing ' characters for more display width */
     if (chatid) {
         if (complete) sprintf(modestr, "%s %s", ModeType(mode), chatid);
-        else return (ModeType(mode));
+        else return ((char*)ModeType(mode));
         return (modestr);
     }
     if (mode != TALK && mode != PAGE && mode != QUERY)
-        return (ModeType(mode));
+        return ((char*)ModeType(mode));
     /*---	modified by period	2000-10-20	---*
         if (get_record(PASSFILE, &urec, sizeof(urec), towho) == -1)
             return (ModeType(mode));
     ---*/
     if (complete) {
-	    if(getuserid(urec.userid, towho) != towho) return ModeType(mode);
+	    if(getuserid(urec.userid, towho) != towho) return (char*)ModeType(mode);
         sprintf(modestr, "%s %s", ModeType(mode), urec.userid);
     }
     else
-        return (ModeType(mode));
+        return ((char*)ModeType(mode));
     return (modestr);
 }
 

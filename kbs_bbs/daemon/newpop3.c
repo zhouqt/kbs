@@ -70,7 +70,7 @@ int     State;
 int     msock,sock;    /* master server socket */
 static int reaper();
 char    fromhost[ IPLEN ];
-char    inbuf[ BUFSIZE ];
+static char    inbuf[ BUFSIZE ];
 char    remote_userid[ STRLEN ];
 FILE    *cfp;
 char    *msg,*cmd;
@@ -105,7 +105,7 @@ struct commandlist {
 
 char *crypt();
 
-void
+static void
 logattempt( uid, frm ) /* Leeward 98.07.25 */
 char *uid, *frm;
 {
@@ -162,7 +162,7 @@ int     protocol;
     }
 }
 
-void
+static void
 outs(str)
 char *str;
 {

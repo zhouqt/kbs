@@ -32,7 +32,7 @@
 
 struct UTMPFILE *utmpshm;
 
-static int longlock(int signo)
+static void longlock(int signo)
 {
     log("5system","utmp lock for so long time!!!.");
     exit(-1);

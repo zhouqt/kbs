@@ -874,7 +874,7 @@ int mode;
     strcpy(quote_title,posttitle);
     post_cross('l',mode);  /* post 文件 */
     strcpy(currboard,dbname); /* 恢复保存的当前版 */
-    return;
+    return 0;
 }
 
 int
@@ -1996,7 +1996,7 @@ char *direct ;
 
 
     if(!HAS_PERM(PERM_LOGINOK) || !strcmp(currentuser->userid,"guest")) /* guest 无权 */
-        return;
+        return 0;
     /*太狠了吧,被封post就不让回信了
         if (!HAS_PERM(PERM_POST)) return; Haohmaru.99.1.18*/
 

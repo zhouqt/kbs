@@ -2292,8 +2292,8 @@ char* argv[];
         return -1;
     }
 
-    sinsize = sizeof sin;
-    if (getsockname(sock, (struct sockaddr *)&sin, &sinsize) == -1)
+    sinsize = sizeof(sin);
+    if (getsockname(sock, (struct sockaddr *)&sin, (socklen_t*)&sinsize) == -1)
     {
         perror("getsockname");
         exit(1);
@@ -2354,7 +2354,7 @@ char* argv[];
         if (FD_ISSET(sock, &readfds))
         {
             sinsize = sizeof sin;
-            newsock = accept(sock, (struct sockaddr *)&sin, &sinsize);
+            newsock = accept(sock, (struct sockaddr *)&sin, (socklen_t*)&sinsize);
             if (newsock == -1)
             {
                 continue;

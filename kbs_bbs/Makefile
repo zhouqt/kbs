@@ -17,19 +17,21 @@
 #############################################################
 
 # The home directory for the user 'bbs'
-#BBSHOME=/home/system/bbs
+BBSHOME=/home/system/bbs
 # The uid for the user 'bbs'
-#BBSUID=9999
+BBSUID=9999
 # by zixia: remove to sysname.h
 
-OS_DEF   = -DAIX -DSYSV 
-#OS_DEF   = -DLINUX -DSYSV 
+#OS_DEF   = -DAIX -DSYSV 
+OS_DEF   = -DLINUX -DSYSV 
 
 CC       = gcc
 #CC       = cc
-CFLAGS   = -g -Ilibesmtp -static 
+CFLAGS   = -W -g -Ilibesmtp -static 
 #CFLAGS   = -g -O3 -qstrict -qcompact -qarch=ppc
-LIBS     = -lbsd -lcrypt -L. -Llibesmtp/.libs -lesmtp
+LIBS     = -lbsd -lcrypt -L. -lesmtp 
+	#-lpthread -lltdl -ldl
+
 #CFLAGS   = -O3
 #LIBS     = -ltermcap -lbsd -lcrypt
 
@@ -52,7 +54,7 @@ CFILE    = bbs.c record.c delete.c stuff.c mail.c register.c \
            xyz.c talk.c read.c comm_lists.c namecomplete.c chat.c \
            maintain.c edit.c more.c pass.c help.c bcache.c boards.c \
            screen.c userinfo.c vote.c announce.c sendmsg.c\
-	   bm.c list.c goodbye.c fileshm.c cache.c bbsd_single.c \
+	   bm.c list.c goodbye.c fileshm.c cache.c \
 	   newmain_single.c newio.c newterm.c convcode.c bbs_sendmail.c crypt.c \
 	   ucache.c utmp.c log.c md5.c smth.c 
 
@@ -60,11 +62,11 @@ COBJS    = bbs.o record.o delete.o stuff.o mail.o register.o \
            xyz.o talk.o read.o comm_lists.o namecomplete.o chat.o \
            maintain.o edit.o more.o pass.o help.o bcache.o boards.o \
            screen.o userinfo.o vote.o announce.o sendmsg.o\
-           bm.o list.o goodbye.o fileshm.o cache.o bbsd_single.o \
+           bm.o list.o goodbye.o fileshm.o cache.o \
 	   newmain_single.o newio.o newterm.o convcode.o bbs_sendmail.o crypt.o \
 	   ucache.o utmp.o log.o md5.o smth.o 
 
-BBSLIBOBJS = record.o log.o ucache.o stuff.o md5.o crypt.o pass.o bcache.o utmp.o $(BBSSITE).o
+BBSLIBOBJS = record.o log.o ucache.o stuff.o md5.o crypt.o pass.o bcache.o utmp.o
 
 OTHERS   = bbs.h edit.h
 
@@ -94,37 +96,40 @@ dep:
 	ls *.c | xargs gcc $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL  -M  >>.depend
 
 
-$(PROGNAME): $(COBJS) $(OTHERS) 
-	$(CC) -o bbsd_single $(CFLAGS) $(COBJS) $(LIBS) -g
+$(PROGNAME): $(COBJS) $(OTHERS) bbsd_single.o
+	$(CC) -o bbsd_single $(CFLAGS) $(COBJS) $(LIBS) bbsd_single.o -g
 #	cp -f bbsnew ../bin/bbsnew
+
+bbsd_single.o:	bbsd_single.c
+	$(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -c bbsd_single.c
 
 bbstest: $(COBJS) $(OTHERS) newmain_single.o newio.o newterm.o convcode.o
 	$(CC) -o bbstest $(CFLAGS) $(COBJS) $(LIBS) newmain_single.o newio.o newterm.o convcode.o
 	cp -f bbstest ../bin/bbstest
 
-bbspost: bbspost.o $(BBSLIB)
-	gcc -DDONT_HAVE_TM_GMTOFF $(OS_DEF) -DLEEWARD_X_RECORD -o bbspost bbspost.o $(BBSLIB)
-	cp -f bbspost $(BBSHOME)/bin
-	chmod 6755 $(BBSHOME)/bin/bbspost
+bbspost: bbspost.o $(COBJS)
+	gcc -DDONT_HAVE_TM_GMTOFF $(OS_DEF) -DLEEWARD_X_RECORD -o bbspost bbspost.o $(COBJS) $(LIBS)
+	#cp -f bbspost $(BBSHOME)/bin
+	#chmod 6755 $(BBSHOME)/bin/bbspost
 
 lint: $(LNFILES)
 	lint -abh $(LNFILES)
 
 newpop3.o: newpop3.c
 	gcc -g $(SITE_DEF) $(DEFINES)  -c newpop3.c
-newpop3d: newpop3.o $(BBSLIB)
-	$(CC) $(CFLAGS) -o newpop3d $(SITE_DEF) $(DEFINES) newpop3.o $(BBSLIB)
-	cp -f newpop3d $(BBSHOME)/bin
+newpop3d: newpop3.o $(COBJS)
+	$(CC) $(CFLAGS) -o newpop3d $(SITE_DEF) $(DEFINES) newpop3.o $(COBJS) $(LIBS)
+	#cp -f newpop3d $(BBSHOME)/bin
 #	$(CC) $(CFLAGS) -o pop3d $(SITE_DEF) -D_BSD pop3d.c
 
 thread: thread.c record.c
 	$(CC) $(CFLAGS) -o thread $(OS_DEF) record.c thread.c $(LIBS)
 
 #$(patsubst %.o,%_use.o,$(BBSLIBOBJS)):$(patsubst %_use.o,%.c,$@)
-%_use.o: %.c
-	$(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL -c $^ -o $@
+#%_use.o: %.c
+#	$(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL -c $^ -o $@
 	
-$(BBSLIB) : $(patsubst %.o,%_use.o,$(BBSLIBOBJS))
+$(BBSLIB) : $(BBSLIBOBJS)
 	ar cru $@ $^
 	ranlib $@
 	

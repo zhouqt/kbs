@@ -121,7 +121,7 @@ usage()
     exit( 0 );
 }
 
-int
+static int
 cmpbnames( bname, brec)
 char *bname;
 struct fileheader *brec;
@@ -337,7 +337,7 @@ char    *name;
     exit( 0 );
 }
 
-post_article( usermail )
+static post_article( usermail )
 {
     struct fileheader   header;
     struct boardheader  brdhdr;
