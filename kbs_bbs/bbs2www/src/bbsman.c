@@ -7,7 +7,7 @@ char genbuf[1024];
 char currfile[STRLEN];
 char im_path[MAXPATH];
 
-int change_flag(struct fileheader*f,char* board,char*dirdir,int ent)
+int change_flag(struct fileheader*f,char* board,char*dirdir,int ent, int flag)
 {
     int ret;
         struct write_dir_arg dirarg;
@@ -21,7 +21,7 @@ int change_flag(struct fileheader*f,char* board,char*dirdir,int ent)
         dirarg.ent = ent;
         if(change_post_flag(&dirarg, 
             DIR_MODE_NORMAL, 
-            bh, f, FILE_IMPORT_FLAG, &data,true)!=0)
+            bh, f, flag, &data,true)!=0)
         ret = 1;
     else
         ret = 0;
@@ -157,7 +157,7 @@ int bbsman_import(int ent,char *board,struct fileheader *f,char *dirdir)
 		free(pm.item[i]);
 
 	if(ret){
-        ret=change_flag(f,board,dirdir,ent);
+        ret=change_flag(f,board,dirdir,ent,FILE_IMPORT_FLAG);
 	}
 
 	return ret;
@@ -241,7 +241,7 @@ int do_set(char *board, int id, int flag)
     if( fd >= 0 && get_records_from_id( fd, id, &f, 1, &ent) )
 	{
         close(fd);
-		if(change_flag(&f,board,dir,ent)==0)
+		if(change_flag(&f,board,dir,ent,flag)==0)
 			printf("<tr><td>%s</td><td>标题:%s</td><td>标记成功.</td></tr>\n", f.owner, nohtml(f.title));
 		else
 			printf("<tr><td>%s</td><td>标题:%s</td><td>标记不成功.</td></tr>\n", f.owner, nohtml(f.title));
@@ -278,7 +278,7 @@ int do_set_zd(char *board, int id, int flag)
     fclose(fp);
 
 	if(ffind){
-		if(change_flag(&f,board,dir,ent)==0)
+		if(change_flag(&f,board,dir,ent,flag)==0)
 			printf("<tr><td>%s</td><td>标题:%s</td><td>标记成功.</td></tr>\n", f.owner, nohtml(f.title));
 		else
 			printf("<tr><td>%s</td><td>标题:%s</td><td>标记不成功.</td></tr>\n", f.owner, nohtml(f.title));
