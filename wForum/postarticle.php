@@ -215,12 +215,14 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 							break;
 					}
 				}
+				$q_prefix = str_repeat(": ", BBS_QUOTE_LEV);
+				$q_len = 2 + 2 * BBS_QUOTE_LEV;
 				while (1) {
-					if (($buf = fgets($fp,5000)) == FALSE)
+					if (($buf = fgets($fp, 500)) == FALSE)
 						break;
-					if (strncmp($buf, "【", 2) == 0)
+					if (strncmp($buf, $q_prefix . "【", $q_len) == 0)
 						continue;
-					if (strncmp($buf, ": ", 2) == 0)
+					if (strncmp($buf, $q_prefix . ": ", $q_len) == 0)
 						continue;
 					if (strpos($buf, "※ 来源") !== FALSE)
 						break;
@@ -230,7 +232,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 						break;
 					if (strncmp($buf, "\n", 1) == 0)
 						continue;
-					if (++$lines > 10) {
+					if (++$lines > BBS_QUOTED_LINES) {
 						$buf2 .= ": ...................\n";
 						break;
 					}
@@ -306,9 +308,11 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 		if (bbs_is_anony_board($boardArr) ) {
 		echo "<input type=\"checkbox\" name=\"anonymous\" value=\"1\" />匿名<br />";
 	}
+	if ($reID == 0) {
 ?>
     <input type=checkbox name=emailflag value="1">有回复时使用邮件通知您？
 <?php
+	}
 	if (SUPPORT_TEX) {
 ?>
     <input type=checkbox name=texflag value="1">使用 tex 发表</font>
