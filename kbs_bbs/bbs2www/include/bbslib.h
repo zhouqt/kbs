@@ -8,7 +8,7 @@
 #include <stdarg.h>
 /*#include "crypt.h"*/
 #include "types.h"
-#include "crypt.h"
+/*#include "crypt.h"*/
 
 #ifdef SMTH
 #define CACHE_ROOT "/backup/www/htdocs"
@@ -22,8 +22,6 @@
 #define UCACHE_SHMKEY	get_shmkey("UCACHE_SHMKEY")
 #define UTMP_SHMKEY	get_shmkey("UTMP_SHMKEY")
 #define BCACHE_SHMKEY	get_shmkey("BCACHE_SHMKEY")
-
-#define SECNUM 9 
 
 #ifndef MAXREJECTS
 #define MAXREJECTS	(0xff)

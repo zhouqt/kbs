@@ -4,6 +4,9 @@
 #define BBSUID 			9999
 #define BBSGID 			99
 
+/* for bbs2www, by flyriver, 2001.3.9 */
+#define SECNUM 9
+
 #define DEFAULTBOARD    	"test"
 #define MAXUSERS  		150000
 #define MAXBOARD  		400

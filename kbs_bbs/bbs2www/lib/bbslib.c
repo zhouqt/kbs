@@ -25,22 +25,6 @@ int range,page,readplan,num;
 struct user_info *user_record[USHM_SIZE];
 struct userec *user_data;
 
-char seccode[SECNUM][5]={
-	"0", "1", "3", "4", "5", "6", "7", "8", "9"
-};
-
-char secname[SECNUM][2][20]={
-	"BBS 系统", "[站内]",
-	"清华大学", "[本校]",
-	"电脑技术", "[电脑/系统]",
-	"休闲娱乐", "[休闲/音乐]",
-	"文化人文", "[文化/人文]",
-	"社会信息", "[社会/信息]",
-	"学术科学", "[学科/语言]",
-	"体育健身", "[运动/健身]",
-	"知性感性", "[谈天/感性]",
-};
-
 int loginok=0;
 friends_t bbb[MAXREJECTS];
 int badnum=0;
