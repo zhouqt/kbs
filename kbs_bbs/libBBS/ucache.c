@@ -389,7 +389,7 @@ static int setuserid_internal(int num, const char *userid)
         oldkey = ucache_hash((char *) uidshm->passwd[num - 1].userid);
         newkey = ucache_hash(userid);
         find = uidshm->hashhead[newkey];
-        while (find) { //check duplicate
+        while ((newkey!=0)&&find) { //check duplicate
             if (!strcasecmp(uidshm->passwd[find-1].userid,userid))
                 return -1;
             find = uidshm->next[find-1];
