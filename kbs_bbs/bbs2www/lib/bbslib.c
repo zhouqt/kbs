@@ -3148,6 +3148,7 @@ int web_send_sms(char *dest,char *msgstr){
 	bool cansend = true;
 	struct userec *ur;
 	int ret;
+	char buf[MAX_MSG_SIZE];
 
 	read_userdata(currentuser->userid, &ud);
 	if(!ud.mobileregistered)
@@ -3185,7 +3186,24 @@ int web_send_sms(char *dest,char *msgstr){
 		return -2;
 	}
 
-	ret = DoSendSMS(ud.mobilenumber, uident, msgstr);
+	strncpy(buf, msgstr, MAX_MSG_SIZE);
+	buf[MAX_MSG_SIZE-1]=0;
+
+	if( strlen(buf) + strlen(ud.smsprefix) + strlen(ud.smsend) < MAX_MSG_SIZE ){
+		int i,i1,j;
+
+		i=strlen(buf);
+		i1=strlen(ud.smsprefix);
+		for(j= i+i1; j>=i1; j--){
+			buf[j] = buf[j-i1];
+		}
+		for(j=0;j<i1;j++)
+			buf[j] = ud.smsprefix[j];
+		strcat(buf, ud.smsend);
+
+	}
+
+	ret = DoSendSMS(ud.mobilenumber, uident, buf);
 
 	if( ret == CMD_ERR_SMS_VALIDATE_FAILED){
 		if( read_user_memo(currentuser->userid, &currentmemo) <= 0) return -1;
@@ -3213,11 +3231,17 @@ int web_send_sms(char *dest,char *msgstr){
 		h.mode = 6;
 		h.sent = 1;
 		h.time = time(0);
-		save_msgtext(currentuser->userid, &h, msgstr);
+		save_msgtext(currentuser->userid, &h, buf);
+#if HAVE_MYSQL == 1
+        save_smsmsg(currentuser->userid, &h, buf, 1);
+#endif
 		if( !isdigit(dest[0]) ){
 			h.sent = 0;
 			strcpy(h.id, currentuser->userid);
-			save_msgtext(destid, &h, msgstr);
+			save_msgtext(destid, &h, buf);
+#if HAVE_MYSQL == 1
+        	save_smsmsg(uident, &h, buf, 1);
+#endif
 			if(uin) kill(uin->pid, SIGUSR2);
 		}
 	}
