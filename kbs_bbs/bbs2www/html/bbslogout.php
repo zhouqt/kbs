@@ -5,6 +5,10 @@
 	 */
   require("funcs.php");
   if ($loginok!=1) {
+        setcookie("UTMPKEY","",time() - 360000,"");
+        setcookie("UTMPNUM","",time() - 360000,"");
+        setcookie("UTMPUSERID","",time() - 360000,"");
+        setcookie("LOGINTIME","",time() - 360000,"");
 ?>
 <html>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
@@ -15,10 +19,10 @@
 <?php
  } else {
 	bbs_wwwlogoff();
-    setcookie("UTMPKEY","",time()-360,"/");
-    setcookie("UTMPNUM","",time()-360,"/");
-    setcookie("UTMPUSERID","",time()-360,"/");
-    setcookie("LOGINTIME","",time()-360,"/");
+    setcookie("UTMPKEY","",time()-3600,"/");
+    setcookie("UTMPNUM","",time()-3600,"/");
+    setcookie("UTMPUSERID","",time()-3600,"/");
+    setcookie("LOGINTIME","",time()-3600,"/");
 
 	header("Location: /index.html");
    }
