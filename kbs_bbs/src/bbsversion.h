@@ -25,6 +25,7 @@ MODULE_OPTION("convert password to md5 format",CONV_PASS)
 MODULE_OPTION("have money field in passwd",HAVE_USERMONEY)
 
 MODULE_VERSION("userdata","user data file in user home",null,1,0)
+MODULE_OPTION("have birthday field",HAVE_BIRTHDAY)
 
 MODULE_VERSION("userinfo","user session data in share memory",null,1,0)
 MODULE_OPTION("wforum data",HAVE_WFORUM)
