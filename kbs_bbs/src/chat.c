@@ -496,13 +496,42 @@ static int ent_chat(int chatnum)
             inbuf[69] = ch;
             currchar = strlen(inbuf);
             continue;
+#ifdef CHINESE_CHARACTER
+        case Ctrl('R'):
+			currentuser->userdefine = currentuser->userdefine ^ DEF_CHCHAR;
+        	break;
+#endif        	
         case KEY_LEFT:
             if (currchar)
                 --currchar;
+#ifdef CHINESE_CHARACTER
+			if (DEFINE(currentuser, DEF_CHCHAR)) {
+				int i,j=0;
+				for(i=0;i<currchar;i++)
+					if(j) j=0;
+					else if(inbuf[i]<0) j=1;
+				if(j) {
+					currchar--;
+				}
+			}
+#endif
             continue;
         case KEY_RIGHT:
             if (inbuf[currchar])
                 ++currchar;
+#ifdef CHINESE_CHARACTER
+			if (DEFINE(currentuser, DEF_CHCHAR)) {
+				int i,j=0;
+				for(i=0;i<currchar;i++)
+					if(j) j=0;
+					else if(inbuf[i]<0) j=1;
+				if(j) {
+		            if (inbuf[currchar])
+        		        ++currchar;
+					currchar++;
+				}
+			}
+#endif
             continue;
         case KEY_ESC:
         case Ctrl('X'):
@@ -604,6 +633,26 @@ static int ent_chat(int chatnum)
                 outs(&inbuf[currchar]);
                 inbuf[69] = ch;
             }
+#ifdef CHINESE_CHARACTER
+			if (DEFINE(currentuser, DEF_CHCHAR)) {
+				int i,j=0;
+				for(i=0;i<currchar;i++)
+					if(j) j=0;
+					else if(inbuf[i]<0) j=1;
+				if(j) {
+	                currchar--;
+	                inbuf[127] = '\0';
+	                memcpy(&inbuf[currchar], &inbuf[currchar + 1],
+	                       127 - currchar);
+	                move(b_lines, currchar + 10);
+	                clrtoeol();
+	                ch = inbuf[69]; /* save the end of line */
+	                inbuf[69] = 0;
+	                outs(&inbuf[currchar]);
+	                inbuf[69] = ch;
+				}
+			}
+#endif
             continue;
         }
         if (ch == Ctrl('Z')) {
