@@ -239,7 +239,7 @@ function bbs_auto_reload() {
 ?>
     setTimeout('bbs_auto_reload()',540000);
 }
-bbs_auto_reload();
+setTimeout('bbs_auto_reload()',540000);
 </script>
 <body  TOPMARGIN="0" leftmargin="0">
 <iframe id="hiddenframe" name="hiddenframe" width="0" height="0"></iframe>
