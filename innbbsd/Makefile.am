@@ -2,7 +2,6 @@ bin_PROGRAMS = innbbsd makedbz mkhistory dbzserver bbsnnrp \
 		ctlinnbbsd dbz_query_sample bbslink
 EXTRA_DIST = AUTHORS INSTALL doc/* README
 CLEANFILES = @EXTRA_CLEAN@
-AM_MAKEFLAGS=@MAKEFLAG@
 innbbsd_SOURCES = nocem.c inndchannel.c innbbsd.c connectsock.c rfc931.c \
 		daemon.c file.c pmain.c parsdate.c his.c \
 		dbz.c closeonexec.c dbztool.c inntobbs.c echobbslib.c \
@@ -16,7 +15,7 @@ bbsnnrp_SOURCES = bbsnnrp.c pmain.c bbslib.c connectsock.c file.c killspam.c
 ctlinnbbsd_SOURCES = ctlinnbbsd.c pmain.c bbslib.c connectsock.c file.c
 bbslink_SOURCES = bbslink.c pmain.c inntobbs.c echobbslib.c connectsock.c file.c \
 		port.c parsdate.y lang.c filter.c wildmat.c
-noinst_HEADERS = bbslib.h clibrary.h config.h daemon.h dbz.h externs.h \
+noinst_HEADERS = bbslib.h clibrary.h daemon.h dbz.h externs.h \
 		his.h innbbsconf.h innbbsd.h inntobbs.h lang.h nntp.h \
 		nocem.h version.h
 AM_CFLAGS = -DGETRUSAGE -DUSE_NCM_PATCH -DPGP5 -DFirebirdBBS -DDBZDEBUG -DFILTER -DBIG2GB -DGB2BIG -I../src
