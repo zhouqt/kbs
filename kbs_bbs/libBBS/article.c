@@ -1228,7 +1228,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
 #endif
             } else {
                 fileinfo->accessed[1] |= FILE_CENSOR;
-                setbfile(oldpath, FILTER_BOARD, fileinfo->filename);
+                setbfile(oldpath, currboard, fileinfo->filename);
                 setbfile(newpath, fileinfo->o_board, fileinfo->filename);
                 f_cp(oldpath, newpath, 0);
 
