@@ -211,7 +211,7 @@ void suicide()
     f_rm(tmpbuf);
     sethomepath(tmpbuf, currentuser->userid);
     f_rm(tmpbuf);
-    sprintf(genbuf, "tmp/email/%s", lookupuser->userid);
+    sprintf(genbuf, "tmp/email/%s", currentuser->userid);
     f_rm(genbuf);
     currentuser->userlevel = 0;
     id = searchuser(currentuser->userid);
