@@ -26,11 +26,11 @@ SMTH.Blog 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
 	    如果缺少上述代码，请通过 cvs 更新您的smthbbs或下载最新的smthbbs-snapshot
 	    代码。
 	1.3 确认您的系统配置文件($BBSHOME/etc/sysconf.ini)中含有下面的字段:
-		MYSQLHOST       = ""    //MySQL服务器地址
-		MYSQLUSER       = ""    //MySQL用户名
-		MYSQLPASSWORD   = ""    //MySQL用户密码
-		MYSQLSMSDATABASE = ""   //MySQL数据库名
-		MYSQLPORT       = ""    //MySQL数据库端口,默认为3306
+		MYSQLBLOGHOST       = ""    //MySQL服务器地址
+		MYSQLBLOGUSER       = ""    //MySQL用户名
+		MYSQLBLOGPASSWORD   = ""    //MySQL用户密码
+		MYSQLBLOGDATABASE = ""   //MySQL数据库名
+		MYSQLBLOGPORT       = ""    //MySQL数据库端口,默认为3306
 
 	1.4 在 MySQL 数据库中添加表。表结构见 DB.Blog.Structure.sql 文档。
 	1.5 配置 telnet 部分。具体方法为在站点配置文件 site.h 中加入下面的定义：
@@ -63,11 +63,11 @@ SMTH.Blog 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
     	define("HAVE_PC", 1);
     这里 *** 表示 --enable-site 所指定的配置文件或目录。
     4) 安装成功后,确认您的 $BBSHOME/etc/sysconf.ini 中含有下列字段:
-	MYSQLHOST       = ""    //MySQL服务器地址
-	MYSQLUSER       = ""    //MySQL用户名
-	MYSQLPASSWORD   = ""    //MySQL用户密码
-	MYSQLSMSDATABASE = ""   //MySQL数据库名
-	MYSQLPORT       = ""    //MySQL数据库端口,默认为3306
+	MYSQLBLOGHOST       = ""    //MySQL服务器地址
+	MYSQLBLOGUSER       = ""    //MySQL用户名
+	MYSQLBLOGPASSWORD   = ""    //MySQL用户密码
+	MYSQLBLOGDATABASE = ""   //MySQL数据库名
+	MYSQLBLOGPORT       = ""    //MySQL数据库端口,默认为3306
     5) 编辑 $WWWHOME/htdocs/pc/pcconf.php ,配置WWW下的BLOG参数。
          $pcconfig["LIST"] :Blog首页上每页显示的用户数;
 	$pcconfig["HOME"] :BBS主目录,默认为BBS_HOME;
