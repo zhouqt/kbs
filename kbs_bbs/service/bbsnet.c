@@ -3,9 +3,6 @@
 #include "tcplib.h"
 #include <netdb.h>
 
-#undef printf
-#undef perror
-
 #define TIME_OUT	15
 #define MAX_PROCESS_BAR_LEN 30
 #define BBSNET_LOG_BOARD "bbsnet"
@@ -22,6 +19,8 @@ jmp_buf jb;
 extern char fromhost[];
 extern struct userec *currentuser;
 extern int msg_count;
+extern struct user_info uinfo;
+extern int utmpent;
 	
 // added by flyriver, 2001.3.2
 // ´©ËóÈÕ¼Ç
@@ -294,6 +293,28 @@ static void process_bar(int n, int len)
 	redoscr();
 }
 
+static time_t last_refresh;
+
+static int 
+bbsnet_read(int fd, char *buf, int len)
+{
+	int rc;
+	time_t now;
+
+	rc = raw_read(fd, buf, len);
+	if (rc > 0)
+	{
+		now = time(NULL);
+		if (now - last_refresh > 60)
+		{
+			uinfo.freshtime = now;
+			UPDATE_UTMP(freshtime, uinfo);
+			last_refresh = now;
+		}
+	}
+	return rc;
+}
+
 int bbsnet(int n)
 {
 	time_t now;
@@ -426,7 +447,7 @@ int bbsnet(int n)
 		}
 		if (FD_ISSET(0, &readset))
 		{
-			if ((rc = raw_read(0, buf, BUFSIZ)) < 0)
+			if ((rc = bbsnet_read(0, buf, BUFSIZ)) < 0)
 			{
 				ret = -1;
 				goto on_error;
