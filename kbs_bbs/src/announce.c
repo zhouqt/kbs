@@ -140,7 +140,7 @@ MENU    *pm;
         sprintf(genbuf,"[ÄúÓÐÐÅ¼þ]");
     }
     else
-        strcpy(genbuf,pm->mtitle);
+        strncpy(genbuf,pm->mtitle,STRLEN*2-1);
     sprintf( buf, "%*s", (80-strlen(genbuf))/2, "" );
     prints( "[44m%s%s%s[m\n",buf, genbuf,buf );
     prints("            F ¼Ä»Ø×Ô¼ºµÄÐÅÏä©§¡ü¡ý ÒÆ¶¯©§¡ú <Enter> ¶ÁÈ¡©§¡û,q Àë¿ª[m\n");
@@ -150,7 +150,7 @@ MENU    *pm;
     if( pm->num == 0 )
         prints( "      << Ä¿Ç°Ã»ÓÐÎÄÕÂ >>\n" );
     for( n = pm->page; n < pm->page + 19 && n < pm->num; n++ ) {
-        strcpy( title, pm->item[n]->title );
+        strncpy( title, pm->item[n]->title ,STRLEN*2-1);
         if( a_fmode ) {
             sprintf( fname,"%s", pm->item[n]->fname );
             sprintf( genbuf, "%s/%s", pm->path, fname );
@@ -183,7 +183,7 @@ MENU    *pm;
                 sprintf( genbuf, "%-s %-55.55s%-s%c",kind, title+7, fname, ch );
             else
                 sprintf( genbuf, "%-s %-55.55s%-s%c",kind, title, fname, ch );
-            strcpy( title, genbuf );
+            strncpy( title, genbuf ,STRLEN*2-1);
         }
         prints( "  %3d  %s\n", n+1, title);
     }
@@ -204,15 +204,15 @@ int     port;
 
     if( pm->num < MAXITEMS ) {
         newitem = (ITEM *) malloc( sizeof(ITEM) );
-        strcpy( newitem->title, title );
+        strncpy( newitem->title, title,sizeof(newitem->title)-1 );
         if(host!=NULL)
         {
             newitem->host=(char *)malloc(sizeof(char)*(strlen(host)+1));
-            strcpy( newitem->host, host );
+            strcpy( newitem->host, host); 
         }else
             newitem->host=host;
         newitem->port=port;
-        strcpy( newitem->fname, fname );
+        strncpy( newitem->fname, fname,sizeof(newitem->fname)-1 );
         pm->item[ (pm->num)++ ] = newitem;
     }
 }
@@ -248,11 +248,11 @@ MENU    *pm;
                 if(strstr(litem.fname,"!@#$%")) /*È¡ host & port */
                 {
                     char *ptr1,*ptr2,gtmp[STRLEN];
-                    strcpy(gtmp,litem.fname);
+                    strncpy(gtmp,litem.fname,STRLEN-1);
                     ptr1=strtok(gtmp,"!#$%@");
                     strcpy(hostname,ptr1);
                     ptr2=strtok(NULL,"@");
-                    strcpy(litem.fname,ptr2);
+                    strncpy(litem.fname,ptr2,sizeof(litem.fname)-1);
                     litem.port=atoi(strtok(NULL,"@"));
                 }
                 a_additem( pm, litem.title, litem.fname ,(strlen(hostname)==0)? /*²úÉúITEM*/
