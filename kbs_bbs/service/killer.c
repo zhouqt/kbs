@@ -265,16 +265,17 @@ void refreshit()
     for(me=0;me<myroom->people;me++)
         if(inrooms.peoples[me].pid == uinfo.pid) break;
     for(i=2;i<=t_lines-3;i++) 
-    if(ipage+i>=0&&ipage+i<myroom->people) {
-        if(inrooms.peoples[i].flag&PEOPLE_KILLER && (inrooms.peoples[me].flag&PEOPLE_KILLER ||
+    if(ipage+i-2>=0&&ipage+i-2<myroom->people) {
+        j=ipage+i-2;
+        if(inrooms.peoples[j].flag&PEOPLE_KILLER && (inrooms.peoples[me].flag&PEOPLE_KILLER ||
             inrooms.peoples[me].flag&PEOPLE_SPECTATOR ||
-            !(inrooms.peoples[i].flag&PEOPLE_ALIVE))) {
+            !(inrooms.peoples[j].flag&PEOPLE_ALIVE))) {
             resetcolor();
             move(i,2);
             setfcolor(RED, 1);
             prints("*");
         }
-        if(!inrooms.peoples[i].flag&PEOPLE_ALIVE) {
+        if(!inrooms.peoples[j].flag&PEOPLE_ALIVE) {
             resetcolor();
             move(i,3);
             setfcolor(BLUE, 1);
@@ -282,14 +283,14 @@ void refreshit()
         }
         resetcolor();
         move(i,4);
-        if(ipage+i==selected) {
+        if(j==selected) {
             setbcolor(GREEN);
             setfcolor(YELLOW, 1);
         }
-        if(inrooms.peoples[i].nick[0])
-            prints(inrooms.peoples[i].nick);
+        if(inrooms.peoples[j].nick[0])
+            prints(inrooms.peoples[j].nick);
         else
-            prints(inrooms.peoples[i].id);
+            prints(inrooms.peoples[j].id);
     }
     resetcolor();
     for(i=2;i<=t_lines-3;i++) 
