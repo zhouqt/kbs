@@ -20,7 +20,7 @@ $pcconfig["USERFILESLIMIT"]:用户个人空间的默认大小,单位是b
 $pcconfig["USERFILESNUMLIMIT"]:用户个人空间的默认容量
 $pcconfig["USERFILEPERM"]:用户个人空间是否支持权限控制
 $pcconfig["USERFILEREF"] :用户个人空间是否检查HTTP_REFERER以防止盗链,开启此功能时请编辑 $accept_hosts 的预定值
-$pcconfig["ENCODINGTBP"] :对 trackback ping 的字符串进行编码处理,包括送出编码和接收编码.开启此功能请确定你的PHP支持mbstring
+$pcconfig["ENCODINGTBP"] :对 trackback ping 的字符串进行编码处理,包括送出编码和接收编码.开启此功能请确定你的PHP支持 mbstring 和 iconv
 pc_personal_domainname($userid)函数 :用户Blog的域名;
 */
 $pcconfig["LIST"] = 100;
@@ -95,7 +95,11 @@ $accept_hosts = array(
                 '166.111.8.238',
                 '202.112.58.200',
                 '166.111.8.237',
-                '166.111.8.235'
+                '166.111.8.235',
+                '211.157.101.233',
+                '202.112.3.143',
+                '211.151.89.113',
+                '210.76.98.69'
                 );
                 
 /* Trackback Ping String Encoding Configure Start */
