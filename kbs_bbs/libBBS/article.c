@@ -583,7 +583,7 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
         postfile.accessed[0] |= FILE_MARKED;    /* Leeward 98.03.29 */
     if (strstr(title, "发文权限") && mode == 2) {
 #ifndef NINE_BUILD
-        postfile.accessed[0] |= FILE_MARKED;    /* Haohmaru 99.11.10 */
+        /*postfile.accessed[0] |= FILE_MARKED;*/   /* Haohmaru 99.11.10 */
         postfile.accessed[1] |= FILE_READ;
 #endif
         postfile.accessed[0] |= FILE_FORWARDED;
