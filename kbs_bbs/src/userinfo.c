@@ -100,7 +100,7 @@ int uinfo_query(struct userec *u, int real, int unum)
 {
     struct userec newinfo;
     char ans[3], buf[STRLEN], *emailfile, genbuf[STRLEN];
-    int i, fail = 0, netty_check = 0;
+    int i, fail = 0, netty_check = 0, tmpchange = 0, j;
     FILE * fin, *fout, *dp;
     time_t code;
 	struct userdata ud;
@@ -177,8 +177,9 @@ int uinfo_query(struct userec *u, int real, int unum)
         
             /* Bigman 2000.10.2 修改使用者ID位数不够 */ 
             getdata(i++, 0, "新的使用者代号: ", genbuf, IDLEN + 1, DOECHO, NULL, true);
+	 if (strncmp(genbuf,u->userid, IDLEN+2)&&!strncasecmp(genbuf,u->userid, IDLEN+2)) tmpchange = 1;
         if (*genbuf != '\0') {
-            if (searchuser(genbuf)) {
+            if (searchuser(genbuf) && !tmpchange) {
                 prints("\n错误! 已经有同样 ID 的使用者\n");
                 fail++;
                 break;
