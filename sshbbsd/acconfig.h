@@ -8,7 +8,7 @@ Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>
 
 */
 
-@TOP@
+/*@TOP@*/
 /* Define this to the canonical name of your host type (e.g., 
    "sparc-sun-sunos4.0.3"). */
 #undef HOSTTYPE
