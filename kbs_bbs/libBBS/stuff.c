@@ -1120,7 +1120,7 @@ size_t read_user_memo( char *userid, struct usermemo ** ppum )
 		struct userdata ud;
 
 		if((fp=fopen(fn,"w"))==NULL)
-			return -1;
+			return 0;
 
     	read_userdata(userid, &ud);
 		memcpy(&(um.ud), & ud, sizeof(struct userdata));
@@ -1129,19 +1129,20 @@ size_t read_user_memo( char *userid, struct usermemo ** ppum )
 	}
 
     if ((fp = fopen(fn, "r+b")) == NULL) {
-		return -1;
+		return 0;
 	}
 
 	if (safe_mmapfile_handle(fileno(fp), O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, (void **)ppum , (size_t *) & size) == 1) {
 		fclose(fp);
 
-		if(size < sizeof(struct usermemo) )
-			return -1;
+		if(size < sizeof(struct usermemo) ){
+			return 0;
+		}
 		return size;
 	}
 
 	fclose(fp);
-	return -1;
+	return 0;
 
 }
 
