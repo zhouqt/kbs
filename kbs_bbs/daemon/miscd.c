@@ -125,6 +125,8 @@ int killauser(struct userec *theuser,char *data)
        strcpy(theuser->username, "");
        strcpy(theuser->realname, "");
      } 
+     
+     return 0;
 }
 int dokilluser()
 {
@@ -175,7 +177,7 @@ int dodaemon()
          default : exit(0); break;
      }
      setsid();
-     setpgrp();
+     setpgrp(0, 0);
 #ifdef AIX
     act.sa_handler = NULL;
     act.sa_flags = SA_RESTART|SA_NOCLDWAIT;
@@ -246,4 +248,6 @@ int main (int argc,char *argv[])
      printf("        %s daemon to run as a daemon\n",argv[0]);
      printf("        %s BOARDNAME to delete old file in BOARDNAME\n",argv[0]);
      printf("That's all, folks\n");
+
+     return 0;
 }       

@@ -40,6 +40,7 @@ LIBS     = -lbsd -lesmtp -Llibesmtp/.libs
 #INSTALL  = /usr/bin/install -c
 INSTALL  = ./install.sh 
 
+BBSSITE = smth
 BBSLIB = libBBS.a
 
 #CSIE_DEF = -DSHOW_IDLE_TIME -D_DETAIL_UINFO_ 
@@ -59,7 +60,7 @@ CFILE    = bbs.c record.c delete.c stuff.c mail.c register.c \
            screen.c userinfo.c vote.c announce.c sendmsg.c\
 	   bm.c list.c goodbye.c fileshm.c cache.c bbsd_single.c \
 	   newmain_single.c newio.c newterm.c convcode.c bbs_sendmail.c crypt.c \
-	   ucache.c utmp.c log.c md5.c smth.c 
+	   ucache.c utmp.c log.c md5.c $(BBSSITE).c
 
 COBJS    = bbs.o record.o delete.o stuff.o mail.o register.o \
            xyz.o talk.o read.o comm_lists.o namecomplete.o chat.o \
@@ -67,9 +68,9 @@ COBJS    = bbs.o record.o delete.o stuff.o mail.o register.o \
            screen.o userinfo.o vote.o announce.o sendmsg.o\
            bm.o list.o goodbye.o fileshm.o cache.o bbsd_single.o \
 	   newmain_single.o newio.o newterm.o convcode.o bbs_sendmail.o crypt.o \
-	   ucache.o utmp.o log.o md5.o smth.o 
+	   ucache.o utmp.o log.o md5.o $(BBSSITE).o 
 
-BBSLIBOBJS = librecord.o liblog.o libucache.o libstuff.o libmd5.o libcrypt.o libpass.o libbcache.o libutmp.o
+BBSLIBOBJS = librecord.o liblog.o libucache.o libstuff.o libmd5.o libcrypt.o libpass.o libbcache.o libutmp.o $(BBSSITE).o
 
 OTHERS   = bbs.h edit.h
 
@@ -105,8 +106,8 @@ bbstest: $(BBSLIB) $(OTHERS) newmain_single.o newio.o newterm.o convcode.o
 	$(CC) -o bbstest $(CFLAGS) $(BBSLIB) $(LIBS) newmain_single.o newio.o newterm.o convcode.o
 	cp -f bbstest ../bin/bbstest
 
-bbspost: bbspost.o $(BBSLIB) smth.o 
-	gcc -DDONT_HAVE_TM_GMTOFF $(OS_DEF) -DLEEWARD_X_RECORD -o bbspost bbspost.o smth.o $(BBSLIB) $(LIBS)
+bbspost: bbspost.o $(BBSLIB) 
+	gcc -DDONT_HAVE_TM_GMTOFF $(OS_DEF) -DLEEWARD_X_RECORD -o bbspost bbspost.o $(BBSLIB) $(LIBS)
 	cp -f bbspost $(BBSHOME)/bin
 	chmod 6755 $(BBSHOME)/bin/bbspost
 
@@ -116,8 +117,8 @@ lint: $(LNFILES)
 newpop3.o: newpop3.c
 	gcc -g $(SITE_DEF) $(DEFINES)  -c newpop3.c
 	
-newpop3d: newpop3.o $(BBSLIB) smth.o
-	$(CC) $(CFLAGS) -o newpop3d $(SITE_DEF) $(DEFINES) newpop3.o smth.o $(BBSLIB) $(LIBS)
+newpop3d: newpop3.o $(BBSLIB) 
+	$(CC) $(CFLAGS) -o newpop3d $(SITE_DEF) $(DEFINES) newpop3.o $(BBSLIB) $(LIBS)
 	cp -f newpop3d $(BBSHOME)/bin
 #	$(CC) $(CFLAGS) -o pop3d $(SITE_DEF) -D_BSD pop3d.c
 

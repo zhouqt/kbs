@@ -13,7 +13,8 @@ CC       = cc -g -DLINUX -DSYSV -DLEEWARD_X_RECORD -I../include -I..
 #CPP       = gcc -g -DLINUX -DSYSV -DLEEWARD_X_RECORD -I../include -I..
 OS_DEF   = -DLINUX -DSYSV 
 CSIE_DEF = -DSHOW_IDLE_TIME -D_DETAIL_UINFO_ 
-
+PTHREAD = -lpthread
+LIBBSD = -lbsd
 include ../Makefile.spec
 
 CPP=$(CC)
@@ -85,7 +86,7 @@ MakeTar.o:MakeTar.cpp
 	$(CPP) $(CFLAGS) $(SITE_DEF) $(DEFINES) -c $^ 
 
 printboards:PrintBoards.o RecordFile.o
-	$(CC) -o $@ $^ -lbsd
+	$(CC) -o $@ $^ $(LIBBSD)
 
 MakeTar:MakeTar.o Mutex.o
-	$(CPP) -o MakeTar MakeTar.o Mutex.o ../libBBS.a -lpthread
+	$(CPP) -o MakeTar MakeTar.o Mutex.o ../libBBS.a $(PTHREAD)
