@@ -27,6 +27,7 @@ crontab:  2 * * * * /home/bbs/bin/bonlinelog
 #include "bbs.h"
 #include "config.h"
 
+#ifdef HAVE_MYSQL_SMTH
 MYSQL s;
 struct tm t;
 
@@ -58,7 +59,7 @@ int fillboard()
     apply_record(BOARDS, (APPLY_FUNC_ARG)fillbcache, sizeof(struct boardheader), NULL, 0,false);
 }
 
-main()
+int main()
 {
 	time_t now;
 
@@ -76,5 +77,12 @@ main()
     fillboard();
 
     mysql_close(&s);
-    return 1;
+    return 0;
 }
+#else
+int main()
+{
+	fprintf("MySQL support had been disabled.\n");
+	return -1;
+}
+#endif

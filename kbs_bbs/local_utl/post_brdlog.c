@@ -14,6 +14,7 @@ crontab:  10 0 * * * /home/bbs/bin/post_brdlog
 #include "bbs.h"
 #include "config.h"
 
+#ifdef HAVE_MYSQL_SMTH
 struct _brdlog
 {
 	char filename[STRLEN];
@@ -109,7 +110,7 @@ int fillboard()
     apply_record(BOARDS, (APPLY_FUNC_ARG)fillbcache, sizeof(struct boardheader), NULL, 0,false);
 }
 
-main(int argc,char **argv)
+int main(int argc,char **argv)
 {
 	char path[256];
 	char title[256];
@@ -159,4 +160,13 @@ main(int argc,char **argv)
     sprintf(title, "%d年%2d月%2d日版面统计数据(文章数排序)", t.tm_year + 1900, t.tm_mon + 1, t.tm_mday);
     post_file(NULL, "", path, "SysTrace", title, 0, 1, getSession());
 	unlink(path);
+
+	return 0;
 }
+#else
+int main()
+{
+	fprintf("MySQL support had been disabled.\n");
+	return -1;
+}
+#endif
