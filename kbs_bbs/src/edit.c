@@ -876,6 +876,7 @@ static int write_file(char* filename,int saveheader,long* effsize,long* pattachp
         buf[0] = 0;             /* Leeward 98.08.14 */
         move(1, 0);
         prints("旧标题: %s", save_title);
+		strcpy(buf,save_title);
         getdata(2, 0, "新标题: ", buf, STRLEN, DOECHO, NULL, 0);
     if (buf[0]!=0) {
             if (strcmp(save_title, buf))
