@@ -1022,4 +1022,27 @@ void sigbus(int signo)
   siglongjmp(bus_jump,1);
 };
 
+void
+encodestr( register char *str )
+{
+    register char       ch, *buf;
+    int                 n;
+
+    buf = str;
+    while( (ch = *str++) != '\0' ) {
+        if( *str == ch && str[1] == ch && str[2] == ch ) {
+            n = 4;
+            str += 3;
+            while( *str == ch && n < 100 ) {
+                str++;
+                n++;
+            }
+            *buf++ = '\01';
+            *buf++ = ch;
+            *buf++ = n;
+        } else
+            *buf++ = ch;
+    }
+    *buf = '\0';
+}
 
