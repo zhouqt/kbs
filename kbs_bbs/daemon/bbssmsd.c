@@ -123,6 +123,49 @@ int sendtouser(struct GWSendSMS * h, char* buf)
 #if HAVE_MYSQL == 1
 		save_smsmsg_nomysqlconnect(&mysql_s, uident, &hh, buf, 0);
 #endif
+		{
+			struct header hr;
+			struct BBSSendSMS h4;
+			char *buf1;
+			int number;
+			struct user_info uintest;
+			struct userdata ud;
+
+			if( read_userdata(uident, &ud) )
+				return -1;
+
+			if( ! ud.mobileregistered )
+				return -1;
+
+			if( ! (ud.smsdef & SMSDEF_AUTOTOMOBILE ) )
+				return -1;
+
+			buf1 = (char *)malloc( strlen(buf) + strlen(h->SrcMobileNo) +3 );
+			if( buf1 == NULL )
+				return -1;
+
+			bzero(&hr,sizeof(hr));
+			bzero(&h4,sizeof(h4));
+
+			sprintf(buf1, "%s: %s", h->SrcMobileNo, buf);
+			hr.Type = CMD_BBSSEND;
+			long2byte(sizeof(h4)+strlen(buf1)+1, hr.BodyLength);
+			long2byte(strlen(buf1)+1, h4.MsgTxtLen);
+			strncpy(h4.SrcMobileNo, ud.mobilenumber, MOBILE_NUMBER_LEN);
+			h4.SrcMobileNo[MOBILE_NUMBER_LEN-1]=0;
+			strncpy(h4.DstMobileNo, ud.mobilenumber,MOBILE_NUMBER_LEN);
+			h4.DstMobileNo[MOBILE_NUMBER_LEN-1]=0;
+			uintest.uid = uid;
+			uid2smsid( &uintest, h4.SrccUserID);
+			number = uid2smsnumber( &uintest );
+			long2byte(number, h4.UserID);
+
+                write(sockfd, &hr, sizeof(hr));
+                write(sockfd, &h4, sizeof(h4));
+                write(sockfd, buf1, byte2long(h4.MsgTxtLen));
+
+			free( buf1 );
+		}
         return -1;
 	}
 
