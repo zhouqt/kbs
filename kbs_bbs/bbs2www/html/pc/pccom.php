@@ -38,6 +38,12 @@
 		{
 			$pc = pc_load_infor($link,"",$rows[uid]);
 			
+			 if(!$pc)   
+                         {   
+                                 html_error_quit("对不起，您要查看的个人文集不存在");   
+                                 exit();   
+                         } 
+
 			if(strtolower($currentuser["userid"]) == strtolower($pc["USER"]))
 				$pur = 2;
 			elseif(pc_is_friend($currentuser["userid"],$pc["USER"]))
