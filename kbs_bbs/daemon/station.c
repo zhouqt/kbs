@@ -65,7 +65,7 @@ struct chatuser
     char ibuf[128];               /* buffer for sending/receiving */
     int ibufsize;                 /* current size of ibuf */
     char lpIgnoreID[MAX_IGNORE][IDLEN + 2/*1*/]; /* Ignored-ID list,added by Luzi 97.11 */
-    char lpEmote[MAX_EMOTES][128]; /* emotes list, added by Luzi 97.12.13 */
+    char lpEmote[MAX_EMOTES][129]; /* emotes list, added by Luzi 97.12.13 */
 }        users[CHATMAXACTIVE];
 
 
@@ -110,94 +110,6 @@ char *msg_not_here = "*** [1m%s[m ²¢Ã»ÓÐÇ°À´"CHAT_SERVER" ***";
    code like "ÎÄÎÄ" and "ÎäÎä". So we use our own code.
 */
 
-#ifdef NO_STRCASECMP
-ci_strcmp(s1,s2)
-const char *s1, *s2;
-{
-    for(;;s1++,s2++) {
-        if(*s1=='\0' || *s2 == '\0')
-            return (*s1=='\0' && *s2=='\0' ? 0 : 1);
-        if((isalpha(*s1)?*s1|0x20:*s1) != (isalpha(*s2)?*s2|0x20:*s2))
-            return 1;
-    }
-    /*NOTREACHED*/
-    return 1;
-}
-
-ci_strncmp(s1,s2,n)
-const char * s1, *s2;
-size_t n;
-{
-    for(;n;s1++,s2++,n--) {
-        if(*s1=='\0' && *s2 == '\0')
-            break ;
-        /*if((isalpha(*s1)?*s1|0x20:*s1) != (isalpha(*s2)?*s2|0x20:*s2))
-         */
-        if (*s1 != *s2)
-            return 1;
-    }
-    return 0;
-}
-#endif
-
-/* Case Independent strncmp */
-
-int
-ci_strncmp(s1,s2,n)
-register char *s1,*s2 ;
-register int n ;
-{
-    char        c1, c2;
-
-    while( n-- > 0 ) {
-        c1 = *s1++;
-        c2 = *s2++;
-        if( c1 >= 'a' && c1 <= 'z' )
-            c1 += 'A' - 'a';
-        if( c2 >= 'a' && c2 <= 'z' )
-            c2 += 'A' - 'a';
-        if( c1 != c2 )
-            return (c1 - c2);
-        if( c1 == 0 )
-            return 0;
-    }
-    return 0;
-}
-
-int
-ci_strcmp( s1, s2 )
-register char   *s1, *s2;
-{
-    char        c1, c2;
-
-    while( 1 ) {
-        c1 = *s1++;
-        c2 = *s2++;
-        if( c1 >= 'a' && c1 <= 'z' )
-            c1 += 'A' - 'a';
-        if( c2 >= 'a' && c2 <= 'z' )
-            c2 += 'A' - 'a';
-        if( c1 != c2 )
-            return (c1 - c2);
-        if( c1 == 0 )
-            return 0;
-    }
-}
-
-int
-flock(fd, op)
-int fd, op;
-{
-    switch (op) {
-    case LOCK_EX:
-        return lockf( fd, F_LOCK, 0 );
-    case LOCK_UN:
-        return lockf( fd, F_ULOCK, 0 );
-    default:
-        return -1;
-    }
-}
-
 is_valid_chatid(id)
 char *id;
 {
@@ -214,17 +126,6 @@ char *id;
     return 1;
 }
 
-
-int
-Isspace(ch)
-char ch;
-{
-    /*  return (int) strchr(" \t\n\r", ch); */
-    if (ch == ' ' || ch == '\t' || ch == '\r' || ch == '\n')
-        return 1;
-    else
-        return 0;
-}
 
 
 char *
@@ -722,16 +623,6 @@ print_user_counts(unsigned int unum)
     return 0;
 }
 
-char *
-sethomefile( buf, userid , filename) /* added by Luzi 1997.11.30 */
-char    *buf, *userid, *filename;
-{
-    if (isalpha(userid[0]))
-        sprintf( buf, "home/%c/%s/%s", toupper(userid[0]), userid ,filename);
-    else sprintf( buf, "home/wrong/%s/%s", userid, filename);
-    return buf;
-}
-
 void
 get_ignore_list(unum)                /* added by Luzi 1997.11.30 */
 int unum ;
@@ -739,7 +630,7 @@ int unum ;
     int fd ;
     int id = 1 ;
 
-    char path[40];
+    char path[60];
     sethomefile( path, users[unum].userid , "/ignores");
 
     /*---	Added by period	2000-10-18	just guessing problems	---*/
@@ -769,7 +660,7 @@ int unum ;
     int fd ;
     int id = 1 ;
 
-    char path[40];
+    char path[60];
     sethomefile( path, users[unum].userid , "/emotes");
 
     if((fd = open(path,O_RDONLY,0)) == -1)
@@ -867,7 +758,86 @@ char *msg;
         }
 }
 
+void call_alias(int unum,char *msg)             /* added by Luzi 1998.01.25,change by KCN */
+{
+    char buf[128],buf2[200];
+    FILE *fp;
+    char path[40];
 
+    char *emoteid;
+    int  nIdx;
+
+
+    emoteid = getnextword(&msg);
+
+    sethomefile( path, users[unum].userid, "/emotes");
+    if(!emoteid[0])
+    {
+        int i,has = 0;
+        for(i=0;i<MAX_EMOTES;i++)
+            if (users[unum].lpEmote[i][0]!='\0')
+            {
+               if (has==0) {
+                   send_to_unum(unum,"¡¼ÓÃ»§×Ô¶¨ÒåemoteÁÐ±í¡½");
+                   has=1;
+               }
+               send_to_unum(unum,users[unum].lpEmote[i]);
+            }
+        if (has==0) 
+            send_to_unum(unum,"*** »¹Ã»ÓÐ×Ô¶¨ÒåµÄemote ***");
+    } else {
+        short len,has;
+        char* arg;
+    	arg = getnextword(&msg);
+        len=strlen(emoteid);
+        has = 0;
+        for (nIdx=0;nIdx<MAX_EMOTES;nIdx++)
+            if (!strncasecmp(users[unum].lpEmote[nIdx], emoteid, len))
+                if (users[unum].lpEmote[nIdx][len]==' ') {
+		      has=1;
+                      break;
+                }
+        if (has)
+        {
+            if ((*arg)&&(arg[0]))
+            {
+                send_to_unum(unum,"*** ¸ÃemoteÒÑ¾­±»¶¨Òå¹ýÁË ***");
+                return;
+            }
+            if (delete_record( path, 128, nIdx+1)==0)
+            {
+                send_to_unum(unum,"*** ¸Ã×Ô¶¨ÒåemoteÒÑ¾­±»É¾³ýÁË ***");
+		users[unum].lpEmote[nIdx][0]=0;
+            } else {
+                send_to_unum(unum,"*** system error ***");
+            }
+        }
+        else if (!*arg)
+            send_to_unum(unum,"*** ÇëÖ¸¶¨emote¶ÔÓ¦µÄ×Ö´® ***");
+        else
+        {
+            short has;
+            has = 0;
+            for (nIdx=0;nIdx<MAX_EMOTES;nIdx++)
+                if (users[unum].lpEmote[nIdx][0]) {
+                    has=1;
+                    break;
+                }
+            if (has) {
+                sprintf(buf,"%s %s",emoteid,arg);
+                if (substitute_record( path, buf, 128, nIdx+1)==0)
+                {
+                    send_to_unum(unum,"*** ×Ô¶¨ÒåemoteÒÑ¾­Éè¶¨ ***");
+                    strncpy(users[unum].lpEmote[nIdx], buf, 128);
+                    users[unum].lpEmote[nIdx][128]=0;
+                } else {
+                    send_to_unum(unum,"*** ÏµÍ³´íÎó ***");
+                }
+            } else
+                send_to_unum(unum,"*** ÓÃ»§×Ô¶¨ÒåemoteµÄÁÐ±íÒÑÂú ***");
+        }
+    }
+}
 login_user(unum, msg)
 int unum;
 char *msg;
@@ -2067,8 +2037,7 @@ struct chatcmd chatcmdlist[] =
         "qc", chat_query_ByChatid,1,1,       /* added by dong 1998.9.12 */
         "ignore",chat_ignore,1,1,            /* added by Luzi 1997.11.30 */
         "listen",chat_listen,1,1,            /* added by Luzi 1997.11.30 */
-        "alias_add",chat_alias_add,1,1,      /* added by Luzi 1998.01.25 */
-        "alias_del",chat_alias_del,1,1,      /* added by Luzi 1998.01.25 */
+        "alias",call_alias,1,1,      /* added by Luzi 1998.01.25 */
         "knock", chat_knock_room, 0, 1,      /* added by period 2000-09-15 */
         NULL, NULL, 0,0
     };
@@ -2238,6 +2207,8 @@ char* argv[];
     long  sinsize;
     fd_set readfds;
     struct timeval *tvptr = NULL;
+
+    chdir(BBSHOME);
     /* ÒÔÏÂÎªLuziÔö¼Ó£¬·ÀÖ¹±»Íâ²¿bbsÁ¬Èë disable by KCN
       char inbuf[80];
       struct hostent *h;
@@ -2258,6 +2229,8 @@ char* argv[];
 
     /* Leeward: 98.01.04: Éè¶¨ main µÄÈ±Ê¡±êÌâÈçÏÂËùÊ¾(No chatting...);
                           Í¬Ê±×¢Òâ: ÎªÅäºÏ chat.c, ²»¿É¼Ó [m ÔÚ±êÌâÄ©Î² */
+    setuid(BBSUID);
+    setuid(BBSGID);
     if (ENABLEMAIN)
         strcpy(rooms[0].topic, "\033[1m´ó¼ÒÏÈËæ±ãÁÄÁÄ°É");
     else
@@ -2285,8 +2258,9 @@ char* argv[];
         sin.sin_port = htons(CHATPORT2);
     else
         sin.sin_port = htons(CHATPORT3);
+
     /* change by KCN 1999.10.22
-      sin.sin_addr.s_addr = INADDR_ANY;
+    sin.sin_addr.s_addr = INADDR_ANY;
     */
     sin.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 
