@@ -67,12 +67,17 @@ while($board = array_shift($boards))
     $cname = find_content($board, "ChineseName");
     $visittimes = find_content($board, "VisitTimes");
     $staytime = find_content($board, "StayTime");
+    $hours = $staytime / 3600;
+    settype($hours, "integer");
+    $minutes = ($staytime - $hours * 3600) / 60;
+    settype($minutes, "integer");
+    $seconds = $staytime - $hours * 3600 - $minutes * 60;
 ?>
 <tr>
 <td class="default"><?php echo $ename; ?></td>
 <td class="default"><?php echo iconv("UTF-8", "GBK", $cname); ?></td>
 <td class="default"><?php echo $visittimes; ?></td>
-<td class="default"><?php echo $staytime; ?></td>
+<td class="default"><?php echo $hours; ?>:<?php echo $minutes; ?>:<?php echo $seconds; ?></td>
 </tr>
 <?php
 }
