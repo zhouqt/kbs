@@ -80,7 +80,7 @@
 #define	REGISTER_WAIT_TIME_NAME	"72 Сʱ"
 
 #ifdef SMTH
-#define REGISTER_TSINGHUA_WAIT_TIME (240*60)
+#define REGISTER_TSINGHUA_WAIT_TIME (24*60*60)
 #endif
 #define MAIL_BBSDOMAIN      "smth.org"
 #define MAIL_MAILSERVER     "166.111.8.236:25"
