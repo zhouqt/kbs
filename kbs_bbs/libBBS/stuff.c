@@ -572,6 +572,10 @@ int compute_user_value( struct userec *urec)
 	return LIFE_DAY_SYSOP;
 #endif
 #endif 
+
+    if( (urec->userlevel & PERM_HORNOR)  && !(urec->userlevel & PERM_LOGINOK))
+        return LIFE_DAY_LONG;
+
     
     if( ((urec->userlevel & PERM_HORNOR)||(urec->userlevel & PERM_CHATCLOAK )) && (!(urec->userlevel & PERM_SUICIDE)))
         return LIFE_DAY_NODIE;
