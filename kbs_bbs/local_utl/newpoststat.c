@@ -217,6 +217,7 @@ int get_top(int type)
 	bzero(sectop, TOPCOUNT * sizeof(struct postrec));
 
 	for(i=0;i<SECNUM;i++) sectopnum[i]=0;
+	sectopnumtotal=0;
 
 	while(1){
 		if(type==4){
@@ -283,7 +284,7 @@ int get_top(int type)
 
 			secid= get_seccode_index(bh->title[0]);
 
-			if(topnum >= mytop[type] && ( secid==-1 || sectopnum[i] >= SECTOPCOUNT))
+			if(topnum >= mytop[type] && ( secid==-1 || sectopnum[secid] >= SECTOPCOUNT))
 				continue;
 
 			threadid = atoi(row[1]);
