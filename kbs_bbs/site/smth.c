@@ -455,7 +455,7 @@ int multilogin_user(struct userec *user, int usernum,int mode)
 
     if (!strcmp("guest", user->userid)) {
         if (logincount > MAX_GUEST_NUM) return 2;
-#define MAX_GUEST_PER_IP 10
+#define MAX_GUEST_PER_IP 20
     	if( apply_utmp((APPLY_UTMP_FUNC) checkguestip, 0, "guest", fromhost) > MAX_GUEST_PER_IP ) return 3;
         return 0;
     }
