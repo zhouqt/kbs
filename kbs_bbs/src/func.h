@@ -306,6 +306,7 @@ extern "C" {
                            void *rptr,  /* record data buffer to be used for reading idx file */
                            int sorted); /* if records in file are sorted */
     int del_range(int ent, struct fileheader *fileinfo, char *direct, int mailmode);
+	void load_mail_list(struct userec *user);
 
 
 /* define in sysconf.c */

@@ -6,7 +6,6 @@ extern char *sysconf_str();
 
 extern char mail_list[MAILBOARDNUM][40];
 extern int mail_list_t;
-extern void load_mail_list();
 
 
 int getmailnum(char* recmaildir)      /*Haohmaru.99.4.5.查对方信件数 */
@@ -68,7 +67,7 @@ int chkusermail(struct userec *user)
         num+=getmailnum(recmaildir) ;
         setmailfile(recmaildir, user->userid, ".DELETED");
         num+=getmailnum(recmaildir) ;
-        load_mail_list();
+        load_mail_list(user);
 	 for(i=0;i<mail_list_t;i++){
 		sprintf(buf, ".%s", mail_list[i]+30);
 		setmailfile(recmaildir, user->userid, buf);
@@ -215,7 +214,9 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
     struct userec *touser;/*peregrine for updating used space*/
     int unum;
     
-
+    unum=getuser(userid,&touser);
+	if (touser == NULL) /* flyriver, 2002.9.8 */
+		return -1;
     memset(&newmessage, 0, sizeof(newmessage));
     strcpy(buf, fromid);        /* Leeward 98.04.14 */
     strncpy(newmessage.owner, buf, OWNER_LEN);
@@ -234,7 +235,8 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
      * setmailpath(filepath, userid, fname); 
      */
     setmailpath(filepath, userid);
-    GET_MAILFILENAME(fname, filepath);
+    if (GET_MAILFILENAME(fname, filepath) < 0)
+		return -1;
     strcpy(newmessage.filename, fname);
     setmailfile(filepath, userid, fname);
     /*
@@ -246,7 +248,6 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
     else
         f_cp(tmpfile, filepath, 0);
     /*peregrine update used space*/
-    unum=getuser(userid,&touser);
     if (stat(filepath, &st) != -1)touser->usedspace+=st.st_size;
     
     setmailfile(buf, userid, DOT_DIR);
