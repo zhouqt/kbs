@@ -2325,13 +2325,12 @@ post_article()                         /*用户 POST 文章 */
     if(currentuser->signature>numofsig||currentuser->signature<0) /*签名档No.检查*/
         currentuser->signature=1;
     anonyboard=seek_in_file("etc/anonymous",currboard); /* 是否为匿名版 */
-    /* by zixia: 匿名版缺省不使用匿名
+    /* by zixia: 匿名版缺省不使用匿名 */
     if(anonyboard==1)
         Anony=1;
     else
         Anony=0;
-    Anony = 0;
-	*/
+    /* anony = 0;*/
     while(1) /* 发表前修改参数， 可以考虑添加'显示签名档' */
     {
         sprintf(buf3,"引言模式 [%c]",include_mode);
