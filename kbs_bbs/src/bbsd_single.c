@@ -424,7 +424,7 @@ char* argv;
     /*    modified by period      2000-11-13      allow localhost anyway  */
     /*    if((fp = fopen("NOLOGIN","r")) != NULL) */
 #ifndef DEBUG
-    if(strcmp(hid, "127.0.0.1") && (fp = fopen("NOLOGIN","r")) != NULL)
+    if(strcmp(hid,"0.0.0.0") && strcmp(hid, "127.0.0.1") && (fp = fopen("NOLOGIN","r")) != NULL)
     {
         while(fgets(buf,256,fp) != NULL)
             local_prints(buf);

@@ -45,7 +45,7 @@ struct UCACHE {
 static struct userec* passwd;
 static struct UCACHE   *uidshm;
 
-static int ucache_lock()
+static inline int ucache_lock()
 {
     int lockfd;
     lockfd = creat( "ucache.lock", 0600 );
@@ -57,7 +57,7 @@ static int ucache_lock()
     return lockfd;
 }
 
-static int ucache_unlock(int fd)
+static inline int ucache_unlock(int fd)
 {
     flock(fd,LOCK_UN);
     close(fd);
@@ -330,9 +330,8 @@ int getuserid(char * userid, int uid)
 }
 
 void
-setuserid( int     num,const char    *userid) /* 设置user num的id为user id*/
+setuserid_internal( int     num,const char    *userid) /* 设置user num的id为user id*/
 {
-    int lockfd;
     if( num > 0 && num <= MAXUSERS ) {
     	int oldkey,newkey,find;
         if( num > uidshm->number )
@@ -340,7 +339,6 @@ setuserid( int     num,const char    *userid) /* 设置user num的id为user id*/
         oldkey=ucache_hash((char*)passwd[ num - 1 ].userid);
         newkey=ucache_hash(userid);
 /*        if (oldkey!=newkey) { disable,为了加强兼容性*/
-		lockfd = ucache_lock();
 	        find=uidshm->hashhead[oldkey];
 
 	        if (find==num) uidshm->hashhead[oldkey]=uidshm->next[find-1];
@@ -358,10 +356,17 @@ setuserid( int     num,const char    *userid) /* 设置user num的id为user id*/
 
 	        uidshm->next[num-1]=uidshm->hashhead[newkey];
 	        uidshm->hashhead[newkey]=num;
-		    ucache_unlock(lockfd);
 /*        }	        */
         strncpy( passwd[ num - 1 ].userid, userid, IDLEN+1 );
     }
+}
+
+void setuserid( int num,const char * userid)
+{
+    int lockfd;
+    lockfd=ucache_lock();
+    setuserid_internal(num,userid);
+    ucache_unlock(lockfd);
 }
 
 int
@@ -542,9 +547,12 @@ int getnewuserid(char* userid)
         close( fd );
     }
 */
+/*
     if( (fd = open( PASSFILE, O_RDWR|O_CREAT, 0600 )) == -1 )
         return -1;
     flock( fd, LOCK_EX );
+*/
+    fd=ucache_lock();
 
     i = searchnewuser();
 #ifdef BBSMAIN
@@ -552,8 +560,7 @@ int getnewuserid(char* userid)
 #endif
 
     if( i <= 0 || i > MAXUSERS ) {
-        flock(fd,LOCK_UN) ;
-        close(fd) ;
+        ucache_unlock(fd);
 #ifdef BBSMAIN
         if( dashf( "etc/user_full" ) ) {
             ansimore( "etc/user_full", NA );
@@ -562,8 +569,10 @@ int getnewuserid(char* userid)
             prints( "抱歉, 使用者帐号已经满了, 无法注册新的帐号.\n\r" );
             oflush();
         }
+/*
         val = (st.st_mtime - system_time + 3660) / 60;
         prints( "请等待 %d 分钟後再试一次, 祝你好运.\n\r", val );
+*/
         oflush();
         sleep( 2 );
 #endif
@@ -572,10 +581,9 @@ int getnewuserid(char* userid)
     memset( &utmp, 0, sizeof( utmp ) );
     strcpy( utmp.userid, userid );
     utmp.lastlogin = time( NULL );
-    setuserid( i, userid ); /* added by dong, 1998.12.2 */
+    setuserid_internal( i, userid ); /* added by dong, 1998.12.2 */
     update_user(&utmp,i,0);
-    flock( fd, LOCK_UN );
-    close( fd );
+    ucache_unlock(fd);
     return i;
 }
 
