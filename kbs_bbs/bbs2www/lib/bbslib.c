@@ -358,19 +358,27 @@ int parm_add(char *name, char *val) {
 	parm_num++;
 }
 
-int http_init() {
-	char *buf, buf2[1024], *t2, *t3;
-	int n;
-#ifndef SILENCE
+void html_init()
+{
 	printf("Content-type: text/html; charset=%s\n\n\n", CHARSET);
+#ifndef SILENCE
 	printf("<html>\n");
+	printf("<head>\n");
 	printf("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=%s\">\n", CHARSET);
 #ifndef MY_CSS
 	printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n", CSS_FILE);
 #else
 	printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n", MY_CSS);
 #endif
+	printf("</head>");
 #endif
+}
+
+int http_init()
+{
+	char *buf, buf2[1024], *t2, *t3;
+	int n;
+
 	n=atoi(getsenv("CONTENT_LENGTH"));
 	if(n>5000000) n=5000000;
 	buf=calloc(n+1, 1);
@@ -476,7 +484,6 @@ int user_init(struct userec **x, struct user_info **y)
 {
 	char id[20], num[20];
 	int i, uid, key;
-	struct UTMPFILE *utmpshm_ptr;
 
 	strsncpy(id, getparm("UTMPUSERID"), 13);
 	strsncpy(num, getparm("UTMPNUM"), 12);
@@ -484,6 +491,8 @@ int user_init(struct userec **x, struct user_info **y)
 	/*printf("utmpnum = %s\n", num);*/
 	key=atoi(getparm("UTMPKEY"));
 	i=atoi(num);
+	if (id[0] == '\0')
+		return -1;
 
 	if (www_user_init(i,id, key, x, y)==0) return 1;
 	return 0;
@@ -976,14 +985,27 @@ int isbad(char *id) {
         return 0;
 }
 
+void http_redirect(char *url)
+{
+	printf("Status: 302 Found\n");
+	printf("Location: %s\n", url);
+	printf("Content-type: text/html; charset=%s\n\n", CHARSET);
+}
+
 int init_all() {
 	srand(time(0)*2+getpid());
 	chdir(BBSHOME);
 	http_init();
-	/*seteuid(BBSUID);*/
-	/*if(geteuid()!=BBSUID) http_fatal("uid error.");*/
+	/*seteuid(BBSUID);
+	if(geteuid()!=BBSUID) http_fatal("uid error.");*/
 	shm_init();
 	loginok=user_init(&currentuser, &u_info);
+	if (loginok < 0)
+	{
+		http_redirect(NOLOGIN_PAGE);
+		exit(0);
+	}
+	html_init();
 }
 
 int init_no_http() {
