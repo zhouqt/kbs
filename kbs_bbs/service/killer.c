@@ -759,7 +759,7 @@ int do_com_menu()
         resetcolor();
         move(t_lines-1,0);
         clrtoeol();
-        while(menupos[sel]-menupos[offset]+strlen(menus[sel])) offset++;
+        while(menupos[sel]-menupos[offset]+strlen(menus[sel])>=scr_cols) offset++;
         j=mypos;
         for(i=0;i<menust;i++) 
         if(inrooms[myroom].peoples[j].flag&PEOPLE_ROOMOP||i<=3)
