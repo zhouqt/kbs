@@ -218,7 +218,7 @@ static void parse_sysconf( char *fname)
         } else if( *ptr != '\n' ) { /*系统参量 定义 */
             key = strtok( ptr, "=#\n" );
             str = strtok( NULL, "#\n" );
-            if( key != NULL & str != NULL ) {
+            if( (key != NULL) && (str != NULL) ) {
                 strtok( key, " \t" );
                 while( *str == ' ' || *str == '\t' )  str++;
                 if( *str == '"' ) {

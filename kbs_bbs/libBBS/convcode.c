@@ -102,9 +102,6 @@ void(*resolv_file)(char*);
 
 void conv_init()
 {
-    struct stat st;
-    int cachesize;
-
     BtoG=attach_shm2("CONVTABLE_SHMKEY",3013,GtoB_count*2+BtoG_count*2,resolv_file);
     GtoB=BtoG+BtoG_count*2;
     gb2big_savec[0]=0;
@@ -174,7 +171,7 @@ void (*dbcvrt)();          /* 2-byte conversion func for a hanzi */
     }
     p = s;  pend = s + (*plen);     /* begin/end of the buffer string */
     while (p < pend) {
-        if ((*p) & 0x80)        /* hi-bit on: hanzi */
+        if ((*p) & 0x80) {       /* hi-bit on: hanzi */
             if (p < pend-1)         /* not the last one */
                 dbcvrt (p++);
             else {                  /* the end of string */
@@ -182,6 +179,7 @@ void (*dbcvrt)();          /* 2-byte conversion func for a hanzi */
                 (*plen) --;
                 break;
             }
+        }
         p++;
     }
     return (s);

@@ -120,8 +120,7 @@ int can_send(int myunum,int unum)            /* added by Luzi 1997.11.30 */
    code like "文文" and "武武". So we use our own code.
 */
 
-is_valid_chatid(id)
-char *id;
+int is_valid_chatid(char *id)
 {
     int i;
     if (*id == '\0')
@@ -515,10 +514,7 @@ char *msg;
     send_to_room(rnum, chatbuf, unum);
 }
 
-enter_room(unum, room, msg)
-int unum;
-char *room;
-char *msg;
+int enter_room(int unum,char *room,char *msg)
 {
     int rnum;
     int op = 0;
@@ -596,7 +592,7 @@ logout_user(unsigned int unum)
     num_conns--;
 }
 
-print_user_counts(unsigned int unum)
+int print_user_counts(unsigned int unum)
 {
     int i, c, userc = 0, suserc = 0, roomc = 0;
     for (i = 0; i < MAXROOM; i++)
@@ -763,8 +759,7 @@ char *msg;
 
 void call_alias(int unum,char *msg)             /* added by Luzi 1998.01.25,change by KCN */
 {
-    char buf[128],buf2[200];
-    FILE *fp;
+    char buf[128];
     char path[40];
 
     char *emoteid;
@@ -841,11 +836,10 @@ void call_alias(int unum,char *msg)             /* added by Luzi 1998.01.25,chan
         }
     }
 }
-login_user(unum, msg)
-int unum;
-char *msg;
+
+int login_user(int unum,char *msg)
 {
-    int i, utent, fd = users[unum].sockfd;
+    int i, utent;
     char *utentstr;
     char *level;
     char *userid;
@@ -942,10 +936,7 @@ char *msg;
 }
 
 
-chat_do_user_list(unum, msg, whichroom)
-int unum;
-char *msg;
-int whichroom;
+int chat_do_user_list(int unum,char *msg,int whichroom)
 {
     char buf[14]="    [公开]    ";/*Haohmaru.99.09.18*/
     char buf1[14]="[秘密]  [锁住]";
@@ -1021,7 +1012,7 @@ char *msg;
     {
         if ((whichroom = roomid_to_indx(roomstr)) == -1)
         {
-            sprintf(chatbuf, "◎ 没这个"CHAT_ROOM_NAME"喔 ◎", roomstr);
+            sprintf(chatbuf, "◎ 没这个"CHAT_ROOM_NAME"喔 ◎");
             send_to_unum(unum, chatbuf);
             return;
         }
@@ -1213,7 +1204,6 @@ int unum;
 char *msg;
 {
     char *recipient;
-    int recunum;
 
     recipient = getnextword(&msg);
     recunum = fuzzy_chatid_to_indx(recipient);
@@ -1223,7 +1213,7 @@ char *msg;
         if (recunum == -1)
             sprintf(chatbuf, msg_no_such_id, recipient);
         else
-            sprintf(chatbuf, " ◎ 对方叫什麽名字? ◎", recipient);
+            sprintf(chatbuf, " ◎ 对方叫什麽名字? ◎");
         send_to_unum(unum, chatbuf);
         return;
     }
@@ -1242,9 +1232,7 @@ char *msg;
 }
 
 
-put_chatid(unum, str)
-int unum;
-char *str;
+void put_chatid(int unum,char *str)
 {
     int i;
     char *chatid = users[unum].chatid;
@@ -1256,9 +1244,7 @@ char *str;
 }
 
 
-chat_allmsg(unum, msg)
-int unum;
-char *msg;
+int chat_allmsg(int unum,char *msg)
 {
     if (*msg)
     {
@@ -1313,7 +1299,6 @@ char *msg;
     char *twit;
     int rnum = users[unum].room, rnum2;
     int recunum;
-    char buf[80];
 
     twit = getnextword(&msg);
     if (!ROOMOP(unum) && !SYSOP(unum) && !CHATOP(unum))
@@ -1716,7 +1701,7 @@ char *party;
                         sprintf(chatbuf+strlen(chatbuf),"%s\033[0m",tmpbuf);
                     break;
                 }
-                if (recunum>=0)
+                if (recunum>=0) {
                     if (party2!=NULL)
                     {
                         party3=getnextword(&party2);
@@ -1726,6 +1711,7 @@ char *party;
                         else if (*party3!=' '&& *party3!='\0') recunum=0;
                     }
                     else recunum=-1;
+                }
                 ch=*tmpbuf2;
                 *tmpbuf2='\0';
                 if (strlen(tmpbuf)+strlen(recunum<0?party:party3)+chatlen+9>255)
@@ -1769,7 +1755,7 @@ char *party;
                     if (recunum == -1)
                         sprintf(chatbuf, msg_no_such_id, party);
                     else
-                        sprintf(chatbuf, "◎ 请问哪间"CHAT_ROOM_NAME" ◎", party);
+                        sprintf(chatbuf, "◎ 请问哪间"CHAT_ROOM_NAME" ◎");
                     send_to_unum(unum, chatbuf);
                     return 0;
                 }
@@ -1778,7 +1764,7 @@ char *party;
             if (strcasecmp(cmd, "faint")==0 &&
                     (strcasecmp(party, users[unum].chatid)==0 ||
                      strcmp(party, CHAT_PARTY)==0))
-                sprintf(chatbuf, "\033[1m%s\033[m %s一声，晕倒在地...\033[0m",users[unum].chatid, (strcasecmp(users[unum].userid,"roberto")==0||strcasecmp(users[unum].chatid,"roberto")==0)?"扑通":"咣当");
+                sprintf(chatbuf, "\033[1m%s\033[m %s一声，晕倒在地...\033[0m",users[unum].chatid,"咣当");
             else {
                 if (strcasecmp(party, users[unum].chatid)==0)
                     party="自己";
@@ -1943,7 +1929,7 @@ char* verb;
             send_to_unum(unum, dscrb[i]);
         chatbuf[0] = '\0';
         j = 0;
-        while (p = verbs[i][j++].verb)
+        while ((p = verbs[i][j++].verb)!=NULL)
         {
             if (!verb)
                 strcat(chatbuf, p);
@@ -1961,7 +1947,7 @@ char* verb;
                                 condition_data[j-1].part1_msg);
 
                     tmp=chatbuf;
-                    while (tmp=strstr(tmp,"\\n")){
+                    while ((tmp=strstr(tmp,"\\n"))!=NULL){
                         count++;
                         tmp++;
                     };
@@ -1994,7 +1980,7 @@ char* verb;
     /* add by KCN */
     if (!verb)
         send_to_unum(unum, "用//help 动作,可以看到动作的说明,//help all列出所有动作示范");
-    else if (!all)
+    else if (!all) {
         if (!p) {
             send_to_unum(unum,"没有这个动作！");
         } else {
@@ -2012,38 +1998,39 @@ char* verb;
                         users[unum].chatid, condition_data[j].part1_msg);
             send_to_unum2(unum,chatbuf);
         }
+   	}
 }
 
 
 struct chatcmd chatcmdlist[] =
     {
-        "act", chat_act, 0, 0,
-        "bye", chat_goodbye, 0, 1,
-        "exit", chat_goodbye, 0, 1,
-        "flags", chat_setroom, 0, 1,
-        "invite", chat_invite, 0, 0,
-        "join", chat_join, 0, 1,
-        "kick", chat_kick, 0,  1,
-        "kid", chat_kickid, 0, 1,/*Haohmaru.99.4.6*/
-        "msg", chat_private, 0, 1,
-        "nick", chat_nick, 0, 0,
-        "operator", chat_makeop, 0, 1,
-        "rooms", chat_list_rooms, 0, 1,
-        "whoin", chat_list_by_room, 1, 1,
-        "wall", chat_broadcast, 1, 1,
-        "rname", chat_name_room, 1, 1,       /* added by Luzi 1998.1.16 */
-        "who", chat_map_chatids_thisroom, 0, 1,
-        "list", chat_list_users, 0, 1,
-        "topic", chat_topic, 0, 1,
-        "toggle", chat_toggle, 0, 1,
-        "me", chat_act, 0, 0,
-        "q", chat_query, 1, 1,               /* exect flag from 0 to 1, modified by dong, 1998.9.12 */
-        "qc", chat_query_ByChatid,1,1,       /* added by dong 1998.9.12 */
-        "ignore",chat_ignore,1,1,            /* added by Luzi 1997.11.30 */
-        "listen",chat_listen,1,1,            /* added by Luzi 1997.11.30 */
-        "alias",call_alias,1,1,      /* added by Luzi 1998.01.25 */
-        "knock", chat_knock_room, 0, 1,      /* added by period 2000-09-15 */
-        NULL, NULL, 0,0
+        {"act", chat_act, 0, 0},
+        {"bye", chat_goodbye, 0, 1},
+        {"exit", chat_goodbye, 0, 1},
+        {"flags", chat_setroom, 0, 1},
+        {"invite", chat_invite, 0, 0},
+        {"join", chat_join, 0, 1},
+        {"kick", chat_kick, 0,  1},
+        {"kid", chat_kickid, 0, 1},/*Haohmaru.99.4.6*/
+        {"msg", chat_private, 0, 1},
+        {"nick", chat_nick, 0, 0},
+        {"operator", chat_makeop, 0, 1},
+        {"rooms", chat_list_rooms, 0, 1},
+        {"whoin", chat_list_by_room, 1, 1},
+        {"wall", chat_broadcast, 1, 1},
+        {"rname", chat_name_room, 1, 1},       /* added by Luzi 1998.1.16 */
+        {"who", chat_map_chatids_thisroom, 0, 1},
+        {"list", chat_list_users, 0, 1},
+        {"topic", chat_topic, 0, 1},
+        {"toggle", chat_toggle, 0, 1},
+        {"me", chat_act, 0, 0},
+        {"q", chat_query, 1, 1},               /* exect flag from 0 to 1, modified by dong, 1998.9.12 */
+        {"qc", chat_query_ByChatid,1,1},       /* added by dong 1998.9.12 */
+        {"ignore",chat_ignore,1,1},            /* added by Luzi 1997.11.30 */
+        {"listen",chat_listen,1,1},            /* added by Luzi 1997.11.30 */
+        {"alias",call_alias,1,1},      /* added by Luzi 1998.01.25 */
+        {"knock", chat_knock_room, 0, 1},      /* added by period 2000-09-15 */
+        {NULL, NULL, 0,0},
     };
 
 
@@ -2128,7 +2115,7 @@ int unum;
                     match = !strcasecmp(cmd, cmdrec->cmdstr);
                 else
                     match = !strncasecmp(cmd, cmdrec->cmdstr, strlen(cmd));
-                if (match)
+                if (match) {
                     if (ENABLEMAIN || users[unum].room || cmdrec->bUsed)/* added by Luzi 98.1.3 */
                         if (NOEMOTE(users[unum].room) &&
                                 (cmd[0]=='a' || cmd[0]=='A' ||
@@ -2136,6 +2123,7 @@ int unum;
                             send_to_unum(unum, "◎ 本"CHAT_ROOM_NAME"禁止作小动作 ◎");
                         else cmdrec->cmdfunc(unum, msg);
                     else send_to_unum(unum, "◎ "CHAT_SERVER"里禁止使用该指令 ◎");
+                }
             }
         }
     }
@@ -2207,7 +2195,7 @@ char* argv[];
 {
     struct sockaddr_in sin;
     register int i;
-    int pid, sr, newsock,nFlag=0;
+    int sr, newsock,nFlag=0;
     long  sinsize;
     fd_set readfds;
     struct timeval *tvptr = NULL;
