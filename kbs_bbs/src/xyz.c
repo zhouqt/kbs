@@ -855,7 +855,7 @@ int search_ip()
         struct in_addr queryip;
 
         linebuf[255] = 0;
-        getdata(t_lines / 2, 0, "输入查询的IP(直接回车退出):", ip, 16, DOECHO, NULL, true);
+        getdata(0, 0, "输入查询的IP(直接回车退出):", ip, 16, DOECHO, NULL, true);
         if (ip[0] == 0)
             return;
         if (inet_aton(ip, &queryip) == -1) {
