@@ -5,11 +5,11 @@
 #include <stdio.h>
 #include <assert.h>
 
+#include "bbs.h"
+
 #if HAVE_MYSQL == 1
 #include "mysql.h"
 #endif
-
-#include "bbs.h"
 
 #ifdef SMS_SUPPORT
 #undef perror
