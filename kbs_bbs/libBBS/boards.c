@@ -267,21 +267,22 @@ static int brc_convert_struct(char* dirfile,char* data,int size) /* °Ñ¾ÉµÄbroard
 	ptr = data;
 	bzero(&brc,sizeof(brc));
 	while( ptr < &data[ size ] && (*ptr >= ' ' && *ptr <= 'z') ) {
-	    int num;
-	    char* tmp;
-	    char boardname[18];
-	    int bid;
-	    strncpy(boardname,ptr,BRC_OLD_STRLEN);
-	    boardname[BRC_OLD_STRLEN]=0;
-           bid=getbnum(boardname);
-           ptr+=BRC_OLD_STRLEN;
-           num=(*ptr++) & 0xff;
-           tmp=ptr;
-    	    ptr+=sizeof(int)*num;
-    	    if( num > BRC_MAXNUM ) { 
-        		num = BRC_MAXNUM;
-    	    }
-    	    memcpy( brc.list[bid-1], tmp, num * sizeof( int ) );
+	        int num;
+	        char* tmp;
+	        char boardname[18];
+	        int bid;
+	        strncpy(boardname,ptr,BRC_OLD_STRLEN);
+	        boardname[BRC_OLD_STRLEN]=0;
+                bid=getbnum(boardname);
+		if (bid<=0||bid>=MAXBOARD) break;
+                ptr+=BRC_OLD_STRLEN;
+                num=(*ptr++) & 0xff;
+                tmp=ptr;
+    	        ptr+=sizeof(int)*num;
+    	        if( num > BRC_OLD_MAXNUM ) { 
+        		num = BRC_OLD_MAXNUM;
+    	        }
+    	        memcpy( brc.list[bid-1], tmp, num * sizeof( int ) );
 	}
    	if( (fd = open( dirfile, O_WRONLY|O_CREAT )) != -1 ) {
             write( fd, &brc, sizeof(brc));
