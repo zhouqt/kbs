@@ -897,7 +897,7 @@ int ansimore(char *filename, int promptend)
     if (promptend)
         pressanykey();
     move(t_lines - 1, 0);
-    prints("[0m[m");
+    prints("[m[m");
     return ch;
 }
 
@@ -928,7 +928,7 @@ int ansimore_withzmodem(char *filename, int promptend, char *title)
     if (promptend)
         pressanykey();
     move(t_lines - 1, 0);
-    prints("\x1b[0m\x1b[m");
+    prints("\x1b[m\x1b[m");
     return ch;
 }
 

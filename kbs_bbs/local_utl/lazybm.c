@@ -130,7 +130,7 @@ void checkBMs(void)
 
     now = time(NULL);           /*  current time stamp  */
     sprintf(lbuf, fmt, fgc, bgc, "用户代号", "任职版面", "最近上站时间", "距今天数");
-    fprintf(stdout, "\033[0m\n%s\n", lbuf);
+    fprintf(stdout, "\033[m\n%s\n", lbuf);
     for (i = 0; i < nBMCount; i++) {
         if (i % 2) {
             fgc = 37;

@@ -935,7 +935,7 @@ int search_ip()
 
 		back_flag=find_ip(ip,1,result);
 
-		prints("\033[33m%s\033[0m\n",result);
+		prints("\033[33m%s\033[m\n",result);
 
 		if (back_flag == 1) {
 		pressreturn();

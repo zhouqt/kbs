@@ -584,10 +584,10 @@ int print_user_counts(unsigned int unum)
     sprintf(chatbuf + strlen(chatbuf), "¡ï");
     send_to_unum(unum, chatbuf);
     if (!ENABLEMAIN)
-        send_to_unum(unum, "[1mÔÚ [33mmain[0m[1m ´óÌüÀï½ûÖ¹ÁÄÌì¡¢×÷Ğ¡¶¯×÷£¬¿ÉÓÃ [33m/j[0m[1m Ö¸Áîµ½ÆäËü" CHAT_ROOM_NAME "½øĞĞÁÄÌì[0m");
-    send_to_unum(unum, "[1mÊäÈë [33m/e[0m[1m Àë¿ª" CHAT_SERVER "£¬[33m/w[0m[1m ²é¿´±¾" CHAT_ROOM_NAME "ÖĞµÄ" NAME_USER_SHORT "[0m");
-    send_to_unum(unum, "[1mÊäÈë [33m/r[0m[1m ²é¿´µ±Ç°µÄ" CHAT_ROOM_NAME "£¬[33m/j roomname[0m[1m ½øÈëÏàÓ¦" CHAT_ROOM_NAME "[0m");
-    send_to_unum(unum, "[1mÊäÈë [33m/h[0m[1m »ñµÃ°ïÖúĞÅÏ¢[0m");
+        send_to_unum(unum, "[1mÔÚ [33mmain[m[1m ´óÌüÀï½ûÖ¹ÁÄÌì¡¢×÷Ğ¡¶¯×÷£¬¿ÉÓÃ [33m/j[m[1m Ö¸Áîµ½ÆäËü" CHAT_ROOM_NAME "½øĞĞÁÄÌì[m");
+    send_to_unum(unum, "[1mÊäÈë [33m/e[m[1m Àë¿ª" CHAT_SERVER "£¬[33m/w[m[1m ²é¿´±¾" CHAT_ROOM_NAME "ÖĞµÄ" NAME_USER_SHORT "[m");
+    send_to_unum(unum, "[1mÊäÈë [33m/r[m[1m ²é¿´µ±Ç°µÄ" CHAT_ROOM_NAME "£¬[33m/j roomname[m[1m ½øÈëÏàÓ¦" CHAT_ROOM_NAME "[m");
+    send_to_unum(unum, "[1mÊäÈë [33m/h[m[1m »ñµÃ°ïÖúĞÅÏ¢[m");
     return 0;
 }
 
@@ -1556,7 +1556,7 @@ int alias_action(unum, cmd, party)
                 chatlen = strlen(chatbuf);
                 if (tmpbuf2 == NULL) {
                     if (chatlen + strlen(tmpbuf) + 5 < 256)
-                        sprintf(chatbuf + strlen(chatbuf), "%s\033[0m", tmpbuf);
+                        sprintf(chatbuf + strlen(chatbuf), "%s\033[m", tmpbuf);
                     break;
                 }
                 if (recunum >= 0) {
@@ -1615,11 +1615,11 @@ int party_action(unum, cmd, party)
                 party = users[recunum].chatid;
             }
             if (strcasecmp(cmd, "faint") == 0 && (strcasecmp(party, users[unum].chatid) == 0 || strcmp(party, CHAT_PARTY) == 0))
-                sprintf(chatbuf, "\033[1m%s\033[m %sÒ»Éù£¬ÔÎµ¹ÔÚµØ...\033[0m", users[unum].chatid, "ßÛµ±");
+                sprintf(chatbuf, "\033[1m%s\033[m %sÒ»Éù£¬ÔÎµ¹ÔÚµØ...\033[m", users[unum].chatid, "ßÛµ±");
             else {
                 if (strcasecmp(party, users[unum].chatid) == 0)
                     party = "×Ô¼º";
-                sprintf(chatbuf, "[1m%s[m %s [1m%s[m %s[0m", users[unum].chatid, party_data[i].part1_msg, party, party_data[i].part2_msg);
+                sprintf(chatbuf, "[1m%s[m %s [1m%s[m %s[m", users[unum].chatid, party_data[i].part1_msg, party, party_data[i].part2_msg);
             }
             send_to_room2(users[unum].room, chatbuf, unum);
             return 0;
@@ -1674,7 +1674,7 @@ int speak_action(unum, cmd, msg)
 
     for (i = 0; speak_data[i].verb; i++) {
         if (!strcasecmp(cmd, speak_data[i].verb)) {
-            sprintf(chatbuf, "[1m%s[m %s£º%s[0m", users[unum].chatid, speak_data[i].part1_msg, msg);
+            sprintf(chatbuf, "[1m%s[m %s£º%s[m", users[unum].chatid, speak_data[i].part1_msg, msg);
             send_to_room(users[unum].room, chatbuf, unum);
             return 0;
         }
@@ -1720,7 +1720,7 @@ int condition_action(unum, cmd)
 
     for (i = 0; condition_data[i].verb; i++) {
         if (!strcasecmp(cmd, condition_data[i].verb)) {
-            sprintf(chatbuf, "[1m%s[m %s[0m", users[unum].chatid, condition_data[i].part1_msg);
+            sprintf(chatbuf, "[1m%s[m %s[m", users[unum].chatid, condition_data[i].part1_msg);
             send_to_room(users[unum].room, chatbuf, unum);
             return 1;
         }
@@ -1774,11 +1774,11 @@ void view_action_verb(unum, verb)
                 /* add by KCN */
             if (all) {
                 if (i == 0)
-                    sprintf(chatbuf, "[1m%-8s: [m %s [1m" CHAT_PARTY "[m %s[0m", verbs[i][j - 1].verb, party_data[j - 1].part1_msg, party_data[j - 1].part2_msg);
+                    sprintf(chatbuf, "[1m%-8s: [m %s [1m" CHAT_PARTY "[m %s[m", verbs[i][j - 1].verb, party_data[j - 1].part1_msg, party_data[j - 1].part2_msg);
                 else if (i == 1)
-                    sprintf(chatbuf, "[1m%-8s: [m %s£º%s[0m", verbs[i][j - 1].verb, speak_data[j - 1].part1_msg, "ÎÒ°®ÄãÀ´Äã°®ÎÒ!");
+                    sprintf(chatbuf, "[1m%-8s: [m %s£º%s[m", verbs[i][j - 1].verb, speak_data[j - 1].part1_msg, "ÎÒ°®ÄãÀ´Äã°®ÎÒ!");
                 else
-                    sprintf(chatbuf, "[1m%-8s: [m %s[0m", verbs[i][j - 1].verb, condition_data[j - 1].part1_msg);
+                    sprintf(chatbuf, "[1m%-8s: [m %s[m", verbs[i][j - 1].verb, condition_data[j - 1].part1_msg);
 
                 tmp = chatbuf;
                 while ((tmp = strstr(tmp, "\\n")) != NULL) {
@@ -1819,11 +1819,11 @@ void view_action_verb(unum, verb)
             send_to_unum(unum, chatbuf);
             j--;
             if (i == 0)
-                sprintf(chatbuf, "[1m%s[m %s [1m" CHAT_PARTY "[m %s[0m", users[unum].chatid, party_data[j].part1_msg, party_data[j].part2_msg);
+                sprintf(chatbuf, "[1m%s[m %s [1m" CHAT_PARTY "[m %s[m", users[unum].chatid, party_data[j].part1_msg, party_data[j].part2_msg);
             else if (i == 1)
-                sprintf(chatbuf, "[1m%s[m %s£º%s[0m", users[unum].chatid, speak_data[j].part1_msg, "ÎÒ°®ÄãÀ´Äã°®ÎÒ!");
+                sprintf(chatbuf, "[1m%s[m %s£º%s[m", users[unum].chatid, speak_data[j].part1_msg, "ÎÒ°®ÄãÀ´Äã°®ÎÒ!");
             else
-                sprintf(chatbuf, "[1m%s[m %s[0m", users[unum].chatid, condition_data[j].part1_msg);
+                sprintf(chatbuf, "[1m%s[m %s[m", users[unum].chatid, condition_data[j].part1_msg);
             send_to_unum2(unum, chatbuf);
         }
     }

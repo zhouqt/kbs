@@ -110,14 +110,14 @@ int inform(bcache_t * bp, char *user, char *exp, int dt)
         fprintf(fn, "发信站: %s (%24.24s)\n", "BBS " NAME_BBS_CHINESE "站", ctime(&now));
         fprintf(fn, "来  源: " NAME_BBS_ENGLISH "\n");
         fprintf(fn, "\n");
-        fprintf(fn, "由于您在 \x1b[4m%s\x1b[0m 版 \x1b[4m%s\x1b[0m，我很遗憾地通知您， \n", board, exp);
+        fprintf(fn, "由于您在 \x1b[4m%s\x1b[m 版 \x1b[4m%s\x1b[m，我很遗憾地通知您， \n", board, exp);
         if (dt)
-            fprintf(fn, "您被暂时取消在该版的发文权力 \x1b[4m%d\x1b[0m 天，到期后请回复\n", dt);
+            fprintf(fn, "您被暂时取消在该版的发文权力 \x1b[4m%d\x1b[m 天，到期后请回复\n", dt);
         else
             fprintf(fn, "您被暂时取消在该版的发文权力，到期后请回复\n");
         fprintf(fn, "此信申请恢复权限。\n");
         fprintf(fn, "\n");
-        fprintf(fn, "                            " NAME_BBS_CHINESE NAME_SYSOP_GROUP "值班站务：\x1b[4m%s\x1b[0m\n", usr->userid);
+        fprintf(fn, "                            " NAME_BBS_CHINESE NAME_SYSOP_GROUP "值班站务：\x1b[4m%s\x1b[m\n", usr->userid);
         fprintf(fn, "                              %s\n", ctime(&now));
         strcpy(usr->userid, "SYSOP");
         strcpy(usr->username, NAME_SYSOP);
@@ -129,14 +129,14 @@ int inform(bcache_t * bp, char *user, char *exp, int dt)
         fprintf(fn, "发信站: %s (%24.24s)\n", "BBS " NAME_BBS_CHINESE "站", ctime(&now));
         fprintf(fn, "来  源: %s \n", usr->lasthost);
         fprintf(fn, "\n");
-        fprintf(fn, "由于您在 \x1b[4m%s\x1b[0m 版 \x1b[4m%s\x1b[0m，我很遗憾地通知您， \n", board, exp);
+        fprintf(fn, "由于您在 \x1b[4m%s\x1b[m 版 \x1b[4m%s\x1b[m，我很遗憾地通知您， \n", board, exp);
         if (dt)
-            fprintf(fn, "您被暂时取消在该版的发文权力 \x1b[4m%d\x1b[0m 天，到期后请回复\n", dt);
+            fprintf(fn, "您被暂时取消在该版的发文权力 \x1b[4m%d\x1b[m 天，到期后请回复\n", dt);
         else
             fprintf(fn, "您被暂时取消在该版的发文权力，到期后请回复\n");
         fprintf(fn, "此信申请恢复权限。\n");
         fprintf(fn, "\n");
-        fprintf(fn, "                              " NAME_BM ":\x1b[4m%s\x1b[0m\n", usr->userid);
+        fprintf(fn, "                              " NAME_BM ":\x1b[4m%s\x1b[m\n", usr->userid);
         fprintf(fn, "                              %s\n", ctime(&now));
     }
     fclose(fn);
@@ -144,16 +144,16 @@ int inform(bcache_t * bp, char *user, char *exp, int dt)
     mail_file(getcurruserid(), buf, user, title, 1);
 
     fn = fopen(buf, "w+");
-    fprintf(fn, "由于 \x1b[4m%s\x1b[0m 在 \x1b[4m%s\x1b[0m 版的 \x1b[4m%s\x1b[0m 行为，\n", user, board, exp);
+    fprintf(fn, "由于 \x1b[4m%s\x1b[m 在 \x1b[4m%s\x1b[m 版的 \x1b[4m%s\x1b[m 行为，\n", user, board, exp);
     if (dt)
-        fprintf(fn, "被暂时取消在本版的发文权力 \x1b[4m%d\x1b[0m 天。\n", dt);
+        fprintf(fn, "被暂时取消在本版的发文权力 \x1b[4m%d\x1b[m 天。\n", dt);
     else
         fprintf(fn, "您被暂时取消在该版的发文权力，到期后请回复\n");
 
     if (my_flag == 0)
-        fprintf(fn, "                            " NAME_BBS_CHINESE NAME_SYSOP_GROUP "值班站务：\x1b[4m%s\x1b[0m\n", saveusr.userid);
+        fprintf(fn, "                            " NAME_BBS_CHINESE NAME_SYSOP_GROUP "值班站务：\x1b[4m%s\x1b[m\n", saveusr.userid);
     else
-        fprintf(fn, "                              " NAME_BM ":\x1b[4m%s\x1b[0m\n", usr->userid);
+        fprintf(fn, "                              " NAME_BM ":\x1b[4m%s\x1b[m\n", usr->userid);
     fprintf(fn, "                              %s\n", ctime(&now));
     fclose(fn);
     /*

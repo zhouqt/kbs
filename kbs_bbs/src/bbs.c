@@ -103,7 +103,7 @@ int check_readonly(char *checked)
             move(8, 0);
             prints("                                        "); /* 40 spaces */
             move(8, (80 - (24 + strlen(checked))) / 2); /* Set text in center */
-            prints("[1m[33mºÜ±§Ç¸£º[31m%s °æÄ¿Ç°ÊÇÖ»¶ÁÄ£Ê½[33m\n\n                          Äú²»ÄÜÔÚ¸Ã°æ·¢±í»òÕßĞŞ¸ÄÎÄÕÂ[0m\n", checked);
+            prints("[1m[33mºÜ±§Ç¸£º[31m%s °æÄ¿Ç°ÊÇÖ»¶ÁÄ£Ê½[33m\n\n                          Äú²»ÄÜÔÚ¸Ã°æ·¢±í»òÕßĞŞ¸ÄÎÄÕÂ[m\n", checked);
             pressreturn();
             clear();
         }
@@ -379,7 +379,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct)
 #ifndef NINE_BUILD    
     move(4, 0);                 /* Leeward 98.02.25 */
     prints
-        ("[1m[33mÇë×¢Òâ£º[31m±¾Õ¾Õ¾¹æ¹æ¶¨£ºÍ¬ÑùÄÚÈİµÄÎÄÕÂÑÏ½ûÔÚ 5 (º¬) ¸öÒÔÉÏÌÖÂÛÇøÄÚÖØ¸´ÕÅÌù¡£\n\nÎ¥·´Õß[33m³ıËùÌùÎÄÕÂ»á±»É¾³ıÖ®Íâ£¬»¹½«±»[31m°ş¶á¼ÌĞø·¢±íÎÄÕÂµÄÈ¨Á¦¡£[33mÏêÏ¸¹æ¶¨Çë²ÎÕÕ£º\n\n    Announce °æµÄÕ¾¹æ£º¡°¹ØÓÚ×ªÌùºÍÕÅÌùÎÄÕÂµÄ¹æ¶¨¡±¡£\n\nÇë´ó¼Ò¹²Í¬Î¬»¤ BBS µÄ»·¾³£¬½ÚÊ¡ÏµÍ³×ÊÔ´¡£Ğ»Ğ»ºÏ×÷¡£\n\n[0m");
+        ("[1m[33mÇë×¢Òâ£º[31m±¾Õ¾Õ¾¹æ¹æ¶¨£ºÍ¬ÑùÄÚÈİµÄÎÄÕÂÑÏ½ûÔÚ 5 (º¬) ¸öÒÔÉÏÌÖÂÛÇøÄÚÖØ¸´ÕÅÌù¡£\n\nÎ¥·´Õß[33m³ıËùÌùÎÄÕÂ»á±»É¾³ıÖ®Íâ£¬»¹½«±»[31m°ş¶á¼ÌĞø·¢±íÎÄÕÂµÄÈ¨Á¦¡£[33mÏêÏ¸¹æ¶¨Çë²ÎÕÕ£º\n\n    Announce °æµÄÕ¾¹æ£º¡°¹ØÓÚ×ªÌùºÍÕÅÌùÎÄÕÂµÄ¹æ¶¨¡±¡£\n\nÇë´ó¼Ò¹²Í¬Î¬»¤ BBS µÄ»·¾³£¬½ÚÊ¡ÏµÍ³×ÊÔ´¡£Ğ»Ğ»ºÏ×÷¡£\n\n[m");
 #endif
     move(1, 0);
     if (!get_a_boardname(bname, "ÇëÊäÈëÒª×ªÌùµÄÌÖÂÛÇøÃû³Æ: ")) {
@@ -510,7 +510,7 @@ void readtitle()
 
     showtitle(header, title);   /* ÏÔÊ¾ µÚÒ»ĞĞ */
     if (DEFINE(currentuser,DEF_HIGHCOLOR))
-    	prints("Àë¿ª[\x1b[1;32m¡û\x1b[0m,\x1b[1;32me\x1b[0m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0m,\x1b[1;32m¡ı\x1b[0m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[0m,\x1b[1;32mr\x1b[0m] ·¢±íÎÄÕÂ[\x1b[1;32mCtrl-P\x1b[0m] ¿³ĞÅ[\x1b[1;32md\x1b[0m] ±¸ÍüÂ¼[\x1b[1;32mTAB\x1b[0m] ÇóÖú[\x1b[1;32mh\x1b[0m][m\n");
+    	prints("Àë¿ª[\x1b[1;32m¡û\x1b[m,\x1b[1;32me\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ı\x1b[m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] ·¢±íÎÄÕÂ[\x1b[1;32mCtrl-P\x1b[m] ¿³ĞÅ[\x1b[1;32md\x1b[m] ±¸ÍüÂ¼[\x1b[1;32mTAB\x1b[m] ÇóÖú[\x1b[1;32mh\x1b[m][m\n");
     else
     	prints("Àë¿ª[¡û,e] Ñ¡Ôñ[¡ü,¡ı] ÔÄ¶Á[¡ú,r] ·¢±íÎÄÕÂ[Ctrl-P] ¿³ĞÅ[d] ±¸ÍüÂ¼[TAB] ÇóÖú[h]\x1b[m\n");
     if (digestmode == 0)        /* ÔÄ¶ÁÄ£Ê½ */
@@ -2476,7 +2476,7 @@ int del_range(int ent, struct fileheader *fileinfo, char *direct, int mailmode)
         if (result) {           /* prints("´íÎó´úÂë: %d;%s Çë±¨¸æÕ¾³¤£¬Ğ»Ğ»£¡", result,direct);
                                  * added by Haohmaru,ĞŞ¸´Çø¶ÎÉ¾³ı´íÎó,98.9.12 */
             prints("´íÎó´úÂë: %d;%s", result, direct);
-            getdata(8, 0, "Çø¶ÎÉ¾³ı´íÎó,Èç¹ûÏëĞŞ¸´,ÇëÈ·¶¨[35mÎŞÈËÔÚ±¾°æÖ´ĞĞÇø¶ÎÉ¾³ı²Ù×÷²¢°´'Y'[0m (Y/N)? [N]: ", num1, 10, DOECHO, NULL, true);
+            getdata(8, 0, "Çø¶ÎÉ¾³ı´íÎó,Èç¹ûÏëĞŞ¸´,ÇëÈ·¶¨[35mÎŞÈËÔÚ±¾°æÖ´ĞĞÇø¶ÎÉ¾³ı²Ù×÷²¢°´'Y'[m (Y/N)? [N]: ", num1, 10, DOECHO, NULL, true);
             if (*num1 == 'Y' || *num1 == 'y') {
                 if (!mailmode) {
                     sprintf(fullpath, "mail/%c/%s/.tmpfile", toupper(currentuser->userid[0]), currentuser->userid);

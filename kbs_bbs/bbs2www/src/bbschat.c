@@ -441,7 +441,7 @@ char *cco(char *s)
         if (!strncmp(s, "%M", 2))
             strcpy(co, "[35m");
         if (!strncmp(s, "%N", 2))
-            strcpy(co, "[0m");
+            strcpy(co, "[m");
         if (!strncmp(s, "%W", 2))
             strcpy(co, "[37m");
         if (!strncmp(s, "%I", 2))

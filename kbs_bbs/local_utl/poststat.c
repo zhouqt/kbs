@@ -201,8 +201,8 @@ void poststat(mytype)
 
     sprintf(curfile, "etc/posts/%s", p);
     if (fp = fopen(curfile, "w")) {
-        /*fprintf(fp, "\t\t[34m-----[37m=====[41m ±æ%s¥Û»»√≈ª∞Ã‚ [40m=====[34m-----[0m\n\n", mytitle[mytype]); */
-        fprintf(fp, "                [34m-----[37m=====[41m ±æ%s¥Û»»√≈ª∞Ã‚ [40m=====[34m-----[0m\n\n", mytitle[mytype]);
+        /*fprintf(fp, "\t\t[34m-----[37m=====[41m ±æ%s¥Û»»√≈ª∞Ã‚ [40m=====[34m-----[m\n\n", mytitle[mytype]); */
+        fprintf(fp, "                [34m-----[37m=====[41m ±æ%s¥Û»»√≈ª∞Ã‚ [40m=====[34m-----[m\n\n", mytitle[mytype]);
         /* Leeward 98.09.24 replace the \t\t to spaces for SHARE MEM in ../main.c */
 
         i = mytop[mytype];

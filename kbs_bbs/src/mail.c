@@ -299,7 +299,7 @@ void m_internet()
             prints("%s вти╠жпё╛╡╩дэйупе\n", receiver);
             break;              /*Haohmaru.99.10.26.вти╠уъ╡╩дэйупе */
         case -552:
-            prints("\n[1m[33mпе╪ЧЁ╛Ё╓ё╗╠╬у╬оч╤╗пе╪ЧЁ╓╤хиоочн╙ %d вж╫зё╘ё╛х║оШ╥╒пе╡ывВ[0m[0m\n", MAXMAILSIZE);
+            prints("\n[1m[33mпе╪ЧЁ╛Ё╓ё╗╠╬у╬оч╤╗пе╪ЧЁ╓╤хиоочн╙ %d вж╫зё╘ё╛х║оШ╥╒пе╡ывВ[m[m\n", MAXMAILSIZE);
             break;
         default:
             prints("пе╪Чря╪дЁЖ\n");
@@ -658,7 +658,7 @@ int m_send(char userid[])
         prints("%s вти╠жпё╛╡╩дэйупе\n", uident);
         break;                  /*Haohmaru.99.10.26.вти╠уъ╡╩дэйупе */
     case -552:
-        prints("\n[1m[33mпе╪ЧЁ╛Ё╓ё╗╠╬у╬оч╤╗пе╪ЧЁ╓╤хиоочн╙ %d вж╫зё╘ё╛х║оШ╥╒пе╡ывВ[0m[0m\n", MAXMAILSIZE);
+        prints("\n[1m[33mпе╪ЧЁ╛Ё╓ё╗╠╬у╬оч╤╗пе╪ЧЁ╓╤хиоочн╙ %d вж╫зё╘ё╛х║оШ╥╒пе╡ывВ[m[m\n", MAXMAILSIZE);
         break;
     default:
         prints("пе╪Чря╪дЁЖ\n");
@@ -1140,7 +1140,7 @@ int mail_forward_internal(int ent, struct fileheader *fileinfo, char *direct, in
         break;
     case -552:
         prints
-            ("\n[1m[33mпе╪ЧЁ╛Ё╓ё╗╠╬у╬оч╤╗пе╪ЧЁ╓╤хиоочн╙ %d вж╫зё╘ё╛х║оШв╙╪д╡ывВ[0m[0m\n\nгК╦Фж╙йупехкё╗р╡пМ╬мйгдЗвт╪╨╟и:PPё╘ё╨\n\n*1* й╧сц [1m[33mWWW[0m[0m ╥╫й╫╥цнй╠╬у╬ё╛кФй╠©ирт╠ё╢ФхнрБЁ╓╤х╣дндуб╣╫вт╪╨╣д╪фкЦ╩Зё╩\n*2* й╧сц [1m[33mpop3[0m[0m ╥╫й╫╢с╠╬у╬сц╩╖╣дпеоДх║пеё╛ц╩спхн╨нЁ╓╤хочжф║ё\n*3* хГ╧Ш╡╩йЛо╓╠╬у╬╣д WWW ╩Р pop3 ╥ЧнЯё╛гКтд╤а [1m[33mAnnounce[0m[0m ╟Фсп╧ь╧╚╦Ф║ё\n",
+            ("\n[1m[33mпе╪ЧЁ╛Ё╓ё╗╠╬у╬оч╤╗пе╪ЧЁ╓╤хиоочн╙ %d вж╫зё╘ё╛х║оШв╙╪д╡ывВ[m[m\n\nгК╦Фж╙йупехкё╗р╡пМ╬мйгдЗвт╪╨╟и:PPё╘ё╨\n\n*1* й╧сц [1m[33mWWW[m[m ╥╫й╫╥цнй╠╬у╬ё╛кФй╠©ирт╠ё╢ФхнрБЁ╓╤х╣дндуб╣╫вт╪╨╣д╪фкЦ╩Зё╩\n*2* й╧сц [1m[33mpop3[m[m ╥╫й╫╢с╠╬у╬сц╩╖╣дпеоДх║пеё╛ц╩спхн╨нЁ╓╤хочжф║ё\n*3* хГ╧Ш╡╩йЛо╓╠╬у╬╣д WWW ╩Р pop3 ╥ЧнЯё╛гКтд╤а [1m[33mAnnounce[m[m ╟Фсп╧ь╧╚╦Ф║ё\n",
              MAXMAILSIZE);
         break;
     default:
@@ -1695,7 +1695,7 @@ int ov_send()
 
         userid = getuserid2(topfriend[i].uid);
         if (!userid)
-            prints("\x1b[1;32m%-12s\x1b[0m ", topfriend[i].uid);
+            prints("\x1b[1;32m%-12s\x1b[m ", topfriend[i].uid);
         else
             prints("%-12s ", userid);
         if ((i + 1) % 6 == 0)

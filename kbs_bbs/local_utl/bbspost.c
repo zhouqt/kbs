@@ -555,12 +555,12 @@ static post_article(usermail)
         ptr = strrchr(homepath, '/');
         (ptr == NULL) ? (ptr = homepath) : (ptr++);
         if (Xpost) {
-            /*sprintf( buf, "%24.24s \033[1m\033[32mWWW-DEL\033[0m\033[0m by %s\n\n", ctime( &now ), Xid); Leeward 98.05.20: 还是不写这一行，否则 undelete 文章的时候不好看赫赫 */
+            /*sprintf( buf, "%24.24s \033[1m\033[32mWWW-DEL\033[m\033[m by %s\n\n", ctime( &now ), Xid); Leeward 98.05.20: 还是不写这一行，否则 undelete 文章的时候不好看赫赫 */
             /* Add 45 space characters first in below ! */
             strcat(subject, "                                            ");
             sprintf(subject + 45 - strlen(Xid) - 3, " - %s", Xid);
         } else {                /*now+=28800;Haohmaru.99.4.21.不知道为什么WWW的时钟比系统时钟慢8小时 */
-            sprintf(buf, "发信人: %s (%s), 信区: %s\n标  题: %s\n发信站: BBS " NAME_BBS_CHINESE "站 (%24.24s) \033[1m\033[32mWWW-POST\033[0m\033[0m\n\n", userid, currentuser->username,
+            sprintf(buf, "发信人: %s (%s), 信区: %s\n标  题: %s\n发信站: BBS " NAME_BBS_CHINESE "站 (%24.24s) \033[1m\033[32mWWW-POST\033[m\033[m\n\n", userid, currentuser->username,
                     ptr, subject, ctime(&now));
         }
         write(fh, buf, strlen(buf));

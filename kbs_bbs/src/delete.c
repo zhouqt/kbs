@@ -126,7 +126,7 @@ void suicide()
     move(3, 0);
     prints("ÔÚÕâ14ÌìÄÚÈô¸Ä±äÖ÷ÒâµÄ»°£¬Ôò¿ÉÒÔÍ¨¹ıµÇÂ¼±¾Õ¾Ò»´Î»Ö¸´Ô­ÉúÃüÁ¦");
     move(5, 0);
-    prints("×ÔÉ±ÓÃ»§½«¶ªÊ§ËùÓĞ[33mÌØÊâÈ¨ÏŞ[0m£¡£¡£¡");
+    prints("×ÔÉ±ÓÃ»§½«¶ªÊ§ËùÓĞ[33mÌØÊâÈ¨ÏŞ[m£¡£¡£¡");
     move(7, 0);
     /*
        clear();
@@ -159,7 +159,7 @@ void suicide()
         sprintf(filename, "etc/%s.tmp", currentuser->userid);
         fn = fopen(filename, "w");
         fprintf(fn, "[1m%s[m ÒÑ¾­ÔÚ [1m%24.24s[m ×ÔÉ±ÁË£¬ÒÔÏÂÊÇËûµÄ×ÊÁÏ£¬Çë±£Áô...", currentuser->userid, ctime(&now));
-        fprintf(fn, "\n\nÒÔÏÂÊÇ×ÔÉ±ÕßÔ­À´µÄÈ¨ÏŞ\n\033[1m\033[33m%s\n[0m", XPERM);
+        fprintf(fn, "\n\nÒÔÏÂÊÇ×ÔÉ±ÕßÔ­À´µÄÈ¨ÏŞ\n\033[1m\033[33m%s\n[m", XPERM);
         getuinfo(fn, currentuser);
         fprintf(fn, "\n                      [1m ÏµÍ³×Ô¶¯·¢ĞÅÏµÍ³Áô[m\n");
         fclose(fn);

@@ -312,12 +312,12 @@ void r_msg()
         clrtoeol();
         refresh();
         if (msg_count) {
-            prints("[1m[33mÄãÓĞĞÂµÄÑ¶Ï¢£¬Çë·¢±íÍêÎÄÕÂºó°´ Ctrl+Z »ØÑ¶Ï¢[0m");
+            prints("[1m[33mÄãÓĞĞÂµÄÑ¶Ï¢£¬Çë·¢±íÍêÎÄÕÂºó°´ Ctrl+Z »ØÑ¶Ï¢[m");
             move(y, x);
             refresh();
             sleep(1);
         } else {
-            prints("[1mÃ»ÓĞÈÎºÎĞÂµÄÑ¶Ï¢´æÔÚ![0m");
+            prints("[1mÃ»ÓĞÈÎºÎĞÂµÄÑ¶Ï¢´æÔÚ![m");
             move(y, x);
             refresh();
             sleep(1);
@@ -331,7 +331,7 @@ void r_msg()
         move(line, 0);
         clrtoeol();
         refresh();
-        prints("[1mÃ»ÓĞÈÎºÎµÄÑ¶Ï¢´æÔÚ£¡£¡[0m");
+        prints("[1mÃ»ÓĞÈÎºÎµÄÑ¶Ï¢´æÔÚ£¡£¡[m");
         move(y, x);
         refresh();
         sleep(1);

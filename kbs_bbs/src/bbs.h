@@ -282,7 +282,7 @@ O MaxMessageSize=32000
 #endif                          /* SYSV */
 
 /* =============== ANSI EDIT ================== */
-#define   ANSI_RESET    "\033[37;40m\033[0m"
+#define   ANSI_RESET    "\033[37;40m\033[m"
 #define   ANSI_REVERSE  "\033[7m\033[4m"
 extern int editansi;
 extern int KEY_ESC_arg;

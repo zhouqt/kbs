@@ -353,7 +353,7 @@ void check_register_info()
             move(12, 0);
             prints("Äã»¹Ã»ÓÐÍ¨¹ýÉí·ÝÈÏÖ¤£¬½«»áÃ»ÓÐtalk,mail,message,postÈ¨...  \n");
             prints("Èç¹ûÄãÒª³ÉÎª" NAME_BBS_NICK "µÄ×¢²á" NAME_USER_SHORT "£¬\n\n");
-            prints("ÇëÔÚ[31m¸öÈË¹¤¾ßÏä[0mÄÚ[31mÏêÏ¸×¢²áÉí·Ý[0m\n");
+            prints("ÇëÔÚ[31m¸öÈË¹¤¾ßÏä[mÄÚ[31mÏêÏ¸×¢²áÉí·Ý[m\n");
             prints("ÄúÖ»ÒªÈ·ÊµÏêÏ¸ÌîÐ´ÁËÄãµÄÕæÊµÉí·Ý×ÊÁÏ, \n");
             prints("ÔÚ" NAME_SYSOP_GROUP "ÌæÄãÊÖ¹¤ÈÏÖ¤ÁËÒÔºó£¬¾Í¿ÉÒÔ³ÉÎª±¾Õ¾ºÏ¸ñ" NAME_USER_SHORT ".\n");
             prints("\nÖ÷²Ëµ¥  -->  I) ¸öÈË¹¤¾ßÏä  -->  F) ÌîÐ´×¢²áµ¥\n");
