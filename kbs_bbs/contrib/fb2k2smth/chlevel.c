@@ -53,8 +53,9 @@ main()
                 user.userlevel |= PERM_ACBOARD;
         if (perm & PERM_NOZAP)
                 user.userlevel |= PERM_NOZAP;
-	
-	
+	if (perm & PERM_JURY)
+	        user.userlevel &=~PERM_JURY;
+	    Ò
 	user.userdefine = -1;
         user.flags[0] = CURSOR_FLAG;
         user.flags[0] |= PAGER_FLAG;

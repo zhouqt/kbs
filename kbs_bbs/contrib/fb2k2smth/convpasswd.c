@@ -59,6 +59,13 @@ static void create_userdata(olduserec * olduser)
     memcpy(ud.realname, olduser->realname, sizeof(ud.realname));
     memcpy(ud.address, olduser->address, sizeof(ud.address));
     memcpy(ud.email, olduser->email, sizeof(ud.email));
+#ifdef HAVE_BIRTHDAY
+    ud.gender =olduser->gender;
+    ud.birthyear = olduser->birthyear;
+    ud.birthmonth = olduser->birthmonth;
+    ud.birthday = olduser->birthday;
+#endif
+
     sethomepath(datafile, olduser->userid);
     if (stat(datafile, &st) == -1) {
         fprintf(stderr, "Warning: %s's home directory not found.\n", olduser->userid);
