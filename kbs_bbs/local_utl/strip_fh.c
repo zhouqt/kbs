@@ -286,8 +286,11 @@ static int rollback_mail(struct userec *user, char *arg)
 int main(int argc, char ** argv)
 {
     chdir(BBSHOME);
+#undef time
+    bbssettime(time(0));
+    sleep(1);
 	resolve_boards();
-	resolve_ucache();
+	load_ucache();
 	if (argc == 1)
 	{
 		apply_boards(strip_board, NULL);
