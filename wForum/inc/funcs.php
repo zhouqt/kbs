@@ -374,6 +374,18 @@ function isErrFounded(){
 	return $foundErr;
 }
 
+function get_frame_referer() {
+	if (!isset($_SERVER["HTTP_REFERER"]) || ( $_SERVER["HTTP_REFERER"]=="") ) {
+		return "index.php";
+	} else {
+		$target = $_SERVER["HTTP_REFERER"];
+		$l_target = strtolower($target);
+		if ((strpos($l_target,'bbsleft.php')!==false)) return "index.php";
+		if ((strpos($l_target,'frames.php')!==false)) return "index.php";
+		return $target;
+	}
+}
+
 function html_error_quit()
 {
 	global $errMsg;
@@ -400,7 +412,7 @@ function html_error_quit()
   	} else {
 ?>
 	<tr>
-	<td class=TableBody2 valign=middle align=center><a href="<?php echo $_SERVER['HTTP_REFERER']; ?>"> <<返回上一页 </a></td></tr></table>
+	<td class=TableBody2 valign=middle align=center><a href="<?php echo htmlspecialchars(get_frame_referer(), ENT_QUOTES); ?>"> <<返回上一页 </a></td></tr></table>
 <?php
 	}
 } 
@@ -425,7 +437,7 @@ function html_success_quit($Desc='',$URL='')
 <?php
 	if ($Desc=='') {
 ?>
-<a href="<?php   echo $_SERVER['HTTP_REFERER']; ?>"> &lt;&lt; 返回上一页</a>
+<a href="<?php   echo htmlspecialchars(get_frame_referer(), ENT_QUOTES); ?>"> &lt;&lt; 返回上一页</a>
 <?php
 	} else {
 ?>
@@ -673,11 +685,10 @@ function htmlformat($str,$multi=false) {
 }
 
 function jumpReferer($forcehome = false) {
-	if ($forcehome || !isset($_SERVER["HTTP_REFERER"]) || ( $_SERVER["HTTP_REFERER"]=="") ) {
+	if ($forcehome) {
 		$target = "index.php";
 	} else {
-		$target = $_SERVER["HTTP_REFERER"];
-		if ((strpos(strtolower($target),'bbsleft.php')!==false)) $target = "index.php";
+		$target = get_frame_referer();
 	}
 	//header("Location: $target");
 ?>
