@@ -7,7 +7,7 @@ function getattachtmppath($userid,$utmpnum)
 
 define("ATTACHMAXSIZE","2097152");
 define("ATTACHMAXCOUNT","10");
-define("HAVE_PC", "1"); // 支持个人文集
+define("HAVE_PC", 1); // 支持个人文集
 $section_nums = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9","A","B","C");
 $section_names = array(
     array("BBS 系统", "[站内]"),
