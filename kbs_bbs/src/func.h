@@ -265,6 +265,7 @@ void unlock_sem_check(int lockid);
     int load_boards(struct newpostdata *nbrd, char *boardprefix, int group, int pos, int len, bool sort, bool yank_flag, const char **input_namelist);
 #if USE_TMPFS==1
     void init_brc_cache(const char* userid,bool replace);
+    void free_brc_cache(char* userid);
 #endif
 
     void brc_clear_new_flag(unsigned fid);      /* 清除版面的到这篇文章未读标记 */

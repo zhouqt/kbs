@@ -528,6 +528,16 @@ void brc_addreaddirectly(char *userid, int bnum, unsigned int postid)
 }
 
 #if USE_TMPFS==1
+void free_brc_cache(char *userid){
+
+	if( strcmp( userid ,"guest") ){
+        if (brc_cache_entry)
+            munmap(brc_cache_entry,BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
+    }
+}
+#endif
+
+#if USE_TMPFS==1
 void init_brc_cache(const char* userid,bool replace) {
     if ((brc_cache_entry==NULL)||(replace)) {
         char dirfile[MAXPATH];
