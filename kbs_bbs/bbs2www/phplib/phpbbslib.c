@@ -2150,7 +2150,6 @@ static void bbs_make_favdir_zval(zval * value, char *col_name, struct newpostdat
 }
 
 
-unsigned int * zapbuf;
 /**
  * Fetch all boards which have given prefix into an array.
  * prototype:
@@ -2184,12 +2183,13 @@ static PHP_FUNCTION(bbs_getboards)
     int ac = ZEND_NUM_ARGS();
     int brdnum, yank, no_brc;
     int group;
-	int total;
+    int total;
+    int * zapbuf;    
 
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
 
-
+    zapbuf = getSession()->zapbuf;
 
     /*
      * getting arguments 
@@ -5262,7 +5262,7 @@ PHP_RINIT_FUNCTION(smth_bbs)
 #ifdef DEBUG
     zend_error(E_WARNING, "request init:%d %x", getpid(), getcurrentuinfo);
 #endif
-	zapbuf=NULL;
+	getSession()->zapbuf=NULL;
 	output_buffer=NULL;
 	output_buffer_size=0;
 	output_buffer_len=0;
