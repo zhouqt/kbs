@@ -611,16 +611,16 @@ char *msgid;
                 fclose(fp);
             }
             xfrom = strtok(buffer, " ");
-            if (strncmp(xfrom, FromTxt, 7) == 0) {
+            if (xfrom!=NULL && strncmp(xfrom, FromTxt, 7) == 0) {
                 xfrom = (char *) strtok(NULL, ",\r\n");
             } else {
                 xfrom = "\0";
             }
-            if (strcmp(HEADER[FROM_H], xfrom)
+            if (xfrom == NULL || (strcmp(HEADER[FROM_H], xfrom)
 #ifdef USE_NCM_PATCH
                 && !search_issuer(FROM)
 #endif
-                ) {
+	       )) {
                 innbbsdlog("Invalid cancel %s, path: %s!%s\n", FROM, MYBBSID, PATH);
                 return 0;
             }
