@@ -187,6 +187,7 @@ int fill_userlist()
 #endif
     } else {
         struct user_info* u;
+	u=get_utmpent(utmpent);
         for (i = 0; i < u->friendsnum; i++) {
             if (u->friends_uid[i])
                 apply_utmpuid((APPLY_UTMP_FUNC) full_utmp, u->friends_uid[i], (char *) &i2);

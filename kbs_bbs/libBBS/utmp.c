@@ -660,6 +660,12 @@ int get_utmpent_num(struct user_info *uent)
     return uent - utmpshm->uinfo + 1;
 }
 
+static int cmpfuid(struct friends *a, struct friends *b)
+{
+    return strncasecmp(a->id, b->id, IDLEN);
+}
+
+
 struct friends_info* topfriend;
 int getfriendstr(struct userec* user,struct user_info* puinfo)
 {
@@ -693,7 +699,7 @@ int getfriendstr(struct userec* user,struct user_info* puinfo)
     topfriend = (struct friends_info *) calloc(sizeof(struct friends_info), nf);
     for (i = 0; i < nf; i++) {
         puinfo->friends_uid[i] = searchuser(friendsdata[i].id);
-        strcpy(topfriend[i], friendsdata[i].exp);
+        strcpy(topfriend[i].exp, friendsdata[i].exp);
     }
     free(friendsdata);
     puinfo->friendsnum=nf;
