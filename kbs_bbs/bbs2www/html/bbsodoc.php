@@ -21,6 +21,8 @@
 		$usernum = $currentuser["index"];
 		if (bbs_checkreadperm($usernum, $brdnum) == 0)
 			html_error_quit("错误的讨论区");
+		bbs_set_onboard($brcnum,1);
+
 		$total = bbs_countarticles($brdnum, $dir_modes["ORIGIN"]);
 		if ($total <= 0)
 			html_error_quit("本讨论区目前没有文章");

@@ -111,6 +111,8 @@ function display_navigation_bar($brdarr, $short_filename, $num)
 				html_error_quit("╢МнС╣дндуб╨е.....");
 			}
 		}
+                bbs_set_onboard($brcnum,1);
+
 		$filename=bbs_get_board_filename($brdarr["NAME"], $short_filename);
 		$test_file = @fopen($filename,"r");
 		if(! $test_file ){

@@ -24,6 +24,7 @@
 		$total = bbs_countarticles($brdnum, $dir_modes["NORMAL"]);
 		if ($total <= 0)
 			html_error_quit("本讨论区目前没有文章");
+        	bbs_set_onboard($brdnum,1);
 		$artcnt = 20;
 		if (isset($_GET["page"]))
 			$page = $_GET["page"];
@@ -88,7 +89,7 @@
 		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
 <body>
-<center><p><?php echo BBS_FULL_NAME; ?> -- [讨论区: <?php echo $brdarr["NAME"]; ?>] 版主[<?php echo $bm_url; ?>] 文章数[<?php echo $total; ?>] <a href="/cgi-bin/bbs/bbsbrdadd?board=<?php echo $brdarr["NAME"]; ?>">预定本版</a></p>
+<center><p><?php echo BBS_FULL_NAME; ?> -- [讨论区: <?php echo $brdarr["NAME"]; ?>] 版主[<?php echo $bm_url; ?>] 文章数[<?php echo $total; ?>] 版内在线人数: <?php echo $brdarr["CURRENTUSERS"]+1; ?> <a href="/cgi-bin/bbs/bbsbrdadd?board=<?php echo $brdarr["NAME"]; ?>">预定本版</a></p>
 <a href="bbspst.php?board=<?php echo $brd_encode; ?>">发表文章</a>
 <a href="javascript:location=location">刷新</a>
 <?php

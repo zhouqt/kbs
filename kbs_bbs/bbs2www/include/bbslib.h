@@ -343,4 +343,6 @@ struct WWW_GUEST_TABLE {
     struct WWW_GUEST_S guest_entry[MAX_WWW_GUEST];
 };
 
+struct WWW_GUEST_S* www_get_guest_entry(int idx);
+
 #endif                          /* BBSLIB_H */

@@ -1,9 +1,10 @@
 <?php
+$setboard=0;
     require("funcs.php");
     if ($loginok != 1)
         html_nologin();
     else {
-        html_init("gb2312","","<meta http-equiv=\"Refresh\" content=\"300; url=/bbsguestfoot.php\">");
+        html_init("gb2312","","<meta http-equiv=\"Refresh\" content=\"3000; url=/bbsguestfoot.php\">");
 ?>
 <script language="JavaScript">
 <!--

@@ -1873,7 +1873,7 @@ static int www_new_guest_entry()
     return i * 32 + j;
 }
 
-static struct WWW_GUEST_S* www_get_guest_entry(int idx)
+struct WWW_GUEST_S* www_get_guest_entry(int idx)
 {
     return  &wwwguest_shm->guest_entry[idx];
 }

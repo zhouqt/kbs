@@ -452,5 +452,6 @@ if ((!isset($needlogin)||($needlogin!=0))&&($loginok!=1)&&($_SERVER["PHP_SELF"]!
 	return;
 }
 
+if (($loginok==1)&&(isset($setboard)&&($setboard==1))) bbs_set_onboard(0,0);
 } // !define ('_BBS_FUNCS_PHP_')
 ?>

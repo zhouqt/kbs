@@ -24,6 +24,8 @@
 		$total = bbs_countarticles($brdnum, $dir_modes["DIGEST"]);
 		if ($total <= 0)
 			html_error_quit("本讨论区目前没有文章");
+		bbs_set_onboard($brcnum,1);
+
 		if (isset($_GET["start"]))
 			$start = $_GET["start"];
 		elseif (isset($_POST["start"]))

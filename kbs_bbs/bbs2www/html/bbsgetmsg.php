@@ -3,6 +3,7 @@
 	 * This file lists articles to user.
 	 * $Id$
 	 */
+    $setboard=0;
     require("funcs.php");
     if ($loginok != 1)
 	html_nologin();

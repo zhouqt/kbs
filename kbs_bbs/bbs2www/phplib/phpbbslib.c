@@ -221,7 +221,7 @@ static void asssign_maillist(zval * array, char *boxname, char *pathname)
     add_assoc_string(array, "pathname", pathname, 1);
 }
 
-static void assign_board(zval * array, struct boardheader *board, int num)
+static void assign_board(zval * array, const struct boardheader *board, const struct BoardStatus* bstatus, int num)
 {
     add_assoc_long(array, "NUM", num);
     add_assoc_string(array, "NAME", board->filename, 1);
@@ -234,6 +234,8 @@ static void assign_board(zval * array, struct boardheader *board, int num)
     add_assoc_stringl(array, "CLASS", board->title + 1, 6, 1);
     add_assoc_stringl(array, "SECNUM", board->title, 1, 1);
     add_assoc_long(array, "LEVEL", board->level);
+    add_assoc_long(array, "CURRENTUSERS", bstatus->currentusers);
+    add_assoc_long(array, "TOTAL", bstatus->total);
 }
 
 static int currentusernum;
@@ -652,6 +654,7 @@ static PHP_FUNCTION(bbs_getboard)
     char *boardname;
     int boardname_len;
     const struct boardheader *bh;
+    const struct BoardStatus *bs;
     int b_num;
 
     if (ZEND_NUM_ARGS() == 1) {
@@ -671,10 +674,11 @@ static PHP_FUNCTION(bbs_getboard)
     if (b_num == 0)
         RETURN_LONG(0);
     bh = getboard(b_num);
+    bs = getbstatus(b_num);
     if (array) {
         if (array_init(array) != SUCCESS)
             WRONG_PARAM_COUNT;
-        assign_board(array, (struct boardheader *) bh, b_num);
+        assign_board(array, bh, bs, b_num);
     }
     RETURN_LONG(b_num);
 }
@@ -2703,6 +2707,7 @@ static PHP_FUNCTION(bbs_set_onboard)
     if (oldboard)
         board_setcurrentuser(oldboard, -1);
     
+    board_setcurrentuser(boardnum, count);
     if (!strcmp(currentuser->userid,"guest")) {
         if (count>0)
             guestinfo->currentboard = boardnum;
@@ -2715,5 +2720,6 @@ static PHP_FUNCTION(bbs_set_onboard)
         else
             currentuinfo->currentboard = 0;
     }
+    RETURN_TRUE;
 }
 
