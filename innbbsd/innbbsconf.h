@@ -202,7 +202,7 @@
 #endif
 
 #ifndef LANG
-#define LANG "BIG5"
+#define LANG "GB"
 #endif
 
 #endif
