@@ -559,7 +559,9 @@ int a_SeSave(char *path, char *key, struct fileheader *fileinfo, int nomsg, char
     char buf[256];
     bool findattach=false;
     struct fileheader savefileheader;
-
+    char userinfo[STRLEN],posttime[STRLEN];
+    char* t;
+		
     sprintf(filepath, "tmp/bm.%s", currentuser->userid);
     ans[0]='N';
     if (dashf(filepath)) {
@@ -580,14 +582,27 @@ int a_SeSave(char *path, char *key, struct fileheader *fileinfo, int nomsg, char
     outf = fopen(filepath, "w");
     if (*qfile != '\0' && (inf = fopen(qfile, "r")) != NULL) {
         fgets(buf, 256, inf);
-        fprintf(outf, "%s", buf);
-        fprintf(outf, "\n");
+	
+	t = strrchr(buf,')');
+	if (t) *(t+1)='\0';
+	memcpy(userinfo,buf+8,STRLEN);
+	fgets(buf, 256, inf);
+	fgets(buf, 256, inf);
+	t = strrchr(buf,')');
+	if (t) *(t+1)='\0';
+	t = strchr(buf,'(');
+	memcpy(posttime,t,STRLEN);
+										
+        fprintf(outf, "\033[0;1;32;40m☆───────────────────────────────☆\033[0;37;40m\n");
+        fprintf(outf, "    \033[0;1;32;40m %s \033[0;37;40m于 \033[0;1;36;40m %s \033[0;37;40m 提到:\n", userinfo,posttime);
+
+	fprintf(outf,"\n");	
         while (fgets(buf, 256, inf) != NULL)
             if (buf[0] == '\n')
                 break;
 
         while (fgets(buf, 256, inf) != NULL) {
-            if (strcmp(buf, "--\n") == 0)
+            if (strcmp(buf, "--\n") == 0 || strstr(buf, ") 的大作中提到"))
                 break;
             if (fileinfo->attachment&&
                 !memcmp(buf,ATTACHMENT_PAD,ATTACHMENT_SIZE)) {
