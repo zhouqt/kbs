@@ -217,7 +217,7 @@
 			mysql_query($query,$link);
 		}
 		
-		$query = "SELECT `nid` , `type` , `created` , `changed` , `emote` , `comment` , `commentcount` , `subject` , `visitcount`,`pid` ".
+		$query = "SELECT `nid` , `type` , `created` , `changed` , `emote` , `comment` , `commentcount` , `subject` , `visitcount`,`pid`,`htmltag` ".
 			" FROM nodes WHERE `access` = '3' AND `uid` = '".$pc["UID"]."' AND `pid` = '".$pid."' ";
 		switch($order)
 		{
@@ -313,7 +313,9 @@
 					echo "&nbsp;";
 				echo	"</td>\n<td class='t3'>".$type."</td>\n".
 					"<td class='t4'>".$c."</td>\n".
-					"<td class='t8'>&nbsp;<img src=\"icon/".$rows[emote].".gif\" border=\"0\" align=\"absmiddle\">\n<a href=\"".$url."\">".html_format($rows[subject])."</a></td>\n".
+					"<td class='t8'>";
+				echo   ($rows[htmltag])?"&nbsp;":"#";	
+				echo    "<img src=\"icon/".$rows[emote].".gif\" border=\"0\" align=\"absmiddle\">\n<a href=\"".$url."\">".html_format($rows[subject])."</a></td>\n".
 					"<td class='t4'>".time_format($rows[created])."|".time_format($rows[changed])."</td>\n".
 					"<td class='t3'>".$rows[visitcount]."</td>\n".
 					"<td class='t4'>".$rows[commentcount]."</td>\n".
