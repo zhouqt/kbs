@@ -111,7 +111,7 @@ void main()
                 memcpy(statlib+j, &temp, sizeof(struct statf));
             }
     fp=fopen("service/killer.1", "w");
-    fprintf(fp, "=============江湖杀手榜=============\n");
+    fprintf(fp, "===============江湖杀手榜===============\n");
     fprintf(fp, "%4s %-12s  %8s  %8s %6s\n", "名次", "杀手名", "命中次数", "出手次数", "绝杀率");
     j=0;
     for(i=0;i<MAXK;i++) {
@@ -131,7 +131,7 @@ void main()
                 memcpy(statlib+j, &temp, sizeof(struct statf));
             }
     fp=fopen("service/killer.2", "w");
-    fprintf(fp, "=============江湖捕快榜=============\n");
+    fprintf(fp, "===============江湖捕快榜===============\n");
     fprintf(fp, "%4s %-12s  %8s  %8s %6s\n", "名次", "捕快名", "命中次数", "出手次数", "神捕率");
     j=0;
     for(i=0;i<MAXK;i++) {
@@ -226,7 +226,7 @@ void main()
                 memcpy(statlib+j, &temp, sizeof(struct statf));
             }
     fp=fopen("service/killer.4", "w");
-    fprintf(fp, "===========今日江湖杀手榜===========\n");
+    fprintf(fp, "=============今日江湖杀手榜=============\n");
     fprintf(fp, "%4s %-12s  %8s  %8s %6s\n", "名次", "杀手名", "命中次数", "出手次数", "绝杀率");
     j=0;
     for(i=0;i<MAXK;i++) {
@@ -245,8 +245,8 @@ void main()
                 memcpy(statlib+i, statlib+j, sizeof(struct statf));
                 memcpy(statlib+j, &temp, sizeof(struct statf));
             }
-    fp=fopen("service/killer.2", "w");
-    fprintf(fp, "===========今日江湖捕快榜===========\n");
+    fp=fopen("service/killer.5", "w");
+    fprintf(fp, "=============今日江湖捕快榜=============\n");
     fprintf(fp, "%4s %-12s  %8s  %8s %6s\n", "名次", "捕快名", "命中次数", "出手次数", "神捕率");
     j=0;
     for(i=0;i<MAXK;i++) {
@@ -264,7 +264,7 @@ void main()
                 memcpy(statlib+i, statlib+j, sizeof(struct statf));
                 memcpy(statlib+j, &temp, sizeof(struct statf));
             }
-    fp=fopen("service/killer.3", "w");
+    fp=fopen("service/killer.6", "w");
     fprintf(fp, "===========今日江湖名人榜===========\n");
     fprintf(fp, "%4s %-12s  %8s  %8s\n", "名次", "尊姓大名", "累计积分", "名人等级");
     j=0;
