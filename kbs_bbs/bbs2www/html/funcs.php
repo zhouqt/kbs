@@ -168,6 +168,10 @@ history.go(-1);
 
 function error_nologin()
 {
+        setcookie("UTMPKEY","",time() - 3600,"");
+        setcookie("UTMPNUM","",time() - 3600,"");
+        setcookie("UTMPUSERID","",time() - 3600,"");
+        setcookie("LOGINTIME","",time() - 3600,"");
 ?>
 <SCRIPT language="javascript">
 window.location="/nologin.html";
@@ -252,6 +256,10 @@ function html_normal_quit()
 
 function html_nologin()
 {
+        setcookie("UTMPKEY","",time() - 3600,"");
+        setcookie("UTMPNUM","",time() - 3600,"");
+        setcookie("UTMPUSERID","",time() - 3600,"");
+        setcookie("LOGINTIME","",time() - 3600,"");
 ?>
 <html>
 <head></head>
