@@ -545,6 +545,9 @@ char *setbdir(int digestmode, char *buf, char *boardname)
     char dir[STRLEN];
 
     switch (digestmode) {
+	case DIR_MODE_WEB_THREAD:
+		strcpy(dir, ".WEBTHREAD");
+		break;
     case DIR_MODE_DIGEST:
         strcpy(dir, DIGEST_DIR);
         break;
