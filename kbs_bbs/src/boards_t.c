@@ -738,7 +738,8 @@ static int fav_key(struct _select_def *conf, int command)
         			return SHOW_REFRESH;
             	if (IsFavBoard(i - 1)) {
                 	move(2, 0);
-                	prints("已存在该讨论区.\n");
+                	prints("已存在该讨论区.");
+                        clrtoeol();
                 	pressreturn();
                 	return SHOW_REFRESH;
             	}
@@ -755,12 +756,14 @@ static int fav_key(struct _select_def *conf, int command)
                 	return SHOW_REFRESH;
             } else if (IsFavBoard(i - 1)) {
                 move(2, 0);
-                prints("已存在该讨论区.\n");
+                prints("已存在该讨论区.");
+                clrtoeol();
                 pressreturn();
                 return SHOW_REFRESH;
             } else {
                 move(2, 0);
-                prints("不正确的讨论区.\n");
+                prints("不正确的讨论区.");
+                clrtoeol();
                 pressreturn();
                 return SHOW_REFRESH;
             }

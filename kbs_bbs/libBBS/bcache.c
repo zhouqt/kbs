@@ -256,7 +256,8 @@ int delete_board(char *boardname, char *title)
     if (bid == 0) {
 #ifdef BBSMAIN
         move(2, 0);
-        prints("不正确的讨论区\n");
+        prints("不正确的讨论区");
+        clrtoeol();
         pressreturn();
         clear();
 #endif                          /* 

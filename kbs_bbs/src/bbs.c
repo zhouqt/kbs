@@ -1041,13 +1041,15 @@ int do_select(int ent, struct fileheader *fileinfo, char *direct)
     	return FULLUPDATE;
     if (stat(bpath, &st) == -1) { /* 判断board是否存在 */
         move(2, 0);
-        prints("不正确的讨论区.\n");
+        prints("不正确的讨论区.");
+        clrtoeol();
         pressreturn();
         return FULLUPDATE;
     }
     if (!(st.st_mode & S_IFDIR)) {
         move(2, 0);
-        prints("不正确的讨论区.\n");
+        prints("不正确的讨论区.");
+        clrtoeol();
         pressreturn();
         return FULLUPDATE;
     }
