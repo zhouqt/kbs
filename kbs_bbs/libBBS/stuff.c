@@ -1953,14 +1953,7 @@ int my_unlink(char *fname)
 {
 
 #ifndef MYUNLINK_BACKUPDIR
-    struct stat st;
-    if (stat(fname, &st))
-        return -1;
-
-    if (!S_ISDIR(st.st_mode))
-        return unlink(fname);
-
-    return rm_dir(fname);
+    return f_rm(fname);
 #else
 
 	char *buf;
