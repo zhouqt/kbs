@@ -157,7 +157,7 @@ static int do_select_internal(struct _select_def *conf, int key)
 {
     int ret = SHOW_CONTINUE;
 
-    if (!(conf->flag & LF_INITED)) {
+    if (!(conf->flag & LF_INITED)) { /*初始化工作*/
         if ((ret=check_valid(conf)) == SHOW_QUIT)
             return SHOW_QUIT;
         if (conf->init)
@@ -169,6 +169,8 @@ static int do_select_internal(struct _select_def *conf, int key)
             conf->flag |= LF_MULTIPAGE;
         if (refresh_select(conf) == SHOW_QUIT)
             return SHOW_QUIT;
+        if (conf->flag & LF_NUMSEL)
+            conf->tmpnum=0;
     }
     if (key == KEY_INIT)
         return SHOW_CONTINUE;
@@ -176,8 +178,21 @@ static int do_select_internal(struct _select_def *conf, int key)
     /*如果定义了预处理键,那么执行之*/
     if (conf->pre_key_command) {
     	ret=(*conf->pre_key_command)(conf,&key);
-    	if (ret!=SHOW_CONTINUE)
-    		return ret;
+    	if (ret!=SHOW_CONTINUE) {
+            conf->tmpnum=0;
+            return ret;
+    	}
+    }
+    if (conf->flag & LF_NUMSEL) { /*处理用数字跳转*/
+        if (key>='0' && key<='9')) {
+            conf->tmpnum=conf->tmpnum*10+key-'0';
+            return SHOW_CONTINUE;
+        }
+        conf->tmpnum = 0;
+        if ((key == '\r' || key == '\n') && (conf->tmpnum != 0)) {
+            /* 直接输入数字跳转*/
+            return select_change(conf,conf->tmpnum);
+        }
     }
 
     /* 查转换表*/

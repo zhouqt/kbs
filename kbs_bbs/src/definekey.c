@@ -2,7 +2,6 @@
 
 extern struct key_struct *keymem;
 extern int keymem_total;
-int tmpnum = 0;
 
 #define MAX_KEY_DEFINE 100
 
@@ -337,15 +336,6 @@ static int set_keydefine_show(struct _select_def *conf, int i)
 
 static int set_keydefine_prekey(struct _select_def *conf, int *key)
 {
-    if ((*key == '\r' || *key == '\n') && (tmpnum != 0)) {
-        conf->new_pos = tmpnum;
-        tmpnum = 0;
-        return SHOW_SELCHANGE;
-    }
-
-    if (!isdigit(*key))
-        tmpnum = 0;
-
     switch (*key) {
     case 'q':
         *key = KEY_LEFT;
@@ -370,10 +360,6 @@ static int set_keydefine_key(struct _select_def *conf, int key)
 {
     int oldmode;
 
-    if (key >= '0' && key <= '9') {
-        tmpnum = tmpnum * 10 + (key - '0');
-        return SHOW_CONTINUE;
-    }
     switch (key) {
     case KEY_TAB:
         ask_define();

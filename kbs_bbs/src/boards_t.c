@@ -269,7 +269,6 @@ struct favboard_proc_arg {
     struct newpostdata *nbrd;
     int favmode;
     int newflag;
-    int tmpnum;
     enum board_mode yank_flag;
     int father; /*保存父结点，如果是收藏夹，是fav_father,
     如果是版面目录，是group编号*/
@@ -475,15 +474,6 @@ static int fav_prekey(struct _select_def *conf, int *command)
         }
         return SHOW_REFRESH;
     }
-    if ((*command == '\r' || *command == '\n') && (arg->tmpnum != 0)) {
-        /* 直接输入数字跳转*/
-        conf->new_pos = arg->tmpnum;
-        arg->tmpnum = 0;
-        return SHOW_SELCHANGE;
-    }
-
-    if (!isdigit(*command))
-        arg->tmpnum = 0;
 
     if (!arg->loop_mode) {
         int y,x;
@@ -607,10 +597,6 @@ static int fav_key(struct _select_def *conf, int command)
     struct newpostdata *ptr;
 
     ptr = &arg->nbrd[conf->pos - conf->page_pos];
-    if (command >= '0' && command <= '9') {
-        arg->tmpnum = arg->tmpnum * 10 + (command - '0');
-        return SHOW_CONTINUE;
-    }
     switch (command) {
     case Ctrl('Z'):
         r_lastmsg();            /* Leeward 98.07.30 support msgX */
@@ -1136,7 +1122,6 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
     arg.namelist=NULL;
     while (1) {
         bzero((char *) &favboard_conf, sizeof(struct _select_def));
-        arg.tmpnum = 0;
         arg.father = favlist[favlevel];
         if (favmode) {
             arg.newflag = 1;
@@ -1155,7 +1140,7 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
 	arg.select_group =false;
 
         favboard_conf.item_per_page = BBS_PAGESIZE;
-        favboard_conf.flag = LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;     /*|LF_HILIGHTSEL;*/
+        favboard_conf.flag = LF_NUMSEL | LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;     /*|LF_HILIGHTSEL;*/
         favboard_conf.prompt = ">";
         favboard_conf.item_pos = pts;
         favboard_conf.arg = &arg;

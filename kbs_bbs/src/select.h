@@ -18,6 +18,7 @@
      */
 #define	LF_BELL			0x10    /*错误的时候响铃 */
 #define	LF_LOOP		0x20    /*循环的，就是最后一个按后到最前一个，最前一个按前到最后一个 */
+#define	LF_NUMSEL		0x40    /*用数字选择*/
 
 #define  LF_ACTIVE	0x10000 /*列表被激活标志 */
 #define  LF_INITED	0x20000 /*列表已经初始化完毕 */
@@ -60,6 +61,8 @@ struct _select_def {
     /*
      * 内部使用的变量 
      */
+    int tmpnum; /*用于定义了LF_NUMSEL的数字保存*/
+    
     int (*init) (struct _select_def * conf);    /*初始化 */
     int (*page_init) (struct _select_def * conf);       /*翻页初始化，此时pos位置已经被改变了 */
     int (*get_data) (struct _select_def * conf, int pos, int len);      /*获得pos位置,长度为len的数据 */

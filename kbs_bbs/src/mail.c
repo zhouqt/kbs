@@ -2737,7 +2737,6 @@ int set_mailbox_prop()
 }
 
 typedef struct {
-    int tmpnum;
     mailgroup_list_t *mgl;
     int entry;
     mailgroup_t *users;
@@ -2767,15 +2766,6 @@ static int set_mailgroup_prekey(struct _select_def *conf, int *key)
 {
     mailgroup_arg *arg = (mailgroup_arg *) conf->arg;
 
-    if ((*key == '\r' || *key == '\n') && (arg->tmpnum != 0)) {
-        conf->new_pos = arg->tmpnum;
-        arg->tmpnum = 0;
-        return SHOW_SELCHANGE;
-    }
-
-    if (!isdigit(*key))
-        arg->tmpnum = 0;
-
     switch (*key) {
     case 'e':
     case 'q':
@@ -2802,10 +2792,6 @@ static int set_mailgroup_key(struct _select_def *conf, int key)
     mailgroup_arg *arg = (mailgroup_arg *) conf->arg;
     int oldmode;
 
-    if (key >= '0' && key <= '9') {
-        arg->tmpnum = arg->tmpnum * 10 + (key - '0');
-        return SHOW_CONTINUE;
-    }
     switch (key) {
     case 'a':                  /* add new user */
         if (arg->mgl->groups[arg->entry].users_num < MAX_MAILGROUP_USERS) {
@@ -2978,7 +2964,6 @@ int set_mailgroup(mailgroup_list_t * mgl, int entry, mailgroup_t * users)
     arg.mgl = mgl;
     arg.entry = entry;
     arg.users = users;
-    arg.tmpnum = 0;
 
     bzero(&group_conf, sizeof(struct _select_def));
     group_conf.item_count = load_mailgroup(currentuser->userid, mgl->groups[entry].group_name, users, mgl->groups[entry].users_num);
@@ -3022,7 +3007,6 @@ int set_mailgroup(mailgroup_list_t * mgl, int entry, mailgroup_t * users)
 }
 
 typedef struct {
-    int tmpnum;
     mailgroup_list_t mail_group;
     mailgroup_t users[MAX_MAILGROUP_USERS];
 } mailgroup_list_arg;
@@ -3048,15 +3032,6 @@ static int set_mailgroup_list_show(struct _select_def *conf, int i)
 static int set_mailgroup_list_prekey(struct _select_def *conf, int *key)
 {
     mailgroup_list_arg *arg = (mailgroup_list_arg *) conf->arg;
-
-    if ((*key == '\r' || *key == '\n') && (arg->tmpnum != 0)) {
-        conf->new_pos = arg->tmpnum;
-        arg->tmpnum = 0;
-        return SHOW_SELCHANGE;
-    }
-
-    if (!isdigit(*key))
-        arg->tmpnum = 0;
 
     switch (*key) {
     case 'e':
@@ -3084,10 +3059,6 @@ static int set_mailgroup_list_key(struct _select_def *conf, int key)
     mailgroup_list_arg *arg = (mailgroup_list_arg *) conf->arg;
     int oldmode;
 
-    if (key >= '0' && key <= '9') {
-        arg->tmpnum = arg->tmpnum * 10 + (key - '0');
-        return SHOW_CONTINUE;
-    }
     switch (key) {
     case 'a':                  /* add new mailgroup */
         if (arg->mail_group.groups_num < MAX_MAILGROUP_NUM) {
@@ -3296,7 +3267,6 @@ int set_mailgroup_list()
         return -1;
     oldmode = uinfo.mode;
     modify_user_mode(MAIL);
-    arg->tmpnum = 0;
     pts = (POINT *) malloc(sizeof(POINT) * BBS_PAGESIZE);
     for (i = 0; i < BBS_PAGESIZE; i++) {
         pts[i].x = 2;
@@ -3312,7 +3282,7 @@ int set_mailgroup_list()
     /*
      * 加上 LF_VSCROLL 才能用 LEFT 键退出 
      */
-    grouplist_conf.flag = LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;
+    grouplist_conf.flag = LF_NUMSEL | LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;
     grouplist_conf.prompt = "◆";
     grouplist_conf.item_pos = pts;
     grouplist_conf.arg = arg;

@@ -96,7 +96,6 @@ char *s;
 
 typedef struct {
     bool save_mode;             /* in save mode,path need valid */
-    int tmpnum;
     bool show_path;
 } a_select_path_arg;
 
@@ -139,15 +138,6 @@ static int a_select_path_prekey(struct _select_def *conf, int *key)
 {
     a_select_path_arg *arg = (a_select_path_arg *) conf->arg;
 
-    if ((*key == '\r' || *key == '\n') && (arg->tmpnum != 0)) {
-        conf->new_pos = arg->tmpnum;
-        arg->tmpnum = 0;
-        return SHOW_SELCHANGE;
-    }
-
-    if (!isdigit(*key))
-        arg->tmpnum = 0;
-
     switch (*key) {
     case 'e':
     case 'q':
@@ -173,11 +163,6 @@ static int a_select_path_key(struct _select_def *conf, int key)
 {
     a_select_path_arg *arg = (a_select_path_arg *) conf->arg;
     int oldmode;
-
-    if (key >= '0' && key <= '9') {
-        arg->tmpnum = arg->tmpnum * 10 + (key - '0');
-        return SHOW_CONTINUE;
-    }
 
     switch (key) {
     case 'h':
@@ -312,7 +297,6 @@ static int a_select_path(bool save_mode)
     load_import_path(import_path,import_title,&import_path_time,&import_path_select);
     arg.save_mode = save_mode;
     arg.show_path = false;
-    arg.tmpnum = 0;
     pts = (POINT *) malloc(sizeof(POINT) * ANNPATH_NUM);
     for (i = 0; i < 20; i++) {
         pts[i].x = 2;
@@ -324,7 +308,7 @@ static int a_select_path(bool save_mode)
     /*
      * 加上 LF_VSCROLL 才能用 LEFT 键退出 
      */
-    pathlist_conf.flag = LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;
+    pathlist_conf.flag = LF_NUMSEL | LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;
     pathlist_conf.prompt = "◆";
     pathlist_conf.item_pos = pts;
     pathlist_conf.arg = &arg;
