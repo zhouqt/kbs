@@ -268,7 +268,7 @@ void refresh()
                 tc_mode|=SCREEN_BACK;
                 stack[stackt++]=7;
             }
-            if(tc_color%16!=bp[j].color[k]%16&&bp[j].data[k]!=' '&&bp[j].data[k]!=0) {
+            if(tc_color%16!=bp[j].color[k]%16&&(bp[j].data[k]!=' '&&bp[j].data[k]!=0||bp[j].mode[k]&SCREEN_LINE)) {
                 tc_color=tc_color/16*16+bp[j].color[k]%16;
                 if(DEFINE(currentuser, DEF_COLOR))
                     stack[stackt++]=30+bp[j].color[k]%16;

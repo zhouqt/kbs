@@ -712,7 +712,7 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
         return;
     }
     outns(ptr, len);
-    outns("\n", 1);
+//    outns("\n", 1);
 }
 
 static int mem_show(char *ptr, int size, int row, int numlines, char *fn)
