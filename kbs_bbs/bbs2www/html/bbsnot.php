@@ -28,17 +28,24 @@
                 if (cache_header("public",filemtime($top_file),300))
                 	return;
 		html_init("gb2312");
+		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
 <body>
-<center><?php echo $BBS_FULL_NAME; ?> -- 备忘录 [讨论区: <?php echo $board; ?>]<hr color=green>
+<center><?php echo $BBS_FULL_NAME; ?> -- 备忘录 [讨论区: <?php echo $brdarr["NAME"]; ?>]
+<hr class="default">
 <table border=1 width=610><tr><td>
 <?php
 	bbs_printansifile($top_file);
 ?></tr></td>
 </table>
-[<a href=bbsdoc.php?board=<?php echo $board; ?>>本讨论区</a>]<?
+[<a href=bbsdoc.php?board=<?php echo $brd_encode; ?>>本讨论区</a>]
+<?php
     if (bbs_is_bm($brdnum,$usernum))
-	echo "[<a href=bbsmnote.php?board=" . $board . ">编辑进版画面</a>]";
+	{
+?>
+[<a href="bbsmnote.php?board=<?php echo $brd_encode; ?>">编辑进版画面</a>]
+<?php
+	}
 ?> 
 </center>
 <?php
