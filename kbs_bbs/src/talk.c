@@ -403,18 +403,6 @@ t_cmpuids(int uid ,struct user_info *up )
     return (up->active && uid == up->uid) ;
 }
 
-int
-/*  modified by netty  */
-t_talk()
-{
-    int  netty_talk ;
-
-    refresh();
-    netty_talk = ttt_talk();
-    clear() ;
-    return (netty_talk);
-}
-
 struct _tag_talk_showstatus {
 	int count;
 	int pos[20];
@@ -435,8 +423,7 @@ int talk_showstatus(struct user_info * uentp,struct _tag_talk_showstatus* arg,in
 }
 
 int
-ttt_talk(userinfo)
-struct user_info *userinfo ;
+ttt_talk( struct user_info *userinfo )
 {
     char uident[STRLEN] ;
     char test[STRLEN];
@@ -446,7 +433,7 @@ struct user_info *userinfo ;
 
     move(1,0);
     clrtobot();
-    if(uinfo.mode!=LUSERS&&uinfo.mode!=FRIEND)
+    if(uinfo.mode!=LUSERS&&uinfo.mode!=FRIEND||userinfo==NULL)
     {
         move(2,0) ;
         prints("<输入使用者代号>\n") ;
@@ -698,6 +685,16 @@ list:		move(5,0) ;
         refresh();
     }
     return 0 ;
+}
+
+int t_talk()
+{
+    int  netty_talk ;
+
+    refresh();
+    netty_talk = ttt_talk(NULL);
+    clear() ;
+    return (netty_talk);
 }
 
 extern int talkrequest ;

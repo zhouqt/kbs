@@ -25,7 +25,7 @@ void redoscr();
 void initscr() ;
 void bell();
 void outc(unsigned char c);
-void outns(const unsigned char *str, int n);
+void outns(const char *str, int n);
 void getyx(int *y,int *x);
 void outs(register const char *str);
 void printdash(char* mesg);
@@ -33,6 +33,7 @@ void scroll();
 void rscroll();
 
 /* newio.c */
+int ask( char *prompt);
 void oflush();
 int getdata(int line, int col,char* prompt,char* buf,int  len,int  echo,int nouse,int clearlabel);
 void set_alarm(int set_timeout,void (*timeout_func)(void*),void* data);
@@ -67,7 +68,9 @@ void abort_bbs();
 int egetch();
 void update_endline();
 void set_numofsig();
+void docmdtitle( char    *title,char *prompt);
 /* bbs.c*/
+int check_readonly(char *checked);/* Leeward 98.03.28 */
 void record_exit_time();   /* 记录离线时间  Luzi 1998/10/23 */
 void shownotepad();
 int check_stuffmode();
@@ -115,6 +118,7 @@ int del_grp(char grp[STRLEN],char bname[STRLEN],char title[STRLEN]);
 int securityreport(char* str,struct userec* lookupuser,char fdata[7][STRLEN]);
 
 /* talk.c */
+int ttt_talk( struct user_info *userinfo );
 int servicepage(int     line,char    *mesg);
 int addtooverride(char* uident);
 int t_query(char q_id[IDLEN]);
@@ -146,6 +150,8 @@ int do_sendmsg(struct user_info *uentp,const char msgstr[256],int mode);
 /* list.c */
 int t_friends();
 int fill_userlist();
+int choose(int update,int defaultn,int (*title_show)(), int (*key_deal)(), int (*list_show)(),
+		int (*read)());
 
 /* edit.c */
 int Origin2(char text[256]);
@@ -194,5 +200,8 @@ int do_exec(char* com,char*wd);
 unsigned int setperms(unsigned int pbits,char *prompt,int numbers,int (*showfunc)(unsigned int ,int ,int));
 void  record_exit_time();
 
+/* announce.c */
+int add_grp( char group[STRLEN],char bname[STRLEN],char title[STRLEN],char gname[STRLEN]);
+int edit_grp( char bname[STRLEN],char grp[STRLEN],char title[STRLEN],char newtitle[100]);
 #endif
 

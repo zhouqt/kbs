@@ -772,14 +772,8 @@ t_users()
     return 0;
 }
 
-int
-choose(update,defaultn,title_show,key_deal,list_show,read)
-int update;
-int defaultn;
-int (*title_show)();
-int (*key_deal)();
-int (*list_show)();
-int (*read)();
+int choose(int update,int defaultn,int (*title_show)(), int (*key_deal)(), int (*list_show)(),
+  int (*read)())
 {
     int         ch, number,deal;
     readplan=NA;

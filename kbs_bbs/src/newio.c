@@ -39,12 +39,12 @@ extern int temp_numposts;
 
 void abort_bbs();
 
-unsigned char outbuffer[OBUFSIZE+1] ;
-unsigned char* outbuf=outbuffer+1;
+char outbuffer[OBUFSIZE+1] ;
+char* outbuf=outbuffer+1;
 int obufsize = 0 ;
 
-unsigned char inbuffer[IBUFSIZE+1] ;
-unsigned char* inbuf=inbuffer+1 ;
+char inbuffer[IBUFSIZE+1] ;
+char* inbuf=inbuffer+1 ;
 int ibufsize = 0 ;
 
 int icurrchar = 0 ;
@@ -205,9 +205,9 @@ unsigned char ch;
     return 0;
 }
 
-int filter_telnet(unsigned char* s,int* len)
+int filter_telnet(char* s,int* len)
 {
-    unsigned char* p1,*p2,*pend;
+    char* p1,*p2,*pend;
     int newlen;
     newlen=0;
     for (p1=s,p2=s,pend=s+(*len);p1!=pend;p1++) {
@@ -450,8 +450,7 @@ char    *prompt;
 }
 
 int
-ask( prompt )
-char *prompt;
+ask( char *prompt)
 {
     int         ch;
 

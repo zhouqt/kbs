@@ -43,6 +43,7 @@ struct textline *mark_begin, *mark_end;
 int    mark_on;
 /* copy/paste */
 static int Origin(struct textline* text);
+static int process_ESC_action(int action,int arg);
 
 void
 msgline()
@@ -459,7 +460,7 @@ register struct textline *line ;
         delete_line(line->next) ;
         return YEA ;
     } else {
-        register unsigned char *s ;
+        register char *s ;
         register struct textline *p = line->next ;
 
         s = p->data + p->len - ovfl -1 ;
@@ -491,7 +492,7 @@ insert_char(ch)
 register int ch ;
 {
     register int i ;
-    register unsigned char *s ;
+    register char *s ;
     register struct textline *p = currline ;
     int wordwrap = YEA ;
 
@@ -822,10 +823,10 @@ int saveheader ;
             if(p->next != NULL || p->data[0] != '\0')
                 if (abort[0] == 'f' || abort[0] == 'F')
                 { /* Leeward 98.07.27 支持自动换行 */
-                    unsigned char *ppt = p->data; /* 折行处 */
-                    unsigned char *pp  = ppt; /* 行首 */
+                    char *ppt = p->data; /* 折行处 */
+                    char *pp  = ppt; /* 行首 */
                     unsigned int  LLL = 78; /* 折行位置 */
-                    unsigned char *ppx, cc;
+                    char *ppx, cc;
                     int  ich, lll;
 
                     while (strlen(pp) > LLL) {
@@ -1206,9 +1207,7 @@ char   *msg;   /* message to return */
     strcpy(msg,"\0");
 }
 
-int
-process_ESC_action(action, arg)
-int     action, arg;
+static int process_ESC_action(int action,int arg)
 /* valid action are I/E/S/B/F/R/C */
 /* valid arg are    '0' - '7' */
 {

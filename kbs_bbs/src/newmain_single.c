@@ -1276,9 +1276,7 @@ char    *title, *mid;
 }
 
 
-void
-docmdtitle( title, prompt )
-char    *title, *prompt;
+void docmdtitle( char    *title,char *prompt)
 {
         char middoc[30];
     int chkmailflag=0;

@@ -38,5 +38,5 @@ struct screenline {
     unsigned char emod ;         /* end of modified data              */
     unsigned char sso ;          /* start stand out */
     unsigned char eso ;          /* end stand out */
-    unsigned char data[LINELEN] ;
+    char data[LINELEN] ;
 } ;

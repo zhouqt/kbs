@@ -1352,9 +1352,8 @@ char *path,*title,*fname;
     a_savenames(&pm);
 }
 
-int
-add_grp(group,gname,bname,title)  /* 精华区 加 目录 */
-char group[STRLEN],bname[STRLEN],title[STRLEN],gname[STRLEN];
+int add_grp( char group[STRLEN],char bname[STRLEN],char title[STRLEN],char gname[STRLEN])
+	/* 精华区 加 目录 */
 {
     FILE        *fn;
     char        buf[ PATHLEN ], *ptr;
@@ -1456,9 +1455,7 @@ char grp[STRLEN],bname[STRLEN],title[STRLEN];
     return 0;
 }
 
-int
-edit_grp(bname,grp,title,newtitle)
-char bname[STRLEN],grp[STRLEN],title[STRLEN],newtitle[100];
+int edit_grp( char bname[STRLEN],char grp[STRLEN],char title[STRLEN],char newtitle[100])
 {
     char        buf[ STRLEN ], *ptr,buf2[STRLEN],buf3[30];
     char        searchname[STRLEN];

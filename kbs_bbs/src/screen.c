@@ -483,13 +483,13 @@ outc(unsigned char c )
 
 void
 outns(str,n)
-const unsigned char *str ;
+const char *str ;
 int n ;
 {
     register int reg_col=0;
     register struct screenline *slp=NULL ;
     register int len=0;
-    unsigned char* begin_str=str;
+    char* begin_str=str;
     int begincol=0;
 
 #define DO_MODIFY { if (slp->smod > begincol) slp->smod=begincol; \
