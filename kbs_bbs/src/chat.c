@@ -345,7 +345,6 @@ int chatnum;
     int cmdpos, ch;
     int currchar;
     int newmail;
-    extern int dumb_term;
     int page_pending = NA;
     int chatting = YEA;
     FILE * fp;

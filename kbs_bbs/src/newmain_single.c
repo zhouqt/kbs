@@ -687,7 +687,7 @@ login_query()
 #else
         signal(SIGALRM, SIG_IGN);
 #endif
-    prints("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+    output("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",22);
     attempts=5;
     while(attempts) {
     getdata(0, 0, "Please input(login as) bbs or bb5 here ==>",passbuf,6, DOECHO, NULL,YEA);
@@ -834,7 +834,8 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
         if (!term_init("vt100"))
           prints("Even vt100 failed!\n");
     } 
-        sethomepath(tmpstr, currentuser.userid);
+    scrint = 1 ;
+    sethomepath(tmpstr, currentuser.userid);
     sprintf(fname,"%s/%s.deadve", tmpstr, currentuser.userid);
     if((fn=fopen(fname,"r"))!=NULL)
     {
@@ -1026,8 +1027,6 @@ user_login()
     log_usies( "ALLOC", genbuf );
 /*---	---*/
     started = 1 ;
-    initscr() ;
-    scrint = 1 ;
     if( USE_NOTEPAD == 1)
             notepad_init();
     if(strcmp(currentuser.userid,"guest")!=0 && USE_NOTEPAD == 1){
@@ -1210,6 +1209,8 @@ main_bbs(char *originhost, int convit,char* argv)
         exit( 0 );
     }
 #endif
+    initscr() ;
+
     load_sysconf();
 #if 0
     if( argc < 2 || ((*argv[1] != 'h' )&& ( *argv[1] != 'd') && ( *argv[1] != 'e') )) {

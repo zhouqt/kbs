@@ -41,8 +41,6 @@ int t_columns = 80 ;
 
 int automargins=1;
 
-int dumb_term = YEA;
-
 int get_tty()
 {
     return 1;
@@ -74,7 +72,6 @@ char* term;
     ibufsize=0;
     icurrchar = 0;
     BC=BCBuf;
-    dumb_term=0;
     strncpy(clearbuf,"\033[H\033[J",clearbuflen);
     strncpy(cleolbuf,"\033[K",cleolbuflen);
     strncpy(strtstandout,"\033[7m",strtstandoutlen);

@@ -36,12 +36,9 @@ extern int clearbuflen ;
 extern int cleolbuflen ;
 extern int strtstandoutlen ;
 extern int endstandoutlen ;
-#ifndef VEDITOR
-#endif
 extern int editansi;
 
 extern int automargins ;
-extern int dumb_term ;
 
 #define o_clear()     output(clearbuf,clearbuflen)
 #define o_cleol()     output(cleolbuf,cleolbuflen) 
@@ -121,9 +118,10 @@ int     slns, scols;
 void
 initscr()
 {
-    if(!dumb_term && !big_picture)
+    if( !big_picture)
         t_columns=WRAPMARGIN;
     init_screen(t_lines,WRAPMARGIN) ;
+    iscolor = YEA;
 }
 
 int tc_col, tc_line ;
@@ -189,8 +187,6 @@ redoscr()
     int ochar() ;
     register struct screenline *bp = big_picture ;
 
-    if(dumb_term)
-        return ;
     o_clear() ;
     tc_col = 0 ;
     tc_line = 0 ;
@@ -229,9 +225,11 @@ refresh()
     register int i,j ;
     register struct screenline *bp = big_picture ;
     extern int automargins ;
+    if (!scrint) {
+	oflush();
+	return;
+    }
 
-    if(dumb_term)
-        return ;
     if(num_in_buf() != 0)
         return ;
     if((docls) || (abs(scrollcnt) >= (scr_lns-3)) ) {
@@ -331,8 +329,6 @@ clear()
     register int i ;
     register struct screenline *slp;
 
-    if(dumb_term)
-        return ;
     roll = 0 ;
     docls = YEA ;
     downfrom = 0 ;
@@ -360,8 +356,6 @@ clrtoeol()
     register struct screenline *slp ;
     register int        ln;
 
-    if(dumb_term)
-        return ;
     standing = NA ;
     ln = cur_ln + roll;
     while( ln >= scr_lns )  ln -= scr_lns;
@@ -382,8 +376,6 @@ clrtobot()
     register struct screenline *slp ;
     register int        i, j;
 
-    if(dumb_term)
-        return ;
     for(i=cur_ln; i<scr_lns;i++) {
         j = i + roll;
         while( j >= scr_lns )  j -= scr_lns;
@@ -398,8 +390,6 @@ void
 clrstandout()
 {
     register int i ;
-    if(dumb_term)
-        return ;
     for(i=0;i<scr_lns;i++)
         big_picture[i].mode &= ~(STANDOUT) ;
 }
@@ -416,6 +406,11 @@ register unsigned char c ;
 #ifndef BIT8
     c &= 0x7f ;
 #endif
+    if (!scrint) {
+	if (c=='\n') ochar('\r');
+	ochar(c);
+	return;
+    }
     if(inansi==1)
     {
         if(c=='m')
@@ -495,36 +490,46 @@ void
 outs(str)
 register char *str ;
 {
-    outns(str,MAXLONG);
+    outns(str,4096);
 }
 
 void
 outns(str,n)
-register char *str ;
-register int n ;
+unsigned char *str ;
+int n ;
 {
-    register int reg_col;
+    register int reg_col=0;
     register struct screenline *slp ;
     register len=0;
-    char* begin_str=str;
-    int begincol;
-#define DO_CRLF { if (slp->smod > begincol) slp->smod=begincol; \
-                        if (slp->emod < reg_col) slp->emod=reg_col; \
-                        if(standing && slp->mode&STANDOUT) { \
-                            standing = NA ; \
-                            slp->eso = Max(slp->eso,reg_col) ; \
-                        slp->len=reg_col; \
+    unsigned char* begin_str=str;
+    int begincol=0;
+#define DO_MODIFY { if (slp->smod > begincol) slp->smod=begincol; \
+                    if (slp->emod < reg_col) slp->emod=reg_col; \
+                    if(standing && slp->mode&STANDOUT) { \
+                        standing = NA ; \
+                        slp->eso = Max(slp->eso,reg_col) ; \
+		    } \
+		    if(!(slp->mode & MODIFIED)) { \
+		    	slp->mode |= MODIFIED ; \
+		    } \
+	          }
+
+#define DO_CRLF   {	slp->len=reg_col; \
                         cur_col = 0 ; \
                         if(cur_ln < scr_lns) \
                             cur_ln++ ; \
-                      }
+			reg_col=begincol; \
+                  }
 
+    if (!scrint) {
+	for (;*begin_str&&(reg_col<n);reg_col++,begin_str++) outc(*begin_str);
+/*
+	if (n>strlen(str)) n=strlen(str);
+	output(str,n);
+*/
+	return;
+    };
     while ((str-begin_str<n)&&(*str != '\0')) {
-        if(cur_col > slp->len) {
-            register int i ;
-            for(i=slp->len;i<=cur_col;i++)
-                slp->data[i] = ' ' ;
-        }
         reg_col=cur_col;
         begincol=cur_col;
         {
@@ -533,7 +538,12 @@ register int n ;
             slp = &big_picture[ reg_line ] ;
         }
             
-        while(((str-begin_str<n)&&(*str != '\0')){
+        if(cur_col >= slp->len) {
+            register int i ;
+            for(i=slp->len;i<=cur_col;i++)
+                slp->data[i] = ' ' ;
+        }
+        while((str-begin_str<n)&&(*str != '\0')){
             if(*str==''&&!iscolor){
                 while(*str!='m')
                     str++;
@@ -541,20 +551,33 @@ register int n ;
                 continue;
             }
             else if (!isprint2(*str)) {
-                if (*(str-1)=='\n'||*(str-1)=='\r') {
+                if (*str=='\n'||*str=='\r') {
+		    DO_MODIFY;
                     DO_CRLF;
+		    str++;
                     break;
-                } else
-                    slp[reg_col++]='*';
+                } else {
+		    if (*str!='')
+                    slp->data[reg_col++]=(unsigned char)'*';
+		    else
+                    slp->data[reg_col++]=(unsigned char)'';
+		    str++;
+		}
             }
             else 
-                slp[reg_col++]=*(str++);
+                slp->data[reg_col++]=*(str++);
             if(reg_col >= scr_cols) {
+		DO_MODIFY;
                 DO_CRLF;
                 break;
             }
         } /* while (*str) */
     } /* while (1) */
+    if (slp&&(begincol!=reg_col)) {
+	if (slp->len<reg_col) slp->len=reg_col;
+	DO_MODIFY;
+	cur_col=reg_col;
+    }
 }
 
 
@@ -697,10 +720,6 @@ int     ch;
 void
 scroll()
 {
-    if(dumb_term) {
-        prints("\n") ;
-        return ;
-    }
     scrollcnt++ ;
     roll++;
     if( roll >= scr_lns )  roll -= scr_lns;
@@ -711,10 +730,6 @@ scroll()
 void
 rscroll()
 {
-    if(dumb_term) {
-        prints("\n\n") ;
-        return ;
-    }
     scrollcnt-- ;
     if( roll > 0 )  roll--;
     else  roll = scr_lns - 1;
@@ -728,7 +743,7 @@ standout()
     register struct screenline *slp ;
     register int        ln;
 
-    if(dumb_term  || !strtstandoutlen)
+    if( !strtstandoutlen)
         return ;
     if(!standing) {
         ln = cur_ln + roll;
@@ -747,7 +762,7 @@ standend()
     register struct screenline *slp ;
     register int        ln;
 
-    if(dumb_term || !strtstandoutlen)
+    if( !strtstandoutlen)
         return ;
     if(standing) {
         ln = cur_ln + roll;

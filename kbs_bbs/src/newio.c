@@ -35,7 +35,6 @@
 #define INPUT_ACTIVE 0
 #define INPUT_IDLE 1
 
-extern int dumb_term ;
 extern temp_numposts;
 
 void abort_bbs();
@@ -268,8 +267,7 @@ igetagain:
         if( sr<0 && errno!=EINTR ) abort_bbs();
         if( sr==0 ){
             if(flushf) (*flushf)() ;
-            if(dumb_term) oflush() ;
-            else refresh() ;
+            refresh() ;
 
             while(1){
                 hifd=1;
@@ -466,7 +464,7 @@ char    *prompt,        *buf;
     buf[curr]='\0';
     prints("%s", buf);
 
-    if (dumb_term||echo==NA)
+    if (!scrint||(echo==NA))
     {
         while ((ch = igetkey()) != '\r')
         {
