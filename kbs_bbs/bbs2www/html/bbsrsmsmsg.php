@@ -169,6 +169,8 @@ function doCount(){
 <option value="50"<?php if( $count==50 ) { ?> selected="selected"<?php } ?>>50</option>
 </select>¸ö
 
+</center>
+</body>
 <?php
 	}
 ?>
