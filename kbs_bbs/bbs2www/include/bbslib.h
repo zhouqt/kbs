@@ -46,16 +46,18 @@
 
 
 extern char seccode[SECNUM][5];
-extern int loginok;
 extern struct user_info *u_info;
-extern struct UTMPFILE *shm_utmp;
-extern struct UCACHE *shm_ucache;
 extern char fromhost[IPLEN + 1];
-extern friends_t fff[200];
 extern char parm_name[256][80], *parm_val[256];
 extern int parm_num;
-extern friends_t bbb[MAXREJECTS];
+/*
 extern int badnum;
+extern int loginok;
+extern struct UTMPFILE *shm_utmp;
+extern struct UCACHE *shm_ucache;
+extern friends_t fff[200];
+extern friends_t bbb[MAXREJECTS];
+*/
 
 struct post_log {
     char author[IDLEN + 1];
