@@ -248,22 +248,17 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 			html_init("gb2312","","",1);
 ?>
 <body>
-<table width="100%" border="0" cellspacing="0" cellpadding="3">
-<tr><td class="b2">
-    <a href="bbssec.php" class="b2"><?php echo BBS_FULL_NAME; ?></a>
-    -
-    <?php
-    	$sec_index = get_secname_index($brdarr["SECNUM"]);
-	if ($sec_index >= 0)
-	{
-    ?>
-	<a href="/bbsboa.php?group=<?php echo $sec_index; ?>" class="b2"><?php echo $section_names[$sec_index][0]; ?></a>
-    <?php
-	}
-    ?>
-    -
-    <?php echo $brdarr["NAME"]; ?>版
-</td></tr>
+<!-- 暂时这样改，比较 ugly  -->
+<script language="javascript">
+<?php
+                      $query_str = urlencode($_SERVER["PHP_SELF"] . "?" . $_SERVER["QUERY_STRING"]);
+                      $home_url = "/guest-frames.html?mainurl=" . $query_str;
+?>
+var strHomeURL = '<?php echo $home_url; ?>';
+var strBBSName = '<?php echo BBS_FULL_NAME; ?>';
+var strDesc = '<?php echo htmlspecialchars($brdarr["DESC"]); ?>';
+</script>
+<script language="javascript" src="bbscon.js"></script>
 <tr><td align="center" class="b4"><?php echo $brdarr["NAME"]; ?> 版</td></tr>
 <tr><td class="b1">
 <table width="100%" border="0" cellspacing="0" cellpadding="3" class="t1">
