@@ -32,12 +32,15 @@ function pc_apply_users($link,$type,$start,$pagesize,$userid="",$appname="")
 	return $newApp;
 }
 
-function pc_add_users($link,$userid,$corpusname,$manual,$blogtype="normal",$groupmanager="")
+function pc_add_users($link,$userid,$corpusname,$manual,$blogtype="",$groupmanager="")
 {
 	global $pcconfig , $currentuser , $bbsman_modes;
 	if(!$userid || !$corpusname)
 		return -1;
 	
+	if (!$blogtype)
+	    $blogtype = "normal";
+	    
 	if ($blogtype=="normal") {
     	$lookupuser=array ();
     	if(bbs_getuser($userid, $lookupuser) == 0 )
