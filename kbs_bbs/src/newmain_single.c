@@ -520,6 +520,14 @@ void login_query()
 #endif
 
     ansimore("etc/issue", false);
+
+#if 0 /* added by atppp for ZIXIA */
+// ws code to reset max_user. do not enable unless you know what you are doing.
+	setpublicshmreadonly(0);
+	get_publicshm()->max_user = 0;
+	setpublicshmreadonly(1);
+#endif
+	
 #ifndef NINE_BUILD
     prints("\033[1m欢迎光临 ◆\033[31m%s\033[37m◆ \033[36m上线人数 \033[1m%d[最高: %d](%d WWW GUEST)\033[m", BBS_FULL_NAME, curr_login_num + getwwwguestcount(), get_publicshm()->max_user,getwwwguestcount());
 #else
