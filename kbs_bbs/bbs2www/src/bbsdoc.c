@@ -82,7 +82,7 @@ int main() {
 	if(loginok) 
 		printf("<a href=\"bbsclear?board=%s&start=%d\">清除未读</a>\n", board, start);
 	fclose(fp);
-	printf("<form name=\"form1\" action=\"bbsdoc?board=%s\" method=\"post\">\n", board);
+	printf("<form name=\"form1\" action=\"bbsdoc?board=%s\" method=\"post\" onsubmit='this.start.value-=1'>\n", board);
 	printf("<input type=\"submit\" value=\"跳转到\"> 第 <input type=\"text\" name=\"start\" size=\"4\"> 篇");
 	printf("</form>\n");
 	http_quit();
