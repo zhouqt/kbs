@@ -1424,7 +1424,7 @@ char *logfile, *regfile;
             move(1, 0);
             prints("帐号位置     : %d   共有 %d 张注册单，当前为第 %d 张，还剩 %d 张\n", unum, total_num, count, sum - count + 1);    /*Haohmaru.2000.3.9.计算还有多少单子没处理 */
             count++;
-#ifdef AUTO_CHECK_REGISTER_FORM
+#if defined(AUTO_CHECK_REGISTER_FORM) || defined(ZIXIA)
             disply_userinfo(&uinfo, 2);
 #endif
 			
