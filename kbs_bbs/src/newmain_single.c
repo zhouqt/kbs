@@ -72,6 +72,8 @@ time_t login_start_time;
 int showansi = 1;
 
 static int i_domode = INPUT_ACTIVE;
+extern time_t calltime;
+extern char calltimememo[];
 
 extern char MsgDesUid[14];      /* ±£´æËù·¢msgµÄÄ¿µÄuid 1998.7.5 by dong */
 int canbemsged(uin)             /*Haohmaru.99.5.29 */
@@ -852,7 +854,6 @@ void main_bbs(int convit, char *argv)
     m_init();
     clear();
     load_key();
-	calc_calltime();
 
 #ifndef DEBUG
 #ifdef SSHBBS
@@ -874,6 +875,23 @@ void main_bbs(int convit, char *argv)
 		clear();
         prints("ÄãµÄĞÅ¼ş¸ß´ï %d ·â, ÇëÉ¾³ı¹ıÆÚĞÅ¼ş, Î¬³ÖÔÚ %d ·âÒÔÏÂ£¬·ñÔò½«²»ÄÜ·¢ĞÅ\n", currmail, nummail);
 		pressanykey();
+	}
+
+	calc_calltime();
+	while(calltime != 0 && calltime < time(0)){
+		clear();
+		move(1,0);
+		prints("ÄúÓĞÒ»¸öÄÖÁåÔÚ %s",ctime(&calltime));
+		move(3,0);
+		prints("ÌáÊ¾ĞÅÏ¢Îª:");
+		move(4,10);
+		calltimememo[39]='\0';
+		prints("[1;31m %s [m",calltimememo);
+		move(t_lines-1,0);
+		prints("                          press any key to continue...");
+		refresh();
+		calc_calltime();
+		igetch();
 	}
 
     if (HAS_PERM(currentuser, PERM_SYSOP) && dashf("new_register"))
