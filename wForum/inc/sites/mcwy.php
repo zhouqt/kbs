@@ -19,7 +19,7 @@ $user_define1 = array(
 /* 网站基本配置 */
 $SiteURL = "http://bbs.stanford.edu/wForum/";
 $SiteName = "牧场物语";
-$Banner = "/mcwy/bm3_08.jpg";
+$Banner = "/mcwy/bm3_08.jpg' height='60";
 define("MAINTITLE", "本站 wForum 永远可能处于调试状态。请小心使用<img src=\"emot/em17.gif\" border=\"0\"/>");
 define("OLD_REPLY_STYLE", true);
 define("ENABLE_UBB", true);
@@ -30,8 +30,8 @@ define("SERVERTIMEZONE", "美西时间");
 define("TREEVIEW_MAXITEM", 201);
 
 /* 附件相关 */
-define("ATTACHMAXSIZE", "8388608");
-define("ATTACHMAXTOTALSIZE", "8388608");
+define("ATTACHMAXSIZE", "10485760");
+define("ATTACHMAXTOTALSIZE", "10485760");
 define("ATTACHMAXCOUNT", "20");
 
 /* 自定义头像相关 */
