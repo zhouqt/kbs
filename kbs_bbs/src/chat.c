@@ -51,7 +51,7 @@ extern void t_pager();
 #define b_lines         (t_lines-1)
 #define screen_lines    (t_lines-4)
 int chat_cmd(chatcontext * pthis, char *buf);
-void set_rec();
+static void set_rec(chatcontext * pthis, const char *arg);
 
 #define CHAT_LOGIN_OK       "OK"
 #define CHAT_LOGIN_EXISTS   "EX"
@@ -678,7 +678,7 @@ static int ent_chat(int chatnum)
         if (ch == Ctrl('C') /*|| ch == Ctrl('D') */ ) { /* ^C ÍË³ö */
             chat_send(pthis, "/b");
             if (pthis->rec)
-                set_rec();
+                set_rec(pthis,NULL);
             break;
         }
     }
