@@ -862,6 +862,8 @@ int chat_status(struct user_info *uentp, chatcontext * pthis)
     char tmpstr[31];
     char *lpTmp;
 
+    if (strlen(genbuf)>t_columns) 
+    	return QUIT;
     if (uentp->invisible == 1) {
         if (HAS_PERM(currentuser, PERM_SEECLOAK)) {
             sprintf(genbuf + strlen(genbuf), "\x1b[32m#\x1b[m");
