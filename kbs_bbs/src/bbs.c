@@ -4477,15 +4477,19 @@ static int tmpl_key(struct _select_def *conf, int key)
 		{
 			char filepath[STRLEN];
 
-    		setbfile(filepath, currboard->filename, "");
-    		if ( GET_POSTFILENAME(ptemplate[conf->pos-1].tmpl->filename, filepath) != 0) {
-				clear();
-				move(3,0);
-				prints("创建模板文件失败!");
-				pressanykey();
-				return SHOW_REFRESH;
+			if( ptemplate[conf->pos-1].tmpl->filename[0] == '\0' ){
+
+	    		setbfile(filepath, currboard->filename, "");
+   	 			if ( GET_POSTFILENAME(ptemplate[conf->pos-1].tmpl->filename, filepath) != 0) {
+					clear();
+					move(3,0);
+					prints("创建模板文件失败!");
+					pressanykey();
+					return SHOW_REFRESH;
+				}
+				tmpl_save();
 			}
-			tmpl_save();
+
 			setbfile(filepath, currboard->filename, ptemplate[conf->pos-1].tmpl->filename);
 
 			vedit(filepath,0,NULL,NULL);
