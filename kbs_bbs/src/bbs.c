@@ -431,7 +431,7 @@ void readtitle()
 					end=1;
     				*p2=0;
     				if (apply_utmp(NULL,1,p1,NULL)) {
-    					sprintf(genbuf,"\x1b[1;32m%s\x1b[0;33m ",p1);
+    					sprintf(genbuf,"\x1b[1;32m%s\x1b[0;44;33m ",p1);
     					strcat(header,genbuf);
     				} else {
     					strcat(header,p1);
