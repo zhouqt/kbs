@@ -853,17 +853,18 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     move(t_lines - 1, 0);
     if (haspostperm(currentuser, currboard->filename)) {  /* ╦Ы╬щйг╥ЯспPOSTх╗ отй╬вНобр╩пп */
         if (DEFINE(currentuser, DEF_HIGHCOLOR))
-            prints("[44m[1;31m[тд╤андуб] [33m ╩ьпе R ╘╕ ╫АйЬ Q,║Ш ╘╕иор╩╥Б ║Э╘╕обр╩╥Б <Space>,║Щ╘╕жВлБтд╤а ^X╩Рp [m");
+            prints("[44m[1;31m[тд╤андуб] [33m ╩ьпе R ╘╕ ╫АйЬ Q,║Ш ╘╕иор╩╥Б ║Э╘╕обр╩╥Б <Space>,║Щ╘╕жВлБтд╤а ^X╩Рp ");
         else
-            prints("[44m[31m[тд╤андуб] [33m ╩ьпе R ╘╕ ╫АйЬ Q,║Ш ╘╕иор╩╥Б ║Э╘╕обр╩╥Б <Space>,║Щ╘╕жВлБтд╤а ^X╩Рp [m");
+            prints("[44m[31m[тд╤андуб] [33m ╩ьпе R ╘╕ ╫АйЬ Q,║Ш ╘╕иор╩╥Б ║Э╘╕обр╩╥Б <Space>,║Щ╘╕жВлБтд╤а ^X╩Рp ");
     } else {
         if (DEFINE(currentuser, DEF_HIGHCOLOR))
-            prints("[44m[31m[тд╤андуб]  [33m╫АйЬ Q,║Ш ╘╕иор╩╥Б ║Э╘╕обр╩╥Б <Space>,<Enter>,║Щ╘╕жВлБтд╤а ^X ╩Р p [m");
+            prints("[44m[31m[тд╤андуб]  [33m╫АйЬ Q,║Ш ╘╕иор╩╥Б ║Э╘╕обр╩╥Б <Space>,<Enter>,║Щ╘╕жВлБтд╤а ^X ╩Р p ");
         else
-            prints("[44m[1;31m[тд╤андуб]  [33m╫АйЬ Q,║Ш ╘╕иор╩╥Б ║Э╘╕обр╩╥Б <Space>,<Enter>,║Щ╘╕жВлБтд╤а ^X ╩Р p [m");
+            prints("[44m[1;31m[тд╤андуб]  [33m╫АйЬ Q,║Ш ╘╕иор╩╥Б ║Э╘╕обр╩╥Б <Space>,<Enter>,║Щ╘╕жВлБтд╤а ^X ╩Р p ");
     }
 
     clrtoeol();                 /* гЕфа╣╫ппн╡ */
+    resetcolor();
     if (!strncmp(fileinfo->title, "Re:", 3)) {
         strncpy(ReplyPost, fileinfo->title,STRLEN);
         for (cou = 0; cou < STRLEN; cou++)
