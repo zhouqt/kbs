@@ -19,3 +19,17 @@
   我们没有做文件存在检查，所以对make install没有做
 对bbshome的拷贝。在一开始安装的时候手动考一次bbshome
 下的文件到你的bbs目录下吧。
+
+3.刚安装完毕，new新版的时候断线
+
+  这个是1.0.1版以前的bug，解决办法
+将bcache.c里面的
+            ftruncate(boardfd, MAXBOARD * sizeof(struct boardheader));
+这一行，移动到上面几行。
+            exit(-1);
+        }
+        /*加到这里*/
+        ftruncate(boardfd, MAXBOARD * sizeof(struct boardheader));
+        /* end */
+        close(boardfd);
+这是个bug
