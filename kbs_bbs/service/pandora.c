@@ -1,11 +1,9 @@
-// NJU tinybbsnet, Preview Version, zhch@dii.nju.edu.cn, 2000.3.23 //
-/*bbsnet.c*/
 // NJU bbsnet, preview version, zhch@dii.nju.edu.cn, 2000.3.23 //
 // HIT bbsnet, Changed by Sunner, sun@bbs.hit.edu.cn, 2000.6.11
 // zixia bbsnet, Changed by zdh, dh_zheng@hotmail.com,2001.12.04
 // zixia bbsnet, Changed by zixia, zixia@zixia.net, 2002.12.25
 // zixia pandora, Changed by zixia, zixia@zixia.net, 2003.1.25
-//
+// zixia pandora, Change by roy, roy@zixia.net 2003.6.08
 #include "bbs.h"
 #include "select.h"
 #include "tcplib.h"
@@ -14,16 +12,17 @@
 #define TIME_OUT	15
 #define MAX_PROCESS_BAR_LEN 30
 #define BBSNET_LOG_BOARD "bbsnet"
+#define DATAFILE BBSHOME "/etc/pandora.ini"
+#define MAXSTATION  100
 
-#define MAXSTATION  26*2
-#define MAXSECTION 14
 
-char sectiontitle[MAXSECTION][9];
+char host1[MAXSTATION][19], host2[MAXSTATION][40], ip[MAXSTATION][40];
+int port[MAXSTATION]; 
 
-int sectionindex;
-int sectioncount;
-
+char str[]= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+char ip_zdh[40]; 
 char user[21];
+int sockfd;
 jmp_buf jb;
 
 extern char fromhost[];
@@ -31,48 +30,27 @@ extern struct userec *currentuser;
 extern int msg_count;
 extern struct user_info uinfo;
 extern int utmpent;
+
+struct _select_def bbsnet_conf;
+
+locate(int n)
+{
+    int x, y;
+    char buf[20];
+
+    if (n >= bbsnet_conf.item_count)
+        return;
+    y = n % 19+1 ;
+    x = n / 19 * 24 + 3;
 	
-// ±ÿ–Î”√∂‡œﬂ≥Ã≤≈ƒ‹ µœ÷Ω¯∂»Ãı¡À£¨sigh
-// UPDATE: ≤ª–Ë“™∂‡œﬂ≥Ã£¨by flyriver, 2002.8.10
-void bbsnet_timeout(int signo)
-{
-	longjmp(jb, signo);
-}
+	move(y, x);
+}	
 
-static void process_bar(int n, int len)
-{
-	char buf[256];
-	char buf2[256];
-	char *ptr;
-	char *ptr2;
-	char *ptr3;
-
-	move(4, 0);
-	prints("©∞©§©§©§©§©§©§©§©§©§©§©§©§©§©§©§©¥\n");
-	sprintf(buf2, "            %3d%%              ", n * 100 / len);
-	ptr = buf;
-	ptr2 = buf2;
-	ptr3 = buf + n;
-	while (ptr != ptr3)
-		*ptr++ = *ptr2++;
-	*ptr++ = '\x1b';
-	*ptr++ = '[';
-	*ptr++ = '4';
-	*ptr++ = '4';
-	*ptr++ = 'm';
-	while (*ptr2 != '\0')
-		*ptr++ = *ptr2++;
-	*ptr++ = '\0';
-	prints("©¶[46m%s[m©¶\n", buf);
-	prints("©∏©§©§©§©§©§©§©§©§©§©§©§©§©§©§©§©º\n");
-	redoscr();
-}
-
-static time_t last_refresh;
 // added by flyriver, 2001.3.2
 // ¥©ÀÛ»’º«
 // mode == 0, ø™ º¥©ÀÛ
 //         1, Ω· ¯¥©ÀÛ
+
 int bbsnet_report(char *station, char *addr, long id, int mode)
 {
 	struct fileheader fh;
@@ -133,223 +111,158 @@ int bbsnet_report(char *station, char *addr, long id, int mode)
 }
 
 
-#include <stdio.h>
-#include <termios.h>
-#include <string.h>
-#include <time.h>
 
-#include <sys/stat.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <string.h>
-#include <fcntl.h>
-#include <signal.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <arpa/telnet.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/time.h>
-#include <sys/select.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <termios.h>
-#include <math.h>
-#include <sys/file.h>
+static bool bbsnet_redraw=true;
 
-#define BBSHOME "/bbs"
-
-char host1[100][40], host2[100][40], ip[100][40];
-char ip_zdh[40];                //”√¿¥Ω” ‹”√ªßµƒip
-static char buf[100];           // output buffer
-int port[100], counts = 0;
-char str[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
-
-char datafile[80] = BBSHOME "/etc/pandora.ini";
-char userid[80] = "unknown";
-
-init_data()
+// from Maple-hightman
+// added by flyriver, 2001.3.3
+int telnetopt(int fd, char* buf, int max)
 {
-    FILE *fp;
-    char t[256], *t1, *t2, *t3, *t4;
-
-    fp = fopen(datafile, "r");
-    if (fp == NULL)
-        return;
-    while (fgets(t, 255, fp) && counts <= 72) {
-        t1 = strtok(t, " \t");
-        t2 = strtok(NULL, " \t\n");
-        t3 = strtok(NULL, " \t\n");
-        t4 = strtok(NULL, " \t\n");
-        if (t1[0] == '#' || t1 == NULL || t2 == NULL || t3 == NULL)
-            continue;
-        strncpy(host1[counts], t1, 16);
-        strncpy(host2[counts], t2, 36);
-        strncpy(ip[counts], t3, 36);
-        port[counts] = t4 ? atoi(t4) : 23;
-        counts++;
-    }
-    fclose(fp);
+	unsigned char c,d,e;
+	int pp=0;
+	unsigned char tmp[30];
+	while(pp<max)
+	{
+		c=buf[pp++];
+		if(c==255)
+		{
+			d=buf[pp++];
+			e=buf[pp++];
+			oflush();
+			if((d==253)&&(e==3||e==24))
+			{
+				tmp[0]=255;
+				tmp[1]=251;
+				tmp[2]=e;
+				write(fd,tmp,3);
+				continue;
+			}
+			if((d==251||d==252)&&(e==1||e==3||e==24))
+			{
+				tmp[0]=255;
+				tmp[1]=253;
+				tmp[2]=e;
+				write(fd,tmp,3);
+				continue;
+			}
+			if(d==251||d==252)
+			{
+				tmp[0]=255;
+				tmp[1]=254;
+				tmp[2]=e;
+				write(fd,tmp,3);
+				continue;
+			}
+			if(d==253||d==254)
+			{
+				tmp[0]=255;
+				tmp[1]=252;
+				tmp[2]=e;
+				write(fd,tmp,3);
+				continue;
+			}
+			if(d==250)
+			{
+				while(e!=240&&pp<max)
+					e=buf[pp++];
+				tmp[0]=255;
+				tmp[1]=250;
+				tmp[2]=24;
+				tmp[3]=0;
+				tmp[4]=65;
+				tmp[5]=78;
+				tmp[6]=83;
+				tmp[7]=73;
+				tmp[8]=255;
+				tmp[9]=240;
+				write(fd,tmp,10);
+			}
+		}
+		else
+		ochar(c);
+	}
+    oflush();
+	return 0;
 }
 
-sh(int n)
+// ±ÿ–Î”√∂‡œﬂ≥Ã≤≈ƒ‹ µœ÷Ω¯∂»Ãı¡À£¨sigh
+// UPDATE: ≤ª–Ë“™∂‡œﬂ≥Ã£¨by flyriver, 2002.8.10
+void bbsnet_timeout(int signo)
 {
-    static oldn = -1;
-
-    if (n >= counts)
-        return;
-    if (oldn >= 0) {
-        locate(oldn);
-        printf("[1;32m %c.[m%s", str[oldn], host2[oldn]);
-        //prints("[1;32m %c.[m%s", str[oldn], host2[oldn]);
-    }
-    oldn = n;
-    if (strcmp(host2[n], "∞„»Ù≤®¡_√‹") == 0) {  //≈–∂œ◊‘∂®“Â’æµ„
-        printf("[22;3H[1;37m π”√∑Ω∑®: ªÿ≥µ∫Û ‰»Îip[:port]°£[1;33m[22;32H[1;37m ’æ√˚: [1;33m◊‘∂®“Â’æµ„              \r\n");
-        printf("[1;37m[23;3H¡¨Õ˘: [1;33m__________________           [21;1H");
-		/*
-		move( 22,3 );
-        prints("[1;37m π”√∑Ω∑®: ∞¥ªÿ≥µ∫Û ‰»Îip°£[1;33m");
-		move (22,32);
-		prints ("[1;37m ’æ√˚: [1;33m◊‘∂®“Â’æµ„              ");
-		move(23,3);
-        prints("[1;37m¡¨Õ˘: [1;33m__________                   ");
-		move(21,1);
-		*/
-    } else {
-		/*
-		move( 22,3 );
-        prints("[1;37mµ•Œª: [1;33m%s                   ");
-		move(22,32);
-		prints ("[1;37m ’æ√˚: [1;33m%s              ", host1[n], host2[n]);
-		move ( 23,3 );
-        prints("[1;37m¡¨Õ˘: [1;33m%s                   ", ip[n]);
-		move ( 21,1 );
-		*/
-        printf("[22;3H[1;37mµ•Œª: [1;33m%s                   [22;32H[1;37m ’æ√˚: [1;33m%s              \r\n", host1[n], host2[n]);
-        printf("[1;37m[23;3H¡¨Õ˘: [1;33m%s                   [21;1H", ip[n]);
-    }
-    locate(n);
-    printf("[%c][1;42m%s[m", str[n], host2[n]);
+	longjmp(jb, signo);
 }
 
-show_all()
+static void process_bar(int n, int len)
 {
-    int n;
+	char buf[256];
+	char buf2[256];
+	char *ptr;
+	char *ptr2;
+	char *ptr3;
 
-    printf("[1H[2J[m");
-    printf("©≥©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•[1;35m ‘¬  π‚  ±¶  ∫– [m©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©∑\r\n");
-    for (n = 1; n < 22; n++)
-        printf("©ß                                                                            ©ß\r\n");
-    printf("©ß                                                               [1;36m∞¥[1;33mCtrl+C[1;36mÕÀ≥ˆ[m ©ß\r\n");
-    printf("©ª©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©ø");
-    printf("[21;3H©§©§©§[1;36m∞„»Ù≤®¡_√‹[m©§©§©§©§©§©§©§[1;36m∞„-»Ù-≤®-¡_-√€~~[m©§©§©§©§©§©§©§[1;36m∞„»Ù≤®¡_√‹[m©§©§©§");
-    //printf("[21;3H[1;36m∞„»Ù≤®¡_√‹∞„»Ù≤®¡_√‹∞„»Ù≤®¡_√‹∞„»Ù≤®¡_√‹∞„»Ù≤®¡_√‹∞„»Ù≤®¡_√‹∞„»Ù≤®¡_√‹∞„»Ù≤®[m");
-
-    for (n = 0; n < counts; n++) {
-        locate(n);
-        printf("[1;32m %c.[m%s", str[n], host2[n]);
-    }
+	move(4, 0);
+	prints("©∞©§©§©§©§©§©§©§©§©§©§©§©§©§©§©§©¥\n");
+	sprintf(buf2, "            %3d%%              ", n * 100 / len);
+	ptr = buf;
+	ptr2 = buf2;
+	ptr3 = buf + n;
+	while (ptr != ptr3)
+		*ptr++ = *ptr2++;
+	*ptr++ = '\x1b';
+	*ptr++ = '[';
+	*ptr++ = '4';
+	*ptr++ = '4';
+	*ptr++ = 'm';
+	while (*ptr2 != '\0')
+		*ptr++ = *ptr2++;
+	*ptr++ = '\0';
+	prints("©¶[46m%s[m©¶\n", buf);
+	prints("©∏©§©§©§©§©§©§©§©§©§©§©§©§©§©§©§©º\n");
+	redoscr();
 }
 
-locate(int n)
+static time_t last_refresh;
+
+static int 
+bbsnet_read(int fd, char *buf, int len)
 {
-    int x, y;
-    char buf[20];
+	int rc;
+	time_t now;
 
-    if (n >= counts)
-        return;
-    y = n % 19 + 2;
-    x = n / 19 * 24 + 4;
-
-    sprintf(buf, "[%d;%dH", y, x);
-    printf(buf);
-}
-
-int getch()
-{
-    int c, d, e;
-    static lastc = 0;
-
-    c = getchar();
-    if (c == 10 && lastc == 13)
-        c = getchar();
-    lastc = c;
-    if (c != 27)
-        return c;
-    d = getchar();
-    e = getchar();
-    if (d == 27)
-        return 27;
-    if (e == 'A')
-        return 257;
-    if (e == 'B')
-        return 258;
-    if (e == 'C')
-        return 259;
-    if (e == 'D')
-        return 260;
-
-    return 0;
+	rc = raw_read(fd, buf, len);
+	if (rc > 0)
+	{
+		now = time(NULL);
+		if (now - last_refresh > 60)
+		{
+			uinfo.freshtime = now;
+			UPDATE_UTMP(freshtime, uinfo);
+			last_refresh = now;
+		}
+	}
+	return rc;
 }
 
 
-/*
-void QuitTime()
+int bbsnet(int n)
 {
-    reset_tty();
-    exit(0);
-}
+	time_t now;
+	struct hostent *pHost = NULL;
+	struct sockaddr_in remote;
+	unsigned char buf[BUFSIZ];
+	int rc;
+	int rv;
+	int maxfdp1;
+	fd_set readset;
+	struct timeval tv;
+	int tos = 020; /* Low delay bit */
+	int i;
+	sig_t oldsig;
+	int ret;
 
-void SetQuitTime()
-{
-    signal(SIGALRM, QuitTime);
-    alarm(60);
-}
-*/
-
-main_loop()
-{
-    int p = 0;
-    int c, n;
-
-  L:
-    show_all();
-    sh(p);
-    fflush(stdout);
-    while (1) {
-        c = getch();
-        if (c == 3 || c == 4 || c == 27 || c < 0)
-            break;
-        if (c == 257 && p > 0)
-            p--;
-        if (c == 258 && p < counts - 1)
-            p++;
-        if (c == 259 && p < counts - 19)
-            p += 19;
-        if (c == 260 && p >= 19)
-            p -= 19;
-        if (c == 13 || c == 10) {
-            bbsnet(p);
-            goto L;
-        }
-        for (n = 0; n < counts; n++)
-            if (str[n] == c)
-                p = n;
-        sh(p);
-        fflush(stdout);
-    }
-}
-
-bbsnet(int n)
-{
     char buf1[40], buf2[39], c, buf3[2];        //‘ˆº”µƒ±‰¡ø
-    int i;                      //    
     int l;                      //≈–∂œ «≤ª «port
     int j, m;
-
-    if (n >= counts)
-        return;
 
     if (strcmp(host2[n], "∞„»Ù≤®¡_√‹") == 0) {  //»Áπ˚ «◊‘∂®“Â’æµ„£¨µ»¥˝ ‰»ÎipªÚ”Ú√˚
 
@@ -357,12 +270,13 @@ bbsnet(int n)
             buf1[i] = '\0';
             buf2[i] = '\0';
         }
-        prints("[23;3H[1;32m¡¨Õ˘: [m");
+		move(22,2);
+        prints("[1;32m¡¨Õ˘: [m");
         refresh();
         j = 0;
         l = 0;
         for (i = 0; i < 30; i++) {
-            c = getch();
+            c = igetch();
             if (c == ' ' || c == '\015' || c == '\0' || c == '\n')
                 break;
             if (c == ':') {
@@ -411,120 +325,47 @@ bbsnet(int n)
     }
 
 
+	now = time(NULL);
 	clear();
-   // printf("[1H[2J[1;32mo ¡¨Õ˘: %s (%s)\r\n", host2[n], ip[n]);
-	move( 0, 0 );
-    prints("[1;32mo ¡¨Õ˘: %s (%s)", host2[n], ip[n]);
-	move( 1, 0 );
-    //printf("%s\r\n\r\n[m", "o ¡¨≤ª…œ ±«Î…‘∫Ú£¨15 √Î∫ÛΩ´◊‘∂ØÕÀ≥ˆ");
-    prints("%s[m", "o ¡¨≤ª…œ ±«Î…‘∫Ú£¨15 √Î∫ÛΩ´◊‘∂ØÕÀ≥ˆ");
-	move( 3, 0 );
-    //fflush(stdout);
-    proc(host2[n], ip[n], port[n]);
-}
+	prints("[1;32m’˝‘⁄≤‚ ‘Õ˘ %s (%s) µƒ¡¨Ω”£¨«Î…‘∫Ú... [m\n", 
+			host1[n], ip[n]);
+	prints("[1;32m»Áπ˚‘⁄ %d √Îƒ⁄Œﬁ∑®¡¨…œ£¨¥©ÀÛ≥Ã–ÚΩ´∑≈∆˙¡¨Ω”°£[m\n",
+			TIME_OUT);
+	if (setjmp(jb) == 0)
+	{
+		oldsig = signal(SIGALRM, bbsnet_timeout);
+		alarm(TIME_OUT);
+		pHost = gethostbyname(ip[n]);
+		alarm(0);
+	}
+	signal(SIGALRM, oldsig);
+	if (pHost == NULL)
+	{
+		prints("[1;31m≤È’“÷˜ª˙√˚ ß∞‹£°[m\n");
+		pressreturn();
+		return -1;
+	}
+	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+	{
+		prints("[1;31mŒﬁ∑®¥¥Ω®socket£°[m\n");
+		pressreturn();
+		return -1;
+	}
+	bzero(&remote, sizeof(remote));
+	remote.sin_family = AF_INET;
+	remote.sin_port = htons(port[n]);
+	remote.sin_addr = *(struct in_addr *)pHost->h_addr_list[0];
 
-int pandora()
-{
-    strncpy(user, currentuser->userid, 20); 
-	modify_user_mode(BBSNET);
-    //SetQuitTime();
-    //get_tty();
-    //init_tty();
-    init_data();
-    main_loop();
-    printf("[m");
-    //reset_tty();
-	return 0;
-}
-
-#define stty(fd, data) tcsetattr( fd, TCSANOW, data )
-#define gtty(fd, data) tcgetattr( fd, data )
-struct termios tty_state, tty_new;
-
-get_tty()
-{
-    if (gtty(1, &tty_state) < 0)
-        return 0;
-    return 1;
-}
-
-init_tty()
-{
-    long vdisable;
-
-    memcpy(&tty_new, &tty_state, sizeof(tty_new));
-    tty_new.c_lflag &= ~(ICANON | ECHO | ECHOE | ECHOK | ISIG);
-    tty_new.c_cflag &= ~CSIZE;
-    tty_new.c_cflag |= CS8;
-    tty_new.c_cc[VMIN] = 1;
-    tty_new.c_cc[VTIME] = 0;
-    if ((vdisable = fpathconf(STDIN_FILENO, _PC_VDISABLE)) >= 0) {
-        tty_new.c_cc[VSTART] = vdisable;
-        tty_new.c_cc[VSTOP] = vdisable;
-        tty_new.c_cc[VLNEXT] = vdisable;
-    }
-    tcsetattr(1, TCSANOW, &tty_new);
-}
-
-reset_tty()
-{
-    stty(1, &tty_state);
-}
-
-proc(char *hostname, char *server, int port)
-{
-    int fd;
-    struct sockaddr_in blah;
-    struct hostent *he;
-    int result;
-	int rv;
-	int i;
-	int ret;
-    unsigned char buf[2048];
-    fd_set readfds;
-    struct timeval tv;
-	time_t now;
-	int tos = 020; /* Low delay bit */
-
-    struct sockaddr_in tmpsin;
-    int tmplen = sizeof(struct sockaddr_in);
-
-    getpeername(0, &tmpsin, (int *) &tmplen);
-
-    //signal(SIGALRM, QuitTime);
-    alarm(TIME_OUT);
-    bzero((char *) &blah, sizeof(blah));
-    blah.sin_family = AF_INET;
-    blah.sin_addr.s_addr = inet_addr(server);
-    blah.sin_port = htons(port);
-    fflush(stdout);
-    fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if ((he = gethostbyname(server)) != NULL)
-        bcopy(he->h_addr, (char *) &blah.sin_addr, he->h_length);
-    else if ((blah.sin_addr.s_addr = inet_addr(server)) < 0)
-        return;
-
-	/* »°œ˚÷±Ω”¥©ÀÛœﬁ÷∆
-    if ((tmpsin.sin_addr.s_addr & 0xff00) == (blah.sin_addr.s_addr & 0xff00)) {
-        printf("\n\n\n[1;31m∞›Õ–~ ‘¬π‚±¶∫–‘ı√¥Àµ“≤ «±¶ŒÔ£¨ƒ˙ƒ‹÷±Ω”»•µƒµÿ∑Ωªπ «÷±Ω”»•∞…... :P[m\n\n\n\n\n");
-        fflush(stdout);
-        sleep(3);
-        return;
-    }
-	*/
-
-    // if (connect(fd, (struct sockaddr *) &blah, 16) < 0)
-    //    return;
 	prints("[1;32m¥©ÀÛΩ¯∂»ÃıÃ· æƒ˙µ±«∞“— π”√µƒ ±º‰°£[m\n");
 	process_bar(0, MAX_PROCESS_BAR_LEN);
 	for (i = 0; i < MAX_PROCESS_BAR_LEN; i++)
 	{
 		if (i == 0)
-			rv = NonBlockConnectEx(fd, (struct sockaddr *)&blah, 
-				sizeof(blah), 500, 1);
+			rv = NonBlockConnectEx(sockfd, (struct sockaddr *)&remote, 
+				sizeof(remote), 500, 1);
 		else
-			rv = NonBlockConnectEx(fd, (struct sockaddr *)&blah, 
-				sizeof(blah), 500, 0);
+			rv = NonBlockConnectEx(sockfd, (struct sockaddr *)&remote, 
+				sizeof(remote), 500, 0);
 		if (rv == ERR_TCPLIB_TIMEOUT)
 		{
 			process_bar(i+1, MAX_PROCESS_BAR_LEN);
@@ -547,134 +388,237 @@ proc(char *hostname, char *server, int port)
 		ret =  -1;
 		goto on_error;
 	}
-	setsockopt(fd, IPPROTO_IP, IP_TOS, &tos, sizeof(int));	
-
-    signal(SIGALRM, SIG_IGN);
-    printf("“—æ≠¡¨Ω”…œ÷˜ª˙£¨∞¥'ctrl+]'øÏÀŸÕÀ≥ˆ°£\n");
-	bbsnet_report ( hostname, server, time(NULL), 0 );
-
+	setsockopt(sockfd, IPPROTO_IP, IP_TOS, &tos, sizeof(int));	
+	prints("[1;31m¡¨Ω”≥…π¶£°[m\n");
+	bbsnet_report(host1[n], ip[n], now, 0);
 	clear();
-	//redoscr();
+	refresh();
+	for (;;)
+	{
+		FD_ZERO(&readset);
+		FD_SET(0, &readset);
+		FD_SET(sockfd, &readset);
+		maxfdp1 = sockfd + 1;
+		tv.tv_sec = 1200;
+		tv.tv_usec = 0;
 
-    while (1) {
-		// ∏¸–¬”√ªß∑¢¥Ù ±º‰
-		now = time(NULL);
-		if (now - last_refresh > 60)
+		/*if ((rv = SignalSafeSelect(maxfdp1, &readset, NULL, NULL, &tv)) == -1)*/
+		if ((rv = select(maxfdp1, &readset, NULL, NULL, &tv)) == -1)
 		{
-			uinfo.freshtime = now;
-			UPDATE_UTMP(freshtime, uinfo);
-			last_refresh = now;
+			if (errno == EINTR)
+			{
+				while (msg_count)
+				{
+					msg_count--;
+					r_msg();
+				}
+				continue;
+			}
+			ret = -1;
+			goto on_error;
+		}
+		if (rv == 0)
+		{
+			ret -1;
+			goto on_error;
 		}
 
-        tv.tv_sec = 2400;
-        tv.tv_usec = 0;
-
-        FD_ZERO(&readfds);
-        FD_SET(fd, &readfds);
-        FD_SET(0, &readfds);
-
-        result = select(fd + 1, &readfds, NULL, NULL, &tv);
-        if (result <= 0)
-            break;
-        if (FD_ISSET(0, &readfds)) {
-            result = read(0, buf, 2048);
-            if (result <= 0)
-                break;
-            if (result == 1 && (buf[0] == 10 || buf[0] == 13)) {
-                buf[0] = 13;
-                buf[1] = 10;
-                result = 2;
-            }
-            //if(buf[0]==29){close(fd);return;}
-            if (buf[0] == 29) {
-                close(fd);
-                break;
-            }
-            write(fd, buf, result);
-        } else {
-            result = read(fd, buf, 2048);
-            if (result <= 0)
-                break;
-            if (strchr(buf, 255))
-                telnetopt(fd, buf, result);
-            else
-                write(0, buf, result);
-        }
-    }
-    //sprintf(buf, "Logout %s (%s)", hostname, server);
-    //syslog(buf);
-	bbsnet_report ( hostname, server, time(NULL), 1 );
+		if (FD_ISSET(sockfd, &readset))
+		{
+			if ((rc = read(sockfd, buf, BUFSIZ)) < 0)
+			{
+				ret = -1;
+				goto on_error;
+			}
+			else if (rc == 0)
+				break;
+			else if (strchr(buf, 255))	/* ≤È’“ «∑Ò∫¨”–TELNET√¸¡ÓIAC */
+				telnetopt(sockfd, buf, rc);
+			else
+			{
+				output(buf, rc);
+				oflush();
+			}
+		}
+		if (FD_ISSET(0, &readset))
+		{
+			if ((rc = bbsnet_read(0, buf, BUFSIZ)) < 0)
+			{
+				ret = -1;
+				goto on_error;
+			}
+			if (rc == 0)
+				break;
+			write(sockfd, buf, rc);
+		}
+	}
+	bbsnet_report(host1[n], ip[n], now, 1);
+	ret = 0;
 on_error:
-	close(fd);
-	;
+	close(sockfd);
+	clear();
+	redoscr();
+	return ret;
 }
 
-int telnetopt(int fd, char *buf, int max)
+static int bbsnet_onselect(struct _select_def *conf)
 {
-    unsigned char c, d, e;
-    int pp = 0;
-    unsigned char tmp[30];
+	bbsnet(conf->pos-1);
+	bbsnet_redraw=true;
+	return SHOW_REFRESH;
+}
 
-    while (pp < max) {
-        c = buf[pp++];
-        if (c == 255) {
-            d = buf[pp++];
-            e = buf[pp++];
-            fflush(stdout);
-            if ((d == 253) && (e == 3 || e == 24)) {
-                tmp[0] = 255;
-                tmp[1] = 251;
-                tmp[2] = e;
-                write(fd, tmp, 3);
-                continue;
-            }
-            if ((d == 251 || d == 252) && (e == 1 || e == 3 || e == 24)) {
-                tmp[0] = 255;
-                tmp[1] = 253;
-                tmp[2] = e;
-                write(fd, tmp, 3);
-                continue;
-            }
-            if (d == 251 || d == 252) {
-                tmp[0] = 255;
-                tmp[1] = 254;
-                tmp[2] = e;
-                write(fd, tmp, 3);
-                continue;
-            }
-            if (d == 253 || d == 254) {
-                tmp[0] = 255;
-                tmp[1] = 252;
-                tmp[2] = e;
-                write(fd, tmp, 3);
-                continue;
-            }
-            if (d == 250) {
-                while (e != 240 && pp < max)
-                    e = buf[pp++];
-                tmp[0] = 255;
-                tmp[1] = 250;
-                tmp[2] = 24;
-                tmp[3] = 0;
-                tmp[4] = 65;
-                tmp[5] = 78;
-                tmp[6] = 83;
-                tmp[7] = 73;
-                tmp[8] = 255;
-                tmp[9] = 240;
-                write(fd, tmp, 10);
-            }
-        } else
-            write(0, &c, 1);
+static int bbsnet_show(struct _select_def *conf, int pos)
+{
+    return SHOW_CONTINUE;
+}
+
+static int bbsnet_key(struct _select_def *conf, int command)
+{
+    char* ptr;
+    if ((ptr=strchr(str,command))!=NULL) {
+	  conf->new_pos = (ptr-str) + 1;
+	  return SHOW_SELCHANGE;
     }
-}
-int refresh()
-{
-    write(0, buf, strlen(buf));
-    buf[0] = 0;
+    switch (command) {
+    case Ctrl('C'):
+    case Ctrl('A'):
+    	   return SHOW_QUIT;
+    case '?':
+        show_help("help/bbsnethelp");
+		bbsnet_redraw=true;
+        return SHOW_REFRESH;
+    case '$':
+    	  conf->new_pos=conf->item_count;
+    	  return SHOW_SELCHANGE;
+    case '^':
+    	  conf->new_pos=1;
+    	  return SHOW_SELCHANGE;
+    }
+    return SHOW_CONTINUE;
 }
 
-int prints(char *b)
+static void bbsnet_refresh(struct _select_def *conf)
 {
-    strcat(buf, b);
+
+	int n;
+	clear();
+    prints("©≥©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•[1;35m ‘¬  π‚  ±¶  ∫– [m©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©∑");
+	for (n = 1; n < 22; n++) {
+		move(n,0);
+		prints("©ß                                                                            ©ß");
+	}
+	move(22,0);
+	prints("©ß                                                               [1;36m∞¥[1;33mCtrl+C[1;36mÕÀ≥ˆ[m ©ß");
+	move(23,0);
+	prints("©ª©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©•©ø");
+	move(20,2);
+	prints("©§©§©§[1;36m∞„»Ù≤®¡_√‹[m©§©§©§©§©§©§©§[1;36m∞„-»Ù-≤®-¡_-√€~~[m©§©§©§©§©§©§©§[1;36m∞„»Ù≤®¡_√‹[m©§©§©§");
+	for (n = 0; n < conf->item_count; n++) {
+		locate(n);
+		prints("[1;32m %c.[m%s", str[n], host2[n]);
+	}
+    bbsnet_selchange(conf,conf->pos);
+
+}
+
+int bbsnet_selchange(struct _select_def* conf,int new_pos)
+{
+    static oldn = -1;
+
+    if (oldn >= 0) {
+        locate(oldn);
+        prints("[1;32m %c.[m%s", str[oldn], host2[oldn]);
+    }
+    oldn = new_pos-1;
+    if (strcmp(host2[new_pos-1], "∞„»Ù≤®¡_√‹") == 0) {  //≈–∂œ◊‘∂®“Â’æµ„
+		move(21,2);
+        prints("[1;37m π”√∑Ω∑®: ªÿ≥µ∫Û ‰»Îip[:port]°£[1;33m[22;32H[1;37m ’æ√˚: [1;33m◊‘∂®“Â’æµ„              ");
+		move(22,2);
+        prints("[1;37m[23;3H¡¨Õ˘: [1;33m__________________           [21;1H");
+    } else {
+		move(21,2);
+        prints("[1;37mµ•Œª: [1;33m%s                   [22;32H[1;37m ’æ√˚: [1;33m%s              ", host1[new_pos-1], host2[new_pos-1]);
+		move(22,2);
+		prints("[1;37m[23;3H¡¨Õ˘: [1;33m%s                   [21;1H", ip[new_pos-1]);
+    }
+    locate(new_pos-1);
+    prints("[%c][1;42m%s[m", str[new_pos-1], host2[new_pos-1]);
+    return SHOW_CONTINUE;
+}
+int load_data(struct _select_def* conf,int pos,int len)
+{
+    FILE *fp;
+    char t[256], *t1, *t2, *t3, *t4;
+
+
+
+
+
+    fp = fopen(DATAFILE, "r");
+	conf->item_count=0;
+    if (fp == NULL)
+        return SHOW_REFRESH;
+    while (fgets(t, 255, fp) && conf->item_count < MAXSTATION) {
+        t1 = strtok(t, " \t");
+        t2 = strtok(NULL, " \t\n");
+        t3 = strtok(NULL, " \t\n");
+        t4 = strtok(NULL, " \t\n");
+        if (t1[0] == '#' || t1 == NULL || t2 == NULL || t3 == NULL)
+            continue;
+        strncpy(host1[conf->item_count], t1, 16);
+        strncpy(host2[conf->item_count], t2, 36);
+        strncpy(ip[conf->item_count], t3, 36);
+        port[conf->item_count] = t4 ? atoi(t4) : 23;
+        conf->item_count++;
+    }
+    fclose(fp);
+
+  conf->item_per_page = conf->item_count;
+  bbsnet_redraw=true;
+  return SHOW_REFRESH;
+}
+
+
+void main_loop()
+{
+	char buf[STRLEN];
+	int i;
+	POINT pts[MAXSTATION];
+
+   for (i = 0; i < MAXSTATION; i++) {
+	   pts[i].x = i / 19 * 24 + 2;
+	   pts[i].y = i % 19+1;
+   };
+	bzero(&bbsnet_conf,sizeof(bbsnet_conf));
+    load_data(&bbsnet_conf,0,MAXSTATION);
+	bbsnet_conf.flag = LF_FORCEREFRESHSEL | LF_BELL | LF_LOOP;     //|LF_HILIGHTSEL;
+	bbsnet_conf.prompt = NULL;
+	bbsnet_conf.item_pos = pts;
+	bbsnet_conf.arg = NULL;
+	bbsnet_conf.title_pos.x = 0;
+	bbsnet_conf.title_pos.y = 0;
+	bbsnet_conf.pos = 1;
+	bbsnet_conf.page_pos = 1;
+
+	bbsnet_conf.on_select = bbsnet_onselect;
+	bbsnet_conf.show_data = bbsnet_show;
+	bbsnet_conf.key_command = bbsnet_key;
+	bbsnet_conf.show_title = bbsnet_refresh;
+	bbsnet_conf.get_data = load_data;
+	bbsnet_conf.on_selchange = bbsnet_selchange;
+	bbsnet_conf.item_per_page = bbsnet_conf.item_count;
+
+	list_select_loop(&bbsnet_conf);
+}
+
+
+
+int pandora()
+{
+	strncpy(user, currentuser->userid, 20);
+	modify_user_mode(BBSNET);
+
+    main_loop();
+	return 0;
 }
