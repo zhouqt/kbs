@@ -102,11 +102,16 @@ static ZEND_FUNCTION(getuser)
         RETURN_LONG(v1);
 }
 
+static char old_pwd[1024];
 static ZEND_MINIT_FUNCTION(bbs_module_init)
 {
+	getcwd(old_pwd,1023);
+	old_pwd[1023]=0;
+	chdir(BBSHOME);
 	resolve_ucache();
 	resolve_utmp();
 	resolve_boards();
+	chdir(old_pwd);
 	return SUCCESS;
 }
 
@@ -117,10 +122,13 @@ static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown)
 
 static ZEND_RINIT_FUNCTION(bbs_request_init)
 {
+	getcwd(old_pwd,1023);
+	old_pwd[1023]=0;
 	return SUCCESS;
 }
 
 static ZEND_RSHUTDOWN_FUNCTION(bbs_request_shutdown)
 {
+	chdir(old_pwd);
 	return SUCCESS;
 }
