@@ -211,12 +211,18 @@ int DelFavBoard(int i)
     if(i < 0) return favbrd_list_t;
     if(favbrd_list[i].flag==-1)
     for (j=0;j<favbrd_list_t;j++)
-    	if(favbrd_list[j].father == i)
+    	if(favbrd_list[j].father == i){
     		DelFavBoard(j);
+		if(j<i) i--;
+		j--;
+	}
     lnum = --favbrd_list_t;
     if (favbrd_list[i].flag==-1)
     	free(favbrd_list[i].title);
     for(;i<lnum;i++) favbrd_list[i] = favbrd_list[i+1];
+    for (j=0;j<fav_brd_list_t;j++)
+        if(favbrd_list[j].father >= i)
+		favbrd_list[j].father--;
     if(!lnum) {
         favbrd_list_t = 1;       /*  favorite board count    */
         favbrd_list[0].flag = 0;   /*  default sysop board     */
