@@ -646,6 +646,8 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct 
         list_select_loop(&read_conf);
         close(arg.fd);
         savePos(arg.mode,direct,read_conf.pos,arg.board);
+        if (read_conf.item_pos!=NULL)
+           free(read_conf.item_pos);
     } else {
 
        if (cmdmode == DIR_MODE_MAIL) {
@@ -674,8 +676,6 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct 
         free(arg.readdata);
     if (arg.dingdirect!=NULL)
         free(arg.dingdirect);
-    if (read_conf.item_pos!=NULL)
-        free(read_conf.item_pos);
     if (cmdmode!=arg.mode)
         arg.returnvalue=CHANGEMODE;
     return arg.returnvalue;
