@@ -446,8 +446,8 @@ int brc_clear_new_flag(char* filename)
                 if (ftime >= brc_list[n]) 
 			break;
 	if (n<BRC_MAXNUM) {
+		brc_list[n] = ftime;
 		brc_num=n+1;
-		brc_list[brc_num] = ftime;
         	brc_changed = 1;
 	}
 	return;
