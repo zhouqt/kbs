@@ -2590,7 +2590,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
             char outbuf[256];
 
             sprintf(link,"%s&amp;attachpos=%d",attachlink,i);
-            extension = attachfilename + strlen(atachfilename);
+            extension = attachfilename + strlen(attachfilename);
             type = 0;
             while ((*extension != '.') && (*extension != NULL))
                 extension--;
