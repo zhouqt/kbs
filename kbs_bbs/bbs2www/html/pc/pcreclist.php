@@ -4,8 +4,8 @@
 */
 require("pcfuncs.php");
 //20min更新一次
-//if(pc_update_cache_header())
-//	return;
+if(pc_update_cache_header())
+	return;
 
 $pno = $_GET["pno"];
 $pno = intval( $pno );

@@ -351,8 +351,8 @@ function  pcmain_blog_most_view()
 }
 
 //20min更新一次
-//if(pc_update_cache_header())
-//	return;
+if(pc_update_cache_header())
+	return;
 
 pc_html_init("gb2312" , $pcconfig["BBSNAME"]."Blog");
 ?>
