@@ -203,7 +203,7 @@ void suicide()
         fn = fopen(filename, "w");
         fprintf(fn, "大家好,\n\n我是 %s (%s)。 我已经离开这里了。", currentuser->userid, currentuser->username);
         fprintf(fn, "\n\n我不会更不可能忘记自 %s", ctime(&(currentuser->firstlogin)));
-        fprintf(fn, "\n以来我在本站 %d 次 login 中总共 %d 分钟逗留期间的点点滴滴。", currentuser->numlogins, currentuser->stay/60);
+        fprintf(fn, "以来我在本站 %d 次 login 中总共 %d 分钟逗留期间的点点滴滴。", currentuser->numlogins, currentuser->stay/60);
         fprintf(fn, "\n请我的好友把 %s 从你们的好友名单中拿掉吧。", currentuser->userid);
         fprintf(fn, "\n\n或许有朝一日我会回来的。 珍重!! 再见!!");
         fprintf(fn, "\n\n自杀者的简短留言: %s", buf2);
