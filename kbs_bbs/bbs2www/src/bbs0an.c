@@ -88,7 +88,7 @@ void ann_show_directory(char *path)
     me.path = pathbuf;
     if (ann_load_directory(&me) == 0) {
         board[0] = '\0';
-        ann_get_board(path, board, sizeof(board));
+        ann_get_board(pathbuf, board, sizeof(board));
         buf[0] = '\0';
         if (board[0] != '\0')
             sprintf(buf, "%s°æ", board);
