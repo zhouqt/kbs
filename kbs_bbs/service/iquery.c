@@ -316,9 +316,10 @@ static int choose_file_show(struct _select_def *conf, int ii)
             return SHOW_CONTINUE;
         }
         while(t<180) {
+            memset(out2, 0, fsize);
             t=0;
-            for(k=0;k<fsize;k++) {
-                out2[k]=0;
+            for(k=0;k<fsize;k++) 
+            if(!out2[k]) {
                 if(out[k]||k>0&&out[k-1]||k<fsize-1&&out[k+1]) {
                     if(out[k]==1)
                         out2[k]=1;
