@@ -33,8 +33,10 @@ global $currentuinfo_num;
 //global $currentuser;
 global $currentuuser_num;
 global $cachemode;
-global $errMsg="";
-global $foundErr=false;
+global $errMsg;
+global $foundErr;
+$errMsg='';
+$foundErr=false;
 
 if (!isset($needlogin)){
 	$needlogin=1;
