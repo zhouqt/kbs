@@ -168,7 +168,7 @@ function main(){
 </tr>
 <tr>
 <td valign=top width=40% class=tablebody1> ЁЁ<b>ецЪЕаеУћЃК</b>
-<input type=text name=realname size=18 value="<?php echo htmlEncode($currentuser['username']); ?>">
+<input type=text name=realname size=18 value="<?php echo htmlEncode($currentuser['realname']); ?>">
 </td>
 <td height=71 align=left valign=top  class=tablebody1 rowspan=14 width=60% >
 <table width=100% border=0 cellspacing=0 cellpadding=5>

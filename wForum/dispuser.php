@@ -73,7 +73,7 @@ if ($user['userdefine'] & $flag) {
 <table cellspacing=1 cellpadding=3 align=center  style="table-layout:fixed;word-break:break-all" class=tableborder1>
   <col width=20% ><col width=*><col width=40% > 
   <tr> 
-    <th colspan=2 align=left>基本资料</th>
+    <th colspan=2 align=left height=25>基本资料</th>
     <td rowspan=9 align=center class=tablebody1 width=40% valign=top>
 <?php
 	$photo_url=htmlspecialchars(trim($user['photo_url']),ENT_QUOTES);
@@ -167,7 +167,7 @@ if ($user['userdefine'] & $flag) {
 <table cellspacing=1 cellpadding=3 align=center class=tableborder1 style="table-layout:fixed;word-break:break-all">
   <col width=20% ><col width=*><col width=40% > 
   <tr> 
-    <th colspan=2 align=left>
+    <th colspan=2 align=left height=25>
       用户详细资料</th>
     <td rowspan=14 class=tablebody1 width=40% valign=top>
 <b>性格：</b>
@@ -178,7 +178,18 @@ if ($user['userdefine'] & $flag) {
 <?php   
 	$filename=bbs_sethomefile($user["userid"],"plans");
 	if (is_file($filename)) {
-		echo dvbcode(bbs_printansifile($filename),0);
+		$plans = bbs_printansifile($filename);
+		$v_plans = split ( "<br />", $plans );
+		$num = count ( $v_plans );
+
+		$plans = "";
+
+		for ( $i=0; $i<$num && $i<20 ; $i++ ){
+			$plans .= $v_plans[$i];
+			$plans .= "<br />";
+		}
+
+		echo dvbcode($plans,0);
 	} else {
 		echo "<font color=gray>这个家伙很懒，什么也没有留下^_^</font>";
 	}
@@ -188,7 +199,7 @@ if ($user['userdefine'] & $flag) {
   </tr>   
   <tr> 
     <td class=tablebody1 width=20% align=right>真实姓名：</td>
-    <td class=tablebody1><?php echo showIt($user['username']);	?></td>
+    <td class=tablebody1><?php echo showIt($user['realname']);	?></td>
   </tr>
   <tr> 
     <td class=tablebody2 width=20% align=right>国　　家：</td>
@@ -204,7 +215,7 @@ if ($user['userdefine'] & $flag) {
   </tr>
   <tr> 
     <td class=tablebody1 width=20% align=right>联系电话：</td>
-    <td class=tablebody1>	<?php echo showIt(substr($user['realemail'],strpos($user['realemail'],'$')+1,strpos($user['realemail'],'@')-strpos($user['realemail'],'$')-1)); ?></td>
+    <td class=tablebody1>	<?php echo showIt($user['telephone']); ?></td>
   </tr>
   <tr> 
     <td class=tablebody2 width=20% align=right>通信地址：</td>
@@ -245,7 +256,7 @@ if ($user['userdefine'] & $flag) {
 ?>
 <table cellspacing=1 cellpadding=3 align=center class=tableborder1>
   <tr>
-    <th align=left colspan=6> 论坛属性</th>
+    <th align=left colspan=6 height=25> 论坛属性</th>
   </tr>
   <tr>
     <td class=tablebody1 width=15% align=right>积分：</td>
