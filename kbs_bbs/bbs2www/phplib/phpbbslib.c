@@ -34,10 +34,9 @@ static unsigned char fifth_arg_force_ref_00011[] = { 5, BYREF_NONE, BYREF_NONE, 
 static PHP_FUNCTION(bbs_get_article);
 static PHP_FUNCTION(bbs_is_yank);
 static PHP_FUNCTION(bbs_alter_yank); 
+#endif
 static PHP_FUNCTION(bbs_getuserparam);
 static PHP_FUNCTION(bbs_setuserparam);
-#endif
-
 #ifdef HAVE_USERMONEY
 static PHP_FUNCTION(bbs_getusermoney);
 static PHP_FUNCTION(bbs_setusermoney);
@@ -242,9 +241,9 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_get_article, NULL)
 		PHP_FE(bbs_is_yank, NULL)
 		PHP_FE(bbs_alter_yank, NULL)
+#endif
 		PHP_FE(bbs_getuserparam, NULL)
 		PHP_FE(bbs_setuserparam, NULL)
-#endif
 		PHP_FE(bbs_getonline_user_list, NULL)
 		PHP_FE(bbs_get_elite_num, NULL)
 		PHP_FE(bbs_get_elite_list, NULL)
@@ -885,8 +884,6 @@ static PHP_FUNCTION(bbs_checkpasswd)
     RETURN_LONG(ret);
 }
 
-#ifdef HAVE_WFORUM
-
 static PHP_FUNCTION(bbs_getuserparam){//这个函数总有一天要被我杀掉！！ - atppp
 	if (ZEND_NUM_ARGS() != 0) {
 		WRONG_PARAM_COUNT;
@@ -911,8 +908,6 @@ static PHP_FUNCTION(bbs_setuserparam){
     store_mailbox_prop(getCurrentUser()->userid);
 	RETURN_LONG(0);
 }
-
-#endif
 
 static PHP_FUNCTION(bbs_wwwlogin)
 {
@@ -3207,13 +3202,6 @@ static PHP_FUNCTION(bbs_get_today_article_num){
     struct boardheader *bp;
 	char dirpath[STRLEN];
     int i;
-    zval *element;
-    int is_bm;
-    char flags[4];              /* flags[0]: flag character
-                                 * flags[1]: imported flag
-                                 * flags[2]: no reply flag
-                                 * flags[3]: attach flag
-                                 */
     int ac = ZEND_NUM_ARGS();
 	unsigned int articleNums;
 	int fd;
@@ -3240,7 +3228,6 @@ static PHP_FUNCTION(bbs_get_today_article_num){
     if ((bp = getbcache(board)) == NULL) {
         RETURN_LONG(-3);
     }
-    is_bm = is_BM(bp, getCurrentUser());
     setbdir(DIR_MODE_NORMAL, dirpath, bp->filename);
 
     if ((fd = open(dirpath, O_RDONLY, 0)) == -1)
@@ -3270,14 +3257,11 @@ static PHP_FUNCTION(bbs_get_today_article_num){
         RETURN_LONG(-5);
     }
     ptr1 = (struct fileheader *) ptr;
-#ifdef HAVE_BRC_CONTROL
-    brc_initial(getCurrentUser()->userid, bp->filename, getSession());
-#endif
 
 	articleNums=0;
 
 	now=time(NULL);
-	gmtime_r(&now,&nowtm);
+	localtime_r(&now,&nowtm);
 	nowtm.tm_sec=0;
 	nowtm.tm_min=0;
 	nowtm.tm_hour=0;
