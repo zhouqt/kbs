@@ -1059,9 +1059,10 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 now = strlen(buf);
                 break;
             case Ctrl('Y'):
-                i=now;
+                i=now-1;
                 while(i>=0&&buf[i]!='\n'&&buf[i]!='\r') i--;
                 i++;
+                if(!buf[i]) break;
                 j=now;
                 while(j<strlen(buf)-1&&buf[j]!='\n'&&buf[j]!='\r') j++;
                 j=j-i+1;
