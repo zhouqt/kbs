@@ -265,6 +265,7 @@ void send_msg(int u, char* msg)
             send_msg(u, buf);
             strcpy(buf, buf2+i);
         }
+        else break;
     }
     for(i=0;i<=6;i++) {
         buf3[0]='%'; buf3[1]=i+48; buf3[2]=0;
