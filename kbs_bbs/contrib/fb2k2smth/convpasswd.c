@@ -20,9 +20,7 @@ typedef struct olduserec {              /* Structure used to hold information in
     unsigned int    inbank;         /* 存款 */
     time_t          banktime;       /* 存入时间 */
     char flags[2];
-#ifdef CONV_PASS    
     char passwd[OLDPASSLEN];
-#endif
     char username[NAMELEN];
     char ident[NAMELEN];
     char            termtype[16];    
@@ -112,13 +110,11 @@ static void convert_userec(struct olduserec *olduser, struct userec *user)
     user->noteline = olduser->noteline;
     user->notemode = -1;
     user->exittime = olduser->lastlogout;
-//#ifdef HAVE_BIRTHDAY
-//    user->gender = olduser->gender;
-//    user->birthyear = olduser->birthyear;
-//    user->birthmonth = olduser->birthmonth;
-//    user->birthday = olduser->birthday;
-//#endif
     user->usedspace = 0; 
+#ifdef HAVE_USERMONEY
+    user->money = olduser->money;
+#endif
+    if(strcasecmp(user->userid,"new")==0) return;
     create_userdata(olduser);
 }
 
