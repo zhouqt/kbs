@@ -175,9 +175,10 @@ uleveltochar( char* buf, struct userec *lookupuser )
 	// buf[10], buf 最多 4 个汉字 + 1 byte （\0结尾）
 	//根据 level
 	//
-	if( !( lvl & PERM_POST ) ) strcpy( buf, "哑巴" ); 
-      	else if ( ! (lvl & PERM_BASIC) ) strcpy( buf, "瞎子" ); 
-	else if( lvl < PERM_DEFAULT ) strcpy( buf, "书生" );
+        if ( ! (lvl & PERM_BASIC) ) strcpy( buf, "瞎子" ); 
+        else if( lvl == PERM_BASIC ) strcpy( buf, "书生" );
+        else if( !( lvl & PERM_POST ) ) strcpy( buf, "哑巴" ); 
+        else if( lvl < PERM_DEFAULT ) strcpy( buf, "书生" );
     	//else if( lvl & PERM_SYSOP ) strcpy(buf,"帮主");
       	else if( lvl & PERM_MM && lvl & PERM_CHATCLOAK ) strcpy(buf,"晶晶姑娘");
       	else if( lvl & PERM_MM ) strcpy(buf,"观音美眉");
