@@ -1198,12 +1198,10 @@ char *msg;
 }
 
 
-void
-chat_private(unum, msg)
-int unum;
-char *msg;
+void chat_private(int unum,char *msg)
 {
     char *recipient;
+    int recunum;
 
     recipient = getnextword(&msg);
     recunum = fuzzy_chatid_to_indx(recipient);
@@ -1510,7 +1508,7 @@ void chat_knock_room(int unum, char * msg)
     char *roomid;
     const char * outd = "里面";
     const char * ind = "外面";
-    int recunum, rnum;
+    int rnum;
 
     roomid = getnextword(&msg);
     if (RESTRICTED(unum)) {

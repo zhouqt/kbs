@@ -34,6 +34,7 @@ int switch_code()
 {
     convcode=!convcode;
     redoscr();
+    return convcode;
 }
 #endif
 
