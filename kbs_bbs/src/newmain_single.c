@@ -561,6 +561,16 @@ login_query()
                 logattempt( currentuser->userid, fromhost );
                 prints( "[32mÃÜÂëÊäÈë´íÎó...[m\n" );
             } else {
+    if(id_invalid(uid))
+    {
+        prints("[31m±§Ç¸!![m\n");
+        prints("[32m±¾ÕÊºÅÊ¹ÓÃÖĞÎÄÎª´úºÅ£¬´ËÕÊºÅÒÑ¾­Ê§Ğ§...[m\n");
+        prints("[32mÏë±£ÁôÈÎºÎÇ©ÃûµµÇë¸úÕ¾³¤ÁªÂç £¬Ëû(Ëı)»áÎªÄã·şÎñ¡£[m\n");
+        getdata( 0, 0, "°´ [RETURN] ¼ÌĞø",genbuf,10,NOECHO,NULL,YEA);
+        oflush();
+        sleep( 1 );
+        exit( 1 );
+    }
 			    if( simplepasswd( passbuf ) ) {
 			        prints("[33m* ÃÜÂë¹ıì¶¼òµ¥, ÇëÑ¡ÔñÒ»¸öÒÔÉÏµÄÌØÊâ×ÖÔª.[m\n");
 			        getdata( 0, 0, "°´ [RETURN] ¼ÌĞø",genbuf,10,NOECHO,NULL,YEA);
@@ -582,16 +592,6 @@ login_query()
        oflush();
        sleep( 1 );
        exit( 1 );
-    }
-    if(id_invalid(uid))
-    {
-        prints("[31m±§Ç¸!![m\n");
-        prints("[32m±¾ÕÊºÅÊ¹ÓÃÖĞÎÄÎª´úºÅ£¬´ËÕÊºÅÒÑ¾­Ê§Ğ§...[m\n");
-        prints("[32mÏë±£ÁôÈÎºÎÇ©ÃûµµÇë¸úÕ¾³¤ÁªÂç £¬Ëû(Ëı)»áÎªÄã·şÎñ¡£[m\n");
-        getdata( 0, 0, "°´ [RETURN] ¼ÌĞø",genbuf,10,NOECHO,NULL,YEA);
-        oflush();
-        sleep( 1 );
-        exit( 1 );
     }
 #ifdef DEBUG
     if (!HAS_PERM(currentuser,PERM_SYSOP)) {
