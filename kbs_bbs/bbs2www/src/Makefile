@@ -23,7 +23,7 @@ CGI	= bbsusr bbstop10 bbssec bbsdoc bbscon bbsbrdadd bbsboa bbsall bbsanc bbs0an
 	  bbsmdoc bbsnick bbsjs bbstfind bbstcon bbstdoc \
 	  bbsdoreg bbsmywww bbsccc bbsufind bbsclear bbsedit bbsman bbsparm \
 	  bbsfwd bbsmnote bbsdenyall bbsdenydel bbsdenyadd \
-	  bbstopb10 bbsbfind bbstty\
+	  bbstopb10 bbsbfind\
 
 #smth happy: bbslib $(CGI)
 #smth := BBSLIBOBJS = crypt.o boardrc.o bbslib.o $(BBSSITE).o smthlib.o md5.o
