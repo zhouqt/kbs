@@ -242,6 +242,7 @@ char *prompt, *data;
                         x++;
                         *temp = cwlist->word[temp-data];
                         temp++;
+                        count++;
                     }
                     *temp = 0;
                 }
@@ -471,6 +472,7 @@ char *prompt, *data;
                         x++;
                         *temp = cwlist[temp-data];
                         temp++;
+                        count++;
                     }
                     *temp = 0;
                 }
