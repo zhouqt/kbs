@@ -80,6 +80,26 @@ void loginas(char* user, char* pass)
 
 int sendtouser(struct GWSendSMS * h, char* buf)
 {
+    int uid;
+    struct userec * ur;
+    struct user_info * uin;
+    struct msghead h;
+    uid = byte2long(h->UserID);
+    if (uid > uidshm->number || uid <= 0)
+        return -1;
+    ur = passwd+(uid - 1);
+    uin = t_search(ur->userid, NULL);
+    if(uin == NULL)
+        return -1;
+
+    h.frompid = -1;
+    h.topid = uin->pid;
+    h.mode = 6;
+    h.sent = 0;
+    h.time = time(0);
+    strcpy(h.id, h->SrcMobileNo);
+    save_msgtext(ur->userid, &h, buf);
+    kill(ur->pid, SIGUSR2);
     return 0;
 }
 
@@ -129,6 +149,7 @@ void processremote()
 	    printf("get CMD_GWSEND\n");
             read(sockfd, &h2, sizeof(h2));
             read(sockfd, buf, byte2long(h2.MsgTxtLen));
+            buf[byte2long(h2.MsgTxtLen)] = 0;
             if(sendtouser(&h2, buf)) reth.Type = CMD_ERR;
             else reth.Type = CMD_OK;
             write(sockfd, &reth, sizeof(reth));
