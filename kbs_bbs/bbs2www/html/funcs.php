@@ -277,8 +277,7 @@ function sizestring($size)
 
 function get_bbsfile($relative_name)
 {
-	global $BBS_HOME;
-	return $BBS_HOME . $relative_name;
+	return BBS_HOME . $relative_name;
 }
 
 function get_secname_index($secnum)
