@@ -168,6 +168,7 @@
 ?>
 <p class="f1">
 [<a href="pcsearch.php?keyword=<?php echo $currentuser["userid"]; ?>&exact=1&key=u">自己的文集</a>]
+<a href="rssnew.php" target="_blank"><img src="images/xml.gif" border="0" align="absmiddle" alt="XML"></a>
 </p>
 <form action="pcsearch.php" method="get" onsubmit="if(this.keyword.value==''){alert('请输入关键字');return false;}">
 个人文集搜索:<br>

@@ -21,6 +21,7 @@ $db["NAME"]=bbs_sysconf_str("MYSQLSMSDATABASE");
 $pcconfig["LIST"] = 20;
 $pcconfig["HOME"] = BBS_HOME;
 $pcconfig["ETEMS"] = 20;
+$pcconfig["NEWS"] = 20;
 $pcconfig["SITE"] = "smth.org";
 $pcconfig["BOARD"] = "SYSOP";
 /* personal corp. configure end */
