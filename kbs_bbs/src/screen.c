@@ -512,6 +512,7 @@ void outc(unsigned char c)
 }
 
 int savey=-1, savex=-1;
+bool disable_move = false;
 
 void outns(const char*str, int n)
 {
@@ -543,7 +544,7 @@ void outns(const char*str, int n)
                     s2[i-j-1]=0;
                     y=atoi(s1)-1+offsetln;
                     x=atoi(s2)-1;
-                    if(y>=0&&y<scr_lns&&x>=0&&x<scr_cols) {
+                    if(y>=0&&y<scr_lns&&x>=0&&x<scr_cols&&!disable_move) {
                         cur_col=x; cur_ln=y;
                     }
                     str+=i+1;
@@ -562,28 +563,31 @@ void outns(const char*str, int n)
                 memcpy(s1,str+2,i-2);
                 if(s1[0]) k=atoi(s1);
                 else k=1;
-                
-                if(*(str+i)=='A') {
-                    if(cur_ln>=k) cur_ln-=k;
-                    else cur_ln=0;
-                }
-                else if(*(str+i)=='B') {
-                    if(cur_ln<scr_lns-k) cur_ln+=k;
-                    else cur_ln = scr_cols;
-                }
-                else if(*(str+i)=='C') {
-                    if(cur_col<scr_cols-k) cur_col+=k;
-                    else cur_col=scr_cols;
-                }
-                else if(*(str+i)=='D') {
-                    if(cur_col>=k) cur_col-=k;
-                    else cur_col=0;
-                }
 
-                if(cur_col<0) cur_col=0;
-                if(cur_col>=scr_cols) cur_col=scr_cols;
-                if(cur_ln<offsetln) cur_ln=offsetln;
-                if(cur_ln>=scr_lns) cur_ln=scr_lns-1;
+                if(!disable_move) {
+                
+                    if(*(str+i)=='A') {
+                        if(cur_ln>=k) cur_ln-=k;
+                        else cur_ln=0;
+                    }
+                    else if(*(str+i)=='B') {
+                        if(cur_ln<scr_lns-k) cur_ln+=k;
+                        else cur_ln = scr_cols;
+                    }
+                    else if(*(str+i)=='C') {
+                        if(cur_col<scr_cols-k) cur_col+=k;
+                        else cur_col=scr_cols;
+                    }
+                    else if(*(str+i)=='D') {
+                        if(cur_col>=k) cur_col-=k;
+                        else cur_col=0;
+                    }
+
+                    if(cur_col<0) cur_col=0;
+                    if(cur_col>=scr_cols) cur_col=scr_cols;
+                    if(cur_ln<offsetln) cur_ln=offsetln;
+                    if(cur_ln>=scr_lns) cur_ln=scr_lns-1;
+                }
 
                 str+=i+1;
                 continue;
@@ -595,14 +599,15 @@ void outns(const char*str, int n)
              }
              else if(*(str+i)=='u' && i==2) {
                 str+=3;
-                if(savey!=-1&&savex!=-1) {
+                if(savey!=-1&&savex!=-1&&!disable_move) {
                     cur_ln=savey; cur_col=savex;
                     continue;
                 }
              }
              else if(*(str+i)=='J') {
                 str+=i+1;
-                clear();
+                if(!disable_move)
+                    clear();
                 continue;
              }
              else if(*(str+i)=='m') {
