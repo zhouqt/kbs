@@ -1205,57 +1205,46 @@ void showtitle( char *title, char*mid)
     }
 
 
-    spc1 = 39 - num_noans_chr(title) - strlen(mid) / 2;
-    spc2 = 40 - strlen(note) - strlen(mid) / 2;
+    spc1 = scr_cols/2 - 1 - strlen(mid) / 2;
     if ((strstr(title,"°æÖ÷")!=NULL)&&(num_noans_chr(title)>36))
 	/*ÎªÁË¶à°æÖ÷ÐÞ¸Ä Bigman:2002.9.7 */
     {
         strcpy(note , note + 7 );
-        spc1 = 78 - num_noans_chr(title) - strlen(mid) - strlen(note);
-        spc2 = 2;
+        spc1 = scr_cols - 3 - strlen(mid) - strlen(note);
     }
-/* Modified by Leeward 97/11/23 -- modification starts */
-/* If title is too long (BM names too long), spc1 < 2 (even < 0)
-   Then we should decrease spc2 to avoid the line length exceed default(80)
-
-   Sulution: "spc2 -= 2 - spc1"
-   Attention: "spc1 = 2" should AFTER "spc2 -= 2 - spc1" !!!
-*/
-    /*if( spc1 < 2 )  spc1 = 2;
-       if( spc2 < 2 )  spc2 = 2; */
-    if (spc2 < 2)
+/*    if (spc2 < 2)
         spc2 = 2;
     if (spc1 < 2) {
         spc2 -= 2 - spc1;
         spc1 = 2;
         if (spc2 < 2)
             spc2 = 2;
-    }
+    }*/
 /* Modified by Leeward 97/11/23 -- modification stops */
+/* rewrite by bad */
     move(0, 0);
-    sprintf(buf, "%*s", spc1, "");
-    if (!strcmp(mid, BBS_FULL_NAME)) {
-		if (DEFINE(currentuser,DEF_HIGHCOLOR))
-        	sprintf(stitle, "[1;4%dm[33m%s%s[37m%s[4%dm", colour, title, buf, mid, colour);
-		else
-        	sprintf(stitle, "[4%dm[33m%s%s[37m%s[4%dm", colour, title, buf, mid, colour);
-        prints("%s", stitle);
-    } else if (mid[0] == '[') {
-		if (DEFINE(currentuser,DEF_HIGHCOLOR))
-        	sprintf(stitle, "[1;4%dm[33m%s%s[37m[5m%s[m[4%dm", colour, title, buf, mid, colour);
-		else
-        	sprintf(stitle, "[4%dm[33m%s%s[37m[5m%s[m[4%dm", colour, title, buf, mid, colour);
-        prints("%s", stitle);
-    } else {
-		if (DEFINE(currentuser,DEF_HIGHCOLOR))
-        	sprintf(stitle, "[1;4%dm[33m%s%s[36m%s", colour, title, buf, mid);
-		else
-        	sprintf(stitle, "[4%dm[33m%s%s[36m%s", colour, title, buf, mid);
-        prints("%s", stitle);
-    }
-    sprintf(buf, "%*s", spc2, "");
-    prints("%s[33m%s[m", buf, note);
+    resetcolor();
+    setfcolor(YELLOW,DEFINE(currentuser,DEF_HIGHCOLOR));
+    setbcolor(colour);
     clrtoeol();
+    prints("%s", title);
+
+    move(0, spc1);
+    resetcolor();
+    if(strcmp(mid, BBS_FULL_NAME)&&mid[0]!='[')
+        setfcolor(CYAN, DEFINE(currentuser,DEF_HIGHCOLOR));
+    else
+        setfcolor(WHITE, DEFINE(currentuser,DEF_HIGHCOLOR));
+    setbcolor(colour);
+    if(mid[0]=='[') prints("[5m");
+    prints("%s", mid);
+
+    move(0, -strlen(note));
+    resetcolor();
+    setfcolor(YELLOW,DEFINE(currentuser,DEF_HIGHCOLOR));
+    setbcolor(colour);
+    prints("%s", note);
+    resetcolor();
     move(1, 0);
 }
 
