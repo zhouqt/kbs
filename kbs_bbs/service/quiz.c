@@ -185,7 +185,7 @@ int quiz_test()
         for(j=0;j<6;j++) answer[j]='0';
         for(j=0;j<anscount;j++)
             answer[j]=row[11][order[j]];
-
+		mysql_free_result(res);
         clear();
         move(0,0);
         setfcolor(YELLOW, 1);
