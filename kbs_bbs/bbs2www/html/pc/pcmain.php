@@ -313,7 +313,7 @@ function  pcmain_blog_most_trackback()
 function  pcmain_blog_most_view()
 {
 	global $pcconfig,$link;
-	$query = "SELECT nid , subject , uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-604800)." AND visitcount != 0 ORDER BY visitcount DESC , nid DESC LIMIT 0 , 10;";
+	$query = "SELECT nid , subject , uid , body FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-604800)." AND visitcount != 0 ORDER BY visitcount DESC , nid DESC LIMIT 0 , 10;";
 	$result = mysql_query($query,$link);
 	$num = mysql_num_rows($result);
 ?>
@@ -407,15 +407,15 @@ pcmain_blog_sections();
 		</ul></td>
 		</tr>
 		<tr>
-		<td class=f1 style="line-height=28px">
-		<p><b>RSS频道</b></p>
-		<ul><li>
+		<td class=f1>
+		<p align="center"><b>RSS频道</b></p>
+		<p align="center">
 		最新日志
 		<a href="rssnew.php"><img src="images/xml.gif" border="0" align="absmiddle" alt="本站最新Blog日志"></a>
-		</li><li>
+		</p><p align="center">
 		推荐文章
 		<a href="rssrec.php"><img src="images/xml.gif" border="0" align="absmiddle" alt="本站推荐Blog日志"></a>
-		</li></ul></td>
+		</p></td>
 		</tr>
 	</table>
 	</td>
