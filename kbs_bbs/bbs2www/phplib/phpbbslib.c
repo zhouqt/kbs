@@ -5939,15 +5939,15 @@ static PHP_FUNCTION(bbs_saveuserdata)
 
 	if (userface_url_len!=0) {
 		userface_img=-1;
-		userface_width=0;
-		userface_height=0;
-	} else {
 		if ( (userface_width<0) || (userface_width>120) ){
 			RETURN_LONG(-1);
 		}
 		if ( (userface_height<0) || (userface_height>120) ){
 			RETURN_LONG(-2);
 		}
+	} else {
+		userface_width=0;
+		userface_height=0;
 	}
 
 	if( read_user_memo(userid, &(getSession()->currentmemo)) <= 0) RETURN_LONG(-2);
@@ -6127,15 +6127,15 @@ static PHP_FUNCTION(bbs_createregform)
 #ifdef HAVE_WFORUM
 	if (userface_url_len!=0) {
 		userface_img=-1;
-		userface_width=0;
-		userface_height=0;
-	} else {
 		if ( (userface_width<0) || (userface_width>120) ){
 			RETURN_LONG(-1);
 		}
 		if ( (userface_height<0) || (userface_height>120) ){
 			RETURN_LONG(-2);
 		}
+	} else {
+		userface_width=0;
+		userface_height=0;
 	}
 #endif
 
