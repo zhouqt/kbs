@@ -1,3 +1,4 @@
+
 function submitonce(theform){
 //if IE 4+ or NS 6+
 if (document.all||document.getElementById){
@@ -30,7 +31,7 @@ tFadeWaiting=null;
 document.write("<style type='text/css'id='defaultPopStyle'>");
 document.write(".cPopText {  background-color: #F8F8F5;color:#000000; border: 1px #000000 solid;font-color: font-size: 12px; padding-right: 4px; padding-left: 4px; height: 20px; padding-top: 2px; padding-bottom: 2px; filter: Alpha(Opacity=0)}");
 document.write("</style>");
-document.write("<div id='dypopLayer' style='position:absolute;z-index:1000;' class='cPopText'></div>");
+document.write("<div id='dypopLayer' style='position:absolute;z-index:1000' class='cPopText'></div>");
 
 
 function showPopupText(){
@@ -111,49 +112,71 @@ function CheckAll(form)  {
  var isvisible;
  var MENU_SHADOW_COLOR='#999999';//定义下拉菜单阴影色
  var global = window.document
+ 
  global.fo_currentMenu = null
  global.fo_shadows = new Array
 
-function HideMenu() 
+function HideMenu(evt) 
 {
  var mX;
  var mY;
  var vDiv;
  var mDiv;
-	if (isvisible == true)
-{
-		vDiv = document.all("menuDiv");
-		mX = window.event.clientX + document.body.scrollLeft;
-		mY = window.event.clientY + document.body.scrollTop;
-		if ((mX < parseInt(vDiv.style.left)) || (mX > parseInt(vDiv.style.left)+vDiv.offsetWidth) || (mY < parseInt(vDiv.style.top)-h) || (mY > parseInt(vDiv.style.top)+vDiv.offsetHeight)){
-			vDiv.style.visibility = "hidden";
-			isvisible = false;
+	if (isvisible == true) {
+		evt = (evt) ? evt : ((window.event) ? event : null);
+		if (evt) {
+			evt.cancelBubble = true;
+			vSrc = (evt.target) ? evt.target :   ((evt.srcElement) ? evt.srcElement : null);
+
+			if (vSrc.nodeType == 3) {
+			   vSrc = vSrc.parentNode;
+			}
+			oDiv=getRawObject("menuDiv");
+
+			mX = evt.clientX + document.body.scrollLeft;
+			mY = evt.clientY + document.body.scrollTop;
+
+			if ((mX < parseInt(oDiv.style.left)) || (mX > parseInt(oDiv.style.left)+getObjectWidth(oDiv)) || (mY < parseInt(oDiv.style.top)-h) || (mY > parseInt(oDiv.style.top)+getObjectHeight(oDiv))){
+				hide(oDiv);
+				isvisible = false;
+			}
 		}
-}
-}
-
-function ShowMenu(vMnuCode,tWidth) {
-	vSrc = window.event.srcElement;
-	vMnuCode = "<table id='submenu' cellspacing=1 cellpadding=3 style='width:"+tWidth+"' class=TableBorder1 onmouseout='HideMenu()'><tr height=23><td nowrap align=left class=TableBody1>" + vMnuCode + "</td></tr></table>";
-
-	h = vSrc.offsetHeight;
-	w = vSrc.offsetWidth;
-	l = vSrc.offsetLeft + leftMar+4;
-	t = vSrc.offsetTop + topMar + h + space-2;
-	vParent = vSrc.offsetParent;
-	while (vParent.tagName.toUpperCase() != "BODY")
-	{
-		l += vParent.offsetLeft;
-		t += vParent.offsetTop;
-		vParent = vParent.offsetParent;
 	}
+}
 
-	menuDiv.innerHTML = vMnuCode;
-	menuDiv.style.top = t;
-	menuDiv.style.left = l;
-	menuDiv.style.visibility = "visible";
-	isvisible = true;
-    makeRectangularDropShadow(submenu, MENU_SHADOW_COLOR, 4)
+function ShowMenu(vMnuCode,tWidth,evt) {
+    evt = (evt) ? evt : ((window.event) ? event : null);
+    if (evt) {
+		evt.cancelBubble = true;
+	   vSrc = (evt.target) ? evt.target :   ((evt.srcElement) ? evt.srcElement : null);
+	   
+       if (vSrc.nodeType == 3) {
+           vSrc = vSrc.parentNode;
+       }
+		vMnuCode = "<table id='submenu' cellspacing=1 cellpadding=3 style='width:"+tWidth+"' class=TableBorder1 onmouseout='HideMenu()'><tr height=23><td nowrap class=TableBody1 align=center>" + vMnuCode + "</td></tr></table>";
+		oDiv=getRawObject("menuDiv");
+
+		h = vSrc.offsetHeight;
+		w = vSrc.offsetWidth;
+		l = vSrc.offsetLeft + leftMar+4;
+		t = vSrc.offsetTop + topMar + h + space-2;
+
+		vParent = vSrc.offsetParent;
+		while (vParent.tagName.toUpperCase() != "BODY")
+		{
+			l += vParent.offsetLeft;
+			t += vParent.offsetTop;
+			vParent = vParent.offsetParent;
+		}
+		oDiv.innerHTML = vMnuCode;
+		shiftTo(oDiv,l,t)
+		show(oDiv);
+		isvisible = true;
+		if( isIE4 ){
+			makeRectangularDropShadow(submenu, MENU_SHADOW_COLOR, 4)
+		}
+	}
+	return false;
 }
 
 function makeRectangularDropShadow(el, color, size)

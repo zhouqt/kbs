@@ -249,7 +249,7 @@ e=1>\\4";
 
 	$search="'\[em(\d+)\]'ie";
 
-	$replace="'<img src=\"emot\em\\1.gif\" border=0 align=middle>'";
+	$replace="'<img src=\"emot/em\\1.gif\" border=0 align=middle>'";
 
 	$strContent=preg_replace($search,$replace,$strContent);
 
@@ -404,7 +404,7 @@ function FilterJS($v)
     if(isset($v))
     {
         $pattern =array("/javascript/i",
-                        "/jscript:/i",
+                        "/javascript:/i",
                         "/js:/i",
                         "/about:/i",
                         "/file:/i",

@@ -91,7 +91,7 @@ function showBoardStaticsTop($boardArr){
 ?>
 <TABLE cellpadding=3 cellspacing=1 class=TableBorder1 align=center><TR><Th height=25 width=100% align=left id=TableTitleLink style="font-weight:normal">本版当前共有<b><?php echo $boardArr['CURRENTUSERS'];?></b>人在线。今日帖子<?php echo bbs_get_today_article_num($boardArr['NAME'] ); ?></Th></TR></td></tr></TABLE>
 <BR>
-<table cellpadding=0 cellspacing=0 border=0 width=97% align=center valign=middle><tr><td align=center width=2> </td><td align=left style="height:27" valign="center"><a href=postarticle.php?board=<?php echo $boardArr['NAME']; ?>><span class="buttonClass1" border=0 alt=发新帖></span></a>&nbsp;&nbsp;<a href=vote.php?board=2><span class="buttonClass2" border=0 alt=发起新投票></span>&nbsp;&nbsp;<a href=smallpaper.php?board=<?php echo $boardArr['NAME']; ?>><span class="buttonClass3" border=0 alt=发布小字报></span></a></td><td align=right><img src=pic/team2.gif align=absmiddle>
+<table cellpadding=0 cellspacing=0 border=0 width=97% align=center valign=middle><tr><td align=center width=2> </td><td align=left style="height:27" valign="center"><table cellpadding=0 cellspacing=0 border=0 ><tr><td width="110"><a href=postarticle.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass1" border=0 alt=发新帖></div></a></td><td width="110"><a href=vote.php?board=2><div class="buttonClass2" border=0 alt=发起新投票></div></td><td width="110"><a href=smallpaper.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass3" border=0 alt=发布小字报></div></a></td></tr></table></td><td align=right><img src=pic/team2.gif align=absmiddle>
 <?php 
 	$bms=split(' ',$boardArr['BM']);
 	foreach($bms as $bm) {

@@ -106,8 +106,7 @@ function article_bar($boardName,$boardID,$articleID,$article,$threadID,$listType
 ?>
 <table cellpadding=0 cellspacing=0 border=0 width=97% align=center>
 	<tr>
-	<td align=left valign=middle style="height:27">&nbsp; 
-	<a href="postarticle.php?board=<?php echo $boardName; ?>"><span class="buttonClass1" border=0 alt=发表一个新主题></span></a>&nbsp;&nbsp;<a href="vote.php?name=<?php echo $boardName; ?>"><span class="buttonClass2" border=0 alt=发表一个新投票></span>&nbsp;&nbsp;<a href="postarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $article['ID']; ?>"><span class="buttonClass4" border=0 alt=回复本主题></span></a>
+	<td align=left valign=middle style="height:27"><table cellpadding=0 cellspacing=0 border=0 ><tr><td width="110"><a href=postarticle.php?board=<?php echo $boardName; ?>><div class="buttonClass1" border=0 alt=发新帖></div></a></td><td width="110"><a href=vote.php?board=2><div class="buttonClass2" border=0 alt=发起新投票></div></td><td width="110"><a href="postarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $article['ID']; ?>"><div class="buttonClass4" border=0 alt=回复本主题></div></a></td></tr></table>
 	</td>
 	<td align=right valign=middle><a href="disparticle.php?boardName=<?php echo $boardName; ?>&ID=<?php echo $articleID>1?$articleID-1:1; ?>"><img src="pic/prethread.gif" border=0 alt=浏览上一篇主题 width=52 height=12></a>&nbsp;
 	<a href="javascript:this.location.reload()"><img src="pic/refresh.gif" border=0 alt=刷新本主题 width=40 height=12></a> &nbsp;

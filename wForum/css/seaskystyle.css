@@ -88,19 +88,19 @@ font-family:Tahoma,Verdana,ËÎÌו; font-size: 12px; line-height: 15px;}
 }
 
 .navClass1
-{Z-INDEX: 2; VISIBILITY: hidden; WIDTH: 1px; POSITION: absolute; HEIGHT: 1px; BACKGROUND-COLOR: #9cc5f8}
+{Z-INDEX: 2; VISIBILITY: hidden; WIDTH:100px; POSITION: absolute;   BACKGROUND-COLOR: #9cc5f8}
 
 .navClass2
-{border:1px #6595D6 solid; border-top-width: 0px; border-right-width: 1px; border-bottom-width: 0px; border-left-width: 1px;width:97%;}
+{border:1px #6595D6 solid; border-top-width: 0px; border-right-WIDTH:1px; border-bottom-width: 0px; border-left-WIDTH:1px;width:97%;}
 
 .buttonClass1
-{width:99;height:25;background-image:url(../pic/blue/postnew0.gif)}
+{width:99px;height:25px;background-image:url(../pic/blue/postnew0.gif)}
 
 .buttonClass2
-{width:99;height:25;background-image:url(../pic/blue/votenew0.gif)}
+{width:99px;height:25px;background-image:url(../pic/blue/votenew0.gif)}
 
 .buttonClass3
-{width:99;height:25;background-image:url(../pic/blue/xzb0.gif)}
+{width:99px;height:25px;background-image:url(../pic/blue/xzb0.gif)}
 
 .buttonClass4
-{width:99;height:25;background-image:url(../pic/blue/reply0.gif)}
+{width:99px;height:25px;background-image:url(../pic/blue/reply0.gif)}

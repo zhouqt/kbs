@@ -312,7 +312,6 @@ function html_init($charset="",$title="",$otherheader="")
 <title><?php echo $title; ?></title>
 <link rel="stylesheet" type="text/css" href="css/ansi.css"/>
 <link rel="stylesheet" type="text/css" href="css/<?php echo $css_style; ?>.css"/>
-<script src="inc/funcs.js"  language="javascript"></script>
 <?php echo($otherheader); ?>
 </head>
 <?php
@@ -594,7 +593,9 @@ function show_nav($boardName='')
 <?php 
   }
 ?>
-<body topmargin=0 leftmargin=0 onmouseover="HideMenu();">
+<body topmargin=0 leftmargin=0 onmouseover="HideMenu(event);">
+<script src="inc/browers.js"  language="javascript"></script>
+<script src="inc/funcs.js"  language="javascript"></script>
 <div id=menuDiv class="navClass1"></div>
 <table cellspacing=0 cellpadding=0 align=center class="navClass2">
 <tr><td width=100% >
@@ -630,13 +631,13 @@ function show_nav($boardName='')
 ?>
 <img src=pic/navspacer.gif align=absmiddle>
 <a href="logon.php">重登陆</a> 
-<img src=pic/navspacer.gif align=absmiddle>  <a href="#" onMouseOver='ShowMenu(manage,100)'>用户功能菜单</a>
+<img src=pic/navspacer.gif align=absmiddle>  <a href="#" onMouseOver='ShowMenu(manage,100,event)'>用户功能菜单</a>
 <?php
  }
 ?>
 <img src=pic/navspacer.gif align=absmiddle>  <a href="http://voicechat.zixia.net:10015/voicechat.htm?r=1" target=_blank>语音聊天室</a>
  <img src=pic/navspacer.gif align=absmiddle>  <a href="query.php<?php echo $boardName==''?'':'?boardName='.$boardName; ?>">搜索</a> 
- <img src=pic/navspacer.gif align=absmiddle>  <a href="#" onMouseOver='ShowMenu(stylelist,100)'>自选风格</a> 
+ <img src=pic/navspacer.gif align=absmiddle>  <a href="#" onMouseOver='ShowMenu(stylelist,100,event)'>自选风格</a> 
  <?php    if ($loginok)
   {
 ?> <img src=pic/navspacer.gif align=absmiddle> <a href="logout.php">退出</a><?php   
