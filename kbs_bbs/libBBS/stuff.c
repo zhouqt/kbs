@@ -1286,3 +1286,68 @@ void set_proc_title(char *argv0, char *title)
 	strcpy(argv0, title);
 #endif
 }
+
+int cmpuids2(unum, urec)
+    int unum;
+    struct user_info *urec;
+{
+    return (unum == urec->uid);
+}
+
+unsigned int 
+load_mailbox_prop(char *userid)
+{
+	char filename[256];
+	int prop = 0;
+	int fd;
+
+	sethomefile(filename, userid, ".mailbox.prop");
+	if ((fd = open(filename, O_RDONLY, 0644)) > 0)
+	{
+		read(fd, &prop, sizeof(prop));
+		close(fd);
+	}
+	return update_mailbox_prop(userid, prop);
+}
+
+unsigned int 
+store_mailbox_prop(char *userid)
+{
+	char filename[256];
+	int prop;
+	int fd;
+
+	prop = get_mailbox_prop(userid);
+	sethomefile(filename, userid, ".mailbox.prop");
+	if ((fd = open(filename, O_WRONLY | O_CREAT, 0644)) > 0)
+	{
+		write(fd, &prop, sizeof(prop));
+		close(fd);
+	}
+	return prop;
+}
+
+unsigned int 
+get_mailbox_prop(char *userid)
+{
+	struct user_info *uip;
+
+	uip = t_search(userid, 0);
+	if (uip == NULL)
+		return 0;
+	else
+		return uip->mailbox_prop;
+}
+
+unsigned int 
+update_mailbox_prop(char *userid, unsigned int prop)
+{
+	struct user_info *uip;
+
+	uip = t_search(userid, 0);
+	if (uip != NULL)
+		return uip->mailbox_prop = prop;
+	else
+		return 0;
+}
+
