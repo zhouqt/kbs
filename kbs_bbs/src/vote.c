@@ -286,9 +286,9 @@ int count_result(struct ballot *ptr, int idx, char *arg)
     }
     if (ptr->msg[0][0] != '\0') {
         if (currvote.type == VOTE_ASKING) {
-            fprintf(sug, "%s 的作答如下：\n", ptr->uid);
+            fprintf(sug, "\033[44m%s 的作答如下：\033[m\n", ptr->uid);
         } else
-            fprintf(sug, "%s 的建议如下：\n", ptr->uid);
+            fprintf(sug, "\033[44m%s 的建议如下：\033[m\n", ptr->uid);
         for (i = 0; i < 3; i++)
             fprintf(sug, "%s\n", ptr->msg[i]);
     }
