@@ -15,7 +15,7 @@ setStat("发布小字报");
 show_nav($boardName);
 
 if (isErrFounded()) {
-		echo"<br><br>";
+	echo"<br><br>";
 	html_error_quit() ;
 } else {
 	?>
@@ -44,16 +44,37 @@ function preprocess(){
 	global $currentuser;
 	global $boardArr;
 	global $loginok;
+	global $title;
+	global $Content;
+	
+	$title=trim($_POST["title"]);
+	$Content=trim($_POST["Content"]);
 
+	if ($title=="") {
+	    foundErr("<br><li>主题不应为空。");
+		return false;
+	}
+	if (strlen($title)>80) {
+		foundErr("<br><li>主题长度不能超过80");
+		return false;
+	}
+	if ($Content=="") {
+		foundErr("<br><li>没有填写内容。");
+		return false;
+	}
+	if (strlen($Content)>500) {
+		foundErr("<br><li>发言内容不得大于500");
+		return false;
+	} 
 	if ($loginok!=1) {
 		foundErr("游客不能发表小字报。");
 		return false;
 	}
-	if (!isset($_GET['board'])) {
+	if (!isset($_POST['board'])) {
 		foundErr("未指定版面。");
 		return false;
 	}
-	$boardName=$_GET['board'];
+	$boardName=$_POST['board'];
 	$brdArr=array();
 	$boardID= bbs_getboard($boardName,$brdArr);
 	$boardArr=$brdArr;
@@ -84,36 +105,14 @@ function preprocess(){
 
 function main($boardID,$boardName) {
 	global $conn;
+	global $currentuser;
+	global $title;
+	global $Content;
 
-	$conn->query("delete from smallpaper_tb where Addtime<subdate(Now(),interval 2 day)");
-?>
-<form action="savesmallpaper.php" method="post"> 
-<input type="hidden" name="action" value="savepaper">
-    <table cellpadding=6 cellspacing=1 align=center class=tableborder1>
-    <tr>
-    <th valign=middle colspan=2>
-    发布小字报</th></tr>
-    <td class=tablebody1 valign=middle><b>标 题</b>(最多30字)</td>
-    <td class=tablebody1 valign=middle><INPUT name="title" type=text size=60></td></tr>
-    <tr>
-    <td class=tablebody1 valign=top width=30%>
-<b>内 容</b><BR>
-<!--
-在本版发布小字报将您将付<font color="<?php   echo $Forum_body[8]; ?>"><b><?php   echo $GroupSetting[46]; ?></b></font>元费用<br>
--->
-<font color=#ff0000><b>48</b></font>小时内发表的小字报将随机抽取<font color="#ff0000"><b>5</b></font>条滚动显示于论坛上<br>
-<li>HTML标签：不可用
-<li>UBB 标签：允许
-<li>内容不得超过500字
-</td>
-<td class=tablebody1 valign=middle>
-<textarea class="smallarea" cols="60" name="Content" rows="8" wrap="VIRTUAL"></textarea>
-<INPUT name="board" type=hidden value="<?php   echo $boardName; ?>">
-                </td></tr>
-    <tr>
-    <td class=tablebody2 valign=middle colspan=2 align=center><input type=submit name="submit" value="发 布"></td></tr></table>
-</form>
-<?php   
+    $sql="insert into smallpaper_tb (boardID,Owner,Title,Content,Addtime) values (".$boardID.",'". $currentuser['userid']."','". htmlentities($title)."','". htmlentities($Content)."',now())";
+	$conn->query($sql);
+	setSucMsg("您成功的发布了小字报。");
+  	return html_success_quit('返回版面', 'board.php?name='.$boardName);
 } 
 
 ?>
