@@ -78,7 +78,7 @@ int search(char* boardname,char *id, char *pat, char *pat2, char *pat3, int dt)
                 continue;
             if (pat3[0] && strcasestr(x.title, pat3))
                 continue;
-            printf("<tr><td>%d<td><a href=bbsqry?userid=%s>%s</a>", n, x.owner, x.owner);
+            printf("<tr><td>%d<td><a href=/bbsqry.php?userid=%s>%s</a>", n, x.owner, x.owner);
             printf("<td>%6.6s", wwwCTime(get_posttime(&x)) + 4);
             printf("<td><a href=/bbscon.php?board=%s&id=%d>%s</a>\n", board, x.id, nohtml(x.title));
             total++;

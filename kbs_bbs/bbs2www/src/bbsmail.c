@@ -51,7 +51,7 @@ int main()
         if (ptr == 0)
             ptr = " ";
         ptr = nohtml(ptr);
-        printf("<td><a href=bbsqry?userid=%s>%13.13s</a>", ptr, ptr);
+        printf("<td><a href=/bbsqry.php?userid=%s>%13.13s</a>", ptr, ptr);
         filetime = atoi(data[i].filename + 2);
         printf("<td>%12.12s", wwwCTime(filetime) + 4);
         printf("<td><a href=bbsmailcon?file=%s&num=%d>", data[i].filename, i);

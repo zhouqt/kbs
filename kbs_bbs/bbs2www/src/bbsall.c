@@ -41,7 +41,7 @@ int main()
         ptr = strtok(data[i].BM, " ,;");
         if (ptr == 0)
             ptr = "³ÏÕ÷°æÖ÷ÖÐ";
-        printf("<td><a href=bbsqry?userid=%s>%s</a>", ptr, ptr);
+        printf("<td><a href=/bbsqry.php?userid=%s>%s</a>", ptr, ptr);
     }
     printf("</table><hr></center>\n");
     http_quit();

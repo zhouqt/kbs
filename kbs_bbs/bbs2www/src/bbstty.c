@@ -14,7 +14,7 @@ int main()
     cmd = getparm("cmd");
     r = sscanf(cmd, "%80s %80s %80s", s1, s2, s3);
     if (!strcasecmp(s1, "/q")) {
-        sprintf(buf, "/cgi-bin/bbs/bbsqry?userid=%s", s2);
+        sprintf(buf, "/bbsqry.php?userid=%s", s2);
         redirect(buf);
         http_quit();
     }

@@ -31,7 +31,7 @@ int main()
     printf("<table border=\"1\"><tr><td>序号</td><td>好友代号</td><td>好友说明</td><td>删除好友</td></tr>");
     for (i = 0; i < fnum; i++) {
         printf("<tr><td>%d</td>", i + 1);
-        printf("<td><a href=\"bbsqry?userid=%s\">%s</a></td>", frnds[i].id, frnds[i].id);
+        printf("<td><a href=\"/bbsqry.php?userid=%s\">%s</a></td>", frnds[i].id, frnds[i].id);
         printf("<td>%s</td>\n", nohtml(frnds[i].exp));
         printf("<td>[<a onclick=\"return confirm('确实删除吗?')\" href=\"bbsfdel?userid=%s\">删除</a>]</td></tr>", frnds[i].id);
     }

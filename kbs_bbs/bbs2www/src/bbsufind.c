@@ -56,8 +56,8 @@ int main()
         printf("<tr><td>%d</td>", i + 1);
         printf("<td>%s", isfriend(user[i].userid) ? "¡Ì" : "  ");
         printf("%s</td>", user[i].invisible ? "<font color=\"green\">C</font>" : " ");
-        printf("<td><a href=\"bbsqry?userid=%s\">%s</a></td>", user[i].userid, user[i].userid);
-        printf("<td><a href=\"bbsqry?userid=%s\">%24.24s </a></td>", user[i].userid, nohtml(user[i].username));
+        printf("<td><a href=\"/bbsqry.php?userid=%s\">%s</a></td>", user[i].userid, user[i].userid);
+        printf("<td><a href=\"/bbsqry.php?userid=%s\">%24.24s </a></td>", user[i].userid, nohtml(user[i].username));
         printf("<td>%20.20s </td>", user[i].from);
         printf("<td>%s</td>", user[i].invisible ? "ÒşÉíÖĞ..." : ModeType(user[i].mode));
         if (dt == 0)

@@ -37,7 +37,7 @@ int main()
             break;
         if (x[start + i].userid[0] == '\0')
             continue;
-        printf("<tr><td>%d<td>%s<td><a href=\"bbsqry?userid=%s\">%s</a><td>%s<td>%d<td>%d<td>%s\n",
+        printf("<tr><td>%d<td>%s<td><a href=\"/bbsqry.php?userid=%s\">%s</a><td>%s<td>%d<td>%d<td>%s\n",
                start + i + 1, isfriend(x[start + i].userid) ? "<font color=\"green\">¡Ì</font>" : " ",
                x[start + i].userid, x[start + i].userid, nohtml(x[start + i].username), x[start + i].numlogins, x[start + i].numposts, Ctime(x[start + i].lastlogin) + 4);
     }

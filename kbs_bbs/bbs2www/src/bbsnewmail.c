@@ -32,7 +32,7 @@ int main()
         if (ptr == 0)
             ptr = " ";
         ptr = nohtml(ptr);
-        printf("<td><a href=bbsqry?userid=%s>%13.13s</a>", ptr, ptr);
+        printf("<td><a href=/bbsqry.php?userid=%s>%13.13s</a>", ptr, ptr);
         printf("<td>%6.6s", wwwCTime(atoi(x.filename + 2)) + 4);
         printf("<td><a href=bbsmailcon?file=%s&num=%d>", x.filename, total - 1);
         if (strncmp("Re: ", x.title, 4))

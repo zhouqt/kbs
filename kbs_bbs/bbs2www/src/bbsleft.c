@@ -75,7 +75,7 @@ int main()
     printf("<tr><td>");
     if (currentuser == NULL)
         http_fatal("hehe:%d", loginok);
-    printf("用户: <a href=\"bbsqry?userid=%s\" target=\"f3\">%s</a><br>", getcurruserid(), getcurruserid());
+    printf("用户: <a href=\"/bbsqry.php?userid=%s\" target=\"f3\">%s</a><br>", getcurruserid(), getcurruserid());
     uleveltochar(buf, getcurrusr());
     printf("身份: %s<br>\n", buf);
 #ifdef ZIXIA
@@ -145,7 +145,7 @@ int main()
         printf("<img src=\"/images/link.gif\"> <a href=\"bbsfriend\" target=\"f3\">在线好友</a><br>\n");
     }
     printf("<img src=\"/images/link.gif\"> <a href=\"bbsusr\" target=\"f3\">环顾四方</a><br>\n");
-    printf("<img src=\"/images/link.gif\"> <a href=\"bbsqry\" target=\"f3\">查询网友</a><br>\n");
+    printf("<img src=\"/images/link.gif\"> <a href=\"/bbsqry.php\" target=\"f3\">查询网友</a><br>\n");
     printf("<img src=\"/images/link.gif\"> <a href=\"/bbssendsms.php\" target=\"f3\">发送短信</a><br>\n");
     if (loginok && currentuser->userlevel & PERM_PAGE) {
         printf("<img src=\"/images/link.gif\"> <a href=\"/bbssendmsg.php\" target=\"f3\">发送讯息</a><br>\n");

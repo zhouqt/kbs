@@ -67,7 +67,7 @@ int main()
     printf("<table border=\"1\"><tr><td>序号</td><td>用户帐号</td><td>理由</td><td>说明</td><td>管理</td></tr>\n");
     for (i = 0; i < denynum; i++) {
         printf("<tr><td>%d</td>", i + 1);
-        printf("<td><a href=\"bbsqry?userid=%s\">%s</a></td>", denyuser[i].id, denyuser[i].id);
+        printf("<td><a href=\"/bbsqry.php?userid=%s\">%s</a></td>", denyuser[i].id, denyuser[i].id);
         printf("<td>%s</td>\n", nohtml(denyuser[i].exp));
         printf("<td>%s</td>\n", denyuser[i].comment);
         printf("<td>[<a onclick=\"return confirm('确实解封吗?')\" href=\"bbsdenydel?board=%s&userid=%s\">解封</a>]</td></tr>\n", brdencode, denyuser[i].id);

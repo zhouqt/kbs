@@ -130,7 +130,7 @@ int brd_show_boards(int sec, int yank)
                 if (!isalpha(buf[0]))
                     printf("<td>%s</td>", buf);
                 else
-                    printf("<td><a href=\"bbsqry?userid=%s\">%s</a></td>", buf, buf);
+                    printf("<td><a href=\"/bbsqry.php?userid=%s\">%s</a></td>", buf, buf);
             }
             printf("<td>%d</td>", ptr->total);
             printf("<td><a target=\"f3\" href=\"bbsfav?select=%d&delete=%d\">É¾³ý</a></td></tr>", sec, IsFavBoard(ptr->pos) - 1);

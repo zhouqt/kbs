@@ -48,8 +48,8 @@ int main()
         printf("<tr><td>%d", i + 1);
         printf("<td>%s", "¡Ì");
         printf("%s", user[i].invisible ? "<font color=\"green\">C</font>" : " ");
-        printf("<td><a href=\"bbsqry?userid=%s\">%s</a>", user[i].userid, user[i].userid);
-        printf("<td><a href=\"bbsqry?userid=%s\">%24.24s </a>", user[i].userid, nohtml(user[i].username));
+        printf("<td><a href=\"/bbsqry.php?userid=%s\">%s</a>", user[i].userid, user[i].userid);
+        printf("<td><a href=\"/bbsqry.php?userid=%s\">%24.24s </a>", user[i].userid, nohtml(user[i].username));
         printf("<td>%20.20s ", user[i].from);
         printf("<td>%s", user[i].invisible ? "ÒşÉíÖĞ..." : ModeType(user[i].mode));
         if (dt == 0) {
