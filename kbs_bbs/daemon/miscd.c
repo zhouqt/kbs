@@ -312,6 +312,10 @@ int dodaemon(char* argv1,char* daemon)
     act.sa_flags = SA_RESTART;
     sigaction(SIGCHLD, &act, NULL);
 #endif
+    if (((daemon==NULL)||(!strcmp(daemon,"timed")))&&fork()) {
+          strcpy(argv1,"timed");
+          timed();
+    }
 
     if (((daemon==NULL)||(!strcmp(daemon,"killd")))&&fork()) {
      strcpy(argv1,"killd");
@@ -354,10 +358,6 @@ int dodaemon(char* argv1,char* daemon)
     if ((daemon==NULL)||(!strcmp(daemon,"flushd"))) {
           strcpy(argv1,"flushd");
           flushd();
-    }
-    if ((daemon==NULL)||(!strcmp(daemon,"timed"))) {
-          strcpy(argv1,"timed");
-          timed();
     }
 }
 int main (int argc,char *argv[])
