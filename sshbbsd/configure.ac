@@ -16,7 +16,7 @@ AM_CONFIG_HEADER(config.h)
 AC_PREREQ(2.10)
 
 # So many systems seem to need this that it is better do it here automatically.
-LIBS="-L/usr/local/lib $LIBS"
+#LIBS="-L/usr/local/lib $LIBS"
 
 m4_include(../config.icc)
 no_x="yes"

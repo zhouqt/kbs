@@ -1268,11 +1268,11 @@ static char search_data[STRLEN];
 int search_mode(int mode, char *index)
 // added by bad 2002.8.8 search mode
 {
-    struct fileheader mkpost;
+    struct fileheader* ptr1;
     struct flock ldata, ldata2;
     int fd, fd2, size = sizeof(fileheader), total, i, count = 0;
     char olddirect[PATHLEN];
-    char *ptr, *ptr1;
+    char *ptr;
     struct stat buf;
     bool init;
     size_t bm_search[256];
@@ -1333,16 +1333,15 @@ int search_mode(int mode, char *index)
         close(fd);
         return FULLUPDATE;
     }
-    ptr1 = ptr;
+    ptr1 = (struct fileheader*)ptr;
     for (i = 0; i < total; i++) {
-        memcpy(&mkpost, ptr1, size);
-        if (mode == 6 && mkpost.id == mkpost.groupid || 
-        	mode == 7 && strcasecmp(mkpost.owner, index) == 0 || 
-        	mode == 8 && bm_strstr_rp(mkpost.title, index,bm_search,&init) != NULL) {
-            write(fd, &mkpost, size);
+        if (mode == 6 && ptr1->id == ptr1->groupid || 
+        	mode == 7 && strcasecmp(ptr1->owner, index) == 0 || 
+        	mode == 8 && bm_strstr_rp(ptr1->title, index,bm_search,&init) != NULL) {
+            write(fd, ptr1, size);
             count++;
         }
-        ptr1 += size;
+        ptr1 ++;
     }
     end_mmapfile((void *) ptr, buf.st_size, -1);
     ldata2.l_type = F_UNLCK;
