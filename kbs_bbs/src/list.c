@@ -672,7 +672,7 @@ int mailtoall(mode)
 int mode;
 {
 
-    return apply_users(mailto,mode);
+    return apply_users(mailto,(char*)mode);
 }
 
 Show_Users()

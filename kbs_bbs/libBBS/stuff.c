@@ -21,6 +21,8 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#define EXTERN
+
 #include "bbs.h"
 #include <sys/param.h>
 #include <sys/ipc.h>
@@ -28,6 +30,10 @@
 
 extern char *getenv();
 extern char fromhost[];
+static const char *invalid[] = { "unknown@", "root@", "gopher@", "bbs@",
+        "guest@", NULL };
+static char modestr[STRLEN];
+static char hh_mm_ss[8];
 
 int my_system(const char *cmdstring)
 {
@@ -143,7 +149,6 @@ pressanykey()
 
 char *idle_str( struct user_info *uent )
 {
-    static char hh_mm_ss[ 32 ];
     struct stat buf;
     time_t      now, diff;
     int         hh, mm;
@@ -164,7 +169,7 @@ char *idle_str( struct user_info *uent )
     mm = (diff / 60) % 60;
 
     if ( hh > 0 )
-        sprintf( hh_mm_ss, "%d:%02d", hh, mm );
+        snprintf( hh_mm_ss,sizeof(hh_mm_ss), "%2d:%02d", hh, mm );
     else if ( mm > 0 )
         sprintf( hh_mm_ss, "%d", mm );
     else sprintf ( hh_mm_ss, "   ");
@@ -175,7 +180,6 @@ char *idle_str( struct user_info *uent )
 
 char *modestring(int mode,int towho,int complete,char *chatid)
 {
-    static char modestr[STRLEN];
     struct userec urec;
 
     /* Leeward: 97.12.18: Below removing ' characters for more display width */
@@ -894,8 +898,6 @@ int bad_user_id( char    *userid)
 
 int valid_ident( char *ident)
 {
-    static char *invalid[] = { "unknown@", "root@", "gopher@", "bbs@",
-        "guest@", NULL };
     int         i;
 
     for( i = 0; invalid[i] != NULL; i++ )

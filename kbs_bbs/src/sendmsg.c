@@ -15,10 +15,11 @@ struct user_info *getuinfopid()
 }
 int  RMSG=NA;
 extern int RUNSH;
-char buf2[STRLEN];
 struct user_info *t_search();
 extern struct screenline *big_picture;
 extern char MsgDesUid[14]; /* 保存所发msg的目的uid 1998.7.5 by dong */
+long f_offset=0;
+static int RMSGCount = 0;    /* Leeward 98.07.30 supporting msgX */
 
 int
 get_msg(uid,msg,line)
@@ -227,7 +228,7 @@ show_allmsgs()
 
 
 int
-dowall(struct user_info *uin,char* arg)
+dowall(struct user_info *uin,char* buf2)
 {
     if (!uin->active || !uin->pid) return -1;
     /*---	不给当前窗口发消息了	period	2000-11-13	---*/
@@ -251,6 +252,7 @@ dowall(struct user_info *uin,char* arg)
 int
 wall()
 {
+	char buf2[STRLEN];
     modify_user_mode( MSG );
     move(2,0) ; clrtobot();
     if (!get_msg("所有使用者",buf2,1) ){
@@ -258,7 +260,7 @@ wall()
         move(2,0); clrtoeol();
         return 0;
     }
-    if( apply_ulist((APPLY_UTMP_FUNC) dowall,NULL ) == -1 ) {
+    if( apply_ulist((APPLY_UTMP_FUNC) dowall,buf2) == -1 ) {
         move(2,0);
         prints( "没有任何使用者上线\n" );
         pressanykey();
@@ -267,8 +269,6 @@ wall()
     pressanykey();
     return 0;
 }
-
-long f_offset=0;
 
 void
 r_msg()
@@ -279,7 +279,6 @@ r_msg()
     char msgX[256];              /* Leeward 98.07.30 supporting msgX */
     int  msgXch = 0;             /* Leeward 98.07.30 supporting msgX */
     int  XOK = 0;                /* Leeward 98.07.30 supporting msgX */
-    static int RMSGCount = 0;    /* Leeward 98.07.30 supporting msgX */
     int  msg_count = 0;
     char fname[STRLEN], fname2[STRLEN] ;
     int line,tmpansi;

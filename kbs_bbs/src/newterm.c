@@ -22,7 +22,6 @@
 #include <varargs.h>
 #include <arpa/telnet.h>
 
-char* BC;
 int clearbuflen=6;
 char clearbuf[6];
 
@@ -64,13 +63,11 @@ restore_tty()
 int
 term_init()
 {
-    extern char* BC;
     extern int obufsize,ibufsize,icurrchar;
     static char* BCBuf="\010";
     obufsize=0;
     ibufsize=0;
     icurrchar = 0;
-    BC=BCBuf;
     strncpy(clearbuf,"\033[H\033[J",clearbuflen);
     strncpy(cleolbuf,"\033[K",cleolbuflen);
     strncpy(strtstandout,"\033[7m",strtstandoutlen);

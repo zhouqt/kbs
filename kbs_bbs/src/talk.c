@@ -81,6 +81,7 @@ char    *talk_uent_buf;
 /* begin - jjyang */
 char save_page_requestor[STRLEN];
 /* end - jjyang */
+char npage_requestor[STRLEN];
 
 int cmpfnames();
 /*---	changed to isidhidden by period	2000-10-20	---*
@@ -337,55 +338,12 @@ char q_id[IDLEN];
 }
 
 int
-count_active(struct user_info *uentp,char* arg,int pos)
+count_visible_active(struct user_info *uentp,int* count,int pos)
 {
-    static int count ;
-
-    if(uentp == NULL) {
-        int c = count;
-        count = 0;
-        return c;
-    }
     if(!uentp->active || !uentp->pid)
         return 0 ;
-    count++ ;
-    return 1 ;
-}
-
-int
-count_useshell(struct user_info *uentp ,char* arg,int pos)
-{
-    static int count ;
-
-    if(uentp == NULL) {
-        int c = count;
-        count = 0;
-        return c;
-    }
-    if(!uentp->active || !uentp->pid)
-        return 0 ;
-    if(uentp->mode==WWW||uentp->mode==CSIE_TIN||uentp->mode==CSIE_GOPHER
-            ||uentp->mode==EXCE_CHESS||uentp->mode==EXCE_BIG2||uentp->mode==EXCE_MJ
-            ||uentp->mode==IRCCHAT)
-        count++ ;
-    return 1 ;
-}
-
-int
-count_visible_active(struct user_info *uentp,char* arg,int pos)
-{
-    static int count ;
-
-    if(uentp == NULL) {
-        int c = count;
-        count = 0;
-        return c;
-    }
-    if(!uentp->active || !uentp->pid)
-        return 0 ;
-    count++ ;
-    if(!HAS_PERM(currentuser,PERM_SEECLOAK) && uentp->invisible)
-        count--;
+    if(!(!HAS_PERM(currentuser,PERM_SEECLOAK) && uentp->invisible))
+    	(*count)++ ;
     return 1 ;
 }
 
@@ -393,46 +351,31 @@ count_visible_active(struct user_info *uentp,char* arg,int pos)
 int
 alcounter(struct user_info *uentp ,char* arg,int pos)
 {
-    static int vi_users,vi_friends;
     int canseecloak;
 
-    if(uentp == NULL) {
-        count_friends= vi_friends;
-        count_users= vi_users;
-        vi_users=vi_friends=0;
-        return 1;
-    }
     if(!uentp->active || !uentp->pid)
         return 0 ;
 
     canseecloak=(!HAS_PERM(currentuser,PERM_SEECLOAK) && uentp->invisible)?0:1;
     if(myfriend(uentp->uid,NULL))
     {
-        vi_friends++ ;
+        count_friends++ ;
         if(!canseecloak)
-            vi_friends--;
+            count_friends--;
     }
-    vi_users++ ;
+    count_users++ ;
     if(!canseecloak)
-        vi_users--;
+        count_users--;
     return 1 ;
 }
 
 int
 num_alcounter()
 {
-    alcounter(NULL,0,0) ;
+	count_friends=0;
+	count_users=0;
     apply_ulist_addr( alcounter,0 ) ;
-    alcounter(NULL,0,0) ;
     return;
-}
-
-int
-num_useshell()
-{
-    count_useshell(NULL,0,0) ;
-    apply_ulist( count_useshell,0) ;
-    return count_useshell(NULL,0,0) ;
 }
 
 int
@@ -445,9 +388,9 @@ char *uid;
 int
 num_visible_users()
 {
-    count_visible_active(NULL,0,0) ;
-    apply_ulist_addr( count_visible_active,0 ) ;
-    return count_visible_active(NULL,0,0) ;
+	int count;
+    apply_ulist_addr( (APPLY_UTMP_FUNC)count_visible_active,(char*)&count) ;
+    return count;
 }
 
 int
@@ -847,8 +790,6 @@ char    *mesg;
     }
     return YEA;
 }
-
-static char npage_requestor[STRLEN];
 
 int
 setnpagerequest()
@@ -1555,6 +1496,27 @@ t_monitor()
     return 0;
 }
 
+#ifdef IRC
+int count_useshell(struct user_info *uentp ,int* count,int pos)
+{
+
+    if(!uentp->active || !uentp->pid)
+        return 0 ;
+    if(uentp->mode==WWW||uentp->mode==CSIE_TIN||uentp->mode==CSIE_GOPHER
+            ||uentp->mode==EXCE_CHESS||uentp->mode==EXCE_BIG2||uentp->mode==EXCE_MJ
+            ||uentp->mode==IRCCHAT)
+        (*count)++ ;
+    return 1 ;
+}
+
+int num_useshell()
+{
+	int count ;
+	count=0;
+    apply_ulist( (APPLY_UTMP_FUNC)count_useshell,(char*)&count) ;
+    return count;
+}
+
 void
 exec_cmd( umode, pager, cmdfile )
 int     umode, pager;
@@ -1598,7 +1560,6 @@ char    *cmdfile;
     clear();
 }
 
-#ifdef IRC
 void
 t_irc() {
     exec_cmd( IRCCHAT, NA, "bin/irc.sh" );

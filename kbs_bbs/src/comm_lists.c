@@ -62,7 +62,10 @@ int     ov_send(), m_internet(),s_msg(),mailall(),suicide();
 int     t_users(), t_friends(), t_rusers(), t_list(), t_monitor();
 int     wait_friend();
 int     t_query(), t_talk(), t_pager(), t_override(), x_cloak();
-int     t_irc(), kick_user();
+#ifdef IRC
+int     t_irc()
+#endif
+int kick_user();
 /* add by KCN */
 /* Modified by sanshao, sb KCN */
 int	ent_chat1(), ent_chat2();
@@ -127,7 +130,9 @@ struct scommandlist {
     "SetFriends",   t_override,
     "EnterChat",    ent_chat1,
     "EnterChat2",    ent_chat2,
+#ifdef IRC
     "ExecIrc",      t_irc,
+#endif
     "ListLogins",   t_list,
     "Monitor",      t_monitor,
     "RealLogins",   t_rusers,

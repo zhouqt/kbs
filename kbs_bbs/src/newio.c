@@ -51,6 +51,10 @@ int icurrchar = 0 ;
 int KEY_ESC_arg;
 
 int idle_count=0;
+
+static time_t old;
+static time_t lasttime = 0;
+
 extern int convcode;
 extern char* big2gb(char*,int*,int);
 extern char* gb2big(char*,int*,int);
@@ -233,7 +237,6 @@ int filter_telnet(unsigned char* s,int* len)
     return (*len=newlen);
 }
 
-time_t old;
 int
 igetch()
 {
@@ -241,7 +244,6 @@ igetch()
     char c;
     int hasaddio=1;
     extern int RMSG;
-    static time_t lasttime = 0;
 
 
     if((uinfo.mode==CHAT1||uinfo.mode==TALK||uinfo.mode==PAGE) && RMSG==YEA)
@@ -385,12 +387,15 @@ igetagain:
     if(Ctrl('T') != c)
         uinfo.freshtime=now;
     /* add by KCN , decrease temp_numposts*/
-if (lasttime + 60*60*8 < now) {
+	if (lasttime + 60*60*8 < now) {
         lasttime = now;
         if (temp_numposts>0)
             temp_numposts--;
     }
-    if (now-old>60) UPDATE_UTMP(freshtime,uinfo);
+    if (now-old>60) {
+    	UPDATE_UTMP(freshtime,uinfo);
+    	old=now;
+    }
     return c;
 }
 

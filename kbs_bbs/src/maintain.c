@@ -318,39 +318,39 @@ chgrp()
     char            buf[STRLEN], ans[6];
 
     /*
-    static char    *explain[] = {
-        "本站系统",
-        "休闲娱乐",
-        "电脑技术",
-        "学术科学",
-        "体育健身",
-        "谈天说地",
-        "校园信息",
-        "艺术文化",
-        "人文社会",
-        "网络信息",
-        "清华大学",
-        "兄弟院校",
-        "其  他",
-        NULL
-    };
+static char    *explain[] = {
+    "本站系统",
+    "休闲娱乐",
+    "电脑技术",
+    "学术科学",
+    "体育健身",
+    "谈天说地",
+    "校园信息",
+    "艺术文化",
+    "人文社会",
+    "网络信息",
+    "清华大学",
+    "兄弟院校",
+    "其  他",
+    NULL
+};
 
-    static char    *groups[] = {
-        "system.faq",
-        "rec.faq",
-        "comp.faq",
-        "sci.faq",
-        "sport.faq",
-        "talk.faq",
-        "campus.faq",
-        "literal.faq",
-        "soc.faq",
-        "network.faq",
-        "thu.faq",
-        "univ.faq",
-        "other.faq",
-        NULL
-    };
+static char    *groups[] = {
+    "system.faq",
+    "rec.faq",
+    "comp.faq",
+    "sci.faq",
+    "sport.faq",
+    "talk.faq",
+    "campus.faq",
+    "literal.faq",
+    "soc.faq",
+    "network.faq",
+    "thu.faq",
+    "univ.faq",
+    "other.faq",
+    NULL
+};
 */
 
     clear();
@@ -969,19 +969,21 @@ char *buf;
     fclose(Ban);
     return IPX;
 }  
+
+static char    *field[] = {"usernum", "userid", "realname", "career",
+                           "addr", "phone", "birth", NULL};
+static char    *finfo[] = {"帐号位置", "申请代号", "真实姓名", "服务单位",
+                           "目前住址", "连络电话", "生    日", NULL};
+static char    *reason[] = {
+    "请输入真实姓名(国外可用拼音).", "请详填学校科系或工作单位.",
+    "请填写完整的住址资料.", "请详填连络电话(若无可用呼机或Email地址代替).",
+    "请确实而详细的填写注册申请表.", "请用中文填写申请单.",
+    "不允许从穿梭注册", "同一个用户注册了过多ID",
+    NULL};
+
 int scan_register_form(logfile, regfile)
 char           *logfile, *regfile;
 {
-    static char    *field[] = {"usernum", "userid", "realname", "career",
-                               "addr", "phone", "birth", NULL};
-    static char    *finfo[] = {"帐号位置", "申请代号", "真实姓名", "服务单位",
-                               "目前住址", "连络电话", "生    日", NULL};
-    static char    *reason[] = {
-        "请输入真实姓名(国外可用拼音).", "请详填学校科系或工作单位.",
-        "请填写完整的住址资料.", "请详填连络电话(若无可用呼机或Email地址代替).",
-        "请确实而详细的填写注册申请表.", "请用中文填写申请单.",
-        "不允许从穿梭注册", "同一个用户注册了过多ID",
-        NULL};
     struct userec   uinfo;
     FILE           *fn, *fout, *freg;
     /*   char            fdata[7][STRLEN];Haohmaru.99.4.15.改全局变量*/

@@ -21,8 +21,6 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#define EXTERN
-
 #include "bbs.h"
 int use_define=0;
 extern int iscolor;

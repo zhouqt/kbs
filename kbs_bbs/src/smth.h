@@ -71,6 +71,8 @@
 
 #ifndef EXTERN
 extern char *permstrings[];
+extern char    *groups[];
+extern char    *explain[];
 #else
 char *permstrings[] = {
         "基本权力",             /* PERM_BASIC */
@@ -105,40 +107,40 @@ char *permstrings[] = {
         "封禁Mail",           /* PERM_DENYMAIL*/
 
 };
+
+char    *explain[] = {
+    "本站系统",
+    "休闲娱乐",
+    "电脑技术",
+    "学术科学",
+    "体育健身",
+    "谈天说地",
+    "校园信息",
+    "艺术文化",
+    "人文社会",
+    "网络信息",
+    "清华大学",
+    "兄弟院校",
+    "其  他",
+    NULL
+};
+
+char    *groups[] = {
+    "system.faq",
+    "rec.faq",
+    "comp.faq",
+    "sci.faq",
+    "sport.faq",
+    "talk.faq",
+    "campus.faq",
+    "literal.faq",
+    "soc.faq",
+    "network.faq",
+    "thu.faq",
+    "univ.faq",
+    "other.faq",
+    NULL
+};
 #endif
-
-    static char    *explain[] = {
-        "本站系统",
-        "休闲娱乐",
-        "电脑技术",
-        "学术科学",
-        "体育健身",
-        "谈天说地",
-        "校园信息",
-        "艺术文化",
-        "人文社会",
-        "网络信息",
-        "清华大学",
-        "兄弟院校",
-        "其  他",
-        NULL
-    };
-
-    static char    *groups[] = {
-        "system.faq",
-        "rec.faq",
-        "comp.faq",
-        "sci.faq",
-        "sport.faq",
-        "talk.faq",
-        "campus.faq",
-        "literal.faq",
-        "soc.faq",
-        "network.faq",
-        "thu.faq",
-        "univ.faq",
-        "other.faq",
-        NULL
-    };
 
 #endif

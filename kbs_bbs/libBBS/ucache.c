@@ -217,8 +217,7 @@ unsigned int ucache_hash(const char* userid)
     return n1;
 }
 
-static int
-fillucache(struct userec *uentp ,int* number)
+static int fillucache(struct userec *uentp ,int* number,int * prev)
 {
     if(*number < MAXUSERS) {
     	int hashkey;
@@ -243,15 +242,14 @@ addempty:
 			};
 			uidshm->next[prev-1]=++(*number);
 		}*/
-		static int prev=0;
 		uidshm->next[*number]=0;
 		(*number)++;
-		if (!prev) {
+		if (!(*prev)) {
 			uidshm->hashhead[0]=*number;
 		} else {
-			uidshm->next[prev-1]=*number;
+			uidshm->next[(*prev)-1]=*number;
 		}
-		prev=*number;
+		*prev=*number;
 	} else {
 /* check multi-entry of user */
            int i,prev;
@@ -300,6 +298,7 @@ int load_ucache()
     time_t      now;
     int     usernumber,i;
     int passwdfd;
+	int prev;
     
     uidshm = (struct UCACHE*)attach_shm( "UCACHE_SHMKEY", 3696, sizeof( *uidshm ) ,&iscreate); /*attach to user shm */
         
@@ -329,8 +328,9 @@ int load_ucache()
 
     ucache_hashinit();
 
+	prev=0;
     for (i=0;i<MAXUSERS;i++)
-        fillucache(&passwd[i],&usernumber);
+        fillucache(&passwd[i],&usernumber,&prev);
 
     bbslog("1system", "CACHE:reload ucache for %d users", usernumber);
     uidshm->number = usernumber;

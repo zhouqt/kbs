@@ -123,8 +123,9 @@ hog or anything, but if you don't want it...
 /* 
    Define this if you are going to install an Internet Relay Chat client
    and/or server. Either the one with this distribution or a newer one. 
-*/
 #define IRC   1 
+*/
+#undef IRC
 
 /***************************************************************************
 BBSDOORS and MMMM are contributed by Bill Schwartz <schwartz@augsburg.edu>.

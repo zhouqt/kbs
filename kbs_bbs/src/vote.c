@@ -33,7 +33,7 @@ char controlfile[STRLEN],limitfile[STRLEN];
 unsigned int result[33];
 int vnum;
 int voted_flag;
-static FILE *sug;
+FILE *sug;
 
 int
 cmpvuid(userid, uv)
@@ -1036,9 +1036,8 @@ voteexp()
 }
 
 int
-printvote(struct  votebal *ent,char* arg)
+printvote(struct  votebal *ent,int *i)
 {
-    static int i ;
     struct ballot uservote;
     char buf[STRLEN+80],*date;
     char flagname[STRLEN];
@@ -1048,13 +1047,13 @@ printvote(struct  votebal *ent,char* arg)
     {
         move(2,0);
         voteexp();
-        i = 0 ;
+        *i = 0 ;
         return 0;
     }
-    i++;
-    if(i>page+19||i>range)
+    (*i)++;
+    if(*i>page+19||*i>range)
         return QUIT;
-    else if(i <= page)
+    else if(*i <= page)
         return 0;
     sprintf(buf,"flag.%d",ent->opendate);
     setvfile(flagname,currboard,buf);
@@ -1068,10 +1067,10 @@ printvote(struct  votebal *ent,char* arg)
     num_voted=get_num_records(flagname,sizeof(struct ballot));
     date=ctime(&ent->opendate)+4;
     if ((ent->type<=0)||(ent->type>5)) ent->type=1;
-    sprintf(buf," %s%3d %-12.12s %-6.6s %-40.40s%-4.4s %3d %4d[m\n",(voted_flag==NA)?"[1m":"",i,ent->userid,
+    sprintf(buf," %s%3d %-12.12s %-6.6s %-40.40s%-4.4s %3d %4d[m\n",(voted_flag==NA)?"[1m":"",*i,ent->userid,
             date,ent->title,vote_type[ent->type-1],ent->maxdays,num_voted);
 /*
-    sprintf(buf," %s%3d %-12.12s %-6.6s %-40.40s%-4.4s %3d  %4d[m\n",(voted_flag==NA)?"[1m":"",i,ent->userid,
+    sprintf(buf," %s%3d %-12.12s %-6.6s %-40.40s%-4.4s %3d  %4d[m\n",(voted_flag==NA)?"[1m":"",*i,ent->userid,
             date,ent->title,vote_type[ent->type-1],ent->maxdays,num_voted);
 */
     prints("%s",buf);
@@ -1238,12 +1237,12 @@ case 'D': case 'd':
 
 Show_Votes()
 {
-
+    int i ;
     move(3,0);
     clrtobot();
-    printvote(NULL,0) ;
+    i=0;
     setcontrolfile();
-    if(apply_record(controlfile,printvote,sizeof(struct votebal),0) == -1) {
+    if(apply_record(controlfile,printvote,sizeof(struct votebal),&i) == -1) {
         prints("´íÎó£¬Ã»ÓÐÍ¶Æ±Ïä¿ªÆô....") ;
         pressreturn() ;
         return 0;

@@ -153,26 +153,6 @@ new_register()
     report( "new account" );
 }
 
-char *
-trim( s )
-char *s;
-{
-    static char buf[ 256 ];
-    char *l, *r;
-
-    buf[ 0 ] = '\0' ;
-    r = s + strlen( s ) - 1;
-
-    for (l = s ; strchr(" \t\r\n", *l) && *l; l++);
-
-    /* if all space, *l is null here, we just return null */
-    if (*l != '\0') {
-        for ( ; strchr(" \t\r\n", *r) && r >= l ; r-- );
-        strncpy( buf, l, r - l + 1 );
-    }
-    return buf;
-}
-
 int
 invalid_realmail( userid, email, msize )
 char    *userid, *email;

@@ -52,8 +52,11 @@ unsigned char   docls ;
 unsigned char   downfrom ;
 int             standing = NA ;
 int             inansi=NA;
-
+int tc_col, tc_line ;
 struct screenline *big_picture = NULL ;
+static const char nullstr[] = "(null)" ;
+
+extern int ochar() ;
 
 int
 num_noans_chr(str)
@@ -124,15 +127,10 @@ initscr()
     iscolor = YEA;
 }
 
-int tc_col, tc_line ;
-extern int ochar() ;
-
 void
 rel_move(was_col,was_ln,new_col,new_ln)
 int     was_col,was_ln,new_col,new_ln;
 {
-    extern char *BC ;
-
     if(new_ln >= t_lines  || new_col >= t_columns)
         return ;
     tc_col = new_col ;
@@ -393,8 +391,6 @@ clrstandout()
     for(i=0;i<scr_lns;i++)
         big_picture[i].mode &= ~(STANDOUT) ;
 }
-
-static char nullstr[] = "(null)" ;
 
 void
 outc(c)
