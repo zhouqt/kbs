@@ -388,6 +388,8 @@ int
 num_visible_users()
 {
 	int count;
+
+	count = 0;
     apply_ulist_addr( (APPLY_UTMP_FUNC)count_visible_active,(char*)&count) ;
     return count;
 }
