@@ -10,7 +10,7 @@ if ($_POST['action']=="doLogon") {
 } else {
 	show_nav();
 	echo "<br>";
-	head_var("用户登录");
+	head_var();
 	showLogon();
 }
 
@@ -70,9 +70,9 @@ function doLogon(){
 		$comeurl=$_POST['comeurl'];
 		$comeurlname="<li><a href=".$_POST['comeurl'].">".$_POST['comeurl']."</a></li>";
 	} 
-	show_nav();
+	show_nav(false);
 	echo "<br>";
-	head_var("用户登录");
+	head_var();
 ?>
 <meta HTTP-EQUIV=REFRESH CONTENT='2; URL=<?php   echo $comeurl; ?>' >
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1 >

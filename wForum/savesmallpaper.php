@@ -15,7 +15,7 @@ requireLoginok("游客不能发表小字报。");
 
 preprocess();
 
-show_nav($boardName);
+show_nav(false);
 
 showUserMailBox();
 board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);

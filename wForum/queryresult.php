@@ -11,7 +11,7 @@ setStat("ËÑË÷½á¹û");
 
 preprocess();
 
-show_nav($singleBoard);
+show_nav($singleBoard ? $singleBoard : false);
 
 showUserMailBoxOrBR();
 

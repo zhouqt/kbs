@@ -9,13 +9,17 @@ requireLoginok("本页面必须要管理员登录才能使用。");
 
 preprocess();
 
-show_nav();
+if (isset($_GET["action"])) {
+	$action = $_GET["action"];
+	show_nav(false);
+} else {
+	$action = "";
+	show_nav();
+}
 
 showUserMailBox();
 head_var("站点配置", 'admin.site_defines.php');
-if (isset($_GET["action"])) {
-	$action = $_GET["action"];
-} else $action = "";
+
 if ($action == "gen") {
 	generate_site();
 	show_site();

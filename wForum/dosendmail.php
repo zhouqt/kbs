@@ -10,7 +10,7 @@ requireLoginok("游客不能写信。");
 
 preprocess();
 
-show_nav();
+show_nav(false);
 
 echo "<br>";
 head_var($userid."的发件箱","usermailbox.php?boxname=sendbox",0);

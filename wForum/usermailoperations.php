@@ -14,7 +14,7 @@ if ($_POST['action']=='lock') { //ToDo: need to revise
 	setStat("É¾³ýÓÊ¼þ");
 }
 
-show_nav();
+show_nav(false);
 
 echo "<br>";
 

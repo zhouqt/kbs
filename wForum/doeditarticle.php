@@ -16,7 +16,7 @@ requireLoginok("游客不能编辑文章。");
 
 preprocess();
 
-show_nav();
+show_nav(false);
 
 showUserMailBoxOrBR();
 board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);

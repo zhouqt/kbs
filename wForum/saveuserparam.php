@@ -8,7 +8,7 @@ setStat("个人参数修改");
 
 requireLoginok();
 
-show_nav();
+show_nav(false);
 
 showUserMailbox();
 head_var($userid."的控制面板","usermanagemenu.php",0);

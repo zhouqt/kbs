@@ -6,7 +6,7 @@ require("inc/funcs.php");
 setStat("¼ì²â ID");
 
 html_init();
-@$id = urldecode($_GET["id"]);
+@$id = urldecode($_REQUEST["id"]);
 ?>
 <body>
 <form method="GET" action="checkid.php">

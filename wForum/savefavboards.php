@@ -6,7 +6,7 @@ require("inc/user.inc.php");
 
 setStat("±£¥Ê ’≤ÿ∞Ê√Ê");
 
-show_nav();
+show_nav(false);
 
 requireLoginok();
 

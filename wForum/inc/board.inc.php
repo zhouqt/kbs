@@ -211,11 +211,12 @@ function showBoardStaticsTop($boardArr, $is_ann=false){
 	| <a href=# onclick="alert('本功能尚在开发中！')" title=查看本版用户组权限>权限</a>
     | <a href=# onclick="alert('本功能尚在开发中！')">管理</a>
 -->
+&nbsp;&nbsp;<img src=pic/team2.gif align=absmiddle>
 <?php 
 	$bms=split(' ',$boardArr['BM']);
 	foreach($bms as $bm) {
 ?>
-&nbsp;&nbsp;<img src=pic/team2.gif align=absmiddle><a href="dispuser.php?id=<?php echo $bm; ?>" target=_blank title=点击查看该版主资料><?php echo $bm; ?></a>
+<a href="dispuser.php?id=<?php echo $bm; ?>" target=_blank title=点击查看该版主资料><?php echo $bm; ?></a>
 <?php
 	}
 ?>

@@ -14,7 +14,11 @@ setStat("小字报列表");
 
 preprocess();
 
-show_nav($boardName);
+if (!isset($_POST['action'])) {
+	show_nav($boardName);
+} else {
+	show_nav(false);
+}
 
 showUserMailBoxOrBR();
 board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);

@@ -378,7 +378,7 @@ function showLogon($showBack = 0){
 				<input type=radio name=CookieDate value=2>保存一月<br>
 				<input type=radio name=CookieDate value=3>保存一年<br>                
 	</td></tr>
-	<input type=hidden name=comeurl value="<?php echo htmlspecialchars($_SERVER[$showBack?'REQUEST_URI':'HTTP_REFERER']); ?>">
+	<input type=hidden name=comeurl value="<?php echo htmlspecialchars($_SERVER['HTTP_REFERER']); ?>">
 	<tr>
 	<td class=TableBody2 valign=middle colspan=2 align=center><input tabindex="3" type=submit name=submit value="登 录">
 <?php
@@ -560,6 +560,9 @@ function show_nav($boardName='')
 
 </td></tr>
 <tr><td class=TopLighNav height=9></td></tr>
+<?php
+	if ($boardName !== false) {
+?>
 		<tr> 
 		  <td class=TopLighNav1 height=22  valign="middle">&nbsp;&nbsp;
 <?php   
@@ -595,6 +598,9 @@ function show_nav($boardName='')
 } ?>
 			</td>
 		</tr>
+<?php
+	}
+?>
 </table>
 </td></tr>
 </table>

@@ -8,7 +8,7 @@ setStat("用户短信服务");
 
 requireLoginok();
 
-show_nav();
+show_nav(false);
 
 showUserMailbox();
 head_var($userid."的控制面板","usermanagemenu.php",0);

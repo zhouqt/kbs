@@ -137,7 +137,8 @@ html_init($charset="",$title="",$otherheader="")
 	初始化 html 页面，一般不需要调用，除非是小页面
 
 show_nav($boardName='')
-	调用 html_init() 并显示页面头。如果 $boardName 不为空，搜索的链接将会自动选中此版面。
+	调用 html_init() 并显示页面头。如果 $boardName 不为空，搜索的链接将会自动选中此版面。如果 $boardName 为 false，不显示菜单条。所有POST递交生成
+	的页面原则上都应该使用  $boardName=false，否则用户重新登录，调整页面风格等可能会造成返回后的URL不正确。
 
 setStat($stat)
 	设置页面标题
