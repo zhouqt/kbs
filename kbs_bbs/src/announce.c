@@ -108,7 +108,9 @@ static int save_import_path()
     if (fn) {
     	for (i=0;i<ANNPATH_NUM;i++) {
     		fputs(import_path[i],fn);
+    		fputs("\n",fn);
     		fputs(import_title[i],fn);
+    		fputs("\n",fn);
     	}
     	return 0;
     }
@@ -124,8 +126,11 @@ static void load_import_path()
     fn = fopen(buf, "rt");
     if (fn) {
     	for (i=0;i<ANNPATH_NUM;i++) {
-    		if (!feof(fn))
+    		if (!feof(fn)) {
 	           fgets(buf, MAXPATH-1, fn);
+		   if (buf[strlen(buf)-1]=='\n')
+			   buf[strlen(buf)-1]=0;
+		}
     		else
     		    buf[0]=0;
     		/*TODO: access check need complete!
@@ -134,8 +139,11 @@ static void load_import_path()
     		
     		import_path[i]=(char*)malloc(strlen(buf)+1);
     		strcpy(import_path[i],buf);
-    		if (!feof(fn))
+    		if (!feof(fn)) {
 	           fgets(buf, MAXPATH-1, fn);
+		   if (buf[strlen(buf)-1]=='\n')
+			   buf[strlen(buf)-1]=0;
+	        }
     		else { //get the title of pm
     		    buf[0]=0;
 		    if (import_path[i][0]) {
@@ -159,7 +167,7 @@ static void load_import_path()
     		import_path[i]=(char*)malloc(1);
     		import_path[i][0]=0;
     		import_title[i]=(char*)malloc(1);    		
-    		import_path[i][0]=0;
+    		import_title[i][0]=0;
     	}
     	save_import_path();
     }
@@ -196,6 +204,7 @@ static int a_select_path_onselect(struct _select_def *conf)
     		a_prompt(-2, "Òª¸²¸ÇÒÑÓÐµÄË¿Â·Ã´£¿(Y/N) [N]", ans);
     		if (toupper(ans[0])!='Y')
     		    return SHOW_CONTINUE;
+		return SHOW_REFRESH;
     	}
     }
     return SHOW_SELECT;
@@ -251,7 +260,14 @@ a_select_path_prekey(struct _select_def *conf, int* key)
 static int 
 a_select_path_key(struct _select_def *conf, int key)
 {
+    a_select_path_arg *arg = (a_select_path_arg *) conf->arg;
     int oldmode;
+    if (key >= '0' && key <= '9')
+    {
+        arg->tmpnum = arg->tmpnum * 10 + (key - '0');
+        return SHOW_CONTINUE;
+    }
+
     switch (key) {
         case 'T':
         case 't':
@@ -274,7 +290,7 @@ a_select_path_key(struct _select_def *conf, int key)
         case 'd':
             if (import_title[conf->pos-1][0]!=0) {
             	      char ans[STRLEN];
-                    a_prompt2(-2, "ÒªÉ¾³ýÕâ¸öË¿Â·£¿", ans);
+                    a_prompt(-2, "ÒªÉ¾³ýÕâ¸öË¿Â·£¿(Y/N)[N]", ans);
                     if (toupper(ans[0])=='Y') {
                         free(import_title[conf->pos-1]);
                         import_title[conf->pos-1]=(char*)malloc(1);
@@ -289,7 +305,7 @@ a_select_path_key(struct _select_def *conf, int key)
         case 'm':
             {
                 char ans[STRLEN];
-                a_prompt2(-2, "ÊäÈëÒªÒÆ¶¯µ½µÄÎ»ÖÃ£º", ans);
+                a_prompt(-2, "ÊäÈëÒªÒÆ¶¯µ½µÄÎ»ÖÃ£º", ans);
                 if ((ans[0]!=0)&&isdigit(ans[0])) {
                     int new_pos;
                     new_pos=atoi(ans);
@@ -306,6 +322,7 @@ a_select_path_key(struct _select_def *conf, int key)
                        return SHOW_DIRCHANGE;
                    }
                 }
+                return SHOW_REFRESH;
             }
             break;
         case Ctrl('Z'):
@@ -344,7 +361,7 @@ a_select_path_refresh(struct _select_def *conf)
     docmdtitle("[Ë¿Â·Ñ¡Ôñ²Ëµ¥]",
                "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ½øÈë[\x1b[1;32mEnter\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ý\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ¸ÄÃû[\x1b[1;32mT\x1b[0;37m] É¾³ý[\x1b[1;32md\x1b[0;37m]\x1b[m ÒÆ¶¯[\x1b[1;32mm\x1b[0;37m]\x1b[m");
     move(2, 0);
-    prints("[0;1;37;44m %4s  %s[m", "±àºÅ", "Ë¿Â·Ãû");
+    prints("[0;1;37;44m %4s  %-64s[m", "±àºÅ", "Ë¿Â·Ãû");
     update_endline();
     return SHOW_CONTINUE;
 }

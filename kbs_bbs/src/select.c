@@ -190,9 +190,10 @@ static int do_select_internal(struct _select_def *conf, int key)
         return select_change(conf, conf->pos - 1);
     case KEY_DOWN:
         return select_change(conf, conf->pos + 1);
-    case KEY_SELECT:
     case '\n':
     case '\r':
+	return SHOW_SELECT;
+    case KEY_SELECT:
         if (conf->on_select)
             return (*conf->on_select) (conf);
         return SHOW_SELECT;
