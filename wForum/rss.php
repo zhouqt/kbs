@@ -1,6 +1,6 @@
 <?php
 
-$needlogin=0;
+//$needlogin = 0;
 $nocookie = 1;
 
 require("inc/funcs.php");
