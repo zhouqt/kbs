@@ -1232,9 +1232,10 @@ int mail_move(int ent, struct fileheader* fileinfo, char* direct)
     int i,j;
     char buf[PATHLEN];
     char* t;
-    clear();
     load_mail_list();
-    move(4, 4);
+    if (!mail_list_t) return DONOTHING;
+    clear();
+    move(5, 3);
     prints("请选择移动到哪个邮箱");
     sel = (struct _select_item*)malloc(sizeof(struct _select_item)*(mail_list_t+1));
     for(i=0;i<mail_list_t;i++) {

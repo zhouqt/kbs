@@ -50,6 +50,10 @@ int chkusermail(struct userec *user)
             numlimit = 15;
         }
     }
+    else {
+        sumlimit = 9999;
+        numlimit = 9999;
+    }
 #endif
         /*peregrine*/
         setmailfile(recmaildir, user->userid, DOT_DIR);
