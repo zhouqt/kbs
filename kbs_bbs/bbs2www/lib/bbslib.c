@@ -1113,22 +1113,6 @@ struct user_info **get_ulist_addr()
     return user_record;
 }
 
-/* from bbs.c */
-static void record_exit_time(char *userid) /* XXX: 这个函数需要砍掉 */
-{                               /* 记录离线时间  Luzi 1998/10/23 */
-    char path[80];
-    FILE *fp;
-    time_t now;
-
-    sethomefile(path, userid, "exit");
-    fp = fopen(path, "wb");
-    if (fp != NULL) {
-        now = time(NULL);
-        fwrite(&now, sizeof(time_t), 1, fp);
-        fclose(fp);
-    }
-}
-
 /* from list.c */
 
 int set_friendmode(int mode)
@@ -1752,7 +1736,7 @@ int www_user_logoff(struct userec *user, int useridx, struct user_info *puinfo, 
     if (stay > 7200)
         stay = 7200;
     user->stay += stay;
-    record_exit_time(user->userid);
+    user->exittime = time(0);
     if (strcasecmp(user->userid, "guest")) {
         newbbslog(BBSLOG_USIES, "EXIT: Stay:%3ld (%s)[%d %d](www)", stay / 60, user->username, get_curr_utmpent(), useridx);
         if (!puinfo->active)
