@@ -283,16 +283,16 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
     setmailfile(filepath, userid, fname);
 
     switch (unlinkmode) {
-    case 2:
+    case BBSPOST_LINK:
         unlink(filepath);
         sprintf(buf,"%s/%s",BBSHOME,tmpfile);
         if (symlink(buf,filepath)==-1)
 		bbslog("3bbs","symlink %s to %s:%s",tmpfile,filepath,strerror(errno));
         break;
-    case 1:
+    case BBSPOST_MOVE:
         f_mv(tmpfile, filepath);
         break;
-    case  0:
+    case  BBSPOST_COPY:
         f_cp(tmpfile, filepath, 0);
         break;
     }

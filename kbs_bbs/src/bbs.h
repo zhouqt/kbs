@@ -525,6 +525,7 @@ struct header{
 #define CMD_ERR_NO_VALIDCODE 107
 #define CMD_ERR_NO_SUCHMOBILE 108
 #define CMD_ERR_REGISTERED 109
+#define CMD_EXCEEDMONEY_LIMIT   110
 #define CMD_LOGOUT 2
 #define CMD_REG 3
 #define CMD_CHECK 4

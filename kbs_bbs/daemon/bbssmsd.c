@@ -118,28 +118,40 @@ int sendtouser(struct GWSendSMS * h, char* buf)
 
 int requiretouser(struct RequireBindPacket * h, unsigned int sn)
 {
-    char uident[IDLEN+2];
+    char * uident;
     char buf[21];
     struct user_info * uin;
-    struct msghead hh;
-    strncpy(uident, h->cUserID, IDLEN+2);
-    uident[IDLEN+1]=0;
-    uin = t_search(uident, NULL);
-    if(uin == NULL)
+    struct usermemo *pum;
+    struct userdata ud;
+    int uid;
+    /* 我们先分配1开头的uid*/
+    if (h->cUserID[0]!='1')
         return -1;
+    uid = atoi(h->cUserID+1);
+    uident = getuserid2(uid);
+    if (uident==NULL) return -1;
 
-    hh.frompid = sn;
-    hh.topid = uin->pid;
-    hh.mode = 6;
-    hh.sent = 0;
-    hh.time = time(0);
-    strncpy(hh.id, h->MobileNo, IDLEN+2);
-    hh.id[IDLEN+1] = 0;
-    if(h->Bind) strcpy(buf, "REQUIRE:BIND");
-    else strcpy(buf, "REQUIRE:UNBIND");
-    save_msgtext(uident, &hh, buf);
-    kill(uin->pid, SIGUSR2);
-    return 0;
+    if (read_user_memo(uident, &pum)>0) {
+        memcpy(&ud,&pum->ud,sizeof(ud));
+        if (strncmp(ud->mobilenumber, h->MobileNo, MOBILE_NUMBER_LEN-1)) {
+            return -2;
+        }
+        if(h->Bind) {
+            pum->ud.mobileregistered=true;
+            ud->mobileregistered=true;
+            strcpy(buf, "你的帐号已经和%s绑定！",ud->mobilenumber);
+        }
+        else {
+            pum->ud.mobileregistered=false;
+            ud->mobileregistered=false;
+            strcpy(buf, "你的帐号已经取消和%s的绑定！",ud->mobilenumber);
+        }
+	end_mmapfile(currentmemo, sizeof(struct usermemo), -1);
+       write_userdata(uident, &ud);
+       mail_file("deliver", "", uident, buf, BBSPOST_COPY, struct fileheader * fh)
+       return 0;
+    }
+    return 1;
 }
 
 void processremote()
@@ -173,6 +185,7 @@ void processremote()
 	case CMD_ERR_NO_VALIDCODE:
 	case CMD_ERR_NO_SUCHMOBILE:
 	case CMD_ERR_REGISTERED:
+	case CMD_EXCEEDMONEY_LIMIT:
 	    printf("get CMD_ERR\n");
             if(pid) {
                 fp=fopen(fn, "w");
@@ -181,10 +194,22 @@ void processremote()
                 kill(pid, SIGUSR1);
             }
             break;
-        case CMD_REQUIRE:
-	    printf("get CMD_REQUIRE\n");
-            read(sockfd, &h1, sizeof(h1));
-            requiretouser(&h1, byte2long(h.SerialNo));
+        case CMD_REQUIRE: {
+               struct header* pheader;
+               struct ReplyBindPacket* prp;
+               pheader=(struct header*)buf;
+               prp=(struct ReplyBindPacket*)(buf+sizeof(*pheader));
+    	        printf("get CMD_REQUIRE\n");
+               read(sockfd, &h1, sizeof(h1));
+               prp->isSucceed = requiretouser(&h1, byte2long(h.SerialNo));
+               //Copy a reth struct in reply packet
+               memcpy(pheader,&reth,sizeof(reth));
+               pheader->Type = CMD_REPLY;
+               long2byte(sizeof(*prp), pheader->BodyLength);
+               
+               printf("send CMD_REPLY  %s\n",rp.isSucceed);
+               write(sockfd, &reth, sizeof(reth)+sizeof(*prp));
+            }
             break;
         case CMD_GWSEND:
 	    printf("get CMD_GWSEND\n");

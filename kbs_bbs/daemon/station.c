@@ -1747,9 +1747,9 @@ int speak_action(unum, cmd, msg)
 
 struct action condition_data[] = {
     {":D", "乐的合不拢嘴", NULL},
-    {":)", "乐的合不拢嘴", NULL},
-    {":P", "乐的合不拢嘴", NULL},
-    {":(", "乐的合不拢嘴", NULL},
+    {":)", "轻轻的笑了笑", NULL},
+    {":P", "吐了吐舌头", NULL},
+    {":(", "委屈的扁了扁嘴", NULL},
     {"applaud", "啪啪啪啪啪啪啪....", NULL},
     {"blush", "脸都红了", NULL},
     {"cough", "咳了几声", NULL},
