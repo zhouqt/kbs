@@ -1572,7 +1572,7 @@ post_article()                         /*сц╩╖ POST ндуб */
     {
         post_file.filename[ STRLEN - 1 ] = 'S';
         post_file.filename[ STRLEN - 2 ] = 'S';
-        outgo_post(&post_file, currboard);
+        outgo_post(&post_file, currboard,save_title);
     }
     Anony=0;/*Inital For ShowOut Signature*/
 

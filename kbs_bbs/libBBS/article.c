@@ -1,14 +1,14 @@
 #include "bbs.h"
 
 void cancelpost(char    *board,char *userid,struct fileheader *fh,int     owned,int     autoappend);
-int outgo_post(struct fileheader *fh,char *board)
+int outgo_post(struct fileheader *fh,char *board,char* title)
 {
     FILE *foo;
 
     if (foo = fopen("innd/out.bntp", "a"))
     {
         fprintf(foo, "%s\t%s\t%s\t%s\t%s\n", board,
-                fh->filename, currentuser->userid, currentuser->username, save_title);
+                fh->filename, currentuser->userid, currentuser->username, title);
         fclose(foo);
     }
 }
@@ -492,7 +492,7 @@ int post_cross(struct userec* user,char* toboard,char* fromboard,char* title,cha
     {
         postfile.filename[ STRLEN - 1 ] = 'S';
         postfile.filename[ STRLEN - 2 ] = 'S';
-        outgo_post(&postfile,toboard);
+        outgo_post(&postfile,toboard,save_title);
     }
     /*   setbdir(digestmode, buf, currboard );Haohmaru.99.11.26.改成下面一行，因为不管是转贴还是自动发文都不会用到文摘模式*/
     setbfile( buf, toboard, DOT_DIR);

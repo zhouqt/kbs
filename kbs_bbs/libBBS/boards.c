@@ -564,7 +564,7 @@ int deldeny(struct userec* user,char* board,char* uident)  /* 删除 禁止POST用户 
         fprintf(fn1,"寄信人: %s \n",user->userid) ;
         fprintf(fn1,"标  题: %s\n",buffer) ;
         fprintf(fn1,"发信站: %s (%24.24s)\n","BBS "NAME_BBS_CHINESE"站",ctime(&now)) ;
-        fprintf(fn1,"来  源: %s \n",host) ;
+        fprintf(fn1,"来  源: %s \n",fromhost) ;
         fprintf(fn1,"\n");
         fprintf(fn1,"您被 %s 板板主 %s 解除封禁\n",board,user->userid);
     }

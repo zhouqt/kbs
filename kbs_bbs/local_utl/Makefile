@@ -40,7 +40,7 @@ clean:
 # Modification ends here by Leeward 1997.11
 
 $(BINFILE): % : %.o
-	$(CC) $(LDFLAGS) -o $* $^ ../libBBS.a ../libsystem.a
+	$(CC) $(LDFLAGS) -o $* $^ ../libBBS.a ../libsystem.a -lbsd -lesmtp -Llibesmtp/.libs -lltdl -ldl
 
 install: all
 	$(INSTALL) $(BINFILE) printboards MakeTar $(BBSHOME)/bin
