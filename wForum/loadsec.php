@@ -23,13 +23,11 @@ if ( isset($_GET['fav']) ) {
 	if ( ($secNum < 0)  && ($secNum >= $sectionCount)) exit(0);
 }
 
-/* set the cookie to avoid problem. */
 if (SECTION_DEF_CLOSE) {
 	$cn = "HideSecBoards";
 	if (!isset($_COOKIE[$cn])) {
-		if (!$fav) {
-			$ssb = ~(1 << ($secNum+1));
-		} else $ssb = ~0;
+		$ssb = ~0;
+		/* 默认关闭的分区被打开时需要设置这个 cookie 的默认值，因为客户端默认的是 0 */
 		setcookie($cn, $ssb ,time() + 604800);
 	}
 }

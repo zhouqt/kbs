@@ -13,16 +13,23 @@ show_nav();
 showUserMailBoxOrBR();
 head_var();
 
-showTopTenXML();
+showTopTen("/xml/day.xml", "今日十大热门话题");
+/* 分区变换糊里糊涂的，各站可能都不一样，要用的自己调整 - atppp
+for ($i = 0; $i < $sectionCount; $i++) {
+
+	// 分区号变换
+	$secid = get_secname_index($section_nums[$i]) - 1;
+	if ($secid < 0) $secid = $sectionCount - 1;
+
+	showTopTen("/xml/day_sec" . $secid . ".xml", $section_names[$i][0] . " 分区十大热门话题");
+}
+*/
 
 show_footer();
 
-function showTopTenXML() {
+function showTopTen($filename, $caption) {
 	
-	$hotsubject_file = BBS_HOME . "/xml/day.xml";
-	$doc = domxml_open_file($hotsubject_file);
-	if (!$doc)
-		return;
+	if (!($doc = domxml_open_file(get_bbsfile($filename)))) return;
 
 	$root = $doc->document_element();
 	$boards = $root->child_nodes();
@@ -30,7 +37,7 @@ function showTopTenXML() {
 	$boardArr = array();
 ?>
 <table cellspacing=1 cellpadding=0 align=center width="97%" class=TableBorder1>
-<thead><tr><th align="center" colspan=5 height=25>今日十大热门话题</th></tr></thead>
+<thead><tr><th align="center" colspan=5 height=25><?php echo $caption; ?></th></tr></thead>
 </table>
 <br>
 <table cellspacing=1 cellpadding=0 align=center width="97%" class=TableBorder1>
@@ -67,6 +74,7 @@ function showTopTenXML() {
 	}
 ?>
 </table>
+<br><br>
 <?php
 }
 ?>
