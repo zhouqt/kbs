@@ -150,8 +150,9 @@ static PHP_FUNCTION(bbs_del_favboarddir);
 static PHP_FUNCTION(bbs_printoriginfile);
 static PHP_FUNCTION(bbs_caneditfile);
 static PHP_FUNCTION(bbs_updatearticle);
-
+#ifdef HAVE_WFORUM
 static PHP_FUNCTION(bbs_getthreadnum);
+#endif
 static PHP_FUNCTION(bbs_getthreads);
 
 
@@ -268,7 +269,9 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_get_thread_article_num,NULL)
 		PHP_FE(bbs_get_thread_articles, NULL)
 		PHP_FE(bbs_getthreads, NULL)
+#ifdef HAVE_WFORUM
 		PHP_FE(bbs_getthreadnum, NULL)
+#endif
         PHP_FE(bbs_getuser, NULL)
         PHP_FE(bbs_getusermode, NULL)
 		PHP_FE(bbs_compute_user_value, NULL)
@@ -3433,6 +3436,7 @@ static PHP_FUNCTION(bbs_countarticles)
     RETURN_LONG(total);
 }
 
+#ifdef HAVE_WFORUM
 
 /* long bbs_getthreadnum(long boardNum)
  * get number of threads
@@ -3475,6 +3479,8 @@ static PHP_FUNCTION(bbs_getthreadnum)
 
     RETURN_LONG(total);
 }
+
+#endif
 
 /**
  * Get filename from num in the DIR
