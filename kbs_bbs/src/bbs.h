@@ -454,7 +454,7 @@ enum BBSPOST_MODE
 #if USE_TMPFS==0
 #define BRC_CACHE_NUM 20        /* 未读标记cache 20个版 */
 #else
-#define BRC_CACHE_NUM 20        /* 未读标记被cache在tmpfs中了 */
+#define BRC_CACHE_NUM 50        /* 未读标记被cache在tmpfs中了 */
 #endif
 
 #define BRCFILE ".boardrc.gz"

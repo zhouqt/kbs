@@ -894,11 +894,6 @@ void init_cachedata(char* userid,int unum)
             return;              /* lock error*/
         }
     }
-    if (logincount==0) {
-        sethomefile(path1, userid, ".boardrc.gz");
-        setcachehomefile(path2, userid, -1, ".boardrc.gz");
-        f_cp(path1,path2,O_TRUNC);
-    }
     logincount++;
     lseek(fd,0,SEEK_SET);
     sprintf(path2,"%d",logincount);
@@ -907,10 +902,6 @@ void init_cachedata(char* userid,int unum)
 }
 void flush_cachedata(char* userid)
 {
-    char path1[MAXPATH],path2[MAXPATH];
-    sethomefile(path1, userid, ".boardrc.gz");
-    setcachehomefile(path2, userid,-1, ".boardrc.gz");
-    f_cp(path2,path1,O_TRUNC);
 }
 
 int clean_cachedata(char* userid,int unum)
@@ -949,9 +940,6 @@ int clean_cachedata(char* userid,int unum)
 	} else {
         setcachehomefile(path1, userid, -1, "entry");
         unlink(path1);
-        sethomefile(path1, userid, ".boardrc.gz");
-        setcachehomefile(path2, userid,-1, ".boardrc.gz");
-        f_cp(path2,path1,O_TRUNC);
         setcachehomefile(path1, userid, -1, NULL);
         f_rm(path1);
 	}

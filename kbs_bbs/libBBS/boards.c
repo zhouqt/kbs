@@ -382,11 +382,7 @@ void brc_update(char *userid)
 
     /*干脆不搞guest的这个算了*/
     if (!strcmp(userid,"guest")) return;
-#if USE_TMPFS==0
     sethomefile(dirfile, userid, BRCFILE);
-#else
-    setcachehomefile(dirfile, userid, -1, BRCFILE);
-#endif
     for (i = 0; i < BRC_CACHE_NUM; i++) {
         if (brc_cache_entry[i].changed) {
             break;
@@ -476,11 +472,7 @@ void brc_addreaddirectly(char *userid, int bnum, unsigned int postid)
 
     /*干脆不搞guest的这个算了*/
     if (!strcmp(userid,"guest")) return;
-#if USE_TMPFS==0
     sethomefile(dirfile, userid, BRCFILE);
-#else
-    setcachehomefile(dirfile, userid, -1 ,BRCFILE);
-#endif
 
     if ((fd = gzopen(dirfile, "w+b6")) == NULL) {
         const char *errstr;
@@ -575,11 +567,7 @@ int brc_initial(char *userid, char *boardname)
             return 1;           /* cache 中有 */
         }
 
-#if USE_TMPFS==0
     sethomefile(dirfile, userid, BRCFILE);
-#else
-    setcachehomefile(dirfile, userid, -1, BRCFILE);
-#endif
 
     if ((brcfile = gzopen(dirfile, "rb6")) == NULL)
         if ((brcfile = gzopen(dirfile, "w+b6")) == NULL)
