@@ -115,6 +115,7 @@ int set_ip_acl();
 
 int exec_mbem(char *s);
 #ifdef SMS_SUPPORT
+int x_usersmsdef();
 int register_sms();
 int unregister_sms();
 int send_sms();
@@ -249,6 +250,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"DefineKeys",define_key},
     {"SetACL",set_ip_acl},
 #ifdef SMS_SUPPORT
+	{"SMSdef",x_usersmsdef},
     {"RegisterSMS",register_sms},
     {"UnRegisterSMS",unregister_sms},
     {"SendSMS",send_sms},

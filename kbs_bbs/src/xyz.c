@@ -62,6 +62,23 @@ int showperminfo(struct _select_def *conf, int i)
     return SHOW_CONTINUE;
 }
 
+#ifdef SMS_SUPPORT
+int showsmsdef(struct _select_def *conf, int i)
+{
+    struct _setperm_select *arg = (struct _setperm_select *) conf->arg;
+
+    i = i - 1;
+    if (i == conf->item_count - 1) {
+        prints("%c. ÍË³ö ", 'A' + i);
+    } else if ((arg->pbits & (1 << i)) != (arg->oldbits & (1 << i))) {
+        prints("%c. %-40s [31;1m%3s[m", 'A' + i, user_smsdefstr[i], ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
+    } else {
+        prints("%c. %-40s \x1b[37;0m%3s\x1b[m", 'A' + i, user_smsdefstr[i], ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
+    }
+    return SHOW_CONTINUE;
+}
+#endif
+
 int showuserdefine(struct _select_def *conf, int i)
 {
     struct _setperm_select *arg = (struct _setperm_select *) conf->arg;
@@ -425,6 +442,39 @@ int XCheckLevel()
     clear();
     return 0;
 }
+
+#ifdef SMS_SUPPORT
+int x_usersmsdef()
+{
+    unsigned int newlevel;
+    struct userec *lookupuser;
+
+    modify_user_mode(USERDEF);
+	clear();
+    if (!strcmp(currentuser->userid, "guest"))
+        return 0;
+
+	if( ! currentmemo->ud.mobileregistered ){
+        move(3, 0);
+		prints("ÄúÃ»ÓĞ×¢²áÊÖ»úºÅÂë");
+        pressreturn();
+        return 0;
+    }
+    move(2, 0);
+    newlevel = setperms(currentmemo->ud.smsdef, 0, "¶ÌĞÅ²ÎÊı", NUMSMSDEF, showsmsdef, NULL);
+    move(2, 0);
+    if (newlevel == currentmemo->ud.smsdef)
+        prints("²ÎÊıÃ»ÓĞĞŞ¸Ä...\n");
+    else {
+        currentmemo->ud.smsdef = newlevel;
+		write_userdata(currentuser->userid, &(currentmemo->ud) );
+        prints("ĞÂµÄ²ÎÊıÉè¶¨Íê³É...\n\n");
+    }
+    pressreturn();
+    clear();
+    return 0;
+}
+#endif
 
 int x_userdefine()
 {
