@@ -1114,8 +1114,8 @@ static void flush_user_title()
         bbslog("3system", "Can't open " USER_TITLE_FILE "file %s", strerror(errno));
     } else {
         int i;
-        for (i=0;i<256;i++) {
-            fprintf(titlefile,"%s\n",uidshm->user_title[i]);
+        for (i=0;i<255;i++) {
+                fprintf(titlefile,"%s\n",uidshm->user_title[i]);
         }
         fclose(titlefile);
     }
