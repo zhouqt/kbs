@@ -426,10 +426,10 @@ void
 login_query()
 {
     char        uid[STRLEN], passbuf[40], *ptr;
-    int         curr_login_num;
+    int         curr_login_num, i, j;
     int 	curr_http_num; /* Leeward 99.03.06 */
     int         attempts;
-    char fname[STRLEN], tmpstr[30];
+    char fname[STRLEN], tmpstr[30], genbuf[PATHLEN];
     FILE *fn;   
     char buf[256];
     curr_login_num = get_utmp_number();;
@@ -561,16 +561,6 @@ login_query()
                 logattempt( currentuser->userid, fromhost );
                 prints( "[32mÃÜÂëÊäÈë´íÎó...[m\n" );
             } else {
-    if(id_invalid(uid))
-    {
-        prints("[31m±§Ç¸!![m\n");
-        prints("[32m±¾ÕÊºÅÊ¹ÓÃÖÐÎÄÎª´úºÅ£¬´ËÕÊºÅÒÑ¾­Ê§Ð§...[m\n");
-        prints("[32mÏë±£ÁôÈÎºÎÇ©ÃûµµÇë¸úÕ¾³¤ÁªÂç £¬Ëû(Ëý)»áÎªÄã·þÎñ¡£[m\n");
-        getdata( 0, 0, "°´ [RETURN] ¼ÌÐø",genbuf,10,NOECHO,NULL,YEA);
-        oflush();
-        sleep( 1 );
-        exit( 1 );
-    }
 			    if( simplepasswd( passbuf ) ) {
 			        prints("[33m* ÃÜÂë¹ýì¶¼òµ¥, ÇëÑ¡ÔñÒ»¸öÒÔÉÏµÄÌØÊâ×ÖÔª.[m\n");
 			        getdata( 0, 0, "°´ [RETURN] ¼ÌÐø",genbuf,10,NOECHO,NULL,YEA);
@@ -587,11 +577,37 @@ login_query()
 #else
    getdata( 0, 0, "\n°´ [RETURN] ¼ÌÐø",genbuf,10,NOECHO,NULL,YEA);
 #endif
-    if( strcasecmp(currentuser->userid,"guest")&&!HAS_PERM(currentuser, PERM_BASIC ) ) {
+    if( !HAS_PERM(currentuser, PERM_BASIC ) ) {
+	sethomefile( genbuf, currentuser->userid,"giveup" );
+    	fn = fopen(genbuf, "rt");
+    	if (fn) {
+	    while(!feof(fn)){
+    	        if(fscanf(fn, "%d %d",&i,&j)<=0)break;
+    	        if(i==1){
+    	        	fclose(fn);
+    	        	sprintf(genbuf, "[32mÄãÒÑ¾­½äÍø£¬Àë½äÍø½áÊø»¹ÓÐ%dÌì[m\n", j-time(0)/3600/24);
+			prints( genbuf );
+    	        	oflush();
+    	        	sleep( 1 );
+    	        	exit( 1 );
+    	        }
+            }
+    	    fclose(fn);
+        }
        prints( "[32m±¾ÕÊºÅÒÑÍ£»ú¡£ÇëÏò [36mSYSOP[32m ²éÑ¯Ô­Òò[m\n" );
        oflush();
        sleep( 1 );
        exit( 1 );
+    }
+    if(id_invalid(uid))
+    {
+        prints("[31m±§Ç¸!![m\n");
+        prints("[32m±¾ÕÊºÅÊ¹ÓÃÖÐÎÄÎª´úºÅ£¬´ËÕÊºÅÒÑ¾­Ê§Ð§...[m\n");
+        prints("[32mÏë±£ÁôÈÎºÎÇ©ÃûµµÇë¸úÕ¾³¤ÁªÂç £¬Ëû(Ëý)»áÎªÄã·þÎñ¡£[m\n");
+        getdata( 0, 0, "°´ [RETURN] ¼ÌÐø",genbuf,10,NOECHO,NULL,YEA);
+        oflush();
+        sleep( 1 );
+        exit( 1 );
     }
 #ifdef DEBUG
     if (!HAS_PERM(currentuser,PERM_SYSOP)) {
