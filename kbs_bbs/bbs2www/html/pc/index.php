@@ -37,15 +37,13 @@
 			echo "<table cellspacing=0 cellpadding=5 width=650 class=t15>\n".
 			"<tr><td class=\"".$cellclass[0]."\"><img src=\"icon/".$nodes[$i][emote].".gif\" border=0 align=absmiddle>\n".
 			"<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\" class=f2>".html_format($nodes[$i][subject])."</a></td>".
-			"<td class=\"".$cellclass[1]."\" align=right>[浏览]<font class=f4>".$nodes[$i][visitcount]."</font>\n[评论]<font class=f4>".$nodes[$i][commentcount]."</font>&nbsp;&nbsp;</td></tr>\n".
+			"<td class=\"".$cellclass[1]."\" align=right>[<a href=\"pccom.php?act=pst&nid=".$nodes[$i][nid]."\">Add Comment</a>]\n[<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\">Mail ".$pc["USER"]."</a>]</td></tr>\n".
 			"<tr><td colspan=2 class=\"".$cellclass[1]."\">".html_format($nodes[$i][body],TRUE)."</td></tr>\n".
-			"<tr><td colspan=2 class=\"".$cellclass[2]."\"><font class=\"f2\">\n<a href=\"/bbsqry.php?userid=".$pc["USER"]."\" class=f2>".$pc["USER"]."</a> 发表于".time_format($nodes[$i][created]).
-			"\n[<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\" class=f2>阅读全文</a>]".
-			"\n[<a href=\"pccom.php?act=pst&nid=".$nodes[$i][nid]."\" class=f2>发表评论</a>]".
-			"\n[<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\" class=f2>写信问候</a>]".
+			"<tr><td colspan=2 class=\"".$cellclass[2]."\"><font class=\"f7\">\nBy <a href=\"/bbsqry.php?userid=".$pc["USER"]."\">".$pc["USER"]."</a> at ".time_format($nodes[$i][created]).
+			"\n|\nViews[".$nodes[$i][visitcount]."]".
+			"\n|\n<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\">Comments[".$nodes[$i][commentcount]."]</a>".
+			"\n|\nTrackBack[0]".
 			"</font></td></tr>\n</table>\n";
-			
-			
 		}
 	}
 	
@@ -54,7 +52,7 @@
 ?>
 <ul>
 <?php		
-		for($i=4;$i< count($nodes);$i++)
+		for($i=0;$i< count($nodes);$i++)
 		{
 			echo "<li><a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nodes[$i][nid]."&tid=".$nodes[$i][tid]."\">".html_format($nodes[$i][subject])."</a>(".time_format($nodes[$i][created]).")</li>\n";
 		}
@@ -76,7 +74,14 @@ More Articles
 ?>
 <table cellpadding=0 cellspacing=0 width=650 border=0 class=f1>
 <tr><td valign=middle align=center>
+<!--
 <img src="<?php echo $pc["STYLE"]["TOPIMG"]; ?>" alt="<?php echo $pc["NAME"]; ?>" border=0>
+-->
+<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0" width="700" height="80">
+              <param name="movie" value="images/SMTH2.swf">
+              <param name="quality" value="high">
+              <embed src="images/SMTH2.swf" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash" width="805" height="90"></embed>
+</object>
 </td></tr></table>
 <table cellpadding=0 cellspacing=0 width=650 border=0 class=f1>
 <tr>

@@ -15,7 +15,7 @@
 	}
 	else
 	{
-		pc_html_init("gb2312","个人文集");		
+		pc_html_init("gb2312","个人文集","","","",TRUE);		
 		$nid = (int)($_GET["nid"]);
 		$act = $_GET["act"];
 		$cid = (int)($_GET["cid"]);
@@ -74,17 +74,6 @@
 		if($act == "pst")
 		{
 ?>
-<script language="Javascript1.2"><!-- // load htmlarea
-_editor_url = "htmlarea/";                     // URL to htmlarea files
-var win_ie_ver = parseFloat(navigator.appVersion.split("MSIE")[1]);
-if (navigator.userAgent.indexOf('Mac')        >= 0) { win_ie_ver = 0; }
-if (navigator.userAgent.indexOf('Windows CE') >= 0) { win_ie_ver = 0; }
-if (navigator.userAgent.indexOf('Opera')      >= 0) { win_ie_ver = 0; }
-if (win_ie_ver >= 5.5) {
- document.write('<scr' + 'ipt src="' +_editor_url+ 'editor.js"');
- document.write(' language="Javascript1.2"></scr' + 'ipt>');  
-} else { document.write('<scr'+'ipt>function editor_generate() { return false; }</scr'+'ipt>'); }
-// --></script> 
 <script language="JavaScript1.2" defer>
 editor_generate('combody');
 </script>

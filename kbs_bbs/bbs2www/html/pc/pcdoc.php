@@ -653,7 +653,7 @@
 	<td>
 	<table cellspacing="0" cellpadding="3" border="0" class="t0" width="100%" class="tt1">
 		<tr>
-			<td class="tt1">&nbsp;&nbsp;&nbsp;&nbsp;<?php echo "<a href=\"/\" class=\"f1\">".BBS_FULL_NAME."</a> - <a href='pc.php' class=\"f1\">个人文集</a> - ".$pc["NAME"]; ?></td>
+			<td class="tt1">&nbsp;&nbsp;&nbsp;&nbsp;<?php echo "<a href=\"/\" class=\"f1\">".BBS_FULL_NAME."</a> - <a href='pc.php' class=\"f1\">个人文集</a> - <a href=\"index.php?id=".$pc["USER"]."\" class=\"f1\">".$pc["NAME"]."</a>"; ?></td>
 			<td align="right" class="tt1">http://<?php echo $pc["USER"]; ?>.mysmth.net&nbsp;&nbsp;&nbsp;&nbsp;</td>
 		</tr>
 	</table>
@@ -761,7 +761,12 @@
 	&nbsp;&nbsp;&nbsp;&nbsp;
 	[
 	<a href="pcnsearch.php?userid=<?php echo $pc["USER"]; ?>">文章搜索</a>
-	]<br>&nbsp;
+	]
+	&nbsp;&nbsp;&nbsp;&nbsp;
+	[
+	<a href="index.php?id=<?php echo $pc["USER"]; ?>"><?php echo $pc["NAME"]; ?></a>
+	]
+	<br>&nbsp;
 	</td>
 </tr>
 <tr>
