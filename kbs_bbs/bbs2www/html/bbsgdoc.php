@@ -234,7 +234,7 @@
 		}
 	    ?>
 	    -
-	    <a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>" class="b2"><?php echo $brdarr["NAME"]; ?>版</a>(<a href="bbsnot.php?board=<?php echo $brd_encode; ?>" class="b2">进版画面</a>|<a href="/bbsfav.php?bname=<?php echo $brd_encode; ?>&select=-1" class="b2">预定本版</a>)
+	    <a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>" class="b2"><?php echo $brdarr["NAME"]; ?>版</a>(<a href="bbsnot.php?board=<?php echo $brd_encode; ?>" class="b2">进版画面</a>|<a href="/bbsfav.php?bname=<?php echo $brd_encode; ?>&select=0" class="b2">预定本版</a>)
 	    -
 	    文摘区
     </td>

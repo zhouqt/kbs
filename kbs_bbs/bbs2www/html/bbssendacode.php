@@ -24,7 +24,7 @@ else
 		
 	if($ret == 0)
 	{
-		if(bbs_reg_haveactivated($activation && !isset($_POST["react"]))
+		if(bbs_reg_haveactivated($activation && !isset($_GET["react"]))
 			html_error_quit("您的帐户已激活");	
 		$reg_email = bbs_reg_getactivationemail($activation);
 	}
@@ -56,7 +56,7 @@ style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-f
 <P class=MsoNormal><FONT size=2><SPAN lang=EN-US>Email: </SPAN><SPAN 
 style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">" . $new_reg_email . "</SPAN></FONT></P>
 <P class=MsoNormal><FONT size=2><A 
-href=\"https://www.smth.edu.cn/bbsact.php?userid=".$userid."&acode=".$new_activation."><SPAN 
+href=\"https://www.smth.edu.cn/bbsact.php?userid=".$userid."&acode=".$new_activation."\"><SPAN 
 style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">点击这里激活您在" . BBS_FULL_NAME . "的新帐号</SPAN>
 <br /><br />
 <P class=MsoNormal><FONT size=2><SPAN 

@@ -387,7 +387,7 @@
 					<a href="/pc/pc.php" target="f3">用户列表</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/pc/pcrec.php" target="f3">推荐文章</a><br>
+					<a href="/pc/pcreclist.php" target="f3">推荐文章</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/pc/pclist.php" target="f3">热门排行</a><br>
@@ -396,16 +396,16 @@
 					<a href="/pc/pcsec.php" target="f3">分类目录</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/pc/pcnew.php" target="f3">最新文章</a><br>
+					<a href="/pc/pcnew.php" target="f3">最新日志</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/pc/pcnew.php?t=c" target="f3">最新评论</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/pc/pcsearch2.php" target="f3">文集搜索</a><br>
+					<a href="/pc/pcsearch2.php" target="f3">博客搜索</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/pc/pcnsearch.php" target="f3">文章搜索</a><br>
+					<a href="/pc/pcnsearch.php" target="f3">日志搜索</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/bbsdoc.php?board=SMTH_blog" target="f3">Blog论坛</a><br>

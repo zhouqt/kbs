@@ -132,7 +132,7 @@
 		}
 	    ?>
 	    -
-	    <a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>" class="b2"><font class="b2"><?php echo $brdarr["NAME"]; ?></font></a>版(<a href="bbsnot.php?board=<?php echo $brd_encode; ?>" class="b2"><font class="b2">进版画面</font></a>|<a href="/bbsfav.php?bname=<?php echo $brd_encode; ?>&select=-1" class="b2"><font class="b2">添加到收藏夹</font></a>)
+	    <a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>" class="b2"><font class="b2"><?php echo $brdarr["NAME"]; ?></font></a>版(<a href="bbsnot.php?board=<?php echo $brd_encode; ?>" class="b2"><font class="b2">进版画面</font></a>|<a href="/bbsfav.php?bname=<?php echo $brd_encode; ?>&select=0" class="b2"><font class="b2">添加到收藏夹</font></a>)
     </td>
   </tr>
   <tr>
