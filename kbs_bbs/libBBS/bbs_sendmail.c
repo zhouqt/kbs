@@ -69,7 +69,8 @@ bbs_readmailfile (char **buf, int *len, void *arg)
     p=retbuf;
     pout=*buf;
     if (pmo->bfirst) {
-//	sprintf(pout,"Reply-To: %s.bbs@%s\r\n\r\n", currentuser.userid, email_domain());
+/*	sprintf(pout,"Reply-To: %s.bbs@%s\r\n\r\n", currentuser.userid, email_domain());
+*/
 	sprintf(pout,"\r\n\r\n", currentuser.userid, email_domain());
 	pout=*buf+strlen(*buf);
 	pmo->bfirst=0;
