@@ -997,7 +997,6 @@ int choose_board(int newflag, char *boardprefix,int favmode)
             sellist[favlevel] = 1;
         };
         clear();
-        save_zapbuf();
     }
     free(nbrd);
     free(pts);
@@ -1005,6 +1004,7 @@ int choose_board(int newflag, char *boardprefix,int favmode)
     	free(arg.namelist);
     	arg.namelist=NULL;
     }
+    save_zapbuf();
 }
 
 void FavBoard()
