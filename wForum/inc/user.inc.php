@@ -8,7 +8,7 @@ function showUserMailbox(){
 	bbs_getmailnum($currentuser["userid"],$total,$unread);
 	if ($unread>0)  {
 ?>
-<bgsound src="sound/msg.wav" border=0>
+<bgsound src="sound/newmail.wav" border=0>
 <img src="pic/msg_new_bar.gif" /> <a href="usermailbox.php?boxname=inbox">我的收件箱</a> (<a href="usermail.php?boxname=inbox&num=<?php echo $total-1;?>" target=_blank><font color="#FF0000"><?php  echo $unread; ?> 新</font></a>)
 <?php   }
     else

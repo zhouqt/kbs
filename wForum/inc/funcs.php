@@ -153,7 +153,8 @@ $loginok=0;
 		$fromhost=$fullfromhost;
   }
 
-bbs_setfromhost($fromhost,$fullfromhost);
+//sometimes,fromhost has strang space
+bbs_setfromhost(trim($fromhost),trim($fullfromhost));
 
 $compat_telnet=0;
 @$sessionid = $_GET["sid"];
