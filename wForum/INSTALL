@@ -1,4 +1,6 @@
 	安装说明
 
 inc 目录下的 site.php 要 ln 到 inc/sites/ 的适当文件上
+copy conn.php.origin 为conn.php,修改里面的mysql 用户、密码和数据库名
+按照documents/smallpaper_tb.sql里的定义在mysql中建立一个数据表
 
