@@ -25,7 +25,7 @@ function main() {
 <?php
 	if ($num==0) {
 ?>
-      <tr><td  class=TableBody1>您在本次访问本站期间没有收到任何短消息</td></tr>
+      <tr><td  class=TableBody1 align="center">您在本次访问本站期间没有收到任何短消息</td></tr>
 <?php
 	} else {
 		for ($i=0;$i<$num;$i++) {

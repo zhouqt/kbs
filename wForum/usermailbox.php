@@ -190,8 +190,11 @@ function doAction(desc,action) {
 	return false;
 }
 </script>
-<input type=checkbox name=chkall value=on onclick="CheckAll(this.form)">选中所有显示信件&nbsp;<input type=button onclick="doAction('确定锁定/解除锁定选定的纪录吗?','lock');" value="锁定信件">&nbsp;<input type=button onclick="doAction('确定删除选定的纪录吗?','delete');" value="删除信件">&nbsp;<input type=button onclick="doAction('确定清除<?php echo $desc; ?>所有的纪录吗?','deleteAll');" value="清空<?php   echo $desc; ?>"></td>
-</tr>
+<input type=checkbox name=chkall value=on onclick="CheckAll(this.form)">选中所有显示信件&nbsp;
+<!--<input type=button onclick="doAction('确定锁定/解除锁定选定的纪录吗?','lock');" value="锁定信件">&nbsp;-->
+<input type=button onclick="doAction('确定删除选定的纪录吗?','delete');" value="删除信件">&nbsp;
+<input type=button onclick="doAction('确定清除<?php echo $desc; ?>所有的纪录吗?','deleteAll');" value="清空<?php   echo $desc; ?>">
+</td></tr>
 </table>
 </form>
 <?php

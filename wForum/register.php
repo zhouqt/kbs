@@ -107,11 +107,17 @@ function do_apply(){
 <TD width=60%  class=TableBody1> 
 <input name=phone size=40> </TD>
 </TR>
+<?php
+	if (SMS_SUPPORT) {
+?>
 <TR> 
 <TD width=40% class=TableBody1><B>手机</B>：<BR>您的手机号码（如果没有可以不填）</TD>
 <TD width=60%  class=TableBody1> 
 <input name=mobile size=40>&nbsp; <input type=button value='检测帐号' name=Button onclick=gopreview() disabled> </TD>
 </TR>
+<?php
+	}
+?>
 </table>
  <table cellpadding=3 cellspacing=1 align=center class=TableBorder1 id=adv style="DISPLAY: none">
 <TBODY> 

@@ -261,7 +261,7 @@ arNews = [<?php
 			} else {
 				$articles = bbs_getthreads($brdarr['NAME'], 0, ANNOUNCENUMBER,1); 
 				if ($articles == FALSE) {
-					echo '"当前没有公告2","",';
+					echo '"当前没有公告","",';
 				} else {
 					$num=count($articles);
 					for ($i=0;$i<$num;$i++) {
@@ -336,7 +336,7 @@ function usersysinfo($info){
 function showUserInfo(){
 ?>
 <table cellpadding=5 cellspacing=1 class=TableBorder1 align=center style="word-break:break-all;" width="97%">
-<TR><Th align=left colSpan=2 height=25>-=> 用户来访信息</Th></TR>
+<TR><Th align=left colSpan=2 height=25>-=&gt; 用户来访信息</Th></TR>
 <TR><TD vAlign=top class=TableBody1 height=25 width=100% >
 <?php
 $userip = $_SERVER["HTTP_X_FORWARDED_FOR"];
@@ -354,9 +354,12 @@ echo usersysinfo($_SERVER["HTTP_USER_AGENT"]);
 function showOnlineUsers(){
 ?>
 <table cellpadding=5 cellspacing=1 class=TableBorder1 align=center style="word-break:break-all;" width="97%">
-<TR><Th colSpan=2 align=left id=TableTitleLink height=25 style="font-weight:normal"><b>-=> 论坛在线统计</b>&nbsp;[<a href=showonlineuser.php>显示详细列表</a>] [<a href=boardstat.php?reaction=online>查看在线用户位置</a>]</Th></TR>
-<TR><TD width=100% vAlign=top class=TableBody1>  目前论坛上总共有 <b><?php echo bbs_getonlinenumber() ; ?></b> 人在线，其中注册用户 <b><?php echo bbs_getonlineusernumber(); ?></b> 人，访客 <b><?php echo bbs_getwwwguestnumber() ; ?></b> 人。<br>
-历史最高在线纪录是 <b><?php echo  $Maxonline ?></b> 人同时在线
+<TR><Th colSpan=2 align=left id=TableTitleLink height=25 style="font-weight:normal">
+	<b>-=&gt; 论坛在线统计</b>&nbsp;[<a href=showonlineuser.php>显示详细列表</a>]
+	<!--[<a href=boardstat.php?reaction=online>查看在线用户位置</a>]-->
+</Th></TR>
+<TR><TD width=100% vAlign=top class=TableBody1>  目前论坛上总共有 <b><?php echo bbs_getonlinenumber() ; ?></b> 人在线，其中注册用户 <b><?php echo bbs_getonlineusernumber(); ?></b> 人，访客 <b><?php echo bbs_getwwwguestnumber() ; ?></b> 人。<!--<br>
+历史最高在线纪录是 <b> </b> 人同时在线-->
 </td></tr>
 </table><br>
 <?php

@@ -25,9 +25,29 @@ function main(){
 <?php
 	echo get_myface($currentuser, "align=absmiddle");
 ?>
-</td></tr><tr><th height=25>基本信息</th></tr><tr><td align=left class=TableBody1 valign=top>用户等级： <?php echo bbs_getuserlevel($currentuser['userid']); ?><br>用户门派： <?php echo showIt($groups[$currentuser['group']]); ?><br>用户财富： <?php echo $currentuser['money']; ?><br>用户经验： <?php echo $currentuser['score']; ?><br>用户魅力： N/A<br>精华帖数： N/A<br>帖数总数： <?php echo $currentuser['numposts']; ?><br>注册时间： <?php echo strftime("%Y-%m-%d %H:%M:%S", $currentuser['firstlogin']); ?><br>登陆次数： <?php echo $currentuser['numlogins']; ?><br></td></tr></table><br><table align=center style="width:100%" height=100% cellspacing=1 cellpadding=6 class=TableBorder1><tr><th height=25>好友在线</th></tr><tr align=center><td class=TableBody1 align=left>快添加您的好友吧！</td></tr><tr><td height=25 class=TableBody2>＊点击图标给好友发送短讯！</td></tr></table></td>
+</td></tr>
+<tr><th height=25>基本信息</th></tr>
+<tr><td align=left class=TableBody1 valign=top>
+用户等级： <?php echo bbs_getuserlevel($currentuser['userid']); ?><br>
+用户门派： <?php echo showIt($groups[$currentuser['group']]); ?><br>
+用户财富： <?php echo $currentuser['money']; ?><br>
+用户经验： <?php echo $currentuser['score']; ?><br>
+用户魅力： N/A<br>
+精华帖数： N/A<br>
+帖数总数： <?php echo $currentuser['numposts']; ?><br>
+注册时间： <?php echo strftime("%Y-%m-%d %H:%M:%S", $currentuser['firstlogin']); ?><br>
+登陆次数： <?php echo $currentuser['numlogins']; ?><br>
+</td></tr></table>
+<!--
+<br>
+<table align=center style="width:100%" height=100% cellspacing=1 cellpadding=6 class=TableBorder1>
+<tr><th height=25>好友在线</th></tr>
+<tr align=center><td class=TableBody1 align=left>快添加您的好友吧！</td></tr>
+<tr><td height=25 class=TableBody2>＊点击图标给好友发送短讯！</td></tr>
+</table>-->
+</td>
 
-<td valign=top><table cellpadding=3 cellspacing=1 style="width:100%" height=29 align=center  class=TableBorder1><tr><th height=25 align=left>-=> 用户个人邮箱</td></tr><tr><td class=TableBody1><?php
+<td valign=top><table cellpadding=3 cellspacing=1 style="width:100%" height=29 align=center  class=TableBorder1><tr><th height=25 align=left>-=&gt; 用户个人邮箱</td></tr><tr><td class=TableBody1><?php
 	bbs_getmailnum($currentuser["userid"],$total,$unread);
 	if ($unread<=0)  {
 		echo "目前您没有新的信件";
@@ -40,7 +60,7 @@ function main(){
 	$mail_num_w = bbs_getmailnum2($mail_fullpath);
 ?>，<a href=usermailbox.php?boxname=inbox><font color="#FF0000">收件箱</font></a>中共有 <b>[<?php echo $mail_num_r; ?>]</b> 条信息，<a href=usermailbox.php?boxname=sendbox><font color="#FF0000">发件箱</font></a>中共有 <b>[<?php echo $mail_num_w; ?>]</b> 条信息。<br></td></tr></table><br>
 
-<table cellpadding=3 cellspacing=1 style="width:100%" align=center class=TableBorder1><tr><th colspan=5 height=25 align=left>-=> 最新收到的信件</th></tr><tr><td align=center valign=middle width=30 class=TableTitle2><b>状态</b></td><td align=center valign=middle width=100 class=TableTitle2><b>发件人</b></td><td align=center valign=middle width=*  class=TableTitle2><b>主题</b></td><td align=center valign=middle width=120 class=TableTitle2><b>日期</b></td><td align=center valign=middle width=60 class=TableTitle2><b>大小</b></td></tr>
+<table cellpadding=3 cellspacing=1 style="width:100%" align=center class=TableBorder1><tr><th colspan=5 height=25 align=left>-=&gt; 最新收到的信件</th></tr><tr><td align=center valign=middle width=30 class=TableTitle2><b>状态</b></td><td align=center valign=middle width=100 class=TableTitle2><b>发件人</b></td><td align=center valign=middle width=*  class=TableTitle2><b>主题</b></td><td align=center valign=middle width=120 class=TableTitle2><b>日期</b></td><td align=center valign=middle width=60 class=TableTitle2><b>大小</b></td></tr>
 <?php
 	$mail_fullpath = bbs_setmailfile($currentuser["userid"],".DIR");
 	$num=3;
@@ -94,8 +114,10 @@ function main(){
 ?>
 </table><br>
 
-<table cellpadding=3 cellspacing=1 style="width:100%" align=center class=TableBorder1><tr><th colspan=5 height=25 align=left>-=> 最新上传文件</th></tr><tr><td align=center valign=middle width=30 class=TableTitle2><b>属性</b></td><td align=center valign=middle width=100 class=TableTitle2><b>大小</b></td><td align=center valign=middle width=* class=TableTitle2><b>文件</b></td><td align=center valign=middle width=120 class=TableTitle2><b>日期</b></td><td align=center valign=middle width=60 class=TableTitle2><b>类型</b></td></tr><tr><td align=center valign=middle  class=TableBody1><img src='images/files/jpg.gif' border=0></td><td align=left valign=middle  class=TableBody1>42777 Byte</td><td align=left valign=middle  class=TableBody1><a href="myfile.asp" >200371516193444364.jpg</a></td><td align=left valign=middle  class=TableBody1>2003-7-15 16:19:34</td><td align=center valign=middle  class=TableBody1><b>图片集</b></td></tr><tr><td align=center valign=middle  class=TableBody1><img src='images/files/jpg.gif' border=0></td><td align=left valign=middle  class=TableBody1>57474 Byte</td><td align=left valign=middle  class=TableBody1><a href="myfile.asp" >20037151345023194.jpg</a></td><td align=left valign=middle  class=TableBody1>2003-7-15 13:45:00</td><td align=center valign=middle  class=TableBody1><b>图片集</b></td></tr><tr><td align=center valign=middle  class=TableBody1><img src='images/files/jpg.gif' border=0></td><td align=left valign=middle  class=TableBody1>227751 Byte</td><td align=left valign=middle  class=TableBody1><a href="myfile.asp" >20037151344982267.jpg</a></td><td align=left valign=middle  class=TableBody1>2003-7-15 13:44:09</td><td align=center valign=middle  class=TableBody1><b>图片集</b></td></tr></table><br>
-<table cellpadding=3 cellspacing=1 style="width:100%" align=center class=TableBorder1><tr><th height=25 align=left>-=> 最近发表的文章</th></tr> <tr><td align=left class=TableBody1>&nbsp;□　&nbsp;<a href=dispbbs.asp?boardid=1&id=7&replyid=15#15>jkhkh</a>&nbsp;--&nbsp;2003-7-25 17:19:56</td></tr> <tr><td align=left class=TableBody1>&nbsp;□　&nbsp;<a href=dispbbs.asp?boardid=1&id=7&replyid=14#14>khjklj</a>&nbsp;--&nbsp;2003-7-25 17:19:12</td></tr> <tr><td align=left class=TableBody1>&nbsp;□　&nbsp;<a href=dispbbs.asp?boardid=1&id=7&replyid=13#13>jkhj,</a>&nbsp;--&nbsp;2003-7-25 17:18:44</td></tr> <tr><td align=left class=TableBody1>&nbsp;□　&nbsp;<a href=dispbbs.asp?boardid=1&id=7&replyid=12#12>kjkj</a>&nbsp;--&nbsp;2003-7-25 17:18:35</td></tr> <tr><td align=left class=TableBody1>&nbsp;□　&nbsp;<a href=dispbbs.asp?boardid=1&id=7&replyid=11#11>nmhjhjk</a>&nbsp;--&nbsp;2003-7-25 17:18:25</td></tr></table><br></td></tr></table>
+<!--
+<table cellpadding=3 cellspacing=1 style="width:100%" align=center class=TableBorder1><tr><th colspan=5 height=25 align=left>-=&gt; 最新上传文件</th></tr><tr><td align=center valign=middle width=30 class=TableTitle2><b>属性</b></td><td align=center valign=middle width=100 class=TableTitle2><b>大小</b></td><td align=center valign=middle width=* class=TableTitle2><b>文件</b></td><td align=center valign=middle width=120 class=TableTitle2><b>日期</b></td><td align=center valign=middle width=60 class=TableTitle2><b>类型</b></td></tr><tr><td align=center valign=middle  class=TableBody1><img src='images/files/jpg.gif' border=0></td><td align=left valign=middle  class=TableBody1>42777 Byte</td><td align=left valign=middle  class=TableBody1><a href="myfile.asp" >200371516193444364.jpg</a></td><td align=left valign=middle  class=TableBody1>2003-7-15 16:19:34</td><td align=center valign=middle  class=TableBody1><b>图片集</b></td></tr><tr><td align=center valign=middle  class=TableBody1><img src='images/files/jpg.gif' border=0></td><td align=left valign=middle  class=TableBody1>57474 Byte</td><td align=left valign=middle  class=TableBody1><a href="myfile.asp" >20037151345023194.jpg</a></td><td align=left valign=middle  class=TableBody1>2003-7-15 13:45:00</td><td align=center valign=middle  class=TableBody1><b>图片集</b></td></tr><tr><td align=center valign=middle  class=TableBody1><img src='images/files/jpg.gif' border=0></td><td align=left valign=middle  class=TableBody1>227751 Byte</td><td align=left valign=middle  class=TableBody1><a href="myfile.asp" >20037151344982267.jpg</a></td><td align=left valign=middle  class=TableBody1>2003-7-15 13:44:09</td><td align=center valign=middle  class=TableBody1><b>图片集</b></td></tr></table><br>
+<table cellpadding=3 cellspacing=1 style="width:100%" align=center class=TableBorder1><tr><th height=25 align=left>-=&gt; 最近发表的文章</th></tr> <tr><td align=left class=TableBody1>&nbsp;□　&nbsp;<a href=dispbbs.asp?boardid=1&id=7&replyid=15#15>jkhkh</a>&nbsp;--&nbsp;2003-7-25 17:19:56</td></tr> <tr><td align=left class=TableBody1>&nbsp;□　&nbsp;<a href=dispbbs.asp?boardid=1&id=7&replyid=14#14>khjklj</a>&nbsp;--&nbsp;2003-7-25 17:19:12</td></tr> <tr><td align=left class=TableBody1>&nbsp;□　&nbsp;<a href=dispbbs.asp?boardid=1&id=7&replyid=13#13>jkhj,</a>&nbsp;--&nbsp;2003-7-25 17:18:44</td></tr> <tr><td align=left class=TableBody1>&nbsp;□　&nbsp;<a href=dispbbs.asp?boardid=1&id=7&replyid=12#12>kjkj</a>&nbsp;--&nbsp;2003-7-25 17:18:35</td></tr> <tr><td align=left class=TableBody1>&nbsp;□　&nbsp;<a href=dispbbs.asp?boardid=1&id=7&replyid=11#11>nmhjhjk</a>&nbsp;--&nbsp;2003-7-25 17:18:25</td></tr></table><br>-->
+</td></tr></table>
 <?php
 }
 ?>

@@ -178,7 +178,7 @@ function showBoardStaticsTop($boardArr){
 <table cellpadding=2 cellspacing=0 border=0 width=97% align=center valign=middle><tr><td align=center width=2> </td>
 <td align=left style="height:27" valign="center"><table cellpadding=0 cellspacing=0 border=0 ><tr>
 <td width="110"><a href=postarticle.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass1" border=0 alt=发新帖></div></a></td>
-<td width="110"><a href=# onclick="alert('本功能尚在开发中！')"><div class="buttonClass2" border=0 alt=发起新投票></div></a></td>
+<!--<td width="110"><a href=# onclick="alert('本功能尚在开发中！')"><div class="buttonClass2" border=0 alt=发起新投票></div></a></td>-->
 <td width="110"><a href=smallpaper.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass3" border=0 alt=发布小字报></div></a></td>
 </tr></table></td>
 <td align=right><img src=pic/team2.gif align=absmiddle>
@@ -213,7 +213,7 @@ function showBroadcast($boardID,$boardName,$is_ann=false){
 <?php
 	if ($is_ann) {
 ?>
-	<a href="board.php?name=<?php echo $boardName; ?>" title=查看本版文章><font color=blue><B>版面</B></font></a> | 
+	<a href="board.php?name=<?php echo $boardName; ?>" title=查看本版文章><font color=blue><B>讨论区</B></font></a> 
 <?php
 	} else {
 		$ann_path = bbs_getannpath($boardName);
@@ -221,15 +221,18 @@ function showBroadcast($boardID,$boardName,$is_ann=false){
 	    	if (!strncmp($ann_path,"0Announce/",10))
 			$ann_path=substr($ann_path,9);
 ?>
-	<a href="elite.php?path=<?php echo urlencode($ann_path); ?>" title=查看本版精华区><font color=#FF0000><B>精华</B></font></a> | 
+	<a href="elite.php?path=<?php echo urlencode($ann_path); ?>" title=查看本版精华区><font color=#FF0000><B>精华区</B></font></a> 
 <?php
 		}
 	}
 ?>	
-    <a href=# onclick="alert('本功能尚在开发中！')" title=查看本版在线详细情况>在线</a>
+<!--
+    | <a href=# onclick="alert('本功能尚在开发中！')" title=查看本版在线详细情况>在线</a>
 	| <a href=# onclick="alert('本功能尚在开发中！')" title=查看本版事件>事件</a>
 	| <a href=# onclick="alert('本功能尚在开发中！')" title=查看本版用户组权限>权限</a>
-    | <a href=# onclick="alert('本功能尚在开发中！')">管理</a></td></tr></table>
+    | <a href=# onclick="alert('本功能尚在开发中！')">管理</a>
+-->
+</td></tr></table>
 </td></tr>
 <?php
 }
