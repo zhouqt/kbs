@@ -275,7 +275,7 @@ function html_init($charset,$title="",$otherheader="",$new_style=0)
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>"/>
-<script src="bbs.js"></script>
+<script src="/bbs.js"></script>
 <?php
         if ( func_num_args() > 1) {
 ?>
