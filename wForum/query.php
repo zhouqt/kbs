@@ -55,7 +55,7 @@ function showSearchMenu(){
 	global $sectionCount;
 	global $section_nums;
 	global $yank;
-	global $_GET;
+	global $currentuser;
 	$allow_multi_query = isMultiQueryAllowed();
 	if (isset($_GET["boardName"])) $s_board = $_GET["boardName"];
 	else $s_board = "";
@@ -77,13 +77,15 @@ function showSearchMenu(){
 <?php
 	$selectedIndex = $j = -1;
 	for ($i=0;$i<$sectionCount;$i++){
-		$boards = bbs_getboards($section_nums[$i], 0, $yank | 2); //ToDo: 二级版面没显示出来？ - atppp
+		$boards = bbs_getboards($section_nums[$i], 0, $yank | 2 | 4);
 		if ($boards != FALSE) {
 			$brd_desc = $boards["DESC"]; // 中文描述
 			$brd_name = $boards["NAME"];
+			$brd_flag = $boards["FLAG"];
 			$rows = sizeof($brd_desc);
 			echo "<OPTGROUP LABEL=\"".$section_names[$i][0]."\">";
 			for ($t = 0; $t < $rows; $t++)	{
+			    if ($brd_flag[$t] & BBS_BOARD_GROUP) continue;
 				$j++;
 				$isSelected = ($s_board==$brd_name[$t]);
 				echo "<option value=\"".$brd_name[$t]."\"".(($isSelected)?" selected=\"selected\"":"").">".$brd_desc[$t]."</option>";
@@ -94,6 +96,27 @@ function showSearchMenu(){
 	}
 ?>
 						</select>
+<?php
+    if (isSelfMultiQueryAllowed()) {
+?>
+<br/>
+<script language="JavaScript">
+<!--
+    function toogleQuerySelf(chk) {
+        var b = chk.checked;
+        var au = getRawObject("userid");
+        getRawObject("boardName").disabled = b;
+        if (au != null) {
+            if (b) au.value = "<?php echo $currentuser["userid"]; ?>";
+            au.disabled = b;
+        }
+    }
+//-->
+</script>
+<input type="checkbox" onclick="toogleQuerySelf(this)" name="querySelf" id="querySelf" value="1"><label style="cursor:hand;" for="querySelf">全站查询自己发表的主题</label>
+<?php
+    }
+?>
 					</td>
 <script language="JavaScript">
 <!--
@@ -123,9 +146,17 @@ function showSearchMenu(){
 		objForm = getRawObject("oForm");
 		objBDs = getRawObject("boardNames");
 		objBDs.value = "";
-		first = true; second = false;
 		c = getRawObject("boardName");
 		o = c.options;
+		objSelf = getRawObject("querySelf");
+		if ((objSelf != null) && (objSelf.checked)) { //self-query
+		    for (i = 0; i < o.length; i++) {
+		        o[i].selected = false;
+		    }
+		    objForm.method = "GET";
+		    return true;
+		}
+		first = true; second = false;
 		for (i = 0; i < o.length; i++) {
 			if (o[i].selected) {
 				o[i].selected = false;

@@ -2,6 +2,7 @@
 require("inc/funcs.php");
 require("inc/usermanage.inc.php");
 require("inc/user.inc.php");
+require("inc/board.inc.php");
 require_once("inc/myface.inc.php");
 
 setStat("控制面板首页");
@@ -119,6 +120,13 @@ function main(){
 </table><br>
 
 <?php
+    if (isSelfMultiQueryAllowed()) {
+?>
+<table cellpadding=3 cellspacing=1 style="width:100%" align=center class=TableBorder1><tr><th height=25 align=left>-=&gt; 个人搜索</th></tr>
+<tr><td align=center class=TableTitle2><a href="queryresult.php?querySelf=1"><font color="#FF0000">搜索我发表的主题</font></a></td>
+</table><br/>
+<?php
+    }
 /*
 ?>
 <table cellpadding=3 cellspacing=1 style="width:100%" align=center class=TableBorder1><tr><th colspan=5 height=25 align=left>-=&gt; 最新上传文件</th></tr><tr><td align=center valign=middle width=30 class=TableTitle2><b>属性</b></td><td align=center valign=middle width=100 class=TableTitle2><b>大小</b></td><td align=center valign=middle width=* class=TableTitle2><b>文件</b></td><td align=center valign=middle width=120 class=TableTitle2><b>日期</b></td><td align=center valign=middle width=60 class=TableTitle2><b>类型</b></td></tr><tr><td align=center valign=middle  class=TableBody1><img src='images/files/jpg.gif' border=0></td><td align=left valign=middle  class=TableBody1>42777 Byte</td><td align=left valign=middle  class=TableBody1><a href="myfile.asp" >200371516193444364.jpg</a></td><td align=left valign=middle  class=TableBody1>2003-7-15 16:19:34</td><td align=center valign=middle  class=TableBody1><b>图片集</b></td></tr><tr><td align=center valign=middle  class=TableBody1><img src='images/files/jpg.gif' border=0></td><td align=left valign=middle  class=TableBody1>57474 Byte</td><td align=left valign=middle  class=TableBody1><a href="myfile.asp" >20037151345023194.jpg</a></td><td align=left valign=middle  class=TableBody1>2003-7-15 13:45:00</td><td align=center valign=middle  class=TableBody1><b>图片集</b></td></tr><tr><td align=center valign=middle  class=TableBody1><img src='images/files/jpg.gif' border=0></td><td align=left valign=middle  class=TableBody1>227751 Byte</td><td align=left valign=middle  class=TableBody1><a href="myfile.asp" >20037151344982267.jpg</a></td><td align=left valign=middle  class=TableBody1>2003-7-15 13:44:09</td><td align=center valign=middle  class=TableBody1><b>图片集</b></td></tr></table><br>

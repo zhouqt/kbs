@@ -30,35 +30,50 @@ function preprocess(){
 	global $currentuser;
 	global $boardArr;
 	global $singleBoard;
+	global $yank;
 	global $title,$title2,$title3,$author;
-	if (!isset($_REQUEST['boardNames'])) {
-		foundErr("未指定版面。");
-	}
-	$boardNames = split(',',$_REQUEST['boardNames']);
-	if (count($boardNames) == 1) {
-		$singleBoard = $boardNames[0];
-		$brdArr=array();
-		$boardID= bbs_getboard($singleBoard, $brdArr);
-		$boardArr=$brdArr;
-		$singleBoard=$brdArr['NAME'];
-		if ($boardID==0) {
-			foundErr("指定的版面不存在");
-		}
-		$usernum = $currentuser["index"];
-		if (bbs_checkreadperm($usernum, $boardID) == 0) {
-			foundErr("指定的版面不存在");
-		}
+	if (isset($_REQUEST['querySelf'])) {
+	    if (!isSelfMultiQueryAllowed()) {
+	        foundErr("不允许多版面查询，请重新查询。");
+	    }
+	    $boards = bbs_getboards("*", $group, $yank | 2 | 4);
+	    if ($boards != FALSE) {
+    		$boardNames = $boards["NAME"];
+    	} else {
+    	    foundErr("系统出错：无法获得所有版面列表。");
+    	}
+    	$boardArr = false;
+    	$author = $currentuser["userid"]; //hello hacker
 	} else {
-		$singleBoard = '';
-		$boardArr = false;
-		if (!isMultiQueryAllowed()) {
-			foundErr("不允许多版面查询，请重新查询。");
-		}
-	}
+    	if (!isset($_REQUEST['boardNames'])) {
+    		foundErr("未指定版面。");
+    	}
+    	$boardNames = split(',',$_REQUEST['boardNames']);
+    	if (count($boardNames) == 1) {
+    		$singleBoard = $boardNames[0];
+    		$brdArr=array();
+    		$boardID= bbs_getboard($singleBoard, $brdArr);
+    		$boardArr=$brdArr;
+    		$singleBoard=$brdArr['NAME'];
+    		if ($boardID==0) {
+    			foundErr("指定的版面不存在");
+    		}
+    		$usernum = $currentuser["index"];
+    		if (bbs_checkreadperm($usernum, $boardID) == 0) {
+    			foundErr("指定的版面不存在");
+    		}
+    	} else {
+    		$singleBoard = '';
+    		$boardArr = false;
+    		if (!isMultiQueryAllowed()) {
+    			foundErr("不允许多版面查询，请重新查询。");
+    		}
+    	}
+    	$author=trim($_REQUEST['userid']);
+    }
 	$title=trim($_REQUEST['title']);
 	$title2=trim($_REQUEST['title2']);
 	$title3=trim($_REQUEST['title3']);
-	$author=trim($_REQUEST['userid']);
 	
 	return true;
 }
