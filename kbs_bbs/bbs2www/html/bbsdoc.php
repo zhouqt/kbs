@@ -80,6 +80,7 @@
 ?>
 <a href="bbsnot.php?board=<?php echo $brd_encode; ?>">进版画面</a>
 <a href="bbsgdoc.php?board=<?php echo $brd_encode; ?>">文摘区</a>
+<a href="bbstdoc.php?board=<?php echo $brd_encode; ?>">主题模式</a>
 <?php
 		$ann_path = bbs_getannpath($brdarr["NAME"]);
 		if ($ann_path != FALSE)
