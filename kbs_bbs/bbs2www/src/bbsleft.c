@@ -140,7 +140,7 @@ int main()
     printmenu("<img src=\"/images/find.gif\"><a href=\"bbssel\" target=\"f3\">查找讨论区</a><br>\n");
     printmenu("<img src=\"/images/find.gif\"><a href=\"/games/index.html\" target=\"f3\">休闲娱乐区</a><br>\n");
     printmenubegin();
-	printf("<table><tr><form action=\"/bbssel\" target=\"f3\"><td>&nbsp;&nbsp;"
+	printf("<table><tr><form action=\"bbssel\" target=\"f3\"><td>&nbsp;&nbsp;"
 			"<input type=\"text\" name=\"board\" maxlength=\"20\" "
 			"size=\"9\" value=\"选择讨论区\" onmouseover=\"this.select()\"></td></form></tr></table>\n");
     printf("<img src=\"/images/telnet.gif\"><a href=\"telnet:%s\">Telnet登录</a><br>\n", NAME_BBS_ENGLISH);
