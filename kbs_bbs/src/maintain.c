@@ -286,7 +286,6 @@ int m_info()
 }
 
 extern int      cmpbnames();
-extern int      numboards;
 
 int valid_brdname(brd)
 char           *brd;
@@ -376,7 +375,6 @@ chgrp()
 int m_newbrd()
 {
     struct boardheader newboard;
-    extern int      numboards;
     char            ans[5];
     char            vbuf[100];
     char           *group;
@@ -433,12 +431,9 @@ int m_newbrd()
     }
     else
         newboard.level = 0;
-    if ((bid = getbnum("")) > 0)
-    {
-        substitute_record(BOARDS, &newboard, sizeof(newboard), bid);
-    }
-    else if (append_record(BOARDS, &newboard, sizeof(newboard)) == -1)
-    {
+    if (add_board(&newboard)==-1) {
+    	move(t_lines-1,0);
+    	outs("加入讨论区失败!\n");
         pressreturn();
         clear();
         return -1;
@@ -460,7 +455,6 @@ int m_newbrd()
         else
             prints("已经置入精华区...\n");
     }
-    numboards = -1;
     prints("\n新讨论区成立\n");
     sprintf(genbuf, "add brd %s", newboard.filename);
     report(genbuf);
@@ -499,7 +493,7 @@ int m_editbrd()
         clear();
         return -1;
     }
-    pos = search_record(BOARDS, &fh, sizeof(fh), cmpbnames, bname);
+    pos = getboardnum(bname,&fh);
     if (!pos)
     {
         move(2, 0);
@@ -527,8 +521,7 @@ enterbname:
         getdata(9, 0, "新讨论区名称: ", genbuf, 18, DOECHO, NULL, YEA);
         if (*genbuf != 0)
         {
-            struct boardheader dh;
-            if (search_record(BOARDS, &dh, sizeof(dh), cmpbnames, genbuf))
+            if (getboardnum(genbuf,NULL)>0)
             {
                 move(3, 0);
                 prints("错误! 此讨论区已经存在\n");
@@ -651,7 +644,6 @@ enterbname:
             sprintf(genbuf, "更改讨论区 %s 的资料 --> %s",
                     fh.filename, newfh.filename);
             report(genbuf);
-            numboards = -1;	/* force re-caching */
         }
     }
     clear();

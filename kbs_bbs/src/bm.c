@@ -293,7 +293,7 @@ Here:
             {   sprintf(filebuf,"%-12s","违反某条站规");
                 if(addtodeny(uident)==1)
                 {
-                	struct userec* lookupuser;
+                	struct userec* lookupuser,*saveptr;
                     sprintf(repbuf,"%s 取消 %s 在 %s 的 POST 权力",
                             currentuser->userid,uident,currboard);
                     report(repbuf);
@@ -302,6 +302,8 @@ Here:
                     sprintf(filename,"etc/%s.deny",currentuser->userid);
                     fn=fopen(filename,"w+");
                     memcpy(&saveuser,currentuser,sizeof(struct userec));
+                    saveptr = currentuser;
+                    currentuser = &saveuser;
                     sprintf(buffer,"%s被取消在%s版的发文权限",uident,currboard);
 
                     if ((HAS_PERM(PERM_SYSOP)||HAS_PERM(PERM_OBOARDS)) && !chk_currBM1(currBM))
@@ -362,9 +364,7 @@ Here:
                     fclose(fn);
                     postfile(filename,currboard,buffer,2);
                     /*	unlink(filename); */
-
-                    memcpy(currentuser,&saveuser,sizeof(struct userec));
-
+                    currentuser = saveptr;
 
                     sprintf(buffer,"%s 被 %s 封禁本板POST权",uident,currentuser->userid);
                     getuser(uident,&lookupuser);

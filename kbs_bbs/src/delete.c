@@ -26,11 +26,10 @@
 int
 d_board()
 {
-    struct boardheader binfo ;
     int bid ;
     char bname[STRLEN];
+    char title[STRLEN];
     extern char lookgrp[];
-    extern int numboards ;
 
     modify_user_mode( ADMIN );
     if(!check_systempasswd())
@@ -44,64 +43,37 @@ d_board()
     namecomplete( "请输入讨论区: ",genbuf) ;
     if( genbuf[0] == '\0' )
         return 0;
-    bid = getbnum(genbuf) ;
-    if( get_record(BOARDS,&binfo,sizeof(binfo),bid) == -1 ) {
-        move(2,0) ;
-        prints("不正确的讨论区\n") ;
-        pressreturn() ;
-        clear() ;
-        return 0 ;
-    }
     strcpy(bname,genbuf);
-    move(1,0) ;
-    prints( "删除讨论区 '%s'.", binfo.filename );
-    clrtoeol();
-    getdata(2,0,"(Yes, or No) [N]: ",genbuf,4,DOECHO,NULL,YEA) ;
-    if( genbuf[0] != 'Y' && genbuf[0] != 'y') { /* if not yes quit */
-        move(2,0) ;
-        prints("取消删除....\n") ;
-        pressreturn() ;
-        clear() ;
-        return 0 ;
-    }
-    {
-        char        secu[STRLEN];
-        sprintf(secu,"删除讨论区：%s",binfo.filename);
-        securityreport(secu,NULL);
-    }
+    if (delete_board(bname,title)!=0) return 0;
     if(seek_in_file("0Announce/.Search",bname))
     {
+#ifdef BBSMAIN
         getdata(3,0,"移除精华区 (Yes, or No) [Y]: ",genbuf,4,DOECHO,NULL,YEA) ;
         if( genbuf[0] != 'N' && genbuf[0] != 'n')
         {
-            get_grp(binfo.filename);
-            del_grp(lookgrp,binfo.filename,binfo.title+13);
+#endif
+            get_grp(bname);
+            del_grp(lookgrp,bname,title+13);
+
         }
     }
-    if(seek_in_file("etc/anonymous",bname))
-        del_from_file("etc/anonymous",bname);
-    if(seek_in_file("0Announce/.Search",bname))
-        del_from_file("0Announce/.Search",bname);
 
-    if( binfo.filename[0] == '\0' ) return -1; /* rrr - precaution */
-    sprintf(genbuf, "deleted board %s", binfo.filename);
-    report(genbuf);
-    sprintf(genbuf,"/bin/rm -fr boards/%s",binfo.filename) ;
-    system(genbuf) ;
-    sprintf(genbuf,"/bin/rm -fr vote/%s",binfo.filename) ;
-    system(genbuf) ;
+    if( !bname[0] ) {
+	    if(seek_in_file("etc/anonymous",bname))
+	        del_from_file("etc/anonymous",bname);
+	    if(seek_in_file("0Announce/.Search",bname))
+	        del_from_file("0Announce/.Search",bname);
+        sprintf(genbuf, "deleted board %s", bname);
+        report(genbuf);
+        sprintf(genbuf,"/bin/rm -fr boards/%s",bname) ;
+        system(genbuf) ;
+        sprintf(genbuf,"/bin/rm -fr vote/%s",bname) ;
+        system(genbuf) ;
+    }
 
-    sprintf( genbuf, " << '%s'被 %s 删除 >>",
-             binfo.filename, currentuser->userid );
-    memset( &binfo, 0, sizeof( binfo ) );
-    strcpy( binfo.title, genbuf );
-    binfo.level = PERM_SYSOP;
-    substitute_record( BOARDS, &binfo, sizeof( binfo ), bid );
-    reload_boards();
     move(4,0) ;
     prints("本讨论区已经删除...\n") ;
     pressreturn() ;
-    numboards = -1 ;
     clear() ;
     return 0 ;
 }

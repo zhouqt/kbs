@@ -688,3 +688,16 @@ char *userID;
  }
 
 
+int id_invalid(char* userid)
+{
+    char *s;
+    if (!isalpha(userid[0]))
+        return 1;
+    for(s=userid;*s != '\0'; s++) {
+        if(*s<1 || !isalnum(*s)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+

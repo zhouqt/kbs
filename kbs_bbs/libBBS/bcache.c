@@ -1,7 +1,3 @@
-/* share memory 处理
-                            bcache:版 , ucache:所有注册用户, utmp cache:在线user 
-*/
-
 /*
     Pirate Bulletin Board System
     Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
@@ -24,125 +20,85 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
+/* 对.BOARDS的cache 处理
+                    KCN 2001.05.16 */
 
 #include "bbs.h"
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
-struct BCACHE   *brdshm;
-struct shortfile *bcache;
-int     numboards = -1 ;
+struct boardheader *bcache;
+struct BCACHE {
+	int numboards;
+}*brdshm;
 
-int
-fillbcache(struct boardheader *fptr,char* arg)/*fill board cache */
+static int bcache_lock()
 {
-    struct shortfile *bptr;
-
-    if( numboards >= MAXBOARD )
-        return 0;
-    bptr = &bcache[ numboards++ ];
-    memcpy( bptr, fptr, sizeof( struct shortfile ) );
-    return 0 ;
+    int lockfd;
+    lockfd = creat( "bcache.lock", 0600 );
+    if( lockfd < 0 ) {
+        log( "3system", "CACHE:lock bcache:%s", strerror(errno) );
+        return -1;
+    }
+    flock(lockfd,LOCK_EX);
+    return lockfd;
 }
 
-/* 为了在人数多的时候减少flock, 重读BOARDS, 将原来的resolve_boards改为reload_boards,
-   并重写了resolve_boards. ylsdd 2001.4.26 */
+static int bcache_unlock(int fd)
+{
+    flock(fd,LOCK_UN);
+    close(fd);
+}
+
 void
 reload_boards()
 {
-    struct stat st;
-    time_t      now;
-    int lockfd;
-    int iscreate;
-
-    if( brdshm == NULL ) {
-        brdshm = attach_shm( "BCACHE_SHMKEY", 3693, sizeof( *brdshm ) ,&iscreate); /* attach board share memory*/
-    }
-    numboards = brdshm->number;
-    bcache = brdshm->bcache;
-    now = time( NULL );
-
-    lockfd = open( "bcache.lock", O_RDWR|O_CREAT, 0600 );
-
-    if( lockfd < 0 ) {
-        log( "3CACHE", "reload bcache lock error!!!!" );
-        return;
-    }
-
-    flock(lockfd,LOCK_EX);
-
-    if( stat( BOARDS, &st ) < 0 ) {
-        st.st_mtime = now - 3600;
-    }
-    if( brdshm->uptime < st.st_mtime || brdshm->uptime < now - 3600 ) { /* 定期update board share memory*/
-        log( "1CACHE", "reload bcache" );
-        /*brdshm->uptime = now;*/
-        numboards = 0;
-        apply_record( BOARDS, fillbcache, sizeof(struct boardheader),0 );
-        brdshm->number = numboards;
-        brdshm->uptime = now;
-    }
-    flock(lockfd,LOCK_UN);
-    close(lockfd);
 }
 
-void
-resolve_boards()
+void resolve_boards()
 {
-    struct stat st;
-    time_t      now;
-    int lockfd;
-    static int n=0;
-    int iscreate;
-
+	int boardfd;
+	struct stat st;
+	int iscreate;
+	
     if( brdshm == NULL ) {
         brdshm = attach_shm( "BCACHE_SHMKEY", 3693, sizeof( *brdshm ) ,&iscreate); /* attach board share memory*/
     }
-    numboards = brdshm->number;
-    bcache = brdshm->bcache;
     
-    if( brdshm->uptime < 999999 ) {
-        reload_boards();
-        return;
-    }
-
-    n++;
-    if(n%50) return;
-    
-    now = time( NULL );
-    if( stat( BOARDS, &st ) < 0 ) {
-        st.st_mtime = now - 3600;
-    }
-    if( brdshm->uptime < st.st_mtime || brdshm->uptime < now - 3600 )
-        reload_boards();
+	if ((boardfd=open(BOARDS,O_RDWR|O_CREAT,0644)) == -1) {
+		log("3system","Can't open " BOARDS "file %s",strerror(errno));
+       	exit(-1);
+	}
+   	bcache = (struct boardheader*) mmap(NULL,
+   			MAXBOARD*sizeof(struct boardheader),
+   			PROT_READ|PROT_WRITE,MAP_SHARED,boardfd,0);
+   	if (bcache==(struct boardheader*)-1) {
+		log("4system","Can't map " BOARDS "file %s",strerror(errno));
+		close(boardfd);
+       	exit(-1);
+   	}
+	if (iscreate) {
+		int i;
+		int fd;
+		fd = bcache_lock();
+		ftruncate(boardfd,MAXBOARD*sizeof(struct boardheader));
+		for (i=0;i<MAXBOARD;i++)
+			if (bcache[i].filename[0])
+				brdshm->numboards=i+1;
+		bcache_unlock(fd);
+	}
+   	close(boardfd);
 }
 
-int
-apply_boards(func) /* 对所有版 应用 func函数*/
-int (*func)() ;
+int apply_boards(int (*func)()) /* 对所有版 应用 func函数*/
 {
     register int i ;
 
-    resolve_boards();
-    for(i=0;i<numboards;i++)
+    for(i=0;i<brdshm->numboards;i++)
         if( bcache[i].level & PERM_POSTMASK || HAS_PERM( bcache[i].level ) || (bcache[i].level&PERM_NOZAP))
             if((*func)(&bcache[i]) == QUIT)
                 return QUIT;
     return 0;
-}
-
-struct shortfile *
-            getbcache( bname ) /* get board cache, 通过board name */
-            char *bname ;
-{
-    register int i ;
-
-    resolve_boards();
-    for(i=0;i<numboards;i++)
-        if( bcache[i].level & PERM_POSTMASK || HAS_PERM( bcache[i].level ) || (bcache[i].level&PERM_NOZAP))
-            if( !strncasecmp( bname, bcache[i].filename, STRLEN ) )
-                return &bcache[i];
-    return NULL;
 }
 
 int
@@ -151,30 +107,27 @@ char    *bname;
 {
     register int i;
 
-    resolve_boards();/* attach shm*/
-    for(i=0;i<numboards;i++)
+    for(i=0;i<brdshm->numboards;i++)
         if( bcache[i].level & PERM_POSTMASK || HAS_PERM( bcache[i].level )|| (bcache[i].level&PERM_NOZAP))
             if(!strncasecmp( bname, bcache[i].filename, STRLEN ) )
                 return i+1 ;
     return 0 ;
 }
 /*---	added by period		2000-11-07	to be used in postfile	---*/
-int
-getboardnum( bname ) /* board name --> board No. & not check level */
-char    *bname;
+int getboardnum(char*  bname ,struct boardheader* bh) /* board name --> board No. & not check level */
 {
     register int i;
 
-    resolve_boards();/* attach shm*/
-    for(i=0;i<numboards;i++)
-        if(!strncasecmp( bname, bcache[i].filename, STRLEN ) )
+    for(i=0;i<brdshm->numboards;i++)
+        if(!strncasecmp( bname, bcache[i].filename, STRLEN ) ) {
+        	if (bh)
+        		*bh=bcache[i];
             return i+1 ;
+        }
     return 0 ;
 } /*---	---*/
 
-int
-haspostperm(bname) /* 判断在 bname版 是否有post权 */
-char *bname;
+int haspostperm(char *bname) /* 判断在 bname版 是否有post权 */
 {
     register int i;
 
@@ -195,14 +148,111 @@ char *bname;
     return (HAS_PERM((bcache[i-1].level&~PERM_NOZAP) & ~PERM_POSTMASK));
 }
 
-int
-normal_board(bname) /* bname版 是否是 normal level */
-char *bname;
+int normal_board(char *bname)
 {
     register int i;
 
     if( strcmp( bname, DEFAULTBOARD ) == 0 )  return 1;
     if ((i = getbnum(bname)) == 0) return 0;
     return (bcache[i-1].level==0);
+}
+
+struct boardheader* getbcache()
+{
+	return bcache;
+}
+
+int get_boardcount()
+{
+	return brdshm->numboards;
+}
+
+struct boardheader const* getboard(int num)
+{
+	if (num>0&&num<=MAXBOARD) {
+		return &bcache[num-1];
+	}
+	return 0;
+}
+
+int delete_board(char* boardname,char* title)
+{
+	int bid,i;
+	char buf[1024];
+	int fd;
+    
+    bid = getbnum(boardname) ;
+    if (bid==0) {
+#ifdef BBSMAIN
+        move(2,0) ;
+        prints("不正确的讨论区\n") ;
+        pressreturn() ;
+        clear() ;
+#endif
+    	return -1;
+    }
+    bid--;
+    strcpy(boardname,bcache[bid].filename);
+    strcpy(title,bcache[bid].title);
+    
+#ifdef BBSMAIN
+    move(1,0) ;
+    prints( "删除讨论区 '%s'.", bcache[bid].filename );
+    clrtoeol();
+    getdata(2,0,"(Yes, or No) [N]: ",genbuf,4,DOECHO,NULL,YEA) ;
+    if( genbuf[0] != 'Y' && genbuf[0] != 'y') { /* if not yes quit */
+        move(2,0) ;
+        prints("取消删除....\n") ;
+        pressreturn() ;
+        clear() ;
+        return -1;
+    }
+    sprintf(buf,"删除讨论区：%s",bcache[bid].filename);
+    securityreport(buf,NULL);
+#endif
+
+    sprintf( buf, " << '%s'被 %s 删除 >>",
+             bcache[bid].filename, currentuser->userid );
+    fd = bcache_lock();
+    bid = getbnum(boardname) ;
+    if (bid==0) return -1; /* maybe delete by other people */
+    bid--;
+	if (brdshm->numboards==bid+1)
+		if (bid==0) brdshm->numboards=0;
+		else
+			for (i=bid-1;i>=0;i--)
+				if (!bcache[i].filename[0]) {
+					brdshm->numboards=i+1;
+					break;
+				}
+    memset( &bcache[bid], 0, sizeof( struct boardheader ) );
+    strcpy( bcache[bid].title, buf );
+    bcache[bid].level = PERM_SYSOP;
+    bcache_unlock(fd);
+    return 0;
+}
+
+int add_board(struct boardheader* newboard)
+{
+	int bid=0;
+	int fd;
+	fd = bcache_lock();
+    if ((bid = getbnum("")) <= 0)
+    	if (brdshm->numboards<MAXBOARD) bid = brdshm->numboards+1;
+
+    if (bid>0) {
+        memcpy(&bcache[bid-1], newboard, sizeof(struct boardheader));
+        if (bid>brdshm->numboards)
+        	brdshm->numboards= bid;
+        bcache_unlock(fd);
+        return 0;
+    }
+    bcache_unlock(fd);
+    return -1;
+}
+
+int set_board(int bid,struct boardheader* board)
+{
+    memcpy(&bcache[bid-1], board, sizeof(struct boardheader));
 }
 

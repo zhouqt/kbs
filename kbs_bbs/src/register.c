@@ -86,20 +86,6 @@ char    *userid;
     return 0;
 }
 
-int
-id_invalid(userid)
-char userid[IDLEN];
-{
-    char *s;
-    if (!isalpha(userid[0]))
-        return 1;
-    for(s=userid;*s != '\0'; s++) {
-        if(*s<1 || !isalnum(*s)) {
-            return 1;
-        }
-    }
-    return 0;
-}
 void
 new_register()
 {

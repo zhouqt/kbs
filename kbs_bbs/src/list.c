@@ -331,7 +331,6 @@ int allnum,pagenum;
 {
     char    buf[STRLEN],genbuf[5];
     static  int   msgflag;
-    int savepid;
 
     if(msgflag==YEA)
     {
@@ -344,7 +343,6 @@ case 'k': case'K':
         if(!HAS_PERM(PERM_SYSOP)&&strcmp(currentuser->userid,
                                          user_record[allnum]->userid))
             return 1;
-        savepid=user_record[allnum]->pid;
         if (!strcmp(currentuser->userid, "guest"))
             return 1; /* Leeward 98.04.13 */
         sprintf(buf,"你要把 %s 踢出站外吗 (Yes/No) [N]: ",
@@ -356,7 +354,6 @@ case 'k': case'K':
         {
             return 1;
         }
-        if (savepid!=user_record[allnum]->pid) return 1;
         if(kick_user(user_record[allnum])==1)
         {
             sprintf(buf,"%s 已被踢出站外",

@@ -1062,6 +1062,7 @@ main_bbs(char *originhost, int convit,char* argv)
      user_data = NULL;
      resolve_ucache();
      resolve_utmp();
+    resolve_boards();
      /* commented by period for it changed to local variable 2000.11.12
      pnt = NULL; */
     
@@ -1323,7 +1324,6 @@ char    *title, *prompt;
 /*    char   middoc[30],bmstr[BM_LEN -1 ];
     struct shortfile    *bp; */
         char middoc[30];
-    struct shortfile    *getbcache();
     int chkmailflag=0;
 
 /*    if (getbnum(DEFAULTBOARD)) 

@@ -28,16 +28,27 @@
 
 #include "bbs.h"
 
-struct userec lookupuser;
 struct userec* currentuser;
 /*static int passwdfd=-1;*/
+
+#include "uhashgen.h"
+
+struct UCACHE {
+        ucache_hashtable hashtable;
+        ucache_hashtable hashusage;
+	int	hashhead[UCACHE_HASHSIZE+1];
+	int     next[MAXUSERS];
+	time_t  uptime;
+	int	number;
+};
+
 static struct userec* passwd;
 static struct UCACHE   *uidshm;
 
 static int ucache_lock()
 {
     int lockfd;
-    lockfd = creat( BBSHOME "/ucache.lock", 0600 );
+    lockfd = creat( "ucache.lock", 0600 );
     if( lockfd < 0 ) {
         log( "3system", "CACHE:lock ucache:%s", strerror(errno) );
         return -1;
@@ -211,12 +222,15 @@ fillucache(struct userec *uentp ,int* number)
 {
     if(*number < MAXUSERS) {
     	int hashkey;
-        hashkey = ucache_hash(uentp->userid);
+    	if (id_invalid(uentp->userid))
+    		hashkey=0;
+    	else
+	        hashkey = ucache_hash(uentp->userid);
 	if (hashkey<0||hashkey>UCACHE_HASHSIZE) {
 		log("3system","UCACHE:hash(%s) %d error",uentp->userid, hashkey);
 		exit(0);
 	}
-	if (hashkey==0) { /* empty user add in recurise sort */
+	if (hashkey==0) { /* empty user add in recurise sort 
 		int i=uidshm->hashhead[0];
         uidshm->next[*number] = 0;
 		if (i==0) uidshm->hashhead[0]=++(*number);
@@ -227,7 +241,16 @@ fillucache(struct userec *uentp ,int* number)
 				i=uidshm->next[i-1];
 			};
 			uidshm->next[prev-1]=++(*number);
+		}*/
+		static int prev=0;
+		uidshm->next[*number]=0;
+		(*number)++;
+		if (!prev) {
+			uidshm->hashhead[0]=*number;
+		} else {
+			uidshm->next[prev-1]=*number;
 		}
+		prev=*number;
 	} else {
         uidshm->next[*number] = uidshm->hashhead[hashkey];
         uidshm->hashhead[hashkey] = ++(*number);
@@ -264,7 +287,6 @@ resolve_ucache()
 		log("3system","Can't open " PASSFILE "file %s",strerror(errno));
        	exit(-1);
 	}
-	/*ftruncate(passwdfd,MAXUSERS*sizeof(struct userec));*/
    	passwd = (struct userec*) mmap(NULL,
    			MAXUSERS*sizeof(struct userec),
    			PROT_READ|PROT_WRITE,MAP_SHARED,passwdfd,0);
@@ -273,10 +295,10 @@ resolve_ucache()
 		close(passwdfd);
        	exit(-1);
    	}
-   	close(passwdfd);
 	if (iscreate) {
     	int lockfd = ucache_lock();
 		int     usernumber,i;
+		ftruncate(passwdfd,MAXUSERS*sizeof(struct userec));
     	if (lockfd==-1) {
     		log("3system","UCACHE:can't lock ucache");
     		exit(0);
@@ -295,6 +317,7 @@ resolve_ucache()
         uidshm->number = usernumber;
         ucache_unlock(lockfd);
     }
+   	close(passwdfd);
 }
 
 /*---	period	2000-10-20	---*/

@@ -26,7 +26,6 @@
 
 extern cmpbnames();
 extern int page,range;
-/*extern int numboards;*/
 char *vote_type[] = { "是非", "单选", "复选", "数字", "问答"};
 struct votebal currvote;
 struct votelimit currlimit;/*Haohmaru.99.11.17.根据板主设的限制条件判断是否让该使用者投票*/
@@ -45,19 +44,19 @@ struct ballot *uv;
 }
 
 int
-setvoteflag(bname,flag)
+setvoteflag(char* bname,int flag)
 {
     int pos;
     struct boardheader fh;
 
-    pos = search_record( BOARDS, &fh, sizeof(fh), cmpbnames, bname );
-    if(flag==0)
-        fh.flag = fh.flag&~VOTE_FLAG;
-    else
-        fh.flag = fh.flag|VOTE_FLAG;
-    if ( substitute_record( BOARDS, &fh, sizeof(fh), pos ) == -1 )
-        prints("Error updating BOARDS file...\n");
-    reload_boards();
+	pos = getboardnum(bname,&fh);
+	if (pos) {
+	    if(flag==0)
+	        fh.flag = fh.flag&~VOTE_FLAG;
+	    else
+	        fh.flag = fh.flag|VOTE_FLAG;
+		set_board(pos,&fh);
+	}
 }
 
 void
@@ -232,12 +231,8 @@ b_closepolls()
     fprintf( cfp, "%s", ctime( &now ) );
     strcpy(buf,currboard);
     fclose( cfp );
-    end=get_num_records(BOARDS,sizeof(struct boardheader));
-    for(i=1;i<=end;i++)
-    {
-        get_record(BOARDS, &fh, sizeof(fh), i);
-        b_close(&fh);
-    }
+
+    apply_boards(b_close);
     strcpy(currboard,buf);
     return 0;
 }

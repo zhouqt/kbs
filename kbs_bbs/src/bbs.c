@@ -83,7 +83,6 @@ int i_read_mail(); /* period 2000.11.12 */
 void    RemoveAppendedSpace(); /* Leeward 98.02.13 */
 int set_delete_mark(int ent,struct fileheader *fileinfo,char *direct ); /* KCN */
 
-extern int      numboards;
 extern time_t   login_start_time;
 extern char     BoardName[];
 extern int      cmpbnames();
@@ -891,13 +890,7 @@ char *filename,*nboard,*posttitle;
 int mode;
 {
     char dbname[STRLEN];
-    /*---	modified by period	2000-11-07	reduce disk io	---*
-        char bname[STRLEN];
-        struct boardheader fh;
-
-        if(search_record(BOARDS, &fh, sizeof(fh), cmpbnames, nboard)<=0)
-    *---	---*/
-    if(getboardnum(nboard) <= 0)
+    if(getboardnum(nboard,NULL) <= 0)
     {  /* 搜索要POST的版 ,判断是否存在该版 */
         sprintf(dbname,"%s 讨论区找不到",nboard);
         report(dbname);
@@ -926,7 +919,6 @@ char *bname,*prompt;
         return 0;
     }
     /*---	Modified by period	2000-10-29	---*/
-    /*    if(search_record(BOARDS, &fh, sizeof(fh), cmpbnames, bname)<=0)*/
     if(getbnum(bname) <= 0)
         /*---	---*/
     {
@@ -1047,8 +1039,7 @@ char *direct;
 void
 readtitle()  /* 版内 显示文章列表 的 title */
 {
-    struct shortfile    *bp;
-    struct shortfile    *getbcache();
+    struct boardheader    *bp;
     char        header[ STRLEN ], title[ STRLEN ];
     char        readmode[10];
     int chkmailflag=0;

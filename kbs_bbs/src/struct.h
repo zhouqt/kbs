@@ -98,12 +98,9 @@ struct one_key {                  /* Used to pass commands to the readmenu */
         int (*fptr)() ;
 } ;
 
-
-#include "uhashgen.h"
-
 #define USHM_SIZE       (MAXACTIVE + 10) /*modified by dong, 10->20, 1999.9.15*/
-#define UTMP_HASHSIZE  (USHM_SIZE*4)
 /* modified back by KCN,20->10, because not reboot */
+#define UTMP_HASHSIZE  (USHM_SIZE*4)
 struct UTMPFILE {
     struct user_info    uinfo[ USHM_SIZE ];
     int next[USHM_SIZE];
@@ -117,19 +114,4 @@ struct UTMPFILE {
     time_t              uptime;
 };
 
-struct BCACHE {
-    struct shortfile    bcache[ MAXBOARD ];
-    int         number;
-    time_t      uptime;
-};
-
-
-struct UCACHE {
-        ucache_hashtable hashtable;
-        ucache_hashtable hashusage;
-	int	hashhead[UCACHE_HASHSIZE+1];
-	int     next[MAXUSERS];
-	time_t  uptime;
-	int	number;
-};
 

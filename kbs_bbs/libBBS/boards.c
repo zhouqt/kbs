@@ -48,8 +48,6 @@ int  DelFavBoard(int i);
 
 char    *sysconf_str();
 extern time_t   login_start_time;
-extern int      numboards;
-extern struct shortfile *bcache;
 
 struct newpostdata {
     char        *name, *title, *BM;
@@ -128,12 +126,15 @@ void load_favboard(int dohelp)
             *favbrd_list = FAVBOARDNUM;
         idx = 0;
         while(++idx <= *favbrd_list) {
+        	struct boardheader* bh;
             fd = favbrd_list[idx];
-            if(fd >= 0 && fd <= numboards && (
-                        bcache[fd].filename[0]
-                        && ( (bcache[fd].level & PERM_POSTMASK)
-                             || HAS_PERM(bcache[fd].level)
-                             || (bcache[fd].level&PERM_NOZAP) )
+            bh = getboard(fd+1);
+            if(fd >= 0 && fd <= get_boardcount() && (
+            			bh &&
+                        bh->filename[0]
+                        && ( (bh->level & PERM_POSTMASK)
+                             || HAS_PERM(bh->level)
+                             || (bh->level&PERM_NOZAP) )
                     )
               )
                 continue;
@@ -179,7 +180,7 @@ load_zapbuf()  /* 装入zap信息*/
         zapbuf[n] = 1;
     setuserfile( fname, ".lastread" ); /*user的.lastread， zap信息*/
     if( (fd = open( fname, O_RDONLY, 0600 )) != -1 ) {
-        size = numboards * sizeof( int );
+        size = get_boardcount() * sizeof( int );
         read( fd, zapbuf, size );
         close( fd );
     }
@@ -200,7 +201,7 @@ void save_userfile(char * fname, int numblk, char * buf)
 
 void save_zapbuf()
 {
-    save_userfile(".lastread", numboards, (char *)zapbuf);
+    save_userfile(".lastread", get_boardcount(), (char *)zapbuf);
 }
 
 #if 0
@@ -222,17 +223,17 @@ save_zapbuf() /*保存Zap信息*/
 int
 load_boards()
 {
-    struct shortfile    *bptr;
+    struct boardheader  *bptr;
     struct newpostdata  *ptr;
     int         n;
 
-    resolve_boards();
     if( zapbuf == NULL ) {
         load_zapbuf();
     }
     brdnum = 0;
-    for( n = 0; n < numboards; n++ ) {
-        bptr = &bcache[ n ];
+    for( n = 0; n < get_boardcount(); n++ ) {
+    	bptr = getboard(n+1);
+    	if (!bptr) continue;
 #ifndef _DEBUG_
         if(!*bptr->filename) continue;
 #endif /*_DEBUG_*/
@@ -433,7 +434,7 @@ int ent ;
 struct fileheader *fileinfo ;
 char *direct ;
 {
-    struct shortfile    *bptr;
+    struct boardheader *bptr;
     int         tuid=0;
     int         n;
 
@@ -466,8 +467,8 @@ char *direct ;
         prints("┏━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┓\n");
         prints("┃            版英文名            ┃            版中文名            ┃\n");
 
-        for( n = 0; n < numboards; n++ ) {
-            bptr = &bcache[ n ];
+        for( n = 0; n < get_boardcount(); n++ ) {
+            bptr = getboard(n+1);
             if( chk_BM_instr(bptr->BM,lookupuser->userid) == YEA){
                 prints("┣━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━┫\n");
                 prints("┃%-32s┃%-32s┃\n",bptr->filename,bptr->title+12);
@@ -528,8 +529,8 @@ query_bm( )
     prints("┏━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┓\n");
     prints("┃            版英文名            ┃            版中文名            ┃\n");
 
-    for( n = 0; n < numboards; n++ ) {
-        bptr = &bcache[ n ];
+    for( n = 0; n < get_boardcount(); n++ ) {
+        bptr = getboard(n+1);
         if( chk_BM_instr(bptr->BM,lookupuser->userid) == YEA)
         {
             prints("┣━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━┫\n");
