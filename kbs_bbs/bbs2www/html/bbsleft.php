@@ -134,7 +134,7 @@
 <div class="mi"><a href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=6">分类管理</a></div>
 <div class="mi"><a href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=7">参数设定</a></div>
 <div class="mi"><a href="/pc/pcfile.php?userid=<?php echo $userid; ?>">个人空间</a></div>
-<div class="mi"><a href="/pc/pcmanage.php?userid=<?php echo $userid; ?>&act=post&tag=0&pid=0" target="_blank">添加文章</a></div>
+<div class="mi"><a href="/pc/pcmanage.php?userid=<?php echo $userid; ?>&act=post&tag=0&pid=0">添加文章</a></div>
 <?php		
 		}	
 	}
