@@ -182,13 +182,7 @@ void bibi (int n)
 int Zctlesc;	/* Encode control characters */
 int Zrwindow = 1400;	/* RX window size (controls garbage count) */
 
-int bbs_zendfile(char *filename,char *remote);
-#if 0
-int main(int argc,char *argv[])
-{
-     bbs_zsendfile(argv[1],NULL);
-}
-#endif
+extern jmp_buf zmodemjmp;
 int bbs_zsendfile(char *filename,char *remote)
 {
 	struct stat f;
@@ -199,6 +193,7 @@ int bbs_zsendfile(char *filename,char *remote)
        protocol = ZM_ZMODEM;
 	io_mode_fd = 1;
 	blklen = start_blklen = 1024;
+	if (setjmp(&zmodemjmp) == 0) {
 	zsendline_init();
 	io_mode(io_mode_fd,1);
 	readline_setup(io_mode_fd, 128, 256);
@@ -244,6 +239,12 @@ int bbs_zsendfile(char *filename,char *remote)
        /* better to eat some input here */
        io_mode(io_mode_fd,0);
        readline_clean();
+		}else{
+				oflush();
+				signal(SIG_ALRM,SIG_IGN);
+				alarm(0);
+				return ERROR;
+			}
 	return OK;
 }
 
