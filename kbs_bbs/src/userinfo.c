@@ -191,9 +191,10 @@ int uinfo_query(struct userec *u, int real, int unum)
 			buf[0] = '\0';
 			sprintf(genbuf, "四位数公元年: [%d]: ", ud.birthyear+1900);
 			getdata(i, 0, genbuf, buf, 5, DOECHO, NULL, true);
-			if(buf[0]=='\0')break;
-			if (atoi(buf) < 1900)continue;
-			ud.birthyear = atoi(buf) - 1900;
+			if(buf[0]) {
+				if (atoi(buf) < 1900)continue;
+				ud.birthyear = atoi(buf) - 1900;
+			}
 		}while (ud.birthyear < tmnow->tm_year - 98 || ud.birthyear > tmnow->tm_year - 3);
 		i++;
 
@@ -201,8 +202,9 @@ int uinfo_query(struct userec *u, int real, int unum)
 			buf[0] = '\0';
 			sprintf(genbuf, "出生月: (1-12) [%d]: ", ud.birthmonth);
 			getdata(i, 0, genbuf, buf, 3, DOECHO, NULL, true);
-			if(buf[0]=='\0')break;
-			ud.birthmonth = atoi(buf);
+			if(buf[0]) {
+				ud.birthmonth = atoi(buf);
+			}
 		}while (ud.birthmonth < 1 || ud.birthmonth > 12);
 		i++;
 
