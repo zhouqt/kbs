@@ -20,7 +20,8 @@ smthbbs 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
   flyriver v1.0
 
 1. 需要的软件:
-libesmtp > 0.8         必须      编译时建议加上 --disable-pthreads 选项
+libesmtp > 0.8         必须
+zlib                   必须
 autoconf-2.57          可选      如果从 cvs 下载源代码编译安装则必需
 automake-1.6.X         可选      如果从 cvs 下载源代码编译安装则必需
 libtool-1.4.X          可选      如果从 cvs 下载源代码编译安装则必需
@@ -29,9 +30,12 @@ apache_1.3.X           可选      选择 web 界面支持才需要
 php > 4.2.0            可选      选择 web 界面支持才需要
 libxml2                可选      选择 web 界面支持才需要
 libiconv               可选      选择 web 界面支持才需要
-zlib                   可选      选择 web 界面支持才需要
-openssl		       可选      选择 pop3d 支持 pop3s 才需要
-gmp-4.1.2              可选      选择 ssh 方式支持才需要
+libjpeg                可选      选择 web 界面支持才需要
+libpng                 可选      选择 web 界面支持才需要
+freetype2              可选      选择 web 界面支持才需要
+gd                     可选      选择 web 界面支持才需要
+openssl                可选      选择 pop3d 支持 pop3s 才需要
+gmp-4.X                可选      选择 ssh 方式支持才需要
 mysql                  可选      选择个人文集等功能支持才需要
 
 2. 安装
@@ -70,7 +74,11 @@ BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到一致。
           make install
           
           cd ../php-4.3.X
-          ./configure --with-apxs=/usr/local/www/bin/apxs
+          ./configure --with-apxs=/home/www/bin/apxs --disable-debug \
+             --enable-pic --disable-rpath --enable-inline-optimization \
+             --with-dom --with-gd --with-freetype-dir=/usr/lib \
+             --with-png-dir --with-iconv --with-jpeg-dir --with-zlib \
+             --enable-track-vars
           make
           make install
 
@@ -86,7 +94,7 @@ BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到一致。
           make install-home
           chown -R bbs:bbs /usr/local/bbs
 
-2.6 将 phpbbslib 放入 php
+2.6[可选] 将 phpbbslib 放入 php 
     同样切换到 $(SRCDIR) 目录，进入 php 的源代码目录。
           mkdir ext/smth_bbs
 
@@ -94,11 +102,13 @@ BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到一致。
 和 phpbbslib.c 三个文件复制到 ext/smth_bbs 目录，然后执行：
           ./buildconf --force
 
-2.7 再次编译安装 php
+2.7[可选] 再次编译安装 php
     重复 2.4 节中的步骤即可，但 php 的 configure 命令应改为：
-          ./configure --disable-debug -enable-track-vars \
-              --with-apxs=/usr/local/www/bin/apxs --enable-mime-magic \
-              --with-zlib-dir --enable-smth_bbs --with-dom --with-iconv
+          ./configure --with-apxs=/home/www/bin/apxs --disable-debug \
+             --enable-pic --disable-rpath --enable-inline-optimization \
+             --with-dom --with-gd --with-freetype-dir=/usr/lib \
+             --with-png-dir --with-iconv --with-jpeg-dir --with-zlib \
+             --enable-track-vars --enable-smth_bbs
 
 
     如果一切顺利，至此 smthbbs、apache 和 php 都已经安装完毕。
@@ -120,7 +130,19 @@ BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到一致。
 
     php 的配置文件可以从 php 源代码目录得到，将 php.ini-dist 复制为
 /usr/local/lib/php.ini，然后编辑 php.ini 文件，将 short_open_tag 的值修改为
-Off 即可。
+Off。
+
+    如果没有执行上面的 2.6 和 2.7 两个步骤，那么再执行下面两个操作：
+    (1) 执行命令
+        cd /usr/local/lib/php/extensions
+        ln -s /usr/local/www/libexec/bbs/libphpbbslib.so
+    (2) 修改 php.ini 文件，将
+            extension_dir = ./
+        修改为
+            extension_dir = /usr/local/lib/php/extensions
+        加入一行
+            extension=libphpbbslib.so
+    (注：以上两个步骤只需在初次安装 smthbbs 时执行。)
 
 4. 运行
 
