@@ -93,7 +93,8 @@ int main()
         fread(&x, sizeof(x), 1, fp);
         printf("[<a href=\"bbscon?board=%s&file=%s&num=%d\">上一篇</a>]", buf2, x.filename, num - 1);
     }
-    printf("[<a href=\"/bbsdoc.php?board=%s\">本讨论区</a>]", buf2);
+    printf("[<a href=\"/bbsdoc.php?board=%s&page=%d\">本讨论区</a>]", 
+			buf2, (num + BBS_PAGE_SIZE - 1) / BBS_PAGE_SIZE);
     if (num < total) {
         fseek(fp, sizeof(x) * ((num-1) + 1), SEEK_SET);
         fread(&x, sizeof(x), 1, fp);
