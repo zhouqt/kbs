@@ -3,7 +3,7 @@
  */
 #include "bbslib.h"
 
-#define RECOREDS_NUM 3
+#define RECORDS_NUM 3
 
 int main()
 {
@@ -37,14 +37,14 @@ int main()
     printf("%s -- 文章阅读 [讨论区: %s]<hr color=\"green\">", BBSNAME, board);
     if (total <= 0)
         http_fatal("此讨论区不存在或者为空");
-	fd = open(dir, O_RDONLY, 0644);
-	if (get_records_from_id(fd, rid, &records, RECOREDS_NUM) == 0)
+	fd = open(dir, O_RDWR, 0644);
+	if (get_records_from_id(fd, rid, &records, RECORDS_NUM) == 0)
 		http_fatal("本文不存在");
     printf("<table width=\"610\" border=\"1\">\n");
     printf("<tr><td>\n<pre>");
 	setbfile(filename, board, records[1].filename);
     fp = fopen(filename, "r");
-    if (fp == 0)
+    if (fp == NULL)
         http_fatal("本文不存在或者已被删除");
     while (1)
 	{
@@ -91,13 +91,13 @@ int main()
         printf("[<a href=\"bbsedit?board=%s&file=%s\">修改文章</a>]", buf2, records[1].filename);
     }
     if (records[0].id != 0) {
-        printf("[<a href=\"bbscon?board=%s&id=%s&num=%d\">上一篇</a>]", buf2, 
+        printf("[<a href=\"bbscon?board=%s&id=%d&num=%d\">上一篇</a>]", buf2, 
 			   records[0].id, num - 1);
     }
     printf("[<a href=\"/bbsdoc.php?board=%s&page=%d\">本讨论区</a>]", 
 			buf2, (num + BBS_PAGE_SIZE - 1) / BBS_PAGE_SIZE);
     if (records[2].id != 0) {
-        printf("[<a href=\"bbscon?board=%s&file=%s&num=%d\">下一篇</a>]", buf2, 
+        printf("[<a href=\"bbscon?board=%s&id=%d&num=%d\">下一篇</a>]", buf2, 
 			   records[2].id, num + 1);
     }
     ptr = records[1].title;
