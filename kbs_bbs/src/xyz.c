@@ -144,7 +144,7 @@ unsigned int setperms(unsigned int pbits, unsigned int basic, char *prompt, int 
     clrtobot();
 
     for (i = 0; i < numbers + 1; i++) {
-        pts[i].x = 0 + ((i > 15) ? 47 : 2);
+        pts[i].x = 0 + ((i > 15) ? 42 : 2);
         pts[i].y = i + 6 - ((i > 15) ? 16 : 0);
     }
     arg.pbits = pbits;
