@@ -4,6 +4,7 @@
 	 * $Id$
 	 */
 	require("funcs.php");
+	require("board.inc.php");
 	if ($loginok !=1 )
 		html_nologin();
 	else
@@ -207,14 +208,8 @@ else
   </tr>
   </table>
 </center>
-<p align="center">
-[<a href="/mainpage.html">首页导读</a>]
-[<a href="/bbssec.php">分类讨论区</a>]
-[<a href="/bbsnewbrd.php">新开讨论区</a>]
-[<a href="javascript:history.go(-1)">快速返回</a>]
-<br />
-</p>
 <?php
+		bbs_boards_navigation_bar();	
 		html_normal_quit();
 	}
 ?>

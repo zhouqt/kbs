@@ -98,6 +98,25 @@ td.header {
 	background-color: #0066CC;
 	color: #FFFFFF;
 }
+.header a:link {
+	font-size: 12px;
+	background-color: #0066CC;
+	color: #FFFFFF;
+	text-decoration: none;
+}
+.header a:visited {
+	font-size: 12px;
+	background-color: #0066CC;
+	color: #FFFFFF;
+	text-decoration: none;
+}
+.header a:hover {
+	font-size: 12px;
+	background-color: #FFFFFF;
+	color: #0066CC;
+	text-decoration: none;
+}
+
 input.text {
 	font-size: 12px;
 	border-style: solid;

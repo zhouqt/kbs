@@ -1,6 +1,6 @@
 <?php
 	/**
-	 * This file lists new boards to user.
+	 * This file lists recommend boards to user.
 	 * windinsn Apr 8 , 2004
 	 */
 	require("funcs.php");
@@ -26,12 +26,12 @@
 		html_nologin();
 	else
 	{
-		$newboard_file = BBS_HOME . "/xml/newboards.xml";
-		if (cache_header("public, must-revalidate",filemtime($newboard_file),3600))
+		$boardrank_file = BBS_HOME . "/xml/rcmdbrd.xml";
+		if (cache_header("public, must-revalidate",filemtime($boardrank_file),3600))
                		return;
-		$doc = domxml_open_file($newboard_file);
+		$doc = domxml_open_file($boardrank_file);
 		if (!$doc)
-			html_error_quit("目前尚无新开讨论区");
+			html_error_quit("目前尚无推荐讨论区");
 			
 		$root = $doc->document_element();
 		$boards = $root->child_nodes();
@@ -44,10 +44,10 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="3" >
   <tr> 
     <td colspan="2" class="kb2" colspan=2>
-	    <a class="kts1"  href="mainpage.php"><?php echo BBS_FULL_NAME; ?></a>  - <a class="kts1"  href="bbssec.php">分类讨论区</a> - [新开讨论区]    </td>
+	    <a class="kts1"  href="mainpage.php"><?php echo BBS_FULL_NAME; ?></a>  - <a class="kts1"  href="bbssec.php">分类讨论区</a> - [推荐讨论区]    </td>
   </tr>
    <tr valign=bottom align=center> 
-    <td align="left" class="kb4">&nbsp;&nbsp;&nbsp;&nbsp; 新开讨论区</td>
+    <td align="left" class="kb4">&nbsp;&nbsp;&nbsp;&nbsp; 推荐讨论区</td>
      <td align="right" class="kb1" >&nbsp;</td>
   </tr>
    <tr> 
@@ -71,18 +71,17 @@
 	{
 		if ($board->node_type() == XML_TEXT_NODE)
 			continue;
-		$ename = find_content($board, "filename"); // EnglishName
+		$ename = find_content($board, "EnglishName");
 		$brdnum = bbs_getboard($ename, $brdarr);
 		if ($brdnum == 0)
 			continue;
 		$brd_encode = urlencode($brdarr["NAME"]);
-		
 		$i ++ ;
 ?>
 <tr>
 <td class="kt3 c2" align=center height=25><?php echo $i; ?></td>
 <td class="kt4 c1" >
-	<img src="images/newgroup.gif" height="15" width="20" title="新开讨论区">
+	<img src="images/newgroup.gif" height="15" width="20" title="推荐讨论区">
 </td>
 <td class="kt3 c1">
 	<a class="kts1"  href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php echo $brdarr["NAME"]; ?></a>

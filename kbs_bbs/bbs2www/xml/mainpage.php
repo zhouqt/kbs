@@ -463,6 +463,7 @@ $root = $doc->document_element();
 $boards = $root->child_nodes();
 
 ?>
+<a name="#todaybless">
       <table width="100%" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
         <tr> 
           <td width="16" background="images/lt.gif">&nbsp;</td>
@@ -506,7 +507,7 @@ while($board = array_shift($boards))
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr> 
     <td colspan="2" height="77"><img src="images/logo.gif" width="144" height="71"></td>
-    <td colspan="6" >
+    <td colspan="7" >
     <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0" width="100%" height="100%">
       <param name="movie" value="ad.swf">
       <param name="quality" value="high">
@@ -517,11 +518,21 @@ while($board = array_shift($boards))
   <form action="/cgi-bin/bbs/bbssel">
   <tr> 
     <td height="18" width="84" class="header" align="center">系统公告</td>
-    <td width="84" class="header" align="center">推荐文章</td>
-    <td width="80" class="header" align="center">分类讨论区</td>
-    <td width="80" class="header" align="center">推荐版面</td>
-    <td width="81" class="header" align="center">人气排名</td>
-    <td width="79" class="header" align="center">本日祝福</td>
+    <td width="84" class="header" align="center"><a href="/bbsrecommend.php">推荐文章</a></td>
+    <td width="80" class="header" align="center"><a href="/bbssec.php">分类讨论区</a></td>
+    <td width="80" class="header" align="center"><a href="/bbsrecbrd.php">推荐版面</a></td>
+    <td width="81" class="header" align="center"><a href="/bbsbrdran.php">人气排名</a></td>
+    <td width="79" class="header" align="center"><a href="#todaybless">本日祝福</a></td>
+    <td width="79" class="header" align="center">
+<?php
+	if(defined("HAVE_PC"))
+	{
+?>
+    <a href="/pc/pcmain.php">水木BLOG</a>
+<?php
+	}
+?>
+    </td>
     <td class="header"></td>
     <td class="header" align="right" width="315"> <input type="text" name="board" size="12" maxlength="30" value="版面搜索" class="text"> 
       <input type="submit" size="15" value="GO" class="button"> 
