@@ -98,16 +98,16 @@ function doSearch($boardNames){
 <?php
 	$usernum = $currentuser["index"];
 	foreach($boardNames as $boardName) {
+		$brdArr = array();
+		$boardID = bbs_getboard($boardName,$brdArr);
+		$boardArr = $brdArr;
+		if (bbs_checkreadperm($usernum, $boardID) == 0) continue; //这个其实是没必要的，因为bbs_searchtitle()是检查的
+		if (bbs_getThreadNum($boardID) == 0) continue; //其实主要目的是强制重新生成 .WEBTHREAD
 		$articles=bbs_searchtitle($boardName,$title,$title2,$title3,$author,intval($_REQUEST['dt']),isset($_REQUEST['mg']),isset($_REQUEST['ag']),$maxreturn);
 				
 		$num=count($articles);
 	
 		if ($num==0 || $articles<=0) continue;
-
-		$brdArr = array();
-		$boardID = bbs_getboard($boardName,$brdArr);
-		$boardArr = $brdArr;
-		if (bbs_checkreadperm($usernum, $boardID) == 0) continue; //这个其实是没必要的，因为bbs_searchtitle()是检查的
 		$totalnum += $num;
 		if (!$singleSearch) {
 ?>

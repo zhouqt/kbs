@@ -97,7 +97,7 @@ function article_bar($boardName,$boardID,$groupID,$article,$startNum,$listType){
 ?>
 <table cellpadding=0 cellspacing=0 border=0 width=97% align=center>
 	<tr>
-	<td align=left valign=middle style="height:27"><table cellpadding=0 cellspacing=0 border=0 ><tr>
+	<td align=left valign=middle style="height:27"><table cellpadding=2 cellspacing=0 border=0 ><tr><td width=2> </td>
 	<td width="110"><a href=postarticle.php?board=<?php echo $boardName; ?>><div class="buttonClass1" border=0 alt=发新帖></div></a></td>
 	<td width="110"><a href=# onclick="alert('本功能尚在开发中！')"><div class="buttonClass2" border=0 alt=发起新投票></div></a></td>
 	<td width="110"><a href="postarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $article['ID']; ?>"><div class="buttonClass4" border=0 alt=回复本主题></div></a></td>
