@@ -1566,22 +1566,6 @@ static void bbs_make_board_zval(zval * value, char *col_name, struct newpostdata
     }
 }
 
-static void bbs_make_thread_zval(zval * value, int index, struct newpostdata *brd)
-{
-	switch(index) {
-	case 0:
-		
-	case 1:
-		break;
-	case 2:
-		break;
-	default:
-		ZVAL_EMPTY_STRING(value);
-		break;
-	}
-
-}
-
 #ifdef HAVE_WFORUM
 
 unsigned int * zapbuf;
