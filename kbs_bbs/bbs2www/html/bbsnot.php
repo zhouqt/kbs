@@ -17,14 +17,14 @@
                 if ($brdnum == 0)
 			html_error_quit("错误的讨论区");
 		if (bbs_checkreadperm($usernum,$brdnum)==0)
-			html_error_quit("错误的讨论区" . $usernum . "," . $board);
+			html_error_quit("错误的讨论区");
 		$top_file="vote/" . $board . "/notes";
 		$fp = fopen($top_file, "r");
 		if ($fp == FALSE) {
 		        html_init("gb2312");
 			html_error_quit("现在没有备忘录");
                 }
-                flose($fp);
+                fclose($fp);
                 $modifytime=filemtime($top_file);
 	session_cache_limiter("public");
 	$oldmodified=$_SERVER["HTTP_IF_MODIFIED_SINCE"];

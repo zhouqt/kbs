@@ -17,8 +17,8 @@
                 $brdnum = bbs_getboard($board, $brdarr);
                 if ($brdnum == 0)
 			html_error_quit("错误的讨论区");
-		if (bbs_is_bm($brdnum,$usernum))
-			html_error_quit("你不是版主");
+		if (!bbs_is_bm($brdnum,$usernum))
+			html_error_quit("你不是版主" . $brdnum . "!!" . $usernum);
 		$top_file="vote/" . $board . "/notes";
 		if ($_GET["type"]=="update") {
 			$fp = fopen($top_file, "w");
@@ -26,8 +26,16 @@
 				html_error_quit("无法打开文件");
 			} else {
 				$data=$_POST["text"];
-				fwrite($fp,str_replace("\r\n","\n",$data););
-				$fclose(fp);
+				fwrite($fp,str_replace("\r\n","\n",$data));
+				fclose($fp);
+?>
+<body>
+<center>
+修改备忘录成功! <br />
+[<a href=bbsdoc.php?board=<?php echo $board; ?>>本讨论区</a>]
+</center>
+</body>
+<?
 			}
 		} else {
 			$fp = fopen($top_file, "r");
@@ -38,8 +46,7 @@
 <table width="610" border="1"><tr><td><textarea name="text" rows="20" cols="80" wrap="physical">
 <? 
 			if ($fp != FALSE) {
-				int i;
-				for (i=0;!feof($fp)&&i<200;i++)
+				for ($i=0;!feof($fp)&&$i<200;$i++)
 					echo(fgets($fp,256));
 				fclose($fp);
 	                }
