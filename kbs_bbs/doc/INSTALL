@@ -7,6 +7,9 @@ smthbbs 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
 站的 BBSMan_Dev 版参与 smthbbs 的讨论。
 
 0. ChangeLog
+2004.7.20
+  flyriver v1.2.1 更新 libesmtp 的说明，加入常用 configure 参数说明
+
 2004.1.1
   flyriver v1.2 重写这个安装文档
 
@@ -20,8 +23,8 @@ smthbbs 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
   flyriver v1.0
 
 1. 需要的软件:
-libesmtp > 0.8         必须
 zlib                   必须
+libesmtp > 0.8         可选
 autoconf-2.57          可选      如果从 cvs 下载源代码编译安装则必需
 automake-1.6.X         可选      如果从 cvs 下载源代码编译安装则必需
 libtool-1.4.X          可选      如果从 cvs 下载源代码编译安装则必需
@@ -53,6 +56,8 @@ mysql                  可选      选择个人文集等功能支持才需要
 2.2 安装 libesmtp 和 gmp
     libesmtp 建议从源代码编译安装，configure 的时候建议加上 --disable-pthreads
 参数，但不加也可以，然后运行 make 和 make install 命令。
+    注：从 smthbbs-1.2.1 版本开始，libesmtp 不再是必须安装的了，但如果不使用
+libesmtp 的话，则系统中必须安装有 sendmail 程序。
 
     gmp 可以直接使用操作系统自带的软件包。
 
@@ -94,7 +99,21 @@ BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到一致。
           make install-home
           chown -R bbs:bbs /usr/local/bbs
 
-2.6[可选] 将 phpbbslib 放入 php 
+    注：一些常用 configure 参数说明。
+          --enable-site=SITE      告诉 smthbbs 采用名为 SITE.h 和 SITE.c 的站
+                                  点定制文件，这两个文件必须放在 site/ 目录
+          --with-mysql[=DIR]      让 smthbbs 支持 mysql，DIR 为 mysql 库文件
+                                  所在目录，如果不指明则自动检测
+          --without-mysql         不让 smthbbs 支持 mysql
+          --with-libesmtp[=DIR]   让 smthbbs 支持 libesmtp，DIR 为 libesmt 库
+                                  文件所在目录，如果不指明则自动检测
+          --without-libesmtp      不让 smthbbs 支持 libesmtp
+          --with-www=DIR          设定 smthbbs web 子系统的安装目录，要求 DIR
+                                  目录下存在名为 html 或 htdocs 的子目录
+          --with-php[=DIR]        让 smthbbs 找到 php 头文件所在目录，如果不
+                                  指明 DIR 则自动检测
+
+2.6[不推荐] 将 phpbbslib 放入 php 
     同样切换到 $(SRCDIR) 目录，进入 php 的源代码目录。
           mkdir ext/smth_bbs
 
@@ -102,7 +121,7 @@ BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到一致。
 和 phpbbslib.c 三个文件复制到 ext/smth_bbs 目录，然后执行：
           ./buildconf --force
 
-2.7[可选] 再次编译安装 php
+2.7[不推荐] 再次编译安装 php
     重复 2.4 节中的步骤即可，但 php 的 configure 命令应改为：
           ./configure --with-apxs=/usr/local/www/bin/apxs --disable-debug \
              --enable-pic --disable-rpath --enable-inline-optimization \
@@ -118,6 +137,10 @@ BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到一致。
 
 
     如果一切顺利，至此 smthbbs、apache 和 php 都已经安装完毕。
+
+    注：我们不推荐执行步骤 2.6 和 2.7，但在某些系统上 (比如 cygwin)，要把
+phpbbslib 编译成可以动态执行的模块比较困难，则 2.6 和 2.7 就是必须执行的
+步骤了。
 
 3. 运行之前的配置
     本节主要说明 ssh 方式和 web 方式的配置。
