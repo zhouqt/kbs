@@ -89,7 +89,7 @@ int get_sockfd()
         return -1;
     sockun.sun_family = AF_UNIX;
     strncpy(sockun.sun_path, path, sizeof(sockun.sun_path) - 1);
-    if (connect(sockfd, (struct sockaddr *) &sockun, sizeof(sun)) < 0) {
+    if (connect(sockfd, (struct sockaddr *) &sockun, sizeof(sockun)) < 0) {
         close(sockfd);
         return -1;
     }
