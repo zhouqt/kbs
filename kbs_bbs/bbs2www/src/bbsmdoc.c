@@ -49,7 +49,7 @@ int main()
         sprintf(filename, "boards/%s/%s", board, x.filename);
         printf("<tr><td>%d</td>", start + i + 1);
         printf("<td><input style=\"height:18px\" name=\"box%s\" type=\"checkbox\"></td>", x.filename);
-        printf("<td>%s</td><td>%s</td>", flag_str(x.accessed[0]), userid_str(x.owner));
+        printf("<td>%s</td><td>%s</td>", get_article_flag(&x,currentuser,board,1), userid_str(x.owner));
         printf("<td>%12.12s</td>", wwwCTime(atoi(x.filename + 2)) + 4);
         printf("<td><a href=\"bbscon?board=%s&file=%s&num=%d\">%s%36.36s </a></td></tr>", brdencode, x.filename, start + i, strncmp(x.title, "Re: ", 4) ? "¡ð " : "", void1(nohtml(x.title)));
     }
