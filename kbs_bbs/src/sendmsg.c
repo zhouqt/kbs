@@ -13,7 +13,6 @@ int RMSG = false;
 extern int RUNSH;
 extern struct screenline *big_picture;
 extern char MsgDesUid[14];      /* ±£´æËù·¢msgµÄÄ¿µÄuid 1998.7.5 by dong */
-long f_offset = 0;
 static int RMSGCount = 0;       /* Leeward 98.07.30 supporting msgX */
 extern int i_timeout;
 
@@ -30,10 +29,10 @@ int line;
     prints("ËÍÒôĞÅ¸ø:%-12s    ÇëÊäÈëÒôĞÅÄÚÈİ£¬Ctrl+Q »»ĞĞ:", uid);
     memset(msg, 0, sizeof(msg));
     while (1) {
-        i = multi_getdata(line, 0, 79, NULL, msg, MAX_MSG_SIZE, 11, false);
+        i = multi_getdata(line+1, 0, 79, NULL, msg, MAX_MSG_SIZE, 11, false);
         if (msg[0] == '\0')
             return false;
-        getdata(line + i, 0, "È·¶¨ÒªËÍ³öÂğ(Y)ÊÇµÄ (N)²»Òª (E)ÔÙ±à¼­? [Y]: ", genbuf, 2, DOECHO, NULL, 1);
+        getdata(line + i + 1, 0, "È·¶¨ÒªËÍ³öÂğ(Y)ÊÇµÄ (N)²»Òª (E)ÔÙ±à¼­? [Y]: ", genbuf, 2, DOECHO, NULL, 1);
         if (genbuf[0] == 'e' || genbuf[0] == 'E')
             continue;
         if (genbuf[0] == 'n' || genbuf[0] == 'N')
@@ -493,12 +492,12 @@ void r_msg()
         
         clrtoeol();
         if(canreply)
-            prints("[m %3d/%-3d, »Ø¸´ %-12s : \n", now+1, count, uid);
+            prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢, »Ø¸´ %-12s    ÇëÊäÈëÒôĞÅÄÚÈİ£¬Ctrl+Q »»ĞĞ:\n", now+1, count, uid);
         else
             if(uin)
-                prints("[m %3d/%-3d,¡ü¡ıÇĞ»»,Enter½áÊø, ¸ÃÏûÏ¢ÎŞ·¨»Ø¸´", now+1, count);
+                prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢,¡ü¡ıÇĞ»»,Enter½áÊø, ¸ÃÏûÏ¢ÎŞ·¨»Ø¸´", now+1, count);
             else
-                prints("[m %3d/%-3d,¡ü¡ıÇĞ»»,Enter½áÊø, ÓÃ»§%sÒÑÏÂÕ¾,ÎŞ·¨»Ø¸´", now+1, count, uid);
+                prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢,¡ü¡ıÇĞ»»,Enter½áÊø, ÓÃ»§%sÒÑÏÂÕ¾,ÎŞ·¨»Ø¸´", now+1, count, uid);
         good_getyx(&oy, &ox);
         
         if(canreply)
@@ -563,7 +562,6 @@ outhere:
 
 void r_lastmsg()
 {
-    f_offset = 0;
     r_msg();
 }
 
