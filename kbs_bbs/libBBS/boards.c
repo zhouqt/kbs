@@ -816,7 +816,7 @@ int check_read_perm(struct userec *user, const struct boardheader *board)
         return 0;
     if (board->level & PERM_POSTMASK || HAS_PERM(user, board->level) || (board->level & PERM_NOZAP)) {
         if (board->flag & BOARD_CLUB_READ) {    /*¾ãÀÖ²¿*/
-            if (HAS_PERM(user, PERM_SYSOP))
+            if (HAS_PERM(user,PERM_OBOARDS)&&HAS_PERM(user, PERM_SYSOP))
                 return 1;
             if (board->clubnum <= 0 || board->clubnum >= MAXCLUB)
                 return 0;
