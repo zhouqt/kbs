@@ -1013,7 +1013,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
 	 * textmode 1 :  enter»»ÐÐ£¬ctrl+w·¢ËÍ
 	 *********************************/
 
-    if(uinfo.mode!=MSG)
+    if(uinfo.mode!=MSG && uinfo.mode != POSTTMPL )
         ingetdata = true;
     if (clearlabel == true) {
         buf[0] = 0;
