@@ -9,7 +9,7 @@
 		html_nologin();
 	else
 	{
-		html_init("gb2312");
+		html_init("gb2312","","",1);
 		if (isset($_GET["board"]))
 			$board = $_GET["board"];
 		else
@@ -56,13 +56,24 @@
 	}
 ?>
 <body>
-<center>
-<?php echo BBS_FULL_NAME; ?> -- 发表文章 [使用者: <?php echo $currentuser["userid"]; ?>]
-<hr class="default" />
+<table width="100%" border="0" cellspacing="0" cellpadding="3">
+  <tr> 
+    <td class="b2">
+	    <a href="bbssec.php" class="b2"><font class="b2"><?php echo BBS_FULL_NAME; ?></font></a>
+	    -
+	    <a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><font class="b2"><?php echo $board; ?></font></a> 版
+	    - 发表文章 [使用者: <?php echo $currentuser["userid"]; ?>]
+	 </td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+  <tr><td align="center">
+
 <form name="postform" method="post" action="bbssnd.php?board=<?php echo $brd_encode; ?>&reid=<?php echo $reid; ?>">
-<table border="1">
+<table border="0" cellspacing="5">
 <tr>
-<td>
+<td class="b2 sb5">
 <?php
 		$notes_file = bbs_get_vote_filename($brdarr["NAME"], "notes");
 		$fp = FALSE;
@@ -91,37 +102,29 @@
 ?>
 </td>
 </tr>
-<tr><td>
-作者: <?php echo $currentuser["userid"]; ?><br />
+<tr><td class="b2 sb5">
+发信人: <?php echo $currentuser["userid"]; ?>, 信区: <?php echo $brd_encode; ?> [<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>">本讨论区</a>]<br>
 <?php
 		if ($reid)
 		{
 	        if(!strncmp($articles[1]["TITLE"],"Re: ",4))$nowtitle = $articles[1]["TITLE"];
 	        else
 	            $nowtitle = "Re: " . $articles[1]["TITLE"];
+	    } else {
+	        $nowtitle = "";
+	    }
 ?>
-标题: <input type="text" name="title" size="40" maxlength="100" value="<?php echo $nowtitle; ?>
-
-" /><br />
-<?php
-		}
-		else
-		{
-?>
-标题: <input type="text" name="title" size="40" maxlength="100" value=""><br />
-<?php
-		}
-?>
-看版: [<?php echo $brd_encode; ?>]<br />
+标&nbsp;&nbsp;题: <input class="sb1" type="text" name="title" size="40" maxlength="100" value="<?php echo $nowtitle; ?>" /><br />
 <?php
 		if (bbs_is_attach_board($brdarr))
 		{
 ?>
-附件: <input type="text" name="attachname" size="50" value="" disabled="disabled" />
+附&nbsp;&nbsp;件: <input class="sb1" type="text" name="attachname" size="50" value="" disabled="disabled" />
+<a href="#" onclick="return GoAttachWindow()" class="b2">操作附件</a>
 <?php
 		}
 ?>
-使用签名档 <select name="signature">
+<br>使用签名档 <select class="sb1" name="signature">
 <?php
 		if ($currentuser["signum"] == 0)
 		{
@@ -152,9 +155,9 @@
 		}
 ?>
 </select>
- [<a target="_balnk" href="bbssig.php">查看签名档</a>]
+ [<a target="_blank" href="bbssig.php">查看签名档</a>]
 <input type="checkbox" name="outgo" value="1" CHECKED/>转信<br />
-<textarea name="text"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' rows="20" cols="80" wrap="physical">
+<textarea class="sb1" name="text"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' rows="20" cols="80" wrap="physical">
 <?php
     if($reid > 0){
     $filename = $articles[1]["FILENAME"];
@@ -199,18 +202,19 @@
     }
 }
 ?>
-</textarea></td></tr>
-<tr><td class="post" align="center">
-<input type="submit" value="发表" />
-<input type="reset" value="清除" />
+</textarea><br>
+<center>
+<input class="sb1" type="submit" value="发表" />
+<input class="sb1" type="reset" value="清除" />
 <?php
 		if (bbs_is_attach_board($brdarr))
 		{
 ?>
-<input type="button" name="attach22" value="附件" onclick="return GoAttachWindow()" />
+<input class="sb1" type="button" name="attach22" value="附件" onclick="return GoAttachWindow()" />
 <?php
 		}
 ?>
+</center>
 <script language="JavaScript">
 <!--
    function GoAttachWindow(){
@@ -231,8 +235,8 @@
 </td></tr>
 </table></form>
 
-<center><a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>">本讨论区</a></center>
-
-</html>
+</td></tr>
+</table>
 <?php
+html_normal_quit();
 ?>

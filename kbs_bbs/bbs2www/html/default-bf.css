@@ -34,3 +34,11 @@ A:active {COLOR: #006699; TEXT-DECORATION: underline}
 A:visited {COLOR: #5493b4; TEXT-DECORATION: none}
 A:hover {COLOR: #dd6900; TEXT-DECORATION: underline}
 .content{font-size:14px;line-height:22px;}
+.sb1 { /* 这名字没人用吧 single-border */
+    padding: 1px;
+    border: 1px solid #808080;
+}
+.sb5 {
+    padding: 5px;
+    border: 1px solid #808080;
+}

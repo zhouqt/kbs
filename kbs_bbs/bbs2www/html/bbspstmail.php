@@ -79,7 +79,7 @@
 		<td width="<?php echo (int)(670-80*$mailboxnum);	?>"><img src="/images/empty.gif"></td>
 	</tr>
 	<tr>
-		<td style="{background-image: url('/images/m3.gif'); background-repeat:repeat-y; background-color: #CEE3F8;}"><img src="/images/empty.gif"></td>
+		<td background="/images/m3.gif" style="background-repeat:repeat-y; background-color: #CEE3F8;"><img src="/images/empty.gif"></td>
 		<td colspan="<?php echo $mailboxnum + 1;	?>" align="right" background="/images/m10.gif"><img src="/images/m12.gif"></td>
 	</tr>
 	<tr>
