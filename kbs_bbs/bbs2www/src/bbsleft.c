@@ -78,7 +78,22 @@ int main()
     printf("用户: <a href=\"bbsqry?userid=%s\" target=\"f3\">%s</a><br>", getcurruserid(), getcurruserid());
     uleveltochar(buf, getcurrusr());
     printf("身份: %s<br>\n", buf);
+#ifdef ZIXIA
+	if (!strcmp("guest",getcurruserid())){
+		printf("      <form target=\"_top\" action=\"/bbslogin.php\" method=\"post\" name=\"form1\"> \n");
+		printf("      <table CELLPADDING=2 CELLSPACING=2><thead> \n");
+		printf("      <th colspan=2>快速登陆</th> \n");
+		printf("      <thead><tbody> \n");
+		printf("      <tr><TD ALIGN=\"RIGHT\" nowrap>账号:</TD><TD ><INPUT TYPE=text size=\"10\" name=\"id\"></TD></tr> \n");
+		printf("      <tr><TD ALIGN=\"RIGHT\" nowrap>密码:</TD><TD ><INPUT TYPE=password size=\"10\" name=\"passwd\" maxlength=\"39\"></TD></tr> \n");
+		printf("     <tr><TD align=center colspan=2><input type=submit value=\"登 录\" name=submit1></TD></tr> \n ");
+		printf("      </tbody></table> </form> \n");
+	} else {
+		printf("<a href=\"/bbslogout.php\" target=\"_top\">注销本次登录</a><br>\n");
+	}
+#else
     printf("<a href=\"/bbslogout.php\" target=\"_top\">注销本次登录</a><br>\n");
+#endif
     printf("</td></tr><tr><td>\n");
     printf("<hr style=\"color:#2020f0; height:1px\" width=\"84px\" align=\"center\">\n");
     printf("</td></tr></table>");

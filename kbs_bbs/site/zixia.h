@@ -1,16 +1,33 @@
 #ifndef __SYSNAME_H_
 #define __SYSNAME_H_
 
-#define ZIXIA
+#define ZIXIA		1
 
-#undef NINE_BUILD
-#undef HAVE_BIRTHDAY
-#undef HAPPY_BBS
-#undef HAVE_COLOR_DATE
-#undef HAVE_TEMPORARY_NICK
-#undef HAVE_FRIENDS_NUM
-#undef HAVE_REVERSE_DNS
-#define FILTER
+#define USE_TMPFS           1   /*使用内存文件系统加速*/
+#define TMPFSROOT   "cache" /*tmpfs的根在bbshome/cache */
+#define NINE_BUILD 		0
+#define NEW_COMERS 		0	/* 注册后在 newcomers 版自动发文 */
+#define HAVE_BIRTHDAY 		1
+#define HAPPY_BBS		0
+#define HAVE_COLOR_DATE		0
+#define HAVE_TEMPORARY_NICK	0
+#define HAVE_FRIENDS_NUM	0
+#define HAVE_REVERSE_DNS	0
+#define CHINESE_CHARACTER	1
+#define ANTISPAM_MAILADDR	0	/* 转信后的文章隐藏真实 MAIL */
+#if ANTISPAM_MAILADDR == 1
+#define	ANTISPAM_MAILDN		"zixia.net"
+#endif
+#define CNBBS_TOPIC		0	/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
+#define MAIL2BOARD		0	/* 是否允许直接 mail to any board */
+#define MAILOUT			0	/* 是否允许向站外主动发信 */
+#define MANUAL_DENY         0   /*是否允许手动解封*/
+#define BBS_SERVICE_DICT    1
+#define HAVE_TSINGHUA_INFO_REGISTER 0 /* 允许从清华信息系统注册 */
+
+#define SMTH			1		/* SMTH专有代码 */
+#define FILTER			1		/* 使用文章内容过滤 */
+
 #undef SITE_HIGHCOLOR
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
@@ -26,8 +43,8 @@
 #define IDLE_TIMEOUT    (60*20) 
 #define MONITOR_TIMEOUT (60*20) 
 
-#define BBSUID 			80 //9999
-#define BBSGID 			80 //99
+#define BBSUID 			80//9999
+#define BBSGID 			80//99
 
 /* for bbs2www, by flyriver, 2001.3.9 */
 #define SECNUM 10
@@ -37,13 +54,19 @@
 #define FILTER_BOARD        "Filter"
 #define SYSMAIL_BOARD       "sysmail"
 #define MAXUSERS  		40000 //150,000
-#define MAXBOARD  		256 //400
+#define MAXBOARD  		400//400
 #define MAXCLUB                 128
 #define MAXACTIVE 		999  //3000
+/* remeber: if MAXACTIVE>46656 need change get_telnet_sessionid,
+    make the number of session char from 3 to 4
+    */
 #define MAX_GUEST_NUM		99
+#define WWW_MAX_LOGIN		300 /* 最大www用户数量 */
 
 #define POP3PORT		3110	//110
 #define POP3SPORT		995
+
+/* ASCIIArt, by czz, 2002.7.5 */
 #define	LENGTH_SCREEN_LINE	256	//220
 #define	LENGTH_FILE_BUFFER 	260	//160
 #define	LENGTH_ACBOARD_BUFFER	200	//150
@@ -100,7 +123,7 @@
 #define	CHAT_PARTY		"帮众" // "大家"
 
 #define DEFAULT_NICK		"旺财"
-#define LOCAL_ARTICLE_DEFAULT 	0	//缺省转信
+//#define LOCAL_ARTICLE_DEFAULT 	0	//缺省转信
 
 #define MSG_ERR_USERID		"嗯？这个猪头是谁？..."
 #define LOGIN_PROMPT		"报上名来"
@@ -217,12 +240,13 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_SHOWSTATISTIC 0200000000    /* Haohmaru */
 #define DEF_UNREADMARK 0400000000       /* Luzi 99.01.12 */
 #define DEF_USEGB     01000000000       /* KCN,99.09.05 */
+#define DEF_CHCHAR    02000000000		
 //#define DEF_SPLITSCREEN 02000000000 /* bad 2002.9.1 */
 /*#define DEF_HIDEIP    02000000000  Haohmaru,99.12.18*/
 
 /*#define PERM_POSTMASK  0100000  *//* means the rest is a post mask */
 
-#define NUMDEFINES 28
+#define NUMDEFINES 28 //29
 
 
 #define TDEF_SPLITSCREEN 000001
@@ -263,12 +287,14 @@ typedef struct fileheader {     /* This structure is used to hold data in */
 #endif
     char innflag[2];
     char owner[OWNER_LEN];
-    char unused2[50];
+    char unused2[38];
+    unsigned int eff_size;
+    time_t posttime;
+    long attachment;
     char title[STRLEN];
     unsigned level;
     unsigned char accessed[12]; /* struct size = 256 bytes */
 } fileheader;
-
 
 typedef struct fileheader fileheader_t;
 
@@ -303,4 +329,8 @@ typedef struct fileheader fileheader_t;
 #define MAX_MAILGROUP_NUM 30
 #define MAX_MAILGROUP_USERS 300
 
+/**
+attach define
+*/
+#define ATTACHTMPPATH "boards/_attach"
 #endif

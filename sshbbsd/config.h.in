@@ -289,6 +289,9 @@ Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>
 /* Define to 1 if you have the `db' library (-ldb). */
 #undef HAVE_LIBDB
 
+/* */
+#undef HAVE_LIBESMTP
+
 /* Define to 1 if you have the `gen' library (-lgen). */
 #undef HAVE_LIBGEN
 
@@ -340,7 +343,7 @@ Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
-/* */
+/* Enable MySQL support */
 #undef HAVE_MYSQL
 
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
