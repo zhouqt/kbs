@@ -86,42 +86,38 @@ int do_del(char *board, int id)
 
 /* 加 G 时并没有 post 到文摘区 */
 /* modified by stiger,use id */
+/* modified by stiger,20030414,post到文摘区 */
+/* modified by stiger,20030414,使用二分法 */
 int do_set(char *board, int id, int flag)
 {
     FILE *fp;
-    char path[256], dir[256];
+    char dir[256];
     struct fileheader f;
     int ent=1;
+    int start,end;
     int ffind=0;
 
     sprintf(dir, "boards/%s/.DIR", board);
-    //sprintf(path, "boards/%s/%s", board, file);
+    start=0;
+    end=get_num_records(dir,sizeof(struct fileheader))-1;
     fp = fopen(dir, "r+");
     if (fp == 0)
         http_fatal("错误的参数");
-    while (1) {
+    /* 二分法查找 */
+    while(start<=end){
+        ent=(start+end)/2;
+        fseek(fp,ent*sizeof(struct fileheader),SEEK_SET);
         if (fread(&f, sizeof(struct fileheader), 1, fp) <= 0)
             break;
-        if (f.id==id) {
-/*
-            if (flag==FILE_READ)
-                f.accessed[1] |= flag;
-            else
-                f.accessed[0] |= flag;
-            if (flag == 0) {
-                f.accessed[0] &= ~(FILE_MARKED|FILE_DIGEST|FILE_SIGN);
-                f.accessed[1] &= ~(FILE_READ);
-            }
-            fseek(fp, -1 * sizeof(struct fileheader), SEEK_CUR);
-            fwrite(&f, sizeof(struct fileheader), 1, fp);
-            fclose(fp);
-            printf("<tr><td>%s</td><td>标题:%s</td><td>标记成功.</td></tr>\n", f.owner, nohtml(f.title));
-            return;
-*/
-	    ffind=1;
-	    break;
+        if(f.id == id){
+            ffind=1;
+            ent++;
+            break;
+        }else if(f.id < id){
+            start=ent+1;
+        }else{
+            end=ent-1;
         }
-	ent++;
     }
     fclose(fp);
 
