@@ -912,7 +912,7 @@ checkvote:
                 j=do_com_menu();
                 if(kicked) goto quitgame;
                 if(j==1) goto quitgame;
-                if(j==2) goto checkvote;
+                if(j==2) if(inrooms[myroom].status!=INROOM_STOP) goto checkvote;
             }
             else if(ch<=0){
                 break;
