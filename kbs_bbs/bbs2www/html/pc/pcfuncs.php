@@ -1004,7 +1004,7 @@ function pc_detect_trackbackpings($body,&$detecttbps,$tbpUrl)
 		$detectnids[intval($matches[3][$i])] = 1;
 		$url = "http://".$matches[1][$i]."/pc/tb.php?id=".intval($matches[3][$i]);
 		if ($url != $tbpUrl) {
-		    $detecttbps[] = ;
+		    $detecttbps[] = $url;
 		    $detectnum ++ ;
 		}
 	}
