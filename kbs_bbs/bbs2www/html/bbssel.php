@@ -5,6 +5,7 @@
  */
  
 require('funcs.php');
+require('board.inc.php');
 login_init();
 html_init('GB2312','','',1);
 
