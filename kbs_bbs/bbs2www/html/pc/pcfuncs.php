@@ -83,7 +83,7 @@ function pc_html_init($charset,$title="",$otherheader="",$style="",$bkimg="")
 
 function html_format($str,$multi=FALSE)
 {
-	$str = str_replace(" ","&nbsp;",htmlspecialchars(stripslashes($str)))." ";	
+	$str = preg_replace(" ","&nbsp;",htmlspecialchars(stripslashes($str)));	
 	if($multi)
 		$str = nl2br($str);
 	return $str;	
@@ -237,12 +237,15 @@ function pc_init_fav($link,$uid)
 	return $r;
 }
 
-function pc_update_record($link,$uid,$addstr="+0",$addvisit=FALSE)
+function pc_update_record($link,$uid,$addstr="+0")
 {
-	if($addvisit)
-		$query = "UPDATE users SET `visitcount` = `visitcount` + 1  WHERE `uid` = '".$uid."' ; ";
-	else
-		$query = "UPDATE users SET `modifytime` = '".date("YmdHis")."' , `nodescount` = `nodescount` ".$addstr." WHERE `uid` = '".$uid."' ";
+	$query = "UPDATE users SET `createtime` = `createtime` , `modifytime` = '".date("YmdHis")."' , `nodescount` = `nodescount` ".$addstr." WHERE `uid` = '".$uid."' ";
+	mysql_query($query,$link);
+}
+
+function pc_visit_counter($link,$uid)
+{
+	$query = "UPDATE users SET `createtime` = `createtime` , `visitcount` = `visitcount` + 1  WHERE `uid` = '".$uid."' ; ";
 	mysql_query($query,$link);
 }
 

@@ -23,7 +23,7 @@
 	function pc_search_special_keyword($str,$keyword)
 	{
 		foreach($keyword as $key)
-			$str = str_replace($key,"<font color=\"#FF0000\">".$key."</font>",$str);	
+			$str = preg_replace($key,"<font color=\"#FF0000\">".$key."</font>",$str);	
 		return $str;
 	}
 	

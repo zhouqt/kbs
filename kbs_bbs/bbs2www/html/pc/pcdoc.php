@@ -597,14 +597,14 @@
 	/*visit count start*/
 	if(!session_is_registered("visitcount"))
 	{
-		pc_update_record($link,$pc["UID"],"+0",TRUE);//计数器加1
+		pc_visit_counter($link,$pc["UID"]);//计数器加1
 		$pc["VISIT"] ++;
 		$visitcount = ",".$pc["UID"].",";
 		session_register("visitcount");
 	}
 	elseif(!stristr($visitcount,",".$pc["UID"].","))
 	{
-		pc_update_record($link,$pc["UID"],"+0",TRUE);//计数器加1
+		pc_visit_counter($link,$pc["UID"]);//计数器加1
 		$pc["VISIT"] ++;
 		$visitcount .= $pc["UID"].",";
 		$_SESSION["visitcount"] .= $pc["UID"].",";

@@ -32,7 +32,7 @@
 	if($_GET["exact"]==0)
 	{
 		$keyword = explode(" ",$keyword);
-		$query .= " `".$key."` != '' ";
+		$query .= " `".$key."` = '' ";
 		$keyword1 = "";
 		for($i=0;$i < count($keyword) ; $i++)
 		{
@@ -40,7 +40,7 @@
 				continue;
 			else
 			{
-				$query .= " AND `".$key."` LIKE '%".addslashes($keyword[$i])."%' ";
+				$query .= " OR `".$key."` LIKE '%".addslashes($keyword[$i])."%' ";
 				$keyword1 .= " ".$keyword[$i];
 			}	
 		}
