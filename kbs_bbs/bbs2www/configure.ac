@@ -93,7 +93,7 @@ AC_SUBST(CGIPATH)
 AC_SUBST(HTMPATH)
 AC_SUBST(PHPBBSLIBPATH)
 
-HTML_FILES=`find html -type f|xargs`
+HTML_FILES=`find html -type f -path 'CVS' -prune|xargs`
 AC_SUBST(HTML_FILES)
 
 OLDCFLAGS="$CFLAGS"
