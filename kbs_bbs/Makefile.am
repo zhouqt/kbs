@@ -10,3 +10,6 @@ dist-hook:
 	-exec indent -kr -l200 -i4 -bad -bap -cdb -sc -ip0 -nut {} -o {} \;
 	find $(distdir) -name "*.[c|h]" \
         -exec $(srcdir)/filter.sh {} \;
+
+install-home:
+	sh makedist.sh ${prefix}

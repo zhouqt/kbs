@@ -49,9 +49,10 @@ ln -s $(BBSHOME)/lib/libsystem.so.0 /usr/lib
 	或者在系统的动态库查询目录列表里面加入$(BBSHOME)/lib
 
     此时系统程序已经安装成功，但您还需要把系统依赖的数据及配置文件复制
-到 $(BBSHOME) 目录，否则系统无法运行。进入源代码包里面的 bbshome 目录，
-把里面的所有文件及目录（包括 . 开头的“隐藏文件”）复制到 $(BBSHOME) 里面。
-要注意 $(BBSHOME) 里面那些目录及文件的权限必须设置正确，可以用命令
+到 $(BBSHOME) 目录，否则系统无法运行。在源码目录下make install-home可以
+将所需要的文件复制到安装目录下。
+    make install-home
+    要注意 $(BBSHOME) 里面那些目录及文件的权限必须设置正确，可以用命令
     chown -R bbs:bbs $(BBSHOME)
 来设置。
 
