@@ -325,8 +325,8 @@ static int choose_file_show(struct _select_def *conf, int ii)
                     else {
                         out2[k]=2;
                         if(!out[k]&&buf[k]<0) {
-                            if(k>0&&out[k-1]) out2[k+1]=2;
-                            if(k<fsize-1&&out[k+1]) out2[k-1]=2;
+                            if(k>0&&out[k-1]&&k<fsize-1) out2[k+1]=2;
+                            if(k>0&&k<fsize-1&&out[k+1]) out2[k-1]=2;
                             t++;
                         }
                     }
