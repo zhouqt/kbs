@@ -286,7 +286,7 @@ function pcmain_section_top_view()
 	$sections = array_keys($pcconfig["SECTION"]);
 	foreach( $sections as $section )
 	{
-		$query = "SELECT nodes.uid , nid , subject , theme , username , corpusname ".
+		$query = "SELECT nodes.uid , nid , subject , theme , username , corpusname  ".
 			 "FROM nodes , users ".
 			 "WHERE nodes.uid = users.uid AND access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-604800)." AND nodes.visitcount != 0 AND theme = '".$section."' ".
 			 "GROUP BY nodes.uid ".
@@ -296,17 +296,25 @@ function pcmain_section_top_view()
 		$num_rows = mysql_num_rows($result);
 		if($num_rows)
 		{
+			$nodes = array();
+			$totallength = 0;
+			while($rows = mysql_fetch_array($result) )
+			{
+				$nodes[] = $rows;
+				$totallength += strlen( $rows[subject] );
+			}
+			mysql_free_result($result);
+			$subjectlength = ( $totallength > 65 )?13:65;
 ?>
 <tr><td align="left">
 [<strong><a href="/pc/pcsec.php?sec=<?php echo $section; ?>"><font class=low2><?php echo $pcconfig["SECTION"][$section]; ?></font></a></strong>]&nbsp;
 <?php
 			for( $i = 0 ; $i < $num_rows ; $i ++ )
 			{
-				$rows = mysql_fetch_array($result);
-				echo "<a href=\"/pc/pccon.php?id=".$rows[0]."&nid=".$rows[nid]."&s=all\">".
-				     "<span title=\"".html_format($rows[subject])."(".$rows[username]."'s BLOG:".html_format($rows[corpusname]).")\">";
-				$subject = substr( $rows[subject] , 0 , 13 );
-				if( strlen( $rows[subject] ) > 13 ) $subject .= "...";
+				echo "<a href=\"/pc/pccon.php?id=".$nodes[$i][0]."&nid=".$nodes[$i][nid]."&s=all\">".
+				     "<span title=\"".html_format($nodes[$i][subject])."(".$nodes[$i][username]."'s BLOG:".html_format($nodes[$i][corpusname]).")\">";
+				$subject = substr( $nodes[$i][subject] , 0 , $subjectlength );
+				if( strlen( $nodes[$i][subject] ) > $subjectlength ) $subject .= "...";
 				echo $subject."</span></a>";
 				if( $i < $num_rows - 1 ) echo " - ";
 			}
@@ -314,7 +322,6 @@ function pcmain_section_top_view()
 </td></tr>
 <?php			
 		}
-		mysql_free_result($result);
 	}
 ?>
 </table>
