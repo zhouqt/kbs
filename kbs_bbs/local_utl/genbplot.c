@@ -41,6 +41,7 @@ int main(int argc,char** argv)
 		exit(0);
 	}
 	if(argv[1][0]!='-'){
+		bzero(&bh, sizeof(bh));
     	strncpy(bh.filename,argv[1],STRLEN);
     	generate_board(&bh,NULL);
 	}else{
