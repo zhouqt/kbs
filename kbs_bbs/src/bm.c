@@ -294,7 +294,7 @@ Here:
 		    	usercomplete("增加无法 POST 的使用者: ", uident);
 		    else strncpy(uident, fileinfo->owner, STRLEN-4);
             /*Haohmaru.99.4.1,增加被封ID正确性检查*/
-            if(!(id = searchuser(uident)))  /* change getuser -> searchuser , by dong, 1999.10.26 */
+            if(!(id = getuser(uident,&saveuser)))  /* change getuser -> searchuser , by dong, 1999.10.26 */
             {
                 move(3,0) ;
                 prints("非法 ID") ;
@@ -302,6 +302,9 @@ Here:
                 pressreturn() ;
                 goto Here;
             }
+            strncpy(uident,saveuser.userid,IDLEN);
+            uident[IDLEN]=0;
+            
             if( *uident != '\0' )
             {   sprintf(filebuf,"%-12s","违反某条站规");
                 if(addtodeny(uident)==1)
