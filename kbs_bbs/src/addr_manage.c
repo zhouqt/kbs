@@ -2,6 +2,8 @@
 #if HAVE_MYSQL == 1
 #include "mysql.h"
 
+#define MAX_ADDRLIST 300
+
 /**********************************************************
  * mysql结构:
  *
@@ -420,6 +422,12 @@ static int set_al_key(struct _select_def *conf, int key)
 	}
 	case 'a':
 	{
+		if( conf->item_count > MAX_ADDRLIST ){
+			clear();
+			prints("您的通讯录已经达到最大容量");
+			pressreturn();
+			return SHOW_REFRESH;
+		}
 		if(add_addresslist(NULL)){
 			return SHOW_DIRCHANGE;
 		}
