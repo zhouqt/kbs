@@ -108,6 +108,7 @@ int inn_stop();                 /* czz 2002.01.15 */
 int clear_all_board_read_flag();        /* kcn 2002.07.18 */
 int friend_wall();
 int define_key();
+int set_clock();
 
 int exec_mbem(char *s);
 
@@ -131,7 +132,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"ReadBoard", Read},
     {"PostArticle", Post},
     {"SetHelp", Help},
-    {"SetAlarm", setcalltime},
+    {"SetAlarm", set_clock},
     {"MailAll", mailall},
     /*
      * {"ExecMJ",       x_excemj},
