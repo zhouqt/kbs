@@ -145,12 +145,12 @@ int requiretouser(struct RequireBindPacket * h, unsigned int sn)
     /* 我们先分配1开头的uid*/
     uid=smsid2uid(h->cUserID);
     uident = getuserid2(uid);
-    if (uident==NULL) return -1;
+    if (uident==NULL) return 1;
 
     if (read_user_memo(uident, &pum)>0) {
         memcpy(&ud,&pum->ud,sizeof(ud));
         if (strncmp(ud.mobilenumber, h->MobileNo, MOBILE_NUMBER_LEN-1)) {
-            return -2;
+            return 2;
         }
         if(h->Bind) {
             pum->ud.mobileregistered=true;
@@ -167,7 +167,7 @@ int requiretouser(struct RequireBindPacket * h, unsigned int sn)
        mail_file("deliver", "", uident, buf, BBSPOST_COPY, NULL);
        return 0;
     }
-    return 1;
+    return 3;
 }
 
 void processremote()
@@ -212,19 +212,19 @@ void processremote()
             break;
         case CMD_REQUIRE: {
                struct header* pheader;
-               struct ReplyBindPacket* prp;
+               struct ReplyBindPacket rp;
                pheader=(struct header*)buf;
-               prp=(struct ReplyBindPacket*)(buf+sizeof(*pheader));
     	        printf("get CMD_REQUIRE\n");
                read(sockfd, &h1, sizeof(h1));
-               prp->isSucceed = requiretouser(&h1, byte2long(h.SerialNo));
+               rp.isSucceed = requiretouser(&h1, byte2long(h.SerialNo));
                //Copy a reth struct in reply packet
-               memcpy(pheader,&reth,sizeof(reth));
-               pheader->Type = CMD_REPLY;
-               long2byte(sizeof(*prp), pheader->BodyLength);
+               memcpy(&reth,&h,sizeof(h));
+               reth.Type = CMD_REPLY;
+               long2byte(sizeof(rp), reth.BodyLength);
                
-               printf("send CMD_REPLY  %d\n",prp->isSucceed);
-               write(sockfd, &reth, sizeof(reth)+sizeof(*prp));
+               printf("send CMD_REPLY  %d\n",rp.isSucceed);
+               write(sockfd, &reth, sizeof(reth));
+			   write(sockfd, &rp,sizeof(rp));
             }
             break;
         case CMD_GWSEND:
