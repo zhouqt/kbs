@@ -160,7 +160,8 @@ struct boardheader {            /* This structure is used to hold data in */
 struct wwwthreadheader{
 	unsigned int groupid,   /* groupid */
 	unsigned int lastid,	/* id for last article */
-	unsigned int articlecount /* number of articles */
+	unsigned int articlecount, /* number of articles */
+	unsigned int unused,    /* used for further index */
 }
 
 /* XXX: struct fileheader moved to site.h */
