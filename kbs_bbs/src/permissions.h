@@ -30,7 +30,7 @@
 #define PERM_NOZAP     02000000
 #define PERM_CHATOP    04000000
 #define PERM_ADMIN     010000000
-#define UNUSE4	    	020000000
+#define PERM_HORNOR   	020000000
 #define UNUSE5         040000000
 #define UNUSE6         0100000000
 #define UNUSE7         0200000000
@@ -105,7 +105,7 @@ char *permstrings[] = {
         "不能 ZAP(讨论区专用)", /* PERM_NOZAP*/
         "聊天室OP(元老院专用)", /* PERM_CHATOP */
         "系统总管理员",         /* PERM_ADMIN */
-        "特殊权限 4",          	/* PERM_UNUSE?*/
+        "荣誉帐号",          	/* PERM_HORNOR*/
         "特殊权限 5",           /* PERM_UNUSE?*/
         "特殊权限 6",           /* PERM_UNUSE?*/
         "特殊权限 7",           /* PERM_UNUSE?*/

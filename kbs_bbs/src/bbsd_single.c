@@ -9,7 +9,7 @@
 #include <sys/resource.h>
 #include <varargs.h>
 
-#define	QLEN		5
+#define	QLEN		50
 #define	PID_FILE	"reclog/bbs.pid"
 #define	LOG_FILE	"reclog/bbs.log"
 
@@ -209,7 +209,6 @@ int inetd;
 int port; /* Thor.981206: 取 0 代表 *没有参数* */
 {
     int n;
-    struct linger ld;
     struct sockaddr_in sin;
     struct rlimit rl;
     char buf[80], data[80];
@@ -295,8 +294,6 @@ int port; /* Thor.981206: 取 0 代表 *没有参数* */
     setsockopt(n, IPPROTO_TCP, TCP_NODELAY, (char *) &val, sizeof(val));
 #endif
 
-    ld.l_onoff = ld.l_linger = 0;
-    setsockopt(n, SOL_SOCKET, SO_LINGER, (char *) &ld, sizeof(ld));
     /* --------------------------------------------------- */
     /* Give up root privileges: no way back from here	 */
     /* --------------------------------------------------- */
@@ -573,23 +570,21 @@ char *argv[];
             csock = accept(0, (struct sockaddr *)&sin, &value);
             if (csock < 0)
             {
-                reaper();
+/*                reaper();*/
                 continue;
             }
 
             if (fork())
             {
                 close(csock);
-#ifdef LOAD_LIMIT
-                if (heavy_load)
-                    sleep(5);
-#endif
                 continue;
             }
 
             getpeername(csock,&sin,sizeof(sin));
             log("1connect","connect from %s(%d) in port %d",inet_ntoa(sin.sin_addr),htons(sin.sin_port),port);
             setsid();
+
+            close(0);
 
             dup2(csock, 0);
             /* COMMAN: 有人说不处理1和2号文件句柄会把stderr and stdout打进文件弄坏PASSWD之类

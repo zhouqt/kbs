@@ -715,35 +715,49 @@ shownotepad()   /* 显示 notepad */
 }
 
 int
-uleveltochar( buf, lvl ) /* 取用户权限字符串,如CVBS */
+uleveltochar( buf, lvl ) /* 取用户权限中文说明 Bigman 2001.6.24 */
 char    *buf;
 unsigned lvl;
 {
     if( !(lvl &  PERM_BASIC) ) {
-        strcpy( buf, "----" );
+    /*    strcpy( buf, "----" ); */
+	strcpy( buf, "新人");
         return 0;
     }
-    if( lvl < PERM_DEFAULT )
+/*    if( lvl < PERM_DEFAULT )
     {
         strcpy( buf, "- --" );
         return 1;
     }
-
+*/
 
     /* Bigman: 增加中文查询显示 2000.8.10 */
     /*if( lvl & PERM_ZHANWU ) strcpy(buf,"站务");*/
     if( (lvl & PERM_ANNOUNCE) && (lvl & PERM_OBOARDS) ) strcpy(buf,"站务");
     else  if( lvl & PERM_CHATCLOAK ) strcpy(buf,"元老");
+    else if (lvl & PERM_CHATOP) strcpy(buf,"ChatOP");
     else if  ( lvl & PERM_BOARDS ) strcpy(buf,"版主");
-    else {
+    else  if( lvl & PERM_HORNOR ) strcpy(buf,"荣誉");
+	/* Bigman: 修改显示 2001.6.24 */
+	else if (lvl & (PERM_LOGINOK))
+	{
+		if (!(lvl & (PERM_CHAT)) || !(lvl & (PERM_PAGE)) || !(lvl & (PERM_POST)) ||(lvl & (PERM_DENYMAIL)) ||(lvl &(PERM_DENYPOST))) strcpy(buf,"受限");	
+		else strcpy(buf,"用户");
+	}
+	else if (!(lvl & (PERM_CHAT)) && !(lvl & (PERM_PAGE))  && !(lvl & (PERM_POST))) strcpy(buf,"新人");
+	else strcpy(buf,"受限");
+
+/*    else {
         buf[0] = (lvl & (PERM_SYSOP)) ? 'C' : ' ';
-        buf[1] = (lvl & (PERM_XEMPT)) ? 'X' : ' ';
+        buf[1] = (lvl & (PERM_XEMPT)) ? 'L' : ' ';
         buf[2] = (lvl & (PERM_BOARDS)) ? 'B' : ' ';
         buf[3] = (lvl & (PERM_DENYPOST)) ? 'p' : ' ';
         if( lvl & PERM_ACCOUNTS ) buf[3] = 'A';
-        if( lvl & PERM_SYSOP ) buf[3] = 'S';
+        if( lvl & PERM_SYSOP ) buf[3] = 'S'; 
         buf[4] = '\0';
     }
+*/
+
     return 1;
 }
 /* 时间转换成 中文 */
@@ -831,7 +845,7 @@ printutitle()  /* 屏幕显示 用户列表 title */
 #ifndef _DETAIL_UINFO_
         isadm? fmtadm:fmtcom,
 #endif
-        "等级" ) ;
+        "身份" ) ;
 }
 
 

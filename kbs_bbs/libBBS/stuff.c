@@ -592,8 +592,14 @@ int compute_user_value( struct userec *urec)
     int         value;
 
     /* if (urec) has CHATCLOAK permission, don't kick it */
-    if( (urec->userlevel & PERM_CHATCLOAK ) && (!(urec->userlevel & PERM_SUICIDE)))
+	/* 元老和荣誉帐号 在不自杀的情况下， 生命力999 Bigman 2001.6.23 */
+    if( ((urec->userlevel & PERM_HORNOR)||(urec->userlevel & PERM_CHATCLOAK )) && (!(urec->userlevel & PERM_SUICIDE)))
         return 999;
+
+    if ( urec->userlevel & PERM_SYSOP) 
+	return 119;
+	/* 站务人员生命力不变 Bigman 2001.6.23 */
+	
 
 
     value = (time(0) - urec->lastlogin) / 60;    /* min */

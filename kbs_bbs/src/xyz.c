@@ -570,12 +570,12 @@ a_edits()
     /* Leeward 98.07.31 added: .badIP */
     /* stephen 2000.10.17 added: /usr/share/apache/htdocs/script/menucontext.js */
     /* period  2000.10.17 link /backup/www/htdocs/script/menucontext.js --> /home0/bbs/etc/www_menu.js */
-    char *e_file[]={"../Welcome","../vote/notes","issue","movie","logout","menu.ini", "mailcheck","s_fill","f_fill.realname","f_fill.unit","f_fill.address","f_fill.telephone","f_fill.real","f_fill.chinese","f_fill.toomany","f_fill.reply","smail","fmail","../.badname", "../.badIP", "../.badword", "sysconf.ini", "www_menu.js", "../0Announce/hotinfo", NULL};
+    char *e_file[]={"../Welcome","../vote/notes","issue","movie","logout","menu.ini", "mailcheck","s_fill","f_fill.realname","f_fill.unit","f_fill.address","f_fill.telephone","f_fill.real","f_fill.chinese","f_fill.toomany","f_fill.reply","smail","fmail","../.badname", "../.badIP", "../.badword", "sysconf.ini", "www_menu.js", "../0Announce/hotinfo", "forbm", "forcloak", "forlongid", NULL};
     /* "/usr/share/apache/htdocs/script/menucontext.js", NULL};    */
 #ifndef LEEWARD_X_FILTER
-    char *explain_file[]={"Welcome","¹«ÓÃ±¸ÍüÂ¼","½øÕ¾»¶Ó­µµ","»î¶¯¿´°æ","ÀëÕ¾»­Ãæ", "menu.ini","Éí·İÈ·ÈÏµµ","×¢²áµ¥Íê³Éµµ","×¢²áµ¥Ê§°Üµµ(ÕæÊµĞÕÃû)","×¢²áµ¥Ê§°Üµµ(·şÎñµ¥Î»)","×¢²áµ¥Ê§°Üµµ(¾Ó×¡µØÖ·)","×¢²áµ¥Ê§°Üµµ(ÁªÂçµç»°)","×¢²áµ¥Ê§°Üµµ(ÕæÊµ×ÊÁÏ)","×¢²áµ¥Ê§°Üµµ(ÖĞÎÄÌîĞ´)","×¢²áµ¥Ê§°Üµµ(¹ı¶àµÄID)","×¢²áµ¥Ê§°Üµµ(Mail Reply)" ,"Éí·İÈ·ÈÏÍê³Éµµ        ","Éí·İÈ·ÈÏÊ§°Üµµ","²»¿É×¢²áµÄ ID         ", "²»¿ÉµÇÂ¼µÄ IP", "ÏµÍ³×Ô¶¯¹ıÂËµÄ´ÊÓï", "sysconf.ini", "WWWÖ÷²Ëµ¥",  "½üÆÚÈÈµã",NULL};
+    char *explain_file[]={"Welcome","¹«ÓÃ±¸ÍüÂ¼","½øÕ¾»¶Ó­µµ","»î¶¯¿´°æ","ÀëÕ¾»­Ãæ", "menu.ini","Éí·İÈ·ÈÏµµ","×¢²áµ¥Íê³Éµµ","×¢²áµ¥Ê§°Üµµ(ÕæÊµĞÕÃû)","×¢²áµ¥Ê§°Üµµ(·şÎñµ¥Î»)","×¢²áµ¥Ê§°Üµµ(¾Ó×¡µØÖ·)","×¢²áµ¥Ê§°Üµµ(ÁªÂçµç»°)","×¢²áµ¥Ê§°Üµµ(ÕæÊµ×ÊÁÏ)","×¢²áµ¥Ê§°Üµµ(ÖĞÎÄÌîĞ´)","×¢²áµ¥Ê§°Üµµ(¹ı¶àµÄID)","×¢²áµ¥Ê§°Üµµ(Mail Reply)" ,"Éí·İÈ·ÈÏÍê³Éµµ        ","Éí·İÈ·ÈÏÊ§°Üµµ","²»¿É×¢²áµÄ ID         ", "²»¿ÉµÇÂ¼µÄ IP", "ÏµÍ³×Ô¶¯¹ıÂËµÄ´ÊÓï", "sysconf.ini", "WWWÖ÷²Ëµ¥",  "½üÆÚÈÈµã", "¸øĞÂÈÎ°æÖ÷µÄĞÅ", "¸øÒşÉíÓÃ»§µÄĞÅ", "¸ø³¤ÆÚÓÃ»§µÄĞÅ", NULL};
 #else
-char *explain_file[]={"Welcome","¹«ÓÃ±¸ÍüÂ¼","½øÕ¾»¶Ó­µµ","»î¶¯¿´°æ","ÀëÕ¾»­Ãæ", "menu.ini","Éí·İÈ·ÈÏµµ","×¢²áµ¥Íê³Éµµ","×¢²áµ¥Ê§°Üµµ(ÕæÊµĞÕÃû)","×¢²áµ¥Ê§°Üµµ(·şÎñµ¥Î»)","×¢²áµ¥Ê§°Üµµ(¾Ó×¡µØÖ·)","×¢²áµ¥Ê§°Üµµ(ÁªÂçµç»°)","×¢²áµ¥Ê§°Üµµ(ÕæÊµ×ÊÁÏ)","×¢²áµ¥Ê§°Üµµ(ÖĞÎÄÌîĞ´)","×¢²áµ¥Ê§°Üµµ(¹ı¶àµÄID)","×¢²áµ¥Ê§°Üµµ(Mail Reply)" ,"Éí·İÈ·ÈÏÍê³Éµµ        ","Éí·İÈ·ÈÏÊ§°Üµµ","²»¿É×¢²áµÄ ID         ", "²»¿ÉµÇÂ¼µÄ IP", "ÏµÍ³×Ô¶¯¹ıÂËµÄ´ÊÓï£¨[1m[31m´Ëµµ°¸Ä¿Ç°ÎŞĞ§£¬²»±ØÉè¶¨»òĞŞ¸Ä[m£©", "sysconf.ini", "WWWÖ÷²Ëµ¥", "½üÆÚÈÈµã",NULL};
+char *explain_file[]={"Welcome","¹«ÓÃ±¸ÍüÂ¼","½øÕ¾»¶Ó­µµ","»î¶¯¿´°æ","ÀëÕ¾»­Ãæ", "menu.ini","Éí·İÈ·ÈÏµµ","×¢²áµ¥Íê³Éµµ","×¢²áµ¥Ê§°Üµµ(ÕæÊµĞÕÃû)","×¢²áµ¥Ê§°Üµµ(·şÎñµ¥Î»)","×¢²áµ¥Ê§°Üµµ(¾Ó×¡µØÖ·)","×¢²áµ¥Ê§°Üµµ(ÁªÂçµç»°)","×¢²áµ¥Ê§°Üµµ(ÕæÊµ×ÊÁÏ)","×¢²áµ¥Ê§°Üµµ(ÖĞÎÄÌîĞ´)","×¢²áµ¥Ê§°Üµµ(¹ı¶àµÄID)","×¢²áµ¥Ê§°Üµµ(Mail Reply)" ,"Éí·İÈ·ÈÏÍê³Éµµ        ","Éí·İÈ·ÈÏÊ§°Üµµ","²»¿É×¢²áµÄ ID         ", "²»¿ÉµÇÂ¼µÄ IP", "ÏµÍ³×Ô¶¯¹ıÂËµÄ´ÊÓï    ", "sysconf.ini", "WWWÖ÷²Ëµ¥             ", "½üÆÚÈÈµã","¸øĞÂÈÎ°æÖ÷µÄĞÅ        ", "¸øÒşÉíÓÃ»§µÄĞÅ","¸ø³¤ÆÚÓÃ»§µÄĞÅ        ",NULL};
 #endif
 
     modify_user_mode( ADMIN );
@@ -589,13 +589,16 @@ char *explain_file[]={"Welcome","¹«ÓÃ±¸ÍüÂ¼","½øÕ¾»¶Ó­µµ","»î¶¯¿´°æ","ÀëÕ¾»­Ãæ",
     for(num=0;e_file[num]!=NULL&&explain_file[num]!=NULL;num++)
     {
         prints("[[32m%2d[m] %s%s",num+1,explain_file[num],
-               (num + 1 >= 9 && num + 1 <= 20 && (num + 1) % 2) ? "      " : "\n");
+               (num + 1 >= 9 && num + 1 <= 28 && (num + 1) % 2) ? "      " : "\n");
         /* Leeward 98.03.29 µ÷ÕûÏÔÊ¾²¼¾Ö£¬ÒÔ±ã¼ÓÈë¡°ÏµÍ³×Ô¶¯¹ıÂËµÄ´ÊÓï¡±Ò»Ïî */
         /* Leeward 98.07.31 µ÷ÕûÏÔÊ¾²¼¾Ö£¬ÒÔ±ã¼ÓÈë¡°²»¿ÉµÇÂ¼µÄ IP¡±Ò»Ïî */
+	/* Bigman 2001.6.23 µ÷Õû²¼¾Ö£¬ Ôö¼ÓÆäËû¼¸ÏîÄÚÈİ */
     }
+	
     prints("[[32m%2d[m] ¶¼²»Ïë¸Ä\n",num+1);
 
-    getdata(num,0,"ÄãÒª±àĞŞÄÄÒ»ÏîÏµÍ³µµ°¸: ",ans,3,DOECHO,NULL,YEA);
+	/* ÏÂÃæµÄ21ÊÇĞĞºÅ£¬ÒÔºóÌí¼Ó£¬¿ÉÒÔÏàÓ¦µ÷Õû */
+    getdata(21,0,"ÄãÒª±àĞŞÄÄÒ»ÏîÏµÍ³µµ°¸: ",ans,3,DOECHO,NULL,YEA);
     ch=atoi(ans);
     if(!isdigit(ans[0])||ch<=0 || ch>num|| ans[0]=='\n'|| ans[0]=='\0')
         return;

@@ -312,8 +312,8 @@ char q_id[IDLEN];
     if (exit_time <= lookupuser->lastlogin)
     	if (logincount!=seecount)
 	    {
-    	    temp=lookupuser->lastlogin+((lookupuser->numlogins+lookupuser->numposts)%100)+5;
-        	strcpy(exittime,ctime(&temp));/*Haohmaru.98.12.04.ÈÃÒþÉíÓÃ»§¿´ÉÏÈ¥ÀëÏßÊ±¼ä±ÈÉÏÏßÊ±¼äÍí5µ½105ÃëÖÓ*/
+    	    temp=lookupuser->lastlogin+((lookupuser->numlogins+lookupuser->numposts)%100)+60;
+        	strcpy(exittime,ctime(&temp));/*Haohmaru.98.12.04.ÈÃÒþÉíÓÃ»§¿´ÉÏÈ¥ÀëÏßÊ±¼ä±ÈÉÏÏßÊ±¼äÍí60µ½160ÃëÖÓ*/
 	        if( (newline = strchr(exittime, '\n')) != NULL )
     	        *newline = '\0';
 	    } else
@@ -328,7 +328,7 @@ char q_id[IDLEN];
                (lookupuser->userlevel & PERM_SUICIDE)?" (×ÔÉ±ÖÐ)":" ");
     */
     uleveltochar(&permstr,lookupuser->userlevel);
-    prints("ÐÅÏä£º[[5m%2s[m] ÉúÃüÁ¦£º[%d] µÈ¼¶: [%s]%s\n",
+    prints("ÐÅÏä£º[[5m%2s[m] ÉúÃüÁ¦£º[%d] Éí·Ý: [%s]%s\n",
            (check_query_mail(qry_mail_dir)==1)? "ÐÅ":"  ",
            compute_user_value(lookupuser),
            permstr,(lookupuser->userlevel & PERM_SUICIDE)?" (×ÔÉ±ÖÐ)":"¡£");

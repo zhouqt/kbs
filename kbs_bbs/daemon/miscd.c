@@ -139,8 +139,18 @@ int ismonday()
      struct tm *tm = localtime(&now);
      return tm -> tm_wday == 1;
 }
+
+static void
+reaper()
+{
+    while (waitpid(-1, NULL, WNOHANG | WUNTRACED) > 0);
+}
+
+
 int dodaemon()
 {
+    struct sigaction act;
+
      switch (fork()) {
          case -1: printf("faint, i can't fork.\n"); exit(0); break;
          case 0: break;
@@ -148,6 +158,16 @@ int dodaemon()
      }
      setsid();
      setpgrp();
+#ifdef AIX
+    act.sa_handler = NULL;
+    act.sa_flags = SA_RESTART|SA_NOCLDWAIT;
+    sigaction(SIGCHLD, &act, NULL);
+#else
+    act.sa_handler = reaper;
+    act.sa_flags = SA_RESTART;
+    sigaction(SIGCHLD, &act, NULL);
+#endif
+
      while (1) {
      	sleep(getnextday4am() - time( 0 ));
     	 switch(fork()) {
