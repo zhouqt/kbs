@@ -36,13 +36,13 @@ static int rm_dir(fpath)
 
     *fname++ = '/';
 
-    readdir(dirp);
-    readdir(dirp);
-
     while ((de = readdir(dirp))!=NULL) {
-        fpath = de->d_name;
-        if (*fpath) {
-            strcpy(fname, fpath);
+        char* name;
+        name = de->d_name;
+        if (*name) {
+            if (strcmp(name, ".") == 0) continue;
+            if (strcmp(name, "..") == 0) continue;
+            strcpy(fname, name);
             if (!stat(buf, &st)) {
                 if (S_ISDIR(st.st_mode))
                     rm_dir(buf);
