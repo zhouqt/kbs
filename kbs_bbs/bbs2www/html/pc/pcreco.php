@@ -30,7 +30,7 @@ function display_recommend_topic($link,$topic) {
     foreach($nodes as $node) {
         if (!$users[$node[uid]])
             $users[$node[uid]] = pc_load_infor($link,'',$node[uid]);
-        echo '<tr><td align="left">[<a href="index.php?userid='.$users[$node['uid']]['USER'].'"><font class="low2">'.$users[$node[uid]]['NAME'].'</font></a>]&nbsp;'.
+        echo '<tr><td align="left">[<a href="index.php?id='.$users[$node['uid']]['USER'].'"><font class="low2">'.$users[$node[uid]]['NAME'].'</font></a>]&nbsp;'.
              '<a href="pccon.php?id='.$node[uid].'&nid='.$node[nid].'&s=all">'.html_format($node[subject]).'</a>&nbsp;(<a href="/bbsqry.php?userid='.$users[$node[uid]]['USER'].'">'.$users[$node[uid]]['USER'].'</a>)</td>'.
              '<td align="right"><a href="/bbsqry.php?userid='.$node[recuser].'"><font class="low">'.$node[recuser].'</a> ÍÆ¼ö</font></td></tr>';
     }
