@@ -6,10 +6,15 @@ function bbs_pwd_form() {
 ?>  
 <script language="JavaScript">
 <!--
-//document.write("<form action='https://"+window.location.hostname+"/bbspwd.php?do' method='post'>");
+document.write("<form action='https://"+window.location.hostname+"/bbspwd.php?do' method='post'>");
 -->
 </script>
+<?php
+/*
+// 注：未使用HTTPS的站点请更改表单为
 <form action='/bbspwd.php?do' method='post'>
+*/
+?>
 <center>
 <table class="t1" width="500" cellspacing="0" cellpadding="5" border="0">
     <tr>
