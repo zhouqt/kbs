@@ -40,8 +40,8 @@ void ask_define()
 {
     struct _select_item *sel;
     int j;
-    char sname[4][14]={"±¾Õ¾Ä¬ÈÏ", "Ò»ËúºýÍ¿", "±±´óÎ´Ãû", "ÄÏ´óÐ¡°ÙºÏ"};
-    char fname[4][30]={"", "service/definekey.ytht", "service/definekey.pku", "service/definekey.nju"};
+    char sname[4][14]={"Ò»ËúºýÍ¿", "±±´óÎ´Ãû", "ÄÏ´óÐ¡°ÙºÏ", "±¾Õ¾Ä¬ÈÏ"};
+    char fname[4][30]={"service/definekey.ytht", "service/definekey.pku", "service/definekey.nju", "service/definekey.smth"};
     char root[18]="¶¨ÖÆÇøÖ÷Ä¿Â¼";
     clear();
     move(5, 3);
@@ -63,7 +63,7 @@ void ask_define()
     clear();
     j = simple_select_loop(sel, SIF_NUMBERKEY | SIF_SINGLE | SIF_ESCQUIT, 0, 6, NULL) - 1;
     free(sel);
-    if(j>=1&&j<=3)
+    if(j>=0&&j<=3)
         load_key(fname[j]);
 }
 
@@ -509,7 +509,7 @@ static int set_keydefine_refresh(struct _select_def *conf)
 {
     clear();
     docmdtitle("[ÉèÖÃ×Ô¶¨Òå¼ü]",
-               "\x1b[1;31mÔ¤¶¨Òå\x1b[m[\x1b[1;32mTab\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ý\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ÐÞ¸ÄÄ£Ê½[\x1b[1;32me\x1b[0;37m] ÐÞ¸Ä¼ü¶¨Òå[\x1b[1;32ms\x1b[0;37m] É¾³ý[\x1b[1;32md\x1b[0;37m]\x1b[m");
+               "Ô¤¶¨Òå[\x1b[1;32mTab\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ý\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ÐÞ¸ÄÄ£Ê½[\x1b[1;32me\x1b[0;37m] ÐÞ¸Ä¼ü¶¨Òå[\x1b[1;32ms\x1b[0;37m] É¾³ý[\x1b[1;32md\x1b[0;37m]\x1b[m");
     move(2, 0);
     prints("[0;1;37;44m  %-6s  %-36s  %-32s[m", "°´¼ü", "Ìæ»»ÐòÁÐ", "Ä£Ê½");
     update_endline();
