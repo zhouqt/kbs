@@ -642,7 +642,7 @@ int ent;
     char ans[STRLEN];
     char importpath[MAXPATH];
     int ret;
-    char newpath[STRLEN];
+    char newpath[MAXPATH];
 
     ret = 0;
     modify_user_mode(CSIE_ANNOUNCE);
@@ -669,7 +669,8 @@ int ent;
         } else
             pm.path = path;
         
-        strcpy(newpath,pm.path);
+        strncpy(newpath,pm.path, MAXPATH);
+        newpath[MAXPATH - 1] = '\0';
         if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) ) 
         {
                 if(!a_chkbmfrmpath(newpath))
