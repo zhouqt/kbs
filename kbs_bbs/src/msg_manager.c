@@ -67,7 +67,7 @@ static int set_smsg_show(struct _select_def *conf, int i)
 	if((c = strchr(title, '\n') )!= NULL) *c=0;
 	if((c = strchr(title, '\r') )!= NULL) *c=0;
 
-	prints(" %s%-3d %-13s %-14s %s %-40s%s",s_m[i-conf->page_pos].readed?"":"[1m", i , s_m[i-conf->page_pos].dest, s_m[i-conf->page_pos].time, s_m[i-conf->page_pos].type?"[1;32m·¢[m":"[1;33mÊÕ[m", title, s_m[i-conf->page_pos].readed?"":"[m");
+	prints(" %s%-3d %-13s %-14s %s %-40s%s",s_m[i-conf->page_pos].readed?"":"[1;5m", i , s_m[i-conf->page_pos].dest, s_m[i-conf->page_pos].time, s_m[i-conf->page_pos].type?"[1;32m·¢[m":"[1;33mÊÕ[m", title, s_m[i-conf->page_pos].readed?"":"[m");
 	return SHOW_CONTINUE;
 }
 
