@@ -315,8 +315,11 @@
 <tr>
 	<td>
 	<?php 
-		$alert = ($loginok != 1 || !strcmp($currentuser["userid"],"guest"))?TRUE:FALSE;
-		pc_add_new_comment($pc,$nid,$alert); 
+		if($rows[comment] && $rows[type] == 0)
+		{
+			$alert = ($loginok != 1 || !strcmp($currentuser["userid"],"guest"))?TRUE:FALSE;
+			pc_add_new_comment($pc,$nid,$alert); 
+		}
 	?>
 	</td>
 </tr>

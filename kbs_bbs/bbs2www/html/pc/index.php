@@ -15,7 +15,7 @@
 var blogCalendarArray = new Array();
 var blogNodeUrl = "pccon.php?id=<?php echo $pc["UID"]; ?>&s=all";
 <?php	
-		$query = "SELECT `nid` , `created` FROM nodes WHERE `uid` = '".$pc["UID"]."' ";
+		$query = "SELECT `nid` , `created` FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `type` = 0 ";
 		if($pur == 0)
 			$query .= " AND `access` = 0 ";
 		elseif($pur == 1)
