@@ -2311,8 +2311,10 @@ int post_article(char *q_file, struct fileheader *re_file)
 #endif
 
     sprintf(genbuf, "%s/%s", buf, fileinfo->filename);
+	strncpy(buf, genbuf, 512);
+	buf[511]=0;
 	attachpos = fileinfo->attachment;
-    if (vedit_post(genbuf, false, &eff_size,&attachpos) != -1) {
+    if (vedit_post(buf, false, &eff_size,&attachpos) != -1) {
 		if( fileinfo->eff_size != eff_size ){
         	fileinfo->eff_size = eff_size;
 			//fileinfo->eff_size = calc_effsize(genbuf);
@@ -2320,7 +2322,7 @@ int post_article(char *q_file, struct fileheader *re_file)
                 //fileinfo, direct, FILE_EFFSIZE_FLAG, 0);
 		}
         if (ADD_EDITMARK)
-            add_edit_mark(genbuf, 0, /*NULL*/ fileinfo->title);
+            add_edit_mark(buf, 0, /*NULL*/ fileinfo->title);
         if (attachpos!=fileinfo->attachment) {
             fileinfo->attachment=attachpos;
             change_post_flag(currBM, currentuser, digestmode, currboard->filename, ent, 
