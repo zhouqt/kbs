@@ -404,15 +404,15 @@ function FilterJS($v)
                         "/vbs:/i",
                         "/on(mouse|exit|error|click|key)/i");
 
-        $replace =array("&#106avascript",
-                        "&#106script:",
-                        "&#106s:",
-                        "about&#58",
-                        "file&#58",
-                        "documents&#46cookie",
-                        "&#118bscript:",
-                        "&#118bs:",
-                        "&#111n\\1");
+        $replace =array("&#106;avascript",
+                        "&#106;script:",
+                        "&#106;s:",
+                        "about&#58;",
+                        "file&#58;",
+                        "documents&#46;cookie",
+                        "&#118;bscript:",
+                        "&#118;bs:",
+                        "&#111;n\\1");
 
         $v=preg_replace($pattern,$replace,$v);
     }
