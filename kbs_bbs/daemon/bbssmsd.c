@@ -81,14 +81,14 @@ void loginas(char* user, char* pass)
 int sendtouser(struct GWSendSMS * h, char* buf)
 {
     int uid;
-    struct userec * ur;
+    char * uident;
     struct user_info * uin;
     struct msghead hh;
     uid = byte2long(h->UserID);
-    if (uid > uidshm->number || uid <= 0)
+    uident = getuserid2(uid);
+    if(uident == NULL)
         return -1;
-    ur = passwd+(uid - 1);
-    uin = t_search(ur->userid, NULL);
+    uin = t_search(uident, NULL);
     if(uin == NULL)
         return -1;
 
@@ -98,7 +98,7 @@ int sendtouser(struct GWSendSMS * h, char* buf)
     hh.sent = 0;
     hh.time = time(0);
     strcpy(hh.id, h->SrcMobileNo);
-    save_msgtext(ur->userid, &hh, buf);
+    save_msgtext(uident, &hh, buf);
     kill(ur->pid, SIGUSR2);
     return 0;
 }
