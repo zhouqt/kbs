@@ -51,11 +51,13 @@ int dict_main()
     if (row==NULL)
         prints("没有这个词！");
     else{
-        prints("%s\n", row[1]);
-        prints("----------------------------\n");
+        prints("\x1b[1;32;4m%s\x1b[m\n", row[1]);
+	strcpy(word,row[1]);
     while (row != NULL) {
 	char* p;
 	int insound=0;
+	if (strcmp(word,row[1]))
+        prints("\x1b[1;32;4m%s\x1b[m\n", row[1]);
 	for (p=row[2];*p!=0;p++) {
             if (insound) {
                 if (*p==25) insound=0;
@@ -86,7 +88,7 @@ int dict_main()
             case 25: insound=1; break;
             case 26: break;
             case 30: break;
-            case 31: p++; if (*p!=0) p++; break;
+            case 31: p++; p++; break;
             case 59: prints("\n"); break;
             default: prints("%c",*p);
             }
