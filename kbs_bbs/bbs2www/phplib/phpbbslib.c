@@ -29,6 +29,7 @@ static ZEND_FUNCTION(bbs_is_bm);
 static ZEND_FUNCTION(bbs_getannpath);
 static ZEND_FUNCTION(bbs_getmailnum);
 static ZEND_FUNCTION(bbs_getwebmsg);
+static ZEND_FUNCTION(bbs_sethomefile);
 
 static ZEND_MINIT_FUNCTION(bbs_module_init);
 static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown);
@@ -63,6 +64,7 @@ static function_entry bbs_php_functions[] = {
 	ZEND_FE(bbs_getannpath, NULL)
 	ZEND_FE(bbs_getmailnum, third_arg_force_ref_011)
 	ZEND_FE(bbs_getwebmsg, third_arg_force_ref_111)
+	ZEND_FE(bbs_sethomefile, NULL)
 	{NULL, NULL, NULL}
 };
 
@@ -282,7 +284,7 @@ static ZEND_FUNCTION(bbs_getonlineuser)
 
 static ZEND_FUNCTION(bbs_getonlinenumber)
 {
-    RETURN_LONG(get_utmp_number());
+    RETURN_LONG(get_utmp_number()+getwwwguestcount());
 }
 
 
@@ -1198,8 +1200,37 @@ static ZEND_FUNCTION(bbs_getwebmsg)
     RETURN_FALSE;
 }
 
-
-
+/**
+ * get the user dir or file.
+ * prototype:
+ * string bbs_sethomefile(string userid[,string filename])
+ *
+ * @return TRUE on success,
+ *       FALSE on failure.
+ *       and return total and unread in argument
+ * @author KCN
+ */
+static ZEND_FUNCTION(bbs_sethomefile)
+{
+    char *userid, *file;
+    int userid_len, file_len=0;
+    char buf[60];
+    int ac = ZEND_NUM_ARGS();
+    if (ac==2)  {
+    	if (zend_parse_parameters(1 TSRMLS_CC, "ss", &userid, &userid_len, &file, &file_len) != SUCCESS)
+            WRONG_PARAM_COUNT;
+    } else
+    if (ac==1) {
+    	if (zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) != SUCCESS)
+            WRONG_PARAM_COUNT;
+    } else
+        WRONG_PARAM_COUNT;
+    if (file_len==0)
+        sethomefile(buf,userid, file);
+    else
+        sethomepath(buf,userid);
+    RETURN_STRING(buf,1);
+}
 
 static ZEND_MINIT_FUNCTION(bbs_module_init)
 {
