@@ -703,7 +703,7 @@ function show_footer()
 <TABLE cellSpacing=0 cellPadding=0 border=0 align=center>
 <tr>
 	<td align=center>
-		<a href="http://wforum.aka.cn/" target="_blank"><img border="0" src="/images/wforum.gif"></a><br>
+		<a href="http://wforum.aka.cn/" target="_blank"><img border="0" src="images/wforum.gif"></a><br>
 		<nobr><?php   echo $Version; ?></nobr>
 	</td>
 	<td>
