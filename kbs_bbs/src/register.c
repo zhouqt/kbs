@@ -319,6 +319,7 @@ void check_register_info()
 	}
 
 
+#if 0
 //    if (strchr(curruserdata.email, '@') == NULL) {
     if (currentmemo->ud.email[0]==0) {
         clear();
@@ -352,6 +353,8 @@ void check_register_info()
 	prints("\n如果您实在没有任何可用的'电子邮件信箱'可以设定，又不愿意看到本信息，可以使用\n%s.bbs@%s进行设定。\n\033[33;1m注意: 上面的电子邮件信箱不能接收电子邮件，仅用来使系统不再显示本信息。\033[m", currentuser->userid, NAME_BBS_ENGLISH);
         pressreturn();
     }
+#endif
+
 #ifdef HAVE_BIRTHDAY
 //	if (!is_valid_date(curruserdata.birthyear+1900, curruserdata.birthmonth,
 //				curruserdata.birthday))
