@@ -44,12 +44,12 @@ struct pattern_image {
 	unsigned char SHIFT1[MAXMEMBER1];
 	unsigned char tr[MAXSYM];
 	unsigned char tr1[MAXSYM];
-        unsigned int HASH[MAXHASH];
-	unsigned char buf[MAXPATFILE + BLOCKSIZE];
-	unsigned char pat_spool[MAXPATFILE + 2 * max_num + MAXPAT];
+    unsigned int HASH[MAXHASH]; /*pattern hash 入口,指向hashtable的位置*/
+	unsigned char buf[MAXPATFILE + BLOCKSIZE]; /*原始的file*/
+	unsigned char pat_spool[MAXPATFILE + 2 * max_num + MAXPAT];/*保存转化后的pattern*/
 	unsigned long patt[max_num]; /*用于指向pat_spool的偏移*/
-	unsigned char pat_len[max_num];
-	struct pat_list hashtable[max_num];
+	unsigned char pat_len[max_num]; /*每一个pattern的长度*/
+	struct pat_list hashtable[max_num+1]; /* 保存所有的pattern hash数据,0节点恒为index=0*/
 };
 
 static void m_short(unsigned char* text,int start,int end,struct pattern_image* patt_img);
@@ -90,6 +90,8 @@ int prepf(int fp,struct pattern_image** ppatt_img,size_t* patt_image_len)
     patt_img->LONG = 0;
     patt_img->SHORT = 0;
     patt_img->p_size = 0;
+	patt_img->hashtable[0].index = 0;
+	patt_img->hashtable[0].next = 0;
     while ((num_read = read(fp, patt_img->buf + length, BLOCKSIZE)) > 0) {
         length = length + num_read;
         if (length > MAXPATFILE) {
@@ -260,13 +262,13 @@ static void monkey1(register unsigned char *text, int start,int  end, struct pat
                 hash = (hash << 4) + (patt_img->tr1[*(text - i)]);
             }
             hash = hash & mm;
-            p = &patt_img->hashtable[patt_img->HASH[hash]-1];
-            while (p != 0) {
+            p = &patt_img->hashtable[patt_img->HASH[hash]];
+            while (p&&p->index != 0) {
                 pat_index = p->index;
 		if (p->next==0)
 		    p=NULL;
 		else
-                    p = &patt_img->hashtable[p->next-1];
+                    p = &patt_img->hashtable[p->next];
                 qx = text - m1;
                 j = 0;
                 while (patt_img->tr[*(patt_img->pat_spool+patt_img->patt[pat_index]+j)] == patt_img->tr[*(qx++)])
@@ -348,13 +350,13 @@ static void m_short(unsigned char* text,int start,int end,struct pattern_image* 
     lastout = text + start + 1;
     text = text + start - 1;
     while (++text <= textend) {
-        p = &patt_img->hashtable[patt_img->HASH[*text]-1];
-        while (p != 0) {
+        p = &patt_img->hashtable[patt_img->HASH[*text]];
+        while (p&&p->index != 0) {
             pat_index = p->index;
 	    if (p->next==0)
 	        p=NULL;
 	    else
-                p = &patt_img->hashtable[p->next-1];
+                p = &patt_img->hashtable[p->next];
             qx = text;
             j = 0;
             while (patt_img->tr[*(patt_img->pat_spool+patt_img->patt[pat_index]+j)] == patt_img->tr[*(qx++)])
@@ -428,9 +430,11 @@ static void f_prep(int pat_index, unsigned char *Pattern, struct pattern_image* 
 	if(INVERSE) hash = Pattern[1];
 */
     hash = hash & mm;
-    qt = &patt_img->hashtable[pat_index-1];
+    qt = &patt_img->hashtable[pat_index];
     qt->index = pat_index;
-    pt = &patt_img->hashtable[patt_img->HASH[hash]-1];
+	if (patt_img->HASH[hash]!=0) {
+    pt = &patt_img->hashtable[patt_img->HASH[hash]];
     qt->next = pt->index;
+	} else qt->next=0;
     patt_img->HASH[hash] = pat_index;
 }
