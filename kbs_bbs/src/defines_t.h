@@ -146,7 +146,7 @@ int num_alcounter();
 int ttt_talk(struct user_info *userinfo);
 int servicepage(int line, char *mesg);
 int addtooverride(char *uident);
-int t_query(char q_id[IDLEN]);
+int t_query(char* q_id);
 int talkreply();
 int friend_add(int ent, struct friends *fh, char *direct);
 void talk_request();

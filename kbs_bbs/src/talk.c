@@ -226,8 +226,7 @@ int t_cmpuids(int uid, struct user_info *up)
 
 extern char MsgDesUid[20];
 
-int t_query(q_id)
-char q_id[IDLEN];
+int t_query(char* q_id)
 {
     char uident[STRLEN], *newline;
     int tuid = 0;
@@ -240,7 +239,7 @@ char q_id[IDLEN];
     int logincount, seecount, oldmode;
     struct userec *lookupuser;
 
-    if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND && uinfo.mode != READING && uinfo.mode != MAIL && uinfo.mode != RMAIL && uinfo.mode != GMENU) {
+    if (q_id==NULL) {
         /*
          * count = shortulist(NULL); 
          */
@@ -262,12 +261,12 @@ char q_id[IDLEN];
     } else {
         char *p;
 
-        for (p = q_id; *p; p++)
+        strcpy(uident, q_id);
+        for (p = uident; *p; p++)
             if (*p == ' ') {
                 *p = 0;
                 break;
             };
-        strcpy(uident, q_id);
     }
     oldmode = uinfo.mode;
     modify_user_mode(QUERY);
