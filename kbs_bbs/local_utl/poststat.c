@@ -204,13 +204,13 @@ void writestat(int mytype,struct postrec* dobucket[HASHSIZE])
         fprintf(fp, "                [34m-----[37m=====[41m ±¾%s [40m=====[34m-----[m\n\n", mytitle[mytype]);
 
         i = mytop[mytype];
-        if (j > i)
-            j = i;
+//        if (j > i)
+//            j = i;
 #ifdef  DEBUG
         printf("i : %d, j: %d \n", i, j);
 #endif
         real = 0;
-        for (i = 0; i < j; i++) {
+        for (i = 0; i < j&&real<mytop[mytype]; i++) {
             strcpy(buf, ctime(&top[i].date));
             buf[20] = NULL;
             p = buf + 4;
@@ -237,6 +237,7 @@ void writestat(int mytype,struct postrec* dobucket[HASHSIZE])
                     continue;
 
                 /* Bigman 2000.8.28 ÐÞ¸ÄÍ³¼Æ·½Ê½ */
+#ifndef NINE_BUILD
                 m = 0;
                 for (n = 0; n < real; n++) {
                     if (!strcmp(top[i].board, BoardName[n]))
@@ -245,6 +246,9 @@ void writestat(int mytype,struct postrec* dobucket[HASHSIZE])
 
                 if (m >= 3)
                     continue;
+#else
+                if(!strcmp(top[i].board,"test")) continue;
+#endif
 
                 strcpy(BoardName[real], top[i].board);
             }
