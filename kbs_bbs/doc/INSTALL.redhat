@@ -8,17 +8,22 @@ $Id$
 apache2。
 
 1. 需要的软件
-httpd-xxx              必须
-httpd-devel-xxx        必须
-php-xxx                必须
-php-devel-xxx          必须
+httpd                  必须
+httpd-devel            必须
+php                    必须
+php-devel              必须
 zlib-devel             必须
 openssl-devel          必须
 gmp-devel              必须
-mysql-devel            必须
+gd                     必须
 libesmtp-devel         可选
      (以上软件可直接用 RedHat 光盘里的安装)
 
+mysql                  可选
+mysql-devel            可选
+mysql-server           可选
+php-mysql              可选
+     (以上 4 个只有当加入 mysql 支持的情况下才需要)
 
 autoconf-2.57          必须
 automake-1.6.X         必须
