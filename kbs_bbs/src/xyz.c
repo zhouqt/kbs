@@ -247,10 +247,8 @@ int x_level()
     int flag = 0;               /*Haohmaru,98.10.05 */
     int flag1 = 0, flag2 = 0;   /* bigman 2000.1.5 */
     struct userec *lookupuser;
-    char genbuf2[255];
-    int lcount = 0, i, j, kcount = 0, basicperm;
+    int lcount = 0, basicperm;
     int s[10][2];
-    FILE *fn;
 
     /*
      * add by alex, 97.7 , strict the power of sysop 
@@ -871,9 +869,7 @@ static void escape_filename(char *fn)
 }
 int zsend_file(char *filename, char *title)
 {
-    char *t;
     char buf[100], buf1[100];
-    int i;
 
     ansimore("etc/zmodem", 0);
     move(t_lines - 1, 0);
@@ -958,10 +954,7 @@ int my_inet_aton(const char * ip, struct in_addr* queryip)
 	return 0;
 }
 
-int find_ip(ip,flag,result)
-const char *ip;
-int flag;
-char result[];
+int find_ip( const char *ip, int flag, char *result)
 /* 查找IP的主程序，flag：1	普通调用，打印所有信息 */
 /*			 0	在审批时调用，只返回结果到result */
 /* 返回：	0 正常 */
@@ -1094,13 +1087,12 @@ int search_ip()
 
 int kick_all_user()
 {
-    int id, ind;
     struct user_info *uin;
 	char ans[3];
 	int i;
 
     if (!check_systempasswd()) {
-        return;
+        return -1;
     }
 	clear();
 	move(3,0);

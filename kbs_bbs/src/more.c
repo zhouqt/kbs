@@ -449,7 +449,7 @@ struct MemMoreLines {
 */
 int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
 {
-    int i, w, in_esc = 0, db = 0, lastspace = 0, asciiart = 0, autoline = 1;
+    int i, w, in_esc = 0, db = 0, lastspace = 0, autoline = 1;
     char *p = p0;
 
     if (size <= 0) {
@@ -496,14 +496,14 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
             } else if (isprint2(*p)) {
                 if (!db) {
                     if(autoline)
-                    if (w >= scr_cols-1&&(i>=size-1||*(p+1)<0) || w >= scr_cols) {
+                    if ((w >= scr_cols-1&&(i>=size-1||*(p+1)<0) )|| w >= scr_cols) {
                         *l = i;
                         *s = i;
                         break;
                     }
                     if ((unsigned char) *p >= 128)
                         db = 1;
-                    else if (isblank((int) *p))
+                    else if (isblank(*p))
                         lastspace = i;
                 } else {
                     db = 0;
@@ -552,7 +552,6 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
     }
     if ( oldty==LINE_ATTACHMENT|| (size > ATTACHMENT_SIZE
         && !memcmp(p0, ATTACHMENT_PAD, ATTACHMENT_SIZE))) {
-        long attach_len;
 
         *ty = LINE_ATTACHMENT;
         p = p0;
@@ -1122,7 +1121,7 @@ extern int minln;
 int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
 {
     struct MemMoreLines l;
-    int i, j, ch = 0, curr_line, last_line, change;
+    int i, j, curr_line, last_line;
     bool header = true;
     char buf[256];
 

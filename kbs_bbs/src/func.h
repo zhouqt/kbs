@@ -18,6 +18,7 @@ extern "C" {
 
 
 /* defined in ucache.c */
+    void load_user_title();
     struct userec *getuserbynum(int num);
     int getnewuserid2(char *userid);
     unsigned int ucache_hash(const char *userid);       /* hash function export for utmp usage */
@@ -104,6 +105,20 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     void output(const char *s, int len);
 
 /* defined in stuff.c */
+    int add_mailgroup_user(mailgroup_list_t * mgl, int entry, mailgroup_t * users, mailgroup_t * user);
+    int delete_mailgroup_user(mailgroup_list_t * mgl, int entry, mailgroup_t * users, int pos);
+    int modify_mailgroup_user(mailgroup_t * users, int pos, mailgroup_t * user);
+    unsigned int load_mailgroup_list(const char *userid, mailgroup_list_t * mgl);
+    int load_mailgroup(const char *userid, const char *group, mailgroup_t * mg, int num);
+    int store_mailgroup_list(const char *userid, const mailgroup_list_t * mgl);
+    int store_mailgroup(const char *userid, const char *group, const mailgroup_t * mg, int num);
+    int import_friends_mailgroup(const char *userid, mailgroup_list_t * mgl);
+    int add_mailgroup_item(const char *userid, mailgroup_list_t * mgl, mailgroup_list_item * item);
+    int delete_mailgroup_item(const char *userid, mailgroup_list_t * mgl, int entry);
+    int add_default_mailgroup_item(const char *userid, mailgroup_list_t * mgl);
+    int modify_mailgroup_item(const char *userid, mailgroup_list_t * mgl, int entry, mailgroup_list_item * item);
+    int import_old_mailgroup(const char *userid, mailgroup_list_t * mgl);
+
     int my_unlink(char *fname);/*封装unlink,用于定义备份的文件*/
     int gettmpfilename(char *retchar, char *fmt, ...); /*获得临时文件名*/
     int setmailcheck(char *userid); /*设置mail检查标志*/
@@ -450,6 +465,9 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     int check_sysconf();
 
 /* libmsg.c */
+    int load_msghead(int id, char *uident, int index, struct msghead *head);
+    int load_msgtext(char *uident, struct msghead *head, char *msgbuf);
+    int translate_msg(char* src, struct msghead *head, char* dest);
     int get_msgcount(int id, char *uident);
     void mail_msg(struct userec* user);
     int clear_msg(char *uident);

@@ -1541,7 +1541,7 @@ int search_mode(struct _select_def* conf,struct fileheader *fileinfo,int mode, c
     for (i = 0; i < total; i++) {
         if (((mode == DIR_MODE_ORIGIN) && (ptr1->id == ptr1->groupid ))
             || ((mode == DIR_MODE_AUTHOR) && !strcasecmp(ptr1->owner, index) )
-            || ((mode == DIR_MODE_TITLE)  && !bm_strcasestr_rp(ptr1->title, index, bm_search, &init))) {
+            || ((mode == DIR_MODE_TITLE)  && bm_strcasestr_rp(ptr1->title, index, bm_search, &init))) {
             write(fd, ptr1, size);
             count++;
         }

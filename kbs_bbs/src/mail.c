@@ -325,7 +325,7 @@ int do_send(char *userid, char *title, char *q_file)
 {
     struct fileheader newmessage;
     struct stat st;
-    char filepath[STRLEN], fname[STRLEN], *ip;
+    char filepath[STRLEN], fname[STRLEN];
     int sum, sumlimit;
     char buf2[256], buf3[STRLEN], buf4[STRLEN];
     int replymode = 1;          /* Post New UI */
@@ -494,7 +494,6 @@ int do_send(char *userid, char *title, char *q_file)
             }
         } 
         else if (ans[0] == 'U'&&HAS_PERM(currentuser, PERM_SYSOP)) {
-            int i;
             chdir("tmp");
             upload = bbs_zrecvfile();
             chdir("..");
@@ -1126,6 +1125,9 @@ static int do_mail_reply(struct _select_def* conf, struct fileheader *fileinfo,v
     if (fileinfo==NULL)
         return DONOTHING;
 	mail_reply(ent,fileinfo,arg->direct);
+    if (strcmp(fileinfo->owner,currentuser->userid))
+        return  DONOTHING;
+    return DIRCHANGED;
 }
 
 static int mail_del(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg)
@@ -1245,7 +1247,6 @@ int mail_to_tmp(struct _select_def* conf, struct fileheader *fileinfo,void* extr
     char fname[STRLEN];
     char board[STRLEN];
     char ans[STRLEN];
-    int ent=conf->pos;
     struct read_arg* arg=conf->arg;
 
     if (fileinfo==NULL)
@@ -1373,10 +1374,9 @@ int mail_forward(struct _select_def* conf, struct fileheader *fileinfo,void* ext
 int mail_del_range(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     int ret;
-    int ent=conf->pos;
     struct read_arg* arg=conf->arg;
 
-    ret = del_range(conf, fileinfo, NULL,DIR_MODE_MAIL);
+    ret = del_range(conf, fileinfo, NULL);
     if (!strstr(arg->direct, ".DELETED"))
         get_mailusedspace(currentuser, 1);
     return ret;
@@ -1400,7 +1400,7 @@ int mail_mark(struct _select_def* conf, struct fileheader *fileinfo,void* extraa
 int mail_move(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg)
 {
     struct _select_item *sel;
-    int i, j;
+    int i;
     char buf[PATHLEN];
     char *t;
     char menu_char[3][10] = { "I) ÊÕ¼þÏä", "J) À¬»øÏä", "Q) ÍË³ö" };
@@ -2296,11 +2296,13 @@ static int m_clean()
     }
 	*/
     uinfo.mode = savemode;
+    return 0;
 }
 
 int m_sendnull()
 {
     m_send(NULL);
+    return 0;
 }
 
 const static struct command_def mail_cmds[] = {
@@ -2563,7 +2565,7 @@ static int maillist_key(struct _select_def *conf, int command)
     if (toupper(command) == 'D') {
         int p = 1, i, j;
         char ans[2];
-        int num, y;
+        int y;
 
         if (!HAS_PERM(currentuser, PERM_LOGINOK))
             return SHOW_CONTINUE;
@@ -2594,10 +2596,8 @@ static int maillist_key(struct _select_def *conf, int command)
         return SHOW_REFRESH;
     }
     if (command == 'T') {
-        int p = 1, i, j;
+        int i;
         char bname[STRLEN];
-        int num;
-        char ans[2];
 
         if (!HAS_PERM(currentuser, PERM_LOGINOK))
             return SHOW_CONTINUE;
@@ -2718,6 +2718,7 @@ int MailProc()
     list_select_loop(&maillist_conf);
     free(pts);
     modify_user_mode(oldmode);
+    return 0;
 }
 
 typedef struct {

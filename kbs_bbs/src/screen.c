@@ -68,7 +68,7 @@ void resetcolor()
 void clrnlines(int n)
 {
 	struct screenline *slp;
-	int i, k;
+	int i;
 	for (i = cur_ln; i < cur_ln + n; i++) {
 		slp = &big_picture[(i + roll) % scr_lns];
 		memset(slp->data, 32, LINELEN);
@@ -105,7 +105,7 @@ void init_screen(int slns, int scols)
 {
     struct screenline *slp, *oslp;
     struct screenline *oldp = big_picture;
-    int j, oldln = scr_lns;
+    int oldln = scr_lns;
 
     scr_lns = slns;
     scr_cols = Min(scols, LINELEN);
@@ -134,7 +134,7 @@ void init_screen(int slns, int scols)
 
 void clear()
 {
-    int i, j;
+    int i;
     struct screenline *slp;
 
     if (!scrint) {
@@ -323,14 +323,18 @@ void refresh()
             if(chc==1) chc=2;
             else if(bp[j].data[k]&0x80) chc=1;
             else chc=0;
-            if(flagc||(chc==1)&&(k<scr_cols-1)&&(!ndiff(j,k+1))||!ndiff(j,k)&&(isprint2(bp[j].data[k]))||(k>=p&&(count>=3||count>0&&i==scr_lns-1))) {
+            if(flagc
+               ||((chc==1)&&(k<scr_cols-1)&&(!ndiff(j,k+1)))
+               ||(!ndiff(j,k)&&(isprint2(bp[j].data[k])))
+               ||(k>=p&&(count>=3||(count>0&&i==scr_lns-1)))) {
                 stackt=0;
                 rel_move(tc_col, tc_line, k, i);
                 s = bp[j].mode[k];
-                if((!(s&SCREEN_BRIGHT)&&tc_mode&SCREEN_BRIGHT&&bp[j].data[k]!=' '||
-                    !(s&SCREEN_LINE)&&tc_mode&SCREEN_LINE||
-                    !(s&SCREEN_BLINK)&&tc_mode&SCREEN_BLINK&&bp[j].data[k]!=' '||
-                    !(s&SCREEN_BACK)&&tc_mode&SCREEN_BACK)||((tc_color>>4)!=0&&(bp[j].color[k]>>4)==0)) {
+                if(((!(s&SCREEN_BRIGHT)&&tc_mode&SCREEN_BRIGHT&&bp[j].data[k]!=' ')
+                    ||(!(s&SCREEN_LINE)&&tc_mode&SCREEN_LINE)
+                    ||(!(s&SCREEN_BLINK)&&tc_mode&SCREEN_BLINK&&bp[j].data[k]!=' ')
+                    ||(!(s&SCREEN_BACK)&&tc_mode&SCREEN_BACK))
+                    ||(((tc_color>>4)!=0&&(bp[j].color[k]>>4)==0))) {
                     char buf[10];
                     tc_mode = 0;
                     tc_color = 7;
@@ -406,7 +410,7 @@ void refresh()
 
 void redoscr()
 {
-    int i, j, k;
+    int i, j;
     struct screenline *bp = big_picture;
 
     if (!scrint) {
@@ -447,7 +451,6 @@ void getyx(int *y, int *x)
 void clear_whole_line(int i)
 {
     struct screenline *slp = &big_picture[(i+roll)%scr_lns];
-    int k;
     memset(slp->data, 32, scr_cols);
     memset(slp->mode, cur_mode, scr_cols);
     memset(slp->color, cur_color, scr_cols);
@@ -458,7 +461,6 @@ void clrtoeol()
 {
     struct screenline *slp;
     int ln;
-    int k;
 
     if (!scrint) {
         o_cleol();
@@ -492,7 +494,6 @@ void clrtobot()
 void outc(unsigned char c)
 {
     struct screenline *slp;
-    unsigned int i,j,reg_col;
 
     if (!scrint) {
         if (c == '\n')
@@ -908,7 +909,7 @@ void outline(char *s)
 
 void scroll()
 {
-    int ln,k;
+    int ln;
     struct screenline *slp;
     scrollcnt++;
     roll++;
@@ -925,7 +926,7 @@ void scroll()
 
 void rscroll()
 {
-    int ln,k;
+    int ln;
     struct screenline *slp;
     scrollcnt--;
     if (roll > 0) roll--;
@@ -1003,7 +1004,6 @@ void saveline(int line, int mode, char* buffer)	/* 0 : save, 1 : restore */
 {
     struct screenline *bp = big_picture;
     char *tmp = tmpbuffer;
-    int i;
 
     if (buffer)
         tmp = buffer;

@@ -283,7 +283,6 @@ static int fillucache(struct userec *uentp, int *number, int *prev)
 
 #ifdef HAVE_CUSTOM_USER_TITLE
 static void flush_user_title();
-void load_user_title();
 #endif
 
 int flush_ucache()

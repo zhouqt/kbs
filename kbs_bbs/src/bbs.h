@@ -69,8 +69,22 @@
 #include "flock.h"
 #endif
 
+#ifndef __GNUC__
+#define __const__ const
+#endif
+
 #ifndef HAVE_STRCASESTR
 #define strcasestr(x,y) bm_strcasestr(x,y)
+#else
+extern char *strcasestr (__const char *__haystack, __const char *__needle);
+#endif
+
+#ifndef HAVE_ISBLANK
+#define isblank(c) ((c==' ')||(c=='\t'))
+#else
+#ifndef isblank //isblank isn't a MACRO
+extern int isblank(int c);
+#endif
 #endif
 
 #ifndef HAVE_SIG_T
@@ -86,10 +100,6 @@ typedef unsigned char byte;
 #ifndef HAVE_BOOL
 typedef enum { false = 0, true = 1 } bool;
 #else
-
-#ifndef __GNUC__
-#define __const__ const
-#endif
 
 #ifndef true
 #define true 1

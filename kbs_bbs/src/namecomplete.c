@@ -224,7 +224,7 @@ char *prompt, *data;
                     }
                 }
                 if (NumInList(cwlist)) {
-                    int i, j;
+                    int j;
                     struct word *list;
                     j = temp-data;
                     while(1) {

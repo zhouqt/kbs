@@ -217,7 +217,7 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
                 post_file(currentuser, "", fname, "syssecurity", str, 0, 2);
             } else {            /* Modified for change id by Bigman 2001.5.25 */
 
-                fprintf(se, "系统安全记录系统\0x1b[32m原因：%s\x1b[m\n", str);
+                fprintf(se, "系统安全记录系统\x1b[32m原因：%s\x1b[m\n", str);
                 fprintf(se, "以下是个人资料");
                 getuinfo(se, lookupuser);
                 fclose(se);
@@ -673,15 +673,10 @@ int m_editbrd()
             getdata(line++, 0, "确定要更改吗? (Y/N) [N]: ", genbuf, 4, DOECHO, NULL, true);
         }
         if (*genbuf == 'Y' || *genbuf == 'y') {
-            char lookgrp[30];
-            int ret;
+            char secu[STRLEN];
 
-            {
-                char secu[STRLEN];
-
-                sprintf(secu, "修改讨论区：%s(%s)", fh.filename, newfh.filename);
-                securityreport(secu, NULL, NULL);
-            }
+            sprintf(secu, "修改讨论区：%s(%s)", fh.filename, newfh.filename);
+            securityreport(secu, NULL, NULL);
             if (strcmp(fh.filename, newfh.filename)) {
                 char old[256], tar[256];
 
@@ -1128,6 +1123,39 @@ int num;
     return (0);
 }
 
+int restore_reg(long pid)
+/* added by Bigman, 2002.5.31 */
+/* 恢复断线的注册文件 */
+{
+    FILE *fn, *freg;
+    char *regfile, buf[STRLEN];
+    int fd1, fd2;
+
+    regfile = "new_register";
+
+    sprintf(buf, "register.%ld", pid);
+
+    if ((fn = fopen(buf, "r")) != NULL) {
+        fd1 = fileno(fn);
+        flock(fd1, LOCK_EX);
+
+        if ((freg = fopen(regfile, "a")) != NULL) {
+            fd2 = fileno(freg);
+            flock(fd2, LOCK_EX);
+            while (fgets(genbuf, STRLEN, fn) != NULL)
+                fputs(genbuf, freg);
+            flock(fd2, LOCK_UN);
+            fclose(freg);
+
+        }
+        flock(fd1, LOCK_UN);
+        fclose(fn);
+
+        f_rm(buf);
+    }
+
+    return (0);
+}
 int check_reg(mod)
 int mod;
 
@@ -1202,41 +1230,6 @@ int mod;
     return (0);
 }
 
-int restore_reg(pid)
-long pid;
-
-/* added by Bigman, 2002.5.31 */
-/* 恢复断线的注册文件 */
-{
-    FILE *fn, *freg;
-    char *regfile, buf[STRLEN];
-    int fd1, fd2;
-
-    regfile = "new_register";
-
-    sprintf(buf, "register.%ld", pid);
-
-    if ((fn = fopen(buf, "r")) != NULL) {
-        fd1 = fileno(fn);
-        flock(fd1, LOCK_EX);
-
-        if ((freg = fopen(regfile, "a")) != NULL) {
-            fd2 = fileno(freg);
-            flock(fd2, LOCK_EX);
-            while (fgets(genbuf, STRLEN, fn) != NULL)
-                fputs(genbuf, freg);
-            flock(fd2, LOCK_UN);
-            fclose(freg);
-
-        }
-        flock(fd1, LOCK_UN);
-        fclose(fn);
-
-        f_rm(buf);
-    }
-
-    return (0);
-}
 static const char *field[] = { "usernum", "userid", "realname", "career",
     "addr", "phone", "birth", NULL
 };
@@ -1356,7 +1349,8 @@ char *logfile, *regfile;
 
             uinfo = *lookupuser;
             move(1, 0);
-            prints("帐号位置     : %d   共有 %d 张注册单，当前为第 %d 张，还剩 %d 张\n", unum, total_num, count++, sum - count + 1);    /*Haohmaru.2000.3.9.计算还有多少单子没处理 */
+            prints("帐号位置     : %d   共有 %d 张注册单，当前为第 %d 张，还剩 %d 张\n", unum, total_num, count, sum - count + 1);    /*Haohmaru.2000.3.9.计算还有多少单子没处理 */
+            count++;
             disply_userinfo(&uinfo, 1);
 			
 			read_userdata(lookupuser->userid, &ud);
@@ -1821,7 +1815,6 @@ int set_BM()
     struct boardheader fh, newfh;
     struct userec *lookupuser, uinfo;
     struct boardheader *bptr;
-    char lookgrp[30];
 
     if (!HAS_PERM(currentuser, PERM_ADMIN) || !HAS_PERM(currentuser, PERM_SYSOP)) {
         move(3, 0);

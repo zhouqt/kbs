@@ -373,7 +373,7 @@ int exec_mbem(char *s)
         if(hdll)      
         {         
 	    char* error;
-            if(func=dlsym(hdll,c ? c : "mod_main"))             
+            if((func=dlsym(hdll,c ? c : "mod_main"))!=NULL)
             func();         
 	    else
             if ((error = dlerror()) != NULL)  {
@@ -392,6 +392,7 @@ int exec_mbem(char *s)
         }   
     }
     modify_user_mode(oldmode);
+    return 0;
 }
 
 static int domenu_screen(struct smenuitem *dopm, char *cmdprompt)

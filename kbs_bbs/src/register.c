@@ -47,8 +47,7 @@ void new_register()
 {
     struct userec newuser;
     int allocid, do_try, flag;
-    FILE* fn;
-    char buf[STRLEN], fname[PATHLEN], title[STRLEN];
+    char buf[STRLEN];
 
 /* temp !!!!!*/
 /*    prints("Sorry, we don't accept newusers due to system problem, we'll fixit ASAP\n");
@@ -814,4 +813,5 @@ int ProtectID()
 		prints("密码保护已经设定");
 		pressanykey();
 	}
+    return 0;
 }

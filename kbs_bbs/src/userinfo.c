@@ -31,7 +31,7 @@ void disply_userinfo(u, real)
     int real;
 {
     struct stat st;
-    int num, diff, exp;
+    int num, diff;
 	struct userdata ud;
 
 	read_userdata(u->userid, &ud);
@@ -76,10 +76,13 @@ void disply_userinfo(u, real)
            }  removed by stephen 2000-11-02 */
         /*    } */
 #ifdef NINE_BUILD
+        {
+           int exp;
            exp=countexp(u);
            prints("经验值       : %d(%s)\n",exp,cexp(exp));
            exp=countperf(u);
            prints("表现值       : %d(%s)\n",exp,cperf(exp));
+        }
 #endif
         prints("上站总时数   : %d 小时 %d 分钟\n", u->stay / 3600, (u->stay / 60) % 60);
     setmailfile(genbuf, u->userid, DOT_DIR);
@@ -114,7 +117,7 @@ int uinfo_query(struct userec *u, int real, int unum)
 {
     struct userec newinfo;
     char ans[3], buf[STRLEN], *emailfile, genbuf[STRLEN];
-    int i, fail = 0, netty_check = 0, tmpchange = 0, j;
+    int i, fail = 0, netty_check = 0, tmpchange = 0;
     FILE * fin, *fout, *dp;
     time_t code;
 	struct userdata ud;

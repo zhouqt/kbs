@@ -1264,7 +1264,6 @@ int m_vote()
 
 int x_vote()
 {
-    char buf[STRLEN];
     struct boardheader* bh;
     int bid;
 

@@ -325,7 +325,7 @@ int t_query(char* q_id)
     }
     show_user_plan(planid);
     if (oldmode != LUSERS && oldmode != LAUSERS && oldmode != FRIEND && oldmode != GMENU) {
-        int ch, tuid, ucount, unum;
+        int ch;
         char buf[STRLEN];
         struct user_info *uin;
         move(t_lines - 1, 0);
@@ -1671,7 +1671,7 @@ int deleteoverride(char *uident)
     return (deleted > 0) ? 1 : -1;
 }
 
-int friend_title(struct _select_def* conf)
+void friend_title(struct _select_def* conf)
 {
     int chkmailflag = 0;
 

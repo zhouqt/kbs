@@ -88,6 +88,9 @@ void set_numofsig();
 void docmdtitle(char *title, char *prompt);
 
 /* bbs.c*/
+int del_range(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
+int add_attach(char* file1, char* file2, char* filename);
+int zsend_attach(int ent, struct fileheader *fileinfo, char *direct);
 int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
 extern int helpmode;
 int zsend_post(int ent, struct fileheader *fileinfo, char *direct);
@@ -227,6 +230,7 @@ void term_init();
 void do_move(int destcol, int destline, void (*outc) (char));
 
 /* xyz.c */
+int find_ip( const char *ip, int flag, char *result);
 int do_exec(char *com, char *wd);
 int showperminfo(struct _select_def *conf, int i);
 unsigned int setperms(unsigned int pbits, unsigned int basic, char *prompt, int numbers, int (*show) (struct _select_def *, int), int (*select) (struct _select_def *));

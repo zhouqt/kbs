@@ -12,7 +12,6 @@
 
 extern int temp_numposts;       /*Haohmaru.99.4.02.让爱灌水的人哭去吧//grin */
 extern int local_article;
-static const int scrollen = 2;
 char save_title[STRLEN];
 int in_mail;
 
@@ -26,9 +25,7 @@ static char searchtext[80];
 static int editansi = 0;
 static int marknum;
 static int moveln = 0;
-static int shifttmp = 0;
 static int ismsgline;
-static int tmpline;
 static struct textline *top_of_win = NULL;
 static int top_of_line = 0;
 static int curr_window_line, currln;
@@ -71,7 +68,7 @@ void display_buffer()
                         myy = y; myx = j;
                     }
                     if (auto_newline)
-                    if (j >= scr_cols || j >= scr_cols-1 && ch) {
+                    if (j >= scr_cols || (j >= scr_cols-1 && ch)) {
                         outc('\n');
                         y++;
                         j = 0;
@@ -526,8 +523,6 @@ void split(struct textline * line, int pos)
 
 int join(struct textline * line)
 {
-    int ovfl;
-
     if (!line->next)
         return true;
     if (line->maxlen<=line->len+line->next->len+5) {
@@ -550,9 +545,7 @@ int join(struct textline * line)
 void insert_char(int ch)
 {
     int i;
-    char *s;
     struct textline *p = currline;
-    int wordwrap = true;
 
     if (currpnt > p->len) {
         indigestion(1);
@@ -644,8 +637,6 @@ void insertch_from_fp(int ch)
 }
 long insert_from_fp(FILE *fp, long * attach_length)
 {
-    int ch;
-    char attachpad[10];
     int matched;
     char* ptr;
     off_t size;
@@ -1053,7 +1044,6 @@ fsdfa
         fclose(fp);
         if (pattachpos && *pattachpos) {
             char buf[MAXPATH];
-            int fsrc,fdst;
             struct stat st;
             snprintf(buf,MAXPATH,"%s.attach",filename);
             stat(filename,&st);
@@ -1552,7 +1542,7 @@ void vedit_key(int ch)
 #define NO_ANSI_MODIFY  if(no_touch) { warn++; break; }
 
     static int lastindent = -1;
-    int no_touch, warn, shift;
+    int no_touch, warn;
 
     if (ch == Ctrl('P') || ch == KEY_UP || ch == Ctrl('N') || ch == KEY_DOWN) {
         if (lastindent == -1)
@@ -1938,7 +1928,7 @@ void vedit_key(int ch)
         } else
             top_of_win = top_of_win->prev;
     }
-    if (curr_window_line >= t_lines - 1 || outii!=-1&&curr_window_line>=outii) {
+    if (curr_window_line >= t_lines - 1 || (outii!=-1&&curr_window_line>=outii)) {
         if (outii!=-1&&curr_window_line>=outii) i = curr_window_line - outii;
         else i = curr_window_line - t_lines + 1;
         for (; i >= 0; i--) {
@@ -1955,7 +1945,7 @@ extern int icurrchar, ibufsize;
 
 static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,long* pattachpos)
 {
-    int newch, ch = 0, foo, shift;
+    int newch, ch = 0, foo;
     struct textline *st_tmp, *st_tmp2;
     long attach_length;
     long ret;
