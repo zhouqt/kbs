@@ -57,7 +57,7 @@ if (!defined('SERVERTIMEZONE')) { //服务器时区 - 暂时这样搞吧 - atppp
 }
 
 if (!defined('USEBROWSCAP')) { //是否使用 browscap 函数来更准确地判断浏览器和操作系统类型，需要配置 PHP - atppp
-	define('USEBROWSCAP',0); //默认 OFF. 设置成 ON 虽然会准确判断出非 IE 浏览器，但是会大大降低出首页的速度，慎用！
+	define('USEBROWSCAP',0); //默认 OFF. 设置成 ON 虽然会准确判断出非 IE 浏览器，但是会大大降低出首页的速度，慎用！//ToDo: 这个没有放入 site_defines.php
 }
 
 if (!defined('SHOWTELNETPARAM')) { //是否允许配置 telnet 下专用的个人参数 - atppp

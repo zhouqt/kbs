@@ -1,24 +1,53 @@
 <?php
 
-define("ANNOUNCENUMBER",5);
+//$AnnounceBoard="Announce"; //公告版面
+
+/* 版面列表方式
+ * default 缺省
+ * simplest 不显示列表
+ */
+//define('BOARDLISTSTYLE','default'); //ToDo: 这还没有放入 site_defines.php
+
+define("ANNOUNCENUMBER",5);  //首页滚动显示的公告数量
 
 define("ARTICLESPERPAGE",30); //目录列表下每页显示的主题数
 
 define("THREADSPERPAGE",10); //文章阅读时每页显示的文章数
 
-$SiteURL="http://172.16.50.79";
+define ('MAINTITLE','<IMG SRC="bar/title.jpg">'); //页面正上方显示的站点标题
 
-$SiteName="大运村BBS";
-
-$DEFAULTStyle="defaultstyle";
-
-$Banner="pic/ws.jpg";
-
-define ("MAINTITLE","<IMG SRC=\"bar/title.jpg\">");
+/* 附件：每个最大尺寸，总最大尺寸，总最大数量 */
 define("ATTACHMAXSIZE","5242880");
 define ("ATTACHMAXTOTALSIZE","20971520");
 define("ATTACHMAXCOUNT","20");
 
+define('SERVERTIMEZONE','北京时间'); //服务器时区
+
+define('SHOWTELNETPARAM', 0); //是否允许配置 telnet 下专用的个人参数
+
+//define('MYFACEDIR','uploadFace/'); //自定义头像上传保存位置
+
+//define('MYFACEMAXSIZE','524288'); //自定义头像最大文件大小, 单位byte
+
+define('SHOWREPLYTREE', 1);  //是否用树图显示回复结构
+
+define('ALLOWMULTIQUERY', 1); //是否允许全站/多版面查询
+
+//define('SMS_SUPPORT', 0); //是否允许手机短信
+
+//define('USER_FACE', 1); //是否允许自定义头像
+
+//define('AUDIO_CHAT', 0); //是否显示语音聊天室的 link
+	
+$SiteURL="http://172.16.50.79"; //站点 URL，也就是本站首页地址
+
+$SiteName="大运村BBS";   //站点名称
+
+$DEFAULTStyle="defaultstyle";  //默认CSS风格，如果要改动千万要确认该CSS存在。ToDo: 这还没有放入 site_defines.php
+
+$Banner="pic/ws.jpg"; //页面左上角显示的图片
+
+/* 分区代号和分区名称 */
 $section_nums = array("0", "1", "2", "3", "4");
 $section_names = array(
     array("BBS 系统", "[系统]"),
@@ -29,9 +58,6 @@ $section_names = array(
 );
 $sectionCount=count($section_names);
 
-define('SHOWTELNETPARAM', 0); //不允许配置 telnet 下专用的个人参数
-define('SHOWREPLYTREE', 1);  //用树图显示回复结构
-define('ALLOWMULTIQUERY', 1); //允许全站/多版面查询
 
 /* 数据库配置 */
 $dbhost='localhost';
