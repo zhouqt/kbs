@@ -111,7 +111,7 @@ function get_mimetype($name)
 				Header("Content-type: " . get_mimetype($attachname));
 				Header("Accept-Ranges: bytes");
 				Header("Accept-Length: " . $attachsize);
-				Header("Content-Disposition: attachment; filename=" . $attachname);
+				Header("Content-Disposition: filename=" . $attachname);
 				echo fread($file,$attachsize);
 				fclose($file);
 				exit;

@@ -704,7 +704,7 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
             (*current_attach_link)(link,255,ptr-begin+ATTACHMENT_SIZE-1,current_attach_link_arg);
         else
             strcpy(link,"(用www方式阅读本文可以下载此附件)");
-	prints("\033[5m%s\033[m\n",link);
+	prints("\033[4m%s\033[m\n",link);
         return;
     } else if (ty >= 2) {
         outns("\033[36m", 5);
