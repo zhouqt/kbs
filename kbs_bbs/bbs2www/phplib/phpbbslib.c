@@ -990,9 +990,13 @@ static int output_buffer_size=0;
 
 static void output_printf(char* buf,size_t len) {
 	int bufLen;
-	int n;
+	int n,newsize;
+	char * newbuf;
 	if (output_buffer==NULL) {
 		output_buffer=(char* )emalloc(10240); //first 10k
+		if (output_buffer==NULL) {
+			return;
+		}
 		output_buffer_size=10240;
 	}
 	bufLen=strlen(buf);
@@ -1001,8 +1005,13 @@ static void output_printf(char* buf,size_t len) {
 	}
 	n=1+output_buffer_len+bufLen-output_buffer_size;
 	if (n>=0) {
-		output_buffer_size+=((n/51200)+1)*51200; //n*50k every time
-		output_buffer=(char*)erealloc(output_buffer,output_buffer_size);
+		newsize+=((n/51200)+1)*51200; //n*50k every time
+		newbuf=(char*)erealloc(output_buffer,output_buffer_size);
+		if (newbuf==NULL){
+			return;
+		}
+		output_buffer=newbuf;
+		output_buffer_size=newsize;
 	}
 	memcpy(output_buffer+output_buffer_len,buf,bufLen);
 	output_buffer_len+=bufLen;
@@ -1168,8 +1177,16 @@ static PHP_FUNCTION(bbs_searchtitle)
     ldata.l_whence = 0;
     ldata.l_len = 0;
     ldata.l_start = 0;
-    fcntl(fd, F_SETLKW, &ldata);
-	fstat(fd, &buf);
+    if (fcntl(fd, F_SETLKW, &ldata)== -1) {
+		close(fd);
+		RETURN_LONG(-200);
+	}
+	if (fstat(fd, &buf) == -1) {
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+		RETURN_LONG(-201);
+	}
     total = buf.st_size / sizeof(struct fileheader);
 
     if ((i = safe_mmapfile_handle(fd, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size)) != 1) {
@@ -1185,15 +1202,23 @@ static PHP_FUNCTION(bbs_searchtitle)
      * fetching articles 
      */
     if (array_init(return_value) == FAILURE) {
-        RETURN_FALSE;
+        RETURN_LONG(-210);
     }
 #ifdef HAVE_BRC_CONTROL
     brc_initial(currentuser->userid, board);
 #endif
 	IDList	= emalloc((1000)*sizeof(long int));
+	if (IDList==NULL) {
+		RETURN_LONG(-211);
+	}
 	IDList2	= emalloc((50000)*sizeof(long int));
+	if (IDList2==NULL) {
+		RETURN_LONG(-212);
+	}
 	index	= emalloc((50000)*sizeof(long int));
-
+	if (index==NULL) {
+		RETURN_LONG(-213);
+	}
 	threadsFounded=0;
 	threads=0;
 
@@ -1276,7 +1301,6 @@ static PHP_FUNCTION(bbs_searchtitle)
     efree(IDList);
     efree(IDList2);
 	efree(index);
-
 }
 
 
@@ -1530,6 +1554,176 @@ static void bbs_make_board_zval(zval * value, char *col_name, struct newpostdata
     }
 }
 
+#ifdef HAVE_WFORUM
+
+unsigned int * zapbuf;
+/**
+ * Fetch all boards which have given prefix into an array.
+ * prototype:
+ * array bbs_getboards(char *prefix, int group, int yank);
+ *
+ * @return array of loaded boards on success,
+ *         FALSE on failure.
+ * @author roy 
+ */
+static PHP_FUNCTION(bbs_getboards)
+{
+    /*
+     * TODO: The name of "yank" must be changed, this name is totally
+     * shit, but I don't know which name is better this time.
+     */
+    char *prefix;
+    int plen;
+    int yank;
+    int rows = 0;
+    struct newpostdata newpost_buffer;
+    struct newpostdata *ptr;
+    zval **columns;
+    zval *element;
+    int i;
+    int j;
+    int ac = ZEND_NUM_ARGS();
+    int brdnum, yank_flag;
+    int group;
+	int total;
+
+    getcwd(old_pwd, 1023);
+    chdir(BBSHOME);
+
+
+
+    /*
+     * getting arguments 
+     */
+    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sll", &prefix, &plen, &group,&yank) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+
+	if (plen=0) {
+		RETURN_FALSE;
+	}
+    if (currentuser == NULL) {
+        RETURN_FALSE;
+    }
+    /*
+     * setup column names 
+     */
+    if (array_init(return_value) == FAILURE) {
+        RETURN_FALSE;
+    }
+    columns = emalloc(BOARD_COLUMNS * sizeof(zval *));
+	if (columns==NULL) {
+		RETURN_FALSE;
+	}
+    for (i = 0; i < BOARD_COLUMNS; i++) {
+        MAKE_STD_ZVAL(element);
+        array_init(element);
+        columns[i] = element;
+        zend_hash_update(Z_ARRVAL_P(return_value), brd_col_names[i], strlen(brd_col_names[i]) + 1, (void *) &element, sizeof(zval *), NULL);
+    }
+
+	total=get_boardcount();
+    
+	yank_flag = yank;
+    if (yank_flag !=1 )
+	yank_flag =0 ;
+
+    if  (zapbuf==NULL)  {
+		char fname[STRLEN];
+		int fd, size;
+
+		size = total* sizeof(int);
+   		zapbuf = (int *) emalloc(size);
+		if (zapbuf==NULL) {
+			RETURN_FALSE;
+		}
+    	for (i = 0; i < total; i++)
+        	zapbuf[i] = 1;
+	   	sethomefile(fname, currentuser->userid, ".lastread");       /*user的.lastread， zap信息 */
+        if ((fd = open(fname, O_RDONLY, 0600)) != -1) {
+	        size = total * sizeof(int);
+	        read(fd, zapbuf, size);
+	   	    close(fd);
+	    } 
+    }
+   		
+    brdnum = 0;
+    {
+	    int n;
+	    struct boardheader const *bptr;
+	    char** namelist;
+        int* indexlist;
+		time_t tnow;
+
+		tnow = time(0);
+        namelist=(char**)emalloc(sizeof(char**)*(total));
+		if (namelist==NULL) {
+			RETURN_FALSE;
+		}
+	    indexlist=(int*)emalloc(sizeof(int*)*(total));
+		if (indexlist==NULL) {
+			RETURN_FALSE;
+		}
+	    for (n = 0; n < total; n++) {
+	        bptr = getboard(n + 1);
+	        if (!bptr)
+	            continue;
+	        if (*(bptr->filename)==0)
+	            continue;
+			if ( group == -2 ){
+				if( ( tnow - bptr->createtime ) > 86400*30 || ( bptr->flag & BOARD_GROUP ) )
+					continue;
+			}else if (bptr->group!=group)
+	            continue;
+	        if (!check_see_perm(currentuser,bptr)) {
+	            continue;
+	        }
+	        if ((group==0)&&( strchr(prefix, bptr->title[0]) == NULL && prefix[0] != '*'))
+	            continue;
+	        if (yank_flag || zapbuf[n] != 0 || (bptr->level & PERM_NOZAP)) {
+	            /*都要排序*/
+	            for (i=0;i<brdnum;i++) {
+				    if ( strcasecmp(namelist[i], bptr->filename)>0) 
+						break;
+				}
+				for (j=brdnum;j>i;j--) {
+						namelist[j]=namelist[j-1];
+					   	indexlist[j]=indexlist[j-1];
+				}
+			   	namelist[i]=bptr->filename;
+			   	indexlist[i]=n;
+			   	brdnum++;
+		   	}
+	   	}
+		for (i=0;i<brdnum;i++) {
+		  	ptr=&newpost_buffer;
+		   	bptr = getboard(indexlist[i]+1);
+		   	ptr->dir = bptr->flag&BOARD_GROUP?1:0;
+		   	ptr->name = bptr->filename;
+		   	ptr->title = bptr->title;
+		   	ptr->BM = bptr->BM;
+		   	ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
+		   	ptr->pos = indexlist[i];
+		   	if (bptr->flag&BOARD_GROUP) {
+			   	ptr->total = bptr->board_data.group_total;
+		   	} else ptr->total=-1;
+		   	ptr->zap = (zapbuf[indexlist[i]] == 0);
+   			check_newpost(ptr);
+	        for (j = 0; j < BOARD_COLUMNS; j++) {
+       		    MAKE_STD_ZVAL(element);
+	            bbs_make_board_zval(element, brd_col_names[j], ptr);
+	            zend_hash_index_update(Z_ARRVAL_P(columns[j]), i, (void *) &element, sizeof(zval *), NULL);
+	        }
+		}
+		efree(namelist);
+	   	efree(indexlist);
+    }
+
+    efree(columns);
+}
+
+#else 
+
 extern int brdnum;
 
 /**
@@ -1561,8 +1755,8 @@ static PHP_FUNCTION(bbs_getboards)
     int brdnum, yank_flag;
     int group;
 
-	    getcwd(old_pwd, 1023);
-		    chdir(BBSHOME);
+    getcwd(old_pwd, 1023);
+    chdir(BBSHOME);
 
     /*
      * getting arguments 
@@ -1586,11 +1780,17 @@ static PHP_FUNCTION(bbs_getboards)
         RETURN_FALSE;
     }
     yank_flag = yank;
+ #ifndef HAVE_WFORUM
     if (strcmp(currentuser->userid, "guest") == 0)
         yank_flag = 1;          /* see all boards including zapped boards. */
     if (yank_flag != 0)
         yank_flag = 1;
+ #else
+    if (yank_flag !=1 )
+	yank_flag =0 ;
+ #endif
     brdnum = 0;
+
     /*
      * TODO: replace load_board() with a new one, without accessing
      * * global variables. 
@@ -1614,6 +1814,9 @@ static PHP_FUNCTION(bbs_getboards)
         RETURN_FALSE;
     }
     columns = emalloc(BOARD_COLUMNS * sizeof(zval *));
+	if (columns==NULL) {
+		RETURN_FALSE;
+	}
     for (i = 0; i < BOARD_COLUMNS; i++) {
         MAKE_STD_ZVAL(element);
         array_init(element);
@@ -1634,7 +1837,7 @@ static PHP_FUNCTION(bbs_getboards)
     }
     efree(columns);
 }
-
+#endif
  
 
 /**
@@ -1710,6 +1913,9 @@ static PHP_FUNCTION(bbs_getarticles)
     brc_initial(currentuser->userid, board);
 #endif
     articles = emalloc(num * sizeof(struct fileheader));
+	if (articles==NULL) {
+		RETURN_FALSE;
+	}
     /* modified by stiger */
 	if(mode == DIR_MODE_NORMAL)
     	rows = read_get_records(dirpath, dirpath1, articles, sizeof(struct fileheader), start, num);
@@ -1812,135 +2018,7 @@ static unsigned int binarySearchInFileHeader(struct fileheader *start,int total,
  * @author roy
  */
 static PHP_FUNCTION(bbs_get_elite_num){
-    char *board;
-    int blen;
-    struct boardheader *bp=NULL;
-	char dirpath[STRLEN];
-    int i;
-    zval *element;
-    int is_bm;
-	unsigned int *IDList=NULL;
-	unsigned int *IDList2=NULL;
-	unsigned int threadsFounded;
-	unsigned int threads;
-	int total;
-	int fd;
-	struct stat buf;
-	struct flock ldata;
-	struct fileheader *ptr1=NULL;
-	char* ptr;
-	unsigned int long found;
-	char flag;
-
-    int ac = ZEND_NUM_ARGS();
-
-
-    /*
-     * getting arguments 
-     */
-    if (ac != 1 || zend_parse_parameters(4 TSRMLS_CC, "s", &board, &blen) == FAILURE) {
-        WRONG_PARAM_COUNT;
-    }
-
-    /*
-     * checking arguments 
-     */
-    if (currentuser == NULL) {
-        RETURN_FALSE;
-    }
-    if ((bp = getbcache(board)) == NULL) {
-        RETURN_FALSE;
-    }
-
-#ifdef HAVE_BRC_CONTROL
-    brc_initial(currentuser->userid, board);
-#endif
-
-	IDList	= emalloc((8000)*sizeof(long int));
-	IDList2	= emalloc((10000)*sizeof(long int));
-
-	threadsFounded=0;
-	threads=0;
-
-
-	// get normal articles
-
-    setbdir(DIR_MODE_NORMAL, dirpath, board);
-
-    if ((fd = open(dirpath, O_RDONLY, 0)) == -1) {
-		efree(IDList);
-        RETURN_LONG(-1);   
-	}
-    ldata.l_type = F_RDLCK;
-    ldata.l_whence = 0;
-    ldata.l_len = 0;
-    ldata.l_start = 0;
-    fcntl(fd, F_SETLKW, &ldata);
-	fstat(fd, &buf);
-    total = buf.st_size / sizeof(struct fileheader);
-
-    if ((i = safe_mmapfile_handle(fd, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size)) != 1) {
-        if (i == 2)
-            end_mmapfile((void *) ptr, buf.st_size, -1);
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-		efree(IDList);
-		efree(IDList2);
-        RETURN_LONG(-2);
-    }
-    ptr1 = (struct fileheader *) ptr;
-    /*
-     * fetching articles 
-     */
-
-
-	for (i=total-1;i>=0;i--) {
-		if (foundInArray(ptr1[i].groupid,IDList2,threads)==-1)	{
-			unsigned int low, high ,mid, found;
-			int comp;
-			low = 0;
-			high = total - 1;
-			found=-1;
-			while (low <= high) {
-				mid = (high + low) / 2;
-				comp = (ptr1[i].groupid) - (ptr1[mid].id);
-				if (comp == 0) {
-					found=mid;
-					break;
-				} else if (comp < 0)
-					high = mid - 1;
-				else
-					low = mid + 1;
-			}
-			if (found!=-1) {
-				IDList2[threads]=ptr1[i].groupid;
-				threads++;
-			} 
-		} else {
-			break;
-		}
-		if (threads>=10000)
-			break;
-		flag = get_article_flag(ptr1+found, currentuser, board, is_bm);
-		if ( ('M'!=toupper(flag)) || ('B'!=toupper(flag)) )
-			break;
-		if (foundInArray(ptr1[i].groupid,IDList,threadsFounded)!=-1)
-			break;
-		IDList[threadsFounded]=ptr1[i].groupid;
-		threadsFounded++;
-
-		if (threadsFounded>=8000){
-			break;
-		}
-	}
-    end_mmapfile((void *) ptr, buf.st_size, -1);
-    ldata.l_type = F_UNLCK;
-    fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
-    close(fd);
-	efree(IDList2);
-    efree(IDList);
-	RETURN_LONG(threadsFounded);
+	RETURN_FALSE;
 }
 /**
  * 获取从start开始的num个精华主题
@@ -1995,6 +2073,7 @@ static PHP_FUNCTION(bbs_getthreads)
     int ac = ZEND_NUM_ARGS();
 
 
+
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
     /*
@@ -2020,6 +2099,7 @@ static PHP_FUNCTION(bbs_getthreads)
         RETURN_FALSE;
     }
     is_bm = is_BM(bp, currentuser);
+
 
     if (array_init(return_value) == FAILURE) {
         RETURN_FALSE;
@@ -2047,6 +2127,10 @@ static PHP_FUNCTION(bbs_getthreads)
 		DingNum=total;
 
 		articles = emalloc(DingNum * sizeof(struct fileheader));
+
+		if (articles==NULL) {
+			RETURN_FALSE;
+		}
 
 		DingNum = get_records(dirpath, articles, sizeof(struct fileheader), 1, total);
 
@@ -2096,8 +2180,18 @@ static PHP_FUNCTION(bbs_getthreads)
     ldata.l_whence = 0;
     ldata.l_len = 0;
     ldata.l_start = 0;
-    fcntl(fd, F_SETLKW, &ldata);
-	fstat(fd, &buf);
+    if (fcntl(fd, F_SETLKW, &ldata)==-1) {
+		efree(IDList);
+		close(fd);
+		RETURN_LONG(-200);
+	}
+	if (fstat(fd, &buf)==-1) {
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+        efree(IDList);
+		RETURN_LONG(-201);
+	}
     total = buf.st_size / sizeof(struct fileheader);
 
     if ((i = safe_mmapfile_handle(fd, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size)) != 1) {
@@ -2209,8 +2303,16 @@ static PHP_FUNCTION(bbs_get_article)
     ldata.l_whence = 0;
     ldata.l_len = 0;
     ldata.l_start = 0;
-    fcntl(fd, F_SETLKW, &ldata);
-	fstat(fd, &buf);
+    if (fcntl(fd, F_SETLKW, &ldata)==-1) {
+		close(fd);
+		RETURN_LONG(-200);
+	}
+	if (fstat(fd, &buf)==-1) {
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+		RETURN_LONG(-201);
+	}
     total = buf.st_size / sizeof(struct fileheader);
 
     if ((i = safe_mmapfile_handle(fd, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size)) != 1) {
@@ -2331,8 +2433,16 @@ static PHP_FUNCTION(bbs_get_thread_articles)
     ldata.l_whence = 0;
     ldata.l_len = 0;
     ldata.l_start = 0;
-    fcntl(fd, F_SETLKW, &ldata);
-	fstat(fd, &buf);
+    if (fcntl(fd, F_SETLKW, &ldata)==-1) {
+		close(fd);
+		RETURN_LONG(-200);
+	}
+	if (fstat(fd, &buf)==-1) {
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+		RETURN_LONG(-200);
+	}
     total = buf.st_size / sizeof(struct fileheader);
 
     if ((i = safe_mmapfile_handle(fd, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size)) != 1) {
@@ -2415,9 +2525,6 @@ static PHP_FUNCTION(bbs_get_today_article_num){
 	time_t now;
 	struct tm nowtm;
 
-	    getcwd(old_pwd, 1023);
-		    chdir(BBSHOME);
-
     /*
      * getting arguments 
      */
@@ -2443,8 +2550,16 @@ static PHP_FUNCTION(bbs_get_today_article_num){
     ldata.l_whence = 0;
     ldata.l_len = 0;
     ldata.l_start = 0;
-    fcntl(fd, F_SETLKW, &ldata);
-	fstat(fd, &buf);
+    if (fcntl(fd, F_SETLKW, &ldata)==-1) {
+		close(fd);
+		RETURN_LONG(-200);
+	}
+	if (fstat(fd, &buf) == -1 ){
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+		RETURN_LONG(-201);
+	}
     total = buf.st_size / sizeof(struct fileheader);
 
     if ((i = safe_mmapfile_handle(fd, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size)) != 1) {
@@ -2456,12 +2571,6 @@ static PHP_FUNCTION(bbs_get_today_article_num){
         RETURN_LONG(-5);
     }
     ptr1 = (struct fileheader *) ptr;
-    /*
-     * fetching articles 
-     */
-    if (array_init(return_value) == FAILURE) {
-        RETURN_LONG(-6);
-    }
 #ifdef HAVE_BRC_CONTROL
     brc_initial(currentuser->userid, board);
 #endif
@@ -2521,8 +2630,6 @@ static PHP_FUNCTION(bbs_get_thread_article_num)
 	char* ptr;
 	unsigned int found;
 
-    getcwd(old_pwd, 1023);
-	    chdir(BBSHOME);
     /*
      * getting arguments 
      */
@@ -2551,8 +2658,16 @@ static PHP_FUNCTION(bbs_get_thread_article_num)
     ldata.l_whence = 0;
     ldata.l_len = 0;
     ldata.l_start = 0;
-    fcntl(fd, F_SETLKW, &ldata);
-	fstat(fd, &buf);
+    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+		close(fd);
+		RETURN_LONG(-200);
+	}
+	if (fstat(fd, &buf)==-1) {
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+		RETURN_LONG(-201);
+	}
     total = buf.st_size / sizeof(struct fileheader);
 
     if ((i = safe_mmapfile_handle(fd, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size)) != 1) {
@@ -3134,6 +3249,10 @@ static PHP_FUNCTION(bbs_postarticle)
     if(reid > 0){
         int pos;int fd;
         oldx = (struct fileheader*)emalloc(sizeof(struct fileheader));
+
+		if (oldx==NULL) {
+			RETURN_FALSE;
+		}	
 
 		setbfile(path,board,DOT_DIR);
 		fd =open(path,O_RDWR);
@@ -4008,6 +4127,9 @@ PHP_RINIT_FUNCTION(smth_bbs)
     currentuser = NULL;
 #ifdef DEBUG
     zend_error(E_WARNING, "request init:%d %x", getpid(), getcurrentuinfo);
+#endif
+#ifdef HAVE_WFORUM
+	zapbuf=NULL;
 #endif
     return SUCCESS;
 }
@@ -5119,8 +5241,11 @@ static PHP_FUNCTION(bbs_add_import_path)
 
 	load_import_path(im_path,im_title,&im_time,&im_select);
 
-	free(im_path[num]);
-	im_path[num] = malloc(strlen(buf)+1);
+	efree(im_path[num]);
+	if ( (im_path[num] = emalloc(strlen(buf)+1)) ==NULL) {
+		RETURN_LONG(0);
+	}
+	
 	strcpy(im_path[num],buf);
 
 	if(title == NULL || title[0]==0 ){
@@ -5137,8 +5262,10 @@ static PHP_FUNCTION(bbs_add_import_path)
 		buf[MAXPATH - 1]=0;
 	}
 
-	free(im_title[num]);
-	im_title[num] = malloc(strlen(buf)+1);
+	efree(im_title[num]);
+	if ( (im_title[num] = emalloc(strlen(buf)+1)) ==NULL) {
+		RETURN_LONG(0);
+	}
 	strcpy(im_title[num],buf);
 
 	save_import_path(im_path,im_title,&im_time);
@@ -6146,6 +6273,10 @@ static PHP_FUNCTION(bbs_fav_boards)
         RETURN_FALSE;
     }
     columns = emalloc(BOARD_COLUMNS * sizeof(zval *));
+
+	if (columns==NULL){
+		RETURN_FALSE;
+	}
     for (i = 0; i < BOARD_COLUMNS; i++) {
         MAKE_STD_ZVAL(element);
         array_init(element);
