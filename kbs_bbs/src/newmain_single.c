@@ -788,11 +788,12 @@ user_login()
     }
     clear();
     if(DEFINE(currentuser,DEF_SHOWHOT))
-    { /* Leeward 98.09.24 Use SHARE MEM and disable old code */
+    { /* Leeward 98.09.24 Use SHARE MEM and disable old code 
       if (DEFINE(currentuser,DEF_SHOWSTATISTIC)) {
-    	ansimore("etc/posts/day", YEA);
+    	ansimore("etc/posts/day", NA);
       }
-      else ansimore("etc/posts/day",NA);  /* Leeward: disable old code */
+      */
+      ansimore("etc/posts/day",NA);  /* Leeward: disable old code */
     }
     move( t_lines - 2/*1*/, 0 ); /* Leeward: 98.09.24 Alter below message */
     clrtoeol();
