@@ -187,6 +187,7 @@ fill_userlist()
     }else {
     	for (i=0;i<nf;i++) {
 /*        sort_user_record(0,i2-1);*/
+		if (topfriend[i].uid)
 			apply_utmpuid((APPLY_UTMP_FUNC)full_utmp,topfriend[i].uid,(char*)&i2);
     	}
     }

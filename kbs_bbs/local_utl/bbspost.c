@@ -36,7 +36,6 @@ char EMode = ' '; /* Leeward: 97.12.23: for 3W modify article */
 int 		sign;/*Haohmaru.第sign个签名档*/
 
 struct userec alluser;
-struct userec* currentuser=&alluser;
 
 int
 CheckBM(BMstr,record)   /* 根据输入的版主名单 判断当前user是否是版主 added by dong, 1998.9.28*/
@@ -880,6 +879,7 @@ char    *argv[];
     char        *progmode;
     int         max, min;
 
+    currentuser = & alluser;
     if( argc < 3 )  usage();
     progmode = argv[1];
     homepath = argv[2];
