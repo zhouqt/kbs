@@ -22,9 +22,11 @@ if (document.images) {
 	if( isIE4 )	{
 		isIE6CSS = (document.compatMode && document.compatMode.indexOf("CSS1") >= 0) ? 
 			true : false;
-	} else {
-		isW3C = (isCSS && document.getElementById) ? true : false;
 	}
+	
+	/* this is modified by atppp: use W3C standard instead of IE function if possible */
+	isW3C = (isCSS && document.getElementById) ? true : false;
+	if (isW3C) isIE4 = false;
 }
 // Convert other frame object name string or object reference
 // into a valid element object reference 
