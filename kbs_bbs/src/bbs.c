@@ -4671,7 +4671,7 @@ static int choose_tmpl_refresh(struct _select_def *conf)
 {
     clear();
     docmdtitle("[°æÃæÄ£°åÑ¡Ôñ]",
-               "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ý\x1b[0;37m] Ê¹ÓÃ[\x1b[1;32mSPACE\x1b[0;37m]");
+               "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ý\x1b[0;37m] Ê¹ÓÃ[\x1b[1;32mSPACE\x1b[0;37m] ²é¿´¸ñÊ½[[1;32ms[0;37m] ²é¿´ÎÊÌâ[[1;32mw[0;37m]");
     move(2, 0);
     prints("[0;1;37;44m %4s %-40s %-20s %8s", "ÐòºÅ", "Ãû³Æ","ÎÄÕÂ±êÌâÇ°×º","ÊÇ·ñ¿ÉÓÃ");
     clrtoeol();
@@ -4784,7 +4784,6 @@ static int choose_tmpl_select(struct _select_def *conf)
 static int choose_tmpl_key(struct _select_def *conf, int key)
 {
 	switch (key) {
-			/*
 	case 's' :
 	{
 		char filepath[STRLEN];
@@ -4792,13 +4791,34 @@ static int choose_tmpl_key(struct _select_def *conf, int key)
 		if( conf->pos > template_num )
 			return SHOW_CONTINUE;
 
-		clear();
-		ansimore(filepath, 1);
+		if( ptemplate[conf->pos-1].tmpl->filename[0] ){
+			clear();
+			setbfile(filepath,currboard->filename, ptemplate[conf->pos-1].tmpl->filename);
 
-		return SHOW_REFRESH;
+			ansimore(filepath, 1);
+			return SHOW_REFRESH;
+		}
+
+		return SHOW_CONTINUE;
 	}
 		break;
-		*/
+	case 'w':
+		{
+			clear();
+			if( ptemplate[conf->pos-1].tmpl->content_num <= 0 ){
+				move(5,0);
+				prints("°ßÖñ»¹Ã»ÓÐÉèÖÃÎÊÌâ£¬±¾Ä£°åÔÝ²»¿ÉÓÃ\n");
+			}else{
+				int i;
+				for(i=0;i<ptemplate[conf->pos-1].tmpl->content_num;i++){
+					move(i+2,0);
+					prints("[1;32mÎÊÌâ %d[m:%s  [1;32m×î³¤»Ø´ð[m%d[1;32m×Ö½Ú[m", i+1, ptemplate[conf->pos-1].cont[i].text, ptemplate[conf->pos-1].cont[i].length);
+				}
+			}
+			pressanykey();
+
+			return SHOW_REFRESH;
+		}
 	default:
 		break;
 	}
