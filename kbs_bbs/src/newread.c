@@ -319,8 +319,6 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (), READ
         read_conf.arg = &arg;
         read_conf.title_pos.x = 0;
         read_conf.title_pos.y = 0;
-        read_conf.pos = 1; //TODO: get last position
-        read_conf.page_pos = ((1-1)/BBS_PAGESIZE)*BBS_PAGESIZE+1; //TODO
 
         read_conf.get_data = read_getdata;
 
@@ -333,7 +331,10 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (), READ
         read_conf.on_size= read_onsize;
         read_conf.key_table = &ktab[0];
 
+        read_conf.pos = 1; //TODO: get last position
         read_getdata(&read_conf,read_conf.pos,read_conf.item_per_page);
+        read_conf.pos = read_conf.item_count; //TODO: get last position
+        read_conf.page_pos = ((read_conf.pos-1)/BBS_PAGESIZE)*BBS_PAGESIZE+1; //TODO
 
         list_select_loop(&read_conf);
         if (arg.data!=NULL)
