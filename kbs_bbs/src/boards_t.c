@@ -402,11 +402,12 @@ int     newflag;
         switch( ch ) {
         case Ctrl('Z'): r_lastmsg(); /* Leeward 98.07.30 support msgX */
             break;
-        case 'R':  /* Leeward 98.04.24 */
+			/*
+        case 'R':   Leeward 98.04.24 
             {
                 char fname[STRLEN], restore[256];
 
-                if(!strcmp(currentuser->userid,"guest")) /* guest ²»±Ø */
+                if(!strcmp(currentuser->userid,"guest")) 
                     break;
 
                 saveline(t_lines-2, 0, NULL);
@@ -416,9 +417,6 @@ int     newflag;
                 if ('y' == restore[0] || 'Y' == restore[0])
                 {
                     sethomefile(fname, currentuser->userid,".boardrc" );
-		    /*
-                    sprintf(restore, "/bin/cp %s.bak %s", fname, fname);
-		    */
                     sprintf(restore, "%s.bak", fname);
                     f_cp(restore,fname,0);
 
@@ -433,6 +431,7 @@ int     newflag;
                 saveline(t_lines-2, 1, NULL);
                 break;
             }
+	    */
         case 'X': /* Leeward 98.03.28 Set a board READONLY */
             {
                 char buf[STRLEN];

@@ -24,6 +24,12 @@ void standout();
 void redoscr();
 void initscr() ;
 void bell();
+void outc(const register unsigned char c);
+void outns(const unsigned char *str, int n);
+void outs( const register char *str);
+
+
+
 /* newio.c */
 void oflush();
 int getdata(int line, int col,char* prompt,char* buf,int  len,int  echo,int nouse,int clearlabel);
@@ -119,7 +125,7 @@ void u_exit();
 void s_msg();
 void r_lastmsg();
 int show_allmsgs();
-int do_sendmsg(struct user_info *uentp,char msgstr[256],int mode);
+int do_sendmsg(struct user_info *uentp,const char msgstr[256],int mode);
 
 /* list.c */
 int t_friends();

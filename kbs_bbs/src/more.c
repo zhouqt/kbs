@@ -27,6 +27,9 @@
 time_t calltime=0;
 void R_monitor();
 
+static int rawmore(char    *filename, int     promptend, int     row, int     numlines);
+
+
 /*struct FILESHM
 {
         char line[FILE_MAXLINE][FILE_BUFSIZE];
@@ -286,16 +289,6 @@ char *fname;
     return count;
 }
 
-int
-more(filename,promptend)
-char    *filename ;
-int     promptend;
-{
-    showansi = 0;
-    return rawmore( filename, promptend);
-    showansi = 1;
-}
-
 /* below added by netty  *//*Rewrite by SmallPig*/
 void
 netty_more()
@@ -362,12 +355,7 @@ void R_monitor(void* data)
 
 
 /*rawmore2() ansimore2() Add by SmaLLPig*/
-int
-rawmore(filename,promptend,row,numlines)
-char    *filename;
-int     promptend;
-int     row;
-int     numlines;
+static int rawmore(char    *filename, int     promptend, int     row, int     numlines)
 {
     extern int  t_lines ;
     struct stat st ;

@@ -2444,9 +2444,6 @@ sequent_messages(struct fileheader *fptr,int* continue_flag)
         strcpy( quote_file, genbuf );
     	 strncpy( quote_user, fptr->owner ,IDLEN);
     	 quote_user[IDLEN]=0;
-#ifdef NOREPLY
-        more(genbuf,YEA);
-#else
         ansimore(genbuf,NA) ;
         move(t_lines-1, 0);
         clrtoeol();
@@ -2470,7 +2467,6 @@ sequent_messages(struct fileheader *fptr,int* continue_flag)
             break;
         default : break;
         }
-#endif
         clear() ;}
     setbdir( digestmode,genbuf, currboard );
     brc_add_read( fptr->filename ) ;
@@ -2929,20 +2925,6 @@ Goodbye()    /*离站 选单*/
         }
 }*/
     report("exit") ;
-
-    /* Leeward 98.04.24 */
-    if(strcmp(currentuser->userid,"guest")) /* guest 不必 */
-    {
-        sethomefile(fname, currentuser->userid,".boardrc" );
-        if (dashf(fname))
-        {
-		/*
-            sprintf(genbuf, "/bin/cp %s %s.bak", fname, fname);
-	    */
-            sprintf(genbuf, "%s.bak", fname);
-	    f_cp(fname,genbuf,0);
-        }
-    }
 
     /*   stay = time(NULL) - login_start_time;    本次线上时间*/
     /*Haohmaru.98.11.10.简单判断是否用上站机*/

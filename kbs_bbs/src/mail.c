@@ -1986,6 +1986,7 @@ doforward(char *direct,struct boardheader*fh,int isuu)
         char data[3];
         int isbig5;
 
+	data[0]=0;
         prints("若您要将信件转寄到台湾请输入 Y 或 y\n");
         getdata(7, 0, "转成BIG5码? [N]: ", data, 2, DOECHO, 0, 0);
         if(data[0]=='y' || data[0]=='Y') isbig5 = 1;
