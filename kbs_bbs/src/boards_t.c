@@ -573,8 +573,9 @@ int choose_board(int newflag, char *boardprefix)
         case 'c':
 #endif
             {                   /* Leeward 98.10.26 fix a bug by saving old mode */
+		int savemode;
                 if (3==yank_flag) goto hotkey;
-                int savemode = uinfo.mode;
+                savemode = uinfo.mode;
 
                 if (!HAS_PERM(currentuser, PERM_BASIC))
                     break;
