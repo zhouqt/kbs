@@ -641,7 +641,7 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
         return -3;
     }
     sprintf(header.filename, "M.%d.A", t);
-    strsncpy(header.title, title, 60);
+    strsncpy(header.title, title, ARTICLE_TITLE_LEN);
     fp = fopen(buf3, "w");
     if (fp == NULL)
         return -4;
@@ -787,7 +787,7 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
     add_loginfo2(fp, board, user, anony);       /*添加最后一行 */
 #endif
 
-    strncpy(post_file.title, title, STRLEN);
+    strncpy(post_file.title, title, ARTICLE_TITLE_LEN);
     if (local_save == 1) {      /* local save */
         post_file.innflag[1] = 'L';
         post_file.innflag[0] = 'L';
@@ -1654,56 +1654,6 @@ int add_favboard(char *brdname)
     return n;
 }*/
 
-/*
-int post_file(char *filename, postinfo_t *pi)
-{
-	FILE *fp;
-	FILE *fp2;
-    struct fileheader pf;
-	char filepath[STRLEN];
-	char buf[STRLEN];
-
-	memset(&pf, 0, sizeof(pf));
-	if (get_unifile(buf, pi->board, 0) == -1)
-		return -1;
-	setbfile(filepath, pi->board, buf);
-	strcpy(pf.filename, buf);
-	strncpy(pf.owner, pi->userid, STRLEN);
-	strncpy(pf.title, pi->title, STRLEN);
-	pf.accessed[0] = pi->access & 0xFF;
-	pf.accessed[1] = (pi->access >> 8) & 0xFF;
-	fp = fopen(filepath, "w");
-	fp2 = fopen(filename, "r");	
-	write_header2(fp, pi->board, pi->title, pi->userid, pi->username,
-		   	pi->anony);
-	write_file2(fp, fp2);
-	fclose(fp2);
-	fclose(fp);
-    if ( pi->local == 1 )
-	{
-		pf.filename[ STRLEN - 1 ] = 'L';
-		pf.filename[ STRLEN - 2 ] = 'L';
-	}
-    else
-	{
-		pf.filename[ STRLEN - 1 ] = 'S';
-		pf.filename[ STRLEN - 2 ] = 'S';
-		outgo_post2(&pf, pi->board, pi->userid, pi->username, pi->title);
-	}
-	setbfile(filepath, pi->board, DOT_DIR);
-	if (append_record(filepath, &pf, sizeof(pf)) == -1)
-   	{
-		sprintf(buf, "post file '%s' on '%s': append_record failed!",
-				pf.title, pi->board);
-		report(buf);
-		return -1;
-	}
-	sprintf(buf,"posted file '%s' on '%s'", pf.title, pi->board);
-	report(buf);
-
-	return 0;
-}
-*/
 /*
  * get_unifile() 用于获得一个独一无二的文件.
  *     filename  文件名缓冲区

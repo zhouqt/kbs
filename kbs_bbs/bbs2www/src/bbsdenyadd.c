@@ -101,7 +101,7 @@ int inform(bcache_t * bp, char *user, char *exp, int dt)
     /*Haohmaru.4.1.自动发信通知并发文章于板上 */
     sprintf(buf, "etc/%s.deny", usr->userid);
     fn = fopen(buf, "w+");
-    sprintf(title, "%s被取消在%s版的发文权限", user, board);
+    snprintf(title, ARTICLE_TITLE_LEN ,"%s被取消在%s版的发文权限", user, board);
 
     if ((HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_OBOARDS)) && !chk_BM_instr(bp->BM, currentuser->userid)) {
         my_flag = 0;
@@ -167,13 +167,13 @@ int inform(bcache_t * bp, char *user, char *exp, int dt)
      */
     post_file(usr, "", buf, board, title, 0, 2);
     memcpy(usr, &saveusr, sizeof(saveusr));
-    sprintf(title, "%s 被 %s 封禁本版POST权", user, usr->userid);
+    snprintf(title, ARTICLE_TITLE_LEN ,"%s 被 %s 封禁本版POST权", user, usr->userid);
     getuser(user, &lookupuser);
 
     if (HAS_PERM(lookupuser, PERM_BOARDS))
-        sprintf(title, "%s 封某版" NAME_BM " %s 在 %s", usr->userid, user, board);
+        snprintf(title, ARTICLE_TITLE_LEN , "%s 封某版" NAME_BM " %s 在 %s", usr->userid, user, board);
     else
-        sprintf(title, "%s 封 %s 在 %s", usr->userid, user, board);
+        snprintf(title, ARTICLE_TITLE_LEN ,"%s 封 %s 在 %s", usr->userid, user, board);
     post_file(usr, "", buf, "denypost", title, 0, 8);
 
     unlink(buf);

@@ -4954,8 +4954,8 @@ static PHP_FUNCTION(bbs_postmail){
 	filename[STRLEN]=0;
     if (f_append(filename, unix_string(content)) < 0)
         RETURN_LONG(-1); //"无法创建临时文件";
-    snprintf(title2,79, "{%s} %s", targetID, title);
-    title2[79] = 0;
+    snprintf(title2,ARTICLE_TITLE_LEN-1, "{%s} %s", targetID, title);
+    title2[ARTICLE_TITLE_LEN-1] = 0;
     
     if ((ret=post_mail(targetID, title3, filename, currentuser->userid, currentuser->username, fromhost, sig))!=0)
     {
@@ -7557,7 +7557,7 @@ static PHP_FUNCTION(bbs_make_tmpl_file)
 				}
 				if( l == 0 ){
 					int ti;
-					for( ti=0; text[0][ti]!='\0' && ti < t_len[0] && newl < STRLEN - 1; ti++, newl++ ){
+					for( ti=0; text[0][ti]!='\0' && ti < t_len[0] && newl < ARTICLE_TITLE_LEN - 1; ti++, newl++ ){
 						newtitle[newl] = text[0][ti] ;
 						newtitle[newl+1]='\0';
 					}
@@ -7573,8 +7573,8 @@ static PHP_FUNCTION(bbs_make_tmpl_file)
 			}
 		}
 	}else{
-		strncpy(newtitle, text[0], STRLEN);
-		newtitle[STRLEN-1]='\0';
+		strncpy(newtitle, text[0], ARTICLE_TITLE_LEN );
+		newtitle[ARTICLE_TITLE_LEN -1]='\0';
 	}
 
 	orig_tmpl_free( & ptemp, tmpl_num );
@@ -7805,8 +7805,8 @@ static PHP_FUNCTION(bbs_x_search)
     for(i=0;i<res_total;i++) {
         fgets(buf, 256, sockfp);
         if(buf[0]&&buf[strlen(buf)-1]=='\n') buf[strlen(buf)-1]=0;
-        strncpy(res_title[i], buf, 80);
-        res_title[i][79] = 0;
+        strncpy(res_title[i], buf, ARTICLE_TITLE_LEN);
+        res_title[i][ARTICLE_TITLE_LEN-1] = 0;
 
         fgets(buf, 256, sockfp);
         if(buf[0]&&buf[strlen(buf)-1]=='\n') buf[strlen(buf)-1]=0;
