@@ -703,8 +703,11 @@ int valid_article(pmt, abort)
             y += 3;
             temp = 1;
         }
-        if (temp)
+        if (temp){
         	local_article = 1; /* 灌水的文章就不要转出去了吧 :P by flyriver */
+		}else{	// local_article 没有初始化 by zixia
+			local_article = 0;
+		}
         if (local_article == 1)
             strcpy(pmt, "(L)站内, (S)转信, (F)自动换行发表, (A)取消, (T)更改标题 or (E)再编辑? [L]: ");
         else
