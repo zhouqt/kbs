@@ -465,7 +465,7 @@ attach_err( shmkey, name )
 int     shmkey;
 char    *name;
 {
-    log( "3system", "Attach:Error! %s error! key = %x.\n", name, shmkey );
+    log( "3system", "Attach:Error! %s error! key = %x.msg:%s\n", name, shmkey ,strerror(errno));
     exit( 1 );
 }
 
@@ -477,7 +477,6 @@ void *attach_shm( char    *shmstr,int     defaultkey, int shmsize,int* iscreate)
     shmkey = defaultkey;
     shmid = shmget( shmkey, shmsize, 0 );
     if( shmid < 0 ) {
-        attach_err( shmkey, "shmget" );
         shmid = shmget( shmkey, shmsize, IPC_CREAT | 0600 );
         if( shmid < 0 )
             attach_err( shmkey, "shmget" );

@@ -3,14 +3,14 @@
 
 #include "bbs.h"
 
-int do_exit()
+void do_exit()
 {
    flush_ucache();
 }
 
-int do_exit_sig(int sig)
+void do_exit_sig(int sig)
 {
-    return do_exit();
+    exit(0);
 }
 
 static char genbuf1[255];
@@ -164,7 +164,10 @@ int dodaemon()
 {
     struct sigaction act;
     
-    if (load_ucache()!=0) printf("ft,load ucache error!");
+    if (load_ucache()!=0) {
+           printf("ft,load ucache error!");
+           exit(-1);
+    }
 
      switch (fork()) {
          case -1: printf("faint, i can't fork.\n"); exit(0); break;
@@ -183,13 +186,10 @@ int dodaemon()
     sigaction(SIGCHLD, &act, NULL);
 #endif
 
-    atexit(do_exit);
-    bzero(&act,sizeof(act));
-    act.sa_handler = do_exit_sig;
-    sigaction(SIGTERM,&act,NULL);
-    sigaction(SIGHUP,&act,NULL);
-    sigaction(SIGABRT,&act,NULL);
-
+    switch(fork()) {
+     case -1:
+               log("3miscd","fork failed\n");
+     case 0:
      while (1) {
      	sleep(getnextday4am() - time( 0 ));
     	 switch(fork()) {
@@ -198,7 +198,6 @@ int dodaemon()
        	        break;
        	     case 0 : 
        	        dokilluser();
-       	        flush_ucache();
                 exit(0);
        	        break;
        	     default:
@@ -217,7 +216,21 @@ int dodaemon()
        	           break;   
     	    } 
     	 }
-     }
+     };
+     default:
+        atexit(do_exit);
+        bzero(&act,sizeof(act));
+        act.sa_handler = do_exit_sig;
+        sigaction(SIGTERM,&act,NULL);
+        sigaction(SIGHUP,&act,NULL);
+        sigaction(SIGABRT,&act,NULL);
+
+        while (1) {
+         sleep(2*60*60);
+       	 flush_ucache();
+         log("4miscdaemon","flush passwd file");
+        };
+    }
 }
 int main (int argc,char *argv[])
 {
