@@ -318,8 +318,8 @@ int x_level()
         /*
          * Haohmaru.98.10.03.给新任版主自动发信 
          */
-        if ((lookupuser->userlevel & PERM_BOARDS) && flag == 0)
-            mail_file(currentuser->userid, "etc/forbm", lookupuser->userid, "新任" NAME_BM "必读", BBSPOST_LINK, NULL);
+//        if ((lookupuser->userlevel & PERM_BOARDS) && flag == 0)
+//            mail_file(currentuser->userid, "etc/forbm", lookupuser->userid, "新任" NAME_BM "必读", BBSPOST_LINK, NULL);
         /*
          * Bigman 2000.1.5 修改权限自动发信 
          */
