@@ -16,6 +16,7 @@ main();
 
 show_footer();
 
+/*
 function showBoards($group, &$allBoards) {
 	global $yank;
 	$boards = bbs_getboards("*", $group, $yank | 2);
@@ -33,10 +34,31 @@ function showBoards($group, &$allBoards) {
 		}
 	}
 }
+*/
+
+function getAllBoards() {
+	global $yank;
+	$allBoards = array();
+	$boards = bbs_getboards("*", $group, $yank | 2 | 4);
+	if ($boards != FALSE) {
+		$brd_desc = $boards["DESC"];
+		$brd_name = $boards["NAME"];
+		$brd_flag = $boards["FLAG"];
+		$brd_bid = $boards["BID"];
+		$rows = sizeof($brd_desc);
+		for ($t = 0; $t < $rows; $t++)	{
+			$allBoards[$brd_name[$t]] = $brd_desc[$t];
+		}
+	}
+	return $allBoards;
+}
 
 function main(){
+	/*
 	$allBoards = array();
 	showBoards(0, $allBoards);
+	*/
+	$allBoards = getAllBoards();
 	uksort($allBoards, "strcasecmp");
 	$str = "";
 	while (list($key, $val) = each($allBoards)) {
