@@ -13,6 +13,8 @@ char update_keyname[20];
 char dns_server[50];
 char dns_zone[50];
 
+unsigned int dns_ttl;
+
 int reread;
 int getconf(char* key,char* value,int len) {
     char* data;
@@ -44,6 +46,7 @@ int readconfig() {
     	printf("please configure dns update server!\n");
     	return -1;
     }
+    dns_ttl=sysconf_eval("DNS_TTL", 60);
     return 0;
 }
 
@@ -96,7 +99,8 @@ int main()
 
 	update_dns(dns_server, dns_zone,
 		update_keyname, update_key,
-		msg.userid, msg.ip, 60); 	
+		msg.userid, msg.ip, dns_ttl); 	
+	bbslog("3error","update dns %s %s",msg.userid,msg.ip);
         if (reread) 
             if (readconfig()!=0) {
             	bbslog("3error","bbsupdated config error");

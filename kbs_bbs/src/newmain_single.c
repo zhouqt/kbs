@@ -1023,13 +1023,19 @@ void main_bbs(int convit, char *argv)
         int msqid;
         msqid = msgget(sysconf_eval("BBSDNS_MSG", 0x999), IPC_CREAT | 0664);
         if (msqid >= 0) {
-            msg.mtype=0;
+	    struct msqid_ds buf;
+
+            msg.mtype=1;
             strncpy(msg.userid,currentuser->userid,IDLEN);
             msg.userid[IDLEN]=0;
             //水木是可以用fromhost的，不过其他打开dns反解得就要考虑一下了
             strncpy(msg.ip,fromhost,IPLEN);
             msg.ip[IPLEN]=0;
-            msgsnd(msqid, &msg, sizeof(msg), IPC_NOWAIT | MSG_NOERROR);
+            msgctl(msqid, IPC_STAT, &buf);
+	    buf.msg_qbytes = (sizeof(msg)-sizeof(msg.mtype))*20;
+	    msgctl(msqid, IPC_SET, &buf);
+
+            msgsnd(msqid, &msg, sizeof(msg)-sizeof(msg.mtype), IPC_NOWAIT | MSG_NOERROR);
         }
     }
 #endif
