@@ -291,7 +291,7 @@ function writepost(pos, html_title, threadNum, origin, lastreply, origin_exists,
 			if (threadPages>=8) {
 				document.write("...");
 			}
-			document.write("<a href=\"disparticle.php?boardName=" + boardName + "&ID=" + origin.ID + "&pos=" + pos + "&page=" + t + "\">" + threadPages + "</a> ");
+			document.write("<a href=\"disparticle.php?boardName=" + boardName + "&ID=" + origin.ID + "&pos=" + pos + "&page=" + threadPages  + "\">" + threadPages + "</a> ");
 		}
 		document.write(" ]</b>");
 	}
