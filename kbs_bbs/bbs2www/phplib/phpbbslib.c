@@ -5062,7 +5062,6 @@ static PHP_FUNCTION(bbs_createnewid)
 	time_t lnow;
 	struct userec newuser;
 	int allocid;
-	FILE*   fn;
 	
 	int ac = ZEND_NUM_ARGS();
 
