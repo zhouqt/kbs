@@ -1,0 +1,40 @@
+
+README
+------
+
+This is FirebirdBBS 2.5 quick installation guide.
+
+The installation document and administration guide  is in 
+~bbsroot/doc/README.txt.
+
+For impatient users, 
+
+1. Create the following three accounts, and their home directories:
+
+bbsroot::9990:99:BBS and modify source code:/home/bbsroot:/bin/csh
+bbs::9999:99:BBS user:/home/bbs:/home/bbs/bin/bbsrf
+bbsuser::9999:99:BBS user:/home/bbs:/bin/csh
+
+2. Add the group 'bbs' into /etc/group
+
+bbs:*:99:bbsroot,bbsuser,bbs
+
+3. Run the following commands
+
+% tar zxvf FirebirdBBS2.5.tar.gz 
+% cd bbs_src
+% ( cd CONFIG ; ./configure )
+% make
+% su
+# make install
+
+4. telnet localhost 
+
+5. login as 'bbs'
+
+6. Hope you can see the 'welcome' message from the BBS.
+
+                                       from developers of FirebirdBBS 2.5 
+
+                                                            Nov 22.
+

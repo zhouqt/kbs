@@ -1,0 +1,35 @@
+2000-09-10 :
+bm.c --> deny_user() --> 增加判断封禁时限是否到达
+
+2000-09-10 :
+read.c --> i_read() --> 增加列表中输入数字的显示与编辑功能.
+
+2000-09-11 :
+read.c --> sread() --> 增加判断ansimore()的返回值
+	解决同主题阅读的一个显示问题
+
+2000-09-11 :
+comm_lists.c --> syscmd_str 中增加FavBoard()入口
+boards.c --> 增加,修改关于FavBoard的代码
+
+2000-09-21 :
+record.c --> delete_file 增加判断fstat(..)返回值.
+             怀疑.DIR丢失与ftruncate(0)有关.
+
+2000-10-19 :
+newmain.c --> 登录及退出时在usies文件中写入utmpent和usernum, 跟踪"超级隐身"
+              和"错误覆盖帐号"的潜在Bug.
+2000-10-20 :
+talk.c --> modestring() 替换掉其中调用get_user()的代码, 减少IO.
+           增加函数isidhidden() ( 因为ishidden()中也调用了get_user() )
+bcache.c --> 增加函数getuserid()
+more.c, record.c --> 增加了几个可能忽略的close(fd).
+
+2000-10-20 :
+list.c --> 改动在线用户列表的显示格式, 当用户数大于1000时编号字段应该给四位.
+
+2000-10-26 :
+help.c --> show_help() 避免重复调用.
+record.c --> 增加函数search_record_back()
+bbs.c --> mark_post() 作改动防止多窗口间数据不同步时错误覆盖.DIR
+

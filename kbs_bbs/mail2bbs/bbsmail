@@ -1,0 +1,59 @@
+#!/usr/local/bin/perl -U
+# chown bbs.bbs $mail2bbs
+# chown bbs.bbs $tmpdir
+# chmod 4750 $mail2bbs
+# change the following lines
+$bbsuid=9999;
+$bbsgid=99;
+$mail2bbs="/home/bbs/bin/mail2bbs";
+require "/home/bbs/bin/mailgate.pl";
+
+##################### You don't need to change The following ####
+
+$)=$bbsgid;
+$(=$bbsgid;
+$<=$bbsuid;
+$>=$bbsuid;
+$ENV{'PATH'}='/bin:/usr/etc:/usr/local/bin:/usr/ucb';
+while ( $ARGV[0] =~ /^-/ ) {
+        $_ = shift;
+        if ( /^-d/ ) {
+                $debug=1;
+        } 
+}
+$normaluser = $ARGV[0];
+$logdir="/home/bbs";
+mkdir($logdir,0700) unless -d $logdir;
+#if ($debug) {
+ open(LOG,">> $logdir/mail-log") || warn "can't open warn file $!\n";
+#} else {
+# open(LOG,">> /dev/null") || warn "can't open warn file $!\n";
+#}
+
+print LOG "\n";
+
+print "\nMail to $normaluser \n";
+print LOG "Mail to $normaluser \n";
+&readmail;
+for ($n=0; $n < $MAILBODY; $n++) {
+        print LOG $MAIL[$n];
+}
+#$subject = "test";
+print LOG "$mail2bbs \'$Header{'Return-Path'}\' \'$normaluser\'  \'$Header{'Subject'}\'\n";
+open(BBSGATE,"| $mail2bbs \'$Header{'Return-Path'}\' \'$normaluser\'  \'$Header{'Subject'}\'");
+for ($n= $MAILBODY; $n <= $#MAIL; $n++) {
+        print BBSGATE $MAIL[$n];
+}
+close(BBSGATE);
+if ($? ==0 ) {
+        print LOG "$Header{'Return-Path'} mail to $normaluser successfully\n";
+        print "$Header{'Return-Path'} mail to $normaluser successfully\n";
+} else {
+     print LOG "$Header{'Return-Path'} mail to $normaluser failed, return code $?\n";
+     print "$Header{Return-Path} mail to $normaluser failed, return code $?\n";
+     close(LOG);
+     die "BBS user $normaluser unknown\n";
+}
+close(LOG);
+0;
+
