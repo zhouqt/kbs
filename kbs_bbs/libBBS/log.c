@@ -201,3 +201,52 @@ int bbslog(const char *from, const char *fmt, ...)
 
     return 0;
 }
+
+#define DATALEN 100
+
+int bmlog(char* id, char* boardname, int type, int value)
+{
+/*
+type - meaning
+  0          停留时间
+  1          进版
+  2          版内发文
+  3          收入文摘
+  4          去掉文摘
+  5          区段
+  6          标记文章
+  7          去掉标记
+  8          删除文章
+  9          封禁
+  10        收入精华
+  11        整理精华
+  12        相同主题
+*/
+	int fd, data[DATALEN];
+    	struct flock ldata;
+	struct stat buf;
+	if(!chk_BM_instr(boardname, id)) return 0;
+       if ((fd = open(direct, O_RDWR | O_CREAT, 0644)) == -1) return 0;
+       ldata.l_type = F_RDLCK;
+       ldata.l_whence = 0;
+       ldata.l_len = 0;
+       ldata.l_start = 0;
+       if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+            close(fd);
+            return 0;
+       }
+       fstat(fd, &buf);
+       if(buf.st_size<DATALEN*sizeof(int)){
+       	memset(data, 0, sizeof(int)*DATALEN);
+       }
+       else
+       	read(fd, data, sizeof(int)*DATALEN);
+       if(type>=0&&type<DATALEN)
+       	data[type]+=value;
+       lseek(fd, 0, SEEK_SET);
+       write(fd, data, sizeof(int)*DATALEN);
+   	ldata.l_type = F_UNLCK;
+   	fcntl(fd, F_SETLKW, &ldata);
+   	close(fd);
+}
+

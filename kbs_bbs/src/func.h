@@ -53,6 +53,7 @@ extern "C" {
 #define board_usage(x,y) bbslog("boardusage", "%-20s Stay: %5ld",x,y)
 
     int bbslog(const char *from, const char *fmt, ...);
+    int bmlog(char* id, char* boardname, int type, int value);
 
 /* defined in utmp.c */
     typedef int (*APPLY_UTMP_FUNC) (struct user_info *, void *, int pos);
