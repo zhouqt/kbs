@@ -244,6 +244,7 @@ extern "C" {
      match=false,找到该插入的前一条记录。
      */
     typedef int (*DIR_APPLY_FUNC)(int fd,struct fileheader* start,int ent,int total,struct fileheader* data,bool match);
+	typedef int (*search_handler_t)(int fd, fileheader_t *base, int ent, int total, bool match, void *arg);
 
     int get_postfilename(char *filename, char *direct, int use_subdir);
     int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink);
