@@ -336,6 +336,34 @@
 				</DIV>
 			</td>
 		</tr>
+		<tr>
+			<td width="16">
+				<DIV class="r" id="divpca">
+				<a href='javascript:changemn("pc");'><img id="imgpc" src="/images/close.gif" border="0"></a>
+				</DIV>
+			</td>
+			<td>
+			<a href='javascript:changemn("pc");'>
+			<img src="/images/t15.gif" border="0" alt="个人文集" align="absmiddle"> 个人文集
+			</a>
+			</td>
+		</tr>
+		<tr>
+			<td> </td>
+			<td>
+				<DIV class="s" id="divpc">
+					&nbsp;
+					<img src="/images/line.gif" border="0" align="absmiddle">
+					<a href="/pc/pc.php" target="f3">个人文集</a><br>
+					&nbsp;
+					<img src="/images/line.gif" border="0" align="absmiddle">
+					<a href="/pc/pcsearch2.php" target="f3">文集搜索</a><br>
+					&nbsp;
+					<img src="/images/line1.gif" border="0" align="absmiddle">
+					<a href="/bbsdoc.php?board=PersonalCorpus" target="f3">个人文集论坛</a><br>
+				</DIV>
+			</td>
+		</tr>
 		
 <?php
 	if($currentuser["userid"]!="guest"){
