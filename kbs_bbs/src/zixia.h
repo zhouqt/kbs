@@ -45,7 +45,7 @@
 #define ISSUE_LOGIN		"本站使用一台X86服务器" //本站使用曙光公司曙光天演服务器
 #define ISSUE_LOGOUT		"般若波羅密！" //还是走了罗
 
-#define NAME_USER_SHORT		"强盗" //用户
+#define NAME_USER_SHORT		"斧头帮众" //用户
 #define NAME_USER_LONG		"斧头帮众" //"水木用户"
 #define NAME_SYSOP		"强盗头" //"System Operator"
 #define NAME_BM			"二当家的" //版主
