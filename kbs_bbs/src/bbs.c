@@ -4215,7 +4215,7 @@ int Goodbye()
             }
 #endif*/
         }
-#ifndef FREE
+#if !defined(FREE) && !defined(ZIXIA)
 		else
             clear_msg(getCurrentUser()->userid);
 #endif
