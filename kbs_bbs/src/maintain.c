@@ -240,9 +240,7 @@ void stand_title(title)
 char *title;
 {
     clear();
-    standout();
-    prints(title);
-    standend();
+    prints("\x1b[7m%s\x1b[m", title);
 }
 
 int m_info()

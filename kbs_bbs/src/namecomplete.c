@@ -226,9 +226,9 @@ char *prompt, *data;
                 len = MaxLen(morelist, NUMLINES);
                 move(2, 0);
                 clrtobot();
-                standout();
+                prints("\x1b[7m");
                 printdash(" ап╠М ");
-                standend();
+                prints("\x1b[m");
                 while (len + col < 80) {
                     int i;
 

@@ -50,9 +50,7 @@ void top_show(char *prompt)
     }
     move(0, 0);
     clrtoeol();
-    standout();
-    prints("%s", prompt);
-    standend();
+    prints("\x1b[7m%s\x1b[m", prompt);
 }
 
 int ask(char *prompt)
