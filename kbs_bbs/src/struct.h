@@ -43,7 +43,8 @@ struct user_info {              /* Structure used in UTMP file */
         int     pager;          /* pager toggle, YEA, or NA */
         int     in_chat;        /* for in_chat commands   */
         char    chatid[ 16 ];   /* chat id, if in chat mode */
-        char    from[ 60 ];     /* machine name the user called in from */
+        char    from[ 56 ];     /* machine name the user called in from */
+        int	priority;
         time_t	freshtime;
         char    userid[ 20 ];
         char    realname[ 20 ];
