@@ -974,7 +974,7 @@ char *direct;
 {
     char buf[512], notgenbuf[128];
     char *t;
-    int readnext;
+    int readnext,readprev;
     char done = false, delete_it, replied;
 
     clear();
@@ -1017,6 +1017,12 @@ char *direct;
             done = true;
             readnext = true;
             break;
+        /* read prev mail  .  binxun 2003.5*/
+        case KEY_UP;
+        	done = true;
+        	readprev = true;
+        	break;
+        	
         case Ctrl('D'):
             zsend_attach(ent, fileinfo, direct);
             done=true;
@@ -1037,6 +1043,11 @@ char *direct;
 	}
     if (readnext == true)
         return READ_NEXT;
+
+    /* read prev mail  .  binxun 2003.5*/
+    if(readprev = true)
+	return READ_PREV;
+    
     return FULLUPDATE;
 }
 
