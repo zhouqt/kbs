@@ -38,7 +38,7 @@ int main() {
 	printf("<input type=hidden name=type value=1>");
 	printf("一屏显示的文章行数(10-40): <input name=t_lines size=8 value=%d><br>\n", t_lines);
 	printf("链接识别 (0识别, 1不识别): <input name=link_mode size=8 value=%d><br>\n", link_mode);
-	printf("缺省模式 (0一般, 1主题): &nbsp;&nbsp;<input name=def_mode size=8 value=%d><br><br>\n", def_mode);
+	printf("缺省模式 (0主题, 1一般): &nbsp;&nbsp;<input name=def_mode size=8 value=%d><br><br>\n", def_mode);
 	printf("<tr><td align=center><input type=submit value=确定> <input type=reset value=复原>\n");
 	printf("</form>\n");
 }

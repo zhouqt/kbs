@@ -9,7 +9,7 @@ int main()
 {
 	bcache_t data[MAXBOARD], *x;
 	int i, total=0, sec1;
-	char *cgi="bbsdoc", *ptr, *my_sec;
+	char *cgi="bbstdoc", *ptr, *my_sec;
 	bcache_t *bc;
 
 	init_all();
@@ -17,7 +17,7 @@ int main()
 	printf("<style type=\"text/css\">A {color: #0000f0}</style>");
 	sec1=atoi(getsenv("QUERY_STRING"));
 	if(sec1<0 || sec1>=SECNUM) http_fatal("´íÎóµÄ²ÎÊý");
-	if(atoi(getparm("my_def_mode"))!=0) cgi="bbstdoc";
+	if(atoi(getparm("my_def_mode"))!=0) cgi="bbsdoc";
 	for(i=0; i<MAXBOARD; i++) {
 		x=&(bc[i]);
 		if(x->filename[0]<=32 || x->filename[0]>'z') continue;
