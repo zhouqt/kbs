@@ -6,7 +6,7 @@ int main(int argc, char **argv)
 {
     FILE *fp, *fp2;
     char fn[80],fn2[80];
-    int i,j,ip[4],t;
+    int i,j,ip[4],t,k;
     time_t tt;
     chdir(BBSHOME);
     resolve_boards();
@@ -17,7 +17,7 @@ int main(int argc, char **argv)
     if(fp) {
         fp2=fopen(fn2, "w");
         while(!feof(fp)) {
-            if(fscanf(fp, "%d %ld %d.%d.%d.%d %d", &i, &j, &ip[0], &ip[1], &ip[2], &ip[3], &t)<=0) break;
+            if(fscanf(fp, "%d %ld %d.%d.%d.%d %d %d", &i, &j, &ip[0], &ip[1], &ip[2], &ip[3], &t, &k)<=0) break;
             tt=(time_t) j;
             if(i==0)
                 fprintf(fp2, "%s 来自%d.%d.%d.%d两次连接时间太短.一小时内共连接%d次.\n", ctime(tt), ip[0],ip[1],ip[2],ip[3],t);
