@@ -630,6 +630,31 @@ void notepad_init()
     return;
 }
 
+void showsysinfo(char * fn)
+{
+    FILE* fp;
+    char buf[200];
+    int count=0,i,j;
+    fp=fopen(fn, "r");
+    while(!feof(fp)) {
+        if(!fgets(buf, 200, fp)) break;
+        if(strstr(buf, "@systeminfo@")) count++;
+    }
+    fclose(fp);
+    i=rand()%count;
+    count=0;
+    clear();
+    fp=fopen(fn, "r");
+    while(!feof(fp)) {
+        if(!fgets(buf, 200, fp)) break;
+        if(strstr(buf, "@systeminfo@")) count++;
+        else {
+            if(count==i) prints("%s", buf);
+        }
+        if(count>i) break;
+    }
+    fclose(fp);
+}
 
 void user_login()
 {
@@ -706,7 +731,7 @@ void user_login()
 #endif
     /* added end */
     if (dashf("0Announce/systeminfo")) {
-        ansimore("0Announce/systeminfo", false);
+        showsysinfo("0Announce/systeminfo");
         move(t_lines - 1 /*1 */ , 0);       /* Leeward: 98.09.24 Alter below message */
         clrtoeol();
         prints("[1;36m¡î °´ÈÎÒâ¼ü¼ÌÐø...[33m[m ");
