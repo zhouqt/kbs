@@ -85,8 +85,6 @@ extern int 	B_to_b;
 extern struct screenline *big_picture;
 extern struct userec *user_data;
 
-int totalusers, usercounter;
-
 int
 check_readonly(char *checked) /* Leeward 98.03.28 */
 {
