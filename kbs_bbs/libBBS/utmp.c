@@ -70,7 +70,7 @@ static int utmp_lock()
     if (flock( utmpfd, LOCK_EX ) ==-1)  {
         exit(-1);
     }
-    alarm(0);
+    signal(SIGALRM,SIG_IGN);
     return utmpfd;
 }
 

@@ -377,7 +377,7 @@ static ZEND_FUNCTION(bbs_wwwlogin)
 		strncpy( ui.userid,   getcurrentuser()->userid,   20 );
 		strncpy( ui.realname, getcurrentuser()->realname, 20 );
 		strncpy( ui.username, getcurrentuser()->username, 40 );
-		utmpent = getnewutmpent2(&ui) ;
+		utmpent = getnewutmpent(&ui) ;
 		if (utmpent == -1)
 			ret=1;
 		else {
@@ -522,11 +522,18 @@ static ZEND_MINIT_FUNCTION(bbs_module_init)
 	REGISTER_MAIN_LONG_CONSTANT("SETTING_SQUID_ACCL", 0, CONST_CS | CONST_PERSISTENT);
 #endif
 	chdir(old_pwd);
+#ifdef DEBUG
+	zend_error(E_WARNING,"module init");
+#endif
 	return SUCCESS;
 }
 
 static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown)
 {
+	detach_utmp();
+#ifdef DEBUG
+	zend_error(E_WARNING,"module shutdown");
+#endif
 	return SUCCESS;
 }
 
@@ -535,11 +542,18 @@ static ZEND_RINIT_FUNCTION(bbs_request_init)
 	getcwd(old_pwd,1023);
 	chdir(BBSHOME);
 	old_pwd[1023]=0;
+#ifdef DEBUG
+	zend_error(E_WARNING,"request init:%d %x",getpid(),getcurrentuinfo);
+#endif
 	return SUCCESS;
 }
 
 static ZEND_RSHUTDOWN_FUNCTION(bbs_request_shutdown)
 {
+#ifdef DEBUG
+	zend_error(E_WARNING,"request shutdown");
+#endif
 	chdir(old_pwd);
+	currentuser=NULL;
 	return SUCCESS;
 }
