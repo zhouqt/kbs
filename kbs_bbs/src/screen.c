@@ -319,7 +319,7 @@ void refresh()
             if(chc==1) chc=2;
             else if(bp[j].data[k]&0x80) chc=1;
             else chc=0;
-            if((chc==1)&&(k<scr_cols-1)&&(bp[j].data[k+1]&0x80)&&(!ndiff(j,k+1))||!ndiff(j,k)&&(isprint2(bp[j].data[k]))||(k>=p&&(count>=3||count>0&&i==scr_lns-1))) {
+            if((chc==1)&&(k<scr_cols-1)&&(!ndiff(j,k+1))||!ndiff(j,k)&&(isprint2(bp[j].data[k]))||(k>=p&&(count>=3||count>0&&i==scr_lns-1))) {
                 stackt=0;
                 rel_move(tc_col, tc_line, k, i);
                 s = bp[j].mode[k];
@@ -384,7 +384,7 @@ void refresh()
                     o_cleol();
                     break;
                 }
-                if(chc==1&&(k==scr_cols-1||!(bp[j].data[k+1]&0x80)))
+                if(chc==1&&(k==scr_cols-1||!(bp[j].data[k+1]<=32)))
                     ochar('?');
                 else
                     ochar(bp[j].data[k]);
