@@ -34,25 +34,6 @@ function showUserMailbox(){ //这个函数直接调用必须保证 $loginok==1
 <?php
 }
 
-/* $secNum == -1 means fav */
-function setSecFoldCookie($secNum, $flag, $isShow) {
-	if ($isShow) $cn = "ShowSecBoards";
-	else $cn = "HideSecBoards";
-	if (isset($_COOKIE[$cn])) {
-		$ssb = $_COOKIE[$cn];
-		settype($ssb, "integer");
-	}
-	else $ssb = 0;
-	if ($flag) {
-		$ssb = $ssb | (1 << ($secNum+1));
-	} else {
-		$ssb = $ssb & ~(1 << ($secNum+1));
-	}
-	setcookie($cn, $ssb ,time() + 604800);
-	$_COOKIE[$cn] = $ssb;
-	return 0;
-}
-
 function getSecFoldCookie($secNum, $isShow = true) {
 	if ($isShow) $cn = "ShowSecBoards";
 	else $cn = "HideSecBoards";

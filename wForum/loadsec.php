@@ -22,11 +22,6 @@ if ( isset($_GET['fav']) ) {
 	$fav = false;
 	if ( ($secNum < 0)  && ($secNum >= $sectionCount)) exit(0);
 }
-
-
-setSecFoldCookie($fav ? -1 : $secNum, true, true);
-setSecFoldCookie($fav ? -1 : $secNum, false, false);
-
 ?>
 <html>
 <body>
@@ -36,8 +31,13 @@ setSecFoldCookie($fav ? -1 : $secNum, false, false);
 	showSecsJS($secNum,0,$isFold,$fav, false);
 ?>
 <script language="javascript">
-	var siteconf_BOARDS_PER_ROW = <?php echo BOARDS_PER_ROW; ?>;
-	loadBoardFollow_Internal(<?php echo $secNum ?>, <?php echo ($fav ? "true" : "false"); ?>, false, false, <?php echo ($isFold?"true":"false"); ?>, true);
+<!--
+	parent.boards<?php echo $secNum; ?> = boards;
+	parent.loadBoardFollow(<?php echo $secNum ?>, <?php echo ($fav ? "true" : "false"); ?>, false, false, <?php echo ($isFold?"true":"false"); ?>);
+	targetTip = getParentRawObject("followTip<?php echo $secNum; ?>");
+	targetTip.style.display = 'none';
+	parent.foldflag<?php echo $secNum; ?> = <?php echo ($isFold ? 2 : 1); ?>;
+//-->
 </script>
 </body>
 </html>
