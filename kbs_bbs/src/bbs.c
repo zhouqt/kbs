@@ -1136,8 +1136,10 @@ void do_quote(char *filepath, char quote_mode, char* q_file,char* q_user)
         fprintf(outf, "\n");
         fclose(inf);
     }
+    /*
     *q_file = '\0';
     *q_user = '\0';
+    */
 
     if ((numofsig > 0) && !(currentuser->signature == 0 || Anony == 1)) {       /* 签名档为0则不添加 */
         if (currentuser->signature < 0)
