@@ -28,7 +28,7 @@
 /*#include <varargs.h>*/
 #include <stdarg.h>
 
-#define o_clear() {output("\x1b[H\x1b[J",6); tc_mode=0; tc_color=7;  tc_col=0; tc_line=0; }
+#define o_clear() {output("\x1b[m\x1b[H\x1b[J",9); tc_mode=0; tc_color=7;  tc_col=0; tc_line=0; }
 #define o_cleol() output("\x1b[K",3)
 
 unsigned char scr_lns, scr_cols;
@@ -132,8 +132,8 @@ void initscr()
 
 void rel_move(int was_col, int was_ln, int new_col, int new_ln)
 {
-    register int i;
-    register struct screenline *bp = big_picture;
+    int i;
+    struct screenline *bp = big_picture;
     if (new_ln >= t_lines || new_col >= t_columns)
         return;
     if(was_col==new_col&&was_ln==new_ln) return;
@@ -170,7 +170,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
 
 void refresh()
 {
-    int i, j, k, ii, p;
+    int i, j, k, ii, p, s;
     struct screenline *bp = big_picture;
     int count=0;
     int stack[100],stackt=0;
@@ -225,8 +225,10 @@ void refresh()
         if((bp[j].mode[k]&SCREEN_MODIFIED)&&(isprint2(bp[j].data[k])||bp[j].data[k]==0)) {
             stackt=0;
             rel_move(tc_col, tc_line, k, i);
-            bp[j].mode[k]&=(~SCREEN_MODIFIED);
-            if((~bp[j].mode[k])&tc_mode!=0) {
+            s = bp[j].mode[k];
+            s=s&(~SCREEN_MODIFIED);
+            bp[j].mode[k]=s;
+            if((~s)&tc_mode!=0) {
                 tc_mode = 0;
                 tc_color = 7;
                 stack[stackt++]=0;
