@@ -186,6 +186,7 @@ if ($board) {
         $usernum = $currentuser['index'];
         if (bbs_checkreadperm($usernum, $bid) == 0)
     		html_error_quit('不存在该目录');
+        bbs_set_onboard($bid,1);
         if (bbs_normalboard($board)) {
             $dotnames = BBS_HOME . '/' . $path . '/.Names';
             if (cache_header('public, must-revalidate',filemtime($dotnames),10))
