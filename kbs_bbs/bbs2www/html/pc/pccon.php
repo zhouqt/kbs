@@ -43,7 +43,7 @@
 </tr>
 <tr>
 	<td class="t5">
-	<input type="submit" value="发表评论" class="f1">
+	<input type="submit" name="postbutton" id="postbutton" onclick="submitwithcopy()" value="发表评论" class="f1">
 	<input type="button" value="返回上页" class="f1" onclick="history.go(-1)">
 	<input type="button" value="使用HTML编辑器" class="f1" onclick="window.location.href='pccom.php?act=pst&nid=<?php echo $nid; ?>';">
 </tr>

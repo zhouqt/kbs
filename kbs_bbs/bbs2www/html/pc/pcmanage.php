@@ -399,7 +399,7 @@
 	<td class="t2">
 		<input type="button" name="ins" value="插入HTML" class="b1" onclick="return insertHTML();" />
 		<input type="button" name="hil" value="高亮" class="b1" onclick="return highlight();" />
-		<input type="submit" onclick="submitwithcopy()" value="发表本文" class="b1">
+		<input type="submit" name="postbutton" id="postbutton"  onclick="submitwithcopy()" value="发表本文" class="b1">
 		<input type="button" value="返回上页" onclick="history.go(-1)" class="b1">
 	</td>
 </tr>
@@ -549,7 +549,7 @@
 	<td class="t2">
 		<input type="button" name="ins" value="插入HTML" class="b1" onclick="return insertHTML();" />
 		<input type="button" name="hil" value="高亮" class="b1" onclick="return highlight();" />
-		<input type="submit" onclick="submitwithcopy()" value="修改本文" class="b1">
+		<input type="submit" name="postbutton" id="postbutton" onclick="submitwithcopy()" value="修改本文" class="b1">
 		<input type="button" value="返回上页" onclick="history.go(-1)" class="b1">
 	</td>
 </tr>

@@ -28,8 +28,13 @@ function submitwithcopy() {
     Copied = holdtext.createTextRange(); 
     Copied.execCommand('Copy'); 
     //alert('文章内容已复制到剪贴板，如果发表失败，请重新发表'); 
-    return true;    
+    document.postform.postbutton.value="发表中，请稍后……";
+	document.postform.postbutton.disabled=true;
+	document.postform.submit();
+	return true;    
 }
+
+
 
 <!--
 // bbCode control by
