@@ -115,7 +115,7 @@ function pc_add_users($link,$userid,$corpusname,$manual,$blogtype="normal",$grou
 	}
 	else {
 	    $annTitle = "[公告] 开设 ".$userid." 群体Blog";
-	    $annBody =  "\n\n        根据用户 ".$groupmanager." 申请，经审核、讨论后决定开设".
+	    $annBody =  "\n\n        根据用户 ".$groupmanager." 申请，经审核、讨论后决定开设\n".
 	        "    ".$userid." 群体Blog，Blog 名称“".$corpusname."”。\n\n".
 		    "        Blog 大部分功能提供在web 模式下，Blog 名称、描述、\n".
 		    "    分类等属性请群体Blog管理员在web 登录后自行修改。\n\n";
