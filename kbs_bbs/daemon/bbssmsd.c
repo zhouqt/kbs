@@ -1,4 +1,3 @@
-#define SMS_SUPPORT
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -7,6 +6,7 @@
 #include <assert.h>
 #include "bbs.h"
 
+#ifdef SMS_SUPPORT
 #undef perror
 #undef printf
 
@@ -309,3 +309,8 @@ int main()
     buf=NULL;
     return 0;
 }
+#else
+main()
+{
+}
+#endif
