@@ -72,11 +72,11 @@ function main() {
 <a href="dispuser.php?id=<?php echo $online_user_list[$i]['userid'] ; ?>" target=_blank>
 <?php echo $online_user_list[$i]['userid'] ?></a>
 </td>
-<td class=TableBody1 align=left style="font-weight:normal"><a href="usermail.php?boxname=<?php echo $boxName; ?>&num=<?php echo $i+$startNum; ?>" > <?php       echo htmlspecialchars($online_user_list[$i]['username'],ENT_QUOTES); ?></a>	</td>
+<td class=TableBody1 align=left style="font-weight:normal"><a href="dispuser.php?id=<?php echo $online_user_list[$i]['userid'] ; ?>" > <?php       echo htmlspecialchars($online_user_list[$i]['username'],ENT_QUOTES); ?></a>	</td>
 <td class=TableBody1 style="font-weight:normal"><?php echo $online_user_list[$i]['userfrom']; ?></td>
 <td class=TableBody1 style="font-weight:normal"><?php printf('%02d:%02d',intval($online_user_list[$i]['idle']/60), ($online_user_list[$i]['idle']%60)); ?></td>
 <td align=center valign=middle width=130 class=TableBody1>
-<a href="#">添加好友</a> <a href="#">删除好友</a> <a href="#">发送消息</a> <a href="#">发送短信</a>
+<a href="#">添加好友</a> <a href="#">删除好友</a> <a href="javascript:replyMsg('<?php echo $online_user_list[$i]['userid'] ; ?>')">发送消息</a> <a href="#">发送短信</a>
 </td>
 </tr>
 <?php
