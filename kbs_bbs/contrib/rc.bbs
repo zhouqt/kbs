@@ -15,7 +15,6 @@ su bbs -c "rm -f $BBSHOME/sysconf.img.*"
 
 #init...
 bin/miscd daemon
-bin/webmsgd
 bin/bbslogd
 
 sleep 5
