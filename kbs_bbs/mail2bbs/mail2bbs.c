@@ -344,6 +344,7 @@ char *userid, *sender1, *sender, *title, *received;
 
             stat(fname, &fs);
             update_user_usedspace(fs.st_size, user);
+			setmailcheck(user->userid);
             return 0;
         }
     }
@@ -430,6 +431,7 @@ char *argv[];
     else
 #endif
         resolve_ucache();
+    resolve_utmp();
 
     if (argv[1] == NULL || strlen(argv[1]) == 0) {
         fprintf(stderr, "Error: Unknown sender\n");
