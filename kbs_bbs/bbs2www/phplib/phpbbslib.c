@@ -114,7 +114,6 @@ static PHP_FUNCTION(bbs_setonlineuser);
 static PHP_FUNCTION(bbs_getcurrentuinfo);
 
 ////////////////////////  User operation functions  ///////////////////////////
-static PHP_FUNCTION(bbs_saveuserdata);
 static PHP_FUNCTION(bbs_checkuserpasswd);
 static PHP_FUNCTION(bbs_setuserpasswd);
 static PHP_FUNCTION(bbs_getuserlevel);
@@ -124,6 +123,7 @@ static PHP_FUNCTION(bbs_compute_user_value);
 static PHP_FUNCTION(bbs_user_level_char);
 static PHP_FUNCTION(bbs_checkpasswd);
 #ifdef HAVE_WFORUM
+static PHP_FUNCTION(bbs_saveuserdata);
 static PHP_FUNCTION(bbs_isonline);
 #endif
 
@@ -316,7 +316,6 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_setuserscore, NULL)
 		PHP_FE(bbs_adduserscore, NULL)
 #endif
-		PHP_FE(bbs_saveuserdata, NULL)
 		PHP_FE(bbs_checkuserpasswd, NULL)
 		PHP_FE(bbs_setuserpasswd, NULL)
 		PHP_FE(bbs_getuserlevel, NULL)
@@ -349,6 +348,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_setfromhost, NULL)
         PHP_FE(bbs_checkpasswd, NULL)
 #ifdef HAVE_WFORUM
+		PHP_FE(bbs_saveuserdata, NULL)
 		PHP_FE(bbs_isonline, NULL)
 #endif
         PHP_FE(bbs_getcurrentuser, one_arg_force_ref_1)
@@ -5859,6 +5859,8 @@ static PHP_FUNCTION(bbs_fillidinfo)
     RETURN_LONG(0);
 }
 
+#ifdef HAVE_WFORUM
+
 static PHP_FUNCTION(bbs_saveuserdata)
 {
     char*   userid,
@@ -5935,14 +5937,17 @@ static PHP_FUNCTION(bbs_saveuserdata)
     usernum = getusernum(userid);
 	if(0 == usernum)RETURN_LONG(3);
 
-	if ( (userface_width<0) || (userface_width>120) ){
-		RETURN_LONG(-1);
-	}
-	if ( (userface_height<0) || (userface_height>120) ){
-		RETURN_LONG(-2);
-	}
 	if (userface_url_len!=0) {
 		userface_img=-1;
+		userface_width=0;
+		userface_height=0;
+	} else {
+		if ( (userface_width<0) || (userface_width>120) ){
+			RETURN_LONG(-1);
+		}
+		if ( (userface_height<0) || (userface_height>120) ){
+			RETURN_LONG(-2);
+		}
 	}
 
 	if( read_user_memo(userid, &(getSession()->currentmemo)) <= 0) RETURN_LONG(-2);
@@ -6002,6 +6007,7 @@ static PHP_FUNCTION(bbs_saveuserdata)
     RETURN_LONG(0);
 
 }
+#endif
 
 /**
  * Function: Create a registry form
@@ -6119,14 +6125,17 @@ static PHP_FUNCTION(bbs_createregform)
 	if(0 == usernum)RETURN_LONG(3);
 
 #ifdef HAVE_WFORUM
-	if ( (userface_width<0) || (userface_width>120) ){
-		RETURN_LONG(-1);
-	}
-	if ( (userface_height<0) || (userface_height>120) ){
-		RETURN_LONG(-2);
-	}
 	if (userface_url_len!=0) {
 		userface_img=-1;
+		userface_width=0;
+		userface_height=0;
+	} else {
+		if ( (userface_width<0) || (userface_width>120) ){
+			RETURN_LONG(-1);
+		}
+		if ( (userface_height<0) || (userface_height>120) ){
+			RETURN_LONG(-2);
+		}
 	}
 #endif
 
