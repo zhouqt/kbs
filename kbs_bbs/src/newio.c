@@ -736,7 +736,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 {
     int ch, clen = 0, curr = 0, x, y;
     char tmp[STRLEN];
-    extern char scr_cols;
+    extern int scr_cols;
     extern int RMSG;
 
     if (clearlabel == true) {
