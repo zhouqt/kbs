@@ -291,3 +291,37 @@ void newbbslog(int type, const char *fmt, ...)
     vsnprintf(msg->mtext, sizeof(buf) - ((char *) msg->mtext - (char *) msg), fmt, v);
     msgsnd(logmsqid, msg, strlen(msg->mtext) + ((char *) msg->mtext - (char *) msg) - sizeof(msg->mtype) + 1, IPC_NOWAIT | MSG_NOERROR);
 }
+
+#ifdef NEWPOSTLOG
+void newpostlog(char *userid, char *boardname, char *title, int groupid)
+{
+    char buf[512];
+    struct bbs_msgbuf *msg = (struct bbs_msgbuf *) buf;
+	struct _new_postlog *ppostlog = (struct _new_postlog *) (buf + ((char *)msg->mtext - (char *)msg) + 1);
+
+	if (userid[0]=='\0' || boardname=='\0')
+		return;
+    if (disablelog)
+        return;
+    if (logmsqid == -1 ) {
+        logmsqid = init_bbslog();
+        if (logmsqid ==-1 ) {
+            disablelog = 1;
+            return;
+        }
+    }
+
+    msg->mtype = BBSLOG_POST;
+    msg->pid = getpid();
+    msg->msgtime = time(0);
+    strncpy(msg->userid, userid, IDLEN);
+
+	strncpy(ppostlog->boardname, boardname, BOARDNAMELEN);
+	ppostlog->boardname[BOARDNAMELEN-1]='\0';
+	ppostlog->threadid = groupid;
+	strncpy(ppostlog->title, title, 80);
+	ppostlog->title[80]='\0';
+
+    msgsnd(logmsqid, msg, sizeof(struct _new_postlog) + ((char *) msg->mtext - (char *) msg) - sizeof(msg->mtype) + 1, IPC_NOWAIT | MSG_NOERROR);
+}
+#endif

@@ -1052,6 +1052,9 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     }
 #endif
     newbbslog(BBSLOG_USER, "%s", buf);
+#ifdef NEWPOSTLOG
+	newpostlog(user->userid, boardname, fh->title, fh->groupid);
+#endif
 
     if (fh->id == fh->groupid) {
         if (setboardorigin(boardname, -1)) {

@@ -269,6 +269,15 @@ struct bbs_msgbuf {
 	char mtext[1];
 };
 
+#ifdef NEWPOSTLOG
+struct _new_postlog
+{
+	char boardname[BOARDNAMELEN];
+	char title[81];
+	int threadid;
+};
+#endif
+
 struct _mail_list{
     char mail_list[MAILBOARDNUM][40];
     int mail_list_t;

@@ -18,6 +18,14 @@ struct bbs_msgbuf *rcvlog(int msqid)
 	}
     }
     retv-=((char*)msgp->mtext-(char*)&msgp->msgtime);
+#ifdef NEWPOSTLOG
+	if (msgp->mtype == BBSLOG_POST){
+		if(retv <= sizeof(struct _new_postlog)){
+			return NULL;
+		}
+		return msgp;
+	}
+#endif
     while (retv > 0 && msgp->mtext[retv - 1] == 0)
         retv--;
     if (retv==0) return NULL;
@@ -48,6 +56,29 @@ static struct taglogconfig logconfig[] = {
     {"debug.log", 10 * 1024, 0, NULL, 0}
 };
 
+#ifdef NEWPOSTLOG
+static MYSQL s;
+static int postlog_start=0;
+static int mysql_fail=0;
+
+static void opennewpostlog()
+{
+	mysql_init (&s);
+
+	if (! my_connect_mysql(&s) ){
+		return;
+	}
+	postlog_start = 1;
+	return;
+}
+
+static void closenewpostlog()
+{
+	mysql_close(&s);
+	postlog_start=0;
+}
+#endif
+
 static void openbbslog(int first)
 {
     int i;
@@ -65,6 +96,11 @@ static void openbbslog(int first)
             logconfig[i].buf = malloc(logconfig[i].bufsize);
     }
 
+#ifdef NEWPOSTLOG
+	if(first || !postlog_start)
+		opennewpostlog();
+#endif
+
 }
 static void writelog(struct bbs_msgbuf *msg)
 {
@@ -72,6 +108,32 @@ static void writelog(struct bbs_msgbuf *msg)
     struct tm *n;
     struct taglogconfig *pconf;
     char ch;
+
+#ifdef NEWPOSTLOG
+	if (msg->mtype == BBSLOG_POST){
+
+		char newtitle[161];
+		char sqlbuf[512];
+		struct _new_postlog * ppl = (struct _new_postlog *) ( &msg->mtext[1]) ;
+		char newts[20];
+
+		if(!postlog_start)
+			return;
+
+		msg->mtext[0]=0;
+
+		mysql_escape_string(newtitle, ppl->title, strlen(ppl->title));
+
+		sprintf(sqlbuf, "INSERT INTO postlog VALUES (NULL, '%s', '%s', '%s', '%s', '%d');", msg->userid, ppl->boardname, newtitle, tt2timestamp(msg->msgtime, newts), ppl->threadid );
+
+		if( mysql_real_query( &s, sqlbuf, strlen(sqlbuf) )){
+			mysql_fail ++;
+			if(mysql_fail > 10)
+				postlog_start = 0;
+		}else
+			mysql_fail = 0;
+	}
+#endif
 
     if ((msg->mtype < 0) || (msg->mtype > sizeof(logconfig) / sizeof(struct taglogconfig)))
         return;
@@ -120,6 +182,9 @@ static void flushlog(int signo)
             close(pconf->fd);
     }
     if (signo==-1) return;
+#ifdef NEWPOSTLOG
+	closenewpostlog();
+#endif
     exit(0);
 }
 
