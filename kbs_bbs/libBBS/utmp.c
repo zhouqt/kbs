@@ -289,11 +289,11 @@ int getnewutmpent(struct user_info *up)
             save_maxuser();
             setpublicshmreadonly(1);
         }
-        kick_idle_user();
         ret=pos+1;
     }
     utmp_setreadonly(1);
     utmp_unlock(utmpfd);
+    kick_idle_user();
     return ret;
 }
 
@@ -645,8 +645,8 @@ void clear_utmp(int uent, int useridx, int pid)
     utmp_unlock(lockfd);
     if (dokickuser) {
         struct userec* user;
-        user=getuserbynum(utmpshm->uinfo[uent-1].uid);
-        do_after_logout(user,get_utmpent(uent),uent,0,false);
+        user=getuserbynum(ui.uid);
+        do_after_logout(user,&ui,uent,0,false);
     }
 }
 
