@@ -2240,7 +2240,7 @@ static void bbs_make_favdir_zval(zval * value, char *col_name, struct newpostdat
 		/* 保存目录的上一级的索引值 */
         ZVAL_LONG(value, getSession()->favbrd_list[brd->tag].father);
     } else if (strncmp(col_name, "FLAG", len) == 0){
-        ZVAL_LONG(value, brd->flag);/*added end */
+        ZVAL_LONG(value, (brd->flag == 0xffffffff) ? -1 : brd->flag);/*added end */
     } else if (strncmp(col_name, "BID", len) == 0){
 		/* 保存目录的索引值 */
         ZVAL_LONG(value, brd->tag);/*added end */

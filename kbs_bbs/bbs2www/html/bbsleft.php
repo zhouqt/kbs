@@ -54,7 +54,7 @@
 				if( $brd_bid[$j] == -1) { //¿ÕÊÕ²ØÄ¿Â¼
 					echo "-¿ÕÄ¿Â¼-";
 				}
-				else if ($brd_flag[$j]==0xffffffff)
+				else if ($brd_flag[$j]==-1)
 				{
 ?>
 <div class="fi">

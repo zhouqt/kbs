@@ -113,7 +113,7 @@ login_init();
 <tr>
 <td class="kt3 c2" align=center height=25><?php echo $i+1; ?></td>
 <?php
-                        if ($brd_flag[$i] == 0xffffffff )
+                        if ($brd_flag[$i] == -1 )
                         {
 ?>
         <td class="kt4 c2"> <img src="images/groupgroup.gif" height="15" width="20"  alt="£«" title="°æÃæ×é"></td><td class="kt3 c3"><a class="kts1" href="bbsfav.php?select=<?php echo $brd_bid[$i];?>">
