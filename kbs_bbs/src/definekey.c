@@ -134,7 +134,7 @@ static int set_keydefine_show(struct _select_def *conf, int i)
 {
     char buf[120], buf2[20];
     get_key_name(keymem[i].key, buf2);
-    get_key_names(keymem+i, buf);
+    get_keys_name(keymem+i, buf);
     prints(" %6s  %-36s  %-32s", buf2, buf, "");
     return SHOW_CONTINUE;
 }
