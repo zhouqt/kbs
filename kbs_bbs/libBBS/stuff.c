@@ -683,6 +683,12 @@ struct public_data *get_publicshm()
     return publicshm;
 }
 
+void detach_publicshm()
+{
+    shmdt(publicshm);
+    publicshm=NULL;
+}
+
 int getwwwguestcount()
 {
     return publicshm->www_guest_count;

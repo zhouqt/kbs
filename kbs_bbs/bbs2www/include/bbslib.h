@@ -336,6 +336,7 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
 int www_user_logoff(struct userec *user, int useridx, struct user_info *puinfo, int userinfoidx);
 int www_user_init(int useridx, char *userid, int key, struct userec **x, struct user_info **y);
 int www_data_init();
+void www_data_detach();
 int can_enter_chatroom();
 int can_send_mail();
 int can_reply_post(char *board, char *filename);

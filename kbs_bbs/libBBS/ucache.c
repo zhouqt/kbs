@@ -351,6 +351,14 @@ void resolve_ucache()
     }
 }
 
+void detach_ucache()
+{
+    shmdt(uidshm);
+    uidshm=NULL;
+    shmdt(passwd);
+    passwd=NULL;
+}
+
 /*---	period	2000-10-20	---*/
 int getuserid(char *userid, int uid)
 {

@@ -173,6 +173,15 @@ void resolve_boards()
         }
     }
 }
+
+void detach_boards()
+{
+    munmap(bcache, MAXBOARD * sizeof(struct boardheader));
+    bcache=NULL;
+    shmdt(brdshm);
+    brdshm=NULL;
+}
+
 struct BoardStatus *getbstatus(int index)
 {
     return &brdshm->bstatus[index];

@@ -23,6 +23,7 @@ extern "C" {
     unsigned int ucache_hash(const char *userid);       /* hash function export for utmp usage */
 
     void resolve_ucache();
+    void detach_ucache();
 
     int getuserid(char *userid, int uid);
     void setuserid(int num, const char *userid);        /* 设置user num的id为user id */
@@ -88,6 +89,7 @@ extern "C" {
     void output(char *s, int len);
 
 /* defined in stuff.c */
+    void detach_publicshm();
     int multilogin_user(struct userec *user, int usernum);
     time_t get_exit_time(char *id, char *exittime);
     int dashf(char *fname);
@@ -182,6 +184,7 @@ extern "C" {
     int get_nextid(char *boardname);    /*生成文章索引号并自动加一 */
 
 /* define in boards.c */
+    void detach_boards();
     int anonymousboard(char *board);
     int load_boards(char *boardprefix);
     void brc_clear_new_flag(unsigned fid);    /* 清除版面的到这篇文章未读标记 */

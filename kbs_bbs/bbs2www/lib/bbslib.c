@@ -1881,6 +1881,12 @@ static int resolve_guest_table()
     return 0;
 }
 
+void www_data_detach()
+{
+    shmdt(wwwguest_shm);
+    wwwguest_shm= NULL;
+}
+
 int www_data_init()
 {
     struct userec *guest;

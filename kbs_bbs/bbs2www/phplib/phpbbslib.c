@@ -1131,7 +1131,11 @@ static ZEND_MINIT_FUNCTION(bbs_module_init)
 
 static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown)
 {
+    www_data_detach();
     detach_utmp();
+    detach_boards();
+    detch_ucache();
+
 #ifdef DEBUG
     zend_error(E_WARNING, "module shutdown");
 #endif
