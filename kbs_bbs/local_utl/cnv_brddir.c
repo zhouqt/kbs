@@ -316,11 +316,28 @@ static int convert_delete(const char *boardname)
 	munmap(fh, fs.st_size);
 	printf(" Done.\n");
 
-	///////////// Convert .DIGEST file ///////////// 
+	return 0;
+}
+
+static int convert_junk(const char *boardname)
+{
+	char buff[256];
+	int fd;
+	struct fileheader *fh;
+	struct fileheader *fhptr;
+	struct stat fs;
+	int records;
+	int i, j, k, rn;
+	Node * ptr;
+
+	snprintf(buff, sizeof(buff), "%s/boards/%s", BBS_HOME, boardname);
+	chdir(buff);
+	///////////// Convert .DELETED file ///////////// 
+
 	if ((fd = open(".JUNK", O_RDWR)) == -1)
 	{
-		printf("No .JUNK file.\n");
-		return 1;
+		perror("open .JUNK");
+		return -1;
 	}
 
 	printf("Converting .JUNK file ...");
@@ -335,8 +352,65 @@ static int convert_delete(const char *boardname)
 		close(fd);
 		return -1;
 	}
+	k = 0;
+	// read every record in sequence
 	for (i = 0; i < records; i++)
 	{
+		fhptr = fh + i;
+        rn = 0 + (int) (52.0 * rand() / (RAND_MAX + 1.0));
+		if (fhptr->filename[0] != '\0' && fhptr->filename[1] == '.')
+		{
+			fhptr->posttime = atoi(fhptr->filename + 2);
+			snprintf(buff, sizeof(buff), "%c/%s", alphabet[rn], fhptr->filename);
+			rename(fhptr->filename, buff);
+			strncpy(fhptr->filename, buff, sizeof(fhptr->filename));
+		}
+	}
+	close(fd);
+	munmap(fh, fs.st_size);
+	printf(" Done.\n");
+
+	return 0;
+}
+
+static int convert_ding(const char *boardname)
+{
+	char buff[256];
+	int fd;
+	struct fileheader *fh;
+	struct fileheader *fhptr;
+	struct stat fs;
+	int records;
+	int i, j, k, rn;
+	Node * ptr;
+
+	snprintf(buff, sizeof(buff), "%s/boards/%s", BBS_HOME, boardname);
+	chdir(buff);
+	///////////// Convert .DELETED file ///////////// 
+
+	if ((fd = open(".DINGDIR", O_RDWR)) == -1)
+	{
+		perror("open .DINGDIR");
+		return -1;
+	}
+
+	printf("Converting .DINGDIR file ...");
+	fflush(stdout);
+
+	fstat(fd, &fs);
+	records = fs.st_size / sizeof(struct fileheader);
+	fh = mmap(NULL, fs.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	if (fh == MAP_FAILED)
+	{
+		perror("mmap");
+		close(fd);
+		return -1;
+	}
+	k = 0;
+	// read every record in sequence
+	for (i = 0; i < records; i++)
+	{
+		fhptr = fh + i;
         rn = 0 + (int) (52.0 * rand() / (RAND_MAX + 1.0));
 		if (fhptr->filename[0] != '\0' && fhptr->filename[1] == '.')
 		{
@@ -366,13 +440,15 @@ static int remove_files(const char *boardname)
 	return 0;
 }
 
-int cnv_board_dir(struct boardheader *bh, void *arg)
+static int cnv_board_dir(struct boardheader *bh, void *arg)
 {
 	printf("=======================================\n");
 	printf("Boardname: %s\n", bh->filename);
 	build_dir(bh->filename);
 	convert_normal(bh->filename);
 	convert_delete(bh->filename);
+	convert_junk(bh->filename);
+	convert_ding(bh->filename);
 	remove_files(bh->filename);
 	return 0;
 }
