@@ -231,7 +231,7 @@ register char *str;
 }
 
 typedef int (*CMD_FUNC)();
-CMD_FUNC cmdlist_funcptr(char *func_name)
+static CMD_FUNC cmdlist_funcptr(char *func_name)
 {
     int         n = 0;
     char        *str;
@@ -247,7 +247,9 @@ CMD_FUNC cmdlist_funcptr(char *func_name)
 extern int sysconf_menu;
 struct _menupos {
 	int line,col;
+	CMD_FUNC fptr;
 };
+
 extern struct smenuitem* menuitem;
 static struct _menupos *menupos=NULL;
 
@@ -324,6 +326,7 @@ static void copymenupos()
     for( n = 0; n < sysconf_menu; n++ ) {
         menupos[n].line=menuitem[n].line;
         menupos[n].col=menuitem[n].col;
+        menupos[n].fptr=cmdlist_funcptr(sysconf_relocate(menuitem[n].name));
     }
 }
 
@@ -367,7 +370,7 @@ char    *menu_name;
     }
     modify_user_mode( MMENU );
     /* added by netty  */
-if (nettyNN ==1) { R_monitor(NULL);}
+	if (nettyNN ==1) { R_monitor(NULL);}
     while( 1 ) {
     	int (*fptr)();
         printacbar();
@@ -418,7 +421,7 @@ if (nettyNN ==1) { R_monitor(NULL);}
             if( strcmp( sysconf_relocate(pm[now].arg), ".." ) == 0 ) {
                 return 0;
             }
-            fptr=cmdlist_funcptr(sysconf_relocate(pm[now].func_name));
+            fptr=menupos[base+now].fptr;
             if( fptr != NULL ) {
                 move( 1, cmdplen );
                 clrtoeol();
@@ -436,7 +439,7 @@ if (nettyNN ==1) { R_monitor(NULL);}
                 if( menupos[base+i].line == menupos[base+now].line && pm[i].level >= 0 &&
                         menupos[base+i].col < menupos[base+now].col && HAS_PERM(currentuser, pm[i].level ) )
                     break;
-                if( cmdlist_funcptr(sysconf_relocate(pm[i].func_name)) == Goodbye )
+                if( menupos[base+i].fptr == Goodbye )
                     break;
             }
             if( i < size ) {
