@@ -137,7 +137,11 @@ function bbs_roam_readinfor($userid) {
     foreach ($lines as $line) {
         $line = ltrim(trim($line));
         $exp = explode (':',$line);
-        $ret[$exp[0]]=$exp[1];
+        $k = ltrim (trim ($exp[0]));
+        $v = ltrim (trim ($exp[1]));
+        if (!$k || !$v)
+            return 0;
+        $ret[$k]=$v;
     }
     return $ret;
 }
@@ -215,6 +219,7 @@ function bbs_roam_normalboard($board) {
 }
 
 function bbs_roam_ann_traverse_check($filename,$userid) {
+    if (!$userid) return -1;
     $ret = bbs_roam_query('ann_traverse_check',array ($filename,$userid),0,$data,$err);
     if ($ret < 0) return -1;
     if ($ret == 1 && strcasecmp ($err,'OK') == 0) return 1;
