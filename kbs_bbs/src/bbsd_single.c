@@ -86,7 +86,7 @@ local_prints(va_alist)
 va_dcl
 {
     va_list args;
-    unsigned char buf[512], *fmt;
+    char buf[512], *fmt;
 
     va_start(args);
     fmt = va_arg(args, char *);
@@ -528,6 +528,17 @@ char* argv;
     execl( bbs_prog_path,"bbsnew",code, hid,  NULL) ; /*µ÷ÓÃBBS*/
 #endif
 #endif
+    {
+        struct stat st;
+	struct rlimit rl;
+
+        if (stat("core",&st)==-1) {
+            rl.rlim_cur=80*1024*1024;
+            rl.rlim_max=200*1024*1024;
+            setrlimit(RLIMIT_CORE,&rl);
+	}
+    }
+
     main_bbs(hid,0,argv);
     exit(-1);
     write(0,"execl failed\r\n",12);

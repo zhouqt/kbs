@@ -77,6 +77,7 @@ search_file(char *filename) /* Leeward 98.10.02 */
 	if (rptr == (struct fileheader * )-1) {close(fd);return -1;}
     if (!sigsetjmp(bus_jump,1)) {
         signal(SIGBUS,sigbus);
+	signal(SIGSEGV,sigbus);
 	for (i = 0, rptr1 = rptr; i<(int)(st.st_size/sizeof(struct fileheader)); i++, rptr1++)
 	    if (!strcmp(filename,rptr1->filename)) {
 		munmap(rptr,st.st_size);
@@ -87,6 +88,7 @@ search_file(char *filename) /* Leeward 98.10.02 */
     munmap(rptr,st.st_size);  
     close(fd);
     signal(SIGBUS,SIG_IGN);
+    signal(SIGSEGV,SIG_IGN);
     return - 1;
 }
 
@@ -1421,6 +1423,7 @@ int             offset, aflag;
     if ((int)pFh == -1) {close(fd); return 0;}
     if (!sigsetjmp(bus_jump,1)) {
         signal(SIGBUS,sigbus);
+        signal(SIGSEGV,sigbus);
 	pFh1 = pFh + now -1;
 	while (1)  {
     	    if( offset > 0 ) {
@@ -1482,6 +1485,7 @@ int             offset, aflag;
         match=0;
     }
     signal(SIGBUS,SIG_IGN);
+    signal(SIGSEGV,SIG_IGN);
     munmap(pFh,st.st_size);
     close(fd);
     move( t_lines-1, 0 );

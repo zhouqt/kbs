@@ -227,6 +227,7 @@ apply_record(char *filename ,int (*fptr)(char*,char*) ,int size ,char* arg)
     
     if (!sigsetjmp(bus_jump,1)) {
         signal(SIGBUS,sigbus);
+	signal(SIGSEGV,sigbus);
     
         for (i=0,buf1=buf;i<stat.st_size/size;i++,buf1+=size) {
             memcpy(buf2,buf1,size);
@@ -240,6 +241,7 @@ apply_record(char *filename ,int (*fptr)(char*,char*) ,int size ,char* arg)
     munmap(buf,stat.st_size);
     close(fd) ;
     signal(SIGBUS,SIG_IGN);
+    signal(SIGSEGV,SIG_IGN);
     return 0 ;
 }
 
@@ -280,6 +282,7 @@ int sorted ; /* if records in file are sorted */
     if (buf == (char *)-1) { close(fd); return 0;}
     if (!sigsetjmp(bus_jump,1)) {
         signal(SIGBUS,sigbus);
+	signal(SIGSEGV,sigbus);
         for (i = start, buf1 = buf; i>=0; i--, buf1-=size) {
             if ((*fptr)(farg,buf1)) {
     	        memcpy(rptr,buf1,size);
@@ -292,6 +295,7 @@ int sorted ; /* if records in file are sorted */
     munmap(buf,start * size);
     close(fd);
     signal(SIGBUS,SIG_IGN);
+    signal(SIGSEGV,SIG_IGN);
     return 0;
 }
 
@@ -320,6 +324,7 @@ char *farg ;
     if (buf == (char *)-1) { close (fd); return 0;}
     if (!sigsetjmp(bus_jump,1)) {
         signal(SIGBUS,sigbus);
+	signal(SIGSEGV,sigbus);
         for (i =0,buf1=buf;i<stat.st_size/size;i++,buf1+=size) {
             if ((*fptr)(farg,buf1)) {
     		memcpy(rptr,buf1,size);
@@ -332,6 +337,7 @@ char *farg ;
     munmap(buf,stat.st_size);
     close(fd) ;
     signal(SIGBUS,SIG_IGN);
+    signal(SIGSEGV,SIG_IGN);
     return 0 ;
 }
 
