@@ -75,6 +75,7 @@ int prepf(int fp,struct pattern_image** ppatt_img,size_t* patt_image_len)
     *ppatt_img=(struct pattern_image*)malloc(sizeof(struct pattern_image));
     patt_img=*ppatt_img;
     *patt_image_len=sizeof(*patt_img);
+    bzero(patt_img,*patt_image_len);
     pat_ptr=patt_img->pat_spool;
     patt_img->LONG = 0;
     patt_img->SHORT = 0;

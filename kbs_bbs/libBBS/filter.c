@@ -7,6 +7,9 @@ extern int mgrep(int fp,void* patternbuf);
 extern int mgrep_str(char* data,int len,void* patternbuf);
 extern void releasepf(void* patternbuf);
 //³ÌÐòÃû
+#ifdef BBSMAIN
+extern void abort_bbs(int sign);
+#endif
 
 int WORDBOUND, WHOLELINE, NOUPPER, INVERSE, FILENAMEONLY, SILENT, FNAME;
 int ONLYCOUNT, num_of_matched, total_line;
@@ -68,7 +71,7 @@ retry2:
 static void default_setting()
 {
     WHOLELINE = 0;
-    NOUPPER = 0;
+    NOUPPER = 1;
     INVERSE = 0;
     FILENAMEONLY = 1;
     WORDBOUND = 0;
@@ -87,25 +90,51 @@ int check_badword(char *checkfile)
     int pattern_img_size;
     int retrycount=0;
 
+    alarm(2);
+#ifdef BBSMAIN
+    signal(SIGALRM,abort_bbs);
+#endif
 retry:
     default_setting();
     CurrentFileName = checkfile;
     BBS_TRY {
         if (safe_mmapfile(checkfile, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)
+	{
+    alarm(0);
+#ifdef BBSMAIN
+    signal(SIGALRM,SIG_IGN);
+#endif
             BBS_RETURN(0);
+	}
         if (check_badwordimg(0)!=0)
+	{
+    alarm(0);
+#ifdef BBSMAIN
+    signal(SIGALRM,SIG_IGN);
+#endif
             BBS_RETURN(0);
+	}
         retv = mgrep_str(ptr, size,badword_img);
     }
     BBS_CATCH {
         if (check_badwordimg(1)!=0)
+	{
+    alarm(0);
+#ifdef BBSMAIN
+    signal(SIGALRM,SIG_IGN);
+#endif
             BBS_RETURN(0);
+	}
 	retrycount++;
 	if (retrycount==0)
 	  goto retry;
     	retv=-2;
     }
     BBS_END end_mmapfile((void *) ptr, size, -1);
+    alarm(0);
+#ifdef BBSMAIN
+    signal(SIGALRM,SIG_IGN);
+#endif
     return retv;
 }
 
@@ -114,23 +143,41 @@ int check_badword_str(char *string,int str_len)
     int retv;
     int retrycount=0;
 
+    alarm(2);
+#ifdef BBSMAIN
+    signal(SIGALRM,abort_bbs);
+#endif
     default_setting();
     CurrentFileName = "";
 retry:
     BBS_TRY {
-        if (check_badwordimg(0)!=0)
+        if (check_badwordimg(0)!=0) {
+    alarm(0);
+#ifdef BBSMAIN
+    signal(SIGALRM,SIG_IGN);
+#endif
             BBS_RETURN(0);
+	}
         retv = mgrep_str(string, str_len,badword_img);
     }
     BBS_CATCH {
-        if (check_badwordimg(1)!=0)
+        if (check_badwordimg(1)!=0) {
+    alarm(0);
+#ifdef BBSMAIN
+    signal(SIGALRM,SIG_IGN);
+#endif
             BBS_RETURN(0);
+	}
 	retrycount++;
 	if (retrycount==0)
 	  goto retry;
     	retv=-2;
     }
     BBS_END
+    alarm(0);
+#ifdef BBSMAIN
+    signal(SIGALRM,SIG_IGN);
+#endif
     return retv;
 }
 
