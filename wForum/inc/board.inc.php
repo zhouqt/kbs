@@ -183,6 +183,10 @@ function showBoardContents($boardID,$boardName,$page){
 		}
 		echo " ]</b>";
 	}
+	if ((($origin['FLAGS'][0] >= 'A') && ($origin['FLAGS'][0] <= 'Z')) || ($origin['FLAGS'][0] == '*')) {
+		 //very dirty way, 测试而已，只判断原贴是否为读，可以换成比方判断24小时之内有新贴 blah blah... - atppp
+		echo "<img src=\"pic/topnew2.gif\" alt=\"原贴未读\">";
+	}
 ?>
 </TD><TD class=TableBody2 width=80><a href="dispuser.php?id=<?php echo $origin['OWNER'] ;?>" target=_blank><?php echo $origin['OWNER'] ;?></a></TD><TD class=TableBody1 width=64><?php echo $threadNum; ?></TD><TD align=left class=TableBody2 width=195>&nbsp;<a href="disparticle.php?boardName=<?php echo $boardName ;?>&ID=<?php echo $origin['ID'];?>&start=<?php echo $total; ?>">
 <?php
