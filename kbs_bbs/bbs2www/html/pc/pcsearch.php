@@ -3,7 +3,6 @@
 	** look for a personal corp.
 	** @id:windinsn Nov 19,2003
 	*/
-	$needlogin=0;
 	require("pcfuncs.php");
 	
 	$keyword = addslashes(trim($_GET["keyword"]));

@@ -3,7 +3,6 @@
 	** article search in personal corp.
 	** @id:windinsn nov 30,2003
 	*/
-	$needlogin=0;
 	require("pcfuncs.php");
 	
 	function pc_search_display_pagetool($tpage,$cpage,$keyword,$area)

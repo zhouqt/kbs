@@ -4,7 +4,6 @@
 	** personal corp.
 	** @id:windinsn Nov 19,2003
 	*/
-	//$needlogin=0;
 	require("pcfuncs.php");
 	
 	function display_user_list($link,$listorder="username",$listorder1="ASC",$char=FALSE,$startno=0,$pagesize=10)

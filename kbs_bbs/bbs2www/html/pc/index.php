@@ -621,10 +621,10 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 				<tr><td class=t17>
 				&gt;&gt; ·ÃÎÊÈËÊı
 				</td></tr>
-				<tr><td class=t17><?php pc_user_infor($pc); ?></td></tr>
 				<tr><td style="text-align:center;color:#FF6600;font-weight:bolder;background-color:#F6F6F6;font-family: Verdana, Arial, Helvetica, sans-serif;font-size: 14px;font-style: italic;line-height: 22px;">
 				<?php echo $pc["VISIT"]; ?>
 				</td></tr>
+				<tr><td class=t17><?php pc_user_infor($pc); ?></td></tr>
 				<tr><td class=t17><center>
 				<?php display_blog_out_rss($pc); ?>
 				<?php display_klip_out($pc); ?></center>

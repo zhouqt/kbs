@@ -1,5 +1,4 @@
 <?php
-	$needlogin=0;
 	require_once("pcfuncs.php");
 	
 	function pc_rss_init()

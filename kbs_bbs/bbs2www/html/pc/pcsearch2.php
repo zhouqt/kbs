@@ -1,5 +1,4 @@
 <?php
-	$needlogin=0;
 	require("pcfuncs.php");
 	
 	pc_html_init("gb2312","BlogËÑË÷");

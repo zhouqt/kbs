@@ -2,7 +2,6 @@
 /*
 ** @id:windinsin nov 29,2003
 */
-$needlogin=0;
 require_once("pcfuncs.php");
 
 function getNewBlogs($link,$pno=1)

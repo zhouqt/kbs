@@ -2,7 +2,6 @@
 	/*
 	** @id:windinsn dec 22,2003
 	*/
-	$needlogin = 0;
 	require("pcfuncs.php");
 	
 	function pc_check_archdate($yy,$mm)

@@ -3,7 +3,6 @@
 	** @id:windinsn dec 20,2003
 	** enable KlipFolio Channel
 	**/
-	$needlogin = 0;
 	require("pcfuncs.php");
 	
 	$userid = addslashes($_GET["id"]);
