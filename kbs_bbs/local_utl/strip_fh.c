@@ -58,7 +58,10 @@ static void strip_fileheader(const fileheader_v1_2 *oldfh, fileheader *fh,
 	fh->attachment = oldfh->attachment;
 	strncpy(fh->title, oldfh->title, ARTICLE_TITLE_LEN - 1);
 	fh->title[ARTICLE_TITLE_LEN - 1] = '\0';
-	memcpy(fh->accessed, oldfh->accessed, sizeof(fh->accessed));
+	fh->accessed[0] = oldfh->accessed[0];
+	fh->accessed[1] = oldfh->accessed[1];
+	fh->accessed[sizeof(fh->accessed) - 1] = 
+									oldfh->accessed[sizeof(fh->accessed) - 1];
 }
 
 static void strip_mail_fileheader(const fileheader_v1_2 *oldfh, fileheader *fh,
@@ -218,28 +221,37 @@ static int strip_mail(struct userec *user, char *arg)
 	return 0;
 }
 
-static int rollback_board(struct boardheader * bh, void * arg)
+static void rollback_board_file(const char *bname, const char *dir)
 {
 	char dir_path[256];
 	char old_dir_path[256];
 
-	setbfile(dir_path, bh->filename, ".DIR");
+	setbfile(dir_path, bname, dir);
 	sprintf(old_dir_path, "%s.v1.2", dir_path);
-	rename(old_dir_path, dir_path);
-	setbfile(dir_path, bh->filename, ".DIGEST");
-	sprintf(old_dir_path, "%s.v1.2", dir_path);
-	rename(old_dir_path, dir_path);
-	setbfile(dir_path, bh->filename, ".DELETED");
-	sprintf(old_dir_path, "%s.v1.2", dir_path);
-	rename(old_dir_path, dir_path);
-	setbfile(dir_path, bh->filename, ".JUNK");
-	sprintf(old_dir_path, "%s.v1.2", dir_path);
-	rename(old_dir_path, dir_path);
-	setbfile(dir_path, bh->filename, ".DINGDIR");
-	sprintf(old_dir_path, "%s.v1.2", dir_path);
-	rename(old_dir_path, dir_path);
+	if (dashf(old_dir_path))
+		rename(old_dir_path, dir_path);
+}
+
+static int rollback_board(struct boardheader * bh, void * arg)
+{
+	rollback_board_file(bh->filename, ".DIR");
+	rollback_board_file(bh->filename, ".DIGEST");
+	rollback_board_file(bh->filename, ".DELETED");
+	rollback_board_file(bh->filename, ".JUNK");
+	rollback_board_file(bh->filename, ".DINGDIR");
 
 	return 0;
+}
+
+static void rollback_mail_file(const char *username, const char *dir)
+{
+	char dir_path[256];
+	char old_dir_path[256];
+
+	setmailfile(dir_path, username, dir);
+	sprintf(old_dir_path, "%s.v1.2", dir_path);
+	if (dashf(old_dir_path))
+		rename(old_dir_path, dir_path);
 }
 
 static int rollback_mail(struct userec *user, char *arg)
@@ -247,30 +259,20 @@ static int rollback_mail(struct userec *user, char *arg)
 	struct _mail_list ml;
 	int i;
 	char buf[STRLEN];
-	char dir_path[256];
-	char old_dir_path[256];
 
 	if (user == NULL || user->userid[0] == '\0')
 		return;
 	bzero(&ml, sizeof(ml));
 	load_mail_list(user, &ml);
 	/* 系统信箱 */
-	setmailfile(dir_path, user->userid, ".DIR");
-	sprintf(old_dir_path, "%s.v1.2", dir_path);
-	rename(old_dir_path, dir_path);
-	setmailfile(dir_path, user->userid, ".SENT");
-	sprintf(old_dir_path, "%s.v1.2", dir_path);
-	rename(old_dir_path, dir_path);
-	setmailfile(dir_path, user->userid, ".DELETED");
-	sprintf(old_dir_path, "%s.v1.2", dir_path);
-	rename(old_dir_path, dir_path);
+	rollback_mail_file(user->userid, ".DIR");
+	rollback_mail_file(user->userid, ".SENT");
+	rollback_mail_file(user->userid, ".DELETED");
 	/* 自定义信箱 */
 	for (i = 0; i < ml.mail_list_t; i++)
 	{
 		sprintf(buf, ".%s", ml.mail_list[i] + 30);
-		setmailfile(dir_path, user->userid, buf);
-		sprintf(old_dir_path, "%s.v1.2", dir_path);
-		rename(old_dir_path, dir_path);
+		rollback_mail_file(user->userid, buf);
 	}
 
 	return 0;
