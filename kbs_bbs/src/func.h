@@ -396,7 +396,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     int get_record(char *filename, void *rptr, int size, int id);
     int delete_range(char *filename, int id1, int id2, int del_mode);
     int get_records(char *filename, void *rptr, int size, int id, int number);
-    int read_get_records(char *filename, char *filename1, void *rptr, int size, int id, int number);
+    int read_get_records(char *filename, char *filename1, char *rptr, int size, int id, int number);
     int search_record_back(int fd,      /* idx file handle */
                            int size,    /* record size */
                            int start,   /* where to start reverse search */

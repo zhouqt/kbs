@@ -22,8 +22,13 @@ struct _select_def* select_set_current_conf(struct _select_def* conf)
 static int check_valid(struct _select_def *conf)
 {
     int ret = SHOW_CONTINUE;;
-    if (conf->item_count <= 0)
+    if (conf->item_count < 0)
         return SHOW_QUIT;
+    if (conf->item_count < 0) {
+        conf->pos=0;
+        conf->page_pos=0;
+	return ret;
+    }
     if (conf->page_pos > conf->item_count) {
         conf->page_pos = (conf->item_count / conf->item_per_page)* conf->item_per_page +1;
         ret = SHOW_DIRCHANGE;
