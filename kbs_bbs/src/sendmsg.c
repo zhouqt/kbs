@@ -411,7 +411,10 @@ void r_msg()
     struct user_info * uin;
     struct msghead head;
     int now, count, canreply, first=1;
+    int savemode;
 
+    savemode=uinfo.mode;
+    modify_user_mode(MSG);
     good_getyx(&y, &x);
     tmpansi = showansi;
     showansi = 1;
@@ -550,6 +553,7 @@ outhere:
     RMSGCount--;
     if (0 == RMSGCount)
         RMSG = false;
+    modify_user_mode(savemode);
     return;
 }
 
