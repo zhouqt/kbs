@@ -39,6 +39,8 @@ define('SHOWREPLYTREE', 1);  //是否用树图显示回复结构
 
 define('ALLOWMULTIQUERY', 1); //是否允许全站/多版面查询
 
+//define('AUTO_KICK', false); //一个用户登录过多时是自动（是）还是提示（否）踢出以前的登录
+
 //define('SMS_SUPPORT', 0); //是否允许手机短信
 
 //define('USER_FACE', 1); //是否允许自定义头像
