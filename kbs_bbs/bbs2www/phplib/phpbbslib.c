@@ -2,6 +2,7 @@
 #include "bbs.h"
 
 static ZEND_FUNCTION(bbs_getuser);
+static ZEND_FUNCTION(bbs_getonlineuser);
 
 static ZEND_MINIT_FUNCTION(bbs_module_init);
 static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown);
@@ -13,6 +14,7 @@ static ZEND_RSHUTDOWN_FUNCTION(bbs_request_shutdown);
  */
 static function_entry bbs_php_functions[] = {
         ZEND_FE(bbs_getuser, NULL)
+        ZEND_FE(bbs_getonlineuser, NULL)
         {NULL,NULL,NULL}
 };
 
@@ -71,6 +73,27 @@ static void assign_user(zval* array,struct userec* user)
 	add_assoc_long(array,"noteline",user->noteline);
 	add_assoc_long(array,"notemode",user->notemode);
 }
+
+static void assign_userinfo(zval* array,struct user_info* uinfo)
+{
+	add_assoc_long(array,"active",uinfo->active);
+	add_assoc_long(array,"uid",uinfo->uid);
+	add_assoc_long(array,"pid",uinfo->pid);
+	add_assoc_long(array,"invisible",uinfo->invisible);
+	add_assoc_long(array,"sockactive",uinfo->sockactive);
+	add_assoc_long(array,"sockaddr",uinfo->sockaddr);
+	add_assoc_long(array,"destuid",uinfo->destuid);
+	add_assoc_long(array,"mode",uinfo->mode);
+	add_assoc_long(array,"pager",uinfo->pager);
+	add_assoc_long(array,"in_chat",uinfo->in_chat);
+	add_assoc_string(array,"chatid",uinfo->chatid,1);
+	add_assoc_string(array,"from",uinfo->from,1);
+	add_assoc_long(array,"freshtime",uinfo->freshtime);
+	add_assoc_long(array,"utmpkey",uinfo->utmpkey);
+	add_assoc_string(array,"userid",uinfo->userid,1);
+	add_assoc_string(array,"realname",uinfo->realname,1);
+	add_assoc_string(array,"username",uinfo->username,1);
+}
 /*
  * Here goes the real functions
  */
@@ -88,7 +111,8 @@ static ZEND_FUNCTION(bbs_getuser)
                 WRONG_PARAM_COUNT;
         }
 
-	s[IDLEN]=0;
+	if (s_len>IDLEN)
+		s[IDLEN]=0;
         v1=getuser(s, &lookupuser);
 
 	if (v1==0)
@@ -100,6 +124,27 @@ static ZEND_FUNCTION(bbs_getuser)
 /*        RETURN_STRING(retbuf, 1);
  *        */
         RETURN_LONG(v1);
+}
+
+static ZEND_FUNCTION(bbs_getonlineuser)
+{
+	long idx,ret;
+	struct user_info* uinfo;
+	zval* user_array;
+
+        if (zend_parse_parameters(2 TSRMLS_CC, "la" ,&idx, &user_array) != SUCCESS) {
+                WRONG_PARAM_COUNT;
+        }
+	uinfo=get_utmpent(idx);
+	if (uinfo==NULL) ret = 0;
+	else {
+	  if(array_init(user_array) != SUCCESS)
+		ret=0;
+	  else {
+		  assign_userinfo(user_array,uinfo);
+		  ret=idx;
+	  }
+	}
 }
 
 static char old_pwd[1024];
