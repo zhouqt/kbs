@@ -182,12 +182,14 @@ int mail_file_sent(char *fromid, char *tmpfile, char *userid, char *title, int u
         f_mv(tmpfile, filepath);
     else
         f_cp(tmpfile, filepath, 0);
-    if (stat(filepath, &st) != -1)
-        session->currentuser->usedspace += st.st_size;
+    if (stat(filepath, &st) != -1) {
+        newmessage.eff_size = st.st_size;
+    }
     setmailfile(buf, userid, ".SENT");
     newmessage.accessed[0] |= FILE_READ;
     if (append_record(buf, &newmessage, sizeof(newmessage)) == -1)
         return -1;
+    session->currentuser->usedspace += newmessage.eff_size;
     newbbslog(BBSLOG_USER, "mailed %s ", userid);
     if (!strcasecmp(userid, "SYSOP"))
         updatelastpost(SYSMAIL_BOARD);
@@ -237,13 +239,15 @@ int mail_buf(struct userec*fromuser, char *mail_buf, char *userid, char *title, 
     /*
      * peregrine update used space
      */
-    if (stat(filepath, &st) != -1)
-        touser->usedspace += st.st_size;
+    if (stat(filepath, &st) != -1) {
+        newmessage.eff_size = st.st_size;
+    }
 
     setmailfile(buf, userid, DOT_DIR);
 
     if (append_record(buf, &newmessage, sizeof(newmessage)) == -1)
         return -1;
+    touser->usedspace +=  newmessage.eff_size;
 	setmailcheck( userid );
 
     newbbslog(BBSLOG_USER, "%s mailed %s ", fromuser->userid,userid);
@@ -304,14 +308,15 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
     /*
      * peregrine update used space
      */
-    if (unlinkmode!=BBSPOST_LINK&&stat(filepath, &st) != -1)
-        touser->usedspace += st.st_size;
+    if (unlinkmode!=BBSPOST_LINK&&stat(filepath, &st) != -1) {
+        newmessage.eff_size = st.st_size;
+    }
 
     setmailfile(buf, userid, DOT_DIR);
 
     if (append_record(buf, &newmessage, sizeof(newmessage)) == -1)
         return -1;
-
+    touser->usedspace += newmessage.eff_size;
 	setmailcheck( userid );
 
     newbbslog(BBSLOG_USER, "%s mailed %s ", fromid,userid);

@@ -605,10 +605,11 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
     fclose(fp);
     
     if (stat(filepath, &st) != -1)
-        touser->usedspace += st.st_size;
+        header.eff_size = st.st_size;
     setmailfile(buf3, userid, ".DIR");
     if (append_record(buf3, &header, sizeof(header)) == -1)
         return -5;
+    touser->usedspace += header.eff_size;
 	setmailcheck(userid);
 	    
    /* Ìí¼ÓLog Bigman: 2003.4.7 */
@@ -624,6 +625,7 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
         f_cp(filepath, sent_filepath, 0);
         if (stat(sent_filepath, &st) != -1) {
             getCurrentUser()->usedspace += st.st_size;
+            header.eff_size = st.st_size;
         } else {
             return -6;
         }

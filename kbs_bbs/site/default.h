@@ -661,7 +661,7 @@ typedef struct fileheader {     /* This structure is used to hold data in */
 #endif
     char innflag[2];
     char owner[OWNER_LEN];
-    unsigned int eff_size;
+    unsigned int eff_size; /* 版面文章: 表示有效字节数，信件: 表示文件大小 - atppp */
     time_t posttime;
     long attachment;
     char title[ARTICLE_TITLE_LEN];

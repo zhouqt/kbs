@@ -338,11 +338,12 @@ char *userid, *sender1, *sender, *title, *received;
 
 /* append the record to the MAIL control file */
     if (chkusermail(user) == 0) {
-        setmailfile(buf, user->userid, DOT_DIR);
-        if (append_record(buf, &newmessage, sizeof(newmessage)) == 0) {
-            struct stat fs;
+        struct stat fs;
 
-            stat(fname, &fs);
+        stat(fname, &fs);
+        setmailfile(buf, user->userid, DOT_DIR);
+        newmessage.eff_size = fs.st_size;
+        if (append_record(buf, &newmessage, sizeof(newmessage)) == 0) {
             update_user_usedspace(fs.st_size, user);
 			setmailcheck(user->userid);
             return 0;

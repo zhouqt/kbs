@@ -628,9 +628,17 @@ int do_send(char *userid, char *title, char *q_file)
         if (askyn("确定寄出？", true) == false)
             return -2;
 
+        if (stat(filepath, &st) != -1) {
+            newmessage.eff_size = st.st_size;
+        } else {
+            newmessage.eff_size = 0;
+        }
+
         setmailfile(genbuf, userid, DOT_DIR);
         if (append_record(genbuf, &newmessage, sizeof(newmessage)) == -1)
             return -1;
+        user->usedspace += newmessage.eff_size;
+        setmailcheck(userid);
 
 #ifdef AUTOREMAIL
 		sethomefile(genbuf, userid, "autoremail");
@@ -640,19 +648,6 @@ int do_send(char *userid, char *title, char *q_file)
 		}
 		setmailcheck(getCurrentUser()->userid);
 #endif
-
-		setmailcheck(userid);
-        if (stat(filepath, &st) != -1) {
-            user->usedspace += st.st_size;
-            /*
-             * Removed by flyriver, 2002.9.23 
-             */
-            /*
-             * getCurrentUser()->usedspace += st.st_size;
-             *//*
-             * 这里多计算了一次 
-             */
-        }
 
         newbbslog(BBSLOG_USER, "mailed %s %s", userid, save_title);
         if (!strcasecmp(userid, "SYSOP"))
@@ -1218,12 +1213,16 @@ static int mail_edit(struct _select_def* conf, struct fileheader *fileinfo,void*
         fileinfo->eff_size = eff_size;
         if (ADD_EDITMARK)
             add_edit_mark(genbuf, 1, /*NULL*/ fileinfo->title,getSession());
-        if (attachpos!=fileinfo->attachment) {
-            fileinfo->attachment=attachpos;
-            substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), ent);
+
+        if(stat(genbuf,&st) != -1) {
+            getCurrentUser()->usedspace -= (before - st.st_size);
+            fileinfo->eff_size = st.st_size;
+        } else {
+            fileinfo->eff_size = 0;
         }
+        fileinfo->attachment=attachpos;
+        substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), ent);
     }
-    if(stat(genbuf,&st) != -1) getCurrentUser()->usedspace -= (before - st.st_size);
 
     newbbslog(BBSLOG_USER, "edited mail '%s' ", fileinfo->title);
     return FULLUPDATE;

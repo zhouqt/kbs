@@ -646,12 +646,13 @@ append_mail(fin, sender1, sender, userid, title, received, encoding, boundary)
 
 	if (chkusermail(user) == 0)
 	{
+		struct stat fs;
+
+		stat(fname, &fs);
 		setmailfile(buf, user->userid, DOT_DIR);
+		newmessage.eff_size = fs.st_size;
 		if (append_record(buf, &newmessage, sizeof(newmessage)) == 0)
 		{
-			struct stat fs;
-
-			stat(fname, &fs);
 			update_user_usedspace(fs.st_size, user);
 			return 0;
 		}
