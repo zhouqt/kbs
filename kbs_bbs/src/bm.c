@@ -426,9 +426,10 @@ int deny_user(ent, fileinfo, direct)    /* 禁止POST用户名单 维护主函数 */
                 }
             }
         } else if (count > 20) {
-            page = *ans - '0';
-            if (page < 0 || page > 10)
-                break;          /*不会封人超过10屏吧?那可是200人啊! */
+            if (ans[1]==0) page = *ans - '0';
+            else page = atoi(ans);
+            if (page < 0)
+                break;          /*不会封人超过10屏吧?那可是200人啊!  会的！*/
             listdeny(page);
             pressanykey();
         } else
