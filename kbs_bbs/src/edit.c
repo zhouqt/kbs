@@ -636,12 +636,12 @@ static void insertch_from_fp(int ch)
 static long insert_from_fp(FILE *fp)
 {
     int ch;
-    char* attachpad;
+    char attachpad[10];
     int matched;
     char* ptr;
     long size;
 
-    attachpad=ATTACHMENT_PAD;
+    strcpy(attachpad, ATTACHMENT_PAD);
     matched=0;
     BBS_TRY {
         if (safe_mmapfile_handle(fileno(fp), O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & size) == 1) {
@@ -660,7 +660,7 @@ static long insert_from_fp(FILE *fp)
                         size = htonl(d);
                         data+=4+size-1;
                         matched = 0;
-                        attachpad = ATTACHMENT_PAD;
+                        strcpy(attachpad, ATTACHMENT_PAD);
                         continue;
                     } else {
                         attachpad++;
