@@ -328,12 +328,13 @@ int save_msgtext(char *uident, struct msghead * head, char *msgbuf)
 
 int get_msgcount(int id, char *uident)
 {
-    char fname[STRLEN];
+    char fname[STRLEN], idname[10];
     int i, j, count;
     struct stat buf;
 
-    if(id) sethomefile(fname, uident, "msgindex2");
-    else sethomefile(fname, uident, "msgindex");
+    if(id) sprintf(idname, "msgindex%d", id+1);
+    else strcpy(idname, "msgindex");
+    sethomefile(fname, uident, idname);
 
     stat(fname, &buf);
     count = (buf.st_size-4)/sizeof(struct msghead);
@@ -436,13 +437,14 @@ int get_unreadcount(char *uident)
 
 int load_msghead(int id, char *uident, int index, struct msghead *head)
 {
-    char fname[STRLEN];
+    char fname[STRLEN], idname[10];
     int fd, i, j, count, now, next;
     struct flock ldata;
     struct stat buf;
 
-    if(id) sethomefile(fname, uident, "msgindex2");
-    else sethomefile(fname, uident, "msgindex");
+    if(id) sprintf(idname, "msgindex%d", id+1);
+    else strcpy(idname, "msgindex");
+    sethomefile(fname, uident, idname);
 
     if ((fd = open(fname, O_RDONLY, 0664)) == -1) {
         bbslog("user", "%s", "msgopen err");
