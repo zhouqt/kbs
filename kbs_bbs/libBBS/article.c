@@ -1014,7 +1014,7 @@ char get_article_flag(struct fileheader *ent, struct userec *user, int is_bm)
 	char type;
 
     type = brc_unread(FILENAME2POSTTIME(ent->filename)) ? unread_mark : ' ';
-    if ((ent->accessed[0] & FILE_DIGEST)
+    if ((ent->accessed[0] & FILE_DIGEST)) {
         if (type == ' ')
             type = 'g';
         else
