@@ -1445,7 +1445,7 @@ int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     make_blist();               /* 生成所有Board名 列表 */
 	in_do_sendmsg=true;
     if ( namecomplete((char *) NULL, bname) == '#' ) { /* 提示输入 board 名 */
-//		super_select_board(bname);
+		super_select_board(bname);
 	}
 	in_do_sendmsg=0;
     setbpath(bpath, bname);
