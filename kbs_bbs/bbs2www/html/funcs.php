@@ -108,6 +108,24 @@ if (($sessionid!='')&&($_SERVER['PHP_SELF']=='/bbscon.php')) {
 	@$utmpnum = $_COOKIE["UTMPNUM"];
 	@$userid = $_COOKIE["UTMPUSERID"];
 }
+// add by stiger, login as "guest" default.....
+if ($utmpkey == ""){
+	$error = bbs_wwwlogin(0);
+	if($error == 2 || $error == 0){
+		$data = array();
+		$num = bbs_getcurrentuinfo($data);
+        setcookie("UTMPKEY",$data["utmpkey"],time()+360000,"");
+        setcookie("UTMPNUM",$num,time()+360000,"");
+        setcookie("UTMPUSERID",$data["userid"],time()+360000,"");
+        setcookie("LOGINTIME",$data["logintime"],time()+360000,"");
+		@$utmpkey = $data["utmpkey"];
+		@$utmpnum = $num;
+		@$userid = $data["userid"];
+  		$compat_telnet=1;
+	}
+}
+//add end
+
 if ($utmpkey!="") {
   if (($ret=bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),$currentuinfo,$compat_telnet))==0) {
     $loginok=1;
