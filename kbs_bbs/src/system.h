@@ -6,6 +6,9 @@ void f_cat(char *fpath, char *msg);
 void f_catfile(char* srcpath,char* dstpath);
 int f_touch(char *filename);
 int f_ln(char *src, char *dst);
+typedef int(*OUTC_FUNC)(char);
+void uuencode(char* inbuf, int size, char *filename, OUTC_FUNC fn);
+
 
 /* ×Ö·û´®Æ¥Åäº¯Êý*/
 char* bm_strstr(const char* string,const char* pattern);

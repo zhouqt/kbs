@@ -23,8 +23,9 @@
             (2) pop3 port    : 110(POP3PORT) or the argv[1] while starting pop3d
             (3) pop3 account : BBSID.bbs (For example: mine is "Leeward.bbs")
             (4) pop3 password: The same as the client's BBSID's password
-	 9. Filter the ANSI control characters(KCN)
-	 10. support POP3 via SSL (pop3s) (COMMAN)
+         9. Filter the ANSI control characters(KCN)
+         10. support POP3 via SSL (pop3s) (COMMAN)
+         11. support attachment (KCN)
   Last modified: 2002.07
 */
 
@@ -284,50 +285,74 @@ static void outs(str)
         (void) write(sock, sendbuf, strlen(sendbuf));
 }
 
+static void outc(char ch)
+{
+#ifdef USE_SSL
+    if (use_ssl)
+        SSL_write(ssl, &ch, 1);
+    else
+#endif
+        (void) write(sock, &ch, 1);
+}
 void outfile(filename, linenum)
     char *filename;
     int linenum;
 {
     FILE *fp;
-    char linebuf[256];
+    char linebuf[10240];
     char *buf, *p;              /* KCN.99.09.01 */
-    char newbuf[256];
+    char *ptr;
+    long size,left;
 
-    if (linenum && (fp = fopen(filename, "r")) != NULL) {
-        while (fgets(linebuf, 256, fp) != NULL && linenum > 0) {
-            int esc;
-
-            linebuf[strlen(linebuf) - 1] = '\0';
-            /*  Added by KCN 1999.09.01 for filter ANSI */
-            buf = newbuf;
-            esc = 0;
-            for (p = linebuf; *p; p++) {
+    if (linenum) {
+        BBS_TRY {
+            bool esc;
+            if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0) {
+                outs(".");
+                BBS_RETURN_VOID();
+            }
+            esc=false;
+            buf=linebuf;
+            for (p=ptr,left=size;left>0&&linenum>0;p++,left--) {
+                long attach_len;
+                char* file,*attach;
+                if (NULL !=(file = checkattach(p, left, &attach_len, &attach))) {
+                    left-=(attach-p)-attach_len;
+                    p=attach+attach_len;
+                    uuencode(attach, attach_len, file, outc);
+                    continue;
+                }
+                if ((*p=='\n')||(buf-linebuf>=10240-1)) {
+                    linenum--;
+                    *buf=0;
+                    if (strcmp(linebuf, ".") == 0)
+                        outs("..");
+                    else
+                        outs(linebuf);
+                    buf=linebuf;
+                    continue;
+                }
                 if (esc) {
-                    if (*p == '\033') {
-                        esc = 0;
+                    if (*p == '\x1b') {
                         *buf = *p;
                         buf++;
+                        esc = false;
                     } else if (isalpha(*p))
-                        esc = 0;
-                } else {
-                    if (*p == '\033') {
-                        esc = 1;
-                    } else {
-                        *buf = *p;
+                        esc = false;
+                }
+                else {
+                    if (*p=='\x1b')
+                        esc=true;
+                    else {
+                        *buf=*p;
                         buf++;
                     }
                 }
             }
-
-            *buf = 0;
-            /* KCN end filter 99.09.01 */
-            if (strcmp(newbuf, ".") == 0)
-                outs("..");
-            else
-                outs(newbuf);
-            linenum--;
         }
-        fclose(fp);
+        BBS_CATCH {
+        }
+        BBS_END end_mmapfile((void *) ptr, size, -1);
     }
     outs(".");
 }

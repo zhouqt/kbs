@@ -55,22 +55,6 @@ int get_edit_post(char *userid, char *board, char *file, struct fileheader *x)
     return 0;
 }
 
-int is_origin(FILE * fp, char *buf)
-{
-    char buf2[256];
-    long offset;
-    int rv = 0;
-
-    if (strstr(buf, "¡ù À´Ô´:¡¤BBS " NAME_BBS_CHINESE "Õ¾ ") != NULL) {
-        offset = ftell(fp);
-        if (fgets(buf2, sizeof(buf2), fp) == NULL)
-            rv = 1;
-        fseek(fp, offset, SEEK_SET);
-    }
-
-    return rv;
-}
-
 int update_form(char *board, char *file)
 {
     FILE *fin;
@@ -95,7 +79,7 @@ int update_form(char *board, char *file)
     fprintf(fout, "%s", unix_string(buf));
     fprintf(fout, "[36m¡ù ÐÞ¸Ä:¡¤%s ì¶ %s ÐÞ¸Ä±¾ÎÄ¡¤[FROM: %s][m\n", currentuser->userid, wwwCTime(time(0)) + 4, fromhost);
     while (fgets(buf2, sizeof(buf2), fin) != NULL) {
-        if (is_origin(fin, buf2)) {
+        if (!Origin2(buf2)) {
             fprintf(fout, "%s", buf2);
             break;
         }
@@ -151,7 +135,11 @@ int main()
     for (i = 0; i < 4; i++)
         fgets(buf, sizeof(buf), fp);
     while (fgets(buf, sizeof(buf), fp) != NULL) {
-        if (is_origin(fp, buf))
+        char tmp[256];
+        if (Origin2(buf))
+            break;
+        sprintf(tmp, "¡ù À´Ô´:¡¤%s ", BBS_FULL_NAME);
+        if (strstr(buf, tmp) && *buf != ':')
             break;
         if (!strcasestr(buf, "</textarea>"))
             printf("%s", buf);
