@@ -17,6 +17,7 @@ function bbs_boards_navigation_bar()
 
 function undo_html_format($str)
 {
+	$str = preg_replace("/&apos;/i", "'", $str);
 	$str = preg_replace("/&gt;/i", ">", $str);
 	$str = preg_replace("/&lt;/i", "<", $str);
 	$str = preg_replace("/&quot;/i", "\"", $str);
