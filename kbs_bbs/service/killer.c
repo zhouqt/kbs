@@ -543,7 +543,15 @@ int do_com_menu()
                             if(!strcmp(inrooms.peoples[i].id, buf)) break;
                         if(!strcmp(inrooms.peoples[i].id, buf) && inrooms.peoples[i].pid!=uinfo.pid) {
                             send_msg(inrooms.peoples+i, "Äã±»ÌßÁË");
-                            kill(inrooms.peoples[i].pid, SIGUSR1);
+                            if(kill(inrooms.peoples[i].pid, SIGUSR1)==-1) {
+                                start_change_inroom(myroom);
+                                myroom->people--;
+                                for(j=i;j<myroom->people-1;j++)
+                                    memcpy(inrooms.peoples+j, inrooms.peoples+j+1, sizeof(struct people_struct));
+                                end_change_inroom();
+                                for(i=0;i<myroom->people;i++)
+                                    kill(inrooms.peoples[i].pid, SIGUSR1);
+                            }
                         }
                     }
                     return 0;
