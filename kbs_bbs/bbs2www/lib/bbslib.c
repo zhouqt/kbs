@@ -1010,7 +1010,8 @@ int init_all() {
 		exit(0);
 		*/
 		printf("Content-type: text/html; charset=%s\n\n", CHARSET);
-		redirect(NOLOGIN_PAGE);
+		/*redirect(NOLOGIN_PAGE);*/
+		printf("<script>top.window.location='/nologin.html';</script>\n");
 		exit(0);
 	}
 	html_init();
