@@ -607,7 +607,7 @@ int translate_msg(char* src, struct msghead *head, char* dest)
             }
             break;
         case 3:
-            sprintf(dest, "%s[44m\x1b[33mÕ¾³¤ÓÚ %13.13s Ê±¹ã²¥£º[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?"[1m":"", , time);
+            sprintf(dest, "%s[44m\x1b[33mÕ¾³¤ÓÚ %13.13s Ê±¹ã²¥£º[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?"[1m":"", time);
             strcpy(attstr, "[44m[37m");
             break;
         case 1:
@@ -633,7 +633,7 @@ int translate_msg(char* src, struct msghead *head, char* dest)
         if(j) j=0;
         else if(src[i]<0) j=1;
         if(j==0&&pos>=78||j==1&&pos>=77) {
-            for(;pos<78;pos++)
+            for(;pos<79;pos++)
                 dest[len++]=' ';
             dest[len++]='';
             dest[len++]='[';
@@ -652,7 +652,7 @@ int translate_msg(char* src, struct msghead *head, char* dest)
         dest[len++]=src[i];
         pos++;
     }
-    for(;pos<78;pos++)
+    for(;pos<79;pos++)
         dest[len++]=' ';
     dest[len++]='';
     dest[len++]='[';
