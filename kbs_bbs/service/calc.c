@@ -94,6 +94,22 @@ void link_w(struct var_struct * a, struct var_struct * b, struct var_struct * c)
             c->p[i][j+a->width]=b->p[i][j];
 }
 
+void domatrix(struct var_struct * a, struct var_struct * b, struct var_struct * c, int op)
+{
+    int i,j;
+    makesure(a->height==b->height);
+    makesure(a->width==b->width);
+    makesize(c, a->height, a->width);
+    for(i=0;i<a->height;i++)
+        for(j=0;j<a->width;j++) {
+            switch(op) {
+                case 4: c->p[i][j]=a->p[i][j]*b->p[i][j]; break;
+                case 5: makesure(fabs(b->p[i][j])>MINIMUM); c->p[i][j]=a->p[i][j]/b->p[i][j]; break;
+                case 6: makesure(a->p[i][j]>0); c->p[i][j]=exp(log(a->p[i][j])*b->p[i][j]); break;
+            }
+        }
+}
+
 void add_var(struct var_struct * a, struct var_struct * b, struct var_struct * c)
 {
     int i,j;
@@ -395,27 +411,27 @@ void selmatrix(struct var_struct * s, struct var_struct * u, struct var_struct *
     if(!u->p) {
         makesize(u, 1, s->height);
         for(i=0;i<s->height;i++)
-            u->p[0][i]=(double)i;
+            u->p[0][i]=(double)i+1;
     }
     if(!v->p) {
         makesize(v, 1, s->width);
         for(i=0;i<s->width;i++)
-            v->p[0][i]=(double)i;
+            v->p[0][i]=(double)i+1;
     }
     for(i=0;i<u->width;i++) {
         j=(int)(u->p[0][i]+0.5);
-        makesure(j>=0&&j<s->height);
+        makesure(j>=1&&j<=s->height);
     }
     for(i=0;i<v->width;i++) {
         j=(int)(v->p[0][i]+0.5);
-        makesure(j>=0&&j<s->width);
+        makesure(j>=1&&j<=s->width);
     }
     makesize(p, u->width, v->width);
     for(i=0;i<u->width;i++) {
         i0=(int)(u->p[0][i]+0.5);
         for(j=0;j<v->width;j++) {
-            j0=(int)(v->p[0][i]+0.5);
-            p->p[i][j]=s->p[i0][j0];
+            j0=(int)(v->p[0][j]+0.5);
+            p->p[i][j]=s->p[i0-1][j0-1];
         }
     }
 }
@@ -562,14 +578,17 @@ void eval(struct var_struct * p, char * s, int l, int r)
             }
             if((f2-f1)/f3<0) f3=-f3;
         }
-        makesize(p, 1, (int)((f2-f1+MINIMUM)/f3)+1);
+        if(f3>0)
+            makesize(p, 1, (int)((f2-f1+MINIMUM)/f3)+1);
+        else
+            makesize(p, 1, (int)((f2-f1-MINIMUM)/f3)+1);
         i=0;
         do{
             p->p[0][i]=f1;
             f1+=f3;
             i++;
             if(i>p->width) break;
-        }while(f1-MINIMUM<=f3);
+        }while(f1-MINIMUM<=f2&&f3>0||f1+MINIMUM>=f2&&f3<0);
         return;
     }
     i=l;
@@ -594,7 +613,7 @@ void eval(struct var_struct * p, char * s, int l, int r)
             int k;
             j=get_var(buf);
             strcpy(buf, s+i+1);
-            s[r-1-i]=0;
+            buf[r-1-i]=0;
             k=strchr(buf, ',')-buf;
             eval(&u, buf, 0, k-1);
             makesure(1);
@@ -606,13 +625,14 @@ void eval(struct var_struct * p, char * s, int l, int r)
         }
         return ;
     }
-    for(j=0;j<5;j++) {
+    for(j=0;j<7;j++) {
         n=r;
         do{
             if(s[n]==op[j]) {
                 struct var_struct m1,m2,m3;
                 m1.p=0; m2.p=0; m3.p=0;
-                eval(&m1,s,l,n-1);
+                if(n>l&&s[n-1]=='.'&&(j==4||j==5||j==6)) eval(&m1,s,l,n-2);
+                else eval(&m1,s,l,n-1);
                 makesure(1);
                 eval(&m2,s,n+1,r);
                 makesure(1);
@@ -630,17 +650,24 @@ void eval(struct var_struct * p, char * s, int l, int r)
                         add_var(&m1, &m2, p);
                         break;
                     case 4:
-                        mul_var(&m1, &m2, p);
+                        if(n>l&&s[n-1]=='.') domatrix(&m1,&m2,p,4);
+                        else mul_var(&m1, &m2, p);
                         break;
                     case 5:
-                        inverse(&m3, &m2);
-                        mul_var(&m1, &m3, p);
-                        del(&m3);
+                        if(n>l&&s[n-1]=='.') domatrix(&m1,&m2,p,5);
+                        else {
+                            inverse(&m3, &m2);
+                            mul_var(&m1, &m3, p);
+                            del(&m3);
+                        }
                         break;
                     case 6:
-                        makesure(is_single_var(&m1)&&is_single_var(&m2));
-                        makesure(fabs(**(m2.p))>MINIMUM);
-                        set_var(p, exp(log(**(m1.p))*(**(m2.p))));
+                        if(n>l&&s[n-1]=='.') domatrix(&m1,&m2,p,6);
+                        else {
+                            makesure(is_single_var(&m1)&&is_single_var(&m2));
+                            makesure((**(m1.p))>0);
+                            set_var(p, exp(log(**(m1.p))*(**(m2.p))));
+                        }
                         break;
                 }
                 del(&m1);
