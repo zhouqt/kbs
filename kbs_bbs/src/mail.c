@@ -1173,6 +1173,7 @@ static int mail_edit_title(int ent, struct fileheader *fileinfo, char *direct)
 		if((t = strrchr(tmp,'/')) != NULL)*t='\0';
 		sprintf(genbuf,"%s/%s",tmp,fileinfo->filename);
 		add_edit_mark(genbuf,3,buf); /* 3 means edit mail and title */
+		substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
 	    newbbslog(BBSLOG_USER, "edited mail '%s' ", fileinfo->title);
 	}
 	return FULLUPDATE;
