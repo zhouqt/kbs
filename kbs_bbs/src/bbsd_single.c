@@ -441,13 +441,13 @@ int check_IP_lists(unsigned int IP2)
     ip[3]=(IP2&0xff000000)>>24;
     if(ip[0]==0) return 0;
     for(i=0;i<MAXLIST;i++) {
-        if(bads[i][0]==0) break;
-        if(ip[0]==bads[i][0]&&ip[1]==bads[i][1]&&ip[2]==bads[i][2]&&ip[3]==bads[i][3])
+        if(bads[i].ip[0]==0) break;
+        if(ip[0]==bads[i].ip[0]&&ip[1]==bads[i].ip[1]&&ip[2]==bads[i].ip[2]&&ip[3]==bads[i].ip[3])
             return 1;
     }
     for(i=0;i<MAXLIST;i++) {
-        if(proxys[i][0]==0) break;
-        if(ip[0]==proxys[i][0]&&ip[1]==proxys[i][1]&&ip[2]==proxys[i][2]&&ip[3]==proxys[i][3])
+        if(proxys[i].ip[0]==0) break;
+        if(ip[0]==proxys[i].ip[0]&&ip[1]==proxys[i].ip[1]&&ip[2]==proxys[i].ip[2]&&ip[3]==proxys[i].ip[3])
             return 1;
     }
     for(i=0;i<MAXLIST;i++) {
