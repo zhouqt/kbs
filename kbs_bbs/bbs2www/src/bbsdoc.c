@@ -69,7 +69,9 @@ int main() {
 		printf("<a href=\"bbsdoc?board=%s&start=%d\">上一页</a> ", board, start-my_t_lines);
 	if(start<total-20)
 		printf("<a href=\"bbsdoc?board=%s&start=%d\">下一页</a> ", board, start+my_t_lines);
+	/*
 	printf("<a href=\"bbstdoc?board=%s\">主题模式</a> ", board);
+	*/
 	if(has_BM_perm(currentuser, board)) 
 		printf("<a href=\"bbsmdoc?board=%s\">管理模式</a> ", board);
 	printf("<a href=\"bbsnot?board=%s\">进版画面</a> ", board);

@@ -131,15 +131,17 @@ int main()
 {
 	int sec1;
 	int yank;
-	char *cgi="bbstdoc";
+	char *cgi="bbsdoc";
 
 	init_all();
 	sec1 = atoi(getparm("group"));
 	yank = atoi(getparm("yank"));
 	if (sec1<0 || sec1>=SECNUM)
 		http_fatal("´íÎóµÄ²ÎÊý");
-	if (atoi(getparm("my_def_mode"))!=0)
-		cgi="bbsdoc";
+	/*
+	if (atoi(getparm("my_def_mode"))==0)
+		cgi="bbstdoc";
+		*/
 	brd_show_boards(sec1, cgi, yank);
 	http_quit();
 }

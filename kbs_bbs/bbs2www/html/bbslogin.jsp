@@ -5,8 +5,7 @@ $id = $_POST["id"];
 $passwd = $_POST["passwd"];
 $kick_multi = $_POST["kick_multi"];
 $error=-1;
-if ($loginok!=1) {
-  if ($id!="") {
+if ($id!="") {
     if (($id!="guest")&&bbs_checkpasswd($id,$passwd)!=0)
       $loginok=6;
     else {
@@ -29,19 +28,13 @@ if ($loginok!=1) {
 	    return;
       }
     }
-  }
-}
-else {
-	header("Location: /frames.html");
-	return;
 }
 ?>
 <html>
 
 <?
 if ($loginok != 1) {
-  if ($loginok!=4) {
-    if ($loginok==6) {
+  if ($loginok==6) {
 ?>
 <body >
 <SCRIPT language="javascript">
@@ -57,17 +50,6 @@ if ($loginok != 1) {
 <?
     return;
   } else {
-?>
-<body>
-<form action="bbslogin.jsp" method="post">
-”√ªß<input class="default" type="text" name="id" maxlength="12" size="8"><br>
-√‹¬Î<input class="default" type="password" name="passwd" maxlength="39" size="8"><br>
-<input class="button" type="submit" value="µ«¬Ω">
-</form> <br>
-<?
-  }
-  }
-  else {
 ?>
 <body >
 <form name="infoform" action="bbslogin.jsp" method="post">
@@ -92,17 +74,5 @@ echo "\"$passwd\"";
 <?
 	return;
   }
-} else {
-  echo "userid:" . $currentuinfo["userid"] . "<br>";
-}
-echo $loginok . "<br>" . $error . "<br>";
-echo $fromhost;
-
-echo "<br>";
-foreach ( $_COOKIE as $key => $var ) {
-    echo "$key=$var<br>";
-}
-
+} 
 ?>
-</body>
-</html>

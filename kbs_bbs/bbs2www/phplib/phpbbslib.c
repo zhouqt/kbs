@@ -135,7 +135,7 @@ static void assign_board(zval* array,struct boardheader* board,int num)
 }
 
 static int currentusernum;
-static char* fullfrom;
+static char fullfrom[255];
 static struct user_info *currentuinfo;
 static int currentuinfonum;
 
@@ -182,17 +182,16 @@ static ZEND_FUNCTION(bbs_setfromhost)
 	char* s;
 	int s_len;
 	int full_len;
+	char* fullfromhostptr;
 
-	getcwd(old_pwd,1023);
-	chdir(BBSHOME);
-	old_pwd[1023]=0;
-        if (zend_parse_parameters(2 TSRMLS_CC, "ss" ,&s,&s_len,&fullfrom,&full_len) != SUCCESS) {
+        if (zend_parse_parameters(2 TSRMLS_CC, "ss" ,&s,&s_len,&fullfromhostptr,&full_len) != SUCCESS) {
                 WRONG_PARAM_COUNT;
         }
         if (s_len>IPLEN)
         	s[IPLEN]=0;
         if (full_len>80)
-        	fullfrom[80]=0;
+        	fullfromhostptr[80]=0;
+		strcpy(fullfrom,fullfromhostptr);
         strcpy(fromhost,s);
         RETURN_NULL();
 }
@@ -323,6 +322,7 @@ static ZEND_FUNCTION(bbs_wwwlogin)
 	} else if (ZEND_NUM_ARGS() != 0) 
                 WRONG_PARAM_COUNT;
 	ret=www_user_login(getcurrentuser(),getcurrentuser_num(), kick_multi, 
+		fromhost,
 #ifdef SQUID_ACCL
 		fullfrom,
 #else
