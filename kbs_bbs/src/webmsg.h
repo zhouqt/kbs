@@ -9,6 +9,7 @@
 
 typedef struct _msgent_t {
     int srcutmp;                /* 消息发送者的 utmp 号 */
+    time_t sndtime;             /* 消息发送的时间 */
     char srcid[IDLEN + 1];      /* 消息发送者的 ID */
     char msg[MSG_LEN + 1];      /* 消息的内容 */
 } msgent_t;
