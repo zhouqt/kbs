@@ -558,7 +558,6 @@ void login_query()
         fclose(fn);
     }
     sethomepath(genbuf, currentuser->userid);
-    currentuser->usedspace=get_mailusedspace(currentuser,1);
     mkdir(genbuf, 0755);
     temp_numposts = 0;          /*Haohmaru.99.4.02.让爱灌水的人哭去吧//grin */
 }

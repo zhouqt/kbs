@@ -159,7 +159,7 @@ long get_mailusedspace(struct userec *user,int force)
 {
 	char recmaildir[200];
 	int sum=0;
-	if(user->usedspace<0||force!=0)
+	if(user->usedspace==0xFFFF||force!=0)
 	{
 		setmailfile(recmaildir, user->userid, DOT_DIR);
 		sum=get_mail_sum_records(recmaildir, sizeof(fileheader));
@@ -167,6 +167,7 @@ long get_mailusedspace(struct userec *user,int force)
 		sum+=get_mail_sum_records(recmaildir, sizeof(fileheader));
 		setmailfile(recmaildir, user->userid, ".DELETED");
 		sum+=get_mail_sum_records(recmaildir, sizeof(fileheader));
+		user->usedspace=sum;
 		return sum;
 	}
 	else return user->usedspace;
