@@ -17,10 +17,14 @@
 #define MAILOUT			0	/* 是否允许向站外主动发信 */
 #define MANUAL_DENY         0   /*是否允许手动解封*/
 #define BBS_SERVICE_DICT    1
-
+#define HAVE_TSINGHUA_INFO_REGISTER 0
+#define HAVE_PERSONAL_DNS	0 
+#define HAVE_CUSTOM_USER_TITLE	1
+#define BUILD_PHP_EXTENSION 1 
+#define HAVE_WFORUM		0
+#define RAW_ARTICLE		0
 #define SMTH			1
 #define FILTER			1
-
 #define HAVE_BRC_CONTROL	0
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
@@ -245,11 +249,18 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_UNREADMARK 0400000000       /* Luzi 99.01.12 */
 #define DEF_USEGB     01000000000       /* KCN,99.09.05 */
 #define DEF_CHCHAR    02000000000
+#define DEF_SHOWDETAILUSERDATA	04000000000
+#define DEF_SHOWREALUSERDATA	010000000000
+#define DEF_HIDEIP			040000000001
 /*#define DEF_HIDEIP    02000000000  Haohmaru,99.12.18*/
 
 /*#define PERM_POSTMASK  0100000  *//* means the rest is a post mask */
 
 #define NUMDEFINES 29
+
+#define SET_DEFINE(user,x) ((user)->userdefine[def_list(x)] |= x)
+#define SET_UNDEFINE(user,x) ((user)->userdefine[def_list(x)] &= ~x)
+#define SET_CHANGEDEFINE(user,x) ((user)->userdefine[def_list(x)] ^= x)
 
 
 #define TDEF_SPLITSCREEN 000001
@@ -337,4 +348,26 @@ attach define
 #define ATTACHTMPPATH "boards/_attach"
 
 #undef CHECK_IP_LINK
+
+#define BOARD_SHOW_ONLINE 0
+
+#undef SMS_SUPPORT
+
+#undef PERSONAL_CORP
+
+#define NEW_HELP
+#define HAVE_DEFAULT_HELPMODE
+
+#undef COMMEND_ARTICLE "Recommend"
+
+#undef NOT_USE_DEFAULT_SMS_FUNCTIONS
+
+#undef HAVE_OWN_USERIP
+#undef SHOW_USERIP(user,x) showuserip(user,x)
+
+#undef AUTO_CHECK_REGISTER_FORM        //自动通过注册单
+
+#define QUOTED_LINES 3
+#define QUOTELEV 0
+
 #endif
