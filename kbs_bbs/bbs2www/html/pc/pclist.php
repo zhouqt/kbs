@@ -63,7 +63,7 @@ pcmain_html_init();
 		<td width="33%" valign="top">
 			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
 				<tr>
-					<td class="td3" bgcolor="#adbe00" align="center"><b><font color="white">本日最热日志</font></b></td>			
+					<td class="td3" bgcolor="#adbe00" align="center"><b><font color="white">最热日志(24小时内)</font></b></td>			
 				</tr>
 				<tr>
 					<td align="left" class="td4">
@@ -75,7 +75,7 @@ pcmain_html_init();
 		<td width="33%" valign="top">
 			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
 				<tr>
-					<td class="td3" bgcolor="#dfd581" align="center"><b><font color="white">本月最热日志</font></b></td>			
+					<td class="td3" bgcolor="#dfd581" align="center"><b><font color="white">最热日志(30天内)</font></b></td>			
 				</tr>
 				<tr>
 					<td align="left" class="td4">
@@ -106,7 +106,7 @@ pcmain_html_init();
 		<td width="33%" valign="top">
 			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
 				<tr>
-					<td class="td3" bgcolor="#ffb600" align="center"><b><font color="white">本日最热栏目</font></b></td>			
+					<td class="td3" bgcolor="#ffb600" align="center"><b><font color="white">最热栏目(24小时内)</font></b></td>			
 				</tr>
 				<tr>
 					<td align="left" class="td4">
@@ -118,7 +118,7 @@ pcmain_html_init();
 		<td width="33%" valign="top">
 			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
 				<tr>
-					<td class="td3" bgcolor="#00b6ef" align="center"><b><font color="white">本月最热栏目</font></b></td>			
+					<td class="td3" bgcolor="#00b6ef" align="center"><b><font color="white">最热栏目(30天内)</font></b></td>			
 				</tr>
 				<tr>
 					<td align="left" class="td4">
@@ -149,7 +149,7 @@ pcmain_html_init();
 		<td width="33%" valign="top">
 			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
 				<tr>
-					<td class="td3" bgcolor="#f75151" align="center"><b><font color="white">本日最热博客</font></b></td>			
+					<td class="td3" bgcolor="#f75151" align="center"><b><font color="white">最热博客(24小时内)</font></b></td>			
 				</tr>
 				<tr>
 					<td align="left" class="td4">
@@ -161,7 +161,7 @@ pcmain_html_init();
 		<td width="33%" valign="top">
 			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
 				<tr>
-					<td class="td3" bgcolor="#00b6ef" align="center"><b><font color="white">本月最热博客</font></b></td>			
+					<td class="td3" bgcolor="#00b6ef" align="center"><b><font color="white">最热博客(30天内)</font></b></td>			
 				</tr>
 				<tr>
 					<td align="left" class="td4">

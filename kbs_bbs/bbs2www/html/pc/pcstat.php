@@ -269,18 +269,18 @@ function getHotUsersByPeriod($link,$period,$num=10)
 {
 	$num = intval( $num );
 	if($period=="day")
-		$queryTime = date("Ymd");
+		$queryTime = time () - 24*3600;
 	elseif($period=="month")
-		$queryTime = date("Ym");
+		$queryTime = time () - 30*24*3600;
 	else
-		$queryTime = "";
+		$queryTime = 0;
 	
 	if($queryTime)
 	    $query = "SELECT COUNT(pri_id) , uid , users.username , corpusname , description ".
 	             "FROM logs , users ".
 	             "WHERE ACTION LIKE '%\'s Blog(www)' ".
 	             "      AND pri_id = users.username ".
-	             "      AND logtime LIKE '".$queryTime."%' ".
+	             "      AND logtime > ".date ("YmdHis",$queryTime)." ".
 	             "      AND pctype < 2 ".
 		     "GROUP BY pri_id ".
 		     "ORDER BY 1 DESC ".
@@ -300,11 +300,11 @@ function getHotNodesByPeriod($link,$period,$num=10)
 {
 	$num = intval( $num );
 	if($period=="day")
-		$queryTime = date("Ymd");
+		$queryTime = time () - 24*3600;
 	elseif($period=="month")
-		$queryTime = date("Ym");
+		$queryTime = time () - 30*24*3600;
 	else
-		$queryTime = "";
+		$queryTime = 0;
 		
 	$query = "SELECT nodes.uid , nid , subject ".
 		 "FROM nodes,users ".
@@ -314,7 +314,7 @@ function getHotNodesByPeriod($link,$period,$num=10)
 		 "   AND pctype < 4 ";
 	
 	if($queryTime)
-	$query.= " AND created LIKE '".$queryTime . "%' ";
+	$query.= " AND created > ".date ("YmdHis",$queryTime) . " ";
 	//$query.= "GROUP BY uid ";
 	$query.= "ORDER BY nodes.visitcount DESC ".
 		 "LIMIT 0 , ".$num." ;";
@@ -330,11 +330,11 @@ function getHotTopicsByPeriod($link,$period,$num=10)
 {
 	$num = intval( $num );
 	if($period=="day")
-		$queryTime = date("Ymd");
+		$queryTime = time () - 24*3600;
 	elseif($period=="month")
-		$queryTime = date("Ym");
+		$queryTime = time () - 30*24*3600;
 	else
-		$queryTime = "";
+		$queryTime = 0;
 	
 	$query =  "SELECT COUNT(nid) , topics.tid , topics.uid , topicname , username ".
 	          "FROM topics , nodes , users ".
@@ -344,7 +344,7 @@ function getHotTopicsByPeriod($link,$period,$num=10)
 		  "      AND nodetype = 0 ".
 		  "      AND pctype < 4 ";
 	if($queryTime)
-	$query.=  "      AND nodes.created LIKE '".$queryTime."%' ";
+	$query.=  "      AND nodes.created > ".date ("YmdHis",$queryTime)." ";
 	$query.=  "GROUP BY nodes.tid ".
 		  "ORDER BY 1 DESC ".
 		  "LIMIT 0 , ".$num." ;";
