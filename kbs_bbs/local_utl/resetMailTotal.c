@@ -19,9 +19,9 @@ int query_BM(struct userec *user, char *arg)
 static void 
 usage()
 {
-	fprintf(stderr, "Usage: resetMailTotal <-a|-u userid>\n\n");
-	fprintf(stderr, "    If -a parameter is provided, this program will reset all userids' mail space,\n");
-	fprintf(stderr, "    else only reset the specified userid's mail space.\n");
+	fprintf(stderr, "Usage: resetMailTotal <-a|-u userid|-s userid>\n\n");
+	fprintf(stderr, "    If -a parameter is provided, this program resets all userids' mail space,\n");
+	fprintf(stderr, "    else only resets (-u) or shows (-s) the specified userid's mail space.\n");
 }
 
 int 
@@ -44,8 +44,18 @@ main(int argc, char ** argv)
 		}
 		user->usedspace = 0xFFFF;
 	}
-	else
+	else if (argc == 3 && !strcmp(argv[1], "-s"))
+	{
+		getuser(argv[2], &user);
+		if (user == NULL)
+		{
+			fprintf(stderr, "User %s not found.\n", argv[1]);
+			return -1;
+		}
+		printf("User %s usedspace: %d bytes.\n", user->userid, user->usedspace);
+	}	else
 		usage();
 
 	return 0;
 }
+
