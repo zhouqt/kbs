@@ -21,6 +21,58 @@
 #include "bbslib.h"
 #include "vote.h"
 
+#ifdef ATPPP_COMPILES_WITH_PHP5 // successfully compiles with PHP5RC3
+static
+     ZEND_BEGIN_ARG_INFO(one_arg_force_ref_1, 0)
+             ZEND_ARG_PASS_INFO(1)
+     ZEND_END_ARG_INFO();
+static
+     ZEND_BEGIN_ARG_INFO(two_arg_force_ref_01, 0)
+             ZEND_ARG_PASS_INFO(0)
+             ZEND_ARG_PASS_INFO(1)
+     ZEND_END_ARG_INFO();
+static
+     ZEND_BEGIN_ARG_INFO(third_arg_force_ref_1111, 0)
+             ZEND_ARG_PASS_INFO(1)
+             ZEND_ARG_PASS_INFO(1)
+             ZEND_ARG_PASS_INFO(1)
+             ZEND_ARG_PASS_INFO(1)
+     ZEND_END_ARG_INFO();
+static
+     ZEND_BEGIN_ARG_INFO(third_arg_force_ref_011, 0)
+             ZEND_ARG_PASS_INFO(0)
+             ZEND_ARG_PASS_INFO(1)
+             ZEND_ARG_PASS_INFO(1)
+     ZEND_END_ARG_INFO();
+static
+     ZEND_BEGIN_ARG_INFO(fourth_arg_force_ref_0001, 0)
+             ZEND_ARG_PASS_INFO(0)
+             ZEND_ARG_PASS_INFO(0)
+             ZEND_ARG_PASS_INFO(0)
+             ZEND_ARG_PASS_INFO(1)
+     ZEND_END_ARG_INFO();
+static
+     ZEND_BEGIN_ARG_INFO(fourth_arg_force_ref_0111, 0)
+             ZEND_ARG_PASS_INFO(0)
+             ZEND_ARG_PASS_INFO(1)
+             ZEND_ARG_PASS_INFO(1)
+             ZEND_ARG_PASS_INFO(1)
+     ZEND_END_ARG_INFO();
+static
+     ZEND_BEGIN_ARG_INFO(third_arg_force_ref_001, 0)
+             ZEND_ARG_PASS_INFO(0)
+             ZEND_ARG_PASS_INFO(0)
+             ZEND_ARG_PASS_INFO(1)
+     ZEND_END_ARG_INFO();
+static
+     ZEND_BEGIN_ARG_INFO(fifth_arg_force_ref_00011, 0)
+             ZEND_ARG_PASS_INFO(0)
+             ZEND_ARG_PASS_INFO(0)
+             ZEND_ARG_PASS_INFO(0)
+             ZEND_ARG_PASS_INFO(1)
+             ZEND_ARG_PASS_INFO(1)
+     ZEND_END_ARG_INFO();
+#else
 static unsigned char one_arg_force_ref_1[]  = { 1, BYREF_FORCE };
 static unsigned char two_arg_force_ref_01[] = { 2, BYREF_NONE, BYREF_FORCE };
 static unsigned char third_arg_force_ref_1111[] = { 4, BYREF_FORCE, BYREF_FORCE, BYREF_FORCE, BYREF_FORCE };
@@ -29,8 +81,9 @@ static unsigned char fourth_arg_force_ref_0001[] = { 4, BYREF_NONE, BYREF_NONE, 
 static unsigned char fourth_arg_force_ref_0111[] = { 4, BYREF_NONE, BYREF_FORCE, BYREF_FORCE, BYREF_FORCE };
 static unsigned char third_arg_force_ref_001[] = { 3, BYREF_NONE, BYREF_NONE, BYREF_FORCE };
 static unsigned char fifth_arg_force_ref_00011[] = { 5, BYREF_NONE, BYREF_NONE, BYREF_NONE, BYREF_FORCE , BYREF_FORCE};
+#endif
 
-#ifdef I_LOVE_ROY // 这个 #ifdef 包括 roy 写的专门用于 wforum 的函数，结果被我换掉了，代码还是暂时留着吧。roy 不要打我 pp - atppp
+#ifdef I_LOVE_ROY // 这个 I_LOVE_ROY 包括 roy 写的专门用于 wforum 的函数，结果被我换掉了，代码还是暂时留着吧。roy 不要打我 pp - atppp
 static PHP_FUNCTION(bbs_get_article);
 #endif
 #ifdef HAVE_WFORUM
