@@ -1381,7 +1381,13 @@ function pc_fwd_getbody($node)
 	$body.= "»’÷æµÿ÷∑£∫http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$node[uid]."&nid=".$node[nid]."&s=all\n\n\n";
 	
 	if($node[htmltag])
-		$body.= undo_html_format(strip_tags($node[body]));
+	{
+		$content = str_replace("<p>","",$node[body]);
+		$content = str_replace("</p>","\n\n",$node[body]);
+		$content = str_replace("&nbsp;"," ",$node[body]);
+		$content = str_replace("<br />","\n",$node[body]);
+		$body .= undo_html_format(strip_tags($content));
+	}
 	else
 		$body.= $node[body];
 	return $body;
