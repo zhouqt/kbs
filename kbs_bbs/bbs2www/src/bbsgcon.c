@@ -9,6 +9,7 @@ int main()
 	char buf[512], board[80], dir[80], file[80], filename[80], *ptr;
 	struct fileheader x;
 	int num, tmp, total;
+	char board_url[80];
 
 	init_all();
 	strsncpy(board, getparm("board"), 32);
@@ -43,29 +44,28 @@ int main()
 	fp=fopen(dir, "r+");
 	if(fp==0)
 		http_fatal("dir error2");
-	encode_url(buf, board, sizeof(buf));
+	encode_url(board_url, board, sizeof(board_url));
 	if(num>0)
 	{
 		fseek(fp, sizeof(x)*(num-1), SEEK_SET);
 		fread(&x, sizeof(x), 1, fp);
 		printf("[<a href=\"bbscon?board=%s&file=%s&num=%d\">上一篇</a>]",
-			   buf, x.filename, num-1);
+			   board_url, x.filename, num-1);
 	}
-	printf("[<a href=\"bbsdoc?board=%s\">本讨论区</a>]", buf);
+	printf("[<a href=\"bbsdoc?board=%s\">本讨论区</a>]", board_url);
 	if(num<total-1)
 	{
 		fseek(fp, sizeof(x)*(num+1), SEEK_SET);
 		fread(&x, sizeof(x), 1, fp);
 		printf("[<a href=\"bbscon?board=%s&file=%s&num=%d\">下一篇</a>]",
-			   buf, x.filename, num+1);
+			   board_url, x.filename, num+1);
 	}
 	fclose(fp);
 	ptr=x.title;
 	if(!strncmp(ptr, "Re: ", 4))
 		ptr+=4;
 	printf("[<a href=\"bbstfind?board=%s&title=%s\">同主题阅读</a>]\n",
-		   encode_url(buf, board, sizeof(buf)),
-		   encode_url(buf, void1(ptr), sizeof(buf)));
+		   board_url, encode_url(buf, void1(ptr), sizeof(buf)));
    	printf("</center>\n"); 
 	http_quit();
 }

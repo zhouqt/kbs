@@ -73,7 +73,7 @@ int main()
 int show_file(char *board, struct fileheader *x, int n)
 {
 	FILE *fp;
-	char path[80], buf[512];
+	char path[80], buf[512], board_url[80];
 	
 	if(loginok)
 		brc_add_read(x->filename);
@@ -81,13 +81,12 @@ int show_file(char *board, struct fileheader *x, int n)
 	fp=fopen(path, "r");
 	if(fp==0)
 		return;
-	encode_url(buf, board, sizeof(buf));
+	encode_url(board_url, board, sizeof(board_url));
 	printf("<table width=\"610\"><pre>\n");
 	printf("[<a href=\"bbscon?board=%s&file=%s&num=%d\">本篇全文</a>] ",
-		   buf, x->filename, n);
+		   board_url, x->filename, n);
 	printf("[<a href=\"bbspst?board=%s&file=%s&title=%s&userid=%s\">回复本文</a>] ",
-		encode_url(buf, board, sizeof(buf)), x->filename,
-		encode_url(buf, x->title, sizeof(buf)), x->owner);
+		board_url, x->filename, encode_url(buf, x->title, sizeof(buf)), x->owner);
 	printf("[本篇作者: %s]\n", userid_str(x->owner));
 	/*printf("[本篇人气: %d]\n", *(int*)(x->title+73));*/
 	while(1)

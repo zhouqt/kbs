@@ -8,7 +8,7 @@ int main()
 {
 	FILE *fp;
 	int n;
-	char s1[256], buf[256], buf2[256];
+	char s1[256], buf[256], buf2[256], buf3[256];
 	char brd[256], id[256], title[256], num[100];
 
 	init_all();
@@ -33,7 +33,7 @@ int main()
 		encode_url(buf, brd, sizeof(buf));
 		printf("<tr><td>µÚ %d Ãû<td><a href=\"bbsdoc?board=%s\">%s</a></td><td><a href=\"bbstfind?board=%s&title=%s\">%42.42s</a></td><td><a href=\"bbsqry?userid=%s\">%12s</a></td><td>%s</td></tr>\n",
 			n, buf, brd, buf, encode_url(buf2, title, sizeof(buf2)),
-			encode_html(buf2, title, sizeof(buf2)), id, id, num);
+			encode_html(buf3, title, sizeof(buf3)), id, id, num);
 	}
 	printf("</table><center>");
 	http_quit();
