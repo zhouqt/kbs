@@ -45,7 +45,6 @@ static logconfig logconf[] = {
     {1, 0, "usermsg", "msg.log", 0, 0, 0, NULL, 0},     /* 所有用户的message记录 */
     {1, 0, "boardusage", "boardusage.log", 0, 0, 0, NULL, 0},   /* 版面使用记录 */
     {1, 0, "chatd", "trace.chatd", 1024, 0, 0, NULL, 0},        /* 聊天室使用记录，使用缓冲 */
-    {1, 0, "system", "usies", 0, 0, 0, NULL, 0},        /* 最后所有的记录都在这里 */
     {1, 0, NULL, "trace", 0, 0, 0, NULL, 0}     /* 最后所有的记录都在这里 */
 };
 
@@ -272,9 +271,9 @@ void newbbslog(int type, const char *fmt, ...)
         return;
     if (disable)
         return;
-    if (msqid < 0) {
+    if (msqid == -1 ) {
         msqid = init_bbslog();
-        if (msqid < 0) {
+        if (msqid ==-1 ) {
             disable = 1;
             return;
         }
