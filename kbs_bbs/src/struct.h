@@ -171,7 +171,7 @@ typedef struct friends mailgroup_t;
 struct msghead {
     int pos, len;
     char sent;
-    int mode;
+    char mode;
     char id[IDLEN+2];
     time_t time;
     int frompid, topid;
