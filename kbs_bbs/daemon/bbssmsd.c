@@ -71,8 +71,8 @@ void start_daemon()
         exit(-1);
     }
     signal(SIGHUP, SIG_IGN);*/
-/*    if (fork())
-        exit(0);*/
+    if (fork())
+        exit(0);
     save_daemon_pid();
 }
 
