@@ -41,6 +41,7 @@ static PHP_FUNCTION(bbs_getarticles);
 static PHP_FUNCTION(bbs_get_records_from_id);
 static PHP_FUNCTION(bbs_get_records_from_num);
 static PHP_FUNCTION(bbs_get_filename_from_num);
+static PHP_FUNCTION(bbs_get_threads_from_id);
 static PHP_FUNCTION(bbs_countarticles);
 static PHP_FUNCTION(bbs_is_bm);
 static PHP_FUNCTION(bbs_getannpath);
@@ -105,6 +106,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_get_records_from_id, NULL)
         PHP_FE(bbs_get_records_from_num, NULL)
         PHP_FE(bbs_get_filename_from_num, NULL)
+        PHP_FE(bbs_get_threads_from_id, NULL)
         PHP_FE(bbs_countarticles, NULL)
         PHP_FE(bbs_is_bm, NULL)
         PHP_FE(bbs_getannpath, NULL)
@@ -1257,6 +1259,89 @@ static PHP_FUNCTION(bbs_get_records_from_id)
 				(void*) &element, sizeof(zval*), NULL);
 	}
 	RETURN_LONG(num);
+}
+
+/**
+ * Get some thread records from an article id.
+ * prototype:
+ * int bbs_get_threads_from_id(long boardid, long id, long mode, long num);
+ *
+ * @return Records on success,
+ *         FALSE on failure.
+ * @author flyriver
+ */
+static PHP_FUNCTION(bbs_get_threads_from_id)
+{
+	int bid;
+	int id;
+	int num;
+	int mode;
+	char dirpath[STRLEN];
+	fileheader_t *articles;
+	const struct boardheader *bp;
+	int rc;
+	int i;
+	zval *element;
+	char flags[3] = {0x00}; /* flags[0]: flag character
+							 * flags[1]: imported flag
+							 * flags[2]: no reply flag
+							 */
+    int ac = ZEND_NUM_ARGS();
+    int retnum;
+
+    if (ac != 4
+        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llll", &bid, &id, &mode, &num) == FAILURE)
+    {
+        WRONG_PARAM_COUNT;
+    }
+
+    /* check for parameter being passed by reference 
+	*/
+	if ((bp = getboard(bid)) == NULL)
+	{
+		RETURN_FALSE;
+	}
+	if (num == 0)
+	{
+		RETURN_FALSE;
+	}
+	if (num < 0)
+	{
+		if ((articles = emalloc((-num)*sizeof(fileheader_t))) == NULL)
+		{
+			RETURN_FALSE;
+		}
+	}
+	else
+	{
+		if ((articles = emalloc(num*sizeof(fileheader_t))) == NULL)
+		{
+			RETURN_FALSE;
+		}
+	}
+	if (array_init(return_value) == FAILURE)
+	{
+		retnum = 0;
+		goto threads_error;
+	}
+	setbdir(mode, dirpath, bp->filename);
+	if ((rc = get_threads_from_id(dirpath, id, articles, num)) == 0)
+	{
+		retnum = 0;
+		goto threads_error;
+	}
+	for (i = 0; i < rc; i++)
+	{
+		MAKE_STD_ZVAL(element);
+		array_init(element);
+		bbs_make_article_array(element, articles + i, flags, sizeof(flags));
+		zend_hash_index_update(Z_ARRVAL_P(return_value), i,
+				(void*) &element, sizeof(zval*), NULL);
+	}
+threads_error:
+	efree(articles);
+	if (retnum == 0)
+		RETURN_FALSE;
 }
 
 /**
