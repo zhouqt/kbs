@@ -8,6 +8,10 @@
 	else
 	{
 		html_init("gb2312");
+
+		if(!strcmp($currentuser["userid"],"guest"))
+			html_error_quit("guest 没有自己的邮箱!");
+		
 		$mailboxs = bbs_loadmaillist($currentuser["userid"]);
 		if ($mailboxs == FALSE)html_error_quit("读取自定义邮箱数据失败!");
 
