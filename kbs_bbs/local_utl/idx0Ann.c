@@ -16,6 +16,7 @@
 #define DEFDBGFLAG	3       /* default debug flag */
 #define MAXIGNORE	5       /* maximum ignored sql errcode */
 #define DEFIDLEN	20
+#define MAXDEPTH    15      /* maximum depth for indent */
 
 #define DOTNAMES	".Names"
 const short int gnsDirBackColor[] = { 41, 42, 43, 44, 45, 46, 47, 0 };
@@ -25,6 +26,8 @@ static const char *psNullStr = "";
 static char psSrcDir[MAXLEN] = "";      /*      initial src dir */
 static int gnDebugLevel = DEFDBGFLAG;   /*      global debug level      */
 static int gnDirDepth = 0;      /*      current recursive depth of directories  */
+static char psIndent[3 * MAXDEPTH + 5];  /* current indent */
+static int gnIndentOutRange = 0;        /* any index in previous recursions that >= 100 */
 static int gnIgnoreError = -1;  /*  0 : ignore error when executing */
 static FILE *pLogFile = NULL;   /* event log file descriptor    */
 static FILE *pOutFile = NULL;   /* output file descriptor       */
@@ -49,6 +52,8 @@ int main(int argc, char **argv)
         fprintf(pLogFile, "%s: Bad parameter.\n", argv[0]);
         exit(1);
     }
+    if (gnDirDepth > MAXDEPTH) gnDirDepth = MAXDEPTH;
+    sprintf(psIndent, "%*.*s", gnDirDepth * 3 + 2, gnDirDepth * 3 + 2, " ");
     fprintf(pOutFile, "\033[1;42;37m  %-14s%-54s%-9s\033[m\n" "-------------------------------------------------------------------------------\n", "序号", "精华区主题", "更新日期");
     if (0 != PhaseDir(psSrcDir, /* prefix, */ title, "SYSOP"))
         exit(1);
@@ -108,7 +113,7 @@ int PhaseDir(char *dname, /* char * prefix, */ char *brdtitle, char *bmstr)
     char vcTitle[MAXBUF];       /*      directory title string  */
     char dirNameEn[MAXBUF];     /*  directory name ( with no path prefix ) */
     char psCTime[SHORTLEN];     /*  modify time string  */
-
+    int oldIndentOutRange = gnIndentOutRange;
 /*    char psPrefix[SHORTLEN];*//*  output prefix string    */
     char *ptr, *end;
     FILE *idxfp;
@@ -244,6 +249,12 @@ int PhaseDir(char *dname, /* char * prefix, */ char *brdtitle, char *bmstr)
             psCTime[10] = 0;    /* only date needed */
         } else
             *psCTime = 0;
+
+        if (gnDirDepth > MAXDEPTH || nNumber >= 100 || oldIndentOutRange)
+            gnIndentOutRange = 1;
+        else
+            gnIndentOutRange = 0;
+
         if (S_ISDIR(lst_p.st_mode)) {   /*      sub-directory   */
             if (NULL != (ptr = strrchr(psName, '('))) {
                 if (!strncmp(ptr, "(BM: ", 5)) {
@@ -274,22 +285,40 @@ int PhaseDir(char *dname, /* char * prefix, */ char *brdtitle, char *bmstr)
             if (lntval > llen)
                 lntval = llen;
 
-            fprintf(pOutFile, "%*.*s\033[33m%4d\033[37m. [\033[1;32m目录\033[37m]"
+            if (!gnIndentOutRange) {
+                fprintf(pOutFile, "\033[33m%s%2d.\033[37m [\033[1;32m目录\033[37m]"
+                    "\033[%d;%dm%.*s\033[0;31m%*.10s\033[37m\n",
+                    psIndent, nNumber,
+                    gnDirDepth < 7 ? gnsDirBackColor[gnDirDepth] : 0, gnDirDepth < 7 ? gnsDirForeColor[gnDirDepth] : 37, lntval, psName, 70 - gnDirDepth * 3 - lntval /*llen */ ,
+                    psCTime);
+            } else {
+                fprintf(pOutFile, "%*.*s\033[33m%4d\033[37m. [\033[1;32m目录\033[37m]"
                     "\033[%d;%dm%.*s\033[0;31m%*.10s\033[37m\n",
                     (gnDirDepth - 1) * 3, (gnDirDepth - 1) * 3, " ", nNumber,
                     gnDirDepth < 7 ? gnsDirBackColor[gnDirDepth] : 0, gnDirDepth < 7 ? gnsDirForeColor[gnDirDepth] : 37, lntval, psName, 70 - gnDirDepth * 3 - lntval /*llen */ ,
                     psCTime);
+            }
+
+            if (!gnIndentOutRange)
+                sprintf(&psIndent[gnDirDepth * 3 - 1], "%2d.", nNumber);
             if (PhaseDir(fname, /*psPrefix, */ psName, psDirBM) < 0) {
                 lerr = -1;
                 break;
             }
+            if (!gnIndentOutRange)
+                psIndent[gnDirDepth * 3 - 1] = '\0';
         } else if (S_ISREG(lst_p.st_mode)) {    /*      regular file    */
             lntval = gnDirDepth >= 15 ? 10 : 70 - gnDirDepth * 3;
             if (lntval > 39)
                 lntval = 39;
 /*			if(lntval > llen) lntval = llen;*/
-            fprintf(pOutFile, "%*.*s%4d. [\033[1;36m文件\033[0;37m]"
+            if (!gnIndentOutRange) {
+                fprintf(pOutFile, "\033[33m%s\033[37m%2d. [\033[1;36m文件\033[0;37m]"
+                    "%-*.*s\033[31m%*.10s\033[37m\n", psIndent, nNumber, lntval, lntval, psName, 70 - gnDirDepth * 3 - lntval, psCTime);
+            } else {
+                fprintf(pOutFile, "%*.*s%4d. [\033[1;36m文件\033[0;37m]"
                     "%-*.*s\033[31m%*.10s\033[37m\n", (gnDirDepth - 1) * 3, (gnDirDepth - 1) * 3, " ", nNumber, lntval, lntval, psName, 70 - gnDirDepth * 3 - lntval, psCTime);
+            }
         } else {                /*      unknown item type       */
             if (DEFDBGFLAG <= gnDebugLevel)
                 fprintf(pLogFile, "Error: Unknown item encountered at line %d of %s\n", lline, idxfile);
@@ -297,6 +326,7 @@ int PhaseDir(char *dname, /* char * prefix, */ char *brdtitle, char *bmstr)
         }
     }                           /*      while(!feof(idxfp))     */
     fclose(idxfp);
+    gnIndentOutRange = oldIndentOutRange;
     gnDirDepth--;
     return lerr;
 }
