@@ -337,7 +337,7 @@ attach define
 
 #define CHECK_IP_LINK 1
 
-#define SMS_SUPPORT
+#undef SMS_SUPPORT
 
 #define PERSONAL_CORP
 
