@@ -215,12 +215,15 @@ char *stitle;
     if(strncmp(stitle,"Re: ",4)!=0&&strncmp(stitle,"RE: ",4)!=0)
     {
         sprintf(ReplyPost,"Re: %s",stitle);
-        strcpy(ReadPost,stitle);
+        strncpy(ReadPost,stitle,STRLEN-1);
+        ReadPost[STRLEN-1]=0;
     }
     else
     {
-        strcpy(ReplyPost,stitle);
-        strcpy(ReadPost,ReplyPost+4);
+        strncpy(ReplyPost,stitle,STRLEN-1);
+        strncpy(ReadPost,ReplyPost+4,STRLEN-1);
+        ReplyPost[STRLEN-1]=0;
+        ReadPost[STRLEN-1]=0;
     }
 }
 
@@ -750,7 +753,8 @@ char *direct ;
     {
         strcpy(ReplyPost,"Re: ");
         strncat(ReplyPost,fileinfo->title,STRLEN-4);
-        strcpy(ReadPost,fileinfo->title);
+        strncpy(ReadPost,fileinfo->title,STRLEN-1);
+        ReadPost[STRLEN-1]=0;
     }
 
     refresh();
