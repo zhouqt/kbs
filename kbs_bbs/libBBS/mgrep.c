@@ -315,7 +315,7 @@ struct pattern_image* patt_img;
                     p = &patt_img->hashtable[p->next-1];
                 qx = text - m1;
                 j = 0;
-                while (patt_img->tr[patt_img->pat_spool+patt_img->patt[pat_index]+j] == patt_img->tr[*(qx++)])
+                while (patt_img->tr[*(patt_img->pat_spool+patt_img->patt[pat_index]+j)] == patt_img->tr[*(qx++)])
                     j++;
                 if (j > m1) {
                     if (patt_img->pat_len[pat_index] <= j) {
@@ -404,7 +404,7 @@ int m_short(unsigned char* text,int start,int end,struct pattern_image* patt_img
                 p = &patt_img->hashtable[p->next-1];
             qx = text;
             j = 0;
-            while (patt_img->tr[patt_img->pat_spool+patt_img->patt[pat_index]+j] == patt_img->tr[*(qx++)])
+            while (patt_img->tr[*(patt_img->pat_spool+patt_img->patt[pat_index]+j)] == patt_img->tr[*(qx++)])
                 j++;
             if (patt_img->pat_len[pat_index] <= j) {
                 if (text >= textend)
