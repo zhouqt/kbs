@@ -3,7 +3,7 @@
 AC_INIT(smthbbs, 1.0.1, SYSOP@smth.org)
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
 
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_TARGET
 case "${host}" in
   i*86-*-freebsd4*)
 	CFLAGS="$CFLAGS -DFREEBSD"
@@ -24,21 +24,25 @@ AC_ARG_ENABLE(innbbsd,
 [  --enable-innbbsd
                 enable innbbsd  support(need innbbsd package)],
 [
-        if test -d innbbsd; then
-                AC_CONFIG_SUBDIRS(nnbbsd)
-        else
-                AC_MSG_ERROR([can't find innbbsd package,please get it first!])
-        fi
+	if test "$enableval" = "yes" ; then
+	        if test -d innbbsd; then
+        	        AC_CONFIG_SUBDIRS(innbbsd)
+	        else
+        	        AC_MSG_ERROR([can't find innbbsd package,please get it first!])
+	        fi
+	fi
 ])
 
 AC_ARG_ENABLE(ssh,
 [  --enable-ssh
 		enable ssh bbsd  support(need sshbbsd package)],
 [
-	if test -d sshbbsd; then
-		AC_CONFIG_SUBDIRS(sshbbsd)
-	else
-		AC_MSG_ERROR([can't find sshbbsd package,please get it first!])
+	if test "$enableval" = "yes" ; then
+		if test -d sshbbsd; then
+			AC_CONFIG_SUBDIRS(sshbbsd)
+		else
+			AC_MSG_ERROR([can't find sshbbsd package,please get it first!])
+		fi
 	fi
 ])
 
@@ -50,13 +54,13 @@ AC_ARG_ENABLE(www,
 [  --enable-www
         enable web support(need bbs2www package)],
 [
-    if [ test "$enableval" = "yes" ]; then
-	    if test -d bbs2www; then
-		AC_CONFIG_SUBDIRS(bbs2www)
+	if test "$enableval" = "yes" ; then
+		if test -d bbs2www; then
+			AC_CONFIG_SUBDIRS(bbs2www)
 		else
-		AC_MSG_ERROR([can't find bbs2www package,please get it first!])
-	   fi
-    fi
+			AC_MSG_ERROR([can't find bbs2www package,please get it first!])
+		fi
+	fi
 ])
 
 
