@@ -304,6 +304,84 @@ struct key_struct { // 自定义键 by bad
     int mapped[10];
 };
 
+//个人文集 by stiger
+#ifdef PERSONAL_CORP
+
+struct _pc_selusr
+{
+	char userid[IDLEN+2];
+	char corpusname[41];
+	time_t createtime;
+};
+
+struct pc_users {
+	int uid;	//not uid in PASSWD, 是个人文集的uid
+	char username[IDLEN+2];
+	char corpusname[41];
+	char description[201];
+	char theme[11];
+	int nodelimit;
+	int dirlimit;
+	time_t createtime;
+};
+
+struct pc_nodes {
+	unsigned long nid;		//node id, auto increment
+
+	//pid不为零:
+	//   type: 0: 收藏夹文章, pid表示收藏夹目录nodes nid
+	//   type: 1: 收藏夹目录, pid表示父收藏夹目录nodes nid
+	//pid == 0:
+	//   type: 0: 普通文章
+	//   type: 1: 收藏夹跟目录
+	unsigned long pid;
+
+	//type: 0: 文章
+	//      1: 收藏夹目录
+	int type;
+
+	char source[11];
+	char hostname[21];
+	time_t created;
+	time_t changed;
+	int uid;
+
+	//是否允许评论
+	// 0: 不允许
+	// 1: 允许登陆用户
+	// 2: 允许guest
+	int comment;
+	long commentcount;
+	char subject[201];
+	char *body;
+
+	//权限
+	// 0: 公开
+	// 1: 好友
+	// 2: 私人
+	// 3: 收藏
+	// 4: 垃圾
+	int access;
+	int visitcount;
+};
+
+struct pc_comments {
+	unsigned long cid;
+	unsigned long nid;
+	int uid;
+	char hostname[21];
+	char username[21];
+	char subject[201];
+	time_t created;
+	time_t changed;
+	char *body;
+};
+
+#define PC_DEFAULT_NODELIMIT 300
+#define PC_DEFAULT_DIRLIMIT 300
+
+#endif
+
 #if HAVE_WWW==1
 
 #define MAX_WWW_MAP_ITEM (MAX_WWW_GUEST/32)

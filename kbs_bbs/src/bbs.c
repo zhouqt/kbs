@@ -87,6 +87,10 @@ int SR_BMfuncX();               /* Leeward 98.04.16 */
 int Goodbye();
 int i_read_mail();              /* period 2000.11.12 */
 
+#ifdef PERSONAL_CORP
+extern int import_to_pc();		/* stiger, 2003.8.26 */
+#endif
+
 void RemoveAppendedSpace();     /* Leeward 98.02.13 */
 int set_delete_mark(int ent, struct fileheader *fileinfo, char *direct);        /* KCN */
 
@@ -3071,6 +3075,9 @@ struct one_key read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
      * {'!',      Goodbye},Haohmaru 98.09.21 
      */
     {Ctrl('Y'), zsend_post},    /* COMMAN 2002 */
+#ifdef PERSONAL_CORP
+	{'y', import_to_pc},
+#endif
     {'\0', NULL},
 };
 

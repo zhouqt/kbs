@@ -122,8 +122,14 @@ int send_sms();
 int smsmsg_read();
 #endif
 #endif
+
 #if HAVE_MYSQL == 1
 int al_read();
+#endif
+
+#ifdef PERSONAL_CORP
+int pc_add_user();
+int pc_choose_user();
 #endif
 
 /*Add By Excellent */
@@ -250,8 +256,14 @@ static const struct scommandlist sysconf_cmdlist[] = {
 	{"SMSmsg",smsmsg_read},
 #endif
 #endif
+
 #if HAVE_MYSQL == 1
 	{"Addrlist", al_read},
+#endif
+
+#ifdef PERSONAL_CORP
+	{"PcorpManage", pc_add_user},
+	{"Pcorp", pc_choose_user},
 #endif
     {NULL, NULL},
 };
