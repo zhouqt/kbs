@@ -326,7 +326,7 @@ static void copymenupos()
     for( n = 0; n < sysconf_menu; n++ ) {
         menupos[n].line=menuitem[n].line;
         menupos[n].col=menuitem[n].col;
-        menupos[n].fptr=cmdlist_funcptr(sysconf_relocate(menuitem[n].name));
+        menupos[n].fptr=cmdlist_funcptr(sysconf_relocate(menuitem[n].func_name));
     }
 }
 
