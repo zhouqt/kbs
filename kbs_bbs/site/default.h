@@ -440,10 +440,6 @@
 #define XPERMSTR "bTCPRp#@XWBA$VS!DEM1234567890%"
 /* means the rest is a post mask */
 
-#ifndef PERM_AUTOSET
-#define PERM_AUTOSET	PERM_BASIC
-#endif
-#define PERM_DEFAULT    (PERM_BASIC | PERM_CHAT | PERM_PAGE | PERM_POST | PERM_LOGINOK)
 /* This is the default permission granted to all new accounts. */
 #define PERM_DEFAULT    (PERM_BASIC | PERM_CHAT | PERM_PAGE | PERM_POST | PERM_LOGINOK)
 
@@ -478,6 +474,10 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEFINE(user,x)     ((x)?((user)->userdefine)&(x):1)
 
 #endif //permission define NUMPERMS
+
+#ifndef PERM_AUTOSET
+#define PERM_AUTOSET	PERM_BASIC
+#endif
 
 
 #ifndef TDEFINE
