@@ -4605,6 +4605,7 @@ static int choose_tmpl_post(char * title, char *fname){
 	int write_ok = 0;
 	char * tmp[ MAX_CONTENT ];
 	char newtitle[STRLEN];
+	int oldmode = uinfo.mode;
 
 	if(t_now <= 0 || t_now > MAX_TEMPLATE )
 		return -1;
@@ -4616,11 +4617,13 @@ static int choose_tmpl_post(char * title, char *fname){
 		return -1;
 	}
 
+    modify_user_mode(POSTTMPL);
 	for(i=0; i< ptemplate[t_now-1].tmpl->content_num; i++){
 		char *ans;
 
 		ans = (char *)malloc(ptemplate[t_now-1].cont[i].length + 2);
 		if( ans == NULL ){
+    		modify_user_mode(oldmode);
 			fclose(fp);
 			return -1;
 		}
@@ -4634,6 +4637,7 @@ static int choose_tmpl_post(char * title, char *fname){
         multi_getdata(6, 0, 79, NULL, ans, ptemplate[t_now-1].cont[i].length+1, 11, true, 0);
 		tmp[i] = ans;
 	}
+    modify_user_mode(oldmode);
 
 	if( ptemplate[t_now-1].tmpl->filename[0] ){
 		setbfile( filepath,currboard->filename, ptemplate[t_now-1].tmpl->filename);
