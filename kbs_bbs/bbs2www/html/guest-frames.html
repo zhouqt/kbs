@@ -7,7 +7,7 @@
 <script src="/func.js"></script>
 <script language="javascript">
 if (is_ie)
-	mainurl=decodeURIComponent(queryString('mainurl','/bbssec.php'));
+	mainurl=unescape(queryString('mainurl','/bbssec.php'));
 else
 	mainurl='/bbssec.php';
 if(is_ie) document.write(""+
