@@ -69,6 +69,7 @@ function pcmain_blog_new_user()
 	}
 ?>				
 				</ul>
+				<p align="right"><a href="pc.php?order=createtime&order1=DESC">&gt;&gt;更多</a></p>
 				</td>
 			</tr>
 		</table>
@@ -103,6 +104,7 @@ function pcmain_blog_top_ten()
 	}
 ?>				
 				</ul>
+				<p align="right"><a href="pc.php?order=visitcount&order1=DESC">&gt;&gt;更多</a></p>
 				</td>
 			</tr>
 		</table>
@@ -137,6 +139,7 @@ function pcmain_blog_last_update()
 	}
 ?>				
 				</ul>
+				<p align="right"><a href="pc.php?order=modifytime&order1=DESC">&gt;&gt;更多</a></p>
 				</td>
 			</tr>
 		</table>

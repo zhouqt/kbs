@@ -30,7 +30,7 @@ if(isset($_GET[sig]) && $_GET[nid])
 		if($rows)
 		{
 			$query = "INSERT INTO `recommend` ( `rid` , `nid` , `hostname` , `created` , `uid` , `subject` , `body` , `emote` , `htmltag` , `recuser` ,`state` ) ".
-			"VALUES ('', '".$rows[nid]."', '".$rows[hostname]."', '".$rows[created]."', '".$rows[uid]."', '".$rows[subject]."', '".$rows[body]."', '".$rows[emote]."', '".$rows[htmltag]."' , '".$currentuser[userid]."' , 1);";
+			"VALUES ('', '".$rows[nid]."', '".addslashes($rows[hostname])."', '".$rows[created]."', '".$rows[uid]."', '".addslashes($rows[subject])."', '".addslashes($rows[body])."', '".$rows[emote]."', '".$rows[htmltag]."' , '".$currentuser[userid]."' , 1);";
 			mysql_query($query,$link);
 		}
 		mysql_free_result($result);
