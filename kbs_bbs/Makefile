@@ -22,7 +22,7 @@ BBSHOME=/home/system/bbs
 BBSUID=9999
 # by zixia: remove to sysname.h
 
-OS_DEF   = -DAIX -DSYSV 
+OS_DEF   = -DAIX -DSYSV -DOS_LACK_SOCKLEN
 #OS_DEF   = -DLINUX -DSYSV 
 #OS_DEF	= -DFREEBSD
 

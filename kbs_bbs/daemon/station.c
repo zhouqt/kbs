@@ -7,9 +7,6 @@
 #include <sys/uio.h>
 #endif  
 
-#ifdef OS_LACK_SOCKLEN
-typedef size_t socklen_t;
-#endif
 
 #include <sys/types.h>
 #include <sys/socket.h>
