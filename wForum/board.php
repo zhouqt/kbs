@@ -37,29 +37,30 @@ if (isErrFounded()) {
 
 	if ($loginok==1) {
 		showUserMailbox();
-	}
-	//board_head_var($boardID);
-	showAnnounce(); 
-
-	?>
-	</TABLE>
-	<?php
-
-
-
-	if ($loginok!=1) {
-		FastLogin();
-	}
-
-	showBoardStaticsTop($boardArr);
-
 ?>
-<br>
+</table>
+<?php
+	}
+
+	board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
+?>
+	<TABLE cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
+<?php
+	showAnnounce(); 
+?>
+	</TABLE>
+<?php
+	showBoardStaticsTop($boardArr);
+?>
 <TABLE cellPadding=1 cellSpacing=1 class=tableborder1 align=center>
 <?php
 	showBroadcast($boardID,$boardName);
 
-	showBoardContents($boardID,$boardName);
+	showBoardContents($boardID,$boardName,$page);
+
+	boardSearchAndJump($boardName, $boardID);
+
+	showBoardSampleIcons();
 ?>
 </table>
 <?php
@@ -73,6 +74,7 @@ function preprocess(){
 	global $boardName;
 	global $currentuser;
 	global $boardArr;
+	global $page;
 	if (!isset($_GET['name'])) {
 		foundErr("Î´Ö¸¶¨°æÃæ¡£");
 		return false;

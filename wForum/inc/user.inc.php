@@ -198,7 +198,6 @@ arNews = [<?php
 <div id="elFader" style="position:relative;visibility:hidden; height:16" ></div>
 </td>
 </tr>
-<tr>
 <?php
 }
 
