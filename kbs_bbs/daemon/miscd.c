@@ -162,8 +162,7 @@ int updateauser(struct userec *theuser,char *data)
     	fclose(fn);
 	tcount=lcount;
         for(i=0;i<lcount;i++){
-            s[i][1]--;
-            if(s[i][1]==0){
+            if(s[i][1]<=time(0)/3600/24){
             	tcount--;
             	switch(s[i][0]){
             	    case 1:theuser->userlevel|=PERM_BASIC;break;
@@ -172,6 +171,7 @@ int updateauser(struct userec *theuser,char *data)
             	    case 4:theuser->userlevel|=PERM_PAGE;break;
             	    case 5:theuser->userlevel&=~PERM_DENYMAIL;break;
             	}
+            	s[i][1]=0;
             }
         }
         if(theuser->flags[0]&GIVEUP_FLAG&&tcount==0)

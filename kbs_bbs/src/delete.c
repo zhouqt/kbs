@@ -284,6 +284,7 @@ PERM_DENYMAIL·¢ÐÅ
     	pressanykey();
     	return;
     }
+    j=time(0)/3600/24+j;
     
     move(13,0);
     
