@@ -109,6 +109,7 @@ function html_init($charset)
 ?>
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="/ansi.css">
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>">
 <?php
 	switch ($css_style)
@@ -180,6 +181,109 @@ function get_secname_index($secnum)
 			return $i;
 	}
 	return -1;
+}
+
+function ansi_getfontcode($fgcolor,$bgcolor,$highlight,$blink,$underlink, &$head,&$tail)
+{
+    $defaultfgcolor = 0;
+    $defaultbgcolor = 7;
+    if ($highlight)
+       $fgcolor+=8;
+    if ($fgcolor==-1)
+      $fgcolor=$defaultfgcolor;
+    else
+    if ($fgcolor==-2)
+      $fgcolor=$defaultbgcolor;
+    if ($bgcolor==-1)
+      $bgcolor=$defaultbgcolor;
+    else
+    if ($bgcolor==-2)
+      $bgcolor=$defaultfgcolor;
+    $head = sprintf("<font class=f%d%2d>",$bgcolor,$fgcolor);
+    if ($underlink) {
+       $head .= "<u>";
+       $tail = "</u>";
+    }
+    $tail .= "</font>";
+}
+
+function ansi_convert( $buf )
+{
+    $keyword = preg_split("/\x1b\[([^a-zA-Z]*)([a-zA-Z])/",$buf,-1,PREG_SPLIT_DELIM_CAPTURE);
+    $fgcolor=-1;
+    $bgcolor=-1;
+    $blink=false;
+    $underlink=false;
+    $highlight=false;
+    for ($i=1;$i<count($keyword);$i+=3) {
+        if ($keyword[$i+1]=='m') {
+            $head="";
+            $tail="";
+            if ($keyword[$i]=="") {
+            		// *[;m
+                $fgcolor=-1;
+                $bgcolor=-1;
+                $blink=false;
+                $underlink=false;
+                $highlight=false;
+            } else {
+            	$good=true;
+            	$colorcodes=split(';',$keyword[$i]);
+                foreach ( $colorcodes as $code ) {
+            	    if (preg_match("/[\D]/",$code)) {
+            	    	$good=false;
+            	        break;
+            	    }
+                    if ($code=="") 
+                        $value=0;
+            	    else
+            	        $value=intval($code);
+                    if ($value<=8 && $value>=1) {
+                    	switch ($value) {
+                    	case 0:
+                            $fgcolor=-1;
+                            $bgcolor=-1;
+                            $blink=false;
+                            $underlink=false;
+                            break;
+                    	case 1:
+                    	    $highlight=1;
+                    	    break;
+                    	case 4:
+                    	    $underlink=1;
+                    	    break;
+                    	case 5:
+                    	    $blink=1;
+                    	case 7:
+                    	    $savebg=$bgcolor;
+                    	    if ($fgcolor==-1)
+                    	        $bgcolor=-2;
+                    	    else
+                    	        $bgcolor=$fgcolor;
+                    	    if ($bgcolor==-1)
+                    	        $fgcolor=-2;
+                    	    else
+                    	        $fgcolor=$savebg;
+                        }
+                    } else
+                    if ($value<=37 && $value>=30)
+                        $fgcolor=$value-30;
+                    else
+                    if ($value<=47 && $value>=40)
+                        $bgcolor=$value-40;
+                    else {
+                    	// unsupport code
+            	    	$good=false;
+                        break;
+                    }
+                }
+                if ($good)
+                    ansi_getfontcode($fgcolor,$bgcolor,$highlight,$blink,$underlink, $head,$tail);
+            }
+            $final .= $head . $keyword[$i+2] . $tail;
+        } else $final .= $keyword[$i+2];
+    }
+    return $final;
 }
 
 if (($loginok!=1)&&($_SERVER["PHP_SELF"]!="/bbslogin.php")) {
