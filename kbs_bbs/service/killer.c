@@ -625,7 +625,7 @@ int do_com_menu()
             }
             break;
         default:
-            for(i=0;i<menust;i++)
+            for(i=0;i<max;i++)
                 if(ch==menus[i][0]) sel=i;
             break;
         }
