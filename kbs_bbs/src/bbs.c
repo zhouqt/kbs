@@ -4082,6 +4082,7 @@ int set_ip_acl()
 #define TEMPLATE_DIR ".templ"
 #define MAX_TEMPLATE 10
 #define MAX_CONTENT 10
+#define TMPL_BM_FLAG 0x1
 
 struct s_content{
 	char text[50];
@@ -4105,7 +4106,11 @@ struct a_template{
 int template_num = 0;
 int t_now = 0;
 
-int tmpl_init(){
+int tmpl_init(int mode){
+		/***********
+		 * mode 0: ÓÃ»§²é¿´
+		 * mode 1: °ßÖñ¹ÜÀí
+		 ************/
 
 	int fd,i;
 	char tmpldir[STRLEN];
@@ -4126,6 +4131,10 @@ int tmpl_init(){
 		return 0;
 	}
 	while( read(fd, &tmpl, sizeof( struct s_template )) == sizeof(struct s_template) ){
+		if( mode == 0 && ( tmpl.flag & TMPL_BM_FLAG ) && !chk_currBM(currBM, currentuser)) {
+			lseek( fd, sizeof(struct s_content) * tmpl.content_num , SEEK_CUR );
+			continue;
+		}
 		cont = (struct s_content *) malloc( sizeof( struct s_content ) * tmpl.content_num );
 		if( cont == NULL )
 			break;
@@ -4249,13 +4258,13 @@ int content_add(){
 
 static int tmpl_show(struct _select_def *conf, int i)
 {
-	prints(" %2d %-40s %-20s %3d", i, ptemplate[i-1].tmpl->title, ptemplate[i-1].tmpl->title_prefix, ptemplate[i-1].tmpl->content_num);
+	prints(" %2d %s%-40s %-20s %3d", i, ptemplate[i-1].tmpl->flag & TMPL_BM_FLAG ? "[1;31mB[m":" ", ptemplate[i-1].tmpl->title, ptemplate[i-1].tmpl->title_prefix, ptemplate[i-1].tmpl->content_num);
 	return SHOW_CONTINUE;
 }
 
 static int content_show(struct _select_def *conf, int i)
 {
-	prints(" %2d   %-50s  %3d", i, ptemplate[t_now].cont[i-1].text, ptemplate[t_now].cont[i-1].length);
+	prints(" %2d  %-50s  %3d", i,ptemplate[t_now].cont[i-1].text, ptemplate[t_now].cont[i-1].length);
 	return SHOW_CONTINUE;
 }
 
@@ -4288,7 +4297,7 @@ static int tmpl_refresh(struct _select_def *conf)
 {
     clear();
     docmdtitle("[°æÃæÄ£°åÉèÖÃ]",
-               "Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] É¾³ý[\x1b[1;32md\x1b[0;37m]\x1b[m ÐÞ¸Ä±êÌâ[[1;32mt[0;37m] ÐÞ¸ÄÇ°×º[[1;32mz[0;37m] ÐÞ¸Ä¸ñÊ½[[1;32mf[0;37m] ²é¿´¸ñÊ½[[1;32ms[0;37m]");
+               "Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] É¾³ý[\x1b[1;32md\x1b[0;37m]\x1b[m ÐÞ¸Ä±êÌâ[[1;32mt[0;37m] ÐÞ¸ÄÇ°×º[[1;32mz[0;37m] ÐÞ¸Ä¸ñÊ½[[1;32mf[0;37m] ²é¿´¸ñÊ½[[1;32ms[0;37m] ÐÞ¸ÄÈ¨ÏÞ[[1;32mb[0;37m]");
     move(2, 0);
     prints("[0;1;37;44m %4s %-40s %-20s %8s", "ÐòºÅ", "Ãû³Æ","ÎÄÕÂ±êÌâÇ°×º","Ñ¡Ïî¸öÊý");
     clrtoeol();
@@ -4517,6 +4526,17 @@ static int tmpl_key(struct _select_def *conf, int key)
 			ansimore(filepath,1);
 			return SHOW_REFRESH;
 		}
+	case 'b' :
+		{
+			if( ptemplate[conf->pos-1].tmpl->flag & TMPL_BM_FLAG )
+				ptemplate[conf->pos-1].tmpl->flag &= ~TMPL_BM_FLAG ;
+			else
+				ptemplate[conf->pos-1].tmpl->flag |= TMPL_BM_FLAG;
+
+			tmpl_save();
+
+			return SHOW_REFRESH;
+		}
 	default :
 		break;
 	}
@@ -4591,7 +4611,7 @@ int m_template()
 		return DONOTHING;
 	}
 
-	if( tmpl_init() < 0 )
+	if( tmpl_init(1) < 0 )
 		return DONOTHING;
 
 	if( template_num == 0 ){
@@ -4799,7 +4819,7 @@ int choose_tmpl(char *title, char *fname)
     struct _select_def grouplist_conf;
     int i;
 
-	if( tmpl_init() < 0 )
+	if( tmpl_init(0) < 0 )
 		return  -1;
 
 	if( template_num == 0 ){
