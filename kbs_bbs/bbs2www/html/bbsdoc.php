@@ -24,22 +24,39 @@
 		$total = bbs_countarticles($brdnum, $dir_modes["NORMAL"]);
 		if ($total <= 0)
 			html_error_quit("本讨论区目前没有文章");
-		if (isset($_GET["start"]))
-			$start = $_GET["start"];
-		elseif (isset($_POST["start"]))
-			$start = $_POST["start"];
+		$artcnt = 20;
+		if (isset($_GET["page"]))
+			$page = $_GET["page"];
+		elseif (isset($_POST["page"]))
+			$page = $_POST["page"];
+		else
+		{
+			if (isset($_GET["start"]))
+			{
+				$start = $_GET["start"];
+				settype($start, "integer");
+				$page = ($start + $artcnt - 1) / $artcnt;
+			}
+			else
+				$page = 0;
+		}
+		settype($page, "integer");
+		if ($page > 0)
+			$start = ($page - 1) * $artcnt + 1;
 		else
 			$start = 0;
-		settype($start, "integer");
-		$artcnt = 20;
 		/*
 		 * 这里存在一个时间差的问题，可能会导致序号变乱。
 		 * 原因在于两次调用 bbs_countarticles() 和 bbs_getarticles()。
 		 */
 		if ($start == 0 || $start > ($total - $artcnt + 1))
+		{
 			$start = ($total - $artcnt + 1);
-		if ($start < 0)
-			$start = 1;
+			$page = ($start + $artcnt - 1) / $artcnt + 1;
+		}
+		else
+			$page = ($start + $artcnt - 1) / $artcnt;
+		settype($page, "integer");
 		$articles = bbs_getarticles($board, $start, $artcnt, $dir_modes["NORMAL"]);
 		if ($articles == FALSE)
 			html_error_quit("读取文章列表失败");
@@ -60,15 +77,63 @@
 				$bm_url = trim($bm_url);
 			}
 		}
+		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
 <body>
-<nobr/>
-<center><?php echo $BBS_FULL_NAME; ?> -- [讨论区: <?php echo $brdarr["NAME"]; ?>] 版主[<?php echo $bm_url; ?>] 文章数[<?php echo $total; ?>] <a href="/cgi-bin/bbs/bbsbrdadd?board=<?php echo $brdarr["NAME"]; ?>">预定本版</a>
+<center><p><?php echo $BBS_FULL_NAME; ?> -- [讨论区: <?php echo $brdarr["NAME"]; ?>] 版主[<?php echo $bm_url; ?>] 文章数[<?php echo $total; ?>] <a href="/cgi-bin/bbs/bbsbrdadd?board=<?php echo $brdarr["NAME"]; ?>">预定本版</a></p>
+<a href="bbspst.html?board=<?php echo $brd_encode; ?>&sig=<?php echo $currentuser["signature"]; ?>">发表文章</a>
+<a href="javascript:location=location">刷新</a>
+<?php
+		if ($page > 1)
+		{
+?>
+<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page - 1; ?>">上一页</a>
+<?php
+		}
+		if ($start < $total - 20)
+		{
+?>
+<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page + 1; ?>">下一页</a>
+<?php
+		}
+		if (bbs_is_bm($brdnum, $usernum))
+		{
+?>
+<a href="bbsmdoc.php?board=<?php echo $brd_encode; ?>">管理模式</a>
+<?php
+		}
+?>
+<a href="bbsnot.php?board=<?php echo $brd_encode; ?>">进版画面</a>
+<a href="bbsgdoc.php?board=<?php echo $brd_encode; ?>">文摘区</a>
+<?php
+		$ann_path = bbs_getannpath($brdarr["NAME"]);
+		if ($ann_path != FALSE)
+		{
+?>
+<a href="/cgi-bin/bbs/bbs0an?path=<?php echo urlencode($ann_path); ?>">精华区</a>
+<?php
+		}
+?>
+<a href="/cgi-bin/bbs/bbsbfind?board=<?php echo $brd_encode; ?>">版内查询</a>
+<?php
+		if (strcmp($currentuser["userid"], "guest") != 0)
+		{
+?>
+<a href="/cgi-bin/bbs/bbsclear?board=<?php echo $brd_encode; ?>&start=<?php echo $start; ?>">清除未读</a>
+<?php
+		}
+		$sec_index = get_secname_index($brdarr["SECNUM"]);
+		if ($sec_index >= 0)
+		{
+?>
+<a href="/bbsboa.php?group=<?php echo $sec_index; ?>">返回[<?php echo $section_names[$sec_index][0]; ?>]</a>
+<?php
+		}
+?>
 <hr class="default"/>
 <table width="613">
 <tr><td>序号</td><td>标记</td><td>作者</td><td>日期</td><td>标题</td></tr>
 <?php
-		$brd_encode = urlencode($brdarr["NAME"]);
 		$i = 0;
 		foreach ($articles as $article)
 		{
@@ -121,16 +186,16 @@
 <a href="bbspst.html?board=<?php echo $brd_encode; ?>&sig=<?php echo $currentuser["signature"]; ?>">发表文章</a>
 <a href="javascript:location=location">刷新</a>
 <?php
-		if ($start > 0)
+		if ($page > 1)
 		{
 ?>
-<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&start=<?php echo $start - $artcnt; ?>">上一页</a>
+<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page - 1; ?>">上一页</a>
 <?php
 		}
 		if ($start < $total - 20)
 		{
 ?>
-<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&start=<?php echo $start + $artcnt; ?>">下一页</a>
+<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page + 1; ?>">下一页</a>
 <?php
 		}
 		if (bbs_is_bm($brdnum, $usernum))
