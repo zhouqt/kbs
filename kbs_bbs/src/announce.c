@@ -44,6 +44,7 @@ void a_report();                /*Haohmaru.99.12.06.版主精华区操作记录，作为考查
 extern void a_prompt();         /* added by netty */
 int t_search_down();
 int t_search_up();
+int a_loadnames(MENU* pm);             /* 装入 .Names */
 
 static char* import_path[ANNPATH_NUM]; /*多丝路*/
 static char* import_title[ANNPATH_NUM];
@@ -127,21 +128,25 @@ static void load_import_path()
 	           fgets(buf, MAXPATH-1, fn);
     		else
     		    buf[0]=0;
-    		
+    		/*TODO: access check need complete!
     		if (buf[0]!=0&&(ann_traverse_check(buf, currentuser)!=0))
-    			buf[0]=0; /* can't access */
+    			buf[0]=0;  can't access */
     		
     		import_path[i]=(char*)malloc(strlen(buf)+1);
     		strcpy(import_path[i],buf);
-    		buf[0]=0;
     		if (!feof(fn))
 	           fgets(buf, MAXPATH-1, fn);
     		else { //get the title of pm
+    		    buf[0]=0;
+		    if (import_path[i][0]) {
     		    MENU pm;
-    		    ann_load_directory(&pm);
+		    bzero(&pm,sizeof(pm));
+		    pm.path=import_path[i];
+    		    a_loadnames(&pm);
     		    strncpy(buf,pm.mtitle,MAXPATH-1);
     		    buf[MAXPATH-1]=0;
     		    a_freenames(&pm);
+		    }
     		}
     		if (import_path[i][0]==0) /* if invalid path,then let the title empty */
     			buf[0]=0;
@@ -170,11 +175,11 @@ static void free_import_path()
     }
 }
 
-struct a_select_path_arg
+typedef struct 
 {
     bool save_mode; /* in save mode,path need valid*/
     int tmpnum;
-};
+} a_select_path_arg;
 
 static int a_select_path_onselect(struct _select_def *conf)
 {
@@ -207,7 +212,7 @@ a_select_path_show(struct _select_def *conf, int i)
 }
 
 static int
-a_select_path_prekey(struct _select_def *conf, int key)
+a_select_path_prekey(struct _select_def *conf, int* key)
 {
     a_select_path_arg *arg = (a_select_path_arg *) conf->arg;
 
@@ -355,8 +360,7 @@ a_select_path(bool save_mode)
     int i;
     struct _select_def pathlist_conf;
     POINT *pts;
-    struct a_select_path arg;
-    int i;
+    a_select_path_arg arg;
     
     clear();
     if (import_path_select==0)
@@ -375,7 +379,7 @@ a_select_path(bool save_mode)
     pathlist_conf.flag = LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;
     pathlist_conf.prompt = "◆";
     pathlist_conf.item_pos = pts;
-    pathlist_conf.arg = NULL;
+    pathlist_conf.arg=&arg;
     pathlist_conf.title_pos.x = 0;
     pathlist_conf.title_pos.y = 0;
     pathlist_conf.pos = import_path_select; 
@@ -388,9 +392,12 @@ a_select_path(bool save_mode)
     pathlist_conf.show_title = a_select_path_refresh;
     pathlist_conf.get_data = NULL;
 
-    list_select_loop(&pathlist_conf);
+    i=list_select_loop(&pathlist_conf);
     free(pts);
-    return pathlist_conf.pos;
+    if (i==SHOW_SELECT)
+        return pathlist_conf.pos;
+    else
+        return 0;
 }
 
 int valid_fname(str)
@@ -735,7 +742,6 @@ int a_Import(path, key, fileinfo, nomsg, direct, ent)
     int ent;
 {
 
-    FILE *fn;
     char fname[STRLEN], bname[PATHLEN];
     char buf[PATHLEN];
     int ch;
@@ -757,10 +763,11 @@ int a_Import(path, key, fileinfo, nomsg, direct, ent)
 		if (i==0)
 			return 1;
 
+		i--;
 		bzero(&pm,sizeof(pm));
 		if (import_path[i][0] != '\0') {
 			/* 直接加入到精华区内，不用确认 Life */
-			pm.path = import_path[i][0];
+			pm.path = import_path[i];
 		}
 		else {
 			sprintf(buf, "将该文章放进 %s,确定吗?(Y/N) [N]: ", Importname);
@@ -1291,13 +1298,18 @@ void a_manager(pm, ch)
     case 'f': {
     	    int i;
            pm->page = 9999;
-	    i=a_select_path(true);
+	    i=a_select_path(false);
 	    if (i==0)
 	        break;
 
-	    free(import_path[i][0];
-	    import_path[i][0]=malloc(strlen(pm->path)+1);
-	    strcpy(import_path[i][0],pm->path);
+	    i--;
+	    free(import_path[i]);
+	    import_path[i]=malloc(strlen(pm->path)+1);
+	    strcpy(import_path[i],pm->path);
+	    free(import_title[i]);
+	    import_title[i]=malloc(strlen(pm->mtitle)+1);
+	    strcpy(import_title[i],pm->mtitle);
+	    save_import_path();
 	 }
         break;
     }
