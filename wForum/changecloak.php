@@ -7,7 +7,7 @@ do_changeCloak();
 
 if (isErrFounded()) {
 		show_nav();
-		head_var("ÇĞ»»ÒşÉí×´Ì¬");
+		head_var();
 		html_error_quit();
 		show_footer();
 } else {
