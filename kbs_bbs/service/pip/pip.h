@@ -197,7 +197,7 @@ struct chicken {
 	int classO;
 
 /*---小鸡的时间---*///1
-	time_t bbtime;
+	int bbtime;
 };
 typedef struct chicken chicken;
 
