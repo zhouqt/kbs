@@ -40,11 +40,11 @@ openssl		(下面是POP3S需要的)
 	最后用 root 来 make install. 
   	make install
   	成功安装之后, 用 root 用户在 /usr/lib 做如下文件链接:
-ln -s libBBS.so ~bbs/lib/libBBS.so
-ln -s libBBS.so.0 ~bbs/lib/libBBS.so.0
-ln -s libzmodem.so ~bbs/lib/libzmodem.so
-ln -s libsystem.so ~bbs/lib/libsystem.so
-ln -s libsystem.so.0 ~bbs/lib/libsystem.so.0
+ln -s ~bbs/lib/libBBS.so /usr/lib
+ln -s ~bbs/lib/libBBS.so.0 /usr/lib
+ln -s ~bbs/lib/libzmodem.so /usr/lib
+ln -s ~bbs/lib/libsystem.so /usr/lib
+ln -s ~bbs/lib/libsystem.so.0 /usr/lib
 	或者在系统的动态库查询目录列表里面加入$(BBSHOME)/lib
 
 3. WWW的支持
@@ -52,7 +52,7 @@ ln -s libsystem.so.0 ~bbs/lib/libsystem.so.0
 假设 apache 安装在 /home/apache, 在该目录下有 cgi-bin/ 和 htdocs/ 目录.
 在 cgi-bin/ 中建立一个 bbs 子目录, 后面的 bbs2www cgi 程序将放在这个目录.
 htdocs/ 必须是 web 服务器的虚拟 /, 后面的 html, php 脚本等文件将放在这个
-目录里面. 另外, 在 httpd.conf 中, 加上 .jsp 作为 php 脚本的后缀.
+目录里面. 另外, 在 httpd.conf 中, 加上.php 作为 php 脚本的后缀.
 
 假设 php 的源代码在 /home/flyriver/download/php-4.2.1 里面, 必须是
 ./configure 过的.
@@ -63,15 +63,16 @@ htdocs/ 必须是 web 服务器的虚拟 /, 后面的 html, php 脚本等文件将放在这个
 重新配置水木源码, ./configure --prefix=/home/system/bbs --enable-site=devel
 --with-www=/home/apache --with-php=/home/flyriver/download/php-4.2.1
 然后 make, 再用 root 用户 make install, 再在 /usr/lib 做如下文件链接:
-ln -s libbbslib.so ~bbs/lib/libbbslib.so
-ln -s libbbslib.so.0 ~bbs/lib/libbbslib.so.0
-
+ln -s ~bbs/lib/libbbslib.so /usr/lib
+ln -s ~bbs/lib/libbbslib.so.0 /usr/lib
+	或者在系统的动态库查询目录列表里面加入$(BBSHOME)/lib
+	
 然后 cd /usr/local/lib/php/extensions/no-debug-non-zts-20020429, 这个目录与
 如何编译安装有关系, 实际上它就是 php 放置 extension 的目录. 做如下链接:
-ln -s libphpbbslib.so /home/apache/libexec/bbs/libphpbbslib.so
+ln -s /home/apache/libexec/bbs/libphpbbslib.so libphpbbslib.so
 
 复制 /home/apache/libexec/bbs/funcs.php 到 /home/apahce/htdocs 目录, 改名为
-funcs.jsp, 编辑这个 funcs.jsp 文件, 把 dl("../libexec/bbs/libphpbbslib.so")
+funcs.php, 编辑这个 funcs.jsp 文件, 把 dl("../libexec/bbs/libphpbbslib.so")
 修改为 dl("libphpbbslib.so").
 
 看看 $(BBSHOME)/ 及其子目录的权限是否正确, bin/ 和 lib/ 子目录及其文件
