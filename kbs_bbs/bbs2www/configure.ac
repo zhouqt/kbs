@@ -6,7 +6,9 @@ AM_CONFIG_HEADER(config.h)
 
 m4_include(../config.icc)
 
-with_php="yes"
+if [ test -z "$with_php" ]; then
+  with_php="yes"
+fi
 
 AC_ARG_WITH(php,
 [  --with-php=path
@@ -31,7 +33,10 @@ AC_ARG_WITH(php,
     PHPBASE=$withval
 ],[AC_MSG_ERROR("must have php source to compile php module!")])
 
-with_phpsuffix="jsp"
+if [ test -z "$with_phpsuffix" ]; then
+  with_phpsuffix="jsp"
+fi
+
 AC_ARG_WITH(phpsuffix,
 [  --with-phpsuffix=SUFFIX
                           select suffix of php file ])
@@ -41,7 +46,9 @@ PHPSUFFIX=$with_phpsuffix
 AC_SUBST(PHPBASE)
 AC_SUBST(PHPSUFFIX)
 
-with_www="yes"
+if [ test -z "$with_www" ]; then
+  with_www="yes"
+fi
 
 AC_ARG_WITH(www,
 [  --with-www=path
@@ -61,7 +68,7 @@ AC_ARG_WITH(www,
         fi
     fi
     if test '!' -d $withval; then
-            AC_MSG_ERROR("can't find php in $withval")
+            AC_MSG_ERROR("can't find www in $withval")
     fi
     WWWBASE=$withval
     CGIPATH=$WWWBASE/cgi-bin/bbs
