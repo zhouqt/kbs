@@ -928,25 +928,27 @@ int mode;
                 f_mv(board, fpath);
                 sprintf(fpath2, "tmp/bm.%s.attach", currentuser->userid);
                 if ((fsrc = open(fpath2, O_RDONLY)) != NULL) {
-                    if ((fdst = open(fpath, O_RDWR , 0600)) >= 0) {
-                        char *src = (char *) malloc(BLK_SIZ);
-                        long ret;
-                        fstat(fdst,&st);
-                        if (st.st_size>1) {
-                            lseek(fdst,st.st_size-1,SEEK_SET);
-                            read(fdst,src,1);
-                            if (src[0]!='\n')
-                                write(fdst, "\n", 1);
+                    fstat(fsrc,&st);
+                    if (st.st_size>0)
+                        if ((fdst = open(fpath, O_RDWR , 0600)) >= 0) {
+                            char *src = (char *) malloc(BLK_SIZ);
+                            long ret;
+                            fstat(fdst,&st);
+                            if (st.st_size>1) {
+                                lseek(fdst,st.st_size-1,SEEK_SET);
+                                read(fdst,src,1);
+                                if (src[0]!='\n')
+                                    write(fdst, "\n", 1);
+                            }
+                            do {
+                                ret = read(fsrc, src, BLK_SIZ);
+                                if (ret <= 0)
+                                    break;
+                            } while (write(fdst, src, ret) > 0);
+                            close(fdst);
+                            attachpos=st.st_size;
+                            free(src);
                         }
-                        do {
-                            ret = read(fsrc, src, BLK_SIZ);
-                            if (ret <= 0)
-                                break;
-                        } while (write(fdst, src, ret) > 0);
-                        close(fdst);
-                        attachpos=st.st_size;
-                        free(src);
-                    }
                     close(fsrc);
                 }
                 unlink(fpath2);
