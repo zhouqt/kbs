@@ -724,7 +724,6 @@ static int fav_key(struct _select_def *conf, int command)
         currentuser->flags[0] ^= BRDSORT_FLAG;  /*排序方式 */
         return SHOW_DIRCHANGE;
     case 's':                  /* sort/unsort -mfchen */
-        modify_user_mode(SELECT);
         if (do_select(0, NULL, genbuf) == NEWDIRECT) {
             Read();
         }
@@ -1056,7 +1055,10 @@ int choose_board(int newflag, char *boardprefix,int favmode)
     int favlevel = 0;           /*当前层数 */
     int favlist[FAVBOARDNUM];
     int sellist[FAVBOARDNUM];   /*保存目录递归信息 */
+    int oldmode;
 
+    oldmode = uinfo.mode;
+    modify_user_mode(SELECT);
     clear();
     pts = (POINT *) malloc(sizeof(POINT) * BBS_PAGESIZE);
 
@@ -1154,6 +1156,7 @@ int choose_board(int newflag, char *boardprefix,int favmode)
     	arg.namelist=NULL;
     }
     save_zapbuf();
+    modify_user_mode(oldmode);
 }
 
 void FavBoard()

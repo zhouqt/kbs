@@ -606,6 +606,7 @@ int igetch()
 int* keybuffer;
 int keybuffer_count=0;
 int skip_key=0;
+bool ingetdata=false;
 
 int igetkey()
 {
@@ -716,7 +717,7 @@ int igetkey()
         last = ch;
     }
 
-    if(scrint&&keymem_total&&!skip_key) {
+    if(scrint&&keymem_total&&!skip_key&&!ingetdata) {
         int i,j,k,p;
         for(i=0;i<keymem_total;i++) {
             p=!keymem[i].status[0];
@@ -791,6 +792,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
         oflush();
         return clen;
     }
+    ingetdata = true;
     clrtoeol();
     while (1) {
         int i;
@@ -803,11 +805,18 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 
         ch = igetkey();
 
-        if(kicked) return 0;
-        if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch))
+        if(kicked) {
+            ingetdata = false;
+            return 0;
+        }
+        if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch)) {
+            ingetdata = false;
             return -ch;         /* Leeward 98.07.30 supporting msgX */
-        if (uinfo.mode == KILLER && (!buf[0]) && (ch==KEY_UP||ch==KEY_DOWN||ch==KEY_PGUP||ch==KEY_PGDN||ch>=Ctrl('S')&&ch<=Ctrl('W')))
+        }
+        if (uinfo.mode == KILLER && (!buf[0]) && (ch==KEY_UP||ch==KEY_DOWN||ch==KEY_PGUP||ch==KEY_PGDN||ch>=Ctrl('S')&&ch<=Ctrl('W'))) {
+            ingetdata = false;
             return -ch;
+        }
 #ifdef NINE_BUILD
 	if (true == RMSG && ch == Ctrl('Z') && clen == 0) break;
 #endif
@@ -936,6 +945,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
     }
     buf[clen] = '\0';
     outc('\n');
+    ingetdata = false;
     return clen;
 }
 

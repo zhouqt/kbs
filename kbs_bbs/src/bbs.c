@@ -318,7 +318,6 @@ void make_blist()
 
 int Select()
 {
-    modify_user_mode(SELECT);
     do_select(0, NULL, genbuf);
     return 0;
 }
