@@ -95,10 +95,15 @@ int mode;
 			if( uident[0] == 0)
 				return 0;
 			if( !isdigit( uident[0] ) ){
-	        	move(2,0);
-        		prints("错误的手机号!");
-        		pressreturn();
-				return 0;
+				char mobile[STRLEN];
+				if( get_al_mobile( uident, mobile) == NULL || *mobile==NULL || !isdigit(mobile[0]) ){
+	        		move(2,0);
+        			prints("错误的手机号!");
+        			pressreturn();
+					return 0;
+				}
+				strncpy(uident, mobile, 14);
+				uident[14]=0;
 			}
 			return do_send_sms_func(uident, NULL);
 		}
