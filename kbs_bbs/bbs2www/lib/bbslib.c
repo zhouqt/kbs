@@ -768,6 +768,7 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
     char filepath[MAXPATH], fname[STRLEN];
     char buf[256];
     int fd, anonyboard;
+	int retvalue;
     FILE *fp, *fp2;
 
     memset(&post_file, 0, sizeof(post_file));
@@ -821,7 +822,20 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
         post_file.accessed[0] |= FILE_SIGN;
     }
 
+	if (attach_dir != NULL) {
+		post_file.attachment = 1;
+	}
+    fclose(fp);
+    post_file.eff_size = get_effsize(filepath);
+	retvalue = after_post(currentuser, &post_file, board, oldx);
+
     if (attach_dir != NULL) {
+
+#ifdef FILTER
+		if(retvalue == 2)
+    		setbfile(filepath, FILTER_BOARD, post_file.filename);
+#endif
+	  if( (fp = fopen(filepath, "a")) != NULL){
         snprintf(filepath, MAXPATH, "%s/.index", attach_dir);
         if ((fp2 = fopen(filepath, "r")) != NULL) {
             fputs("\n", fp);
@@ -871,11 +885,10 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
                 close(fd);
             }
         }
+	  fclose(fp);
+	  }
     }
-    fclose(fp);
-    setbfile(filepath, board, post_file.filename);
-    post_file.eff_size = get_effsize(filepath);
-    if (after_post(currentuser, &post_file, board, oldx)==0) {
+    if (retvalue == 0) {
 #ifdef WWW_GENERATE_STATIC
         generate_static(DIR_MODE_NORMAL,&post_file,board,oldx);
 #endif
