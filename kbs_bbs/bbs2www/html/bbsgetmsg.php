@@ -11,7 +11,6 @@
 		html_init("gb2312");
 		$ret=bbs_getwebmsg($srcid,$msgbuf,$srcutmpnum);
 ?>
-<meta http-equiv='Refresh' content='60; url=bbsgetmsg.php'>
 <meta http-equiv="pragma" content="no-cache"><style type="text/css">
 A {color: #0000FF}
 </style>
@@ -33,6 +32,7 @@ echo $srcutmpnum; ?>">[»ØÑ¶Ï¢]</a> <a href="bbsgetmsg.php">[ºöÂÔ]</a></td></tr><
 		//no msg
 ?><script language=javascript>if (parent.viewfrm)	parent.viewfrm.rows = "0,*,20";
 </script>
+<meta http-equiv='Refresh' content='60; url=/bbsgetmsg.php'>
 <?php
 		}
 		html_normal_quit();
