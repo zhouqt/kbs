@@ -19,6 +19,10 @@ case "${host}" in
   *-*-linux*)        
         OSTYPE="LINUX"
         ;;  
+  *-*-cygwin*)        
+        OSTYPE="CYGWIN"
+	LIBS="$LIBS -lcygipc"
+        ;;  
   *)        
         OSTYPE="GENERIC"
         ;;        
