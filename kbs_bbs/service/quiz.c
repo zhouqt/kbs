@@ -123,7 +123,7 @@ int init_quiz()
                 move(7+i, 24);
                 setfcolor(GREEN,1);
                 sprintf(p, "%3d   %-12s %4d", i+1+k*10, topid[i+k*10], topscore[i+k*10]);
-                prints(p);
+                prints("%s", p);
             }
             move(7+i, 52);
             setfcolor(RED,1);
@@ -144,14 +144,18 @@ int init_quiz()
     }    
 }
 
+extern int kicked;
+extern void ktimeout(void * data);
+
 int quiz_test()
 {
     int i=0,j,k;
     char sql[100];
     score = 0;
     while(1) {
-        int level, style, anscount, order[100], order2[100];
+        int level, style, anscount, order[100], order2[100], tout=0;
         char question[200], ans[6][200], answer[100], now[100], input[6];
+        set_alarm(30, 0, ktimeout, NULL);
         do{
             j=rand()%10000+1;
             sprintf(sql, "SELECT * FROM quiz WHERE id=%d", j);
@@ -193,7 +197,7 @@ int quiz_test()
             resetcolor();
             move(2,0);
             if(strlen(question)<70)
-                prints(question);
+                prints("%s", question);
             else {
                 char q2[100];
                 strcpy(q2,question+70);
@@ -207,6 +211,7 @@ int quiz_test()
             }
             sprintf(bb, "ÇëÑ¡Ôñ:(A-%c,»Ø³µ½áÊø)", anscount+'A'-1);
             getdata(anscount+6, 0, bb, input, 3, 1, NULL, 1);
+            if(kicked) break;
             input[0] = toupper(input[0]);
             if(input[0]>='A'&&input[0]<anscount+'A') {
                 if(now[input[0]-'A']=='1') now[input[0]-'A']='0';
@@ -217,13 +222,23 @@ int quiz_test()
                 if(input[0]==0&&style==2) break;
             else {
                 getdata(anscount+7, 0, "ÍË³ö²âÊÔ:(Y/N)", input, 3, 1, NULL, 1);
-                if(toupper(input[0])=='Y') return;
+                if(toupper(input[0])=='Y') {
+                    set_alarm(0, 0, NULL, NULL);
+                    kicked = 0;
+                    return;
+                }
             }
         }
+        if(kicked) tout=1;
+        set_alarm(0, 0, NULL, NULL);
+        kicked = 0;
         if(strcmp(now, answer)) {
             move(anscount+8, 0);
             setfcolor(RED, 1);
-            prints("Äã´ð´íÀ²\n");
+            if(tout)
+                prints("Äã³¬Ê±ÁË\n");
+            else
+                prints("Äã´ð´íÀ²\n");
             setfcolor(BLUE, 1);
             prints("      ,\n");
             prints("     (¨t¨r¨r\n");
@@ -242,6 +257,7 @@ int quiz_test()
             score+=level;
         }
     }
+    set_alarm(0, 0, NULL, NULL);
 }
 
 int quiz_again()
