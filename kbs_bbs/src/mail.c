@@ -45,7 +45,7 @@ int chkmail()
     struct fileheader fh;
     struct stat st;
     int fd;
-    int i, offset;
+    int offset;
     long numfiles;
     unsigned char ch;
     char curmaildir[STRLEN];
@@ -739,7 +739,7 @@ int del_mail(int ent, struct fileheader *fh, char *direct)
         if (strstr(direct, ".DELETED")
             || HAS_MAILBOX_PROP(&uinfo, MBP_FORCEDELETEMAIL)) {
             if (fh->filename[0]!=0)
-            unlink(genbuf);
+            unlink(filename);
 	}
         else {
             strcpy(buf, direct);
