@@ -82,9 +82,11 @@
 			$ret = bbs_new_board($bnum,$bname,$section,$desp,$btitle,$bbm,$blevel,$banony,$bjunk,$bout,$bgroup,$battach);
 
 			if($ret < 0)
-				html_error_quit("加入讨论区失败".$ret);
-			else
+				html_error_quit("加入/修改讨论区失败".$ret);
+			else if($bnum==0)
 				echo "新讨论区成立";
+			else
+				echo "修改讨论区成功";
 
 		}	//submit
 		else{
@@ -114,6 +116,11 @@
 版面分区描述 <?php echo $nowbh["CLASS"];?><br>
 <hr class="default">
 讨论区新属性:<br>
+<?php
+			}else if(isset($_GET["board"])){
+?>
+版面 <?php echo $board;?>不存在，
+<hr class="default">
 <?php
 			}
 ?>
