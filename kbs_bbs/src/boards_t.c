@@ -1217,8 +1217,7 @@ extern int mybrd_list_t;
 
 void FavBoard()
 {
-	if(mybrd_list_t <= 0)
-    	load_favboard(1,1);
+ 	load_favboard(1,1);
     choose_board(1, NULL,0,1);
 }
 

@@ -87,14 +87,15 @@ void load_favboard(int dohelp,int mode)
 	if(mode!=2){
 		favbrd_list=mybrd_list;
 		favbrd_list_count=&mybrd_list_t;
-//		if(favbrd_list_t > 0)
-//			return;
+#ifdef BBSMAIN
+		if(favbrd_list_t > 0)
+			return;
+#endif
 	}else{
 		favbrd_list=bdirshm->allbrd_list;
 		favbrd_list_count = &bdirshm->allbrd_list_t;
 		return;
 	}
-//	if(favbrd_list_t>0) return;
 
 	bzero(favbrd_list, sizeof(struct favbrd_struct)*FAVBOARDNUM);
     if ((fd = open(fname, O_RDONLY, 0600)) != -1) {
