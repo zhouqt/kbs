@@ -883,9 +883,9 @@ function pc_counter($link)
 	$action = $currentuser["userid"]." visit ".$pc["USER"]."'s Blog(www)";
 	if(!$visitcount)
 	{
-		$query = "SELECT logtime FROM logs WHERE hostname = '".addslashes($_SERVER["REMOTE_ADDR"])."' AND username = '".addslashes($currentuser[userid])."' AND pri_id = '".addslashes($pc["USER"])."' ORDER BY lid DESC LIMIT 0,1;";
+		$query = "SELECT UNIX_TIMESTAMP(logtime) FROM logs WHERE hostname = '".addslashes($_SERVER["REMOTE_ADDR"])."' AND username = '".addslashes($currentuser[userid])."' AND pri_id = '".addslashes($pc["USER"])."' ORDER BY lid DESC LIMIT 0,1;";
 		$result = mysql_query($query,$link);
-		$rows = mysql_fetch_array($result);
+		$rows = mysql_fetch_row($result);
 		mysql_free_result($result);
 		if( !$rows )
 		{
@@ -896,7 +896,7 @@ function pc_counter($link)
 			setcookie("BLOGVISITCOUNT",$visitcount);
 			return;
 		}
-		elseif( date("YmdHis") - $rows[logtime] > 10000 )//1个小时log一次 
+		elseif( time () - $rows[0] > 3600 )//1个小时log一次 
 		{
 			pc_visit_counter($link,$pc["UID"]);//计数器加1
 			pc_logs($link,$action,"",$pc["USER"]);//记一下访问日志

@@ -280,7 +280,7 @@ function getHotUsersByPeriod($link,$period,$num=10)
 	             "FROM logs , users ".
 	             "WHERE ACTION LIKE '%\'s Blog(www)' ".
 	             "      AND pri_id = users.username ".
-	             "      AND logtime > ".date ("YmdHis",$queryTime)." ".
+	             "      AND UNIX_TIMESTAMP(logtime) > ".$queryTime." ".
 	             "      AND pctype < 2 ".
 		     "GROUP BY pri_id ".
 		     "ORDER BY 1 DESC ".
@@ -314,7 +314,7 @@ function getHotNodesByPeriod($link,$period,$num=10)
 		 "   AND pctype < 4 ";
 	
 	if($queryTime)
-	$query.= " AND created > ".date ("YmdHis",$queryTime) . " ";
+	$query.= " AND UNIX_TIMESTAMP(created) > ".$queryTime . " ";
 	//$query.= "GROUP BY uid ";
 	$query.= "ORDER BY nodes.visitcount DESC ".
 		 "LIMIT 0 , ".$num." ;";
@@ -344,7 +344,7 @@ function getHotTopicsByPeriod($link,$period,$num=10)
 		  "      AND nodetype = 0 ".
 		  "      AND pctype < 4 ";
 	if($queryTime)
-	$query.=  "      AND nodes.created > ".date ("YmdHis",$queryTime)." ";
+	$query.=  "      AND UNIX_TIMESTAMP(nodes.created) > ".$queryTime." ";
 	$query.=  "GROUP BY nodes.tid ".
 		  "ORDER BY 1 DESC ".
 		  "LIMIT 0 , ".$num." ;";
@@ -375,11 +375,11 @@ function getHotNodes($link,$type,$timeLong=259200,$num=20)
 	$num = intval($num);
 	
 	if("comments" == $type)
-		$query = "SELECT nid , subject , nodes.uid FROM nodes,users WHERE nodes.uid = users.uid AND nodetype = 0 AND pctype < 4 AND access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-  $timeLong )." ORDER BY commentcount DESC , nid DESC LIMIT 0 , ".$num.";";
+		$query = "SELECT nid , subject , nodes.uid FROM nodes,users WHERE nodes.uid = users.uid AND nodetype = 0 AND pctype < 4 AND access = 0 AND type = 0 AND recommend != 2 AND UNIX_TIMESTAMP(created) > ".(time()-  $timeLong )." ORDER BY commentcount DESC , nid DESC LIMIT 0 , ".$num.";";
 	elseif("trackbacks" == $type)
-		$query = "SELECT nid , subject , nodes.uid FROM nodes,users WHERE nodes.uid = users.uid AND nodetype = 0 AND pctype < 4 AND access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-  $timeLong )." AND trackbackcount != 0 ORDER BY trackbackcount DESC , nid DESC LIMIT 0 , ".$num.";";
+		$query = "SELECT nid , subject , nodes.uid FROM nodes,users WHERE nodes.uid = users.uid AND nodetype = 0 AND pctype < 4 AND access = 0 AND type = 0 AND recommend != 2 AND UNIX_TIMESTAMP(created) > ".(time()-  $timeLong )." AND trackbackcount != 0 ORDER BY trackbackcount DESC , nid DESC LIMIT 0 , ".$num.";";
 	else
-		$query = "SELECT nid , subject , nodes.uid  FROM nodes,users WHERE nodes.uid = users.uid AND nodetype = 0 AND pctype < 4 AND access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()- $timeLong )." AND nodes.visitcount != 0 ORDER BY nodes.visitcount DESC , nid DESC LIMIT 0 , ".$num.";";
+		$query = "SELECT nid , subject , nodes.uid  FROM nodes,users WHERE nodes.uid = users.uid AND nodetype = 0 AND pctype < 4 AND access = 0 AND type = 0 AND recommend != 2 AND UNIX_TIMESTAMP(created) > ".(time()- $timeLong )." AND nodes.visitcount != 0 ORDER BY nodes.visitcount DESC , nid DESC LIMIT 0 , ".$num.";";
 	
 	$result = mysql_query($query,$link);	
 	$nodes = array();
@@ -420,7 +420,7 @@ function getSectionHotNodes($link,$section,$timeLong,$num)
              "   AND type = 0 ".
              "   AND recommend != 2 ".
              "   AND nodes.theme = '".addslashes($section)."'".
-             "   AND created > ".date("YmdHis",time()- $timeLong ).
+             "   AND UNIX_TIMESTAMP(created) > ".(time()- $timeLong ).
              "   AND nodes.visitcount != 0 ".
              " ORDER BY nodes.visitcount DESC , nid DESC ".
              " LIMIT 0 , ".intval($num).";";
