@@ -543,7 +543,7 @@ int size, id ;
     	return -2;
     }
     if (id*size>=st.st_size) {
-    	ptr = (char*) mmap(size*(id-1), st.size-size*(id-1),
+    	ptr = (char*) mmap(size*(id-1), st.st_size-size*(id-1),
     	              PROT_READ|PROT_WRITE,MAP_SHARED,fdr,0);
     } else {
         close(fdr);
@@ -552,7 +552,7 @@ int size, id ;
     if (!sigsetjmp(bus_jump,1)) {
 	signal(SIGBUS,sigbus);
 	signal(SIGSEGV,sigbus);
-	memcpy(ptr,ptr+size,st.size-size*id);
+	memcpy(ptr,ptr+size,st.st_size-size*id);
     } else
     	ret=-3;
     munmap(ptr,st.st_size);  
