@@ -116,7 +116,7 @@ short_open_tag = off</programlisting>
 			<orderedlist>
 				<listitem><para>原 smthbbs 系统要使用 wForum，首先需要在 site.h 中定义 HAVE_WFORUM：
 					<programlisting>#define HAVE_WFORUM 1</programlisting>
-					如果您的系统原来就已经定义了这个，那么，恭喜你，转换已经完成！
+					如果您的系统原来就已经定义了这个，那么，恭喜你，你的系统已经支持 wForum 了，不需要进行下面的操作。
 				</para></listitem>
 				<listitem><para>停掉所有的 BBS 服务，重新编译安装所有的 BBS 程序。备份 ~bbs/.PASSWDS 文件,拷贝一份为 ~bbs/.PASSWDS.OLD，到 contrib/smth2wforum/ 下编译 convpasswd 文件
 					<programlisting>gcc -o convpasswd convpasswd.c -lBBS -lsystem</programlisting>
@@ -261,26 +261,24 @@ menuDivStyle.visible="hidden";</programlisting>
 			<title>分区版面列表</title>
 			<para>分区版面列表采用 JS 写页面。展开列表可能需要隐藏 iframe 读数据，折叠列表直接使用已有的 js 变量重写页面。列表是否展开由一个 ShowSecBoards cookie 控制。这个 cookie 变量的最低一个 bit 表示收藏夹版面列表是否展开，第(i+1) bit 表示第 i 个分区是否展开。二级目录永远展开。</para>
 			<para>列表也可以完全隐藏。这个由 HideSecBoards cookie 控制。LSB 没有作用。第 (i+1) bit 表示第 i 个分区的版面是否完全隐藏。收藏夹不可以被隐藏。</para>
-			<para>这两个 cookie 全部由客户端设置，服务器端只读取（除了特殊情况设置初始值）。</para>
-			<para>JavaScript 变量
-				<itemizedlist>
-					<listitem><para>"foldflag" + i 表示第 i 个分区（或者 select == i 的收藏夹）的数据状态:
-						<itemizedlist>
-							<listitem><para>0: 当前还没有任何版面数据。</para></listitem>
-							<listitem><para>1: 当前有折叠版面列表所必需的所有数据。</para></listitem>
-							<listitem><para>2: 当前已经有所有用作显示的版面数据了。</para></listitem>
-						</itemizedlist>
-					</para></listitem>
-					<listitem><para>"curfold" + i 表示第 i 个分区（或者 select == i 的收藏夹）的折叠状态:
-						<itemizedlist>
-							<listitem><para>0: 隐藏。</para></listitem>
-							<listitem><para>1: 折叠版面列表。</para></listitem>
-							<listitem><para>2: 详细版面列表。</para></listitem>
-						</itemizedlist>
-					</para></listitem>
-				</itemizedlist>
-				上面这两个 cookie 的默认值：ShowSecBoards 是 0，HideSecBoards 可配置为 0 或者 ~0。
-			</para>
+			<para>这两个 cookie 全部由客户端设置，服务器端只读取（除了特殊情况设置初始值）。这两个 cookie 的默认值：ShowSecBoards 是 0，HideSecBoards 可配置为 0 或者 ~0。</para>
+			<para>JavaScript 变量</para>
+			<itemizedlist>
+				<listitem><para>"foldflag" + i 表示第 i 个分区（或者 select == i 的收藏夹）的数据状态:
+					<itemizedlist>
+						<listitem><para>0: 当前还没有任何版面数据。</para></listitem>
+						<listitem><para>1: 当前有折叠版面列表所必需的所有数据。</para></listitem>
+						<listitem><para>2: 当前已经有所有用作显示的版面数据了。</para></listitem>
+					</itemizedlist>
+				</para></listitem>
+				<listitem><para>"curfold" + i 表示第 i 个分区（或者 select == i 的收藏夹）的折叠状态:
+					<itemizedlist>
+						<listitem><para>0: 隐藏。</para></listitem>
+						<listitem><para>1: 折叠版面列表。</para></listitem>
+						<listitem><para>2: 详细版面列表。</para></listitem>
+					</itemizedlist>
+				</para></listitem>
+			</itemizedlist>
 		</section>
 		<section>
 			<title>inc/funcs.php 代码分析</title>
