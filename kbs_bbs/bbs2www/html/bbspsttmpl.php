@@ -60,7 +60,7 @@
 <hr class="default"/>
 <form name="postform" method="post" action="/cgi-bin/bbs/bbssnd?board=<?php echo $board; ?>">
 <input type="hidden" name="tmpl" value=1>
-<input type="hidden" name="title" value="<?php echo urlencode($title);?>">
+<input type="hidden" name="title" value="<?php echo $title;?>">
 <input type="submit" value="·¢±í" />
 <input type="reset" value="Çå³ý" />
 </form>
