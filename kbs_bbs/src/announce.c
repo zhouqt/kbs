@@ -1395,6 +1395,42 @@ MENU *pm;
     pressanykey();
 }
 
+/* add by stiger */
+/* 寻找丢失条目 */
+int a_repair(MENU *pm)
+{
+	DIR *dirp;
+	struct dirent *direntp;
+	int i,changed;
+
+	changed=0;
+	
+	dirp=opendir(pm->path);
+	if(dirp==NULL) return -1;
+
+	while( (direntp=readdir(dirp)) != NULL){
+		if(direntp->d_name[0]=='.') continue;
+		for( i=0; i < pm->num; i++ ){
+			if(strcmp(pm->item[i]->fname, direntp->d_name)==0){
+				i=-1;
+				break;
+			}
+		}
+		if(i!=-1){
+			a_additem(pm, direntp->d_name, direntp->d_name, NULL, 0, 0);
+			changed++;
+		}
+	}
+	closedir(dirp);
+
+	if(changed>0){
+		if(a_savenames(pm) != 0)
+			changed = 0 - changed;
+	}
+	return changed;
+}
+/* add end */
+
 void a_manager(MENU *pm,int ch)
 {
     char uident[STRLEN];
@@ -1444,6 +1480,24 @@ void a_manager(MENU *pm,int ch)
             save_import_path();
         }
         break;
+	/* add by stiger,20030502 */
+	/* 寻找丢失条目 */
+	case 'z':
+		if(HAS_PERM(currentuser, PERM_SYSOP)){
+			int i;
+
+			i=a_repair(pm);
+
+			if(i>=0){
+				sprintf(genbuf,"发现 %d 个丢失条目,请按Enter继续...",i);
+			}else{
+				sprintf(genbuf,"发现 %d 个丢失条目,更新索引失败,请按Enter继续...",0-i);
+			}
+			a_prompt(-1,genbuf,ans);
+			pm->page = 9999;
+		}
+		break;
+	/* add end */
     }
     if (pm->num > 0)
         switch (ch) {
@@ -1519,10 +1573,9 @@ void a_manager(MENU *pm,int ch)
                     a_report(genbuf);
                 }
                 if (a_savenames(pm) != 0) {
-                    char buf[80], ans[40];
 
-                    sprintf(buf, "整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
-                    a_prompt(-1, buf, ans);
+                    sprintf(genbuf, "整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
+                    a_prompt(-1, genbuf, ans);
                     a_loadnames(pm);
                 }
             }
