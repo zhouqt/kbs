@@ -1423,12 +1423,9 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
 	    pressanykey();
     };
     if (Xflag) {
-        if (search_file(ori_file) != ori_crs)
-#ifndef NINE_BUILD		
+/*        if (search_file(ori_file) != ori_crs)
             bell();
-#else
-	   {}	
-#endif	
+*/
         RMVCURS(locmem);
         locmem->top_line = ori_top;
         locmem->crs_line = ori_crs;
