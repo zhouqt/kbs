@@ -145,7 +145,7 @@ long get_mail_sum_records(char *fpath, int size)
     p = strrchr(buf, '/') + 1;
     while (fread(&fhdr, size, 1, fp) == 1) {
         strcpy(p, fhdr.filename);
-        if (stat(buf, &st) == 0 && S_ISREG(st.st_mode) && st.st_nlink == 1)
+        if (lstat(buf, &st) == 0 && S_ISREG(st.st_mode) && st.st_nlink == 1)
             ans += st.st_size;
     }
     fclose(fp);
