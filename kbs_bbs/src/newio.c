@@ -674,7 +674,7 @@ removed by wwj, just use oflush , 2001/5/8
         {
             buf[curr + 1] = '\0';
             buf[curr] = ch;
-            ochar(ch);
+            outc(ch);
         }
         else
         {
@@ -689,7 +689,8 @@ removed by wwj, just use oflush , 2001/5/8
             	buf[i+1]=buf[i];
             buf[curr]=ch;
             move(y,x+curr);
-            prints("%s",buf+curr);
+            outs(buf+curr);
+            move(y, x + curr+1);
         }
         curr++;
         clen++;
