@@ -484,6 +484,7 @@ void r_msg()
             int x,y;
             getyx(&y,&x);
             prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢", now+1, count);
+            clrtoeol();
             do{
                 ch = igetkey();
             }while(!DEFINE(currentuser, DEF_IGNOREMSG)&&ch!=Ctrl('Z')&&ch!='r'&&ch!='R');
@@ -498,6 +499,7 @@ void r_msg()
                 prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢,¡ü¡ıÇĞ»»,Enter½áÊø, ¸ÃÏûÏ¢ÎŞ·¨»Ø¸´", now+1, count);
             else
                 prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢,¡ü¡ıÇĞ»»,Enter½áÊø, ÓÃ»§%sÒÑÏÂÕ¾,ÎŞ·¨»Ø¸´", now+1, count, uid);
+        clrtoeol();
         good_getyx(&oy, &ox);
         
         if(canreply)
