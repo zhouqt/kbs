@@ -1452,7 +1452,7 @@ int add_edit_mark(char *fname, int mode, char *title)
             }
         }
         
-        if (!strncmp(buf, "\033[36m¡ù ÐÞ¸Ä:¡¤", 17))
+        if (!strncmp(buf, "\033[36m¡ù ÐÞ¸Ä:¡¤", 15))
             continue;
         if (Origin2(buf)) {
             now = time(0);
