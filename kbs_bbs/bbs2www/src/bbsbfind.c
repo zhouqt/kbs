@@ -9,7 +9,7 @@ int main()
     int num = 0, total = 0, type, dt, mg = 0, og = 0;
     char dir[80], title[80], title2[80], title3[80], board[80], userid[80];
     char brdencode[STRLEN];
-    bcache_t *brd, bh;
+    bcache_t bh;
     struct fileheader x;
 
     init_all();
@@ -31,11 +31,9 @@ int main()
         dt = 0;
     if (dt > 9999)
         dt = 9999;
-    num = getboardnum(board, &bh);
-    if (num == 0)
+    if (getboardnum(board, &bh) == 0)
         http_fatal("错误的讨论区");
-    brd = &bh;
-    strcpy(board, brd->filename);
+    strcpy(board, bh.filename);
     if (!has_read_perm(currentuser, board))
         http_fatal("错误的讨论区");
     sprintf(dir, "boards/%s/.DIR", board);
@@ -74,7 +72,7 @@ int main()
         printf("<td>%s</td>", flag_str(x.accessed[0]));
         printf("<td>%s</td>", userid_str(x.owner));
         printf("<td>%12.12s</td>", 4 + wwwCTime(atoi(x.filename + 2)));
-        printf("<td><a href=\"bbscon?board=%s&file=%s&num=%d\">%40.40s </a></td></tr>\n", brdencode, x.filename, num - 1, x.title);
+        printf("<td><a href=\"bbscon?board=%s&file=%s&num=%d\">%40.40s </a></td></tr>\n", brdencode, x.filename, num, x.title);
         if (total >= 999)
             break;
     }
