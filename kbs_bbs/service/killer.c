@@ -553,7 +553,11 @@ void refreshit()
         }
         sprintf(buf, "%d %s", j+1, inrooms[myroom].peoples[j].nick);
         buf[12]=0;
-        if(inrooms[myroom].status != INROOM_STOP) {
+        if(inrooms[myroom].status == INROOM_DAY ||
+            inrooms[myroom].status == INROOM_NIGHT &&
+            (inrooms[myroom].peoples[me].flag&PEOPLE_KILLER ||
+            inrooms[myroom].peoples[me].flag&PEOPLE_SPECTATOR||
+            inrooms[myroom].peoples[me].flag&PEOPLE_POLICE)) {
             k=0;
             for(i0=0;i0<MAX_PEOPLE;i0++)
                 if(inrooms[myroom].peoples[i0].style!=-1 && inrooms[myroom].peoples[i0].vote==
