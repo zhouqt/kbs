@@ -543,9 +543,16 @@ int pc_selusr( char prefix)
  */
 char pc_select_user[IDLEN+2];
 
+static int pc_is_owner(char *userid){
+	
+	if( !strcasecmp(userid, currentuser->userid) && pc_u->createtime < currentuser->firstlogin)
+		return 1;
+	return 0;
+}
+
 static int pc_is_admin(char *userid){
 
-	if( HAS_PERM(currentuser, PERM_ADMIN) || !strcasecmp(userid, currentuser->userid) )
+	if( HAS_PERM(currentuser, PERM_ADMIN) || pc_is_owner(userid) )
 		return 1;
 
 	return 0;
@@ -1151,7 +1158,7 @@ static int pc_dir_key(struct _select_def *conf, int key)
 	switch(key)
 	{
 	case 'a':
-		if( strcasecmp(pc_u->username, currentuser->userid) )
+		if( ! pc_is_owner(pc_u->username) )
 			return SHOW_CONTINUE;
 		if( conf->item_count > pc_u->nodelimit ){
 			clear();
@@ -1167,7 +1174,7 @@ static int pc_dir_key(struct _select_def *conf, int key)
 	{
 		char ans[4];
 
-		if( strcasecmp(pc_u->username, currentuser->userid) || pc_dirmode != 2 )
+		if( !pc_is_owner(pc_u->username) || pc_dirmode != 2 )
 			return SHOW_CONTINUE;
 
 		clear();
@@ -1204,13 +1211,13 @@ static int pc_dir_key(struct _select_def *conf, int key)
 		}
 	}
 	case 'o':
-		if( strcasecmp(pc_u->username, currentuser->userid) || pc_dirmode != 2 )
+		if( !pc_is_owner(pc_u->username) || pc_dirmode != 2 )
 			return SHOW_CONTINUE;
 		pc_change_friend();
 		return SHOW_REFRESH;
 		break;
 	case 'g':
-		if( strcasecmp(pc_u->username, currentuser->userid) || pc_dirmode != 4 || pc_fav_dir==0)
+		if( !pc_is_owner(pc_u->username) || pc_dirmode != 4 || pc_fav_dir==0)
 			return SHOW_CONTINUE;
 		if( conf->item_count > pc_u->dirlimit ){
 			clear();
@@ -1251,7 +1258,7 @@ static int pc_dir_key(struct _select_def *conf, int key)
 	{
 		char ans[4];
 
-		if( strcasecmp(pc_u->username, currentuser->userid) )
+		if( !pc_is_owner(pc_u->username) )
 			return SHOW_CONTINUE;
 		if( pc_dirmode != 5 )
 			return SHOW_CONTINUE;
@@ -1265,7 +1272,7 @@ static int pc_dir_key(struct _select_def *conf, int key)
 		return SHOW_DIRCHANGE;
 	}
 	case 'e':
-		if( strcasecmp(pc_u->username, currentuser->userid) )
+		if( ! pc_is_owner(pc_u->username) )
 			return SHOW_CONTINUE;
 		if( pc_dirmode == 4 && pc_n[conf->pos-conf->page_pos].type == 1){
 			if ( pc_add_a_dir( pc_n[conf->pos-conf->page_pos].nid ) )
@@ -1294,7 +1301,7 @@ static int pc_dir_key(struct _select_def *conf, int key)
 		return SHOW_CONTINUE;
 		break;
 	case 'p':
-		if( strcasecmp(pc_u->username, currentuser->userid) )
+		if( !pc_is_owner(pc_u->username) )
 			return SHOW_CONTINUE;
 		if( conf->item_count > pc_u->nodelimit ){
 			clear();
@@ -1486,7 +1493,7 @@ int pc_read_dir(int first)
 		return -1;
 	}
 	if( i == 0 ){
-		if( strcasecmp(pc_u->username, currentuser->userid) ){
+		if( !pc_is_owner(pc_u->username) ){
 			clear();
 			move(7,0);
 			prints("暂时没有文章");
