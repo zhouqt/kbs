@@ -221,6 +221,7 @@ typedef int (*read_func)(int fd, void *buf, size_t count);
 #ifdef BIRTHFILEPATH
 	int mail_birth();
 #endif
+    int check_ID_lists(char * id);
 
 #ifndef CYGWIN
 #define time(x) bbstime(x)
@@ -620,6 +621,8 @@ int pc_logs(struct pc_logs *pn);
     int check_query_mail(char qry_mail_dir[STRLEN]);
 /* convcode.c */
     void conv_init(session_t* session);
+    char *gb2big(char *s, int *plen, int inst, session_t* session);
+    char *big2gb( char *s, int *plen, int inst, session_t* session);
 
 /* libann.c */
 #ifdef FB2KPC
