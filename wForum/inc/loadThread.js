@@ -285,13 +285,13 @@ function writepost(unused_id, html_title, threadNum, origin, lastreply, origin_e
 	if (threadPages>1) {
 		document.write("<b>[<img src=\"pic/multipage.gif\"> ");
 		for (t=1; (t<7) && (t<=threadPages); t++) {
-			document.write("<a href=\"disparticle.php?boardName=" + boardName + "&ID=" + origin.ID + "&start=" + ((t-1)*siteconf_THREADSPERPAGE) + "\">" + t + "</a> ");
+			document.write("<a href=\"disparticle.php?boardName=" + boardName + "&ID=" + origin.ID + "&page=" + t + "\">" + t + "</a> ");
 		}
 		if (threadPages>=7) {
 			if (threadPages>=8) {
 				document.write("...");
 			}
-			document.write("<a href=\"disparticle.php?boardName=" + boardName + "&ID=" + origin.ID + "&start=" + ((threadPages-1)*siteconf_THREADSPERPAGE) + "\">" + threadPages + "</a> ");
+			document.write("<a href=\"disparticle.php?boardName=" + boardName + "&ID=" + origin.ID + "&page=" + t + "\">" + threadPages + "</a> ");
 		}
 		document.write(" ]</b>");
 	}
