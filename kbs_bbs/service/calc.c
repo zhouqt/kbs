@@ -342,7 +342,7 @@ int get_var(char * name)
     int i;
     if(!name[0]||strlen(name)>6) {
         err=14;
-        return;
+        return 0;
     }
     for(i=0;i<vart;i++)
         if(!strcasecmp(vars[i].name, name)) {
@@ -350,7 +350,7 @@ int get_var(char * name)
         }
     if(vart>=MAX_VAR) {
         err=15;
-        return;
+        return 0;
     }
     strncpy(vars[vart].name, name, 8);
     vars[vart].p = 0;
@@ -713,7 +713,7 @@ void print_var(struct var_struct * p)
     }
 }
 
-int main()
+int calc_main()
 {
     char cmd[1005];
     char einfo[20][30]={
