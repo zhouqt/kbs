@@ -950,7 +950,7 @@ int choose_board(int newflag, char *boardprefix)
              * fall through 
              */
         case 'r':
-            if (3==yank_flag) goto hotkey;
+            if (ch=='r'&&3==yank_flag) goto hotkey;
         case KEY_RIGHT:        /*½øÈë board */
             {
                 char buf[STRLEN];
