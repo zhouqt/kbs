@@ -2054,7 +2054,7 @@ static void maillist_refresh(struct _select_def *conf)
 //    docmdtitle("[处理信笺选单]",
  //              "  主选单[\x1b[1;32m←\x1b[0;37m,\x1b[1;32me\x1b[0;37m] 进入[\x1b[1;32m→\x1b[0;37m,\x1b[1;32mr\x1b[0;37m] 选择[\x1b[1;32m↑\x1b[0;37m,\x1b[1;32m↓\x1b[0;37m] 添加[\x1b[1;32ma\x1b[0;37m] 改名[\x1b[1;32mT\x1b[0;37m] 删除[\x1b[1;32md\x1b[0;37m]                   \x1b[m");
     docmdtitle("[处理信笺选单]",
-               "主选单[\x1b[1;32m←\x1b[0;37m,\x1b[1;32me\x1b[0;37m] 进入[\x1b[1;32mEnter\x1b[0;37m] 选择[\x1b[1;32m↑\x1b[0;37m,\x1b[1;32m↓\x1b[0;37m] 左右切换[\x1b[1;32m→\x1b[m,\x1b[1;32mTab\x1b[m] 添加[\x1b[1;32ma\x1b[0;37m] 改名[\x1b[1;32mT\x1b[0;37m] 删除[\x1b[1;32md\x1b[0;37m]                   \x1b[m");
+               "主选单[\x1b[1;32m←\x1b[0;37m,\x1b[1;32me\x1b[0;37m] 进入[\x1b[1;32mEnter\x1b[0;37m] 选择[\x1b[1;32m↑\x1b[0;37m,\x1b[1;32m↓\x1b[0;37m] 左右切换[\x1b[1;32mTab\x1b[m] 添加[\x1b[1;32ma\x1b[0;37m] 改名[\x1b[1;32mT\x1b[0;37m] 删除[\x1b[1;32md\x1b[0;37m]\x1b[m");
 
     move(2, 0);
     prints("%s", "\x1b[1;44;37m──功能选单─────────────┬────自定义邮箱───────\x1b[m");
@@ -2150,7 +2150,7 @@ static int maillist_prekey(struct _select_def *conf, int *command)
      * 如果是左键并且到了左边
      */
     if (*command == KEY_RIGHT) {
-	if (mail_list_t==0)
+	if ((mail_list_t==0)||(conf->pos>arg->cmdnum+arg->sysboxnum))
             *command='\n';
 	else
             *command='\t';
