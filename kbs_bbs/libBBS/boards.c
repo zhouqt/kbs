@@ -708,7 +708,10 @@ void init_brc_cache(const char* userid,bool replace,session_t* session) {
         brcfdr = open(dirfile, O_RDWR, 0600);
 	if (brcfdr==-1) bbslog("3error","can't open %s errno %d",dirfile,errno);
         session->brc_cache_entry = mmap(NULL, BRC_CACHE_NUM*sizeof(struct _brc_cache_entry), PROT_READ|PROT_WRITE, MAP_SHARED, brcfdr, 0);
-        if (session->brc_cache_entry==MAP_FAILED) bbslog("3error","can't mmap %s errno %d",dirfile,errno);
+        if (session->brc_cache_entry==MAP_FAILED) {
+                bbslog("3error","can't mmap %s errno %d",dirfile,errno);
+                session->brc_cache_entry = NULL; //added by atppp 20040724
+        }
         session->brc_currcache = -1; //added by atppp 20040719
         close(brcfdr);
     }
@@ -734,7 +737,7 @@ int brc_initial(const char *userid, const char *boardname,session_t* session)
 #if USE_TMPFS==1
     init_brc_cache(userid,false,session);
     if (session->brc_cache_entry==NULL) return 0;
-    if (session->brc_cache_entry==MAP_FAILED) return 0;
+    // if (session->brc_cache_entry==MAP_FAILED) return 0; //removed by atppp 20040724
 #endif
 
     for (i = 0; i < BRC_CACHE_NUM; i++)
