@@ -22,7 +22,8 @@
 #define USE_DEFAULT_SET_POSTTIME2
 #define USE_DEFAULT_BUILD_BOARD
 #define USE_DEFAULT_MAIL_LIMIT /*邮件容量限制*/
-
+#define USE_DEFAULT_READ_PERM
+#define USE_DEFAULT_SEE_PERM
 
 
 #endif

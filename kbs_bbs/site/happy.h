@@ -116,6 +116,8 @@
 #define LOGIN_PROMPT		"请输入代号"
 #define PASSWD_PROMPT		"请输入密码"
 
+#define BOARD_SUPER_CLUB 0x01000000 /* 超级俱乐部，仅成员可见 */
+
 /* 权限位定义 */
 /*
    These are the 16 basic permission bits. 

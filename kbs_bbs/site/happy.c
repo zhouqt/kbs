@@ -526,3 +526,52 @@ void get_mail_limit(struct userec* user,int *sumlimit,int * numlimit)
     *sumlimit=10000;
     *numlimit=10000;
 }
+
+/* board permissions control */
+int check_read_perm(struct userec *user, const struct boardheader *board)
+{
+    if (board == NULL)
+        return 0;
+    if (board->level & PERM_POSTMASK || HAS_PERM(user, board->level) || (board->level & PERM_NOZAP)) {
+        if (board->flag & BOARD_CLUB_READ) {    /*¾ãÀÖ²¿*/
+			/* only club members can access super club */
+			if (board->flag & BOARD_SUPER_CLUB)
+			{
+				if (user->club_read_rights[(board->clubnum - 1) >> 5] & (1 << ((board->clubnum - 1) & 0x1f)))
+					return 1;
+				else
+					return 0;
+			}
+            if (HAS_PERM(user,PERM_OBOARDS)&&HAS_PERM(user, PERM_SYSOP))
+                return 1;
+            if (board->clubnum <= 0 || board->clubnum >= MAXCLUB)
+                return 0;
+            if (user->club_read_rights[(board->clubnum - 1) >> 5] & (1 << ((board->clubnum - 1) & 0x1f)))
+                return 1;
+            else
+                return 0;
+        }
+        return 1;
+    }
+    return 0;
+}
+
+int check_see_perm(struct userec* user,const struct boardheader* board)
+{
+    if (board == NULL)
+        return 0;
+    if (board->level & PERM_POSTMASK
+    	|| ((user==NULL)&&(board->level==0))
+    	|| ((user!=NULL)&& HAS_PERM(user, board->level) )
+    	|| (board->level & PERM_NOZAP))
+	{
+        if (board->flag & BOARD_CLUB_HIDE)     /*Òş²Ø¾ãÀÖ²¿*/
+		{
+			if (user==NULL) return 0;
+			return check_read_perm(user,board);
+		}
+        return 1;
+    }
+    return 0;
+}
+
