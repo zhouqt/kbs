@@ -191,6 +191,21 @@ if (($utmpkey == "")&&($needlogin!=0)){
 			}else if ($ret==5) {
 				foundErr("ÇëÎðÆµ·±µÇÂ½£¡");
 			}
+		} else {
+			$error = bbs_wwwlogin(0);
+			if($error == 2 || $error == 0){
+				$data = array();
+				$num = bbs_getcurrentuinfo($data);
+				setcookie("UTMPKEY",$data["utmpkey"],time()+360000,"");
+				setcookie("UTMPNUM",$num,time()+360000,"");
+				setcookie("UTMPUSERID",$data["userid"],time()+360000,"");
+				setcookie("LOGINTIME",$data["logintime"],time()+360000,"");
+				@$utmpkey = $data["utmpkey"];
+				@$utmpnum = $num;
+				@$userid = $data["userid"];
+				$compat_telnet=1;
+				$guestloginok=1;
+			}
 		}
 
 	  }
