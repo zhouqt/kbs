@@ -64,7 +64,7 @@ Ptt_prints(char *str, int mode)
     {
       time_t now = time(0);
       po[0] = 0;
-      sprintf(strbuf,"%s%s",str,Cdate(&now));
+      sprintf(strbuf,"%s%s",str,ctime(&now));
       str[strlen(strbuf)-1] =0;
       strcat(strbuf,po+3);
       strcpy(str,strbuf);

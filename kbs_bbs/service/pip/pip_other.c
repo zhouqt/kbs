@@ -80,7 +80,7 @@ pip_marriage_offer()
 		now = time(0);
 		sprintf(buf,
 			"[1;37m%s %-11sµÄÐ¡¼¦ [%s] ½ÓÊÜÁË %s µÄÇó»é[0m\n",
-			Cdate(&now), cuser->userid, d.name,
+			ctime(&now), cuser->userid, d.name,
 			name[who][d.sex - 1]);
 		pip_log_record(buf);
 	} else {

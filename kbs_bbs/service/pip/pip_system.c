@@ -126,7 +126,7 @@ pip_system_service()
 			now = time(0);
 			sprintf(buf,
 				"[1;37m%s %-11s°ÑĞ¡¼¦ [%s] ¸ÄÃû³É [%s] [0m\n",
-				Cdate(&now), cuser->userid, oldname, d.name);
+				ctime(&now), cuser->userid, oldname, d.name);
 			pip_log_record(buf);
 			pressanykey("àÅàÅ  »»Ò»¸öĞÂµÄÃû×Öà¸...");
 		}
@@ -161,11 +161,11 @@ pip_system_service()
 			if (d.sex == 1)
 				sprintf(buf,
 					"[1;37m%s %-11s°ÑĞ¡¼¦ [%s] ÓÉ¡á±äĞÔ³É¡âÁË[0m\n",
-					Cdate(&now), cuser->userid, d.name);
+					ctime(&now), cuser->userid, d.name);
 			else
 				sprintf(buf,
 					"[1;37m%s %-11s°ÑĞ¡¼¦ [%s] ÓÉ¡â±äĞÔ³É¡áÁË[0m\n",
-					Cdate(&now), cuser->userid, d.name);
+					ctime(&now), cuser->userid, d.name);
 			pip_log_record(buf);
 			pressanykey("±äĞÔÊÖÊõÍê±Ï...");
 			d.sex = oldchoice;
