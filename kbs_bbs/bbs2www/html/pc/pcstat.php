@@ -68,4 +68,32 @@ function getNewBlogs($link,$pno=1)
 	return $newBlogs;
 }
 
+function getNewComments($link,$pno=1)
+{
+	global $pcconfig;
+	if($pno < 1)	$pno = 1;
+	$newComments = array();
+	$query = "SELECT cid , comments.uid , comments.subject , comments.created , comments.username , nodes.subject , nodes.created , visitcount , commentcount , nodes.nid FROM comments, nodes WHERE comments.nid = nodes.nid AND access = 0  AND comment = 1 ORDER BY cid DESC LIMIT ".(($pno - 1) * $pcconfig["NEWS"])." , ".$pcconfig["NEWS"]." ;";
+	$result = mysql_query($query,$link);
+	for($i = 0; $i < mysql_num_rows($result) ; $i ++ )
+	{
+		$rows = mysql_fetch_array($result);
+		$newComments[$i] = array(
+					"CID" => $rows[cid],
+					"UID" => $rows[uid],
+					"CCREATED" => time_format($rows[3]),
+					"NCREATED" => time_format($rows[created]),
+					"VISITCOUNT" => $rows[visitcount],
+					"COMMENTCOUNT" => $rows[commentcount],
+					"CSUBJECT" => html_format($rows[2]),
+					"NSUBJECT" => html_format($rows[subject]),
+					"POSTER" => $rows[username],
+					"NID" => $rows[nid]
+					);	
+	}
+	mysql_free_result($result);
+	return $newComments;
+}
+
+
 ?>
