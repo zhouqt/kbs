@@ -146,6 +146,7 @@ int main()
     }
     printf("<img src=\"/images/link.gif\"> <a href=\"bbsusr\" target=\"f3\">环顾四方</a><br>\n");
     printf("<img src=\"/images/link.gif\"> <a href=\"bbsqry\" target=\"f3\">查询网友</a><br>\n");
+    printf("<img src=\"/images/link.gif\"> <a href=\"/bbssendsms.php\" target=\"f3\">发送短信</a><br>\n");
     if (loginok && currentuser->userlevel & PERM_PAGE) {
         printf("<img src=\"/images/link.gif\"> <a href=\"/bbssendmsg.php\" target=\"f3\">发送讯息</a><br>\n");
         printf("<img src=\"/images/link.gif\"> <a href=\"/bbsmsg.php\" target=\"f3\">查看所有讯息</a><br>\n");
