@@ -59,6 +59,22 @@ function preprocess(){
 }
 
 
+function showAllSecs(){
+	GLOBAL $sectionCount;
+	
+	outputSecJS();
+	for ($i=0;$i<$sectionCount;$i++){
+		echo "<a name=\"sec$i\"></a>";
+		if ($_COOKIE['ShowSecBoards'.$i]=='Y') {
+			showSecs($i,0,true);
+		} else {
+			showSecs($i,0,false);
+		}
+	}
+	return false;
+}
+
+
 function showTitle() {
 	global $dir_modes;
 	$boardID=bbs_getboard('newcomers');

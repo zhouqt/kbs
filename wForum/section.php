@@ -24,7 +24,12 @@ head_var($section_names[$secNum][0],'section.php?sec='.$secNum, 0);
 </td></tr>
 </table>
 <?php
-showSecs($secNum,0,true);
+outputSecJS();
+if (isset($_COOKIE['ShowSecBoards'.$secNum]) && $_COOKIE['ShowSecBoards'.$secNum]=='') {
+	showSecs($secNum,0,false);
+} else {
+	showSecs($secNum,0,true);
+}
 showUserInfo();
 showSample();
 
@@ -40,7 +45,7 @@ function preprocess(){
 	$secNum=intval($_GET['sec']);
 	if ( ($secNum<0)  || ($secNum>=$sectionCount)) {
 		foundErr("您指定的分区不存在！");
-	} else {
+	} else if (isset($_GET['ShowBoards'])) {
 		if ($_GET['ShowBoards']=='N') {
 			setcookie('ShowSecBoards'.$secNum, '' ,time()+604800);
 			$_COOKIE['ShowSecBoards'.$secNum]='';

@@ -28,6 +28,7 @@ board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
 </table>
 <?php
 	if ($boardArr['FLAG'] & BBS_BOARD_GROUP ) {
+		outputSecJS();
 		showSecs($boardArr['SECNUM'],$boardID,true);
 	} else {
 ?>

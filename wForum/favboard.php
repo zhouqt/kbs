@@ -51,6 +51,7 @@ function main()	{
         if ($add_bname)
             $sssss=bbs_add_favboard($add_bname);
     }
+   	outputSecJS();
 	showSecs($select, 0, true, 1); //第三个参数是 isFold，暂时设定为永远展开。如果要改那 showSecs() 函数也要改。- atppp
 ?>
 <center>
