@@ -64,16 +64,24 @@ int main()
     for (i = 0; i < parm_num && i < 40; i++) {
         if (!strncmp(parm_name[i], "box", 3)) {
             total++;
-            if (mode == 1)
+			switch (mode)
+			{
+			case 1: /* delete articles */
                 do_del(board, parm_name[i] + 3);
-            if (mode == 2)
+				break;
+            case 2: /* mark articles */
                 do_set(board, parm_name[i] + 3, FILE_MARKED);
-            if (mode == 3)
+				break;
+            case 3: /* digest articles */
                 do_set(board, parm_name[i] + 3, FILE_DIGEST);
-            if (mode==4)
+				break;
+			case 4: /* set no-reply flag of the articles */
                 do_set(board, parm_name[i] + 3, FILE_READ);
-            if (mode == 5)
+				break;
+            case 5: /* clear mark and digest */
                 do_set(board, parm_name[i] + 3, 0);
+				break;
+			}
         }
     }
     printf("</table>");

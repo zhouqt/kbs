@@ -112,7 +112,7 @@
 <td><a href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
 <td><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
 <td>
-<a href="/cgi-bin/bbs/bbscon?board=<?php echo $brd_encode; ?>&file=<?php echo $article["FILENAME"]; ?>&num=<?php echo $start + $i; ?>"><?php echo htmlspecialchars($title); ?></a>
+<a href="/cgi-bin/bbs/bbscon?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?>&num=<?php echo $start + $i; ?>"><?php echo htmlspecialchars($title); ?></a>
 </td>
 </tr>
 <?php
@@ -121,7 +121,7 @@
 ?>
 </table>
 <input type="hidden" name="mode" value="">
-<input type="hidden" name="board" value="KCNclub">
+<input type="hidden" name="board" value="<?php echo $brdarr["NAME"]; ?>">
 <input type="button" value="É¾³ı" onclick="document.form1.mode.value=1; document.form1.submit();">
 <input type="button" value="¼ÓM" onclick="document.form1.mode.value=2; document.form1.submit();">
 <input type="button" value="¼ÓG" onclick="document.form1.mode.value=3; document.form1.submit();">

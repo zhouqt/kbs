@@ -52,7 +52,7 @@ int main()
 //        printf("<td>%s</td><td>%s</td>", get_article_flag(&x,currentuser,board,1), userid_str(x.owner));
         printf("<td>%s</td><td>%s</td>", flag_str(x.accessed[0]), userid_str(x.owner));
         printf("<td>%12.12s</td>", wwwCTime(atoi(x.filename + 2)) + 4);
-        printf("<td><a href=\"bbscon?board=%s&file=%s&num=%d\">%s%36.36s </a></td></tr>", brdencode, x.filename, start + i, strncmp(x.title, "Re: ", 4) ? "¡ð " : "", void1(nohtml(x.title)));
+        printf("<td><a href=\"bbscon?board=%s&id=%d&num=%d\">%s%36.36s </a></td></tr>", brdencode, x.id, start + i, strncmp(x.title, "Re: ", 4) ? "¡ð " : "", void1(nohtml(x.title)));
     }
     printf("</table>\n");
     printf("<input type=\"hidden\" name=\"mode\" value=\"\">\n");

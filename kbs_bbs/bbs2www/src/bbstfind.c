@@ -49,7 +49,7 @@ int main()
                     strcat(buf, buf2);
             }
             printf("<td>%6.6s</td>", wwwCTime(get_posttime(&x) + 4));
-            printf("<td><a href=\"bbscon?board=%s&file=%s&num=%d\">%s</a></td></tr>\n", brdencode, x.filename, sum - 1, void1(x.title));
+            printf("<td><a href=\"bbscon?board=%s&id=%d&num=%d\">%s</a></td></tr>\n", brdencode, x.id, sum - 1, void1(x.title));
             total++;
         }
     }

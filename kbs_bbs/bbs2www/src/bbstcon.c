@@ -85,7 +85,7 @@ int show_file(char *board,struct fileheader *x, int n, char* brdencode)
         return;
     encode_url(board_url, board, sizeof(board_url));
     printf("<table width=\"610\"><pre>\n");
-    printf("[<a href=\"bbscon?board=%s&file=%s&num=%d\">本篇全文</a>] ", board_url, x->filename, n);
+    printf("[<a href=\"bbscon?board=%s&id=%d&num=%d\">本篇全文</a>] ", board_url, x->id, n);
     if (strncmp(x->title,"Re:",3))
 	    title=x->title;
     else

@@ -61,7 +61,7 @@ int main()
             continue;
         if (title3[0] && strcasestr(x.title, title3))
             continue;
-        if (abs(time(0) - atoi(x.filename + 2)) > dt * 86400)
+        if (abs(time(0) - get_posttime(&x)) > dt * 86400)
             continue;
         if (mg && !(x.accessed[0] & FILE_MARKED) && !(x.accessed[0] & FILE_DIGEST))
             continue;
@@ -71,14 +71,14 @@ int main()
         printf("<tr><td>%d</td>", num);
         printf("<td>%s</td>", flag_str(x.accessed[0]));
         printf("<td>%s</td>", userid_str(x.owner));
-        printf("<td>%12.12s</td>", 4 + wwwCTime(atoi(x.filename + 2)));
-        printf("<td><a href=\"bbscon?board=%s&file=%s&num=%d\">%40.40s </a></td></tr>\n", brdencode, x.filename, num, x.title);
+        printf("<td>%12.12s</td>", 4 + wwwCTime(get_posttime(&x)));
+        printf("<td><a href=\"bbscon?board=%s&id=%d&num=%d\">%40.40s </a></td></tr>\n", brdencode, x.id, num, x.title);
         if (total >= 999)
             break;
     }
     fclose(fp);
     printf("</table>\n");
-    printf("<br>共找到 %d 篇文章符合条件", total);
+    printf("<br>%d: 共找到 %d 篇文章符合条件", num, total);
     if (total > 999)
         printf("(匹配结果过多, 省略第1000以后的查询结果)");
     printf("<br>\n");
