@@ -35,9 +35,9 @@ require("site.php");
 $loginok=0;
 header("Cache-Control: no-cache");
 
-  $fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
+  @$fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
   if ($fullfromhost=="") {
-      $fullfromhost=$_SERVER["REMOTE_ADDR"];
+      @$fullfromhost=$_SERVER["REMOTE_ADDR"];
       $fromhost=$fullfromhost;
   }
   else {
@@ -50,9 +50,9 @@ header("Cache-Control: no-cache");
 
 bbs_setfromhost($fromhost,$fullfromhost);
 
-$utmpkey = $_COOKIE["UTMPKEY"];
-$utmpnum = $_COOKIE["UTMPNUM"];
-$userid = $_COOKIE["UTMPUSERID"];
+@$utmpkey = $_COOKIE["UTMPKEY"];
+@$utmpnum = $_COOKIE["UTMPNUM"];
+@$userid = $_COOKIE["UTMPUSERID"];
 if ($utmpkey!="") {
   if (bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),$currentuinfo)==0) {
     $loginok=1;
@@ -94,7 +94,7 @@ window.location="/nologin.html";
 
 function html_init($charset)
 {
-	$css_style = $_COOKIE["STYLE"];
+	@$css_style = $_COOKIE["STYLE"];
 ?>
 <html>
 <head>
