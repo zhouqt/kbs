@@ -8,7 +8,9 @@
 	else
 	{
 		html_init("gb2312");
-		
+
+		if(!strcmp($currentuser["userid"],"guest"))
+			html_error_quit("guest 没有自己的邮箱!");
 		$mail_sysbox = array(".DIR",".SENT",".DELETED");
 		$mail_sysboxtitle = array("收件箱","发件箱","垃圾箱");
 ?>
