@@ -285,7 +285,7 @@ function getHotUsersByPeriod($link,$period,$num=10)
 		     "LIMIT 0 , ".$num." ;";
 	else
 	    $query = "SELECT corpusname , uid , username , description ".
-	    	     "FROM users ORDER BY visitcount DESC LIMIT 0 , ".$num." ;";
+	    	     "FROM users WHERE pctype < 2 ORDER BY visitcount DESC LIMIT 0 , ".$num." ;";
 	$result = mysql_query($query,$link);
 	$users = array();
 	while($rows = mysql_fetch_array($result))
