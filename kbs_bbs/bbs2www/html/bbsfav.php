@@ -16,7 +16,7 @@
                 if (isset($_GET["up"]))
                         $list_father=$_GET["up"];
                 else
-                        $list_father=-1;
+                        $list_father=0;
                 settype($list_father,"integer");
 
                 if (!strcmp($currentuser["userid"],"guest"))
@@ -178,8 +178,8 @@
   </tr>
   </table>
 <center>
-<form action=bbsfav.php>增加目录<input name=dname size=24 maxlength=20 type=text value=""><input type=submit value=确定><input type=hidden name=select value=<?php echo $select;?>></form>
-<form action=bbsfav.php>增加版面<input name=bname size=24 maxlength=20 type=text value=""><input type=submit value=确定><input type=hidden name=select value=<?php echo $select;?>></from>
+<form action=bbsfav.php>增加目录<input name=dname size=24 maxlength=20 type=text value=""><input type=submit value=确定><input type=hidden name=select value=<?php echo $select;?>><input type=hidden name=up value=<?php echo $list_father;?>></form>
+<form action=bbsfav.php>增加版面<input name=bname size=24 maxlength=20 type=text value=""><input type=submit value=确定><input type=hidden name=select value=<?php echo $select;?>><input type=hidden name=up value=<?php echo $list_father;?>></from>
 </center>
 
 
