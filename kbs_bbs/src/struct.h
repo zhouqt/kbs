@@ -94,13 +94,6 @@ struct one_key {                  /* Used to pass commands to the readmenu */
 #define UTMP_HASHSIZE  (USHM_SIZE*4)
 struct UTMPFILE {
     struct user_info    uinfo[ USHM_SIZE ];
-    int next[USHM_SIZE];
-    int hashhead[UTMP_HASHSIZE+1]; /* use UCACHE_HASHSIZE/32 */
-    int number;
-    int listhead;
-    int list_prev[USHM_SIZE];  /* sorted list prev ptr*/
-    int list_next[USHM_SIZE];  /* sorted list next ptr*/
-    time_t              uptime;
 };
 
 struct BoardStatus { /* use this to speed up board list */
