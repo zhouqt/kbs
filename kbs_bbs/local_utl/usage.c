@@ -88,7 +88,7 @@ struct boardheader *fptr ;
 int 
 fillboard()
 {
-        apply_record( BOARDS, fillbcache, sizeof(struct boardheader) );
+        apply_record( BOARDS, fillbcache, sizeof(struct boardheader),NULL,0 );
 }
 
 char *

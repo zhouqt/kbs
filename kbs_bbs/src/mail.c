@@ -448,6 +448,7 @@ char *userid, *title ;
     char        tmp_fname[ 256 ];
     int		noansi;
     struct userec user;
+    extern char quote_title[120];
 
     int now;	/* added by Bigman: for SYSOP mail */
 
@@ -633,6 +634,7 @@ edit_mail_file:
     }
 
     do_quote( filepath ,include_mode);
+    strcpy(quote_title,newmessage.title);
 
 #ifdef INTERNET_PRIVATE_EMAIL
     if (internet_mail) {
