@@ -694,15 +694,15 @@ void eval(struct var_struct * p, char * s, int l, int r)
 void print_var(struct var_struct * p)
 {
     int i,j;
-    char buf[80];
-    sprintf(buf, "%s =\n", p->name);
+    char buf[1000];
+    snprintf(buf, 1000, "%s =\n", p->name);
     outline(buf);
     if(!p->p) {
         outline("null\n");
         return;
     }
     else if(is_single_var(p)) {
-        sprintf(buf, "%lf\n", **(p->p));
+        snprintf(buf, 1000, "%lf\n", **(p->p));
         outline(buf);
         return;
     }
@@ -710,7 +710,7 @@ void print_var(struct var_struct * p)
         if(i==0) outline("[");
         else outline(" ");
         for(j=0;j<p->width;j++) {
-            sprintf(buf, "%lf", p->p[i][j]);
+            snprintf(buf, 1000, "%lf", p->p[i][j]);
             outline(buf);
             if(j<p->width-1) outline(" ");
         }
