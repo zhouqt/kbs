@@ -3,3 +3,8 @@
 "öÄ»ª" <roy at zixia.net>
 "Àî×¿»¸" <zixia at zixia.net>
 
+
+----------
+
+Scripts for PHP4 domxml compatible with PHP5 dom
+Credit to Alexandre Alapetite, used in inc/xml.inc.php
