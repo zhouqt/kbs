@@ -168,7 +168,8 @@ function showDenys() {
 <form action="bmdeny.php?act=add&board=<?php echo $brd_encode; ?>" method="post" name="adddeny">
 <table align="center">
 <tr>
-	<td>添加封禁用户: 用户名<input type="text" name="userid" size="12" value="<?php if (isset($_GET["userid"])) echo $_GET["userid"]; ?>" maxlength="12" />，封禁时间
+	<td>添加封禁用户: 用户名<input type="text" name="userid" size="12" value="<?php
+	    if (isset($_GET["userid"])) echo htmlspecialchars($_GET["userid"], ENT_QUOTES); ?>" maxlength="12" />，封禁时间
 	<select name="denyday">
 <?php
 	$i = 1;
