@@ -544,11 +544,11 @@ int do_send(char *userid, char *title, char *q_file)
                 else
                     isbig5 = 0;
 
-                getdata(8, 0, "¹ıÂËANSI¿ØÖÆ·û¿? [Y]: ", data, 2, DOECHO, 0, 0);
-                if (data[0] == 'n' || data[0] == 'N')
-                    noansi = 0;
-                else
+                getdata(8, 0, "¹ıÂËANSI¿ØÖÆ·û¿? [N]: ", data, 2, DOECHO, 0, 0);
+                if (data[0] == 'y' || data[0] == 'Y')
                     noansi = 1;
+                else
+                    noansi = 0;
 
                 prints("ÇëÉÔºò, ĞÅ¼ş´«µİÖĞ...\n");
                 refresh();
@@ -1984,11 +1984,11 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
         else
             isbig5 = 0;
 
-        getdata(8, 0, "¹ıÂËANSI¿ØÖÆ·û¿? [Y]: ", data, 2, DOECHO, 0, 0);
-        if (data[0] == 'n' || data[0] == 'N')
-            noansi = 0;
-        else
+        getdata(8, 0, "¹ıÂËANSI¿ØÖÆ·û¿? [N]: ", data, 2, DOECHO, 0, 0);
+        if (data[0] == 'y' || data[0] == 'Y')
             noansi = 1;
+        else
+            noansi = 0;
 
         prints("×ª¼ÄĞÅ¼ş¸ø %s, ÇëÉÔºò....\n", receiver);
         refresh();
