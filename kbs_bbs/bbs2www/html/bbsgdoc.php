@@ -5,7 +5,7 @@
 	 */
 	require("funcs.php");
 
-	function display_navigation_bar($brdarr,$brdnum,$start,$total,$page,$order=FALSE)
+	function display_navigation_bar($brdarr,$brdnum,$start,$total,$order=FALSE)
 	{
 		global $section_names;
 		$brd_encode = urlencode($brdarr["NAME"]);
@@ -32,7 +32,7 @@
 			{
 		    ?>
 [<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>">第一页</a>]
-[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page + 1; ?>">上一页</a>]
+[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&start=<?php echo $start + 20; ?>">上一页</a>]
 		    <?php
 			}
 			else
@@ -42,11 +42,11 @@
 [上一页]
 		    <?php
 			}
-			if ($page > 1)
+			if ($start > 1)
 			{
 		?>
-[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page - 1; ?>">下一页</a>]
-[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=1">最后一页</a>]
+[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&start=<?php if($start>20) echo $start - 20; else echo "1";?>">下一页</a>]
+[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&start=1">最后一页</a>]
 		    <?php
 			}
 			else
@@ -59,11 +59,11 @@
 		     }
 		     else
 		     {	
-		     	if ($page > 1)
+		     	if ($start > 1)
 			{
 		?>
-[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=1">第一页</a>]
-[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page - 1; ?>">上一页</a>]
+[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&start=1">第一页</a>]
+[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&start=<?php if($start > 20) echo $start - 20; else echo "1"; ?>">上一页</a>]
 		    <?php
 			}
 			else
@@ -76,7 +76,7 @@
 			if ($start <= $total - 20)
 			{
 		    ?>
-[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page + 1; ?>">下一页</a>]
+[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&start=<?php echo $start + 20; ?>">下一页</a>]
 [<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>">最后一页</a>]
 		    <?php
 			}
@@ -271,7 +271,7 @@
   </tr>
   <tr><td colspan="2" align="right" class="b1">
   <?php
-  	display_navigation_bar($brdarr, $brdnum, $start, $total, $page,$order_articles );
+  	display_navigation_bar($brdarr, $brdnum, $start, $total, $order_articles );
   ?>
   </td></tr>
   <tr> 
@@ -283,7 +283,7 @@
   </tr>
   <tr><td colspan="2" align="right" class="b1">
   <?php
-  	display_navigation_bar($brdarr, $brdnum, $start, $total, $page,$order_articles);
+  	display_navigation_bar($brdarr, $brdnum, $start, $total, $order_articles);
   ?>
   </td></tr>
   <tr> 
