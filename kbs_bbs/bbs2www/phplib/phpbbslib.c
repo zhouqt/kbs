@@ -989,7 +989,7 @@ static ZEND_FUNCTION(bbs_get_records_from_id)
     int ac = ZEND_NUM_ARGS();
     int retnum;
 
-    if (ac != 3
+    if (ac != 4
         ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "slla", &board, &blen, &id, &mode, & articlearray) == FAILURE)
     {
         WRONG_PARAM_COUNT;
