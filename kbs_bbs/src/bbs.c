@@ -1026,7 +1026,7 @@ int digest_post(int ent, struct fileheader *fhdr, char *direct)
 int do_reply(struct fileheader *fileinfo)
 /* reply POST */
 {                          
-	char buf[255];
+    char buf[255];
     if (fileinfo->accessed[1] & FILE_READ) {    /*Haohmaru.99.01.01.ÎÄÕÂ²»¿Ére */
         clear();
         move(3, 0);
@@ -1034,7 +1034,7 @@ int do_reply(struct fileheader *fileinfo)
         pressreturn();
         return FULLUPDATE;
     }
-    setbfile(buf, currboard, fptr->filename);
+    setbfile(buf, currboard, fileinfo->filename);
     strcpy(replytitle, fileinfo->title);
     post_article(buf);
     replytitle[0] = '\0';

@@ -1166,7 +1166,6 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
         else
             setmailfile(genbuf, currentuser->userid, SR_fptr.filename);
         previous = locmem->crs_line;
-        setquotefile(genbuf);
         if (passonly == 0) {
             int lch;            /* period 2000-09-11    方案1:                          *
                                    * 解决:同主题向上查找,文章大于一屏时按一次UP键屏幕无内容 *
