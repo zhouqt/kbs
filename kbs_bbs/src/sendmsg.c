@@ -773,7 +773,7 @@ int wait_for_result()
     move(t_lines-1, 0);
     clrtoeol();
     fp=fopen(fn, "r");
-    fscanf("%d", &i);
+    fscanf(fp, "%d", &i);
     fclose(fp);
     if(i==1) return 0;
     else return -1;
@@ -968,7 +968,7 @@ int do_send_sms_func(char * dest, char * msgstr)
 {
     char uident[STRLEN];
     struct user_info *uin;
-    struct userdata * udata;
+    struct userdata udata;
     char buf[MAX_MSG_SIZE];
     int oldmode;
     int result;
