@@ -290,7 +290,7 @@ void draw_main()
     i0=0;
     while(wFtv[i0][0]) {
         if(getnum(wFtv[i0])==month&&(wFtv[i0][3]-'0'==get_week(year,month,day))&&
-            (wFtv[i0][2]-'0'==day/7)) {
+            (wFtv[i0][2]-'1'==day/7)) {
             strcpy(buf, wFtv[i0]+5);
             k-=strlen(buf);
             move(13, k);
