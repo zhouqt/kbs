@@ -213,7 +213,7 @@ PERM_DENYMAIL发信
     	    	case 4:prints("呼叫权限"); break;
     	    	case 5:prints("发信权限"); break;
     	    }
-    	    sprintf(buf,"        还有%d天\n",j);
+    	    sprintf(buf,"        还有%d天\n",j-time(0)/3600/24);
     	    prints(buf);
     	    lcount++;
     	}
