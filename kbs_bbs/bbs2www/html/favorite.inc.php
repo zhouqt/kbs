@@ -573,8 +573,12 @@ class Favorite {
      */
     function _open ($mode) {
         if (!file_exists ($this->file)) {
-            if (!copy (FAVORITE_DEFAULT_FILE, $this->file))
-                exit ('System Error!');
+            if (file_exists(FAVORITE_DEFAULT_FILE)) {
+                if (!copy (FAVORITE_DEFAULT_FILE, $this->file))
+                    exit ('System Error!');
+            } else {
+                touch($this->file);
+            }
         }
         
         if (!($fh=fopen ($this->file, $mode))) {
