@@ -240,7 +240,7 @@ void refresh()
         p=ii+1;
 
         for (k = 0; k < scr_cols; k++)
-        if(!ndiff(j,k)&&(isprint2(bp[j].data[k])) {
+        if(!ndiff(j,k)&&(isprint2(bp[j].data[k]))) {
             stackt=0;
             rel_move(tc_col, tc_line, k, i);
             s = bp[j].mode[k];
