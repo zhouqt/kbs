@@ -27,6 +27,7 @@ $pcconfig["SITE"] = "www.smth.edu.cn";
 $pcconfig["BOARD"] = "SMTH_blog";
 $pcconfig["SEARCHFILTER"] = " 的";
 $pcconfig["SEARCHNUMBER"] = 10;
+$pcconfig["SECTION"] = array("其它类别");
 /* personal corp. configure end */
 
 $brdarr = array();
@@ -48,6 +49,7 @@ function pc_html_init($charset,$title="",$otherheader="",$style="",$bkimg="",$lo
 	global $_COOKIE;
 	global $cachemode;
 	global $currentuser;
+	global $cssFile;
 	if ($cachemode=="") 
 	{
 		cache_header("no-cache");
@@ -320,6 +322,7 @@ function pc_db_close($link)
 
 function pc_load_infor($link,$userid=FALSE,$uid=0)
 {
+	global $cssFile;
 	if($userid)
 		$query = "SELECT * FROM users WHERE `username`= '".$userid."'  LIMIT 0,1;";
 	else
@@ -332,11 +335,11 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 	else
 	{
 		$pc = array(
-			"NAME" => html_format($rows[corpusname])." ",
+			"NAME" => html_format($rows[corpusname]),
 			"USER" => $rows[username],
 			"UID" => $rows[uid],
-			"DESC" => html_format($rows[description])." ",
-			"THEM" => html_format($rows[theme])." ",
+			"DESC" => html_format($rows[description]),
+			"THEM" => html_format($rows[theme]),
 			"TIME" => $rows[createtime],
 			"VISIT" => $rows[visitcount],
 			"MODIFY" => $rows[modifytime],
@@ -347,8 +350,15 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 			"LOGO" => str_replace("<","&lt;",stripslashes($rows[logoimage])),
 			"BKIMG" => str_replace("<","&lt;",stripslashes($rows[backimage])),
 			"LINKS" => pc_get_links(stripslashes($rows[links])),
-			"EDITOR" => $rows[htmleditor]
+			"EDITOR" => $rows[htmleditor],
+			"INDEX" => array("nodeNum"=> $rows[indexnodes],"nodeChars" => $rows[indexnodechars]),
+			"CSSFILE" => htmlspecialchars(stripslashes($rows[cssfile]))
 			);
+	if($pc["CSSFILE"])
+		$cssFile = $pc["CSSFILE"];
+	else
+		$cssFile = "";
+		
 	return $pc;
 	}
 }

@@ -587,7 +587,20 @@ Blog名
 	<input type="radio" name="template" value="0" <?php if($pc["STYLE"]["SID"]==0) echo "checked"; ?>>默认模板
 	<input type="radio" name="template" value="1" <?php if($pc["STYLE"]["SID"]==1) echo "checked"; ?>>水木清华
 	</td>
-</tr><tr>
+</tr>
+<tr>
+	<td class="t3">Blog首页显示文章数</td>
+	<td class="t5">
+	<input type="input" name="indexnodes" class=f1 size=1 maxlength=1 value="<?php echo $pc["INDEX"]["nodeNum"]; ?>">篇(至多9篇)
+	</td>
+</tr>
+<tr>
+	<td class="t3">Blog首页每篇文章显示字节</td>
+	<td class="t5">
+	<input type="input" name="indexnodechars" class=f1 size=5 maxlength=5 value="<?php echo $pc["INDEX"]["nodeChars"]; ?>">字节(设定0表示显示整篇文章)
+	</td>
+</tr>
+<tr>
 	<td class="t4" colspan="2">
 	<input type="submit" value="修改Blog参数" class="b1">
 	<input type="reset" value="恢复原始参数" class="b1">

@@ -68,7 +68,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 	
 	function display_nodes($link,$pc,$nodes,$tablewidth="100%",$tablestyle=0)
 	{
-		for($i=0;$i<min(5,count($nodes));$i++)
+		for($i=0;$i<min($pc["INDEX"]["nodeNum"],count($nodes));$i++)
 		{
 			$contentcss = ($nodes[$i][htmltag])?"indexcontentwithhtml":"indexcontent";
 			if($tablestyle==1)
@@ -92,12 +92,14 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 			"<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\" class=f2>".html_format($nodes[$i][subject])."</a></td>".
 			"<td class=\"".$cellclass[1]."\" align=right>[<a href=\"pccom.php?act=pst&nid=".$nodes[$i][nid]."\">评论</a>]\n[<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\">写信问候</a>]</td></tr>\n".
 			"<tr><td colspan=2 class=\"".$cellclass[1]."\"><font class='".$contentcss."'>";
-			echo html_format($nodes[$i][body],TRUE,$nodes[$i][htmltag]);//先暂时改成显示全文吧，直接切断问题颇多。windinsn dec 21 , 2003 
-			/**
-			echo html_format(substr($nodes[$i][body],0,600)." ",TRUE,$nodes[$i][htmltag]); 
-                        if (strlen($nodes[$i][body])>600) 
-                        	echo " ......<A href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\">阅读全文</A>"; 
-                        **/
+			if($pc["INDEX"]["nodeChars"]==0)
+				echo html_format($nodes[$i][body],TRUE,$nodes[$i][htmltag]);//先暂时改成显示全文吧，直接切断问题颇多。windinsn dec 21 , 2003 
+			else
+			{
+				echo html_format(substr($nodes[$i][body],0,$pc["INDEX"]["nodeChars"])." ",TRUE,$nodes[$i][htmltag]); 
+                        	if (strlen($nodes[$i][body])>$pc["INDEX"]["nodeChars"]) 
+                        		echo " ......<A href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\">阅读全文</A>"; 
+                        }
                         echo "</font></td></tr>\n". 
 			"<tr><td colspan=2 class=\"".$cellclass[2]."\"><font class=\"f7\">\n&nbsp; <a href=\"/bbsqry.php?userid=".$pc["USER"]."\">".$pc["USER"]."</a> 发布于 ".time_format($nodes[$i][created]).
 			"\n|\n浏览[".$nodes[$i][visitcount]."]".
@@ -352,7 +354,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	<tr>
 		<td colspan=2 valign=middle bgcolor="#F6F6F6" style="border-bottom-width: 1px;border-top-width: 2px;border-top-style: solid;border-bottom-style: dashed;border-color: #718BD6;" height="30">
 		&nbsp;&nbsp;
-		<?php echo ($pc["DESC"]=="")?$pc["DESC"]:"惠风荡繁囿,白云屯曾阿,景昃鸣禽集,水木湛清华"; ?>
+		<?php echo $pc["DESC"]?$pc["DESC"]:"惠风荡繁囿,白云屯曾阿,景昃鸣禽集,水木湛清华"; ?>
 		</td>
 	</tr>
 	<tr>
