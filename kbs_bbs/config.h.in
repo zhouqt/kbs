@@ -345,6 +345,9 @@
    <sys/cpustats.h>. */
 #undef UMAX4_3
 
+/* Define to use openssl library */
+#undef USE_SSL
+
 /* Version number of package */
 #undef VERSION
 

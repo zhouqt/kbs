@@ -8,3 +8,5 @@ LDADD=../.libs/libBBS.a ../.libs/libsystem.a ../.libs/libzmodem.a -lbsd -lesmtp 
 #AM_LDFLAGS=-static
 AM_CFLAGS=-DINVISIBLE -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME  -I$(top_builddir)/src
 CLEANFILES=@EXTRA_CLEAN@
+newpop3d_CFLAGS=$(AM_CFLAGS) @OPENSSL_INC@
+newpop3d_LDADD=$(LDADD) @OPENSSL_LIBS@

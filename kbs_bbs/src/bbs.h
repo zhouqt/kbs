@@ -24,6 +24,7 @@
 #ifndef  _BBS_H_
 #define _BBS_H_
 
+#include "bbsconfig.h"             /* User-configurable stuff */
 #ifndef BBSIRC
 
 
@@ -61,7 +62,6 @@
 /* System names.. by zixia.*/
 #include "site.h"
 
-#include "bbsconfig.h"             /* User-configurable stuff */
 #include "permissions.h"
 
 #define PUBLIC_SHMKEY	3700 

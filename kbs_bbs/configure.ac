@@ -39,25 +39,6 @@ AC_ARG_ENABLE(www,
     fi
 ])
 
-# Checks for programs.
-AC_PROG_CXX
-AC_PROG_AWK
-AC_PROG_CC
-AC_PROG_LIBTOOL
-AC_PROG_INSTALL
-AC_PROG_LN_S
-AC_PROG_MAKE_SET
-AC_PROG_RANLIB
-
-# Checks for libraries.
-# FIXME: Replace `main' with a function in `-lbsd':
-AC_CHECK_LIB([bsd], [main])
-# FIXME: Replace `main' with a function in `-ldl':
-AC_CHECK_LIB([dl], [main])
-# FIXME: Replace `main' with a function in `-lesmtp':
-AC_CHECK_LIB([esmtp], [main])
-# FIXME: Replace `main' with a function in `-lltdl':
-AC_CHECK_LIB([ltdl], [main])
 
 # Checks for header files.
 AC_HEADER_DIRENT
@@ -114,6 +95,86 @@ AC_ARG_ENABLE(site,
 SITEDIR=site])
 AC_SUBST(BBSSITE)
 
+AH_TEMPLATE([USE_SSL],
+[Define to use openssl library])
+
+AC_ARG_WITH(openssl,
+[  --with-openssl[=path],Build with OpenSSL [yes|no|path].
+	],
+    use_openssl="$withval", use_openssl="no")
+case "$use_openssl" in
+        no)
+                AC_MSG_RESULT(no)
+                DST_OPENSSL_INC=""
+                USE_OPENSSL=""
+                ;;
+        *)
+            # User did not specify a path - guess it
+            openssldirs="/usr /usr/local /usr/local/ssl /usr/pkg"
+            for d in $openssldirs
+            do
+                  if test -f $d/include/openssl/opensslv.h
+                  then
+                      use_openssl=$d
+                      break
+                  fi
+            done
+            if test "$use_openssl" = "yes"
+            then
+                  AC_MSG_RESULT(not found)
+                  AC_MSG_ERROR(
+[OpenSSL was not found in any of $openssldirs; use --with-openssl=/path])
+            fi
+
+    	    AC_DEFINE(USE_SSL)
+            OPENSSL_INC="-I$use_openssl/include"
+            OPENSSL_LIBS="-L$use_openssl/lib -lcrypto -lssl"
+            AC_MSG_RESULT(using openssl from $use_openssl/lib and $use_openssl/include)
+
+            AC_MSG_CHECKING(OpenSSL library version)
+            saved_cflags="$CFLAGS"
+            saved_libs="$LIBS"
+            CFLAGS="$CFLAGS $DST_OPENSSL_INC"
+            LIBS="$LIBS $DNS_OPENSSL_LIBS"
+            AC_TRY_RUN([
+#include <stdio.h>
+#include <openssl/opensslv.h>
+int main() {
+        printf("\n\nFound   OPENSSL_VERSION_NUMBER %#010x\n",
+                OPENSSL_VERSION_NUMBER);
+        return (0);
+}
+],
+            [AC_MSG_RESULT(ok)],
+            [AC_MSG_RESULT(not compatible)],
+            [AC_MSG_RESULT(assuming target platform has compatible version)])
+            CFLAGS="$saved_cflags"
+            LIBS="$saved_libs"
+            ;;
+esac
+
+AC_SUBST(OPENSSL_INC)
+AC_SUBST(OPENSSL_LIBS)
+
+# Checks for programs.
+AC_PROG_CXX
+AC_PROG_AWK
+AC_PROG_CC
+AC_PROG_LIBTOOL
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+
+# Checks for libraries.
+# FIXME: Replace `main' with a function in `-lbsd':
+AC_CHECK_LIB([bsd], [main])
+# FIXME: Replace `main' with a function in `-ldl':
+AC_CHECK_LIB([dl], [main])
+# FIXME: Replace `main' with a function in `-lesmtp':
+AC_CHECK_LIB([esmtp], [main])
+# FIXME: Replace `main' with a function in `-lltdl':
+AC_CHECK_LIB([ltdl], [main])
 AC_CONFIG_LINKS(libBBS/site.c:$SITEDIR/$BBSSITE.c
 		libBBS/site.h:$SITEDIR/$BBSSITE.h
 		src/site.c:$SITEDIR/$BBSSITE.c

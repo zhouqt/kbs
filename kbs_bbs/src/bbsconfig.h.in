@@ -21,6 +21,7 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include "@top_builddir@/config.h"
 /* Firebird BBS 2.0 CONFIGURATION VARIABLES */
 
 /* 
