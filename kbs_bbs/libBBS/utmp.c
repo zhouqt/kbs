@@ -706,4 +706,27 @@ int getfriendstr(struct userec* user,struct user_info* puinfo)
     return 0;
 }
 
+int myfriend(int uid, char *fexp)
+{
+    int i, found = false;
+    struct user_info* u;
+
+    u = get_utmpent(utmpent);
+    /*
+     * char buf[IDLEN+3]; 
+     */
+    if (u->friendsnum<= 0) {
+        return false;
+    }
+    for (i = 0; i < u->friendsnum; i++) {
+        if (u->friends_uid[i] == uid) {
+            found = true;
+            break;
+        }
+    }
+    if ((found) && fexp)
+        strcpy(fexp, topfriend[i].exp);
+    return found;
+}
+
 

@@ -15,29 +15,6 @@ struct userec *user_data;
 extern char MsgDesUid[14];      /* 保存所发msg的目的uid 1998.7.5 by dong */
 int t_users();
 int Show_Users();
-int myfriend(int uid, char *fexp)
-{
-    int i, found = false;
-    struct user_info* u;
-
-    u = get_utmpent(utmpent);
-    /*
-     * char buf[IDLEN+3]; 
-     */
-    if (u->friendsnum<= 0) {
-        return false;
-    }
-    for (i = 0; i < u->friendsnum; i++) {
-        if (u->friends_uid[i] == uid) {
-            found = true;
-            break;
-        }
-    }
-    if ((found) && fexp)
-        strcpy(fexp, topfriend[i].exp);
-    return found;
-}
-
 int print_title()
 {
     if (DEFINE(currentuser, DEF_HIGHCOLOR))
