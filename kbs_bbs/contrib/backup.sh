@@ -24,9 +24,9 @@ fi
 
 cd $BACKUPHOME
 ftp -n <<end
-open $1
-quote user $2
-quote pass $3
+open $1 $2
+quote user $3
+quote pass $4
 mkdir $DAY
 cd $DAY
 bin
