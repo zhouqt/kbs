@@ -20,6 +20,13 @@ show_footer();
 function main() {
 	global $currentuser;
 	$mode=bbs_alter_yank();
+?>
+<script language="JavaScript">
+<!--
+    refreshLeft();
+//-->
+</script>
+<?php
 	return setSucMsg("状态已切换为".(($mode==0)?'显示全部':'显示只显示订阅版'));
 }
 
