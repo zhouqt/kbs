@@ -619,9 +619,9 @@ int compute_user_value( struct userec *urec)
     /* if (urec->userlevel & PERM_LONGID)
          return (667 * 24 * 60 - value)/(60*24); */
      registeryear = (time(0) -urec->firstlogin)/31536000;
-    if (registeryear<2) basiclife = LIFE_DAY_USER ;
-    else  if (registeryear >=5) basiclife = LIFE_DAY_LONG;
-       else basiclife = LIFE_DAY_YEAR;
+    if (registeryear<2) basiclife = LIFE_DAY_USER+1 ;
+    else  if (registeryear >=5) basiclife = LIFE_DAY_LONG+1;
+       else basiclife = LIFE_DAY_YEAR+1;
     return (basiclife * 24 * 60 - value)/(60*24);
 }
 
