@@ -29,6 +29,7 @@ login_init();
 		html_init("gb2312");
 		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
+<link rel="stylesheet" type="text/css" href="/ansi.css"/>
 <body>
 <center><?php echo BBS_FULL_NAME; ?> -- ±¸ÍüÂ¼ [ÌÖÂÛÇø: <?php echo $brdarr["NAME"]; ?>]
 <hr class="default">

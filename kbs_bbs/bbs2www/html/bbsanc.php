@@ -4,6 +4,7 @@
 	 * $Id$
 	 */
 	require("funcs.php");
+	require("board.inc.php");
 login_init();
 function get_mimetype($name)
 {
@@ -79,6 +80,36 @@ function get_mimetype($name)
 			html_init("gb2312");
 			html_error_quit("错误的文章号...");
 		}
+		
+		$board = '';
+		$up_dirs = array();
+		$up_cnt = bbs_ann_updirs($filename,$board,$up_dirs);
+		
+if ($board) {
+    $brdarr = array();
+    $bid = bbs_getboard($board,$brdarr);
+    if ($bid) {
+        $board = $brdarr['NAME'];
+        $usernum = $currentuser['index'];
+        if (bbs_checkreadperm($usernum, $bid) == 0) 
+    		html_error_quit('不存在该目录');
+        bbs_set_onboard($bid,1);
+        if (bbs_normalboard($board)) {
+            if (cache_header('public, must-revalidate',filemtime($filename),10))
+                return;
+        }
+    }
+    else {
+        if (cache_header('public, must-revalidate',filemtime($filename),10))
+            return;
+    }
+    
+}
+else {
+    if (cache_header('public, must-revalidate',filemtime($filename),10))
+        return;
+    $bid = 0;
+}
 
 			@$attachpos=$_GET["ap"];//pointer to the size after ATTACHMENT PAD
 			if ($attachpos!=0) {
@@ -102,21 +133,28 @@ function get_mimetype($name)
 				exit;
 			} else
 			{
-				html_init("gb2312");
+				html_init("gb2312","","",1);
 ?>
-<body>
-<center><p><?php echo BBS_FULL_NAME; ?> -- 精华区文章阅读 </p>
-<hr class="default" />
-<table width="610" border="1">
-<tr><td>
+<link rel="stylesheet" type="text/css" href="/ansi.css"/>
+<?php
+				$bid?bbs_board_header($brdarr):bbs_ann_header($board);
+				bbs_ann_xsearch($board);
+?>
+<center>
+<table width="98%" border="0" class="t1" cellspacing="0" cellpadding="3" >
+<tr><td class="t3">精华区文章阅读</td></tr>
+<tr><td class="t7"><font class="content">
 <?php
 				bbs_print_article($filename,1,$_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']);
 ?>
-</td></tr></table>
-<hr>
-[<a href="javascript:history.go(-1)">返回上一页</a>]</center>
+</font></td></tr></table></center>
 <?php
+            
+            if ($bid)
+            bbs_board_foot($brdarr,'');
+    
+			($up_cnt >= 2)?bbs_ann_foot($up_dirs[$up_cnt - 2]):bbs_ann_foot('');
+			html_normal_quit();
 			}
-		html_normal_quit();
 	}
 ?>
