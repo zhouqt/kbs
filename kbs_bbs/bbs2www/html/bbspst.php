@@ -49,6 +49,8 @@
 			{
 				html_error_quit("错误的 Re 文编号");
 			}
+			if ($articles[1]["FLAGS"][2] == 'y')
+				html_error_quit("该文不可回复!");
 		}
 		$brd_encode = urlencode($brdarr["NAME"]);
 	}
