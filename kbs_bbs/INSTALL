@@ -76,6 +76,7 @@ funcs.jsp, 编辑这个 funcs.jsp 文件, 把 dl("../libexec/bbs/libphpbbslib.so")
                 ./miscd daemon
                 ./bbsd -p port
                 ./newpop3d
+                ./bbslogd
                 ./webmsgd
 然后就可以用 telnet 访问 BBS 系统了. 再启动 apache 就可以从 web 端访问 BBS
 系统了.
