@@ -1,7 +1,6 @@
 bindir=@CGIPATH@
 bin_PROGRAMS = bbsbrdadd bbsall bbs0an \
 	  bbspwd \
-	  bbsmybrd \
 	  bbssnd \
 	  bbssndmail bbschat bbssel \
 	  bbstfind bbstcon \
