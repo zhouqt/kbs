@@ -594,7 +594,7 @@ function bbs_can_edit_article($board, $article, $user)
 		return 0;
 }
 
-function show_nav()
+function show_nav($boardName='')
 {
 	global $Banner;
 	global $BannerURL;
@@ -655,6 +655,7 @@ echo $srcutmpnum; ?>\',500,400)">发短信</a>';
 <?php
  }
 ?>
+ <img src=pic/navspacer.gif align=absmiddle>  <a href="query.php<?php echo $boardName==''?'':'?boardName='.$boardName; ?>">搜索</a> 
  <img src=pic/navspacer.gif align=absmiddle>  <a href="#" onMouseOver='ShowMenu(stylelist,100)'>自选风格</a> 
  <?php    if ($loginok)
   {
@@ -739,7 +740,10 @@ function getMsg(){
 <script>
 function closeWindow(){
 	document.all.floater.style.visibility='hidden';
-	window.setTimeout("document.frames('webmsg').document.location.reload();", 30000);
+	window.setTimeout("document.frames('webmsg').document.location.href='getmsg.php';", 30000);
+}
+function replyMsg(id){
+	document.frames('webmsg').document.location.href='sendmsg.php?destid='+id;
 }
 </script>
 

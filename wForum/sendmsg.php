@@ -11,16 +11,7 @@ html_init();
 
 if ($loginok==1) {
 	main();
-}else {
-	foundErr("本页需要您以正式用户身份登陆之后才能访问！");
 }
-
-if (isErrFounded()) {
-	echo "<body>";
-	html_error_quit();
-}
-
-show_footer();
 
 function main() {
 	global $currentuser;
@@ -35,13 +26,16 @@ function main() {
 		$destutmp = 0;
 	settype($destutmp, "integer");
 ?>
-<body  topmargin=0 leftmargin=0" onkeydown="if(event.keyCode==13 && event.ctrlKey)messager.submit()">
-
-<form action="dosendmsg.php" method=post name=messager>
+<div id="msgcontent" onkeydown="if(event.keyCode==13 && event.ctrlKey)messager.submit()">
+<script>
+function dosendmsg(){
+}
+</script>
+<form action="dosendmsg.php" method=post name=messager id=messager>
 <input type="hidden" name="destutmp" value="<?php echo $destutmp; ?>"/>
 <table cellpadding=3 cellspacing=1 align=center class=tableborder1>
           <tr> 
-            <th colspan=3>发送短消息（请输入完整信息）</td>
+            <th colspan=3>发送短消息（请输入完整信息）</th>
           </tr>
           <tr> 
             <td class=tablebody1 valign=middle><b>送讯息给:</b></td>
@@ -67,20 +61,28 @@ function main() {
 ② 可以用英文状态下的逗号将用户名隔开实现群发，最多<b>5</b>个用户<br>
 ③ 标题最多<b>50</b>个字符，内容最多<b>300</b>个字符<br>
 -->
+</form>
             </td>
           </tr>
           <tr> 
             <td  class=tablebody2 valign=middle colspan=2 align=center> 
-              <input type=Submit value="发送" name=Submit>
+              <input type=button value="发送" name=Submit onclick="dosendmsg();">
+             &nbsp;
+<!--
+			  <form action="showmsgs.php">
+              <input type=button value="查看聊天记录" name="chatlog" >
+			  </form>
+			 -->
               &nbsp; 
-              <input type=button value="查看聊天记录" name="chatlog" onclick="location.href='showmsgs.php'">
-              &nbsp; 
-              <input type="button" name="close" value="关闭" onclick="window.close()">
+              <input type="button" name="close" value="关闭" onclick="closeWindow();">
             </td>
           </tr>
-
         </table>
-</form>
+
+</div>
+	<script>
+	parent.document.all.floater.innerHTML=msgcontent.innerHTML;
+	</script>
 <?php
 
 }

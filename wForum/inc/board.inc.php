@@ -169,7 +169,7 @@ function showBoardContents($boardID,$boardName,$page){
 		echo " ]</b>";
 	}
 ?>
-</TD><TD class=tablebody2 width=80><a href="dispuser.asp?id=<?php echo $articles[$i]['OWNER'] ;?>" target=_blank><?php echo $articles[$i]['OWNER'] ;?></a></TD><TD class=tablebody1 width=64><?php echo $threadNum; ?></TD><TD align=left class=tablebody2 width=195>&nbsp;<a href="dispbbs.asp?boardid=1&id=1&star=1#1">
+</TD><TD class=tablebody2 width=80><a href="dispuser.php?id=<?php echo $articles[$i]['OWNER'] ;?>" target=_blank><?php echo $articles[$i]['OWNER'] ;?></a></TD><TD class=tablebody1 width=64><?php echo $threadNum; ?></TD><TD align=left class=tablebody2 width=195>&nbsp;<a href="disparticle.php?boardName=<?php echo $boardName ;?>&ID=<?php echo $i+$start ;?>&start=<?php echo $total; ?>">
 <?php
 			if ($threadNum==0) {
 				echo strftime("%Y-%m-%d %H:%M", $articles[$i]['POSTTIME']);
@@ -238,7 +238,9 @@ function showBoardContents($boardID,$boardName,$page){
 function showBroadcast($boardID,$boardName){
 ?>
 <tr><td class=tablebody1 colspan=5 height=20>
-	<table width=100% ><tr><td valign=middle height=20 width=50> <a href=AllPaper.asp?boardid=1 title=点击查看本论坛所有小字报><b>广播：</b></a> </td><td width=*> <marquee scrolldelay=150 scrollamount=4 onmouseout="if (document.all!=null){this.start()}" onmouseover="if (document.all!=null){this.stop()}"></marquee><td align=right width=240><a href=elist.asp?boardid=<?php echo boardID; ?> title=查看本版精华><font color=#FF0000><B>精华</B></font></a> | <a href=boardstat.asp?reaction=online&boardid=<?php echo boardID; ?> title=查看本版在线详细情况>在线</a> | <a href=bbseven.asp?boardid=1 title=查看本版事件>事件</a> | <a href=BoardPermission.asp?boardid=<?php echo boardID; ?> title=查看本版用户组权限>权限</a> | <a href=admin_boardset.asp?boardid=<?php echo boardID; ?>>管理</a></td></tr></table>
+	<table width=100% ><tr><td valign=middle height=20 width=50> <a href=AllPaper.asp?boardid=1 title=点击查看本论坛所有小字报><b>广播：</b></a> </td><td width=*> <marquee scrolldelay=150 scrollamount=4 onmouseout="if (document.all!=null){this.start()}" onmouseover="if (document.all!=null){this.stop()}"></marquee><td align=right width=240><a href=# onclick="alert('本功能尚在开发中！')"  title=查看本版精华><font color=#FF0000><B>精华</B></font></a>
+	| <a href=href=# onclick="alert('本功能尚在开发中！')" title=查看本版在线详细情况>在线</a> | <a href=bbseven.asp?boardid=1 title=查看本版事件>事件</a> | <a href=href=# onclick="alert('本功能尚在开发中！')"> title=查看本版用户组权限>权限</a>
+| <a href=# onclick="alert('本功能尚在开发中！')">管理</a></td></tr></table>
 </td></tr>
 <?php
 }

@@ -38,20 +38,36 @@ $total=count($threads);
 
 <?php
 function showTree($boardName,$boardID,$articleID,$article,$threads,$threadNum) {
-	$flags=array();
-	for ($i=0;$i<$threadNum;$i++){
-		showTreeItem($boardName,$articleID,$threads[$threadNum-$i-1],$i,$flags);
-	}
+	$printed=array(); 
+	$nowID=array();
+	$t=array();
+	$p=0;
+	$nowID[0]=0;
+	$try[0]=-1;
+	for(;;) {
+		for ($i=$try[$p]+1;$i<$threadNum;$i++){
+			if ( (!isset($printed[$i])) && ( ($threads[$threadNum-$i-1]['REID']==$nowID[$p]) || $p==0) ) 
+				break;
+		}
+		if ($i<$threadNum) {
+			$try[$p]=$i;
+			$p++;
+			showTreeItem($boardName,$articleID,$threads[$threadNum-$i-1],$i,$p);
+			$printed[$i]=1;
+			$nowID[$p]=intval($threads[$threadNum-$i-1]['ID']);
+			$try[$p]=-1;
+		} else {
+			$p--;
+			if ($p<0) 
+				break;
+		}
+	} 
+
 }
 
-function showTreeItem($boardName,$articleID,$thread,$threadID,&$flags){
-	if (isset($flags[$thread['REID']]) ){
-		$flags[$thread['ID']]=$flags[$thread['REID']]+1;
-	} else {
-		$flags[$thread['ID']]=0;
-	}
+function showTreeItem($boardName,$articleID,$thread,$threadID,$level){
 	echo '<TR><TD class=tablebody1 width="100%" height=25>гагага';
-	for ($i=0;$i<$flags[$thread['ID']];$i++) {
+	for ($i=0;$i<$level;$i++) {
 		echo "&nbsp;&nbsp;";
 	}
 	echo '<img src="pic/nofollow.gif"><a href="disparticle.php?boardName='.$boardName.'&ID='.$articleID.'&start='.$threadID.'&listType=1">';

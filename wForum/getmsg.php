@@ -21,9 +21,8 @@ html_init();
 		<td height=110 align="left" valign="top" class=tablebody1><?php echo htmlspecialchars($msgbuf); ?></td>
 	  </tr>
 	  <tr>
-		<td height=20 align="right" valign="top" nowrap="nowrap" class=tablebody2><a  href="javascript:openScript('sendmsg.php?destid=<?php 
-	echo $srcid; ?>&destutmp=<?php 
-	echo $srcutmpnum; ?>',500,400)" >[回讯息]</a> <a href="#" onclick="closeWindow();">[忽略]</a></td>
+		<td height=20 align="right" valign="top" nowrap="nowrap" class=tablebody2><a  href="javascript:replyMsg('<?php 
+	echo $srcid; ?>')" >[回讯息]</a> <a href="#" onclick="closeWindow();">[忽略]</a></td>
 	  </tr>
 	 </tbody>
 	</table>

@@ -25,7 +25,7 @@ preprocess();
 
 setStat("ндубап╠М");
 
-show_nav();
+show_nav($boardName);
 
 if (isErrFounded()) {
 	html_error_quit() ;
