@@ -5,7 +5,7 @@ char* curuserid;
 int check_BM(struct boardheader* bptr)
 {
   if ((bptr->level!=0)&&!(bptr->level & PERM_POSTMASK)) return 0; 
-  if (chk_BM_instr(bptr->BM,curuserid) == YEA) printf("%s(%s) ",bptr->filename,bptr->title+12);
+  if (chk_BM_instr(bptr->BM,curuserid) == true) printf("%s(%s) ",bptr->filename,bptr->title+12);
   return 0;
 }
 

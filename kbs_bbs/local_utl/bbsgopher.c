@@ -527,7 +527,7 @@ showout()
             sethomefile(tmpfile,currentuser->userid,"gopher.tmp");
             savetmpfile(tmpfile);
             close(a);
-            ansimore(tmpfile,YEA);
+            ansimore(tmpfile,true);
             notreload=1;
             unlink(tmpfile);
             continue;

@@ -23,7 +23,7 @@ int do_userlist(struct user_info* uentp,char* arg,int t)
                      uentp->userid,
                      uentp->username,
                      uentp->from,
-                     pagec,' ',(uentp->invisible==YEA)
+                     pagec,' ',(uentp->invisible==true)
                      ?"[34m":"",
                      modestring(uentp->mode, uentp->destuid, 0,/* 1->0 ²»ÏÔÊ¾ÁÄÌì¶ÔÏóµÈ modified by dong 1996.10.26 */
                                 (uentp->in_chat ? uentp->chatid : NULL)),
