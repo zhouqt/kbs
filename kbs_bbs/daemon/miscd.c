@@ -368,6 +368,12 @@ int main (int argc,char *argv[])
      setreuid(BBSUID,BBSUID);
      setregid(BBSGID,BBSGID);
 
+    setpublicshmreadonly(0);
+#undef time
+	bbssettime(time(0));
+	sleep(1);
+#define time(x) bbstime(x)
+    setpublicshmreadonly(1);
      if (argc>1) {
          if (strcasecmp(argv[1],"killuser") == 0)  return dokilluser();
          if (strcasecmp(argv[1],"allboards") == 0) return dokillalldir();

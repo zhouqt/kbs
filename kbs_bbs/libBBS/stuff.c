@@ -807,8 +807,7 @@ char filename[STRLEN],seekstr[STRLEN];
 }
 
 
-static time_t* nowtime;
-static struct public_data *publicshm;
+static struct public_data *publicshm=NULL;
 void bbssettime(time_t now)
 {
     int iscreate;
@@ -822,7 +821,8 @@ void bbssettime(time_t now)
 int setpublicshmreadonly(int readonly)
 {
     int iscreate;
-    shmdt(publicshm);
+    if (publicshm)
+	    shmdt(publicshm);
     if (readonly)
         publicshm = (struct public_data*)attach_shm1( "PUBLIC_SHMKEY", 3700, sizeof( *publicshm ) ,&iscreate , 1, publicshm); 
     else
