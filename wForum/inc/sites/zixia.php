@@ -18,6 +18,8 @@ define("ATTACHMAXSIZE","5242880");
 define ("ATTACHMAXTOTALSIZE","20971520");
 define("ATTACHMAXCOUNT","20");
 
+define('MYFACEMAXSIZE','102400');
+
 $section_nums = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
 $section_names = array(
     array("¸« Í· °ï", "[ºÚ°ï/ÏµÍ³]"),
