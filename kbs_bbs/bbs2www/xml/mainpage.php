@@ -351,7 +351,7 @@ $brdarr = array();
         </tr>
 	</table>
 
-	<table border="0" cellpadding="0" cellspacing="0" width="626">
+	<table border="0" cellpadding="0" cellspacing="0" width="97%">
 	<tr><td height=10></td></tr>
 <?php
 # shift through the array
@@ -492,11 +492,13 @@ while($board = array_shift($boards))
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr> 
     <td colspan="2" height="77"><img src="images/logo.gif" width="144" height="71"></td>
-    <td colspan="6" ><object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0" width="100%" height="100%">
+    <td colspan="6" >
+    <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0" width="100%" height="100%">
       <param name="movie" value="ad.swf">
       <param name="quality" value="high">
-      <embed src="ad.swf" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash" width="670" height="77"></embed>
-    </object></td>
+      <embed src="ad.swf" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash"></embed>
+    </object>
+    </td>
   </tr>
   <form action="/cgi-bin/bbs/bbssel">
   <tr> 
@@ -506,7 +508,7 @@ while($board = array_shift($boards))
     <td width="80" class="header" align="center">推荐版面</td>
     <td width="81" class="header" align="center">人气排名</td>
     <td width="79" class="header" align="center">本日祝福</td>
-    <td width="56" class="header"></td>
+    <td class="header"></td>
     <td class="header" align="right" width="315"> <input type="text" name="board" size="12" maxlength="30" value="版面搜索" class="text"> 
       <input type="submit" size="15" value="GO" class="button"> 
     </td></form>
@@ -517,7 +519,7 @@ while($board = array_shift($boards))
     <td colspan="5" height="8"></td>
   </tr>
   <tr>
-    <td width="75%">
+    <td width="80%">
 <?php
 	gen_commend_html();
 ?>
