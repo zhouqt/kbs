@@ -816,3 +816,22 @@ int auto_register(char* userid,char* email,int msize)
 	return 0;
 }
 
+int smsnumber2uid(char* number)
+{
+    int uid;
+    char buf[10];
+    uid = byte2long(number);
+    /* 现在我们用的是1开头的,需要去掉开始的那个1*/
+    printf(buf,"%d",uid);
+    if (buf[0]!='1')
+        return -1;
+    uid=atoi(buf+1);
+    return uid;
+}
+
+void uid2smsnumber(struct user_info uin,char* number)
+{
+  sprintf(number,"1%d",uin->uid);
+}
+
+

@@ -90,7 +90,8 @@ int sendtouser(struct GWSendSMS * h, char* buf)
     char * uident;
     struct user_info * uin;
     struct msghead hh;
-    uid = byte2long(h->UserID);
+    uid = smsnumber2uid(h->UserID);
+    
     uident = getuserid2(uid);
     if(uident == NULL)
         return -1;

@@ -874,7 +874,7 @@ int DoReg(char * n)
     long2byte(smsuin->pid, h.pid);
     long2byte(sizeof(h1), h.BodyLength);
     strcpy(h1.MobileNo, n);
-    sprintf(h1.cUserID, "1%d", smsuin->uid);
+    uid2smsnumber(smsuin,h1.cUserID);
     while(head->sem) {
         sleep(1);
         count++;
@@ -896,7 +896,7 @@ int DoUnReg(char * n)
     long2byte(smsuin->pid, h.pid);
     long2byte(sizeof(h1), h.BodyLength);
     strcpy(h1.MobileNo, n);
-    sprintf(h1.cUserID, "1%d", smsuin->uid);
+    uid2smsnumber(smsuin,h1.cUserID);
     while(head->sem) {
         sleep(1);
         count++;
@@ -919,7 +919,7 @@ int DoCheck(char * n, char * c)
     long2byte(sizeof(h1), h.BodyLength);
     strcpy(h1.MobileNo, n);
     strcpy(h1.ValidateNo, c);
-    sprintf(h1.cUserID, "1%d", smsuin->uid);
+    uid2smsnumber(smsuin,h1.cUserID);
     while(head->sem) {
         sleep(1);
         count++;
@@ -937,14 +937,16 @@ int DoSendSMS(char * n, char * d, char * c)
     int count=0;
     struct header h;
     struct BBSSendSMS h1;
+    int number;
     h.Type = CMD_BBSSEND;
     long2byte(smsuin->pid, h.pid);
     long2byte(sizeof(h1)+strlen(c)+1, h.BodyLength);
     long2byte(strlen(c)+1, h1.MsgTxtLen);
-    long2byte(smsuin->uid, h1.UserID);
     strcpy(h1.SrcMobileNo, n);
     strcpy(h1.DstMobileNo, d);
-    sprintf(h1.SrccUserID, "1%d", smsuin->uid);
+    uid2smsnumber(smsuin,h1.SrccUserID);
+    number=atoi(h1.SrccUserID);
+    long2byte(number, h1.UserID);
     while(head->sem) {
         sleep(1);
         count++;

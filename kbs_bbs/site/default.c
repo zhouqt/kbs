@@ -526,5 +526,20 @@ int check_see_perm(struct userec* user,const struct boardheader* board)
     }
     return 0;
 }
+
+
+int smsnumber2uid(char* number)
+{
+    int uid;
+    char buf[10];
+    uid = byte2long(number);
+    return uid;
+}
+
+void uid2smsnumber(struct user_info uin,char* number)
+{
+  sprintf(number,"%d",uin->uid);
+}
+
 #endif /* USE_DEFAULT_SEE_PERM */
 
