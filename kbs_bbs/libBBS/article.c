@@ -740,7 +740,9 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
         sprintf(buf, "posted '%s' on '%s' filtered", fh->title, fh->o_board);
     else {
 #endif
+#ifdef HAVE_BRC_CONTROL
         brc_add_read(fh->id);
+#endif
         sprintf(buf, "posted '%s' on '%s'", fh->title, boardname);
 #ifdef FILTER
     }
@@ -1304,7 +1306,9 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
                 flock(filedes, LOCK_UN);
                 close(filedes);
                 updatelastpost(fileinfo->o_board);
+#ifdef HAVE_BRC_CONTROL
                 brc_add_read(newfh->id);
+#endif
                 if (newfh->id == newfh->groupid)
                     setboardorigin(fileinfo->o_board, 1);
                 setboardtitle(fileinfo->o_board, 1);
@@ -1451,9 +1455,11 @@ char get_article_flag(struct fileheader *ent, struct userec *user, char *boardna
     char unread_mark = (DEFINE(user, DEF_UNREADMARK) ? '*' : 'N');
     char type;
 
+#ifdef HAVE_BRC_CONTROL
     if (strcmp(user->userid, "guest"))
         type = brc_unread(ent->id) ? unread_mark : ' ';
     else
+#endif
         type = ' ';
     /* add by stiger */
     if(POSTFILE_BASENAME(ent->filename)[0] == 'Z')

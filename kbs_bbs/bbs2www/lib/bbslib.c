@@ -2004,8 +2004,10 @@ int www_user_init(int useridx, char *userid, int key, struct userec **x, struct 
 
         if (*x == 0)
             return -5;
+#ifdef HAVE_BRC_CONTROL
 #if USE_TMPFS==1
 	    init_brc_cache((*x)->userid,true);
+#endif
 #endif
     } else {
         /*

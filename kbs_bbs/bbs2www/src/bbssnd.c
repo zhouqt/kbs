@@ -69,7 +69,9 @@ int main()
     else {
         oldx = NULL;
     }
+#ifdef HAVE_BRC_CONTROL
     brc_initial(currentuser->userid, board);
+#endif
     if (is_outgo_board(board) && local == 0)
         local = 0;
     else
@@ -91,7 +93,9 @@ int main()
         r = post_article(board, title, filename, currentuser, fromhost, sig, local, anony, oldx,NULL);
     if (r < 0)
         http_fatal("内部错误，无法发文");
+#ifdef HAVE_BRC_CONTROL
     brc_update(currentuser->userid);
+#endif
     if(oldx)
     	free(oldx);
     unlink(filename);

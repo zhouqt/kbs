@@ -38,6 +38,7 @@ int cmpboard(brd, tmp)          /*ÅÅĞòÓÃ */
 
 static int check_newpost(struct newpostdata *ptr)
 {
+#ifdef HAVE_BRC_CONTROL
     struct BoardStatus *bptr;
 
     ptr->total = ptr->unread = 0;
@@ -55,6 +56,10 @@ static int check_newpost(struct newpostdata *ptr)
         }
     }
     return 1;
+#else
+    ptr->unread = 1;
+    return 1;
+#endif
 }
 
 /*

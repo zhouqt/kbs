@@ -844,8 +844,6 @@ void save_giveupinfo(struct userec* lookupuser,int lcount,int s[10][2])
 
 #if USE_TMPFS==1
 
-extern struct _brc_cache_entry* brc_cache_entry;
-
 void setcachehomefile(char* path,char* user,int unum,char* file)
 {
     if (unum==-1) {

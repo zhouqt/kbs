@@ -220,7 +220,9 @@ void u_exit()
     if ((HAS_PERM(currentuser, PERM_CHATCLOAK) || HAS_PERM(currentuser, PERM_CLOAK)))
         setflags(CLOAK_FLAG, uinfo.invisible);
 
+#ifdef HAVE_BRC_CONTROL
     brc_update(currentuser->userid);
+#endif
 
     if (utmpent > 0)
         clear_utmp(utmpent, usernum, getpid());
@@ -1159,7 +1161,13 @@ void showtitle( char *title, char*mid)
     if (selboard)
 	    sprintf(note, "讨论区 [%s]", currboard->filename);
     else {
+        int bid;
+        bid=getboard(DEFAULTBOARD);
+        currboardent=bid;
+        currboard=(struct boardheader*)getboard(bid);
+#ifdef HAVE_BRC_CONTROL
         brc_initial(currentuser->userid, DEFAULTBOARD);
+#endif
         if (currboardent) {
             selboard = 1;
             sprintf(note, "讨论区 [%s]", currboard->filename);

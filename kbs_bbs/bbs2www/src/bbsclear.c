@@ -16,9 +16,11 @@ int main()
     if (getboardnum(board,&bh) == 0 || !check_read_perm(currentuser, &bh))
         http_fatal("´íÎóµÄÌÖÂÛÇø");
     if (strcmp(currentuser->userid,"guest")) {
+#ifdef HAVE_BRC_CONTROL
         brc_initial(currentuser->userid, board);
         brc_clear();
         brc_update(currentuser->userid);
+#endif
     }
     strcpy(buf, board);
     encode_url(board, buf, sizeof(board));

@@ -5,12 +5,14 @@
 #include "bbs.h"
 #include <zlib.h>
 
+#ifdef HAVE_BRC_CONTROL
 #if USE_TMPFS==1
 struct _brc_cache_entry* brc_cache_entry=NULL;
 #else
 struct _brc_cache_entry brc_cache_entry[BRC_CACHE_NUM];
 #endif
 static int brc_currcache=-1;
+#endif
 
 struct favbrd_struct {
     int flag;
@@ -368,6 +370,8 @@ void save_zapbuf()
 }
 #endif
 
+#ifdef HAVE_BRC_CONTROL
+
 void brc_update(char *userid)
 {
     int i;
@@ -557,10 +561,6 @@ int brc_initial(char *userid, char *boardname)
     bid = getbnum(boardname);
     if (bid == 0)
         return 0;
-#ifdef BBSMAIN
-    currboardent=bid;
-    currboard=(struct boardheader*)getboard(bid);
-#endif
     /*干脆不搞guest的这个算了*/
     if (!strcmp(userid,"guest")) return 0;
 #if USE_TMPFS==1
@@ -712,6 +712,7 @@ void brc_clear_new_flag(unsigned int fid)
     }
     return;
 }
+#endif
 
 int junkboard(char *currboard)
 {                               /* 判断当前版是否为 junkboards */

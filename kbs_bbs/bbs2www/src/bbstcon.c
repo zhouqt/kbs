@@ -23,8 +23,10 @@ int main()
     if (getboardnum(board,&bh)==0||!check_read_perm(currentuser, &bh))
         http_fatal("错误的讨论区");
     strcpy(board, getbcache(board)->filename);
+#ifdef HAVE_BRC_CONTROL
     if ((loginok)&&strcmp(currentuser->userid,"guest"))
         brc_initial(currentuser->userid, board);
+#endif
     printf("%s -- 主题文章阅读 [讨论区: %s]<hr class=\"default\" />", BBSNAME, board);
     if (VALID_FILENAME(file) < 0)
         http_fatal("错误的参数");
@@ -65,8 +67,10 @@ int main()
     ptr = x.title;
     if (!strncmp(ptr, "Re: ", 4))
         ptr += 4;
+#ifdef HAVE_BRC_CONTROL
     if ((loginok)&&strcmp(currentuser->userid,"guest"))
         brc_update(currentuser->userid);
+#endif
     http_quit();
 }
 
@@ -145,8 +149,10 @@ int show_file(char *board,struct boardheader* bh,struct fileheader *x, int n, ch
 	char www_url[200];
     char* title;
 
+#ifdef HAVE_BRC_CONTROL
     if ((loginok)&&strcmp(currentuser->userid,"guest"))
         brc_add_read(x->id);
+#endif
     sprintf(path, "boards/%s/%s", board, x->filename);
     encode_url(board_url, board, sizeof(board_url));
     printf("<table width=\"90%%\" class=\"BODY\">\n");

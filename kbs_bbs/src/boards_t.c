@@ -25,8 +25,10 @@ char *cmd;
 
 static int clear_all_board_read_flag_func(struct boardheader *bh,void* arg)
 {
+#ifdef HAVE_BRC_CONTROL
     if (brc_initial(currentuser->userid, bh->filename) != 0)
         brc_clear();
+#endif
 }
 
 int clear_all_board_read_flag()
@@ -61,6 +63,7 @@ int unread_position(dirfile, ptr)
 char *dirfile;
 struct newpostdata *ptr;
 {
+#ifdef HAVE_BRC_CONTROL
     struct fileheader fh;
     int id;
     int fd, offset, step, num;
@@ -95,6 +98,9 @@ struct newpostdata *ptr;
     if (num < 0)
         num = 0;
     return num;
+#else
+    return 0;
+#endif
 }
 
 int show_authorBM(ent, fileinfo, direct)
@@ -216,6 +222,7 @@ extern char *maildoent(char *buf, int num, struct fileheader *ent);
 
 static int check_newpost(struct newpostdata *ptr)
 {
+#ifdef HAVE_BRC_CONTROL
     struct BoardStatus *bptr;
 
     if (ptr->dir)
@@ -235,6 +242,7 @@ static int check_newpost(struct newpostdata *ptr)
             ptr->unread = 1;
         }
     }
+#endif
     return 1;
 }
 
@@ -526,7 +534,15 @@ static int fav_onselect(struct _select_def *conf)
         int tmp, page;
 
         if (getboardnum(ptr->name, &bh) != 0 && check_read_perm(currentuser, &bh)) {
+            int bid;
+            bid = getbnum(ptr->name);
+
+            currboardent=bid;
+            currboard=(struct boardheader*)getboard(bid);
+
+#ifdef HAVE_BRC_CONTROL
             brc_initial(currentuser->userid, ptr->name);
+#endif
             memcpy(currBM, ptr->BM, BM_LEN - 1);
             if (DEFINE(currentuser, DEF_FIRSTNEW)) {
                 setbdir(digestmode, buf, currboard->filename);

@@ -75,9 +75,11 @@ int main()
     fclose(fp);
 
     if ((loginok) && strcmp(currentuser->userid, "guest")) {
+#ifdef HAVE_BRC_CONTROL
         brc_initial(currentuser->userid, board);
         brc_add_read(records[1].id);
         brc_update(currentuser->userid);
+#endif
     }
     encode_url(buf2, board, sizeof(buf2));
     printf("</pre></td></tr>\n</table><hr>\n");

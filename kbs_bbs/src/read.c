@@ -1417,9 +1417,11 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
         case 2:
             break;
         case 3:
+#ifdef HAVE_BRC_CONTROL
             if (brc_unread(SR_fptr.id))
                 return -1;
             else
+#endif
                 break;
         case SR_BMDEL:
             if (digestmode)
@@ -1528,7 +1530,9 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
             /*
              * ansimore(genbuf,false) ;  
              */
+#ifdef HAVE_BRC_CONTROL
             brc_add_read(SR_fptr.id);
+#endif
             isstart = 0;
           redo:
             move(t_lines - 1, 0);

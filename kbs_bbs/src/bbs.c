@@ -837,7 +837,9 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     ch = ansimore_withzmodem(genbuf, true, fileinfo->title);    /* 显示文章内容 */
 #endif
     register_attach_link(NULL,NULL);
+#ifdef HAVE_BRC_CONTROL
     brc_add_read(fileinfo->id);
+#endif
 #ifndef NOREPLY
     move(t_lines - 1, 0);
     if (haspostperm(currentuser, currboard->filename)) {  /* 根据是否有POST权 显示最下一行 */
@@ -1019,7 +1021,9 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
 
 int skip_post(int ent, struct fileheader *fileinfo, char *direct)
 {
+#ifdef HAVE_BRC_CONTROL
     brc_add_read(fileinfo->id);
+#endif
     return GOTO_NEXT;
 }
 
@@ -1030,6 +1034,7 @@ int do_select(int ent, struct fileheader *fileinfo, char *direct)
 {
     char bname[STRLEN], bpath[STRLEN];
     struct stat st;
+    int bid;
 
     move(0, 0);
     prints("选择一个讨论区 (英文字母大小写皆可)");
@@ -1063,7 +1068,15 @@ int do_select(int ent, struct fileheader *fileinfo, char *direct)
     board_setcurrentuser(uinfo.currentboard, 1);
     
     selboard = 1;
+
+    bid = getbnum(bname);
+
+    currboardent=bid;
+    currboard=(struct boardheader*)getboard(bid);
+
+#ifdef HAVE_BRC_CONTROL
     brc_initial(currentuser->userid, bname);
+#endif
 
     move(0, 0);
     clrtoeol();
@@ -2793,8 +2806,10 @@ int sequent_messages(struct fileheader *fptr, int idc, int *continue_flag)
     if (readpost) {
         if (idc < sequent_ent)
             return 0;
+#ifdef HAVE_BRC_CONTROL
         if (!brc_unread(fptr->id))
             return 0;           /*已读 则 返回 */
+#endif
         if (*continue_flag != 0) {
             genbuf[0] = 'y';
         } else {
@@ -2855,7 +2870,9 @@ int sequent_messages(struct fileheader *fptr, int idc, int *continue_flag)
         clear();
     }
     setbdir(digestmode, genbuf, currboard->filename);
+#ifdef HAVE_BRC_CONTROL
     brc_add_read(fptr->id);
+#endif
     /*
      * return 0;  modified by dong , for clear_new_flag(), 1999.1.20
      * if (strcmp(CurArticleFileName, fptr->filename) == 0)
@@ -2886,15 +2903,19 @@ int sequential_read(int ent, struct fileheader *fileinfo, char *direct)
 
 int clear_new_flag(int ent, struct fileheader *fileinfo, char *direct)
 {
+#ifdef HAVE_BRC_CONTROL
 	/* add by stiger */
 	if(POSTFILE_BASENAME(fileinfo->filename)[0]=='Z') brc_clear();
 	else brc_clear_new_flag(fileinfo->id);
+#endif
     return PARTUPDATE;
 }
 
 int clear_all_new_flag(int ent, struct fileheader *fileinfo, char *direct)
 {
+#ifdef HAVE_BRC_CONTROL
     brc_clear();
+#endif
     return PARTUPDATE;
 }
 
@@ -3006,6 +3027,7 @@ int Read()
     char notename[STRLEN];
     time_t usetime;
     struct stat st;
+    int bid;
 
     if (!selboard) {
         move(2, 0);
@@ -3016,7 +3038,15 @@ int Read()
         return -1;
     }
     in_mail = false;
+    bid = getbnum(currboard->filename);
+
+    currboardent=bid;
+    currboard=(struct boardheader*)getboard(bid);
+
+#ifdef HAVE_BRC_CONTROL
     brc_initial(currentuser->userid, currboard->filename);
+#endif
+
     setbdir(digestmode, buf, currboard->filename);
 
     board_setcurrentuser(uinfo.currentboard, -1);
