@@ -4,7 +4,6 @@
 			  Software - Practice and Experience, 10, 501-06. Further improvements by HUME, A., and D. M. SUNDAY. 1991. 
    2002.08.20 周霖 KCN
 */
-#include <types.h>
 #include "system.h"
 /* 字符串匹配函数*/
 char *bm_strcmp(const char *string, const char *pattern)
@@ -70,7 +69,7 @@ void *memfind(const void *in_block,     /* 数据块 */
             shift[(unsigned char) pattern[byte_nbr]] = pattern_size - byte_nbr;
 
         if (init)
-            *init = TRUE;
+            *init = true;
     }
 
 /*开始搜索数据块，每次前进移位表中的数量*/
@@ -126,7 +125,7 @@ void *txtfind(const void *in_block,     /* 数据块 */
             shift[(unsigned char) tolower(pattern[byte_nbr])] = pattern_size - byte_nbr;
 
         if (init)
-            *init = TRUE;
+            *init = true;
     }
 
 /*开始搜索数据块，每次前进移位表中的数量*/
