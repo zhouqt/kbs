@@ -260,6 +260,8 @@ void join_room(struct room_struct * r)
 {
     char buf[80];
     int i,j;
+    sprintf(buf, "home/%c/%s/.INROOMMSG", toupper(r->creator[0]), r->creator);
+    unlink(buf);
     myroom = r;
     signal(SIGUSR1, room_refresh);
     i=r->people;
@@ -295,7 +297,7 @@ void join_room(struct room_struct * r)
     for(i=0;i<myroom->people;i++)
         if(inrooms.peoples[i].pid==uinfo.pid) {
             for(j=i;j<myroom->people-1;j++)
-                memcpy(inrooms.peoples+j, inrooms.peoples+j+1, sizeof(struct inroom_struct));
+                memcpy(inrooms.peoples+j, inrooms.peoples+j+1, sizeof(struct people_struct));
             break;
         }
     r->people--;
