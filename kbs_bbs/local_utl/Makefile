@@ -4,7 +4,7 @@
 #CC       = cc -DAIX -DSYSV -DLEEWARD_X_RECORD
 CC       = cc -g -DLINUX -DSYSV -DLEEWARD_X_RECORD -I../include -I..
 
-BINFILE= poststat static usage bfinger Xclean Xhtml Bhtml bfinger refriend chlevel listonline
+BINFILE= poststat static usage bfinger Xclean Xhtml Bhtml bfinger refriend chlevel listonline syncann
 
 all:  $(BINFILE)
 
@@ -48,3 +48,6 @@ listonline:listonline.o bcache.o
 
 #bcache.o:bcache.c
 #	gcc -c bcache.c
+
+syncann:syncann.cpp
+	gcc -o syncann syncann.cpp

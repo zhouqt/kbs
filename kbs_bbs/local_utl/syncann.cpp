@@ -1,6 +1,16 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <utime.h>
+
 #define SMTH_ROOT "/home/bbs/smthAnnounce"
 #define SYNC_ROOT "/home/bbs/0Announce"
+#include "syncann.h"
 
 struct _AnnounceEntry_ {
 	char filepath[1024];
@@ -38,8 +48,6 @@ void rotatespace(char* str)
 		*(p+1)=0;
 }
 
-#include "queue.h"
-
 CQueue::CQueue()
 {
 	m_pHead = NULL;
@@ -67,7 +75,7 @@ void CQueue::RemoveAll()
 	m_pTail = NULL;
 }
 
-BOOL	CQueue::IsEmpty()
+int	CQueue::IsEmpty()
 {
 	return (m_pHead==NULL);
 }
@@ -120,7 +128,7 @@ void* CQueue::GetNext(POS& pos)
 	return data;
 }
 
-int CSendApp::UpdateFile(char* filepath)
+int CSendApp::UpdateFile(char* filepath,time_t modtime)
 {
   
 	const int buflen=40960;
@@ -128,10 +136,14 @@ int CSendApp::UpdateFile(char* filepath)
 	int fd,fout;
 	struct stat st;
 	int len,pos,readlen;
+	struct utimbuf utm;
+
+	utm.actime=modtime;
+	utm.modtime=modtime;
 	
 	fd = open(filepath,O_RDONLY);
 	if (fd==-1) {
-		printf("Can't Open File %s:%s",filepath,strerror(errno));
+		printf("Can't Open File %s:%s\n",filepath,strerror(errno));
 		return -1;
 	}
 	
@@ -140,7 +152,7 @@ int CSendApp::UpdateFile(char* filepath)
 	pos=0;
 	
 	sprintf(buf,"%s/%s",SYNC_ROOT,filepath);
-	fout = open(buf,O_CREATE|O_TRUNC|O_WRONLY);
+	fout = open(buf,O_CREAT|O_TRUNC|O_WRONLY);
 	if (fout==-1) {
 		printf("Can't Open File %s:%s",buf,strerror(errno));
 		return -1;
@@ -158,13 +170,16 @@ int CSendApp::UpdateFile(char* filepath)
 	}
 	close(fd);
 	close(fout);
-	printf("Update File %s",filepath);
+	sprintf(buf,"%s/%s",SYNC_ROOT,filepath);
+	utime(buf,&utm);
+	printf("Update File %s\n",filepath);
 	return 0;
 }
 
 int CSendApp::SaveNames(FILE* file,char* dir,struct _AnnounceEntry_ * &pEntry,int count)
 {
 	fprintf(file,"#Directory=%s\n",dir);
+	fprintf(file,"#\n%s\n#\n",m_strDirectoryTitle);
 	for (int i=0;i<count;i++) {
 		fprintf(file,"Name=%s\n",pEntry[i].title);
 		char* p;
@@ -192,14 +207,17 @@ int CSendApp::LoadNames(FILE* file,char* dir,struct _AnnounceEntry_ * &pEntry)
 	memset(pEntry,0,sizeof(struct _AnnounceEntry_));
 	while (fgets(buf,1024,file)) {
 		int i;
-		if (buf[0]=='#')
+		if (buf[0]=='#') {
+			if (!strncmp(buf,"# Title=",8)) {
+				strcpy(m_strDirectoryTitle,buf);
+			};
 			if (!read) continue; /*没有Entry */
 			else {
 				struct stat st;
 				if (stat(pEntry[count].filepath,&st)) continue; /* 错误的文件或目录 */
 				if (!pEntry[count].title[0]) continue; /*没有标题*/
 				if (!pEntry[count].filepath[0]) continue; /*没有文件*/
-				if (pEntry[count].issysop||pEntry[count].issysop) continue;
+				if (pEntry[count].issysop||pEntry[count].isbm) continue;
 				if (!pEntry[count].updatetime)  /* 取文件更新时间 */
 					pEntry[count].updatetime = st.st_mtime;
 				pEntry[count].isdir = S_ISDIR(st.st_mode);
@@ -215,6 +233,7 @@ int CSendApp::LoadNames(FILE* file,char* dir,struct _AnnounceEntry_ * &pEntry)
 				read = 0;
 				continue;
 			}
+		}
 		if (buf[strlen(buf)-1]=='\n') buf[strlen(buf)-1] = 0;
 		for (i=0;tags[i];i++)
 			if (!strncmp(buf,tags[i],strlen(tags[i]))) break;
@@ -278,47 +297,11 @@ int CSendApp::LogUpdate(int action,struct _AnnounceEntry_* entry,char* lastfilen
 		act = '*';
 		break;
 	}
-	/*
-	char buf[1024];
-	char *p1,*p2;
-	p1 = buf;
-	p2 = entry->title;
-	while (*p2) {
-		if (*p2=='"') {
-			*p1='\\';
-			p1++;
-		}
-		if (*p2=='\\') {
-			*p1='\\';
-			p1++;
-		}
-		*p1 = *p2;
-		p2++;
-		p1++;
-	}
-	*p1=0;
-        char buf2[64];
-        p1 = buf2;
-        p2 = entry->owner;
-        while (*p2) {
-                *p1 = *p2;
-		if (*p2=='"') {
-			*p1='\\';
-			p1++;
-		}
-                if (*p2=='\\') {
-                        *p1='"';
-                        p1++;
-                }
-                p2++;
-                p1++;
-        }
-	*p1=0;*/
 	fprintf(m_updateLogfile,"%c \"%s\" \"%s\" \"%s\" %d %d %d %d %d \"%s\"\n",
 		act,
 		entry->filepath,
-		buf2,
-		buf,
+		entry->title,
+		entry->owner,
 		0,
 		entry->issysop,
 		entry->isbm,
@@ -328,11 +311,19 @@ int CSendApp::LogUpdate(int action,struct _AnnounceEntry_* entry,char* lastfilen
 	return 0;
 }
 
-int CSendApp::MakeDir(char* dir)
+int CSendApp::MakeDir(char* dir,time_t modtime)
 {
 	char buf[1024];
+	struct utimbuf utm;
+	int ret;
+
+	utm.actime = modtime;
+	utm.modtime = modtime;
 	sprintf(buf,"%s/%s",SYNC_ROOT,dir);
-	return mkdir(buf);
+	
+	ret = mkdir(buf,0750);
+	utime(buf,&utm);
+	return ret;
 }
 
 int CSendApp::DoDirectory(char* dir,int ignoreold)
@@ -340,13 +331,13 @@ int CSendApp::DoDirectory(char* dir,int ignoreold)
 	FILE* indexfile,*logfile;
 	char filepath[1024],logfilepath[1024];
 
-	printf("Do Directory:%s",dir);
+	printf("Do Directory:%s\n",dir);
 	
 	sprintf(filepath,"%s/.Names",dir);
 	sprintf(logfilepath,"%s/%s/.Names",SYNC_ROOT,dir);
 	
 	if ((indexfile = fopen(filepath,"r"))==NULL) {
-		printf("Can't open %s for read:%s",dir,strerror(errno));
+		printf("Can't open %s for read:%s\n",dir,strerror(errno));
 		return 0;
 	}
 	if (!ignoreold)
@@ -361,9 +352,9 @@ int CSendApp::DoDirectory(char* dir,int ignoreold)
 	count = LoadNames(indexfile,dir,pEntry);
 	if (logfile) {
 		logcount = LoadNames(logfile,dir,pLogEntry);
-		printf("load save log:");
+		printf("load save log:\n");
 		for (i=0;i<logcount;i++)
-			printf("%d:path:%s title:%s owner:%s issysop:%d isbm:%d udpatetime:%d",
+			printf("%d:path:%s title:%s owner:%s issysop:%d isbm:%d udpatetime:%d\n",
 			i,
 			pLogEntry[i].filepath,
 			pLogEntry[i].title,
@@ -373,7 +364,7 @@ int CSendApp::DoDirectory(char* dir,int ignoreold)
 			pLogEntry[i].updatetime);
 	}
 	else {
-		printf("Not log file");
+		printf("Not log file\n");
 		logcount = 0;
 	};
 	
@@ -391,7 +382,7 @@ int CSendApp::DoDirectory(char* dir,int ignoreold)
 	for (i=0;i<count;i++) {
 		int found;
 		found = 0;
-		printf("%d:path:%s title:%s owner:%s issysop:%d isbm:%d udpatetime:%d",
+		printf("%d:path:%s title:%s owner:%s issysop:%d isbm:%d udpatetime:%d\n",
 			i,
 			pEntry[i].filepath,
 			pEntry[i].title,
@@ -427,7 +418,7 @@ int CSendApp::DoDirectory(char* dir,int ignoreold)
 
 			if ((pLogEntry[j].updatetime<pEntry[i].updatetime)&&!pEntry[i].isdir)
 				/* 老的目录项，但内容已经变化 */
-				UpdateFile(pEntry[i].filepath);
+				UpdateFile(pEntry[i].filepath,pEntry[i].updatetime);
 
 			if (changed||orderchange)
 				if (i==0)
@@ -436,9 +427,9 @@ int CSendApp::DoDirectory(char* dir,int ignoreold)
 					LogUpdate(ACT_MOD,&pEntry[i],pEntry[i-1].filepath);
 		} else { /* add a entry */
 			if (!pEntry[i].isdir)
-				UpdateFile(pEntry[i].filepath);
+				UpdateFile(pEntry[i].filepath,pEntry[i].updatetime);
 			else
-				MakeDir(pEntry[i].filepath);
+				MakeDir(pEntry[i].filepath,pEntry[i].updatetime);
 			if (i)
 				LogUpdate(ACT_ADD,&pEntry[i],pEntry[i-1].filepath);
 			else
@@ -457,7 +448,7 @@ int CSendApp::DoDirectory(char* dir,int ignoreold)
 	if (logfile)
 		fclose(logfile);
 	if ((logfile = fopen(logfilepath,"w+"))==NULL)
-		printf("Can't open %s for write:%s.",logfilepath,strerror(errno));
+		printf("Can't open %s for write:%s.\n",logfilepath,strerror(errno));
 	else {
 		SaveNames(logfile,dir,pEntry,count);
 		fclose(logfile);
@@ -471,9 +462,10 @@ int CSendApp::DoDirectory(char* dir,int ignoreold)
 
 int CSendApp::Run()
 {
+	mkdir(SYNC_ROOT,0750);
 	chdir(SMTH_ROOT);
 	if ((m_updateLogfile = fopen("/tmp/AnnounceUpdate","w+")) ==NULL) {
-		printf("can't open /tmp/AnnounceUpdate for write");
+		printf("can't open /tmp/AnnounceUpdate for write\n");
 		return -1;
 	};
 	
@@ -503,4 +495,14 @@ int CSendApp::OnSignalTerm()
 int CSendApp::PreRun()
 {
 	return 0;
+}
+
+CSendApp::CSendApp()
+{
+}
+
+main()
+{
+  CSendApp* app=new CSendApp();
+  app->Run();
 }
