@@ -633,7 +633,7 @@ int igetkey()
 
 #ifdef SMTH
 	if (scrint&&ch==Ctrl('V')) {
-            if (currentuser&&!HAS_PERM(currentuser,PERM_DENYRELAX))
+            if (currentuser&&!HAS_PERM(currentuser,PERM_DENYRELAX)&&uinfo.mode!=DICT)
             exec_mbem("@mod:service/libdict.so#dict_main");
             continue;
         }
