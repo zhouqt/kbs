@@ -160,9 +160,10 @@ void encipher(char* buf,size_t len,unsigned long *k)
 {
     unsigned long l[2];
     unsigned long iv[2] = {IV1,IV2};
+    int i;
     if (len % 8) return;
     len = len / 8;
-    for (unsigned int i=0; i<len; i++) {
+    for (i=0; i<len; i++) {
         memcpy(l,buf,8);
         l[0] ^= iv[0]; l[1] ^= iv[1];
         tea_encipher(l,k);
