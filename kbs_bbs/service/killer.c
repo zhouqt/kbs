@@ -717,7 +717,7 @@ void join_room(struct room_struct * r)
                             else {
                                 int a=0,b=0;
                                 if(inrooms.status == INROOM_DAY)
-                                    sprintf(buf, "你大家处决了!");
+                                    sprintf(buf, "你被大家处决了!");
                                 else
                                     sprintf(buf, "你被凶手杀掉了!");
                                 send_msg(inrooms.peoples+maxi, buf);
