@@ -138,11 +138,11 @@ void check_calltime()
         bell();
         bell();
         bell();
-        move(line, 0);
+        good_move(line, 0);
         clrtoeol();
         prints("[44m[32mBBS ÏµÍ³Í¨¸æ: [37m%-65s[m", "ÏµÍ³ÄÖÖÓ Áå¡«¡«¡«¡«¡«¡«");
         igetch();
-        move(line, 0);
+        good_move(line, 0);
         clrtoeol();
         saveline(line, 1, NULL);
         calltime = 0;
@@ -154,7 +154,7 @@ void setcalltime()
     char ans[6];
     int ttt;
 
-    move(1, 0);
+    good_move(1, 0);
     clrtoeol();
     getdata(1, 0, "¼¸·ÖÖÓááÒªÏµÍ³ÌáÐÑÄã: ", ans, 3, DOECHO, NULL, true);
     if (!isdigit(ans[0]))
@@ -330,9 +330,9 @@ void netty_more()
 
     getyx(&y, &x);
     update_endline();
-    move(3, 0);
+    good_move(3, 0);
     while ((nnline < movieshm->movielines) /*&&DEFINE(currentuser,DEF_ACBOARD) */ ) {
-        move(2 + ne_row, 0);
+        good_move(2 + ne_row, 0);
         clrtoeol();
 
         strcpy(buf, movieshm->line[nnline]);
@@ -347,7 +347,7 @@ void netty_more()
             break;
         }
     }
-    move(y, x);
+    good_move(y, x);
 }
 
 void printacbar()
@@ -356,17 +356,17 @@ void printacbar()
 
     getyx(&y, &x);
 
-    move(2, 0);
+    good_move(2, 0);
     if (DEFINE(currentuser, DEF_HIGHCOLOR))
         prints("[1;35m©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[37m»î  ¶¯  ¿´  °æ[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´ [m\n");
     else
         prints("[35m©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[37m»î  ¶¯  ¿´  °æ[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´ [m\n");
-    move(3 + MAXnettyLN, 0);
+    good_move(3 + MAXnettyLN, 0);
     if (DEFINE(currentuser, DEF_HIGHCOLOR))
         prints("[1;35m©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[36m" FOOTER_MOVIE "[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©¼ [m\n");
     else
         prints("[35m©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[36m" FOOTER_MOVIE "[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©¼ [m\n");
-    move(y, x);
+    good_move(y, x);
     refresh();
 }
 
@@ -739,7 +739,7 @@ static int mem_show(char *ptr, int size, int row, int numlines, char *fn)
     int i, curr_line;
 
     init_MemMoreLines(&l, ptr, size);
-    move(row, 0);
+    good_move(row, 0);
     clrtobot();
     prints("\033[m");
     curr_line = l.curr_line;
@@ -767,7 +767,7 @@ void mem_printbotline(int l1, int l2, int total, int read, int size)
 		n %= 4;
 	else
 		n %= 3;*/
-    move(t_lines - 1, 0);
+    good_move(t_lines - 1, 0);
 /*	prints
 	    ("\033[1;44;32m%s (%d%%) µÚ(%d-%d)ÐÐ \033[33m| %s | h ¸¨ÖúËµÃ÷\033[m",
 	     (read >= size) ? "¿´µ½Ä©Î²À²" : "ÏÂÃæ»¹ÓÐà¸",
@@ -790,7 +790,7 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
 
     prints("\033[m");
     while (1) {
-        move(0, 0);
+        good_move(0, 0);
         clear();
         curr_line = l.curr_line;
         for (i = 0;;) {
@@ -808,7 +808,7 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
         if (l.total && l.total <= t_lines - 1)
             return 0;
         if (l.line[last_line % 100] - ptr + l.s[last_line % 100] == size && (ch == KEY_RIGHT || ch == KEY_PGDN || ch == ' ' || ch == Ctrl('f'))) {
-            move(t_lines - 1, 0);
+            good_move(t_lines - 1, 0);
             clrtobot();
             return 0;
         }
@@ -816,7 +816,7 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
         while (change == 0) {
             mem_printbotline(curr_line + 1, last_line + 1, l.total, l.line[last_line % 100] - ptr + l.s[last_line % 100], size);
             ch = morekey();
-            move(t_lines - 1, 0);
+            good_move(t_lines - 1, 0);
             clrtoeol();
             switch (ch) {
             case KEY_UP:
@@ -930,12 +930,12 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
                     curr_line++;
                     last_line++;
                     scroll();
-                    move(t_lines - 2, 0);
+                    good_move(t_lines - 2, 0);
                     mem_printline(l.curr, l.currlen, fn, l.currty);
                     if ((ch == KEY_PGDN || ch == ' ' || ch == Ctrl('f')
                          || ch == KEY_RIGHT || ch == KEY_DOWN || ch == 'j' || ch == '\n')
                         && l.line[last_line % 100] - ptr + l.s[last_line % 100] == size) {
-                        move(t_lines - 1, 0);
+                        good_move(t_lines - 1, 0);
                         clrtoeol();
                         return 0;
                     }
@@ -948,7 +948,7 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
                     curr_line--;
                     last_line--;
                     rscroll();
-                    move(0, 0);
+                    good_move(0, 0);
                     mem_printline(l.curr, l.currlen, fn, l.currty);
                 }
                 change = 0;
@@ -970,7 +970,7 @@ int ansimore(char *filename, int promptend)
     if (promptend)
         pressanykey();
     if (scrint)
-    move(t_lines - 1, 0);
+    good_move(t_lines - 1, 0);
     prints("[m[m");
     return ch;
 }
@@ -1002,7 +1002,7 @@ int ansimore_withzmodem(char *filename, int promptend, char *title)
     if (promptend)
         pressanykey();
     if (scrint)
-    move(t_lines - 1, 0);
+    good_move(t_lines - 1, 0);
     prints("\x1b[m\x1b[m");
     return ch;
 }
@@ -1019,7 +1019,7 @@ int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
     shownflag = 1;
     init_MemMoreLines(&l, ptr, size);
 
-    move(t_lines / 2, 0);
+    good_move(t_lines / 2, 0);
 /*    prints("\033[34m¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ªÔ¤ÀÀ´°¿Ú¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª");*/
 /*    move(t_lines/2+1, 0);*/
     sprintf(buf, "\033[1;32m\x1b[44m·¢ÐÅÈË: \033[1;33m%-13.13s\033[1;32m±ê  Ìâ: \033[1;33m%-50.50s\033[1;32m %4.4s\033[m", fh->owner, fh->title, fh->innflag[1] == 'S' ? "[×ª]" : "");
