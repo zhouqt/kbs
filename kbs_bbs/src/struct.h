@@ -269,6 +269,15 @@ struct bbs_msgbuf {
 	char mtext[1];
 };
 
+#ifdef NEWBMLOG
+struct _new_bmlog
+{
+	char boardname[BOARDNAMELEN];
+	int type;
+	int value;
+};
+#endif
+
 #ifdef NEWPOSTLOG
 struct _new_postlog
 {

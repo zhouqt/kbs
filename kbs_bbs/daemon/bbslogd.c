@@ -26,6 +26,14 @@ struct bbs_msgbuf *rcvlog(int msqid)
 		return msgp;
 	}
 #endif
+#ifdef NEWBMLOG
+	if (msgp->mtype == BBSLOG_BM){
+		if(retv <= sizeof(struct _new_bmlog)){
+			return NULL;
+		}
+		return msgp;
+	}
+#endif
     while (retv > 0 && msgp->mtext[retv - 1] == 0)
         retv--;
     if (retv==0) return NULL;
@@ -56,7 +64,7 @@ static struct taglogconfig logconfig[] = {
     {"debug.log", 10 * 1024, 0, NULL, 0}
 };
 
-#ifdef NEWPOSTLOG
+#if defined(NEWPOSTLOG) || defined(NEWBMLOG)
 static MYSQL s;
 static int postlog_start=0;
 static int mysql_fail=0;
@@ -96,7 +104,7 @@ static void openbbslog(int first)
             logconfig[i].buf = malloc(logconfig[i].bufsize);
     }
 
-#ifdef NEWPOSTLOG
+#if defined(NEWPOSTLOG) || defined(NEWBMLOG)
 	if(first || !postlog_start)
 		opennewpostlog();
 #endif
@@ -108,6 +116,46 @@ static void writelog(struct bbs_msgbuf *msg)
     struct tm *n;
     struct taglogconfig *pconf;
     char ch;
+
+#ifdef NEWBMLOG
+	if (msg->mtype == BBSLOG_BM){
+		char sqlbuf[512];
+		struct _new_bmlog * ppl = (struct _new_bmlog *)( &msg->mtext[1]) ;
+		int affect;
+
+		if(!postlog_start)
+			return;
+
+		if(ppl->value == 0)
+			return;
+
+		msg->mtext[0]=0;
+
+		sprintf(sqlbuf, "UPDATE bmlog SET `log%d`=`log%d`+%d WHERE userid='%s' AND bname='%s' AND month=MONTH(CURDATE()) AND year=YEAR(CURDATE()) ;", ppl->type, ppl->type, ppl->value, msg->userid, ppl->boardname );
+
+		if( mysql_real_query(&s,sqlbuf,strlen(sqlbuf)) || (affect=(int)mysql_affected_rows(&s))<0 ){
+			mysql_fail ++;
+			if(mysql_fail > 10)
+				postlog_start = 0;
+			return;
+		}
+
+		if(affect <= 0){
+			sprintf(sqlbuf, "INSERT INTO bmlog (`id`, `userid`, `bname`, `month`, `year`, `log%d` ) VALUES (NULL, '%s', '%s', MONTH(CURDATE()), YEAR(CURDATE()), '%d' );", ppl->type, msg->userid, ppl->boardname, ppl->value);
+
+			if( mysql_real_query( &s, sqlbuf, strlen(sqlbuf) )){
+				mysql_fail ++;
+				if(mysql_fail > 10)
+					postlog_start = 0;
+			}else
+				mysql_fail = 0;
+		}else{
+			mysql_fail = 0;
+		}
+
+		return;
+	}
+#endif
 
 #ifdef NEWPOSTLOG
 	if (msg->mtype == BBSLOG_POST){
@@ -132,6 +180,8 @@ static void writelog(struct bbs_msgbuf *msg)
 				postlog_start = 0;
 		}else
 			mysql_fail = 0;
+
+		return;
 	}
 #endif
 
@@ -182,7 +232,7 @@ static void flushlog(int signo)
             close(pconf->fd);
     }
     if (signo==-1) return;
-#ifdef NEWPOSTLOG
+#if defined(NEWPOSTLOG) || defined(NEWBMLOG)
 	closenewpostlog();
 #endif
     exit(0);

@@ -78,6 +78,9 @@ void set_user_title(unsigned char titleidx,char* newtitle);
 #ifdef NEWPOSTLOG
 	void newpostlog(char *userid, char *boardname, char *title, int groupid);
 #endif
+#ifdef NEWBMLOG
+int newbmlog(char *userid, char *boardname, int type, int value);
+#endif
     int bmlog(char *id, char *boardname, int type, int value);
     int init_bbslog(ARG_VOID);
     void newbbslog(int type, const char *fmt, ...);

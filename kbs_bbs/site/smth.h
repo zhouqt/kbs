@@ -370,6 +370,7 @@ attach define
 
 #define BMSLOG
 #define NEWPOSTLOG
+#define NEWBMLOG
 
 //#define USE_SEM_LOCK
 #endif

@@ -218,6 +218,11 @@ type - meaning
     BM[sizeof(BM) - 1] = '\0';
     if (!chk_BM_instr(BM, id))
         return 0;
+
+#ifdef NEWBMLOG
+	return newbmlog(id, boardname, type, value);
+#endif
+
     sprintf(direct, "boards/%s/.bm.%s", boardname, id);
     if ((fd = open(direct, O_RDWR | O_CREAT, 0644)) == -1)
         return 0;
@@ -323,5 +328,56 @@ void newpostlog(char *userid, char *boardname, char *title, int groupid)
 	ppostlog->title[80]='\0';
 
     msgsnd(logmsqid, msg, sizeof(struct _new_postlog) + ((char *) msg->mtext - (char *) msg) - sizeof(msg->mtype) + 1, IPC_NOWAIT | MSG_NOERROR);
+}
+#endif
+
+#ifdef NEWBMLOG
+int newbmlog(char *userid, char *boardname, int type, int value)
+{
+/*
+type - meaning
+  0          停留时间
+  1          进版
+  2          版内发文
+  3          收入文摘
+  4          去掉文摘
+  5          区段
+  6          标记文章
+  7          去掉标记
+  8          删除文章
+  9          恢复删除
+  10        封禁
+  11        解封
+  12        收入精华
+  13        整理精华
+  14        相同主题
+*/
+    char buf[512];
+    struct bbs_msgbuf *msg = (struct bbs_msgbuf *) buf;
+	struct _new_bmlog *ppostlog = (struct _new_bmlog *) (buf + ((char *)msg->mtext - (char *)msg) + 1);
+
+	if (userid[0]=='\0' || boardname=='\0')
+		return;
+    if (disablelog)
+        return;
+    if (logmsqid == -1 ) {
+        logmsqid = init_bbslog();
+        if (logmsqid ==-1 ) {
+            disablelog = 1;
+            return;
+        }
+    }
+
+    msg->mtype = BBSLOG_BM;
+    msg->pid = getpid();
+    msg->msgtime = time(0);
+    strncpy(msg->userid, userid, IDLEN);
+
+	strncpy(ppostlog->boardname, boardname, BOARDNAMELEN);
+	ppostlog->boardname[BOARDNAMELEN-1]='\0';
+	ppostlog->type = type;
+	ppostlog->value = value;
+
+    msgsnd(logmsqid, msg, sizeof(struct _new_bmlog) + ((char *) msg->mtext - (char *) msg) - sizeof(msg->mtype) + 1, IPC_NOWAIT | MSG_NOERROR);
 }
 #endif
