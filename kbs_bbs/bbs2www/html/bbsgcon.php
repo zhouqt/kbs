@@ -91,9 +91,9 @@ function display_navigation_bar($brdarr, $short_filename, $num)
 			html_error_quit("本文摘区目前没有文章");
 		}
 
-		if (isset($_GET["file"]))
-			$short_filename = $_GET["file"];
-		else {
+#		if (isset($_GET["file"]))
+#			$short_filename = $_GET["file"];
+#		else {
 			if(! isset($_GET["num"]) ){
 				html_init("gb2312");
 				html_error_quit("错误的文章号");
@@ -110,7 +110,7 @@ function display_navigation_bar($brdarr, $short_filename, $num)
 				html_init("gb2312");
 				html_error_quit("错误的文章号.....");
 			}
-		}
+#		}
                 bbs_set_onboard($brcnum,1);
 
 		$filename=bbs_get_board_filename($brdarr["NAME"], $short_filename);
