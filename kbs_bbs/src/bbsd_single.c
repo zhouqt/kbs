@@ -115,44 +115,6 @@ getloadavg( load, 3 );
 }
 #endif
 
-int local_check_ban_IP(ip, buf)
-char *ip;
-char *buf;
-{ /* Leeward 98.07.31
-      RETURN:         
-                     - 1: No any banned IP is defined now 
-                       0: The checked IP is not banned
-      other value over 0: The checked IP is banned, the reason is put in buf
-      */
-    FILE *Ban = fopen(".badIP", "r");
-    char IPBan[64];
-    int  IPX = - 1;
-    char *ptr;
-
-    if (!Ban)
-        return IPX;
-    else
-        IPX ++;
-
-    while (fgets(IPBan, 64, Ban))
-    {
-        if ((ptr = strchr(IPBan, '\n'))!=NULL)
-            *ptr = 0;
-        if ((ptr = strchr(IPBan, ' '))!=NULL)
-        {
-            *ptr ++ = 0;
-            strcpy(buf, ptr);
-        }
-        IPX = strlen(IPBan);
-        if (!strncmp(ip, IPBan, IPX))
-            break;
-        IPX = 0;
-    }
-
-    fclose(Ban);
-    return IPX;
-}
-
 static void
 telnet_init()
 {
@@ -481,7 +443,7 @@ char* argv;
     sprintf( bbs_prog_path, "%s/bin/bbs", BBSHOME );
 #endif
 
-    if (local_check_ban_IP(fromhost, buf) > 0) /* Leeward 98.07.31 */
+    if (check_ban_IP(fromhost, buf) > 0) /* Leeward 98.07.31 */
     {
         local_prints("本站目前不欢迎来自 %s 访问!\r\n原因：%s。\r\n\r\n", fromhost, buf);
         local_Net_Sleep( 60 );
