@@ -1757,7 +1757,7 @@ int do_reply(struct _select_def* conf,struct fileheader *fileinfo)
 }
 #endif
 
-int garbage_line(char *str)
+int garbage_line(const char *str)
 {                               /* 判断本行是否是 无用的 */
     int qlevel = 0;
 

@@ -1503,8 +1503,7 @@ char* checkattach(char *buf, long size,long *len,char** attachptr)
 
 /**
  * 一个能检测attach的fgets
- * 发现attach返回1
- * 文件尾返回-1
+ * 文件尾返回0,否则返回1
  */
 int skip_attach_fgets(char* s,int size,FILE* stream)
 {
@@ -1521,7 +1520,7 @@ int skip_attach_fgets(char* s,int size,FILE* stream)
             fread(&d, 1, 4, stream);
             size = htonl(d);
             fseek(stream,size,SEEK_CUR);
-            ptr-=ATTACHMENT_SIZE;
+            ptr-=(ATTACHMENT_SIZE-1);
             matchpos=0;
             continue;
         }
