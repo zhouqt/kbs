@@ -55,6 +55,9 @@ int main()
         fread(&x, sizeof(x), 1, fp);
         printf("[<a href=\"bbsgcon?board=%s&file=%s&num=%d\">обр╩ф╙</a>]", board_url, x.filename, num + 1);
     }
+	/* FIXME: quick & dirty patch */
+	fseek(fp, sizeof(x) * (num-1), SEEK_SET);
+	fread(&x, sizeof(x), 1, fp);
     fclose(fp);
     ptr = x.title;
     if (!strncmp(ptr, "Re: ", 4))
