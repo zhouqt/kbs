@@ -57,7 +57,6 @@ function display_navigation_bar($brdarr, $short_filename, $num)
 	$PAGE_SIZE = 20;
 ?>
 [<a href="/bbssec.php">分类讨论区</a>]
-[<a href="/cgi-bin/bbs/bbsall">全部讨论区</a>]
 [<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>">返回版面</a>]
 [<a href="/bbsgdoc.php?board=<?php echo $brd_encode; ?>&page=<?php echo intval(($num + $PAGE_SIZE - 1) / $PAGE_SIZE); ?>">返回文摘区</a>]
 [<a href="javascript:history.go(-1)">快速返回</a>]

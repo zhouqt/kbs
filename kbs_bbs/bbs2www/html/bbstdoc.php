@@ -65,7 +65,7 @@ login_init();
 ?>
 <body>
 <nobr/>
-<center><?php echo BBS_FULL_NAME; ?> -- [讨论区: <?php echo $brdarr["NAME"]; ?>] 版主[<?php echo $bm_url; ?>] 文章数[<?php echo $total; ?>] <a href="/cgi-bin/bbs/bbsbrdadd?board=<?php echo $brdarr["NAME"]; ?>">预定本版</a>
+<center><?php echo BBS_FULL_NAME; ?> -- [讨论区: <?php echo $brdarr["NAME"]; ?>] 版主[<?php echo $bm_url; ?>] 文章数[<?php echo $total; ?>]
 <hr class="default"/>
 <table width="613">
 <tr><td>序号</td><td>标记</td><td>作者</td><td>日期</td><td>标题</td></tr>
@@ -150,7 +150,7 @@ login_init();
 		if ($ann_path != FALSE)
 		{
 ?>
-<a href="/cgi-bin/bbs/bbs0an?path=<?php echo urlencode($ann_path); ?>">精华区</a>
+<a href="/bbs0an.php?path=<?php echo urlencode($ann_path); ?>">精华区</a>
 <?php
 		}
 ?>
