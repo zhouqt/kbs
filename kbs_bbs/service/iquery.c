@@ -71,7 +71,7 @@ int get_pos(char * s)
 {
     struct stat st;
     FILE* fp;
-    char buf[240],buf2[100];
+    char buf[240],buf2[100],tt[100];
     int i,j,k;
     if(stat(s, &st)==-1) return -1;
     strcpy(buf, s);
@@ -82,6 +82,7 @@ int get_pos(char * s)
     strcpy(buf+i, ".Names");
     fp=fopen(buf, "r");
     if(fp==NULL) return -1;
+    tt[0]=0;
     j=0;
     while(!feof(fp))
     {
@@ -90,6 +91,9 @@ int get_pos(char * s)
 	    return -1;
 	}
 	if(buf[0]) buf[strlen(buf)-1]=0;
+	if(!strncmp(buf, "Name=", 5)) {
+	    strcpy(tt, buf+5);
+	}
 	if(!strncmp(buf, "Path=~/", 7)) {
 	    j++;
 	    if(!strcmp(buf+7, buf2)) {
@@ -110,9 +114,7 @@ void do_query_all(int w, char * s)
     char buf[256];
     char ip[20], s1[30], s2[30], *pp;
     
-    if(rand()%2==0)strcpy(ip,"166.111.3.125");
-    else 
-        strcpy(ip,"166.111.8.235");
+    strcpy(ip, "166.111.3.125");
     
     res_total = -2;
     if(strstr(s, "法轮功")||strstr(s, "kcn")||strstr(s, "KCN")||strstr(s, "毒中之毒")||
@@ -407,6 +409,14 @@ int show_res()
     else {
         choose_file();
     }
+}
+
+int iquery_board(char * board, char * w)
+{
+    sprintf(qn, "=%s %s", board, w);
+    wh = 0;
+    do_query_all(wh, qn);
+    show_res();
 }
 
 int iquery_main()
