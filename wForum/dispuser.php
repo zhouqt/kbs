@@ -80,14 +80,14 @@ if ($user['userdefine'] & $flag) {
   </tr>   
   <tr> 
     <td class=tablebody1 width=20% align=right>性 别：</td>
-    <td class=tablebody1><?php echo $user['gender']==1?'男':'女'; ?> </td>
+    <td class=tablebody1><?php echo chr($user['gender'])=='M'?'男':'女'; ?> </td>
   </tr>
   <tr> 
     <td class=tablebody2 width=20% align=right>出 生：</td>
     <td class=tablebody2>
 <?php
 	if ( ($user['birthyear']!=0) && ($user['birthmonth']!=0) && ($user['birthday']!=0)) {
-		echo $user['birthyear'].'年'.$user['birthmonth'].'月'.$user['birthday'].'日';
+		echo '19'.$user['birthyear'].'年'.$user['birthmonth'].'月'.$user['birthday'].'日';
 	} else {
 		echo "<font color=gray>未知</font>";
 	}?>

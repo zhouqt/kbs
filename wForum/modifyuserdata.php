@@ -46,15 +46,15 @@ function main(){
     </tr> 
 <TR> 
 <TD width=40% class=tablebody1><B>性&nbsp;&nbsp;&nbsp;&nbsp;别</B>：<BR>请选择您的性别</TD>
-<TD width=60%  class=tablebody1> <INPUT type=radio <?php if ($currentuser['gender']==1) echo "checked"; ?> value=1 name=gender>
+<TD width=60%  class=tablebody1> <INPUT type=radio <?php if (chr($currentuser['gender'])=='M') echo "checked"; ?> value=1 name=gender>
 <IMG  src=pic/Male.gif align=absMiddle>男孩 &nbsp;&nbsp;&nbsp;&nbsp; 
-<INPUT type=radio value=2 <?php if ($currentuser['gender']==2) echo "checked"; ?> name=gender>
+<INPUT type=radio value=2 <?php if (chr($currentuser['gender'])=='F') echo "checked"; ?> name=gender>
 <IMG  src=pic/Female.gif align=absMiddle>女孩</font></TD>
 </tr>
 <tr>    
 <td width=40%  class=tablebody1><B>生日</B><BR>如不想填写，请全部留空</td>   
 <td width=60%  class=tablebody1 valign=center>
-<input maxlength="4" size="4" name="year" value="<?php echo $currentuser['birthyear']; ?>" /> 年 <input maxlength="2" size="2" name="month" value="<?php echo $currentuser['birthmonth']; ?>"/> 月 <input size="2" maxlength="2" name="day" value="<?php echo $currentuser['birthday']; ?>"/> 日
+<input maxlength="4" size="4" name="year" value="<?php echo '19'.$currentuser['birthyear']; ?>" /> 年 <input maxlength="2" size="2" name="month" value="<?php echo $currentuser['birthmonth']; ?>"/> 月 <input size="2" maxlength="2" name="day" value="<?php echo $currentuser['birthday']; ?>"/> 日
 </td>   
 </tr>
 
