@@ -278,9 +278,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		$result = mysql_query($query,$link);
 		while($rows = mysql_fetch_array($result))
 		{
-			echo "<li>";
-			if($rows[blogname]) echo "[".$rows[blogname]."]";
-			echo "<a href=\"".htmlspecialchars(stripslashes($rows[url]))."\">".html_format($rows[title])."</a>"
+			echo "<li><a href=\"".htmlspecialchars(stripslashes($rows[url]))."\">".html_format($rows[title])."</a>"
 				."\n(".time_format($rows[time]).")</li>";
 		}
 		mysql_free_result($result);
