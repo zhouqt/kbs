@@ -17,6 +17,11 @@ int pc_dirmode=0;
 //收藏夹当前路径,0表示未进入收藏夹
 unsigned long pc_fav_dir = 0;
 
+int pc_read();
+int pc_selusr();
+int pc_read_dir();
+int pc_sec();
+int pc_read_comment();
 
 int pc_choose_user()
 {
@@ -41,7 +46,7 @@ static int pc_sel_user()
 
 }
 
-static int pc_add_user()
+int pc_add_user()
 {
 	char ans[201];
 	char sql[100];
@@ -1804,7 +1809,7 @@ static int pc_read_comment()
 	return 0;
 }
 
-static int import_to_pc(int ent, struct fileheader *fileinfo, char *direct)
+int import_to_pc(int ent, struct fileheader *fileinfo, char *direct)
 {
 	struct pc_users pu;
 	struct pc_nodes pn;
