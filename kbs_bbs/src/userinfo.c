@@ -115,6 +115,7 @@ int uinfo_query(struct userec *u, int real, int unum)
     FILE * fin, *fout, *dp;
     time_t code;
 	struct userdata ud;
+	struct usermemo *um;
 	
 	time_t now;
 	struct tm *tmnow;
@@ -124,6 +125,7 @@ int uinfo_query(struct userec *u, int real, int unum)
 
     memcpy(&newinfo, u, sizeof(struct userec));
 	read_userdata(u->userid, &ud);
+	read_user_memo(u->userid, &um);
 	//memcpy(&ud, &(currentmemo->ud), sizeof(ud));
     getdata(t_lines - 1, 0, real ? "请选择 (0)结束 (1)修改资料 (2)设定密码 (3) 改 ID ==> [0]" : "请选择 (0)结束 (1)修改资料 (2)设定密码 ==> [0]", ans, 2, DOECHO, NULL, true);
     clear();
@@ -240,6 +242,7 @@ int uinfo_query(struct userec *u, int real, int unum)
         break;
     case '3':
         if (!real) {
+			end_mmapfile(um, sizeof(struct usermemo), -1);
             clear();
             return 0;
         }
@@ -290,6 +293,7 @@ int uinfo_query(struct userec *u, int real, int unum)
             prints("\n\n错误!系统禁止修改SYSOP的密码," NAME_POLICE "正在来的路上 :)");
             pressreturn();
             clear();
+			end_mmapfile(um, sizeof(struct usermemo), -1);
             return 0;
             }
         
@@ -298,11 +302,13 @@ int uinfo_query(struct userec *u, int real, int unum)
         break;
     default:
         clear();
+		end_mmapfile(um, sizeof(struct usermemo), -1);
         return 0;
     }
     if (fail != 0) {
         pressreturn();
         clear();
+		end_mmapfile(um, sizeof(struct usermemo), -1);
         return 0;
     }
     for (;;)
@@ -401,8 +407,8 @@ int uinfo_query(struct userec *u, int real, int unum)
                     }
                 }
             update_user(&newinfo, unum, 1);
-			//if (!real)
-				//memcpy(&(currentmemo->ud), &ud, sizeof(ud));
+			memcpy(&(um->ud), &ud, sizeof(ud));
+			end_mmapfile(um, sizeof(struct usermemo), -1);
 			write_userdata(newinfo.userid, &ud);
             if (real)
                  {
