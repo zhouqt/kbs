@@ -65,7 +65,7 @@ void ann_show_item(MENU *pm, ITEM *it)
 	printf("<td>%6.6s %s</td></tr>\n", wwwCTime(file_time(buf))+4, wwwCTime(file_time(buf))+20);
 }
 
-void ann_display(char *path)
+void ann_show_directory(char *path)
 {
 	MENU me;
 	ITEM *its;
@@ -132,7 +132,7 @@ int main()
 
 	init_all();
 	strsncpy(path, getparm("path"), 511);
-	ann_display(path);
+	ann_show_directory(path);
 	http_quit();
 }
 
