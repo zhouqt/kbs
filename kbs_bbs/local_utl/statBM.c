@@ -1,7 +1,7 @@
 #include "bbs.h"
 
 char *curuserid;
-int type=-1, flag=0, timed=0;
+int type=-1, flag=0, timed=0, sorttype=0, groupid=-1;
 
 #define DATALEN 100
 
@@ -16,14 +16,15 @@ int total=0;
 
 int order[10000];
 
-int show(int i)
+int show(int k,int i)
 {
+    printf("序号:%-4d  ", k+1);
     if(lib[i].data[0]>=3600)
-    	printf("版面名称: %-15s  版主: %-15s  停留时间: %d 小时 %d 分钟 %d 秒\n", lib[i].boardname, lib[i].id, lib[i].data[0]/3600, lib[i].data[0]/60%60, lib[i].data[0]%60);
+    	printf("版面名称: %-10s  版主: %-15s  停留时间: %d 小时 %d 分钟 %d 秒\n", lib[i].boardname, lib[i].id, lib[i].data[0]/3600, lib[i].data[0]/60%60, lib[i].data[0]%60);
     else if(lib[i].data[0]>=60)
-    	printf("版面名称: %-15s  版主: %-15s  停留时间: %d 分钟 %d 秒\n", lib[i].boardname, lib[i].id, lib[i].data[0]/60, lib[i].data[0]%60);
+    	printf("版面名称: %-10s  版主: %-15s  停留时间: %d 分钟 %d 秒\n", lib[i].boardname, lib[i].id, lib[i].data[0]/60, lib[i].data[0]%60);
     else
-    	printf("版面名称: %-15s  版主: %-15s  停留时间: %d 秒\n", lib[i].boardname, lib[i].id, lib[i].data[0]);
+    	printf("版面名称: %-10s  版主: %-15s  停留时间: %d 秒\n", lib[i].boardname, lib[i].id, lib[i].data[0]);
     printf("   进版次数: %-4d    版内发文: %-4d    收入文摘: %-4d    去掉文摘: %-4d\n", lib[i].data[1], lib[i].data[2], lib[i].data[3], lib[i].data[4]);
     printf("   区段次数: %-4d    标记文章: %-4d    去掉标记: %-4d    删除文章: %-4d\n", lib[i].data[5], lib[i].data[6], lib[i].data[7], lib[i].data[8]);
     printf("   恢复删除: %-4d    封禁人数: %-4d    解封人数: %-4d    收入精华: %-4d\n", lib[i].data[9], lib[i].data[10], lib[i].data[11], lib[i].data[12]);
@@ -37,20 +38,33 @@ void sort()
 	int i,j,k;
 	for(i=0;i<total;i++)
 		order[i]=i;
-	for(i=0;i<total;i++)
-		for(j=i+1;j<total;j++)
-		if(lib[order[i]].data[0]<lib[order[j]].data[0]){
-			k=order[i];
-			order[i]=order[j];
-			order[j]=k;
-		}
+	switch(sorttype){
+		case 0:
+			for(i=0;i<total;i++)
+				for(j=i+1;j<total;j++)
+				if(lib[order[i]].data[0]<lib[order[j]].data[0]){
+					k=order[i];
+					order[i]=order[j];
+					order[j]=k;
+				}
+			break;
+		case 1:
+			for(i=0;i<total;i++)
+				for(j=i+1;j<total;j++)
+				if(strcasecmp(lib[order[i]].id, lib[order[j]].id)>0){
+					k=order[i];
+					order[i]=order[j];
+					order[j]=k;
+				}
+			break;
+	}
 }
 
 void showall()
 {
 	int i;
 	for(i=0;i<total;i++)
-		show(order[i]);
+		show(i, order[i]);
 }
 
 int check_BM(struct boardheader *bptr)
@@ -60,9 +74,10 @@ int check_BM(struct boardheader *bptr)
     struct stat buf;
     char direct[PATHLEN];
     
-    if ((bptr->level != 0) && !(bptr->level & PERM_POSTMASK))
-        return 0;
+//    if ((bptr->level != 0) && !(bptr->level & PERM_POSTMASK))
+//        return 0;
     if (!chk_BM_instr(bptr->BM, curuserid)) return 0;
+    if (groupid!=-1&&bptr->title[0]-48!=groupid) return 0;
     sprintf(direct, "boards/%s/.bm.%s%s", bptr->filename, curuserid, suffix[timed]);
     if ((fd = open(direct, O_RDWR | O_CREAT, 0644)) == -1) return 0;
     ldata.l_type = F_RDLCK;
@@ -126,18 +141,29 @@ main(int argc, char ** argv)
 {
 	time_t t;
 	struct tm res;
-	if (argc<=1) {
-		printf("usage: statBM day|week|month|year|update|clear\n");
+	if (argc<=2) {
+		printf("usage: statBM group day|week|month|year|update|clear\n");
 		return;
 	}
-	if (!strcasecmp(argv[1],"clear")) type=0;
-	if (!strcasecmp(argv[1],"day")) type=1;
-	if (!strcasecmp(argv[1],"week")) type=2;
-	if (!strcasecmp(argv[1],"month")) type=3;
-	if (!strcasecmp(argv[1],"year")) type=4;
-	if (!strcasecmp(argv[1],"update")) type=5;
+	if (!strcmp(argv[1], "0")) groupid = 0;
+	if (!strcmp(argv[1], "1")) groupid = 1;
+	if (!strcmp(argv[1], "2")) groupid = 2;
+	if (!strcmp(argv[1], "3")) groupid = 3;
+	if (!strcmp(argv[1], "4")) groupid = 4;
+	if (!strcmp(argv[1], "5")) groupid = 5;
+	if (!strcmp(argv[1], "6")) groupid = 6;
+	if (!strcmp(argv[1], "7")) groupid = 7;
+	if (!strcmp(argv[1], "8")) groupid = 8;
+	if (!strcmp(argv[1], "9")) groupid = 9;
+	if (!strcasecmp(argv[2],"clear")) type=0;
+	if (!strcasecmp(argv[2],"day")) type=1;
+	if (!strcasecmp(argv[2],"week")) type=2;
+	if (!strcasecmp(argv[2],"month")) type=3;
+	if (!strcasecmp(argv[2],"year")) type=4;
+	if (!strcasecmp(argv[2],"update")) type=5;
+	if (argc>=4&&!strcasecmp(argv[3],"id")) sorttype=1;
 	if (type==-1) {
-		printf("usage: statBM day|week|month|year|update|clear\n");
+		printf("usage: statBM group day|week|month|year|update|clear\n");
 		return;
 	}
     chdir(BBSHOME);
