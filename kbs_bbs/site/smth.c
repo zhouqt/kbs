@@ -79,9 +79,11 @@ uleveltochar( char *buf, struct userec *lookupuser ) /* 取用户权限中文说明 Bigma
 	/* Bigman: 修改显示 2001.6.24 */
 	else if (lvl & (PERM_LOGINOK))
 	{
-		if (!(lvl & (PERM_CHAT)) || !(lvl & (PERM_PAGE)) || !(lvl & (PERM_POST)) ||(lvl & (PERM_DENYMAIL)) ||(lvl &(PERM_DENYPOST))) strcpy(buf,"受限");	
+		if (lookupuser->flags[0]&GIVEUP_FLAG) strcpy(buf,"戒网");
+		else if (!(lvl & (PERM_CHAT)) || !(lvl & (PERM_PAGE)) || !(lvl & (PERM_POST)) ||(lvl & (PERM_DENYMAIL)) ||(lvl &(PERM_DENYPOST))) strcpy(buf,"受限");	
 		else strcpy(buf,"用户");
 	}
+	else if (lookupuser->flags[0]&GIVEUP_FLAG) strcpy(buf,"戒网");
 	else if (!(lvl & (PERM_CHAT)) && !(lvl & (PERM_PAGE))  && !(lvl & (PERM_POST))) strcpy(buf,"新人");
 	else strcpy(buf,"受限");
 
@@ -186,6 +188,7 @@ int     mode;
     case LOOKMSGS:  return "察看讯息";
     case WFRIEND:   return "寻人名册";
     case LOCKSCREEN:return "屏幕锁定";
+    case GIVEUPNET: return "戒网中..";
     default: return "去了那里!?" ;
     }
 }
