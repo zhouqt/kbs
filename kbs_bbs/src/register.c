@@ -127,6 +127,13 @@ void new_register()
         setpasswd(passbuf, &newuser);
         break;
     }
+
+    if ( searchuser(newuser.userid) != 0) {   
+        prints("此帐号已经有人使用\n");
+        refresh();
+        longjmp(byebye, -1);
+    }
+
     newuser.userlevel = PERM_BASIC;
     newuser.userdefine = -1;
 /*   newuser.userdefine&=~DEF_MAILMSG;
