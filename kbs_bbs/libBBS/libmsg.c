@@ -208,7 +208,6 @@ MYSQL * my_connect_mysql(MYSQL *s){
 			    sysconf_eval("MYSQLPORT",3306), sysconf_str("MYSQLSOCKET"), 0);
 }
 
-#if HAVE_MYSQL_SMTH == 1
 MYSQL * my_connect_mysql_blog(MYSQL *s){
 	
     return mysql_real_connect(s, 
@@ -220,7 +219,6 @@ MYSQL * my_connect_mysql_blog(MYSQL *s){
 }
 
 
-#if HAVE_MYSQL_SMTH == 1
 MYSQL * my_connect_mysql_dict(MYSQL *s){
 	
     return mysql_real_connect(s, 
