@@ -1,11 +1,13 @@
 <?php
 require "default.php";
-//define("ATTACHTMPPATH","boards/_attach");
+define("ATTACHTMPPATH","boards/_attach");
 function getattachtmppath($userid,$utmpnum)
 {
+/*
   $attachdir="cache/home/" . strtoupper(substr($userid,0,1)) . "/" . $userid . "/" . $utmpnum . "/upload";
   return $attachdir;
-//  return ATTACHTMPPATH;
+ */
+  return ATTACHTMPPATH."/".$userid."_".$utmpnum;
 }
 
 define("ANNOUNCENUMBER",5);

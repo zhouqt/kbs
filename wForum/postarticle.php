@@ -59,12 +59,12 @@ function preprocess(){
 	$boardID= bbs_getboard($boardName,$brdArr);
 	$boardArr=$brdArr;
 	if ($boardID==0) {
-		foundErr("指定的版面不存在");
+		foundErr("指定的版面不存在。");
 		return false;
 	}
 	$usernum = $currentuser["index"];
 	if (bbs_checkreadperm($usernum, $boardID) == 0) {
-		foundErr("您无权阅读本版");
+		foundErr("您无权阅读本版！");
 		return false;
 	}
 	if (bbs_is_readonly_board($boardArr)) {
@@ -72,7 +72,7 @@ function preprocess(){
 			return false;
 	}
 	if (bbs_checkpostperm($usernum, $boardID) == 0) {
-		foundErr("您无权阅读本版");
+		foundErr("您无权在本版发表文章！");
 		return false;
 	}
 	return true;
