@@ -5147,7 +5147,7 @@ static PHP_FUNCTION(bbs_modify_nick)
             WRONG_PARAM_COUNT;
     }
 	for( m=0; username[m]; m++){
-		if( username[m] < 32 || username[m]==-1)
+		if( username[m] < 32 && username[m] >= -1)
 			username[m]=' ';
 	}
 	if( strlen(username) >= NAMELEN)
