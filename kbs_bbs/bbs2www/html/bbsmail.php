@@ -144,11 +144,7 @@ function bbs_confirm(url,infor){
   <tr>
   	<td align=center>
   	[<a href="bbspstmail.php">发送新邮件</a>]
-  	[<a href="#" onclick="bbs_confirm('bbsmailbox.php?clear=TURE','清空垃圾箱内的所有邮件吗?')">清空垃圾箱</a>]
-  	<!--
-  	<input type="button" onclick="window.location.href='bbspstmail.php'" value="发送新邮件" class="b9">
-  	<input type="button" onclick="{if(confirm('清空垃圾箱内的所有邮件吗?')){window.location.href='bbsmailbox.php?clear=TURE';return true;}return false;}" value="清空垃圾箱" class="b9">
-  	-->
+  	[<a href="#" onclick="bbs_confirm('bbsmailact.php?act=clear','清空垃圾箱内的所有邮件吗?')">清空垃圾箱</a>]
   	</td>
   </tr>
  <tr>

@@ -218,7 +218,42 @@
                         
                 	}
                
-		}	
+	}
+	
+	function display_mail_menu($userid)
+	{
+?>
+&nbsp;
+<img src="/images/line.gif" border="0" align="absmiddle">
+<a href="/bbsnewmail.php" target="f3">阅览新邮件</a><br>
+&nbsp;
+<img src="/images/line.gif" border="0" align="absmiddle">
+<a href="/bbsmailbox.php?path=.DIR&title=收件箱" target="f3">收件箱</a><br>
+&nbsp;
+<img src="/images/line.gif" border="0" align="absmiddle">
+<a href="/bbsmailbox.php?path=.SENT&title=发件箱" target="f3">发件箱</a><br>
+&nbsp;
+<img src="/images/line.gif" border="0" align="absmiddle">
+<a href="/bbsmailbox.php?path=.DELETED&title=垃圾箱" target="f3">垃圾箱</a><br>
+<?php
+		//custom mailboxs
+		$mail_cusbox = bbs_loadmaillist($userid);
+		if ($mail_cusbox != -1)
+		{
+			foreach ($mail_cusbox as $mailbox)
+			{
+				echo "&nbsp;\n".
+					"<img src=\"/images/line.gif\" border=\"0\" align=\"absmiddle\">\n".
+					"<a href=\"/bbsmailbox.php?path=".$mailbox["pathname"]."&title=".urlencode($mailbox["boxname"])."\" target=\"f3\">".htmlspecialchars($mailbox["boxname"])."</a><br>\n";
+			}
+		}
+?>
+&nbsp;
+<img src="/images/line1.gif" border="0" align="absmiddle">
+<a href="/bbspstmail.php" target="f3">发送邮件</a>
+<?php		
+	}
+		
 		
 	if ($loginok != 1)
 		html_nologin();
@@ -279,7 +314,11 @@
 				<a href='javascript:changemn("exp");'><img id="imgexp" src="/images/close.gif" border="0"></a>
 				</DIV>
 			</td>
-			<td><img src="/images/t7.gif" border="0" alt="水木特刊Web版" align="absmiddle"> 水木特刊Web版</a></td>
+			<td>
+			<a href='javascript:changemn("exp");'>
+			<img src="/images/t7.gif" border="0" alt="水木特刊Web版" align="absmiddle"> 水木特刊Web版
+			</a>
+			</td>
 		</tr>
 		<tr>
 			<td> </td>
@@ -314,14 +353,18 @@
 				<a href='javascript:changemn("tool");'><img id="imgtool" src="/images/close.gif" border="0"></a>
 				</DIV>
 			</td>
-			<td><img src="/images/t4.gif" border="0" alt="个人工具箱" align="absmiddle"> 个人工具箱</td>
+			<td>
+			<a href='javascript:changemn("tool");'>
+			<img src="/images/t4.gif" border="0" alt="个人工具箱" align="absmiddle"> 个人工具箱
+			</a>
+			</td>
 		</tr>
 		<tr>
 			<td> </td>
 			<td>
 				<DIV class="s" id="divtool">
 					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">&nbsp;
+					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/bbsfillform.html" target="f3">填写注册单</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
@@ -359,27 +402,15 @@
 				<a href='javascript:changemn("mail");'><img id="imgmail" src="/images/close.gif" border="0"></a>
 				</DIV>
 			</td>
-			<td><a href="/bbsmailbox.php" target="f3"><img src="/images/t5.gif" border="0" alt="处理信件" align="absmiddle"> 处理信件</a></td>
+			<td><a href="/bbsmail.php" target="f3"><img src="/images/t5.gif" border="0" alt="处理信件" align="absmiddle"> 处理信件</a></td>
 		</tr>
 		<tr>
 			<td> </td>
 			<td>
 				<DIV class="s" id="divmail">
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">&nbsp;
-					<a href="/bbsnewmail.php" target="f3">阅览新邮件</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/bbsreadmail.php" target="f3">所有邮件</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/bbsmailbox_system.php" target="f3">系统预定义邮箱</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/bbsmailbox_custom.php" target="f3">自定义邮箱</a><br>
-					&nbsp;
-					<img src="/images/line1.gif" border="0" align="absmiddle">
-					<a href="/bbspstmail.php" target="f3">发送邮件</a>
+<?php
+	display_mail_menu($currentuser["userid"]);
+?>					
 				</DIV>
 			</td>
 		</tr>
@@ -434,7 +465,11 @@
 				<a href='javascript:changemn("chat");'><img id="imgchat" src="/images/close.gif" border="0"></a>
 				</DIV>
 			</td>
-			<td><img src="/images/t6.gif" border="0" alt="谈天说地" align="absmiddle"> 谈天说地</td>
+			<td>
+			<a href='javascript:changemn("chat");'>
+			<img src="/images/t6.gif" border="0" alt="谈天说地" align="absmiddle"> 谈天说地
+			</a>
+			</td>
 		</tr>
 		<tr>
 			<td> </td>
@@ -512,7 +547,11 @@
 				<a href='javascript:changemn("ser");'><img id="imgser" src="/images/close.gif" border="0"></a>
 				</DIV>
 			</td>
-			<td><img src="/images/t9.gif" border="0" alt="系统资讯和服务" align="absmiddle"> 系统资讯和服务</td>
+			<td>
+			<a href='javascript:changemn("ser");'>
+			<img src="/images/t9.gif" border="0" alt="系统资讯和服务" align="absmiddle"> 系统资讯和服务
+			</a>
+			</td>
 		</tr>
 		<tr>
 			<td> </td>
