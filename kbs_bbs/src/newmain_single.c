@@ -936,8 +936,8 @@ void update_endline()
 #endif
     }
     move(t_lines - 1, 0);
-    clrtoeol();
     prints("%s", stitle);
+    clrtoeol();
 
     /* Leeward 98.09.30 show hint for rookies */
     /* PERMs should coincide with ~bbsroot/etc/sysconf.ini: PERM_ADMENU */

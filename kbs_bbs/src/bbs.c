@@ -442,8 +442,8 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct)
     }
 
     move(0, 0);
-    clrtoeol();
     prints("×ªÌù ' %s ' µ½ %s °æ ", quote_title, bname);
+    clrtoeol();
     move(1, 0);
     getdata(1, 0, "(S)×ªĞÅ (L)±¾Õ¾ (A)È¡Ïû? [A]: ", ispost, 9, DOECHO, NULL, true);
     if (ispost[0] == 's' || ispost[0] == 'S' || ispost[0] == 'L' || ispost[0] == 'l') {
@@ -763,7 +763,6 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     brc_add_read(fileinfo->id);
 #ifndef NOREPLY
     move(t_lines - 1, 0);
-    clrtoeol();                 /* ÇåÆÁµ½ĞĞÎ² */
     if (haspostperm(currentuser, currboard)) {  /* ¸ù¾İÊÇ·ñÓĞPOSTÈ¨ ÏÔÊ¾×îÏÂÒ»ĞĞ */
         if (DEFINE(currentuser, DEF_HIGHCOLOR))
             prints("[44m[1;31m[ÔÄ¶ÁÎÄÕÂ] [33m »ØĞÅ R ©¦ ½áÊø Q,¡û ©¦ÉÏÒ»·â ¡ü©¦ÏÂÒ»·â <Space>,¡ı©¦Ö÷ÌâÔÄ¶Á ^X»òp [m");
@@ -776,6 +775,7 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
             prints("[44m[1;31m[ÔÄ¶ÁÎÄÕÂ]  [33m½áÊø Q,¡û ©¦ÉÏÒ»·â ¡ü©¦ÏÂÒ»·â <Space>,<Enter>,¡ı©¦Ö÷ÌâÔÄ¶Á ^X »ò p [m");
     }
 
+    clrtoeol();                 /* ÇåÆÁµ½ĞĞÎ² */
     if (!strncmp(fileinfo->title, "Re:", 3)) {
         strncpy(ReplyPost, fileinfo->title,STRLEN);
         for (cou = 0; cou < STRLEN; cou++)
@@ -954,9 +954,9 @@ int do_select(int ent, struct fileheader *fileinfo, char *direct)
     struct stat st;
 
     move(0, 0);
+    prints("Ñ¡ÔñÒ»¸öÌÖÂÛÇø (Ó¢ÎÄ×ÖÄ¸´óĞ¡Ğ´½Ô¿É)");
     clrtoeol();
-    prints("Ñ¡ÔñÒ»¸öÌÖÂÛÇø (Ó¢ÎÄ×ÖÄ¸´óĞ¡Ğ´½Ô¿É)\n");
-    prints("ÊäÈëÌÖÂÛÇøÃû (°´¿Õ°×¼ü×Ô¶¯ËÑÑ°): ");
+    prints("\nÊäÈëÌÖÂÛÇøÃû (°´¿Õ°×¼ü×Ô¶¯ËÑÑ°): ");
     clrtoeol();
 
     make_blist();               /* Éú³ÉËùÓĞBoardÃû ÁĞ±í */
