@@ -37,7 +37,7 @@ int dict_main()
 	for (p=row[2];*p!=0;p++) {
             if (insound) {
                 if (*p==25) insound=0;
-		else prints("%c",*p);
+//		else prints("%c",*p);
             } else
             switch (*p) {
             case 1: prints("n.");break;
