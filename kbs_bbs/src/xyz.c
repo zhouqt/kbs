@@ -528,6 +528,8 @@ int Xdeljunk()
     unlink(buf);
     sprintf(buf, "boards/%s/.JUNK", genbuf);
     unlink(buf);
+    sprintf(buf, "%s Çå¿Õ %s °æÃæÀ¬»øÏä", getCurrentUser()->userid, genbuf);
+    securityreport(buf, NULL, NULL);
     clear();
     return 0;
 }
