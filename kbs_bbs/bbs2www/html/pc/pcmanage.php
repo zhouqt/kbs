@@ -9,6 +9,7 @@
 	*/
 	require("pcfuncs.php");
 	require("pctbp.php");
+	$blogadmin = intval($_COOKIE["BLOGADMIN"]);
 					
 	if ($loginok != 1)
 		html_nologin();
@@ -21,7 +22,7 @@
 	else
 	{
 		$link = pc_db_connect();
-		if( pc_is_manager($currentuser) && session_is_registered($blogadmin) )
+		if( pc_is_manager($currentuser) && $blogadmin )
 			$pc = pc_load_infor($link,$pcconfig["ADMIN"]);
 		else
 			$pc = pc_load_infor($link,$currentuser["userid"]);
@@ -187,7 +188,7 @@
 					"VALUES ( '".$pid."', '".(int)($_POST["tid"])."' , '0', '', '".$emote."' ,  '".$_SERVER["REMOTE_ADDR"]."','".date("YmdHis")."' , '".date("YmdHis")."', '".$pc["UID"]."', '".$c."', '0', '".addslashes($_POST["subject"])."', '".addslashes($blogbody)."', '".$tag."', '0' , '".$useHtmlTag."' ,'".$trackback."','0');";
 				mysql_query($query,$link);
 				//管理员管理时的log
-				if( pc_is_manager($currentuser) && session_is_registered($blogadmin) )
+				if( pc_is_manager($currentuser) && $blogadmin )
 				{
 					$action = $currentuser[userid]." 发表管理员文章";
 					$comment = $currentuser[userid]." 于 ".date("Y-m-d H:i:s")." 自 ".$_SERVER["REMOTE_ADDR"]." 发表文章。".
@@ -349,7 +350,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				mysql_query($query,$link);
 				pc_update_record($link,$pc["UID"]);
 				//管理员修改文章时的log
-				if( pc_is_manager($currentuser) && session_is_registered($blogadmin) )
+				if( pc_is_manager($currentuser) && $blogadmin )
 				{
 					$action = $currentuser[userid]." 修改管理员文章";
 					$comment = $currentuser[userid]." 于 ".date("Y-m-d H:i:s")." 自 ".$_SERVER["REMOTE_ADDR"]." 修改文章。".
@@ -664,7 +665,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			mysql_query($query,$link);
 			
 			//管理员管理时的log
-			if( pc_is_manager($currentuser) && session_is_registered($blogadmin) )
+			if( pc_is_manager($currentuser) && $blogadmin )
 			{
 				$action = $currentuser[userid]." 修改管理员Blog参数";
 				$comment = $currentuser[userid]." 于 ".date("Y-m-d H:i:s")." 自 ".$_SERVER["REMOTE_ADDR"]." 修改管理员Blog参数。";

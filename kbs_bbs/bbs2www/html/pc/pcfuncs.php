@@ -242,8 +242,10 @@ function pc_is_friend($userid,$uid)
 function pc_is_admin($currentuser,$pc)
 {
 	global $pcconfig;
-	if( $pc["USER"] == $pcconfig["ADMIN"] && pc_is_manager($currentuser) )
+	if( $pc["USER"] == $pcconfig["ADMIN"] && pc_is_manager($currentuser) && intval($_COOKIE["BLOGADMIN"]) )
 		return TRUE;
+	if( $pc["USER"] != $pcconfig["ADMIN"] && pc_is_manager($currentuser) && intval($_COOKIE["BLOGADMIN"]) )
+		return FALSE;
 	if(strtolower($pc["USER"]) == strtolower($currentuser["userid"]) && $pc["TIME"] > date("YmdHis",$currentuser["firstlogin"]) && $currentuser["firstlogin"])
 		return TRUE;
 	else
