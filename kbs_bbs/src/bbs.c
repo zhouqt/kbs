@@ -1819,7 +1819,7 @@ void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
                 fprintf(outf, "\n【 在 %s 的来信中提到: 】\n", quser);
 
             if (op == 'A') {    /* 除第一行外，全部引用 */
-                while (skip_attach_fgets(buf, 256, inf) != NULL) {
+                while (skip_attach_fgets(buf, 256, inf) != 0) {
                     fprintf(outf, ": %s", buf);
                     if(buf[strlen(buf)-1]!='\n') {
                         char ch;
@@ -1828,20 +1828,20 @@ void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
                     }
                 }
             } else if (op == 'R') {
-                while (skip_attach_fgets(buf, 256, inf) != NULL)
+                while (skip_attach_fgets(buf, 256, inf) != 0)
                     if (buf[0] == '\n')
                         break;
-                while (skip_attach_fgets(buf, 256, inf) != NULL) {
+                while (skip_attach_fgets(buf, 256, inf) != 0) {
                     if (Origin2(buf))   /* 判断是否 多次引用 */
                         continue;
                     fprintf(outf, "%s", buf);
 
                 }
             } else {
-                while (skip_attach_fgets(buf, 256, inf) != NULL)
+                while (skip_attach_fgets(buf, 256, inf) != 0)
                     if (buf[0] == '\n')
                         break;
-                while (skip_attach_fgets(buf, 256, inf) != NULL) {
+                while (skip_attach_fgets(buf, 256, inf) != 0) {
                     if (strcmp(buf, "--\n") == 0)       /* 引用 到签名档为止 */
                         break;
                     if(buf[strlen(buf)-1]!='\n') {
