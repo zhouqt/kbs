@@ -594,7 +594,8 @@ int igetkey()
         return ret;
     }
     mode = last = 0;
-    refresh();
+    if (ibufsize == icurrchar)
+        refresh();
     while (1) {
         ch = igetch();
 
