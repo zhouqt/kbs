@@ -60,6 +60,22 @@ INSTALL只写了bbsd等主要程序的安装方法
 		) TYPE=MyISAM COMMENT='toplog';
    注意: postlog表过大时可以清空以前的发文记录，不影响
 
+ 2.) MYSQL 斑竹任期记录
+
+   define:   #define BMSLOG
+   需要: #define HAVE_MYSQL_SMTH 1 (这个在config.h里)
+   mysql:
+        CREATE TABLE bms (
+          userid varchar(15) NOT NULL default '',
+          board varchar(20) NOT NULL default '',
+          in timestamp(14) NOT NULL,
+          out int(11) NOT NULL default '3',
+          sysop varchar(15) default NULL,
+          memo varchar(255) default NULL,
+          KEY userid (userid),
+          KEY board (board)
+        ) TYPE=MyISAM COMMENT='斑竹任期记录表';
+
 
 【二】    游戏等
 
