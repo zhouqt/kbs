@@ -17,16 +17,17 @@ static int RMSGCount = 0;       /* Leeward 98.07.30 supporting msgX */
 extern int i_timeout;
 
 
-int get_msg(uid, msg, line)
-char *msg, *uid;
-int line;
+int get_msg(char * uid, char * msg, int line, int sms)
 {
     char genbuf[3];
     int i;
 
     move(line, 0);
     clrtoeol();
-    prints("送音信给:%-12s    请输入音信内容，Ctrl+Q 换行:", uid);
+    if(sms)
+        prints("发短信给:%-12s    请输入短信内容，Ctrl+Q 换行:", uid);
+    else
+        prints("送音信给:%-12s    请输入音信内容，Ctrl+Q 换行:", uid);
     msg[0] = 0;
     while (1) {
         i = multi_getdata(line+1, 0, 79, NULL, msg, MAX_MSG_SIZE, 11, false,0);
@@ -148,7 +149,7 @@ int mode;
     case 0:                    /* message presending test ok, get the message and resend */
         if (mode == 4)
             return 0;
-        Gmode = get_msg(uident, buf, 1);
+        Gmode = get_msg(uident, buf, 1, 0);
         if (!Gmode) {
             move(1, 0);
             clrtoeol();
@@ -387,7 +388,7 @@ int wall()
     modify_user_mode(MSG);
     move(2, 0);
     clrtobot();
-    if (!get_msg("所有使用者", buf2, 1)) {
+    if (!get_msg("所有使用者", buf2, 1, 0)) {
         move(1, 0);
         clrtoeol();
         move(2, 0);
@@ -655,7 +656,7 @@ int friend_wall()
     modify_user_mode(MSG);
     move(2, 0);
     clrtobot();
-    if (!get_msg("我的好朋友", buf, 1))
+    if (!get_msg("我的好朋友", buf, 1, 0))
         return 0;
     if (apply_ulist(myfriend_wall, buf) == -1) {
         move(2, 0);
@@ -856,7 +857,7 @@ checksmsagain:
     }
 
     if(msgstr==NULL) {
-        if(!get_msg(uident, buf, 1)) {
+        if(!get_msg(uident, buf, 1, 1)) {
             move(1, 0);
             clrtoeol();
             move(2, 0);

@@ -181,8 +181,14 @@ void processremote()
             read(sockfd, &h2, sizeof(h2));
             read(sockfd, buf, byte2long(h2.MsgTxtLen));
             buf[byte2long(h2.MsgTxtLen)] = 0;
-            if(sendtouser(&h2, buf)) reth.Type = CMD_ERR;
-            else reth.Type = CMD_OK;
+            if(sendtouser(&h2, buf)) {
+                reth.Type = CMD_ERR;
+                printf("send CMD_ERR\n");
+            }
+            else {
+                reth.Type = CMD_OK;
+                printf("send CMD_OK\n");
+            }
             write(sockfd, &reth, sizeof(reth));
             break;
     }
@@ -282,7 +288,6 @@ int main()
         return -1;
     }
     loginas(sysconf_str("SMS_USERNAME"),sysconf_str("SMS_PASSWORD"));
-//    loginas("12","bbsbad");
 
     while(1) {
 	FD_ZERO(&readset);

@@ -520,13 +520,16 @@ struct LoginPacket { //Type=1
 };
 struct RegMobileNoPacket { //Type=3
     char MobileNo[MOBILE_NUMBER_LEN];
+    char cUserID[IDLEN+2];
 };
 struct CheckMobileNoPacket { //Type=4
     char MobileNo[MOBILE_NUMBER_LEN];
+    char cUserID[IDLEN+2];
     char ValidateNo[MOBILE_NUMBER_LEN];
 };
 struct UnRegPacket { //Type=5
     char MobileNo[MOBILE_NUMBER_LEN];
+    char cUserID[IDLEN+2];
 };
 struct RequireBindPacket { //Type = 6
     byte UserID[4];
@@ -535,11 +538,13 @@ struct RequireBindPacket { //Type = 6
 };
 struct ReplyBindPacket { //Type=7
     char MobileNo[MOBILE_NUMBER_LEN];
+    char cUserID[IDLEN+2];
     char isSucceed;
 };
 struct BBSSendSMS { //Type=8
     byte UserID[4];
     char SrcMobileNo[MOBILE_NUMBER_LEN];
+    char SrccUserID[IDLEN+2];
     char DstMobileNo[MOBILE_NUMBER_LEN];
     byte MsgTxtLen[4];
 };
