@@ -850,6 +850,47 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
                 change = -t_lines + 2;
                 break;
             case 'g':
+		getdata(t_lines - 1, 0, "跳转到的行号:", buf, 9,
+			DOECHO, YEA);
+		if (isdigit(buf[0])) {
+			change = atoi(buf) - curr_line;
+		}
+		break;
+	case '/':
+	case '?':
+		getdata(t_lines - 1, 0,
+			ch ==
+			'/' ? "向下查找字符串:" :
+			"向上查找字符串:", searchstr, 29,
+			DOECHO, NA);
+		if (strlen(searchstr) > 0) {
+			int i = curr_line;
+			while (1) {
+				if (ch == '/')
+					i++;
+				else
+					i--;
+				if (seek_MemMoreLines(&l, i) <
+				    0)
+					break;
+				memcpy(buf, l.curr,
+				       (l.currlen >=
+					256) ? 255 : l.currlen);
+				buf[(l.currlen >= 256) ? 255 :
+				    l.currlen] = 0;
+				if (strcasestr(buf, searchstr)
+				    != NULL) {
+					change = i - curr_line;
+					break;
+				}
+			}
+			if (change == 0) {
+				move(t_lines - 1, 0);
+				prints("没有找到呀...");
+				continue;
+			}
+		}
+		break;
             case KEY_LEFT:
             case 'q':
                 return 0;
