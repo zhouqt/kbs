@@ -4098,7 +4098,7 @@ int tmpl_init(int mode){
 
 	ret = orig_tmpl_init(currboard->filename, newmode, & ptemplate);
 
-	if(ret > 0) template_num = ret;
+	if(ret >= 0) template_num = ret;
 
 	return ret;
 
