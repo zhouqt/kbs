@@ -6,9 +6,9 @@ require("inc/user.inc.php");
 
 setStat("保存收藏版面");
 
-show_nav(false);
-
 requireLoginok();
+
+show_nav(false);
 
 showUserMailbox();
 head_var($userid."的控制面板","usermanagemenu.php",0);

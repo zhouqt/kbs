@@ -12,12 +12,7 @@ preprocess();
 
 bbs_brcclear($boardName);
 
-if (!isset($_SERVER["HTTP_REFERER"]) || ( $_SERVER["HTTP_REFERER"]=="") )
-{
-	header("Location: index.php");
-} else {
-	header("Location: ".$_SERVER["HTTP_REFERER"]);
-} 
+jumpReferer();
 
 function preprocess() {
 	global $boardName;

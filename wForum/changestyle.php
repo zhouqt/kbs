@@ -6,12 +6,7 @@ setStat("¸ü»»½çÃæ");
 
 do_changeStyle();
 
-if (!isset($_SERVER["HTTP_REFERER"]) || ( $_SERVER["HTTP_REFERER"]=="") )
-{
-	header("Location: index.php");
-} else {
-	header("Location: ".$_SERVER["HTTP_REFERER"]);
-} 
+jumpReferer();
 
 function do_changeStyle()
 {

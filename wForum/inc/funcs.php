@@ -527,6 +527,7 @@ function show_nav($boardName='')
 	global $currentuser;
 	global $currentuinfo;
 	global $showedbanner;
+	global $needloginok;
 	$showedbanner = true;
 
   html_init();
@@ -595,10 +596,13 @@ function show_nav($boardName='')
 ?>
  <img src=pic/navspacer.gif align=absmiddle>  <a title="搜索当前版面" href="query.php<?php echo $boardName==''?'':'?boardName='.$boardName; ?>" onMouseOver='ShowMenu(query,100,event)'>搜索</a> 
  <img src=pic/navspacer.gif align=absmiddle>  <a href="#" onMouseOver='ShowMenu(stylelist,100,event)'>自选风格</a> 
- <?php    if ($loginok)
-  {
-?> <img src=pic/navspacer.gif align=absmiddle> <a href="logout.php">退出</a><?php   
-} ?>
+<?php 
+	if ($loginok) {
+?>
+<img src=pic/navspacer.gif align=absmiddle> <a href="logout.php<?php if ($needloginok!=0) echo "?jumphome=1"; ?>">退出</a>
+<?php   
+	}
+?>
 			</td>
 		</tr>
 <?php
@@ -721,6 +725,14 @@ function htmlformat($str,$multi=false) {
     if ($multi)
         $str = nl2br($str);
     return $str;    
+}
+
+function jumpReferer() {
+	if (!isset($_SERVER["HTTP_REFERER"]) || ( $_SERVER["HTTP_REFERER"]=="") ) {
+		header("Location: index.php");
+	} else {
+		header("Location: ".$_SERVER["HTTP_REFERER"]);
+	} 
 }
 
 } // !define ('_BBS_FUNCS_PHP_')

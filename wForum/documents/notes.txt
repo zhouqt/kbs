@@ -165,6 +165,9 @@ requireLoginok($msg = false, $directexit = true)
 	否则直接调用 foundErr(错误信息, $directexit, false)，其中错误信息由 $msg 控制：
 	$msg        错误信息。如果为 false 就是用默认的错误信息
 
+	这个函数还有一个作用是，调用它之后调用show_nav()显示的页面头里面的注销link将会带到首页，否则注销仍旧会回到当前页面。
+	页面调用这几个函数的顺序应该是：setStat, requireLoginok, show_nav
+
 foundErr($msg, $directexit = true, $showmsg = true)
 	添加操作错误信息 $msg
 	$directexit 为 true 时，检查是否调用过 show_nav()，如果没有就调用 show_nav() 显示页面头。然后调用 show_footer($showmsg, true)，结束页面。
@@ -182,3 +185,6 @@ show_footer($showmsg = true, $showerr = true)
 	$showmsg    本页面是否有自动刷新消息接受页面的功能。除非是小页面，一般都设置成 true
 	$showerr    如果页面有错误，是否调用 html_error_quit() 输出错误信息。
 
+
+jumpReferer()
+	如果Referer有设置，跳到Referer，否则跳到首页。

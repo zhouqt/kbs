@@ -10,7 +10,7 @@ show_nav();
 
 showUserMailBoxOrBR();
 
-head_var("谈天说地","usermanagemenu.php",0);
+head_var();
 
 main();
 
