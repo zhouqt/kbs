@@ -914,7 +914,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     setbfile(oldpath, boardname, fh->filename);
     filtered = 0;
     bh = getbcache(boardname);
-    if (strcmp(fh->owner, DELIVER) {
+    if (strcmp(fh->owner, DELIVER)) {
         if (((bh && bh->level & PERM_POSTMASK) || normal_board(boardname)) && strcmp(boardname, FILTER_BOARD)
 #if 0
             && strcmp(boardname, "NewsClub")
