@@ -655,6 +655,7 @@ static long insert_from_fp(FILE *fp)
                 if (*data==*attachpad) {
                     matched++;
                     if (matched==ATTACHMENT_SIZE) {
+                        end_mmapfile((void *) ptr, size, -1);
                         BBS_RETURN((not+1)-(ATTACHMENT_SIZE)+1);
                     } else {
                         attachpad++;

@@ -324,7 +324,7 @@ static int search_board(int *num, struct _select_def *conf, int key)
             arg->find = true;
             break;
         }
-        bell(1);
+        bell();
     }
     if (arg->find) {
         move(t_lines - 1, 0);

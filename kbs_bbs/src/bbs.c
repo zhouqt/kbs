@@ -1146,17 +1146,20 @@ int generate_title()
         hasht = total * 8 / 5;
         hashtable = (struct hashstruct *) malloc(sizeof(*hashtable) * hasht);
         if (hashtable == NULL) {
+            end_mmapfile((void *) ptr, f_size, -1);
             BBS_RETURN(-1);
         }
         index = (int *) malloc(sizeof(int) * total);
         if (index == NULL) {
             free(hashtable);
+            end_mmapfile((void *) ptr, f_size, -1);
             BBS_RETURN(-1);
         }
         next = (int *) malloc(sizeof(int) * total);
         if (next == NULL) {
             free(hashtable);
             free(index);
+            end_mmapfile((void *) ptr, f_size, -1);
             BBS_RETURN(-1);
         }
         memset(hashtable, 0xFF, sizeof(*hashtable) * hasht);

@@ -277,6 +277,7 @@ int apply_record(char *filename, APPLY_FUNC_ARG fptr, int size, void *arg, int a
                 end_mmapfile((void *) buf, file_size, -1);
                 if (applycopy)
                     free(buf2);
+                end_mmapfile((void *) buf, file_size, -1);
                 BBS_RETURN(QUIT);
             }
             if (reverse)

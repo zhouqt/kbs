@@ -104,6 +104,7 @@ retry:
 	}
         if (check_badwordimg(0)!=0)
 	{
+	    end_mmapfile((void *) ptr, size, -1);
             BBS_RETURN(0);
 	}
         retv = mgrep_str(ptr, size,badword_img);
@@ -111,6 +112,7 @@ retry:
     BBS_CATCH {
         if (check_badwordimg(1)!=0)
 	{
+	    end_mmapfile((void *) ptr, size, -1);
             BBS_RETURN(0);
 	}
 	retrycount++;
