@@ -95,17 +95,23 @@ int sendtouser(struct GWSendSMS * h, char* buf)
     if(uident == NULL)
         return -1;
     uin = t_search(uident, NULL);
-    if(uin == NULL)
-        return -1;
 
     hh.frompid = -1;
-    hh.topid = uin->pid;
     hh.mode = 6;
     hh.sent = 0;
     hh.time = time(0);
     strncpy(hh.id, h->SrcMobileNo, IDLEN+2);
     hh.id[IDLEN+1] = 0;
+
+    if(uin == NULL){
+		hh.topid = -1;
+		save_smsmsg(uident, &hh, buf, 0);
+        return -1;
+	}
+
+    hh.topid = uin->pid;
     save_msgtext(uident, &hh, buf);
+	save_smsmsg(uident, &hh, buf, 1);
     kill(uin->pid, SIGUSR2);
     return 0;
 }
