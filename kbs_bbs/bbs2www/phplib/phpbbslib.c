@@ -2,8 +2,8 @@
 #include "bbs.h"
 #include "bbslib.h"
 
-static const unsigned char third_arg_force_ref_111[] = { 3, BYREF_FORCE, BYREF_FORCE, BYREF_FORCE };
-static const unsigned char third_arg_force_ref_011[] = { 3, BYREF_NONE, BYREF_FORCE, BYREF_FORCE };
+static unsigned char third_arg_force_ref_111[] = { 3, BYREF_FORCE, BYREF_FORCE, BYREF_FORCE };
+static unsigned char third_arg_force_ref_011[] = { 3, BYREF_NONE, BYREF_FORCE, BYREF_FORCE };
 
 static ZEND_FUNCTION(bbs_getuser);
 static ZEND_FUNCTION(bbs_getonlineuser);
@@ -62,7 +62,7 @@ static function_entry bbs_php_functions[] = {
 	ZEND_FE(bbs_is_bm, NULL)
 	ZEND_FE(bbs_getannpath, NULL)
 	ZEND_FE(bbs_getmailnum, third_arg_force_ref_011)
-	ZEND_FE(bbs_getwegmsg, third_arg_force_ref_111)
+	ZEND_FE(bbs_getwebmsg, third_arg_force_ref_111)
 	{NULL, NULL, NULL}
 };
 
@@ -1167,13 +1167,12 @@ static ZEND_FUNCTION(bbs_getmailnum)
  * @author KCN
  */
 
-static ZEND_FUNCTION(bbs_getwegmsg)
+static ZEND_FUNCTION(bbs_getwebmsg)
 {
     zval *retsrcid,*msgbuf,*srcutmpent;
     int ac = ZEND_NUM_ARGS();
     int srcutmp;
     char buf[MSG_LEN + 1];
-    int srcutmp;
     char srcid[IDLEN + 1];
 
     if (ac != 3

@@ -65,7 +65,7 @@ $utmpkey = $_COOKIE["UTMPKEY"];
 $utmpnum = $_COOKIE["UTMPNUM"];
 $userid = $_COOKIE["UTMPUSERID"];
 if ($utmpkey!="") {
-  if (bbs_setonlineuser($userid,$utmpnum,$utmpkey,$currentuinfo)==0) {
+  if (bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),$currentuinfo)==0) {
     $loginok=1;
     $currentuinfo_num=bbs_getcurrentuinfo();
     $currentuser_num=bbs_getcurrentuser($currentuser);
