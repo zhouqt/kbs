@@ -15,7 +15,7 @@ sites:    各个站点定制文件
 获得代码之后生成configure文件：
 
 在smth_bbs,bbs2www,sshbbsd目录分别下
-autoheader;aclocal;automake -a;autoconf
+aclocal;autoheader;automake -a;autoconf
 
 之后，就可以按照正常方式安装使用BBS 代码了。
 
