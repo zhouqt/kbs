@@ -137,13 +137,13 @@ char * fname;
 int
 chkmail()
 {
-    static long lasttime = 0;
+    static time_t lasttime = 0;
     static ismail = 0 ;
     struct fileheader fh ;
     struct stat st ;
     int fd ;
-    register int i, offset ;
-    register long numfiles ;
+    int i, offset ;
+    long numfiles ;
     unsigned char ch ;
     extern char currmaildir[ STRLEN ] ;
     int sum,sumlimit, numlimit;/*Haohmaru.99.4.4.对收信也加限制*/
@@ -151,14 +151,13 @@ chkmail()
     if( !HAS_PERM( PERM_BASIC ) ) {
         return 0;
     }
-    
     /* ylsdd 2001.4.23: 检测文件状态应该在get_mailnum，get_sum_records之前，否则岂不是
        要做大量无用的系统调用. 在这个改动中也把fstat改为stat了，节省一个open&close */
     if(stat(currmaildir,&st)<0)
         return (ismail=0) ;
-    if(lasttime > st.st_mtime) {
+    if(lasttime >= st.st_mtime) 
         return ismail ;
-    }
+    
 
     if ( !HAS_PERM(PERM_SYSOP) ) {/*Haohmaru.99.4.4.对收信也加限制,改动下面的数字时请同时改动chkreceiver函数*/
         if (HAS_PERM(PERM_CHATCLOAK))
