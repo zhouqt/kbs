@@ -208,8 +208,8 @@ function cache_header($scope,$modifytime=0,$expiretime=300)
 			header("Cache-Control: max-age=" . "$expiretime");
 		return TRUE;
 	}
-	header("Last-Modified: " . gmdate("D, d M Y H:i:s", $modifytime) . "GMT");
-	header("Expires: " . gmdate("D, d M Y H:i:s", $modifytime+$expiretime) . "GMT");
+	header("Last-Modified: " . gmdate("D, d M Y H:i:s", $modifytime) . " GMT");
+	header("Expires: " . gmdate("D, d M Y H:i:s", $modifytime+$expiretime) . " GMT");
 	header("Cache-Control: max-age=" . "$expiretime");
 	return FALSE;
 }
@@ -291,7 +291,7 @@ function showLogon($showBack = 0, $comeurl = "") {
 	<table cellpadding="3" cellspacing="1" align="center" class="TableBorder1" style="width: 75%;">
 	<form action="logon.php" method="post"> 
 	<tr>
-	<td valign="middle" colspan="2" align="center" height="25">请输入您的用户名、密码登录</td></tr>
+	<th valign="middle" colspan="2" align="center" height="25">请输入您的用户名、密码登录</th></tr>
 	<tr>
 	<td valign="middle" class="TableBody1">请输入您的用户名</td>
 	<td valign="middle" class="TableBody1"><input name="id" type="text" tabindex="1"/> &nbsp; <a href="register.php">没有注册？</a></td></tr>
@@ -442,7 +442,7 @@ function sizestring($size)
 	}
 }
 
-function show_nav($boardName='',$is_mathml=false)
+function show_nav($boardName='',$is_mathml=false,$other_headers="")
 {
 	global $Banner;
 	global $SiteName;
@@ -454,7 +454,7 @@ function show_nav($boardName='',$is_mathml=false)
 	global $needloginok;
 	$showedbanner = true;
 
-	html_init("","","",$is_mathml);
+	html_init("","",$other_headers,$is_mathml);
 ?>
 <script language="javascript">
 <!--
@@ -481,12 +481,11 @@ function show_nav($boardName='',$is_mathml=false)
 
 <table border="0" width="100%" align="center">
 <tr>
-<td align="left" width="25%"><a href="<?php  echo  $SiteURL; ?>"><img border="0" src='<?php echo  $Banner; ?>'/></a></td>
+<td align="left" width="25%"><a href="index.php"><img border="0" src='<?php echo  $Banner; ?>'/></a></td>
 <td align="center" width="65%">
 <?php echo MAINTITLE; ?>
 </td>
 <td align="right" style="line-height: 15pt" width="10%">
-<nobr><a href="#" onClick="window.external.AddFavorite('<?php   echo $SiteURL; ?>', '<?php   echo $SiteName; ?>');">加入收藏</a></nobr><br/>
 <nobr><a href="http://www.aka.cn/">联系我们</a></nobr><br/>
 <nobr><a href="index.php">论坛帮助</a></nobr>
 </td></tr>
