@@ -81,6 +81,7 @@ int fillbcache(struct boardheader *fptr,int idx,void* arg)
 
 int fillboard()
 {
+    resolve_boards();
     apply_record(BOARDS, (APPLY_FUNC_ARG)fillbcache, sizeof(struct boardheader), NULL, 0,false);
 }
 
@@ -145,6 +146,7 @@ main(argc, argv)
         /* modified end */
     };
 
+    chdir(BBSHOME);
     if (argc <= 1)
         exit(0);
     mode = atoi(argv[1]);
