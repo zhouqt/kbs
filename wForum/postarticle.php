@@ -302,7 +302,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 <?php
     }
 		if (bbs_is_anony_board($boardArr) ) {
-		echo "<input type=\"checkbox\" name=\"annonymous\" value=\"1\" />匿名<br />";
+		echo "<input type=\"checkbox\" name=\"anonymous\" value=\"1\" />匿名<br />";
 	}
 ?>
     <input type=checkbox name=emailflag value=yes disabled>有回复时使用邮件通知您？</font>
