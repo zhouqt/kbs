@@ -16,6 +16,7 @@ static unsigned char third_arg_force_ref_011[] = { 3, BYREF_NONE, BYREF_FORCE, B
 static unsigned char fourth_arg_force_ref_0001[] = { 4, BYREF_NONE, BYREF_NONE, BYREF_NONE, BYREF_FORCE };
 
 #ifdef HAVE_WFORUM
+static PHP_FUNCTION(bbs_get_article);
 static PHP_FUNCTION(bbs_is_yank);
 static PHP_FUNCTION(bbs_alter_yank); 
 #endif
@@ -136,6 +137,7 @@ static PHP_FUNCTION(bbs_getthreads);
  */
 static function_entry smth_bbs_functions[] = {
 #ifdef HAVE_WFORUM
+		PHP_FE(bbs_get_article, NULL)
 		PHP_FE(bbs_is_yank, NULL)
 		PHP_FE(bbs_alter_yank, NULL)
 #endif
@@ -1633,6 +1635,7 @@ static PHP_FUNCTION(bbs_getboards)
     efree(columns);
 }
 
+ 
 
 /**
  * Fetch a list of articles in a board into an array.
@@ -2147,6 +2150,115 @@ static PHP_FUNCTION(bbs_getthreads)
     close(fd);
     efree(IDList);
 }
+
+#ifdef HAVE_WFORUM
+static PHP_FUNCTION(bbs_get_article)
+{
+    char *board;
+    int blen;
+    int groupid;
+    int total;
+    struct fileheader *articles;
+    struct boardheader *bp;
+	char dirpath[STRLEN];
+    zval *element;
+    int is_bm;
+    char flags[4];              /* flags[0]: flag character
+                                 * flags[1]: imported flag
+                                 * flags[2]: no reply flag
+                                 * flags[3]: attach flag
+                                 */
+    int ac = ZEND_NUM_ARGS();
+	unsigned int articlesFounded;
+	int fd;
+	int i;
+
+	struct stat buf;
+	struct flock ldata;
+	struct fileheader *ptr1;
+	char* ptr;
+	unsigned int found;
+
+
+    /*
+     * getting arguments 
+     */
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &board, &blen, &groupid) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+
+	if (groupid<0){
+		RETURN_LONG(-3);
+	}
+    /*
+     * checking arguments 
+     */
+    if (currentuser == NULL) {
+        RETURN_LONG(-4);
+    }
+    if ((bp = getbcache(board)) == NULL) {
+        RETURN_LONG(-5);
+    }
+    is_bm = is_BM(bp, currentuser);
+    setbdir(DIR_MODE_NORMAL, dirpath, board);
+
+    if ((fd = open(dirpath, O_RDONLY, 0)) == -1)
+        RETURN_LONG(-6);   
+    ldata.l_type = F_RDLCK;
+    ldata.l_whence = 0;
+    ldata.l_len = 0;
+    ldata.l_start = 0;
+    fcntl(fd, F_SETLKW, &ldata);
+	fstat(fd, &buf);
+    total = buf.st_size / sizeof(struct fileheader);
+
+    if ((i = safe_mmapfile_handle(fd, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size)) != 1) {
+        if (i == 2)
+            end_mmapfile((void *) ptr, buf.st_size, -1);
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+        RETURN_LONG(-7);
+    }
+    ptr1 = (struct fileheader *) ptr;
+    /*
+     * fetching articles 
+     */
+    if (array_init(return_value) == FAILURE) {
+        RETURN_LONG(-8);
+    }
+#ifdef HAVE_BRC_CONTROL
+    brc_initial(currentuser->userid, board);
+#endif
+
+	articlesFounded=0;
+
+	if ( (found=binarySearchInFileHeader(ptr1,total,groupid))!=-1) {
+		MAKE_STD_ZVAL(element);
+		array_init(element);
+		flags[0] = get_article_flag(ptr1+found, currentuser, board, is_bm);
+		if (is_bm && (ptr1[found].accessed[0] & FILE_IMPORTED))
+			flags[1] = 'y';
+		else
+			flags[1] = 'n';
+		if (ptr1[found].accessed[1] & FILE_READ)
+			flags[2] = 'y';
+		else
+			flags[2] = 'n';
+		if (ptr1[found].attachment)
+			flags[3] = '@';
+		else
+			flags[3] = ' ';
+		bbs_make_article_array(element, ptr1+found, flags, sizeof(flags));
+		zend_hash_index_update(Z_ARRVAL_P(return_value), 0 , (void *) &element, sizeof(zval *), NULL);
+	}else 
+		RETURN_FALSE;
+    end_mmapfile((void *) ptr, buf.st_size, -1);
+    ldata.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
+    close(fd);
+}
+#endif
 
 /**
  * 反序获取从start开始的num个同主题文章
@@ -4253,14 +4365,6 @@ static PHP_FUNCTION(bbs_saveuserdata)
 	ud.address[STRLEN-1] = '\0';
 	ud.reg_email[STRLEN-1] = '\0';
 
-    if(strcmp(mobile_phone,"")){
-	    ud.mobileregistered = true;
-		strncpy(ud.mobilenumber,mobile_phone,MOBILE_NUMBER_LEN);
-		ud.mobilenumber[MOBILE_NUMBER_LEN-1] = '\0';
-	}
-    else{
-    	ud.mobileregistered = false;
-    	}
     
 #ifdef HAVE_BIRTHDAY
     ud.birthyear=(year > 1900 && year < 2050)?(year-1900):0;
@@ -4444,7 +4548,7 @@ static PHP_FUNCTION(bbs_createregform)
 	ud.reg_email[STRLEN-1] = '\0';
 
     if(strcmp(mobile_phone,"")){
-	    ud.mobileregistered = true;
+	    ud.mobileregistered = false;
 		strncpy(ud.mobilenumber,mobile_phone,MOBILE_NUMBER_LEN);
 		ud.mobilenumber[MOBILE_NUMBER_LEN-1] = '\0';
 	}
