@@ -389,11 +389,12 @@ void r_msg()
                                 sleep(1);
                                 saveline(0, 1, savebuffer[0]);
                             }
+                            ch = '\n';
                         }
                     }
                     break;
             }
-            if (ch=='\r'||ch=='\n'||ch==0&&canreply) break;
+            if (ch=='\r'||ch=='\n') break;
         }
 
         now = get_unreadmsg(currentuser->userid);
