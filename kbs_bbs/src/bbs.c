@@ -2245,7 +2245,6 @@ int post_article(char *q_file, struct fileheader *re_file)
     strcpy(quote_title, save_title);
     strcpy(quote_board, currboard);
     aborted = vedit(filepath, true, &eff_size, NULL);    /* 进入编辑状态 */
-    bbs_zrecvfile();
 
     add_loginfo(filepath, currentuser, currboard, Anony);       /*添加最后一行 */
 
