@@ -4,26 +4,51 @@ BBSHOME=/usr/local/bbs
 BBSSITE=devel
 WWWROOT=/var/www
 
-make distclean
+if [ -f Makefile ]; then
+	make distclean
+fi
 
 cvs up -d
 
 aclocal; autoheader; automake -a; autoconf
 
-cd bbs2www
+if [ -d bbs2www ]; then
+	cd bbs2www
 
-aclocal; autoheader; automake -a; autoconf
+	aclocal; autoheader; automake -a; autoconf
 
-cd ..
+	cd ..
+	WWWCONFIG="--with-www=$WWWROOT --with-php=/usr/include/php"
+else
+	WWWCONFIG=--disable-www
+fi
 
-cd sshbbsd
+if [ -d sshbbsd ]; then
+	cd sshbbsd
 
-aclocal; autoheader; automake -a; autoconf
+	aclocal; autoheader; automake -a; autoconf
 
-cd ..
+	cd ..
+	SSHCONFIG=--enable-ssh
+else
+	SSHCONFIG=--disable-ssh
+fi
+
+if [ -d innbbsd ]; then
+	cd innbbsd
+
+	aclocal; autoheader; automake -a; autoconf
+
+	cd ..
+	INNCONFIG=--enable-innbbsd
+else
+	INNCONFIG=--disable-innbbsd
+fi
 
 ./configure --prefix=$BBSHOME --enable-site=$BBSSITE \
-         --with-www=$WWWROOT --with-php=/usr/include/php --enable-ssh \
+         $WWWCONFIG \
+         $SSHCONFIG \
+         $INNCONFIG \
          --with-mysql
 
 make
