@@ -1,8 +1,36 @@
 <html>
 <meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=gb2312">
 <link rel=stylesheet type=text/css href='/bbs.css'>
-<nobr><center>BBS水木清华站 -- 新用户注册<hr color=green>
-<font color=green>欢迎加入BBS水木清华站  (有"*"号的必须填写，一个汉字作为两个字符计算)</font><form method=post action="/bbsreg.php">
+<nobr><center>BBS大话西游站 -- 新用户注册<hr color=green>
+<font color=green>欢迎加入BBS大话西游站  (有"*"号的必须填写，一个汉字作为两个字符计算)</font>
+<script language="javascript">
+<!--
+	function checkEmpty(form, fieldID, fieldName) {
+		if (form[fieldID].value == "") {
+			alert('请输入您的' + fieldName + '!');
+			form[fieldID].focus();
+			return false;
+		}
+		return true;
+	}
+	function CheckDataValid(form) 
+	{
+		var fID = new Array("userid", "pass1", "num_auth", "realname", "dept", "address", "reg_email", "phone");
+		var fName = new Array("用户名", "密码", "验证码", "真实姓名", "学校系级或工作单位", "详细通讯地址", "注册email", "联络电话");
+		var len = fID.length;
+		for (i = 0; i < len; i++) {
+			if (!checkEmpty(form, fID[i], fName[i])) return false;
+		}
+		if (form["pass1"].value != form["pass2"].value) {
+			alert("你两次输入的密码不一样：（"); 
+			form["pass1"].focus(); 
+			return false; 
+		}
+		return true;
+	}
+//-->
+</script> 
+<form method=post action="/bbsreg.php" onsubmit="return CheckDataValid(this);" name="theForm">
 <img src="img_rand/img_rand.php">
 <table width=700>
   <TR>
@@ -28,7 +56,6 @@
     <TD align=right>请输入昵称:</TD>
     <TD align=left><INPUT maxLength=32 name=username> (2-39字符, 中英文不限) </TD>
   </TR>
-<!--
   <TR>
     <TD align=right>*您的真实姓名:</TD>
     <TD align=left><INPUT name=realname> (请用中文, 至少2个汉字) </TD>
@@ -59,16 +86,10 @@
     <TD align=left><INPUT maxLength=4 size=4 name=year>年<INPUT maxLength=2 
       size=2 name=month>月<INPUT maxLength=2 size=2 name=day>日</TD>
   </TR>
--->
   <TR>
     <TD align=right>*您的注册Email 地址:</TD>
     <TD align=left><INPUT size=60 name=reg_email></TD>
   </TR>
-  <TR>
-    <TD align=right>&nbsp;</TD>
-    <TD align=left><font color=red>(这个请注意认真填写，将用于获得注册的密码及以后取回密码使用)</font></TD>
-  </TR>
-<!--
   <TR>
     <TD align=right>*您的联络电话:</TD>
     <TD align=left><INPUT size=40 name=phone> </TD>
@@ -85,14 +106,13 @@
     <TD align=right>您的手机号码:</TD>
     <TD align=left><INPUT size=15 name=mobile_phone> </TD>
   </TR>
--->
 </table>
 <table width="75%" border="0">
+<!--
       <tr>
         <td width="8%">备注：</td>
         <td width="92%">1. 请到注册 Email 里面查收本ID 的激活码。如果未收到激活码，请登录后确认您的Email并重新发送激活码.</td>
       </tr>
-<!--
       <tr>
         <td>&nbsp;</td>
         <td>2. 学校系级或工作单位的填写，学校请具体到系，工作单位请具体到部门。</td>
@@ -104,7 +124,7 @@
 -->
       <tr>
         <td>&nbsp;</td>
-        <td>2. 除代号和昵称会公开以外，其他项站务都会为您严格保密。</td>
+        <td>1. 除代号和昵称会公开以外，其他项站务都会为您严格保密。</td>
       </tr>
 <!--
       <tr>
