@@ -768,7 +768,8 @@ char   *pathname, *firstpath;
 	header.title[STRLEN - 1] = '\0';
 	header.innflag[1] = 'M';
 	/* if append record record, should return fail message */
-	after_post(NULL, &header, board, NULL);
+	if (after_post(NULL, &header, board, NULL)!=0)
+            innbbslog(":Err:after_post Unable to post in %s.\n", homepath);
 	return name;
 }
 cancel_article(homepath, board, file)
