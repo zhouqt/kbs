@@ -8255,7 +8255,7 @@ static PHP_FUNCTION(bbs_getonline_user_list)
     if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC,"ll",&arg.start,&arg.num) ==FAILURE){
         WRONG_PARAM_COUNT;
     }
-
+    if (arg.start < 0 || arg.start > USHM_SIZE) RETURN_FALSE;
     if (array_init(return_value) == FAILURE)
         RETURN_FALSE;
 
