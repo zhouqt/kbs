@@ -1436,7 +1436,11 @@ char get_article_flag(struct fileheader *ent, struct userec *user, char *boardna
             break;
         }
     }
+#ifdef OPEN_NOREPLY
+    if (ent->accessed[1] & FILE_READ) {
+#else
     if (is_bm && (ent->accessed[1] & FILE_READ)) {
+#endif
         switch (type) {
         case 'g':
         case 'G':
