@@ -20,7 +20,7 @@ login_init();
 		$brdnum = bbs_getboard($board, $brdarr);
 		if ($brdnum == 0)
 			html_error_quit("错误的讨论区");
-		bbs_set_onboard($brcnum,1);
+		bbs_set_onboard($brdnum,1);
 		$usernum = $currentuser["index"];
 		if (bbs_checkreadperm($usernum, $brdnum) == 0)
 			html_error_quit("错误的讨论区");
