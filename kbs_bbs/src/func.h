@@ -433,6 +433,8 @@ int clean_cachedata(char* userid,int unum);
     int save_import_path(char ** i_path,char ** i_title,int * i_path_time );
 	void load_import_path(char ** i_path,char ** i_title, int * i_path_time,int * i_path_select);
 	void free_import_path(char ** i_path,char ** i_title,int * i_path_time);
+	int linkto(char *path, char *fname, char *title);
+	int add_grp(char group[STRLEN], char bname[STRLEN], char title[STRLEN], char gname[STRLEN]);
 
 /* check the user's access for the path
   return < 0 deny access
