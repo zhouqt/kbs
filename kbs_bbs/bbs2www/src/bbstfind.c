@@ -12,10 +12,13 @@ int main()
     struct fileheader x, x0;
     int sum = 0, total = 0;
     int title_len;
+	int groupid;
+	int same;
 
     init_all();
     strsncpy(board, getparm("board"), 32);
     strsncpy(title, getparm("title"), 42);
+	groupid=atoi(getparm("groupid"));
     x1 = getbcache(board);
     if (x1 == 0)
         http_fatal("´íÎóµÄÌÖÂÛÇø");
@@ -36,7 +39,11 @@ int main()
         if (fread(&x, sizeof(x), 1, fp) == 0)
             break;
         sum++;
-        if (!strncmp(title, x.title, title_len) || (!strncmp(title, x.title + 4, title_len) && !strncmp(x.title, "Re: ", 4))) {
+		if( groupid == 0 )
+	        same = (!strncmp(title, x.title, title_len) || (!strncmp(title, x.title + 4, title_len) && !strncmp(x.title, "Re: ", 4))) ;
+		else same = (x.groupid == groupid);
+
+		if( same ){
             if (total == 0)
                 strcpy(first_file, x.filename);
             printf("<tr><td>%d</td>", sum);
