@@ -12,7 +12,7 @@ login_init();
 	else
 	{
 		html_init("gb2312","csvµº»Î");
-		$attachdir=getattachtmppath($currentuser["userid"] ,$utmpnum);
+		$attachdir=bbs_getattachtmppath($currentuser["userid"] ,$utmpnum);
 		@mkdir($attachdir);
 		if ($action=="add") {
 			@$errno=$_FILES['attachfile']['error'];

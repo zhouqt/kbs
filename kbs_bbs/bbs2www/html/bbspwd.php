@@ -42,10 +42,10 @@ if ($loginok != 1) {
     html_nologin();
     exit();
 }
+html_init("gb2312","","",1);
 if(!strcmp($currentuser["userid"],"guest"))
     html_error_quit("ÇëÏÈµÇÂ¼");
 
-html_init("gb2312","","",1);
 ?>
 <body topmargin="0">
 <table width="100%" border="0" cellspacing="0" cellpadding="3">

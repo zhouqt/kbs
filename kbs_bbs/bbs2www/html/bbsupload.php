@@ -16,7 +16,7 @@ login_init();
 	else
 	{
 		html_init("gb2312","Õ³Ìù¸½¼þ");
-		$attachdir=getattachtmppath($currentuser["userid"] ,$utmpnum);
+		$attachdir=bbs_getattachtmppath($currentuser["userid"] ,$utmpnum);
 		@mkdir($attachdir);
 		if ($action=="delete") {
 			@$act_attachname=$_GET["attachname"];
