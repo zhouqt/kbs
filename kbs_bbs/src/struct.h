@@ -118,5 +118,6 @@ struct UCACHE_hashnode {
 struct UCACHE {
 	int	hashhead[UCACHE_HASHSIZE];
 	struct UCACHE_hashnode users[MAXUSER];
+	int number;
     time_t      uptime;
 };

@@ -32,11 +32,9 @@
 
 
 struct BCACHE   *brdshm;
-struct UCACHE   *uidshm;
 struct UTMPFILE *utmpshm;
 struct userec lookupuser;
 struct shortfile *bcache;
-int     usernumber;
 int     numboards = -1 ;
 
 void
@@ -245,162 +243,6 @@ char *bname;
     if( strcmp( bname, DEFAULTBOARD ) == 0 )  return 1;
     if ((i = getbnum(bname)) == 0) return 0;
     return (bcache[i-1].level==0);
-}
-
-int
-fillucache(uentp) /* user cache中 添加user */
-struct userec *uentp ;
-{
-    if(usernumber < MAXUSERS) {
-        strncpy(uidshm->userid[usernumber],uentp->userid,IDLEN+1) ;
-        uidshm->userid[usernumber++][IDLEN] = '\0' ;
-    }
-    return 0 ;
-}
-
-void
-resolve_ucache()
-{
-    struct stat st ;
-    int         ftime;
-    time_t      now;
-    int lockfd;
-    char   log_buf[256]; /* Leeward 99.10.24 */
-
-    if( uidshm == NULL ) {
-        uidshm = attach_shm( "UCACHE_SHMKEY", 3696, sizeof( *uidshm ) ); /*attach to user shm */
-    }
-    /* modified by dong, for relaod ucache, 1998.12.2
-    now = time( NULL );
-
-    if( (stat( WWWFLUSH,&st ) >= 0 ) || (uidshm->uptime < now - 3600)) {
-        usernumber = 0;
-        apply_record( PASSFILE, fillucache, sizeof(struct userec) ); 刷新user cache 
-        sprintf(log_buf, "reload ucache for %s: %d users", WWWFLUSH, usernumber);  Leeward 99.10.24 
-        log_usies( "CACHE", log_buf);
-        uidshm->number = usernumber;
-        uidshm->uptime = now;
-        if (stat( WWWFLUSH,&st ) >= 0 )
-           unlink(WWWFLUSH);
-}
-    */
-    lockfd = open( "ucache.lock", O_RDWR|O_CREAT, 0600 );
-    if( lockfd < 0 ) {
-        log_usies( "CACHE", "reload ucache lock error!!!!" );
-        return;
-    }
-    flock(lockfd,LOCK_EX);
-
-
-    if( stat( FLUSH,&st ) < 0 ) {
-        st.st_mtime++ ;
-    }
-    ftime = st.st_mtime;
-    if( uidshm->uptime < ftime ) {
-        usernumber = 0;
-        apply_record( PASSFILE, fillucache, sizeof(struct userec) ); /*刷新user cache */
-        sprintf(log_buf, "reload ucache for %d users", usernumber);
-        log_usies( "CACHE", log_buf );
-        uidshm->number = usernumber;
-        uidshm->uptime = ftime+100000; /* change by dong ? */
-    }
-    flock(lockfd,LOCK_UN);
-    close(lockfd);
-}
-
-void
-setuserid( num, userid ) /* 设置user num的id为user id*/
-int     num;
-char    *userid;
-{
-    if( num > 0 && num <= MAXUSERS ) {
-        if( num > uidshm->number )
-            uidshm->number = num;
-        strncpy( uidshm->userid[ num - 1 ], userid, IDLEN+1 );
-    }
-}
-
-int
-searchnewuser() /* 找cache中 空闲的 user num */
-{
-    register int num, i;
-
-    resolve_ucache() ;
-
-    num = uidshm->number; /* cache 中 user 总数*/
-    for(i=0; i < num; i++)
-        if( uidshm->userid[i][0] == '\0' )
-            return i+1 ;
-    if( num < MAXUSERS )
-        return( num + 1 );
-    return 0 ;
-}
-int
-searchuser(userid)
-char *userid ;
-{
-    register int i ;
-
-    resolve_ucache() ;
-    for(i=0; i < uidshm->number; i++)
-        if(!strncasecmp(userid,uidshm->userid[i],IDLEN+1))
-            return i+1 ;
-    return 0 ;
-}
-
-int
-apply_users(func) /* 所有在线user 应用 func */
-void (*func)() ;
-{
-    register int i ;
-    resolve_ucache() ;
-    for(i=0; i < uidshm->number; i++)
-        (*func)(uidshm->userid[i],i+1) ;
-    return 0 ;
-}
-
-int
-getuser(userid) /* 取用户信息 */
-char *userid ;
-{
-    int uid = searchuser(userid) ;
-
-    if(uid == 0) return 0 ;
-    get_record(PASSFILE,&lookupuser,sizeof(lookupuser),uid) ;
-    return uid ;
-}
-
-char *
-u_namearray( buf, pnum, tag )  /* 根据tag ,生成 匹配的user id 列表 (针对所有注册用户)*/
-char    buf[][ IDLEN+1 ], *tag;
-int     *pnum;
-{
-    register struct UCACHE *reg_ushm = uidshm;
-    register char       *ptr, tmp;
-    register int        n, total;
-    char        tagbuf[ STRLEN ];
-    int         ch, num = 0;
-
-    resolve_ucache();
-    if( *tag == '\0' ) { /* return all user */
-        *pnum = reg_ushm->number;
-        return reg_ushm->userid[0];
-    }
-    for( n = 0; tag[n] != '\0'; n++ ) {
-        tagbuf[ n ] = chartoupper( tag[n] );
-    }
-    tagbuf[ n ] = '\0';
-    ch = tagbuf[0];
-    total = reg_ushm->number; /* reg. user total num */
-    for( n = 0; n < total; n++ ) {
-        ptr = reg_ushm->userid[n];
-        tmp = *ptr;
-        if( tmp == ch || tmp == ch - 'A' + 'a' ) /* 判断第一个字符是否相同*/
-            if( chkstr( tag, tagbuf, ptr ) )
-                strcpy( buf[ num++ ], ptr ); /*如果匹配, add into buf */
-    }
-    *pnum = num;
-    return buf[0];
 }
 
 void
@@ -652,12 +494,4 @@ update_utmp()
     extern time_t old;
     memcpy(&old,uinfo.tty+1,sizeof(time_t));
     update_ulist( &uinfo, utmpent );
-}
-/*---	period	2000-10-20	---*/
-int getuserid(char * userid, int uid)
-{
-    resolve_ucache() ;
-    if( uid > uidshm->number || uid <= 0 ) return 0;
-    strncpy(userid,uidshm->userid[uid-1], IDLEN+1);
-    return uid;
 }
