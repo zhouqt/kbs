@@ -1111,6 +1111,7 @@ size_t read_user_memo( char *userid, struct usermemo ** ppum )
 	FILE *fp;
     struct stat st;
 
+	bzero(&um, sizeof(um));
 	sethomefile(fn, userid, "usermemo");
 
     logincount = apply_utmp(NULL, 0, userid, 0);
@@ -1133,6 +1134,9 @@ size_t read_user_memo( char *userid, struct usermemo ** ppum )
 
 	if (safe_mmapfile_handle(fileno(fp), O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, (void **)ppum , (size_t *) & size) == 1) {
 		fclose(fp);
+
+		if(size < sizeof(struct usermemo) )
+			return -1;
 		return size;
 	}
 
