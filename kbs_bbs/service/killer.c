@@ -432,7 +432,7 @@ int do_com_menu()
                 case 1:
                     for(me=0;me<myroom->people;me++)
                         if(inrooms.peoples[me].pid==uinfo.pid) break;
-                    if(inrooms.peoples[me].flag&PEOPLE_ALIVE) {
+                    if(inrooms.peoples[me].flag&PEOPLE_ALIVE&&!(inrooms.peoples[me].flag&PEOPLE_ROOMOP)) {
                         send_msg(inrooms.peoples+me, "你还在游戏,不能退出");
                         kill(inrooms.peoples[me].pid, SIGUSR1);
                         return 0;
