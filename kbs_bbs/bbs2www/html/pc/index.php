@@ -56,6 +56,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 	{
 		for($i=0;$i<min(5,count($nodes));$i++)
 		{
+			$contentcss = ($nodes[$i][htmltag])?"contentwithhtml":"content";
 			if($i%2==0)
 				$cellclass=array("t14","t11","t8");
 			else
@@ -64,10 +65,10 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 			"<tr><td class=\"".$cellclass[0]."\"><img src=\"icon/".$nodes[$i][emote].".gif\" border=0 align=absmiddle>\n".
 			"<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\" class=f2>".html_format($nodes[$i][subject])."</a></td>".
 			"<td class=\"".$cellclass[1]."\" align=right>[<a href=\"pccom.php?act=pst&nid=".$nodes[$i][nid]."\">评论</a>]\n[<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\">写信问候</a>]</td></tr>\n".
-			"<tr><td colspan=2 class=\"".$cellclass[1]."\">".html_format(substr($nodes[$i][body],0,600)." ",TRUE,$nodes[$i][htmltag]); 
+			"<tr><td colspan=2 class=\"".$cellclass[1]."\"><font class='".$contentcss."'>".html_format(substr($nodes[$i][body],0,600)." ",TRUE,$nodes[$i][htmltag]); 
                         if (strlen($nodes[$i][body])>600) 
                         	echo " ......<A href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\">阅读全文</A>"; 
-                        echo "</td></tr>\n". 
+                        echo "</font></td></tr>\n". 
 			"<tr><td colspan=2 class=\"".$cellclass[2]."\"><font class=\"f7\">\nBy <a href=\"/bbsqry.php?userid=".$pc["USER"]."\">".$pc["USER"]."</a> at ".time_format($nodes[$i][created]).
 			"\n|\nViews[".$nodes[$i][visitcount]."]".
 			"\n|\n<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\">Comments[".$nodes[$i][commentcount]."]</a>".

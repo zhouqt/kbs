@@ -5,9 +5,12 @@
 $needlogin=0;
 require_once("pcfuncs.php");
 
-function getNewBlogs($link)
+function getNewBlogs($link,$pno=1)
 {
 	global $pcconfig;
+	if($pno < 1)
+		$pno = 1;
+		
 	$newBlogs = array();
 	$newBlogs[channel] = array(
 			"siteaddr" => "http://".$pcconfig["SITE"],
@@ -25,7 +28,7 @@ function getNewBlogs($link)
 			
 			);
 	
-	$query = "SELECT * FROM nodes WHERE `access` = 0 ORDER BY `nid` DESC LIMIT 0 , ".$pcconfig["NEWS"]." ; ";
+	$query = "SELECT * FROM nodes WHERE `access` = 0 ORDER BY `nid` DESC LIMIT ".(($pno - 1) * $pcconfig["NEWS"])." , ".$pcconfig["NEWS"]." ; ";
 	$result = mysql_query($query,$link);
 	$j = 0;
 	$bloguser = array();

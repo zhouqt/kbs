@@ -67,6 +67,7 @@
 <?php
 		for($i = 0;$i < $re_num ;$i++)
 		{
+			$contentcss = ($rows[htmltag])?"contentwithhtml":"content";
 			if($i%2==0)
 				$tdclass= array("t8","t10","t11");
 			else
@@ -85,8 +86,8 @@
 			echo "</td><td width=\"100\" align=\"right\" class=\"".$tdclass[0]."\"><font class=\"f4\">".($i+1)."</font>&nbsp;&nbsp;</td>\n</tr>\n";
 			if($spr)
 			{
-				echo "<tr>\n<td colspan='2' class=\"".$tdclass[2]."\">".
-					html_format($rows[body],TRUE,$rows[htmltag])."</td>\n</tr>\n".
+				echo "<tr>\n<td colspan='2' class=\"".$tdclass[2]."\"><font class='".$contentcss."'>".
+					html_format($rows[body],TRUE,$rows[htmltag])."</font></td>\n</tr>\n".
 					"<tr>\n<td colspan='2' align='right' class=\"".$tdclass[0]."\">[FROM: ".$rows[hostname]."]".
 					"</td>\n</tr>\n";
 			}	
@@ -211,7 +212,9 @@
 		µÿ÷∑£∫<?php echo $rows[hostname]; ?>
 		</td>
 		<td width="80%" height="300" align="left" valign="top" class="t5">
+		<font class="<?php echo ($rows[htmltag])?"contentwithhtml":"content"; ?>">
 		<?php echo html_format($rows[body],TRUE,$rows[htmltag]); ?>&nbsp;
+		</font>
 		</td>
 	</tr>
 	<tr>

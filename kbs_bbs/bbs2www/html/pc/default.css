@@ -229,3 +229,12 @@ BODY
 	font-size: 8pt;
 	font-family: "Georgia", "Times New Roman", "Times", "serif"
 }
+.content
+{
+	font-size: 14px;
+	line-height: 24px;
+}
+.contentwithhtml
+{
+	font-size: 14px;
+}
