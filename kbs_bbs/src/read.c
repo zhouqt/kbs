@@ -891,8 +891,11 @@ int SR_BMfunc(int ent, struct fileheader *fileinfo, char *direct)
     int i;
     char buf[256], ch[4], BMch;
     char *SR_BMitems[] = { "删除", "保留", "文摘", "放入精华区", "放入暂存档", "标记删除",
-        "设为不可回复"
+        "设为不可回复", "做合集"
     };
+	const int item_num = 8;
+	char filepath[80],title[STRLEN];
+
     char linebuffer[256*3];
 
     if (!chk_currBM(currBM, currentuser)) {
@@ -900,14 +903,14 @@ int SR_BMfunc(int ent, struct fileheader *fileinfo, char *direct)
     }
     if (digestmode == 4 || digestmode == 5)     /* KCN:暂不允许 */
         return DONOTHING;
-    if (digestmode >= 2) 
+    if (digestmode >= 2)
     	return DONOTHING;
     saveline(t_lines - 3, 0, linebuffer);
     saveline(t_lines - 2, 0, NULL);
     move(t_lines - 3, 0);
     clrtoeol();
     strcpy(buf, "相同主题 (0)取消  ");
-    for (i = 0; i < 7; i++) {
+    for (i = 0; i < item_num; i++) {
         char t[40];
 
         sprintf(t, "(%d)%s", i + 1, SR_BMitems[i]);
@@ -928,7 +931,7 @@ int SR_BMfunc(int ent, struct fileheader *fileinfo, char *direct)
     } else
         getdata(t_lines - 3, 0, buf, ch, 3, DOECHO, NULL, true);
     BMch = atoi(ch);
-    if (BMch <= 0 || BMch > 7) {
+    if (BMch <= 0 || BMch > item_num) {
         saveline(t_lines - 2, 1, NULL);
         saveline(t_lines - 3, 1, linebuffer);
         return DONOTHING;
@@ -944,7 +947,7 @@ int SR_BMfunc(int ent, struct fileheader *fileinfo, char *direct)
     clrtoeol();
 
     /*
-     * Leeward 98.04.16 
+     * Leeward 98.04.16
      */
     snprintf(buf, 256, "是否从此主题第一篇开始%s (Y)第一篇 (N)目前这篇 (C)取消 (Y/N/C)? [Y]: ", SR_BMitems[BMch - 1]);
     getdata(t_lines - 3, 0, buf, ch, 3, DOECHO, NULL, true);
@@ -965,7 +968,49 @@ int SR_BMfunc(int ent, struct fileheader *fileinfo, char *direct)
         return DONOTHING;
     }
     bmlog(currentuser->userid, currboard, 14, 1);
-    sread(BMch + SR_BMBASE, 0, ent, 0, fileinfo);
+
+	if(SR_BMTOTAL == BMch + SR_BMBASE){
+        snprintf(buf, 256, "是否保留引文(Y/N/C)? [Y]: ");
+        getdata(t_lines - 2, 0, buf, ch, 3, DOECHO, NULL, true);
+	    switch (ch[0]){
+	    case 'y':
+	    case 'Y':
+		default:
+		    sread(BMch + SR_BMBASE - 3 , 0, ent, 0, fileinfo); //切换成暂存档操作
+			sprintf(filepath,"tmp/bm.%s",currentuser->userid);
+			break;
+	    case 'n':
+		case 'N':
+		    sread(-(BMch + SR_BMBASE - 3), 0, ent, 0, fileinfo);
+			sprintf(filepath,"tmp/bm.%s",currentuser->userid);
+			break;
+		case 'c':
+		case 'C':
+		    saveline(t_lines - 2, 1, NULL);
+            saveline(t_lines - 3, 1, linebuffer);
+            return DONOTHING;
+    	}
+        //create new title
+		if(!strncmp(fileinfo->title,"Re: ",4))strcpy(title,fileinfo->title + 4);
+		else
+		    strcpy(title,fileinfo->title);
+        if(strlen(title) < STRLEN - 8)strcat(title," [合集]");
+        //post file to the board
+		if(post_file(currentuser,"",filepath,currboard,title,0,2) < 0) {//fail
+            sprintf(buf,"发表文章到版面出错!请按任意键退出 << ");
+			a_prompt(-1,buf,filepath); //filepath no use
+			saveline(t_lines - 2, 1, NULL);
+            saveline(t_lines - 3, 1, linebuffer);
+            return DONOTHING;
+		}
+        unlink(filepath);
+		sprintf(filepath,"tmp/se.%s",currentuser->userid);
+		unlink(filepath);
+		return DIRCHANGED;
+	}
+
+	sread(BMch + SR_BMBASE, 0, ent, 0, fileinfo);
+
     return DIRCHANGED;
 }
 
@@ -975,8 +1020,11 @@ int SR_BMfuncX(int ent, struct fileheader *fileinfo, char *direct)
     int i;
     char buf[256], ch[4], BMch;
     char *SR_BMitems[] = { "删除", "保留", "文摘", "放入精华区", "放入暂存档", "标记删除",
-        "设为不可回复"
+        "设为不可回复", "做合集"
     };
+	const int item_num = 8;
+	char filepath[80],title[STRLEN];
+
     char linebuffer[256*3];
 
     if (!chk_currBM(currBM, currentuser)) {
@@ -989,7 +1037,7 @@ int SR_BMfuncX(int ent, struct fileheader *fileinfo, char *direct)
     move(t_lines - 3, 0);
     clrtoeol();
     strcpy(buf, "相同主题 (0)取消  ");
-    for (i = 0; i < 7; i++) {
+    for (i = 0; i < item_num; i++) {
         char t[40];
 
         sprintf(t, "(%d)%s", i + 1, SR_BMitems[i]);
@@ -1007,7 +1055,7 @@ int SR_BMfuncX(int ent, struct fileheader *fileinfo, char *direct)
     } else
         getdata(t_lines - 3, 0, buf, ch, 3, DOECHO, NULL, true);
     BMch = atoi(ch);
-    if (BMch <= 0 || BMch > 7) {
+    if (BMch <= 0 || BMch > item_num) {
         saveline(t_lines - 2, 1, NULL);
         saveline(t_lines - 3, 1, linebuffer);
         return DONOTHING;
@@ -1021,7 +1069,7 @@ int SR_BMfuncX(int ent, struct fileheader *fileinfo, char *direct)
     clrtoeol();
 
     /*
-     * Leeward 98.04.16 
+     * Leeward 98.04.16
      */
     snprintf(buf, 256, "是否从此主题第一篇开始%s (Y)第一篇 (N)目前这篇 (C)取消 (Y/N/C)? [Y]: ", SR_BMitems[BMch - 1]);
     getdata(t_lines - 2, 0, buf, ch, 3, DOECHO, NULL, true);
@@ -1043,6 +1091,47 @@ int SR_BMfuncX(int ent, struct fileheader *fileinfo, char *direct)
     }
 
     bmlog(currentuser->userid, currboard, 14, 1);
+
+	if(SR_BMTOTAL == BMch + SR_BMBASE){
+        snprintf(buf, 256, "是否保留引文(Y/N/C)? [Y]: ");
+        getdata(t_lines - 2, 0, buf, ch, 3, DOECHO, NULL, true);
+	    switch (ch[0]){
+	    case 'y':
+	    case 'Y':
+		default:
+		    sread(BMch + SR_BMBASE - 3 , 0, ent, 0, fileinfo); //切换成暂存档操作
+			sprintf(filepath,"tmp/bm.%s",currentuser->userid);
+			break;
+	    case 'n':
+		case 'N':
+		    sread(-(BMch + SR_BMBASE - 3), 0, ent, 0, fileinfo);
+			sprintf(filepath,"tmp/bm.%s",currentuser->userid);
+			//sprintf(filepath,"tmp/se.%s",currentuser->userid);
+			break;
+		case 'c':
+		case 'C':
+		    saveline(t_lines - 2, 1, NULL);
+            saveline(t_lines - 3, 1, linebuffer);
+            return DONOTHING;
+    	}
+        //create new title
+		if(!strncmp(fileinfo->title,"Re: ",4))strcpy(title,fileinfo->title + 4);
+		else
+		    strcpy(title,fileinfo->title);
+        if(strlen(title) < STRLEN - 8)strcat(title," [合集]");
+        //post file to the board
+		if(post_file(currentuser,"",filepath,currboard,title,0,2) < 0) {//fail
+            sprintf(buf,"发表文章到版面出错!请按任意键退出 << ");
+			a_prompt(-1,buf,filepath); //filepath no use
+			saveline(t_lines - 2, 1, NULL);
+            saveline(t_lines - 3, 1, linebuffer);
+            return DONOTHING;
+		}
+        unlink(filepath);
+		sprintf(filepath,"tmp/se.%s",currentuser->userid);
+		unlink(filepath);
+		return DIRCHANGED;
+	}
 
     if (SR_BMTMP == BMch + SR_BMBASE)   /* Leeward 98.04.16 */
         sread(-(BMch + SR_BMBASE), 0, ent, 0, fileinfo);
