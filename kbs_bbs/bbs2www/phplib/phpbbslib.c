@@ -6591,6 +6591,7 @@ static PHP_FUNCTION(bbs_denyusers)
     
     i = 0;
     while (fgets(buf, sizeof(buf), fp)) {
+        if (buf[0] == '\n') continue;
         MAKE_STD_ZVAL(element);
         array_init(element);
         
@@ -6601,6 +6602,7 @@ static PHP_FUNCTION(bbs_denyusers)
         strcpy(buf2, buf);
         add_assoc_string(element,"ID",buf2,1);
         strncpy(buf2, buf + 12, 30);
+        buf2[30] = '\0';
         add_assoc_string(element,"EXP",nohtml(buf2),1);
         
         nick = strrchr(buf + 13, '[');
