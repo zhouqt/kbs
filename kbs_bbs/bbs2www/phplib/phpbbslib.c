@@ -3939,7 +3939,7 @@ static PHP_FUNCTION(bbs_postarticle)
     if (!sigsetjmp(bus_jump, 1)) {
         signal(SIGBUS, sigbus);
         signal(SIGSEGV, sigbus);
-        if (clen>0) f_append(filename, unix_string(content));
+        f_append(filename, (clen>0) ? unix_string(content) : "");
     } else {
 		RETURN_LONG(-9);
 	}
