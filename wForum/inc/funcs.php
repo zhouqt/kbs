@@ -731,28 +731,19 @@ function show_footer()
 } 
 
 function getMsg(){
-	$ret=bbs_getwebmsg($srcid,$msgbuf,$srcutmpnum,$sndtime);
-	if ($ret==0) 
-		return false;
+
 ?>
-<div id="floater" style="position:absolute; width:502px; height:152px; z-index:2; left: 200px; top: 250px; visibility: visible; background-color: transparent; layer-background-color: #FFFFFF; "> 
-<bgsound src="/sound/msg.wav">
-<table cellspacing=1 cellpadding=0 align=center width="100%" class=tableBorder1 >
-<thead>
-<TR><Th height=20 align=left id=TableTitleLink align="center"><a href="dispuser.php?name=><?php echo $srcid; ?>" target=_blank><?php echo $srcid; ?></a>于(<?php echo strftime("%b %e %H:%M", $sndtime); ?>)发送给您的短信：
-</th></tr></thead>
-<tbody>
-  <tr>
-    <td height=110 align="left" valign="top" class=tablebody1><?php echo htmlspecialchars($msgbuf); ?></td>
-  </tr>
-  <tr>
-    <td height=20 align="right" valign="top" nowrap="nowrap" class=tablebody2><a  href="javascript:openScript('sendmsg.php?destid=<?php 
-echo $srcid; ?>&destutmp=<?php 
-echo $srcutmpnum; ?>',500,400)" >[回讯息]</a> <a href="#" onclick="document.all.floater.style.visibility='hidden';">[忽略]</a></td>
-  </tr>
- </tbody>
-</table>
+<script>
+function closeWindow(){
+	document.all.floater.style.visibility='hidden';
+	window.setTimeout("document.frames('webmsg').document.location.reload();", 30000);
+}
+</script>
+
+<div id="floater" style="position:absolute; width:502px; height:152px; z-index:2; left: 200px; top: 250px; visibility: hidden; background-color: transparent; layer-background-color: #FFFFFF; "> 
 </div>
+<iframe width="100%" height="0" border="0" scrolling=no src="getmsg.php" name="webmsg">
+</iframe>
 <script src="inc/floater.js"  language="javascript"></script>
 <?php
 }
