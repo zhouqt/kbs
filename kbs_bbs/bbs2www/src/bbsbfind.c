@@ -103,6 +103,7 @@ int show_form(char *board)
     printf("不含跟贴: <input type=\"checkbox\" name=\"og\"><br><br>\n");
     printf("<tr><td><input type=\"submit\" value=\"递交查询结果\">\n");
     printf("</form></table>");
-    printf("[<a href=\"/bbsdoc.php?board=%s\">本讨论区</a>] [<a href=\"bbsfind\">全站文章查询</a>]", brdencode);
+    printf("[<a href=\"/bbsdoc.php?board=%s\">本讨论区</a>]", brdencode);
+		   // [<a href=\"bbsfind\">全站文章查询</a>]", brdencode);
     http_quit();
 }
