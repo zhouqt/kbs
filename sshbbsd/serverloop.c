@@ -16,6 +16,9 @@ Server main loop for handling the interactive session.
 /*
  * $Id$
  * $Log$
+ * Revision 1.3  2002/05/09 12:50:46  kxn
+ * fixed a buffer overflow in ssh_read, ft
+ *
  * Revision 1.2  2002/05/09 09:53:25  kxn
  * max output packet is now limited to 512 bytes as many ssh implementions do
  *
@@ -126,6 +129,7 @@ int ssh_read(int fd,void *buf,size_t count)
 		ProcessOnePacket(0);
 	}
 	retlen = buffer_len(&NetworkBuf);
+	retlen = retlen > count ? count : retlen;
 	buffer_get(&NetworkBuf,buf,retlen);
 	return retlen;
 }
