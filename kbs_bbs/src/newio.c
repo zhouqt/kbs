@@ -763,7 +763,8 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
     if (prompt) prints("%s", prompt);
     if (scrint) getyx(&y, &x);
     clen = strlen(buf);
-    curr = (clen >= len) ? len - 1 : clen;
+    if(clen>=len) clen = len - 1;
+    curr = clen;
     buf[curr] = '\0';
     strncpy(save, buf, STRLEN);
     save[STRLEN-1]=0;

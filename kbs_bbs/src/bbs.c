@@ -2405,7 +2405,7 @@ int edit_title(int ent, struct fileheader *fileinfo, char *direct)
                 return DONOTHING;
             }
     strcpy(buf, fileinfo->title);
-    getdata(t_lines - 1, 0, "新文章标题: ", buf, 50, DOECHO, NULL, false);      /*输入标题 */
+    getdata(t_lines - 1, 0, "新文章标题: ", buf, 78, DOECHO, NULL, false);      /*输入标题 */
     if (buf[0] != '\0'&&strcmp(buf,fileinfo->title)) {
         char tmp[STRLEN * 2], *t;
         char tmp2[STRLEN];      /* Leeward 98.03.29 */
