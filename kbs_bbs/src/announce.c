@@ -1314,7 +1314,7 @@ case KEY_PGDN: case Ctrl( 'F' ): case ' ':
                 }else
                     sprintf( fname, "%s/%s", path, me.item[ me.now ]->fname );
                 if( dashf( fname ) ) {
-                	    zsend_file(fname,me.item[ me.now ].title);
+                	    zsend_file(fname,me.item[ me.now ]->title);
                 	}    
              	}	
           	break;
