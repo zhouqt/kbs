@@ -1,7 +1,9 @@
 #ifndef __WEBMSG_H__
 #define __WEBMSG_H__
 
-#define MSG_LEN 119
+#include "bbs.h"
+
+#define MSG_LEN MAX_MSG_SIZE
 #define MSG_NUM 5
 #define WWW_MAX_LOGIN 1000
 
@@ -32,7 +34,7 @@ typedef struct _msglist_t {
 typedef struct _msg_t {
     int type;                   /* request or response type */
     int sockfd;                 /* */
-    char rawdata[2 * STRLEN];   /* */
+    char rawdata[STRLEN + MSG_LEN];   /* */
 } bbsmsg_t;
 
 /*static msg_t     msgbuf;*/
