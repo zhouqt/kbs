@@ -504,7 +504,7 @@ void login_query()
                 sprintf(buf, "/bin/mv -f %s " BBSHOME "/mailback/%s", tmpstr, getCurrentUser()->userid);
                 system(buf);
                 /*给新注册的用户一封信 added by binxun .2003-6-24*/
-                #ifdef SMTH
+                #if defined(SMTH) || defined(ZIXIA)
                 mail_file(DELIVER,"etc/tonewuser",getCurrentUser()->userid,"致新注册用户的信",0,NULL);
                 #endif
                 break;
