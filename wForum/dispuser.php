@@ -76,7 +76,7 @@ if ($user['userdefine0'] & BBS_DEF_SHOWDETAILUSERDATA) {
   <col width=20% ><col width=*><col width=40% > 
   <tr> 
     <th colspan=2 align=left height=25>基本资料</th>
-    <td rowspan=7 align=center class=TableBody1 width=40% valign=top>
+    <td rowspan=8 align=center class=TableBody1 width=40% valign=top>
 <?php
 	$photo_url=htmlspecialchars(trim($user['photo_url']),ENT_QUOTES);
 	if ($photo_url!='') {
