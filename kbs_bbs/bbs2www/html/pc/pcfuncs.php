@@ -296,7 +296,7 @@ function pc_friend_list($uid)
 	$i = 0;
 	while(!feof($fp))
 	{
-		$line = trim(fgets($fp,12));
+		$line = trim(fgets($fp,14));
 		if(!$line)
 			continue;
 		$friendlist[$i] = $line;
@@ -314,7 +314,7 @@ function pc_add_friend($id,$uid)
 	else
 	{
 		$fp = $file["FP"];
-		fputs($fp,$id."\n");
+		fputs($fp,$id."\n",strlen($id)+2);
 		pc_friend_file_close($fp);
 		return TRUE;
 	}
@@ -329,7 +329,7 @@ function pc_del_friend($id,$uid)
 		for($i = 0;$i < count($friendlist); $i ++ )
 		{
 			if(strtolower($id)!=strtolower($friendlist[$i]))
-				fputs($fp,$friendlist[$i]."\n");
+				fputs($fp,$friendlist[$i]."\n",strlen($friendlist[$i])+2);
 		}
 		pc_friend_file_close($fp);
 	}
