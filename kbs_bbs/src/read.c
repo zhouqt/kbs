@@ -182,9 +182,7 @@ int move_cursor_line(struct keeploc *locmem, int mode)
 static void draw_title(void (*dotitle) ())
 {
     move(0, 0);
-    clear();
     (*dotitle) ();
-    clrtobot();
 }
 
 /*---	Modified by period	2000-11-12	---*
@@ -201,8 +199,8 @@ void draw_entry(READ_FUNC doentry, struct keeploc *locmem, int num, int ssize, c
     char foroutbuf[512];
 
     base = locmem->top_line;
-    move(3, 0);
     for (i = 0; i < num; i++) {
+        move(i+3, 0);
         str = (*doentry) (foroutbuf, base + i, &pnt[i * ssize]);
 	/*
         if (!check_stuffmode())
@@ -212,7 +210,11 @@ void draw_entry(READ_FUNC doentry, struct keeploc *locmem, int num, int ssize, c
         else
             showstuff(str);
 	    */
-        prints("\n");
+        clrtoeol();
+    }
+    for(i=num+3; i<t_lines-1; i++) {
+        move(i, 0);
+        clrtoeol();
     }
     move(t_lines - 1, 0);
     update_endline();
@@ -257,7 +259,6 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
     modify_user_mode(cmdmode);
     pnt = calloc(t_lines, ssize);
     draw_title(dotitle);
-    clrtobot();
     last_line = get_num_records(currdirect, ssize);
     if (last_line == 0) {
         if (cmdmode == RMAIL) {
@@ -465,7 +466,6 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
             }
         case FULLUPDATE:
             draw_title(dotitle);
-            clrtobot();
         case PARTUPDATE:
             if (last_line < locmem->top_line + screen_len) {
                 num = get_num_records(currdirect, ssize);
@@ -491,7 +491,6 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
                 locmem->crs_line = last_line;
 
             move(3, 0);
-            clrtobot();
             if (TDEFINE(TDEF_SPLITSCREEN)&&cmdmode!=GMENU) {
 		lastfile[0]=0;
             	set_alarm(0,300*1000,NULL,NULL);
