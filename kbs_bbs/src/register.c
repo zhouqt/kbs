@@ -304,135 +304,98 @@ void check_register_info()
         pressreturn();
     }
 #ifdef HAVE_BIRTHDAY
-	if (currentuser->lastlogin - currentuser->firstlogin < 3 * 86400)
+	if (!is_valid_date(curruserdata.birthyear+1900, curruserdata.birthmonth,
+				curruserdata.birthday))
 	{
-		if (currentuser->numlogins == 1)
-		{
-			time_t now;
-			struct tm *tmnow;
-			FILE *fout;
-			char buf2[STRLEN];
+		time_t now;
+		struct tm *tmnow;
 
-			now = time(0);
-			tmnow = localtime(&now);
-			clear();
-			buf[0] = '\0';
-			while (buf[0] < '1' || buf[0] > '2')
-			{
-				getdata(2, 0, "请输入你的性别: [1]男的 [2]女的 (1 or 2): ",
-						buf, 2, DOECHO, NULL, true);
-			}
-			switch (buf[0])
-			{
-			case '1':
-				currentuser->gender = 'M';
-				break;
-			case '2':
-				currentuser->gender = 'F';
-				break;
-			}
-			move(4, 0);
-			prints("请输入您的出生日期");
-			while (currentuser->birthyear < tmnow->tm_year - 98
-				   || currentuser->birthyear > tmnow->tm_year - 3)
-			{
-				buf[0] = '\0';
-				getdata(5, 0, "四位数公元年: ", buf, 5, DOECHO, NULL, true);
-				if (atoi(buf) < 1900)
-					continue;
-				currentuser->birthyear = atoi(buf) - 1900;
-			}
-			while (currentuser->birthmonth < 1 || currentuser->birthmonth > 12)
-			{
-				buf[0] = '\0';
-				getdata(6, 0, "出生月: (1-12) ", buf, 3, DOECHO, NULL, true);
-				currentuser->birthmonth = atoi(buf);
-			}
-			do
-			{
-				buf[0] = '\0';
-				getdata(7, 0, "出生日: (1-31) ", buf, 3, DOECHO, NULL, true);
-				currentuser->birthday = atoi(buf);
-			} while (!is_valid_date(currentuser->birthyear + 1900,
-						currentuser->birthmonth,
-						currentuser->birthday));
-			sprintf(buf, "tmp/newcomer.%s", currentuser->userid);
-			if ((fout = fopen(buf, "w")) != NULL)
-			{
-				fprintf(fout, "大家好,\n\n");
-				fprintf(fout, "我是 %s (%s), 来自 %s\n", currentuser->userid,
-						currentuser->username, fromhost);
-				fprintf(fout, "今天%s初来此站报到, 请大家多多指教。\n",
-						(currentuser->gender == 'M') ? "小弟" : "小女子");
-				move(9, 0);
-				prints("请作个简短的个人简介, 向本站其他使用者打个招呼\n");
-				prints("(最多三行, 写完可直接按 <Enter> 跳离)....");
-				getdata(11, 0, ":", buf2, 75, DOECHO, NULL, true);
-				if (buf2[0] != '\0')
-				{
-					fprintf(fout, "\n\n自我介绍:\n\n");
-					fprintf(fout, "%s\n", buf2);
-					getdata(12, 0, ":", buf2, 75, DOECHO, NULL, true);
-					if (buf2[0] != '\0')
-					{
-						fprintf(fout, "%s\n", buf2);
-						getdata(13, 0, ":", buf2, 75, DOECHO, NULL, true);
-						if (buf2[0] != '\0')
-						{
-							fprintf(fout, "%s\n", buf2);
-						}
-					}
-				}
-				fclose(fout);
-				sprintf(buf2, "新手上路: %s", currentuser->username);
-				post_file(currentuser, "", buf, "newcomers", buf2, 0, 2);
-				unlink(buf);
-			}
-			pressanykey();
+		now = time(0);
+		tmnow = localtime(&now);
+		clear();
+		buf[0] = '\0';
+		while (buf[0] < '1' || buf[0] > '2')
+		{
+			getdata(2, 0, "请输入你的性别: [1]男的 [2]女的 (1 or 2): ",
+					buf, 2, DOECHO, NULL, true);
 		}
+		switch (buf[0])
+		{
+		case '1':
+			curruserdata.gender = 'M';
+			break;
+		case '2':
+			curruserdata.gender = 'F';
+			break;
+		}
+		move(4, 0);
+		prints("请输入您的出生日期");
+		while (curruserdata.birthyear < tmnow->tm_year - 98
+			   || curruserdata.birthyear > tmnow->tm_year - 3)
+		{
+			buf[0] = '\0';
+			getdata(5, 0, "四位数公元年: ", buf, 5, DOECHO, NULL, true);
+			if (atoi(buf) < 1900)
+				continue;
+			curruserdata.birthyear = atoi(buf) - 1900;
+		}
+		while (curruserdata.birthmonth < 1 || curruserdata.birthmonth > 12)
+		{
+			buf[0] = '\0';
+			getdata(6, 0, "出生月: (1-12) ", buf, 3, DOECHO, NULL, true);
+			curruserdata.birthmonth = atoi(buf);
+		}
+		do
+		{
+			buf[0] = '\0';
+			getdata(7, 0, "出生日: (1-31) ", buf, 3, DOECHO, NULL, true);
+			curruserdata.birthday = atoi(buf);
+		} while (!is_valid_date(curruserdata.birthyear + 1900,
+					curruserdata.birthmonth,
+					curruserdata.birthday));
+		write_userdata(currentuser->userid, &curruserdata);
 	}
 #endif
 #ifdef NEW_COMERS
-    if (currentuser->numlogins == 1)
-    {
-        time_t now;
-        struct tm *tmnow;
-        FILE *fout;
-        char buf2[STRLEN];
-	clear();
-	sprintf(buf, "tmp/newcomer.%s", currentuser->userid);
-	if ((fout = fopen(buf, "w")) != NULL)
+	if (currentuser->numlogins == 1)
 	{
-		fprintf(fout, "大家好,\n\n");
-		fprintf(fout, "我是 %s (%s), 来自 %s\n", currentuser->userid,
-				currentuser->username, fromhost);
-		fprintf(fout, "今天%s初来此站报到, 请大家多多指教。\n",
-				"小弟");
-		move(9, 0);
-		prints("请作个简短的个人简介, 向本站其他使用者打个招呼\n");
-		prints("(最多三行, 写完可直接按 <Enter> 跳离)....");
-		getdata(11, 0, ":", buf2, 75, DOECHO, NULL, true);
-		if (buf2[0] != '\0')
+		FILE *fout;
+		char buf2[STRLEN];
+
+		sprintf(buf, "tmp/newcomer.%s", currentuser->userid);
+		if ((fout = fopen(buf, "w")) != NULL)
 		{
-			fprintf(fout, "\n\n自我介绍:\n\n");
-			fprintf(fout, "%s\n", buf2);
-			getdata(12, 0, ":", buf2, 75, DOECHO, NULL, true);
+			fprintf(fout, "大家好,\n\n");
+			fprintf(fout, "我是 %s (%s), 来自 %s\n", currentuser->userid,
+					currentuser->username, fromhost);
+			fprintf(fout, "今天%s初来此站报到, 请大家多多指教。\n",
+					(curruserdata.gender == 'M') ? "小弟" : "小女子");
+			move(9, 0);
+			prints("请作个简短的个人简介, 向本站其他使用者打个招呼\n");
+			prints("(最多三行, 写完可直接按 <Enter> 跳离)....");
+			getdata(11, 0, ":", buf2, 75, DOECHO, NULL, true);
 			if (buf2[0] != '\0')
 			{
+				fprintf(fout, "\n\n自我介绍:\n\n");
 				fprintf(fout, "%s\n", buf2);
-				getdata(13, 0, ":", buf2, 75, DOECHO, NULL, true);
+				getdata(12, 0, ":", buf2, 75, DOECHO, NULL, true);
 				if (buf2[0] != '\0')
 				{
 					fprintf(fout, "%s\n", buf2);
+					getdata(13, 0, ":", buf2, 75, DOECHO, NULL, true);
+					if (buf2[0] != '\0')
+					{
+						fprintf(fout, "%s\n", buf2);
+					}
 				}
 			}
+			fclose(fout);
+			sprintf(buf2, "新手上路: %s", currentuser->username);
+			post_file(currentuser, "", buf, "newcomers", buf2, 0, 2);
+			unlink(buf);
 		}
-		fclose(fout);
-		sprintf(buf2, "新手上路: %s", currentuser->username);
-		post_file(currentuser, "", buf, "newcomers", buf2, 0, 2);
-		unlink(buf);
-    }
-    	}
+		pressanykey();
+	}
 #endif
     if (!strcmp(currentuser->userid, "SYSOP")) {
         currentuser->userlevel = ~0;
