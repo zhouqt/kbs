@@ -1368,7 +1368,7 @@ void call_alias(chatcontext * pthis, const char *arg)
 }
 void call_mail(chatcontext * pthis, const char *arg)
 {                               /* added by Luzi, 1997/12/22 */
-    extern char currmaildir[STRLEN];
+    extern char currdirect[255];
     fileheader mailheader;
     FILE *fpin;
     char b2[STRLEN];
@@ -1378,8 +1378,8 @@ void call_mail(chatcontext * pthis, const char *arg)
         printchatline(pthis, "\033[32m*** 没有新的信件 ***\033[m");
         return;
     }
-    setmailfile(currmaildir, currentuser->userid, DOT_DIR);
-    fpin = fopen(currmaildir, "rb");
+    setmailfile(currdirect, currentuser->userid, DOT_DIR);
+    fpin = fopen(currdirect, "rb");
     if (fpin == NULL)
         return;
     printchatline(pthis, "\033[32m【当前新的信件如下】\033[m");

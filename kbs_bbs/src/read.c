@@ -252,7 +252,11 @@ int i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, str
     /* add end */
 
     /* add by stiger */
-    sprintf(ding_direct,"boards/%s/%s",currboard->filename,DING_DIR);
+    if ((cmdmode != RMAIL && cmdmode != GMENU)&&
+        (digestmode==DIR_MODE_NORMAL||digestmode==DIR_MODE_THREAD))
+  	  	sprintf(ding_direct,"boards/%s/%s",currboard->filename,DING_DIR);
+	else
+		ding_direct[0]='\0';
     /* add end */
 
     /*---	Moved from top of file	period	2000-11-12	---*/
@@ -477,7 +481,11 @@ int i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, str
         switch (mode) {
         case NEWDIRECT:
         case DIRCHANGED:
-    sprintf(ding_direct,"boards/%s/%s",currboard->filename,DING_DIR);
+    if ((cmdmode != RMAIL && cmdmode != GMENU)&&
+        (digestmode==DIR_MODE_NORMAL||digestmode==DIR_MODE_THREAD))
+    	sprintf(ding_direct,"boards/%s/%s",currboard->filename,DING_DIR);
+	else
+		ding_direct[0]='\0';
             recbase = -1;
             last_line = get_num_records(currdirect, ssize);
     /* add by stiger */

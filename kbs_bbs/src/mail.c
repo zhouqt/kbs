@@ -50,7 +50,8 @@ int cmpinames();                /* added by Leeward 98.04.10 */
 extern int numofsig;
 extern char quote_user[];
 char *sysconf_str();
-char currmaildir[STRLEN];
+//char currmaildir[STRLEN];
+extern char currdirect[];
 
 #define maxrecp 300
 
@@ -68,9 +69,10 @@ int chkmail()
     int i, offset;
     long numfiles;
     unsigned char ch;
-    extern char currmaildir[STRLEN];
+    char curmaildir[STRLEN];
 
-    m_init();
+    setmailfile(curmaildir, currentuser->userid, DOT_DIR);
+
     if (!HAS_PERM(currentuser, PERM_BASIC)) {
         return 0;
     }
@@ -78,7 +80,7 @@ int chkmail()
      * ylsdd 2001.4.23: ¼ì²âÎÄ¼ş×´Ì¬Ó¦¸ÃÔÚget_mailnum£¬get_sum_recordsÖ®Ç°£¬·ñÔòÆñ²»ÊÇ
      * Òª×ö´óÁ¿ÎŞÓÃµÄÏµÍ³µ÷ÓÃ. ÔÚÕâ¸ö¸Ä¶¯ÖĞÒ²°Ñfstat¸ÄÎªstatÁË£¬½ÚÊ¡Ò»¸öopen&close 
      */
-    if (stat(currmaildir, &st) < 0)
+    if (stat(curmaildir, &st) < 0)
         return (ismail = 0);
     if (lasttime >= st.st_mtime)
         return ismail;
@@ -87,7 +89,7 @@ int chkmail()
     if (chkusermail(currentuser))
         return (ismail = 2);
     offset = (int) ((char *) &(fh.accessed[0]) - (char *) &(fh));
-    if ((fd = open(currmaildir, O_RDONLY)) < 0)
+    if ((fd = open(curmaildir, O_RDONLY)) < 0)
         return (ismail = 0);
     lasttime = st.st_mtime;
     numfiles = st.st_size;
@@ -115,9 +117,8 @@ int get_mailnum()
     struct stat st;
     int fd;
     register int numfiles;
-    extern char currmaildir[STRLEN];
 
-    if ((fd = open(currmaildir, O_RDONLY)) < 0)
+    if ((fd = open(currdirect, O_RDONLY)) < 0)
         return 0;
     fstat(fd, &st);
     numfiles = st.st_size;
@@ -314,10 +315,6 @@ void m_internet()
     clear();
 }
 
-void m_init()
-{
-    setmailfile(currmaildir, currentuser->userid, DOT_DIR);
-}
 
 /* ·µ»ØÖµ¶¨Òå: 
   *   -1  ÊÕĞÅÕß²»´æÔÚ;  -2 È¡Ïû·¢ĞÅ;
@@ -759,7 +756,7 @@ int mrd;
 int delete_new_mail(struct fileheader *fptr, int idc, void *arg)
 {
     if (fptr->accessed[1] & FILE_DEL) {
-        del_mail(idc, fptr, currmaildir);
+        del_mail(idc, fptr, currdirect);
         return 1;
     }
     return 0;
@@ -792,7 +789,7 @@ int read_new_mail(struct fileheader *fptr, int idc, void *arg)
         prints("(R)»ØĞÅ, (D)É¾³ı, (G)¼ÌĞø ? [G]: ");
         switch (igetkey()) {
         case Ctrl('Y'):
-            zsend_post(idc, fptr, currmaildir);
+            zsend_post(idc, fptr, currdirect);
             break;
         case 'R':
         case 'r':
@@ -807,7 +804,7 @@ int read_new_mail(struct fileheader *fptr, int idc, void *arg)
                 pressreturn();
                 break;
             }
-            mail_reply(idc, fptr, currmaildir);
+            mail_reply(idc, fptr, currdirect);
             /*
              * substitute_record(currmaildir, fptr, sizeof(*fptr), dc);
              */
@@ -829,7 +826,7 @@ int read_new_mail(struct fileheader *fptr, int idc, void *arg)
             fptr->accessed[1] |= FILE_DEL;
         }
     }
-    if (substitute_record(currmaildir, fptr, sizeof(*fptr), idc))
+    if (substitute_record(currdirect, fptr, sizeof(*fptr), idc))
         return -1;
     clear();
     return 0;
@@ -840,14 +837,14 @@ int m_new()
     clear();
     mrd = 0;
     modify_user_mode(RMAIL);
-    setmailfile(currmaildir, currentuser->userid, ".DIR");
-    if (apply_record(currmaildir, (APPLY_FUNC_ARG) read_new_mail, sizeof(struct fileheader), NULL, 1, false) == -1) {
+    setmailfile(currdirect, currentuser->userid, ".DIR");
+    if (apply_record(currdirect, (APPLY_FUNC_ARG) read_new_mail, sizeof(struct fileheader), NULL, 1, false) == -1) {
         clear();
         move(0, 0);
         prints("No new messages\n\n\n");
         return -1;
     }
-    apply_record(currmaildir, (APPLY_FUNC_ARG) delete_new_mail, sizeof(struct fileheader), NULL, 1, true);
+    apply_record(currdirect, (APPLY_FUNC_ARG) delete_new_mail, sizeof(struct fileheader), NULL, 1, true);
 /*    	
     if (delcnt) {
         while (delcnt--)
@@ -883,7 +880,7 @@ void mailtitle()
         UsedSpace = 1;
     else if (UsedSpace < 0)
         UsedSpace = 0;
-    prints("[44m±àºÅ    %-12s %6s  %-13sÄúµÄĞÅÏäÉÏÏŞÈİÁ¿%4dK£¬µ±Ç°ÒÑÓÃ%4dK ", (strstr(currmaildir, ".SENT")) ? "ÊÕĞÅÕß" : "·¢ĞÅÕß", "ÈÕ  ÆÚ", "±ê  Ìâ", MailSpace, UsedSpace);    /* modified by dong , 1998.9.19 */
+    prints("[44m±àºÅ    %-12s %6s  %-13sÄúµÄĞÅÏäÉÏÏŞÈİÁ¿%4dK£¬µ±Ç°ÒÑÓÃ%4dK ", (strstr(currdirect, ".SENT")) ? "ÊÕĞÅÕß" : "·¢ĞÅÕß", "ÈÕ  ÆÚ", "±ê  Ìâ", MailSpace, UsedSpace);    /* modified by dong , 1998.9.19 */
     clrtoeol();
     prints("\n");
     resetcolor();
@@ -1454,9 +1451,11 @@ struct one_key mail_comms[] = {
 
 int m_read()
 {
-    m_init();
+    char curmaildir[STRLEN];
+
+    setmailfile(curmaildir, currentuser->userid, DOT_DIR);
     in_mail = true;
-    i_read(RMAIL, currmaildir, mailtitle, (READ_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
+    i_read(RMAIL, curmaildir, mailtitle, (READ_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
     in_mail = false;
     return FULLUPDATE /* 0 */ ;
 }
@@ -2305,6 +2304,7 @@ static int maillist_onselect(struct _select_def *conf)
 {
     struct mail_proc_arg *arg = (struct mail_proc_arg *) conf->arg;
     char buf[20];
+    char curmaildir[STRLEN];
 
     if (conf->pos <= arg->cmdnum) {
         /*
@@ -2315,9 +2315,9 @@ static int maillist_onselect(struct _select_def *conf)
         int sel;
 
         sel = conf->pos - arg->cmdnum - 1;
-        setmailfile(currmaildir, currentuser->userid, mail_sysbox[sel]);
+        setmailfile(curmaildir,currentuser->userid, mail_sysbox[sel]);
         in_mail = true;
-        i_read(RMAIL, currmaildir, mailtitle, (READ_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
+        i_read(RMAIL, curmaildir, mailtitle, (READ_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
         in_mail = false;
         /*
          * ÏµÍ³ÓÊÏä
@@ -2330,9 +2330,9 @@ static int maillist_onselect(struct _select_def *conf)
 
         sel = conf->pos - arg->sysboxnum - arg->cmdnum - 1;
         sprintf(buf, ".%s", user_mail_list.mail_list[sel] + 30);
-        setmailfile(currmaildir, currentuser->userid, buf);
+        setmailfile(curmaildir, currentuser->userid, buf);
         in_mail = true;
-        i_read(RMAIL, currmaildir, mailtitle, (READ_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
+        i_read(RMAIL, curmaildir, mailtitle, (READ_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
         in_mail = false;
     }
     modify_user_mode(MAIL);
