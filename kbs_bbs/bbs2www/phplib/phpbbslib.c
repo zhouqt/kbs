@@ -7401,6 +7401,7 @@ static PHP_FUNCTION(bbs_get_explain)
 	int ac = ZEND_NUM_ARGS();
 	zval *element,*retarray;
 	int i;
+	extern const char **secname;
 
     if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "a", &retarray) == FAILURE) {
 		WRONG_PARAM_COUNT;
