@@ -144,7 +144,7 @@ struct userec *udata;
 showstuff(buf)
 char    buf[256];
 {
-    extern time_t   login_start_time;
+    struct userec douser;
     int     frg,
     i,
     matchfrg,
@@ -220,18 +220,22 @@ char    buf[256];
             NULL,           NULL,
         };
 
-    stuffstr[ST_USERID]=currentuser->userid;
-	stuffstr[ST_USERNAME]=currentuser->username;
-	stuffstr[ST_REALNAME]=currentuser->realname;
-	stuffstr[ST_ADDRESS]=currentuser->address;
-	stuffstr[ST_EMAIL]=currentuser->email;
-	stuffstr[ST_REALEMAIL]=currentuser->realemail;
-	stuffstr[ST_IDENT]=currentuser->ident;
+	if (currentuser) 
+		douser=*currentuser;
+	else
+		bzero(douser,sizeof(struct userec));
+    stuffstr[ST_USERID]=douser.userid;
+	stuffstr[ST_USERNAME]=douser.username;
+	stuffstr[ST_REALNAME]=douser.realname;
+	stuffstr[ST_ADDRESS]=douser.address;
+	stuffstr[ST_EMAIL]=douser.email;
+	stuffstr[ST_REALEMAIL]=douser.realemail;
+	stuffstr[ST_IDENT]=douser.ident;
 	stuffstr[ST_RGTDAY]=rgtday;
 	stuffstr[ST_NUMLOGINS]=numlogins;
 	stuffstr[ST_NUMPOSTS]=numposts;
 	stuffstr[ST_LASTTIME]=lasttime;
-	stuffstr[ST_LASTHOST]=currentuser->lasthost;
+	stuffstr[ST_LASTHOST]=douser.lasthost;
 	stuffstr[ST_THISTIME]=thistime;
 	stuffstr[ST_BOARDNAME]=BoardName;
 	stuffstr[ST_STAY]=stay;
@@ -253,11 +257,11 @@ char    buf[256];
     tmpnum=countperf(currentuser);
     sprintf(perf,"%d",tmpnum);
     strcpy(ccperf,cperf(tmpnum));
-    sprintf(tin, "%d", post_in_tin(currentuser->userid));
+    sprintf(tin, "%d", post_in_tin(douser.userid));
 #endif
-    sprintf(alltime,"%d小时%d分钟",currentuser->stay/3600,(currentuser->stay/60)%60);
-    sprintf(rgtday, "%24.24s",ctime(&currentuser->firstlogin));
-    sprintf(lasttime, "%24.24s",ctime(&currentuser->lastlogin));
+    sprintf(alltime,"%d小时%d分钟",douser.stay/3600,(douser.stay/60)%60);
+    sprintf(rgtday, "%24.24s",ctime(&douser.firstlogin));
+    sprintf(lasttime, "%24.24s",ctime(&douser.lastlogin));
     sprintf(thistime,"%24.24s",ctime(&now));
     sprintf(stay,"%d",(time(0) - login_start_time) / 60);
     /*---	modified by period	hide posts/logins	2000-11-02	---*/
@@ -268,8 +272,8 @@ char    buf[256];
     } else
 #endif
     {
-        sprintf(numlogins, "%d", currentuser->numlogins);
-        sprintf(numposts, "%d", currentuser->numposts);
+        sprintf(numlogins, "%d", douser.numlogins);
+        sprintf(numposts, "%d", douser.numposts);
     }
 
 
