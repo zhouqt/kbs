@@ -4107,6 +4107,7 @@ int tmpl_init(int mode){
 int tmpl_free(){
 
 	orig_tmpl_free( & ptemplate, template_num );
+	template_num = 0;
 
 }
 
