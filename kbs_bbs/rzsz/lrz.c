@@ -675,7 +675,7 @@ static int procheader(char *name, struct zm_fileinfo *zi)
             return (OK);
         }
 #endif
-#ifdef 0
+/*
         if (Thisbinary && zconv == ZCRESUM) {
             struct stat st;
 
@@ -697,7 +697,7 @@ static int procheader(char *name, struct zm_fileinfo *zi)
                 if ((unsigned long) st.st_size > zi->bytes_total) {
                     can_resume = FALSE;
                 }
-                /* retransfer whole blocks */
+
                 zi->bytes_skipped = st.st_size & ~(1023);
                 if (can_resume) {
                     if (fseek(fout, (long) zi->bytes_skipped, SEEK_SET)) {
@@ -705,14 +705,14 @@ static int procheader(char *name, struct zm_fileinfo *zi)
                         return ZFERR;
                     }
                 } else
-                    zi->bytes_skipped = 0;      /* resume impossible, file has changed */
+                    zi->bytes_skipped = 0;
                 goto buffer_it;
             }
             zi->bytes_skipped = 0;
             if (fout)
                 fclose(fout);
-        }
-#endif
+        }*/
+        zi->bytes_skipped = 0;
         strcpy(fname, name_static);
         fout = fopen(name_static, openmode);
         if (!fout) {
