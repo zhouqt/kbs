@@ -239,8 +239,6 @@ function showBroadcast($boardID,$boardName){
   $sth->free();
 ?>
 	</marquee>
-	<td align=right width=240>
-
 </td></tr></table>
 </td></tr>
 <?php

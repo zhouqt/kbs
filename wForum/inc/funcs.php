@@ -378,7 +378,7 @@ function showLogon($showBack = 0){
 				<input type=radio name=CookieDate value=2>保存一月<br>
 				<input type=radio name=CookieDate value=3>保存一年<br>                
 	</td></tr>
-	<input type=hidden name=comeurl value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
+	<input type=hidden name=comeurl value="<?php echo htmlspecialchars($_SERVER[$showBack?'REQUEST_URI':'HTTP_REFERER']); ?>">
 	<tr>
 	<td class=TableBody2 valign=middle colspan=2 align=center><input tabindex="3" type=submit name=submit value="登 录">
 <?php
