@@ -400,7 +400,7 @@ int msg_can_sendmsg(char *userid, int utmpnum)
     return 1;
 }
 
-int save_msg(char *uident, char *msgbuf)
+int save_msgtext(char *uident, char *msgbuf)
 {
     char fname[STRLEN], fname2[STRLEN];
     int fd, fd2, i, j, count, size;
@@ -484,6 +484,19 @@ int get_msgcount(char *uident)
     return count;
 }
 
+int clear_msg(char *uident)
+{
+    char fname[STRLEN], fname2[STRLEN];
+
+    sethomefile(fname, uident, "msgindex");
+    sethomefile(fname2, uident, "msgcontent");
+
+    unlink(fname);
+    unlink(fname2);
+
+    return 0;
+}
+
 int get_unreadmsg(char *uident)
 {
     char fname[STRLEN];
@@ -525,7 +538,7 @@ int get_unreadmsg(char *uident)
     return ret;
 }
 
-int load_msg(char *uident, int index, char *msgbuf)
+int load_msgtext(char *uident, int index, char *msgbuf)
 {
     char fname[STRLEN], fname2[STRLEN];
     int fd, fd2, i, j, count, size, now, next;
