@@ -255,7 +255,7 @@ void send_msg(int u, char* msg)
     while(strlen(buf)>=54) {
         k=0;
         for(i=0;i<strlen(buf);i++) {
-            if(k==0&&i<=53) break;
+            if(k==0&&i>=53) break;
             if(k) k=0;
             else if(buf[i]<0) k=1;
         }
@@ -1174,7 +1174,7 @@ checkvote:
                 if(!speak_data[i].verb) break;
                 if(!strcmp(speak_data[i].verb, buf)) {
                     k=0;
-                    sprintf(buf, "%s %s: %s", speak_data[i].part1_msg, buf2, buf3);
+                    sprintf(buf, "%s: %s", speak_data[i].part1_msg, buf2);
                     break;
                 }
             }
