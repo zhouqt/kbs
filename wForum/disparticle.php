@@ -423,7 +423,7 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 
 function showTreeItem($boardName,$groupID,$article,$startNum,$level, $lastflag){
 	global $start; //不好意思，搞个全局变量 - atppp
-	echo '<tr><td class="TableBody2" width="100%" height="22" colspan="2">';
+	echo '<tr><td class="TableBody'.($start==$startNum?1:2).'" width="100%" height="22" colspan="2">';
 	for ($i=0;$i<$level;$i++) {
 		if ($lastflag[$i]) {
 			if ($i == $level - 1) echo '<img src="pic/treenode2.gif"/>'; // |-
@@ -436,20 +436,17 @@ function showTreeItem($boardName,$groupID,$article,$startNum,$level, $lastflag){
 	if ($article == null) {
 		echo ' ... <a href="disparticle.php?boardName='.$boardName.'&amp;ID='.$groupID.'&amp;start='.$startNum.'&amp;listType=1"><span style="color:red">还有更多</span></a> ...';
 	} else {
-		if ($start==$startNum) {
-			echo "<font color=\"#FF0000\">";
-		}
 		echo '<img src="face/face1.gif" height="16" width="16"/>  <a href="disparticle.php?boardName='.$boardName.'&amp;ID='.$groupID.'&amp;start='.$startNum.'&amp;listType=1">';
-		echo htmlspecialchars($article['TITLE'],ENT_QUOTES).' </a><i><font color="gray">(';
+		if ($start==$startNum) echo "<font color=\"red\">";
+		echo htmlspecialchars($article['TITLE'],ENT_QUOTES);
+		if ($start==$startNum) echo "</font>";
+		echo ' </a><i><font color="gray">(';
 		if ($article["EFFSIZE"] < 1000) echo $article["EFFSIZE"];
 		else {
 			printf("%.1f",$article["EFFSIZE"]/1000.0); echo "k";
 		}
 		echo '字)</font> － <a href="dispuser.php?id='.$article['OWNER'].'" target="_blank" title="作者资料"><font color="gray">'.$article['OWNER'].'</font></a>，'.strftime("%Y年%m月%d日 %T",$article['POSTTIME']);
 		echo '</i>';
-		if ($start==$startNum) {
-			echo "</font>";
-		}
 	}
 	echo '</td></tr>';	
 }
