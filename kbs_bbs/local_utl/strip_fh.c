@@ -36,7 +36,10 @@ static void strip_fileheader(const fileheader_v1_2 *oldfh, fileheader *fh,
 	fh->reid = oldfh->reid;
 #if defined(FILTER) || defined(COMMEND_ARTICLE)
 	if (strcmp(bname, FILTER_BOARD) == 0 
-			|| strcmp(bname, COMMEND_ARTICLE) == 0)
+#ifdef COMMEND_ARTICLE
+			|| strcmp(bname, COMMEND_ARTICLE) == 0
+#endif
+			)
 	{
 		if (oldfh->o_board[0] != '\0'
 			&& (fh->o_bid = getboardnum(oldfh->o_board, NULL)) == 0)
