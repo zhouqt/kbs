@@ -24,10 +24,10 @@ int main()
 	printf("<tr><td>");
 	if(!loginok)
 	{
-		printf( "<form action=\"bbslogin\" method=\"post\" target=\"_top\"><br>\n"
+		printf( "<form action=\"/bbslogin.jsp\" method=\"post\" target=\"_top\"><br>\n"
 NAME_BBS_CHINESE "ÓÃ»§µÇÂ¼<br>\n"
 "ÕÊºÅ <input class=\"default\" type=\"text\" name=\"id\" maxlength=\"12\" size=\"8\"><br>\n"
-"ÃÜÂë <input class=\"default\" type=\"password\" name=\"pw\" maxlength=\"39\" size=\"8\"><br>\n"
+"ÃÜÂë <input class=\"default\" type=\"password\" name=\"passwd\" maxlength=\"39\" size=\"8\"><br>\n"
 "<input class=\"button\" type=\"submit\" value=\"µÇÂ¼½øÕ¾\">\n"
 "</form>\n");
 	}

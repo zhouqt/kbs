@@ -40,7 +40,7 @@ if ($utmpkey!="") {
   if (bbs_setonlineuser($userid,$utmpnum,$utmpkey,$currentuinfo)==0) {
     $loginok=1;
     $currentuinfo_num=bbs_getcurrentuinfo();
-    $currentuser_num=bbs_getcurrentuser($currentuuser);
+    $currentuser_num=bbs_getcurrentuser($currentuser);
   }
 } 
 ?>

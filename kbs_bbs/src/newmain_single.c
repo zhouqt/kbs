@@ -322,6 +322,7 @@ void multi_user_check()
 				int num;
 	            if ( !(num=search_ulist( &uin, cmpuids2, usernum) ))
 	                        return;  /* user isn't logged in */
+		    if (uin.pid!=1) {
 	            if (!uin.active || (kill(uin.pid,0) == -1))
 	                        return;  /* stale entry in utmp file */
 	/*---	modified by period	first try SIGHUP	2000-11-08	---*/
@@ -330,6 +331,7 @@ void multi_user_check()
 			    if(lres)
 	/*---	---*/
 	                kill(uin.pid,9);
+		    }
 	            sprintf(buffer, "kicked (multi-login)" );
 	            report(buffer);
 

@@ -239,24 +239,6 @@ static ZEND_FUNCTION(bbs_countuser)
     	RETURN_LONG(apply_utmpuid( NULL , idx,0));
 }
 
-static ZEND_FUNCTION(bbs_checkmulti)
-{
-    int count;
-    if (!getcurrentuser())
-    	RETURN_LONG(1);
-    if (!getcurrentuser_num()==-1)
-    	RETURN_LONG(1);
-    count = apply_utmpuid( NULL , getcurrentuser_num(),0);
-    if ((HAS_PERM(getcurrentuser(),PERM_BOARDS) || HAS_PERM(getcurrentuser(),PERM_CHATOP)|| HAS_PERM(currentuser,PERM_JURY) || HAS_PERM(currentuser,PERM_CHATCLOAK)) && count< 2)
-        RETURN_LONG(0);
-    if ( (get_utmp_number()<700)&&(count>=2) 
-           || (get_utmp_number()>=700)&& (count>=1) ) /*user login limit*/
-    {  
-		RETURN_LONG(1);
-    }
-    RETURN_LONG(0);
-}
-
 static ZEND_FUNCTION(bbs_checkpasswd)
 {
 	char* s;
@@ -289,20 +271,51 @@ static ZEND_FUNCTION(bbs_checkpasswd)
 	RETURN_LONG(ret);
 }
 
+static int cmpuids2(int unum, struct user_info *urec)
+{
+	    return (unum == urec->uid);
+}
+
 static ZEND_FUNCTION(bbs_wwwlogin)
 {
 	char buf[255];
 	long ret;
+	long kick_multi=0;
 #ifdef SQUID_ACCL
 	snprintf(buf, sizeof(buf), "ENTER ?@%s [www]", fullfrom);
 #else
 	snprintf(buf, sizeof(buf), "ENTER ?@%s [www]", fromhost);
 #endif
+	if(ZEND_NUM_ARGS() == 1) {
+          if (zend_parse_parameters(1 TSRMLS_CC, "l" , &kick_multi) != SUCCESS) {
+                WRONG_PARAM_COUNT;
+          }
+	}
 	bbslog("1system", buf);
 	if(strcasecmp(getcurrentuser()->userid, "guest")) {
 		struct user_info ui;
 		int utmpent;
                 time_t t;
+		int ret=1;
+		while (ret!=0) {
+			int lres;
+			int num;
+			struct user_info uin;
+			ret=multilogin_user(getcurrentuser(),getcurrentuser_num());
+			if ((ret!=0)&&(!kick_multi))
+				RETURN_LONG(-1);
+	                if ( !(num=search_ulist( &uin, cmpuids2, getcurrentuser_num()) ))
+	                        continue;  /* user isn't logged in */
+	                if (!uin.active || (kill(uin.pid,0) == -1))
+	                        continue;  /* stale entry in utmp file */
+	/*---	modified by period	first try SIGHUP	2000-11-08	---*/
+			lres = kill(uin.pid, SIGHUP);
+			sleep(1);
+			if(lres)
+	/*---	---*/
+	                  kill(uin.pid,9);
+			clear_utmp(num);
+		}
 
 		if(!HAS_PERM(getcurrentuser(), PERM_BASIC))
 			RETURN_LONG(3);
