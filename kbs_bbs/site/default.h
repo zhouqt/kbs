@@ -638,6 +638,7 @@ attach define
 #ifndef CHECK_IP_LINK
 #define CHECK_IP_LINK 0
 #else
+#undef CHECK_IP_LINK
 #define CHECK_IP_LINK 1
 #endif
 
