@@ -5,7 +5,9 @@
 	 */
 	require("funcs.php");
 login_init();
-	require("reg.inc.php");
+	if (!defined("SITE_ZIXIA")) {
+		require("reg.inc.php");
+	}
 	html_init("gb2312");
 
 	if ($loginok != 1)
@@ -28,23 +30,25 @@ login_init();
 		html_error_quit("请申请另外的帐号填写注册单!");
 
 	//检查激活码
-	$ret = bbs_getactivation($currentuser["userid"],$activation);
-	if($ret==0) //需要激活
-	{
-		if(!bbs_reg_haveactivated($activation))
-			html_error_quit("对不起，请先激活您的帐号。激活链接在您的注册Email里。<a href=\"/bbssendacode.php\">[我还没收到激活码]</a>");
-	
-		/*
-		if(strtolower($email) != strtolower(bbs_reg_getactivationemail($activation)))
-			html_error_quit("对不起，您的注册Email有变动，请<a href=\"/bbssendacode.php?react=1\">重新激活</a>");
-		*/
-		$email = bbs_reg_getactivationemail($activation);
+	if (!defined("SITE_ZIXIA")) {
+		$ret = bbs_getactivation($currentuser["userid"],$activation);
+		if($ret==0) //需要激活
+		{
+			if(!bbs_reg_haveactivated($activation))
+				html_error_quit("对不起，请先激活您的帐号。激活链接在您的注册Email里。<a href=\"/bbssendacode.php\">[我还没收到激活码]</a>");
+		
+			/*
+			if(strtolower($email) != strtolower(bbs_reg_getactivationemail($activation)))
+				html_error_quit("对不起，您的注册Email有变动，请<a href=\"/bbssendacode.php?react=1\">重新激活</a>");
+			*/
+			$email = bbs_reg_getactivationemail($activation);
+		}
+		
+		//48小时后才让注册
+		if ( time() - $currentuser["firstlogin"] < MIN_REG_TIME * 3600 )
+			html_error_quit("请于第一次登录 ".MIN_REG_TIME."小时 后再填写注册单，先熟悉一下这里的环境吧。");
 	}
-	
-	//48小时后才让注册
-	if ( time() - $currentuser["firstlogin"] < MIN_REG_TIME * 3600 )
-		html_error_quit("请于第一次登录 ".MIN_REG_TIME."小时 后再填写注册单，先熟悉一下这里的环境吧。");
-	
+		
 	//用户已经通过注册
 	//未满等待时间(先放到phplib里面做了)
 	if(!strcmp($gender,"男"))$gender=1;

@@ -31,8 +31,14 @@ html_init("gb2312","","",1);
 您好！<br /><br />
 &nbsp;&nbsp;&nbsp;&nbsp;欢迎来到<?php echo BBS_FULL_NAME; ?>，目前您的状态是新人。如果您想拥有发文、聊天、信件和信息等权利，请按照如下演示，注册成为本站合法用户：<br /><br />
 <ol>
+<?php
+	if (!defined("SITE_ZIXIA")) {
+?>
 <li>激活帐户，激活码在您的注册信箱内，如果您还未收到本站发出的激活码，请<a href="/bbssendacode.php">点击此处重新发送激活码</a>。</li>
 <li>熟悉一下本站的环境，在 <?php echo MIN_REG_TIME; ?> 小时后填写注册单。</li>
+<?php
+	}
+?>
 <li>填写注册单。注册单在本站站务手工认证通过以后，你就将成为本站合法用户。 请<a href="/bbsfillform.html">点击此处填写注册单</a>。</li>
 </ol>
 </td></tr>
