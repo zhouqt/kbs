@@ -443,6 +443,47 @@ int XCheckLevel()
     return 0;
 }
 
+int Xdelipacl()
+{
+    int id;
+    struct userec *lookupuser;
+
+    if (HAS_PERM(currentuser, PERM_SYSOP)) {
+        move(3, 0);
+        clrtobot();
+        prints("抱歉, 只有SYSOP权限的管理员才能修改其他用户权限");
+        pressreturn();
+        return 0;
+    }
+
+    modify_user_mode(ADMIN);
+    if (!check_systempasswd()) {
+        return 0;
+    }
+    clear();
+    move(0, 0);
+    prints("删除" NAME_USER_SHORT "的IP控制\n");
+    clrtoeol();
+    move(1, 0);
+    usercomplete("请输入" NAME_USER_SHORT " ID: ", genbuf);
+    if (genbuf[0] == '\0') {
+        clear();
+        return 0;
+    }
+    if (!(id = getuser(genbuf, &lookupuser))) {
+        move(3, 0);
+        prints("非法 ID");
+        clrtoeol();
+        pressreturn();
+        clear();
+        return 0;
+    }
+    sprintf(genbuf, "home/%c/%s/ipacl", toupper(lookupuser->userid[0]), lookupuser->userid);
+    unlink(genbuf);
+    clear();
+    return 0;
+}
+
 #ifdef SMS_SUPPORT
 int x_usersmsdef()
 {
