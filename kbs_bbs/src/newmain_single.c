@@ -882,19 +882,14 @@ chk_friend_book()
                 sprintf(msg,"%s 已经上站。",currentuser->userid);
                 /* 保存所发msg的目的uid 1998.7.5 by dong*/
                 strcpy(MsgDesUid, uin?uin->userid:"");
-                if (strcmp(uid,"Luzi")==0) {
-                    if (uin!=NULL) do_sendmsg(uin,msg,2);
-		}
-                else {
-		  idnum=0;/*Haohmaru.99.5.29.修正一个bug,免得有人利用这个来骚扰别人*/
-                  if (uin!=NULL && canbemsged(uin))
-			idnum=do_sendmsg(uin,msg,2);
-		  if (idnum)
+		  		idnum=0;/*Haohmaru.99.5.29.修正一个bug,免得有人利用这个来骚扰别人*/
+                if (uin!=NULL && canbemsged(uin))
+					idnum=do_sendmsg(uin,msg,2);
+		  		if (idnum)
                     prints("%s 找你，系统已经告诉他(她)你上站的消息。\n",uid);
-                  else
+                else
                     prints("%s 找你，系统无法联络到他(她)，请你跟他(她)联络。\n",uid);
                   del_from_file("friendbook",buf);
-                }
                 n++;
                 if (n>15) { /* Leeward 98.12.03 */
                    pressanykey();
