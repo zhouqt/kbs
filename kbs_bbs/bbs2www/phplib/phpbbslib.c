@@ -184,6 +184,7 @@ static PHP_FUNCTION(bbs_get_tmpls);
 static PHP_FUNCTION(bbs_get_tmpl_from_num);
 static PHP_FUNCTION(bbs_make_tmpl_file);
 static PHP_FUNCTION(bbs_docross);
+static PHP_FUNCTION(bbs_docommend);
 static PHP_FUNCTION(bbs_bmmanage);
 
 static PHP_FUNCTION(bbs_delfile);
@@ -457,6 +458,7 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_get_tmpl_from_num,NULL)
 		PHP_FE(bbs_make_tmpl_file,NULL)
 		PHP_FE(bbs_docross,NULL)
+		PHP_FE(bbs_docommend,NULL)
 		PHP_FE(bbs_bmmanage,NULL)
 #ifdef SMS_SUPPORT
 		PHP_FE(bbs_send_sms,NULL)
@@ -8692,6 +8694,92 @@ static PHP_FUNCTION(bbs_docross)
 	if (post_cross(u, target, board, f.title, path, 0, 0, ispost[0], 0, getSession()) == -1)
 	    RETURN_LONG(-10);
     RETURN_LONG(0);
+}
+
+/**
+ * int bbs_docommend(string board, int id, int confirmed);
+ *
+ * @param confirmed: when set false, only test if can recommend
+ *
+ * return 0: no error
+ *       -1: 无权限
+ *       -2: 源版面不存在
+ *       -3: 文件记录不存在
+ *       -4: 本文章已经推荐过
+ *       -5: 内部版面文章
+ *       -6: 被停止了推荐的权力
+ *       -7: 推荐出错
+ *       -10: system err
+ *
+ * @author atppp
+ */
+static PHP_FUNCTION(bbs_docommend)
+{
+    char *board;
+    int  board_len;
+    long  id,confirmed;
+    struct userec *u;
+    struct boardheader *src_bp;
+    struct fileheader fileinfo;
+    int  ent;
+    int  fd;
+    char path[256];
+
+    int ac = ZEND_NUM_ARGS();
+    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sll", &board, &board_len, &id, &confirmed) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+
+#ifdef COMMEND_ARTICLE
+    u = getCurrentUser();
+
+    src_bp = getbcache(board);
+    if (src_bp == NULL)
+        RETURN_LONG(-1);
+    strcpy(board, src_bp->filename);
+    if(!check_read_perm(u, src_bp))
+        RETURN_LONG(-2);
+
+    setbdir(DIR_MODE_NORMAL, path, board);
+    if ((fd = open(path, O_RDWR, 0644)) < 0)
+        RETURN_LONG(-10);
+    if (!get_records_from_id(fd,id,&fileinfo,1,&ent)) {
+        close(fd);
+        RETURN_LONG(-3); //无法取得文件记录
+    }
+    close(fd);
+
+    if (!has_BM_perm(u, COMMEND_ARTICLE) && !is_BM(src_bp, u)) {
+        if (strcmp(u->userid, fileinfo.owner))
+            RETURN_LONG(-1);
+    }
+    if ((fileinfo.accessed[1] & FILE_COMMEND) && !HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
+        RETURN_LONG(-4);
+    }
+    if( ! normal_board(board) ){
+        RETURN_LONG(-5);
+    }
+    if ( deny_me(u->userid, COMMEND_ARTICLE) ) {
+        RETURN_LONG(-6);
+    }
+    if (confirmed) {
+        if (post_commend(u, board, &fileinfo ) == -1) {
+            RETURN_LONG(-7);
+        } else {
+            struct write_dir_arg dirarg;
+            struct fileheader data;
+            data.accessed[1] = FILE_COMMEND;
+            init_write_dir_arg(&dirarg);
+            dirarg.filename = path;  
+            dirarg.ent = ent;
+            change_post_flag(&dirarg,DIR_MODE_NORMAL,src_bp, &fileinfo, FILE_COMMEND_FLAG, &data,false,getSession());
+            free_write_dir_arg(&dirarg);
+        }
+    }
+    RETURN_LONG(0);
+#else
+    RETURN_LONG(-1);
+#endif
 }
 
 /**
