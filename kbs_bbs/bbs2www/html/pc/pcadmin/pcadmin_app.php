@@ -28,7 +28,7 @@ function pc_apply_users($link,$type,$start,$pagesize)
 	return $newApp;
 }
 
-function pc_add_users($link,$userid,$corpusname)
+function pc_add_users($link,$userid,$corpusname,$manual)
 {
 	global $pcconfig , $currentuser;
 	if(!$userid || !$corpusname)
@@ -39,6 +39,14 @@ function pc_add_users($link,$userid,$corpusname)
 	
 	if(pc_load_infor($link,$userid))
 		return FALSE;
+	
+	if($manual)
+	{
+		$query = "SELECT username FROM newapply WHERE management != 1 AND management != 3  AND management != 0 AND username = '".addslashes($lookupuser["userid"])."' LIMIT 0 , 1;";	
+		$result = mysql_query($query,$link);
+		if($rows = mysql_fetch_array($result))
+			return FALSE;
+	}
 	
 	//添加用户
 	$query = "INSERT INTO `users` ( `uid` , `username` , `corpusname` , `description` , `theme` , `nodelimit` , `dirlimit` , `createtime` , `style` , `backimage` , `visitcount` , `nodescount` , `logoimage` , `modifytime` , `links` , `htmleditor` , `indexnodechars` , `indexnodes` , `useremail` , `favmode` , `updatetime` , `userinfor` ) ".
@@ -54,7 +62,11 @@ function pc_add_users($link,$userid,$corpusname)
 	pc_logs($link , $action , "" , $lookupuser["userid"] );
 	
 	//更新申请表
-	$query = "UPDATE newapply SET apptime = apptime ,manager = '".addslashes($currentuser["userid"])."',management = '0' WHERE username = '".addslashes($lookupuser["userid"])."' LIMIT 1 ;";
+	if($manual)
+		$query = "INSERT INTO `newapply` ( `naid` , `username` , `appname` , `appself` , `appdirect` , `hostname` , `apptime` , `manager` , `management` ) ".
+	 		 "VALUES ('', '".addslashes($lookupuser["userid"])."', '".addslashes($corpusname)."', '', '', '".addslashes($_SERVER["REMOTE_ADDR"])."', NOW( ) , NULL , '1');";
+	else
+		$query = "UPDATE newapply SET apptime = apptime ,manager = '".addslashes($currentuser["userid"])."',management = '0' WHERE username = '".addslashes($lookupuser["userid"])."' LIMIT 1 ;";
 	if(!mysql_query($query,$link))
 	{
 		pc_db_close($link);
@@ -65,7 +77,7 @@ function pc_add_users($link,$userid,$corpusname)
 	$annTitle = "[公告] 批准 ".$lookupuser["userid"]." 的 Blog 申请";
 	$annBody =  "\n\n        根据用户 ".$lookupuser["userid"]." 申请，经审核、讨论后决定开通该用户\n".
 		    "    Blog ，Blog 名称“".$corpusname."”。\n\n".
-		    "        Blog 大部分功能提供在web 模式下，Blog 名称、描述、".
+		    "        Blog 大部分功能提供在web 模式下，Blog 名称、描述、\n".
 		    "    分类等属性请用户在web 登录后自行修改。\n\n";
 	$ret = bbs_postarticle($pcconfig["BOARD"], preg_replace("/\\\(['|\"|\\\])/","$1",$annTitle), preg_replace("/\\\(['|\"|\\\])/","$1",$annBody), 0 , 0 , 0 , 0);
 	if($ret != 0)
@@ -97,7 +109,7 @@ function pc_reject_apply($link,$userid,$applyAgain)
 if($_GET["userid"])
 {
 	if($_GET["act"] == "y")
-		pc_add_users($link,$_GET["userid"],$_GET["pcname"]);
+		pc_add_users($link,$_GET["userid"],$_GET["pcname"],$_GET["manual"]);
 	elseif($_GET["act"] == "r")
 		pc_reject_apply($link,$_GET["userid"],2);
 	elseif($_GET["act"] == "d")
@@ -182,7 +194,26 @@ function bbsconfirm(url,infor){
 <?php		
 	}
 ?>
-</table></center>
+</table>
+<?php
+	if($type == 1)
+	{
+?>
+<form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="get">
+<b>[手动添加]</b>
+<input type="hidden" name="act" value="add">
+<input type="hidden" name="type" value="1">
+<input type="hidden" name="manual" value="1">
+用户名：
+<input type="text" class="f1" size="20" name="userid">
+BLOG名：
+<input type="text" class="f1" size="20" name="appname">
+<input type="submit" class="f1" value="添加">
+</form>
+<?php
+	}
+?>
+</center>
 <br />
 <p align="center">
 <?php
