@@ -917,7 +917,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 if(y-starty+1<maxline) {
                     for(i=strlen(buf)+1;i>now;i--)
                         buf[i]=buf[i-1];
-                    buf[now++]=ch;
+                    buf[now++]='\n';
                 }
                 break;
             case '\177':
