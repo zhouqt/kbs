@@ -829,11 +829,7 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
     multi_user_check();
     signal(SIGALRM, SIG_IGN);/*Haohmaru.98.11.12*/
     alarm(IDLE_TIMEOUT);
-    if( !term_init(currentuser.termtype) ) {
-        prints("Bad terminal type: '%s' -- Defaulting to 'vt100'\n", currentuser.termtype) ;   
-        if (!term_init("vt100"))
-          prints("Even vt100 failed!\n");
-    } 
+    term_init("vt100");
     scrint = 1 ;
     sethomepath(tmpstr, currentuser.userid);
     sprintf(fname,"%s/%s.deadve", tmpstr, currentuser.userid);

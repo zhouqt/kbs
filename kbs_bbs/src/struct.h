@@ -14,7 +14,8 @@ struct userec {                  /* Structure used to hold information in */
         char            passwd[PASSLEN];
         char            username[NAMELEN];
         char            ident[NAMELEN];
-        char            termtype[STRLEN];
+        char            unused[16];
+        char			realemail[STRLEN-16];
         unsigned        userlevel;
         time_t          lastlogin;
         time_t          stay;

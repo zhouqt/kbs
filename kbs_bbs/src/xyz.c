@@ -360,7 +360,7 @@ XCheckLevel() /* Leeward 98.06.05 */
                         fprintf(fpx,"真  实  姓  名 : %s\n\n", lookupuser.realname);
                         fprintf(fpx,"居  住  住  址 : %s\n\n", lookupuser.address);
                         fprintf(fpx,"电  子  邮  件 : %s\n\n", lookupuser.email);
-                        fprintf(fpx,"单位$电话@认证 : %s\n\n", lookupuser.termtype + 16);
+                        fprintf(fpx,"单位$电话@认证 : %s\n\n", lookupuser.realemail);
                         fprintf(fpx,"注  册  日  期 : %s\n", ctime(&lookupuser.firstlogin));
                         fprintf(fpx,"最后的登录日期 : %s\n", ctime(&lookupuser.lastlogin));
                         fprintf(fpx,"最后的登录机器 : %s\n\n", lookupuser.lasthost );

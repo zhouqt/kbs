@@ -232,7 +232,7 @@ new_register()
 {
     struct userec       newuser;
     char        passbuf[ STRLEN ];
-    int         allocid, try,flag;
+    int         allocid, do_try,flag,lockfd;
 
 
     if( 1 ) {
@@ -246,22 +246,15 @@ new_register()
             exit( 1 );
         }
     }
-    memset( &newuser, 0, sizeof(newuser) );
-    allocid = getnewuserid()  ;
-    if(allocid > MAXUSERS || allocid <= 0) {
-        printf("No space for new users on the system!\n\r") ;
-        exit(1) ;
-    }
-
     getdata(0, 0, "使用GB编码阅读?(\xa8\xcf\xa5\xce BIG5\xbd\x58\xbe\x5c\xc5\xaa\xbd\xd0\xbf\xefN)(Y/N)? [Y]: ", passbuf, 4, DOECHO, NULL, YEA);
     if (*passbuf == 'n' || *passbuf == 'N')
         if (!convcode)
             switch_code();
 
     ansimore("etc/register", NA);
-    try = 0;
+    do_try = 0;
     while( 1 ) {
-        if( ++try >= 10 ) {
+        if( ++do_try >= 10 ) {
             prints("\n掰掰，按太多下  <Enter> 了...\n");
             refresh();
             longjmp( byebye, -1 );
@@ -300,7 +293,26 @@ new_register()
             }
 	}
     }
+    lockfd = open( "ucache.lock", O_RDWR|O_CREAT, 0600 );
+    if( lockfd < 0 ) {
+        log_usies( "CACHE", "reload ucache lock error!!!!" );
+        return;
+    }
+    flock(lockfd,LOCK_EX);
+    
+    memset( &newuser, 0, sizeof(newuser) );
+    allocid = getnewuserid()  ;
+    if(allocid > MAXUSERS || allocid <= 0) {
+        printf("No space for new users on the system!\n\r") ;
+        flock(lockfd,LOCK_UN);
+    	close(lockfd);
+	    exit(1) ;
+    }
+
     setuserid( allocid, newuser.userid ); /* added by dong, 1998.12.2 */
+    flock(lockfd,LOCK_UN);
+    close(lockfd);
+
     newuser.firstlogin = newuser.lastlogin = time(NULL) - 13 * 60 * 24 ;
     substitute_record(PASSFILE,&newuser,sizeof(newuser),allocid);
     while( 1 ) {
@@ -318,10 +330,6 @@ new_register()
         passbuf[8] = '\0' ;
         strncpy( newuser.passwd, genpasswd( passbuf ), PASSLEN );
         break;
-    }
-    getdata(0,0,"请输入终端机形态: [vt100] ",newuser.termtype,16,DOECHO,NULL,YEA);
-    if( newuser.termtype[0] == '\0' ) {
-        strcpy(newuser.termtype, "vt100");
     }
     newuser.userlevel = PERM_BASIC;
     newuser.userdefine=-1;
@@ -498,7 +506,7 @@ check_register_info()
     {
         if( HAS_PERM( PERM_SYSOP ))
             return;
-        if(!invalid_realmail( urec->userid, urec->termtype+16, STRLEN-16 ))
+        if(!invalid_realmail( urec->userid, urec->realemail, STRLEN-16 ))
         {
             set_safe_record();
             urec->userlevel |= PERM_DEFAULT;

@@ -497,6 +497,7 @@ int n ;
     register len=0;
     unsigned char* begin_str=str;
     int begincol=0;
+
 #define DO_MODIFY { if (slp->smod > begincol) slp->smod=begincol; \
                     if (slp->emod < reg_col) slp->emod=reg_col; \
                     if(standing && slp->mode&STANDOUT) { \
@@ -515,15 +516,11 @@ int n ;
 			reg_col=begincol; \
                   }
 
-    if (!scrint) {
-	for (;*begin_str&&(reg_col<n);reg_col++,begin_str++) outc(*begin_str);
-/*
-	if (n>strlen(str)) n=strlen(str);
-	output(str,n);
-*/
+	if (!scrint) {
+		for (;*begin_str&&(reg_col<n);reg_col++,begin_str++) outc(*begin_str);
 	return;
     };
-    while ((str-begin_str<n)&&(*str != '\0')) {
+    while ((str-begin_str<n)&&*str) {
         reg_col=cur_col;
         begincol=cur_col;
         {
@@ -537,31 +534,28 @@ int n ;
             for(i=slp->len;i<=cur_col;i++)
                 slp->data[i] = ' ' ;
         }
-        while((str-begin_str<n)&&(*str != '\0')){
-            if(*str==''&&!iscolor){
-                while(*str!='m')
-                    str++;
-                str++;
-                continue;
-            }
-            else if (!isprint2(*str)) {
-                if (*str=='\n'||*str=='\r') {
-		    DO_MODIFY;
-                    DO_CRLF;
-		    str++;
-                    break;
-                } else {
-		    if (*str!='')
-                    slp->data[reg_col++]=(unsigned char)'*';
-		    else
-                    slp->data[reg_col++]=(unsigned char)'';
-		    str++;
-		}
-            }
-            else 
-                slp->data[reg_col++]=*(str++);
+        while((str-begin_str<n)&&*str){
+			if (*str=='\n'||*str=='\r') {
+		    	DO_MODIFY;
+                DO_CRLF;
+		    	str++;
+                break;
+			}
+            if(*str=='') {
+            	if (!iscolor){
+	                while(*str&&(*str!='m'))
+	                    str++;
+	                str++;
+	                continue;
+            	} else
+	            	slp->data[reg_col++]=(unsigned char)'';
+            } else if (!isprint2(*str)) 
+                slp->data[reg_col++]=(unsigned char)'*';
+            } else 
+            	slp->data[reg_col++]=*(str);
+			str++;
             if(reg_col >= scr_cols) {
-		DO_MODIFY;
+				DO_MODIFY;
                 DO_CRLF;
                 break;
             }

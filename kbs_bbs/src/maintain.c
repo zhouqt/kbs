@@ -1009,7 +1009,7 @@ char           *logfile, *regfile;
             for (n = 0; field[n] != NULL; n++)
                 prints("%s     : %s\n", finfo[n], fdata[n]);
             /* if (uinfo.userlevel & PERM_LOGINOK) modified by dong, 1999.4.18*/
-            if ((uinfo.userlevel & PERM_LOGINOK) || valid_userid(uinfo.termtype+16))
+            if ((uinfo.userlevel & PERM_LOGINOK) || valid_userid(uinfo.realemail))
             {
                 move(t_lines - 1, 0);
                 prints("此帐号不需再填写注册单.\n");
@@ -1040,7 +1040,7 @@ char           *logfile, *regfile;
                 strncpy(uinfo.realname, fdata[2], NAMELEN);
                 strncpy(uinfo.address, fdata[4], NAMELEN);
                 sprintf(genbuf, "%s$%s@%s", fdata[3], fdata[5], uid);
-                strncpy(uinfo.termtype + 16, genbuf, STRLEN - 16);
+                strncpy(uinfo.realemail, genbuf, STRLEN - 16);
                 sprintf(buf, "tmp/email_%s", uinfo.userid);
                 if ((fout = fopen(buf, "w")) != NULL)
                 {

@@ -297,7 +297,7 @@ if((pid = vfork()) == 0) {
                 exit(-1) ;
             }
         bbssetenv("PATH", "/bin:.");
-        bbssetenv("TERM", currentuser.termtype);
+        bbssetenv("TERM", "vt100");
         bbssetenv("USER", currentuser.userid);
         bbssetenv("USERNAME", currentuser.username);
         /* added for tin's reply to */

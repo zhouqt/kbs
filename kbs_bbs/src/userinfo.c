@@ -44,10 +44,9 @@ int     real;
     prints("居住住址     : %s\n", u->address);
     prints("电子邮件信箱 : %s\n", u->email);
     if( real ) {
-        prints("真实 E-mail  : %s\n", u->termtype + 16 );
+        prints("真实 E-mail  : %s\n", u->realemail );
         prints("Ident 资料   : %s\n", u->ident );
     }
-    prints("终端机形态   : %s\n", u->termtype );
     prints("注册日期     : %s", ctime( &u->firstlogin));
     prints("最近光临日期 : %s", ctime( &u->lastlogin));
     if( real ) {
@@ -149,14 +148,10 @@ int     real, unum;
             strncpy( newinfo.email, buf, STRLEN );
 
         }
-        sprintf( genbuf, "终端机形态 [%s]: ", u->termtype );
-        getdata( i++, 0, genbuf, buf, 16, DOECHO, NULL ,YEA);
-        if( buf[0] ) strncpy( newinfo.termtype, buf, 16 );
-
         if( real ) {
-            sprintf( genbuf, "真实Email[%s]: ", u->termtype+16 );
+            sprintf( genbuf, "真实Email[%s]: ", u->realemail );
             getdata( i++, 0, genbuf, buf, STRLEN, DOECHO, NULL ,YEA);
-            if( buf[0] ) strncpy( newinfo.termtype+16, buf, STRLEN-16 );
+            if( buf[0] ) strncpy( newinfo.realemail, buf, STRLEN-16 );
 
             sprintf( genbuf, "上线次数 [%d]: ", u->numlogins );
             getdata( i++, 0, genbuf, buf, 16, DOECHO, NULL ,YEA);

@@ -265,7 +265,7 @@ extern int showansi;
 #define KEY_PGDN        0x0206
 #endif
 
-#define Ctrl(c)         ( (c) & 037 )
+#define Ctrl(c)         ( c & 037 )
 #define isprint2(c)     ( ((c) & 0xe0) && ((c)!=127) )
 
 #ifdef  SYSV
