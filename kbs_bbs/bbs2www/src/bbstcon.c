@@ -23,7 +23,7 @@ int main()
     if (!has_read_perm(currentuser, board))
         http_fatal("错误的讨论区");
     strcpy(board, getbcache(board)->filename);
-    if (loginok)
+    if ((loginok)&&strcmp(currentuser->userid,"guest"))
         brc_initial(currentuser->userid, board);
     printf("%s -- 主题文章阅读 [讨论区: %s]<hr class=\"class\">", BBSNAME, board);
     if (valid_filename(file) < 0)
@@ -65,7 +65,7 @@ int main()
     if (!strncmp(ptr, "Re: ", 4))
         ptr += 4;
     printf("</center>\n");
-    if (loginok)
+    if ((loginok)&&strcmp(currentuser->userid,"guest"))
         brc_update(currentuser->userid);
     http_quit();
 }
@@ -76,7 +76,7 @@ int show_file(char *board,struct fileheader *x, int n, char* brdencode)
     char path[80], buf[512], board_url[80];
     char* title;
 
-    if (loginok)
+    if ((loginok)&&strcmp(currentuser->userid,"guest"))
         brc_add_read(x->id);
     sprintf(path, "boards/%s/%s", board, x->filename);
     fp = fopen(path, "r");

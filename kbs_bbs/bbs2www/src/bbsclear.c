@@ -14,9 +14,11 @@ int main()
         http_fatal("匆匆过客无法执行此项操作, 请先登录");
     if (!has_read_perm(currentuser, board))
         http_fatal("错误的讨论区");
-    brc_initial(currentuser->userid, board);
-    brc_clear();
-    brc_update(currentuser->userid);
+    if (strcmp(currentuser->userid,"guest")) {
+        brc_initial(currentuser->userid, board);
+        brc_clear();
+        brc_update(currentuser->userid);
+    }
     strcpy(buf, board);
     encode_url(board, buf, sizeof(board));
     sprintf(buf, "/bbsdoc.php?board=%s&start=%s", board, start);

@@ -653,6 +653,10 @@ static int
 check_newpost( struct newpostdata *ptr)
 {
 	struct BoardStatus* bptr;
+	if (!strcmp(currentuser->userid,"guest")) {
+		ptr->unread = 1;
+		return 1;
+	}
 	ptr->total = ptr->unread = 0;
 
 	bptr = getbstatus(ptr->pos);
