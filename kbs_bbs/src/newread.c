@@ -307,6 +307,7 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (), READ
     arg.rcmdlist=rcmdlist;
     arg.ssize=ssize;
     arg.readmode=READ_NORMAL;
+    arg.data=NULL;
 
     clear();
 
