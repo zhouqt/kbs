@@ -63,12 +63,17 @@
 			}else
 				$bout = 0;
 
+			if(isset($_GET["battach"])){
+				$battach = 1;
+			}else
+				$battach = 0;
+
 			if(isset($_GET["bgroup"])){
 				$bgroup = $_GET["bgroup"];
 			}else
 				$bgroup = 0;
 
-			$ret = bbs_new_board($bname,$section,$desp,$btitle,$bbm,$blevel,$banony,$bjunk,$bout,$bgroup);
+			$ret = bbs_new_board($bname,$section,$desp,$btitle,$bbm,$blevel,$banony,$bjunk,$bout,$bgroup,$battach);
 
 			if($ret < 0)
 				html_error_quit("加入讨论区失败".$ret);
@@ -108,6 +113,10 @@
 <input type="checkbox" name="banony">匿名版面<br>
 <input type="checkbox" name="bjunk">版面不计文章数<br>
 <input type="checkbox" name="bout">转信版面<br>
+<input type="checkbox" name="battach">可粘贴附件<br>
+<input type="checkbox" name="bclubread">读限制俱乐部<br>
+<input type="checkbox" name="bclubwrite">写限制俱乐部<br>
+<input type="checkbox" name="bclubhide">隐藏限制俱乐部<br>
 <input type="submit" name="submit" value="确定">
 </form>
 <?php

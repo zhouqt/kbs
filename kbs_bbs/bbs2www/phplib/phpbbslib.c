@@ -2692,6 +2692,7 @@ static PHP_FUNCTION(bbs_new_board)
 	int banony;
 	int bjunk;
 	int bout;
+	int battach;
 	char* bgroup;
 	int bgroup_len;
 	char explainn[100];
@@ -2700,7 +2701,7 @@ static PHP_FUNCTION(bbs_new_board)
 	struct boardheader newboard;
 	char vbuf[100];
 
-    if (ac != 10 || zend_parse_parameters(10 TSRMLS_CC, "ssssslllls", &bname, &bname_len, &section, &section_len, &desp, &desp_len, &btitle, &btitle_len, &bbm, &bbm_len, &blevel, &banony, &bjunk, &bout, &bgroup, &bgroup_len) == FAILURE) {
+    if (ac != 11 || zend_parse_parameters(11 TSRMLS_CC, "sssssllllsl", &bname, &bname_len, &section, &section_len, &desp, &desp_len, &btitle, &btitle_len, &bbm, &bbm_len, &blevel, &banony, &bjunk, &bout, &bgroup, &bgroup_len, &battach) == FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
 
@@ -2753,6 +2754,9 @@ static PHP_FUNCTION(bbs_new_board)
 
 	if( bout )
 		newboard.flag |= BOARD_OUTFLAG;
+
+	if( battach )
+		newboard.flag |= BOARD_ATTACH;
 
 	sprintf(vbuf,"vote/%s",newboard.filename);
 	if( mkdir(vbuf,0755) == -1 )
