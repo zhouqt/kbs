@@ -1,6 +1,6 @@
 EXTRA_DIST = README INSTALL include/bbslib.h include/types.h \
              @HTML_FILES@
-SUBDIRS = lib phplib src
+SUBDIRS = lib phplib
 CLEANFILES=@EXTRA_CLEAN@
 AM_MAKEFLAGS=@MAKEFLAG@
 
