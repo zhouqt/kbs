@@ -777,7 +777,7 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
 #endif
     getcross(filepath, filename, user, in_mail, fromboard, title, Anony, mode, toboard);        /*根据fname完成 文件复制 */
 
-    postfile.eff_size=get_effsize(filepath);
+    postfile.eff_size=get_effsize_attach(filepath, &postfile.attachment); /* FreeWizard: get effsize & attachment */
     /*
      * Changed by KCN,disable color title 
      */
@@ -1597,6 +1597,44 @@ int get_effsize(char * ffn)
             p++;
             if(entercount>=4&&!ignoreline)
                 abssize++;
+       }
+    }
+    end_mmapfile((void*)op, fsize, -1);
+    return abssize;
+}
+ 
+int get_effsize_attach(char * ffn, int *att)
+{
+    char* p,*op, *attach;
+    long attach_len;
+    int j;
+    off_t fsize;
+    int k,abssize=0,entercount=0,ignoreline=0;
+    j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize, NULL);
+    op = p;
+    *att = 0;
+    if(j) {
+        k=fsize;
+        while(k) {
+            if(NULL!=(checkattach(p, k, &attach_len, &attach))) {
+                if (!*att) *att=p-op;
+                k-=(attach-p)+attach_len;
+                p=attach+attach_len;
+                continue;
+            }
+            if(k>=3&&*p=='\n'&&*(p+1)=='-'&&*(p+2)=='-'&&*(p+3)=='\n') break;
+            if(*p=='\n') {
+                entercount++;
+               ignoreline=0;
+            }
+            if(k>=5&&*p=='\n'&&*(p+1)=='\xa1'&&*(p+2)=='\xbe'&&*(p+3)==' '&&*(p+4)=='\xd4'&&*(p+5)=='\xda') ignoreline=1;
+            if(k>=2&&*p=='\n'&&*(p+1)==':'&&*(p+2)==' ') ignoreline=2;
+            if(k>=2&&*p==KEY_ESC&&*(p+1)=='['&&*(p+2)=='m') ignoreline=3;
+
+           k--;
+           p++;
+           if(entercount>=4&&!ignoreline)
+               abssize++;
         }
     }
     end_mmapfile((void*)op, fsize, -1);
