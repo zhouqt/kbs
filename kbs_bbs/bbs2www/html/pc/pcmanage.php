@@ -192,10 +192,12 @@
 					$rows = mysql_fetch_array($result);
 					$thisNid = $rows[nid];
 					mysql_free_result($result);
-					if(strlen($_POST["blogbody"]) < 255 )
-						$tbbody = $_POST["blogbody"];
+					if($useHtmlTag)
+						$tbbody = strip_tags($_POST["blogbody"]);
 					else
-						$tbbody = substr($_POST["blogbody"],0,251)." ...";
+						$tbbody = $_POST["blogbody"];
+					if(strlen($tbbody) > 255 )
+						$tbbody = substr($tbbody,0,251)." ...";
 					$tbarr = array(
 							"title" => $_POST["subject"],
 							"excerpt" => $tbbody,
