@@ -16,6 +16,7 @@ struct _read_pos {
     struct _read_pos* next;
 }static *read_pos_head=NULL;
 
+static int read_getdata(struct _select_def *conf, int pos, int len);
 /* 获得上一次阅读的位置
   * @param mode 阅读模式
   * @param direct dir的文件名
@@ -226,7 +227,7 @@ static int read_key(struct _select_def *conf, int command)
             ret=SHOW_REFRESH;
             break;
         case NEWDIRECT: {
-                int newfd;
+                int newfd,lastpos;
                 if ((newfd = open(arg->direct, O_RDWR, 0)) != -1) {
                     close(arg->fd);
                     arg->fd=newfd;
@@ -239,7 +240,13 @@ static int read_key(struct _select_def *conf, int command)
 */
                 savePos(arg->mode,arg->direct,conf->pos,arg->board);
 		arg->board=currboard;
-                conf->pos=getPos(arg->newmode,arg->direct,currboard);
+                read_getdata(conf,1,conf->item_per_page);
+                lastpos=getPos(arg->newmode,arg->direct,currboard);
+                if ((lastpos!=0)&&(lastpos<arg->filecount))
+                    conf->pos = lastpos;
+                else {
+                    conf->pos = arg->filecount;
+                }
                 arg->mode=arg->newmode;
                 arg->newmode=-1;
             }
@@ -608,7 +615,24 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct 
         close(arg.fd);
         savePos(arg.mode,direct,read_conf.pos,arg.board);
     } else {
-        prints("没有任何信件...");
+
+       if (cmdmode == DIR_MODE_MAIL) {
+            prints("没有任何信件...");
+            pressreturn();
+            clear();
+        }
+
+        else if (cmdmode == DIR_MODE_FRIEND) {
+            getdata(t_lines - 1, 0, "没有任何好友 (A)新增好友 (Q)离开？[Q] ", genbuf, 4, DOECHO, NULL, true);
+            if (genbuf[0] == 'a' || genbuf[0] == 'A')
+                friend_add(0, NULL, 0);
+        }
+
+        else {
+            getdata(t_lines - 1, 0, "新版刚成立 (P)发表文章 (Q)离开？[Q] ", genbuf, 4, DOECHO, NULL, true);
+            if (genbuf[0] == 'p' || genbuf[0] == 'P')
+                do_post();
+        }
         pressreturn();
         clear();
     }
