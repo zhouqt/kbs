@@ -14,6 +14,22 @@ int csock;                      /* socket for Master and Child */
 
 int max_load = 79;              /* ԭֵ39 , modified by KCN,1999.09.07 */
 
+int proxy_getpeername(int csock,struct sockaddr* psaddr,int* plen)
+{
+    int ret=getpeername(csock,psaddr,plen);
+#ifdef SMTH
+    struct sockaddr_in* psin=(struct sockaddr_in*)psaddr;
+    if (psin->sin_addr.s_addr==0xea086fa6) { //166.111.8.234
+        int buf;
+        read(csock,&buf,4);
+        if (buf==0x330123) {
+            read(csock,&psin->sin_addr.s_addr,4);
+        }
+    }
+#endif
+    return ret;
+}
+
 /* 59->79 , modified by dong , 1999.9.7 */
 
 /* ԭֵ29, modified by dong, 1998.11.23 */
@@ -344,7 +360,7 @@ static void getremotehost(int sockfd, char *rhost, int buf_len)
 	char buf[STRLEN];
 	
 	value = sizeof(sin);
-	getpeername(csock, (struct sockaddr *) &sin, (socklen_t *) & value);
+	proxy_getpeername(csock, (struct sockaddr *) &sin, (socklen_t *) & value);
 	if (setjmp(byebye) == 0)
 	{
 		signal(SIGALRM, dns_query_timeout);
@@ -529,7 +545,17 @@ static int bbs_standalone_main(char* argv)
       continue;
     }
     /* sanshao@10.24: why next line is originally sizeof(sin) not &value */
-    getpeername(csock, (struct sockaddr *) &sin, (socklen_t *) & value);
+    proxy_getpeername(csock, (struct sockaddr *) &sin, (socklen_t *) & value);
+#ifdef SMTH
+    if (sin.sin_addr.s_addr==0xea086fa6) { //166.111.8.234
+        int buf;
+        read(csock,&buf,4);
+        if (buf==0x330123) {
+            read(csock,&sin.sin_addr.s_addr,4);
+        }
+    }
+#endif
+
     bbslog("0connect", "connect from %s(%d) in port %d", inet_ntoa(sin.sin_addr), htons(sin.sin_port), mport);
     setsid();
 
@@ -665,7 +691,7 @@ int bbs_entry(void)
     main_signals();
     sinlen = sizeof(struct sockaddr_in);
     atexit(ssh_exit);
-    getpeername(0, (struct sockaddr *) &sin, (void *) &sinlen);
+    proxy_getpeername(0, (struct sockaddr *) &sin, (void *) &sinlen);
     {
         char *host = (char *) inet_ntoa(sin.sin_addr);
 
