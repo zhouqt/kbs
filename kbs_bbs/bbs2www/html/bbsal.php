@@ -70,6 +70,56 @@
 			$sqlstr = "DELETE FROM addr WHERE userid=\"".$currentuser["userid"]."\" AND id=".$id;
 			$result = mysql_query($sqlstr) or die(mysql_error());
 
+		}else if(isset($action) && $action=="detail"){
+			if( $_GET["id"] ){
+				$id = $_GET["id"];
+			}
+			else{
+				html_error_quit("参数错误1");
+			}
+			settype($id, "integer");
+			if($id < 0)
+				html_error_quit("参数错误2");
+
+			$sqlstr = "SELECT * FROM addr WHERE userid=\"".$currentuser["userid"]."\" AND id=".$id;
+
+			$result = mysql_query($sqlstr) or die(mysql_error());
+
+			if( ! $result ){
+				html_error_quit("数据错误");
+			}else{
+				$row = mysql_fetch_row($result);
+				if( ! $row )
+					html_error_quit("数据错误1");
+?>
+<body>
+<center><p><?php echo BBS_FULL_NAME; ?> -- 通讯录条目显示 [用户: <?php echo $currentuser["userid"]; ?>]</p>
+<a href="javascript:location=location">刷新</a>
+</center>
+<hr class=default>
+<table border="1" width="613" align="center" cellpadding="0" cellspacing="0">
+<tr><td>姓名</td><td><?php echo $row[2];?></td></tr>
+<tr><td>bbsid</td><td><?php echo $row[3];?></td></tr>
+<tr><td>分组</td><td><?php echo $row[15];?></td></tr>
+<tr><td>生日</td><td><?php echo $row[13];?></td></tr>
+<tr><td>学校</td><td><?php echo $row[4];?></td></tr>
+<tr><td>邮政编码</td><td><?php echo $row[5];?></td></tr>
+<tr><td>家庭地址</td><td><?php echo $row[6];?></td></tr>
+<tr><td>家庭电话</td><td><?php echo $row[9];?></td></tr>
+<tr><td>公司地址</td><td><?php echo $row[7];?></td></tr>
+<tr><td>公司电话</td><td><?php echo $row[8];?></td></tr>
+<tr><td>手机</td><td><?php echo $row[10];?></td></tr>
+<tr><td>email</td><td><?php echo $row[11];?></td></tr>
+<tr><td>qq</td><td><?php echo $row[12];?></td></tr>
+<tr><td>备注</td><td><pre><?php echo $row[14];?></pre></td></tr>
+</table>
+<center>
+<a href="javascript:history.go(-1)">返回</a>
+</center>
+</body>
+<?php
+				html_normal_quit();
+			}
 		}else if(isset($action) && $action=="add"){
 			if( $_GET["submit"] || $_POST["submit"] ){
 				if( $_POST["t_name"] ){
@@ -274,7 +324,7 @@
 ?>
 <tr>
 <td><?php echo $startnum+$i+1;?></td>
-<td><?php echo $row[2];?></td>
+<td><a href="/bbsal.php?start=<?php if($i==0 && $startnum > 0) echo ($startnum-1); else echo $startnum;?>&count=<?php echo $count;?>&action=detail&id=<?php echo $row[0];?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>"><?php echo $row[2];?></a></td>
 <td><?php echo $row[3];?></td>
 <td><?php echo $row[15];?></td>
 <td><pre><?php echo $row[14];?></pre></td>
