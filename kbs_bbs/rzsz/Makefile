@@ -27,6 +27,7 @@ libzmodem.a: $(OBJS)
 	-rm -f libzmodem.a
 	$(AR) cru libzmodem.a $(OBJS)
 	$(RANLIB) libzmodem.a
+	cp -f libzmodem.a ..
 
 clean:
 	rm -rf *.a *.o

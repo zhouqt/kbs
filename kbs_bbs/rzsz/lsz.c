@@ -410,6 +410,7 @@ wctxpn(struct zm_fileinfo *zi)
 		}
 
 	q = (char *) 0;
+#if 0	
 	if (Dottoslash) {		/* change . to . */
 		for (p=zi->fname; *p; ++p) {
 			if (*p == '/')
@@ -424,7 +425,7 @@ wctxpn(struct zm_fileinfo *zi)
 			strcpy(++q, name2);	/* add it back */
 		}
 	}
-
+#endif
 	for (p=zi->fname, q=txbuf ; *p; )
 		if ((*q++ = *p++) == '/' && !Fullname)
 			q = txbuf;
