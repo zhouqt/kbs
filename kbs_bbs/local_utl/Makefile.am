@@ -1,3 +1,4 @@
+EXTRA_DIST=crontab.SMTH
 bin_PROGRAMS = poststat static usage Xclean Xhtml Bhtml refriend chlevel listonline \
 	showBM idx0Ann lazybm fixdir autoundeny fixwebmsg login statBM gen_title \
 	resetMailTotal
