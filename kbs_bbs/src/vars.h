@@ -71,3 +71,6 @@ extern struct _mail_list user_mail_list;
 
 extern sigjmp_buf bus_jump;
 
+#if HAVE_WWW==1
+extern struct WWW_GUEST_TABLE *wwwguest_shm;
+#endif

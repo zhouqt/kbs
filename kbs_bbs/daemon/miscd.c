@@ -540,6 +540,10 @@ static int miscd_dodaemon(char *argv1, char *daemon)
     }
 #endif
     resolve_boards();
+#if HAVE_WWW==1
+    resolve_guest_table();
+#endif
+
     if (argv1 != NULL) {
         switch (fork()) {
         case -1:

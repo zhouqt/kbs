@@ -981,3 +981,71 @@ int do_after_logout(struct userec* user,struct user_info* userinfo,int unum,int 
     if (userinfo&&userinfo->currentboard)
         board_setcurrentuser(userinfo->currentboard,-1);
 }
+
+#if HAVE_WWW==1
+
+/* WWW GUEST这样做有个同步问题，就是当被清除一个
+ * GUEST的时候如果正好这个guest刷新了，那么会重写数据结构
+ * 所以，要注意除了key之外的数据如果要变动，必须保证
+ * 在这种情况下不会逻辑混乱。freshtime因为即使被错误的
+ * client更新了，误差在秒级，而且也不会造成用户问题，所以
+ * 不会出错。但是如果需要更新key，那么就有可能导致下一个
+ * guest用户的key被错误的覆盖。这个是个问题
+ * 另: www guest表使用的idx居然是0 base的。
+ */
+struct WWW_GUEST_TABLE *wwwguest_shm = NULL;
+
+static void longlock(int signo)
+{
+    bbslog("5system", "www_guest lock for so long time!!!.");
+    exit(-1);
+}
+
+int www_guest_lock()
+{
+    int fd = 0;
+
+    fd = open("www_guest.lock", O_RDWR | O_CREAT, 0600);
+    if (fd < 0) {
+        return -1;
+    }
+    signal(SIGALRM, longlock);
+    alarm(10);
+    if (flock(fd, LOCK_EX) == -1) {
+        return -1;
+    }
+    signal(SIGALRM, SIG_IGN);
+    return fd;
+}
+
+void www_guest_unlock(int fd)
+{
+    flock(fd, LOCK_UN);
+    close(fd);
+}
+
+
+int resolve_guest_table()
+{
+    int iscreate = 0;
+
+    if (wwwguest_shm == NULL) {
+        wwwguest_shm = (struct WWW_GUEST_TABLE *)
+            attach_shm("WWWGUEST_SHMKEY", 4500, sizeof(*wwwguest_shm), &iscreate);      /*attach user tmp cache */
+        if (iscreate) {
+            struct public_data *pub;
+            int fd = www_guest_lock();
+            setpublicshmreadonly(0);
+	    pub=get_publicshm();
+            if (fd == -1)
+                return -1;
+            bzero(wwwguest_shm, sizeof(*wwwguest_shm));
+            wwwguest_shm->uptime = time(0);
+            www_guest_unlock(fd);
+            pub->www_guest_count = 0;
+            setpublicshmreadonly(1);
+        }
+    }
+    return 0;
+}
+#endif

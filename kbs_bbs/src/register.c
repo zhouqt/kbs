@@ -315,6 +315,10 @@ void check_register_info()
 		tmnow = localtime(&now);
 		clear();
 		buf[0] = '\0';
+		move(0, 0);
+		prints("我们检查到你的部分注册资料不够完全，为了更好的为您提供个性化的服务，");
+		move(1, 0);
+		prints("希望您填写以下资料。");
 		while (buf[0] < '1' || buf[0] > '2')
 		{
 			getdata(2, 0, "请输入你的性别: [1]男的 [2]女的 (1 or 2): ",

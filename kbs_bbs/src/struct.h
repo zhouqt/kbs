@@ -191,5 +191,23 @@ struct key_struct { // ×Ô¶¨Òå¼ü by bad
     int mapped[10];
 };
 
+#if HAVE_WWW==1
+
+#define MAX_WWW_MAP_ITEM (MAX_WWW_GUEST/32)
+
+struct WWW_GUEST_S {
+    int key;
+    time_t freshtime;
+    time_t logintime;
+    int currentboard;
+};
+
+struct WWW_GUEST_TABLE {
+    int use_map[MAX_WWW_MAP_ITEM + 1];
+    time_t uptime;
+    struct WWW_GUEST_S guest_entry[MAX_WWW_GUEST];
+};
+
+#endif
 #endif
 

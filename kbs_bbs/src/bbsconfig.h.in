@@ -178,3 +178,5 @@ Define this for Query to show real names.
 #define MAIL_LIMIT      50   /* Leeward: 25->50 due to new system:) */
 
 #define BBSHOME "@prefix@"
+
+#define HAVE_WWW @CONFIG_HAVE_WWW@

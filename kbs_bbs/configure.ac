@@ -60,8 +60,12 @@ AC_ARG_ENABLE(www,
 		else
 			AC_MSG_ERROR([can't find bbs2www package,please get it first!])
 		fi
+		CONFIG_HAVE_WWW=1
+        else
+		CONFIG_HAVE_WWW=0
 	fi
 ])
+AC_SUBST(CONFIG_HAVE_WWW)
 
 
 # Checks for header files.

@@ -325,21 +325,6 @@ char *http_encode_string(char *str, size_t len);
 char *unix_string(char *str);
 void output_ansi_html(char *buf, size_t buflen, buffered_output_t *output,char* attachlink);
 
-#define MAX_WWW_MAP_ITEM (MAX_WWW_GUEST/32)
-
-struct WWW_GUEST_S {
-    int key;
-    time_t freshtime;
-    time_t logintime;
-    int currentboard;
-};
-
-struct WWW_GUEST_TABLE {
-    int use_map[MAX_WWW_MAP_ITEM + 1];
-    time_t uptime;
-    struct WWW_GUEST_S guest_entry[MAX_WWW_GUEST];
-};
-
 struct WWW_GUEST_S* www_get_guest_entry(int idx);
 
 #endif                          /* BBSLIB_H */
