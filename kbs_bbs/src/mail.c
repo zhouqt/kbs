@@ -2078,8 +2078,8 @@ const static struct command_def mail_cmds[] = {
     {"R) ÀÀÔÄÈ«²¿ÐÅ¼þ", 0, m_read, NULL},
     {"S) ¼ÄÐÅ", PERM_LOGINOK, m_sendnull, NULL},
     {"G) ÈºÌåÐÅ¼þÑ¡µ¥", PERM_LOGINOK, set_mailgroup_list, NULL},
-    {"O)©°Éè¶¨ºÃÓÑÃûµ¥", 0, t_override, NULL},
-    {"F)©¸¼ÄÐÅ¸øºÃÓÑÃûµ¥", PERM_LOGINOK, ov_send, NULL},
+    /*{"O)©°Éè¶¨ºÃÓÑÃûµ¥", 0, t_override, NULL},*/
+    {"F) ¼ÄÐÅ¸øËùÓÐºÃÓÑ", PERM_LOGINOK, ov_send, NULL},
     {"C) Çå¿Õ±¸·ÝµÄÓÊÏä", 0, m_clean, NULL},
     {"X) ÉèÖÃÓÊÏäÑ¡Ïî", 0, set_mailbox_prop, NULL},
     {"M) ¼ÄÐÅ¸øËùÓÐÈË", PERM_SYSOP, mailall, NULL},
@@ -2956,11 +2956,39 @@ set_mailgroup_list_key(struct _select_def *conf, int key)
 		if (arg->mail_group.groups_num < MAX_MAILGROUP_NUM)
 		{
 			mailgroup_list_item item;
+			char ans[3];
+			char filename[STRLEN];
+			int y = 0;
+			int initialized = 0;
 
-			bzero(&item, sizeof(item));
-			getdata(0, 0, "ÇëÊäÈëÐÂÈºÌåÐÅ¼þ×éµÄÃû³Æ: ", item.group_desc, 
-					sizeof(item.group_desc), DOECHO, NULL, true);
-			add_mailgroup_item(currentuser->userid, &(arg->mail_group), &item);
+			clear();
+			sethomefile(filename, currentuser->userid, "friends");
+			if (dashf(filename))
+			{
+				getdata(y, 0, "ÊÇ·ñµ¼ÈëºÃÓÑÃûµ¥(Y/N)? [Y]: ",
+						ans, sizeof(ans), DOECHO, NULL, true);
+				y++;
+				if (ans[0] == '\0' || ans[0] == 'Y' || ans[0] == 'y')
+				{
+					move(y, 0);
+					prints("µ¼ÈëºÃÓÑÃûµ¥... ");
+					import_friends_mailgroup(currentuser->userid, 
+							&(arg->mail_group));
+					initialized ++;
+					prints("[[0;1;32m³É¹¦[m]\n");
+					y++;
+				}
+			}
+			if (initialized == 0)
+			{
+				bzero(&item, sizeof(item));
+				getdata(y, 0, "ÇëÊäÈëÐÂÈºÌåÐÅ¼þ×éµÄÃû³Æ: ", 
+						item.group_desc, sizeof(item.group_desc), 
+						DOECHO, NULL, true);
+				add_mailgroup_item(currentuser->userid, &(arg->mail_group),
+						&item);
+			}
+			pressanykey();
 			return SHOW_DIRCHANGE;
 		}
 		break;
