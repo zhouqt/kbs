@@ -33,7 +33,7 @@ function main(){
 			$flags|= (1<<$i);
 		}
 	}
-	bbs_setuserparam($flags);
+	bbs_setuserparam($flags,0,0);
 	setSucMsg("修改成功！");
 	return html_success_quit('返回控制面板', 'usermanagemenu.php');
 }
