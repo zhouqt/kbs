@@ -1505,11 +1505,9 @@ char    *cmdfile;
     ******/    
     sethomepath(userhome, currentuser->userid);
     sprintf( buf, "/bin/sh %s %s %s %s", cmdfile, userhome,currentuser->userid, currentuser->username);
-    reset_tty() ;
     RUNSH=YEA;
     do_exec(buf,NULL) ;
     RUNSH=NA;
-    restore_tty() ;
     uinfo.pager = save_pager;
     clear();
 }

@@ -1052,8 +1052,6 @@ main_bbs(int convit,char* argv)
     if( setjmp(byebye) ) {
         system_abort();
     }
-    get_tty();
-    init_tty();
     login_query();
     user_login();
     m_init();

@@ -1656,7 +1656,7 @@ post_article()                         /*用户 POST 文章 */
         { /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
             sethomefile(buf2,currentuser->userid,"signatures");
             move(t_lines-1,0);
-            if (askyn("预设显示前三个签名档, 要显示全部吗",NA,YEA)==YEA)
+            if (askyn("预设显示前三个签名档, 要显示全部吗",NA)==YEA)
                 ansimore(buf2,0);
             else
             {
@@ -1887,9 +1887,9 @@ char *direct ;
     system(genbuf);
 #endif
 
-    /* Leeward 2000.01.23: Cache */
+    /* Leeward 2000.01.23: Cache 
     sprintf(genbuf, "/board/%s/%s.html", currboard,fileinfo->filename);
-    ca_expire(genbuf);
+    ca_expire(genbuf);*/
 
     sprintf(genbuf,"%s/%s",buf,fileinfo->filename) ;
     if( vedit_post(genbuf,NA)!=-1)
@@ -1938,9 +1938,9 @@ char *direct;
         char tmp[STRLEN*2],*t;
         char tmp2[STRLEN]; /* Leeward 98.03.29 */
 
-        /* Leeward 2000.01.23: Cache */
+        /* Leeward 2000.01.23: Cache 
         sprintf(genbuf, "/board/%s/%s.html", currboard,fileinfo->filename);
-        ca_expire(genbuf);
+        ca_expire(genbuf);*/
 
         strcpy(tmp2, fileinfo->title); /* Do a backup */
         /* Changed by KCN,disable color title */
@@ -3017,7 +3017,6 @@ Goodbye()    /*离站 选单*/
             fclose(fp);
     }
     sleep(1);
-    reset_tty() ;
     pressreturn();/*Haohmaru.98.10.18*/
     shutdown(0,2);    
     close(0);

@@ -29,6 +29,7 @@ int modify_user_mode(int mode);
 
 /* more.c */
 int ansimore(char* filename,int promptend);
+int ansimore2(char* filename,int promptend,int row,int numlines);
 
 /* namecomplete.c */
 void AddNameList(char* name);
@@ -51,6 +52,12 @@ void make_blist();
 int postfile(char* filename,char* nboard,char* posttile,int mode);
 int digest_post(int ent,struct fileheader *fhdr,char *direct);
 int mark_post(int ent,struct fileheader *fhdr,char *direct);
+int post_article();                         /*ÓÃ»§ POST ÎÄÕÂ */
+int do_send(char* userid,char* title);
+int post_cross(char islocal,int mode);
+int a_Save(char    *path,char *key,struct fileheader *fileinfo,int nomsg,
+	char *direct,int ent);
+int a_Import(char *path,char *key,struct fileheader *fileinfo,int nomsg,char *direct,int ent);  /* Leeward 98.04.15 */
 
 /*vote.c*/
 void makevdir(char* bname);
@@ -70,17 +77,30 @@ int securityreport(char* str,struct userec* lookupuser,char fdata[7][STRLEN]);
 int del_from_file(char filename[STRLEN],char str[STRLEN]);
 int addtooverride(char* uident);
 int t_query(char q_id[IDLEN]);
+int talkreply();
 
 /* delete.c */
 int kick_user(struct user_info *userinfo);
+int d_user(char cid[IDLEN]);
 
 /* read.c */
 int sread(int passonly,int readfirst,int auser,int pnum,struct fileheader *ptitle);
+void fixkeep(char* s,int first,int last);
 
 /* sendmsg.c */
 void s_msg();
+void r_lastmsg();
 
 /* list.c */
 int t_friends();
+
+/* edit.c */
+int Origin2(char text[256]);
+int vedit(char *filename,int saveheader);
+int vedit_post(char *filename,int saveheader );
+
+/* Announce.c */
+void a_prompt(int bot,char* pmt,char* buf);
+
 #endif
 

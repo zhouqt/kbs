@@ -40,26 +40,6 @@ int t_columns = 80 ;
 
 int automargins=1;
 
-int get_tty()
-{
-    return 1;
-}
-
-void
-init_tty()
-{
-}
-
-void
-reset_tty()
-{
-}
-
-void
-restore_tty()
-{
-}
-
 int
 term_init()
 {

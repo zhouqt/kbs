@@ -277,7 +277,6 @@ char *com, *wd ;
         strncpy(path,arglist[0],MAXPATHLEN) ;
     else
         strncat(path,arglist[0],MAXPATHLEN) ;
-    reset_tty() ;
 #ifdef IRIX
     if((pid = fork()) == 0) {
 #else
@@ -318,7 +317,6 @@ if((pid = vfork()) == 0) {
         /* NULL STATEMENT */ ;
     signal(SIGINT, isig) ;
     signal(SIGQUIT, qsig) ;
-    restore_tty() ;
     return((w == -1)? w: status) ;
 }
 #endif

@@ -290,7 +290,7 @@ char *roomid;
 }
 
 
-void
+static void
 do_send(writefds, str)
 fd_set *writefds;
 char *str;

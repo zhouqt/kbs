@@ -715,9 +715,7 @@ ent_bnet()  /* Bill Schwartz */
     /* is in bbsnet they will be sent back to the xyz menu when they */
     /* leave the system they are currently in. */
 
-    reset_tty() ;
     do_exec("bbsnet.sh",NULL) ;
-    restore_tty() ;
     uinfo.pager = save_pager;
     report("BBSNet Exit");
     clear() ;
