@@ -64,9 +64,12 @@ char    *userid;
                 if( strcasecmp( ptr, userid ) == 0 ) {
                     if(ptr[13]>47 && ptr[13]<58)/*Haohmaru.99.12.24*/
                     {
-                        char timebuf[9];
+                        char timebuf[12];
                         time_t	t,now;
-                        strncpy(timebuf,ptr+13,9);
+                        strcpy(timebuf,ptr+13);
+                        ptr = timebuf;
+                        while (isdigit(*ptr)) ptr++;
+			*ptr=0;
                         t = atol(timebuf);
                         now = time(0);
                         if(now - t > 24*30*3600)

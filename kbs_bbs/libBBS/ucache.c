@@ -450,7 +450,10 @@ void setuserid(int num,const char * userid)
                 close(m_socket);
                 return;
         }
-        sprintf(cmdbuf,"SET %s %d",userid,num);
+        if (userid[0]==0)
+            sprintf(cmdbuf,"DEL %s %d",userid,num);
+        else
+            sprintf(cmdbuf,"SET %s %d",userid,num);
         write(m_socket,cmdbuf,strlen(cmdbuf));
         FD_ZERO(&rfds);
         FD_SET(m_socket,&rfds);

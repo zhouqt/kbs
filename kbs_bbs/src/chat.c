@@ -360,6 +360,9 @@ int ent_chat_conn(chatcontext * pthis, int chatnum)
     memset(&sin, 0, sizeof sin);
     sin.sin_family = PF_INET;
     sin.sin_addr.s_addr=htonl(INADDR_LOOPBACK);
+/*
+    sin.sin_addr.s_addr = inet_addr("166.111.8.237");
+*/
     if (chatnum==1)
         sin.sin_port = htons(CHATPORT3);
     else
@@ -1535,7 +1538,7 @@ struct chat_command chat_cmdtbl[] = {
     {"ignore",call_ignore,6}, /* added by Luzi 1997.11.28 */
     {"listen",call_listen,6}, /* added by Luzi 1997.11.28 */
     {"mail",call_mail,4},     /* added by Luzi 1997.12.22 */
-    {"alias",call_alias,5},   /* added by Luzi 1998.01.25 */
+/*    {"alias",call_alias,5},    added by Luzi 1998.01.25 */
     {NULL, NULL,1}
 };
 

@@ -134,7 +134,7 @@ int killauser(struct userec *theuser,char *data)
 }
 int dokilluser()
 {
-    if (load_ucache()!=0) return -1;
+/*    if (load_ucache()!=0) return -1;*/
     log("1user","Started kill users\n");
     apply_users(killauser,NULL);
     log("1user","kill users done\n");
@@ -187,6 +187,11 @@ int getrequest(int m_socket)
                 if (strcmp(tmpbuf,"QUIT")==0) exit(0);
                 if (strcmp(tmpbuf,"NEW") == 0) break;
                 if (strcmp(tmpbuf,"SET") == 0) break;
+                if (strcmp(tmpbuf,"DEL") == 0) {
+                    pnum=username;
+		    num = atoi(pnum);
+                    break;
+                }
                 close(s);
         }
         return s;
@@ -230,6 +235,10 @@ void userd()
 		id = getnewuserid(username);
 	if (!strcmp(cmd,"SET")) {
 		setuserid2(num,username);
+		id = 0;
+        }
+	if (!strcmp(cmd,"DEL")) {
+		setuserid2(num,"");
 		id = 0;
         }
         putrequest(sock,id);

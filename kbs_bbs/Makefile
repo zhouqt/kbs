@@ -137,8 +137,8 @@ $(BBSLIB) : $(BBSLIBOBJS)
 	ar cru $@ $^
 	ranlib $@
 	
-chatd: station.c 
-	$(CC) -g $(CFLAGS) $(SITE_DEF) $(DEFINES) -o chatd $(OS_DEF) station.c $(LIBS)
+chatd: station.c  libBBS.a
+	$(CC) -g $(CFLAGS) $(SITE_DEF) $(DEFINES) -o chatd $(OS_DEF) station.c $(LIBS) libBBS.a
 	cp -f chatd $(BBSHOME)/bin
 
 

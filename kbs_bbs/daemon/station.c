@@ -666,6 +666,10 @@ int unum ;
     if((fd = open(path,O_RDONLY,0)) == -1)
     {
         users[unum].lpEmote[0][0]='\0';
+        if (( fd = open(path,O_CREAT|O_WRONLY,0664)) != -1) {
+            ftruncate(fd, 128*MAX_EMOTES);
+            close(fd);
+        }
         return;
     }
     for(id=0;id<MAX_EMOTES;id++)
@@ -819,7 +823,7 @@ void call_alias(int unum,char *msg)             /* added by Luzi 1998.01.25,chan
             short has;
             has = 0;
             for (nIdx=0;nIdx<MAX_EMOTES;nIdx++)
-                if (users[unum].lpEmote[nIdx][0]) {
+                if (users[unum].lpEmote[nIdx][0]==0) {
                     has=1;
                     break;
                 }
