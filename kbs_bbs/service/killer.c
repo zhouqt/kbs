@@ -266,7 +266,7 @@ void refreshit()
     resetcolor();
     setfcolor(YELLOW, 1);
     move(1,0);
-    prints("╭———————╮╭—————————————————————————————╮");
+    prints("╭\x1b[32m玩家\x1b[33m—————╮╭\x1b[32m讯息\x1b[33m———————————————————————————╮");
     move(t_lines-2,0);
     prints("╰———————╯╰—————————————————————————————╯");
     for(i=2;i<=t_lines-3;i++) {
@@ -433,8 +433,11 @@ int do_com_menu()
                     clrtoeol();
                     getdata(t_lines-1, 0, "请输入名字:", buf, 30, 1, 0, 1);
                     if(buf[0]) {
+                        for(me=0;me<myroom->people;me++)
+                            if(inrooms.peoples[me].pid==uinfo.pid) break;
                         j=0;
                         for(i=0;i<myroom->people;i++)
+                            if(i!=me)
                             if(!strcmp(buf,inrooms.peoples[i].id) || !strcmp(buf,inrooms.peoples[i].nick)) j=1;
                         if(j) {
                             move(t_lines-1,0);
@@ -453,6 +456,58 @@ int do_com_menu()
                         for(i=0;i<myroom->people;i++)
                             kill(inrooms.peoples[i].pid, SIGUSR1);
                     }
+                    return 0;
+                case 3:
+                    for(me=0;me<myroom->people;me++)
+                        if(inrooms.peoples[me].pid==uinfo.pid) break;
+                    for(i=0;i<myroom->people;i++) {
+                        sprintf(buf, "%-12s  %s", inrooms.peoples[i].id, inrooms.peoples[i].nick);
+                        send_msg(inrooms.peoples+me, buf);
+                    }
+                    kill(inrooms.peoples[me].pid, SIGUSR1);
+                    return 0;
+                case 4:
+                    move(t_lines-1, 0);
+                    resetcolor();
+                    clrtoeol();
+                    getdata(t_lines-1, 0, "请输入话题:", buf, 30, 1, 0, 1);
+                    if(buf[0]) {
+                        start_change_inroom(myroom);
+                        strcpy(inrooms.title, buf);
+                        end_change_inroom();
+                        for(i=0;i<myroom->people;i++)
+                            kill(inrooms.peoples[i].pid, SIGUSR1);
+                    }
+                    return 0;
+                case 5:
+                    move(t_lines-1, 0);
+                    resetcolor();
+                    clrtoeol();
+                    getdata(t_lines-1, 0, "请输入房间最大人数:", buf, 30, 1, 0, 1);
+                    if(buf[0]) {
+                        i=atoi(buf);
+                        if(i>0) {
+                            myroom->maxpeople = i;
+                            move(t_lines-1, 0);
+                            clrtoeol();
+                            getdata(t_lines-1, 0, "设置为隐藏房间? [Y/N]", buf, 30, 1, 0, 1);
+                            buf[0]=toupper(buf[0]);
+                            if(buf[0]=='Y'||buf[0]=='N') {
+                                if(buf[0]=='Y') myroom->flag|=ROOM_SECRET;
+                                else myroom->flag&=~ROOM_SECRET;
+                                move(t_lines-1, 0);
+                                clrtoeol();
+                                getdata(t_lines-1, 0, "设置为锁定房间? [Y/N]", buf, 30, 1, 0, 1);
+                                buf[0]=toupper(buf[0]);
+                                if(buf[0]=='Y'||buf[0]=='N') {
+                                    if(buf[0]=='Y') myroom->flag|=ROOM_LOCKED;
+                                    else myroom->flag&=~ROOM_LOCKED;
+                                }
+                            }
+                        }
+                    }
+                    for(i=0;i<myroom->people;i++)
+                        kill(inrooms.peoples[i].pid, SIGUSR1);
                     return 0;
                 case 7:
                     start_game();
@@ -521,7 +576,7 @@ void join_room(struct room_struct * r)
             }
             else if(ch==KEY_PGDN) {
                 jpage-=t_lines/2;
-                if(jpage>=0) jpage=0;
+                if(jpage<=0) jpage=0;
                 refreshit();
             }
             else if(ch==Ctrl('S')) {
@@ -529,6 +584,7 @@ void join_room(struct room_struct * r)
                 for(me=0;me<myroom->people;me++)
                     if(inrooms.peoples[me].pid == uinfo.pid) break;
                 pid=inrooms.peoples[selected].pid;
+                if(inrooms.peoples[me].vote==0)
                 if(inrooms.peoples[me].flag&PEOPLE_ALIVE&&
                     (inrooms.peoples[me].flag&PEOPLE_KILLER&&inrooms.status==INROOM_NIGHT ||
                     inrooms.status==INROOM_DAY)) {
@@ -744,10 +800,11 @@ quitgame:
         if(inrooms.peoples[me].flag&PEOPLE_ROOMOP) {
             end_change_inroom();
             clear_inroom(myroom);
-            for(i=0;i<myroom->people;i++)
-                kill(inrooms.peoples[i].pid, SIGUSR1);
             myroom->people = 0;
             myroom->style = -1;
+            for(i=0;i<myroom->people;i++)
+                if(i!=me)
+                kill(inrooms.peoples[i].pid, SIGUSR1);
             goto quitgame2;
         }
         for(i=0;i<myroom->people;i++)
@@ -809,7 +866,7 @@ static int room_list_select(struct _select_def *conf)
         refresh(); sleep(1);
         return SHOW_REFRESH;
     }
-    if(r2->people==r2->maxpeople) {
+    if(r2->people>=r2->maxpeople) {
         move(0, 0);
         clrtoeol();
         prints(" 该房间人数已满");
@@ -883,7 +940,7 @@ static int room_list_key(struct _select_def *conf, int key)
             refresh(); sleep(1);
             return SHOW_REFRESH;
         }
-        if(r2->people==r2->maxpeople) {
+        if(r2->people>=r2->maxpeople) {
             move(0, 0);
             clrtoeol();
             prints(" 该房间人数已满");
