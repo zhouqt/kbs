@@ -817,7 +817,7 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
                         /* log the attachment begin */
                         post_file.attachment=ftell(fp)+1;
                     }
-                    fwrite(ATTACHMMENT_PAD,sizeof(ATTACHMMENT_PAD)-1,1,fp);
+                    fwrite(ATTACHMENT_PAD,ATTACHMENT_SIZE,1,fp);
                     fwrite(name,strlen(name)+1,1,fp);
                     BBS_TRY {
                         if (safe_mmapfile_handle(fd, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & size) == 0) {
