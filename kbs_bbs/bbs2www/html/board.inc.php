@@ -71,7 +71,7 @@ function bbs_board_header($brdarr,$articles=0)
 	}
 	
 ?>
-<body topmargin="0" leftmargin="0">
+<body topmargin="0" leftmargin="15">
 <a name="listtop"></a>
 <table width="100%" border="0" cellspacing="0" cellpadding="3">
 <tbody>  <tr> 
@@ -88,7 +88,7 @@ function bbs_board_header($brdarr,$articles=0)
 		}
 	    ?>
 	    -
-	    <?php echo $brdarr["NAME"]; ?>版(<a href="bbsnot.php?board=<?php echo $brd_encode; ?>" class="b2"><font class="b2">进版画面</font></a>
+	    <a href="/bbsdoc.php?board=<?php echo $brdarr["NAME"]; ?>"><?php echo $brdarr["NAME"]." (".$brdarr["DESC"].")"; ?></a>版(<a href="bbsnot.php?board=<?php echo $brd_encode; ?>" class="b2"><font class="b2">进版画面</font></a>
 	    |
 	    <a href="/bbsfav.php?bname=<?php echo $brdarr["NAME"]; ?>&select=0" class="b2"><font class="b2">添加到收藏夹</font></a>
 	    |
