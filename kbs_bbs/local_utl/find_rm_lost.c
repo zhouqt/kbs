@@ -10,8 +10,6 @@
 #define NUMBUFFER 100
 #define HASHSIZE 50
 
-#define SMTH
-
 #ifdef SMTH
 const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 #endif
