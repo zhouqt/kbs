@@ -50,7 +50,7 @@ struct user_info {              /* Structure used in UTMP file */
         char    stuff[ 40 ];
 };
 
-struct friend {
+struct friends {
         char id[13];
         char exp[15];
 };

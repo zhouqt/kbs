@@ -33,7 +33,7 @@
 extern char BoardName[];
 extern int iscolor;
 extern int numf,friendmode;
-struct friend *topfriend;
+struct friends *topfriend;
 int talkidletime=0;
 int ulistpage;
 int friend_query();
@@ -569,7 +569,7 @@ num_visible_users()
 int
 cmpfnames(userid, uv)
 char    *userid;
-struct friend *uv;
+struct friends *uv;
 {
     return !ci_strcmp(userid, uv->id);
 }
@@ -1801,7 +1801,7 @@ can_override( userid, whoasks )
 char *userid;
 char *whoasks;
 {
-    struct friend fh;
+    struct friends fh;
 
     sethomefile( genbuf, userid, "friends" );
     return  (search_record( genbuf, &fh, sizeof(fh), cmpfnames, whoasks )>0)?YEA:NA;
@@ -1873,14 +1873,14 @@ int
 addtooverride(uident)
 char *uident;
 {
-    struct friend tmp;
+    struct friends tmp;
     int  n;
     char buf[STRLEN];
 
     memset(&tmp,0,sizeof(tmp));
     setuserfile( buf, "friends" );
     if((!HAS_PERM(PERM_ACCOUNTS) && !HAS_PERM(PERM_SYSOP)) &&
-            (get_num_records(buf,sizeof(struct friend))>=MAXFRIENDS) )
+            (get_num_records(buf,sizeof(struct friends))>=MAXFRIENDS) )
     {
         move(t_lines-2,0);
         clrtoeol();
@@ -1910,7 +1910,7 @@ char *uident;
         getdata(t_lines-2,0,genbuf, tmp.exp,15,DOECHO,NULL,YEA);
     }
     setuserfile( genbuf, "friends" );
-    n=append_record(genbuf,&tmp,sizeof(struct friend));
+    n=append_record(genbuf,&tmp,sizeof(struct friends));
     if(n!=-1)
         getfriendstr();
     else
@@ -1947,7 +1947,7 @@ deleteoverride(uident)
 char *uident;
 {
     int deleted;
-    struct friend fh;
+    struct friends fh;
 
     setuserfile( genbuf, "friends" );
     deleted = search_record( genbuf, &fh, sizeof(fh), cmpfnames, uident );
@@ -1983,7 +1983,7 @@ friend_title()
 char *
 friend_doentry(ent,fh)
 int ent;
-struct friend *fh;
+struct friends *fh;
 {
     static char buf[STRLEN/2];
 
@@ -1994,10 +1994,10 @@ struct friend *fh;
 int
 friend_edit(ent,fh,direc)
 int ent;
-struct friend *fh;
+struct friends *fh;
 char *direc;
 {
-    struct friend nh;
+    struct friends nh;
     char buf[STRLEN/2];
     int pos;
 
@@ -2026,7 +2026,7 @@ friend_help()
 int
 friend_add(ent,fh,direct)
 int ent;
-struct friend *fh;
+struct friends *fh;
 char *direct;
 {
     char uident[13];
@@ -2050,7 +2050,7 @@ char *direct;
 int
 friend_dele(ent,fh,direct)
 int ent;
-struct friend *fh;
+struct friends *fh;
 char *direct;
 {
     char buf[STRLEN];
@@ -2088,7 +2088,7 @@ char *direct;
 int
 friend_mail(ent,fh,direct)
 int ent;
-struct friend *fh;
+struct friends *fh;
 char *direct;
 {
     if(!HAS_PERM(PERM_POST))
@@ -2100,7 +2100,7 @@ char *direct;
 int
 friend_query(ent,fh,direct)
 int ent;
-struct friend *fh;
+struct friends *fh;
 char *direct;
 {
     int ch;
@@ -2135,7 +2135,7 @@ t_override()
 {
 
     setuserfile( genbuf, "friends" );
-    i_read( GMENU, genbuf , friend_title , friend_doentry, friend_list ,sizeof(struct friend));
+    i_read( GMENU, genbuf , friend_title , friend_doentry, friend_list ,sizeof(struct friends));
     clear();
     return;
 }
@@ -2169,7 +2169,7 @@ int  pid;
 
 int
 cmpfuid( a,b )
-struct friend   *a,*b;
+struct friends   *a,*b;
 {
     return strcasecmp(a->id,b->id);
 }
@@ -2182,13 +2182,13 @@ getfriendstr()
     if(topfriend!=NULL)
         free(topfriend);
     setuserfile( genbuf, "friends" );
-    nf=get_num_records(genbuf,sizeof(struct friend));
+    nf=get_num_records(genbuf,sizeof(struct friends));
     if(nf<=0)
         return 0;
     if(!HAS_PERM(PERM_ACCOUNTS) && !HAS_PERM(PERM_SYSOP))/*Haohmaru.98.11.16*/
         nf=(nf>=MAXFRIENDS)?MAXFRIENDS:nf;
-    topfriend=(struct friend *)calloc(sizeof(struct friend),nf);
-    get_records(genbuf,topfriend,sizeof(struct friend),1,nf);
+    topfriend=(struct friends *)calloc(sizeof(struct friends),nf);
+    get_records(genbuf,topfriend,sizeof(struct friends),1,nf);
     qsort( topfriend, nf, sizeof( topfriend[0] ), cmpfuid );/*For Bi_Search*/
 }
 

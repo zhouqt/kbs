@@ -48,7 +48,7 @@ extern int     add_author_friend();
 
 int cmpinames(); /* added by Leeward 98.04.10 */
 
-extern struct friend *topfriend;
+extern struct friends *topfriend;
 extern int nf;
 extern int numofsig;
 extern char quote_file[], quote_user[];

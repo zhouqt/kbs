@@ -20,7 +20,7 @@ int
 myfriend(str)
 char str[IDLEN];
 {
-    extern struct friend *topfriend;
+    extern struct friends *topfriend;
     extern int  nf;
     int hi,low,mid,found=NA;
     int cmp;
