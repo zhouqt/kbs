@@ -20,10 +20,6 @@ struct titlenode
 struct titlenode toptitle;
 
 int
-report()
-{}
-
-int
 thread(post,num)
 struct fileheader *post;
 int num;

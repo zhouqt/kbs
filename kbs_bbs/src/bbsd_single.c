@@ -7,9 +7,6 @@
 #include <netinet/tcp.h>
 #include <arpa/telnet.h>
 #include <sys/resource.h>
-#ifdef AIX
-#include <rpcsvc/rstat.h>
-#endif
 #include <varargs.h>
 
 #define	QLEN		5
@@ -86,12 +83,15 @@ va_dcl
     write(0,buf,strlen(buf));
 }
 
+#ifdef LOAD_LIMIT
+#ifdef AIX
+#include <rpcsvc/rstat.h>
+#endif
 void
 get_load( load )
 /*取系统负载*/
 double load[];
 {
-#ifdef LOAD_LIMIT
 #ifdef LINUX
     FILE *fp;
     fp = fopen ("/proc/loadavg", "r");
@@ -113,8 +113,8 @@ getloadavg( load, 3 );
     load[ 2 ] = rs.avenrun[ 2 ] / (double) (1 << 8);
 #endif
 #endif
-#endif
 }
+#endif
 
 int local_check_ban_IP(ip, buf)
 char *ip;

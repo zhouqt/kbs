@@ -195,10 +195,6 @@ int fd, op;
     }
 }
 
-#define  report  vdfdsa#fds
-
-
-
 is_valid_chatid(id)
 char *id;
 {

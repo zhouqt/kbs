@@ -265,8 +265,12 @@ extern int Net_Sleep(int);
 #undef NULL
 #endif
 
-#define NULL ((void*)0)
+#define NULL 0
 #define UNUSED_ARG(a) {if (&a) /* null */ ;}
+
+#ifdef OS_LACK_SOCKLEN
+typedef size_t socklen_t;
+#endif
 #include "vars.h"
 #include "func.h"
 

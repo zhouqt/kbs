@@ -24,7 +24,11 @@
 #define MAXPATH 255
 #define MAXLINELEN 512
 
+#ifdef AIX
 #define GNUTAR "/usr/local/bin/tar"
+#else
+#define GNUTAR "/bin/tar"
+#endif
 
 typedef struct __tagDIR_DATA {
   char dir[MAXPATH];
@@ -117,7 +121,6 @@ char* DealLink(char* directory,char* Link,int index,int* isDir,char* date)
   struct tm *tmstruct;
   
   sprintf(filename,"%s/%s",directory,Link);
-  printf("Process %s:\n",filename);
   if (stat(filename,&st)==-1) {
     printf("Directory or File %s is not exist!\n",filename);
     return NULL;
@@ -142,9 +145,10 @@ char* DealLink(char* directory,char* Link,int index,int* isDir,char* date)
   } else {
   /* 处理一般的精华区文件 */
     FILE *psrcFile;
+    FILE *pBBSFile;
     int i,j,k;
 
-    char srcLine[MAXLINELEN] , dstLine[MAXLINELEN];
+    char srcLine[MAXLINELEN] , dstLine[MAXLINELEN*20];
     char Buf2[MAXLINELEN*4] = "";
     char* ptr;
   
@@ -153,12 +157,12 @@ char* DealLink(char* directory,char* Link,int index,int* isDir,char* date)
       printf("Unexpected error: Can not open file \"%s\"\n", filename);
       return NULL;
     }
-  
+
     sprintf(filename,"%s/%s/%08d.htm",WorkDir,directory,index);
     
     if (pdstFile) {
       /* 关闭上一个HTML文件 */
-      fputs("</CENTER>\n",pdstFile);
+/*      fputs("</CENTER>\n",pdstFile);*/
       if (prevprevHtml[0]) {
         fprintf(pdstFile,"<A HREF=\"%s\">上一篇</A>\n",prevprevHtml);
       }
@@ -187,13 +191,17 @@ char* DealLink(char* directory,char* Link,int index,int* isDir,char* date)
     fputs(HEADER, pdstFile);
     fputs("</H1></CENTER>\n", pdstFile);        
     fputs("<A Name=\"top\"></a>\n", pdstFile);        
-    fputs("<CENTER>\n",pdstFile);
+/*    fputs("<CENTER>\n",pdstFile); */
+  
+    sprintf(filename,"%s/bbs/%s/%s",WorkDir,directory,Link);
+    if (NULL == (pBBSFile = fopen(filename, "wt")))
+      printf("Unexpected error: Can not open file \"%s\"\n", filename);
   
     while (!feof(psrcFile))
     {
-      fgets(srcLine, MAXLINELEN, psrcFile);
-      if (feof(psrcFile))
-        break;
+      if (fgets(srcLine, MAXLINELEN, psrcFile)==0) break;
+      if (fputs(srcLine,pBBSFile)==EOF)
+	perror("fputs error bbs file:");
     
       if ('\n' == srcLine[strlen(srcLine) - 1])
         srcLine[strlen(srcLine) - 1] = ' ';
@@ -297,6 +305,7 @@ char* DealLink(char* directory,char* Link,int index,int* isDir,char* date)
     }
   
     fclose(psrcFile); 
+    if (pBBSFile) fclose(pBBSFile); 
     sprintf(filename,"%08d.htm",index);
     strcpy(prevprevHtml,prevHtml);
     strcpy(prevHtml,filename);
@@ -309,10 +318,14 @@ void DealDirectory(char* directory)
 {
   FILE* IndexHtmlFile;
   FILE* DotFile;
+  FILE* BBSDotFile;
   char filename[MAXPATH];
   int index;
   
   printf("Dealing Directory %s\n",directory);
+  if (strstr(directory,"install")) {
+	prevHtml[1]=1;
+  }
   prevHtml[0] = 0;
   prevprevHtml[0] = 0;
 
@@ -323,9 +336,19 @@ void DealDirectory(char* directory)
       return;
     }
   }
+  sprintf(filename,"%s/bbs/%s",WorkDir,directory);
+  if (mkdir(filename,0700)==-1) {
+    if (errno!=EEXIST) 
+      fprintf(stderr,"Create Directory %s failed:%s",filename,strerror(errno));
+  };
 
   sprintf(filename,"%s/%s",directory,DOTNAMES);
   if ((DotFile=fopen(filename,"rt"))==NULL) {
+    fprintf(stderr,"can't open %s file",filename);
+    return;
+  }
+  sprintf(filename,"%s/bbs/%s/%s",WorkDir,directory,DOTNAMES);
+  if ((BBSDotFile=fopen(filename,"wt"))==NULL) {
     fprintf(stderr,"can't open %s file",filename);
     return;
   }
@@ -333,6 +356,7 @@ void DealDirectory(char* directory)
   sprintf(filename,"%s/%s/%s",WorkDir,directory,INDEXHTML);
   if ((IndexHtmlFile=fopen(filename,"wt"))==NULL) {
     fclose(DotFile);
+    if (BBSDotFile) fclose(BBSDotFile);
     perror("can't open Index Html file");
     return;
   }
@@ -343,11 +367,12 @@ void DealDirectory(char* directory)
         char anchor[MAXLINELEN] = "";
         char* ptr;
         
-        fgets(Buf, MAXLINELEN, DotFile);
-        if (feof(DotFile))
-          break;
-        else
-          Buf[strlen(Buf) - 1] = 0;
+        if (fgets(Buf, MAXLINELEN, DotFile)==0) break;
+  	if (BBSDotFile) 
+           if (!(strstr(Buf, "Name=")&&(strstr(Buf,"(BM: BMS)")||strstr(Buf,"(BM: SYSOPS)"))))
+		if (fputs(Buf,BBSDotFile)==EOF)
+			perror("fputs bbs .Name:");
+        Buf[strlen(Buf) - 1] = 0;
         if (ptr = strstr(Buf, "Title="))
         {
           fputs("<HTML>\n\n<HEAD>\n  <TITLE>", IndexHtmlFile);
@@ -376,8 +401,10 @@ void DealDirectory(char* directory)
               printf("Unexpected error: Incorrect format in \"%s\" file\n\tName not match path", DOTNAMES);
               break;
             }
-            else if (ptr = strstr(Buf, "Path=~/"))
-            {
+            else {
+  	      if (BBSDotFile) fputs(Buf,BBSDotFile);
+	      if (ptr = strstr(Buf, "Path=~/"))
+              {
               char* herfname;
               char datestr[25];
               int isDir;
@@ -391,14 +418,16 @@ void DealDirectory(char* directory)
                 fprintf(IndexHtmlFile,"<td>%s</td></tr>\n", datestr);
               }
               break;
-            }
+	      }
+            } /* feof */
           } /* while (1) */
         } /* if Buf has "Name" */
   }; /* while feof(DotFile) */
   fclose(DotFile);
+  if (BBSDotFile) fclose(BBSDotFile);
 
   if (pdstFile) {
-    fputs("</CENTER>\n",pdstFile);
+/*    fputs("</CENTER>\n",pdstFile);*/
     if (prevHtml[0]) {
       fprintf(pdstFile,"<A HREF=\"%s\">上一篇</A>\n",prevHtml);
     }
@@ -449,7 +478,15 @@ main(int argc, char **argv)
 
   pdstFile=NULL;
   strcpy(maindir,task_head->dir);
-  mkdir(WorkDir,0700);
+  if (mkdir(WorkDir,0700)==-1) {
+	fprintf(stderr,"mkdir %s:%s",WorkDir,strerror(errno));
+	return 0;
+  }
+  sprintf(Buf,"%s/bbs",WorkDir);
+  if (mkdir(Buf,0700)==-1) {
+	fprintf(stderr,"mkdir %s/bbs:%s",WorkDir,strerror(errno));
+	return 0;
+  }
   printf("Begine %s\n",task_head->dir);
   task_tail = task_head;
   while (task_head) {
@@ -462,12 +499,21 @@ main(int argc, char **argv)
   free(task_head);
 
   printf("Finished creating HTML files...\n");
+
+  printf("Compressing BBS files...\n");
+  printf("Calling \"gnu tar\"...\n");
+  sprintf(Buf, "%s/%s.bbs.tgz", OutDir, maindir);
+  unlink(Buf);
+  sprintf(Buf, "cd %s/bbs; %s zcf %s/%s.bbs.tgz %s", WorkDir , GNUTAR, OutDir,maindir, maindir); 
+  printf("%s",Buf);
+  system(Buf);
   
   printf("Compressing HTML files...\n");
   printf("Calling \"gnu tar\"...\n");
   sprintf(Buf, "%s/%s.html.tgz", OutDir, maindir);
   unlink(Buf);
   sprintf(Buf, "cd %s; %s zcf %s/%s.html.tgz %s", WorkDir , GNUTAR, OutDir,maindir, maindir); 
+  printf("%s",Buf);
   system(Buf);
 
   printf("Cleaning working directory/data...\n");

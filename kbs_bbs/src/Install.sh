@@ -1,8 +1,8 @@
 #! /bin/sh
 
-BBS_HOME=/home/bbs
+BBS_HOME=/home0/bbs
 INSTALL="//bin/install -c"
-TARGET=/home/bbs/bin
+TARGET=/home0/bbs/bin
 
 echo "This script will install the whole BBS to ${BBS_HOME}..."
 echo -n "Press <Enter> to continue ..."
