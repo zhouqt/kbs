@@ -46,8 +46,6 @@ char    ReplyPost[STRLEN]="";
 int     FFLL=0;
 int     Anony;
 
-char CurArticleFileName[STRLEN]; /* 保存当前文章的文件名，用于clear_new_flag, added by dong, 1999.1.21 */
-
 char    *filemargin() ;
 void    cancelpost();
 /*For read.c*/
@@ -3145,152 +3143,6 @@ char *direct ;
     return FULLUPDATE ;
 }
 
-static int sequent_ent ;
-
-int
-sequent_messages(struct fileheader *fptr,char* arg)
-{
-    static int idc;
-
-    if(fptr == NULL) {
-        idc = 0 ;
-        return 0 ;
-    }
-    idc++ ;
-    if(readpost){
-        if(idc < sequent_ent)
-            return 0;
-        if( !brc_unread( fptr->filename ) )  return 0; /*已读 则 返回*/
-        mot = 1 ;
-        if (continue_flag != 0) {
-            genbuf[ 0 ] = 'y';
-        } else {
-            prints("讨论区: '%s' 标题:\n\"%s\" posted by %s.\n",
-                   currboard,fptr->title,fptr->owner) ;
-            getdata(3,0,"读取 (Y/N/Quit) [Y]: ",genbuf,5,DOECHO,NULL,YEA) ;
-        }
-        if(genbuf[0] != 'y' && genbuf[0] != 'Y' && genbuf[0] != '\0') {
-            if(genbuf[0] == 'q' || genbuf[0] == 'Q') {
-                clear() ;
-                return QUIT ;
-            }
-            clear() ;
-            return 0;
-        }
-        setbfile( genbuf, currboard, fptr->filename );
-        strcpy( quote_file, genbuf );
-        strcpy( quote_user, fptr->owner );
-#ifdef NOREPLY
-        more(genbuf,YEA);
-#else
-        ansimore(genbuf,NA) ;
-        move(t_lines-1, 0);
-        clrtoeol();
-        prints("\033[1;44;31m[连续读信]  \033[33m回信 R │ 结束 Q,← │下一封 ' ',↓ │^R 回信给作者                \033[m");
-        continue_flag = 0;
-        switch( egetch() ) {
-        case Ctrl('Z'): r_lastmsg(); /* Leeward 98.07.30 support msgX */
-            break;
-    case 'N': case 'Q':
-    case 'n': case 'q':
-        case KEY_LEFT:
-            break;
-    case 'Y' : case 'R':
-    case 'y' : case 'r':
-            do_reply(fptr->title); /*回信*/
-    case ' ': case '\n':
-        case KEY_DOWN:
-            continue_flag = 1; break;
-        case Ctrl('R'):
-                        post_reply( 0, fptr, (char *)NULL );
-            break;
-        default : break;
-        }
-#endif
-        clear() ;}
-    setbdir( genbuf, currboard );
-    brc_addlist( fptr->filename ) ;
-    /* return 0;  modified by dong , for clear_new_flag(), 1999.1.20*/
-    if (strcmp(CurArticleFileName, fptr->filename) == 0)
-        return QUIT;
-    else
-        return 0;
-
-}
-/* added by dong , for clear all unread flag, 1999.1.25 */
-int
-newsequent_messages(struct fileheader* fptr,char* arg)
-{
-    static int idc;
-
-    if(fptr == NULL) {
-        idc = 0 ;
-        return 0 ;
-    }
-    idc++ ;
-    setbdir( genbuf, currboard );
-    brc_addlist( fptr->filename ) ;
-    return 0;
-}
-
-/* added by dong, for clear all unread flag, 1999.1.25 */
-int
-clear_all_new_flag(ent,fileinfo,direct)
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
-{
-    char        buf[ STRLEN ];
-
-    readpost=0;
-    newsequent_messages((struct fileheader *)NULL,0) ;
-    sequent_ent = ent ;
-    quiting = NA ;
-    continue_flag = 0;
-    setbdir( buf, currboard );
-    apply_record( buf,newsequent_messages,sizeof(struct fileheader),0) ;
-    return PARTUPDATE ;
-}
-
-int
-clear_new_flag(ent,fileinfo,direct)
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
-{
-    readpost=0;
-    strcpy(CurArticleFileName, fileinfo->filename); /* 保存当前文章的文件名， added by dong, 1999.1.20 */
-    sequential_read2(ent);
-    return PARTUPDATE;
-}
-int
-sequential_read(ent,fileinfo,direct)
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
-{
-    readpost=1;
-    clear();
-    return sequential_read2(ent);
-}
-/*ARGSUSED*/
-int
-sequential_read2(ent/*,fileinfo,direct*/)
-int ent ;
-/*struct fileheader *fileinfo ;
-char *direct ;*/
-{
-    char        buf[ STRLEN ];
-
-    sequent_messages((struct fileheader *)NULL,0) ;
-    sequent_ent = ent ;
-    quiting = NA ;
-    continue_flag = 0;
-    setbdir( buf, currboard );
-    apply_record( buf,sequent_messages,sizeof(struct fileheader),0) ;
-    return FULLUPDATE ;
-}
-
 /* Added by netty to handle post saving into (0)Announce */
 int Save_post(int ent,struct fileheader *fileinfo,char *direct)
 {
@@ -3458,6 +3310,121 @@ extern int b_vote();
 extern int b_vote_maintain();
 extern int b_notes_edit();
 extern int b_jury_edit(); /*stephen 2001.11.1*/
+
+static int sequent_ent ;
+
+int
+sequent_messages(struct fileheader *fptr,char* arg)
+{
+    static int idc;
+
+    if(fptr == NULL) {
+        idc = 0 ;
+        return 0 ;
+    }
+    idc++ ;
+    if(readpost){
+        if(idc < sequent_ent)
+            return 0;
+        if( !brc_unread( fptr->filename ) )  return 0; /*已读 则 返回*/
+        mot = 1 ;
+        if (continue_flag != 0) {
+            genbuf[ 0 ] = 'y';
+        } else {
+            prints("讨论区: '%s' 标题:\n\"%s\" posted by %s.\n",
+                   currboard,fptr->title,fptr->owner) ;
+            getdata(3,0,"读取 (Y/N/Quit) [Y]: ",genbuf,5,DOECHO,NULL,YEA) ;
+        }
+        if(genbuf[0] != 'y' && genbuf[0] != 'Y' && genbuf[0] != '\0') {
+            if(genbuf[0] == 'q' || genbuf[0] == 'Q') {
+                clear() ;
+                return QUIT ;
+            }
+            clear() ;
+            return 0;
+        }
+        setbfile( genbuf, currboard, fptr->filename );
+        strcpy( quote_file, genbuf );
+        strcpy( quote_user, fptr->owner );
+#ifdef NOREPLY
+        more(genbuf,YEA);
+#else
+        ansimore(genbuf,NA) ;
+        move(t_lines-1, 0);
+        clrtoeol();
+        prints("\033[1;44;31m[连续读信]  \033[33m回信 R │ 结束 Q,← │下一封 ' ',↓ │^R 回信给作者                \033[m");
+        continue_flag = 0;
+        switch( egetch() ) {
+        case Ctrl('Z'): r_lastmsg(); /* Leeward 98.07.30 support msgX */
+            break;
+    case 'N': case 'Q':
+    case 'n': case 'q':
+        case KEY_LEFT:
+            break;
+    case 'Y' : case 'R':
+    case 'y' : case 'r':
+            do_reply(fptr->title); /*回信*/
+    case ' ': case '\n':
+        case KEY_DOWN:
+            continue_flag = 1; break;
+        case Ctrl('R'):
+                        post_reply( 0, fptr, (char *)NULL );
+            break;
+        default : break;
+        }
+#endif
+        clear() ;}
+    setbdir( genbuf, currboard );
+    brc_addlist( fptr->filename ) ;
+    /* return 0;  modified by dong , for clear_new_flag(), 1999.1.20
+    if (strcmp(CurArticleFileName, fptr->filename) == 0)
+        return QUIT;
+    else*/
+        return 0;
+
+}
+
+int
+sequential_read(ent,fileinfo,direct)
+int ent ;
+struct fileheader *fileinfo ;
+char *direct ;
+{
+    readpost=1;
+    clear();
+    return sequential_read2(ent);
+}
+/*ARGSUSED*/
+int
+sequential_read2(ent/*,fileinfo,direct*/)
+int ent ;
+/*struct fileheader *fileinfo ;
+char *direct ;*/
+{
+    char        buf[ STRLEN ];
+
+    sequent_messages((struct fileheader *)NULL,0) ;
+    sequent_ent = ent ;
+    quiting = NA ;
+    continue_flag = 0;
+    setbdir( buf, currboard );
+    apply_record( buf,sequent_messages,sizeof(struct fileheader),0) ;
+    return FULLUPDATE ;
+}
+
+int
+clear_new_flag( int ent , struct fileheader *fileinfo , char *direct )
+{
+	brc_clear_new_flag(fileinfo->filename);
+	return PARTUPDATE;
+}
+
+int
+clear_all_new_flag( int ent , struct fileheader *fileinfo , char *direct )
+{
+	brc_clear();
+	return PARTUPDATE;
+}
 
 struct one_key  read_comms[] = { /*阅读状态，键定义 */
                                    'r',        read_post,
