@@ -165,7 +165,11 @@
 		@mysql_free_result($result);
 		if(!$rows)
 		{
-			return NULL;
+?>
+&nbsp;
+<img src="images/line.gif" width="11" height="16" align="absmiddle">
+<A href="/pc/pcapp0.html" target="f3">…Í«ÎBLOG</A><BR>
+<?php
 		}
 		else
 		{
