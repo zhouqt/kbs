@@ -69,9 +69,19 @@ int NNread_init()
     struct stat st;
     time_t ftime, now;
     int iscreate;
+#ifdef ACBOARD_BNAME
+	struct fileheader fh;
+	int fd;
+	char fname[PATHLEN];
+	int i;
+#endif
 
     now = time(0);
+#ifdef ACBOARD_BNAME
+    if (stat("boards/"ACBOARD_BNAME"/.DIGEST", &st) < 0) {
+#else
     if (stat("etc/movie", &st) < 0) {
+#endif
         return 0;
     }
     ftime = st.st_mtime;
@@ -93,6 +103,43 @@ int NNread_init()
         xxxline = 1;
         return 1;
     }
+#ifdef ACBOARD_BNAME
+	if ((fd=open("boards/"ACBOARD_BNAME"/.DIGEST", O_RDONLY, 0)) == -1)
+		return 0;
+	while(read(fd, &fh, sizeof(fh)) == sizeof(fh)){
+		if(xxxline >= ACBOARD_MAXLINE)
+			break;
+		setbfile(fname, ACBOARD_BNAME, fh.filename);
+		if((fffd = fopen(fname, "r")) == NULL)
+			continue;
+		for(i=0; i<4; i++) //跳过文章头部信息
+			fgets(buf, ACBOARD_BUFSIZE, fffd);
+		for(i=0; i < MAXnettyLN; i++){
+			if( fgets(buf, ACBOARD_BUFSIZE, fffd) == 0 )
+				break;
+			if( ! strcmp(buf, "--\n") )
+				break;
+			if (xxxline >= ACBOARD_MAXLINE)
+				break;
+			strncpy(movieshm->line[xxxline], buf, ACBOARD_BUFSIZE);
+			movieshm->line[xxxline][ACBOARD_BUFSIZE-1]='\0';
+			xxxline ++;
+		}
+		if (xxxline >= ACBOARD_MAXLINE){
+			fclose(fffd);
+			break;
+		}
+		fclose(fffd);
+		for(; i<MAXnettyLN; i++){
+			if (xxxline >= ACBOARD_MAXLINE)
+				break;
+			sprintf(buf, "%79.79s\n", " ");
+			strcpy(movieshm->line[xxxline], buf);
+			xxxline++;
+		}
+	}
+	close(fd);
+#else
     /*---	原有程序顺序有误, !DEFINE --> return后没close	---*/
     if ((fffd = fopen("etc/movie", "r")) == NULL)
         return 0;
@@ -102,18 +149,18 @@ int NNread_init()
         memcpy(ptr, buf, sizeof(buf));
         xxxline++;
     }
+    fclose(fffd);
     sprintf(buf, "%79.79s\n", " ");
-    movieshm->movielines = xxxline;
     while (xxxline % MAXnettyLN != 0) {
         ptr = movieshm->line[xxxline];
         memcpy(ptr, buf, sizeof(buf));
         xxxline++;
     }
+#endif
     movieshm->movielines = xxxline;
     movieshm->update = time(0);
     sprintf(buf, "%d 行 活动看板 更新", xxxline);
     bbslog("user", "%s", buf);
-    fclose(fffd);
     return 1;
 }
 
@@ -305,7 +352,11 @@ void netty_more()
     update_endline();
     move(3, 0);
     while ((nnline < movieshm->movielines) /*&&DEFINE(getCurrentUser(),DEF_ACBOARD) */ ) {
+#ifdef FREE
+        move(1 + ne_row, 0);
+#else
         move(2 + ne_row, 0);
+#endif
         clrtoeol();
 
         strcpy(buf, movieshm->line[nnline]);
@@ -327,6 +378,7 @@ void printacbar()
 {
     int x, y;
 
+#ifndef FREE
     getyx(&y, &x);
 
     move(2, 0);
@@ -340,6 +392,8 @@ void printacbar()
     else
         prints("\033[35m└——————————————┤\033[36m" FOOTER_MOVIE "\033[35m├——————————————┘ \033[m\n");
     move(y, x);
+#endif
+
 }
 
 extern int idle_count;

@@ -189,7 +189,6 @@ extern long ti;
 
 
 #define MORE_BUFSIZE    4096
-#define MAXnettyLN      5       /* lines of  activity board  */
 /*#define ACBOARD_BUFSIZE      300    max. length of each line for activity board  */
 /*#define ACBOARD_MAXLINE      80     max. lines of  activity board  */
 #define ACBOARD_BUFSIZE      LENGTH_ACBOARD_BUFFER      /* max. length of each line for activity board  */
@@ -201,7 +200,13 @@ extern long ti;
 #define BOARDNAMELEN 30         /* max length of board */
 #define PASSLEN 39
 #define MD5PASSLEN 16
+
+#ifdef FREE
+#define OLDPASSLEN  35          /* Length of encrypted passwd field */
+#else
 #define OLDPASSLEN  14          /* Length of encrypted passwd field */
+#endif
+
 #define MAXGOPHERITEMS 9999     /*max of gopher items */
 #define PASSFILE   ".PASSWDS"   /* Name of file User records stored in */
 #define ULIST "UTMP"            /* Names of users currently on line */

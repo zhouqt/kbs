@@ -793,6 +793,10 @@ attach define
 #define QUOTED_LINES 10
 #endif
 
+#ifndef MAXnettyLN
+#define MAXnettyLN      5       /* lines of  activity board  */
+#endif
+
 #ifndef QUOTELEV
 #define QUOTELEV 0
 #endif
