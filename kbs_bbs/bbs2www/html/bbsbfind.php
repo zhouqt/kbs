@@ -28,9 +28,9 @@ login_init();
 <?php echo BBS_FULL_NAME; ?> -- 版内文章搜索 [使用者: <?php echo $currentuser["userid"];?>]
 <hr color="green"><br>
 <?php
-		if( !isset($_GET["submit"]) && !isset($_POST["submit"]) ){
+		if( !isset($_GET["board"]) && !isset($_POST["board"]) ){
 ?>
-<table><form action="/bbsbfind.php" method=GET>
+<table><form action="/bbsbfind.php" method="GET">
 <tr><td>版面名称: <input type="text" maxlength="24" size="24" name="board" value="<?php echo $brdarr["NAME"];?>"><br>
 <tr><td>标题含有: <input type="text" maxlength="50" size="20" name="title"> AND <input type="text" maxlength="50" size="20" name="title2">
 <tr><td>标题不含: <input type="text" maxlength="50" size="20" name="title3">
@@ -39,7 +39,7 @@ login_init();
 <tr><td><input type="checkbox" name="mg" id="mg"><label for="mg" style="cursor:hand;">精华文章</label><br>
 <tr><td><input type="checkbox" name="ag" id="ag"><label for="ag" style="cursor:hand;">带附件文章</label><br>
 <tr><td><input type="checkbox" name="og" id="og"><label for="og" style="cursor:hand;">不含跟贴</label><br><br>
-<tr><td><input type="submit" name="submit" value="递交查询结果">
+<tr><td><input type="submit" value="递交查询结果">
 </form></table>[<a href="/bbsdoc.php?board=<?php echo $brdarr["NAME"];?>">本讨论区</a>]
 </html>
 <?php
