@@ -136,6 +136,7 @@ static void trunclog(int signo)
         	    sprintf(buf,"%s.%d",pconf->filename,j);
         	    if (!dashf(buf))
         	    	break;
+		    j++;
         	}
         	f_mv(pconf->filename,buf);
         }
