@@ -1,0 +1,362 @@
+#include "bbslib.h"
+
+int
+count_user()
+{
+	int num;
+
+	num = searchuser(getcurruserid());
+    return apply_utmpuid( NULL, num, 0);
+}
+
+void RemoveMsgCountFile()
+{
+  char fname[STRLEN];
+  setuserfile(fname,"msgcount");
+  unlink(fname);
+ }
+
+/* to be Continue to fix kick problem */
+void
+multi_user_check()
+{
+    struct user_info    uin;
+    int         curr_login_num;
+    char        buffer[40];
+
+    if (count_user()<1)
+		RemoveMsgCountFile();
+
+    if (has_perm(PERM_MULTILOG)) 
+        return;  /* don't check sysops */
+    curr_login_num = get_utmp_number();
+    /* Leeward: 97.12.22 BMs may open 2 windows at any time */
+    /* Bigman: 2000.8.17 智囊团能够开2个窗口 */
+    /* stephen: 2001.10.30 仲裁可以开两个窗口 */
+    if ((has_perm(PERM_BOARDS) || has_perm(PERM_CHATOP)|| has_perm(PERM_JURY) || has_perm(PERM_CHATCLOAK)) && count_user() < 2)
+        return;
+    if ( (curr_login_num<700)&&(count_user()>=2) 
+           || (curr_login_num>=700)&& (count_user()>=1) ) /*user login limit*/
+    {  
+		http_fatal("您同时上线的窗口数过多。为了保证他人利益，此次连线将被取消。");
+    }
+}
+
+int main()
+{
+	int pid, n, t;
+	char buf[256], id[20], pw[20];
+	struct userec *x = NULL;
+	FILE *fp;
+
+	init_all();
+	strsncpy(id, getparm("id"), 13);
+    strsncpy(pw, getparm("pw"), 13);
+	//strsncpy(id, argv[1], 13);
+    //strsncpy(pw, argv[2], 13);
+	if(loginok && strcasecmp(id, currentuser.userid)) {
+		http_fatal("系统检测到目前你的计算机上已经登录有一个帐号 %s，请先退出.(%s)", 
+			currentuser.userid, "选择正常logout, 或者关闭所有浏览器窗口");
+	}
+	getuser(id, &x);
+	if(x==0) http_fatal("错误的使用者帐号");
+	if(strcasecmp(id, "guest"))
+	{
+		/*if(!checkpasswd(x->passwd, pw)) {*/
+		if (!checkpasswd2(pw, x))
+		{
+			if(pw[0]!=0) sleep(2);
+			sprintf(buf, "%s %s %s\n", Ctime(time(0))+4, id, fromhost);
+			f_append(WWW_BADLOGIN, buf);
+			http_fatal("密码错误");
+		}
+		setcurrusr(x);
+		multi_user_check();
+		if(!user_perm(x, PERM_BASIC))
+			http_fatal("此帐号已被停机, 若有疑问, 请用其他帐号在sysop版询问.");
+		if(file_has_word(".bansite", fromhost)) {
+			http_fatal("对不起, 本站不欢迎来自 [%s] 的登录. <br>若有疑问, 请与SYSOP联系.", fromhost);
+		}
+		t=x->lastlogin;
+		x->lastlogin=time(0);
+		save_user_data(x);
+		if(abs(t-time(0))<5) http_fatal("两次登录间隔过密!");
+		x->numlogins++;
+		strsncpy(x->lasthost, fromhost, 17);
+		save_user_data(x);
+		currentuser=*x;	/* struct assignment */
+	}
+	sprintf(buf, "%s %s %s\n", Ctime(time(0)), x->userid, fromhost);
+	f_append(WWW_LOG, buf);
+	sprintf(buf, "%s ENTER %-12s @%s [www]\n", Ctime(time(0))+4, x->userid, fromhost);
+	f_append("usies", buf);
+	n=0;
+	if(!loginok && strcasecmp(id, "guest"))	wwwlogin(x);
+	redirect(FIRST_PAGE);
+	//refreshto("/cgi-bin/bbs/bbssec",10);
+}
+
+int wwwlogin(struct userec *user) {
+	FILE *fp;
+	char buf[80];
+	int pid, tmp;
+	uinfo_t *u;
+	uinfo_t ui;
+	int utmpent;
+
+    memset( &ui, 0, sizeof( uinfo_t ) );
+    ui.active = YEA ;
+    //ui.pid    = getpid();
+
+    /* Bigman 2000.8.29 智囊团能够隐身 */
+    if( (has_perm(PERM_CHATCLOAK) || has_perm(PERM_CLOAK)) && (user->flags[0] & CLOAK_FLAG))
+        ui.invisible = YEA;
+    ui.pager = 0;
+    if(define(DEF_FRIENDCALL))
+    {
+        ui.pager|=FRIEND_PAGER;
+    }
+    if(user->flags[0] & PAGER_FLAG)
+    {
+        ui.pager|=ALL_PAGER;
+        ui.pager|=FRIEND_PAGER;
+    }
+    if(define(DEF_FRIENDMSG))
+    {
+        ui.pager|=FRIENDMSG_PAGER;
+    }
+    if(define(DEF_ALLMSG))
+    {
+        ui.pager|=ALLMSG_PAGER;
+        ui.pager|=FRIENDMSG_PAGER;
+    }
+    ui.uid = getusernum(user->userid);
+    strncpy( ui.from, fromhost, IPLEN );
+	*(int*)(ui.from+32)=time(0);	/* for counting user's stay time */
+									/* refer to bbsfoot.c for details */
+	set_idle_time(&ui, time(0));
+	ui.mode = WEBEXPLORE;
+    strncpy( ui.userid,   user->userid,   20 );
+    strncpy( ui.realname, user->realname, 20 );
+    strncpy( ui.username, user->username, 40 );
+    //nf=0;
+	set_friends_num(0);
+    //topfriend=NULL;
+	init_finfo_addr();
+    getfriendstr();
+    utmpent = getnewutmpent2(&ui) ;
+    if (utmpent == -1)
+		http_fatal("抱歉，目前在线用户数已达上限，无法登录。请稍后再来。");
+	u = get_user_info(utmpent);
+	pid=fork();
+	if(pid<0) http_fatal("can't fork");
+	if(pid==0)
+	{
+		setcurruinfo(u);
+		wwwagent();
+		exit(0);
+	}
+	u->pid = pid;
+	tmp=rand()%100000000;
+	u->utmpkey=tmp;
+	sprintf(buf, "%d", utmpent);
+	setcookie("utmpnum", buf);
+	sprintf(buf, "%d", tmp);
+	setcookie("utmpkey", buf);
+	setcookie("utmpuserid", user->userid);
+	set_my_cookie();
+	return 0;
+}
+
+long f_offset=0;
+
+int get_msgcount()
+{
+    char buf2[256] ;
+	char fname2[STRLEN];
+	int fd;
+	int msg_count;
+
+	setuserfile(fname2,"msgcount");
+	if ((fd = open(fname2, O_RDWR, 0600)) < 0)
+	{
+		sprintf(buf2, "open %s failed: %s\n", fname2, strerror(errno));
+		f_append("debug", buf2);
+		return -1;
+	}
+	read(fd, &msg_count, sizeof(msg_count));
+	close(fd);
+
+	return msg_count;
+}
+
+void set_msgcount(int msg_count)
+{
+    char buf2[256] ;
+	char fname2[STRLEN];
+	int fd;
+
+	setuserfile(fname2,"msgcount");
+	if ((fd = open(fname2, O_RDWR, 0600)) < 0)
+	{
+		sprintf(buf2, "open %s failed: %s\n", fname2, strerror(errno));
+		f_append("debug", buf2);
+		return;
+	}
+	write(fd, &msg_count, sizeof(msg_count));
+	close(fd);
+
+	return;
+}
+
+/* 从消息记录(msgfile)中读入消息,
+ * 并写入 WWW 消息记录(wwwmsg)中.
+*/
+void add_msg()
+{
+	char file[256], file2[256];
+    FILE *fp;
+    char buf[256];
+    char msg[256];
+    int  msg_count;
+    char fname[STRLEN];
+    int i;
+    int send_pid;
+    char *ptr;
+    struct user_info *ui ;
+    char msgbuf[STRLEN];
+	int fd;
+
+	ui = getcurruinfo();
+    setuserfile(fname,"msgfile");
+    if(!file_exist(fname))
+        return;
+	sleep(1); /* quick and dirty */
+	if ((msg_count = get_msgcount()) < 0)
+		return;
+   	setuserfile(file,"wwwmsg");
+	setuserfile(file2, ".wwwmsg.lock");
+	if ((fd = open(file2, O_RDWR | O_CREAT, 0600)) < 0)
+		goto failed;
+	flock(fd, LOCK_EX);
+    while(1)
+    {
+        if((fp=fopen(fname,"r"))==NULL)
+            break;
+        i=0;
+        if (f_offset==0)
+        {
+            while( fgets(buf,256,fp)!=NULL)
+            {
+                ptr=strrchr(buf,'[');
+                send_pid=atoi(ptr+1);
+                if(send_pid>100)
+                    send_pid-=100;
+                if (ui->pid == send_pid)
+                {
+					i=1;
+                    strcpy(msg,buf);
+                }
+            }
+        }
+        else
+		{
+			fseek(fp, f_offset, SEEK_SET);
+            while(fgets( msg, 256, fp)!=NULL)
+            {
+                ptr=strrchr(msg,'[');
+                send_pid=atoi(ptr+1);
+                if(send_pid>100)
+                    send_pid-=100;
+                if (ui->pid == send_pid)
+                {
+					i=1;
+					break;
+				}
+            }
+        }
+        f_offset = ftell(fp);
+        fclose(fp);
+        if (i==0)
+			break;
+		fp = fopen(file, "a");
+		fputs(msg, fp);
+		fclose(fp);
+		if (msg_count)
+			msg_count--;
+    }
+	set_msgcount(msg_count);
+    if (count_user()<2)
+		RemoveMsgCountFile();
+	flock(fd, LOCK_UN);
+	close(fd);
+
+failed:
+    signal(SIGUSR2, add_msg);
+    return ;
+}
+
+void
+setflags(mask, value)
+int mask, value;
+{
+	struct userec *u;
+
+	u = getcurrusr();
+    if (((u->flags[0] & mask) && 1) != value) {
+        if (value) u->flags[0] |= mask;
+        else u->flags[0] &= ~mask;
+    }
+}
+
+void
+u_exit()
+{
+	uinfo_t *ui;
+
+	ui = getcurruinfo();
+/*---	Added by period		2000-11-19	sure of this	---*/
+    if(!ui->active) return;
+/*---		---*/
+    setflags(PAGER_FLAG, (ui->pager&ALL_PAGER));
+/*    if (HAS_PERM(PERM_LOGINCLOAK)&&HAS_PERM(PERM_SEECLOAK))*/
+
+   /* Bigman 2000.8.29 智囊团能够隐身 */
+	if((has_perm(PERM_CHATCLOAK) || has_perm(PERM_CLOAK)))
+        setflags(CLOAK_FLAG, ui->invisible);
+
+    clear_utmp2(ui);
+}
+
+void abort_program() {
+	int stay=0;
+	struct userec *x = NULL;
+
+	stay=abs(time(0) - *(int*)(u_info->from+32));
+	if(stay>7200) stay = 7200;
+	getuser(getcurruserid(), &x);
+	if(x) {
+			x->stay+=stay;
+			record_exit_time();
+			u_exit();
+			save_user_data(x);
+	}
+	exit(0);
+}
+
+int wwwagent() {
+	int i;
+	for(i=0; i<1024; i++) close(i);
+	for(i=0; i<NSIG; i++) signal(i, SIG_IGN);
+	signal(SIGUSR2, add_msg);
+	signal(SIGHUP, abort_program);
+	while(1) {
+		sleep(60);
+		if(abs(time(0) - get_idle_time(u_info))>600) {
+			f_append("err", "idle timeout");
+			abort_program();
+		}
+	}
+	exit(0);
+}
+
