@@ -307,7 +307,7 @@ int mailall()
                 }
             }
             setquotefile("");
-            do_quote(fname, include_mode);
+            do_quote(fname, include_mode,quote_file,quote_user);
             if (vedit(fname, true) == -1) {
                 in_mail = false;
                 unlink(fname);

@@ -1061,7 +1061,7 @@ int garbage_line(char *str)
 }
 
 /* When there is an old article that can be included -jjyang */
-void do_quote(char *filepath, char quote_mode)
+void do_quote(char *filepath, char quote_mode, char* q_file,char* q_user)
 {                               /* 引用文章， 全局变量quote_file,quote_user, */
     FILE *inf, *outf;
     char *qfile, *quser;
@@ -1070,8 +1070,8 @@ void do_quote(char *filepath, char quote_mode)
     int bflag;
     int line_count = 0;         /* 添加简略模式计数 Bigman: 2000.7.2 */
 
-    qfile = quote_file;
-    quser = quote_user;
+    qfile = q_file;
+    quser = q_user;
     bflag = strncmp(qfile, "mail", 4);  /* 判断引用的是文章还是信 */
     outf = fopen(filepath, "w");
     if (*qfile != '\0' && (inf = fopen(qfile, "r")) != NULL) {  /* 打开被引用文件 */
@@ -1132,8 +1132,8 @@ void do_quote(char *filepath, char quote_mode)
         fprintf(outf, "\n");
         fclose(inf);
     }
-    *quote_file = '\0';
-    *quote_user = '\0';
+    *q_file = '\0';
+    *q_user = '\0';
 
     if ((numofsig > 0) && !(currentuser->signature == 0 || Anony == 1)) {       /* 签名档为0则不添加 */
         if (currentuser->signature < 0)
@@ -1435,7 +1435,7 @@ int post_article()
 
     modify_user_mode(POSTING);
 
-    do_quote(filepath, include_mode);   /*引用原文章 */
+    do_quote(filepath, include_mode,quote_file,quote_user);   /*引用原文章 */
 
     strcpy(quote_title, save_title);
     strcpy(quote_board, currboard);

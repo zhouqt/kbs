@@ -99,7 +99,7 @@ int Goodbye();
 int post_reply(int ent, struct fileheader *fileinfo, char *direct);
 int sequential_read2(int ent);
 void setquotefile(char filepath[]);
-void do_quote(char *filepath, char quote_mode);
+void do_quote(char *filepath, char quote_mode, char* q_file,char* q_user);
 void setqtitle(char *stitle);
 int set_delete_mark(int ent, struct fileheader *fileinfo, char *direct);
 int noreply_post_noprompt(int ent, struct fileheader *fileinfo, char *direct);
