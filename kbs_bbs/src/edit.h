@@ -38,6 +38,7 @@ struct textline {
     struct textline *prev;
     struct textline *next;
     int len;
+    int maxlen;
     char attr;
-    char data[WRAPMARGIN + 1];
+    char * data;
 };

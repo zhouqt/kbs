@@ -217,6 +217,8 @@ struct textline *alloc_line()
     }
     p->next = NULL;
     p->prev = NULL;
+    p->data = malloc(WRAPMARGIN+1);
+    p->maxlen = WRAPMARGIN;
     p->data[0] = '\0';
     p->len = 0;
     p->attr = 0;                /* for copy/paste */
@@ -395,7 +397,7 @@ void delete_line(line)
         line->prev->next = line->next;
     else
         firstline = line->next; /* if on first line */
-
+    free(line->data)
     free(line);
 }
 
@@ -455,13 +457,20 @@ int join(line)
         return true;
     /*if(*killsp(line->next->data) == '\0')
        return true ; */
-    ovfl = line->len + line->next->len - WRAPMARGIN;
-    if (ovfl < 0) {
+//    ovfl = line->len + line->next->len - WRAPMARGIN;
+//    if (ovfl < 0) {
+    while(line->maxlen<=line->len+line->next->len+1) {
+        char *q = (char *) malloc(((line->len+line->next->len)/WRAPMARGIN+1)*WRAPMARGIN+1);
+        memcpy(q, line->data, line->len);
+        free(line->data);
+        line->data = q;
+        line->maxlen = ((line->len+line->next->len)/WRAPMARGIN+1)*WRAPMARGIN;
+    }
         strcat(line->data, line->next->data);
         line->len += line->next->len;
         delete_line(line->next);
         return true;
-    } else {
+/*    } else {
         register char *s;
         register struct textline *p = line->next;
 
@@ -486,7 +495,7 @@ int join(line)
             }
         }
         return false;
-    }
+    }*/
 }
 
 void insert_char(ch)
@@ -510,6 +519,14 @@ void insert_char(ch)
         p->len++;
         currpnt++;
     }
+    if (p->len >= p->maxlen-1) {
+        char *q = (char *)malloc(p->maxlen+WRAPMARGIN+1);
+        memcpy(q, p->data, p->len);
+        free(p->data);
+        p->data = q;
+        p->maxlen += WRAPMARGIN;
+    }
+    return;
     if (p->len < WRAPMARGIN)
         return;
     s = p->data + (p->len - 1);
@@ -956,7 +973,8 @@ static int write_file(char* filename,int saveheader,long* effsize,long* pattachp
         struct textline *v = p->next;
 
         if( (!aborted)&&(aborted!=-1)) {
-            long_flag = (strlen(p->data) >= WRAPMARGIN -2 );
+//            long_flag = (strlen(p->data) >= WRAPMARGIN -2 );
+            long_flag = 0;
             if (p->next != NULL || p->data[0] != '\0') {
                 if (!strcmp(p->data,"--"))
                     temp=1;
@@ -1047,6 +1065,7 @@ fsdfa
                     fprintf(fp, "%s\n", p->data);
                 }
             }
+        free(p->data);
         free(p);
         p = v;
     }
@@ -1109,6 +1128,7 @@ void keep_fail_post()
 
         if (p->next != NULL || p->data[0] != '\0')
             fprintf(fp, "%s\n", p->data);
+        free(p->data);
         free(p);
         p = v;
     }
