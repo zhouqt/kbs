@@ -648,8 +648,13 @@ int zsend_post( int ent , struct fileheader *fileinfo , char *direct )
 	char *t;
 	char buf[512];
 	char buf1[512];
-	if (strcmp(currboard,"sys_discuss") != 0) return FULLUPDATE;
-      strcpy(buf1,direct) ;
+	ansimore("etc/zmodem",0);
+       move(t_lines-1, 0);
+       clrtoeol();
+       strcpy(buf,"N");
+       getdata( t_lines-1, 0, "您确定要使用Zmodem传输文件么?[y/N]", buf, 2, DOECHO, NULL ,YEA);
+       if (toupper(buf[0])  != 'Y') return FULLUPDATE;
+       strcpy(buf1,direct) ;
       if( (t = strrchr(buf1,'/')) != NULL )
        *t = '\0' ;
 	snprintf(genbuf,512,"%s/%s",buf1,fileinfo->filename);
