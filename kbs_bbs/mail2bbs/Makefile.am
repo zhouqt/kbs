@@ -7,5 +7,5 @@ LDADD=../libBBS/.libs/libBBS.a ../libsystem/.libs/libsystem.a
 CLEANFILES=@EXTRA_CLEAN@
 AM_CFLAGS=-I$(top_builddir)/src
 
-install-exec-local:
-	cp -f bbsmail mailgate.pl $(bindir)
+#install-exec-local:
+#	cp -f bbsmail mailgate.pl $(bindir)
