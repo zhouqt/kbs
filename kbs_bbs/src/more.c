@@ -451,7 +451,7 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
             lastspace = i - 1;
         } else if (in_esc) {
             if (strchr("suHmMfL@PABCDJK", *p) != NULL) {
-                if(strchr("suHABCDJ", *p) != NULL) autoline=0;
+                if(strchr("suHmABCDJ", *p) != NULL) autoline=0;
                 in_esc = 0;
                 continue;
             }
