@@ -43,7 +43,7 @@
 ?>
 <body>
 <?php
-			bbs_printansifile("boards/" . $brdarr["NAME"] . "/" . $articles[1]["FILENAME"]);
+			bbs_printansifile(bbs_get_board_filename($brdarr["NAME"], $articles[1]["FILENAME"]));
 		}
 		html_normal_quit();
 	}
