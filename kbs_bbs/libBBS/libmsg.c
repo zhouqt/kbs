@@ -274,20 +274,20 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
     *(timestr + 8) = '\0';
     strcpy(ret_str, "R »ØÑ¶Ï¢");
     if (mode == 0 || mode == 2 || mode == 4) {
-        sprintf(msgbuf, "[44m[36m%-12.12s[33m(%-5.5s):[37m%-59.59s[m[%dm\033[%dm\n", currentuser->userid, timestr, msgstr, getuinfopid() + 100, uin->pid + 100);
-        sprintf(msgbak, "[44m[0;1;32m=>[37m%-10.10s[33m(%-5.5s):[36m%-59.59s[m[%dm\033[%dm\n", uident, timestr, msgstr, getuinfopid() + 100, uin->pid + 100);
+        sprintf(msgbuf, "[1;44;36m%-12.12s[33m(%-5.5s):[37m%-59.59s[m[%dm\033[%dm\n", currentuser->userid, timestr, msgstr, getuinfopid() + 100, uin->pid + 100);
+        sprintf(msgbak, "[1;44;32m=>[37m%-10.10s[33m(%-5.5s):[36m%-59.59s[m[%dm\033[%dm\n", uident, timestr, msgstr, getuinfopid() + 100, uin->pid + 100);
     } else {
         if (mode == 3) {
-            sprintf(msgbuf, "[44m[33mÕ¾³¤ì¶ %8.8s Ê±¹ã²¥£º" "[37m%-55.55s[m\033[%dm\n",
+            sprintf(msgbuf, "[1;44;33mÕ¾³¤ì¶ %8.8s Ê±¹ã²¥£º" "[37m%-55.55s[m\033[%dm\n",
                     /*
                      * "[37m%-59.59s[m\033[%dm\n", 
                      */
                     timestr, msgstr, uin->pid + 100);
         } else if (mode == 1) {
-            sprintf(msgbuf, "[44m[36m%-12.12s(%-5.5s) ÑûÇëÄã[37m%-43.43s(%s)[m[%dm\033[%dm\n", currentuser->userid, timestr, msgstr, ret_str, getuinfopid() + 100, uin->pid + 100);
-            sprintf(msgbak, "[44m[37mÄã(%-5.5s) ÑûÇë%-12.12s[36m%-43.43s(%s)[m[%dm\033[%dm\n", timestr, uident, msgstr, ret_str, getuinfopid() + 100, uin->pid + 100);
+            sprintf(msgbuf, "[1;44;36m%-12.12s(%-5.5s) ÑûÇëÄã[37m%-43.43s(%s)[m[%dm\033[%dm\n", currentuser->userid, timestr, msgstr, ret_str, getuinfopid() + 100, uin->pid + 100);
+            sprintf(msgbak, "[1;44;37mÄã(%-5.5s) ÑûÇë%-12.12s[36m%-43.43s(%s)[m[%dm\033[%dm\n", timestr, uident, msgstr, ret_str, getuinfopid() + 100, uin->pid + 100);
         } else if (mode == 3) {
-            sprintf(msgbuf, "[44m[32mBBS ÏµÍ³Í¨¸æ(%-5.5s):[37m%-59.59s[31m(%s)[m\033[%dm\n", timestr, msgstr, ret_str, uin->pid + 100);
+            sprintf(msgbuf, "[1;44;32mBBS ÏµÍ³Í¨¸æ(%-5.5s):[37m%-59.59s[31m(%s)[m\033[%dm\n", timestr, msgstr, ret_str, uin->pid + 100);
         } else if (mode == 5) {
 	    sprintf(msgbuf,
 		"\x1b[1;45;36m%-12.12s\x1b[33m(\x1b[36m%-5.5s\x1b[33m):\x1b[37m%-54.54s\x1b[31m(%s)\x1b[m\x1b[%05dm\n",
@@ -298,7 +298,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
 	}
     }
     if (Gmode == 2)
-        sprintf(msgbuf, "[44m[33mÕ¾³¤ì¶ %8.8s Ê±¹ã²¥£º[37m%-59.59s[m\033[%dm\n", timestr, buf, uin->pid + 100);
+        sprintf(msgbuf, "[1;44;33mÕ¾³¤ì¶ %8.8s Ê±¹ã²¥£º[37m%-59.59s[m\033[%dm\n", timestr, buf, uin->pid + 100);
 #ifdef BBSMAIN
     if (uin->mode == WEBEXPLORE) {
         if (send_webmsg(get_utmpent_num(uin), uident, utmpent, currentuser->userid, msgbuf) < 0) {
