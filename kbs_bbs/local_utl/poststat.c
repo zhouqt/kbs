@@ -265,7 +265,8 @@ void writestat(int mytype,struct postrec* dobucket[HASHSIZE])
     }
 }
 
-void poststat(int mytype)
+void poststat(int mytype,time_t now,  struct tm *ptime)
+
 {
     static char *logfile = ".post";
     static char *oldfile = ".post.old";
@@ -301,8 +302,6 @@ void poststat(int mytype)
         char *p;
 #ifdef BLESS_BOARD
         if (mytype==0) {
-            char fname[STRLEN];
-            
             unlink("etc/posts/bless.0");
             post_file(NULL, "", "etc/posts/bless", BLESS_BOARD, "十大祝福", 0, 1);
         }                
@@ -346,30 +345,39 @@ main(argc, argv)
 {
     time_t now;
     struct tm *ptime;
+    int i;
 
-    if (argc < 2) {
-        printf("Usage:\t%s bbshome [day]\n", argv[0]);
-        return (-1);
-    }
+    chdir(BBSHOME);
 
-    chdir(argv[1]);
-
-    if (argc == 3) {
-        poststat(atoi(argv[2]));
-        return (0);
-    }
-
-#ifdef BLESS_BOARD
-    resolve_boards();
-#endif
     time(&now);
     ptime = localtime(&now);
+    if (argc == 2) {
+        i=atoi(argv[1]));
+        if (i!=0) {
+        	poststat(i,now,ptime);
+        	return 0;
+        }
+    }
+
+    resolve_boards();
     if (ptime->tm_hour == 0) {
         if (ptime->tm_mday == 1)
-            poststat(2);
+            poststat(2,now,ptime);
         if (ptime->tm_wday == 0)
-            poststat(1);
-        poststat(0);
+            poststat(1,now,ptime);
+        poststat(0,now,ptime);
     }
-    poststat(-1);
+    poststat(-1,now,ptime);
+    if (ptime->tm_hour==23) {
+        char fname[STRLEN];
+
+		sprintf(fname,"%d年%2d月%2d日十大统计",
+			ptime->tm_year+1900,ptime->tm_mon+1,ptime->tm_mday);
+        post_file(NULL, "", "etc/posts/day", "BBSLists", fname 0, 1);
+        if (ptime->tm_wday==6) {
+			sprintf(fname,"%d年%2d月%2d日本周五十大统计",
+				ptime->tm_year+1900,ptime->tm_mon+1,ptime->tm_mday);
+	        post_file(NULL, "", "etc/posts/week", "BBSLists", fname 0, 1);
+        }
+    }
 }
