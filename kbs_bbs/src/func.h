@@ -195,7 +195,9 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     int gen_title(const char *boardname );
     off_t read_user_memo( char *userid, struct usermemo ** ppum );
 
+#ifndef CYGWIN
 #define time(x) bbstime(x)
+#endif
 
     sigjmp_buf* push_sigbus(ARG_VOID);
     void popup_sigbus(ARG_VOID);

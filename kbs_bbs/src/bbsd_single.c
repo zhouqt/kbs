@@ -203,9 +203,11 @@ static void start_daemon(inetd, port)
      * children, once per connection --- and it does add up.
      */
 
+#ifndef CYGWIN
 #undef time
     time(&val);
 #define time(x) bbstime(x)
+#endif
     strftime(buf, 80, "%d/%b/%Y %H:%M:%S", localtime(&val));
 
     /* --------------------------------------------------- */
