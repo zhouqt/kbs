@@ -71,6 +71,7 @@ static PHP_FUNCTION(bbs_new_board);
 static PHP_FUNCTION(bbs_set_onboard);
 static PHP_FUNCTION(bbs_get_votes);
 static PHP_FUNCTION(bbs_get_vote_from_num);
+static PHP_FUNCTION(bbs_vote_num);
 
 
 /*
@@ -133,6 +134,7 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_set_onboard,NULL)
 		PHP_FE(bbs_get_votes,NULL)
 		PHP_FE(bbs_get_vote_from_num,NULL)
+		PHP_FE(bbs_vote_num,NULL)
         {NULL, NULL, NULL}
 };
 
@@ -2883,20 +2885,43 @@ static void bbs_make_detail_vote_array(zval * array, struct votebal *vbal)
 
 }
 
+static void bbs_make_user_vote_array(zval * array, struct ballot *vbal)
+{
+	int i;
+	char tmp[10];
+
+	if(vbal && vbal->uid[0]){
+	    add_assoc_string(array, "USERID", vbal->uid, 1);
+    	add_assoc_long(array, "VOTED", vbal->voted);
+	    add_assoc_string(array, "MSG1", vbal->msg[0], 1);
+	    add_assoc_string(array, "MSG2", vbal->msg[1], 1);
+	    add_assoc_string(array, "MSG3", vbal->msg[2], 1);
+	}else{
+	    add_assoc_string(array, "USERID", "", 1);
+	}
+}
+
+static int cmpvuid(char *userid, struct ballot *uv)
+{
+	return !strncmp(userid, uv->uid,IDLEN);
+}
+
 static PHP_FUNCTION(bbs_get_vote_from_num)
 {
 	int ac = ZEND_NUM_ARGS();
 	char *bname;
 	int bname_len;
 	struct votebal vbal;
+	struct ballot uservote;
 	char controlfile[STRLEN];
 	struct boardheader *bp=NULL;
 	FILE *fp;
 	int vnum;
-	zval *element,*retarray;
+	zval *element,*retarray,*uservotearray;
 	int ent;
+	int pos;
 
-    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sal", &bname, &bname_len, &retarray, &ent) == FAILURE) {
+    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "sala", &bname, &bname_len, &retarray, &ent, &uservotearray) == FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
 
@@ -2911,6 +2936,11 @@ static PHP_FUNCTION(bbs_get_vote_from_num)
 	if(array_init(retarray) != SUCCESS)
 	{
                 RETURN_LONG(-5);
+	}
+
+	if(array_init(uservotearray) != SUCCESS)
+	{
+                RETURN_LONG(-9);
 	}
 
 	vnum = get_num_records(controlfile,sizeof(struct votebal));
@@ -2942,6 +2972,88 @@ static PHP_FUNCTION(bbs_get_vote_from_num)
 	bbs_make_detail_vote_array(element, &vbal);
 	zend_hash_index_update(Z_ARRVAL_P(retarray), 0,
 				(void*) &element, sizeof(zval*), NULL);
+
+	MAKE_STD_ZVAL(element);
+	array_init(element);
+
+	sprintf(controlfile,"vote/%s/flag.%lu",bname,vbal.opendate);
+	if((pos = search_record(controlfile, &uservote, sizeof(uservote),
+							(RECORD_FUNC_ARG) cmpvuid, currentuser->userid))<=0){
+		bbs_make_user_vote_array(element, NULL);
+	}
+	else{
+		bbs_make_user_vote_array(element, &uservote);
+	}
+
+	zend_hash_index_update(Z_ARRVAL_P(uservotearray), 0,
+				(void*) &element, sizeof(zval*), NULL);
+
+	RETURN_LONG(ent);
+}
+
+static PHP_FUNCTION(bbs_vote_num)
+{
+	int ac = ZEND_NUM_ARGS();
+	char *bname;
+	int bname_len;
+	int ent;
+	unsigned int votevalue;
+	struct votebal vbal;
+	struct ballot uservote;
+	struct ballot tmpball;
+	char controlfile[STRLEN];
+	struct boardheader *bp=NULL;
+	FILE *fp;
+	int vnum,i,pos;
+
+    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sll", &bname, &bname_len, &ent, &votevalue) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	if((bp=getbcache(bname))==NULL)
+		RETURN_LONG(-2);
+
+	if( ! HAS_PERM(currentuser, PERM_LOGINOK) )
+		RETURN_LONG(-1);
+
+	sprintf(controlfile,"vote/%s/control",bname);
+
+	vnum = get_num_records(controlfile,sizeof(struct votebal));
+
+	if(vnum <= 0)
+		RETURN_LONG(-4);
+
+	if(ent <= 0 || ent > vnum)
+		RETURN_LONG(-6);
+
+	if((fp=fopen(controlfile,"r"))==NULL)
+		RETURN_LONG(-3);
+
+	fseek(fp,sizeof(vbal) * (ent-1), SEEK_SET);
+
+	if(fread(&vbal, sizeof(vbal), 1, fp) < 1){
+		fclose(fp);
+		RETURN_LONG(-7);
+	}
+	fclose(fp);
+
+	sprintf(controlfile,"vote/%s/limit.%lu",bname,vbal.opendate);
+	if(! bbs_can_access_vote(controlfile))
+		RETURN_LONG(-8);
+
+	bzero( &uservote, sizeof(uservote) );
+	strcpy(uservote.uid,currentuser->userid);
+	uservote.voted = votevalue;
+
+	sprintf(controlfile,"vote/%s/flag.%lu",bname,vbal.opendate);
+	if((pos = search_record(controlfile, &tmpball, sizeof(tmpball),
+							(RECORD_FUNC_ARG) cmpvuid, currentuser->userid))>0){
+		substitute_record(controlfile, &uservote, sizeof(uservote), pos); 
+	}
+	else{
+		if(append_record(controlfile, &uservote, sizeof(uservote)) == -1)
+			RETURN_LONG(-11);
+	}
 
 	RETURN_LONG(ent);
 }
