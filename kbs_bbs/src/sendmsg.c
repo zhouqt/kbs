@@ -329,7 +329,7 @@ void r_msg()
             prints("%s", outmsg);
         getyx(&oy, &ox);
 
-        prints("  第%-3.3d/%3.3d条消息, R回复", count, now);
+        prints("  第%-3d/%3d条消息, R回复", count, now);
         clrtoeol();
         
         refresh();

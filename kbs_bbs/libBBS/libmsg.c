@@ -427,11 +427,13 @@ int load_msgtext(char *uident, int index, char *msgbuf)
     sethomefile(fname, uident, "msgindex");
     sethomefile(fname2, uident, "msgcontent");
 
-    if ((fd = open(fname, O_RDONLY | O_CREAT, 0664)) == -1) {
+    msgbuf[0] = 0;
+
+    if ((fd = open(fname, O_RDONLY, 0664)) == -1) {
         bbslog("user", "%s", "msgopen err");
         return -1;              /* 创建文件发生错误*/
     }
-    if ((fd2 = open(fname2, O_RDONLY | O_CREAT, 0664)) == -1) {
+    if ((fd2 = open(fname2, O_RDONLY, 0664)) == -1) {
         bbslog("user", "%s", "msgopen err");
         close(fd);
         return -1;              /* 创建文件发生错误*/
