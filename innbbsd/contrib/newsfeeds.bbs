@@ -1,7 +1,7 @@
 #  newsgroups                   board           news server
 #-----------------------------  --------------  -----------
-cnbbs.smth.admin		SMTHDev		smthnews
-cnbbs.smth.admin.cvs		SMTHDev,	null
+cnbbs.smth.dev		SMTHDev		smthnews
+cnbbs.smth.dev.cvs		SMTHDev,	null
 cn.bbs.admin			cnAdmin		cnnews
 cn.bbs.admin.announce		cnAnnounce	null
 cn.bbs.admin.lists		cnLists		null
