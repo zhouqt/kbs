@@ -906,6 +906,32 @@ int get_records_from_id(int fd, int id, fileheader_t * buf, int num)
     return mmap_dir_search(fd, &key, get_dir_records, &rs);
 }
 
+//土鳖两分法，    by yuhuan
+//请flyriver同学或其他人自行整合
+int
+Search_Bin(char *ptr, int key, int start, int end)
+{
+        // 在有序表中折半查找其关键字等于key的数据元素。
+        // 若查找到，返回索引
+        // 否则为大于key的最小数据元素索引m，返回(-m-1)
+		// -1 留着供出错处理使用
+        int low, high, mid;
+        struct fileheader *totest;
+        low = start;
+        high = end;
+        while (low <= high) {
+                mid = (low + high) / 2;
+                totest = (struct fileheader *)(ptr + mid * sizeof(struct fileheader));
+                if (key == totest->id)
+                        return mid;
+                else if (key < totest->id)
+                        high = mid - 1;
+                else
+                        low = mid + 1;
+        }
+        return -(low+1);
+}
+
 int change_dir_post_flag(struct userec *currentuser, char *currboard, int ent, struct fileheader *fileinfo, int flag)
 {
     /*---	---*/

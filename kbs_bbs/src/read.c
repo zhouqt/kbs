@@ -61,7 +61,7 @@ static int search_title(struct keeploc *locmem, int offset);
 static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, int ssize, char* pnt);
 static int cursor_pos(struct keeploc *locmem, int val, int from_top);
 static int search_thread(struct keeploc *locmem, int offset, char *title);
-static int search_threadid(struct keeploc *locmem, int offset, int groupid);
+static int search_threadid(struct keeploc *locmem, int offset, int groupid, int mode);
 
 
 /*struct fileheader *files = NULL;*/
@@ -1064,7 +1064,7 @@ int thread_up(int ent, struct fileheader *fileinfo, char *direct)
 
     locmem = getkeep(direct, 1, 1);
     if (uinfo.mode != RMAIL) {
-        if (search_threadid(locmem, -1, fileinfo->groupid)) {
+        if (search_threadid(locmem, -1, fileinfo->groupid, 0)) {
             update_endline();
             return PARTUPDATE;
         }
@@ -1083,7 +1083,7 @@ int thread_down(int ent, struct fileheader *fileinfo, char *direct)
 
     locmem = getkeep(direct, 1, 1);
     if (uinfo.mode != RMAIL) {
-        if (search_threadid(locmem, 1, fileinfo->groupid)) {
+        if (search_threadid(locmem, 1, fileinfo->groupid, 0)) {
             update_endline();
             return PARTUPDATE;
         }
@@ -1294,8 +1294,13 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
             break;
         }
         if (!isstart) {
-            if (uinfo.mode != RMAIL && auser == 0)
-                search_threadid(locmem, isnext, ptitle->groupid);
+            if (uinfo.mode != RMAIL && auser == 0) {
+                    search_threadid(locmem, isnext, ptitle->groupid, (passonly == 1));
+	    			if (passonly == 1) {//直接搜到尾了
+		    			previous = locmem->crs_line;
+			    		break;
+				    }
+    		}
             else
                 search_articles(locmem, title, isnext, auser + 2);
         }
@@ -1588,9 +1593,12 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
     return match;
 }
 
-static int search_threadid(struct keeploc *locmem, int offset, int groupid)
+static int search_threadid(struct keeploc *locmem, int offset, int groupid, int mode)
 {
-    int now, match = 0;
+//从 locmem 位置起，向offset方向，搜索groupid相同的fileheader，
+//mode == 0 搜索第一个即退出，否则搜索到最后一个符合条件的
+//以下开始抄袭ytht代码              by yuhuan
+    int now, match = 0, start, sorted, i;
 
 /*	int mmap_offset,mmap_length; */
     struct fileheader *pFh, *pFh1;
@@ -1599,32 +1607,78 @@ static int search_threadid(struct keeploc *locmem, int offset, int groupid)
     now = locmem->crs_line;
 /*    refresh();*/
     memset(&SR_fptr, 0, sizeof(struct fileheader));
+	if (digestmode == 0 || digestmode == 3)  //这几种 .DIR 是排序的
+		sorted = 1;
+	else 
+		sorted = 0;
     match = 0;
     BBS_TRY {
         if (safe_mmapfile(currdirect, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &pFh, &size, NULL) == 0)
             BBS_RETURN(0);
         last_line = size / sizeof(struct fileheader);
         if (now <= last_line) {
-            pFh1 = pFh + now - 1;
-            while (1) {
-                if (offset > 0) {
-                    if (++now > last_line)
+			if (mode == 0) {           //挨着搜，搜到就停
+                pFh1 = pFh + now - 1;
+                while (1) {
+                    if (offset > 0) {
+                        if (++now > last_line)
+                            break;
+                        pFh1++;
+                    } else {
+                        if (--now < 1)
+                            break;
+                        pFh1--;
+						if (sorted && pFh1->id < groupid)  //因为排序了，搜到这里就到头了
+							break;
+                    }
+                    if (now == locmem->crs_line)
                         break;
-                    pFh1++;
-                } else {
-                    if (--now < 1)
+                    if (pFh1->groupid == groupid) {
+                        match = cursor_pos(locmem, now, screen_len/2);
                         break;
-                    pFh1--;
-                }
-                if (now == locmem->crs_line)
-                    break;
-                if (pFh1->groupid == groupid) {
-                    match = cursor_pos(locmem, now, screen_len/2);
-                    break;
-                }
-            }
+                    }
+				}
+            } else {
+				if (sorted && offset == -1) {   //有望两分法加速部分
+					start = Search_Bin(pFh, groupid, 0, now - 1);
+					if (start >= 0) {   //似乎是直接找到了哦
+						match = cursor_pos(locmem, start + 1, screen_len / 2);
+						goto END;
+					}
+					start = -(start + 1);
+					if (start >= now)
+						goto END;
+					pFh1 = pFh + start;
+					for (i = start; i < now; i++) {
+						if (pFh1->groupid == groupid) {
+							match = cursor_pos(locmem, i+1, screen_len / 2);
+							break;
+						}
+						pFh1++;
+					}
+				} else {
+					pFh1 = pFh + now - 1;
+					while (1) {
+						if (offset > 0) {
+							if (++now > last_line)
+								break;
+							pFh1++;
+						} else {
+							if (--now < 1)
+								break;
+							pFh1--;
+						}
+						if (pFh1->groupid == groupid) {
+							match = now;
+						}
+					}
+					if (match)   //找到过
+						match = cursor_pos(locmem, match, screen_len/2);
+				}
+			}
+			END: {}
+		}
             memcpy(&SR_fptr, pFh + locmem->crs_line - 1, sizeof(struct fileheader));
-        }
     }
     BBS_CATCH {
         memset(&SR_fptr, 0, sizeof(struct fileheader));
