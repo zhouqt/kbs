@@ -90,6 +90,7 @@ int set_BM();
 int ent_chat1(), ent_chat2();
 int switch_code();              /* add by KCN */
 int AllBoard();
+int WwwBoard();
 
 
 int x_level(), XCheckLevel(), Xdelipacl(), Xdeljunk(), m_info(), d_user(), m_register(), m_newbrd(), setsystempasswd();
@@ -230,6 +231,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"ConveyID", ConveyID},    /* added by binxun 2003.5.3 */
     {"ProtectID",ProtectID},
 	{"AllBoard",AllBoard},
+	{"WwwBoard",WwwBoard},
     /*
      * end of addin 
      */

@@ -192,6 +192,7 @@ void resolve_boards()
         if (iscreate) {
             bbslog("3system", "reload bdircache!");
 			load_allboard(bdirshm->allbrd_list, &bdirshm->allbrd_list_t);
+			load_wwwboard(bdirshm->wwwbrd_list, &bdirshm->wwwbrd_list_t);
         }
     }
     if (boardfd!=-1)

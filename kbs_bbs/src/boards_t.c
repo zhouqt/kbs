@@ -710,7 +710,7 @@ static int fav_key(struct _select_def *conf, int command)
 			int oldlevel;
 			if(arg->yank_flag != BOARD_FAV)
 				return SHOW_CONTINUE;
-			if(arg->favmode != 2)
+			if(arg->favmode != 2 && arg->favmode!=3 )
 				return SHOW_CONTINUE;
 			if(!HAS_PERM(currentuser,PERM_SYSOP))
 				return SHOW_CONTINUE;
@@ -737,7 +737,7 @@ static int fav_key(struct _select_def *conf, int command)
 
             if (BOARD_FAV == arg->yank_flag) {
 
-			if (arg->favmode == 2 && !HAS_PERM(currentuser,PERM_SYSOP))
+			if ((arg->favmode == 2 || arg->favmode == 3) && !HAS_PERM(currentuser,PERM_SYSOP))
 				return SHOW_REFRESH;
 
 
@@ -847,7 +847,7 @@ static int fav_key(struct _select_def *conf, int command)
         if (BOARD_FAV == arg->yank_flag) {
             char bname[STRLEN];
 
-			if (arg->favmode == 2 && !HAS_PERM(currentuser,PERM_SYSOP))
+			if ((arg->favmode == 2 || arg->favmode == 3) && !HAS_PERM(currentuser,PERM_SYSOP))
 				return SHOW_REFRESH;
 
 
@@ -873,7 +873,7 @@ static int fav_key(struct _select_def *conf, int command)
         if (BOARD_FAV == arg->yank_flag) {
             char bname[STRLEN];
 
-			if (arg->favmode == 2 && !HAS_PERM(currentuser,PERM_SYSOP))
+			if ((arg->favmode == 2 || arg->favmode == 3) && !HAS_PERM(currentuser,PERM_SYSOP))
 				return SHOW_REFRESH;
 
 
@@ -892,7 +892,7 @@ static int fav_key(struct _select_def *conf, int command)
     case 'm':
         if (arg->yank_flag == BOARD_FAV) {
 
-			if (arg->favmode == 2 && !HAS_PERM(currentuser,PERM_SYSOP))
+			if ((arg->favmode == 2 || arg->favmode == 3) && !HAS_PERM(currentuser,PERM_SYSOP))
 				return SHOW_REFRESH;
 
             if (currentuser->flags & BRDSORT_FLAG) {
@@ -930,7 +930,7 @@ static int fav_key(struct _select_def *conf, int command)
     case 'd':
         if (BOARD_FAV == arg->yank_flag) {
 
-			if (arg->favmode == 2 && !HAS_PERM(currentuser,PERM_SYSOP))
+			if ((arg->favmode == 2 || arg->favmode == 3) && !HAS_PERM(currentuser,PERM_SYSOP))
 				return SHOW_REFRESH;
 
             if (ptr->tag >= 0){
@@ -989,16 +989,25 @@ static int fav_refresh(struct _select_def *conf)
     clear();
     ptr = &arg->nbrd[conf->pos - conf->page_pos];
     if (DEFINE(currentuser, DEF_HIGHCOLOR)) {
-        if (arg->yank_flag == BOARD_FAV)
-            docmdtitle("[个人定制区]",
+        if (arg->yank_flag == BOARD_FAV){
+			if(arg->favmode == 2 || arg->favmode == 3){
+            	docmdtitle("[讨论区列表]",
+                       "  \033[m主选单[\x1b[1;32m←\x1b[m,\x1b[1;32me\x1b[m] 阅读[\x1b[1;32m→\x1b[m,\x1b[1;32mr\x1b[m] 选择[\x1b[1;32m↑\x1b[m,\x1b[1;32m↓\x1b[m] 排序[\x1b[1;32mS\x1b[m] 求助[\x1b[1;32mh\x1b[m]");
+			}else{
+            	docmdtitle("[个人定制区]",
                        "  \033[m主选单[\x1b[1;32m←\x1b[m,\x1b[1;32me\x1b[m] 阅读[\x1b[1;32m→\x1b[m,\x1b[1;32mr\x1b[m] 选择[\x1b[1;32m↑\x1b[m,\x1b[1;32m↓\x1b[m] 添加[\x1b[1;32ma\x1b[m,\x1b[1;32mA\x1b[m] 移动[\x1b[1;32mm\x1b[m] 删除[\x1b[1;32md\x1b[m] 排序[\x1b[1;32mS\x1b[m] 求助[\x1b[1;32mh\x1b[m]");
-        else
+			}
+		}else
             docmdtitle("[讨论区列表]",
                        "  \033[m主选单[\x1b[1;32m←\x1b[m,\x1b[1;32me\x1b[m] 阅读[\x1b[1;32m→\x1b[m,\x1b[1;32mr\x1b[m] 选择[\x1b[1;32m↑\x1b[m,\x1b[1;32m↓\x1b[m] 列出[\x1b[1;32my\x1b[m] 排序[\x1b[1;32mS\x1b[m] 搜寻[\x1b[1;32m/\x1b[m] 切换[\x1b[1;32mc\x1b[m] 求助[\x1b[1;32mh\x1b[m]");
     } else {
-        if (arg->yank_flag == BOARD_FAV)
-            docmdtitle("[个人定制区]", "  \033[m主选单[←,e] 阅读[→,r] 选择[↑,↓] 添加[a,A] 移动[m] 删除[d] 排序[S] 求助[h]");
-        else
+        if (arg->yank_flag == BOARD_FAV){
+			if(arg->favmode == 2 || arg->favmode == 3){
+            	docmdtitle("[讨论区列表]", "  \033[m主选单[←,e] 阅读[→,r] 选择[↑,↓] 排序[S] 求助[h]");
+			}else{
+            	docmdtitle("[个人定制区]", "  \033[m主选单[←,e] 阅读[→,r] 选择[↑,↓] 添加[a,A] 移动[m] 删除[d] 排序[S] 求助[h]");
+			}
+		}else
             docmdtitle("[讨论区列表]", "  \033[m主选单[←,e] 阅读[→,r] 选择[↑,↓] 列出[y] 排序[S] 搜寻[/] 切换[c] 求助[h]");
     }
     move(2, 0);
@@ -1227,4 +1236,10 @@ void AllBoard()
 {
 	load_favboard(1,2);
 	choose_board(1, NULL,0,2);
+}
+
+void WwwBoard()
+{
+	load_favboard(1,3);
+	choose_board(1, NULL,0,3);
 }

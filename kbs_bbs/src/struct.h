@@ -220,6 +220,8 @@ struct BCACHE {
 struct BDIRCACHE {
 	struct favbrd_struct allbrd_list[FAVBOARDNUM];
 	int allbrd_list_t;
+	struct favbrd_struct wwwbrd_list[FAVBOARDNUM];
+	int wwwbrd_list_t;
 };
 
 struct posttop {

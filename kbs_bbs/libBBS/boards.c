@@ -50,6 +50,29 @@ char *brd;
     return 1;
 }
 
+void load_wwwboard(struct favbrd_struct *brdlist, int * brdlist_t)
+{
+	int fd, sign=0;
+
+	(*brdlist_t) = 0;
+	bzero(brdlist, sizeof(struct favbrd_struct)*FAVBOARDNUM);
+
+    if ((fd = open("etc/wwwboard.dir", O_RDONLY, 0600)) != -1) {
+        read(fd, &sign, sizeof(int));
+		if(sign==0x8081){
+            read(fd, brdlist_t, sizeof(int));
+			read(fd, brdlist, sizeof(struct favbrd_struct) * (*brdlist_t) );
+		}
+		close(fd);
+	}
+	if(*brdlist_t <= 0){
+        brdlist[0].bnum = 1;
+        brdlist[0].bid[0] = 0;
+		brdlist[0].father = -1;
+		(*brdlist_t)=1;
+	}	
+}
+
 void load_allboard(struct favbrd_struct *brdlist, int * brdlist_t)
 {
 	int fd, sign=0;
@@ -78,23 +101,29 @@ void load_favboard(int dohelp,int mode)
     char fname[STRLEN];
     int fd, sign, i, j, k;
 
-	if(mode!=2)
-	    sethomefile(fname, currentuser->userid, "favboard");
-	else
+	if(mode==2)
 		sprintf(fname,"etc/board.dir");
+	else if(mode==3)
+		sprintf(fname,"etc/wwwboard.dir");
+	else
+	    sethomefile(fname, currentuser->userid, "favboard");
     favnow = 0;
 	
-	if(mode!=2){
+	if(mode==2){
+		favbrd_list=bdirshm->allbrd_list;
+		favbrd_list_count = &bdirshm->allbrd_list_t;
+		return;
+	}else if(mode==3){
+		favbrd_list=bdirshm->wwwbrd_list;
+		favbrd_list_count = &bdirshm->wwwbrd_list_t;
+		return;
+	}else{
 		favbrd_list=mybrd_list;
 		favbrd_list_count=&mybrd_list_t;
 #ifdef BBSMAIN
 		if(favbrd_list_t > 0)
 			return;
 #endif
-	}else{
-		favbrd_list=bdirshm->allbrd_list;
-		favbrd_list_count = &bdirshm->allbrd_list_t;
-		return;
 	}
 
 	bzero(favbrd_list, sizeof(struct favbrd_struct)*FAVBOARDNUM);
@@ -213,7 +242,7 @@ void load_favboard(int dohelp,int mode)
             }
             fclose(fp);
         }
-    } else if(mode!=2){
+    } else if(mode!=2 && mode!=3){
         int change=0;
 		struct boardheader *bh;
 
@@ -244,12 +273,14 @@ void save_favboard(int mode)
     int fd, i;
     char fname[MAXPATH];
 
-	if(mode!=2)
-		sethomefile(fname, currentuser->userid, "favboard");
-	else
+	if(mode==2)
 		sprintf(fname,"etc/board.dir");
+	else if(mode==3)
+		sprintf(fname,"etc/wwwboard.dir");
+	else
+		sethomefile(fname, currentuser->userid, "favboard");
 
-	if(mode==2 && !HAS_PERM(currentuser,PERM_SYSOP))
+	if( (mode==2 || mode==3 ) && !HAS_PERM(currentuser,PERM_SYSOP))
 		return;
 
     if ((fd = open(fname, O_WRONLY | O_CREAT, 0600)) != -1) {
@@ -352,6 +383,7 @@ int DelFavBoardDir(int i,int fath)
     int j,k;
 	int father=fath;
 	int n;
+
     if (i >= favbrd_list[father].bnum)
         return favbrd_list_t;
     if (i < 0)

@@ -194,6 +194,9 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     unsigned int update_mailbox_prop(char *userid, unsigned int prop);
     int gen_title(const char *boardname );
     off_t read_user_memo( char *userid, struct usermemo ** ppum );
+//	int bms_add(char *userid, char *boardname, time_t in, time_t out, char *memo );
+//	int bms_update(char *userid, char *boardname, time_t in, time_t out, char *memo );
+//	int bms_del(char *userid, char *boardname);
 
 #ifndef CYGWIN
 #define time(x) bbstime(x)
@@ -288,6 +291,7 @@ void unlock_sem_check(int lockid);
 	int DelFavBoardDir(int i,int fath);
     int SetFav(int i);
 	void load_allboard(struct favbrd_struct *brdlist, int * brdlist_t);
+	void load_wwwboard(struct favbrd_struct *brdlist, int * brdlist_t);
 
     int brc_initial(const char *userid, const char *boardname);
     char *brc_putrecord(char *ptr, char *name, int num, int *list);
