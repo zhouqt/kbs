@@ -64,7 +64,7 @@ int releasepf(struct pattern_image* patt_img)
     free((void*)patt_img);
 }
 
-int prepf(int fp,struct pattern_image** ppatt_img)
+int prepf(int fp,struct pattern_image** ppatt_img,size_t* patt_image_len)
 {
     int length = 0, i, p = 1, pdx = 0, num_pat;
     struct pattern_image *patt_img;
@@ -74,6 +74,7 @@ int prepf(int fp,struct pattern_image** ppatt_img)
 
     *ppatt_img=(struct pattern_image*)malloc(sizeof(struct pattern_image));
     patt_img=*ppatt_img;
+    *patt_image_len=sizeof(*patt_img);
     pat_ptr=patt_img->pat_spool;
     patt_img->LONG = 0;
     patt_img->SHORT = 0;

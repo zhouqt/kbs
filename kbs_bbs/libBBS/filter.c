@@ -1,5 +1,5 @@
 #include "bbs.h"
-extern int prepf(int fp,void** patternbuf);
+extern int prepf(int fp,void** patternbuf,size_t* patt_image_len);
 extern int mgrep(int fp,void* patternbuf);
 extern int mgrep_str(char* data,int len,void* patternbuf);
 extern void releasepf(void* patternbuf);
@@ -15,6 +15,7 @@ int check_filter(char *patternfile, char *checkfile,int defaultval)
     char *ptr;
     int size, retv;
     void* pattern_buf;
+    size_t pattern_imagesize;
 
     WHOLELINE = 0;
     NOUPPER = 0;
@@ -28,7 +29,7 @@ int check_filter(char *patternfile, char *checkfile,int defaultval)
     CurrentFileName = checkfile;
     num_of_matched = 0;
     fp = open(patternfile, O_RDONLY);
-    prepf(fp,&pattern_buf);
+    prepf(fp,&pattern_buf,&pattern_imagesize);
     BBS_TRY {
         if (safe_mmapfile(checkfile, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)
             BBS_RETURN(0);
