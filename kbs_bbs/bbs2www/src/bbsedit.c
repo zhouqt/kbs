@@ -135,7 +135,7 @@ int update_form(char *board, char *file)
         fprintf(fout, "%s", buf2);
     }
     fprintf(fout, "%s", unix_string(buf));
-    fprintf(fout, "\033[36m※ 修改:·%s 於 %s 修改本文·[FROM: %s]\033[m\n", currentuser->userid, wwwCTime(time(0)) + 4, fromhost);
+    fprintf(fout, "\033[36m※ 修改:·%s 於 %s 修改本文·[FROM: %s]\033[m\n", currentuser->userid, wwwCTime(time(0)) + 4, SHOW_USERIP(currentuser, fromhost));
     while (fgets(buf2, sizeof(buf2), fin) != NULL) {
         if (Origin2(buf2)) {
             fprintf(fout, "%s", buf2);
