@@ -573,7 +573,7 @@ setTimeout('bbs_auto_reload()',540000);
 					<a href="/bbspwd.php" target="f3">修改密码</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="cgi-bin/bbs/bbsparm" target="f3">修改个人参数</a><br>
+					<a href="/bbsparm.php" target="f3">修改个人参数</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/bbsal.php" target="f3">通讯录</a><br>
