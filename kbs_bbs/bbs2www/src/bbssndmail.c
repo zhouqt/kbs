@@ -35,12 +35,12 @@ int main()
     if (title[0] == 0)
         strcpy(title, "没主题");
     sprintf(filename, "tmp/%s.%d.tmp", userid, getpid());
-    if (f_append(filename, content) < 0)
+    if (f_append(filename, unix_string(content)) < 0)
         http_fatal("发信失败");
     sprintf(title2, "{%s} %s", userid, title);
     title2[70] = 0;
     
-    if ((i=post_mail(userid, title, filename, currentuser->userid, currentuser->username, fromhost, sig - 1))!=0)
+    if ((i=post_mail(userid, title, filename, currentuser->userid, currentuser->username, fromhost, sig))!=0)
     {
         switch (i) {
         case -1:
@@ -54,7 +54,7 @@ int main()
         }
     }
     if (backup)
-        post_mail(currentuser->userid, title2, filename, currentuser->userid, currentuser->username, fromhost, sig - 1);
+        post_mail(currentuser->userid, title2, filename, currentuser->userid, currentuser->username, fromhost, sig);
     unlink(filename);
     printf("信件已寄给%s.<br>\n", userid);
     if (backup)

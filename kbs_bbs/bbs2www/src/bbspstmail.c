@@ -38,14 +38,7 @@ int main()
             printf("<option value=\"%d\">第 %d 个</option>\n", i, i);
     }
     printf("</select>\n");
-    printf(" [<a target=\"_balnk\" href=\"bbssig\">查看签名档</a>] \n");
-    /*printf("  使用签名档 ");
-       printf("<input type=\"radio\" name=\"signature\" value=\"1\" checked>1\n");
-       printf("<input type=\"radio\" name=\"signature\" value=\"2\">2\n");
-       printf("<input type=\"radio\" name=\"signature\" value=\"3\">3\n");
-       printf("<input type=\"radio\" name=\"signature\" value=\"4\">4\n");
-       printf("<input type=\"radio\" name=\"signature\" value=\"5\">5\n");
-       printf("<input type=\"radio\" name=\"signature\" value=\"0\">0\n"); */
+    printf(" [<a target=\"_balnk\" href=\"/bbssig.php\">查看签名档</a>] \n");
     printf(" <input type=\"checkbox\" name=\"backup\">备份\n");
     printf("<br>\n");
     printf("<textarea name=\"text\" rows=\"20\" cols=\"80\" wrap=\"physical\">\n\n");

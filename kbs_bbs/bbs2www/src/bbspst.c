@@ -50,7 +50,7 @@ int main()
             printf("<option value=\"%d\">第 %d 个</option>\n", i, i);
     }
     printf("</select>\n");
-    printf(" [<a target=\"_balnk\" href=\"bbssig\">查看签名档</a>] \n");
+    printf(" [<a target=\"_balnk\" href=\"/bbssig.php\">查看签名档</a>] \n");
     /* 加上转信支持 */
     printf("<input type=\"checkbox\" name=\"outgo\" value=\"1\">转信\n");
     /* 加上匿名讨论区支持 */
