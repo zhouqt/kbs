@@ -148,7 +148,9 @@ int apply_ALL_boards(int (*func)())
 
     for(i=0;i<brdshm->numboards;i++){
         if (bcache[i].filename[0]){
-	    printf( "apply_ALL_boards: %s\n", bcache[i].filename );
+        /* COMMAN: pig zixia, 我说怎么 ssh 老是断线呢*/	 
+	/*    printf( "apply_ALL_boards: %s\n", bcache[i].filename ); */
+	
             if((*func)(&bcache[i]) == QUIT)
                 return QUIT;
 	}
