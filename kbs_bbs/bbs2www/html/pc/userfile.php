@@ -277,7 +277,7 @@ function edit_file($new_pid,$new_filename,$new_access,$new_remark) {
 }
 
 function check_dir() {
-    $query = 'SELECT `fid` FROM userfiles WHERE pid = '.$this->fid.' ORDER BY type DESC;';
+    $query = 'SELECT `fid` FROM userfiles WHERE pid = '.$this->fid.' ORDER BY type DESC , filename ASC;';
     $result = mysql_query($query);
     $sub_files = array();
     while($rows = mysql_fetch_array($result))

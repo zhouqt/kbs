@@ -33,6 +33,7 @@ $link = pc_db_connect();
 pcmain_html_init();
 
 ?>
+<tbody>
 <form action="pcsearch.php" method="get" onsubmit="if(this.keyword.value==''){alert('ÇëÊäÈë¹Ø¼ü×Ö');return false;}">
 <tr>
 	<td bgcolor="#F6F6F6">
@@ -53,9 +54,11 @@ pcmain_html_init();
 	</td></tr></table>
 	</td>
 </tr>
+</tbody>
 <tr>
 	<td>
 	<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tbody>
 		<tr>
 		<td width="33%" valign="top">
 			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
@@ -94,6 +97,8 @@ pcmain_html_init();
 			</table>
 		</td>
 		</tr>
+	</tbody>
+	<tbody>	
 		<tr>
 		<td colspan="3" bgcolor="#999999" height="3"> </td>
 		</tr>
@@ -135,6 +140,8 @@ pcmain_html_init();
 			</table>
 		</td>
 		</tr>
+	</tbody>
+	<tbody>
 		<tr>
 		<td colspan="3" bgcolor="#999999" height="3"> </td>
 		</tr>
@@ -176,6 +183,7 @@ pcmain_html_init();
 			</table>
 		</td>
 		</tr>
+	</tbody>
 	</table>
 	</td>
 </tr>

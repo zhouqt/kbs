@@ -27,28 +27,28 @@ $num = mysql_num_rows($result);
 <hr size=1>
 <center>
 <table cellpadding=5 cellspacing=0 class=t1 width=98% border=0>
-	<tr>
+	<tbody><tr>
 		<td class=t2 width=20> </td>
 		<td class=t2>文章主题</td>
 		<td class=t2 width=160>Blog名称</td>
 		<td class=t2 width=80>作者</td>
 		<td class=t2 width=80>类别</td>
 		<td class=t2 width=80>推荐人</td>
-	</tr>
+	</tr></tbody>
 <?php
 	for( $i = 0;$i<$num;$i ++)
 	{
 		$rows = mysql_fetch_array($result);
 		if( !$pcuser[$rows[uid]] )
 			$pcuser[$rows[uid]] = pc_load_infor($link,"",$rows[uid]);
-		echo "<tr>\n".
+		echo "<tbody><tr>\n".
 			"<td class=t3>".($i + $start + 1)."</td>".
 			"<td class=t5><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">".html_format($rows[subject])."</a></td>".
 			"<td class=t3><span title=\"".$pcuser[$rows[uid]]["DESC"]."\"><a href=\"index.php?id=".$pcuser[$rows[uid]]["USER"]."\">".$pcuser[$rows[uid]]["NAME"]."</a></span></td>".
 			"<td class=t4><a href=\"/bbsqry.php?userid=".$pcuser[$rows[uid]]["USER"]."\">".$pcuser[$rows[uid]]["USER"]."</a></td>".
 			"<td class=t3><span title=\"点击查看该分类的其它Blog信息\"><a href=\"pcsec.php?sec=".html_format($pcuser[$rows[uid]]["THEM"][0])."\">".html_format($pcconfig["SECTION"][$pcuser[$rows[uid]]["THEM"][0]])."</a></span></td>".
 			"<td class=t4><a href=\"/bbsqry.php?userid=".$rows[recuser]."\">".$rows[recuser]."</a></td>".
-			"</tr>\n";
+			"</tr></tbody>\n";
 	}
 ?>
 </table>

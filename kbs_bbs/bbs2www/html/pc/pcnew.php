@@ -72,7 +72,7 @@
 	if($type == "n")
 	{
 ?>
-	<tr>
+	<tbody><tr>
 		<td class=t2 width=70>用户名</td>
 		<td class=t2 width=120>Blog名称</td>
 		<td class=t2 width=70>Blog主题</td>
@@ -80,42 +80,42 @@
 		<td class=t2 width=40>文章数</td>
 		<td class=t2>文章主题</td>
 		<td class=t2 width=120>更新时间</td>
-	</tr>
+	</tr></tbody>
 <?php
 		for($i=0;$i < $newNum;$i++)
 		{
-			echo "<tr>\n<td class=t4><a href='/bbsqry.php?userid=".$newBlogs[useretems][$i][creator]."'>".$newBlogs[useretems][$i][creator]."</a></td>\n".
+			echo "<tbody><tr>\n<td class=t4><a href='/bbsqry.php?userid=".$newBlogs[useretems][$i][creator]."'>".$newBlogs[useretems][$i][creator]."</a></td>\n".
 				"<td class=t3><span title=\"".html_format($newBlogs[useretems][$i][description])."\"><a href=\"index.php?id=".$newBlogs[useretems][$i][creator]."\">".html_format($newBlogs[useretems][$i][pcname])."</a>&nbsp;</span></td>\n".
 				"<td class=t4><span title=\"点击查看该分类的其它Blog信息\"><a href=\"pcsec.php?sec=".html_format($newBlogs[useretems][$i][theme][0])."\">".
 				$pcconfig["SECTION"][$newBlogs[useretems][$i][theme][0]]."</a></span></td>\n".
 				"<td class=t3>".$newBlogs[useretems][$i][pcvisit]."</td>\n".
 				"<td class=t4>".$newBlogs[useretems][$i][pcnodes]."</td>\n".
 				"<td class=t8><a href='pccon.php?id=".$newBlogs[useretems][$i][pc]."&nid=".$newBlogs[useretems][$i][nid]."&s=all&tid=".$newBlogs[useretems][$i][tid]."'>".$newBlogs[useretems][$i][subject]."</a>&nbsp;</td>\n".
-				"<td class=t4>".$newBlogs[useretems][$i][created]."</td>\n</tr>\n";
+				"<td class=t4>".$newBlogs[useretems][$i][created]."</td>\n</tr></tbody>\n";
 		}
 	}
 	else
 	{
 ?>
-	<tr>
+	<tbody><tr>
 		<td class=t2 width=70>发布者</td>
 		<td class=t2>评论主题</td>
 		<td class=t2 width=125>评论发布时间</td>
 		<td class=t2 width=200>原文主题</td>
 		<td class=t2 width=20>访</td>
 		<td class=t2 width=20>评</td>
-	</tr>
+	</tr></tbody>
 <?php
 		for($i=0;$i < $newNum;$i++)
 		{
-			echo "<tr>\n<td class=t4><a href='/bbsqry.php?userid=".$newComments[$i][POSTER]."'>".$newComments[$i][POSTER]."</a></td>\n".
+			echo "<tbody><tr>\n<td class=t4><a href='/bbsqry.php?userid=".$newComments[$i][POSTER]."'>".$newComments[$i][POSTER]."</a></td>\n".
 				"<td class=t8><a href=\"pcshowcom.php?cid=".$newComments[$i][CID]."\">".$newComments[$i][CSUBJECT]."</a>&nbsp;</td>\n".
 				"<td class=t4>".$newComments[$i][CCREATED]."&nbsp;</td>\n".
 				"<td class=t8><span title=\"".$newComments[$i][NSUBJECT]."\"><a href=\"pccon.php?id=".$newComments[$i][UID]."&nid=".$newComments[$i][NID]."&s=all\">".substr($newComments[$i][NSUBJECT],0,30)." \n ";
 			if(strlen($newComments[$i][NSUBJECT]) > 30) echo " ...";
 				echo "</a>&nbsp;</span></td>\n".
 				"<td class=t3>".$newComments[$i][VISITCOUNT]."</td>\n".
-				"<td class=t4>".$newComments[$i][COMMENTCOUNT]."</td>\n</tr>\n";
+				"<td class=t4>".$newComments[$i][COMMENTCOUNT]."</td>\n</tr></tbody>\n";
 		}
 	}	
 ?>

@@ -21,6 +21,7 @@
 		$list_user_num = mysql_num_rows($result);
 ?>
 <table border="0" cellspacing="0" cellpadding="5" width="99%" class="t1">
+<tbody>
 <tr>
 	<td class="t2" width="50">编号</td>
 	<td class="t2" width="90">
@@ -48,20 +49,20 @@
 		<a href="pc.php?order=modifytime&order1=ASC&char=<?php echo $char; ?>"><img src="images/desc_order.png" border="0" align="absmiddle" alt="按更新时间递增排序"></a>
 		<a href="pc.php?order=modifytime&order1=DESC&char=<?php echo $char; ?>"><img src="images/asc_order.png" border="0" align="absmiddle" alt="按更新时间递减排序"></a>
 	</td>
-</tr>
+</tr></tbody>
 <?php
 		for($i=0;$i < $list_user_num;$i++)
 		{
 			$rows = mysql_fetch_array($result);
 			$pcThem = pc_get_theme($rows[theme]);
-			echo "<tr>\n<td class=\"t3\">".($startno + $i + 1)."</td>\n".
+			echo "<tbody><tr>\n<td class=\"t3\">".($startno + $i + 1)."</td>\n".
 				"<td class=\"t4\"><a href=\"/bbsqry.php?userid=".html_format($rows[username])."\">".html_format($rows[username])."</a></td>\n".
 				"<td class=\"t3\"><span title=\"".html_format($rows[description])."\"><a href=\"index.php?id=".$rows[username]."\">".html_format($rows[corpusname])."</a>&nbsp;</span></td>\n".
 				"<td class=\"t3\"><span title=\"点击查看该分类的其它Blog信息\"><a href=\"pcsec.php?sec=".html_format($pcThem[0])."\">".html_format($pcconfig["SECTION"][$pcThem[0]])."</a></span></td>\n".
 				"<td class=\"t4\">".$rows[nodescount]."</a>".
 				"<td class=\"t3\">".$rows[visitcount]."</a>".
 				"<td class=\"t4\">".time_format($rows[createtime])."</a>".
-				"<td class=\"t3\">".time_format($rows[modifytime])."</td>\n</tr>\n";
+				"<td class=\"t3\">".time_format($rows[modifytime])."</td>\n</tr></tbody>\n";
 		}
 ?>
 </table>	

@@ -382,6 +382,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		global $pcconfig;
 ?>
 <center>
+<tbody>
 <table cellspacing=0 cellpadding=0 border=0 width=780>
 
 	<tr><td colspan=2 height=167><img src="style/earthsong/es_r1_c1.jpg" border=0></td></tr>
@@ -399,16 +400,16 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	</tr>
 	</table></td></tr>
 </table>
-</center>
-<center>
+</tbody>
+<tbody>
 <table cellspacing=0 cellpadding=5 border=0 width=780>
 
 	<tr>
 		<td class="bloglists"><?php pc_user_infor($pc); ?></td>
 	</tr>
 </table>
-</center>
-<center>
+</tbody>
+<tbody>
 <table cellspacing=0 cellpadding=5 border=0 width=780>
 	<tr>
 		<td width="40%" class="bloglists">
@@ -440,12 +441,13 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		</td>
 	</tr>
 </table>
-</center>
+</tbody>
+<tbody>
 <?php		
 		display_nodes($link,$pc,$nodes,780,0,$totalnodes,$pno);
 ?>
-<center>
-<center>
+</tbody>
+<tbody>
 <table cellspacing=0 cellpadding=5 border=0 width=780>
 	<tr>
 		<td width="40%" class="bloglists">
@@ -477,8 +479,8 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		</td>
 	</tr>
 </table>
-</center>
-<center>
+</tbody>
+<tbody>
 <table cellspacing=0 cellpadding=5 border=0 width=780>
 	<tr>
 		<td class="bloglists2" id="bloglists2">
@@ -486,7 +488,8 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		</td>
 	</tr>
 </table>
-</center><center>
+</tbody>
+<tbody>
 <table cellspacing=0 cellpadding=5 border=0 width=780>
 	<tr>
 		<td class="bloglists2">
@@ -494,8 +497,8 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		</td>
 	</tr>
 </table>
-</center>
-<center>
+</tbody>
+<tbody>
 <table cellpadding=3 cellspacing=0 width=780 border=0 class=f1>
 		<tr><td class="t14" align=center>
 	<?php display_blog_out_rss($pc); ?>
@@ -516,10 +519,13 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 &nbsp;&nbsp;
 <?php echo pc_personal_domainname($pc["USER"]); ?>
 </td></tr>
-</table></center>
+</table>
+</tbody>
+<tbody>
 <table cellspacing=0 cellpadding=0 border=0 width=780>
 	<tr><td height=186><img src="style/earthsong/es_r3_c1.jpg" border=0></td></tr>
 </table>
+</tbody>
 </center>
 <?php		
 		
@@ -667,6 +673,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		
 ?>
 <center>
+<tbody>
 <table cellpadding=0 cellspacing=0 width=700 border=0 class=f1>
 <tr><td valign=middle align=center>
 <!--
@@ -677,15 +684,19 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
               <param name="quality" value="high">
               <embed src="images/SMTH2.swf" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash" width="805" height="90"></embed>
 </object>
-</td></tr></table></center>
-<center><table cellpadding=0 cellspacing=0 width=700 border=0 class=f1>
+</td></tr></table>
+</tbody>
+<tbody>
+<table cellpadding=0 cellspacing=0 width=700 border=0 class=f1>
 <tr>
 	<td align="center">
 	<?php display_blog_area_links($sec,$pc,$tags); ?>
 	</td>
 </tr>
-</table></center>
-<center><table cellpadding=10 cellspacing=0 width=700 border=0 class=t1>
+</table>
+</tbody>
+<tbody>
+<table cellpadding=10 cellspacing=0 width=700 border=0 class=t1>
 
 	<tr>
 		<td align="center" class="t11" colspan="2">
@@ -725,11 +736,14 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		<?php display_blog_calendar(); ?>
 		</td>
 	</tr>
-</table></center>
+</table>
+</tbody><tbody>
 <?php		
 		display_nodes($link,$pc,$nodes,700,0,$totalnodes,$pno);
 ?>
-<center><table cellpadding=10 cellspacing=0 width=700 border=0 class=t15>
+</tbody>
+<tbody>
+<table cellpadding=10 cellspacing=0 width=700 border=0 class=t15>
 <tr>
 <td align="center" class="t14" width="50%" valign="top">
 <table cellpadding=3 cellspacing=0 width=100% border=0 class=t1>
@@ -786,7 +800,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 &nbsp;&nbsp;
 <?php echo pc_personal_domainname($pc["USER"]); ?>
 </td></tr>
-</table></center>	
+</table></tbody></center>	
 <?php		
 	}
 

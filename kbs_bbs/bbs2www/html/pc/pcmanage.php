@@ -257,7 +257,6 @@
 				if($pc["TMPSAVE"]) //ÆôÓÃ·¢ÎÄÔÝ´æµµ
 				{
 ?>
-<iframe name="tmpsave" id="tmpsave" src="pctmpsave.php" frameborder="0" width="0" height="0" scrolling="no"></iframe>
 <script language="javascript">
 var init = 0;
 function pc_client_tmpsave_import() 
@@ -681,7 +680,7 @@ pc_client_tmpsave_import();
 			if($favmode != 1 && $favmode != 2)
 				$favmode = 0;
 			$tmpsave = ($_POST["pctmpsave"]==0)?0:1;
-			$query = "UPDATE `users` SET `createtime` = `createtime` , `corpusname` = '".addslashes(undo_html_format($_POST["pcname"]))."',`description` = '".addslashes(undo_html_format($_POST["pcdesc"]))."',`theme` = '".addslashes(undo_html_format($_POST["pcthem"]))."' , `backimage` = '".addslashes(undo_html_format($_POST["pcbkimg"]))."' , `logoimage` = '".addslashes(undo_html_format($_POST["pclogo"]))."' , `htmleditor` = '".(int)($_POST["htmleditor"])."', `style` = '".(int)($_POST["template"])."' , `indexnodechars` = '".(int)($_POST["indexnodechars"])."' , `indexnodes` = '".(int)($_POST["indexnodes"])."' , `favmode` = '".$favmode."' , `useremail` = '".addslashes(trim($_POST["pcuseremail"]))."' , `userinfor` = '".addslashes(trim($_POST["userinfor"]))."' , `defaulttopic` = '".addslashes(trim($_POST["pcdefaulttopic"]))."' , `tempsave` = '".$tmpsave."'  WHERE `uid` = '".$pc["UID"]."';";	
+			$query = "UPDATE `users` SET `createtime` = `createtime` , `corpusname` = '".addslashes(undo_html_format($_POST["pcname"]))."',`description` = '".addslashes(undo_html_format($_POST["pcdesc"]))."',`theme` = '".addslashes(undo_html_format($_POST["pcthem"]))."' , `backimage` = '".addslashes(undo_html_format($_POST["pcbkimg"]))."' , `logoimage` = '".addslashes(undo_html_format($_POST["pclogo"]))."' , `htmleditor` = '".(int)($_POST["htmleditor"])."', `style` = '".(int)($_POST["template"])."' , `indexnodechars` = '".(int)($_POST["indexnodechars"])."' , `indexnodes` = '".(int)($_POST["indexnodes"])."' , `favmode` = '".$favmode."' , `useremail` = '".addslashes(trim($_POST["pcuseremail"]))."' , `userinfor` = '".addslashes(trim($_POST["userinfor"]))."' , `defaulttopic` = '".addslashes(trim($_POST["pcdefaulttopic"]))."'  WHERE `uid` = '".$pc["UID"]."';";	
 			mysql_query($query,$link);
 			
 			$log_action = "UPDATE SETTINGS";
