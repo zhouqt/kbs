@@ -249,11 +249,15 @@ void refreshit()
 
 void room_refresh(int signo)
 {
+    int y,x;
     signal(SIGUSR1, room_refresh);
 
     load_inroom(myroom);
     load_msgs();
+    getyx(&y, &x);
     refreshit();
+    refresh();
+    move(y, x);
 }
 
 void join_room(struct room_struct * r)
