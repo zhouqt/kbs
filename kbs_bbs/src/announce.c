@@ -475,7 +475,7 @@ void a_showmenu(pm)             /* 精华区 菜单 状态 */
 {
     struct stat st;
     struct tm *pt;
-    char title[STRLEN * 2], kind[20];
+    char title[MAXPATH], kind[20];
     char fname[STRLEN];
     char ch;
     char buf[MAXPATH], genbuf[MAXPATH];
@@ -507,8 +507,8 @@ void a_showmenu(pm)             /* 精华区 菜单 状态 */
     for (n = pm->page; n < pm->page + 19 && n < pm->num; n++) {
         strncpy(title, pm->item[n]->title, STRLEN * 2 - 1);
         if (a_fmode) {
-            sprintf(fname, "%s", pm->item[n]->fname);
-            sprintf(genbuf, "%s/%s", pm->path, fname);
+            snprintf(fname, STRLEN, "%s", pm->item[n]->fname);
+            snprintf(genbuf, MAXPATH, "%s/%s", pm->path, fname);
             if (a_fmode == 2) {
                 ch = (dashf(genbuf) ? ' ' : (dashd(genbuf) ? '/' : ' '));
                 fname[10] = '\0';
@@ -614,7 +614,7 @@ int a_loadnames(pm)             /* 装入 .Names */
             hostname[0] = '\0';
         } else if (strncmp(buf, "# Title=", 8) == 0) {
             if (pm->mtitle[0] == '\0')
-                strcpy(pm->mtitle, buf + 8);
+                strncpy(pm->mtitle, buf + 8, STRLEN);
         } else if (strncmp(buf, "Host=", 5) == 0) {
             strcpy(hostname, buf + 5);
         } else if (strncmp(buf, "Port=", 5) == 0) {
@@ -1983,7 +1983,7 @@ int edit_grp(char bname[STRLEN], char title[STRLEN], char newtitle[100])
     }
     pm.path = bpath;
     a_loadnames(&pm);
-    strcpy(pm.mtitle, newtitle);
+    strncpy(pm.mtitle, newtitle, STRLEN);
     if (a_savenames(&pm)!=0) {
 	  char buf[80],ans[40];
         sprintf(buf, "整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");

@@ -438,7 +438,10 @@ int m_newbrd()
     group = chgrp();
     if (group != NULL) {
         if (newboard.BM[0] != '\0')
-            sprintf(vbuf, "%-38.38s(BM: %s)", newboard.title + 13, newboard.BM);
+            if (strlen(newboard.BM) <= 30)
+                sprintf(vbuf, "%-38.38s(BM: %s)", newboard.title + 13, newboard.BM);
+	    else
+                snprintf(vbuf, STRLEN, "%-28.28s(BM: %s)", newboard.title + 13, newboard.BM);
         else
             sprintf(vbuf, "%-38.38s", newboard.title + 13);
 
@@ -635,7 +638,10 @@ int m_editbrd()
                 f_mv(old, tar);
             }
             if (newfh.BM[0] != '\0')
-                sprintf(vbuf, "%-38.38s(BM: %s)", newfh.title + 13, newfh.BM);
+                if (strlen(newfh.BM) <= 30)
+                  sprintf(vbuf, "%-38.38s(BM: %s)", newfh.title + 13, newfh.BM);
+		else
+                  snprintf(vbuf, STRLEN, "%-28.28s(BM: %s)", newfh.title + 13, newfh.BM);
             else
                 sprintf(vbuf, "%-38.38s", newfh.title + 13);
             edit_grp(fh.filename, oldtitle + 13, vbuf);
