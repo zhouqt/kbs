@@ -242,8 +242,18 @@ function showArticle($boardName,$boardID,$num, $threadID,$thread,$type){
 <tr><td class=<?php echo $bgstyle ;?> valign=top width=175 >
 <table width=100% cellpadding=4 cellspacing=0 >
 <tr><td width=* valign=middle style="filter:glow(color=#9898BA,strength=2)" >&nbsp;<a name=1><font color=#990000><B><?php echo $thread['OWNER']; ?></B></font></a>	</td>
-<td width=25 valign=middle><img src=pic/ofmale.gif alt=帅哥哟，离线，有人找我吗？></td>
-<td width=16 valign=middle></td></tr></table>&nbsp;&nbsp;<img src=userface/image1.gif width=32 height=32><br>&nbsp;&nbsp;<img src=pic/level10.gif><br>&nbsp;&nbsp;等级：<?php echo bbs_getuserlevel($thread['OWNER']); ?><BR>&nbsp;&nbsp;文章：<?php echo $user['numposts']; ?><br>&nbsp;&nbsp;积分：<?php echo $user['score']; ?><br>&nbsp;&nbsp;注册：<?php echo strftime('%Y-%m-%d',$user['firstlogin']); ?><BR></td>
+<td width=25 valign=middle>
+<?php 
+if ( $user['gender']=='M' ){
+?>
+	<img src=pic/ofmale.gif alt=帅哥哟，离线，有人找我吗？></td>
+<?php 
+} else {
+?>
+	<img src=pic/offemale.gif alt=帅哥哟，离线，有人找我吗？></td>
+<?php
+?>
+<td width=16 valign=middle></td></tr></table>&nbsp;&nbsp;<img src=userface/image<?php echo $user['userface_img']; ?>.gif width=32 height=32><br>&nbsp;&nbsp;<img src=pic/level10.gif><br>&nbsp;&nbsp;等级：<?php echo bbs_getuserlevel($thread['OWNER']); ?><BR>&nbsp;&nbsp;文章：<?php echo $user['numposts']; ?><br>&nbsp;&nbsp;积分：<?php echo $user['score']; ?><br>&nbsp;&nbsp;注册：<?php echo strftime('%Y-%m-%d',$user['firstlogin']); ?><BR></td>
 
 <td class=<?php echo $bgstyle ;?> valign=top width=*>
 

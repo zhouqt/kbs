@@ -112,9 +112,10 @@ function get_mimetype($name)
 	}else{
 		$filename=bbs_get_board_filename($brdarr["NAME"], $articles[1]["FILENAME"]);
 		if ($isnormalboard) {
-       	if (cache_header("public",filemtime($filename),300))
-			echo 11;
-			exit(0);
+	       	if (cache_header("public",filemtime($filename),300)) {
+				echo 11;
+				exit(0);
+			}
         }
 //		Header("Cache-control: nocache");
 

@@ -48,7 +48,7 @@ function main(){
 	@$month=$_POST["month"];
 	@$day=$_POST["day"];
 	@$email=$_POST["email"];
-	@$phone=$_POST["phone"];
+	@$phone=$_POST["userphone"];
 	@$mobile_phone=$_POST["mobile"];
 	@$gender=$_POST["gender"];
 	if($gender!='1')$gender=2;

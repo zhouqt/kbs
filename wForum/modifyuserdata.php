@@ -37,6 +37,7 @@ show_footer();
 function main(){
 	global $currentuser;
 	require("inc/userdatadefine.inc.php");
+
 ?>
 <form action="saveuserdata.php" method=POST name="theForm">
 <table cellpadding=3 cellspacing=1 border=0 align=center class=tableborder1>
@@ -96,7 +97,7 @@ function main(){
 <tr>    
 <td width="40%" class=tablebody1><B>个人照片</B>：<BR>如果您有照片在网上，请输入网页地址。此项可选</td>   
 <td width="60%" class=tablebody1>    
-<input type="TEXT" name="userphoto" value="" size=30 maxlength=100>   
+<input type="TEXT" name="userphoto" value="<?php echo $currentuser['photo_url']; ?>" size=30 maxlength=100>   
 </td>   
 </tr>   
 <TR> 
