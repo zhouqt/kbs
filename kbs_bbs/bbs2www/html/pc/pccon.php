@@ -6,7 +6,7 @@
 	$needlogin=0;
 	require("pcfuncs.php");
 	
-	function display_navigation_bar($link,$pc,$nid,$pid,$tag,$spr,$order,$comment,$tid=0)
+	function display_navigation_bar($link,$pc,$nid,$pid,$tag,$spr,$order,$comment,$tid=0,$pur)
 	{
 		$query = "SELECT `nid` FROM nodes WHERE `nid` < ".$nid." AND `uid` = '".$pc["UID"]."' AND `pid` = '".$pid."' AND `access` = '".$tag."' AND `tid` = '".$tid."' AND `type` != '1' ORDER BY `nid` DESC LIMIT 0 , 1 ;  ";
 		$result = mysql_query($query,$link);
@@ -33,6 +33,8 @@
 				echo "<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nid."&s=all\">展开所有评论</a>\n";
 			echo "<a href=\"pccom.php?act=pst&nid=".$nid."\">发表评论</a>\n";
 		}
+		if($pur == 3)
+			echo "<a href=\"pcmanage.php?act=edit&nid=".$nid."\">修改</a>\n";
 		echo 	"<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\">写信问候</a>\n".
 			//"<a href=\"pccon.php?id=".$id."&nid=".$nid."\">转寄</a>\n".
 			//"<a href=\"pccon.php?id=".$id."&nid=".$nid."\">转载</a>\n".
@@ -119,10 +121,6 @@
 	
 	if(pc_is_admin($currentuser,$pc) && $loginok == 1)
 		$pur = 3;
-	/*
-	elseif(bbs_is_bm($pcconfig["BRDNUM"], $currentuser["index"]))
-		$pur = 2;
-	*/
 	elseif(pc_is_friend($currentuser["userid"],$pc["USER"]) || bbs_is_bm($pcconfig["BRDNUM"], $currentuser["index"]))
 		$pur = 1;
 	else
@@ -218,7 +216,7 @@
 	</tr>
 	<tr>
 		<td colspan="2" align="right" class="t8">
-		<?php display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid); ?>
+		<?php display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur); ?>
 		</td>
 	</tr>
 	</table>
@@ -238,7 +236,7 @@
 	<td align="middle" class="f1" height="40" valign="middle">
 	<?php
 		if($re_num != 0)
-			display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid); 
+			display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur); 
 	?>
 	&nbsp;</td>
 </tr>
