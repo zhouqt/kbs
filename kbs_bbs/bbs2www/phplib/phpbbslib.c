@@ -1699,6 +1699,12 @@ static PHP_FUNCTION(bbs_getarticles)
     if (start <= 0)
         start = 1;
 
+	if(mode == DIR_MODE_THREAD){
+//		if(setboardtitle(board, -1)){
+			gen_title(board);
+//		}
+	}
+
     /*
      * fetching articles 
      */
