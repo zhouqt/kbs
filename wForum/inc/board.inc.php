@@ -169,14 +169,13 @@ function showBoardContents($boardID,$boardName,$page){
 	
 	function writepost(id, html_title, threadNum, origin, lastreply) {
 		document.write("<TR align=middle><TD class=TableBody2 width=32 height=27 align=\"center\">");
-		upperflag = origin.FLAGS.toUpperCase();
-		if (upperflag == 'D') {
+		if (article_is_zhiding(origin.FLAGS)) {
 			document.write("<img src=\"pic/istop.gif\" alt=固顶的主题>");
 		} else if( threadNum > 10 ) {
 			document.write("<img src=\"pic/blue/hotfolder.gif\" alt=回复超过10贴>");
-		} else if( ';' == upperflag ) {
+		} else if(article_is_noreply(origin.FLAGS)) {
 			document.write("<img src=\"pic/blue/lockfolder.gif\" alt=锁定的主题>");
-		} else if( 'M' == upperflag || 'B' == upperflag || 'G' == upperflag) { //暂时这样吧，原来只判断是否是 'M' - atppp
+		} else if(article_is_digest(origin.FLAGS)) {
 			document.write("<img src=\"pic/isbest.gif\" alt=精华帖>");
 		} else {
 			document.write("<img src=\"pic/blue/folder.gif\" alt=开放主题>");
@@ -202,7 +201,7 @@ function showBoardContents($boardID,$boardName,$page){
 			}
 			document.write(" ]</b>");
 		}
-		if (((lastreply.FLAGS >= 'A') && (lastreply.FLAGS <= 'Z')) || (lastreply.FLAGS == '*')) {
+		if (article_is_unread(lastreply.FLAGS)) {
 			 //最后回复未读那这个 thread 就未读
 			document.write("<img src=\"pic/topnew2.gif\" alt=\"未读\">");
 		}
@@ -224,7 +223,7 @@ function showBoardContents($boardID,$boardName,$page){
 ?>
 	origin = new Post(<?php echo $origin['ID']; ?>, '<?php echo $origin['OWNER']; ?>', '<?php echo strftime("%Y-%m-%d %H:%M:%S", $origin['POSTTIME']); ?>', '<?php echo $origin['FLAGS'][0]; ?>');
 	lastreply = new Post(<?php echo $lastreply['ID']; ?>, '<?php echo $lastreply['OWNER']; ?>', '<?php echo strftime("%Y-%m-%d %H:%M:%S", $lastreply['POSTTIME']); ?>', '<?php echo $lastreply['FLAGS'][0]; ?>');
-	writepost(<?php echo $i+$start; ?>, '<?php echo htmlspecialchars($origin['TITLE'],ENT_QUOTES); ?> ', <?php echo $threadNum; ?>, origin, lastreply);
+	writepost(<?php echo $i+$start; ?>, '<?php echo addslashes(htmlspecialchars($origin['TITLE'],ENT_QUOTES)); ?> ', <?php echo $threadNum; ?>, origin, lastreply);
 <?php
 		}
 ?>

@@ -288,3 +288,22 @@ function sendMsg(){
 function sendSMSMsg(){
 	window.frames['webmsg'].document.location.href='sendmsg.php?type=sms';
 }
+
+
+/* article flag functions. reference: libBBS/article.c get_article_flag(). - atppp */
+function article_is_digest(flag) {
+	upperflag = flag.toUpperCase();
+	return ( 'M' == upperflag || 'B' == upperflag || 'G' == upperflag);
+}
+
+function article_is_zhiding(flag) {
+	return(flag == "d" || flag == "D");
+}
+
+function article_is_noreply(flag) {
+	return ( 'O' == flag || 'U' == flag || '8' == flag || ';' == flag);
+}
+
+function article_is_unread(flag) {
+	return ( 'D' == flag || 'G' == flag || 'M' == flag  || 'B' == flag || 'N' == flag || '*' == flag);
+}
