@@ -480,6 +480,8 @@ int d_user(cid)
     char tmpbuf[30];
     char userid[IDLEN + 2];
     struct userec *lookupuser;
+       /* 增加显示用户信息 Bigman:2003.5.11*/
+        struct userec uinfo1;
 	/*struct userdata ud;*/
 
     if (uinfo.mode != OFFLINE) {
@@ -506,7 +508,6 @@ int d_user(cid)
         return 0;
     }
      /* 增加显示用户信息 Bigman:2003.5.11*/
-    struct userec uinfo1;
     uinfo1 = *lookupuser;
     clrtobot();
 
