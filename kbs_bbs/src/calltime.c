@@ -304,7 +304,7 @@ static int add_new_clock()
 	prints("5. 每月闹铃\n");
 	prints("6. 重要闹铃 (闹铃时未在线下次登陆时自动提示)\n");
 	prints("7. 停留闹铃 (在BBS上停留到达几分钟时提醒)");
-	getdata(10,0,"请选择闹铃种类(1-6)? [0]:",ans,sizeof(ans),DOECHO,NULL,true);
+	getdata(10,0,"请选择闹铃种类(1-7)? [0]:",ans,sizeof(ans),DOECHO,NULL,true);
 
 	switch( ans[0] ){
 	case '1':
