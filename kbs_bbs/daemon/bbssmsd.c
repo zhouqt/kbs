@@ -83,7 +83,7 @@ int sendtouser(struct GWSendSMS * h, char* buf)
     int uid;
     struct userec * ur;
     struct user_info * uin;
-    struct msghead h;
+    struct msghead hh;
     uid = byte2long(h->UserID);
     if (uid > uidshm->number || uid <= 0)
         return -1;
@@ -92,13 +92,13 @@ int sendtouser(struct GWSendSMS * h, char* buf)
     if(uin == NULL)
         return -1;
 
-    h.frompid = -1;
-    h.topid = uin->pid;
-    h.mode = 6;
-    h.sent = 0;
-    h.time = time(0);
-    strcpy(h.id, h->SrcMobileNo);
-    save_msgtext(ur->userid, &h, buf);
+    hh.frompid = -1;
+    hh.topid = uin->pid;
+    hh.mode = 6;
+    hh.sent = 0;
+    hh.time = time(0);
+    strcpy(hh.id, h->SrcMobileNo);
+    save_msgtext(ur->userid, &hh, buf);
     kill(ur->pid, SIGUSR2);
     return 0;
 }
