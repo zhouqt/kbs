@@ -130,7 +130,7 @@ function preprocess(){
 
 function 	doPostAritcles($boardID,$boardName,$boardArr,$reID,$reArticles){
 	global $_POST;
-	$ret=bbs_updatearticle($boardName,$reArticles[1]['FILENAME'],$_POST['Content']);
+	$ret=bbs_updatearticle($boardName,$reArticles[1]['FILENAME'],preg_replace("/\\\(['|\"|\\\])/","$1",$_POST['Content']));
 	switch ($ret) {
 		case -1:
 			foundErr("修改文章失败，文章可能含有不恰当内容");
