@@ -934,13 +934,17 @@ static PHP_FUNCTION(bbs_checkpasswd)
     int pw_len;
     long ret;
     int unum;
+    int ismd5 = 0;
     struct userec *user;
+    int ac = ZEND_NUM_ARGS();
 
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
     old_pwd[1023] = 0;
-    if (zend_parse_parameters(2 TSRMLS_CC, "ss", &s, &s_len, &pw, &pw_len) != SUCCESS) {
-        WRONG_PARAM_COUNT;
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ss", &s, &s_len, &pw, &pw_len) != SUCCESS) {
+        if (ac!= 3 || zend_parse_parameters(3 TSRMLS_CC, "ssl", &s, &s_len, &pw, &pw_len, &ismd5) != SUCCESS) {
+            WRONG_PARAM_COUNT;
+        }
     }
     if (s_len > IDLEN)
         s[IDLEN] = 0;
@@ -951,7 +955,12 @@ static PHP_FUNCTION(bbs_checkpasswd)
     else {
         if (s[0] == 0)
             user = getCurrentUser();
-        if (checkpasswd2(pw, user)) {
+        if (ismd5) {
+            ismd5 = !(memcmp(pw, user->md5passwd, MD5PASSLEN));
+        } else {
+            ismd5 = checkpasswd2(pw, user);
+        }
+        if (ismd5) {
             ret = 0;
             if (s[0] != 0)
                 setcurrentuser(user, unum);
