@@ -58,6 +58,8 @@
 					exit();
 				}
 			}
+			else
+				$rootpid = 0;
 			
 			if($act == "cut" && $target == 3)
 				$query = "UPDATE nodes SET `access` = '".$target."' , `changed` = '".date("YmdHis")."' , `pid` = '".$rootpid."', `tid` = 0 WHERE `uid` = '".$pc["UID"]."' AND ( `nid` = '0' ";
@@ -104,7 +106,7 @@
 					/*	目前复制文章的时候评论不同步复制	*/
 					$rows = mysql_fetch_array($result);
 					$query = "INSERT INTO `nodes` ( `pid` , `tid` , `type` , `source` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` ,`htmltag`)  ".
-						" VALUES ('0','0' , '0', '".$rows[source]."', '".$rows[hostname]."','".date("YmdHis")."' , '".$rows[created]."', '".$pc["UID"]."', '".$rows[comment]."', '0', '".$rows[subject]."', '".$rows[body]."', '".$target."', '0','".$rows[htmltag]."');";
+						" VALUES ('".$rootpid."','0' , '0', '".$rows[source]."', '".$rows[hostname]."','".date("YmdHis")."' , '".$rows[created]."', '".$pc["UID"]."', '".$rows[comment]."', '0', '".$rows[subject]."', '".$rows[body]."', '".$target."', '0','".$rows[htmltag]."');";
 					mysql_query($query,$link);
 				}
 				
