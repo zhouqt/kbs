@@ -258,7 +258,7 @@ void refresh()
                 if(p) {
                     for(ii=k;ii<scr_cols;ii++)
                         bp[j].mode[ii]&=~SCREEN_MODIFIED;
-                    o_clreol();
+                    o_cleol();
                     continue;
                 }
             }
