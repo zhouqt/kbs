@@ -470,8 +470,8 @@ static int choose_file_key(struct _select_def *conf, int key)
             pts[i].x = 2;
             pts[i].y = i*4+3;
         }
-        grouplist_conf.item_per_page = BBS_PAGESIZE/4;
-        grouplist_conf.item_pos = pts;
+        conf.item_per_page = BBS_PAGESIZE/4;
+        conf.item_pos = pts;
         return SHOW_DIRCHANGE;
     case '-':
         free(conf->item_pos);
@@ -481,8 +481,8 @@ static int choose_file_key(struct _select_def *conf, int key)
             pts[i].x = 2;
             pts[i].y = i + 3;
         }
-        grouplist_conf.item_per_page = BBS_PAGESIZE;
-        grouplist_conf.item_pos = pts;
+        conf.item_per_page = BBS_PAGESIZE;
+        conf.item_pos = pts;
         return SHOW_DIRCHANGE;
     }
     return SHOW_CONTINUE;
