@@ -66,7 +66,7 @@ user.getUser ()
 ';
 
 function XMLRPC_SERVER_get_user_FUNC ($params) {
-    global $currentModule, $GLOBAL_CONFIG;
+    global $currentModule;
     global $XML_RPC_erruser;
     
     $user_id = $params->getParam (0);
@@ -121,16 +121,19 @@ int user.loginFromModule (struct $loginParams)
 </pre>
 ';
 function XMLRPC_SERVER_login_from_module_FUNC ($params) {
-    GLOBAL $currentModule,$GLOBAL_CONFIG;
+    GLOBAL $currentModule;
     GLOBAL $XML_RPC_erruser;
 
-    $userIdVal = $params->getParam (0);
-    if (!$userIdVal) 
+    $userIdVal   = $params->getParam (0);
+    $userPassVal = $params->getParam (1);
+    $userHostVal = $params->getParam (2);
+    
+    if (!$userIdVal || !$userPassVal || !$userHostVal) 
         return new XML_RPC_Response(new XML_RPC_Value(-7, 'int'));
     else {
-        $user_id = $userIdVal->scalarval();
-        $user_password = $params->getParam(1)->scalarval();
-        $user_host = $params->getParam(2)->scalarval();
+        $user_id       = $userIdVal->scalarval();
+        $user_password = $userPassVal->scalarval();
+        $user_host     = $userHostVal->scalarval();
 
         $account = array ();
         if (!bbs_getuser ($user_id, $account))
