@@ -1296,8 +1296,8 @@ static int www_new_guest_entry(struct in_addr *fromhostn, int * idx)
                  */
                 bzero(&wwwguest_shm->guest_entry[i], sizeof(struct WWW_GUEST_S));
             }
-        }
-    }
+        } //for
+    }//if need kick www guest
 
 	hashkey = www_guest_calc_hashkey(fromhostn);
 	oldidx = WWW_GUEST_HASHTAB(hashkey);
@@ -1367,7 +1367,7 @@ if( oldidx != 0 && fromhostn->s_addr == wwwguest_shm->guest_entry[oldidx].fromip
 		*idx = i*32+j;
 	}
 }
-    getCurrentUser() = user;
+    setCurrentUser(user);
     setpublicshmreadonly(1);
     www_guest_unlock(fd);
     if (num == MAX_WWW_MAP_ITEM)
