@@ -222,8 +222,8 @@ int show_allmsgs()
             }
         }
         good_move(23,0);
+        prints("[1;44;32mÑ¶Ï¢ä¯ÀÀÆ÷   ±£Áô <[37mr[32m>    Çå³ı <[37mc[32m>   ¼Ä»ØĞÅÏä<[37mm[32m>");
         clrtoeol();
-        prints("[1;44;32mÑ¶Ï¢ä¯ÀÀÆ÷   ±£Áô <[37mr[32m>    Çå³ı <[37mc[32m>   ¼Ä»ØĞÅÏä<[37mm[m");
         refresh();
         oflush();
 reenter:
@@ -263,12 +263,14 @@ reenter:
                     translate_msg(buf, showmsg);
                     fprintf(fn, "%s", showmsg);
                 }
+                fprintf(fn, "[m");
                 fclose(fn);
 
                 now = time(0);
                 sprintf(title, "[%12.12s] ËùÓĞÑ¶Ï¢±¸·İ", ctime(&now) + 4);
                 mail_file(currentuser->userid, fname, currentuser->userid, title, BBSPOST_MOVE);
                 unlink(fname);
+                clear_msg(currentuser->userid);
                 goto outofhere;
             default:
                 goto reenter;
