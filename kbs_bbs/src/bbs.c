@@ -2471,7 +2471,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
                 chdir("tmp");
                 upload = bbs_zrecvfile();
                 chdir("..");
-				use_tmpl = -1;
+//				use_tmpl = -1;
             }
         } else {
             /*
