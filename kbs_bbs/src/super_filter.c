@@ -52,8 +52,7 @@ int fexist_var(char * name)
     int i;
     if(ferr) return 0;
     if(!name[0]||strlen(name)>11) {
-        ferr=14;
-        return 0;
+        return -1;
     }
     for(i=0;i<fvart;i++)
         if(!strncasecmp(fvars[i].name, name, 12)) {
@@ -369,24 +368,24 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
            "函数: sub(s1,s2)第一个字符串在第二个中的位置,如果不存在返回0\n"
            "      len(s)字符串长度\n"
            "举例: 我要查询所有bad写的标记是b的文章:\n"
-           "              author=='bad'&&b\n"
+           "              author=='bad'&&b                   作者是bad且b\n"
            "      我要查询所有不可回复并且未读的文章:\n"
-           "              noreply&&unread\n"
+           "              noreply&&unread                    不可回复且未读\n"
            "      我要查询所有1000-2000范围内带附件的文章:\n"
-           "              (no>=1000)&&(no<=2000)&&attach\n"
+           "              (no>=1000)&&(no<=2000)&&attach     文章号大等于1000 且 文章号小等于2000 且 附件\n"
            "      我要查询标题长度在5-10之间的文章:\n"
-           "              len(title)>=5&&len(title)<=10\n"
+           "              len(title)>=5&&len(title)<=10      标题的长度大等于5 且 标题的长度小等于10\n"
            "      我要查询标题里含有faint的文章:\n"
-           "              sub('faint',title)\n"
+           "              sub('faint',title)                 标题包含faint\n"
            "      我要查询标题里包含hehe并且位置在最后的文章:\n"
-           "              sub('hehe',title)==len(title)-3\n"
+           "              sub('hehe',title)==len(title)-3    标题包含faint是标题的长度减3\n"
            "      我要查询......自己动手查吧,hehe"
     );
     multi_getdata(2, 0, scr_cols-1, "请输入表达式: ", index, 1020, 20, 0, 0);
     if(!index[0]) 
         return FULLUPDATE;
-    load_content = (strstr(index, "content")!=NULL);
-    load_stat = (strstr(index, "asize")!=NULL);
+    load_content = (strstr(index, "content")!=NULL||strstr(index, "文章内容")!=NULL);
+    load_stat = (strstr(index, "asize")!=NULL||strstr(index, "总长度")!=NULL);
     if (digestmode==7||digestmode==8 ) {
         if (digestmode == 7 || digestmode == 8)
             unlink(currdirect);
@@ -446,6 +445,15 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
         size_t fsize;
         libptr = libs;
         ferr = 0;
+        
+        set_vard(fvars+fget_var("cid"), fileinfo->id);
+        set_vard(fvars+fget_var("creid"), fileinfo->reid);
+        set_vard(fvars+fget_var("cgroupid"), fileinfo->groupid);
+        set_vars(fvars+fget_var("cauthor"), fileinfo->owner);
+        set_vars(fvars+fget_var("cfname"), fileinfo->filename);
+        set_vard(fvars+fget_var("cftime"), get_posttime(fileinfo));
+        set_vard(fvars+fget_var("ceffsize"), fileinfo->eff_size);
+        
         set_vard(fvars+fget_var("no"), i+1); set_vard(fvars+fget_var("文章号"), i+1);
         set_vard(fvars+fget_var("id"), ptr1->id);
         set_vard(fvars+fget_var("reid"), ptr1->reid);
@@ -486,11 +494,11 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
         if(load_content) {
             int k,abssize=0,entercount=0,ignoreline=0;
             set_vars(fvars+fget_var("content"), ptr1->filename);
-            set_vars(fvars+fget_var("内容"), ptr1->filename);
+            set_vars(fvars+fget_var("文章内容"), ptr1->filename);
             j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize, NULL);
             if(j) {
                 set_vars(fvars+fget_var("content"), p);
-                set_vars(fvars+fget_var("内容"), p);
+                set_vars(fvars+fget_var("文章内容"), p);
             }
         }
         ferr=0;
