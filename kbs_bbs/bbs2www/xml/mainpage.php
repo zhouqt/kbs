@@ -41,7 +41,9 @@ function gen_hot_subjects_html()
 {
 # load xml doc
 $hotsubject_file = BBS_HOME . "/xml/day.xml";
-$doc = domxml_open_file($hotsubject_file) or die("Can't open hot subject file!");
+$doc = domxml_open_file($hotsubject_file);
+	if (!$doc)
+		return;
 
 $root = $doc->document_element();
 $boards = $root->child_nodes();
@@ -136,7 +138,9 @@ global $section_names;
 
 # load xml doc
 $boardrank_file = BBS_HOME . "/xml/board.xml";
-$doc = domxml_open_file($boardrank_file) or die("What boards?");
+$doc = domxml_open_file($boardrank_file);
+	if (!$doc)
+		return;
 
 
 $root = $doc->document_element();
@@ -150,6 +154,10 @@ for ($i = 0; $i < $sec_count; $i++)
 	$sec_boards[$i] = array();
 	$sec_boards_num[$i] = 0;
 }
+$t = array(); // 分区序号变换表
+for ($i = 0; $i < $sec_count - 1; $i++)
+	$t[$i] = $i + 1;
+$t[$i] = 0;
 
 # shift through the array
 while($board = array_shift($boards))
@@ -182,20 +190,20 @@ while($board = array_shift($boards))
 ?>
         <tr> 
           <td width="50%" valign="top" class="MainContentText"> 
-<strong><?php echo $section_nums[$i]; ?>. [<a href="bbsboa.php?group=<?php echo $i; ?>"><?php echo htmlspecialchars($section_names[$i][0]); ?></a>]</strong><br>
+<strong><?php echo $section_nums[$t[$i]]; ?>. [<a href="bbsboa.php?group=<?php echo $t[$i]; ?>"><?php echo htmlspecialchars($section_names[$t[$i]][0]); ?></a>]</strong><br>
 <div style="margin-left: 20px">
 <?php
-		$brd_count = $sec_boards_num[$i] > 5 ? 5 : $sec_boards_num[$i];
+		$brd_count = $sec_boards_num[$t[$i]] > 5 ? 5 : $sec_boards_num[$t[$i]];
 		for ($k = 0; $k < $brd_count; $k++)
 		{
 ?>
-<a href="bbsdoc.php?board=<?php echo urlencode($sec_boards[$i][$k]["EnglishName"]); ?>"><?php echo $sec_boards[$i][$k]["ChineseName"]; ?></a>, 
+<a href="bbsdoc.php?board=<?php echo urlencode($sec_boards[$t[$i]][$k]["EnglishName"]); ?>"><?php echo $sec_boards[$t[$i]][$k]["ChineseName"]; ?></a>, 
 <?php
 		}
 ?>
-<a href="bbsboa.php?group=<?php echo $i; ?>">更多&gt;&gt;</a></div>
+<a href="bbsboa.php?group=<?php echo $t[$i]; ?>">更多&gt;&gt;</a></div>
 <?php
-		gen_sec_hot_subjects_html($i);
+		gen_sec_hot_subjects_html($t[$i]);
 ?>
 </td>
 <td width="1" bgcolor="FFFFFF"></td>
@@ -205,20 +213,20 @@ while($board = array_shift($boards))
 		{
 ?>
   <td valign="top" class="MainContentText"> 
-<strong><?php echo $section_nums[$i]; ?>. [<a href="bbsboa.php?group=<?php echo $i; ?>"><?php echo htmlspecialchars($section_names[$i][0]); ?></a>]</strong><br>
+<strong><?php echo $section_nums[$t[$i]]; ?>. [<a href="bbsboa.php?group=<?php echo $t[$i]; ?>"><?php echo htmlspecialchars($section_names[$t[$i]][0]); ?></a>]</strong><br>
 <div style="margin-left: 20px">
 <?php
-			$brd_count = $sec_boards_num[$i] > 5 ? 5 : $sec_boards_num[$i];
+			$brd_count = $sec_boards_num[$t[$i]] > 5 ? 5 : $sec_boards_num[$t[$i]];
 			for ($k = 0; $k < $brd_count; $k++)
 			{
 ?>
-<a href="bbsdoc.php?board=<?php echo urlencode($sec_boards[$i][$k]["EnglishName"]); ?>"><?php echo $sec_boards[$i][$k]["ChineseName"]; ?></a>, 
+<a href="bbsdoc.php?board=<?php echo urlencode($sec_boards[$t[$i]][$k]["EnglishName"]); ?>"><?php echo $sec_boards[$t[$i]][$k]["ChineseName"]; ?></a>, 
 <?php
 			}
 ?>
-<a href="bbsboa.php?group=<?php echo $i; ?>">更多&gt;&gt;</a></div>
+<a href="bbsboa.php?group=<?php echo $t[$i]; ?>">更多&gt;&gt;</a></div>
 <?php
-			gen_sec_hot_subjects_html($i);
+			gen_sec_hot_subjects_html($t[$i]);
 ?>
 </td>
 <?php
@@ -302,7 +310,9 @@ function gen_board_rank_html()
 {
 # load xml doc
 $boardrank_file = BBS_HOME . "/xml/board.xml";
-$doc = domxml_open_file($boardrank_file) or die("What boards?");
+$doc = domxml_open_file($boardrank_file);
+	if (!$doc)
+		return;
 
 
 $root = $doc->document_element();
@@ -347,7 +357,9 @@ function gen_blessing_list_html()
 {
 # load xml doc
 $hotsubject_file = BBS_HOME . "/xml/bless.xml";
-$doc = domxml_open_file($hotsubject_file) or die("Can't open hot subject file!");
+$doc = domxml_open_file($hotsubject_file);
+	if (!$doc)
+		return;
 
 $root = $doc->document_element();
 $boards = $root->child_nodes();
