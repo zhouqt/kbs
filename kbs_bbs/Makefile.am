@@ -1,4 +1,4 @@
-EXTRA_DIST = README INSTALL site/devel.c site/devel.h bbshome innbbsd
+EXTRA_DIST = README INSTALL site/devel.c site/devel.h bbshome innbbsd config.icc config.lib
 SUBDIRS=libsystem libBBS rzsz src daemon local_utl mail2bbs service @subdirs@
 CLEANFILES=@EXTRA_CLEAN@
 
