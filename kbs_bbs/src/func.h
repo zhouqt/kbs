@@ -219,6 +219,14 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     void end_mmapfile(void *ptr, off_t size, int fd);
     void set_proc_title(char *argv0, char *title);
 
+/* 0-1 locks using semaphore, flock and fcntl lock replacement */
+/* @author kxn */
+
+void lock_sem(int lockid);
+void unlock_sem(int lockid);
+void unlock_sem_check(int lockid);
+
+
 /* define in bcache.c */
     void board_setcurrentuser(int idx,int num); /*设置在线用户计数*/
     int getbnum(const char *bname);

@@ -26,6 +26,7 @@ struct UCACHE {
 
 static struct UCACHE *uidshm = NULL;
 
+#ifndef USE_SEM_LOCK
 static int ucache_lock()
 {
     int lockfd;
@@ -44,7 +45,19 @@ static void ucache_unlock(int fd)
     flock(fd, LOCK_UN);
     close(fd);
 }
+#else
+static int ucache_lock()
+{
+	lock_sem(UCACHE_SEMLOCK);
+	return 0;
+}
 
+static void ucache_unlock(int fd)
+{
+	unlock_sem_check(UCACHE_SEMLOCK);
+}
+
+#endif 
 /* do init hashtable , read from uhashgen.dat -- wwj*/
 static void ucache_hashinit()
 {

@@ -1,8 +1,8 @@
 #ifndef __SYSNAME_H_
 #define __SYSNAME_H_
 
-#define BBSUID 			501
-#define BBSGID 			501
+#define BBSUID 			500
+#define BBSGID 			500
 
 /*#define USE_TMPFS 1*/
 #define TMPFSROOT "cache"
@@ -42,5 +42,7 @@
 #define COMMEND_ARTICLE "Recommend"
 
 #define BUILD_PHP_EXTENSION
+
+#define USE_SEM_LOCK 1
 
 #endif

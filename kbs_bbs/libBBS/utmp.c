@@ -36,6 +36,7 @@ static void longlock(int signo)
     exit(-1);
 }
 
+#ifndef USE_SEM_LOCK
 static int utmp_lock()
 {
     int utmpfd = 0;
@@ -58,7 +59,22 @@ static void utmp_unlock(int fd)
     flock(fd, LOCK_UN);
     close(fd);
 }
+#else
+static int utmp_lock()
+{
+    signal(SIGALRM, longlock);
+    alarm(10);
+    lock_sem(UCACHE_SEMLOCK);
+    signal(SIGALRM, SIG_IGN);
+    return 0;
+}
 
+static void utmp_unlock(int fd)
+{
+	unlock_sem_check(UCACHE_SEMLOCK);
+}
+
+#endif 
 static void utmp_setreadonly(int readonly)
 {
     int iscreate;

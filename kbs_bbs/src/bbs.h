@@ -424,6 +424,14 @@ typedef size_t socklen_t;
 #define FILE_EFFSIZE_FLAG 0x400
 #define FILE_COMMEND_FLAG 0x800
 
+/* 
+  0-1 locks used sem count
+  @author kxn
+*/
+
+#define SEMLOCK_COUNT 20
+#define UCACHE_SEMLOCK 0
+
 /**
  * Enumeration values for the so-called board .DIR file.
  *
