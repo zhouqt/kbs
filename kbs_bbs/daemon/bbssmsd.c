@@ -148,22 +148,23 @@ void processremote()
             printf("get CMD_OK\n");
             if(pid) {
                 fp=fopen(fn, "w");
-                fprintf(fp, "1");
+                fprintf(fp, "1\n0");
                 fclose(fp);
                 kill(pid, SIGUSR1);
             }
             break;
-        case CMD_ERR:
-	case 103:
-	case 104:
-	case 105:
-	case 106:
-	case 107:
-	case 108:
+       case CMD_ERR:
+	case CMD_ERR_HEAD_LENGTH:
+	case CMD_ERR_DB:
+	case CMD_ERR_SMS_VALIDATE_FAILED:
+	case CMD_ERR_LENGTH:
+	case CMD_ERR_NO_VALIDCODE:
+	case CMD_ERR_NO_SUCHMOBILE:
+	case CMD_ERR_REGISTERED:
 	    printf("get CMD_ERR\n");
             if(pid) {
                 fp=fopen(fn, "w");
-                fprintf(fp, "0");
+                fprintf(fp, "0\n%d", h.Type);
                 fclose(fp);
                 kill(pid, SIGUSR1);
             }

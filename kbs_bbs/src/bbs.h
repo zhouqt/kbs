@@ -503,6 +503,13 @@ struct header{
 #define CMD_LOGIN 1
 #define CMD_OK 101
 #define CMD_ERR 102
+#define CMD_ERR_HEAD_LENGTH 103
+#define CMD_ERR_DB 104
+#define CMD_ERR_SMS_VALIDATE_FAILED 105
+#define CMD_ERR_LENGTH 106
+#define CMD_ERR_NO_VALIDCODE 107
+#define CMD_ERR_NO_SUCHMOBILE 108
+#define CMD_ERR_REGISTERED 109
 #define CMD_LOGOUT 2
 #define CMD_REG 3
 #define CMD_CHECK 4

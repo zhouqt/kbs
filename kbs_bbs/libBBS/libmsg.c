@@ -760,7 +760,7 @@ int wait_for_result()
     int count;
     char fn[80];
     FILE* fp;
-    int i;
+    int i,j;
     signal(SIGUSR1, SMS_request);
 //	gettmpfilename( fn, "sms.res");
     sprintf(fn, "tmp/%d.res", smsuin->pid);
@@ -791,10 +791,10 @@ int wait_for_result()
     clrtoeol();
 #endif
     fp=fopen(fn, "r");
-    fscanf(fp, "%d", &i);
+    fscanf(fp, "%d%d", &i, &j);
     fclose(fp);
     if(i==1) return 0;
-    else return -1;
+    else return -j;
 }
 
 int DoReg(char * n)

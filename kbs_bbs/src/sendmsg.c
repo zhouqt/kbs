@@ -746,6 +746,7 @@ int unregister_sms()
     char ans[4];
     char valid[20];
     char buf2[80];
+    int rr;
     sms_init_memory();
     smsuin = &uinfo;
     clear();
@@ -761,7 +762,8 @@ int unregister_sms()
     sprintf(buf2, "你输入的手机号是%s，是否取消注册？[y/N]", curruserdata.mobilenumber);
     getdata(3, 0, buf2, ans, 3, 1, 0, 1);
     if(toupper(ans[0])=='Y') {
-        if(DoUnReg(curruserdata.mobilenumber)) {
+        rr = DoUnReg(curruserdata.mobilenumber);
+        if(rr&&rr!=CMD_ERR_NO_SUCHMOBILE) {
             signal(SIGUSR1, talk_request);
             move(5, 0);
             prints("取消注册失败");
@@ -872,6 +874,11 @@ checksmsagain:
 
     ret = DoSendSMS(curruserdata.mobilenumber, udata.mobilenumber, buf);
     signal(SIGUSR1, talk_request);
+    if(ret==CMD_ERR_SMS_VALIDATE_FAILED) {
+        curruserdata.mobilenumber[0]=0;
+        curruserdata.mobileregistered = 0;
+        write_userdata(currentuser->userid, &curruserdata);
+    }
     if(ret) {
         clrtoeol();
         prints("发送失败....");
