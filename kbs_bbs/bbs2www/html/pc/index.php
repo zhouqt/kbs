@@ -371,6 +371,151 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	}
 	
 	
+	function display_blog_earthsong($link,$pc,$sec,$nodes,$blogs,$pur)
+	{
+		global $pcconfig;
+?>
+<center>
+<table cellspacing=0 cellpadding=0 border=0 width=780>
+	<tr><td colspan=2 height=167><img src="style/earthsong/es_r1_c1.jpg" border=0></td></tr>
+	<tr>
+	<td width=414 height=232><img src="style/earthsong/es_r2_c1.jpg" border=0></td>
+	<td width=366 height=232><img src="style/earthsong/es_r2_c2.jpg" border=0></td>
+	</tr>
+	<tr>
+	<td colspan=2 class="blogarea">
+	<table cellspacing=0 cellpadding=0 border=0 class=f1>
+	<tr><td class="blogarea" align="center">
+	<?php echo $pc["NAME"]; ?>&nbsp;&gt;&gt;
+	</td><td class="blogarea">
+	<?php display_blog_area_links($sec,$pc); ?></td>
+	</tr>
+	</table></td></tr>
+</table>
+</center>
+<center>
+<table cellspacing=0 cellpadding=5 border=0 width=780>
+	<tr>
+		<td class="bloglists">
+		<?php echo $pc["DESC"]; ?>&nbsp;
+		</td>
+	</tr>
+</table>
+</center>
+<center>
+<table cellspacing=0 cellpadding=5 border=0 width=780>
+	<tr>
+		<td width="40%" class="bloglists">
+			<table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
+			<tr><td align="center" class="t8">
+			:+: 最近更新文章 :+:
+			</td></tr>
+			<tr><td class="t5">
+			<?php display_newnodes_list($link,$pc,$nodes); ?>
+			</td></tr></table>
+		</td>
+		<td width="35%" class="bloglists">
+			<table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
+			<tr><td align="center" class="t8">
+			:+: 最近收到的评论 :+:
+			</td></tr>
+			<tr><td class="t5">
+			<?php display_new_comments($link,$pc,$pur); ?>
+			</td></tr></table>
+		</td>
+		<td width="25%" class="bloglists">
+			<table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
+			<tr><td align="center" class="t8">
+			:+: 日历 :+:
+			</td></tr>
+			<tr><td class="t5" align="center">
+			<?php display_blog_calendar(); ?>
+			</td></tr></table>
+		</td>
+	</tr>
+</table>
+</center>
+<?php		
+		display_nodes($link,$pc,$nodes,780);
+?>
+<center>
+<center>
+<table cellspacing=0 cellpadding=5 border=0 width=780>
+	<tr>
+		<td width="40%" class="bloglists">
+			<table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
+			<tr><td align="center" class="t8">
+			:+: 栏目分类 :+:
+			</td></tr>
+			<tr><td class="t5">
+			<?php display_blog_list($pc,$blogs); ?>
+			</td></tr></table>
+		</td>
+		<td width="35%" class="bloglists">
+			<table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
+			<tr><td align="center" class="t8">
+			:+: 最近收到的引用通告 :+:
+			</td></tr>
+			<tr><td class="t5">
+			<?php display_trackback_links($link,$pc); ?>
+			</td></tr></table>
+		</td>
+		<td width="25%" class="bloglists">
+			<table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
+			<tr><td align="center" class="t8">
+			:+: 工具箱 :+:
+			</td></tr>
+			<tr><td class="t5" align="center">
+			<?php display_blog_tools($pc,$pur); ?>
+			</td></tr></table>
+		</td>
+	</tr>
+</table>
+</center>
+<center>
+<table cellspacing=0 cellpadding=5 border=0 width=780>
+	<tr>
+		<td class="bloglists2" id="bloglists2">
+		<strong>每月档案 &gt;&gt; </strong><?php pc_get_archfile($pc); ?>
+		</td>
+	</tr>
+</table>
+</center><center>
+<table cellspacing=0 cellpadding=5 border=0 width=780>
+	<tr>
+		<td class="bloglists2">
+		<strong>友情链接 &gt;&gt; <?php display_blog_friend_links($pc); ?>&nbsp;
+		</td>
+	</tr>
+</table>
+</center>
+<center>
+<table cellpadding=3 cellspacing=0 width=780 border=0 class=f1>
+		<tr><td class="t14" align=center>
+	<?php display_blog_out_rss($pc); ?>
+	<?php display_klip_out($pc); ?>
+<br />
+	访问量 
+	<font class="f2">
+	<?php echo $pc["VISIT"]; ?>
+	</font>
+	&nbsp;&nbsp;&nbsp;&nbsp;
+	更新时间:
+	<?php echo time_format($pc["MODIFY"]); ?>
+	<br>
+&copy;All Rights Reserved
+&nbsp;&nbsp;
+<?php echo pc_personal_domainname($pc["USER"]); ?>
+</td></tr>
+</table></center>
+<table cellspacing=0 cellpadding=0 border=0 width=780>
+	<tr><td height=186><img src="style/earthsong/es_r3_c1.jpg" border=0></td></tr>
+</table>
+</center>
+<?php		
+		
+	}
+	
 	function display_blog_smth($link,$pc,$sec,$nodes,$blogs,$pur)
 	{
 		global $pcconfig;
@@ -653,7 +798,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		}
 	}
 	/*visit count end*/	
-	pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
+	pc_html_init("gb2312",$pc["NAME"],"",$pc["STYLE"]["CSSFILE"],$pc["BKIMG"]);
 	get_calendar_array($link,$pc,$pur);
 ?>
 <script src="bc.js"></script>

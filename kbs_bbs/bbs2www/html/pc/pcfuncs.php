@@ -44,7 +44,7 @@ function pc_personal_domainname($userid)
 	return "http://".$userid.".mysmth.net";	
 }
 
-function pc_html_init($charset,$title="",$otherheader="",$style="",$bkimg="",$loadhtmlarea=FALSE)
+function pc_html_init($charset,$title="",$otherheader="",$cssfile="",$bkimg="",$loadhtmlarea=FALSE)
 {
 	global $_COOKIE;
 	global $cachemode;
@@ -68,10 +68,10 @@ function pc_html_init($charset,$title="",$otherheader="",$style="",$bkimg="",$lo
 ?>
 <title><?php echo $title; ?></title>
 <?php   }
-	if($style!="" )
+	if($cssfile!="" )
 	{
 ?>
-<link rel="stylesheet" type="text/css" href="css/<?php echo $style; ?>.css"/>
+<link rel="stylesheet" type="text/css" href="<?php echo $cssfile; ?>"/>
 <?php		
 	}
 	else
@@ -259,7 +259,7 @@ function pc_is_friend($userid,$uid)
 
 function pc_is_admin($currentuser,$pc)
 {
-	if(strtolower($pc["USER"]) == strtolower($currentuser["userid"]) && $pc["CREATED"] > date("YmdHis",$currentuser["firstlogin"]) && $currentuser["firstlogin"])
+	if(strtolower($pc["USER"]) == strtolower($currentuser["userid"]) && $pc["TIME"] > date("YmdHis",$currentuser["firstlogin"]) && $currentuser["firstlogin"])
 		return TRUE;
 	else
 		return FALSE;
@@ -458,7 +458,15 @@ function pc_style_array($i)
 				"SID" => 1,
 				"INDEXFUNC" => "display_blog_smth",
 				"TOPIMG" => "style/default/p1.jpg",
-				"CSSFILE" => "style/default/default.css"
+				"CSSFILE" => "default.css"
+				);
+			break;
+		case 2:
+			$style = array(
+				"SID" => 2,
+				"INDEXFUNC" => "display_blog_earthsong",
+				"TOPIMG" => "style/default/p1.jpg",
+				"CSSFILE" => "style/earthsong/earthsong.css"
 				);
 			break;
 		default:		
@@ -466,7 +474,7 @@ function pc_style_array($i)
 				"SID" => 0,
 				"INDEXFUNC" => "display_blog_default",
 				"TOPIMG" => "style/default/p1.jpg",
-				"CSSFILE" => "style/default/default.css"
+				"CSSFILE" => "default.css"
 				);	
 	}
 	return $style;
