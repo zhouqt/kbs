@@ -578,19 +578,20 @@ int id1,id2,del_mode ;
 {
 #define DEL_RANGE_BUF 2048
     struct fileheader savefhdr[DEL_RANGE_BUF];
+    struct fileheader readfhdr[DEL_RANGE_BUF];
 
     struct fileheader delfhdr[DEL_RANGE_BUF];
     int         fdr;
     int         count,totalcount,delcount,remaincount,keepcount;
     int         pos_read,pos_write,pos_end;
+    int		i,j;
+    int savedigestmode;
     /*digestmode=4, 5的情形或者允许区段删除,或者不允许,这可以在
     调用函数中或者任何地方给定, 这里的代码是按照不允许删除写的,
     但是为了修理任何缘故造成的临时文件故障(比如自动删除机), 还是
     尝试了一下打开操作; tmpfile是否对每种模式独立, 这个还是值得
     商榷的.  -- ylsdd*/
     if(digestmode==4||digestmode==5)  { /* KCN:暂不允许 */
-       tmpfile[strlen(tmpfile)-1]=(digestmode==4)?'D':'J';
-       deleted[strlen(deleted)-1]=(digestmode==4)?'D':'J';
        return 0;
     }
 
@@ -606,8 +607,8 @@ int id1,id2,del_mode ;
         close(fdr);
         return -2;
     }
-    totalcount = pos_end/sizeof(struct filehead);
-    pos_end = totalcount*sizeof(struct filehead);
+    totalcount = pos_end/sizeof(struct fileheader);
+    pos_end = totalcount*sizeof(struct fileheader);
     if (id2!=-1) {
         char buf[3];
         pos_read=sizeof(struct fileheader)*id2;
@@ -615,7 +616,22 @@ int id1,id2,del_mode ;
     else
         pos_read=pos_end;
         
+    if (id1!=0) {
+        pos_write=sizeof(struct fileheader)*(id1-1);
+        count = id1;
+        if (id1>totalcount) {
+	  prints("开始文章号大于文章总数");
+	  pressanykey();
+	  return 0;
+        }
+    }
+    else {
+        pos_write=0;
+        count = 1;
+    }
+    
     if (id2>totalcount) {
+	char buf[3];
         getdata(6,0,"文章编号大于文章总数，确认删除 (Y/N)? [N]: ",buf,2,DOECHO,NULL,YEA) ;
         if(*buf != 'Y' && *buf != 'y') {
             close(fdr);
@@ -625,20 +641,12 @@ int id1,id2,del_mode ;
         id2=totalcount;
     }
     
-    if (id1!=0) {
-        pos_write=sizeof(struct fileheader)*(id1-1);
-        count = 1;
-    }
-    else {
-        pos_write=0;
-        count = 1;
-    }
-    
     if (del_mode==0) { //rangle mark del
         while (count<=id2) {
             int i,j;
+	    int readcount;
             lseek(fdr,pos_write,SEEK_SET);
-            readcount=read(fdr,savefhdr,DEL_RANGLE_BUF*sizeof(struct fileheader))/sizeof(struct fileheader);
+            readcount=read(fdr,savefhdr,DEL_RANGE_BUF*sizeof(struct fileheader))/sizeof(struct fileheader);
             for (i=0;i<readcount;i++,count++) {
                 if (count>id2) break;  //del end
                 savefhdr[i].accessed[1]|=FILE_DEL;
@@ -653,46 +661,53 @@ int id1,id2,del_mode ;
     remaincount=count-1;
     keepcount=0;
     lseek(fdr,pos_write,SEEK_SET);
+    savedigestmode=digestmode;
+    digestmode=4;
     while (count<=id2) {
         int readcount;
-        readcount=read(fdr,savefhdr,DEL_RANGLE_BUF*sizeof(struct fileheader))/sizeof(struct fileheader);
+        readcount=read(fdr,savefhdr,DEL_RANGE_BUF*sizeof(struct fileheader))/sizeof(struct fileheader);
 //        if (readcount==0) break;
         for (i=0;i<readcount;i++,count++) {
             if (count>id2) break;  //del end
-            if ((savefhdr[i].accessed[0] & FILE_MARKED)&&del_mode!=2) 
+            if ((savefhdr[i].accessed[0] & FILE_MARKED)&&del_mode!=1) 
             {
-                memcpy(readfhdr[keepcount],savefhdr[i],sizeof(struct fileheader));
+                memcpy(&readfhdr[keepcount],&savefhdr[i],sizeof(struct fileheader));
                 keepcount++;
                 remaincount++;
-                if (keepcount>DEL_RANGLE_BUF) {
+                if (keepcount>DEL_RANGE_BUF) {
                     lseek(fdr,pos_write,SEEK_SET);
-                    write(fdr,savefhdr,DEL_RANGLE_BUF*sizeof(struct fileheader));
-                    lseek(fdr,remaincount*sizeof(struct fileheader),SEEK_SET);
+                    write(fdr,readfhdr,DEL_RANGE_BUF*sizeof(struct fileheader));
+                    lseek(fdr,count*sizeof(struct fileheader),SEEK_SET);
+		    pos_write*=keepcount*sizeof(struct fileheader);
                     keepcount=0;
                 }
             } else {
-                memcpy(delfhdr[delcount],savefhdr[i],sizeof(struct fileheader));
+                memcpy(&delfhdr[delcount],&savefhdr[i],sizeof(struct fileheader));
                 delcount++;
-                if (delcount>DEL_RANGLE_BUF) {
-                    for (j=0;j<DEL_RANGLE_BUF;j++)
+                if (delcount>DEL_RANGE_BUF) {
+                    for (j=0;j<DEL_RANGE_BUF;j++)
                         cancelpost(currboard, currentuser.userid,
-                               &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser.userid,0));
+                               &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser.userid),0);
                     delcount=0;
-                    setbdir( genbuf, board );
-                    append_record( genbuf, delfhdr, DEL_RANGLE_BUF*sizeof(struct fileheader) );
+                    setbdir( genbuf, currboard );
+                    append_record( genbuf, delfhdr, DEL_RANGE_BUF*sizeof(struct fileheader) );
                 }  //need clear delcount
             } //if mark file
         }  //for readcount
+    }
+    if (keepcount) {
+        lseek(fdr,pos_write,SEEK_SET);
+        write(fdr,readfhdr,keepcount*sizeof(struct fileheader));
     }
         
     while (1) {
         int readcount;
         lseek(fdr,pos_read,SEEK_SET);   
-        readcount=read(fdr,savefhdr,DEL_RANGLE_BUF*sizeof(struct fileheader))/sizeof(struct fileheader);
+        readcount=read(fdr,savefhdr,DEL_RANGE_BUF*sizeof(struct fileheader))/sizeof(struct fileheader);
         if (readcount==0) break;
         
         lseek(fdr,remaincount*sizeof(struct fileheader),SEEK_SET);
-        write(fdr,readfhdr,keepcount*sizeof(struct fileheader));
+        write(fdr,savefhdr,readcount*sizeof(struct fileheader));
         pos_read+=readcount*sizeof(struct fileheader);
         remaincount+=readcount;
     }
@@ -701,10 +716,11 @@ int id1,id2,del_mode ;
     if (delcount) {
         for (j=0;j<delcount;j++)
             cancelpost(currboard, currentuser.userid,
-                   &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser.userid,0));
-        setbdir( genbuf, board );
-        append_record( genbuf, delfhdr, delcount*sizeof(postfile) );
+                   &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser.userid),0);
+        setbdir( genbuf, currboard );
+        append_record( genbuf, delfhdr, delcount*sizeof(struct fileheader) );
     }
+    digestmode=savedigestmode;
     return 0;
 }
 

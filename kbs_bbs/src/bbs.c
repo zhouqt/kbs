@@ -3035,13 +3035,7 @@ char *direct ;
     if(digestmode==2)
         return DONOTHING;
     if(digestmode==4||digestmode==5) {
-//       if(!HAS_PERM(PERM_SYSOP))
           return DONOTHING;
-/*       else {
-          result=1; 
-          goto DO_REPAIR;          /*ËãÀ²,goto°Ñ, hehe.  ylsdd 
-*/
-       }
     }
     clear() ;
     prints("ÇøÓòÉ¾³ý\n") ;
@@ -4297,6 +4291,7 @@ int     autoappend;
     struct fileheader   postfile;
     char oldpath[sizeof(genbuf)];
     int         tmpdigestmode;
+    struct fileheader* ph;
     time_t now;
     if(uinfo.mode==RMAIL)  {
        sprintf(oldpath,"mail/%c/%s/%s",toupper(currentuser.userid[0]),
@@ -4304,25 +4299,30 @@ int     autoappend;
        unlink(oldpath);
        return;
     }
+    if (autoappend) ph=&postfile;
+    else ph=fh;
 
     sprintf(genbuf, "/board/%s/%s.html", board, fh->filename);
     ca_expire(genbuf);
 
-    bzero(&postfile,sizeof(postfile));
-    now=time(NULL);
-    postfile.accessed[11]=now/(3600*24)%100; //localtime(&now)->tm_mday;
+    if (!autoappend) {
+      bzero(&postfile,sizeof(postfile));
+      now=time(NULL);
+      postfile.accessed[11]=now/(3600*24)%100; //localtime(&now)->tm_mday;
+      strcpy( postfile.filename, fh->filename );
+      strncpy( postfile.owner, fh->owner, IDLEN+2 );
+      postfile.owner[IDLEN+1]=0;
+    };
     sprintf( genbuf, "%-32.32s - %s", fh->title, userid );
-    strcpy( postfile.filename, fh->filename );
-    strncpy( postfile.owner, fh->owner, IDLEN+2 );
-    postfile.owner[IDLEN+1]=0;
-    strncpy( postfile.title, genbuf, STRLEN );
-    postfile.title[STRLEN-1]=0;
-    tmpdigestmode=digestmode;
-    digestmode=(owned)?5:4;
-    setbdir( genbuf, board );
-    if (autoappend)
+    strncpy( ph->title, genbuf, STRLEN );
+    ph->title[STRLEN-1]=0;
+    if (autoappend) {
+        tmpdigestmode=digestmode;
+        digestmode=(owned)?5:4;
+        setbdir( genbuf, board );
         append_record( genbuf, &postfile, sizeof(postfile) );
-    digestmode=tmpdigestmode;
+        digestmode=tmpdigestmode;
+    }
 }
 
 
