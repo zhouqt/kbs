@@ -121,6 +121,7 @@ extern long ti ;
 #define IPLEN   16    /* Length of most string data */
 #define NAMELEN  40    /* Length of username/realname */
 #define IDLEN    12    /* Length of userids */
+#define BOARDNAMELEN 30	/* max length of board */
 #define PASSLEN 39
 #define MD5PASSLEN 16
 #define OLDPASSLEN  14    /* Length of encrypted passwd field */

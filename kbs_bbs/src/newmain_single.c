@@ -303,6 +303,7 @@ void multi_user_check()
     struct user_info    uin;
     char        buffer[40];
     int ret=1;
+	int kickmulti=-1;
 
 	while (ret!=0) {
 		ret = multilogin_user(currentuser,usernum);
@@ -314,28 +315,31 @@ void multi_user_check()
 	            exit(1);
 		}
 	    if (ret==1) {
-	    	getdata(0, 0, "你同时上线的窗口数过多，是否踢出本ID其它窗口(Y/N)? [N]", 
+			if (kickmulti==-1)
+	    		getdata(0, 0, "你同时上线的窗口数过多，是否踢出本ID其它窗口(Y/N)? [N]", 
 	                buffer, 4, DOECHO, NULL, YEA);
-	        if(buffer[0] == 'Y' || buffer[0] == 'y') 
+	        if(buffer[0] == 'Y' || buffer[0] == 'y' || kickmulti==1) 
 	        {
 				int lres;
 				int num;
+				kickmulti=1;
 	            if ( !(num=search_ulist( &uin, cmpuids2, usernum) ))
 	                        return;  /* user isn't logged in */
-		    if (uin.pid!=1) {
-	            if (!uin.active || (kill(uin.pid,0) == -1))
+				if (uin.pid!=1) {
+	           		if (!uin.active || (kill(uin.pid,0) == -1))
 	                        return;  /* stale entry in utmp file */
 	/*---	modified by period	first try SIGHUP	2000-11-08	---*/
-			    lres = kill(uin.pid, SIGHUP);
-			    sleep(1);
-			    if(lres)
+			    	lres = kill(uin.pid, SIGHUP);
+			    	sleep(1);
+			    	if(lres)
 	/*---	---*/
 	                kill(uin.pid,9);
-		    }
+		    	}
 	            sprintf(buffer, "kicked (multi-login)" );
 	            report(buffer);
 
 				clear_utmp(num);
+				continue;
 	        } 
 	        oflush();
 	        exit(1);       /* 多窗口时踢掉一个，自己也断线 */
