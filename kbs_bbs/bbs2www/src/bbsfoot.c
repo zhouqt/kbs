@@ -15,37 +15,38 @@ int main()
 		dt=abs(time(0) - *(int*)(u_info->from+32))/60;
 				set_idle_time(u_info, time(0));
 	}
-	printf("<script language=\"JavaScript\">\n\
-<!--\n\
-function Init() {\n\
-  servertime=new Date()\n\
-  servertime.setTime(%d*1000)\n\
-  staytime=%d\n\
-  localtime=new Date()\n\
-  Time()\n\
-}\n\
-function Time(){\n\
- var now=new Date()\n\
- var Timer=new Date()\n\
- Timer.setTime(servertime.getTime()+now.getTime()-localtime.getTime());\n\
- var hours=Timer.getHours()\n\
- var minutes=Timer.getMinutes()\n\
- if (hours==0)\n\
- hours=12\n\
- if (minutes<=9)\n\
- minutes=\"0\"+minutes\n\
- var year=Timer.getYear(); \n\
- if (year < 1900)    // Y2K Fix, Isaac Powell \n\
-	 year = year + 1900; // http://onyx.idbsu.edu/~ipowell\n\
- myclock=year+\"年\"+(Timer.getMonth()+1)+\"月\"+Timer.getDay()+\"日\"+hours+\":\"+minutes\n\
- var staysec=(now.getTime()-localtime.getTime())/60000+staytime;\n\
- stayclock=parseInt(staysec/60)+\"小时\"+parseInt(staysec%60)+\"分钟\"\n\
- document.clock.myclock.value=myclock\n\
- document.clock.stay.value=stayclock\n\
- setTimeout(\"Time()\",58000)\n\
-}\n\
-//JavaScript End-->\n\
-</script>",time(0)+20,loginok?dt:0);
+	printf("<script language=\"JavaScript\">\n"
+"<!--\n"
+"function Init() {\n"
+"  servertime=new Date()\n"
+"  servertime.setTime(%d*1000)\n"
+"  staytime=%d\n"
+"  localtime=new Date()\n"
+"  Time()\n"
+"}\n"
+"function Time(){\n"
+" var now=new Date()\n"
+" var Timer=new Date()\n"
+" Timer.setTime(servertime.getTime()+now.getTime()-localtime.getTime());\n"
+" var hours=Timer.getHours()\n"
+" var minutes=Timer.getMinutes()\n"
+" if (hours==0)\n"
+" hours=12\n"
+" if (minutes<=9)\n"
+" minutes=\"0\"+minutes\n"
+" var year=Timer.getYear();\n"
+" if (year < 1900)    // Y2K Fix, Isaac Powell\n"
+"	 year = year + 1900; // http://onyx.idbsu.edu/~ipowell\n"
+
+" myclock=year+\"年\"+(Timer.getMonth()+1)+\"月\"+Timer.getDay()+\"日\"+hours+\":\"+minutes\n"
+" var staysec=(now.getTime()-localtime.getTime())/60000+staytime;\n"
+" stayclock=parseInt(staysec/60)+\"小时\"+parseInt(staysec%60)+\"分钟\"\n"
+" document.clock.myclock.value=myclock\n"
+" document.clock.stay.value=stayclock\n"
+" setTimeout(\"Time()\",58000)\n"
+"}\n"
+"//JavaScript End-->\n"
+"</script>",time(0)+20,loginok?dt:0);
  /*
 if (document.layers){\n\
 document.layers.position.document.write(myclock)\n\
