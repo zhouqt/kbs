@@ -246,7 +246,7 @@ function Post(id, owner, posttime, flags) {
 	this.FLAGS = flags;
 }
 
-function writepost(unused_id, html_title, threadNum, origin, lastreply, origin_exists) {
+function writepost(unused_id, html_title, threadNum, origin, lastreply, origin_exists, has_attach) {
 	/* note: when origin post does not exists, origin is actually the same as lastreply except
 	 * groupID is different. See also www_generateOriginIndex() */
 	//if (!origin_exists) return;
@@ -268,6 +268,9 @@ function writepost(unused_id, html_title, threadNum, origin, lastreply, origin_e
 	} else {
 		document.write('<img loaded="no" src="pic/plus.gif" id="followImg' + origin.ID + '" style="cursor:hand;" onclick="loadThreadFollow(\'' + origin.ID +"','" + boardName + "')\" title=展开贴子列表>");
 	}
+/*	if (has_attach) {
+		document.write('<img src="pic/havefolder.gif" align=absmiddle alt="有附件">');
+	} 图标不好看，暂时不 enable - atppp */
 	if (origin_exists) {
 		href_title = html_title + ' <br>作者：' + origin.OWNER + '<br>发表于' + origin.POSTTIME;
 	} else {

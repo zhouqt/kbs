@@ -103,8 +103,8 @@ function showSecsJS($secNum,$group,$isFold,$isFav,$isHide) {
 				$isFavGroup = ($isFav && ($brd_flag[$i] == -1));
 				$isBoardGroup = (($brd_flag[$i] & BBS_BOARD_GROUP) && !$isFavGroup);
 				
-				$j_isBoardGroup = ($isBoardGroup?"true":"false");
-				$j_isFavGroup = ($isFavGroup?"true":"false");
+				$j_isBoardGroup = ($isBoardGroup ? 1 : 0);
+				$j_isFavGroup = ($isFavGroup ? 1 : 0);
 				$j_boardDesc = "'" . addslashes(htmlspecialchars($brd_desc[$i], ENT_QUOTES)) . "'";
 				if ($isFavGroup) {
 					$j_boardName = $j_boardDesc;
@@ -126,7 +126,7 @@ function showSecsJS($secNum,$group,$isFold,$isFav,$isHide) {
 				}
 				$j_currentusers = intval($brd_currentusers[$i]);
 				if ($isFold) {
-					$j_isUnread = ($brd_unread[$i] == 1 ? "true" : "false");
+					$j_isUnread = ($brd_unread[$i] == 1 ? 1 : 0);
 					if ($j_nArticles > 0) {
 						$j_nThreads = bbs_getthreadnum($brd_bid[$i]);
 						$articles = bbs_getthreads($brd_name[$i], 0, 1, 0 ); //$brd_artcnt[$i], 1, $default_dir_mode);
@@ -225,7 +225,7 @@ function showSecs($secNum,$group,$isFold,$isFav = false,$isHide = false) {
 <TR><Td id="followSpan<?php echo $secNum; ?>">
 <script language="JavaScript">
 <!--
-	str = showSec(<?php echo ($isFold?"true":"false"); ?>, <?php echo ($isFav?"true":"false"); ?>, boards, <?php echo $secNum ?>, <?php echo ($isHide?"true":"false"); ?>);
+	str = showSec(<?php echo ($isFold ? 1 : 0); ?>, <?php echo ($isFav ? 1 : 0); ?>, boards, <?php echo $secNum ?>, <?php echo ($isHide ? 1 : 0); ?>);
 	document.write(str);
 //-->
 </script>

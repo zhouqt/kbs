@@ -44,7 +44,7 @@ if (SECTION_DEF_CLOSE) {
 <script language="javascript">
 <!--
 	parent.boards<?php echo $secNum; ?> = boards;
-	parent.loadBoardFollow(<?php echo $secNum ?>, <?php echo ($fav ? "true" : "false"); ?>, false, false, <?php echo ($isFold?"true":"false"); ?>);
+	parent.loadBoardFollow(<?php echo $secNum ?>, <?php echo ($fav ? 1 : 0); ?>, false, false, <?php echo ($isFold ? 1 : 0); ?>);
 	parent.foldflag<?php echo $secNum; ?> = <?php echo ($isFold ? 2 : 1); ?>;
 //-->
 </script>
