@@ -18,6 +18,8 @@ $Banner="bar/bar.jpg";
 
 define('SMS_SUPPORT', 1);
 
+define('AUDIO_CHAT', 1);
+
 define ("MAINTITLE","<IMG SRC=\"bar/title.jpg\">");
 
 define("ATTACHMAXSIZE","5242880");
