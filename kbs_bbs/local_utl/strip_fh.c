@@ -291,7 +291,7 @@ int main(int argc, char ** argv)
     sleep(1);
 	resolve_boards();
 	load_ucache();
-	if (argc == 1)
+	if (argc == 2 && strcmp(argv[1], "--all") == 0)
 	{
 		apply_boards(strip_board, NULL);
 		apply_users(strip_mail, NULL);
@@ -344,7 +344,7 @@ int main(int argc, char ** argv)
 	else
 	{
 		fprintf(stderr, "Usage:\n", argv[0]);
-		fprintf(stderr, "  %s                        Strip all fileheaders.\n", argv[0]);
+		fprintf(stderr, "  %s --all                  Strip all fileheaders.\n", argv[0]);
 		fprintf(stderr, "  %s --rollback             Rollback all fileheaders.\n", argv[0]);
 		fprintf(stderr, "  %s -b board               Strip fileheaders of a board.\n", argv[0]);
 		fprintf(stderr, "  %s -m user                Strip fileheaders of a user's mailbox.\n", argv[0]);
