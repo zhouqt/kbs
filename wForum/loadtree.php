@@ -37,9 +37,13 @@ $total=count($threads);
 
 showTree($boardName,$boardID,$articleID,$article,$threads,$total);
 ?>
+<body>
+<script language="javascript" type="text/javascript" src="inc/browser.js"></script>
 <script language="javascript">
-	parent.followTd<?php echo $articleID; ?>.innerHTML='<TABLE border=0 cellPadding=0 cellSpacing=0 width="100%" align=center><TBODY><?php showTree($boardName,$boardID,$articleID,$article,$threads,$total);?></TBODY></TABLE>';
+	oTd=getParentRawObject("followTd<?php echo $articleID; ?>");
+	oTd.innerHTML='<TABLE border=0 cellPadding=0 cellSpacing=0 width="100%" align=center><TBODY><?php showTree($boardName,$boardID,$articleID,$article,$threads,$total);?></TBODY></TABLE>';
 </script>
+</body>
 
 <?php
 /*  rem by roy 2003.7.28

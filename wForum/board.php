@@ -49,7 +49,7 @@ if (isErrFounded()) {
 	} else {
 ?>
 <script src="inc/loadThread.js"></script>
-<iframe width=0 height=0 src="" id="hiddenframe"></iframe>
+<iframe width=0 height=0 src="" id="hiddenframe" name="hiddenframe"></iframe>
 
 <?php
 		showBoardStaticsTop($boardArr);
