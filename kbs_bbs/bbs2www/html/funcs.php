@@ -119,7 +119,17 @@ if (($sessionid!='')&&($_SERVER['PHP_SELF']=='/bbscon.php')) {
 	@$utmpnum = $_COOKIE["UTMPNUM"];
 	@$userid = $_COOKIE["UTMPUSERID"];
 }
-// add by stiger, login as "guest" default.....
+
+if ($utmpkey!="") {
+  if (($ret=bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),$currentuinfo,$compat_telnet))==0) {
+    $loginok=1;
+    $currentuinfo_num=bbs_getcurrentuinfo();
+    $currentuser_num=bbs_getcurrentuser($currentuser);
+  }else
+	$utmpkey="";
+}
+
+// add by stiger, 如果登陆失败就继续用guest登陆
 if (($utmpkey == "")&&(!isset($needlogin) || ($needlogin!=0))){
 	$error = bbs_wwwlogin(0);
 	if($error == 2 || $error == 0){
@@ -134,9 +144,7 @@ if (($utmpkey == "")&&(!isset($needlogin) || ($needlogin!=0))){
 		@$userid = $data["userid"];
   		$compat_telnet=1;
 	}
-}
-//add end
-
+//guest 登陆成功，设置一下
 if ($utmpkey!="") {
   if (($ret=bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),$currentuinfo,$compat_telnet))==0) {
     $loginok=1;
@@ -144,6 +152,9 @@ if ($utmpkey!="") {
     $currentuser_num=bbs_getcurrentuser($currentuser);
   }
 }
+
+}
+//add end
 
 function valid_filename($fn)
 {
