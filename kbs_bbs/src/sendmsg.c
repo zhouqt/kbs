@@ -62,6 +62,7 @@ int s_msg()
 
 extern char msgerr[255];
 extern bool inremsg;
+extern bool in_do_sendmsg;
 
 int do_sendmsg(uentp, msgstr, mode)
 struct user_info *uentp;
@@ -84,7 +85,24 @@ int mode;
         clrtobot();
         prints("送讯息给: ");
         creat_list();
-        namecomplete(NULL, uident);
+		in_do_sendmsg=true;
+        if( namecomplete(NULL, uident) == '#' ){
+			in_do_sendmsg=false;
+            inremsg = false;
+    		if(!currentmemo->ud.mobileregistered)
+				return 0;
+            getdata(1, 0, "送短信给:", uident, MOBILE_NUMBER_LEN+1, true, NULL, true);
+			if( uident[0] == 0)
+				return 0;
+			if( !isdigit( uident[0] ) ){
+	        	move(2,0);
+        		prints("错误的手机号!");
+        		pressreturn();
+				return 0;
+			}
+			return do_send_sms_func(uident, NULL);
+		}
+		in_do_sendmsg=0;
         if (uident[0] == '\0') {
             clear();
             inremsg = false;
@@ -889,7 +907,7 @@ checksmsagain:
     if (dest == NULL) {
         move(1, 0);
         clrtobot();
-        getdata(1, 0, "送讯息给: ", uident, 15, 1, 0, 1);
+        getdata(1, 0, "送短信给: ", uident, 15, 1, 0, 1);
         if (uident[0] == '\0') {
             clear();
             modify_user_mode(oldmode);

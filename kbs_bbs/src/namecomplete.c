@@ -151,6 +151,8 @@ int count;
 }
 
 #define NUMLINES (t_lines - 4)
+bool in_do_sendmsg=0;
+
 int namecomplete(prompt, data)
 char *prompt, *data;
 {
@@ -296,6 +298,12 @@ char *prompt, *data;
                 continue;
             }
             if (isprint2(ch)) {
+				if( ch == '#' && count==0 && in_do_sendmsg ){
+                	*temp = '\0';
+                	ClearSubList(cwlist);
+        			ingetdata = false;
+					return ( ch ) ;
+				}
                 if (count < STRLEN) {
                     struct word *node;
 
