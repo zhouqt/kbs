@@ -1,5 +1,9 @@
 #!/bin/sh
 
+BBSHOME=/usr/local/bbs
+BBSSITE=devel
+WWWROOT=/var/www
+
 make distclean
 
 cvs up -d
@@ -18,8 +22,8 @@ autoheader; aclocal; automake -a; autoconf
 
 cd ..
 
-./configure --prefix=/usr/local/bbs --enable-site=devel \
-         --with-www=/var/www --with-php=/usr/include/php --enable-ssh \
+./configure --prefix=$BBSHOME --enable-site=$BBSSITE \
+         --with-www=$WWWROOT --with-php=/usr/include/php --enable-ssh \
          --with-mysql
 
 make
