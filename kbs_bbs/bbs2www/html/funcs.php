@@ -209,6 +209,7 @@ function html_init($charset,$title="",$otherheader="",$new_style=0)
 {
 	global $_COOKIE;
 	global $cachemode;
+	global $currentuser;
 	if ($cachemode=="") {
 		cache_header("no-cache");
 		Header("Cache-Control: no-cache");
@@ -266,7 +267,10 @@ function html_init($charset,$title="",$otherheader="",$new_style=0)
 ?>
 </head>
 <?php
-	if($_SERVER['PHP_SELF']!="/bbsgetmsg.php"){
+	if($_SERVER["PHP_SELF"] != "/bbsgetmsg.php" 
+			&& $currentuser["userid"] != "guest"
+			&& bbs_checkwebmsg())
+	{
 ?>
 <script language="javascript">
 if (top.fmsg && !top.fmsg.form0)
