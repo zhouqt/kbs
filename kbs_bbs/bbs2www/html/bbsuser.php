@@ -55,9 +55,11 @@
 ?>
 <hr>
 <?php
+/*
     for ($i=0;$i<26;$i++) {
       echo "[<a href=\"/cgi-bin/bbs/bbsufind?search=" . chr(ord('A')+$i) . "\">" . chr(ord('A')+$i) . "</a>]";
     }
+*/
 ?>
 <br>
 [<a href="bbsfriend.php">тзоъ╨цся</a>]
