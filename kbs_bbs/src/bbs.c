@@ -1906,6 +1906,9 @@ int post_article(char *q_file, struct fileheader *re_file)
     int replymode = 1;          /* Post New UI */
     char ans[4], include_mode = 'S';
     struct boardheader *bp;
+#ifdef FILTER
+    int returnvalue;
+#endif
 
     if (true == check_readonly(currboard))      /* Leeward 98.03.28 */
         return FULLUPDATE;
@@ -2155,10 +2158,16 @@ int post_article(char *q_file, struct fileheader *re_file)
         post_file.accessed[0] |= FILE_SIGN;
     }
 
-    after_post(currentuser, &post_file, currboard, re_file);
+    returnvalue = after_post(currentuser, &post_file, currboard, re_file);
 
     if (!junkboard(currboard)) {
         currentuser->numposts++;
+    }
+    if (returnvalue == 2) {
+	    clear();
+	    move (3, 0);
+	    prints ("\n\n            很抱歉，本文需要站务审核方可发表，请耐心等待...\n");
+	    pressreturn();
     }
     switch (olddigestmode) {
     case 2:

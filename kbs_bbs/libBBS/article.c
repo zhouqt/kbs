@@ -682,6 +682,11 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
         setboardmark(boardname, 1);
     if (user != NULL)
         bmlog(user->userid, boardname, 2, 1);
+#ifdef FILTER
+    if (boardname == "Filter")
+	    return 2;
+    else
+#endif
     return 0;
 }
 
@@ -1063,7 +1068,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
 	    fileinfo->accessed[0] |= FILE_CENSOR;
 	    sprintf(oldpath, "%s/boards/Filter/%s", BBSHOME, fileinfo->filename);
 	    sprintf(newpath, "boards/%s/%s", fileinfo->o_board, fileinfo->filename);
-	    f_cp(oldpath, newpath);
+	    f_cp(oldpath, newpath, 0);
 
 	    setbfile(buffer, fileinfo->o_board, DOT_DIR);
 	    if ((filedes = open(buffer, O_WRONLY | O_CREAT, 0664)) == -1) {
