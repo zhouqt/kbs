@@ -1579,7 +1579,7 @@ int listfilecontent(fname)
 char *fname;
 {
     FILE *fp;
-    int x = 0, y = 3, cnt = 0, max = 0, len;
+    int x = 0, y = 3, cnt = 0, max = 0, showline=1, len;
     char u_buf[20], line[STRLEN], *nick;
 
     move(y, x);
@@ -1609,14 +1609,15 @@ char *fname;
             max = len;
         if (x + len > 78)
             line[78 - x] = '\0';
-        prints("%s", line);
+        if( showline ) prints("%s", line);
         cnt++;
         if ((++y) >= t_lines - 1) {
             y = 3;
             x += max + 2;
             max = 0;
             if (x > 70)
-                break;
+				showline = 0;
+                //break;
         }
         move(y, x);
     }
