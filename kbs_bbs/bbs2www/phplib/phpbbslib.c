@@ -2129,6 +2129,6 @@ static ZEND_FUNCTION(bbs_normalboard)
     if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &boardname, &name_len) == FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
-	RETURN_LONG(normal_board(bname));
+	RETURN_LONG(normal_board(boardname));
 }
 
