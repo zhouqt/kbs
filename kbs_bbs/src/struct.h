@@ -163,8 +163,8 @@ struct boardheader {            /* This structure is used to hold data in */
 /* add by roy 2003.8.7 struct wwwthreadheader */
 /* used for .WWWTHREAD */
 struct wwwthreadheader{
-	unsigned int groupid; /* groupid */
-	unsigned int lastid;	/* id for last article */
+	struct fileheader origin; /* groupid */
+	struct fileheader lastreply;	/* id for last article */
 	unsigned int articlecount; /* number of articles */
 	unsigned int flags;
 	unsigned int unused;   /* used for further index */
