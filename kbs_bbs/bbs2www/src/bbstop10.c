@@ -26,7 +26,7 @@ int main()
 		       	break;
 		sscanf(s1+41, "%s", brd);
 		sscanf(s1+120, "%s", id);
-		sscanf(s1+99, "%s", num);
+		sscanf(s1+98, "%s", num);
 		if(fgets(s1, 255, fp) == NULL)
 		       	break;
 		strsncpy(title, s1+27, 60);
