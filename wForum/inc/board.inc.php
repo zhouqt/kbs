@@ -91,7 +91,13 @@ function showBoardStaticsTop($boardArr){
 ?>
 <TABLE cellpadding=3 cellspacing=1 class=TableBorder1 align=center><TR><Th height=25 width=100% align=left id=TableTitleLink style="font-weight:normal">本版当前共有<b><?php echo $boardArr['CURRENTUSERS'];?></b>人在线。今日帖子<?php echo bbs_get_today_article_num($boardArr['NAME'] ); ?></Th></TR></td></tr></TABLE>
 <BR>
-<table cellpadding=0 cellspacing=0 border=0 width=97% align=center valign=middle><tr><td align=center width=2> </td><td align=left style="height:27" valign="center"><table cellpadding=0 cellspacing=0 border=0 ><tr><td width="110"><a href=postarticle.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass1" border=0 alt=发新帖></div></a></td><td width="110"><a href=vote.php?board=2><div class="buttonClass2" border=0 alt=发起新投票></div></td><td width="110"><a href=smallpaper.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass3" border=0 alt=发布小字报></div></a></td></tr></table></td><td align=right><img src=pic/team2.gif align=absmiddle>
+<table cellpadding=0 cellspacing=0 border=0 width=97% align=center valign=middle><tr><td align=center width=2> </td>
+<td align=left style="height:27" valign="center"><table cellpadding=0 cellspacing=0 border=0 ><tr>
+<td width="110"><a href=postarticle.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass1" border=0 alt=发新帖></div></a></td>
+<td width="110"><a href=vote.php?board=2><div class="buttonClass2" border=0 alt=发起新投票></div></a></td>
+<td width="110"><a href=smallpaper.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass3" border=0 alt=发布小字报></div></a></td>
+</tr></table></td>
+<td align=right><img src=pic/team2.gif align=absmiddle>
 <?php 
 	$bms=split(' ',$boardArr['BM']);
 	foreach($bms as $bm) {
@@ -118,7 +124,12 @@ function showBoardContents($boardID,$boardName,$page){
 <?php
 	} else {
 ?>
-<form action=admin_batch.asp method=post name=batch><TR align=middle><Th height=25 width=32 id=TableTitleLink><a href=list.asp?name=<?php echo $boardName; ?>&page=&action=batch>状态</a></th><Th width=* id=TableTitleLink>主 题  (点<img src=pic/plus.gif align=absmiddle>即可展开贴子列表)</Th><Th width=80 id=TableTitleLink>作 者</Th><Th width=64 id=TableTitleLink>回复</Th><Th width=195 id=TableTitleLink>最后更新 | 回复人</Th></TR>
+<form action=admin_batch.asp method=post name=batch><TR align=middle>
+<Th height=25 width=32 id=TableTitleLink><a href=list.asp?name=<?php echo $boardName; ?>&page=&action=batch>状态</a></th>
+<Th width=* id=TableTitleLink>主 题  (点<img src=pic/plus.gif align=absmiddle>即可展开贴子列表)</Th>
+<Th width=80 id=TableTitleLink>作 者</Th>
+<Th width=64 id=TableTitleLink>回复</Th>
+<Th width=200 id=TableTitleLink>最后更新 | 回复人</Th></TR>
 <?php
 		
 		$totalPages=ceil($total/ARTICLESPERPAGE);
@@ -140,13 +151,13 @@ function showBoardContents($boardID,$boardName,$page){
 
 		$articles = bbs_getthreads($boardName, $start, $num,1);
 		$articleNum=count($articles);
-		for($i=0;$i<$articleNum;$i++){
+		for($i=0;$i<$articleNum;$i++){ // 这个地方可以考虑全部换成javascript输出，把显示/判断的load交给客户端，同时减少大量重复字符的网络传输 - atppp
 			$origin=$articles[$i]['origin'];
 			$lastreply=$articles[$i]['lastreply'];
 			$threadNum=$articles[$i]['articlenum']-1;
 
 ?>
-<TR align=middle><TD class=TableBody2 width=32 height=27>
+<TR align=middle><TD class=TableBody2 width=32 height=27 align="center">
 <?php
 //print_r($articles[$i]);
 	$upperflag = strtoupper($origin['FLAGS'][0]);
@@ -189,7 +200,10 @@ function showBoardContents($boardID,$boardName,$page){
 		echo "<img src=\"pic/topnew2.gif\" alt=\"原贴未读\">";
 	}
 ?>
-</TD><TD class=TableBody2 width=80><a href="dispuser.php?id=<?php echo $origin['OWNER'] ;?>" target=_blank><?php echo $origin['OWNER'] ;?></a></TD><TD class=TableBody1 width=64><?php echo $threadNum; ?></TD><TD align=left class=TableBody2 width=195>&nbsp;<a href="disparticle.php?boardName=<?php echo $boardName ;?>&ID=<?php echo $origin['ID'];?>&start=<?php echo $total; ?>">
+</TD>
+<TD class=TableBody2 width=80 align="center"><a href="dispuser.php?id=<?php echo $origin['OWNER'] ;?>" target=_blank><?php echo $origin['OWNER'] ;?></a></TD>
+<TD class=TableBody1 width=64 align="center"><?php echo $threadNum; ?></TD>
+<TD align=left class=TableBody2 width=200>&nbsp;<a href="disparticle.php?boardName=<?php echo $boardName ;?>&ID=<?php echo $origin['ID'];?>&start=<?php echo $total; ?>">
 <?php
 			echo strftime("%Y-%m-%d %H:%M", $lastreply['POSTTIME']);
 ?></a>&nbsp;<font color=#FF0000>|</font>&nbsp;<a href=dispuser.php?id=<?php echo $lastreply['OWNER']; ?>  target=_blank>

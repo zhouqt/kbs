@@ -106,7 +106,11 @@ function article_bar($boardName,$boardID,$articleID,$article,$threadID,$listType
 ?>
 <table cellpadding=0 cellspacing=0 border=0 width=97% align=center>
 	<tr>
-	<td align=left valign=middle style="height:27"><table cellpadding=0 cellspacing=0 border=0 ><tr><td width="110"><a href=postarticle.php?board=<?php echo $boardName; ?>><div class="buttonClass1" border=0 alt=发新帖></div></a></td><td width="110"><a href=vote.php?board=2><div class="buttonClass2" border=0 alt=发起新投票></div></td><td width="110"><a href="postarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $article['ID']; ?>"><div class="buttonClass4" border=0 alt=回复本主题></div></a></td></tr></table>
+	<td align=left valign=middle style="height:27"><table cellpadding=0 cellspacing=0 border=0 ><tr>
+	<td width="110"><a href=postarticle.php?board=<?php echo $boardName; ?>><div class="buttonClass1" border=0 alt=发新帖></div></a></td>
+	<td width="110"><a href=# onclick="alert('本功能尚在开发中！')"><div class="buttonClass2" border=0 alt=发起新投票></div></a></td>
+	<td width="110"><a href="postarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $article['ID']; ?>"><div class="buttonClass4" border=0 alt=回复本主题></div></a></td>
+	</tr></table>
 	</td>
 	<td align=right valign=middle><a href="disparticle.php?boardName=<?php echo $boardName; ?>&ID=<?php echo $articleID>1?$articleID-1:1; ?>"><img src="pic/prethread.gif" border=0 alt=浏览上一篇主题 width=52 height=12></a>&nbsp;
 	<a href="javascript:this.location.reload()"><img src="pic/refresh.gif" border=0 alt=刷新本主题 width=40 height=12></a> &nbsp;
@@ -139,13 +143,13 @@ function dispArticleTitle($boardName,$boardID,$articleID,$article, $threadID){
 		<th align=left valign=middle width="73%" height=25>
 		&nbsp;* 文章主题</B>： <?php echo htmlspecialchars($article['TITLE'],ENT_QUOTES); ?>  </th>
 		<th width=37% align=right>
-		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/saveas.gif" border=0 width=16 height=16 alt=保存该页为文件 align=absmiddle></a>&nbsp;
-		<a href=# onclick="alert('本功能尚未实现');"><img src=pic/report.gif alt=报告本帖给版主 border=0></a>&nbsp;
+		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/saveas.gif" border=0 alt=保存该页为文件></a>&nbsp;
+		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/report.gif" alt=报告本帖给版主 border=0></a>&nbsp;
 		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/printpage.gif" alt=显示可打印的版本 border=0></a>&nbsp;
 		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/pag.gif" border=0 alt=把本贴打包邮递></a>&nbsp;
 		<a href=# onclick="alert('本功能尚未实现');"><IMG SRC="pic/fav_add.gif" BORDER=0 alt=把本贴加入论坛收藏夹></a>&nbsp;
 		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/emailtofriend.gif" border=0 alt=发送本页面给朋友></a>&nbsp;
-		<a href=#><span style="CURSOR: hand" onClick="window.external.AddFavorite(location.href, document.title);"><IMG SRC="pic/fav_add1.gif" BORDER=0 width=15 height=15 alt=把本贴加入IE收藏夹></a>&nbsp;
+		<a href=# onClick="window.external.AddFavorite(location.href, document.title);"><IMG SRC="pic/fav_add1.gif" BORDER=0 width=15 height=15 alt=把本贴加入IE收藏夹></a>&nbsp;
 		</th>
 		</tr>
 		</table>

@@ -35,7 +35,7 @@ document.write("<div id='dypopLayer' style='position:absolute;z-index:1000' clas
 
 
 function showPopupText(){
-	//if (!isIE4) return; //ToDo: I found only IE fully supports event.srcElement. maybe there're other tricks? - atppp
+	if (typeof event == "undefined") return; //ToDo: I found only IE fully supports event.srcElement. maybe there're other tricks? - atppp
 var o=event.srcElement;
 	MouseX=event.x;
 	MouseY=event.y;
