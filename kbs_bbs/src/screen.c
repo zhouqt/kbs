@@ -348,10 +348,10 @@ void refresh()
             if(tc_color>>4!=bp[j].color[k]>>4) {
                 tc_color=bp[j].color[k]&0xf0+tc_color&0x0f;
                 if(DEFINE(currentuser, DEF_COLOR)) {
-                    if(bp[j].color[k]>>4==8)
+                    if((bp[j].color[k]>>4)==8)
                         stack[stackt++]=40;
                     else
-                        stack[stackt++]=40+bp[j].color[k]>>4;
+                        stack[stackt++]=40+(bp[j].color[k]>>4);
                 }
             }
             if(stackt>0) {
