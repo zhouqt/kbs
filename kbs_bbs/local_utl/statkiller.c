@@ -2,6 +2,7 @@
 
 #define MAX 10000
 #define MAXK 100
+#define MAX_PEOPLE 100
 
 struct statf {
     char id[IDLEN+2];
@@ -100,7 +101,7 @@ void main()
     for(i=0;i<statt;i++)
         for(j=i+1;j<statt;j++)
             if(statlib[i].btime==0||statlib[i].btime>0&&statlib[j].btime>0&&
-                statlib[i].bwtime/statlib[i].btime>statlib[j].bwtime/statlib[j].btime) {
+                (double)statlib[i].bwtime/statlib[i].btime>(double)statlib[j].bwtime/statlib[j].btime) {
                 memcpy(&temp, statlib+i, sizeof(struct statf));
                 memcpy(statlib+i, statlib+j, sizeof(struct statf));
                 memcpy(statlib+j, &temp, sizeof(struct statf));
@@ -108,6 +109,6 @@ void main()
     printf("========江湖十大杀手榜========\n");
     printf("%4s %-12s  %8s  %8s %6s\n", "名次", "杀手名", "命中次数", "出手次数", "绝杀率");
     for(i=0;i<MAXK;i++) {
-        printf("%3d  %-12s  %6d    %6d   %4.2lf%%  \n", i+1, statlib[i].id, statlib[i].bwtime, statlib[i].btime, statlib[i].bwtime/statlib[i].btime*100);
+        printf("%3d  %-12s  %6d    %6d   %4.2lf%%  \n", i+1, statlib[i].id, statlib[i].bwtime, statlib[i].btime, (statlib[i].btime==0)?0.0:(double)statlib[i].bwtime/statlib[i].btime*100);
     }
 }
