@@ -66,7 +66,7 @@ static int refresh_select(struct _select_def *conf)
     //TODO:
     //目前应该清除的区域尚未定义，所以先清全部
     good_move(conf->title_pos.y, conf->title_pos.x);
-    clrtobot();
+    //clrtobot();
     if (conf->show_title) {
         (*conf->show_title) (conf);
     }
@@ -325,6 +325,8 @@ struct _simple_select_arg{
 static int simple_onselect(struct _select_def *conf)
 {
     struct _simple_select_arg *arg = (struct _simple_select_arg *) conf->arg;
+    if (arg->flag&SIF_SINGLE) 
+        return SHOW_SELECT;
     return SHOW_CONTINUE;
 }
 
@@ -366,7 +368,7 @@ static int simple_key(struct _select_def *conf, int key)
 }
 
 
-int simple_select_loop(struct _select_item* item_conf,int flag,int titlex,int titley,union _select_return_value* ret)
+int simple_select_loop(const struct _select_item* item_conf,int flag,int titlex,int titley,union _select_return_value* ret)
 {
     struct _select_def simple_conf;
     struct _simple_select_arg arg;

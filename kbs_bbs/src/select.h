@@ -100,6 +100,6 @@ union _select_return_value {
 	char* returnstr;
 };
 
-int simple_select_loop(struct _select_item* item_conf,int flag,int titlex,int titley,union _select_return_value* ret);
+int simple_select_loop(const struct _select_item* item_conf,int flag,int titlex,int titley,union _select_return_value* ret);
 #endif
 

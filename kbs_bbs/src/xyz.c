@@ -278,7 +278,7 @@ int x_level()
         flag2 = 1;
 
 /*Bad 2002.7.6 受限与戒网问题*/
-	lcount=get_giveupinfo(lookupuser->userid,&basicperm,s);
+    lcount=get_giveupinfo(lookupuser->userid,&basicperm,s);
     move(1, 0);
     clrtobot();
     move(2, 0);
