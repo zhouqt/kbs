@@ -133,10 +133,7 @@ chatd: station.c libBBS.a
 ve: edit.o term.o screen.o io.o editor.c
 	$(CC) -o ve -g edit.o term.o screen.o io.o editor.c
 
-#install: all
-#	./Install.sh
-
-installbbs: $(PROGNAME) $(BBSHOME)/bin/bbsd_single
+install: $(PROGNAME) $(BBSHOME)/bin/bbsd_single
 	$(INSTALL) newpop3d $(BBSHOME)/bin
 	$(INSTALL) chatd $(BBSHOME)/bin
 

@@ -10,6 +10,8 @@ OS_DEF   = -DLINUX -DSYSV
 #CSIE_DEF = -DSHOW_IDLE_TIME -DBBSGID=502 -D_DETAIL_UINFO_ 
 CSIE_DEF = -DSHOW_IDLE_TIME -D_DETAIL_UINFO_ 
 
+all:allthing
+
 ifeq (../Makefile.spec ,$(wildcard ../Makefile.spec))
 include ../Makefile.spec
 endif
@@ -28,10 +30,10 @@ BINFILE=utmpd miscd
 .c.ln:  ;   lint -abhi $*.c
 
 
-all:  $(BINFILE)
+allthing:  $(BINFILE)
 
 $(BINFILE): % : %.o ../libBBS.a
 	$(CC) $^ -o $*
 
 install: all
-	cp -f $(BINFILE) $(BBSHOME)/bin
+	$(INSTALL) $(BINFILE) $(BBSHOME)/bin

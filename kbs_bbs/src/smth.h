@@ -8,9 +8,9 @@
 #define SECNUM 9
 
 #define DEFAULTBOARD    	"test"
-#define MAXUSERS  		150000
+#define MAXUSERS  		160000
 #define MAXBOARD  		400
-#define MAXACTIVE 		4000
+#define MAXACTIVE 		8000
 #define MAX_GUEST_NUM		800
 
 #define POP3PORT		110
