@@ -5,9 +5,13 @@
 require 'DB.php';
 $dsn = "mysql://$dbuser:$dbpasswd@$dbhost/$dbname";
 
-$conn = DB::connect($dsn);
-if (DB::isError($conn)) {
-	//die ($conn->getMessage());
+if (DB_ENABLED) {
+	$conn = DB::connect($dsn);
+	if (DB::isError($conn)) {
+		//die ($conn->getMessage());
+		$conn = false;
+	}
+} else {
 	$conn = false;
 }
 function CloseDatabase()
@@ -69,8 +73,12 @@ class my_mysql {
 	}
 }
 
-$conn = new my_mysql($dbhost, $dbuser, $dbpasswd, $dbname);
-if ($conn->my_err) $conn = false;
+if (DB_ENABLED) {
+	$conn = new my_mysql($dbhost, $dbuser, $dbpasswd, $dbname);
+	if ($conn->my_err) $conn = false;
+} else {
+	$conn = false;
+}
 function CloseDatabase()
 {
 	global $conn;
