@@ -25,7 +25,7 @@ SITE_DEF = -DBBSHOME='"$(BBSHOME)"' -DBBSUID=$(BBSUID) -DINVISIBLE
 DEFINES	=  $(CSIE_DEF) $(OS_DEF)
 CFLAGS += -I..
 
-BINFILE=utmpd
+BINFILE=utmpd miscd
 
 .SUFFIXES: .o .c .ln
 
@@ -37,3 +37,6 @@ all:  $(BINFILE)
 
 $(BINFILE): % : %.o ../libBBS.a
 	$(CC) $^
+
+install: all
+	cp -f $(BINFILE) $(BBSHOME)/bin
