@@ -12,6 +12,7 @@ int main()
 
     init_all();
     strsncpy(file, getparm("file"), 32);
+    strsncpy(dir, getparm("dir"), 32);
     num = atoi(getparm("num"));
     printf("<center>\n");
     id = currentuser->userid;
@@ -20,8 +21,12 @@ int main()
         http_fatal("错误的参数1");
     if (strstr(file, "..") || strstr(file, "/"))
         http_fatal("错误的参数2");
+    if (strstr(dir, "..") || strstr(dir, "/"))
+        http_fatal("错误的参数3");
+    if (dir[0]==0)
+        strcpy(dir,".DIR");
+    sprintf(dir, "mail/%c/%s/%s", toupper(id[0]), id, dir);
     /*自定义邮箱不应该判断这个
-    sprintf(dir, "mail/%c/%s/.DIR", toupper(id[0]), id);
     total = file_size(dir) / sizeof(x);
     if (total <= 0)
         http_fatal("错误的参数3");

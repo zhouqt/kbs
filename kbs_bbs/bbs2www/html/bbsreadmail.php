@@ -54,7 +54,7 @@
 <tr><td><?php echo $i+1;?><td><?php echo $maildata[$i]["FLAGS"];?><td>
 <a href=/cgi-bin/bbs/bbsqry?userid=<?php echo $maildata[$i]["OWNER"];?>><?php echo $maildata[$i]["OWNER"];?></a>
 <td><?php echo strftime("%b&nbsp;%e&nbsp;%H&nbsp;:%M",$maildata[$i]["POSTTIME"]);?>
-<td><a href=/cgi-bin/bbs/bbsmailcon?file=<?php echo $maildata[$i]["FILENAME"];?>&num=<?php echo $i;?>><?php echo htmlspecialchars($maildata[$i]["TITLE"]);?></a>
+<td><a href=/cgi-bin/bbs/bbsmailcon?file=<?php echo $maildata[$i]["FILENAME"];?>&dir=<?php echo $mail_path;?>&num=<?php echo $i;?>><?php echo htmlspecialchars($maildata[$i]["TITLE"]);?></a>
 </tr>
 <?php
 		}
