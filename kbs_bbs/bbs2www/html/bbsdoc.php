@@ -102,7 +102,7 @@
 		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
 <table width="100%" border="0" cellspacing="0" cellpadding="3" class="t1">
-<tr><td class="t2" width="50">序号</td><td class="t2" width="40">标记</td><td class="t2" width="120">作者</td><td class="t2" width="80">日期</td><td class="t2">标题</td></tr>
+<tr><td class="t2" width="40">序号</td><td class="t2" width="30">标记</td><td class="t2" width="85">作者</td><td class="t2" width="50">日期</td><td class="t2">标题</td></tr>
 <?php
 		$ding_cnt = 0;
 		foreach ($articles as $article)
@@ -134,7 +134,7 @@
 			} else {
 ?>
 <td class="t3"><?php echo $start+$i; ?></td>
-<td class="t4">&nbsp;
+<td class="t4">
 <?php
 			if ($flags[1] == 'y')
 			{
@@ -143,19 +143,26 @@
 				else
 					echo $flags[0];
 			}
-			elseif ($flags[0] == 'N' || $flags[0] == '*')
-				echo $flags[0];
-			else
-				echo $flags[0];
-			echo $flags[3];
-?>
-&nbsp;</td>
+                         elseif ($flags[0] == 'N' || $flags[0] == '*'){
+                                 if ($flags[0] == ' ') 
+                                         echo "&nbsp;"; 
+                                 else
+                                         echo $flags[0];
+                         }else{
+                                 if ($flags[0] == ' ')
+                                         echo "&nbsp;"; 
+                                 else
+                                         echo $flags[0];
+                         }   
+                         echo $flags[3]; 
+ ?> 
+</td>
 <?php
 	}//置顶
 ?>
 <td class="t3"><a class="ts1" href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
 <td class="t4"><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
-<td class="t5">&nbsp;<strong>
+<td class="t5"><strong>
 <?php
 	switch ($default_dir_mode)
 	{
@@ -163,7 +170,7 @@
 		if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1))
 		{
 ?>
-<a href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?>&ftype=9"><?php echo htmlspecialchars($title); ?>
+<a href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?>&ftype=<?php echo $dir_modes["ZHIDING"]; ?>"><?php echo htmlspecialchars($title); ?>
 
 </a>
 <?php
@@ -180,7 +187,7 @@
 	case $dir_modes["NORMAL"]:
 	default:
 ?>
-<a href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?><?php if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1)) echo "&ftype=9"; ?>"><?php echo htmlspecialchars($title); ?>
+<a href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?><?php if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1)) echo "&ftype=" . $dir_modes["ZHIDING"]; ?>"><?php echo htmlspecialchars($title); ?>
 
 </a>
 <?php
