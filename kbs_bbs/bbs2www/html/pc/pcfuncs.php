@@ -20,11 +20,6 @@ if(!$currentuser["userid"])
 $pcconfig["NOWRAPSTR"] = "<!--NoWrap-->";
 $pcconfig["EDITORALERT"] = "<!--Loading HTMLArea Editor , Please Wait/ÕýÔÚ¼ÓÔØ HTML±à¼­Æ÷ £¬ ÇëÉÔºò ¡­¡­-->";
 
-function pc_personal_domainname($userid)
-{
-	return "http://".$userid.".mysmth.net";	
-}
-
 function pc_html_init($charset,$title="",$otherheader="",$cssfile="",$bkimg="",$loadhtmlarea=FALSE)
 {
 	global $_COOKIE;
