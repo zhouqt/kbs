@@ -17,9 +17,6 @@ bbslink_SOURCES = bbslink.c pmain.c inntobbs.c echobbslib.c connectsock.c file.c
 noinst_HEADERS = bbslib.h clibrary.h daemon.h dbz.h externs.h \
 		innbbsconf.h innbbsd.h inntobbs.h lang.h nntp.h \
 		nocem.h version.h
-AM_CFLAGS = -DLINUX -DGETRUSAGE -DUSE_NCM_PATCH -DPGP5 -DDBZSERVER -DFirebirdBBS -DDBZDEBUG -DFILTER -DBIG2GB -DGB2BIG -I../src convert/hztty-2.0/b2g.o convert/hztty-2.0/b2g_tables.o \
-		convert/hztty-2.0/hz2gb.o convert/hztty-2.0/log.o convert/hztty-2.0/io.o \
-		convert/hztty-2.0/g2u.o convert/hztty-2.0/g2u_tables.o convert/hztty-2.0/unicode.o \
-		convert/hztty-2.0/b2u.o convert/hztty-2.0/b2u_tables.o convert/hztty-2.0/hack.o
-LDADD = ../libBBS/.libs/libBBS.a ../libsystem/.libs/libsystem.a
+AM_CFLAGS = -DGETRUSAGE -DUSE_NCM_PATCH -DPGP5 -DDBZSERVER -DFirebirdBBS -DDBZDEBUG -DFILTER -DBIG2GB -DGB2BIG -I../src 
+LDADD = -Lconvert/hztty-2.0 -lhztty -L../libBBS -lBBS  -L../libsystem -lsystem
 CLEANFILES = @EXTRA_CLEAN@

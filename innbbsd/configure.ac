@@ -7,6 +7,13 @@ case "${host}" in
   i*86-*-freebsd4*)
         CFLAGS="$CFLAGS -DFREEBSD"
 	;;
+  *-*-linux*)        
+        CFLAGS="$CFLAGS -DLINUX"
+        ;;  
+  *-*-cygwin*)        
+        CFLAGS="$CFLAGS -DCYGWIN"
+	    LIBS="$LIBS -liconv"
+        ;;  
   *)
 	;;
 esac
@@ -58,7 +65,7 @@ AC_FUNC_STRFTIME
 AC_FUNC_UTIME_NULL
 AC_FUNC_VPRINTF
 AC_FUNC_WAIT3
-AC_CHECK_FUNCS([alarm bzero dup2 ftruncate getcwd gethostbyaddr gethostbyname gethostname getpagesize gettimeofday getwd inet_ntoa memchr mkdir munmap putenv select setenv socket strcasecmp strchr strdup strerror strncasecmp strrchr strspn strstr utime])
+AC_CHECK_FUNCS([bzero bcopy dup2 ftruncate getcwd gethostbyaddr gethostbyname gethostname getpagesize gettimeofday getwd inet_ntoa memchr mkdir munmap putenv select setenv socket strcasecmp strchr strdup strerror strncasecmp strrchr strspn strstr utime killpg])
 
 AC_CONFIG_FILES([Makefile
                  convert/Makefile])

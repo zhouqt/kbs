@@ -12,7 +12,7 @@
 static char *rcs_id = "$Id$";
 #endif                          /* lint */
 
-#include "config.h"
+#include "hzconfig.h"
 
 /* 
  * Functions get_pty() and pty_search() in this file are adopted from
@@ -511,7 +511,7 @@ void addutmp()
     utmpx.ut_exit.e_exit = 0;
     utmpx.ut_exit.e_termination = 0;
 # else
-#  if !defined(linux)
+#  if !defined(linux) && !defined(__CYGWIN__)
     utmp.ut_exit.e_exit = 2;
 #  endif
 # endif

@@ -1,7 +1,7 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* Define to 1 if you have the `alarm' function. */
-#undef HAVE_ALARM
+/* Define to 1 if you have the `bcopy' function. */
+#undef HAVE_BCOPY
 
 /* Define to 1 if you have the `bzero' function. */
 #undef HAVE_BZERO
@@ -54,6 +54,9 @@
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the `killpg' function. */
+#undef HAVE_KILLPG
 
 /* */
 #undef HAVE_LIBESMTP

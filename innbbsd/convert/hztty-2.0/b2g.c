@@ -4,7 +4,7 @@
 static char *rcs_id = "$Id$";
 #endif                          /* lint */
 
-#include "config.h"
+#include "hzconfig.h"
 #include "io.h"
 
 #define	BtoG_bad1 0xa1

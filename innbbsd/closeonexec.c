@@ -22,7 +22,7 @@
 #define CLX_FCNTL
 #endif
 
-#if	defined(CLX_IOCTL) && !defined(IRIX)
+#if	defined(CLX_IOCTL) && !defined(IRIX) && !defined(CYGWIN)
 #ifdef __linux
 #include <termios.h>
 #else

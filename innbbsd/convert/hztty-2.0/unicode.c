@@ -4,7 +4,7 @@
 static char *rcs_id = "$Id$";
 #endif                          /* lint */
 
-#include "config.h"
+#include "hzconfig.h"
 #include "io.h"
 
 /*** UTF8 => UNICODE ***/

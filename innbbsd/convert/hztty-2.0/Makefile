@@ -30,13 +30,17 @@ MODULES_DEF=	${DEF_GB_BIG5} ${DEF_UNICODE_GB} ${DEF_UNICODE_BIG5}
 OBJS =  main.o tty.o io.o log.o hz2gb.o unicode.o hack.o	\
 	${OBJ_GB_BIG5} ${OBJ_UNICODE_GB} ${OBJ_UNICODE_BIG5}
 
+LIBOBJS =  tty.o io.o log.o hz2gb.o unicode.o hack.o	\
+	${OBJ_GB_BIG5} ${OBJ_UNICODE_GB} ${OBJ_UNICODE_BIG5}
+
 DEFINES= 
-CFLAGS=${CDEBUGFLAGS} ${DEFINES} ${MODULES_DEF} -I.
+CFLAGS=${CDEBUGFLAGS} ${DEFINES} ${MODULES_DEF} -I. -I../..
 
 PROG = hztty
+HZLIB = libhztty.a
 LIBS=
 
-all: linux
+all: linux ${HZLIB}
 
 help:
 	@echo "Choose one of the make command according to your system type:"
@@ -154,6 +158,9 @@ svr4:
 ${PROG}: miniconf.h ${OBJS}
 	$(CC) $(CDEBUGFLAGS) -o ${PROG} ${OBJS} ${LIBS}
 
+${HZLIB}: ${LIBOBJS}
+	ar cru $@ ${LIBOBJS}
+
 miniconf.h:
 	${MAKE} clean
 	miniconf.sh $(CPP)
@@ -163,12 +170,12 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-main.o: config.h io.h
-tty.o: config.h 
-io.o: config.h io.h
-log.o: config.h io.h
-hz2gb.o: config.h io.h
-unicode.o: config.h io.h
-b2g.o: config.h io.h
-g2u.o: config.h io.h
-b2u.o: config.h io.h
+main.o: hzconfig.h io.h
+tty.o: hzconfig.h 
+io.o: hzconfig.h io.h
+log.o: hzconfig.h io.h
+hz2gb.o: hzconfig.h io.h
+unicode.o: hzconfig.h io.h
+b2g.o: hzconfig.h io.h
+g2u.o: hzconfig.h io.h
+b2u.o: hzconfig.h io.h
