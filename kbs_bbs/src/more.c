@@ -925,7 +925,7 @@ mmap_more(char *fn, int quit, char *keystr)
 	
 	switch (safe_mmapfile(fn,O_RDONLY,PROT_READ,MAP_SHARED,(void**)&ptr,&size,NULL)) {
 		case 0: //mmap error
-			return 0;
+			return -1;
 		case 1:
 			retv = mem_more(ptr, size, quit, keystr, fn);
     }
