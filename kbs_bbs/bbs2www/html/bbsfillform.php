@@ -24,9 +24,9 @@
 		html_error_quit("请申请另外的帐号填写注册单!");
 
 	//用户已经通过注册
-	//未满等待时间
+	//未满等待时间(先放到phplib里面做了)
 
-	$ret=bbs_createregform($realname,$dept,$address,$year,$month,$day,$email,$phone,FALSE); //手工填写注册单
+	$ret=bbs_createregform($currentuser["userid"],$realname,$dept,$address,$year,$month,$day,$email,$phone,FALSE); //手工填写注册单
 
 	switch($ret)
 	{
@@ -35,12 +35,26 @@
 	case 1:
 		html_error_quit("您的注册单还没有处理，请耐心等候");
 		break;
+	case 2:
+		html_error_quit("该用户不存在!");
+		break;
+	case 3:
+		html_error_quit("参数错误");
+		break;
+	case 4:
+		html_error_quit("你已经通过注册了!");
+		break;
+	case 5:
+		html_error_quit("您注册尚不满48小时,请在首次注册48小时后再填写注册单.");
+		break;
 	default:
 		html_error_quit("未知的错误!");
 		break;
 	}
+}
 ?>
 <body>
-注册单已经提交,24小时内站务将会审核,如果通过,你就会获得合法用户权限！
+注册单已经提交,24小时内站务将会审核,如果通过,你就会获得合法用户权限！<br>
+<a href=\"javascript:history.go(-1)\">快速返回</a>
 </body>
 </html>
