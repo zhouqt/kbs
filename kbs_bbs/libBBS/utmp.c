@@ -595,6 +595,8 @@ void clear_utmp2(int uent)
         snprintf(buf,MAXPATH,"%s/%s_%d",ATTACHTMPPATH,utmpshm->uinfo[uent-1].userid,uent);
         f_rm(buf);
     }
+    if (utmpshm->uinfo[uent-1].userid[0]!=0)
+        clean_cachedata(utmpshm->uinfo[uent-1].userid,uent);
     hashkey = utmp_hash(utmpshm->uinfo[uent - 1].userid);
     find = utmphead->hashhead[hashkey];
 

@@ -631,9 +631,6 @@ void user_login()
     char ans[5], *ruser;
     unsigned unLevel = PERM_SUICIDE;
 
-    if (strcmp(currentuser->userid, "SYSOP") == 0) {
-        currentuser->userlevel &= (~0); /* SYSOP gets all permission bits */
-    }
     /* ?????后面还有check_register_info */
     newbbslog(BBSLOG_USIES,"ENTER @%s", fromhost);
     u_enter();

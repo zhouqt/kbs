@@ -787,7 +787,10 @@ int zsend_attach(int ent, struct fileheader *fileinfo, char *direct)
                 fp=fopen(name, "wb");
                 fwrite(attach, 1, attach_len, fp);
                 fclose(fp);
-                bbs_zsendfile(name, file);
+                if (bbs_zsendfile(name, file)==-1) {
+                    unlink(name);
+                    break;
+                }
                 unlink(name);
                 continue;
             }

@@ -1905,6 +1905,7 @@ static int www_free_guest_entry(int idx)
     }
     www_guest_unlock(fd);
     setpublicshmreadonly(1);
+    clean_cachedata("guest", idx);
     return 0;
 }
 
@@ -2171,6 +2172,7 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
                 ret = 0;
             }
             getfriendstr(currentuser, u);
+            do_after_login(currentuser,utmpent);
         }
     } else {
         /*
@@ -2196,6 +2198,7 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
             *putmpent = idx;
             getuser("guest", &currentuser);
             ret = 0;
+            do_after_login(currentuser,idx);
         }
     }
 

@@ -1,6 +1,8 @@
 #ifndef __SYSNAME_H_
 #define __SYSNAME_H_
 
+#define USE_TMPFS           1   /*使用内存文件系统加速*/
+#define TMPFSROOT   "cache" /*tmpfs的根在bbshome/cache */
 #define NINE_BUILD 		0
 #define NEW_COMERS 		0	/* 注册后在 newcomers 版自动发文 */
 #define HAVE_BIRTHDAY 		0

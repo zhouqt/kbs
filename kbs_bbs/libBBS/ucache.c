@@ -842,4 +842,46 @@ void save_giveupinfo(struct userec* lookupuser,int lcount,int s[10][2])
         lookupuser->flags[0] &= ~GIVEUP_FLAG;
 }
 
+#if USE_TMPFS==1
+void setcachehomefile(char* path,char* user,char* file)
+{
+    if (file==NULL)
+      sprintf(path, "%s/home/%c/%s",TMPFSROOT,user->userid[0],user->userid);
+    else
+      sprintf(path, "%s/home/%c/%s/%s",TMPFSROOT, user->userid[0], user->userid,file);
+}
 
+void init_cachedata(char* userid,int unum)
+{
+    char path1[MAXPATH],path2[MAXPATH];
+    sethomefile(path1, userid, NULL);
+    mkdir(path1);
+    sethomefile(path1, userid, unum);
+    mkdir(path1);
+    sethomefile(path1, userid, ".boardrc.gz");
+    setcachehomefile(path2, userid,".boardrc.gz");
+    f_cp(path1,path2);
+}
+void flush_cachedata(char* userid)
+{
+    char path1[MAXPATH],path2[MAXPATH];
+    sethomefile(path1, userid, ".boardrc.gz");
+    setcachehomefile(path2, userid,".boardrc.gz");
+    f_cp(path2,path1);
+}
+
+int clean_cachedata(char* userid,int unum)
+{
+    char path1[MAXPATH];
+    setcachehomefile(path1, userid, unum);
+    f_rm(path1);
+    //todo: check the dir
+    setcachehomefile(path1, userid, NULL);
+    f_rm(path1);
+}
+#endif
+
+int do_after_login(struct userec* user,int unum)
+{
+  init_cachedata(user->userid,unum);
+}

@@ -9,7 +9,11 @@
 #define BRC_ITEMSIZE    (BRC_MAXNUM * sizeof( unsigned int ))
 #define BRC_FILESIZE BRC_ITEMSIZE*MAXBOARD
 
-#define BRC_CACHE_NUM 60        /* 未读标记cache 20个版 */
+#if USE_TMPFS==0
+#define BRC_CACHE_NUM 20        /* 未读标记cache 20个版 */
+#else
+#define BRC_CACHE_NUM 1        /* 未读标记被cache在tmpfs中了 */
+#endif
 
 static struct _brc_cache_entry {
     int bid;
@@ -367,7 +371,11 @@ void brc_update(char *userid)
     unsigned int data[MAXBOARD][BRC_MAXNUM];
     size_t count;
 
+#if USE_TMPFS==0
     sethomefile(dirfile, userid, ".boardrc.gz");
+#else
+    setcachehomefile(dirfile, userid, userid);
+#endif
     for (i = 0; i < BRC_CACHE_NUM; i++) {
         if (brc_cache_entry[i].changed) {
             break;
@@ -441,7 +449,11 @@ void brc_addreaddirectly(char *userid, int bnum, unsigned int postid)
     int list[BRC_MAXNUM];
     gzFile fd;
 
+#if USE_TMPFS==0
     sethomefile(dirfile, userid, ".boardrc.gz");
+#else
+    setcachehomefile(dirfile, userid, userid);
+#endif
 
     if ((fd = gzopen(dirfile, "w+b6")) == NULL) {
         const char *errstr;
@@ -506,7 +518,11 @@ int brc_initial(char *userid, char *boardname)
             return 1;           /* cache 中有 */
         }
 
+#if USE_TMPFS==0
     sethomefile(dirfile, userid, ".boardrc.gz");
+#else
+    setcachehomefile(dirfile, userid, userid);
+#endif
 
     if ((brcfile = gzopen(dirfile, "rb6")) == NULL)
         if ((brcfile = gzopen(dirfile, "w+b6")) == NULL)

@@ -40,6 +40,15 @@ extern "C" {
     int load_ucache();
     int get_giveupinfo(char *userid, int *basicperm, int s[10][2]);
     void save_giveupinfo(struct userec *lookupuser, int lcount, int s[10][2]);
+    int do_after_login(struct userec* user,int unum);
+
+#if USE_TMPFS==1
+void setcachehomefile(char* path,char* user,char* file);
+void init_cachedata(struct userec* user,int unum);
+void flush_cachedata(struct userec* user);
+int clean_cachedata(struct userec* user,int unum);
+#endif
+
 /* 根据tag ,生成 匹配的user id 列表 (针对所有注册用户)*/
 
 
