@@ -44,6 +44,7 @@ $dbname = "wForum";
 /* 其他附加功能 */
 define("SHOWTELNETPARAM", false);
 define("ALLOW_SYSOP_MULTIQUERY", true);
+define('ALLOW_SELF_MULTIQUERY', true);
 define("SUPPORT_TEX", true);
 
 /* 默认配置 */

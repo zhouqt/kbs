@@ -38,6 +38,7 @@ define('SHOWREPLYTREE', 1);  //是否用树图显示回复结构
 
 define('ALLOWMULTIQUERY', false); //是否允许一般用户进行全站/多版面查询
 define('ALLOW_SYSOP_MULTIQUERY', false); //是否允许管理员进行全站/多版面查询
+define('ALLOW_SELF_MULTIQUERY', false); //是否允许全站查询自己发表的文章
 
 //define('AUTO_KICK', false); //一个用户登录过多时是自动（是）还是提示（否）踢出以前的登录
 
