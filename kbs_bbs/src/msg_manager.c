@@ -323,7 +323,10 @@ int smsmsg_read()
 	bzero( s_m, sizeof(struct smsmsg) * BBS_PAGESIZE );
 	sm_num = get_sql_smsmsg(s_m, currentuser->userid, NULL, 0, 0, -1, 0, sm_start, BBS_PAGESIZE, NULL,sm_desc);
 	
-	if(sm_num <= 0) return -1;
+	if(sm_num <= 0){
+		free(s_m);
+		return -1;
+	}
 
 	group_conf.item_count = sm_num;
 		

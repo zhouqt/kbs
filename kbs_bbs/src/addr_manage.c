@@ -569,7 +569,11 @@ int al_read()
 	bzero( a_l, sizeof(struct addresslist) * BBS_PAGESIZE );
 	al_num = get_sql_al(a_l, currentuser->userid, al_dest, al_group, al_start, BBS_PAGESIZE, al_order, NULL);
 	
-	if(al_num < 0) return -1;
+	if(al_num < 0){
+		free(pts);
+		free(a_l);
+		return -1;
+	}
 	if(al_num == 0){
 		if(!add_addresslist(NULL)){
 			free(pts);
@@ -579,7 +583,11 @@ int al_read()
 		al_num = get_sql_al(a_l, currentuser->userid, al_dest, al_group, al_start, BBS_PAGESIZE, al_order, NULL);
 	}
 
-	if(al_num <= 0) return -1;
+	if(al_num <= 0){
+		free(pts);
+		free(a_l);
+		return -1;
+	}
 
 	group_conf.item_count = al_num;
 		
