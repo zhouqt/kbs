@@ -1,7 +1,7 @@
 #define BBSMAIN
 #include "bbs.h"
 #ifdef BBS_SERVICE_QUIZ
-#if HAVE_MYSQL == 1
+#if HAVE_MYSQL_SMTH == 1
 #include <mysql.h>
 
 MYSQL s;
@@ -305,5 +305,5 @@ int quiz_main()
 
     mysql_close(&s);
 }
-#endif /* HAVE_MSYQL == 1*/
+#endif /* HAVE_MYSQL_SMTH == 1*/
 #endif

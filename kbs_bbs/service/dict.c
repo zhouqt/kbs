@@ -1,7 +1,7 @@
 #define BBSMAIN
 #include "bbs.h"
 #ifdef BBS_SERVICE_DICT
-#if HAVE_MYSQL == 1
+#if HAVE_MYSQL_SMTH == 1
 #include <mysql.h>
 
 char save_scr[LINEHEIGHT][LINELEN*3];
