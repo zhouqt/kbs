@@ -164,7 +164,8 @@ login_init();
 		$db["PASS"]=bbs_sysconf_str("MYSQLPASSWORD");
 		$db["NAME"]=bbs_sysconf_str("MYSQLSMSDATABASE");
 		
-		@$link = mysql_connect($db["HOST"],$db["USER"],$db["PASS"]) or die("无法连接到服务器!");
+		@$link = mysql_connect($db["HOST"],$db["USER"],$db["PASS"]) ;
+		if (!$link) return;
 		@mysql_select_db($db["NAME"],$link);
 		
 		$query = "SELECT `uid` FROM `users` WHERE `username` = '".$userid."' AND `createtime`  > ".date("YmdHis",$userfirstlogin)." LIMIT 0,1 ;";
@@ -209,6 +210,9 @@ login_init();
 &nbsp;
 <img src="images/line.gif" width="11" height="16" align="absmiddle">
 <A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=7" target="f3">参数设定</A><BR>
+&nbsp;
+<img src="images/line.gif" width="11" height="16" align="absmiddle">
+<A href="/pc/pcfile.php?userid=<?php echo $userid; ?>" target="f3">个人空间</A><BR>
 &nbsp;
 <img src="images/line.gif" width="11" height="16" align="absmiddle">
 <A href="/pc/pcmanage.php?userid=<?php echo $userid; ?>&act=post&tag=0&pid=0" target="f3">添加文章</A><BR>
@@ -648,8 +652,12 @@ login_init();
 </tr>
 </table>
 <script type="text/javascript" src="/bbsleftad.js"> </script>
+<P aling="center">
 <?php
-		
+		powered_by_smth();
+?>
+</P>
+<?php
 		html_normal_quit();
 		}
 ?>
