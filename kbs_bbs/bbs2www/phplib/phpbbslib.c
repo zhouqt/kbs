@@ -1956,7 +1956,8 @@ char *brd_col_names[BOARD_COLUMNS] = {
 
 /* added by caltary */
 extern struct favbrd_struct favbrd_list[FAVBOARDNUM];
-extern int favbrd_list_t;
+extern int *favbrd_list_count;
+#define favbrd_list_t (*favbrd_list_count)
 extern int favnow;
 
 static void bbs_make_board_columns(zval ** columns)
