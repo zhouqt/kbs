@@ -6868,6 +6868,7 @@ static PHP_FUNCTION(bbs_x_search)
     if (array_init(return_value) == FAILURE)
         RETURN_FALSE;
 
+    chdir(BBSHOME);
     strcpy(ip, sysconf_str("QUERY_SERVER"));
     if((sockfd=socket(AF_INET, SOCK_STREAM, 0))==-1) return;
     memset(&addr, 0, sizeof(addr));
