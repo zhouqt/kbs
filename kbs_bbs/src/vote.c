@@ -424,7 +424,7 @@ static int mk_result( int num)
     sprintf(title,"[公告] %s 板的投票结果",currboard);
     mail_file(currentuser->userid,nname,currvote.userid,title,0);
     
-    if (!normal_board(currboard))
+    if (normal_board(currboard))
     {
         post_file(currentuser,"",nname,"vote",title,0,1);
     }
