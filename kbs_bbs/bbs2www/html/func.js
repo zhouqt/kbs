@@ -3,6 +3,39 @@ var isIE3 = false;
 var isGood = false;
 var isOP = false;
 var wmn='-1';
+// Use this function to retrieve a cookie.
+function getCookie(name){
+    var cname = name + "="; 
+    var dc = document.cookie; 
+    if (dc.length > 0) { 
+	begin = dc.indexOf(cname); 
+	if (begin != -1) { 
+            	begin += cname.length; 
+		end = dc.indexOf(";", begin);
+		if (end == -1) end = dc.length;
+		return unescape(dc.substring(begin, end));
+	} 
+    }
+    return null;
+}
+
+function queryString(Param, Default) 
+{
+         //  Extracts and returns the parameter value from the URL for the specified parameter.
+         //  If the parameter does not occur is the URL, the default value is returned.
+         //  This function is not Case-sensitive.
+         var sURL = location.search;
+         var sURLUpper = sURL.toUpperCase() + "&";
+         Param = Param.toUpperCase();
+         if (!Default) Default="";
+    
+         var Pos = sURLUpper.indexOf (Param + "=");
+         if (Pos==-1) return Default;
+         Pos = Pos + Param.length + 1;
+         return sURL.substring (Pos, sURLUpper.indexOf("&", Pos));
+}
+
+
 function Is() {
 	agent = navigator.userAgent.toLowerCase();
 	this.major = parseInt(navigator.appVersion);
