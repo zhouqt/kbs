@@ -517,6 +517,7 @@
 			</td>
 			<td><img src="/images/t7.gif" border="0" alt="界面风格" align="absmiddle"> 界面风格</td>
 		</tr>
+<!--
 		<tr>
 			<td> </td>
 			<td>
@@ -530,6 +531,7 @@
 				</DIV>
 			</td>
 		</tr>
+-->
 		<tr>
 			<td width="16"><img src="/images/open.gif" border="0"></td>
 			<form action="cgi-bin/bbs/bbssel" target="f3">
