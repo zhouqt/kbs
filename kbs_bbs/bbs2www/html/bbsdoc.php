@@ -383,7 +383,7 @@
 	    | 
 	    <img src="images/vote.gif" align="absmiddle" alt="本版投票"><a href="/bbsshowvote.php?board=<?php echo $brd_encode; ?>">本版投票</a>
 	    | 
-	    <img src="images/model.gif" align="absmiddle" alt="发文模板"><a href="/bbsshowtmpl.php?board=<?php echo $brd_encode; ?>">发文摸板</a>
+	    <img src="images/model.gif" align="absmiddle" alt="发文模板"><a href="/bbsshowtmpl.php?board=<?php echo $brd_encode; ?>">发文模板</a>
     	    <?php
     		}
     	    ?>	

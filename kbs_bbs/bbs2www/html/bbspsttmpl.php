@@ -36,11 +36,11 @@
 			html_error_quit("错误");
 
 		if( $votearr[0]["CONT_NUM"] <= 0 )
-			html_error_quit("本摸板暂不可使用");
+			html_error_quit("本模板暂不可使用");
 ?>
 <body>
-<center><p><?php echo BBS_FULL_NAME; ?> -- [摸板发文] [用户:<?php echo $currentuser["userid"];?>] 
-版面<?php echo $board; ?>使用第<?php echo $retnum;?>个摸板<br></p>
+<center><p><?php echo BBS_FULL_NAME; ?> -- [模板发文] [用户:<?php echo $currentuser["userid"];?>] 
+版面<?php echo $board; ?>使用第<?php echo $retnum;?>个模板<br></p>
 <hr class="default"/>
 <?php
 	if($_POST["submit"]){
@@ -69,7 +69,7 @@
 ?>
 <table width="613">
 <tr>
-<td>摸板说明</td><td><?php echo $votearr[0]["TITLE"];?></td>
+<td>模板说明</td><td><?php echo $votearr[0]["TITLE"];?></td>
 </tr>
 <tr>
 <td>问题个数</td><td><?php echo $votearr[0]["CONT_NUM"];?></td>
