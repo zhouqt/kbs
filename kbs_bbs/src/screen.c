@@ -185,7 +185,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
     
 void refresh()
 {
-    register int i, j, k, ii;
+    int i, j, k, ii;
     register struct screenline *bp = big_picture;
     int count=0;
     int stack[100],stackt=0;
@@ -217,7 +217,7 @@ void refresh()
     for (i=0; i < scr_lns; i++)
         for(j=0;j<scr_cols;j++)
             if((bp[i].data[j]==0||bp[i].data[j]==32)&&(bp[i].mode[j]&SCREEN_MODIFIED)&&
-                (bp[i].mode[j]&(SCREEN_BACK|SCREEN_LINE)==0)&&(bp[i].color[j]/16==0))
+                (bp[i].mode[j]&SCREEN_BACK==0)&&(bp[i].mode[j]&SCREEN_LINE==0)&&(bp[i].color[j]/16==0))
                 count++;
     if(count>scr_lns*scr_cols/2) {
         o_clear();
