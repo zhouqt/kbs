@@ -538,6 +538,7 @@ int ann_get_postfilename(char *filename, struct fileheader *fileinfo,
 			(*ip)++;
 		sprintf(fname, "%s/%s", pm->path, filename);
 	}
+    return 0;
 }
 
 /**
