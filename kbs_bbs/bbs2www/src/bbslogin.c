@@ -94,7 +94,20 @@ int main(int argc,char** argv)
 	}
 	sprintf(buf, "%s %s %s\n", wwwCTime(time(0)), x->userid, fromhost);
 	f_append(WWW_LOG, buf);
-	sprintf(buf, "%s ENTER %-12s @%s [www]\n", wwwCTime(time(0))+4, x->userid, fromhost);
+#ifdef SQUID_ACCL
+	{
+		char* ptr;
+		ptr=getenv("HTTP_X_FORWARDED_FOR");
+		if (ptr) {
+			ptr[200]=0;
+			sprintf(buf, "%s ENTER %-12s @%s [www]\n", wwwCTime(time(0))+4, x->userid, ptr);
+		}
+		else
+			sprintf(buf, "%s ENTER %-12s @%s [www]\n", wwwCTime(time(0))+4, x->userid, fromhost);
+	}
+#else
+		sprintf(buf, "%s ENTER %-12s @%s [www]\n", wwwCTime(time(0))+4, x->userid, fromhost);
+#endif
 	f_append("usies", buf);
 	n=0;
 	if(!loginok && strcasecmp(id, "guest"))	wwwlogin(x);
