@@ -72,9 +72,9 @@ style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-f
 <P class=MsoNormal><FONT size=2><SPAN 
 style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">用户名：" . $userid . "</SPAN></FONT></P>
 <P class=MsoNormal><FONT size=2><SPAN lang=EN-US>Email: </SPAN><SPAN 
-style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">" . $new_reg_email . "</SPAN></FONT></P>
+style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">" . $new_reg_mail . "</SPAN></FONT></P>
 <P class=MsoNormal><FONT size=2><A 
-href=\"https://".$_SERVER["HTTP_HOST"]."/bbsact.php?userid=".$userid."&acode=".$new_activation."\"><SPAN 
+href=\"http://".$_SERVER["HTTP_HOST"]."/bbsact.php?userid=".$userid."&acode=".$new_activation."\"><SPAN 
 style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">点击这里激活您在" . BBS_FULL_NAME . "的新帐号</SPAN>
 <br /><br />
 <P class=MsoNormal><FONT size=2><SPAN 
@@ -83,11 +83,11 @@ style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-f
 </html>
 ";
 /* To send HTML mail, you can set the Content-type header. */
-			$headers  = "MIME-Version: 1.0\r\n";
-			$headers .= "Content-type: text/html; charset=gb2312\r\n";
+			$headers  = "MIME-Version: 1.0\n";
+			$headers .= "Content-type: text/html; charset=gb2312\n";
 			
 			/* additional headers */
-			$headers .= "From: ".BBS_FULL_NAME." <http://".$_SERVER["HTTP_HOST"].">\r\n";
+			$headers .= "From: ".BBS_FULL_NAME." <http://".$_SERVER["HTTP_HOST"].">\n";
 			
 			if(!mail($new_reg_mail, "welcome to " . BBS_FULL_NAME, $mailbody,$headers))
 			{		
