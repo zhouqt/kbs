@@ -1134,7 +1134,7 @@ void Pass()
         outs(genbuf);
         LowUserid[0] = '\0';
         BBSlog_usies("ERROR PASSWD");
-        logattempt(currentuser->userid, remote_userid); /* Leeward 98.07.25 */
+        logattempt(currentuser->userid, fromhost); /* Leeward 98.07.25 */
         return;
     }
 
