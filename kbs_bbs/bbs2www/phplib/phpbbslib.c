@@ -2393,18 +2393,81 @@ static PHP_FUNCTION(bbs_add_import_path)
     int ac = ZEND_NUM_ARGS();
 	char * path;
 	int path_len;
+	char * title;
+	int title_len;
 	int num;
+	char *im_path[ANNPATH_NUM];
+	char *im_title[ANNPATH_NUM];
+	int im_time=0;
+	int im_select=0;
+	char buf[MAXPATH];
 
-    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &path, &path_len, &num) == FAILURE) {
+	if(ac == 2){
+    	if ( zend_parse_parameters(2 TSRMLS_CC, "sl", &path, &path_len, &num) == FAILURE) {
+			WRONG_PARAM_COUNT;
+		}
+		title = NULL;
+	}else if(ac == 3){
+    	if ( zend_parse_parameters(3 TSRMLS_CC, "ssl", &path, &path_len, &title, &title_len, &num) == FAILURE) {
+			WRONG_PARAM_COUNT;
+		}
+	}else
 		WRONG_PARAM_COUNT;
+
+	/* first ,check the path */
+	if(strstr(path,"..") || strstr(path,"SYSHome") ) /* SYSHome? from bbs0an.c */
+		RETURN_LONG(0);
+	if(path[0] == '\0')
+		RETURN_LONG(0);
+	path_len = strlen(path);
+	if(path[path_len-1]=='/')
+		snprintf(buf, sizeof(buf), "0Announce%s", path);
+	else
+		snprintf(buf, sizeof(buf), "0Announce/%s", path);
+
+	if (ann_traverse_check(buf, currentuser) < 0)
+		RETURN_LONG(0);
+
+	if (0) /* if no PERM_BOARDS */
+		RETURN_LONG(0);
+
+	if(num < 0 || num >= ANNPATH_NUM)
+		RETURN_LONG(0);
+
+	load_import_path(im_path,im_title,&im_time,&im_select);
+
+	free(im_path[num]);
+	im_path[num] = malloc(strlen(buf)+1);
+	strcpy(im_path[num],buf);
+
+	if(title == NULL){
+		MENU pm;
+
+		bzero(&pm,sizeof(pm));
+		pm.path = im_path[num];
+		a_loadnames(&pm);
+		strncpy(buf, pm.mtitle, MAXPATH - 1);
+		buf[MAXPATH - 1]=0;
+		a_freenames(&pm);
+	}else{
+		strncpy(buf, title, MAXPATH - 1);
+		buf[MAXPATH - 1]=0;
 	}
-	RETURN_LONG(0);
+
+	free(im_title[num]);
+	im_title[num] = malloc(strlen(buf)+1);
+	strcpy(im_title[num],buf);
+
+	save_import_path(im_path,im_title,&im_time);
+
+	free_import_path(im_path,im_title,&im_time);
+
+	RETURN_LONG(1);
 }
 
 static PHP_FUNCTION(bbs_get_import_path)
 {
     zval *element,*ret_path;
-	char buf[MAXPATH];
 	char *im_path[ANNPATH_NUM];
 	char *im_title[ANNPATH_NUM];
 	int im_time=0;

@@ -13,7 +13,33 @@
 
 		if(isset($_GET["action"])){
 			$action = $_GET["action"];
-			
+			if(!strcmp($action,"add")){
+
+				if(isset($_GET["num"])){
+					$num = $_GET["num"];
+				}else{
+					html_error_quit("参数错误");
+				}
+				settype($num,"integer");
+				if($num < 0 || $num > 39)
+					html_error_quit("参数错误1");
+
+				if(isset($_GET["path"])){
+					$path = $_GET["path"];
+				}else{
+					html_error_quit("参数错误2");
+				}
+
+				if(isset($_GET["title"])){
+					$title = $_GET["title"];
+					$actionret = bbs_add_import_path($path,$title,$num);
+				}else
+					$actionret = bbs_add_import_path($path,$num);
+
+				if($actionret > 0) $actionret = 1;
+				else $actionret = -1;
+
+			}
 		}
 
 		$pathret = bbs_get_import_path();
@@ -40,6 +66,10 @@
 ?>
 </table>
 <?php
+				if($actionret == 1 )
+					echo $path."丝路增加设置成功<p>";
+				else if($actionret == -1)
+					echo $path."丝路增加设置失败<p>";
 		html_normal_quit();
 	}
 ?>
