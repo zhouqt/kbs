@@ -108,6 +108,13 @@ int del_room(struct room_struct * r)
     return 0;
 }
 
+void clear_room()
+{
+    int i;
+    for(i=0;i<*roomst;i++)
+        if(rooms[i].style==-1) del_room(rooms+i);
+}
+
 int load_inroom(struct room_struct * r)
 {
     int fd, res=-1;
@@ -426,6 +433,18 @@ int do_com_menu()
                     clrtoeol();
                     getdata(t_lines-1, 0, "请输入名字:", buf, 30, 1, 0, 1);
                     if(buf[0]) {
+                        j=0;
+                        for(i=0;i<myroom->people;i++)
+                            if(!strcmp(buf,inrooms.peoples[i].id) || !strcmp(buf,inrooms.peoples[i].nick)) j=1;
+                        if(j) {
+                            move(t_lines-1,0);
+                            resetcolor();
+                            clrtoeol();
+                            prints(" 已有人用这个名字了");
+                            refresh();
+                            sleep(1);
+                            return 0;
+                        }
                         start_change_inroom(myroom);
                         for(me=0;me<myroom->people;me++)
                             if(inrooms.peoples[me].pid==uinfo.pid) break;
@@ -725,6 +744,8 @@ quitgame:
         if(inrooms.peoples[me].flag&PEOPLE_ROOMOP) {
             end_change_inroom();
             clear_inroom(myroom);
+            for(i=0;i<myroom->people;i++)
+                kill(inrooms.peoples[i].pid, SIGUSR1);
             myroom->people = 0;
             myroom->style = -1;
             goto quitgame2;
@@ -780,6 +801,7 @@ static int room_list_show(struct _select_def *conf, int i)
 static int room_list_select(struct _select_def *conf)
 {
     struct room_struct * r = room_get(conf->pos-1), * r2;
+    if(r==NULL) return SHOW_CONTINUE;
     if((r2=find_room(r->name))==NULL) {
         move(0, 0);
         clrtoeol();
@@ -880,6 +902,7 @@ int choose_room()
     int i;
     POINT *pts;
 
+    clear_room();
     bzero(&grouplist_conf, sizeof(struct _select_def));
     grouplist_conf.item_count = room_count();
     if (grouplist_conf.item_count == 0) {
