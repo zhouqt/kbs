@@ -4,6 +4,8 @@
 如有问题，欢迎来 BBS 水木清华站的 BBSMan_Dev 版参与讨论。
 
 1. ChangeLog
+2004.1.25
+    flyriver 增加 FAQ 2.6
 2003.7.17
     flyriver 增加 FAQ 2.5
 2003.6.5
@@ -16,9 +18,8 @@
 
 2.1. make install的时候是否会覆盖原来的bbshome？
 [答复]
-  我们没有做文件存在检查，所以对make install没有做
-对bbshome的拷贝。在一开始安装的时候手动考一次bbshome
-下的文件到你的bbs目录下吧。
+  我们没有做文件存在检查，所以对 make install 没有做对 bbshome 的拷贝。
+在一开始安装的时候手动拷贝一次 bbshome 下的文件到你的 bbs 目录下吧。
 
 2.2. 我启动 bbsd 时出现“can't lock pid file:var/bbsd.2500.pid”，怎么回事？
 [答复]
@@ -44,6 +45,7 @@
      libesmtp 的安装目录；
   b) 如果您的 libesmtp 包是自己编译安装的，您一定要在 configure libesmtp 的
      加上 --disable-pthreads 参数。这个限制在未来的 smthbbs 版本里会被去除。
+(注：在最新版的 smthbbs 代码中已经没有这个限制了)
 
 2.4. 我用的是 smthbbs-1.0.1，configure 通过，但 make 时出错，提示：
   “bbs_sendmail.c:5:22: libesmtp.h: No such file or directory”
@@ -59,6 +61,15 @@
   用 bbs 用户无法启动 23 端口的服务，所以必须用 root 用户执行 ./bbsd -p 23，
   才可能使 bbsd 成功运行于 23 端口。另外还要保证执行 ./bbsd -p 23 命令之前，
   23 端口没有被占用。
+
+2.6. 编译 smthbbs 都通过了，打开 bbsd 后，一连就断开。
+[答复]
+  a) 首先检查 .BOARDS 和 .PASSWDS 文件的权限是否正确，如果文件属主不是 bbs
+     用户，用 chown 进行修改。另外，要注意不能直接在 $BBSHOME 目录里面执行
+     chown -R bbs:bbs *，因为这样是不会修改到 .BOARDS 和 .PASSWDS 文件的。
+     而必须执行 chown -R bbs:bbs $BBSHOME。$BBSHOME 是指安装 bbs 的目录。
+  b) 检查 /etc/passwd 和 /etc/group 文件，看看 bbs 用户的 uid 和 gid 是否
+     与代码中定义的 BBSUID 和 BBSGID 宏一致(在 site.h 文件中)。
 
 3. 管理维护
 
