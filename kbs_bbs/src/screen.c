@@ -557,7 +557,22 @@ void outns(const char*str, int n)
             str++;
             continue;
         }
-        if (!isprint2(*str)) ch=(unsigned char) '*';
+        if(*str==9) {  //¥¶¿Ìtab
+            ch=32;
+            for(i=0;i<(cur_col/8+1)*8-cur_col;i++) {
+                if(ch!=slp->data[cur_col]||cur_mode!=slp->mode[cur_col]||cur_color!=slp->color[cur_col]) 
+                if(slp->data[cur_col]!=32&&slp->data[cur_col]!=0||ch!=32||slp->color[cur_col]/16!=cur_color/16||slp->mode[cur_col]!=cur_mode)
+                {
+                    slp->data[cur_col]=ch;
+                    slp->mode[cur_col]=SCREEN_MODIFIED|cur_mode;
+                    slp->color[cur_col]=cur_color;
+                }
+                cur_col++;
+                str++;
+            }
+            continue;
+        }
+        else if (!isprint2(*str)) ch=(unsigned char) '*';
         else ch=*str;
         if(ch!=slp->data[cur_col]||cur_mode!=slp->mode[cur_col]||cur_color!=slp->color[cur_col]) 
         if(slp->data[cur_col]!=32&&slp->data[cur_col]!=0||ch!=32||slp->color[cur_col]/16!=cur_color/16||slp->mode[cur_col]!=cur_mode)
