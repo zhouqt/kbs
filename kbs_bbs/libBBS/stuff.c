@@ -663,7 +663,7 @@ void RemoveMsgCountFile(char *userID)
     if (!isalpha(userid[0]))
         return 1;
     for (s = userid; *s != '\0'; s++) {
-#ifdef NINE_BUILD
+#if defined(NINE_BUILD) || defined(FREE)
         if (*s < 1 || !isalpha(*s)) {
 #else
         if (*s < 1 || !isalnum(*s)) {
@@ -857,6 +857,12 @@ int bad_user_id(char *userid)
         while (fgets(buf, STRLEN, fp) != NULL) {
             ptr = strtok(buf, " \n\t\r");
             if (ptr != NULL && *ptr != '#') {
+				if (*ptr == '*'){
+					if(strcasestr(userid, ptr+1)){
+						fclose(fp);
+						return 1;
+					}
+				}
                 if (strcasecmp(ptr, userid) == 0) {
                     if (ptr[13] > 47 && ptr[13] < 58) { /*Haohmaru.99.12.24 */
                         char timebuf[50];
