@@ -242,7 +242,10 @@ char *uident;
 }
 
 int
-deny_user()  /* 禁止POST用户名单 维护主函数*/
+deny_user(ent, fileinfo, direct)  /* 禁止POST用户名单 维护主函数*/
+int ent ;
+struct fileheader *fileinfo ;
+char *direct ;
 {
     char uident[STRLEN];
     int page=0;
