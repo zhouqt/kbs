@@ -335,7 +335,7 @@ int usermenu()
     prints("统计结果["); setfcolor(GREEN,1); prints("s"); setfcolor(WHITE,0); prints("] ");
     prints("管理题["); setfcolor(GREEN,1); prints("m"); setfcolor(WHITE,0); prints("] ");
     prints("注册列表["); setfcolor(GREEN,1); prints("l"); setfcolor(WHITE,0); prints("] ");
-    if(HAS_PERM(currentuser, PERM_SYSOP)) {
+    if(HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
         prints("SYSOP["); setfcolor(GREEN,1); prints("d"); setfcolor(WHITE,0); prints("] ");
     }
     move(20,22);
@@ -352,7 +352,7 @@ int usermenu()
               return 4;
         if(toupper(buf[0])=='L'&&!buf[1])
               return 5;
-        if(HAS_PERM(currentuser, PERM_SYSOP)&&toupper(buf[0])=='D'&&!buf[1]) {
+        if(HAS_PERM(getCurrentUser(), PERM_SYSOP)&&toupper(buf[0])=='D'&&!buf[1]) {
               return 6;
         }
         else if(buf[0]){
@@ -399,7 +399,7 @@ void new_friendtest_reset()
     move(0,0);
     setfcolor(YELLOW,1);
     setbcolor(BLUE);
-    prints("   FRIENDTEST      新建用户 %s                                                  ", currentuser->userid);
+    prints("   FRIENDTEST      新建用户 %s                                                  ", getCurrentUser()->userid);
     resetcolor();
     prints("\n");
 }
@@ -415,14 +415,14 @@ void new_friendtest()
     
     load_users(BADLIST);
     for(i=0;i<userst;i++)
-    if (!strcmp(users[i].userid,currentuser->userid)&&users[i].tried&1) {
+    if (!strcmp(users[i].userid,getCurrentUser()->userid)&&users[i].tried&1) {
         prints("\n你已经被封禁了出题权限\n");
         pressreturn();
         done();
         return;
     }
     
-    sethome(direct, currentuser->userid);
+    sethome(direct, getCurrentUser()->userid);
     if(stat(direct, &st) != -1) {
         empty=0;
         getdata(1,0,"已经存在你的账号，是否继续? [y/N] ", ans, 2, 1, NULL, true);
@@ -479,7 +479,7 @@ again:
     load_users(FRIENDTOP);
     j=1;
     for(i=0;i<userst;i++)
-    if(!strcmp(users[i].userid, currentuser->userid)) {
+    if(!strcmp(users[i].userid, getCurrentUser()->userid)) {
         users[i].tried = 0;
         users[i].got = 0;
         users[i].create = time(0);
@@ -489,16 +489,16 @@ again:
     if(j) {
         if(!userst)
             users=(struct usertype*)malloc(sizeof(struct usertype)*(userst+1));
-        strcpy(users[userst].userid, currentuser->userid);
+        strcpy(users[userst].userid, getCurrentUser()->userid);
         users[userst].tried = 0;
         users[userst].got = 0;
         users[userst].create = time(0);
         userst++;
     }
     save_users(FRIENDTOP);
-    sethometop(direct, currentuser->userid);
+    sethometop(direct, getCurrentUser()->userid);
     unlink(direct);
-    sethomestat(direct, currentuser->userid);
+    sethomestat(direct, getCurrentUser()->userid);
     unlink(direct);
     move(3,0);
     prints("恭喜你，你已经创建了账号，赶快邀请你的好友来参加吧");
@@ -512,7 +512,7 @@ void do_test_reset()
     move(0,0);
     setfcolor(YELLOW,1);
     setbcolor(BLUE);
-    prints("   FRIENDTEST      友谊竞赛 %s <--> %s                                           ", currentuser->userid, lookuser->userid);
+    prints("   FRIENDTEST      友谊竞赛 %s <--> %s                                           ", getCurrentUser()->userid, lookuser->userid);
     resetcolor();
     prints("\n");
 }
@@ -581,7 +581,7 @@ void do_test()
         do_test_reset();
     }
     for(i=0;i<userst;i++)
-    if(!strcmp(users[i].userid, currentuser->userid)){
+    if(!strcmp(users[i].userid, getCurrentUser()->userid)){
         span = time(0)-users[i].create;
         if (span<3600) {
             move(2,0);
@@ -622,7 +622,7 @@ doitagain:
     load_users(direct);
     j=1;
     for(i=0;i<userst;i++)
-    if(!strcmp(users[i].userid, currentuser->userid)) {
+    if(!strcmp(users[i].userid, getCurrentUser()->userid)) {
         if(k>users[i].tried)
             users[i].tried = k;
         users[i].got++;
@@ -633,7 +633,7 @@ doitagain:
     if(j) {
         if(!userst)
             users=(struct usertype*)malloc(sizeof(struct usertype)*(userst+1));
-        strcpy(users[userst].userid, currentuser->userid);
+        strcpy(users[userst].userid, getCurrentUser()->userid);
         users[userst].tried = k;
         users[userst].got = 1;
         users[userst].create = time(0);
@@ -651,7 +651,7 @@ doitagain:
         save_users(FRIENDTOP);
     }
     sethomestat(direct, lookuser->userid);
-    strcpy(answer+21, currentuser->userid);
+    strcpy(answer+21, getCurrentUser()->userid);
     save_stats(direct, answer);
     
     do_test_reset();
@@ -669,7 +669,7 @@ void show_stat_reset()
     move(0,0);
     setfcolor(YELLOW,1);
     setbcolor(BLUE);
-    prints("   FRIENDTEST      统计结果 %s                                                 ", currentuser->userid);
+    prints("   FRIENDTEST      统计结果 %s                                                 ", getCurrentUser()->userid);
     resetcolor();
     prints("\n");
 }
@@ -684,7 +684,7 @@ void show_stat()
 
     do_test_reset();
     
-    sethome(direct, currentuser->userid);
+    sethome(direct, getCurrentUser()->userid);
     if(stat(direct, &st) == -1) {
         move(1,0);
         prints("你还没有建立账号!");
@@ -692,10 +692,10 @@ void show_stat()
         return;
     }
     load_quests(direct);
-    sethometop(direct, currentuser->userid);
+    sethometop(direct, getCurrentUser()->userid);
     load_users(direct);
     sort_users();
-    sethomestat(direct, currentuser->userid);
+    sethomestat(direct, getCurrentUser()->userid);
     load_stats(direct);
 
     move(2,0);
@@ -732,7 +732,7 @@ void admin_reset()
     move(0,0);
     setfcolor(YELLOW,1);
     setbcolor(BLUE);
-    prints("   FRIENDTEST      管理选单 %s                                                 ", currentuser->userid);
+    prints("   FRIENDTEST      管理选单 %s                                                 ", getCurrentUser()->userid);
     resetcolor();
     prints("\n");
 }
@@ -745,7 +745,7 @@ void admin_stat()
     char ans[3], buf[122], buf2[10], answer[TOTALNUM];
     time_t span;
 
-    sethome(direct, currentuser->userid);
+    sethome(direct, getCurrentUser()->userid);
     if(stat(direct, &st) == -1) {
         move(1,0);
         prints("你还没有建立账号!");
@@ -753,7 +753,7 @@ void admin_stat()
         return;
     }
     load_quests(direct);
-    sethometop(direct, currentuser->userid);
+    sethometop(direct, getCurrentUser()->userid);
     load_users(direct);
     sort_users();
 
@@ -772,7 +772,7 @@ void admin_stat()
         switch(toupper(ans[0])) {
             case 'Q': return;
             case 'L':
-                sethomestat(direct, currentuser->userid);
+                sethomestat(direct, getCurrentUser()->userid);
                 load_stats(direct);
                 admin_reset();
                 move(1,0);
@@ -833,7 +833,7 @@ void admin_stat()
                     questst--;
                     if(!questst) free(quests);
                 }
-                sethome(direct, currentuser->userid);
+                sethome(direct, getCurrentUser()->userid);
                 if(!questst) {
                     unlink(direct);
                     return;
@@ -878,7 +878,7 @@ againa:
                     } while(quests[i].value[k]<-10||quests[i].value[k]>10);
                 }
                 questst++;
-                sethome(direct, currentuser->userid);
+                sethome(direct, getCurrentUser()->userid);
                 save_quests(direct);
                 break;
 
@@ -922,7 +922,7 @@ againb:
                         quests[i].value[k]=atoi(buf2);
                     } while(quests[i].value[k]<-10||quests[i].value[k]>10);
                 }
-                sethome(direct, currentuser->userid);
+                sethome(direct, getCurrentUser()->userid);
                 save_quests(direct);
                 break;
             case 'R':
@@ -931,7 +931,7 @@ againb:
                 load_users(FRIENDTOP);
                 j=1;
                 for(i=0;i<userst;i++)
-                if(!strcmp(users[i].userid, currentuser->userid)) {
+                if(!strcmp(users[i].userid, getCurrentUser()->userid)) {
                     users[i].tried = 0;
                     users[i].got = 0;
                     users[i].create = time(0);
@@ -941,16 +941,16 @@ againb:
                 if(j) {
                     if(!userst)
                         users=(struct usertype*)malloc(sizeof(struct usertype)*(userst+1));
-                    strcpy(users[userst].userid, currentuser->userid);
+                    strcpy(users[userst].userid, getCurrentUser()->userid);
                     users[userst].tried = 0;
                     users[userst].got = 0;
                     users[userst].create = time(0);
                     userst++;
                 }
                 save_users(FRIENDTOP);
-                sethometop(direct, currentuser->userid);
+                sethometop(direct, getCurrentUser()->userid);
                 unlink(direct);
-                sethomestat(direct, currentuser->userid);
+                sethomestat(direct, getCurrentUser()->userid);
                 unlink(direct);
                 move(10,0);
                 prints("题目已经被重置!\n");
@@ -985,7 +985,7 @@ void sys_reset()
     move(0,0);
     setfcolor(YELLOW,1);
     setbcolor(BLUE);
-    prints("   FRIENDTEST      用户列表 %s                                                 ", currentuser->userid);
+    prints("   FRIENDTEST      用户列表 %s                                                 ", getCurrentUser()->userid);
     resetcolor();
     prints("\n");
 }
@@ -1022,13 +1022,13 @@ int admin_menu()
     int i,j,k,tuid;
     char direct[PATHLEN], buf[IDLEN+2];
     
-    if (!HAS_PERM(currentuser, PERM_SYSOP)) return;
+    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP)) return;
     resetcolor();
     clear();
     move(0,0);
     setfcolor(YELLOW,1);
     setbcolor(BLUE);
-    prints("   FRIENDTEST      管理模式 %s                                                 ", currentuser->userid);
+    prints("   FRIENDTEST      管理模式 %s                                                 ", getCurrentUser()->userid);
     resetcolor();
     prints("\n");
 
@@ -1162,7 +1162,7 @@ int admin_menu()
                 move(0,0);
                 setfcolor(YELLOW,1);
                 setbcolor(BLUE);
-                prints("   FRIENDTEST      管理模式 %s                                                 ", currentuser->userid);
+                prints("   FRIENDTEST      管理模式 %s                                                 ", getCurrentUser()->userid);
                 resetcolor();
                 move(1,0);
                 prints("用户            出题  做题\n");
@@ -1179,7 +1179,7 @@ int admin_menu()
                         move(0,0);
                         setfcolor(YELLOW,1);
                         setbcolor(BLUE);
-                        prints("   FRIENDTEST      管理模式 %s                                                 ", currentuser->userid);
+                        prints("   FRIENDTEST      管理模式 %s                                                 ", getCurrentUser()->userid);
                         resetcolor();
                         prints("\n");
                         move(1,0);
@@ -1199,7 +1199,7 @@ int friend_main()
     init();
     load_users(BADLIST);
     for(i=0;i<userst;i++)
-    if (!strcmp(users[i].userid,currentuser->userid)&&users[i].tried&2) {
+    if (!strcmp(users[i].userid,getCurrentUser()->userid)&&users[i].tried&2) {
         prints("\n你已经被封禁了该游戏权限\n");
         pressreturn();
         done();

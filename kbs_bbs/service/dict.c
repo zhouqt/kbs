@@ -175,7 +175,7 @@ int dict_main()
         else
             strcpy(table, "ecdict");
 #ifdef SMTH
-        if (!HAS_PERM(currentuser,PERM_SYSOP))
+        if (!HAS_PERM(getCurrentUser(),PERM_SYSOP))
             sprintf(sql, "SELECT * FROM %s WHERE word='%s' and dictid=0", table, word);
         else
 #endif
@@ -195,7 +195,7 @@ int dict_main()
         else{
             char title[80];
             sprintf(title, "µ¥´Ê%sµÄº¬Òå", word);
-            sprintf(fn, "tmp/%s.%d.dict", currentuser->userid, rand());
+            sprintf(fn, "tmp/%s.%d.dict", getCurrentUser()->userid, rand());
             fp = fopen(fn, "w");
             fprintf(fp, "\x1b[1;32;4m%s\x1b[m\n", row[1]);
             strcpy(word,row[1]);

@@ -134,7 +134,7 @@ void save_result(int w)
     int i;
     char filename[80], buf[80];
     msgst=0;
-    sprintf(filename, "home/%c/%s/.INROOMMSG%d", toupper(currentuser->userid[0]), currentuser->userid, uinfo.pid);
+    sprintf(filename, "home/%c/%s/.INROOMMSG%d", toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid, uinfo.pid);
     fp = fopen(filename, "r");
     if(fp) {
         while(!feof(fp)) {
@@ -413,7 +413,7 @@ int add_room(struct room_struct * r)
     if(rooms[i].style==1) {
         if(!strcmp(rooms[i].name, r->name))
             return -1;
-        if(!strcmp(rooms[i].creator, currentuser->userid))
+        if(!strcmp(rooms[i].creator, getCurrentUser()->userid))
             return -1;
     }
     for(i=0;i<MAX_ROOM;i++)
@@ -457,18 +457,18 @@ void clear_room()
 int can_see(struct room_struct * r)
 {
     if(r->style==-1) return 0;
-    if(r->level&currentuser->userlevel!=r->level) return 0;
+    if(r->level&getCurrentUser()->userlevel!=r->level) return 0;
     if(r->style!=1) return 0;
-    if(r->flag&ROOM_SECRET&&!HAS_PERM(currentuser, PERM_SYSOP)) return 0;
+    if(r->flag&ROOM_SECRET&&!HAS_PERM(getCurrentUser(), PERM_SYSOP)) return 0;
     return 1;
 }
 
 int can_enter(struct room_struct * r)
 {
     if(r->style==-1) return 0;
-    if(r->level&currentuser->userlevel!=r->level) return 0;
+    if(r->level&getCurrentUser()->userlevel!=r->level) return 0;
     if(r->style!=1) return 0;
-    if(r->flag&ROOM_LOCKED&&!HAS_PERM(currentuser, PERM_SYSOP)) return 0;
+    if(r->flag&ROOM_LOCKED&&!HAS_PERM(getCurrentUser(), PERM_SYSOP)) return 0;
     return 1;
 }
 
@@ -1038,17 +1038,17 @@ void join_room(int w, int spec)
     mypos = i;
     inrooms[myroom].peoples[i].style = 0;
     inrooms[myroom].peoples[i].flag = 0;
-    strcpy(inrooms[myroom].peoples[i].id, currentuser->userid);
-    strcpy(inrooms[myroom].peoples[i].nick, currentuser->userid);
+    strcpy(inrooms[myroom].peoples[i].id, getCurrentUser()->userid);
+    strcpy(inrooms[myroom].peoples[i].nick, getCurrentUser()->userid);
     inrooms[myroom].peoples[i].pid = uinfo.pid;
-    if(rooms[myroom].people==0 && !strcmp(rooms[myroom].creator, currentuser->userid))
+    if(rooms[myroom].people==0 && !strcmp(rooms[myroom].creator, getCurrentUser()->userid))
         inrooms[myroom].peoples[i].flag = PEOPLE_ROOMOP;
     if(spec) inrooms[myroom].peoples[i].flag|=PEOPLE_SPECTATOR;
     rooms[myroom].people++;
     end_change_inroom();
 
     kill_msg(-1);
-/*    sprintf(buf, "%s进入房间", currentuser->userid);
+/*    sprintf(buf, "%s进入房间", getCurrentUser()->userid);
     for(i=0;i<myroom->people;i++) {
         send_msg(inrooms.peoples+i, buf);
         kill(inrooms.peoples[i].pid, SIGUSR1);
@@ -1458,7 +1458,7 @@ quitgame2:
         sprintf(buf, "tmp/%d.msg", rand());
         save_msgs(buf);
         sprintf(buf2, "\"%s\"的杀人记录", roomname);
-        mail_file(currentuser->userid, buf, currentuser->userid, buf2, BBSPOST_MOVE, NULL);
+        mail_file(getCurrentUser()->userid, buf, getCurrentUser()->userid, buf2, BBSPOST_MOVE, NULL);
     }
     signal(SIGUSR1, talk_request);
 }
@@ -1503,7 +1503,7 @@ static int room_list_select(struct _select_def *conf)
         return SHOW_REFRESH;
     }
     r2 = rooms+j;
-    if(r2->people>=r2->maxpeople&&!HAS_PERM(currentuser, PERM_SYSOP)) {
+    if(r2->people>=r2->maxpeople&&!HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
         move(0, 0);
         clrtoeol();
         prints(" 该房间人数已满");
@@ -1511,7 +1511,7 @@ static int room_list_select(struct _select_def *conf)
         return SHOW_REFRESH;
     }
     getdata(0, 0, "是否以旁观者身份进入? [y/N]", ans, 3, 1, NULL, 1);
-    if(toupper(ans[0])=='Y'&&r2->flag&ROOM_DENYSPEC&&!HAS_PERM(currentuser, PERM_SYSOP)) {
+    if(toupper(ans[0])=='Y'&&r2->flag&ROOM_DENYSPEC&&!HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
         move(0, 0);
         clrtoeol();
         prints(" 该房间拒绝旁观者");
@@ -1559,7 +1559,7 @@ static int room_list_key(struct _select_def *conf, int key)
     char name[40], ans[4];
     switch(key) {
     case 'a':
-        strcpy(r.creator, currentuser->userid);
+        strcpy(r.creator, getCurrentUser()->userid);
         getdata(0, 0, "房间名:", name, 13, 1, NULL, 1);
         if(!name[0]) return SHOW_REFRESH;
         if(name[0]==' '||name[strlen(name)-1]==' ') {
@@ -1595,7 +1595,7 @@ static int room_list_key(struct _select_def *conf, int key)
             return SHOW_REFRESH;
         }
         r2 = rooms+i;
-        if(r2->people>=r2->maxpeople&&!HAS_PERM(currentuser, PERM_SYSOP)) {
+        if(r2->people>=r2->maxpeople&&!HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
             move(0, 0);
             clrtoeol();
             prints(" 该房间人数已满");
@@ -1603,7 +1603,7 @@ static int room_list_key(struct _select_def *conf, int key)
             return SHOW_REFRESH;
         }
         getdata(0, 0, "是否以旁观者身份进入? [y/N]", ans, 3, 1, NULL, 1);
-        if(toupper(ans[0])=='Y'&&r2->flag&ROOM_DENYSPEC&&!HAS_PERM(currentuser, PERM_SYSOP)) {
+        if(toupper(ans[0])=='Y'&&r2->flag&ROOM_DENYSPEC&&!HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
             move(0, 0);
             clrtoeol();
             prints(" 该房间拒绝旁观者");
@@ -1613,7 +1613,7 @@ static int room_list_key(struct _select_def *conf, int key)
         join_room(find_room(name), toupper(ans[0])=='Y');
         return SHOW_DIRCHANGE;
     case 'K':
-        if(!HAS_PERM(currentuser, PERM_SYSOP)) return SHOW_CONTINUE;
+        if(!HAS_PERM(getCurrentUser(), PERM_SYSOP)) return SHOW_CONTINUE;
         i = room_get(conf->pos-1);
         if(i!=-1) {
             r2 = rooms+i;

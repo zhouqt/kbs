@@ -59,13 +59,13 @@ static int load_highrecord(int level,struct high_record* hr,int myrecord)
 		lseek(fd,0,SEEK_SET);
 		read(fd,&allrecord,sizeof(*hr)*MAXDATA);
 		for (i=0;i<MAXDATA;i++) {
-			if (!strcasecmp(allrecord[i].userid,currentuser->userid))
+			if (!strcasecmp(allrecord[i].userid,getCurrentUser()->userid))
 				count++;
 		}
 		if (count>20) 
 			ret = count;
 		else {
-    		strcpy(hr->userid,currentuser->userid);
+    		strcpy(hr->userid,getCurrentUser()->userid);
 #else
 		{
 #endif

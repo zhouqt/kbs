@@ -54,7 +54,7 @@ int check_top(int score)
     load_board();
     if(topn<lasttopn) return -1;
     for(i=0;i<topn;i++)
-    if(!strcmp(topid[i],currentuser->userid)) {
+    if(!strcmp(topid[i],getCurrentUser()->userid)) {
         if(score<=topscore[i]) return 0;
         topn--;
         for(j=i;j<topn;j++) {
@@ -70,13 +70,13 @@ int check_top(int score)
                 strcpy(topid[j], topid[j-1]);
                 topscore[j] = topscore[j-1];
             }
-            strcpy(topid[i], currentuser->userid);
+            strcpy(topid[i], getCurrentUser()->userid);
             topscore[i] = score;
             return 1;
         }
     }
     if(topn<100) {
-        strcpy(topid[topn], currentuser->userid);
+        strcpy(topid[topn], getCurrentUser()->userid);
         topscore[topn] = score;
         topn++;
         return 1;
@@ -191,7 +191,7 @@ int quiz_test()
         setfcolor(YELLOW, 1);
         setbcolor(BLUE);
         prints(" 开心词典测试(\x1b[31mHAPPYQUIZ\x1b[33m)    测试人:%s  目前得分:\x1b[31m%d\x1b[33m  题号:%d  分值:%d  类型:%s",
-            currentuser->userid, score, i+1, level, (style==1)?"单选":"多选");
+            getCurrentUser()->userid, score, i+1, level, (style==1)?"单选":"多选");
         clrtoeol();
         for(j=0;j<6;j++) now[j]='0';
         now[6]=0;

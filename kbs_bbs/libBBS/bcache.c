@@ -38,7 +38,6 @@ static void bcache_unlock(int fd)
 #endif
 static void bcache_setreadonly(int readonly)
 {
-/* ulock disable it
     int boardfd;
 	void *oldptr = bcache;
     munmap(bcache, MAXBOARD * sizeof(struct boardheader));
@@ -51,7 +50,6 @@ static void bcache_setreadonly(int readonly)
     else
         bcache = (struct boardheader *) mmap(oldptr, MAXBOARD * sizeof(struct boardheader), PROT_READ | PROT_WRITE, MAP_SHARED, boardfd, 0);
     close(boardfd);
-    */
 }
 int getlastpost(const char *board, int *lastpost, int *total)
 {
@@ -172,7 +170,7 @@ void resolve_boards()
             bbslog("3system", "Can't open " BOARDS "file %s", strerror(errno));
             exit(-1);
         }
-        bcache = (struct boardheader *) mmap(NULL, MAXBOARD * sizeof(struct boardheader), PROT_READ |PROT_WRITE, MAP_SHARED, boardfd, 0);
+        bcache = (struct boardheader *) mmap(NULL, MAXBOARD * sizeof(struct boardheader), PROT_READ, MAP_SHARED, boardfd, 0);
         if (bcache == (struct boardheader *) -1) {
             bbslog("4system", "Can't map " BOARDS "file %s", strerror(errno));
             close(boardfd);

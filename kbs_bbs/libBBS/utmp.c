@@ -776,14 +776,14 @@ void kick_idle_user()
                         continue;
                     }
                     if (uentp->active && 
-                        ((uentp->mode != WEBEXPLORE)&&uentp->pid && kill(uentp->pid, 0) == -1))
+                        ((uentp->mode == WEBEXPLORE)||(uentp->pid && kill(uentp->pid, 0) == -1)))
                         /*不是WWW的要检查进程是否退出了*/
                     {     /*uentp检查 */
                         clear_utmp(n + 1,utmpshm->uinfo[n].uid,utmpshm->uinfo[n].pid);
                     }
                 }
-                exit(0);
-            } //fork
+               exit(0);
+           } //fork
         } else utmp_unlock(fd);
     }
 }

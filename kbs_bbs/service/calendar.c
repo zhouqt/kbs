@@ -276,7 +276,7 @@ void draw_main()
             move(y,x);
             prints("  %-2d", i);
 
-            sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, i);
+            sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid, year, month, i);
             if(stat(buf, &st)!=-1) prints("\x1b[4m");
 
             if(lday==1) sprintf(buf2, "%s月", lmonths[lmonth]);
@@ -391,7 +391,7 @@ void draw_main()
                 i0++;
             }
             if(i==day) setbcolor(PINK);
-            sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, i);
+            sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid, year, month, i);
             if(stat(buf, &st)!=-1) prints("\x1b[4m");
             move(y,x);
             prints("%2d", i);
@@ -652,8 +652,8 @@ int calendar_main()
             case 10:
                 cc = 0;
                 modify_user_mode(CALENEDIT);
-                sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, day);
-                sprintf(buf2, "tmp/%s.%d.cal", currentuser->userid, rand());
+                sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid, year, month, day);
+                sprintf(buf2, "tmp/%s.%d.cal", getCurrentUser()->userid, rand());
                 if(stat(buf, &st)!=-1)
                     decode_file(buf, buf2);
                 else
@@ -664,9 +664,9 @@ int calendar_main()
                 modify_user_mode(CALENDAR);
                 break;
             case 32:
-                sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, day);
+                sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid, year, month, day);
                 sprintf(title, "%d-%02d-%02d", year, month, day);
-                sprintf(buf2, "tmp/%s.%d.cal", currentuser->userid, rand());
+                sprintf(buf2, "tmp/%s.%d.cal", getCurrentUser()->userid, rand());
                 if(stat(buf, &st)!=-1) {
                     decode_file(buf, buf2);
                     ansimore_withzmodem(buf2, true, title);
@@ -681,7 +681,7 @@ int calendar_main()
                 year = nowr.tm_year+1900;
                 break;
             case KEY_DEL:
-                sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, day);
+                sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid, year, month, day);
                 if(stat(buf, &st)!=-1) {
                     getdata(13, 48, "  确认删除该日日记[y/N]", title, 3, 1, 0, 1);
                     if(toupper(title[0])=='Y')

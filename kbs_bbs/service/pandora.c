@@ -26,7 +26,6 @@ int sockfd;
 jmp_buf jb;
 
 extern char fromhost[];
-extern struct userec *currentuser;
 extern int msg_count;
 extern struct user_info uinfo;
 extern int utmpent;
@@ -616,7 +615,7 @@ void main_loop()
 
 int pandora()
 {
-	strncpy(user, currentuser->userid, 20);
+	strncpy(user, getCurrentUser()->userid, 20);
 	modify_user_mode(BBSNET);
 
     main_loop();
