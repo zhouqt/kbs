@@ -152,7 +152,7 @@ unsigned int setperms(unsigned int pbits,unsigned int basic,char *prompt,int num
 	perm_conf.item_count=numbers+1;
 	perm_conf.item_per_page=numbers+1;
 	perm_conf.flag=LF_BELL|LF_LOOP;//|LF_HILIGHTSEL;
-	perm_conf.prompt=">";
+	perm_conf.prompt=NULL;//">";
 	perm_conf.item_pos = pts;
 	perm_conf.arg=&arg;
 	perm_conf.title_pos.x=1;
