@@ -750,8 +750,8 @@ void  board_attach_link(char* buf,int buf_len,long attachpos,void* arg)
     char* server=sysconf_str("BBS_WEBDOMAIN");
     if (server==NULL)
         server=sysconf_str("BBSDOMAIN");
-    snprintf(buf,buf_len-SESSIONLEN,"http://%s/bbscon.php?board=%s&id=%d&ap=%d&sid=",
-        server,currboard->filename,fh->id,attachpos);
+    snprintf(buf,buf_len-SESSIONLEN,"http://%s/bbscon.php?bid=%d&id=%d&ap=%d&sid=",
+        server,getbnum(currboard->filename),fh->id,attachpos);
     get_telnet_sessionid(buf+strlen(buf), utmpent);
 }
 
