@@ -1101,7 +1101,7 @@ int get_sql_smsmsg( struct smsmsg * smdata, char *userid, char *dest, time_t sta
 		return -1;
 	}
 
-	sprintf(sql,"SELECT * FROM smsmsg WHERE userid=\"%s\"", userid );
+	sprintf(sql,"SELECT * FROM smsmsg WHERE userid=\"%s\" and deleted=0", userid );
 
 	if(dest && *dest){
 		snprintf(qtmp, 99, " AND dest=\"%s\"", dest);
