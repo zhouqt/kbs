@@ -239,7 +239,7 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board);
 
 int isowner(struct userec *user, struct fileheader *fileinfo);
 
-void write_header2(FILE * fp, char *board, char *title, char *userid, char *username, int anony);
+void write_header2(FILE * fp, char *board, char *title, char *userid, char *username, int anony, int local);
 
 int outgo_post2(struct fileheader *fh, char *board, char *userid, char *username, char *title);
 

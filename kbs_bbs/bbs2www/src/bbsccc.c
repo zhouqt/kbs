@@ -10,7 +10,7 @@ char save_filename[4096];
 
 /* Add by SmallPig */ 
 /* 把quote_file复制到filepath (转贴或自动发信)*/ 
-void getcross2(char *filepath, char *board, struct userec *user) 
+void getcross2(char *filepath, char *board, struct userec *user, int local) 
 {
 	FILE * inf, *of;
 	char buf[256];
@@ -34,7 +34,7 @@ void getcross2(char *filepath, char *board, struct userec *user)
 		return;
 	}
 	normal_file = 1;
-	write_header2(of, board, save_title, user->userid, user->username, 0);
+	write_header2(of, board, save_title, user->userid, user->username, 0, local);
 	// 从文章头中取出原作者ID
 	if(fgets(buf, 256, inf) != NULL)
 	{
@@ -102,7 +102,7 @@ int post_cross2(int local_save, char *board)
 	strncpy(postfile.owner, whopost, OWNER_LEN);
 	postfile.owner[OWNER_LEN-1]=0;
 	setbfile(filepath, board, postfile.filename);
-	getcross2(filepath, board, getcurrusr()); /*根据fname完成 文件复制 */
+	getcross2(filepath, board, getcurrusr(), local_save); /*根据fname完成 文件复制 */
 	strncpy(postfile.title, save_title, ARTICLE_TITLE_LEN - 1);
 	postfile.title[ARTICLE_TITLE_LEN - 1] = '\0';
 	if(local_save == 1)	  /* local save */

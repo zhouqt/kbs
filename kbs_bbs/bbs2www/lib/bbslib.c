@@ -673,13 +673,16 @@ void add_loginfo2(FILE * fp, char *board, struct userec *user, int anony)
     return;
 }
 
-void write_header2(FILE * fp, char *board, char *title, char *userid, char *username, int anony)
+void write_header2(FILE * fp, char *board, char *title, char *userid, char *username, int anony, int local)
 {
     if (!strcmp(board, "Announce"))
         fprintf(fp, "发信人: %s (%s), 信区: %s\n", "SYSOP", NAME_SYSOP, board);
     else
         fprintf(fp, "发信人: %s (%s), 信区: %s\n", anony ? board : userid, anony ? NAME_ANONYMOUS : username, board);
-    fprintf(fp, "标  题: %s\n发信站: %s (%24.24s)\n\n", title, "BBS " NAME_BBS_CHINESE "站", Ctime(time(0)));
+    if (local == 1)
+        fprintf(fp, "标  题: %s\n发信站: %s (%24.24s), 站内\n\n", title, "BBS " NAME_BBS_CHINESE "站", Ctime(time(0)));
+    else
+        fprintf(fp, "标  题: %s\n发信站: %s (%24.24s), 转信\n\n", title, "BBS " NAME_BBS_CHINESE "站", Ctime(time(0)));
 }
 
 /* fp 		for destfile*/
@@ -738,7 +741,7 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
     fp = fopen(filepath, "w");
     fp2 = fopen(file, "r");
 #ifndef RAW_ARTICLE
-    write_header2(fp, board, title, user->userid, user->username, anony);
+    write_header2(fp, board, title, user->userid, user->username, anony, local_save);
 #endif
     write_file2(fp, fp2);
     fclose(fp2);
