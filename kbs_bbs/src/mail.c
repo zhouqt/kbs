@@ -2232,6 +2232,11 @@ static int maillist_key(struct _select_def *conf, int command)
 	}
         return SHOW_SELCHANGE;
     }
+    if (toupper(command) == 'H') {
+		mailreadhelp();
+		return SHOW_REFRESH;
+    }
+    
     if (toupper(command) == 'A') {
         char bname[STRLEN], buf[PATHLEN];
         int i = 0, y, x;
