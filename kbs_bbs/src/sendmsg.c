@@ -490,6 +490,13 @@ void r_msg()
             }while(!DEFINE(currentuser, DEF_IGNOREMSG)&&ch!=Ctrl('Z')&&ch!='r'&&ch!='R');
             first = 0;
             move(y, x);
+#ifdef NINE_BUILD
+            if(DEFINE(currentuser, DEF_IGNOREMSG)&&ch==Ctrl('Z')) {
+                for(i=0;i<=y;i++)
+                    saveline(i, 1, savebuffer[i]);
+                break;
+            }
+#endif
         }
         
         if(canreply)
