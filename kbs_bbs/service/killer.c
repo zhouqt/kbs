@@ -184,6 +184,7 @@ struct action party_data[] = {
     {"qifu", "小嘴一扁，对", "哭道：“你欺负我，你欺负我！！！”"},
     {"wa", "对", "大叫一声：“哇哇哇哇哇哇酷弊了耶！！！！！！！！！！！！！！”"},
     {"feibang", "喔－－！熟归熟，", "你这样乱讲话，我一样可以告你毁谤，哈！"},
+    {"badman", "指着", "的脑袋, 手舞足蹈的喊:“ 杀~~手~~在~~这~~里~~~”"}, 
     {NULL, NULL, NULL}
 };
 
@@ -237,6 +238,7 @@ struct action condition_data[] = {
     {"tongue", "吐了吐舌头", NULL},
     {"think", "歪著头想了一下", NULL},
     {"wawl", "惊天动地的哭", NULL},
+    {"goodman", "用及其无辜的表情看着大家: “我真的是好人耶~~”", NULL},
     {NULL, NULL, NULL}
 };
 
@@ -1346,7 +1348,7 @@ static int room_list_show(struct _select_def *conf, int i)
     int j = room_get(i-1);
     if(j!=-1) {
         r=rooms+j;
-        prints("  %3d  %-14s %-12s %3d  %3d  %2s%2s%2s %-36s", i, r->name, r->creator, r->people, r->maxpeople, (r->flag&ROOM_LOCKED)?"●":"", (r->flag&ROOM_SECRET)?"●":"", (!(r->flag&ROOM_DENYSPEC))?"●":"", r->title);
+        prints("  %3d  %-14s %-12s %3d  %3d  %2s%2s%2s %-36s", i, r->name, r->creator, r->people, r->maxpeople, (r->flag&ROOM_LOCKED)?"√":"", (r->flag&ROOM_SECRET)?"√":"", (!(r->flag&ROOM_DENYSPEC))?"√":"", r->title);
     }
     return SHOW_CONTINUE;
 }
