@@ -30,6 +30,7 @@ static int shifttmp = 0;
 static int ismsgline;
 static int tmpline;
 static struct textline *top_of_win = NULL;
+static int top_of_line = 0;
 static int curr_window_line, currln;
 static int insert_character = 1;
 /* for copy/paste */
@@ -39,6 +40,59 @@ static int mark_on;
 inline static void CLEAR_MARK() {
     mark_on = 0;
     mark_begin = mark_end = NULL;
+}
+
+int myy, myx, outii, outjj;
+
+void display_buffer()
+{
+    struct textline *p;
+    int ii, i, j, ch, y;
+
+    clear();
+    y = 0; outii = -1;
+    for (p = top_of_win, ii = 0; ii < t_lines - 1; ii++) {
+        if (p) {
+            if (editansi)
+                prints("%s", p->data);
+            else {
+                if (p->attr & M_MARK) prints("%s", ANSI_REVERSE);
+                j = 0; ch = 0;
+                for (i = 0; i < p->len; i++) {
+                    if (ch) ch = 0;
+                    else if (p->data[i]<0) ch = 1;
+                    if (p == currline && i == currpnt)
+                        getyx(&myy, &myx);
+                    if (j >= scr_cols || j >= scr_cols-1 && ch) {
+                        prints("\n");
+                        y++;
+                        j = 0;
+                    }
+                    if (y >= scr_lns-1) {
+                        outii = ii; outjj = i;
+                        break;
+                    }
+                    if (p->data[i]==27) {
+                        setfcolor(YELLOW);
+                        outc('*');
+                        resetcolor();
+                    }
+                    else outc(p->data[i]);
+                    j++;
+                }
+                if (p == currline && i == currpnt)
+                    getyx(&myy, &myx);
+                if (p->attr & M_MARK) prints("%s", ANSI_RESET);
+            }
+            p = p->next;
+        } else
+            prints("%s~", ANSI_RESET);
+        prints("\n");
+        y++;
+        if (y >= scr_lns-1) break;
+    }
+
+    msgline();
 }
 
 void top_show(char *prompt)
@@ -1190,51 +1244,6 @@ static int Origin(struct textline *text)
 #endif
 }
 
-int myy, myx;
-
-void display_buffer()
-{
-    struct textline *p;
-    int ii, i, j, ch;
-
-    clear();
-    for (p = top_of_win, ii = 0; ii < t_lines - 1; ii++) {
-        if (p) {
-            if (editansi)
-                prints("%s", p->data);
-            else {
-                if (p->attr & M_MARK) prints("%s", ANSI_REVERSE);
-                j = 0; ch = 0;
-                for (i = 0; i < p->len; i++) {
-                    if (ch) ch = 0;
-                    else if (p->data[i]<0) ch = 1;
-                    if (p == currline && i == currpnt)
-                        getyx(&myy, &myx);
-                    if (j >= scr_cols || j >= scr_cols-1 && ch) {
-                        prints("\n");
-                        j = 0;
-                    }
-                    if (p->data[i]==27) {
-                        setfcolor(YELLOW);
-                        outc('*');
-                        resetcolor();
-                    }
-                    else outc(p->data[i]);
-                    j++;
-                }
-                if (p == currline && i == currpnt)
-                    getyx(&myy, &myx);
-                if (p->attr & M_MARK) prints("%s", ANSI_RESET);
-            }
-            p = p->next;
-        } else
-            prints("%s~", ANSI_RESET);
-        prints("\n");
-    }
-
-    msgline();
-}
-
 int vedit_process_ESC(arg)
     int arg;                    /* ESC + x */
 {
@@ -1930,28 +1939,18 @@ void vedit_key(ch)
         curr_window_line = 0;
         if (!top_of_win->prev) {
             indigestion(6);
-        } else {
+        } else
             top_of_win = top_of_win->prev;
-            /*            redraw_everything = true ;
-               move(t_lines-2,0);
-               clrtoeol();
-               refresh(); */
-            rscroll();
-        }
     }
-    if (curr_window_line >= t_lines - 1) {
-        for (i = curr_window_line - t_lines + 1; i >= 0; i--) {
+    if (curr_window_line >= t_lines - 1 || outii!=-1&&curr_window_line>=outii) {
+        if (outii!=-1&&curr_window_line>=outii) i = curr_window_line - outii;
+        else i = curr_window_line - t_lines + 1;
+        for (; i >= 0; i--) {
             curr_window_line--;
             if (!top_of_win->next) {
                 indigestion(7);
-            } else {
+            } else
                 top_of_win = top_of_win->next;
-                /*          redraw_everything = true ;
-                   move(t_lines-1,0);
-                   clrtoeol();
-                   refresh(); */
-                scroll();
-            }
         }
     }
 }
@@ -1968,6 +1967,7 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,
         // TODO: add zmodem upload
         read_file(filename,NULL);
     top_of_win = firstline;
+    top_of_line = 0;
     for (newch = 0; newch < headlines; newch++)
         if (top_of_win->next)
             top_of_win = top_of_win->next;
