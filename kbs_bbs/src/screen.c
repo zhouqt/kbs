@@ -163,6 +163,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
     struct screenline *bp = big_picture;
     if (new_ln >= t_lines || new_col > t_columns)
         return;
+    if(new_col == t_columns) new_col--;
     if(was_col==new_col&&was_ln==new_ln) return;
     tc_col = new_col;
     tc_line = new_ln;
@@ -480,7 +481,8 @@ void outc(unsigned char c)
     }
     slp = &big_picture[(cur_ln+roll)%scr_lns];
     if (!isprint2(c)) {
-        if (c == '\n' || c == '\r') {	/* do the newline thing */
+        if (c == '\r') return;
+        if (c == '\n') {	/* do the newline thing */
             clrtoeol();
             cur_col=0; 
             if(cur_ln<scr_lns-1) cur_ln++;
@@ -531,7 +533,7 @@ void outns(const char*str, int n)
                     y=atoi(s1)-1+offsetln;
                     x=atoi(s2)-1;
                     if(DEFINE(currentuser, DEF_COLOR))
-                    if(y>=0&&y<scr_lns&&x>=0&&x<scr_cols&&!disable_move) {
+                    if(y>=0&&y<scr_lns&&x>=0&&x<=scr_cols&&!disable_move) {
                         cur_col=x; cur_ln=y;
                     }
                     str+=i+1;
@@ -560,7 +562,7 @@ void outns(const char*str, int n)
                     }
                     else if(*(str+i)=='B') {
                         if(cur_ln<scr_lns-k) cur_ln+=k;
-                        else cur_ln = scr_cols;
+                        else cur_ln = scr_lns-1;
                     }
                     else if(*(str+i)=='C') {
                         if(cur_col<scr_cols-k) cur_col+=k;
