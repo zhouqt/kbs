@@ -395,6 +395,47 @@ int size, id, number ;
 }
 
 int
+substitute_record_comp(filename,rptr,size,id,comptr,fptr,tmpbuf)
+char *filename ;
+char *rptr ;
+int size, id ;
+char* comptr;   /* extra arg for compare func */
+int (*fptr)() ;	/* compare function */
+char* tmpbuf;  /* temp buffer for use*/
+{
+    int fd;
+    int newent;
+    
+    if((fd = open(filename,O_RDWR,0644)) == -1)
+        return -1 ;
+    flock(fd,LOCK_EX);
+
+    if (lseek(fd,size*(id-1),SEEK_SET) == -1) {
+        report("subrec seek err");
+        /*---	period	2000-10-24	---*/
+        close(fd);
+        return -1;
+    }
+    if (read(fd,tmpbuf,size)==size) {
+        if ((*fptr)(comptr,tmpbuf)) {
+            newent = search_record_back(filename,size,id,fptr,comptr,tmpbuf);
+            if (newent<=0) {
+                close(fd);
+                return -1;
+            }
+        } else 
+            newent=id;
+    } else {
+        close(fd);
+        return -1;
+    }
+    lseek(fd,size*(newent-1),SEEK_SET);
+    if (safewrite(fd,rptr,size) != size)
+        report("subrec write err");
+    close(fd);
+}
+
+int
 substitute_record(filename,rptr,size,id)
 char *filename ;
 char *rptr ;
