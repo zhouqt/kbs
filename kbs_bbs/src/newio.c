@@ -138,27 +138,24 @@ void raw_ochar(char c)
 
 int raw_read(int fd, char *buf, int len)
 {
-    int i,retlen=0,pp=0;
+    int i,j,retlen=0,pp=0;
 #ifdef SSHBBS
     return ssh_read(fd, buf, len);
 #else
-    for(i=0;i<len;i++) {
-        int mylen;
-        mylen=read(fd, buf+i, 1);
-        if (mylen <= 0)
-            break;
-        if(i>0&&buf[i-1]==0xff&&buf[i]==0xff&&!pp) {
-            pp=1;
-            i--;
+    retlen = read(fd,buf,len);
+    for(i=0;i<retlen;i++) {
+        if(i>0&&buf[i-1]==-1&&buf[i]==-1) {
+            retlen--;
+            for(j=i;j<retlen;j++)
+                buf[j]=buf[j+1];
             continue;
         }
-        if(i>0&&buf[i-1]==0x0d&&buf[i]==0x00&&!pp) {
-            pp=1;
-            i--;
+        if(i>0&&buf[i-1]==0x0d&&buf[i]==0x00) {
+            retlen--;
+            for(j=i;j<retlen;j++)
+                buf[j]=buf[j+1];
             continue;
         }
-        pp=0;
-        retlen++;
     }
     return retlen;
 #endif
