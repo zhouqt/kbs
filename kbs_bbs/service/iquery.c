@@ -114,9 +114,15 @@ void do_query_all(int w, char * s)
     char buf[256];
     char ip[20], s1[30], s2[30], *pp;
     
-    strcpy(ip, sysconf_str("QUERY_SERVER"));
+    pp = sysconf_str("QUERY_SERVER");
     
     res_total = -2;
+    if (pp == NULL) {
+        res_total = -1;
+        return;
+    }
+    strcpy(ip, pp);
+    
     if(strstr(s, "·¨ÂÖ¹¦")) {
         res_total = -1;
         return;
