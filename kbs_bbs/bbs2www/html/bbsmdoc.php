@@ -81,7 +81,10 @@
 			$flags = $article["FLAGS"];
 ?>
 <tr>
-<td><?php echo $start + $i; ?></td><td><input style="height:18px" name="box<?php echo $article["ID"]; ?>" type="checkbox"></td>
+<td><?php echo $start + $i; ?></td><td><input style="height:18px" name="<?
+if($article["FILENAME"][0]=='Z') echo "boz";
+else echo "box";
+?><?php echo $article["ID"]; ?>" type="checkbox"></td>
 <td>
 <?php
 			if ($flags[1] == 'y')
@@ -126,6 +129,7 @@
 <input type="button" value="ÇÐ»»M" onclick="document.form1.mode.value=2; document.form1.submit();">
 <input type="button" value="ÇÐ»»G" onclick="document.form1.mode.value=3; document.form1.submit();">
 <input type="button" value="ÇÐ»»²»¿ÉRe" onclick="document.form1.mode.value=4; document.form1.submit();">
+<input type="button" value="ÇÐ»»ÖÃ¶¥" onclick="document.form1.mode.value=5; document.form1.submit();">
 </form>
 <?php
 		if ($start > 0)
