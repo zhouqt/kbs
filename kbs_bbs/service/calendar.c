@@ -144,8 +144,14 @@ void encode_file(char * s)
     }
     fclose(fp1);
     fclose(fp2);
-    unlink(s);
-    f_mv(fn, s);
+    fp1 = fopen(s, "wb");
+    fp2 = fopen(fn, "rb");
+    while((o=fread(buf, 1, 1024*16, fp2))>0) {
+        fwrite(buf, 1, o, fp1);
+    }
+    fclose(fp1);
+    fclose(fp2);
+    unlink(fn);
 }
 
 extern int incalendar;
