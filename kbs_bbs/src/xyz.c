@@ -547,7 +547,7 @@ int get_favread()
 	clear();
 	move(1,0);
 	prints("同步他人收藏夹和未读标记到本ID. 会导致本ID原来的收藏夹和未读标记丢失，慎用\n");
-    getdata(5, 0, "请输入对方ID:", destid, IDLEN, DOECHO, NULL, true);
+    getdata(5, 0, "请输入对方ID:", destid, IDLEN+1, DOECHO, NULL, true);
 	if(destid[0] == '\0' || destid[0] == '\n'){
 		clear();
 		return 0;
@@ -564,7 +564,7 @@ int get_favread()
 		pressanykey();
 		return 0;
 	}
-    getdata(6, 0, "请输入对方密码:", passwd, PASSLEN, NOECHO, NULL, true);
+    getdata(6, 0, "请输入对方密码:", passwd, PASSLEN+1, NOECHO, NULL, true);
     if (passwd[0] == '\0' || !checkpasswd2(passwd, destuser)) {
         logattempt(destuser->userid, getSession()->fromhost);
 		move(8,0);
