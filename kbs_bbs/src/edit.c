@@ -969,7 +969,7 @@ fsdfa
                         do {
                             if ((ppx = (unsigned char *) strstr((char *) ppx, "[")) != NULL) {
                                 int ich=0;
-                                while (!isalpha(*(ppx+ich)&&*(ppx+ich)!=0)
+                                while (!isalpha(*(ppx+ich))&&(*(ppx+ich)!=0))
                                     ich++;
                                 if (ich > 0)
                                     ich++;

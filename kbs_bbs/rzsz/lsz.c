@@ -45,7 +45,6 @@ void *mm_addr = NULL;
 #  undef HAVE_MMAP
 #endif
 
-
 #ifndef HAVE_ERRNO_DECLARATION
 extern int errno;
 #endif
@@ -226,7 +225,7 @@ int bbs_zsendfile(char *filename, char *remote)
             struct zm_fileinfo zi;
             char *pa;
 
-            pa = (char *)alloca(PATH_MAX + 1);
+            pa = (char *)malloc(PATH_MAX + 1);
             *pa = '\0';
             zi.fname = pa;
             zi.modtime = 0;
@@ -236,6 +235,7 @@ int bbs_zsendfile(char *filename, char *remote)
             zi.bytes_received = 0;
             zi.bytes_skipped = 0;
             wctxpn(&zi);
+            free(pa);
         }
 
         oflush();
@@ -282,7 +282,7 @@ static int wcs(const char *oname, const char *remotename)
     if (0 == strcmp(oname, "-")) {
         char *p = getenv("ONAME");
 
-        name = (char *)alloca(PATH_MAX + 1);
+        name = (char *)malloc(PATH_MAX + 1);
         if (p) {
             strcpy(name, p);
         } else {
@@ -298,7 +298,7 @@ static int wcs(const char *oname, const char *remotename)
         ++errcnt;
         return OK;              /* pass over it, there may be others */
     } else {
-        name = (char *)alloca(PATH_MAX + 1);
+        name = (char *)malloc(PATH_MAX + 1);
         strcpy(name, oname);
     }
 #ifdef HAVE_MMAP
@@ -350,6 +350,7 @@ static int wcs(const char *oname, const char *remotename)
     if (c == S_IFDIR || c == S_IFBLK) {
 #endif
         fclose(input_f);
+	free(name);
         return OK;
     }
 
@@ -377,6 +378,7 @@ static int wcs(const char *oname, const char *remotename)
     zi.eof_seen = 0;
 
     ++Filcnt;
+    free(name);
     switch (wctxpn(&zi)) {
     case ERROR:
         return ERROR;
@@ -405,13 +407,15 @@ static int wctxpn(struct zm_fileinfo *zi)
     char *name2;
     struct stat f;
 
-    name2 = (char *)alloca(PATH_MAX + 1);
+    name2 = (char *)malloc(PATH_MAX + 1);
 
     if (protocol == ZM_XMODEM) {
+        free(name2);
         return OK;
     }
     if (!zmodem_requested)
         if (getnak()) {
+            free(name2);
             return ERROR;
         }
 
@@ -458,10 +462,13 @@ static int wctxpn(struct zm_fileinfo *zi)
         txbuf[126] = (f.st_size + 127) >> 15;
     }
     if (zmodem_requested)
+        free(name2);
         return zsendfile(zi, txbuf, 1 + strlen(p) + (p - txbuf));
     if (wcputsec(txbuf, 0, 128) == ERROR) {
+        free(name2);
         return ERROR;
     }
+    free(name2);
     return OK;
 }
 
