@@ -506,6 +506,7 @@ soverview_t *sover;
     time_t mtime;
     char *indata, *fd_buf;
     int fd_size;
+    int use_subdir;
 
     board = sover->board;
     filename = sover->filename;
@@ -528,7 +529,7 @@ soverview_t *sover;
 
         if (end)
             *end = '\0';
-        strncpy(times, baseN(atol(filename + 4), 48, 6), sizeof times);
+        strncpy(times, baseN(atol(filename + (use_subdir?4:2)), 48, 6), sizeof times);
         if (end)
             *end = '.';
         hash = hash_value(fileglue("%s.%s", filename, board));
