@@ -1545,6 +1545,9 @@ void a_manager(pm, ch)
         case 'c':
             a_copypaste(pm, 0);
             break;
+        case 'x':  //added by bad 03-2-10
+            a_copypaste(pm, 1);
+            break;
 /*  do not support thread read in announce: COMMAN 2002.7
         case '=':  t_search_down();     break;
         case '+':  t_search_up();       break;
