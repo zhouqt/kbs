@@ -422,23 +422,6 @@ count_useshell(struct user_info *uentp ,char* arg,int pos)
 }
 
 int
-count_user_logins(struct user_info *uentp,char* arg,int pos)
-{
-    static int count ;
-
-    if(uentp == NULL) {
-        int c = count;
-        count = 0;
-        return c;
-    }
-    if(!uentp->active || !uentp->pid)
-        return 0 ;
-    if(!strcasecmp(uentp->userid,save_page_requestor))
-        count++ ;
-    return 1 ;
-}
-
-int
 count_visible_active(struct user_info *uentp,char* arg,int pos)
 {
     static int count ;
@@ -513,9 +496,7 @@ num_user_logins(uid)
 char *uid;
 {
     strcpy(save_page_requestor,uid);
-    count_active(NULL,0,0) ;
-    apply_ulist( count_user_logins,0 ) ;
-    return count_user_logins(NULL,0,0) ;
+    return apply_utmp(NULL,0,uid,0) ;
 }
 int
 num_visible_users()
