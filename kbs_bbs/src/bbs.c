@@ -2226,7 +2226,7 @@ int post_article(char *q_file, struct fileheader *re_file)
     /*
      * 在boards版版主发文自动添加文章标记 Bigman:2000.8.12 
      */
-    if (!strcmp(currboard->filename, "Board") && !HAS_PERM(currentuser, PERM_OBOARDS) && HAS_PERM(currentuser, PERM_BOARDS)) {
+    if (!strcmp(currboard->filename, "BM_Apply") && !HAS_PERM(currentuser, PERM_OBOARDS) && HAS_PERM(currentuser, PERM_BOARDS)) {
         post_file.accessed[0] |= FILE_SIGN;
     }
     if(upload) {
