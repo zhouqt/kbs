@@ -26,8 +26,6 @@
 #include <time.h>
 #include <ctype.h>
 
-extern cmpbnames();
-
 /*Add by SmallPig*/
 
 int
@@ -144,14 +142,14 @@ int addtodeny(char* uident) /* 添加 禁止POST用户 */
         time_t undenytime=now+denyday*24*60*60;
         tmtime=gmtime(&undenytime);
 
-        sprintf( strtosave, "%-12.12s %-30.30s%-12.12s %2d月%2d日解\x1b[%um",
+        sprintf( strtosave, "%-12.12s %-30.30s%-12.12s %2d月%2d日解\x1b[%lum",
                 uident, denymsg ,currentuser->userid,
                 tmtime->tm_mon+1,tmtime->tm_mday, undenytime);/*Haohmaru 98,09,25,显示是谁什么时候封的 */
     } else {
         struct tm* tmtime;
         time_t undenytime = now+denyday*24*60*60;
         tmtime=gmtime(&undenytime);
-        sprintf( strtosave, "%-12.12s %-30.30s%-12.12s %2d月%2d日后\x1b[%um",
+        sprintf( strtosave, "%-12.12s %-30.30s%-12.12s %2d月%2d日后\x1b[%lum",
                 uident, denymsg, currentuser->userid,
                 tmtime->tm_mon+1,tmtime->tm_mday, undenytime);
     }
@@ -159,7 +157,6 @@ int addtodeny(char* uident) /* 添加 禁止POST用户 */
     if(addtofile(genbuf,strtosave)==1)
     {
 	struct userec* lookupuser,*saveptr;
-    	char repbuf[STRLEN];
     	int my_flag=0;	/* Bigman. 2001.2.19 */
         struct userec saveuser;
 
@@ -259,11 +256,8 @@ char *direct ;
     /*Haohmaru.99.4.1.auto notify*/
     time_t  now;
     int  id;
-    char buffer[STRLEN];
-    FILE *fn,*fp;
-    char filename[STRLEN];
+    FILE *fp;
     int  find;/*Haohmaru.99.12.09*/
-    char *idindex;/*Haohmaru.99.12.09*/
 
     /*   static page=0;*//*Haohmaru.12.18*/
     now=time(0);

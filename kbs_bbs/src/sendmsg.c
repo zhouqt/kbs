@@ -62,12 +62,9 @@ struct user_info *uentp;
 const char msgstr[256];
 int mode;
 {
-    char uident[STRLEN] ,ret_str[20];
-    FILE *fp;
-    time_t now;
+    char uident[STRLEN];
     struct user_info *uin ;
-    char buf[80],msgbuf[256] ,*timestr,msgbak[256];
-    int msg_count=0;
+    char buf[80],msgbak[256];
     int Gmode = 0;
     int result;
     *msgbak = 0;	/* period 2000-11-20 may be used without init */
@@ -204,6 +201,7 @@ show_allmsgs()
         clear();
     }
     uinfo.mode = oldmode;
+    return 0;
 }
 
 
@@ -246,7 +244,7 @@ wall()
         prints( "没有任何使用者上线\n" );
         pressanykey();
     }
-    sprintf(buf2,"%d 对所有用户广播",currentuser->userid);
+    sprintf(buf2,"%s 对所有用户广播",currentuser->userid);
     securityreport(buf2,NULL,NULL);
     prints("\n已经广播完毕....\n");
     pressanykey();
@@ -420,7 +418,7 @@ MSGX2:
                         int  send_pidX, Line_1, Line;
 
                         XOK = Line_1 = Line = 0;
-                        if (fpX = fopen(fname,"r")) {
+                        if ((fpX = fopen(fname,"r"))!=NULL) {
                             while (fgets(bufX,256,fpX)) {
                                 Line ++;
                                 ptrX = strrchr(bufX,'[');

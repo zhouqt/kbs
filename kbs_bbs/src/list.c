@@ -21,7 +21,6 @@ int myfriend(int uid,char* fexp)
 {
     extern int  nf;
     int i,found=NA;
-    int cmp;
     /*char buf[IDLEN+3];*/
 
     if(nf<=0)
@@ -39,7 +38,7 @@ int myfriend(int uid,char* fexp)
     return found;
 }
 
-print_title()
+void print_title()
 {
 
     docmdtitle((friendmode)?"[ºÃÅóÓÑÁÐ±í]":"[Ê¹ÓÃÕßÁÐ±í]",
@@ -47,7 +46,7 @@ print_title()
     update_endline();
 }
 
-print_title2()
+void print_title2()
 {
 
     docmdtitle((friendmode)?"[ºÃÅóÓÑÁÐ±í]":"[Ê¹ÓÃÕßÁÐ±í]",
@@ -199,7 +198,6 @@ int
 do_userlist()
 {
     int i;
-    int fd,len;
     char  user_info_str[256/*STRLEN*2*/],pagec;
     int   override;
     char fexp[30];
@@ -580,13 +578,12 @@ case 'd': case'D':
     return 1;
 }
 
-printuent(struct userec *uentp ,char* arg)
+int printuent(struct userec *uentp ,char* arg)
 {
     static int i ;
     char permstr[10];
     int override;
     char fexp[30];
-    char buf[20] = "           ";
 
 
     if(uentp == NULL) {
@@ -676,8 +673,7 @@ void setlistrange( int i)
 }
 
 
-do_query(star,curr)
-int star,curr;
+void do_query(int star,int curr)
 {
 
     clear();
@@ -691,15 +687,14 @@ int star,curr;
     }
 }
 
-do_query2(star,curr)
-int star,curr;
+void do_query2(int star,int curr)
 {
     t_query(user_data[curr-star].userid);
     move(t_lines-1,0);
     prints( "[44m           ¼ÄÐÅ[m] ¼Ó,¼õÅóÓÑ[o,d] ¿´ËµÃ÷µµ[¡ú,r] Ñ¡Ôñ[¡ü,¡ý] Çó¾È[h]           [m");
 }
 
-Users()
+void Users()
 {
     range=allusers();
     modify_user_mode(LAUSERS );

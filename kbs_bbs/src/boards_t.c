@@ -236,7 +236,6 @@ query_bm( )
 {
     const struct boardheader *bptr;
     int         n;
-    char        tmpBM[BM_LEN-1];
     char        uident[STRLEN];
     int         tuid=0;
     struct userec* lookupuser;

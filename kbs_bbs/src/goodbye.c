@@ -21,7 +21,7 @@ int countlogouts(char filename[STRLEN])
 void user_display(char    *filename,int number,int mode)
 {
     FILE    *fp;
-    char    buf[256],buf2[STRLEN];
+    char    buf[256];
     int     count=1;
 
     clear();
@@ -59,14 +59,7 @@ void showstuff(buf)
 char    buf[256];
 {
     struct userec douser;
-    int     frg,
-    i,
-    matchfrg,
-    strlength,
-    cnt,
-    tmpnum,
-    dble,
-    count;
+    int     frg, i, matchfrg, strlength;
 
 	enum {
 		ST_USERID,
@@ -103,7 +96,7 @@ char    buf[256];
 #endif
 	char* stuffstr[ST_END];
 
-    char    buf2[STRLEN],*ptr,*ptr2;
+    char    *ptr,*ptr2;
     time_t  now;
 
     static char* loglst[] =
@@ -170,11 +163,11 @@ char    buf[256];
     sprintf(perf,"%d",tmpnum);
     strcpy(ccperf,cperf(tmpnum));
 #endif
-    sprintf(alltime,"%d小时%d分钟",douser.stay/3600,(douser.stay/60)%60);
+    sprintf(alltime,"%lu小时%lu分钟",douser.stay/3600,(douser.stay/60)%60);
     sprintf(rgtday, "%24.24s",ctime(&douser.firstlogin));
     sprintf(lasttime, "%24.24s",ctime(&douser.lastlogin));
     sprintf(thistime,"%24.24s",ctime(&now));
-    sprintf(stay,"%d",(time(0) - login_start_time) / 60);
+    sprintf(stay,"%lu",(time(0) - login_start_time) / 60);
     /*---	modified by period	hide posts/logins	2000-11-02	---*/
 #ifndef _DETAIL_UINFO_
     if(uinfo.mode == RMAIL && (!HAS_PERM(currentuser,PERM_ADMINMENU)) ) {
@@ -192,7 +185,7 @@ char    buf[256];
     ptr2 = buf;
     do
     {
-        if(ptr = strchr(ptr2, '$'))
+        if((ptr = strchr(ptr2, '$'))!=NULL)
         {
             matchfrg = 0;
             *ptr = '\0';
