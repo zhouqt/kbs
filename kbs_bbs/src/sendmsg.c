@@ -70,13 +70,11 @@ int mode;
 
     if ((mode == 0) || (mode == 3)) {
         modify_user_mode(MSG);
-        move(2, 0);
-        clrtobot();
     }
     if (uentp == NULL) {
         prints("<输入使用者代号>\n");
         move(1, 0);
-        clrtoeol();
+        clrtobot();
         prints("送讯息给: ");
         creat_list();
         namecomplete(NULL, uident);
