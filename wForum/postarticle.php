@@ -303,7 +303,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 <option value="0">不使用签名档</option>
 <?php
 		}
-		for ($i = 1; $i <= bbs_getnumofsig(); $i++) {
+		for ($i = 1; $i <= $currentuser["signum"]; $i++) {
 			if ($currentuser["signature"] == $i) {
 ?>
 <option value="<?php echo $i; ?>" selected="selected">第 <?php echo $i; ?> 个</option>
