@@ -73,7 +73,7 @@
 #define	REGISTER_WAIT_TIME	(0)
 #define	REGISTER_WAIT_TIME_NAME	"1 ∑÷÷”"
 
-#define MAIL_BBSDOMAIN      "bbs.feeling.smth.org"
+#define MAIL_BBSDOMAIN      "feeling.smth.org"
 #define MAIL_MAILSERVER     "127.0.0.1:25"
 
 #define NAME_BBS_ENGLISH	"bbs.feeling.smth.org"
