@@ -11,6 +11,7 @@
 #define HAVE_FRIENDS_NUM /* 显示好友数目 */
 #undef HAVE_REVERSE_DNS
 #undef FILTER
+#define CHINESE_CHARACTER
 
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
@@ -222,12 +223,13 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_SHOWSTATISTIC 0200000000    /* Haohmaru */
 #define DEF_UNREADMARK 0400000000       /* Luzi 99.01.12 */
 #define DEF_USEGB     01000000000       /* KCN,99.09.05 */
+#define DEF_CHCHAR    02000000000
 //#define DEF_SPLITSCREEN 02000000000 /* bad 2002.9.1 */
 /*#define DEF_HIDEIP    02000000000  Haohmaru,99.12.18*/
 
 /*#define PERM_POSTMASK  0100000  *//* means the rest is a post mask */
 
-#define NUMDEFINES 28
+#define NUMDEFINES 29
 
 
 #define TDEF_SPLITSCREEN 000001

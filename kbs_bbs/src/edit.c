@@ -1501,6 +1501,17 @@ void vedit_key(ch)
                 currline = currline->prev;
                 currpnt = currline->len;
             }
+#ifdef CHINESE_CHARACTER
+			if (DEFINE(currentuser, DEF_CHCHAR)) {
+				int i,j=0;
+				for(i=0;i<currpnt;i++)
+					if(j) j=0;
+					else if(currline->data[i]>127) j=1;
+				if(j)
+		            if (currpnt > 0)
+		                currpnt--;
+			}
+#endif
             break;
             /*case Ctrl('Q'):  Leeward 98.07.30 Change hot key for msgX
                process_ESC_action('M', '0');
@@ -1532,6 +1543,17 @@ void vedit_key(ch)
                     currline = currline->prev;
                 }
             }
+#ifdef CHINESE_CHARACTER
+			if (DEFINE(currentuser, DEF_CHCHAR)) {
+				int i,j=0;
+				for(i=0;i<currpnt;i++)
+					if(j) j=0;
+					else if(currline->data[i]>127) j=1;
+				if(j)
+		            if (currline->len != currpnt)
+		                currpnt++;
+			}
+#endif
             break;
         case Ctrl('P'):
         case KEY_UP:           /* Previous line */
@@ -1541,6 +1563,17 @@ void vedit_key(ch)
                 currline = currline->prev;
                 currpnt = (currline->len > lastindent) ? lastindent : currline->len;
             }
+#ifdef CHINESE_CHARACTER
+			if (DEFINE(currentuser, DEF_CHCHAR)) {
+				int i,j=0;
+				for(i=0;i<currpnt;i++)
+					if(j) j=0;
+					else if(currline->data[i]>127) j=1;
+				if(j)
+		            if (currpnt > 0)
+		                currpnt--;
+			}
+#endif
             break;
         case Ctrl('N'):
         case KEY_DOWN:         /* Next line */
@@ -1555,6 +1588,17 @@ void vedit_key(ch)
                 }
                 currpnt = (currline->len > lastindent) ? lastindent : currline->len;
             }
+#ifdef CHINESE_CHARACTER
+			if (DEFINE(currentuser, DEF_CHCHAR)) {
+				int i,j=0;
+				for(i=0;i<currpnt;i++)
+					if(j) j=0;
+					else if(currline->data[i]>127) j=1;
+				if(j)
+		            if (currpnt > 0)
+		                currpnt--;
+			}
+#endif
             break;
         case Ctrl('B'):
         case KEY_PGUP:         /* previous page */
@@ -1664,6 +1708,18 @@ void vedit_key(ch)
             }
             currpnt--;
             delete_char();
+#ifdef CHINESE_CHARACTER
+			if (DEFINE(currentuser, DEF_CHCHAR)) {
+				int i,j=0;
+				for(i=0;i<currpnt;i++)
+					if(j) j=0;
+					else if(currline->data[i]>127) j=1;
+				if(j) {
+					currpnt--;
+		            delete_char();
+		        }
+			}
+#endif
             break;
         case Ctrl('D'):
         case KEY_DEL:          /* delete current character */
@@ -1685,6 +1741,16 @@ void vedit_key(ch)
                 break;
             }
             delete_char();
+#ifdef CHINESE_CHARACTER
+			if (DEFINE(currentuser, DEF_CHCHAR)) {
+				int i,j=0;
+				for(i=0;i<currpnt+1;i++)
+					if(j) j=0;
+					else if(currline->data[i]>127) j=1;
+				if(j)
+		            delete_char();
+			}
+#endif
             break;
         case Ctrl('Y'):        /* delete current line */
             /* STONGLY coupled with Ctrl-K */
