@@ -145,6 +145,14 @@ int getnewutmpent(struct user_info *up)
     */
 
     utmpshm->hashhead[0]=utmpshm->next[pos];
+
+    if (utmpshm->uinfo[pos].active)
+    	if (utmpshm->uinfo[pos].pid) {
+    		log("3system","utmp: alloc a active utmp! old:%s new:%s",
+    			utmpshm->uinfo[pos].userid,
+    			up->userid);
+    		kill(utmpshm->uinfo[pos].pid,SIGHUP);
+    	}
     utmpshm->uinfo[pos] = *up;
     hashkey=utmp_hash(up->userid);
 
