@@ -59,49 +59,55 @@ static int mail_reply(int ent, struct fileheader *fileinfo, char *direct);
 static int mail_del(int ent, struct fileheader *fileinfo, char *direct);
 static int do_gsend(char *userid[], char *title, int num);
 
-int chkreceiver(char *userid, struct userec *lookupuser)
-/*Haohmaru.99.4.4.检查收信者信箱是否满,改动下面的数字时请同时改动do_send do_gsend doforward doforward函数*/
+static int chkusermail(struct * user)
 {
-    int sum, sumlimit, numlimit;
     char recmaildir[STRLEN];
-    struct userec *user;
-
-    if (!getuser(userid, &user))
-        return 0;
-
-    if (lookupuser)
-        *lookupuser = *user;
-    /* Bigman 2000.9.8 : 修正没有用户的话,返回0 */
-    /* 修正PERM_SYSOP给自杀用户发信后的错误 */
-
-    if ((HAS_PERM(currentuser, PERM_SYSOP)) || (!strcmp(currentuser->userid, "Arbitrator")))
-        /* Leeward 99.07.28 , Bigman 2002.6.5: Arbitrator can send any mail to user */
-        return 1;
-
-
+    int sum, sumlimit, numlimit;
 /*Arbitrator's mailbox has no limit, stephen 2001.11.1 */
-    if ((!(lookupuser->userlevel & PERM_SYSOP)) && strcmp(lookupuser->userid, "Arbitrator")) {
-        if (lookupuser->userlevel & PERM_CHATCLOAK) {
+    if ((!(user->userlevel & PERM_SYSOP)) && strcmp(user->userid, "Arbitrator")) {
+        if (user->userlevel & PERM_CHATCLOAK) {
             sumlimit = 2000;
             numlimit = 2000;
         } else
             /*  if (lookupuser->userlevel & PERM_BOARDS)
                set BM, chatop, and jury have bigger mailbox, stephen 2001.10.31 */
-        if (lookupuser->userlevel & PERM_MANAGER) {
+        if (user->userlevel & PERM_MANAGER) {
             sumlimit = 300;
             numlimit = 300;
-        } else if (lookupuser->userlevel & PERM_LOGINOK) {
+        } else if (user->userlevel & PERM_LOGINOK) {
             sumlimit = 120;
             numlimit = 150;
         } else {
             sumlimit = 15;
             numlimit = 15;
         }
-        setmailfile(recmaildir, lookupuser->userid, DOT_DIR);
-        if (getmailnum(lookupuser->userid) > numlimit || (sum = get_sum_records(recmaildir, sizeof(fileheader))) > sumlimit)
-            return 0;
+        setmailfile(recmaildir, user->userid, DOT_DIR);
+        if (getmailnum(user->userid) > numlimit || (sum = get_sum_records(recmaildir, sizeof(fileheader))) > sumlimit)
+            return 1;
     }
-    return 1;
+    return 0;
+}
+
+int chkreceiver(struct userec* fromuser,struct userec *touser)
+/*Haohmaru.99.4.4.检查收信者信箱是否满,改动下面的数字时请同时改动do_send do_gsend doforward doforward函数*/
+{
+    /* Bigman 2000.9.8 : 修正没有用户的话,返回0 */
+    /* 修正PERM_SYSOP给自杀用户发信后的错误 */
+    if ((HAS_PERM(fromuser, PERM_SYSOP)) || (!strcmp(fromuser->userid, "Arbitrator")))
+        /* Leeward 99.07.28 , Bigman 2002.6.5: Arbitrator can send any mail to user */
+        return 0;
+
+    if (touser->userlevel & PERM_SUICIDE)
+        return 1;
+
+    if (!(touser->userlevel & PERM_READMAIL))
+    	return 1;
+    if (fromuser)
+		if (chkusermail(fromuser))
+			return 2;
+	if (chkusermail(touser))
+		return 3;
+    return 0;
 }
 
 int chkmail()
@@ -129,31 +135,8 @@ int chkmail()
         return ismail;
 
 
-    if (!HAS_PERM(currentuser, PERM_SYSOP) && strcmp(currentuser->userid, "Arbitrator"))
-        /*Arbitrator's mailbox has no limit, stephen 2001.11.1 */
-    {                           /*Haohmaru.99.4.4.对收信也加限制,改动下面的数字时请同时改动chkreceiver函数 */
-        if (HAS_PERM(currentuser, PERM_CHATCLOAK))
-            /* Bigman:2000.8.17 智囊团修改 */
-        {
-            sumlimit = 2000;
-            numlimit = 2000;
-        }
-        /* else if (HAS_PERM(currentuser,PERM_BOARDS)) */
-        /* give Jury a bigger mail box. stephen 2001.10.31 */
-        else if (HAS_PERM(currentuser, PERM_MANAGER)) {
-            sumlimit = 300;
-            numlimit = 300;
-        } else if (HAS_PERM(currentuser, PERM_LOGINOK)) {
-            sumlimit = 120;
-            numlimit = 150;
-        } else {
-            sumlimit = 15;
-            numlimit = 15;
-        }
-        if ((get_mailnum() > numlimit || (sum = get_sum_records(currmaildir, sizeof(fileheader))) > sumlimit)) {
-            return (ismail = 2);
-        }
-    }
+	if (chkusermail(currentuser))
+		return (ismail=2);
     offset = (int) ((char *) &(fh.accessed[0]) - (char *) &(fh));
     if ((fd = open(currmaildir, O_RDONLY)) < 0)
         return (ismail = 0);
@@ -413,49 +396,29 @@ int do_send(userid, title)
     int internet_mail = 0;
     char tmp_fname[256];
     int noansi;
-    struct userec user;
+    struct userec *user;
     extern char quote_title[120];
 
     int now;                    /* added by Bigman: for SYSOP mail */
+    int ret;
 
-    if (!strchr(userid, '@') && !chkreceiver(userid, &user))
+    if (!strchr(userid, '@'))
         return -4;
 
-    if ((user.userlevel & PERM_SUICIDE) && (!HAS_PERM(currentuser, PERM_SYSOP)))
-        return -5;
+    if (getuser(userid,&user)==0)
+    	return -4;
+	ret = chkreceiver(userid, user);
+	if (ret==1)
+		return -3;
     /* SYSOP也能给自杀的人发信 */
 
-    if (!HAS_PERM(currentuser, PERM_SYSOP) && strcmp(currentuser->userid, "Arbitrator")) {
-/*Arbitrator's mailbox has no limit, stephen 2001.11.1 */
-        if (HAS_PERM(currentuser, PERM_CHATCLOAK))
-            /* Bigman: 2000.8.17, 智囊团信箱 */
-        {
-            sumlimit = 2000;
-            numlimit = 2000;
-        } else if (HAS_PERM(currentuser, PERM_MANAGER)) {       /* alex于1996.10.20添加，revised by stephen on 2001.11.1, mailbox容量限制 */
-            sumlimit = 300;
-            numlimit = 300;
-        } else if (HAS_PERM(currentuser, PERM_LOGINOK)) {
-            sumlimit = 120;
-            numlimit = 150;
-        } else {
-            sumlimit = 15;
-            numlimit = 15;
-        }
-        if (get_mailnum() > numlimit) {
-            move(1, 0);
-            prints("你的信箱已经超出限额，无法发送信件。\n");
-            prints("请删至 %d 封信以内，然后再发信。\n", numlimit);
-            pressreturn();
-            return -2;
-        }
-        if ((sum = get_sum_records(currmaildir, sizeof(fileheader))) > sumlimit) {
-            move(1, 0);
-            prints("你的信箱容量 %d(k)超出上限 %d(k), 无法发送信件。", sum, sumlimit);
-            pressreturn();
-            return -2;
-        }
-    }
+
+	if (ret==2) {
+		move(1, 0);
+        prints("你的信箱容量 %d(k)超出上限 %d(k), 无法发送信件。", sum, sumlimit);
+        pressreturn();
+        return -2;
+	}
 #ifdef INTERNET_PRIVATE_EMAIL
     /* I hate go to , but I use it again for the noodle code :-) */
     if (strchr(userid, '@')) {
@@ -474,7 +437,7 @@ int do_send(userid, title)
     /* end of kludge for internet mail */
 #endif
 
-    if (!(user.userlevel & PERM_READMAIL))
+    if (ret==3)
         return -3;
 
     setmailpath(filepath, userid);
@@ -1516,39 +1479,11 @@ static int do_gsend(char *userid[], char *title, int num)
     extern char quote_title[120];
 
     /* 添加在好友寄信时的发信上限限制 Bigman 2000.12.11 */
-    int sumlimit, numlimit, sum;
-
-    if (!HAS_PERM(currentuser, PERM_SYSOP)) {
-        if (HAS_PERM(currentuser, PERM_CHATCLOAK))
-            /* Bigman: 2000.8.17 智囊团 */
-        {
-            sumlimit = 2000;
-            numlimit = 2000;
-        } else if (HAS_PERM(currentuser, PERM_MANAGER)) {       /* Leeward 于1997.12.13添加，revised by stephen on 2001.11.1 , */
-            /* mailbox 容量限制 */
-            sumlimit = 300;
-            numlimit = 300;
-        } else if (HAS_PERM(currentuser, PERM_LOGINOK)) {
-            sumlimit = 120;
-            numlimit = 150;
-        } else {
-            sumlimit = 15;
-            numlimit = 15;
-        }
-        if (get_mailnum() > numlimit) {
-            move(1, 0);
-            prints("你的信箱已经超出限额，无法转寄信件。\n");
-            prints("请删至 %d 封信以内，然后再转寄。\n", numlimit);
-            pressreturn();
-            return -4;
-        }
-
-        if ((sum = get_sum_records(currmaildir, sizeof(fileheader))) > sumlimit) {
-            move(1, 0);
-            prints("你的信箱容量 %d(k)超出上限 %d(k), 无法转寄信件。", sum, sumlimit);
-            pressreturn();
-            return -4;
-        }
+    if (chkusermail(currentuser)) {
+        move(1, 0);
+        prints("你的信箱已经超出限额，无法转寄信件。\n");
+        pressreturn();
+        return -4;
     }
 
     in_mail = true;
@@ -1653,7 +1588,7 @@ static int do_gsend(char *userid[], char *title, int num)
     for (cnt = 0; cnt < num; cnt++) {
         char uid[13];
         char buf[STRLEN];
-        struct userec user;
+        struct userec *user;
 
         if (G_SENDMODE == 1)
             getuserid(uid, topfriend[cnt].uid);
@@ -1684,12 +1619,20 @@ static int do_gsend(char *userid[], char *title, int num)
             }
         }
 
-        if (!chkreceiver(uid, &user)) { /*Haohamru.99.4.05 */
-            prints("%s 信箱已满,无法收信,请按 Enter 键继续向其他人发信...", uid);
+		if (getuser(uid,&user)==0) {
+            prints("找不到用户%s,请按 Enter 键继续向其他人发信...", uid);
             pressreturn();
             clear();
-        } else /* Bigman. 2000.9.8 修正好友发信错误 */ if (user.userlevel & PERM_SUICIDE) {
+    	} else if (user->userlevel & PERM_SUICIDE) {
             prints("%s 自杀中，不能收信，请按 Enter 键继续向其他人发信...", uid);
+            pressreturn();
+            clear();
+        } else if (!(user->userlevel & PERM_READMAIL)) {
+            prints("%s 没有收信的权力，不能收信，请按 Enter 键继续向其他人发信...", uid);
+            pressreturn();
+            clear();
+        } else if (chkreceiver(NULL, user)) { /*Haohamru.99.4.05 */
+            prints("%s 信箱已满,无法收信,请按 Enter 键继续向其他人发信...", uid);
             pressreturn();
             clear();
         } else /* 修正好友发信的错误 Bigman 2000.9.8 */ if (false == canIsend2(uid)) {  /* Leeward 98.04.10 */
@@ -1799,35 +1742,11 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
         }
     }
 
-    if (!HAS_PERM(currentuser, PERM_SYSOP)) {
-        if (HAS_PERM(currentuser, PERM_CHATCLOAK))
-            /* Bigman: 2000.8.17 智囊团 */
-        {
-            sumlimit = 2000;
-            numlimit = 2000;
-        } else if (HAS_PERM(currentuser, PERM_MANAGER)) {       /* Leeward 于1997.12.13添加，revised by stephen on 2001.11.1, mailbox 容量限制 */
-            sumlimit = 300;
-            numlimit = 300;
-        } else if (HAS_PERM(currentuser, PERM_LOGINOK)) {
-            sumlimit = 120;
-            numlimit = 150;
-        } else {
-            sumlimit = 15;
-            numlimit = 15;
-        }
-        if (get_mailnum() > numlimit) {
-            move(1, 0);
-            prints("你的信箱已经超出限额，无法转寄信件。\n");
-            prints("请删至 %d 封信以内，然后再转寄。\n", numlimit);
-            pressreturn();
-            return -4;
-        }
-        if ((sum = get_sum_records(currmaildir, sizeof(fileheader))) > sumlimit) {
-            move(1, 0);
-            prints("你的信箱容量 %d(k)超出上限 %d(k), 无法转寄信件。", sum, sumlimit);
-            pressreturn();
-            return -4;
-        }
+	if (chkusermail(currentuser)) {
+        move(1, 0);
+        prints("你的信箱已经超出限额，无法转寄信件。\n");
+        pressreturn();
+        return -4;
     }
 
     prints("请直接按 Enter 接受括号内提示的地址, 或者输入其他地址\n");
@@ -1904,14 +1823,14 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
 
             /*if(!chkreceiver(receiver,NULL))Haohamru.99.4.05
                FIXME NULL -> lookupuser，在 zixia.net 上是这么改的... 有没有问题？ */
-            if (!chkreceiver(receiver, lookupuser)) {   /*Haohamru.99.4.05 */
-                prints("%s 信箱已满,无法收信\n", receiver);
-                return -4;
-            }
-
             if (lookupuser->userlevel & PERM_SUICIDE) {
                 prints("%s 自杀中，不能收信\n", receiver);
                 return -5;
+            }
+
+            if (!chkreceiver(NULL, lookupuser)) {   /*Haohamru.99.4.05 */
+                prints("%s 信箱已满,无法收信\n", receiver);
+                return -4;
             }
 
             if (false == canIsend2(receiver)) { /* Leeward 98.04.10 */
