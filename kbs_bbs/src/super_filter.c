@@ -8,7 +8,7 @@ int ferr=0;
 
 struct fvar_struct {
     bool num;
-    char name[8];
+    char name[12];
     int s;
     char * p;
 };
@@ -28,23 +28,38 @@ int fget_var(char * name)
 {
     int i;
     if(ferr) return 0;
-    if(!name[0]||strlen(name)>7) {
+    if(!name[0]||strlen(name)>11) {
         ferr=14;
         return 0;
     }
     for(i=0;i<fvart;i++)
-        if(!strncasecmp(fvars[i].name, name, 8)) {
+        if(!strncasecmp(fvars[i].name, name, 12)) {
             return i;
         }
     if(fvart>=MAX_FVAR) {
         ferr=15;
         return 0;
     }
-    strncpy(fvars[fvart].name, name, 8);
+    strncpy(fvars[fvart].name, name, 12);
     fvars[fvart].p = 0;
     fvars[fvart].num = true;
     fvart++;
     return (fvart-1);
+}
+
+int fexist_var(char * name)
+{
+    int i;
+    if(ferr) return 0;
+    if(!name[0]||strlen(name)>11) {
+        ferr=14;
+        return 0;
+    }
+    for(i=0;i<fvart;i++)
+        if(!strncasecmp(fvars[i].name, name, 12)) {
+            return i;
+        }
+    return -1;
 }
 
 void set_vard(struct fvar_struct * a, int f)
@@ -63,7 +78,7 @@ int fcheck_var_name(char * s, int l)
 {
     int i,p=1;
     for(i=0;i<l;i++)
-        p=p&&(isalpha(s[i]));
+        p=p&&(isalpha(s[i])||s[i]<0);
     return p;
 }
 
@@ -102,7 +117,8 @@ int get_rl2(char * s, int r, int l)
 void feval(struct fvar_struct * p, char * s, int l, int r)
 {
     int i,j,n;
-    char op[13][4]={"&&","||","==","!=",">=","<=",">","<","+","-","*","/","%"};
+    char op[14][4]={"&&","||","==","!=",">=","<=",">","<","+","-","*","/","%","<<"};
+    char op2[14][10]={"且","或","是","不是","大等于","小等于","大于","小于","加","减","乘","除","模", "包含"};
     struct fvar_struct * t,q;
     char buf[1000];
     while(s[l]==' '&&l<=r) l++;
@@ -116,11 +132,13 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
     if(fcheck_var_name(s+l, r-l+1)) {
         strncpy(buf, s+l, 1000);
         buf[r-l+1]=0;
-        i=fget_var(buf);
-        p->num = fvars[i].num;
-        p->s = fvars[i].s;
-        p->p = fvars[i].p;
-        return;
+        if(fexist_var(buf)!=-1) {
+            i=fget_var(buf);
+            p->num = fvars[i].num;
+            p->s = fvars[i].s;
+            p->p = fvars[i].p;
+            return;
+        }
     }
     if(check_var_int(s+l, r-l+1)) {
         int f;
@@ -228,18 +246,32 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
         ferr=18;
         return ;
     }
-    for(j=0;j<13;j++) {
+    if (r-l>=6&&!strncmp("的长度", s+r-5, 6)) {
+        struct fvar_struct u;
+        u.p = 0;
+        feval(&u, s, l, r-6);
+        fmakesure(!u.num&&u.p, 3);
+        p->num=true;
+        p->s = strlen(u.p);
+        return;
+    }
+    for(j=0;j<14;j++) {
         n=r;
         do{
-            if(toupper(s[n])==op[j][0]&&(!op[j][1]||toupper(s[n+1])==op[j][1])) {
+            if(n+strlen(op[j])<=r&&!strncmp(s+n, op[j], strlen(op[j]))||n+strlen(op2[j])<=r&&!strncmp(s+n, op2[j], strlen(op2[j]))) {
                 struct fvar_struct m1,m2,m3;
+                char * res;
                 m1.p=0; m2.p=0; m3.p=0;
                 feval(&m1,s,l,n-1);
                 if(j==2||j==3) {fmakesure(m1.num||!m1.num&&m1.p,1);}
+                else if(j==13) {fmakesure(!m1.num,1);}
                 else {fmakesure(m1.num,1);}
-                if(op[j][1]==0) feval(&m2,s,n+1,r);
-                else feval(&m2,s,n+2,r);
+                if(!strncmp(s+n, op[j], strlen(op[j])))
+                    feval(&m2,s,n+strlen(op[j]),r);
+                else
+                    feval(&m2,s,n+strlen(op2[j]),r);
                 if(j==2||j==3) {fmakesure(m1.num&&m2.num||!m1.num&&!m2.num&&m2.p,1);}
+                else if(j==13) {fmakesure(!m2.num,1);}
                 else {fmakesure(m2.num,1);}
                 p->num=true;
                 switch(j) {
@@ -286,6 +318,11 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
                         fmakesure(m2.s!=0, 6);
                         p->s=m1.s%m2.s;
                         break;
+                    case 13:
+                        res = bm_strcasestr(m1.p, m2.p);
+                        if(res==NULL) p->s=0;
+                        else p->s=res-m1.p+1;
+                        break;
                 }
                 return;
             }
@@ -325,8 +362,8 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
     clear();
     prints("                  超强文章选择\n\n");
     move(5,0);
-    prints("变量: no(文章号) m(m文章) g(g文章) b(m&&g) noreply(不可回复) sign(标记)\n"
-           "      del(删除标记) attach(带附件) unread(未读)\n"
+    prints("变量: no(文章号) m(保留) g(文摘) b(m&&g) noreply(不可回复) sign(标记)\n"
+           "      del(删除) attach(附件) unread(未读)\n"
            "      title(标题) author(作者)\n"
            "函数: sub(s1,s2)第一个字符串在第二个中的位置,如果不存在返回0\n"
            "      len(s)字符串长度\n"
@@ -343,7 +380,7 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
            "      我要查询标题里包含hehe并且位置在最后的文章:\n"
            "              sub('hehe',title)==len(title)-3\n"
            "      我要查询......自己动手查吧,hehe"
-);
+    );
     multi_getdata(2, 0, scr_cols-1, "请输入表达式: ", index, 1020, 20, 0, 0);
     if(!index[0]) 
         return FULLUPDATE;
@@ -371,7 +408,6 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
         close(fd);
         return FULLUPDATE;      /* lock error*/
     }
-    /* 开始互斥过程*/
 
     if ((fd2 = open(olddirect, O_RDONLY, 0664)) == -1) {
         bbslog("user", "%s", "recopen err");
@@ -409,34 +445,34 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
         size_t fsize;
         libptr = libs;
         ferr = 0;
-        set_vard(fvars+fget_var("no"), i+1);
+        set_vard(fvars+fget_var("no"), i+1); set_vard(fvars+fget_var("文章号"), i+1);
         set_vard(fvars+fget_var("id"), ptr1->id);
         set_vard(fvars+fget_var("reid"), ptr1->reid);
         set_vard(fvars+fget_var("groupid"), ptr1->groupid);
-        set_vard(fvars+fget_var("origin"), ptr1->id==ptr1->groupid);
-        set_vard(fvars+fget_var("m"), ptr1->accessed[0]&FILE_MARKED);
-        set_vard(fvars+fget_var("g"), ptr1->accessed[0]&FILE_DIGEST);
+        set_vard(fvars+fget_var("origin"), ptr1->id==ptr1->groupid); set_vard(fvars+fget_var("原作"), ptr1->id==ptr1->groupid);
+        set_vard(fvars+fget_var("m"), ptr1->accessed[0]&FILE_MARKED); set_vard(fvars+fget_var("保留"), ptr1->accessed[0]&FILE_MARKED);
+        set_vard(fvars+fget_var("g"), ptr1->accessed[0]&FILE_DIGEST); set_vard(fvars+fget_var("文摘"), ptr1->accessed[0]&FILE_DIGEST);
         set_vard(fvars+fget_var("b"), (ptr1->accessed[0]&FILE_MARKED)&&(ptr1->accessed[0]&FILE_DIGEST));
         if (chk_currBM(currBM, currentuser)) {
-            set_vard(fvars+fget_var("noreply"), ptr1->accessed[1]&FILE_READ);
-            set_vard(fvars+fget_var("sign"), ptr1->accessed[0]&FILE_SIGN);
+            set_vard(fvars+fget_var("noreply"), ptr1->accessed[1]&FILE_READ); set_vard(fvars+fget_var("不可回复"), ptr1->accessed[1]&FILE_READ);
+            set_vard(fvars+fget_var("sign"), ptr1->accessed[0]&FILE_SIGN); set_vard(fvars+fget_var("标记"), ptr1->accessed[0]&FILE_SIGN);
 #ifdef FILTER
-            set_vard(fvars+fget_var("censor"), ptr1->accessed[1]&FILE_CENSOR);
+            set_vard(fvars+fget_var("censor"), ptr1->accessed[1]&FILE_CENSOR); set_vard(fvars+fget_var("审核"), ptr1->accessed[1]&FILE_CENSOR);
 #endif
-            set_vard(fvars+fget_var("del"), ptr1->accessed[1]&FILE_DEL);
-            set_vard(fvars+fget_var("import"), ptr1->accessed[0]&FILE_IMPORTED);
+            set_vard(fvars+fget_var("del"), ptr1->accessed[1]&FILE_DEL); set_vard(fvars+fget_var("删除"), ptr1->accessed[1]&FILE_DEL);
+            set_vard(fvars+fget_var("import"), ptr1->accessed[0]&FILE_IMPORTED); set_vard(fvars+fget_var("精华"), ptr1->accessed[0]&FILE_IMPORTED);
         }
-        set_vard(fvars+fget_var("attach"), ptr1->attachment);
-        set_vars(fvars+fget_var("title"), ptr1->title);
-        set_vars(fvars+fget_var("author"), ptr1->owner);
-        set_vars(fvars+fget_var("fname"), ptr1->filename);
-        set_vard(fvars+fget_var("my"), !strcmp(ptr1->owner,currentuser->userid));
+        set_vard(fvars+fget_var("attach"), ptr1->attachment); set_vard(fvars+fget_var("附件"), ptr1->attachment);
+        set_vars(fvars+fget_var("title"), ptr1->title); set_vars(fvars+fget_var("标题"), ptr1->title);
+        set_vars(fvars+fget_var("author"), ptr1->owner); set_vars(fvars+fget_var("作者"), ptr1->owner);
+        set_vars(fvars+fget_var("fname"), ptr1->filename); set_vars(fvars+fget_var("文件名"), ptr1->filename);
+        set_vard(fvars+fget_var("my"), !strcmp(ptr1->owner,currentuser->userid)); set_vard(fvars+fget_var("我的"), !strcmp(ptr1->owner,currentuser->userid));
 #ifdef HAVE_BRC_CONTROL
-        set_vard(fvars+fget_var("unread"), brc_unread(ptr1->id));
+        set_vard(fvars+fget_var("unread"), brc_unread(ptr1->id)); set_vard(fvars+fget_var("未读"), brc_unread(ptr1->id));
 #endif
         setbfile(ffn, currboard, ptr1->filename);
-        set_vard(fvars+fget_var("ftime"), get_posttime(ptr1));
-        set_vard(fvars+fget_var("effsize"), ptr1->eff_size);
+        set_vard(fvars+fget_var("ftime"), get_posttime(ptr1)); set_vard(fvars+fget_var("时间"), get_posttime(ptr1));
+        set_vard(fvars+fget_var("effsize"), ptr1->eff_size); set_vard(fvars+fget_var("长度"), ptr1->eff_size);
         if(load_stat) {
             if(stat(ffn, &st)!=-1)
                 set_vard(fvars+fget_var("asize"), st.st_size);
