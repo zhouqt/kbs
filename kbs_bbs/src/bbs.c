@@ -628,7 +628,8 @@ void readtitle(struct _select_def* conf)
     if (currBM[0] == '\0' || currBM[0] == ' ') {
         strcpy(header, "³ÏÕ÷°æÖ÷ÖÐ");
     } else {
-        if (HAS_PERM(currentuser, PERM_OBOARDS)) {
+        //if (HAS_PERM(currentuser, PERM_OBOARDS)) {
+		if ( chk_currBM(currBM, currentuser) ) {
             char *p1, *p2;
 
             strcpy(header, "°æÖ÷: ");
