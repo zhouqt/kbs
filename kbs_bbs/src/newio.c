@@ -168,8 +168,7 @@ num_in_buf()
 int telnet_state=0;
 char lastch;
 
-int telnet_machine(ch)
-unsigned char ch;
+static int telnet_machine( unsigned char ch)
 {
     switch (telnet_state) {
     case 255:	/* after the first IAC */
@@ -207,10 +206,10 @@ unsigned char ch;
 
 int filter_telnet(char* s,int* len)
 {
-    char* p1,*p2,*pend;
+    unsigned char* p1,*p2,*pend;
     int newlen;
     newlen=0;
-    for (p1=s,p2=s,pend=s+(*len);p1!=pend;p1++) {
+    for (p1=(unsigned char*)s,p2=(unsigned char*)s,pend=(unsigned char*)s+(*len);p1!=pend;p1++) {
         if (telnet_state) {
             int ch=0;
             ch=telnet_machine(*p1);
