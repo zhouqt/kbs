@@ -1,0 +1,29 @@
+
+$2004.6.15   stiger@smth
+
+INSTALL只写了bbsd等主要程序的安装方法
+按照那个安装完本站后，你得到的只是一个最简单的电子公告板。
+
+其他的一些外部程序也是非常重要，所以单独用一个文件来说明。
+刚好我自己在转站，就是顺便了。
+
+==============================================================
+
+【一】    统计程序等
+
+ 1.) 十大热门话题
+  i) 普通方式的十大热门话题统计
+  ii)使用MYSQL的十大热门话题统计 
+
+
+【二】    游戏等
+
+ 1.) 推箱子
+   代码: service/worker
+   define: 不需要，都有
+   系统:  $mkdir $BBSHOME/game/worker
+          $cd $BBSHOME/game/worker
+		  $cp $BBSSRC/service/worker/worker.tar.gz .
+		  $tar zxvf worker.tar.gz
+   menu.ini:
+          @RunMBEM     0, 0, PERM_LOGINOK, "O@mod:game/so/libworker.so#worker_main",  "(O) 推箱子"
