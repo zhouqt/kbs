@@ -776,9 +776,11 @@ int calc_main()
 "单步值不能为0",
 "表达式出错",
 ""};
-    int y,x,res,i,j,ch,hi;
+    int y,x,res,i,j,ch,hi,oldmode;
     extern int scr_cols, scr_lns;
     extern bool UPDOWN;
+    oldmode=uinfo.mode;
+    modify_user_mode(CALC);
     for(i=0;i<HIST;i++) history[i][0]=0;
     res = get_var("res");
     set_var(vars+get_var("%pi"), Pi);
@@ -852,4 +854,5 @@ checkcalcerr:
     }
     for(i=0;i<vart;i++)
         del(vars+i);
+    modify_user_mode(oldmode);
 }
