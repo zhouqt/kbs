@@ -111,7 +111,7 @@
 				}
 				
 			}
-			if($access == 0)
+			if($access == 0 && $act == "cut")
 				pc_update_record($link,$pc["UID"]," - ".$j);
 			if($target == 0)
 				pc_update_record($link,$pc["UID"]," + ".$j);

@@ -83,7 +83,7 @@ function pc_html_init($charset,$title="",$otherheader="",$style="",$bkimg="")
 
 function html_format($str,$multi=FALSE)
 {
-	$str = preg_replace(" ","&nbsp;",htmlspecialchars(stripslashes($str)));	
+	$str = str_replace(" ","&nbsp;",htmlspecialchars(stripslashes($str)));	
 	if($multi)
 		$str = nl2br($str);
 	return $str;	
