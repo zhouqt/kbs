@@ -171,17 +171,18 @@ int mode;
  
     switch (result) {
     	 case 1: /* success */
-          if (mode ==4) return 1;
+            if (mode==0) {
            prints("\n已送出讯息....\n") ; pressreturn();
-           clear() ;
+           clear() ;}
            return 1;     	 
     	 break;
     	 case -1: /* failed, reason in msgerr */
+             if (mode==0 ) {
     	    move(2,0) ;
     	    prints(msgerr);
     	    pressreturn() ;
     	    move(2,0) ;
-    	    clrtoeol() ;
+    	    clrtoeol() ; }
     	    return -1;
     	 break;
     	 case 0: /* message presending test ok, get the message and resend */
@@ -202,17 +203,18 @@ int mode;
  
     switch (result) {
     	 case 1: /* success */
-          if (mode==4) return 0;
+          if (mode==0) {
            prints("\n已送出讯息....\n") ; pressreturn();
-           clear() ;
+           clear() ;}
            return 1;     	 
     	 break;
     	 case -1: /* failed, reason in msgerr */
+           if (mode ==0){
     	    move(2,0) ;
     	    prints(msgerr);
     	    pressreturn() ;
     	    move(2,0) ;
-    	    clrtoeol() ;
+    	    clrtoeol() ;}
     	    return -1;
     	 break;
     	 default: /* unknown reason */
