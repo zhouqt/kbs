@@ -1839,8 +1839,10 @@ getfriendstr()
     int i;
     struct friends* friendsdata;
 
-    if(topfriend!=NULL)
+    if(topfriend!=NULL) {
         free(topfriend);
+	topfriend=NULL;
+    }
     sethomefile( genbuf, currentuser->userid,"friends" );
     nf=get_num_records(genbuf,sizeof(struct friends));
     if(nf<=0)
