@@ -180,8 +180,8 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
 
 void refresh()
 {
-    int i, j, k, ii, p, s;
-    struct screenline *bp = big_picture;
+    register int i, j, k, ii, p, s;
+    register struct screenline *bp = big_picture;
     int count=0;
     int stack[100],stackt=0;
 
@@ -559,7 +559,8 @@ void outns(const char*str, int n)
         }
         if(*str==9) {  //´¦Àítab
             ch=32;
-            for(i=0;i<(cur_col/8+1)*8-cur_col;i++) {
+            j=(cur_col/8+1)*8-cur_col;
+            for(i=0;i<j;i++) {
                 if(ch!=slp->data[cur_col]||cur_mode!=slp->mode[cur_col]||cur_color!=slp->color[cur_col]) 
                 if(slp->data[cur_col]!=32&&slp->data[cur_col]!=0||ch!=32||slp->color[cur_col]/16!=cur_color/16||slp->mode[cur_col]!=cur_mode)
                 {
