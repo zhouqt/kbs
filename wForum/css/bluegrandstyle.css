@@ -1,0 +1,106 @@
+A:link,A:active,A:visited{TEXT-DECORATION:none ;Color:#000000}
+A:hover{TEXT-DECORATION: underline;Color:#4455aa}
+
+BODY{
+FONT-SIZE: 12px;
+COLOR: #000000;
+FONT-FAMILY:  ËÎÌו;
+background-color: #FFFFFF; 
+scrollbar-face-color: #DEE3E7;
+scrollbar-highlight-color: #FFFFFF;
+scrollbar-shadow-color: #DEE3E7;
+scrollbar-3dlight-color: #D1D7DC;
+scrollbar-arrow-color:  #006699;
+scrollbar-track-color: #EFEFEF;
+scrollbar-darkshadow-color: #98AAB1;
+}
+TD{
+font-family: ËÎÌו;
+font-size: 12px;
+line-height: 15px;
+}
+th
+{
+background-image: url(../skin/default/lan1.gif);
+background-color: #4455aa;
+color: white;
+font-size: 12px;
+font-weight:bold;
+}
+td.TableTitle2
+{
+background-color: #BFD3EE;
+}
+td.TableBody1
+{
+background-color: #e8f4ff;
+}
+td.TableBody2
+{
+background-color: #DBE8F2;
+}
+td.TopDarkNav
+{
+background-image: url(../skin/default/lan12.gif);
+
+}
+td.TopLighNav
+{
+background-image: url(../skin/default/lan0.gif);
+}
+td.TopLighNav1
+{
+background-image: url(../skin/citye/a2.gif);
+}
+td.TopLighNav2
+{
+background-color:#FFFFFF
+}
+.tableBorder1
+{
+width:97%;
+border: 1px; 
+background-color: #76aef0;
+}
+.tableBorder2
+{
+width:97%;
+border: 1px #DEDEDE solid; 
+background-color: #EFEFEF;
+}
+
+#TableTitleLink A:link, #TableTitleLink A:visited, #TableTitleLink A:active {
+	COLOR: #ffffff;
+	TEXT-DECORATION: none;
+}
+#TableTitleLink A:hover {
+	COLOR: #FFFFFF;
+	TEXT-DECORATION: underline;}
+
+input,select,Textarea{
+font-family:Tahoma,Verdana,ËÎÌו; font-size: 12px; line-height: 15px;}
+}
+.normalTextSmall 
+{ 
+    font-size : 11px;
+    color : #000000; 
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+.navclass1
+{Z-INDEX: 2; VISIBILITY: hidden; WIDTH: 1px; POSITION: absolute; HEIGHT: 1px; BACKGROUND-COLOR: #9cc5f8}
+
+.navclass2
+{border:1px #5e8aca solid; border-top-width: 0px; border-right-width: 1px; border-bottom-width: 0px; border-left-width: 1px;width:97%;}
+
+.buttonclass1
+{width:72;height:21;background-image:url(../pic/blue/postnew.gif)}
+
+.buttonclass2
+{width:72;height:21;background-image:url(../pic/blue/votenew.gif)}
+
+.buttonclass3
+{width:72;height:21;background-image:url(../pic/blue/xzb.gif)}
+
+.buttonclass4
+{width:72;height:21;background-image:url(../pic/blue/reply.gif)}
