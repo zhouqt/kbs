@@ -56,7 +56,7 @@ login_init();
 ?>
 <form action="/bbsinfo.php" method=post>
 您的帐号: <?php echo $currentuser["userid"];?><br>
-您的昵称: <input type="text" name="username" value="<?php echo $currentuser["username"];?>" size=24 maxlength=39><br>
+您的昵称: <input type="text" name="username" value="<?php echo htmlspecialchars($currentuser["username"],ENT_QUOTES);?>" size=24 maxlength=39><br>
 发表大作: <?php echo $currentuser["numposts"];?> 篇<br>
 上站次数: <?php echo $currentuser["numlogins"];?> 次<br>
 上站时间: <?php echo $currentuser["stay"]/60;?> 分钟<br>

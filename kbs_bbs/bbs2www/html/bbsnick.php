@@ -34,7 +34,7 @@ login_init();
 		}else{
 ?>
 <form action="/bbsnick.php" method=post>
-新昵称: <input type="text" name="username" value="<?php echo $currentuser["username"];?>" size=24 maxlength=39><br>
+新昵称: <input type="text" name="username" value="<?php echo htmlspecialchars($currentuser["username"],ENT_QUOTES);?>" size=24 maxlength=39><br>
 <input type="submit" name="submit" value="确定">
 </form>
 <hr>
