@@ -2940,15 +2940,15 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
 }
 
 unsigned int binarySearchInFileHeader(struct fileheader *start,int total, unsigned int key){
-	unsigned int low, high ,mid, found;
+	int low, high ,mid, found;
 	int comp;
 	low = 0;
 	high = total - 1;
 	found=-1;
 	while (low <= high) {
 		mid = (high + low) / 2;
-		if (mid>=total)
-			break;
+//		if (mid>=total)
+//			break;
 		if (key == start[mid].id) {
 			found=mid;
 			break;
