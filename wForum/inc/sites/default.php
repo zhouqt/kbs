@@ -119,7 +119,7 @@ if (!isset($user_define)) {
 	    array(1, "接受所有人的讯息", "是否允许所有人给您发短消息？","是","否"),         /* DEF_ALLMSG */
 	    array(1, "接受好友的讯息", "是否好友给您发短消息？", "是", "否"),          /* DEF_FRIENDMSG */
 	    array(1, "收到讯息发出声音","收到短信后是否以声音提醒您？","是","否"),         /* DEF_SOUNDMSG */
-	    array(0, "离站後寄回所有讯息","您退出登陆后是否把短信息记录发回您的信箱？", "是", "否"),       /* DEF_MAILMSG */
+	    array(0, "离站後寄回所有讯息","您退出登录后是否把短信息记录发回您的信箱？", "是", "否"),       /* DEF_MAILMSG */
 	    array(0, "发文章时实时显示讯息","telnet方式下编辑文章时是否实时显示短消息？","是", "否"),     /*"所有好友上站均通知",    DEF_LOGININFORM */
 	    array(0,"菜单上显示帮助信息","telnet方式下是否在菜单上显示帮助信息？", "是", "否"),       /* DEF_SHOWSCREEN */
 	    array(0, "进站时显示十大新闻","telnet方式进站时是否显示十大热门话题？", "显示", "不显示"),       /* DEF_SHOWHOT */
@@ -133,17 +133,17 @@ if (!isset($user_define)) {
 	    array(1,"显示详细用户信息", "是否允许他人看到您的性别、生日、联系方式等资料", "允许", "不允许"),  /*DEF_SHOWDETAILUSERDATA 2003.7.31 */
 	    array(1,"显示真实用户信息",  "是否允许他人看到您的真实姓名、地址等资料", "允许", "不允许") /*DEF_REALDETAILUSERDATA 2003.7.31 */
 	);
-}
+} else $user_define_default = 0;
 
 if (!isset($user_define1)) {
 	$user_define1=array(array(1,"隐藏 IP", "是否发文和被查询的时候隐藏自己的 IP 信息","不隐藏","隐藏") /* DEF_HIDEIP */
 	);
-}
+} else $user_define1_default = 0;
 
 if (!isset($mailbox_prop)) {
 	$mailbox_prop=array(array(1,"发信时保存信件到发件箱", "是否发信时自动选择保存到发件箱","保存","不保存"),
 		array(1,"删除信件时不保存到垃圾箱", "是否删除信件时不保存到垃圾箱","不保存","保存"),
 		array(0,"快捷邮箱键", "telnet方式下版面按 'v' 时进入什么界面？","信箱主界面","收件箱")
 	);
-}
+} else $mailbox_prop_default = 0;
 ?>

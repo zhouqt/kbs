@@ -31,4 +31,7 @@ gcc -o convpasswd convpasswd.c -lBBS -lsystem
 ./convpasswd
 然后用~bbs/.PASSWDS.NEW覆盖.PASSWDS
 
+这个转换程序实质上只是设置上面两个用户自定义选项的默认值，默认是
+允许显示详细用户数据，不允许显示真实用户数据。
+
 全部转换工作就此完成
