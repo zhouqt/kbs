@@ -1799,14 +1799,12 @@ int edit_title( int ent, struct fileheader *fileinfo, char *direct)
     return PARTUPDATE;
 }
 
+/* Mark POST */
 int mark_post( int ent, struct fileheader *fileinfo, char *direct)
-	/* Mark POST */
 {
-    /*---	---*/
     int newent = 1;
     char *ptr, buf[STRLEN];
     struct fileheader mkpost;
-    /*---	---*/
 
     if( !HAS_PERM(currentuser,PERM_SYSOP) )
         if( !chk_currBM(currBM,currentuser) )
@@ -1822,11 +1820,6 @@ int mark_post( int ent, struct fileheader *fileinfo, char *direct)
     if (fileinfo->accessed[0] & FILE_MARKED)
         fileinfo->accessed[0] &= ~FILE_MARKED;
     else fileinfo->accessed[0] |= FILE_MARKED;
-    /*    if ( strncmp(fileinfo->title,"Re: ",4)&&strncmp(fileinfo->title,"RE: ",4) )
-            sprintf(fileinfo->title,"Re: %s",&(fileinfo->title)+2);
-     */
-    /*---   Added by period   2000-10-26  add verify when doing idx operation ---*/
-    /*#ifdef _DEBUG_*/
     strcpy(buf, direct);
     ptr = strrchr(buf, '/') + 1;
     ptr[0] = '\0';
@@ -1851,15 +1844,9 @@ int mark_post( int ent, struct fileheader *fileinfo, char *direct)
         else mkpost.accessed[0] &= ~FILE_MARKED;
         memcpy(fileinfo, &mkpost, sizeof(mkpost));
     } else newent = 0;
-    /*#endif*/ /* _DEBUG_ */
-    /*---	---*/
 
     substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
-    /*#ifdef _DEBUG_*/
     return (ent == newent) ? DIRCHANGED : PARTUPDATE;
-    /*#else
-        return PARTUPDATE;
-    #endif*/ /* _DEBUG_ */
 }
 
 int
