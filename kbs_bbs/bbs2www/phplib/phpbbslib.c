@@ -6943,7 +6943,7 @@ static PHP_FUNCTION(bbs_x_search)
         char buf[10*1024],out[10*1024],out2[10*1024];
         FILE* fp;
         int i,j,k,l,fsize=0,t=0,p=0,inc=0;
-        res_content[i][0] = 0;
+        res_content[t][0] = 0;
         fp = fopen(res_filename[t], "rb");
         if(!fp) continue;
         fsize = fread(buf, 1, 10*1024, fp);
