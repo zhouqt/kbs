@@ -77,9 +77,17 @@
 			}
 ?>
 <form action="/bbsmpath.php" method="get">
-路径:<input type="text" size="35" name="path" value="<?php echo $path;?>">
-丝路名:<input type="text" size="35" name="title" value="<?php echo $title?>">
-序号:<input type="text" size="2" maxlength="2" name="num" value="<?php echo $num;?>">
+路径:<input type="text" size="30" name="path" value="<?php echo $path;?>">
+丝路名:<input type="text" size="30" name="title" value="<?php echo $title?>">
+序号:<select name="num" class="input"  style="WIDTH: 40px">
+<?php
+		for($i = 0; $i < 40; $i++){
+?>
+<option <?php if($i == $num) echo "selected";?> value=<?php echo $i;?>><?php echo $i;?>
+<?php
+		}
+?>
+</option></select> 
 <input type="hidden" name="action" value="add">
 <input type="submit" value="添加">
 </form>
