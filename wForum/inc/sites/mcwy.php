@@ -48,5 +48,6 @@ define("SUPPORT_TEX", true);
 
 /* Ä¬ÈÏÅäÖÃ */
 define('COOKIE_PREFIX', '');
+define('COOKIE_PATH', '/');
 require "default.php";
 ?>

@@ -14,7 +14,7 @@ define('AUDIO_CHAT', true);
 
 define ("MAINTITLE","<IMG SRC=\"bar/title.jpg\">");
 
-define("ATTACHMAXSIZE","5242880");
+define("ATTACHMAXSIZE","4194304");
 define ("ATTACHMAXTOTALSIZE","20971520");
 define("ATTACHMAXCOUNT","20");
 
