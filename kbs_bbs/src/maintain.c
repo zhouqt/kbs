@@ -115,7 +115,7 @@ char *str;
     savemode = uinfo.mode;
     sprintf(fname, "tmp/deliver.%s.%05d", currentuser->userid, uinfo.pid);
     if ((se = fopen(fname, "w")) != NULL) {
-        fprintf(se, "%s", str);
+        fprintf(se, "%s\n", str);
         fclose(se);
         post_file(currentuser, "", fname, currboard->filename, title, 0, 2);
         unlink(fname);
