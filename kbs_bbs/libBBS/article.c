@@ -428,6 +428,7 @@ void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail
     char owner[256];
     int count;
     time_t now;
+    int asize;
 
     now = time(0);
     inf = fopen(quote_file, "rb");
@@ -484,7 +485,6 @@ void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail
     } else if (mode == 2) {
         write_header(of, user, in_mail, sourceboard, title, Anony, 0 /*写入 .posts */ );
     }
-    int asize;
     while ((asize=-attach_fgets(buf, 256, inf)) != 0) {
         if ((strstr(buf, "【 以下文字转载自 ") && strstr(buf, "讨论区 】")) || (strstr(buf, "【 原文由") && strstr(buf, "所发表 】")))
             continue;           /* 避免引用重复 */
