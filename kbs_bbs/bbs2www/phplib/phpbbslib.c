@@ -4875,7 +4875,7 @@ PHP_RSHUTDOWN_FUNCTION(smth_bbs)
 
 #ifdef HAVE_BRC_CONTROL
 #ifdef USE_TMPFS
-    if (curerntuser&&(currentuser->userid[0]))
+    if (currentuser&&(currentuser->userid[0]))
 	free_brc_cache( currentuser->userid );
 #endif
 #endif
