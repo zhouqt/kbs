@@ -420,6 +420,7 @@ a_select_path(bool save_mode)
     load_import_path();
     arg.save_mode=save_mode;
     arg.show_path=false;
+    arg.tmpnum=0;
     pts = (POINT *)malloc(sizeof(POINT) * ANNPATH_NUM);
     for (i = 0; i < ANNPATH_NUM; i++)
     {
