@@ -37,7 +37,8 @@ static int set_smsg_select(struct _select_def *conf)
 	clear();
 	move(0,0);
 	prints("%s信人:%s   时间:%s", s_m[conf->pos-conf->page_pos].type?"收":"发", s_m[conf->pos-conf->page_pos].dest, s_m[conf->pos-conf->page_pos].time);
-	prints("\n内容:\n%s", s_m[conf->pos-conf->page_pos].context);
+	prints("\n内容:\n");
+	outline(s_m[conf->pos-conf->page_pos].context);
 	pressanykey();
 
 	if( ! s_m[conf->pos-conf->page_pos].readed ){
