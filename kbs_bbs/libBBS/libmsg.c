@@ -1129,12 +1129,12 @@ int chk_smsmsg(int force ){
 	MYSQL_RES *res;
 	MYSQL_ROW row;
 	char sql[100];
-	static int i=0;
+	static int lastsmsstatus=0;
 
 	if( ! force )
-		return i;
+		return lastsmsstatus;
 
-	i=0;
+	lastsmsstatus=0;
 	mysql_init(&s);
 
 	if (! my_connect_mysql(&s) ){
@@ -1150,13 +1150,13 @@ int chk_smsmsg(int force ){
 	row = mysql_fetch_row(res);
 
 	while(row != NULL){
-		i++;
+		lastsmsstatus++;
 		row = mysql_fetch_row(res);
 	}
 	mysql_free_result(res);
 
 	mysql_close(&s);
-	return i;
+	return lastsmsstatus;
 }
 
 int sign_smsmsg_read(int id ){
