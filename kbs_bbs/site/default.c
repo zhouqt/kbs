@@ -505,9 +505,9 @@ int check_read_perm(struct userec *user, const struct boardheader *board)
 {
     if (board == NULL)
         return 0;
-    if (user==NULL)
+    if (user==NULL) {
         if (board->title_level!=0) return 0;
-    else 
+    } else 
     if (!HAS_PERM(user, PERM_OBOARDS)&&board->title_level
         &&(board->title_level!=user->title))
         return 0;
@@ -535,9 +535,9 @@ int check_see_perm(struct userec* user,const struct boardheader* board)
 {
     if (board == NULL)
         return 0;
-    if (user==NULL)
+    if (user==NULL) {
         if (board->title_level!=0) return 0;
-    else
+    } else
     if (!HAS_PERM(user, PERM_OBOARDS)&&board->title_level
         &&(board->title_level!=user->title))
         return 0;
