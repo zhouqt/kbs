@@ -2606,6 +2606,7 @@ static int maillist_key(struct _select_def *conf, int command)
         return SHOW_REFRESH;
     }
     if (toupper(command) == 'D') {
+        char bname[STRLEN], buf[PATHLEN];
         int p = 1, i, j;
         char ans[2];
         int y;
@@ -2616,9 +2617,17 @@ static int maillist_key(struct _select_def *conf, int command)
             return SHOW_CONTINUE;
         move(0, 0);
         clrtoeol();
+        sprintf(bname, ".%s", user_mail_list.mail_list[conf->pos - arg->cmdnum - arg->sysboxnum - 1] + 30);
+        setmailfile(buf, getCurrentUser()->userid, bname);
+        if (get_num_records(buf, sizeof(struct fileheader)) != 0) {
+            prints("目录非空，请先删除里面的信件。");
+            pressreturn();
+            return SHOW_REFRESH;
+        }
         getdata(0, 0, "确认删除整个目录？(y/N)", ans, 2, DOECHO, NULL, true);
         p = ans[0] == 'Y' || ans[0] == 'y';
         if (p) {
+            f_rm(buf);
             p = conf->pos - arg->cmdnum - arg->sysboxnum - 1;
             for (j = p; j < user_mail_list.mail_list_t - 1; j++)
                 memcpy(user_mail_list.mail_list[j], user_mail_list.mail_list[j + 1], sizeof(user_mail_list.mail_list[j]));
