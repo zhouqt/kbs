@@ -409,6 +409,7 @@ void redoscr()
 void move(int y, int x)
 {
 	if (!scrint) {
+            if(x>=0&&y>=0&&x<=scr_cols&&y<=scr_lns)
 	    do_move(x, y, ochar);
 	    return;
 	}
