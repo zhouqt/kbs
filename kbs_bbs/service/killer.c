@@ -530,7 +530,7 @@ void refreshit()
         if(ipage+i-2==selected) {
             setfcolor(RED, 1);
         }
-        sprintf(buf, "%d %s", j, inrooms[myroom].peoples[j].nick);
+        sprintf(buf, "%d %s", j+1, inrooms[myroom].peoples[j].nick);
         prints("%s", buf);
     }
     resetcolor();
