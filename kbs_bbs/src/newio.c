@@ -539,7 +539,9 @@ int igetch()
     case Ctrl('Z'):
         if(!inremsg) {
             icurrchar++;
+            inremsg = true;
             r_msg();
+            inremsg = false;
             goto igetagain;
         }
         break;
