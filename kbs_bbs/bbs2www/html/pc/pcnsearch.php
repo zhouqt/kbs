@@ -69,11 +69,11 @@ http://<?php echo $pcconfig["SITE"]; ?>/pc/pccon.php?<?php echo "id=".$rows[uid]
 <?php		
 	}
 	
-	pc_html_init("gb2312","个人文集文章搜索");
+	pc_html_init("gb2312","Blog文章搜索");
 ?>
 <br><br>
 <p align="center" class="f2">
-个人文集文章搜索
+Blog文章搜索
 </p>
 <?php
 
@@ -172,7 +172,7 @@ http://<?php echo $pcconfig["SITE"]; ?>/pc/pccon.php?<?php echo "id=".$rows[uid]
 <p align="center" class="f1">
 搜索范围：
 <input type="radio" name="area" value="<?php echo $userid; ?>" checked>
-<?php echo $userid?$userid:$area; ?>的个人文集
+<?php echo $userid?$userid:$area; ?>的Blog
 <input type="radio" name="area" value="_all">
 全站
 </p>

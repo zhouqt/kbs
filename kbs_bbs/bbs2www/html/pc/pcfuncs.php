@@ -24,6 +24,7 @@ $pcconfig["BBSNAME"] = BBS_FULL_NAME;
 $pcconfig["ETEMS"] = 20;
 $pcconfig["NEWS"] = 20;
 $pcconfig["SITE"] = "www.smth.edu.cn";
+$pcconfig["DOMAIN"] = ".mysmth.net";
 $pcconfig["BOARD"] = "SMTH_blog";
 $pcconfig["SEARCHFILTER"] = " µÄ";
 $pcconfig["SEARCHNUMBER"] = 10;

@@ -168,8 +168,8 @@
 	if(!$pc)
 	{
 		pc_db_close($link);
-		html_init("gb2312","个人文集");		
-		html_error_quit("对不起，您要查看的个人文集不存在");
+		html_init("gb2312","Blog");		
+		html_error_quit("对不起，您要查看的Blog不存在");
 		exit();
 	}
 	
@@ -199,7 +199,7 @@
 	}
 	if( $rows[access] > 1 && $pur < 2 )
 	{
-		html_error_quit("对不起，文集所有者才能查看该文章!");
+		html_error_quit("对不起，Blog所有者才能查看该文章!");
 		exit();
 	}
 	$nid = $rows[nid];
@@ -225,15 +225,15 @@
 	<td>
 	<table cellspacing="0" cellpadding="3" border="0" width="100%" class="tt1">
 		<tr>
-			<td>&nbsp;&nbsp;&nbsp;&nbsp;<?php echo "<a href=\"/\" class=f1>".BBS_FULL_NAME."</a> - <a href='pc.php' class=f1>个人文集</a> - <a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=".$rows[access]."&pid=".$pid."\" class=f1>".$pc["NAME"]."</a>"; ?></td>
-			<td align="right">http://<?php echo $pc["USER"]; ?>.mysmth.net&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td>&nbsp;&nbsp;&nbsp;&nbsp;<?php echo "<a href=\"/\" class=f1>".BBS_FULL_NAME."</a> - <a href='pc.php' class=f1>Blog</a> - <a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=".$rows[access]."&pid=".$pid."\" class=f1>".$pc["NAME"]."</a>"; ?></td>
+			<td align="right">http://<?php echo $pc["USER"].$pcconfig["DOMAIN"]; ?>&nbsp;&nbsp;&nbsp;&nbsp;</td>
 		</tr>
 	</table>
 	</td>
 </tr>
 <tr>
 	<td class="f2" align="center" height="40" valign="middle">
-	<?php echo $pc["USER"]; ?> 的个人文集
+	<?php echo $pc["USER"]; ?> 的Blog
 	-
 	<?php echo $pc["NAME"]; ?>
 	</td>
@@ -329,7 +329,7 @@
 	[<a href='javascript:location=location' class=f1>刷新</a>]
 	[<?php echo "<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\" class=f1>给".$pc["USER"]."写信</a>"; ?>]
 	[<a href="index.php?id=<?php echo $pc["USER"]; ?>" class=f1><?php echo $pc["NAME"]; ?>首页</a>]
-	[<a href="pc.php" class=f1>文集首页</a>]
+	[<a href="pc.php" class=f1>Blog首页</a>]
 	[<a href="
 <?php
 	if(!strcmp($currentuser["userid"],"guest"))

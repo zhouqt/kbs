@@ -20,6 +20,8 @@ var blogNodeUrl = "pccon.php?id=<?php echo $pc["UID"]; ?>&s=all";
 			$query .= " AND `access` = 0 ";
 		elseif($pur == 1)
 			$query .= " AND ( `access` = 0 OR `access` = 1 ) ";
+		elseif($pur == 3)
+			$query .= " AND ( `access` = 0 OR `access` = 1 OR `access` = 2 OR `access` = 3 ) ";
 		$query .= " ORDER BY `nid` DESC;";
 		$result = mysql_query($query,$link);
 		$bc = array();
@@ -49,6 +51,8 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 			$query .= " AND `access` = 0 ";
 		elseif($pur == 1)
 			$query .= " AND ( `access` = 0 OR `access` = 1 ) ";
+		elseif($pur == 3)
+			$query .= " AND ( `access` = 0 OR `access` = 1 OR `access` = 2 OR `access` = 3 ) ";
 		$query .= " ORDER BY `nid` DESC LIMIT 0 , 10 ;";
 		$result = mysql_query($query,$link);
 		$nodes = array();
@@ -314,6 +318,8 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 			$query .= " AND access = 0 ";
 		elseif($pur == 1)
 			$query .= " AND ( access = 0 OR access = 1 ) ";
+		elseif($pur == 3)
+			$query .= " AND ( `access` = 0 OR `access` = 1 OR `access` = 2 OR `access` = 3 ) ";
 		$query .= " AND comments.uid = ".$pc["UID"]." AND comment = 1 ORDER BY cid DESC LIMIT 0 , 10 ;";
 		$result = mysql_query($query,$link);
 		for($i = 0;$i < mysql_num_rows($result) ; $i++)
@@ -330,6 +336,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	
 	function display_blog_smth($link,$pc,$sec,$nodes,$blogs,$pur)
 	{
+		global $pcconfig;
 ?>	
 <table cellspacing=0 cellpadding=0 width=100% border=0 class=f1>
 	<tr><td colspan=2 bgcolor="#718BD6" height="5" align=right>
@@ -421,7 +428,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		<br />
 		&copy;All Rights Reserved
 		&nbsp;&nbsp;
-		http://<?php echo $pc["USER"]; ?>.mysmth.net
+		http://<?php echo $pc["USER"].$pcconfig["DOMAIN"]; ?>
 		</p>
 		</td>
 	</tr>
@@ -535,7 +542,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	<br>
 &copy;All Rights Reserved
 &nbsp;&nbsp;
-http://<?php echo $pc["USER"]; ?>.mysmth.net
+http://<?php echo $pc["USER"].$pcconfig["DOMAIN"]; ?>
 </td></tr>
 </table>	
 <?php		
@@ -549,15 +556,15 @@ http://<?php echo $pc["USER"]; ?>.mysmth.net
 	if(!$pc)
 	{
 		pc_db_close($link);
-		html_init("gb2312","个人文集");		
-		html_error_quit("对不起，您要查看的个人文集不存在");
+		html_init("gb2312",BBS_FULL_NAME."Blog");		
+		html_error_quit("对不起，您要查看的Blog不存在");
 		exit();
 	}
 	
 	
 	if(pc_is_admin($currentuser,$pc) && $loginok == 1)
 	{
-		$sec = array("公开区","好友区","私人区","收藏区","删除区","设定好友","文集管理","参数设定");
+		$sec = array("公开区","好友区","私人区","收藏区","删除区","设定好友","Blog管理","参数设定");
 		$pur = 3;
 	}
 	elseif(pc_is_friend($currentuser["userid"],$pc["USER"]) || bbs_is_bm($pcconfig["BRDNUM"], $currentuser["index"]))
@@ -573,7 +580,7 @@ http://<?php echo $pc["USER"]; ?>.mysmth.net
 	$nodes = pc_load_nodes($link,$pc,$pur);
 	$blogs = pc_blog_menu($link,$pc["UID"],0);
 	/*visit count start*/
-	if($pur != 3)//文集所有者的访问不进行计数  windinsn dec 10,2003
+	if($pur != 3)//Blog所有者的访问不进行计数  windinsn dec 10,2003
 	{
 		if(!session_is_registered("visitcount"))
 		{

@@ -8,7 +8,7 @@
 	
 	$cid = (int)($_GET["cid"]);
 	
-	pc_html_init("gb2312","个人文集");
+	pc_html_init("gb2312",BBS_FULL_NAME."Blog");
 	$link = pc_db_connect();
 	$query = "SELECT * FROM comments WHERE `cid` = '".$cid."' LIMIT 0 , 1 ;";
 	$result = mysql_query($query,$link);

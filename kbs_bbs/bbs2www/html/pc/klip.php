@@ -15,7 +15,7 @@
 	if(!$pc)
 	{
 		html_init("gb2312");
-		html_error_quit("个人文集不存在!");
+		html_error_quit("所请求的Blog不存在!");
 		exit();
 	}
 	
@@ -55,7 +55,7 @@ This Klip File is Used For SMTH.Blog System , Script Writen by windinsn@smth.org
 	</identity>
 		
 	<locations>
-		<defaultlink>http://<?php echo $pc["USER"]; ?>.mysmth.net</defaultlink>
+		<defaultlink>http://<?php echo $pc["USER"].$pcconfig["DOMAIN"]; ?></defaultlink>
 		<contentsource>http://<?php echo $pcconfig["SITE"]; ?>/pc/rss.php?userid=<?php echo $pc["USER"]; ?></contentsource>
 		<icon></icon>
 		<banner></banner>

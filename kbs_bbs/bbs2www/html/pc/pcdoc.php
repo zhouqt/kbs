@@ -16,7 +16,7 @@
 ?>
 <table cellspacing="0" cellpadding="5" border="0" width="95%">
 <tr>
-	<td align="right" class="f2">文集分类</td>
+	<td align="right" class="f2">Blog分类</td>
 </tr>
 <tr>
 	<td align="right"><hr align="right" width="90%" class="hr"></td>
@@ -239,7 +239,7 @@
 			}
 			else
 			{
-				html_error_quit("对不起，个人文集收藏夹初始化错误!");
+				html_error_quit("对不起，Blog收藏夹初始化错误!");
 				exit();
 			}
 		}	
@@ -452,7 +452,7 @@
 <tr>
 	<td class="t2" width="25%">序号</td>
 	<td class="t2">好友</td>
-	<td class="t2">文集</td>
+	<td class="t2">Blog</td>
 	<td class="t2" width="25%">删除</td>
 </tr>
 <?php
@@ -491,7 +491,7 @@
 <table cellspacing="0" cellpadding="5" border="0" width="99%" class="t1">
 <tr>
 	<td class="t2" width="50">序号</td>
-	<td class="t2">文集</td>
+	<td class="t2">Blog</td>
 	<td class="t2" width="200">分区</td>
 	<td class="t2" width="50">修改</td>
 	<td class="t2" width="50">删除</td>
@@ -510,19 +510,19 @@
 		
 ?>
 </table>
-<form action="pcmanage.php?act=tadd" method="post" onsubmit="if(this.topicname.value==''){alert('请输入文集名称!');return false;}">
+<form action="pcmanage.php?act=tadd" method="post" onsubmit="if(this.topicname.value==''){alert('请输入Blog名称!');return false;}">
 <input type="hidden" name="tag" value="<?php echo $tag; ?>">
 <p align="center" class="b2">
-新建文集：
+新建Blog：
 分区
 <select name="access" class="b2">
 	<option value="0">公开区</option>
 	<option value="1">好友区</option>
 	<option value="2">私人区</option>
 </select>
-文集名
+Blog名
 <input type="text" name="topicname" maxlength="200" size="30" class="b2">
-<input type="submit" value="新建文集" class="b1">
+<input type="submit" value="新建Blog" class="b1">
 </p>
 </form>
 <?php
@@ -531,25 +531,25 @@
 	function display_pc_settings($pc)
 	{
 ?>
-<form action="pcmanage.php?act=sedit" method="post" onsubmit="if(this.pcname.value==''){alert('请输入文集名称!');return false;}">	
+<form action="pcmanage.php?act=sedit" method="post" onsubmit="if(this.pcname.value==''){alert('请输入Blog名称!');return false;}">	
 <table cellspacing="0" cellpadding="3" border="0" width="99%" class="t1">		
 <tr>
 	<td class="t2" colspan="2">参数设定</td>
 </tr>
 <tr>
-	<td class="t3">文集名称</td>
+	<td class="t3">Blog名称</td>
 	<td class="t5">&nbsp;
 	<input type="text" maxlength="40" name="pcname" id="pcname" value="<?php echo $pc["NAME"]; ?>" class="f1">
 	</td>
 </tr>
 <tr>
-	<td class="t3">文集描述</td>
+	<td class="t3">Blog描述</td>
 	<td class="t5">&nbsp;
 	<input type="text" maxlength="200" name="pcdesc" value="<?php echo $pc["DESC"]; ?>" class="f1">
 	</td>
 </tr>
 <tr>
-	<td class="t3">文集主题</td>
+	<td class="t3">Blog主题</td>
 	<td class="t5">&nbsp;
 	<input type="text" maxlength="20" name="pcthem" value="<?php echo $pc["THEM"]; ?>" class="f1">
 	</td>
@@ -589,7 +589,7 @@
 	</td>
 </tr><tr>
 	<td class="t4" colspan="2">
-	<input type="submit" value="修改文集参数" class="b1">
+	<input type="submit" value="修改Blog参数" class="b1">
 	<input type="reset" value="恢复原始参数" class="b1">
 	</td>
 </tr>
@@ -610,15 +610,15 @@
 	if(!$pc)
 	{
 		pc_db_close($link);
-		html_init("gb2312","个人文集");		
-		html_error_quit("对不起，您要查看的个人文集不存在");
+		html_init("gb2312","Blog");		
+		html_error_quit("对不起，您要查看的Blog不存在");
 		exit();
 	}
 		
 	$isfriend = pc_is_friend($currentuser["userid"],$pc["USER"]);
 	if(pc_is_admin($currentuser,$pc) && $loginok == 1)
 	{
-		$sec = array("公开区","好友区","私人区","收藏区","删除区","设定好友","文集管理","参数设定");
+		$sec = array("公开区","好友区","私人区","收藏区","删除区","设定好友","Blog管理","参数设定");
 		$pur = 3;
 		if($_GET["act"] == "addfriend")
 			$f_err = add_friend($pc);
@@ -640,7 +640,7 @@
 		$tag = 0;
 	
 	/*visit count start*/
-	if($pur != 3)//文集所有者的访问不进行计数  windinsn dec 10,2003
+	if($pur != 3)//Blog所有者的访问不进行计数  windinsn dec 10,2003
 	{
 		if(!session_is_registered("visitcount"))
 		{
@@ -667,15 +667,15 @@
 	<td>
 	<table cellspacing="0" cellpadding="3" border="0" class="t0" width="100%" class="tt1">
 		<tr>
-			<td class="tt1">&nbsp;&nbsp;&nbsp;&nbsp;<?php echo "<a href=\"/\" class=\"f1\">".BBS_FULL_NAME."</a> - <a href='pc.php' class=\"f1\">个人文集</a> - <a href=\"index.php?id=".$pc["USER"]."\" class=\"f1\">".$pc["NAME"]."</a>"; ?></td>
-			<td align="right" class="tt1">http://<?php echo $pc["USER"]; ?>.mysmth.net&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td class="tt1">&nbsp;&nbsp;&nbsp;&nbsp;<?php echo "<a href=\"/\" class=\"f1\">".BBS_FULL_NAME."</a> - <a href='pc.php' class=\"f1\">Blog</a> - <a href=\"index.php?id=".$pc["USER"]."\" class=\"f1\">".$pc["NAME"]."</a>"; ?></td>
+			<td align="right" class="tt1">http://<?php echo $pc["USER"].$pcconfig["DOMAIN"]; ?>&nbsp;&nbsp;&nbsp;&nbsp;</td>
 		</tr>
 	</table>
 	</td>
 </tr>
 <tr>
 	<td class="f2" align="center" height="40" valign="middle">
-	<?php echo $pc["USER"]; ?> 的个人文集
+	<?php echo $pc["USER"]; ?> 的Blog
 	-
 	<?php echo $pc["NAME"]; ?>
 	</td>
@@ -788,7 +788,7 @@
 	[<a href="#top" class=f1>返回顶部</a>]
 	[<a href='javascript:location=location' class=f1>刷新</a>]
 	[<?php echo "<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\" class=f1>给".$pc["USER"]."写信</a>"; ?>]
-	[<a href="pc.php" class=f1>文集首页</a>]
+	[<a href="pc.php" class=f1>Blog首页</a>]
 	[<a href="
 <?php
 	if(!strcmp($currentuser["userid"],"guest"))
@@ -797,7 +797,7 @@
 		echo "/frames.html";
 ?>	
 	" class=f1 target="_top"><?php echo BBS_FULL_NAME; ?>首页</a>]
-	<a href="rss.php?userid=<?php echo $pc["USER"]; ?>" target="_blank"><img src="images/xml.gif" border="0" alt="XML" align="absmiddle"></a>
+	<a href="rss.php?userid=<?php echo $pc["USER"]; ?>"><img src="images/xml.gif" border="0" alt="XML" align="absmiddle"></a>
 	</td>
 </tr>
 </table>

@@ -11,19 +11,19 @@
 	{
 		case "c":
 			$key = "corpusname";
-			$keyname = "个人文集名称";
+			$keyname = "Blog名称";
 			break;
 		case "t":
 			$key = "theme";
-			$keyname = "个人文集主题";
+			$keyname = "Blog主题";
 			break;
 		case "d":
 			$key = "description";
-			$keyname = "个人文集描述";
+			$keyname = "Blog描述";
 			break;
 		default:
 			$key = "username";
-			$keyname = "个人文集所有者";
+			$keyname = "Blog所有者";
 	}
 	
 	$query = "SELECT `uid` , `username` , `corpusname` , `description` , `theme` , `createtime`,`modifytime`,`nodescount`,`visitcount` ".
@@ -56,12 +56,12 @@
 	$result = mysql_query($query,$link);
 	$num_rows = mysql_num_rows($result);
 	
-	pc_html_init("gb2312","个人文集搜索");
+	pc_html_init("gb2312","Blog搜索");
 	if($num_rows == 0)
 	{
 		mysql_free_result($result);
 		pc_db_close($link);
-		html_error_quit("对不起，没有符合条件的个人文集，请尝试缩减关键字重新查询");
+		html_error_quit("对不起，没有符合条件的Blog，请尝试缩减关键字重新查询");
 	}
 	else
 	{
@@ -73,7 +73,7 @@
 <tr>
 	<td class="t2" width="30">编号</td>
 	<td class="t2" width="70">用户名</td>
-	<td class="t2" width="130">文集名称</td>
+	<td class="t2" width="130">Blog名称</td>
 	<td class="t2">描述</td>
 	<td class="t2" width="120">主题</td>
 	<td class="t2" width="50">文章数</td>
@@ -100,7 +100,7 @@
 </table>
 </center>
 <p align="center">
-<a href="pc.php">返回个人文集首页</a>
+<a href="pc.php">返回Blog首页</a>
 </p>		
 <?php
 		mysql_free_result($result);

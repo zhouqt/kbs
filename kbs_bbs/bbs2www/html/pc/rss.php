@@ -12,7 +12,7 @@
 	if(!$rows)
 	{
 		html_init("gb2312");
-		html_error_quit("个人文集不存在!");
+		html_error_quit("Blog不存在!");
 		exit();
 	}
 	$pc = array(
@@ -27,7 +27,7 @@
 			"userid" => $pc["UID"] ,
 			"siteaddr" => "http://".$pcconfig["SITE"],
 			"title" => $pc["NAME"],
-			"pcaddr" => "http://".$pc["USER"].".mysmth.net",
+			"pcaddr" => "http://".$pc["USER"].$pcconfig["DOMAIN"],
 			"desc" => $pc["DESC"],
 			"email" => $pc["USER"].".bbs@".$pcconfig["SITE"]
 			);

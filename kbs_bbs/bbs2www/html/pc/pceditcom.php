@@ -15,7 +15,7 @@
 	}
 	else
 	{
-		pc_html_init("gb2312","个人文集","","","",TRUE);		
+		pc_html_init("gb2312",BBS_FULL_NAME."Blog","","","",TRUE);		
 		$act = $_GET["act"];
 		$cid = (int)($_GET["cid"]);
 		

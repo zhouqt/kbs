@@ -16,7 +16,7 @@
 	else
 		echo "[<a href=\"pcnew.php\">最新文章列表</a>]";
 ?>
-[<a href="pcsearch2.php">文集搜索</a>]
+[<a href="pcsearch2.php">Blog搜索</a>]
 [<a href="pcnsearch.php">文章搜索</a>]
 </p>
 <?php
@@ -59,7 +59,7 @@
 	pc_db_close($link);
 	
 	
-	pc_html_init("gb2312","个人文集");
+	pc_html_init("gb2312",BBS_FULL_NAME."Blog");
 ?>
 <br><br>
 <p align=center class=f2>

@@ -26,7 +26,7 @@
 		<a href="pc.php?order=username&order1=ASC&char=<?php echo $char; ?>"><img src="images/desc_order.png" border="0" align="absmiddle" alt="按用户名递增排序"></a>
 		<a href="pc.php?order=username&order1=DESC&char=<?php echo $char; ?>"><img src="images/asc_order.png" border="0" align="absmiddle" alt="按用户名递减排序"></a>
 	</td>
-	<td class="t2" width="130">文集名称</td>
+	<td class="t2" width="130">Blog名称</td>
 	<!--
 	<td class="t2">描述</td>
 	-->
@@ -158,16 +158,17 @@
 	if( $pageno < 1 || $pageno > $totalpage )
 		$pageno = 1;
 	$startno = ($pageno - 1)*$pagesize;
-	pc_html_init("gb2312","个人文集");
+	pc_html_init("gb2312",BBS_FULL_NAME."Blog");
 ?>
 <center><br><br>
 <p align="center" class="f2">
-<?php echo BBS_FULL_NAME; ?>个人文集
+<?php echo BBS_FULL_NAME; ?>Blog
 </p>
 <hr size=1>
 <p class="f1">
-[<a href="pcsearch.php?keyword=<?php echo $currentuser["userid"]; ?>&exact=1&key=u">自己的文集</a>]
+[<a href="pcsearch.php?keyword=<?php echo $currentuser["userid"]; ?>&exact=1&key=u">自己的Blog</a>]
 [<a href="pcnew.php">最新文章列表</a>]
+[<a href="pcnew.php?t=c">最新评论列表</a>]
 <a href="rssnew.php" target="_blank"><img src="images/xml.gif" border="0" align="absmiddle" alt="XML"></a>
 </p>
 <?php
@@ -177,12 +178,12 @@
 ?>
 <hr size=1>
 <p class="f1">
-[<a href="pcsearch.php?keyword=<?php echo $currentuser["userid"]; ?>&exact=1&key=u">自己的文集</a>]
+[<a href="pcsearch.php?keyword=<?php echo $currentuser["userid"]; ?>&exact=1&key=u">自己的Blog</a>]
 [<a href="pcnew.php">最新文章列表</a>]
 <a href="rssnew.php" target="_blank"><img src="images/xml.gif" border="0" align="absmiddle" alt="XML"></a>
 </p>
 <form action="pcsearch.php" method="get" onsubmit="if(this.keyword.value==''){alert('请输入关键字');return false;}">
-个人文集搜索:<br>
+本站Blog搜索:<br>
 <input type="text" name="keyword" size="20" class="b2">
 (进行模糊搜索时,请用空格隔开多个关键字)
 <br>
@@ -191,9 +192,9 @@
 <input type="radio" name="exact" value="0" class="b2">模糊<br>
 类型:
 <input type="radio" name="key" value="u" class="b2" checked>用户名
-<input type="radio" name="key" value="c" class="b2">文集名
+<input type="radio" name="key" value="c" class="b2">Blog名
 <input type="radio" name="key" value="t" class="b2">主题
-<input type="radio" name="key" value="d" class="b2">文集描述<br>
+<input type="radio" name="key" value="d" class="b2">Blog描述<br>
 <input type="submit" value="开始搜" class="b1">
 </form>
 </center>

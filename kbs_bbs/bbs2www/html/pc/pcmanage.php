@@ -15,7 +15,7 @@
 	elseif(!strcmp($currentuser["userid"],"guest"))
 	{
 		html_init("gb2312");
-		html_error_quit("guest 没有个人文集!");
+		html_error_quit("guest 没有Blog!");
 		exit();
 	}
 	else
@@ -25,7 +25,7 @@
 		if(!$pc || !pc_is_admin($currentuser,$pc))
 		{
 			pc_db_close($link);
-			html_error_quit("对不起，您要查看的个人文集不存在");
+			html_error_quit("对不起，您要查看的Blog不存在");
 			exit();
 		}
 		
@@ -236,7 +236,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 </tr>
 <tr>
 	<td class="t8">
-	文集
+	Blog
 	<select name="tid" class="f1">
 <?php
 		$blogs = pc_blog_menu($link,$pc["UID"],$tag);
@@ -368,7 +368,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 </tr>
 <tr>
 	<td class="t8">
-	文集
+	Blog
 	<select name="tid" class="f1">
 <?php
 		$blogs = pc_blog_menu($link,$pc["UID"],$rows[access]);
@@ -504,7 +504,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			mysql_free_result($result);
 			if(!$rows)
 			{
-				html_error_quit("文集不存在!");
+				html_error_quit("Blog不存在!");
 				exit();
 			}
 			if($_POST["topicname"])
@@ -533,10 +533,10 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 ?>
 <br>
 <center>
-<form action="pcmanage.php?act=tedit&tid=<?php echo $rows[tid]; ?>" method="post" onsubmit="if(this.topicname.value==''){alert('请输入文集名称!');return false;}">
+<form action="pcmanage.php?act=tedit&tid=<?php echo $rows[tid]; ?>" method="post" onsubmit="if(this.topicname.value==''){alert('请输入Blog名称!');return false;}">
 <table cellspacing="0" cellpadding="5" border="0" width="90%" class="t1">
 <tr>
-	<td class="t2">修改文集</td>
+	<td class="t2">修改Blog</td>
 </tr>
 <?php /*
 <tr>
@@ -560,13 +560,13 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 ?>
 <tr>
 	<td class="t8">
-	文集名
+	Blog名
 	<input type="text" class="f1" name="topicname" value="<?php echo htmlspecialchars(stripslashes($rows[topicname])); ?>">
 	</td>
 </tr>
 <tr>
 	<td class="t2">
-	<input type="submit" value="修改文集" class="b1">
+	<input type="submit" value="修改Blog" class="b1">
 	<input type="button" value="返回上页" class="b1" onclick="history.go(-1)">
 	</td>
 </tr>
@@ -583,7 +583,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			mysql_free_result($result);
 			if($rows)
 			{
-				html_error_quit("请先删除文集中的文章!");
+				html_error_quit("请先删除Blog中的文章!");
 				exit();
 			}
 			else

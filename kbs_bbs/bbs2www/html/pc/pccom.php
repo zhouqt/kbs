@@ -15,7 +15,7 @@
 	}
 	else
 	{
-		pc_html_init("gb2312","个人文集","","","",TRUE);		
+		pc_html_init("gb2312",BBS_FULL_NAME."Blog","","","",TRUE);		
 		$nid = (int)($_GET["nid"]);
 		$act = $_GET["act"];
 		$cid = (int)($_GET["cid"]);
@@ -40,7 +40,7 @@
 			
 			 if(!$pc)   
                          {   
-                                 html_error_quit("对不起，您要查看的个人文集不存在");   
+                                 html_error_quit("对不起，您要查看的Blog不存在");   
                                  exit();   
                          } 
 
@@ -58,7 +58,7 @@
 			}
 			if( $rows[access] > 1 && $pur < 2 )
 			{
-				html_error_quit("对不起，文集所有者才能查看该文章!");
+				html_error_quit("对不起，Blog所有者才能查看该文章!");
 				exit();
 			}
 		}

@@ -23,7 +23,7 @@
 	elseif(!strcmp($currentuser["userid"],"guest"))
 	{
 		html_init("gb2312");
-		html_error_quit("guest 没有个人文集!");
+		html_error_quit("guest 没有Blog!");
 		exit();
 	}
 	else
@@ -33,7 +33,7 @@
 		if(!$pc || !pc_is_admin($currentuser,$pc))
 		{
 			pc_db_close($link);
-			html_error_quit("对不起，您要查看的个人文集不存在");
+			html_error_quit("对不起，您要查看的Blog不存在");
 			exit();
 		}
 		$favlinks = $pc["LINKS"];
