@@ -1135,7 +1135,7 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
     	}
     }
         
-    if (!$pcconfig["SECTION"][$theme])
+    if (!isset($pcconfig["SECTION"][$theme]))
         $theme = "others";
     
     $theme = addslashes($theme);
