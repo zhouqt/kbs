@@ -1729,6 +1729,7 @@ static int www_new_guest_entry()
 	struct public_data* pub;
 	int fd,i,j;
 	time_t now;
+	struct userec* user;
 	fd = www_guest_lock();
 	if (fd==-1) return -1;
 	setpublicshmreadonly(0);
@@ -1737,7 +1738,10 @@ static int www_new_guest_entry()
 		setpublicshmreadonly(1);
 		return -1;
 	}
+	user=currentuser;
+	getuser("guest",&currentuser);
 
+	if (currentuser==NULL) return NULL;
     	now = time( NULL );
     	if(( now > wwwguest_shm->uptime + 240 )||(now < wwwguest_shm->uptime-240)) {
         	bbslog( "1system", "WWW guest:Clean guest table:%d",wwwguest_shm->uptime);
@@ -1746,9 +1750,10 @@ static int www_new_guest_entry()
         		if (!(wwwguest_shm->use_map[i/32]&(1<<(i%32)))||
 						(now-wwwguest_shm->guest_entry[i].freshtime<MAX_WWW_GUEST_IDLE_TIME))
         			continue;
+				bbslog("1system","EXIT: Stay:%3ld (%s)[%d %d](www)",now-wwwguest_shm->guest_entry[i].freshtime,currentuser->username,wwwguest_shm->guest_entry[i].key);
         		/*清除use_map*/
         		wwwguest_shm->use_map[i/32]&=~(1<<(i%32));
-				if (((wwwguest_shm->use_map[i/32])&(1<<(i%32)))&&pub->www_guest_count>0) {
+				if (pub->www_guest_count>0) {
 					pub->www_guest_count--;
         		/* 清除数据 */
         			bzero(&wwwguest_shm->guest_entry[i],sizeof(struct WWW_GUEST_S));
@@ -1771,6 +1776,7 @@ static int www_new_guest_entry()
 	if (i!=MAX_WWW_MAP_ITEM) {
 		pub->www_guest_count++;
 	}
+	currentuser=user;
 	setpublicshmreadonly(1);
 	www_guest_unlock(fd);
 	if (i==MAX_WWW_MAP_ITEM)
@@ -1803,12 +1809,13 @@ static int resolve_guest_table()
        	 wwwguest_shm = (struct WWW_GUEST_TABLE*)
         	attach_shm( "WWWGUEST_SHMKEY", 4500, sizeof( *wwwguest_shm ),&iscreate );/*attach user tmp cache */
 	        if (iscreate) {
-			struct public_data* pub=get_publicshm();
-			int fd = www_guest_lock();
-			if (fd==-1) return -1;
-			bzero(wwwguest_shm,sizeof(*wwwguest_shm));
+				struct public_data* pub=get_publicshm();
+				int fd = www_guest_lock();
+				if (fd==-1) return -1;
+				bzero(wwwguest_shm,sizeof(*wwwguest_shm));
 				wwwguest_shm->uptime=time(0);
 	        	www_guest_unlock(fd);
+				pub->www_guest_count=0;
 	    	}
     	}
     	return 0;
