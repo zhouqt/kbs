@@ -315,7 +315,7 @@ PERM_DENYRELAX娱乐
 
     move(13, 0);
 
-    if (askyn("你确定要戒网吗？", 0) == 1) {
+    if (askyn("你确定要戒网吗\x1b[1;31m(注意:戒网之后不能提前解开!\x1b[m)？", 0) == 1) {
         getdata(15, 0, "请输入密码: ", buf, 39, NOECHO, NULL, true);
         if (*buf == '\0' || !checkpasswd2(buf, currentuser)) {
             prints("\n\n很抱歉, 您输入的密码不正确。\n");

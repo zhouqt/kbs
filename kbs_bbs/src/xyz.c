@@ -253,7 +253,7 @@ int x_level()
     }
     clear();
     move(0, 0);
-    prints("更改" NAME_USER_SHORT "的权限\n");
+    prints("更改" NAME_USER_SHORT "的权限(\x1b注意：如果是封禁解封，请使用封禁选单！\x[m\n");
     clrtoeol();
     move(1, 0);
     usercomplete("请输入" NAME_USER_SHORT " ID: ", genbuf);
@@ -296,7 +296,7 @@ int x_level()
          * Leeward: 1997.12.02 : Modification stops 
          */
 
-        prints(NAME_USER_SHORT " '%s' 的权限已更改\n", lookupuser->userid);
+        prints(NAME_USER_SHORT " '%s' 的权限已更改,注意：如果是封禁解封，\n", lookupuser->userid);
         sprintf(genbuf, "changed permissions for %s", lookupuser->userid);
         bbslog("user","%s",genbuf);
         /*

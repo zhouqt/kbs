@@ -903,6 +903,8 @@ int user_vote(int num)
     int votevalue;
     int aborted = false, pos;
 
+    if (!haspostperm(currentuser,currboard))
+	    return -1;
     move(t_lines - 2, 0);
     get_record(controlfile, &currvote, sizeof(struct votebal), num);
     sprintf(fname, "vote/%s/flag.%lu", currboard, currvote.opendate);
