@@ -49,6 +49,26 @@
 <tr><td>投票天数</td><td><?php echo $votearr[0]["MAXDAY"];?></tr>
 </table>
 <hr class="default"/>
+<form action="/bbsvote.php" method="get">
+<table width="613">
+<?php
+		if( $votearr[0]["TYPE"] == "复选" ){
+
+			for( $i=0; $i < $votearr[0]["TOTALITEMS"]; $i++){
+				$itemstr = "ITEM".($i+1);
+?>
+<tr><td><?php echo $i+1;?></td>
+<td><input type="checkbox" name="<?php echo $itemstr;?>"></td>
+<td><?php echo $votearr[0][$itemstr];?></td></tr>
+<?php
+			}
+		}
+?>
+</table>
+<input type="hidden" name="board" value="<?php echo $board;?>">
+<input type="hidden" name="num" value="<?php echo $num;?>">
+<input type="submit" name="submit" value="确认">
+</form>
 <?php
 		html_normal_quit();
 
