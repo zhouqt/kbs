@@ -1,20 +1,17 @@
 #include "bbs.h"
-static void* badword_img=NULL;
-static int badword_img_size;
 
+
+#ifdef FILTER
 extern int prepf(int fp,void** patternbuf,size_t* patt_image_len);
 extern int mgrep(int fp,void* patternbuf);
 extern int mgrep_str(char* data,int len,void* patternbuf);
 extern void releasepf(void* patternbuf);
-//³ÌÐòÃû
-#ifdef BBSMAIN
-extern void abort_bbs(int sign);
-#endif
-
 int WORDBOUND, WHOLELINE, NOUPPER, INVERSE, FILENAMEONLY, SILENT, FNAME;
 int ONLYCOUNT, num_of_matched, total_line;
 char *CurrentFileName;
 
+static void* badword_img=NULL;
+static int badword_img_size;
 int build_badwordimage()
 {
     int fp;
@@ -144,7 +141,6 @@ retry:
     BBS_END
     return retv;
 }
-
 int check_filter(char *patternfile, char *checkfile,int defaultval)
 {
     int fp;
@@ -170,3 +166,5 @@ int check_filter(char *patternfile, char *checkfile,int defaultval)
     releasepf(pattern_buf);
     return retv;
 }
+#endif
+
