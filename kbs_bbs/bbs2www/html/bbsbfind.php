@@ -30,7 +30,7 @@ login_init();
 <?php
 		if( !isset($_GET["submit"]) && !isset($_POST["submit"]) ){
 ?>
-<table><form action="/bbsbfind.php" method=post>
+<table><form action="/bbsbfind.php" method=GET>
 <tr><td>版面名称: <input type="text" maxlength="24" size="24" name="board" value="<?php echo $brdarr["NAME"];?>"><br>
 <tr><td>标题含有: <input type="text" maxlength="50" size="20" name="title"> AND <input type="text" maxlength="50" size="20" name="title2">
 <tr><td>标题不含: <input type="text" maxlength="50" size="20" name="title3">
@@ -46,28 +46,28 @@ login_init();
 			html_normal_quit();
 		}
 
-		if( isset( $_POST["title"] ) ){
-			$title = $_POST["title"];
+		if( isset( $_GET["title"] ) ){
+			$title = $_GET["title"];
 		}else
 			$title="";
 
-		if( isset( $_POST["title2"] ) ){
-			$title2 = $_POST["title2"];
+		if( isset( $_GET["title2"] ) ){
+			$title2 = $_GET["title2"];
 		}else
 			$title2="";
 
-		if( isset( $_POST["title3"] ) ){
-			$title3 = $_POST["title3"];
+		if( isset( $_GET["title3"] ) ){
+			$title3 = $_GET["title3"];
 		}else
 			$title3="";
 
-		if( isset( $_POST["userid"] ) ){
-			$userid = $_POST["userid"];
+		if( isset( $_GET["userid"] ) ){
+			$userid = $_GET["userid"];
 		}else
 			$userid="";
 
-		if( isset( $_POST["dt"] ) ){
-			$dt = $_POST["dt"];
+		if( isset( $_GET["dt"] ) ){
+			$dt = $_GET["dt"];
 		}else
 			$dt=0;
 		settype($dt, "integer");
@@ -76,8 +76,8 @@ login_init();
 		else if($dt > 9999)
 			$dt = 9999;
 
-		if( isset( $_POST["mg"] ) ){
-			$mg = $_POST["mg"];
+		if( isset( $_GET["mg"] ) ){
+			$mg = $_GET["mg"];
 		}else
 			$mg = "";
 		if($mg != "")
@@ -85,8 +85,8 @@ login_init();
 		else
 			$mgon=0;
 
-		if( isset( $_POST["og"] ) ){
-			$og = $_POST["og"];
+		if( isset( $_GET["og"] ) ){
+			$og = $_GET["og"];
 		}else
 			$og = "";
 		if($og != "")
@@ -94,8 +94,8 @@ login_init();
 		else
 			$ogon=0;
 
-		if( isset( $_POST["ag"] ) ){
-			$ag = $_POST["ag"];
+		if( isset( $_GET["ag"] ) ){
+			$ag = $_GET["ag"];
 		}else
 			$ag = "";
 		if($ag != "")
