@@ -2183,13 +2183,10 @@ static PHP_FUNCTION(bbs_getboards)
     int ac = ZEND_NUM_ARGS();
     int brdnum, yank, no_brc;
     int group;
-    int total;
-    int * zapbuf;    
+    int total;   
 
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
-
-    zapbuf = getSession()->zapbuf;
 
     /*
      * getting arguments 
@@ -2226,21 +2223,21 @@ static PHP_FUNCTION(bbs_getboards)
 	yank = flag & 1;
     no_brc = flag & 2;
 
-    if  (zapbuf==NULL)  {
+    if  (getSession()->zapbuf==NULL)  {
 		char fname[STRLEN];
 		int fd, size;
 
 		size = total* sizeof(int);
-   		zapbuf = (int *) emalloc(size);
-		if (zapbuf==NULL) {
+   		getSession()->zapbuf = (int *) emalloc(size);
+		if (getSession()->zapbuf==NULL) {
 			RETURN_FALSE;
 		}
     	for (i = 0; i < total; i++)
-        	zapbuf[i] = 1;
+        	getSession()->zapbuf[i] = 1;
 	   	sethomefile(fname, getCurrentUser()->userid, ".lastread");       /*user的.lastread， zap信息 */
         if ((fd = open(fname, O_RDONLY, 0600)) != -1) {
 	        size = total * sizeof(int);
-	        read(fd, zapbuf, size);
+	        read(fd, getSession()->zapbuf, size);
 	   	    close(fd);
 	    } 
     }
@@ -2278,7 +2275,7 @@ static PHP_FUNCTION(bbs_getboards)
 	        }
 	        if ((group==0)&&( strchr(prefix, bptr->title[0]) == NULL && prefix[0] != '*'))
 	            continue;
-	        if (yank || zapbuf[n] != 0 || (bptr->level & PERM_NOZAP)) {
+	        if (yank || getSession()->zapbuf[n] != 0 || (bptr->level & PERM_NOZAP)) {
 	            /*都要排序*/
 	            for (i=0;i<brdnum;i++) {
 				    if ( strcasecmp(namelist[i], bptr->filename)>0) 
@@ -2305,7 +2302,7 @@ static PHP_FUNCTION(bbs_getboards)
 		   	if (bptr->flag&BOARD_GROUP) {
 			   	ptr->total = bptr->board_data.group_total;
 		   	} else ptr->total=-1;
-		   	ptr->zap = (zapbuf[indexlist[i]] == 0);
+		   	ptr->zap = (getSession()->zapbuf[indexlist[i]] == 0);
    			check_newpost(ptr, no_brc);
 	        for (j = 0; j < BOARD_COLUMNS; j++) {
        		    MAKE_STD_ZVAL(element);
