@@ -1073,24 +1073,6 @@ void chat_setroom(unum, msg)
     while (*modestr) {
         flag = 0;
         switch (*modestr) {
-#ifdef FILTER
-       case 'F':
-       case 'f': {
-        if (SYSOP(unum)) {        /*added by Haohmaru,98.9.6 */
-       	char buf[80];
-       	char title[80];
-       	filtering=!filtering;
-       	if (filtering)
-                sprintf(buf, "¹ıÂËÆ÷ÒÑ¾­´ò¿ª");
-       	else
-                sprintf(buf, "¹ıÂËÆ÷ÒÑ¾­¹Ø±Õ");
-       	send_to_unum(unum,buf);
-       	sprintf(title,"%s:%s",users[unum].userid, buf);
-       	filter_report(title,buf);
-       	return;
-       	}
-	}
-#endif
         case 'l':
         case 'L':
             if (!rnum && !SYSOP(unum)) {        /*added by Haohmaru,98.9.6 */
@@ -1121,6 +1103,24 @@ void chat_setroom(unum, msg)
                 fstr = "'¾øÃÜ'";
             }
             break;
+#ifdef FILTER
+       case 'F':
+       case 'f': {
+        if (SYSOP(unum)) {        /*added by Haohmaru,98.9.6 */
+       	char buf[80];
+       	char title[80];
+       	filtering=!filtering;
+       	if (filtering)
+                sprintf(buf, "¹ıÂËÆ÷ÒÑ¾­´ò¿ª");
+       	else
+                sprintf(buf, "¹ıÂËÆ÷ÒÑ¾­¹Ø±Õ");
+       	send_to_unum(unum,buf);
+       	sprintf(title,"%s:%s",users[unum].userid, buf);
+       	filter_report(title,buf);
+       	return;
+       	}
+	}
+#endif
         default:
             sprintf(chatbuf, "¡ò " CHAT_SYSTEM "¿´²»¶®ÄãµÄÒâË¼£º[[1m%c[m] ¡ò", *modestr);
             send_to_unum(unum, chatbuf);
