@@ -5,6 +5,7 @@
 ** @id:windinsn Nov 19,2003
 */
 require("funcs.php");
+login_init();
 require("pcconf.php");//blog配置文件
 require("pctbp.php");//引用通告相关函数
 $db["HOST"]=bbs_sysconf_str("MYSQLHOST");

@@ -4,6 +4,7 @@
 	 * windinsn Apr 8 , 2004
 	 */
 	require("funcs.php");
+login_init();
 	require("board.inc.php");
 
 	if ($loginok !=1 )

@@ -1,6 +1,7 @@
 <?php
 	/*	This file dispaly mailbox to user	windinsn nov 7,2003*/
 	require("funcs.php");
+login_init();
 	
 	if ($loginok != 1 || $currentuser[userid] == "guest" )
 		html_nologin();

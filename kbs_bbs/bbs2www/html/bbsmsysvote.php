@@ -3,6 +3,7 @@
 	** ID:windinsn dec 29,2003
 	**/
 	require("funcs.php");
+login_init();
 	require("libvote.php");
 	
 	if ($loginok != 1 || $currentuser[userid] == "guest" )

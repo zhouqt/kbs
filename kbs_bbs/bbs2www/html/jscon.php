@@ -4,6 +4,7 @@
 	 * $Id$
 	 */
 	require("funcs.php");
+login_init();
 
 	if( isset( $_GET["bid"] ) )
 	{

@@ -1,6 +1,7 @@
 <?php
 
 	require("funcs.php");
+login_init();
 	if ($loginok != 1 || ($currentuser["userid"] == "guest") ){
 		html_init("gb2312");
 		html_error_quit("匿名用户没有投票权限");

@@ -4,6 +4,7 @@
 	 * $Id$
 	 */
 	require("funcs.php");
+login_init();
 	require("boards.php");
 	if ($loginok != 1)
 		html_nologin();

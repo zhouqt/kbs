@@ -1,6 +1,7 @@
 <?php
 // $Id$
 require_once("funcs.php");
+login_init();
 require_once("style.inc.php");
 
 $style = intval($_GET["style"]);

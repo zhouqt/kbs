@@ -3,6 +3,7 @@
          * This file lists fav boards to user.  @author caltary
          */
         require("funcs.php");
+login_init();
         if ($loginok !=1 )
                 html_nologin();
         else

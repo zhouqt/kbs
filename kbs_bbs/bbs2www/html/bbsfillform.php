@@ -4,6 +4,7 @@
 	 * by binxun 2003.5
 	 */
 	require("funcs.php");
+login_init();
 	require("reg.inc.php");
 	html_init("gb2312");
 

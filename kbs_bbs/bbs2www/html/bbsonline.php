@@ -1,5 +1,6 @@
 <?php
     require("funcs.php");
+login_init();
 
     html_init("gb2312");
 

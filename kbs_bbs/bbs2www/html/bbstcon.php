@@ -1,5 +1,6 @@
 <?php
 	require("funcs.php");
+login_init();
 	
 	function show_file( $board , $brd_encode , $bid , $article , $articlenum)
 	{

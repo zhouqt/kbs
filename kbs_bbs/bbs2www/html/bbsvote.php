@@ -1,6 +1,7 @@
 <?php
 
 	require("funcs.php");
+login_init();
 	if ($loginok != 1 || ($currentuser["userid"] == "guest") )
 		html_nologin();
 	else

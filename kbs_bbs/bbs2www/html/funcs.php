@@ -88,6 +88,17 @@ function decodesessionchar($ch)
 
 $loginok=0;
 
+function login_init()
+{
+
+global $currentuinfo;
+global $fullfromhost;
+global $fromhost;
+global $loginok;
+global $currentuser_num;
+global $currentuinfo_num;
+global $currentuser;
+
 @$fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
   if ($fullfromhost=="") {
       @$fullfromhost=$_SERVER["REMOTE_ADDR"];
@@ -124,10 +135,10 @@ if (($sessionid!='')&&($_SERVER['PHP_SELF']=='/bbscon.php')) {
 }
 
 if (($utmpkey!="") && (!isset($needlogin) || ($needlogin!=0)) ) {
-  if (($ret=bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),$currentuinfo,$compat_telnet))==0) {
+  if (($ret=bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),&$currentuinfo,$compat_telnet))==0) {
     $loginok=1;
     $currentuinfo_num=bbs_getcurrentuinfo();
-    $currentuser_num=bbs_getcurrentuser($currentuser);
+    $currentuser_num=bbs_getcurrentuser(&$currentuser);
   }else
 	$utmpkey="";
 }
@@ -150,15 +161,24 @@ if (($utmpkey == "")&&(!isset($needlogin) || ($needlogin!=0))){
 	}
 //guest 登陆成功，设置一下
 if ($utmpkey!="") {
-  if (($ret=bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),$currentuinfo,$compat_telnet))==0) {
+  if (($ret=bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),&$currentuinfo,$compat_telnet))==0) {
     $loginok=1;
     $currentuinfo_num=bbs_getcurrentuinfo();
-    $currentuser_num=bbs_getcurrentuser($currentuser);
+    $currentuser_num=bbs_getcurrentuser(&$currentuser);
   }
 }
 
 }
+if ((!isset($needlogin)||($needlogin!=0))&&($loginok!=1)&&($_SERVER["PHP_SELF"]!="/bbslogin.php")) {
+	error_nologin();
+	return;
+}
+
+if (($loginok==1)&&(isset($setboard)&&($setboard==1))) bbs_set_onboard(0,0);
 //add end
+
+}
+
 
 /* 
 ** BBS Board Envelop Code Start
@@ -563,11 +583,5 @@ function bbs_login_form()
 <?php	
 }
 
-if ((!isset($needlogin)||($needlogin!=0))&&($loginok!=1)&&($_SERVER["PHP_SELF"]!="/bbslogin.php")) {
-	error_nologin();
-	return;
-}
-
-if (($loginok==1)&&(isset($setboard)&&($setboard==1))) bbs_set_onboard(0,0);
 } // !define ('_BBS_FUNCS_PHP_')
 ?>

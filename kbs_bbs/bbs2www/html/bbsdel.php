@@ -3,6 +3,7 @@
 	 *  This file delete board article.
 	 */
 	require("funcs.php");
+login_init();
 	if ($loginok !=1 )
 		html_nologin();
 	else

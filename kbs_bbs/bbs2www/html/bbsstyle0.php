@@ -1,5 +1,6 @@
 <?php
 require_once("funcs.php");
+login_init();
 require_once("style.inc.php");
 
 $bbsstyle = bbs_style_getstyle();

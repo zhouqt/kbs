@@ -3,6 +3,7 @@
 	 * $Id$ 
 	 */
 	require("funcs.php");
+login_init();
 	require("board.inc.php");
 	if ($loginok !=1 )
 		html_nologin();

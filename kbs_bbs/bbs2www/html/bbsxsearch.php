@@ -3,6 +3,7 @@
          * This file searches x boards to user.  @author bad
          */
         require("funcs.php");
+login_init();
         if ($loginok !=1 )
                 html_nologin();
         else

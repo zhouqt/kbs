@@ -1,5 +1,6 @@
 <?php
 require("funcs.php");
+login_init();
 if( !defined("HAVE_BRDENV") )
 	exit();
 

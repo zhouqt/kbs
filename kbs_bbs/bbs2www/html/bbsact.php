@@ -4,6 +4,7 @@
 ** @author: windinsn Apr 12 , 2004
 */
 require("funcs.php");
+login_init();
 require("reg.inc.php");
 $retry_time = intval($_COOKIE["ACTRETRYTIME"]);
 

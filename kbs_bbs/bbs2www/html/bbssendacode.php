@@ -1,5 +1,6 @@
 <?php
 require("funcs.php");
+login_init();
 require("reg.inc.php");
 html_init("gb2312");
 

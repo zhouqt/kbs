@@ -4,6 +4,7 @@
 	 * $Id$
 	 */
 	require("funcs.php");
+login_init();
 	require("board.inc.php");
 	
 	function display_navigation_bar($brdarr,$brdnum,$start,$total,$page,$order=FALSE)

@@ -1,6 +1,7 @@
 <?php
     $setboard=0;
     require("funcs.php");
+login_init();
     if ($loginok != 1)
         html_nologin();
     else {

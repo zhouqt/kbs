@@ -1,6 +1,7 @@
 <?php
 	/* this file delete user mails  windinsn nov 15,2003*/
 	require("funcs.php");
+login_init();
 	
 	if ($loginok != 1)
 		html_nologin();

@@ -1,5 +1,6 @@
 <?php
 require_once("funcs.php");
+login_init();
 if(isset($_GET["fav"]))
 {
 	$boardList = FALSE;

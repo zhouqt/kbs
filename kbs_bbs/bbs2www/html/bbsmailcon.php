@@ -4,6 +4,7 @@
 	 * $Id$
 	 */
 	require("funcs.php");
+login_init();
 function get_mimetype($name)
 {
 	$dot = strrchr($name, '.');

@@ -1,6 +1,7 @@
 <?php
         
     require("funcs.php");
+login_init();
 
     $hostname=bbs_sysconf_str("MYSQLHOST");
     $username=bbs_sysconf_str("MYSQLUSER");
