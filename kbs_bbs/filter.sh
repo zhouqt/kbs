@@ -1,6 +1,7 @@
 #!/bin/sh
 awk 'BEGIN { definenum=0;infilter=0; } \
   $0~/#ifdef[ \t]*FILTER/ { infilter=1;definenum=0;} \
+  $0~/#ifdef[ \t]*SMTH/ { infilter=1;definenum=0;} \
   { if (infilter==1) {  \
       if (match($0,"#endif")) {\
          definenum--; \

@@ -8,6 +8,8 @@
 #undef HAVE_TEMPORARY_NICK
 #undef HAVE_FRIENDS_NUM
 #undef HAVE_REVERSE_DNS
+
+#define SMTH
 #define FILTER
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
