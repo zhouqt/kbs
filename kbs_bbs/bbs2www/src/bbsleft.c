@@ -33,9 +33,9 @@ int main()
 	printf("</td></tr><tr><td>\n");
 	printf("<hr style=\"color:#2020f0; height:1px\" width=\"84px\" align=\"center\">\n");
 	printf("</td></tr></table>");
-  	printf("<img src=\"/images/home.gif\"><a href=\"bbssec\" target=\"f3\">讨论区首页</a><br>\n");
+  	printf("<img src=\"/images/home.gif\"><a href=\"/bbssec.jsp\" target=\"f3\">讨论区首页</a><br>\n");
         printf("<img src=\"/images/link0.gif\"><a target=\"f3\" href=\"bbs0an\">精华公布栏</a><br>\n");
-   	printf("<img src=\"/images/link0.gif\"><a target=\"f3\" href=\"bbstop10\">今日十大</a><br>\n");
+   	printf("<img src=\"/images/link0.gif\"><a target=\"f3\" href=\"/bbstop10.jsp\">今日十大</a><br>\n");
 	/*printf("<img src=\"/images/link0.gif\"><a target=\"f3\" href=\"bbstopb10\">热门讨论区</a><br>\n");*/
 	if(loginok)
 	{
