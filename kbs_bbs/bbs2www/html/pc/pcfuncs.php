@@ -131,6 +131,7 @@ function html_editorstr_format($str)
 function html_format($str,$multi=FALSE,$useHtmlTag = FALSE,$defaultfg = "#000000" , $defaultbg = "#FFFFFF")
 {
 	global $pcconfig;
+	$str = trim($str);
 	if($multi)
 	{
 		if(strstr($str,$pcconfig["NOWRAPSTR"]) || $useHtmlTag )
@@ -919,6 +920,32 @@ function pc_load_directory($link,$uid,$pid)
 }
 
 /*
+**  auto-detect trackback pings from a text
+*/
+function pc_detect_trackbackpings($body,&$detecttbps)
+{
+	$text = $body;
+	$text = undo_html_format(trim($text)); 
+	$text = str_replace("'"," ",str_replace("\""," ",stripslashes($text)));     //convert " and ' to nth
+	
+	$detecttbps = array();
+	$detectnids = array();
+	$detectnum  = 0;
+	
+	preg_match_all("/[b\/]([^\/]+)\/pc\/pccon.php\?\id\=([0-9]+)&n\id\=([0-9]+)/i",$text,$matches);
+	
+	for($i=0; $i< count($matches[0]); $i++)
+	{
+		if($detectnids[intval($matches[3][$i])])
+			continue;
+		$detectnids[intval($matches[3][$i])] = 1;
+		$detecttbps[] = "http://".$matches[1][$i]."/pc/tb.php?id=".intval($matches[3][$i]);
+		$detectnum ++ ;
+	}
+	return $detectnum;
+}
+
+/*
 ** add a node
 ** $pc  : pc infor-->load by pc_load_infor() function
 ** return  0  :seccess
@@ -931,7 +958,7 @@ function pc_load_directory($link,$uid,$pid)
 **         -7 :引用通告的url错误
 **         -8 :引用通告目标服务器连接超时
 */
-function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$trackback,$subject,$body,$nodeType,$tbpUrl="",$tbpArt="")
+function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$trackback,$subject,$body,$nodeType,$autodetecttbp=FALSE,$tbpUrl="",$tbpArt="")
 {
 	global $pcconfig;
 	
@@ -942,8 +969,8 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
 	$access = intval($access);
 	$htmlTag = ($htmlTag==1)?1:0;
 	$trackback = ($trackback==1)?1:0;
-	$subject = addslashes($subject);
-	$body = html_editorstr_format($body);
+	$subject = addslashes(trim($subject));
+	$body = html_editorstr_format(trim($body));
 	$nodeType = intval($nodeType); //0: 普通;1: log,不可删除
 	
 	if(!$pc || !is_array($pc))
@@ -976,7 +1003,10 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
 	}
 	
 	if($access != 0) //公开区以外不发布引用通告
+	{
 		$tbpUrl = "";
+		$autodetecttbp = FALSE;
+	}
 	
 	if($tbpUrl && pc_tbp_check_url($tbpUrl) && $tbpArt) //若有引用通告的相关文章，加上链接
 	{
@@ -999,7 +1029,13 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
 	if($access == 0)
 		pc_update_record($link,$pc["UID"],"+1");
 	
-	if($tbpUrl) //发送引用通告
+	$detectnum = 0;
+	if($autodetecttbp) //自动发掘引用通告
+	{
+		$detecttbps = array();
+		$detectnum  = pc_detect_trackbackpings($body,$detecttbps);
+	}
+	if($tbpUrl || $detectnum) //发送引用通告前提取NID
 	{
 		//提取日志的nid
 		$query = "SELECT `nid` FROM nodes WHERE `subject` = '".$subject."' AND `body` = '".$body."' AND `uid` = '".$pc["UID"]."' AND `access` = '".$access."' AND `pid` = '".$pid."' AND `tid` = '".$tid."' ORDER BY nid DESC LIMIT 0,1;";
@@ -1027,11 +1063,12 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
 				"blogname" => undo_html_format($pc["NAME"])
 				);	
 		
-		$r = pc_tbp_trackback_ping($tbpUrl,$tbarr);
-		if($r == -1)
-			return -7;
-		if($r == -2)
-			return -8;
+		if($tbpUrl) //发送引用通告
+			pc_tbp_trackback_ping($tbpUrl,$tbarr);
+		for($i = 0 ; $i < $detectnum ; $i ++) //发送自动发掘的引用通告
+		{
+			pc_tbp_trackback_ping($detecttbps[$i],$tbarr);
+		}
 	}
 	
 	return 0;
@@ -1118,6 +1155,69 @@ function pc_convertto_group($link,$pc)
 	$pc["LOGTID"] = $logtid;
 	
 	if(!pc_group_logs($link,$pc,"CONVERT TO GROUPWORK"))
+		return -5;
+	return 0;
+}
+
+//修改Blog分类名
+function pc_edit_topics($link,$tid,$newname)
+{
+	if(!$tid || !$newname)
+		return FALSE;
+	$query = "UPDATE topics SET `topicname` = '".addslashes($newname)."' WHERE `tid` = '".intval($tid)."' LIMIT 1;";
+	if(!mysql_query($query,$link))
+		return FALSE;
+	else
+		return TRUE;
+}
+
+//删除Blog分类
+/*
+** return 0: seccess
+**        -1:node exist
+**        -2:error
+*/
+function pc_del_topics($link,$tid)
+{
+	$tid = intval($tid);
+	$query = "SELECT `nid` FROM nodes WHERE `tid` = '".$tid."' ;";
+	$result = mysql_query($query,$link);
+	$rows = mysql_fetch_array($result);
+	mysql_free_result($result);
+	if($rows)
+		return -1;
+	$query = "DELETE FROM topics WHERE `tid` = '".$tid."' ;";
+	if(!mysql_query($query,$link))
+		return -2;
+	return 0;
+}
+
+/*
+** 收藏夹中添加目录
+** return  0: seccess
+**        -1: 缺少blog资料
+**        -2: 缺少父目录id
+**        -3: 缺少目录名
+**        -4: 超容
+**        -5: 系统错误
+*/
+function pc_add_favdir($link,$pc,$pid,$dirname)
+{
+	$pid = intval($pid); //parent's id
+	$dirname = addslashes(trim($dirname));
+	
+	if(!$pc || !is_array($pc))
+		return -1;
+	if(!$pid)
+		return -2;
+	if(!$dirname)
+		return -3;
+	if(pc_dir_num($link,$pc["UID"],$pid)+1 > $pc["DLIM"])
+		return -4;
+	
+	$query = "INSERT INTO `nodes` ( `nid` , `pid` , `type` , `source` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `tid` , `emote` ) ".
+		"VALUES ('', '".$pid."', '1', '', '".$_SERVER["REMOTE_ADDR"]."',NOW( ),NOW( ), '".$pc["UID"]."', '0', '0', '".$dirname."', NULL , '3', '0', '0', '0');";
+	if(!mysql_query($query,$link))
 		return -5;
 	return 0;
 }

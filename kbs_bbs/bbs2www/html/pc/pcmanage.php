@@ -195,7 +195,7 @@
 				else
 					$blogbody = $_POST["blogbody"];
 				
-				$ret = pc_add_node($link,$pc,$_GET["pid"],$_POST["tid"],$_POST["emote"],$_POST["comment"],$_GET["tag"],$_POST["htmltag"],$_POST["trackback"],$_POST["subject"],$blogbody,0,$_POST["trackbackurl"],$_POST["trackbackname"]);
+				$ret = pc_add_node($link,$pc,$_GET["pid"],$_POST["tid"],$_POST["emote"],$_POST["comment"],$_GET["tag"],$_POST["htmltag"],$_POST["trackback"],$_POST["subject"],$blogbody,0,$_POST["autodetecttbps"],$_POST["trackbackurl"],$_POST["trackbackname"]);
 				$error_alert = "";
 				switch($ret)
 				{
@@ -325,24 +325,32 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 ?>
 	</td>
 </tr>
+<?php
+	if($tag == 0)
+	{
+?>
 <tr>
-	<td class="t13">
+	<td class="t8">
 	引用通告
 	</td>
 </tr>
 <tr>
-	<td class="t5">
+	<td class="t8">
+	<input type="checkbox" name="autodetecttbps" value="1">自动发掘引用通告
+	(什么是自动发掘引用通告?)<br />
 	文章链接: <input type="text" size="80" maxlength="255" name="trackbackname" class="f1" value="<?php echo htmlspecialchars($_GET[tbArtAddr]); ?>"><br />
 	Trackback Ping URL: <input type="text" size="80" maxlength="255" name="trackbackurl" value="<?php echo htmlspecialchars($_GET[tbTBP]); ?>" class="f1">
 	(必须以"http://"开头)
 	</td>
 </tr>
 <tr>
-	<td class="t8">
-	允许引用
-	<input type="checkbox" name="trackback" value="1" checked>
+	<td class="t5">
+	<input type="checkbox" name="trackback" value="1" checked>允许引用
 	</td>
 </tr>
+<?php
+	}
+?>
 <tr>
 	<td class="t2">
 		<input type="button" name="ins" value="插入HTML" class="b1" onclick="return insertHTML();" />
@@ -594,18 +602,8 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			}
 			if($_POST["topicname"])
 			{
-				/*
-				if($_POST["access"] != $rows[access])
-				{
-					$query = "UPDATE nodes SET `access` = '".$_POST["access"]."' , `changed` = '".date("YmdHis")."' WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".$rows[tid]."' ;";
-					mysql_query($query,$link);
-				}
-				*/
-				//$query = "UPDATE topics SET `topicname` = '".$_POST["topicname"]."' , `access` = '".$_POST["access"]."' WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".$rows[tid]."' ;";
-				$query = "UPDATE topics SET `topicname` = '".addslashes($_POST["topicname"])."' WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".$tid."' ;";
-				mysql_query($query,$link);
+				pc_edit_topics($link,$tid,$_POST["topicname"]);
 				$log_action = "UPDATE TOPIC: ".$_POST["topicname"];
-				$log_content = "OLD TITLE: ".$topicname."\nNEW TITLE: ".$_POST["topicname"];
 				pc_update_record($link,$pc["UID"]);
 				
 ?>
@@ -620,35 +618,15 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 ?>
 <br>
 <center>
-<form action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=tedit&tid=<?php echo $rows[tid]; ?>" method="post" onsubmit="if(this.topicname.value==''){alert('请输入Blog名称!');return false;}">
+<form action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=tedit&tid=<?php echo $tid; ?>" method="post" onsubmit="if(this.topicname.value==''){alert('请输入Blog名称!');return false;}">
 <table cellspacing="0" cellpadding="5" border="0" width="90%" class="t1">
 <tr>
 	<td class="t2">修改Blog</td>
 </tr>
-<?php /*
-<tr>
-	<td>
-	所在分区
-	<select name="access">
-<?php
-		for($i =0 ;$i < 3 ;$i++ )
-		{
-			if($i == $rows[access])
-				echo "<option value=\"".$i."\" selected>".$sec[$i]."</option>\n";
-			else
-				echo "<option value=\"".$i."\">".$sec[$i]."</option>\n";
-		}
-?>	
-	</select>
-	</td>
-</tr>
-
-*/
-?>
 <tr>
 	<td class="t8">
 	Blog名
-	<input type="text" class="f1" name="topicname" value="<?php echo htmlspecialchars(stripslashes($rows[topicname])); ?>">
+	<input type="text" class="f1" name="topicname" value="<?php echo htmlspecialchars(stripslashes($topicname)); ?>">
 	</td>
 </tr>
 <tr>
@@ -670,27 +648,24 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				html_error_quit("Blog不存在!");
 				exit();
 			}
-			$query = "SELECT `nid` FROM nodes WHERE `tid` = '".$tid."' ;";
-			$result = mysql_query($query,$link);
-			$rows = mysql_fetch_array($result);
-			mysql_free_result($result);
-			if($rows)
+			$ret = pc_del_topics($link,$tid);
+			if($ret==-1)
 			{
-				html_error_quit("请先删除Blog中的文章!");
+				html_error_quit("请先删除该分类的所有文章!");
 				exit();
 			}
-			else
+			if($ret!=0)
 			{
-				$query = "DELETE FROM topics WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".$tid."' ;";
-				mysql_query($query,$link);
-				pc_update_record($link,$pc["UID"]);
-				$log_action = "DEL TOPIC: ".$topicname;
+				html_error_quit("删除失败,请联系管理员!");
+				exit();
+			}
+			pc_update_record($link,$pc["UID"]);
+			$log_action = "DEL TOPIC: ".$topicname;
 ?>
 <p align="center">
 <a href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=6">操作成功,点击返回</a>
 </p>
 <?php				
-			}
 		}
 		elseif($act == "tadd" && $_POST["topicname"])
 		{
@@ -724,15 +699,26 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 		}
 		elseif($act == "adddir" && $_POST["dir"])
 		{
-			$pid = (int)($_POST["pid"]);
-			if(pc_dir_num($link,$pc["UID"],$pid)+1 > $pc["DLIM"])
+			$ret = pc_add_favdir($link,$pc,$_POST["pid"],$_POST["dir"]);
+			switch($ret)
 			{
-				html_error_quit("目标文件夹中的目录数已达上限 ".$pc["DLIM"]. " 个!");
-				exit();
+				case -1:
+					html_error_quit("缺少Blog信息!");
+					exit();
+				case -2:
+					html_error_quit("缺少父目录ID!");
+					exit();
+				case -3:
+					html_error_quit("缺少目录名!");
+					exit();
+				case -4:
+					html_error_quit("该目录下目录数已达上限!");
+					exit();
+				case -5:
+					html_error_quit("系统错误,请联系管理员!");
+					exit();
+				default:	
 			}
-			$query = "INSERT INTO `nodes` ( `nid` , `pid` , `type` , `source` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `tid` , `emote` ) ".
-				"VALUES ('', '".$pid."', '1', '', '".$_SERVER["REMOTE_ADDR"]."','".date("YmdHis")."', '".date("YmdHis")."', '".$pc["UID"]."', '0', '0', '".addslashes($_POST["dir"])."', NULL , '3', '0', '0', '0');";
-			mysql_query($query,$link);
 			pc_update_record($link,$pc["UID"]);
 			$log_action = "ADD DIR: ".$_POST["dir"];
 ?>
