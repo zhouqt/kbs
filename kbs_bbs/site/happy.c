@@ -3,7 +3,7 @@
 const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 const char seccode[SECNUM][5]={
-	"0", "1", "3", "4", "5", "6", "7", "8", "9"
+	"0", "1", "2", "3", "4", "5", "6", "7", "8"
 };
 
 const char *permstrings[] = {
@@ -30,7 +30,7 @@ const char *permstrings[] = {
         "聊天室OP(元老院专用)", /* PERM_CHATOP */
         "系统总管理员",         /* PERM_ADMIN */
         "荣誉帐号",           /* PERM_HONOR*/
-        "特殊权限 5",           /* PERM_UNUSE?*/
+        "俱乐部管理",           /* PERM_SECANC*/
         "仲裁委员",           /* PERM_JURY*/
         "特殊权限 7",           /* PERM_UNUSE?*/
         "自杀进行中",        /*PERM_SUICIDE*/
@@ -71,21 +71,25 @@ const char *user_definestr[] = {
     "进站时观看上站人数统计图", /* DEF_SHOWSTATISTIC Haohmaru 98.09.24 */
     "未读标记使用 *",           /* DEF_UNREADMARK Luzi 99.01.12 */
     "使用GB码阅读",             /* DEF_USEGB KCN 99.09.03 */
+    "对汉字进行整字处理",  
+    "显示详细用户数据",  /*DEF_SHOWDETAILUSERDATA 2003.7.31 */
+    "显示真实用户数据", /*DEF_REALDETAILUSERDATA 2003.7.31 */
+    "",
 	"显示自己的星座",           /* DEF_SHOWHOROSCOPE */
-    "使用随机签名档",           /* DEF_RANDSIGN */
-    "对汉字进行整字处理"  /* DEF_SPLITSCREEN 2002.9.1 */
+/*    "隐藏ip", */             
+	"显示底部浮动信息"
 };
 
 const char    *explain[] = {
     "本站系统",
-    "快乐聚会",
-    "电脑技术",
-    "电脑游戏",
+    "网络服务",
+    "群体组织",
+    "个人空间",
     "艺术文化",
-    "转信专区",
-    "体育休闲",
+    "电脑技术",
+    "休闲娱乐",
     "知性感性",
-    "新闻时事",
+    "其他版面",
     NULL
 };
 
@@ -110,15 +114,15 @@ const char *mailbox_prop_str[] =
 };
 
 const char secname[SECNUM][2][20]={
-	{"BBS 系统", "[本站]"},
-	{"快乐聚会", "[院系][协会][团体]"},
-	{"电脑技术", "[电脑][系统][网路]"},
-	{"电脑游戏", "[游戏]"},
+	{"本站系统", "[HAPPYBBS系统区]"},
+	{"网络服务", "[WWW][FTP][校园网]"},
+	{"群体组织", "[院系][协会][团体]"},
+	{"个人空间", "[你] [我] [他] [她]"},
 	{"艺术文化", "[文艺][艺术][学术]"},
-	{"转信专区", "[转信]"},
-	{"体育休闲", "[体育][星座][音乐]"},
+	{"电脑技术", "[电脑][系统][网路]"},
+	{"休闲娱乐", "[流行][星座][游戏]"},
 	{"知性感性", "[闲聊][感性]"},
-	{"新闻时事", "[新闻][特快][信息]"},
+	{"其他版面", "[未分类]"}
 };
 
 struct _shmkey
@@ -536,6 +540,7 @@ int check_read_perm(struct userec *user, const struct boardheader *board)
 {
     if (board == NULL)
         return 0;
+	if (HAS_PERM(user, PERM_SECANC)) return 1;
     if (board->level & PERM_POSTMASK || HAS_PERM(user, board->level) || (board->level & PERM_NOZAP)) {
         if (board->flag & BOARD_CLUB_READ) {    /*俱乐部*/
 			/* only club members can access super club */
@@ -557,6 +562,9 @@ int check_read_perm(struct userec *user, const struct boardheader *board)
         }
         return 1;
     }
+	if (!(board->flag & BOARD_SUPER_CLUB) && HAS_PERM(user, PERM_ADMIN))
+		return 1;
+
     return 0;
 }
 

@@ -1,6 +1,9 @@
 #ifndef __SYSNAME_H_
 #define __SYSNAME_H_
 
+#define HAVE_MYSQL_SMTH		1
+#define HAVE_WFORUM		1
+#define PERSONAL_CORP		1
 #define CONV_PASS		1
 #define NINE_BUILD		0
 #define NEW_COMERS		1	/* 注册后在 newcomers 版自动发文 */
@@ -15,10 +18,12 @@
 #define ANTISPAM_MAILADDR	0	/* 转信后的文章隐藏真实 MAIL */
 #define CNBBS_TOPIC		1	/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
 #define MAIL2BOARD		0	/* 是否允许直接 mail to any board */
-#define MAILOUT			0	/* 是否允许向站外主动发信 */
+#define MAILOUT			1	/* 是否允许向站外主动发信 */
 #define HAVE_TSINGHUA_INFO_REGISTER 0
 
 #define BUILD_PHP_EXTENSION 1 /*将php lib编成php extension*/
+
+#define FLOWBANNER   			/* 底部浮动条 */
 
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
@@ -114,7 +119,7 @@
 #define CHAT_SYSTEM		"系统"
 #define	CHAT_PARTY		"大家"
 
-#define DEFAULT_NICK		"每天爱你多一些"
+#define DEFAULT_NICK		"永远HAPPY"
 
 #define MSG_ERR_USERID		"错误的使用者代号..."
 #define LOGIN_PROMPT		"请输入代号"
@@ -201,9 +206,13 @@ bigger mailbox. --stephen 2001.10.31*/
 
 /* Don't mess with this. */
 #define HAS_PERM(user,x) ((x)?((user)->userlevel)&(x):1)
-#define DEFINE(user,x)     ((x)?((user)->userdefine)&(x):1)
+#define DEFINE(user,x) ((x)?((user)->userdefine[def_list(x)])&(x):1)   
 
 #define TDEFINE(x) ((x)?(tmpuser)&(x):1)
+
+#define SET_DEFINE(user,x) ((user)->userdefine[def_list(x)] |= x)
+#define SET_UNDEFINE(user,x) ((user)->userdefine[def_list(x)] &= ~x)
+#define SET_CHANGEDEFINE(user,x) ((user)->userdefine[def_list(x)] ^= x)
 
 /* 用户自订参数定义 */
 #define DEF_ACBOARD      000001
@@ -230,16 +239,18 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_SHOWHOT      010000000
 #define DEF_NOTEPAD      020000000
 #define DEF_IGNOREMSG    040000000      /* Added by Marco */
-#define DEF_HIGHCOLOR	0100000000   /*Leeward 98.01.12 */
+#define DEF_HIGHCOLOR    0100000000   /*Leeward 98.01.12 */
 #define DEF_SHOWSTATISTIC 0200000000    /* Haohmaru */
-#define DEF_UNREADMARK 0400000000       /* Luzi 99.01.12 */
-#define DEF_USEGB     01000000000       /* KCN,99.09.05 */
-#define DEF_SHOWHOROSCOPE 02000000000
-#define DEF_RANDSIGN      04000000000
-/*#define DEF_SPLITSCREEN 010000000000*/
-#define DEF_CHCHAR 010000000000
+#define DEF_UNREADMARK   0400000000       /* Luzi 99.01.12 */
+#define DEF_USEGB        01000000000       /* KCN,99.09.05 */
+#define DEF_CHCHAR 		 02000000000
+#define DEF_SHOWDETAILUSERDATA  04000000000
+#define DEF_SHOWREALUSERDATA   010000000000
 
-#define NUMDEFINES 31
+#define DEF_HIDEIP       040000000001
+#define DEF_SHOWHOROSCOPE	040000000001
+#define DEF_SHOWBANNER   040000000002
+#define NUMDEFINES 		 34
 
 #define TDEF_SPLITSCREEN 000001
 
