@@ -6676,9 +6676,9 @@ static PHP_FUNCTION(bbs_register_sms_sendcheck)
     if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &dest, &dest_len) == FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
-/*
+
 	ret = web_register_sms_sendcheck( dest );
-*/
+
 	RETURN_LONG(ret);
 }
 
@@ -6692,10 +6692,9 @@ static PHP_FUNCTION(bbs_register_sms_docheck)
     if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &dest, &dest_len) == FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
-/*
-	{char cmd[256];sprintf(cmd,"echo %s_ >> /home/stiger/test",dest);system(cmd);}
+
 	ret = web_register_sms_docheck( dest );
-*/
+
 	RETURN_LONG(ret);
 }
 
