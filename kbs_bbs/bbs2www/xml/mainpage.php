@@ -279,7 +279,16 @@ $boards = $root->child_nodes();
 <?php
 	}
 ?>
-</ul></td></tr>
+</ul>
+<?php
+	if($j == 10)
+	{
+?>
+<p align="right"><a href="/bbsnewbrd.php">&gt;&gt;¸ü¶à</a></p>
+<?php
+	}
+?>
+	</td></tr>
       </table>
       <br>
 <?php
