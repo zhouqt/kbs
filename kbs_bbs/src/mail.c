@@ -1257,21 +1257,18 @@ int mail_move(int ent, struct fileheader* fileinfo, char* direct)
     sel[mail_list_t+3].data = NULL;
     i = simple_select_loop(sel, SIF_NUMBERKEY | SIF_SINGLE | SIF_ESCQUIT, 0, 6, NULL)-1;
     if(i>=0&&i<mail_list_t+2){
-        strcpy(buf, direct);
-        if ((t = strrchr(buf, '/')) != NULL)
-            *t = '\0';
+        strcpy(buf, direct);    
+        t = strrchr(buf, '/') + 1;
+        *t = '.';
+        t++;
+        if (i>=2)
+            strcpy(t, mail_list[i-2]+30);
+        else if (i==0)
+            strcpy(t, "DIR");
+        else if (i==1)
+            strcpy(t, "DELETED");
+        if (strcmp(buf, direct))
         if (!delete_record(direct, sizeof(*fileinfo), ent, (RECORD_FUNC_ARG) cmpname, fileinfo->filename)) {
-            sprintf(genbuf, "%s/%s", buf, fileinfo->filename);
-            strcpy(buf, direct);    
-            t = strrchr(buf, '/') + 1;
-            *t = '.';
-            t++;
-            if (i>=2)
-                strcpy(t, mail_list[i-2]+30);
-            else if (i==0)
-                strcpy(t, "DIR");
-            else if (i==1)
-                strcpy(t, "DELETED");
             append_record(buf, fileinfo, sizeof(*fileinfo));
         }
     }
@@ -2046,9 +2043,9 @@ char mail_title[9][30]=
 {
 "N) 览阅新信笺",
 "S) 寄信给站上其它使用者",
-"收件箱",
-"已发送邮件",
-"垃圾箱",
+"I) 收件箱",
+"T) 已发送邮件",
+"J) 垃圾箱",
 "G) 寄给 / 设定寄信名单",
 "O)┌设定好友名单",
 "F)└寄信给好友名单",

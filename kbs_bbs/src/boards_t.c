@@ -477,6 +477,7 @@ int choose_board(int newflag, char *boardprefix)
             {
                 char buf[STRLEN];
 
+                if (3==yank_flag) goto hotkey;
                 if (!HAS_PERM(currentuser, PERM_SYSOP) && !HAS_PERM(currentuser, PERM_OBOARDS))
                     break;
                 if (!strcmp(nbrd[num].name, "syssecurity")
@@ -505,6 +506,7 @@ int choose_board(int newflag, char *boardprefix)
             {
                 char buf[STRLEN];
 
+                if (3==yank_flag) goto hotkey;
                 if (!HAS_PERM(currentuser, PERM_SYSOP) && !HAS_PERM(currentuser, PERM_OBOARDS))
                     break;
                 if (nbrd[num].dir) break;
@@ -524,6 +526,7 @@ int choose_board(int newflag, char *boardprefix)
             }
         case 'L':
         case 'l':              /* Luzi 1997.10.31 */
+            if (3==yank_flag) goto hotkey;
             if (uinfo.mode != LOOKMSGS) {
                 show_allmsgs();
                 page = -1;
@@ -535,6 +538,7 @@ int choose_board(int newflag, char *boardprefix)
             break;
         case 'W':
         case 'w':              /* Luzi 1997.10.31 */
+            if (3==yank_flag) goto hotkey;
             if (!HAS_PERM(currentuser, PERM_PAGE))
                 break;
             s_msg();
@@ -544,6 +548,7 @@ int choose_board(int newflag, char *boardprefix)
             {
                 int oldmode = uinfo.mode;
 
+                if (3==yank_flag) goto hotkey;
                 clear();
                 modify_user_mode(QUERY);
                 t_query(NULL);
@@ -562,6 +567,7 @@ int choose_board(int newflag, char *boardprefix)
         case 'c':
 #endif
             {                   /* Leeward 98.10.26 fix a bug by saving old mode */
+                if (3==yank_flag) goto hotkey;
                 int savemode = uinfo.mode;
 
                 if (!HAS_PERM(currentuser, PERM_BASIC))
@@ -576,6 +582,7 @@ int choose_board(int newflag, char *boardprefix)
             }
         case 'P':
         case 'b':
+            if (3==yank_flag) goto hotkey;
         case Ctrl('B'):
         case KEY_PGUP:
             if (num == 0)
@@ -590,6 +597,7 @@ int choose_board(int newflag, char *boardprefix)
         case 'C':
         case 'c':              /*ÔÄ¶ÁÄ£Ê½ */
 #endif
+            if (3==yank_flag) goto hotkey;
             if (newflag == 1)
                 newflag = 0;
             else
@@ -597,6 +605,7 @@ int choose_board(int newflag, char *boardprefix)
             show_brdlist(page, 1, newflag);
             break;
         case 'N':
+            if (3==yank_flag) goto hotkey;
         case ' ':
         case Ctrl('F'):
         case KEY_PGDN:
@@ -607,12 +616,14 @@ int choose_board(int newflag, char *boardprefix)
             break;
         case 'p':
         case 'k':
+            if (3==yank_flag) goto hotkey;
         case KEY_UP:
             if (num-- <= 0)
                 num = brdnum - 1;
             break;
         case 'n':
         case 'j':
+            if (3==yank_flag) goto hotkey;
         case KEY_DOWN:
             if (++num >= brdnum)
                 num = 0;
@@ -621,6 +632,7 @@ int choose_board(int newflag, char *boardprefix)
             num = brdnum - 1;
             break;
         case 'h':
+            if (3==yank_flag) goto hotkey;
             show_help("help/boardreadhelp");
             page = -1;
             break;
@@ -757,6 +769,7 @@ int choose_board(int newflag, char *boardprefix)
             }
             break;
         case 'A':              // added by bad 2002.8.3
+            if (3==yank_flag) goto hotkey;
             if (2 == yank_flag) {
                 char bname[STRLEN];
                 int i < 0;
@@ -815,6 +828,7 @@ int choose_board(int newflag, char *boardprefix)
             }	
             break;
         case 'm':
+            if (3==yank_flag) goto hotkey;
             if (yank_flag == 2) {
                 if (currentuser->flags[0] & BRDSORT_FLAG) {
                     move(0, 0);
@@ -893,6 +907,7 @@ int choose_board(int newflag, char *boardprefix)
             break;
             /*---	End of Addition	---*/
         case 'y':
+            if (3==yank_flag) goto hotkey;
             if (yank_flag < 2) {
                                 /*--- Modified 4 FavBoard 2000-09-11	---*/
                 yank_flag = !yank_flag;
@@ -900,6 +915,7 @@ int choose_board(int newflag, char *boardprefix)
             }
             break;
         case 'z':              /* Zap */
+            if (3==yank_flag) goto hotkey;
             if (yank_flag < 2) {
                                 /*--- Modified 4 FavBoard 2000-09-11	---*/
                 if (HAS_PERM(currentuser, PERM_BASIC) && !(nbrd[num].flag & BOARD_NOZAPFLAG)) {
