@@ -47,8 +47,12 @@ int main()
         http_fatal("两次发文间隔过密, 请休息几秒后再试");
     }
     *(int *) (u_info->from + 36) = time(0);
-    sprintf(filename, "tmp/%s.%d.tmp", getcurruserid(), getpid());
-    f_append(filename, unix_string(content));
+	if( atoi(getparm("tmpl")) )
+   		sprintf(filename, "tmp/%s.tmpl.tmp", getcurruserid());
+	else{
+   		sprintf(filename, "tmp/%s.%d.tmp", getcurruserid(), getpid());
+    	f_append(filename, unix_string(content));
+	}
 
     if(reid > 0){
         int pos;int fd;
