@@ -234,7 +234,7 @@ do_userlist()
         uentp=user_record[i+page];
         if (!uentp->active||!uentp->pid)
 		{
-			prints(" %4d 啊,我刚走",i+1+page);
+			prints(" %4d 啊,我刚走\n",i+1+page);
 			continue;
         }	
         if(!showexplain)
