@@ -109,23 +109,6 @@ int chkmail()
     return (ismail = 0);
 }
 
-int getmailnum(recmaildir)      /*Haohmaru.99.4.5.查对方信件数 */
-    char recmaildir[STRLEN];
-{
-    struct fileheader fh;
-    struct stat st;
-    int fd;
-    register int numfiles;
-
-    if ((fd = open(recmaildir, O_RDONLY)) < 0)
-        return 0;
-    fstat(fd, &st);
-    numfiles = st.st_size;
-    numfiles = numfiles / sizeof(fh);
-    close(fd);
-    return numfiles;
-}
-
 int get_mailnum()
 {
     struct fileheader fh;

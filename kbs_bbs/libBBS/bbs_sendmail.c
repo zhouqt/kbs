@@ -3,6 +3,22 @@ extern char *gb2big(char *, int *, int);
 extern char *sysconf_str();
 
 #include <libesmtp.h>
+static int getmailnum(char* recmaildir)      /*Haohmaru.99.4.5.查对方信件数 */
+{   
+    struct fileheader fh;
+    struct stat st;
+    int fd;
+    register int numfiles;
+    
+    if ((fd = open(recmaildir, O_RDONLY)) < 0)
+        return 0;
+    fstat(fd, &st);
+    numfiles = st.st_size;
+    numfiles = numfiles / sizeof(fh);
+    close(fd);
+    return numfiles;
+}
+
 int chkusermail(struct userec *user)
 {
     char recmaildir[STRLEN];
