@@ -45,7 +45,10 @@ int main()
 
 		if( same ){
             if (total == 0)
+			{
                 strcpy(first_file, x.filename);
+				groupid = x.groupid;
+			}
             printf("<tr><td>%d</td>", sum);
             printf("<td>%s</td>", userid_str(x.owner));
             if (!(x.accessed[0] & (FILE_MARKED | FILE_DIGEST))) {
@@ -64,7 +67,7 @@ int main()
     printf("</table><hr>\n共找到 %d 篇 \n", total);
     printf("<a href=\"/bbsdoc.php?board=%s\">本讨论区</a> ", brdencode);
     if (total > 0) {
-        printf("<a href=\"bbstcon?board=%s&file=%s\">本主题全部展开</a> ", brdencode, first_file);
+        printf("<a href=\"bbstcon?board=%s&gid=%d\">本主题全部展开</a> ", brdencode, groupid);
         if (has_BM_perm(currentuser, board))
             printf("<a onclick=\"return confirm('确定同主题全部删除?')\" href=\"%s\">同主题删除</a>", buf);
     }

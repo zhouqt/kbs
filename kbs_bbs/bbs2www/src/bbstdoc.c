@@ -56,7 +56,7 @@ int main()
             break;
         printf("<tr><td>%d</td><td>%s</td><td>%s</td>", sum + 1, flag_str(data[i].accessed[0]), userid_str(data[i].owner));
         printf("<td>%6.6s</td>", wwwCTime(atoi(data[i].filename + 2)) + 4);
-        printf("<td><a href=\"bbstcon?board=%s&file=%s\">¡ð %38.38s </a></td><td>%s</td></tr>", brdencode, data[i].filename, nohtml(data[i].title), stat1(data, i, total));
+        printf("<td><a href=\"bbstcon?board=%s&gid=%d\">¡ð %38.38s </a></td><td>%s</td></tr>", brdencode, data[i].groupid, nohtml(data[i].title), stat1(data, i, total));
     }
     printf("</table><hr>\n");
     if (start > 0)
