@@ -11,7 +11,8 @@ login_init();
 	{
 		global $section_names;
 		$brd_encode = urlencode($brdarr["NAME"]);
-	?>		
+	?>
+	<tbody>		
 <table width="100%" border="0" cellspacing="0" cellpadding="3" class="b1">		
 <form name="form1" action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="get">
 <input type="hidden" name="board" value="<?php echo $brdarr["NAME"]; ?>"/>
@@ -92,7 +93,7 @@ login_init();
 		    }
 	?>
 <input type="submit" class="b5" value="跳转到"/> 第 <input type="text" name="start" size="3"  onmouseover=this.focus() onfocus=this.select() class="b5"> 篇 
-</td></tr></form></table>
+</td></tr></form></table></tbody>
 	<?php
 	}
 
@@ -102,10 +103,10 @@ login_init();
 		global $dir_modes;
 		global $default_dir_mode;
 		$brd_encode = urlencode($brdarr["NAME"]);
-?>
+?><tbody>
 <table width="100%" border="0" cellspacing="0" cellpadding="3" class="t1">
 <tr><td class="t2" width="50">序号</td><td class="t2" width="30">标记</td><td class="t2" width="85">作者</td><td class="t2" width="50">日期</td><td class="t2">标题</td></tr>
-</table>
+</table></tbody>
 <?php
 		$ding_cnt = 0;
 		foreach ($articles as $article)
@@ -126,7 +127,7 @@ login_init();
 				$title = "● " . $title;
 
 			$flags = $article["FLAGS"];
-?>
+?><tbody>
 <table width="100%" border="0" cellspacing="0" cellpadding="3" class="t9">
 <tr>
 <?php
@@ -199,7 +200,7 @@ login_init();
 ?>
 </td>
 </tr>
-</table>
+</table></tbody>
 <?php
 			if ($order)
 				$i--;
