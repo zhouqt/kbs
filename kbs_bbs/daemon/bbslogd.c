@@ -9,11 +9,18 @@ struct bbs_msgbuf *rcvlog(int msqid)
     int retv;
 
     retv = msgrcv(msqid, msgp, sizeof(buf) - sizeof(msgp->mtype) - 2, 0, MSG_NOERROR);
+    if (retv < 0) {
+	if (errno==EINTR)
+            return NULL;
+	else {
+	    bbslog("3error","bbslogd(rcvlog):%s",strerror(errno));
+	    exit(0);
+	}
+    }
     retv-=((char*)msgp->mtext-(char*)&msgp->msgtime);
     while (retv > 0 && msgp->mtext[retv - 1] == 0)
         retv--;
-    if (retv <= 0)
-        return NULL;
+    if (retv==0) return NULL;
     if (msgp->mtext[retv - 1] != '\n') {
         msgp->mtext[retv] = '\n';
         retv++;

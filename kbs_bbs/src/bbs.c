@@ -2158,17 +2158,22 @@ int post_article(char *q_file, struct fileheader *re_file)
         post_file.accessed[0] |= FILE_SIGN;
     }
 
-    returnvalue = after_post(currentuser, &post_file, currboard, re_file);
+#ifdef FILTER
+    returnvalue = 
+#endif
+	   after_post(currentuser, &post_file, currboard, re_file);
 
     if (!junkboard(currboard)) {
         currentuser->numposts++;
     }
+#ifdef FILTER
     if (returnvalue == 2) {
 	    clear();
 	    move (3, 0);
 	    prints ("\n\n            很抱歉，本文可能含有不适当的内容，需经审核方可发\n表，请耐心等待...\n");
 	    pressreturn();
     }
+#endif
     switch (olddigestmode) {
     case 2:
         title_mode();
