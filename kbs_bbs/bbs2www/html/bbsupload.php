@@ -118,7 +118,7 @@ a:hover {  color: #FF0000; text-decoration: none}
 <?php
                 if ($action=="add") {
                 	if ($_FILES['attachfile']['size']+$totalsize>ATTACHMAXSIZE) {
-                		unlink($attachdir . "/" . $act_attachname);
+                		@unlink($attachdir . "/" . $act_attachname);
                 		unset($filenames,$act_attachname);
                 		$errno=UPLOAD_ERR_FORM_SIZE;
                 	}

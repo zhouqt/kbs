@@ -144,6 +144,7 @@ function display_navigation_bar($brdarr, $num)
 				Header("Accept-Ranges: bytes");
 				Header("Content-Length: " . $attachsize);
 				Header("Content-Disposition: filename=" . $attachname);
+				if ($attachsize>0)
 				echo fread($file,$attachsize);
 				fclose($file);
 				exit;
