@@ -2966,7 +2966,7 @@ int range_flag(int ent, struct fileheader *fileinfo, char *direct)
         pressreturn();
         return FULLUPDATE;
     }
-    sprintf(buf, "1-保留标记m  2-删除标记t  3-文摘标记g  4-不可Re标记  5-标记#%s:  [0]",
+    sprintf(buf, "1-保留标记m  2-删除标记t  3-文摘标记g  4-不可Re标记  5-标记#%s:[0]",
         HAS_PERM(currentuser, PERM_SYSOP)?"  6-审查标记@":"");
     getdata(4, 0, buf, ans, 4, DOECHO, NULL, true);
     if(ans[0]=='6'&&!HAS_PERM(currentuser, PERM_SYSOP)) return FULLUPDATE;
