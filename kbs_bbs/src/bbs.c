@@ -1984,6 +1984,10 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 
     char direct[PATHLEN];
     int cmdmode;
+#ifdef FILTER
+    int returnvalue;
+#endif
+
     if (conf!=NULL)  {
         struct read_arg* arg;
         arg=(struct read_arg*)conf->arg;
@@ -1992,10 +1996,6 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     else {
 	cmdmode=DIR_MODE_NORMAL;
     }
-
-#ifdef FILTER
-    int returnvalue;
-#endif
 
     if (true == check_readonly(currboard->filename))      /* Leeward 98.03.28 */
         return FULLUPDATE;
