@@ -219,6 +219,7 @@ int num_in_buf()
 
 int telnet_state = 0;
 char lastch;
+int naw_col, naw_ln, naw_changed=0;
 
 static int telnet_machine(unsigned char ch)
 {
@@ -252,8 +253,13 @@ static int telnet_machine(unsigned char ch)
             telnet_state = 4;   /* filter telnet SB data */
         break;
     case 3:                    /* wait for se */
-        if (ch == SE)
+        if (ch == SE) {
             telnet_state = 0;
+            if(naw_changed) {
+                naw_changed = 0;
+                do_naws(naw_ln, naw_col);
+            }
+        }
         else
             telnet_state = 4;
         break;
@@ -262,15 +268,11 @@ static int telnet_machine(unsigned char ch)
             telnet_state = 3;   /* wait for SE */
         break;
     case 5:
+        naw_changed = 1;
         telnet_state = 6;
         break;
     case 6:
-        /*
-         * if (ch<120&&ch>=80)
-         * t_columns=ch;
-         * else
-         * t_columns=80;
-         */
+        naw_col = ch;
         if (ch == IAC)
             telnet_state = 4;
         else
@@ -283,16 +285,11 @@ static int telnet_machine(unsigned char ch)
             telnet_state = 8;
         break;
     case 8:
-        /*
-         * if (ch<35&&ch>=24)
-         * t_lines=ch;
-         * else
-         * t_lines=24;
-         */
+        naw_ln = ch;
         if (ch == IAC)
             telnet_state = 4;
         else
-            telnet_state = 4;
+            telnet_state = 2;
         break;
     }
     return 0;
