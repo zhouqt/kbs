@@ -166,7 +166,7 @@ int mgrep_str(char *text, int num)
         end--;                  /*最后一行无\n的 */
 
     residue = buf_end - end + 1;
-    text[start - 1] = r_newline;
+    /*text[start - 1] = r_newline;*/
     if (SHORT)
         m_short(text, start, end);
     else
