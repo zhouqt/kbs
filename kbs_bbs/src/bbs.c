@@ -3014,6 +3014,19 @@ void notepad()
             if (i > 2)
                 i = 2;
             for (n = 0; n <= i; n++) {
+#ifdef FILTER
+	        if (check_badword_str(note[n],strlen(note[n]))) {
+			int t;
+                        for (t = n; t <= i; t++) 
+                            fprintf(in, "[31m©¦[m%-74.74s[31m©¦[m\n", note[t]);
+			fclose(in);
+
+                        post_file(currentuser, "", tmpname, FILTER_BOARD, "---ÁôÑÔ°æ¹ýÂËÆ÷---", 0, 2);
+
+			unlink(tmpname);
+			return;
+		}
+#endif
                 if (note[n][0] == '\0')
                     break;
                 fprintf(in, "[31m©¦[m%-74.74s[31m©¦[m\n", note[n]);

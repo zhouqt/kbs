@@ -343,7 +343,7 @@ void send_to_room(room, str, unum)
     if (filtering) {
     	if (check_badword_str(str, strlen(str))) {
     		char title[80];
-    		char content[80];
+    		char content[256];
     		sprintf(title,"%s 在聊天室说坏话",users[unum].userid);
     		sprintf(content,"%s\n%s(聊天代号 %s )说:%s",Ctime(time(NULL)),
 			users[unum].userid,
