@@ -28,16 +28,14 @@
 	
 	function display_nodes($link,$pc,$nodes)
 	{
-?>
-<table cellspacing=0 cellpadding=5 width=650 class=t1>
-<?php
 		for($i=0;$i<min(5,count($nodes));$i++)
 		{
 			if($i%2==0)
 				$cellclass=array("t14","t11","t8");
 			else
 				$cellclass=array("f1","t13","t5");
-			echo "<tr><td class=\"".$cellclass[0]."\"><img src=\"icon/".$nodes[$i][emote].".gif\" border=0 align=absmiddle>\n".
+			echo "<table cellspacing=0 cellpadding=5 width=650 class=t15>\n".
+			"<tr><td class=\"".$cellclass[0]."\"><img src=\"icon/".$nodes[$i][emote].".gif\" border=0 align=absmiddle>\n".
 			"<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\" class=f2>".html_format($nodes[$i][subject])."</a></td>".
 			"<td class=\"".$cellclass[1]."\" align=right>[浏览]<font class=f4>".$nodes[$i][visitcount]."</font>\n[评论]<font class=f4>".$nodes[$i][commentcount]."</font>&nbsp;&nbsp;</td></tr>\n".
 			"<tr><td colspan=2 class=\"".$cellclass[1]."\">".html_format($nodes[$i][body],TRUE)."</td></tr>\n".
@@ -45,13 +43,10 @@
 			"\n[<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\" class=f2>阅读全文</a>]".
 			"\n[<a href=\"pccom.php?act=pst&nid=".$nodes[$i][nid]."\" class=f2>发表评论</a>]".
 			"\n[<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\" class=f2>写信问候</a>]".
-			"</font></td></tr>\n";
+			"</font></td></tr>\n</table>\n";
 			
 			
 		}
-?>
-</table>
-<?php		
 	}
 	
 	function display_newnodes_list($link,$pc,$nodes)
@@ -102,7 +97,7 @@ More Articles
 			</td><td class=t11>
 			<a href="pc.php" class="f1">:Blog首页:</a>
 			</td><td class=t11>
-			<a href="<?php echo $pcconfig["SITE"]; ?>" class="f1">:<?php echo BBS_FULL_NAME; ?>:</a>
+			<a href="/<?php echo ($loginok==1 && strcmp($currentuser["userid"],"guest"))?"frames.html":"guest-frames.html"; ?>" class="f1">:<?php echo BBS_FULL_NAME; ?>:</a>
 			</td>
 		</tr>
 	</table>
@@ -181,7 +176,7 @@ PassWord:
 		</td>
 	</tr>
 	<tr>
-		<td align="center" class="t11" colspan="2">
+		<td align="center" class="t3" colspan="2">
 		<table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
 			<tr><td class=t2>
 			.:Blog List:.
@@ -207,7 +202,7 @@ PassWord:
 	{
 		global $pcconfig;
 ?>	
-<table cellpadding=10 cellspacing=0 width=650 border=0 class=t1>
+<table cellpadding=10 cellspacing=0 width=650 border=0 class=t15>
 <tr><td align="center" class="t11">
 	<table cellpadding=3 cellspacing=0 width=100% border=0 class=t1>
 		<tr><td class="t2">

@@ -210,3 +210,10 @@ BODY
 	font-size: 13px;
 	line-height: 20px;
 }
+.t15 {
+	border-width: 1px;
+	border-left-style: solid;
+	border-color: #999999;
+	font-size: 12px;
+	line-height: 20px;
+}
