@@ -38,13 +38,13 @@ multi_user_check()
 int main(int argc,char** argv)
 {
 	int pid, n, t;
-	char buf[256], id[20], pw[20];
+	char buf[256], id[20], pw[40];
 	struct userec *x = NULL;
 	FILE *fp;
 
 	init_all();
 	strsncpy(id, getparm("id"), 13);
-    strsncpy(pw, getparm("pw"), 13);
+    strsncpy(pw, getparm("pw"), sizeof(pw));
 /*
 	strsncpy(id, argv[1], 13);
     strsncpy(pw, argv[2], 13);
@@ -306,58 +306,4 @@ int mask, value;
         else u->flags[0] &= ~mask;
     }
 }
-#if 0
-void
-u_exit()
-{
-	uinfo_t *ui;
-
-	ui = getcurruinfo();
-/*---	Added by period		2000-11-19	sure of this	---*/
-    if(!ui->active) return;
-/*---		---*/
-    setflags(PAGER_FLAG, (ui->pager&ALL_PAGER));
-/*    if (HAS_PERM(currentuser,PERM_LOGINCLOAK)&&HAS_PERM(currentuser,PERM_SEECLOAK))*/
-
-   /* Bigman 2000.8.29 ÖÇÄÒÍÅÄÜ¹»ÒþÉí */
-	if((HAS_PERM(currentuser,PERM_CHATCLOAK) || HAS_PERM(currentuser,PERM_CLOAK)))
-        setflags(CLOAK_FLAG, ui->invisible);
-
-    clear_utmp(ui);
-}
-
-void abort_program() {
-	int stay=0;
-	struct userec *x = NULL;
-
-	stay=abs(time(0) - *(int*)(u_info->from+32));
-	if(stay>7200) stay = 7200;
-	getuser(getcurruserid(), &x);
-	if(x) {
-			x->stay+=stay;
-			record_exit_time();
-			u_exit();
-			save_user_data(x);
-	}
-	exit(0);
-}
-#endif
-#if 0
-int wwwagent() {
-	int i;
-	for(i=0; i<1024; i++) close(i);
-	for(i=0; i<NSIG; i++) signal(i, SIG_IGN);
-	signal(SIGUSR2, add_msg);
-	signal(SIGHUP, abort_program);
-	while(1) {
-		sleep(60);
-		if(abs(time(0) - get_idle_time(u_info))>600) {
-			f_append("err", "idle timeout");
-			abort_program();
-		}
-	}
-	exit(0);
-}
-
-#endif
 

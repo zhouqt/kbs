@@ -3,7 +3,7 @@
 int main()
 {
 	int type;
-  	char pw1[20], pw2[20], pw3[20];
+  	char pw1[40], pw2[40], pw3[40];
 	int i;
 
 	init_all();
@@ -15,15 +15,15 @@ int main()
 		printf("%s -- 修改密码 [用户: %s]<hr color=\"green\">\n", 
 			BBSNAME, currentuser->userid);
 		printf("<form action=\"bbspwd?type=1\" method=\"post\">\n");
-		printf("你的旧密码: <input maxlength=\"12\" size=\"12\" type=\"password\" name=\"pw1\"><br>\n");
-		printf("你的新密码: <input maxlength=\"12\" size=\"12\" type=\"password\" name=\"pw2\"><br>\n");
-		printf("再输入一次: <input maxlength=\"12\" size=\"12\" type=\"password\" name=\"pw3\"><br><br>\n");
+		printf("你的旧密码: <input maxlength=\"39\" size=\"12\" type=\"password\" name=\"pw1\"><br>\n");
+		printf("你的新密码: <input maxlength=\"39\" size=\"12\" type=\"password\" name=\"pw2\"><br>\n");
+		printf("再输入一次: <input maxlength=\"39\" size=\"12\" type=\"password\" name=\"pw3\"><br><br>\n");
 		printf("<input type=\"submit\" value=\"确定修改\">\n");
 		http_quit();
 	}
-  	strsncpy(pw1, getparm("pw1"), 13);
-  	strsncpy(pw2, getparm("pw2"), 13);
-  	strsncpy(pw3, getparm("pw3"), 13);
+  	strsncpy(pw1, getparm("pw1"), sizeof(pw1));
+  	strsncpy(pw2, getparm("pw2"), sizeof(pw2));
+  	strsncpy(pw3, getparm("pw3"), sizeof(pw3));
   	if(strcmp(pw2, pw3))
 		http_fatal("两次密码不相同");
   	if(strlen(pw2)<2)

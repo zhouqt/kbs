@@ -292,6 +292,11 @@ int getnewutmpent(struct user_info *up)
         for( n = 0; n < USHM_SIZE; n++ ) {
             utmphead->uptime = now;
             uentp = &(utmpshm->uinfo[ n ]);
+            if ((uentp->mode == WEBEXPLORE)
+					&& ((now - uentp->freshtime) < 360))
+			{
+				continue;
+			}
             if( uentp->active && uentp->pid && kill( uentp->pid, 0 ) == -1 ) /*uentp¼ì²é*/
             {
                 char buf[STRLEN];
@@ -510,17 +515,7 @@ void clear_utmp(int uent)
 	sendutmpreq(&utmpreq);
 }
 #endif
-void clear_utmp(int uent)
-{
-	int lockfd;
-   	lockfd=utmp_lock();
-	utmp_setreadonly(0);
 
-	clear_utmp2(uent);
-
-	utmp_setreadonly(1);
-    utmp_unlock(lockfd);
-}	
 void clear_utmp2(int uent)
 {
  	int hashkey, find;
@@ -569,6 +564,18 @@ void clear_utmp2(int uent)
     utmpshm->uinfo[ uent - 1 ] = zeroinfo;
   	utmphead->number--;
 }
+
+void clear_utmp(int uent)
+{
+	int lockfd;
+   	lockfd=utmp_lock();
+	utmp_setreadonly(0);
+
+	clear_utmp2(uent);
+
+	utmp_setreadonly(1);
+    utmp_unlock(lockfd);
+}	
 
 int get_utmp_number()
 {

@@ -46,7 +46,7 @@ int main() {
 "               	<form action=\"bbslogin\" method=\"post\" target=\"_top\"><br>"
 "		bbs用户登录<br>"
 "               	帐号 <input style=\"height:20px;BACKGROUND-COLOR:e0f0e0\" type=\"text\" name=\"id\" maxlength=\"12\" size=\"8\"><br>"
-"               	密码 <input style=\"height:20px;BACKGROUND-COLOR:e0f0e0\" type=\"password\" name=\"pw\" maxlength=\"12\" size=\"8\"><br>"
+"               	密码 <input style=\"height:20px;BACKGROUND-COLOR:e0f0e0\" type=\"password\" name=\"pw\" maxlength=\"39\" size=\"8\"><br>"
 "               	<input style=\"width:72px; height:22px; BACKGROUND-COLOR:b0e0b0\" type=\"submit\" value=\"登录进站\">"
 "		</center>");
 	}
@@ -103,7 +103,7 @@ int main() {
 	printf("</div>\n");
 	ptr="";
 	if(loginok&&currentuser->userlevel & PERM_CLOAK)
-		ptr="<img src<img src=\"/link.gif\"><a target=\"f3\" onclick=\"return confirm('确实切换隐身状态吗?')\" href=\"bbscloak\"> 切换隐身</a><br>\n";
+		ptr="<img src=\"/link.gif\"><a target=\"f3\" onclick=\"return confirm('确实切换隐身状态吗?')\" href=\"bbscloak\"> 切换隐身</a><br>\n";
 	if(loginok)
                 printf("<img src=\"/folder.gif\" name=\"img3\"><a href=\"javascript: t(document.all.div3, document.img3)\">个人工具箱</a><br>"
 "			<div id=\"div3\" style=\"display:none\">"
