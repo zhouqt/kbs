@@ -687,6 +687,7 @@ int     mode;
     char        *mesg, *domain;
     FILE        *pn;
     char        ans[ STRLEN ];
+    char	buf[255];
 
     pm->page = 9999;
     switch( mode ) {
@@ -697,8 +698,8 @@ int     mode;
     case ADDMAIL:
         sprintf( board, "tmp/bm.%s", currentuser->userid );
         if( !dashf( board ) ) {
-            sprintf( genbuf, "哎呀!! 请先至该板(讨论区)将文章存入暂存档! << "  );
-            a_prompt( -1, genbuf, ans );
+            sprintf( buf, "哎呀!! 请先至该板(讨论区)将文章存入暂存档! << "  );
+            a_prompt( -1, buf, ans );
             return;
         }
         mesg = "请输入文件之英文名称(可含数字)：";       break;
@@ -707,17 +708,17 @@ int     mode;
     if( *fname == '\0' )  return;
     sprintf( fpath, "%s/%s", pm->path, fname );
     if( !valid_fname( fname ) ) {
-        sprintf( genbuf, "哎呀!! 名称只能包含英文及数字! << "  );
-        a_prompt( -1, genbuf, ans );
+        sprintf( buf, "哎呀!! 名称只能包含英文及数字! << "  );
+        a_prompt( -1, buf, ans );
     } else if( dashf( fpath ) || dashd( fpath ) ) {
-        sprintf( genbuf, "哎呀!! 系统内已经有 %s 这个文件存在了! << " , fname );
-        a_prompt( -1, genbuf, ans );
+        sprintf( buf, "哎呀!! 系统内已经有 %s 这个文件存在了! << " , fname );
+        a_prompt( -1, buf, ans );
     } else {
         mesg = "请输入文件或目录之中文名称 <<  ";
         a_prompt( -1, mesg, title );
         if( *title == '\0' )  return;
-        sprintf(r_genbuf,"创建新文件或目录 %s (标题: %s)",fpath+17,title);
-        a_report(r_genbuf);
+        sprintf(buf,"创建新文件或目录 %s (标题: %s)",fpath+17,title);
+        a_report(buf);
         switch( mode ) {
         case ADDITEM:
             /*vedit( fpath, 0 );*/
@@ -737,7 +738,7 @@ int     mode;
             break;
         }
         if( mode != ADDGROUP )
-            sprintf( genbuf, "%-38.38s %s ", title, currentuser->userid );
+            sprintf( buf, "%-38.38s %s ", title, currentuser->userid );
         else
         {
             /*Add by SmallPig*/
@@ -747,14 +748,14 @@ int     mode;
                 /*$$$$$$$$ Multi-BM Input, Modified By Excellent $$$$$$$*/
                 getdata(1,0,"板主: ",uident,STRLEN-1,DOECHO,NULL,YEA) ;
                 if(uident[0]!='\0')
-                    sprintf( genbuf, "%-38.38s(BM: %s)", title,uident);
+                    sprintf( buf, "%-38.38s(BM: %s)", title,uident);
                 else
-                    sprintf( genbuf, "%-38.38s", title);
+                    sprintf( buf, "%-38.38s", title);
             }
             else
-                sprintf( genbuf, "%-38.38s", title);
+                sprintf( buf, "%-38.38s", title);
         }
-        a_additem( pm, genbuf, fname  ,NULL,0);
+        a_additem( pm, buf, fname  ,NULL,0);
         a_savenames( pm );
         if( mode == ADDGROUP )
         {
@@ -762,7 +763,7 @@ int     mode;
             if( (pn = fopen( fpath2, "w" )) != NULL )
             {
                 fprintf( pn, "#\n" );
-                fprintf( pn, "# Title=%s\n", genbuf );
+                fprintf( pn, "# Title=%s\n", buf );
                 fprintf( pn, "#\n" );
                 fclose(pn);
             }
