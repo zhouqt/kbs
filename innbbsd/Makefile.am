@@ -15,14 +15,11 @@ dbzserver_SOURCES = dbzserver.c dbzinnbbsd.c pmain.c connectsock.c bbslib.c his.
 bbsnnrp_SOURCES = bbsnnrp.c pmain.c bbslib.c connectsock.c file.c killspam.c
 ctlinnbbsd_SOURCES = ctlinnbbsd.c pmain.c bbslib.c connectsock.c file.c
 bbslink_SOURCES = bbslink.c pmain.c inntobbs.c echobbslib.c connectsock.c file.c \
-		port.c parsdate.c lang.c filter.c wildmat.c
-noinst_HEADERS = bbslib.h clibrary.h daemon.h dbz.h externs.h \
-		innbbsconf.h innbbsd.h inntobbs.h lang.h nntp.h \
+		port.c parsdate.y lang.c filter.c wildmat.c
+noinst_HEADERS = bbslib.h clibrary.h config.h daemon.h dbz.h externs.h \
+		his.h innbbsconf.h innbbsd.h inntobbs.h lang.h nntp.h \
 		nocem.h version.h
-AM_CFLAGS = -DGETRUSAGE -DUSE_NCM_PATCH -DPGP5 -DFirebirdBBS -DDBZDEBUG -DFILTER -DBIG2GB -DGB2BIG -I../src 
-innbbsd_CFLAGS = -DWITH_ECHOMAIL $(AM_CFLAGS)
-bbslink_CFLAGS = -DWITH_ECHOMAIL $(AM_CFLAGS)
-dbzserver_CFLAGS = -DDBZSERVER $(AM_CFLAGS)
+AM_CFLAGS = -DGETRUSAGE -DUSE_NCM_PATCH -DPGP5 -DFirebirdBBS -DDBZDEBUG -DFILTER -DBIG2GB -DGB2BIG -I../src -DWITH_ECHOMAIL -DWITH_RECORD_O -DDBZSERVER
 LDADD=-L../libBBS -lBBS -L../libsystem -lsystem
 
 install-data-local:
