@@ -26,15 +26,14 @@
 /*#define LINELEN (220) */
 #define LINELEN LENGTH_SCREEN_LINE
 
-/* Line buffer modes             */
-#define MODIFIED (1)            /* if line has been modifed, output to screen   */
-#define STANDOUT (2)            /* if this line has a standout region */
+#define SCREEN_MODIFIED 1
+#define SCREEN_BRIGHT 2
+#define SCREEN_LINE 4
+#define SCREEN_BLINK 8
+#define SCREEN_BACK 16
 
 struct screenline {
-    unsigned char oldlen;       /* previous line length              */
-    unsigned char len;          /* current length of line            */
-    unsigned char mode;         /* status of line, as far as update  */
-    unsigned char smod;         /* start of modified data            */
-    unsigned char emod;         /* end of modified data              */
     char data[LINELEN];
+    char mode[LINELEN];
+    unsigned char color[LINELEN];
 };

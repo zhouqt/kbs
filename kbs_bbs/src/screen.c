@@ -28,49 +28,35 @@
 /*#include <varargs.h>*/
 #include <stdarg.h>
 
-extern int editansi;
-
-extern int automargins;
-extern int dumb_term;
-
-#define o_clear() output("\x1b[H\x1b[J",6)
+#define o_clear() {output("\x1b[2J",4); cur_mode=0; cur_color=7;  tc_col=0; tc_line=0; }
 #define o_cleol() output("\x1b[K",3)
-#define o_standup() output("\x1b[7m",4)
-#define o_standdown() output("\x1b[m",3)
 
 unsigned char scr_lns, scr_cols;
 unsigned char cur_ln = 0, cur_col = 0;
 int roll, scrollcnt;
-unsigned char docls;
-unsigned char downfrom;
-int inansi = false;
-int tc_col, tc_line;
+int tc_col=0, tc_line=0;
+int cur_mode=0, cur_color=7;
 struct screenline *big_picture = NULL;
 static const char nullstr[] = "(null)";
-static /*struct screenline old_line; */ char tmpbuffer[256];
+static /*struct screenline old_line; */ char tmpbuffer[256*3];
 
 /* –«ø’’Ω∂∑º¶ added by Czz 020926 */
-void
-clrnlines(int n)
+void clrnlines(int n)
 {
 	register struct screenline *slp;
 	register int i, k;
-/*	if (dumb_term)*/
-/*		return;*/
 	for (i = cur_ln; i < cur_ln + n; i++) {
 		slp = &big_picture[(i + roll) % scr_lns];
-		slp->mode = 0;
-		slp->oldlen = 255;
-		slp->len = 0;
-		for (k = 0; k < LINELEN; k++)
+		for (k = 0; k < LINELEN; k++) {
 			slp->data[k] = 0;
+			slp->mode[k] = 0;
+                     slp->color[k] = 7;
+		}
 	}
 }
 /* added end */
 
-int
-num_noans_chr(str)
-char *str;
+int num_noans_chr(char* str)
 {
 	int len, i, ansinum, ansi;
 
@@ -84,23 +70,15 @@ char *str;
 			continue;
 		}
 		if (ansi) {
-			if (strchr("[0123456789; ", str[i])) {
-				ansinum++;
-				continue;
-			} else if (isalpha(str[i])) {
-				ansinum++;
-				ansi = false;
-				continue;
-			} else
-				break;
+                    if (isalpha(str[i])) ansi=false;
+                    ansinum++;
+                    continue;
 		}
 	}
 	return len - ansinum;
 }
 
-void
-init_screen(slns, scols)
-int slns, scols;
+void init_screen(int slns, int scols)
 {
 	register struct screenline *slp;
 
@@ -112,29 +90,25 @@ int slns, scols;
 						 sizeof (struct screenline));
 	for (slns = 0; slns < scr_lns; slns++) {
 		slp = &big_picture[slns];
-		slp->mode = 0;
-		slp->len = 0;
-		slp->oldlen = 0;
+              for(int j=0;j<LINELEN;j++)
+                { slp->data[j]=0; slp->mode[j]=0; slp->color[j]=7; }
 	}
-	docls = true;
-	downfrom = 0;
 	roll = 0;
 }
 
-void
-initscr()
+void initscr()
 {
-	if (!big_picture)
-		t_columns = WRAPMARGIN;
-	init_screen(t_lines, WRAPMARGIN);
+//	if (!big_picture)
+//		t_columns = WRAPMARGIN;
+//	init_screen(t_lines, WRAPMARGIN);
+    init_screen(t_lines, t_columns);
 }
 
-void
-rel_move(was_col, was_ln, new_col, new_ln)
-int was_col, was_ln, new_col, new_ln;
+void rel_move(int was_col, int was_ln, int new_col, int new_ln)
 {
 	if (new_ln >= t_lines || new_col >= t_columns)
 		return;
+       if(was_col==new_col&&was_ln==new_ln) return;
 	tc_col = new_col;
 	tc_line = new_ln;
 	if ((new_col == 0) && (new_ln == was_ln + 1)) {
@@ -158,569 +132,395 @@ int was_col, was_ln, new_col, new_ln;
 	do_move(new_col, new_ln, ochar);
 }
 
-void
-redoscr()
+void clear()
 {
-	register int i, j;
-	register struct screenline *bp = big_picture;
+    register int i, j;
+    register struct screenline *slp;
 
-	if (!scrint) {
-		oflush();
-		return;
-	}
-	o_clear();
-	tc_col = 0;
-	tc_line = 0;
-	for (i = 0; i < scr_lns; i++) {
-		j = i + roll;
-		while (j >= scr_lns)
-			j -= scr_lns;
-		if (bp[j].len == 0)
-			continue;
-		rel_move(tc_col, tc_line, 0, i);
-		output(bp[j].data, bp[j].len);
-		tc_col += bp[j].len;
-		if (tc_col >= t_columns) {
-			if (!automargins) {
-				tc_col -= t_columns;
-				tc_line++;
-				if (tc_line >= t_lines)
-					tc_line = t_lines - 1;
-			} else
-				tc_col = t_columns - 1;
-		}
-		bp[j].mode &= ~(MODIFIED);
-		bp[j].oldlen = bp[j].len;
-	}
-	rel_move(tc_col, tc_line, cur_col, cur_ln);
-	docls = false;
-	scrollcnt = 0;
-	oflush();
+    if (!scrint) {
+        o_clear();
+        return;
+    }
+    roll = 0;
+    for (i = 0; i < scr_lns; i++) {
+        slp = &big_picture[i];
+        for(j=0; j<scr_cols;j++) {
+            if((bp[i].data[j]==' '||bp[i].data[j]==' ')&&bp[i].mode[j]&SCREEN_LINE==0&&bp[i].mode[j]&SCREEN_BACK==0&&bp[i].color[j]/16==0)
+                slp[i].mode[j]=0;
+            else
+                slp[i].mode[j]=SCREEN_MODIFIED;
+            slp[i].data[j]=0;
+            slp[i].color[j]=7;
+        }
+    }
+    move(0, 0);
 }
 
-void
-refresh()
+#define push(x) stack[stackt++]=x
+#define outstack() if(stackt>0) {\
+    char buf[200],*p;\
+    sprintf(buf, "\x1b[");\
+    p=buf+2;\
+    for(register int ii=0;ii<stackt;ii++) {\
+        if(ii==0) sprintf(p, "%d", stack[i]); \
+        else sprintf(p, ";%d", stack[i]); \
+        p=p+strlen(p);\
+    }\
+    output(buf, strlen(buf)); \
+    stackt=0; }
+    
+void refresh()
 {
-	int i, j;
-	register struct screenline *bp = big_picture;
-	extern int automargins;
+    register int i, j, k;
+    register struct screenline *bp = big_picture;
+    int count=0;
+    int stack[100],stackt=0;
 
-	if (!scrint) {
-		oflush();
-		return;
-	}
+    if (!scrint) {
+        oflush();
+        return;
+    }
 
-	if (num_in_buf() != 0)
-		return;
-	if ((docls) || (abs(scrollcnt) >= (scr_lns - 3))) {
-		redoscr();
-		return;
-	}
-	/*    if(scrollcnt < 0) {
-	   if(!scrollrevlen) {
-	   redoscr() ;
-	   return ;
-	   }
-	   rel_move(tc_col,tc_line,0,0) ;
-	   while(scrollcnt < 0) {
-	   o_scrollrev() ;
-	   scrollcnt++ ;
-	   }
-	   }
-	   if(scrollcnt > 0) {
-	   rel_move(tc_col,tc_line,0,t_lines-1) ;
-	   while(scrollcnt > 0) {
-	   ochar('\n') ;
-	   scrollcnt-- ;
-	   }
-	   }
-	 */
-	if (scrollcnt < 0) {
-		char buf[10];
+    if (num_in_buf() != 0)
+        return;
+    if (scrollcnt < 0) {
+        char buf[10];
+        rel_move(tc_col, tc_line, 0, 0);
+        sprintf(buf, "\033[%dL", -scrollcnt);
+        output(buf, strlen(buf));
+        scrollcnt = 0;
+    }
+    if (scrollcnt > 0) {
+        do_move(0, 1024, ochar);
+        while (scrollcnt > 0) {
+            ochar('\n');
+            scrollcnt--;
+        }
+        do_move(0, t_lines - 2, ochar);
+        tc_col = 0; tc_line = t_lines-2;
+    }
+    for (i=0; i<scr_lns; i++)
+        for(k=0; k<scr_cols; k++)
+            if((bp[i].data[k]==' '||bp[i].data[k]==' ')&&bp[i].mode[k]&SCREEN_LINE==0&&bp[i].mode[k]&SCREEN_BACK==0&&bp[i].color[k]/16==0&&bp[i].mode[k]&SCREEN_MODIFIED)
+                count++;
+    if(count>scr_lns*scr_cols/2) {
+        o_clear();
+        clear();
+    }
 
-		rel_move(tc_col, tc_line, 0, 0);
-		sprintf(buf, "\033[%dL", -scrollcnt);
-		output(buf, strlen(buf));
-		scrollcnt = 0;
-	}
-	if (scrollcnt > 0) {
-		/*        rel_move(tc_col,tc_line,0,t_lines-1) ;
-		 */
-		do_move(0, 1024, ochar);
-		while (scrollcnt > 0) {
-			ochar('\n');
-			scrollcnt--;
-		}
-		do_move(0, t_lines - 2, ochar);
-	}
-
-	for (i = 0; i < scr_lns; i++) {
-		j = i + roll;
-		while (j >= scr_lns)
-			j -= scr_lns;
-		if (bp[j].mode & MODIFIED && bp[j].smod < bp[j].len) {
-			bp[j].mode &= ~(MODIFIED);
-			if (bp[j].emod >= bp[j].len)
-				bp[j].emod = bp[j].len - 1;
-			rel_move(tc_col, tc_line, bp[j].smod, i);
-			output(&bp[j].data[bp[j].smod],
-				       bp[j].emod - bp[j].smod + 1);
-			tc_col = bp[j].emod + 1;
-			if (tc_col >= t_columns) {
-				if (automargins) {
-					tc_col -= t_columns;
-					tc_line++;
-					if (tc_line >= t_lines)
-						tc_line = t_lines - 1;
-				} else
-					tc_col = t_columns - 1;
-			}
-		}
-		if (bp[j].oldlen > bp[j].len) {
-			rel_move(tc_col, tc_line, bp[j].len, i);
-			o_cleol();
-		}
-		bp[j].oldlen = bp[j].len;
-	}
-	good_getyx(&i, &j);
-	rel_move(tc_col, tc_line, j, i);
-	oflush();
+    for (i = 0; i < scr_lns; i++) {
+        j = (i + roll)%scr_lns;
+        for (k = 0; k < t_columns; k++)
+        if(bp[j].mode[k]&SCREEN_MODIFIED&&(isprint2(bp[j].data[k])||bp[j].data[k]==0) {
+            rel_move(tc_col, tc_line, k, i);
+            bp[j].mode[k]&=~SCREEN_MODIFIED;
+            if(~(bp[j].mode[k])&cur_mode!=0) {
+                cur_mode = 0;
+                push(0);
+            }
+            if(!(cur_mode&SCREEN_BRIGHT)&&bp[j].mode[k]&SCREEN_BRIGHT) {
+                cur_mode|=SCREEN_BRIGHT;
+                push(1);
+            }
+            if(!(cur_mode&SCREEN_LINE)&&bp[j].mode[k]&SCREEN_LINE) {
+                cur_mode|=SCREEN_LINE;
+                push(4);
+            }
+            if(!(cur_mode&SCREEN_BLINK)&&bp[j].mode[k]&SCREEN_BLINK) {
+                cur_mode|=SCREEN_BLINK;
+                push(5);
+            }
+            if(!(cur_mode&SCREEN_BACK)&&bp[j].mode[k]&SCREEN_BACK) {
+                cur_mode|=SCREEN_BACK;
+                push(7);
+            }
+            if(cur_color%16!=bp[j].color[k]%16) {
+                cur_color=cur_color/16*16+bp[j].color[k]%16;
+                push(30+bp[j].color[k]%16);
+            }
+            if(cur_color/16!=bp[j].color[k]/16) {
+                cur_color=bp[j].color[k]/16*16+cur_color%16;
+                push(40+bp[j].color[k]/16);
+            }
+            outstack();
+            if(bp[j].data[k]==0) outc(' ');
+            else outc(bp[j].data[k]);
+            tc_col++;
+        }
+    }
+    rel_move(tc_col, tc_line, cur_col , cur_ln);
+    oflush();
 }
 
-void
-move(y, x)
-int y, x;
+void redoscr()
+{
+    register int i, j, k;
+    register struct screenline *bp = big_picture;
+
+    if (!scrint) {
+        oflush();
+        return;
+    }
+    o_clear();
+    for (i = 0; i < scr_lns; i++) {
+        j = (i + roll)%scr_lns;
+        for (k=0;k < scr_cols; k++)
+            bp[j].mode[k]|=SCREEN_MODIFIED;
+    }
+    refresh();
+}
+
+void move(int y, int x)
 {
 	if (!scrint) {
 	    do_move(x, y, ochar);
 	    return;
-	
 	}
 	cur_col = x /*+c_shift(y,x) */ ;
 	cur_ln = y;
 }
 
-void
-good_move(int y, int x)
+void good_move(int y, int x)
 {
-	register struct screenline *slp;
-	register int ln;
-	int i, j = 0;
-	int inansi = 0;
-
-	if (!scrint) {
-	    do_move(x, y, ochar);
-	    return;
-	
-	}
-	cur_ln = y;
-	ln = cur_ln + roll;
-	while (ln >= scr_lns)
-		ln -= scr_lns;
-	slp = &big_picture[ln];
-	for (i = 0; i < slp->len; i++) {
-		if (inansi) {
-			if ((slp->data[i] == KEY_ESC)
-			    || (isalpha(slp->data[i])))
-				inansi = 0;
-		} else if (j >= x) {
-			cur_col = i /*+c_shift(y,x) */ ;
-			return;
-		} else if (slp->data[i] == KEY_ESC)
-			inansi = 1;
-		else
-			j++;
-	}
-	if (j <= x)
-		cur_col = slp->len + (x - j);
+    move(y, x);
 }
 
-void
-getyx(int *y, int *x)
+void getyx(int *y, int *x)
 {
 	*y = cur_ln;
 	*x = cur_col /*-c_shift(y,x)*/ ;
 }
 
-void
-good_getyx(int *y, int *x)
+void good_getyx(int *y, int *x)
 {
-	register struct screenline *slp;
-	register int ln;
-	int i, j = 0;
-	int inansi = 0;
-
-	*y = cur_ln;
-	ln = cur_ln + roll;
-	while (ln >= scr_lns)
-		ln -= scr_lns;
-	slp = &big_picture[ln];
-
-	for (i = 0; i < cur_col; i++) {
-		if (inansi) {
-			if ((slp->data[i] == KEY_ESC)
-			    || (isalpha(slp->data[i])))
-				inansi = 0;
-		} else if (slp->data[i] == KEY_ESC)
-			inansi = 1;
-		else
-			j++;
-	}
-
-	*x = j + cur_col - i;
+    getyx(y,x);
 }
 
-void
-clear()
+void clear_whole_line(int i)
 {
-	register int i;
-	register struct screenline *slp;
-
-        if (!scrint) {
-            o_clear();
-            return;
-        }
-	roll = 0;
-	docls = true;
-	downfrom = 0;
-	for (i = 0; i < scr_lns; i++) {
-		slp = &big_picture[i];
-		slp->mode = 0;
-		slp->len = 0;
-		slp->oldlen = 0;
-	}
-	move(0, 0);
+    register struct screenline *slp = &big_picture[(i+roll)%scr_lns];
+    register int k;
+    for(k=0;k<scr_cols;k++) {
+        if((slp->data[k]==32||slp->data[k]==0)&&slp->mode[k]==cur_mode&&slp->color[k]/16==curr_color/16)
+            slp->mode[k]=SCREEN_MODIFIED;
+        else
+            slp->mode[k]=0;
+        slp->data[k]=0;
+        slp->data[k]=0;
+    }
 }
 
-void
-clear_whole_line(int i)
+void clrtoeol()
 {
-	register struct screenline *slp = &big_picture[i];
+    register struct screenline *slp;
+    register int ln;
+    register int k;
 
-	slp->mode = slp->len = 0;
-	slp->oldlen = 79;
-}
-
-void
-clrtoeol()
-{
-	register struct screenline *slp;
-	register int ln;
-
-        if (!scrint) {
-            o_cleol();
-            return;
-        }
-	ln = cur_ln + roll;
-	while (ln >= scr_lns)
-		ln -= scr_lns;
-	slp = &big_picture[ln];
-	if (cur_col > slp->oldlen) {
-		register int i;
-
-		for (i = slp->len; i <= cur_col; i++)
-			slp->data[i] = ' ';
-	}
-	slp->len = cur_col;
+    if (!scrint) {
+        o_cleol();
+        return;
+    }
+    ln = (cur_ln + roll)%scr_lns;
+    slp = &big_picture[ln];
+    for(k=0;k<t_columns;k++) {
+        if((slp->data[k]==32||slp->data[k]==0)&&slp->mode[k]==cur_mode&&slp->color[k]/16==curr_color/16)
+            slp->mode[k]=SCREEN_MODIFIED;
+        else
+            slp->mode[k]=0;
+        slp->data[k]=0;
+        slp->mode[k]|=cur_mode;
+        slp->color[k]=cur_color;
+    }
 }
 
 void
 clrtobot()
 {
-	register struct screenline *slp;
-	register int i, j;
+    register struct screenline *slp;
+    register int i, j, ln;
 
-	for (i = cur_ln; i < scr_lns; i++) {
-		j = i + roll;
-		while (j >= scr_lns)
-			j -= scr_lns;
-		slp = &big_picture[j];
-		slp->mode = 0;
-		slp->len = 0;
-		if (slp->oldlen > 0)
-			slp->oldlen = 255;
-	}
+    for (i = cur_ln; i < scr_lns; i++) {
+        ln = (i + roll)%scr_lns;
+        slp = &big_picture[ln];
+        for(k=0;k<t_columns;k++) {
+            if((slp->data[k]==32||slp->data[k]==0)&&slp->mode[k]==cur_mode&&slp->color[k]/16==curr_color/16)
+                slp->mode[k]=SCREEN_MODIFIED;
+            else
+                slp->mode[k]=0;
+            slp->data[k]=0;
+            slp->mode[k]|=cur_mode;
+            slp->color[k]=cur_color;
+        }
+    }
 }
 
-void
-outc(unsigned char c)
+void outc(unsigned char c)
 {
-	register struct screenline *slp;
-	register unsigned char reg_col;
+    register struct screenline *slp;
+    register unsigned int i,j,reg_col;
 
-#ifndef BIT8
-	c &= 0x7f;
-#endif
-	if (!scrint) {
-		if (c == '\n')
-			ochar('\r');
-		ochar(c);
-		return;
-	}
-	if (inansi == true) {
-		if (isalpha(c) ) {
-			inansi = false;
-			return;
-		} else if ((c=='\n') || (c=='\r'))
-		    inansi=false;
-		else
-		    return;
-	}
-	{
-		register int reg_line = cur_ln + roll;
-
-		while (reg_line >= scr_lns)
-			reg_line -= scr_lns;
-		slp = &big_picture[reg_line];
-	}
-	reg_col = cur_col;
-	/* deal with non-printables */
-	if (!isprint2(c)) {
-		if (c == '\n' || c == '\r') {	/* do the newline thing */
-			if (reg_col > slp->len) {
-				register int i;
-
-				for (i = slp->len; i <= reg_col; i++)
-					slp->data[i] = ' ';
-				if (slp->smod > slp->len)
-					slp->smod = slp->len;
-				slp->mode |= MODIFIED;
-			}
-			slp->len = reg_col;
-			cur_col = 0;	/* reset cur_col */
-			if (cur_ln < scr_lns)
-				cur_ln++;
-			return;
-		} else if (c != KEY_ESC || !showansi) {
-			c = '*';	/* else substitute a '*' for non-printable */
-		} if ((c==KEY_ESC)) {
-		    inansi=true;
-		    return;
-		}
-	}
-	if (reg_col >= slp->len) {
-		register int i;
-
-		for (i = slp->len; i < reg_col; i++)
-			slp->data[i] = ' ';
-		if (slp->smod > slp->len)
-			slp->smod = slp->len;
-		slp->mode |= MODIFIED;
-		slp->data[reg_col] = '\0';
-		slp->len = reg_col + 1;
-	}
-	if (slp->data[reg_col] != c) {
-		if (!(slp->mode & MODIFIED)) {
-			slp->smod = (slp->emod = reg_col);
-			slp->mode |= MODIFIED;
-		} else {
-			if (reg_col > slp->emod)
-				slp->emod = reg_col;
-			else if (reg_col < slp->smod)
-				slp->smod = reg_col;
-		}
-	}
-	slp->data[reg_col] = c;
-	reg_col++;
-	if (reg_col >= scr_cols) {
-		reg_col = 0;
-		if (cur_ln < scr_lns)
-			cur_ln++;
-	}
-	cur_col = reg_col;	/* store cur_col back */
+    if (!scrint) {
+        if (c == '\n')
+            ochar('\r');
+        ochar(c);
+        return;
+    }
+    slp = &big_picture[(cur_ln+roll)%scr_lns];
+    if (!isprint2(c)) {
+        if (c == '\n' || c == '\r') {	/* do the newline thing */
+            clrtoeol();
+            cur_col=0; 
+            if(cur_ln<scr_lns) cur_ln++;
+        }
+        return;
+    }
+    if(slp->data[cur_col]!=c||slp->mode[cur_col]!=cur_mode||slp->color[cur_col]!=cur_color) {
+        slp->mode[cur_col]=SCREEN_MODIFIED|cur_mode;
+        slp->color[cur_col]=cur_color;
+        slp->data[cur_col]=c;
+        cur_col++;
+    }
 }
 
 int savey=-1, savex=-1;
 
-void
-outns(str, n)
-const char *str;
-int n;
+void outns(const char*str, int n)
 {
-	register int reg_col = 0;
-	register struct screenline *slp = NULL;
-	const char *begin_str = str;
-	int begincol = 0;
+    register int i,j,k;
+    register char ch;
+    register struct screenline *slp = NULL;
+    const char *begin_str = str;
 
-	inansi=false;
+    if (!scrint) {
+        for (; *begin_str && (reg_col < n); reg_col++, begin_str++)
+            outc(*begin_str);
+        return;
+    }
+    while ((str - begin_str < n) && *str) {
+        slp = &big_picture[(cur_ln + roll)%scr_lns];
 
-#define DO_MODIFY { if (slp->smod > begincol) slp->smod=begincol; \
-                    if (slp->emod < reg_col) slp->emod=reg_col; \
-                    if (reg_col > slp->len) slp->len = reg_col;\
-		    	slp->mode |= MODIFIED ; \
-	          }
+        if (*str == ''&&*(str+1)=='[') {
+             i=1;
+             while(!isalpha(*(str+i))&&(*(str+i)!='')&&*(str+i)) i++;
+             if(*(str+i)=='H') {
+                j=0;
+                while(j<i&&*(str+j)!=';') j++;
+                if(*(str+j)==';'&&j<=4&&j>=3&&i-j>=2&&i-j<=3) {
+                    char s1[5],s2[5],x,y;
+                    memcpy(s1,str+2,j-2);
+                    s1[j-2]=0;
+                    memcpy(s2,str+j+1,i-j-1);
+                    s2[i-j-1]=0;
+                    y=atoi(s1)-1;
+                    x=atoi(s2)-1;
+                    if(y>=0&&y<scr_lns&&x>=0&&x<scr_cols) {
+                        cur_col=x; cur_ln=y;
+                    }
+                    str+=i+1;
+                    continue;
+                }
+                else if((*str+j)!=';') {
+                    clear();
+                    str+=i+1;
+                    continue;
+                }
+             }
+             else if((*(str+i)=='A'||*(str+i)=='B'||*(str+i)=='C'||*(str+i)=='D')&&i<=4) {
+                char s1[5];
+                s1[i-2]=0;
+                memcpy(s1,str+2,i-2);
+                if(s1[0]) k=atoi(s1);
+                else k=1;
+                
+                if(*(str+i)=='A') cur_ln-=k;
+                else if(*(str+i)=='B') cur_ln+=k;
+                else if(*(str+i)=='C') cur_col+=k;
+                else if(*(str+i)=='D') cur_col-=k;
 
-#define DO_CRLF   {  slp->len=reg_col; \
-                        cur_col = 0 ; \
-                        cur_ln = (cur_ln+1)%scr_lns;\
-                        reg_col=begincol; \
-                  }
-	if (!scrint) {
-		for (; *begin_str && (reg_col < n); reg_col++, begin_str++)
-			outc(*begin_str);
-		return;
-	};
-	while ((str - begin_str < n) && *str) {
-		reg_col = cur_col;
-		begincol = cur_col;
-		slp = &big_picture[(cur_ln + roll)%scr_lns];
+                if(cur_col<0) cur_col=0;
+                if(cur_col>=scr_cols) cur_col=scr_cols;
+                if(cur_ln<0) cur_ln=0;
+                if(cur_ln>=scr_lns) cur_ln=scr_lns-1;
 
-		if (cur_col >= slp->len) {
-                     memset(slp->data+slp->len, ' ', cur_col-slp->len+1);
-			slp->smod = Min(slp->smod, slp->len);
-			slp->mode |= MODIFIED;
-                     slp->len = cur_col;
-		}
-		while ((str - begin_str < n) && *str) {
-		    if (inansi) {
-		        //filter ansi
-		        if (isalpha(*str))
-		            inansi=false;
-		        if ((*str=='\n')||(*str=='\r')) {
-		            inansi=false;
-		            continue;
-		        }
-		        str++;
-		        continue;
-		    }
-                      if (*str == ''&&*(str+1)=='[') {
-                             register int i=1;
-                             while(!isalpha(*(str+i))&&(*(str+i)!='')&&*(str+i)) i++;
-                             if(*(str+i)=='H') {
-                                register int j=0;
-                                while(j<i&&*(str+j)!=';') j++;
-                                if(*(str+j)==';'&&j<=4&&j>=3&&i-j>=2&&i-j<=3) {
-                                    char s1[5],s2[5],x,y;
-                                    memcpy(s1,str+2,j-2);
-                                    s1[j-2]=0;
-                                    memcpy(s2,str+j+1,i-j-1);
-                                    s2[i-j-1]=0;
-                                    y=atoi(s1)-1;
-                                    x=atoi(s2)-1;
-                                    if(y>=0&&y<scr_lns&&x>=0&&x<scr_cols) {
-                                    	if (slp && (begincol != reg_col)) {
-                                    		if (slp->len < reg_col)
-                                    			slp->len = reg_col;
-                                    		DO_MODIFY;
-                                    	}
-                                        good_move(y,x);
-                                    }
-                                    str+=i+1;
-                                    break;
-                                }
-                             }
-                             else if((*(str+i)=='A'||*(str+i)=='B'||*(str+i)=='C'||*(str+i)=='D')&&i<=4) {
-                                register int k;
-                                char s1[5];
-                                s1[i-2]=0;
-                                memcpy(s1,str+2,i-2);
-                                if(s1[0]) k=atoi(s1);
-                                else k=1;
-                                
-                        	    if (slp && (begincol != reg_col)) {
-                        		if (slp->len < reg_col)
-                        			slp->len = reg_col;
-                        		DO_MODIFY;
-                        		cur_col = reg_col;
-                        	    }
-                                good_getyx(&savey, &savex);
-                                
-                                if(*(str+i)=='A') savey-=k;
-                                else if(*(str+i)=='B') savey+=k;
-                                else if(*(str+i)=='C') savex+=k;
-                                else if(*(str+i)=='D') savex-=k;
-
-                                if(savex<0) savex=0;
-                                if(savex>=scr_cols) savex=scr_cols-1;
-                                if(savey<0) savey=0;
-                                if(savey>=scr_lns) savey=scr_lns-1;
-
-                                good_move(savey,savex);
-                                str+=i+1;
-                                break;
-                             }
-                             else if(*(str+i)=='s' && i==2) {
-                                str+=3;
-                                	if (slp && (begincol != reg_col)) {
-                                		if (slp->len < reg_col)
-                                			slp->len = reg_col;
-                                		DO_MODIFY;
-                                		cur_col = reg_col;
-                                	}
-                                good_getyx(&savey, &savex);
-                                break;
-                             }
-                             else if(*(str+i)=='u' && i==2) {
-                                str+=3;
-                                if(savey!=-1&&savex!=-1) {
-                                	if (slp && (begincol != reg_col)) {
-                                		if (slp->len < reg_col)
-                                			slp->len = reg_col;
-                                		DO_MODIFY;
-                                	}
-                                    good_move(savey,savex);
-                                    break;
-                                }
-                                continue;
-                             }
-/*                             else if(isalpha(*(str+i))) {
-                                register int j;
-                                for(j=scr_cols-i-2;j>=reg_col;j--)
-                                    slp->data[j+i+1]=slp->data[j];
-                                for(j=0;j<=i;j++)
-                                    slp->data[reg_col+j]=*(str+j);
-                                str+=i+1;
-                                reg_col+=i+1;
-                                slp->len+=i+1;
-                                DO_MODIFY;
-                                continue;
-                             }*/
-                      }
+                str+=i+1;
+                continue;
+             }
+             else if(*(str+i)=='s' && i==2) {
+                str+=3;
+                savey=cur_ln; savex=cur_col;
+                continue;
+             }
+             else if(*(str+i)=='u' && i==2) {
+                str+=3;
+                if(savey!=-1&&savex!=-1) {
+                    cur_ln=savey; cur_col=savex;
+                    continue;
+                }
+             }
+             else if(*(str+i)=='m') {
+                j=2;
+                while(*(str+j)!='m') {
+                    int m;
+                    char s[100];
+                    k=j;
+                    while(*(str+j)!='m'&&*(str+j)!=';'&&*(str+j)>='0'&&*(str+j)<='9') j++;
+                    if(*(str+j)!='m'&&*(str+j)!=';') break;
+                    memcpy(s, str+k, j-k);
+                    s[j-k]=0;
+                    if(s[0]) {
+                        m=atoi(s);
+                        if(m==0) {
+                            cur_mode=0;
+                            cur_color=7;
+                        } else if(m==1)
+                            cur_mode|=SCREEN_BRIGHT;
+                        else if(m==4)
+                            cur_mode|=SCREEN_LINE;
+                        else if(m==5)
+                            cur_mode|=SCREEN_BLINK;
+                        else if(m==7)
+                            cur_mode|=SCREEN_BACK;
+                        else if(m>=30&&m<=37)
+                            cur_color = m-30+cur_color/16*16;
+                        else if(m>=40&&m<=47)
+                            cur_color = (m-40)*16+cur_color%16;
+                    }
+                    j++;
+                }
+                if(i==2) {
+                    cur_mode=0;
+                    cur_color=7;
+                }
+                continue;
+             }
+             else if(isalpha(*(str+i))) {
+                str+=i+1;
+                continue;
+             }
+      }
               
-			if (*str == '\n' || *str == '\r') {
-				DO_MODIFY;
-				DO_CRLF;
-				str++;
-				break;
-			}
-/*                     if (slp->data[reg_col]=='') {
-                        register int i,j;
-                        i=1;
-                        while(!isalpha(slp->data[reg_col+i])&&reg_col+i<scr_cols-1) i++;
-                        if(isalpha(slp->data[reg_col+i])) {
-                            for(j=reg_col;j<scr_cols-i-1;j++)
-                                slp->data[j]=slp->data[j+i+1];
-                            if(reg_col+i<slp->len)
-                                slp->len-=i+1;
-                        }
-                     }*/
-			if (*str == '') {
-        		        slp->data[reg_col++] = (unsigned char) '';
-    			} else if (!isprint2(*str))
-    				slp->data[reg_col++] = (unsigned char) '*';
-			else
-				slp->data[reg_col++] = *(str);
-			str++;
-			if (reg_col >= scr_cols) {
-				DO_MODIFY;
-				DO_CRLF;
-				break;
-			}
-		}		/* while (*str) */
-	}			/* while (1) */
-	if (slp && (begincol != reg_col)) {
-		if (slp->len < reg_col)
-			slp->len = reg_col;
-		DO_MODIFY;
-		cur_col = reg_col;
-	}
+        if (*str == '\n' || *str == '\r') {
+            if(cur_ln<scr_lns-1)
+                cur_ln++;
+            cur_col=0;
+            str++;
+            break;
+        }
+        if (!isprint2(*str)) ch=(unsigned char) '*';
+        else ch=*str;
+        if(ch!=slp->data[cur_col]||cur_mode!=slp->mode[cur_col]||cur_color|=slp->color[cur_col]) {
+            slp->data[cur_col]=ch;
+            slp->mode[cur_col]=SCREEN_MODIFIED|cur_mode;
+            slp->color[cur_col]=cur_color;
+        }
+        cur_col++;
+        str++;
+    }        
 }
 
-void
-outs(str)
-register const char *str;
+void outs(register const char*str)
 {
-	outns(str, 4096);
+    outns(str, 4096);
 }
 
 int dec[] =
@@ -728,8 +528,7 @@ int dec[] =
 	1
 };
 
-void
-prints(char *format, ...)
+void prints(char *format, ...)
 {
 	va_list ap;
 	register char *fmt;
@@ -854,8 +653,7 @@ prints(char *format, ...)
 	return;
 }
 
-void
-scroll()
+void scroll()
 {
 	scrollcnt++;
 	roll++;
@@ -865,8 +663,7 @@ scroll()
 	clrtoeol();
 }
 
-void
-rscroll()
+void rscroll()
 {
 	scrollcnt--;
 	if (roll > 0)
@@ -888,53 +685,52 @@ void noscroll()
     roll = 0;
 }
 
-void
-saveline(line, mode, buffer)	/* 0 : save, 1 : restore */
-int line, mode;
-char *buffer;
+void saveline(int line, int mode, char* buffer)	/* 0 : save, 1 : restore */
 {
-	register struct screenline *bp = big_picture;
-	char *tmp = tmpbuffer;
-	int x, y;
+    register struct screenline *bp = big_picture;
+    char *tmp = tmpbuffer;
+    int i;
 
-	if (buffer)
-		tmp = buffer;
-	switch (mode) {
-	case 0:
-		strncpy(tmp /*old_line.data */ , bp[line].data, LINELEN);
-		tmp[bp[line].len] = '\0';
-		break;
-	case 1:
-		good_getyx(&x, &y);
-		move(line, 0);
-		clrtoeol();
-		prints("%s", tmp);
-		good_move(x, y);
-		refresh();
-	}
+    if (buffer)
+        tmp = buffer;
+    switch (mode) {
+        case 0:
+            strncpy(tmp, bp[line].data, LINELEN);
+            strncpy(tmp+LINELEN, bp[line].mode, LINELEN);
+            strncpy(tmp+LINELEN*2, bp[line].color, LINELEN);
+            break;
+        case 1:
+            strncpy(bp[line].data, tmp, LINELEN);
+            strncpy(bp[line].mode, tmp+LINELEN, LINELEN);
+            strncpy(bp[line].color, tmp+LINELEN*2, LINELEN);
+            for(i=0;i<scr_lns;i++)
+                bp[line].mode[i]|=SCREEN_MODIFIED;
+            refresh();
+            break;
+    }
 };
 
-void norefresh_saveline(line, mode, buffer)	/* 0 : save, 1 : restore */
-int line, mode;
-char *buffer;
+void norefresh_saveline(int line, int mode, char*buffer)	/* 0 : save, 1 : restore */
 {
-	register struct screenline *bp = big_picture;
-	char *tmp = tmpbuffer;
-	int x, y;
+    register struct screenline *bp = big_picture;
+    char *tmp = tmpbuffer;
+    int i;
 
-	if (buffer)
-		tmp = buffer;
-	switch (mode) {
-	case 0:
-		strncpy(tmp /*old_line.data */ , bp[line].data, LINELEN);
-		tmp[bp[line].len] = '\0';
-		break;
-	case 1:
-		getyx(&x, &y);
-		move(line, 0);
-		clrtoeol();
-		prints("%s", tmp);
-		move(x, y);
-	}
+    if (buffer)
+        tmp = buffer;
+    switch (mode) {
+        case 0:
+            strncpy(tmp, bp[line].data, LINELEN);
+            strncpy(tmp+LINELEN, bp[line].mode, LINELEN);
+            strncpy(tmp+LINELEN*2, bp[line].color, LINELEN);
+            break;
+        case 1:
+            strncpy(bp[line].data, tmp, LINELEN);
+            strncpy(bp[line].mode, tmp+LINELEN, LINELEN);
+            strncpy(bp[line].color, tmp+LINELEN*2, LINELEN);
+            for(i=0;i<scr_lns;i++)
+                bp[line].mode[i]|=SCREEN_MODIFIED;
+            break;
+    }
 };
 
