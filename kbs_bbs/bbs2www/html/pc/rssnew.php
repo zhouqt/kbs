@@ -47,7 +47,7 @@
 			"发信站: ".BBS_FULL_NAME."<br>\n".
 			"时间: ".time_format($rows[created])."<br>\n".
 			"<hr size=1>\n".
-			html_format($rows[body],TRUE).
+			html_format($rows[body],TRUE,$rows[htmltag]).
 			"<hr size=1>\n".
 			"(<a href=\"http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&tid=".$rows[tid]."&s=all\">浏览全文</a>\n".
 			"<a href=\"http://".$pcconfig["SITE"]."/pc/pccom.php?act=pst&nid=".$rows[nid]."\">发表评论</a>)<br>\n".

@@ -41,7 +41,7 @@
 					"etemaddr" => "http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$pc["UID"]."&amp;nid=".$rows[nid]."&amp;tid=".$rows[tid],
 					"etemcomaddr" => "http://".$pcconfig["SITE"]."/pc/pccom.php?act=pst&amp;nid=".$rows[nid],
 					"etemtitle" => htmlspecialchars(stripslashes($rows[subject])),
-					"etemdesc" => html_format($rows[body],TRUE),
+					"etemdesc" => html_format($rows[body],TRUE,$rows[htmltag]),
 					"etemauth" => $pc["USER"],
 					"etemtime" => rss_time_format($rows[created]),
 					"etemnid" => $rows[nid]
