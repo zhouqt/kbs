@@ -3,7 +3,7 @@
 	 * This file displays article to user.
 	 * $Id$
 	 */
-	$needlogin=1;
+	$needlogin=0;
 	require("funcs.php");
 function get_mimetype($name)
 {
@@ -49,15 +49,15 @@ function get_mimetype($name)
 	return "application/octet-stream";
 }
 
-function display_navigation_bar($brdarr, $articles, $num)
+function display_navigation_bar($brdarr, $articles, $num, $brdnum)
 {
 	global $currentuser;
 
 	$brd_encode = urlencode($brdarr["NAME"]);
 	$PAGE_SIZE = 20;
 ?>
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=p">上一篇</a>]
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=n">下一篇</a>]
+[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=p">上一篇</a>]
+[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=n">下一篇</a>]
 <?php
 	if( $articles[1]["ATTACHPOS"] == 0)
 	{
@@ -110,9 +110,11 @@ function display_navigation_bar($brdarr, $articles, $num)
                if (($loginok != 1)&&!$isnormalboard) {
                    html_nologin();
                    return;
-               } else
-	    $usernum = $currentuser["index"];
-	if (!$isnormalboard&&bbs_checkreadperm($usernum, $brdnum) == 0) {
+               }
+	if($loginok == 1)
+		$usernum = $currentuser["index"];
+
+	if (!$isnormalboard && bbs_checkreadperm($usernum, $brdnum) == 0) {
 		html_init("gb2312");
 		html_error_quit("错误的讨论区");
 	}
@@ -179,16 +181,16 @@ function display_navigation_bar($brdarr, $articles, $num)
 			//$http_uri = "http" . ($_SERVER["HTTPS"] == "on" ? "s" : "") . "://";
 			if ($ptr == 'p' && $articles[0]["ID"] != 0)
 		{
-				if ($currentuser["userid"] != "guest")
+				if (($loginok == 1) && $currentuser["userid"] != "guest")
 					bbs_brcaddread($brdarr["NAME"], $articles[0]["ID"]);
-				header("Location: " . "/bbscon.php?board=" . $brd_encode . "&id=" . $articles[0]["ID"]);
+				header("Location: " . "/bbscon.php?bid=" . $brdnum . "&id=" . $articles[0]["ID"]);
 				exit;
 			}
 			elseif ($ptr == 'n' && $articles[2]["ID"] != 0)
 			{
-				if ($currentuser["userid"] != "guest")
+				if (($loginok == 1) && $currentuser["userid"] != "guest")
 					bbs_brcaddread($brdarr["NAME"], $articles[2]["ID"]);
-				header("Location: " ."/bbscon.php?board=" . $brd_encode . "&id=" . $articles[2]["ID"]);
+				header("Location: " ."/bbscon.php?bid=" . $brdnum . "&id=" . $articles[2]["ID"]);
 				exit;
 			}
 			html_init("gb2312");
@@ -196,7 +198,7 @@ function display_navigation_bar($brdarr, $articles, $num)
 <body>
 <center><p><?php echo BBS_FULL_NAME; ?> -- 文章阅读 [讨论区: <?php echo $brdarr["NAME"]; ?>]</a></p></center>
 <?php
-				display_navigation_bar($brdarr, $articles, $num);
+				display_navigation_bar($brdarr, $articles, $num, $brdnum);
 ?>
 <hr class="default" />
 <table width="610" border="0">
@@ -207,7 +209,7 @@ function display_navigation_bar($brdarr, $articles, $num)
 </td></tr></table>
 <hr class="default" />
 <?php
-			display_navigation_bar($brdarr, $articles, $num);
+			display_navigation_bar($brdarr, $articles, $num, $brdnum);
 		}
 	}
 	if ($loginok==1&&($currentuser["userid"] != "guest"))
