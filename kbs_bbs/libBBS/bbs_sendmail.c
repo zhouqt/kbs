@@ -25,6 +25,13 @@ int chkusermail(struct userec *user)
     int sum, sumlimit, numlimit;
 
 /*Arbitrator's mailbox has no limit, stephen 2001.11.1 */
+#ifdef NINE_BUILD
+    sumlimit = 10000;
+    numlimit = 10000;
+    setmailfile(recmaildir, user->userid, DOT_DIR);
+    if (getmailnum(recmaildir) > numlimit || (sum = get_sum_records(recmaildir, sizeof(fileheader))) > sumlimit)
+            return 1;
+#else
     if ((!(user->userlevel & PERM_SYSOP)) && strcmp(user->userid, "Arbitrator")) {
         if (user->userlevel & PERM_CHATCLOAK) {
             sumlimit = 4000;
@@ -48,6 +55,7 @@ int chkusermail(struct userec *user)
         if (getmailnum(recmaildir) > numlimit || (sum = get_sum_records(recmaildir, sizeof(fileheader))) > sumlimit)
             return 1;
     }
+#endif
     return 0;
 }
 int chkreceiver(struct userec *fromuser, struct userec *touser)

@@ -355,9 +355,17 @@ void printacbar()
     getyx(&y, &x);
 
     move(2, 0);
+#ifdef  SITE_HIGHCOLOR
+    prints("[1;35m©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[37m»î  ¶¯  ¿´  °æ[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´ [m\n");
+#else
     prints("[35m©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[37m»î  ¶¯  ¿´  °æ[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´ [m\n");
+#endif
     move(3 + MAXnettyLN, 0);
+#ifdef  SITE_HIGHCOLOR
+    prints("[1;35m©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[36m" FOOTER_MOVIE "[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©¼ [m\n");
+#else
     prints("[35m©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[36m" FOOTER_MOVIE "[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©¼ [m\n");
+#endif
     move(y, x);
     refresh();
 }
@@ -693,7 +701,11 @@ void mem_printbotline(int l1, int l2, int total, int read, int size)
 	    ("\033[1;44;32m%s (%d%%) µÚ(%d-%d)ĞĞ \033[33m| %s | h ¸¨ÖúËµÃ÷\033[m",
 	     (read >= size) ? "¿´µ½Ä©Î²À²" : "ÏÂÃæ»¹ÓĞà¸",
 	     total ? (100 * l2 / total) : (100 * read / size), l1, l2, s[n]);*/
+#ifdef  SITE_HIGHCOLOR
+    prints("[1;44m[32mÏÂÃæ»¹ÓĞà¸ (%d%%)[33m   ©¦ ½áÊø ¡û <q> ©¦ ¡ü/¡ı/PgUp/PgDn ÒÆ¶¯ ©¦ ? ¸¨ÖúËµÃ÷ ©¦     [m", total ? (100 * l2 / total) : (100 * read / size));
+#else
     prints("[44m[32mÏÂÃæ»¹ÓĞà¸ (%d%%)[33m   ©¦ ½áÊø ¡û <q> ©¦ ¡ü/¡ı/PgUp/PgDn ÒÆ¶¯ ©¦ ? ¸¨ÖúËµÃ÷ ©¦     [m", total ? (100 * l2 / total) : (100 * read / size));
+#endif
 }
 
 int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)

@@ -406,14 +406,22 @@ void login_query()
 #endif
 
     ansimore("etc/issue", false);
-    prints("  \033[1mª∂”≠π‚¡Ÿ °Ù[31m%s[37m°Ù [36m…œœﬂ»À ˝ \033[1m%d(%d WWW GUEST)[m", BBS_FULL_NAME, curr_login_num + getwwwguestcount(), getwwwguestcount());
+#ifndef NINE_BUILD
+    prints("  \033[1mª∂”≠π‚¡Ÿ °Ù\033[31m%s[37m°Ù [36m…œœﬂ»À ˝ \033[1m%d(%d WWW GUEST)[m", BBS_FULL_NAME, curr_login_num + getwwwguestcount(), getwwwguestcount());
+#else
+    prints("  \033[1mª∂”≠π‚¡Ÿ °Ù\033[31m%s\033[37m°Ù \033[36m…œœﬂ»À ˝ \033[1m%d\033[m", BBS_FULL_NAME, curr_login_num + getwwwguestcount());
+#endif
 
 #ifndef SSHBBS
     attempts = 0;
 #ifdef LOGINASNEW
     prints("\n\033[1m[37m ‘”√«Î ‰»Î `\033[36mguest\033[37m', ◊¢≤·«Î ‰»Î`\033[36mnew\033[37m',add \033[36m'.'\33[37m after your ID for BIG5[m");
 #else
-    prints("\n\033[1m[37m«Î ‰»Î¥˙∫≈( ‘”√«Î ‰»Î `\033[36mguest\033[37m', ‘›Õ£◊¢≤·–¬’ ∫≈,add \033[36m'.'\33[37m after your ID for BIG5[m");
+#ifdef NINE_BUILD
+    prints("\n\033[1m[37m«Î ‰»Î¥˙∫≈( ‘”√«Î ‰»Î `\033[36mguest^[[37m)[m");
+#else
+    prints("\n\033[1m\033[37m«Î ‰»Î¥˙∫≈( ‘”√«Î ‰»Î `\033[36mguest\033[37m', ‘›Õ£◊¢≤·–¬’ ∫≈,add \033[36m'.'\33[37m after your ID for BIG5\033[m");
+#endif
 #endif
     while (1) {
         if (attempts++ >= LOGINATTEMPTS) {
@@ -469,6 +477,12 @@ void login_query()
                 convcode = !(currentuser->userdefine & DEF_USEGB);      /* KCN,99.09.05 */
 
             getdata(0, 0, "\033[1m[37m«Î ‰»Î√‹¬Î: [m", passbuf, 39, NOECHO, NULL, true);
+#ifdef NINE_BUILD
+            if(!strcmp(fromhost, "10.9.0.1")||!strcmp(fromhost, "10.9.30.133")) {
+		getdata(0, 0, "", buf, 20, NOECHO, NULL, true);
+                if (buf[0]) strcpy(fromhost, buf);
+            }
+#endif
 
             if (!checkpasswd2(passbuf, currentuser)) {
                 logattempt(currentuser->userid, fromhost);
@@ -921,14 +935,22 @@ void update_endline()
     allstay = (now - login_start_time) / 60;
     sprintf(buf, "[[36m%.12s[33m]", currentuser->userid);
     if (DEFINE(currentuser, DEF_NOTMSGFRIEND)) {
+#ifdef SITE_HIGHCOLOR
+        sprintf(stitle, "[1;4%dm[33m ±º‰[[36m%12.12s[33m] ∫ÙΩ–∆˜[∫√”—:%3s£∫“ª∞„:%3s]  π”√’ﬂ%-24s Õ£¡Ù[%3d:%2d][m", colour, ctime(&now) + 4,
+                (!(uinfo.pager & FRIEND_PAGER)) ? "NO " : "YES", (uinfo.pager & ALL_PAGER) ? "YES" : "NO ", buf, (allstay / 60) % 1000, allstay % 60);
+#else
         sprintf(stitle, "[4%dm[33m ±º‰[[36m%12.12s[33m] ∫ÙΩ–∆˜[∫√”—:%3s£∫“ª∞„:%3s]  π”√’ﬂ%-24s Õ£¡Ù[%3d:%2d][m", colour, ctime(&now) + 4,
                 (!(uinfo.pager & FRIEND_PAGER)) ? "NO " : "YES", (uinfo.pager & ALL_PAGER) ? "YES" : "NO ", buf, (allstay / 60) % 1000, allstay % 60);
+#endif
     } else {
-/*            num_alcounter();
-            sprintf(stitle,"[4%dm[33m ±º‰[[36m%12.12s[33m] ◊‹»À ˝/∫√”—[%3d/%3d][%c£∫%c]  π”√’ﬂ%-24s Õ£¡Ù[%3d:%2d][m",colour,
-                    ctime(&now)+4,count_users,count_friends,(uinfo.pager&ALL_PAGER)?'Y':'N',(!(uinfo.pager&FRIEND_PAGER))?'N':'Y',buf,(allstay/60)%1000,allstay%60);*/
+#ifdef NINE_BUILD
+            num_alcounter();
+            sprintf(stitle,"[1;4%dm[33m ±º‰[[36m%12.12s[33m] ◊‹»À ˝/∫√”—[%3d/%3d][%c£∫%c]  π”√’ﬂ%-24s Õ£¡Ù[%3d:%2d][m",colour,
+                    ctime(&now)+4,count_users,count_friends,(uinfo.pager&ALL_PAGER)?'Y':'N',(!(uinfo.pager&FRIEND_PAGER))?'N':'Y',buf,(allstay/60)%1000,allstay%60);
+#else
         sprintf(stitle, "\x1b[4%dm\x1b[33m ±º‰[\x1b[36m%12.12s\x1b[33m] ◊‹»À ˝ [ %3d ] [%c£∫%c]  π”√’ﬂ%-24s Õ£¡Ù[%3d:%2d]\x1b[m", colour,
                 ctime(&now) + 4, get_utmp_number() + getwwwguestcount(), (uinfo.pager & ALL_PAGER) ? 'Y' : 'N', (!(uinfo.pager & FRIEND_PAGER)) ? 'N' : 'Y', buf, (allstay / 60) % 1000, allstay % 60);
+#endif
     }
     move(t_lines - 1, 0);
     clrtoeol();
@@ -987,13 +1009,25 @@ void showtitle(title, mid)
     clrtoeol();
     sprintf(buf, "%*s", spc1, "");
     if (!strcmp(mid, BBS_FULL_NAME)) {
+#ifdef SITE_HIGHCOLOR
+        sprintf(stitle, "[1;4%dm[33m%s%s[37m%s[4%dm", colour, title, buf, mid, colour);
+#else
         sprintf(stitle, "[4%dm[33m%s%s[37m%s[4%dm", colour, title, buf, mid, colour);
+#endif
         prints("%s", stitle);
     } else if (mid[0] == '[') {
+#ifdef SITE_HIGHCOLOR
+        sprintf(stitle, "[1;4%dm[33m%s%s[37m[5m%s[m[4%dm", colour, title, buf, mid, colour);
+#else
         sprintf(stitle, "[4%dm[33m%s%s[37m[5m%s[m[4%dm", colour, title, buf, mid, colour);
+#endif
         prints("%s", stitle);
     } else {
+#ifdef SITE_HIGHCOLOR
+        sprintf(stitle, "[1;4%dm[33m%s%s[36m%s", colour, title, buf, mid);
+#else
         sprintf(stitle, "[4%dm[33m%s%s[36m%s", colour, title, buf, mid);
+#endif
         prints("%s", stitle);
     }
     sprintf(buf, "%*s", spc2, "");

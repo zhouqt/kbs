@@ -639,7 +639,11 @@ void RemoveMsgCountFile(char *userID)
     if (!isalpha(userid[0]))
         return 1;
     for (s = userid; *s != '\0'; s++) {
+#ifdef NINE_BUILD
+        if (*s < 1 || !isalpha(*s)) {
+#else
         if (*s < 1 || !isalnum(*s)) {
+#endif
             return 1;
         }
     }

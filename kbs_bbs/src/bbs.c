@@ -505,7 +505,11 @@ void readtitle()
         strcpy(title, bp->title + 13);
 
     showtitle(header, title);   /* ÏÔÊ¾ µÚÒ»ĞĞ */
-    prints("Àë¿ª[¡û,e] Ñ¡Ôñ[¡ü,¡ı] ÔÄ¶Á[¡ú,r] ·¢±íÎÄÕÂ[Ctrl-P] ¿³ĞÅ[d] ±¸ÍüÂ¼[TAB] ÇóÖú[h][m\n");
+#ifdef SITE_HIGHCOLOR
+    prints("Àë¿ª[\x1b[1;32m¡û\x1b[0m,\x1b[1;32me\x1b[0m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0m,\x1b[1;32m¡ı\x1b[0m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[0m,\x1b[1;32mr\x1b[0m] ·¢±íÎÄÕÂ[\x1b[1;32mCtrl-P\x1b[0m] ¿³ĞÅ[\x1b[1;32md\x1b[0m] ±¸ÍüÂ¼[\x1b[1;32mTAB\x1b[0m] ÇóÖú[\x1b[1;32mh\x1b[0m][m\n");
+#else
+    prints("Àë¿ª[¡û,e] Ñ¡Ôñ[¡ü,¡ı] ÔÄ¶Á[¡ú,r] ·¢±íÎÄÕÂ[Ctrl-P] ¿³ĞÅ[d] ±¸ÍüÂ¼[TAB] ÇóÖú[h]\x1b[m\n");
+#endif
     if (digestmode == 0)        /* ÔÄ¶ÁÄ£Ê½ */
         strcpy(readmode, "Ò»°ã");
     else if (digestmode == 1)
@@ -525,7 +529,11 @@ void readtitle()
     else if (digestmode == 8)
         strcpy(readmode, "±êÌâ");
 
+#ifdef SITE_HIGHCOLOR
+    prints("[1;37m[44m ±àºÅ   %-12s %6s %-40s[%4sÄ£Ê½] [m\n", "¿¯ µÇ Õß", "ÈÕ  ÆÚ", " ÎÄÕÂ±êÌâ", readmode);
+#else
     prints("[37m[44m ±àºÅ   %-12s %6s %-40s[%4sÄ£Ê½] [m\n", "¿¯ µÇ Õß", "ÈÕ  ÆÚ", " ÎÄÕÂ±êÌâ", readmode);
+#endif
     clrtobot();
 }
 
@@ -555,19 +563,18 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
     }
     filetime = atoi(ent->filename + 2); /* ÓÉÎÄ¼şÃûÈ¡µÃÊ±¼ä */
     if (filetime > 740000000) {
-        /*
-         * add by KCN
-         * char* datestr = ctime( &filetime ) + 4;
-         */
+#ifdef NINE_BUILD
+        char* datestr = ctime( &filetime ) + 4;
+#else
         strncpy(date, ctime(&filetime) + 4, 6);
-        /*
-         * strcpy(date,"[0m[m      [0m");
-         * strncpy(date+7,datestr,6);
-         */
-        /*
-         * date[5]='1'+(atoi(datestr+4)%7);
-         * if (date[5]=='2') date[5]='7';
-         */
+#endif
+        
+#ifdef NINE_BUILD
+	    strcpy(date,"[1;30m      [0m");
+	    strncpy(date+7,datestr,6);
+		date[5]='1'+(atoi(datestr+4)%7);
+		if (date[5]=='6') date[5]='7';
+#endif
     }
     /*
      * date = ctime( &filetime ) + 4;   Ê±¼ä -> Ó¢ÎÄ 
@@ -590,44 +597,64 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
     if (uinfo.mode != RMAIL && digestmode != 1 && digestmode != 4 && digestmode != 5) { // ĞÂ·½·¨±È½Ï
         if (FFLL == 0) {
             if (ent->groupid != ent->id && (!strncmp("Re:", ent->title, 3) || (!strncmp("©¸ ", ent->title, 3) || !strncmp("©À ", ent->title, 3)) && digestmode == 2))   /*ReµÄÎÄÕÂ */
-                sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  %-47.47s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                sprintf(buf, " %4d %s%c%s %-12.12s %s  %-47.47s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
             else                /* ·ÇReµÄÎÄÕÂ */
-                sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                sprintf(buf, " %4d %s%c%s %-12.12s %s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
         } else {                /* ÔÊĞí ÏàÍ¬Ö÷Ìâ±êÊ¶ */
             if (ent->groupid != ent->id) {      /*ReµÄÎÄÕÂ */
                 if (!strncmp("Re:", ent->title, 3) || (!strncmp("©¸ ", ent->title, 3) || !strncmp("©À ", ent->title, 3)) && digestmode == 2)
                     if (ReadPostHeader.groupid == ent->groupid) /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
-                        sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %6.6s[36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+#ifdef SITE_HIGHCOLOR
+                        sprintf(buf, " [1;36m%4d[m %s%c%s %-12.12s %s[1;36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+#else
+                        sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %s[36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+#endif
                     else
-                        sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  %-47.47s", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                        sprintf(buf, " %4d %s%c%s %-12.12s %s  %-47.47s", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
                 else if (ReadPostHeader.groupid == ent->groupid)        /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
-                    sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %6.6s[36m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+#ifdef SITE_HIGHCOLOR
+                    sprintf(buf, " [1;36m%4d[m %s%c%s %-12.12s %s[1;36m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+#else
+                    sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %s[36m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+#endif
                 else
-                    sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                    sprintf(buf, " %4d %s%c%s %-12.12s %s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
             } else {
                 if (ReadPostHeader.groupid == ent->groupid)     /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
-                    sprintf(buf, " [33m%4d[m %s%c%s %-12.12s %6.6s[33m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+#ifdef SITE_HIGHCOLOR
+                    sprintf(buf, " [1;33m%4d[m %s%c%s %-12.12s %s[1;33m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+#else
+                    sprintf(buf, " [33m%4d[m %s%c%s %-12.12s %s[33m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+#endif
                 else
-                    sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                    sprintf(buf, " %4d %s%c%s %-12.12s %s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
             }
 
         }
     } else if (FFLL == 0) {     // ¾É·½·¨±È½Ï
         if (!strncmp("Re:", ent->title, 3))     /*ReµÄÎÄÕÂ */
-            sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  %-47.47s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+            sprintf(buf, " %4d %s%c%s %-12.12s %s  %-47.47s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
         else                    /* ·ÇReµÄÎÄÕÂ */
-            sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+            sprintf(buf, " %4d %s%c%s %-12.12s %s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
     } else {                    /* ÔÊĞí ÏàÍ¬Ö÷Ìâ±êÊ¶ */
         if (!strncmp("Re:", ent->title, 3)) {   /*ReµÄÎÄÕÂ */
             if (!strcmp(ReplyPost + 3, ent->title + 3)) /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
-                sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %6.6s[36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+#ifdef SITE_HIGHCOLOR
+                sprintf(buf, " [1;36m%4d[m %s%c%s %-12.12s %s[1;36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+#else
+                sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %s[36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+#endif
             else
-                sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  %-47.47s", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                sprintf(buf, " %4d %s%c%s %-12.12s %s  %-47.47s", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
         } else {
             if (strcmp(ReadPost, ent->title) == 0)      /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
-                sprintf(buf, " [33m%4d[m %s%c%s %-12.12s %6.6s[33m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+#ifdef SITE_HIGHCOLOR
+                sprintf(buf, " [1;33m%4d[m %s%c%s %-12.12s %s[1;33m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+#else
+                sprintf(buf, " [33m%4d[m %s%c%s %-12.12s %s[33m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+#endif
             else
-                sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                sprintf(buf, " %4d %s%c%s %-12.12s %s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
         }
     }
     return buf;
@@ -690,9 +717,17 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     move(t_lines - 1, 0);
     clrtoeol();                 /* ÇåÆÁµ½ĞĞÎ² */
     if (haspostperm(currentuser, currboard)) {  /* ¸ù¾İÊÇ·ñÓĞPOSTÈ¨ ÏÔÊ¾×îÏÂÒ»ĞĞ */
+#ifdef SITE_HIGHCOLOR
+        prints("[44m[1;31m[ÔÄ¶ÁÎÄÕÂ] [33m »ØĞÅ R ©¦ ½áÊø Q,¡û ©¦ÉÏÒ»·â ¡ü©¦ÏÂÒ»·â <Space>,¡ı©¦Ö÷ÌâÔÄ¶Á ^X»òp [m");
+#else
         prints("[44m[31m[ÔÄ¶ÁÎÄÕÂ] [33m »ØĞÅ R ©¦ ½áÊø Q,¡û ©¦ÉÏÒ»·â ¡ü©¦ÏÂÒ»·â <Space>,¡ı©¦Ö÷ÌâÔÄ¶Á ^X»òp [m");
+#endif
     } else {
+#ifdef SITE_HIGHCOLOR
         prints("[44m[31m[ÔÄ¶ÁÎÄÕÂ]  [33m½áÊø Q,¡û ©¦ÉÏÒ»·â ¡ü©¦ÏÂÒ»·â <Space>,<Enter>,¡ı©¦Ö÷ÌâÔÄ¶Á ^X »ò p [m");
+#else
+        prints("[44m[1;31m[ÔÄ¶ÁÎÄÕÂ]  [33m½áÊø Q,¡û ©¦ÉÏÒ»·â ¡ü©¦ÏÂÒ»·â <Space>,<Enter>,¡ı©¦Ö÷ÌâÔÄ¶Á ^X »ò p [m");
+#endif
     }
 
     FFLL = 1;                   /* ReplyPostÖĞÎªReplyºóµÄÎÄÕÂÃû£¬ReadPostÎªÈ¥µôRe:µÄÎÄÕÂÃû */
@@ -735,9 +770,13 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
         break;
     case KEY_REFRESH:
         break;
+    case KEY_RIGHT:
+#ifdef NINE_BUILD
+        sread(0, 0, ent, 0, fileinfo);
+        break;
+#endif
     case ' ':
     case 'j':
-    case KEY_RIGHT:
     case KEY_DOWN:
     case KEY_PGDN:
         return READ_NEXT;
@@ -2698,6 +2737,7 @@ struct one_key read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
     {Ctrl('P'), do_post},
 #ifdef NINE_BUILD
 	{'c', show_t_friends},
+    {'C', clear_new_flag},
 #else
     {'c', clear_new_flag},
 #endif

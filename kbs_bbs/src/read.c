@@ -585,7 +585,7 @@ static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, 
     case '\n':
     case '\r':
     case KEY_RIGHT:
-        ch = 'r';
+            ch = 'r';
 
         /*
          * lookup command table 

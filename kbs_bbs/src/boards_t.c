@@ -299,10 +299,17 @@ void show_brdlist(page, clsflag, newflag)       /* show board list */
     if (clsflag) {
         clear();
         if(yank_flag==2)
+#ifdef SITE_HIGHCOLOR
+	        docmdtitle("[¸öÈË¶¨ÖÆÇø]", "  [mÖ÷Ñ¡µ¥[\x1b[1;32m¡û\x1b[m,\x1b[1;32me\x1b[m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ı\x1b[m] Ìí¼Ó[\x1b[1;32ma\x1b[m,\x1b[1;32mA\x1b[m] ÒÆ¶¯[\x1b[1;32mm\x1b[m] É¾³ı[\x1b[1;32md\x1b[m] ÅÅĞò[\x1b[1;32mS\x1b[m] ÇóÖú[\x1b[1;32mh\x1b[m]\n");
+	else
+       	 docmdtitle("[ÌÖÂÛÇøÁĞ±í]", "  [mÖ÷Ñ¡µ¥[\x1b[1;32m¡û\x1b[m,\x1b[1;32me\x1b[m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ı\x1b[m] ÁĞ³ö[\x1b[1;32my\x1b[m] ÅÅĞò[\x1b[1;32mS\x1b[m] ËÑÑ°[\x1b[1;32m/\x1b[m] ÇĞ»»[\x1b[1;32mc\x1b[m] ÇóÖú[\x1b[1;32mh\x1b[m]\n");
+        prints("[1;44m[37m %s ÌÖÂÛÇøÃû³Æ       V  Àà±ğ ×ªĞÅ  %-24s °æ  Ö÷   %s   [m\n", newflag ? "È«²¿ Î´¶Á" : "±àºÅ  ", "ÖĞ  ÎÄ  Ğğ  Êö", newflag ? "" : "   ");
+#else
 	        docmdtitle("[¸öÈË¶¨ÖÆÇø]", "  [mÖ÷Ñ¡µ¥[¡û,e] ÔÄ¶Á[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] Ìí¼Ó[a,A] ÒÆ¶¯[m] É¾³ı[d] ÅÅĞò[S] ÇóÖú[h]\n");
-        else
+	else
        	 docmdtitle("[ÌÖÂÛÇøÁĞ±í]", "  [mÖ÷Ñ¡µ¥[¡û,e] ÔÄ¶Á[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] ÁĞ³ö[y] ÅÅĞò[S] ËÑÑ°[/] ÇĞ»»[c] ÇóÖú[h]\n");
         prints("[44m[37m %s ÌÖÂÛÇøÃû³Æ       V  Àà±ğ ×ªĞÅ  %-24s °æ  Ö÷   %s   [m\n", newflag ? "È«²¿ Î´¶Á" : "±àºÅ  ", "ÖĞ  ÎÄ  Ğğ  Êö", newflag ? "" : "   ");
+#endif
     }
 
     move(3, 0);

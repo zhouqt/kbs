@@ -787,10 +787,14 @@ void mailtitle()
     /*
      * Leeward 98.01.19 adds below codes for statistics 
      */
+#ifdef NINE_BUILD
+    int MailSpace = 10000;
+#else
     int MailSpace = ((HAS_PERM(currentuser, PERM_SYSOP)
                       || !strcmp(currentuser->userid, "Arbitrator")) ? 9999 : (HAS_PERM(currentuser,
                                                                                         PERM_CHATCLOAK) ? 4000 : (HAS_PERM(currentuser, PERM_MANAGER) ? 600
                                                                                                                   : (HAS_PERM(currentuser, PERM_LOGINOK) ? 240 : 15))));
+#endif
     int UsedSpace = get_sum_records(currmaildir, sizeof(fileheader));
 
     showtitle("ÓÊ¼þÑ¡µ¥    ", BBS_FULL_NAME);
