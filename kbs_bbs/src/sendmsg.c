@@ -201,7 +201,7 @@ int show_allmsgs()
 
     oldmode = uinfo.mode;
     modify_user_mode(LOOKMSGS);
-    set_alarm(0, 0, NULL, NULL);
+//    set_alarm(0, 0, NULL, NULL);
 
     page = 0;
     count = get_msgcount(0, currentuser->userid);
@@ -347,7 +347,7 @@ outofhere:
     }
     clear();
     uinfo.mode = oldmode;
-    R_monitor(NULL);
+//    R_monitor(NULL);
     return 0;
 }
 
@@ -479,6 +479,7 @@ void r_msg()
         if (DEFINE(currentuser, DEF_SOUNDMSG))
             bell();
         good_move(0,0);
+        clrtoeol();
         prints("%s", outmsg);
 
         if(first) {

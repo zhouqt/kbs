@@ -1401,7 +1401,7 @@ void chat_show_allmsgs(chatcontext * pthis, const char *arg)
     char fname[STRLEN];
     FILE *fp;
     char buf[400];
-    int line, cnt, i;
+    int line, cnt, i, count;
     long pos;
 
     line = atoi(arg);
@@ -1409,8 +1409,18 @@ void chat_show_allmsgs(chatcontext * pthis, const char *arg)
         line = screen_lines - 1;
     if (line > 300)
         line = 300;
-    sethomefile(fname, currentuser->userid, "msgfile");
-    if ((fp = fopen(fname, "rb")) != NULL) {
+    sprintf(fname, "tmp/%s.msg", currentuser->userid);
+    fp = fopen(fname, "w");
+    count = get_msgcount(0, currentuser->userid);
+    for(i=0;i<count;i++) {
+        load_msghead(0, currentuser->userid, i, &head);
+        load_msgtext(currentuser->userid, &head, buf);
+        translate_msg(buf, showmsg);
+        fprintf(fp, "%s", showmsg);
+    }
+    fclose(fp);
+    if (count) {
+        fp = fopen(fname, "rb");
         fseek(fp, 0, SEEK_END);
         pos = ftell(fp);
         cnt = 0;
@@ -1432,7 +1442,7 @@ void chat_show_allmsgs(chatcontext * pthis, const char *arg)
                 }
             }
         }
-        sprintf(buf, "【最近 %d 条消息】", line);
+        sprintf(buf, "【最近 %d 条消息】", count);
         printchatline(pthis, buf);
         while (!feof(fp)) {
             bzero(buf, sizeof(buf));
@@ -1447,6 +1457,7 @@ void chat_show_allmsgs(chatcontext * pthis, const char *arg)
     } else {
         printchatline(pthis, "***** 没有任何的讯息存在！！*****");
     }
+    unlink(fname);
 }
 static const struct chat_command chat_cmdtbl[] = {
     {"pager", setpager, 1},
