@@ -2280,7 +2280,7 @@ int post_article(char *q_file, struct fileheader *re_file)
         	fileinfo->eff_size = eff_size;
 			//fileinfo->eff_size = calc_effsize(genbuf);
             //change_post_flag(currBM, currentuser, digestmode, currboard->filename, ent, 
-                fileinfo, direct, FILE_EFFSIZE_FLAG, 0);
+                //fileinfo, direct, FILE_EFFSIZE_FLAG, 0);
 		}
         if (ADD_EDITMARK)
             add_edit_mark(genbuf, 0, /*NULL*/ fileinfo->title);
