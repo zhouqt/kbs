@@ -25,6 +25,7 @@ A {color: #0000FF}
 <bgsound src="/sound/msg.wav">
 <body style="BACKGROUND-COLOR: #f0ffd0">
 <table width="100%">
+<form action=/bbsgetmsg.php name=form0>
   <tr>
     <td valign="top" nowrap="nowrap"><font color="green"><?php echo $srcid; ?></font> (<?php echo strftime("%b %e %H:%M", $sndtime); ?>): </td>
     <td align="left" valign="top"><?php echo htmlspecialchars($msgbuf); ?></td>
@@ -32,6 +33,7 @@ A {color: #0000FF}
 echo $srcid; ?>&destutmp=<?php 
 echo $srcutmpnum; ?>">[回讯息]</a> <a href="bbsgetmsg.php">[忽略]</a></td>
   </tr>
+</form>
 </table>
 <script language="javascript">if (parent.viewfrm)	parent.viewfrm.rows = "54,*,20";
 </script>
@@ -40,7 +42,7 @@ echo $srcutmpnum; ?>">[回讯息]</a> <a href="bbsgetmsg.php">[忽略]</a></td>
 		//no msg
 ?><script language="javascript">if (parent.viewfrm)	parent.viewfrm.rows = "0,*,20";
 </script>
-<meta http-equiv="Refresh" content="60; url=/bbsgetmsg.php">
+<meta http-equiv="Refresh" content="600; url=/bbsgetmsg.php">
 <?php
 		}
 		html_normal_quit();

@@ -247,6 +247,14 @@ function html_init($charset,$title="",$otherheader="")
 <?php echo($otherheader); ?>
 </head>
 <?php
+	if($_SERVER['PHP_SELF']!="/bbsgetmsg.php"){
+?>
+<script language="javascript">
+if (top.fmsg && !top.fmsg.form0)
+	top.fmsg.location.reload();
+</script>
+<?php
+	}
 }
 
 function html_normal_quit()
