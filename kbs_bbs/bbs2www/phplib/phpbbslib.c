@@ -6831,7 +6831,7 @@ static PHP_FUNCTION(bbs_x_search)
     zval* element;
     struct sockaddr_in addr;
     FILE* sockfp;
-    int sockfd, i, j, k, t;
+    int sockfd, i, j, k, ttt;
     char buf[256];
     char ip[20], s1[30], s2[30], *pp;
     #define MAX_KEEP 100
@@ -6939,12 +6939,12 @@ static PHP_FUNCTION(bbs_x_search)
 	}
     }
 
-    for (t=0; t < res_total; t++) {
+    for (ttt=0; ttt < res_total; ttt++) {
         char buf[10*1024],out[10*1024],out2[10*1024];
         FILE* fp;
         int i,j,k,l,fsize=0,t=0,p=0,inc=0;
-        res_content[t][0] = 0;
-        fp = fopen(res_filename[t], "rb");
+        res_content[ttt][0] = 0;
+        fp = fopen(res_filename[ttt], "rb");
         if(!fp) continue;
         fsize = fread(buf, 1, 10*1024, fp);
         fclose(fp);
@@ -7031,7 +7031,7 @@ static PHP_FUNCTION(bbs_x_search)
             }
             memcpy(out,out2,fsize);
         }
-        pp = res_content[i];
+        pp = res_content[ttt];
         j=0; t = 0;
         for(i=0;i<fsize;i++)
         if(out[i]) {
