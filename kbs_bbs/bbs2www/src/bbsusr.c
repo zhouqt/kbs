@@ -53,8 +53,6 @@ int main()
     char search[80];
 
     init_all();
-    if (loginok)
-        getfriendstr();
     printf("<center>\n");
     printf("%s -- 在线用户列表 [目前在线: %d人]<hr>\n", BBSNAME, count_online());
     total = get_online_users();

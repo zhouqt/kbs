@@ -44,9 +44,6 @@ int login(struct userec *user)
     strncpy(ui.userid, user->userid, 20);
     strncpy(ui.realname, user->realname, 20);
     strncpy(ui.username, user->username, 40);
-    /*set_friends_num(0);
-    init_finfo_addr();
-    getfriendstr();*/
     utmpent = getnewutmpent2(&ui);
     if (utmpent == -1)
 	{
@@ -58,6 +55,7 @@ int login(struct userec *user)
     u->pid = 1;
     tmp = rand() % 100000000;
     u->utmpkey = tmp;
+    getfriendstr(user,u);
     /*setcurruinfo(u);*/
 	/*u_info = ui;*/
     /*if (addto_msglist(get_utmpent_num(getcurruinfo()), getcurruserid()) < 0)

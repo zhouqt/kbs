@@ -1565,7 +1565,7 @@ char *uident;
     sethomefile(genbuf, currentuser->userid, "friends");
     n = append_record(genbuf, &tmp, sizeof(struct friends));
     if (n != -1)
-        getfriendstr();
+        getfriendstr(currentuser,get_utmpent(utmpent));
     else
         bbslog("user","%s","append friendfile error");
     return n;
@@ -1579,7 +1579,7 @@ int deleteoverride(char *uident)
     deleted = search_record(genbuf, &fh, sizeof(fh), (RECORD_FUNC_ARG) cmpfnames, uident);
     if (deleted > 0) {
         if (delete_record(genbuf, sizeof(fh), deleted, NULL, NULL) == 0)
-            getfriendstr();
+            getfriendstr(currentuser,get_utmpent(utmpent));
         else {
             deleted = -1;
             bbslog("user","%s","delete friend error");
@@ -1761,45 +1761,6 @@ int cmpfuid(a, b)
 struct friends *a, *b;
 {
     return strncasecmp(a->id, b->id, IDLEN);
-}
-
-int getfriendstr()
-{
-    extern int nf;
-    int i;
-    struct friends *friendsdata;
-
-    if (topfriend != NULL) {
-        free(topfriend);
-        topfriend = NULL;
-    }
-    sethomefile(genbuf, currentuser->userid, "friends");
-    nf = get_num_records(genbuf, sizeof(struct friends));
-    if (nf <= 0)
-        return 0;
-    if (!HAS_PERM(currentuser, PERM_ACCOUNTS) && !HAS_PERM(currentuser, PERM_SYSOP))
-        /*
-         * Haohmaru.98.11.16 
-         */
-        nf = (nf >= MAXFRIENDS) ? MAXFRIENDS : nf;
-    friendsdata = (struct friends *) calloc(sizeof(struct friends), nf);
-    get_records(genbuf, friendsdata, sizeof(struct friends), 1, nf);
-    for (i = 0; i < nf; i++) {
-        friendsdata[i].id[IDLEN] = 0;
-        friendsdata[i].exp[14] = 0;
-        if (id_invalid(friendsdata[i].id)) {
-            memcpy(&friendsdata[i], &friendsdata[nf - 1], sizeof(struct friends));
-            nf--;
-        }
-    }
-    qsort(friendsdata, nf, sizeof(friendsdata[0]), (int (*)(const void *, const void *)) cmpfuid);      /*For Bi_Search */
-    topfriend = (struct friends_info *) calloc(sizeof(struct friends_info), nf);
-    for (i = 0; i < nf; i++) {
-        topfriend[i].uid = searchuser(friendsdata[i].id);
-        strcpy(topfriend[i].exp, friendsdata[i].exp);
-    }
-    free(friendsdata);
-    return 0;
 }
 
 int wait_friend()

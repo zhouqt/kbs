@@ -659,3 +659,45 @@ int get_utmpent_num(struct user_info *uent)
         return -1;
     return uent - utmpshm->uinfo + 1;
 }
+
+struct friends_info* topfriend;
+int getfriendstr(struct userec* user,struct user_info* puinfo)
+{
+    int nf;
+    int i;
+    struct friends *friendsdata;
+    char buf[60];
+
+    puinfo->friendsnum=0;
+    if (topfriend != NULL) {
+        free(topfriend);
+        topfriend = NULL;
+    }
+    sethomefile(buf, user->userid, "friends");
+    nf = get_num_records(buf, sizeof(struct friends));
+    if (nf <= 0)
+        return 0;
+    if (nf>MAXFRIENDS)
+    	nf=MAXFRIENDS;
+    friendsdata = (struct friends *) calloc(sizeof(struct friends), nf);
+    get_records(buf, friendsdata, sizeof(struct friends), 1, nf);
+    for (i = 0; i < nf; i++) {
+        friendsdata[i].id[IDLEN] = 0;
+        friendsdata[i].exp[14] = 0;
+        if (id_invalid(friendsdata[i].id)||(searchuser(friendsdata[i].id)==0)) {
+            memcpy(&friendsdata[i], &friendsdata[nf - 1], sizeof(struct friends));
+            nf--;
+        }
+    }
+    qsort(friendsdata, nf, sizeof(friendsdata[0]), (int (*)(const void *, const void *)) cmpfuid);      /*For Bi_Search */
+    topfriend = (struct friends_info *) calloc(sizeof(struct friends_info), nf);
+    for (i = 0; i < nf; i++) {
+        puinfo->friends_uid[i] = searchuser(friendsdata[i].id);
+        strcpy(topfriend[i], friendsdata[i].exp);
+    }
+    free(friendsdata);
+    puinfo->friendsnum=nf;
+    return 0;
+}
+
+

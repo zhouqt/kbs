@@ -23,8 +23,6 @@ int main()
     uinfo_t **usr;
 
     init_all();
-    if (loginok)
-        getfriendstr();
     fill_userlist();
     usr = get_ulist_addr();
     printf("<center>\n");

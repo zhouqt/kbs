@@ -22,7 +22,7 @@ int addtooverride2(char *uident, char *exp)
     strsncpy(tmp.exp, exp, sizeof(tmp.exp));
     n = append_record(buf, &tmp, sizeof(friends_t));
     if (n != -1)
-        getfriendstr();
+        getfriendstr(currentuser,get_utmpent(utmpent));
     else
         report("append friendfile error");
     return n;

@@ -17,18 +17,18 @@ int t_users();
 int Show_Users();
 int myfriend(int uid, char *fexp)
 {
-    extern int nf;
     int i, found = false;
+    struct user_info* u;
 
-
+    u = get_utmpent(utmpent);
     /*
      * char buf[IDLEN+3]; 
      */
-    if (nf <= 0) {
+    if (u->friendsnum<= 0) {
         return false;
     }
-    for (i = 0; i < nf; i++) {
-        if (topfriend[i].uid == uid) {
+    for (i = 0; i < u->friendsnum; i++) {
+        if (u->friends_uid[i] == uid) {
             found = true;
             break;
         }
@@ -186,9 +186,10 @@ int fill_userlist()
         sort_user_record(numf, i2 - 1);
 #endif
     } else {
-        for (i = 0; i < nf; i++) {
-            if (topfriend[i].uid)
-                apply_utmpuid((APPLY_UTMP_FUNC) full_utmp, topfriend[i].uid, (char *) &i2);
+        struct user_info* u;
+        for (i = 0; i < u->friendsnum; i++) {
+            if (u->friends_uid[i])
+                apply_utmpuid((APPLY_UTMP_FUNC) full_utmp, u->friends_uid[i], (char *) &i2);
     }} range = i2;
     return i2 == 0 ? -1 : 1;
 }

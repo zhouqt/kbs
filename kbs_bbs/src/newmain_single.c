@@ -49,7 +49,6 @@ int temp_numposts;              /*Haohmaru.99.4.02.让爱灌水的人哭去吧//grin */
 int nettyNN = 0;
 int count_friends, count_users; /*Add by SmallPig for count users and Friends */
 int iscolor = 1;
-int nf;
 char *getenv();
 char *sysconf_str();
 char *Ctime();
@@ -174,9 +173,6 @@ void u_enter()
     strncpy(uinfo.userid, currentuser->userid, 20);
     strncpy(uinfo.realname, currentuser->realname, 20);
     strncpy(uinfo.username, currentuser->username, 40);
-    nf = 0;
-    topfriend = NULL;
-    getfriendstr();
     utmpent = getnewutmpent(&uinfo);
     if (utmpent == -1) {
         prints("人数已满,无法分配用户条目!\n");
@@ -185,6 +181,7 @@ void u_enter()
         exit(-1);
     }
 
+    getfriendstr(currentuser,get_utmpent(utmpent));
     listmode = 0;
     digestmode = false;
 }

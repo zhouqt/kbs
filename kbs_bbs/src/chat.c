@@ -1028,6 +1028,7 @@ void chat_friends(chatcontext * pthis, const char *arg)
 {
     /* printchatline(pthis,"");   moved by wwj */
     int num, i;
+    struct user_info* u;
 
     pthis->apply_count = 0;
     sprintf(genbuf, "[1m¡¾ µ±Ç°ÏßÉÏµÄºÃÓÑÁÐ±í ¡¿[m");
@@ -1036,10 +1037,11 @@ void chat_friends(chatcontext * pthis, const char *arg)
     pthis->apply_buf = genbuf;
     pthis->apply_buf[0] = 0;
     num = 0;
-    for (i = 0; i < nf; i++) {
+    u=get_utmpent(utmpent);
+    for (i = 0; i < u->friendsnum; i++) {
         num +=
             apply_utmpuid((APPLY_UTMP_FUNC) print_friend_ent,
-                          topfriend[i].uid, (char *) pthis);
+                          u->friends_uid[i], (char *) pthis);
     }
     if (pthis->apply_count)
         printchatline(pthis, pthis->apply_buf);

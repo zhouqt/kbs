@@ -18,7 +18,7 @@ int deleteoverride2(char *uident)
     deleted = search_record(buf, &fh, sizeof(fh), cmpfnames2, uident);
     if (deleted > 0) {
         if (delete_record(buf, sizeof(fh), deleted, NULL, NULL) != -1)
-            getfriendstr();
+            getfriendstr(currentuser,get_utmpent(utmpent));
         else {
             deleted = -1;
             report("delete friend error");
@@ -36,7 +36,6 @@ int main()
     init_all();
     if (!loginok)
         http_fatal("您尚未登录，请先登录");
-    getfriendstr();
     printf("<center>%s -- 好友名单 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser->userid);
     strsncpy(userid, getparm("userid"), 13);
     if (userid[0] == 0) {

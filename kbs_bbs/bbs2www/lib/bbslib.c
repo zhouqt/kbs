@@ -40,9 +40,7 @@ extern int favnow;
 friends_t fff[200];
 
 int friendnum = 0;
-int nf;
-struct friends_info *topfriend;
-
+int utmpent;
 
 
 int file_has_word(char *file, char *word)
@@ -561,14 +559,14 @@ int shm_init()
 int user_init(struct userec **x, struct user_info **y)
 {
     char id[20], num[20];
-    int i, uid, key;
+    int uid, key;
 
     strsncpy(id, getparm("UTMPUSERID"), 13);
     strsncpy(num, getparm("UTMPNUM"), 12);
     /*printf("utmpuserid = %s\n", id); */
     /*printf("utmpnum = %s\n", num); */
     key = atoi(getparm("UTMPKEY"));
-    i = atoi(num);
+    utmpent = atoi(num);
     if (id[0] == '\0')
         return -1;
 
@@ -1409,21 +1407,10 @@ uinfo_t *get_user_info(int utmpnum)
     return &(utmpshm->uinfo[utmpnum - 1]);
 }
 
-int set_friends_num(int num)
-{
-    nf = num;
-    return nf;
-}
-
 int get_friends_num()
 {
-    return nf;
-}
-
-struct friends_info *init_finfo_addr()
-{
-    topfriend = NULL;
-    return topfriend;
+    return get_utmpent(utmpent)->friendsnum;
+;
 }
 
 struct boardheader *getbcache_addr()
@@ -1436,34 +1423,6 @@ int cmpfuid(a, b)
     struct friends *a, *b;
 {
     return strcasecmp(a->id, b->id);
-}
-
-int getfriendstr()
-{
-    extern int nf;
-    int i;
-    struct friends *friendsdata;
-    char filename[STRLEN];
-
-    if (topfriend != NULL)
-        free(topfriend);
-    sethomefile(filename, currentuser->userid, "friends");
-    nf = get_num_records(filename, sizeof(struct friends));
-    if (nf <= 0)
-        return 0;
-    if (!HAS_PERM(currentuser, PERM_ACCOUNTS) && !HAS_PERM(currentuser, PERM_SYSOP))    /*Haohmaru.98.11.16 */
-        nf = (nf >= MAXFRIENDS) ? MAXFRIENDS : nf;
-    friendsdata = (struct friends *) calloc(sizeof(struct friends), nf);
-    get_records(filename, friendsdata, sizeof(struct friends), 1, nf);
-
-    qsort(friendsdata, nf, sizeof(friendsdata[0]), cmpfuid);    /*For Bi_Search */
-    topfriend = (struct friends_info *) calloc(sizeof(struct friends_info), nf);
-    for (i = 0; i < nf; i++) {
-        topfriend[i].uid = searchuser(friendsdata[i].id);
-        strcpy(topfriend[i].exp, friendsdata[i].exp);
-    }
-    free(friendsdata);
-    return 0;
 }
 
 /* from bbs.c */
@@ -1498,17 +1457,18 @@ int get_friendmode()
 
 int myfriend(int uid, char *fexp)
 {
-    extern int nf;
     int i, found = false;
     int cmp;
+    struct user_info *u;
 
     /*char buf[IDLEN+3]; */
 
-    if (nf <= 0) {
+    u = get_utmpent(utmpent);
+    if (u->friendsnum <= 0) {
         return false;
     }
-    for (i = 0; i < nf; i++) {
-        if (topfriend[i].uid == uid) {
+    for (i = 0; i < u->friendsnum; i++) {
+        if (u->friends_uid[i] == uid) {
             found = true;
             break;
         }
@@ -1538,14 +1498,16 @@ int full_utmp(struct user_info *uentp, int *count)
 int fill_userlist()
 {
     static int i, i2;
+    struct user_info* u;
 
     i2 = 0;
     if (!friendmode) {
         apply_ulist_addr((APPLY_UTMP_FUNC) full_utmp, (char *) &i2);
     } else {
-        for (i = 0; i < nf; i++) {
-            if (topfriend[i].uid)
-                apply_utmpuid((APPLY_UTMP_FUNC) full_utmp, topfriend[i].uid, (char *) &i2);
+        u= get_utmpent(utmpent);
+        for (i = 0; i < u->friendsnum; i++) {
+            if (u->friends_uid[i])
+                apply_utmpuid((APPLY_UTMP_FUNC) full_utmp, u->friends_uid[i], (char *) &i2);
         }
     }
     range = i2;
@@ -2138,6 +2100,7 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
                 *putmpent = utmpent;
                 ret = 0;
             }
+            getfriendstr(currentuser,u);
         }
     } else {
         /* TODO:alloc guest table */

@@ -6,8 +6,6 @@ extern struct userec *currentuser;
 
 extern struct friends_info *topfriend;
 
-extern int nf;
-
 extern int scrint;              /* Set when screen has been initialized */
 
                                   /* Used by namecomplete *only* */

@@ -59,13 +59,14 @@ struct user_info {              /* Structure used in UTMP file */
     char userid[20];
     char realname[20];
     char username[40];
+    int friendsnum;
+    int friends_uid[MAXFRIENDS];
 };
 struct friends {
     char id[13];
     char exp[15];
 };
 struct friends_info {
-    int uid;
     char exp[15];
 };
 

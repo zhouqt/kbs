@@ -26,7 +26,6 @@ int main()
     init_all();
     total = allusers();
     x = get_passwd_addr();
-    getfriendstr();
     printf("<center>%s -- 所有使用者列表 [用户总数: %d]<hr color=\"green\">\n", BBSNAME, total);
     start = atoi(getparm("start"));
     if (start > total || start < 0)

@@ -23,7 +23,6 @@ int main()
     init_all();
     if (!loginok)
         http_fatal("匆匆过客没有好友列表.");
-    getfriendstr();
     set_friendmode(1);
     fill_userlist();
     usr = get_ulist_addr();

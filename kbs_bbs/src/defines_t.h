@@ -146,7 +146,6 @@ int t_query(char q_id[IDLEN]);
 int talkreply();
 int friend_add(int ent, struct friends *fh, char *direct);
 void talk_request();
-int getfriendstr();
 int num_user_logins(char *uid);
 int listfilecontent(char *fname);
 int m_send(char userid[]);

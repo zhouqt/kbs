@@ -80,6 +80,7 @@ extern "C" {
 
     int t_cmpuids(int uid, struct user_info *up);
     int apply_utmp(APPLY_UTMP_FUNC fptr, int maxcount, char *userid, void *arg);
+    int getfriendstr(struct userec* user,struct user_info* puinfo);
 
 /* defined in list.c */
     int myfriend(int uid, char *fexp);

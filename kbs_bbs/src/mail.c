@@ -47,7 +47,6 @@ int G_SENDMODE = false;
 extern int add_author_friend();
 int cmpinames();                /* added by Leeward 98.04.10 */
 
-extern int nf;
 extern int numofsig;
 extern char quote_user[];
 char *sysconf_str();
@@ -1404,6 +1403,7 @@ int g_send()
     int cnt, i, n, fmode = false;
     char maillists[STRLEN];
     struct userec *lookupuser;
+    struct user_info* u;
 
     /*
      * ·â½ûMail Bigman:2000.8.22 
@@ -1473,11 +1473,12 @@ int g_send()
         case 'i':
             n = 0;
             clear();
-            for (i = cnt; i < maxrecp && n < nf; i++) {
+            u = get_utmpent(utmpent);
+            for (i = cnt; i < maxrecp && n < u->friendsnum; i++) {
                 int key;
 
                 move(2, 0);
-                prints("%s\n", getuserid2(topfriend[n].uid));
+                prints("%s\n", getuserid2(u->friends_uid[n]));
                 move(4, 0);
                 clrtoeol();
                 move(3, 0);
@@ -1497,13 +1498,13 @@ int g_send()
                 if (key == '\0' || key == '\n' || key == 'y' || key == 'Y' || '\r' == key) {
                     struct userec *lookupuser;
                     char *errstr;
-                    char *touserid = getuserid2(topfriend[n - 1].uid);
+                    char *touserid = getuserid2(u->friends_uid[n - 1]);
 
                     errstr = NULL;
                     if (!touserid) {
                         errstr = "Õâ¸öÊ¹ÓÃÕß´úºÅÊÇ´íÎóµÄ.\n";
                     } else {
-                        strcpy(uident, getuserid2(topfriend[n - 1].uid));
+                        strcpy(uident, getuserid2(u->friends_uid[n - 1]));
                         if (!getuser(uident, &lookupuser)) {
                             errstr = "Õâ¸öÊ¹ÓÃÕß´úºÅÊÇ´íÎóµÄ.\n";
                         } else if (!(lookupuser->userlevel & PERM_READMAIL)) {
@@ -1697,13 +1698,14 @@ static int do_gsend(char *userid[], char *title, int num)
             return -3;
         }
     }
+    
     for (cnt = 0; cnt < num; cnt++) {
         char uid[13];
         char buf[STRLEN];
         struct userec *user;
 
         if (G_SENDMODE == 1)
-            getuserid(uid, topfriend[cnt].uid);
+            getuserid(uid, get_utmpent(utmpent)->friends_uid[cnt]);
         else if (G_SENDMODE == 2) {
             if (fgets(buf, STRLEN, mp) != NULL) {
                 if (strtok(buf, " \n\r\t") != NULL)
@@ -1772,6 +1774,7 @@ static int do_gsend(char *userid[], char *title, int num)
 int ov_send()
 {
     int all, i;
+    struct user_info* u;
 
     /*
      * ·â½ûMail Bigman:2000.8.22 
@@ -1783,8 +1786,9 @@ int ov_send()
     move(1, 0);
     clrtobot();
     move(2, 0);
+    u = get_utmpent(utmpent);
     prints("¼ÄÐÅ¸øºÃÓÑÃûµ¥ÖÐµÄÈË£¬Ä¿Ç°±¾Õ¾ÏÞÖÆ½ö¿ÉÒÔ¼Ä¸ø [1m%d[m Î»¡£\n", maxrecp);
-    if (nf <= 0) {
+    if (u->friendsnum<= 0) {
         prints("Äã²¢Ã»ÓÐÉè¶¨ºÃÓÑ¡£\n");
         pressanykey();
         clear();
@@ -1793,13 +1797,13 @@ int ov_send()
         prints("Ãûµ¥ÈçÏÂ£º\n");
     }
     G_SENDMODE = 1;
-    all = (nf >= maxrecp) ? maxrecp : nf;
+    all = (u->friendsnum>= maxrecp) ? maxrecp : u->friendsnum;
     for (i = 0; i < all; i++) {
         char *userid;
 
-        userid = getuserid2(topfriend[i].uid);
+        userid = getuserid2(u->friends_uid[i]);
         if (!userid)
-            prints("\x1b[1;32m%-12s\x1b[m ", topfriend[i].uid);
+            prints("\x1b[1;32m%-12s\x1b[m ", u->friends_uid[i]);
         else
             prints("%-12s ", userid);
         if ((i + 1) % 6 == 0)
