@@ -220,6 +220,16 @@ extern "C" {
     int check_read_perm(struct userec *user, int num);
 
 /* define in article.c */
+    /* mmap_search_dir_apply
+     功能:mmap struct fileheader结构的文件，找到需要的记录,
+     找到后调用func,传入start整个文件mmap的开始，ent为记录号
+     根据文章ID做二分查找
+     调用的时候
+     match=true,完全匹配
+     match=false,找到该插入的前一条记录。
+     */
+    typedef int (*DIR_APPLY_FUNC)(int fd,struct fileheader* start,int ent,int total,struct fileheader* data,bool match);
+
     int get_postfilename(char *filename, char *direct);
     int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink);
     int isowner(struct userec *user, struct fileheader *fileinfo);
