@@ -732,6 +732,7 @@ void a_edits()
     }
     pressreturn();
 }
+#ifdef CAN_EXEC
 
 #ifdef BBSDOORS
 
@@ -753,6 +754,7 @@ void ent_bnet()
     clear();
 }
 
+#endif
 #endif
 static void escape_filename(char *fn)
 {

@@ -52,7 +52,9 @@ int x_fillform();
 int x_vote();
 int ShowWeather();              /* 2001.6.12 */
 int x_results();
+#ifdef CAN_EXEC
 int ent_bnet();
+#endif
 int a_edits();
 int x_edits();
 int x_date();
@@ -157,7 +159,9 @@ int t_irc()
         {"ShowDate", x_date},
         {"DoVote", x_vote},
         {"VoteResult", x_results},
+#ifdef CAN_EXEC
         {"ExecBBSNet", ent_bnet},
+#endif
         {"ShowWelcome", Welcome},
         {"ReadWeather", ShowWeather},   /*Bigman 2001.6.12 */
         {"SpecialUser", Users},
