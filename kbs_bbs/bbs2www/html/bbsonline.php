@@ -55,9 +55,13 @@ login_init();
 <form action="/bbsonline.php" method="get">
 
 <select name="year" class="input" style="WIDTH: 55px">
-<option value="2002"<?php if( $year=="2002" ) { ?> selected="selected"<?php } ?>>2002</option>
-<option value="2003"<?php if( $year=="2003" ) { ?> selected="selected"<?php } ?>>2003</option>
-<option value="2004"<?php if( $year=="2004" ) { ?> selected="selected"<?php } ?>>2004</option>
+<?php
+	for ($i = 2002; $i <= $nowyear; $i++) {
+?>
+<option value="<?php echo $i; ?>"<?php if( $year==$i ) { ?> selected="selected"<?php } ?>><?php echo $i; ?></option>
+<?php
+	}
+?>
 </select>Äê
 
 <select name="month" class="input" style="WIDTH: 40px">
