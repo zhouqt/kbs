@@ -6,10 +6,10 @@
 #include <zlib.h>
 
 #if USE_TMPFS==1
-struct _brc_cache_entry* brc_cache_entry;
+struct _brc_cache_entry* brc_cache_entry=NULL;
 #else
 struct _brc_cache_entry brc_cache_entry[BRC_CACHE_NUM];
-#endif;
+#endif
 static int brc_currcache=-1;
 
 struct favbrd_struct {
@@ -500,6 +500,28 @@ void brc_addreaddirectly(char *userid, int bnum, unsigned int postid)
     return;
 }
 
+#if USE_TMPFS==1
+void init_brc_cache(char* userid,bool replace) {
+    if ((brc_cache_entry==NULL)||(replace)) {
+        char dirfile[MAXPATH];
+        int brcfdr;
+	struct stat st;
+	if (brc_cache_entry)
+		munmap(brc_cache_entry,BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
+        setcachehomefile(dirfile, userid, -1, "entry");
+        if(stat(dirfile, &st)<0) {
+            char brc[BRC_CACHE_NUM*sizeof(struct _brc_cache_entry)];
+            brcfdr = open(dirfile, O_RDWR|O_CREAT, 0600);
+            memset(brc, 0, BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
+            write(brcfdr, brc, BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
+            close(brcfdr);
+        }
+        brcfdr = open(dirfile, O_RDWR, 0600);
+        brc_cache_entry = mmap(NULL, BRC_CACHE_NUM*sizeof(struct _brc_cache_entry), PROT_READ|PROT_WRITE, MAP_SHARED, brcfdr, 0);
+        close(brcfdr);
+    }
+}
+#endif
 int brc_initial(char *userid, char *boardname)
 {                               /* 读取用户.boardrc文件，取出保存的当前版的brc_list */
     int entry;
@@ -522,6 +544,10 @@ int brc_initial(char *userid, char *boardname)
 #endif
     /*干脆不搞guest的这个算了*/
     if (!strcmp(userid,"guest")) return 0;
+#if USE_TMPFS==1
+    init_brc_cache(userid,false);
+#endif
+
     for (i = 0; i < BRC_CACHE_NUM; i++)
         if (brc_cache_entry[i].bid == bid) {
             brc_currcache = i;

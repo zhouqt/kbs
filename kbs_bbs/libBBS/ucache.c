@@ -861,9 +861,6 @@ void setcachehomefile(char* path,char* user,int unum,char* file)
     }
 }
 
-int brcfdr;
-size_t brcfilesize;
-
 void init_cachedata(char* userid,int unum)
 {
     char path1[MAXPATH],path2[MAXPATH];
@@ -877,17 +874,6 @@ void init_cachedata(char* userid,int unum)
     if (mkdir(path1,0700)==-1)
         bbslog("3error","mkdir %s errorno %d",path1,errno);
     
-    setcachehomefile(path1, userid, -1, "entry");
-    if(stat(path1, &st)<0) {
-        char brc[BRC_CACHE_NUM*sizeof(struct _brc_cache_entry)];
-        brcfdr = open(path1, O_RDWR|O_CREAT, 0600);
-        memset(brc, 0, BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
-        write(brcfdr, brc, BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
-        close(brcfdr);
-    }
-    brcfdr = open(path1, O_RDWR, 0600);
-    brc_cache_entry = mmap(NULL, BRC_CACHE_NUM*sizeof(struct _brc_cache_entry), PROT_READ|PROT_WRITE, MAP_SHARED, brcfdr, 0);
-        
     setcachehomefile(path1, userid, -1, "logincount");
     if ((fd = open(path1, O_RDWR, 0664)) != -1) {
         ldata.l_type = F_RDLCK;
@@ -936,7 +922,6 @@ int clean_cachedata(char* userid,int unum)
     int count;
     struct flock ldata;
 
-    end_mmapfile(brc_cache_entry, brcfilesize, brcfdr);
     setcachehomefile(path1, userid, unum, NULL);
     f_rm(path1);
     //todo: check the dir

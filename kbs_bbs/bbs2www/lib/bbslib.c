@@ -2018,6 +2018,9 @@ int www_user_init(int useridx, char *userid, int key, struct userec **x, struct 
 
         if (*x == 0)
             return -5;
+#if USE_TMPFS==1
+	    init_brc_cache((*x)->userid,true);
+#endif
     } else {
         /*
          * guest用户处理 

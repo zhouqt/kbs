@@ -207,6 +207,10 @@ int clean_cachedata(char* userid,int unum);
     void detach_boards();
     int anonymousboard(char *board);
     int load_boards(struct newpostdata *nbrd, char *boardprefix, int pos, int len, bool sort, bool yank_flag, char **input_namelist);
+#if USE_TMPFS==1
+    void init_brc_cache(char* userid,bool replace);
+#endif
+
     void brc_clear_new_flag(unsigned fid);      /* 清除版面的到这篇文章未读标记 */
 
     int getfavnum();
