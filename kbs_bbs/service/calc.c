@@ -7,8 +7,13 @@
 ******************************************************/
 
 #define BBSMAIN
+#include "service.h"
 #include "bbs.h"
 #include <math.h>
+
+SMTH_API struct user_info uinfo;
+SMTH_API bool UPDOWN;
+SMTH_API int scr_cols, scr_lns;
 
 #define MINIMUM	0.00001
 #define Pi		3.1415926535897932384626433832795
@@ -777,8 +782,6 @@ int calc_main()
 "表达式出错",
 ""};
     int y,x,res,i,j,ch,hi,oldmode;
-    extern int scr_cols, scr_lns;
-    extern bool UPDOWN;
     oldmode=uinfo.mode;
     modify_user_mode(CALC);
     for(i=0;i<HIST;i++) history[i][0]=0;

@@ -1,8 +1,12 @@
 // NJU tinybbsnet, Preview Version, zhch@dii.nju.edu.cn, 2000.3.23 //
+#include "service.h"
 #include "bbs.h"
 #include "select.h"
 #include "tcplib.h"
 #include <netdb.h>
+
+SMTH_API struct user_info uinfo;
+SMTH_API char fromhost[IPLEN + 1];
 
 #define TIME_OUT	15
 #define MAX_PROCESS_BAR_LEN 30
@@ -25,12 +29,6 @@ char user[21];
 int sockfd;
 jmp_buf jb;
 
-extern char fromhost[];
-extern struct userec *currentuser;
-extern int msg_count;
-extern struct user_info uinfo;
-extern int utmpent;
-	
 // added by flyriver, 2001.3.2
 // 穿梭日记
 // mode == 0, 开始穿梭
@@ -595,21 +593,6 @@ void main_loop()
         bbsnet_conf.get_data = load_section;
         bbsnet_conf.on_selchange = bbsnet_selchange;
 	list_select_loop(&bbsnet_conf);
-/*
-	display_sites();
-	for(;;)
-	{
-		getdata(23, 0, "请输入穿梭站序号(直接输入回车可退出穿梭服务): ", buf, 3, DOECHO, NULL, true);
-		if (buf[0] == '\0')
-			break;
-		n = atoi(buf);
-		if (n > 0 && n <= counts)
-		{
-			bbsnet(n-1);
-			display_sites();
-		}
-	}
-	*/
 }
 
 int bbsnet_main()

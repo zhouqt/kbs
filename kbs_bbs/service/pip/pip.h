@@ -281,6 +281,7 @@ typedef struct royalset royalset;
 #define  ERR_UID	"这里没有这个人啦！"
 #define  cuser		currentuser
 #define  b_lines	t_lines-1
+SMTH_API int t_lines;
 #endif				// End MAPLE
 #define   cuser     currentuser
 #define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)

@@ -1,4 +1,5 @@
 #include "tcplib.h"
+#include "config.h"
 
 void
 MsToTimeval(const int ms, struct timeval *tv)
@@ -156,7 +157,11 @@ DoConnect(const char *ip, const int port, const int msec)
 	/* 设置 sockaddr_in 结构 */
 	bzero(&sa, sizeof(sa));
 	sa.sin_family = AF_INET;
+#ifdef HAVE_INET_ATON
+	if (inet_aton(ip, &sa.sin_addr) <= 0)
+#else
 	if (inet_pton(AF_INET, ip, &sa.sin_addr) <= 0)
+#endif
 		return ERR_TCPLIB_OTHERS; /* 获取服务器地址失败 */
 	sa.sin_port = htons(port);
 	/* 创建连接 */

@@ -1,26 +1,26 @@
 /* define variable used by whole project */
 
-extern struct UTMPFILE *utmpshm;
+#ifndef SMTH_API
+#define SMTH_API extern
+#endif
+SMTH_API struct UTMPFILE *utmpshm;
 /*extern struct UCACHE *uidshm;*/
-extern struct userec *currentuser;
+SMTH_API struct userec *currentuser;
 //extern struct userdata curruserdata;
-extern struct usermemo *currentmemo;
+SMTH_API struct usermemo *currentmemo;
 
-extern struct friends_info *topfriend;
+SMTH_API struct friends_info *topfriend;
 
-extern int scrint;              /* Set when screen has been initialized */
+SMTH_API int scrint;              /* Set when screen has been initialized */
 
                                   /* Used by namecomplete *only* */
 
-extern int digestmode;          /*To control Digestmode */
-#ifdef NEW_HELP
-extern int helpmode;
-#endif
+SMTH_API int digestmode;          /*To control Digestmode */
 extern struct user_info uinfo;  /* Ditto above...utmp entry is stored here
                                    and written back to the utmp file when
                                    necessary (pretty darn often). */
-extern int usernum;             /* Index into passwds file user record */
-extern int utmpent;             /* Index into this users utmp file entry */
+SMTH_API int usernum;             /* Index into passwds file user record */
+SMTH_API int utmpent;             /* Index into this users utmp file entry */
 extern int count_friends, count_users;  /*Add by SmallPig for count users and friends */
 
 extern int t_lines, t_columns;  /* Screen size / width */
@@ -55,8 +55,8 @@ extern int showansi;
 extern char fromhost[IPLEN + 1];
 extern time_t login_start_time;
 
-extern struct boardheader *bcache;
-extern struct BCACHE *brdshm;
+SMTH_API struct boardheader *bcache;
+SMTH_API struct BCACHE *brdshm;
 
 #ifdef BBSMAIN
 extern int idle_count;
@@ -86,3 +86,6 @@ extern int smsresult;
 extern void* smsbuf;
 #endif
 extern const char secname[SECNUM][2][20];
+
+SMTH_API int msg_count;
+

@@ -7,7 +7,13 @@
 ******************************************************/
 
 #define BBSMAIN
+#include "service.h"
 #include "bbs.h"
+
+SMTH_API struct user_info uinfo;
+SMTH_API int t_lines;
+SMTH_API int kicked;
+SMTH_API int RMSG;
 
 #define MAX_ROOM 100
 #define MAX_PEOPLE 100
@@ -76,7 +82,6 @@ struct killer_record {
 
 int myroom, mypos;
 
-extern int kicked;
 
 void save_result(int w)
 {
@@ -660,7 +665,6 @@ void refreshit()
     }
 }
 
-extern int RMSG;
 
 void room_refresh(int signo)
 {

@@ -6,8 +6,14 @@
 请在修改后的文件头部保留版权信息
 ******************************************************/
 #define BBSMAIN
+#include "service.h"
 #include "bbs.h"
 #include <time.h>
+
+SMTH_API bool UPDOWN;
+SMTH_API int t_lines;
+SMTH_API int incalendar;
+SMTH_API struct user_info uinfo;
 
 char save_scr[LINEHEIGHT][LINELEN*3];
 int save_y, save_x;

@@ -1,4 +1,5 @@
 #define BBSMAIN
+#include "service.h"
 #include "bbs.h"
 
 #define TOTALNUM 20

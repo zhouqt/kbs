@@ -7,6 +7,7 @@
 //#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
 //#define pressanykey(a) prints(a);pressanykey();
 
+#include "service.h"
 #include "bbs.h"
 #include <time.h>
 #include "pip.h"

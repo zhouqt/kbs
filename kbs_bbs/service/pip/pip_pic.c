@@ -2,6 +2,7 @@
 /* Ð¡¼¦Í¼ÐÎÇø                                                                */
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
+#include "service.h"
 #include "bbs.h"
 //#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
 

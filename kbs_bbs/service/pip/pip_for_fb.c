@@ -1,3 +1,4 @@
+#include "service.h"
 #include "bbs.h"
 
 //#define       cuser   currentuser
