@@ -9029,7 +9029,7 @@ static PHP_FUNCTION(bbs_read_ann_dir)
     int i,j;
     char *id,*ptr;
     char buf[256];
-    char r_title[STRLEN],r_path[256],r_bm[IDLEN + 2];
+    char r_title[STRLEN],r_path[256],r_bm[256];
     int  r_flag,r_time;
     
     int ac = ZEND_NUM_ARGS();
@@ -9111,7 +9111,8 @@ static PHP_FUNCTION(bbs_read_ann_dir)
                 r_flag = me.item[i]->attachpos?3:2;
 
             snprintf(r_path, sizeof(r_path), "%s/%s", ptr == NULL ? "" : ptr, me.item[i]->fname);
-            strcpy(r_bm,id[0]?id:"");
+            strncpy(r_bm,id[0]?id:"",sizeof(r_bm)-1);
+            r_bm[sizeof(r_bm)-1] = '\0';
             r_time = file_time(buf);
             if (strcmp(r_bm,"BMS") && strcmp(r_bm,"SYSOPS")) { // only display common articles
                 MAKE_STD_ZVAL(element);
