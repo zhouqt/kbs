@@ -613,13 +613,13 @@ int main(int argc, char *argv[])
     setreuid(BBSUID, BBSUID);
     setregid(BBSGID, BBSGID);
 
-    init_bbslog();
     setpublicshmreadonly(0);
 #undef time
     bbssettime(time(0));
     sleep(1);
 #define time(x) bbstime(x)
     setpublicshmreadonly(1);
+    init_bbslog();
     if (argc > 1) {
         if (strcasecmp(argv[1], "killuser") == 0) {
             if (load_ucache() != 0)
