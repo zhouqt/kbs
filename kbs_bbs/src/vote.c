@@ -1252,7 +1252,7 @@ int x_vote()
     bh=currboard;
     bid=currboardent;
     b_vote();
-    currboard-=bh;
+    currboard=bh;
     currboardent=bid;
     return 0;
 }
