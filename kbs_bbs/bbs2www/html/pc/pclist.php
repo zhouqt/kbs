@@ -51,7 +51,7 @@ pcmain_html_init();
 	<td>
 	<table width="100%" cellpadding="0" cellspacing="0" border="0">
 		<tr>
-		<td width="33%">
+		<td width="33%" valign="top">
 			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
 				<tr>
 					<td class="td3" bgcolor="#f75151" align="center"><b><font color="white">本日最热博客</font></b></td>			
@@ -63,7 +63,7 @@ pcmain_html_init();
 				</tr>
 			</table>
 		</td>
-		<td width="33%">
+		<td width="33%" valign="top">
 			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
 				<tr>
 					<td class="td3" bgcolor="#00b6ef" align="center"><b><font color="white">本月最热博客</font></b></td>			
@@ -75,7 +75,7 @@ pcmain_html_init();
 				</tr>
 			</table>
 		</td>
-		<td width="33%">
+		<td width="33%" valign="top">
 			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
 				<tr>
 					<td align="center" class="td3" bgcolor="#4cb81c"><b><font color="white">最热博客</font></b></td>			
@@ -92,7 +92,7 @@ pcmain_html_init();
 		<td colspan="3" bgcolor="#999999" height="3"> </td>
 		</tr>
 		<tr>
-		<td width="33%">
+		<td width="33%" valign="top">
 			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
 				<tr>
 					<td class="td3" bgcolor="#adbe00" align="center"><b><font color="white">本日最热日志</font></b></td>			
@@ -104,7 +104,7 @@ pcmain_html_init();
 				</tr>
 			</table>
 		</td>
-		<td width="33%">
+		<td width="33%" valign="top">
 			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
 				<tr>
 					<td class="td3" bgcolor="#dfd581" align="center"><b><font color="white">本月最热日志</font></b></td>			
@@ -116,7 +116,7 @@ pcmain_html_init();
 				</tr>
 			</table>
 		</td>
-		<td width="33%">
+		<td width="33%" valign="top">
 			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
 				<tr>
 					<td align="center" class="td3" bgcolor="#ff00cc"><b><font color="white">最热日志</font></b></td>			
@@ -134,7 +134,7 @@ pcmain_html_init();
 		<td colspan="3" bgcolor="#999999" height="3"> </td>
 		</tr>
 		<tr>
-		<td width="33%">
+		<td width="33%" valign="top">
 			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
 				<tr>
 					<td class="td3" bgcolor="#ffb600" align="center"><b><font color="white">本日最热栏目</font></b></td>			
@@ -146,7 +146,7 @@ pcmain_html_init();
 				</tr>
 			</table>
 		</td>
-		<td width="33%">
+		<td width="33%" valign="top">
 			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
 				<tr>
 					<td class="td3" bgcolor="#00b6ef" align="center"><b><font color="white">本月最热栏目</font></b></td>			
@@ -158,7 +158,7 @@ pcmain_html_init();
 				</tr>
 			</table>
 		</td>
-		<td width="33%">
+		<td width="33%" valign="top">
 			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
 				<tr>
 					<td align="center" class="td3" bgcolor="#f75151"><b><font color="white">最热栏目</font></b></td>			

@@ -230,21 +230,21 @@ function getCommentsCnt($link)
 	return $rows[0];
 }
 
-function getHotUsersByPeriod($link,$period="",$num=10)
+function getHotUsersByPeriod($link,$period,$num=10)
 {
 	if($period=="day")
-		$startTime = intval(date("Ymd")."000000");
+		$queryTime = date("Ymd");
 	elseif($period=="month")
-		$startTime = intval(date("Ym")."00000000");
+		$queryTime = date("Ym");
 	else
-		$startTime = 0;
+		$queryTime = "";
 	
 	$query = "SELECT COUNT(pri_id) , uid , users.username , corpusname , description ".
 	         "FROM logs , users ".
 	         "WHERE ACTION LIKE '%\'s Blog(www)' ".
 	         "      AND pri_id = users.username ";
-	if($startTime)
-	$query.= "      AND logtime > ".$startTime." ";
+	if($queryTime)
+	$query.= "      AND logtime LIKE '".$queryTime."%' ";
 	$query.= "GROUP BY pri_id ".
 	         "ORDER BY 1 DESC ".
 	         "LIMIT 0 , ".$num." ;";
@@ -256,20 +256,20 @@ function getHotUsersByPeriod($link,$period="",$num=10)
 	return $users;	
 }
 
-function getHotNodesByPeriod($link,$period="",$num=10)
+function getHotNodesByPeriod($link,$period,$num=10)
 {
 	if($period=="day")
-		$startTime = intval(date("Ymd")."000000");
+		$queryTime = date("Ymd");
 	elseif($period=="month")
-		$startTime = intval(date("Ym")."00000000");
+		$queryTime = date("Ym");
 	else
-		$startTime = 0;
+		$queryTime = "";
 		
 	$query = "SELECT uid , nid , subject ".
 		 "FROM nodes ".
 		 "WHERE access = 0 ";
-	if($startTime)
-	$query.= " AND created > ".$startTime . " ";
+	if($queryTime)
+	$query.= " AND created LIKE '".$queryTime . "%' ";
 	//$query.= "GROUP BY uid ";
 	$query.= "ORDER BY visitcount DESC ".
 		 "LIMIT 0 , ".$num." ;";

@@ -15,8 +15,8 @@ function pcmain_html_init()
 .more {font-size: 11px;color: #ffffff;}
 .channelback {background-color: #1F66A7;border-right-width: 1px;border-bottom-width: 1px;border-right-style: solid;border-bottom-style: solid;border-right-color: #999999;border-bottom-color: #999999;font-size: 12px;font-weight: bold;color: #FFFFFF;text-align: left;text-indent: 3pt;}
 .td {border-right-width: 1px;border-bottom-width: 1px;border-right-style: solid;border-bottom-style: solid;border-right-color: #999999;border-bottom-color: #999999;line-height: 16px;word-wrap:break-word;word-break:break-all;}
-body {font-size: 12px;}
-a:link {color: #000000;text-decoration: none;}
+body {font-size: 12px;line-height: 16px;}
+a:link {color: #333333;text-decoration: none;}
 a:visited {color: #003333;text-decoration: none;}
 a:hover {color: #003366;text-decoration: underline;}
 .topic {color: #666666;background-color: #D2E9FF;text-align: left;text-indent: 5pt;font-size: 12px;font-weight: bold;border: 1px solid #999999;}
@@ -32,8 +32,8 @@ select {font-size: 12px;font-weight: lighter;}
 .navigationbar a:visited {color: #f6f6f6;}
 .navigationbar a:hover {color: #ff0000;text-decoration: none;text-align: center;}
 .table2{border-width: 1px;border-color: #999999; border-top-style: dashed; border-left-style: dashed;border-right-style: none; border-bottom-style: none;}
-.td3{border-width: 1px;border-color: #999999; border-right-style: dashed; border-bottom-style: dashed;border-top-style: none; border-left-style: none;}
-.td4{border-width: 1px;border-color: #999999; border-right-style: none; border-bottom-style: dashed;border-top-style: none; border-left-style: none;}
+.td3{valign: top; border-width: 1px;border-color: #999999; border-right-style: dashed; border-bottom-style: dashed;border-top-style: none; border-left-style: none;}
+.td4{valign: top; border-width: 1px;border-color: #999999; border-right-style: none; border-bottom-style: dashed;border-top-style: none; border-left-style: none;}
 -->
 </style>
 </head>
