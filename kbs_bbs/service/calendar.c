@@ -220,11 +220,11 @@ void draw_main()
         saveline(i, 1, save_scr[i]);
     if(fullscr) {
         clear();
-        move(1, 3);
+        move(1, 2);
         setbcolor(CYAN);
         setfcolor(YELLOW, 1);
         for(i=0;i<42;i++) prints(" ");
-        move(1, 5);
+        move(1, 4);
         if(month<=10) {
             prints("%s  ", nums[month]);
         }
@@ -236,19 +236,19 @@ void draw_main()
         strcpy(buf, emonths[month]);
         move(1, 40-strlen(buf));
         prints(buf);
-        move(3, 4);
+        move(3, 3);
         prints("[1;41;31mSUN [0;40;37m  [1;43;33mMON [40m  [43;33mTUE [40;37m  [43;33mWED [40;37m  [43;33mTHU [40;37m  [43;33mFRI [40;37m  [42;32mSAT [m");
-        move(4, 4);
+        move(4, 3);
         prints("[41;37m  [1;31mÈÕ[0;40;37m  [43;37m  [1;33mÒ»[40;37m  [43;33m  ¶þ[40m  [43;33m  Èý[40m  [43;33m  ËÄ[40m  [43;33m  Îå[40m  [42;33m  [32mÁù[m");
         for(i=0;i<6;i++) {
-            move(6+i*3, 3);
+            move(5+i*3, 2);
             prints("[36m©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥[m");
         }
         k=0;
         for(i=1;i<=get_day(year,month);i++) {
             j=get_week(year,month,i);
             Lunar(i, &lmonth, &lday);
-            y=k*3+7;
+            y=k*3+6;
             x=j*6+3;
             resetcolor();
             if(j==0) setfcolor(RED, 1);
@@ -267,10 +267,11 @@ void draw_main()
                 i0++;
             }
             if(i==day) setbcolor(PINK);
+            move(y,x+2);
+            prints("%-2d", i);
+
             sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, i);
             if(stat(buf, &st)!=-1) prints("\x1b[4m");
-            move(y,x);
-            prints("%4d", i);
 
             if(lday==1) sprintf(buf2, "%sÔÂ", lmonths[lmonth]);
             else if(lday<=10) sprintf(buf2, "³õ%s", nums[lday]);
