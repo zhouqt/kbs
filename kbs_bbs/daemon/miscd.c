@@ -623,11 +623,11 @@ int main(int argc, char *argv[])
     setreuid(BBSUID, BBSUID);
     setregid(BBSGID, BBSGID);
 
-    setpublicshmreadonly(0);
 #undef time
     bbssettime(time(0));
     sleep(1);
 #define time(x) bbstime(x)
+    setpublicshmreadonly(0);
     setpublicshmreadonly(1);
     init_bbslog();
     if (argc > 1) {
