@@ -44,16 +44,16 @@ int main()
     *(int *) (u_info->from + 36) = time(0);
     sprintf(filename, "tmp/%s.%d.tmp", getcurruserid(), getpid());
     f_append(filename, unix_string(content));
-    oldx = (struct fileheader*)malloc(sizeof(struct fileheader));
     if(oldfilename[0]){
-    	int pos = get_file_ent(board, oldfilename, oldx);
-    	if (pos <= 0) {
+    	int pos;
+    	oldx = (struct fileheader*)malloc(sizeof(struct fileheader));
+    	pos = get_file_ent(board, oldfilename, oldx);
+    	if (strncmp(oldx->filename, oldfilename, FILENAME_LEN)) {
     		free(oldx);
     		oldx = NULL;
     	}
     }
     else {
-    	free(oldx);
     	oldx = NULL;
     }
     brc_initial(currentuser->userid, board);
