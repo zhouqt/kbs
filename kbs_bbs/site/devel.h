@@ -43,6 +43,6 @@
 
 #define BUILD_PHP_EXTENSION
 
-#define USE_SEM_LOCK 1
+/*#define USE_SEM_LOCK 1*/
 
 #endif
