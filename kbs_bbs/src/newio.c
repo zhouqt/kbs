@@ -635,7 +635,7 @@ int igetkey()
 			continue;
 		}
 
-#ifdef SMTH
+#if defined(SMTH) || defined(FREE)
 	if (scrint&&ch==Ctrl('V')) {
             if (getCurrentUser()&&!HAS_PERM(getCurrentUser(),PERM_DENYRELAX)&&uinfo.mode!=DICT)
             exec_mbem("@mod:service/libdict.so#dict_main");
@@ -705,7 +705,7 @@ int igetkey()
                 else ret = KEY_F1+k-1;
         	if (scrint&&ret==KEY_F10&&!incalendar) {
         	      mode=0;
-                    if (getCurrentUser()&&!HAS_PERM(getCurrentUser(),PERM_DENYRELAX))
+                    if (getCurrentUser()&&!HAS_PERM(getCurrentUser(),PERM_DENYRELAX)&&uinfo.mode!=LOCKSCREEN)
                     exec_mbem("@mod:service/libcalendar.so#calendar_main");
                     continue;
                 }
