@@ -110,7 +110,7 @@ int add_room(struct room_struct * r)
             return -1;
     }
     for(i=0;i<*roomst;i++)
-    if(rooms[i].name[0]==0) {
+    if(rooms[i].name[0]==0&&rooms[i].style==-1) {
         memcpy(&(rooms[i]), r, sizeof(struct room_struct));
         return 0;
     }
