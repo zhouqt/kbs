@@ -1953,6 +1953,10 @@ int mode;
     }
     if(mode==0/*×ªÌù*/)
     {
+        int normal_file;         
+        int header_count;        
+        normal_file=1;           
+
         write_header(of,1/*²»Ğ´Èë .posts*/);
         if(fgets( buf, 256, inf ) != NULL)
             { for(count=8;buf[count]!=' ';count++)
@@ -1962,9 +1966,18 @@ int mode;
             fprintf( of, "[1;37m¡¾ ÒÔÏÂÎÄ×Ö×ªÔØ×Ô [32m%s [37mµÄĞÅÏä ¡¿\n",currentuser->userid);
         else
             fprintf( of, "¡¾ ÒÔÏÂÎÄ×Ö×ªÔØ×Ô %s ÌÖÂÛÇø ¡¿\n",quote_board);
-        fprintf( of, "¡¾ Ô­ÎÄÓÉ %s Ëù·¢±í ¡¿[m\n",owner);
-        while( fgets( buf, 256, inf ) != NULL)/*Clear Post header*/
-            if( buf[0] == '\n' )  break;
+        if (id_invalid(owner)) normal_file=0;
+       if (normal_file) {                                                   
+         for (header_count=0;header_count<3;header_count++) {               
+           if ( fgets( buf, 256, inf ) == NULL) break;/*Clear Post header*/ 
+          }                                                        
+          if ((header_count!=2)||(buf[0]!='\n')) normal_file=0;    
+        }                                                          
+        if (normal_file)                                           
+            fprintf( of, "¡¾ Ô­ÎÄÓÉ %s Ëù·¢±í ¡¿\n",owner);        
+        else                                                       
+            fseek(inf,0,SEEK_SET);                                 
+
     }else if(mode==1/*×Ô¶¯·¢ĞÅ*/)
     {
         fprintf( of,"·¢ĞÅÈË: deliver (×Ô¶¯·¢ĞÅÏµÍ³), ĞÅÇø: %s\n",quote_board);

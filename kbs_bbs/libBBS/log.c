@@ -178,6 +178,11 @@ int log(const char * from,const char *fmt,...)
         }
         pconf++;
     }
+        if (pconf->fd>=0 && !pconf->bufsize) {        
+        close(pconf->fd);         
+        pconf->fd=-1;             
+    }                             
+
 	return 0;
 }
 

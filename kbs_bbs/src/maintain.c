@@ -191,6 +191,14 @@ int securityreport(char *str,struct userec* lookupuser)		/* Leeward: 1997.12.02 
 	            fclose(se);
 	            postfile(fname, "syssecurity", str, 2);
 	        }
+                else    /* Modified for change id by Bigman 2001.5.25 */                
+                {                                                                       
+                      fprintf(se, "系统安全记录系统\n^[[32m原因：%s^[[m\n", str);     
+                      fprintf(se, "以下是个人资料");                                  
+                      getuinfo(se, currentuser);                                      
+                      fclose(se);                                                     
+                      postfile(fname, "syssecurity", str, 2);                         
+                }                                                                       
     	}
         else
         {
@@ -676,7 +684,7 @@ int searchtrace()
         return -1;
     }
 
-    sprintf(tmp_command, "grep -w %s trace | grep posted > etc/searchresult", tmp_id);
+    sprintf(tmp_command, "grep -w %s user.log | grep posted > etc/searchresult", tmp_id);
     system(tmp_command);
     mail_file("etc/searchresult", currentuser->userid, "系统查询结果");
     unlink("etc/searchresult");
