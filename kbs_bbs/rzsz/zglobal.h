@@ -38,6 +38,10 @@ extern jmp_buf zmodemjmp;
 #include <string.h>
 #include <sys/stat.h>
 
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
+#endif
+
 /* we need to decide whether readcheck is possible */
 #if 0
 /* used to use #elif, but native braindead hpux 9.00 c compiler didn't 
