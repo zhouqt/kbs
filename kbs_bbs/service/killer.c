@@ -87,7 +87,7 @@ extern int kicked;
 
 void start_change_inroom()
 {
-    while(inrooms[myroom].w) sleep(0);
+    if(inrooms[myroom].w) sleep(0);
     inrooms[myroom].w = 1;
 }
 
