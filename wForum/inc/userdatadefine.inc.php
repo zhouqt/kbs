@@ -23,7 +23,7 @@ function get_astro($birthmonth, $birthday)
 	if (($birthmonth==0) || ($birthday==0) ){
 		return "<font color=gray>未知</font>";
 	}
-	$birth=$birthmonth.'月'.$birthday.'日';
+	$birth=""; //$birthmonth.'月'.$birthday.'日'; - disabled by atppp
 	switch ($birthmonth){
 	case 1:
 		if ($birthday>=21)	{
