@@ -6944,11 +6944,13 @@ static PHP_FUNCTION(bbs_useronboard)
     char *board;
     int   board_len;
     zval *element,*users;
-    int bid,i,j;
+    int bid,i,j,seecloak=0;
     
     int ac = ZEND_NUM_ARGS();
     if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sz", &board, &board_len, &users) == FAILURE) {
-		WRONG_PARAM_COUNT;
+        if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "szl", &board, &board_len, &users, &seecloak) == FAILURE) {
+            WRONG_PARAM_COUNT;
+        }
 	}
 
     
@@ -6958,6 +6960,7 @@ static PHP_FUNCTION(bbs_useronboard)
 #ifndef ALLOW_PUBLIC_USERONBOARD
     if(! HAS_PERM(getCurrentUser(), PERM_SYSOP))
 		RETURN_LONG(-1);
+    seecloak = 1;
 #endif
     if (array_init(users) != SUCCESS)
         RETURN_LONG(-1);
@@ -6967,6 +6970,7 @@ static PHP_FUNCTION(bbs_useronboard)
         struct user_info* ui;
         ui=get_utmpent(i+1);
         if (ui->active&&ui->currentboard) {
+            if (!seecloak && ui->invisible==1) continue;
             if (ui->currentboard == bid) {
                 MAKE_STD_ZVAL(element);
                 array_init(element);
