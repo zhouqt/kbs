@@ -178,22 +178,22 @@
             while (1) {
                 if (($buf = fgets($fp,500)) == FALSE)
                     break;
-                if (strncmp($buf, ": ¡¾", 4) == 0)
+                if (strncmp($buf, "¡¾", 2) == 0)
                     continue;
-                if (strncmp($buf, ": : ", 4) == 0)
+                if (strncmp($buf, ": ", 2) == 0)
                     continue;
                 if (strncmp($buf, "--\n", 3) == 0)
                     break;
-                if (strncmp($buf,'\n',1) == 0)
+                if (strncmp($buf, "\n", 1) == 0)
                     continue;
-                if (++$lines > 10) {
+                if (++$lines > QUOTED_LINES) {
                     echo ": ...................\n";
                     break;
                 }
-                /* */
                 if (stristr($buf, "</textarea>") == FALSE)  //filter </textarea> tag in the text
                     echo ": ". $buf;
             }
+			echo "\n\n";
             fclose($fp);
         }
     }
