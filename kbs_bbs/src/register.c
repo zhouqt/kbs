@@ -135,6 +135,10 @@ void new_register()
     if (convcode)
         newuser.userdefine &= ~DEF_USEGB;
 
+#ifdef HAVE_WFORUM
+		currentuser->userdefine &= ~DEF_SHOWREALUSERDATA;
+#endif
+
     newuser.notemode = -1;
     newuser.exittime = time(NULL) - 100;
     /*newuser.unuse2 = -1;*/
