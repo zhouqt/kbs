@@ -41,4 +41,6 @@
 
 #define COMMEND_ARTICLE "Recommend"
 
+#define BUILD_PHP_EXTENSION
+
 #endif
