@@ -1310,12 +1310,14 @@ static int new_write(const char *buf, size_t buflen)
 	return 0;
 }
 
+/* 注意，当 is_preview 为 1 的时候，第一个参数 filename 就是供预览的帖子内容，而不是文件名 - atppp */
 static PHP_FUNCTION(bbs_printansifile)
 {
     char *filename;
     long filename_len;
-    long linkmode;
+    long linkmode,is_tex,is_preview;
     char *ptr;
+    long ptrlen;
     int fd;
     struct stat st;
     const int outbuf_len = 4096;
@@ -1333,38 +1335,52 @@ static PHP_FUNCTION(bbs_printansifile)
         }
         linkmode = 1;
         attachlink=NULL;
+        is_tex=is_preview=0;
     } else if (ZEND_NUM_ARGS() == 2) {
         if (zend_parse_parameters(2 TSRMLS_CC, "sl", &filename, &filename_len, &linkmode) != SUCCESS) {
             WRONG_PARAM_COUNT;
         }
         attachlink=NULL;
-    } else 
+        is_tex=is_preview=0;
+    } else if (ZEND_NUM_ARGS() == 3) {
         if (zend_parse_parameters(3 TSRMLS_CC, "sls", &filename, &filename_len, &linkmode,&attachlink,&attachlink_len) != SUCCESS) {
             WRONG_PARAM_COUNT;
         }
-    fd = open(filename, O_RDONLY);
-    if (fd < 0)
-        RETURN_LONG(2);
-    if (fstat(fd, &st) < 0) {
-        close(fd);
-        RETURN_LONG(2);
+        is_tex=is_preview=0;
+    } else {
+        if (zend_parse_parameters(5 TSRMLS_CC, "slsll", &filename, &filename_len, &linkmode,&attachlink,&attachlink_len,&is_tex,&is_preview) != SUCCESS) {
+            WRONG_PARAM_COUNT;
+        }
     }
-    if (!S_ISREG(st.st_mode)) {
-        close(fd);
-        RETURN_LONG(2);
-    }
-    if (st.st_size <= 0) {
-        close(fd);
-        RETURN_LONG(2);
-    }
+    if (!is_preview) {
+        fd = open(filename, O_RDONLY);
+        if (fd < 0)
+            RETURN_LONG(2);
+        if (fstat(fd, &st) < 0) {
+            close(fd);
+            RETURN_LONG(2);
+        }
+        if (!S_ISREG(st.st_mode)) {
+            close(fd);
+            RETURN_LONG(2);
+        }
+        if (st.st_size <= 0) {
+            close(fd);
+            RETURN_LONG(2);
+        }
 
-    ptr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
-    close(fd);
-    if (ptr == NULL)
-        RETURN_LONG(-1);
+        ptr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
+        ptrlen = st.st_size;
+        close(fd);
+        if (ptr == NULL)
+            RETURN_LONG(-1);
+    } else {
+        ptr = filename;
+        ptrlen = filename_len;
+    }
 	if ((out = alloc_output(outbuf_len)) == NULL)
 	{
-		munmap(ptr, st.st_size);
+		if (!is_preview) munmap(ptr, st.st_size);
         RETURN_LONG(2);
 	}
 /*
@@ -1379,12 +1395,12 @@ static PHP_FUNCTION(bbs_printansifile)
 	{
         signal(SIGBUS, sigbus);
         signal(SIGSEGV, sigbus);
-		output_ansi_html(ptr, st.st_size, out, attachlink);
+		output_ansi_html(ptr, ptrlen, out, attachlink, is_tex, is_preview);
 		free_output(out);
     }
     signal(SIGBUS, SIG_IGN);
     signal(SIGSEGV, SIG_IGN);
-    munmap(ptr, st.st_size);
+    if (!is_preview) munmap(ptr, st.st_size);
 	RETURN_STRINGL(get_output_buffer(), get_output_buffer_len(),1);
 }
 

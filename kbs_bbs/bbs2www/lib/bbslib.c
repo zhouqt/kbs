@@ -2457,7 +2457,7 @@ void output_ansi_javascript(char *buf, size_t buflen,
  *
  * This function is a core function in wForum, do not modify unless you know what you are doing. - atppp
  */
-void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char* attachlink)
+void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char* attachlink, int is_tex, int is_preview)
 {
     unsigned int font_style = 0;
     unsigned int ansi_state;
