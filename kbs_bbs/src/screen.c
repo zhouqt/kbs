@@ -186,7 +186,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
 void refresh()
 {
     int i, j, k, ii;
-    register struct screenline *bp = big_picture;
+    struct screenline *bp = big_picture;
     int count=0;
     int stack[100],stackt=0;
 
