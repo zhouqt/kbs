@@ -844,8 +844,10 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
                     change = l.total - curr_line - t_lines + 1;
                 break;
             case 's':
+            case KEY_HOME:
                 change = -curr_line;
                 break;
+            case KEY_END:
             case 'e':
                 if (!l.total) {
                     while (next_MemMoreLines(&l) >= 0);
