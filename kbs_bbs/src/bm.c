@@ -384,7 +384,18 @@ int deny_user(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
             }
             strncpy(uident, denyuser->userid, IDLEN);
             uident[IDLEN] = 0;
-
+            
+            /*
+             * windinsn.04.5.17,不准封禁 guest 和 SYSOP
+             */
+            if (!strcasecmp(uident,"guest") || !strcasecmp(uident,"SYSOP")) {
+                move(3, 0);
+                prints("不能封禁 %s", uident);
+                clrtoeol();
+                pressreturn();
+                goto Here;
+            }
+            
             if (*uident != '\0') {
                 addtodeny(uident);
             }
