@@ -57,13 +57,16 @@ int main(int argc,char** argv)
 			currentuser->userid, "选择正常logout, 或者关闭所有浏览器窗口");
 	}
 	getuser(id, &x);
-	if(x==0) http_fatal("错误的使用者帐号");
+	if(x==0)
+		http_fatal("错误的使用者帐号");
 	if(strcasecmp(id, "guest"))
 	{
 		/*if(!checkpasswd(x->passwd, pw)) {*/
 		if (!checkpasswd2(pw, x))
 		{
-			if(pw[0]!=0) sleep(2);
+			if(pw[0]!=0)
+				sleep(2);
+			logattempt(id, fromhost);
 			sprintf(buf, "%s %s %s\n", wwwCTime(time(0))+4, id, fromhost);
 			f_append(WWW_BADLOGIN, buf);
 			http_fatal("密码错误");
@@ -98,19 +101,22 @@ int main(int argc,char** argv)
 	{
 		char* ptr;
 		ptr=getenv("HTTP_X_FORWARDED_FOR");
-		if (ptr) {
+		if (ptr)
+		{
 			ptr[200]=0;
-			sprintf(buf, "%s ENTER %-12s @%s [www]\n", wwwCTime(time(0))+4, x->userid, ptr);
+			snprintf(buf, sizeof(buf), "ENTER ?@%s [www]", ptr);
 		}
 		else
-			sprintf(buf, "%s ENTER %-12s @%s [www]\n", wwwCTime(time(0))+4, x->userid, fromhost);
+			snprintf(buf, sizeof(buf), "ENTER ?@%s [www]", fromhost);
 	}
 #else
-		sprintf(buf, "%s ENTER %-12s @%s [www]\n", wwwCTime(time(0))+4, x->userid, fromhost);
+		snprintf(buf, sizeof(buf), "ENTER ?@%s [www]", fromhost);
 #endif
-	f_append("usies", buf);
+	bbslog("1system", buf);
+	/*f_append("usies", buf);*/
 	n=0;
-	if(!loginok && strcasecmp(id, "guest"))	wwwlogin(x);
+	if(!loginok && strcasecmp(id, "guest"))
+		wwwlogin(x);
 	redirect(FIRST_PAGE);
 }
 
