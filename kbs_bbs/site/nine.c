@@ -297,6 +297,7 @@ int     mode;
     case SERVICES:    return "休闲娱乐..";
 	case FRIENDTEST:  return "心有灵犀";
 	case CHICKEN:	return "星空战斗鸡";
+	case KILLER:        return "杀人游戏";
     default: return "去了那里!?" ;
     }
 }
