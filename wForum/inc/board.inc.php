@@ -52,15 +52,33 @@ function showBoardContents($boardID,$boardName,$page){
 		$articles = bbs_getarticles($boardName, $start, $num, $dir_modes["ORIGIN"]);
 		$articleNum=count($articles);
 		for($i=$articleNum-1;$i>=0;$i--){
-			$threads=bbs_get_threads_from_id($boardID, intval($articles[$i]['ID']), $dir_modes["NORMAL"], 100000);
+			unset($threads);
+			$threads=bbs_get_threads_from_id($boardID, intval($articles[$i]['ID']), $dir_modes["NORMAL"], 50000);
 			$threadNum=count($threads);
 ?>
-<TR align=middle><TD class=tablebody2 width=32 height=27><img src="pic/blue/folder.gif" alt=开放主题></TD><TD align=left class=tablebody1 width=* ><img src="pic/nofollow.gif" id="followImg1"><a href="disparticle.php?boardName=<?php echo $boardName ;?>&ID=<?php echo $i+$start ;?>" title="<?php echo $articles[$i]['TITLE'] ;?><br>作者：<?php echo $articles[$i]['OWNER'] ;?><br>发表于2003-6-2 14:04:17<br>最后跟贴：asdfsadf..."><?php echo $articles[$i]['TITLE'] ;?></a></TD><TD class=tablebody2 width=80><a href="dispuser.asp?id=<?php echo $articles[$i]['OWNER'] ;?>" target=_blank><?php echo $articles[$i]['OWNER'] ;?></a></TD><TD class=tablebody1 width=64><?php echo $threads==NULL?0:$threadNum; ?></TD><TD align=left class=tablebody2 width=195>&nbsp;&nbsp;<a href="dispbbs.asp?boardid=1&id=1&star=1#1">
+<TR align=middle><TD class=tablebody2 width=32 height=27><img src="pic/blue/folder.gif" alt=开放主题></TD><TD align=left class=tablebody1 width=* ><img src="pic/nofollow.gif" id="followImg1"><a href="disparticle.php?boardName=<?php echo $boardName ;?>&ID=<?php echo $i+$start ;?>" title="<?php echo $articles[$i]['TITLE'] ;?><br>作者：<?php echo $articles[$i]['OWNER'] ;?><br>发表于<?php echo strftime("%Y-%m-%d %H:%M:%S", $articles[$i]['POSTTIME']); ?>"><?php echo $articles[$i]['TITLE'] ;?></a> 
+<?php
+	$threadPages=ceil(($threadNum+1)/THREADSPERPAGE);
+	if ($threadPages>1) {
+		echo "<b>[<img src=\"pic/multipage.gif\"> ";
+		for ($t=1; ($t<7) && ($t<=$threadPages) ;$t++) {
+			echo "<a href=\"disparticle.php?boardName=".$boardName."&ID=".($i+$start). "&page=".$t."\">".$t."</a> ";
+		}
+		if ($threadPages>7) {
+			if ($threadPages>8) {
+				echo "...";
+			}
+			echo "<a href=\"disparticle.php?boardName=".$boardName."&ID=".($i+$start). "&page=".$threadPages."\">".$threadPages."</a> ";
+		}
+		echo " ]</b>";
+	}
+?>
+</TD><TD class=tablebody2 width=80><a href="dispuser.asp?id=<?php echo $articles[$i]['OWNER'] ;?>" target=_blank><?php echo $articles[$i]['OWNER'] ;?></a></TD><TD class=tablebody1 width=64><?php echo $threads==NULL?0:$threadNum; ?></TD><TD align=left class=tablebody2 width=195>&nbsp;<a href="dispbbs.asp?boardid=1&id=1&star=1#1">
 <?php
 			if ($threads==NULL) {
-				echo strftime("%Y-%m-%d %H-%M-%S", $articles[$i]['POSTTIME']);
+				echo strftime("%Y-%m-%d %H:%M", $articles[$i]['POSTTIME']);
 			} else {
-				echo strftime("%Y-%m-%d %H-%M-%S", $threads[$threadNum-1]['POSTTIME']);
+				echo strftime("%Y-%m-%d %H:%M", $threads[$threadNum-1]['POSTTIME']);
 			}
 ?></a>&nbsp;<font color=#FF0000>|</font>&nbsp;<a href=dispuser.asp?id=4 target=_blank>
 <?php 
@@ -77,7 +95,7 @@ function showBoardContents($boardID,$boardName,$page){
 </form></table><table border=0 cellpadding=0 cellspacing=3 width=97% align=center >
 <form method=get action="board.php">
 <input type="hidden" name="name" value="<?php echo $boardName ; ?>">
-<tr><td valign=middle>页次：<b><?php echo $page; ?></b>/<b><?php echo $totalPages; ?></b>页 每页<b><?php echo ARTICLESPERPAGE; ?></b> 主题数<b><?php echo $total ?></b></td><td valign=middle><div align=right >分页：
+<tr><td valign=middle>页次：<b><?php echo $page; ?></b>/<b><?php echo $totalPages; ?></b>页 每页<b><?php echo ARTICLESPERPAGE; ?></b> 主题数<b><?php echo $total ?></b></td><td valign=middle ><div align=right >分页：
 <?php
     $lastTenPages=(floor(($page-1)/ 10))*10;
 	if ($page==1) {
@@ -108,7 +126,7 @@ function showBoardContents($boardID,$boardName,$page){
 	if ($page==$totalPages) {
 		echo "<font face=webdings color=#ff0000>:</font>   ";
 	}  else  {
-		echo "<a href='board.php?name=".$boardName."&page=".$n."' title=尾页><font face=webdings>:</font></a>   ";
+		echo "<a href='board.php?name=".$boardName."&page=".$totalPages."' title=尾页><font face=webdings>:</font></a>   ";
 	} 
 ?>
 转到:<input type=text name="page" size=3 maxlength=10  value=1><input type=submit value=Go ></div></td></tr>

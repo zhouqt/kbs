@@ -167,7 +167,6 @@ function showArticleThreads($boardName,$boardID,$articleID,$article,$page) {
 	if (($start+$num)>$total) {
 		$num=$total-$start;
 	}
-	print_r($threads);
 	for($i=0;$i<$num;$i++) {
 		if (($i+$start)==0) {
 			showArticle($boardName,$boardID,intval($article['ID']), $article);
@@ -177,7 +176,7 @@ function showArticleThreads($boardName,$boardID,$articleID,$article,$page) {
 	}
 ?>
 </table>
-<table cellpadding=0 cellspacing=3 border=0 width=97% align=center><tr><td valign=middle nowrap>本主题贴数<b><?php echo $total+1 ?></b>，分页： 
+<table cellpadding=0 cellspacing=3 border=0 width=97% align=center><tr><td valign=middle nowrap>本主题贴数<b><?php echo $total ?></b>，分页： 
 <?php
 	if ($page>4) {
 		echo "<a href=\"?boardName=".$boardName."&ID=".$articleID."&page=1\">[1]</a> ";
@@ -204,7 +203,7 @@ function showArticleThreads($boardName,$boardID,$articleID,$article,$page) {
 		if ($endpage<$totalPages-1){
 			echo "...";
 		}
-		echo " <a href=\"?boardName=".$boardName."&ID=".$articleID."&page=".$i."\">[".$totalPages."]</a>";
+		echo " <a href=\"?boardName=".$boardName."&ID=".$articleID."&page=".$totalPages."\">[".$totalPages."]</a>";
 } 
 ?></td><td valign=middle nowrap align=right>
 <?php 

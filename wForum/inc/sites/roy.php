@@ -8,6 +8,7 @@ function getattachtmppath($userid,$utmpnum)
 }
 define("ANNOUNCENUMBER",5);
 define("ARTICLESPERPAGE",20);
+define("THREADSPERPAGE",5); //文章阅读时每页显示的文章数
 $SiteName="大运村BBS";
 
 $HTMLTitle="大运村BBS";
@@ -22,7 +23,7 @@ $BannerURL="http://172.16.50.79";
 
 //$SiteURL=$_SERVER['SERVER_NAME'];
 
-$SiteURL="http://172.16.50.79/wbbs/index.php";
+$SiteURL="http://172.16.50.79";
 
 
 
