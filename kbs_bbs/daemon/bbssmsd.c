@@ -4,7 +4,11 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <assert.h>
+
+#if HAVE_MYSQL == 1
 #include "mysql.h"
+#endif
+
 #include "bbs.h"
 
 #ifdef SMS_SUPPORT
@@ -16,7 +20,9 @@ int sockfd;
 int sn=0;
 struct header h;
 int running;
+#if HAVE_MYSQL == 1
 MYSQL mysql_s;
+#endif
 
 void do_exit_sig(int sig)
 {
@@ -300,6 +306,7 @@ void processbbs()
     head->sem=0;
 }
 
+#if HAVE_MYSQL == 1
 int sms_init_mysql(){
 	mysql_init(&mysql_s);
 	if (! my_connect_mysql(&mysql_s) ){
@@ -308,6 +315,7 @@ int sms_init_mysql(){
 		exit(0);
 	}
 }
+#endif
 
 int main()
 {
@@ -318,7 +326,9 @@ int main()
     struct sigaction act;
 
     start_daemon();
+#if HAVE_MYSQL == 1
 	sms_init_mysql();
+#endif
     load_sysconf();
     resolve_ucache();
     resolve_utmp();
@@ -388,7 +398,9 @@ int main()
     
     close(sockfd);
         }
+#if HAVE_MYSQL == 1
 	mysql_close(&mysql_s);
+#endif
     shmdt(head);
     buf=NULL;
     return 0;

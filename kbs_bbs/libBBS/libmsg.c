@@ -1172,6 +1172,13 @@ int sign_smsmsg_read(int id ){
 	mysql_close(&s);
 	return 1;
 }
+#else
+
+int chk_smsmsg(int force ){
+
+		return 0;
+}
+
 #endif  //HAVE_MYSQL
 
 #else	//SMS_SUPPORT
