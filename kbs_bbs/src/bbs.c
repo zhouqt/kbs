@@ -2887,6 +2887,7 @@ int del_ding(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         prints("É¾³ýÊ§°Ü\n");
         pressreturn();
         clear();
+        board_update_toptitle(arg->bid, true);
         return FULLUPDATE;
     }else{
         snprintf(tmpname,100,"boards/%s/%s",currboard->filename,fileinfo->filename);
