@@ -63,6 +63,11 @@ function getBbsStyleFile()
 	return defaultStyleFile;
 }
 
+function writeHotContainer() {
+	document.write('<center><table cellspacing="0" cellpadding="5" border="0" width="98%"><tr>' +
+	               '<td width="100" align="center">[<font color="red">热门话题</font>]</td>' + 
+	               '<td id="hotTopics">载入中...</td></tr></table></center>');
+}
 
 var bbsconImg = new Array();
 function resizeImg(obj) {
