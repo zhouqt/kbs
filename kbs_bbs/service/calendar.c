@@ -37,14 +37,14 @@ void draw_main()
         saveline(i, 1, save_scr[i]);
     resetcolor();
     for(i=0;i<13;i++) {
-        move(50, i);
+        move(i, 50);
         clrtoeol();
     }
-    move(52, 0);
+    move(0, 52);
     prints("\x1b[31;1m日  \x1b[33m一  二  三  四  五  \x1b[31m六");
     for(i=0;i<6;i++) {
-        move(52, 1+i*2);
-        prints("\x1b[36;0m━━━━━━━━━━━━━━");
+        move(1+i*2, 52);
+        prints("\x1b[0;36m━━━━━━━━━━━━━━");
     }
     k=0;
     for(i=1;i<=get_day(year,month);i++) {
@@ -69,16 +69,14 @@ int calendar_main()
     char buf[80];
     long eff_size;
     time_t now;
-    getyx(&save_y, save_x);
+    getyx(&save_y, &save_x);
     for(i=0;i<t_lines-1;i++)
         saveline(i, 0, save_scr[i]);
     now = time(0);
     localtime_r(&now, &nowr);
     day = nowr.tm_mday;
     month = nowr.tm_mon+1;
-    year = nowr.tm_year;
-    prints("%d %d %d", year, month, day);
-    refresh(); sleep(10);
+    year = nowr.tm_year+1900;
     
     while(1){
         draw_main();
@@ -127,4 +125,3 @@ int calendar_main()
         saveline(i, 1, save_scr[i]);
     move(save_y, save_x);
 }
-#endif
