@@ -2,7 +2,9 @@
 extern char *gb2big(char *, int *, int);
 extern char *sysconf_str();
 
+#ifdef HAVE_LIBESMTP
 #include <libesmtp.h>
+#endif
 
 int getmailnum(char *recmaildir)
 {                               /*Haohmaru.99.4.5.查对方信件数 */
@@ -340,20 +342,8 @@ struct mail_option {
     char* from;
     char* to;
 };
-void monitor_cb(const char *buf, int buflen, int writing, void *arg)
-{
-    FILE *fp = arg;
-
-    if (writing == SMTP_CB_HEADERS) {
-        fputs("H: ", fp);
-        fwrite(buf, 1, buflen, fp);
-        return;
-    }
-    fputs(writing ? "C >>>>\n" : "S <<<<\n", fp);
-    fwrite(buf, 1, buflen, fp);
-    if (buf[buflen - 1] != '\n')
-        putc('\n', fp);
-}
+#ifdef HAVE_LIBESMTP
+#endif
 char *bbs_readmailfile(char **buf, int *len, void *arg)
 {
 #define MAILBUFLEN	8192
@@ -431,6 +421,22 @@ char *bbs_readmailfile(char **buf, int *len, void *arg)
 #undef MAILBUFLEN
 }
 
+#ifdef HAVE_LIBESMTP
+void monitor_cb(const char *buf, int buflen, int writing, void *arg)
+{
+    FILE *fp = arg;
+
+    if (writing == SMTP_CB_HEADERS) {
+        fputs("H: ", fp);
+        fwrite(buf, 1, buflen, fp);
+        return;
+    }
+    fputs(writing ? "C >>>>\n" : "S <<<<\n", fp);
+    fwrite(buf, 1, buflen, fp);
+    if (buf[buflen - 1] != '\n')
+        putc('\n', fp);
+}
+
 /* Callback to prnt the recipient status */
 void print_recipient_status(smtp_recipient_t recipient, const char *mailbox, void *arg)
 {
@@ -442,7 +448,101 @@ void print_recipient_status(smtp_recipient_t recipient, const char *mailbox, voi
 #endif
 }
 
-#ifdef OWNSENDMAIL
+int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5, int noansi,session_t *session)
+{                               /* Modified by ming, 96.10.9  KCN,99.12.16 */
+    struct mail_option mo;
+    FILE *fin;
+    char uname[STRLEN];
+    char from[STRLEN];
+    int len;
+    smtp_session_t smtpsession;
+    smtp_message_t message;
+    smtp_recipient_t recipient;
+    const smtp_status_t *status;
+    enum notify_flags notify = Notify_NOTSET;
+    char *server;
+    char newbuf[257];
+
+    if (isuu) {
+        char buf[256];
+
+		gettmpfilename( uname, "uu" );
+        //sprintf(uname, "tmp/uu%05d", getpid());
+        sprintf(buf, "uuencode %s thbbs.%05d > %s", fname, getpid(), uname);
+        system(buf);
+    }
+    if ((fin = fopen(isuu ? uname : fname, "r")) == NULL) {
+#ifdef BBSMAIN
+        prints("can't open %s: %s\n", isuu ? uname : fname, strerror(errno));
+#endif
+        return -1;
+    }
+    smtpsession = smtp_create_session();
+    message = smtp_add_message(smtpsession);
+
+/*
+    if ((fout = fopen ("tmp/maillog", "w+")) == NULL)
+    {
+      prints("can't open %s: %s\n", "tmp/maillog", strerror (errno));
+      return -1;
+    }
+    smtp_set_monitorcb (session, monitor_cb, fout, 1);
+*/
+    server = sysconf_str("MAILSERVER");
+    /*
+     * server = MAIL_MAILSERVER; 
+     */
+    if ((server == NULL) || !strcmp(server, "(null ptr)"))
+        server = "127.0.0.1:25";
+    smtp_set_server(smtpsession, server);
+    sprintf(newbuf, "%s@%s", session->currentuser->userid, email_domain());
+    snprintf(from, STRLEN, "%s(%s) <%s@%s>",session->currentuser->userid, session->currentuser->username, session->currentuser->userid, email_domain());
+    from[STRLEN-1]=0;
+    smtp_set_reverse_path(message, newbuf);
+    smtp_set_header(message, "Message-Id", NULL);
+    if (isbig5) {
+        strcpy(newbuf, title);
+        len = strlen(title);
+        smtp_set_header(message, "Subject", gb2big(title, &len, 1));
+    } else {
+        smtp_set_header(message, "Subject", title);
+    }
+    smtp_set_header_option(message, "Subject", Hdr_OVERRIDE, 3);
+    /*
+     * smtp_8bitmime_set_body(message, E8bitmime_8BITMIME); 
+     */
+    mo.isbig5 = isbig5;
+    mo.noansi = noansi;
+    mo.fin = fin;
+    mo.bfirst = 1;
+    mo.from = from;
+    mo.to = receiver;
+    smtp_set_messagecb(message, (smtp_messagecb_t) bbs_readmailfile, (void *) &mo);
+    recipient = smtp_add_recipient(message, receiver);
+    if (notify != Notify_NOTSET)
+        smtp_dsn_set_notify(recipient, notify);
+    /*
+     * Initiate a connection to the SMTP server and transfer the
+     * message. 
+     */
+    smtp_start_session(smtpsession);
+    status = smtp_message_transfer_status(message);
+#ifdef BBSMAIN
+    prints("return code:%d(%s)\n", status->code, status->text);
+#endif                          /* 
+                                 */
+    smtp_enumerate_recipients(message, print_recipient_status, NULL);
+    /*
+     * Free resources consumed by the program.
+     */
+    smtp_destroy_session(smtpsession);
+    fclose(fin);
+    if (isuu)
+        unlink(uname);
+    return (status->code != 250);
+}
+
+#else
 char encodingTable [64] = {
 
     'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P',
@@ -533,7 +633,7 @@ int encode_imail_file(char *fromid, char *fromhost, char *fromip, char *to, char
 		return -1;
 	}
 	now = time(0);
-	sprintf(boundary,"----=_%d_%d.attach", now, rand());
+	sprintf(boundary,"----=_%ld_%d.attach", now, rand());
 	fprintf(fp2,"Return-Path: <%s@%s>\n", fromid, fromhost);
 	fprintf(fp2,"Received: from %s by %s\n", fromip, fromhost);
 	fprintf(fp2,"From: <%s@%s>\n", fromid, fromhost);
@@ -625,8 +725,6 @@ endencode:
 
 	fprintf(fp2, "--%s--\n", boundary);
 	fclose(fp2);
-//	f_cp(newfile, oldfile, O_CREAT);
-//	rename(newfile, oldfile);
 
 	return 0;
 }
@@ -655,25 +753,11 @@ void my_ansi_filter(char *source)
     result[loc] = '\0';
     strncpy(source, result, loc + 1);
 }
-#endif
 
 int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5, int noansi,session_t *session)
 {                               /* Modified by ming, 96.10.9  KCN,99.12.16 */
-    struct mail_option mo;
     FILE *fin;
-    char uname[STRLEN];
-    char from[STRLEN];
-    int len;
-    smtp_session_t smtpsession;
-    smtp_message_t message;
-    smtp_recipient_t recipient;
-    const smtp_status_t *status;
-    enum notify_flags notify = Notify_NOTSET;
-    char *server;
     char newbuf[257];
-
-#ifdef OWNSENDMAIL
-
 	FILE *fout;
 	char gbuf[256];
 
@@ -705,84 +789,6 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5,
 
 	unlink(newbuf);
 	return 0;
-#endif
-
-
-    if (isuu) {
-        char buf[256];
-
-		gettmpfilename( uname, "uu" );
-        //sprintf(uname, "tmp/uu%05d", getpid());
-        sprintf(buf, "uuencode %s thbbs.%05d > %s", fname, getpid(), uname);
-        system(buf);
-    }
-    if ((fin = fopen(isuu ? uname : fname, "r")) == NULL) {
-#ifdef BBSMAIN
-        prints("can't open %s: %s\n", isuu ? uname : fname, strerror(errno));
-#endif
-        return -1;
-    }
-    smtpsession = smtp_create_session();
-    message = smtp_add_message(smtpsession);
-
-/*
-    if ((fout = fopen ("tmp/maillog", "w+")) == NULL)
-    {
-      prints("can't open %s: %s\n", "tmp/maillog", strerror (errno));
-      return -1;
-    }
-    smtp_set_monitorcb (session, monitor_cb, fout, 1);
-*/
-    server = sysconf_str("MAILSERVER");
-    /*
-     * server = MAIL_MAILSERVER; 
-     */
-    if ((server == NULL) || !strcmp(server, "(null ptr)"))
-        server = "127.0.0.1:25";
-    smtp_set_server(smtpsession, server);
-    sprintf(newbuf, "%s@%s", session->currentuser->userid, email_domain());
-    snprintf(from, STRLEN, "%s(%s) <%s@%s>",session->currentuser->userid, session->currentuser->username, session->currentuser->userid, email_domain());
-    from[STRLEN-1]=0;
-    smtp_set_reverse_path(message, newbuf);
-    smtp_set_header(message, "Message-Id", NULL);
-    if (isbig5) {
-        strcpy(newbuf, title);
-        len = strlen(title);
-        smtp_set_header(message, "Subject", gb2big(title, &len, 1));
-    } else {
-        smtp_set_header(message, "Subject", title);
-    }
-    smtp_set_header_option(message, "Subject", Hdr_OVERRIDE, 3);
-    /*
-     * smtp_8bitmime_set_body(message, E8bitmime_8BITMIME); 
-     */
-    mo.isbig5 = isbig5;
-    mo.noansi = noansi;
-    mo.fin = fin;
-    mo.bfirst = 1;
-    mo.from = from;
-    mo.to = receiver;
-    smtp_set_messagecb(message, (smtp_messagecb_t) bbs_readmailfile, (void *) &mo);
-    recipient = smtp_add_recipient(message, receiver);
-    if (notify != Notify_NOTSET)
-        smtp_dsn_set_notify(recipient, notify);
-    /*
-     * Initiate a connection to the SMTP server and transfer the
-     * message. 
-     */
-    smtp_start_session(smtpsession);
-    status = smtp_message_transfer_status(message);
-#ifdef BBSMAIN
-    prints("return code:%d(%s)\n", status->code, status->text);
-#endif                          /* 
-                                 */
-    smtp_enumerate_recipients(message, print_recipient_status, NULL);
-    /*
-     * Free resources consumed by the program.
-     */
-    smtp_destroy_session(smtpsession);
-    fclose(fin);
-    if (isuu)
-        unlink(uname);
-    return (status->code != 250);
 }
+#endif
+
