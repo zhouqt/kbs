@@ -15,7 +15,7 @@ extern struct screenline *big_picture;
 extern char MsgDesUid[14];      /* 保存所发msg的目的uid 1998.7.5 by dong */
 long f_offset = 0;
 static int RMSGCount = 0;       /* Leeward 98.07.30 supporting msgX */
-extern static int i_timeout;
+extern int i_timeout;
 
 
 int get_msg(uid, msg, line)
