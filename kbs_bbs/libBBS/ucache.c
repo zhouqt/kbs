@@ -389,10 +389,12 @@ static int setuserid_internal(int num, const char *userid)
         oldkey = ucache_hash((char *) uidshm->passwd[num - 1].userid);
         newkey = ucache_hash(userid);
         find = uidshm->hashhead[newkey];
+	if (newkey!=oldkey) { //改名的问题 faint
         while ((newkey!=0)&&find) { //check duplicate
             if (!strcasecmp(uidshm->passwd[find-1].userid,userid))
                 return -1;
             find = uidshm->next[find-1];
+        }
         }
         if (num > uidshm->number)
             uidshm->number = num;
