@@ -1761,6 +1761,7 @@ void a_menu(maintitle, path, lastlevel, lastbmonly)
                     }
                 } else if (dashd(fname)) {
                     a_menu(me.item[me.now]->title, fname, me.level, bmonly);
+                    a_loadnames(&me);           /* added by bad 03-2-10 */
                 }
                 me.page = 9999;
             }
