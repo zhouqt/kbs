@@ -1356,7 +1356,10 @@ char *logfile, *regfile;
                 strncpy(ud.realname, fdata[2], NAMELEN);
                 strncpy(ud.address, fdata[4], NAMELEN);
                 sprintf(genbuf, "%s$%s@%s", fdata[3], fdata[5], uid);
+		if(strlen(genbuf) >= STRLEN-16)
+			sprintf(genbuf, "%s@%s",fdata[5],uid);
                 strncpy(ud.realemail, genbuf, STRLEN - 16);
+		ud.realemail[STRLEN - 16 - 1] = '\0';
                 sprintf(buf, "tmp/email/%s", uinfo.userid);
                 if ((fout = fopen(buf, "w")) != NULL) {
                     fprintf(fout, "%s\n", genbuf);
