@@ -866,9 +866,10 @@ int bad_user_id( char    *userid)
                 if( strcasecmp( ptr, userid ) == 0 ) {
                     if(ptr[13]>47 && ptr[13]<58)/*Haohmaru.99.12.24*/
                     {
-                        char timebuf[12];
+                        char timebuf[50];
                         time_t	t,now;
-                        strcpy(timebuf,ptr+13);
+                        strncpy(timebuf,ptr+13,49);
+			timebuf[49] = 0;
                         ptr = timebuf;
                         while (isdigit(*ptr)) ptr++;
 			*ptr=0;
