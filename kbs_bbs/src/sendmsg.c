@@ -28,7 +28,7 @@ int line;
     prints("ËÍÒôÐÅ¸ø:%-12s  ÒôÐÅ: ", uid);
     memset(msg, 0, sizeof(msg));
     while (1) {
-        i = multi_getdata(line, 29, 78, NULL, msg, MAX_MSG_SIZE, false);
+        i = multi_getdata(line, 29, 77, NULL, msg, MAX_MSG_SIZE, false);
         if (msg[0] == '\0')
             return false;
         getdata(line + i, 0, "È·¶¨ÒªËÍ³öÂð(Y)ÊÇµÄ (N)²»Òª (E)ÔÙ±à¼­? [Y]: ", genbuf, 2, DOECHO, NULL, 1);
@@ -494,7 +494,7 @@ void r_msg()
 
         clrtoeol();
         if(canreply)
-            prints("[m %3d/%-3d, »Ø¸´ %-12.12s: ", now+1, count, uid);
+            prints("[m %3d/%-3d, »Ø¸´ %-12s: ", now+1, count, uid);
         else
             if(uin)
                 prints("[m %3d/%-3d,¡ü¡ýÇÐ»»,Enter½áÊø, ¸ÃÏûÏ¢ÎÞ·¨»Ø¸´", now+1, count);
@@ -503,7 +503,7 @@ void r_msg()
         good_getyx(&oy, &ox);
         
         if(canreply)
-            ch = -multi_getdata(oy, ox, 78, NULL, buf, 1024, true);
+            ch = -multi_getdata(oy, ox, 77, NULL, buf, 1024, true);
         else {
             refresh();
             do {
