@@ -831,8 +831,12 @@ quitgame:
         kill(inrooms.peoples[i].pid, SIGUSR1);
     }
 quitgame2:
-    
-    sprintf(buf, "home/%c/%s/.INROOMMSG%d", toupper(currentuser->userid[0]), currentuser->userid, uinfo.pid);
+    getdata(t_lines-1, 0, "寄回本次全部信息吗?[y/N]", buf, 3, 1, 0, 1);
+    if(toupper(buf[0])=='Y') {
+        sprintf(buf, "home/%c/%s/.INROOMMSG%d", toupper(currentuser->userid[0]), currentuser->userid, uinfo.pid);
+        sprintf(buf2, "\"%s\"的杀人记录", myroom->name);
+        mail_file(currentuser->userid, buf, currentuser->userid, buf2, BBSPOST_LINK, NULL);
+    }
     unlink(buf);
     signal(SIGUSR1, talk_request);
 }
