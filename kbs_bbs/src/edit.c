@@ -1195,10 +1195,10 @@ int myy, myx;
 void display_buffer()
 {
     struct textline *p;
-    int i, j, ch;
+    int ii, i, j, ch;
 
     clear();
-    for (p = top_of_win, i = 0; i < t_lines - 1; i++) {
+    for (p = top_of_win, ii = 0; ii < t_lines - 1; ii++) {
         if (p) {
             if (editansi)
                 prints("%s", p->data);
@@ -1214,7 +1214,11 @@ void display_buffer()
                         prints("\n");
                         j = 0;
                     }
-                    if (p->data[i]==27) outc('*');
+                    if (p->data[i]==27) {
+                        setfcolor(YELLOW);
+                        outc('*');
+                        resetcolor();
+                    }
                     else outc(p->data[i]);
                     j++;
                 }
