@@ -758,7 +758,7 @@ static int fav_key(struct _select_def *conf, int command)
                     return SHOW_REFRESH;
             } else {
                 struct boardheader bh;
-                int total=0,i,j,k;
+                int total=0,j,k;
                 i=getboardnum(ptr->name, &bh);
                 if (i<=0)
                     return SHOW_REFRESH;
@@ -775,6 +775,7 @@ static int fav_key(struct _select_def *conf, int command)
                         pressreturn();
                         return SHOW_REFRESH;
                     }
+                    move(2,0);
                     if (askyn("加入个人定制区？",0)!=1)
                         return SHOW_REFRESH;
                 }
@@ -803,7 +804,7 @@ static int fav_key(struct _select_def *conf, int command)
                     clear();
                     k = simple_select_loop(sel, SIF_NUMBERKEY | SIF_SINGLE | SIF_ESCQUIT, 0, 6, NULL) - 1;
                     free(sel);
-                    if(k>=0&&k<total) {
+                    if(k>=0&&k<total+1) {
                         if(k==0) SetFav(-1);
                         else {
                             for(j=0;j<favbrd_list_t;j++)
