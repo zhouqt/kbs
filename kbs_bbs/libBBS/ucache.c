@@ -508,7 +508,8 @@ int searchuser(const char *userid)
 {
     register int i;
 
-    i = uidshm->hashhead[ucache_hash(userid)];
+    if ((i = ucache_hash(userid)) == 0) return 0;
+    i = uidshm->hashhead[i];
     while (i)
         if (!strcasecmp(userid, uidshm->passwd[i - 1].userid))
             return i;
