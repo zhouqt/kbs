@@ -141,6 +141,7 @@ static PHP_FUNCTION(bbs_getthreadnum);
 static PHP_FUNCTION(bbs_getthreads);
 static PHP_FUNCTION(bbs_ext_initialized);
 static PHP_FUNCTION(bbs_init_ext);
+static PHP_FUNCTION(bbs_x_search);
 
 /*
  * define what functions can be used in the PHP embedded script
@@ -269,6 +270,7 @@ static function_entry smth_bbs_functions[] = {
 #endif
 		PHP_FE(bbs_ext_initialized, NULL)
 		PHP_FE(bbs_init_ext, NULL)
+	PHP_FE(bbs_x_search,NULL)
         {NULL, NULL, NULL}
 };
 
@@ -6778,5 +6780,136 @@ static PHP_FUNCTION(bbs_getonline_user_list)
 
 		zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
 	}
+}
+
+static PHP_FUNCTION(bbs_x_search)
+{
+    int toomany, res_total;
+    int ac = ZEND_NUM_ARGS();
+    int char_len;   
+    int pos;
+    char *char_dname;
+    zval* element;
+    struct sockaddr_in addr;
+    FILE* sockfp;
+    int sockfd, i, j, k;
+    char buf[256];
+    char ip[20], s1[30], s2[30], *pp;
+    #define MAX_KEEP 100
+    char res_title[MAX_KEEP][80],res_filename[MAX_KEEP][200],res_path[MAX_KEEP][200];
+    int res_flag[MAX_KEEP];
+
+    if(ac != 1 || zend_parse_parameters(2 TSRMLS_CC,"sl",&char_dname,&char_len,&pos) ==FAILURE){
+        WRONG_PARAM_COUNT;
+    }
+    if (array_init(return_value) == FAILURE)
+        RETURN_FALSE;
+
+    strcpy(ip, sysconf_str("QUERY_SERVER"));
+    if((sockfd=socket(AF_INET, SOCK_STREAM, 0))==-1) return;
+    memset(&addr, 0, sizeof(addr));
+    addr.sin_family=AF_INET;    
+    addr.sin_addr.s_addr=inet_addr(ip);
+    addr.sin_port=htons(4875);
+    if(connect(sockfd, (struct sockaddr*)&addr, sizeof(addr))<0) return;
+    sockfp=fdopen(sockfd, "r+");
+    fprintf(sockfp, "\n%d\n%s\n", pos, char_dname);
+    fflush(sockfp);
+    fscanf(sockfp, "%d %d %d\n", &toomany, &i, &res_total);
+    for(i=0;i<res_total;i++) {
+        fgets(buf, 256, sockfp);
+        if(buf[0]&&buf[strlen(buf)-1]=='\n') buf[strlen(buf)-1]=0;
+        strncpy(res_title[i], buf, 80);
+        res_title[i][79] = 0;
+
+        fgets(buf, 256, sockfp);
+        if(buf[0]&&buf[strlen(buf)-1]=='\n') buf[strlen(buf)-1]=0;
+        strncpy(res_filename[i], buf, 200);
+        res_filename[i][199] = 0;
+    }
+    fclose(sockfp);
+    close(sockfd);
+    for(i=0;i<res_total;i++)
+	if(get_pos(res_filename[i])==-1) {
+	    strcpy(res_path[i], "无效文章");
+	    res_flag[i]=1;
+	}
+        else {
+	    char buf[200],buf2[200];
+	    res_flag[i]=0;
+	    if(!strncmp(res_filename[i], "0Announce/groups/", 17)) {
+		j=17;
+		while(res_filename[i][j]!='/') j++;
+		j++;
+		k=j;
+		while(res_filename[i][j]!='/') j++;
+		strcpy(buf,res_filename[i]+k);
+		buf[j-k]=0;
+		strcpy(res_path[i],buf);
+		k=strlen(res_path[i]);
+		while(1) {
+		    j++;
+		    while(res_filename[i][j]!='/'&&res_filename[i][j]) j++;
+		    strcpy(buf2, res_filename[i]);
+		    buf2[j] = 0;
+		    sprintf(res_path[i]+k, "-%d", get_pos(buf2));
+		    k = strlen(res_path[i]);
+		    if(!res_filename[i][j]) break;
+		}
+	    }
+	    else {
+		j=10;
+		strcpy(res_path[i], "精华区");
+		k=strlen(res_path[i]);
+		while(1) {
+		    j++;
+		    while(res_filename[i][j]!='/'&&res_filename[i][j]) j++;
+		    strcpy(buf2, res_filename[i]);
+		    buf2[j] = 0;
+		    sprintf(res_path[i]+k, "-%d", get_pos(buf2));
+		    k = strlen(res_path[i]);
+		    if(!res_filename[i][j]) break;
+		}
+	    }
+	}
+    for(i=0;i<res_total;i++) 
+    if(res_title[i][0]){
+        if(strlen(res_title[i])>30){
+	    j=30;
+	    while(res_title[i][j]!=' '&&res_title[i][j])j++;
+	    res_title[i][j]=0;
+        }
+	j=strlen(res_title[i])-1;
+	if((j>=0)&&res_title[i][j]==' ')j--;
+	j++;
+	res_title[i][j]=0;
+    }
+    for(i=0;i<res_total;i++) {
+	pp=res_filename[i]+strlen(res_filename[i])-1;
+	while(*pp!='/') pp--;
+	strcpy(s1, pp+1);
+	if(strlen(s1)>7)
+	for(j=i+1;j<res_total;j++) {
+	    pp=res_filename[j]+strlen(res_filename[j])-1;
+	    while(*pp!='/') pp--;
+	    strcpy(s2, pp+1);
+	    if(!strcmp(s1,s2)) {
+		res_flag[j]=1;
+		strcpy(res_path[j], "重复文章");
+	    }
+	}
+    }
+
+
+    for ( i=0; i < res_total; i++ ) {
+        MAKE_STD_ZVAL ( element );
+        array_init ( element );
+
+        add_assoc_string ( element, "title", res_title[i], 1 );
+        add_assoc_string ( element, "filename", res_filename[i], 1 );
+        add_assoc_string ( element, "path", res_path[i], 1 );
+
+        zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
+    }
 }
 
