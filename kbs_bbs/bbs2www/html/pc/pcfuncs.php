@@ -1124,7 +1124,7 @@ function pc_convertto_group($link,$pc)
 
 function pc_ubb_parse($txt)
 {
-	$bbcode_lib = "bbcode.php";
+	$bbcode_lib = $_SERVER["DOCUMENT_ROOT"]."/bbcode.php";
 	if(file_exists($bbcode_lib))
 		include("bbcode.php");
 	else
