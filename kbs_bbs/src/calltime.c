@@ -746,7 +746,7 @@ static int set_clock_key(struct _select_def *conf, int key)
 		if(calltime)
 			prints("下一个闹钟时刻:%s",ctime(&calltime));
 		else
-			prints("系统没有闹钟现在");
+			prints("现在系统没有闹钟");
 		pressanykey();
 		return SHOW_DIRCHANGE;
 	}
