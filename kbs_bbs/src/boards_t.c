@@ -602,7 +602,7 @@ static int choose_board(int newflag, char *boardprefix)
             }
             else {
             	modify_user_mode(SELECT);
-		do_select(0, NULL, genbuf);
+		if(do_select(0, NULL, genbuf)==NEWDIRECT)
             	Read();
               show_brdlist(page, 1, newflag);     /*  refresh screen */
               modify_user_mode(newflag ? READNEW : READBRD);
@@ -709,7 +709,7 @@ static int choose_board(int newflag, char *boardprefix)
 	                    show_brdlist(page, 1, newflag);     /*  refresh screen */
                     }
                     else {
-                          if (q==0) q=1;
+                          if (q==0) q=0;
                           else 
                           	if (nbrd[q].flag == -1) q=nbrd[q].pos;
                           	else q=IsFavBoard(nbrd[q].pos)-1;
