@@ -68,7 +68,7 @@ function preprocess(){
 
 function doSearch($boardID,$boardName){
 	global $title,$title2,$title3,$author;
-	$articles=bbs_searchtitle($boardName,$title,$title2,$title3,$author,intval($_REQUEST['dt']),isset($_REQUEST['mg']),isset($_REQUEST['ag']));
+	$articles=bbs_searchtitle($boardName,$title,$title2,$title3,$author,intval($_REQUEST['dt']),isset($_REQUEST['mg']),isset($_REQUEST['ag']),999);
 	$num=count($articles);
 	if ($num==0 || $articles<=0) {
 		foundErr("<font color=#ff0000>没有找到您要的结果</font>");

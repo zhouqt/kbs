@@ -1638,7 +1638,7 @@ static PHP_FUNCTION(bbs_searchtitle)
 {
     char *board,*title, *title2, *title3,*author;
     long bLen,tLen,tLen2,tLen3,aLen;
-    long date,mmode,attach;
+    long date,mmode,attach,maxreturn;
     bcache_t bh;
 	char dirpath[STRLEN];
 	int fd;
@@ -1660,7 +1660,7 @@ static PHP_FUNCTION(bbs_searchtitle)
     char* thread_col_names[]={"origin","lastreply","articlenum"};
 
 
-    if (ZEND_NUM_ARGS() != 8 || zend_parse_parameters(8 TSRMLS_CC, "ssssslll", &board, &bLen,&title,&tLen, &title2, &tLen2, &title3, &tLen3,&author, &aLen, &date,&mmode,&attach) != SUCCESS) {
+    if (ZEND_NUM_ARGS() != 9 || zend_parse_parameters(9 TSRMLS_CC, "sssssllll", &board, &bLen,&title,&tLen, &title2, &tLen2, &title3, &tLen3,&author, &aLen, &date,&mmode,&attach,&maxreturn) != SUCCESS) {
             WRONG_PARAM_COUNT;
     }
     if (date <= 0)
@@ -1714,8 +1714,6 @@ static PHP_FUNCTION(bbs_searchtitle)
     ptr1 = (struct wwwthreadheader *) ptr;
 
 	for (i=total-1;i>=0;i--) {
-		if (threads>=9999) 
-			break;
 		if (title[0] && !strcasestr(ptr1[i].origin.title, title))
 	        continue;
 	    if (title2[0] && !strcasestr(ptr1[i].origin.title, title2))
@@ -1771,6 +1769,9 @@ static PHP_FUNCTION(bbs_searchtitle)
 		ZVAL_LONG(columns[2],ptr1[i].articlecount);
 
 		zend_hash_index_update(Z_ARRVAL_P(return_value), threads, (void *) &element, sizeof(zval *), NULL);
+		if (threads>=maxreturn) 
+			break;
+
 	}
     end_mmapfile((void *) ptr, buf.st_size, -1);
     ldata.l_type = F_UNLCK;
