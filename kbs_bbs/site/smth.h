@@ -56,6 +56,7 @@
     make the number of session char from 3 to 4
     */
 #define MAX_GUEST_NUM		800
+#define WWW_MAX_LOGIN 5000
 
 #define POP3PORT		110
 #define POP3SPORT		995

@@ -188,6 +188,10 @@
 #define MAX_GUEST_NUM		800
 #endif
 
+#ifndef WWW_MAX_LOGIN
+#define WWW_MAX_LOGIN 1000
+#endif
+
 #ifndef POP3PORT
 #define POP3PORT		110
 #endif
