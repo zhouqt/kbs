@@ -445,8 +445,12 @@ static int fav_prekey(struct _select_def *conf, int *command)
     if (!isdigit(*command))
         arg->tmpnum = 0;
 
-    if (!arg->loop_mode)
+    if (!arg->loop_mode) {
+        int y,x;
+        getyx(&y, &x);
         update_endline();
+        move(y, x);
+    }
     ptr = &arg->nbrd[conf->pos - conf->page_pos];
     switch (*command) {
     case 'e':

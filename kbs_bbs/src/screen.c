@@ -117,6 +117,8 @@ void clear()
             slp[i].color[j]=7;
         }
     }
+    cur_color = 7;
+    cur_mode = 0;
     can_clrscr = 1;
     move(0, 0);
 }

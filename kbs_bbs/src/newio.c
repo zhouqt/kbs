@@ -1272,6 +1272,7 @@ int pressreturn()
 
     showansi = 1;
     move(t_lines - 1, 0);
+    prints("\x1b[m");
     clrtoeol();
     getdata(t_lines - 1, 0, "                              \x1b[33mÇë°´ ¡ô\x1b[36mEnter\x1b[33m¡ô ¼ÌÐø\x1b[m", buf, 2, NOECHO, NULL, true);
     move(t_lines - 1, 0);
