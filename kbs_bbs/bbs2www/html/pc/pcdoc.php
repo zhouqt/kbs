@@ -37,7 +37,7 @@
 <table cellspacing="0" cellpadding="5" border="0" width="95%" class="b2">
 <tr>
 <td>
-<a href="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=post&<?php echo "tag=".$tag."&pid=".$pid."&tid=".$tid; ?>">
+<a href="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=post&<?php echo "tag=".$tag."&pid=".$pid."&tid=".$tid; ?>" target="_blank">
 <img src="images/post.gif" border="0" alt="·¢±íÎÄÕÂ">
 </a>
 </td>

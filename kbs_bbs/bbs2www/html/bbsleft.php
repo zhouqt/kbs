@@ -215,7 +215,7 @@ login_init();
 <A href="/pc/pcfile.php?userid=<?php echo $userid; ?>" target="f3">个人空间</A><BR>
 &nbsp;
 <img src="images/line.gif" width="11" height="16" align="absmiddle">
-<A href="/pc/pcmanage.php?userid=<?php echo $userid; ?>&act=post&tag=0&pid=0" target="f3">添加文章</A><BR>
+<A href="/pc/pcmanage.php?userid=<?php echo $userid; ?>&act=post&tag=0&pid=0" target="_blank">添加文章</A><BR>
 <?php		
 		}	
 	}
