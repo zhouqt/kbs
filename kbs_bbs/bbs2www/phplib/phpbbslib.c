@@ -517,8 +517,7 @@ static void assign_user(zval * array, struct userec *user, int num)
     add_assoc_long(array, "firstlogin", user->firstlogin);
     add_assoc_long(array, "exittime", user->exittime);
 //    add_assoc_stringl(array, "lasthost", user->lasthost, IPLEN, 1);
-    user->lasthost[IPLEN - 1] = '\0'; //这个其实现在已经不需要了 - atppp
-    add_assoc_string(array, "lasthost", SHOW_USERIP(user, user->lasthost), 1);
+    add_assoc_string(array, "lasthost", (!strcmp(user->userid , getcurruserid()) || HAS_PERM(getCurrentUser(), PERM_SYSOP)) ? user->lasthost: SHOW_USERIP(user, user->lasthost), 1);
     add_assoc_long(array, "numlogins", user->numlogins);
     add_assoc_long(array, "numposts", user->numposts);
     add_assoc_long(array, "flag1", user->flags);
@@ -6389,7 +6388,8 @@ static PHP_FUNCTION(bbs_getonlinefriends)
     zval* element;
     int range;
     uinfo_t *usr[MAXFRIENDS]; //指向共享内存内容
-    
+    struct userec *lookupuser;
+
     int ac = ZEND_NUM_ARGS();
 
     if (ac != 0) {
@@ -6426,7 +6426,8 @@ static PHP_FUNCTION(bbs_getonlinefriends)
         add_assoc_long ( element, "idle", (long)(time(0) - get_idle_time(&user[i]))/60 );
         add_assoc_string ( element, "userid", user[i].userid, 1 );       
         add_assoc_string ( element, "username", user[i].username, 1 );   
-        add_assoc_string ( element, "userfrom", HAS_PERM(getCurrentUser(), PERM_SYSOP)?user[i].from:SHOW_USERIP(NULL, user[i].from), 1 );
+        if( getuser(user[i].userid, &lookupuser) == 0 ) lookupuser=NULL;
+        add_assoc_string ( element, "userfrom", HAS_PERM(getCurrentUser(), PERM_SYSOP)?user[i].from:SHOW_USERIP(lookupuser, user[i].from), 1 );
         add_assoc_string ( element, "mode", ModeType(user[i].mode), 1 );
         zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
 	}
@@ -8886,6 +8887,7 @@ struct fulluserlistarg{
 static int full_user_list(struct user_info *uentp, struct fulluserlistarg* arg,int count)
 {
     struct user_info userinfo=*uentp;
+    struct userec *lookupuser;
     zval* element;
     if (!userinfo.active || !userinfo.pid) {
         return 0;
@@ -8905,7 +8907,8 @@ static int full_user_list(struct user_info *uentp, struct fulluserlistarg* arg,i
     add_assoc_bool ( element, "isfriend", isfriend(userinfo.userid) );
     add_assoc_string ( element, "userid", userinfo.userid, 1 );
     add_assoc_string ( element, "username", userinfo.username, 1 );
-    add_assoc_string ( element, "userfrom", HAS_PERM(getCurrentUser(), PERM_SYSOP)? userinfo.from: SHOW_USERIP(NULL, userinfo.from), 1 );
+    if( getuser(userinfo.userid, &lookupuser) == 0 ) lookupuser=NULL;
+    add_assoc_string ( element, "userfrom", HAS_PERM(getCurrentUser(), PERM_SYSOP)? userinfo.from: SHOW_USERIP(lookupuser, userinfo.from), 1 );
     add_assoc_string ( element, "mode", ModeType(userinfo.mode), 1 );
     add_assoc_long ( element, "idle", (long)(time(0) - get_idle_time(&userinfo))/60 );
     
