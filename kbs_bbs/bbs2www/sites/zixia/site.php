@@ -5,6 +5,7 @@ define("ATTACHMAXCOUNT","20");
 define("MAINPAGE_FILE", "bbssec.php");
 define("QUOTED_LINES","10");
 define("SITE_ZIXIA",1); //目前主要涉及新注册用户认证的相关代码 - atppp
+define("PWD_HTTP", 1); //修改密码使用 http - atppp
 
 $section_nums = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
 $section_names = array(
