@@ -13,6 +13,5 @@ awk 'BEGIN { definenum=0;infilter=0; } \
       } \
     } else \
      print $0; \
-  } \
-' $1 > /tmp/filtersource
+  }' $1 > /tmp/filtersource
 mv -f /tmp/filtersource $1
