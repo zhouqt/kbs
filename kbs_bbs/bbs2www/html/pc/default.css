@@ -250,15 +250,28 @@ font-weight: bold;
 {
 	font-size: 14px;
 }
+.indexcontent
+{
+	font-size: 12px;
+	line-height: 20px;
+	color: #333333;
+}
+.indexcontentwithhtml
+{
+	color: #333333;
+	font-size: 12px;
+}
 .bc1
 {
 	font-size: 12px;
 	color: #000000;
+	font-weight:bolder;
 	text-decoration: none;
 }
 .bc2
 {
 	color: #FFFFFF;
+	font-weight:bolder;
 	text-decoration: none;
 }
 .bc3
