@@ -107,7 +107,7 @@ int     real, unum;
     FILE        *fin, *fout,*dp;
     time_t      code;
 
-    memcpy( &newinfo, u, sizeof(currentuser));
+    memcpy( &newinfo, u, sizeof(struct userec));
     getdata( t_lines-1, 0, real ?
              "请选择 (0)结束 (1)修改资料 (2)设定密码 (3) 改 ID ==> [0]" :
              "请选择 (0)结束 (1)修改资料 (2)设定密码 ==> [0]",

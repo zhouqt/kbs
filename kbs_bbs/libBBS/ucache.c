@@ -435,7 +435,7 @@ set_safe_record()
     struct userec tmp;
     extern int ERROR_READ_SYSTEM_FILE;
 
-    if(get_record(PASSFILE,&tmp,sizeof(currentuser),usernum)==-1)
+    if(get_record(PASSFILE,&tmp,sizeof(struct userec),usernum)==-1)
     {
         char buf[STRLEN];
 
