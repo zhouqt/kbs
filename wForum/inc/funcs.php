@@ -340,8 +340,10 @@ function html_init($charset="",$title="",$otherheader="",$is_mathml=false)
 	}
 	if ($is_mathml) {
 		header("Content-Type: application/xhtml+xml");
+		if (strpos($_SERVER["HTTP_USER_AGENT"], "MSIE") === false) $eee = " encoding=\"$charset\"";
+		else $eee = ""; //fuck, IE doesn't understand that.
 ?>
-<?xml version="1.0"?>
+<?xml version="1.0"<?php echo $eee; ?>?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
                "http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
@@ -376,32 +378,32 @@ function showLogon($showBack = 0, $comeurl = "") {
 		}
 	}
 ?>
-	<table cellpadding=3 cellspacing=1 align=center class=TableBorder1 style="width: 75%;">
-	<form action="logon.php" method=post> 
+	<table cellpadding="3" cellspacing="1" align="center" class="TableBorder1" style="width: 75%;">
+	<form action="logon.php" method="post"> 
 	<input type="hidden" name="action" value="doLogon">
 	<tr>
-	<th valign=middle colspan=2 align=center height=25>请输入您的用户名、密码登录</td></tr>
+	<th valign="middle" colspan="2" align="center" height="25">请输入您的用户名、密码登录</td></tr>
 	<tr>
-	<td valign=middle class=TableBody1>请输入您的用户名</td>
-	<td valign=middle class=TableBody1><INPUT name=id type=text tabindex="1"> &nbsp; <a href="register.php">没有注册？</a></td></tr>
+	<td valign="middle" class="TableBody1">请输入您的用户名</td>
+	<td valign="middle" class="TableBody1"><input name="id" type="text" tabindex="1"/> &nbsp; <a href="register.php">没有注册？</a></td></tr>
 	<tr>
-	<td valign=middle class=TableBody1>请输入您的密码</font></td>
-	<td valign=middle class=TableBody1><INPUT name=password type=password tabindex="2"> &nbsp; <!--<a href="foundlostpass.php">忘记密码？</a>--></td></tr>
+	<td valign="middle" class="TableBody1">请输入您的密码</td>
+	<td valign="middle" class="TableBody1"><input name="password" type="password" tabindex="2" /> &nbsp; <!--<a href="foundlostpass.php">忘记密码？</a>--></td></tr>
 	<tr>
-	<td class=TableBody1 valign=top width=30% ><b>Cookie 选项</b><BR> 请选择你的 Cookie 保存时间，下次访问可以方便输入。</td>
-	<td valign=middle class=TableBody1>
-	<input type=radio name=CookieDate value=0 checked>不保存，关闭浏览器就失效<br>
-				<input type=radio name=CookieDate value=1>保存一天<br>
-				<input type=radio name=CookieDate value=2>保存一月<br>
-				<input type=radio name=CookieDate value=3>保存一年<br>                
+	<td class="TableBody1" valign="top" width="30%" ><b>Cookie 选项</b><br/> 请选择你的 Cookie 保存时间，下次访问可以方便输入。</td>
+	<td valign="middle" class="TableBody1">
+	<input type="radio" name="CookieDate" value="0" checked="checked" />不保存，关闭浏览器就失效<br/>
+				<input type="radio" name="CookieDate" value="1" />保存一天<br/>
+				<input type="radio" name="CookieDate" value="2" />保存一月<br/>
+				<input type="radio" name="CookieDate" value="3" />保存一年<br/>                
 	</td></tr>
-	<input type=hidden name=comeurl value="<?php echo htmlspecialchars($comeurl); ?>">
+	<input type="hidden" name="comeurl" value="<?php echo htmlspecialchars($comeurl); ?>">
 	<tr>
-	<td class=TableBody2 valign=middle colspan=2 align=center><input tabindex="3" type=submit name=submit value="登 录">
+	<td class="TableBody2" valign="middle" colspan="2" align="center"><input tabindex="3" type="submit" name="submit" value="登 录" />
 <?php
 	if ($showBack) {
 ?>
-	&nbsp;&nbsp;<input type=button name="back" value="返 回" onclick="location.href='<?php echo htmlspecialchars($comeurl, ENT_QUOTES); ?>'">
+	&nbsp;&nbsp;<input type="button" name="back" value="返 回" onclick="location.href='<?php echo htmlspecialchars($comeurl, ENT_QUOTES); ?>'"/>
 <?php
 	}
 ?>
@@ -451,13 +453,13 @@ function html_error_quit()
 	global $needloginok;
 	global $loginok;
 ?>
-<br>
-<table cellpadding=3 cellspacing=1 align=center class=TableBorder1 style="width: 75%;">
-<tr align=center>
-<th height=25>论坛错误信息</th>
+<br/>
+<table cellpadding="3" cellspacing="1" align="center" class="TableBorder1" style="width: 75%;">
+<tr align="center">
+<th height="25">论坛错误信息</th>
 </tr>
 <tr>
-<td class=TableBody1>
+<td class="TableBody1">
 <b>产生错误的可能原因：</b>
 <ul>
 <li>您是否仔细阅读了帮助文件，可能您还没有登录或者不具有使用当前功能的权限。</li>
@@ -480,27 +482,27 @@ function html_success_quit($Desc='',$URL='')
 {
   global $sucmsg;
 ?>
-<br>
-<table cellpadding=3 cellspacing=1 align=center class=TableBorder1 style="width: 75%;">
-<tr align=center>
+<br/>
+<table cellpadding="3" cellspacing="1" align="center" class="TableBorder1" style="width: 75%;">
+<tr align="center">
 <th width="100%">论坛成功信息</th>
 </tr>
 <tr>
-<td width="100%" class=TableBody1>
+<td width="100%" class="TableBody1">
 <b>操作成功：</b>
 <ul>
 <?php   echo $sucmsg; ?>
 </ul>
 </td></tr>
-<tr align=center><td width="100%" class=TableBody2>
+<tr align=center><td width="100%" class="TableBody2">
 <?php
 	if ($Desc=='') {
 ?>
-<a href="<?php   echo $_SERVER['HTTP_REFERER']; ?>"> << 返回上一页</a>
+<a href="<?php   echo $_SERVER['HTTP_REFERER']; ?>"> &lt;&lt; 返回上一页</a>
 <?php
 	} else {
 ?>
-<a href="<?php   echo $URL; ?>"> << <?php echo $Desc; ?></a>
+<a href="<?php   echo $URL; ?>"> &lt;&lt; <?php echo $Desc; ?></a>
 <?php
 	}
 ?>
@@ -554,67 +556,66 @@ function show_nav($boardName='',$is_mathml=false)
 //-->
 </script>
 <script src="inc/funcs.js"  language="javascript"></script>
-<body topmargin=0 leftmargin=0 onmouseover="HideMenu(event);">
+<body topmargin="0" leftmargin="0" onmouseover="HideMenu(event);">
 <script src="inc/browser.js"  language="javascript"></script>
-<div id=menuDiv class="navClass1"></div>
-<table cellspacing=0 cellpadding=0 align=center class="navClass2">
-<tr><td width=100% >
-<table width=100% align=center border=0 cellspacing=0 cellpadding=0>
-<tr><td class=TopDarkNav height=9></td></tr>
-<tr><td height=70 class=TopLighNav2>
+<div id="menuDiv" class="navClass1"></div>
+<table cellspacing="0" cellpadding="0" align="center" class="navClass2">
+<tr><td width="100%">
+<table width="100%" align="center" border="0" cellspacing="0" cellpadding="0">
+<tr><td class="TopDarkNav" height="9"></td></tr>
+<tr><td height="70" class="TopLighNav2">
 
-<TABLE border=0 width="100%" align=center>
-<TR>
-<TD align=left width="25%"><a href="<?php  echo  $SiteURL; ?>" target="_blank"><img border=0 src='<?php echo  $Banner; ?>'></a></TD>
-<TD Align=center width="65%">
+<table border="0" width="100%" align="center">
+<tr>
+<td align="left" width="25%"><a href="<?php  echo  $SiteURL; ?>" target="_blank"><img border="0" src='<?php echo  $Banner; ?>'/></a></td>
+<td align="center" width="65%">
 <?php echo MAINTITLE; ?>
 </td>
-<td align=right style="line-height: 15pt" width="10%">
-<nobr><a href="#" onClick="window.external.AddFavorite('<?php   echo $SiteURL; ?>', '<?php   echo $SiteName; ?>');">加入收藏</a></nobr><br>
-<nobr><a href="">联系我们</a></nobr><br>
+<td align="right" style="line-height: 15pt" width="10%">
+<nobr><a href="#" onClick="window.external.AddFavorite('<?php   echo $SiteURL; ?>', '<?php   echo $SiteName; ?>');">加入收藏</a></nobr><br/>
+<nobr><a href="">联系我们</a></nobr><br/>
 <nobr><a href="">论坛帮助</a></nobr>
-</td>
 </td></tr>
 </table>
 
 </td></tr>
-<tr><td class=TopLighNav height=9></td></tr>
+<tr><td class="TopLighNav" height="9"></td></tr>
 <?php
 	if ($boardName !== false) {
 ?>
 		<tr> 
-		  <td class=TopLighNav1 height=22  valign="middle">&nbsp;&nbsp;
+		  <td class="TopLighNav1" height="22" valign="middle">&nbsp;&nbsp;
 <?php   
 	if ($loginok!=1)  {
 ?>
-<a href="logon.php">登录</a> <img src=pic/navspacer.gif align=absmiddle> <a href="register.php">注册</a>
+<a href="logon.php">登录</a> <img src="pic/navspacer.gif" align="absmiddle"/> <a href="register.php">注册</a>
 <?php  
 	}  else  {
 		echo '欢迎您 <b>'.$currentuser['userid'].'</b> ';
 		if ($currentuser["userlevel"] & BBS_PERM_CLOAK) {
 ?>
-<img src=pic/navspacer.gif align=absmiddle>
+<img src="pic/navspacer.gif" align="absmiddle"/>
 <a href="changecloak.php"><?php echo $currentuinfo["invisible"]?"现身":"隐身"; ?></a> 
 <?php
 		}
 ?>
-<img src=pic/navspacer.gif align=absmiddle> <a href="logon.php">重登录</a> 
-<img src=pic/navspacer.gif align=absmiddle> <a href="usermanagemenu.php" onMouseOver='ShowMenu(manage,100,event)'>用户功能菜单</a>
-<img src=pic/navspacer.gif align=absmiddle> <a href="#" onMouseOver='ShowMenu(talk,100,event)'>谈天说地菜单</a>
+<img src="pic/navspacer.gif" align="absmiddle"/> <a href="logon.php">重登录</a> 
+<img src="pic/navspacer.gif" align="absmiddle"/> <a href="usermanagemenu.php" onmouseover="ShowMenu(manage,100,event)">用户功能菜单</a>
+<img src="pic/navspacer.gif" align="absmiddle"/> <a href="#" onmouseover="ShowMenu(talk,100,event)">谈天说地菜单</a>
 <?php
  }
  if (AUDIO_CHAT) {
 ?>
-<img src=pic/navspacer.gif align=absmiddle>  <a href="http://voicechat.zixia.net:10015/voicechat.htm?r=1" target=_blank>语音聊天室</a>
+<img src="pic/navspacer.gif" align="absmiddle"/>  <a href="http://voicechat.zixia.net:10015/voicechat.htm?r=1" target="_blank">语音聊天室</a>
 <?php
  }
 ?>
- <img src=pic/navspacer.gif align=absmiddle>  <a title="搜索当前版面" href="query.php<?php echo $boardName==''?'':'?boardName='.$boardName; ?>" onMouseOver='ShowMenu(query,100,event)'>搜索</a> 
- <img src=pic/navspacer.gif align=absmiddle>  <a href="#" onMouseOver='ShowMenu(stylelist,100,event)'>自选风格</a> 
+ <img src="pic/navspacer.gif" align="absmiddle"/>  <a title="搜索当前版面" href="query.php<?php echo $boardName==''?'':'?boardName='.$boardName; ?>" onmouseover="ShowMenu(query,100,event)">搜索</a> 
+ <img src="pic/navspacer.gif" align="absmiddle"/>  <a href="#" onmouseover="ShowMenu(stylelist,100,event)">自选风格</a> 
 <?php 
 	if ($loginok) {
 ?>
-<img src=pic/navspacer.gif align=absmiddle> <a href="logout.php<?php if ($needloginok!=0) echo "?jumphome=1"; ?>">退出</a>
+<img src="pic/navspacer.gif" align="absmiddle"/> <a href="logout.php<?php if ($needloginok!=0) echo "?jumphome=1"; ?>">退出</a>
 <?php   
 	}
 ?>
@@ -640,19 +641,19 @@ function head_var($Title='', $URL='',$showWelcome=0)
 <?php
   if ($showWelcome==1) {
 ?>
-<br>
-<table cellspacing=1 cellpadding=3 align=center border=0 width="97%">
+<br/>
+<table cellspacing="1" cellpadding="3" align="center" border="0" width="97%">
 <tr>
-<td height=25>
->> 欢迎光临 <B><?php       echo $SiteName; ?></B>
+<td height="25">
+&gt;&gt; 欢迎光临 <B><?php       echo $SiteName; ?></B>
 </td></tr>
 </table>
 <?php
   } 
 ?>
-<table cellspacing=1 cellpadding=3 align=center class=TableBorder2>
+<table cellspacing="1" cellpadding="3" align="center" class="TableBorder2">
 <tr><td><nobr>
-<img src="pic/forum_nav.gif" align=absmiddle> <a href="index.php"><?php   echo $SiteName; ?></a> → 
+<img src="pic/forum_nav.gif" align="absmiddle"/> <a href="index.php"><?php   echo $SiteName; ?></a> → 
 <?php 
 	if ($Title!='') {
 		echo  "<a href=".$URL.">".$Title."</a> → ";
@@ -674,7 +675,7 @@ function head_var($Title='', $URL='',$showWelcome=0)
 <?php
 	}
 ?>
-<br>
+<br/>
 <?php 
 } 
 
@@ -695,23 +696,23 @@ function show_footer($showmsg = true, $showerr = true)
   $endtime=getmicrotime();
 ?>
 <p>
-<TABLE cellSpacing=0 cellPadding=0 border=0 align=center>
+<table cellSpacing="0" cellPadding="0" border="0" align="center">
 <tr>
-	<td align=center>
-		<a href="http://wforum.aka.cn/" target="_blank"><img border="0" src="images/wforum.gif"></a><br>
+	<td align="center">
+		<a href="http://wforum.aka.cn/" target="_blank"><img border="0" src="images/wforum.gif"/></a><br/>
 		<nobr><?php   echo $Version; ?></nobr>
 	</td>
 	<td>
-		<TABLE cellSpacing=0 cellPadding=0 border=0 align=center>
+		<table cellSpacing="0" cellPadding="0" border="0" align="center">
 		<tr>
-			<td align=center>
+			<td align="center">
 				<?php   echo $Forum_ads[1]; ?>
 			</td>
 		</tr>
 		<tr>
 		</tr>
 		<tr>
-			<td align=center nowrap>
+			<td align="center" nowrap="nowrap">
 				<?php   echo $Copyright; ?>
 				, 页面执行时间：<?php  printf(number_format(($endtime-$StartTime)*1000,3)); ?>毫秒
 			</td>
@@ -720,16 +721,16 @@ function show_footer($showmsg = true, $showerr = true)
 	</td>
 </tr>
 <tr>
-<td colspan=2><?php echo $FooterBan ; ?></td>
+<td colspan="2"><?php echo $FooterBan ; ?></td>
 </tr>
-</TABLE>
+</table></p>
 <?php
 	if ($loginok==1 && $showmsg) {
 		getMsg();
 	}
 ?>
-<br>
-<br>
+<br/>
+<br/>
 </body>
 </html>
 <?php
@@ -742,7 +743,7 @@ function getMsg(){
 
 <div id="floater" style="position:absolute; width:502px; height:152px; z-index:2; left: 200px; top: 250px; visibility: hidden; background-color: transparent; layer-background-color: #FFFFFF; "> 
 </div>
-<iframe width="100%" height="0" frameborder="0" scrolling=no src="getmsg.php" name="webmsg">
+<iframe width="100%" height="0" frameborder="0" scrolling="no" src="getmsg.php" name="webmsg">
 </iframe>
 <script src="inc/floater.js"  language="javascript"></script>
 <?php

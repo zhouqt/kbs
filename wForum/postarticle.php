@@ -307,7 +307,8 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 		echo "<input type=\"checkbox\" name=\"anonymous\" value=\"1\" />匿名<br />";
 	}
 ?>
-    <input type=checkbox name=emailflag value=yes disabled>有回复时使用邮件通知您？</font>
+    <input type=checkbox name=emailflag value="1">有回复时使用邮件通知您？
+    <input type=checkbox name=texflag value="1">使用 tex 发表</font>
 <BR><BR></td>
 	</tr><tr>
 	<td valign=middle colspan=2 align=center class=TableBody2>

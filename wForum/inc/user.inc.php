@@ -5,27 +5,27 @@ function showUserMailBoxOrBR() { //用于普通用户就可以访问的页面
 	if ($loginok==1) {
 		showUserMailBox();
 	} else {
-		echo "<br>";
+		echo "<br/>";
 	}
 }
 
 function showUserMailbox(){ //这个函数直接调用必须保证 $loginok==1
 	global $currentuser;
 ?>
-<table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
-<tr><td width=65% >
-</td><td width=35% align=right>
+<table cellSpacing="0" cellPadding="0" width="97%" border="0" align="center">
+<tr><td width="65%" >
+</td><td width="35%" align="right">
 <?php   
 	bbs_getmailnum($currentuser["userid"],$total,$unread,0,0);
 	if ($unread>0)  {
 ?>
-<bgsound src="sound/newmail.wav" border=0>
-<img src="pic/msg_new_bar.gif" /> <a href="usermailbox.php?boxname=inbox">我的收件箱</a> (<a href="usermail.php?boxname=inbox&num=<?php echo $total-1;?>" target=_blank><font color="#FF0000"><?php  echo $unread; ?> 新</font></a>)
+<bgsound src="sound/newmail.wav" border="0">
+<img src="pic/msg_new_bar.gif" /> <a href="usermailbox.php?boxname=inbox">我的收件箱</a> (<a href="usermail.php?boxname=inbox&amp;num=<?php echo $total-1;?>" target="_blank"><font color="#FF0000"><?php  echo $unread; ?> 新</font></a>)
 <?php   }
     else
   {
 ?>
-<img src="pic/msg_no_new_bar.gif" /> <a href="usermailbox.php?boxname=inbox">我的收件箱</a> (<font color=gray>0 新</font>)
+<img src="pic/msg_no_new_bar.gif" /> <a href="usermailbox.php?boxname=inbox">我的收件箱</a> (<font color="gray">0 新</font>)
 <?php
   }
 ?>

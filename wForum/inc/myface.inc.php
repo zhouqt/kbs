@@ -38,6 +38,6 @@
 		$str = "<img src=\"".$user_pic."\"";
 		if ($has_size) $str .= " width=\"".$user['userface_width']."\" height=\"".$user['userface_height']."\"";
 		if ($extra_tag !== false) $str .= " ".$extra_tag;
-		return $str.">";
+		return $str."/>";
 	}
 ?>

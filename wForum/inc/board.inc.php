@@ -189,9 +189,9 @@ function board_head_var($boardDesc,$boardName,$secCode)
   }
   $secIndex = get_secname_index($secCode);
 ?>
-<table cellspacing=1 cellpadding=3 align=center class=TableBorder2>
+<table cellspacing="1" cellpadding="3" align="center" class="TableBorder2">
 <tr><td><nobr>
-<img src="pic/forum_nav.gif"> <a href="index.php"><?php   echo $SiteName; ?></a> → 
+<img src="pic/forum_nav.gif"/> <a href="index.php"><?php   echo $SiteName; ?></a> → 
 <a href="section.php?sec=<?php echo $secIndex; ?>"><?php echo $section_names[$secIndex][0] ; ?></a> → 
 <a href="board.php?name=<?php echo $boardName; ?>"><?php echo $boardDesc; ?></a> → 
 <?php echo $stats; ?> 
@@ -210,7 +210,7 @@ function board_head_var($boardDesc,$boardName,$secCode)
 <?php
 	}
 ?>
-<br>
+<br/>
 <?php 
 } 
 function boardJump(){
@@ -219,8 +219,8 @@ function boardJump(){
 	global $section_nums;
 	global $yank;
 ?>
-<div align=right><select onchange="if(this.options[this.selectedIndex].value!=''){location=this.options[this.selectedIndex].value;}">
-<option selected>跳转论坛至...</option>
+<div align="right"><select onchange="if(this.options[this.selectedIndex].value!=''){location=this.options[this.selectedIndex].value;}">
+<option selected="selected">跳转论坛至...</option>
 <?php
 	for ($i=0;$i<$sectionCount;$i++){
 		echo "<option value=\"section.php?sec=".$i."\">╋".$section_names[$i][0]."</option>";
@@ -251,7 +251,7 @@ function boardSearchAndJump($boardName, $boardID){
 <?php
 	boardJump();
 ?>
-</td></tr></table><BR>
+</td></tr></table><br/>
 <?php
 }
 

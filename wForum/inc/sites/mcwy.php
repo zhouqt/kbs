@@ -20,7 +20,7 @@ $user_define1 = array(
 $SiteURL = "http://bbs.stanford.edu/wForum/";
 $SiteName = "牧场物语";
 $Banner = "/mcwy/bm3_08.jpg";
-define("MAINTITLE", "本站 wForum 永远可能处于调试状态。请小心使用<img src=\"emot/em17.gif\" border=0>");
+define("MAINTITLE", "本站 wForum 永远可能处于调试状态。请小心使用<img src=\"emot/em17.gif\" border=\"0\"/>");
 define("OLD_REPLY_STYLE", true);
 $AnnounceBoard = "Announcement";
 define("SERVERTIMEZONE", "美西时间");

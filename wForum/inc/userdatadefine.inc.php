@@ -27,86 +27,86 @@ function get_astro($birthmonth, $birthday)
 	switch ($birthmonth){
 	case 1:
 		if ($birthday>=21)	{
-			$function_ret="<img src=star/z11.gif alt=Ë®Æ¿×ù".$birth."> Ë®Æ¿×ù";
+			$function_ret="<img src=\"star/z11.gif\" alt=\"Ë®Æ¿×ù".$birth."\"/> Ë®Æ¿×ù";
 		}else{
-			$function_ret="<img src=star/z10.gif alt=Ä§ôÉ×ù".$birth."> Ä§ôÉ×ù";
+			$function_ret="<img src=\"star/z10.gif\" alt=\"Ä§ôÉ×ù".$birth."\"/> Ä§ôÉ×ù";
 		} 
 		break;
 	case 2:
 		if ($birthday>=20)	{
-			$function_ret="<img src=star/z12.gif alt=Ë«Óã×ù".$birth."> Ë«Óã×ù";
+			$function_ret="<img src=\"\"star/z12.gif\" alt=\"Ë«Óã×ù".$birth."\"/> Ë«Óã×ù";
 		}else{
-			$function_ret="<img src=star/z11.gif alt=Ë®Æ¿×ù".$birth."> Ë®Æ¿×ù";
+			$function_ret="<img src=\"\"star/z11.gif\" alt=\"Ë®Æ¿×ù".$birth."\"/> Ë®Æ¿×ù";
 		} 
 		break;
 	case 3:
 		if ($birthday>=21)	{
-			$function_ret="<img src=star/z1.gif alt=°×Ñò×ù".$birth."> °×Ñò×ù";
+			$function_ret="<img src=\"star/z1.gif\" alt=\"°×Ñò×ù".$birth."\"/> °×Ñò×ù";
 		}else{
-			$function_ret="<img src=star/z12.gif alt=Ë«Óã×ù".$birth."> Ë«Óã×ù";
+			$function_ret="<img src=\"star/z12.gif\" alt=\"Ë«Óã×ù".$birth."\"/> Ë«Óã×ù";
 		} 
 		break;
 	case 4:
 		if ($birthday>=21)	{
-			$function_ret="<img src=star/z2.gif alt=½ðÅ£×ù".$birth."> ½ðÅ£×ù";
+			$function_ret="<img src=\"star/z2.gif\" alt=\"½ðÅ£×ù".$birth."\"/> ½ðÅ£×ù";
 		}else{
-			$function_ret="<img src=star/z1.gif alt=°×Ñò×ù".$birth."> °×Ñò×ù";
+			$function_ret="<img src=\"star/z1.gif\" alt=\"°×Ñò×ù".$birth."\"/> °×Ñò×ù";
 		} 
 		break;
 	case 5:
 		if ($birthday>=22)	{
-			$function_ret="<img src=star/z3.gif alt=Ë«×Ó×ù".$birth."> Ë«×Ó×ù";
+			$function_ret="<img src=\"star/z3.gif\" alt=\"Ë«×Ó×ù".$birth."\"/> Ë«×Ó×ù";
 		}else{
-			$function_ret="<img src=star/z2.gif alt=½ðÅ£×ù".$birth."> ½ðÅ£×ù";
+			$function_ret="<img src=\"star/z2.gif\" alt=\"½ðÅ£×ù".$birth."\"/> ½ðÅ£×ù";
 		} 
 		break;
 	case 6:
 		if ($birthday>=22)	{
-			$function_ret="<img src=star/z4.gif alt=¾ÞÐ·×ù".$birth."> ¾ÞÐ·×ù";
+			$function_ret="<img src=\"star/z4.gif\" alt=\"¾ÞÐ·×ù".$birth."\"/> ¾ÞÐ·×ù";
 		}else{
-			$function_ret="<img src=star/z3.gif alt=Ë«×Ó×ù".$birth."> Ë«×Ó×ù";
+			$function_ret="<img src=\"star/z3.gif\" alt=\"Ë«×Ó×ù".$birth."\"/> Ë«×Ó×ù";
 		} 
 		break;
 	case 7:
 		if ($birthday>=23)	{
-			$function_ret="<img src=star/z5.gif alt=Ê¨×Ó×ù".$birth."> Ê¨×Ó×ù";
+			$function_ret="<img src=\"star/z5.gif\" alt=\"Ê¨×Ó×ù".$birth."\"/> Ê¨×Ó×ù";
 		}else{
-			$function_ret="<img src=star/z4.gif alt=¾ÞÐ·×ù".$birth."> ¾ÞÐ·×ù";
+			$function_ret="<img src=\"star/z4.gif\" alt=\"¾ÞÐ·×ù".$birth."\"/> ¾ÞÐ·×ù";
 		} 
 		break;
 	case 8:
 		if ($birthday>=24){
-			$function_ret="<img src=star/z6.gif alt=´¦Å®×ù".$birth."> ´¦Å®×ù";
+			$function_ret="<img src=\"star/z6.gif\" alt=\"´¦Å®×ù".$birth."\"/> ´¦Å®×ù";
 		}else{
-			$function_ret="<img src=star/z5.gif alt=Ê¨×Ó×ù".$birth."> Ê¨×Ó×ù";
+			$function_ret="<img src=\"star/z5.gif\" alt=\"Ê¨×Ó×ù".$birth."\"/> Ê¨×Ó×ù";
 		} 
 		break;
 	case 9:
 		if ($birthday>=24)	{
-			$function_ret="<img src=star/z7.gif alt=Ìì³Ó×ù".$birth."> Ìì³Ó×ù";
+			$function_ret="<img src=\"star/z7.gif\" alt=\"Ìì³Ó×ù".$birth."\"/> Ìì³Ó×ù";
 		}else{
-			$function_ret="<img src=star/z6.gif alt=´¦Å®×ù".$birth."> ´¦Å®×ù";
+			$function_ret="<img src=\"star/z6.gif\" alt=\"´¦Å®×ù".$birth."\"/> ´¦Å®×ù";
 		} 
 		break;
 	case 10:
 		if ($birthday>=24){
-			$function_ret="<img src=star/z8.gif alt=ÌìÐ«×ù".$birth."> ÌìÐ«×ù";
+			$function_ret="<img src=\"star/z8.gif\" alt=\"ÌìÐ«×ù".$birth."\"/> ÌìÐ«×ù";
 		}else{
-			$function_ret="<img src=star/z7.gif alt=Ìì³Ó×ù".$birth."> Ìì³Ó×ù";
+			$function_ret="<img src=\"star/z7.gif\" alt=\"Ìì³Ó×ù".$birth."\"/> Ìì³Ó×ù";
 		} 
 		break;
 	case 11:
 		if ($birthday>=23)	{
-			$function_ret="<img src=star/z9.gif alt=ÉäÊÖ×ù".$birth."> ÉäÊÖ×ù";
+			$function_ret="<img src=\"star/z9.gif\" alt=\"ÉäÊÖ×ù".$birth."\"/> ÉäÊÖ×ù";
 		}else{
-			$function_ret="<img src=star/z8.gif alt=ÌìÐ«×ù".$birth."> ÌìÐ«×ù";
+			$function_ret="<img src=\"star/z8.gif\" alt=\"ÌìÐ«×ù".$birth."\"/> ÌìÐ«×ù";
 		} 
 		break;
 	case 12:
 		if ($birthday>=22)	{
-			$function_ret="<img src=star/z10.gif alt=Ä§ôÉ×ù".$birth."> Ä§ôÉ×ù";
+			$function_ret="<img src=\"star/z10.gif\" alt=\"Ä§ôÉ×ù".$birth."\"/> Ä§ôÉ×ù";
 		}else{
-			$function_ret="<img src=star/z9.gif alt=ÉäÊÖ×ù".$birth."> ÉäÊÖ×ù";
+			$function_ret="<img src=\"star/z9.gif\" alt=\"ÉäÊÖ×ù".$birth."\"/> ÉäÊÖ×ù";
 		} 
 		break;
 	default:
@@ -121,7 +121,7 @@ function showIt($str){
 	if ($str1!='') {
 		return $str1; 
 	} else {
-		return  "<font color=gray>Î´Öª</font>";
+		return  "<font color=\"gray\">Î´Öª</font>";
 	}
 }
 
