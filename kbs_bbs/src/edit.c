@@ -86,16 +86,12 @@ void display_buffer()
                     myy = y; myx = j;
                 }
                 if (show_eof) {
-                    setfcolor(YELLOW, 0);
+                    setfcolor((p->next)?YELLOW:GREEN, 0);
                     outc('~');
                 }
                 resetcolor();
             }
             p = p->next;
-            if (show_eof&&!p) {
-                setfcolor(GREEN, 0);
-                outc('~');
-            }
         } else
             prints("%s~", ANSI_RESET);
         outc('\n');
@@ -169,9 +165,10 @@ void msgline()
     /* Leeward 98.07.30 Change hot key for msgX */
     /*strcat(buf," [31mCtrl-Z[33m Çó¾È         "); */
     strcat(buf, " [31mCtrl-Q[33m Çó¾È         ");
-    sprintf(buf2, " ×´Ì¬ [%s][%d,%d]      Ê±¼ä", insert_character ? "²åÈë" : "Ìæ»»", currln + 1, currpnt + 1);
+    sprintf(buf2, " ×´Ì¬ [[32m%s[33m][[32m%d[33m,[32m%d[33m][[32m%c[33m]      Ê±¼ä", insert_character ? "²åÈë" : "Ìæ»»", currln + 1, currpnt + 1,
+        show_eof?'~':' ');
     strcat(buf, buf2);
-    sprintf(buf2, "[33m[44m¡¾%.16s¡¿", ctime(&now));
+    sprintf(buf2, "[33m[44m¡¾[32m%.16s[33m¡¿", ctime(&now));
     strcat(buf, buf2);
     move(t_lines - 1, 0);
     prints("%s", buf);
@@ -1144,7 +1141,7 @@ int vedit_process_ESC(arg)
     case 'A':
     case 'a':
         show_eof = !show_eof;
-        break;
+        return 0;
     case 'M':
     case 'm':
         ch2 = ask(CHOOSE_MARK);
@@ -1582,6 +1579,9 @@ void vedit_key(int ch)
             break;
             /* Leeward 98.07.30 Change hot key for msgX */
             /*case Ctrl('Z'):  call help screen */
+        case Ctrl('R'):
+            show_eof = !show_eof;
+            break;
         case Ctrl('Q'):        /* call help screen */
             show_help("help/edithelp");
             break;
