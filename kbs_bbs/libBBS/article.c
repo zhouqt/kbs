@@ -637,7 +637,8 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     filtered = 0;
     bh = getbcache(boardname);
     if (strcmp(fh->owner, "deliver")) {
-        if (((bh && bh->level & PERM_POSTMASK) || normal_board(boardname)) && strcmp(boardname, FILTER_BOARD)) 
+        if (((bh && bh->level & PERM_POSTMASK) || normal_board(boardname)) && strcmp(boardname, FILTER_BOARD)
+            &&strcmp(boardname,"NewsClub")) 
         {
 #ifdef SMTH
             int isnews;
@@ -1214,7 +1215,12 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
         break;
 #ifdef FILTER
     case FILE_CENSOR_FLAG:
-        if (!strcmp(currboard, FILTER_BOARD)) {
+#ifdef SMTH
+        if (!strcmp(currboard, FILTER_BOARD)) 
+#else
+        if ((!strcmp(currboard, FILTER_BOARD)) ||(!strcmp(currboard, "NewsClub")))
+#endif
+        {
             if (fileinfo->accessed[1] & FILE_CENSOR || fileinfo->o_board[0] == 0) {
 #ifdef BBSMAIN
                 if (prompt)
@@ -1403,8 +1409,8 @@ char get_article_flag(struct fileheader *ent, struct userec *user, char *boardna
         type = '#';
 #ifdef FILTER
 #ifdef SMTH
-    } else if ((HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[1] & FILE_CENSOR) && !strcmp(boardname, FILTER_BOARD))
-    ||(!strcmp(boardname,"NewsClub")&&is_bm)) {
+    } else if ((HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[1] & FILE_CENSOR) && (!strcmp(boardname, FILTER_BOARD))
+    ||(!strcmp(boardname,"NewsClub")&&is_bm))) {
         type = '@';
 #else
     } else if (HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[1] & FILE_CENSOR) && !strcmp(boardname, FILTER_BOARD)) {
