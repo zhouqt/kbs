@@ -31,6 +31,7 @@
 #define SCREEN_LINE 4
 #define SCREEN_BLINK 8
 #define SCREEN_BACK 16
+#define SCREEN_NOTMOD 30
 
 struct screenline {
     char data[LINELEN];
