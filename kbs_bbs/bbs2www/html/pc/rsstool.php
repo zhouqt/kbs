@@ -94,6 +94,9 @@
 	
 	function pc_rss_etem($etem)
 	{
+		$etembody = $etem[etemdesc]."\n<br><hr size=1>\n".
+				"(<a href=\"".$etem[etemaddr]."\">阅读全文</a>)\n".
+				"(<a href=\"".$etem[etemcomaddr]."\">发表评论</a>)";
 ?>
 	<item rdf:about="<?php echo $etem[etemaddr]; ?>">
 		<title><?php echo $etem[etemtitle]; ?></title> 
@@ -102,7 +105,7 @@
 		<dc:date><?php echo $etem[etemtime]; ?></dc:date> 
 		<description>
 			<![CDATA[
-				<?php echo $etem[etemdesc]; ?>
+				<?php echo $etembody; ?>
 			]]> 
 		</description>
 	</item>

@@ -24,6 +24,7 @@
 			);
 	$rss = array();
 	$rss[channel] = array(
+			"userid" => $pc["UID"] ,
 			"siteaddr" => "http://".$pcconfig["SITE"],
 			"title" => $pc["NAME"],
 			"pcaddr" => "http://".$pc["USER"].".mysmth.net",
@@ -38,10 +39,12 @@
 	{
 		$rss[etems][$i] = array(
 					"etemaddr" => "http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$pc["UID"]."&amp;nid=".$rows[nid]."&amp;tid=".$rows[tid],
+					"etemcomaddr" => "http://".$pcconfig["SITE"]."/pc/pccom.php?act=pst&amp;nid=".$rows[nid],
 					"etemtitle" => htmlspecialchars(stripslashes($rows[subject])),
 					"etemdesc" => html_format($rows[body],TRUE),
 					"etemauth" => $pc["USER"],
-					"etemtime" => rss_time_format($rows[created])
+					"etemtime" => rss_time_format($rows[created]),
+					"etemnid" => $rows[nid]
 					);
 		$i ++ ;
 	}
