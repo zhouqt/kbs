@@ -671,7 +671,6 @@ static int bbs_standalone_main(char* argv)
     }
     /* sanshao@10.24: why next line is originally sizeof(sin) not &value */
 
-    sleep(30);
     bbslog("0connect", "connect from %s(%d) in port %d", inet_ntoa(sin.sin_addr), htons(sin.sin_port), mport);
     setsid();
 
