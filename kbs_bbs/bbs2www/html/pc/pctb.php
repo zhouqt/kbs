@@ -17,7 +17,7 @@
 	
 	
 	$nid = (int)($_GET["nid"]);
-	$subject = html_format(urldecode($_GET["subject"]));
+	$subject = html_format(base64_decode($_GET["subject"]));
 	$link = pc_db_connect();
 	$tbarr = pc_get_trackback($link,$nid);
 	pc_html_init("gb2312",$subject);
