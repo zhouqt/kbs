@@ -835,7 +835,7 @@ int check_see_perm(struct userec* user,const struct boardheader* board)
     if (board == NULL)
         return 0;
     if (board->level & PERM_POSTMASK
-    	|| ((user==NULL)&&(board->level=0))
+    	|| ((user==NULL)&&(board->level==0))
     	|| ((user!=NULL)&& HAS_PERM(user, board->level) )
     	|| (board->level & PERM_NOZAP)) {
         if (board->flag & BOARD_CLUB_HIDE)     /*Òþ²Ø¾ãÀÖ²¿*/
