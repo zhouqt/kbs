@@ -155,7 +155,7 @@ void resolve_boards()
     if (brdshm == NULL) {
         brdshm = attach_shm("BCACHE_SHMKEY", 3693, sizeof(*brdshm), &iscreate); /* attach board share memory */
         if (iscreate) {
-            int i, maxi = 0;
+            int i, maxi = -1;
             int fd;
 
             bbslog("3system", "reload bcache!");
@@ -166,7 +166,7 @@ void resolve_boards()
                     getlastpost(bcache[i].filename, &brdshm->bstatus[i].lastpost, &brdshm->bstatus[i].total);
                     maxi = i;
                 }
-            if (maxi != 0)
+            if (maxi != -1)
                 brdshm->numboards = maxi + 1;
             bcache_unlock(fd);
         }
