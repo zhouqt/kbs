@@ -449,6 +449,7 @@ void brc_update(char *userid)
     gzFile fd = NULL;
     char dirfile[MAXPATH];
     unsigned int data[MAXBOARD][BRC_MAXNUM];
+    size_t count;
 
     sethomefile(dirfile, userid, ".boardrc.gz");
     for (i = 0; i < BRC_CACHE_NUM; i++) {
@@ -466,7 +467,14 @@ void brc_update(char *userid)
         bbslog("3user", "can't %s open to read:%s", dirfile, errstr);
         return;
     }
-    gzread(fd,&data,BRC_FILESIZE);
+    bzero(data,BRC_FILESIZE);
+    count=0;
+    while (count<BRC_FILESIZE) {
+    	int ret;
+    	ret=gzread(fd,&data,BRC_FILESIZE);
+    	if (ret<=0) break;
+    	count+=ret;
+    }
     gzclose(fd);
     fd = gzopen(dirfile, "w+b6");
 
@@ -474,7 +482,13 @@ void brc_update(char *userid)
         if (brc_cache_entry[i].changed) 
 		memcpy(&data[brc_cache_entry[i].bid-1],&brc_cache_entry[i].list,BRC_ITEMSIZE);
     }
-    gzwrite(fd, &data, BRC_FILESIZE);
+    count=0;
+    while (count<BRC_FILESIZE) {
+    	int ret;
+	    ret=gzwrite(fd, &data, BRC_FILESIZE);
+    	if (ret==0) break;
+    	count+=ret;
+    }
     gzclose(fd);
     return;
 }
