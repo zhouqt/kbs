@@ -1,5 +1,8 @@
 <?php
 require("site.php");
+if (BUILD_PHP_EXTENSION==0)
+    @dl("libphpbbslib.so");
+
 if (!bbs_ext_initialized())
 	bbs_init_ext();
 
@@ -226,28 +229,9 @@ function gen_system_vote_html()
 {
 $vote_file = BBS_HOME."/vote/sysvote.html";
 if(!file_exists($vote_file)) return;
+require($vote_file);
 ?>
-      <table width="100%" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
-        <tr> 
-          <td width="16" background="images/lt.gif">&nbsp;</td>
-          <td width="66" bgcolor="#0066CC">系统投票</td>
-          <td width="16" background="images/rt.gif"></td>
-          <td>&nbsp;</td>
-        </tr>
-      </table>
-      <table width="100%" border="0" cellpadding="5" cellspacing="0" class="helper">
-              <form action="/bbssysvote.php" method="post">
-              <tr> 
-                <td width="100%" class="MainContentText">
-                <?php require($vote_file); ?>
-                <p align=center>
-                <input type=submit class=button value="投票">
-                <input type=button class=button value="查看" onclick="window.location.href='/bbssysvote.php';">
-                </p>
-                </td>
-              </tr>
-              </form>
-      </table><br />	
+<br />	
 <?php
 }
 
@@ -469,6 +453,7 @@ while($board = array_shift($boards))
       <embed src="ad.swf" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash" width="670" height="77"></embed>
     </object></td>
   </tr>
+  <form action="/cgi-bin/bbs/bbssel">
   <tr> 
     <td height="18" width="84" class="header" align="center">系统公告</td>
     <td width="84" class="header" align="center">推荐文章</td>
@@ -477,9 +462,9 @@ while($board = array_shift($boards))
     <td width="81" class="header" align="center">人气排名</td>
     <td width="79" class="header" align="center">本日祝福</td>
     <td width="56" class="header"></td>
-    <td class="header" align="right" width="315"> <form action="/cgi-bin/bbs/bbssel"><input type="text" name="board" size="12" maxlength="30" value="版面搜索" class="text"> 
-      <input type="submit" size="15" value="GO" class="button"> </form>
-    </td>
+    <td class="header" align="right" width="315"> <input type="text" name="board" size="12" maxlength="30" value="版面搜索" class="text"> 
+      <input type="submit" size="15" value="GO" class="button"> 
+    </td></form>
   </tr>
 </table>
 <table border="0" cellpadding="0" cellspacing="0" width="100%">

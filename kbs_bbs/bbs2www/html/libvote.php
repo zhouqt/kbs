@@ -590,7 +590,18 @@ class sysVoteAdmin
 			svPostAnnouce("vote",$svInfor);
 			
 		//生成html文档供mainpage使用
-		$htmlFile = sysvote_display_probs(sysvote_get_probs($svInfor[etems]));
+		$query = "SELECT svid FROM sysvote_votes WHERE subject = '".addslashes($svInfor[subject])."' AND probs = '".addslashes($svInfor[etems])."' ORDER BY svid DESC LIMIT 0,1";
+		$result = mysql_query($query,$link);
+		$rows = mysql_fetch_array($result);
+		$newSvid = $rows[svid];
+		$htmlFile = "<form action=\"/bbssysvote.php?svid=".$newSvid."&sv=sv\" method=\"post\"><table width=\"100%\" height=\"18\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"helpert\">".
+				"<tr><td width=\"16\" background=\"images/lt.gif\">&nbsp;</td><td width=\"66\" bgcolor=\"#0066CC\">系统投票</td><td width=\"16\" background=\"images/rt.gif\"></td>".
+				"<td>&nbsp;</td></tr></table><table width=\"100%\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\" class=\"helper\">".
+				"<tr><td width=\"100%\" class=\"MainContentText\">".
+				sysvote_display_probs(sysvote_get_probs($svInfor[etems])).
+				"<p align=center><input type=submit class=button value=\"投票\">".
+				"<input type=button class=button value=\"查看\" onclick=\"window.location.href='/bbssysvote.php';\">".
+				"</p></td></tr></table></form>";
 		$fp = fopen(BBS_HOME . "/vote/sysvote.html" , "w");
 		fputs($fp,$htmlFile,strlen($htmlFile));
 		fclose($fp);
