@@ -202,7 +202,8 @@ void suicide()
         sprintf(filename, "etc/%s.tmp", currentuser->userid);
         fn = fopen(filename, "w");
         fprintf(fn, "[1m%s[m ÒÑ¾­ÔÚ [1m%24.24s[m ×ÔÉ±ÁË!", currentuser->userid, ctime(&now));
-        fprintf(fn, "\n\n×ÔÉ±ÕßµÄÁôÑÔ: %s", buf2);
+        fprintf(fn, "\n\n×ÔÉ±ÕßµÄ¼ò¶ÌÁôÑÔ: %s", buf2);
+        fclose(fn);
         sprintf(buf, "%s µÄ×ÔÉ±Í¨Öª", currentuser->userid);
         post_file(currentuser, "", filename, "Goodbye", buf, 0, 1);
         unlink(filename);
