@@ -350,21 +350,24 @@ int deny_user(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 
     while (1) {
         char querybuf[0xff];
+        char LtNing[24];
+        if (fileinfo == NULL) LtNing[0] = '\0';
+        else sprintf(LtNing, "(O)增加%s ", fileinfo->owner);
 
       Here:
         clear();
         count = listdeny(0);
         if (count > 0 && count < 20)    /*Haohmaru.12.18,看下一屏 */
-            snprintf(querybuf, 0xff, "(O)增加%s (A)增加 (D)删除 or (E)离开 [E]: ", fileinfo->owner);
+            snprintf(querybuf, 0xff, "%s(A)增加 (D)删除 or (E)离开 [E]: ", LtNing);
         else if (count >= 20)
-            snprintf(querybuf, 0xff, "(O)增加%s (A)增加 (D)删除 (N)后面第N屏 or (E)离开 [E]: ", fileinfo->owner);
+            snprintf(querybuf, 0xff, "%s(A)增加 (D)删除 (N)后面第N屏 or (E)离开 [E]: ", LtNing);
         else
-            snprintf(querybuf, 0xff, "(O)增加%s (A)增加 or (E)离开 [E]: ", fileinfo->owner);
+            snprintf(querybuf, 0xff, "%s(A)增加 or (E)离开 [E]: ", LtNing);
 
         getdata(1, 0, querybuf, ans, 7, DOECHO, NULL, true);
         *ans = (char) toupper((int) *ans);
 
-        if (*ans == 'A' || *ans == 'O') {
+        if (*ans == 'A' || (*ans == 'O' && fileinfo != NULL)) {
             struct userec *denyuser;
 
             move(1, 0);
