@@ -1352,7 +1352,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
         }
     }
 
-    ingetdata = true;
+    ingetdata = false;
     return y-starty+1;
 }
 
