@@ -2748,10 +2748,8 @@ static PHP_FUNCTION(bbs_getthreadnum)
     int total;
     int ac = ZEND_NUM_ARGS();
 	struct stat normalStat,originStat;
+	char dirpath1[STRLEN];
 
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-	old_pwd[1023]=0;
     /*
      * getting arguments 
      */
@@ -2761,8 +2759,19 @@ static PHP_FUNCTION(bbs_getthreadnum)
     if ((bp = getboard(brdnum)) == NULL) {
         RETURN_LONG(-1);
     }
-	setbdir(DIR_MODE_WEB_THREAD, dirpath, bp->filename);
-	www_generateOriginIndex(bp->filename);
+    setbdir(DIR_MODE_WEB_THREAD, dirpath, bp->filename);
+	if (!stat(dirpath,&originStat))	{
+		setbdir(DIR_MODE_NORMAL,dirpath1,bp->filename);
+		if (!stat(dirpath1,&normalStat)){
+			if (normalStat.st_mtime>originStat.st_mtime){
+				www_generateOriginIndex(bp->filename);
+			}
+		} else {
+			www_generateOriginIndex(bp->filename);
+		}
+	} else {
+		www_generateOriginIndex(bp->filename);
+	}
     total = get_num_records(dirpath, sizeof(struct wwwthreadheader));
     RETURN_LONG(total);
 }
