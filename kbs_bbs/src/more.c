@@ -457,6 +457,11 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
                 in_esc = 0;
         } else if (isprint2(*p)) {
             if (!db) {
+                if (w >= scr_cols-1) {
+                    *l = i;
+                    *s = i;
+                    break;
+                }
                 if ((unsigned char) *p >= 128)
                     db = 1;
                 else if (isblank((int) *p))
@@ -827,6 +832,7 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
             case KEY_DOWN:
             case 'd':
             case '\n':
+            case '\r':
                 change = 1;
                 break;
             case 'b':
