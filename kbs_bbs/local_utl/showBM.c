@@ -1,25 +1,6 @@
 #include "bbs.h"
 
 char* curuserid;
-int
-chk_BM_instr(BMstr,bmname)
-char BMstr[STRLEN-1];
-char    bmname[IDLEN+2];
-{
-    char *ptr;
-    char BMstrbuf[STRLEN-1];
-
-    strcpy(BMstrbuf,BMstr);
-    ptr=strtok(BMstrbuf,",: ;|&()\0\n");
-    while(1)
-    {
-        if(ptr==NULL)
-            return NA;
-        if(!strcmp(ptr,bmname/*,strlen(currentuser->userid)*/))
-            return YEA;
-        ptr=strtok(NULL,",: ;|&()\0\n");
-    }
-}
 
 int check_BM(struct boardheader* bptr)
 {
