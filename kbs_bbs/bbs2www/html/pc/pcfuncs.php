@@ -700,13 +700,26 @@ function pc_get_user_permission($currentuser,$pc)
 		$pur = 1;
 		$tags = array(1,1,1,0,0,0,0,0);	    
 	}
-	elseif(pc_is_admin($currentuser,$pc) && $loginok == 1)
+	elseif (pc_is_groupwork($pc)) //群体blog目录
+	{
+	    if (pc_is_admin($currentuser,$pc) && $loginok == 1) {
+	        $sec = array(0=>"俱乐部",1=>"会议室",4=>"备份中心",6=>"栏目管理",7=>"参数设定");
+    		$pur = 3;
+    		$tags = array(1,1,0,0,1,0,1,1);
+	    }
+	    else {
+	        $sec = array(0=>"俱乐部");
+    		$pur = 3;
+    		$tags = array(1,0,0,0,0,0,0,0);
+	    }
+	}
+	elseif (pc_is_admin($currentuser,$pc) && $loginok == 1)
 	{
 		$sec = array("公开区","好友区","私人区","收藏区","删除区","设定好友","分类管理","参数设定");
 		$pur = 3;
 		$tags = array(1,1,1,1,1,1,1,1);
 	}
-	elseif(pc_is_friend($currentuser["userid"],$pc["USER"]) || pc_is_manager($currentuser))
+	elseif (pc_is_friend($currentuser["userid"],$pc["USER"]) || pc_is_manager($currentuser))
 	{
 		$sec = array("公开区","好友区");
 		$pur = 1;
@@ -727,7 +740,10 @@ function pc_get_user_permission($currentuser,$pc)
 			$sec[3] = "收藏区";
 			$tags[3] = 1;
 		}
-	}	
+	}
+	else
+	    return false;
+	    	
 	return array(
 		"tags" => $tags ,
 		"pur" => $pur , 
