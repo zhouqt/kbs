@@ -210,45 +210,7 @@ void refresh()
         p=ii+1;
 
         for (k = 0; k < scr_cols; k++)
-        if(k>=p&&p>=scr_cols-5) {
-            stackt=0;
-            rel_move(tc_col, tc_line, k, i);
-            if(~(bp[j].mode[k])&tc_mode!=0) {
-                tc_mode = 0;
-                tc_color = 7;
-                push(0);
-            }
-            if(!(tc_mode&SCREEN_BRIGHT)&&bp[j].mode[k]&SCREEN_BRIGHT) {
-                tc_mode|=SCREEN_BRIGHT;
-                push(1);
-            }
-            if(!(tc_mode&SCREEN_LINE)&&bp[j].mode[k]&SCREEN_LINE) {
-                tc_mode|=SCREEN_LINE;
-                push(4);
-            }
-            if(!(tc_mode&SCREEN_BLINK)&&bp[j].mode[k]&SCREEN_BLINK) {
-                tc_mode|=SCREEN_BLINK;
-                push(5);
-            }
-            if(!(tc_mode&SCREEN_BACK)&&bp[j].mode[k]&SCREEN_BACK) {
-                tc_mode|=SCREEN_BACK;
-                push(7);
-            }
-            if(tc_color%16!=bp[j].color[k]%16) {
-                tc_color=tc_color/16*16+bp[j].color[k]%16;
-                push(30+bp[j].color[k]%16);
-            }
-            if(tc_color/16!=bp[j].color[k]/16) {
-                tc_color=bp[j].color[k]/16*16+tc_color%16;
-                push(40+bp[j].color[k]/16);
-            }
-            outstack();
-            for(ii=k;ii<scr_cols;ii++)
-                bp[j].mode[ii]&=~SCREEN_MODIFIED;
-            o_cleol();
-            break;
-        }
-        else if((bp[j].mode[k]&SCREEN_MODIFIED)&&(isprint2(bp[j].data[k])||bp[j].data[k]==0)) {
+        if((bp[j].mode[k]&SCREEN_MODIFIED)&&(isprint2(bp[j].data[k])||bp[j].data[k]==0)) {
             stackt=0;
             rel_move(tc_col, tc_line, k, i);
             bp[j].mode[k]&=~SCREEN_MODIFIED;
@@ -257,7 +219,7 @@ void refresh()
                 tc_color = 7;
                 push(0);
             }
-            if(!(tc_mode&SCREEN_BRIGHT)&&bp[j].mode[k]&SCREEN_BRIGHT) {
+            if(!(tc_mode&SCREEN_BRIGHT)&&bp[j].mode[k]&SCREEN_BRIGHT&&bp[j].data[k]!=' '&&bp[j].data[k]!=0) {
                 tc_mode|=SCREEN_BRIGHT;
                 push(1);
             }
@@ -265,7 +227,7 @@ void refresh()
                 tc_mode|=SCREEN_LINE;
                 push(4);
             }
-            if(!(tc_mode&SCREEN_BLINK)&&bp[j].mode[k]&SCREEN_BLINK) {
+            if(!(tc_mode&SCREEN_BLINK)&&bp[j].mode[k]&SCREEN_BLINK&&bp[j].data[k]!=' '&&bp[j].data[k]!=0) {
                 tc_mode|=SCREEN_BLINK;
                 push(5);
             }
@@ -273,7 +235,7 @@ void refresh()
                 tc_mode|=SCREEN_BACK;
                 push(7);
             }
-            if(tc_color%16!=bp[j].color[k]%16) {
+            if(tc_color%16!=bp[j].color[k]%16&&bp[j].data[k]!=' '&&bp[j].data[k]!=0) {
                 tc_color=tc_color/16*16+bp[j].color[k]%16;
                 push(30+bp[j].color[k]%16);
             }
@@ -282,6 +244,12 @@ void refresh()
                 push(40+bp[j].color[k]/16);
             }
             outstack();
+            if(k>=p&&p>=scr_cols-5) {
+                for(ii=k;ii<scr_cols;ii++)
+                    bp[j].mode[ii]&=~SCREEN_MODIFIED;
+                o_cleol();
+                break;
+            }
             if(bp[j].data[k]==0) ochar(' ');
             else ochar(bp[j].data[k]);
             tc_col++;
