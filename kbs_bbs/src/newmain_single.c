@@ -71,7 +71,6 @@ struct user_info uinfo;
 
 /* char netty_path[ 60 ]; FAINT!!! 怎么会不出错呢!!! Leeward: 1997.12.10 */
 char netty_path[256];
-int utmpent = -1;
 time_t login_start_time;
 int showansi = 1;
 

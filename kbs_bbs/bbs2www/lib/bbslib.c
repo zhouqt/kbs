@@ -40,7 +40,6 @@ extern int favnow;
 friends_t fff[200];
 
 int friendnum = 0;
-int utmpent;
 
 
 int file_has_word(char *file, char *word)

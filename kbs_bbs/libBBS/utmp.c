@@ -706,6 +706,7 @@ int getfriendstr(struct userec* user,struct user_info* puinfo)
     return 0;
 }
 
+int utmpent=-1;
 int myfriend(int uid, char *fexp)
 {
     int i, found = false;
