@@ -631,6 +631,12 @@ int getnewuserid2(char * userid)
        return -1;
 }
 
+struct userec* getuserbynum(int num)
+{
+	if (num<=0||num>=MAXUSERS) return NULL;
+	return &passwd[num-1];
+}
+
 int getnewuserid(char* userid)
 {
     struct userec utmp;
