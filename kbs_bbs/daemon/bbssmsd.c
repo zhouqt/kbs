@@ -131,21 +131,17 @@ void start_daemon()
     setgid(BBSGID);
     setuid(BBSUID);
     chdir(BBSHOME);
-    n = getdtablesize();
+/*    n = getdtablesize();
     if (fork())
         exit(0);
     if (setsid() == -1) {
         perror("setsid");
         exit(-1);
     }
-    signal(SIGHUP, SIG_IGN);
-    if (fork())
-        exit(0);
+    signal(SIGHUP, SIG_IGN);*/
+/*    if (fork())
+        exit(0);*/
     save_daemon_pid();
-    while (n)
-        close(--n);
-    for (n = 1; n <= NSIG; n++)
-        signal(n, SIG_IGN);
 }
 
 void loginas(char* user, char* pass)
@@ -154,10 +150,11 @@ void loginas(char* user, char* pass)
     struct LoginPacket p;
     strcpy(p.user, user);
     strcpy(p.pass, pass);
-    h.Type = 0;
+    h.Type = CMD_LOGIN;
     long2byte(sn++, h.SerialNo);
     long2byte(sizeof(p), h.BodyLength);
     long2byte(0, h.pid);
+    printf("send CMD_LOGIN\n");
     write(sockfd, &h, sizeof(h));
     write(sockfd, &p, sizeof(p));
 }
@@ -182,6 +179,7 @@ void processremote()
     sprintf(fn, "tmp/%d.res", pid);
     switch(h.Type) {
         case CMD_OK:
+            printf("get CMD_OK\n");
             if(pid) {
                 fp=fopen(fn, "w");
                 fprintf(fp, "1");
@@ -190,6 +188,13 @@ void processremote()
             }
             break;
         case CMD_ERR:
+	case 103:
+	case 104:
+	case 105:
+	case 106:
+	case 107:
+	case 108:
+	    printf("get CMD_ERR\n");
             if(pid) {
                 fp=fopen(fn, "w");
                 fprintf(fp, "0");
@@ -198,9 +203,11 @@ void processremote()
             }
             break;
         case CMD_REQUIRE:
+	    printf("get CMD_REQUIRE\n");
             read(sockfd, &h1, sizeof(h1));
             break;
         case CMD_GWSEND:
+	    printf("get CMD_GWSEND\n");
             read(sockfd, &h2, sizeof(h2));
             read(sockfd, buf, byte2long(h2.MsgTxtLen));
             if(sendtouser(&h2, buf)) reth.Type = CMD_ERR;
@@ -235,21 +242,25 @@ void processbbs()
         long2byte(sn++, h.SerialNo);
         switch(h.Type) {
             case CMD_REG:
+                printf("send CMD_REG\n");
                 getbuf(&h1, sizeof(h1));
                 write(sockfd, &h, sizeof(h));
                 write(sockfd, &h1, sizeof(h1));
                 break;
             case CMD_CHECK:
+                printf("send CMD_CHECK\n");
                 getbuf(&h2, sizeof(h2));
                 write(sockfd, &h, sizeof(h));
                 write(sockfd, &h2, sizeof(h2));
                 break;
             case CMD_UNREG:
+                printf("send CMD_UNREG\n");
                 getbuf(&h3, sizeof(h3));
                 write(sockfd, &h, sizeof(h));
                 write(sockfd, &h3, sizeof(h3));
                 break;
             case CMD_BBSSEND:
+                printf("send CMD_BBSSEND\n");
                 getbuf(&h4, sizeof(h4));
                 write(sockfd, &h, sizeof(h));
                 write(sockfd, &h4, sizeof(h4));
@@ -265,10 +276,14 @@ void processbbs()
 int main()
 {
     struct sockaddr_in addr;
-    int rc,remain=0;
+    fd_set readset;
+    struct timeval to;
+    int rc,remain=0,retr;
+
     start_daemon();
     init_memory();
-    if(sockfd=socket(AF_INET, SOCK_STREAM, 0)==-1) {
+    errno=0;
+    if((sockfd=socket(AF_INET, SOCK_STREAM, 0))==-1) {
         printf("Unable to create socket.\n");
         shmdt(head);
         buf=NULL;
@@ -276,8 +291,8 @@ int main()
     }
     memset(&addr, 0, sizeof(addr));
     addr.sin_family=AF_INET;
-    addr.sin_addr.s_addr=inet_addr("127.0.0.1");
-    addr.sin_port=htons(12345);
+    addr.sin_addr.s_addr=inet_addr("211.157.100.10");
+    addr.sin_port=htons(4002);
     if(connect(sockfd, (struct sockaddr*)&addr, sizeof(addr))<0) {
         close(sockfd);
         printf("Unable to connect.\n");
@@ -285,15 +300,25 @@ int main()
         buf=NULL;
         return -1;
     }
-    loginas("12","abc");
+    loginas("12","bbsbad");
+//    loginas("12","bbsbad");
 
     while(1) {
-        rc = read(sockfd, ((void*)&h)+remain, sizeof(h)-remain);
-        if(rc<0) break;
-        remain+=rc;
-        if(remain==sizeof(h)) {
-            remain=0;
-            processremote();
+	FD_ZERO(&readset);
+        FD_SET(sockfd, &readset);
+	to.tv_sec = 1;
+	to.tv_usec = 0;
+        if((retr=select(sockfd+1, &readset, NULL, NULL, &to))<0) break;
+        if(retr) {
+            if (FD_ISSET(sockfd, &readset)) {
+                rc = read(sockfd, ((void*)&h)+remain, sizeof(h)-remain);
+                if(rc<0) break;
+                remain+=rc;
+                if(remain==sizeof(h)) {
+                    remain=0;
+                    processremote();
+                }
+            }
         }
         processbbs();
     }
