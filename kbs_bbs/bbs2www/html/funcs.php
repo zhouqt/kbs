@@ -368,6 +368,7 @@ top.window.location='/nologin.html';
 </body>
 </html>
 <?php
+exit();
 }
 
 function html_error_quit($err_msg)

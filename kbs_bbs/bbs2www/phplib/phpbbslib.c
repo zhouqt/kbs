@@ -105,6 +105,7 @@ static PHP_FUNCTION(bbs_getbname);
 static PHP_FUNCTION(bbs_getbdes);
 static PHP_FUNCTION(bbs_checkpostperm);
 static PHP_FUNCTION(bbs_postarticle);
+static PHP_FUNCTION(bbs_edittitle);
 #ifdef HAVE_BRC_CONTROL
 static PHP_FUNCTION(bbs_brcaddread);
 #endif
@@ -294,7 +295,8 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_brcaddread, NULL)
 #endif
         PHP_FE(bbs_getboard, NULL)
-		PHP_FE(bbs_postarticle,NULL)
+	PHP_FE(bbs_postarticle,NULL)
+        PHP_FE(bbs_edittitle, NULL)
         PHP_FE(bbs_ann_traverse_check, NULL)
         PHP_FE(bbs_ann_get_board, NULL)
         PHP_FE(bbs_getboards, NULL)
@@ -4032,6 +4034,172 @@ stiger: 在 post_article 里处理
         signal(SIGSEGV, SIG_IGN);
     }
     RETURN_LONG(0);
+}
+
+/*
+ * function bbs_edittitle(string boardName , int id , string newTitle)
+ * 修改文章标题
+ * @author: windinsn apr 28,2004
+ * return 0 : 成功
+ *        -1: 版面错误
+ *        -2: 该版不能修改文章
+ *        -3: 只读讨论区
+ *        -4: 文件错误
+ *        -5: 封禁中
+ *        -6: 无权修改
+ *        -7: 被过滤掉
+ *	  -8: 当前模式不能编辑标题
+ *        -9: 标题过长或为空
+ *        -10:system error
+ */
+
+static PHP_FUNCTION(bbs_edittitle)
+{
+	char *board,*title;
+	int  board_len,title_len;
+	int  id , mode;
+	char path[STRLEN];
+	char dirpath[STRLEN];
+	struct userec *u = NULL;
+	struct fileheader f;
+	struct fileheader xfh;
+	struct boardheader brd;
+	int bid,i,ent;
+	int fd;
+	
+	int ac = ZEND_NUM_ARGS();
+	if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "slsl", &board, &board_len, &id , &title, &title_len , &mode) == FAILURE) 
+		WRONG_PARAM_COUNT;
+	
+	if ((mode>= DIR_MODE_THREAD) && (mode<= DIR_MODE_WEB_THREAD))
+        	RETURN_LONG(-8);
+	if (title_len > ARTICLE_TITLE_LEN || title_len == 0)
+		RETURN_LONG(-9);
+	bid = getboardnum(board, &brd);
+	if (bid==0) 
+		RETURN_LONG(-1); //版面名称错误
+	if (brd.flag&BOARD_GROUP)
+	        RETURN_LONG(-1); //二级目录版
+	if (!strcmp(brd.filename, "syssecurity") || !strcmp(brd.filename, "junk") || !strcmp(brd.filename, "deleted"))  
+		RETURN_LONG(-2); //不允许修改文章
+	if (true == checkreadonly(brd.filename))
+		RETURN_LONG(-3); //只读讨论区
+	if ((u = getcurrentuser())==NULL)
+		RETURN_LONG(-10); //无法获得当前登录用户
+	
+	if (mode == DIR_MODE_DIGEST)
+		setbdir(DIR_MODE_DIGEST, dirpath, brd.filename);
+	else
+		setbdir(DIR_MODE_NORMAL, dirpath, brd.filename);
+	
+	if ((fd = open(dirpath, O_RDWR, 0644)) < 0)
+		RETURN_LONG(-10);
+	if (!get_records_from_id(fd,id,&f,1,&ent))
+	{
+		close(fd);
+		RETURN_LONG(-4); //无法取得文件记录
+	}
+	close(fd);
+	if (!HAS_PERM(u,PERM_SYSOP)) //权限检查
+	{
+		if (!haspostperm(u, brd.filename))
+	        	RETURN_LONG(-6);
+	        if (deny_me(u->userid, brd.filename))
+	        	RETURN_LONG(-5);
+	        if (!chk_currBM(brd.BM, u))
+	        {
+	        	if (!isowner(u, &f))
+		            RETURN_LONG(-6); //他人文章
+		}
+	}
+	
+	for (i = 0; (i < title_len)&&(i < ARTICLE_TITLE_LEN - 1); i++)
+	{
+		if (title[i] <= 27 && title[i] >= -1)
+			title[i] = ' ';
+    	}
+    	title[i] = 0;
+	if (!strcmp(title,f.title)) //无需修改
+		RETURN_LONG(0);
+#ifdef FILTER
+	if (check_badword_str(title, strlen(title)))
+		RETURN_LONG(-7);
+#endif
+	setbfile(path, brd.filename, f.filename);
+	if (add_edit_mark(path, 2, title) != 1)
+		RETURN_LONG(-10);
+	/* update .DIR START */
+	strcpy(f.title, title);
+	if (mode == DIR_MODE_ZHIDING)
+	{
+		setbdir(DIR_MODE_ZHIDING, dirpath, brd.filename);
+		ent = get_num_records(dirpath,sizeof(struct fileheader));
+        	fd = open(dirpath, O_RDONLY, 0);
+        }
+	else
+	{
+		if (mode == DIR_MODE_DIGEST)
+			setbdir(DIR_MODE_DIGEST, dirpath, brd.filename);
+		else
+			setbdir(DIR_MODE_NORMAL, dirpath, brd.filename);
+		fd = open(dirpath, O_RDONLY, 0);
+	}
+	if (fd!=-1) 
+	{
+		for (i = ent; i > 0; i--)
+		{
+			if (0 == get_record_handle(fd, &xfh, sizeof(xfh), i)) 
+			{
+                		if (0 == strcmp(xfh.filename, f.filename)) 
+                		{
+                			ent = i;
+                			break;
+                		}
+                	}
+		}
+		if (mode == DIR_MODE_ZHIDING)
+		{
+                	if (i!=0) 
+                    		substitute_record(dirpath, &f, sizeof(f), ent);
+               		board_update_toptitle(bid, true);
+        	}
+        	else
+        	{
+        		if (i!=0) 
+                		substitute_record(dirpath, &f, sizeof(f), ent);
+		}
+	}
+	close(fd);
+	if (0 == i)
+            RETURN_LONG(-10);
+        if(mode != DIR_MODE_ORIGIN && f.id == f.groupid)
+        {
+		if( setboardorigin(board, -1) )
+		{
+			board_regenspecial(brd.filename,DIR_MODE_ORIGIN,NULL);
+		}
+		else
+		{
+			char olddirect[PATHLEN];
+	    		setbdir(DIR_MODE_ORIGIN, olddirect, brd.filename);
+			if ((fd = open(olddirect, O_RDWR, 0644)) >= 0)
+			{
+				struct fileheader tmpfh;
+				if (get_records_from_id(fd, f.id, &tmpfh, 1, &ent) == 0)
+				{
+					close(fd);
+				}
+				else
+				{
+					close(fd);
+   	                		substitute_record(olddirect, &f, sizeof(f), ent);
+				}
+			}
+		}
+	}
+	setboardtitle(brd.filename, 1);	
+	/* update .DIR END   */
+	RETURN_LONG(0);
 }
 
 /*  function bbs_updatearticle(string boardName, string filename ,string text)  
