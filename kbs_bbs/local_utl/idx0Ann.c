@@ -209,6 +209,8 @@ int PhaseDir(char *dname, /* char * prefix, */ char *brdtitle, char *bmstr)
                 ;
             strcpy(psPath, buf + 6);
             continue;
+        } else if (!strncmp(buf, "Attach=", 7)) {
+            continue;
         } else if (!strncmp(buf, "Numb=", 5)) {
             nNumbCnt++;
             nNumber = atoi(buf + 5);
