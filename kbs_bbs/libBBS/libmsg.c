@@ -1139,6 +1139,13 @@ int sign_smsmsg_read(int id ){
 	return 1;
 }
 
+#else
+
+int chk_smsmsg(int force ){
+
+		return 0;
+}
+
 #endif
 
 int get_sql_al( struct addresslist * smdata, char *userid, char *dest, char *group, int start, int num, int order, char *msgtxt)

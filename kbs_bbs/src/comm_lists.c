@@ -119,8 +119,8 @@ int register_sms();
 int unregister_sms();
 int send_sms();
 int smsmsg_read();
-int al_read();
 #endif
+int al_read();
 
 /*Add By Excellent */
 struct scommandlist {

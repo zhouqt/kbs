@@ -1,6 +1,8 @@
 #include "bbs.h"
 #include "mysql.h"
 
+#ifdef SMS_SUPPORT
+
 /******************************************************
  * mysql ½á¹¹:
  *
@@ -340,3 +342,5 @@ int smsmsg_read()
 
 	return 1;
 }
+
+#endif
