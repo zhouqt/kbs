@@ -2,7 +2,7 @@
 #include "bbs.h"
 #include "/usr/include/mysql/mysql.h"
 
-void dict_main()
+int dict_main()
 {
     MYSQL s;
     MYSQL_RES* res;
