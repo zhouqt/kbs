@@ -20,6 +20,7 @@ static ZEND_FUNCTION(bbs_wwwlogoff);
 static ZEND_FUNCTION(bbs_printansifile);
 static ZEND_FUNCTION(bbs_getboard);
 static ZEND_FUNCTION(bbs_checkreadperm);
+static ZEND_FUNCTION(bbs_checkpostperm);
 static ZEND_FUNCTION(bbs_brcaddread);
 static ZEND_FUNCTION(bbs_ann_traverse_check);
 static ZEND_FUNCTION(bbs_ann_get_board);
@@ -67,6 +68,7 @@ static function_entry bbs_php_functions[] = {
         ZEND_FE(bbs_wwwlogoff, NULL)
         ZEND_FE(bbs_printansifile, NULL)
         ZEND_FE(bbs_checkreadperm, NULL)
+        ZEND_FE(bbs_checkpostperm, NULL)
         ZEND_FE(bbs_brcaddread, NULL)
         ZEND_FE(bbs_getboard, NULL)
         ZEND_FE(bbs_ann_traverse_check, NULL)
@@ -1100,6 +1102,22 @@ static ZEND_FUNCTION(bbs_checkreadperm)
     if (user == NULL)
         RETURN_LONG(0);
     RETURN_LONG(check_read_perm(user, getboard(boardnum)));
+}
+
+static ZEND_FUNCTION(bbs_checkpostperm)
+{
+    long user_num, boardnum;
+    struct userec *user;
+
+    getcwd(old_pwd, 1023);
+    chdir(BBSHOME);
+    old_pwd[1023] = 0;
+    if (zend_parse_parameters(2 TSRMLS_CC, "ll", &user_num, &boardnum) != SUCCESS)
+        WRONG_PARAM_COUNT;
+    user = getuserbynum(user_num);
+    if (user == NULL)
+        RETURN_LONG(0);
+    RETURN_LONG(haspostperm(user, getboard(boardnum)));
 }
 
 static ZEND_FUNCTION(bbs_wwwlogoff)
