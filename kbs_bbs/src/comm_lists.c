@@ -102,6 +102,7 @@ int inn_start();                /* czz 2002.01.15 */
 int inn_reload();               /* czz 2002.01.15 */
 int inn_stop();                 /* czz 2002.01.15 */
 int clear_all_board_read_flag();        /* kcn 2002.07.18 */
+int friend_wall();
 
 /*Add By Excellent */
 struct scommandlist {
@@ -147,6 +148,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"SetPager", t_pager},
     {"SetCloak", x_cloak},
     {"SendMsg", s_msg},
+    {"FriendWall",friend_wall},
     {"ShowMsg", show_allmsgs},
     {"SetFriends", t_override},
     {"EnterChat", ent_chat1},

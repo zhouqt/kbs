@@ -119,6 +119,41 @@ int b_notes_edit()
     return FULLUPDATE;
 }
 
+int b_sec_notes_edit()
+{
+    char buf[STRLEN];
+    char ans[4];
+    int aborted;
+
+    if (!chk_currBM(currBM, currentuser)) {
+        return 0;
+    }
+    clear();
+    makevdir(currboard);
+    setvfile(buf, currboard, "secnotes");
+    getdata(1, 0, "(E)编辑 (D)删除 本讨论区的秘密备忘录? [E]: ", ans, 2,
+            DOECHO, NULL, true);
+    if (ans[0] == 'D' || ans[0] == 'd') {
+        move(2, 0);
+        if (askyn("真的要删除本讨论区的秘密备忘录", 0)) {
+            move(3, 0);
+            prints("秘密备忘录已经删除...\n");
+            pressanykey();
+            unlink(buf);
+            aborted = 1;
+        } else
+            aborted = -1;
+    } else
+        aborted = vedit(buf, false);
+    if (aborted == -1) {
+        pressreturn();
+    } else {
+        setvfile(buf, currboard, "noterec");
+        unlink(buf);
+    }
+    return FULLUPDATE;
+}
+
 int b_jury_edit()
 {                               /* stephen 2001.11.1: 编辑版面仲裁名单 */
     char buf[STRLEN];
@@ -380,7 +415,11 @@ static int mk_result(int num)
     sug = NULL;
     sprintf(title, "[公告] %s 版的投票结果", currboard);
     mail_file(currentuser->userid, nname, currvote.userid, title, 0);
+#ifdef NINE_BUILD
+    if (1) {
+#else
     if (normal_board(currboard)) {
+#endif
         post_file(currentuser, "", nname, "vote", title, 0, 1);
     }
     post_file(currentuser, "", nname, currboard, title, 0, 1);
@@ -659,11 +698,16 @@ char *bname;
             }
             fclose(sug);
             sug = NULL;
+#ifdef NINE_BUILD
+            post_file(currentuser, "", votename, currboard, buf, 0, 1);
+            post_file(currentuser, "", votename, "vote", buf, 0, 1);
+#else
             if (!normal_board(currboard)) {
                 post_file(currentuser, "", votename, currboard, buf, 0, 1);
             } else {
                 post_file(currentuser, "", votename, "vote", buf, 0, 1);
             }
+#endif
             unlink(votename);
         }
     }

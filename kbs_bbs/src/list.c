@@ -148,6 +148,26 @@ int a, b;
     return COUNT;
 }
 
+#ifdef NINE_BUILD
+void
+sort_user_record(left, right)
+int left, right;
+{
+	int i, last;
+	if (left >= right)
+		return;
+	swap_user_record(left, (left + right) / 2);
+	last = left;
+	for (i = left + 1; i <= right; i++)
+			if (strcasecmp
+			    (user_record[i]->userid,
+			     user_record[left]->userid) < 0)
+				swap_user_record(++last, i);
+	swap_user_record(left, last);
+	sort_user_record(left, last - 1);
+	sort_user_record(last + 1, right);
+}
+#endif
 int fill_userlist()
 {
     static int i, i2;
@@ -159,6 +179,15 @@ int fill_userlist()
     i2 = 0;
     if (!friendmode) {
         apply_ulist_addr((APPLY_UTMP_FUNC) full_utmp, (char *) &i2);
+#ifdef NINE_BUILD
+        numf=0;
+	for (i = 0; i < i2; i++) {
+	    if (myfriend(user_record[i]->uid,NULL)) {
+		swap_user_record(numf++, i);
+	    }
+	}
+	sort_user_record(numf, i2 - 1);
+#endif
     } else {
         for (i = 0; i < nf; i++) {
             if (topfriend[i].uid)
@@ -260,11 +289,14 @@ int do_userlist()
             override = (i + page < numf) || friendmode;
 
         else {
+#ifdef NINE_BUILD
+            override = myfriend(uentp.uid, fexp);
+#else
             if ((i + page < numf) || friendmode)
                 override = myfriend(uentp.uid, fexp);
-
             else
                 override = false;
+#endif
         }
         if (readplan == true) {
             return 0;

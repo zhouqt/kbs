@@ -570,7 +570,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
 #endif
         
 #ifdef NINE_BUILD
-	    strcpy(date,"[1;30m      [0m");
+	    strcpy(date,"[1;30m      [m");
 	    strncpy(date+7,datestr,6);
 		date[5]='1'+(atoi(datestr+4)%7);
 		if (date[5]=='6') date[5]='7';
@@ -2583,6 +2583,34 @@ int show_b_note()
     return FULLUPDATE;
 }
 
+#ifdef NINE_BUILD
+int show_sec_board_notes(char bname[30])
+{                               /* ÏÔÊ¾°æÖ÷µÄ»° */
+    char buf[256];
+
+    sprintf(buf, "vote/%s/secnotes", bname);       /* ÏÔÊ¾±¾°æµÄ°æÖ÷µÄ»° vote/°æÃû/notes */
+    if (dashf(buf)) {
+        ansimore2(buf, false, 0, 23 /*19 */ );
+        return 1;
+    } else if (dashf("vote/secnotes")) {   /* ÏÔÊ¾ÏµÍ³µÄ»° vote/notes */
+        ansimore2("vote/secnotes", false, 0, 23 /*19 */ );
+        return 1;
+    }
+    return -1;
+}
+
+int show_sec_b_note()
+{
+    clear();
+    if (show_sec_board_notes(currboard) == -1) {
+        move(3, 30);
+        prints("´ËÌÖÂÛÇøÉÐÎÞ¡¸ÃØÃÜ±¸ÍüÂ¼¡¹¡£");
+    }
+    pressanykey();
+    return FULLUPDATE;
+}
+#endif
+
 int into_announce()
 {
     if (a_menusearch("0Announce", currboard, (HAS_PERM(currentuser, PERM_ANNOUNCE) || HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_OBOARDS)) ? PERM_BOARDS : 0))
@@ -2595,6 +2623,7 @@ extern int b_results();
 extern int b_vote();
 extern int b_vote_maintain();
 extern int b_notes_edit();
+extern int b_sec_notes_edit();
 extern int b_jury_edit();       /*stephen 2001.11.1 */
 
 static int sequent_ent;
@@ -2773,8 +2802,13 @@ struct one_key read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
     {Ctrl('O'), add_author_friend},
     {Ctrl('Q'), show_authorinfo},       /*Haohmaru.98.12.05 */
     {Ctrl('W'), show_authorBM}, /*cityhunter 00.10.18 */
+#ifdef NINE_BUILD
+    {'z', show_sec_b_note},     /*Haohmaru.2000.5.19 */
+    {'Z', b_sec_notes_edit},
+#else
     {'z', sendmsgtoauthor},     /*Haohmaru.2000.5.19 */
     {'Z', sendmsgtoauthor},     /*Haohmaru.2000.5.19 */
+#endif
     {Ctrl('N'), SR_first_new},
     {'n', SR_first_new},
     {'\\', SR_last},

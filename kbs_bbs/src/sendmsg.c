@@ -573,3 +573,46 @@ void r_lastmsg()
     f_offset = 0;
     r_msg();
 }
+
+int
+myfriend_wall( struct user_info *uin,char* buf,int i)
+{
+	if ((uin->pid - uinfo.pid == 0) || !uin->active || !uin->pid
+	    || !canmsg(currentuser,uin)) return -1;
+	if (myfriend(uin->uid,NULL)) {
+		move(1, 0);
+		clrtoeol();
+		prints("\x1b[1;32m正在送讯息给 %s...  \x1b[m", uin->userid);
+		refresh();
+                strcpy(MsgDesUid, uin->userid);
+		do_sendmsg(uin, buf, 5);
+	}
+	return 0;
+}
+
+int
+friend_wall()
+{
+	char buf[80];
+
+	if (uinfo.invisible) {
+		move(2, 0);
+		prints("抱歉, 此功能在隐身状态下不能执行...\n");
+		pressreturn();
+		return 0;
+	}
+	modify_user_mode(MSG);
+	move(2, 0);
+	clrtobot();
+	if (!get_msg("我的好朋友", buf, 1))
+			return 0;
+	if (apply_ulist(myfriend_wall,buf) == -1) {
+		move(2, 0);
+		prints("线上空无一人\n");
+		pressanykey();
+	}
+	move(6, 0);
+	prints("讯息传送完毕...");
+	pressanykey();
+	return 1;
+}

@@ -288,7 +288,14 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
             sprintf(msgbak, "[44m[37mÄã(%-5.5s) ÑûÇë%-12.12s[36m%-43.43s(%s)[m[%dm\033[%dm\n", timestr, uident, msgstr, ret_str, getuinfopid() + 100, uin->pid + 100);
         } else if (mode == 3) {
             sprintf(msgbuf, "[44m[32mBBS ÏµÍ³Í¨¸æ(%-5.5s):[37m%-59.59s[31m(%s)[m\033[%dm\n", timestr, msgstr, ret_str, uin->pid + 100);
-        }
+        } else if (mode == 5) {
+	    sprintf(msgbuf,
+		"\x1b[1;45;36m%-12.12s\x1b[33m(\x1b[36m%-5.5s\x1b[33m):\x1b[37m%-54.54s\x1b[31m(%s)\x1b[m\x1b[%05dm\n",
+		currentuser->userid, timestr,
+		(msgstr == NULL) ? buf : msgstr, ret_str,
+		uin->pid+100);
+
+	}
     }
     if (Gmode == 2)
         sprintf(msgbuf, "[44m[33mÕ¾³¤ì¶ %8.8s Ê±¹ã²¥£º[37m%-59.59s[m\033[%dm\n", timestr, buf, uin->pid + 100);
