@@ -2685,52 +2685,52 @@ void output_ansi_text(char *buf, size_t buflen,
     bzero(ansi_val, sizeof(ansi_val));
     bzero(attachShowed, sizeof(attachShowed));
     attachmatched = 0;
-	for (i = 0; i < buflen ; i++ )
+	if (attachlink != NULL)
 	{
-        long attach_len;
-        char *attachptr, *attachfilename;
-
-		if (attachmatched >= MAXATTACHMENTCOUNT)
-			break;
-
-        if (attachlink
-			&&((attachfilename = checkattach(buf + i, buflen - i, &attach_len, 
-												&attachptr)) != NULL))
+		long attach_len;
+		char *attachptr, *attachfilename;
+		char *extension;
+		for (i = 0; i < buflen ; i++ )
 		{
-            char *extension;
+			if (attachmatched >= MAXATTACHMENTCOUNT)
+				break;
 
-            extension = attachfilename + strlen(attachfilename);
-			i += (attachptr-buf-i) + attach_len - 1;
-			if (i > buflen)
-				continue;
-			attachPos[attachmatched] = attachfilename - buf;
-			attachLen[attachmatched] = attach_len;
-			attachFileName[attachmatched] = (char*)malloc(256);
-			strncpy(attachFileName[attachmatched], attachfilename, 255);
-			attachFileName[attachmatched][255] = '\0';
-			attachType[attachmatched] = ATTACH_OTHERS;
-			extension--;
-            while ((*extension != '.') && (*extension != '\0'))
-                extension--;
-            if (*extension == '.')
+			if (((attachfilename = checkattach(buf + i, buflen - i, 
+									&attach_len, &attachptr)) != NULL))
 			{
-                extension++;
-                if (!strcasecmp(extension, "jpg")
-					|| !strcasecmp(extension, "gif"))
+				extension = attachfilename + strlen(attachfilename);
+				i += (attachptr-buf-i) + attach_len - 1;
+				if (i > buflen)
+					continue;
+				attachPos[attachmatched] = attachfilename - buf;
+				attachLen[attachmatched] = attach_len;
+				attachFileName[attachmatched] = (char*)malloc(256);
+				strncpy(attachFileName[attachmatched], attachfilename, 255);
+				attachFileName[attachmatched][255] = '\0';
+				attachType[attachmatched] = ATTACH_OTHERS;
+				extension--;
+				while ((*extension != '.') && (*extension != '\0'))
+					extension--;
+				if (*extension == '.')
 				{
-                    attachType[attachmatched] = ATTACH_IMG;
+					extension++;
+					if (!strcasecmp(extension, "jpg")
+						|| !strcasecmp(extension, "gif"))
+					{
+						attachType[attachmatched] = ATTACH_IMG;
+					}
+					else if (!strcasecmp(extension, "swf"))
+						attachType[attachmatched] = ATTACH_FLASH;
+					else if (!strcasecmp(extension, "jpeg")
+						|| !strcasecmp(extension, "png")
+						|| !strcasecmp(extension, "pcx")
+						|| !strcasecmp(extension, "bmp"))
+					{
+						attachType[attachmatched] = ATTACH_IMG;
+					}
 				}
-                else if (!strcasecmp(extension, "swf"))
-                    attachType[attachmatched] = ATTACH_FLASH;
-				else if (!strcasecmp(extension, "jpeg")
-					|| !strcasecmp(extension, "png")
-                    || !strcasecmp(extension, "pcx")
-					|| !strcasecmp(extension, "bmp"))
-				{
-                    attachType[attachmatched] = ATTACH_IMG;
-				}
-            }
-			attachmatched++;
+				attachmatched++;
+			}
 		}
 	}
 
@@ -2860,44 +2860,52 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
     bzero(ansi_val, sizeof(ansi_val));
     bzero(attachShowed, sizeof(attachShowed));
     attachmatched = 0;
-	for (i = 0; i < buflen ; i++ ){
-        long attach_len;
-        char *attachptr, *attachfilename;
-		if (attachmatched>=MAXATTACHMENTCOUNT)	{
-			break;
-		}
-        if (attachlink&&((attachfilename = checkattach(buf + i, buflen - i, &attach_len, &attachptr)) != NULL)) {
-            char *extension;
-            extension = attachfilename + strlen(attachfilename);
-			i+=(attachptr-buf-i)+attach_len-1;
-			if (i>buflen) continue;
-			attachPos[attachmatched]=attachfilename-buf;
-			attachLen[attachmatched]=attach_len;
-			attachFileName[attachmatched]=(char*)malloc(256);
-			strncpy(attachFileName[attachmatched],attachfilename,255);
-			attachFileName[attachmatched][255]=0;
-			attachType[attachmatched]=ATTACH_OTHERS;
-			extension--;
-            while ((*extension != '.') && (*extension != NULL))
-                extension--;
-            if (*extension == '.') {
-                extension++;
-                if (!strcasecmp(extension, "jpg")
-					|| !strcasecmp(extension, "gif"))
+	if (attachlink != NULL)
+	{
+		long attach_len;
+		char *attachptr, *attachfilename;
+		char *extension;
+		for (i = 0; i < buflen ; i++ )
+		{
+			if (attachmatched >= MAXATTACHMENTCOUNT)
+				break;
+
+			if (((attachfilename = checkattach(buf + i, buflen - i, 
+									&attach_len, &attachptr)) != NULL))
+			{
+				extension = attachfilename + strlen(attachfilename);
+				i += (attachptr-buf-i) + attach_len - 1;
+				if (i > buflen)
+					continue;
+				attachPos[attachmatched] = attachfilename - buf;
+				attachLen[attachmatched] = attach_len;
+				attachFileName[attachmatched] = (char*)malloc(256);
+				strncpy(attachFileName[attachmatched], attachfilename, 255);
+				attachFileName[attachmatched][255] = '\0';
+				attachType[attachmatched] = ATTACH_OTHERS;
+				extension--;
+				while ((*extension != '.') && (*extension != '\0'))
+					extension--;
+				if (*extension == '.')
 				{
-                    attachType[attachmatched] = ATTACH_IMG;
+					extension++;
+					if (!strcasecmp(extension, "jpg")
+						|| !strcasecmp(extension, "gif"))
+					{
+						attachType[attachmatched] = ATTACH_IMG;
+					}
+					else if (!strcasecmp(extension, "swf"))
+						attachType[attachmatched] = ATTACH_FLASH;
+					else if (!strcasecmp(extension, "jpeg")
+						|| !strcasecmp(extension, "png")
+						|| !strcasecmp(extension, "pcx")
+						|| !strcasecmp(extension, "bmp"))
+					{
+						attachType[attachmatched] = ATTACH_IMG;
+					}
 				}
-                else if (!strcasecmp(extension, "swf"))
-                    attachType[attachmatched] = ATTACH_FLASH;
-				else if (!strcasecmp(extension, "jpeg")
-					|| !strcasecmp(extension, "png")
-                    || !strcasecmp(extension, "pcx")
-					|| !strcasecmp(extension, "bmp"))
-				{
-                    attachType[attachmatched] = ATTACH_IMG;
-				}
-            }
-			attachmatched++;
+				attachmatched++;
+			}
 		}
 	}
 
