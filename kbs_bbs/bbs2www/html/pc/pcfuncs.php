@@ -30,9 +30,8 @@ function pc_html_init($charset,$title="",$otherheader="",$cssfile="",$bkimg="",$
 	global $cssFile;
 	if ($cachemode=="") 
 	{
-		cache_header("no-cache");
-		Header("Cache-Control: no-cache");
-    	}
+		cache_header("nocache");
+    }
 ?>
 <?xml version="1.0" encoding="<?php echo $charset; ?>"?>
 <!DOCTYPE html

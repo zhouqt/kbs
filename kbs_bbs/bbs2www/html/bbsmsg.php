@@ -15,6 +15,7 @@ login_init();
 				html_error_quit("ÏµÍ³´íÎó");
 
 		$i=0;
+		cache_header("nocache");
 ?>
 <html>
 <table border=1>

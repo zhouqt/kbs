@@ -64,6 +64,7 @@ for($j = 0 ; $j < $brd_num ; $j ++ )
 }
 if (!$innerHtml) $innerHtml = "-©уд©б╪-";
 $innerHtml = "<div class='b1'>" . $innerHtml . "</div>";
+cache_header("nocache");
 ?>
 <html>
 <head>

@@ -6,8 +6,7 @@
 		return;
 	}
 	$isguest = ($currentuser["userid"] == "guest"); //可以永远设成 TRUE
-	cache_header("no-cache");
-	header("Cache-Control: no-cache");
+	cache_header("nocache");
 ?>
 <html>
 <head>
