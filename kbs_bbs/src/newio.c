@@ -144,7 +144,7 @@ int raw_read(int fd, char *buf, int len)
 #else
     retlen = read(fd,buf,len);
     for(i=0;i<retlen;i++) {
-        if(i>0&&buf[i-1]==-1&&buf[i]==-1) {
+        if(i>0&&((unsigned char)buf[i-1]==0xff)&&((unsigned char)buf[i]==0xff)) {
             retlen--;
             for(j=i;j<retlen;j++)
                 buf[j]=buf[j+1];
