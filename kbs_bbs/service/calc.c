@@ -715,7 +715,7 @@ void print_var(struct var_struct * p)
 
 int main()
 {
-    char cmd[1000];
+    char cmd[1005];
     char einfo[20][30]={
 "",
 "",
@@ -738,10 +738,11 @@ int main()
 "表达式出错",
 ""};
     int y,x,res,i,j;
+    extern int scr_cols;
     res = get_var("res");
     set_var(vars+get_var("%pi"), Pi);
     set_var(vars+get_var("%e"), exp(1));
-//    clear();
+    clear();
     while(1) {
         getyx(&y, &x);
 //        getdata(y, x, 0, cmd, 300, 1, 0, 1);
