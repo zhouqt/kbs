@@ -687,7 +687,7 @@ int id1,id2,del_mode ;
         id2=totalcount;
     }
     
-    if (del_mode==0) { /*rangle mark del*/
+    if ((idi!=0)&&(del_mode==0)) { /*rangle mark del*/
         while (count<=id2) {
             int i,j;
 	    int readcount;
@@ -695,7 +695,8 @@ int id1,id2,del_mode ;
             readcount=read(fdr,savefhdr,DEL_RANGE_BUF*sizeof(struct fileheader))/sizeof(struct fileheader);
             for (i=0;i<readcount;i++,count++) {
                 if (count>id2) break;  /*del end*/
-                savefhdr[i].accessed[1]|=FILE_DEL;
+                if (!(savefhdr[i].accessed[0]&FILE_MARKED))
+                  savefhdr[i].accessed[1]|=FILE_DEL;
             }
             lseek(fdr,pos_write,SEEK_SET);
             write(fdr,savefhdr,i*sizeof(struct fileheader))/sizeof(struct fileheader);
@@ -718,6 +719,7 @@ int id1,id2,del_mode ;
             if (((savefhdr[i].accessed[0] & FILE_MARKED)&&del_mode!=2)||((id1==0)&&(!(savefhdr[i].accessed[1]&FILE_DEL))))
             {
                 memcpy(&readfhdr[keepcount],&savefhdr[i],sizeof(struct fileheader));
+		readfhdr[keepcount].accessed[1]&=!FILE_DEL;
                 keepcount++;
                 remaincount++;
                 if (keepcount>=DEL_RANGE_BUF) {

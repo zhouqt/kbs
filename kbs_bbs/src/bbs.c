@@ -2801,6 +2801,7 @@ char *direct;
             ||!strcmp(currboard, "deleted"))    /* Leeward : 98.01.22 */
         return DONOTHING ;
 
+    if ((digestmode==4)||(digestmode==5)) return DONOTHING;
     if (YEA == check_readonly(currboard)) /* Leeward 98.03.28 */
         return FULLUPDATE;
 
@@ -3929,9 +3930,19 @@ Goodbye()    /*离站 选单*/
     /*Haohmaru.98.11.10.简单判断是否用上站机*/
     if(/*strcmp(currentuser.username,"guest")&&*/stay<=Time) {
         char lbuf[256];
-        strcpy(lbuf, "自首-");
+        char tmpfile[256];
+        FILE* fp;
+
+        strcpy(lbuf,"自首-");
         strftime(lbuf+5, 30, "%Y%m%d%y%H%M", localtime(&login_start_time));
-        mail_file("etc/surrender","SYSOP",lbuf);
+        sprintf(tmpfile,"tmp/.tmp%d",getpid());
+        fp = fopen(tmpfile,"w");
+        if (fp) {
+            fputs(lbuf,fp);
+            fclose(fp);
+            mail_file(tmpfile,"SYSOP","自首");
+        }
+        unlink(tmpfile);
     }
     if(started) {
         record_exit_time(); /* 记录用户的退出时间 Luzi 1998.10.23*/
