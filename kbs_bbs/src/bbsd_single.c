@@ -78,7 +78,7 @@ void local_prints(char *fmt, ...)
     char buf[512];
 
     va_start(args, fmt);
-    fmt = va_arg(args, char *);
+    /*fmt = va_arg(args, char *);*/
 
     vsprintf(buf, fmt, args);
     va_end(args);
