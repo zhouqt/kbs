@@ -33,6 +33,7 @@
 
 unsigned char scr_lns, scr_cols;
 unsigned char cur_ln = 0, cur_col = 0;
+int can_clrscr = 0;
 int roll, scrollcnt;
 int tc_col=0, tc_line=0;
 int tc_mode=0, tc_color = 7;
@@ -50,7 +51,7 @@ void clrnlines(int n)
 	for (i = cur_ln; i < cur_ln + n; i++) {
 		slp = &big_picture[(i + roll) % scr_lns];
 		for (k = 0; k < LINELEN; k++) {
-			slp->data[k] = 0;
+			slp->data[k] = 32;
 			slp->mode[k] = 0;
                      slp->color[k] = 7;
 		}
@@ -94,7 +95,7 @@ void init_screen(int slns, int scols)
     for (slns = 0; slns < scr_lns; slns++) {
         slp = &big_picture[slns];
         for(j=0;j<LINELEN;j++)
-        { slp->data[j]=0; slp->mode[j]=0; slp->color[j]=7; }
+        { slp->data[j]=32; slp->mode[j]=0; slp->color[j]=7; slp->ldata[j]=255;}
     }
     roll = 0;
 }
@@ -112,11 +113,12 @@ void clear()
     for (i = 0; i < scr_lns; i++) {
         slp = big_picture;
         for(j=0; j<scr_cols;j++) {
-            slp[i].mode[j]=SCREEN_MODIFIED;
-            slp[i].data[j]=0;
+            slp[i].data[j]=32;
+            slp[i].mode[j]=0;
             slp[i].color[j]=7;
         }
     }
+    can_clrscr = 1;
     move(0, 0);
 }
 
@@ -182,6 +184,9 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
     do_move(new_col, new_ln, ochar);
 }
 
+#define ndiff(i,j) (bp[i].data[j]==bp[i].ldata[j]&&bp[i].mode[j]==bp[i].lmode[j]&&bp[i].color[j]==bp[i].lcolor[j])
+
+
 void refresh()
 {
     register int i, j, k, ii, p, s;
@@ -204,47 +209,44 @@ void refresh()
         scrollcnt = 0;
     }
     if (scrollcnt > 0) {
-        do_move(0, 1024, ochar);
+        do_move(0, t_lines - 1, ochar);
         while (scrollcnt > 0) {
             ochar('\n');
             scrollcnt--;
         }
-        do_move(0, t_lines - 2, ochar);
-        tc_col = 0; tc_line = t_lines-2;
+        tc_col = 0; tc_line = t_lines-1;
     }
     count = 0;
     for (i=0; i < scr_lns; i++)
         for(j=0;j<scr_cols;j++)
-            if((bp[i].data[j]==0||bp[i].data[j]==32)&&(bp[i].mode[j]==1)&&(bp[i].color[j]/16==0))
+            if((bp[i].data[j]==0||bp[i].data[j]==32)&&(bp[i].color[j]/16==0)&&!ndiff(i,j))
                 count++;
-/*    if(count>scr_lns*scr_cols/2) {
+    if(count>scr_lns*scr_cols/2&&can_clrscr) {
         o_clear();
         for (i=0; i < scr_lns; i++)
-            for(j=0;j<scr_cols;j++)
-                if((bp[i].data[j]==0||bp[i].data[j]==32)&&
-                    (bp[i].mode[j]<=3)&&bp[i].color[j]/16==0)
-                    bp[i].mode[j]=0;
-                else
-                    bp[i].mode[j]|=SCREEN_MODIFIED;
-    }*/
-
+            for(j=0;j<scr_cols;j++) {
+                bp[i].ldata[j] = 0;
+                bp[i].lmode[j] = 0;
+                bp[i].lcolor[j] = 7;
+            }
+    }
+    can_clrscr = 0;
+    
     for (i = 0; i < scr_lns; i++) {
         j = (i + roll)%scr_lns;
 
         ii=scr_cols-1;
-        while(ii>=0&&(bp[j].data[ii]==0||bp[j].data[ii]==32)&&(bp[j].color[ii]/16)==(bp[j].color[scr_cols-1]/16)&&((bp[j].mode[ii]&~SCREEN_MODIFIED&~SCREEN_BRIGHT)==(bp[j].mode[scr_cols-1]&~SCREEN_MODIFIED&~SCREEN_BRIGHT))) ii--;
+        while(ii>=0&&(bp[j].data[ii]==0||bp[j].data[ii]==32)&&(bp[j].color[ii]/16)==(bp[j].color[scr_cols-1]/16)&&((bp[j].mode[ii]&~SCREEN_BRIGHT)==(bp[j].mode[scr_cols-1]&~SCREEN_BRIGHT))) ii--;
         p=ii+1;
 
         for (k = 0; k < scr_cols; k++)
-        if((bp[j].mode[k]&SCREEN_MODIFIED)&&(isprint2(bp[j].data[k])||bp[j].data[k]==0)) {
+        if(!ndiff(j,k)&&(isprint2(bp[j].data[k])) {
             stackt=0;
             rel_move(tc_col, tc_line, k, i);
             s = bp[j].mode[k];
-            s=s&(~SCREEN_MODIFIED);
-            bp[j].mode[k]=s;
-            if((!(s&SCREEN_BRIGHT)&&tc_mode&SCREEN_BRIGHT&&bp[j].data[k]!=' '&&bp[j].data[k]!=0||
+            if((!(s&SCREEN_BRIGHT)&&tc_mode&SCREEN_BRIGHT&&bp[j].data[k]!=' '||
                 !(s&SCREEN_LINE)&&tc_mode&SCREEN_LINE||
-                !(s&SCREEN_BLINK)&&tc_mode&SCREEN_BLINK&&bp[j].data[k]!=' '&&bp[j].data[k]!=0||
+                !(s&SCREEN_BLINK)&&tc_mode&SCREEN_BLINK&&bp[j].data[k]!=' '||
                 !(s&SCREEN_BACK)&&tc_mode&SCREEN_BACK)||(tc_color/16!=0&&bp[j].color[k]/16==0)) {
                 char buf[10];
                 tc_mode = 0;
@@ -252,19 +254,19 @@ void refresh()
                 sprintf(buf, "\x1b[m");
                 output(buf, strlen(buf));
             }
-            if(!(tc_mode&SCREEN_BRIGHT)&&bp[j].mode[k]&SCREEN_BRIGHT&&bp[j].data[k]!=' '&&bp[j].data[k]!=0) {
+            if(!(tc_mode&SCREEN_BRIGHT)&&s&SCREEN_BRIGHT&&bp[j].data[k]!=' '&&bp[j].data[k]!=0) {
                 tc_mode|=SCREEN_BRIGHT;
                 stack[stackt++]=1;
             }
-            if(!(tc_mode&SCREEN_LINE)&&bp[j].mode[k]&SCREEN_LINE) {
+            if(!(tc_mode&SCREEN_LINE)&&s&SCREEN_LINE) {
                 tc_mode|=SCREEN_LINE;
                 stack[stackt++]=4;
             }
-            if(!(tc_mode&SCREEN_BLINK)&&bp[j].mode[k]&SCREEN_BLINK&&bp[j].data[k]!=' '&&bp[j].data[k]!=0) {
+            if(!(tc_mode&SCREEN_BLINK)&&s&SCREEN_BLINK&&bp[j].data[k]!=' '&&bp[j].data[k]!=0) {
                 tc_mode|=SCREEN_BLINK;
                 stack[stackt++]=5;
             }
-            if(!(tc_mode&SCREEN_BACK)&&bp[j].mode[k]&SCREEN_BACK) {
+            if(!(tc_mode&SCREEN_BACK)&&s&SCREEN_BACK) {
                 tc_mode|=SCREEN_BACK;
                 stack[stackt++]=7;
             }
@@ -275,8 +277,12 @@ void refresh()
             }
             if(tc_color/16!=bp[j].color[k]/16) {
                 tc_color=bp[j].color[k]/16*16+tc_color%16;
-                if(DEFINE(currentuser, DEF_COLOR))
-                    stack[stackt++]=40+bp[j].color[k]/16;
+                if(DEFINE(currentuser, DEF_COLOR)) {
+                    if(bp[j].color[k]/16==8)
+                        stack[stackt++]=40;
+                    else
+                        stack[stackt++]=40+bp[j].color[k]/16;
+                }
             }
             if(stackt>0) {
                 char buf[200],*p;
@@ -293,13 +299,19 @@ void refresh()
                 stackt=0; 
             }
             if(k>=p&&p<=scr_cols-5) {
-                for(ii=k;ii<scr_cols;ii++)
-                    bp[j].mode[ii]&=~SCREEN_MODIFIED;
+                for(ii=k;ii<scr_cols;ii++) {
+                    bp[j].ldata[ii]=bp[j].data[ii];
+                    bp[j].lmode[ii]=bp[j].mode[ii];
+                    bp[j].lcolor[ii]=bp[j].color[ii];
+                }
                 o_cleol();
                 break;
             }
             if(bp[j].data[k]==0) ochar(' ');
             else ochar(bp[j].data[k]);
+            bp[j].ldata[k]=bp[j].data[k];
+            bp[j].lmode[k]=bp[j].mode[k];
+            bp[j].lcolor[k]=bp[j].color[k];
             tc_col++;
         }
     }
@@ -319,7 +331,7 @@ void redoscr()
     for (i = 0; i < scr_lns; i++) {
         j = (i + roll)%scr_lns;
         for (k=0;k < scr_cols; k++)
-            bp[j].mode[k]|=SCREEN_MODIFIED;
+            bp[j].ldata[k]=255;
     }
     refresh();
 }
@@ -355,8 +367,8 @@ void clear_whole_line(int i)
     register struct screenline *slp = &big_picture[(i+roll)%scr_lns];
     register int k;
     for(k=0;k<scr_cols;k++) {
-        slp->data[k]=0;
-        slp->mode[k]=SCREEN_MODIFIED|cur_mode;
+        slp->data[k]=32;
+        slp->mode[k]=cur_mode;
         slp->color[k]=cur_color;
     }
 }
@@ -374,8 +386,8 @@ void clrtoeol()
     ln = (cur_ln + roll)%scr_lns;
     slp = &big_picture[ln];
     for(k=cur_col;k<t_columns;k++) {
-        slp->data[k]=0;
-        slp->mode[k]=SCREEN_MODIFIED|cur_mode;
+        slp->data[k]=32;
+        slp->mode[k]=cur_mode;
         slp->color[k]=cur_color;
     }
 }
@@ -391,8 +403,8 @@ void clrtobot()
         for(k=0;k<scr_cols;k++) 
         if(i>cur_ln||k>=cur_col)
         {
-            slp->data[k]=0;
-            slp->mode[k]=SCREEN_MODIFIED|cur_mode;
+            slp->data[k]=32;
+            slp->mode[k]=cur_mode;
             slp->color[k]=cur_color;
         }
     }
@@ -418,10 +430,9 @@ void outc(unsigned char c)
         }
         return;
     }
-    if(slp->data[cur_col]!=c||slp->mode[cur_col]!=cur_mode||slp->color[cur_col]!=cur_color) 
-    if(slp->data[cur_col]!=32&&slp->data[cur_col]!=0||c!=32||slp->color[cur_col]/16!=cur_color/16||slp->mode[cur_col]!=cur_mode)
+    if(cur_col<scr_cols)
     {
-        slp->mode[cur_col]=SCREEN_MODIFIED|cur_mode;
+        slp->mode[cur_col]=cur_mode;
         slp->color[cur_col]=cur_color;
         slp->data[cur_col]=c;
     }
@@ -535,8 +546,10 @@ void outns(const char*str, int n)
                             cur_mode|=SCREEN_BACK;
                         else if(m>=30&&m<=37)
                             cur_color = m-30+cur_color/16*16;
-                        else if(m>=40&&m<=47)
+                        else if(m>=40&&m<=47) {
+                            if(m==40) m=48;
                             cur_color = (m-40)*16+cur_color%16;
+                        }
                     }
                     j++;
                 }
@@ -576,11 +589,10 @@ void outns(const char*str, int n)
             ch=32;
             j=(cur_col/8+1)*8-cur_col;
             for(i=0;i<j;i++) {
-                if(ch!=slp->data[cur_col]||cur_mode!=slp->mode[cur_col]||cur_color!=slp->color[cur_col]) 
-                if(slp->data[cur_col]!=32&&slp->data[cur_col]!=0||ch!=32||slp->color[cur_col]/16!=cur_color/16||slp->mode[cur_col]!=cur_mode)
+                if(cur_col<scr_cols)
                 {
                     slp->data[cur_col]=ch;
-                    slp->mode[cur_col]=SCREEN_MODIFIED|cur_mode;
+                    slp->mode[cur_col]=cur_mode;
                     slp->color[cur_col]=cur_color;
                 }
                 cur_col++;
@@ -590,11 +602,10 @@ void outns(const char*str, int n)
         }
         else if (!isprint2(*str)) ch=(unsigned char) '*';
         else ch=*str;
-        if(ch!=slp->data[cur_col]||cur_mode!=slp->mode[cur_col]||cur_color!=slp->color[cur_col]) 
-        if(slp->data[cur_col]!=32&&slp->data[cur_col]!=0||ch!=32||slp->color[cur_col]/16!=cur_color/16||slp->mode[cur_col]!=cur_mode)
+        if(cur_col<scr_cols)
         {
             slp->data[cur_col]=ch;
-            slp->mode[cur_col]=SCREEN_MODIFIED|cur_mode;
+            slp->mode[cur_col]=cur_mode;
             slp->color[cur_col]=cur_color;
         }
         cur_col++;
@@ -787,8 +798,6 @@ void saveline(int line, int mode, char* buffer)	/* 0 : save, 1 : restore */
             memcpy(bp[line].data, tmp, LINELEN);
             memcpy(bp[line].mode, tmp+LINELEN, LINELEN);
             memcpy(bp[line].color, tmp+LINELEN*2, LINELEN);
-            for(i=0;i<scr_cols;i++)
-                bp[line].mode[i]|=SCREEN_MODIFIED;
             break;
     }
 };
