@@ -323,6 +323,7 @@ int multilogin_user(struct userec *user, int usernum,int mode)
     /* Bigman: 2000.8.17 智囊团能够开2个窗口 */
     /* stephen: 2001.10.30 仲裁可以开两个窗口 */
     if (HAS_PERM(user, PERM_SYSOP)) return 0;
+    if (HAS_PERM(user, PERM_BOARDS) && strncmp(user->lasthost, "10.9.", 5)==0 && logincount==1) return 0;
     if(logincount>=1)
     return 1;
 //    if ((HAS_PERM(user, PERM_BOARDS) || HAS_PERM(user, PERM_CHATOP) 
