@@ -1384,7 +1384,7 @@ static int search_articles( struct keeploc  *locmem,char *query,int offset,int a
     clrtoeol();
     prints("[44m[33mËÑÑ°ÖÐ£¬ÇëÉÔºò....                                                             [m");
     now = locmem->crs_line;
-    refresh();
+/*    refresh();*/
 
     switch (safe_mmapfile(currdirect,O_RDONLY,PROT_READ,MAP_SHARED,(void**)&pFh,&size,NULL)) {
     	case 0: return 0;
