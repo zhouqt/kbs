@@ -264,6 +264,7 @@ int wall()
 }
 
 int msg_count;
+
 void r_msg_sig(int signo)
 {
     msg_count++;
@@ -272,43 +273,20 @@ void r_msg_sig(int signo)
 
 void r_msg()
 {
-    FILE *fp;
-    char buf[256];
-    char msg[256];
-    char msgX[256];             /* Leeward 98.07.30 supporting msgX */
-    int msgXch = 0;             /* Leeward 98.07.30 supporting msgX */
-    int XOK = 0;                /* Leeward 98.07.30 supporting msgX */
-    int msg_count = 0;
-    char fname[STRLEN], fname2[STRLEN];
-    int line, tmpansi;
-    int y, x, ch, i;
-    char tmp[256];
-    char savebuffer[256];
-    int send_pid;
-    char *ptr;
-    int retcode;
-    struct user_info *uin;
-    char msgbuf[STRLEN];
-    int good_id;
-    char usid[STRLEN];
+    int y, x, ch, i, ox, oy;
+    char savebuffer[24][256];
+    char buf[MAX_MSG_SIZE+100], outmsg[MAX_MSG_SIZE*2], ch, buf2[STRLEN];
+    int now, count;
 
     getyx(&y, &x);
     tmpansi = showansi;
     showansi = 1;
-    if (uinfo.mode == TALK)
-        line = t_lines / 2 - 1;
-    else
-        line = 0;
+    for(i=0;i<=24;i++)
+        saveline(i, 0, savebuffer[i]);
 
     if ((uinfo.mode == POSTING || uinfo.mode == SMAIL) && !DEFINE(currentuser, DEF_LOGININFORM)) {      /*Haohmaru.99.12.16.·¢ÎÄÕÂÊ±²»»Ømsg */
-        sethomefile(buf, currentuser->userid, "msgcount");
-        fp = fopen(buf, "rb");
-        if (fp != NULL) {
-            fread(&msg_count, sizeof(int), 1, fp);
-            fclose(fp);
-        }
-        saveline(line, 0, savebuffer);
-        move(line, 0);
+        msgcount = get_unreadcount(currentuser->userid);
+        move(0, 0);
         clrtoeol();
         refresh();
         if (msg_count) {
@@ -322,307 +300,49 @@ void r_msg()
             refresh();
             sleep(1);
         }
-        saveline(line, 1, savebuffer);
+        saveline(0, 1, savebuffer[0]);
         return;
     }
-    sethomefile(fname, currentuser->userid, "msgfile");
-    if (!dashf(fname)) {        /* Leeward 98.07.30 */
-        saveline(line, 0, savebuffer);
-        move(line, 0);
+    count = get_msgcount(currentuser->userid);
+    if (!count) {        /* Leeward 98.07.30 */
+        move(0, 0);
         clrtoeol();
         refresh();
         prints("[1mÃ»ÓÐÈÎºÎµÄÑ¶Ï¢´æÔÚ£¡£¡[m");
         move(y, x);
         refresh();
         sleep(1);
-        saveline(line, 1, savebuffer);  /* restore line */
+        saveline(0, 1, savebuffer[0]);  /* restore line */
         return;
     }
-    sethomefile(fname2, currentuser->userid, "msgcount");
-    RMSG = true;
-    RMSGCount++;                /* Leeward 98.07.30 supporting msgX */
-    saveline(line, 0, savebuffer);
-    while (1) {                 /* modified by Luzi 1997.12.27 */
-        if ((fp = fopen(fname, "r")) == NULL)
-            break;
-        i = 0;
-        if (f_offset == 0) {
-            while (fgets(buf, 256, fp) != NULL) {
-                ptr = strrchr(buf, '[');
-                if (ptr != 0)
-                    send_pid = atoi(ptr + 1);
-                else
-                    send_pid = 0;
-                if (send_pid > 100)
-                    send_pid -= 100;
-#ifdef NINE_BUILD
-		if (strncmp(buf,"\x1b[44m\x1b[0;1;32m=>",15))
-                if ((uinfo.pid == send_pid)||kill(send_pid,0)) {
-#else
-                if (uinfo.pid == send_pid) {
-#endif
-                    i = 1;
-                    strcpy(msg, buf);
-                }
-            }
-        } else {
-            fseek(fp, f_offset, SEEK_SET);
-            while (fgets(msg, 256, fp) != NULL) {
-                ptr = strrchr(msg, '[');
-                send_pid = atoi(ptr + 1);
-                if (send_pid > 100)
-                    send_pid -= 100;
-#ifdef NINE_BUILD
-		if (strncmp(msg,"\x1b[44m\x1b[0;1;32m=>",15))
-                if ((uinfo.pid == send_pid)||kill(send_pid,0)) {
-#else
-                if (uinfo.pid == send_pid) {
-#endif
-                    i = 1;
-                    break;
-                }
-            }
-        }
-        f_offset = ftell(fp);
-        fclose(fp);
-        if (i == 0)
-            break;
-        if (DEFINE(currentuser, DEF_SOUNDMSG)) {
+
+    now = get_unreadmsg(currentuser->userid);
+    if(now==-1) now = get_msgcount(currentuser->userid)-1;
+    do {
+        load_msgtext(currentuser->userid, now, buf);
+        translate_msg(buf, outmsg);
+        move(0,0);
+        if (DEFINE(currentuser, DEF_SOUNDMSG))
             bell();
-            bell();
-        }
-        move(line, 0);
-        clrtoeol();
         if (DEFINE(currentuser, DEF_HIGHCOLOR))
-            prints("\x1b[1m%s", msg);
+            prints("\x1b[1m%s", outmsg);
         else
-            prints("%s", msg);
+            prints("%s", outmsg);
+        getyx(&oy, &ox);
+
+        prints("  µÚ%-3.3d/%3.3dÌõÏûÏ¢, R»Ø¸´", count, now);
+        clrtoeol();
+        
         refresh();
         oflush();
-        ch = 0;
-        while ( /*ch!='\n'&&ch!='\r' */ 1) {
+        ch = igetkey();
+        for(i=0;i<oy;i++)
+            saveline(i, 1, savebuffer[i]);
 
-            /*
-             * read(0,&ch,1); 
-             */
-          END:
-            ch = igetkey();
-            if (!DEFINE(currentuser, DEF_IGNOREMSG)) {  /*Haohmaru.98.12.23 */
-                if (ch == KEY_ESC)
-                    break;
-                else if (ch == Ctrl('R') || ch == 'r' || ch == 'R')
-                    goto MSGX;
-                else
-                    goto END;
-            }
+        now = get_unreadmsg(currentuser->userid);
+    } while(now!=-1);
 
-            /*
-             * Added by Marco 
-             */
-          MSGX:                /* Leeward 98.07.30 supporting msgX */
-            strcpy(msgX, msg);
-
-
-            strcpy(buf, msg);
-            ptr = strrchr(buf, '[');
-            *ptr = '\0';
-            ptr = strrchr(buf, '[');
-            if (ptr)
-                send_pid = atoi(ptr + 1);
-            else
-                send_pid = 0;
-            if (send_pid > 100)
-                send_pid -= 100;
-            ptr = strtok(msg + 10, " [");      /* ºÍmsgÖÐ useridµÄÎ»ÖÃ¹ØÏµÃÜÇÐ */
-            if (ptr == NULL)    /*|| !strcasecmp(ptr,currentuser->userid)) */
-                good_id = false;
-            else {
-                strcpy(usid, ptr);
-                uin = t_search(usid, send_pid);
-                if (uin == NULL)
-                    good_id = false;
-                else
-                    good_id = true;
-            }
-            if (good_id == true) {
-                if (-KEY_UP != msgXch && -KEY_DOWN != msgXch) {
-                    strncpy(tmp, big_picture[line + 1].data, 256 /*LINELEN*/);
-                    tmp[big_picture[line + 1].len] = '\0';
-                }               /* Leeward 98.07.30 supporting msgX */
-                move(line + 1, 0);
-                clrtoeol();
-                sprintf(msgbuf, "»ØÑ¶Ï¢¸ø %s: ", usid);
-
-                /*
-                 * Leeward 98.07.30 supporting msgX 
-                 */
-                /*
-                 * getdata(line + 1,0,msgbuf,buf,49,DOECHO,NULL,true); 
-                 */
-              MSGX2:
-                switch (msgXch = getdata(line + 1, 0, msgbuf, buf, 59, DOECHO, NULL, true)) {
-                case -KEY_UP:
-                case -KEY_DOWN:
-                    {
-                        char bufX[256], *ptrX;
-                        FILE *fpX;
-                        int send_pidX, Line_1, Line;
-
-                        XOK = Line_1 = Line = 0;
-                        if ((fpX = fopen(fname, "r")) != NULL) {
-                            while (fgets(bufX, 256, fpX)) {
-                                Line++;
-                                ptrX = strrchr(bufX, '[');
-                                if (ptrX)
-                                    send_pidX = atoi(ptrX + 1);
-                                else
-                                    send_pidX = 0;
-                                if (send_pidX > 100)
-                                    send_pidX -= 100;
-#ifdef NINE_BUILD
-		                if (strncmp(bufX,"\x1b[44m\x1b[0;1;32m=>",15))
-                                if ((uinfo.pid == send_pidX)||kill(send_pidX,0)) {
-#else
-                                if (uinfo.pid == send_pidX) {
-#endif
-                                    if (XOK) {  /* KEY_DOWN */
-                                        Line_1 = Line;
-                                        break;
-                                    }
-                                    if (!strncmp(msgX, bufX, strlen(msgX))) {
-                                        XOK = 1;
-                                        if (-KEY_UP == msgXch)
-                                            break;
-                                    }
-                                    Line_1 = Line;
-                                }       /* End if (uinfo.pid == send_pidX) */
-                            }   /* End while (fgets(bufX,256,fpX)) */
-                        }
-                        /*
-                         * if (fpX = fopen(fname,"r")) 
-                         */
-                        if (XOK) {
-                            rewind(fpX);
-                            for (Line = 0; Line < Line_1; Line++)
-                                fgets(bufX, 256, fpX);
-                            /*
-                             * Leeward 98.09.24 enable scroll on both ends when Ctrl+Z 
-                             */
-                            if (!strncmp(msgX, bufX, strlen(msgX))) {
-                                if (-KEY_DOWN == msgXch) {
-                                    rewind(fpX);
-                                    fgets(bufX, 256, fpX);
-                                } else if (-KEY_UP == msgXch)
-                                    while (!feof(fpX))
-                                        fgets(bufX, 256, fpX);
-                            }
-                            strcpy(msg, bufX);
-                            move(line, 0);
-                            clrtoeol();
-                            if (DEFINE(currentuser, DEF_HIGHCOLOR))
-                                prints("\x1b[1m%s", msg);
-                            else
-                                prints("%s", msg);
-                            refresh();
-                            oflush();
-                            ch = 'R';
-                            fclose(fpX);
-                            goto MSGX;
-                        } else {
-                            if (fpX)
-                                fclose(fpX);
-                            break;
-                        }
-
-                    }           /* End case */
-                    break;
-
-                default:
-                    break;
-                }               /* End switch *//* Leeward 98.07.30 supporting msgX */
-
-                if (-1 == XOK)
-                    sprintf(msgbuf, "[1m½áÊø»ØÕâÌõÑ¶Ï¢[m");
-                else if (0 == XOK && (-KEY_UP == msgXch || -KEY_DOWN == msgXch))
-                    ;
-                else {
-                    if (buf[0] != '\0') {
-                        /*
-                         * ±£´æËù·¢msgµÄÄ¿µÄuid 1998.7.5 by dong 
-                         */
-                        strcpy(MsgDesUid, usid);
-                        retcode = do_sendmsg(uin, buf, 4);
-                        if (retcode == 1)
-                            sprintf(msgbuf, "[1m°ïÄãËÍ³öÑ¶Ï¢ÁË[m");
-                        else if (retcode == -2)
-                            sprintf(msgbuf, "[1m¶Ô·½ÒÑ¾­ÀëÏßÁË...[m");
-                    } else
-                        sprintf(msgbuf, "[1m¿ÕÑ¶Ï¢, ËùÒÔ²»ËÍ³ö.[m");
-                }
-
-            } else {            /* Leeward 98.07.30 add below 2 lines to fix bug */
-                if (-KEY_UP != msgXch && -KEY_DOWN != msgXch) {
-                    strncpy(tmp, big_picture[line + 1].data, 256 /*LINELEN*/);
-                    tmp[big_picture[line + 1].len] = '\0';
-                }
-                sprintf(msgbuf, "[1mÕÒ²»³ö·¢Ñ¶Ï¢µÄÈË[m");
-                /*
-                 * Leeward 98.07.30 enable reply other messages 
-                 */
-                move(line, 0);
-                clrtoeol();
-                if (DEFINE(currentuser, DEF_HIGHCOLOR))
-                    prints("\x1b[1m%s", msgbuf);
-                else
-                    prints("%s", msgbuf);
-                refresh();
-                oflush();
-                sprintf(msgbuf, "[1mÇë°´¡ü»ò¡ýÇÐ»»Ñ¶Ï¢£¬»ò°´ Enter ½áÊø£º[m");
-                move(line + 1, 0);
-                clrtoeol();
-                XOK = -1;
-                goto MSGX2;
-            }
-            move(line, 0);
-            clrtoeol();
-            refresh();
-            prints("%s", msgbuf);
-            refresh();
-#ifdef NINE_BUILD
-	    if (retcode !=1)
-#endif
-            sleep(1);
-
-            move(line + 1, 0);
-            clrtoeol();
-            prints("%s", tmp);
-
-            break;
-        }
-        fp = fopen(fname2, "rb+");
-        if (fp != NULL) {
-            int msg_count;
-            fread(&msg_count, sizeof(int), 1, fp);
-            if (msg_count)
-                msg_count--;
-            fseek(fp, 0, SEEK_SET);
-            fwrite(&msg_count, sizeof(int), 1, fp);
-            fclose(fp);
-        }
-    }
-    if (apply_utmpuid(NULL, usernum, 0) < 2)
-        unlink(fname2);
-    showansi = tmpansi;
-    saveline(line, 1, savebuffer);      /* restore line */
-    move(y, x);
-    refresh();
-    /*
-     * Leeward 98.07.30 supporting msgX 
-     */
-    RMSGCount--;
-    if (0 == RMSGCount)
-        RMSG = false;
-    return;
+    
 }
 
 void r_lastmsg()

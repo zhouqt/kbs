@@ -284,7 +284,7 @@ int save_msgtext(char *uident, char *msgbuf)
     write(fd, &size, 4);
     lseek(fd2, size, SEEK_SET);
     i = strlen(msgbuf)+1;
-    if (i>=MAX_MSG_SIZE) i=MAX_MSG_SIZE-1;
+    if (i>=MAX_MSG_SIZE+100) i=MAX_MSG_SIZE+100-1;
     write(fd, msgbuf, i);
 
     close(fd2);
@@ -465,7 +465,7 @@ int load_msgtext(char *uident, int index, char *msgbuf)
     else
         next = size;
     lseek(fd2, now, SEEK_SET);
-    if(next-now > MAX_MSG_SIZE) next=now+MAX_MSG_SIZE-1;
+    if(next-now > MAX_MSG_SIZE+100) next=now+MAX_MSG_SIZE+100-1;
     read(fd, msgbuf, next-now);
     msgbuf[next-now-1] = 0;
 
@@ -482,7 +482,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
     FILE *fp;
     time_t now;
     struct user_info *uin;
-    char buf[80], msgbuf[1024], *timestr, msgbak[1024];
+    char buf[80], msgbuf[MAX_MSG_SIZE+100], *timestr, msgbak[MAX_MSG_SIZE+100];
     int msg_count = 0;
 
     *msgbak = 0;
@@ -555,5 +555,60 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
         return -1;
     }
     return 1;
+}
+
+int translate_msg(char* src, char* dest)
+{
+    char id[14], time[8], msg[1024];
+    int i,j=0,len,pos,space;
+    memcpy(id, src+2, 12);
+    id[12] = 0;
+    memcpy(time, src+14, 5);
+    time[5] = 0;
+    strncpy(msg, src+39, 1024);
+    dest[0] = 0;
+    space=22;
+    switch(src[1]) {
+        case '0':
+        case '2':
+        case '4':
+            if(src[0]=='0')
+                sprintf(dest, "[44m\x1b[36m%-14.14s[33m(%-5.5s):[37m", id, time);
+            else
+                sprintf(dest, "[44m\x1b[0;1;32m=>[37m%-12.12s[33m(%-5.5s):[36m", id, time);
+            break;
+        case '3':
+            sprintf(dest, "[44m\x1b[33mÕ¾³¤ÓÚ %6.6s Ê±¹ã²¥£º[37m", time);
+            break;
+        case '1':
+            if(src[0]=='0')
+                sprintf(dest, "[44m\x1b[36m%-12.12s(%-5.5s) ÑûÇëÄã[37m", id, time);
+            else
+                sprintf(dest, "[44m\x1b[37mÄã(%-5.5s) ÑûÇë%-12.12s[36m", time, id);
+            space=26;
+            break;
+        case '5':
+            sprintf(dest, "[45m\x1b[36m%-14.14s\x1b[33m(\x1b[36m%-5.5s\x1b[33m):\x1b[37m", id, time);
+            space=22;
+            break;
+    }
+    len = strlen(dest);
+    pos = space;
+    for(i=0;i<strlen(msg);i++){
+        if(j) j=0;
+        else if(msg[i]<0) j=1;
+        if(j==0&&pos>=80||j==1&&pos>=79) {
+            for(;pos<=80;pos++)
+                dest[len++]=' ';
+            dest[len++]='\n';
+            for(pos=1;pos<=space;pos++)
+                dest[len++]=' ';
+        }
+        dest[len++]=msg[i];
+    }
+    for(;pos<=80;pos++)
+        dest[len++]=' ';
+    dest[len++]='\n';
+    dest[len]=0;
 }
 
