@@ -87,6 +87,7 @@ int dokillalldir ()
 }
 static char tmpbuf[255];
 static char genbuf1[255];
+#if 0
 char *
 setmailpath( buf, userid )  /* 取 某用户 的mail */
 char    *buf, *userid;
@@ -107,6 +108,7 @@ char    *buf, *userid;
         sprintf( buf, "home/wrong/%s", userid);
     return buf;
 }
+#endif
 int killauser(struct userec *theuser,char *data)
 {
        int a;
@@ -168,7 +170,7 @@ struct requesthdr {
 	union {
 		struct user_info utmp;
 		int uent;
-	};
+	}u_info;
 }utmpreq;
 int getutmprequest(int m_socket)
 {
@@ -338,13 +340,13 @@ void utmpd()
 		/* utmp */
 		switch (utmpreq.command) {
 		case 1: // getnewutmp
-		       id = getnewutmpent2(&utmpreq.utmp);
+		       id = getnewutmpent2(&utmpreq.u_info.utmp);
 			break;
 		case 2:
 			id = -1;
 			break; // clear, by uentp
 		case 3:    // clear, by id
-		       clear_utmp2(utmpreq.uent);
+		       clear_utmp2(utmpreq.u_info.uent);
 		       id = 0;
 			break;
 		default:

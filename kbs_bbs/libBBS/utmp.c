@@ -29,6 +29,7 @@
 #include "bbs.h"
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <netinet/in.h>
 
 struct UTMPFILE *get_utmpshm_addr()
 {
@@ -100,7 +101,7 @@ struct requesthdr {
 	union {
 		struct user_info utmp;
 		int uent;
-	};
+	}u_info;
 }utmpreq;
 
 int sendutmpreq(struct requesthdr *req)
@@ -139,7 +140,7 @@ int sendutmpreq(struct requesthdr *req)
 
 int getnewutmpent(struct user_info *up){
 	utmpreq.command = 1;
-	memcpy(&utmpreq.utmp,up,sizeof(*up));
+	memcpy(&utmpreq.u_info.utmp,up,sizeof(*up));
 	/* connect and send request */
 	return sendutmpreq(&utmpreq);
 }
@@ -453,7 +454,7 @@ void clear_utmp2(struct user_info* uentp)
 void clear_utmp(int uent)
 {
 	utmpreq.command = 3;
-	utmpreq.uent = uent;
+	utmpreq.u_info.uent = uent;
 	/* connect and clear */
 	sendutmpreq(&utmpreq);
 }

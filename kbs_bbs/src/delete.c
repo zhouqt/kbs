@@ -383,7 +383,7 @@ int kick_user(struct user_info *userinfo)
     }
     if (kill(uin.pid,SIGHUP) == -1)
     {
-    	clear_utmp(userinfo-utmpshm->uinfo)+1);
+    	clear_utmp((userinfo-utmpshm->uinfo)+1);
     }
     sprintf(buffer, "kicked %s", userid);
     report(buffer);
