@@ -292,6 +292,8 @@ int getnewutmpent(struct user_info *up)
                 && ((now - uentp->freshtime) < 360)) {
                 continue;
             }
+			if (uentp->mode == BBSNET) /* 临时解决办法, flyriver */
+				continue;
             if (uentp->active && uentp->pid && kill(uentp->pid, 0) == -1) {     /*uentp检查 */
                 char buf[STRLEN];
 
