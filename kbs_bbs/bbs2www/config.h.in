@@ -47,7 +47,7 @@
 #undef HAVE_MUNMAP
 
 /* Enable MySQL support */
-#undef HAVE_MYSQL
+#undef HAVE_MYSQL_SMTH
 
 /* Define to 1 if you have the <netdb.h> header file. */
 #undef HAVE_NETDB_H

@@ -5124,7 +5124,7 @@ static struct key_command read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
     {'`', (READ_KEY_FUNC)change_mode,(void*)DIR_MODE_DIGEST},
     {'.', (READ_KEY_FUNC)change_mode,(void*)DIR_MODE_DELETED},
     {'>', (READ_KEY_FUNC)change_mode,(void*)DIR_MODE_JUNK},
-    {Ctrl('T'), (READ_KEY_FUNC)change_mode,(void*)DIR_MODE_TITLE},
+    {Ctrl('T'), (READ_KEY_FUNC)change_mode,(void*)DIR_MODE_THREAD},
 
     {'s', (READ_KEY_FUNC)do_select,NULL},
     {'x', (READ_KEY_FUNC)into_announce,NULL},
