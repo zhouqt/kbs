@@ -696,6 +696,10 @@ break;
     
 case 'f':
     case 'F':
+#ifdef NINE_BUILD
+    case 'c':
+    case 'C':
+#endif
         
 if (friendmode)
             
