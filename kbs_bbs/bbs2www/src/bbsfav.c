@@ -102,7 +102,7 @@ int brd_show_boards(int sec, int yank)
         if (ptr->flag == -1) {
             int j;
 
-            j = ptr->pos;
+            j = ptr->tag;
             if (j != -1) {
                 printf("<tr><td>%d</td><td><img src=\"/images/folder.gif\"></td><td>"
                        " <a target=\"f3\" href=\"bbsfav?select=%d\">%s</a></td>"
