@@ -350,7 +350,7 @@ int do_com_menu()
             resetcolor();
             move(t_lines-1, menupos[i]);
             if(i==sel) {
-                setbcolor(BLUE);
+                setfcolor(RED,1);
             }
             prints(menus[i]);
         }
