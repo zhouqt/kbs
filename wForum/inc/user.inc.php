@@ -115,7 +115,7 @@ function showSecs($secNum=0,$isFold) {
 						//	$threads = bbs_getthreads($brd_name[$i],0,1); 
 						//	$start = bbs_get_thread_article_num( $brd_name[$i], $articles[0]['GROUPID']); 
 		?>
-				主题：<a href="disparticle.php?boardName=<?php echo $brd_name[$i]; ?>&ID=0"><?php echo htmlspecialchars($articles[0]['TITLE'],ENT_QUOTES); ?></a><BR>作者：<a href="userinfo.php?id=<?php echo $articles[0]['OWNER']; ?>" target=_blank><?php echo $articles[0]['OWNER']; ?></a><BR>日期：<?php echo strftime('%Y-%m-%d %H:%M:%S', intval($articles[0]['POSTTIME'])) ; ?>&nbsp;<a href="disparticle.php?boardName=<?php echo $brd_name[$i]; ?>&ID=0&start=<?php echo $start?>"><IMG border=0 src="pic/lastpost.gif" title="转到：<?php echo $articles[0]['TITLE']; ?>"></a>
+				主题：<a href="disparticle.php?boardName=<?php echo $brd_name[$i]; ?>&ID=<?php echo $articles[0]['ID']; ?>"><?php echo htmlspecialchars($articles[0]['TITLE'],ENT_QUOTES); ?></a><BR>作者：<a href="userinfo.php?id=<?php echo $articles[0]['OWNER']; ?>" target=_blank><?php echo $articles[0]['OWNER']; ?></a><BR>日期：<?php echo strftime('%Y-%m-%d %H:%M:%S', intval($articles[0]['POSTTIME'])) ; ?>&nbsp;<a href="disparticle.php?boardName=<?php echo $brd_name[$i]; ?>&ID=<?php echo $articles[0]['ID']; ?>&start=<?php echo $start?>"><IMG border=0 src="pic/lastpost.gif" title="转到：<?php echo $articles[0]['TITLE']; ?>"></a>
 	<?php
 						}
 					}
@@ -187,7 +187,7 @@ arNews = [<?php
 				} else {
 					$num=count($articles);
 					for ($i=0;$i<$num;$i++) {
-					echo '"<b><a href=\"disparticle.php?boardName='.$brdarr['NAME'].'&ID='.($i).'\">' .htmlspecialchars($articles[$i]['TITLE'],ENT_QUOTES) . '</a></b> ('.strftime('%Y-%m-%d %H:%M:%S', intval($articles[$i]['POSTTIME'])).')","",';
+					echo '"<b><a href=\"disparticle.php?boardName='.$brdarr['NAME'].'&ID='.$articles[$i]['ID'].'\">' .htmlspecialchars($articles[$i]['TITLE'],ENT_QUOTES) . '</a></b> ('.strftime('%Y-%m-%d %H:%M:%S', intval($articles[$i]['POSTTIME'])).')","",';
 					}
 				}
 			}
