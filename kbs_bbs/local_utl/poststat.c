@@ -576,12 +576,6 @@ void poststat(int mytype, time_t now, struct tm *ptime)
 
         char *p;
 
-#ifdef BLESS_BOARD
-        if (mytype == 0) {
-            unlink("etc/posts/bless.0");
-            post_file(NULL, "", "etc/posts/bless", BLESS_BOARD, "十大祝福", 0, 1);
-        }
-#endif
         i = mycount[mytype];
         p = myfile[mytype];
         while (i) {
@@ -649,11 +643,17 @@ int main(int argc, char **argv)
 
     resolve_boards();
     if (ptime.tm_hour == 0) {
+		if (ptime.tm_yday == 1)
+			poststat(2, now, &ptime);
         if (ptime.tm_mday == 1)
-            poststat(2, now, &ptime);
-        if (ptime.tm_wday == 0)
             poststat(1, now, &ptime);
-        poststat(0, now, &ptime);
+        if (ptime.tm_wday == 0)
+            poststat(0, now, &ptime);
+		unlink("etc/posts/day.0");
+#ifdef BLESS_BOARD
+        unlink("etc/posts/bless.0");
+        post_file(NULL, "", "etc/posts/bless", BLESS_BOARD, "十大祝福", 0, 1);
+#endif
     }
     poststat(-1, now, &ptime);
     if (ptime.tm_hour == 23) {
