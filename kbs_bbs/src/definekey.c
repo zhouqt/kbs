@@ -395,7 +395,7 @@ static int set_keydefine_key(struct _select_def *conf, int key)
             prints("%s\n", buf);
             k.key = i;
             move(2, 0);
-            prints("请输入替换序列(最多10个)，按两次ESC结束: ");
+            prints("请输入替换序列(最多10个)，按一次ESC结束: ");
             j=0;
             do{
                 do {
@@ -436,7 +436,7 @@ static int set_keydefine_key(struct _select_def *conf, int key)
             prints("%s\n", buf);
             k.key = i;
             move(2, 0);
-            prints("请输入替换序列(最多10个)，按两次ESC结束: ");
+            prints("请输入替换序列(最多10个)，按一次ESC结束: ");
             j=0;
             do{
                 do {
