@@ -356,7 +356,12 @@ function html_init($charset="",$title="",$otherheader="")
 }
 
 
-function showLogon($showBack = 0){
+function showLogon($showBack = 0, $comeurl = "") {
+	if ($comeurl == "") {
+		if (isset($_SERVER['HTTP_REFERER'])) {
+			$comeurl = $_SERVER['HTTP_REFERER'];
+		}
+	}
 ?>
 	<table cellpadding=3 cellspacing=1 align=center class=TableBorder1 style="width: 75%;">
 	<form action="logon.php" method=post> 
@@ -377,13 +382,13 @@ function showLogon($showBack = 0){
 				<input type=radio name=CookieDate value=2>保存一月<br>
 				<input type=radio name=CookieDate value=3>保存一年<br>                
 	</td></tr>
-	<input type=hidden name=comeurl value="<?php echo htmlspecialchars($_SERVER['HTTP_REFERER']); ?>">
+	<input type=hidden name=comeurl value="<?php echo htmlspecialchars($comeurl); ?>">
 	<tr>
 	<td class=TableBody2 valign=middle colspan=2 align=center><input tabindex="3" type=submit name=submit value="登 录">
 <?php
 	if ($showBack) {
 ?>
-	&nbsp;&nbsp;<input type=button name="back" value="返 回" onclick="location.href='<?php  echo $_SERVER['HTTP_REFERER']; ?>'">
+	&nbsp;&nbsp;<input type=button name="back" value="返 回" onclick="location.href='<?php  echo $comeurl; ?>'">
 <?php
 	}
 ?>
@@ -437,7 +442,6 @@ function html_error_quit()
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1 style="width: 75%;">
 <tr align=center>
 <th height=25>论坛错误信息</th>
-</td>
 </tr>
 <tr>
 <td class=TableBody1>
@@ -467,7 +471,6 @@ function html_success_quit($Desc='',$URL='')
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1 style="width: 75%;">
 <tr align=center>
 <th width="100%">论坛成功信息</th>
-</td>
 </tr>
 <tr>
 <td width="100%" class=TableBody1>

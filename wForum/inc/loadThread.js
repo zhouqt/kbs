@@ -127,8 +127,8 @@ function showSec(isFold, isFav, boards, secNum) {
 				str += '<td class=TableBody1 width="'+percent+'%"><TABLE cellSpacing=2 cellPadding=2 width=100% border=0><tr><td width="100%" colspan=2>';
 
 				if (!isFav || !boards[i].isGroup) {
-					str += '<a href="board.php?name=' + boards[i].boardName + '"><font color=#000066>' + boards[i].boardDesc + '</font>';
-					str += '&nbsp;[' + boards[i].boardName + ']</a>';
+					str += '<a href="board.php?name=' + boards[i].boardName + '"><font color=#000066>' + boards[i].boardDesc;
+					str += '&nbsp;[' + boards[i].boardName + ']</font></a>';
 					if (isFav) {
 						str += '&nbsp;&nbsp;<a href="favboard.php?select=' + boards[i].select + '&delete=' + boards[i].npos + '" title="从收藏中删除该版面">&lt;删&gt;</a>';
 					}
