@@ -537,6 +537,7 @@ static void assign_userinfo(zval * array, struct user_info *uinfo, int num)
     add_assoc_long(array, "logintime", uinfo->logintime);
     add_assoc_long(array, "freshtime", uinfo->freshtime);
     add_assoc_long(array, "utmpkey", uinfo->utmpkey);
+    add_assoc_long(array, "mailbox_prop", uinfo->mailbox_prop);
     add_assoc_string(array, "userid", uinfo->userid, 1);
     add_assoc_string(array, "realname", uinfo->realname, 1);
     add_assoc_string(array, "username", uinfo->username, 1);
@@ -905,11 +906,9 @@ static PHP_FUNCTION(bbs_setuserparam){
 		RETURN_LONG(-1);
 	}
 	getCurrentUser()->userdefine[0] = userparam0;
-#if 0
     getCurrentUser()->userdefine[1] = userparam1;
     currentuinfo->mailbox_prop = update_mailbox_prop(getCurrentUser()->userid, mailboxprop); //ToDo: global variable!!! - atppp
     store_mailbox_prop(getCurrentUser()->userid);
-#endif
 	RETURN_LONG(0);
 }
 
@@ -1446,7 +1445,7 @@ static void bbs_make_article_array(zval * array, struct fileheader *fh, char *fl
 {
     add_assoc_string(array, "FILENAME", fh->filename, 1);
 	if (fh->o_bid > 0)
-    	add_assoc_string(array, "O_BOARD", getboard(fh->o_bid)->filename, 1); /* for compitible */
+    	add_assoc_string(array, "O_BOARD", (char*)(getboard(fh->o_bid)->filename), 1); /* for compitible */
 	else
     	add_assoc_string(array, "O_BOARD", "", 1); /* for compitible */
     add_assoc_long(array, "O_BID", fh->o_bid);
