@@ -1,6 +1,6 @@
 bin_PROGRAMS = poststat static usage Xclean Xhtml Bhtml refriend chlevel listonline \
 	showBM idx0Ann lazybm fixdir autoundeny fixwebmsg login statBM gen_title \
-	resetMailTotal convpass getadmin cnv_brdflag find_rm_lost \
+	resetMailTotal getadmin cnv_brdflag find_rm_lost \
 	cnv_bh statguy cnv_bh2 autoclear ch_brdflag statkiller showipdeny \
 	convpass356
 EXTRA_PROGRAMS = 
