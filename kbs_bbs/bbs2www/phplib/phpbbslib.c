@@ -449,9 +449,7 @@ static PHP_FUNCTION(bbs_is_yank){
 }
 static PHP_FUNCTION(bbs_alter_yank){
 	currentuinfo->yank=~currentuinfo->yank;
-	
-	RETURN_TRUE:
-	
+	RETURN_LONG(currentuinfo->yank);
 };
 #endif
 static inline int getcurrentuinfo_num()

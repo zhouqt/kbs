@@ -2881,7 +2881,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
 	for ( i = 0; i<attachmatched ; i++ ){
 		if (!attachShowed[i]) { 
 			char outbuf[512];
-			switch(attachType[UBBArg1-1]) {
+			switch(attachType[i]) {
 			case ATTACH_IMG:
 		 		snprintf(outbuf, 511, "<br><IMG SRC=\"images/files/img.gif\" border=0>此主题相关图片如下：<br><A HREF=\"%s&ap=%d\" TARGET=_blank><IMG SRC=\"%s&ap=%d\" border=0 alt=按此在新窗口浏览图片 onload=\"javascript:if(this.width>screen.width-333)this.width=screen.width-333\"></A> ",attachlink, attachPos[i],attachlink, attachPos[i]);
 				break;
