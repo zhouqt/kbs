@@ -581,45 +581,48 @@ int countperf(struct userec *udata)
             (float) udata->numlogins / (float) reg_days) * 10;
     return perf > 0 ? perf : 0;
 }
+
+/*
+ * 根据阅读模式 取某版 目录路径 
+ */
 char *setbdir(int digestmode, char *buf, char *boardname)
-  /*
-   * 根据阅读模式 取某版 目录路径 
-   */
 {
     char dir[STRLEN];
 
     switch (digestmode) {
-    case false:
-        strcpy(dir, DOT_DIR);
-        break;
-    case true:
+    case DIR_MODE_DIGEST:
         strcpy(dir, DIGEST_DIR);
         break;
-    case 2:
+    case DIR_MODE_THREAD:
         strcpy(dir, THREAD_DIR);
         break;
-    case 3:
+    case DIR_MODE_MARK:
         strcpy(dir, ".MARK");
         break;
-    case 4:
+    case DIR_MODE_DELETED:
         strcpy(dir, ".DELETED");
         break;
-    case 5:
+    case DIR_MODE_JUNK:
         strcpy(dir, ".JUNK");
         break;
-    case 6:
+    case DIR_MODE_ORIGIN:
         strcpy(dir, ".ORIGIN");
         break;
-    case 7:
+    case DIR_MODE_AUTHOR:
         sprintf(dir, ".AUTHOR.%s", currentuser->userid);
         break;
-    case 8:
+    case DIR_MODE_TITLE:
         sprintf(dir, ".TITLE.%s", currentuser->userid);
+        break;
+    case DIR_MODE_NORMAL:
+	default:
+        strcpy(dir, DOT_DIR);
         break;
     }
     sprintf(buf, "boards/%s/%s", boardname, dir);
     return buf;
 }
+
 char *sethomefile(char *buf, char *userid, char *filename)
 {                               /*取某用户文件 路径 */
     if (isalpha(userid[0]))     /* 加入错误判断,提高容错性, alex 1997.1.6 */
