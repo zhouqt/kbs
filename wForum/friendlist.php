@@ -70,7 +70,7 @@ function preProcess() {
 			$error = 1;			
 		}
 	}
-	if ($error > 0) {
+	if ($error > 0) { //ToDo: 这里可以用 html_success_quit html_error_quit foundErr setSucMsg 等标准函数来做。- atppp
 ?>
 <table cellpadding=3 cellspacing=1 align=center class=tableborder1 style="width:75%">
 <tr align=center>
