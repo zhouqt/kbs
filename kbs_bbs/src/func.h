@@ -500,8 +500,8 @@ void *memmem(register const void *s, size_t slen, register const void *p,
 time_t calc_calltime(int mode);
 
 #ifdef SMS_SUPPORT
-void uid2smsnumber(struct user_info uin,char* number);
-int smsnumber2uid(char* number);
+void uid2smsnumber(struct user_info* uin,char* number);
+int smsnumber2uid(byte number[4]);
 unsigned int byte2long(byte arg[4]);
 void long2byte(unsigned int num, byte* arg);
 #endif

@@ -816,7 +816,7 @@ int auto_register(char* userid,char* email,int msize)
 	return 0;
 }
 
-int smsnumber2uid(char* number)
+int smsnumber2uid(byte number[4])
 {
     int uid;
     char buf[10];
@@ -829,7 +829,7 @@ int smsnumber2uid(char* number)
     return uid;
 }
 
-void uid2smsnumber(struct user_info uin,char* number)
+void uid2smsnumber(struct user_info* uin,char* number)
 {
   sprintf(number,"1%d",uin->uid);
 }
