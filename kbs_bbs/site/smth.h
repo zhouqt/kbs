@@ -363,6 +363,9 @@ attach define
 #define QUOTELEV 0
 #define BOARD_SHOW_ONLINE 1
 
+#define BIRTHFILENUM 12
+#define BIRTHFILEPATH "0Announce/groups/system.faq/SYSOP/birthfile"
+
 #define BMSLOG
 
 #endif

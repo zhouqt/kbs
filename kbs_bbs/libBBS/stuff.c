@@ -2366,3 +2366,32 @@ int bms_del(char *userid, char *boardname)
 
 #endif //BMSLOG
 #endif //HAVE_MYSQL_SMTH
+
+#ifdef BIRTHFILEPATH
+
+int mail_birth()
+{
+	time_t now;
+	struct tm t;
+	int i;
+	char filename[256];
+
+    if ( ! DEFINE(getCurrentUser(), DEF_SHOWDETAILUSERDATA))
+		return 0;
+
+	now = time(0);
+	localtime_r(&now,&t);
+
+	if (t.tm_mon+1!=getSession()->currentmemo->ud.birthmonth || t.tm_mday!=getSession()->currentmemo->ud.birthday)
+		return 0;
+
+	i=rand() % BIRTHFILENUM;
+
+	sprintf(filename, "%s/%d", BIRTHFILEPATH, i);
+
+    mail_file("SYSOP", filename, getCurrentUser()->userid, NAME_BBS_CHINESE "¹§×£ÄúÉúÈÕ¿ìÀÖ", BBSPOST_COPY, NULL);
+
+	return 1;
+}
+
+#endif

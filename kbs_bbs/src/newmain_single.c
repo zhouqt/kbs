@@ -698,6 +698,10 @@ void login_query()
 		exit(1);
 	}
 
+#ifdef BIRTHFILEPATH
+	mail_birth();
+#endif
+
     alarm(0);
     signal(SIGALRM, SIG_IGN);   /*Haohmaru.98.11.12 */
     term_init();

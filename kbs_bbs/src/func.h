@@ -202,6 +202,9 @@ void set_user_title(unsigned char titleidx,char* newtitle);
 	int bms_del(char *userid, char *boardname);
 #endif
 #endif
+#ifdef BIRTHFILEPATH
+	int mail_birth();
+#endif
 
 #ifndef CYGWIN
 #define time(x) bbstime(x)
