@@ -290,6 +290,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 			}
 		}
 ?>
+<option value="-1" <?php if ($currentuser["signature"] < 0) echo "selected "; ?>>随机签名档</option>
 </select>
  [<a target="_balnk" href="bbssig.php">查看签名档</a>]<br>
  <?php
