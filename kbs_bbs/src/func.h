@@ -445,6 +445,12 @@ int clean_cachedata(char* userid,int unum);
 #ifdef HAVE_TSINGHUA_INFO_REGISTER
 int auto_register(char* userid,char* email,int msize);
 #endif
+
+/* libc */
+#ifndef HAVE_MEMMEM
+void *memmem(register const void *s, size_t slen, register const void *p, 
+		size_t plen);
+#endif /* ! HAVE_MEMMEM */
     
 #ifdef __cplusplus
 }
