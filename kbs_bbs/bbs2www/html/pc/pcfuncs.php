@@ -666,4 +666,19 @@ function pc_update_cache_header($updatetime = 20)
 	header("Cache-Control: max-age=" . "$expiretime");
 	return FALSE;
 }
+
+function pc_logs($link , $action , $comment = "" , $pri_id = 0 , $sec_id = 0)
+{
+	global $currentuser;
+	if( !pc_is_manager($currentuser) )
+		return FALSE;
+	if( !$action ) 
+		return FALSE;
+	
+	$query = "INSERT INTO `logs` ( `lid` , `username` , `hostname` , `ACTION` , `pri_id` , `sec_id` , `COMMENT` , `logtime` )".
+		"VALUES ('', '".addslashes($currentuser[userid])."', '".addslashes($_SERVER["REMOTE_ADDR"])."', '".addslashes($action)."', '".intval($pre_id)."', '".intval($sec_id)."', '".addslashes($comment)."', NOW( ) );";
+	mysql_query($query,$link);
+	return TRUE;
+}
+
 ?>
