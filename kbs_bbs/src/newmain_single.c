@@ -362,7 +362,7 @@ void system_init()
 void system_abort()
 {
     if (started) {
-        bbslog("1ABORT", currentuser->username);
+        bbslog("1system","ABORT %s", currentuser->username);
         u_exit();
     }
     clear();
