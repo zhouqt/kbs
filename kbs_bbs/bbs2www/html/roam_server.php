@@ -49,7 +49,7 @@ function bbs_roam_query ($query_string,$query_keys,$type,&$data,&$err) {
 	fputs($fp, "$encoded\n");
 	
 	$line = fgets($fp,1024);
-	if (!eregi("^HTTP/1\.. 200", $line) && !eregi("^HTTP/1\.. 302", $line)) {
+	if (!eregi("^HTTP/1\.. 200", $line)) {
 	    return -3;
 	}
 	

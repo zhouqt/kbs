@@ -8,9 +8,9 @@ $filename = $_POST['filename'];
 $userid   = $_POST['userid'];
 
 if (bbs_ann_traverse_check($filename,$userid))
-    web_service_error (1,'OK');
+    web_service_error (0,'OK');
 else
-    web_service_error (0,'NO');
+    web_service_error (1,'NO');
 
 exit ();
 ?>
