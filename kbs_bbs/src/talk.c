@@ -639,8 +639,8 @@ int ttt_talk(struct user_info *userinfo)
                                  */
             do_talk(msgsock);
         }
-	    if (talkrequest)
-	        talkreply();
+	if (talkrequest)
+	    talkreply();
         close(msgsock);
         clear();
         refresh();
@@ -657,7 +657,6 @@ int t_talk()
     clear();
     return (netty_talk);
 }
-extern int talkrequest;
 struct user_info ui;
 char page_requestor[STRLEN];
 char page_requestorid[STRLEN];

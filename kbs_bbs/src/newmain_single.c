@@ -66,7 +66,6 @@ FILE *ufp;
 int RUNSH = false;
 int ERROR_READ_SYSTEM_FILE = false;
 int talkrequest = false;
-int ntalkrequest = false;
 time_t lastnote;
 
 struct user_info uinfo;

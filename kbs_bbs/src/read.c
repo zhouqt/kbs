@@ -237,7 +237,6 @@ static int search_author(struct keeploc *locmem, int offset, char *powner)
 
 void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, struct one_key *rcmdlist, int ssize)
 {
-    extern int talkrequest;
     struct keeploc *locmem;
     char lbuf[11];
     int lbc, recbase, mode, ch;

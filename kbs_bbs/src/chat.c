@@ -35,7 +35,6 @@
 #include "chat.h"
 extern char MsgDesUid[14];      /* 保存所发msg的目的uid 1998.7.5 by dong */
 extern char page_requestor[];
-extern int talkrequest;
 extern char *modestring();
 extern char pagerchar();
 extern struct UTMPFILE *utmpshm;

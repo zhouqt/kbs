@@ -2176,8 +2176,6 @@ void notepad()
     FILE *in;
     int i, n;
     time_t thetime = time(0);
-    extern int talkrequest;
-
 
     clear();
     move(0, 0);

@@ -521,7 +521,9 @@ int igetkey()
          */
         ch = igetch();
 
-	    if (talkrequest) {
+        check_calltime();
+
+        if (talkrequest) {
         	if(uinfo.mode!=CHAT1&&uinfo.mode!=CHAT2&&uinfo.mode!=CHAT3&&uinfo.mode!=CHAT4
         		&&uinfo.mode!=TALK&&uinfo.mode!=PAGE) {
 		        talkreply();
