@@ -557,7 +557,6 @@ void check_register_info()
         /*  above lines added by netty...  */
     }
 //    	curruserdata.realemail[STRLEN -16 - 1] = '\0';  //¾À´í´úÂë
-	{char cmd[256];sprintf(cmd,"echo _4%s__ >> /home/bbs/stiger.test",currentmemo->ud.realemail);system(cmd);}
     	currentmemo->ud.realemail[STRLEN -16 - 1] = '\0';  //¾À´í´úÂë
 //	write_userdata(currentuser->userid, &curruserdata);
 	write_userdata(currentuser->userid, &(currentmemo->ud));
