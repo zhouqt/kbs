@@ -279,6 +279,7 @@ a_select_path_key(struct _select_def *conf, int key)
     	       return SHOW_REFRESH;
     	 case 'R':
     	 case 'r':
+	        free_import_path();
     	 	load_import_path();
     	 	return SHOW_DIRCHANGE;
     	 case 'a':
