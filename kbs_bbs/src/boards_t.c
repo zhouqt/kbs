@@ -123,7 +123,7 @@ search_board( int *num,int *i,int *find,char* bname)
 
     if (*find == YEA)
     {
-        bzero(bname, sizeof(bname));
+        bzero(bname, STRLEN);
         *find = NA;
         *i = 0;
     }
