@@ -886,6 +886,7 @@ void mailtitle()
     prints("[44m±àºÅ    %-12s %6s  %-13sÄúµÄĞÅÏäÉÏÏŞÈİÁ¿%4dK£¬µ±Ç°ÒÑÓÃ%4dK ", (strstr(currmaildir, ".SENT")) ? "ÊÕĞÅÕß" : "·¢ĞÅÕß", "ÈÕ  ÆÚ", "±ê  Ìâ", MailSpace, UsedSpace);    /* modified by dong , 1998.9.19 */
     clrtoeol();
     prints("\n");
+    resetcolor();
 }
 
 char *maildoent(char *buf, int num, struct fileheader *ent)
