@@ -190,6 +190,20 @@ function rss_time_format($t)
 	return $t;
 }
 
+function pc_get_links($linkstr)
+{
+	if(!$linkstr)
+		return NULL;
+	$linkarrays = explode("||",$linkstr);	
+	$links = array();
+	for($i = 0 ; $i < count($linkarrays) ; $i ++ )
+	{
+		$linkarray = explode("|",$linkarrays[$i]);
+		$links[$i] = array("LINK" => base64_decode($linkarray[0]) , "URL" => base64_decode($linkarray[1]));
+	}
+	return $links ;
+}
+
 function pc_friend_file_open($id,$write="r")
 {
 	global $pcconfig;
@@ -332,20 +346,21 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 	else
 	{
 		$pc = array(
-			"NAME" => html_format($rows[corpusname]),
+			"NAME" => html_format($rows[corpusname])." ",
 			"USER" => $rows[username],
 			"UID" => $rows[uid],
-			"DESC" => html_format($rows[description]),
-			"THEM" => html_format($rows[theme]),
+			"DESC" => html_format($rows[description])." ",
+			"THEM" => html_format($rows[theme])." ",
 			"TIME" => $rows[createtime],
 			"VISIT" => $rows[visitcount],
 			"MODIFY" => $rows[modifytime],
 			"NODES" => $rows[nodescount],
 			"STYLE" => pc_style_array($rows[stype]),
 			"LOGO" => str_replace("<","&lt;",stripslashes($rows[logoimage])),
-			"BKIMG" => str_replace("<","&lt;",stripslashes($rows[backimage]))
+			"BKIMG" => str_replace("<","&lt;",stripslashes($rows[backimage])),
+			"LINKS" => pc_get_links(stripslashes($rows[links]))
 			);
-		return $pc;
+	return $pc;
 	}
 }
 

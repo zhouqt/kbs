@@ -19,24 +19,13 @@
 	else
 	{
 		$link = pc_db_connect();
-		$query = "SELECT `uid`,`nodelimit`,`dirlimit`,`corpusname`,`username`  FROM users WHERE username = '".$currentuser["userid"]."' AND `createtime` > '".date("YmdHis",$currentuser["firstlogin"])."' LIMIT 0 , 1 ;";
-		$result = mysql_query($query,$link);
-		$rows = mysql_fetch_array($result);
-		if(!$rows)
+		$pc = pc_load_infor($link,$currentuser["userid"]);
+		if(!$pc || !pc_is_admin($currentuser,$pc))
 		{
-			mysql_free_result($result);
 			pc_db_close($link);
 			html_error_quit("对不起，您要查看的个人文集不存在");
 			exit();
 		}
-		$pc = array(
-				"UID" => $rows[uid],
-				"NLIM" => $rows[nodelimit],
-				"DLIM" => $rows[dirlimit],
-				"USER" => $rows[username],
-				"NAME" => $rows[corpusname]
-				);
-		mysql_free_result($result);
 		
 		$act = $_GET["act"]?$_GET["act"]:$_POST["act"];
 		
@@ -194,7 +183,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 </tr>
 <tr>
 	<td class="t8">主题
-	<input type="text" size="100" name="subject" class="f1">
+	<input type="text" size="100" maxlength="200" name="subject" class="f1">
 	</td>
 </tr>
 <tr>
@@ -302,7 +291,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 <tr>
 	<td class="t8">
 	主题
-	<input type="text" size="100" class="f1" name="subject" value="<?php echo htmlspecialchars(stripslashes($rows[subject])); ?>">
+	<input type="text" size="100" class="f1" maxlength="200" name="subject" value="<?php echo htmlspecialchars(stripslashes($rows[subject])); ?>">
 	</td>
 </tr>
 <tr>

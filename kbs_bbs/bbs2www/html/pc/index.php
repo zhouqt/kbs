@@ -59,7 +59,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 			if($i%2==0)
 				$cellclass=array("t14","t11","t8");
 			else
-				$cellclass=array("f1","t13","t5");
+				$cellclass=array("t16","t13","t5");
 			echo "<table cellspacing=0 cellpadding=5 width=650 class=t15>\n".
 			"<tr><td class=\"".$cellclass[0]."\"><img src=\"icon/".$nodes[$i][emote].".gif\" border=0 align=absmiddle>\n".
 			"<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\" class=f2>".html_format($nodes[$i][subject])."</a></td>".
@@ -267,10 +267,10 @@ PassWord:
 		.: Links :. 
 		</td></tr>
 		<tr><td class="t4">
-		<a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>" class="f1">:BlogÂÛÌ³:</a>
-		<a href="pcsearch2.php" class="f1">:BlogËÑË÷:</a>
-		<a href="pc.php" class="f1">:BlogÊ×Ò³:</a>
-		<a href="http://<?php echo $pcconfig["SITE"]; ?>" class="f1">:<?php echo BBS_FULL_NAME; ?>:</a>
+		<?php
+			foreach($pc["LINKS"] as $link)
+				echo "<a href='http://".$link["URL"]."'>".htmlspecialchars($link["LINK"])."</a>\n";
+		?>
 		<br><br>
 		<a href="rss.php?userid=<?php echo $pc["USER"]; ?>" target="_blank">
 		<img src="images/xml.gif" align="absmiddle" alt="XML" border="0">

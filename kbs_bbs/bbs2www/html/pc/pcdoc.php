@@ -393,7 +393,7 @@
 <input type="hidden" name="pid" value="<?php echo $pid; ?>">
 <p class="b2" align="center">
 新建目录:
-<input type="text" name="dir" size="40" id="dir" class="b2">
+<input type="text" name="dir" maxlength="200" size="40" id="dir" class="b2">
 <input type="submit" value="新建目录" class="b1">
 </p>
 </form>
@@ -503,7 +503,7 @@
 	<option value="2">私人区</option>
 </select>
 文集名
-<input type="text" name="topicname" size="30" class="b2">
+<input type="text" name="topicname" maxlength="200" size="30" class="b2">
 <input type="submit" value="新建文集" class="b1">
 </p>
 </form>
@@ -521,33 +521,39 @@
 <tr>
 	<td class="t3">文集名称</td>
 	<td class="t5">&nbsp;
-	<input type="text" name="pcname" id="pcname" value="<?php echo $pc["NAME"]; ?>" class="f1">
+	<input type="text" maxlength="40" name="pcname" id="pcname" value="<?php echo $pc["NAME"]; ?>" class="f1">
 	</td>
 </tr>
 <tr>
 	<td class="t3">文集描述</td>
 	<td class="t5">&nbsp;
-	<input type="text" name="pcdesc" value="<?php echo $pc["DESC"]; ?>" class="f1">
+	<input type="text" maxlength="200" name="pcdesc" value="<?php echo $pc["DESC"]; ?>" class="f1">
 	</td>
 </tr>
 <tr>
 	<td class="t3">文集主题</td>
 	<td class="t5">&nbsp;
-	<input type="text" name="pcthem" value="<?php echo $pc["THEM"]; ?>" class="f1">
+	<input type="text" maxlength="20" name="pcthem" value="<?php echo $pc["THEM"]; ?>" class="f1">
 	</td>
 </tr>
 <tr>
 	<td class="t3">Logo图片</td>
 	<td class="t5">&nbsp;
-	<input type="text" name="pclogo" value="<?php echo htmlspecialchars($pc["LOGO"]); ?>" class="f1">
+	<input type="text" maxlength="255" name="pclogo" value="<?php echo htmlspecialchars($pc["LOGO"]); ?>" class="f1">
 	(请填写Logo图片所在的URL地址，留空表示无LOGO图片)
 	</td>
 </tr>
 <tr>
 	<td class="t3">背景图片</td>
 	<td class="t5">&nbsp;
-	<input type="text" name="pcbkimg" value="<?php echo htmlspecialchars($pc["BKIMG"]); ?>" class="f1">
+	<input type="text" name="pcbkimg" maxlength="255" value="<?php echo htmlspecialchars($pc["BKIMG"]); ?>" class="f1">
 	(请填写背景图片所在的URL地址，留空表示无背景图片)
+	</td>
+</tr>
+<tr>
+	<td class="t3">友情链接管理</td>
+	<td class="t5">&nbsp;
+	<a href="pclinks.php">点击此处</a>
 	</td>
 </tr>
 <tr>

@@ -75,7 +75,7 @@
 <tr>
 	<td class="t8">
 	Ö÷Ìâ
-	<input type="text" name="subject" size="100" class="f1">
+	<input type="text" name="subject" maxlength="200" size="100" class="f1">
 	</td>
 </tr>
 <tr>

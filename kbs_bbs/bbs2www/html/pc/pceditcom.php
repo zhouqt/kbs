@@ -73,7 +73,7 @@
 <tr>
 	<td class="t8">
 	Ö÷Ìâ
-	<input class="f1" type="text" name="subject" size="100" value="<?php echo htmlspecialchars(stripslashes($rows[subject])); ?>">
+	<input class="f1" maxlength="200" type="text" name="subject" size="100" value="<?php echo htmlspecialchars(stripslashes($rows[subject])); ?>">
 	</td>
 </tr>
 <tr>
