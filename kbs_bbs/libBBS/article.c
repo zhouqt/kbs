@@ -1657,12 +1657,16 @@ int attach_fgets(char* s,int size,FILE* stream)
             return 1;
         }
      }
+     *ptr=ch;
+     ptr++;
+     if ((ptr-s)==size-1) {
+	     *(ptr-1)=0;
+	     return 0;
+     }
      if (ch=='\n') {
         *ptr=0;
         return 0;
      }
-     *ptr=ch;
-     ptr++;
   }
   return -1;
 }
