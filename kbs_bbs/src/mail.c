@@ -2054,7 +2054,7 @@ void load_mail_list()
     char fname[STRLEN];
     int fd;
 
-    sethomefile(fname, currentuser->userid, "maillist");
+    sethomefile(fname, currentuser->userid, "maildir");
     mail_list_t=0;
     if ((fd = open(fname, O_RDONLY, 0600)) != -1) {
         read(fd, &mail_list_t, sizeof(int));
@@ -2068,7 +2068,7 @@ void save_mail_list()
     char fname[STRLEN];
     int fd;
 
-    sethomefile(fname, currentuser->userid, "maillist");
+    sethomefile(fname, currentuser->userid, "maildir");
     if ((fd = open(fname, O_WRONLY|O_CREAT, 0600)) != -1) {
         write(fd, &mail_list_t, sizeof(int));
         write(fd, mail_list, sizeof(mail_list));

@@ -66,7 +66,7 @@ append_mail(fin, sender1, sender, userid, title)
                 fgets(fff2, sizeof(fff2), dp);
                 fclose(dp);
                 sprintf(fff2, "%9.9s", fff2);
-                if (dosearchuser(sender1) && strstr(title, fff2) /*&&strstr(sender,checkuser.email) */ ) {
+                if (getuser(sender1,NULL) && strstr(title, fff2) /*&&strstr(sender,checkuser.email) */ ) {
                     printf("pass1\n");
 
                     unlink(fff);

@@ -732,6 +732,7 @@ int choose_board(int newflag, char *boardprefix)
                 clrtoeol();
                 getdata(0, 0, "输入邮箱英文名: ", bname, 10, DOECHO, NULL, true);
                 sprintf(buf, ".%s", bname);
+		if (buf[0]==0) break;
                 if (!valid_fname(bname)) {
                     move(2, 0);
                     clrtoeol();
@@ -744,6 +745,7 @@ int choose_board(int newflag, char *boardprefix)
                 	move(0, 0);
                 	clrtoeol();
                 	getdata(0, 0, "输入邮箱显示中文名: ", buf, 30, DOECHO, NULL, true);
+		        if (buf[0]==0) break;
                 	strncpy(mail_list[mail_list_t], buf, 29);
                 	strncpy(mail_list[mail_list_t]+30, bname, 9);
                 	mail_list_t++;
