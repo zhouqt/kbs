@@ -355,7 +355,7 @@
 				</DIV>
 			</td>
 			<td>
-			<a href='/pc/pcmain.php'>
+			<a href='/pc/pcmain.php' target='f3'>
 			<img src="<?php echo $img_subdir; ?>m3.gif" border="0" alt="<?php echo BBS_FULL_NAME; ?>Blog" align="absmiddle"> ˮľBlog
 			</a>
 			</td>
