@@ -910,6 +910,7 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     case KEY_UP:
     case KEY_PGUP:
     case 'k':
+    case 'l':
         return READ_PREV;
     case 'Y':
     case 'R':
@@ -991,7 +992,6 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
         return READ_NEXT;
         break;
     case 'L':
-    case 'l':
         if (uinfo.mode != LOOKMSGS) {
             show_allmsgs();
             break;

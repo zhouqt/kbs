@@ -767,9 +767,9 @@ void mem_printbotline(int l1, int l2, int total, int read, int size)
 	     (read >= size) ? "¿´µ½Ä©Î²À²" : "ÏÂÃæ»¹ÓÐà¸",
 	     total ? (100 * l2 / total) : (100 * read / size), l1, l2, s[n]);*/
     if (currentuser != NULL && DEFINE(currentuser, DEF_HIGHCOLOR))
-        prints("[1;44m[32mÏÂÃæ»¹ÓÐà¸ (%d%%) µÚ(%d-%d)ÐÐ[33m | g Ìø×ª | j k ÉÏÏÂÆª | / ? ËÑË÷ | s e ¿ªÍ·Ä©Î²|", total ? (100 * l2 / total) : (100 * read / size), l1, l2);
+        prints("[1;44m[32mÏÂÃæ»¹ÓÐà¸ (%d%%) µÚ(%d-%d)ÐÐ[33m | g Ìø×ª | l n ÉÏÏÂÆª | / ? ËÑË÷ | s e ¿ªÍ·Ä©Î²|", total ? (100 * l2 / total) : (100 * read / size), l1, l2);
     else
-        prints("[44m[32mÏÂÃæ»¹ÓÐà¸ (%d%%) µÚ(%d-%d)ÐÐ[33m | g Ìø×ª | j k ÉÏÏÂÆª | / ? ËÑË÷ | s e ¿ªÍ·Ä©Î²|", total ? (100 * l2 / total) : (100 * read / size), l1, l2);
+        prints("[44m[32mÏÂÃæ»¹ÓÐà¸ (%d%%) µÚ(%d-%d)ÐÐ[33m | g Ìø×ª | l n ÉÏÏÂÆª | / ? ËÑË÷ | s e ¿ªÍ·Ä©Î²|", total ? (100 * l2 / total) : (100 * read / size), l1, l2);
     clrtoeol();
     resetcolor();
 }
@@ -819,9 +819,11 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
             move(t_lines - 1, 0);
             clrtoeol();
             switch (ch) {
+            case 'k':
             case KEY_UP:
                 change = -1;
                 break;
+            case 'j':
             case KEY_DOWN:
             case 'd':
             case '\n':
@@ -906,16 +908,14 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
                 curr_line += t_lines - 1;
                 change = 1 - t_lines;
                 break;
-            case 'j':
             case 'n':
                 return KEY_DOWN;
-            case 'k':
+            case 'l':
                 return KEY_UP;
             case KEY_REFRESH:
                 curr_line += t_lines - 1;
                 change = 1 - t_lines;
                 break;
-            case 'l':
             case 'L':
                 if (uinfo.mode != LOOKMSGS) {
                     show_allmsgs();
