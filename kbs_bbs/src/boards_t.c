@@ -346,12 +346,12 @@ static int fav_show(struct _select_def *conf, int pos)
 			if(arg->favmode == 1)
             	prints(" %4d  ＋  <目录>  ", pos);
 			else
-            	prints(" %4d  ＋  %-16s  ", pos ,ptr->BM);
+            	prints(" %4d  ＋  %-17s  ", pos ,ptr->BM);
 		}else{
 			if(arg->favmode == 1)
             	prints(" %4d  ＋  <目录>  ", ptr->total);
 			else
-            	prints(" %4d  ＋  %-16s  ", ptr->total, ptr->BM);
+            	prints(" %4d  ＋  %-17s  ", ptr->total, ptr->BM);
 		}
     } else {
 	if ((ptr->dir==1)||(ptr->flag&BOARD_GROUP)) {
@@ -912,7 +912,7 @@ static int fav_key(struct _select_def *conf, int command)
             }
             move(0, 0);
             clrtoeol();
-            getdata(0, 0, "输入讨论区目录名: ", bname, 22, DOECHO, NULL, true);
+            getdata(0, 0, "输入讨论区目录名: ", bname, 41, DOECHO, NULL, true);
             if (bname[0]) {
                 addFavBoardDir(bname);
                 save_favboard(arg->favmode);
@@ -954,7 +954,7 @@ static int fav_key(struct _select_def *conf, int command)
             if (ptr->dir == 1 && ptr->tag >= 0) {
                 move(0, 0);
                 clrtoeol();
-                getdata(0, 0, "输入讨论区目录名: ", bname, 22, DOECHO, NULL, true);
+                getdata(0, 0, "输入讨论区目录名: ", bname, 41, DOECHO, NULL, true);
                 if (bname[0]) {
                     changeFavBoardDir(ptr->tag, bname);
                     save_favboard(arg->favmode);
