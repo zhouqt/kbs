@@ -323,7 +323,7 @@ void refresh()
                 tc_mode|=SCREEN_BACK;
                 stack[stackt++]=7;
             }
-            if(tc_color%16!=bp[j].color[k]%16&&(bp[j].data[k]!=' '&&bp[j].data[k]!=0||bp[j].mode[k]&SCREEN_LINE)) {
+            if(tc_color%16!=bp[j].color[k]%16&&(bp[j].data[k]!=' '||bp[j].mode[k]&SCREEN_LINE||bp[j].mode[k]&SCREEN_BACK)) {
                 tc_color=tc_color/16*16+bp[j].color[k]%16;
                 if(DEFINE(currentuser, DEF_COLOR))
                     stack[stackt++]=30+bp[j].color[k]%16;
@@ -814,23 +814,31 @@ void prints(char *format, ...)
 
 void scroll()
 {
-	scrollcnt++;
-	roll++;
-	if (roll >= scr_lns)
-		roll -= scr_lns;
-	move(scr_lns - 1, 0);
-	clrtoeol();
+    int ln,k;
+    struct screenline *slp;
+    scrollcnt++;
+    roll++;
+    if (roll >= scr_lns)
+        roll -= scr_lns;
+    move(scr_lns - 1, 0);
+    ln = (cur_ln + roll)%scr_lns;
+    slp = &big_picture[ln];
+    for(k=cur_col;k<t_columns;k++)
+        slp->ldata[k]=255;
 }
 
 void rscroll()
 {
-	scrollcnt--;
-	if (roll > 0)
-		roll--;
-	else
-		roll = scr_lns - 1;
-	move(0, 0);
-	clrtoeol();
+    int ln,k;
+    struct screenline *slp;
+    scrollcnt--;
+    if (roll > 0) roll--;
+    else roll = scr_lns - 1;
+    move(0, 0);
+    ln = (cur_ln + roll)%scr_lns;
+    slp = &big_picture[ln];
+    for(k=cur_col;k<t_columns;k++)
+        slp->ldata[k]=255;
 }
 
 void noscroll()
