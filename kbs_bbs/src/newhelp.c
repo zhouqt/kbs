@@ -248,7 +248,7 @@ static int help_select(struct _select_def *conf)
 {
 	clear();
 	move(0,0);
-	prints("Ä£Ê½: [1;33m%s[m\n\n", helpmodestr[ *((int *)conf->arg) - 1]);
+	prints("Ä£Ê½: [1;33m%s[m\n\n", (*((int *)conf->arg) > 0)?helpmodestr[ *((int *)conf->arg) - 1]:"²Ëµ¥");
 	prints("Ë÷Òý: %s\n", s_help[conf->pos-conf->page_pos].index);
 	prints("¼ò½é: %s\n", s_help[conf->pos-conf->page_pos].desc);
 	if(s_help[conf->pos-conf->page_pos].content)
