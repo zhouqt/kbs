@@ -834,10 +834,10 @@ int change_dir_post_flag(struct userec *currentuser, char *currboard, int ent, s
         break;
 #ifdef FILTER
     case FILE_CENSOR_FLAG:
-	if (fileinfo->accessed[0] & FILE_CENSOR)
-	    fileinfo->accessed[0] &= ~FILE_CENSOR;
+	if (fileinfo->accessed[1] & FILE_CENSOR)
+	    fileinfo->accessed[1] &= ~FILE_CENSOR;
 	else
-	    fileinfo->accessed[0] |= FILE_CENSOR;
+	    fileinfo->accessed[1] |= FILE_CENSOR;
 	break;
 #endif
     case FILE_NOREPLY_FLAG:
@@ -1059,48 +1059,50 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
 #ifdef FILTER
     case FILE_CENSOR_FLAG:
 	if (!strcmp(currboard, "Filter"))
-	if (fileinfo->accessed[0] & FILE_CENSOR) {
+	{
+		if (fileinfo->accessed[1] & FILE_CENSOR) {
 #ifdef BBSMAIN
-	    if (prompt)
-		a_prompt(-1, " 该文章已经通过审核, 请按 Enter 继续 << ", ans);
+			if (prompt)
+			a_prompt(-1, " 该文章已经通过审核, 请按 Enter 继续 << ", ans);
 #endif
-	} else {
-	    fileinfo->accessed[0] |= FILE_CENSOR;
-	    sprintf(oldpath, "%s/boards/Filter/%s", BBSHOME, fileinfo->filename);
-	    sprintf(newpath, "boards/%s/%s", fileinfo->o_board, fileinfo->filename);
-	    f_cp(oldpath, newpath, 0);
+		} else {
+			fileinfo->accessed[1] |= FILE_CENSOR;
+			sprintf(oldpath, "%s/boards/Filter/%s", BBSHOME, fileinfo->filename);
+			sprintf(newpath, "boards/%s/%s", fileinfo->o_board, fileinfo->filename);
+			f_cp(oldpath, newpath, 0);
 
-	    setbfile(buffer, fileinfo->o_board, DOT_DIR);
-	    if ((filedes = open(buffer, O_WRONLY | O_CREAT, 0664)) == -1) {
+			setbfile(buffer, fileinfo->o_board, DOT_DIR);
+			if ((filedes = open(buffer, O_WRONLY | O_CREAT, 0664)) == -1) {
 #ifdef BBSMAIN
                 perror(buffer);
 #endif  
-	    }
-	    flock(filedes, LOCK_EX);
-	    nowid = get_nextid(fileinfo->o_board);
-	    newfh->id = nowid;
-	    if (fileinfo->o_id == fileinfo->o_groupid)
-		    newfh->groupid = newfh->reid = newfh->id;
-	    else {
-		    newfh->groupid = fileinfo->o_groupid;
-		    newfh->reid = fileinfo->o_reid;
-	    }
-	    lseek(filedes, 0, SEEK_END);
-	    if (safewrite(filedes, newfh, sizeof(fileheader)) == -1) {
-		    bbslog("user","%s","apprec write err!");
-	    }
-	    flock(filedes, LOCK_UN);
-	    close(filedes);
-	    updatelastpost(fileinfo->o_board);
-	    brc_add_read(newfh->id);
-	    if (newfh->id == newfh->groupid)
-		    setboardorigin(fileinfo->o_board, 1);
-	    setboardtitle(fileinfo->o_board, 1);
-	    if (newfh->accessed[0] & FILE_MARKED)
-		    setboardmark(fileinfo->o_board, 1);
+			}
+			flock(filedes, LOCK_EX);
+			nowid = get_nextid(fileinfo->o_board);
+			newfh->id = nowid;
+			if (fileinfo->o_id == fileinfo->o_groupid)
+				newfh->groupid = newfh->reid = newfh->id;
+			else {
+				newfh->groupid = fileinfo->o_groupid;
+				newfh->reid = fileinfo->o_reid;
+			}
+			lseek(filedes, 0, SEEK_END);
+			if (safewrite(filedes, newfh, sizeof(fileheader)) == -1) {
+				bbslog("user","%s","apprec write err!");
+			}
+			flock(filedes, LOCK_UN);
+			close(filedes);
+			updatelastpost(fileinfo->o_board);
+			brc_add_read(newfh->id);
+			if (newfh->id == newfh->groupid)
+				setboardorigin(fileinfo->o_board, 1);
+			setboardtitle(fileinfo->o_board, 1);
+			if (newfh->accessed[0] & FILE_MARKED)
+				setboardmark(fileinfo->o_board, 1);
+		}
 	}
 	break;
-#endif
+#endif /* FILTER */
     case FILE_DELETE_FLAG:
         if (fileinfo->accessed[1] & FILE_DEL)
             fileinfo->accessed[1] &= ~FILE_DEL;
@@ -1243,7 +1245,7 @@ char get_article_flag(struct fileheader *ent, struct userec *user, int is_bm)
     } else if (HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[0] & FILE_SIGN)) {
         type = '#';
 #ifdef FILTER
-    } else if (ent->accessed[0] & FILE_CENSOR) {
+    } else if (HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[1] & FILE_CENSOR)) {
 	type = '@';
 #endif
     }
