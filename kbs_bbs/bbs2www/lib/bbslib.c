@@ -62,6 +62,15 @@ int f_append(char *file, char *buf)
 	return 0;
 }
 
+time_t file_time(char *file)
+{
+	struct stat st;
+
+	if (stat(file, &st) == -1)
+		return 0;
+	return st.st_mtime;
+}
+
 struct stat *f_stat(char *file) {
 	static struct stat buf;
 	bzero(&buf, sizeof(buf));
@@ -1142,94 +1151,12 @@ int fprintf2(FILE *fp, char *s) {
 	}
 }
 
-#if 0
-int fprintf2(FILE *fp, char *s)
+int get_file_ent(char *board, char *file, struct fileheader *x)
 {
-	unsigned char *ppt = s; /* ÕÛÐÐ´¦ */
-	unsigned char *pp  = ppt; /* ÐÐÊ× */
-	unsigned int  LLL = 78; /* ÕÛÐÐÎ»ÖÃ */
-	unsigned char *ppx, cc;
-	int  ich, lll;
-
-	while (strlen(pp) > LLL)
-	{
-		lll = 0; ppx = pp; ich = 0;
-		do
-		{
-			if (ppx = strstr(ppx, "["))
-			{
-				ich = (int)strchr(ppx, 'm') - (int)ppx;
-				if (ich > 0)
-					ich ++;
-				else
-					ich = 2;
-				lll += ich;
-				ppx += 2;
-				ich = 0;
-			}
-		} while (ppx);
-		ppt += LLL + lll;
-
-		if (*ppt > 127)
-		{ /* ±ÜÃâÔÚºº×ÖÖÐ¼äÕÛÐÐ */
-			for (ppx = ppt - 1, ich = 0; ppx >= pp; ppx --)
-			{
-				if (*ppx < 128)
-					break; 
-				else 
-					ich ++;
-			}
-			if (ich % 2) 
-				ppt --;
-		}
-		else if (*ppt)
-		{
-			for (ppx = ppt - 1, ich = 0; ppx >= pp; ppx --)
-			{
-				if (*ppx > 127 || ' ' == *ppx)
-					break;
-				else
-					ich ++;
-			}
-			if (ppx > pp && ich < 16)
-				ppt -= ich;
-		}
-
-		cc = *ppt;
-		*ppt = 0;
-		if (':' == s[0] && ':' != *pp)
-			fprintf(fp, ": ");
-		fprintf(fp,"%s",pp) ;
-		if (cc)
-			fprintf(fp, "\n");
-		*ppt = cc;
-		pp = ppt;
-	}
-	if (':' == s[0] && ':' != *pp)
-		fprintf(fp, ": ");
-	fprintf(fp,"%s\n",pp) ;
-
-	return 0;
-}
-#endif
-
-struct fileheader *get_file_ent(char *board, char *file) {
-	FILE *fp;
 	char dir[80];
-	static struct fileheader x;
-	int num=0;
+
 	sprintf(dir, "boards/%s/.DIR", board);
-	fp=fopen(dir, "r");
-	while(1) {
-		if(fread(&x, sizeof(x), 1, fp)<=0) break;
-		if(!strcmp(x.filename, file)) {
-			fclose(fp);
-			return &x;
-		}
-		num++;
-	}
-	fclose(fp);
-	return 0;
+	return search_record(dir, x, sizeof(struct fileheader), cmpname, file);
 }
 
 char *getbfroma(char *path) {

@@ -7,7 +7,7 @@
 
 int main()
 {
-	struct fileheader *x;
+	struct fileheader x;
 	char board[80], file[80], target[80];
 	struct userec *u = NULL;
 	int big5;
@@ -23,8 +23,7 @@ int main()
 		http_fatal("匆匆过客不能进行本项操作");
 	if(!has_read_perm(currentuser, board))
 		http_fatal("错误的讨论区");
-	x = get_file_ent(board, file);
-	if(x==0)
+	if(get_file_ent(board, file, &x)==0)
 		http_fatal("错误的文件名");
 	printf("<center>%s -- 转寄/推荐给好友 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser->userid);
 	if(target[0])
@@ -37,11 +36,11 @@ int main()
 			big5 = 0;
 			noansi = 0;
 		}
-		return do_fwd(x, board, target, big5, noansi);
+		return do_fwd(&x, board, target, big5, noansi);
 	}
 	printf("<table><tr><td>\n");
-	printf("文章标题: %s<br>\n", nohtml(x->title));
-	printf("文章作者: %s<br>\n", x->owner);
+	printf("文章标题: %s<br>\n", nohtml(x.title));
+	printf("文章作者: %s<br>\n", x.owner);
 	printf("原讨论区: %s<br>\n", board);
 	printf("<form action=\"bbsfwd\" method=\"post\">\n");
 	printf("<input type=\"hidden\" name=\"board\" value=\"%s\">", board);

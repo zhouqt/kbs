@@ -87,7 +87,7 @@ int f_append(char *file, char *buf);
 struct stat *f_stat(char *file);
 
 #define file_size(x) f_stat(x)->st_size
-#define file_time(x) f_stat(x)->st_mtime
+/*#define file_time(x) f_stat(x)->st_mtime*/
 #define file_rtime(x) f_stat(x)->st_atime
 #define file_exist(x) (file_time(x)!=0)
 #define file_isdir(x) ((f_stat(x)->st_mode & S_IFDIR)!=0)
@@ -256,7 +256,7 @@ char *userid_str(char *s);
 
 int fprintf2(FILE *fp, char *s);
 
-struct fileheader *get_file_ent(char *board, char *file);
+int get_file_ent(char *board, char *file, struct fileheader *x);
 
 char *getbfroma(char *path);
 
@@ -329,5 +329,7 @@ int post_file(char *filename, postinfo_t *pi);
 char * setmailpath( char *buf, char *userid );
 
 int get_unifile(char *filename, char *key, int mode);
+
+time_t file_time(char *file);
 
 #endif /* BBSLIB_H */
