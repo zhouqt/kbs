@@ -340,4 +340,6 @@ attach define
 
 #define BOARD_SHOW_ONLINE 0
 
+#define SMS_SUPPORT
+
 #endif
