@@ -2666,6 +2666,14 @@ int clear_all_new_flag(int ent, struct fileheader *fileinfo, char *direct)
     return PARTUPDATE;
 }
 
+int show_t_friends()
+{
+    if (!HAS_PERM(currentuser, PERM_BASIC))
+        return PARTUPDATE;
+    t_friends();
+    return FULLUPDATE;
+}
+
 struct one_key read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
     {'r', read_post},
     {'K', skip_post},
@@ -2689,7 +2697,7 @@ struct one_key read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
     {'Y', UndeleteArticle},     /* Leeward 98.05.18 */
     {Ctrl('P'), do_post},
 #ifdef NINE_BUILD
-	{'c', t_friends},
+	{'c', show_t_friends},
 #else
     {'c', clear_new_flag},
 #endif
