@@ -300,7 +300,7 @@ int     *num;
             bname[i++] = ch;
             for (n = 0; n < brdnum; n++)
             {
-                if (!ci_strncmp(nbrd[n].name, bname, i))
+                if (!strncasecmp(nbrd[n].name, bname, i))
                 {
                     tmpn=YEA;
                     *num = n;
@@ -603,11 +603,11 @@ struct newpostdata      *brd, *tmp;
     {
         type = brd->title[0] - tmp->title[0];
         if(type==0)
-            type=ci_strncmp( brd->title+1, tmp->title+1,6);
+            type=strncasecmp( brd->title+1, tmp->title+1,6);
 
     }
     if( type == 0 )
-        type = ci_strcmp( brd->name, tmp->name );
+        type = strcasecmp( brd->name, tmp->name );
     return type;
 }
 

@@ -42,7 +42,7 @@ int 		sign;/*Haohmaru.第sign个签名档*/
 
 struct UCACHE   *uidshm /*= NULL*/; /* dong: 使用uid共享内存 */
 
-int ci_strncmp(register char *s1,register char *s2,register int n);
+int strncasecmp(register char *s1,register char *s2,register int n);
 /* change to new , by dong, 1999.10.29 */
 
 int searchuser(userid)
@@ -51,7 +51,7 @@ char *userid ;
     register int i ;
 
     for(i=0; i < uidshm->number; i++)
-        if(!ci_strncmp(userid,uidshm->userid[i],IDLEN+1))
+        if(!strncasecmp(userid,uidshm->userid[i],IDLEN+1))
             return i+1 ;
     return 0 ;
 }
@@ -72,7 +72,7 @@ int my_bsearch(char *userid, int *userlist, int num)
         find_index = (head + tail + 1) >> 1 ;
         user = uidshm->userid[userlist[find_index]];
 
-        if ((cmp = ci_strncmp(user, userid, IDLEN+1)) == 0)
+        if ((cmp = strncasecmp(user, userid, IDLEN+1)) == 0)
             return find_index;
 
         if (cmp > 0){
@@ -259,7 +259,7 @@ cmpbnames( bname, brec)
 char *bname;
 struct fileheader *brec;
 {
-    if (!ci_strncmp( bname, brec->filename, sizeof(brec->filename)))
+    if (!strncasecmp( bname, brec->filename, sizeof(brec->filename)))
         return 1;
     else
         return 0;
@@ -406,7 +406,7 @@ char    *name;
         exit( 0 );
     }
     /*while( read( fh, record, sizeof *record ) > 0 ) {
-        if( ci_strcmp( name, record->userid ) == 0 ) {*/
+        if( strcasecmp( name, record->userid ) == 0 ) {*/
 
     if (userindex = searchuser(name)) /* modified by dong , 1998.11.2 */
     {
@@ -450,7 +450,7 @@ int delta;
         exit( 0 );
     }
     /*while( read( fh, record, sizeof *record ) > 0 ) {
-        if( ci_strcmp( name, record->userid ) == 0 ) {*/
+        if( strcasecmp( name, record->userid ) == 0 ) {*/
 
     if (userindex = searchuser(name)) /* modified by dong , 1998.11.2 */
     {
@@ -484,7 +484,7 @@ char    *name;
     }
 
     /*while( read( fh, &record, sizeof record ) > 0 ) {
-        if( ci_strcmp( name, record.userid ) == 0 ) {*/
+        if( strcasecmp( name, record.userid ) == 0 ) {*/
 
     if (userindex = searchuser(name)) /* modified by dong , 1998.11.2 */
     {
@@ -1060,18 +1060,18 @@ char    *argv[];
     sign = atoi(argv[3]);/*Haohmaru.99.11.24.第sign个签名档*/
     if(sign<0 || sign>5)
         sign = 1;
-    if( ci_strcmp( progmode, "list" ) == 0 ) {
+    if( strcasecmp( progmode, "list" ) == 0 ) {
         search_boards( 0 );
-    } else if( ci_strcmp( progmode, "visit" ) == 0 ) {
+    } else if( strcasecmp( progmode, "visit" ) == 0 ) {
         search_boards( 1 );
-    } else if( ci_strcmp( progmode, "post" ) == 0 ) {
+    } else if( strcasecmp( progmode, "post" ) == 0 ) {
         post_article( 0 );
-    } else if( ci_strcmp( progmode, "mail" ) == 0 ) {
+    } else if( strcasecmp( progmode, "mail" ) == 0 ) {
         post_article( 1 );
-    } else if( ci_strcmp( progmode, "cancel" ) == 0 ) {
+    } else if( strcasecmp( progmode, "cancel" ) == 0 ) {
         if( argc < 5 )  usage();
         cancel_article( argv[3], argv[4] );
-    } else if( ci_strcmp( progmode, "expire" ) == 0 ) {
+    } else if( strcasecmp( progmode, "expire" ) == 0 ) {
         if( argc < 5 )  usage();
         max = atoi( argc > 5 ? argv[5] : "9999" );
         min = atoi( argc > 6 ? argv[6] : "10" );

@@ -472,7 +472,7 @@ struct user_info *uentp ;
     }
     if(!uentp->active || !uentp->pid)
         return 0 ;
-    if(!ci_strcmp(uentp->userid,save_page_requestor))
+    if(!strcasecmp(uentp->userid,save_page_requestor))
         count++ ;
     return 1 ;
 }
@@ -571,7 +571,7 @@ cmpfnames(userid, uv)
 char    *userid;
 struct friends *uv;
 {
-    return !ci_strcmp(userid, uv->id);
+    return !strcasecmp(userid, uv->id);
 }
 
 int
@@ -1786,7 +1786,7 @@ char filename[STRLEN],seekstr[STRLEN];
         return 0;
     while (fgets(buf, STRLEN, fp) != NULL) {
         namep = (char *)strtok( buf, ": \n\r\t" );
-        if (namep != NULL && ci_strcmp(namep, seekstr) == 0 ) {
+        if (namep != NULL && strcasecmp(namep, seekstr) == 0 ) {
             fclose(fp);
             return 1;
         }

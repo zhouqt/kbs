@@ -289,7 +289,7 @@ cmpuids(uid,up)
 char *uid ;
 struct userec *up ;
 {
-    return !ci_strncmp(uid,up->userid,sizeof(up->userid)) ;
+    return !strncasecmp(uid,up->userid,sizeof(up->userid)) ;
 }
 
 int

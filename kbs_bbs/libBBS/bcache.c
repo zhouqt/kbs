@@ -183,7 +183,7 @@ struct shortfile *
     resolve_boards();
     for(i=0;i<numboards;i++)
         if( bcache[i].level & PERM_POSTMASK || HAS_PERM( bcache[i].level ) || (bcache[i].level&PERM_NOZAP))
-            if( !ci_strncmp( bname, bcache[i].filename, STRLEN ) )
+            if( !strncasecmp( bname, bcache[i].filename, STRLEN ) )
                 return &bcache[i];
     return NULL;
 }
@@ -197,7 +197,7 @@ char    *bname;
     resolve_boards();/* attach shm*/
     for(i=0;i<numboards;i++)
         if( bcache[i].level & PERM_POSTMASK || HAS_PERM( bcache[i].level )|| (bcache[i].level&PERM_NOZAP))
-            if(!ci_strncmp( bname, bcache[i].filename, STRLEN ) )
+            if(!strncasecmp( bname, bcache[i].filename, STRLEN ) )
                 return i+1 ;
     return 0 ;
 }
@@ -210,7 +210,7 @@ char    *bname;
 
     resolve_boards();/* attach shm*/
     for(i=0;i<numboards;i++)
-        if(!ci_strncmp( bname, bcache[i].filename, STRLEN ) )
+        if(!strncasecmp( bname, bcache[i].filename, STRLEN ) )
             return i+1 ;
     return 0 ;
 } /*---	---*/
@@ -343,7 +343,7 @@ char *userid ;
 
     resolve_ucache() ;
     for(i=0; i < uidshm->number; i++)
-        if(!ci_strncmp(userid,uidshm->userid[i],IDLEN+1))
+        if(!strncasecmp(userid,uidshm->userid[i],IDLEN+1))
             return i+1 ;
     return 0 ;
 }

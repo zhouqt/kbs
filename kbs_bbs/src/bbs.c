@@ -2443,8 +2443,8 @@ post_article()                         /*用户 POST 文章 */
 #ifndef NOREPLY /* title是否不用Re: */
     if( replytitle[0] != '\0' ) {
         buf4[0]=' ';
-        /*        if( ci_strncmp( replytitle, "Re:", 3 ) == 0 ) Change By KCN:
-        	why use ci_strncmp?*/
+        /*        if( strncasecmp( replytitle, "Re:", 3 ) == 0 ) Change By KCN:
+        	why use strncasecmp?*/
         if( strncmp( replytitle, "Re:", 3 ) == 0 )
             strcpy(buf, replytitle);
         else
@@ -4131,7 +4131,7 @@ int post_num;
         time(&(postlog.date));
         strcpy(postlog.author,currentuser.userid);
         strcpy(postlog.board, currboard);
-        if( ci_strncmp( posttitle, "Re:", 3 ) == 0 )
+        if( strncasecmp( posttitle, "Re:", 3 ) == 0 )
             strcpy(postlog.title, posttitle+4);
         else
             strcpy(postlog.title, posttitle);
@@ -4230,7 +4230,7 @@ cmpbnames( bname, brec)
 char *bname;
 struct fileheader *brec;
 {
-    if (!ci_strncmp( bname, brec->filename, sizeof(brec->filename)))
+    if (!strncasecmp( bname, brec->filename, sizeof(brec->filename)))
         return 1;
     else
         return 0;

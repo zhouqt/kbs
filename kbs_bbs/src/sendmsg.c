@@ -223,7 +223,7 @@ int mode;
 
     }else
     {
-        /*  if(!ci_strcmp(uentp->userid,currentuser.userid))	rem by Haohmaru,ÕâÑù²Å¿ÉÒÔ×Ô¼º¸ø×Ô¼º·¢msg
+        /*  if(!strcasecmp(uentp->userid,currentuser.userid))	rem by Haohmaru,ÕâÑù²Å¿ÉÒÔ×Ô¼º¸ø×Ô¼º·¢msg
             return 0;    
          */   uin=uentp;
         strcpy(uident,uin->userid);
@@ -550,7 +550,7 @@ MSGX: /* Leeward 98.07.30 supporting msgX */
             if(send_pid>100)
                 send_pid-=100;
             ptr=strtok(msg+10," ["); /* ºÍmsgÖĞ useridµÄÎ»ÖÃ¹ØÏµÃÜÇĞ*/
-            if(ptr==NULL)/*|| !ci_strcmp(ptr,currentuser.userid))*/
+            if(ptr==NULL)/*|| !strcasecmp(ptr,currentuser.userid))*/
                 good_id=NA;
             else
             {
@@ -710,7 +710,7 @@ struct user_info *pageinfo;
             return 0;
         if(!(lookupuser.userdefine&DEF_LOGININFORM))
             return 0;
-        if(!ci_strcmp(pageinfo->userid,currentuser.userid))
+        if(!strcasecmp(pageinfo->userid,currentuser.userid))
             return 0;
         sprintf(msg,"ÄãµÄºÃÅóÓÑ %s ÒÑ¾­ÉÏÕ¾ÂŞ£¡",currentuser.userid);
 

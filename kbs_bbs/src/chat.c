@@ -598,8 +598,8 @@ int chatnum;
                     chatting ++;
                 if (chatting > 1)
                 {
-                    if (!ci_strncmp(inbuf, "/bye", chatting)) break;
-                    if (!ci_strncmp(inbuf, "/exit", chatting)) /*added by alex, 96.9.5*/
+                    if (!strncasecmp(inbuf, "/bye", chatting)) break;
+                    if (!strncasecmp(inbuf, "/exit", chatting)) /*added by alex, 96.9.5*/
                         break;                     /* modified by Luzi 1997.11.18 */
                 } else chatting = 1; /* added by Luzi 97.11.18 11:40AM */
 
@@ -1375,7 +1375,7 @@ cmpinames(userid, uv)       /* added by Luzi 1997.11.28 */
 char    *userid;
 char *uv;
 {
-    return !ci_strcmp(userid, uv);
+    return !strcasecmp(userid, uv);
 }
 
 void
@@ -1547,7 +1547,7 @@ int fd;
                 tmpbuf=buf;
                 tmpemote=nextword(&tmpbuf);
                 nIdx++;
-                if (ci_strcmp(emoteid,tmpemote)==0) break;
+                if (strcasecmp(emoteid,tmpemote)==0) break;
             }
             fclose(fp);
         }

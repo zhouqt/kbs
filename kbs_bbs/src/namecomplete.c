@@ -208,12 +208,12 @@ char *prompt, *data ;
                     strcpy(data,cwlist->word) ;
                 /*---	Modified by period	2000-09-13		---*
                  *---	when more results found, compare one by one	---*/
-                /*                if(!ci_strcmp(data,cwlist->word))
+                /*                if(!strcasecmp(data,cwlist->word))
                                     strcpy(data,cwlist->word) ;
                 */		else {
                     struct word *list ;
                     for(list = cwlist;list != NULL;list = list->next)
-                    if(!ci_strcmp(data, list->word)) {
+                    if(!strcasecmp(data, list->word)) {
                         strcpy(data, list->word);
                             break;
                         }
@@ -394,7 +394,7 @@ char *prompt, *data ;
                 prints( "\n" );
                 ptr = cwlist;
                 for( i = 0; i < cwnum; i++ ) {
-                    if( ci_strncmp( data, ptr, IDLEN+1 ) == 0 )
+                    if( strncasecmp( data, ptr, IDLEN+1 ) == 0 )
                         strcpy( data, ptr );
                     ptr += IDLEN + 1;
                 }

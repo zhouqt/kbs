@@ -281,7 +281,7 @@ char *chatid;
     {
         if (users[i].sockfd == -1)
             continue;
-        if (!ci_strcmp(chatid, users[i].chatid))
+        if (!strcasecmp(chatid, users[i].chatid))
             return i;
     }
     return -1;
@@ -296,7 +296,7 @@ char *userid;
     {
         if (users[i].sockfd == -1)
             continue;
-        if (!ci_strcmp(userid, users[i].userid))
+        if (!strcasecmp(userid, users[i].userid))
             return i;
     }
     return -1;
@@ -355,7 +355,7 @@ char *chatid;              /* Fixed a bug by Leeward 99.10.08 */
     {
         if (users[i].sockfd == -1)
             continue;
-        if (!ci_strncmp(chatid, users[i].chatid, len))
+        if (!strncasecmp(chatid, users[i].chatid, len))
         {
             if (len == strlen(users[i].chatid))
                 return i;
@@ -375,7 +375,7 @@ char *chatid;              /* Fixed a bug by Leeward 99.10.08 */
       {
         if (users[i].sockfd == -1)
           continue;
-        if (!ci_strncmp(chatid, users[i].userid, len))
+        if (!strncasecmp(chatid, users[i].userid, len))
         {
           if (len == strlen(users[i].userid))
             return i;
@@ -406,7 +406,7 @@ char *roomid;
             continue;
         /*    report(roomid);
             report(rooms[i].name);*/
-        if (!ci_strcmp(roomid, rooms[i].name))
+        if (!strcasecmp(roomid, rooms[i].name))
             break;
     }
     if (ch) roomid[IDLEN-1]=ch;
@@ -819,7 +819,7 @@ int myunum,unum;
     int i;
     for(i=0;i<MAX_IGNORE;i++)
         if (users[unum].lpIgnoreID[i][0]!='\0')
-            if (!ci_strcmp(users[unum].lpIgnoreID[i], users[myunum].userid)
+            if (!strcasecmp(users[unum].lpIgnoreID[i], users[myunum].userid)
                     && !SYSOP(myunum)) return 0;
     return 1;
 }
@@ -865,7 +865,7 @@ char *msg;
     userid=nextword(&msg);
     for(i=0;i<MAX_IGNORE;i++)
         if (users[unum].lpIgnoreID[i][0]!='\0')
-            if (!ci_strcmp(users[unum].lpIgnoreID[i], userid))
+            if (!strcasecmp(users[unum].lpIgnoreID[i], userid))
             {
                 users[unum].lpIgnoreID[i][0]='\0';
                 return;
@@ -884,7 +884,7 @@ char *msg;
     for(i=0;i<MAX_EMOTES;i++)
         if (users[unum].lpEmote[i][0]!='\0')
         {
-            if (!ci_strncmp(users[unum].lpEmote[i], emoteid, len))
+            if (!strncasecmp(users[unum].lpEmote[i], emoteid, len))
                 if (users[unum].lpEmote[i][len]==' ')
                 {
                     users[unum].lpEmote[i][0]='\0';
@@ -1738,7 +1738,7 @@ char *party;
     for (i = 0; i<MAX_EMOTES; i++)
     {
         if (users[unum].lpEmote[i][0]=='\0') continue;
-        if (!ci_strncmp(cmd, users[unum].lpEmote[i], len)
+        if (!strncasecmp(cmd, users[unum].lpEmote[i], len)
                 && users[unum].lpEmote[i][len]==' ')
         {
             if (*party == '\0')
@@ -1804,7 +1804,7 @@ char *party;
     int i;
     for (i = 0; party_data[i].verb; i++)
     {
-        if (!ci_strcmp(cmd, party_data[i].verb))
+        if (!strcasecmp(cmd, party_data[i].verb))
         {
             if (*party == '\0')
             {
@@ -1825,12 +1825,12 @@ char *party;
                 }
                 party = users[recunum].chatid;
             }
-            if (ci_strcmp(cmd, "faint")==0 &&
-                    (ci_strcmp(party, users[unum].chatid)==0 ||
+            if (strcasecmp(cmd, "faint")==0 &&
+                    (strcasecmp(party, users[unum].chatid)==0 ||
                      strcmp(party, "´ó¼Ò")==0))
-                sprintf(chatbuf, "\033[1m%s\033[m %sÒ»Éù£¬ÔÎµ¹ÔÚµØ...\033[0m",users[unum].chatid, (ci_strcmp(users[unum].userid,"roberto")==0||ci_strcmp(users[unum].chatid,"roberto")==0)?"ÆËÍ¨":"ßÛµ±");
+                sprintf(chatbuf, "\033[1m%s\033[m %sÒ»Éù£¬ÔÎµ¹ÔÚµØ...\033[0m",users[unum].chatid, (strcasecmp(users[unum].userid,"roberto")==0||strcasecmp(users[unum].chatid,"roberto")==0)?"ÆËÍ¨":"ßÛµ±");
             else {
-                if (ci_strcmp(party, users[unum].chatid)==0)
+                if (strcasecmp(party, users[unum].chatid)==0)
                     party="×Ô¼º";
                 sprintf(chatbuf, "[1m%s[m %s [1m%s[m %s[0m",
                         users[unum].chatid,
@@ -1891,7 +1891,7 @@ char *msg;
 
     for (i = 0; speak_data[i].verb; i++)
     {
-        if (!ci_strcmp(cmd, speak_data[i].verb))
+        if (!strcasecmp(cmd, speak_data[i].verb))
         {
             sprintf(chatbuf, "[1m%s[m %s£º%s[0m",
                     users[unum].chatid, speak_data[i].part1_msg, msg);
@@ -1939,7 +1939,7 @@ char *cmd;
 
     for (i = 0; condition_data[i].verb; i++)
     {
-        if (!ci_strcmp(cmd, condition_data[i].verb))
+        if (!strcasecmp(cmd, condition_data[i].verb))
         {
             sprintf(chatbuf, "[1m%s[m %s[0m",
                     users[unum].chatid, condition_data[i].part1_msg);
@@ -2133,7 +2133,7 @@ int unum;
     if (cmd[0] == '/')
     {
 
-        if (!ci_strcmp(cmd + 1, "help") || (cmd[1] == '\0'))
+        if (!strcasecmp(cmd + 1, "help") || (cmd[1] == '\0'))
         {
             /* add by KCN */
             if (cmd[1]&&cmd[6]) {
@@ -2166,7 +2166,7 @@ int unum;
     }
     else
     {
-        if (!ci_strncmp(cmd, "shutdown",8))
+        if (!strncasecmp(cmd, "shutdown",8))
         {
             if (SYSOP(unum)) {
                 char buf[256];
@@ -2180,9 +2180,9 @@ int unum;
             for (cmdrec = chatcmdlist; !match && cmdrec->cmdstr; cmdrec++)
             {
                 if (cmdrec->exact)
-                    match = !ci_strcmp(cmd, cmdrec->cmdstr);
+                    match = !strcasecmp(cmd, cmdrec->cmdstr);
                 else
-                    match = !ci_strncmp(cmd, cmdrec->cmdstr, strlen(cmd));
+                    match = !strncasecmp(cmd, cmdrec->cmdstr, strlen(cmd));
                 if (match)
                     if (ENABLEMAIN || users[unum].room || cmdrec->bUsed)/* added by Luzi 98.1.3 */
                         if (NOEMOTE(users[unum].room) &&

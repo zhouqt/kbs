@@ -63,7 +63,7 @@ char    *userid;
             ptr = strtok( buf, " \n\t\r" );
             if( ptr != NULL && *ptr != '#')
             {
-                if( ci_strcmp( ptr, userid ) == 0 ) {
+                if( strcasecmp( ptr, userid ) == 0 ) {
                     if(ptr[13]>47 && ptr[13]<58)/*Haohmaru.99.12.24*/
                     {
                         char timebuf[9];
