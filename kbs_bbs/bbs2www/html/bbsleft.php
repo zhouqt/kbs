@@ -355,7 +355,7 @@
 				</DIV>
 			</td>
 			<td>
-			<a href='javascript:changemn("pc");'>
+			<a href='/pc/pcmain.php'>
 			<img src="<?php echo $img_subdir; ?>m3.gif" border="0" alt="<?php echo BBS_FULL_NAME; ?>Blog" align="absmiddle"> 水木Blog
 			</a>
 			</td>
@@ -370,7 +370,10 @@
 ?>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/pc/pc.php" target="f3">Blog首页</a><br>
+					<a href="/pc/pcmain.php" target="f3">Blog首页</a><br>
+					&nbsp;
+					<img src="/images/line.gif" border="0" align="absmiddle">
+					<a href="/pc/pc.php" target="f3">用户列表</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/pc/pcsec.php" target="f3">分类目录</a><br>
