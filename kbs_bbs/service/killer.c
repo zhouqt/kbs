@@ -3,7 +3,7 @@
 
 #define MAX_ROOM 100
 #define MAX_PEOPLE 100
-#define MAX_MSG
+#define MAX_MSG 2000
 
 #define ROOM_LOCKED 01
 #define ROOM_SECRET 02
@@ -47,15 +47,18 @@ struct inroom_struct {
     int policenum;
     struct people_struct peoples[MAX_PEOPLE];
     char msgs[MAX_MSG][60];
+    int msgpid[MAX_MSG];
     int msgi;
 };
 
 struct room_struct * rooms;
 struct inroom_struct * inrooms;
 
+int myroom, mypos;
+
 extern int kicked;
 
-void load_msgs()
+/*void load_msgs()
 {
     FILE* fp;
     int i;
@@ -79,31 +82,40 @@ void load_msgs()
         }
         fclose(fp);
     }
+}*/
+
+void send_msg(int u, char* msg)
+{
+    int i, j;
+    j=MAX_MSG;
+    for(i=0;i<MAX_MSG;i++)
+        if(inrooms[myroom].msgs[(i+inrooms[myroom].msgi)%MAX_MSG][0]==0) {
+            j=(i+inrooms[myroom].msgi)%MAX_MSG;
+            break;
+        }
+    if(j==MAX_MSG) {
+        strcpy(inrooms[myroom].msgs[inrooms[myroom].msgi], msg);
+        inrooms[myroom].msgpid[inrooms[myroom].msgi] = inrooms[myroom].peoples[u].pid;
+        inrooms[myroom].msgi = (inrooms[myroom].msgi+1)%MAX_MSG;
+    }
+    else {
+        strcpy(inrooms[myroom].msgs[j], msg);
+        inrooms[myroom].msgpid[j] = inrooms[myroom].peoples[u].pid;
+    }
 }
 
-void send_msg(struct people_struct * u, char* msg)
+void kill_msg(int u)
 {
-    FILE* fp;
-    int i, j;
-    char filename[80], buf[80];
-    sprintf(filename, "home/%c/%s/.INROOMMSG%d", toupper(u->id[0]), u->id, u->pid);
-    fp = fopen(filename, "a");
-    if(fp) {
-        while(strlen(msg)>58) {
-            j=0;
-            for(i=0;i<strlen(msg);i++){
-                if(i>=57&&!j) break;
-                if(j) j=0;
-                else if(msg[i]<0) j=1;
-            }
-            strcpy(buf, msg);
-            buf[i]=0;
-            fprintf(fp, "%s\n", buf);
-            strcpy(buf, msg+i);
-            strcpy(msg, buf);
+    int i,j;
+    char buf[80];
+    for(i=0;i<MAX_PEOPLE;i++)
+    if(inrooms[myroom].peoples[i].style!=-1)
+    if(u==-1||i==u) {
+        j=kill(inrooms[myroom].peoples[i].pid, SIGUSR1);
+        if(j==-1) {
+            sprintf(buf, "%sµôÏßÁË", inrooms[myroom].peoples[i].nick[0]?inrooms[myroom].peoples[i].nick:inrooms[myroom].peoples[i].id);
+            send_msg(-1, buf);
         }
-        fprintf(fp, "%s\n", msg);
-        fclose(fp);
     }
 }
 
@@ -151,8 +163,6 @@ void clear_room()
         if((rooms[i].style!=-1) && (!strcmp(rooms[i].creator, currentuser->userid)||rooms[i].people==0))
             rooms[i].style=-1;
 }
-
-int myroom, mypos;
 
 void start_change_inroom()
 {
@@ -229,6 +239,32 @@ int getpeople(int i)
     return -1;
 }
 
+int get_msgt()
+{
+    int i,j=0,k;
+    for(i=0;i<MAX_MSG;i++) {
+        if(inrooms[myroom].msgs[(i+inrooms[myroom].msgi)%MAX_MSG][0]==0) break;
+        k=inrooms[myroom].msgpid[(i+inrooms[myroom].msgi)%MAX_MSG];
+        if(k==-1||k==uinfo.pid) j++;
+    }
+    return j;
+}
+
+char * get_msg(int s)
+{
+    int i,j=0,k;
+    for(i=0;i<MAX_MSG;i++) {
+        if(inrooms[myroom].msgs[(i+inrooms[myroom].msgi)%MAX_MSG][0]==0) break;
+        k=inrooms[myroom].msgpid[(i+inrooms[myroom].msgi)%MAX_MSG];
+        if(k==-1||k==uinfo.pid) {
+            if(j==s)
+                return inrooms[myroom].msgs[(i+inrooms[myroom].msgi)%MAX_MSG];
+            j++;
+        }
+    }
+    return NULL;
+}
+
 void refreshit()
 {
     int i,j,me,msgst;
@@ -290,17 +326,14 @@ void refreshit()
             prints(inrooms[myroom].peoples[j].id);
     }
     resetcolor();
-    msgst=MAX_MSG;
-    for(i=0;i<MAX_MSG;i++)
-        if(inrooms[myroom].msgs[(i+inrooms[myroom].msgi)%MAX_MSG][0]==0) {
-            msgst=i;
-            break;
-        }
+    msgst=get_msgt();
     for(i=2;i<=t_lines-3;i++) 
     if(msgst-1-(t_lines-3-i)-jpage>=0)
     {
+        char * ss=get_msg(msgst-1-(t_lines-3-i)-jpage);
         move(i,20);
-        prints(inrooms[myroom].msgs[(msgst-1-(t_lines-3-i)-jpage+inrooms[myroom].msgi)%MAX_MSG]);
+        if(ss)
+            prints(ss);
     }
 }
 
@@ -883,7 +916,7 @@ quitgame:
         for(i=0;i<MAX_PEOPLE;i++)
             if(inrooms[myroom].peoples[i].style!=-1)
             if(i!=me)
-                kill(i, SIGUSR1);
+                kill_msg(i);
         goto quitgame2;
     }
     inrooms[myroom].peoples[me].style=-1;
