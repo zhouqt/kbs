@@ -1775,7 +1775,7 @@ int lastlevel, lastbmonly;
             break;
         case 'F':
         case 'U':
-            if (me.now < me.num && HAS_PERM(currentuser, PERM_BASIC)) {
+            if (me.now < me.num && HAS_PERM(currentuser, PERM_BASIC) && HAS_PERM(currentuser, PERM_LOGINOK)) {
                 a_forward(path, me.item[me.now], ch == 'U');
                 me.page = 9999;
             }
