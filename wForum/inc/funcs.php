@@ -607,10 +607,10 @@ function show_nav($boardName='')
 <TABLE border=0 width="100%" align=center>
 <TR>
 <TD align=left width="25%"><a href="<?php  echo  $BannerURL; ?>" target="_blank"><img border=0 src='<?php echo  $Banner; ?>'></a></TD>
-<TD Align=center width="5%">
+<TD Align=center width="65%">
 <?php echo MAINTITLE; ?>
 </td>
-<td align=right style="line-height: 15pt" width="70%">
+<td align=right style="line-height: 15pt" width="10%">
 <a href=#><span style="CURSOR: hand" onClick="window.external.AddFavorite('<?php   echo $SiteURL; ?>', '<?php   echo $SiteName; ?>');">加入收藏</span></a>
 <br><a href="">联系我们</a>
 <br><a href="">论坛帮助</a>
