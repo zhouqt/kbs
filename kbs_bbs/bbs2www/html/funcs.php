@@ -361,8 +361,18 @@ function html_error_quit($err_msg)
 {
 ?>
 <body>
-错误! <?php echo $err_msg; ?>! <br><br>
-<a href="javascript:history.go(-1)">快速返回</a>
+<br /><br /><br /><br /><br />
+<center>
+<table cellspacing="0" cellpadding="10" border="0" class="t1">
+<tr><td class="t3">
+<font color=red><b>发生错误</b></font>
+</td></tr>
+<tr><td class="t4">
+<?php echo $err_msg; ?>
+</td></tr>
+</table>
+[<a href="javascript:history.go(-1)">快速返回</a>]
+</center>
 </body>
 </html>
 <?php
