@@ -259,6 +259,8 @@ static int search_board(int *num, struct _select_def *conf, int key)
 {
     struct favboard_proc_arg *arg = (struct favboard_proc_arg *) conf->arg;
     int n, ch, tmpn = false;
+    extern bool ingetdata;
+    ingetdata = true;
 
     *num=0;
     if (arg->find == true) {
@@ -291,9 +293,11 @@ static int search_board(int *num, struct _select_def *conf, int key)
                     *num = n;
                 }
                 if (!strcmp(arg->namelist[n], arg->bname))
+        			ingetdata = false;
                     return 1 /*找到类似的版，画面重画 */ ;
             }
             if (tmpn)
+        		ingetdata = false;
                 return 1;
             if (arg->find == false) {
                 arg->bname[--arg->bname_len] = '\0';
@@ -323,8 +327,10 @@ static int search_board(int *num, struct _select_def *conf, int key)
     if (arg->find) {
         move(t_lines - 1, 0);
         clrtoeol();
+        ingetdata = false;
         return 2 /*结束了 */ ;
     }
+    ingetdata = false;
     return 1;
 }
 
