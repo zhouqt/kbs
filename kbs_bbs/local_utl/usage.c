@@ -66,9 +66,10 @@ int record_data(board, sec)
 int fillbcache(struct boardheader *fptr,int idx,void* arg)
 {
 
+    struct userec normaluser;
     if (numboards >= MAXBOARD)
         return 0;
-    if (fptr->level != 0 || strlen(fptr->filename) == 0)
+    if (check_see_perm(NULL, fptr)==0|| strlen(fptr->filename) == 0)
         return;
     strcpy(st[numboards].boardname, fptr->filename);
     strcpy(st[numboards].expname, fptr->title + 13);

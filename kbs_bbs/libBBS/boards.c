@@ -834,14 +834,16 @@ int check_see_perm(struct userec* user,const struct boardheader* board)
 {
     if (board == NULL)
         return 0;
-    if (HAS_PERM(user, PERM_NOZAP))
-        return 1;
-    if (board->level & PERM_POSTMASK || HAS_PERM(user, board->level) || (board->level & PERM_NOZAP)) {
+    if (board->level & PERM_POSTMASK
+    	|| ((user==NULL)&&(board->level=0))
+    	|| ((user!=NULL)&& HAS_PERM(user, board->level) )
+    	|| (board->level & PERM_NOZAP)) {
         if (board->flag & BOARD_CLUB_HIDE)     /*Òþ²Ø¾ãÀÖ²¿*/
 	{
-            if (HAS_PERM(user, PERM_OBOARDS))
+	    if (user==NULL) return 0;
+           if (HAS_PERM(user, PERM_OBOARDS))
                 return 1;
-            return check_read_perm(user,board);
+           return check_read_perm(user,board);
 	}
         return 1;
     }
