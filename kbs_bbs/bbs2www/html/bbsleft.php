@@ -10,6 +10,7 @@ login_init();
 	{
 ?>
 <table width="100%" border="0" cellspacing="0" cellpadding="1" class="b1">
+<col width="16px"/><col align="left"/>
 <?php
 		$i = 0;
 		foreach ($section_names as $secname)
@@ -54,6 +55,7 @@ login_init();
 	{
 ?>
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="b1">
+<col width="16px"/><col align="left"/>
 <?php
  		$select = 0; 
  		$yank = 0;
