@@ -278,12 +278,16 @@ int get_msgt()
 char * get_msgs(int s)
 {
     int i,j=0,k;
+    char * ss;
     for(i=0;i<MAX_MSG;i++) {
         if(inrooms[myroom].msgs[(i+inrooms[myroom].msgi)%MAX_MSG][0]==0) break;
         k=inrooms[myroom].msgpid[(i+inrooms[myroom].msgi)%MAX_MSG];
         if(k==-1||k==uinfo.pid) {
-            if(j==s)
-                return inrooms[myroom].msgs[(i+inrooms[myroom].msgi)%MAX_MSG];
+            if(j==s) {
+                ss = inrooms[myroom].msgs[(i+inrooms[myroom].msgi)%MAX_MSG];
+                if(!strcmp(ss, "Äã±»ÌßÁË")) kicked = 1;
+                return ss;
+            }
             j++;
         }
     }
