@@ -760,6 +760,8 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
         return -1;
     }
 
+    after_post(currentuser, &post_file, board);
+
     sprintf(buf, "posted '%s' on '%s'", post_file.title, board);
     report(buf);                /* bbslog */
 /*      postreport(post_file.title, 1); *//*added by alex, 96.9.12 */

@@ -71,6 +71,9 @@ int do_del_post(struct userec *user, int ent, struct fileheader *fileinfo, char 
 /* .post.X not use???! KCN
 postreport(fileinfo->title, -1, currboard); added by alex, 96.9.12 */
 /*    if( keep <= 0 ) {*/
+	if (strstr(fileinfo->title, "Re:")!=fileinfo->title) setboardorigin(board, 1);
+	setboardtitle(board, 1);
+		//added by bad 2002.8.12
     fail = delete_record(direct, sizeof(struct fileheader), ent, (RECORD_FUNC_ARG) cmpname, fileinfo->filename);
 /*
     } else {
@@ -547,6 +550,7 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
     }
     /* brc_add_read( postfile.filename ) ; */
     updatelastpost(toboard);
+    after_post(user, &postfile, toboard);
     if (!mode)                  /* 用户post还是自动发信 */
         sprintf(buf, "cross_posted '%s' on '%s'", postfile.title, toboard);
     else
@@ -564,4 +568,10 @@ int post_file(struct userec *user, char *fromboard, char *filename, char *nboard
     }
     post_cross(user, nboard, fromboard, posttitle, filename, Anony, false, 'l', mode);  /* post 文件 */
     return 0;
+}
+
+int after_post(struct userec *user, struct fileheader *fh, char *boardname)
+{
+	if (strstr(fh->title, "Re:")!=fh->title) setboardorigin(boardname, 1);
+	setboardtitle(boardname, 1);
 }

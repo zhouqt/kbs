@@ -1053,6 +1053,124 @@ int generate_mark()
     return 0;
 }
 
+int generate_title()
+{
+    struct fileheader mkpost, *tmppost;
+    struct flock ldata, ldata2;
+    int fd, fd2, size = sizeof(fileheader), total, i, j, count = 0;
+    char olddirect[PATHLEN];
+    char *ptr, *ptr1, *t, *t2;
+    int* index;
+    struct stat buf;
+
+    digestmode = 0;
+    setbdir(digestmode, olddirect, currboard);
+    digestmode = 2;
+    setbdir(digestmode, currdirect, currboard);
+    if ((fd = open(currdirect, O_WRONLY | O_CREAT, 0664)) == -1) {
+        report("recopen err");
+        return -1;              // 创建文件发生错误
+    }
+    ldata.l_type = F_WRLCK;
+    ldata.l_whence = 0;
+    ldata.l_len = 0;
+    ldata.l_start = 0;
+    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+        report("reclock err");
+        close(fd);
+        return -1;              // lock error
+    }
+    // 开始互斥过程
+    if (!setboardtitle(currboard, -1)) {
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+        return -1;
+    }
+
+    if ((fd2 = open(olddirect, O_RDONLY, 0664)) == -1) {
+        report("recopen err");
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+        return -1;
+    }
+    fstat(fd2, &buf);
+    ldata2.l_type = F_RDLCK;
+    ldata2.l_whence = 0;
+    ldata2.l_len = 0;
+    ldata2.l_start = 0;
+    fcntl(fd2, F_SETLKW, &ldata2);
+    total = buf.st_size / size;
+
+    if ((i = safe_mmapfile_handle(fd2, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
+        if (i == 2)
+            end_mmapfile((void *) ptr, buf.st_size, -1);
+        ldata2.l_type = F_UNLCK;
+        fcntl(fd2, F_SETLKW, &ldata2);
+        close(fd2);
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+        return -1;
+    }
+    index = (int*)malloc(sizeof(int)*total);
+    ptr1 = ptr;
+    for (i = 0; i < total; i++) {
+        memcpy(&mkpost, ptr1, size);
+        t2 = mkpost.title;
+        if (strstr(t2, "Re:") == t2) t2+=4;
+    	index[i]=-1;
+    	for (j=0; j<i; j++) 
+    	if (index[j]==-1){
+    		tmppost = ((fileheader*)(ptr+j*size));
+    		t = tmppost->title;
+    		if (strstr(t, "Re:") == t) t+=4;
+    		if (!strcmp(t, t2)) {
+    			index[i]=j;
+    			break;
+    		}
+    	}
+        ptr1 += size;
+    }
+    for(i=0;i<total;i++)
+    	if(index[i]==-1){
+    		int has=0;
+    		memcpy(&mkpost, ptr+i*size, size);
+    		write(fd, &mkpost, size);
+    		count++;
+    		for(j=i+1;j<total;j++)
+    			if(index[j]==i){
+    				if (has) {
+    					if (strstr(mkpost.title, "Re:")==mkpost.title)
+	                    			sprintf(mkpost.title, "├ %s", mkpost.title + 4);
+	    				write(fd, &mkpost, size);
+    					count++;
+    				}
+    				memcpy(&mkpost, ptr+j*size, size);
+	    			has=1;
+    			}
+		if (has) {
+    			if (strstr(mkpost.title, "Re:")==mkpost.title)
+        			sprintf(mkpost.title, "└ %s", mkpost.title + 4);
+			write(fd, &mkpost, size);
+			count++;
+		}
+    	}
+    free(index);
+    end_mmapfile((void *) ptr, buf.st_size, -1);
+    ldata2.l_type = F_UNLCK;
+    fcntl(fd2, F_SETLKW, &ldata2);
+    close(fd2);
+    ftruncate(fd, count * size);
+
+    setboardtitle(currboard, 0); // 标记flag
+
+    ldata.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &ldata);        // 退出互斥区域
+    close(fd);
+    return 0;
+}
 int marked_mode()
 {
     if (digestmode == 3) {
@@ -1076,6 +1194,35 @@ int marked_mode()
     return NEWDIRECT;
 }
 
+int title_mode()
+{
+    struct stat st;
+    
+    if (!stat("heavyload", &st)) {
+        move(t_lines - 1, 0);
+        clrtoeol();
+        prints("系统负担过重，暂时不能响应主题阅读的请求...");
+        refresh();
+        pressanykey();
+        return FULLUPDATE;
+    }
+    
+    digestmode = 2;
+    if (setboardtitle(currboard, -1)) {
+        if (generate_title() == -1) {
+            digestmode = false;
+            return FULLUPDATE;
+        }
+    }
+    setbdir(digestmode, currdirect, currboard);
+    if (!dashf(currdirect)) {
+        digestmode = false;
+        setbdir(digestmode, currdirect, currboard);
+        return FULLUPDATE;
+    }
+    return NEWDIRECT;
+}
+
 int search_mode(int mode, char *index)
 // added by bad 2002.8.8 search mode
 {
@@ -1090,6 +1237,9 @@ int search_mode(int mode, char *index)
     setbdir(digestmode, olddirect, currboard);
     digestmode = mode;
     setbdir(digestmode, currdirect, currboard);
+    if (mode==6&& !setboardorigin(currboard, -1)) {
+    	return NEWDIRECT;
+    }
     if ((fd = open(currdirect, O_WRONLY | O_CREAT, 0664)) == -1) {
         report("recopen err");
         return FULLUPDATE;      // 创建文件发生错误
@@ -1104,6 +1254,12 @@ int search_mode(int mode, char *index)
         return FULLUPDATE;      // lock error
     }
     // 开始互斥过程
+    if (mode==6&& !setboardorigin(currboard, -1)) {
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+        return -1;
+    }
 
     if ((fd2 = open(olddirect, O_RDONLY, 0664)) == -1) {
         report("recopen err");
@@ -1146,6 +1302,8 @@ int search_mode(int mode, char *index)
     close(fd2);
     ftruncate(fd, count * size);
 
+    if(mode==6) setboardorigin(currboard, 0); // 标记flag
+    
     ldata.l_type = F_UNLCK;
     fcntl(fd, F_SETLKW, &ldata);        // 退出互斥区域
     close(fd);
@@ -1167,8 +1325,12 @@ int change_mode(int ent, struct fileheader *fileinfo, char *direct)
     }
     move(t_lines - 1, 0);
     clrtoeol();
-    getdata(t_lines - 1, 0, "切换模式到: 1)文摘 2)被m文章 3)同作者 4)标题关键字 [1]: ", ans, 3, DOECHO, NULL, true);
-    if (ans[0] == '3') {
+    getdata(t_lines - 1, 0, "切换模式到: 1)文摘 2)同主题 3)被m文章 4)原作 5)同作者 6)标题关键字 [1]: ", ans, 3, DOECHO, NULL, true);
+    if (ans[0] == ' ') {
+    	 ans[0] = ans[1];
+    	 ans[1] = 0;
+    }
+    if (ans[0] == '5') {
         move(t_lines - 1, 0);
         clrtoeol();
         sprintf(buf, "您想查找哪位网友的文章[%s]: ", fileinfo->owner);
@@ -1179,7 +1341,7 @@ int change_mode(int ent, struct fileheader *fileinfo, char *direct)
             strcpy(buf, fileinfo->owner);
         if (buf[0] == 0)
             return FULLUPDATE;
-    } else if (ans[0] == '4') {
+    } else if (ans[0] == '6') {
         move(t_lines - 1, 0);
         clrtoeol();
         sprintf(buf, "您想查找的文章标题关键字[%s]: ", title);
@@ -1196,15 +1358,18 @@ int change_mode(int ent, struct fileheader *fileinfo, char *direct)
         return digest_mode();
         break;
     case '2':
+    	 return title_mode();
+    	 break;
+    case '3':
         return marked_mode();
         break;
-//              case '3':
-//                      return search_mode(6, buf);
-//                      break;
-    case '3':
+   case '4':
+        return search_mode(6, buf);
+        break;
+    case '5':
         return search_mode(7, buf);
         break;
-    case '4':
+    case '6':
         return search_mode(8, buf);
         break;
     }
@@ -1822,6 +1987,7 @@ int post_article(char *q_file)
         return FULLUPDATE;
     }
     updatelastpost(currboard);
+    after_post(currentuser, &post_file, currboard);
     brc_add_read(post_file.filename);
 
     bbslog("1user", "posted '%s' on '%s'", post_file.title, currboard);
@@ -2047,6 +2213,8 @@ int edit_title(int ent, struct fileheader *fileinfo, char *direct)
 
         substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
 
+	 setboardorigin(currboard, 1);
+	 setboardtitle(currboard, 1);
     }
     return PARTUPDATE;
 }
@@ -2486,7 +2654,7 @@ struct one_key read_comms[] = { /*阅读状态，键定义 */
     {Ctrl('H'), SR_authorX},    /* Leeward 98.10.03 */
     {'b', SR_BMfunc},
     {'B', SR_BMfuncX},          /* Leeward 98.04.16 */
-    {Ctrl('T'), thread_mode},
+    {Ctrl('T'), title_mode},
     {'t', set_delete_mark},     /*KCN 2001 */
     {'v', i_read_mail},         /* period 2000-11-12 read mail in article list */
     /*

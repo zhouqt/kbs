@@ -90,6 +90,36 @@ int setboardmark(char *board, int i)
         return -1;
 }
 
+int setboardorigin(char *board, int i)
+{
+    int pos;
+
+    pos = getbnum(board);       /* board name --> board No. */
+    if (pos > 0) {
+    	 int j;
+    	 j=brdshm->bstatus[pos - 1].updateorigin;
+    	 if(i>=0&&i<=1)
+        brdshm->bstatus[pos - 1].updateorigin = i;
+        return j;
+    } else
+        return -1;
+}
+
+int setboardtitle(char *board, int i)
+{
+    int pos;
+
+    pos = getbnum(board);       /* board name --> board No. */
+    if (pos > 0) {
+    	 int j;
+    	 j=brdshm->bstatus[pos - 1].updatetitle;
+    	 if(i>=0&&i<=1)
+        brdshm->bstatus[pos - 1].updatetitle = i;
+        return j;
+    } else
+        return -1;
+}
+
 void resolve_boards()
 {
     int boardfd;

@@ -492,7 +492,8 @@ void r_msg(int signo)
                 if (-1 == XOK)
                     sprintf(msgbuf, "[1m½áÊø»ØÕâÌõÑ¶Ï¢[m");
                 else if (0 == XOK && (-KEY_UP == msgXch || -KEY_DOWN == msgXch))
-                    sprintf(msgbuf, "[1mÏµÍ³´íÎó£ºsendmsg.c/r_msg/msgx/fopen|locate[m");
+//                    sprintf(msgbuf, "[1mÏµÍ³´íÎó£ºsendmsg.c/r_msg/msgx/fopen|locate[m"); fixed by bad 2002.8.12
+			;
                 else {
                     if (buf[0] != '\0') {
                         /* ±£´æËù·¢msgµÄÄ¿µÄuid 1998.7.5 by dong */
