@@ -2937,6 +2937,46 @@ int clear_all_new_flag(int ent, struct fileheader *fileinfo, char *direct)
     return PARTUPDATE;
 }
 
+int range_flag(int ent, struct fileheader *fileinfo, char *direct)
+{
+    char ans[4];
+    char num1[10], num2[10];
+    int inum1, inum2;
+    struct fileheader f;
+    int i,j,k;
+    int fflag;
+    int y,x;
+    if (!chk_currBM(currBM, currentuser)) return DONOTHING;
+    if (digestmode!=8) return DONOTHING;
+
+    clear();
+    getdata(2, 0, "首篇文章编号: ", num1, 10, DOECHO, NULL, true);
+    inum1 = atoi(num1);
+    if (inum1 <= 0) {
+        prints("错误编号\n");
+        pressreturn();
+        return FULLUPDATE;
+    }
+    getdata(3, 0, "末篇文章编号: ", num2, 10, DOECHO, NULL, true);
+    inum2 = atoi(num2);
+    if (inum2 <= inum1) {
+        prints("错误编号\n");
+        pressreturn();
+        return FULLUPDATE;
+    }
+    getdata(4, 0, "1-保留标记m, 2-删除标记t, 3-不可回复标记;) [0]", ans, 4, DOECHO, NULL, true);
+    if(ans[0]<'1'||ans[0]>'3') return FULLUPDATE;
+    k=ans[0]-'0';
+    if(ans[0]=='1') fflag=FILE_MARK_FLAG;
+    else if(ans[0]=='2') fflag=FILE_DELETE_FLAG;
+    else if(ans[0]=='3') fflag=FILE_NOREPLY_FLAG;
+    for(i=inum1;i<=inum2;i++)
+        change_post_flag(currBM, currentuser, digestmode, currboard, i, &f, direct, fflag, 0);
+    prints("\n完成标记\n");
+    pressreturn();
+    return DIRCHANGED;
+}
+
 int show_t_friends()
 {
     if (!HAS_PERM(currentuser, PERM_BASIC))
@@ -3012,6 +3052,7 @@ struct one_key read_comms[] = { /*阅读状态，键定义 */
     {Ctrl('O'), add_author_friend},
     {Ctrl('Q'), show_authorinfo},       /*Haohmaru.98.12.05 */
     {Ctrl('W'), show_authorBM}, /*cityhunter 00.10.18 */
+    {'G', range_flag},
 #ifdef NINE_BUILD
     {'z', show_sec_b_note},     /*Haohmaru.2000.5.19 */
     {'Z', b_sec_notes_edit},
