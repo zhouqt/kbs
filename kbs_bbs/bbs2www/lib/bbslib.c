@@ -1511,40 +1511,6 @@ int add_favboard(char *brdname)
 	return -1; /* brdname not found or brdname already in favbrd_list*/
 }
 
-/* from mail.c */
-int
-check_query_mail(qry_mail_dir)
-char qry_mail_dir[STRLEN];
-{
-    struct fileheader fh ;
-    struct stat st ;
-    int fd ;
-    register int  offset ;
-    register long numfiles ;
-    unsigned char ch ;
-
-    offset = (int)((char *)&(fh.accessed[0]) - (char *)&(fh)) ;
-    if((fd = open(qry_mail_dir,O_RDONLY)) < 0)
-        return 0 ;
-    fstat(fd,&st) ;
-    numfiles = st.st_size ;
-    numfiles = numfiles/sizeof(fh) ;
-    if(numfiles <= 0) {
-        close(fd) ;
-        return 0 ;
-    }
-    lseek(fd,(st.st_size-(sizeof(fh)-offset)),SEEK_SET) ;
-    /*离线查询新信只要查询最後一封是否为新信，其他并不重要*/
-    /*Modify by SmallPig*/
-    read(fd,&ch,1) ;
-    if(!(ch & FILE_READ)) {
-        close(fd) ;
-        return YEA ;
-    }
-    close(fd) ;
-    return NA ;
-}
-
 /* from bbsfadd.c */
 /*int addtooverride2(char *uident, char *exp)
 {
