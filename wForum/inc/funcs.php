@@ -35,6 +35,8 @@ global $currentuuser_num;
 global $cachemode;
 global $errMsg;
 global $foundErr;
+global $stats;
+$stats='';
 $errMsg='';
 $foundErr=false;
 
@@ -213,7 +215,7 @@ function html_init($charset="",$title="",$otherheader="")
 		cache_header("no-cache");
 		Header("Cache-Control: no-cache");
     }
-	@$css_style = $_COOKIE["STYLE"];
+	@$css_style = $_COOKIE["style"];
 	if ($css_style==''){
 		$css_style=$DEFAULTStyle;
 	}
@@ -226,42 +228,23 @@ function html_init($charset="",$title="",$otherheader="")
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>"/>
 <title><?php echo $title; ?></title>
-<link rel="stylesheet" type="text/css" href="css/<?php echo $css_style; ?>"/>
-<link rel="stylesheet" type="text/css" href="css/ansi.css"/>
+<link rel="stylesheet" type="text/css" href="css/<?php echo $css_style; ?>.css"/>
 <script src="inc/funcs.js"  language="javascript"></script>
 <?php echo($otherheader); ?>
 </head>
 <?php
 }
 
-function html_normal_quit()
-{
-?>
-</body>
-</html>
-<?php
-	exit;
+
+function setStat($stat){
+	GLOBAL $stats;
+	$stats=$stat;
 }
 
-function html_nologin()
-{
-?>
-<html>
-<head></head>
-<body>
-<script language="Javascript">
-top.window.location='/nologin.html';
-</script>
-</body>
-</html>
-<?php
-}
-
-function foundErr($errMsg){
-	GLOBAL $Errmsg;
-	GLOBAL $foundErr;
-	$Errmsg+=$errMsg;
-	$Errmsg+='\n';
+function foundErr($msg){
+	global $errMsg;
+	global $foundErr;
+	$errMsg.='<br><li>'.$msg;
 	$foundErr=true;
 }
 
@@ -272,7 +255,7 @@ function isErrFounded(){
 
 function html_error_quit()
 {
-  GLOBAL $Errmsg;
+	global $errMsg;
 ?>
 <br>
 <table cellpadding=3 cellspacing=1 align=center class=tableborder1 style="width:75%">
@@ -284,7 +267,7 @@ function html_error_quit()
 <td width="100%" class=tablebody1 colspan=2>
 <b>产生错误的可能原因：</b><br><br>
 <li>您是否仔细阅读了<a href="boardhelp.php">帮助文件</a>，可能您还没有登陆或者不具有使用当前功能的权限。
-<?php   echo $Errmsg; ?>
+<?php   echo $errMsg; ?>
 </td></tr>
 <?php   if (($needlogin!=0)&&($loginok!=1))
   {
@@ -507,9 +490,7 @@ function show_nav()
 
   html_init();
 ?>
-<script>
-var stylelist = '<a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=0&boardid=0\">恢复默认设置</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=1&boardid=0\">默认模板</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=25&boardid=0\">水晶紫色</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=26&boardid=0\">ｅ点小镇</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=27&boardid=0\">心情灰色</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=28&boardid=0\">秋意盎然</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=29&boardid=0\">蓝色庄重</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=32&boardid=0\">绿色淡雅</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=34&boardid=0\">蓝雅绿</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=35&boardid=0\">紫色淡雅</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=36&boardid=0\">淡紫色</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=37&boardid=0\">橘子红了</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=38&boardid=0\">红红夜思</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=40&boardid=0\">粉色回忆</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=41&boardid=0\">青青河草</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=42&boardid=0\">浓浓绿意</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=44&boardid=0\">棕红预览</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=45&boardid=0\">淡咖啡</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=46&boardid=0\">碧海晴天</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=47&boardid=0\">蓝色水晶</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=48&boardid=0\">雪花飘飘</a><br>';
-</script>
+
 <body topmargin=0 leftmargin=0 onmouseover="HideMenu();">
 <div id=menuDiv class="navclass1"></div>
 <table cellspacing=0 cellpadding=0 align=center class="navclass2">
@@ -539,7 +520,7 @@ var stylelist = '<a style=font-size:9pt;line-height:12pt; href=\"cookies.php?act
 <?php   
 	if (!$Founduser)  {
 ?>
-<a href="login.php">登陆</a> <img src=pic/navspacer.gif align=absmiddle> <a href="reg.php">注册</a>
+<a href="logon.php">登陆</a> <img src=pic/navspacer.gif align=absmiddle> <a href="register.php">注册</a>
 <?php  
 	}  else  {
 ?>
@@ -557,112 +538,35 @@ var stylelist = '<a style=font-size:9pt;line-height:12pt; href=\"cookies.php?act
 </table>
 </td></tr>
 </table>
-<br>
-<br>
 <?php 
 
 } 
 
-function head_var($IsBoard,$idepth,$GetTitle,$GetUrl)
+function head_var($Title)
 {
-  extract($GLOBALS);
-
-
+  GLOBAL $SiteName;
+  GLOBAL $SiteURL;
+  GLOBAL $stats;
+  $URL=$_SERVER['PHP_SELF'];
 ?>
 <table cellspacing=1 cellpadding=3 align=center border=0 width="97%">
 <tr>
-<?php   if (!$Founduser)
-  {
-?>
 <td height=25>
 <BR>
->> <?php     if ($FoundBoard)
-    {
-?><?php       echo $BoardReadme; ?><?php     }
-      else
-    {
-?>欢迎光临 <B><?php       echo $Forum_info[0]; ?></B><?php     } ?>
-<?php   }
-    else
-  {
-?>
-<td width=65% >
-</td><td width=35% align=right>
-<?php     if (intval(newincept())>intval(0))
-    {
-?>
-<bgsound src="<?php       echo $Forum_info[7].$Forum_statePic[8]; ?>" border=0>
-<?php       if (intval($Forum_setting[10])==1)
-      {
-?>
-<script language=JavaScript>openScript('messanger.php?action=read&id=<?php         echo inceptid(1); ?>&sender=<?php         echo inceptid(2); ?>',500,400)</script>
-<?php       } ?>
-<img src=<?php       echo $Forum_info[7].$Forum_boardpic[9]; ?>> <a href="usersms.php?action=inbox">我的收件箱</a> (<a href="javascript:openScript('messanger.php?action=read&id=<?php       echo inceptid(1); ?>&sender=<?php       echo inceptid(2); ?>',500,400)"><font color="<?php       echo $Forum_body[8]; ?>"><?php       echo newincept(); ?> 新</font></a>)
-<?php     }
-      else
-    {
-?>
-<img src=<?php       echo $Forum_info[7].$Forum_boardpic[8]; ?>> <a href="usersms.php?action=inbox">我的收件箱</a> (<font color=gray>0 新</font>)
-<?php     } ?>
-<?php   } ?>
+>>欢迎光临 <B><?php       echo $SiteName; ?></B>
 </td></tr>
 </table>
 <table cellspacing=1 cellpadding=3 align=center class=tableBorder2>
 <tr><td height=25 valign=middle>
-<img src="<?php   echo $Forum_info[7].$Forum_pic[12]; ?>" align=absmiddle> <a href=index.php><?php   echo $Forum_info[0]; ?></a> → 
+<img src="pic/forum_nav.gif" align=absmiddle> <a href="<?php echo $SiteURL; ?>"><?php   echo $SiteName; ?></a> → 
 <?php 
-  if ($IsBoard==1)
-  {
-
-    if ($BoardParentID>0)
-    {
-
-      for ($i=0; $i<=$idepth-1; $i=$i+1)
-      {
-
-        print "<a href=list.php?boardid=".$FBoardID[$i].">".$FBoardName[$i]."</a> →  ";
-        if ($i>9)
-        {
-          break;
-        } 
-
-
-      } 
-
-    } 
-
-    if ($_REQUEST['CatLog']=="NN")
-    {
-
-            $_COOKIE['BoardList'.$Boardid."BoardID"]="NNotShow";
-    } 
-
-    print "<a href=list.php?boardid=".$Boardid.">".$boardtype."</a> →  ".HTMLEncode($Stats);
-    if ($_COOKIE['BoardList'.$Boardid."BoardID"]=="NNotShow")
-    {
-      print "&nbsp;<a href=\"?BoardID=".$Boardid."&cBoardID=".$Boardid."&Catlog=Y\" title=\"展开论坛列表\">[展开]</a>";
-    } 
-
-  }
-    else
-  if ($IsBoard==2)
-  {
-
-    print HTMLEncode($Stats);
-  }
-    else
-  {
-
-    print "<a href=".$GetUrl.">".$GetTitle."</a> → ".HTMLEncode($Stats);
-  } 
-
+    print "<a href=".$URL.">".$Title."</a> → ".$stats;
 ?>
 <a name=top></a>
 </td></td>
 </table>
 <br>
 <?php 
-  return $function_ret;
 } 
 
 function show_footer()

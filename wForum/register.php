@@ -1,23 +1,26 @@
 <?php
 	$needlogin=0;
 	require("inc/funcs.php");
-	$stats="新用户注册";
+	setStat("新用户注册");
 		show_nav();
 	@$action=$_POST['action'];
 	if ($action=='apply') {
-		$stats="填写资料";
+		setStat("填写资料");
+		head_var("新用户注册");
 		do_apply();
 	} elseif ($action=='save') {
-		$stats="提交注册";
+		setStat("提交注册");
+		head_var("新用户注册");
 		do_save();
 	} else {
-		$stats="注册协议";
+		setStat("注册协议");
+		head_var("新用户注册");
 		do_show();
 	}
 
 	if (isErrFounded()) {
-
-
+		html_error_quit();
+	}
 show_footer();
 
 function do_show() {
@@ -209,6 +212,5 @@ function do_save(){
 }
 
 ?>
-
 </body>
 </html>

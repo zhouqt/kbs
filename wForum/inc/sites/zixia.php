@@ -10,17 +10,18 @@ function getattachtmppath($userid,$utmpnum)
 
 $SiteName="≤‚ ‘BBS";
 
+$SiteURL="http://news.zixia.net:8080/wbbs";
+
 $HTMLTitle="≤‚ ‘BBS";
 
 $HTMLCharset="GB2312";
 
-$DEFAULTStyle="style1.css";
+$DEFAULTStyle="defaultstyle";
 
 $Banner="pic/ws.jpg";
 
 $BannerURL="http://aka.com.cn";
 
-$SiteURL=$_SERVER['SERVER_NAME'];
 define("ATTACHMAXSIZE","1048576");
 define("ATTACHMAXCOUNT","20");
 
