@@ -18,7 +18,7 @@ SMTH_API struct user_info uinfo;
 char save_scr[LINEHEIGHT][LINELEN*3];
 int save_y, save_x;
 bool fullscr = false;
-unsigned long lunarInfo[]={
+unsigned int lunarInfo[]={
 0x4bd8,0x4ae0,0xa570,0x54d5,0xd260,0xd950,0x5554,0x56af,0x9ad0,0x55d2,
 0x4ae0,0xa5b6,0xa4d0,0xd250,0xd295,0xb54f,0xd6a0,0xada2,0x95b0,0x4977,
 0x497f,0xa4b0,0xb4b5,0x6a50,0x6d40,0xab54,0x2b6f,0x9570,0x52f2,0x4970,
@@ -129,7 +129,7 @@ int leapDays(int y)
 
 int lYearDays(int y) 
 {
-    unsigned long i, sum = 348;
+    unsigned int i, sum = 348;
     for(i=0x8000; i>0x8; i>>=1) sum += (lunarInfo[y-1900] & i)? 1: 0;
     return(sum+leapDays(y));
 }
@@ -477,9 +477,9 @@ int newfile(char * s)
 
 #define IV1         0x12345678
 #define IV2         0xabcdef44
-void tea_encipher(unsigned long* v, unsigned long* k)  
+void tea_encipher(unsigned int* v, unsigned int* k)  
 {              
-    register unsigned long y=v[0],z=v[1], sum=0, delta=0x9e3779b9, n=32;
+    register unsigned int y=v[0],z=v[1], sum=0, delta=0x9e3779b9, n=32;
     while (n-->0) {                       
         sum += delta ;
         y += (z<<4)+k[0] ^ z+sum ^ (z>>5)+k[1];
@@ -489,9 +489,9 @@ void tea_encipher(unsigned long* v, unsigned long* k)
     v[1]=z; 
 }
 
-void tea_decipher(unsigned long* v,unsigned long* k)  
+void tea_decipher(unsigned int* v,unsigned int* k)  
 {
-    register unsigned long n=32, sum, y=v[0], z=v[1],delta=0x9e3779b9;
+    register unsigned int n=32, sum, y=v[0], z=v[1],delta=0x9e3779b9;
     sum=delta<<5;
                        
     while (n-->0) {
@@ -503,10 +503,10 @@ void tea_decipher(unsigned long* v,unsigned long* k)
     v[1]=z;  
 }
 
-void encipher(char* buf,size_t len,unsigned long *k)
+void encipher(char* buf,size_t len,unsigned int *k)
 {
-    unsigned long l[2];
-    unsigned long iv[2] = {IV1,IV2};
+    unsigned int l[2];
+    unsigned int iv[2] = {IV1,IV2};
     int i;
     if (len % 8) return;
     len = len / 8;
@@ -520,10 +520,10 @@ void encipher(char* buf,size_t len,unsigned long *k)
     }
 }
 
-void decipher(char* buf,size_t len,unsigned long *k)
+void decipher(char* buf,size_t len,unsigned int *k)
 {
-    unsigned long l[2];
-    unsigned long iv[2];
+    unsigned int l[2];
+    unsigned int iv[2];
     if (len % 8) return;
     buf += len;
     for (len=len/8-1; len; --len) {
@@ -544,7 +544,7 @@ void decipher(char* buf,size_t len,unsigned long *k)
 void encode_file(char * s, char * s2)
 {
     char buf[1024*16];
-    unsigned long k[4];
+    unsigned int k[4];
     int o, i;
     FILE *fp1, *fp2;
     k[0] = sysconf_eval("CALENDAR_KEY0", 0x234251);
@@ -570,7 +570,7 @@ void decode_file(char * s, char * s2)
 {
     char buf[1024*16];
     char fn[80];
-    unsigned long k[4];
+    unsigned int k[4];
     int o, i;
     FILE *fp1, *fp2;
     k[0] = sysconf_eval("CALENDAR_KEY0", 0x234251);
