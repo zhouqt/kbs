@@ -755,7 +755,7 @@ int choose_board(int newflag, char *boardprefix)
                 	i++;
                 	sprintf(bname, ".MAILBOX%d", i);
                 	setmailfile(buf, currentuser->userid, bname);
-                	if (stat(buf, &st) != -1) break;
+                	if (stat(buf, &st) == -1) break;
                 }
                 sprintf(bname, "MAILBOX%d", i);
                 move(0, 0);
