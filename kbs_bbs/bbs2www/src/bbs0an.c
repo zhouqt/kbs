@@ -79,7 +79,7 @@ void ann_show_toolbar(char * path, char * board)
 		strncpy(buf,path,STRLEN);
 		buf[STRLEN-1]='\0';
 		if((c=strrchr(buf,'/'))!=NULL) *c='\0';
-		printf("[<a href=\"bbs0an?path=%s\">返回上一级目录</a>]",buf);
+		if (buf[0]) printf("[<a href=\"bbs0an?path=%s\">返回上一级目录</a>]",buf);
         if (board[0]){
             printf("[<a href=\"/bbsdoc.php?board=%s\">本讨论区</a>]\n", encode_url(buf, board, sizeof(buf)));
     			if(ann_is_bm){
