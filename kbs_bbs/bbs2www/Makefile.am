@@ -14,4 +14,6 @@ install-data-local:
 	fi;
 
 install-data-hook:
-	ln -s @HTMPATH@/site.php @WAPPATH@/site.php
+	if test @CONFIG_HAVE_WAP@ = "yes"; then \
+	ln -s @HTMPATH@/site.php @WAPPATH@/site.php; \
+	fi;
