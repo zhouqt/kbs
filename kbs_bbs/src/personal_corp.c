@@ -1221,7 +1221,7 @@ static int pc_dir_select(struct _select_def *conf)
 
     clear();
 
-    pc_add_visitcount(pc_n[conf->pos - conf->page_pos].nid);
+    //pc_add_visitcount(pc_n[conf->pos - conf->page_pos].nid);
     pc_n[conf->pos - conf->page_pos].visitcount++;
         /**如果是目录***/
     if (pc_dirmode == 4 && pc_n[conf->pos - conf->page_pos].type == 1) {
