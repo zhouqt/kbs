@@ -505,7 +505,6 @@ int post_commend(struct userec *user, char *fromboard, struct fileheader *filein
     struct fileheader postfile;
     char filepath[STRLEN];
     char oldfilepath[STRLEN];
-    char buf4[STRLEN+10];
 	char buf[256];
     int aborted;
 	int oldmode;
@@ -532,7 +531,7 @@ int post_commend(struct userec *user, char *fromboard, struct fileheader *filein
     if( f_cp( oldfilepath, filepath , 0) < 0 )
 		return -1;
 
-    snprintf(postfile.title, STRLEN, "[ÍÆ¼ö]%s", fileinfo->title);
+    strcpy(postfile.title, fileinfo->title);
     strncpy(postfile.owner, user->userid, OWNER_LEN);
     postfile.owner[OWNER_LEN - 1] = 1;
     postfile.eff_size=get_effsize(oldfilepath);
