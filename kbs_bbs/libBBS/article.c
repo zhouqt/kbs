@@ -457,7 +457,7 @@ void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail
         }
         owner[count - 8] = '\0';
         if (in_mail == true)
-            fprintf(of, "[1;37m║╬ ртобндвжв╙тьвт [32m%s [37m╣дпеоД ║©\n", user->userid);
+            fprintf(of, "[1;37m║╬ ртобндвжв╙тьвт [32m%s [37m╣дпеоД ║©[m\n", user->userid);
         else
             fprintf(of, "║╬ ртобндвжв╙тьвт %s лжбшгЬ ║©\n", board);
         if (id_invalid(owner))
