@@ -2103,6 +2103,12 @@ PHP_MINIT_FUNCTION(smth_bbs)
     REGISTER_LONG_CONSTANT("BBS_PERM_BOARDS", PERM_BOARDS, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_PERM_CLOAK", PERM_CLOAK, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_BOARD_ATTACH", BOARD_ATTACH, CONST_CS | CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("BBS_BOARD_ANNONY", BOARD_ANNONY, CONST_CS | CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("BBS_BOARD_JUNK", BOARD_JUNK, CONST_CS | CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("BBS_BOARD_OUTFLAG", BOARD_OUTFLAG, CONST_CS | CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("BBS_BOARD_CLUB_READ", BOARD_CLUB_READ, CONST_CS | CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("BBS_BOARD_CLUB_WRITE", BOARD_CLUB_WRITE, CONST_CS | CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("BBS_BOARD_CLUB_HIDE", BOARD_CLUB_HIDE, CONST_CS | CONST_PERSISTENT);
     chdir(old_pwd);
 #ifdef DEBUG
     zend_error(E_WARNING, "module init");
@@ -2823,6 +2829,9 @@ static PHP_FUNCTION(bbs_new_board)
 	int bout;
 	int battach;
 	int oldbnum;
+	int bclubread;
+	int bclubwrite;
+	int bclubhide;
 
 	char* bgroup;
 	int bgroup_len;
@@ -2832,7 +2841,7 @@ static PHP_FUNCTION(bbs_new_board)
 	struct boardheader newboard;
 	char vbuf[100];
 
-    if (ac != 12 || zend_parse_parameters(12 TSRMLS_CC, "lsssssllllsl", &oldbnum, &bname, &bname_len, &section, &section_len, &desp, &desp_len, &btitle, &btitle_len, &bbm, &bbm_len, &blevel, &banony, &bjunk, &bout, &bgroup, &bgroup_len, &battach) == FAILURE) {
+    if (ac != 15 || zend_parse_parameters(15 TSRMLS_CC, "lsssssllllsllll", &oldbnum, &bname, &bname_len, &section, &section_len, &desp, &desp_len, &btitle, &btitle_len, &bbm, &bbm_len, &blevel, &banony, &bjunk, &bout, &bgroup, &bgroup_len, &battach, &bclubread, &bclubwrite, &bclubhide) == FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
 
@@ -2943,6 +2952,15 @@ static PHP_FUNCTION(bbs_new_board)
 			del_from_file("etc/anonymous",oldboard.filename);
 		if(newboard.flag | BOARD_ANNONY)
 			addtofile("etc/anonymous",newboard.filename);
+
+		if( bclubread )
+			newboard.flag |= BOARD_CLUB_READ;
+		
+		if( bclubwrite )
+			newboard.flag |= BOARD_CLUB_WRITE;
+		
+		if( bclubhide )
+			newboard.flag |= BOARD_CLUB_HIDE;
 		
 		set_board(oldbnum, &newboard, &oldboard);
 		sprintf(vbuf, "更改讨论区 %s 的资料 --> %s", oldboard.filename, newboard.filename);
