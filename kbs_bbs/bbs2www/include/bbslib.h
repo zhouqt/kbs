@@ -21,6 +21,7 @@
 
 #define FIRST_PAGE	"/index.html"
 #define MAIN_PAGE   "/frames.html"
+#define NOLOGIN_PAGE "/nologin.html"
 #define CSS_FILE 	"/bbs.css"
 #define CHARSET		"gb2312"
 #define UCACHE_SHMKEY	get_shmkey("UCACHE_SHMKEY")
