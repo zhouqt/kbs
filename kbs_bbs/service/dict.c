@@ -141,7 +141,7 @@ int dict_main()
                 word[len]=0;
             }
 
-            if(word[0]) {
+            if(len>=4) {
                 int i=0;
                 if (word[0]&0x80)
                     strcpy(table, "cedict");
@@ -156,12 +156,12 @@ int dict_main()
                 res = mysql_store_result(&s);
                 row = mysql_fetch_row(res);
                 while(row!=NULL) {
-                    row = mysql_fetch_row(res);
                     move(3+i, 0);
                     prints("%s ", row[1]);
                     print_res(row[2]);
                     i++;
                     if(i>=20) break;
+                    row = mysql_fetch_row(res);
                 }
             }
         }
