@@ -68,7 +68,7 @@ int is_origin(FILE *fp, char *buf)
 	long offset;
 	int rv = 0;
 
-	if (strstr(buf, "※ 来源:·BBS "NAME_BBS_CHINESE"站 " NAME_BBS_ENGLISH"·[FROM:") != NULL)
+	if (strstr(buf, "※ 来源:·BBS "NAME_BBS_CHINESE"站 ") != NULL)
 	{
 		offset = ftell(fp);
 		if (fgets(buf2, sizeof(buf2), fp) == NULL)
