@@ -14,6 +14,7 @@
 #define MAX_GUEST_NUM		800
 
 #define POP3PORT		110
+#define POP3SPORT		995
 /* ASCIIArt, by czz, 2002.7.5 */
 #define       LENGTH_SCREEN_LINE      256
 #define       LENGTH_FILE_BUFFER      260
