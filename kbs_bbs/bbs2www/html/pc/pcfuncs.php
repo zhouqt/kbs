@@ -1365,16 +1365,19 @@ function pc_fwd_getsubject($node)
 
 function pc_fwd_getbody($node)
 {
-	$body = "【以下文章转自 ".$node[username]." 的BLOG：".$node[corpusname]."】\n";
-	$body.= "BLOG地址：http://".$pcconfig["SITE"]."/pc/index.php?id=".$node[username]."\n";
-	$body.= "日志地址：http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$node[uid]."&nid=".$node[nid]."&s=all\n\n\n";
+	global $pcconfig;
+	$body = "\x1b[1;32m【以下文章转自 ".$node[username]." 的BLOG：".$node[corpusname]."】\x1b[m\n";
+	$body.= "\x1b[1;32mBLOG地址：http://".$pcconfig["SITE"]."/pc/index.php?id=".$node[username]."\x1b[m\n";
+	$body.= "\x1b[1;32m日志地址：http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$node[uid]."&nid=".$node[nid]."&s=all\x1b[m\n\n\n";
+	$body.= "    \x1b[1;36m\x1b[44m".$node[subject]."\x1b[m\n\n";
 	
 	if($node[htmltag])
 	{
-		$content = eregi_replace("<p>","",$node[body]);
-		$content = eregi_replace("</p>","\n\n",$node[body]);
-		$content = eregi_replace("&nbsp;"," ",$node[body]);
-		$content = eregi_replace("<br />","\n",$node[body]);
+		$content = $node[body];
+		$content = eregi_replace("<p>","",$content);
+		$content = eregi_replace("</p>","\n\n",$content);
+		$content = eregi_replace("&nbsp;"," ",$content);
+		$content = eregi_replace("<br />","\n",$content);
 		$content = undo_html_format(strip_tags($content));
 		$body .= $content;
 	}
@@ -1390,6 +1393,20 @@ function pc_return($url)
 window.location.href="<?php echo $url; ?>";
 </script>
 <?php
+}
+
+function pc_can_comment($link , $uid)
+{
+	global $currentuser;
+	if ($currentuser["userlevel"]&BBS_PERM_LOGINOK)
+	{
+		if (pc_in_blacklist($link , $currentuser["userid"] , $uid ))
+			return FALSE;
+		else
+			return TRUE;
+	}
+	else
+		return FALSE;
 }
 
 ?>

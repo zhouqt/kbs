@@ -59,11 +59,11 @@
 				html_error_quit("所选择的评论不存在!");
 				exit();
 			}
-			if($blmanager = pc_in_blacklist($link , $currentuser["userid"] , $rows[uid] ))
+			if(!pc_can_comment($link , $uid))
 			{
-				html_error_quit("对不起，您被".$blmanager."取消了评论权限！");
+				html_error_quit("对不起，您尚无该BLOG的评论权限！");
 				exit();
-			}
+			}	
 		
 			//判定评论文章是否用了编辑器，根据情况调入 windinsn feb 22 , 2004
 			if($rows[htmltag])

@@ -34,9 +34,9 @@
 		
 		$uid = $rows[uid];
 		
-		if($blmanager = pc_in_blacklist($link , $currentuser["userid"] , $uid ))
+		if(!pc_can_comment($link , $uid))
 		{
-			html_error_quit("对不起，您被".$blmanager."取消了评论权限！");
+			html_error_quit("对不起，您尚无该BLOG的评论权限！");
 			exit();
 		}	
 		
