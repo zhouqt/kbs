@@ -23,7 +23,9 @@
 <!--
 var num=queryString("totalsig",5);
 var sel=queryString("sig",1);
-for (i=0;i<num;i++) {
+if (sel>99) sel=1;
+if (sel>num) num=sel;
+for (i=1;i<=num;i++) {
   if (i==sel)
     document.write("<option value=\""+i+"\" selected>µÚ "+i+" ¸ö</option>");
   else

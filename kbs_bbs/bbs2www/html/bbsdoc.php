@@ -118,7 +118,7 @@
 ?>
 </table>
 <hr class="default"/>
-<a href="/cgi-bin/bbs/bbspst?board=<?php echo $brd_encode; ?>">发表文章</a>
+<a href="bbspst.html?board=<?php echo $brd_encode; ?>&sig=<?php echo $currentuser["signature"]; ?>">发表文章</a>
 <a href="javascript:location=location">刷新</a>
 <?php
 		if ($start > 0)
