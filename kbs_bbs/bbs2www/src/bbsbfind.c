@@ -34,7 +34,7 @@ int main()
     if (getboardnum(board, &bh) == 0)
         http_fatal("错误的讨论区");
     strcpy(board, bh.filename);
-    if (!has_read_perm(currentuser, board))
+    if (!check_read_perm(currentuser, &bh))
         http_fatal("错误的讨论区");
     sprintf(dir, "boards/%s/.DIR", board);
     fp = fopen(dir, "r");

@@ -104,6 +104,26 @@ int setsystempasswd()
 }
 
 
+void
+deliverreport(title, str)
+char *title;
+char *str;
+{
+	FILE *se;
+	char fname[STRLEN];
+	int savemode;
+
+	savemode = uinfo.mode;
+	sprintf(fname, "tmp/deliver.%s.%05d", currentuser->userid, uinfo.pid);
+	if ((se = fopen(fname, "w")) != NULL) {
+		fprintf(se, "%s", str);
+		fclose(se);
+        post_file(currentuser, "", fname, currboard, title, 0, 2);
+		unlink(fname);
+		modify_user_mode(savemode);
+	}
+}
+
 
 void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
 {                               /* Leeward: 1997.12.02 */
@@ -479,29 +499,37 @@ int m_editbrd()
     prints("匿名讨论区:   %s\n", (noidboard) ? "Yes" : "No");
     prints("不记文章数:   %s\n", (fh.flag & BOARD_JUNK) ? "Yes" : "No");
     prints("可向外转信:   %s\n", (fh.flag & BOARD_OUTFLAG) ? "Yes" : "No");
+    if (fh.flag&BOARD_CLUB_READ||fh.flag&BOARD_CLUB_WRITE)
+        prints("俱乐部:   %s %s %s  序号: %d\n", 
+            fh.flag&BOARD_CLUB_READ?"阅读限制":"",
+            fh.flag&BOARD_CLUB_WRITE?"发表限制":"",
+            fh.flag&BOARD_CLUB_HIDE?"隐藏":"",
+            fh.clubnum);
+    else
+        prints("%s","俱乐部:   无\n");
     strcpy(oldtitle, fh.title);
     prints("限制 %s 权力: %s", (fh.level & PERM_POSTMASK) ? "POST" : "READ", (fh.level & ~PERM_POSTMASK) == 0 ? "不设限" : "有设限");
-    getdata(9, 0, "是否更改以上资讯? (Yes or No) [N]: ", genbuf, 4, DOECHO, NULL, true);
+    getdata(10, 0, "是否更改以上资讯? (Yes or No) [N]: ", genbuf, 4, DOECHO, NULL, true);
     if (*genbuf == 'y' || *genbuf == 'Y') {
-        move(8, 0);
+        move(9, 0);
         prints("直接按 <Return> 不修改此栏资讯\n");
       enterbname:
-        getdata(9, 0, "新讨论区名称: ", genbuf, 18, DOECHO, NULL, true);
+        getdata(10, 0, "新讨论区名称: ", genbuf, 18, DOECHO, NULL, true);
         if (*genbuf != 0) {
             if (getboardnum(genbuf, NULL) > 0) {
                 move(3, 0);
                 prints("错误! 此讨论区已经存在\n");
-                move(10, 0);
+                move(11, 0);
                 clrtobot();
                 goto enterbname;
             }
             strncpy(newfh.filename, genbuf, sizeof(newfh.filename));
             strcpy(bname, genbuf);
         }
-        getdata(10, 0, "新讨论区说明: ", genbuf, 60, DOECHO, NULL, true);
+        getdata(11, 0, "新讨论区说明: ", genbuf, 60, DOECHO, NULL, true);
         if (*genbuf != 0)
             strncpy(newfh.title, genbuf, sizeof(newfh.title));
-        getdata(11, 0, "讨论区管理员: ", genbuf, 60, DOECHO, NULL, true);
+        getdata(12, 0, "讨论区管理员: ", genbuf, 60, DOECHO, NULL, true);
         if (*genbuf != 0)
             strncpy(newfh.BM, genbuf, sizeof(newfh.BM));
         if (*genbuf == ' ')
@@ -510,7 +538,7 @@ int m_editbrd()
          * newfh.BM[ BM_LEN - 1 ]=fh.BM[ BM_LEN - 1 ]; 
          */
         sprintf(buf, "匿名版 (Y/N)? [%c]: ", (noidboard) ? 'Y' : 'N');
-        getdata(12, 0, buf, genbuf, 4, DOECHO, NULL, true);
+        getdata(13, 0, buf, genbuf, 4, DOECHO, NULL, true);
         if (*genbuf == 'y' || *genbuf == 'Y' || *genbuf == 'N' || *genbuf == 'n') {
             if (*genbuf == 'y' || *genbuf == 'Y')
                 noidboard = 1;
@@ -518,7 +546,7 @@ int m_editbrd()
                 noidboard = 0;
         }
         sprintf(buf, "不记文章数 (Y/N)? [%c]: ", (newfh.flag & BOARD_JUNK) ? 'Y' : 'N');
-        getdata(13, 0, buf, genbuf, 4, DOECHO, NULL, true);
+        getdata(14, 0, buf, genbuf, 4, DOECHO, NULL, true);
         if (*genbuf == 'y' || *genbuf == 'Y' || *genbuf == 'N' || *genbuf == 'n') {
             if (*genbuf == 'y' || *genbuf == 'Y')
                 newfh.flag |= BOARD_JUNK;
@@ -526,24 +554,48 @@ int m_editbrd()
                 newfh.flag &= ~BOARD_JUNK;
         };
         sprintf(buf, "可向外转信 (Y/N)? [%c]: ", (newfh.flag & BOARD_OUTFLAG) ? 'Y' : 'N');
-        getdata(14, 0, buf, genbuf, 4, DOECHO, NULL, true);
+        getdata(15, 0, buf, genbuf, 4, DOECHO, NULL, true);
         if (*genbuf == 'y' || *genbuf == 'Y' || *genbuf == 'N' || *genbuf == 'n') {
             if (*genbuf == 'y' || *genbuf == 'Y')
                 newfh.flag |= BOARD_OUTFLAG;
             else
                 newfh.flag &= ~BOARD_OUTFLAG;
         };
-        getdata(15, 0, "是否移动精华区的位置 (Y/N)? [N]: ", genbuf, 4, DOECHO, NULL, true);
+        getdata(16, 0, "是否移动精华区的位置 (Y/N)? [N]: ", genbuf, 4, DOECHO, NULL, true);
         if (*genbuf == 'Y' || *genbuf == 'y')
             a_mv = 2; /* 表示移动精华区目录 */
         else
             a_mv = 0;
-        getdata(16, 0, "是否更改存取权限 (Y/N)? [N]: ", genbuf, 4, DOECHO, NULL, true);
+        sprintf(buf,"是否为读限制俱乐部: (Y/N)? [%c]",(newfh.flag&BOARD_CLUB_READ)?'Y':'N');
+        getdata(17, 0, buf, genbuf, 4, DOECHO, NULL, true);
+        if (*genbuf == 'Y' || *genbuf == 'y')
+        	newfh.flag|=BOARD_CLUB_READ;
+        else
+        if (*genbuf == 'N' || *genbuf == 'n')
+        	newfh.flag&=~BOARD_CLUB_READ;
+        sprintf(buf,"是否为发表限制俱乐部: (Y/N)? [%c]",(newfh.flag&BOARD_CLUB_WRITE)?'Y':'N');
+        getdata(18, 0, buf, genbuf, 4, DOECHO, NULL, true);
+        if (*genbuf == 'Y' || *genbuf == 'y')
+        	newfh.flag|=BOARD_CLUB_WRITE;
+        else
+        if (*genbuf == 'N' || *genbuf == 'n')
+        	newfh.flag&=~BOARD_CLUB_WRITE;
+        if (newfh.flag&BOARD_CLUB_WRITE||newfh.flag&BOARD_CLUB_READ) {
+	        sprintf(buf,"是否为隐藏限制俱乐部: (Y/N)? [%c]",(newfh.flag&BOARD_CLUB_HIDE)?'Y':'N');
+	        getdata(19, 0, buf, genbuf, 4, DOECHO, NULL, true);
+	        if (*genbuf == 'Y' || *genbuf == 'y')
+	        	newfh.flag|=BOARD_CLUB_HIDE;
+	        else
+	        if (*genbuf == 'N' || *genbuf == 'n')
+	        	newfh.flag&=~BOARD_CLUB_HIDE;
+        } else
+	        newfh.flag&=~BOARD_CLUB_HIDE;
+        getdata(20, 0, "是否更改存取权限 (Y/N)? [N]: ", genbuf, 4, DOECHO, NULL, true);
         if (*genbuf == 'Y' || *genbuf == 'y') {
             char ans[5];
 
             sprintf(genbuf, "限制 (R)阅读 或 (P)张贴 文章 [%c]: ", (newfh.level & PERM_POSTMASK ? 'P' : 'R'));
-            getdata(17, 0, genbuf, ans, 4, DOECHO, NULL, true);
+            getdata(21, 0, genbuf, ans, 4, DOECHO, NULL, true);
             if ((newfh.level & PERM_POSTMASK) && (*ans == 'R' || *ans == 'r'))
                 newfh.level &= ~PERM_POSTMASK;
             else if (!(newfh.level & PERM_POSTMASK) && (*ans == 'P' || *ans == 'p'))
@@ -556,10 +608,11 @@ int m_editbrd()
             clear();
             getdata(0, 0, "确定要更改吗? (Y/N) [N]: ", genbuf, 4, DOECHO, NULL, true);
         } else {
-            getdata(17, 0, "确定要更改吗? (Y/N) [N]: ", genbuf, 4, DOECHO, NULL, true);
+            getdata(21, 0, "确定要更改吗? (Y/N) [N]: ", genbuf, 4, DOECHO, NULL, true);
         }
         if (*genbuf == 'Y' || *genbuf == 'y') {
             char lookgrp[30];
+            int ret;
 
             {
                 char secu[STRLEN];
@@ -625,7 +678,7 @@ int m_editbrd()
                 newfh.flag &= ~BOARD_ANNONY;
                 del_from_file("etc/anonymous", newfh.filename);
             }
-            set_board(pos, &newfh);
+            set_board(pos, &newfh, &fh);
             sprintf(genbuf, "更改讨论区 %s 的资料 --> %s", fh.filename, newfh.filename);
             bbslog("user", "%s", genbuf);
         }
@@ -1834,7 +1887,7 @@ int set_BM()
         		lookupuser->userlevel = newlevel;
 
     		 	edit_grp(fh.filename, oldtitle + 13, vbuf); 
-  			set_board(pos, &newfh);
+  			set_board(pos, &newfh,NULL);
   			
   			sprintf(genbuf, "更改讨论区 %s 的资料 --> %s", fh.filename, newfh.filename);
             		bbslog("user", "%s", genbuf);

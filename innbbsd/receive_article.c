@@ -724,6 +724,7 @@ char   *pathname, *firstpath;
 	char    buf[MAXPATHLEN], *ptr;
 	FILE   *fidx;
 	int     fh;
+	int ret;
 	time_t  now;
 	int     linkflag;
 	char    conv_buf[256];
@@ -800,7 +801,8 @@ char   *pathname, *firstpath;
 	resolve_boards();
 
         linkflag=find_thread(&threadfh,board,header.title);
-        if (after_post(NULL, &header, board,linkflag?&threadfh:NULL)!=0) {
+        ret=after_post(NULL, &header, board,linkflag?&threadfh:NULL);
+	if ((ret!=0)&&(ret!=2)) {
             innbbslog(":Err:after_post Unable to post in %s.\n", homepath);
     chdir(old_path);
 	    return NULL;

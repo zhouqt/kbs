@@ -12,6 +12,7 @@
 #define	LF_HILIGHTSEL	0x2     /*选择的行变色 */
 #define	LF_VSCROLL	0x4     /*每个item占一行 */
 #define	LF_NEEDFORCECLEAN 0x8
+#define LF_FORCEREFRESHSEL 0x10
     /*
      * 如果每个item不等长，需要强制用空格清除 
      */

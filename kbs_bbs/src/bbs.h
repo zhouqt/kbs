@@ -43,6 +43,8 @@
 #ifndef FREEBSD
 #include <malloc.h>
 #endif
+#else
+#include "mpatrol.h"
 #endif
 #include <sys/time.h>
 #include <sys/types.h>
@@ -185,6 +187,9 @@ O MaxMessageSize=32000
 #define BOARD_JUNK	0x8
 #define BOARD_ANNONY 0x10
 #define BOARD_OUTFLAG 0x20      /* for outgo boards */
+#define BOARD_CLUB_READ  0x40  /*限制读的俱乐部*/
+#define BOARD_CLUB_WRITE  0x80  /*限制写的俱乐部*/
+#define BOARD_CLUB_HIDE  0x100  /*隐藏俱乐部*/
 
 #define ZAPPED  0x1             /* For boards...tells if board is Zapped */
 

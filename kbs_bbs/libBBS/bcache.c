@@ -192,10 +192,6 @@ int apply_boards(int (*func) (struct boardheader *))
     register int i;
 
     for (i = 0; i < brdshm->numboards; i++)
-#ifdef BBSMAIN
-        if (bcache[i].level & PERM_POSTMASK || HAS_PERM(currentuser, bcache[i].level) || (bcache[i].level & PERM_NOZAP))
-#endif                          /* 
-                                 */
             if (bcache[i].filename[0])
                 if ((*func) (&bcache[i]) == QUIT)
                     return QUIT;
@@ -209,7 +205,7 @@ char *bname;
 
     for (i = 0; i < brdshm->numboards; i++)
 #ifdef BBSMAIN
-        if (bcache[i].level & PERM_POSTMASK || HAS_PERM(currentuser, bcache[i].level) || (bcache[i].level & PERM_NOZAP))
+        if (check_read_perm(currentuser,&bcache[i]))
 #endif
             if (!strncasecmp(bname, bcache[i].filename, STRLEN))
                 return i + 1;
@@ -229,16 +225,6 @@ int getboardnum(char *bname, struct boardheader *bh)
         }
     return 0;
 }/*---	---*/
-int normal_board(char *bname)
-{
-    register int i;
-
-    if (strcmp(bname, DEFAULTBOARD) == 0)
-        return 1;
-    if ((i = getbnum(bname)) == 0)
-        return 0;
-    return (bcache[i - 1].level == 0);
-}
 struct boardheader *getbcache(char *bname)
 {
     int i;
@@ -338,9 +324,57 @@ int add_board(struct boardheader *newboard)
     return -1;
 }
 
-int set_board(int bid, struct boardheader *board)
+static int clearclubreadright(struct userec* user,struct boardheader* bh)
+{
+    user->club_read_rights[(bh->clubnum-1)>>5]&=~(1<<(bh->clubnum-1));
+    return 0;
+}
+
+static int clearclubwriteright(struct userec* user,struct boardheader* bh)
+{
+    user->club_write_rights[(bh->clubnum-1)>>5]&=~(1<<(bh->clubnum-1));
+    return 0;
+}
+
+int set_board(int bid, struct boardheader *board,struct boardheader *oldbh)
 {
     bcache_setreadonly(0);
+    if (oldbh) {
+    	char buf[100];
+    	if ((board->flag&BOARD_CLUB_READ)^(oldbh->flag&BOARD_CLUB_READ)) {
+    	    if (oldbh->clubnum&&oldbh->clubnum<=MAXCLUB) //如果是老的俱乐部
+    	        apply_users(clearclubreadright,(void*)oldbh);
+	    setbfile(buf, board->filename, "read_club_users");
+	    unlink(buf);
+    	}
+    	if ((board->flag&BOARD_CLUB_WRITE)^(oldbh->flag&BOARD_CLUB_WRITE)) {
+    	    if (oldbh->clubnum&&oldbh->clubnum<=MAXCLUB) //如果是老的俱乐部
+    	         apply_users(clearclubwriteright,(void*)oldbh);
+	    setbfile(buf, board->filename, "write_club_users");
+	    unlink(buf);
+    	}
+       if (!(board->flag&BOARD_CLUB_READ)&&!(board->flag&BOARD_CLUB_WRITE))
+    	   board->clubnum=0;
+       else if ((board->clubnum<=0)||(board->clubnum>=MAXCLUB)) {
+    	/* 需要计算clubnum*/
+    	    int used[MAXCLUB];
+    	    int i;
+    	    bzero(used,sizeof(int)*MAXCLUB);
+    	    for (i=0;i<MAXBOARD;i++)
+    	    	if ((bcache[i].flag&BOARD_CLUB_READ||bcache[i].flag&BOARD_CLUB_WRITE)
+    	    	    &&bcache[i].clubnum>0&&bcache[i].clubnum<=MAXCLUB)
+    	    	    used[bcache[i].clubnum-1]=1;
+    	    for (i=0;i<MAXCLUB;i++)
+    	    	if (used[i]==0)
+    	    		break;
+    	    if (i==MAXCLUB) {
+    	    	/* 俱乐部数满了!*/
+    	    	bbslog("3error","new club error:the number raise to max...");
+    	    	board->clubnum=0;
+    	    	board->flag&=(~BOARD_CLUB_READ) & (~BOARD_CLUB_WRITE);
+    	    } else board->clubnum=i+1;
+       }
+    }
     memcpy(&bcache[bid - 1], board, sizeof(struct boardheader));
     bcache_setreadonly(1);
     return 0;
@@ -357,7 +391,8 @@ int board_setreadonly(char *board, int readonly)
     if (readonly)
         bh->flag |= BOARD_READONLY;
     else
-        bh->flag &= !BOARD_READONLY;
+        bh->flag &= ~BOARD_READONLY;
     bcache_unlock(fd);
     return 0;
 }
+

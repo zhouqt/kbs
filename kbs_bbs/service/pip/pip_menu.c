@@ -181,6 +181,10 @@ const struct pipcommands cmdtable[];
 	int class6 = 0, class7 = 0, class8 = 0, class9 = 0, class10 = 0;
 	struct pipcommands *cmd1;
 	struct pipcommands *cmd2;
+	/* Á÷¿Ø ÏÞÖÆ5keys/s*/
+	static time_t lastkey_time[5]={0,0,0,0,0};
+	static int count=0;
+	int i;
 
 	do {
 		ok = 0;
@@ -236,8 +240,19 @@ const struct pipcommands cmdtable[];
 
 		now = time(0);
 		pip_time_change(now);
+regetkey:
 		pipkey = igetkey();
 		now = time(0);
+		if (count>=5) {
+		    if (now-lastkey_time[0]<=1)
+			    goto regetkey;
+                    for (i=0;i<4;i++)
+                        lastkey_time[i]=lastkey_time[i+1];
+		    lastkey_time[4]=now;
+		} else {
+		  lastkey_time[count]=now;
+		  count++;
+		}
 		pip_time_change(now);
 
 		cmd1 = cmdtable;

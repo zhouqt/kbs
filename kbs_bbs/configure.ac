@@ -195,6 +195,7 @@ AC_CONFIG_FILES([Makefile
                  local_utl/Makefile
                  service/Makefile
                  service/pip/Makefile
+                 service/worker/Makefile
                  src/bbsconfig.h
                  src/Makefile])
 AC_OUTPUT

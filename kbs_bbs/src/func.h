@@ -174,7 +174,7 @@ extern "C" {
     int apply_boards(int (*func) ());   /* 对所有版 应用 func函数 */
     int delete_board(char *boardname, char *title);     /* delete board entry */
     struct boardheader const *getboard(int num);
-    int set_board(int bid, struct boardheader *board);
+    int set_board(int bid, struct boardheader *board,struct boardheader* oldbh);
     struct BoardStatus *getbstatus(int index);  /* 获得版面的发文状态结构 */
     int updatelastpost(char *board);
     int setboardmark(char *board, int i);
@@ -200,7 +200,7 @@ extern "C" {
     void save_favboard();
     void save_userfile(char *fname, int blknum, char *buf);
     int IsFavBoard(int idx);
-    void MoveFavBoard(int p, int q);
+    int MoveFavBoard(int p, int q, int fav_father);
     int DelFavBoard(int i);
     int SetFav(int i);
     int cmpboard(struct newpostdata *brd, struct newpostdata *tmp);
@@ -222,8 +222,9 @@ extern "C" {
     int chk_BM_instr(const char BMstr[STRLEN - 1], const char bmname[IDLEN + 2]);       /*查询字符串中是否包含 bmname */
     int chk_currBM(const char BMstr[STRLEN - 1], struct userec *user);  /* 根据输入的版主名单 判断user是否有版主 权限 */
     int deldeny(struct userec *user, char *board, char *uident, int notice_only);       /* 删除 禁止POST用户 */
-    int check_read_perm(struct userec *user, int num);
-	int is_outgo_board(char *board);
+    int check_read_perm(struct userec *user, const struct boardheader *board);
+    int check_see_perm(struct userec *user, const struct boardheader *board);
+    int is_outgo_board(char *board);
 
 /* define in article.c */
     /* mmap_search_dir_apply
@@ -286,7 +287,7 @@ extern "C" {
 	void set_posttime(struct fileheader *fileinfo);
 
 /* define in record.c */
-    int safewrite(int fd, char *buf, int size);
+    int safewrite(int fd, void *buf, int size);
     typedef int (*RECORD_FUNC_ARG) (void *, void *);
     typedef int (*APPLY_FUNC_ARG) (void *, int, void *);
     int delete_record(char *dirname, int size, int ent, RECORD_FUNC_ARG filecheck, void *arg);

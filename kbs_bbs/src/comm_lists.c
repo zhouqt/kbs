@@ -290,8 +290,15 @@ int exec_mbem(char *s)
         hdll=dlopen(s+5,RTLD_LAZY);      
         if(hdll)      
         {         
+	    char* error;
             if(func=dlsym(hdll,c ? c : "mod_main"))             
             func();         
+	    else
+            if ((error = dlerror()) != NULL)  {
+	        clear();
+	        prints ("%s\n", error);
+                pressanykey();
+            }   
             dlclose(hdll);      
         }      
         else 

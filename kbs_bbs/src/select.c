@@ -10,12 +10,12 @@ static int check_valid(struct _select_def *conf)
         return SHOW_QUIT;
     if (conf->page_pos > conf->item_count)
         conf->page_pos = conf->item_count;
-    if (conf->page_pos <= 1)
-        conf->page_pos = 1;
     if (conf->pos > conf->item_count)
         conf->pos = conf->item_count;
     if (conf->pos <= 1)
         conf->pos = 1;
+    if (conf->page_pos <= 1)
+        conf->page_pos = ((conf->pos-1)/conf->item_per_page)*conf->item_per_page+1;
     return SHOW_CONTINUE;
 }
 static void select_wrong(struct _select_def *conf)
@@ -78,13 +78,14 @@ static int refresh_select(struct _select_def *conf)
          && (i <= conf->item_count); i++)
         if (show_item(conf, i, false) == SHOW_QUIT)
             return SHOW_QUIT;
-    good_move(conf->item_pos[conf->pos-1].y, conf->item_pos[conf->pos-1].x);
+    good_move(conf->item_pos[conf->pos-conf->page_pos].y, conf->item_pos[conf->pos-conf->page_pos].x);
     refresh();
     return SHOW_CONTINUE;
 }
 static int select_change(struct _select_def *conf, int new_pos)
 {
     int ret = SHOW_CONTINUE;
+    int old_pos;
 
     if (new_pos <= 0 || new_pos > conf->item_count) {
         if ((new_pos == 0) && (conf->flag & LF_LOOP)) {
@@ -103,33 +104,46 @@ static int select_change(struct _select_def *conf, int new_pos)
     }
     if (conf->flag & LF_MULTIPAGE) {
         //TODO multi page
-    } else {
-        if (conf->prompt) {
-            int pre_len = strlen(conf->prompt);
-            int idx = conf->pos - conf->page_pos;
-            int newidx = new_pos - conf->page_pos;
-
-            if (pre_len) {
-                good_move(conf->item_pos[idx].y, conf->item_pos[idx].x - pre_len);
-                outns("                                                               ", pre_len);
-                if (conf->item_pos[newidx].x > pre_len)
-                    good_move(conf->item_pos[newidx].y, conf->item_pos[newidx].x - pre_len);
-                else
-                    good_move(conf->item_pos[newidx].y, 0);
-                outns(conf->prompt, pre_len);
-            }
+        if (new_pos<conf->page_pos || new_pos>=conf->page_pos+conf->item_per_page)
+        { //需要换页了
+            conf->page_pos=((new_pos-1)/conf->item_per_page)*conf->item_per_page+1;
+            conf->pos = new_pos;
+            return SHOW_DIRCHANGE;
         }
-        // 如果是高亮的选择方式，需要清除原来的行
-        // 和重绘新行
-        conf->pos = new_pos;
-        if (conf->flag & LF_HILIGHTSEL) {
-            conf->new_pos = conf->pos;
-            show_item(conf, conf->pos, true);
-            show_item(conf, conf->new_pos, true);
-        }
-        refresh();
     }
+    if (conf->prompt) {
+        int pre_len = strlen(conf->prompt);
+        int idx = conf->pos - conf->page_pos;
+        int newidx = new_pos - conf->page_pos;
+
+        if (pre_len) {
+            good_move(conf->item_pos[idx].y, conf->item_pos[idx].x - pre_len);
+            outns("                                                               ", pre_len);
+            if (conf->item_pos[newidx].x > pre_len)
+                good_move(conf->item_pos[newidx].y, conf->item_pos[newidx].x - pre_len);
+            else
+                good_move(conf->item_pos[newidx].y, 0);
+            outns(conf->prompt, pre_len);
+        }
+    }
+    // 如果是高亮的选择方式，需要清除原来的行
+    // 和重绘新行
+    old_pos=conf->pos;
     conf->pos = new_pos;
+    if (conf->flag & LF_HILIGHTSEL) {
+        conf->new_pos = new_pos;
+        show_item(conf, old_pos, true);
+        show_item(conf, conf->pos, true);
+    } else
+    if (conf->flag & LF_FORCEREFRESHSEL) {
+        conf->new_pos = new_pos;
+        show_item(conf, old_pos, false);
+        show_item(conf, conf->pos, false);
+    }
+    good_move(conf->item_pos[new_pos-conf->page_pos].y,
+    	    conf->item_pos[new_pos-conf->page_pos].x);
+    refresh();
+    //conf->pos = new_pos;
     return ret;
 }
 static int do_select_internal(struct _select_def *conf, int key)
@@ -182,6 +196,35 @@ static int do_select_internal(struct _select_def *conf, int key)
         if (conf->on_select)
             return (*conf->on_select) (conf);
         return SHOW_SELECT;
+    case Ctrl('F'):
+    case KEY_PGDN:
+    	if (conf->flag&LF_MULTIPAGE) {
+  	    if (conf->pos+conf->item_per_page<=conf->item_count) 
+    		return select_change(conf, conf->pos + conf->item_per_page);
+	    else
+            if (conf->pos==conf->item_count)
+    		return select_change(conf, 1);
+	    else
+    		return select_change(conf, conf->item_count);
+    	}
+    	break;
+    case Ctrl('B'):
+    case KEY_PGUP:
+    	if (conf->flag&LF_MULTIPAGE) {
+    	    if (conf->pos-conf->item_per_page>0) 
+    		return select_change(conf, conf->pos - conf->item_per_page);
+	    else
+            if (conf->pos==1)
+    		return select_change(conf, conf->item_count);
+	    else
+    		return select_change(conf, 1);
+    	}
+    	break;
+    case KEY_HOME:
+    	  return select_change(conf, 1);
+    case '$':
+    case KEY_END:
+    	  return select_change(conf, conf->item_count);
     case KEY_LEFT:
         if (conf->flag & LF_VSCROLL)
             return SHOW_QUIT;
@@ -265,6 +308,7 @@ int list_select(struct _select_def *conf, int key)
 	ret=SHOW_QUIT;
 	while (ret!=SHOW_CONTINUE) {
 	    ret = do_select_internal(conf, key);
+checkret:
 	    switch (ret) {
 	    case SHOW_DIRCHANGE:
 	        if (conf->get_data)
@@ -279,8 +323,7 @@ int list_select(struct _select_def *conf, int key)
 	    case SHOW_SELCHANGE:
 	        ret = select_change(conf, conf->new_pos);
 	        if ((ret!=SHOW_SELECT)&&(ret!=SHOW_QUIT)) {
-	        	key=ret;
-	        	continue;
+	        	goto checkret;
 	        }
 	    case SHOW_REFRESHSELECT:
 	        show_item(conf, conf->pos, true);
@@ -291,8 +334,7 @@ int list_select(struct _select_def *conf, int key)
 	    case SHOW_SELECT:
 	        ret = do_select_internal(conf, KEY_SELECT);
 	        if (ret!=SHOW_SELECT) {
-	        	key=ret;
-	        	continue;
+	            goto checkret;
 	        }
 	    case SHOW_QUIT:
 	    	if (conf->quit)
@@ -369,7 +411,7 @@ static int simple_key(struct _select_def *conf, int key)
 	    }
 	}
 	for (i=0;i<conf->item_count;i++)
-		if (key==arg->items[i].hotkey) {
+		if (toupper(key)==toupper(arg->items[i].hotkey)) {
 	        conf->new_pos = i + 1;
 	        return SHOW_SELCHANGE;
 		}

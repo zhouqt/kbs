@@ -1031,7 +1031,7 @@ static ZEND_FUNCTION(bbs_checkreadperm)
     user = getuserbynum(user_num);
     if (user == NULL)
         RETURN_LONG(0);
-    RETURN_LONG(check_read_perm(user, boardnum));
+    RETURN_LONG(check_read_perm(user, getboard(boardnum)));
 }
 
 static ZEND_FUNCTION(bbs_wwwlogoff)

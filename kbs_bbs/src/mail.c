@@ -2016,7 +2016,7 @@ const static char *mail_sysbox[] = {
 
 const static char *mail_sysboxtitle[] = {
     "I)收件箱",
-    "T)发件箱",
+    "P)发件箱",
     "J)垃圾箱",
 };
 
@@ -2104,7 +2104,7 @@ static void maillist_refresh(struct _select_def *conf)
         prints("%s", "无自定义邮箱");
     }
 }
-static void maillist_show(struct _select_def *conf, int pos)
+static int maillist_show(struct _select_def *conf, int pos)
 {
     struct mail_proc_arg *arg = (struct mail_proc_arg *) conf->arg;
     char buf[80];

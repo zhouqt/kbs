@@ -7,10 +7,11 @@ int main()
 {
     FILE *fp;
     char buf[512], board[80], filename[80];
+    struct boardheader bh;
 
     init_all();
     strsncpy(board, getparm("board"), 32);
-    if (!has_read_perm(currentuser, board))
+    if (getboardnum(board,&bh)==0||!check_read_perm(currentuser, &bh))
         http_fatal("错误的版面");
     printf("<center>\n");
     printf("%s -- 备忘录 [讨论区: %s]<hr color=green>\n", BBSNAME, board);

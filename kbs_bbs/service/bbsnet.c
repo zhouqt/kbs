@@ -1,5 +1,6 @@
 // NJU tinybbsnet, Preview Version, zhch@dii.nju.edu.cn, 2000.3.23 //
 #include "bbs.h"
+#include "select.h"
 #include "tcplib.h"
 #include <netdb.h>
 
@@ -8,9 +9,17 @@
 #define BBSNET_LOG_BOARD "bbsnet"
 #define DATAFILE "etc/bbsnet.ini"
 
-char host1[100][40], host2[100][40], ip[100][40];
-int port[100], counts= 0; 
-char str[]= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+#define MAXSTATION  26*2
+#define MAXSECTION 14
+
+char host1[MAXSTATION][19], host2[MAXSTATION][40], ip[MAXSTATION][40];
+char sectiontitle[MAXSECTION][9];
+
+int port[MAXSTATION]; 
+int sectionindex;
+int sectioncount;
+char str[]= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+char section[]="1234567890!@#%&*()";
 
 char user[21];
 int sockfd;
@@ -90,100 +99,64 @@ void init_data()
     FILE *fp;
     char t[256], *t1, *t2, *t3, *t4;
 
+    sectioncount=0;
     fp = fopen(DATAFILE, "r");
     if(fp== NULL) return;
-    while(fgets(t, 255, fp)&& counts <= 72)
+    while(fgets(t, 255, fp))
 	{
         t1= strtok(t, " \t");
         t2= strtok(NULL, " \t\n");
         t3= strtok(NULL, " \t\n"); 
         t4= strtok(NULL, " \t\n");
-        if(t1[0]== '#'|| t1== NULL|| t2== NULL|| t3== NULL)
-			continue;
-        strncpy(host1[counts], t1, 16);
-        strncpy(host2[counts], t2, 36);
-        strncpy(ip[counts], t3, 36);
-        port[counts]= t4? atoi(t4): 23;
-        counts++;
+        if ((*t1=='*')&&!strcmp(t2,"[section]")) {
+        	sectioncount++;
+        	if (sectioncount>=MAXSECTION)
+        		break;
+        }
+        if ((sectioncount>0)&&(*t1=='*')&&!strcmp(t2,"[title]"))
+        	strncpy(sectiontitle[sectioncount-1],t3,8);
+        	sectiontitle[sectioncount-1][8]=0;
     } 
     fclose(fp);
 }
 
-void locate(int n)
+static bool bbsnet_redraw=true;
+int load_section(struct _select_def* conf,int pos,int len)
 {
-    int x, y;
-    char buf[20];
-    if(n>= counts)
-		return;
-    y= n% 19+ 2;
-    x= n/ 19* 24+ 4;
-	good_move(y, x);
-}
+    FILE *fp;
+    char t[256], *t1, *t2, *t3, *t4;
+    int section;
 
-void sh(int n)
-{
-    static int oldn= -1;
-    if(n>= counts) return;
-    if(oldn >=0) 
+    fp = fopen(DATAFILE, "r");
+    conf->item_count=0;
+    if(fp== NULL) return SHOW_REFRESH;
+    section=0;
+    while(fgets(t, 255, fp)&& conf->item_count < MAXSTATION)
 	{
-        locate(oldn);
-        prints("[1;32m %c.[m%s", str[oldn], host1[oldn]);
-    }
-    oldn = n; 
-    locate(n);
-    prints("[%c][1;42m%s[m", str[n], host1[n]);
-	good_move(22, 3);
-    prints("[1;37mµ¥Î»: [1;33m%s                   ", host2[n]);
-	good_move(22, 32);
-	prints("[1;37m Õ¾Ãû: [1;33m%s              ", host1[n]);
-	good_move(23, 3);
-    printf("[1;37mÁ¬Íù: [1;33m%s                   ", ip[n]);
-	good_move(1, 1);
-}
-
-void show_all()
-{
-    int n;
-
-	clear();
-    prints("¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ\n");
-    for(n= 1; n< 23; n++)
-    prints("¡õ                                                                            ¡õ\n");
-    prints("¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ");
-	good_move(21, 3);
-    prints("----------------------------------------------------------------------------");
-    for(n= 0; n< counts; n++)
-	{
-        locate(n);
-        prints("[1;32m %c.[m%s", str[n], host1[n]);
-    }
-}
-
-static void 
-display_sites()
-{
-	int i;
-	int j;
-	int k;
-	const int rows = 20;
-
-	clear();
-	prints("                          ---== [0;1;36mÒøºÓ´©ËóÁÐ±í [m==---[m\n\n");
-	for (i = 0; i < rows; i++)
-	{
-		for (k = 0; k < 3; k++)
-		{
-			j = k * rows + i;
-			if (j < counts)
-				prints("      [1;32m%02d. [m%-16s", j+1, host1[j]);
-		}
-		prints("[m\n");
-	}
-}
-
-int getch()
-{
-	return igetkey();
+        t1= strtok(t, " \t");
+        t2= strtok(NULL, " \t\n");
+        t3= strtok(NULL, " \t\n"); 
+        t4= strtok(NULL, " \t\n");
+        if ((*t1=='*')&&!strcmp(t2,"[section]")) {
+        	section++;
+        }
+        if (section>sectionindex) break;
+        if (section==sectionindex) {
+            if(t1[0]== '#'|| t1[0] == '*' || t1== NULL|| t2== NULL|| t3== NULL)
+    			continue;
+            strncpy(host1[conf->item_count], t2, 18);
+	    host1[conf->item_count][18]=0;
+            strncpy(host2[conf->item_count], t1, 36);
+	    host1[conf->item_count][36]=0;
+            strncpy(ip[conf->item_count], t3, 36);
+            port[conf->item_count]= t4? atoi(t4): 23;
+            conf->item_count++;
+        }
+    } 
+    fclose(fp);
+  conf->item_per_page = conf->item_count;
+  bbsnet_redraw=true;
+  return SHOW_REFRESH;
 }
 
 // from Maple-hightman
@@ -397,6 +370,7 @@ int bbsnet(int n)
 	setsockopt(sockfd, IPPROTO_IP, IP_TOS, &tos, sizeof(int));	
 	prints("[1;31mÁ¬½Ó³É¹¦£¡[m\n");
 	bbsnet_report(host1[n], ip[n], now, 0);
+	clear();
 	redoscr();
 	for (;;)
 	{
@@ -464,11 +438,162 @@ on_error:
 	return ret;
 }
 
+static int bbsnet_onselect(struct _select_def *conf)
+{
+	bbsnet(conf->pos-1);
+	bbsnet_redraw=true;
+	return SHOW_REFRESH;
+}
+
+static int bbsnet_show(struct _select_def *conf, int pos)
+{
+    if (conf->pos==pos)
+    	prints("\x1b[1;32m>%c\x1b[36m%-18s",str[pos-1],host1[pos-1]);
+    else
+    	prints("\x1b[1;32m %c\x1b[00m%-18s",str[pos-1],host1[pos-1]);
+    if (pos==conf->item_count&&bbsnet_redraw) {
+    int i;
+    good_move(4,64);
+    outs("\x1b[m¨q¡ª¡ª¡ª¡ª¡ª¨r");
+    for (i=0;i<sectioncount;i++)
+    {
+        good_move(i+5,64);
+        if (i+1==sectionindex) 
+            prints("\x1b[m©¦\x1b[1;44;32m%c %-8s\x1b[m©¦",section[i],sectiontitle[i]);
+        else
+            prints("\x1b[m©¦\x1b[1;32m%c %-8s\x1b[m©¦",section[i],sectiontitle[i]);
+    }
+    good_move(i+5,64);
+    outs("\x1b[m¨t¡ª¡ª¡ª¡ª¡ª¨s");
+    for (i=2;i<19;i++) {
+        good_move(i,0);
+        outs("¨U");
+        good_move(i,78);
+        outs("\x1b[m¨U");
+    }
+    bbsnet_redraw=false;
+    } else
+    if (pos==conf->item_count) {
+        good_move(2,78);
+        outs("\x1b[m¨U");
+    }
+    return SHOW_CONTINUE;
+}
+
+static int bbsnet_key(struct _select_def *conf, int command)
+{
+    char* ptr;
+    if ((ptr=strchr(str,command))!=NULL) {
+	  conf->new_pos = (ptr-str) + 1;
+	  return SHOW_SELCHANGE;
+    }
+    if ((ptr=strchr(section,command))!=NULL) {
+    	  if (ptr-section<sectioncount) {
+    	  	sectionindex=ptr-section+1;
+    	       return SHOW_DIRCHANGE;
+    	  }
+    }
+    switch (command) {
+    case ' ':
+    	  sectionindex++;
+    	  sectionindex=sectionindex%sectioncount;
+	  if (sectionindex==0) sectionindex=sectioncount;
+    	   return SHOW_DIRCHANGE;
+    case Ctrl('C'):
+    case Ctrl('A'):
+    	   return SHOW_QUIT;
+    case '?':
+        show_help("help/bbsnethelp");
+	bbsnet_redraw=true;
+        return SHOW_REFRESH;
+    case '$':
+    	  conf->new_pos=conf->item_count;
+    	  return SHOW_SELCHANGE;
+    case '^':
+    	  conf->new_pos=1;
+    	  return SHOW_SELCHANGE;
+    }
+    return SHOW_CONTINUE;
+}
+
+static void bbsnet_refresh(struct _select_def *conf)
+{
+    int i;
+    clear();
+    good_move(0,0);
+    prints("  ¡ò %s ¡ò",sectiontitle[sectionindex-1]);
+    good_move(1,0);
+    outs("¨q¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨r");
+    /*
+    for (i=2;i<19;i++) {
+    	good_move(i,0);
+    	outs("¨U");
+    	good_move(i,78);
+    	outs("¨U");
+    }
+    */
+    good_move(19,0);
+    outs("¨U¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¨U");
+    bbsnet_selchange(conf,conf->pos);
+    good_move(22,0);
+    outs("¨t¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨s");
+    good_move(23,0);
+    outs("[1;36m[\x1b[1;32m?\x1b[m]ÇóÖú [\x1b[1;32mCtrl+C\x1b[m]ÍË³ö [\x1b[1;32mCtrl+L\x1b[m]ÖØ»æÓ©Ä» [\x1b[1;32m¿Õ¸ñ\x1b[m]ÇÐ»»Ä¿Â¼ [\x1b[1;32m^\x1b[m]µÚÒ»¸ö [\x1b[1;32m$\x1b[m]×îºóÒ»¸ö[0;37m[m");
+}
+
+int bbsnet_selchange(struct _select_def* conf,int new_pos)
+{
+    good_move(20,0);
+    clrtoeol();
+    prints("¨U\x1b[1mµ¥Î»:\x1b[1;33m%-18s\x1b[m  Õ¾Ãû:\x1b[1;33m%s\x1b[m",
+    	host2[new_pos-1],
+    	host1[new_pos-1]);
+    good_move(20,78);
+    outs("¨U");
+    good_move(21,0);
+    clrtoeol();
+    prints("¨U\x1b[1mÁ¬Íù:\x1b[1;33m%-20s",ip[new_pos-1]);
+    if (port[new_pos-1]!=23)
+    	prints("  %d",port[new_pos-1]);
+    outs("\x1b[m");
+    good_move(21,78);
+    outs("¨U");
+    return SHOW_CONTINUE;
+}
+
 void main_loop()
 {
 	char buf[STRLEN];
-	int n;
+	int i;
+	POINT pts[MAXSTATION];
+       struct _select_def bbsnet_conf;
 
+       for (i = 0; i < MAXSTATION; i++) {
+           pts[i].x = 2 + ((i>=17)?20:0) + ((i>=34)?20:0) + ((i>=51)?20:0);
+           pts[i].y = i + 2 -((i>=17)?17:0) - ((i>=34)?17:0) - ((i>=51)?17:0);
+       };
+
+       sectionindex=1;
+        bzero(&bbsnet_conf,sizeof(bbsnet_conf));
+        load_section(&bbsnet_conf,1,MAXSTATION);
+        bbsnet_conf.item_per_page = bbsnet_conf.item_count;
+        bbsnet_conf.flag = LF_FORCEREFRESHSEL | LF_BELL | LF_LOOP;     //|LF_HILIGHTSEL;
+        bbsnet_conf.prompt = NULL;
+        bbsnet_conf.item_pos = pts;
+        bbsnet_conf.arg = NULL;
+        bbsnet_conf.title_pos.x = 0;
+        bbsnet_conf.title_pos.y = 0;
+        bbsnet_conf.pos = 1;
+        bbsnet_conf.page_pos = 1;
+
+        bbsnet_conf.on_select = bbsnet_onselect;
+        bbsnet_conf.show_data = bbsnet_show;
+        bbsnet_conf.key_command = bbsnet_key;
+        bbsnet_conf.show_title = bbsnet_refresh;
+        bbsnet_conf.get_data = load_section;
+        bbsnet_conf.on_selchange = bbsnet_selchange;
+	list_select_loop(&bbsnet_conf);
+/*
 	display_sites();
 	for(;;)
 	{
@@ -482,40 +607,7 @@ void main_loop()
 			display_sites();
 		}
 	}
-/*
-    int p= 0;
-    int c, n;
-
-    show_all();
-    sh(p);
-    while(1)
-	{
-        c= getch();
-        if(c== 3|| c== 4|| c== 27|| c< 0)
-			break;
-        if(c== 257&& p> 0)
-			p--;
-        if(c== 258&& p< counts- 1)
-			p++;
-        if(c== 259&& p< counts- 19)
-			p+=19;
-        if(c== 260&& p>= 19)
-			p-=19; 
-        if(c== 13|| c== 10)
-		{ 
-            bbsnet(p);
-			show_all();
-			sh(p);
-			continue;
-        }
-        for(n=0; n< counts; n++)
-		{
-			if(str[n]== c)
-				p= n;
-		}
-        sh(p);
-    } 
-*/
+	*/
 }
 
 int bbsnet_main()

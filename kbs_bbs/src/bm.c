@@ -80,7 +80,9 @@ int listdeny(int page)
             y = 3;
             x += max + 2;
             max = 0;
-            /*            if( x > 90 )  break; */
+            /*
+             * if( x > 90 )  break; 
+             */
         }
         move(y, x);
     }
@@ -95,7 +97,9 @@ int addtodeny(char *uident)
     char buf2[50], strtosave[256], date[STRLEN] = "0";
     int maxdeny;
 
-    /*Haohmaru.99.4.1.auto notify */
+    /*
+     * Haohmaru.99.4.1.auto notify 
+     */
     time_t now;
     char buffer[STRLEN];
     FILE *fn;
@@ -227,7 +231,9 @@ int addtodeny(char *uident)
         int my_flag = 0;        /* Bigman. 2001.2.19 */
         struct userec saveuser;
 
-        /*Haohmaru.4.1.自动发信通知并发文章于版上 */
+        /*
+         * Haohmaru.4.1.自动发信通知并发文章于版上 
+         */
         sprintf(filename, "tmp/%s.deny", currentuser->userid);
         fn = fopen(filename, "w+");
         memcpy(&saveuser, currentuser, sizeof(struct userec));
@@ -290,7 +296,9 @@ int addtodeny(char *uident)
         fprintf(fn, "                              %s\n", ctime(&now));
         fclose(fn);
         post_file(currentuser, "", filename, currboard, buffer, 0, 2);
-        /*      unlink(filename); */
+        /*
+         * unlink(filename); 
+         */
         currentuser = saveptr;
 
         sprintf(buffer, "%s 被 %s 封禁本版POST权", uident, currentuser->userid);
@@ -308,23 +316,24 @@ int addtodeny(char *uident)
 }
 
 
-int deny_user(ent, fileinfo, direct)    /* 禁止POST用户名单 维护主函数 */
-    int ent;
-    struct fileheader *fileinfo;
-    char *direct;
-{
+int deny_user(int ent, struct fileheader *fileinfo, char *direct)
+{                               /* 禁止POST用户名单 维护主函数 */
     char uident[STRLEN];
     int page = 0;
     char ans[10], repbuf[STRLEN];
     int count;
 
-    /*Haohmaru.99.4.1.auto notify */
+    /*
+     * Haohmaru.99.4.1.auto notify 
+     */
     time_t now;
     int id;
     FILE *fp;
     int find;                   /*Haohmaru.99.12.09 */
 
-/*   static page=0; *//*Haohmaru.12.18 */
+/*   static page=0; *//*
+ * * Haohmaru.12.18 
+ */
     now = time(0);
     if (!HAS_PERM(currentuser, PERM_SYSOP))
         if (!chk_currBM(currBM, currentuser)) {
@@ -355,7 +364,9 @@ int deny_user(ent, fileinfo, direct)    /* 禁止POST用户名单 维护主函数 */
                 usercomplete("增加无法 POST 的使用者: ", uident);
             else
                 strncpy(uident, fileinfo->owner, STRLEN - 4);
-            /*Haohmaru.99.4.1,增加被封ID正确性检查 */
+            /*
+             * Haohmaru.99.4.1,增加被封ID正确性检查 
+             */
             if (!(id = getuser(uident, &denyuser))) {   /* change getuser -> searchuser , by dong, 1999.10.26 */
                 move(3, 0);
                 prints("非法 ID");
@@ -405,7 +416,9 @@ int deny_user(ent, fileinfo, direct)    /* 禁止POST用户名单 维护主函数 */
                 char *lptr;
                 time_t ldenytime;
 
-                /* now the corresponding line in genbuf */
+                /*
+                 * now the corresponding line in genbuf 
+                 */
                 if (NULL != (lptr = strrchr(genbuf, '[')))
                     sscanf(lptr + 1, "%lu", &ldenytime);
                 else
@@ -422,20 +435,195 @@ int deny_user(ent, fileinfo, direct)    /* 禁止POST用户名单 维护主函数 */
             clrtoeol();
             if (uident[0] != '\0') {
                 if (deldeny(currentuser, currboard, uident, 0)) {
-                    sprintf(repbuf, "%s 恢复 %s 在 %s 的 POST 权力", currentuser->userid, uident, currboard);
-                    bbslog("user","%s",repbuf);
                 }
             }
         } else if (count > 20) {
-            if (ans[1]==0) page = *ans - '0';
-            else page = atoi(ans);
+            if (ans[1] == 0)
+                page = *ans - '0';
+            else
+                page = atoi(ans);
             if (page < 0)
-                break;          /*不会封人超过10屏吧?那可是200人啊!  会的！*/
+                break;          /*不会封人超过10屏吧?那可是200人啊!  会的！ */
             listdeny(page);
             pressanykey();
         } else
             break;
     }                           /*end of while */
+    clear();
+    return FULLUPDATE;
+}
+
+int addclubmember(char *uident, int readperm)
+{
+    char genbuf1[80], genbuf2[80];
+    int id;
+    int i;
+    char ans[8];
+    int seek;
+    struct userec *lookupuser;
+    struct boardheader bh;
+
+    if (!(id = getuser(uident, &lookupuser))) {
+        move(3, 0);
+        prints("Invalid User Id");
+        clrtoeol();
+        pressreturn();
+        clear();
+        return 0;
+    }
+    strcpy(uident, lookupuser->userid);
+    if (readperm)
+        setbfile(genbuf, currboard, "read_club_users");
+    else
+        setbfile(genbuf, currboard, "write_club_users");
+
+	seek = seek_in_file(genbuf, uident);
+	if (seek) {
+		move(2, 0);
+		prints("输入的ID 已经存在!");
+		pressreturn();
+		return -1;
+	}
+
+	getdata(4, 0, "真的要添加么?[Y/N]: ", ans, 7, 1, NULL, true);
+	if ((*ans != 'Y') && (*ans != 'y'))
+		return -1;
+		
+    if ((i = getboardnum(currboard, &bh)) == 0)
+        return DONOTHING;
+    seek = addtofile(genbuf, uident);;
+    if (seek == 1) {
+        if (readperm == 1)      //读权限
+            lookupuser->club_read_rights[(bh.clubnum - 1) >> 5] |= 1 << ((bh.clubnum - 1) & 0x1f);
+        else
+            lookupuser->club_write_rights[(bh.clubnum - 1) >> 5] |= 1 << ((bh.clubnum - 1) & 0x1f);
+        return FULLUPDATE;
+    }
+    return DONOTHING;
+
+}
+
+int delclubmember(char *uident, int readperm)
+{
+    char genbuf1[80], genbuf2[80];
+    char fn[STRLEN];
+    int id;
+    int i;
+    int ret;
+    struct userec *lookupuser;
+    struct boardheader bh;
+
+    if (!(id = getuser(uident, &lookupuser))) {
+        move(3, 0);
+        prints("Invalid User Id");
+        clrtoeol();
+        pressreturn();
+        clear();
+        return 0;
+    }
+    strcpy(uident, lookupuser->userid);
+    if ((i = getboardnum(currboard, &bh)) == 0)
+        return DONOTHING;
+    if (readperm)
+        setbfile(fn, currboard, "read_club_users");
+    else
+        setbfile(fn, currboard, "write_club_users");
+    ret = del_from_file(fn, uident);
+    if (ret == 0) {
+        if (readperm == 1)      //读权限
+            lookupuser->club_read_rights[(bh.clubnum - 1) >> 5] &= ~(1 << ((bh.clubnum - 1) & 0x1f));
+        else
+            lookupuser->club_write_rights[(bh.clubnum - 1) >> 5] &= ~(1 << ((bh.clubnum - 1) & 0x1f));
+        return FULLUPDATE;
+    }
+    return DONOTHING;
+}
+
+int clubmember(int ent, struct fileheader *fh, char *direct)
+{
+    char uident[STRLEN];
+    char ans[8], buf[STRLEN];
+    int count, i;
+    int readperm;
+    struct boardheader bh;
+
+    if (!(chk_currBM(currBM, currentuser))) {
+        return DONOTHING;
+    }
+    if ((i = getboardnum(currboard, &bh)) == 0)
+        return DONOTHING;
+    if ((!(bh.flag & BOARD_CLUB_READ) && !(bh.flag & BOARD_CLUB_WRITE)) || bh.clubnum <= 0 || bh.clubnum >= MAXCLUB)
+        return DONOTHING;
+    if ((bh.flag & BOARD_CLUB_READ) && (bh.flag & BOARD_CLUB_WRITE)) {
+        int choose;
+        int left = (80 - 24) / 2;
+        int top = (scr_lns - 11) / 2;
+        struct _select_item menu_conf[] = {
+            {left, top + 2, 'R', SIT_SELECT, (void *) "[R] 设定可读取用户名单"},
+            {left, top + 3, 'P', SIT_SELECT, (void *) "[P] 设定可发表用户名单"},
+            {-1, -1, -1, 0, NULL}
+        };
+
+        clear();
+        choose = simple_select_loop(menu_conf, SIF_SINGLE | SIF_NUMBERKEY, t_columns, t_lines, NULL);
+        if (choose == 1)
+            readperm = 1;
+        else
+            readperm = 0;
+    } else if (bh.flag & BOARD_CLUB_READ)
+        readperm = 1;
+    else
+        readperm = 0;
+    if (readperm)
+        setbfile(buf, currboard, "read_club_users");
+    else
+        setbfile(buf, currboard, "write_club_users");
+    ansimore(buf, true);
+    while (1) {
+        clear();
+        prints("设定俱乐部名单\n");
+        count = listfilecontent(buf);
+        if (count)
+            getdata(1, 0, "(A)增加 (D)删除or (E)离开[E]",       //or (M)写信给所有成员 [E]: ",
+                    ans, 7, DOECHO, NULL, true);
+        else
+            getdata(1, 0, "(A)增加 or (E)离开 [E]: ", ans, 7, DOECHO, NULL, true);
+        if (*ans == 'A' || *ans == 'a') {
+            move(1, 0);
+            usercomplete("增加俱乐部成员: ", uident);
+            if (*uident != '\0') {
+                if (addclubmember(uident, readperm) == 1) {
+                    sprintf(genbuf, "%s由%s授予%s俱乐部权力", uident, currentuser->userid, currboard);
+                    securityreport(genbuf, NULL, NULL);
+                    mail_buf(currentuser, genbuf, uident, genbuf);
+                    deliverreport(genbuf, genbuf);
+                }
+            }
+        } else if ((*ans == 'D' || *ans == 'd') && count) {
+            move(1, 0);
+            namecomplete("删除俱乐部使用者: ", uident);
+            move(1, 0);
+            clrtoeol();
+            if (uident[0] != '\0') {
+                sprintf(genbuf, "真的要取消%s的俱乐部权力么？", uident);
+                if (askyn(genbuf, true))
+                    if (delclubmember(uident, readperm)) {
+                        sprintf(genbuf, " %s 被%s 取消 %s 俱乐部 权力", uident, currentuser->userid, currboard);
+                        securityreport(genbuf, NULL, NULL);
+                        mail_buf(currentuser, genbuf, uident, genbuf);
+                        deliverreport(genbuf, genbuf);
+                    }
+            }
+        }
+        /*
+         * else if ((*ans == 'M' || *ans == 'm') && count) {
+         * club_send();
+         * }
+         */
+        else
+            break;
+
+    }
     clear();
     return FULLUPDATE;
 }

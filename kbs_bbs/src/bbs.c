@@ -295,8 +295,7 @@ void printutitle()
 
 int g_board_names(struct boardheader *fhdrp)
 {
-    if ((fhdrp->level & PERM_POSTMASK) || HAS_PERM(currentuser, fhdrp->level)
-        || (fhdrp->level & PERM_NOZAP)) {
+    if (check_read_perm(currentuser, fhdrp)) {
         AddNameList(fhdrp->filename);
     }
     return 0;
@@ -2353,6 +2352,7 @@ int edit_title(int ent, struct fileheader *fileinfo, char *direct)
          * ca_expire(genbuf); 
          */
 
+#ifdef FILTER
         if (check_badword_str(buf,strlen(buf))) {
 	    clear();
 	    move (3, 0);
@@ -2360,6 +2360,7 @@ int edit_title(int ent, struct fileheader *fileinfo, char *direct)
 	    pressreturn();
             return PARTUPDATE;
         }
+#endif
         strcpy(tmp2, fileinfo->title);  /* Do a backup */
         /*
          * Changed by KCN,disable color title 
@@ -2872,6 +2873,7 @@ struct one_key read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
     {']', thread_down},
     {'[', thread_up},
     {Ctrl('D'), deny_user},
+    {Ctrl('E'), clubmember},
     {Ctrl('A'), show_author},
     {Ctrl('O'), add_author_friend},
     {Ctrl('Q'), show_authorinfo},       /*Haohmaru.98.12.05 */

@@ -17,7 +17,7 @@ int main()
     if (getboardnum(board, &x) == 0)
         http_fatal("此讨论区不存在");
     load_favboard(0);
-    if (!has_read_perm(currentuser, x.filename))
+    if (!check_read_perm(currentuser, &x))
         http_fatal("此讨论区不存在");
     rv = add_favboard(x.filename);
     switch (rv) {

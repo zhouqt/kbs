@@ -1,16 +1,17 @@
 #include "bbs.h"
 
+int WORDBOUND, WHOLELINE, NOUPPER, INVERSE, FILENAMEONLY, SILENT, FNAME;
+int ONLYCOUNT, num_of_matched, total_line;
+char *CurrentFileName;
 
 #ifdef FILTER
 extern int prepf(int fp,void** patternbuf,size_t* patt_image_len);
 extern int mgrep(int fp,void* patternbuf);
 extern int mgrep_str(char* data,int len,void* patternbuf);
 extern void releasepf(void* patternbuf);
-int WORDBOUND, WHOLELINE, NOUPPER, INVERSE, FILENAMEONLY, SILENT, FNAME;
-int ONLYCOUNT, num_of_matched, total_line;
-char *CurrentFileName;
 
 static void* badword_img=NULL;
+static time_t badimg_time;
 static int badword_img_size;
 int build_badwordimage()
 {
@@ -27,7 +28,9 @@ int build_badwordimage()
     	return 0;
     }
     prepf(fp,&pattern_buf,&pattern_imagesize);
-   	flock(fp,LOCK_UN);
+
+    badimg_time;
+    flock(fp,LOCK_UN);
     close(fp);
     fp = open("etc/badword.img", O_WRONLY|O_TRUNC|O_CREAT,0600);
     if (fp==-1) {
@@ -42,8 +45,18 @@ int build_badwordimage()
 
 static int check_badwordimg(int checkreload)
 {
-retry2:
+    struct stat st;
+    stat("etc/badword.img",&st);
+    if ((badword_img!=NULL)&&(badimg_time!=st.st_mtime)) 
+        checkreload=1;
+    if (checkreload) {
+    	if (badword_img)
+    		end_mmapfile(badword_img,badword_img_size,-1);
+    	badword_img=NULL;
+    	checkreload=0;
+    }
     if (badword_img==NULL) {
+      badimg_time=st.st_mtime;
       if (!dashf("etc/badword"))
       	return -1;
       retry:
@@ -55,12 +68,6 @@ retry2:
         }
         return -1;
       }
-    }
-    if (checkreload) {
-    	end_mmapfile(badword_img,badword_img_size,-1);
-    	badword_img=NULL;
-    	checkreload=0;
-    	goto retry2;
     }
     return 0;
 }

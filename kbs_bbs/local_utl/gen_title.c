@@ -93,7 +93,7 @@ int generate_board_title(struct boardheader *bh)
     close(fd2);
     memcpy(&btmp,getbcache(bh->filename),sizeof(btmp));
     btmp.nowid = gen_threadid + 1;
-    set_board(getbnum(bh->filename), &btmp);
+    set_board(getbnum(bh->filename), &btmp,NULL);
     return 0;
 }
 

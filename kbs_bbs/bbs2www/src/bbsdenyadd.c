@@ -190,6 +190,7 @@ int main()
     struct tm *tmtime;
     time_t undenytime;
     char buf[STRLEN];
+    struct boardheader bh;
 
     init_all();
     if (!loginok)
@@ -197,7 +198,7 @@ int main()
     strsncpy(board, getparm("board"), 30);
     strsncpy(exp, getparm("exp"), 30);
     dt = atoi(getparm("dt"));
-    if (!has_read_perm(currentuser, board))
+    if (getboard(board,&bh)==0||!check_read_perm(currentuser, &bh))
         http_fatal("错误的讨论区");
     if (!has_BM_perm(currentuser, board))
         http_fatal("你无权进行本操作");

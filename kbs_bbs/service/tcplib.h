@@ -17,7 +17,6 @@
 #include <stdio.h>
 #include <sys/mman.h>
 
-const int TIME_CNV_RATIO   = 1000;	/* 时间转换率，秒->毫秒，毫秒->微秒 */
 
 /**
  * tcplib 用到的错误号.
@@ -36,8 +35,16 @@ enum TCPLIB_ERRNO
     ERR_TCPLIB_OTHERS     = -100 /** 其他错误，可从 errno 获得错误信息 */
 };
 
+#ifdef __cplusplus
 const int TCPLIB_TRUE  = 1;
 const int TCPLIB_FALSE = 0;
+const int TIME_CNV_RATIO   = 1000;	/* 时间转换率，秒->毫秒，毫秒->微秒 */
+#else
+#define TCPLIB_TRUE  1
+#define TCPLIB_FALSE 0
+#define TIME_CNV_RATIO   1000	/* 时间转换率，秒->毫秒，毫秒->微秒 */
+
+#endif
 
 #ifdef __cplusplus
 extern "C"

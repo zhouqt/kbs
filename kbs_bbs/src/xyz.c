@@ -591,7 +591,7 @@ void a_edits()
      */
     static const char *e_file[] =
         { "../Welcome", "../vote/notes", "issue", "movie", "logout", "menu.ini", "proxyIP", "mailcheck", "s_fill", "f_fill.realname", "f_fill.unit", "f_fill.address", "f_fill.telephone",
-        "f_fill.real", "f_fill.chinese", "f_fill.toomany", "f_fill.proxy", "smail", "f_fill", "../.badname", "../.badIP", "../.badword", "sysconf.ini", "www_menu.js", "../0Announce/hotinfo",
+        "f_fill.real", "f_fill.chinese", "f_fill.toomany", "f_fill.proxy", "smail", "f_fill", "../.badname", "../.badIP", "badword", "sysconf.ini", "www_menu.js", "../0Announce/hotinfo",
         "forbm",
         "forcloak",
         "forlongid", "../innd/newsfeeds.bbs", "deny_reason", NULL
@@ -680,6 +680,10 @@ void a_edits()
             unlink("Welcome.rec");
             prints("\nWelcome 记录档更新");
         }
+	if (!strcmp(e_file[ch], "badword")) {
+            unlink("etc/badword.img");
+            prints("\n过滤词表更新");
+	}
     }
     pressreturn();
 }

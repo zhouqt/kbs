@@ -36,6 +36,7 @@
 #define SYSMAIL_BOARD       "sysmail"
 #define MAXUSERS  		20000
 #define MAXBOARD  		400
+#define MAXCLUB                 128
 #define MAXACTIVE 		8000
 #define MAX_GUEST_NUM		1000
 

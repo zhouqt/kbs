@@ -14,13 +14,14 @@ int main()
     char brdencode[STRLEN];
     struct fileheader x,oldx;
     int i, num = 0, found = 0;
+    struct boardheader bh;
 
     init_all();
     strsncpy(board, getparm("board"), 32);
     strsncpy(file, getparm("file"), 32);
     encode_url(brdencode, board, sizeof(brdencode));
     printf("<center>\n");
-    if (!has_read_perm(currentuser, board))
+    if (getboardnum(board,&bh)==0||!check_read_perm(currentuser, &bh))
         http_fatal("´íÎóµÄÌÖÂÛÇø");
     strcpy(board, getbcache(board)->filename);
     if ((loginok)&&strcmp(currentuser->userid,"guest"))

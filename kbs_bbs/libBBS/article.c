@@ -376,10 +376,10 @@ void write_header(FILE * fp, struct userec *user, int in_mail, char *board, char
      * Leeward: 1997.12.11 
      */
     uname[39] = 0;              /* 其实是写错变量名了! 嘿嘿 */
-    noname = anonymousboard(board);
     if (in_mail)
         fprintf(fp, "寄信人: %s (%s)\n", uid, uname);
     else {
+        noname = anonymousboard(board);
         if (mode == 0 && !(noname && Anony)) {
             write_posts(user->userid, board, title);
         }
@@ -689,7 +689,9 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
 #endif
     brc_add_read(fh->id);
     sprintf(buf, "posted '%s' on '%s'", fh->title, boardname);
+#ifdef FILTER
     }
+#endif
     newbbslog(BBSLOG_USER, "%s", buf);
 
     if (fh->id == fh->groupid)
@@ -919,7 +921,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
     struct flock ldata;
     int fd, size = sizeof(fileheader), orgent;
 #ifdef FILTER
-    FILE* filedes;
+    int filedes;
     int nowid = 0;
     char oldpath[50], newpath[50], buffer[256];
     struct fileheader *newfh = fileinfo;
@@ -1259,7 +1261,7 @@ char get_article_flag(struct fileheader *ent, struct userec *user, char* boardna
             type = ';';
             break;
         }
-    } else if (HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[0] & FILE_SIGN)) {
+    } else if ((is_bm || HAS_PERM(user, PERM_OBOARDS)) && (ent->accessed[0] & FILE_SIGN)) {
         type = '#';
 #ifdef FILTER
     } else if (HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[1] & FILE_CENSOR)&&!strcmp(boardname,FILTER_BOARD)) {

@@ -1,0 +1,18 @@
+
+Install:
+  在worker目录下 make install , 生成$BBSHOME/bin/worker
+  在$BBSHOME下建立目录 game/worker 把所有的game.dat.xxx都copy到此目录下,
+  然后在xyz.c里加一段代码调用
+    bin/worker game/worker xxx
+
+Play:
+          ■ 为障碍物，□ 为货物，· 为目的地，⊙ 为搬运工人
+
+          用上下左右键移动搬运工人，用Tab 键重新开始本局．
+          用 Ctrl-L 组合键刷新屏幕，用空格键退出游戏．    
+
+Notice:
+   虽然后缀名为.cxx, 但是没用到cpp的东西, 改成.c也应该能编译通过.
+
+   因为使用ncurse在cterm下不能用, screens.cxx中使用了zhch@dii所写的
+   TETRIS中的一些代码. //thank zhch

@@ -16,7 +16,9 @@ struct userec {                 /* Structure used to hold information in */
     char passwd[OLDPASSLEN];
 #endif
     char username[NAMELEN];
-    char unused[NAMELEN];
+    unsigned int club_read_rights[MAXCLUB>>5];
+    unsigned int club_write_rights[MAXCLUB>>5];
+    char unused2[6];
     unsigned char md5passwd[MD5PASSLEN];
     char realemail[STRLEN - 16];
     unsigned userlevel;
@@ -72,13 +74,14 @@ struct friends_info {
 
 struct boardheader {            /* This structure is used to hold data in */
     char filename[STRLEN];      /* the BOARDS files */
-    char owner[STRLEN - BM_LEN];
+    char unused1[STRLEN - BM_LEN];
     char BM[BM_LEN - 1];
-    char flag;
+    char unused_flag;
     char title[STRLEN];
     unsigned level;
     unsigned int nowid;
-    unsigned char unused[8];
+    unsigned int clubnum; /*如果是俱乐部，这个是俱乐部序号*/
+    unsigned int flag;
 };
 
 /* XXX: struct fileheader moved to site.h */

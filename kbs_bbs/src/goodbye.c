@@ -95,7 +95,7 @@ char buf[256];
     stuffstr[ST_ADDRESS] = douser.address;
     stuffstr[ST_EMAIL] = douser.email;
     stuffstr[ST_REALEMAIL] = douser.realemail;
-    stuffstr[ST_IDENT] = douser.unused;
+    stuffstr[ST_IDENT] = "";
     stuffstr[ST_RGTDAY] = rgtday;
     stuffstr[ST_NUMLOGINS] = numlogins;
     stuffstr[ST_NUMPOSTS] = numposts;

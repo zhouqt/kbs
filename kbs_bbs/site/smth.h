@@ -35,15 +35,16 @@
 #define FILTER_BOARD        "Filter"
 #define SYSMAIL_BOARD       "sysmail"
 #define MAXUSERS  		200000
-#define MAXBOARD  		400
+#define MAXCLUB			128
+#define MAXBOARD  		600
 #define MAXACTIVE 		8000
 #define MAX_GUEST_NUM		800
 
 #define POP3PORT		110
 #define POP3SPORT		995
 /* ASCIIArt, by czz, 2002.7.5 */
-#define       LENGTH_SCREEN_LINE      256
-#define       LENGTH_FILE_BUFFER      256
+#define       LENGTH_SCREEN_LINE      255
+#define       LENGTH_FILE_BUFFER      255
 #define       LENGTH_ACBOARD_BUFFER   200
 #define       LENGTH_ACBOARD_LINE     300
 

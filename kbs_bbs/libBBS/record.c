@@ -22,10 +22,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
-int safewrite(fd, buf, size)
-int fd;
-char *buf;
-int size;
+int safewrite( int fd, void *buf, int size)
 {
     int cc, sz = size, origsz = size;
     char *bp = buf;

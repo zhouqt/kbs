@@ -15,6 +15,7 @@ int main()
     struct userec *u = NULL;
     int big5;
     int noansi;
+    struct boardheader bh;
 
     init_all();
     strsncpy(board, getparm("board"), 30);
@@ -24,7 +25,7 @@ int main()
     noansi = atoi(getparm("noansi"));
     if (!loginok)
         http_fatal("匆匆过客不能进行本项操作");
-    if (!has_read_perm(currentuser, board))
+    if (getboardnum(board,&bh)==0||!check_read_perm(currentuser, &bh))
         http_fatal("错误的讨论区");
     if (get_file_ent(board, file, &x) == 0)
         http_fatal("错误的文件名");

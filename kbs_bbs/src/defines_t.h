@@ -133,6 +133,7 @@ int check_systempasswd();
 void stand_title(char *title);
 int del_grp(char bname[STRLEN], char title[STRLEN]);
 void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN]);
+void deliverreport(char *title,char *str);
 
 /* talk.c */
 void creat_list();
@@ -234,4 +235,9 @@ int edit_grp(char bname[STRLEN], char title[STRLEN], char newtitle[100]);
 
 /* boards_t.c */
 int show_authorBM(int ent, struct fileheader *fileinfo, char *direct);
+
+/* bm.c*/
+int deny_user(int ent,struct fileheader* fileinfo,char* direct);    /* 禁止POST用户名单 维护主函数 */
+int clubmember(int ent,struct fileheader* fh,char* direct);
+
 #endif

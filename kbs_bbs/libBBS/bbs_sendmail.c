@@ -193,6 +193,60 @@ int mail_file_sent(char *fromid, char *tmpfile, char *userid, char *title, int u
 
 }
 
+int mail_buf(struct userec*fromuser, char *mail_buf, char *userid, char *title)
+{
+    struct fileheader newmessage;
+    struct stat st;
+    char fname[STRLEN], filepath[STRLEN];
+    char buf[255];
+    struct userec *touser;      /*peregrine for updating used space */
+    int unum;
+    FILE* fp;
+
+    unum = getuser(userid, &touser);
+    if (touser == NULL)         /* flyriver, 2002.9.8 */
+        return -1;
+    memset(&newmessage, 0, sizeof(newmessage));
+    strcpy(buf, fromuser->userid);        /* Leeward 98.04.14 */
+    strncpy(newmessage.owner, buf, OWNER_LEN);
+    newmessage.owner[OWNER_LEN - 1] = 0;
+    strncpy(newmessage.title, title, STRLEN);
+    setmailpath(filepath, userid);
+    if (stat(filepath, &st) == -1) {
+        if (mkdir(filepath, 0755) == -1)
+            return -1;
+    } else {
+        if (!(st.st_mode & S_IFDIR))
+            return -1;
+    }
+    if (GET_MAILFILENAME(fname, filepath) < 0)
+        return -1;
+    strcpy(newmessage.filename, fname);
+    setmailfile(filepath, userid, fname);
+
+	fp = fopen(filepath, "w");
+	if (fp != NULL) {
+		write_header(fp, fromuser,1,NULL,title,0,0);
+		fprintf(fp, "%s\n", mail_buf);
+		fclose(fp);
+	} else
+		return -1;
+    /*
+     * peregrine update used space
+     */
+    if (stat(filepath, &st) != -1)
+        touser->usedspace += st.st_size;
+
+    setmailfile(buf, userid, DOT_DIR);
+
+    if (append_record(buf, &newmessage, sizeof(newmessage)) == -1)
+        return -1;
+    newbbslog(BBSLOG_USER, "%s mailed %s ", fromuser->userid,userid);
+    if (!strcasecmp(userid, "SYSOP"))
+        updatelastpost(SYSMAIL_BOARD);
+    return 0;
+}
+
 /*peregrine*/
 int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink)
 {
@@ -238,7 +292,7 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
 
     if (append_record(buf, &newmessage, sizeof(newmessage)) == -1)
         return -1;
-    newbbslog(BBSLOG_USER, "mailed %s ", userid);
+    newbbslog(BBSLOG_USER, "%s mailed %s ", fromid,userid);
     if (!strcasecmp(userid, "SYSOP"))
         updatelastpost(SYSMAIL_BOARD);
     return 0;

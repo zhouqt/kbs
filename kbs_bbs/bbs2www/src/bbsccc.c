@@ -205,7 +205,7 @@ int main()
 	if (src_bp == NULL)
 		http_fatal("错误的讨论区");
 	strcpy(board, src_bp->filename);
-	if(!has_read_perm(currentuser, board))
+	if(!check_read_perm(currentuser, src_bp))
 		http_fatal("错误的讨论区");
 	sprintf(dir, "boards/%s/.DIR", board);
 	fp = fopen(dir, "r");

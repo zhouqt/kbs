@@ -1043,9 +1043,13 @@ int del_from_file(char filename[STRLEN], char str[STRLEN])
 
     if ((fp = fopen(filename, "r")) == NULL)
         return -1;
+    flock(fileno(fp),LOCK_EX);
     sprintf(fnnew, "%s.%d", filename, getuid());
-    if ((nfp = fopen(fnnew, "w")) == NULL)
+    if ((nfp = fopen(fnnew, "w")) == NULL) {
+    	flock(fileno(fp),LOCK_UN);
+    	 fclose(fp);
         return -1;
+    }
     while (fgets(buf, 256 /*STRLEN*/, fp) != NULL) {
         if (strncasecmp(buf, str, strlen(str)) == 0 && buf[strlen(str)] <= 32)
             deleted = true;
@@ -1053,6 +1057,7 @@ int del_from_file(char filename[STRLEN], char str[STRLEN])
         else if (*buf > ' ')
             fputs(buf, nfp);
     }
+    flock(fileno(fp),LOCK_UN);
     fclose(fp);
     fclose(nfp);
     if (!deleted)

@@ -7,15 +7,11 @@ WRAPLIBS	= @WRAPLIBS@
 SSH_INSTALL_MODE= @SSHINSTALLMODE@
 transform	= @program_transform_name@
 
-GMPDIR          = gmp-2.0.2-ssh-2
-SUBDIRS=$(GMPDIR)
-
 HOST_KEY_FILE 	= etc/ssh_host_key
 HOST_CONFIG_FILE = etc/ssh_config
 SERVER_CONFIG_FILE = etc/sshd_config
 
-GMPLIBS         = -L$(GMPDIR) -lgmp
-GMPDEP          = $(GMPDIR)/gmp.h $(GMPDIR)/libgmp.a
+GMPLIBS         = -lgmp
 
 SSHLIBS         = -lnsl -lbsd -L/usr/local/lib
 
@@ -45,10 +41,10 @@ EXTRA_DIST= COPYING README README.SECURID README.TIS README.SECURERPC \
 CLEANFILES=@EXTRA_CLEAN@
 bin_PROGRAMS = sshbbsd
 sshbbsd_LDADD = @BBSOBJS@ @CONFOBJS@ @SSHDCONFOBJS@ ../libsystem/.libs/libsystem.a ../rzsz/.libs/libzmodem.a $(GMPLIBS) $(WRAPLIBS) $(KERBEROS_LIBS) $(SSHLIBS) $(LIBS)
-sshbbsd_DEPENDENCIES = @BBSOBJS@ @CONFOBJS@ @SSHDCONFOBJS@ ../libsystem/.libs/libsystem.a ../rzsz/.libs/libzmodem.a $(GMPDEP)
+sshbbsd_DEPENDENCIES = @BBSOBJS@ @CONFOBJS@ @SSHDCONFOBJS@ ../libsystem/.libs/libsystem.a ../rzsz/.libs/libzmodem.a 
 #EXTRA_sshbbsd_SOURCE = @BBSSOURCES@ @LIBOBJS@ @CONFOBJS@ @SSHDCONFOBJS@
 sshbbsd_SOURCES = $(SSHD_OBJS:.o=.c) $(KEYGEN_OBJS:.o=.c)
-AM_CFLAGS=-I. -I../src -DBBSMAIN -DINVISIBLE -DSAFE_KILL -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME -DSSHBBS -I$(srcdir)/$(GMPDIR) -DSAFE_KILL -DBBSMAIN -DSSHBBS -DHOST_KEY_FILE=\"$(HOST_KEY_FILE)\" -DHOST_CONFIG_FILE=\"$(HOST_CONFIG_FILE)\" -I.. -DSERVER_CONFIG_FILE=\"$(SERVER_CONFIG_FILE)\" -DSSH_PROGRAM=\"$(SSH_PROGRAM)\" -DETCDIR=\"$(etcdir)\" -DPIDDIR=\"$(piddir)\" -DSSH_BINDIR=\"$(bindir)\"
+AM_CFLAGS=-I. -I../src -DBBSMAIN -DINVISIBLE -DSAFE_KILL -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME -DSSHBBS  -DSAFE_KILL -DBBSMAIN -DSSHBBS -DHOST_KEY_FILE=\"$(HOST_KEY_FILE)\" -DHOST_CONFIG_FILE=\"$(HOST_CONFIG_FILE)\" -I.. -DSERVER_CONFIG_FILE=\"$(SERVER_CONFIG_FILE)\" -DSSH_PROGRAM=\"$(SSH_PROGRAM)\" -DETCDIR=\"$(etcdir)\" -DPIDDIR=\"$(piddir)\" -DSSH_BINDIR=\"$(bindir)\"
 AM_LDFLAGS=-rdynamic
 
 # Creates /etc/ssh_host_key

@@ -38,7 +38,7 @@ int main()
     printf("<table>\n");
     bc = getbcacheaddr();
     for (i = 0; i < MAXBOARD; i++) {
-        if (has_read_perm(currentuser, bc[i].filename)) {
+        if (check_read_perm(currentuser, &bc[i])) {
             memcpy(&data[total], &(bc[i]), sizeof(struct boardheader));
             total++;
         }
@@ -74,9 +74,10 @@ int read_submit()
         http_fatal("参数错误");
     for (i = 0; i < parm_num; i++) {
         if (!strcasecmp(parm_val[i], "on")) {
+	    struct boardheader bh;
             if (mybrdnum >= FAVBOARDNUM)
                 http_fatal("您试图预定超过%d个讨论区", FAVBOARDNUM);
-            if (!has_read_perm(currentuser, parm_name[i])) {
+            if (getboardnum(parm_name[i],&bh)==0||!check_read_perm(currentuser, &bh)) {
                 printf("警告: 无法预定'%s'讨论区<br>\n", nohtml(parm_name[i]));
                 continue;
             }

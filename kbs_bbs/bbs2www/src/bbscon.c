@@ -19,9 +19,9 @@ int main()
     strsncpy(file, getparm("file"), 32);
     num = atoi(getparm("num"));
     printf("<center>\n");
-    if (!has_read_perm(currentuser, board))
-        http_fatal("错误的讨论区");
     bp = getbcache(board);
+    if (!check_read_perm(currentuser, bp))
+        http_fatal("错误的讨论区");
     strcpy(board, bp->filename);
     if (VALID_FILENAME(file) < 0)
         http_fatal("错误的参数");

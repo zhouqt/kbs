@@ -503,6 +503,7 @@ int a_menusearch(path, key, level)
     int len;
     struct stat st;
     struct boardheader fhdr;
+    int num;
 
     if (key == NULL) {
         key = bname;
@@ -514,21 +515,19 @@ int a_menusearch(path, key, level)
         return 0;
     if (!(st.st_mode & S_IFDIR))
         return 0;
-    if (getboardnum(key, &fhdr) == 0)
+    if ((num=getboardnum(key, &fhdr)) == 0)
         return 0;
 
 
-    if (!((fhdr.level & PERM_POSTMASK) || HAS_PERM(currentuser, fhdr.level)
-          || (fhdr.level & PERM_NOZAP))) {
-        return 0;
-    }
+    if (check_read_perm(currentuser,&fhdr)==0)
+	return 0;
 
 
     len = strlen(key);
     sprintf(buf, "%s/.Search", path);
     if (len > 0 && (fn = fopen(buf, "r")) != NULL) {
         while (fgets(buf, sizeof(buf), fn) != NULL) {
-            if (strncmp(buf, key, len) == 0 && buf[len] == ':' && (ptr = strtok(&buf[len + 1], " \t\n")) != NULL) {
+            if (strncasecmp(buf, key, len) == 0 && buf[len] == ':' && (ptr = strtok(&buf[len + 1], " \t\n")) != NULL) {
                 sprintf(bname, "%s/%s", path, ptr);
                 fclose(fn);
                 a_menu("", bname, level, 0);
