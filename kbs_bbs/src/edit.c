@@ -735,6 +735,9 @@ int write_file(filename, saveheader)
     int temp;
     extern char quote_title[120], quote_board[120];
     extern int Anony;
+#ifdef FILTER
+    int filter = 0;
+#endif
 
 #ifndef VEDITOR
     char p_buf[100];
@@ -788,7 +791,6 @@ int write_file(filename, saveheader)
 #endif
 
 #ifdef FILTER
-    int filter = 0;
     
     if ((abort[0] != 'a')||(abort[0] != 'e')) {
 	while (p != NULL) {
