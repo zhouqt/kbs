@@ -32,7 +32,7 @@
 	settype($year,"integer");
 	settype($month,"integer");
 	settype($day,"integer");
-	$ret=bbs_createregform($currentuser["userid"],$realname,$dept,$address,$gender,$year,$month,$day,$email,$phone,FALSE); //手工填写注册单
+	$ret=bbs_createregform($currentuser["userid"],$realname,$dept,$address,$gender,$year,$month,$day,$email,$phone,"",FALSE); //手工填写注册单
 
 	switch($ret)
 	{
