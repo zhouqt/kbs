@@ -139,7 +139,7 @@ unsigned int setperms(unsigned int pbits,char *prompt,int numbers,int (*showfunc
     }
     return( pbits );
 }
-/* bad 2002.7.6*/
+/* bad 2002.7.6
 unsigned int setperms2(unsigned int pbits,unsigned int basic,char *prompt,int numbers,int (*showfunc)(unsigned int ,unsigned int,int ,int))
 {
     int lastperm = numbers - 1;
@@ -150,7 +150,6 @@ unsigned int setperms2(unsigned int pbits,unsigned int basic,char *prompt,int nu
     prints("Çë°´ÏÂÄãÒªµÄ´úÂëÀ´Éè¶¨%s£¬°´ Enter ½áÊø.\n",prompt);
     move(6,0);
     clrtobot();
-    /*    pbits &= (1 << numbers) - 1;*/
     for (i=0; i<=lastperm; i++) {
         (*showfunc)( pbits, basic, i,false);
     }
@@ -169,7 +168,90 @@ unsigned int setperms2(unsigned int pbits,unsigned int basic,char *prompt,int nu
         }
     }
     return( pbits );
+}*/
+#include "select.h"
+struct _setperm_select {
+	unsigned int pbits;
+	unsigned int basic;
+};
+int setperm_select(struct _select_def* conf)
+{
+	struct _setperm_select* arg=(struct _setperm_select*)conf->arg;
+	if (conf->pos==conf->item_count)
+		return SHOW_QUIT;
+	arg->pbits ^= (1 << (conf->pos-1));
+	return SHOW_REFRESHSELECT;
 }
+
+int setperm_show(struct _select_def* conf,int i)
+{
+	struct _setperm_select* arg=(struct _setperm_select*)conf->arg;
+	i=i-1;
+	if (i==conf->item_count-1) {
+		prints( "%c. ÍË³ö ",'A'+i);
+	}
+	else
+	{
+    if((1<<i==PERM_BASIC||1<<i==PERM_POST||1<<i==PERM_CHAT
+    	||1<<i==PERM_PAGE||1<<i==PERM_DENYMAIL)&&
+    	(arg->basic&(1<<i)))
+        prints( "%c. %-30s [32;1m%3s[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
+                 ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
+    else
+        prints( "%c. %-30s [37;0m%3s[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
+                 ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
+	}
+	return SHOW_CONTINUE;
+}
+
+int setperm_key(struct _select_def *conf,int key)
+{
+    int sel;
+    if (key<='z'&&key>='a')
+	sel=key-'a';
+    else
+	sel=key-'A';
+    if (sel>=0&&sel<(conf->item_count-1)) {
+	conf->new_pos=sel+1;
+	return SHOW_SELCHANGE;
+    }
+    return SHOW_CONTINUE;
+}
+
+unsigned int setperms2(unsigned int pbits,unsigned int basic,char *prompt,int numbers,int (*showfunc)(unsigned int ,unsigned int,int ,int))
+{
+	struct _select_def perm_conf;
+	struct _setperm_select arg;
+	POINT* pts;
+	int i;
+
+	pts=(POINT*)malloc(sizeof(POINT)*numbers);
+
+	for (i=0;i<numbers+1;i++) {
+		pts[i].x=0+(( i>15)? 50:1) ;
+		pts[i].y=i+6-(( i>15)? 16:0);
+	}
+	arg.pbits=pbits;
+	arg.basic=basic;
+	bzero((char*)&perm_conf,sizeof(struct _select_def ));
+	perm_conf.item_count=numbers+1;
+	perm_conf.item_per_page=numbers+1;
+	perm_conf.flag=LF_BELL|LF_LOOP;//|LF_HILIGHTSEL;
+	perm_conf.prompt=">";
+	perm_conf.item_pos = pts;
+	perm_conf.arg=&arg;
+	perm_conf.title_pos.x=1;
+	perm_conf.title_pos.y=6;
+
+	perm_conf.on_select=setperm_select;
+	perm_conf.show_data=setperm_show;
+	perm_conf.key_command=setperm_key;
+
+	list_select_loop(&perm_conf);
+	free(pts);
+	return arg.pbits;
+}
+
 /* É¾³ı¹ıÆÚµÄÕÊºÅ */
 /* ËãÊÇ¸ø°ÂÔËµÄÏ×Àñ */
 /* Bigman 2001.7.14 */
