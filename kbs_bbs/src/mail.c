@@ -1018,7 +1018,7 @@ char *direct;
             readnext = true;
             break;
         /* read prev mail  .  binxun 2003.5*/
-        case KEY_UP;
+        case KEY_UP:
         	done = true;
         	readprev = true;
         	break;
