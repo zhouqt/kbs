@@ -972,10 +972,12 @@ int do_after_logout(struct userec* user,struct user_info* userinfo,int unum,int 
 #endif
     }
     if (user) {
+#if USE_TMPFS==1
         if (mode==0)
             clean_cachedata(user->userid,unum);
         else //www guest,使用负数来和telnet guest区分
             clean_cachedata(user->userid,-unum);
+#endif
     }
     if (userinfo&&userinfo->currentboard)
         board_setcurrentuser(userinfo->currentboard,-1);
