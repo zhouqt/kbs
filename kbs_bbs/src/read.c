@@ -35,6 +35,7 @@ int B_to_b = false;
 char *pnt;
  *---	current code memory leak ---*/
 extern char MsgDesUid[14];
+extern unsigned int tmpuser;
 struct keeploc {
     char *key;
     int top_line;
@@ -250,7 +251,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
 
     /*---	HERE:	---*/
     screen_len = t_lines - 4;
-    if (!DEFINE(currentuser, DEF_SPLITSCREEN))
+    if (TDEFINE(TDEF_SPLITSCREEN))
         screen_len = screen_len/2-1;
     modify_user_mode(cmdmode);
     pnt = calloc(screen_len, ssize);
@@ -291,8 +292,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
     /*---	Modofied by period	2000-11-12	---*
     draw_entry( doentry, locmem, entries ,ssize);
      *---			---*/
-    draw_entry(doentry, locmem, entries, ssize, pnt);
-    if (!DEFINE(currentuser, DEF_SPLITSCREEN)){
+    if (TDEFINE(TDEF_SPLITSCREEN)){
         char buf[256], *t;
         struct fileheader* h;
         strcpy(buf, currdirect);
@@ -302,7 +302,11 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
         sprintf(genbuf, "%s/%s", buf, h->filename);
         strcpy(lastfile, genbuf);
         draw_content(genbuf,h);
+        move(0, 0);
+        (*dotitle) ();
+        clrtobot();
     }
+    draw_entry(doentry, locmem, entries, ssize, pnt);
     PUTCURS(locmem);
     lbc = 0;
     mode = DONOTHING;
@@ -451,8 +455,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
             if (locmem->crs_line > last_line)
                 locmem->crs_line = last_line;
 
-            draw_entry(doentry, locmem, entries, ssize, pnt);
-            if (!DEFINE(currentuser, DEF_SPLITSCREEN)){
+            if (TDEFINE(TDEF_SPLITSCREEN)){
                 char buf[256], *t;
                 struct fileheader* h;
                 strcpy(buf, currdirect);
@@ -462,12 +465,16 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
                 sprintf(genbuf, "%s/%s", buf, h->filename);
                 draw_content(genbuf,h);
                 strcpy(lastfile, genbuf);
+                move(0, 0);
+                (*dotitle) ();
+                clrtobot();
             }
+            draw_entry(doentry, locmem, entries, ssize, pnt);
             PUTCURS(locmem);
             break;
 
         default:
-            if (!DEFINE(currentuser, DEF_SPLITSCREEN)){ //added by bad 2002.9.2
+            if (TDEFINE(TDEF_SPLITSCREEN)){ //added by bad 2002.9.2
                 char buf[256], *t;
                 struct fileheader* h;
                 strcpy(buf, currdirect);
@@ -478,6 +485,11 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
                 if (strcmp(genbuf, lastfile))
                     draw_content(genbuf,h);
                 strcpy(lastfile, genbuf);
+                PUTCURS(locmem);
+                move(0, 0);
+                (*dotitle) ();
+                clrtobot();
+                draw_entry(doentry, locmem, entries, ssize, pnt);
                 PUTCURS(locmem);
             }
             break;
@@ -619,6 +631,16 @@ static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, 
             return FULLUPDATE;
             break;
         }
+    case Ctrl('V'):
+        if (TDEFINE(TDEF_SPLITSCREEN))
+        	tmpuser&=~TDEF_SPLITSCREEN;
+        else
+        	tmpuser|=TDEF_SPLITSCREEN;
+        screen_len = t_lines - 4;
+        if (TDEFINE(TDEF_SPLITSCREEN))
+            screen_len = screen_len/2-1;
+        return FULLUPDATE;
+        break;
     case '!':                  /*Haohmaru 1998.09.24 */
         Goodbye();
         return FULLUPDATE;

@@ -43,6 +43,7 @@ struct fileheader ReadPostHeader;
 int FFLL = 0;
 int Anony;
 char genbuf[1024];
+unsigned int tmpuser = 0;
 char quote_title[120], quote_board[120];
 char quote_user[120];
 struct friends_info *topfriend;

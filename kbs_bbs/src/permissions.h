@@ -87,6 +87,7 @@ bigger mailbox. --stephen 2001.10.31*/
 #define HAS_PERM(user,x) ((x)?((user)->userlevel)&(x):1)
 #define DEFINE(user,x)     ((x)?((user)->userdefine)&(x):1)
 
+#define TDEFINE(x) ((x)?(tmpuser)&(x):1)
 
 /*#define NUMPERMS (30)*//*Define in bbs.h */
 
@@ -118,7 +119,7 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_SHOWSTATISTIC 0200000000    /* Haohmaru */
 #define DEF_UNREADMARK 0400000000       /* Luzi 99.01.12 */
 #define DEF_USEGB     01000000000       /* KCN,99.09.05 */
-#define DEF_SPLITSCREEN 02000000000 /* bad 2002.9.1 */
+//#define DEF_SPLITSCREEN 02000000000 /* bad 2002.9.1 */
 /*#define DEF_HIDEIP    02000000000  Haohmaru,99.12.18*/
 
 /*#define PERM_POSTMASK  0100000  *//* means the rest is a post mask */
@@ -126,7 +127,10 @@ bigger mailbox. --stephen 2001.10.31*/
 
 /* #define NUMDEFINES 23 */
 /* #define NUMDEFINES 24 */
-#define NUMDEFINES 29           /* Leeward 98.01.12,Haohmaru,98.09.24 KCN,99.09.03,要用DEF_HIDEIP时请改为29 */
+#define NUMDEFINES 28           /* Leeward 98.01.12,Haohmaru,98.09.24 KCN,99.09.03,要用DEF_HIDEIP时请改为29 */
+
+
+#define TDEF_SPLITSCREEN 000001
 
 #ifndef EXTERN
 extern char *user_definestr[];
