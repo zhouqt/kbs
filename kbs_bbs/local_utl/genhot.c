@@ -15,9 +15,9 @@ int gen_commend_xml()
 	struct fileheader fh;
 	char dirpath[STRLEN];
 	char dirfile[STRLEN];
-	char xml_buf[256];
+	char xml_buf[1024]; //changed from 256 to 1024, for <brief> - atppp
 	char buf[256];
-	char url_buf[256];
+	char url_buf[1024]; //changed from 256 to 1024, for <brief> - atppp
 	struct stat st;
 	int numrecords;
 	int i;
