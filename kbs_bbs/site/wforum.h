@@ -1,5 +1,7 @@
 #include "bbs.h"
 
+#error this file is for reference only. not intended to be used
+
 #ifndef REGISTER_TSINGHUA_WAIT_TIME
 #define REGISTER_TSINGHUA_WAIT_TIME (24*60*60)
 #endif
