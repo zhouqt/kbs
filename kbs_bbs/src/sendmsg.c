@@ -185,7 +185,7 @@ int mode;
         /*   strcpy(MsgDesUid, uin->userid); change by KCN,is wrong*/
     }
 
-    if(LOCKSCREEN == uin->mode) /* Leeward 98.02.28 */
+    if((mode!=0)&&(LOCKSCREEN == uin->mode)) /* Leeward 98.02.28 */
     {
         move(2,0) ;
         prints("对方已经锁定屏幕，请稍候再发或给他(她)写信...\n");
@@ -195,7 +195,7 @@ int mode;
         return -1 ;
     }
 
-    if (NA==canIsend2(uin->userid))/*Haohmaru.06.06.99.检查自己是否被ignore*/
+    if ((mode!=0)&&(NA==canIsend2(uin->userid)))/*Haohmaru.06.06.99.检查自己是否被ignore*/
     {
         move(2,0) ;
         prints("对方拒绝接受你的讯息...\n");
@@ -206,6 +206,7 @@ int mode;
     }
 
 
+    if (mode!=0) {
     sethomefile(buf,uident,"msgcount");
     fp=fopen(buf, "rb");
     if (fp!=NULL)
@@ -222,6 +223,7 @@ int mode;
             clrtoeol() ;
             return -1 ;
         }
+    }
     }
     if(msgstr==NULL)
     {
@@ -270,7 +272,7 @@ int mode;
     { /*
         uin=t_search(MsgDesUid, NA);
             if ((uin == NULL) || (uin->active == 0) || (uin->pid == 0) || (kill(uin->pid, 0) !=0)){ */
-        if (mode != 0)
+        if (mode == 0)
             return -2;
         move(2,0) ;
         prints("对方已经离线....\n");
