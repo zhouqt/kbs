@@ -201,11 +201,15 @@ void suicide()
         now = time(0);
         sprintf(filename, "etc/%s.tmp", currentuser->userid);
         fn = fopen(filename, "w");
-        fprintf(fn, "[1m%s[m ÒÑ¾­ÔÚ [1m%24.24s[m ×ÔÉ±ÁË!", currentuser->userid, ctime(&now));
+        fprintf(fn, "´ó¼ÒºÃ,\n\nÎÒÊÇ %s (%s)¡£ ÎÒÒÑ¾­Àë¿ªÕâÀïÁË¡£", currentuser->userid, currentuser->username);
+        fprintf(fn, "\n\nÎÒ²»»á¸ü²»¿ÉÄÜÍü¼Ç×Ô %s", ctime(&(currentuser->firstlogin)));
+        fprintf(fn, "\nÒÔÀ´ÎÒÔÚ±¾Õ¾ %d ´Î login ÖĞ×Ü¹² %d ·ÖÖÓ¶ºÁôÆÚ¼äµÄµãµãµÎµÎ¡£", currentuser->numlogins, currentuser->stay/60);
+        fprintf(fn, "\nÇëÎÒµÄºÃÓÑ°Ñ %s ´ÓÄãÃÇµÄºÃÓÑÃûµ¥ÖĞÄÃµô°É¡£", currentuser->userid);
+        fprintf(fn, "\n\n»òĞíÓĞ³¯Ò»ÈÕÎÒ»á»ØÀ´µÄ¡£ ÕäÖØ!! ÔÙ¼û!!");
         fprintf(fn, "\n\n×ÔÉ±ÕßµÄ¼ò¶ÌÁôÑÔ: %s", buf2);
         fclose(fn);
         sprintf(buf, "%s µÄ×ÔÉ±Í¨Öª", currentuser->userid);
-        post_file(currentuser, "", filename, "Goodbye", buf, 0, 1);
+        post_file(currentuser, "", filename, "Goodbye", buf, 0, 2);
         unlink(filename);
 
     setmailpath(tmpbuf, currentuser->userid);
