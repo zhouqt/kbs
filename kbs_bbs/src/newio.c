@@ -1054,10 +1054,10 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 break;
             case Ctrl('Y'):
                 i=now;
-                while(i>=0&&buf[i]!='\n') i--;
+                while(i>=0&&buf[i]!='\n'&&buf[i]!='\r') i--;
                 i++;
                 j=now;
-                while(j<strlen(buf)-1&&buf[j]!='\n') j++;
+                while(j<strlen(buf)-1&&buf[j]!='\n'&&buf[j]!='\r') j++;
                 j=j-i+1;
                 if(j<0) j=0;
                 for(k=0;k<j+1;k++)
@@ -1096,7 +1096,6 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
         }
     }
 
-    prints("\n");
     refresh();
     return y-starty+1;
 }
