@@ -214,6 +214,26 @@ convert_board_articles(struct boardheader *brd)
 static void
 convert_board(struct oldboardheader *oldbrd, struct boardheader *brd)
 {
+	FILE *fp3;
+        char buf[1024];
+        int len;
+	char* ptr;
+        if((fp3 = fopen(".Search","r")) == NULL)
+        {
+            printf("can't open .Search file!");
+            exit(0);
+        }
+
+        len=strlen(oldbrd->filename);
+	while(fgets(buf,sizeof(buf),fp3) != NULL)
+	{       
+	        if(strncasecmp(buf,oldbrd->filename,len) == 0 && buf[len] == ':' && (ptr = strtok(&buf[len+1],"\t\n"))!=NULL)
+	        {       
+	                strncpy(brd->ann_path,ptr+8,128);  //dont'save groups/
+	                break;
+	        }
+	}
+        fclose(fp3);
 	strcpy(brd->filename, oldbrd->filename);
 	strcpy(brd->BM, oldbrd->BM);
 	convert_flag(oldbrd, brd);
