@@ -1545,7 +1545,7 @@ int inn_stop()
 int x_deny()
 {
     int sel;
-    char userid[IDLEN + 1];
+    char userid[IDLEN + 2];
     struct userec *lookupuser;
     const int level[] = {
         PERM_BASIC,
@@ -1591,7 +1591,7 @@ int x_deny()
         move(1, 0);
 
         usercomplete("请输入使用者帐号:", genbuf);
-        strncpy(userid, genbuf, IDLEN);
+        strncpy(userid, genbuf, IDLEN+1);
         if (userid[0] == '\0') {
             clear();
             return 0;
