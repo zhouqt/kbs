@@ -170,7 +170,7 @@ void check_stats(char* filename)
                 statst = st.st_size/20;
                 stats = malloc(statst*sizeof(statinfo));
                 for(i=0;i<statst;i++) {
-                    read(fd, stats+i*sizeof(statinfo), 20);
+                    read(fd, stats[i], 20);
                     strcpy(stats[i]+21,"unknown");
                 }
             	
