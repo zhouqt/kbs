@@ -167,18 +167,19 @@ function display_navigation_bar($brdarr, $articles, $num)
 				// 检查上一篇或下一篇
 				@$ptr=$_GET["p"];
 				$brd_encode = urlencode($brdarr["NAME"]);
+				$http_uri = "http" . ($_SERVER["HTTPS"] == "on" ? "s" : "") . "://";
 				if ($ptr == 'p' && $articles[0]["ID"] != 0)
 				{
 					if ($currentuser["userid"] != "guest")
 						bbs_brcaddread($brdarr["NAME"], $articles[0]["ID"]);
-					header("Location: http://" . $_SERVER["HTTP_HOST"] . "/bbscon.php?board=" . $brd_encode . "&id=" . $articles[0]["ID"]);
+					header("Location: " . $http_uri . $_SERVER["HTTP_HOST"] . "/bbscon.php?board=" . $brd_encode . "&id=" . $articles[0]["ID"]);
 					exit;
 				}
 				elseif ($ptr == 'n' && $articles[2]["ID"] != 0)
 				{
 					if ($currentuser["userid"] != "guest")
 						bbs_brcaddread($brdarr["NAME"], $articles[2]["ID"]);
-					header("Location: http://" . $_SERVER["HTTP_HOST"] . "/bbscon.php?board=" . $brd_encode . "&id=" . $articles[2]["ID"]);
+					header("Location: " . $http_uri . $_SERVER["HTTP_HOST"] . "/bbscon.php?board=" . $brd_encode . "&id=" . $articles[2]["ID"]);
 					exit;
 				}
 				html_init("gb2312");
