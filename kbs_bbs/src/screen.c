@@ -487,8 +487,8 @@ void outc(unsigned char c)
         slp->mode[cur_col]=cur_mode;
         slp->color[cur_col]=cur_color;
         slp->data[cur_col]=c;
+        cur_col++;
     }
-    cur_col++;
 }
 
 int savey=-1, savex=-1;
@@ -645,8 +645,8 @@ void outns(const char*str, int n)
                     slp->data[cur_col]=ch;
                     slp->mode[cur_col]=cur_mode;
                     slp->color[cur_col]=cur_color;
+                    cur_col++;
                 }
-                cur_col++;
             }
             str++;
             continue;
@@ -658,8 +658,8 @@ void outns(const char*str, int n)
             slp->data[cur_col]=ch;
             slp->mode[cur_col]=cur_mode;
             slp->color[cur_col]=cur_color;
+            cur_col++;
         }
-        cur_col++;
         str++;
     }        
 }
