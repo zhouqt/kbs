@@ -1449,9 +1449,9 @@ char get_article_flag(struct fileheader *ent, struct userec *user, char *boardna
     if(POSTFILE_BASENAME(ent->filename)[0] == 'Z')
 	{
 		if(type==' ')
-			type='D';
-		else
 			type='d';
+		else
+			type='D';
 		return type;
     }
     /* add end */
