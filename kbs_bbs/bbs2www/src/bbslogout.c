@@ -42,7 +42,7 @@ void abort_program()
 	int stay=0;
 	struct userec *x = NULL;
 
-	stay = abs(time(0) - *(int*)(u_info->from+32));
+	stay = abs(time(0) - u_info->logintime);
 	/* 上站时间超过 2 小时按 2 小时计 */
 	if(stay>7200)
 		stay = 7200;

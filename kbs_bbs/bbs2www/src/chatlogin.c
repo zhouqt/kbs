@@ -88,7 +88,7 @@ int wwwlogin(struct userec *user) {
                 		u->pager|=FRIENDMSG_PAGER;
         		}
 			strsncpy(u->from, fromhost, IPLEN);
-			*(int*)(u->from+32)=time(0);
+			u->logintime=time(0);
 			set_idle_time(u, time(0));
 			strsncpy(u->username, user->username, 20);
 			strsncpy(u->userid, user->userid, 13);
@@ -132,7 +132,7 @@ void abort_program() {
 	f_append("err", "ok");
 	if(strcmp(u_info->userid, currentuser->userid))
 		bzero(u_info, sizeof(struct user_info));
-	stay=abs(time(0) - *(int*)(u_info->from+32));
+	stay=abs(time(0) - u_info->logintime);
         if(stay>7200) stay=7200;
 	getuser(getcurruserid(), &x);
  	if(x) {

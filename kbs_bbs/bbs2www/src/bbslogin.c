@@ -155,7 +155,7 @@ int wwwlogin(struct userec *user) {
     }
     ui.uid = getusernum(user->userid);
     strncpy( ui.from, fromhost, IPLEN );
-	*(int*)(ui.from+32)=time(0);	/* for counting user's stay time */
+	ui.logintime=time(0);	/* for counting user's stay time */
 									/* refer to bbsfoot.c for details */
 	set_idle_time(&ui, time(0));
 	ui.mode = WEBEXPLORE;

@@ -12,7 +12,7 @@ int main()
 	if(loginok)
 	{
 		id=currentuser->userid;
-		dt=abs(time(0) - *(int*)(u_info->from+32))/60;
+		dt=abs(time(0) - u_info->logintime)/60;
 				set_idle_time(u_info, time(0));
 	}
 	printf("<script language=\"JavaScript\">\n"

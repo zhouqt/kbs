@@ -822,31 +822,31 @@ int saveheader ;
             if(p->next != NULL || p->data[0] != '\0') {
                 if (abort[0] == 'f' || abort[0] == 'F')
                 { /* Leeward 98.07.27 Ö§³Ö×Ô¶¯»»ÐÐ */
-                    char *ppt = p->data; /* ÕÛÐÐ´¦ */
-                    char *pp  = ppt; /* ÐÐÊ× */
+                    unsigned char *ppt =(unsigned char*) p->data; /* ÕÛÐÐ´¦ */
+                    unsigned char *pp  =(unsigned char*)ppt; /* ÐÐÊ× */
                     unsigned int  LLL = 78; /* ÕÛÐÐÎ»ÖÃ */
-                    char *ppx, cc;
+                    unsigned char *ppx, cc;
                     int  ich, lll;
 
-                    while (strlen(pp) > LLL) {
+                    while (strlen((char*)pp) > LLL) {
                         lll = 0; ppx = pp; ich = 0;
                         do {
-                            if ((ppx = strstr(ppx, "["))!=NULL) {
-                                ich = (int)strchr(ppx, 'm') - (int)ppx;
+                            if ((ppx = (unsigned char*)strstr((char*)ppx, "["))!=NULL) {
+                                ich = (int)strchr((char*)ppx, 'm') - (int)ppx;
                                 if (ich > 0) ich ++; else ich = 2;
                                 lll += ich; ppx += 2; ich = 0;
                             }
                         } while (ppx);
                         ppt += LLL + lll;
 
-                        if (((unsigned char)*ppt) > 127) { /* ±ÜÃâÔÚºº×ÖÖÐ¼äÕÛÐÐ */
+                        if ((*ppt) > 127) { /* ±ÜÃâÔÚºº×ÖÖÐ¼äÕÛÐÐ */
                             for (ppx = ppt - 1, ich = 0; ppx >= pp; ppx --)
-                                    if (((unsigned char)*ppx) < 128) break; else ich ++;
+                                    if ((*ppx) < 128) break; else ich ++;
                             if (ich % 2) ppt --;
                         }
                         else if (*ppt) {
                             for (ppx = ppt - 1, ich = 0; ppx >= pp; ppx --)
-                                    if (((unsigned char)*ppx) > 127 || ' ' == *ppx) break; else ich ++;
+                                    if ((*ppx) > 127 || ' ' == *ppx) break; else ich ++;
                             if (ppx > pp && ich < 16) ppt -= ich;
                         }
 

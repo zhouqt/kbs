@@ -1,8 +1,9 @@
 <?
 global $SQUID_ACCL;
 //$fromhost=$_SERVER["REMOTE_ADDR"];
-$fromhost;
-$fullfromhost;
+dl("../libexec/bbs/phpbbslib.so");
+global $fromhost;
+global $fullfromhost;
 if (SQUID_ACCL) {
   $fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
   if ($fullfromhost=="") {
