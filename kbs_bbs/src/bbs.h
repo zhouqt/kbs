@@ -239,6 +239,7 @@ extern long ti;
 #define FILE_REPLIED 0x20       /* in mail ,added by alex, 96.9.7 */
 #define FILE_FORWARDED 0x40     /* in mail ,added by alex, 96.9.7 */
 #define FILE_IMPORTED 0x80      /* Leeward 98.04.15 */
+#define FILE_TEX 0x100       /* tex article, in accessed[0], added by atppp 20040729 */
 
 /* roy 2003.07.21 */
 #define FILE_WWW_POST	0x1 /* post by www */

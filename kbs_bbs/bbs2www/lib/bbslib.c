@@ -710,7 +710,7 @@ int write_file2(FILE * fp, FILE * fp2)
 /* return value:
    >0		success
    -1		write .DIR failed*/
-int post_article(char *board, char *title, char *file, struct userec *user, char *ip, int sig, int local_save, int anony, struct fileheader *oldx, char *attach_dir)
+int post_article(char *board, char *title, char *file, struct userec *user, char *ip, int sig, int local_save, int anony, struct fileheader *oldx, char *attach_dir, int mailback, int is_tex)
 {
     struct fileheader post_file;
     char filepath[MAXPATH];
@@ -761,6 +761,9 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
         outgo_post2(&post_file, board, user->userid, user->username, title);
     }
 
+    if (mailback) post_file.accessed[1] |= FILE_MAILBACK;
+    if (is_tex) post_file.accessed[0] |= FILE_TEX;
+    
     setbfile(buf, board, DOT_DIR);
 
     /*

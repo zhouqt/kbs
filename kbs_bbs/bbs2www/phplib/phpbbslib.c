@@ -3918,7 +3918,7 @@ static PHP_FUNCTION(bbs_postarticle)
 	char *boardName, *title, *content;
     char filename[80], dir[80], buf[MAXPATH], buf2[80],path[80],board[80];
 	int blen, tlen, clen;
-    int r, i, sig;
+    int r, i, sig, mailback, is_tex;
 	int reid;
     struct fileheader x, *oldx;
     bcache_t *brd;
@@ -3932,10 +3932,19 @@ static PHP_FUNCTION(bbs_postarticle)
      * getting arguments 
      */
     
-	if (ac != 7 || zend_parse_parameters(7 TSRMLS_CC, "ss/s/llll", &boardName, &blen, &title, &tlen, &content, &clen, &sig, &reid, &local,&anony) == FAILURE) {
+    if (ac == 7) {
+        if (zend_parse_parameters(7 TSRMLS_CC, "ss/s/llll", &boardName, &blen, &title, &tlen, &content, &clen, &sig, &reid, &local,&anony) == FAILURE) {
 		WRONG_PARAM_COUNT;
-
-	} 
+        }
+        mailback = 0;
+        is_tex = 0;
+    } else if (ac == 9) {
+        if (zend_parse_parameters(9 TSRMLS_CC, "ss/s/llllll", &boardName, &blen, &title, &tlen, &content, &clen, &sig, &reid, &local,&anony,&mailback,&is_tex) == FAILURE) {
+		WRONG_PARAM_COUNT;
+        }
+    } else {
+        WRONG_PARAM_COUNT;
+    }
 
     brd = getbcache(boardName);
     if (getCurrentUser() == NULL) {
@@ -4023,7 +4032,7 @@ static PHP_FUNCTION(bbs_postarticle)
         if (!sigsetjmp(bus_jump, 1)) {
             signal(SIGBUS, sigbus);
             signal(SIGSEGV, sigbus);
-        	r = post_article(board, title, filename, getCurrentUser(), fromhost, sig, local, anony, oldx,buf);
+        	r = post_article(board, title, filename, getCurrentUser(), fromhost, sig, local, anony, oldx,buf,mailback,is_tex);
         } else {
 			RETURN_LONG(-9);
 		}
@@ -4034,7 +4043,7 @@ static PHP_FUNCTION(bbs_postarticle)
         if (!sigsetjmp(bus_jump, 1)) {
             signal(SIGBUS, sigbus);
             signal(SIGSEGV, sigbus);
-        	r = post_article(board, title, filename, getCurrentUser(), fromhost, sig, local, anony, oldx,NULL);
+        	r = post_article(board, title, filename, getCurrentUser(), fromhost, sig, local, anony, oldx,NULL,mailback,is_tex);
         } else {
 			RETURN_LONG(-9);
 		}
@@ -9370,6 +9379,7 @@ static PHP_FUNCTION(bbs_get_threads_from_gid)
 		flags[2]=0;
 	  }
 		bbs_make_article_array(element, articles + i, flags, sizeof(flags));
+                add_assoc_long(element, "IS_TEX", articles[i].accessed[0] & FILE_TEX);
 		zend_hash_index_update(Z_ARRVAL_P(z_threads), i,
 				(void*) &element, sizeof(zval*), NULL);
 	}
