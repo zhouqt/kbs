@@ -31,7 +31,9 @@ static PHP_FUNCTION(bbs_getboard);
 static PHP_FUNCTION(bbs_checkreadperm);
 static PHP_FUNCTION(bbs_getbname);
 static PHP_FUNCTION(bbs_checkpostperm);
+#ifdef HAVE_BRC_CONTROL
 static PHP_FUNCTION(bbs_brcaddread);
+#endif
 static PHP_FUNCTION(bbs_ann_traverse_check);
 static PHP_FUNCTION(bbs_ann_get_board);
 static PHP_FUNCTION(bbs_getboards);
@@ -90,7 +92,9 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_checkreadperm, NULL)
         PHP_FE(bbs_getbname, NULL)
         PHP_FE(bbs_checkpostperm, NULL)
+#ifdef HAVE_BRC_CONTROL
         PHP_FE(bbs_brcaddread, NULL)
+#endif
         PHP_FE(bbs_getboard, NULL)
         PHP_FE(bbs_ann_traverse_check, NULL)
         PHP_FE(bbs_ann_get_board, NULL)
@@ -718,6 +722,8 @@ static int check_newpost(struct newpostdata *ptr)
         ptr->unread = 1;
         return 1;
     }
+
+#ifdef HAVE_BRC_CONTROL
     if (!brc_initial(currentuser->userid, ptr->name)) {
         ptr->unread = 1;
     } else {
@@ -725,6 +731,9 @@ static int check_newpost(struct newpostdata *ptr)
             ptr->unread = 1;
         }
     }
+#else
+    ptr->unread = 0;
+#endif
     return 1;
 }
 
@@ -957,7 +966,9 @@ static PHP_FUNCTION(bbs_getarticles)
     if (array_init(return_value) == FAILURE) {
         RETURN_FALSE;
     }
+#ifdef HAVE_BRC_CONTROL
     brc_initial(currentuser->userid, board);
+#endif
     articles = emalloc(num * sizeof(struct fileheader));
     /* modified by stiger */
 	if(mode == DIR_MODE_NORMAL)
@@ -1333,6 +1344,7 @@ static PHP_FUNCTION(bbs_wwwlogoff)
         RETURN_LONG(-1);
 }
 
+#ifdef HAVE_BRC_CONTROL
 static PHP_FUNCTION(bbs_brcaddread)
 {
 	char *board;
@@ -1351,6 +1363,7 @@ static PHP_FUNCTION(bbs_brcaddread)
 
     RETURN_NULL();
 }
+#endif
 
 static PHP_FUNCTION(bbs_ann_traverse_check)
 {
