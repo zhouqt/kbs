@@ -703,9 +703,9 @@ void user_login()
     show_help("0Announce/bbslist/newsday");
 #endif
     /* added end */
-    if (dashf("0announce/systeminfo"))
+    if (dashf("0Announce/systeminfo"))
         ansimore("0Announce/systeminfo", false);
-    if (dashf("0announce/hotinfo"))    
+    if (dashf("0Announce/hotinfo"))    
         ansimore("0Announce/hotinfo", false);
     move(t_lines - 1 /*1 */ , 0);       /* Leeward: 98.09.24 Alter below message */
     clrtoeol();
