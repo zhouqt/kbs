@@ -2,7 +2,7 @@
 // numric auth. hehe.. by hightman@hightman.net
 // $Id$
 
-$radix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
+$radix = "0123456789";
 $maxlen = 4;
 
 mt_srand();
@@ -18,7 +18,7 @@ $rand_str = "";
 
 while ($len) {
     $len --;
-    $i = mt_rand(0, 34);
+    $i = mt_rand(0, 9);
     $j = mt_rand(20, 30);
     $x = 170 - $len * $bwidth;
     $y = 15 + $j;
