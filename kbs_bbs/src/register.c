@@ -320,47 +320,9 @@ void check_register_info()
 		
 	}
 
-
-#if 0
-//    if (strchr(curruserdata.email, '@') == NULL) {
-    if (getSession()->currentmemo->ud.email[0]==0) {
-        clear();
-        move(3, 0);
-        prints("只有本站的合法公民才能够完全享有各种功能，");
-        /* alex           prints( "成为本站合法公民有两种办法：\n\n" );
-           prints( "1. 如果你有合法的email信箱(非BBS), \n");
-           prints( "       你可以用回认证信的方式来通过认证。 \n\n" );
-           prints( "2. 如果你没有email信箱(非BBS)，你可以在进入本站以后，\n" );
-           prints( "       在'个人工具箱'内 详细注册真实身份，( 主菜单  -->  I) 个人工具箱  -->  F) 填写注册单 )\n" );
-           prints( "       SYSOPs 会尽快 检查并确认你的注册单。\n" );
-           move( 17, 0 );
-           prints( "电子信箱格式为: xxx@xxx.xxx.edu.cn \n" );
-           getdata( 18, 0, "请输入电子信箱: (不能提供者按 <Enter>) << "
-           , urec->email, STRLEN,DOECHO,NULL,true);
-           if ((strchr( urec->email, '@' ) == NULL )) {
-           sprintf( genbuf, "%s.bbs@%s", urec->userid,buf );
-           strncpy( urec->email, genbuf, STRLEN);
-           }
-           alex, 因为取消了email功能 , 97.7 */
-        prints("成为" NAME_BBS_NICK"合法" NAME_USER_SHORT "的方法如下：\n\n");
-        prints("您的帐号在第一次登录后的 " REGISTER_WAIT_TIME_NAME "内（\033[1m\033[33m不是指上 BBS " REGISTER_WAIT_TIME_NAME "\033[m），\n");
-        prints("处于新手上路期间, 不能注册成为合法" NAME_USER_SHORT "，请四处参观学习，推荐阅读 BBSHELP版，\n学习本站使用方法和各种礼仪。\n");
-        prints("\n" REGISTER_WAIT_TIME_NAME "后, 您就可以\033[33;1m填写注册单\033[m了，注册单通过站务认证以后，您就拥有本站合法用户\n的基本权限。注册单填写路径如下: \n\n");
-        prints("I) 个人工具箱 --> F) 填写注册单\n\n");
-        //prints("    " NAME_SYSOP_GROUP "会尽快检查并确认你的注册单。\n\n");
-        /* Leeward adds below 98.04.26 */
-        prints("\033[1m\033[33m如果您已经通过注册，成为合法" NAME_USER_SHORT "，却依然看到本信息，那可能是由于您没有在\n‘个人工具箱’内设定‘电子邮件信箱’。\033[m\n");
-	prints("\nI) 个人工具箱 --> I) 设定个人资料\n");
-
-	prints("\n如果您实在没有任何可用的'电子邮件信箱'可以设定，又不愿意看到本信息，可以使用\n%s.bbs@%s进行设定。\n\033[33;1m注意: 上面的电子邮件信箱不能接收电子邮件，仅用来使系统不再显示本信息。\033[m", getCurrentUser()->userid, NAME_BBS_ENGLISH);
-        pressreturn();
-    }
-#endif
-
 #ifdef HAVE_BIRTHDAY
-//	if (!is_valid_date(curruserdata.birthyear+1900, curruserdata.birthmonth,
-//				curruserdata.birthday))
-	if (!is_valid_date(getSession()->currentmemo->ud.birthyear+1900, getSession()->currentmemo->ud.birthmonth,
+	if (!is_valid_date(getSession()->currentmemo->ud.birthyear+1900, 
+				getSession()->currentmemo->ud.birthmonth,
 				getSession()->currentmemo->ud.birthday))
 	{
 		time_t now;
@@ -382,18 +344,14 @@ void check_register_info()
 		switch (buf[0])
 		{
 		case '1':
-//			curruserdata.gender = 'M';
 			getSession()->currentmemo->ud.gender = 'M';
 			break;
 		case '2':
-//			curruserdata.gender = 'F';
 			getSession()->currentmemo->ud.gender = 'F';
 			break;
 		}
 		move(4, 0);
 		prints("请输入您的出生日期");
-//		while (curruserdata.birthyear < tmnow->tm_year - 98
-//			   || curruserdata.birthyear > tmnow->tm_year - 3)
 		while (getSession()->currentmemo->ud.birthyear < tmnow->tm_year - 98
 			   || getSession()->currentmemo->ud.birthyear > tmnow->tm_year - 3)
 		{
@@ -401,30 +359,23 @@ void check_register_info()
 			getdata(5, 0, "四位数公元年: ", buf, 5, DOECHO, NULL, true);
 			if (atoi(buf) < 1900)
 				continue;
-//			curruserdata.birthyear = atoi(buf) - 1900;
 			getSession()->currentmemo->ud.birthyear = atoi(buf) - 1900;
 		}
-//		while (curruserdata.birthmonth < 1 || curruserdata.birthmonth > 12)
-		while (getSession()->currentmemo->ud.birthmonth < 1 || getSession()->currentmemo->ud.birthmonth > 12)
+		while (getSession()->currentmemo->ud.birthmonth < 1 
+				|| getSession()->currentmemo->ud.birthmonth > 12)
 		{
 			buf[0] = '\0';
 			getdata(6, 0, "出生月: (1-12) ", buf, 3, DOECHO, NULL, true);
-//			curruserdata.birthmonth = atoi(buf);
 			getSession()->currentmemo->ud.birthmonth = atoi(buf);
 		}
 		do
 		{
 			buf[0] = '\0';
 			getdata(7, 0, "出生日: (1-31) ", buf, 3, DOECHO, NULL, true);
-//			curruserdata.birthday = atoi(buf);
 			getSession()->currentmemo->ud.birthday = atoi(buf);
-//		} while (!is_valid_date(curruserdata.birthyear + 1900,
-//					curruserdata.birthmonth,
-//					curruserdata.birthday));
 		} while (!is_valid_date(getSession()->currentmemo->ud.birthyear + 1900,
 					getSession()->currentmemo->ud.birthmonth,
 					getSession()->currentmemo->ud.birthday));
-//		write_userdata(getCurrentUser()->userid, &curruserdata);
 		write_userdata(getCurrentUser()->userid, &(getSession()->currentmemo->ud));
 	}
 #endif

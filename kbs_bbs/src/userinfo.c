@@ -211,9 +211,11 @@ int uinfo_query(struct userec *u, int real, int unum)
 			buf[0] = '\0';
 			sprintf(genbuf, "³öÉúÈÕ: (1-31) [%d]: ", ud.birthday);
 			getdata(i, 0, genbuf, buf, 3, DOECHO, NULL, true);
-			if(buf[0]=='\0')break;
-			ud.birthday = atoi(buf);
-		}while (ud.birthday < 1 || ud.birthday > 31);
+			if((buf[0] && atoi(buf) >= 1 && atoi(buf) <= 31))
+				ud.birthday = atoi(buf);
+		}while (!is_valid_date(ud.birthyear + 1900,
+					ud.birthmonth,
+					ud.birthday));
 		i++;
 #endif
 
