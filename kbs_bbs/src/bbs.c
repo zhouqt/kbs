@@ -3403,7 +3403,7 @@ int i_read_mail()
      */
     int savemode;
 
-    if(!HAS_PERM(currentuser, PERM_READMAIL)) return DONOTHING;
+    if(!HAS_PERM(currentuser, PERM_BASIC)||!strcmp(currentuser->userid, "guest")) return DONOTHING;
     strcpy(savedir, currdirect);
     savemode = digestmode;
     digestmode = false;
