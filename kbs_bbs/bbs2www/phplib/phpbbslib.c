@@ -25,6 +25,7 @@ static ZEND_FUNCTION(bbs_ann_traverse_check);
 static ZEND_FUNCTION(bbs_ann_get_board);
 static ZEND_FUNCTION(bbs_getboards);
 static ZEND_FUNCTION(bbs_getarticles);
+static ZEND_FUNCTION(bbs_get_records_from_id);
 static ZEND_FUNCTION(bbs_countarticles);
 static ZEND_FUNCTION(bbs_is_bm);
 static ZEND_FUNCTION(bbs_getannpath);
@@ -68,6 +69,7 @@ static function_entry bbs_php_functions[] = {
 	ZEND_FE(bbs_ann_get_board, NULL)
 	ZEND_FE(bbs_getboards, NULL)
 	ZEND_FE(bbs_getarticles, NULL)
+	ZEND_FE(bbs_get_records_from_id, NULL)
 	ZEND_FE(bbs_countarticles, NULL)
 	ZEND_FE(bbs_is_bm, NULL)
 	ZEND_FE(bbs_getannpath, NULL)
@@ -566,6 +568,9 @@ static ZEND_FUNCTION(bbs_printansifile)
                     if (*p == '>')
                         OUTPUT("&gt;", 4)
                             else
+					if (*p == '\n')
+						OUTPUT("<br />\n", 7)
+							else
                         break;
                     continue;
                 case 1:
@@ -1007,6 +1012,85 @@ static ZEND_FUNCTION(bbs_countarticles)
 	setbdir(mode, dirpath, bp->filename);
 	total = get_num_records(dirpath, sizeof(struct fileheader));
 	RETURN_LONG(total);
+}
+
+/**
+ * Get some article records from the article id.
+ * prototype:
+ * bool bbs_get_records_from_id(string board, long id, long mode);
+ *
+ * @return Records on success,
+ *       FALSE on failure.
+ * @author flyriver
+ */
+static ZEND_FUNCTION(bbs_get_records_from_id)
+{
+	char *board;
+	int blen;
+	int id;
+	int num;
+	int mode;
+	int fd;
+	char dirpath[STRLEN];
+	const int record_cnt = 3;
+	fileheader_t articles[record_cnt];
+	struct boardheader *bp;
+	int i;
+	zval *element;
+	int is_bm;
+	char flags[3]; /* flags[0]: flag character
+					* flags[1]: imported flag
+					* flags[2]: no reply flag
+					*/
+    int ac = ZEND_NUM_ARGS();
+
+    if (ac != 3
+        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sll", &board, &blen, &id, &mode) == FAILURE)
+    {
+        WRONG_PARAM_COUNT;
+    }
+
+    /* check for parameter being passed by reference */
+	if (currentuser == NULL)
+	{
+		RETURN_FALSE;
+	}
+	if ((bp = getbcache(board)) == NULL)
+	{
+		RETURN_FALSE;
+	}
+	if (array_init(return_value) == FAILURE)
+	{
+		RETURN_FALSE;
+	}
+	setbdir(mode, dirpath, board);
+	if ((fd = open(dirpath, O_RDWR, 0644)) < 0)
+	{
+		RETURN_FALSE;
+	}
+	if (get_records_from_id(fd, id, articles, record_cnt) == 0)
+	{
+		close(fd);
+		RETURN_FALSE;
+	}
+	for (i = 0; i < record_cnt; i++)
+	{
+		MAKE_STD_ZVAL(element);
+		array_init(element);
+		flags[0] = get_article_flag(articles + i, currentuser, board, is_bm);
+		if (is_bm && (articles[i].accessed[0] & FILE_IMPORTED))
+			flags[1] = 'y';
+		else
+			flags[1] = 'n';
+		if (articles[i].accessed[1] & FILE_READ)
+			flags[2] = 'y';
+		else
+			flags[2] = 'n';
+		bbs_make_article_array(element, articles + i, flags, sizeof(flags));
+		zend_hash_index_update(Z_ARRVAL_P(return_value), i,
+				(void*) &element, sizeof(zval*), NULL);
+	}
+	close(fd);
 }
 
 /**
