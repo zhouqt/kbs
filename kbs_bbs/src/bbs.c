@@ -1145,7 +1145,7 @@ int generate_title()
     		struct fileheader* tmppost;
     		if (index[j].digest!=index[i].digest)
     			continue;
-    		tmppost = ((fileheader*)(ptr+j*size));
+    		tmppost = ((struct fileheader*)(ptr+j*size));
     		t = tmppost->title;
     		if (index[j].has_pre) 
     			t+=4;
@@ -1162,19 +1162,24 @@ int generate_title()
         	gen_threadid++;
         }
     }
-    gen_threadid=0;
     for(i=0;i<total;i++) {
-    	if (gen_threadid!=index[i].thread_id) {
+    	if (0!=index[i].thread_id) {
+		int j;
     		write(fd, ptr+i*size, size);
     		gen_threadid=index[i].thread_id;
-    	} else {
-    		ptr1=(struct fileheader*)ptr+i*size;
-    		memcpy(&mkpost, ptr1, size);
-    		if (index[i].next)
-	            sprintf(mkpost.title, "©À %s", ptr1->title + index[i].has_pre?4:0);
-    		else
-       			sprintf(mkpost.title, "©¸ %s", ptr1->title+ index[i].has_pre?4:0);
-			write(fd, &mkpost, size);
+
+		j=index[i].next;
+		while (j) {
+		    index[j].thread_id=0;
+    		    ptr1=((struct fileheader*)ptr)+j;
+    		    memcpy(&mkpost, ptr1, size);
+    		    if (index[j].next)
+	                sprintf(mkpost.title, "©À %s", ptr1->title + (index[j].has_pre?4:0),STRLEN);
+    		    else
+       		        sprintf(mkpost.title, "©¸ %s", ptr1->title+ (index[j].has_pre?4:0),STRLEN);
+		    write(fd, &mkpost, size);
+		    j=index[j].next;
+		}
     	}
 		count++;
     }
