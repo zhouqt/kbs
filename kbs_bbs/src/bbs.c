@@ -1668,7 +1668,7 @@ edit_post( int ent , struct fileheader *fileinfo , char *direct )
             ||!strcmp(currboard, "junk")
             ||!strcmp(currboard, "deleted"))    /* Leeward : 98.01.22 */
         return DONOTHING ;
-
+    if ((digestmode==4)||(digestmode==5)) return DONOTHING;	/* no edit in dustbin as requested by terre*/
     if (true == check_readonly(currboard)) /* Leeward 98.03.28 */
         return FULLUPDATE;
 
