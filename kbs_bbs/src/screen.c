@@ -64,15 +64,13 @@ void resetcolor()
 /* –«ø’’Ω∂∑º¶ added by Czz 020926 */
 void clrnlines(int n)
 {
-	register struct screenline *slp;
-	register int i, k;
+	struct screenline *slp;
+	int i, k;
 	for (i = cur_ln; i < cur_ln + n; i++) {
 		slp = &big_picture[(i + roll) % scr_lns];
-		for (k = 0; k < LINELEN; k++) {
-			slp->data[k] = 32;
-			slp->mode[k] = 0;
-                     slp->color[k] = 7;
-		}
+		memset(slp->data, 32, LINELEN);
+		memset(slp->mode, 0, LINELEN);
+		memset(slp->color, 7, LINELEN);
 	}
 }
 /* added end */
@@ -101,39 +99,46 @@ int num_noans_chr(char* str)
 
 void init_screen(int slns, int scols)
 {
-    register struct screenline *slp;
-    register int j;
+    struct screenline *slp, *oslp;
+    struct screenline *oldp = big_picture;
+    int j;
 
     scr_lns = slns;
     scr_cols = Min(scols, LINELEN);
     
-    if (big_picture)
-        free(big_picture);
     big_picture = (struct screenline *) calloc(scr_lns, sizeof (struct screenline));
     for (slns = 0; slns < scr_lns; slns++) {
         slp = &big_picture[slns];
-        for(j=0;j<LINELEN;j++)
-        { slp->data[j]=32; slp->mode[j]=0; slp->color[j]=7; slp->ldata[j]=255;}
+        memset(slp->data, 32, LINELEN);
+        memset(slp->mode, 0, LINELEN);
+        memset(slp->color, 7, LINELEN);
+        memset(slp->ldata, 255, LINELEN);
     }
     roll = 0;
+    for (slns = 0; slns < 24; slns++) {
+    	slp = &big_picture[slns];
+    	oslp = &oldp[slns];
+    	memcpy(slp->data, oslp->data, LINELEN);
+    	memcpy(slp->mode, oslp->mode, LINELEN);
+    	memcpy(slp->color, oslp->color, LINELEN);
+    }
+    free(oldp);
 }
 
 void clear()
 {
-    register int i, j;
-    register struct screenline *slp;
+    int i, j;
+    struct screenline *slp;
 
     if (!scrint) {
         o_clear();
         return;
     }
     for (i = 0; i < scr_lns; i++) {
-        slp = big_picture;
-        for(j=0; j<scr_cols;j++) {
-            slp[i].data[j]=32;
-            slp[i].mode[j]=0;
-            slp[i].color[j]=7;
-        }
+        slp = big_picture+i;
+        memset(slp->data, 32, scr_cols);
+        memset(slp->mode, 0, scr_cols);
+        memset(slp->color, 7, scr_cols);
     }
     cur_color = 7;
     cur_mode = 0;
@@ -253,8 +258,8 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
 
 void refresh()
 {
-    register int i, j, k, ii, p, s;
-    register struct screenline *bp = big_picture;
+    int i, j, k, ii, p, s;
+    struct screenline *bp = big_picture;
     int count=0;
     int stack[100],stackt=0;
 
@@ -280,25 +285,15 @@ void refresh()
         }
         tc_col = 0; tc_line = t_lines-1;
     }
-    count = 0;
-    for (i=0; i < scr_lns; i++)
-        for(j=0;j<scr_cols;j++) 
-        if(!ndiff(i,j)) {
-            if((bp[i].data[j]==0||bp[i].data[j]==32)&&(bp[i].color[j]/16==0))
-                count++;
-            else
-                count--;
-        }
-    if(count>5&&can_clrscr) {
+    if(can_clrscr) {
         o_clear();
-        for (i=0; i < scr_lns; i++)
-            for(j=0;j<scr_cols;j++) {
-                bp[i].ldata[j] = 32;
-                bp[i].lmode[j] = 0;
-                bp[i].lcolor[j] = 7;
-            }
+        can_clrscr = 0;
+        for (i=0; i < scr_lns; i++) {
+            memset(bp[i].ldata, 32, scr_cols);
+            memset(bp[i].lmode, 0, scr_cols);
+            memset(bp[i].lcolor, 7, scr_cols);
+        }
     }
-    can_clrscr = 0;
     
     for (i = 0; i < scr_lns; i++) {
         j = (i + roll)%scr_lns;
@@ -357,24 +352,25 @@ void refresh()
             }
             if(stackt>0) {
                 char buf[200],*p;
+                int pos = 2;
                 sprintf(buf, "\x1b[");
                 p=buf+2;
                 if(stackt!=1||stack[0]!=0)
                 for(ii=0;ii<stackt;ii++) {
+                    pos++;
                     if(ii==0) sprintf(p, "%d", stack[ii]);
-                    else sprintf(p, ";%d", stack[ii]);
-                    p+=strlen(p);
+                    else {sprintf(p, ";%d", stack[ii]);pos++;}
+                    if(stack[ii]>9) pos++;
+                    p=buf+pos;
                 }
-                sprintf(p, "m");
-                output(buf, strlen(buf));
+                *p='m'; pos++;
+                output(buf, pos);
                 stackt=0; 
             }
             if(k>=p&&p<=scr_cols-5) {
-                for(ii=k;ii<scr_cols;ii++) {
-                    bp[j].ldata[ii]=bp[j].data[ii];
-                    bp[j].lmode[ii]=bp[j].mode[ii];
-                    bp[j].lcolor[ii]=bp[j].color[ii];
-                }
+                memcpy(bp[j].ldata+k, bp[j].data+k, scr_cols-k);
+                memcpy(bp[j].lmode+k, bp[j].mode+k, scr_cols-k);
+                memcpy(bp[j].lcolor+k, bp[j].color+k, scr_cols-k);
                 o_cleol();
                 break;
             }
@@ -392,8 +388,8 @@ void refresh()
 
 void redoscr()
 {
-    register int i, j, k;
-    register struct screenline *bp = big_picture;
+    int i, j, k;
+    struct screenline *bp = big_picture;
 
     if (!scrint) {
         oflush();
@@ -401,8 +397,7 @@ void redoscr()
     }
     for (i = 0; i < scr_lns; i++) {
         j = (i + roll)%scr_lns;
-        for (k=0;k < scr_cols; k++)
-            bp[j].ldata[k]=255;
+        memset(bp[j].ldata, 255, scr_cols);
     }
     do_move(tc_col, tc_line, ochar);
     refresh();
@@ -436,20 +431,18 @@ void good_getyx(int *y, int *x)
 
 void clear_whole_line(int i)
 {
-    register struct screenline *slp = &big_picture[(i+roll)%scr_lns];
-    register int k;
-    for(k=0;k<scr_cols;k++) {
-        slp->data[k]=32;
-        slp->mode[k]=cur_mode;
-        slp->color[k]=cur_color;
-    }
+    struct screenline *slp = &big_picture[(i+roll)%scr_lns];
+    int k;
+    memset(slp->data, 32, scr_cols);
+    memset(slp->mode, cur_mode, scr_cols);
+    memset(slp->color, cur_color, scr_cols);
 }
 
 void clrtoeol()
 {
-    register struct screenline *slp;
-    register int ln;
-    register int k;
+    struct screenline *slp;
+    int ln;
+    int k;
 
     if (!scrint) {
         o_cleol();
@@ -457,35 +450,31 @@ void clrtoeol()
     }
     ln = (cur_ln + roll)%scr_lns;
     slp = &big_picture[ln];
-    for(k=cur_col;k<t_columns;k++) {
-        slp->data[k]=32;
-        slp->mode[k]=cur_mode;
-        slp->color[k]=cur_color;
-    }
+    memset(slp->data+cur_col, 32, scr_cols-cur_col);
+    memset(slp->mode+cur_col, cur_mode, scr_cols-cur_col);
+    memset(slp->color+cur_col, cur_color, scr_cols-cur_col);
 }
 
 void clrtobot()
 {
-    register struct screenline *slp;
-    register int i, k, ln;
+    struct screenline *slp;
+    int i, k, ln;
 
     for (i = cur_ln; i < scr_lns; i++) {
         ln = (i + roll)%scr_lns;
         slp = &big_picture[ln];
-        for(k=0;k<scr_cols;k++) 
-        if(i>cur_ln||k>=cur_col)
-        {
-            slp->data[k]=32;
-            slp->mode[k]=cur_mode;
-            slp->color[k]=cur_color;
-        }
+        if(i==cur_ln) k=cur_col;
+        else k=0;
+        memset(slp->data+k, 32, scr_cols-k);
+        memset(slp->mode+k, cur_mode, scr_cols-k);
+        memset(slp->color+k, cur_color, scr_cols-k);
     }
 }
 
 void outc(unsigned char c)
 {
-    register struct screenline *slp;
-    register unsigned int i,j,reg_col;
+    struct screenline *slp;
+    unsigned int i,j,reg_col;
 
     if (!scrint) {
         if (c == '\n')
@@ -516,9 +505,9 @@ bool disable_move = false;
 
 void outns(const char*str, int n)
 {
-    register int i,j,k;
-    register char ch;
-    register struct screenline *slp = NULL;
+    int i,j,k;
+    char ch;
+    struct screenline *slp = NULL;
     const char *begin_str = str;
 
     if (!scrint) {
@@ -665,8 +654,11 @@ void outns(const char*str, int n)
                 continue;
              }
       }
-              
-        if (*str == '\n' || *str == '\r') {
+        if (*str == '\r')  {
+            str++;
+            continue;    
+        }
+        if (*str == '\n') {
             if(cur_ln<scr_lns-1)
                 cur_ln++;
             cur_col=0;
@@ -701,7 +693,7 @@ void outns(const char*str, int n)
     }        
 }
 
-void outs(register const char*str)
+void outs(const char*str)
 {
     outns(str, 4096);
 }
@@ -714,9 +706,9 @@ int dec[] =
 void prints(char *format, ...)
 {
 	va_list ap;
-	register char *fmt;
+	char *fmt;
 	const char *bp;
-	register int i, count, hd, indx;
+	int i, count, hd, indx;
 	char *begin;
 
 	va_start(ap, format);
@@ -746,7 +738,7 @@ void prints(char *format, ...)
 				if (bp == NULL)
 					bp = nullstr;
 				if (val) {
-					register int slen = strlen(bp);
+					int slen = strlen(bp);
 
 					if (val <= slen)
 						outns(bp, val);
@@ -782,7 +774,7 @@ void prints(char *format, ...)
 				if (negi)
 					len++;
 				if (val >= len && sgn > 0) {
-					register int slen;
+					int slen;
 
 					for (slen = val - len; slen > 0; slen--)
 						outc(' ');
@@ -805,7 +797,7 @@ void prints(char *format, ...)
 					outc('0' + count);
 				}
 				if (val >= len && sgn < 0) {
-					register int slen;
+					int slen;
 
 					for (slen = val - len; slen > 0; slen--)
 						outc(' ');
@@ -878,7 +870,7 @@ void noscroll()
 
 void saveline(int line, int mode, char* buffer)	/* 0 : save, 1 : restore */
 {
-    register struct screenline *bp = big_picture;
+    struct screenline *bp = big_picture;
     char *tmp = tmpbuffer;
     int i;
 
