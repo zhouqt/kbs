@@ -1,3 +1,4 @@
+//http://www.webreference.com/tools/browser/javascript.html
     var agt=navigator.userAgent.toLowerCase();
     var appVer = navigator.appVersion.toLowerCase();
     var is_minor = parseFloat(appVer);
