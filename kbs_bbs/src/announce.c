@@ -819,7 +819,8 @@ int a_Import(path, key, fileinfo, nomsg, direct, ent)
 			i--;
 			if (import_path[i][0] != '\0') {
 				pm.path = import_path[i];
-				strcpy(path,import_path[i]);
+				if (path)
+				    strcpy(path,import_path[i]);
 			} else {
 			       strcpy(importpath,buf);
 				pm.path=importpath;
@@ -1098,7 +1099,7 @@ void a_copypaste(pm, paste)
     char ans[STRLEN], newpath[PATHLEN];
     FILE *fn;                   /* Leeward 98.02.19 */
 
-    move(t_lines - 1, 0);
+    move(t_lines - 2, 0);
     if (paste==0) {
         item = pm->item[pm->now];
         strncpy(title, item->title, STRLEN);
