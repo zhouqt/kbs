@@ -120,7 +120,7 @@ function bbs_confirm(url,infor){
 <?php
 			if($i>2){
 ?>
-<a href="bbsmail.php?delete=<?php echo $i-2; ?>">删除</a>
+<a href="#" onclick="bbs_confirm('bbsmail.php?delete=<?php echo $i-2; ?>','确实要删除自定义邮箱<?php echo $mail_boxtitle[$i]; ?>吗？')">删除</a>
 <?php
 				}
 			else{
