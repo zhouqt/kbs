@@ -381,3 +381,9 @@ function showTime() {
 function resizeImg(obj) {
 	if (obj.width>screen.width-333) obj.width=screen.width-333;
 }
+
+function refreshLeft() {
+    if (top != self) {
+        top.menu.location.href = "bbsleft.php";
+    }
+}
