@@ -28,6 +28,12 @@ char *cmd;
     choose_board(DEFINE(currentuser, DEF_NEWPOST) ? 1 : 0, boardprefix,0,0);
 }
 
+void ENewGroup(cmd)
+char *cmd;
+{
+	choose_board(DEFINE(currentuser,DEF_NEWPOST) ? 1 : 0, NULL, -2, 0);
+}
+
 static int clear_all_board_read_flag_func(struct boardheader *bh,void* arg)
 {
 #ifdef HAVE_BRC_CONTROL

@@ -33,6 +33,7 @@ int domenu();
 int Announce();
 int Boards();
 int EGroup();
+int ENewGroup();
 int Info();
 int Goodbye();
 int Help();
@@ -121,6 +122,7 @@ struct scommandlist {
 static const struct scommandlist sysconf_cmdlist[] = {
     {"domenu", domenu},
     {"EGroups", EGroup},
+    {"ENewGroups", ENewGroup},
     {"BoardsAll", Boards},
     {"BoardsNew", New},
     {"LeaveBBS", Goodbye},

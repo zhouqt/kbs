@@ -1093,7 +1093,9 @@ int load_boards(struct newpostdata *nbrd,char *boardprefix,int group,int pos,int
     char** namelist;
     char** titlelist;
     int* indexlist;
+	time_t tnow;
 
+	tnow = time(0);
     brdnum = 0;
     curcount=0;
     if (zapbuf == NULL) {
@@ -1111,7 +1113,10 @@ int load_boards(struct newpostdata *nbrd,char *boardprefix,int group,int pos,int
             continue;
         if (*bptr->filename==0)
             continue;
-        if (bptr->group!=group)
+		if ( group == -2 ){
+			if( ( tnow - bptr->createtime ) > 86400*30 || ( bptr->flag & BOARD_GROUP ) )
+				continue;
+		}else if (bptr->group!=group)
             continue;
         if (!check_see_perm(currentuser,bptr)) {
             continue;
