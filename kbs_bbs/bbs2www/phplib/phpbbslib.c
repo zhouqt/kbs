@@ -2195,22 +2195,29 @@ static PHP_FUNCTION(bbs_fillidinfo)
 /**
  * Function: Create a registry form
  *  rototype:
- * int bbs_createregform(string realname,string dept,string address,int year,int month,int day,string email,string phone)
+ * int bbs_createregform(string userid ,string realname,string dept,string address,int year,int month,int day,
+    string email,string phone,bool bAuto)
  *
+ *  bAuto : true -- 自动生成注册单,false -- 手工.
  *  @return the result
  *  	0 -- success,
  *      1 -- 注册单尚未处理
+ *      2 -- 参数错误
+ *      3 -- 用户不存在
+ *      4 -- 用户已经通过注册  5 -- 不到时间
  *  	10 -- system error
  *  @author binxun 2003.5
  */
 static PHP_FUNCTION(bbs_createregform)
 {
-    char*   realname,
+    char*   userid,
+	    *   realname,
         *   dept,
         *   address,
 		*	email,
 		*	phone;
-    int     realname_len,
+    int     userid_len,
+	        realname_len,
 	        dept_len,
 			address_len,
 			email_len,
@@ -2218,8 +2225,9 @@ static PHP_FUNCTION(bbs_createregform)
 	        year,
 	        month,
 			day;
-    struct  userec* uc;
+    zend_bool   bAuto;
 	struct  userdata ud;
+	struct  userec* uc;
 	FILE*   fn;
 	char    genbuf[STRLEN+1];
 	char*   ptr;
@@ -2228,29 +2236,39 @@ static PHP_FUNCTION(bbs_createregform)
 
     int ac = ZEND_NUM_ARGS();
 
-    if (ac != 8 || zend_parse_parameters(8 TSRMLS_CC, "ssslllss", &realname,&realname_len,&dept,&dept_len,&address,&address_len,
-	        &year,&month,&day,&email,&email_len,&phone,&phone_len) == FAILURE)
+    if (ac != 10 || zend_parse_parameters(10 TSRMLS_CC, "sssslllssb", &userid,&userid_len,&realname,&realname_len,&dept,&dept_len,
+	    &address,&address_len,&year,&month,&day,&email,&email_len,&phone,&phone_len,&bAuto) == FAILURE)
     {
 		WRONG_PARAM_COUNT;
 	}
 
-    uc = getcurrentuser();
-	usernum = getusernum(uc->userid);
+	if(userid_len > IDLEN)RETURN_LONG(2);
 
-	//检查是否单子已经填过了
-	if ((fn = fopen("new_register", "r")) != NULL) {
-        while (fgets(genbuf, STRLEN, fn) != NULL) {
-            if ((ptr = strchr(genbuf, '\n')) != NULL)
-                *ptr = '\0';
-            if (strncmp(genbuf, "userid: ", 8) == 0 && strcmp(genbuf + 8, uc->userid) == 0) {
-                fclose(fn);
-                RETURN_LONG(1);
-            }
-        }
-        fclose(fn);
+    usernum = getusernum(userid);
+	if(0 == usernum)RETURN_LONG(3);
+
+
+	if(!bAuto)
+	{
+        //检查用户是否已经通过注册或者还不到时间(先放到这里,最好放到php里面)
+	    if(getuser(userid,&uc) == 0)RETURN_LONG(3);
+		if(HAS_PERM(uc,PERM_LOGINOK))RETURN_LONG(4);
+		if(time(NULL) - uc->firstlogin < REGISTER_WAIT_TIME)RETURN_LONG(5);
+
+	    //检查是否单子已经填过了
+		if ((fn = fopen("new_register", "r")) != NULL) {
+			while (fgets(genbuf, STRLEN, fn) != NULL) {
+				if ((ptr = strchr(genbuf, '\n')) != NULL)
+					*ptr = '\0';
+				if (strncmp(genbuf, "userid: ", 8) == 0 && strcmp(genbuf + 8, userid) == 0) {
+					fclose(fn);
+					RETURN_LONG(1);
+				}
+			}
+			fclose(fn);
+		}
     }
-
-	read_userdata(uc->userid, &ud);
+	read_userdata(userid, &ud);
     strncpy(ud.realname, realname, NAMELEN);
     strncpy(ud.address, address, STRLEN);
 	strncpy(ud.email,email,STRLEN);
@@ -2258,13 +2276,24 @@ static PHP_FUNCTION(bbs_createregform)
 	ud.address[STRLEN-1] = '\0';
 	ud.email[STRLEN-1] = '\0';
 	//todo : 填入生日
-	write_userdata(uc->userid, &ud);
+#ifdef HAVE_BIRTHDAY
+    ud.birthyear=year;
+	ud.birthmonth=month;
+	ud.birthday=day;
+	ud.gender=0;
+#endif
+	write_userdata(userid, &ud);
 
 	sprintf(genbuf,"%d.%d.%d",year,month,day);
-    if ((fn = fopen("new_register", "a")) != NULL) {
+	if(bAuto)
+        fn = fopen("pre_register", "a");
+	else
+	    fn = fopen("new_register", "a");
+
+    if (fn) {
         now = time(NULL);
-        fprintf(fn, "usernum: %d, %s from www", usernum, ctime(&now));
-        fprintf(fn, "userid: %s\n", uc->userid);
+        fprintf(fn, "usernum: %d, %s", usernum, ctime(&now));
+        fprintf(fn, "userid: %s\n", userid);
         fprintf(fn, "realname: %s\n", realname);
         fprintf(fn, "career: %s\n", dept);
         fprintf(fn, "addr: %s\n", address);
@@ -2272,9 +2301,10 @@ static PHP_FUNCTION(bbs_createregform)
         fprintf(fn, "birth: %s\n", genbuf);
         fprintf(fn, "----\n");
         fclose(fn);
+        RETURN_LONG(0);
     }
-
-	RETURN_LONG(0);
+	else
+        RETURN_LONG(10);
 }
 
 
