@@ -1,25 +1,6 @@
 /*
-   Pirate Bulletin Board System
-   Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-   Eagles Bulletin Board System
-   Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                       Guy Vega, gtvega@seabass.st.usm.edu
-                       Dominic Tynes, dbtynes@seabass.st.usm.edu
-   Copyright (C) 1999, Lin Zhou, kcn@cic.tsinghua.edu.cn
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 1, or (at your option)
-   any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+底层的I/O库。
+		KCN重写
 */
 
 #include "bbs.h"
@@ -29,8 +10,13 @@
 #include <sys/select.h>
 #endif
 
-#define OBUFSIZE  (4096)
-#define IBUFSIZE  (256)
+/*输入输出缓冲区的大小
+  输出缓冲区给个半屏大小足以，
+  输入缓冲区一般都利用不上，给
+  个128字节吧
+*/
+#define OBUFSIZE  (1024)
+#define IBUFSIZE  (128)
 
 #define INPUT_ACTIVE 0
 #define INPUT_IDLE 1
@@ -511,18 +497,6 @@ int igetkey()
 
     mode = last = 0;
     while (1) {
-        /*        if((uinfo.mode==CHAT1||uinfo.mode==TALK||uinfo.mode==PAGE) && RMSG==true)
-           {
-           char a;
-           #ifdef SSHBBS
-           ssh_read(0,&a,1);
-           #else
-           read(0,&a,1);
-           #endif
-           ch=(int) a;
-           }
-           else 
-         */
         ch = igetch();
 
         check_calltime();
@@ -626,16 +600,6 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
                 ochar(Ctrl('H'));
                 ochar(' ');
                 ochar(Ctrl('H'));
-/*
-removed by wwj, just use oflush , 2001/5/8 
-
-#ifndef DEBUG
---- strange code, maybe should call move() after refresh() 
-                move(line, col + clen);  Leeward 98.02.23 
-                refresh();  
-
-#endif
-*/
                 oflush();
                 continue;
             }
@@ -775,7 +739,6 @@ removed by wwj, just use oflush , 2001/5/8
 int lock_scr()
 {                               /* Leeward 98.02.22 */
     char passbuf[STRLEN];
-
 
     if (!strcmp(currentuser->userid, "guest"))
         return 1;

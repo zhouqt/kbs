@@ -308,7 +308,8 @@ int write_posts(char *id, char *board, char *title)
         }
     }
 
-    append_record(".post.X", &postlog, sizeof(postlog));
+/*    append_record(".post.X", &postlog, sizeof(postlog));
+*/
     return 0;
 }
 
