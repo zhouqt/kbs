@@ -321,7 +321,7 @@ int simple_select_loop(struct _select_item* item_conf,int flag,POINT title,union
 */
     list_select_loop(&simple_conf);
     free(pts);
-    return arg.pbits;
+    return arg.flag;
 }
 
 
