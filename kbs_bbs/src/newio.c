@@ -172,7 +172,7 @@ int len;
 int i_newfd = 0;
 static void (*flushf) () = NULL;
 
-static int i_timeout = 0;
+int i_timeout = 0;
 static int i_timeoutusec = 0;
 static time_t i_begintimeout;
 static void (*i_timeout_func) (void *);
