@@ -2393,7 +2393,7 @@ int mail_birth()
 
 	sprintf(filename, "%s/%d", BIRTHFILEPATH, i);
 
-    mail_file("SYSOP", filename, getCurrentUser()->userid, NAME_BBS_CHINESE "恭祝您生日快乐", BBSPOST_COPY, NULL);
+    mail_file("SYSOP", filename, getCurrentUser()->userid, NAME_BBS_CHINESE "恭祝您生日快乐", BBSPOST_LINK, NULL);
 
 	return 1;
 }
