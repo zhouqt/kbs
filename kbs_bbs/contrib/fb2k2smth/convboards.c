@@ -201,7 +201,7 @@ convert_board_articles(struct boardheader *brd)
 		fh.innflag[1] = ptr->filename[STRLEN - 1];
 		strncpy(fh.owner, ptr->owner, OWNER_LEN - 1);
 		fh.owner[OWNER_LEN - 1] = '\0';
-		fh.level = ptr->level;
+		/*fh.level = ptr->level;*/
 		convert_article_flag(ptr, &fh);
 		memcpy(ptr, &fh, sizeof (fh));
 	}
