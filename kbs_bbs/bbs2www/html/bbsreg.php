@@ -5,7 +5,6 @@
 	 */
 	$needlogin=false;
 	require("funcs.php");
-	html_init("gb2312");
 
 	@$num_auth=$_POST["num_auth"];
 	@$userid=$_POST["userid"];
@@ -131,6 +130,7 @@ if(!mail($reg_email, "welcome to BBS水木清华站",$mailbody,$headers))
 		html_error_quit("生成注册单发生 未知的错误! 请两天后手工填写注册单");
 		break;
 	}
+	html_init("gb2312");
 ?>
 <body>
 申请BBS水木清华ID成功,你现在还没有通过身份认证,只有最基本的权限,不能发文,发信,聊天等,两天后系统会自动生成注册单.<br>
