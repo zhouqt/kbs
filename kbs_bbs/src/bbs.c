@@ -3573,21 +3573,14 @@ struct acl_struct {
     char len;
     char deny;
 } * acl;
-
-int get_acl_len()
-{
-    int i;
-    for(i=0;i<ACL_MAX;i++)
-        if(acl[i].ip==0) return i;
-    return ACL_MAX;
-}
+int aclt=0;
 
 static int set_acl_list_show(struct _select_def *conf, int i)
 {
     char buf[80];
     unsigned int ip,ip2;
     ip = acl[i-1].ip;
-    if(ip>0) {
+    if(i-1<aclt) {
         ip2=ip+((1<<(32-acl[i-1].len))-1);
         sprintf(buf, "%d.%d.%d.%d--%d.%d.%d.%d", ip>>24, (ip>>16)%0x100, (ip>>8)%0x100, ip%0x100, ip2>>24, (ip2>>16)%0x100, (ip2>>8)%0x100, ip2%0x100);
         prints("  %2d  %-40s  %4s", i, buf, acl[i-1].deny?"æ‹æ¯":"‘ –Ì");
@@ -3624,9 +3617,9 @@ static int set_acl_list_key(struct _select_def *conf, int key)
 
     switch (key) {
     case 'a':
-        if (get_acl_len()<ACL_MAX) {
+        if (aclt<ACL_MAX) {
             char buf[20];
-            int ip[4], i, k=0, err=0, len=get_acl_len();
+            int ip[4], i, k=0, err=0;
             getdata(0, 0, "«Î ‰»ÎIPµÿ÷∑: ", buf, 18, 1, 0, 1);
             for(i=0;i<strlen(buf);i++) if(buf[i]=='.') k++;
             if(k!=3) err=1;
@@ -3645,8 +3638,8 @@ static int set_acl_list_key(struct _select_def *conf, int key)
             }
             else {
                 getdata(0, 0, "«Î ‰»Î≥§∂»(µ•Œª:bit): ", buf, 4, 1, 0, 1);
-                acl[len].len = atoi(buf);
-                if(acl[len].len<0 || acl[len].len>32) err=1;
+                acl[aclt].len = atoi(buf);
+                if(acl[aclt].len<0 || acl[aclt].len>32) err=1;
                 if(err) {
                     move(0, 0);
                     prints("≥§∂» ‰»Î¥ÌŒÛ!");
@@ -3655,29 +3648,55 @@ static int set_acl_list_key(struct _select_def *conf, int key)
                 }
                 else {
                     getdata(0, 0, "‘ –Ì/æ‹æ¯(0-‘ –Ì,1-æ‹æ¯): ", buf, 4, 1, 0, 1);
-                    if(buf[0]=='0') acl[len].deny=0;
-                    else acl[len].deny=1;
-                    acl[len].ip = (ip[0]<<24)+(ip[1]<<16)+(ip[2]<<8)+ip[3];
-                    if(acl[len].len<32)
-                        acl[len].ip = acl[len].ip&(((1<<acl[len].len)-1)<<(32-acl[len].len));
+                    if(buf[0]=='0') acl[aclt].deny=0;
+                    else acl[aclt].deny=1;
+                    acl[aclt].ip = (ip[0]<<24)+(ip[1]<<16)+(ip[2]<<8)+ip[3];
+                    if(acl[aclt].len<32)
+                        acl[aclt].ip = acl[aclt].ip&(((1<<acl[aclt].len)-1)<<(32-acl[aclt].len));
+                    aclt++;
                     return SHOW_DIRCHANGE;
                 }
             }
             return SHOW_REFRESH;
         }
         break;
-    case 'd':                  /* delete existed mailgroup */
-        if (get_acl_len() > 0) {
+    case 'd':
+        if (aclt > 0) {
             char ans[3];
 
             getdata(0, 0, "»∑ µ“™…æ≥˝¬(Y/N)? [N]: ", ans, sizeof(ans), DOECHO, NULL, true);
             if (ans[0] == 'Y' || ans[0] == 'y') {
-                int len=get_acl_len()-1, i;
-                for(i=conf->pos-1;i<len;i++)
+                int i;
+                aclt--;
+                for(i=conf->pos-1;i<aclt;i++)
                     memcpy(acl+i, acl+i+1, sizeof(struct acl_struct));
-                bzero(acl+len, sizeof(struct acl_struct));
+                bzero(acl+aclt, sizeof(struct acl_struct));
             }
             return SHOW_DIRCHANGE;
+        }
+        break;
+    case 'm':
+        if (aclt > 0) {
+            char ans[3];
+            int d;
+
+            getdata(0, 0, "«Î ‰»Î“™“∆∂ØµΩµƒŒª÷√: ", ans, 3, DOECHO, NULL, true);
+            d=atoi(ans);
+            if (d>=1&&d<=aclt+1&&d!=conf->pos-1) {
+                struct acl_struct temp;
+                int i, p;
+                p = conf->pos-1;
+                memcpy(&temp, acl+p, sizeof(struct acl_struct));
+                if(p>d) {
+                    for(i=p;i>d;i--)
+                        memcpy(acl+i, acl+i-1, sizeof(struct acl_struct));
+                } else {
+                    for(i=p;i<d;i++)
+                        memcpy(acl+i, acl+i+1, sizeof(struct acl_struct));
+                }
+                memcpy(acl+d, &temp, sizeof(struct acl_struct));
+                return SHOW_DIRCHANGE;
+            }
         }
         break;
     case 'L':
@@ -3713,14 +3732,14 @@ static int set_acl_list_refresh(struct _select_def *conf)
     docmdtitle("[µ«¬ΩIPøÿ÷∆¡–±Ì]",
                "ÕÀ≥ˆ[\x1b[1;32m°˚\x1b[0;37m,\x1b[1;32me\x1b[0;37m] —°‘Ò[\x1b[1;32m°¸\x1b[0;37m,\x1b[1;32m°˝\x1b[0;37m] ÃÌº”[\x1b[1;32ma\x1b[0;37m] …æ≥˝[\x1b[1;32md\x1b[0;37m]\x1b[m");
     move(2, 0);
-    prints("[0;1;37;44m  %4s  %-40s %-31s[m", "±‡∫≈", "IPµÿ÷∑∑∂Œß", "‘ –Ì/æ‹æ¯");
+    prints("[0;1;37;44m  %4s  %-40s %-31s[m", "º∂±", "IPµÿ÷∑∑∂Œß", "‘ –Ì/æ‹æ¯");
     update_endline();
     return SHOW_CONTINUE;
 }
 
 static int set_acl_list_getdata(struct _select_def *conf, int pos, int len)
 {
-    conf->item_count = get_acl_len();
+    conf->item_count = aclt;
     if(conf->item_count==0)
         conf->item_count=1;
 
@@ -3737,6 +3756,7 @@ int set_ip_acl()
     char fn[80];
 
     acl = (struct acl_struct *) malloc(sizeof(struct acl_struct)*ACL_MAX);
+    aclt=0;
     bzero(acl, sizeof(struct acl_struct)*ACL_MAX);
     sethomefile(fn, currentuser->userid, "ipacl");
     fp=fopen(fn, "r");
@@ -3748,6 +3768,7 @@ int set_ip_acl()
             i++;
             if(i>=ACL_MAX) break;
         }
+        aclt = i;
         fclose(fp);
     }
     clear();
@@ -3759,7 +3780,7 @@ int set_ip_acl()
         pts[i].y = i + 3;
     }
     bzero(&grouplist_conf, sizeof(struct _select_def));
-    grouplist_conf.item_count = get_acl_len();
+    grouplist_conf.item_count = aclt;
     if(grouplist_conf.item_count==0)
         grouplist_conf.item_count=1;
     grouplist_conf.item_per_page = BBS_PAGESIZE;
@@ -3785,7 +3806,7 @@ int set_ip_acl()
     modify_user_mode(oldmode);
     fp=fopen(fn, "w");
     if(fp){
-        for(i=0;i<get_acl_len();i++)
+        for(i=0;i<aclt;i++)
             fprintf(fp, "%d.%d.%d.%d %d %d\n", acl[i].ip>>24, (acl[i].ip>>16)%0x100, (acl[i].ip>>8)%0x100, acl[i].ip%0x100, acl[i].len, acl[i].deny);
         fclose(fp);
     }
