@@ -489,6 +489,7 @@ void r_msg()
             refresh();
             do{
                 ch = igetkey();
+                if(!DEFINE(currentuser, DEF_IGNOREMSG)&&(ch=='\r'||ch=='\n')) goto outhere;
             }while(!DEFINE(currentuser, DEF_IGNOREMSG)&&ch!=Ctrl('Z')&&ch!='r'&&ch!='R');
             first = 0;
         }
