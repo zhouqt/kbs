@@ -324,6 +324,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
             }
             move(0, 0);
             (*dotitle) ();
+            PUTCURS(locmem);
 	    continue;
     	} else if (ch == KEY_REFRESH) {
             mode = FULLUPDATE;
@@ -486,14 +487,15 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
             move(3, 0);
             clrtobot();
             if (TDEFINE(TDEF_SPLITSCREEN)&&cmdmode!=GMENU)
-            	set_alarm(0,500,NULL,NULL);
+            	set_alarm(1,0,NULL,NULL);
             draw_entry(doentry, locmem, entries, ssize, pnt);
             PUTCURS(locmem);
             break;
 
         default:
             if (TDEFINE(TDEF_SPLITSCREEN)&&cmdmode!=GMENU) //added by bad 2002.9.2
-            	set_alarm(0,500,NULL,NULL);
+            	set_alarm(1,0,NULL,NULL);
+            PUTCURS(locmem);
             break;
         }
         mode = DONOTHING;
