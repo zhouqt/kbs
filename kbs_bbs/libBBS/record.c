@@ -622,10 +622,10 @@ char *filename ;
 int id1,id2,del_mode ;
 {
 #define DEL_RANGE_BUF 2048
-    struct fileheader savefhdr[DEL_RANGE_BUF];
-    struct fileheader readfhdr[DEL_RANGE_BUF];
+    struct fileheader* savefhdr;
+    struct fileheader* readfhdr;
 
-    struct fileheader delfhdr[DEL_RANGE_BUF];
+    struct fileheader* delfhdr;
     int         fdr;
     int         count,totalcount,delcount,remaincount,keepcount;
     int         pos_read,pos_write,pos_end;
@@ -687,7 +687,9 @@ int id1,id2,del_mode ;
         pos_read=pos_end;
         id2=totalcount;
     }
-    
+    savefhdr =(struct fileheader*) malloc([DEL_RANGE_BUF*sizeof(struct fileheader));
+    readfhdr =(struct fileheader*) malloc([DEL_RANGE_BUF*sizeof(struct fileheader));
+    delfhdr =(struct fileheader*) malloc([DEL_RANGE_BUF*sizeof(struct fileheader));
     if ((id1!=0)&&(del_mode==0)) { /*rangle mark del*/
         while (count<=id2) {
             int i,j;
@@ -704,6 +706,9 @@ int id1,id2,del_mode ;
             pos_write+=i*sizeof(struct fileheader);
         }
         close(fdr);
+        free(savefhdr);
+        free(readfhdr);
+        free(delfhdr);
         return 0;
     }
     remaincount=count-1;
@@ -770,6 +775,9 @@ int id1,id2,del_mode ;
         append_record( genbuf, delfhdr, delcount*sizeof(struct fileheader) );
     }
     digestmode=savedigestmode;
+    free(savefhdr);
+    free(readfhdr);
+    free(delfhdr);
     return 0;
 }
 
