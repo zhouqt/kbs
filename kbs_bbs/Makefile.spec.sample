@@ -2,6 +2,10 @@
 BBSHOME=/home0/bbs
 BBSSITE=smth
 
+CGIPATH = /home/www/cgi-bin
+HTMPATH = /home/www/html
+BBSINCLUDE = /home/bbs/smth_bbs
+BBSLIBRARY = /home/bbs/smth_bbs/bbs2www/lib
 # The uid for the user 'bbs'
 #BBSUID=9999
 #BBSUID=502
