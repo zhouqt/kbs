@@ -2979,7 +2979,8 @@ static bool AVL_Insert(wwwthread_treenode ** proot, struct fileheader *newinfo, 
     bool tallersubtree;
     bool taller;
     wwwthread_treenode *root;
-
+    int cmp;
+    
     root = *proot;
     if (root == NULL) {
         root = (wwwthread_treenode *) malloc(sizeof(wwwthread_treenode));
@@ -3002,55 +3003,52 @@ static bool AVL_Insert(wwwthread_treenode ** proot, struct fileheader *newinfo, 
         root->Rchild = NULL;
         root->bf = EH;
         taller = true;
-    }
+    } else {
+        cmp = newinfo->groupid - root->content.lastreply.groupid;
+        if ((cmp < 0) || ((cmp > 0) && (root->content.flags & FILE_ON_TOP))) {
+            tallersubtree = AVL_Insert(&(root->Lchild), newinfo, flags);
+            if (tallersubtree)
+                switch (root->bf) {
+                case LH:
+                    root = AVL_LeftBalance(root);
+                    taller = false;
+                    break;
+                case EH:
+                    root->bf = LH;
+                    taller = true;
+                    break;
+                case RH:
+                    root->bf = EH;
+                    taller = false;
+                    break;
+                }
 
-    else if (newinfo->groupid < root->content.lastreply.groupid) {
-        tallersubtree = AVL_Insert(&(root->Lchild), newinfo, flags);
-        if (tallersubtree)
-            switch (root->bf) {
-            case LH:
-                root = AVL_LeftBalance(root);
+            else
                 taller = false;
-                break;
-            case EH:
-                root->bf = LH;
-                taller = true;
-                break;
-            case RH:
-                root->bf = EH;
-                taller = false;
-                break;
-            }
+        } else if (cmp > 0) {
+            tallersubtree = AVL_Insert(&(root->Rchild), newinfo, flags);
+            if (tallersubtree)
+                switch (root->bf) {
+                case LH:
+                    root->bf = EH;
+                    taller = false;
+                    break;
+                case EH:
+                    root->bf = RH;
+                    taller = true;
+                    break;
+                case RH:
+                    root = AVL_RightBalance(root);
+                    taller = false;
+                }
 
-        else
+            else
+                taller = false;
+        } else {  // cmp == 0
+            root->content.articlecount++;
+            if (newinfo->groupid == newinfo->id) memcpy(&(root->content.origin), newinfo, sizeof(struct fileheader));
             taller = false;
-    }
-
-    else if (newinfo->groupid > root->content.lastreply.groupid) {
-        tallersubtree = AVL_Insert(&(root->Rchild), newinfo, flags);
-        if (tallersubtree)
-            switch (root->bf) {
-            case LH:
-                root->bf = EH;
-                taller = false;
-                break;
-            case EH:
-                root->bf = RH;
-                taller = true;
-                break;
-            case RH:
-                root = AVL_RightBalance(root);
-                taller = false;
-            }
-
-        else
-            taller = false;
-    }
-
-    else {                      // newinfo == root->info
-        root->content.articlecount++;
-        if (newinfo->groupid == newinfo->id) memcpy(&(root->content.origin), newinfo, sizeof(struct fileheader));
-        taller = false;
+        }
     }
     *proot = root;
     return taller;
