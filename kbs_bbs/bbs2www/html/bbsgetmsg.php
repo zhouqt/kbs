@@ -12,7 +12,7 @@
         if ($currentuser["userid"]=="guest")
             $ret=0;
         else
-            $ret=bbs_getwebmsg($srcid,$msgbuf,$srcutmpnum);
+            $ret=bbs_getwebmsg($srcid,$msgbuf,$srcutmpnum,$sndtime);
 ?>
 <meta http-equiv="pragma" content="no-cache"><style type="text/css">
 A {color: #0000FF}
@@ -24,11 +24,15 @@ A {color: #0000FF}
 <bgsound src="/sound/msg.wav">
 <body style="BACKGROUND-COLOR: #f0ffd0">
 <table width="100%">
-<tr><td><font color="green"><?php echo $srcid; ?></font>: <?php echo $msgbuf; ?></td>
-<td align="right"><a target="f3" href="/bbssendmsg.php?destid=<?php 
+  <tr>
+    <td valign="top" nowrap="nowrap"><font color="green"><?php echo $srcid; ?></font> (<?php ; ?>):</td>
+    <td valign="top"><?php echo htmlspecialchars($msgbuf); ?></td>
+    <td align="right" valign="top" nowrap="nowrap"><a target="f3" href="/bbssendmsg.php?destid=<?php 
 echo $srcid; ?>&destutmp=<?php 
-echo $srcutmpnum; ?>">[回讯息]</a> <a href="bbsgetmsg.php">[忽略]</a></td></tr></table>
-<script language="javascript">if (parent.viewfrm)	parent.viewfrm.rows = "18,*,20";
+echo $srcutmpnum; ?>">[回讯息]</a> <a href="bbsgetmsg.php">[忽略]</a></td>
+  </tr>
+</table>
+<script language="javascript">if (parent.viewfrm)	parent.viewfrm.rows = "54,*,20";
 </script>
 <?php
         } else {

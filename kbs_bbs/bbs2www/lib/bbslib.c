@@ -978,26 +978,34 @@ int send_msg(char *srcid, int srcutmp, char *destid, int destutmp, char *msg)
         return -1;
     strcpy(MsgDesUid, uin->userid);
     if (uin != NULL && uin->mode == WEBEXPLORE) {
-        char msgbuf[256];
-        char msgbak[256];
-        char *timestr;
-        time_t now;
+		struct msghead head, head2;
 
-        now = time(0);
-        timestr = ctime(&now) + 11;
-        *(timestr + 8) = '\0';
-        snprintf(msgbuf, sizeof(msgbuf), "[44m[36m%-12.12s[33m(%-5.5s):[37m%-59.59s[m[%dm\033[%dm\n", srcid, timestr, msg, getuinfopid() + 100, uin->pid + 100);
-        snprintf(msgbak, sizeof(msgbak), "[44m[0;1;32m=>[37m%-10.10s[33m(%-5.5s):[36m%-59.59s[m[%dm\033[%dm\n", uin->userid, timestr, msg, getuinfopid() + 100, uin->pid + 100);
+		head.time = time(0);
+		head.sent = 0; /* save to receiver's msg index */
+		head.mode = mode;
+		strncpy(head.id, srcid, IDLEN);
+		head.frompid = getuinfopid();
+		head.topid = uin->pid;
+		memcpy(&head2, &head, sizeof(struct msghead));
+		head2.sent = 1; /* save to sender's msg index */
+		strncpy(head2.id, uident, IDLEN);
         if (destutmp == 0)
             destutmp = get_utmpent_num(uin);
-        if (send_webmsg(destutmp, uin->userid, srcutmp, srcid, msgbuf) < 0)
+        if (send_webmsg(destutmp, uin->userid, srcutmp, srcid, head.time, msg) < 0)
             return -1;
+        if (save_msgtext(uin->userid, &head, msg) < 0)
+            return -2;
+        if (strcmp(srcid, uin->userid)) {
+            if (save_msgtext(srcid, &head2, msg) < 0)
+                return -2;
+        }
+		/*
         if (store_msgfile(uin->userid, msgbuf) < 0)
             return -2;
         if (strcmp(srcid, uin->userid)) {
             if (store_msgfile(srcid, msgbak) < 0)
                 return -2;
-        }
+        }*/
         return 1;
     }
     return sendmsgfunc(uin, msg, 2);

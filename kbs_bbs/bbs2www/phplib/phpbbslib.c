@@ -2,7 +2,7 @@
 #include "bbs.h"
 #include "bbslib.h"
 
-static unsigned char third_arg_force_ref_111[] = { 3, BYREF_FORCE, BYREF_FORCE, BYREF_FORCE };
+static unsigned char third_arg_force_ref_1111[] = { 4, BYREF_FORCE, BYREF_FORCE, BYREF_FORCE, BYREF_FORCE };
 static unsigned char third_arg_force_ref_011[] = { 3, BYREF_NONE, BYREF_FORCE, BYREF_FORCE };
 static unsigned char fourth_arg_force_ref_0001[] = { 4, BYREF_NONE, BYREF_NONE, BYREF_NONE, BYREF_FORCE };
 
@@ -77,7 +77,7 @@ static function_entry bbs_php_functions[] = {
         ZEND_FE(bbs_getmails, NULL)
         ZEND_FE(bbs_loadmaillist, NULL)
         ZEND_FE(bbs_changemaillist, NULL)
-        ZEND_FE(bbs_getwebmsg, third_arg_force_ref_111)
+        ZEND_FE(bbs_getwebmsg, third_arg_force_ref_1111)
         ZEND_FE(bbs_sendwebmsg, fourth_arg_force_ref_0001)
         ZEND_FE(bbs_sethomefile, NULL)
         ZEND_FE(bbs_setmailfile, NULL)
@@ -1492,7 +1492,7 @@ static ZEND_FUNCTION(bbs_changemaillist)
 /**
  * receive webmsg.
  * prototype:
- * bool bbs_getwegmsg(string &srcid,string &buf,long &srcutmpent);
+ * bool bbs_getwegmsg(string &srcid,string &buf,long &srcutmpent,long &sndtime);
  *
  * @return TRUE on success,
  *       FALSE on failure.
@@ -1501,28 +1501,31 @@ static ZEND_FUNCTION(bbs_changemaillist)
  */
 static ZEND_FUNCTION(bbs_getwebmsg)
 {
-    zval *retsrcid, *msgbuf, *srcutmpent;
+    zval *retsrcid, *msgbuf, *srcutmpent, *z_sndtime;
     int ac = ZEND_NUM_ARGS();
     int srcutmp;
+	time_t sndtime;
     char buf[MSG_LEN + 1];
     char srcid[IDLEN + 1];
 
-    if (ac != 3 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "zzz", &retsrcid, &msgbuf, &srcutmpent) == FAILURE) {
+    if (ac != 4 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "zzzz", &retsrcid, &msgbuf, &srcutmpent, &z_sndtime) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
 
     /*
      * check for parameter being passed by reference 
      */
-    if (!PZVAL_IS_REF(retsrcid) || !PZVAL_IS_REF(msgbuf) || !PZVAL_IS_REF(srcutmpent)) {
+    if (!PZVAL_IS_REF(retsrcid) || !PZVAL_IS_REF(msgbuf) || !PZVAL_IS_REF(srcutmpent)
+		|| !PZVAL_IF_REF(z_sndtime)) {
         zend_error(E_WARNING, "Parameter wasn't passed by reference");
         RETURN_FALSE;
     }
 
-    if (receive_webmsg(currentuinfonum, currentuser->userid, &srcutmp, srcid, buf) == 0) {
+    if (receive_webmsg(currentuinfonum, currentuser->userid, &srcutmp, srcid, &sndtime, buf) == 0) {
         ZVAL_STRING(retsrcid, srcid, 1);
         ZVAL_STRING(msgbuf, buf, 1);
         ZVAL_LONG(srcutmpent, srcutmp);
+        ZVAL_LONG(z_sndtime, sndtime);
         RETURN_TRUE;
     }
     /*
