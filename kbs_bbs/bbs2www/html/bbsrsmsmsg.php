@@ -29,6 +29,18 @@
 			$count = 10;
 		settype($count,"integer");
 
+		if( $_GET["desc"] ){
+			$desc = $_GET["desc"];
+		}else if( $_POST["desc"] ){
+			$desc = $_POST["desc"];
+		}else
+			$desc = 0;
+		settype($desc, "integer");
+		if($desc == 1)
+			$order="DESC";
+		else
+			$order="ASC";
+
 		$db = mysql_connect($hostname, $username, $password) or die(mysql_error());
 		mysql_select_db($dbname, $db) or die(mysql_error());
 
@@ -52,7 +64,7 @@
 
 		}
 
-		$sqlstr = "SELECT * FROM smsmsg WHERE userid=\"".$currentuser["userid"]."\" ORDER BY readed, timestamp LIMIT ".$startnum.",".$count;
+		$sqlstr = "SELECT * FROM smsmsg WHERE userid=\"".$currentuser["userid"]."\" ORDER BY readed, timestamp ".$order." LIMIT ".$startnum.",".$count;
 
 		$result = mysql_query($sqlstr) or die(mysql_error());
 
@@ -77,7 +89,7 @@
 <td><?php if( $row[4]==1 ) echo "发"; else echo "收";?></td>
 <td><?php echo $row[3];?></td>
 <td><pre><?php echo $row[5];?></pre></td>
-<td><a href="/bbsrsmsmsg.php?start=<?php if($i==0 && $startnum > 0) echo ($startnum-1); else echo $startnum;?>&count=<?php echo $count;?>&action=del&id=<?php echo $row[0];?>">删除</a></td>
+<td><a href="/bbsrsmsmsg.php?start=<?php if($i==0 && $startnum > 0) echo ($startnum-1); else echo $startnum;?>&count=<?php echo $count;?>&action=del&id=<?php echo $row[0];?>&desc=<?php echo $desc;?>">删除</a></td>
 </tr>
 <?php
 				$i++;
@@ -92,7 +104,7 @@
 <?php
 		if( $startnum > 0 ){
 ?>
-<a href="/bbsrsmsmsg.php?start=<?php if($startnum - $count > 0) echo ($startnum-$count); else echo "0";?>&count=<?php echo $count;?>">上一页</a>
+<a href="/bbsrsmsmsg.php?start=<?php if($startnum - $count > 0) echo ($startnum-$count); else echo "0";?>&count=<?php echo $count;?>&desc=<?php echo $desc;?>">上一页</a>
 <?php	}else{
 ?>
 上一页
@@ -101,13 +113,35 @@
 
 		if( $i >= $count ){
 ?>
-<a href="/bbsrsmsmsg.php?start=<?php echo ($startnum+$count-1);?>&count=<?php echo $count;?>">下一页</a>
+<a href="/bbsrsmsmsg.php?start=<?php echo ($startnum+$count-1);?>&count=<?php echo $count;?>&desc=<?php echo $desc;?>">下一页</a>
 <?php	}else{
 ?>
 下一页
 <?php
 		}
 ?>
+
+<script language="javascript">
+<!--//
+function doRefresh(){
+	var oSelectType=document.getElementById("oType");
+	var type=oSelectType.value;
+
+	if(type=="1")
+		window.location="/bbsrsmsmsg.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&desc=0";
+	else
+		window.location="/bbsrsmsmsg.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&desc=1";
+
+	return;
+}
+//-->
+</script>
+
+<select name="type" class="input"  style="WIDTH: 60px" id="oType" onChange="doRefresh();">
+<option value="1"<?php if( $desc==0 ) { ?> selected="selected"<?php } ?>>增序</option>
+<option value="2"<?php if( $desc==1 ) { ?> selected="selected"<?php } ?>>倒序</option>
+</select>
+
 </center>
 </body>
 <?php
