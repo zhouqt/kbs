@@ -783,7 +783,7 @@ int read_new_mail(struct fileheader *fptr, int idc, void *arg)
         switch (igetkey()) {
         case Ctrl('Y'):
             zsend_post(idc, fptr, currmaildir);
-        break;
+            break;
         case 'R':
         case 'r':
 
@@ -982,6 +982,7 @@ char *direct;
         switch (igetkey()) {
         case Ctrl('Y'):
             zsend_post(ent, fileinfo, direct);
+	    break;
         case 'R':
         case 'r':
 

@@ -83,6 +83,7 @@ void set_numofsig();
 void docmdtitle(char *title, char *prompt);
 
 /* bbs.c*/
+int zsend_post(int ent, struct fileheader *fileinfo, char *direct);
 void  board_attach_link(char* buf,int buf_len,long attachpos,void* arg);
 int get_a_boardname(char *bname, char *prompt); /* 输入一个版名 */
 int Read();
