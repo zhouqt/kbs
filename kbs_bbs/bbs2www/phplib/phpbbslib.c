@@ -3939,7 +3939,7 @@ static PHP_FUNCTION(bbs_postarticle)
     if (!sigsetjmp(bus_jump, 1)) {
         signal(SIGBUS, sigbus);
         signal(SIGSEGV, sigbus);
-    	f_append(filename, unix_string(content));
+        if (clen>0) f_append(filename, unix_string(content));
     } else {
 		RETURN_LONG(-9);
 	}
@@ -4066,7 +4066,7 @@ static PHP_FUNCTION(bbs_edittitle)
 	int fd;
 	
 	int ac = ZEND_NUM_ARGS();
-	if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "slsl", &board, &board_len, &id , &title, &title_len , &mode) == FAILURE) 
+	if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "sls/l", &board, &board_len, &id , &title, &title_len , &mode) == FAILURE) 
 		WRONG_PARAM_COUNT;
 	
 	if ((mode>= DIR_MODE_THREAD) && (mode<= DIR_MODE_WEB_THREAD))
@@ -4264,7 +4264,7 @@ static PHP_FUNCTION(bbs_updatearticle)
 		}
         fprintf(fout, "%s", buf2);
     }
-    fprintf(fout, "%s", unix_string(content));
+    if (clen>0) fprintf(fout, "%s", unix_string(content));
 #ifndef RAW_ARTICLE
     fprintf(fout, "\033[36m※ 修改:·%s 於 %s 修改本文·[FROM: %s]\033[m\n", getCurrentUser()->userid, wwwCTime(time(0)) + 4, SHOW_USERIP(getCurrentUser(), fromhost));
 #endif
@@ -5339,8 +5339,10 @@ static PHP_FUNCTION(bbs_postmail){
 	title3[79]=0;
 	snprintf(filename, STRLEN, "tmp/%s.%d.tmp", targetID, getpid());
 	filename[STRLEN]=0;
-    if (f_append(filename, unix_string(content)) < 0)
-        RETURN_LONG(-1); //"无法创建临时文件";
+    if (cLen>0) {
+        if (f_append(filename, unix_string(content)) < 0)
+                RETURN_LONG(-1); //"无法创建临时文件";
+    }
     snprintf(title2,ARTICLE_TITLE_LEN-1, "{%s} %s", targetID, title);
     title2[ARTICLE_TITLE_LEN-1] = 0;
     
