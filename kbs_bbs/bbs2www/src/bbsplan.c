@@ -13,7 +13,7 @@ int main()
     printf("<center>\n");
     if (!loginok)
         http_fatal("匆匆过客不能设置说明档，请先登录");
-    sprintf(plan, "home/%c/%s/plans", toupper(currentuser->userid[0]), currentuser->userid);
+	sethomefile(plan, currentuser->userid, "plans");
     if (!strcasecmp(getparm("type"), "update"))
         save_plan(plan);
     printf("%s -- 设置个人说明档 [%s]<hr>\n", BBSNAME, currentuser->userid);
@@ -42,7 +42,7 @@ int save_plan(char *plan)
 
     fp = fopen(plan, "w");
     strsncpy(buf, getparm("text"), 9999);
-    fprintf(fp, "%s", buf);
+    fprintf(fp, "%s", unix_string(buf));
     fclose(fp);
     printf("个人说明档修改成功。");
     http_quit();

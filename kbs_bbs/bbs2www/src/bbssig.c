@@ -13,7 +13,7 @@ int main()
     if (!loginok)
         http_fatal("匆匆过客不能设置签名档，请先登录");
     printf("<center>%s -- 设置签名档 [使用者: %s]<hr>\n", BBSNAME, currentuser->userid);
-    sprintf(path, "home/%c/%s/signatures", toupper(currentuser->userid[0]), currentuser->userid);
+	sethomefile(path, currentuser->userid, "signatures");
     if (!strcasecmp(getparm("type"), "1"))
         save_sig(path);
     printf("<form method=\"post\" action=\"bbssig?type=1\">\n");
@@ -42,7 +42,7 @@ int save_sig(char *path)
 
     fp = fopen(path, "w");
     buf = getparm("text");
-    fprintf(fp, "%s", buf);
+    fprintf(fp, "%s", unix_string(buf));
     fclose(fp);
     printf("签名档修改成功。");
     http_quit();

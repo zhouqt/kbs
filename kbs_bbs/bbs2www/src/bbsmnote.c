@@ -46,7 +46,7 @@ int save_note(char *path)
 
     fp = fopen(path, "w");
     strsncpy(buf, getparm("text"), 9999);
-    fprintf(fp, "%s", buf);
+    fprintf(fp, "%s", unix_string(buf));
     fclose(fp);
     printf("进版画面修改成功。<br>\n");
     printf("<a href=\"javascript:history.go(-2)\">返回</a>");
