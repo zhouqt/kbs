@@ -26,7 +26,7 @@
 
 time_t calltime = 0;
 char calltimememo[40];
-static int stuffmode = 0;
+int stuffmode = 0;
 
 enum LINE_CODE {
     LINE_NORMAL,                   //normal line

@@ -971,6 +971,8 @@ char *maildoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
 extern int bug_possible;
 #endif
 
+extern int stuffmode;
+
 int mail_read(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     char buf[512], notgenbuf[128];
@@ -979,6 +981,7 @@ int mail_read(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     char done = false, delete_it, replied;
     int ent=conf->pos;
     struct read_arg* arg=conf->arg;
+	struct stat st;
 
     if (fileinfo==NULL)
         return DONOTHING; 
@@ -991,6 +994,13 @@ int mail_read(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
         *t = '\0';
     sprintf(notgenbuf, "%s/%s", buf, fileinfo->filename);
     delete_it = replied = false;
+
+    if(stat(notgenbuf,&st) != -1){
+		if (S_ISLNK(st.st_mode)){
+			stuffmode = 1;
+		}
+	}
+
     while (!done) {
         ansimore(notgenbuf, false);
         move(t_lines - 1, 0);
@@ -1041,6 +1051,7 @@ int mail_read(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
             
         }
     }
+	stuffmode = 0;
     if (delete_it)
         return mail_del(conf, fileinfo,NULL);
     else if ((fileinfo->accessed[0] & FILE_READ) != FILE_READ)
