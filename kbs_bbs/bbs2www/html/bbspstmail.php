@@ -16,10 +16,8 @@ login_init();
 			$board = $_GET["board"];
 		if (isset($_GET["file"]))
 			$file = $_GET["file"];
-		if (isset($_GET["title"]))
-			$title = $_GET["title"];
-		if (isset($_GET["userid"]))
-			$destuserid = $_GET["userid"];
+		$title = isset($_GET["title"])?$_GET["title"]:'';
+	    $destuserid = isset($_GET["userid"])?$_GET["userid"]:'';
 
 		if (isset( $board )){
 			$brdarr = array();
@@ -54,7 +52,7 @@ login_init();
 			}
 		$mailboxnum = $i + 1;
 ?>
-<body>
+<body topmargin="0">
 <p align="left" class="b2">
 <a href="bbssec.php" class="b2"><?php echo BBS_FULL_NAME; ?></a>
 -
@@ -89,7 +87,7 @@ login_init();
 				<td width="7" background="/images/m3.gif"><img src="/images/empty.gif"></td>
 				<td background="/images/m6.gif" height="400" align="center" valign="top">
 
-<form name="postform" method="post" action="/cgi-bin/bbs/bbssndmail">
+<form name="postform" method="post" action="/bbssendmail.php">
 <table>
 <tr>
 <td class="b9">
