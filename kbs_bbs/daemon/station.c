@@ -882,9 +882,11 @@ int login_user(int unum,char *msg)
     get_emote_list(unum);               /* added by Luzi 1998.01.25 */
     get_ignore_list(unum);              /* added by Luzi 1997.11.28 */
     print_user_counts(unum);
+	/*
     sprintf(chatbuf,"User entry:%d",utent);
-/*    send_to_room(mainroom,chatbuf , unum); wrong??? KCN*/
+    send_to_room(mainroom,chatbuf , unum); wrong??? KCN
     send_to_room(0,chatbuf , unum);
+	*/
     enter_room(unum, mainroom, (char *) NULL);
     return 0;
 }

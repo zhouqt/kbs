@@ -33,7 +33,7 @@ BINFILE=utmpd miscd webmsgd
 allthing:  $(BINFILE)
 
 $(BINFILE): % : %.o ../libBBS.a ../libsystem.a
-	$(CC) $^ -o $*
+	$(LD) $^ -o $* $(EXECLDFLAGS) $(LDFLAGS) $(COBJS)
 
 install: all
 	$(INSTALL) $(BINFILE) $(BBSHOME)/bin
