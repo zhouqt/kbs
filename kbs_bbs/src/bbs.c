@@ -3286,7 +3286,7 @@ int Goodbye()
 
 //        sethomefile(fname, currentuser->userid, "msgfile");
         if (DEFINE(currentuser, DEF_MAILMSG /*离站时寄回所有信息 */ ) && (get_msgcount(0, currentuser->userid))) {
-            show_allmsgs();
+                mail_msg(currentuser);
 /*    #ifdef NINE_BUILD
             time_t now, timeout;
             char ans[3];

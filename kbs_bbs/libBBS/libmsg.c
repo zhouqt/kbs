@@ -670,3 +670,29 @@ int translate_msg(char* src, struct msghead *head, char* dest)
     return ret+2;
 }
 
+void mail_msg(struct userec* user)
+{
+    char fname[MAXPATH];
+    char buf[MAX_MSG_SIZE],showmsg[MAX_MSG_SIZE*2];
+    int i;
+    struct msghead head;
+    time_t now;
+    char title[STRLEN];
+
+    sprintf(fname, "tmp/%s.msg", user->userid);
+    fn = fopen(fname, "w");
+    count = get_msgcount(0, user->userid);
+    for(i=0;i<count;i++) {
+        load_msghead(0, user->userid, i, &head);
+        load_msgtext(user->userid, &head, buf);
+        translate_msg(buf, &head, showmsg);
+        fprintf(fn, "%s", showmsg);
+    }
+    fclose(fn);
+
+    now = time(0);
+    sprintf(title, "[%12.12s] 所有讯息备份", ctime(&now) + 4);
+    mail_file(user->userid, fname, user->userid, title, BBSPOST_MOVE, NULL);
+    unlink(fname);
+    clear_msg(user->userid);
+}

@@ -324,22 +324,7 @@ reenter:
                 break;
             case 'm':
             case 'M':
-                sprintf(fname, "tmp/%s.msg", currentuser->userid);
-                fn = fopen(fname, "w");
-                count = get_msgcount(0, currentuser->userid);
-                for(i=0;i<count;i++) {
-                    load_msghead(0, currentuser->userid, i, &head);
-                    load_msgtext(currentuser->userid, &head, buf);
-                    translate_msg(buf, &head, showmsg);
-                    fprintf(fn, "%s", showmsg);
-                }
-                fclose(fn);
-
-                now = time(0);
-                sprintf(title, "[%12.12s] 所有讯息备份", ctime(&now) + 4);
-                mail_file(currentuser->userid, fname, currentuser->userid, title, BBSPOST_MOVE, NULL);
-                unlink(fname);
-                clear_msg(currentuser->userid);
+                mail_msg(currentuser);
                 goto outofhere;
             default:
                 goto reenter;
