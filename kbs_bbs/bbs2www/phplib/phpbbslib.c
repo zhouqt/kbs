@@ -1163,6 +1163,7 @@ static PHP_FUNCTION(bbs_searchtitle)
                                  * flags[3]: attach flag
                                  */
     struct boardheader *bp;
+	int found;
 
 
     if (ZEND_NUM_ARGS() != 9 || zend_parse_parameters(9 TSRMLS_CC, "sssssllll", &board, &bLen,&title,&tLen, &title2, &tLen2, &title3, &tLen3,&author, &aLen, &date,&mmode,&attach,&origin) != SUCCESS) {
@@ -1234,22 +1235,7 @@ static PHP_FUNCTION(bbs_searchtitle)
 
 	for (i=total-1;i>=0;i--) {
 		if (foundInArray(ptr1[i].groupid,IDList2,threads)==-1)	{
-			unsigned int low, high ,mid, found;
-			int comp;
-			low = 0;
-			high = total - 1;
-			found=-1;
-			while (low <= high) {
-				mid = (high + low) / 2;
-				comp = (ptr1[i].groupid) - (ptr1[mid].id);
-				if (comp == 0) {
-					found=mid;
-					break;
-				} else if (comp < 0)
-					high = mid - 1;
-				else
-					low = mid + 1;
-			}
+			found=binarySearchInFileHeader(ptr1,total,ptr1[i].groupid);
 			if (found!=-1) {
 				IDList2[threads]=ptr1[i].groupid;
 				index[threads]=found;
@@ -2718,7 +2704,6 @@ static PHP_FUNCTION(bbs_getthreadnum)
     if ((bp = getboard(brdnum)) == NULL) {
         RETURN_LONG(-1);
     }
-
     setbdir(DIR_MODE_WEB_THREAD, dirpath, bp->filename);
 	if (!stat(dirpath,&originStat))	{
 		setbdir(DIR_MODE_NORMAL,dirpath1,bp->filename);
@@ -2732,7 +2717,6 @@ static PHP_FUNCTION(bbs_getthreadnum)
 	} else {
 		www_generateOriginIndex(bp->filename);
 	}
-
    total = get_num_records(dirpath, sizeof(struct wwwthreadheader));
 
 
