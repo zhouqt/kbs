@@ -646,22 +646,20 @@ int read_mail(fptr)
 }
 
 int mrd;
-int delete_new_mail(struct fileheader *fptr, int * idc)
+int delete_new_mail(struct fileheader *fptr, int idc,void* arg)
 {
-	(*idc)++;
     if (fptr->accessed[1]&FILE_DEL) {
-        delete_record(currmaildir, sizeof(struct fileheader), *idc, NULL, NULL);
+        delete_record(currmaildir, sizeof(struct fileheader), idc, NULL, NULL);
         return 1;
     }
     return 0;
 }
 
-int read_new_mail(struct fileheader *fptr, int * idc)
+int read_new_mail(struct fileheader *fptr, int idc, void* arg)
 {
     char done = false, delete_it;
     char fname[256];
 
-    (*idc)++;
     if (fptr->accessed[0])
         return 0;
     prints("¶ÁÈ¡ %s ¼ÄÀ´µÄ '%s' ?\n", fptr->owner, fptr->title);
@@ -694,9 +692,9 @@ int read_new_mail(struct fileheader *fptr, int * idc)
                 pressreturn();
                 break;
             }
-            mail_reply(*idc, fptr, currmaildir);
+            mail_reply(idc, fptr, currmaildir);
             /*
-            substitute_record(currmaildir, fptr, sizeof(*fptr), idc);
+            substitute_record(currmaildir, fptr, sizeof(*fptr), dc);
             */
             break;
         case 'D':
@@ -718,7 +716,7 @@ int read_new_mail(struct fileheader *fptr, int * idc)
         }
         fptr->accessed[1]|=FILE_DEL;
     }
-    if (substitute_record(currmaildir, fptr, sizeof(*fptr), *idc))
+    if (substitute_record(currmaildir, fptr, sizeof(*fptr), idc))
         return -1;
     clear();
     return 0;
@@ -726,19 +724,17 @@ int read_new_mail(struct fileheader *fptr, int * idc)
 
 int m_new()
 {
-	int idc;
     clear();
     mrd = 0;
-    idc=0;
     modify_user_mode(RMAIL);
-    if (apply_record(currmaildir, (RECORD_FUNC_ARG) read_new_mail, sizeof(struct fileheader), &idc, 1,false) == -1) {
+    if (apply_record(currmaildir, (APPLY_FUNC_ARG ) read_new_mail, sizeof(struct fileheader), NULL, 1,false) == -1) {
         clear();
         move(0, 0);
         prints("No new messages\n\n\n");
         return -1;
     }
     idc=0;
-    apply_record(currmaildir, (RECORD_FUNC_ARG) delete_new_mail, sizeof(struct fileheader), &idc, 1,true);
+    apply_record(currmaildir, (APPLY_FUNC_ARG ) delete_new_mail, sizeof(struct fileheader), NULL, 1,true);
 /*    	
     if (delcnt) {
         while (delcnt--)

@@ -483,10 +483,8 @@ return 0;
 
 }
 
-
-
 int 
-count_result(struct ballot *ptr, char *arg) 
+count_result(struct ballot *ptr, int idx, char *arg) 
 {
     
 int i;
@@ -653,7 +651,7 @@ pressanykey();
     
 (void) memset(result, 0, sizeof(result));
     
-if (apply_record(fname, (RECORD_FUNC_ARG) count_result, sizeof(struct ballot), 0, 0,false) == -1)
+if (apply_record(fname, (APPLY_FUNC_ARG) count_result, sizeof(struct ballot), 0, 0,false) == -1)
         
  {
         
@@ -818,7 +816,7 @@ pressanykey();
     
 (void) memset(result, 0, sizeof(result));
     
-if (apply_record(fname, (RECORD_FUNC_ARG) count_result, sizeof(struct ballot), 0, 0,false) == -1)
+if (apply_record(fname, (APPLY_FUNC_ARG) count_result, sizeof(struct ballot), 0, 0,false) == -1)
         
  {
         
@@ -1904,10 +1902,10 @@ clrtoeol();
     
 prints("[44m±àºÅ ¿ªÆôÍ¶Æ±ÏäÕß ¿ªÆôÈÕ %-40sÀà±ð ÌìÊý ÈËÊý[m\n", "Í¶Æ±Ö÷Ìâ", "");
 
-} 
+}
 
 int 
-printvote(struct votebal *ent, int *i) 
+printvote(struct votebal *ent,int idx, int *i) 
 {
     
 struct ballot uservote;
@@ -2302,7 +2300,7 @@ i = 0;
     
 setcontrolfile();
     
-if (apply_record(controlfile, (RECORD_FUNC_ARG) printvote, sizeof(struct votebal), &i, 0,false) == -1) {
+if (apply_record(controlfile, (APPLY_FUNC_ARG) printvote, sizeof(struct votebal), &i, 0,false) == -1) {
         
 prints("´íÎó£¬Ã»ÓÐÍ¶Æ±Ïä¿ªÆô....");
         

@@ -1927,15 +1927,8 @@ extern int b_jury_edit();       /*stephen 2001.11.1 */
 
 static int sequent_ent;
 
-int sequent_messages(struct fileheader *fptr, int *continue_flag)
+int sequent_messages(struct fileheader *fptr,int idc, int *continue_flag)
 {
-    static int idc;
-
-    if (fptr == NULL) {
-        idc = 0;
-        return 0;
-    }
-    idc++;
     if (readpost) {
         if (idc < sequent_ent)
             return 0;
@@ -2011,11 +2004,10 @@ int sequential_read(int ent, struct fileheader *fileinfo, char *direct)
     char buf[STRLEN];
     int continue_flag;
 
-    sequent_messages((struct fileheader *) NULL, 0);
     sequent_ent = ent;
     continue_flag = 0;
     setbdir(digestmode, buf, currboard);
-    apply_record(buf, (RECORD_FUNC_ARG) sequent_messages, sizeof(struct fileheader), &continue_flag, 1,false);
+    apply_record(buf, (APPLY_FUNC_ARG ) sequent_messages, sizeof(struct fileheader), &continue_flag, 1,false);
     return FULLUPDATE;
 }
 

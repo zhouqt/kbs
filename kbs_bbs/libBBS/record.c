@@ -185,6 +185,7 @@ int apply_record(char *filename, RECORD_FUNC_ARG fptr, int size, void *arg,
     char *buf, *buf1, *buf2;
     int i;
     int file_size;
+    int count;
 
     if (applycopy)
         buf2 = malloc(size);
@@ -194,16 +195,17 @@ int apply_record(char *filename, RECORD_FUNC_ARG fptr, int size, void *arg,
     case 0:
         return 0;
     case 1:
+    	count=file_size/size;
     	if (reverse)
-    		buf1=buf+((file_size/size)-1)*size;
+    		buf1=buf+(count-1)*size;
     	else
     		buf1=buf;
-        for (i = 0; i < file_size / size; i++) {
+        for (i = 0; i < count; i++) {
             if (applycopy)
                 memcpy(buf2, buf1, size);
             else
                 buf2 = buf1;
-            if ((*fptr) (buf2, arg) == QUIT) {
+            if ((*fptr) (buf2, reverse?count-i:i+1, arg) == QUIT) {
                 end_mmapfile((void *) buf, file_size, -1);
                 if (applycopy)
                     free(buf2);

@@ -63,8 +63,7 @@ int record_data(board, sec)
     return;
 }
 
-int fillbcache(fptr)
-    struct boardheader *fptr;
+int fillbcache(struct boardheader *fptr,int idx,void* arg)
 {
 
     if (numboards >= MAXBOARD)
@@ -81,7 +80,7 @@ int fillbcache(fptr)
 
 int fillboard()
 {
-    apply_record(BOARDS, fillbcache, sizeof(struct boardheader), NULL, 0,false);
+    apply_record(BOARDS, (APPLY_FUNC_ARG)fillbcache, sizeof(struct boardheader), NULL, 0,false);
 }
 
 char *timetostr(i)
