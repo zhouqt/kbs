@@ -459,7 +459,7 @@ int get_rl(char * s, int r, int l)
     else return -1;
 }
 
-int get_rl2(char * s, int r, int l)
+int get_rl3(char * s, int r, int l)
 {
     int n=r,i=0;
     do{
@@ -548,7 +548,7 @@ void eval(struct var_struct * p, char * s, int l, int r)
     while(s[r]==' '&&l<=r) r--;
     makesure(l<=r,11);
     while(s[l]=='('&&s[r]==')'&&get_rl(s,r,l)==l||
-        s[l]=='['&&s[r]==']'&&get_rl2(s,r,l)==l) {
+        s[l]=='['&&s[r]==']'&&get_rl3(s,r,l)==l) {
         l++; r--;
         while(s[l]==' '&&l<=r) l++;
         while(s[r]==' '&&l<=r) r--;
@@ -699,7 +699,7 @@ void eval(struct var_struct * p, char * s, int l, int r)
                 return;
             }
             if(s[n]==')') n=get_rl(s,n,l);
-            if(s[n]==']') n=get_rl2(s,n,l);
+            if(s[n]==']') n=get_rl3(s,n,l);
             n--;
         }while(n>=l);
     }
