@@ -6,6 +6,7 @@ int main(int argc, char **argv)
 {
     FILE* fin,*fout1,*fout2;
 	char genbuf[8][256];
+	char* ptr;
 	int i;
 	struct userec * uc;
 	int now;
@@ -46,10 +47,12 @@ int main(int argc, char **argv)
 			}
 		}
 		if(exit == 1)break;
-		strncpy(userid,genbuf[1]+8,strlen(genbuf[1])-9);
+		strncpy(userid,genbuf[1]+8,IDLEN);
+		if((ptr=strchr(userid,'\n')) != NULL)*ptr = 0;
 		userid[IDLEN]=0;
 		if(getuser(userid,&uc) == 0)
 		{
+		    printf("genbuf[1] is %s",genbuf[1]);
 		    printf("%s not found\n",userid);
 		    continue;  //get userid's userec
 		}
