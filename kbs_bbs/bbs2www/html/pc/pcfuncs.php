@@ -463,7 +463,8 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 			"UPDATE" => (int)($rows[updatetime]),
 			"INFOR" => str_replace("<?","&lt;?",stripslashes($rows[userinfor])),
 			"TYPE" => $rows[pctype],
-			"LOGTID" => $rows[logtid] 
+			"LOGTID" => $rows[logtid],
+			"DEFAULTTOPIC" => $rows[defaulttopic]
 			);
 	if($pc["CSSFILE"])
 		$cssFile = $pc["CSSFILE"];
@@ -534,31 +535,50 @@ function pc_file_num($link,$uid,$pid=0)
 	return $rows[0];
 }
 
-function pc_blog_menu($link,$uid,$tag=9)
+function pc_blog_menu($link,$pc,$tag=9)
 {
+	if(!$pc || !is_array($pc) || !$pc["UID"])
+		return NULL;
 	if($tag == 9)
-		$query = "SELECT * FROM topics WHERE `uid` = '".$uid." ' ORDER BY `sequen` ;";
+		$query = "SELECT * FROM topics WHERE `uid` = '".intval($pc["UID"])." ' ORDER BY `sequen` ;";
 	else
-		$query = "SELECT * FROM topics WHERE `uid` = '".$uid." ' AND ( `access` = '".$tag."' OR `access` = 9 ) ORDER BY `sequen` DESC ;";
+		$query = "SELECT * FROM topics WHERE `uid` = '".intval($pc["UID"])." ' AND ( `access` = '".intval($tag)."' OR `access` = 9 ) ORDER BY `sequen` DESC ;";
 	$result = mysql_query($query,$link);
-	$i = 0;
+	$blog = array();
 	while($rows = mysql_fetch_array($result))
 	{
-		$blog[$i] = array(
+		$blog[] = array(
 				"TID" => $rows[tid],
 				"NAME" => $rows[topicname],
 				"SEQ" => $rows[sequen],
 				"TAG" => $rows[access]
 				);
-		$i ++;
 	}
 	mysql_free_result($result);
-	$blog[$i] = array(
-			"TID" => 0,
-			"NAME" => "其他类别",
-			"SEQ" => 0,
-			"TAG" => 9
-			);
+	
+	if($tag==0 && $pc["DEFAULTTOPIC"]) //自定义公开区默认分类
+	{
+		$blog[] = array(
+				"TID" => 0,
+				"NAME" => $pc["DEFAULTTOPIC"],
+				"SEQ" => 0,
+				"TAG" => 9
+				);
+	}
+	elseif($tag != 0 && $tag != 9)
+	{
+		$blog[] = array(
+				"TID" => 0,
+				"NAME" => "其他类别",
+				"SEQ" => 0,
+				"TAG" => 9
+				);
+	}
+	else
+	{
+		// nth :p
+	}
+	
 	
 	return $blog;
 }

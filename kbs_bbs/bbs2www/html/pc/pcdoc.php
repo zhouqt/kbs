@@ -5,10 +5,9 @@
 	*/
 	require("pcfuncs.php");
 	
-	function display_blog_menu($link,$pc,$tag,$tid=0,&$blogMenus)
+	function display_blog_menu($pc,$tid,$blogMenus)
 	{
-		$blogs = pc_blog_menu($link,$pc["UID"],$tag);
-		$blogMenus = $blogs;
+		$blogs = $blogMenus
 ?>
 <table cellspacing="0" cellpadding="5" border="0" width="95%">
 <tr>
@@ -488,7 +487,7 @@
 	function display_blog_settings($link,$pc,$tag)
 	{
 		global $sec;
-		$blog = pc_blog_menu($link,$pc["UID"]);	
+		$blog = pc_blog_menu($link,$pc);	
 ?>
 <table cellspacing="0" cellpadding="5" border="0" width="99%" class="t1">
 <tr>
@@ -590,6 +589,13 @@ Blog名
 	</td>
 </tr>
 <tr>
+	<td class="t3">公开区默认分类</td>
+	<td class="t5">&nbsp;
+	<input type="text" name="pcdefaulttopic" maxlength="100" value="<?php echo htmlspecialchars($pc["DEFAULTTOPIC"]); ?>" class="f1">
+	(留空表示取消公开区默认分类，建议在取消前移走该分类的所有文章)
+	</td>
+</tr>
+<tr>
 	<td class="t3">友情链接管理</td>
 	<td class="t5">&nbsp;
 	<a href="pclinks.php?userid=<?php echo $pc["USER"]; ?>">点击此处</a>
@@ -671,6 +677,7 @@ Blog名
 	$userid = addslashes($_GET["userid"]);
 	$pid = (int)($_GET["pid"]);
 	$tag = (int)($_GET["tag"]);
+	$tid = (int)($_GET["tid"]);
 		
 	$link = pc_db_connect();
 	$pc = pc_load_infor($link,$userid);
@@ -705,6 +712,14 @@ Blog名
 	
 	//if( pc_cache( $pc["MODIFY"] ) )
 	//	return;
+	
+	if($tag == 0 || $tag ==1 || $tag ==2)
+	{
+		$blogMenus = pc_blog_menu($link,$pc,$tag);
+		if(!$pc["DEFAULTTOPIC"] && $tag == 0 && !$tid)
+			$tid = $blogMenus[0]["TID"];
+	}	
+	
 	pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
 ?>
 <a name="top"></a>
@@ -749,7 +764,7 @@ Blog名
 	{
 ?>
 	<td rowspan="2" align="middle" valign="top" width="150">
-	<?php display_blog_menu($link,$pc,$tag,(int)($_GET["tid"]),$blogMenus); ?>
+	<?php display_blog_menu($pc,$tid,$blogMenus); ?>
 	</td>
 <?php
 	}
@@ -785,7 +800,7 @@ Blog名
 	if($tag == 3)
 		display_fav_folder($link,$pc,$pid,$pur,addslashes($_GET["order"]));
 	elseif($tag < 5 )
-		display_art_list($link,$pc,$tag,$pur,(int)($_GET["tid"]),addslashes($_GET["order"]));
+		display_art_list($link,$pc,$tag,$pur,$tid,addslashes($_GET["order"]));
 	elseif($tag == 5)
 		display_friend_manage($pc,$f_err);
 	elseif($tag == 6)

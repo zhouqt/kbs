@@ -142,7 +142,7 @@ if($pur != 3)
 	pc_counter($link);
 
 $nodes = pc_load_nodes($link,$pc,$pur,$pno);   //文章
-$blogs = pc_blog_menu($link,$pc["UID"],0);     //分类
+$blogs = pc_blog_menu($link,$pc,0);            //分类
 $comments = pc_load_comments($link,$pc,$pur);  //评论
 $bc = pc_load_calendar($link,$pc,$pur);        //日历
 $trackbacks = pc_load_trackbacks($link,$pc);   //引用

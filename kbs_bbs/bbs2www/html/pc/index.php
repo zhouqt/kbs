@@ -779,7 +779,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	$tags = $userPermission["tags"];
 	
 	$nodes = pc_load_nodes($link,$pc,$pur,$pno);
-	$blogs = pc_blog_menu($link,$pc["UID"],0);
+	$blogs = pc_blog_menu($link,$pc,0);
 	
 	if($pur != 3)//Blog所有者的访问不进行计数  windinsn dec 10,2003
 		pc_counter($link);

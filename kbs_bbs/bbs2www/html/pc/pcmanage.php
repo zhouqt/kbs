@@ -288,7 +288,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 	Blog
 	<select name="tid" class="f1">
 <?php
-		$blogs = pc_blog_menu($link,$pc["UID"],$tag);
+		$blogs = pc_blog_menu($link,$pc,$tag);
 		for($i = 0 ; $i < count($blogs) ; $i ++)
 		{
 			if($blogs[$i]["TID"] == $tid )
@@ -457,7 +457,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 	Blog
 	<select name="tid" class="f1">
 <?php
-		$blogs = pc_blog_menu($link,$pc["UID"],$rows[access]);
+		$blogs = pc_blog_menu($link,$pc,$rows[access]);
 		for($i = 0 ; $i < count($blogs) ; $i ++)
 		{
 			if($blogs[$i]["TID"] == $rows[tid])
@@ -686,7 +686,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			$favmode = (int)($_POST["pcfavmode"]);
 			if($favmode != 1 && $favmode != 2)
 				$favmode = 0;
-			$query = "UPDATE `users` SET `createtime` = `createtime` , `corpusname` = '".addslashes(undo_html_format($_POST["pcname"]))."',`description` = '".addslashes(undo_html_format($_POST["pcdesc"]))."',`theme` = '".addslashes(undo_html_format($_POST["pcthem"]))."' , `backimage` = '".addslashes(undo_html_format($_POST["pcbkimg"]))."' , `logoimage` = '".addslashes(undo_html_format($_POST["pclogo"]))."' , `modifytime` = NOW( ) , `htmleditor` = '".(int)($_POST["htmleditor"])."', `style` = '".(int)($_POST["template"])."' , `indexnodechars` = '".(int)($_POST["indexnodechars"])."' , `indexnodes` = '".(int)($_POST["indexnodes"])."' , `favmode` = '".$favmode."' , `useremail` = '".addslashes($_POST["pcuseremail"])."' , `userinfor` = '".addslashes($_POST["userinfor"])."'  WHERE `uid` = '".$pc["UID"]."';";	
+			$query = "UPDATE `users` SET `createtime` = `createtime` , `corpusname` = '".addslashes(undo_html_format($_POST["pcname"]))."',`description` = '".addslashes(undo_html_format($_POST["pcdesc"]))."',`theme` = '".addslashes(undo_html_format($_POST["pcthem"]))."' , `backimage` = '".addslashes(undo_html_format($_POST["pcbkimg"]))."' , `logoimage` = '".addslashes(undo_html_format($_POST["pclogo"]))."' , `modifytime` = NOW( ) , `htmleditor` = '".(int)($_POST["htmleditor"])."', `style` = '".(int)($_POST["template"])."' , `indexnodechars` = '".(int)($_POST["indexnodechars"])."' , `indexnodes` = '".(int)($_POST["indexnodes"])."' , `favmode` = '".$favmode."' , `useremail` = '".addslashes(trim($_POST["pcuseremail"]))."' , `userinfor` = '".addslashes(trim($_POST["userinfor"]))."' , `defaulttopic` = '".addslashes(trim($_POST["pcdefaulttopic"]))."'  WHERE `uid` = '".$pc["UID"]."';";	
 			mysql_query($query,$link);
 			
 			$log_action = "UPDATE SETTINGS";

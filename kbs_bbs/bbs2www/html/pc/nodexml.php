@@ -43,7 +43,7 @@ if($pur != 3)
 	pc_ncounter($link,$nid);
 }
 
-$blogs = pc_blog_menu($link,$pc["UID"],$node[access]);
+$blogs = pc_blog_menu($link,$pc,$node[access]);
 
 if($node[comment])
 {

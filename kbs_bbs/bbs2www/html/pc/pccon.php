@@ -326,7 +326,7 @@
 			<tr><td class=t5 style="line-height:20px">
 			<ul>
 <?php
-	$blogtopics = pc_blog_menu($link,$pc["UID"],$rows[access]);
+	$blogtopics = pc_blog_menu($link,$pc,$rows[access]);
 	foreach( $blogtopics as $blogtopic )
 	{
 		if( $blogtopic["TID"] != $tid )
