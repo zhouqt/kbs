@@ -719,12 +719,14 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
             }
         }
     }
+#ifdef DEBUG
     if (!HAS_PERM(PERM_SYSOP)) {
 		prints("本端口仅供测试用，请连接本站的其他开放端口。\n");
 		oflush();
 		Net_Sleep(3);
 		system_abort();
     }
+#endif
     multi_user_check();
     alarm(0);
     signal(SIGALRM, SIG_IGN);/*Haohmaru.98.11.12*/

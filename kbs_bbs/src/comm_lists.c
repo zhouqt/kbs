@@ -50,6 +50,7 @@ int     Help(), New(), Post(), Read(), Select(), Users(), Welcome();
 int     t_www(),setcalltime();
 int     show_allmsgs();
 int     Conditions(), x_cloak(), t_users(), x_info(), x_fillform(), x_vote();
+int	ShowWeather();	/* 2001.6.12 */
 int     x_results(), ent_bnet(), a_edits(), x_edits();
 int     x_date(),shownotepad(),x_userdefine();
 /*Add by SmallPig*/
@@ -136,6 +137,7 @@ struct scommandlist {
     "VoteResult",   x_results,
     "ExecBBSNet",   ent_bnet,
     "ShowWelcome",  Welcome,
+    "ReadWeather",	ShowWeather, /*Bigman 2001.6.12 */
     "SpecialUser",  Users,
     /*"ExecViewer",   t_announce,*/
     "LockScreen",   lock_scr, /* Leeward 98.02.22 */

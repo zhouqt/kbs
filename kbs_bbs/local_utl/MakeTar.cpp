@@ -57,7 +57,7 @@ main(int argc,char** argv)
 {
   FILE* filein;
   char* filename="boardlist";
-  char* savepath="/home0/backup/Announce";
+  char* savepath="/backup/bbs/Announce";
   char  buf[1024];
 
   if ((argc>1)&&!strcmp(argv[1],"-h")) {

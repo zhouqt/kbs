@@ -3993,6 +3993,14 @@ Conditions()             /* 显示版权信息COPYING */
 }
 
 int
+ShowWeather()                   /* 显示版本信息Version.Info */
+{
+    modify_user_mode( XMENU );
+    ansimore("WEATHER",YEA) ;
+    clear() ;
+    return 0 ;
+}
+int
 Welcome()               /* 显示欢迎画面 Welcome */
 {
     modify_user_mode( XMENU );
