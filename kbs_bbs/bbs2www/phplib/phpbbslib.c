@@ -4218,6 +4218,7 @@ static PHP_FUNCTION(bbs_updatearticle)
     int i;
     bcache_t *bp;
     sigjmp_buf bus_jump;
+    int asize;
     /*int filtered = 0;*/
 
 	int ac = ZEND_NUM_ARGS();
@@ -4251,13 +4252,16 @@ static PHP_FUNCTION(bbs_updatearticle)
     fprintf(fout, "%s", unix_string(content));
 #ifndef RAW_ARTICLE
     fprintf(fout, "\033[36m※ 修改:·%s 於 %s 修改本文·[FROM: %s]\033[m\n", currentuser->userid, wwwCTime(time(0)) + 4, SHOW_USERIP(currentuser, fromhost));
-    while (fgets(buf2, sizeof(buf2), fin) != NULL) {
-        if (Origin2(buf2)) {
-            fprintf(fout, "%s", buf2);
-            break;
+#endif
+    while ((asize = -attach_fgets(buf2, sizeof(buf2), fin)) != 0) {
+        if (asize <= 0) {
+            if (Origin2(buf2)) {
+                fprintf(fout, "%s", buf2);
+            }
+        } else {
+            put_attach(fin, fout, asize);
         }
     }
-#endif
     fclose(fin);
     fclose(fout);
 #ifdef FILTER
