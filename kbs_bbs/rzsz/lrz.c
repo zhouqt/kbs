@@ -149,6 +149,7 @@ char * bbs_zrecvfile()
 
     Rxtimeout = 100;
     Restricted = 2;
+    no_timeout = TRUE;
 
     protocol = ZM_ZMODEM;
 
