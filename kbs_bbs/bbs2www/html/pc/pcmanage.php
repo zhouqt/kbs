@@ -218,13 +218,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 </tr>
 <tr>
 	<td class="t11">内容
-<?php
-	if($pc["EDITOR"] == 0){
-?>
-	<input type="checkbox" name="htmltag" value=1 checked>使用HTML标记
-<?php
-	}
-?>
+	<input type="checkbox" name="htmltag" value=1 <?php if($pc["EDITOR"] == 0) echo "checked"; ?>>使用HTML标记
 	</td>
 </tr>
 <tr>
@@ -356,13 +350,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 </tr>
 <tr>
 	<td class="t11">内容
-<?php
-	if($pc["EDITOR"] == 0){
-?>
-	<input type="checkbox" name="htmltag" value=1 <?php if(strstr($rows[body],$pcconfig["NOWRAPSTR"]) || $rows[htmltag] == 1) echo "checked"; ?> >使用HTML标记
-<?php
-	}
-?>
+	<input type="checkbox" name="htmltag" value=1 <?php if((strstr($rows[body],$pcconfig["NOWRAPSTR"]) || $rows[htmltag] == 1) && $pc["EDITOR"] == 0) echo "checked"; ?> >使用HTML标记
 	</td>
 </tr>
 <tr>
