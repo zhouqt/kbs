@@ -6,7 +6,7 @@
  * default 缺省
  * simplest 不显示列表
  */
-//define('BOARDLISTSTYLE','default'); //ToDo: 这还没有放入 site_defines.php
+//define('BOARDLISTSTYLE','default');
 
 define("ANNOUNCENUMBER",5);  //首页滚动显示的公告数量
 
@@ -47,8 +47,6 @@ $SiteURL="http://172.16.50.79"; //站点 URL，也就是本站首页地址
 
 $SiteName="大运村BBS";   //站点名称
 
-$DEFAULTStyle="defaultstyle";  //默认CSS风格，如果要改动千万要确认该CSS存在。ToDo: 这还没有放入 site_defines.php
-
 $Banner="pic/ws.jpg"; //页面左上角显示的图片
 
 /* 分区代号和分区名称 */
@@ -60,7 +58,6 @@ $section_names = array(
     array("学术科学", "[学习]"),
     array("休闲娱乐", "[娱乐]")
 );
-$sectionCount=count($section_names);
 
 
 /* 数据库配置 */

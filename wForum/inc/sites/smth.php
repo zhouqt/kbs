@@ -12,8 +12,6 @@ $SiteName="水木清华";
 
 $HTMLTitle="BBS 水木清华站";
 
-$DEFAULTStyle="defaultstyle";
-
 $Banner="bar/bar.jpg";
 
 define('SMS_SUPPORT', 1);
@@ -38,7 +36,6 @@ $section_names = array(
     array("操作系统", "[系统/内核]"),
     array("电脑技术", "[专项技术]")
 );
-$sectionCount=count($section_names);
 
 require "default.php";
 ?>

@@ -10,8 +10,6 @@ $SiteURL="http://172.16.50.79";
 
 $SiteName="大运村BBS";
 
-$DEFAULTStyle="defaultstyle";
-
 $Banner="pic/ws.jpg";
 
 define ('MAINTITLE','<IMG SRC="bar/title.jpg">');
@@ -27,7 +25,6 @@ $section_names = array(
     array("学术科学", "[学习]"),
     array("休闲娱乐", "[娱乐]")
 );
-$sectionCount=count($section_names);
 
 $FooterBan='<table cellSpacing=0 cellPadding=0 border=0 align=center><tr><td width=100 align=center><a href="http://www.turckware.ru/en/e_mmc.htm#download" target="_blank"><img border="0" src="/images/copyright/mmcache02.gif"></a></td><td width=100 align=center><a href="http://www.php.net/" target="_blank"><img border="0" src="/images/copyright/php-small-trans-light.gif"></a></td><td width=100 align=center><a href="http://www.apache.org/" target="_blank"><img border="0" src="/images/copyright/apache_pb.gif"></a></td><td width=100 align=center><a href="http://www.redhat.com/" target="_blank"><img border="0" src="/images/copyright/poweredby.png"></a></td><td width=100 align=center><a href="http://www.mysql.com/" target="_blank"><img border="0" src="/images/copyright/mysql-17.gif"></a></td></tr></table>';
 

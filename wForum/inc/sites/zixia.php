@@ -12,8 +12,6 @@ $SiteName="大话西游";
 
 $SiteURL="http://wforum.zixia.net";
 
-$DEFAULTStyle="defaultstyle";
-
 $Banner="bar/bar.jpg";
 
 define('SMS_SUPPORT', 1);
@@ -39,7 +37,7 @@ $section_names = array(
     array("东城西就", "[省份/城市]"),
     array("大圣取经", "[专业/申请]") 
 );
-$sectionCount=count($section_names);
+
 
 require "default.php";
 ?>

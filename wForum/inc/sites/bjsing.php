@@ -10,8 +10,6 @@ $SiteURL="http://bbs.bjsing.net:8081/forum/";
 
 $SiteName="北极星BBS";
 
-$DEFAULTStyle="defaultstyle";
-
 $Banner="pic/ws.jpg";
 
 define ("MAINTITLE","<IMG SRC=\"bar/title.jpg\">");
@@ -32,7 +30,6 @@ $section_names = array(
     array("谈天聊地", "[谈天][新闻]"),
     array("技术转信", "[电脑][系统]"),
 );
-$sectionCount=count($section_names);
 
 require "default.php";
 ?>

@@ -9,7 +9,7 @@ $Copyright="<a href='http://www.aka.cn/' target=_blank>°¢¿¨ĞÅÏ¢¼¼Êõ(±±¾©)ÓĞÏŞ¹«Ë
  * ¸ñÊ½
  * 0. integer: ÊÇ³£Êı(0)»¹ÊÇ±äÁ¿(1)£¬Ò»°ãÕ¾µã¶¨Òå²ÎÊı¶¼Ó¦¸ÃÊÇ³£Êı
  * 1. string:  ³£Á¿»ò±äÁ¿Ãû³Æ
- * 2. string:  ³£Á¿»ò±äÁ¿ÀàĞÍ£ºinteger(i), string(s), boolean(b)
+ * 2. string:  ³£Á¿»ò±äÁ¿ÀàĞÍ£ºinteger(i), string(s), boolean(b), enum ´ı¼Ó
  * 3. mixed:   Ä¬ÈÏÖµ
  * 4. string:  ²ÎÊıËµÃ÷
  */
@@ -87,6 +87,11 @@ if (!defined('USEBROWSCAP')) { //ÊÇ·ñÊ¹ÓÃ browscap º¯ÊıÀ´¸ü×¼È·µØÅĞ¶Ïä¯ÀÀÆ÷ºÍ²Ù×
 	define('USEBROWSCAP',0); //Ä¬ÈÏ OFF. ÉèÖÃ³É ON ËäÈ»»á×¼È·ÅĞ¶Ï³ö·Ç IE ä¯ÀÀÆ÷£¬µ«ÊÇ»á´ó´ó½µµÍ³öÊ×Ò³µÄËÙ¶È£¬É÷ÓÃ£¡
 }
 
+$sectionCount=count($section_names);
+
+if (!isset($DEFAULTStyle)) {
+	$DEFAULTStyle="defaultstyle";  //Ä¬ÈÏCSS·ç¸ñ£¬Èç¹ûÒª¸Ä¶¯Ç§ÍòÒªÈ·ÈÏ¸ÃCSS´æÔÚ¡£
+}
 
 
 /*
