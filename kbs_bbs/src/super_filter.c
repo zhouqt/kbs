@@ -338,7 +338,7 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
         p->s=!m.s;
         return;
     }
-    if(strncmp(s+l,"没有",4)) {
+    if(!strncmp(s+l,"没有",4)) {
         struct fvar_struct m;
         m.p = 0;
         feval(&m, s, l+4, r);
