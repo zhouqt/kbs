@@ -888,6 +888,7 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
 
                 close(fd);
             }
+			fclose(fp2);
         }
 	  fclose(fp);
 	  }
