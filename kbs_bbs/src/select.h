@@ -85,6 +85,7 @@ int list_select_loop(struct _select_def *conf);
 #define SIF_NUMBERKEY	0x100  /* 数字选择0-9*/
 #define SIF_ALPHAKEY	0x200  /*字母选择a-z*/
 #define SIF_ESCQUIT	0x400  /* ESC退出 */
+#define SIF_RIGHTSEL 0x800 /* 右键选择*/
 
 
 #define SIT_SELECT	0x1
