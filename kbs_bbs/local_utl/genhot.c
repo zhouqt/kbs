@@ -5,7 +5,7 @@
 
 #define	MAX_COMMEND 15
 
-void gen_commend_xml()
+int gen_commend_xml()
 {
 	int fd,dirfd;
 	FILE *fp;
