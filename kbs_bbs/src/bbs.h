@@ -66,6 +66,10 @@
 
 #ifndef _cplusplus
 
+#ifndef byte
+typedef unsigned char byte;
+#endif
+
 #ifndef HAVE_BOOL
 typedef enum { false = 0, true = 1 } bool;
 #else
@@ -501,10 +505,6 @@ struct _brc_cache_entry {
 #define FRIENDSGROUP_UNUSE 020
 
 #ifdef SMS_SUPPORT
-
-#ifndef byte
-typedef unsigned char byte;
-#endif
 
 #define SMS_SHM_SIZE 1024*50
 
