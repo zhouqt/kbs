@@ -318,6 +318,7 @@ extern "C" {
     char get_article_flag(struct fileheader *ent, struct userec *user, char *boardname, int is_bm);
     time_t get_posttime(const struct fileheader *fileinfo);
     void set_posttime(struct fileheader *fileinfo);
+    char* checkattach(char *buf, long size,long *len,char** attachptr);
 
 /* define in record.c */
     int safewrite(int fd, void *buf, int size);

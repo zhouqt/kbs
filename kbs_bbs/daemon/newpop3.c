@@ -298,18 +298,18 @@ void outfile(filename, linenum)
     char *filename;
     int linenum;
 {
-    FILE *fp;
     char linebuf[10240];
     char *buf, *p;              /* KCN.99.09.01 */
     char *ptr;
-    long size,left;
+    size_t size;
+    long left;
 
     if (linenum) {
         BBS_TRY {
             bool esc;
             if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0) {
                 outs(".");
-                BBS_RETURN_VOID();
+                BBS_RETURN_VOID;
             }
             esc=false;
             buf=linebuf;
