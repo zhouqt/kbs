@@ -159,9 +159,7 @@ struct textline *back_line(struct textline *pos,int num)
 }
 
 /* 向后num 行,同时计算真实移动行数放入moveln*/
-struct textline *forward_line(pos, num)
-    struct textline *pos;
-    int num;
+struct textline *forward_line(struct textline * pos, int num)
 {
     moveln = 0;
     while (num-- > 0)
@@ -198,8 +196,7 @@ int getlineno()
     return cnt;
 }
 
-char *killsp(s)
-    char *s;
+char *killsp(char * s)
 {
     while (*s == ' ')
         s++;
@@ -252,7 +249,7 @@ struct textline *alloc_line_w(int w)
 void goline(n)
     int n;
 {
-    register struct textline *p = firstline;
+    struct textline *p = firstline;
     int count;
 
     if (n < 0)
@@ -316,7 +313,7 @@ void searchline(text)
     int addr;
     int tt;
 
-    register struct textline *p = currline;
+    struct textline *p = currline;
     int count = 0;
 
     tmpline = currln;
@@ -376,8 +373,7 @@ void search()
 }
 
 
-void append(p, line)
-    register struct textline *p, *line;
+void append(struct textline * p, struct textline * line)
 {
     p->next = line->next;
     if (line->next)
@@ -393,8 +389,7 @@ void append(p, line)
   firstline pointers.
  */
 
-void delete_line(line)
-    register struct textline *line;
+void delete_line(struct textline * line)
 {
     /* if single line */
     if (!line->next && !line->prev) {
@@ -427,7 +422,7 @@ void delete_line(line)
 
 void split(struct textline * line, int pos)
 {
-    register struct textline *p;
+    struct textline *p;
 
     countline();
     if (moveln>MAX_EDIT_LINE) {
@@ -468,7 +463,7 @@ void split(struct textline * line, int pos)
 
 int join(struct textline * line)
 {
-    register int ovfl;
+    int ovfl;
 
     if (!line->next)
         return true;
@@ -476,7 +471,7 @@ int join(struct textline * line)
        return true ; */
 //    ovfl = line->len + line->next->len - WRAPMARGIN;
 //    if (ovfl < 0) {
-    if (line->maxlen<=line->len+line->next->len+1) {
+    if (line->maxlen<=line->len+line->next->len+5) {
         int ml;
         char *q;
         ml = ((line->len+line->next->len)/WRAPMARGIN+1)*WRAPMARGIN;
@@ -539,7 +534,7 @@ void insert_char(int ch)
         p->len++;
         currpnt++;
     }
-    if (p->len >= p->maxlen-1) {
+    if (p->len >= p->maxlen-5) {
         char *q = (char *)malloc(p->maxlen+WRAPMARGIN+1);
         memcpy(q, p->data, p->len+1);
         free(p->data);
@@ -608,7 +603,7 @@ void ve_insert_str(str)
 
 void delete_char()
 {
-    register int i;
+    int i;
 
     if (currline->len == 0)
         return;
