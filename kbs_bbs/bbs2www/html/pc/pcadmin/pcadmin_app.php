@@ -37,6 +37,9 @@ function pc_add_users($link,$userid,$corpusname)
 	if(bbs_getuser($userid, $lookupuser) == 0 )
 		return FALSE;
 	
+	if(pc_load_infor($link,$userid))
+		return FALSE;
+	
 	//添加用户
 	$query = "INSERT INTO `users` ( `uid` , `username` , `corpusname` , `description` , `theme` , `nodelimit` , `dirlimit` , `createtime` , `style` , `backimage` , `visitcount` , `nodescount` , `logoimage` , `modifytime` , `links` , `htmleditor` , `indexnodechars` , `indexnodes` , `useremail` , `favmode` , `updatetime` , `userinfor` ) ".
 		 "VALUES ('', '".addslashes($lookupuser["userid"])."', '".addslashes($corpusname)."', NULL , 'others', '300', '300', NOW( ) , '0', NULL , '0', '0', NULL , NULL , '', '0', '600', '5', '', '0', NULL , '');";
@@ -60,7 +63,7 @@ function pc_add_users($link,$userid,$corpusname)
 	
 	//发布公告
 	$annTitle = "[公告] 批准 ".$lookupuser["userid"]." 的 Blog 申请";
-	$annBogy =  "\n\n        根据用户 ".$lookupuser["userid"]." 申请，经审核、讨论后决定开通该用户\n".
+	$annBody =  "\n\n        根据用户 ".$lookupuser["userid"]." 申请，经审核、讨论后决定开通该用户\n".
 		    "    Blog ，Blog 名称“".$corpusname."”。\n\n".
 		    "        Blog 大部分功能提供在web 模式下，Blog 名称、描述、".
 		    "    分类等属性请用户在web 登录后自行修改。\n\n";
