@@ -339,8 +339,8 @@ function pcmain_cache_header()
 }
 
 //20min更新一次
-//if(pcmain_cache_header())
-//	return;
+if(pcmain_cache_header())
+	return;
 
 pc_html_init("gb2312" , $pcconfig["BBSNAME"]."Blog");
 ?>
