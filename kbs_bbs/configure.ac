@@ -8,7 +8,7 @@ case "${host}" in
   *)
 	;;
 esac
-AM_INIT_AUTOMAKE(smthbbs, 1.0)
+AM_INIT_AUTOMAKE(smthbbs, 1.0.1)
 
 AC_CONFIG_SRCDIR([config.h.in])
 AM_CONFIG_HEADER(config.h)
