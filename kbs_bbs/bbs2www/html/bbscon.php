@@ -134,6 +134,18 @@ function get_mimetype($name)
 [<a href="/cgi-bin/bbs/bbsfwd?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">转寄/推荐</a>]
 [<a href="/cgi-bin/bbs/bbsccc?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">转贴</a>]
 <?php
+				if (bbs_can_delete_article($brdarr, $articles[1], $currentuser))
+				{
+?>
+[<a onclick="return confirm('你真的要删除本文吗?')" href="bbsdel.php?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">删除文章</a>]
+<?php
+				}
+				if (bbs_can_edit_article($brdarr, $articles[1], $currentuser))
+				{
+?>
+[<a href="/cgi-bin/bbs/bbsedit?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">修改文章</a>]
+<?php
+				}
 				if ($articles[0]["ID"] != 0)
 				{
 ?>
@@ -150,7 +162,7 @@ function get_mimetype($name)
 <?php
 				}
 ?>
-[<a href="/cgi-bin/bbs/bbspst?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>&userid=<?php echo $currentuser["userid"]; ?>&title=Re: <?php echo urlencode($articles[1]["TITLE"]); ?>&refilename=<?php echo $articles[1]["FILENAME"]; ?>&attach=<?php echo $brdarr["FLAG"]&BBS_BOARD_ATTACH ? 1 : 0; ?>">回文章</a>]
+[<a href="/cgi-bin/bbs/bbspst?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>&userid=<?php echo $articles[1]["OWNER"]; ?>&title=Re: <?php echo urlencode($articles[1]["TITLE"]); ?>&refilename=<?php echo $articles[1]["FILENAME"]; ?>&attach=<?php echo $brdarr["FLAG"]&BBS_BOARD_ATTACH ? 1 : 0; ?>">回文章</a>]
 [<a href="/cgi-bin/bbs/bbstfind?board=<?php echo $brd_encode; ?>&title=<?php echo urlencode($articles[1]["TITLE"]); ?>">同主题阅读</a>]
 [<a href="javascript:history.go(-1)">快速返回</a>]
 <hr class="default" />
@@ -164,6 +176,18 @@ function get_mimetype($name)
 [<a href="/cgi-bin/bbs/bbsfwd?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">转寄/推荐</a>]
 [<a href="/cgi-bin/bbs/bbsccc?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">转贴</a>]
 <?php
+				if (bbs_can_delete_article($brdarr, $articles[1], $currentuser))
+				{
+?>
+[<a onclick="return confirm('你真的要删除本文吗?')" href="bbsdel.php?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">删除文章</a>]
+<?php
+				}
+				if (bbs_can_edit_article($brdarr, $articles[1], $currentuser))
+				{
+?>
+[<a href="/cgi-bin/bbs/bbsedit?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">修改文章</a>]
+<?php
+				}
 				if ($articles[0]["ID"] != 0)
 				{
 ?>
@@ -180,7 +204,7 @@ function get_mimetype($name)
 <?php
 				}
 ?>
-[<a href="/cgi-bin/bbs/bbspst?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>&userid=<?php echo $currentuser["userid"]; ?>&title=Re: <?php echo urlencode($articles[1]["TITLE"]); ?>&refilename=<?php echo $articles[1]["FILENAME"]; ?>&attach=<?php echo $brdarr["FLAG"]&BBS_BOARD_ATTACH ? 1 : 0; ?>">回文章</a>]
+[<a href="/cgi-bin/bbs/bbspst?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>&userid=<?php echo $articles[1]["OWNER"]; ?>&title=Re: <?php echo urlencode($articles[1]["TITLE"]); ?>&refilename=<?php echo $articles[1]["FILENAME"]; ?>&attach=<?php echo $brdarr["FLAG"]&BBS_BOARD_ATTACH ? 1 : 0; ?>">回文章</a>]
 [<a href="/cgi-bin/bbs/bbstfind?board=<?php echo $brd_encode; ?>&title=<?php echo urlencode($articles[1]["TITLE"]); ?>">同主题阅读</a>]
 [<a href="javascript:history.go(-1)">快速返回</a>]
 <?php
