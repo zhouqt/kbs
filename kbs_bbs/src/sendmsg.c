@@ -319,92 +319,90 @@ void r_msg()
 
     now = get_unreadmsg(currentuser->userid);
     if(now==-1) now = get_msgcount(currentuser->userid)-1;
-    do {
-        while(1){
-            load_msgtext(1, currentuser->userid, now, buf);
-            translate_msg(buf, outmsg);
-            uid[12] = 0;
-            memcpy(uid, buf+2, 12);
-            i=strlen(uid);
-            while(i>0&&uid[i-1]==' ') i--;
-            uid[i] = 0;
-            buf[29]=0;
-            i=19;
-            while(buf[i]=='0'&&i<28) i++;
-            pid = atoi(buf+i);
-            uin = t_search(uid, pid);
-            if(buf[1]=='3'||uin==NULL) canreply = 0;
-            else canreply = 1;
-            
-            good_move(0,0);
-            if (DEFINE(currentuser, DEF_SOUNDMSG))
-                bell();
-            if (DEFINE(currentuser, DEF_HIGHCOLOR))
-                prints("\x1b[1m%s", outmsg);
-            else
-                prints("%s", outmsg);
+    while(1){
+        load_msgtext(1, currentuser->userid, now, buf);
+        translate_msg(buf, outmsg);
+        uid[12] = 0;
+        memcpy(uid, buf+2, 12);
+        i=strlen(uid);
+        while(i>0&&uid[i-1]==' ') i--;
+        uid[i] = 0;
+        buf[29]=0;
+        i=19;
+        while(buf[i]=='0'&&i<28) i++;
+        pid = atoi(buf+i);
+        uin = t_search(uid, pid);
+        if(buf[1]=='3'||uin==NULL) canreply = 0;
+        else canreply = 1;
+        
+        good_move(0,0);
+        clrtoeol();
+        if (DEFINE(currentuser, DEF_SOUNDMSG))
+            bell();
+        if (DEFINE(currentuser, DEF_HIGHCOLOR))
+            prints("\x1b[1m%s", outmsg);
+        else
+            prints("%s", outmsg);
 
-            if(first) {
-                refresh();
-                oflush();
-                ch = igetkey();
-                first = 0;
-            }
-            
-
-            prints("[m  µÚ%3d/%-3dÌõÏûÏ¢, ¡ü¡ýÇÐ»»Ñ¶Ï¢, Enter ½áÊø, %s", now+1, count, canreply?"»Ø¸´:":(uin?"¸ÃÏûÏ¢ÎÞ·¨»Ø¸´":"ÓÃ»§ÒÑÏÂÕ¾,ÎÞ·¨»Ø¸´"));
-            clrtoeol();
-            good_getyx(&oy, &ox);
-            
+        if(first) {
             refresh();
             oflush();
-            if(canreply)
-                ch = -getdata(oy, ox, NULL, buf, 1024, DOECHO, NULL, true);
-            else {
-                do {
-                    ch = igetkey();
-                } while(ch!=KEY_UP&&ch!=KEY_DOWN&&ch!='\r'&&ch!='\n');
-            }
-            for(i=0;i<=oy;i++)
-                saveline(i, 1, savebuffer[i]);
-            switch(ch) {
-                case KEY_UP:
-                    now--;
-                    if(now<0) now=count-1;
-                    break;
-                case KEY_DOWN:
-                    now++;
-                    if(now>=count) now=0;
-                    break;
-                default:
-                    if(canreply) {
-                        if(buf[0]) {
-                            strcpy(MsgDesUid, uid);
-                            i = do_sendmsg(uin, buf, 4);
-                            buf[0]=0;
-                            if(i==1) strcpy(buf, "[1m°ïÄãËÍ³öÑ¶Ï¢ÁË[m");
-                            else if(i==-2) strcpy(buf, "[1m¶Ô·½ÒÑ¾­ÀëÏßÁË...[m");
-                            if(buf[0]) {
-                                good_move(0,0);
-                                clrtoeol();
-                                prints("%s", buf);
-                                refresh();
-#ifdef NINE_BUILD
-                                if(i!=1)
-#endif
-                                sleep(1);
-                                saveline(0, 1, savebuffer[0]);
-                            }
-                        }
-                        ch = '\n';
-                    }
-                    break;
-            }
-            if (ch=='\r'||ch=='\n') goto outhere;
+            ch = igetkey();
+            first = 0;
         }
+        
 
-        now = get_unreadmsg(currentuser->userid);
-    } while(now!=-1);
+        prints("[m  µÚ%3d/%-3dÌõÏûÏ¢, ¡ü¡ýÇÐ»»Ñ¶Ï¢, Enter ½áÊø, %s", now+1, count, canreply?"»Ø¸´:":(uin?"¸ÃÏûÏ¢ÎÞ·¨»Ø¸´":"ÓÃ»§ÒÑÏÂÕ¾,ÎÞ·¨»Ø¸´"));
+        clrtoeol();
+        good_getyx(&oy, &ox);
+        
+        refresh();
+        oflush();
+        if(canreply)
+            ch = -getdata(oy, ox, NULL, buf, 1024, DOECHO, NULL, true);
+        else {
+            do {
+                ch = igetkey();
+            } while(ch!=KEY_UP&&ch!=KEY_DOWN&&ch!='\r'&&ch!='\n');
+        }
+        for(i=0;i<=oy;i++)
+            saveline(i, 1, savebuffer[i]);
+        switch(ch) {
+            case KEY_UP:
+                now--;
+                if(now<0) now=count-1;
+                break;
+            case KEY_DOWN:
+                now++;
+                if(now>=count) now=0;
+                break;
+            default:
+                if(canreply) {
+                    if(buf[0]) {
+                        strcpy(MsgDesUid, uid);
+                        i = do_sendmsg(uin, buf, 4);
+                        buf[0]=0;
+                        if(i==1) strcpy(buf, "[1m°ïÄãËÍ³öÑ¶Ï¢ÁË[m");
+                        else if(i==-2) strcpy(buf, "[1m¶Ô·½ÒÑ¾­ÀëÏßÁË...[m");
+                        if(buf[0]) {
+                            good_move(0,0);
+                            clrtoeol();
+                            prints("%s", buf);
+                            refresh();
+#ifdef NINE_BUILD
+                            if(i!=1)
+#endif
+                            sleep(1);
+                            saveline(0, 1, savebuffer[0]);
+                        }
+                    }
+                    ch = '\n';
+                }
+                break;
+        }
+        if (ch=='\r'||ch=='\n') break;
+    }
+
 
 outhere:
     showansi = tmpansi;

@@ -356,6 +356,15 @@ int igetch()
             if (hifd <= i_newfd)
                 hifd = i_newfd + 1;
         }
+        if (!inremsg) {
+            while (msg_count) {
+                inremsg = true;
+                msg_count--;
+                r_msg();
+                inremsg = false;
+            }
+            goto igetagain;
+        }
         sr = select(hifd, &readfds, NULL, NULL, &to);
         if (sr < 0 && errno == EINTR) {
             if (talkrequest)
