@@ -48,7 +48,7 @@ CSIE_DEF = -DSHOW_IDLE_TIME -DBBSGID=99 -D_DETAIL_UINFO_
 
 PROGNAME = bbsd_single
 
-all: $(PROGNAME) chatd $(BBSLIB) newpop3d bbspost
+all: $(PROGNAME) chatd $(BBSLIB) newpop3d
 
 ifeq (Makefile.spec ,$(wildcard Makefile.spec))
 include	Makefile.spec
@@ -73,8 +73,8 @@ COBJS    = bbs.o record.o delete.o stuff.o mail.o register.o \
 	   newmain_single.o newio.o newterm.o convcode.o bbs_sendmail.o crypt.o \
 	   ucache.o utmp.o log.o md5.o $(BBSSITE).o
 
-#BBSLIBOBJS = librecord.o liblog.o libucache.o libstuff.o libmd5.o libcrypt.o libpass.o libbcache.o libutmp.o liblvars.o $(BBSSITE).o libboards.o liblvars.o
-BBSLIBOBJS = record.o log.o ucache.o stuff.o md5.o crypt.o pass.o bcache.o utmp.o lvars.o $(BBSSITE).o boards.o lvars.o
+#BBSLIBOBJS = librecord.o liblog.o libucache.o libstuff.o libmd5.o libcrypt.o libpass.o libbcache.o libutmp.o liblvars.o $(BBSSITE).o libboards.o liblvars.o libbbs_sendmail.o
+BBSLIBOBJS = record.o log.o ucache.o stuff.o md5.o crypt.o pass.o bcache.o utmp.o lvars.o $(BBSSITE).o boards.o lvars.o bbs_sendmail.o
 
 OTHERS   = bbs.h edit.h
 
@@ -108,11 +108,6 @@ $(PROGNAME): $(COBJS) $(OTHERS)
 bbstest: $(BBSLIB) $(OTHERS) newmain_single.o newio.o newterm.o convcode.o
 	$(CC) -o bbstest $(CFLAGS) $(BBSLIB) $(LIBS) newmain_single.o newio.o newterm.o convcode.o
 	cp -f bbstest ../bin/bbstest
-
-bbspost: bbspost.o $(BBSLIB) 
-	gcc -DDONT_HAVE_TM_GMTOFF $(OS_DEF) -DLEEWARD_X_RECORD -o bbspost bbspost.o $(BBSLIB) $(LIBS)
-	cp -f bbspost $(BBSHOME)/bin
-	chmod 6755 $(BBSHOME)/bin/bbspost
 
 lint: $(LNFILES)
 	lint -abh $(LNFILES)

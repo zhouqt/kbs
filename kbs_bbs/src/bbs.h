@@ -56,11 +56,6 @@
 #include "config.h"             /* User-configurable stuff */
 #include "permissions.h"
 
-#ifdef AIX
-#ifndef OS_LACK_SOCKLEN
-#define OS_LACK_SOCKLEN
-#endif
-#endif
 
 /* add by KCN ,disable perror */
 #ifdef BBSMAIN
@@ -301,10 +296,9 @@ typedef size_t socklen_t;
 /* added period 2000-09-11	4 FavBoard */
 #define FAVBOARDNUM     20
 
-//#ifndef	BBS2WWW
 #include "vars.h"
 #include "func.h"
-//#endif
+
 
 #define system my_system
 

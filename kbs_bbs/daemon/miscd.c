@@ -306,7 +306,6 @@ int dodaemon(char* argv1,char* daemon)
     if (((daemon==NULL)||(!strcmp(daemon,"killd")))&&fork()) {
      strcpy(argv1,"killd");
      while (1) {
-     	sleep(getnextday4am() - time( 0 ));
     	 switch(fork()) {
        	     case -1: 
        	        log("1miscdaemon","fork failed\n");
@@ -331,6 +330,7 @@ int dodaemon(char* argv1,char* daemon)
        	           break;   
     	    } 
     	 }
+     	sleep(86400); /* 1 day */
      };
     }
     if (((daemon==NULL)||(!strcmp(daemon,"userd")))&&fork()) {

@@ -2181,7 +2181,7 @@ int mode;
         sprintf(buf,"cross_posted '%s' on '%s'", postfile.title, currboard) ;
     else
         sprintf(buf,"自动发表系统 POST '%s' on '%s'", postfile.title, currboard) ;
-    report(buf) ;
+    log("1user",buf) ;
     return 1;
 }
 
@@ -2326,7 +2326,9 @@ post_article()                         /*用户 POST 文章 */
     else
         Anony=0;
 	*/
-    anony = 0;
+    if (!strcmp(currboard,"Announce")) Anony=1;
+    else
+        Anony = 0;
     /* by zixia: 匿名版缺省不使用匿名 */
 
     while(1) /* 发表前修改参数， 可以考虑添加'显示签名档' */
