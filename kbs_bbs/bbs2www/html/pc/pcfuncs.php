@@ -5,30 +5,11 @@
 ** @id:windinsn Nov 19,2003
 */
 require("funcs.php");
+require("pcconf.php");//blog配置文件
 $db["HOST"]=bbs_sysconf_str("MYSQLHOST");
 $db["USER"]=bbs_sysconf_str("MYSQLUSER");
 $db["PASS"]=bbs_sysconf_str("MYSQLPASSWORD");
 $db["NAME"]=bbs_sysconf_str("MYSQLSMSDATABASE");
-
-/*
-** personal corp. configure start
-** LIST: user number in pc.php
-** HOME: bbs home directory
-** ETEMS: etems in xml file
-** SITE: site address,used in xml file
-** BOARD: whose manager can manage anyone's personal corp.
-*/
-$pcconfig["LIST"] = 20;
-$pcconfig["HOME"] = BBS_HOME;
-$pcconfig["BBSNAME"] = BBS_FULL_NAME;
-$pcconfig["ETEMS"] = 20;
-$pcconfig["NEWS"] = 20;
-$pcconfig["SITE"] = "www.smth.edu.cn";
-$pcconfig["BOARD"] = "SMTH_blog";
-$pcconfig["SEARCHFILTER"] = " 的";
-$pcconfig["SEARCHNUMBER"] = 10;
-$pcconfig["SECTION"] = array("其它类别");
-/* personal corp. configure end */
 
 $brdarr = array();
 $pcconfig["BRDNUM"] = bbs_getboard($pcconfig["BOARD"], $brdarr);
@@ -178,6 +159,12 @@ function time_format_date($t)
 	return $t;
 }
 
+function time_format_date1($t)
+{
+	$t= $t[0].$t[1].$t[2].$t[3]."-".$t[4].$t[5]."-".$t[6].$t[7];
+	return $t;
+}
+
 function rss_time_format($t)
 {
 	$t= $t[0].$t[1].$t[2].$t[3]."-".$t[4].$t[5]."-".$t[6].$t[7]."T".$t[8].$t[9].":".$t[10].$t[11].":".$t[12].$t[13]."+08:00";
@@ -265,6 +252,14 @@ function pc_is_admin($currentuser,$pc)
 		return FALSE;
 }
 
+function pc_is_manager($currentuser)
+{
+	global $pcconfig;
+	if(!$currentuser || !$currentuser["index"] ) return FALSE;
+	$ret = 	bbs_is_bm($pcconfig["BRDNUM"], $currentuser["index"]);
+	return $ret ;
+}
+
 function pc_friend_list($uid)
 {
 	$file = pc_friend_file_open($uid,"r");
@@ -340,6 +335,7 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 		return FALSE;
 	else
 	{
+		$pcThem = pc_get_theme($rows[theme]);
 		$pc = array(
 			"NAME" => html_format($rows[corpusname]),
 			"USER" => $rows[username],
@@ -368,6 +364,16 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 		
 	return $pc;
 	}
+}
+
+function pc_get_theme($theme,$stripSlashes=TRUE)
+{
+	global $pcconfig;
+	if($stripSlashes)
+		$theme = stripslashes($theme) ;
+	$theme = explode("/",$theme);	
+	if(!$pcconfig["SECTION"][$theme[0]]) $theme[0] = "others";
+	return $theme;
 }
 
 function pc_init_fav($link,$uid)
@@ -500,6 +506,34 @@ function get_pre_month($yy,$mm)
 		$yy --;
 	}
 	return array($yy,$mm);
+}
+
+function display_blog_catalog()
+{
+	global $pcconfig;
+	$secNum = count($pcconfig["SECTION"]);
+	$secKeys = array_keys($pcconfig["SECTION"]);
+?>
+<center><table cellspacing=0 cellpadding=3 border=0 width=90% class=t1>
+<tr>
+	<td class=t8><strong>Blog分类&gt;&gt;</strong></td>
+</tr>
+<tr>
+	<td class=t4>
+	<table cellspacing=0 cellpadding=3 border=0 width=98% class=f1>
+<?php
+	for($i = 0 ; $i < $secNum ; $i ++ )
+	{
+		if( $i % 6 == 0 ) echo "<tr>";		
+		echo "<td class=f1 align=center><a href=\"pcsec.php?sec=".htmlspecialchars($secKeys[$i])."\">".htmlspecialchars($pcconfig["SECTION"][$secKeys[$i]])."</a></td>";
+		if( $i % 6 == 5 ) echo "</tr>";
+	}
+?>
+	</table>
+	</td>
+</tr>
+</table></center><br />
+<?php	
 }
 
 ?>

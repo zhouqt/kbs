@@ -87,7 +87,10 @@
 		$pc = pc_load_infor($link,"",$node[uid]);
 		
 		$isadmin = (pc_is_admin($currentuser,$pc) && $loginok == 1)?TRUE:FALSE;
-		$isfriend = pc_is_friend($currentuser["userid"],$pc["USER"]);
+		if( pc_is_manager($currentuser) || pc_is_friend($currentuser["userid"],$pc["USER"]))
+			$isfriend = TRUE;
+		else
+			$isfriend = FALSE;
 		
 		if( ( $node[access] == 1 && !$isadmin && !$isfriend ) || ( $node[access] > 1 && !$isadmin ) )
 		{

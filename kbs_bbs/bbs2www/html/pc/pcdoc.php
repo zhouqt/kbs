@@ -555,6 +555,7 @@ Blog名
 	<td class="t3">Blog主题</td>
 	<td class="t5">&nbsp;
 	<input type="text" maxlength="20" name="pcthem" value="<?php echo $pc["THEM"]; ?>" class="f1">
+	[<a href="pcsec.php?act=list">查看本站可用的主题</a>]
 	</td>
 </tr>
 <tr>
@@ -643,7 +644,7 @@ Blog名
 		if($_GET["act"] == "delfriend")
 			del_friend($pc);
 	}
-	elseif($isfriend || bbs_is_bm($pcconfig["BRDNUM"], $currentuser["index"]))
+	elseif($isfriend || pc_is_manager($currentuser) )
 	{
 		$sec = array("公开区","好友区");
 		$pur = 1;
@@ -712,16 +713,6 @@ Blog名
 	</table>
 	</td>
 </tr>
-<?php /*
-<tr>
-	<td align="center">
-<?php
-		display_calendar($link,$pc);
-?>	
-	</td>
-</tr>
-*/
-?>
 <tr>
 <td  valign="top">
 <table cellspacing="0" cellpadding="0" border="0" width="100%">

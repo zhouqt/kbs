@@ -46,7 +46,7 @@
 
 			if(strtolower($currentuser["userid"]) == strtolower($pc["USER"]))
 				$pur = 2;
-			elseif(pc_is_friend($currentuser["userid"],$pc["USER"]))
+			elseif(pc_is_friend($currentuser["userid"],$pc["USER"]) || pc_is_manager($currentuser))
 				$pur = 1;
 			else
 				$pur = 0;

@@ -9,6 +9,7 @@
 	
 	function display_user_list($link,$listorder="username",$listorder1="ASC",$char=FALSE,$startno=0,$pagesize=10)
 	{
+		global $pcconfig;
 		if($char)
 			$query = "SELECT  `uid` , `username` , `corpusname` , `description` , `theme` , `createtime`,`modifytime`,`nodescount`,`visitcount` ".
 				" FROM users WHERE `username` LIKE '".$char."%' ORDER BY ".$listorder." ".$listorder1." LIMIT ".$startno." , ".$pagesize.";";
@@ -26,11 +27,8 @@
 		<a href="pc.php?order=username&order1=ASC&char=<?php echo $char; ?>"><img src="images/desc_order.png" border="0" align="absmiddle" alt="按用户名递增排序"></a>
 		<a href="pc.php?order=username&order1=DESC&char=<?php echo $char; ?>"><img src="images/asc_order.png" border="0" align="absmiddle" alt="按用户名递减排序"></a>
 	</td>
-	<td class="t2" width="130">Blog名称</td>
-	<!--
-	<td class="t2">描述</td>
-	-->
-	<td class="t2">主题</td>
+	<td class="t2">Blog名称</td>
+	<td class="t2" width=50>类别</td>
 	<td class="t2" width="70">
 		文章数
 		<a href="pc.php?order=nodescount&order1=ASC&char=<?php echo $char; ?>"><img src="images/desc_order.png" border="0" align="absmiddle" alt="按文章数递增排序"></a>
@@ -54,12 +52,11 @@
 		for($i=0;$i < $list_user_num;$i++)
 		{
 			$rows = mysql_fetch_array($result);
-			$themekey = urlencode(stripslashes($rows[theme]));
+			$pcThem = pc_get_theme($rows[theme]);
 			echo "<tr>\n<td class=\"t3\">".($startno + $i + 1)."</td>\n".
 				"<td class=\"t4\"><a href=\"/bbsqry.php?userid=".html_format($rows[username])."\">".html_format($rows[username])."</a></td>\n".
 				"<td class=\"t3\"><span title=\"".html_format($rows[description])."\"><a href=\"index.php?id=".$rows[username]."\">".html_format($rows[corpusname])."</a>&nbsp;</span></td>\n".
-				//"<td class=\"t5\"><a href=\"pcdoc.php?userid=".$rows[username]."\">".html_format($rows[description])."</a>&nbsp;</td>\n".
-				"<td class=\"t3\"><a href=\"pcsearch.php?exact=0&key=t&keyword=".$themekey."\">".html_format($rows[theme])."</a>&nbsp;</td>\n".
+				"<td class=\"t3\"><span title=\"点击查看该分类的其它Blog信息\"><a href=\"pcsec.php?sec=".html_format($pcThem[0])."\">".html_format($pcconfig["SECTION"][$pcThem[0]])."</a></span></td>\n".
 				"<td class=\"t4\">".$rows[nodescount]."</a>".
 				"<td class=\"t3\">".$rows[visitcount]."</a>".
 				"<td class=\"t4\">".time_format($rows[createtime])."</a>".
@@ -108,8 +105,6 @@
 			echo "<a href=\"pc.php\">一般模式</a> ";
 		echo "]\n</p>";
 	}
-	
-	
 	
 	$listorder = $_GET["order"];
 	$listorder1 = $_GET["order1"];
@@ -164,7 +159,7 @@
 <p align="center" class="f2">
 <?php echo BBS_FULL_NAME; ?>Blog
 </p>
-<img src="images/xmas1.gif" alt="<?php echo BBS_FULL_NAME; ?>祝大家新年快乐~">
+<hr size=1>
 <p class="f1">
 [<a href="pcsearch.php?keyword=<?php echo $currentuser["userid"]; ?>&exact=1&key=u">自己的Blog</a>]
 [<a href="pcnew.php">最新文章列表</a>]
@@ -172,11 +167,12 @@
 <a href="rssnew.php" target="_blank"><img src="images/xml.gif" border="0" align="absmiddle" alt="XML"></a>
 </p>
 <?php
+	display_blog_catalog();
 	display_user_list($link,$listorder,$listorder1,$char,$startno,$pagesize);
 	display_navigation_bar($totalpage,$pageno,$char,$listorder,$listorder1);
 	display_char_bar($char);
 ?>
-<img src="images/xmas2.gif" alt="<?php echo BBS_FULL_NAME; ?>祝大家新年快乐~">
+<hr size=1>
 <p class="f1">
 [<a href="pcsearch.php?keyword=<?php echo $currentuser["userid"]; ?>&exact=1&key=u">自己的Blog</a>]
 [<a href="pcnew.php">最新文章列表</a>]

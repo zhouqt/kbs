@@ -134,7 +134,7 @@
 				html_format($rows[subject]).
 				"</a>".
 				"[<a href=\"/bbsqry.php?userid=".$rows[username]."\">".$rows[username]."</a> 于 ".time_format($rows[created])." 提到]\n";
-			if($perm || strtolower($rows[username]) == strtolower($currentuser["userid"]))
+			if($perm || strtolower($rows[username]) == strtolower($currentuser["userid"]) || pc_is_manager($currentuser) )
 				echo "[<a href=\"#\" onclick=\"bbsconfirm('pceditcom.php?act=del&cid=".$rows[cid]."','确认删除?')\">删</a>]\n";
 			if(strtolower($rows[username]) == strtolower($currentuser["userid"]))
 				echo "[<a href=\"pceditcom.php?act=edit&cid=".$rows[cid]."\">改</a>]\n";
@@ -177,7 +177,7 @@
 	
 	if(pc_is_admin($currentuser,$pc) && $loginok == 1)
 		$pur = 3;
-	elseif(pc_is_friend($currentuser["userid"],$pc["USER"]) || bbs_is_bm($pcconfig["BRDNUM"], $currentuser["index"]))
+	elseif(pc_is_friend($currentuser["userid"],$pc["USER"]) || pc_is_manager($currentuser))
 		$pur = 1;
 	else
 		$pur = 0;

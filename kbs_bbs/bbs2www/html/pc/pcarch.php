@@ -65,7 +65,7 @@
 	$query = "SELECT * FROM nodes WHERE uid = '".$pc["UID"]."' AND type = 0 AND changed >= ".$archDate[0]." AND changed <= ".$archDate[1]." ";
 	if(pc_is_admin($currentuser,$pc) && $loginok == 1)
 		$query .= " AND ( access = 0 OR access = 1 OR access = 2 ) ";
-	elseif(pc_is_friend($currentuser["userid"],$pc["USER"]) || bbs_is_bm($pcconfig["BRDNUM"], $currentuser["index"]))
+	elseif(pc_is_friend($currentuser["userid"],$pc["USER"]) || pc_is_manager($currentuser))
 		$query .= " AND ( access = 0 OR access = 1 ) ";
 	else
 		$query .=" AND access = 0 ";

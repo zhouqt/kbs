@@ -26,7 +26,7 @@
 			$result = mysql_query($query);
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);
-			if(strtolower($rows[username])==strtolower($currentuser["userid"]))
+			if(strtolower($rows[username])==strtolower($currentuser["userid"]) || pc_is_manager($currentuser))
 			{
 				$query = "DELETE FROM comments WHERE `cid` = '".$cid."' ";
 				mysql_query($query,$link);

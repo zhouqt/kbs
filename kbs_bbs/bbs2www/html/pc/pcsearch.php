@@ -73,9 +73,8 @@
 <tr>
 	<td class="t2" width="30">编号</td>
 	<td class="t2" width="70">用户名</td>
-	<td class="t2" width="130">Blog名称</td>
-	<td class="t2">描述</td>
-	<td class="t2" width="120">主题</td>
+	<td class="t2">Blog名称</td>
+	<td class="t2" width="50">类别</td>
 	<td class="t2" width="50">文章数</td>
 	<td class="t2" width="50">访问量</td>
 	<td class="t2" width="120">创建时间</td>
@@ -85,12 +84,11 @@
 		for($i=0 ; $i < $num_rows ; $i++)
 		{
 			$rows = mysql_fetch_array($result);
-			$themekey = urlencode(stripslashes($rows[theme]));
+			$pcThem = pc_get_theme($rows[theme]);
 			echo "<tr>\n<td class=t3>".($startno + $i + 1)."</td>\n".
 				"<td class=t4><a href=\"/bbsqry.php?userid=".html_format($rows[username])."\">".html_format($rows[username])."</a></td>\n".
-				"<td class=t3>&nbsp;<a href=\"index.php?id=".$rows[username]."\">".html_format($rows[corpusname])."</a></td>\n".
-				"<td class=t5>&nbsp;<a href=\"index.php?id=".$rows[username]."\">".html_format($rows[description])."</a></td>\n".
-				"<td class=t3>&nbsp;<a href=\"pcsearch.php?exact=0&key=t&keyword=".$themekey."\">".html_format($rows[theme])."</a></td>\n".
+				"<td class=t3><span title=\"".html_format($rows[description])."\"><a href=\"index.php?id=".$rows[username]."\">".html_format($rows[corpusname])."</a></span></td>\n".
+				"<td class=t3><span title=\"点击查看该分类的其它Blog信息\"><a href=\"pcsec.php?sec=".html_format($pcThem[0])."\">".html_format($pcconfig["SECTION"][$pcThem[0]])."</a></span></td>\n".
 				"<td class=\"t4\">".$rows[nodescount]."</a>".
 				"<td class=\"t3\">".$rows[visitcount]."</a>".
 				"<td class=\"t4\">".time_format($rows[createtime])."</a>".
