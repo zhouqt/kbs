@@ -13,8 +13,8 @@ cd smth_bbs && patch -p0 --dry-run < smthbbs_ipv6.diff && patch -p0 < smthbbs_ip
 [这步不用做了，现在的 CVS 已经包含了这个 patch。]
 
 在site.h中增加
-#ifndef HAVE_IPV6
-#define HAVE_IPV6
+#ifndef HAVE_IPV6_SMTH
+#define HAVE_IPV6_SMTH
 #endif
 #define LEGACY_IPV4_DISPLAY
 
