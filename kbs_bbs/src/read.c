@@ -722,16 +722,20 @@ char *direct ;
     move(t_lines-3, 0);
     clrtoeol();
     strcpy(buf,"相同主题 (0)取消  ");
-    for(i=0;i<7;i++)
-        snprintf(buf,256,"%s(%d)%s  ",buf,i+1,SR_BMitems[i]);
+    for(i=0;i<7;i++) {
+	    char t[40];
+	    sprintf(t,"(%d)%s",i+1,SR_BMitems[i]);
+	    strcat(buf,t);
+/*        snprintf(buf,256,"%s(%d)%s  ",buf,i+1,SR_BMitems[i]);*/
+    };
     strcat(buf,"? [0]: ");
     if (strlen(buf)>76) {
         char savech=buf[76];
         buf[76]=0;
         prints("%s",buf);
         buf[76]=savech;
-        strcpy(buf,buf+76);
-        getdata(t_lines-2, 0,buf,ch,3,DOECHO,NULL,YEA);
+/*        strcpy(buf,buf+76);*/
+        getdata(t_lines-2, 0,buf+76,ch,3,DOECHO,NULL,YEA);
     } else
         getdata(t_lines-3, 0,buf,ch,3,DOECHO,NULL,YEA);
     BMch=atoi(ch);
@@ -751,7 +755,7 @@ char *direct ;
     move(t_lines-3, 0);
     clrtoeol();
     /* Leeward 98.04.16 */
-    sprintf(buf,256,"是否从此主题第一篇开始%s (Y)第一篇 (N)目前这篇 (C)取消 (Y/N/C)? [Y]: ",SR_BMitems[BMch-1]);
+    snprintf(buf,256,"是否从此主题第一篇开始%s (Y)第一篇 (N)目前这篇 (C)取消 (Y/N/C)? [Y]: ",SR_BMitems[BMch-1]);
     getdata(t_lines-3, 0,buf,ch,3,DOECHO,NULL,YEA);
     switch (ch[0])
     {
@@ -795,16 +799,19 @@ char *direct ;
     move(t_lines-3, 0);
     clrtoeol();
     strcpy(buf,"相同主题 (0)取消  ");
-    for(i=0;i<7;i++)
-        snprintf(buf,256,"%s(%d)%s  ",buf,i+1,SR_BMitems[i]);
+    for(i=0;i<7;i++) {
+	char t[40];
+	sprintf(t,"(%d)%s",i+1,SR_BMitems[i]);
+	strcat(buf,t);
+    }
     strcat(buf,"? [0]: ");
     if (strlen(buf)>76) {
         char savech=buf[76];
         buf[76]=0;
         prints("%s",buf);
         buf[76]=savech;
-        strcpy(buf,buf+76);
-        getdata(t_lines-2, 0,buf,ch,3,DOECHO,NULL,YEA);
+//        strcpy(buf,buf+76);
+        getdata(t_lines-2, 0,buf+76,ch,3,DOECHO,NULL,YEA);
     } else
         getdata(t_lines-3, 0,buf,ch,3,DOECHO,NULL,YEA);
 
@@ -933,7 +940,7 @@ char            *powner;
 
     strncpy( currauth, powner,STRLEN);
 
-    sprintf( pmt,STRLEN, "%s的文章搜寻作者 [%s]: ", offset > 0 ?  "往後来" : "往先前", currauth );
+    snprintf( pmt,STRLEN, "%s的文章搜寻作者 [%s]: ", offset > 0 ?  "往後来" : "往先前", currauth );
     move(t_lines-1,0);
     clrtoeol();
     getdata( t_lines-1, 0, pmt, ans, IDLEN+1, DOECHO, NULL ,YEA);/*Haohmaru.98.09.29.修正作者查找只能11位ID的错误*/
