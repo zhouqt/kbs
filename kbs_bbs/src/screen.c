@@ -312,7 +312,7 @@ void refresh()
         ii=scr_cols-1;
         count = 0;
         while(ii>=0&&(bp[j].data[ii]==0||bp[j].data[ii]==32)&&(bp[j].color[ii]>>4)==(bp[j].color[scr_cols-1]>>4)&&((bp[j].mode[ii]&~SCREEN_BRIGHT)==(bp[j].mode[scr_cols-1]&~SCREEN_BRIGHT))) {
-            if(!ndiff(j,ii)) count++;
+            if(count<3&&!ndiff(j,ii)) count++;
             ii--;
         }
         p=ii+1;
@@ -553,6 +553,7 @@ void outns(const char*str, int n)
                     s2[i-j-1]=0;
                     y=atoi(s1)-1+offsetln;
                     x=atoi(s2)-1;
+                    if (x<-1) x = scr_cols+x+1;
                     if(DEFINE(currentuser, DEF_COLOR))
                     if(y>=0&&y<scr_lns&&x>=0&&x<=scr_cols&&!disable_move) {
                         cur_col=x; cur_ln=y;
