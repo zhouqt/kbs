@@ -68,7 +68,7 @@ CFILE    = bbs.c record.c delete.c stuff.c mail.c register.c \
            screen.c userinfo.c vote.c announce.c sendmsg.c boards_t.c\
 	   bm.c list.c goodbye.c fileshm.c bbsd_single.c lvars.c\
 	   newmain_single.c newio.c newterm.c convcode.c bbs_sendmail.c crypt.c \
-	   ucache.c utmp.c log.c md5.c libmsg.c article.c sysconf.c ${BBSSITE}.c
+	   ucache.c utmp.c log.c md5.c libmsg.c article.c sysconf.c site.c
 
 COBJS    = bbs.o record.o delete.o stuff.o mail.o register.o \
            xyz.o talk.o read.o comm_lists.o namecomplete.o chat.o \
@@ -76,10 +76,10 @@ COBJS    = bbs.o record.o delete.o stuff.o mail.o register.o \
            screen.o userinfo.o vote.o announce.o sendmsg.o boards_t.o\
            bm.o list.o goodbye.o fileshm.o bbsd_single.o lvars.o\
 	   newmain_single.o newio.o newterm.o convcode.o bbs_sendmail.o crypt.o \
-	   ucache.o utmp.o log.o md5.o libmsg.o article.o sysconf.o $(BBSSITE).o
+	   ucache.o utmp.o log.o md5.o libmsg.o article.o sysconf.o site.o
 
 BBSLIBOBJS = record.o log.o ucache.o stuff.o md5.o crypt.o pass.o bcache.o utmp.o \
-	lvars.o $(BBSSITE).o boards.o lvars.o bbs_sendmail.o libmsg.o article.o convcode.o \
+	lvars.o site.o boards.o lvars.o bbs_sendmail.o libmsg.o article.o convcode.o \
 	sysconf.o libann.o
 
 OTHERS   = bbs.h edit.h
@@ -89,7 +89,7 @@ GARBAGE  = a.out core installchatd adminbbs chatd
 # The -DINVISIBLE makes bbs users invisible to 'finger' and 'who'.
 # Simply remove it if you don't want this feature.
 
-SITE_DEF = -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' -DINVISIBLE
+SITE_DEF = -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"site.h"' -DINVISIBLE
 
 DEFINES	=  $(CSIE_DEF) $(OS_DEF)
 
