@@ -48,7 +48,6 @@ extern int     add_author_friend();
 
 int cmpinames(); /* added by Leeward 98.04.10 */
 
-extern struct friends *topfriend;
 extern int nf;
 extern int numofsig;
 extern char quote_file[], quote_user[];
@@ -803,8 +802,7 @@ int delmsgs[1024] ;
 int delcnt ;
 
 int
-read_new_mail(fptr)
-struct fileheader *fptr ;
+read_new_mail(struct fileheader *fptr ,char* arg)
 {
     static int idc ;
     char done = NA, delete_it;
@@ -879,8 +877,8 @@ m_new()
     clear() ;
     mrd = 0 ;
     modify_user_mode( RMAIL );
-    read_new_mail(NULL) ;
-    if(apply_record(currmaildir,read_new_mail,sizeof(struct fileheader)) == -1) {
+    read_new_mail(NULL,0) ;
+    if(apply_record(currmaildir,read_new_mail,sizeof(struct fileheader),0) == -1) {
         clear() ;
         move(0,0) ;
         prints("No new messages\n\n\n") ;
@@ -1461,7 +1459,7 @@ case 'I':case 'i':
             {
                 int key;
                 move(2,0);
-                prints("%s\n",topfriend[n].id);
+                prints("%s\n",getuserid2(topfriend[n].uid));
                 move(4, 0);
                 clrtoeol();
                 move(3,0);
@@ -1480,7 +1478,7 @@ case 'I':case 'i':
                 }
                 if(key=='\0'||key=='\n'||key=='y'||key=='Y' || '\r' == key)
                 {
-                    strcpy(uident,topfriend[n-1].id);
+                    strcpy(uident,getuserid2(topfriend[n-1].uid));
                     if(!getuser(uident))
                     {
                         move(4,0);
@@ -1704,7 +1702,7 @@ int num ;
         char buf[STRLEN];
 
         if(G_SENDMODE==1)
-            strcpy(uid,topfriend[cnt].id);
+            getuserid(uid,topfriend[cnt].uid);
         else if(G_SENDMODE==2)
         {
             if(fgets(buf, STRLEN, mp) != NULL)
@@ -1864,7 +1862,7 @@ ov_send()
     all=(nf>=maxrecp)? maxrecp:nf;
     for(i=0;i<all;i++)
     {
-        prints("%-12s ",topfriend[i].id);
+        prints("%-12s ",getuserid2(topfriend[i].uid));
         if((i+1)%6==0)
             prints("\n");
     }

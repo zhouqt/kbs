@@ -27,6 +27,7 @@
 extern char *getenv();
 extern char fromhost[];
 
+
 int
 dashf( fname )
 char *fname;
@@ -44,102 +45,13 @@ char    *fname;
 
     return ( stat( fname, &st ) == 0 && S_ISDIR( st.st_mode ) );
 }
-
-int
-pressanykey()
-{
-    extern int showansi;
-
-    showansi=1;
-    move( t_lines-1,0);
-    clrtoeol();
-    prints( "[m                                [5;1;33m°´ÈÎºÎ¼ü¼ÌÐø ..[m" );
-    egetch();
-    move( t_lines-1, 0 );
-    clrtoeol();
-    return 0;
-}
-
-int
-pressreturn()
-           {
-               extern int showansi;
-               char buf[3] ;
-
-               showansi=1;
-               move(t_lines-1,0);
-               clrtoeol();
-               getdata(t_lines-1,0,"                              [33mÇë°´ ¡ô[36mEnter[33m¡ô ¼ÌÐø[m",buf,2,NOECHO,NULL,YEA);
-               move(t_lines-1,0) ;
-               clrtoeol() ;
-               refresh() ;
-               return 0 ;
-           }
-
-           askyn(str,defa)
-           char str[STRLEN];
-int defa;
-{
-    int x,y;
-    char realstr[STRLEN*2];
-    char ans[6];
-
-    sprintf(realstr,"%s (Y/N)? [%c]: ",str,(defa)?'Y':'N');
-    getyx(&x,&y);
-    getdata( x, y, realstr, ans,3,DOECHO,NULL,YEA);
-    if(ans[0]!='Y' && ans[0]!='y' &&
-            ans[0]!='N' && ans[0]!='n')
-    {
-        return defa;
-    }else if(ans[0]=='Y' || ans[0]=='y')
-        return 1;
-    else if(ans[0]=='N' || ans[0]=='n')
-        return 0;
-}
-
-
-
-
-void
-printdash( mesg )
-char    *mesg;
-{
-    char        buf[ 80 ], *ptr;
-    int         len;
-
-    memset( buf, '=', 79 );
-    buf[ 79 ] = '\0';
-    if( mesg != NULL ) {
-        len = strlen( mesg );
-        if( len > 76 )  len = 76;
-        ptr = &buf[ 40 - len / 2 ];
-        ptr[ -1  ] = ' ';
-        ptr[ len ] = ' ';
-        strncpy( ptr, mesg, len );
-    }
-    prints( "%s\n", buf );
-}
-
-void
-bell()
-{
-    /* change by KCN 1999.09.08    fprintf(stderr,"%c",Ctrl('G')) ;*/
-    char sound;
-
-    sound= Ctrl('G');
-    output( &sound, 1);
-
-}
-
 void
 touchnew()
 {
     int fd ;
 
-    sprintf( genbuf, "touch by: %s", currentuser.userid );
     if((fd = open(FLUSH,O_WRONLY|O_CREAT,0644)) == -1)
         return ;
-    write(fd, genbuf, strlen(genbuf) );
     close(fd) ;
 }
 
@@ -225,6 +137,7 @@ char *env, *val ;
     return 0;
 }
 
+#ifdef BBSMAIN
 int
 do_exec(com,wd)
 char *com, *wd ;
@@ -328,6 +241,7 @@ if((pid = vfork()) == 0) {
 #endif
     return((w == -1)? w: status) ;
 }
+#endif
 
 #ifdef kill
 #undef kill
@@ -337,3 +251,129 @@ int safe_kill(int x, int y)
 {  if(x<=0) return -1;
    return kill(x,y);
 }
+
+
+
+char * Cdate(time_t * clock) /* Ê±¼ä --> Ó¢ÎÄ */
+{
+    /* Leeward 2000.01.01 Adjust year display for 20** */
+    static char foo[24/*22*/];
+    struct tm *mytm = localtime(clock);
+
+    strftime(foo, 24/*22*/, "%Y-%m-%d %T %a"/*"%D %T %a"*/, mytm);
+    return (foo);
+}
+
+char * Ctime(time_t * clock) /* Ê±¼ä ×ª»» ³É Ó¢ÎÄ */
+{
+    char *foo;
+    char *ptr = ctime(clock);
+
+    if (foo = strchr(ptr, '\n')) *foo = '\0';
+    return (ptr);
+}
+
+int Isspace(char ch)
+{
+    return (ch == ' ' || ch =='\t' || ch == 10 || ch == 13);
+}
+
+
+char * nextword(const char * * str, char *buf, int sz)
+{
+    const char *p;
+    
+    while (Isspace(**str))(*str)++;
+    
+    while (**str && !Isspace(**str)){
+        if(sz>0){
+            if(sz>1)  *buf++=**str;
+            sz--;
+        }
+        (*str)++;
+    }
+    *buf=0;
+    while (Isspace(**str))(*str)++;
+    return buf;
+}
+
+#ifndef BBSMAIN
+void
+attach_err( shmkey, name )
+int     shmkey;
+char    *name;
+{
+    log( "3system", "Attach:Error! %s error! key = %x.\n", name, shmkey );
+    exit( 1 );
+}
+
+void *
+attach_shm( shmstr, defaultkey, shmsize )  /* attach share memory */
+char    *shmstr;
+int     defaultkey, shmsize;
+{
+    void        *shmptr;
+    int         shmkey, shmid;
+
+    shmkey = defaultkey;
+    shmid = shmget( shmkey, shmsize, 0 );
+    if( shmid < 0 ) {
+        shmid = shmget( shmkey, shmsize, IPC_CREAT | 0600 );
+        if( shmid < 0 )
+            attach_err( shmkey, "shmget" );
+        shmptr = (void *) shmat( shmid, NULL, 0 );
+        if( shmptr == (void *)-1 )
+            attach_err( shmkey, "shmat" );
+        memset( shmptr, 0, shmsize );
+    } else {
+        shmptr = (void *) shmat( shmid, NULL, 0 );
+        if( shmptr == (void *)-1 )
+            attach_err( shmkey, "shmat" );
+    }
+    return shmptr;
+}
+#else
+void
+attach_err( shmkey, name )
+int     shmkey;
+char    *name;
+{
+    sprintf( genbuf, "Error! %s error! key = %x.\n", name, shmkey );
+    write( 1, genbuf, strlen( genbuf ) );
+    exit( 1 );
+}
+
+void *
+attach_shm( char    *shmstr,int     defaultkey, int shmsize,int* iscreate)
+{
+    void        *shmptr;
+    int         shmkey, shmid;
+
+    shmkey = sysconf_eval( shmstr );
+    if( shmkey < 1024 )
+        shmkey = defaultkey;
+    shmid = shmget( shmkey, shmsize, 0 );
+    if( shmid < 0 ) {
+        shmid = shmget( shmkey, shmsize, IPC_CREAT | 0660 ); /* modified by dong , for web application , 1998.12.1 */
+        *iscreate=YEA;
+        if( shmid < 0 ) {
+            attach_err( shmkey, "shmget" );
+            exit(0);
+        }
+        shmptr = (void *) shmat( shmid, NULL, 0 );
+        if( shmptr == (void *)-1 ) {
+            attach_err( shmkey, "shmat" );
+            exit(0);
+    	}
+        memset( shmptr, 0, shmsize );
+    } else {
+    	*iscreate=0;
+        shmptr = (void *) shmat( shmid, NULL, 0 );
+        if( shmptr == (void *)-1 ) {
+            attach_err( shmkey, "shmat" );
+            exit(0);
+        }
+    }
+    return shmptr;
+}
+#endif

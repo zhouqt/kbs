@@ -33,7 +33,7 @@
 extern char BoardName[];
 extern int iscolor;
 extern int numf,friendmode;
-struct friends *topfriend;
+
 int talkidletime=0;
 int ulistpage;
 int friend_query();
@@ -84,7 +84,6 @@ char    *talk_uent_buf;
 char save_page_requestor[STRLEN];
 /* end - jjyang */
 
-int t_cmpuids();
 int cmpfnames();
 /*---	changed to isidhidden by period	2000-10-20	---*
 int
@@ -176,28 +175,13 @@ struct user_info *uent ;
 {
     static char hh_mm_ss[ 32 ];
     struct stat buf;
-    char        tty[ 128 ];
     time_t      now, diff;
     int         hh, mm;
 
-    strcpy( tty, uent->tty );
-    if (tty[0]) {
-        /* KCN add tty[0]==0 for bbsd */
-        if ( (stat( tty, &buf ) != 0) /*||
-                     (strstr( tty, "tty" ) == NULL)*/) {
-            strcpy( hh_mm_ss, "≤ªœÍ");
-            return hh_mm_ss;
-        }/*;’‚∏ˆ∑÷∫≈ ≤√¥“‚Àº?Haohmaru*/
-
-        now = time( 0 );
-
-        diff = now - buf.st_atime;
-    } else {
-        now = time(0);
-        diff = now - *(time_t*)(uent->tty+1);
-        if (diff==now) /* @#$#!@$#@! */
-            diff=0;
-    }
+    now = time(0);
+    diff = now - uent->freshtime;
+    if (diff==now) /* @#$#!@$#@! */
+        diff=0;
 #ifdef DOTIMEOUT
     /* the 60 * 60 * 24 * 5 is to prevent fault /dev mount from
        kicking out all users */
@@ -221,8 +205,7 @@ struct user_info *uent ;
 
 
 int
-listcuent(uentp)
-struct user_info *uentp ;
+listcuent(struct user_info *uentp,char* arg,int pos)
 {
     if(uentp == NULL) {
         CreateNameList() ;
@@ -243,8 +226,8 @@ struct user_info *uentp ;
 void
 creat_list()
 {
-    listcuent(NULL) ;
-    apply_ulist( listcuent );
+    listcuent(NULL,0,0) ;
+    apply_ulist( listcuent ,0);
 }
 
 int
@@ -270,7 +253,7 @@ t_pager()
                 (uinfo.pager&ALL_PAGER) ? "¥Úø™" : "πÿ±’" );
         pressreturn();
     }
-    update_utmp();
+    UPDATE_UTMP(pager,uinfo);
     return 0 ;
 }
 
@@ -305,7 +288,30 @@ char userid[IDLEN];
     }
 }
 
-
+int t_printstatus(struct user_info* uentp,int* arg,int pos)
+{
+    if(uentp->invisible==1)
+    {
+        if(!HAS_PERM(PERM_SEECLOAK))
+	        return COUNT;
+    }
+    (*arg)++;
+    if(*arg==1)
+        strcpy(genbuf,"ƒø«∞‘⁄’æ…œ£¨◊¥Ã¨»Áœ¬£∫\n");
+    if (uentp->invisible)
+        strcat(genbuf,"[32m“˛…Ì÷–   [m");
+    else {
+    	char buf[80];
+    	sprintf(buf,"[1m%s[m ", modestring(uentp->mode,
+                                     uentp->destuid, 0,/* 1->0 ≤ªœ‘ æ¡ƒÃÏ∂‘œÛµ» modified by dong 1996.10.26 */
+                                     (uentp->in_chat ? uentp->chatid : NULL)));
+        strcat(genbuf,buf);
+    }
+    if((*arg)%8==0)
+           strcat(genbuf,"\n");
+    UNUSED_ARG(pos);
+    return COUNT;
+}
 
 /* Modified By Excellent*/
 int
@@ -321,6 +327,7 @@ char q_id[IDLEN];
     char permstr[10];
     char exittime[40];
     time_t exit_time,temp/*Haohmaru.98.12.04*/;
+    int logincount,seecount;
 
     if(uinfo.mode!=LUSERS&&uinfo.mode!=LAUSERS&&uinfo.mode!=FRIEND&&uinfo.mode!=READING &&uinfo.mode!=MAIL&&uinfo.mode!=RMAIL&&uinfo.mode!=GMENU){
         modify_user_mode( QUERY );
@@ -351,9 +358,9 @@ char q_id[IDLEN];
         return -1 ;
     }
     uinfo.destuid = tuid ;
-    update_utmp();
+/*    UPDATE_UTMP(destuid,uinfo);  I think it is not very importance.KCN*/
 
-    search_ulist( &uin, t_cmpuids, tuid );
+/*    search_ulist( &uin, t_cmpuids, tuid );*/
 
     move(1,0);
     clrtobot();
@@ -371,29 +378,27 @@ char q_id[IDLEN];
                 lookupuser.userid, lookupuser.username,
                 lookupuser.numlogins,lookupuser.numposts);
     strcpy(planid,lookupuser.userid);
-    strcpy(genbuf, ctime(&(lookupuser.lastlogin)));
     if( (newline = strchr(genbuf, '\n')) != NULL )
         *newline = '\0';
+    seecount=0;
+	logincount=apply_utmp(t_printstatus,10,lookupuser.userid,&seecount);
     /* ªÒµ√¿Îœﬂ ±º‰ Luzi 1998/10/23 */
     exit_time = get_exit_time(lookupuser.userid,exittime);
     if( (newline = strchr(exittime, '\n')) != NULL )
         *newline = '\0';
 
-    if (exit_time <= lookupuser.lastlogin
-            || (uin.active && uin.pid
-                && (!uin.invisible || (uin.invisible && HAS_PERM(PERM_SEECLOAK)))))
-        strcpy(exittime,"“Ú‘⁄œﬂ…œªÚ∑«≥£∂œœﬂ≤ªœÍ");
-    if (exit_time <= lookupuser.lastlogin && (uin.invisible&& !HAS_PERM(PERM_SEECLOAK)))
-    {
-        temp=lookupuser.lastlogin+(lookupuser.numlogins%7)+5;
-        strcpy(exittime,ctime(&temp));/*Haohmaru.98.12.04.»√“˛…Ì”√ªßø¥…œ»•¿Îœﬂ ±º‰±»…œœﬂ ±º‰ÕÌ5µΩ12√Î÷”*/
-        if( (newline = strchr(exittime, '\n')) != NULL )
-            *newline = '\0';
-    }
-    prints( "\n…œ¥Œ‘⁄  [%s] ¥” [%s] µΩ±æ’æ“ª”Œ°£\n¿Îœﬂ ±º‰[%s] ", genbuf,
+    if (exit_time <= lookupuser.lastlogin)
+    	if (logincount!=seecount)
+	    {
+    	    temp=lookupuser.lastlogin+((lookupuser.numlogins+currentuser.numposts)%100)+5;
+        	strcpy(exittime,ctime(&temp));/*Haohmaru.98.12.04.»√“˛…Ì”√ªßø¥…œ»•¿Îœﬂ ±º‰±»…œœﬂ ±º‰ÕÌ5µΩ105√Î÷”*/
+	        if( (newline = strchr(exittime, '\n')) != NULL )
+    	        *newline = '\0';
+	    } else
+    	    strcpy(exittime,"“Ú‘⁄œﬂ…œªÚ∑«≥£∂œœﬂ≤ªœÍ");
+    prints( "\n…œ¥Œ‘⁄  [%s] ¥” [%s] µΩ±æ’æ“ª”Œ°£\n¿Îœﬂ ±º‰[%s] ", Ctime(&(lookupuser.lastlogin)),
             ((lookupuser.lasthost[0] == '\0') /*|| DEFINE(DEF_HIDEIP)*/ ? "(≤ªœÍ)" : lookupuser.lasthost),/*Haohmaru.99.12.18. hide ip*/
             exittime);
-
     /* SNOW CHANGE AT 10.20 (CHANGE THIS MSG)
         prints("–≈œ‰£∫[[5m%2s[m]£¨æ≠—È÷µ£∫[%d](%s) ±Ìœ÷÷µ£∫[%d](%s) …˙√¸¡¶£∫[%d]%s\n"
                 ,(check_query_mail(qry_mail_dir)==1)? "–≈":"  ",exp,cexp(exp),perf,
@@ -406,13 +411,15 @@ char q_id[IDLEN];
            compute_user_value(&lookupuser),
            permstr,(lookupuser.userlevel & PERM_SUICIDE)?" (◊‘…±÷–)":"°£");
 
-    t_search_ulist( &uin, t_cmpuids, tuid );
-
 #if defined(QUERY_REALNAMES)
     if (HAS_PERM(PERM_BASIC))
         prints("Real Name: %s \n",lookupuser.realname);
 #endif
 
+	if (genbuf[0]) {
+		prints(genbuf);
+		prints("\n");
+	}
     show_user_plan(planid);
 
     if (uinfo.mode!=LUSERS&&uinfo.mode!=LAUSERS&&uinfo.mode!=FRIEND&&uinfo.mode!=GMENU)
@@ -423,8 +430,7 @@ char q_id[IDLEN];
 }
 
 int
-count_active(uentp)
-struct user_info *uentp ;
+count_active(struct user_info *uentp,char* arg,int pos)
 {
     static int count ;
 
@@ -440,8 +446,7 @@ struct user_info *uentp ;
 }
 
 int
-count_useshell(uentp)
-struct user_info *uentp ;
+count_useshell(struct user_info *uentp ,char* arg,int pos)
 {
     static int count ;
 
@@ -460,8 +465,7 @@ struct user_info *uentp ;
 }
 
 int
-count_user_logins(uentp)
-struct user_info *uentp ;
+count_user_logins(struct user_info *uentp,char* arg,int pos)
 {
     static int count ;
 
@@ -478,8 +482,7 @@ struct user_info *uentp ;
 }
 
 int
-count_visible_active(uentp)
-struct user_info *uentp ;
+count_visible_active(struct user_info *uentp,char* arg,int pos)
 {
     static int count ;
 
@@ -497,8 +500,7 @@ struct user_info *uentp ;
 }
 
 int
-alcounter(uentp)
-struct user_info *uentp ;
+alcounter(struct user_info *uentp ,char* arg,int pos)
 {
     static int vi_users,vi_friends;
     int canseecloak;
@@ -513,7 +515,7 @@ struct user_info *uentp ;
         return 0 ;
 
     canseecloak=(!HAS_PERM(PERM_SEECLOAK) && uentp->invisible)?0:1;
-    if(myfriend(uentp->userid))
+    if(myfriend(uentp->uid,NULL))
     {
         vi_friends++ ;
         if(!canseecloak)
@@ -528,42 +530,42 @@ struct user_info *uentp ;
 int
 num_alcounter()
 {
-    alcounter(NULL) ;
-    apply_ulist( alcounter ) ;
-    alcounter(NULL) ;
+    alcounter(NULL,0,0) ;
+    apply_ulist( alcounter,0 ) ;
+    alcounter(NULL,0,0) ;
     return;
 }
 
 int
 num_useshell()
 {
-    count_useshell(NULL) ;
-    apply_ulist( count_useshell) ;
-    return count_useshell(NULL) ;
+    count_useshell(NULL,0,0) ;
+    apply_ulist( count_useshell,0) ;
+    return count_useshell(NULL,0,0) ;
 }
 
 int
 num_active_users()
 {
-    count_active(NULL) ;
-    apply_ulist( count_active ) ;
-    return count_active(NULL) ;
+    count_active(NULL,0,0) ;
+    apply_ulist( count_active ,0) ;
+    return count_active(NULL,0,0) ;
 }
 int
 num_user_logins(uid)
 char *uid;
 {
     strcpy(save_page_requestor,uid);
-    count_active(NULL) ;
-    apply_ulist( count_user_logins ) ;
-    return count_user_logins(NULL) ;
+    count_active(NULL,0,0) ;
+    apply_ulist( count_user_logins,0 ) ;
+    return count_user_logins(NULL,0,0) ;
 }
 int
 num_visible_users()
 {
-    count_visible_active(NULL) ;
-    apply_ulist( count_visible_active ) ;
-    return count_visible_active(NULL) ;
+    count_visible_active(NULL,0,0) ;
+    apply_ulist( count_visible_active,0 ) ;
+    return count_visible_active(NULL,0,0) ;
 }
 
 int
@@ -575,9 +577,7 @@ struct friends *uv;
 }
 
 int
-t_cmpuids(uid,up)
-int uid ;
-struct user_info *up ;
+t_cmpuids(int uid ,struct user_info *up )
 {
     return (up->active && uid == up->uid) ;
 }
@@ -599,6 +599,25 @@ t_talk()
     return (netty_talk);
 }
 
+struct _tag_talk_showstatus {
+	int count;
+	int pos[20];
+};
+
+int talk_showstatus(struct user_info * uentp,struct _tag_talk_showstatus* arg,int pos)
+{
+    char buf[80];
+    if (uentp->invisible && !HAS_PERM(PERM_SEECLOAK))
+    	return 0;
+    arg->pos[arg->count++]=pos;
+
+    sprintf(buf,"(%d) ƒø«∞◊¥Ã¨: %s, ¿¥◊‘: %s \n", arg->count,
+        modestring(uentp->mode, uentp->destuid, 0, /* 1->0 ≤ªœ‘ æ¡ƒÃÏ∂‘œÛµ» modified by dong 1996.10.26 */
+        uentp->in_chat ? uentp->chatid : NULL), uentp->from );
+    strcat(genbuf,buf);
+	return COUNT;
+}
+
 int
 ttt_talk(userinfo)
 struct user_info *userinfo ;
@@ -607,6 +626,7 @@ struct user_info *userinfo ;
     char test[STRLEN];
     int tuid, ucount, unum, tmp ;
     struct user_info uin ;
+    struct _tag_talk_showstatus ts;
 
     move(1,0);
     clrtobot();
@@ -631,20 +651,22 @@ struct user_info *userinfo ;
             clrtoeol() ;
             return -1 ;
         }
-        ucount=count_logins( &uin, t_cmpuids, tuid, 0);
+        genbuf[0]=0;
+        ts.count=0;
+        ucount = apply_utmp( talk_showstatus, 20,uident, &ts);
         move(3,0);
         prints("ƒø«∞ %s µƒ %d logins »Áœ¬: \n", uident, ucount);
         clrtobot() ;
         if(ucount>1) {
-list:   move(5,0) ;
+        	char buf[6];
+list:		move(5,0) ;
             prints("(0) À„¡ÀÀ„¡À£¨≤ª¡ƒ¡À°£\n");
-            ucount=count_logins( &uin, t_cmpuids, tuid, 0);
-            count_logins( &uin, t_cmpuids, tuid, 1);
+            prints(genbuf);
             clrtobot() ;
             tmp=ucount+8;
             getdata( tmp, 0, "«Î—°“ª∏ˆƒ„ø¥µƒ±»ΩœÀ≥—€µƒ [0]: ",
-                     genbuf, 4, DOECHO, NULL,YEA);
-            unum=atoi(genbuf);
+                     buf, 4, DOECHO, NULL,YEA);
+            unum=atoi(buf);
             if(unum == 0) { clear(); return 0; }
             if(unum > ucount || unum < 0) {
                 move(tmp,0);
@@ -653,7 +675,7 @@ list:   move(5,0) ;
                 pressreturn();
                 goto list;
             }
-            search_ulistn( &uin, t_cmpuids, tuid, unum );
+            uin=utmpshm->uinfo[ts.pos[unum-1]];
         }else
             search_ulist( &uin, t_cmpuids, tuid );
     }else
@@ -716,7 +738,7 @@ list:   move(5,0) ;
     }
     else {
         int sock, msgsock;
-        long length ;
+        socklen_t length ;
         struct sockaddr_in server ;
         char c ;
         char buf[512] ;
@@ -1146,8 +1168,7 @@ char *buf;
 }
 
 int
-dotalkuent(uentp)
-struct user_info *uentp;
+dotalkuent(struct user_info *uentp,char* arg,int pos)
 {
     char        buf[ STRLEN ];
 
@@ -1235,7 +1256,7 @@ struct talk_win *twin;
     do_talk_string( twin, "\n*** …œœﬂÕ¯”— ***\n" );
     savecolumns = (t_columns > STRLEN ? t_columns : 0);
     talk_uent_buf = bigbuf;
-    if( apply_ulist( dotalkuent ) == -1 ) {
+    if( apply_ulist( dotalkuent,0 ) == -1 ) {
         strcpy( bigbuf, "√ª”–»Œ∫Œ π”√’ﬂ…œœﬂ\n" );
     }
     strcpy( talk_uent_buf, "\n" );
@@ -1457,7 +1478,6 @@ int fd ;
                 }
             } else if (ch == Ctrl('P') && HAS_PERM(PERM_BASIC)) {
                 t_pager();
-                update_utmp();
                 update_endline();
             }
             else if (Ctrl('Z') == ch)
@@ -1887,7 +1907,7 @@ char *uident;
         clrtoeol();
         return -1;
     }
-    if( myfriend( uident ) )
+    if( myfriend( searchuser(uident) , NULL) )
         return -1;
     if(uinfo.mode!=LUSERS&&uinfo.mode!=LAUSERS&&uinfo.mode!=FRIEND)
     {
@@ -2137,31 +2157,38 @@ t_override()
     return;
 }
 
+struct _tag_t_search {
+	struct user_info* result;
+	int pid;
+};
+
+int _t_search(struct user_info* uentp,struct _tag_t_search* data,int pos)
+{
+	if (data->pid==0) {
+		data->result=uentp;
+		return QUIT;
+	}
+	data->result=uentp;
+	if (uentp->pid==data->pid)
+		return QUIT;
+	UNUSED_ARG(pos);
+	return 0;
+}
+
 struct user_info *
             t_search(sid,pid)
             char *sid;
 int  pid;
 {
     int         i;
-    extern      struct UTMPFILE *utmpshm;
-    struct      user_info *cur,*tmp=NULL;
+    struct _tag_t_search data;
 
-    resolve_utmp();
-    for( i = 0; i < USHM_SIZE; i++ )
-    {
-        cur = &(utmpshm->uinfo[ i ]);
-        if (!cur->active || !cur->pid )
-            continue;
-        if( !strcasecmp(cur->userid,sid) )
-        {
-            if(pid==0)
-                return cur;
-            tmp=cur;
-            if(pid==cur->pid)
-                break;
-        }
-    }
-    return tmp;
+    data.pid=pid;
+    data.result=NULL;
+
+    apply_utmp(_t_search,20,sid,&data);
+    
+    return data.result;
 }
 
 int
@@ -2175,6 +2202,8 @@ int
 getfriendstr()
 {
     extern int nf;
+    int i;
+    struct friends* friendsdata;
 
     if(topfriend!=NULL)
         free(topfriend);
@@ -2184,9 +2213,16 @@ getfriendstr()
         return 0;
     if(!HAS_PERM(PERM_ACCOUNTS) && !HAS_PERM(PERM_SYSOP))/*Haohmaru.98.11.16*/
         nf=(nf>=MAXFRIENDS)?MAXFRIENDS:nf;
-    topfriend=(struct friends *)calloc(sizeof(struct friends),nf);
-    get_records(genbuf,topfriend,sizeof(struct friends),1,nf);
-    qsort( topfriend, nf, sizeof( topfriend[0] ), cmpfuid );/*For Bi_Search*/
+    friendsdata=(struct friends *)calloc(sizeof(struct friends),nf);
+    get_records(genbuf,friendsdata,sizeof(struct friends),1,nf);
+    
+    qsort( friendsdata, nf, sizeof( friendsdata[0] ), cmpfuid );/*For Bi_Search*/
+    topfriend=(struct friends_info *)calloc(sizeof(struct friends_info),nf);
+    for (i=0;i<nf;i++) {
+    	topfriend[i].uid=searchuser(friendsdata[i].id);
+    	strcpy(topfriend[i].exp,friendsdata[i].exp);
+    }
+    free(friendsdata);
 }
 
 int

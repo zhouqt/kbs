@@ -3,7 +3,7 @@
 #define refreshtime     (30)
 extern time_t   login_start_time;
 extern char     BoardName[];
-char   fexp[30];
+
 int   (*func_list_show)();
 time_t update_time=0;
 int showexplain=0,freshmode=0;
@@ -11,18 +11,15 @@ int mailmode,numf;
 int friendmode=0;
 int usercounter,real_user_names=0;
 int range,page,readplan,num;
-/* struct user_info *user_record[MAXACTIVE]; modified by dong , 1999.5.11 */
+
 struct user_info *user_record[USHM_SIZE];
 struct userec *user_data;
 extern char MsgDesUid[14]; /* 保存所发msg的目的uid 1998.7.5 by dong */
 
-int
-myfriend(str)
-char str[IDLEN];
+int myfriend(int uid,char* fexp)
 {
-    extern struct friends *topfriend;
     extern int  nf;
-    int hi,low,mid,found=NA;
+    int i,found=NA;
     int cmp;
     /*char buf[IDLEN+3];*/
 
@@ -30,24 +27,14 @@ char str[IDLEN];
     {
         return NA;
     }
-    hi=nf-1;
-    low=0;
-    while(low<=hi)
-    {
-        mid=(low+hi)/2;
-        cmp=strcasecmp(topfriend[mid].id,str);
-        if(cmp==0)
-        {
-            found=YEA;
-            break;
-        }
-        if(cmp>0)
-            hi=mid-1;
-        else
-            low=mid+1;
+    for (i=0;i<nf;i++) {
+    	if (topfriend[i].uid==uid) {
+    		found=YEA;
+    		break;
+    	}
     }
-    if(found)
-        strcpy(fexp,topfriend[mid].exp);
+    if((found)&&fexp)
+        strcpy(fexp,topfriend[i].exp);
     return found;
 }
 
@@ -152,48 +139,57 @@ sort_user_record(left,right)
     sort_user_record(last+1,right);
 }
 
+int full_utmp(struct user_info* uentp,int* count)
+{
+    if( !uentp->active || !uentp->pid )
+    {
+        return 0;
+    }
+    if(!HAS_PERM(PERM_SEECLOAK) && uentp->invisible && strcmp(uentp->userid,currentuser.userid))/*Haohmaru.99.4.24.让隐身者能看见自己*/
+    {
+        return 0;
+    }
+    if(friendmode&&!myfriend(uentp->uid,NULL))
+    {
+        return 0;
+    }
+    user_record[*count]=uentp;
+    (*count)++;
+    return COUNT;
+}
+
 int
 fill_userlist()
 {
     static int i,i2;
     extern      struct UTMPFILE *utmpshm;
+    struct UTMP_POS pos;
     /*    struct      user_info *not_good; */
 
-    resolve_utmp();
+    bzero((char*)&pos,sizeof(pos));
     i2=0;
-    for( i = 0; i < USHM_SIZE; i++ )
-    {
-        if( !utmpshm->uinfo[ i ].active || !utmpshm->uinfo[ i ].pid )
-        {
-            continue;
-        }
-        if(!HAS_PERM(PERM_SEECLOAK) && utmpshm->uinfo[ i ].invisible && strcmp(utmpshm->uinfo[ i ].userid,currentuser.userid))/*Haohmaru.99.4.24.让隐身者能看见自己*/
-        {
-            continue;
-        }
-        if(friendmode&&!myfriend(utmpshm->uinfo[ i ].userid))
-        {
-            continue;
-        }
-        user_record[i2]=&utmpshm->uinfo[ i ];
-        i2++;
-    }
     if(!friendmode)
     {
+        /*把朋友放在一起
+
         int n;
         numf=0;
-        /*把朋友放在一起*/
-        for(n=0;n<i2;n++)
+		for(n=0;n<i2;n++)
         {
-            if(myfriend(user_record[n]->userid))
+            if(myfriend(searchuser(user_record[n]->userid,NULL)))
             {
                 swap_user_record(numf++,n);
             }
         }
         sort_user_record(0,numf-1);
-        sort_user_record(numf,i2-1);
-    }else
-        sort_user_record(0,i2-1);
+        sort_user_record(numf,i2-1);*/
+	    apply_ulist_addr((APPLY_UTMP_FUNC)full_utmp,(char*)&i2,&pos);
+    }else {
+    	for (i=0;i<nf;i++) {
+/*        sort_user_record(0,i2-1);*/
+			apply_utmpuid((APPLY_UTMP_FUNC)full_utmp,topfriend[i].uid,(char*)&i2);
+    	}
+    }
     range=i2;
     return i2==0?-1:1;
 }
@@ -205,6 +201,7 @@ do_userlist()
     int fd,len;
     char  user_info_str[256/*STRLEN*2*/],pagec;
     int   override;
+    char fexp[30];
     struct user_info *uentp;
     /*  _SHOW_ONLINE_USER */
     /* to print on line user to a file */
@@ -240,7 +237,7 @@ do_userlist()
         else
         {
             if((i+page<numf)||friendmode)
-                override=myfriend(uentp->userid);
+                override=myfriend(uentp->uid,fexp);
             else
                 override=NA;
         }
@@ -568,8 +565,7 @@ case 'd': case'D':
 }
 
 int
-countusers(uentp)
-struct userec *uentp ;
+countusers(struct userec *uentp ,char* arg)
 {
     static int totalusers;
     char permstr[10];
@@ -585,12 +581,12 @@ struct userec *uentp ;
     return 0;
 }
 
-printuent(uentp)
-struct userec *uentp ;
+printuent(struct userec *uentp ,char* arg)
 {
     static int i ;
     char permstr[10];
     int override;
+    char fexp[30];
     char buf[20] = "           ";
 
 
@@ -613,7 +609,7 @@ struct userec *uentp ;
     }
     uleveltochar(&permstr,uentp->userlevel);
     user_data[i-page]=*uentp;
-    override=myfriend(uentp->userid);
+    override=myfriend(searchuser(uentp->userid),fexp);
     /*---	modified by period	2000-11-02	hide posts/logins	---*/
 #ifdef _DETAIL_UINFO_
     prints(" %5d%2s%s%-14s%s %s%-19s%s  %5d %5d %4s   %-16s\n",i+1,
@@ -646,16 +642,15 @@ struct userec *uentp ;
 int
 allusers()
 {
-    countusers(NULL);
-    if(apply_record(PASSFILE,countusers,sizeof(struct userec)) == -1) {
+    countusers(NULL,0);
+    if(apply_record(PASSFILE,countusers,sizeof(struct userec),0) == -1) {
         return 0;
     }
-    return countusers(NULL);
+    return countusers(NULL,0);
 }
 
 int
-mailto(uentp)
-struct userec *uentp ;
+mailto(struct userec *uentp ,char* arg)
 {
     char filename[STRLEN];
 
@@ -675,7 +670,7 @@ int mode;
 {
 
     mailmode=mode;
-    if(apply_record(PASSFILE,mailto,sizeof(struct userec)) == -1) {
+    if(apply_record(PASSFILE,mailto,sizeof(struct userec),0) == -1) {
         prints("No Users Exist") ;
         pressreturn() ;
         return 0;
@@ -688,8 +683,8 @@ Show_Users()
 
     usercounter = 0;
     modify_user_mode(LAUSERS );
-    printuent((struct userec *)NULL) ;
-    if(apply_record(PASSFILE,printuent,sizeof(struct userec)) == -1) {
+    printuent((struct userec *)NULL,0) ;
+    if(apply_record(PASSFILE,printuent,sizeof(struct userec),0) == -1) {
         prints("No Users Exist") ;
         pressreturn() ;
         return 0;

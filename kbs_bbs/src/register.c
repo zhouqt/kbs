@@ -32,7 +32,6 @@
 #define  NEWREG         0x0040
 
 char    *sysconf_str();
-char    *genpasswd();
 char    *Ctime();
 
 extern char     fromhost[ 60 ];
@@ -179,8 +178,7 @@ getnewuserid(char* userid)
     flock( fd, LOCK_EX );
 
     i = searchnewuser();
-    sprintf( genbuf, "uid %d from %s", i, fromhost );
-    log_usies( "APPLY", genbuf );
+    log( "1system", "APPLY: uid %d from %s", i, fromhost );
 
     if( i <= 0 || i > MAXUSERS ) {
         flock(fd,LOCK_UN) ;
@@ -231,13 +229,13 @@ void
 new_register()
 {
     struct userec       newuser;
-    char        passbuf[ STRLEN ];
-    int         allocid, do_try,flag,lockfd;
+    int    allocid, do_try,flag,lockfd;
+    char   buf[STRLEN];
 
 
     memset( &newuser, 0, sizeof(newuser) );
-    getdata(0, 0, "使用GB编码阅读?(\xa8\xcf\xa5\xce BIG5\xbd\x58\xbe\x5c\xc5\xaa\xbd\xd0\xbf\xefN)(Y/N)? [Y]: ", passbuf, 4, DOECHO, NULL, YEA);
-    if (*passbuf == 'n' || *passbuf == 'N')
+    getdata(0, 0, "使用GB编码阅读?(\xa8\xcf\xa5\xce BIG5\xbd\x58\xbe\x5c\xc5\xaa\xbd\xd0\xbf\xefN)(Y/N)? [Y]: ", buf, 4, DOECHO, NULL, YEA);
+    if (*buf == 'n' || *buf == 'N')
         if (!convcode)
             switch_code();
 
@@ -285,7 +283,7 @@ new_register()
     }
     lockfd = open( "ucache.lock", O_RDWR|O_CREAT, 0600 );
     if( lockfd < 0 ) {
-        log_usies( "CACHE", "reload ucache lock error!!!!" );
+        log( "3system", "CACHE: reload ucache lock error!!!!" );
         return;
     }
     flock(lockfd,LOCK_EX);
@@ -304,19 +302,19 @@ new_register()
     newuser.firstlogin = newuser.lastlogin = time(NULL) - 13 * 60 * 24 ;
     substitute_record(PASSFILE,&newuser,sizeof(newuser),allocid);
     while( 1 ) {
-        getdata(0,0,"请设定您的密码: ",passbuf,PASSLEN,NOECHO,NULL,YEA) ;
+        char  passbuf[ STRLEN ], passbuf2[ STRLEN ];
+        getdata(0,0,"请设定您的密码: ",passbuf,39,NOECHO,NULL,YEA) ;
         if( strlen( passbuf ) < 4 || !strcmp( passbuf, newuser.userid ) ) {
             prints("密码太短或与使用者代号相同, 请重新输入\n") ;
             continue;
         }
-        strncpy( newuser.passwd, passbuf, PASSLEN );
-        getdata(0,0,"请再输入一次你的密码: ",passbuf,PASSLEN,NOECHO,NULL,YEA);
-        if( strncmp( passbuf, newuser.passwd, PASSLEN ) != 0 ) {
+        getdata(0,0,"请再输入一次你的密码: ",passbuf2,39,NOECHO,NULL,YEA);
+        if( strcmp( passbuf, passbuf2) != 0 ) {
             prints("密码输入错误, 请重新输入密码.\n") ;
             continue;
         }
-        passbuf[8] = '\0' ;
-        strncpy( newuser.passwd, genpasswd( passbuf ), PASSLEN );
+        
+        setpasswd(passbuf,&newuser);
         break;
     }
     newuser.userlevel = PERM_BASIC;
@@ -442,7 +440,7 @@ check_register_info()
     while ( strlen( urec->username ) < 2 ) {
         getdata( 2, 0, "请输入您的昵称:(例如,打倒北约) << ", urec->username, NAMELEN,DOECHO,NULL ,YEA);
         strcpy(uinfo.username,urec->username);
-        update_utmp();
+        UPDATE_UTMP_STR(username,uinfo);
     }
     if ( strlen( urec->realname ) < 2 ) {
         move( 3, 0 );

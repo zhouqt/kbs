@@ -35,7 +35,7 @@ int     mode;
 {
     if(uinfo.mode==mode) return 0; /* 必须减少update_ulist的次数. ylsdd 2001.4.27 */
     uinfo.mode = mode;
-    update_ulist( &uinfo, utmpent );
+    UPDATE_UTMP(mode,uinfo);
     return 0;
 }
 /*
@@ -48,7 +48,7 @@ x_csh()
     reset_tty() ;
     save_pager = uinfo.pager;
     uinfo.pager = 0 ;
-    update_utmp();
+    UPDATE_UTMP(pager,uinfo);
     report("shell out");
 #ifdef SYSV
     do_exec("sh", NULL) ;
@@ -57,7 +57,7 @@ x_csh()
 #endif
     restore_tty() ;
     uinfo.pager = save_pager;
-    update_utmp();
+    UPDATE_UTMP(pager,uinfo);
     clear() ;
     return 0 ;
 }
@@ -454,7 +454,7 @@ x_userdefine()
             uinfo.pager|=ALLMSG_PAGER;
             uinfo.pager|=FRIENDMSG_PAGER;
         }
-        update_utmp();
+		UPDATE_UTMP(pager,uinfo);
         if(DEFINE(DEF_ACBOARD))
             nettyNN=NNread_init();
         prints("新的参数设定完成...\n\n") ;
@@ -475,7 +475,7 @@ x_cloak()
     modify_user_mode( GMENU );
     report("toggle cloak");
     uinfo.invisible = (uinfo.invisible)?NA:YEA ;
-    update_utmp();
+	UPDATE_UTMP(invisible,uinfo);
     if (!uinfo.in_chat) {
         move(1,0) ;
         clrtoeol();

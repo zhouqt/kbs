@@ -195,34 +195,9 @@ int fd, op;
     }
 }
 
-#define HAVE_REPORT
+#define  report  vdfdsa#fds
 
-/*#ifdef  HAVE_REPORT*/
-report(s)
-char *s;
-{
-    static int disable = NA;
-    int fd;
 
-    /*  if (disable)
-        return;*/
-    if ((fd = open("trace.chatd", O_WRONLY|O_CREAT, 0644)) != -1)
-    {
-        char buf[160];
-        flock(fd, LOCK_EX);
-        lseek(fd, 0, SEEK_END);
-        sprintf(buf, "%s\n", s);
-        write(fd, buf, strlen(buf));
-        flock(fd, LOCK_UN);
-        close(fd);
-        return;
-    }
-    disable = YEA;
-    return;
-}
-/*#else
-#define report(s)       ;
-#endif*/
 
 is_valid_chatid(id)
 char *id;
@@ -254,7 +229,7 @@ char ch;
 
 
 char *
-nextword(str)
+getnextword(str)
 char **str;
 {
     char *p;
@@ -310,7 +285,7 @@ char *msg;
     char modestr[30];
     char *userid;
     int unum;
-    userid=nextword(&msg);
+    userid=getnextword(&msg);
     unum = userid_to_indx(userid);
     if (unum >= 0 && users[unum].room>=0)
         if ((rooms[users[unum].room].flags & ROOM_SECRET) ==0
@@ -333,7 +308,7 @@ char *msg;
     char userstr[40];
     char *chatid;
     int unum;
-    chatid=nextword(&msg);
+    chatid=getnextword(&msg);
     unum = chatid_to_indx(chatid);
     if (unum >= 0 && users[unum].room>=0)
     {
@@ -599,7 +574,7 @@ int unum;
 char *msg;
 {
     int rnum;
-    char *roomid=nextword(&msg);
+    char *roomid=getnextword(&msg);
     rnum = users[unum].room;
 
     if (!ROOMOP(unum) && !SYSOP(unum) && !CHATOP(unum))
@@ -831,7 +806,7 @@ char *msg;
 {
     char *userid;
     short i;
-    userid=nextword(&msg);
+    userid=getnextword(&msg);
     for(i=0;i<MAX_IGNORE;i++)
         if (users[unum].lpIgnoreID[i][0]=='\0')
         {
@@ -862,7 +837,7 @@ char *msg;
 {
     char *userid;
     short i;
-    userid=nextword(&msg);
+    userid=getnextword(&msg);
     for(i=0;i<MAX_IGNORE;i++)
         if (users[unum].lpIgnoreID[i][0]!='\0')
             if (!strcasecmp(users[unum].lpIgnoreID[i], userid))
@@ -879,7 +854,7 @@ char *msg;
 {
     char *emoteid;
     short i,len;
-    emoteid=nextword(&msg);
+    emoteid=getnextword(&msg);
     len=strlen(emoteid);
     for(i=0;i<MAX_EMOTES;i++)
         if (users[unum].lpEmote[i][0]!='\0')
@@ -904,10 +879,10 @@ char *msg;
     char *userid;
     char *chatid;
 
-    utentstr = nextword(&msg);
-    level = nextword(&msg);
-    userid = nextword(&msg);
-    chatid = nextword(&msg);
+    utentstr = getnextword(&msg);
+    level = getnextword(&msg);
+    userid = getnextword(&msg);
+    chatid = getnextword(&msg);
 
     utent = atoi(utentstr);
     for (i = 0; i < CHATMAXACTIVE; i++)
@@ -957,7 +932,7 @@ char *msg;
     char* str;
 
     j=0;
-    str = nextword(&msg);
+    str = getnextword(&msg);
     if (*str == '\0')
         pause = 1;
     else
@@ -1072,7 +1047,7 @@ char *msg;
     int whichroom;
     char *roomstr;
 
-    roomstr = nextword(&msg);
+    roomstr = getnextword(&msg);
     if (*roomstr == '\0')
         whichroom = users[unum].room;
     else
@@ -1159,7 +1134,7 @@ char *msg;
     int flag;
     char *fstr;
 
-    modestr = nextword(&msg);
+    modestr = getnextword(&msg);
     if (!ROOMOP(unum))
     {
         send_to_unum(unum, msg_not_op);
@@ -1240,7 +1215,7 @@ char *msg;
     char *chatid;
     int othernum;
 
-    chatid = nextword(&msg);
+    chatid = getnextword(&msg);
     if (!is_valid_chatid(chatid))
     {
         send_to_unum(unum, "°Ú ∑«∑®√˚◊÷£¨«Î÷ÿ–¬ ‰»Î °Ú");
@@ -1257,9 +1232,8 @@ char *msg;
     sprintf(chatbuf, "°Ú [1m%s[m Ω´¡ƒÃÏ¥˙∫≈∏ƒŒ™ [1m%s[m °Ú",
             users[unum].chatid, chatid);
     send_to_room(users[unum].room, chatbuf, unum);
-    sprintf(chatbuf, "°Ú %s Ω´¡ƒÃÏ¥˙∫≈∏ƒŒ™ %s °Ú",users[unum].chatid, chatid);
-    strcat(chatbuf,users[unum].userid);
-    report(chatbuf);
+    
+
     strcpy(users[unum].chatid, chatid);
     sprintf(chatbuf, "/n%s", users[unum].chatid);
     send_to_unum(unum, chatbuf);
@@ -1274,7 +1248,7 @@ char *msg;
     char *recipient;
     int recunum;
 
-    recipient = nextword(&msg);
+    recipient = getnextword(&msg);
     recunum = fuzzy_chatid_to_indx(recipient);
     if (recunum < 0)
     {
@@ -1349,7 +1323,7 @@ char *msg;
 {
     char *roomid;
 
-    roomid = nextword(&msg);
+    roomid = getnextword(&msg);
     if (RESTRICTED(unum))
     {
         send_to_unum(unum, "°Ú ƒ„÷ªƒ‹‘⁄’‚¿Ô¡ƒÃÏ °Ú");
@@ -1374,7 +1348,7 @@ char *msg;
     int recunum;
     char buf[80];
 
-    twit = nextword(&msg);
+    twit = getnextword(&msg);
     if (!ROOMOP(unum) && !SYSOP(unum) && !CHATOP(unum))
     {
         send_to_unum(unum, msg_not_op);
@@ -1422,7 +1396,7 @@ char *msg;
     int rnum = users[unum].room, rnum2;
     int recunum;
 
-    twit = nextword(&msg);
+    twit = getnextword(&msg);
     if (!ROOMOP(unum) && !SYSOP(unum) && !CHATOP(unum))
     {
         send_to_unum(unum, msg_not_op);
@@ -1466,7 +1440,7 @@ chat_makeop(unum, msg)
 int unum;
 char *msg;
 {
-    char *newop = nextword(&msg);
+    char *newop = getnextword(&msg);
     int rnum = users[unum].room;
     int recunum;
 
@@ -1506,7 +1480,7 @@ chat_toggle(unum, msg)
 int unum;
 char *msg;
 {
-    char *togglee = nextword(&msg);
+    char *togglee = getnextword(&msg);
     int rnum = users[unum].room;
     int recunum;
 
@@ -1548,7 +1522,7 @@ chat_invite(unum, msg)
 int unum;
 char *msg;
 {
-    char *invitee = nextword(&msg);
+    char *invitee = getnextword(&msg);
     int rnum = users[unum].room;
     int recunum;
 
@@ -1586,7 +1560,7 @@ void chat_knock_room(int unum, char * msg)
     const char * ind = "Õ‚√Ê";
     int recunum, rnum;
 
-    roomid = nextword(&msg);
+    roomid = getnextword(&msg);
     if (RESTRICTED(unum)) {
         send_to_unum(unum, "\033[1;31m°Ú \033[37mƒ„÷ªƒ‹‘⁄’‚¿Ô¡ƒÃÏ \033[31m°Ú\033[m");
         return;
@@ -1748,7 +1722,7 @@ char *party;
             }
             else
             { party2=party;
-                party=nextword(&party2);
+                party=getnextword(&party2);
                 recunum = fuzzy_chatid_to_indx(party);
                 if (recunum >= 0)
                     party = users[recunum].chatid;
@@ -1769,7 +1743,7 @@ char *party;
                 if (recunum>=0)
                     if (party2!=NULL)
                     {
-                        party3=nextword(&party2);
+                        party3=getnextword(&party2);
                         recunum = fuzzy_chatid_to_indx(party3);
                         if (recunum>=0)
                             party3=users[recunum].chatid;
@@ -2129,7 +2103,7 @@ int unum;
     }
 
     msg++;
-    cmd = nextword(&msg);
+    cmd = getnextword(&msg);
     if (cmd[0] == '/')
     {
 
@@ -2139,7 +2113,7 @@ int unum;
             if (cmd[1]&&cmd[6]) {
                 /*
                       char* verb;
-                      verb=nextword(cmd+1);
+                      verb=getnextword(cmd+1);
                 */
                 view_action_verb(unum,cmd+6);
             } else
@@ -2169,9 +2143,6 @@ int unum;
         if (!strncasecmp(cmd, "shutdown",8))
         {
             if (SYSOP(unum)) {
-                char buf[256];
-                sprintf(buf,"%s shutdown chat room",users[unum].userid);
-                report(buf);
                 match=-1; /* SYSOPø…“‘÷¥––shutdown√¸¡Ó */
             }
         }
@@ -2462,3 +2433,4 @@ SHUTDOWN:
     }
     exit(0);
 }
+

@@ -244,8 +244,7 @@ b_closepolls()
 
 
 int
-count_result(ptr)
-struct ballot *ptr;
+count_result(struct ballot *ptr,char* arg)
 {
     int     i;
 
@@ -323,7 +322,7 @@ int num;
 
     setcontrolfile();
     sprintf(fname,"vote/%s/flag.%d",currboard,currvote.opendate);
-    count_result(NULL);
+    count_result(NULL,0);
     sprintf(sugname,"vote/%s/tmp.%d",currboard,getpid());
     if((sug=fopen(sugname,"w"))==NULL)
     {
@@ -332,7 +331,7 @@ int num;
         pressanykey();
     }
     (void)memset(result, 0, sizeof(result));
-    if(apply_record(fname,count_result,sizeof(struct ballot))==-1)
+    if(apply_record(fname,count_result,sizeof(struct ballot),0)==-1)
     {
         report("Vote apply flag error");
     }
@@ -416,7 +415,7 @@ int num;
 
     setcontrolfile();
     sprintf(fname,"vote/%s/flag.%d",currboard,currvote.opendate);
-    count_result(NULL);
+    count_result(NULL,0);
     sprintf(sugname,"vote/%s/tmp.%d",currboard,getpid());
     if((sug=fopen(sugname,"w"))==NULL)
     {
@@ -425,7 +424,7 @@ int num;
         pressanykey();
     }
     (void)memset(result, 0, sizeof(result));
-    if(apply_record(fname,count_result,sizeof(struct ballot))==-1)
+    if(apply_record(fname,count_result,sizeof(struct ballot),0)==-1)
     {
         report("Vote apply flag error");
     }
@@ -982,8 +981,7 @@ voteexp()
 }
 
 int
-printvote(ent)
-struct  votebal *ent ;
+printvote(struct  votebal *ent,char* arg)
 {
     static int i ;
     struct ballot uservote;
@@ -1182,9 +1180,9 @@ Show_Votes()
 
     move(3,0);
     clrtobot();
-    printvote(NULL) ;
+    printvote(NULL,0) ;
     setcontrolfile();
-    if(apply_record(controlfile,printvote,sizeof(struct votebal)) == -1) {
+    if(apply_record(controlfile,printvote,sizeof(struct votebal),0) == -1) {
         prints("错误，没有投票箱开启....") ;
         pressreturn() ;
         return 0;

@@ -11,10 +11,10 @@ struct userec {                  /* Structure used to hold information in */
         unsigned int    numlogins;
         unsigned int    numposts;
         char            flags[2];
-        char            passwd[PASSLEN];
+        char            passwd[OLDPASSLEN];
         char            username[NAMELEN];
         char            ident[NAMELEN];
-        char            unused[16];
+        unsigned char   md5passwd[16];
         char			realemail[STRLEN-16];
         unsigned        userlevel;
         time_t          lastlogin;
@@ -23,7 +23,7 @@ struct userec {                  /* Structure used to hold information in */
         char            address[STRLEN];
         char            email[STRLEN];
         int             signature;
-        unsigned int             userdefine;
+        unsigned int    userdefine;
         time_t          notedate;
         int             noteline;
         int             notemode;
@@ -44,7 +44,7 @@ struct user_info {              /* Structure used in UTMP file */
         int     in_chat;        /* for in_chat commands   */
         char    chatid[ 16 ];   /* chat id, if in chat mode */
         char    from[ 60 ];     /* machine name the user called in from */
-        char    tty[ 20 ];      /* tty port */
+        time_t	freshtime;
         char    userid[ 20 ];
         char    realname[ 20 ];
         char    username[ 40 ];
@@ -53,6 +53,11 @@ struct user_info {              /* Structure used in UTMP file */
 
 struct friends {
         char id[13];
+        char exp[15];
+};
+
+struct friends_info {
+        int uid;
         char exp[15];
 };
 
@@ -95,10 +100,16 @@ struct one_key {                  /* Used to pass commands to the readmenu */
 } ;
 
 
+#include "uhashgen.h"
+
 #define USHM_SIZE       (MAXACTIVE + 10) /*modified by dong, 10->20, 1999.9.15*/
+#define UTMP_HASHSIZE  ((UCACHE_HASHSIZE>>5)+2)
 /* modified back by KCN,20->10, because not reboot */
 struct UTMPFILE {
     struct user_info    uinfo[ USHM_SIZE ];
+    int next[USHM_SIZE];
+    int hashhead[UTMP_HASHSIZE]; /* use UCACHE_HASHSIZE/32 */
+    int number;
     time_t              uptime;
 };
 
@@ -108,13 +119,14 @@ struct BCACHE {
     time_t      uptime;
 };
 
-#define UCACHE_HASHSIZE 10240
 
 struct UCACHE {
-	int	hashhead[UCACHE_HASHSIZE];
-	char users[MAXUSERS][IDLEN+1];
-	int next[MAXUSERS];
-	time_t      uptime;
+        ucache_hashtable hashtable;
+        ucache_hashtable hashusage;
+	int	hashhead[UCACHE_HASHSIZE+1];
+	char    users[MAXUSERS][IDLEN+1];
+	int     next[MAXUSERS];
+	time_t  uptime;
 	int	number;
 };
 

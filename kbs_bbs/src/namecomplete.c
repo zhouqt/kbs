@@ -23,8 +23,6 @@
 
 #include "bbs.h"
 
-#define chartoupper(c)  ((c >= 'a' && c <= 'z') ? c+'A'-'a' : c)
-
 struct word {
     char *word ;
     struct word *next ;
@@ -382,7 +380,8 @@ char *prompt, *data ;
             clrtoeol();
         }
         temp = data;
-        cwlist = u_namearray( cwbuf, &cwnum, "" );
+        cwlist = NULL;
+        cwnum=0;
         getyx( &y, &x );
         getyx( &origy, &origx );
         while( (ch = igetch()) != EOF ) {
@@ -393,28 +392,34 @@ char *prompt, *data ;
                 *temp = '\0';
                 prints( "\n" );
                 ptr = cwlist;
-                for( i = 0; i < cwnum; i++ ) {
-                    if( strncasecmp( data, ptr, IDLEN+1 ) == 0 )
-                        strcpy( data, ptr );
+		if (cwnum) {
+	            for( i = 0; i < cwnum; i++ ) {
+       		        if( strncasecmp( data, ptr, IDLEN+1 ) == 0 ) {
+                            strcpy( data, ptr );
+		            break;
+                        }
+		    }
                     ptr += IDLEN + 1;
+                } else {
+                    i=getuser(data);
+                    if (i!=0) memcpy(data,lookupuser.userid,IDLEN);
+		    data[IDLEN]=0;
                 }
-                /*
-                                if( cwnum == 1 )
-                                    strcpy( data, cwlist );
-                */
                 break;
             } else if( ch == ' ' ) {
                 int     col, len;
 
                 if( cwnum == 1 ) {
                     strcpy( data, cwlist );
-                    move( y, x );
-                    prints( "%s", data+count );
+                    move( y, origx );
+                    prints( "%s", data );
                     count = strlen( data );
                     temp = data + count;
                     getyx( &y, &x );
                     continue;
                 }
+                if (count<2) continue;
+	        cwlist = u_namearray( cwbuf, &cwnum, data );
                 clearbot = YEA;
                 col = 0;
                 len = UserMaxLen( cwlist, cwnum, morenum, NUMLINES );
@@ -444,8 +449,9 @@ char *prompt, *data ;
                 temp--;
                 count--;
                 *temp = '\0';
-                cwlist = u_namearray( cwbuf, &cwnum, data );
-                morenum = 0;
+                cwlist=NULL;
+                morenum=0;
+                cwnum=0;
                 x--;
                 move( y, x );
                 addch( ' ' );
@@ -456,15 +462,17 @@ char *prompt, *data ;
 
                 *temp++ = ch;
                 *temp = '\0';
-                n = UserSubArray( cwbuf, cwlist, cwnum, ch, count );
-                if( n == 0 ) {
-                    temp--;
-                    *temp = '\0';
-                    continue;
+                if ((count>1)&&cwnum) {
+	                n = UserSubArray( cwbuf, cwlist, cwnum, ch, count );
+	                if( n == 0 ) {
+	                    temp--;
+	                    *temp = '\0';
+	                    continue;
+	                }
+	                cwlist = cwbuf;
+	                cwnum = n;
                 }
-                cwlist = cwbuf;
                 count++;
-                cwnum = n;
                 morenum = 0;
                 move( y, x );
                 addch( ch );

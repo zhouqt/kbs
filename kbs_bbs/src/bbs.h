@@ -44,6 +44,10 @@
 #include <sys/stat.h>
 #include <sys/file.h>
 #include <dirent.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+
+
 #include "config.h"             /* User-configurable stuff */
 #include "permissions.h"
 
@@ -95,7 +99,7 @@ extern long ti ;
 #define STRLEN   80    /* Length of most string data */
 #define NAMELEN  40    /* Length of username/realname */
 #define IDLEN    12    /* Length of userids */
-#define PASSLEN  14    /* Length of encrypted passwd field */
+#define OLDPASSLEN  14    /* Length of encrypted passwd field */
 #define MAXGOPHERITEMS 9999 /*max of gopher items*/
 #define PASSFILE   ".PASSWDS"      /* Name of file User records stored in */
 #define ULIST_BASE ".UTMP"         /* Names of users currently on line */
@@ -112,6 +116,7 @@ extern  char ULIST[];
 #define NAMEFILE "BoardName"     /* File containing site name of bbs */
 
 #define QUIT 0x666               /* Return value to abort recursive functions */
+#define COUNT 0x2				/* count record */
 
 #define FILE_READ  0x1        /* Ownership flags used in fileheader structure in accessed[1]*/
 #define FILE_OWND  0x2        /* accessed array */
@@ -298,5 +303,17 @@ extern int Net_Sleep(int);
 #define memcpy(x,y,z) pr_memcpy(x,y,z)
 #endif
 
+#define chartoupper(c)  ((c >= 'a' && c <= 'z') ? c+'A'-'a' : c)
+
 #define strncasecmp(x,y,n) ci_strncmp(x,y,n)
 #define strcasecmp(x,y) ci_strcmp(x,y)
+
+#ifdef NULL
+#undef NULL
+#endif
+
+#define NULL ((void*)0)
+#define UNUSED_ARG(a) {if (&a) /* null */ ;}
+#include "vars.h"
+#include "func.h"
+

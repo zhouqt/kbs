@@ -34,6 +34,8 @@ char *shmkey,*fname;
     struct stat st ;
     time_t  ftime,now;
     int lines=0,nowfn=0,maxnum;
+    int iscreate;
+    
     struct FILESHM *tmp;
 
     switch(mode)
@@ -53,7 +55,7 @@ char *shmkey,*fname;
         return 0;
     }
     ftime = st.st_mtime;
-    tmp =(void *)attach_shm( shmkey, 5000+mode*10, sizeof( struct FILESHM )*maxnum );
+    tmp =(void *)attach_shm( shmkey, 5000+mode*10, sizeof( struct FILESHM )*maxnum ,&iscreate);
     switch(mode)
     {
     case 1:
@@ -111,6 +113,7 @@ int  mode;
     struct stat st ;
     time_t  now;
     int lines=0;
+    int iscreate;
 
     if( stat( fname,&st ) < 0 ) {
         return 0;
@@ -122,7 +125,7 @@ int  mode;
          {
     */
     if (statshm==NULL)
-        statshm =(void *)attach_shm("STAT_SHMKEY", 5100, sizeof(struct STATSHM)*2);
+        statshm =(void *)attach_shm("STAT_SHMKEY", 5100, sizeof(struct STATSHM)*2,&iscreate);
     /*
          }
     */

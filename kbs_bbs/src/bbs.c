@@ -50,9 +50,6 @@ int     Anony;
 char CurArticleFileName[STRLEN]; /* 保存当前文章的文件名，用于clear_new_flag, added by dong, 1999.1.21 */
 
 char    *filemargin() ;
-void    report();
-void    postreport(); /*added by alex, 96.9.12*/
-void    board_usage();
 void    cancelpost();
 /*For read.c*/
 int     auth_search_down();
@@ -96,10 +93,10 @@ extern int 	B_to_b;
 extern struct screenline *big_picture;
 extern struct userec *user_data;
 extern char* pnt;
-extern struct friend *topfriend;
 char genbuf[ 1024 ];
 char quote_title[120],quote_board[120];
 char quote_file[120], quote_user[120];
+struct friends_info *topfriend;
 #ifndef NOREPLY
 char replytitle[STRLEN];
 #endif
@@ -116,22 +113,6 @@ struct fileheader* fileinfo;
     if (posttime<user->firstlogin)
         return 0;
     return 1;
-}
-
-void free_mem() /* free the memory , only for calloc now, by dong 1998.8.29 */
-{
-    /* disable by KCN because it core dump
-       if (topfriend != NULL)
-    	free(topfriend);
-       if (big_picture != NULL)
-       	free(big_picture);
-
-       if (user_data != NULL)
-    	free(user_data);
-
-       if (pnt != NULL)
-    	free(pnt);
-    */
 }
 
 int totalusers, usercounter;
@@ -900,16 +881,6 @@ time_t *clock;
 }
 */
 
-char *
-Ctime(clock) /* 时间 转换 成 英文 */
-time_t *clock;
-{
-    char *foo;
-    char *ptr = ctime(clock);
-
-    if (foo = strchr(ptr, '\n')) *foo = '\0';
-    return (ptr);
-}
 
 void
 printutitle()  /* 屏幕显示 用户列表 title */
@@ -3277,8 +3248,7 @@ char *direct ;
 static int sequent_ent ;
 
 int
-sequent_messages(fptr)
-struct fileheader *fptr ;
+sequent_messages(struct fileheader *fptr,char* arg)
 {
     static int idc;
 
@@ -3349,8 +3319,7 @@ struct fileheader *fptr ;
 }
 /* added by dong , for clear all unread flag, 1999.1.25 */
 int
-newsequent_messages(fptr)
-struct fileheader *fptr ;
+newsequent_messages(struct fileheader* fptr,char* arg)
 {
     static int idc;
 
@@ -3374,12 +3343,12 @@ char *direct ;
     char        buf[ STRLEN ];
 
     readpost=0;
-    newsequent_messages((struct fileheader *)NULL) ;
+    newsequent_messages((struct fileheader *)NULL,0) ;
     sequent_ent = ent ;
     quiting = NA ;
     continue_flag = 0;
     setbdir( buf, currboard );
-    apply_record( buf,newsequent_messages,sizeof(struct fileheader)) ;
+    apply_record( buf,newsequent_messages,sizeof(struct fileheader),0) ;
     return PARTUPDATE ;
 }
 
@@ -3413,12 +3382,12 @@ char *direct ;*/
 {
     char        buf[ STRLEN ];
 
-    sequent_messages((struct fileheader *)NULL) ;
+    sequent_messages((struct fileheader *)NULL,0) ;
     sequent_ent = ent ;
     quiting = NA ;
     continue_flag = 0;
     setbdir( buf, currboard );
-    apply_record( buf,sequent_messages,sizeof(struct fileheader)) ;
+    apply_record( buf,sequent_messages,sizeof(struct fileheader),0) ;
     return FULLUPDATE ;
 }
 
@@ -3483,6 +3452,50 @@ show_b_note()
     pressanykey();
     return FULLUPDATE;
 }
+
+/*added by alex, 96.9.12*/
+void postreport(const char * posttitle, int post_num) 
+{
+    struct posttop
+    {
+        char author[13];              /* author name */
+        char board[13];               /* board name */
+        char title[66];               /* title name */
+        time_t date;                  /* last post's date */
+        int number;                   /* post number */
+    }    postlog;
+
+    int fd ;
+    static int disable = NA ;
+    char* buf;
+
+    if(disable)
+        return ;
+    if(!strcmp(currboard, "test") || !strcmp(currboard,"junk") || !strcmp(currboard,"WaterWorld"))
+        return;
+    /*if((fd = open(".post",O_WRONLY|O_CREAT,0644)) != -1 ) {*/
+    if((fd = open(".post.X",O_WRONLY|O_CREAT,0644)) != -1 ) {
+        memset(&postlog, 0, sizeof(postlog));
+        time(&(postlog.date));
+        strcpy(postlog.author,currentuser.userid);
+        strcpy(postlog.board, currboard);
+        if( strncasecmp( posttitle, "Re:", 3 ) == 0 )
+            strcpy(postlog.title, posttitle+4);
+        else
+            strcpy(postlog.title, posttitle);
+        postlog.number = post_num;
+        flock(fd,LOCK_EX) ;
+        lseek(fd,0,SEEK_END) ;
+        write(fd, (char *)&postlog, sizeof(postlog));
+        flock(fd,LOCK_UN) ;
+        close(fd) ;
+        return ;
+    }
+    disable = YEA ;
+    return ;
+
+}
+
 
 int
 into_announce()
@@ -3981,8 +3994,7 @@ Goodbye()    /*离站 选单*/
         record_exit_time(); /* 记录用户的退出时间 Luzi 1998.10.23*/
         /*---	period	2000-10-19	4 debug	---*/
         /*        sprintf( genbuf, "Stay:%3ld (%s)", stay / 60, currentuser.username );*/
-        sprintf( genbuf, "Stay:%3ld (%s)[%d %d]", stay / 60, currentuser.username, utmpent, usernum );
-        log_usies( "EXIT ", genbuf );
+        log( "1system", "EXIT: Stay:%3ld (%s)[%d %d]", stay / 60, currentuser.username, utmpent, usernum );
         u_exit() ;
         started = 0;
     }
@@ -4030,7 +4042,6 @@ Goodbye()    /*离站 选单*/
                 fclose(fp);
         }
     }
-    free_mem(); /* free the memory , by dong 1998.8.29 */
     sleep(1);
     reset_tty() ;
     pressreturn();/*Haohmaru.98.10.18*/
@@ -4040,129 +4051,6 @@ Goodbye()    /*离站 选单*/
     return -1;
 }
 
-
-void
-report(s)               /* 记录当前事件在trace中 */
-char *s ;
-{
-    static int disable = NA ;
-    int fd ;
-
-    if(disable)
-        return ;
-    if((fd = open("trace",O_WRONLY|O_CREAT,0644)) != -1 ) {
-        char buf[512] ;
-        /*char timestr[10], *thetime;*/ /* Leeward 98.04.27 */
-        char timestr[24], *thetime;
-        time_t dtime;
-        time(&dtime);
-        thetime = ctime(&dtime);
-        /*strncpy(timestr, &(thetime[11]), 8);*/
-        strncpy(timestr, thetime, 20);
-        /*timestr[8] = '\0';*/
-        timestr[20] = '\0';
-        flock(fd,LOCK_EX) ;
-        lseek(fd,0,SEEK_END) ;
-        /*   sprintf(buf," %s %s %s\n",currentuser.userid, timestr, s) ;avoid similar user id in search in trace, stephen, 2000.12.22 */
-        sprintf(buf,"%s %s %s\n",currentuser.userid, timestr, s) ;
-        write(fd,buf,strlen(buf)) ;
-        flock(fd,LOCK_UN) ;
-        close(fd) ;
-        return ;
-    }
-    disable = YEA ;
-    return ;
-}
-
-void
-msgreport(s)
-char *s ;
-{
-    static int disable = NA ;
-    int fd ;
-
-    if(disable)
-        return ;
-    if((fd = open("msgtrace",O_WRONLY|O_CREAT,0644)) != -1 ) {
-        char buf[512] ;
-        char timestr[10], *thetime;
-        time_t dtime;
-        time(&dtime);
-        thetime = ctime(&dtime);
-        strncpy(timestr, &(thetime[11]), 8);
-        timestr[8] = '\0';
-        flock(fd,LOCK_EX) ;
-        lseek(fd,0,SEEK_END) ;
-        sprintf(buf,"%s %s %s\n",currentuser.userid, timestr, s) ;
-        write(fd,buf,strlen(buf)) ;
-        flock(fd,LOCK_UN) ;
-        close(fd) ;
-        return ;
-    }
-    disable = YEA ;
-    return ;
-}
-
-void
-postreport(posttitle, post_num) /*added by alex, 96.9.12*/
-char* posttitle;
-int post_num;
-{
-    struct posttop
-    {
-        char author[13];              /* author name */
-        char board[13];               /* board name */
-        char title[66];               /* title name */
-        time_t date;                  /* last post's date */
-        int number;                   /* post number */
-    }    postlog;
-
-    int fd ;
-    static int disable = NA ;
-    char* buf;
-
-    if(disable)
-        return ;
-    if(!strcmp(currboard, "test") || !strcmp(currboard,"junk") || !strcmp(currboard,"WaterWorld"))
-        return;
-    /*if((fd = open(".post",O_WRONLY|O_CREAT,0644)) != -1 ) {*/
-    if((fd = open(".post.X",O_WRONLY|O_CREAT,0644)) != -1 ) {
-        memset(&postlog, 0, sizeof(postlog));
-        time(&(postlog.date));
-        strcpy(postlog.author,currentuser.userid);
-        strcpy(postlog.board, currboard);
-        if( strncasecmp( posttitle, "Re:", 3 ) == 0 )
-            strcpy(postlog.title, posttitle+4);
-        else
-            strcpy(postlog.title, posttitle);
-        postlog.number = post_num;
-        flock(fd,LOCK_EX) ;
-        lseek(fd,0,SEEK_END) ;
-        write(fd, (char *)&postlog, sizeof(postlog));
-        flock(fd,LOCK_UN) ;
-        close(fd) ;
-        return ;
-    }
-    disable = YEA ;
-    return ;
-
-}
-void
-board_usage( mode, usetime ) /*在use_board中记录board使用情况*/
-char *mode;
-time_t usetime;
-{
-    time_t      now;
-    FILE        *fp;
-    char        buf[ 256 ];
-
-    now = time(0);
-    sprintf( buf, "%s USE %-20.20s Stay: %5ld (%s)\n", Ctime( &now )+4, mode, usetime ,currentuser.userid);
-    if( (fp = fopen( "use_board", "a" )) != NULL ) {
-        fputs( buf, fp );
-        fclose( fp );
-    }
-}
 
 
 int

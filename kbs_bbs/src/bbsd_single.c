@@ -570,7 +570,9 @@ char *argv[];
 
             dup2(csock, 0);
             /* COMMAN: 有人说不处理1和2号文件句柄会把stderr and stdout打进文件弄坏PASSWD之类
-            想想挺有道理的说，不过为什么以前税目没有碰上过呢....*/
+            想想挺有道理的说，不过为什么以前税目没有碰上过呢....
+            笨蛋COMMAN:这个当然是因为stderr,stdout都被全部检查过，不会写入，唯一的可能
+            发生的情况是在system调用。*/
             dup2(0,2);
             dup2(0,1);
             /* COMMAN end */

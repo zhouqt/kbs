@@ -23,11 +23,11 @@ char *ProgramUsage = "\
 
 #include "bbs.h"
 /*#include "../bbs.h"  Leeward 98.04.27 For macro LEEWARD_X_RECORD*/
-#define PERM(x)       ((x)?record.userlevel&(x):1)
 #define MAXLEN          1024
 
 char currboard[1];
 
+struct userec       currentuser;
 char            *crypt();
 char            *homepath;
 int             visitflag;
@@ -37,118 +37,6 @@ char EMode = ' '; /* Leeward: 97.12.23: for 3W modify article */
 int 		sign;/*Haohmaru.第sign个签名档*/
 
 
-/* Leeward: 98.05.17 增添下列宏定义，和 bbs2www.h 保持一致 */
-#define BBSHOME "/home0/bbs/" /* 必须后跟 / */
-
-struct UCACHE   *uidshm /*= NULL*/; /* dong: 使用uid共享内存 */
-
-int strncasecmp(register char *s1,register char *s2,register int n);
-/* change to new , by dong, 1999.10.29 */
-
-int searchuser(userid)
-char *userid ;
-{
-    register int i ;
-
-    for(i=0; i < uidshm->number; i++)
-        if(!strncasecmp(userid,uidshm->userid[i],IDLEN+1))
-            return i+1 ;
-    return 0 ;
-}
-
-
-int my_bsearch(char *userid, int *userlist, int num)
-{
-
-    int head, tail, count;
-    int find_index, cmp;
-    char *user;
-
-    head = 0;
-    tail = num - 1;
-    count = num;
-
-    while (count > 0 ){
-        find_index = (head + tail + 1) >> 1 ;
-        user = uidshm->userid[userlist[find_index]];
-
-        if ((cmp = strncasecmp(user, userid, IDLEN+1)) == 0)
-            return find_index;
-
-        if (cmp > 0){
-            tail = find_index-1;
-            count = tail - head + 1;
-        }
-        else{
-            head = find_index+1;
-            count = tail - head + 1;
-        }
-    }
-    return 0;
-}
-
-/*
-int
-searchuser(userid)  
-char *userid ;
-{
-    register int i ;
-    int find;
-
-    find = my_bsearch(userid, uidshm->userlist, uidshm->number);
-
-    if (find == 0)
-       return 0;
-    else {
-       return ((int )(uidshm->userid[uidshm->userlist[find]] - uidshm->userid[0])/(IDLEN+1) +1);
-    }
-}
-*/
-
-void
-attach_err( shmkey, name )
-int     shmkey;
-char    *name;
-{
-    char genbuf[MAXLEN];
-    sprintf( genbuf, "Error! %s error! key = %x.\n", name, shmkey );
-    write( 1, genbuf, strlen( genbuf ) );
-    exit( 1 );
-}
-
-void *
-attach_shm( shmstr, defaultkey, shmsize )  /* attach share memory */
-char    *shmstr;
-int     defaultkey, shmsize;
-{
-    void        *shmptr;
-    int         shmkey, shmid;
-
-    shmkey = defaultkey;
-    shmid = shmget( shmkey, shmsize, 0 );
-    if( shmid < 0 ) {
-        shmid = shmget( shmkey, shmsize, IPC_CREAT | 0600 );
-        if( shmid < 0 )
-            attach_err( shmkey, "shmget" );
-        shmptr = (void *) shmat( shmid, NULL, 0 );
-        if( shmptr == (void *)-1 )
-            attach_err( shmkey, "shmat" );
-        memset( shmptr, 0, shmsize );
-    } else {
-        shmptr = (void *) shmat( shmid, NULL, 0 );
-        if( shmptr == (void *)-1 )
-            attach_err( shmkey, "shmat" );
-    }
-    return shmptr;
-}
-
-void init_ucache()
-{
-    /*attach to user shm */
-    if( uidshm == NULL ) {
-        uidshm = attach_shm( "UCACHE_SHMKEY", 7912/*3696*/, sizeof( *uidshm ) ); /*attach to user shm */ }
-}
-
 int
 CheckBM(BMstr,record)   /* 根据输入的版主名单 判断当前user是否是版主 added by dong, 1998.9.28*/
 char *BMstr;
@@ -157,9 +45,9 @@ struct userec record;
     char *ptr;
     char BMstrbuf[STRLEN-1];
 
-    if(PERM(PERM_OBOARDS)||PERM(PERM_SYSOP))
+    if(HAS_PERM(PERM_OBOARDS)||HAS_PERM(PERM_SYSOP))
         return 1;
-    if(!PERM(PERM_BOARDS))
+    if(!HAS_PERM(PERM_BOARDS))
         return 0;
     strcpy(BMstrbuf,BMstr);
     ptr=strtok(BMstrbuf,",: ;|&()\0\n");
@@ -233,28 +121,6 @@ usage()
 }
 
 int
-ci_strncmp(s1,s2,n)
-register char *s1,*s2 ;
-register int n ;
-{
-    char        c1, c2;
-
-    while( n-- > 0 ) {
-        c1 = *s1++;
-        c2 = *s2++;
-        if( c1 >= 'a' && c1 <= 'z' )
-            c1 += 'A' - 'a';
-        if( c2 >= 'a' && c2 <= 'z' )
-            c2 += 'A' - 'a';
-        if( c1 != c2 )
-            return (c1 - c2);
-        if( c1 == 0 )
-            return 0;
-    }
-    return 0;
-}
-
-int
 cmpbnames( bname, brec)
 char *bname;
 struct fileheader *brec;
@@ -263,32 +129,6 @@ struct fileheader *brec;
         return 1;
     else
         return 0;
-}
-
-report()
-{
-    /* Function called from record.o */
-    /* Please leave this function empty */
-}
-
-int
-ci_strcmp( s1, s2 )
-register char   *s1, *s2;
-{
-    char        c1, c2;
-
-    while( 1 ) {
-        c1 = *s1++;
-        c2 = *s2++;
-        if( c1 >= 'a' && c1 <= 'z' )
-            c1 += 'A' - 'a';
-        if( c2 >= 'a' && c2 <= 'z' )
-            c2 += 'A' - 'a';
-        if( c1 != c2 )
-            return (c1 - c2);
-        if( c1 == 0 )
-            return 0;
-    }
 }
 
 void search_article( brdname )
@@ -365,8 +205,8 @@ struct userec   *record;
     char        genbuf[ MAXLEN ];
 
     gets( passwd );
-    pw = crypt( passwd, record->passwd );
-    if( strcmp( pw, record->passwd ) != 0 ) {
+    
+    if( !checkpasswd2(passwd,record) ){
         printf( ":Err: user '%s' password incorrect!!\n", record->userid );
         exit( 0 );
     }
@@ -399,7 +239,6 @@ char    *name;
     int         fh;
     char        exitfile[80];
     int userindex;
-    init_ucache();/* modified by dong , 1998.11.2 */
 
     if( (fh = open( ".PASSWDS", O_RDWR )) == -1 ) {
         printf( ":Err: unable to open .PASSWDS file.\n" );
@@ -443,8 +282,6 @@ int delta;
 {
     int         fh;
     int userindex;
-    init_ucache();/* modified by dong , 1998.11.2 */
-
     if( (fh = open( ".PASSWDS", O_RDWR )) == -1 ) {
         printf( ":Err: unable to open .PASSWDS file.\n" );
         exit( 0 );
@@ -476,8 +313,6 @@ char    *name;
     int         fh;
     struct      userec   record;
     int userindex;
-    init_ucache();/* modified by dong , 1998.11.2 */
-
     if( (fh = open( ".PASSWDS", O_RDWR )) == -1 ) {
         printf( ":Err: unable to open .PASSWDS file.\n" );
         exit( 0 );
@@ -503,7 +338,6 @@ char    *name;
 
 post_article( usermail )
 {
-    struct userec       record;
     struct fileheader   header;
     struct boardheader  brdhdr;
     char        userid[ MAXLEN ], subject[ MAXLEN ];
@@ -579,18 +413,18 @@ post_article( usermail )
         FILE *fpMail;
 
 
-        check_userec( &record, userid );
+        check_userec( &currentuser, userid );
 
         gets( letter );
         Xuserec2(letter); /* Leeward 98.10.01 Fix a bug */
 
-        if (!PERM(PERM_SYSOP) && !PERM(PERM_LOGINOK))
+        if (!HAS_PERM(PERM_SYSOP) && !HAS_PERM(PERM_LOGINOK))
         { /* Leeward 98.07.26 加入权限判断 */
             printf(":Err: User %s try to send letter while not registered .\n", userid);
             return;
         }
 
-        if( PERM(PERM_DENYMAIL))
+        if( HAS_PERM(PERM_DENYMAIL))
         { /* Bigman: 2000.9.5 封禁Mail 不能发信 */
             printf(":Err: Deny_mail User %s try to mail in (%s) .\n", userid, homepath);
             return;
@@ -607,7 +441,7 @@ post_article( usermail )
             return;
         }
 
-        fprintf(fpMail, "寄信人: %s (%s) [WWW MAIL]\n标  题: %s\n发信站: BBS 水木清华站 (%24.24s)\n来  源: %s\n\n", userid, record.username, subject, ctime(&now), szRemoteHost);
+        fprintf(fpMail, "寄信人: %s (%s) [WWW MAIL]\n标  题: %s\n发信站: BBS 水木清华站 (%24.24s)\n来  源: %s\n\n", userid, currentuser.username, subject, ctime(&now), szRemoteHost);
         while(fgets(buf, MAXLEN, stdin) != NULL )
             fputs(buf, fpMail);
         AddSignature(fpMail, userid, 0); /* Leeward: 98.05.17 */
@@ -634,17 +468,16 @@ post_article( usermail )
     }
 
     if( usermail ) {
-        check_userec( &record, userid );
+        check_userec( &currentuser, userid );
         strcpy(Xid, userid);
         ptr = strrchr( homepath, '/' );
         (ptr == NULL) ? (ptr = homepath) : (ptr++);
-        search_record(BOARDS, &brdhdr, sizeof(brdhdr), cmpbnames, ptr);
-        if ( strcmp(ptr, "junk") && strcmp(ptr, "deleted")
-                && strcmp(ptr, "Filter") ) /* Leeward 98.09.28 Fix bugs */
+/*        search_record(BOARDS, &brdhdr, sizeof(brdhdr), cmpbnames, ptr);*/
+        if ( haspostperm(ptr) ) /* Leeward 98.09.28 Fix bugs */
         {
-            if( !PERM(PERM_SYSOP) && (!PERM(PERM_POST)
-                                      || !PERM(brdhdr.level)
-                                      || PERM(PERM_DENYPOST)) )
+            if( !HAS_PERM(PERM_SYSOP) && (!HAS_PERM(PERM_POST)
+                                      || !HAS_PERM(brdhdr.level)
+                                      || HAS_PERM(PERM_DENYPOST)) )
             { /* Leeward 98.05.02
                   加入 PERM_DENYPOST 的判断，消除下列 BUG:
                      被封POST后不用telnet登录则 PERM(PERM_POST) 仍为真，仍可 WWW-POST)
@@ -708,7 +541,7 @@ post_article( usermail )
                     fclose(temp_inf);
             */
             memcpy( currBM, brdhdr.BM, BM_LEN -1);
-            if (CheckBM(currBM,record))/* 修改权限检查,允许版主删文 modified by dong, 1998.9.28 */
+            if (CheckBM(currBM,currentuser))/* 修改权限检查,允许版主删文 modified by dong, 1998.9.28 */
             {
                 ptr = strrchr(homepath, '/');
                 strcpy(ptr + 1, "deleted");
@@ -748,7 +581,7 @@ post_article( usermail )
         }
         else
         { /*now+=28800;Haohmaru.99.4.21.不知道为什么WWW的时钟比系统时钟慢8小时*/
-            sprintf( buf, "发信人: %s (%s), 信区: %s\n标  题: %s\n发信站: BBS 水木清华站 (%24.24s) \033[1m\033[32mWWW-POST\033[0m\033[0m\n\n", userid, record.username, ptr, subject, ctime( &now ) );
+            sprintf( buf, "发信人: %s (%s), 信区: %s\n标  题: %s\n发信站: BBS 水木清华站 (%24.24s) \033[1m\033[32mWWW-POST\033[0m\033[0m\n\n", userid, currentuser.username, ptr, subject, ctime( &now ) );
         }
         write( fh, buf, strlen( buf ) );
     }
@@ -771,14 +604,14 @@ post_article( usermail )
             } while (ppx);
             ppt += LLL + lll;
 
-            if (*ppt > 127) { /* 避免在汉字中间折行 */
+            if (*pp & 0x80) { /* 避免在汉字中间折行 */
                 for (ppx = ppt - 1, ich = 0; ppx >= pp; ppx --)
-                        if (*ppx < 128) break; else ich ++;
+                        if (!(*ppx & 0x80)) break; else ich ++;
                 if (ich % 2) ppt --;
             }
             else if (*ppt) {
                 for (ppx = ppt - 1, ich = 0; ppx >= pp; ppx --)
-                        if (*ppx > 127 || ' ' == *ppx) break; else ich ++;
+                        if ((*ppx & 0x80) || ' ' == *ppx) break; else ich ++;
                 if (ppx > pp && ich < 16) ppt -= ich;
             }
 
@@ -861,7 +694,7 @@ post_article( usermail )
                 unlink(WWW_DEL);
                 ptr = strrchr(WWW_DEL, '/') - 5;
                 if(strncmp(ptr, "/test", 5))
-                    Xuserec(&record, userid, -1); /* Decrease article number */
+                    Xuserec(&currentuser, userid, -1); /* Decrease article number */
             }
         }
 
@@ -913,7 +746,7 @@ post_article( usermail )
 
         append_record(".post.X", &postlog, sizeof(postlog));
 
-        Xuserec( &record, userid, 1); /* Increase article number */
+        Xuserec( &currentuser, userid, 1); /* Increase article number */
     }
 }
 
@@ -1049,6 +882,9 @@ char    *argv[];
     if( argc < 3 )  usage();
     progmode = argv[1];
     homepath = argv[2];
+
+    resolve_ucache();/* modified by dong , 1998.11.2 */
+    bzero(&currentuser,sizeof(struct userec));
 
     /* Leeward: 97.12.20: 让 3W 发文能影响生命力 */
     if (argc < 5)/*Haohmaru.99.11.24.原来为4*/

@@ -81,11 +81,36 @@ struct  chat_info       {
         struct  person_info     person[MAX_PORTS];
 };
 
+
+/* 2001/5/6 added by wwj */
+#define MAXMESSAGE 5
+#define MAXLASTCMD 32
+
+typedef struct {
+    int  cfd; /* 聊天室的socket */
+
+    char buf[512];
+    int  bufptr;
+    
+    char chatid[10];
+    char chatroom[IDLEN];           /* Chat-Room Name */
+    char topic[STRLEN];
+
+    int  chatline;                  /* Where to display message now */
+    
+    int  cmdpos;
+    char lastcmd[MAXLASTCMD][128];
+
+	int apply_count;
+    char* apply_buf;
+    FILE *rec;
+} chatcontext;
+
+
 struct  chat_command    {
         char            *cmdname;               /* Char-room command length */
-        void             (*cmdfunc)();           /* Pointer to function */
-        short  nCmdLenth;/*命令字串判别需要匹配的字符数*/
-        short  bNeed;    /*调用命令函数时是否需要传递与chatd通讯的句柄*/
+        void            (*cmdfunc)(chatcontext * pthis, const char * arg); /* Pointer to function */
+        short           nCmdLenth;              /*命令字串判别需要匹配的字符数*/
 };
 
 

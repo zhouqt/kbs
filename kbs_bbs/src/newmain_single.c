@@ -41,7 +41,6 @@
 extern struct screenline *big_picture;
 extern struct userec *user_data;
 /* extern char* pnt; */
-extern struct friend *topfriend;
 
 int	temp_numposts;/*Haohmaru.99.4.02.ÈÃ°®¹àË®µÄÈË¿ÞÈ¥°É//grin*/
 int     nettyNN=0;
@@ -149,22 +148,6 @@ int times;
 
 }
 
-void
-log_usies( mode, mesg )
-char *mode, *mesg;
-{
-    time_t      now;
-    FILE        *fp;
-    char        buf[ 256 ], *fmt;
-
-    now = time(0);
-    fmt = currentuser.userid[0] ? "%s %s %-12s %s\n" : "%s %s %s%s\n";
-    sprintf( buf, fmt, Ctime( &now )+4, mode, currentuser.userid, mesg );
-    if( (fp = fopen( "usies", "a" )) != NULL ) {
-        fputs( buf, fp );
-        fclose( fp );
-    }
-}
 
 void
 u_enter()
@@ -203,14 +186,7 @@ u_enter()
     uinfo.uid = usernum;
     strncpy( uinfo.from, fromhost, 60 );
 #ifdef SHOW_IDLE_TIME
-/* KCN modified for my error  1999.9.1*/
-    if (tty_name[0])
-    strncpy( uinfo.tty, tty_name, 20 );
-    else {
-      time_t now;
-      now=time(0);
-      memcpy(uinfo.tty+1,&now,sizeof(time_t));
-    }
+    uinfo.freshtime=time(0);
 #endif
     iscolor=(DEFINE(DEF_COLOR))? 1:0;
     strncpy( uinfo.userid,   currentuser.userid,   20 );
@@ -225,7 +201,7 @@ u_enter()
     {
         prints("ÈËÊýÒÑÂú,ÎÞ·¨·ÖÅäÓÃ»§ÌõÄ¿!\n");
         oflush();
-	Net_Sleep(20);
+		Net_Sleep(20);
         exit(-1);
     }
 
@@ -272,16 +248,7 @@ u_exit()
         substitute_record(PASSFILE,&currentuser,sizeof(currentuser),usernum);
     }
 
-    uinfo.active = NA ;
-    uinfo.pid = 0 ;
-    uinfo.invisible = YEA ;
-    uinfo.sockactive = NA ;
-    uinfo.sockaddr = 0 ;
-    uinfo.destuid = 0 ;
-#ifdef SHOW_IDLE_TIME
-    strcpy(uinfo.tty, "NoTTY");
-#endif
-    update_utmp();
+    clear_utmp(0);
 }
 
 int
@@ -346,12 +313,9 @@ abort_bbs()
         record_exit_time();
         stay = time( 0 ) - login_start_time;
 /*---	period	2000-10-20	4 debug	---*/
-	sprintf( genbuf, "Stay: %3ld (%s)[%d %d]", stay/60, currentuser.username, utmpent, usernum);
-/*	sprintf( genbuf, "Stay: %3ld (%s)", stay / 60, currentuser.username );*/
-        log_usies( "AXXED", genbuf );
+	    log("1system", "AXXED Stay: %3ld (%s)[%d %d]", stay/60, currentuser.username, utmpent, usernum);
         u_exit();
     }
-    free_mem(); /* free the memory , by dong 1998.8.29 */
     shutdown(0,2);
     close(0);
     exit( 0 );
@@ -367,8 +331,7 @@ struct user_info *urec;
 }
 
 int
-count_multi( uentp )
-struct user_info *uentp;
+count_multi( struct user_info *uentp,char* arg,int pos)
 {
     static int  count;
 
@@ -387,9 +350,9 @@ struct user_info *uentp;
 int
 count_user()
 {
-    count_multi( NULL );
-    apply_ulist( count_multi );
-    return count_multi( NULL );
+    count_multi( NULL,0 ,0);
+    apply_ulist( count_multi , 0);
+    return count_multi( NULL,0,0 );
 }
 
 void RemoveMsgCountFile()
@@ -407,6 +370,7 @@ char *userID;
   unlink(fname);
  }
 
+/* to be Continue to fix kick problem */
 void
 multi_user_check()
 {
@@ -453,7 +417,6 @@ multi_user_check()
                 kill(uin.pid,9);
                 sprintf(buffer, "kicked (multi-login)" );
                 report(buffer);
-                log_usies( "KICK ", currentuser.username );
 
 		return ; /* ²»¼ÌÐø¼ì²é£¬·µ»Ø, ²»Ìß×Ô¼º´°¿Ú, added by dong, 1999.1.25 */
         } 
@@ -473,7 +436,6 @@ multi_user_check()
        kill(uin.pid,9);
         sprintf(buffer, "kicked (multi-login)" );
         report(buffer);
-        log_usies( "KICK ", currentuser.username );
     }
     else if ( (curr_login_num<700)&&(count_user()>=2)
               || (curr_login_num>=700)&& (count_user()>=1) )
@@ -555,7 +517,7 @@ void
 system_abort()
 {
     if( started ) {
-        log_usies( "ABORT", currentuser.username );
+        log( "1ABORT", currentuser.username );
         u_exit() ;
     }
     clear();
@@ -661,7 +623,7 @@ int num_active_http_users()
 void
 login_query()
 {
-    char        uid[STRLEN], passbuf[PASSLEN], *ptr;
+    char        uid[STRLEN], passbuf[OLDPASSLEN], *ptr;
     int         curr_login_num;
     int 	curr_http_num; /* Leeward 99.03.06 */
     int         attempts;
@@ -782,30 +744,28 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
             currentuser.flags[0] = CURSOR_FLAG | PAGER_FLAG;
             break;
         } else {
-	    if (!convcode)
+	        if (!convcode)
             	convcode=!(currentuser.userdefine&DEF_USEGB);  /* KCN,99.09.05 */
-            getdata( 0, 0, "\033[1m[37mÇëÊäÈëÃÜÂë: [m", passbuf, PASSLEN, NOECHO, NULL ,YEA);
-            passbuf[8] = '\0';
-/*  COMMAN : Ê¹ÓÃÀÏµÄ checkpassword ÒÔ½ÚÊ¡ CPU Load
-            if( !checkpasswd(currentuser.passwd, passbuf ))
-*/
-	    if( !checkpasswd2(currentuser.passwd, passbuf ))
-	    {
+            	
+            getdata( 0, 0, "\033[1m[37mÇëÊäÈëÃÜÂë: [m", passbuf, 39, NOECHO, NULL ,YEA);
+
+	        if( !checkpasswd2(passbuf, &currentuser ))
+    	    {
                 logattempt( currentuser.userid, fromhost );
                 prints( "[32mÃÜÂëÊäÈë´íÎó...[m\n" );
             } else {
                 if( !HAS_PERM( PERM_BASIC ) ) {
-                    prints( "[32m±¾ÕÊºÅÒÑÍ£»ú¡£ÇëÏò [36mSYSOP[32m ²éÑ¯Ô­Òò[m\n" );
-                    oflush();
-                    sleep( 1 );
-                    exit( 1 );
+                   prints( "[32m±¾ÕÊºÅÒÑÍ£»ú¡£ÇëÏò [36mSYSOP[32m ²éÑ¯Ô­Òò[m\n" );
+                   oflush();
+                   sleep( 1 );
+                   exit( 1 );
                 }
                 if(id_invalid(uid))
                 {
-                  prints("[31m±§Ç¸!![m\n");
-                  prints("[32m±¾ÕÊºÅÊ¹ÓÃÖÐÎÄÎª´úºÅ£¬´ËÕÊºÅÒÑ¾­Ê§Ð§...[m\n");
-                  prints("[32mÏë±£ÁôÈÎºÎÇ©ÃûµµÇë¸úÕ¾³¤ÁªÂç £¬Ëû(Ëý)»áÎªÄã·þÎñ¡£[m\n");
-                  getdata( 0, 0, "°´ [RETURN] ¼ÌÐø",genbuf,10,NOECHO,NULL,YEA);
+                    prints("[31m±§Ç¸!![m\n");
+                    prints("[32m±¾ÕÊºÅÊ¹ÓÃÖÐÎÄÎª´úºÅ£¬´ËÕÊºÅÒÑ¾­Ê§Ð§...[m\n");
+                    prints("[32mÏë±£ÁôÈÎºÎÇ©ÃûµµÇë¸úÕ¾³¤ÁªÂç £¬Ëû(Ëý)»áÎªÄã·þÎñ¡£[m\n");
+                    getdata( 0, 0, "°´ [RETURN] ¼ÌÐø",genbuf,10,NOECHO,NULL,YEA);
                     oflush();
                     sleep( 1 );
                     exit( 1 );
@@ -813,6 +773,11 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
                 if( simplepasswd( passbuf ) ) {
                     prints("[33m* ÃÜÂë¹ýì¶¼òµ¥, ÇëÑ¡ÔñÒ»¸öÒÔÉÏµÄÌØÊâ×ÖÔª.[m\n");
                     getdata( 0, 0, "°´ [RETURN] ¼ÌÐø",genbuf,10,NOECHO,NULL,YEA);
+                }
+                /* passwd ok, covert to md5 --wwj 2001/5/7 */
+                if(currentuser.passwd[0]){
+                    log("covert","for md5passwd");
+                    setpasswd(passbuf,&currentuser);
                 }
                 break;
             }
@@ -1000,8 +965,7 @@ user_login()
 	} /* ?????ºóÃæ»¹ÓÐcheck_register_info */
  
     ruser = getenv( "REMOTEUSERNAME" );
-    sprintf( genbuf, "%s@%s", ruser ? ruser : "?", fromhost );
-    log_usies( "ENTER", genbuf );
+    log( "1system", "ENTER %s@%s", ruser ? ruser : "?", fromhost );
     if( ruser ) {
         sprintf( genbuf, "%s@%s", ruser, fromhost );
         if( valid_ident( genbuf ) ) {
@@ -1013,14 +977,10 @@ user_login()
     }
     u_enter() ;
     sprintf(genbuf, "Enter from %-16s", fromhost); /* Leeward: 97.12.02 */
-    if (!strcmp(fromhost,"127.0.0.1")) {
-        system("netstat -na|grep 127.0.0.1>/home0/bbs/KCN/see-it!");
-    }
 
     report(genbuf) ;
 /*---	period	2000-10-19	4 debug	---*/
-    sprintf( genbuf, "[%d %d]", utmpent, usernum);
-    log_usies( "ALLOC", genbuf );
+    log( "1system", "ALLOC: [%d %d]", utmpent, usernum);
 /*---	---*/
     started = 1 ;
     if( USE_NOTEPAD == 1)
@@ -1195,6 +1155,7 @@ main_bbs(char *originhost, int convit,char* argv)
      big_picture=NULL;
      user_data = NULL;
      resolve_ucache();
+     resolve_utmp();
      /* commented by period for it changed to local variable 2000.11.12
      pnt = NULL; */
     
@@ -1250,9 +1211,7 @@ main_bbs(char *originhost, int convit,char* argv)
     /*chk_friend_book();*/
     /* Leeward 98.12.03 */
     if (chk_friend_book()) {
-/*    if(!uinfo.invisible)
-            apply_ulist(friend_login_wall);
-*/    pressreturn();
+	    pressreturn();
     }
     clear();
     memset(netty_path,0,sizeof(netty_path));

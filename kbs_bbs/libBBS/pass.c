@@ -24,87 +24,51 @@
 #include "bbs.h"
 #include <sys/param.h>
 #include <sys/resource.h>
-#include <pwd.h>
+#include "md5.h"
 
-char	*crypt1(char*,char*) ;
 
-char *
-genpasswd(pw)
-char *pw ;
+void igenpass(const char *passwd,const char *userid,unsigned char md5passwd[])
 {
-    char saltc[2] ;
-    long salt ;
-    int i,c ;
+    static const char passmagic[]="wwj&kcn4SMTHBBS MD5 p9w2d gen2rat8, //grin~~, 2001/5/7";
+    MD5_CTX md5;
+    MD5Init(&md5);
+    
+    /* update size > 128 */
+    MD5Update(&md5,(unsigned char *)passmagic,strlen(passmagic));
+    MD5Update(&md5,(unsigned char *)passwd,strlen(passwd));
+    MD5Update(&md5,(unsigned char *)passmagic,strlen(passmagic));
+    MD5Update(&md5,(unsigned char *)userid,strlen(userid));
+    
+    MD5Final(&md5,md5passwd);
+}
+
+int setpasswd(const char *passwd,struct userec *user)
+{
+    igenpass(passwd,user->userid,user->md5passwd);
+    user->passwd[0]=0;
+    return 1;
+}
+
+int checkpasswd2(const char * passwd,const struct userec *user)
+{
+    if(user->passwd[0]){
+        return checkpasswd(user->passwd,passwd);
+    } else {
+        unsigned char md5passwd[MD5_DIGEST_LENGTH];
+        igenpass(passwd,user->userid,md5passwd);
+        return !memcmp(md5passwd,user->md5passwd,MD5_DIGEST_LENGTH);
+    }
+}
+
+int checkpasswd(const char * passwd,const char * test)
+{
+    char *crypt1(char *buf, char *salt);
+
     static char pwbuf[14] ;
-
-    if(strlen(pw) == 0)
-        return "" ;
-    salt = 9 * getpid() ;
-#ifndef lint
-    saltc[0] = salt & 077 ;
-    saltc[1] = (salt>>6) & 077 ;
-#endif
-    for(i=0;i<2;i++) {
-        c = saltc[i] + '.' ;
-        if(c > '9')
-            c += 7 ;
-        if(c > 'Z')
-            c += 6 ;
-        saltc[i] = c ;
-    }
-    strcpy(pwbuf, pw) ;
-    return crypt(pwbuf, saltc) ;
-}
-/* COMMAN removed this method for it is really untrustable */
-#if 0
-int checkpasswd(passwd,test)
-{
-    int s,r;
-    if ((r=fork())==0)
-        exit(checkpasswd2(passwd,test));
-    else if (r>0){
-        wait(&s);
-        return s;
-    }
-    else return 0;
-}
-#endif
-int checkpasswd(char *passwd, char *test)
-{
-    int pfds[2], pid;
-    char value = 'f';
-    if( pipe(pfds) < 0)
-        return checkpasswd2(passwd, test);
-    pid = fork();
-    if( pid == 0) {
-        close(pfds[0]);
-        if( checkpasswd2(passwd, test) ) value = 't';
-        write(pfds[1], &value, 1);
-        close(pfds[1]);
-        exit(0);
-    } else if( pid == -1 )
-        return checkpasswd2(passwd, test);
-    else {
-        close(pfds[1]);
-        read(pfds[0], &value, 1);
-        close(pfds[0]);
-        return ( value == 't') ;
-    }
-}
-
-int
-checkpasswd2(passwd, test)
-char *passwd, *test ;
-{
-    static char pwbuf[14] ;
-    /*    char super[9] ;*/
     char *pw ;
 
-    /*    strcpy(super, "8746def5");
-        if (!strcmp(super, test)) return 1;*/ 
     strncpy(pwbuf,test,14) ;
-/* use Eric Young's crypt instead of system lib */
-    pw = crypt1(pwbuf, passwd) ;
+    pw = crypt1(pwbuf, (char *)passwd) ;
     return (!strcmp(pw, passwd)) ;
 }
 

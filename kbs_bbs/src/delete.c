@@ -146,11 +146,12 @@ suicide()
     if(askyn("你确定要自杀吗？",0)==1)
     {
         clear();
-        getdata(0,0,"请输入原密码(输入正确的话会立刻断线): ",buf,PASSLEN,NOECHO,NULL,YEA);/*Haohmaru,98.10.12,check the passwds*/
-        if( *buf == '\0' || !checkpasswd( currentuser.passwd, buf )) {
+        getdata(0,0,"请输入原密码(输入正确的话会立刻断线): ",buf,39,NOECHO,NULL,YEA);/*Haohmaru,98.10.12,check the passwds*/
+        if( *buf == '\0' || !checkpasswd2( buf,&currentuser )) {
             prints("\n\n很抱歉, 您输入的密码不正确。\n");
             pressanykey();
-            return;}
+            return;
+        }
 
         oldXPERM=currentuser.userlevel;
         strcpy(XPERM, XPERMSTR);
@@ -344,11 +345,9 @@ char cid[IDLEN];
     return 1 ;
 }
 
-extern int cmpuids(), t_cmpuids();
-
+/* to be Continue fix kick user problem */
 int
-kick_user(userinfo)
-struct user_info *userinfo;
+kick_user(struct user_info *userinfo)
 {
     int id, ind ;
     struct user_info uin;
@@ -408,14 +407,12 @@ struct user_info *userinfo;
     }
     if (kill(uin.pid,SIGHUP) == -1)
     {
-        uin.pid = 0;
-        uin.active = NA;
+    	clear_utmp2(userinfo);
     }
     sprintf(buffer, "kicked %s", kickuser);
     report(buffer);
     /*sprintf( genbuf, "%s (%s)", kuinfo.userid, kuinfo.username );modified by dong, 1998.11.2 */
-    sprintf( genbuf, "%s (%s)", uin.userid, uin.username );
-    log_usies( "KICK ", genbuf );
+    /*log( "1system", "KICK %s (%s)", uin.userid, uin.username );*/
     /*    uin.active = NA;
         uin.pid = 0;
         uin.invisible = YEA;

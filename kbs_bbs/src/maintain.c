@@ -26,25 +26,38 @@ char           *Ctime();
 char            lookgrp[30];
 char        fdata[ 7 ][ STRLEN ];
 
-int
-showperminfo(int, int);
+int showperminfo(int, int);
+
+/* modified by wwj, 2001/5/7, for new md5 passwd */
+void igenpass(const char *passwd,const char *userid,unsigned char md5passwd[]);
 
 int check_systempasswd()
 {
     FILE           *pass;
-    char            passbuf[20], prepass[STRLEN];
+    char            passbuf[40], prepass[STRLEN];
 
     clear();
-    if ((pass = fopen("etc/systempassword", "r")) != NULL)
+    if ((pass = fopen("etc/systempassword", "rb")) != NULL)
     {
         fgets(prepass, STRLEN, pass);
-        fclose(pass);
         prepass[strlen(prepass) - 1] = '\0';
-        getdata(1, 0, "请输入系统密码: ", passbuf, 19, NOECHO, NULL, YEA);
+        if(!strcmp(prepass,"md5")){
+            fread(&prepass[16],1,16,pass);
+        }
+        fclose(pass);
+        
+        getdata(1, 0, "请输入系统密码: ", passbuf, 39, NOECHO, NULL, YEA);
         if (passbuf[0] == '\0' || passbuf[0] == '\n')
             return NA;
-        if (!checkpasswd(prepass, passbuf))
-        {
+            
+        
+        if(!strcmp(prepass,"md5")){
+            igenpass(passbuf,"[system]",(unsigned char *)prepass);
+            passbuf[0]=(char)!memcmp(prepass,&prepass[16],16);
+        } else {
+            passbuf[0]=(char)checkpasswd(prepass, passbuf);
+        }
+        if (!passbuf[0]) {
             move(2, 0);
             prints("错误的系统密码...");
             securityreport("系统密码输入错误...");
@@ -58,15 +71,15 @@ int check_systempasswd()
 int setsystempasswd()
 {
     FILE           *pass;
-    char            passbuf[20], prepass[20];
+    char            passbuf[40], prepass[40];
 
     modify_user_mode(ADMIN);
     if (strcmp(currentuser.userid, "SYSOP"))
         return;
     if (!check_systempasswd())
         return;
-    getdata(2, 0, "请输入新的系统密码: ", passbuf, 19, NOECHO, NULL, YEA);
-    getdata(3, 0, "确认新的系统密码: ", prepass, 19, NOECHO, NULL, YEA);
+    getdata(2, 0, "请输入新的系统密码: ", passbuf, 39, NOECHO, NULL, YEA);
+    getdata(3, 0, "确认新的系统密码: ", prepass, 39, NOECHO, NULL, YEA);
     if (strcmp(passbuf, prepass))
         return;
     if ((pass = fopen("etc/systempassword", "w")) == NULL)
@@ -76,7 +89,11 @@ int setsystempasswd()
         pressanykey();
         return;
     }
-    fprintf(pass, "%s\n", genpasswd(passbuf));
+    fwrite("md5\n",4,1,pass);
+    
+    igenpass(passbuf,"[system]",(unsigned char *)prepass);
+    fwrite(prepass,16,1,pass);
+    
     fclose(pass);
     move(4, 0);
     prints("系统密码设定完成....");
@@ -84,8 +101,9 @@ int setsystempasswd()
     return;
 }
 
-securityreport(str)		/* Leeward: 1997.12.02 */
-char           *str;
+
+
+int securityreport(char *str)		/* Leeward: 1997.12.02 */
 {
     FILE           *se;
     char            fname[STRLEN];
@@ -707,21 +725,18 @@ char           *username;
 
 }
 
-FILE           *cleanlog;
 char            curruser[IDLEN + 2];
 extern int      delmsgs[];
 extern int      delcnt;
 
-void domailclean(fhdrp)
-struct fileheader *fhdrp;
+void domailclean(struct fileheader *fhdrp,char* arg)
 {
     static int      newcnt, savecnt, deleted, idc;
     char            buf[STRLEN];
 
     if (fhdrp == NULL)
     {
-        fprintf(cleanlog, "new = %d, saved = %d, deleted = %d\n",
-                newcnt, savecnt, deleted);
+        log("clean", "new = %d, saved = %d, deleted = %d", newcnt, savecnt, deleted);
         newcnt = savecnt = deleted = idc = 0;
         if (delcnt)
         {
@@ -747,26 +762,24 @@ struct fileheader *fhdrp;
         }
 }
 
-int cleanmail(urec)
-struct userec  *urec;
+int cleanmail(struct userec  *urec,char* arg)
 {
     struct stat     statb;
     if (urec->userid[0] == '\0' || !strcmp(urec->userid, "new"))
         return 0;
     setmailfile(genbuf, urec->userid, DOT_DIR);
-    fprintf(cleanlog, "%s: ", urec->userid);
-    if (stat(genbuf, &statb) == -1)
-        fprintf(cleanlog, "no mail\n");
-    else
-        if (statb.st_size == 0)
-            fprintf(cleanlog, "no mail\n");
-        else
-        {
+    if (stat(genbuf, &statb) == -1) {
+        log("clean","%s no mail",urec->userid);
+    } else {
+        if (statb.st_size == 0) {
+            log("clean","%s no mail",urec->userid);
+        } else {
             strcpy(curruser, urec->userid);
             delcnt = 0;
-            apply_record(genbuf, domailclean, sizeof(struct fileheader));
-            domailclean(NULL);
+            apply_record(genbuf, domailclean, sizeof(struct fileheader),0);
+            domailclean(NULL,0);
         }
+    }
     return 0;
 }
 
@@ -795,11 +808,10 @@ int m_mclean()
         securityreport(secu);
     }
 
-    cleanlog = fopen("mailclean.log", "w");
     move(3, 0);
     prints("请耐心等候.\n");
     refresh();
-    if (apply_record(PASSFILE, cleanmail, sizeof(struct userec)) == -1)
+    if (apply_record(PASSFILE, cleanmail, sizeof(struct userec),0) == -1)
     {
         move(4, 0);
         prints("apply PASSFILE err...\n");
@@ -808,8 +820,7 @@ int m_mclean()
         return -1;
     }
     move(4, 0);
-    fclose(cleanlog);
-    prints("清除完成! 记录档 mailclean.log.\n");
+    prints("清除完成! 请查看日志文件.\n");
     report("Mail Clean");
     pressreturn();
     clear();
@@ -1053,10 +1064,11 @@ char           *logfile, *regfile;
                 securityreport(genbuf);
                 if ((fout = fopen(logfile, "a")) != NULL)
                 {
+                	time_t now;
                     for (n = 0; field[n] != NULL; n++)
                         fprintf(fout, "%s: %s\n", field[n], fdata[n]);
-                    n = time(NULL);
-                    fprintf(fout, "Date: %s\n", Ctime(&n));
+                    now = time(NULL);
+                    fprintf(fout, "Date: %s\n", Ctime(&now));
                     fprintf(fout, "Approved: %s\n", uid);
                     fprintf(fout, "----\n");
                     fclose(fout);

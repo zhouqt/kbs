@@ -129,17 +129,6 @@ char *uid, *frm;
     }
 }
 
-int
-checkpasswd(passwd, test)
-char *passwd, *test;
-{
-    static char pwbuf[14];
-    char *pw;
-
-    strncpy(pwbuf, test, 14);
-    pw = crypt(pwbuf, passwd);
-    return (!strcmp(pw, passwd));
-}
 
 static int
 abort_server()
@@ -349,13 +338,6 @@ char   *dest;
 
 }
 
-int
-Isspace(ch)
-char ch;
-{
-    return (ch == ' ' || ch =='\t' || ch == 10 || ch == 13);
-}
-
 char *
 nextwordlower(str)
 char **str;
@@ -379,7 +361,7 @@ char **str;
 }
 
 char *
-nextword(str)
+nextword2(str)
 char **str;
 {
     char *p;
@@ -521,12 +503,13 @@ char **argv;
     }
 
     signal(SIGHUP, (void *)abort_server) ;
-    signal(SIGCHLD, reaper);
-    signal(SIGINT,dokill);
-    signal(SIGTERM,dokill);
+    signal(SIGCHLD, (void *)reaper);
+    signal(SIGINT,(void *)dokill);
+    signal(SIGTERM,(void *)dokill);
 
     listen(msock,QLEN);
 
+	resolve_ucache();
     while (1) {
 
         alen=sizeof(fsin);
@@ -617,8 +600,8 @@ reaper()
     int state, pid;
 
     signal(SIGCHLD,SIG_IGN);
-    signal(SIGINT,dokill);
-    signal(SIGTERM,dokill);
+    signal(SIGINT,(void *)dokill);
+    signal(SIGTERM,(void *)dokill);
 
     while (( pid = waitpid(-1, &state, WNOHANG|WUNTRACED)) > 0);
 }
@@ -634,7 +617,14 @@ int
 get_userdata(user)
 char *user;
 {
-    FILE *rec;
+	int uid;
+	uid = getuser(user);
+	if (uid) {
+		currentuser=lookupuser;
+		return 1;
+	}
+	return -1;
+/*    FILE *rec;
     int found=0;
     char buf[256];
 
@@ -660,7 +650,7 @@ char *user;
         return -1;
     else
         return 1;
-
+*/
 }
 
 int
@@ -688,7 +678,7 @@ User()
     *ptr = '\0';
     if(get_userdata(cmd)==1)
     {
-        strcpy(LowUserid, cmd);
+        strcpy(LowUserid, currentuser.userid);
         sprintf(genbuf, "+OK Password required for %s.bbs.", cmd);
         outs(genbuf);
     }else
@@ -735,7 +725,7 @@ Retr()
         return;
     }
 
-    cmd = nextword(&msg);
+    cmd = nextword2(&msg);
 
     if (*cmd==0) {
         outs("-ERR Too few arguments for the retr command.");
@@ -817,7 +807,7 @@ List()
         return;
     }
 
-    cmd = nextword(&msg);
+    cmd = nextword2(&msg);
 
     if (*cmd == 0) {
         sprintf(genbuf, "+OK %d messages (%d octets)", totalnum, totalbyte);
@@ -862,7 +852,7 @@ Top() /* Leeward adds, 98.01.21 */
         return;
     }
 
-    cmd = nextword(&msg);
+    cmd = nextword2(&msg);
 
     if (*cmd==0) {
         outs("-ERR Too few arguments for the top command.");
@@ -880,7 +870,7 @@ Top() /* Leeward adds, 98.01.21 */
         return;
     }
 
-    cmd = nextword(&msg);
+    cmd = nextword2(&msg);
 
     if (*cmd==0) {
         outs("-ERR Too few arguments for the top command.");
@@ -930,7 +920,7 @@ Uidl()
         return;
     }
 
-    cmd = nextword(&msg);
+    cmd = nextword2(&msg);
 
     if (*cmd == 0) {
         outs("+OK");
@@ -981,7 +971,7 @@ Pass()
         return;
     }
 
-    if (!checkpasswd(currentuser.passwd, cmd)) {
+    if (!checkpasswd2(cmd, &currentuser)) {
         sprintf(genbuf, "-ERR Password supplied for \"%s.bbs\" is incorrect.", LowUserid);
         outs(genbuf);
         LowUserid[0] = '\0';
@@ -1023,7 +1013,7 @@ Dele()
         return;
     }
 
-    cmd = nextword(&msg);
+    cmd = nextword2(&msg);
 
     if (*cmd==0) {
         outs("-ERR Too few arguments for the dele command.");

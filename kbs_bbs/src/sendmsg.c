@@ -108,51 +108,6 @@ show_allmsgs()
     uinfo.mode = oldmode;
 }
 
-/* snow change at 10.24 */
-/* 得到文件的一行 */
-void getoneline(fp,line)
-FILE *fp;
-char line[200];
-{
-    int i;
-    char ch;
-
-    for (i=0;i<200;i++)
-        line[i] = 0;
-    i = 0;
-
-    while (!feof(fp)) {
-        fscanf(fp,"%c",&ch);
-        if (ch=='\n') break;
-        line[i++] = ch ;
-    }
-    line[i]=0;
-}
-
-/* snow change at 10.24 */
-/* 聊天室看msg的函数 */
-void chat_show_allmsgs()
-{
-    char fname[STRLEN];
-    FILE *fp;
-    char buf[200];
-
-    setuserfile(fname,"msgfile");
-    if(dashf(fname))
-    {
-        printchatline("你的消息有:");
-        fp =fopen(fname,"r");
-        while (!feof(fp)) {
-            getoneline(fp,buf);
-            printchatline(buf);
-        }
-        fclose(fp);
-    }
-    else
-    {
-        printchatline("没有任何的讯息存在！！");
-    }
-}
 
 int
 do_sendmsg(uentp,msgstr,mode)
@@ -372,8 +327,7 @@ int mode;
 }
 
 int
-dowall(uin)
-struct user_info *uin;
+dowall(struct user_info *uin,char* arg)
 {
     if (!uin->active || !uin->pid) return -1;
     /*---	不给当前窗口发消息了	period	2000-11-13	---*/
@@ -403,7 +357,7 @@ wall()
         move(2,0); clrtoeol();
         return 0;
     }
-    if( apply_ulist( dowall ) == -1 ) {
+    if( apply_ulist((APPLY_UTMP_FUNC) dowall,NULL ) == -1 ) {
         move(2,0);
         prints( "没有任何使用者上线\n" );
         pressanykey();

@@ -206,10 +206,7 @@ toobigmesg()
 /* apply_record进行了预读优化,以减少系统调用次数,提高速度. ylsdd 2001.4.24 */
 /* COMMAN : use mmap to speed up searching */
 int
-apply_record(filename,fptr,size)
-char *filename ;
-int (*fptr)() ;
-int size ;
+apply_record(char *filename ,int (*fptr)(char*,char*) ,int size ,char* arg)
 {
     char *buf,*buf1,*buf2;
     int fd, sizeread, n, i;
@@ -222,7 +219,7 @@ int size ;
     if (buf ==(char *) -1) { close(fd);return 0;}
     for (i=0,buf1=buf;i<stat.st_size/size;i++,buf1+=size) {
     	memcpy(buf2,buf1,size);
-    	if ((*fptr)(buf2) == QUIT) {
+    	if ((*fptr)(buf2,arg) == QUIT) {
     		munmap(buf,stat.st_size);
     		close(fd);
     		return QUIT;
@@ -234,10 +231,7 @@ int size ;
 }
 #else
 int
-apply_record(filename,fptr,size)
-char *filename ;
-int (*fptr)() ;
-int size ;
+apply_record(char *filename ,int (*fptr)(char*,char*) ,int size ,char* arg)
 {
     char *buf,*buf1,*buf2;
     int fd, sizeread, n, i;
@@ -250,7 +244,7 @@ int size ;
     if (buf ==(char *) -1) { close(fd);return 0;}
     for (i=0,buf1=buf;i<stat.st_size/size;i++,buf1+=size) {
     	memcpy(buf2,buf1,size);
-    	if ((*fptr)(buf2) == QUIT) {
+    	if ((*fptr)(buf2,arg) == QUIT) {
     		munmap(buf,stat.st_size);
     		close(fd);
     		return QUIT;
@@ -550,6 +544,7 @@ char    *filename, *tmpfile, *deleted;
     char        *ptr, delfname[STRLEN], tmpfname[STRLEN];
 
     strcpy( tmpfile, filename );
+#ifdef BBSMAIN
     if (YEA == checkreadonly(currboard))/*Haohmaru 2000.3.19*/
     {
         sprintf(delfname,".%sdeleted",currboard);
@@ -564,9 +559,11 @@ char    *filename, *tmpfile, *deleted;
         }
         return;
     }
-    else{
-        sprintf(delfname , ".deleted");
-        sprintf(tmpfname , ".tmpfile");
+    else
+#endif
+    {
+        sprintf(delfname , ".deleted%d",getpid());
+        sprintf(tmpfname , ".tmpfile%d",getpid());
     }
 
     /*    if( (ptr = strchr( tmpfile, '/' )) != NULL ) {
@@ -665,6 +662,7 @@ int id1,id2,del_mode ;
     int         count,totalcount,delcount,remaincount,keepcount;
     int         pos_read,pos_write,pos_end;
     int		i,j;
+#ifdef BBSMAIN
     int savedigestmode;
     /*digestmode=4, 5的情形或者允许区段删除,或者不允许,这可以在
     调用函数中或者任何地方给定, 这里的代码是按照不允许删除写的,
@@ -674,6 +672,8 @@ int id1,id2,del_mode ;
     if(digestmode==4||digestmode==5)  { /* KCN:暂不允许 */
        return 0;
     }
+
+#endif
 
     if((fdr = open(filename,O_RDWR,0)) == -1) {
         return -2;
@@ -701,8 +701,10 @@ int id1,id2,del_mode ;
         pos_write=sizeof(struct fileheader)*(id1-1);
         count = id1;
         if (id1>totalcount) {
+#ifdef BBSMAIN
 	  prints("开始文章号大于文章总数");
 	  pressanykey();
+#endif
 	  return 0;
         }
     }
@@ -714,11 +716,16 @@ int id1,id2,del_mode ;
     
     if (id2>totalcount) {
 	char buf[3];
+#ifdef BBSMAIN
         getdata(6,0,"文章编号大于文章总数，确认删除 (Y/N)? [N]: ",buf,2,DOECHO,NULL,YEA) ;
         if(*buf != 'Y' && *buf != 'y') {
             close(fdr);
             return -3;
         }
+#else
+		close(fdr);
+		return -3;
+#endif
         pos_read=pos_end;
         id2=totalcount;
     }
@@ -749,8 +756,10 @@ int id1,id2,del_mode ;
     remaincount=count-1;
     keepcount=0;
     lseek(fdr,pos_write,SEEK_SET);
+#ifdef BBSMAIN
     savedigestmode=digestmode;
     digestmode=4;
+#endif
     while (count<=id2) {
         int readcount;
         lseek(fdr,(count-1)*sizeof(struct fileheader),SEEK_SET);
@@ -770,7 +779,9 @@ int id1,id2,del_mode ;
 		    pos_write+=keepcount*sizeof(struct fileheader);
                     keepcount=0;
                 }
-            } else if (uinfo.mode!=RMAIL) {
+            } 
+#ifdef BBSMAIN
+            else if (uinfo.mode!=RMAIL) {
                 memcpy(&delfhdr[delcount],&savefhdr[i],sizeof(struct fileheader));
                 delcount++;
                 if (delcount>=DEL_RANGE_BUF) {
@@ -781,7 +792,8 @@ int id1,id2,del_mode ;
                     setbdir( genbuf, currboard );
                     append_record( genbuf, delfhdr, DEL_RANGE_BUF*sizeof(struct fileheader) );
                 }  /*need clear delcount*/
-            } /*if mark file*/
+            } /*if !Reading mail*/
+#endif
         }  /*for readcount*/
     }
     if (keepcount) {
@@ -802,6 +814,7 @@ int id1,id2,del_mode ;
     }
     ftruncate(fdr,remaincount*sizeof(struct fileheader));
     close(fdr);
+#ifdef BBSMAIN
     if ((uinfo.mode!=RMAIL)&&delcount) {
         for (j=0;j<delcount;j++)
             cancelpost(currboard, currentuser.userid,
@@ -810,6 +823,7 @@ int id1,id2,del_mode ;
         append_record( genbuf, delfhdr, delcount*sizeof(struct fileheader) );
     }
     digestmode=savedigestmode;
+#endif
     free(savefhdr);
     free(readfhdr);
     free(delfhdr);

@@ -24,7 +24,6 @@
 #include "bbs.h"
 
 extern time_t   login_start_time;
-char *genpasswd() ;
 char    *sysconf_str();
 
 void
@@ -178,41 +177,6 @@ int     real, unum;
         }
 
         break;
-    case '2':
-        if( ! real ) {
-            getdata(i++,0,"请输入原密码: ",buf,PASSLEN,NOECHO,NULL,YEA);
-            if( *buf == '\0' || !checkpasswd( u->passwd, buf )) {
-                prints("\n\n很抱歉, 您输入的密码不正确。\n");
-                fail++;
-                break;
-            }
-        }
-        getdata(i++,0,"请设定新密码: ",buf,PASSLEN,NOECHO,NULL,YEA);
-        if( buf[0] == '\0' ) {
-            prints("\n\n密码设定取消, 继续使用旧密码\n");
-            fail++;
-            break;
-        }
-        strncpy(genbuf,buf,PASSLEN) ;
-
-        getdata(i++,0,"请重新输入新密码: ",buf,PASSLEN,NOECHO,NULL,YEA);
-        if(strncmp(buf,genbuf,PASSLEN)) {
-            prints("\n\n新密码确认失败, 无法设定新密码。\n");
-            fail++;
-            break;
-        }
-        buf[8] = '\0';
-        /*	Added by cityhunter to deny others to modify SYSOP's passwd */
-        if( real && (strcmp(u->userid,"SYSOP") ==0) )
-        {
-            prints("\n\n错误!系统禁止修改SYSOP的密码,警察正在来的路上 :)");
-            pressreturn();
-            clear();
-            return 0;
-        }
-        /* end of this addin */
-        strncpy( newinfo.passwd, genpasswd( buf ), PASSLEN );
-        break;
     case '3':
         if( ! real ) {
             clear();
@@ -224,11 +188,48 @@ int     real, unum;
             if(getuser(genbuf)) {
                 prints("\n错误! 已经有同样 ID 的使用者\n") ;
                 fail++;
+                break;
             } else {
                 strncpy(newinfo.userid, genbuf,IDLEN+2) ;
             }
+        } else {
+            break;
         }
+        /* fall throw, must change passwd for newid, by wwj 2001/5/7 */
+        
+    case '2':
+        if( ! real ) {
+            getdata(i++,0,"请输入原密码: ",buf,39,NOECHO,NULL,YEA);
+            if( *buf == '\0' || !checkpasswd2( buf,u)) {
+                prints("\n\n很抱歉, 您输入的密码不正确。\n");
+                fail++;
+                break;
+            }
+        }
+        getdata(i++,0,"请设定新密码: ",buf,39,NOECHO,NULL,YEA);
+        if( buf[0] == '\0' ) {
+            prints("\n\n密码设定取消, 继续使用旧密码\n");
+            fail++;
+            break;
+        }
+        getdata(i++,0,"请重新输入新密码: ",genbuf,39,NOECHO,NULL,YEA);
+        if(strcmp(buf,genbuf)) {
+            prints("\n\n两个密码不一致, 无法设定新密码。\n");
+            fail++;
+            break;
+        }
+        /*	Added by cityhunter to deny others to modify SYSOP's passwd */
+        if( real && (strcmp(u->userid,"SYSOP") ==0) )
+        {
+            prints("\n\n错误!系统禁止修改SYSOP的密码,警察正在来的路上 :)");
+            pressreturn();
+            clear();
+            return 0;
+        }
+        /* end of this addin */
+        setpasswd(buf,&newinfo);
         break;
+        
     default:
         clear();
         return 0;

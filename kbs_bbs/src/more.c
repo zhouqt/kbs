@@ -58,6 +58,7 @@ NNread_init()
     char buf[ACBOARD_BUFSIZE];
     struct stat st ;
     time_t         ftime,now;
+    int iscreate;
 
     now=time(0);
     if( stat( "etc/movie",&st ) < 0 ) {
@@ -65,7 +66,7 @@ NNread_init()
     }
     ftime = st.st_mtime;
     if(  movieshm== NULL ) {
-        movieshm = (void *)attach_shm( "ACBOARD_SHMKEY", 4123, sizeof( *movieshm ) );
+        movieshm = (void *)attach_shm( "ACBOARD_SHMKEY", 4123, sizeof( *movieshm ),&iscreate );
     }
     if(abs(now-movieshm->update)<12*60*60&&ftime<movieshm->update)
     {
