@@ -43,7 +43,7 @@ html_init();
 <?php
 	}else {
 ?>
-	<script>
+	<script language="javascript">
 	parent.refreshWindow();
 	</script>
 <?php

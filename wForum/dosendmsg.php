@@ -68,7 +68,7 @@ function main(){
 
 	if (strlen($destid) == 0 || strlen($msg) == 0)	{
 ?>
-<script>
+<script language="javascript">
 	parent.closeWindow();
 </script>
 <?php

@@ -334,7 +334,7 @@ function do_apply(){
 <form name=preview action=chkreg.php method=post target=preview_page>
 <input type=hidden name=userid value=>
 </form>
-<script>
+<script language="javascript">
 function gopreview()
 {
 document.preview.userid.value=document.theForm.userid.value;

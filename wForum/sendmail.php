@@ -133,7 +133,7 @@ function main() {
 	global $action;
 ?>
 <br>
-<form action="dosendmail.php" method=post name=messager onkeydown="if(event.keyCode==13 && event.ctrlKey)messager.submit()">
+<form action="dosendmail.php" method=post name=messager id="messager" onkeydown="if(event.keyCode==13 && event.ctrlKey){ obj=getRawObject('messager');obj.submit();} ">
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
           <tr> 
             <th colspan=3><?php echo $action==0?"撰写新邮件":"回复邮件"; ?></td>
@@ -167,7 +167,7 @@ function main() {
            <tr> 
             <td class=TableBody1 valign=top width=15%><b>内容：</b></td>
             <td  class=TableBody1 valign=middle>
-              <textarea style="width:500;height:300" name="content"><?php
+              <textarea style="width:500px;height:300px" name="content"><?php
     if($action!=0){
 		if ($action==2){
     		$filename = "boards/" . $_GET['board']. "/" . $article['FILENAME'];

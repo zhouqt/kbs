@@ -1,15 +1,15 @@
 
 function submitonce(theform){
 //if IE 4+ or NS 6+
-if (document.all||document.getElementById){
+if (isIE4 || isW3C){
 //screen thru every element in the form, and hunt down "submit" and "reset"
-for (i=0;i<theform.length;i++){
-var tempobj=theform.elements[i]
-if(tempobj.type.toLowerCase()=="submit"||tempobj.type.toLowerCase()=="reset")
+	for (i=0;i<theform.length;i++){
+		var tempobj=theform.elements[i]
+		if(tempobj.type.toLowerCase()=="submit"||tempobj.type.toLowerCase()=="reset")
 //disable em
-tempobj.disabled=true
-}
-}
+			tempobj.disabled=true
+		}
+	}
 }
 function openScript(url, width, height){
 	var Win = window.open(url,"openScript",'width=' + width + ',height=' + height + ',resizable=0,scrollbars=no,menubar=no,status=no' );
@@ -95,11 +95,13 @@ function fadeIn(){
 document.onmouseover=showPopupText;
 
 function CheckAll(form)  {
-  for (var i=0;i<form.elements.length;i++)    {
-    var e = form.elements[i];
-    if (e.name != 'chkall')       e.checked = form.chkall.checked; 
-   }
-  }
+	var e;
+	for (var i=0;i<form.elements.length;i++)    {
+		e = form.elements[i];
+		if (e.name != 'chkall')
+			e.checked = form.chkall.checked; 
+	}
+}
 
 //下拉菜单相关代码
  var h;
@@ -205,7 +207,7 @@ var manage= '<a style=font-size:9pt;line-height:14pt; href="usermailbox.php?boxn
 
 var timerID=0;
 function dosendmsg(){
-	oMessager=getRawObjectFrom("messager",window.frames['webmsg']);
+	oMessager=getRawObjectFrom("messager",document.frames['webmsg']);
 	oMessager.submit();
 }
 
