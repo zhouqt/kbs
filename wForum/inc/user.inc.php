@@ -177,6 +177,7 @@ function showSecs($secNum,$group,$isFold,$loadFav=0) {
 				<B>本版尚无文章</B>
 		<?php
 						} else {
+							bbs_getthreadnum($brd_bid[$i]); //ToDo: this is only dirty fix: 触发必要的 .WEBTHREAD 更新
 							$articles = bbs_getthreads($brd_name[$i], 0, 1,0 ); //$brd_artcnt[$i], 1, $default_dir_mode);
 							if ($articles == FALSE) {
 		?>
