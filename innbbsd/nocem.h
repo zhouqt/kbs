@@ -13,6 +13,7 @@ $Id$
 #include "bbslib.h"
 #include "inntobbs.h"
 #include "version.h"            /* for FB3 */
+#include "bbs.h"
 
 #ifdef SOLARIS
 #include <stdarg.h>             /* for va_start() problem */
