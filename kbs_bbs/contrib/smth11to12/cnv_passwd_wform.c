@@ -102,8 +102,10 @@ int main(int argc, char *argv[])
         memset(&bhnew, 0, sizeof(struct userec2));
         memcpy(&bhnew, &bh, sizeof(struct userec1));
 
+#ifdef HAVE_USERMONEY
         bhnew.money = 1000;
         bhnew.score = 0;
+#endif
         SET_UNDEFINE((&bhnew), DEF_SHOWREALUSERDATA);
         fwrite(&bhnew, sizeof(struct userec2), 1, fp2);
         printf("%s\n", bhnew.userid);
