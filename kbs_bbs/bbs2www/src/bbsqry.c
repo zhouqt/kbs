@@ -5,27 +5,78 @@
 
 char genbuf[1024];
 
+static void flush_buffer(buffered_output_t *output)
+{
+	*(output->outp) = '\0'; 
+	printf("%s", output->buf);
+	output->outp = output->buf;
+}
+
+static int buffered_output(char *buf, size_t buflen, void *arg)
+{
+	buffered_output_t *output = (buffered_output_t *)arg;
+	if (output->buflen < buflen)
+	{
+		output->flush(output);
+		printf("%s", buf);
+		return 0;
+	}
+	if ((output->buflen - (output->outp - output->buf)) < buflen) 
+		output->flush(output);
+	strncpy(output->outp, buf, buflen); 
+	output->outp += buflen;
+
+	return 0;
+}
+
 int show_user_plan(userid)
     char userid[IDLEN];
 {
-    int i;
-    char pfile[STRLEN], pbuf[256];
-    FILE *pf;
+    char pfile[STRLEN];
+	int fd;
 
     sethomefile(pfile, userid, "plans");
-    if ((pf = fopen(pfile, "r")) == NULL) {
+    if ((fd = open(pfile, O_RDONLY, 0644)) < 0) {
         hprintf("[36m√ª”–∏ˆ»ÀÀµ√˜µµ[m\n");
-        return false;
+    	printf("</pre>\n");
+        return 0;
     } else {
+		size_t filesize;
+		char *ptr;
+		const int outbuf_len = 4096;
+		buffered_output_t out;
+
         hprintf("[36m∏ˆ»ÀÀµ√˜µµ»Áœ¬£∫[m\n");
-        for (i = 1; i <= MAXQUERYLINES; i++) {
-            if (fgets(pbuf, sizeof(pbuf), pf))
-                hprintf("%s", pbuf);
-            else
-                break;
-        }
-        fclose(pf);
-        return true;
+    	printf("</pre>\n");
+		if (flock(fd, LOCK_EX) == -1)
+			return 0;
+		BBS_TRY
+		{
+			if (safe_mmapfile_handle(fd, O_RDONLY, PROT_READ, MAP_SHARED,
+						(void **)&ptr, &filesize) == 0)
+			{
+				flock(fd, LOCK_UN);
+				BBS_RETURN(0);
+			}
+			if ((out.buf = (char *)malloc(outbuf_len)) == NULL)
+			{
+				end_mmapfile((void *)ptr, filesize, -1);
+				flock(fd, LOCK_UN);
+				BBS_RETURN(0);
+			}
+			out.outp = out.buf;
+			out.buflen = outbuf_len;
+			out.output = buffered_output;
+			out.flush = flush_buffer;
+			output_ansi_html(ptr, filesize, &out);
+			free(out.buf);
+		}
+		BBS_CATCH
+		{
+		}
+		BBS_END end_mmapfile((void *)ptr, filesize, -1);
+		flock(fd, LOCK_UN);
+        return 1;
     }
 }
 
@@ -117,7 +168,6 @@ void display_user(char *userid)
         printf("\n");
     }
     show_user_plan(planid);
-    printf("</pre>");
     printf("<br><br><a href=\"bbspstmail?userid=%s&title=√ª÷˜Ã‚\">[–¥–≈Œ ∫Ú]</a> ", lookupuser->userid);
     printf("<a href=\"/bbssendmsg.php?destid=%s\">[∑¢ÀÕ—∂œ¢]</a> ", lookupuser->userid);
     printf("<a href=\"bbsfadd?userid=%s\">[º”»Î∫√”—]</a> ", lookupuser->userid);
