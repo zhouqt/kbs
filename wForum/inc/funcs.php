@@ -300,7 +300,7 @@ function showLogon($showBack = 0, $comeurl = "") {
 	<th valign="middle" colspan="2" align="center" height="25">请输入您的用户名、密码登录</th></tr>
 	<tr>
 	<td valign="middle" class="TableBody1">请输入您的用户名</td>
-	<td valign="middle" class="TableBody1"><input name="id" type="text" tabindex="1"/> &nbsp; <a href="register.php">没有注册？</a></td></tr>
+	<td valign="middle" class="TableBody1"><input name="id" id="idF" type="text" tabindex="1"/> &nbsp; <a href="register.php">没有注册？</a></td></tr>
 	<tr>
 	<td valign="middle" class="TableBody1">请输入您的密码</td>
 	<td valign="middle" class="TableBody1"><input name="passwd" type="password" tabindex="2" /> &nbsp; <!--<a href="foundlostpass.php">忘记密码？</a>--></td></tr>
@@ -323,6 +323,11 @@ function showLogon($showBack = 0, $comeurl = "") {
 	}
 ?>
 	</td></tr></form></table>
+<script language="Javascript">
+<!--
+	registerFocusOnLoad("idF");
+//-->
+</script>
 <?php
 }
 
@@ -477,7 +482,7 @@ function show_nav($boardName='',$is_mathml=false,$other_headers="")
     defineMenus();
 //-->
 </script>
-<body topmargin="0" leftmargin="0" onmouseover="HideMenu(event);">
+<body style="margin: 0px;" onmouseover="HideMenu(event);">
 <div id="menuDiv" class="navClass1"></div>
 <table cellspacing="0" cellpadding="0" align="center" class="navClass2">
 <tr><td width="100%">
@@ -735,6 +740,7 @@ if ($userid=='') {
 }
 
 $setonlined=0;
+$setidcookie=true;
 if ($nologin==0) {
 
 	// add by stiger, login as "guest" default.....
@@ -756,15 +762,11 @@ if ($nologin==0) {
 				$currentuser_num=bbs_getcurrentuser($currentuser);
 				$setonlined=1;
 			} else {
-				if (($userid!='guest') && (bbs_checkpasswd($userid,base64_decode($userpassword),1)==0)){
+				if (($userid!='guest') && ($userpassword != '') && (bbs_checkpasswd($userid,base64_decode($userpassword),1)==0)){
 					$ret=bbs_wwwlogin(1);
 					if ( ($ret==2) || ($ret==0) ){
-						if ($userid!="guest") {
-							$loginok=1;
-						} else {
-							$guestloginok=1;
-						}
-
+						$loginok=1;
+						$setidcookie=false;
 					}else if ($ret==5) {
 						foundErr("请勿频繁登录！");
 					}
@@ -784,7 +786,9 @@ if  ( ($loginok || $guestloginok ) && ($setonlined==0) ){
 	$currentuinfo_num=bbs_getcurrentuinfo($data);
 	bbs_setonlineuser($userid,$currentuinfo_num,$data["utmpkey"],$currentuinfo,$compat_telnet);
 	$currentuser_num=bbs_getcurrentuser($currentuser);
-	setcookie(COOKIE_PREFIX."UTMPUSERID",$data["userid"],time()+360000,COOKIE_PATH);
+	if ($setidcookie) {
+		setcookie(COOKIE_PREFIX."UTMPUSERID",$data["userid"],time()+360000,COOKIE_PATH);
+	}
 	setcookie(COOKIE_PREFIX."UTMPKEY",$data["utmpkey"],time()+360000,COOKIE_PATH);
 	setcookie(COOKIE_PREFIX."UTMPNUM",$currentuinfo_num,time()+360000,COOKIE_PATH);
 	setcookie(COOKIE_PREFIX."LOGINTIME",$data["logintime"],time()+360000,COOKIE_PATH);

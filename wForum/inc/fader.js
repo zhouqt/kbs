@@ -41,7 +41,7 @@ blendTimer = null;
 var oElFader;
 
 if (!window.prefix) prefix = "";
-window.onload = FDRcountLoads;
+addOnLoadListener("FDRcountLoads()");
 
 function FDRcountLoads(e) {
 	setTimeout("FDRinit()",1);

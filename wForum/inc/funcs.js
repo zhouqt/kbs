@@ -111,10 +111,10 @@ function CheckAll(form)  {
  var space = 1;
  var isvisible;
  var MENU_SHADOW_COLOR='#999999';//定义下拉菜单阴影色
- var global = window.document
+ var global = window.document;
  
- global.fo_currentMenu = null
- global.fo_shadows = new Array
+ global.fo_currentMenu = null;
+ global.fo_shadows = new Array();
 
 function HideMenu(evt) 
 {
@@ -348,3 +348,25 @@ function refreshLeft() {
 		top.menu.location.href = "bbsleft.php";
 	}
 }
+
+
+
+var onLoadListeners = new Array();
+var focusElement = null;
+function addOnLoadListener(listener) {
+	onLoadListeners[onLoadListeners.length] = listener;
+}
+function documentOnLoad() {
+	for (i = 0; i < onLoadListeners.length; i++) {
+		eval(onLoadListeners[i]);
+	}
+	if (focusElement == null) return;
+	e = getRawObject(focusElement);
+	if (e == null) return;
+	e.focus();
+}
+function registerFocusOnLoad(ele) {
+	focusElement = ele;
+}
+window.onload = documentOnLoad;
+
