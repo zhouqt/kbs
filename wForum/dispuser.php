@@ -37,25 +37,34 @@ function preprocess() {
 }
 
 function showUserData($user, $user_num) {
+	/* ToDo: 这里有三个部分: 1. 基本资料，2. 真实详细资料，3. 一般用户信息。1,2用户可以选择是否可以被人查到。
+	   默认设置是 1 开启 2 关闭。下面的资料可能需要调整一下以和 BBS 系统一致？比方该看到的信息就应该永远可以看到...
+	 */
 require("inc/userdatadefine.inc.php");
-$flag=1<<29;
-if ($user['userdefine'] & $flag) {
+$flag=1<<29; //ToDo: 这个写法太不 portable 了！！考虑 phpbbslib.c 加入相关 REGISTER_LONG_CONSTANT - atppp
+if ($user['userdefine0'] & $flag) {
+	if ($user['userface_img']==-2) {
+		$user_pic = $user['userface_url'];
+	} else {
+		$user_pic = 'userface/image'.$user['userface_img'].'.gif';
+	}
 ?>
 <table width=97% border=0 cellspacing=0 cellpadding=3 align=center>
   <tr> 
-    <td><img src="<?php
-	if ($user['userface_img']==-2) {
-		echo $user['userface_url'];
-	} else {
-		echo 'userface/image'.$user['userface_img'].'.gif';
-	}
-?>" width=<?php echo $currentuser['userface_width'];  ?> height=<?php echo $currentuser['userface_height'];  ?> align=absmiddle> 
-<b><?php echo $user['userid']; ?></b> 
+    <td><img src="<?php echo $user_pic; ?>" align=absmiddle>
+<!-- img 里头原来有这个 width=<?php echo $user['userface_width'];  ?> height=<?php echo $user['userface_height'];  ?> 有问题 - atppp -->
+<b><?php echo $user['userid']; ?></b>
 </td>
     <td align=right>
+<b>
+<a href="sendmail.php?receiver=<?php echo $user['userid']; ?>" title="给该用户发信">发信问候</a> | 
+<a href="friendlist.php?addfriend=<?php echo $user['userid']; ?>" title="将该用户添加到好友列表">加为好友</a>
+</b>
+<!-- 先注释掉 atppp
 当前位置：[测试帖子列表]<img src=pic/zhuangtai.gif width=16 height=16 align=absmiddle> 
       状态：
 正常  [在线：0Mins]
+-->
   </td>
   </tr>
 </table>
@@ -117,18 +126,12 @@ if ($user['userdefine'] & $flag) {
 	?>
 </td>
   </tr>
-  <tr> 
-    <td class=TableBody1 width=20% align=right valign=top>&nbsp;</td>
-    <td class=TableBody1>&nbsp;</td>
-    <td class=TableBody1 align=center width=40% >
-      <b><a href="javascript:openScript('messanger.asp?action=new&touser=admin',500,400)">给他留言</a> | <a href="friendlist.asp?action=addF&myFriend=admin" target=_blank>加为好友</a></b></td>
-  </tr>
 </table>
 <br>
 <?php
 }
-$flag=1<<30;
-if ($user['userdefine'] & $flag) {
+$flag=1<<30; //ToDo: 这个写法太不 portable 了！！ - atppp
+if ($user['userdefine0'] & $flag) {
 ?>
 <table cellspacing=1 cellpadding=3 align=center class=TableBorder1 style="table-layout:fixed;word-break:break-all">
   <col width=20% ><col width=*><col width=40% > 
@@ -325,11 +328,11 @@ N/A
 <table class=TableBorder1 cellspacing=1 cellpadding=3 align=center>
 <tr><th height="25" align=left colspan=2>快捷管理选项</th></tr>
 
+<!-- 暂时禁止 - atppp
 <tr><td class=TableBody1 height=25 colspan=2>
 <B>用户管理选项</B>：   『 <a href=# onclick="alert('该功能尚在开发中。');" title=锁定该用户不允许登陆和发言>锁定</a> | <a href=# onclick="alert('该功能尚在开发中。');" title=屏蔽该用户在论坛的发言>屏蔽</a> | <a href=# onclick="alert('该功能尚在开发中。');" title=解除该用户在论坛的锁定和屏蔽>解除</a> | <a href=# onclick="alert('该功能尚在开发中。');" title=对用户进行分值奖励>奖励</a> | <a href=# onclick="alert('该功能尚在开发中。');">编辑该用户论坛权限</a> 』
 </td></tr>
-
-
+-->
 
 <tr><td class=TableBody1 valign=middle height=25 colspan=2>
 <B>用户最后来访IP</B>：   <a href=# onclick="alert('该功能尚在开发中。');"><?php echo $user['lasthost']; ?></a>&nbsp;&nbsp;点击IP查看用户来源及操作

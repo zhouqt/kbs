@@ -29,7 +29,6 @@ show_footer();
 function main() {
 	global $currentuser;
 ?>
-<br>
 <form action="" method=post id="oForm">
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
 <tr>
@@ -67,7 +66,10 @@ function main() {
 <td class=TableBody1 style="font-weight:normal"><?php echo $friend['userfrom']; ?></td>
 <td class=TableBody1 style="font-weight:normal"><?php printf('%02d:%02d',intval($friend['idle']/60), ($friend['idle']%60)); ?></td>
 <td align=center valign=middle width=220 class=TableBody1>
-<a target="_blank" href="friendlist.php?addfriend=<?php echo $friend['userid']; ?>">添加好友</a> <a target="_blank" href="friendlist.php?delfriend=<?php echo $friend['userid']; ?>">删除好友</a> <a href="javascript:replyMsg('<?php echo $friend['userid'] ; ?>')">发送消息</a> <a href="#">发送短信</a>
+<a target="_blank" href="friendlist.php?addfriend=<?php echo $friend['userid']; ?>">添加好友</a> | 
+<a href="sendmail.php?receiver=<?php echo $friend['userid']; ?>">发信问候</a> | 
+<a href="javascript:replyMsg('<?php echo $friend['userid'] ; ?>')">发送消息</a> | 
+<a href="#">发送短信</a>
 </td>
 </tr>
 <?php

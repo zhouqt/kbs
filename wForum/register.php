@@ -327,7 +327,9 @@ function do_apply(){
 </td></tr></table>
 <table cellpadding=0 cellspacing=0 border=0 width=97% align=center>
 <tr>
-<td width=50% height=24><INPUT id=advcheck name=advshow type=checkbox value=1 onclick=showadv()><span id=advance>显示高级用户设置选项</a></span> </td>
+<td width=50% height=24>
+	<INPUT id=advshow name=advshow type=checkbox value=1 onclick=showadv()><span name=advance id=advance>显示高级用户设置选项</span>
+</td>
 <td width=50% ><input type=submit value=提交表格>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type=reset value=重新填写></td>
 </tr></table>
 </form>
@@ -343,11 +345,11 @@ document.preview.submit();
 }
 function showadv(){
 if (document.theForm.advshow.checked == true) {
-	adv.style.display = "";
-	advance.innerText="关闭高级用户设置选项"
+	getRawObject("adv").style.display = "";
+	//getRawObject("advance").innerHTML="关闭高级用户设置选项"; //这两句话其实能运行但是好像没什么用反而增加误解，先去掉把。- atppp
 }else{
-	adv.style.display = "none";
-	advance.innerText="显示高级用户设置选项"
+	getRawObject("adv").style.display = "none";
+	//getRawObject("advance").innerHTML="显示高级用户设置选项";
 }
 }
 </script>
