@@ -1,5 +1,7 @@
 #include "bbs.h"
 
+#ifndef NEWBMLOG
+
 char *curuserid;
 int type=-1, flag=0, timed=0, sorttype=0;
 char groupid=0;
@@ -225,3 +227,10 @@ main(int argc, char ** argv)
 		    break;
     }
 }
+#else
+
+int main()
+{
+	return;
+}
+#endif
