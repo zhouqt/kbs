@@ -589,8 +589,8 @@
 			"TIME" => $rows[createtime],
 			"VISIT" => $rows[visitcount],
 			"MODIFY" => $rows[modifytime],
-			"LOGO" => stripslashes($rows[logoimage]),
-			"BKIMG" => stripslashes($rows[backimage])
+			"LOGO" => str_replace("<","&lt;",stripslashes($rows[logoimage])),
+			"BKIMG" => str_replace("<","&lt;",stripslashes($rows[backimage]))
 			);
 	mysql_free_result($result);
 	
