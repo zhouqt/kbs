@@ -846,6 +846,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len, int clearlabel)
 {
     int ch, clen = 0, curr = 0, x, y, startx, starty, now, i, chk, cursorx, cursory;
+    char savebuffer[25][256];
     char tmp[STRLEN];
     extern int RMSG;
 
@@ -857,6 +858,8 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
         prints("%s", prompt);
     good_getyx(&starty, &startx);
     now = strlen(buf);
+    for(i=0;i<=24;i++)
+        saveline(i, 0, savebuffer[i]);
 
     while (1) {
         y = starty; x = startx;
@@ -892,6 +895,8 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
         good_move(cursory, cursorx);
         refresh();
         ch = igetkey();
+        for(i=starty;i<=y;i++)
+            saveline(i, 1, savebuffer[i]);
         if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch))
             return -ch;
         if (ch == '\n' || ch == '\r')

@@ -588,7 +588,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
 
 int translate_msg(char* src, struct msghead *head, char* dest)
 {
-    char id[14], *time;
+    char id[14], *time, attstr[STRLEN];
     int i,j=0,len,pos,space, ret=0;
     time = ctime(&head->time)+4;
     dest[0] = 0;
@@ -597,23 +597,33 @@ int translate_msg(char* src, struct msghead *head, char* dest)
         case 0:
         case 2:
         case 4:
-            if(!head->sent)
+            if(!head->sent) {
                 sprintf(dest, "[44m\x1b[36m%-14.14s[33m(%-12.12s):[37m", head->id, time);
-            else
-                sprintf(dest, "[44m\x1b[0;1;32m=>[37m%-12.12s[33m(%-12.12s):[36m", head->id, time);
+                strcpy(attstr, "[44m[37m");
+            }
+            else {
+                sprintf(dest, "\x1b[0;1;32m=>[37m%-12.12s[33m(%-12.12s):[36m", head->id, time);
+                strcpy(attstr, "[36m");
+            }
             break;
         case 3:
             sprintf(dest, "[44m\x1b[33mÕ¾³¤ÓÚ %13.13s Ê±¹ã²¥£º[37m", time);
+            strcpy(attstr, "[44m[37m");
             break;
         case 1:
-            if(!head->sent)
+            if(!head->sent) {
                 sprintf(dest, "[44m\x1b[36m%-12.12s(%-12.12s) ÑûÇëÄã[37m", head->id, time);
-            else
+                strcpy(attstr, "[44m[37m");
+            }
+            else {
                 sprintf(dest, "[44m\x1b[37mÄã(%-12.12s) ÑûÇë%-12.12s[36m", time, head->id);
+                strcpy(attstr, "[44m[36m");
+            }
             space=33;
             break;
         case 5:
             sprintf(dest, "[45m\x1b[36m%-14.14s\x1b[33m(\x1b[36m%-12.12s\x1b[33m):\x1b[37m", head->id, time);
+            strcpy(attstr, "[45m[37m");
             space=29;
             break;
     }
