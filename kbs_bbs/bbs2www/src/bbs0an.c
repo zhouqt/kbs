@@ -3,6 +3,23 @@
  */
 #include "bbslib.h"
 
+int valid_fname(str)
+char *str;
+{
+    char ch;
+
+	if(strstr(str,"..")) return 0;
+
+    while ((ch = *str++) != '\0') {
+        if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || strchr("0123456789@[]-._", ch) != NULL) {
+            ;
+        } else {
+            return 0;
+        }
+    }
+    return 1;
+}
+
 void ann_show_item(MENU * pm, ITEM * it)
 {
     char title[STRLEN];
@@ -72,36 +89,27 @@ void ann_show_toolbar(char * path, char * board)
 			    strncpy(BM, bp->BM, sizeof(BM) - 1);
 			    BM[sizeof(BM) - 1] = '\0';
     			if(chk_currBM(BM,currentuser)){
-					printf("[<a href=\"/bbsmpath.php?action=add&path=%s\">加为丝路</a>]",encode_url(buf,path,sizeof(buf)));
+					printf("[<a href=\"/bbsmpath.php?action=add&path=%s\">加为丝路</a>]<br>",encode_url(buf,path,sizeof(buf)));
+					printf("<form action=\"bbs0an\" method=\"post\">");
+					printf("<input type=\"hidden\" name=\"action\" value=\"add\">");
+					printf("<input type=\"hidden\" name=\"path\" value=\"%s\">",path);
+					printf("目录名(只能英文和数字)<input type=\"text\" name=\"dpath\">");
+					printf("标题<input type=\"text\" name=\"fname\">");
+					printf("<input type=\"submit\" name=\"submit\" value=\"添加目录\">");
+					printf("</form>");
 				}
 			}
 		}
 }
 
-void ann_show_directory(char *path)
+void ann_show_directory(char *path,char * pathbuf)
 {
     MENU me;
     ITEM *its;
-    int len;
     char board[STRLEN];
-    char pathbuf[256];
     char buf[STRLEN];
     int i;
 
-    if (strstr(path, "..") || strstr(path, "SYSHome"))  /* SYSHome? */
-        http_fatal("此目录不存在");
-    if (path[0] != '\0') {
-        len = strlen(path);
-        if (path[len - 1] == '/')
-            path[len - 1] = '\0';
-        if (path[0] == '/')
-            snprintf(pathbuf, sizeof(pathbuf), "0Announce%s", path);
-        else
-            snprintf(pathbuf, sizeof(pathbuf), "0Announce/%s", path);
-        if (ann_traverse_check(pathbuf, currentuser) < 0)
-            http_fatal("此目录不存在");
-    } else
-        strcpy(pathbuf, "0Announce");
     if ((its = ann_alloc_items(MAXITEMS)) == NULL)
         http_fatal("分配内存失败");
     ann_set_items(&me, its, MAXITEMS);
@@ -134,12 +142,148 @@ void ann_show_directory(char *path)
     ann_free_items(its, MAXITEMS);
 }
 
+int ann_check_dir(char * path,char *pathbuf)
+{
+	int len;
+
+    if (strstr(path, "..") || strstr(path, "SYSHome"))  /* SYSHome? */
+		return 0;
+    if (path[0] != '\0') {
+        len = strlen(path);
+        if (path[len - 1] == '/')
+            path[len - 1] = '\0';
+        if (path[0] == '/')
+            snprintf(pathbuf, 255, "0Announce%s", path);
+        else
+            snprintf(pathbuf, 255, "0Announce/%s", path);
+        if (ann_traverse_check(pathbuf, currentuser) < 0)
+			return 0;
+    } else
+        strcpy(pathbuf, "0Announce");
+
+	return 1;
+}
+
+int ann_check_bm(char *buf)
+{
+
+	char board[STRLEN];
+	char *c;
+
+
+	if(strncmp(buf,"0Announce/groups/",17))
+		return 0;
+	if((c=strchr(buf+17,'/'))==NULL) return 0;
+	strncpy(board,c+1,STRLEN-1);
+	board[STRLEN-1]='\0';
+	if((c=strchr(board,'/'))!=NULL) *c='\0';
+
+	if(!has_BM_perm(currentuser, board))
+		return 0;
+
+	return 1;
+}
+
+int ann_add_dir(char *path,char *pathbuf,char *fname,char *title)
+{
+	char fpath[PATHLEN];
+	char fpath2[PATHLEN];
+	char buf[STRLEN];
+	MENU pm;
+	FILE *fp;
+
+	if(ann_check_bm(pathbuf) == 0)
+		return -1;
+
+	if(!valid_fname(fname))
+		return -2;
+
+	sprintf(fpath, "%s/%s", pathbuf, fname);
+
+	if(dashf(fpath) || dashd(fpath))
+		return -3;
+
+	mkdir(fpath, 0755);
+	chmod(fpath, 0755);
+
+	bzero(&pm,sizeof(pm));
+	pm.path=pathbuf;
+	a_loadnames(&pm);
+
+	sprintf(buf,"%-38.38s",title);
+
+	a_additem(&pm,buf,fname,NULL,0,0);
+
+	if(a_savenames(&pm))
+		return -4;
+
+	sprintf(fpath, "%s/%s/.Names", pathbuf, fname);
+	if((fp=fopen(fpath,"w"))==NULL)
+		return -5;
+
+	fprintf(fp, "#\n");
+	fprintf(fp, "# Title=%s\n", buf);
+	fprintf(fp, "#\n");
+	fclose(fp);
+
+	return 1;
+
+}
+
 int main()
 {
     char path[512];
+	char *c;
+	char action[10];
+	char dpath[PATHLEN];
+	char title[STRLEN];
+    char pathbuf[256];
+	int ret;
 
     init_all();
     strsncpy(path, getparm("path"), 511);
-    ann_show_directory(path);
+
+	if(! ann_check_dir(path,pathbuf))
+        http_fatal("此目录不存在");
+
+	c = getparm("action");
+
+	if(c && *c){
+		strncpy(action,c,9);
+		action[9]='\0';
+		if(! strcmp(action,"add") ){
+			c = getparm("dpath");
+			if(!c || ! *c)
+				http_fatal("目录路径错误");
+			strncpy(dpath,c,PATHLEN-1);
+			dpath[PATHLEN-1]='\0';
+
+			c = getparm("fname");
+			if(!c || ! *c)
+				http_fatal("目录题目错误");
+			strncpy(title,c,STRLEN-1);
+			title[STRLEN-1]='\0';
+
+			ret = ann_add_dir(path,pathbuf,dpath,title);
+			if(ret < 0){
+				switch(ret){
+				case -1:
+					http_fatal("您没有这个权限");
+					break;
+				case -2:
+					http_fatal("文件名不合法");
+					break;
+				case -3:
+					http_fatal("目录已经存在");
+					break;
+				default:
+					http_fatal("系统错误");
+					break;
+				}
+			}
+		}
+	}
+
+    ann_show_directory(path,pathbuf);
     http_quit();
 }
