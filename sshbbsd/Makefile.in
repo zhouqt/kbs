@@ -10,6 +10,9 @@
 #
 # $Id$
 # $Log$
+# Revision 1.3  2002/05/09 09:31:27  kxn
+# removed md5 since it is merged into libBBS.a
+#
 # Revision 1.2  2002/04/27 06:44:19  kxn
 # minor script fix
 #
@@ -321,7 +324,7 @@ RSAREFSRCDIR 	= $(RSAREFDIR)/source
 
 
 COMMON_OBJS = $(LIBOBJS) $(CONFOBJS) \
-	rsa.o randoms.o md5.o buffer.o emulate.o packet.o compress.o \
+	rsa.o randoms.o buffer.o emulate.o packet.o compress.o \
 	xmalloc.o bufaux.o authfile.o \
 	crc32.o rsaglue.o cipher.o des.o match.o mpaux.o \
 	userfile.o signals.o blowfish.o deattack.o
