@@ -276,7 +276,7 @@
 					echo "</td>\n";
 				}
 				if ($is_admin) {
-					echo "<td class='t4'><a href=\"#\" onclick=\"bbsconfirm('pcadmin_del.php?userid=".$pc["USER"]."&nid=".$rows[nid]."','确认过滤?')\">滤</a></td>\n";
+					echo "<td class='t4'><a href=\"#\" onclick=\"bbsconfirm('pcadmin_del.php?userid=".$pc["USER"]."&nid=".$rows[nid]."','确认删除?')\">滤</a></td>\n";
 				}
 				echo	"</tr>\n";
 			}
