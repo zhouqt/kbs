@@ -386,8 +386,8 @@ while($board = array_shift($boards))
     <td width="81" class="header" align="center">人气排名</td>
     <td width="79" class="header" align="center">本日祝福</td>
     <td width="56" class="header"></td>
-    <td class="header" align="right" width="315"> <input type="text" name="bsearch" size="15" maxlength="30" value="版面搜索" class="text"> 
-      <input type="button" name="search" size="15" value="GO" class="button"> 
+    <td class="header" align="right" width="315"> <form action="/cgi-bin/bbs/bbssel"><input type="text" name="board" size="12" maxlength="30" value="版面搜索" class="text"> 
+      <input type="submit" size="15" value="GO" class="button"> </form>
     </td>
   </tr>
 </table>
