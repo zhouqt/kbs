@@ -407,3 +407,16 @@ int board_setreadonly(char *board, int readonly)
     return 0;
 }
 
+void board_setcurrentuser(int idx,int num)
+{
+    if (idx<=0) return;
+    if (num > 0)
+        brdshm->bstatus[idx - 1].currentusers++;
+    else  if (num < 0) {
+      brdshm->bstatus[idx - 1].currentusers--;
+      if (brdshm->bstatus[idx - 1].currentusers<0)
+          brdshm->bstatus[idx - 1].currentusers=0;
+    }
+    else
+        brdshm->bstatus[idx - 1].currentusers=0;
+}

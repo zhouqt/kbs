@@ -1762,6 +1762,9 @@ int get_curr_utmpent()
 
 static struct user_info www_guest_uinfo;
 
+#define MAX_WWW_MAP_ITEM (MAX_WWW_GUEST/32)     /* 除以32 */
+#define MAX_WWW_GUEST_IDLE_TIME 3600    /* www guest发呆时间设为1小时 */
+
 /* WWW GUEST这样做有个同步问题，就是当被清除一个
   GUEST的时候如果正好这个guest刷新了，那么会重写数据结构
   所以，要注意除了key之外的数据如果要变动，必须保证
@@ -1769,15 +1772,14 @@ static struct user_info www_guest_uinfo;
   client更新了，误差在秒级，而且也不会造成用户问题，所以
   不会出错。但是如果需要更新key，那么就有可能导致下一个
   guest用户的key被错误的覆盖。这个是个问题
+  另: www guest表使用的idx居然是0 base的。
   */
 struct WWW_GUEST_S {
     int key;
     time_t freshtime;
     time_t logintime;
+    int currentboard;
 };
-
-#define MAX_WWW_MAP_ITEM (MAX_WWW_GUEST/32)     /* 除以32 */
-#define MAX_WWW_GUEST_IDLE_TIME 3600    /* www guest发呆时间设为1小时 */
 
 struct WWW_GUEST_TABLE {
     int use_map[MAX_WWW_MAP_ITEM + 1];
@@ -1888,13 +1890,21 @@ static int www_new_guest_entry()
     return i * 32 + j;
 }
 
+static struct WWW_GUEST_S* www_get_guest_entry(int idx)
+{
+    return  wwwguest_shm->guest_entry[idx];
+}
+
 static int www_free_guest_entry(int idx)
 {
     int fd;
     struct public_data *pub;
+    struct user_info guestinfo;
 
     if ((idx < 0) || (idx > MAX_WWW_GUEST))
         return -1;
+    guestinfo.currentboard=wwwguest_shm->guest_entry[idx].currentboard;
+    do_after_logout(currentuser, &guestinfo, idx, 1);
     setpublicshmreadonly(0);
     pub = get_publicshm();
     fd = www_guest_lock();
@@ -1905,7 +1915,6 @@ static int www_free_guest_entry(int idx)
     }
     www_guest_unlock(fd);
     setpublicshmreadonly(1);
-    clean_cachedata("guest", idx);
     return 0;
 }
 

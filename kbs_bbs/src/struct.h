@@ -65,12 +65,13 @@ struct user_info {              /* Structure used in UTMP file */
     char fill[36];
     time_t freshtime;
     int utmpkey;
-	unsigned int mailbox_prop;  /* properties of currentuser's mailbox */
+    unsigned int mailbox_prop;  /* properties of currentuser's mailbox */
     char userid[20];
     char realname[20];
     char username[40];
     int friendsnum;
     int friends_uid[MAXFRIENDS];
+    int currentboard;
 };
 struct friends {
     char id[13];
@@ -114,6 +115,7 @@ struct BoardStatus {            /* use this to speed up board list */
     bool updatemark;
     bool updatetitle;
     bool updateorigin;
+    int currentusers;
 };
 struct BCACHE {
     int numboards;

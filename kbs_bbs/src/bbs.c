@@ -496,13 +496,16 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct)
 
 void readtitle()
 {                               /* °æÄÚ ÏÔÊ¾ÎÄÕÂÁÐ±í µÄ title */
-    struct boardheader *bp;
+    struct boardheader bp;
+    struct BoardStatus * bs;
     char header[STRLEN*2], title[STRLEN];
     char readmode[10];
     int chkmailflag = 0;
+    int bnum;
 
-    bp = getbcache(currboard);
-    memcpy(currBM, bp->BM, BM_LEN - 1);
+    bnum = getboardnum(currboard,&bp);
+    bs = getbstatus(bnum);
+    memcpy(currBM, bp.BM, BM_LEN - 1);
     if (currBM[0] == '\0' || currBM[0] == ' ') {
         strcpy(header, "³ÏÕ÷°æÖ÷ÖÐ");
     } else {
@@ -550,10 +553,10 @@ void readtitle()
         strcpy(title, "[ÄúµÄÐÅÏä³¬¹ýÈÝÁ¿,²»ÄÜÔÙÊÕÐÅ!]");
     else if (chkmailflag)       /* ÐÅ¼þ¼ì²é */
         strcpy(title, "[ÄúÓÐÐÅ¼þ]");
-    else if ((bp->flag & BOARD_VOTEFLAG))       /* Í¶Æ±¼ì²é */
+    else if ((bp.flag & BOARD_VOTEFLAG))       /* Í¶Æ±¼ì²é */
         sprintf(title, "Í¶Æ±ÖÐ£¬°´ V ½øÈëÍ¶Æ±");
     else
-        strcpy(title, bp->title + 13);
+        strcpy(title, bp.title + 13);
 
     showtitle(header, title);   /* ÏÔÊ¾ µÚÒ»ÐÐ */
     update_endline();
@@ -584,9 +587,12 @@ void readtitle()
         strcpy(readmode, "±êÌâ");
 
     if (DEFINE(currentuser, DEF_HIGHCOLOR))
-        prints("[1;37m[44m ±àºÅ   %-12s %6s %-40s[%4sÄ£Ê½] [m", "¿¯ µÇ Õß", "ÈÕ  ÆÚ", " ÎÄÕÂ±êÌâ", readmode);
+        prints("[1;37m[44m ±àºÅ   %-12s %6s %-28sÔÚÏß:%4d [%4sÄ£Ê½] [m", 
+        "¿¯ µÇ Õß", "ÈÕ  ÆÚ", 
+            " ÎÄÕÂ±êÌâ", bs->currentusers, readmode);
     else
-        prints("[37m[44m ±àºÅ   %-12s %6s %-40s[%4sÄ£Ê½] [m", "¿¯ µÇ Õß", "ÈÕ  ÆÚ", " ÎÄÕÂ±êÌâ", readmode);
+        prints("[37m[44m ±àºÅ   %-12s %6s %-28sÔÚÏß:%4d [%4sÄ£Ê½] [m", 
+        "¿¯ µÇ Õß", "ÈÕ  ÆÚ", " ÎÄÕÂ±êÌâ", bs->currentusers, readmode);
     clrtoeol();
 }
 
@@ -1059,6 +1065,11 @@ int do_select(int ent, struct fileheader *fileinfo, char *direct)
         return FULLUPDATE;
     }
 
+    board_setcurrentuser(uinfo.currentboard, -1)
+    uinfo.currentboard = getbnum(bname);
+    UPDATE_UTMP(currentboard,utmpent);
+    board_setcurrentuser(uinfo.currentboard, 1);
+    
     selboard = 1;
     brc_initial(currentuser->userid, bname);
 
@@ -3098,6 +3109,11 @@ int Read()
     brc_initial(currentuser->userid, currboard);
     setbdir(digestmode, buf, currboard);
 
+    board_setcurrentuser(uinfo.currentboard, -1);
+    uinfo.currentboard = getbnum(currboard);
+    UPDATE_UTMP(currentboard,utmpent);
+    board_setcurrentuser(uinfo.currentboard, 1);
+    
     setvfile(notename, currboard, "notes");
     if (stat(notename, &st) != -1) {
         if (st.st_mtime < (time(NULL) - 7 * 86400)) {
@@ -3125,6 +3141,9 @@ int Read()
     bmlog(currentuser->userid, currboard, 0, time(0) - usetime);
     bmlog(currentuser->userid, currboard, 1, 1);
 
+    board_setcurrentuser(uinfo.currentboard, -1);
+    uinfo.currentboard = 0;
+    UPDATE_UTMP(currentboard,utmpent);
     return 0;
 }
 

@@ -583,6 +583,7 @@ void clear_utmp2(int uent)
     int hashkey, find;
     struct user_info zeroinfo;
     char buf[MAXPATH];
+    struct userec* user;
 
 #ifdef BBSMAIN
     if (!uent) {
@@ -591,12 +592,8 @@ void clear_utmp2(int uent)
         uent = utmpent;
     }
 #endif
-    if (utmpshm->uinfo[uent - 1].utmpkey!=0) {
-        snprintf(buf,MAXPATH,"%s/%s_%d",ATTACHTMPPATH,utmpshm->uinfo[uent-1].userid,uent);
-        f_rm(buf);
-    }
-    if (utmpshm->uinfo[uent-1].userid[0]!=0)
-        clean_cachedata(utmpshm->uinfo[uent-1].userid,uent);
+    user=getuserbynum(utmpshm->uinfo[uent-1].uid);
+    do_after_logout(user,get_utmpent(uent),uent,0);
     hashkey = utmp_hash(utmpshm->uinfo[uent - 1].userid);
     find = utmphead->hashhead[hashkey];
 

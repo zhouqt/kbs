@@ -942,9 +942,33 @@ int clean_cachedata(char* userid,int unum)
 }
 #endif
 
-int do_after_login(struct userec* user,int unum)
+int do_after_login(struct userec* user,int unum,int mode)
 {
 #if USE_TMPFS==1
-  init_cachedata(user->userid,unum);
+  if (mode==0)
+    init_cachedata(user->userid,unum);
+  else //www guest,使用负数来和telnet guest区分
+    init_cachedata(user->userid,-unum);
 #endif
+}
+
+int do_after_logout(struct userec* user,struct user_info* userinfo,int unum,int mode)
+{
+    char buf[MAXPATH];
+    if (userinfo&&(mode==0)) {
+#if USE_TMPFS==0
+      if (userinfo->utmpkey!=0) {
+        snprintf(buf,MAXPATH,"%s/%s_%d",ATTACHTMPPATH,userinfo->userid,unum);
+        f_rm(buf);
+      }
+#endif
+    }
+    if (user) {
+        if (mode==0)
+            clean_cachedata(user->userid,unum);
+        else //www guest,使用负数来和telnet guest区分
+            clean_cachedata(user->userid,-unum);
+    }
+    if (userinfo&&userinfo->currentboard)
+        board_setcurrentuser(userinfo->currentboard,-1);
 }
