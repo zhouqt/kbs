@@ -655,6 +655,7 @@ int friend_wall()
 #ifdef SMS_SUPPORT
 
 extern void * smsbuf;
+extern struct user_info * smsuin;
 
 int register_sms()
 {
@@ -662,6 +663,7 @@ int register_sms()
     char valid[20];
     char buf2[80];
     init_memory();
+    smsuin = &uinfo;
     clear();
     prints("注册手机号\n\n注册你的手机号之后，你可在bbs上发送和接收手机短信\n");
     move(4,0);
@@ -727,6 +729,7 @@ int unregister_sms()
     char valid[20];
     char buf2[80];
     init_memory();
+    smsuin = &uinfo;
     clear();
     prints("取消注册手机号");
     move(4,0);
@@ -782,6 +785,7 @@ int do_send_sms_func(char * dest, char * msgstr)
     }
     
     init_memory();
+    smsuin = &uinfo;
     inremsg = true;
 
     oldmode = uinfo.mode;

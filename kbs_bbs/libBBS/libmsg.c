@@ -710,6 +710,7 @@ void mail_msg(struct userec* user)
 
 void * smsbuf=NULL;
 int smsresult=0;
+struct user_info * smsuin;
 
 inline unsigned int byte2long(byte arg[4]) {
     unsigned int tmp;
@@ -748,7 +749,7 @@ void SMS_request(int signo)
 {
     char fn[80];
     struct stat st;
-    sprintf(fn, "tmp/%d.res", uinfo.pid);
+    sprintf(fn, "tmp/%d.res", smsuin->pid);
     if(stat(fn, &st)!=-1)
         smsresult=1;
 }
@@ -760,27 +761,33 @@ int wait_for_result()
     FILE* fp;
     int i;
     signal(SIGUSR1, SMS_request);
-    sprintf(fn, "tmp/%d.res", uinfo.pid);
+    sprintf(fn, "tmp/%d.res", smsuin->pid);
     unlink(fn);
     smsresult = 0;
     head->sem=0;
 
     count=0;
     while(!smsresult) {
+#ifdef BBSMAIN
         move(t_lines-1, 0);
         clrtoeol();
         prints("·¢ËÍÖÐ....%d%%", count*100/30);
         refresh();
+#endif
         sleep(1);
         count++;
         if(count>30) {
+#ifdef BBSMAIN
             move(t_lines-1, 0);
             clrtoeol();
+#endif
             return -1;
         }
     }
+#ifdef BBSMAIN
     move(t_lines-1, 0);
     clrtoeol();
+#endif
     fp=fopen(fn, "r");
     fscanf(fp, "%d", &i);
     fclose(fp);
@@ -794,7 +801,7 @@ int DoReg(char * n)
     struct header h;
     struct RegMobileNoPacket h1;
     h.Type = CMD_REG;
-    long2byte(uinfo.pid, h.pid);
+    long2byte(smsuin->pid, h.pid);
     long2byte(sizeof(h1), h.BodyLength);
     strcpy(h1.MobileNo, n);
     while(head->sem) {
@@ -815,7 +822,7 @@ int DoUnReg(char * n)
     struct header h;
     struct UnRegPacket h1;
     h.Type = CMD_UNREG;
-    long2byte(uinfo.pid, h.pid);
+    long2byte(smsuin->pid, h.pid);
     long2byte(sizeof(h1), h.BodyLength);
     strcpy(h1.MobileNo, n);
     while(head->sem) {
@@ -836,7 +843,7 @@ int DoCheck(char * n, char * c)
     struct header h;
     struct CheckMobileNoPacket h1;
     h.Type = CMD_CHECK;
-    long2byte(uinfo.pid, h.pid);
+    long2byte(smsuin->pid, h.pid);
     long2byte(sizeof(h1), h.BodyLength);
     strcpy(h1.MobileNo, n);
     strcpy(h1.ValidateNo, c);
@@ -858,10 +865,10 @@ int DoSendSMS(char * n, char * d, char * c)
     struct header h;
     struct BBSSendSMS h1;
     h.Type = CMD_BBSSEND;
-    long2byte(uinfo.pid, h.pid);
+    long2byte(smsuin->pid, h.pid);
     long2byte(sizeof(h1)+strlen(c)+1, h.BodyLength);
     long2byte(strlen(c)+1, h1.MsgTxtLen);
-    long2byte(uinfo.uid, h1.UserID);
+    long2byte(smsuin->uid, h1.UserID);
     strcpy(h1.SrcMobileNo, n);
     strcpy(h1.DstMobileNo, d);
     while(head->sem) {
