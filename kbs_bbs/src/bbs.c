@@ -503,90 +503,14 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
     char *TITLE;
     int type;
     int manager;
-    char cUnreadMark = (DEFINE(currentuser, DEF_UNREADMARK) ? '*' : 'N');
     char *typeprefix;
     char *typesufix;
 
     typesufix = typeprefix = "";
 
-    manager = (HAS_PERM(currentuser, PERM_OBOARDS) || (chk_currBM(currBM, currentuser)));
+    manager = chk_currBM(currBM, currentuser);
 
-    type = brc_unread(FILENAME2POSTTIME(ent->filename)) ? cUnreadMark : ' ';
-    if ((ent->accessed[0] & FILE_DIGEST) /*&& HAS_PERM(currentuser,PERM_MARKPOST) */ ) {        /* 文摘模式 判断 */
-        if (type == ' ')
-            type = 'g';
-        else
-            type = 'G';
-    }
-    if (ent->accessed[0] & FILE_MARKED) {       /* 如果文件被mark住了，改变标识 */
-        switch (type) {
-        case ' ':
-            type = 'm';
-            break;
-        case '*':
-        case 'N':
-            type = 'M';
-            break;
-        case 'g':
-            type = 'b';
-            break;
-        case 'G':
-            type = 'B';
-            break;
-        }
-    }
-/*    if(HAS_PERM(currentuser,PERM_OBOARDS) && ent->accessed[1] & FILE_READ) *//*
- * * * * 版务总管以上的能看不可re标志,Haohmaru.99.6.7 
- */
-    if (manager & ent->accessed[1] & FILE_READ) {       /* 版主以上能看不可re标志, Bigman.2001.2.27 */
-        switch (type) {
-        case 'g':
-#ifdef _DEBUG_
-            type = 'o';
-            break;
-#endif                          /* _DEBUG_ */
-        case 'G':
-            type = 'O';
-            break;
-        case 'm':
-#ifdef _DEBUG_
-            type = 'u';
-            break;
-#endif                          /* _DEBUG_ */
-        case 'M':
-            type = 'U';
-            break;
-        case 'b':
-#ifdef _DEBUG_
-            type = 'd';
-            break;
-#endif                          /* _DEBUG_ */
-        case 'B':
-            type = '8';
-            break;
-        case ' ':
-#ifdef _DEBUG_
-            type = ',';
-            break;
-#endif                          /* _DEBUG_ */
-        case '*':
-        case 'N':
-        default:
-            type = ';';
-            break;
-        }
-    } else if (HAS_PERM(currentuser, PERM_OBOARDS) && ent->accessed[0] & FILE_SIGN)
-        /*
-         * 版务总管以上的能看Sign标志, Bigman: 2000.8.12 
-         */
-    {
-        type = '#';
-    }
-
-    if (manager && ent->accessed[1] & FILE_DEL) {       /* 如果文件被mark delete住了，显示X */
-        type = 'X';
-    }
-
+	type = get_article_flag(ent, currentuser, manager);
     if (manager && (ent->accessed[0] & FILE_IMPORTED)) {        /* 文件已经被收入精华区 */
         if (type == ' ') {
             typeprefix = "\x1b[42m";
