@@ -1688,11 +1688,11 @@ static PHP_FUNCTION(bbs_searchtitle)
 	if (IDList==NULL) {
 		RETURN_LONG(-211);
 	}
-	IDList2	= emalloc((50000)*sizeof(long int));
+	IDList2	= emalloc((10000)*sizeof(long int));
 	if (IDList2==NULL) {
 		RETURN_LONG(-212);
 	}
-	index	= emalloc((50000)*sizeof(long int));
+	index	= emalloc((10000)*sizeof(long int));
 	if (index==NULL) {
 		RETURN_LONG(-213);
 	}
@@ -1707,11 +1707,13 @@ static PHP_FUNCTION(bbs_searchtitle)
 				IDList2[threads]=ptr1[i].groupid;
 				index[threads]=found;
 				threads++;
+			} else {
+    			continue;
 			}
 		} else {
-			break;
+			continue;
 		}
-		if (threads>10000) 
+		if (threads>=9999) 
 			break;
 		if (title[0] && !strcasestr(ptr1[i].title, title))
 	        continue;
@@ -1727,7 +1729,7 @@ static PHP_FUNCTION(bbs_searchtitle)
 			continue;
 		if (origin && (ptr1[i].groupid!=ptr1[i].id) )
 			continue;
-		if (origin && ptr1[i].attachment==0)
+		if (attach && ptr1[i].attachment==0)
 			continue;
 		if (foundInArray(ptr1[i].groupid,IDList,threadsFounded)==-1)	{
 			int found,tmp=foundInArray(ptr1[i].groupid,IDList2,threads);
@@ -1750,7 +1752,7 @@ static PHP_FUNCTION(bbs_searchtitle)
 			else
 				flags[3] = ' ';
 			bbs_make_article_array(element, ptr1+found, flags, sizeof(flags));
-			add_assoc_long(element, "threadsnum",tmp);
+			//add_assoc_long(element, "threadsnum",tmp); //.DIR里头第几个thread，似乎已经没用了。 - disabled by atppp
 			zend_hash_index_update(Z_ARRVAL_P(return_value),threadsFounded, (void *) &element, sizeof(zval *), NULL);
 			if (threadsFounded>=999){
 				break;
