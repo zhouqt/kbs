@@ -277,7 +277,7 @@
 ?>
 &nbsp;
 <img src="images/line.gif" width="11" height="16" align="absmiddle">
-<A href="/pc/index.php?id=<?php echo $userid; ?>" target="f3">我的个人文集</A><BR>
+<A href="/pc/index.php?id=<?php echo $userid; ?>" target="f3">我的Blog</A><BR>
 &nbsp;
 <img src="images/line.gif" width="11" height="16" align="absmiddle">
 <A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=0" target="f3">公开区</A><BR>
@@ -298,7 +298,7 @@
 <A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=5" target="f3">好友管理</A><BR>
 &nbsp;
 <img src="images/line.gif" width="11" height="16" align="absmiddle">
-<A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=6" target="f3">文集管理</A><BR>
+<A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=6" target="f3">分类管理</A><BR>
 &nbsp;
 <img src="images/line.gif" width="11" height="16" align="absmiddle">
 <A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=7" target="f3">参数设定</A><BR>
@@ -460,7 +460,7 @@
 			</td>
 			<td>
 			<a href='javascript:changemn("pc");'>
-			<img src="/images/t15.gif" border="0" alt="个人文集" align="absmiddle"> 个人文集
+			<img src="/images/t15.gif" border="0" alt="<?php echo BBS_FULL_NAME; ?>" align="absmiddle"> 水木Blog
 			</a>
 			</td>
 		</tr>
@@ -474,10 +474,16 @@
 ?>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/pc/pc.php" target="f3">个人文集</a><br>
+					<a href="/pc/pc.php" target="f3">Blog首页</a><br>
+					&nbsp;
+					<img src="/images/line.gif" border="0" align="absmiddle">
+					<a href="/pc/pcsec.php" target="f3">分类目录</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/pc/pcnew.php" target="f3">最新文章</a><br>
+					&nbsp;
+					<img src="/images/line.gif" border="0" align="absmiddle">
+					<a href="/pc/pcnew.php?t=c" target="f3">最新评论</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/pc/pcsearch2.php" target="f3">文集搜索</a><br>
@@ -486,7 +492,7 @@
 					<a href="/pc/pcnsearch.php" target="f3">文章搜索</a><br>
 					&nbsp;
 					<img src="/images/line1.gif" border="0" align="absmiddle">
-					<a href="/bbsdoc.php?board=SMTH_blog" target="f3">个人文集讨论区</a><br>
+					<a href="/bbsdoc.php?board=SMTH_blog" target="f3">Blog论坛</a><br>
 				</DIV>
 			</td>
 		</tr>
