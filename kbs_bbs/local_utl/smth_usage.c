@@ -20,27 +20,35 @@ int sec_board_num[5]={0};
 
 int numboards = 0;
 
-int brd_cmp(b, a)
-    struct binfo *a, *b;
+int brd_cmp(const void* b1, const void* a1)
 {
+    struct binfo* a ,*b;
+    a = (struct binfo*)a1;
+    b = (struct binfo*)b1;
+
     if (a->times != b->times)
         return (a->times - b->times);
     return a->sum - b->sum;
 }
 
-int total_cmp(b, a)
-    struct binfo *a, *b;
+int total_cmp(const void* b1, const void* a1)
 {
+    struct binfo *a, *b;
+    
+    a = (struct binfo*)a1;
+    b = (struct binfo*)b1;
     if (a->sum != b->sum)
         return (a->sum - b->sum);
     return a->times - b->times;
 }
 
-int average_cmp(b, a)
-    struct binfo *a, *b;
+int average_cmp(const void* b1, const void* a1)
 {
+    struct binfo *a, *b;
     int a_ave, b_ave;
-
+    
+    a = (struct binfo*)a1;
+    b = (struct binfo*)b1;	 
     if (a->times)
         a_ave = a->sum / a->times;
     else
@@ -136,6 +144,7 @@ int fillbcache(struct boardheader *fptr,int idx,void* arg)
 int fillboard()
 {
     int i = 0;
+    resolve_boards();
     apply_record(BOARDS, (APPLY_FUNC_ARG)fillbcache, sizeof(struct boardheader), NULL, 0,false);
     for(i = 0;i < 5; i++) 	{
     	if(0 == sec_board_num[i] ){
@@ -233,7 +242,7 @@ main(argc, argv)
 
     fillboard();
     now = time(0);
-    sprintf(date, "%6.6s", Ctime(&now) + 4);
+    sprintf(date, "%6.6s", Ctime(now) + 4);
     printf("%6.6s", date);
      /**/ while (fgets(buf, 256, fp)) {
         if (strlen(buf) < 57)
