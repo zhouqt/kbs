@@ -797,10 +797,10 @@ int mode;
     pm->page = 9999;
     switch (mode) {
     case ADDITEM:
-        mesg = "请输入新文件之英名名称(可含数字)：";
+        mesg = "请输入新文件之英文名称(可含数字)：";
         break;
     case ADDGROUP:
-        mesg = "请输入新目录之英名名称(可含数字)：";
+        mesg = "请输入新目录之英文名称(可含数字)：";
         break;
     case ADDMAIL:
         sprintf(board, "tmp/bm.%s", getCurrentUser()->userid);
