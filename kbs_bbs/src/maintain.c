@@ -1630,7 +1630,6 @@ int x_deny()
                 } else {
                     sprintf(buf, "真的要解开%s的%s 戒网", lookupuser->userid, (char *) level_conf[sel - 1].data + 2);
                     sprintf(reportbuf, "解开%s的%s 戒网", lookupuser->userid, (char *) level_conf[sel - 1].data + 2);
-                    break;
                 }
                 if (askyn(buf, 0) != 0) {
                     lookupuser->userlevel ^= level[sel - 1];
