@@ -1076,7 +1076,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
         clrtoeol();
         move(cursory, cursorx);
         ch = igetkey();
-        if ((ch == '\n' || ch == '\r')&&num_in_buf()==0)
+        if ((ch == '\n' || ch == '\r'))
             break;
         for(i=starty;i<=y;i++)
             saveline(i, 1, savebuffer[i]);

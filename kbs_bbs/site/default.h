@@ -634,4 +634,11 @@ attach define
 #ifndef WWW_PAGE_SIZE //www的每页条目数
 #define WWW_PAGE_SIZE 20
 #endif
+
+#ifndef CHECK_IP_LINK
+#define CHECK_IP_LINK 0
+#else
+#define CHECK_IP_LINK 1
+#endif
+
 #endif

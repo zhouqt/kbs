@@ -332,4 +332,6 @@ typedef struct fileheader fileheader_t;
 attach define
 */
 #define ATTACHTMPPATH "boards/_attach"
+
+#define CHECK_IP_LINK
 #endif
