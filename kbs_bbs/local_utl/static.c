@@ -13,7 +13,6 @@ struct {
 
 int main(int argc,char* argv[])
 {
-    char *progmode;
     FILE *fp;
     char buf[256], *p;
     char date[80];
@@ -23,7 +22,6 @@ int main(int argc,char* argv[])
     int i, j;
     struct tm *date_tm;
     int fd;
-    int change;
     struct tm now_tm,last_tm;
     char *blk[10] = {
         /* 方框太难看了 modified by Czz */
@@ -43,8 +41,10 @@ int main(int argc,char* argv[])
     //读入原来的统计数据
     bzero(&total_st,sizeof(total_st));
     fd=open(STATIC_COUNT_FILE,O_RDONLY);
-    if (fd!=-1) 
+    if (fd!=-1) {
+	read(fd,&total_st,sizeof(total_st));
     	close(fd);
+    }
     if ((fp = fopen("usies", "r")) == NULL) {
         printf("cann't open usies\n");
         return 1;
@@ -66,7 +66,7 @@ int main(int argc,char* argv[])
             st.no[hour]++;
             continue;
         }
-        if (p = (char *) strstr(buf + 40, "Stay:")) {
+        if ((p = (char *) strstr(buf + 40, "Stay:"))!=NULL) {
             st.sum[hour] += atoi(p + 6);
             continue;
         }
@@ -84,20 +84,19 @@ int main(int argc,char* argv[])
 
     /*累计以前的统计数据*/
     old_st=total_st;
-    change=1;
+    now_tm=*date_tm;
     if (total_st.counttime==0) {
     	/*第一次统计*/
-    	total_st.day_count[date_tm->tm_mday]=total;
-    	total_st.month_count[date_tm->tm_mon]=total;
+    	total_st.day_count[now_tm.tm_mday-1]=total;
+    	total_st.month_count[now_tm.tm_mon]=total;
     	total_st.counttime=now;
     } else {
-      now_tm=*date_tm;
       date_tm=localtime(&total_st.counttime);
       last_tm=*date_tm;
       if (last_tm.tm_year!=now_tm.tm_year) {
 	      	/*过了一年了*/
            bzero(&total_st,sizeof(total_st));
-           total_st.month_count[date_tm->tm_mon]=total;
+           total_st.month_count[now_tm.tm_mon]=total;
       }
       else if (last_tm.tm_mon!=now_tm.tm_mon) {
       /*	换月份了，清除每日统计*/
@@ -105,18 +104,17 @@ int main(int argc,char* argv[])
           for (i=0;i<31;i++)
           	total_st.day_count[i]=0;
       }
-      if (last_tm.tm_mday==now_tm.tm_mday) {
+      if ((last_tm.tm_mday==now_tm.tm_mday)&&(last_tm.tm_mon==now_tm.tm_mon)) {
       	/*当天多次执行，那么当月统计减去上次加的，加上这次的*/
            total_st.month_count[date_tm->tm_mon]=total_st.month_count[date_tm->tm_mon]-
            	total_st.day_count[date_tm->tm_mday-1]+total;
-      	    change=0;
       	}
-      total_st.day_count[date_tm->tm_mday-1]=total;
+      total_st.day_count[now_tm.tm_mday-1]=total;
       total_st.counttime=now;
     }
 
     /*保存累计数据*/
-    substitute_record(STATIC_COUNT_FILE,&total_st,sizeof(total_st),0);
+    substitute_record(STATIC_COUNT_FILE,&total_st,sizeof(total_st),1);
     if (now_tm.tm_hour==23) {
     	/*晚上12点显示累计数据*/
 	    if ((fp = fopen("0Announce/bbslists/count", "w")) == NULL) {
@@ -126,11 +124,12 @@ int main(int argc,char* argv[])
 	    if (fp!=NULL) {
 	    	int count,total,total2,count2;
 	    	int i;
-	       fprintf(fp, "\n\x1b[36m                  %s上站人数统计\n",BBS_FULL_NAME);
+	        fprintf(fp, "\n\x1b[1;36m                  %s上站人数统计\n",BBS_FULL_NAME);
 /*月统计*/
-	       fprintf(fp, "\n\x1b[36m                  月统计数据\n");
+	        fprintf(fp, "\n\x1b[1;36m                  每月统计数据\n");
 	       
-		fprintf(fp,"\n       1        2        3        4        5        6|总      数 平    均\n");
+                fprintf(fp,"\n\x1b[m        1        2        3        4        5        6| 总      数 平     均\n");
+		fprintf(fp,"------------------------------------------------------+---------------------\n");
 		count=0;
 		total=0;
 		for (i=0;i<6;i++) {
@@ -138,29 +137,57 @@ int main(int argc,char* argv[])
 				total+=total_st.month_count[i];
 				count++;
 			}
-			fprintf(fp,"%10d",total_st.month_count[i]);
+			fprintf(fp,"%9d",total_st.month_count[i]);
 	        }
+		fprintf(fp,"|%11d %9d\n",total,count==0?0:total/count);
 		total2=total;
 		count2=count;
 		count=0;
 		total=0;
 		
-		fprintf(fp," %11d %10d\n",total,total/count);
-		fprintf(fp,"\n       7        8        9       10       11       12|总      数 平    均\n");
-		count=0;
-		total=0;
-		for (i=7;i<12;i++) {
+		fprintf(fp,"\n        7        8        9       10       11       12| 总      数 平     均\n");
+		fprintf(fp,"------------------------------------------------------+---------------------\n");
+		for (i=6;i<12;i++) {
 			if (total_st.month_count[i]!=0) {
 				total+=total_st.month_count[i];
 				count++;
 			}
-			fprintf(fp,"%10d",total_st.month_count[i]);
-	       }
-		fprintf(fp," %11d %10d\n",total,total/count);
+			fprintf(fp,"%9d",total_st.month_count[i]);
+	        }
+	        fprintf(fp,"|%11d %9d\n",total,count==0?0:total/count);
 
-		fprintf(fp,"总数: %d\n每月总平均: %d\n",
-			total+total2,(total+total2)/(count+count2));
-/*TODO:每天统计*/		
+                fprintf(fp,"总数: %d\n每月总平均: %d\n",
+			total+total2,count+count2==0?0:(total+total2)/(count+count2));
+	        fprintf(fp, "\n\x1b[1;36m                  本月每天统计数据\x1b[m\n");
+		fprintf(fp,"\n      1      2      3      4      5      6      7      8      9     10     11");
+		fprintf(fp,"\n-----------------------------------------------------------------------------\n");
+                for (i=0;i<11;i++) {
+		    if (total_st.day_count[i]!=0) {
+                        total+=total_st.day_count[i];
+		        count++;
+		    }
+		    fprintf(fp,"%7d",total_st.day_count[i]);
+		}
+		fprintf(fp,"\n\n     12     13     14     15     16     17     18     19     20     21     22");
+		fprintf(fp,"\n-----------------------------------------------------------------------------\n");
+                for (i=11;i<22;i++) {
+		    if (total_st.day_count[i]!=0) {
+                        total+=total_st.day_count[i];
+		        count++;
+		    }
+		    fprintf(fp,"%7d",total_st.day_count[i]);
+		}
+		fprintf(fp,"\n\n     23     24     25     26     27     28     29     30     31");
+		fprintf(fp,"\n-----------------------------------------------------------------------------\n");
+                for (i=22;i<31;i++) {
+		    if (total_st.day_count[i]!=0) {
+                        total+=total_st.day_count[i];
+		        count++;
+		    }
+		    fprintf(fp,"%7d",total_st.day_count[i]);
+		}
+                fprintf(fp,"\n总数: %d\n每天平均: %d\n",
+			total,count==0?0:total/count);
 		fclose(fp);
 	    } else {
 		 post_file(NULL, "", "0Announce/bbslists/countlogins", "BBSLists", "无法打开文件", 0, 1);
