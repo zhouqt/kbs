@@ -1,5 +1,6 @@
 #include <php.h>
 #include "bbs.h"
+#include "bbslib.h"
 
 static ZEND_FUNCTION(bbs_getuser);
 static ZEND_FUNCTION(bbs_getonlineuser);
@@ -167,23 +168,22 @@ static inline int getcurrentuinfo_num()
 {
 	return currentuinfonum;
 }
-time_t set_idle_time(struct user_info *uentp, time_t t)
-{
-	uentp->freshtime = t;
-	return t;
-}
 
 /*
  * Here goes the real functions
  */
 
 /* arguments: userid, username, ipaddr, operation */
+static char old_pwd[1024];
 static ZEND_FUNCTION(bbs_setfromhost)
 {
 	char* s;
 	int s_len;
 	int full_len;
 
+	getcwd(old_pwd,1023);
+	chdir(BBSHOME);
+	old_pwd[1023]=0;
         if (zend_parse_parameters(2 TSRMLS_CC, "ss" ,&s,&s_len,&fullfrom,&full_len) != SUCCESS) {
                 WRONG_PARAM_COUNT;
         }
@@ -203,6 +203,9 @@ static ZEND_FUNCTION(bbs_getuser)
 	int s_len;
 	zval* user_array;
 
+	getcwd(old_pwd,1023);
+	chdir(BBSHOME);
+	old_pwd[1023]=0;
         if (zend_parse_parameters(2 TSRMLS_CC, "sa" ,&s,&s_len, &user_array) != SUCCESS) {
                 WRONG_PARAM_COUNT;
         }
@@ -228,6 +231,9 @@ static ZEND_FUNCTION(bbs_getonlineuser)
 	struct user_info* uinfo;
 	zval* user_array;
 
+	getcwd(old_pwd,1023);
+	chdir(BBSHOME);
+	old_pwd[1023]=0;
         if (zend_parse_parameters(2 TSRMLS_CC, "la" ,&idx, &user_array) != SUCCESS) {
                 WRONG_PARAM_COUNT;
         }
@@ -254,6 +260,9 @@ static ZEND_FUNCTION(bbs_countuser)
 {
 	long idx;
 
+	getcwd(old_pwd,1023);
+	chdir(BBSHOME);
+	old_pwd[1023]=0;
         if (zend_parse_parameters(2 TSRMLS_CC, "l" ,&idx) != SUCCESS) {
                 WRONG_PARAM_COUNT;
         }
@@ -270,6 +279,9 @@ static ZEND_FUNCTION(bbs_checkpasswd)
 	int unum;
 	struct userec* user;
 
+	getcwd(old_pwd,1023);
+	chdir(BBSHOME);
+	old_pwd[1023]=0;
        if (zend_parse_parameters(2 TSRMLS_CC, "ss" ,&s,&s_len, &pw,&pw_len) != SUCCESS) {
                 WRONG_PARAM_COUNT;
        }
@@ -292,11 +304,6 @@ static ZEND_FUNCTION(bbs_checkpasswd)
 	RETURN_LONG(ret);
 }
 
-static int cmpuids2(int unum, struct user_info *urec)
-{
-	    return (unum == urec->uid);
-}
-
 static ZEND_FUNCTION(bbs_wwwlogin)
 {
 	long ret;
@@ -304,6 +311,9 @@ static ZEND_FUNCTION(bbs_wwwlogin)
 	struct user_info *pu;
 	int utmpent;
 	
+	getcwd(old_pwd,1023);
+	chdir(BBSHOME);
+	old_pwd[1023]=0;
 	if(ZEND_NUM_ARGS() == 1) {
           if (zend_parse_parameters(1 TSRMLS_CC, "l" , &kick_multi) != SUCCESS) {
                 WRONG_PARAM_COUNT;
@@ -326,6 +336,9 @@ static ZEND_FUNCTION(bbs_getcurrentuinfo)
         zval* user_array;
         long ret=1;
 
+	getcwd(old_pwd,1023);
+	chdir(BBSHOME);
+	old_pwd[1023]=0;
 	if(ZEND_NUM_ARGS() == 1) {
           if (zend_parse_parameters(1 TSRMLS_CC, "a" , &user_array) != SUCCESS) {
                 WRONG_PARAM_COUNT;
@@ -352,6 +365,9 @@ static ZEND_FUNCTION(bbs_getcurrentuser)
 	zval* user_array;
 	long ret;
 
+	getcwd(old_pwd,1023);
+	chdir(BBSHOME);
+	old_pwd[1023]=0;
         if (zend_parse_parameters(1 TSRMLS_CC, "a" , &user_array) != SUCCESS) {
                 WRONG_PARAM_COUNT;
         }
@@ -381,6 +397,9 @@ static ZEND_FUNCTION(bbs_setonlineuser)
 	int idx;
 	struct userec* user;
 
+	getcwd(old_pwd,1023);
+	chdir(BBSHOME);
+	old_pwd[1023]=0;
 	if (zend_parse_parameters(4 TSRMLS_CC, "slla" , &userid, &userid_len,
 				&utmpnum, &utmpkey, &user_array) != SUCCESS) {
 	            WRONG_PARAM_COUNT;
@@ -414,6 +433,9 @@ static ZEND_FUNCTION(bbs_printansifile)
 	int fd;
 	struct stat st;
 
+	getcwd(old_pwd,1023);
+	chdir(BBSHOME);
+	old_pwd[1023]=0;
 	if(ZEND_NUM_ARGS() == 1) {
     	if (zend_parse_parameters(1 TSRMLS_CC, "s" , 
 			&filename,&filename_len)!= SUCCESS) {
@@ -546,6 +568,9 @@ static ZEND_FUNCTION(bbs_getboard)
 	const struct boardheader* bh;
 	int b_num;
 
+	getcwd(old_pwd,1023);
+	chdir(BBSHOME);
+	old_pwd[1023]=0;
 	if(ZEND_NUM_ARGS() == 1) {
     	if (zend_parse_parameters(1 TSRMLS_CC, "s" , 
 			&boardname,&boardname_len)!= SUCCESS) 
@@ -576,6 +601,9 @@ static ZEND_FUNCTION(bbs_checkreadperm)
 {
 	long user_num,boardnum;
 	struct userec* user;
+	getcwd(old_pwd,1023);
+	chdir(BBSHOME);
+	old_pwd[1023]=0;
 	if (zend_parse_parameters(2 TSRMLS_CC, "ll" , 
 		&user_num,&boardnum)!= SUCCESS) 
                 WRONG_PARAM_COUNT;
@@ -588,6 +616,9 @@ static ZEND_FUNCTION(bbs_brcaddread)
 {
 	long posttime,boardnum;
 	
+	getcwd(old_pwd,1023);
+	chdir(BBSHOME);
+	old_pwd[1023]=0;
 	if (zend_parse_parameters(2 TSRMLS_CC, "ll" , 
 		&boardnum,&posttime)!= SUCCESS) 
                 WRONG_PARAM_COUNT;
@@ -596,7 +627,6 @@ static ZEND_FUNCTION(bbs_brcaddread)
 	RETURN_NULL();
 }
 
-static char old_pwd[1024];
 static ZEND_MINIT_FUNCTION(bbs_module_init)
 {
 	getcwd(old_pwd,1023);

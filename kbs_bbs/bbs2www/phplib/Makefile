@@ -7,7 +7,7 @@ SRC     = phpbbslib.c
 OBJ     = phpbbslib.o
 PHPSUFFIX = php
 
-INC     = -I$(PHPBASE) -I$(PHPBASE)/main -I$(PHPBASE)/Zend -I$(PHPBASE)/TSRM
+INC     = -I../include -I$(PHPBASE) -I$(PHPBASE)/main -I$(PHPBASE)/Zend -I$(PHPBASE)/TSRM -DSMTH
 all: $(TARGET)
 #smth happy: bbslib $(CGI)
 #smth := BBSLIBOBJS = crypt.o boardrc.o bbslib.o $(BBSSITE).o smthlib.o md5.o
@@ -22,7 +22,7 @@ DEFINES = $(OS_DEF) $(SITE_DEF)
 PHPBASE = /home/share/php-4.2.0
 
 $(TARGET): $(OBJ) ../../libBBS.a ../../libsystem.a
-	$(LD) -shared $(LDFLAGS) -o $(TARGET) $(OBJ) ../../libBBS.a ../../libsystem.a
+	$(LD) -shared $(LDFLAGS) -o $(TARGET) $(OBJ) -lBBS ../../libsystem.a ../lib/libbbslib.a -lesmtp
 
 install: $(TARGET)
 	@mkdir -p $(PHPBBSLIBDIR)

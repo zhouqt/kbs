@@ -35,6 +35,8 @@ NAME_BBS_CHINESE "用户登录<br>\n"
 	else
 	{
         char buf[256]="未注册用户";
+		if (currentuser==NULL)
+			http_fatal("hehe:%d",loginok);
 		printf("用户: <a href=\"bbsqry?userid=%s\" target=\"f3\">%s</a><br>", 
 				getcurruserid(), getcurruserid());
 		uleveltochar(buf, getcurrusr());

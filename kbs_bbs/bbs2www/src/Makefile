@@ -15,7 +15,7 @@ DEFINES = $(OS_DEF) $(SITE_DEF) -I../include
 #BBSLIBOBJS = crypt.o boardrc.o bbslib.o
 
 CGI	= bbsusr bbstop10 bbssec bbsdoc bbscon bbsbrdadd bbsboa bbsall bbsanc bbs0an \
-	  bbslogout bbsleft bbslogin bbsqry bbsnot bbsfind \
+	  bbslogout bbsleft bbsqry bbsnot bbsfind \
 	  bbsfadd bbsfdel bbsfall bbsfriend bbsfoot bbsform bbspwd bbsplan bbsinfo \
 	  bbsmybrd bbssig bbspst bbsgcon bbsgdoc bbsdel bbsdelmail bbsmailcon bbsmail \
 	  bbsdelmsg bbssnd bbsalluser bbsnotepad bbsmsg bbssendmsg bbsreg \
@@ -23,8 +23,8 @@ CGI	= bbsusr bbstop10 bbssec bbsdoc bbscon bbsbrdadd bbsboa bbsall bbsanc bbs0an
 	  bbsmdoc bbsnick bbsjs bbstfind bbstcon bbstdoc \
 	  bbsdoreg bbsmywww bbsccc bbsufind bbsclear bbsedit bbsman bbsparm \
 	  bbsfwd bbsmnote bbsdenyall bbsdenydel bbsdenyadd \
-	  bbstopb10 bbsbfind\
-
+	  bbstopb10 bbsbfind
+#bbslogin 
 #smth happy: bbslib $(CGI)
 #smth := BBSLIBOBJS = crypt.o boardrc.o bbslib.o $(BBSSITE).o smthlib.o md5.o
 #happy := BBSLIOBJS = crypt.o boardrc.o bbslib.o

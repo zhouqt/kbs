@@ -485,7 +485,8 @@ int user_init(struct userec **x, struct user_info **y)
 	key=atoi(getparm("UTMPKEY"));
 	i=atoi(num);
 
-	www_user_init(i,id, key, x, y);
+	if (www_user_init(i,id, key, x, y)==0) return 1;
+	return 0;
 }
 
 int post_mail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig)
@@ -1210,12 +1211,6 @@ time_t get_idle_time(struct user_info *uentp)
 	return uentp->freshtime;
 }
 
-time_t set_idle_time(struct user_info *uentp, time_t t)
-{
-	uentp->freshtime = t;
-
-	return t;
-}
 
 bcache_t *getbcacheaddr()
 {
@@ -1669,7 +1664,7 @@ struct WWW_GUEST_S {
 #define MAX_WWW_GUEST_IDLE_TIME 3600 /* www guest发呆时间设为1小时*/
 
 struct WWW_GUEST_TABLE {
-	DWORD use_map[MAX_WWW_MAP_ITEM];
+	int use_map[MAX_WWW_MAP_ITEM];
 	time_t uptime;
 	struct WWW_GUEST_S guest_entry[MAX_WWW_GUEST];
 };
@@ -1686,7 +1681,7 @@ static int www_guest_lock()
 {
     int          fd=0;
     fd = open( "www_guest.lock", O_RDWR|O_CREAT, 0600 );
-    if( utmpfd < 0 ) {
+    if( fd < 0 ) {
         return -1;
     }
     signal(SIGALRM,longlock);
@@ -1731,7 +1726,7 @@ static int www_new_guest_entry()
     	}
 	for (i=0;i< MAX_WWW_MAP_ITEM;i++)
 		if (wwwguest_shm->use_map[i]!=0xFFFFFFFF) {
-			DWORD map=wwwguest_shm->use_map[i];
+			int map=wwwguest_shm->use_map[i];
 			for (j=0;j<32;j++)
 				if ((map&1)==0) {
 					wwwguest_shm->use_map[i]|=1<<j;
@@ -1776,7 +1771,7 @@ static int resolve_guest_table()
 			if (fd==-1) return -1;
 			bzero(wwwguest_shm,sizeof(*wwwguest_shm));
 			pub->www_guest_count=0;
-			wwwguest_shm.uptime=time(0);
+			wwwguest_shm->uptime=time(0);
 	        	www_guest_unlock(fd);
 	    	}
     	}
@@ -1813,23 +1808,22 @@ int www_data_init()
 
 int www_user_init(int useridx,char* userid,int key,struct userec **x, struct user_info **y)
 {
-	struct UTMPFILE *utmpshm_ptr;
-
 	/*printf("utmpuserid = %s\n", id);*/
 	/*printf("utmpnum = %s\n", num);*/
-	if(strcasecmp(userid, "new"))
+	if(!strcasecmp(userid, "new"))
 		return -1;
 	
 	if (strcasecmp(userid,"guest")) {
 	 	/* 非guest在线用户处理*/
-		if(useridx<1 || useridx>=MAXACTIVE)
+		if(useridx<1 || useridx>=MAXACTIVE) {
 			return -1;
-		(*y) = get_user_info(i);
+		}
+		(*y) = get_utmpent(useridx);
 		if((strncmp((*y)->from, fromhost, IPLEN))||((*y)->utmpkey != key))
 			return -2;
 		
-		if(((*y)->active == 0))||((*y)->userid[0] == 0)
-			||((*y)->mode!=WEBEXPLORE)
+		if((((*y)->active == 0))||((*y)->userid[0] == 0)
+			||((*y)->mode!=WEBEXPLORE))
 			return -3;
 
 		if(strcmp((*y)->userid, userid))
@@ -1837,7 +1831,7 @@ int www_user_init(int useridx,char* userid,int key,struct userec **x, struct use
 		getuser((*y)->userid, x);
 
 		if(*x==0)
-			return -1;
+			return -5;
 	} else {
 	/* guest用户处理 */
 		struct WWW_GUEST_S * guest_info;
@@ -1848,10 +1842,10 @@ int www_user_init(int useridx,char* userid,int key,struct userec **x, struct use
 			return -2;
 		
 		strncpy(www_guest_uinfo.from,fromhost,IPLEN);
-		www_guest_uinfo.freshtime=guest_info.freshtime;
+		www_guest_uinfo.freshtime=guest_info->freshtime;
 		www_guest_uinfo.utmpkey=key;
 		www_guest_uinfo.destuid=useridx;
-		www_guest_uinfo.logintime=guest_info.logintime;
+		www_guest_uinfo.logintime=guest_info->logintime;
 
 		*y=&www_guest_uinfo;
 
@@ -1862,8 +1856,13 @@ int www_user_init(int useridx,char* userid,int key,struct userec **x, struct use
 	return 0;
 }
 
+static int cmpuids2(int unum, struct user_info *urec)
+{
+		    return (unum == urec->uid);
+}
+
 int www_user_login(struct userec* user,int useridx,int kick_multi,char* fromhost,
-	struct **user_info ppuinfo,int* putmpent)
+	struct user_info** ppuinfo,int* putmpent)
 {
 	int ret;
 	char buf[255];
@@ -1969,7 +1968,7 @@ int www_user_login(struct userec* user,int useridx,int kick_multi,char* fromhost
 			{
 				bbslog("3system","can't add msg:%d %s!!!\n",utmpent,user->userid);
 				*ppuinfo=u;
-				*pputmpent=utmpent;
+				*putmpent=utmpent;
 				ret=2;
 			}
 			else {
@@ -1992,7 +1991,7 @@ int www_user_login(struct userec* user,int useridx,int kick_multi,char* fromhost
 			www_guest_uinfo.freshtime=wwwguest_shm->guest_entry[idx].freshtime;
 
 			www_guest_uinfo.destuid=idx;
-			www_guest_uinfo.utmpkey=key;
+			www_guest_uinfo.utmpkey=tmp;
 			*ppuinfo=&www_guest_uinfo;
 			*putmpent=-1;
 			ret=0;
@@ -2006,14 +2005,14 @@ int www_user_login(struct userec* user,int useridx,int kick_multi,char* fromhost
 	return ret;
 }
 
-static void setflags(struct userec*u, int mask, value)
+static void setflags(struct userec* u, int mask, int value)
 {
     if (((u->flags[0] & mask) && 1) != value) {
         if (value) u->flags[0] |= mask;
         else u->flags[0] &= ~mask;
     }
 }
-int www_user_logoff(struct userec* user,int useridx,struct *user_info puinfo,int userinfoidx)
+int www_user_logoff(struct userec* user,int useridx,struct user_info* puinfo,int userinfoidx)
 {
 	int stay=0;
 	struct userec *x = NULL;
@@ -2026,16 +2025,29 @@ int www_user_logoff(struct userec* user,int useridx,struct *user_info puinfo,int
 	record_exit_time();
 	bbslog( "1system", "EXIT: Stay:%3ld (%s)[%d %d]", stay / 60, 
 			x->username, get_curr_utmpent(), useridx);
-	if (strccasecmp(user->userid,"guest")) {
-	    	if(!puinfo->active) return;
+	if (strcasecmp(user->userid,"guest")) {
+	    	if(!puinfo->active) return 0;
 	    		setflags(user,PAGER_FLAG, (puinfo->pager&ALL_PAGER));
 
-		if((HAS_PERM(user,PERM_CHATCLOAK) || HAS_PERM(puinfo,PERM_CLOAK)))
+		if((HAS_PERM(user,PERM_CHATCLOAK) || HAS_PERM(user,PERM_CLOAK)))
 	        	setflags(user,CLOAK_FLAG, puinfo->invisible);
-
-    		clear_utmp(userinfoidx,puinfo);
+    	clear_utmp(userinfoidx,useridx);
 	} else {
 		www_free_guest_entry(puinfo->destuid);
 	}
+	return 0;
 }
 
+time_t set_idle_time(struct user_info *uentp, time_t t)
+{
+	if (strcasecmp(uentp->userid,"guest"))
+		uentp->freshtime = t;
+	else {
+		int idx;
+		idx=uentp->destuid;
+		if (idx>=1&&idx<MAX_WWW_GUEST)
+			wwwguest_shm->guest_entry[uentp->destuid].freshtime=t;
+	}
+
+	return t;
+}
