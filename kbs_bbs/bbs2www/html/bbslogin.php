@@ -48,7 +48,7 @@ if ($id!="") {
         if ($data["userid"]=="guest") {
             setcookie("WWWPARAMS",WWW_DEFAULT_PARAMS,0,""); 	
             if ($mainurl!="")
-	    header("Location: /guest-frames.html" . $mainurl);
+	    header("Location: /guest-frames.html?mainurl=" . $mainurl);
             else
 	    header("Location: /guest-frames.html");
         }
