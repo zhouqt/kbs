@@ -581,7 +581,10 @@ list:		move(5,0) ;
         }
 
         server.sin_family = AF_INET ;
-        server.sin_addr.s_addr = INADDR_ANY ;
+/*        server.sin_addr.s_addr = INADDR_ANY ;
+我想应该用INADDR_LOOPBACK比较好 KCN
+*/
+    	server.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
         server.sin_port = 0 ;
         if(bind(sock, (struct sockaddr *) & server, sizeof server ) < 0) {
             perror("bind err") ;
@@ -808,63 +811,6 @@ setnpagerequest()
         return 1;
     return 0;
 }
-void
-ndo_talk(pager,reject)
-char *pager ;
-int reject;
-{
-    char tmp_buf[STRLEN + 128];
-
-    if (reject) {
-        sprintf(tmp_buf,"/bin/sh %s %s", sysconf_str("REJECTCALL"),pager);
-    } else {
-        sprintf(tmp_buf,"/bin/sh %s %s", sysconf_str("NTALK"),pager);
-        modify_user_mode( TALK );
-    }
-    reset_tty() ;
-    do_exec(tmp_buf,NULL) ;
-    restore_tty() ;
-    modify_user_mode( MMENU );
-}
-
-int
-ntalkreply()
-{
-    char buf[512] ;
-    char inbuf[STRLEN*2];
-
-    talkrequest = NA ;
-    ntalkrequest = NA ;
-
-    if (setnpagerequest()) return 0;
-
-    set_alarm(0,NULL,NULL);
-    clear() ;
-    move(1,0);
-    prints("(N)【抱歉，我现在很忙，不能跟你聊。】(B)【我现在很烦，不想跟别人聊天。 】\n");
-    prints("(C)【我有急事，我等一下再 Call 你。】(D)【请不要再 Page，我不想跟你聊。】\n");
-    prints("(E)【我要离开了，下次在聊吧。      】(F)【请寄一封信给我，我现在没空。 】\n");
-    sprintf( inbuf, "你想跟 %s 聊聊天吗? (Y N B C D E F)[Y]: ", npage_requestor );
-    getdata(0,0, inbuf ,buf,STRLEN,DOECHO,NULL,YEA) ;
-
-    if(buf[0] != 'n' && buf[0] != 'N'&& buf[0] != 'B'&& buf[0] != 'b'
-            && buf[0] != 'C'&& buf[0] != 'c'&& buf[0] != 'D'&& buf[0] != 'd'
-            && buf[0] != 'e'&& buf[0] != 'E'&& buf[0] != 'f'&& buf[0] != 'F')
-        buf[0] = 'y';
-    if(buf[0] != 'y') {
-        report("page refused");
-        ndo_talk(npage_requestor,1) ;
-        clear() ;
-        refresh();
-        return 0 ;
-    }
-
-    clear() ;
-    report("page accepted");
-    ndo_talk(npage_requestor,0) ;
-    clear() ;
-    return 0 ;
-}
 
 int
 talkreply()
@@ -907,14 +853,19 @@ talkreply()
     memset(page_requestor, 0, sizeof(page_requestor));
     memset(page_requestorid, 0, sizeof(page_requestorid));
     getdata(0,0, inbuf ,buf,STRLEN,DOECHO,NULL,YEA) ;
+    /*        
     gethostname(hostname,STRLEN) ;
     if(!(h = gethostbyname(hostname))) {
         perror("gethostbyname") ;
         return -1 ;
     }
-    memset(&sin, 0, sizeof sin) ;
-    sin.sin_family = h->h_addrtype ;
     memcpy( &sin.sin_addr, h->h_addr, h->h_length) ;
+我想应该用INADDR_LOOPBACK比较好 KCN
+*/
+    memset(&sin, 0, sizeof sin) ;
+
+    sin.sin_family = h->h_addrtype ;
+    sin.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
     sin.sin_port = ui.sockaddr ;
     a = socket(sin.sin_family,SOCK_STREAM,0) ;
     if((connect(a, (struct sockaddr *)&sin, sizeof sin))) {
