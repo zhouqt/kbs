@@ -38,6 +38,7 @@ int show_authorinfo();          /*Haohmaru.98.12.19 */
 int show_authorBM();            /*cityhunter 00.10.18 */
 int SR_first_new();
 int SR_last();
+int import_to_pc();
 int SR_first();
 int SR_read();
 int SR_readX();                 /* Leeward 98.10.03 */
@@ -1456,6 +1457,9 @@ struct one_key mail_comms[] = {
     {Ctrl('W'), show_authorBM}, /*cityhunter 00.10.18 */
     {Ctrl('N'), SR_first_new},
     {'\\', SR_last},
+#ifdef PERSONAL_CORP
+	{'y', import_to_pc},
+#endif
     {'=', SR_first},
     {Ctrl('C'), do_cross},
 /*    {Ctrl('S'), SR_read},

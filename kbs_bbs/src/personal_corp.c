@@ -1884,7 +1884,10 @@ int import_to_pc(int ent, struct fileheader *fileinfo, char *direct)
 	strncpy(pn.subject, fileinfo->title, STRLEN);
 	pn.subject[STRLEN-1]=0;
 
-	setbfile(fpath, currboard->filename, fileinfo->filename);
+	if( uinfo.mode == RMAIL )
+		setmailfile(fpath, currentuser->userid, fileinfo->filename);
+	else
+		setbfile(fpath, currboard->filename, fileinfo->filename);
 
 	pn.body = NULL;
 	if( ! pc_conv_file_to_body(&(pn.body), fpath)){
