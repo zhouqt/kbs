@@ -115,7 +115,7 @@ int update_form(char *board, char *file)
 	}
 	fclose(fin);
 	fclose(fout);
-	Rename(outfile, infile);
+	f_mv(outfile, infile);
 
 	printf("修改文章成功.<br><a href=\"bbsdoc?board=%s\">返回本讨论区</a>", board);
 	return 0;
