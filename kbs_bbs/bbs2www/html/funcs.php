@@ -109,7 +109,7 @@ if (($sessionid!='')&&($_SERVER['PHP_SELF']=='/bbscon.php')) {
 	@$userid = $_COOKIE["UTMPUSERID"];
 }
 // add by stiger, login as "guest" default.....
-if ($utmpkey == ""){
+if (($utmpkey == "")&&($needlogin)){
 	$error = bbs_wwwlogin(0);
 	if($error == 2 || $error == 0){
 		$data = array();

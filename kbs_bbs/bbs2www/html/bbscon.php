@@ -3,6 +3,7 @@
 	 * This file displays article to user.
 	 * $Id$
 	 */
+	$needlogin=0;
 	require("funcs.php");
 function get_mimetype($name)
 {
@@ -76,120 +77,121 @@ function display_navigation_bar($brdarr, $articles, $num)
 <?php
 }
 
-	if ($loginok != 1)
-		html_nologin();
+	$brdarr = array();
+	if( isset( $_GET["bid"] ) ){
+		$brdnum = $_GET["bid"] ;
+		if( $brdnum == 0 ){
+			html_init("gb2312");
+			html_error_quit("错误的讨论区!");
+		}
+		$board = bbs_getbname($brdnum);
+		if( !$board ){
+			html_init("gb2312");
+			html_error_quit("错误的讨论区");
+		}
+		if( $brdnum != bbs_getboard($board, $brdarr) ){
+			html_init("gb2312");
+			html_error_quit("错误的讨论区");
+		}
+	}
+	elseif (isset($_GET["board"])){
+		$board = $_GET["board"];
+		$brdnum = bbs_getboard($board, $brdarr);
+		if ($brdnum == 0) {
+			html_init("gb2312");
+			html_error_quit("错误的讨论区");
+		}
+	}
+	else {
+		html_init("gb2312");
+		html_error_quit("错误的讨论区");
+	}
+               $isnormalboard=bbs_normalboard($board);
+               if (($loginok != 1)&&!$isnormalboard) {
+                   html_nologin();
+                   return;
+               } else
+	    $usernum = $currentuser["index"];
+	if (!$isnormalboard&&bbs_checkreadperm($usernum, $brdnum) == 0) {
+		html_init("gb2312");
+		html_error_quit("错误的讨论区");
+	}
+	if (isset($_GET["ftype"])){
+		$ftype = $_GET["ftype"];
+		if($ftype != $dir_modes["ZHIDING"])
+			$ftype = $dir_modes["NORMAL"];
+	}
+	else
+		$ftype = $dir_modes["NORMAL"];
+	$total = bbs_countarticles($brdnum, $ftype);
+	if ($total <= 0) {
+		html_init("gb2312");
+		html_error_quit("本讨论区目前没有文章,$brdnum,$ftype");
+	}
+	if (isset($_GET["id"]))
+		$id = $_GET["id"];
+	else {
+		html_init("gb2312");
+		html_error_quit("错误的文章号");
+	}
+	settype($id, "integer");
+	$articles = array ();
+	$num = bbs_get_records_from_id($brdarr["NAME"], $id, 
+			$ftype, $articles);
+	if ($num == 0)
+	{
+		html_init("gb2312");
+		html_error_quit("错误的文章号.");
+	}
 	else
 	{
-		$brdarr = array();
-		if( isset( $_GET["bid"] ) ){
-			$brdnum = $_GET["bid"] ;
-			if( $brdnum == 0 ){
-				html_init("gb2312");
-				html_error_quit("错误的讨论区!");
+		$filename=bbs_get_board_filename($brdarr["NAME"], $articles[1]["FILENAME"]);
+		if ($isnormalboard) {
+       			if (cache_header("public",filemtime($filename),300))
+               			return;
+               	}
+//		Header("Cache-control: nocache");
+		@$attachpos=$_GET["ap"];//pointer to the size after ATTACHMENT PAD
+		if ($attachpos!=0) {
+			$file = fopen($filename, "rb");
+			fseek($file,$attachpos);
+			$attachname='';
+			while (1) {
+				$char=fgetc($file);
+				if (ord($char)==0) break;
+				$attachname=$attachname . $char;
 			}
-			$board = bbs_getbname($brdnum);
-			if( !$board ){
-				html_init("gb2312");
-				html_error_quit("错误的讨论区");
-			}
-			if( $brdnum != bbs_getboard($board, $brdarr) ){
-				html_init("gb2312");
-				html_error_quit("错误的讨论区");
-			}
-		}
-		elseif (isset($_GET["board"])){
-			$board = $_GET["board"];
-			$brdnum = bbs_getboard($board, $brdarr);
-			if ($brdnum == 0) {
-				html_init("gb2312");
-				html_error_quit("错误的讨论区");
-			}
-		}
-		else {
-			html_init("gb2312");
-			html_error_quit("错误的讨论区");
-		}
-		$usernum = $currentuser["index"];
-		if (bbs_checkreadperm($usernum, $brdnum) == 0) {
-			html_init("gb2312");
-			html_error_quit("错误的讨论区");
-		}
-		if (isset($_GET["ftype"])){
-			$ftype = $_GET["ftype"];
-			if($ftype != $dir_modes["ZHIDING"])
-				$ftype = $dir_modes["NORMAL"];
-		}
-		else
-			$ftype = $dir_modes["NORMAL"];
-		$total = bbs_countarticles($brdnum, $ftype);
-		if ($total <= 0) {
-			html_init("gb2312");
-			html_error_quit("本讨论区目前没有文章");
-		}
-		if (isset($_GET["id"]))
-			$id = $_GET["id"];
-		else {
-			html_init("gb2312");
-			html_error_quit("错误的文章号");
-		}
-		settype($id, "integer");
-		$articles = array ();
-		$num = bbs_get_records_from_id($brdarr["NAME"], $id, 
-				$ftype, $articles);
-		if ($num == 0)
+			$str=fread($file,4);
+			$array=unpack('Nsize',$str);
+			$attachsize=$array["size"];
+			Header("Content-type: " . get_mimetype($attachname));
+			Header("Accept-Ranges: bytes");
+			Header("Accept-Length: " . $attachsize);
+			Header("Content-Disposition: filename=" . $attachname);
+			echo fread($file,$attachsize);
+			fclose($file);
+			exit;
+		} else
 		{
-			html_init("gb2312");
-			html_error_quit("错误的文章号.");
-		}
-		else
+			// 检查上一篇或下一篇
+			@$ptr=$_GET["p"];
+			$brd_encode = urlencode($brdarr["NAME"]);
+			//$http_uri = "http" . ($_SERVER["HTTPS"] == "on" ? "s" : "") . "://";
+			if ($ptr == 'p' && $articles[0]["ID"] != 0)
 		{
-			$filename=bbs_get_board_filename($brdarr["NAME"], $articles[1]["FILENAME"]);
-			if (bbs_normalboard($board)) {
-            			if (cache_header("public",filemtime($filename),300))
-                			return;
-                	}
-//			Header("Cache-control: nocache");
-			@$attachpos=$_GET["ap"];//pointer to the size after ATTACHMENT PAD
-			if ($attachpos!=0) {
-				$file = fopen($filename, "rb");
-				fseek($file,$attachpos);
-				$attachname='';
-				while (1) {
-					$char=fgetc($file);
-					if (ord($char)==0) break;
-					$attachname=$attachname . $char;
-				}
-				$str=fread($file,4);
-				$array=unpack('Nsize',$str);
-				$attachsize=$array["size"];
-				Header("Content-type: " . get_mimetype($attachname));
-				Header("Accept-Ranges: bytes");
-				Header("Accept-Length: " . $attachsize);
-				Header("Content-Disposition: filename=" . $attachname);
-				echo fread($file,$attachsize);
-				fclose($file);
+				if ($currentuser["userid"] != "guest")
+					bbs_brcaddread($brdarr["NAME"], $articles[0]["ID"]);
+				header("Location: " . "/bbscon.php?board=" . $brd_encode . "&id=" . $articles[0]["ID"]);
 				exit;
-			} else
+			}
+			elseif ($ptr == 'n' && $articles[2]["ID"] != 0)
 			{
-				// 检查上一篇或下一篇
-				@$ptr=$_GET["p"];
-				$brd_encode = urlencode($brdarr["NAME"]);
-				//$http_uri = "http" . ($_SERVER["HTTPS"] == "on" ? "s" : "") . "://";
-				if ($ptr == 'p' && $articles[0]["ID"] != 0)
-				{
-					if ($currentuser["userid"] != "guest")
-						bbs_brcaddread($brdarr["NAME"], $articles[0]["ID"]);
-					header("Location: " . "/bbscon.php?board=" . $brd_encode . "&id=" . $articles[0]["ID"]);
-					exit;
-				}
-				elseif ($ptr == 'n' && $articles[2]["ID"] != 0)
-				{
-					if ($currentuser["userid"] != "guest")
-						bbs_brcaddread($brdarr["NAME"], $articles[2]["ID"]);
-					header("Location: " ."/bbscon.php?board=" . $brd_encode . "&id=" . $articles[2]["ID"]);
-					exit;
-				}
-				html_init("gb2312");
+				if ($currentuser["userid"] != "guest")
+					bbs_brcaddread($brdarr["NAME"], $articles[2]["ID"]);
+				header("Location: " ."/bbscon.php?board=" . $brd_encode . "&id=" . $articles[2]["ID"]);
+				exit;
+			}
+			html_init("gb2312");
 ?>
 <body>
 <center><p><?php echo BBS_FULL_NAME; ?> -- 文章阅读 [讨论区: <?php echo $brdarr["NAME"]; ?>]</a></p></center>
@@ -200,16 +202,15 @@ function display_navigation_bar($brdarr, $articles, $num)
 <table width="610" border="0">
 <tr><td>
 <?php
-				bbs_printansifile($filename,1,$_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']);
+			bbs_printansifile($filename,1,$_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']);
 ?>
 </td></tr></table>
 <hr class="default" />
 <?php
-				display_navigation_bar($brdarr, $articles, $num);
-			}
+			display_navigation_bar($brdarr, $articles, $num);
 		}
-		if ($currentuser["userid"] != "guest")
-			bbs_brcaddread($brdarr["NAME"], $articles[1]["ID"]);
-		html_normal_quit();
 	}
+	if ($loginok==1&&($currentuser["userid"] != "guest"))
+		bbs_brcaddread($brdarr["NAME"], $articles[1]["ID"]);
+	html_normal_quit();
 ?>
