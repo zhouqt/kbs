@@ -696,7 +696,7 @@ function pc_counter($link)
 	if(!$pc || !is_array($pc))
 		return FALSE;
 	$visitcount = $_COOKIE["BLOGVISITCOUNT"];
-	$action = $currentuser["userid"]." 访问 ".$pc["USER"]."的Blog";
+	$action = $currentuser["userid"]." visit ".$pc["USER"]."'s Blog(www)";
 	if(!$visitcount)
 	{
 		pc_visit_counter($link,$pc["UID"]);//计数器加1
