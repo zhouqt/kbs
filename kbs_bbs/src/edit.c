@@ -1492,6 +1492,10 @@ void vedit_key(ch)
             redraw_everything = true;
             break;
         case Ctrl('R'):
+#ifdef CHINESE_CHARACTER
+			currentuser->userdefine = currentuser->userdefine ^ DEF_CHCHAR;
+        	break;
+#endif        	
         case KEY_LEFT:         /* backward character */
             if (currpnt > 0) {
                 currpnt--;
