@@ -600,6 +600,10 @@ void ConveyID()
 		}
 		currentuser->userlevel = 0;
 		currentuser->userlevel |= PERM_BASIC;
+
+		currentuser->numposts = 0;
+		currentuser->numlogins = 0;
+		currentuser->stay = 0;
 		//clear 用户信息
 		bzero(&curruserdata,sizeof(struct userdata));
 		strcpy(curruserdata.userid,currentuser->userid);
