@@ -112,8 +112,6 @@ initalarm()/*Haohmaru.98.11.3*/
         alarm(WAITTIME) ;
 }
 
-void abort_bbs();
-
 int Net_Sleep(times) /* KCN 1999.9.15 */
 int times;
 {
@@ -133,7 +131,7 @@ int times;
 
         while((sr=select(csock+1,&fd,NULL,&efd,&tv))>0) {
                 if (FD_ISSET(csock,&efd))
-                        abort_bbs();
+                        abort_bbs(0);
                 tv.tv_sec = times-(time(0)-old);
 	        tv.tv_usec = 0;
 	        FD_ZERO(&fd);
@@ -289,7 +287,7 @@ talk_request()
 
 
 void
-abort_bbs()
+abort_bbs(int signo)
 {
     time_t      stay;
 
@@ -306,7 +304,6 @@ abort_bbs()
     shutdown(0,2);
     close(0);
     exit( 0 );
-
 }
 
 int
@@ -453,7 +450,7 @@ system_abort()
     refresh();
     prints("谢谢光临, 记得常来喔 !\n");
     oflush();
-    abort_bbs();
+    abort_bbs(0);
     return;
 }
 

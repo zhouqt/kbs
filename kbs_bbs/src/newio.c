@@ -37,8 +37,6 @@
 
 extern int temp_numposts;
 
-void abort_bbs();
-
 char outbuffer[OBUFSIZE+1] ;
 char* outbuf=outbuffer+1;
 int obufsize = 0 ;
@@ -71,7 +69,7 @@ oflush()
 #else
             if (write(0,out,obufsize)<0)
 #endif
-                abort_bbs() ;
+                abort_bbs(0) ;
         }
         else
 #ifdef SSHBBS
@@ -79,7 +77,7 @@ oflush()
 #else
             if (write(0,outbuf,obufsize)<0)
 #endif
-                abort_bbs() ;
+                abort_bbs(0);
     }
     obufsize = 0 ;
 }
@@ -259,7 +257,7 @@ igetagain:
             if(hifd<=i_newfd)hifd=i_newfd+1;
         }
         sr = select(hifd,&readfds,NULL,NULL,&to);
-        if( sr<0 && errno!=EINTR ) abort_bbs();
+        if( sr<0 && errno!=EINTR ) abort_bbs(0);
 		if( sr==0 ){
             if(flushf) (*flushf)() ;
             refresh() ;
@@ -300,12 +298,12 @@ igetagain:
                 }
                 if( sr>=0 )break;
                 if(errno == EINTR) continue ;
-                else abort_bbs();
+                else abort_bbs(0);
 
             }
-            if ((sr == 0)&&(!i_top)) abort_bbs();
+            if ((sr == 0)&&(!i_top)) abort_bbs(0);
             if(sr == 0) return I_TIMEOUT ;
-            if(FD_ISSET(0,&xds)) abort_bbs();
+            if(FD_ISSET(0,&xds)) abort_bbs(0);
         }
         if(hasaddio&&(i_newfd && FD_ISSET(i_newfd,&readfds)))
             return I_OTHERDATA ;

@@ -373,7 +373,7 @@ char    *menu_name;
             break;
         case EOF:
             if( ! refscreen ) {
-                abort_bbs();
+                abort_bbs(0);
             }
             domenu_screen( pm, cmdprompt );
             modify_user_mode( MMENU );

@@ -426,7 +426,7 @@ int     newflag;
                     move(t_lines-1, 0);
                     clrtoeol();
                     getdata(t_lines-1, 0,"[1m[32mÇë°´ Enter ¶ÏÏß£¬È»ºóÖØÐÂµÇÂ¼ 8-) [m", restore,1,DOECHO,NULL,YEA);
-                    abort_bbs();
+                    abort_bbs(0);
                 }
                 saveline(t_lines-2, 1, NULL);
                 break;

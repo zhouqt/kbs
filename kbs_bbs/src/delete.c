@@ -170,7 +170,7 @@ suicide()
 
         /*kick_user(&uinfo);
         exit(0);*/
-        abort_bbs();
+        abort_bbs(0);
     }
 }
 

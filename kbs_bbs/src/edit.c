@@ -198,7 +198,7 @@ struct textline *
     p = (struct textline *) malloc(sizeof(*p)) ;
     if(p == NULL) {
         indigestion(13) ;
-        abort_bbs() ;
+        abort_bbs(0) ;
     }
     p->next = NULL ;
     p->prev = NULL ;
@@ -645,7 +645,7 @@ char *filename ;
             return ;
         }
         indigestion(4) ;
-        abort_bbs() ;
+        abort_bbs(0) ;
     }
     insert_from_fp( fp );
     fclose(fp);
@@ -810,7 +810,7 @@ int saveheader ;
     if (!aborted) {
         if((fp = fopen(filename,"w")) == NULL) {
             indigestion(5) ;
-            abort_bbs() ;
+            abort_bbs(0) ;
         }
 #ifndef VEDITOR
         if(saveheader)
@@ -1555,7 +1555,7 @@ int     ch;
                     p = p->next ;
                     if(p == NULL) {
                         indigestion(2) ;
-                        abort_bbs() ;
+                        abort_bbs(0) ;
                     }
                 }
                 redraw_everything = YEA ;
@@ -1576,7 +1576,7 @@ int     ch;
                         if(p == NULL)
                         {
                             indigestion(2) ;
-                            abort_bbs() ;
+                            abort_bbs(0) ;
                         }
                     }
                 }else if(currpnt==0)
@@ -1656,7 +1656,7 @@ int     ch;
                     p = p->next ;
                     if(p == NULL) {
                         indigestion(2) ;
-                        abort_bbs() ;
+                        abort_bbs(0) ;
                     }
                 }
                 redraw_everything = YEA ;

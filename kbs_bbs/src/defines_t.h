@@ -65,7 +65,7 @@ int usercomplete(char* prompt,char* data);
 /* newmain_single.c */
 int dosearchuser(char* userid);
 void showtitle(char* title,char* mid);
-void abort_bbs();
+void abort_bbs(int);
 int egetch();
 void update_endline();
 void set_numofsig();
