@@ -290,6 +290,15 @@ void poststat(int mytype, time_t now, struct tm *ptime)
     FILE *fp;
     int i;
 
+    for (i = 0; i < HASHSIZE; i++) {
+        bucket[i] = NULL;
+    }
+#ifdef BLESS_BOARD
+    for (i = 0; i < HASHSIZE; i++) {
+        blessbucket[i] = NULL;
+    }
+#endif
+
     if (mytype < 0) {
         /*
          * --------------------------------------- 
