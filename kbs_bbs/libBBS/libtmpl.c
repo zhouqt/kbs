@@ -6,7 +6,7 @@ int orig_tmpl_init(char * nboard, int mode, struct a_template ** pptemp){
 		 * mode 1: ∞ﬂ÷Òπ‹¿Ì
 		 ************/
 
-	int fd,i;
+	int fd;
 	char tmpldir[STRLEN];
 	struct s_template tmpl;
 	struct s_content * cont;
@@ -79,6 +79,7 @@ int orig_tmpl_free(struct a_template ** pptemp, int temp_num){
 	}
 	free( * pptemp );
 	* pptemp = NULL;
+    return 0;
 }
 
 int orig_tmpl_save(struct a_template * ptemp, int temp_num, char *board){

@@ -163,36 +163,6 @@ int send_webmsg(int destutmp, char *destid, int srcutmp, char *srcid,
     return -1;
 }
 */
-int receive_webmsg(int destutmp, char *destid, int *srcpid, char *srcid, 
-				   time_t *sndtime, char *msg)
-{
-	int now,count;
-    struct msghead head;
-    char buf[MAX_MSG_SIZE+100];
-
-    count = get_msgcount(1, destid);
-    now = get_unreadmsg(destid);
-
-	if( now < 0 || now >= count )
-		return -1;
-
-	load_msghead(1, destid, now, &head);
-	while(head.topid!=1 && now<count-1){
-    	now = get_unreadmsg(destid);
-		load_msghead(1, destid, now, &head);
-	};
-	if(load_msgtext(destid, &head, buf)) return -1;
-
-	*srcpid = head.frompid;
-	*sndtime = head.time;
-    strncpy(srcid, head.id, IDLEN+2);
-    srcid[IDLEN] = '\0';
-    strncpy(msg, buf, MSG_LEN);
-    msg[MSG_LEN] = '\0';
-
-	return 0;
-}
-
 int store_msgfile(char *uident, char *msgbuf)
 {
     char buf[STRLEN];
@@ -307,7 +277,7 @@ int save_smsmsg_nomysqlconnect(MYSQL *s, char *uident, struct msghead *head, cha
 int save_msgtext(char *uident, struct msghead * head,const char *msgbuf)
 {
     char fname[STRLEN], fname2[STRLEN];
-    int fd, fd2, i, j, count, size;
+    int fd, fd2, i, count, size;
     struct flock ldata;
     struct stat buf;
 
@@ -391,7 +361,7 @@ int save_msgtext(char *uident, struct msghead * head,const char *msgbuf)
 int get_msgcount(int id, char *uident)
 {
     char fname[STRLEN], idname[10];
-    int i, j, count;
+    int count;
     struct stat buf;
 
     if(id) sprintf(idname, "msgindex%d", id+1);
@@ -422,7 +392,7 @@ int clear_msg(char *uident)
 int get_unreadmsg(char *uident)
 {
     char fname[STRLEN];
-    int fd, i, j, count, ret;
+    int fd, i, count, ret;
     struct flock ldata;
     struct stat buf;
 
@@ -463,7 +433,7 @@ int get_unreadmsg(char *uident)
 int get_unreadcount(char *uident)
 {
     char fname[STRLEN];
-    int fd, i, j, count, ret;
+    int fd, count, ret;
     struct flock ldata;
     struct stat buf;
 
@@ -500,7 +470,7 @@ int get_unreadcount(char *uident)
 int load_msghead(int id, char *uident, int index, struct msghead *head)
 {
     char fname[STRLEN], idname[10];
-    int fd, i, j, count, now, next;
+    int fd, count;
     struct flock ldata;
     struct stat buf;
 
@@ -541,7 +511,7 @@ int load_msghead(int id, char *uident, int index, struct msghead *head)
 int load_msgtext(char *uident, struct msghead *head, char *msgbuf)
 {
     char fname2[STRLEN];
-    int fd2, i, j;
+    int fd2, i;
 
     sethomefile(fname2, uident, "msgcontent");
 
@@ -564,12 +534,8 @@ int load_msgtext(char *uident, struct msghead *head, char *msgbuf)
 int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
 {
     char uident[STRLEN];
-    FILE *fp;
-    time_t now;
     struct user_info *uin;
-    char buf[80], *timestr;
     struct msghead head, head2;
-    int msg_count = 0;
 
     *msgerr = 0;
     uin = uentp;
@@ -655,7 +621,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
 
 int translate_msg(char* src, struct msghead *head, char* dest)
 {
-    char id[14], *time, attstr[STRLEN];
+    char *time, attstr[STRLEN];
     int i,j=0,len,pos,ret=0;
     time = ctime(&head->time);
     dest[0] = 0;
@@ -709,7 +675,8 @@ int translate_msg(char* src, struct msghead *head, char* dest)
     for(i=0;i<strlen(src);i++){
         if(j) j=0;
         else if(src[i]<0) j=1;
-        if(j==0&&pos>=80||j==1&&pos>=79||src[i]=='\n'||src[i]=='\r') {
+        if(((j==0)&&(pos>=80))
+           ||((j==1)&&(pos>=79))||(src[i]=='\n')||(src[i]=='\r')) {
             dest[len++]='\033';
             dest[len++]='[';
             dest[len++]='K';
@@ -1686,7 +1653,7 @@ int conv_csv_to_al(char *fname)
 	struct csv_list *cl;
 	struct csv_list *nowcl;
 	struct addresslist al;
-	int i,j,first,csv_hash[CSV_LIST_MAX_KEYNUM];
+	int i,first,csv_hash[CSV_LIST_MAX_KEYNUM];
 	int ret=0;
 
     if ((fp = fopen(fname, "r+b")) == NULL) {
@@ -1822,3 +1789,35 @@ int conv_csv_to_al(char *fname)
 }
 	
 #endif
+
+
+int receive_webmsg(int destutmp, char *destid, int *srcpid, char *srcid, 
+				   time_t *sndtime, char *msg)
+{
+	int now,count;
+    struct msghead head;
+    char buf[MAX_MSG_SIZE+100];
+
+    count = get_msgcount(1, destid);
+    now = get_unreadmsg(destid);
+
+	if( now < 0 || now >= count )
+		return -1;
+
+	load_msghead(1, destid, now, &head);
+	while(head.topid!=1 && now<count-1){
+    	now = get_unreadmsg(destid);
+		load_msghead(1, destid, now, &head);
+	};
+	if(load_msgtext(destid, &head, buf)) return -1;
+
+	*srcpid = head.frompid;
+	*sndtime = head.time;
+    strncpy(srcid, head.id, IDLEN+2);
+    srcid[IDLEN] = '\0';
+    strncpy(msg, buf, MSG_LEN);
+    msg[MSG_LEN] = '\0';
+
+	return 0;
+}
+

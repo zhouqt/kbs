@@ -170,7 +170,6 @@ static int findboard(struct boardheader* bh,void* data)
 int ann_get_board(char *path, char *board, size_t len)
 {
     char *ptr;
-    char *ptr2;
     struct _tmp_findboard arg;
 
     ptr = path;
@@ -346,8 +345,10 @@ int a_loadnames(MENU* pm)             /* ×°Èë .Names */
             else
                 strncpy(litem.fname, buf + 5, sizeof(litem.fname));
             if (strstr(litem.fname,"..")) continue;
-            if ((HAS_PERM(currentuser, PERM_SYSOP)||(!strstr(litem.title, "(BM: BMS)") || HAS_PERM(currentuser, PERM_BOARDS)) &&
-                (!strstr(litem.title, "(BM: SYSOPS)") || HAS_PERM(currentuser, PERM_SYSOP)) && (!strstr(litem.title, "(BM: ZIXIAs)") || HAS_PERM(currentuser, PERM_SECANC))) ){
+            if (HAS_PERM(currentuser, PERM_SYSOP)
+                ||((!strstr(litem.title, "(BM: BMS)") || HAS_PERM(currentuser, PERM_BOARDS))
+                 &&(!strstr(litem.title, "(BM: SYSOPS)") || HAS_PERM(currentuser, PERM_SYSOP)) 
+                 &&(!strstr(litem.title, "(BM: ZIXIAs)") || HAS_PERM(currentuser, PERM_SECANC)))){
                 if (strstr(litem.fname, "!@#$%")) {     /*È¡ host & port */
                     char *ptr1, *ptr2, gtmp[STRLEN];
 

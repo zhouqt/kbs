@@ -142,6 +142,7 @@ int check_query_mail(char qry_mail_dir[STRLEN])
 int update_user_usedspace(int delta, struct userec *user)
 {
     user->usedspace += delta;
+    return 0;
 }
 
 int mail_file_sent(char *fromid, char *tmpfile, char *userid, char *title, int unlink)

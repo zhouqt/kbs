@@ -992,6 +992,7 @@ int do_after_login(struct userec* user,int unum,int mode)
   else //www guest,使用负数来和telnet guest区分
     init_cachedata(user->userid,-unum);
 #endif
+  return 0;
 }
 
 int do_after_logout(struct userec* user,struct user_info* userinfo,int unum,int mode)
@@ -1022,6 +1023,7 @@ int do_after_logout(struct userec* user,struct user_info* userinfo,int unum,int 
     }
     if (userinfo&&userinfo->currentboard)
         board_setcurrentuser(userinfo->currentboard,-1);
+    return 0;
 }
 
 #ifdef HAVE_CUSTOM_USER_TITLE

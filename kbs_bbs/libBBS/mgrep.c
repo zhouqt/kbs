@@ -51,11 +51,12 @@ struct pattern_image {
 	struct pat_list hashtable[max_num];
 };
 
-int m_short(unsigned char* text,int start,int end,struct pattern_image* patt_img);
+static void m_short(unsigned char* text,int start,int end,struct pattern_image* patt_img);
+static void f_prep(int pat_index, unsigned char *Pattern, struct pattern_image* patt_img);
+static void monkey1(register unsigned char *text, int start,int  end, struct pattern_image* patt_img);
 
 int releasepf(struct pattern_image* patt_img)
 {
-    int i;
     /*
     for (i = 0; i < MAXHASH; i++) {
         struct pat_list* curr;
@@ -69,13 +70,14 @@ int releasepf(struct pattern_image* patt_img)
     }
     */
     free((void*)patt_img);
+    return 0;
 }
 
 int prepf(int fp,struct pattern_image** ppatt_img,size_t* patt_image_len)
 {
-    int length = 0, i, p = 1, pdx = 0, num_pat;
+    int length = 0, i, p = 1, num_pat;
     struct pattern_image *patt_img;
-    unsigned char *pat_ptr , temp[10];
+    unsigned char *pat_ptr;
     unsigned Mask = 15;
     int num_read;
 
@@ -93,7 +95,6 @@ int prepf(int fp,struct pattern_image** ppatt_img,size_t* patt_image_len)
 #ifdef BBSMAIN
             prints("maximum pattern file size is %d\n", MAXPATFILE);
 #endif
-            bbslog("3error", "maximum pattern file size is %d\n", MAXPATFILE);
             return -1;
         }
     }
@@ -119,7 +120,6 @@ int prepf(int fp,struct pattern_image** ppatt_img,size_t* patt_image_len)
 #ifdef BBSMAIN
         prints("maximum number of patterns is %d\n", max_num);
 #endif
-        bbslog("3error", "maximum number of patterns is %d\n", max_num);
         return -1;
     }
     for (i = 1; i < 20; i++)
@@ -149,7 +149,6 @@ int prepf(int fp,struct pattern_image** ppatt_img,size_t* patt_image_len)
 #ifdef BBSMAIN
         prints("the pattern file is empty\n");
 #endif
-        bbslog("3error", "the pattern file is empty\n");
         return -1;
     }
     if (length > 400 && patt_img->p_size > 2)
@@ -163,6 +162,7 @@ int prepf(int fp,struct pattern_image** ppatt_img,size_t* patt_image_len)
     }
     for (i = 1; i <= num_pat; i++)
         f_prep(i, patt_img->pat_spool+patt_img->patt[i],patt_img);
+    return 0;
 }
 
 int mgrep_str(char *text, int num,struct pattern_image* patt_img)
@@ -174,7 +174,7 @@ int mgrep_str(char *text, int num,struct pattern_image* patt_img)
     return num_of_matched;
 }                               /* end mgrep */
 
-static countline(text, len)
+static void countline(text, len)
 unsigned char *text;
 int len;
 {
@@ -185,16 +185,17 @@ int len;
             total_line++;
 }
 
-mgrep(fd,patt_img)
+int mgrep(fd,patt_img)
 int fd;
 struct pattern_image *patt_img;
 {
     register char r_newline = '\n';
     unsigned char text[2 * BLOCKSIZE + MAXLINE];
-    register int buf_end, num_read, i = 0, j, start, end, residue = 0;
+    register int buf_end, num_read, start, end, residue = 0;
 
     text[MAXLINE - 1] = '\n';   /* initial case */
     start = MAXLINE - 1;
+    end = MAXLINE - 1;
 
     while ((num_read = read(fd, text + MAXLINE, BLOCKSIZE)) > 0) {
         if (INVERSE && ONLYCOUNT)
@@ -225,14 +226,11 @@ struct pattern_image *patt_img;
         else
             monkey1(text, start, end,patt_img);
     }
-    return;
+    return 0;
 }                               /* end mgrep */
 
 
-monkey1(text, start, end,patt_img)
-int start, end;
-register unsigned char *text;
-struct pattern_image* patt_img;
+static void monkey1(register unsigned char *text, int start,int  end, struct pattern_image* patt_img)
 {
     register unsigned char *textend;
     register unsigned hash, i;
@@ -334,12 +332,11 @@ struct pattern_image* patt_img;
             putchar(*lastout++);
 }
 
-int m_short(unsigned char* text,int start,int end,struct pattern_image* patt_img)
+static void m_short(unsigned char* text,int start,int end,struct pattern_image* patt_img)
 {
     register unsigned char *textend;
-    register unsigned i;
     register int j;
-    register struct pat_list *p, *q;
+    register struct pat_list *p;
     register int pat_index;
     int MATCHED = 0;
     int OUT = 0;
@@ -363,10 +360,10 @@ int m_short(unsigned char* text,int start,int end,struct pattern_image* patt_img
                 j++;
             if (patt_img->pat_len[pat_index] <= j) {
                 if (text >= textend)
-                    return 0;
+                    return;
                 num_of_matched++;
                 if (FILENAMEONLY || SILENT)
-                    return 0;
+                    return;
                 if (ONLYCOUNT) {
                     while (*text != '\n')
                         text++;
@@ -405,12 +402,9 @@ int m_short(unsigned char* text,int start,int end,struct pattern_image* patt_img
             putchar(*lastout++);
 }
 
-f_prep(pat_index, Pattern,patt_img)
-unsigned char *Pattern;
-int pat_index;
-struct pattern_image* patt_img;
+static void f_prep(int pat_index, unsigned char *Pattern, struct pattern_image* patt_img)
 {
-    int i, j, m;
+    int i, m;
     register unsigned hash, Mask = 15;
 	struct pat_list *pt, *qt;
 

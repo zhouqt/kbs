@@ -104,6 +104,9 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     void output(const char *s, int len);
 
 /* defined in stuff.c */
+    int my_unlink(char *fname);/*封装unlink,用于定义备份的文件*/
+    int gettmpfilename(char *retchar, char *fmt, ...); /*获得临时文件名*/
+    int setmailcheck(char *userid); /*设置mail检查标志*/
     void save_maxuser();
     void detach_publicshm();
     int multilogin_user(struct userec *user, int usernum, int mode);
@@ -194,6 +197,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     void set_proc_title(char *argv0, char *title);
 
 /* define in bcache.c */
+    void board_setcurrentuser(int idx,int num); /*设置在线用户计数*/
     int getbnum(const char *bname);
     void resolve_boards();
     int get_boardcount();
@@ -359,7 +363,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
 
 /*写入.post文件供分析*/
     int write_posts(char *id, char *board, unsigned int groupid);
-    void cancelpost(char *board, char *userid, struct fileheader *fh, int owned, int autoappend);
+    void cancelpost(const char *board, const char *userid, struct fileheader *fh, int owned, int autoappend);
     int outgo_post(struct fileheader *fh, char *board, char *title);
     int after_post(struct userec *user, struct fileheader *fh, char *boardname, struct fileheader *re, int poststat);
     int post_file(struct userec *user, char *fromboard, char *filename, char *nboard, char *posttitle, int Anony, int mode);
@@ -493,6 +497,7 @@ int pc_read_comment();
 
 #endif
 /* site.c */
+    void set_posttime2(struct fileheader *dest, struct fileheader *src);
     char *ModeType(int mode);
     char *email_domain();
     int get_shmkey(char *s);

@@ -2,7 +2,7 @@
 #include <utime.h>
 #define DEBUG
 
-void cancelpost(char *board, char *userid, struct fileheader *fh, int owned, int autoappend);
+void cancelpost(const char *board,const char *userid,struct fileheader *fh, int owned, int autoappend);
 int outgo_post(struct fileheader *fh, char *board, char *title)
 {
     FILE *foo;
@@ -213,7 +213,6 @@ int prepare_write_dir(struct write_dir_arg * filearg,struct fileheader* fileinfo
 
 int do_del_post(struct userec *user, struct write_dir_arg*dirarg,struct fileheader *fileinfo, char *board, int currmode, int decpost)
 {
-    char *t;
     int owned;
     struct fileheader fh;
 
@@ -279,11 +278,7 @@ int do_del_post(struct userec *user, struct write_dir_arg*dirarg,struct filehead
    Unlike the fb code which moves the file to the deleted
    board.
 */
-void cancelpost(board, userid, fh, owned, autoappend)
-char *board, *userid;
-struct fileheader *fh;
-int owned;
-int autoappend;
+void cancelpost(const char *board,const char *userid,struct fileheader *fh, int owned, int autoappend)
 {
     struct fileheader postfile;
     char oldpath[50];
@@ -439,7 +434,6 @@ void addsignature(FILE * fp, struct userec *user, int sig)
 
 int write_posts(char *id, char *board, unsigned int groupid)
 {
-    char *ptr;
     time_t now;
     struct posttop postlog, pl;
 	char xpostfile[PATHLEN];
@@ -586,7 +580,6 @@ void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail
     if (mode == 0 /*转贴 */ ) {
         int normal_file;
         int header_count;
-        int asize;
 
         normal_file = 1;
 
@@ -646,7 +639,6 @@ int post_commend(struct userec *user, char *fromboard, struct fileheader *filein
     char oldfilepath[STRLEN];
 	char buf[256];
     int aborted;
-	int oldmode;
     int fd, err = 0, nowid = 0;
 
     memset(&postfile, 0, sizeof(postfile));
@@ -726,7 +718,6 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
     char filepath[STRLEN];
     char buf4[STRLEN], whopost[IDLEN], save_title[STRLEN];
     int aborted, local_article;
-	int oldmode;
 
     if (!mode && !haspostperm(user, toboard)) {
 #ifdef BBSMAIN
@@ -1238,7 +1229,6 @@ get_dir_gthreads(int fd, fileheader_t * base, int ent, int total, bool match,
 {
 	struct dir_gthread_set *ts = (struct dir_gthread_set *) arg;
 	int i;
-	int off = 1;
 	int count = 0;
 	int start = ent;
 	int end = total;
@@ -1502,7 +1492,7 @@ int skip_attach_fgets(char* s,int size,FILE* stream)
         matchpos++;
         if (matchpos==ATTACHMENT_SIZE) {
             int size, d;
-            while(ch=fgetc(stream));
+            while((ch=fgetc(stream))!=0);
             fread(&d, 1, 4, stream);
             size = htonl(d);
             fseek(stream,size,SEEK_CUR);
@@ -1538,7 +1528,8 @@ int attach_fgets(char* s,int size,FILE* stream)
         matchpos++;
         if (matchpos==ATTACHMENT_SIZE) {
             int size, d, count=8+4+1;
-            while(ch=fgetc(stream))count++;
+            while((ch=fgetc(stream))!=0)
+                count++;
             fread(&d, 1, 4, stream);
             size = htonl(d);
             fseek(stream,-count,SEEK_CUR);
@@ -1564,9 +1555,9 @@ int attach_fgets(char* s,int size,FILE* stream)
 int put_attach(FILE* in, FILE* out, int size)
 {
     char buf[1024*16];
-    int i,o;
+    int o;
     if(size<=0) return -1;
-    while(o=fread(buf, 1, 1024*16, in)) {
+    while((o=fread(buf, 1, 1024*16, in))!=0) {
         size-=o;
         fwrite(buf, 1, o, out);
     }
@@ -1611,7 +1602,6 @@ int get_effsize(char * ffn)
 
 long calc_effsize(char *fname)
 {
-    int ch;
     FILE *fp;
     int matched;
     char* ptr;
@@ -1681,7 +1671,6 @@ long calc_effsize(char *fname)
                     matched++;
                     if (matched==ATTACHMENT_SIZE) {
                         int d, size;
-						char *sstart = data;
                         data++; not++;
                         while(*data){
 							data++;
@@ -1871,7 +1860,6 @@ int delete_range(struct write_dir_arg* dirarg,int id1,int id2,int del_mode,int c
             }
             else if (curmode == DIR_MODE_MAIL) {
                 if (!strstr(dirarg->filename, ".DELETED")) { //add to 垃圾箱,todo:检查邮件标记
-                    int j;
                     memcpy(&delfhdr[delcount], &savefhdr[i], sizeof(struct fileheader));
                     delcount++;
                     if (delcount >= DEL_RANGE_BUF) {
@@ -1998,7 +1986,6 @@ int dele_digest(char *dname, const char *boardname)
     char digest_name[STRLEN];
     char new_dir[STRLEN];
     char buf[STRLEN];
-    char *ptr;
     struct fileheader fh;
     int pos;
 
@@ -2193,7 +2180,7 @@ int change_post_flag(struct write_dir_arg* dirarg,int currmode, struct boardhead
                 bmlog(currentuser->userid, board->filename, 3, 1);
                 ret=add_digest(originFh,board->filename);
             } else { /*其实这时候只需要改一下标志就够了*/
-                originFh->accessed[0] != FILE_DIGEST;
+                originFh->accessed[0] |= FILE_DIGEST;
             }
         } else {/* 如果已经是文摘的话，则从文摘中删除该post */
             originFh->accessed[0] = (originFh->accessed[0] & ~FILE_DIGEST);

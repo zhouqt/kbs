@@ -582,7 +582,6 @@ void clear_utmp2(int uent)
 {
     int hashkey, find;
     struct user_info zeroinfo;
-    char buf[MAXPATH];
     struct userec* user;
 
 #ifdef BBSMAIN

@@ -57,7 +57,7 @@ char *brd;
 void load_favboard(int dohelp)
 {
     char fname[STRLEN];
-    int fd, size, idx, i, j;
+    int fd, idx, i, j;
 
     sethomefile(fname, currentuser->userid, "favboard");
     favnow = -1;
@@ -204,6 +204,7 @@ int changeFavBoardDir(int i, char *s)
     free(favbrd_list[i].title);
     favbrd_list[i].title = (char *) malloc(strlen(s) + 1);
     strcpy(favbrd_list[i].title, s);
+    return 0;
 }
 
 int getfavnum()
@@ -218,8 +219,6 @@ int getfavnum()
 
 void addFavBoard(int i)
 {
-    int llen;
-
     if (favbrd_list_t < FAVBOARDNUM) {
         favbrd_list[favbrd_list_t].flag = i;
         favbrd_list[favbrd_list_t].father = favnow;
@@ -229,7 +228,7 @@ void addFavBoard(int i)
 
 void addFavBoardDir(int i, char *s)
 {
-    int llen, j;
+    int j;
 
     if (favbrd_list_t < FAVBOARDNUM && strlen(s) <= 20) {
         for (j = 0; j < favbrd_list_t; j++)
@@ -304,15 +303,14 @@ int MoveFavBoard(int p, int q, int fav_father)
             }
         }
 	if (i==favbrd_list_t)
-	    return;
-        q = i;
+	    return fav_father;
     }
     if (p == q)
-        return;
+	    return fav_father;
     if (p < 0 || p >= favbrd_list_t)
-        return;
+	    return fav_father;
     if (q < 0 || q >= favbrd_list_t)
-        return;
+	    return fav_father;
     for (i = 0; i < favbrd_list_t; i++)
         if (favbrd_list[i].father == p)
             favbrd_list[i].father = q;
@@ -484,7 +482,6 @@ static int brc_getcache(const char *userid)
 void brc_addreaddirectly(char *userid, int bnum, unsigned int postid)
 {
     char dirfile[MAXPATH];
-    int fdr;
     int i, n;
     int list[BRC_MAXNUM];
     gzFile fd;
@@ -563,7 +560,6 @@ int brc_initial(const char *userid, const char *boardname)
     int entry;
     int i;
     char dirfile[MAXPATH];
-    int brc_size;
     int bid;
     gzFile brcfile;
     const struct boardheader *bptr;
@@ -1104,7 +1100,7 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
 
 int load_boards(struct newpostdata *nbrd,char *boardprefix,int group,int pos,int len,bool sort,bool yank_flag,const char** input_namelist)
 {
-    int n, k;
+    int n;
     const struct boardheader *bptr;
     int brdnum;
     struct newpostdata *ptr;
@@ -1148,7 +1144,6 @@ int load_boards(struct newpostdata *nbrd,char *boardprefix,int group,int pos,int
             brdnum++;
             /*¶¼ÒªÅÅĞò*/
             for (i=0;i<curcount;i++) {
-                    int ret;
 		    int type;
 		    type = 0;
 

@@ -466,7 +466,6 @@ void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int 
 
 void remove_shm(char *shmstr, int defaultkey, int shmsize)
 {
-    void *shmptr;
     int shmkey, shmid;
 
     if (shmstr)
@@ -501,13 +500,10 @@ int exp;
         return "长老级";
     if (exp > 3000 + expbase && exp <= 5000 + expbase)
         return "本站元老";
-    if (exp > 5000 + expbase)
-        return "开国大老";
-
+    return "开国大老";
 }
 
-char *cperf(perf)
-int perf;
+char *cperf(int perf)
 {
 
     if (perf == -9999)
@@ -526,9 +522,7 @@ int perf;
         return "太优秀了";
     if (perf > 140 && perf <= 200)
         return "本站支柱";
-    if (perf > 200)
-        return "神～～";
-
+    return "神～～";
 }
 
 int countexp(struct userec *udata)
@@ -1969,8 +1963,6 @@ int gen_title(const char *boardname )
         ptr1 = (struct fileheader *) ptr;
         for (i = 0; i < total; i++, ptr1++)
             if (index[i] != -1) {
-                int last;
-
                 write(fd, ptr1, size);
                 count++;
                 j = next[i];
