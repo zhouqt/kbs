@@ -4,9 +4,10 @@
 #define MY_CSS "/bbsold.css"
 #include "bbslib.h"
 
-void printdiv(int n, char *str)
+void printdiv(int n, char *str, char *imgurl)
 {
-	printf("<div id=\"div%da\" class=\"r\"><img id=\"img%d\" src=\"/folder.gif\">", n, n);
+	printf("<div id=\"div%da\" class=\"r\"><img id=\"img%d\" src=\"%s\">",
+		   n, n, imgurl);
 	printf("<A href=\"javascript:changemn('%d');\">%s</A></div>\n", n, str);
 	printf("<div id=\"div%d\" class=\"s\">\n", n);
 }
@@ -43,15 +44,15 @@ NAME_BBS_CHINESE "用户登录<br>\n"
 	printf("</td></tr><tr><td>\n");
 	printf("<hr style=\"color:2020f0; height=1px\" width=\"84px\" align=\"center\">\n");
 	printf("</td></tr></table>");
-  	printf("<img src=\"/link0.gif\"><a href=\"bbsall\" target=\"f3\">讨论区首页</a><br>\n");
-        printf("<img src=\"/link0.gif\"><a target=\"f3\" href=\"bbs0an\">精华公布栏</a><br>\n");
-   	printf("<img src=\"/link0.gif\"><a target=\"f3\" href=\"bbstop10\">今日十大</a><br>\n");
-	printf("<img src=\"/link0.gif\"><a target=\"f3\" href=\"bbstopb10\">热门讨论区</a><br>\n");
+  	printf("<img src=\"/images/home.gif\"><a href=\"bbsall\" target=\"f3\">讨论区首页</a><br>\n");
+        printf("<img src=\"/images/link0.gif\"><a target=\"f3\" href=\"bbs0an\">精华公布栏</a><br>\n");
+   	printf("<img src=\"/images/link0.gif\"><a target=\"f3\" href=\"bbstop10\">今日十大</a><br>\n");
+	printf("<img src=\"/images/link0.gif\"><a target=\"f3\" href=\"bbstopb10\">热门讨论区</a><br>\n");
 	if(loginok)
 	{
 		int i, mybrdnum=0;
 		const struct boardheader  *bptr;
-		printdiv(1,"个人定制区");
+		printdiv(1,"个人定制区","/images/favorite.gif");
 		load_favboard(0);
 		mybrdnum = get_favboard_count();
  		for(i=0; i<mybrdnum; i++)
@@ -59,74 +60,75 @@ NAME_BBS_CHINESE "用户登录<br>\n"
 			bptr = getboard(get_favboard(i+1)+1);
 			if (bptr == NULL)
 				continue;
-     		printf("<img src=\"/link.gif\">"
+     		printf("<img src=\"/images/link.gif\">"
 					" <a target=\"f3\" href=\"bbsdoc?board=%s\">%s</a><br>\n",
 					bptr->filename, bptr->filename);
 		}
-		printf("<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsmybrd\">"
+		printf("<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsmybrd\">"
 				"预定管理</a><br>\n");
 		printf("</div>\n");
 	}
-	printdiv(2,"分类讨论区");
+	printdiv(2,"分类讨论区","/images/closedfold.gif");
 	for (i = 0; i < SECNUM; i++)
-		printf("<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsboa?%d\">%s</a><br>\n",
+		printf("<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsboa?group=%d\">%s</a><br>\n",
 				i, secname[i][0]);
 	printf("</div>\n");
 
-	printdiv(3,"谈天说地区");
+	printdiv(3,"谈天说地区","/images/closedfold.gif");
   	if(loginok) {
-		printf("<img src=\"/link.gif\"> <a href=\"bbsfriend\" target=\"f3\">在线好友</a><br>\n");
+		printf("<img src=\"/images/friend.gif\"> <a href=\"bbsfriend\" target=\"f3\">在线好友</a><br>\n");
 	}
-  	printf("<img src=\"/link.gif\"> <a href=\"bbsusr\" target=\"f3\">环顾四方</a><br>\n");
-  	printf("<img src=\"/link.gif\"> <a href=\"bbsqry\" target=\"f3\">查询网友</a><br>\n");
+  	printf("<img src=\"/images/link.gif\"> <a href=\"bbsusr\" target=\"f3\">环顾四方</a><br>\n");
+  	printf("<img src=\"/images/link.gif\"> <a href=\"bbsqry\" target=\"f3\">查询网友</a><br>\n");
         if(loginok&&currentuser->userlevel & PERM_PAGE) {
-                printf("<img src=\"/link.gif\"> <a href=\"bbssendmsg\" target=\"f3\">发送讯息</a><br>\n");
-                printf("<img src=\"/link.gif\"> <a href=\"bbsmsg\" target=\"f3\">查看所有讯息</a><br>\n");
+                printf("<img src=\"/images/link.gif\"> <a href=\"bbssendmsg\" target=\"f3\">发送讯息</a><br>\n");
+                printf("<img src=\"/images/link.gif\"> <a href=\"bbsmsg\" target=\"f3\">查看所有讯息</a><br>\n");
 	}
 	printf("</div>\n");
 	ptr="";
 	if(loginok&&currentuser->userlevel & PERM_CLOAK)
-		ptr="<img src=\"/link.gif\"> <a target=\"f3\" onclick=\"return confirm('确实切换隐身状态吗?')\" href=\"bbscloak\">切换隐身</a><br>\n";
+		ptr="<img src=\"/images/link.gif\"> <a target=\"f3\" onclick=\"return confirm('确实切换隐身状态吗?')\" href=\"bbscloak\">切换隐身</a><br>\n";
 	if(loginok)
 	{
-		printdiv(4,"个人工具箱");
+		printdiv(4,"个人工具箱","/images/cntlpnl.gif");
 			printf(
-"			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsinfo\">个人资料</a><br>\n"
-"			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsplan\">改说明档<a><br>\n"
-"			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbssig\">改签名档<a><br>\n"
-"			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbspwd\">修改密码</a><br>\n"
-"			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsparm\">修改个人参数</a><br>\n"
-"			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsmywww\">WWW个人定制</a><br>\n"
-"			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsnick\">临时改昵称</a><br>\n"
-/*"		<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsstat\"> 排名统计</a><br>"*/
-"			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsfall\">设定好友</a><br>\n"
+"			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsinfo\">个人资料</a><br>\n"
+"			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsplan\">改说明档<a><br>\n"
+"			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbssig\">改签名档<a><br>\n"
+"			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbspwd\">修改密码</a><br>\n"
+"			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsparm\">修改个人参数</a><br>\n"
+"			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsmywww\">WWW个人定制</a><br>\n"
+"			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsnick\">临时改昵称</a><br>\n"
+/*"		<img src=\"/images/link.gif\"><a target=\"f3\" href=\"bbsstat\"> 排名统计</a><br>"*/
+"			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsfall\">设定好友</a><br>\n"
 "			%s</div>",ptr);
-		printdiv(5,"处理信件区");
-		printf("			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsnewmail\">阅览新邮件</a><br>\n"
-"			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsmail\">所有邮件</a><br>\n"
-"			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbspstmail\">发送邮件</a><br>\n"
+		printdiv(5,"处理信件区","/images/mailfold.gif");
+		printf("			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsnewmail\">阅览新邮件</a><br>\n"
+"			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsmail\">所有邮件</a><br>\n"
+"			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbspstmail\">发送邮件</a><br>\n"
 "			</div>");
 	}
 
-	printdiv(6,"特别服务区");
-	printf("<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsalluser\">所有使用者</a><br>\n");
-	/*printf("<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsadl\">下载精华区</a><br>\n");*/
+	printdiv(6,"特别服务区","/images/closedfold.gif");
+	printf("<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsalluser\">所有使用者</a><br>\n");
+	/*printf("<img src=\"/images/link.gif\"><a target=\"f3\" href=\"bbsadl\">下载精华区</a><br>\n");*/
 	printf("</div>\n");
 	printf("<div class=\"r\">");
-  	printf("<img src=\"/link0.gif\"><a href=\"bbsfind\" target=\"f3\">文章查询</a><br>\n");
-	printf("<img src=\"/link0.gif\"><a href=\"bbssel\" target=\"f3\">查找讨论区</a><br>\n");
-	printf("<img src=\"/telnet.gif\"><a href=\"telnet:%s\">Telnet登录</a><br>\n", NAME_BBS_ENGLISH);
+  	printf("<img src=\"/images/link0.gif\"><a href=\"bbsfind\" target=\"f3\">文章查询</a><br>\n");
+	printf("<img src=\"/images/find.gif\"><a href=\"bbssel\" target=\"f3\">查找讨论区</a><br>\n");
+	printf("<img src=\"/images/telnet.gif\"><a href=\"telnet:%s\">Telnet登录</a><br>\n", NAME_BBS_ENGLISH);
 	if(!loginok) 
-		printf("<img src=\"/link0.gif\"><a href=\"javascript:void open('bbsreg', '', 'width=620,height=550')\">新用户注册</a><br>\n");
+		printf("<img src=\"/images/link0.gif\"><a href=\"javascript:void open('bbsreg', '', 'width=620,height=550')\">新用户注册</a><br>\n");
    	if(loginok) {
 		if(HAS_PERM(currentuser,PERM_LOGINOK) && !HAS_PERM(currentuser,PERM_POST))
-			printf("<script>alert('您被封禁了全站发表文章的权限, 请参看Announce版公告, 期满后在sysop版申请解封. 如有异议, 可在appeal版提出申诉.')</script>\n");
+			printf("<script>alert('您被封禁了全站发表文章的权限, 请参看Announce版公告, 期满后在sysop版申请解封. 如有异议, 可在Complain版提出申诉.')</script>\n");
 		if(count_new_mails()>0) 
 			printf("<script>alert('您有新信件!')</script>\n");
 	}
 	if(loginok && !(currentuser->userlevel & PERM_LOGINOK) && !has_fill_form()) 
 		printf("<a target=\"f3\" href=\"bbsform\">填写注册单</a><br>\n");
-	if(loginok) printf("<br><a href=\"javascript:openchat()\">[聊天广场<font color=\"red\">测试中</font>]</a>");
+	if(loginok)
+		printf("<br><a href=\"javascript:openchat()\">["CHAT_SERVER"<font color=\"red\">测试中</font>]</a>");
 	printf("</div><script>if(isNS4) arrange();if(isOP)alarrangeO();</script>");
   	printf("</body>");
 }
