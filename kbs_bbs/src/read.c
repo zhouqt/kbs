@@ -301,7 +301,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
         h = &pnt[(locmem->crs_line - locmem->top_line) * ssize];
         sprintf(genbuf, "%s/%s", buf, h->filename);
         strcpy(lastfile, genbuf);
-        draw_content(genbuf);
+        draw_content(genbuf,h);
     }
     PUTCURS(locmem);
     lbc = 0;
@@ -460,7 +460,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
                     *t = '\0';
                 h = &pnt[(locmem->crs_line - locmem->top_line) * ssize];
                 sprintf(genbuf, "%s/%s", buf, h->filename);
-                draw_content(genbuf);
+                draw_content(genbuf,h);
                 strcpy(lastfile, genbuf);
             }
             PUTCURS(locmem);
@@ -473,10 +473,10 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
                 strcpy(buf, currdirect);
                 if ((t = strrchr(buf, '/')) != NULL)
                     *t = '\0';
-                h = &pnt[(locmem->crs_line - locmem->top_line) * ssize];
+                h = (struct fileheader*)&pnt[(locmem->crs_line - locmem->top_line) * ssize];
                 sprintf(genbuf, "%s/%s", buf, h->filename);
                 if (strcmp(genbuf, lastfile))
-                    draw_content(genbuf);
+                    draw_content(genbuf,h);
                 strcpy(lastfile, genbuf);
                 PUTCURS(locmem);
             }

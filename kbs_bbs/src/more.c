@@ -932,7 +932,7 @@ int ansimore_withzmodem(char *filename, int promptend, char *title)
     return ch;
 }
 
-int draw_content_more(char *ptr, int size, char *fn)
+int draw_content_more(char *ptr, int size, char *fn,struct fileheader* fh)
 {
     extern int t_lines;
     struct MemMoreLines l;
@@ -944,8 +944,12 @@ int draw_content_more(char *ptr, int size, char *fn)
     init_MemMoreLines(&l, ptr, size);
 
     move(t_lines/2, 0);
-    prints("\033[34m！！！！！！！！！！！！！！！！！！圓誓完笥！！！！！！！！！！！！！！！！！");
+//    prints("\033[34m！！！！！！！！！！！！！！！！！！圓誓完笥！！！！！！！！！！！！！！！！！");
 //    move(t_lines/2+1, 0);
+    prints("\033[1;33m圓誓  \033[1;32m恬宀:\033[1;34m%13.13s   \033[1;32m炎籾:\033[1;34m%50.50s       \033[1;32m%4.4s\033[m",
+    	fh->owner,
+    	fh->title,
+    	fh->innflag[1]=='S'?"廬佚":"");
     prints("\n\033[m");
     curr_line = l.curr_line;
     for (i = 0;;) {
@@ -970,7 +974,7 @@ int draw_content_more(char *ptr, int size, char *fn)
         return 0;
 }
 
-int draw_content(char* fn)
+int draw_content(char* fn,struct fileheader* fh)
 {
     char *ptr;
     int size, retv;
@@ -978,7 +982,7 @@ int draw_content(char* fn)
     BBS_TRY {
         if (safe_mmapfile(fn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)
             BBS_RETURN(-1);
-        retv = draw_content_more(ptr, size, fn);
+        retv = draw_content_more(ptr, size, fn,fh);
     }
     BBS_CATCH {
     }
