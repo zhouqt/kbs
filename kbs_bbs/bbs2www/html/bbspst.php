@@ -77,10 +77,13 @@
 </tr>
 <tr><td>
 作者: <?php echo $currentuser["userid"]; ?><br />
+<?php
+		if ($reid)
+?>
 标题: <input type="text" name="title" size="40" maxlength="100" value="Re: <?php echo $articles[1]["TITLE"]; ?>"><br />
 看版: [<?php echo $brd_encode; ?>]<br />
 <?php
-		if ($brdarr["FLAG"]&BBS_BOARD_ATTACH)
+		if (bbs_is_attach_board($brdarr))
 		{
 ?>
 附件: <input type="text" name="attachname" size="50" value="" disabled="disabled" />
