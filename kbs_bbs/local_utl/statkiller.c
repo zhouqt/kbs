@@ -3,7 +3,7 @@
 #define MAX 10000
 #define MAXK 100
 #define MAX_PEOPLE 100
-#define MINB 20 //上榜要求的最少次数
+#define MINB 30 //上榜要求的最少次数
 
 struct statf {
     char id[IDLEN+2];
