@@ -2111,6 +2111,7 @@ int delete_range(struct write_dir_arg *dirarg, int id1, int id2, int del_mode, i
                             setmailfile(genbuf, session->currentuser->userid, delfhdr[j].filename);
                             if (stat(genbuf, &st) != -1)
                                 session->currentuser->usedspace -= st.st_size;
+                            unlink(genbuf);
                         }
                     }
                 }
@@ -2158,6 +2159,7 @@ int delete_range(struct write_dir_arg *dirarg, int id1, int id2, int del_mode, i
             setmailfile(genbuf, session->currentuser->userid, delfhdr[j].filename);
             if (stat(genbuf, &st) != -1)
                 session->currentuser->usedspace -= st.st_size;
+            unlink(genbuf);
         }
     }
     if (dirarg->needlock)
