@@ -348,7 +348,7 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
     if(!index[0]) 
         return FULLUPDATE;
     load_content = (strstr(index, "content")!=NULL);
-    load_stat = (strstr(index, "fsize")!=NULL);
+    load_stat = (strstr(index, "asize")!=NULL);
     if (digestmode==7||digestmode==8 ) {
         if (digestmode == 7 || digestmode == 8)
             unlink(currdirect);
@@ -439,9 +439,9 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
         set_vard(fvars+fget_var("effsize"), ptr1->eff_size);
         if(load_stat) {
             if(stat(ffn, &st)!=-1)
-                set_vard(fvars+fget_var("fsize"), st.st_size);
+                set_vard(fvars+fget_var("asize"), st.st_size);
             else
-                set_vard(fvars+fget_var("fsize"), 0);
+                set_vard(fvars+fget_var("asize"), 0);
         }
         if(load_content) {
             int k,abssize=0,entercount=0,ignoreline=0;
