@@ -291,7 +291,7 @@ function showLogon($showBack = 0, $comeurl = "") {
 	<table cellpadding="3" cellspacing="1" align="center" class="TableBorder1" style="width: 75%;">
 	<form action="logon.php" method="post"> 
 	<tr>
-	<th valign="middle" colspan="2" align="center" height="25">请输入您的用户名、密码登录</td></tr>
+	<td valign="middle" colspan="2" align="center" height="25">请输入您的用户名、密码登录</td></tr>
 	<tr>
 	<td valign="middle" class="TableBody1">请输入您的用户名</td>
 	<td valign="middle" class="TableBody1"><input name="id" type="text" tabindex="1"/> &nbsp; <a href="register.php">没有注册？</a></td></tr>
