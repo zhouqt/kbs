@@ -102,7 +102,7 @@ int fillsecboard(struct boardheader* fptr,int i)
 	}
 }
 
-int fillbcache(struct boardheader *fptr,int idx,void* arg)
+int fillbcache(struct boardheader *fptr,void* arg)
 {
     if (numboards >= MAXBOARD)
         return 0;
@@ -145,7 +145,9 @@ int fillboard()
 {
     int i = 0;
     resolve_boards();
-    apply_record(BOARDS, (APPLY_FUNC_ARG)fillbcache, sizeof(struct boardheader), NULL, 0,false);
+    resolve_ucache();
+    /*apply_record(BOARDS, (APPLY_FUNC_ARG)fillbcache, sizeof(struct boardheader), NULL, 0,false);*/
+    apply_boards(fillbcache,NULL);
     for(i = 0;i < 5; i++) 	{
     	if(0 == sec_board_num[i] ){
     		printf(" ¸Ã·ÖÇøÖÐÃ»ÓÐ°æÃæ! ·ÖÇø %d",i);
@@ -215,6 +217,7 @@ main(argc, argv)
         /* modified end */
     };
 
+    chdir(BBSHOME);
     if (argc <= 1)
         exit(0);
     mode = atoi(argv[1]);
@@ -260,7 +263,6 @@ main(argc, argv)
 	printf("numboards is %d", numboards);
 	for(i = 0;i < 5; i++){
 	    qsort(sec_board[i],sec_board_num[i], sizeof(sec_board[i][0]),brd_cmp);
-        printf("sec_board_num[%d] is %d",i,sec_board_num[i]);
     }
      /**/ ave[0] = 0;
     ave[1] = 0;
@@ -356,8 +358,10 @@ main(argc, argv)
 
 	for(i = 0;i < 5; i ++){
 	    if(mode == 1){
-		    for(j = 0;j < sec_board_num[i]; j++)
-                fprintf(op, "%4d[m %-15.15s%-25.25s %5d %-.8s %10d\n", i + 1, sec_board[i][j].boardname, sec_board[i][j].expname,
+		fprintf(op,"\n");
+		fprintf(op, "Ãû´Î %-15.15s%-25.25s %5s %8s %10s\n", "ÌÖÂÛÇøÃû³Æ", "ÖÐÎÄÐðÊö", "ÈË´Î", "ÀÛ»ýÊ±¼ä", "Æ½¾ùÊ±¼ä");
+		for(j = 0;j < sec_board_num[i]; j++)
+                fprintf(op, "%4d[m %-15.15s%-25.25s %5d %-.8s %10d\n", j + 1, sec_board[i][j].boardname, sec_board[i][j].expname,
 				    sec_board[i][j].times, timetostr(sec_board[i][j].sum), sec_board[i][j].times == 0 ? 0 : sec_board[i][j].sum / sec_board[i][j].times);
 		}else{
 		    //·ÖÇøÁÐ±í
@@ -405,7 +409,7 @@ main(argc, argv)
 			fprintf(op1,"\n");
             fprintf(op1, "Ãû´Î %-15.15s%-25.25s %8s %5s %10s\n", "ÌÖÂÛÇøÃû³Æ", "ÖÐÎÄÐðÊö", "ÀÛ»ýÊ±¼ä", "ÈË´Î", "Æ½¾ùÊ±¼ä");
             for(j = 0; j < sec_board_num[i]; j++)
-                fprintf(op1, "%4d %-15.15s%-25.25s %-.8s %5d %10d\n", i + 1, sec_board[i][j].boardname, sec_board[i][j].expname,
+                fprintf(op1, "%4d %-15.15s%-25.25s %-.8s %5d %10d\n", j + 1, sec_board[i][j].boardname, sec_board[i][j].expname,
 			        timetostr(sec_board[i][j].sum), sec_board[i][j].times,sec_board[i][j].times == 0 ? 0 :sec_board[i][j].sum / sec_board[i][j].times);
 		}
         fclose(op1);
@@ -421,7 +425,7 @@ main(argc, argv)
 			fprintf(op2,"\n");
             fprintf(op2, "Ãû´Î %-15.15s%-25.25s %10s %5s %8s\n", "ÌÖÂÛÇøÃû³Æ", "ÖÐÎÄÐðÊö", "Æ½¾ùÊ±¼ä", "ÀÛ»ýÊ±¼ä", "ÈË´Î");
             for (j = 0; j < sec_board_num[i]; j++)
-                fprintf(op2, "%4d %-15.15s%-25.25s %10d %-.8s %5d\n", i + 1, sec_board[i][j].boardname, sec_board[i][j].expname,
+                fprintf(op2, "%4d %-15.15s%-25.25s %10d %-.8s %5d\n", j + 1, sec_board[i][j].boardname, sec_board[i][j].expname,
 				    sec_board[i][j].times == 0 ? 0 : sec_board[i][j].sum / sec_board[i][j].times, timetostr(sec_board[i][j].sum), sec_board[i][j].times);
 		}
         fclose(op2);
