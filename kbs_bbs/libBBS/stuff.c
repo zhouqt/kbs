@@ -1278,3 +1278,11 @@ int valid_filename(char *file, int use_subdir)
     return 0;
 }
 
+void set_proc_title(char *argv0, char *title)
+{
+#ifdef FREEBSD
+	setproctitle("-%s", title);
+#else
+	strcpy(argv0, title);
+#endif
+}

@@ -849,10 +849,11 @@ void main_bbs(int convit, char *argv)
 
 #ifndef DEBUG
 #ifdef SSHBBS
-    sprintf(argv, "sshbbsd:%s", currentuser->userid);
+    sprintf(genbuf, "sshbbsd:%s", currentuser->userid);
 #else
-    sprintf(argv, "bbsd:%s", currentuser->userid);
+    sprintf(genbuf, "bbsd:%s", currentuser->userid);
 #endif
+	set_proc_title(argv, genbuf);
 #endif
 
 #ifdef TALK_LOG
