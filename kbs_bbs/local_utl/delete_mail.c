@@ -39,6 +39,7 @@ int delete_all_mail(int dfd, char *touser, char *filename, int size, RECORD_FUNC
 
     return 0;
 }
+
 int main(int argc, char **argv)
 {
 	char mdir[256];
@@ -66,7 +67,7 @@ int main(int argc, char **argv)
 		setmailfile(mdir, touser, ".DIR");
 		if (stat(mdir, &st) < 0)
 		{
-			fprintf("User '%s' not found.\n", touser);
+			fprintf(stderr, "User '%s' not found.\n", touser);
 			continue;
 		}
 		sprintf(mdir_bak, "%s.BAK", mdir);
