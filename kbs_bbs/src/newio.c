@@ -636,8 +636,14 @@ int igetkey()
                 return KEY_TALK;
         }
         if (mode == 0) {
-            if (ch == KEY_ESC)
+            if (ch == KEY_ESC) {
+                if(ibufsize==icurrchar) {
+                    if(uinfo.mode!=POSTING&&uinfo.mode!=SMAIL&&uinfo.mode!=EDITUFILE&&uinfo.mode!=EDITSFILE&&
+                        uinfo.mode!=NOTEPAD&&uinfo.mode!=EDIT&&uinfo.mode!=EDITANN&&uinfo.mode!=RMAIL)
+                        return ch;
+                }
                 mode = 1;
+            }
             else {
                 ret = ch;
                 break;      /* Normal Key */
