@@ -30,6 +30,7 @@
 
 /* for bbs2www, by flyriver, 2001.3.9 */
 #define SECNUM 13
+#define BBS_PAGE_SIZE 20
 
 #define SQUID_ACCL
 

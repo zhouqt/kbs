@@ -32,6 +32,7 @@
 
 /* for bbs2www, by flyriver, 2001.3.9 */
 #define SECNUM 9
+#define BBS_PAGE_SIZE 20
 
 #define DEFAULTBOARD    	"test"
 #define FILTER_BOARD        "Filter"
