@@ -539,14 +539,14 @@
 <tr>
 	<td class="t3">Logo图片</td>
 	<td class="t5">&nbsp;
-	<input type="text" name="pclogo" value="<?php echo $pc["LOGO"]; ?>" class="f1">
+	<input type="text" name="pclogo" value="<?php echo htmlspecialchars($pc["LOGO"]); ?>" class="f1">
 	(请填写Logo图片所在的URL地址，留空表示无LOGO图片)
 	</td>
 </tr>
 <tr>
 	<td class="t3">背景图片</td>
 	<td class="t5">&nbsp;
-	<input type="text" name="pcbkimg" value="<?php echo $pc["BKIMG"]; ?>" class="f1">
+	<input type="text" name="pcbkimg" value="<?php echo htmlspecialchars($pc["BKIMG"]); ?>" class="f1">
 	(请填写背景图片所在的URL地址，留空表示无背景图片)
 	</td>
 </tr>
