@@ -85,9 +85,14 @@ function valid_filename($fn)
 	return 1;
 }
 
-function getboardfilename($boardname,$filename)
+function bbs_get_board_filename($boardname,$filename)
 {
 	return "boards/" . $boardname . "/" . $filename;
+}
+
+function bbs_get_vote_filename($boardname, $filename)
+{
+	return "vote/" . $boardname . "/" . $filename;
 }
 
 function error_alert($msg)
