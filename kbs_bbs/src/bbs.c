@@ -171,6 +171,9 @@ int UndeleteArticle(int ent, struct fileheader *fileinfo, char *direct)
     strcpy(UFile.owner, fileinfo->owner);
     strcpy(UFile.title, UTitle);
     strcpy(UFile.filename, fileinfo->filename);
+    UFile.id = fileinfo->id;
+    UFile.groupid = fileinfo->groupid;
+    UFile.reid = fileinfo->reid;
 
     sprintf(buf, "boards/%s/.DIR", currboard);
     append_record(buf, &UFile, sizeof(UFile));
