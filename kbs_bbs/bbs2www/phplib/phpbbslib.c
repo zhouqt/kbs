@@ -19,29 +19,39 @@ static ZEND_FUNCTION(bbs_checkreadperm);
 static ZEND_FUNCTION(bbs_brcaddread);
 static ZEND_FUNCTION(bbs_ann_traverse_check);
 static ZEND_FUNCTION(bbs_ann_get_board);
+static ZEND_FUNCTION(bbs_getboards);
 
 static ZEND_MINIT_FUNCTION(bbs_module_init);
 static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown);
 static ZEND_RINIT_FUNCTION(bbs_request_init);
 static ZEND_RSHUTDOWN_FUNCTION(bbs_request_shutdown);
 
+static unsigned char a2_arg_force_ref[] = { 2, BYREF_NONE, BYREF_FORCE };
+
 /*
  * define what functions can be used in the PHP embedded script
  */
 static function_entry bbs_php_functions[] = {
-    ZEND_FE(bbs_getuser, NULL)
-        ZEND_FE(bbs_getonlineuser, NULL)
-        ZEND_FE(bbs_getonlinenumber, NULL)
-        ZEND_FE(bbs_countuser, NULL)
-        ZEND_FE(bbs_setfromhost, NULL)
-        ZEND_FE(bbs_checkpasswd, NULL)
-        ZEND_FE(bbs_getcurrentuser, NULL)
-        ZEND_FE(bbs_setonlineuser, NULL)
-        ZEND_FE(bbs_getcurrentuinfo, NULL)
-        ZEND_FE(bbs_wwwlogin, NULL)
-        ZEND_FE(bbs_wwwlogoff, NULL)
-        ZEND_FE(bbs_printansifile, NULL)
-        ZEND_FE(bbs_checkreadperm, NULL) ZEND_FE(bbs_brcaddread, NULL) ZEND_FE(bbs_getboard, NULL) ZEND_FE(bbs_ann_traverse_check, NULL) ZEND_FE(bbs_ann_get_board, NULL) {NULL, NULL, NULL}
+	ZEND_FE(bbs_getuser, NULL)
+	ZEND_FE(bbs_getonlineuser, NULL)
+	ZEND_FE(bbs_getonlinenumber, NULL)
+	ZEND_FE(bbs_countuser, NULL)
+	ZEND_FE(bbs_setfromhost, NULL)
+	ZEND_FE(bbs_checkpasswd, NULL)
+	ZEND_FE(bbs_getcurrentuser, NULL)
+	ZEND_FE(bbs_setonlineuser, NULL)
+	ZEND_FE(bbs_getcurrentuinfo, NULL)
+	ZEND_FE(bbs_wwwlogin, NULL)
+	ZEND_FE(bbs_wwwlogoff, NULL)
+	ZEND_FE(bbs_printansifile, NULL)
+	ZEND_FE(bbs_checkreadperm, NULL)
+	ZEND_FE(bbs_brcaddread, NULL)
+	ZEND_FE(bbs_getboard, NULL)
+	ZEND_FE(bbs_ann_traverse_check, NULL)
+	ZEND_FE(bbs_ann_get_board, NULL)
+	/*ZEND_FE(bbs_getboards, a2_arg_force_ref)*/
+	ZEND_FE(bbs_getboards, NULL)
+	{NULL, NULL, NULL}
 };
 
 /*
@@ -205,7 +215,7 @@ static ZEND_FUNCTION(bbs_getuser)
     int s_len;
     zval *user_array;
 
-    //MAKE_STD_ZVAL(user_array);
+    MAKE_STD_ZVAL(user_array);
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
     old_pwd[1023] = 0;
@@ -234,7 +244,7 @@ static ZEND_FUNCTION(bbs_getonlineuser)
     struct user_info *uinfo;
     zval *user_array;
 
-    //MAKE_STD_ZVAL(user_array);
+    MAKE_STD_ZVAL(user_array);
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
     old_pwd[1023] = 0;
@@ -347,7 +357,7 @@ static ZEND_FUNCTION(bbs_getcurrentuinfo)
     zval *user_array;
     long ret = 1;
 
-    //MAKE_STD_ZVAL(user_array);
+    MAKE_STD_ZVAL(user_array);
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
     old_pwd[1023] = 0;
@@ -376,7 +386,7 @@ static ZEND_FUNCTION(bbs_getcurrentuser)
     zval *user_array;
     long ret;
 
-    //MAKE_STD_ZVAL(user_array);
+    MAKE_STD_ZVAL(user_array);
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
     old_pwd[1023] = 0;
@@ -408,7 +418,7 @@ static ZEND_FUNCTION(bbs_setonlineuser)
     int idx;
     struct userec *user;
 
-    //MAKE_STD_ZVAL(user_array);
+    MAKE_STD_ZVAL(user_array);
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
     old_pwd[1023] = 0;
@@ -585,7 +595,7 @@ static ZEND_FUNCTION(bbs_getboard)
     const struct boardheader *bh;
     int b_num;
 
-    //MAKE_STD_ZVAL(array);
+    MAKE_STD_ZVAL(array); /* Is it necessary? */
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
     old_pwd[1023] = 0;
@@ -612,6 +622,230 @@ static ZEND_FUNCTION(bbs_getboard)
         assign_board(array, (struct boardheader *) bh, b_num);
     }
     RETURN_LONG(b_num);
+}
+
+static int
+bbs_cmpboard(const struct newpostdata *brd, const struct newpostdata *tmp)
+{
+	register int type = 0;
+
+	if ( !(currentuser->flags[0] & BRDSORT_FLAG) )
+	{
+		type = brd->title[0] - tmp->title[0];
+		if (type == 0)
+			type = strncasecmp(brd->title+1, tmp->title+1,6);
+	}
+	if ( type == 0 )
+		type = strcasecmp( brd->name, tmp->name );
+	return type;
+}
+
+/* TODO: move this function into bbslib. */
+static int 
+check_newpost( struct newpostdata *ptr)
+{
+	struct BoardStatus* bptr;
+	ptr->total = ptr->unread = 0;
+
+	bptr = getbstatus(ptr->pos);
+	if (bptr == NULL)
+		return 0;
+	ptr->total = bptr->total;
+
+	if (!brc_initial(currentuser->userid,ptr->name))
+	{
+		ptr->unread = 1;
+	}
+	else
+	{
+		if (brc_unread(bptr->lastpost))
+		{
+			ptr->unread = 1;
+		}
+	}
+	return 1;
+}
+
+#define BOARD_COLUMNS 7
+
+char *brd_col_names[BOARD_COLUMNS] =
+{
+	"NAME",
+	"DESC",
+	"CLASS",
+	"BM",
+	"ARTCNT", /* article count */
+	"UNREAD",
+	"ZAPPED"
+};
+
+static void
+bbs_make_board_columns(zval **columns)
+{
+	int i;
+
+	for (i = 0; i < BOARD_COLUMNS; i++)
+	{
+		MAKE_STD_ZVAL(columns[i]);
+		ZVAL_STRING(columns[i], brd_col_names[i], 1);
+	}
+}
+
+static void
+bbs_make_board_zval(zval *value, char *col_name, struct newpostdata *brd)
+{
+	int len = strlen(col_name);
+
+	if (strncmp(col_name, "ARTCNT", len) == 0)
+	{
+		ZVAL_LONG(value, brd->total);
+	}
+	else if (strncmp(col_name, "UNREAD", len) == 0)
+	{
+		ZVAL_LONG(value, brd->unread);
+	}
+	else if (strncmp(col_name, "ZAPPED", len) == 0)
+	{
+		ZVAL_LONG(value, brd->zap);
+	}
+	else if (strncmp(col_name, "CLASS", len) == 0)
+	{
+		ZVAL_STRINGL(value, brd->title+1, 6, 1);
+	}
+	else if (strncmp(col_name, "DESC", len) == 0)
+	{
+		ZVAL_STRING(value, brd->title+13, 1);
+	}
+	else if (strncmp(col_name, "NAME", len) == 0)
+	{
+		ZVAL_STRING(value, brd->name, 1);
+	}
+	else if (strncmp(col_name, "BM", len) == 0)
+	{
+		ZVAL_STRING(value, brd->BM, 1);
+	}
+	else
+	{
+		ZVAL_EMPTY_STRING(value);
+	}
+}
+
+extern int     brdnum;
+extern int yank_flag;
+
+/**
+ * Fetch all boards which have given prefix into an array.
+ * prototype:
+ * int bbs_getboards(char *prefix, int yank, array &output);
+ * by flyriver, 2002.8.6
+ *
+ * @return >=0 number of fetched boards
+ *         <0  failure
+ */
+static ZEND_FUNCTION(bbs_getboards)
+{
+	/*
+	 * TODO: The name of "yank" must be changed, this name is totally
+	 * shit, but I don't know which name is better this time.
+	 */
+	char *prefix;
+	int plen;
+	int yank;
+	zval *brdarrs;
+	int rows = 0;
+	struct newpostdata newpost_buffer[MAXBOARD];
+	struct newpostdata *ptr;
+	zval **columns;
+	zval *element;
+	int i;
+	int j;
+	int ac = ZEND_NUM_ARGS();
+
+	/* getting arguments */
+#if 0
+	if (ac != 3 
+		|| zend_parse_parameters(3 TSRMLS_CC, "sla", &prefix, &plen, &yank, &brdarrs) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+#endif
+	if (ac != 2 
+		|| zend_parse_parameters(2 TSRMLS_CC, "sl", &prefix, &plen, &yank) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+	/*array_init(brdarrs);*/
+	if (array_init(return_value) == FAILURE)
+	{
+		RETURN_FALSE;
+	}
+
+	/* loading boards */
+	/* handle some global variables: currentuser, yank, brdnum, 
+	 * boardprefix, nbrd.
+	 */
+	/* NOTE: currentuser SHOULD had been set in funcs.php, 
+	 * but we still check it. */
+	if (currentuser == NULL)
+	{
+		/*RETURN_LONG(-1);*/
+		RETURN_FALSE;
+	}
+	yank_flag = yank;
+	if (strcmp(currentuser->userid, "guest") == 0)
+		yank_flag = 1; /* see all boards including zapped boards. */
+	if (yank_flag != 0)
+		yank_flag = 1;
+	nbrd = newpost_buffer;
+	brdnum = 0;
+	/* TODO: replace load_board() with a new one, without accessing
+	 * global variables. */
+	if (load_boards(prefix) < 0)
+	{
+		/*RETURN_LONG(-1);*/
+		RETURN_FALSE;
+	}
+	qsort( nbrd, brdnum, sizeof( nbrd[0] ), 
+		   (int (*)(const void *, const void *))bbs_cmpboard );
+	rows = brdnum; /* number of loaded boards */
+
+	/* fill data in output array. */
+	/* setup column names */
+	columns = emalloc(BOARD_COLUMNS * sizeof(zval*));
+	for (i = 0; i < BOARD_COLUMNS; i++)
+	{
+		MAKE_STD_ZVAL(element);
+		array_init(element);
+		columns[i] = element;
+		/*zend_hash_update(Z_ARRVAL_P(brdarrs), */
+		zend_hash_update(Z_ARRVAL_P(return_value), 
+				brd_col_names[i], strlen(brd_col_names[i])+1,
+				(void *) &element, sizeof(zval *), NULL);
+	}
+	/* fill data for each column */
+	for (i = 0; i < rows; i++)
+	{
+		ptr = &nbrd[i];
+		check_newpost(ptr);
+		for (j = 0; j < BOARD_COLUMNS; j++)
+		{
+			MAKE_STD_ZVAL(element);
+			bbs_make_board_zval(element, brd_col_names[j], ptr);
+			/*
+			 * 首先，取得 outarrs[i]，为一个 zval** 型指针；
+			 * 然后，施行 *(outarrs[i])，得到 zval* 型指针(实际上指向
+			 *       一个哈希表，该哈希表元素的数据类型为 zval*)；
+			 * 最后，通过 ->value.ht 得到该哈希表的起始地址。
+			 * 由于哈希表中存放的是 zval* 型元素，所以必须传入 element
+			 * 的指针和 element 这个指针本身所占用的空间长度，这就是
+			 * &element 和 sizeof(zval *) 的来历。
+			 */
+			zend_hash_index_update(Z_ARRVAL_P(columns[j]), i,
+				   	(void*) &element, sizeof(zval*), NULL);
+		}
+	}
+	efree(columns);
+	/*RETURN_LONG(rows);*/
 }
 
 static ZEND_FUNCTION(bbs_checkreadperm)
@@ -697,9 +931,9 @@ static ZEND_MINIT_FUNCTION(bbs_module_init)
     resolve_boards();
     www_data_init();
 #ifdef SQUID_ACCL
-    REGISTER_MAIN_LONG_CONSTANT("SETTING_SQUID_ACCL", 1, CONST_CS | CONST_PERSISTENT);
+    REGISTER_MAIN_LONG_CONSTANT("SQUID_ACCL", 1, CONST_CS | CONST_PERSISTENT);
 #else
-    REGISTER_MAIN_LONG_CONSTANT("SETTING_SQUID_ACCL", 0, CONST_CS | CONST_PERSISTENT);
+    REGISTER_MAIN_LONG_CONSTANT("SQUID_ACCL", 0, CONST_CS | CONST_PERSISTENT);
 #endif
     REGISTER_MAIN_LONG_CONSTANT("BBS_PERM_POSTMASK", PERM_POSTMASK, CONST_CS | CONST_PERSISTENT);
     REGISTER_MAIN_LONG_CONSTANT("BBS_PERM_NOZAP", PERM_NOZAP, CONST_CS | CONST_PERSISTENT);
@@ -724,6 +958,7 @@ static ZEND_RINIT_FUNCTION(bbs_request_init)
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
     old_pwd[1023] = 0;
+	currentuser = NULL;
 #ifdef DEBUG
     zend_error(E_WARNING, "request init:%d %x", getpid(), getcurrentuinfo);
 #endif
