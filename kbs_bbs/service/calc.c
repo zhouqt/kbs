@@ -403,7 +403,7 @@ int check_var_array(char * s, int l)
 void selmatrix(struct var_struct * s, struct var_struct * u, struct var_struct * v, struct var_struct * p)
 {
     int i,j,k,i0,j0;
-    makesure(u->height==1&&v->height==1,10);
+    makesure(1,0);
     if(!u->p) {
         makesize(u, 1, s->height);
         for(i=0;i<s->height;i++)
@@ -414,6 +414,7 @@ void selmatrix(struct var_struct * s, struct var_struct * u, struct var_struct *
         for(i=0;i<s->width;i++)
             v->p[0][i]=(double)i+1;
     }
+    makesure(u->height==1&&v->height==1,10);
     for(i=0;i<u->width;i++) {
         j=(int)(u->p[0][i]+0.5);
         makesure(j>=1&&j<=s->height,9);
