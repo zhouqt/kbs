@@ -1,17 +1,27 @@
 #!/bin/bash
 OUTPUTDIR="/home0/www/htdocs/bbsstat"
 OUTPUTDIRSED="\/home0\/www\/htdocs\/bbsstat"
+LOGDIR="bonlinelog"
 
 cd /home/bbs
 
-nowmonth=`date '+%Y/%m/'`
-if test ! -d "$OUTPUTDIR/$nowmonth"
+nowyear=`date '+%Y'`
+nowmonth=`date '+%m'`
+nowday=`date '+%d'`
+declare -i intmonth=$nowmonth
+declare -i intday=$nowday
+shortmonth=`echo $intmonth`
+shortday=`echo $intday`
+
+if test ! -d "$OUTPUTDIR/$nowyear/$nowmonth"
 then
-	`mkdir -p $OUTPUTDIR/$nowmonth`
+	`mkdir -p $OUTPUTDIR/$nowyear/$nowmonth`
 fi
 
-nowfile=`date '+%Y/%m/%d_useronline.png'`
-nowfilesed=`date '+%Y\/%m\/%d_useronline.png'`
+cp -f $LOGDIR/$nowyear/$shortmonth/${shortday}_useronline dayonline
+
+nowfile="$nowyear/$nowmonth/${nowday}_useronline.png"
+nowfilesed="$nowyear\/$nowmonth\/${nowday}_useronline.png"
 
 sed -e "s/OUTPUTFILE/$OUTPUTDIRSED\/$nowfilesed/g" day.plt > todayonline.plt
 gnuplot todayonline.plt
