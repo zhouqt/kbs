@@ -2635,10 +2635,10 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
                         if ( (UBBArg1>0) && (UBBArg1<=attachmatched)) {
                             switch(attachType[UBBArg1-1]) {
                             case ATTACH_IMG:
-                                snprintf(outbuf, 511, "<br /><a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" alt=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ", attachlink, attachPos[UBBArg1-1],attachlink, attachPos[UBBArg1-1]);
+                                snprintf(outbuf, 511, "<a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" alt=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ", attachlink, attachPos[UBBArg1-1],attachlink, attachPos[UBBArg1-1]);
                                 break;
                             case ATTACH_FLASH:
-                                snprintf(outbuf, 511, "<br /><object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" > <param name=\"MOVIE\" value=\"%s&amp;ap=%ld\" />" "<embed src=\"%s&amp;ap=%ld\"></embed></object><br />", attachlink, attachPos[UBBArg1-1], attachlink, attachPos[UBBArg1-1]);
+                                snprintf(outbuf, 511, "<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" > <param name=\"MOVIE\" value=\"%s&amp;ap=%ld\" />" "<embed src=\"%s&amp;ap=%ld\"></embed></object>", attachlink, attachPos[UBBArg1-1], attachlink, attachPos[UBBArg1-1]);
                                 break;
                             case ATTACH_OTHERS:
                                  snprintf(outbuf, 511, "<br />附件: <a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />", attachlink, attachPos[UBBArg1-1], attachFileName[UBBArg1-1], attachLen[UBBArg1-1]);
