@@ -125,7 +125,9 @@ static PHP_FUNCTION(bbs_sysconf_str);
 static PHP_FUNCTION(bbs_get_tmpls);
 static PHP_FUNCTION(bbs_get_tmpl_from_num);
 static PHP_FUNCTION(bbs_make_tmpl_file);
+#ifdef SMS_SUPPORT
 static PHP_FUNCTION(bbs_send_sms);
+#endif
 static PHP_FUNCTION(bbs_printoriginfile);
 static PHP_FUNCTION(bbs_caneditfile);
 static PHP_FUNCTION(bbs_updatearticle);
@@ -248,7 +250,9 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_get_tmpls,NULL)
 		PHP_FE(bbs_get_tmpl_from_num,NULL)
 		PHP_FE(bbs_make_tmpl_file,NULL)
+#ifdef SMS_SUPPORT
 		PHP_FE(bbs_send_sms,NULL)
+#endif
         {NULL, NULL, NULL}
 };
 
@@ -6621,6 +6625,8 @@ static PHP_FUNCTION(bbs_make_tmpl_file)
 	RETURN_STRING(newtitle,1);
 }
 
+#ifdef SMS_SUPPORT
+
 static PHP_FUNCTION(bbs_send_sms)
 {
 	int ac = ZEND_NUM_ARGS();
@@ -6636,6 +6642,8 @@ static PHP_FUNCTION(bbs_send_sms)
 
 	RETURN_LONG(ret);
 }
+
+#endif
 
 /*
  *  bbs_getonline_user_list

@@ -3027,6 +3027,8 @@ int www_generateOriginIndex(char* board)
     return 0;
 }
 
+#ifdef SMS_SUPPORT
+
 extern struct user_info * smsuin;
 
 int web_send_sms(char *dest,char *msgstr){
@@ -3106,3 +3108,5 @@ int web_send_sms(char *dest,char *msgstr){
 	return 0;
 
 }
+
+#endif
