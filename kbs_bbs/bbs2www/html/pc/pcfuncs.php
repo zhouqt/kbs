@@ -251,7 +251,7 @@ function pc_is_member($pc,$userid)
 	if(!$pc || !is_array($pc))
 		return FALSE;
 	
-	$query = "SELECT uid FROM members WHERE uid = '".intval($pc["UID"])." AND username = '".addslashes($userid)."' LIMIT 0 , 1;";
+	$query = "SELECT uid FROM members WHERE uid = ".intval($pc["UID"])." AND username = '".addslashes($userid)."' LIMIT 0 , 1;";
 	$result = mysql_query($query);
 	$rows = mysql_fetch_array($result);
 	mysql_free_result($result);
