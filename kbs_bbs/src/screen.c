@@ -45,6 +45,7 @@ static /*struct screenline old_line; */ char tmpbuffer[LINELEN*3];
 
 void setfcolor(int i,int j)
 {
+    if(!DEFINE(currentuser, DEF_COLOR)) return;
     cur_color = i+(cur_color&0xf0);
     if(j) cur_mode|=SCREEN_BRIGHT;
     else cur_mode&=~SCREEN_BRIGHT;
@@ -52,6 +53,7 @@ void setfcolor(int i,int j)
 
 void setbcolor(int i)
 {
+    if(!DEFINE(currentuser, DEF_COLOR)) return;
     if(i==0) i=8;
     cur_color = (cur_color&0x0f)+(i<<4);
 }
