@@ -260,6 +260,10 @@ extern int icurrchar, ibufsize;
 void abort_bbs(int signo)
 {
     time_t stay;
+    static bool in_abort_bbs=false;
+
+    if(in_abort_bbs) return;
+    in_abort_bbs=true;
 
     move(t_lines-1, 0);
     icurrchar = 0; ibufsize = 0;
