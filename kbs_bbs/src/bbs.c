@@ -189,15 +189,15 @@ int UndeleteArticle(int ent, struct fileheader *fileinfo, char *direct)
     strcpy(UFile.owner, fileinfo->owner);
     strcpy(UFile.title, UTitle);
     strcpy(UFile.filename, fileinfo->filename);
-    UFile.filename[0]='M';
+    UFile.filename[0] = 'M';
     UFile.id = fileinfo->id;
     UFile.groupid = fileinfo->groupid;
     UFile.reid = fileinfo->reid;
-	set_posttime2(&UFile, fileinfo);
+    set_posttime2(&UFile, fileinfo);
 
-    setbfile(genbuf,currboard,fileinfo->filename);
-    setbfile(buf,currboard,UFile.filename);
-    f_mv(genbuf,buf);
+    setbfile(genbuf, currboard, fileinfo->filename);
+    setbfile(buf, currboard, UFile.filename);
+    f_mv(genbuf, buf);
 
     sprintf(buf, "boards/%s/.DIR", currboard);
     if ((fd = open(buf, O_RDWR | O_CREAT, 0644)) != -1) {
@@ -381,7 +381,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct)
     strcpy(quote_title, fileinfo->title);
 
     clear();
-#ifndef NINE_BUILD    
+#ifndef NINE_BUILD
     move(4, 0);                 /* Leeward 98.02.25 */
     prints
         ("[1m[33mÇë×¢Òâ£º[31m±¾Õ¾Õ¾¹æ¹æ¶¨£ºÍ¬ÑùÄÚÈİµÄÎÄÕÂÑÏ½ûÔÚ 5 (º¬) ¸öÒÔÉÏÌÖÂÛÇøÄÚÖØ¸´ÕÅÌù¡£\n\nÎ¥·´Õß[33m³ıËùÌùÎÄÕÂ»á±»É¾³ıÖ®Íâ£¬»¹½«±»[31m°ş¶á¼ÌĞø·¢±íÎÄÕÂµÄÈ¨Á¦¡£[33mÏêÏ¸¹æ¶¨Çë²ÎÕÕ£º\n\n    Announce °æµÄÕ¾¹æ£º¡°¹ØÓÚ×ªÌùºÍÕÅÌùÎÄÕÂµÄ¹æ¶¨¡±¡£\n\nÇë´ó¼Ò¹²Í¬Î¬»¤ BBS µÄ»·¾³£¬½ÚÊ¡ÏµÍ³×ÊÔ´¡£Ğ»Ğ»ºÏ×÷¡£\n\n[m");
@@ -402,7 +402,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct)
         clear();
         return FULLUPDATE;
     }
-#endif    
+#endif
     {                           /* Leeward 98.01.13 ¼ì²é×ªÌùÕßÔÚÆäÓû×ªµ½µÄ°æÃæÊÇ·ñ±»½ûÖ¹ÁË POST È¨ */
         char szTemp[STRLEN];
 
@@ -515,11 +515,12 @@ void readtitle()
 
     showtitle(header, title);   /* ÏÔÊ¾ µÚÒ»ĞĞ */
     update_endline();
-    move(1,0);
-    if (DEFINE(currentuser,DEF_HIGHCOLOR))
-    	prints("Àë¿ª[\x1b[1;32m¡û\x1b[m,\x1b[1;32me\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ı\x1b[m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] ·¢±íÎÄÕÂ[\x1b[1;32mCtrl-P\x1b[m] ¿³ĞÅ[\x1b[1;32md\x1b[m] ±¸ÍüÂ¼[\x1b[1;32mTAB\x1b[m] ÇóÖú[\x1b[1;32mh\x1b[m][m\n");
+    move(1, 0);
+    if (DEFINE(currentuser, DEF_HIGHCOLOR))
+        prints
+            ("Àë¿ª[\x1b[1;32m¡û\x1b[m,\x1b[1;32me\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ı\x1b[m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] ·¢±íÎÄÕÂ[\x1b[1;32mCtrl-P\x1b[m] ¿³ĞÅ[\x1b[1;32md\x1b[m] ±¸ÍüÂ¼[\x1b[1;32mTAB\x1b[m] ÇóÖú[\x1b[1;32mh\x1b[m][m\n");
     else
-    	prints("Àë¿ª[¡û,e] Ñ¡Ôñ[¡ü,¡ı] ÔÄ¶Á[¡ú,r] ·¢±íÎÄÕÂ[Ctrl-P] ¿³ĞÅ[d] ±¸ÍüÂ¼[TAB] ÇóÖú[h]\x1b[m\n");
+        prints("Àë¿ª[¡û,e] Ñ¡Ôñ[¡ü,¡ı] ÔÄ¶Á[¡ú,r] ·¢±íÎÄÕÂ[Ctrl-P] ¿³ĞÅ[d] ±¸ÍüÂ¼[TAB] ÇóÖú[h]\x1b[m\n");
     if (digestmode == 0)        /* ÔÄ¶ÁÄ£Ê½ */
         strcpy(readmode, "Ò»°ã");
     else if (digestmode == 1)
@@ -539,10 +540,10 @@ void readtitle()
     else if (digestmode == 8)
         strcpy(readmode, "±êÌâ");
 
-	if (DEFINE(currentuser,DEF_HIGHCOLOR))
-    	prints("[1;37m[44m ±àºÅ   %-12s %6s %-40s[%4sÄ£Ê½] [m\n", "¿¯ µÇ Õß", "ÈÕ  ÆÚ", " ÎÄÕÂ±êÌâ", readmode);
-	else
-    	prints("[37m[44m ±àºÅ   %-12s %6s %-40s[%4sÄ£Ê½] [m\n", "¿¯ µÇ Õß", "ÈÕ  ÆÚ", " ÎÄÕÂ±êÌâ", readmode);
+    if (DEFINE(currentuser, DEF_HIGHCOLOR))
+        prints("[1;37m[44m ±àºÅ   %-12s %6s %-40s[%4sÄ£Ê½] [m\n", "¿¯ µÇ Õß", "ÈÕ  ÆÚ", " ÎÄÕÂ±êÌâ", readmode);
+    else
+        prints("[37m[44m ±àºÅ   %-12s %6s %-40s[%4sÄ£Ê½] [m\n", "¿¯ µÇ Õß", "ÈÕ  ÆÚ", " ÎÄÕÂ±êÌâ", readmode);
 //    clrtobot();
 }
 
@@ -560,7 +561,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
 
     manager = chk_currBM(currBM, currentuser);
 
-    type = get_article_flag(ent, currentuser, currboard,manager);
+    type = get_article_flag(ent, currentuser, currboard, manager);
     if (manager && (ent->accessed[0] & FILE_IMPORTED)) {        /* ÎÄ¼şÒÑ¾­±»ÊÕÈë¾«»ªÇø */
         if (type == ' ') {
             typeprefix = "\x1b[42m";
@@ -570,16 +571,17 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
             typesufix = "\x1b[m";
         }
     }
-	filetime = get_posttime(ent);
+    filetime = get_posttime(ent);
     if (filetime > 740000000) {
 #ifdef HAVE_COLOR_DATE
-		struct tm *mytm;
-        char* datestr = ctime( &filetime ) + 4;
-		mytm = localtime(&filetime);
-		sprintf(date, "[1;%dm%6.6s[m", mytm->tm_wday + 31, datestr);
+        struct tm *mytm;
+        char *datestr = ctime(&filetime) + 4;
+
+        mytm = localtime(&filetime);
+        sprintf(date, "[1;%dm%6.6s[m", mytm->tm_wday + 31, datestr);
 #else
         strncpy(date, ctime(&filetime) + 4, 6);
-		date[6]=0;
+        date[6] = 0;
 #endif
     }
     /*
@@ -602,33 +604,25 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
 
     if (uinfo.mode != RMAIL && digestmode != 1 && digestmode != 4 && digestmode != 5) { // ĞÂ·½·¨±È½Ï
         if (FFLL == 0) {
-            if (ent->groupid != ent->id && (!strncmp("Re:", ent->title, 3) || (!strncmp("©¸ ", ent->title, 3) || !strncmp("©À ", ent->title, 3)) && digestmode == 2))   /*ReµÄÎÄÕÂ */
+            if (ent->groupid != ent->id)
                 sprintf(buf, " %4d %s%c%s %-12.12s %s  %-47.47s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
             else                /* ·ÇReµÄÎÄÕÂ */
                 sprintf(buf, " %4d %s%c%s %-12.12s %s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
         } else {                /* ÔÊĞí ÏàÍ¬Ö÷Ìâ±êÊ¶ */
             if (ent->groupid != ent->id) {      /*ReµÄÎÄÕÂ */
-                if (!strncmp("Re:", ent->title, 3) || (!strncmp("©¸ ", ent->title, 3) || !strncmp("©À ", ent->title, 3)) && digestmode == 2)
-                    if (ReadPostHeader.groupid == ent->groupid) /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
-		if (DEFINE(currentuser,DEF_HIGHCOLOR))
+                if (ReadPostHeader.groupid == ent->groupid)     /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
+                    if (DEFINE(currentuser, DEF_HIGHCOLOR))
                         sprintf(buf, " [1;36m%4d[m %s%c%s %-12.12s %s[1;36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
-else
-                        sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %s[36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
                     else
-                        sprintf(buf, " %4d %s%c%s %-12.12s %s  %-47.47s", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
-                else if (ReadPostHeader.groupid == ent->groupid)        /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
-		if (DEFINE(currentuser,DEF_HIGHCOLOR))
-                    sprintf(buf, " [1;36m%4d[m %s%c%s %-12.12s %s[1;36m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
-else
-                    sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %s[36m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                        sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %s[36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
                 else
-                    sprintf(buf, " %4d %s%c%s %-12.12s %s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                    sprintf(buf, " %4d %s%c%s %-12.12s %s  %-47.47s", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
             } else {
                 if (ReadPostHeader.groupid == ent->groupid)     /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
-		if (DEFINE(currentuser,DEF_HIGHCOLOR))
-                    sprintf(buf, " [1;33m%4d[m %s%c%s %-12.12s %s[1;33m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
-else
-                    sprintf(buf, " [33m%4d[m %s%c%s %-12.12s %s[33m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                    if (DEFINE(currentuser, DEF_HIGHCOLOR))
+                        sprintf(buf, " [1;33m%4d[m %s%c%s %-12.12s %s[1;33m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                    else
+                        sprintf(buf, " [33m%4d[m %s%c%s %-12.12s %s[33m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
                 else
                     sprintf(buf, " %4d %s%c%s %-12.12s %s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
             }
@@ -642,18 +636,18 @@ else
     } else {                    /* ÔÊĞí ÏàÍ¬Ö÷Ìâ±êÊ¶ */
         if (!strncmp("Re:", ent->title, 3)) {   /*ReµÄÎÄÕÂ */
             if (!strcmp(ReplyPost + 3, ent->title + 3)) /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
-		if (DEFINE(currentuser,DEF_HIGHCOLOR))
-                sprintf(buf, " [1;36m%4d[m %s%c%s %-12.12s %s[1;36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
-else
-                sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %s[36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                if (DEFINE(currentuser, DEF_HIGHCOLOR))
+                    sprintf(buf, " [1;36m%4d[m %s%c%s %-12.12s %s[1;36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                else
+                    sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %s[36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
             else
                 sprintf(buf, " %4d %s%c%s %-12.12s %s  %-47.47s", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
         } else {
             if (strcmp(ReadPost, ent->title) == 0)      /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
-		if (DEFINE(currentuser,DEF_HIGHCOLOR))
-                sprintf(buf, " [1;33m%4d[m %s%c%s %-12.12s %s[1;33m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
-else
-                sprintf(buf, " [33m%4d[m %s%c%s %-12.12s %s[33m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                if (DEFINE(currentuser, DEF_HIGHCOLOR))
+                    sprintf(buf, " [1;33m%4d[m %s%c%s %-12.12s %s[1;33m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                else
+                    sprintf(buf, " [33m%4d[m %s%c%s %-12.12s %s[33m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
             else
                 sprintf(buf, " %4d %s%c%s %-12.12s %s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
         }
@@ -706,7 +700,7 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
 /*    quote_file[119] = fileinfo->filename[STRLEN - 2];
 */
     strncpy(quote_user, fileinfo->owner, OWNER_LEN);
-    quote_user[OWNER_LEN-1] = 0;
+    quote_user[OWNER_LEN - 1] = 0;
 
 #ifndef NOREPLY
     ch = ansimore_withzmodem(genbuf, false, fileinfo->title);   /* ÏÔÊ¾ÎÄÕÂÄÚÈİ */
@@ -718,15 +712,15 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     move(t_lines - 1, 0);
     clrtoeol();                 /* ÇåÆÁµ½ĞĞÎ² */
     if (haspostperm(currentuser, currboard)) {  /* ¸ù¾İÊÇ·ñÓĞPOSTÈ¨ ÏÔÊ¾×îÏÂÒ»ĞĞ */
-		if (DEFINE(currentuser,DEF_HIGHCOLOR))
-        prints("[44m[1;31m[ÔÄ¶ÁÎÄÕÂ] [33m »ØĞÅ R ©¦ ½áÊø Q,¡û ©¦ÉÏÒ»·â ¡ü©¦ÏÂÒ»·â <Space>,¡ı©¦Ö÷ÌâÔÄ¶Á ^X»òp [m");
-else
-        prints("[44m[31m[ÔÄ¶ÁÎÄÕÂ] [33m »ØĞÅ R ©¦ ½áÊø Q,¡û ©¦ÉÏÒ»·â ¡ü©¦ÏÂÒ»·â <Space>,¡ı©¦Ö÷ÌâÔÄ¶Á ^X»òp [m");
+        if (DEFINE(currentuser, DEF_HIGHCOLOR))
+            prints("[44m[1;31m[ÔÄ¶ÁÎÄÕÂ] [33m »ØĞÅ R ©¦ ½áÊø Q,¡û ©¦ÉÏÒ»·â ¡ü©¦ÏÂÒ»·â <Space>,¡ı©¦Ö÷ÌâÔÄ¶Á ^X»òp [m");
+        else
+            prints("[44m[31m[ÔÄ¶ÁÎÄÕÂ] [33m »ØĞÅ R ©¦ ½áÊø Q,¡û ©¦ÉÏÒ»·â ¡ü©¦ÏÂÒ»·â <Space>,¡ı©¦Ö÷ÌâÔÄ¶Á ^X»òp [m");
     } else {
-		if (DEFINE(currentuser,DEF_HIGHCOLOR))
-        prints("[44m[31m[ÔÄ¶ÁÎÄÕÂ]  [33m½áÊø Q,¡û ©¦ÉÏÒ»·â ¡ü©¦ÏÂÒ»·â <Space>,<Enter>,¡ı©¦Ö÷ÌâÔÄ¶Á ^X »ò p [m");
-else
-        prints("[44m[1;31m[ÔÄ¶ÁÎÄÕÂ]  [33m½áÊø Q,¡û ©¦ÉÏÒ»·â ¡ü©¦ÏÂÒ»·â <Space>,<Enter>,¡ı©¦Ö÷ÌâÔÄ¶Á ^X »ò p [m");
+        if (DEFINE(currentuser, DEF_HIGHCOLOR))
+            prints("[44m[31m[ÔÄ¶ÁÎÄÕÂ]  [33m½áÊø Q,¡û ©¦ÉÏÒ»·â ¡ü©¦ÏÂÒ»·â <Space>,<Enter>,¡ı©¦Ö÷ÌâÔÄ¶Á ^X »ò p [m");
+        else
+            prints("[44m[1;31m[ÔÄ¶ÁÎÄÕÂ]  [33m½áÊø Q,¡û ©¦ÉÏÒ»·â ¡ü©¦ÏÂÒ»·â <Space>,<Enter>,¡ı©¦Ö÷ÌâÔÄ¶Á ^X »ò p [m");
     }
 
     FFLL = 1;                   /* ReplyPostÖĞÎªReplyºóµÄÎÄÕÂÃû£¬ReadPostÎªÈ¥µôRe:µÄÎÄÕÂÃû */
@@ -749,7 +743,7 @@ else
 
     refresh();
 /* sleep(1); *//*
- * * * * * * * * ????? 
+ * * * * * * * * * * * ????? 
  */
     if (!(ch == KEY_RIGHT || ch == KEY_UP || ch == KEY_PGUP))
         ch = igetkey();
@@ -877,8 +871,8 @@ else
     case 'O':
     case 'o':                  /* Luzi 1997.11.1 */
 #ifdef NINE_BUILD
-	case 'C':
-	case 'c':
+    case 'C':
+    case 'c':
 #endif
         if (!HAS_PERM(currentuser, PERM_BASIC))
             break;
@@ -1099,7 +1093,7 @@ int generate_title()
         int index, data;
     } *hashtable;
     int *index, *next;
-	size_t f_size;
+    size_t f_size;
 
     digestmode = 0;
     setbdir(digestmode, olddirect, currboard);
@@ -1155,23 +1149,20 @@ int generate_title()
         total = f_size / size;
         hasht = total * 8 / 5;
         hashtable = (struct hashstruct *) malloc(sizeof(*hashtable) * hasht);
-        if (hashtable == NULL)
-		{
-			BBS_RETURN(-1);
-		}
+        if (hashtable == NULL) {
+            BBS_RETURN(-1);
+        }
         index = (int *) malloc(sizeof(int) * total);
-        if (index == NULL)
-		{
-			free(hashtable);
-			BBS_RETURN(-1);
-		}
+        if (index == NULL) {
+            free(hashtable);
+            BBS_RETURN(-1);
+        }
         next = (int *) malloc(sizeof(int) * total);
-        if (next == NULL)
-		{
-			free(hashtable);
-			free(index);
-			BBS_RETURN(-1);
-		}
+        if (next == NULL) {
+            free(hashtable);
+            free(index);
+            BBS_RETURN(-1);
+        }
         memset(hashtable, 0xFF, sizeof(*hashtable) * hasht);
         memset(index, 0, sizeof(int) * total);
         ptr1 = (struct fileheader *) ptr;
@@ -1606,11 +1597,12 @@ int do_reply(struct fileheader *fileinfo)
 int garbage_line(char *str)
 {                               /* ÅĞ¶Ï±¾ĞĞÊÇ·ñÊÇ ÎŞÓÃµÄ */
     int qlevel = 0;
+
 #ifdef NINE_BUILD
-    #define QUOTELEV 1 
+#define QUOTELEV 1
 #else
-    #define QUOTELEV 0
-#endif    
+#define QUOTELEV 0
+#endif
     while (*str == ':' || *str == '>') {
         str++;
         if (*str == ' ')
@@ -1628,63 +1620,65 @@ int garbage_line(char *str)
 
 /* When there is an old article that can be included -jjyang */
 #ifdef NINE_BUILD
-void
-do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
+void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
 {
-    FILE        *inf, *outf;
-    char        *qfile, *quser;
-    char        buf[256], *ptr;
-    char        op;
-    int         bflag;
+    FILE *inf, *outf;
+    char *qfile, *quser;
+    char buf[256], *ptr;
+    char op;
+    int bflag;
 
     qfile = q_file;
     quser = q_user;
-    bflag = strncmp( qfile, "mail", 4 );
-    outf = fopen( filepath, "w" );
-    if( *qfile != '\0' && (inf = fopen( qfile, "r" )) != NULL ) {
+    bflag = strncmp(qfile, "mail", 4);
+    outf = fopen(filepath, "w");
+    if (*qfile != '\0' && (inf = fopen(qfile, "r")) != NULL) {
         op = quote_mode;
-        if( op != 'N' ) {
-            fgets( buf, 256, inf );
-            if( (ptr = strrchr( buf, ')' )) != NULL ) {
+        if (op != 'N') {
+            fgets(buf, 256, inf);
+            if ((ptr = strrchr(buf, ')')) != NULL) {
                 ptr[1] = '\0';
-                if( (ptr = strchr( buf, ':' )) != NULL ) {
+                if ((ptr = strchr(buf, ':')) != NULL) {
                     quser = ptr + 1;
-                    while( *quser == ' ' )  quser++;
+                    while (*quser == ' ')
+                        quser++;
                 }
             }
 
-            if( bflag ) fprintf( outf, "¡¾ ÔÚ %-.55s µÄ´ó×÷ÖĞÌáµ½: ¡¿\n", quser );
-            else fprintf( outf, "¡¾ ÔÚ %-.55s µÄÀ´ĞÅÖĞÌáµ½: ¡¿\n", quser );
+            if (bflag)
+                fprintf(outf, "¡¾ ÔÚ %-.55s µÄ´ó×÷ÖĞÌáµ½: ¡¿\n", quser);
+            else
+                fprintf(outf, "¡¾ ÔÚ %-.55s µÄÀ´ĞÅÖĞÌáµ½: ¡¿\n", quser);
 
-            if( op == 'A' ) {
-                while( fgets( buf, 256, inf ) != NULL )
-                {
-                fprintf( outf, ": %s", buf );
+            if (op == 'A') {
+                while (fgets(buf, 256, inf) != NULL) {
+                    fprintf(outf, ": %s", buf);
                 }
-            } else if( op == 'R' ) {
-                while (fgets( buf, 256, inf ) != NULL)
-                    if( buf[0] == '\n' )  break;
-                while( fgets( buf, 256, inf ) != NULL )
-                {
-                    if(Origin2(buf))
+            } else if (op == 'R') {
+                while (fgets(buf, 256, inf) != NULL)
+                    if (buf[0] == '\n')
+                        break;
+                while (fgets(buf, 256, inf) != NULL) {
+                    if (Origin2(buf))
                         continue;
-                    fprintf( outf, "%s", buf );
+                    fprintf(outf, "%s", buf);
                 }
             } else {
-                while (fgets( buf, 256, inf ) != NULL)
-                    if( buf[0] == '\n' )  break;
-                while (fgets( buf, 256, inf ) != NULL) {
-                    if( strcmp( buf, "--\n" ) == 0 )
+                while (fgets(buf, 256, inf) != NULL)
+                    if (buf[0] == '\n')
                         break;
-                    if( buf[ 250 ] != '\0' )
-                        strcpy( buf+250, "\n" );
-                    if( !garbage_line( buf ) )
-                        fprintf( outf, ": %s", buf );
+                while (fgets(buf, 256, inf) != NULL) {
+                    if (strcmp(buf, "--\n") == 0)
+                        break;
+                    if (buf[250] != '\0')
+                        strcpy(buf + 250, "\n");
+                    if (!garbage_line(buf))
+                        fprintf(outf, ": %s", buf);
                 }
             }
         }
-        fprintf(outf,"\n");
-        fclose( inf ); 
+        fprintf(outf, "\n");
+        fclose(inf);
     }
 
     if ((numofsig > 0) && !(currentuser->signature == 0 || Anony == 1)) {       /* Ç©ÃûµµÎª0Ôò²»Ìí¼Ó */
@@ -1693,7 +1687,7 @@ do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
         else
             addsignature(outf, currentuser, currentuser->signature);
     }
-    fclose(outf); 
+    fclose(outf);
 }
 
 #else
@@ -1825,7 +1819,7 @@ int do_post()
      */
     setbfile(q_file, currboard, fileinfo->filename);
     strncpy(quote_user, fileinfo->owner, OWNER_LEN);
-    quote_user[OWNER_LEN-1] = 0;
+    quote_user[OWNER_LEN - 1] = 0;
 
     /*
      * find the author 
@@ -1907,6 +1901,7 @@ int post_article(char *q_file, struct fileheader *re_file)
     int replymode = 1;          /* Post New UI */
     char ans[4], include_mode = 'S';
     struct boardheader *bp;
+
 #ifdef FILTER
     int returnvalue;
 #endif
@@ -1981,8 +1976,8 @@ int post_article(char *q_file, struct fileheader *re_file)
         Anony = 1;
     else if (anonyboard)
         Anony = ANONYMOUS_DEFAULT;
-	else
-		Anony = 0;
+    else
+        Anony = 0;
 
     while (1) {                 /* ·¢±íÇ°ĞŞ¸Ä²ÎÊı£¬ ¿ÉÒÔ¿¼ÂÇÌí¼Ó'ÏÔÊ¾Ç©Ãûµµ' */
         sprintf(buf3, "ÒıÑÔÄ£Ê½ [%c]", include_mode);
@@ -2091,7 +2086,7 @@ int post_article(char *q_file, struct fileheader *re_file)
      * "Anonymous":currentuser->userid,STRLEN) ;
      */
     strncpy(post_file.owner, (anonyboard && Anony) ? currboard : currentuser->userid, OWNER_LEN);
-    post_file.owner[OWNER_LEN-1]=0;
+    post_file.owner[OWNER_LEN - 1] = 0;
 
     /*
      * if ((!strcmp(currboard,"Announce"))&&(!strcmp(post_file.owner,"Anonymous")))
@@ -2158,21 +2153,20 @@ int post_article(char *q_file, struct fileheader *re_file)
     if (!strcmp(currboard, "Board") && !HAS_PERM(currentuser, PERM_OBOARDS) && HAS_PERM(currentuser, PERM_BOARDS)) {
         post_file.accessed[0] |= FILE_SIGN;
     }
-
 #ifdef FILTER
-    returnvalue = 
+    returnvalue =
 #endif
-	   after_post(currentuser, &post_file, currboard, re_file);
+        after_post(currentuser, &post_file, currboard, re_file);
 
     if (!junkboard(currboard)) {
         currentuser->numposts++;
     }
 #ifdef FILTER
     if (returnvalue == 2) {
-	    clear();
-	    move (3, 0);
-	    prints ("\n\n            ºÜ±§Ç¸£¬±¾ÎÄ¿ÉÄÜº¬ÓĞ²»ÊÊµ±µÄÄÚÈİ£¬Ğè¾­ÉóºË·½¿É·¢\n±í£¬ÇëÄÍĞÄµÈ´ı...\n");
-	    pressreturn();
+        clear();
+        move(3, 0);
+        prints("\n\n            ºÜ±§Ç¸£¬±¾ÎÄ¿ÉÄÜº¬ÓĞ²»ÊÊµ±µÄÄÚÈİ£¬Ğè¾­ÉóºË·½¿É·¢\n±í£¬ÇëÄÍĞÄµÈ´ı...\n");
+        pressreturn();
     }
 #endif
     switch (olddigestmode) {
@@ -2355,11 +2349,11 @@ int edit_title(int ent, struct fileheader *fileinfo, char *direct)
          */
 
 #ifdef FILTER
-        if (check_badword_str(buf,strlen(buf))) {
-	    clear();
-	    move (3, 0);
-	    outs("     ºÜ±§Ç¸£¬¸Ã±êÌâ¿ÉÄÜº¬ÓĞ²»Ç¡µ±µÄÄÚÈİ£¬Çë×ĞÏ¸¼ì²é»»¸ö±êÌâ¡£");
-	    pressreturn();
+        if (check_badword_str(buf, strlen(buf))) {
+            clear();
+            move(3, 0);
+            outs("     ºÜ±§Ç¸£¬¸Ã±êÌâ¿ÉÄÜº¬ÓĞ²»Ç¡µ±µÄÄÚÈİ£¬Çë×ĞÏ¸¼ì²é»»¸ö±êÌâ¡£");
+            pressreturn();
             return PARTUPDATE;
         }
 #endif
@@ -2439,7 +2433,7 @@ int sign_post(int ent, struct fileheader *fileinfo, char *direct)
 #ifdef FILTER
 int censor_post(int ent, struct fileheader *fileinfo, char *direct)
 {
-	return change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_CENSOR_FLAG, 1);
+    return change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_CENSOR_FLAG, 1);
 }
 #endif
 
@@ -2662,11 +2656,11 @@ int show_sec_board_notes(char bname[30])
 {                               /* ÏÔÊ¾°æÖ÷µÄ»° */
     char buf[256];
 
-    sprintf(buf, "vote/%s/secnotes", bname);       /* ÏÔÊ¾±¾°æµÄ°æÖ÷µÄ»° vote/°æÃû/notes */
+    sprintf(buf, "vote/%s/secnotes", bname);    /* ÏÔÊ¾±¾°æµÄ°æÖ÷µÄ»° vote/°æÃû/notes */
     if (dashf(buf)) {
         ansimore2(buf, false, 0, 23 /*19 */ );
         return 1;
-    } else if (dashf("vote/secnotes")) {   /* ÏÔÊ¾ÏµÍ³µÄ»° vote/notes */
+    } else if (dashf("vote/secnotes")) {        /* ÏÔÊ¾ÏµÍ³µÄ»° vote/notes */
         ansimore2("vote/secnotes", false, 0, 23 /*19 */ );
         return 1;
     }
@@ -2724,7 +2718,7 @@ int sequent_messages(struct fileheader *fptr, int idc, int *continue_flag)
             return 0;
         }
         strncpy(quote_user, fptr->owner, OWNER_LEN);
-        quote_user[OWNER_LEN-1] = 0;
+        quote_user[OWNER_LEN - 1] = 0;
         setbfile(genbuf, currboard, fptr->filename);
         ansimore_withzmodem(genbuf, false, fptr->title);
       redo:
@@ -2828,7 +2822,7 @@ struct one_key read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
     {';', noreply_post},        /*Haohmaru.99.01.01,Éè¶¨²»¿ÉreÄ£Ê½ */
     {'#', sign_post},           /* Bigman: 2000.8.12  Éè¶¨ÎÄÕÂ±ê¼ÇÄ£Ê½ */
 #ifdef FILTER
-    {'@', censor_post},		/* czz: 2002.9.29 ÉóºË±»¹ıÂËÎÄÕÂ */
+    {'@', censor_post},         /* czz: 2002.9.29 ÉóºË±»¹ıÂËÎÄÕÂ */
 #endif
     {'E', edit_post},
     {Ctrl('G'), change_mode},   /* bad : 2002.8.8 add marked mode */
@@ -2842,7 +2836,7 @@ struct one_key read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
     {'Y', UndeleteArticle},     /* Leeward 98.05.18 */
     {Ctrl('P'), do_post},
 #ifdef NINE_BUILD
-	{'c', show_t_friends},
+    {'c', show_t_friends},
     {'C', clear_new_flag},
 #else
     {'c', clear_new_flag},
@@ -3179,7 +3173,7 @@ int Goodbye()
              * i,sysoplist[i+4],syswork[i+4]);
              * prints("[[33m%1d[m] »¹ÊÇ×ßÁËÂŞ£¡\n",4); 
  *//*
- * * * * * * * * ×îºóÒ»¸öÑ¡Ïî 
+ * * * * * * * * * * * ×îºóÒ»¸öÑ¡Ïî 
  */
             /*
              * sprintf(spbuf,"ÄãµÄÑ¡ÔñÊÇ [[32m%1d[m]£º",4);
@@ -3290,7 +3284,7 @@ int Goodbye()
         /*
          * sprintf( genbuf, "Stay:%3ld (%s)", stay / 60, currentuser->username ); 
          */
-        newbbslog(BBSLOG_USIES,"EXIT: Stay:%3ld (%s)[%d %d]", stay / 60, currentuser->username, utmpent, usernum);
+        newbbslog(BBSLOG_USIES, "EXIT: Stay:%3ld (%s)[%d %d]", stay / 60, currentuser->username, utmpent, usernum);
         u_exit();
         started = 0;
     }
@@ -3304,28 +3298,29 @@ int Goodbye()
         sethomefile(fname, currentuser->userid, "msgfile");
         if (DEFINE(currentuser, DEF_MAILMSG /*ÀëÕ¾Ê±¼Ä»ØËùÓĞĞÅÏ¢ */ ) && dashf(fname)) {
 #ifdef NINE_BUILD
-	  time_t now, timeout;	
-	  char ans[3];
-	  timeout = time(0) + 60;
-	  do
-          {
-              move(t_lines-1,0);
-	      clrtoeol();
-	      getdata( t_lines-1, 0, "ÊÇ·ñ½«´Ë´ÎËùÊÕµ½µÄËùÓĞÑ¶Ï¢´æµµ (Y/N)? ", ans,2,DOECHO,NULL,true);
-	      if((toupper(ans[0])=='Y')||(toupper(ans[0])=='N')) break;
-          } while(time(0) < timeout);
- 	  if (toupper(ans[0])=='Y') {	 
-#endif		
-            char title[STRLEN];
-            time_t now;
+            time_t now, timeout;
+            char ans[3];
 
-            now = time(0);
-            sprintf(title, "[%12.12s] ËùÓĞÑ¶Ï¢±¸·İ", ctime(&now) + 4);
-            mail_file(currentuser->userid, fname, currentuser->userid, title, 1);
-#ifdef NINE_BUILD
-	  }   
+            timeout = time(0) + 60;
+            do {
+                move(t_lines - 1, 0);
+                clrtoeol();
+                getdata(t_lines - 1, 0, "ÊÇ·ñ½«´Ë´ÎËùÊÕµ½µÄËùÓĞÑ¶Ï¢´æµµ (Y/N)? ", ans, 2, DOECHO, NULL, true);
+                if ((toupper(ans[0]) == 'Y') || (toupper(ans[0]) == 'N'))
+                    break;
+            } while (time(0) < timeout);
+            if (toupper(ans[0]) == 'Y') {
 #endif
-	} else
+                char title[STRLEN];
+                time_t now;
+
+                now = time(0);
+                sprintf(title, "[%12.12s] ËùÓĞÑ¶Ï¢±¸·İ", ctime(&now) + 4);
+                mail_file(currentuser->userid, fname, currentuser->userid, title, 1);
+#ifdef NINE_BUILD
+            }
+#endif
+        } else
             unlink(fname);
         fp = fopen("friendbook", "r");  /*ËÑË÷ÏµÍ³ Ñ°ÈËÃûµ¥ */
         while (fp != NULL && fgets(buf, sizeof(buf), fp) != NULL) {
@@ -3343,7 +3338,7 @@ int Goodbye()
             if (!strcmp(uid, currentuser->userid))      /*É¾³ı±¾ÓÃ»§µÄ Ñ°ÈËÃûµ¥ */
                 del_from_file("friendbook", buf);       /*Ñ°ÈËÃûµ¥Ö»ÔÚ±¾´ÎÉÏÏßÓĞĞ§ */
         }
-        if (fp)                                                                            /*---	add by period 2000-11-11 fix null hd bug	---*/
+        if (fp)                                                                                        /*---	add by period 2000-11-11 fix null hd bug	---*/
             fclose(fp);
     }
     sleep(1);
