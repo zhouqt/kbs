@@ -693,6 +693,8 @@ int valid_article(pmt, abort)
             prints("本篇文章的引言与签名档行数远超过本文长度.\n");
             y += 3;
         }
+        if (total!=lines) 
+        	lines--; /*如果是re文和签名档，应该减掉一行*/
         temp = 0;
         if (len < 8 || lines <= 2) {
             move(y, 0);
