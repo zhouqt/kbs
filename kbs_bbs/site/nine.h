@@ -10,6 +10,7 @@
 #define HAVE_TEMPORARY_NICK /* 允许临时改变昵称 */
 #define HAVE_FRIENDS_NUM /* 显示好友数目 */
 #undef HAVE_REVERSE_DNS
+#undef FILTER
 
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
@@ -34,13 +35,17 @@
 #define DEFAULTBOARD    	"sysop"
 #define FILTER_BOARD        "Filter"
 #define SYSMAIL_BOARD       "sysmail"
+#define BLESS_BOARD "Blessing"
+
 #define MAXUSERS  		20000
+#define MAXCLUB         128
 #define MAXBOARD  		400
-#define MAXCLUB                 128
 #define MAXACTIVE 		8000
-#define MAX_GUEST_NUM		1000
+#define MAX_GUEST_NUM		10
 
 #define POP3PORT		110
+#define POP3SPORT		995
+/* ASCIIArt, by czz, 2002.7.5 */
 #define	LENGTH_SCREEN_LINE	220
 #define	LENGTH_FILE_BUFFER 	160
 #define	LENGTH_ACBOARD_BUFFER	150
@@ -54,7 +59,7 @@
 #define LIFE_DAY_NEW		15
 #define LIFE_DAY_SUICIDE	3
 
-#define DAY_DELETED_CLEAN	20
+#define DAY_DELETED_CLEAN	10
 #define SEC_DELETED_OLDHOME	259200/* 3600*24*30，注册新用户如果存在这个用户的目录，保留时间*/
 
 #define	REGISTER_WAIT_TIME	(0)
@@ -227,107 +232,11 @@ bigger mailbox. --stephen 2001.10.31*/
 
 #define TDEF_SPLITSCREEN 000001
 
-#ifndef EXTERN
-extern char *permstrings[];
-extern char    *groups[];
-extern char    *explain[];
-extern char *user_definestr[];
-#else
-const char *permstrings[] = {
-        "基本权力",             /* PERM_BASIC */
-        "进入聊天室",           /* PERM_CHAT */
-        "呼叫他人聊天",         /* PERM_PAGE */
-        "发表文章",             /* PERM_POST */
-        "使用者资料正确",       /* PERM_LOGINOK */
-        "计算机系本科生",       /* PERM_DCS */
-        "可隐身",               /* PERM_CLOAK */
-        "可见隐身",             /* PERM_SEECLOAK */
-        "长期帐号",         /* PERM_XEMPT */
-        "编辑系统档案",         /* PERM_WELCOME */
-        "板主",                 /* PERM_BOARDS */
-        "帐号管理员",           /* PERM_ACCOUNTS */
-        "水木清华智囊团",       /* PERM_CHATCLOAK */
-        "投票管理员",           /* PERM_OVOTE */
-        "系统维护管理员",       /* PERM_SYSOP */
-        "Read/Post 限制",       /* PERM_POSTMASK */
-        "精华区总管",           /* PERM_ANNOUNCE*/
-        "讨论区总管",           /* PERM_OBOARDS*/
-        "活动看版总管",         /* PERM_ACBOARD*/
-        "不能 ZAP(讨论区专用)", /* PERM_NOZAP*/
-        "聊天室OP(元老院专用)", /* PERM_CHATOP */
-        "系统总管理员",         /* PERM_ADMIN */
-        "荣誉帐号",           /* PERM_HONOR*/
-        "特殊权限 5",           /* PERM_UNUSE?*/
-        "仲裁委员",           /* PERM_JURY*/
-        "特殊权限 7",           /* PERM_UNUSE?*/
-        "自杀进行中",        /*PERM_SUICIDE*/
-        "特殊权限 9",           /* PERM_UNUSE?*/
-        "看系统讨论版",           /* PERM_UNUSE?*/
-        "封禁Mail",           /* PERM_DENYMAIL*/
-        "男人版权限",           /* PERM_MAIL*/
-
-};
-
-/* You might want to put more descriptive strings for SPECIAL1 and SPECIAL2
-   depending on how/if you use them. */
-char *user_definestr[] = {
-    "活动看版",                 /* DEF_ACBOARD */
-    "使用彩色",                 /* DEF_COLOR */
-    "编辑时显示状态栏",         /* DEF_EDITMSG */
-    "分类讨论区以 New 显示",    /* DEF_NEWPOST */
-    "选单的讯息栏",             /* DEF_ENDLINE */
-    "上站时显示好友名单",       /* DEF_LOGFRIEND */
-    "让好友呼叫",               /* DEF_FRIENDCALL */
-    "使用自己的离站画面",       /* DEF_LOGOUT */
-    "进站时显示备忘录",         /* DEF_INNOTE */
-    "离站时显示备忘录",         /* DEF_OUTNOTE */
-    "讯息栏模式：呼叫器/人数",  /* DEF_NOTMSGFRIEND */
-    "菜单模式选择：一般/精简",  /* DEF_NORMALSCR */
-    "阅读文章是否使用绕卷选择", /* DEF_CIRCLE */
-    "阅读文章游标停於第一篇未读",       /* DEF_FIRSTNEW */
-    "屏幕标题色彩：一般/变换",  /* DEF_TITLECOLOR */
-    "接受所有人的讯息",         /* DEF_ALLMSG */
-    "接受好友的讯息",           /* DEF_FRIENDMSG */
-    "收到讯息发出声音",         /* DEF_SOUNDMSG */
-    "离站後寄回所有讯息",       /* DEF_MAILMSG */
-    "发文章时实时显示讯息",     /*"所有好友上站均通知",    DEF_LOGININFORM */
-    "菜单上显示帮助信息",       /* DEF_SHOWSCREEN */
-    "进站时显示十大新闻",       /* DEF_SHOWHOT */
-    "进站时观看留言版",         /* DEF_NOTEPAD */
-    "忽略讯息功能键: Enter/Esc",        /* DEF_IGNOREMSG */
-    "使用高亮界面",                   /* DEF_HIGHCOLOR */
-    "进站时观看上站人数统计图", /* DEF_SHOWSTATISTIC Haohmaru 98.09.24 */
-    "未读标记使用 *",           /* DEF_UNREADMARK Luzi 99.01.12 */
-    "使用GB码阅读",             /* DEF_USEGB KCN 99.09.03 */
-    "阅读方式: 全屏/分屏"  /* DEF_SPLITSCREEN 2002.9.1 */
-};
-
-const char *explain[]={
-        "本站系统", 
-        "同学会",
-        "电脑技术",   
-        "学术科学", 
-        "艺术文化",  
-        "人文社会",
-        "体育休闲", 
-        "知性感性",  
-        "新闻时事",  
-        NULL
-};
-
-const char *groups[]={
-        "GROUP_0",
-        "GROUP_1",
-        "GROUP_2",
-        "GROUP_3",
-        "GROUP_4",
-        "GROUP_5",
-        "GROUP_6",
-        "GROUP_7",
-        "GROUP_8",
-        NULL
-};
-#endif
+extern const char *permstrings[];
+extern const char    *groups[];
+extern const char    *explain[];
+extern const char *user_definestr[];
+extern const char *mailbox_prop_str[];
 
 /**
  * 看在线用户时的按键处理字符。
@@ -347,7 +256,15 @@ const char *groups[]={
 typedef struct fileheader {     /* This structure is used to hold data in */
     char filename[FILENAME_LEN];      /* the DIR files */
     unsigned int id, groupid, reid;
+#ifdef FILTER
+    char o_board[STRLEN - BM_LEN];
+    unsigned int o_id;
+    unsigned int o_groupid;
+    unsigned int o_reid;
+    char unused1[14];
+#else
     char unused1[46];
+#endif
     char innflag[2];
     char owner[OWNER_LEN];
     char unused2[50];
@@ -356,8 +273,37 @@ typedef struct fileheader {     /* This structure is used to hold data in */
     unsigned char accessed[12]; /* struct size = 256 bytes */
 } fileheader;
 
+typedef struct fileheader fileheader_t;
+
 #define GET_POSTFILENAME(x,y) get_postfilename(x,y,0)
 #define GET_MAILFILENAME(x,y) get_postfilename(x,y,0)
 #define VALID_FILENAME(x) valid_filename(x,0)
+
+// WWW部分
+
+//修改密码之类的页面使用https
+#define SECURE_HTTPS
+
+/**
+ * Mailbox properties.
+ * 
+ * @author flyriver
+ */
+
+#define MBP_SAVESENTMAIL      0x00000001
+#define MBP_FORCEDELETEMAIL   0x00000002
+#define MBP_MAILBOXSHORTCUT   0x00000004
+
+#define MBP_NUMS 3
+
+#define HAS_MAILBOX_PROP(u, x) ((u)->mailbox_prop & x)
+
+/**
+ * Mailgroup macros.
+ *
+ * @author flyriver
+ */
+#define MAX_MAILGROUP_NUM 30
+#define MAX_MAILGROUP_USERS 300
 
 #endif

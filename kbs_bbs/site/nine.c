@@ -6,6 +6,99 @@ const char seccode[SECNUM][5]={
 	"0", "1", "3", "4", "5", "6", "7", "8"
 };
 
+const char *permstrings[] = {
+        "基本权力",             /* PERM_BASIC */
+        "进入聊天室",           /* PERM_CHAT */
+        "呼叫他人聊天",         /* PERM_PAGE */
+        "发表文章",             /* PERM_POST */
+        "使用者资料正确",       /* PERM_LOGINOK */
+        "计算机系本科生",       /* PERM_DCS */
+        "可隐身",               /* PERM_CLOAK */
+        "可见隐身",             /* PERM_SEECLOAK */
+        "长期帐号",         /* PERM_XEMPT */
+        "编辑系统档案",         /* PERM_WELCOME */
+        "板主",                 /* PERM_BOARDS */
+        "帐号管理员",           /* PERM_ACCOUNTS */
+        "水木清华智囊团",       /* PERM_CHATCLOAK */
+        "投票管理员",           /* PERM_OVOTE */
+        "系统维护管理员",       /* PERM_SYSOP */
+        "Read/Post 限制",       /* PERM_POSTMASK */
+        "精华区总管",           /* PERM_ANNOUNCE*/
+        "讨论区总管",           /* PERM_OBOARDS*/
+        "活动看版总管",         /* PERM_ACBOARD*/
+        "不能 ZAP(讨论区专用)", /* PERM_NOZAP*/
+        "聊天室OP(元老院专用)", /* PERM_CHATOP */
+        "系统总管理员",         /* PERM_ADMIN */
+        "荣誉帐号",           /* PERM_HONOR*/
+        "特殊权限 5",           /* PERM_UNUSE?*/
+        "仲裁委员",           /* PERM_JURY*/
+        "特殊权限 7",           /* PERM_UNUSE?*/
+        "自杀进行中",        /*PERM_SUICIDE*/
+        "特殊权限 9",           /* PERM_UNUSE?*/
+        "看系统讨论版",           /* PERM_UNUSE?*/
+        "封禁Mail",           /* PERM_DENYMAIL*/
+        "男人版权限",           /* PERM_MAIL*/
+
+};
+
+char *user_definestr[] = {
+    "活动看版",                 /* DEF_ACBOARD */
+    "使用彩色",                 /* DEF_COLOR */
+    "编辑时显示状态栏",         /* DEF_EDITMSG */
+    "分类讨论区以 New 显示",    /* DEF_NEWPOST */
+    "选单的讯息栏",             /* DEF_ENDLINE */
+    "上站时显示好友名单",       /* DEF_LOGFRIEND */
+    "让好友呼叫",               /* DEF_FRIENDCALL */
+    "使用自己的离站画面",       /* DEF_LOGOUT */
+    "进站时显示备忘录",         /* DEF_INNOTE */
+    "离站时显示备忘录",         /* DEF_OUTNOTE */
+    "讯息栏模式：呼叫器/人数",  /* DEF_NOTMSGFRIEND */
+    "菜单模式选择：一般/精简",  /* DEF_NORMALSCR */
+    "阅读文章是否使用绕卷选择", /* DEF_CIRCLE */
+    "阅读文章游标停於第一篇未读",       /* DEF_FIRSTNEW */
+    "屏幕标题色彩：一般/变换",  /* DEF_TITLECOLOR */
+    "接受所有人的讯息",         /* DEF_ALLMSG */
+    "接受好友的讯息",           /* DEF_FRIENDMSG */
+    "收到讯息发出声音",         /* DEF_SOUNDMSG */
+    "离站後寄回所有讯息",       /* DEF_MAILMSG */
+    "发文章时实时显示讯息",     /*"所有好友上站均通知",    DEF_LOGININFORM */
+    "菜单上显示帮助信息",       /* DEF_SHOWSCREEN */
+    "进站时显示十大新闻",       /* DEF_SHOWHOT */
+    "进站时观看留言版",         /* DEF_NOTEPAD */
+    "忽略讯息功能键: Enter/Esc",        /* DEF_IGNOREMSG */
+    "使用高亮界面",                   /* DEF_HIGHCOLOR */
+    "进站时观看上站人数统计图", /* DEF_SHOWSTATISTIC Haohmaru 98.09.24 */
+    "未读标记使用 *",           /* DEF_UNREADMARK Luzi 99.01.12 */
+    "使用GB码阅读",             /* DEF_USEGB KCN 99.09.03 */
+    "阅读方式: 全屏/分屏"  /* DEF_SPLITSCREEN 2002.9.1 */
+};
+
+const char *explain[]={
+        "本站系统", 
+        "同学会",
+        "电脑技术",   
+        "学术科学", 
+        "艺术文化",  
+        "人文社会",
+        "体育休闲", 
+        "知性感性",  
+        "新闻时事",  
+        NULL
+};
+
+const char *groups[]={
+        "GROUP_0",
+        "GROUP_1",
+        "GROUP_2",
+        "GROUP_3",
+        "GROUP_4",
+        "GROUP_5",
+        "GROUP_6",
+        "GROUP_7",
+        "GROUP_8",
+        NULL
+};
+
 const char secname[SECNUM][2][20]={
 	{"本站系统", "[站内]"},
 	{"同学会", "[本系]"},
@@ -16,6 +109,13 @@ const char secname[SECNUM][2][20]={
 	{"体育休闲", "[休闲/音乐]"},
 	{"知性感性", "[谈天/感性]"},
 	{"新闻时事", "[新闻]"},
+};
+
+const char *mailbox_prop_str[] =
+{
+	"发信时保存信件到发件箱",
+	"删除信件时不保存到垃圾箱",
+	"版面按 'v' 时进入: 收件箱(OFF) / 信箱主界面(ON)",
 };
 
 struct _shmkey
@@ -195,39 +295,47 @@ int     mode;
     case GIVEUPNET: return "戒网中..";
     case SERVICES:    return "休闲娱乐..";
 	case FRIENDTEST:  return "心有灵犀";
+	case CHICKEN:	return "星空战斗鸡";
     default: return "去了那里!?" ;
     }
 }
 
-int multilogin_user(struct userec* user,int usernum)
+int multilogin_user(struct userec *user, int usernum)
 {
     int logincount;
     int curr_login_num;
 
-    logincount=apply_utmpuid( NULL , usernum,0);
+    logincount = apply_utmpuid(NULL, usernum, 0);
 
-    if (logincount<1) RemoveMsgCountFile(user->userid);
+    if (logincount < 1)
+        RemoveMsgCountFile(user->userid);
 
-    if (HAS_PERM(user,PERM_MULTILOG)) 
-        return 0;  /* don't check sysops */
+#ifdef FILTER
+    if (!strcmp(user->userid,"menss")&&logincount<2)
+        return 0;
+#endif
+    if (HAS_PERM(user, PERM_MULTILOG))
+        return 0;               /* don't check sysops */
     curr_login_num = get_utmp_number();
     /* Leeward: 97.12.22 BMs may open 2 windows at any time */
     /* Bigman: 2000.8.17 智囊团能够开2个窗口 */
     /* stephen: 2001.10.30 仲裁可以开两个窗口 */
-    if ((HAS_PERM(user,PERM_BOARDS) || HAS_PERM(user,PERM_CHATOP)|| 
-    	HAS_PERM(user,PERM_JURY) || HAS_PERM(user,PERM_CHATCLOAK)) 
-    	&& logincount< 2)
+    if (HAS_PERM(user, PERM_SYSOP)) return 0;
+    return 1;
+    if ((HAS_PERM(user, PERM_BOARDS) || HAS_PERM(user, PERM_CHATOP) 
+    	|| HAS_PERM(user, PERM_JURY) || HAS_PERM(user, PERM_CHATCLOAK)
+    	|| HAS_PERM(user, PERM_BMAMANGER) )
+        && logincount < 2)
         return 0;
     /* allow multiple guest user */
     if (!strcmp("guest", user->userid)) {
-        if ( logincount > MAX_GUEST_NUM ) {
-        	return 2;
+        if (logincount > MAX_GUEST_NUM) {
+            return 2;
         }
         return 0;
-    }
-    else if ( ((curr_login_num<700)&&(logincount>=2) )
-           || ((curr_login_num>=700)&& (logincount>=1)) ) /*user login limit*/
-           return 1;
+    } else if (((curr_login_num < 700) && (logincount >= 2))
+               || ((curr_login_num >= 700) && (logincount >= 1)))       /*user login limit */
+        return 1;
     return 0;
 }
 
