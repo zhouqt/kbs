@@ -297,10 +297,7 @@ int do_userlist()
         resetcolor();
         move(y, x);
         sprintf(user_info_str,
-                 /*---	modified by period	2000-10-21	ÔÚÏßÓÃ»§Êı¿ÉÒÔ´óÓÚ1000µÄ
-                         " %3d%2s%s%-12.12s%s%s %-16.16s%s %-16.16s %c %c %s%-17.17s[m%5.5s\n",
-                 ---*/
-                " %4d%2s%s%-12.12s%s%s "), 
+                " %4d%2s%s%-12.12s%s%s ", 
                 (override) ? "[1;32m" : "", uentp.userid, (override) ? "[m" : "", 
                 (override && showexplain) ? "[1;31m" : "");
         prints("%s", user_info_str);
