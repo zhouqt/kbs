@@ -68,6 +68,32 @@ void copy_var(struct var_struct * a, struct var_struct * b)
             b->p[i][j]=a->p[i][j];
 }
 
+void link_h(struct var_struct * a, struct var_struct * b, struct var_struct * c)
+{
+    int i,j;
+    makesure(a->width==b->width);
+    makesize(c, a->height+b->height, a->width);
+    for(i=0;i<a->height;i++)
+        for(j=0;j<a->width;j++)
+            c->p[i][j]=a->p[i][j];
+    for(i=0;i<b->height;i++)
+        for(j=0;j<b->width;j++)
+            c->p[i+a->height][j]=b->p[i][j];
+}
+
+void link_w(struct var_struct * a, struct var_struct * b, struct var_struct * c)
+{
+    int i,j;
+    makesure(a->height==b->height);
+    makesize(c, a->height, a->width+b->width);
+    for(i=0;i<a->height;i++)
+        for(j=0;j<a->width;j++)
+            c->p[i][j]=a->p[i][j];
+    for(i=0;i<b->height;i++)
+        for(j=0;j<b->width;j++)
+            c->p[i][j+a->width]=b->p[i][j];
+}
+
 void add_var(struct var_struct * a, struct var_struct * b, struct var_struct * c)
 {
     int i,j;
@@ -318,6 +344,16 @@ int check_var_double(char * s, int l)
     return p;
 }
 
+int check_var_array(char * s, int l)
+{
+    int i,p=1,count=0;
+    for(i=0;i<l;i++) {
+        if(s[i]==':') count++;
+        p=p&&(isdouble(s[i])||s[i]==':');
+    }
+    return (p&&count>=1&&count<=2)?count:0;
+}
+
 void set_matrix(struct var_struct * p, char * s)
 {
     char buf[80];
@@ -350,6 +386,38 @@ void set_matrix(struct var_struct * p, char * s)
             sscanf(buf, "%lf", &f);
             p->p[i][j]=f;
         }
+}
+
+void selmatrix(struct var_struct * s, struct var_struct * u, struct var_struct * v, struct var_struct * p)
+{
+    int i,j,k,i0,j0;
+    makesure(u->height==1&&v->height==1);
+    if(!u->p) {
+        makesize(u, 1, s->height);
+        for(i=0;i<s->height;i++)
+            u->p[0][i]=(double)i;
+    }
+    if(!v->p) {
+        makesize(v, 1, s->width);
+        for(i=0;i<s->width;i++)
+            v->p[0][i]=(double)i;
+    }
+    for(i=0;i<u->width;i++) {
+        j=(int)(u->p[0][i]+0.5);
+        makesure(j>=0&&j<s->height);
+    }
+    for(i=0;i<v->width;i++) {
+        j=(int)(v->p[0][i]+0.5);
+        makesure(j>=0&&j<s->width);
+    }
+    makesize(p, u->width, v->width);
+    for(i=0;i<u->width;i++) {
+        i0=(int)(u->p[0][i]+0.5);
+        for(j=0;j<v->width;j++) {
+            j0=(int)(v->p[0][i]+0.5);
+            p->p[i][j]=s->p[i0][j0];
+        }
+    }
 }
 
 int get_rl(char * s, int r, int l)
@@ -445,13 +513,14 @@ void take_func(struct var_struct * p, struct var_struct * q, int kind)
 void eval(struct var_struct * p, char * s, int l, int r)
 {
     int i,j,n;
-    char op[5]="+-*/^";
+    char op[7]=";,+-*/^";
     struct var_struct * t,q;
     char buf[300];
     while(s[l]==' '&&l<=r) l++;
     while(s[r]==' '&&l<=r) r--;
     makesure(l<=r);
-    while(s[l]=='('&&s[r]==')'&&get_rl(s,r,l)==l) {
+    while(s[l]=='('&&s[r]==')'&&get_rl(s,r,l)==l||
+        s[l]=='['&&s[r]==']'&&get_rl2(s,r,l)==l) {
         l++; r--;
         while(s[l]==' '&&l<=r) l++;
         while(s[r]==' '&&l<=r) r--;
@@ -471,16 +540,43 @@ void eval(struct var_struct * p, char * s, int l, int r)
         set_var(p, f);
         return;
     }
-    if(s[l]=='['&&s[r]==']'&&get_rl2(s,r,l)==l) {
-        strcpy(buf, s+l+1);
-        buf[r-l-1]=0;
-        set_matrix(p, buf);
+    if(check_var_array(s+l, r-l+1)) {
+        double f1,f2,f3;
+        double f;
+        strcpy(buf, s+l);
+        buf[r-l+1]=0;
+        i=check_var_array(s+l,r-l+1);
+        if(buf[0]==':'&&!buf[1]) {
+            p->p=0;
+            return;
+        }
+        else if(i==2) {
+            sscanf(buf, "%lf:%lf", &f1, &f2);
+            if(f1<f2) f3=1; else f3=-1;
+        }
+        else {
+            sscanf(buf, "%lf:%lf:%lf", &f1, &f2, &f3);
+            if(fabs(f3)<MINIMUM) {
+                err=1;
+                return;
+            }
+            if((f2-f1)/f3<0) f3=-f3;
+        }
+        makesize(p, 1, (int)((f2-f1+MINIMUM)/f3)+1);
+        i=0;
+        do{
+            p->p[0][i]=f1;
+            f1+=f3;
+            i++;
+            if(i>p->width) break;
+        }while(f1-MINIMUM<=f3);
         return;
     }
     i=l;
     while(isalpha(s[i])&&i<=r) i++;
     if(i>l&&s[i]=='('&&s[r]==')'&&get_rl(s,r,l)==i) {
-        struct var_struct u;
+        struct var_struct u,v;
+        u.p=0; v.p=0;
         strcpy(buf, s+l);
         buf[i-l]=0;
         j=0;
@@ -489,42 +585,59 @@ void eval(struct var_struct * p, char * s, int l, int r)
             j++;
         }
         if(funcname[j][0]) {
-            u.p = 0;
             eval(&u, s, i+1, r-1);
             makesure(1);
             take_func(p, &u, j);
             del(&u);
         }
-        else
-            err=1;
+        else {
+            int k;
+            j=get_var(buf);
+            strcpy(buf, s+i+1);
+            s[r-1-i]=0;
+            k=strchr(buf, ',');
+            eval(&u, buf, 0, k-1);
+            makesure(1);
+            eval(&v, buf, k+1, strlen(buf)-1);
+            makesure(1);
+            selmatrix(vars+j, &u, &v, p);
+            del(&u);
+            del(&v);
+        }
         return ;
     }
     for(j=0;j<5;j++) {
         n=r;
         do{
             if(s[n]==op[j]) {
-                struct var_struct m1,m2;
-                m1.p=0; m2.p=0;
+                struct var_struct m1,m2,m3;
+                m1.p=0; m2.p=0; m3.p=0;
                 eval(&m1,s,l,n-1);
                 makesure(1);
                 eval(&m2,s,n+1,r);
                 makesure(1);
                 switch(j) {
                     case 0:
-                        add_var(&m1, &m2, p);
+                        link_h(&m1, &m2, p);
                         break;
                     case 1:
-                        add_var(&m1, &m2, p);
+                        link_w(&m1, &m2, p);
                         break;
                     case 2:
-                        mul_var(&m1, &m2, p);
+                        add_var(&m1, &m2, p);
                         break;
                     case 3:
-                        makesure(is_single_var(&m1)&&is_single_var(&m2));
-                        makesure(fabs(**(m2.p))>MINIMUM);
-                        set_var(p, (**(m1.p))/(**(m2.p)));
+                        add_var(&m1, &m2, p);
                         break;
                     case 4:
+                        mul_var(&m1, &m2, p);
+                        break;
+                    case 5:
+                        inverse(&m3, &m2);
+                        mul_var(&m1, &m3, p);
+                        del(&m3);
+                        break;
+                    case 6:
                         makesure(is_single_var(&m1)&&is_single_var(&m2));
                         makesure(fabs(**(m2.p))>MINIMUM);
                         set_var(p, exp(log(**(m1.p))*(**(m2.p))));
