@@ -21,7 +21,11 @@
 	else
 	{
 		$link = pc_db_connect();
-		$pc = pc_load_infor($link,$currentuser["userid"]);
+		if( pc_is_manager($currentuser) && session_is_registered($blogadmin) )
+			$pc = pc_load_infor($link,$pcconfig["ADMIN"]);
+		else
+			$pc = pc_load_infor($link,$currentuser["userid"]);
+		
 		if(!$pc || !pc_is_admin($currentuser,$pc))
 		{
 			pc_db_close($link);
@@ -182,6 +186,15 @@
 				$query = "INSERT INTO `nodes` (  `pid` , `tid` , `type` , `source` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`) ".
 					"VALUES ( '".$pid."', '".(int)($_POST["tid"])."' , '0', '', '".$emote."' ,  '".$_SERVER["REMOTE_ADDR"]."','".date("YmdHis")."' , '".date("YmdHis")."', '".$pc["UID"]."', '".$c."', '0', '".addslashes($_POST["subject"])."', '".addslashes($blogbody)."', '".$tag."', '0' , '".$useHtmlTag."' ,'".$trackback."','0');";
 				mysql_query($query,$link);
+				//管理员管理时的log
+				if( pc_is_manager($currentuser) && session_is_registered($blogadmin) )
+				{
+					$action = $currentuser[userid]." 发表管理员文章";
+					$comment = $currentuser[userid]." 于 ".date("Y-m-d H:i:s")." 自 ".$_SERVER["REMOTE_ADDR"]." 发表文章。".
+							"\n主题：".$_POST["subject"];
+					pc_logs($link , $action , $comment);
+				}
+				
 				if($tag == 0)
 					pc_update_record($link,$pc["UID"]," + 1");
 				if($_POST["trackbackurl"])
@@ -335,6 +348,15 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				$query = "UPDATE nodes SET `subject` = '".addslashes($_POST["subject"])."' , `body` = '".addslashes(html_editorstr_format($_POST["blogbody"]))."' , `changed` = '".date("YmdHis")."' , `comment` = '".$c."' , `tid` = '".(int)($_POST["tid"])."' , `emote` = '".$emote."' , `htmltag` = '".$useHtmlTag."' , `trackback` = '".$trackback."' WHERE `nid` = '".$nid."' ;";
 				mysql_query($query,$link);
 				pc_update_record($link,$pc["UID"]);
+				//管理员修改文章时的log
+				if( pc_is_manager($currentuser) && session_is_registered($blogadmin) )
+				{
+					$action = $currentuser[userid]." 修改管理员文章";
+					$comment = $currentuser[userid]." 于 ".date("Y-m-d H:i:s")." 自 ".$_SERVER["REMOTE_ADDR"]." 修改文章。".
+							"\n主题：".$_POST["subject"];
+					pc_logs($link , $action , $comment);
+				}
+				
 ?>
 <p align="center">
 <a href="javascript:history.go(-2);">操作成功,点击返回</a>
@@ -640,6 +662,14 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				$favmode = 0;
 			$query = "UPDATE `users` SET `createtime` = `createtime` , `corpusname` = '".addslashes(undo_html_format($_POST["pcname"]))."',`description` = '".addslashes(undo_html_format($_POST["pcdesc"]))."',`theme` = '".addslashes(undo_html_format($_POST["pcthem"]))."' , `backimage` = '".addslashes(undo_html_format($_POST["pcbkimg"]))."' , `logoimage` = '".addslashes(undo_html_format($_POST["pclogo"]))."' , `modifytime` = '".date("YmdHis")."' , `htmleditor` = '".(int)($_POST["htmleditor"])."', `style` = '".(int)($_POST["template"])."' , `indexnodechars` = '".(int)($_POST["indexnodechars"])."' , `indexnodes` = '".(int)($_POST["indexnodes"])."' , `favmode` = '".$favmode."' , `useremail` = '".addslashes($_POST["pcuseremail"])."' , `userinfor` = '".addslashes($_POST["userinfor"])."'  WHERE `uid` = '".$pc["UID"]."' LIMIT 0,1;";	
 			mysql_query($query,$link);
+			
+			//管理员管理时的log
+			if( pc_is_manager($currentuser) && session_is_registered($blogadmin) )
+			{
+				$action = $currentuser[userid]." 修改管理员Blog参数";
+				$comment = $currentuser[userid]." 于 ".date("Y-m-d H:i:s")." 自 ".$_SERVER["REMOTE_ADDR"]." 修改管理员Blog参数。";
+				pc_logs($link , $action , $comment);
+			}
 			
 ?>
 <p align="center">

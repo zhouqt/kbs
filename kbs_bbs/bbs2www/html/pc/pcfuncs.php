@@ -241,6 +241,9 @@ function pc_is_friend($userid,$uid)
 
 function pc_is_admin($currentuser,$pc)
 {
+	global $pcconfig;
+	if( $pc["USER"] == $pcconfig["ADMIN"] && pc_is_manager($currentuser) )
+		return TRUE;
 	if(strtolower($pc["USER"]) == strtolower($currentuser["userid"]) && $pc["TIME"] > date("YmdHis",$currentuser["firstlogin"]) && $currentuser["firstlogin"])
 		return TRUE;
 	else
@@ -641,7 +644,12 @@ function pc_main_navigation_bar()
 [<a href="pcsearch2.php">BlogËÑË÷</a>]
 [<a href="pcnsearch.php">ÎÄÕÂËÑË÷</a>]
 [<a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">BlogÂÛÌ³</a>]
-<?php	
+<?php
+	if( $pcconfig["ADMIN"] ){
+?>
+[<a href="index.php?id=<?php echo $pcconfig["ADMIN"]; ?>">°ïÖú</a>]
+<?php
+	}	
 }
 
 function pc_update_cache_header($updatetime = 20)

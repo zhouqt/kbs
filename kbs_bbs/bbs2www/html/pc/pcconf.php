@@ -24,6 +24,7 @@ $pcconfig["SITE"] = "www.smth.edu.cn";
 $pcconfig["BOARD"] = "SMTH_blog";
 $pcconfig["SEARCHFILTER"] = " 的";
 $pcconfig["SEARCHNUMBER"] = 10;
+$pcconfig["ADMIN"] = "SYSOP";
 $pcconfig["SECTION"] = array(
 			"personal" => "个人空间" ,
 			"literature" => "原创文学" ,
