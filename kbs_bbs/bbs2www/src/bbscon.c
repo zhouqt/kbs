@@ -30,10 +30,6 @@ int main()
     strcpy(board, bp->filename);
 	setbdir(DIR_MODE_NORMAL, dir, board);
     total = file_size(dir) / sizeof(fileheader_t);
-    /*if (VALID_FILENAME(file) < 0)
-        http_fatal("错误的参数");*/
-    /* 需要修改 if (get_file_ent(board, file, &x) <= 0)
-        http_fatal("错误的文件名"); */
     printf("%s -- 文章阅读 [讨论区: %s]<hr color=\"green\">", BBSNAME, board);
     if (total <= 0)
         http_fatal("此讨论区不存在或者为空");
