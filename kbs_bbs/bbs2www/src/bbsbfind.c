@@ -6,8 +6,8 @@
 int main()
 {
     FILE *fp;
-    int num = 0, total = 0, type, dt, mg = 0, og = 0;
-    char dir[80], title[80], title2[80], title3[80], board[80], userid[80];
+    int num = 0, total = 0, type, dt, mg = 0, og = 0, ag=0;
+    char dir[80], title[80], title2[80], title3[80], board[80], userid[80], fileflag[10];
     char brdencode[STRLEN];
     bcache_t bh;
     struct fileheader x;
@@ -27,6 +27,8 @@ int main()
         mg = 1;
     if (!strcasecmp(getparm("og"), "on"))
         og = 1;
+    if (!strcasecmp(getparm("ag"), "on"))
+        ag = 1;
     if (dt < 0)
         dt = 0;
     if (dt > 9999)
@@ -67,9 +69,12 @@ int main()
             continue;
         if (og && !strncmp(x.title, "Re: ", 4))
             continue;
+		if (ag && x.attachment==0)
+			continue;
         total++;
         printf("<tr><td>%d</td>", num);
-        printf("<td>%s</td>", flag_str(x.accessed[0]));
+		sprintf(fileflag,"%-1s%c",flag_str(x.accessed[0]),x.attachment?'@':' ');
+        printf("<td>%s</td>", fileflag);
         printf("<td>%s</td>", userid_str(x.owner));
         printf("<td>%12.12s</td>", 4 + wwwCTime(get_posttime(&x)));
         printf("<td><a href=\"/bbscon.php?board=%s&id=%d\">%40.40s </a></td></tr>\n", brdencode, x.id, x.title);
@@ -99,8 +104,9 @@ int show_form(char *board)
     printf("<tr><td>标题不含: <input type=\"text\" maxlength=\"50\" size=\"20\" name=\"title3\">\n");
     printf("<tr><td>作者帐号: <input type=\"text\" maxlength=\"12\" size=\"12\" name=\"userid\"><br>\n");
     printf("<tr><td>时间范围: <input type=\"text\" maxlength=\"4\"  size=\"4\"  name=\"dt\" value=\"7\"> 天以内<br>\n");
-    printf("<tr><td>精华文章: <input type=\"checkbox\" name=\"mg\"> ");
-    printf("不含跟贴: <input type=\"checkbox\" name=\"og\"><br><br>\n");
+    printf("<tr><td>精华文章:<input type=\"checkbox\" name=\"mg\">  ");
+	printf("带附件文章:<input type=\"checkbox\" name=\"ag\">  ");
+    printf("不含跟贴:<input type=\"checkbox\" name=\"og\"><br><br>\n");
     printf("<tr><td><input type=\"submit\" value=\"递交查询结果\">\n");
     printf("</form></table>");
     printf("[<a href=\"/bbsdoc.php?board=%s\">本讨论区</a>]", brdencode);
