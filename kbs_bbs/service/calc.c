@@ -11,13 +11,12 @@
 #include <math.h>
 
 #define MINIMUM	0.0000000001
-#define sqr(x)	(x)*(x)
 #define Pi		3.1415926535897932384626433832795
 
 #define MAX_VAR 100
 #define MAX_MEM 10000
 
-int err=0;
+int calcerr=0;
 
 struct var_struct {
     char name[8];
@@ -28,8 +27,8 @@ struct var_struct {
 struct var_struct vars[MAX_VAR];
 int vart = 0;
 
-#define makesure(o,p) if(err) return;\
-    if(!(o)) {err=p; return;}
+#define makesure(o,p) if(calcerr) return;\
+    if(!(o)) {calcerr=p; return;}
 
 void makesize(struct var_struct * a, int h, int w)
 {
@@ -255,7 +254,7 @@ double envalue(struct var_struct * s)
     double result,ration;
     struct var_struct temp;
     if(s->height!=s->width) {
-        err=8;
+        calcerr=8;
         return 0;
     }
     temp.p = 0;  
@@ -311,7 +310,7 @@ void inverse(struct var_struct * s, struct var_struct * A)
         if(fabs(tempA.p[i][i])<MINIMUM) {
             del(&temp);
             del(&tempA);
-            err=13;
+            calcerr=13;
             return;
         }
         //保证对角线元素不为零
@@ -341,7 +340,7 @@ int get_var(char * name)
 {
     int i;
     if(!name[0]||strlen(name)>6) {
-        err=14;
+        calcerr=14;
         return 0;
     }
     for(i=0;i<vart;i++)
@@ -349,7 +348,7 @@ int get_var(char * name)
             return i;
         }
     if(vart>=MAX_VAR) {
-        err=15;
+        calcerr=15;
         return 0;
     }
     strncpy(vars[vart].name, name, 8);
@@ -561,7 +560,7 @@ void eval(struct var_struct * p, char * s, int l, int r)
         else {
             sscanf(buf, "%lf:%lf:%lf", &f1, &f2, &f3);
             if(fabs(f3)<MINIMUM) {
-                err=17;
+                calcerr=17;
                 return;
             }
             if((f2-f1)/f3<0) f3=-f3;
@@ -605,7 +604,7 @@ void eval(struct var_struct * p, char * s, int l, int r)
             buf[r-1-i]=0;
             kk=strchr(buf, ',');
             if(!kk) {
-                err=18;
+                calcerr=18;
                 return;
             }
             k=kk-buf;
@@ -682,7 +681,7 @@ void eval(struct var_struct * p, char * s, int l, int r)
         del(&m);
         return;
     }
-    err=18;
+    calcerr=18;
 }
 
 void print_var(struct var_struct * p)
@@ -746,15 +745,17 @@ int calc_main()
     while(1) {
         getyx(&y, &x);
 //        getdata(y, x, 0, cmd, 300, 1, 0, 1);
-        multi_getdata(y, x, scr_cols, "> ", cmd, 1000, 13, 1);
+        move(y+multi_getdata(y, x, scr_cols, "> ", cmd, 1000, 13, 1), 0);
+        outline("\n");
+        if(!cmd[0]) continue;
 //        scanf("%s", cmd);
         if(!strcasecmp(cmd, "exit")) break;
         if(!strcasecmp(cmd, "quit")) break;
         if(strchr(cmd, '=')) {
             i=strchr(cmd, '=')-cmd;
             if(i<=0||!check_var_name(cmd, i)) {
-                err=19;
-                goto checkerr;
+                calcerr=19;
+                goto checkcalcerr;
             }
             cmd[i]=0;
             res = get_var(cmd);
@@ -765,11 +766,11 @@ int calc_main()
             i=0;
         }
         eval(vars+res, cmd+i, 0, strlen(cmd+i)-1);
-checkerr:
-        if(err) {
-            outline(einfo[err]);
+checkcalcerr:
+        if(calcerr) {
+            outline(einfo[calcerr]);
             outline("\n");
-            err=0;
+            calcerr=0;
             continue;
         }
         else
