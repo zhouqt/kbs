@@ -1016,7 +1016,7 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
 			return -3;
 		if($tid != 0) //如果是发布在一个分类下面，需要检查分类
 		{
-			if(!pc_load_topic($link,$pc["UID"],$tid,&$topicname,$access))
+			if(!pc_load_topic($link,$pc["UID"],$tid,$topicname,$access))
 				return -4;
 		}
 	}
