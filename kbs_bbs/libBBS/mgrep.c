@@ -174,6 +174,17 @@ int mgrep_str(char *text, int num,struct pattern_image* patt_img)
     return num_of_matched;
 }                               /* end mgrep */
 
+static countline(text, len)
+unsigned char *text;
+int len;
+{
+    int i;
+
+    for (i = 0; i < len; i++)
+        if (text[i] == '\n')
+            total_line++;
+}
+
 mgrep(fd,patt_img)
 int fd;
 struct pattern_image *patt_img;
@@ -216,17 +227,6 @@ struct pattern_image *patt_img;
     }
     return;
 }                               /* end mgrep */
-
-static countline(text, len)
-unsigned char *text;
-int len;
-{
-    int i;
-
-    for (i = 0; i < len; i++)
-        if (text[i] == '\n')
-            total_line++;
-}
 
 
 monkey1(text, start, end,patt_img)
