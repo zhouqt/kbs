@@ -287,8 +287,6 @@ struct userec *setcurrusr(struct userec *user);
 
 uinfo_t *getcurruinfo();
 
-#define FAVBOARDNUM     20
-
 void save_favboard();
 
 void release_favboard();
