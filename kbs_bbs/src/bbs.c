@@ -727,6 +727,45 @@ void  board_attach_link(char* buf,int buf_len,long attachpos,void* arg)
     get_telnet_sessionid(buf+strlen(buf), utmpent);
 }
 
+int zsend_attach(int ent, struct fileheader *fileinfo, char *direct)
+{
+    char *t;
+    char buf1[512];
+    char *ptr, *p;
+    size_t size;
+    long left;
+
+    strcpy(buf1, direct);
+    if ((t = strrchr(buf1, '/')) != NULL)
+        *t = '\0';
+    snprintf(genbuf, 512, "%s/%s", buf1, fileinfo->filename);
+    BBS_TRY {
+        if (safe_mmapfile(genbuf, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0) {
+            BBS_RETURN_VOID;
+        }
+        for (p=ptr,left=size;left>0;p++,left--) {
+            long attach_len;
+            char* file,*attach;
+            FILE* fp;
+            char name[100];
+            if (NULL !=(file = checkattach(p, left, &attach_len, &attach))) {
+                left-=(attach-p)+attach_len-1;
+                p=attach+attach_len-1;
+                sprintf(name, "attach%06d", rand()%100000);
+                fp=fopen(name, "wb");
+                fwrite(attach, 1, attach_len, fp);
+                fclose(fp);
+                bbs_zsendfile(name, file);
+                unlink(name);
+                continue;
+            }
+        }
+    }
+    BBS_CATCH {
+    }
+    BBS_END end_mmapfile((void *) ptr, size, -1);
+}
+
 int read_post(int ent, struct fileheader *fileinfo, char *direct)
 {
     char *t;
@@ -805,6 +844,9 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
         break;
     case Ctrl('Y'):
         zsend_post(ent, fileinfo, direct);
+        break;
+    case Ctrl('D'):
+        zsend_attach(ent, fileinfo, direct);
         break;
     case 'N':
     case 'Q':
