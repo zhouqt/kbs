@@ -57,7 +57,7 @@ function showTopTen(){
 <tr>
 <td class=<?php echo $class; ?>  align=center><?php echo $i+1; ?></td>
 <td class=<?php echo $class; ?> >&nbsp;<a href="board.php?name=<?php echo $r_board; ?>"><?php echo $r_board; ?></a></td>
-<td class=<?php echo $class; ?> >&nbsp;<a href="queryresult.php?boardName=<?php echo $r_board; ?>&title=<?php echo urlencode($r_title); ?>"><?php echo $r_title; ?></a></td>
+<td class=<?php echo $class; ?> >&nbsp;<a href="queryresult.php?boardNames=<?php echo $r_board; ?>&title=<?php echo urlencode($r_title); ?>"><?php echo $r_title; ?></a></td>
 <td class=<?php echo $class; ?> >&nbsp;<a href="dispuser.php?id=<?php echo $r_id; ?>"><?php echo $r_id; ?></a></td>
 <td class=<?php echo $class; ?> >&nbsp;<?php echo $r_num; ?></td>
 </tr>
