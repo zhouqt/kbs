@@ -593,23 +593,25 @@ int m_editbrd()
 
         while(1) {
             struct boardheader* bh=NULL;
-            char* groupname="无";
+            char* groupname="";
             if (newfh.group) {
-                bh=getboard(int num);
+                bh=getboard(newfh.group);
                 if (bh) groupname=bh->filename;
             }
             sprintf(buf, "设定所属目录[%s]", groupname);
             strcpy(genbuf,groupname);
-            getdata(line, 0, buf, genbuf, 4, DOECHO, NULL, false);
+            getdata(line, 0, buf, genbuf, BOARDNAMELEN, DOECHO, NULL, false);
             if (*genbuf == 0) {
                 newfh.group = 0;
                 break;
             }
             newfh.group=getbnum(genbuf);
-            if (!(newfh.flag&BOARD_GROUP)) {
-                move(line+1,0);
-                prints("不是目录");
-            } else  if (newfh.group) break;
+            if (newfh.group) {
+		if (!(getboard(newfh.group)->flag&BOARD_GROUP)) {
+                    move(line+1,0);
+                    prints("不是目录");
+		} else break;
+            }
         }
         
         line++;

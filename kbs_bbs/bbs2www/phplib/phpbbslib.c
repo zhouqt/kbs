@@ -823,7 +823,7 @@ static void bbs_make_board_zval(zval * value, char *col_name, struct newpostdata
     } else if (strncmp(col_name, "FLAG", len) == 0){
         ZVAL_LONG(value, brd->flag);/*added end */
     } else if (strncmp(col_name, "BID", len) == 0){
-        ZVAL_LONG(value, brd->bid);/*added end */
+        ZVAL_LONG(value, brd->pos+1);/*added end */
     } else {
         ZVAL_EMPTY_STRING(value);
     }

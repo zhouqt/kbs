@@ -984,7 +984,6 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
                     ptr->pos = 0;
                     ptr->total = 0;
                     ptr->unread = 1;
-                    ptr->group=0;
                     for (k = 0; k < favbrd_list_t; k++)
                         if (favbrd_list[k].father == n)
                             ptr->total++;
@@ -997,8 +996,10 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
                     ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
                     ptr->tag = n;
                     ptr->pos = favbrd_list[n].flag;
+		    if (bptr->flag&BOARD_GROUP)
+                    ptr->total = bptr->board_data.group_total;
+		    else
                     ptr->total = -1;
-                    ptr->group=0;
                     ptr->zap = (zapbuf[favbrd_list[n].flag] == 0);
                 }
             	}
@@ -1053,6 +1054,9 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
                     ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
                     ptr->tag = indexlist[n];
                     ptr->pos = favbrd_list[indexlist[n]].flag;
+		    if (bptr->flag&BOARD_GROUP)
+                    ptr->total = bptr->board_data.group_total;
+		    else
                     ptr->total = -1;
                     ptr->zap = (zapbuf[favbrd_list[indexlist[n]].flag] == 0);
                 } else {
@@ -1161,7 +1165,7 @@ int load_boards(struct newpostdata *nbrd,char *boardprefix,int group,int pos,int
             ptr->pos = indexlist[n];
             if (bptr->flag&BOARD_GROUP) {
                 ptr->total = bptr->board_data.group_total;
-            }
+            } else ptr->total=-1;
             ptr->zap = (zapbuf[indexlist[n]] == 0);
         }
     }

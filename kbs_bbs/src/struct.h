@@ -91,15 +91,15 @@ struct boardheader {            /* This structure is used to hold data in */
     unsigned int nowid;
     unsigned int clubnum; /*如果是俱乐部，这个是俱乐部序号*/
     unsigned int flag;
-    union board_data{
+    union {
     unsigned int adv_club; /* 用于指定club对应关系,0表示没有,1表示序号*/
     unsigned int group_total; /*如果是二级目录，应该是目录的版面总数*/
-    }
+    } board_data;
     time_t createtime;
     int toptitle;
     char ann_path[128];
     int group; /*所属目录*/
-    char des[200]; /*版面描述,用于www的版面说明和search */
+    char des[196]; /*版面描述,用于www的版面说明和search */
 };
 
 /* XXX: struct fileheader moved to site.h */

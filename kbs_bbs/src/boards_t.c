@@ -260,6 +260,7 @@ enum board_mode {
 
 struct favboard_proc_arg {
     struct newpostdata *nbrd;
+    int favmode;
     int newflag;
     int tmpnum;
     enum board_mode yank_flag;
@@ -357,7 +358,7 @@ static int fav_show(struct _select_def *conf, int pos)
     char buf[LENGTH_SCREEN_LINE];
 
     ptr = &arg->nbrd[pos-(conf->page_pos)];
-    if (ptr->dir == 1) {        /* added by bad 2002.8.3*/
+    if ((ptr->dir == 1)&&arg->favmode) {        /* added by bad 2002.8.3*/
         if (ptr->tag < 0)
             prints("       ");
         else if (!arg->newflag)
@@ -365,6 +366,9 @@ static int fav_show(struct _select_def *conf, int pos)
         else
             prints(" %4d  ＋  <目录>  ", ptr->total);
     } else {
+	if ((ptr->dir==1)||(ptr->flag&BOARD_GROUP)) {
+            prints(" %4d  ＋ ", ptr->total);
+	} else {
         if (!arg->newflag){
 			check_newpost(ptr);
             prints(" %4d  %s ", pos, ptr->unread?"◆" : "◇");     /*zap标志 */
@@ -386,20 +390,21 @@ static int fav_show(struct _select_def *conf, int pos)
             }
             prints(" %4d%s%s ", ptr->total, ptr->total > 9999 ? " " : "  ", ptr->unread ? "◆" : "◇"); /*是否未读 */
         }
+      }
     }
     /*
      * Leeward 98.03.28 Displaying whether a board is READONLY or not 
      */
     if (ptr->dir == 2)
         sprintf(buf, "%s(%d)", ptr->title, ptr->total);
-    else if (ptr->dir >= 1)
+    else if ((ptr->dir >= 1)&&arg->favmode)
         sprintf(buf, "%s", ptr->title); /* added by bad 2002.8.3*/
     else if (true == checkreadonly(ptr->name))
         sprintf(buf, "[只读] %s", ptr->title + 8);
     else
         sprintf(buf, "%s", ptr->title + 1);
 
-    if (ptr->dir >= 1)          /* added by bad 2002.8.3*/
+    if ((ptr->dir >= 1)&&arg->favmode)          /* added by bad 2002.8.3*/
         prints("%-50s\n", buf);
     else {
           char flag[20];
@@ -533,7 +538,7 @@ static int fav_onselect(struct _select_def *conf)
 
     ptr = &arg->nbrd[conf->pos - conf->page_pos];
 
-    if (ptr->dir == 1) {        /* added by bad 2002.8.3*/
+    if ((ptr->dir == 1)||((arg->favmode==1)&&(ptr->flag&BOARD_GROUP))) {        /* added by bad 2002.8.3*/
         return SHOW_SELECT;
     } else {
         struct boardheader bh;
@@ -1022,7 +1027,7 @@ static int fav_getdata(struct _select_def *conf, int pos, int len)
     if (pos==-1) 
         fav_loaddata(NULL, arg->father,1, conf->item_count,currentuser->flags[0] & BRDSORT_FLAG,arg->namelist);
     else
-        conf->item_count = fav_loaddata(arg->nbrd, arg->fav_father,pos, len,currentuser->flags[0] & BRDSORT_FLAG,NULL);
+        conf->item_count = fav_loaddata(arg->nbrd, arg->father,pos, len,currentuser->flags[0] & BRDSORT_FLAG,NULL);
     return SHOW_CONTINUE;
 }
 
@@ -1059,7 +1064,6 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
     int changelevel=-1; /*保存在那一级的目录转换了mode,就是从收藏夹进入了版面目录*/
 
     oldmode = uinfo.mode;
-    currmode=favmode;
     modify_user_mode(SELECT);
     clear();
     pts = (POINT *) malloc(sizeof(POINT) * BBS_PAGESIZE);
@@ -1072,6 +1076,7 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
     nbrd = (struct newpostdata *) malloc(sizeof(*nbrd) * BBS_PAGESIZE);
     arg.nbrd = nbrd;
     sellist[0] = 1;
+    arg.favmode = favmode;
     if (favmode)
         favlist[0] = -1;
     else
@@ -1154,14 +1159,14 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
             if (favmode) {
                 if (nbrd[favboard_conf.pos - favboard_conf.page_pos].flag!=-1) {
                     //进入版面目录
-                    favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].pos;
+                    favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].pos+1;
                     changelevel=favlevel-1;
                     favmode=0;
                 } else
                     favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].tag;
             }
             else {
-                favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].pos;
+                favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].pos+1;
             }
             sellist[favlevel] = 1;
         };

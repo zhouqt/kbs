@@ -3109,9 +3109,8 @@ int ReadBoard()
 {
     if (Read()==-2) //is directory {
         if (currboard->flag&BOARD_GROUP) {
-            choose_board(0,NULL,currboardent,yank_flag);
+            choose_board(0,NULL,currboardent,0);
         }
-    }
     return 0;
 }
 
