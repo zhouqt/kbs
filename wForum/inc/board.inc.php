@@ -174,7 +174,7 @@ function showBroadcast($boardID,$boardName){
 <?php
 }
 
-function board_head_var($boardDesc,$boardName,$secNum)
+function board_head_var($boardDesc,$boardName,$secCode)
 {
   GLOBAL $SiteName;
   GLOBAL $stats;
@@ -182,11 +182,12 @@ function board_head_var($boardDesc,$boardName,$secNum)
   if ($URL=='') {
 	  $URL=$_SERVER['PHP_SELF'];
   }
+  $secIndex = get_secname_index($secCode);
 ?>
 <table cellspacing=1 cellpadding=3 align=center class=TableBorder2>
 <tr><td>
 <img src="pic/forum_nav.gif"> <a href="index.php"><?php   echo $SiteName; ?></a> ¡ú 
-<a href="section.php?sec=<?php echo $secNum; ?>"><?php echo $section_names[get_secname_index(intval($secNum))][0] ; ?></a> ¡ú 
+<a href="section.php?sec=<?php echo $secIndex; ?>"><?php echo $section_names[$secIndex][0] ; ?></a> ¡ú 
 <a href="board.php?name=<?php echo $boardName; ?>"><?php echo $boardDesc; ?></a> ¡ú 
 <?php echo $stats; ?> 
 </td></tr>
