@@ -9,7 +9,7 @@
 
 #define DQPI    1               /*作为DQPI的测试站嘛 */
 #define SMTH	1
-#define HAVE_TSINGHUA_INFO_REGISTER 1
+#define HAVE_TSINGHUA_INFO_REGISTER 0
 
 #ifndef REGISTER_TSINGHUA_WAIT_TIME 
 #define REGISTER_TSINGHUA_WAIT_TIME (240*60)
@@ -37,6 +37,7 @@
 #define CHAT_MSG_NOT_OP		"*** 您不是聊天室老大 ***"
 #define CHAT_ROOM_NAME		"快意聊天室"
 #define CHAT_SERVER		"北极星空间站"
+#define HAVE_CUSTOM_USER_TITLE	1
 
 
 #define MSG_ERR_USERID		"这里没有这个人，请输入 \'new\' 注册一个吧."
@@ -70,6 +71,8 @@
 #define BBS_FULL_NAME "BBS 北极星站"
 #define ISSUE_LOGIN             "热烈庆祝北极星建站五周年"
 #define NAME_ANONYMOUS          "北极星过客!"
+#define BUILD_PHP_EXTENSION 1 /*将php lib编成php extension*/
+
 
 
 
@@ -110,6 +113,7 @@ typedef struct fileheader fileheader_t;
 
 #define DEF_SHOWDETAILUSERDATA 04000000000
 #define DEF_SHOWREALUSERDATA   010000000000
+#define PERSONAL_CORP
 
 
 #endif
