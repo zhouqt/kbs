@@ -667,6 +667,7 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
     if (ty == LINE_ATTACHMENT) {
         char attachname[41], *p;
         strncpy(attachname, ptr + ATTACHMENT_SIZE, 40);
+        attachname[40] = '\0';
         p = strrchr(attachname, '.');
         if (p != NULL && (!strcasecmp(p, ".bmp") || !strcasecmp(p, ".jpg")
                           || !strcasecmp(p, ".gif") || !strcasecmp(p, ".jpeg")))
