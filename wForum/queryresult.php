@@ -18,7 +18,7 @@ showUserMailBoxOrBR();
 if ($boardArr !== false && !isErrFounded()) 
 	board_head_var($boardArr['DESC'],$singleBoard,$boardArr['SECNUM']);
 else {
-	head_var("ÂÛÌ³ËÑË÷",'',0);
+	head_var("ÂÛÌ³ËÑË÷",'query.php',0);
 }
 
 if (isErrFounded()) {
