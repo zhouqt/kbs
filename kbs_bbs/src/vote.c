@@ -158,7 +158,7 @@ b_jury_edit()   /* stephen 2001.11.1: 编辑版面仲裁名单 */
             prints("仲裁委员名单已经删除...\n");
             pressanykey();
             unlink(buf);
-            aborted=1;
+            aborted=111;
         }else
             aborted=-1;
     }
@@ -174,7 +174,10 @@ b_jury_edit()   /* stephen 2001.11.1: 编辑版面仲裁名单 */
     } else
     {
 	char secu[STRLEN];
-	sprintf(secu, "修改 %s 版的仲裁委员名单",currboard);
+	if (aborted==111)
+	  sprintf(secu, "删除 %s 版的仲裁委员名单",currboard);
+	else 
+	  sprintf(secu, "修改 %s 版的仲裁委员名单",currboard);
 	securityreport(secu, NULL);
 
         setvfile( buf, currboard, "juryrec" );

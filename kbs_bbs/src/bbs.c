@@ -1574,7 +1574,7 @@ int
 isJury()
 {
     char buf[STRLEN];
-
+    if(!HAS_PERM(PERM_JURY)) return 0;
     setbfile(buf,currboard,"jury");
     return seek_in_file(buf,currentuser->userid);
 }
@@ -1584,8 +1584,8 @@ deleted_mode()
 {
     extern  char  currdirect[ STRLEN ];
 /* Allow user in file "jury" to see deleted area. Stephen 2001.11.1 */
-  if (!chk_currBM(currBM) && !(isJury()&&HAS_PERM(PERM_JURY))) {
-      return DONOTHING;
+  if (!chk_currBM(currBM) && !isJury()) {
+    return DONOTHING;
   }
   if(digestmode==4)
   {
