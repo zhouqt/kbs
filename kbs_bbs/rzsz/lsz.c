@@ -193,7 +193,7 @@ int bbs_zsendfile(char *filename,char *remote)
        protocol = ZM_ZMODEM;
 	io_mode_fd = 1;
 	blklen = start_blklen = 1024;
-	if (setjmp(&zmodemjmp) == 0) {
+	if (setjmp(zmodemjmp) == 0) {
 	zsendline_init();
 	io_mode(io_mode_fd,1);
 	readline_setup(io_mode_fd, 128, 256);
@@ -241,7 +241,7 @@ int bbs_zsendfile(char *filename,char *remote)
        readline_clean();
 		}else{
 				oflush();
-				signal(SIG_ALRM,SIG_IGN);
+				signal(SIGALRM,SIG_IGN);
 				alarm(0);
 				return ERROR;
 			}
