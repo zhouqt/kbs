@@ -10,4 +10,4 @@ bin_PROGRAMS = bbsusr bbstop10 bbssec bbsdoc bbscon bbsbrdadd bbsboa bbsall bbsa
 	  bbsfwd bbsmnote bbsdenyall bbsdenydel bbsdenyadd \
 	  bbsbfind bbsstyle
 AM_CFLAGS = -I../include -DINVISIBLE -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME -I../../src
-LDADD = ../lib/.libs/libbbslib.a -L../../.libs -lBBS -lbsd -lesmtp -lltdl -ldl
+LDADD = ../lib/.libs/libbbslib.a -lBBS -lsystem -lbsd -lesmtp -lltdl -ldl

@@ -40,7 +40,7 @@ AC_ARG_WITH(php,
 [
     if test "$withval" = "yes"; then
 	if test -f /home/share/php/Zend/zend.h; then
-            withval=/home/sahre/php
+            withval=/home/share/php
 	else
 	if test -f /usr/include/php/Zend/zend.h; then
             withval=/usr/include/php
