@@ -241,7 +241,7 @@
 #endif
 
 #ifndef MAX_WWW_GUEST
-#define MAX_WWW_GUEST 30000
+#define MAX_WWW_GUEST 30016
 #endif
 
 #ifndef POP3PORT
