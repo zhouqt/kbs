@@ -230,7 +230,15 @@ int do_userlist()
     int override;
     char fexp[30];
     struct user_info uentp;
-
+#ifdef NINE_BUILD
+  #define FRIENDSIG "¡õ"
+    char *p;
+    int padding_count;
+  #define FROMSTR uentp.from   
+#else    
+  #define FRIENDSIG "£®"
+  #define FROMSTR "*"  
+#endif    
 
     /*
      * _SHOW_ONLINE_USER 
@@ -303,7 +311,7 @@ int do_userlist()
                  /*---	modified by period	2000-10-21	ÔÚÏßÓÃ»§Êý¿ÉÒÔ´óÓÚ1000µÄ
                          " %3d%2s%s%-12.12s%s%s %-16.16s%s %-16.16s %c %c %s%-17.17s[m%5.5s\n",
                  ---*/
-                " %4d%2s%s%-12.12s%s%s %-16.16s%s %-16.16s %c %c %s%-16.16s[m%5.5s\n", i + 1 + page, (override) ? (uentp.invisible ? "££" : "£®") : (uentp.invisible ? "£ª" : ""), (override) ? "[1;32m" : "", uentp.userid, (override) ? "[m" : "", (override && showexplain) ? "[1;31m" : "", (real_user_names) ? uentp.realname : (showexplain && override) ? fexp : uentp.username, (override && showexplain) ? "[m" : "", (( /* !DEFINE(currentuser,DEF_HIDEIP) && */ (pagec == ' ' || pagec == 'O')) || HAS_PERM(currentuser, PERM_SYSOP)) ? uentp.from : "*",       /*Haohmaru.99.12.18 */
+                " %4d%2s%s%-12.12s%s%s %-16.16s%s %-16.16s %c %c %s%-16.16s[m%5.5s\n", i + 1 + page, (override) ? (uentp.invisible ? "££" : FRIENDSIG) : (uentp.invisible ? "£ª" : ""), (override) ? "[1;32m" : "", uentp.userid, (override) ? "[m" : "", (override && showexplain) ? "[1;31m" : "", (real_user_names) ? uentp.realname : (showexplain && override) ? fexp : uentp.username, (override && showexplain) ? "[m" : "", (( /* !DEFINE(currentuser,DEF_HIDEIP) && */ (pagec == ' ' || pagec == 'O')) || HAS_PERM(currentuser, PERM_SYSOP)) ? uentp.from : FROMSTR,       /*Haohmaru.99.12.18 */
                 pagec,
                 /*
                  * (uentp.invisible ? '#' : ' ') 
@@ -320,6 +328,8 @@ int do_userlist()
         clrtoeol();
         prints("%s", user_info_str);
     }
+#undef FROMSTR    
+#undef FRIENDSIG    
     return 0;
 }
 
