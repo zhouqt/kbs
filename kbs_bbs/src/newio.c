@@ -978,6 +978,12 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
 #endif
                 }
                 break;
+            case KEY_HOME:
+                now=0;
+                break;
+            case KEY_END:
+                now = strlen(buf);
+                break;
             default:
                 if(isprint2(ch)&&strlen(buf)<len-1) {
                     for(i=strlen(buf)+1;i>now;i--)
