@@ -156,7 +156,7 @@ void msgline()
     /* Leeward 98.07.30 Change hot key for msgX */
     /*strcat(buf," [31mCtrl-Z[33m Çó¾È         "); */
     strcat(buf, " [31mCtrl-Q[33m Çó¾È         ");
-    sprintf(buf2, " ×´Ì¬ [%s][%4.4d,%3.3d]      Ê±¼ä", insert_character ? "²åÈë" : "Ìæ»»", currln + 1, currpnt + 1);
+    sprintf(buf2, " ×´Ì¬ [%s][%d,%d]      Ê±¼ä", insert_character ? "²åÈë" : "Ìæ»»", currln + 1, currpnt + 1);
     strcat(buf, buf2);
     sprintf(buf2, "[33m[44m¡¾%.16s¡¿", ctime(&now));
     strcat(buf, buf2);
