@@ -545,6 +545,8 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
             break;
 
         default:
+            RMVCURS(locmem);
+            PUTCURS(locmem);
             if (TDEFINE(TDEF_SPLITSCREEN)&&cmdmode!=GMENU) /*added by bad 2002.9.2*/
             	set_alarm(0,300*1000,NULL,NULL);
             break;
