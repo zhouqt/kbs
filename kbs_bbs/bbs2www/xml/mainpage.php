@@ -296,7 +296,7 @@ function gen_recommend_boards_html()
 				continue;
 			$brd_encode = urlencode($brdarr["NAME"]);
 ?>
-<li style="default">&lt;<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
+<li class="default">&lt;<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
 <?php
 	}
 ?>
