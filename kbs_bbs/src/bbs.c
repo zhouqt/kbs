@@ -3551,7 +3551,7 @@ int Goodbye()
     }
     sleep(1);
     pressreturn();              /*Haohmaru.98.10.18 */
-    prints("\x33[m");
+    prints("\x1b[m");
     icurrchar = 0; ibufsize = 0;
     refresh();
     shutdown(0, 2);
