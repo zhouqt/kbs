@@ -447,7 +447,7 @@ void join_room(struct room_struct * r)
     char buf[80],buf2[80];
     int i,j,killer,me;
     clear();
-    sprintf(buf, "home/%c/%s/.INROOMMSG%d", toupper(r->creator[0]), r->creator, uinfo.pid);
+    sprintf(buf, "home/%c/%s/.INROOMMSG%d", toupper(currentuser->userid[0]), currentuser->userid, uinfo.pid);
     unlink(buf);
     myroom = r;
     signal(SIGUSR1, room_refresh);
