@@ -162,7 +162,7 @@ char userid[IDLEN];
         return false;
     } else {
         prints("[36m¸öÈËËµÃ÷µµÈçÏÂ£º[m\n");
-        for (i = 1; i <= MAXQUERYLINES; i++) {
+        for (i = 1; i <= scr_lns-8/*MAXQUERYLINES*/; i++) {
             if (fgets(pbuf, sizeof(pbuf), pf))
                 prints("%s", pbuf);
             else
@@ -174,6 +174,8 @@ char userid[IDLEN];
 }
 int t_printstatus(struct user_info *uentp, int *arg, int pos)
 {
+    char buf[80],buf2[20];
+    char* p;
     if (uentp->invisible == 1) {
         if (!HAS_PERM(currentuser, PERM_SEECLOAK))
             return COUNT;
@@ -181,18 +183,14 @@ int t_printstatus(struct user_info *uentp, int *arg, int pos)
     (*arg)++;
     if (*arg == 1)
         strcpy(genbuf, "Ä¿Ç°ÔÚÕ¾ÉÏ£¬×´Ì¬ÈçÏÂ£º\n");
-    if (uentp->invisible)
-        strcat(genbuf, "[32mÒşÉíÖĞ   [m");
-    else {
-        char buf[80],buf2[20];
-        char* p;
-        p = idle_str(uentp);
-        if(p[0]==' ') buf2[0]=0;
-        else sprintf(buf2, "[%s]", p);
-        sprintf(buf, "[1m%s[m%s ", modestring(uentp->mode, uentp->destuid, 0,   /* 1->0 ²»ÏÔÊ¾ÁÄÌì¶ÔÏóµÈ modified by dong 1996.10.26 */
-                                              (uentp->in_chat ? uentp->chatid : NULL)), buf2);
-        strcat(genbuf, buf);
-    }
+
+    p = idle_str(uentp);
+    if(p[0]==' '&&p[1]==' '&&p[2]==0) buf2[0]=0;
+    else sprintf(buf2, "[%s]", p);
+    sprintf(buf, "%s[1m%s[m%s ", uentp->invisible?("[32m":""), modestring(uentp->mode, uentp->destuid, 0,   /* 1->0 ²»ÏÔÊ¾ÁÄÌì¶ÔÏóµÈ modified by dong 1996.10.26 */
+                                          (uentp->in_chat ? uentp->chatid : NULL)), buf2);
+    strcat(genbuf, buf);
+
     if ((*arg) % 8 == 0)
         strcat(genbuf, "\n");
     UNUSED_ARG(pos);
