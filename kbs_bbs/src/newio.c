@@ -243,37 +243,54 @@ static int telnet_machine( unsigned char ch)
         break;
     case 2: /* the telnet suboption */
 	if (ch==31)
-	    telnet_state=4; /* wait for windows size */
+	    telnet_state=5; /* wait for windows size */
+	else
         if (ch==IAC)
             telnet_state=3;	/* wait for SE */
 	else
-	    telnet_state=5; /* filter telnet SB data */
+	    telnet_state=4; /* filter telnet SB data */
         break;
     case 3:	/* wait for se */
         if (ch==SE)
             telnet_state=0;
-        else telnet_state=5;
+        else telnet_state=4;
         break;
-    case 4:
+    case 4:/* telnet SB data */
+        if (ch==IAC)
+            telnet_state=3;	/* wait for SE */
+	break;
+    case 5:  
+	telnet_state=6;
+	break;
+    case 6:
+	/*
 	if (ch<120&&ch>=80)
 	    t_columns=ch;
 	else
 	    t_columns=80;
-	telnet_state=6;
-	break;
-    case 5:/* telnet SB data */
-        if (ch==IAC)
-            telnet_state=3;	/* wait for SE */
-	break;
-    case 6:  
-	telnet_state=7;
+	    */
+	if (ch==IAC)
+		telnet_state=4;
+	else
+		telnet_state=7;
 	break;
     case 7:
+	if (ch==IAC)
+		telnet_state=4;
+	else
+		telnet_state=8;
+	break;
+    case 8:
+	/*
 	if (ch<35&&ch>=24)
 	    t_lines=ch;
 	else
 	    t_lines=24;
-	telnet_state=5;
+	    */
+	if (ch==IAC)
+		telnet_state=4;
+	else
+		telnet_state=4;
 	break;
     }
     return 0;
