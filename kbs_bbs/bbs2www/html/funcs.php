@@ -9,7 +9,11 @@ define('_BBS_FUNCS_PHP_', 1);
 
 if (!isset($topdir))
     $topdir=".";
-@dl("$topdir/../libexec/bbs/libphpbbslib.so");
+
+// NOTE: If you want to statically link smth_bbs phpbbslib into php,
+//       you *MUST* set enable_dl variable to Off in php.ini file.
+if (ini_get("enable_dl") == 1)
+	@dl("$topdir/../libexec/bbs/libphpbbslib.so");
 global $SQUID_ACCL;
 global $BBS_PERM_POSTMASK;
 global $BBS_PERM_NOZAP;
