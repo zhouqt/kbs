@@ -8,8 +8,8 @@
 		$filename=bbs_sethomefile($currentuser["userid"],"signatures");
 		if ($_GET["type"]=="1") {
 		    $fp=fopen($filename,"w+");
-		    fwrite($_POST["text"]);
-			fclose($fp);
+		    fwrite($fp,$_POST["text"]);
+		    fclose($fp);
 		}
 ?>
 <body>
@@ -24,6 +24,7 @@ if ($_GET["type"]!="1") {
         echo $buffer;
     }
     fclose ($fp);
+}
 else {
     echo $_POST["text"];
 }
