@@ -370,7 +370,8 @@ int do_com_menu()
 {
     char menus[menust][15]=
         {"0-返回","1-退出游戏","2-改名字", "3-玩家列表", "4-改话题", "5-设置房间", "6-踢玩家", "7-开始游戏"};
-    int menupos[menust],i,j,sel=0,ch,max=0;
+    int menupos[menust],i,j,sel=0,ch,max=0,me;
+    char buf[80];
     menupos[0]=0;
     for(i=1;i<menust;i++)
         menupos[i]=menupos[i-1]+strlen(menus[i-1])+1;
@@ -410,6 +411,21 @@ int do_com_menu()
                     return 0;
                 case 1:
                     return 1;
+                case 2:
+                    move(t_lines-1, 0);
+                    resetcolor();
+                    clrtoeol();
+                    getdata(t_lines-1, 0, "请输入名字:", buf, 30, 1, 0, 1);
+                    if(buf[0]) {
+                        start_change_inroom(myroom);
+                        for(me=0;me<myroom->people;me++)
+                            if(inrooms.peoples[me].pid==uinfo.pid) break;
+                        strcpy(inrooms.peoples[me].nick, buf);
+                        end_change_inroom();
+                        for(i=0;i<myroom->people;i++)
+                            kill(inrooms.peoples[i].pid, SIGUSR1);
+                    }
+                    return 0;
                 case 7:
                     start_game();
                     return 0;
@@ -473,14 +489,18 @@ void join_room(struct room_struct * r)
                 for(me=0;me<myroom->people;me++)
                     if(inrooms.peoples[me].pid == uinfo.pid) break;
                 pid=inrooms.peoples[selected].pid;
-                if(inrooms.status!=INROOM_STOP) {
+                if(inrooms.peoples[me].flag&PEOPLE_ALIVE&&
+                    (inrooms.peoples[me].flag&PEOPLE_KILLER&&inrooms.status==INROOM_NIGHT ||
+                    inrooms.status==INROOM_DAY)) {
                     if(inrooms.peoples[selected].flag&PEOPLE_ALIVE && 
                         !(inrooms.peoples[selected].flag&PEOPLE_SPECTATOR) &&
                         selected!=me) {
                         int i,j;
                         sprintf(buf, "\x1b[32;1m%s投了%s一票\x1b[m", inrooms.peoples[me].nick[0]?inrooms.peoples[me].nick:inrooms.peoples[me].id,
                             inrooms.peoples[selected].nick[0]?inrooms.peoples[selected].nick:inrooms.peoples[selected].id);
+                        start_change_inroom(myroom);
                         inrooms.peoples[me].vote = pid;
+                        end_change_inroom();
                         if(inrooms.status==INROOM_NIGHT) {
                             for(i=0;i<myroom->people;i++)
                                 if(inrooms.peoples[i].flag&PEOPLE_KILLER||
@@ -642,6 +662,12 @@ void join_room(struct room_struct * r)
                 break;
             }
         }while(1);
+        for(me=0;me<myroom->people;me++)
+            if(inrooms.peoples[me].pid == uinfo.pid) break;
+        strcpy(buf2, buf);
+        sprintf(buf, "%s: %s", 
+            inrooms.peoples[me].nick[0]?inrooms.peoples[me].nick:inrooms.peoples[me].id, 
+            buf2);
         if(inrooms.status==INROOM_NIGHT) {
             for(me=0;me<myroom->people;me++)
                 if(inrooms.peoples[me].pid == uinfo.pid) break;
