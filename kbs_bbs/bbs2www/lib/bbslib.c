@@ -2832,6 +2832,11 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
 
 }
 
+#ifdef HAVE_WFORUM
+//#define GENERATE_WEBTHREAD_USE_AVLTREE
+
+#ifndef GENERATE_WEBTHREAD_USE_AVLTREE
+
 //以后改成更有效率的算法吧……
 typedef struct _wwwthreadheader_list{
 	struct wwwthreadheader content;
@@ -2867,6 +2872,227 @@ static void clearWWWThreadList(pwwwthreadheader_list p){
 	}
 }
 
+#else //ifndef GENERATE_WEBTHREAD_USE_AVLTREE
+
+// balance is LH (left heavy), EH (even), RH (right heavy)
+enum balance { LH, EH, RH };
+typedef struct _wwwthread_treenode {
+    struct wwwthreadheader content;
+    enum balance bf;            // bf is the balance factor
+    struct _wwwthread_treenode *Lchild;
+    struct _wwwthread_treenode *Rchild;
+} wwwthread_treenode;
+
+static wwwthread_treenode *AVL_RotateLeft(wwwthread_treenode * p)
+{
+    wwwthread_treenode *temp;
+    temp = p->Rchild;
+    p->Rchild = temp->Lchild;
+    temp->Lchild = p;
+    p = temp;
+    return p;
+}
+
+static wwwthread_treenode *AVL_RotateRight(wwwthread_treenode * p)
+{
+    wwwthread_treenode *temp;
+    temp = p->Lchild;
+    p->Lchild = temp->Rchild;
+    temp->Rchild = p;
+    p = temp;
+}
+
+static wwwthread_treenode *AVL_RightBalance(wwwthread_treenode * r)
+{
+    wwwthread_treenode *x;
+    wwwthread_treenode *w;
+
+    x = r->Rchild;
+    switch (x->bf) {
+    case RH:
+        r->bf = EH;
+        x->bf = EH;
+        r = AVL_RotateLeft(r);
+        break;
+    case LH:
+        w = x->Lchild;
+        switch (w->bf) {
+        case EH:
+            r->bf = EH;
+            x->bf = EH;
+            break;
+        case LH:
+            r->bf = EH;
+            x->bf = RH;
+            break;
+        case RH:
+            r->bf = LH;
+            x->bf = EH;
+            break;
+        }
+        w->bf = EH;
+        x = AVL_RotateRight(x);
+        r->Rchild = x;
+        r = AVL_RotateLeft(r);
+    }
+    return r;
+}
+
+static wwwthread_treenode *AVL_LeftBalance(wwwthread_treenode * r)
+{
+    wwwthread_treenode *x;
+    wwwthread_treenode *w;
+
+    x = r->Lchild;
+    switch (x->bf) {
+    case LH:
+        r->bf = EH;
+        x->bf = EH;
+        r = AVL_RotateRight(r);
+        break;
+    case RH:
+        w = x->Rchild;
+        switch (w->bf) {
+        case EH:
+            r->bf = EH;
+            x->bf = EH;
+            break;
+        case RH:
+            r->bf = EH;
+            x->bf = LH;
+            break;
+        case LH:
+            r->bf = RH;
+            x->bf = EH;
+            break;
+        }
+        w->bf = EH;
+        x = AVL_RotateLeft(x);
+        r->Lchild = x;
+        r = AVL_RotateRight(r);
+    }
+    return r;
+}
+
+static bool AVL_Insert(wwwthread_treenode ** proot, struct fileheader *newinfo, int flags)
+{
+    bool tallersubtree;
+    bool taller;
+    wwwthread_treenode *root;
+
+    root = *proot;
+    if (root == NULL) {
+        root = (wwwthread_treenode *) malloc(sizeof(wwwthread_treenode));
+        if (root == NULL) return false; //ToDo: error handling. But I guess this is probably good enough... - atppp
+        memcpy(&(root->content.lastreply), newinfo, sizeof(struct fileheader));
+
+        /* 
+         * here's the trick: if the lastreply is not the original post, set the origin.groupid to something else,
+         * so wwwthread_write() knows if original post still exists in .DIR. - atppp
+         */
+        if (newinfo->groupid == newinfo->id)
+            memcpy(&(root->content.origin), newinfo, sizeof(struct fileheader));
+        else
+            root->content.origin.groupid = newinfo->groupid + 1;
+        
+        root->content.articlecount = 1;
+        root->content.unused = 0;
+        root->content.flags = flags;
+        root->Lchild = NULL;
+        root->Rchild = NULL;
+        root->bf = EH;
+        taller = true;
+    }
+
+    else if (newinfo->groupid < root->content.lastreply.groupid) {
+        tallersubtree = AVL_Insert(&(root->Lchild), newinfo, flags);
+        if (tallersubtree)
+            switch (root->bf) {
+            case LH:
+                root = AVL_LeftBalance(root);
+                taller = false;
+                break;
+            case EH:
+                root->bf = LH;
+                taller = true;
+                break;
+            case RH:
+                root->bf = EH;
+                taller = false;
+                break;
+            }
+
+        else
+            taller = false;
+    }
+
+    else if (newinfo->groupid > root->content.lastreply.groupid) {
+        tallersubtree = AVL_Insert(&(root->Rchild), newinfo, flags);
+        if (tallersubtree)
+            switch (root->bf) {
+            case LH:
+                root->bf = EH;
+                taller = false;
+                break;
+            case EH:
+                root->bf = RH;
+                taller = true;
+                break;
+            case RH:
+                root = AVL_RightBalance(root);
+                taller = false;
+            }
+
+        else
+            taller = false;
+    }
+
+    else {                      // newinfo == root->info
+        root->content.articlecount++;
+        if (newinfo->groupid == newinfo->id) memcpy(&(root->content.origin), newinfo, sizeof(struct fileheader));
+        taller = false;
+    }
+    *proot = root;
+    return taller;
+}                               // end insert
+
+static void AVL_InTW(wwwthread_treenode * root, void (*fptr) (wwwthread_treenode *, void *), void *arg)
+{                               /* inorder tree walk, note root must not be null */
+    if (root->Lchild != NULL)
+        AVL_InTW(root->Lchild, fptr, arg);
+    if (fptr != NULL)
+        fptr(root, arg);
+    if (root->Rchild != NULL)
+        AVL_InTW(root->Rchild, fptr, arg);
+}
+
+static void AVL_PostTW(wwwthread_treenode * root, void (*fptr) (wwwthread_treenode *, void *), void *arg)
+{                               /* postorder tree walk, note root must not be null */
+    if (root->Lchild != NULL)
+        AVL_PostTW(root->Lchild, fptr, arg);
+    if (root->Rchild != NULL)
+        AVL_PostTW(root->Rchild, fptr, arg);
+    if (fptr != NULL)
+        fptr(root, arg);
+}
+
+static void wwwthread_write(wwwthread_treenode *node, void *arg)
+{
+    int fd = *((int *)arg);
+    
+    /* original post does not exist, skip this thread */
+    if (node->content.origin.groupid != node->content.lastreply.groupid) return;
+    
+    write(fd, &(node->content), sizeof(struct wwwthreadheader));
+}
+
+static void wwwthread_freenode(wwwthread_treenode * node, void *arg)
+{
+    free(node);
+}
+
+#endif //ifndef GENERATE_WEBTHREAD_USE_AVLTREE
+
 int www_generateOriginIndex(const char* board)
 /* added by roy 2003.7.17 generate .WEBTHREAD index file*/
 {
@@ -2877,8 +3103,12 @@ int www_generateOriginIndex(const char* board)
 	char currdirect[PATHLEN];
     char *ptr;
     struct stat buf;
-	pwwwthreadheader_list tail,temp;
+#ifndef GENERATE_WEBTHREAD_USE_AVLTREE
+    pwwwthreadheader_list tail,temp;
 	int found;
+#else
+    wwwthread_treenode *root = NULL;
+#endif
     int bid;
     struct BoardStatus* bs;
 
@@ -2944,12 +3174,15 @@ int www_generateOriginIndex(const char* board)
 
 	size=sizeof(struct wwwthreadheader);
 
+#ifndef GENERATE_WEBTHREAD_USE_AVLTREE
 	tail=temp=NULL;
+#endif
 
     bid = getbnum(board);
     bs = getbstatus(bid);
     for (i=bs->toptitle-1;i>=0;i--) {
         if (bs->topfh[i].groupid!=bs->topfh[i].id) continue;
+#ifndef GENERATE_WEBTHREAD_USE_AVLTREE
         if (foundInWWWThreadList(bs->topfh[i].groupid,tail)!=NULL) continue;
         temp=CreateNewWWWThreadListNode(tail);
         if (temp==NULL) {
@@ -2962,11 +3195,15 @@ int www_generateOriginIndex(const char* board)
         temp->content.flags=FILE_ON_TOP;
         temp->content.unused=0;
         tail=temp;
+#else
+        AVL_Insert(&root, &(bs->topfh[i]), FILE_ON_TOP);
+#endif
     }
 
 
     ptr1 = (struct fileheader *) ptr;
 	for (i=total-1;i>=0;i--) {
+#ifndef GENERATE_WEBTHREAD_USE_AVLTREE
 		temp=foundInWWWThreadList(ptr1[i].groupid,tail);
 		if (temp==NULL)	{
 			if ((found=Search_Bin((struct fileheader *)ptr,ptr1[i].groupid,0,total-1))<0) continue;
@@ -2988,14 +3225,22 @@ int www_generateOriginIndex(const char* board)
 				temp->content.articlecount++;
 			}
 		}
+#else
+        AVL_Insert(&root, &(ptr1[i]), 0);
+#endif
 	}
 
+#ifndef GENERATE_WEBTHREAD_USE_AVLTREE
 	while (tail!=NULL) {
 		temp=tail->previous;
 		write(fd,&(tail->content),size);
 		free(tail);
 		tail=temp;
 	}
+#else
+    AVL_InTW(root, wwwthread_write, (void *)(&fd));
+    AVL_PostTW(root, wwwthread_freenode, NULL);
+#endif
     end_mmapfile((void *) ptr, buf.st_size, -1);
     ldata2.l_type = F_UNLCK;
     fcntl(fd2, F_SETLKW, &ldata2);
@@ -3006,6 +3251,8 @@ int www_generateOriginIndex(const char* board)
     close(fd);
     return 0;
 }
+
+#endif //ifdef HAVE_WFORUM
 
 #ifdef SMS_SUPPORT
 
