@@ -675,6 +675,7 @@ static int procheader(char *name, struct zm_fileinfo *zi)
             return (OK);
         }
 #endif
+#ifdef 0
         if (Thisbinary && zconv == ZCRESUM) {
             struct stat st;
 
@@ -711,6 +712,7 @@ static int procheader(char *name, struct zm_fileinfo *zi)
             if (fout)
                 fclose(fout);
         }
+#endif
         strcpy(fname, name_static);
         fout = fopen(name_static, openmode);
         if (!fout) {

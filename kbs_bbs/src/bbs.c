@@ -2054,7 +2054,7 @@ int add_attach(char* file1, char* file2, char* filename)
     char buf[1024*16];
     int i;
     stat(file2, &st);
-    if(st.st_size>=1024*1024*10&&!HAS_PERM(currentuser, PERM_SYSOP)) {
+    if(st.st_size>=1024*1024&&!HAS_PERM(currentuser, PERM_SYSOP)) {
         unlink(file2);
         return 0;
     }
