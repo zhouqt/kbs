@@ -313,7 +313,6 @@ int can_send_mail();
 int can_reply_post(char *board, char *filename);
 char bin2hex(int val);
 char *encode_url(char *buf, const char *str, size_t buflen);
-char *string_copy(char *buf, const char *str, size_t * buflen);
 char *encode_html(char *buf, const char *str, size_t buflen);
 int is_BM(struct boardheader *board, struct userec *user);
 int is_owner(struct fileheader *fh, struct userec *user);
@@ -328,13 +327,11 @@ int www_generateOriginIndex(char* board);
 
 struct WWW_GUEST_S* www_get_guest_entry(int idx);
 
-/*
 #define DEBUG_WAIT \
 do {\
 	struct stat _dw_st; \
 	while (stat("/tmp/start", &_dw_st) < 0) \
 		sleep(1); \
 } while(0)
-*/
 
 #endif                          /* BBSLIB_H */

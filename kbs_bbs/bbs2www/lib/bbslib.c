@@ -2311,33 +2311,6 @@ char *encode_url(char *buf, const char *str, size_t buflen)
     return buf;
 }
 
-/*
- * buflen is a value-result variable. When it is passed to the function,
- * its value is the buffer length (including the trailing '\0' character).
- * When the function returned, its value is the number of characters 
- * actually copied to buf (excluding the trailing '\0' character).
-*/
-char *string_copy(char *buf, const char *str, size_t * buflen)
-{
-    size_t i;
-    size_t len;
-
-    if (*buflen == 0)
-        return buf;
-    len = *buflen - 1;
-    for (i = 0; i < len; i++) {
-        if (str[i] == '\0') {
-            buf[i] = str[i];
-            break;
-        }
-        buf[i] = str[i];
-    }
-    *buflen = i;
-    buf[i] = '\0';
-
-    return buf;
-}
-
 char *encode_html(char *buf, const char *str, size_t buflen)
 {
     size_t i, j, k;
