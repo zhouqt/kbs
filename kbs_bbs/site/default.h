@@ -101,6 +101,10 @@
 #endif
 #endif
 
+#if HAVE_PERSONAL_DNS == 0	/*个人域名服务，缺省不使能*/
+#undef HAVE_PERSONAL_DNS
+#endif
+
 #ifndef HAVE_BRC_CONTROL
 #define HAVE_BRC_CONTROL
 #else

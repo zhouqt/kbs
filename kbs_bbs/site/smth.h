@@ -19,6 +19,7 @@
 #define MANUAL_DENY         0   /*是否允许手动解封*/
 #define BBS_SERVICE_DICT    1
 #define HAVE_TSINGHUA_INFO_REGISTER 1 /* 允许从清华信息系统注册 */
+#define HAVE_PERSONAL_DNS   1   /*个人域名服务*/
 
 #define SMTH			1
 #define FILTER			1

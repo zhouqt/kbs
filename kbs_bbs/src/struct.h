@@ -214,5 +214,13 @@ struct WWW_GUEST_TABLE {
 };
 
 #endif
+
+#ifdef HAVE_PERSONAL_DNS
+struct dns_msgbuf {
+	long int mtype;
+	char userid[IDLEN+1];
+	char ip[IPLEN+1];
+};
+#endif
 #endif
 

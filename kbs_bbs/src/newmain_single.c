@@ -1013,6 +1013,23 @@ void main_bbs(int convit, char *argv)
     clear();
     load_key(NULL);
 
+#ifdef HAVE_PERSONAL_DNS
+  //动态域名更新
+    if (HAS_PERM(currentuser, PERM_SYSOP)) {
+        struct dns_msgbuf msg;
+        int msqid;
+        msqid = msgget(sysconf_eval("BBSDNS_MSG", 0x999), IPC_CREAT | 0664);
+        if (msqid >= 0)
+            msg.mtype=0;
+            strncpy(msg.userid,currentuser->userid,IDLEN);
+            msg.userid[IDLEN]=0;
+            //水木是可以用fromhost的，不过其他打开dns反解得就要考虑一下了
+            strncpy(msg.ip,fromhost,IPLEN);
+            msg.ip[IPLEN]=0;
+            msgsnd(msqid, msg, sizeof(msg), IPC_NOWAIT | MSG_NOERROR);
+        }
+    }
+#endif
 #ifndef DEBUG
 #ifdef SSHBBS
     sprintf(genbuf, "sshbbsd:%s", currentuser->userid);
