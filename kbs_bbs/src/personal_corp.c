@@ -1713,7 +1713,7 @@ static int pc_com_key(struct _select_def *conf, int key)
 		return SHOW_REFRESH;
 		break;
 	case 'd':
-		if( ! pc_is_admin(pc_u->username) )
+		if( ! pc_is_admin(pc_u->username) && strcasecmp(currentuser->userid, pc_c[conf->pos-conf->page_pos].username ) )
 			return SHOW_CONTINUE;
 		if( del_pc_comments( pc_n[pc_now_node_ent].nid, pc_c[conf->pos-conf->page_pos].cid ) ){
 			return SHOW_DIRCHANGE;
