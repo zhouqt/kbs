@@ -112,7 +112,7 @@
 		
 		$pno = intval($pno);
 		if ($pno < 1) $pno = 1; 
-		$cnt = 40;
+		$cnt = 40; //cnt
 		$start = ($pno-1)*$cnt;
 		
 		$query .= " LIMIT ".$start.",".$cnt." ;";
