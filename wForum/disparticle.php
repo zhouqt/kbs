@@ -37,7 +37,7 @@ if (isErrFounded()) {
 	}
 
 	board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
-
+	require_once("inc/ubbcode.php");
 	showArticleThreads($boardName,$boardID,$articleID,$article,$start,$listType);
 }
 
@@ -103,10 +103,10 @@ function article_bar($boardName,$boardID,$articleID,$article,$threadID,$listType
 ?>
 <table cellpadding=0 cellspacing=0 border=0 width=97% align=center>
 	<tr>
-	<td align=left width="30%" valign=middle style="height:27">&nbsp; 
-	<a href="announce.asp?name=<?php echo $boardName; ?>"><span class="buttonclass1" border=0 alt=发表一个新主题></span></a>&nbsp;&nbsp;<a href="vote.php?name=<?php echo $boardName; ?>"><span class="buttonclass2" border=0 alt=发表一个新投票></span>&nbsp;&nbsp;<a href="reply?name=<?php echo $boardName; ?>&id=<?php echo $article['ID']; ?>"><span class="buttonclass4" border=0 alt=回复本主题></span></a>
+	<td align=left valign=middle style="height:27">&nbsp; 
+	<a href="postarticle.php?board=<?php echo $boardName; ?>"><span class="buttonclass1" border=0 alt=发表一个新主题></span></a>&nbsp;&nbsp;<a href="vote.php?name=<?php echo $boardName; ?>"><span class="buttonclass2" border=0 alt=发表一个新投票></span>&nbsp;&nbsp;<a href="reply?name=<?php echo $boardName; ?>&id=<?php echo $article['ID']; ?>"><span class="buttonclass4" border=0 alt=回复本主题></span></a>
 	</td>
-	<td align=right width="70%" valign=middle><a href="disparticle.php?boardName=<?php echo $boardName; ?>&ID=<?php echo $articleID>1?$articleID-1:1; ?>"><img src="pic/prethread.gif" border=0 alt=浏览上一篇主题 width=52 height=12></a>&nbsp;
+	<td align=right valign=middle><a href="disparticle.php?boardName=<?php echo $boardName; ?>&ID=<?php echo $articleID>1?$articleID-1:1; ?>"><img src="pic/prethread.gif" border=0 alt=浏览上一篇主题 width=52 height=12></a>&nbsp;
 	<a href="javascript:this.location.reload()"><img src="pic/refresh.gif" border=0 alt=刷新本主题 width=40 height=12></a> &nbsp;
 <?php
 	if ($listType==1) {
