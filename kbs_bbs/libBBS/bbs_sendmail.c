@@ -30,7 +30,7 @@ int chkusermail(struct userec *user)
     int num,sum, sumlimit, numlimit, i;
 
 /*Arbitrator's mailbox has no limit, stephen 2001.11.1 */
-    get_mail_limit(&sumlimit,&numlimit);
+    get_mail_limit(user,&sumlimit,&numlimit);
     /*peregrine*/
     setmailfile(recmaildir, user->userid, DOT_DIR);
     num=getmailnum(recmaildir);

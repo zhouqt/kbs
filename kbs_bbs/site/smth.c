@@ -42,7 +42,7 @@ const char *permstrings[] = {
 
 /* You might want to put more descriptive strings for SPECIAL1 and SPECIAL2
    depending on how/if you use them. */
-char *user_definestr[] = {
+const char *user_definestr[] = {
     "活动看版",                 /* DEF_ACBOARD */
     "使用彩色",                 /* DEF_COLOR */
     "编辑时显示状态栏",         /* DEF_EDITMSG */
@@ -175,9 +175,9 @@ int uleveltochar(char *buf, struct userec *lookupuser)
         strcpy(buf, "站务");
     else if (lvl & PERM_JURY)
         strcpy(buf, "仲裁");    /* stephen :增加中文查询"仲裁" 2001.10.31 */
-    if (lvl & PERM_BMAMANGER)
+    else if (lvl & PERM_BMAMANGER)
         strcpy(buf, "监理");
-    if (lvl & PERM_COLLECTIVE)
+    else if (lvl & PERM_COLLECTIVE)
         strcpy(buf, "集体");
     else if (lvl & PERM_CHATCLOAK)
         strcpy(buf, "元老");
@@ -582,6 +582,6 @@ void get_mail_limit(struct userec* user,int *sumlimit,int * numlimit)
     else {
         *sumlimit = 9999;
         *numlimit = 9999;
-        return 0;
+        return;
     }
 }

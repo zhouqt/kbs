@@ -404,7 +404,7 @@ void get_mail_limit(struct userec* user,int *sumlimit,int * numlimit)
     else {
         *sumlimit = 9999;
         *numlimit = 9999;
-        return 0;
+        return;
     }
 }
 
