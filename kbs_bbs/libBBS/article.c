@@ -1030,6 +1030,60 @@ get_threads_from_id(const char *filename, int id, fileheader_t *buf, int num)
 	return ret;
 }
 
+struct dir_gthread_set {
+    fileheader_t *records;
+    int num;
+	int groupid;
+};
+
+static int 
+get_dir_gthreads(int fd, fileheader_t * base, int ent, int total, bool match, 
+		void *arg)
+{
+	struct dir_gthread_set *ts = (struct dir_gthread_set *) arg;
+	int i;
+	int off = 1;
+	int count = 0;
+	int start = ent;
+	int end = total;
+
+	for (i = start; i <= end; i++)
+	{
+		if (count == ts->num)
+			break;
+		if (base[i-1].groupid == ts->groupid)
+		{
+			memcpy(ts->records + count, base + i - 1,
+					sizeof(fileheader_t));
+			count++;
+		}
+	}
+	return count;
+}
+
+int 
+get_threads_from_gid(const char *filename, int gid, fileheader_t *buf, int num)
+{
+    struct dir_gthread_set ts;
+    fileheader_t key;
+	int fd;
+	int ret;
+
+	if (num == 0)
+		return 0;
+    ts.records = buf;
+    ts.num = num;
+	ts.groupid = gid;
+    bzero(&key, sizeof(key));
+    key.id = gid;
+	if ((fd = open(filename, O_RDWR, 0644)) < 0)
+		return -1;
+	ret = mmap_dir_search(fd, &key, get_dir_gthreads, &ts);
+	close(fd);
+	
+	return ret;
+}
+
 //土鳖两分法，    by yuhuan
 //请flyriver同学或其他人自行整合
 int

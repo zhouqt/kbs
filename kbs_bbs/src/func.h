@@ -308,6 +308,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     int get_records_from_id(int fd, int id, fileheader_t * buf, int num, int *index);
 
 	int get_threads_from_id(const char *filename, int id, fileheader_t *buf, int num);
+	int get_threads_from_gid(const char *filename, int gid, fileheader_t *buf, int num);
 
     int Origin2(char text[256]);
 /*º”»Îedit mark*/
@@ -548,6 +549,10 @@ void *memmem(register const void *s, size_t slen, register const void *p,
 
 /* calltime.c */
 time_t calc_calltime(int mode);
+
+/* xml.c */
+char *encode_xml(char *buf, const char *str, size_t buflen);
+char *string_copy(char *buf, const char *str, size_t * buflen);
 
 #ifdef SMS_SUPPORT
 int smsid2uid(char* smsid);
