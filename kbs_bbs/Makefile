@@ -139,12 +139,16 @@ $(BBSLIB) : $(patsubst %.o,lib%.o,$(BBSLIBOBJS))
 $(BBSLIB-SHARE) : $(patsubst %.o,lib%.o,$(BBSLIBOBJS))
 	$(LD) -shared $(LDFLAGS) -o $@ $^
 
+
 chatd: station.c libBBS.a libsystem.a
 	$(CC) -g $(CFLAGS) $(SITE_DEF) $(DEFINES) -o chatd $(OS_DEF) station.c $(LIBS) libBBS.a libsystem.a
 
-install: $(PROGNAME) $(BBSHOME)/bin/bbsd_single
+install: $(PROGNAME) $(BBSHOME)/bin/bbsd_single $(BBSHOME)/bin/$(BBSLIB-SHARE)
 	$(INSTALL) newpop3d $(BBSHOME)/bin
 	$(INSTALL) chatd $(BBSHOME)/bin
+
+$(BBSHOME)/bin/$(BBSLIB-SHARE) : $(BBSLIB-SHARE)
+	$(INSTALL) $^ $@
 
 $(BBSHOME)/bin/bbsd_single: bbsd_single
 	$(INSTALL) $@ $@.old

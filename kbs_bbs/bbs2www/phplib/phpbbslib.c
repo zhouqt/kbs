@@ -281,22 +281,17 @@ static ZEND_FUNCTION(bbs_wwwlogin)
 	char buf[255];
 	long ret;
 	long kick_multi=0;
-#ifdef SQUID_ACCL
-	snprintf(buf, sizeof(buf), "ENTER ?@%s [www]", fullfrom);
-#else
-	snprintf(buf, sizeof(buf), "ENTER ?@%s [www]", fromhost);
-#endif
 	if(ZEND_NUM_ARGS() == 1) {
           if (zend_parse_parameters(1 TSRMLS_CC, "l" , &kick_multi) != SUCCESS) {
                 WRONG_PARAM_COUNT;
           }
 	}
-	bbslog("1system", buf);
 	if(strcasecmp(getcurrentuser()->userid, "guest")) {
 		struct user_info ui;
 		int utmpent;
                 time_t t;
 		int multi_ret=1;
+		int tmp;
 		while (multi_ret!=0) {
 			int lres;
 			int num;
@@ -304,6 +299,7 @@ static ZEND_FUNCTION(bbs_wwwlogin)
 			multi_ret=multilogin_user(getcurrentuser(),getcurrentuser_num());
 			if ((multi_ret!=0)&&(!kick_multi))
 				RETURN_LONG(-1);
+			if (multi_ret==0) break;
 	                if ( !(num=search_ulist( &uin, cmpuids2, getcurrentuser_num()) ))
 	                        continue;  /* user isn't logged in */
 			if (uin.pid==1) {
@@ -325,7 +321,7 @@ static ZEND_FUNCTION(bbs_wwwlogin)
 
 		if(!HAS_PERM(getcurrentuser(), PERM_BASIC))
 			RETURN_LONG(3);
-		if(!check_ban_IP(fromhost,buf))
+		if(check_ban_IP(fromhost,buf))
 			RETURN_LONG(4);
 		t=getcurrentuser()->lastlogin;
 		getcurrentuser()->lastlogin=time(0);
@@ -375,22 +371,25 @@ static ZEND_FUNCTION(bbs_wwwlogin)
 		ui.logintime=time(0);	/* for counting user's stay time */
 										/* refer to bbsfoot.c for details */
 		ui.freshtime = time(0);
+		tmp=rand()%100000000;
+		ui.utmpkey=tmp;
 		ui.mode = WEBEXPLORE;
 		strncpy( ui.userid,   getcurrentuser()->userid,   20 );
 		strncpy( ui.realname, getcurrentuser()->realname, 20 );
 		strncpy( ui.username, getcurrentuser()->username, 40 );
-		utmpent = getnewutmpent(&ui) ;
+		utmpent = getnewutmpent2(&ui) ;
 		if (utmpent == -1)
 			ret=1;
 		else {
 			struct user_info* u;
-			int tmp;
 			u = get_utmpent(utmpent);
 			u->pid = 1;
-			tmp=rand()%100000000;
-			u->utmpkey=tmp;
 			if (addto_msglist(utmpent, getcurrentuser()->userid) < 0)
+			{
+				zend_error(E_WARNING,"can't add msg:%d %s!!!\n",utmpent,getcurrentuser()->userid);
+				setcurrentuinfo(u,utmpent);
 				ret=2;
+			}
 			else {
 				/*
 				sprintf(buf, "%d", utmpent);
@@ -406,6 +405,14 @@ static ZEND_FUNCTION(bbs_wwwlogin)
 		}
 	} else /* guest */
 		ret=0;
+	if ((ret==0)||(ret==2)) {
+#ifdef SQUID_ACCL
+		snprintf(buf, sizeof(buf), "ENTER ?@%s [www]", fullfrom);
+#else
+		snprintf(buf, sizeof(buf), "ENTER ?@%s [www]", fromhost);
+#endif
+		bbslog("1system", buf);
+	}
 	RETURN_LONG(ret);
 }
 

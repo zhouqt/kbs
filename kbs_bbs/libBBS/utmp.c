@@ -87,6 +87,14 @@ static void utmp_setreadonly(int readonly)
    	utmphead = (struct UTMPHEAD*)attach_shm1( NULL, 3698, sizeof(struct UTMPHEAD),&iscreate ,readonly, utmphead);/*attach user tmp head */
 }
 
+void detach_utmp()
+{
+	shmdt(utmphead);
+	shmdt(utmpshm);
+	utmphead=NULL;
+	utmpshm=NULL;
+}
+
 void resolve_utmp()
 {
 	int iscreate;

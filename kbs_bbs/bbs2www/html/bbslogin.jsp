@@ -13,7 +13,8 @@ if ($loginok!=1) {
       $kick=0;
       if ($kick_multi!="")
 	$kick=1;
-      if (($error=bbs_wwwlogin($kick))!=0) {
+      $error=bbs_wwwlogin($kick);
+      if (($error!=0)&&($error!=2)) {
         $loginok=6;
 	if ($error==-1) 
 		$loginok=4;
