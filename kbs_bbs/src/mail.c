@@ -849,14 +849,15 @@ int m_new()
     mrd = 0;
     modify_user_mode(RMAIL);
     setmailfile(currdirect, currentuser->userid, ".DIR");
-	setmailcheck(currentuser->userid);
     if (apply_record(currdirect, (APPLY_FUNC_ARG) read_new_mail, sizeof(struct fileheader), NULL, 1, false) == -1) {
         clear();
         move(0, 0);
         prints("No new messages\n\n\n");
+		setmailcheck(currentuser->userid);
         return -1;
     }
     apply_record(currdirect, (APPLY_FUNC_ARG) delete_new_mail, sizeof(struct fileheader), NULL, 1, true);
+	setmailcheck(currentuser->userid);
 /*    	
     if (delcnt) {
         while (delcnt--)
