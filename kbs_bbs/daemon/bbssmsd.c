@@ -382,6 +382,7 @@ int main()
     struct sigaction act;
     time_t now;
 
+    init_sessiondata(getSession());
     start_daemon();
 #if HAVE_MYSQL == 1
 	sms_init_mysql();
@@ -392,7 +393,6 @@ int main()
     init_memory();
     running=1;
     errno=0;
-    init_sessiondata(getSession());
 
     bzero(&act, sizeof(act));
     act.sa_handler = do_exit_sig;
