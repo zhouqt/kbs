@@ -749,7 +749,7 @@ int cmp_title(char *title, struct fileheader *fh1)
         p1 = fh1->title + 6;
     else
         p1 = fh1->title;
-    return (!strncmp(p1, title, STRLEN));
+    return (!strncmp(p1, title, ARTICLE_TITLE_LEN));
 }
 
 int find_thread(struct fileheader *fh, char *board, char *title)
@@ -845,8 +845,8 @@ char *pathname, *firstpath;
     strncpy(header.owner, userid, OWNER_LEN);
     header.owner[OWNER_LEN - 1] = 0;
     str_decode(conv_buf, SUBJECT);
-    strncpy(header.title, conv_buf, STRLEN);
-    header.title[STRLEN - 1] = '\0';
+    strncpy(header.title, conv_buf, ARTICLE_TITLE_LEN);
+    header.title[ARTICLE_TITLE_LEN - 1] = '\0';
     header.innflag[1] = 'M';
 	set_posttime(&header);
     /*
@@ -907,7 +907,7 @@ char *board, *file;
                 sprintf(buf, "-%s", header.owner);
                 strncpy(header.owner, buf, OWNER_LEN);
                 header.owner[OWNER_LEN - 1] = 0;
-                sprintf(header.title, "<< cancelled from %-.50s >>", POSTHOST ? POSTHOST : "site of origin");
+                snprintf(header.title, ARTICLE_TITLE_LEN ,"<< cancelled from %-.50s >>", POSTHOST ? POSTHOST : "site of origin");
                 lseek(fd, (off_t) (-size), SEEK_CUR);
                 safewrite(fd, &header, size);
             }
