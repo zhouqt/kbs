@@ -2125,9 +2125,11 @@ int change_post_flag(struct write_dir_arg* dirarg,int currmode, struct boardhead
         /*在普通模式下才能修改主体*/
         return 1;
 
+#ifdef COMMEND_ARTICLE
     if (flag == FILE_COMMEND_FLAG && currmode != DIR_MODE_NORMAL)
         /*在普通模式下才能推荐*/
         return 1;
+#endif
     if (prepare_write_dir(dirarg, fileinfo, currmode)!=0)
         return 2;
     
@@ -2163,13 +2165,14 @@ int change_post_flag(struct write_dir_arg* dirarg,int currmode, struct boardhead
         } 
     }
     
-    /* 标记 处理*/
+#ifdef COMMEND_ARTICLE
     if (flag&FILE_COMMEND_FLAG) {
         if (data->accessed[1] & FILE_SIGN)
             originFh->accessed[1] |= FILE_COMMEND;
         else
             originFh->accessed[1] &= ~FILE_COMMEND;
     }
+#endif
 
     /* 标记 处理*/
     if (flag&FILE_SIGN_FLAG) {
