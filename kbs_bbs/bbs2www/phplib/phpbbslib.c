@@ -73,6 +73,7 @@ static PHP_FUNCTION(bbs_get_votes);
 static PHP_FUNCTION(bbs_get_vote_from_num);
 static PHP_FUNCTION(bbs_vote_num);
 static PHP_FUNCTION(bbs_get_explain);
+static PHP_FUNCTION(bbs_start_vote);
 
 /*
  * define what functions can be used in the PHP embedded script
@@ -136,6 +137,7 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_get_vote_from_num,NULL)
 		PHP_FE(bbs_vote_num,NULL)
 		PHP_FE(bbs_get_explain,NULL)
+		PHP_FE(bbs_start_vote,NULL)
         {NULL, NULL, NULL}
 };
 
@@ -3155,3 +3157,142 @@ static PHP_FUNCTION(bbs_get_explain)
 
 	RETURN_LONG(i);
 }
+
+static PHP_FUNCTION(bbs_start_vote)
+{
+
+	int ac = ZEND_NUM_ARGS();
+	//zval *items;
+	char *items[32];
+	int items_len[32];
+	char *board;
+	int board_len;
+	char *title;
+	int title_len;
+	char *desp;
+	int desp_len;
+	int type,ball_maxdays;
+	int ball_maxtkt;
+	int ball_totalitems;
+	int i,pos;
+	int numlogin,numpost,numstay,numday;
+	struct boardheader *bp;
+	struct boardheader fh;
+	struct votebal ball;
+	struct votelimit vlimit;
+	char buf[PATHLEN];
+	char buff[PATHLEN];
+	FILE *fp;
+
+    if (ac != 21 || zend_parse_parameters(21 TSRMLS_CC, "slllllsslllssssssssss", &board, &board_len, &type, &numlogin, &numpost, &numstay, &numday, &title, &title_len, &desp, &desp_len, &ball_maxdays, &ball_maxtkt, &ball_totalitems, &items[0], &items_len[0], &items[1], &items_len[1], &items[2], &items_len[2], &items[3], &items_len[3], &items[4], &items_len[4], &items[5], &items_len[5], &items[6], &items_len[6], &items[7], &items_len[7], &items[8], &items_len[8], &items[9], &items_len[9]) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+    if ((bp = getbcache(board)) == NULL) {
+        RETURN_LONG(-1);
+    }
+    if(! is_BM(bp, currentuser) && !HAS_PERM(currentuser,PERM_SYSOP) )
+        RETURN_LONG(-2);
+
+	if(type < 1 || type > 5)
+		RETURN_LONG(-3);
+
+	if(ball_totalitems < 1 || ball_totalitems > 10)
+		RETURN_LONG(-4);
+
+	if(ball_maxdays <= 0)
+		ball_maxdays = 1;
+
+	if(strlen(title) <=0 )
+		RETURN_LONG(-8);
+
+	bzero(&ball,sizeof(ball));
+	strncpy(ball.title,title,STRLEN);
+	ball.title[STRLEN-1]='\0';
+
+	ball.opendate = time(0);
+	ball.type = type;
+	ball.maxdays = 1;
+
+	if(type == 1){
+		ball.maxtkt = 1;
+		ball.totalitems = 3;
+		strcpy(ball.items[0], "赞成  （是的）");
+		strcpy(ball.items[1], "不赞成（不是）");
+		strcpy(ball.items[2], "没意见（不清楚）");
+	}else if(type == 2 || type == 3){
+		if(type == 2) ball.maxtkt = 1;
+		else ball.maxtkt = ball_maxtkt;
+
+		ball.totalitems = ball_totalitems;
+		for(i=0; i<ball.totalitems; i++){
+			strncpy(ball.items[i], items[i], STRLEN);
+			ball.items[i][STRLEN-1]='\0';
+		}
+	}else if(type == 4){
+		ball.maxtkt = ball_maxtkt;
+		if(ball.maxtkt <= 0)
+			ball.maxtkt = 100;
+	}else if(type == 5){
+		ball.maxtkt = 0;
+		ball.totalitems = 0;
+	}
+
+	//setvoteflag
+    pos = getboardnum(board, &fh);
+    if (pos) {
+        fh.flag = fh.flag | BOARD_VOTEFLAG;
+        set_board(pos, &fh,NULL);
+    }
+
+	strcpy(ball.userid, currentuser->userid);
+
+	sprintf(buf, "vote/%s/control", board);
+	if(append_record(buf,&ball,sizeof(ball)) == -1)
+		RETURN_LONG(-7);
+
+	sprintf(buf,"%s OPEN VOTE",board);
+	bbslog("user","%s",buf);
+
+	sprintf(buf, "vote/%s/desc.%lu",board, ball.opendate );
+	if((fp=fopen(buf,"w"))!=NULL){
+		fputs(desp,fp);
+		fclose(fp);
+	}
+
+	if(numlogin < 0) numlogin = 0;
+	vlimit.numlogins = numlogin;
+
+	if(numpost < 0) numpost = 0;
+	vlimit.numposts = numpost;
+
+	if(numstay < 0) numstay = 0;
+	vlimit.stay = numstay;
+
+	if(numday < 0) numday = 0;
+	vlimit.day = numday;
+
+	sprintf(buf,"vote/%s/limit.%lu",board, ball.opendate);
+	append_record(buf, &vlimit, sizeof(vlimit));
+
+	sprintf(buf,"tmp/votetmp.%d",getpid());
+	if((fp=fopen(buf,"w"))==NULL){
+		sprintf(buff,"[通知] %s 举办投票: %s",board,ball.title);
+		fprintf(fp,"%s",buff);
+		fclose(fp);
+#ifdef NINE_BUILD
+		post_file(currentuser, "", buf, board, buff, 0, 1);
+		post_file(currentuser, "", buf, "vote", buff, 0, 1);
+#else
+		if( !normal_board(board) ){
+			post_file(currentuser, "", buf, board, buff, 0,1);
+		}else{
+			post_file(currentuser, "", buf, "vote", buff, 0,1);
+		}
+#endif
+		unlink(buf);
+	}
+
+	RETURN_LONG(1);
+}
+
