@@ -557,133 +557,6 @@ MENU *pm;
            "[31m[44m[¹¦ÄÜ¼ü] [33m ËµÃ÷ h ©¦ Àë¿ª q,¡û ©¦ ÒÆ¶¯ÓÎ±ê k,¡ü,j,¡ý ©¦ ¶ÁÈ¡×ÊÁÏ Rtn,¡ú         [m");
 }
 
-void a_additem(MENU* pm,char* title,char* fname,char* host,int port,long attachpos)    /* ²úÉúITEM object,²¢³õÊ¼»¯ */
-{
-    ITEM *newitem;
-
-    if (pm->num < MAXITEMS) {
-        newitem = (ITEM *) malloc(sizeof(ITEM));
-        strncpy(newitem->title, title, sizeof(newitem->title) - 1);
-        if (host != NULL) {
-            newitem->host = (char *) malloc(sizeof(char) * (strlen(host) + 1));
-            strcpy(newitem->host, host);
-        } else
-            newitem->host = host;
-        newitem->port = port;
-        newitem->attachpos = attachpos;
-        strncpy(newitem->fname, fname, sizeof(newitem->fname) - 1);
-        pm->item[(pm->num)++] = newitem;
-    }
-}
-
-int a_loadnames(pm)             /* ×°Èë .Names */
-MENU *pm;
-{
-    FILE *fn;
-    ITEM litem;
-    char buf[PATHLEN], *ptr;
-    char hostname[STRLEN];
-    struct stat st;
-
-    a_freenames(pm);
-    pm->num = 0;
-    sprintf(buf, "%s/.Names", pm->path);        /*.Names¼ÇÂ¼²Ëµ¥ÐÅÏ¢ */
-    if ((fn = fopen(buf, "r")) == NULL)
-        return 0;
-    if (fstat(fileno(fn), &st) != -1)
-        pm->modified_time = st.st_mtime;
-    hostname[0] = '\0';
-    while (fgets(buf, sizeof(buf), fn) != NULL) {
-        if ((ptr = strchr(buf, '\n')) != NULL)
-            *ptr = '\0';
-        if (strncmp(buf, "Name=", 5) == 0) {
-            strncpy(litem.title, buf + 5, sizeof(litem.title));
-            litem.attachpos = 0;
-        } else if (strncmp(buf, "Path=", 5) == 0) {
-            if (strncmp(buf, "Path=~/", 7) == 0)
-                strncpy(litem.fname, buf + 7, sizeof(litem.fname));
-            else
-                strncpy(litem.fname, buf + 5, sizeof(litem.fname));
-            if ((!strstr(litem.title, "(BM: BMS)") || HAS_PERM(currentuser, PERM_BOARDS)) &&
-                (!strstr(litem.title, "(BM: SYSOPS)") || HAS_PERM(currentuser, PERM_SYSOP)) && (!strstr(litem.title, "(BM: ZIXIAs)") || HAS_PERM(currentuser, PERM_SECANC))) {
-                if (strstr(litem.fname, "!@#$%")) {     /*È¡ host & port */
-                    char *ptr1, *ptr2, gtmp[STRLEN];
-
-                    strncpy(gtmp, litem.fname, STRLEN - 1);
-                    ptr1 = strtok(gtmp, "!#$%@");
-                    strcpy(hostname, ptr1);
-                    ptr2 = strtok(NULL, "@");
-                    strncpy(litem.fname, ptr2, sizeof(litem.fname) - 1);
-                    litem.port = atoi(strtok(NULL, "@"));
-                }
-                a_additem(pm, litem.title, litem.fname, (strlen(hostname) == 0) ?       /*²úÉúITEM */
-                          NULL : hostname, litem.port, litem.attachpos);
-            }
-            hostname[0] = '\0';
-        } else if (strncmp(buf, "# Title=", 8) == 0) {
-            if (pm->mtitle[0] == '\0')
-                strncpy(pm->mtitle, buf + 8, STRLEN);
-        } else if (strncmp(buf, "Host=", 5) == 0) {
-            strcpy(hostname, buf + 5);
-        } else if (strncmp(buf, "Port=", 5) == 0) {
-            litem.port = atoi(buf + 5);
-        } else if (strncmp(buf, "Attach=", 7) == 0) {
-            litem.attachpos= atoi(buf + 7);
-        }
-    }
-    fclose(fn);
-    return 1;
-}
-
-int a_savenames(pm)             /*±£´æµ±Ç°MENUµ½ .Names */
-MENU *pm;
-{
-    FILE *fn;
-    ITEM *item;
-    char fpath[PATHLEN];
-    int n;
-    struct stat st;
-
-    sprintf(fpath, "%s/.Names", pm->path);
-    if (stat(fpath, &st) != -1) {
-        if (st.st_mtime != pm->modified_time)
-            return -3;
-    }
-    if ((fn = fopen(fpath, "w")) == NULL)
-        return -1;
-    fprintf(fn, "#\n");
-    if (!strncmp(pm->mtitle, "[Ä¿Â¼] ", 7) || !strncmp(pm->mtitle, "[ÎÄ¼þ] ", 7)
-        || !strncmp(pm->mtitle, "[Á¬Ïß] ", 7)) {
-        fprintf(fn, "# Title=%s\n", pm->mtitle + 7);
-    } else {
-        fprintf(fn, "# Title=%s\n", pm->mtitle);
-    }
-    fprintf(fn, "#\n");
-    for (n = 0; n < pm->num; n++) {
-        item = pm->item[n];
-        if (!strncmp(item->title, "[Ä¿Â¼] ", 7) || !strncmp(item->title, "[ÎÄ¼þ] ", 7)
-            || !strncmp(item->title, "[Á¬Ïß] ", 7)) {
-            fprintf(fn, "Name=%s\n", item->title + 7);
-        } else
-            fprintf(fn, "Name=%s\n", item->title);
-        fprintf(fn, "Attach=%ld\n", item->attachpos);
-        if (item->host != NULL) {
-            fprintf(fn, "Host=%s\n", item->host);
-            fprintf(fn, "Port=%d\n", item->port);
-            fprintf(fn, "Type=1\n");
-            fprintf(fn, "Path=%s\n", item->fname);
-        } else
-            fprintf(fn, "Path=~/%s\n", item->fname);
-        fprintf(fn, "Numb=%d\n", n + 1);
-        fprintf(fn, "#\n");
-    }
-    fclose(fn);
-    if (stat(fpath, &st) != -1)
-        pm->modified_time = st.st_mtime;
-    chmod(fpath, 0644);
-    return 0;
-}
-
 /* a_SeSave ÓÃÀ´É¾³ý´æµ½ÔÝ´æµµÊ±µÄÎÄ¼þÍ·ºÍÎ² Life 1997.4.6 */
 int a_SeSave(char *path, char *key, struct fileheader *fileinfo, int nomsg, char *direct, int ent)
 {
@@ -952,22 +825,8 @@ int level;
     if (check_read_perm(currentuser, &fhdr) == 0)
         return 0;
 
-
-    len = strlen(key);
-    sprintf(buf, "%s/.Search", path);
-    if (len > 0 && (fn = fopen(buf, "r")) != NULL) {
-        while (fgets(buf, sizeof(buf), fn) != NULL) {
-            if (strncasecmp(buf, key, len) == 0 && buf[len] == ':' && (ptr = strtok(&buf[len + 1], " \t\n")) != NULL) {
-                sprintf(bname, "%s/%s", path, ptr);
-                fclose(fn);
-                a_menu("", bname, level, 0);
-                return 1;
-            }
-        }
-        /*---	added by period	2000-09-21	---*/
-        fclose(fn);
-        /*---	---*/
-    }
+    sprintf(bname,"0Announce/groups/%s",fhdr.ann_path);
+    a_menu("", bname, level, 0);
     return 0;
 }
 
@@ -1583,12 +1442,9 @@ void a_manager(MENU *pm,int ch)
             pm->page = 9999;
             break;
         case 'V':
-        case 'v':
             if (HAS_PERM(currentuser, PERM_SYSOP)) {
                 if (ch == 'v')
                     sprintf(fpath, "%s/.Names", pm->path);
-                else
-                    sprintf(fpath, "0Announce/.Search");        /*.Search¿ØÖÆ¸÷°æ¶ÔÓ¦µÄ¾«»ªÇø */
 
                 if (dashf(fpath)) {
                     modify_user_mode(EDITANN);
@@ -1927,6 +1783,10 @@ int lastlevel, lastbmonly;
             t_friends();
             me.page = 9999;
             break;              /*Haohmaru 98.09.22 */
+        case 'v':
+            i_read_mail;
+            me.page = 9999;
+            break;
         case 'u':
             clear();
             modify_user_mode(QUERY);
@@ -2015,7 +1875,6 @@ int add_grp(char group[STRLEN], char bname[STRLEN], char title[STRLEN], char gna
     char gpath[STRLEN * 2];
     char bpath[STRLEN * 2];
 
-    sprintf(buf, "0Announce/.Search");
     sprintf(searchname, "%s: groups/%s/%s", bname, group, bname);
     sprintf(gpath, "0Announce/groups/%s", group);
     sprintf(bpath, "%s/%s", gpath, bname);

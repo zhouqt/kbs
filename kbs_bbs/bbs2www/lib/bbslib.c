@@ -1277,26 +1277,6 @@ int get_file_ent(char *board, char *file, struct fileheader *x)
     return search_record(dir, x, sizeof(struct fileheader), cmpname, file);
 }
 
-/*char *getbfroma(char *path) {
-        FILE *fp;
-	static char buf1[180], buf2[180];
-	int len;
-	if(path[0]==0) return "";
-	path++;
-        fp=fopen("0Announce/.Search", "r");
-        if(fp==0) return "";
-        while(1) {
-		bzero(buf1, 80);
-		bzero(buf2, 80);
-                if(fscanf(fp, "%s %s", buf1, buf2)<=0) break;
-                if(buf1[0]) buf1[strlen(buf1)-1]=0;
-		if(buf1[0]=='*') continue;
-                if(!strncmp(buf2, path, strlen(buf2))) return buf1;
-        }
-        fclose(fp);
-        return "";
-}*/
-
 int set_my_cookie()
 {
     FILE *fp;

@@ -94,7 +94,7 @@ int dokilldir(char *board)
     return killed;
 }
 
-int doaboard(struct boardheader *brd)
+int doaboard(struct boardheader *brd,void* arg)
 {
     if (!brd)
         return 0;
@@ -104,7 +104,7 @@ int doaboard(struct boardheader *brd)
 int dokillalldir()
 {
     resolve_boards();
-    apply_boards(doaboard);
+    apply_boards(doaboard,NULL);
     return 0;
 }
 static char tmpbuf[255];

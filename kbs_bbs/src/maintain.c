@@ -427,13 +427,6 @@ int m_newbrd()
     getdata(9, 0, "是否可向外转信(Y/N)? [N]: ", ans, 4, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y')
         newboard.flag |= BOARD_OUTFLAG;
-    if (add_board(&newboard) == -1) {
-        move(t_lines - 1, 0);
-        outs("加入讨论区失败!\n");
-        pressreturn();
-        clear();
-        return -1;
-    }
     build_board_structure(newboard.filename);
     group = chgrp();
     if (group != NULL) {
@@ -449,7 +442,15 @@ int m_newbrd()
             prints("\n成立精华区失败....\n");
         else
             prints("已经置入精华区...\n");
-        ann_addto_search(group, newboard.filename);
+        snprintf(newboard.ann_path,127,"%s/%s",group, newboard.filename);
+        newboard.ann_path[127]=0;
+    }
+    if (add_board(&newboard) == -1) {
+        move(t_lines - 1, 0);
+        outs("加入讨论区失败!\n");
+        pressreturn();
+        clear();
+        return -1;
     }
     prints("\n新讨论区成立\n");
     sprintf(genbuf, "add brd %s", newboard.filename);
@@ -663,9 +664,6 @@ int m_editbrd()
                         else
                             sprintf(vbuf, "%-38.38s", newfh.title + 13);
 
-                        /*
-                         * add_grp() 会在 .Search 中加入一条记录 
-                         */
                         if (add_grp(group, newfh.filename, vbuf, cexplain) == -1)
                             prints("\n成立精华区失败....\n");
                         else
@@ -677,17 +675,9 @@ int m_editbrd()
                             f_rm(newpath);
                         }
                         f_mv(oldpath, newpath);
-                        /*
-                         * FIXME: 这里逻辑上有问题，明天再处理了 
-                         */
-                        /*
-                         * 因为 del_grp() 需要搜索 .Search 文件，
-                         * * 但此时 .Search 中已经没有 fh.filename 了 
-                         */
                         del_grp(fh.filename, fh.title + 13);
-                        del_from_file("0Announce/.Search", fh.filename);
-                        ann_delfrom_search(fh.filename);
-                        ann_addto_search(group, newfh.filename);
+                        snprintf(newfh.ann_path,127,"%s/%s",group, newfh.filename);
+                        newfh.ann_path[127]=0;
                     }
                 }
             }

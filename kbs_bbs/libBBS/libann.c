@@ -143,69 +143,58 @@ void ann_set_items(MENU * pm, ITEM * it, size_t num)
         pm->item[i] = it + i;
 }
 
+struct _tmp_findboard {
+    char *path;
+    char *board;
+    size_t len;
+}
+
+static int findboard(struct boardheader* bh,struct _tmp_findboard* arg)
+{
+    if (!strcmp(bh->ann_path,arg->path)) {
+        strncpy(arg->board,bh->filename,arg->len);
+        arg->board[arg->len-1]=0;
+        return QUIT;
+    }
+    return 0;
+}
+
 /*
  * Get a board name from an announce path.
- * For high performance, we should drop .Search file into shared memory.
 */
 int ann_get_board(char *path, char *board, size_t len)
 {
-    FILE *fp;
-    char buf[256];
     char *ptr;
     char *ptr2;
+    struct _tmp_findboard arg;
 
     ptr = path;
     if (ptr[0] == '\0')
         return -1;
     if (ptr[0] == '/')
         ptr++;
-    fp = fopen("0Announce/.Search", "r");
-    if (fp == NULL)
+    if (strncmp(path,"0Announce/groups/",strlen("0Announce/groups/"))
         return -1;
-    while (fgets(buf, sizeof(buf), fp) != NULL) {
-        if ((ptr2 = strrchr(buf, '\n')) != NULL)
-            *ptr2 = '\0';
-        if ((ptr2 = strchr(buf, ':')) != NULL) {
-            *ptr2 = '\0';
-            if (strncmp(ptr2 + 2, ptr, strlen(ptr2 + 2)) == 0) {
-                strncpy(board, buf, len - 1);
-                board[len - 1] = '\0';
-                fclose(fp);
-                return 0;
-            }
-        }
-    }
-    fclose(fp);
+    arg.path=path+strlen("0Announce/groups/");
+    arg.board=board;
+    arg.len=len;
+    if (apply_boards(findboard,&arg)==QUIT)
+        return 0;
     return -1;
 }
 
 /*
  * Get an announce path from a board name.
- * For high performance, we should drop .Search file into shared memory.
 */
 int ann_get_path(char *board, char *path, size_t len)
 {
-    FILE *fp;
-    char buf[256];
-    char *ptr;
-
-    fp = fopen("0Announce/.Search", "r");
-    if (fp == NULL)
-        return -1;
-    while (fgets(buf, sizeof(buf), fp) != NULL) {
-        if ((ptr = strrchr(buf, '\n')) != NULL)
-            *ptr = '\0';
-        if ((ptr = strchr(buf, ':')) != NULL) {
-            *ptr = '\0';
-            if (strcmp(buf, board) == 0) {
-                strncpy(path, ptr + 2, len - 1);
-                path[len - 1] = '\0';
-                fclose(fp);
-                return 0;
-            }
-        }
+    struct boardheader* bh;
+    if ((bh=getbcache(board)!=NULL)) {
+        if (strlen(bh->ann_path)+strlen("0Announce/groups")>len)
+            return -1;
+        sprintf(path,"0Announce/groups/%s",bh->ann_path);
+        return 0;
     }
-    fclose(fp);
     return -1;
 }
 
@@ -289,49 +278,129 @@ int ann_traverse_check(char *path, struct userec *user)
     return ret;
 }
 
-/* Add a board searching path to .Search file. */
-int ann_addto_search(char *group, char *board)
+void a_additem(MENU* pm,char* title,char* fname,char* host,int port,long attachpos)    /* 产生ITEM object,并初始化 */
 {
-	char buf[PATHLEN];
-	char searchname[STRLEN];
+    ITEM *newitem;
 
-	strcpy(buf, "0Announce/.Search");
-	sprintf(searchname, "%s: groups/%s/%s", board, group, board);
-    if (!seek_in_file(buf, board))
-	{
-		addtofile(buf, searchname);
-		return 0;
-	}
-	else
-		return -1;
-}
-
-/* Delete a board searching path from .Search file. */
-int ann_delfrom_search(char *board)
-{
-    FILE *fp, *nfp;
-    int deleted = false;
-	char filename[PATHLEN];
-    char fnnew[256 /*STRLEN*/];
-    char buf[256 /*STRLEN*/];
-
-	strcpy(filename, "0Announce/.Search");
-    if ((fp = fopen(filename, "r")) == NULL)
-        return -1;
-    sprintf(fnnew, "%s.%d", filename, getuid());
-    if ((nfp = fopen(fnnew, "w")) == NULL)
-        return -1;
-    while (fgets(buf, 256 /*STRLEN*/, fp) != NULL) {
-        if (strncasecmp(buf, board, strlen(board)) == 0)
-            deleted = true;
-
-        else if (*buf > ' ')
-            fputs(buf, nfp);
+    if (pm->num < MAXITEMS) {
+        newitem = (ITEM *) malloc(sizeof(ITEM));
+        strncpy(newitem->title, title, sizeof(newitem->title) - 1);
+        if (host != NULL) {
+            newitem->host = (char *) malloc(sizeof(char) * (strlen(host) + 1));
+            strcpy(newitem->host, host);
+        } else
+            newitem->host = host;
+        newitem->port = port;
+        newitem->attachpos = attachpos;
+        strncpy(newitem->fname, fname, sizeof(newitem->fname) - 1);
+        pm->item[(pm->num)++] = newitem;
     }
-    fclose(fp);
-    fclose(nfp);
-    if (!deleted)
-        return -1;
-    return (f_mv(fnnew, filename));
 }
+
+int a_loadnames(MENU* pm)             /* 装入 .Names */
+{
+    FILE *fn;
+    ITEM litem;
+    char buf[PATHLEN], *ptr;
+    char hostname[STRLEN];
+    struct stat st;
+
+    a_freenames(pm);
+    pm->num = 0;
+    sprintf(buf, "%s/.Names", pm->path);        /*.Names记录菜单信息 */
+    if ((fn = fopen(buf, "r")) == NULL)
+        return 0;
+    if (fstat(fileno(fn), &st) != -1)
+        pm->modified_time = st.st_mtime;
+    hostname[0] = '\0';
+    while (fgets(buf, sizeof(buf), fn) != NULL) {
+        if ((ptr = strchr(buf, '\n')) != NULL)
+            *ptr = '\0';
+        if (strncmp(buf, "Name=", 5) == 0) {
+            strncpy(litem.title, buf + 5, sizeof(litem.title));
+            litem.attachpos = 0;
+        } else if (strncmp(buf, "Path=", 5) == 0) {
+            if (strncmp(buf, "Path=~/", 7) == 0)
+                strncpy(litem.fname, buf + 7, sizeof(litem.fname));
+            else
+                strncpy(litem.fname, buf + 5, sizeof(litem.fname));
+            if ((!strstr(litem.title, "(BM: BMS)") || HAS_PERM(currentuser, PERM_BOARDS)) &&
+                (!strstr(litem.title, "(BM: SYSOPS)") || HAS_PERM(currentuser, PERM_SYSOP)) && (!strstr(litem.title, "(BM: ZIXIAs)") || HAS_PERM(currentuser, PERM_SECANC))) {
+                if (strstr(litem.fname, "!@#$%")) {     /*取 host & port */
+                    char *ptr1, *ptr2, gtmp[STRLEN];
+
+                    strncpy(gtmp, litem.fname, STRLEN - 1);
+                    ptr1 = strtok(gtmp, "!#$%@");
+                    strcpy(hostname, ptr1);
+                    ptr2 = strtok(NULL, "@");
+                    strncpy(litem.fname, ptr2, sizeof(litem.fname) - 1);
+                    litem.port = atoi(strtok(NULL, "@"));
+                }
+                a_additem(pm, litem.title, litem.fname, (strlen(hostname) == 0) ?       /*产生ITEM */
+                          NULL : hostname, litem.port, litem.attachpos);
+            }
+            hostname[0] = '\0';
+        } else if (strncmp(buf, "# Title=", 8) == 0) {
+            if (pm->mtitle[0] == '\0')
+                strncpy(pm->mtitle, buf + 8, STRLEN);
+        } else if (strncmp(buf, "Host=", 5) == 0) {
+            strcpy(hostname, buf + 5);
+        } else if (strncmp(buf, "Port=", 5) == 0) {
+            litem.port = atoi(buf + 5);
+        } else if (strncmp(buf, "Attach=", 7) == 0) {
+            litem.attachpos= atoi(buf + 7);
+        }
+    }
+    fclose(fn);
+    return 1;
+}
+
+int a_savenames(MENU* pm)             /*保存当前MENU到 .Names */
+{
+    FILE *fn;
+    ITEM *item;
+    char fpath[PATHLEN];
+    int n;
+    struct stat st;
+
+    sprintf(fpath, "%s/.Names", pm->path);
+    if (stat(fpath, &st) != -1) {
+        if (st.st_mtime != pm->modified_time)
+            return -3;
+    }
+    if ((fn = fopen(fpath, "w")) == NULL)
+        return -1;
+    fprintf(fn, "#\n");
+    if (!strncmp(pm->mtitle, "[目录] ", 7) || !strncmp(pm->mtitle, "[文件] ", 7)
+        || !strncmp(pm->mtitle, "[连线] ", 7)) {
+        fprintf(fn, "# Title=%s\n", pm->mtitle + 7);
+    } else {
+        fprintf(fn, "# Title=%s\n", pm->mtitle);
+    }
+    fprintf(fn, "#\n");
+    for (n = 0; n < pm->num; n++) {
+        item = pm->item[n];
+        if (!strncmp(item->title, "[目录] ", 7) || !strncmp(item->title, "[文件] ", 7)
+            || !strncmp(item->title, "[连线] ", 7)) {
+            fprintf(fn, "Name=%s\n", item->title + 7);
+        } else
+            fprintf(fn, "Name=%s\n", item->title);
+        fprintf(fn, "Attach=%ld\n", item->attachpos);
+        if (item->host != NULL) {
+            fprintf(fn, "Host=%s\n", item->host);
+            fprintf(fn, "Port=%d\n", item->port);
+            fprintf(fn, "Type=1\n");
+            fprintf(fn, "Path=%s\n", item->fname);
+        } else
+            fprintf(fn, "Path=~/%s\n", item->fname);
+        fprintf(fn, "Numb=%d\n", n + 1);
+        fprintf(fn, "#\n");
+    }
+    fclose(fn);
+    if (stat(fpath, &st) != -1)
+        pm->modified_time = st.st_mtime;
+    chmod(fpath, 0644);
+    return 0;
+}
+
 

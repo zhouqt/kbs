@@ -233,8 +233,7 @@ int vote_close()
     return 0;
 }
 
-int b_close(fh)
-struct boardheader *fh;
+int b_close(struct boardheader *fh,void* arg)
 {
     int end;
 
@@ -270,7 +269,7 @@ int b_closepolls()
     fprintf(cfp, "%s", ctime(&now));
     strcpy(buf, currboard);
     fclose(cfp);
-    apply_boards(b_close);
+    apply_boards(b_close,NULL);
     strcpy(currboard, buf);
     return 0;
 }

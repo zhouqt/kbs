@@ -179,7 +179,7 @@ extern "C" {
 
     int add_board(struct boardheader *newboard);
     void build_board_structure(const char *board);
-    int apply_boards(int (*func) ());   /* 对所有版 应用 func函数 */
+    int apply_boards(int (*func) (void*),void* arg);   /* 对所有版 应用 func函数 */
     int delete_board(char *boardname, char *title);     /* delete board entry */
     struct boardheader const *getboard(int num);
     int set_board(int bid, struct boardheader *board, struct boardheader *oldbh);
@@ -392,6 +392,9 @@ extern "C" {
     void ann_set_items(MENU * pm, ITEM * it, size_t num);
     int ann_get_board(char *path, char *board, size_t len);
     int ann_get_path(char *board, char *path, size_t len);
+    void a_additem(MENU* pm,char* title,char* fname,char* host,int port,long attachpos);    /* 产生ITEM object,并初始化 */
+    int a_loadnames(MENU* pm);             /* 装入 .Names */
+    int a_savenames(MENU* pm);             /*保存当前MENU到 .Names */
 
 /* check the user's access for the path
   return < 0 deny access
@@ -403,8 +406,6 @@ extern "C" {
      * in site.c 
      */
     int ann_get_postfilename(char *filename, struct fileheader *fileinfo, MENU * pm);
-    int ann_addto_search(char *group, char *board);
-    int ann_delfrom_search(char *board);
 
 
 /* zmodem */

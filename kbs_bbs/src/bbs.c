@@ -299,7 +299,7 @@ void printutitle()
 }
 
 
-int g_board_names(struct boardheader *fhdrp)
+int g_board_names(struct boardheader *fhdrp,void* arg)
 {
     if (check_read_perm(currentuser, fhdrp)) {
         AddNameList(fhdrp->filename);
@@ -310,7 +310,7 @@ int g_board_names(struct boardheader *fhdrp)
 void make_blist()
 {                               /* 所有版 版名 列表 */
     CreateNameList();
-    apply_boards((int (*)()) g_board_names);
+    apply_boards((int (*)()) g_board_names,NULL);
 }
 
 int Select()

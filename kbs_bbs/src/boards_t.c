@@ -23,7 +23,7 @@ char *cmd;
     choose_board(DEFINE(currentuser, DEF_NEWPOST) ? 1 : 0, boardprefix,0);
 }
 
-static int clear_all_board_read_flag_func(struct boardheader *bh)
+static int clear_all_board_read_flag_func(struct boardheader *bh,void* arg)
 {
     if (brc_initial(currentuser->userid, bh->filename) != 0)
         brc_clear();
@@ -39,7 +39,7 @@ int clear_all_board_read_flag()
         strncpy(save_board, currboard, BOARDNAMELEN);
         save_board[BOARDNAMELEN - 1] = 0;
 
-        apply_boards(clear_all_board_read_flag_func);
+        apply_boards(clear_all_board_read_flag_func,NULL);
         strcpy(currboard, save_board);
     }
     return 0;

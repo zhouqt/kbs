@@ -187,13 +187,13 @@ struct BoardStatus *getbstatus(int index)
 {
     return &brdshm->bstatus[index];
 }
-int apply_boards(int (*func) (struct boardheader *))
+int apply_boards(int (*func) (struct boardheader *),void* arg)
 {                               /* 对所有版 应用 func函数 */
     register int i;
 
     for (i = 0; i < brdshm->numboards; i++)
             if (bcache[i].filename[0])
-                if ((*func) (&bcache[i]) == QUIT)
+                if ((*func) (&bcache[i],arg) == QUIT)
                     return QUIT;
     return 0;
 }
@@ -283,6 +283,15 @@ int delete_board(char *boardname, char *title)
 #endif                          /* 
                                  */
     sprintf(buf, " << '%s'被 %s 删除 >>", bcache[bid].filename, currentuser->userid);
+#ifdef BBSMAIN
+    getdata(3, 0, "移除精华区 (Yes, or No) [Y]: ", genbuf, 4, DOECHO, NULL, true);
+    if (genbuf[0] != 'N' && genbuf[0] != 'n')
+#endif
+    {
+            char lookgrp[30];
+
+            del_grp(boardname, title + 13);
+    }
     fd = bcache_lock();
     bid = getbnum(boardname);
     if (bid == 0)

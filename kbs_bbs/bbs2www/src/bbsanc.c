@@ -11,7 +11,7 @@ void ann_show_file(char *path)
     char buf[STRLEN];
     int len;
 
-    if (strstr(path, ".Search") || strstr(path, ".Names")
+    if (strstr(path, ".Names")
         || strstr(path, "..") || strstr(path, "SYSHome"))
         http_fatal("错误的文件名");
     if (path[0] != '\0') {
