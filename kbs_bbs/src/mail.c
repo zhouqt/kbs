@@ -2330,6 +2330,7 @@ static int maillist_onselect(struct _select_def *conf)
         i_read(RMAIL, currmaildir, mailtitle, (READ_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
         in_mail = false;
     }
+    modify_user_mode(MAIL);
     return SHOW_REFRESH;
 }
 
@@ -2531,7 +2532,10 @@ int MailProc()
     POINT *pts;
     int i;
     int y;
+    int oldmode;
 
+    oldmode = uinfo.mode;
+    modify_user_mode(MAIL);
     clear();
     bzero(&arg,sizeof(arg));
     arg.tmpnum = -1;
@@ -2593,6 +2597,7 @@ int MailProc()
 
     list_select_loop(&maillist_conf);
     free(pts);
+    modify_user_mode(oldmode);
 }
 
 typedef struct {
