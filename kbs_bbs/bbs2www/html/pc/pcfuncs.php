@@ -320,7 +320,7 @@ function pc_is_admin($currentuser,$pc)
 	global $pcconfig;
 	if(pc_is_groupwork($pc))
 	{
-		return pc_is_member($currentuser,$pc);
+		return pc_is_member($pc,$currentuser["userid"]);
 	}
 	if(strtolower($pc["USER"]) == strtolower($currentuser["userid"]) && $pc["TIME"] > date("YmdHis",$currentuser["firstlogin"]) && $currentuser["firstlogin"])
 		return TRUE;
