@@ -168,7 +168,7 @@ function bbsconfirm(url,infor){
 	<input type="checkbox" name="file<?php echo $i; ?>" value="<?php echo $maildata[$i]["FILENAME"]	?>">
 	</td>
 	<td class="mt3"><?php echo $start+$i+1;?></td>
-	<td class="mt4">&nbsp;<?php echo $maildata[$i]["FLAGS"];?>&nbsp;</td>
+	<td class="mt4">&nbsp;<?php echo $maildata[$i]["FLAGS"]; if ($maildata[$i]["ATTACHPOS"]>0) echo "<font color='red'>@</font>"; ?>&nbsp;</td>
 	<td class="mt3"><a href="/bbsqry.php?userid=<?php echo $maildata[$i]["OWNER"];?>"><?php echo $maildata[$i]["OWNER"];?></a></td>
 	<td class="mt5">&nbsp;<a href="/bbsmailcon.php?dir=<?php echo $mail_path;?>&num=<?php echo $i+$start;?>&title=<?php echo $mail_title_encode;?>"><?php
 if(strncmp($maildata[$i]["TITLE"],"Re: ",4))
