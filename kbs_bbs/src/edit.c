@@ -752,8 +752,6 @@ int valid_article(pmt, abort)
             /*Haohmaru.99.4.02.让爱灌水的人哭去吧//grin */
             y += 3;
             temp = 1;
-            if (local_article == 0)
-                local_article = 2; /* 灌水的文章就不要转出去了吧 :P by flyriver */
         }
 
         if (local_article == 2)
