@@ -50,15 +50,23 @@ function main() {
 <th valign=middle width=130>操作</th>
 </tr>
 <?php
-	$online_user_list = bbs_getonline_user_list();
+    if( isset( $_GET["start"] ) ){
+        $startNum = $_GET["start"];
+    } else {
+        $startNum = 1;
+    }
+    if ($startNum <= 0) $startNum = 1;
+    define("USERSPERPAGE", 20); //ToDo: put this define into site.php  - atppp
+	$online_user_list = bbs_getonline_user_list($startNum, USERSPERPAGE);
+    $total_online_num = bbs_getonlineusernumber();
+    
+	$count = count ( $online_user_list );
 
-	$num = count ( $online_user_list );
-
-	for ( $i=0; $i<$num ; $i++ ) {
+	for ( $i=0; $i<$count ; $i++ ) {
 ?>
 <tr>
 <td class=TableBody1 align=center valign=middle>
-<?php echo $i+1 ?>
+<?php echo $startNum+$i; ?>
 </td>
 <td class=TableBody1 align=center valign=middle style="font-weight:normal">
 <a href="dispuser.php?id=<?php echo $online_user_list[$i]['userid'] ; ?>" target=_blank>
@@ -74,28 +82,28 @@ function main() {
 <?php
 	}
 ?>
-<tr> 
-<td align=right valign=middle colspan=6 class=TableBody2>您现在已使用了<?php echo bbs_getmailusedspace() ;?>K邮箱空间，共有<?php echo $mail_num; ?>封信&nbsp;
+<tr>
+<td align=right valign=middle colspan=6 class=TableBody2>
 <?php
 			
-		if ($startNum > 0)
+		if ($startNum > 1)
 		{
-			$i = $startNum - ARTICLESPERPAGE;
-			if ($i < 0) $i = 0;
-			echo ' [<a href=usermailbox.php?boxname='.$boxName.'&start=0>第一页</a>] ';
-			echo ' [<a href=usermailbox.php?boxname='.$boxName.'&start='.$i.'>上一页</a>] ';
+			$i = $startNum - USERSPERPAGE;
+			if ($i < 1) $i = 1;
+			echo ' [<a href=showonlineuser.php>第一页</a>] ';
+			echo ' [<a href=showonlineuser.php?start='.$i.'>上一页</a>] ';
 		} else {
 ?>
 <font color=gray>[第一页]</font>
 <font color=gray>[上一页]</font>
 <?php 
 		}
-		if ($startNum < $mail_num - ARTICLESPERPAGE)
+		if ($startNum < $total_online_num - USERSPERPAGE) //这一段是不准确的，因为没有考虑隐身用户，我先不管了。- atppp
 		{
-			$i = $startNum + ARTICLESPERPAGE;
-			if ($i > $mail_num -1) $i = $mail_num -1;
-			echo ' [<a href=usermailbox.php?boxname='.$boxName.'&start='.$i.'>下一页</a>] ';
-			echo ' [<a href=usermailbox.php?boxname='.$boxName.'>最后一页</a>] ';
+			$i = $startNum + USERSPERPAGE;
+			if ($i > $total_online_num -1) $i = $total_online_num -1;
+			echo ' [<a href=showonlineuser.php?start='.$i.'>下一页</a>] ';
+			echo ' [<a href=showonlineuser.php?start='.($total_online_num - USERSPERPAGE).'>最后一页</a>] ';
 		} else {
 ?>
 <font color=gray>[下一页]</font>
@@ -104,33 +112,8 @@ function main() {
 		}
 ?>
 <br>
-<input type="hidden" name="action" id="oAction">
-<input type="hidden" name="nums" id="oNums">
-<input type="hidden" id="oNum">
-<script >
-function doAction(desc,action) {
-	var nums,s,first;
-	if(confirm(desc))	{
-		oForm.oNums.value="";
-		oForm.oAction.value=action;
-		first=true;
-		for (nums=new Enumerator(document.all.item("oNum"));!nums.atEnd();nums.moveNext()){
-			s=nums.item();
-			if (s.checked) {
-				if (first) {
-					first=false;
-				} else {
-					oForm.oNums.value+=',';
-				}
-				oForm.oNums.value+=s.value;
-			}
-		}
-		return oForm.submit()
-	}
-	return false;
-}
-</script>
-<input type=checkbox name=chkall value=on onclick="CheckAll(this.form)">选中所有显示信件&nbsp;<input type=button onclick="doAction('确定锁定/解除锁定选定的纪录吗?','lock');" value="锁定信件">&nbsp;<input type=button onclick="doAction('确定删除选定的纪录吗?','delete');" value="删除信件">&nbsp;<input type=button onclick="doAction('确定清除<?php echo $desc; ?>所有的纪录吗?','deleteAll');" value="清空<?php   echo $desc; ?>"></td>
+目前论坛上总共有 <b><?php echo bbs_getonlinenumber() ; ?></b> 人在线，其中注册用户 <b><?php echo bbs_getonlineusernumber(); ?></b> 人，访客 <b><?php echo bbs_getwwwguestnumber() ; ?></b> 人。
+</td>
 </tr>
 </table>
 </form>
