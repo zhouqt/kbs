@@ -2805,6 +2805,108 @@ static PHP_FUNCTION(bbs_get_import_path)
 
 }
 
+static int bbs_bm_change(char *board, struct boardheader *newbh, struct boardheader *oldbh)
+{
+	int id,m,brd_num,n,i;
+	int flag;
+	struct userec *lookupuser;
+	unsigned int newlevel;
+	char *p;
+	char oldbm[BM_LEN];
+	char obm[10][IDLEN+2];
+	int obmnum=0,nbmnum=0;
+	char nbm[10][IDLEN+2];
+	char buf[200];
+
+	for(i=0;i<10;i++){
+		obm[i][0]='\0';
+		nbm[i][0]='\0';
+	}
+
+	if(oldbh){
+		for(p = strtok(oldbh->BM, " "),obmnum=0; p && obmnum < 10; p=strtok(NULL," "),obmnum++){
+			strncpy(obm[obmnum], p, IDLEN+2);
+			obm[obmnum][IDLEN+1]='\0';
+		}
+	}
+
+	for(p = strtok(newbh->BM, " "),nbmnum=0; p && nbmnum < 10; p=strtok(NULL," "),nbmnum++){
+		strncpy(nbm[nbmnum], p, IDLEN+2);
+		nbm[nbmnum][IDLEN+1]='\0';
+	}
+
+	newbh->BM[0]='\0';
+
+	for( i=0; i<obmnum; i++ ){
+		flag = 2;
+
+		if(!(id = getuser(obm[i],&lookupuser))){
+			continue;
+		}
+
+		for(m=0;m<nbmnum;m++){
+			if(!strcmp(obm[i],nbm[m]))
+				flag = 0;
+		}
+		if(flag == 0) continue;
+
+		newlevel = lookupuser->userlevel;
+
+		brd_num = 0;
+
+		if( lookupuser->userlevel & PERM_BOARDS ){
+			for(n = 0; n < get_boardcount(); n++){
+				if(chk_BM_instr(getboard(n+1)->BM, lookupuser->userid) == true )
+					brd_num ++;
+			}
+		}
+
+		if( brd_num == 1){
+			newlevel &= ~PERM_BOARDS;
+			newlevel &= ~PERM_CLOAK;
+		}
+
+		sprintf(buf,"免去 %s 的斑竹 %s", board, lookupuser->userid);
+		//securityreport(buf, lookupuser, NULL);
+		lookupuser->userlevel = newlevel;
+	}
+
+	for( i=0; i<nbmnum; i++ ){
+		flag = 1;
+
+		if(!(id = getuser(nbm[i],&lookupuser))){
+			continue;
+		}
+
+		if( strlen(newbh->BM) + strlen(lookupuser->userid) >= BM_LEN - 2 )
+			continue;
+
+		for(m=0;m<obmnum;m++){
+			if(!strcmp(nbm[i],obm[m])){
+				flag = 0;
+				if( newbh->BM[0] != '\0' )
+					strcat(newbh->BM, " ");
+				strcat(newbh->BM, lookupuser->userid);
+			}
+		}
+		if(flag == 0) continue;
+
+		newlevel = lookupuser->userlevel;
+
+		if( newbh->BM[0] != '\0' )
+			strcat( newbh->BM, " " );
+		strcat(newbh->BM, lookupuser->userid);
+
+		newlevel |= PERM_BOARDS;
+		mail_file(currentuser->userid, "etc/forbm", lookupuser->userid, "新任斑竹必读", BBSPOST_LINK, NULL);
+
+		sprintf(buf,"任命 %s 的斑竹 %s", board, lookupuser->userid);
+		//securityreport(buf, lookupuser, NULL);
+		lookupuser->userlevel = newlevel;
+	}
+}
+
+
 /*
  * new a board
  * 修改版面不允许重新修改精华区路径
@@ -2931,6 +3033,8 @@ static PHP_FUNCTION(bbs_new_board)
 			f_mv(old,tar);
 		}
 
+		bbs_bm_change(newboard.filename, &newboard, &oldboard);
+
 		if(newboard.BM[0]!='\0' && strcpy(oldboard.BM, newboard.BM)){
 			if(newboard.BM[0] != '\0'){
 				if(strlen(newboard.BM) <= 30)
@@ -2978,6 +3082,8 @@ static PHP_FUNCTION(bbs_new_board)
 		sprintf(vbuf,"boards/%s",newboard.filename);
 		if( mkdir(vbuf,0755) == -1 )
 			RETURN_LONG( -5);
+
+		bbs_bm_change(newboard.filename, &newboard, NULL);
 
 		if(bgroup && bgroup_len > 0){
 			for(i=0; groups[i] && explain[i]; i++){
