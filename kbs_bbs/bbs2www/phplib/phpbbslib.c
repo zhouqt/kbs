@@ -1687,12 +1687,6 @@ static PHP_FUNCTION(bbs_getarticles)
     }
     is_bm = is_BM(bp, currentuser);
 
-	if(mode == DIR_MODE_THREAD){
-//		if(setboardtitle(board, -1)){
-			gen_title(board);
-//		}
-	}
-
     setbdir(mode, dirpath, board);
     total = get_num_records(dirpath, sizeof(struct fileheader));
     /* add by stiger */
@@ -2624,6 +2618,12 @@ static PHP_FUNCTION(bbs_countarticles)
         RETURN_LONG(-1);
     }
     setbdir(mode, dirpath, bp->filename);
+
+	if(mode == DIR_MODE_THREAD){
+//		if(setboardtitle(board, -1)){
+			gen_title(bp->filename);
+//		}
+	}
 
     total = get_num_records(dirpath, sizeof(struct fileheader));
     /* add by stiger */
