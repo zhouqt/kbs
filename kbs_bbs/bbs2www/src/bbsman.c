@@ -6,40 +6,6 @@
 char genbuf[1024];
 char currfile[STRLEN];
 
-int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
-{
-    FILE *fn;
-    char buf[512];
-    char usrid[STRLEN];
-    char *t;
-    int owned, fail;
-    struct userec *user;
-    char bm_str[BM_LEN - 1];
-    struct boardheader *bp;
-
-    user = getcurrusr();
-    bp = getbcache(board);
-    memcpy(bm_str, bp->BM, BM_LEN - 1);
-    if (!strcmp(board, "syssecurity")
-        || !strcmp(board, "junk")
-        || !strcmp(board, "deleted"))   /* Leeward : 98.01.22 */
-        return DONOTHING;
-
-    if (fileinfo->owner[0] == '-') {
-        return FULLUPDATE;
-    }
-    owned = isowner(user, fileinfo);
-    /* change by KCN  ! strcmp( fileinfo->owner, currentuser->userid ); */
-    strcpy(usrid, fileinfo->owner);
-    if (!(owned) && !HAS_PERM(currentuser, PERM_SYSOP))
-        if (!chk_currBM(bm_str, currentuser)) {
-            return DONOTHING;
-        }
-    if (do_del_post(currentuser, ent, fileinfo, direct, board, 0, 1) != 0)
-        return FULLUPDATE;
-    return DIRCHANGED;
-}
-
 int main()
 {
     int i, total = 0, mode;
