@@ -807,7 +807,6 @@ static int fav_key(struct _select_def *conf, int command)
                     sel[k].hotkey = -1;
                     sel[k].type = 0;
                     sel[k].data = NULL;
-                    clear();
                     k = simple_select_loop(sel, SIF_NUMBERKEY | SIF_SINGLE | SIF_ESCQUIT, 0, 6, NULL) - 1;
                     free(sel);
                     if(k>=0&&k<total+1) {

@@ -60,7 +60,6 @@ void ask_define()
     sel[j].hotkey = -1;
     sel[j].type = 0;
     sel[j].data = NULL;
-    clear();
     j = simple_select_loop(sel, SIF_NUMBERKEY | SIF_SINGLE | SIF_ESCQUIT, 0, 6, NULL) - 1;
     free(sel);
     if(j>=0&&j<=3)
