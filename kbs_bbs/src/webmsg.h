@@ -5,7 +5,7 @@
 
 #define MSG_LEN MAX_MSG_SIZE
 #define MSG_NUM 5
-#define WWW_MAX_LOGIN 1000
+#define WWW_MAX_LOGIN 5000
 
 typedef struct _msgent_t {
     int srcutmp;                /* 消息发送者的 utmp 号 */

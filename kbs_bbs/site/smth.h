@@ -51,7 +51,7 @@
 #define MAXUSERS  		200000
 #define MAXCLUB			128
 #define MAXBOARD  		600
-#define MAXACTIVE 		8000
+#define MAXACTIVE 		12000
 /* remeber: if MAXACTIVE>46656 need change get_telnet_sessionid,
     make the number of session char from 3 to 4
     */
