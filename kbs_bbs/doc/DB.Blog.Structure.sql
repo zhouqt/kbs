@@ -70,7 +70,7 @@ CREATE TABLE `nodes` (
   `nid` int(10) unsigned NOT NULL auto_increment,
   `pid` int(10) unsigned default NULL,
   `type` int(4) NOT NULL default '0',
-  `source` varchar(10) NOT NULL default '',
+  `recuser` varchar(12) NOT NULL default '',
   `hostname` varchar(20) NOT NULL default '',
   `changed` timestamp(14) NOT NULL,
   `created` timestamp(14) NOT NULL,
@@ -94,8 +94,7 @@ CREATE TABLE `nodes` (
   KEY `created` (`changed`),
   KEY `changed` (`created`),
   FULLTEXT KEY `body` (`body`)
-) TYPE=MyISAM COMMENT='文章表' ;
-
+) TYPE=MyISAM COMMENT='文章表'
 
 CREATE TABLE `recommend` (
   `rid` int(10) unsigned NOT NULL auto_increment,
