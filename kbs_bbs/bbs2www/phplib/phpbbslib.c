@@ -147,6 +147,7 @@ static void assign_board(zval * array, struct boardheader *board, int num)
 
 static int currentusernum;
 static char fullfrom[255];
+static char php_fromhost[IPLEN+1];
 static struct user_info *currentuinfo;
 static int currentuinfonum;
 
@@ -204,6 +205,7 @@ static ZEND_FUNCTION(bbs_setfromhost)
         fullfromhostptr[80] = 0;
     strcpy(fullfrom, fullfromhostptr);
     strcpy(fromhost, s);
+    strcpy(php_fromhost, s);
     RETURN_NULL();
 }
 
@@ -312,7 +314,7 @@ static ZEND_FUNCTION(bbs_checkpasswd)
             setcurrentuser(user, unum);
         } else {
             ret = 1;
-            logattempt(user->userid, fromhost);
+            logattempt(user->userid, php_fromhost);
         }
     }
     RETURN_LONG(ret);
@@ -334,11 +336,11 @@ static ZEND_FUNCTION(bbs_wwwlogin)
         }
     } else if (ZEND_NUM_ARGS() != 0)
         WRONG_PARAM_COUNT;
-    ret = www_user_login(getcurrentuser(), getcurrentuser_num(), kick_multi, fromhost,
+    ret = www_user_login(getcurrentuser(), getcurrentuser_num(), kick_multi, php_fromhost,
 #ifdef SQUID_ACCL
                          fullfrom,
 #else
-                         fromhost,
+                         php_fromhost,
 #endif
                          &pu, &utmpent);
     if (getcurrentuser() == NULL) {
