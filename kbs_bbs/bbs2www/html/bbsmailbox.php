@@ -175,7 +175,7 @@ else
     echo htmlspecialchars($maildata[$i]["TITLE"]);
 ?></a></td>
 	<td class="mt3"><?php echo strftime("%b&nbsp;%e&nbsp;%H&nbsp;:%M",$maildata[$i]["POSTTIME"]);?></td>
-	<td class="mt4"><input type="button" name="del" value="删除" class="bt1" onclick="bbsconfirm('bbsmailact.php?act=del&<?php echo "dir=".$mail_title_encode."&file=".urlencode($maildata[$i]["FILENAME"])."&title=".$mail_title_encode; ?>','确认删除该邮件吗?')"></td>
+	<td class="mt4"><input type="button" name="del" value="删除" class="bt1" onclick="bbsconfirm('bbsmailact.php?act=del&<?php echo "dir=".urlencode($mail_path)."&file=".urlencode($maildata[$i]["FILENAME"])."&title=".$mail_title_encode; ?>','确认删除该邮件吗?')"></td>
 </tr>
 <?php
 		}
