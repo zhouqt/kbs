@@ -483,23 +483,10 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
 	    last_line += get_num_records(ding_direct,ssize);
     /* add end */
             if (last_line == 0 && digestmode > 0) {
-                if (digestmode == true)
-                    digest_mode();
-
-                else if (digestmode == 2)
-                    change_mode();
-
-                else if (digestmode == 3)
-                    marked_mode();
-
-                else if (digestmode == 4)
-                    deleted_mode();
-
-                else if (digestmode == 5)
-                    junk_mode();
-
-                else if (digestmode > 0)
-                    change_mode();
+                if (digestmode == 7 || digestmode == 8)
+                    unlink(currdirect);
+                digestmode = 0;
+                setbdir(digestmode, currdirect, currboard->filename);
             }
             if (mode == NEWDIRECT) {
                 num = last_line - screen_len + 1;
@@ -580,24 +567,12 @@ static int i_read_key(int cmdmode, struct one_key *rcmdlist, struct keeploc *loc
     case 'q':
     case 'e':
     case KEY_LEFT:
-        if (digestmode == true)
-            return digest_mode();
-
-        else if (digestmode == 2)
-            return change_mode();
-
-        else if (digestmode == 3)
-            return marked_mode();
-
-        else if (digestmode == 4)
-            return deleted_mode();
-
-        else if (digestmode == 5)
-            return junk_mode();
-
-        else if (digestmode > 0)
-            return change_mode();       /* added by bad 2002.8.8*/
-
+        if (digestmode > 0) {
+            if (digestmode == 7 || digestmode == 8)
+                unlink(currdirect);
+            digestmode = 0;
+            setbdir(digestmode, currdirect, currboard->filename);
+        }
         else
             return DOQUIT;
     case Ctrl('L'):
