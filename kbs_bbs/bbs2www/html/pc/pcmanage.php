@@ -187,7 +187,7 @@
 				if($_POST["trackbackurl"])
 				{
 					$url = $_POST["trackbackurl"];
-					$query = "SELECT `nid` FROM nodes WHERE `subject` = '".addslashes($_POST["subject"])."' AND `body` = '".addslashes(html_editorstr_format($_POST["blogbody"]))."' AND `uid` = '".$pc["UID"]."' AND `access` = '".$tag."' AND `pid` = '".$pid."' AND `tid` = '".(int)($_POST["tid"])."' ORDER BY tid DESC LIMIT 0,1;";
+					$query = "SELECT `nid` FROM nodes WHERE `subject` = '".addslashes($_POST["subject"])."' AND `body` = '".addslashes($blogbody)."' AND `uid` = '".$pc["UID"]."' AND `access` = '".$tag."' AND `pid` = '".$pid."' AND `tid` = '".(int)($_POST["tid"])."' ORDER BY tid DESC LIMIT 0,1;";
 					$result = mysql_query($query,$link);
 					$rows = mysql_fetch_array($result);
 					$thisNid = $rows[nid];
