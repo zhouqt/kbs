@@ -52,12 +52,16 @@ void sethomestat(char* s, char* id)
 
 void setfcolor(int i,int j)
 {
-    prints("\033[%d;%dm",i+30,j);
+    char buf[30];
+    sprintf(buf, "\033[%d;%dm",i+30,j);
+    prints(buf);
 }
 
 void setbcolor(int i)
 {
-    prints("\033[%d;%dm",i+40);
+    char buf[30];
+    sprintf(buf, "\033[%d;%dm",i+40);
+    prints(buf);
 }
 
 void resetcolor()
