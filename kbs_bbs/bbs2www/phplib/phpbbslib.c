@@ -995,6 +995,12 @@ static PHP_FUNCTION(bbs_wwwlogin)
         }
     } else if (ZEND_NUM_ARGS() != 0)
         WRONG_PARAM_COUNT;
+    
+    if (getCurrentUser() != NULL && strcasecmp(getCurrentUser()->userid, "guest") != 0) {
+        if (check_ip_acl(getCurrentUser()->userid, php_fromhost)) 
+            RETURN_LONG(7);
+    }
+    
     ret = www_user_login(getCurrentUser(), getcurrentuser_num(), kick_multi, php_fromhost,
 #ifdef SQUID_ACCL
                          fullfrom,

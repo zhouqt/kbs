@@ -47,6 +47,8 @@ if ($id!="") {
         $loginok=6;
 	  if ($error==-1) 
 		$loginok=4;
+      if ($error==7)
+        $loginok=7;
       }
       else {
         $loginok=0;
@@ -130,7 +132,24 @@ if ($loginok != 1) {
 </html>
 <?php
     return;
-  } else {
+  }
+  elseif ($loginok==7) {
+?>
+<body >
+<SCRIPT language="javascript">
+	alert("对不起,当前位置不允许登录该ID"+
+<?php
+ echo "\"$error\"";
+?>
+);
+	window.location = "/index.html";
+</SCRIPT>
+</body>
+</html>
+<?php
+    return;
+  }
+  else {
 ?>
 <body >
 <?php
