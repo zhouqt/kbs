@@ -1213,6 +1213,11 @@ struct fileheader *ent ;
         type='#';
     }
 
+    if((HAS_PERM(PERM_OBOARDS)||(chk_currBM(currBM))) && ent->accessed[1] & FILE_MARKED) /* 如果文件被mark delete住了，显示X*/
+    {
+        type = 'X';
+    }
+    
     filetime = atoi( ent->filename + 2 ); /* 由文件名取得时间 */
     if( filetime > 740000000 ) {
         /* add by KCN
@@ -3406,6 +3411,7 @@ struct one_key  read_comms[] = { /*阅读状态，键定义 */
                                    'b',       SR_BMfunc,
                                    'B',       SR_BMfuncX, /* Leeward 98.04.16 */
                                    Ctrl('T'),  thread_mode,
+                                   't',        set_delete_mark, /*KCN 2001 */
                                    'v',	i_read_mail, /* period 2000-11-12 read mail in article list */
                                    /*'!',	Goodbye,Haohmaru 98.09.21*/
                                    '\0',       NULL
@@ -4130,4 +4136,67 @@ int i_read_mail()
     digestmode = savemode;
     strcpy(currdirect, savedir);
     return mode;
+}
+
+int
+set_delete_mark(ent,fileinfo,direct)
+int ent ;
+struct fileheader *fileinfo ;
+char *direct ;
+{
+    /*---	---*/
+    int newent = 1;
+    char *ptr, buf[STRLEN];
+    struct fileheader mkpost;
+    /*---	---*/
+
+    if( !HAS_PERM(PERM_SYSOP) )
+        if( !chk_currBM(currBM) )
+        {
+            return DONOTHING;
+        }
+
+    if (!strcmp(currboard, "syssecurity")
+            ||!strcmp(currboard, "Filter")) /* Leeward 98.04.06 */
+        return DONOTHING ; /* Leeward 98.03.29 */
+    /*Haohmaru.98.10.12.主题模式下不允许mark delete文章*/
+    if (strstr(direct, "/.THREAD")) return DONOTHING;
+    if (fileinfo->accessed[1]&FILE_DEL)
+        fileinfo->accessed[1]&=!FILE_DEL;
+    else
+        fileinfo->accessed[1]|=FILE_DEL;
+    /*    if ( strncmp(fileinfo->title,"Re: ",4)&&strncmp(fileinfo->title,"RE: ",4) )
+            sprintf(fileinfo->title,"Re: %s",&(fileinfo->title)+2);
+     */
+    /*---   Added by period   2000-10-26  add verify when doing idx operation ---*/
+    /*#ifdef _DEBUG_*/
+    strcpy(buf, direct);
+    ptr = strrchr(buf, '/') + 1;
+    ptr[0] = '\0';
+    sprintf( &genbuf[512], "%s%s", buf, fileinfo->filename);
+    if(!dashf( &genbuf[512]) ) newent = 0; /* 借用一下newent :PP   */
+    if(!newent || get_record(direct, &mkpost, sizeof(mkpost), ent) < 0
+            || strcmp(mkpost.filename, fileinfo->filename)) {
+        if(newent) /* newent = 0 说明文件已被删除,不用再search了   */
+            newent = search_record_back(direct, sizeof(struct fileheader),
+                                        ent, strcmp, fileinfo, &mkpost, 1);
+        if(newent <= 0) {
+            move(2,0) ;
+            prints(" 文章列表发生变动，文章[%s]可能已被删除．\n", fileinfo->title) ;
+            clrtobot();
+            pressreturn() ;
+            return DIRCHANGED;
+        }
+        ent = newent;
+        /* file status may be changed by other BM, so use data *
+         * returned from search_record_back()                  */
+        if(fileinfo->accessed[1] & FILE_DEL) mkpost.accessed[1] |= FILE_DEL;
+        else mkpost.accessed[1] &= ~FILE_DEL;
+        memcpy(fileinfo, &mkpost, sizeof(mkpost));
+    } else newent = 0;
+    /*#endif*/ /* _DEBUG_ */
+    /*---	---*/
+
+    substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
+    return (ent == newent) ? DIRCHANGED : PARTUPDATE;
 }

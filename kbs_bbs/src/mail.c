@@ -1282,7 +1282,7 @@ struct one_key  mail_comms[] = {
                                    'F',        mail_forward,
                                    'U',        mail_uforward,
 #endif
-                                   /* Added by ming, 96.10.9 
+                                   /* Added by ming, 96.10.9 */
                                    'a',        auth_search_down,
                                    'A',        auth_search_up,
                                    '/',        t_search_down,
@@ -1304,6 +1304,7 @@ struct one_key  mail_comms[] = {
                                    Ctrl('H'),  SR_authorX, /* Leeward 98.10.03 */
                                    'h',        mailreadhelp,
                                    Ctrl('J'),  mailreadhelp,
+                                   Ctrl('O'),  add_author_friend,
                                    '\0',       NULL
                                } ;
 

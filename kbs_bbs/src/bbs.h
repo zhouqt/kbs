@@ -113,7 +113,7 @@ extern  char ULIST[];
 
 #define QUIT 0x666               /* Return value to abort recursive functions */
 
-#define FILE_READ  0x1        /* Ownership flags used in fileheader structure */
+#define FILE_READ  0x1        /* Ownership flags used in fileheader structure in accessed[1]*/
 #define FILE_OWND  0x2        /* accessed array */
 #define FILE_VISIT 0x4
 #define FILE_MARKED 0x8
@@ -122,6 +122,7 @@ extern  char ULIST[];
 #define FILE_FORWARDED 0x40      /* in mail ,added by alex, 96.9.7*/
 #define FILE_IMPORTED 0x80      /* Leeward 98.04.15 */
 #define FILE_SIGN 0x1		/* In article mode, Sign , Bigman 2000.8.12 ,in accessed[0]*/ 
+#define FILE_DEL  0x2		/* In article mode, Sign , Bigman 2000.8.12 ,in accessed[1]*/ 
 
 /* Leeward 98.05.11:
 In /etc/sendmail.cf:
