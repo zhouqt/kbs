@@ -225,7 +225,7 @@ unsigned int setperms2(unsigned int pbits,unsigned int basic,char *prompt,int nu
 	POINT* pts;
 	int i;
 
-	pts=(POINT*)malloc(sizeof(POINT)*numbers);
+	pts=(POINT*)malloc(sizeof(POINT)*(numbers+1));
 
 	for (i=0;i<numbers+1;i++) {
 		pts[i].x=0+(( i>15)? 50:1) ;
