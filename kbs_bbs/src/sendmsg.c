@@ -891,6 +891,7 @@ checksmsagain:
         save_msgtext(currentuser->userid, &h, buf);
         if(!isdigit(uident[0])) {
             h.sent = 0;
+            strcpy(h.id, currentuser->userid);
             save_msgtext(uident, &h, buf);
             if(uin) kill(uin->pid, SIGUSR2);
         }
