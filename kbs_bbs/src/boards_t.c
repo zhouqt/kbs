@@ -1215,7 +1215,8 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
 
 void FavBoard()
 {
-    load_favboard(1,1);
+	if(mybrd_list_t <= 0)
+    	load_favboard(1,1);
     choose_board(1, NULL,0,1);
 }
 
