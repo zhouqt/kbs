@@ -314,7 +314,6 @@ function cache_header($scope,$modifytime=0,$expiretime=300)
 
 function html_init($charset="",$title="",$otherheader="")
 {
-	global $_COOKIE;
 	global $cachemode;
 	global $HTMLTitle;
 	global $HTMLCharset;

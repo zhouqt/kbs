@@ -89,7 +89,6 @@ function preprocess(){
 
 function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 	global $currentuser;
-	global $_COOKIE;
 ?>
 <script src="inc/ubbcode.js"></script>
 <form action="doeditarticle.php" method=POST onSubmit=submitonce(this) name=frmAnnounce>

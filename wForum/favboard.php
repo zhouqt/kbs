@@ -1,6 +1,6 @@
 <?php
 require("inc/funcs.php");
-require("inc/usermanage.inc.php");
+
 require("inc/user.inc.php");
 
 setStat("用户收藏版面");
@@ -11,6 +11,9 @@ show_nav();
 
 showUserMailbox();
 head_var($userid."的控制面板","usermanagemenu.php",0);
+?>
+<script src="inc/loadThread.js"></script>
+<?php
 main();	
 
 show_footer();
@@ -51,8 +54,7 @@ function main()	{
         if ($add_bname)
             $sssss=bbs_add_favboard($add_bname);
     }
-   	outputSecJS();
-	showSecs($select, 0, true, 1); //第三个参数是 isFold，暂时设定为永远展开。如果要改那 showSecs() 函数也要改。- atppp
+	showSecs($select, 0, getSecFoldCookie(-1), true);
 ?>
 <center>
 <form action=favboard.php>增加目录: 输入目录名称&nbsp;<input name=dname size=24 maxlength=20 type=text value="">&nbsp;<input type=submit value=确定><input type=hidden name=select value=<?php echo $select;?>></form>

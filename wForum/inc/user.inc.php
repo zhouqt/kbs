@@ -34,64 +34,49 @@ function showUserMailbox(){ //这个函数直接调用必须保证 $loginok==1
 <?php
 }
 
-
-/*
- * $loadFav = 1 的时候表示载入收藏夹，参数说明：$secNum 相当于 bbs2www/html/bbsfav.php 里头的 $select, $group 参数此时没有作用 - atppp
- */
-function showSecs($secNum,$group,$isFold,$loadFav=0) {
-	global $yank;
-	global $sectionCount;
-	global $section_names;
-	global $section_nums;
-?>
-<table cellspacing=1 cellpadding=0 align=center width="97%" class=TableBorder1>
-<TR><Th <?php if (!$isFold) echo "colspan=4 "; ?>height=25 align=left id=TableTitleLink>&nbsp;
-<?php
-	if ($loadFav == 0) {
-		if ( ($secNum<0)  || ($secNum>=$sectionCount)) {
-			foundErr("版面参数错误！");
-		}
-?>
-<?php
-		if ($isFold) {
-?>
-<a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=N#sec<?php echo $secNum ?>" title="关闭版面列表"><img src="pic/nofollow.gif" border=0></a><a href="section.php?sec=<?php echo $secNum ; ?>" title=进入本分类讨论区><?php echo $section_names[$secNum][0]; ?> </a>
-<?php
-		} else {
-?>
-<a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=Y#sec<?php echo $secNum ?>" title="展开版面列表"><img src="pic/plus.gif" border=0></a><a href="section.php?sec=<?php echo $secNum ; ?>" title=进入本分类讨论区><?php echo $section_names[$secNum][0]; ?> </a>
-<?php
-		}
-	} else {
-		$select = $secNum; //代码相似性 :D
-?>
-用户收藏夹
-<?php
-		if ($select != 0) {
-			$list_father = bbs_get_father($select);
-?>
-&nbsp;[<a href="favboard.php?select=<?php echo $list_father; ?>">回到上一级</a>]
-<?php
-		}
-?>
-&nbsp;[<a href="modifyfavboards.php?select=<?php echo $select; ?>">管理本收藏夹目录</a>]
-<?php
+/* $secNum == -1 means fav */
+function setSecFoldCookie($secNum, $isFold) {
+	if (isset($_COOKIE["ShowSecBoards"])) {
+		$ssb = $_COOKIE["ShowSecBoards"];
+		settype($ssb, "integer");
 	}
-?>
-</th></tr>
-<?php
-	if (! $isFold && (BOARDLISTSTYLE=='simplest')) {
-?>
-		<TR><TD class=TableBody1>&nbsp;版面列表已关闭 [<a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=Y#sec<?php echo $secNum ?>" title="展开版面列表">展开</a>]</td></tr>
-<?php
+	else $ssb = 1;
+	if ($isFold) {
+		$ssb = $ssb | (1 << ($secNum+1));
 	} else {
+		$ssb = $ssb & ~(1 << ($secNum+1));
+	}
+	setcookie('ShowSecBoards', $ssb ,time() + 604800);
+	$_COOKIE["ShowSecBoards"] = $ssb;
+	return 0;
+}
+
+function getSecFoldCookie($secNum) {
+	if (isset($_COOKIE["ShowSecBoards"])) {
+		$ssb = $_COOKIE["ShowSecBoards"];
+		settype($ssb, "integer");
+	}
+	else $ssb = 1;
+	return (($ssb & (1 << ($secNum+1))) != 0);
+}
+
+function showSecsJS($secNum,$group,$isFold,$isFav) {
+	global $yank;
+	global $section_nums;
+	
+	if ($isFav) {
+		$select = $secNum; //代码相似性 :D
+	}
 ?>
 <script language="JavaScript">
 <!--
 	boards = new Array();
 	select = npos = bid = isUnread = lastID = lastTitle = lastOwner = lastPosttime = bm = 0;
 <?php
-		if ($loadFav == 0) {
+	if (!$isFold && (BOARDLISTSTYLE=='simplest') && !$isFav) {
+		// hehe 
+	} else {	
+		if (!$isFav) {
 			$boards = bbs_getboards($section_nums[$secNum], $group, $yank);
 		} else {
 			$boards = bbs_fav_boards($select, 1);
@@ -99,8 +84,7 @@ function showSecs($secNum,$group,$isFold,$loadFav=0) {
 	    		//foundErr("读取版列表失败");
 			}
 		}
-		if ($boards == FALSE) {
-		} else {
+		if ($boards !== FALSE) {
 			$brd_name = $boards["NAME"]; // 英文名
 			$brd_desc = $boards["DESC"]; // 中文描述
 			$brd_class = $boards["CLASS"]; // 版分类名
@@ -108,7 +92,7 @@ function showSecs($secNum,$group,$isFold,$loadFav=0) {
 			$brd_artcnt = $boards["ARTCNT"]; // 文章数
 			$brd_unread = $boards["UNREAD"]; // 未读标记
 			$brd_zapped = $boards["ZAPPED"]; // 是否被 z 掉
-			if ($loadFav == 1) {
+			if ($isFav) {
                 $brd_position= $boards["POSITION"];//位置
                 $brd_npos= $boards["NPOS"];//位置
             }
@@ -124,10 +108,15 @@ function showSecs($secNum,$group,$isFold,$loadFav=0) {
 				if ($brd_name[$i]=='undenypost')
 					continue;
 
-				$isGroup = (($loadFav == 0) && ($brd_flag[$i] & BBS_BOARD_GROUP)) || (($loadFav == 1) && ($brd_flag[$i] == -1));
+				$isGroup = ((!$isFav) && ($brd_flag[$i] & BBS_BOARD_GROUP)) || ($isFav && ($brd_flag[$i] == -1));
 				echo "isGroup = ".($isGroup?"true":"false").";\n";
-				echo "boardName = '".$brd_name[$i]."';\n";
 				echo "boardDesc = '".addslashes(htmlspecialchars($brd_desc[$i], ENT_QUOTES))."';\n";
+				if ($isGroup && $isFav) {
+					echo "boardName = boardDesc;\n";
+				} else {
+					echo "boardName = '".$brd_name[$i]."';\n";
+				}
+
 				if ($isGroup) {
 					echo "todayNum = nThreads = 0;\n";
 				} else {
@@ -142,7 +131,7 @@ function showSecs($secNum,$group,$isFold,$loadFav=0) {
 				echo "nArticles = $nArticles;\n";
 				if ($isFold) {
 					echo "isUnread = ".($brd_unread[$i] == 1 ? "true" : "false").";\n";
-					if ($loadFav == 1) {
+					if ($isFav) {
 						echo "select = ".$select.";\n";
 						echo "npos = ".$brd_npos[$i].";\n";
 						echo "bid = ".$brd_bid[$i].";\n";
@@ -169,112 +158,84 @@ function showSecs($secNum,$group,$isFold,$loadFav=0) {
 				echo "boards[boards.length] = new Board(isGroup,isUnread,boardName,boardDesc,lastID,lastTitle,lastOwner,lastPosttime,bm,todayNum,nArticles,nThreads,select,npos,bid);\n";
 			}
 		}
-?>
-	str = showSec(<?php echo ($isFold?"true":"false"); ?>, <?php echo ($loadFav == 1?"true":"false"); ?>, boards);
-	document.write(str);
-//-->
-</script>
-<?php
 	}
 ?>
-</table><br>
+	boards<?php echo $secNum; ?> = boards;
+	fold<?php echo $secNum; ?> = <?php echo ($isFold?"true":"false"); ?>;
+//-->
+</script>
 <?php
 }
 
 
-function outputSecJS() {
+/*
+ * $isFav = true 的时候表示载入收藏夹，参数说明：$secNum 相当于 bbs2www/html/bbsfav.php 里头的 $select, $group 参数此时没有作用 - atppp
+ * isFold: true when show detailed boards list.
+ */
+function showSecs($secNum,$group,$isFold,$isFav = false) {
+	global $section_names;
 ?>
+<table cellspacing=0 cellpadding=0 align=center width="97%" class=TableBorder1>
+<TR><Th height=25 align=left id=TableTitleLink>&nbsp;
+<?php
+	if (!$isFav) {
+		if ($group == 0) {
+			if ($isFold) {
+?>
+<img src="pic/nofollow.gif" id="followImg<?php echo $secNum; ?>" style="cursor:hand;" onclick="loadSecFollow(<?php echo $secNum; ?>)" border=0 title="关闭版面列表">
+<?php
+			} else {
+?>
+<img src="pic/plus.gif" id="followImg<?php echo $secNum; ?>" style="cursor:hand;" onclick="loadSecFollow(<?php echo $secNum; ?>)" border=0 title="展开版面列表">
+<?php
+			}
+		} else {
+?>
+<img src="pic/nofollow.gif" border=0>
+<?php
+		}
+?>
+<a href="section.php?sec=<?php echo $secNum ; ?>" title=进入本分类讨论区><?php echo $section_names[$secNum][0]; ?></a>
+<?php
+	} else {
+		$select = $secNum; //代码相似性 :D
+		if ($isFold) {
+?>
+<img src="pic/nofollow.gif" id="followImg<?php echo $secNum; ?>" style="cursor:hand;" onclick="loadFavFollow(<?php echo $select; ?>)" border=0 title="关闭版面列表">
+<?php
+		} else {
+?>
+<img src="pic/plus.gif" id="followImg<?php echo $secNum; ?>" style="cursor:hand;" onclick="loadFavFollow(<?php echo $select; ?>)" border=0 title="展开版面列表">
+<?php
+		}
+?>
+用户收藏夹
+<?php
+		if ($select != 0) {
+			$list_father = bbs_get_father($select);
+?>
+&nbsp;[<a href="favboard.php?select=<?php echo $list_father; ?>">回到上一级</a>]
+<?php
+		}
+?>
+&nbsp;[<a href="modifyfavboards.php?select=<?php echo $select; ?>">管理本收藏夹目录</a>]
+<?php
+	}
+?>
+</th></tr>
+<?php
+	showSecsJS($secNum,$group,$isFold,$isFav);
+?>
+<tr style="display:none" id="followTip<?php echo $secNum; ?>"><td style="text-align:center;border:1px solid black;background-color:lightyellow;color:black;padding:2px" onclick="loadSecFollow('<?php echo $secNum; ?>')">正在读取版面列表数据，请稍侯……</div></td></tr>
+<TR><Td id="followSpan<?php echo $secNum; ?>">
 <script language="JavaScript">
 <!--
-	function Board(isGroup,isUnread,boardName,boardDesc,lastID,lastTitle,lastOwner,lastPosttime,
-	               bm,todayNum,nArticles,nThreads,select,npos,bid) {
-		this.isGroup = isGroup;
-		this.isUnread = isUnread;
-		this.boardName = boardName;
-		this.boardDesc = boardDesc;
-		this.lastID = lastID;
-		this.lastTitle = lastTitle;
-		this.lastOwner = lastOwner;
-		this.lastPosttime = lastPosttime;
-		this.bm = bm;
-		this.todayNum = todayNum;
-		this.nArticles = nArticles;
-		this.nThreads = nThreads;
-		this.select = select;
-		this.npos = npos;
-		this.bid = bid;
-	}
-
-	function showSec(isFold, isFav, boards) {
-<?php
-	if (BOARDLISTSTYLE=='simplest') {
-?>
-		if (!isFold) return '';
-<?php
-	}
-?>
-		if (boards.length == 0) {
-			return '<TR><TD class=TableBody1 align="center" height="25">本分区尚无版面</td></tr>';
-		}
-		str = '';
-		showed = 0;
-		for (i = 0; i < boards.length; i++)	{
-			if (isFold) {
-				str += '<TR><TD align=middle width="100%" class=TableBody1>';
-				str += '<table width="100%" cellspacing=0 cellpadding=0><TR><TD align=middle width=46 class=TableBody1>';
-				if (boards[i].isUnread) {
-					str += "<img src=pic/forum_isnews.gif alt=有新帖子>";
-				} else {
-					str += "<img src=pic/forum_nonews.gif alt=无新帖子>";
-				}
-				str += '</TD><TD width=1 bgcolor=#7a437a></TD>';
-				str += '<TD vAlign=top width=* class=TableBody1>';
-				str += '<TABLE cellSpacing=0 cellPadding=2 width=100% border=0><tr><td class=TableBody1 width=*>';
-				if (!isFav || !isGroup) {
-					str += '<a href="board.php?name=' + boards[i].boardName + '"><font color=#000066>' + boards[i].boardName + '</font></a>';
-					if (isFav) {
-						str += '&nbsp;&nbsp;<a href="favboard.php?select=' + boards[i].select + '&delete=' + boards[i].npos + '" title="从收藏中删除该版面">&lt;删&gt;</a>';
-					}
-				} else {
-					str += '<a href="favboard.php?select=' + boards[i].bid + '"><font color=#000066>[目录]' + boards[i].boardDesc + '</font></a>&nbsp;&nbsp;<a href="favboard.php?select=' + boards[i].select + '&deldir=' + boards[i].npos + '" title="从收藏中删除该目录">&lt;删&gt;</a>';
-				}
-				str += '</td><td width=40 rowspan=2 align=center class=TableBody1></td><td width=200 rowspan=2 class=TableBody1>';
-				if (boards[i].isGroup) {
-					str += '<B>本版为二级目录版</B>';
-				} else if (boards[i].nArticles <= 0) {
-					str += '<B>本版尚无文章</B>';
-				} else {
-					str += '主题：<a href="disparticle.php?boardName=' + boards[i].boardName + '&ID=' + boards[i].lastID + '">' + boards[i].lastTitle + ' &nbsp;</a><BR>作者：<a href="dispuser.php?id=' + boards[i].lastOwner + '" target=_blank>' + boards[i].lastOwner + ' </a><BR>日期：' + boards[i].lastPosttime + '&nbsp;<a href="disparticle.php?boardName=' + boards[i].boardName + '&ID=' + boards[i].lastID + '"><IMG border=0 src="pic/lastpost.gif" title="转到：' + boards[i].lastTitle + ' "> </a>';
-				}
-				str += '</TD></TR><TR><TD width=*><FONT face=Arial><img src=pic/forum_readme.gif align=middle> ' + boards[i].boardDesc + '</FONT></TD></TR><TR><TD class=TableBody2 height=20 width=*>版主：' + (boards[i].bm == '' ? '暂无' : boards[i].bm) + ' </TD><td width=40 align=center class=TableBody2>&nbsp;</td><TD vAlign=middle class=TableBody2 width=200>';
-				if (!boards[i].isGroup) {
-					str += '<table width=100% border=0><tr><td width=25% vAlign=middle><img src=pic/forum_today.gif alt=今日帖 align=absmiddle>&nbsp;<font color=#FF0000>' + boards[i].todayNum + '</font></td><td width=30% vAlign=middle><img src=pic/forum_topic.gif alt=主题 border=0  align=absmiddle>&nbsp;' + boards[i].nThreads + '</td><td width=45% vAlign=middle><img src=pic/forum_post.gif alt=文章 border=0 align=absmiddle>&nbsp;' + boards[i].nArticles + '</td></tr></table>';
-				}
-				str += '</TD></TR></TBODY></TABLE></td></tr></table></td></tr>';
-			} else { //!isFold
-				showed++;
-				if (showed % 4 == 1) {
-					str += "<tr>";
-				}
-				str += '<td class=TableBody1 width="25%"><TABLE cellSpacing=2 cellPadding=2 width=100% border=0><tr><td width="100%" colspan=2><a href="board.php?name=' + boards[i].boardName + '"><font color=#000066>' + boards[i].boardDesc + '&nbsp;[' + boards[i].boardName + ']</font></a></td></tr><tr>';
-				if (boards[i].isGroup) {
-					str += '<td> <b>本版为二级目录版</b></td>';
-				} else {
-					str += '<td width="50%">今日：<font color=#FF0000>' + boards[i].todayNum + '</font></td><td width="50%">发贴：' + boards[i].nArticles + '</td>';
-				}
-				str += '</tr></table></td>';
-				if (showed % 4 == 0) {
-					str += "</tr>";
-				}
-			}
-		}
-		if (showed % 4 != 0) {
-			str += '<td class=TableBody1 colspan="' + (4 - showed % 4) + '" width="' + (25*(4 - showed % 4)) + '%"></td></tr>';
-		}
-		return str;
-	}
+	str = showSec(<?php echo ($isFold?"true":"false"); ?>, <?php echo ($isFav?"true":"false"); ?>, boards, <?php echo $secNum ?>);
+	document.write(str);
 //-->
 </script>
+</td></tr>
+</table><br>
 <?php
 }
 

@@ -14,6 +14,7 @@ show_nav();
 showUserMailBoxOrBR();
 head_var($section_names[$secNum][0],'section.php?sec='.$secNum, 0);
 ?>
+<script src="inc/loadThread.js"></script>
 <table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
  <?php
 	showAnnounce(); 
@@ -24,12 +25,7 @@ head_var($section_names[$secNum][0],'section.php?sec='.$secNum, 0);
 </td></tr>
 </table>
 <?php
-outputSecJS();
-if (isset($_COOKIE['ShowSecBoards'.$secNum]) && $_COOKIE['ShowSecBoards'.$secNum]=='') {
-	showSecs($secNum,0,false);
-} else {
-	showSecs($secNum,0,true);
-}
+showSecs($secNum,0,true);
 showUserInfo();
 showSample();
 
@@ -45,14 +41,6 @@ function preprocess(){
 	$secNum=intval($_GET['sec']);
 	if ( ($secNum<0)  || ($secNum>=$sectionCount)) {
 		foundErr("您指定的分区不存在！");
-	} else if (isset($_GET['ShowBoards'])) {
-		if ($_GET['ShowBoards']=='N') {
-			setcookie('ShowSecBoards'.$secNum, '' ,time()+604800);
-			$_COOKIE['ShowSecBoards'.$secNum]='';
-		} else {
-			setcookie('ShowSecBoards'.$secNum, 'Y' ,time()+604800);
-			$_COOKIE['ShowSecBoards'.$secNum]='Y';
-		}
 	}
 }
 

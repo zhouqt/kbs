@@ -26,24 +26,19 @@ board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
 	showAnnounce(); 
 ?>
 </table>
+<script src="inc/loadThread.js"></script>
 <?php
 	if ($boardArr['FLAG'] & BBS_BOARD_GROUP ) {
-		outputSecJS();
 		showSecs($boardArr['SECNUM'],$boardID,true);
 	} else {
-?>
-<script src="inc/loadThread.js"></script>
-<iframe width=0 height=0 src="" id="hiddenframe" name="hiddenframe"></iframe>
-
-<?php
-	showBoardStaticsTop($boardArr);
+		showBoardStaticsTop($boardArr);
 ?>
 <TABLE cellPadding=1 cellSpacing=1 class=TableBorder1 align=center>
 <?php
-	showBroadcast($boardID,$boardName);
-	showBoardContents($boardID,$boardName,$page);
-	boardSearchAndJump($boardName, $boardID);
-	showBoardSampleIcons();
+		showBroadcast($boardID,$boardName);
+		showBoardContents($boardID,$boardName,$page);
+		boardSearchAndJump($boardName, $boardID);
+		showBoardSampleIcons();
 ?>
 </table>
 <?php
@@ -129,7 +124,6 @@ function showBoardContents($boardID,$boardName,$page){
 	boardName = '<?php echo $boardName; ?>';
 	THREADSPERPAGE = <?php echo THREADSPERPAGE; ?>;
 <?php
-		print_file_display_javascript($boardName);
 		for($i=0;$i<$articleNum;$i++){
 			$origin=$articles[$i]['origin'];
 			$lastreply=$articles[$i]['lastreply'];

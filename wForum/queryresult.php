@@ -73,12 +73,8 @@ function doSearch($boardNames){
 <script language="JavaScript">
 <!--
 	THREADSPERPAGE = <?php echo THREADSPERPAGE; ?>;
-<?php
-	print_file_display_javascript($boardName);
-?>
 //-->
 </script>
-<iframe width=0 height=0 src="" id="hiddenframe" name="hiddenframe"></iframe>
 <TABLE cellPadding=3 cellSpacing=1 class=TableBorder1 align=center>
 <TR valign=middle>
 <Th height=25 width=32>״̬</Th>

@@ -5,11 +5,21 @@ $setboard=1;
 require("inc/funcs.php");
 require("inc/user.inc.php");
 
-preprocess();
-
 show_nav();
 
 showUserMailBoxOrBR();
+?>
+<script src="inc/loadThread.js"></script>
+<?php
+	if (BOARDLISTSTYLE == 'simplest') {
+?>
+<script language="JavaScript">
+<!--
+	simplestBoardsList = true;
+//-->
+</script>
+<?php
+	}
 ?>
 <table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
 <?php
@@ -36,40 +46,12 @@ showSample();
 
 show_footer();
 
-/*--------------- function defines ------------------*/
-
-function preprocess(){
-	GLOBAL $sectionCount;
-
-	$path='';
-	if ($_GET['ShowBoards']=='Y') {
-		$secNum=intval($_GET['sec']);
-		if ( ($secNum>=0)  && ($secNum<$sectionCount)) {
-			setcookie('ShowSecBoards'.$secNum, 'Y' ,time()+604800,''); 
-			$_COOKIE['ShowSecBoards'.$secNum]='Y';
-		}
-	}
-	if ($_GET['ShowBoards']=='N') {
-		$secNum=intval($_GET['sec']);
-		if ( ($secNum>=0)  && ($secNum<$sectionCount)) {
-			setcookie('ShowSecBoards'.$secNum, '' ,time()+604800);
-			$_COOKIE['ShowSecBoards'.$secNum]='';
-		}
-	}
-}
-
-
 function showAllSecs(){
 	GLOBAL $sectionCount;
 	
-	outputSecJS();
 	for ($i=0;$i<$sectionCount;$i++){
-		echo "<a name=\"sec$i\"></a>";
-		if ($_COOKIE['ShowSecBoards'.$i]=='Y') {
-			showSecs($i,0,true);
-		} else {
-			showSecs($i,0,false);
-		}
+		showSecs($i,0,getSecFoldCookie($i));
+		flush();
 	}
 	return false;
 }
