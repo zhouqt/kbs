@@ -525,7 +525,7 @@ int do_com_menu()
 
 void join_room(struct room_struct * r)
 {
-    char buf[80],buf2[80];
+    char buf[80],buf2[80],buf3[80];
     int i,j,killer,me;
     clear();
     sprintf(buf, "home/%c/%s/.INROOMMSG%d", toupper(currentuser->userid[0]), currentuser->userid, uinfo.pid);
@@ -831,9 +831,9 @@ quitgame:
         kill(inrooms.peoples[i].pid, SIGUSR1);
     }
 quitgame2:
-    getdata(t_lines-1, 0, "寄回本次全部信息吗?[y/N]", buf, 3, 1, 0, 1);
+    getdata(t_lines-1, 0, "寄回本次全部信息吗?[y/N]", buf3, 3, 1, 0, 1);
     sprintf(buf, "home/%c/%s/.INROOMMSG%d", toupper(currentuser->userid[0]), currentuser->userid, uinfo.pid);
-    if(toupper(buf[0])=='Y') {
+    if(toupper(buf3[0])=='Y') {
         sprintf(buf2, "\"%s\"的杀人记录", myroom->name);
         mail_file(currentuser->userid, buf, currentuser->userid, buf2, BBSPOST_COPY, NULL);
     }
