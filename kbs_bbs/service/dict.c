@@ -1,6 +1,6 @@
 #define BBSMAIN
-#ifdef BBS_SERVICE_DICT
 #include "bbs.h"
+#ifdef BBS_SERVICE_DICT
 #include <mysql.h>
 
 int dict_main()
