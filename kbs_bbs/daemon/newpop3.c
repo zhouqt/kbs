@@ -512,6 +512,8 @@ char **argv;
         setuid(BBSUID);
         setreuid(BBSUID,BBSUID);
         setregid(BBSGID,BBSGID);
+        chdir(BBSHOME);
+
 	resolve_ucache();
     while (1) {
 
@@ -546,8 +548,6 @@ char **argv;
 
             sprintf(genbuf, "+OK FireBird BBS Pop3 server at %s starting.", strchr(BBSNAME, '@') + 1);
             outs(genbuf);
-
-            chdir(BBSHOME);
 
             log_usies("CONNECT");
             alarm(0);
