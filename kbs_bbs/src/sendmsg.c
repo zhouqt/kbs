@@ -302,7 +302,7 @@ void r_msg()
             sleep(1);
         }
         saveline(0, 1, savebuffer[0]);
-        return;
+        goto outhere;
     }
     count = get_msgcount(1, currentuser->userid);
     if (!count) {
@@ -314,7 +314,7 @@ void r_msg()
         refresh();
         sleep(1);
         saveline(0, 1, savebuffer[0]);  /* restore line */
-        return;
+        goto outhere;
     }
 
     now = get_unreadmsg(currentuser->userid);
@@ -394,12 +394,13 @@ void r_msg()
                     }
                     break;
             }
-            if (ch=='\r'||ch=='\n') break;
+            if (ch=='\r'||ch=='\n') goto outhere;
         }
 
         now = get_unreadmsg(currentuser->userid);
     } while(now!=-1);
 
+outhere:
     showansi = tmpansi;
     good_move(y,x);
     refresh();
