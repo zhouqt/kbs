@@ -634,7 +634,7 @@ void clear_utmp(int uent,int useridx)
    	lockfd=utmp_lock();
 	utmp_setreadonly(0);
 
-	if ((useridx==0)||(utmpshm.uinfo[uent-1].uid==useridx))
+	if ((useridx==0)||(utmpshm->uinfo[uent-1].uid==useridx))
 		clear_utmp2(uent);
 
 	utmp_setreadonly(1);
