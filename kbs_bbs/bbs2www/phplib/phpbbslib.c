@@ -57,6 +57,7 @@ static PHP_FUNCTION(bbs_mail_file);
 static PHP_FUNCTION(bbs_update_uinfo);
 static PHP_FUNCTION(bbs_createnewid);
 static PHP_FUNCTION(bbs_fillidinfo);
+static PHP_FUNCTION(bbs_createregform);
 static PHP_FUNCTION(bbs_delfile);
 static PHP_FUNCTION(bbs_delmail);
 static PHP_FUNCTION(bbs_normalboard);
@@ -111,6 +112,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_mail_file, NULL)
         PHP_FE(bbs_update_uinfo, NULL)
         PHP_FE(bbs_createnewid,NULL)
+		PHP_FE(bbs_createregform,NULL)
         PHP_FE(bbs_fillidinfo,NULL)
         PHP_FE(bbs_delfile,NULL)
         PHP_FE(bbs_delmail,NULL)
@@ -2181,6 +2183,92 @@ static PHP_FUNCTION(bbs_fillidinfo)
 
     RETURN_LONG(0);
 }
+
+/**
+ * Function: Create a registry form
+ *  rototype:
+ * int bbs_createregform(string realname,string dept,string address,int year,int month,int day,string email,string phone)
+ *
+ *  @return the result
+ *  	0 -- success,
+ *      1 -- 注册单尚未处理
+ *  	10 -- system error
+ *  @author binxun 2003.5
+ */
+static PHP_FUNCTION(bbs_creatregform)
+{
+    char*   realname,
+        *   dept,
+        *   address,
+		*	email,
+		*	phone;
+    int     realname_len,
+	        dept_len,
+			address_len,
+			email_len,
+			phone_len,
+	        year,
+	        month,
+			day;
+    struct  userec* uc;
+	struct  userdata ud;
+	FILE*   fn;
+	char    genbuf[STRLEN+1];
+	char*   ptr;
+	int     usernum;
+	long    now;
+
+    int ac = ZEND_NUM_ARGS();
+
+    if (ac != 8 || zend_parse_parameters(8 TSRMLS_CC, "ssslllss", &realname,&realname_len,&dept,&dept_len,&address,&address_len,
+	        &year,&month,&day,&email,&email_len,&phone,&phone_len) == FAILURE)
+    {
+		WRONG_PARAM_COUNT;
+	}
+
+    uc = getcurrentuser();
+	usernum = getusernum(uc->userid);
+
+	//检查是否单子已经填过了
+	if ((fn = fopen("new_register", "r")) != NULL) {
+        while (fgets(genbuf, STRLEN, fn) != NULL) {
+            if ((ptr = strchr(genbuf, '\n')) != NULL)
+                *ptr = '\0';
+            if (strncmp(genbuf, "userid: ", 8) == 0 && strcmp(genbuf + 8, uc->userid) == 0) {
+                fclose(fn);
+                RETURN_LONG(1);
+            }
+        }
+        fclose(fn);
+    }
+
+	read_userdata(uc->userid, &ud);
+    strncpy(ud.realname, realname, NAMELEN);
+    strncpy(ud.address, address, STRLEN);
+	strncpy(ud.email,email,STRLEN);
+    ud.realname[NAMELEN-1] = '\0';
+	ud.address[STRLEN-1] = '\0';
+	ud.email[STRLEN-1] = '\0';
+	//todo : 填入生日
+	write_userdata(uc->userid, &ud);
+
+	sprintf(genbuf,"%d.%d.%d",year,month,day);
+    if ((fn = fopen("new_register", "a")) != NULL) {
+        now = time(NULL);
+        fprintf(fn, "usernum: %d, %s from www", usernum, ctime(&now));
+        fprintf(fn, "userid: %s\n", uc->userid);
+        fprintf(fn, "realname: %s\n", realname);
+        fprintf(fn, "career: %s\n", dept);
+        fprintf(fn, "addr: %s\n", address);
+        fprintf(fn, "phone: %s\n", phone);
+        fprintf(fn, "birth: %s\n", genbuf);
+        fprintf(fn, "----\n");
+        fclose(fn);
+    }
+
+	RETURN_LONG(0);
+}
+
 
 
 /**
