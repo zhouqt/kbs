@@ -92,7 +92,7 @@ login_init();
 <tr>
 <td class="b9">
 寄信人: <?php echo $currentuser["userid"]; ?><br />
-标&nbsp;&nbsp;题: <input class="sb1" type="text" name="title" size="40" maxlength="100" value="<?php echo $title; ?>"><br />
+标&nbsp;&nbsp;题: <input class="sb1" type="text" name="title" size="40" maxlength="100" value="<?php echo htmlspecialchars($title,ENT_QUOTES); ?>"><br />
 收信人: <input class="sb1" type="text" name="userid" value="<?php echo $destuserid; ?>"><br />
 使用签名档 <select name="signature">
 <?php

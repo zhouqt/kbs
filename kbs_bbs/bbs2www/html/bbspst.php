@@ -125,7 +125,7 @@ function dosubmit() {
 	        $nowtitle = "";
 	    }
 ?>
-标&nbsp;&nbsp;题: <input class="sb1" type="text" name="title" size="40" maxlength="100" value="<?php echo $nowtitle?$nowtitle." ":""; ?>" /><br />
+标&nbsp;&nbsp;题: <input class="sb1" type="text" name="title" size="40" maxlength="100" value="<?php echo $nowtitle?htmlspecialchars($nowtitle,ENT_QUOTES)." ":""; ?>" /><br />
 <?php
 		if (bbs_is_attach_board($brdarr))
 		{
