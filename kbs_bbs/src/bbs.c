@@ -2140,7 +2140,8 @@ int post_article(char *q_file, struct fileheader *re_file)
          * Leeward 98.09.24 add: viewing signature(s) while setting post head 
          */
         sprintf(buf2, "°´[1;32m0[m~[1;32m%d/V/L[mÑ¡/¿´/Ëæ»úÇ©Ãûµµ%s£¬[1;32mT[m¸Ä±êÌâ£¬%s[1;32mEnter[m½ÓÊÜËùÓĞÉè¶¨: ", numofsig,
-                (replymode) ? "£¬[1;32mS/Y[m/[1;32mN[m/[1;32mR[m/[1;32mA[m ¸ÄÒıÑÔÄ£Ê½" : "", (anonyboard) ? "[1;32mM[m ÄäÃû£¬" : "");
+                (replymode) ? "£¬[1;32mS/Y[m/[1;32mN[m/[1;32mR[m/[1;32mA[m ¸ÄÒıÑÔÄ£Ê½" : "", (anonyboard) ? "[1;32mM[mÄäÃû£¬" : "");
+        if(strlen(buf2)>74) buf2[74]=0;
         getdata(t_lines - 1, 0, buf2, ans, 3, DOECHO, NULL, true);
         ans[0] = toupper(ans[0]);       /* Leeward 98.09.24 add; delete below toupper */
         if ((ans[0] - '0') >= 0 && ans[0] - '0' <= 9) {
