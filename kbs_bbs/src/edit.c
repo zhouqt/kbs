@@ -965,7 +965,7 @@ int saveheader ;
 		/*
             sprintf(buf,"cp %s %s",filename,bkfname);
 	    */
-		f_cp(filename,bkfname,0600);
+		f_cp(filename,bkfname,0);
         }
 #endif
     }

@@ -1162,12 +1162,12 @@ char *direct ;
                 sprintf( genbuf, "/bin/cp -r %s  tmp/bm.%s", fname , currentuser->userid );
 		*/
                 sprintf( genbuf, "tmp/bm.%s", currentuser->userid );
-		f_cp(fname,genbuf,0600);
+		f_cp(fname,genbuf,0);
             }
         }
         else {
             sprintf( genbuf, "tmp/bm.%s", currentuser->userid );
-	    f_cp(fname,genbuf,0600);
+	    f_cp(fname,genbuf,0);
         }
         sprintf( genbuf, " 已将该文章存入暂存档, 请按任何键以继续 << " );
         a_prompt( -1, genbuf, ans );
@@ -1847,7 +1847,7 @@ char tmpfile[STRLEN],userid[STRLEN],title[STRLEN];
     /*
     sprintf(genbuf, "cp %s %s",tmpfile, filepath) ;
     */
-    f_cp(tmpfile,filepath,0600);
+    f_cp(tmpfile,filepath,0);
 
     setmailfile(genbuf, userid, DOT_DIR);
     if(append_record(genbuf,&newmessage,sizeof(newmessage)) == -1)
@@ -2017,7 +2017,7 @@ doforward(char *direct,struct boardheader*fh,int isuu)
              direct, fh->filename, fname);
 	     */
     sprintf( tmp_buf, "%s/%s", direct, fh->filename);
-    f_cp( tmp_buf,fname,0600);
+    f_cp( tmp_buf,fname,0);
     sprintf(title,"%.50s(转寄)",fh->title);/*Haohmaru.00.05.01,moved here*/
     if(askyn("是否修改文章内容",0)==1)
     {

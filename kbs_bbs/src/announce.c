@@ -378,7 +378,7 @@ int    nomsg;
             sprintf( genbuf, "/bin/cp -r %s  tmp/bm.%s", filepath, currentuser->userid );
 	    */
             sprintf( genbuf, "tmp/bm.%s", filepath, currentuser->userid );
-	    f_cp(filepath,genbuf,0600);
+	    f_cp(filepath,genbuf,0);
         }
         else if(ans[0] == 'C' || ans[0] == 'c')
             return 1;
@@ -392,7 +392,7 @@ int    nomsg;
 	    /*
         sprintf( genbuf, "/bin/cp -r %s  tmp/bm.%s", filepath , currentuser->userid );
 	*/
-	    f_cp(filepath,genbuf,0600);
+	    f_cp(filepath,genbuf,0);
     }
     sprintf( genbuf, " 已将该文章存入暂存档, 请按任何键以继续 << " );
     unlink( filepath );
@@ -427,7 +427,7 @@ a_Save(char    *path,char *key,struct fileheader *fileinfo,int nomsg,
 	    */
             sprintf( genbuf, "boards/%s/%s", key, fileinfo->filename);
             sprintf( board, "tmp/bm.%s", currentuser->userid );
-	    f_cp(genbuf,board,0600);
+	    f_cp(genbuf,board,0);
         }
         else if(ans[0] == 'C' || ans[0] == 'c')
             return 1;
@@ -445,7 +445,7 @@ a_Save(char    *path,char *key,struct fileheader *fileinfo,int nomsg,
 	*/
         sprintf( genbuf, "boards/%s/%s", key, fileinfo->filename);
         sprintf( board, "tmp/bm.%s", currentuser->userid );
-	f_cp(genbuf,board,0600);
+	f_cp(genbuf,board,0);
     }
     sprintf( genbuf, " 已将该文章存入暂存档, 请按任何键以继续 << " );
     sprintf(r_genbuf,"将 boards/%s/%s 存入暂存档",key,fileinfo->filename);
@@ -554,7 +554,7 @@ int ent;
                 sprintf( genbuf, "/bin/cp -r boards/%s/%s %s", key , fileinfo->filename , bname );
 		*/
                 sprintf( genbuf, "boards/%s/%s", key , fileinfo->filename );
-		f_cp(genbuf,bname,0600);
+		f_cp(genbuf,bname,0);
 
                 /* Leeward 98.04.15 */
                 sprintf(genbuf, " 收入精华区目录 %s, 请按 Enter 继续 << " , /*fileinfo->title,*/ pm.path);
@@ -884,7 +884,7 @@ int     paste;
                 else
                 { /* 是文件 
                     sprintf( genbuf, "/bin/cp -p %s %s", fpath, newpath );*/
-		    f_cp(fpath,newpath,0600);
+		    f_cp(fpath,newpath,0);
                 }
                 a_additem( pm, title, filename  ,NULL,0);
                 a_savenames( pm );

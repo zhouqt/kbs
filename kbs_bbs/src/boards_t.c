@@ -443,7 +443,7 @@ int     newflag;
                     sprintf(restore, "/bin/cp %s.bak %s", fname, fname);
 		    */
                     sprintf(restore, "%s.bak", fname);
-                    f_cp(restore,fname,0600);
+                    f_cp(restore,fname,0);
 
                     move(t_lines-2, 0);
                     clrtoeol();

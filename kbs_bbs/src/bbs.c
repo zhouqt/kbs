@@ -3576,7 +3576,7 @@ Goodbye()    /*¿Î’æ —°µ•*/
             sprintf(genbuf, "/bin/cp %s %s.bak", fname, fname);
 	    */
             sprintf(genbuf, "%s.bak", fname);
-	    f_cp(fname,genbuf,0600);
+	    f_cp(fname,genbuf,0);
         }
     }
 
