@@ -357,7 +357,6 @@ void write_header(FILE * fp, struct userec *user, int in_mail, char *board, char
      * Leeward: 1997.12.11 
      */
     uname[39] = 0;              /* 其实是写错变量名了! 嘿嘿 */
-    title[STRLEN - 10] = '\0';
     noname = anonymousboard(board);
     if (in_mail)
         fprintf(fp, "寄信人: %s (%s)\n", uid, uname);
