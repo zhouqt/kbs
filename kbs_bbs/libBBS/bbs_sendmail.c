@@ -371,10 +371,9 @@ char *bbs_readmailfile(char **buf, int *len, void *arg)
 /*	sprintf(pout,"Reply-To: %s.bbs@%s\r\n\r\n", currentuser->userid, email_domain());
 */
         if (pmo->isbig5)
-            sprintf(pout, "%s", "MIME-Version: 1.0\r\nContent-Type: text/plain; charset=big5\r\nContent-Transfer-Encoding: 8bit\r\n\r\n");
+            sprintf(pout, "MIME-Version: 1.0\r\nContent-Type: text/plain; charset=big5\r\nContent-Transfer-Encoding: 8bit\r\nfrom: %s\r\nto: %s\r\n\r\n",pmo->from,pmo->to);
         else
-            sprintf(pout, "%s", "MIME-Version: 1.0\r\nContent-Type: text/plain; charset=gb2312\r\nContent-Transfer-Encoding: 8bit\r\n\r\n");
-        sprintf(pout, "from: %s\r\nto: %s\r\n",pmo->from,pmo->to);
+            sprintf(pout, "MIME-Version: 1.0\r\nContent-Type: text/plain; charset=gb2312\r\nContent-Transfer-Encoding: 8bit\r\nfrom: %s\r\nto: %s\r\n\r\n",pmo->from,pmo->to);
         pout = *buf + strlen(*buf);
         pmo->bfirst = 0;
     }
@@ -435,6 +434,7 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5,
     struct mail_option mo;
     FILE *fin;
     char uname[STRLEN];
+    char from[STRLEN];
     int len;
     smtp_session_t session;
     smtp_message_t message;
@@ -476,6 +476,8 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5,
         server = "127.0.0.1:25";
     smtp_set_server(session, server);
     sprintf(newbuf, "%s@%s", currentuser->userid, email_domain());
+    snprintf(from, STRLEN, "%s(%s) <%s@%s>",currentuser->userid, currentuser->username, currentuser->userid, email_domain());
+    from[STRLEN-1]=0;
     smtp_set_reverse_path(message, newbuf);
     smtp_set_header(message, "Message-Id", NULL);
     if (isbig5) {
@@ -493,7 +495,7 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5,
     mo.noansi = noansi;
     mo.fin = fin;
     mo.bfirst = 1;
-    mo.from = currentuser->userid;
+    mo.from = from;
     mo.to = receiver;
     smtp_set_messagecb(message, (smtp_messagecb_t) bbs_readmailfile, (void *) &mo);
     recipient = smtp_add_recipient(message, receiver);
