@@ -650,7 +650,8 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
         return buf;
     }
 
-    if (uinfo.mode != RMAIL && digestmode != 1 && digestmode != 4 && digestmode != 5) { /* 新方法比较*/
+    if (uinfo.mode != RMAIL && digestmode != 1 && digestmode != 4 && digestmode != 5
+        && strcmp(currboard, "sysmail")) { /* 新方法比较*/
             if ((ent->groupid != ent->id)&&(digestmode==DIR_MODE_THREAD||!strncasecmp(TITLE,"Re:",3)||!strncmp(TITLE,"回复:",5))) {      /*Re的文章 */
                 if (ReadPostHeader.groupid == ent->groupid)     /* 当前阅读主题 标识 */
                     if (DEFINE(currentuser, DEF_HIGHCOLOR))
