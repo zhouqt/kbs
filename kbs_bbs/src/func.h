@@ -253,6 +253,17 @@ extern "C" {
     int dele_digest(char *dname, char *direc);
     int change_post_flag(char* currBM, struct userec* currentuser, int digestmode, char* currboard, int ent, struct fileheader *fileinfo, char *direct, int flag, int prompt);
 
+/**
+ * A function return flag character of an article.
+ * 
+ * @param ent pointer to fileheader structure of the article
+ * @param user pointer to userec structure of the user
+ * @param is_bm nonzero for board manager, zero for others
+ * @return flag character of the article
+ * @author flyriver
+ */
+    char get_article_flag(struct fileheader *ent, struct userec *user, int is_bm);
+
 /* define in record.c */
     int safewrite(int fd, char *buf, int size);
     typedef int (*RECORD_FUNC_ARG) (void *, void *);
