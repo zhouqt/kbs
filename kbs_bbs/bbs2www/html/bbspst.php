@@ -23,8 +23,12 @@
 		$usernum = $currentuser["index"];
 		if (bbs_checkreadperm($usernum, $brdnum) == 0)
 			html_error_quit("错误的讨论区");
-		if(bbs_checkpostperm($usernum, $brdnum) == 0)
-		    html_error_quit("错误的讨论区或者您无权在此讨论区发表文章");
+		if(bbs_checkpostperm($usernum, $brdnum) == 0) {
+                    if (!strcmp($currentuser["userid"],"guest"))
+		      html_error_quit("请先注册帐号");
+                    else 
+		      html_error_quit("错误的讨论区或者您无权在此讨论区发表文章");
+                }
 		if (bbs_is_readonly_board($brdarr))
 			html_error_quit("不能在只读讨论区发表文章");
 		if (isset($_GET["reid"]))

@@ -23,7 +23,7 @@
 			html_error_quit("错误的讨论区");
 		$total = bbs_countarticles($brdnum, $dir_modes["NORMAL"]);
 		if ($total <= 0)
-			html_error_quit("本讨论区目前没有文章");
+			html_error_quit("本讨论区目前没有文章<br /><a href=\"bbspst.php?board=\"" . $board . ">发表文章</a>");
         	bbs_set_onboard($brdnum,1);
 		$artcnt = 20;
 		if (isset($_GET["page"]))
