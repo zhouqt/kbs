@@ -42,7 +42,7 @@ if ($num==0) {
 	exit(0);
 }
 
-//showTree($boardName,$boardID,$groupID,$article,$threads,$total);
+    html_init();
 ?>
 <body>
 <script language="javascript" type="text/javascript" src="inc/browser.js"></script>
@@ -51,7 +51,7 @@ if ($num==0) {
 	oTd.innerHTML='<TABLE border=0 cellPadding=0 cellSpacing=0 width="100%" align=center><TBODY><?php showTree($boardName,$groupID,$articles,"showTreeItem",TREEVIEW_MAXITEM);?></TBODY></TABLE>';
 </script>
 </body>
-
+</html>
 <?php
 /*  rem by roy 2003.7.28
 	按文章之间的继承关系排序
@@ -117,7 +117,7 @@ function showTree($boardName,$boardID,$groupID,$article,$threads,$threadNum) {
 */
 
 function showTreeItem($boardName,$groupID,$article,$startNum,$level, $lastflag){
-	echo '<TR><TD class=TableBody1 width="100%" height=25>';
+	echo '<TR><TD class=TableBody1 width="100%" height=25 style="padding-left: 37px;">';
 	for ($i=0;$i<$level;$i++) {
 		if ($lastflag[$i]) {
 			if ($i == $level - 1) echo '<img src="pic/treenode2.gif">'; // |-
