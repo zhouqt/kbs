@@ -235,6 +235,7 @@ extern const char *permstrings[];
 extern const char    *groups[];
 extern const char    *explain[];
 extern const char *user_definestr[];
+extern char *mailbox_prop_str[];
 
 /**
  * 看在线用户时的按键处理字符。
@@ -279,5 +280,19 @@ typedef struct fileheader {     /* This structure is used to hold data in */
 
 //修改密码之类的页面使用https
 #define SECURE_HTTPS
+
+/**
+ * Mailbox properties.
+ * 
+ * @author flyriver
+ */
+
+#define MBP_SAVESENTMAIL      0x00000001
+#define MBP_FORCEDELETEMAIL   0x00000002
+#define MBP_MAILBOXSHORTCUT   0x00000004
+
+#define MBP_NUMS 3
+
+#define HAS_MAILBOX_PROP(u, x) ((u)->mailbox_prop & x)
 
 #endif

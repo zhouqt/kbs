@@ -233,6 +233,7 @@ extern char *permstrings[];
 extern char    *groups[];
 extern char    *explain[];
 extern char *user_definestr[];
+extern char *mailbox_prop_str[];
 #else
 const char *permstrings[] = {
         "基本权力",             /* PERM_BASIC */
@@ -329,6 +330,13 @@ const char    *groups[] = {
     "news.faq",   /* GROUP_8 */
     NULL
 };
+
+const char *mailbox_prop_str[] =
+{
+	"发信时保存信件到发件箱",
+	"删除信件时不保存到垃圾箱",
+	"版面按 'v' 时进入: 收件箱(OFF) / 信箱主界面(ON)",
+};
 #endif
 
 /**
@@ -370,5 +378,18 @@ typedef struct fileheader {     /* This structure is used to hold data in */
 #define GET_POSTFILENAME(x,y) get_postfilename(x,y,1)
 #define GET_MAILFILENAME(x,y) get_postfilename(x,y,0)
 #define VALID_FILENAME(x) valid_filename(x,1)
+
+/**
+ * Mailbox properties.
+ * 
+ * @author flyriver
+ */
+#define MBP_SAVESENTMAIL      0x00000001
+#define MBP_FORCEDELETEMAIL   0x00000002
+#define MBP_MAILBOXSHORTCUT   0x00000004
+
+#define MBP_NUMS 3
+
+#define HAS_MAILBOX_PROP(u, x) ((u)->mailbox_prop & x)
 
 #endif

@@ -119,6 +119,13 @@ const char secname[SECNUM][2][20] = {
     {"知性感性", "[谈天/感性]"},
 };
 
+const char *mailbox_prop_str[] =
+{
+	"发信时保存信件到发件箱",
+	"删除信件时不保存到垃圾箱",
+	"版面按 'v' 时进入: 收件箱(OFF) / 信箱主界面(ON)",
+};
+
 struct _shmkey {
     char key[20];
     int value;
