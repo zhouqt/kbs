@@ -446,6 +446,9 @@ static int fav_prekey(struct _select_def *conf, int *command)
     case 'j':
         *command = KEY_DOWN;
         break;
+	case 'r':
+		*command = KEY_RIGHT;
+		break;
     };
     return SHOW_CONTINUE;
 }
