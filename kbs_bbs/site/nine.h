@@ -33,7 +33,7 @@
 #define MAXUSERS  		20000
 #define MAXBOARD  		400
 #define MAXACTIVE 		8000
-#define MAX_GUEST_NUM		800
+#define MAX_GUEST_NUM		1000
 
 #define POP3PORT		110
 #define	LENGTH_SCREEN_LINE	220
@@ -47,10 +47,10 @@
 #define LIFE_DAY_SYSOP		120
 #define LIFE_DAY_NODIE		999
 #define LIFE_DAY_NEW		15
-#define LIFE_DAY_SUICIDE	15
+#define LIFE_DAY_SUICIDE	3
 
 #define DAY_DELETED_CLEAN	20
-#define SEC_DELETED_OLDHOME	2592000/* 3600*24*30，注册新用户如果存在这个用户的目录，保留时间*/
+#define SEC_DELETED_OLDHOME	259200/* 3600*24*30，注册新用户如果存在这个用户的目录，保留时间*/
 
 #define	REGISTER_WAIT_TIME	(0)
 #define	REGISTER_WAIT_TIME_NAME	"72 小时"
