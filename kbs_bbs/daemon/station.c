@@ -109,7 +109,6 @@ void filter_report(char* title,char *str)
 {
 	FILE *se;
 	char fname[STRLEN];
-	int savemode;
 	struct userec chatuser;
 
        bzero(&chatuser,sizeof(chatuser));
@@ -120,7 +119,7 @@ void filter_report(char* title,char *str)
 	if ((se = fopen(fname, "w")) != NULL) {
 		fprintf(se, "%s", str);
 		fclose(se);
-                post_file(&chatuser, "", fname, FILTER_BOARD, title, 0, 1);
+                post_file(&chatuser, "", fname, FILTER_BOARD, title, 0, 2);
 		unlink(fname);
 	}
 }
@@ -346,11 +345,12 @@ void send_to_room(room, str, unum)
     		char title[80];
     		char content[80];
     		sprintf(title,"%s 在聊天室说坏话",users[unum].userid);
-    		sprintf(content,"%s(聊天代号 %s )说:%s",users[unum].userid,
+    		sprintf(content,"%s\n%s(聊天代号 %s )说:%s",Ctime(time(NULL)),
+			users[unum].userid,
     			users[unum].chatid,str);
     		filter_report(title, content);
-              FD_SET(users[unum].sockfd, &writefds);
-              do_send(&writefds, str);
+                FD_SET(users[unum].sockfd, &writefds);
+                do_send(&writefds, str);
     		return;
     	}
     }
@@ -1076,6 +1076,7 @@ void chat_setroom(unum, msg)
 #ifdef FILTER
        case 'F':
        case 'f': {
+        if (SYSOP(unum)) {        /*added by Haohmaru,98.9.6 */
        	char buf[80];
        	char title[80];
        	filtering=!filtering;
@@ -1088,6 +1089,7 @@ void chat_setroom(unum, msg)
        	filter_report(title,buf);
        	return;
        	}
+	}
 #endif
         case 'l':
         case 'L':
