@@ -294,18 +294,23 @@ int do_userlist()
         disable_move = false;
         prints(tbuf);
         disable_move = true;
+        resetcolor();
         move(y, x);
         sprintf(user_info_str,
                  /*---	modified by period	2000-10-21	‘⁄œﬂ”√ªß ˝ø…“‘¥Û”⁄1000µƒ
                          " %3d%2s%s%-12.12s%s%s %-16.16s%s %-16.16s %c %c %s%-17.17s[m%5.5s\n",
                  ---*/
-                " %4d%2s%s%-12.12s%s%s %s%s %-16.16s %c %c %s%-16.16s[m%5.5s\n", i + 1 + page, (override) ? (uentp.invisible ? "££" : FRIENDSIG) : (uentp.invisible ? "£™" : ""), 
+                " %4d%2s%s%-12.12s%s%s "), 
                 (override) ? "[1;32m" : "", uentp.userid, (override) ? "[m" : "", 
-                (override && showexplain) ? "[1;31m" : "", "[16C", "[m", 
+                (override && showexplain) ? "[1;31m" : "");
+        prints("%s", user_info_str);
+        resetcolor();
+        move(y, 36);
+        sprintf(user_info_str, " %-16.16s %c %c %s%-16.16s[m%5.5s\n", i + 1 + page, (override) ? (uentp.invisible ? "££" : FRIENDSIG) : (uentp.invisible ? "£™" : ""), 
                 (((pagec == ' ' || pagec == 'O')) || HAS_PERM(currentuser, PERM_SYSOP)) ? uentp.from : FROMSTR,
                 pagec, msgchar(&uentp, &isfriend), 
                 (uentp.invisible == true)? "[34m" : "", modestring(uentp.mode, uentp.destuid, 0,        /* 1->0 ≤ªœ‘ æ¡ƒÃÏ∂‘œÛµ» modified by dong 1996.10.26 */
-                                           (uentp.in_chat ? uentp.chatid : NULL)),
+                                           (uentp.in_chat ? uentp.chatid : NULL)),            
 #ifdef SHOW_IDLE_TIME
                 idle_str(&uentp));
 
@@ -313,8 +318,6 @@ int do_userlist()
                 "");
 
 #endif                          /*  */
-        resetcolor();
-        clrtoeol();
         prints("%s", user_info_str);
         resetcolor();
     }
