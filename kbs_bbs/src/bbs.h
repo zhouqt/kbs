@@ -554,6 +554,7 @@ struct sms_shm_head {
     int length;
 } * head;
 
+#ifndef byte2long
 inline unsigned int byte2long(byte arg[4]) {
     unsigned int tmp;
     tmp=((long)arg[0]<<24)+((long)arg[1]<<16)+((long)arg[2]<<8)+(long)arg[3];
@@ -566,6 +567,7 @@ inline void long2byte(unsigned int num, byte* arg) {
     (arg)[2]=(num<<16)>>24;
     (arg)[3]=(num<<24)>>24;
 }
+#endif
 
 #endif
 
