@@ -1206,7 +1206,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
     return newent ? DIRCHANGED : PARTUPDATE;
 }
 
-char get_article_flag(struct fileheader *ent, struct userec *user, int is_bm)
+char get_article_flag(struct fileheader *ent, struct userec *user, char* boardname,int is_bm)
 {
     char unread_mark = (DEFINE(user, DEF_UNREADMARK) ? '*' : 'N');
     char type;
@@ -1262,7 +1262,7 @@ char get_article_flag(struct fileheader *ent, struct userec *user, int is_bm)
     } else if (HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[0] & FILE_SIGN)) {
         type = '#';
 #ifdef FILTER
-    } else if (HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[1] & FILE_CENSOR)&&!strcmp(currboard,FILTER_BOARD)) {
+    } else if (HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[1] & FILE_CENSOR)&&!strcmp(boardname,FILTER_BOARD)) {
 	type = '@';
 #endif
     }

@@ -935,7 +935,7 @@ static ZEND_FUNCTION(bbs_getarticles)
 	{
 		MAKE_STD_ZVAL(element);
 		array_init(element);
-		flags[0] = get_article_flag(articles + i, currentuser, is_bm);
+		flags[0] = get_article_flag(articles + i, currentuser, board,is_bm);
 		if (is_bm && (articles[i].accessed[0] & FILE_IMPORTED))
 			flags[1] = 'y';
 		else

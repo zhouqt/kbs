@@ -281,7 +281,7 @@ extern "C" {
  * @return flag character of the article
  * @author flyriver
  */
-    char get_article_flag(struct fileheader *ent, struct userec *user, int is_bm);
+    char get_article_flag(struct fileheader *ent, struct userec *user, char* boardname,int is_bm);
 	time_t get_posttime(const struct fileheader *fileinfo);
 	void set_posttime(struct fileheader *fileinfo);
 

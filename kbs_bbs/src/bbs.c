@@ -559,7 +559,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
 
     manager = chk_currBM(currBM, currentuser);
 
-    type = get_article_flag(ent, currentuser, manager);
+    type = get_article_flag(ent, currentuser, currboard,manager);
     if (manager && (ent->accessed[0] & FILE_IMPORTED)) {        /* 文件已经被收入精华区 */
         if (type == ' ') {
             typeprefix = "\x1b[42m";
