@@ -257,7 +257,7 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
     char olddirect[PATHLEN];
     char *ptr;
     struct stat buf;
-    int mode=8, load_content=0;
+    int mode=8, load_content=0, found=0;
     extern int scr_cols;
     static char index[1024]="";
 
@@ -286,14 +286,13 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
     multi_getdata(2, 0, scr_cols-1, "请输入表达式: ", index, 1020, 20, 0);
     if(!index[0]) 
         return FULLUPDATE;
-    load_content = (strstr(index, "content")!=NULL);
-    if (digestmode > 0) {
+    load_content = (strstr(index, "contentx")!=NULL);
+    if (digestmode==7||digestmode==8 ) {
         if (digestmode == 7 || digestmode == 8)
             unlink(currdirect);
         digestmode = 0;
         setbdir(digestmode, currdirect, currboard->filename);
     }
-    digestmode = 0;
     setbdir(digestmode, olddirect, currboard->filename);
     digestmode = mode;
     setbdir(digestmode, currdirect, currboard->filename);
@@ -341,12 +340,16 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
     ptr1 = (struct fileheader *) ptr;
     libs = (char*)malloc(LIBLEN);
     for (i = 0; i < total; i++) {
+        int fd3;
+        char* p;
+        size_t fsize;
         libptr = libs;
         ferr = 0;
         set_vard(fvars+fget_var("no"), i+1);
         set_vard(fvars+fget_var("id"), ptr1->id);
         set_vard(fvars+fget_var("reid"), ptr1->reid);
         set_vard(fvars+fget_var("groupid"), ptr1->groupid);
+        set_vard(fvars+fget_var("origin"), ptr1->id==ptr1->groupid);
         set_vard(fvars+fget_var("m"), ptr1->accessed[0]&FILE_MARKED);
         set_vard(fvars+fget_var("g"), ptr1->accessed[0]&FILE_DIGEST);
         set_vard(fvars+fget_var("b"), (ptr1->accessed[0]&FILE_MARKED)&&(ptr1->accessed[0]&FILE_DIGEST));
@@ -362,8 +365,27 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
         set_vard(fvars+fget_var("attach"), ptr1->attachment);
         set_vars(fvars+fget_var("title"), ptr1->title);
         set_vars(fvars+fget_var("author"), ptr1->owner);
+        set_vars(fvars+fget_var("file"), ptr1->filename);
+#ifdef 
+#ifdef HAVE_BRC_CONTROL
         set_vard(fvars+fget_var("unread"), brc_unread(ptr1->id));
+#endif
         if(load_content) {
+            set_vars(fvars+fget_var("contentx"), ptr->filename);
+            fd3 = open(ptr1->filename, O_RDONLY, 0664);
+            if(fd3!=-1) {
+                int j;
+                j = safe_mmapfile_handle(fd3, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize)
+                if(j==2) {
+                    end_mmapfile((void*)p, fsize, -1);
+                    close(fd3);
+                    fd3=-1;
+                }
+                else if(j==0) {
+                    set_vars(fvars+fget_var("contentx"), p);
+                }
+                else fd3=-1;
+            }
         }
         ferr=0;
         feval(fvars+fget_var("res"), index, 0, strlen(index)-1);
@@ -371,6 +393,12 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
         if(fvars[fget_var("res")].s) {
             write(fd, ptr1, size);
             count++;
+            found++;
+        }
+        if(load_content) {
+            if(fd3!=-1) {
+                end_mmapfile((void*)p, fsize, -1);
+            }
         }
         ptr1++;
     }
@@ -384,6 +412,20 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
     ldata.l_type = F_UNLCK;
     fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
     close(fd);
+    if(ferr) {
+        move(3, 0);
+        clrtoeol();
+        prints("表达式错误");
+        refresh();
+        sleep(1);
+    }
+    else if(count==0) {
+        move(3, 0);
+        clrtoeol();
+        prints("一个都没有找到....");
+        refresh();
+        sleep(1);
+    }
     return NEWDIRECT;
 }
 

@@ -1572,13 +1572,6 @@ int change_mode(int ent, struct fileheader *fileinfo, char *direct)
     char buf[STRLEN], buf2[STRLEN];
     static char title[31] = "";
 
-    if (digestmode > 0) {
-        if (digestmode == 7 || digestmode == 8)
-            unlink(currdirect);
-        digestmode = 0;
-        setbdir(digestmode, currdirect, currboard->filename);
-        return NEWDIRECT;
-    }
     move(t_lines - 2, 0);
     clrtoeol();
     prints("切换模式到: 1)文摘 2)同主题 3)被m文章 4)原作 5)同作者 6)标题关键字 ");
@@ -1610,6 +1603,12 @@ int change_mode(int ent, struct fileheader *fileinfo, char *direct)
         strcpy(buf, title);
         if (buf[0] == 0)
             return FULLUPDATE;
+    }
+    if (digestmode > 0&&ans[0]!='7') {
+        if (digestmode == 7 || digestmode == 8)
+            unlink(currdirect);
+        digestmode = 0;
+        setbdir(digestmode, currdirect, currboard->filename);
     }
     switch (ans[0]) {
     case 0:
