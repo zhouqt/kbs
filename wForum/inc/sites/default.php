@@ -137,7 +137,7 @@ if (!isset($user_define)) {
 } else $user_define_default = 0;
 
 if (!isset($user_define1)) {
-	$user_define1=array(array(1,"隐藏 IP", "是否发文和被查询的时候隐藏自己的 IP 信息","不隐藏","隐藏") /* DEF_HIDEIP */
+	$user_define1=array(array(1,"隐藏 IP", "是否发文和被查询的时候隐藏自己的 IP 信息","隐藏","不隐藏") /* DEF_HIDEIP */
 	);
 } else $user_define1_default = 0;
 
