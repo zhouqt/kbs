@@ -90,7 +90,7 @@ function pcmain_blog_last_update()
 function  pcmain_blog_most_hot()
 {
 	global $pcconfig,$link;
-	$query = "SELECT nid , subject , uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-604800)." ORDER BY commentcount DESC , nid DESC LIMIT 0 , 40;";
+	$query = "SELECT nid , subject , uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-604800)." ORDER BY commentcount DESC , nid DESC LIMIT 0 , 20;";
 	$result = mysql_query($query,$link);
 	$num = mysql_num_rows($result);
 ?>
@@ -194,7 +194,7 @@ function  pcmain_blog_most_view()
 function pcmain_blog_new_nodes()
 {
 	global $link;
-	$newBlogs = getNewBlogs($link,1,60);
+	$newBlogs = getNewBlogs($link,1,40);
 	$newNum = count($newBlogs[useretems]);
 ?>
 <table cellspacing=0 cellpadding=3 width=98%>
@@ -284,14 +284,15 @@ function pcmain_section_top_view()
 <table cellspacing=0 cellpadding=3 width="100%">
 <?php
 	$sections = array_keys($pcconfig["SECTION"]);
+	$othersections = array();
 	foreach( $sections as $section )
 	{
 		$query = "SELECT nodes.uid , nid , subject , theme , username , corpusname  ".
 			 "FROM nodes , users ".
-			 "WHERE nodes.uid = users.uid AND access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-604800)." AND nodes.visitcount != 0 AND theme = '".$section."' ".
+			 "WHERE nodes.uid = users.uid AND access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-604800)." AND theme = '".$section."' ".
 			 "GROUP BY nodes.uid ".
 			 "ORDER BY nodes.visitcount DESC , nid DESC ".
-			 "LIMIT 0 , 4 ;";
+			 "LIMIT 0 , 12 ;";
 		$result = mysql_query($query,$link);
 		$num_rows = mysql_num_rows($result);
 		if($num_rows)
@@ -300,30 +301,42 @@ function pcmain_section_top_view()
 			$totallength = 0;
 			while($rows = mysql_fetch_array($result) )
 			{
+				if( $totallength + strlen( $rows[subject] ) > 65 )
+					continue;
 				$nodes[] = $rows;
 				$totallength += strlen( $rows[subject] );
 			}
 			mysql_free_result($result);
-			$subjectlength = ( $totallength > 65 )?13:65;
+			//$subjectlength = ( $totallength > 65 )?13:65;
+			$nodesNum = max(1,count($nodes) - 1);
 ?>
 <tr><td align="left">
 [<strong><a href="/pc/pcsec.php?sec=<?php echo $section; ?>"><font class=low2><?php echo $pcconfig["SECTION"][$section]; ?></font></a></strong>]&nbsp;
 <?php
-			for( $i = 0 ; $i < $num_rows ; $i ++ )
+			for( $i = 0 ; $i < $nodesNum ; $i ++ )
 			{
 				echo "<a href=\"/pc/pccon.php?id=".$nodes[$i][0]."&nid=".$nodes[$i][nid]."&s=all\">".
 				     "<span title=\"".html_format($nodes[$i][subject])."(".$nodes[$i][username]."'s BLOG:".html_format($nodes[$i][corpusname]).")\">";
-				$subject = substr( $nodes[$i][subject] , 0 , $subjectlength );
-				if( strlen( $nodes[$i][subject] ) > $subjectlength ) $subject .= "...";
-				echo $subject."</span></a>";
-				if( $i < $num_rows - 1 ) echo " - ";
+				//$subject = substr( $nodes[$i][subject] , 0 , $subjectlength );
+				//if( strlen( $nodes[$i][subject] ) > $subjectlength ) $subject .= "...";
+				//echo html_format($subject)."</span></a>";
+				echo html_format($nodes[$i][subject])."</span></a>";
+				if( $i < $nodesNum - 1 ) echo " | ";
 			}
 ?>
 </td></tr>
 <?php			
 		}
+		else
+			$othersections[] = $section;
 	}
 ?>
+<tr><td>
+<?php
+		foreach( $othersections as $section )
+			echo "[<a href=\"/pc/pcsec.php?sec=".$section."\"><font class=low2>".$pcconfig["SECTION"][$section]."</class></a>]\n";
+?>
+</td></tr>
 </table>
 <?php
 }
