@@ -94,7 +94,7 @@
 	<input type="button" name="ins" value="插入HTML" class="b1" onclick="return insertHTML();" />
 	<input type="button" name="hil" value="高亮" class="b1" onclick="return highlight();" />
 	<input type="submit" name="postbutton" id="postbutton" value="发表评论" class="b1">
-	<input type="button" value="返回上页" class="b1" onclick="history.go(-1)">
+	<input type="button" value="返回上页" class="b1" onclick="doCancel();">
 </tr>
 </table>
 </form></center>	

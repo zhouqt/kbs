@@ -62,41 +62,14 @@ function pc_html_init($charset,$title="",$otherheader="",$cssfile="",$bkimg="",$
 	{
 ?>
 <script type="text/javascript">
-_editor_url = "htmlarea/";
+var _editor_url = "htmlarea/";
+var editor = null;
 </script>
 <!-- load the main HTMLArea files -->
 <script type="text/javascript" src="htmlarea/htmlarea.js"></script>
 <style type="text/css">
 textarea { background-color: #fff; border: 1px solid 00f; }
 </style>
-<?php /*
-** 去掉表格编辑器和输入检查 否则下载量太大 **
-** by windinsn **
-*/ ?>
-<?php
-/*
-<!-- load the plugins -->
-<script type="text/javascript">
-      HTMLArea.loadPlugin("TableOperations");
-      HTMLArea.loadPlugin("SpellChecker");
-</script>
-*/
-?>
-<script type="text/javascript" defer="1">
-var editor = null;
-function initEditor() {
-  editor = new HTMLArea("blogbody", getBlogConfig());
-<?php
-/*
-  editor.registerPlugin("TableOperations");
-  editor.registerPlugin("SpellChecker");
-*/
-?>
-  editor.generate();
-  return false;
-}
-    
-</script>
 <?php
 	}
 ?>

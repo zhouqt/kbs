@@ -38,12 +38,35 @@ function submitwithcopy() {
 		alert('文章内容已复制到剪贴板，如果发表失败，请重新发表'); 
 	}
 */
-	f.postbutton.value="发表中，请稍候……";
-	f.postbutton.disabled=true;
+	if (f.postbutton != null) {
+		f.postbutton.value="发表中，请稍候……";
+		f.postbutton.disabled=true;
+	}
+	window.onbeforeunload=null;
 	/*f.submit();*/
 	return true;
 }
 
+function confirmLeave() {
+	return "正在编辑，确定离开吗？编辑的内容将全部丢失！";
+}
+
+function doCancel() {
+	window.onbeforeunload=null;
+	history.go(-1);
+}
+
+function initEditor() {
+	if (document.getElementById("blogbody") == null) return false;
+	/*
+	HTMLArea.loadPlugin("TableOperations");
+	HTMLArea.loadPlugin("SpellChecker");
+	*/
+	editor = new HTMLArea("blogbody", getBlogConfig());
+	editor.generate();
+	window.onbeforeunload = confirmLeave;
+	return false;
+}
 
 /* html area additional functions */
 function insertHTML() {

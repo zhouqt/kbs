@@ -400,7 +400,7 @@
 		<input type="button" name="ins" value="插入HTML" class="b1" onclick="return insertHTML();" />
 		<input type="button" name="hil" value="高亮" class="b1" onclick="return highlight();" />
 		<input type="submit" name="postbutton" id="postbutton" value="发表本文" class="b1">
-		<input type="button" value="返回上页" onclick="history.go(-1)" class="b1">
+		<input type="button" value="返回上页" onclick="doCancel();" class="b1">
 	</td>
 </tr>
 </table>
@@ -473,7 +473,7 @@
 <tr>
 	<td class="t2">
 		<input type="submit" value="修改目录" class="b1">
-		<input type="button" value="返回上页" class="b1" onclick="history.go(-1)">
+		<input type="button" value="返回上页" class="b1" onclick="doCancel();">
 	</td>
 </tr>
 <?php
@@ -550,7 +550,7 @@
 		<input type="button" name="ins" value="插入HTML" class="b1" onclick="return insertHTML();" />
 		<input type="button" name="hil" value="高亮" class="b1" onclick="return highlight();" />
 		<input type="submit" name="postbutton" id="postbutton" value="修改本文" class="b1">
-		<input type="button" value="返回上页" onclick="history.go(-1)" class="b1">
+		<input type="button" value="返回上页" onclick="doCancel();" class="b1">
 	</td>
 </tr>
 <?php
@@ -668,13 +668,13 @@
 <tr>
 	<td class="t8">
 	Blog名
-	<input type="text" class="f1" name="topicname" value="<?php echo htmlspecialchars(stripslashes($topicname)); ?>">
+	<input type="text" class="f1" style="width:300px;" name="topicname" value="<?php echo htmlspecialchars(stripslashes($topicname)); ?>">
 	</td>
 </tr>
 <tr>
 	<td class="t2">
 	<input type="submit" value="修改Blog" class="b1">
-	<input type="button" value="返回上页" class="b1" onclick="history.go(-1)">
+	<input type="button" value="返回上页" class="b1" onclick="doCancel();">
 	</td>
 </tr>
 </table>
