@@ -763,7 +763,7 @@ static int check_newpost(struct newpostdata *ptr)
     return 1;
 }
 
-#define BOARD_COLUMNS 9
+#define BOARD_COLUMNS 10
 
 char *brd_col_names[BOARD_COLUMNS] = {
     "NAME",
@@ -775,7 +775,7 @@ char *brd_col_names[BOARD_COLUMNS] = {
     "ZAPPED",
     "BID",
     "POSITION",                  /* added by caltary */
-    "ISGROUP"           /* is group ?*/
+    "FLAG"           /* is group ?*/
 };
 
 /* added by caltary */
