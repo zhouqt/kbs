@@ -38,8 +38,8 @@
 		exit();
 	}
 	
-	if( pc_cache( $pc["MODIFY"] ) )
-		return;
+	//if( pc_cache( $pc["MODIFY"] ) )
+	//	return;
 	
 	Header("Content-type: file/html");
 	Header("Content-Disposition: inline;filename=".$pc["USER"]."_blog_".substr($archDate[0],0,8)."_".substr($archDate[1],0,8).".html");
@@ -63,11 +63,13 @@
 	echo "<p class=date>µµ°¸ÈÕÆÚ£º".time_format($archDate[0])." ¡« ".time_format($archDate[1])."</p><hr size=1>";
 	
 	$query = "SELECT * FROM nodes WHERE uid = '".$pc["UID"]."' AND type = 0 AND changed >= ".$archDate[0]." AND changed <= ".$archDate[1]." ";
+	
 	if(pc_is_admin($currentuser,$pc) && $loginok == 1)
 		$query .= " AND ( access = 0 OR access = 1 OR access = 2 ) ";
 	elseif(pc_is_friend($currentuser["userid"],$pc["USER"]) || pc_is_manager($currentuser))
 		$query .= " AND ( access = 0 OR access = 1 ) ";
 	else
+	
 		$query .=" AND access = 0 ";
 	
 	$query .=" ORDER BY nid DESC ;";
