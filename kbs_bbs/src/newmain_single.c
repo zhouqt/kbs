@@ -1182,7 +1182,7 @@ void docmdtitle( char    *title,char *prompt)
                 strcpy(middoc,"[您的信箱超过容量,不能再收信!]");
     else if(chkmailflag)
         strcpy(middoc,"[您有信件]");
-/*    else if ( vote_flag( DEFAULTBOARD, '\0' ,0) == 0&&(bp->flag&VOTE_FLAG))
+/*    else if ( vote_flag( DEFAULTBOARD, '\0' ,0) == 0&&(bp->flag&BOARD_VOTEFLAG))
         strcpy(middoc,"[系统投票中]");*/
     else
         strcpy(middoc,BBS_FULL_NAME);

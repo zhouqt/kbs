@@ -511,6 +511,15 @@ checkreadonly( char *board) /* 检查是否是只读版面 */
         return NA;
 }
 
+int anonymousboard(char* board) /*检查版面是不是匿名版*/
+{
+    struct boardheader* bh=getbcache(board);
+    if (bh&&(bh->flag & BOARD_ANNONY)) /* Checking if DIR access mode is "555" */
+        return YEA;
+    else
+        return NA;
+}
+
 int
 deny_me(char* user,char* board)   /* 判断用户 是否被禁止在当前版发文章 */
 {

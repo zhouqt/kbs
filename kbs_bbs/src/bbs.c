@@ -443,7 +443,7 @@ readtitle()  /* 版内 显示文章列表 的 title */
         strcpy( title,"[您的信箱超过容量,不能再收信!]");
     else if ( chkmailflag ) /* 信件检查 */
         strcpy( title, "[您有信件]" );
-    else if ( (bp->flag&VOTE_FLAG))  /* 投票检查 */
+    else if ( (bp->flag&BOARD_VOTEFLAG))  /* 投票检查 */
         sprintf( title, "投票中，按 V 进入投票");
     else
         strcpy( title, bp->title+13 );
@@ -1408,7 +1408,7 @@ post_article()                         /*用户 POST 文章 */
     }
     if(currentuser->signature>numofsig) /*签名档No.检查*/
         currentuser->signature=1;
-    anonyboard=seek_in_file("etc/anonymous",currboard); /* 是否为匿名版 */
+    anonyboard=anonymousboard(currboard); /* 是否为匿名版 */
     /* by zixia: 匿名版缺省不使用匿名 */
     if (!strcmp(currboard,"Announce")) 
 	Anony=1;

@@ -443,8 +443,10 @@ int m_newbrd()
         return -1;
     }
     getdata(7, 0, "是否加入匿名板 (Y/N)? [N]: ", ans, 4, DOECHO, NULL, YEA);
-    if (ans[0] == 'Y' || ans[0] == 'y')
+    if (ans[0] == 'Y' || ans[0] == 'y') {
+    	newboard.flag|=BOARD_ANNONY;
         addtofile("etc/anonymous", newboard.filename);
+    }
     getdata(8, 0, "是否不记文章数(Y/N)? [N]: ", ans, 4, DOECHO, NULL, YEA);
     if (ans[0] == 'Y' || ans[0] == 'y')
         newboard.flag|=BOARD_JUNK;
@@ -508,7 +510,7 @@ int m_editbrd()
         clear();
         return -1;
     }
-    noidboard = seek_in_file("etc/anonymous", bname);
+    noidboard = anonymousboard(bname);
     move(3, 0);
     memcpy(&newfh, &fh, sizeof(newfh));
     prints("讨论区名称:   %s\n", fh.filename);
@@ -651,12 +653,16 @@ enterbname:
                     }
                 }
             }
-			set_board(pos, &newfh);
-            if (noidboard == 1 && !seek_in_file("etc/anonymous", newfh.filename))
+            if (noidboard == 1 && !anonymousboard(newfh.filename)) {
+            	newfh.flag|=BOARD_ANNONY;
                 addtofile("etc/anonymous", newfh.filename);
+            }
             else
-                if (noidboard == 0)
+                if (noidboard == 0) {
+            		newfh.flag&=~BOARD_ANNONY;
                     del_from_file("etc/anonymous", newfh.filename);
+                }
+			set_board(pos, &newfh);
             sprintf(genbuf, "更改讨论区 %s 的资料 --> %s",
                     fh.filename, newfh.filename);
             report(genbuf);

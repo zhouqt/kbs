@@ -75,7 +75,7 @@ d_board()
         }
     }
             if( !bname[0] ) {
-	    if(seek_in_file("etc/anonymous",bname))
+	    if(anonymousboard(bname))
 	        del_from_file("etc/anonymous",bname);
 	    if(seek_in_file("0Announce/.Search",bname))
 	        del_from_file("0Announce/.Search",bname);
