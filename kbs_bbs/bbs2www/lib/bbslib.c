@@ -591,9 +591,7 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
     fprintf(fp, "发信站: %s (%s)\n", BBSNAME, wwwCTime(time(0)));
     fprintf(fp, "来  源: %s\n\n", ip);
     if (fp2) {
-        while (fgets(buf3, 256, fp2) != NULL) {
-            fprintf2(fp, buf3);
-        }
+        write_file2(fp, fp2);
         fclose(fp2);
     }
     fprintf(fp, "\n--\n");
@@ -797,7 +795,8 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
             fputs("\n", fp);
             while (!feof(fp2)) {
                 char *name;
-                long begin, save_size;
+                long begin;
+                unsigned int save_size;
                 char *ptr;
                 off_t size;
 
@@ -1298,6 +1297,7 @@ static int www_new_guest_entry(struct in_addr *fromhostn, int * idx)
 	hashkey = www_guest_calc_hashkey(fromhostn);
 	oldidx = WWW_GUEST_HASHTAB(hashkey);
 
+	num=0;
 /* 如果已经有相同的登陆 */
 if( oldidx != 0 && fromhostn->s_addr == wwwguest_shm->guest_entry[oldidx].fromip.s_addr ){
 
