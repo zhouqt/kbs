@@ -1142,7 +1142,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
     extern struct fileheader ReadPostHeader;
     int istest = 0, isstart = 0, isnext = 1;
     int previous;
-    char genbuf[STRLEN], title[STRLEN];
+    char genbuf[STRLEN], title[STRLEN],path[MAXPATH];
     int B;                      /* Leeward: 表示按的是 B(-1) 还是 b(+1) */
     int ori_top, ori_crs;       /* Leeward 98.10.03 add these 3 ori_...  and Xflag */
     char ori_file[STRLEN];
@@ -1150,6 +1150,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
 /*    int Xflag = (-1003 != passonly )? 0 : !(passonly = 0);奇怪啊KCN */
     int Xflag = (-1003 != passonly) ? 0 : (passonly = 0, 1);
 
+    path[0]=0;
     strncpy(ori_file, ptitle->filename, FILENAME_LEN);
     B = (passonly < 0 ? -1 : 1);        /* Leeward 98.04.16 */
     passonly *= B;
@@ -1278,7 +1279,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
             digest_post(locmem->crs_line, &SR_fptr, currdirect);
             break;
         case SR_BMIMPORT:
-            a_Import("0Announce", currboard, &SR_fptr, true, currdirect, locmem->crs_line);     /* Leeward 98.04.15 */
+            a_Import(path, currboard, &SR_fptr, true, currdirect, locmem->crs_line);     /* Leeward 98.04.15 */
             break;
         case SR_BMTMP:         /* Leeward 98.04.16 */
             if (-1 == B)

@@ -2667,7 +2667,7 @@ int Import_post(int ent, struct fileheader *fileinfo, char *direct)
     /*
      * Leeward 98.04.15 
      */
-    return (a_Import("0Announce", currboard, fileinfo, false, direct, ent));
+    return (a_Import(NULL, currboard, fileinfo, false, direct, ent));
 }
 
 int show_b_note()

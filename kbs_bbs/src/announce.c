@@ -34,7 +34,7 @@
 #define ADDMAIL         2
 #define ADDGOPHER       3
 
-#define ANNPATH_NUM	20
+#define ANNPATH_NUM	40
 int bmonly = 0;
 int a_fmode = 1;
 char *email_domain();
@@ -802,70 +802,67 @@ int a_Import(path, key, fileinfo, nomsg, direct, ent)
     int ch;
     MENU pm;
     char ans[STRLEN];
-	char Importname[STRLEN];
+    char importpath[MAXPATH];
+    int ret;
 
+    ret=0;
     modify_user_mode(CSIE_ANNOUNCE);
     if (ann_get_path(key, buf, sizeof(buf)) == 0)
-	{
+    {
 	    int i;
-		snprintf(Importname, sizeof(Importname), "%s/%s", path, buf);
-
-		/* Leeward: 97.12.17: 对版主的多个窗口同步丝路 
-		    KCN: 2003.1.17:应该用版主目录下的文件。而不是
-		    多个斑竹公用。
-		*/
-		i=a_select_path(true);
-		if (i==0)
-			return 1;
-                import_path_select=i;
-		i--;
-		bzero(&pm,sizeof(pm));
-		if (import_path[i][0] != '\0') {
-			/* 直接加入到精华区内，不用确认 Life */
-			pm.path = import_path[i];
-		}
-		else {
-			sprintf(buf, "将该文章放进 %s,确定吗?(Y/N) [N]: ", Importname);
-			if (!nomsg)
-				a_prompt(-1, buf, ans);
-			if (ans[0] == 'Y' || ans[0] == 'y' || nomsg) {
-				pm.path = Importname;
-			} else {
-				sprintf(buf, "你改变心意了?? ,请按任何键以结束 << ");
-				a_prompt(-1, buf, ans);
+	    if ((path==NULL)||(path[0]==0)) {
+			i=a_select_path(true);
+			if (i==0)
 				return 1;
+	              import_path_select=i;
+			i--;
+			bzero(&pm,sizeof(pm));
+			if (import_path[i][0] != '\0') {
+				pm.path = import_path[i];
+				strcpy(path,import_path[0]);
+			} else {
+			       strcpy(importpath,buf);
+				pm.path=importpath;
 			}
-		}
-		a_loadnames(&pm);
-		ann_get_postfilename(fname, fileinfo, &pm);
-		sprintf(bname, "%s/%s", pm.path, fname);
-		sprintf(buf, "%-38.38s %s ", fileinfo->title, currentuser->userid);
-		a_additem(&pm, buf, fname, NULL, 0);
-		if (a_savenames(&pm)==0) {
+	    } else
+	    	pm.path=path;
+	    if (!nomsg) {
+			sprintf(buf, "将该文章放进 %s,确定吗?(Y/N) [N]: ", pm.path);
+			a_prompt(-1, buf, ans);
+			if (ans[0] != 'Y' && ans[0] != 'y')
+			    return 2;
+	    }
+	    a_loadnames(&pm);
+	    ann_get_postfilename(fname, fileinfo, &pm);
+	    sprintf(bname, "%s/%s", pm.path, fname);
+	    sprintf(buf, "%-38.38s %s ", fileinfo->title, currentuser->userid);
+	    a_additem(&pm, buf, fname, NULL, 0);
+	    if (a_savenames(&pm)==0) {
 			sprintf(buf, "boards/%s/%s", key, fileinfo->filename);
 			f_cp(buf, bname, 0);
 
 			/* Leeward 98.04.15 */
 			sprintf(buf, "将 boards/%s/%s 收入目录 %s", key, fileinfo->filename, pm.path + 17);
 			a_report(buf);
-			sprintf(buf, " 收入精华区目录 %s, 请按 Enter 继续 << ", /*fileinfo->title, */ pm.path);
-			if (!nomsg)
-				a_prompt(-1, buf, ans);
+			if (!nomsg) {
+			    sprintf(buf, " 收入精华区目录 %s, 请按 Enter 继续 << ", /*fileinfo->title, */ pm.path);
+			    a_prompt(-1, buf, ans);
+			}
 
 			/* Leeward 98.04.15 add below FILE_IMPORTED */
 			change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_IMPORT_FLAG, 0);
 			bmlog(currentuser->userid, currboard, 12, 1);
-		} else {
+	    } else {
 			sprintf(buf, " 收入精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
 			if (!nomsg)
 				a_prompt(-1, buf, ans);
-                     a_loadnames(&pm);
-		}
-		for (ch = 0; ch < pm.num; ch++)
+			ret=3;
+	    }
+	    for (ch = 0; ch < pm.num; ch++)
 			free(pm.item[ch]);
-		return 1;
+	    return ret;
     }
-    return 0;
+    return 1;
 }
 
 int a_menusearch(path, key, level)
