@@ -274,7 +274,6 @@ e=1>\\4";
 				"'(?<!>|=|\")(?:http|https|ftp|rtsp|mms):(?://|\\\\)(&(?=amp;)|[A-Za-z0-9\./=\?%\-#_~`@\[\]\':;+!])+'i",//自动识别网址
                 //WWW开头网址判断
                 //Email地址判断
-				"'\[(?:html|code)\](.*)\[/\\1\]'iUs",
 				"'\[QUOTE\](.*)\[/QUOTE\]'iU",
 				"'\[fly\](.*)\[/fly\]'iU",
 				"'\[move\](.*)\[/move\]'iU",
@@ -294,13 +293,12 @@ e=1>\\4";
 				"<img align=\"absmiddle\" src=\"pic/url.gif\" border=\"0\"/><a target=\"_blank\" href=\"\\0\">\\0</a>",
                 //WWW替换结果
                 //Email替换结果
-				"<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"6\" class=\"".$abgcolor."\"><td><b>以下内容为程序代码:</b><br/>\\1</td></table>'i",
-				"<table style=\"width:100%\" cellpadding=\"5\" cellspacing=\"1\" class=\"TableBorder1\"><tr><td class=\"".$abgcolor."\" width=\"100%\">\\1</td></tr></table><br/>",
+				"<div style=\"padding:10px;\" class=\"TableBorder2 ".$abgcolor."\">\\1</div><br/>",
 				"<marquee width=\"90%\" behavior=\"alternate\" scrollamount=\"3\">\\1</marquee>",
 				"<marquee scrollamount=\"3\">\\1</marquee>",
                 "<font \\1=\"\\2\">\\3</font>",
                 "<div align=\"\\1\">\\2</div>",
-                "<table width=\"\\2\" ><tr><td style=\"filter:\\1(color=\\3, strength=\\4)\">\\5</td></tr></table>",
+                "<span width=\"\\2\" style=\"display:inline-block;filter:\\1(color=\\3, strength=\\4)\">\\5</span>",
 //              "<\\1>\\2</\\1>",
 				"<i>\\1</i>",
 				"<u>\\1</u>",
