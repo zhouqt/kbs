@@ -1,13 +1,6 @@
 #include "bbs.h"
 
 extern char BoardName[];
-typedef struct
-{
-    char    *match;
-    char    *replace;
-}
-logout;
-
 int
 countlogouts(filename)
 char filename[STRLEN];
@@ -160,71 +153,111 @@ char    buf[256];
     tmpnum,
     dble,
     count;
-    static  char
-    numlogins[10],
-    numposts[10],
-    rgtday[35],
-    lasttime[35],
-    thistime[35],
-    stay[10],
-    alltime[20]
-#ifdef _DETAIL_UEXP_
-    ,
-    tin[10],
-    exper[10],
-    ccperf[20],
-    perf[10],
-    exp[10],
-    ccexp[20]
-#endif
-    ;
 
-    char    buf2[STRLEN],
-    *ptr,
-    *ptr2;
+	enum {
+		ST_USERID,
+		ST_USERNAME,
+		ST_REALNAME,
+		ST_ADDRESS,
+		ST_EMAIL,
+		ST_REALEMAIL,
+		ST_IDENT,
+		ST_RGTDAY,
+		ST_NUMLOGINS,
+		ST_NUMPOSTS,
+		ST_LASTTIME,
+		ST_LASTHOST,
+		ST_THISTIME,
+		ST_BOARDNAME,
+		ST_STAY,
+		ST_ALLTIME,
+#ifdef _DETAIL_UEXP_
+		ST_TIN,
+		ST_EXP,
+		ST_CEXP,
+		ST_PERF,
+		ST_CCPERF,
+#endif		
+		ST_END
+	};
+    char numlogins[10],numposts[10],rgtday[35];
+	char lasttime[35],thistime[35],stay[10],
+    char alltime[20];
+    
+#ifdef _DETAIL_UEXP_
+    char tin[10],exper[10],ccperf[20],perf[10],exp[10],ccexp[20];
+#endif
+	char* stuffstr[ST_END];
+
+    char    buf2[STRLEN],*ptr,*ptr2;
     time_t  now;
 
-    static logout loglst[] =
+    static char* loglst[] =
         {
-            "userid",       currentuser->userid,
-            "username",     currentuser->username,
-            "realname",     currentuser->realname,
-            "address",      currentuser->address,
-            "email",        currentuser->email,
-            "realemail",    currentuser->realemail,
-            "ident",        currentuser->ident,
-            "rgtday",       rgtday,
-            "log",          numlogins,
-            "pst",          numposts,
-            "lastlogin",    lasttime,
-            "lasthost",     currentuser->lasthost,
-            "now",          thistime,
-            "bbsname",      BoardName,
-            "stay",         stay,
-            "alltime",      alltime,
+            "userid",
+            "username",
+            "realname",
+            "address", 
+            "email",   
+            "realemail",
+            "ident",
+            "rgtday",
+            "log",   
+            "pst",   
+            "lastlogin",
+            "lasthost",
+            "now",   
+            "bbsname",
+            "stay",    
+            "alltime",  
 #ifdef _DETAIL_UEXP_
-            "tin",          tin,
-            "exp",          exp,
-            "cexp",         ccexp,
-            "perf",         perf,
-            "cperf",        ccperf,
+            "tin",     
+            "exp",    
+            "cexp",   
+            "perf",    
+            "cperf",   
 #endif
             NULL,           NULL,
         };
+
+    stuffstr[ST_USERID]=currentuser->userid;
+	stuffstr[ST_USERNAME]=currentuser->username;
+	stuffstr[ST_REALNAME]=currentuser->realname;
+	stuffstr[ST_ADDRESS]=currentuser->address;
+	stuffstr[ST_EMAIL]=currentuser->email;
+	stuffstr[ST_REALEMAIL]=currentuser->realemail;
+	stuffstr[ST_IDENT]=currentuser->ident;
+	stuffstr[ST_RGTDAY]=rgtday;
+	stuffstr[ST_NUMLOGINS]=numlogins;
+	stuffstr[ST_NUMPOSTS]=numposts;
+	stuffstr[ST_LASTTIME]=lasttime;
+	stuffstr[ST_LASTHOST]=currentuser->lasthost;
+	stuffstr[ST_THISTIME]=thistime;
+	stuffstr[ST_BOARDNAME]=BoardName;
+	stuffstr[ST_STAY]=stay;
+	stuffstr[ST_ALLTIME]=alltime;
+#ifdef _DETAIL_UEXP_
+	stuffstr[ST_TIN]=tin;
+	stuffstr[ST_EXP]=exp;
+	stuffstr[ST_CEXP]=ccexp;
+	stuffstr[ST_PERF]=perf;
+	stuffstr[ST_CCPERF]=ccperf;
+#endif		
+
     now=time(0);
     /*---	modified by period	hide posts/logins	2000-11-02	---*/
 #ifdef _DETAIL_UEXP_
-    tmpnum=countexp(&currentuser);
+    tmpnum=countexp(currentuser);
     sprintf(exp,"%d",tmpnum);
     strcpy(ccexp,cexp(tmpnum));
-    tmpnum=countperf(&currentuser);
+    tmpnum=countperf(currentuser);
     sprintf(perf,"%d",tmpnum);
     strcpy(ccperf,cperf(tmpnum));
     sprintf(tin, "%d", post_in_tin(currentuser->userid));
 #endif
     sprintf(alltime,"%dÐ¡Ê±%d·ÖÖÓ",currentuser->stay/3600,(currentuser->stay/60)%60);
-    sprintf(rgtday, "%24.24s",ctime(&currentuser->firstlogin));
-    sprintf(lasttime, "%24.24s",ctime(&currentuser->lastlogin));
+    sprintf(rgtday, "%24.24s",ctime(currentuser->firstlogin));
+    sprintf(lasttime, "%24.24s",ctime(currentuser->lastlogin));
     sprintf(thistime,"%24.24s",ctime(&now));
     sprintf(stay,"%d",(time(0) - login_start_time) / 60);
     /*---	modified by period	hide posts/logins	2000-11-02	---*/
@@ -248,31 +281,35 @@ char    buf[256];
         {
             matchfrg = 0;
             *ptr = '\0';
-            prints("%s", ptr2);
-            ptr += 1;
-            for (i = 0; loglst[i].match != NULL; i++)
+            outs(ptr2);
+            ptr ++;
+            for (i = 0; i<ST_END; i++)
             {
-                if(strstr(ptr, loglst[i].match) == ptr)
+            	strlength=strlen(loglst[i]);
+                if(!strncmp(ptr, loglst[i],strlength)
                 {
-                    strlength=strlen(loglst[i].match);
+                	/*
                     ptr2 = ptr+strlength;
                     for(cnt=0; *(ptr2+cnt) == ' '; cnt++);
-                    sprintf(buf2,"%-*.*s", cnt?strlength+cnt:strlength+1, strlength+cnt,loglst[i].replace);
-                    prints("%s",buf2);
+                    sprintf(buf2,"%-*.*s", cnt?strlength+cnt:strlength+1, strlength+cnt,stuffstr[i]);
+                    outs(buf2);
                     ptr2 += (cnt?(cnt-1):cnt);
+                    */
+                    outs(stuffstr[i]);
+                	ptr2 = ptr+strlength;
                     matchfrg=1;
                     break;
                 }
             }
             if(!matchfrg)
             {
-                prints("$");
+                outc('$');
                 ptr2 = ptr;
             }
         }
         else
         {
-            prints("%s", ptr2);
+            outs(ptr2);
             frg = 0;
         }
     }

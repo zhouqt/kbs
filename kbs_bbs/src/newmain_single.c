@@ -245,7 +245,7 @@ u_exit()
 
     if( currentuser->flags[0] != enter_uflags ) {
         set_safe_record();
-        substitute_record(PASSFILE,&currentuser,sizeof(currentuser),usernum);
+        substitute_record(PASSFILE,currentuser,sizeof(currentuser),usernum);
     }
 
     clear_utmp(0);
@@ -690,7 +690,7 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
             /*prints( "\033[32m´íÎóµÄÊ¹ÓÃÕß´úºÅ...\033[m\n" );*/
             if (check_ban_IP(fromhost,buf)<=0)
 	    {
-	        memset( &currentuser, 0, sizeof( currentuser ) );
+	        memset( currentuser, 0, sizeof( currentuser ) );
 		new_register();
 		sethomepath(tmpstr, currentuser->userid);
 		sprintf( buf, "/bin/mv -f %s /home0/bbs/homeback/%s", tmpstr,currentuser->userid);
@@ -723,7 +723,7 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
             	
             getdata( 0, 0, "\033[1m[37mÇëÊäÈëÃÜÂë: [m", passbuf, 39, NOECHO, NULL ,YEA);
 
-	        if( !checkpasswd2(passbuf, &currentuser ))
+	        if( !checkpasswd2(passbuf, currentuser ))
     	    {
                 logattempt( currentuser->userid, fromhost );
                 prints( "[32mÃÜÂëÊäÈë´íÎó...[m\n" );
@@ -751,7 +751,7 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
                 /* passwd ok, covert to md5 --wwj 2001/5/7 */
                 if(currentuser->passwd[0]){
                     log("covert","for md5passwd");
-                    setpasswd(passbuf,&currentuser);
+                    setpasswd(passbuf,currentuser);
                 }
                 break;
             }
@@ -802,7 +802,7 @@ write_defnotepad()
 {
   currentuser->notedate=time(NULL);
   set_safe_record();
-  substitute_record(PASSFILE, &currentuser, sizeof(currentuser), usernum);
+  substitute_record(PASSFILE, currentuser, sizeof(currentuser), usernum);
   return;
 }
 
@@ -847,7 +847,7 @@ defnotepad()
         currentuser->noteline=0;     
      }
      set_safe_record();
-     substitute_record(PASSFILE, &currentuser, sizeof(currentuser), usernum);
+     substitute_record(PASSFILE, currentuser, sizeof(currentuser), usernum);
      return;
   }
 }  
@@ -1013,7 +1013,7 @@ user_login()
     move( t_lines - 2/*1*/, 0 ); /* Leeward: 98.09.24 Alter below message */
     clrtoeol();
     prints( "[1;36m¡î ÕâÊÇÄúµÚ [33m%d[36m ´ÎÉÏÕ¾£¬ÉÏ´ÎÄúÊÇ´Ó [33m%s[36m Á¬Íù±¾Õ¾¡£\n", currentuser->numlogins + 1, currentuser->lasthost );
-    prints( "¡î ÉÏ´ÎÁ¬ÏßÊ±¼äÎª [33m%s[m ", Ctime(&currentuser->lastlogin) );
+    prints( "¡î ÉÏ´ÎÁ¬ÏßÊ±¼äÎª [33m%s[m ", Ctime(currentuser->lastlogin) );
     igetkey();
     ansimore("0Announce/hotinfo",NA);
     move( t_lines - 1/*1*/, 0 ); /* Leeward: 98.09.24 Alter below message */
@@ -1041,7 +1041,7 @@ user_login()
     if ((int)currentuser->stay < 0) currentuser->stay = 1;
     currentuser->userlevel&=(~unLevel); /* »Ö¸´×ÔÉ±±êÖ¾ Luzi 98.10.10 */
 
-    substitute_record(PASSFILE, &currentuser, sizeof(currentuser), usernum);
+    substitute_record(PASSFILE, currentuser, sizeof(currentuser), usernum);
     if (currentuser->firstlogin == 0) {
         currentuser->firstlogin = login_start_time - 7 * 86400;
     }

@@ -419,7 +419,7 @@ int     msize;
 void
 check_register_info()
 {
-    struct userec *urec = &currentuser;
+    struct userec *urec = currentuser;
     char        *newregfile;
     int         perm;
     time_t      code;
@@ -486,7 +486,7 @@ check_register_info()
         currentuser->userlevel=~0;
         currentuser->userlevel&=~PERM_SUICIDE; /* Leeward 98.10.13 */
         currentuser->userlevel&=~PERM_DENYMAIL; /* Bigman 2000.9.22 */
-        substitute_record(PASSFILE,&currentuser,sizeof(struct userec),usernum);
+        substitute_record(PASSFILE,currentuser,sizeof(struct userec),usernum);
     }
     if(!(currentuser->userlevel&PERM_LOGINOK))
     {

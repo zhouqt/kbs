@@ -147,7 +147,7 @@ suicide()
     {
         clear();
         getdata(0,0,"ÇëÊäÈëÔ­ÃÜÂë(ÊäÈëÕıÈ·µÄ»°»áÁ¢¿Ì¶ÏÏß): ",buf,39,NOECHO,NULL,YEA);/*Haohmaru,98.10.12,check the passwds*/
-        if( *buf == '\0' || !checkpasswd2( buf,&currentuser )) {
+        if( *buf == '\0' || !checkpasswd2( buf,currentuser )) {
             prints("\n\nºÜ±§Ç¸, ÄúÊäÈëµÄÃÜÂë²»ÕıÈ·¡£\n");
             pressanykey();
             return;
@@ -161,14 +161,14 @@ suicide()
         XPERM[num] = '\0';
         currentuser->userlevel&=0x3F;/*Haohmaru,99.3.20.×ÔÉ±ÕßÖ»±£Áô»ù±¾È¨ÏŞ*/
         currentuser->userlevel^=PERM_SUICIDE;
-        substitute_record(PASSFILE,&currentuser,sizeof(currentuser),usernum);
+        substitute_record(PASSFILE,currentuser,sizeof(currentuser),usernum);
         /*Haohmaru.99.3.20.×ÔÉ±Í¨Öª*/
         now=time(0);
         sprintf(filename,"etc/%s.tmp",currentuser->userid);
         fn=fopen(filename,"w");
         fprintf(fn,"[1m%s[m ÒÑ¾­ÔÚ [1m%24.24s[m ×ÔÉ±ÁË£¬ÒÔÏÂÊÇËûµÄ×ÊÁÏ£¬Çë±£Áô...",currentuser->userid,ctime(&now));
         fprintf(fn,"\n\nÒÔÏÂÊÇ×ÔÉ±ÕßÔ­À´µÄÈ¨ÏŞ\n\033[1m\033[33m%s\n[0m", XPERM);
-        getuinfo(fn, &currentuser);
+        getuinfo(fn, currentuser);
         fprintf(fn,"\n                      [1m ÏµÍ³×Ô¶¯·¢ĞÅÏµÍ³Áô[m\n");
         fclose(fn);
         sprintf(buf,"%s µÄ×ÔÉ±Í¨Öª",currentuser->userid);
@@ -236,7 +236,7 @@ mail_info()
     fn=fopen(filename,"w");
     fprintf(fn,"[1m%s[m ÒÑ¾­ÔÚ [1m%24.24s[m ×ÔÉ±ÁË£¬ÒÔÏÂÊÇËû(Ëı)µÄ×ÊÁÏ£¬Çë±£Áô...",currentuser->userid
             ,ctime(&now));
-    getuinfo(fn, &currentuser);
+    getuinfo(fn, currentuser);
     fprintf(fn,"\n                      [1m ÏµÍ³×Ô¶¯·¢ĞÅÏµÍ³Áô[m\n");
     fclose(fn);
     mail_file(filename,"acmanager","×ÔÉ±Í¨Öª....");

@@ -796,7 +796,7 @@ int blank;
     {return;}
     if ( blank ) fputs("\n", fp);
     fputs("--\n", fp);
-    for (i=1; i<=(currentuser->signature-1)*MAXSIGLINES&&currentuser->signature!=1; i++)
+    for (i=1; i<=(currentuser->signature-1)*MAXSIGLINES&currentuser->signature!=1; i++)
     {
         if (!fgets(inbuf, sizeof(inbuf), sigfile)){
             fclose(sigfile);

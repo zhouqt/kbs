@@ -301,7 +301,7 @@ Here:
                     /*Haohmaru.4.1.自动发信通知并发文章于板上*/
                     sprintf(filename,"etc/%s.deny",currentuser->userid);
                     fn=fopen(filename,"w+");
-                    memcpy(&saveuser,&currentuser,sizeof(struct userec));
+                    memcpy(&saveuser,currentuser,sizeof(struct userec));
                     sprintf(buffer,"%s被取消在%s版的发文权限",uident,currboard);
 
                     if ((HAS_PERM(PERM_SYSOP)||HAS_PERM(PERM_OBOARDS)) && !chk_currBM1(currBM))
@@ -363,7 +363,7 @@ Here:
                     postfile(filename,currboard,buffer,2);
                     /*	unlink(filename); */
 
-                    memcpy(&currentuser,&saveuser,sizeof(struct userec));
+                    memcpy(currentuser,&saveuser,sizeof(struct userec));
 
 
                     sprintf(buffer,"%s 被 %s 封禁本板POST权",uident,currentuser->userid);
