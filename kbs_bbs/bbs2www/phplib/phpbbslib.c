@@ -7041,11 +7041,11 @@ static PHP_FUNCTION(bbs_x_search)
                 j+=3;
             }
             if(out[i]==1&&!inc) {
-                sprintf(pp, "<font color=\"#BB0808\">");
-                pp += 22;
+                sprintf(pp, "<font class=\"BB0808\">");
+                pp += 21;
                 inc = 1;
             }
-            else if(inc) {
+            else if(out[i]!=1&&inc) {
                 sprintf(pp, "</font>");
                 pp += 7;
                 inc = 0;
