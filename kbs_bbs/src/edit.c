@@ -717,7 +717,7 @@ int saveheader ;
     int         aborted = 0;
     char buf[256];
     int temp;
-    extern char* quote_title,*quote_board;
+    extern char quote_title[120],quote_board[120];
     extern int Anony;
 
 #ifndef VEDITOR
