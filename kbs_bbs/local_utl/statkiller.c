@@ -52,7 +52,8 @@ int main()
     chdir(BBSHOME);
     now = time(0);
     statlib = (struct statf*) malloc(MAX*sizeof(struct statf));
-    fp = fopen("service/.KILLERRESULT", "rb");
+    if ((fp = fopen("service/.KILLERRESULT", "rb")) == NULL)
+        return -1;
     while(!feof(fp)) {
         fread(&r, 1, sizeof(struct killer_record), fp);
         bt=0; gt=0;
@@ -101,7 +102,7 @@ int main()
             statlib[j].score+=rr;
         }
     }
-
+    fclose(fp);
     for(i=0;i<statt;i++)
         for(j=i+1;j<statt;j++)
             if(statlib[i].btime==0||statlib[i].btime>0&&statlib[j].btime>0&&
@@ -169,7 +170,8 @@ int main()
 
 
     statt = 0;
-    fp = fopen("service/.KILLERRESULT", "rb");
+    if ((fp = fopen("service/.KILLERRESULT", "rb"))==NULL)
+        return -1;
     while(!feof(fp)) {
         fread(&r, 1, sizeof(struct killer_record), fp);
         if((int)(r.t/86400)!=(int)(now/86400)) continue;
@@ -219,6 +221,7 @@ int main()
             statlib[j].score+=rr;
         }
     }
+    fclose(fp);
 
     for(i=0;i<statt;i++)
         for(j=i+1;j<statt;j++)
