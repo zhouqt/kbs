@@ -742,7 +742,7 @@ function sysvote_user_can_vote($link,$vote,$currentuser)
 	$i = 0 ;
 	while($rows=mysql_fetch_array($result))
 	{
-		if(strtolower($rows[userid])==strtolower($currentuser[userid]))
+		if(strtolower($rows[userid])==strtolower($currentuser[userid]) && $currentuser[userid]!="guest")
 			return -2;//¸ÃIDÒÑÍ¶Æ±	
 		$i ++;
 	}
