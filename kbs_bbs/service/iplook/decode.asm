@@ -190,7 +190,7 @@ loc_40215E:                             ; CODE XREF: sub_401F2C+207j
                 add     [ebp+pindex1], dword 7
                 mov     ecx, [ebp+index1]
                 cmp     ecx, [ebp+index2]
-                jle     loc_402038
+                jle     near loc_402038
 loc_4021BD:                             ; CODE XREF: sub_401F2C+106j
 
 		push   dword 0
