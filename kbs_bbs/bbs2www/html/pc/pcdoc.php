@@ -278,7 +278,7 @@
 				$query.=" ORDER BY ";
 				
 		}	
-		$query .= " `type` ASC ;";
+		$query .= " `type` DESC ;";
 		
 		$result = mysql_query($query,$link);
 		$i = 0;
@@ -559,6 +559,24 @@ Blog名
 	</td>
 </tr>
 <tr>
+	<td class="t3">启用站外信箱</td>
+	<td class="t5">&nbsp;
+	<input type="text" maxlength="200" name="pcuseremail" value="<?php echo $pc["EMAIL"]; ?>" class="f1">
+	(留空表示使用本站信箱)
+	</td>
+</tr>
+<tr>
+	<td class="t3">收藏夹模式</td>
+	<td class="t5">&nbsp;
+	<input type="radio" name="pcfavmode" value="0" <?php if($pc["FAVMODE"]==0) echo "checked"; ?> >
+	私有
+	<input type="radio" name="pcfavmode" value="1" <?php if($pc["FAVMODE"]==1) echo "checked"; ?> >
+	对好友开放
+	<input type="radio" name="pcfavmode" value="2" <?php if($pc["FAVMODE"]==2) echo "checked"; ?> >
+	完全开放
+	</td>
+</tr>
+<tr>
 	<td class="t3">Logo图片</td>
 	<td class="t5">&nbsp;
 	<input type="text" maxlength="255" name="pclogo" value="<?php echo htmlspecialchars($pc["LOGO"]); ?>" class="f1">
@@ -633,30 +651,22 @@ Blog名
 		html_error_quit("对不起，您要查看的Blog不存在");
 		exit();
 	}
-		
-	$isfriend = pc_is_friend($currentuser["userid"],$pc["USER"]);
 	if(pc_is_admin($currentuser,$pc) && $loginok == 1)
 	{
-		$sec = array("公开区","好友区","私人区","收藏区","删除区","设定好友","Blog管理","参数设定");
-		$pur = 3;
 		if($_GET["act"] == "addfriend")
 			$f_err = add_friend($pc);
 		if($_GET["act"] == "delfriend")
 			del_friend($pc);
-	}
-	elseif($isfriend || pc_is_manager($currentuser) )
-	{
-		$sec = array("公开区","好友区");
-		$pur = 1;
-	}
-	else
-	{
-		$sec = array("公开区");
-		$pur = 0;
-	}
+	}	
+	
+	$isfriend = pc_is_friend($currentuser["userid"],$pc["USER"]);
+	$userPermission = pc_get_user_permission($currentuser,$pc);
+	$sec = $userPermission["sec"];
+	$pur = $userPermission["pur"];
+	$tags = $userPermission["tags"];
+		
 	$secnum = count($sec);
-	if($tag < 0 || $tag > $secnum )
-		$tag = 0;
+	if(!$tags[$tag]) $tag = 0;
 	
 	/*visit count start*/
 	if($pur != 3)//Blog所有者的访问不进行计数  windinsn dec 10,2003
@@ -735,12 +745,13 @@ Blog名
 	<table cellspacing="0" cellpadding="3" border="0" class='t21'>
 	<tr>
 <?php
-	for($i=0 ; $i < $secnum ;$i ++)
+	while(list($secTag,$secTagValue) = each($tags))
 	{
-		if($i == $tag)
-			echo "<td width='70' class='t23'>".$sec[$i]."</td>\n";
+		if(!$secTagValue) continue;
+		if($secTag == $tag)
+			echo "<td width='70' class='t23'>".$sec[$tag]."</td>\n";
 		else
-			echo "<td width='70' class='t22'><a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=".$i."\" class='b22'>".$sec[$i]."</a></td>\n";
+			echo "<td width='70' class='t22'><a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=".$secTag."\" class='b22'>".$sec[$secTag]."</a></td>\n";
 	}
 ?>	
 	</tr>
@@ -795,7 +806,14 @@ Blog名
 	<td align="center" class="tt3" valign="middle" height="25">
 	[<a href="#top" class=f1>返回顶部</a>]
 	[<a href='javascript:location=location' class=f1>刷新</a>]
-	[<?php echo "<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\" class=f1>给".$pc["USER"]."写信</a>"; ?>]
+	[<?php 
+		echo "<a href=\"";
+		if($pc["EMAIL"])
+			echo "mailto:".$pc["EMAIL"];
+		else
+			echo "/bbspstmail.php?userid=".$pc["USER"]."&title=问候";
+		echo "\" class=f1>给".$pc["USER"]."写信</a>"; 
+	?>]
 	[<a href="index.php?id=<?php echo $pc["USER"]; ?>" class=f1><?php echo $pc["NAME"]; ?>首页</a>]
 	[<a href="pc.php" class=f1>Blog首页</a>]
 	[<a href="

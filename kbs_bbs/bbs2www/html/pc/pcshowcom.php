@@ -12,17 +12,18 @@
 	{
 ?>
 <center>
-<form name="postform" action="pccom.php?act=add&nid=<?php echo $nid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入评论主题!');return false;}">
 <table cellspacing="0" cellpadding="5" width="500" border="0" class="t1">
 <tr>
 	<td class="t5"><strong>发表评论 </strong>
 	<?php if($alert){ ?>
 	<font class=f4>
-	注意：仅有本站登录用户才能发表评论[<a href="/" target="_top">点击登录</a>]。
+	注意：仅有本站登录用户才能发表评论。<br />
+	<?php bbs_login_form(); ?>
 	</font>
 	<?php } ?>
 	</td>
 </tr>
+<form name="postform" action="pccom.php?act=add&nid=<?php echo $nid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入评论主题!');return false;}">
 <tr>
 	<td class="t8">
 	主题
@@ -77,22 +78,18 @@
 	}
 	if($node[access] > 0)
 	{
-		//判断是否为好友或所有者	
-		if ($loginok != 1 || !strcmp($currentuser["userid"],"guest"))
-		{
-			html_error_quit("对不起，guest 不能查看本条记录!");
-			exit();
-		}
-		
 		$pc = pc_load_infor($link,"",$node[uid]);
-		
-		$isadmin = (pc_is_admin($currentuser,$pc) && $loginok == 1)?TRUE:FALSE;
-		if( pc_is_manager($currentuser) || pc_is_friend($currentuser["userid"],$pc["USER"]))
-			$isfriend = TRUE;
-		else
-			$isfriend = FALSE;
-		
-		if( ( $node[access] == 1 && !$isadmin && !$isfriend ) || ( $node[access] > 1 && !$isadmin ) )
+		if(!$pc)   
+                {   
+                	html_error_quit("对不起，您要查看的Blog不存在");   
+                	exit();   
+                }
+                
+                $userPermission = pc_get_user_permission($currentuser,$pc);
+		$sec = $userPermission["sec"];
+		$pur = $userPermission["pur"];
+		$tags = $userPermission["tags"];
+		if(!$tags[$node[access]])
 		{
 			html_error_quit("对不起，您不能查看本条记录!");
 			exit();

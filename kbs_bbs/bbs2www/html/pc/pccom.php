@@ -37,28 +37,19 @@
 		if($rows[access] != 0)
 		{
 			$pc = pc_load_infor($link,"",$rows[uid]);
-			
-			 if(!$pc)   
-                         {   
-                                 html_error_quit("对不起，您要查看的Blog不存在");   
-                                 exit();   
-                         } 
-
-			if(strtolower($currentuser["userid"]) == strtolower($pc["USER"]))
-				$pur = 2;
-			elseif(pc_is_friend($currentuser["userid"],$pc["USER"]) || pc_is_manager($currentuser))
-				$pur = 1;
-			else
-				$pur = 0;
-			
-			if( $rows[access] == 1 && $pur < 1)
+			if(!$pc)   
+	                {   
+	                	html_error_quit("对不起，您要查看的Blog不存在");   
+	                	exit();   
+	                }
+	                
+	                $userPermission = pc_get_user_permission($currentuser,$pc);
+			$sec = $userPermission["sec"];
+			$pur = $userPermission["pur"];
+			$tags = $userPermission["tags"];
+			if(!$tags[$rows[access]])
 			{
-				html_error_quit("对不起，只有好友列表中的用户才能查看好友区文章!");
-				exit();
-			}
-			if( $rows[access] > 1 && $pur < 2 )
-			{
-				html_error_quit("对不起，Blog所有者才能查看该文章!");
+				html_error_quit("对不起，您不能查看本条记录!");
 				exit();
 			}
 		}

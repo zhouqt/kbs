@@ -355,7 +355,9 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 			"LINKS" => pc_get_links(stripslashes($rows[links])),
 			"EDITOR" => $rows[htmleditor],
 			"INDEX" => array("nodeNum"=> $rows[indexnodes],"nodeChars" => $rows[indexnodechars]),
-			"CSSFILE" => htmlspecialchars(stripslashes($rows[cssfile]))
+			"CSSFILE" => htmlspecialchars(stripslashes($rows[cssfile])),
+			"EMAIL" => htmlspecialchars(stripslashes($rows[useremail])),
+			"FAVMODE" => (int)($rows[favmode])
 			);
 	if($pc["CSSFILE"])
 		$cssFile = $pc["CSSFILE"];
@@ -536,4 +538,41 @@ function display_blog_catalog()
 <?php	
 }
 
+function pc_get_user_permission($currentuser,$pc)
+{
+	global $loginok;
+	if(pc_is_admin($currentuser,$pc) && $loginok == 1)
+	{
+		$sec = array("公开区","好友区","私人区","收藏区","删除区","设定好友","Blog管理","参数设定");
+		$pur = 3;
+		$tags = array(1,1,1,1,1,1,1,1);
+	}
+	elseif(pc_is_friend($currentuser["userid"],$pc["USER"]) || pc_is_manager($currentuser))
+	{
+		$sec = array("公开区","好友区");
+		$pur = 1;
+		$tags = array(1,1,0,0,0,0,0,0);
+		if($pc["FAVMODE"] == 1 || $pc["FAVMODE"] == 2)//收藏夹模式
+		{
+			$sec[3] = "收藏区";
+			$tags[3] = 1;
+		}
+	}
+	else
+	{
+		$sec = array("公开区");
+		$pur = 0;
+		$tags = array(1,0,0,0,0,0,0,0);
+		if($pc["FAVMODE"] == 2)//收藏夹模式
+		{
+			$sec[3] = "收藏区";
+			$tags[3] = 1;
+		}
+	}	
+	return array(
+		"tags" => $tags ,
+		"pur" => $pur , 
+		"sec" => $sec  
+		);
+}
 ?>

@@ -16,16 +16,8 @@
 	<td class="t5"><strong>发表评论 </strong>
 	<?php if($alert){ ?>
 	<font class=f4>
-	注意：仅有本站登录用户才能发表评论<form name="loginform" action="/bbslogin.php?mainurl=<?php
-echo urlencode($_SERVER["REQUEST_URI"]); ?>" method="post">
-<TABLE WIDTH="60%" BORDER="0" CELLSPACING="2" CELLPADDING="3" ALIGN="CENTER"><TR valign="middle"><TD ALIGN="RIGHT"><B>
-<FONT SIZE="2" color="#333333">用户名:</FONT></B></TD><TD><INPUT TYPE=text STYLE="width:100px;height:20px;font-size: 12px;color: #555555;border-color: #ddaa66;border-style: solid;border-width: 1px;background-color: #feffff;" LENGTH="10" onMouseOver="this.focus()" onFocus="this.select()" name="id" >
-</TD></TR><TR valign="middle"><TD HEIGHT="30" ALIGN="RIGHT"><B><FONT SIZE="2" color="#333333">密 码:</FONT></B></TD><TD HEIGHT="30"><INPUT TYPE=password  STYLE="width:100px;height:20px;font-size: 12px;color: #555555;border-color: #ddaa66;border-style: solid;border-width: 1px;background-color: #feffff;" LENGTH="10" name="passwd" maxlength="39"></TD></TR></TABLE>
-<TABLE WIDTH="60%" BORDER="0" ALIGN="CENTER" CELLSPACING="2" CELLPADDING="2"><TR><TD>
-<input type="submit" value="登　录" style="width:60px;height:24px;font-size: 12px;color: #555555;border-color: #ddaa66;border-style: solid;border-width: 1px;background-color: #fffff8;" name="submit1"></TD><TD>
-<input type="button" name="guest" value="注  册" style="width:60px;height:24px;font-size: 12px;color: #555555;border-color: #ddaa66;border-style: solid;border-width: 1px;background-color: #fffff8;" onclick="location.href='https://www.smth.org/bbsreg0.html'")>
-</TD></TR></TABLE>
-</form>
+	注意：仅有本站登录用户才能发表评论<br />
+	<?php bbs_login_form(); ?>
 	</font>
 	<?php } ?>
 	</td>
@@ -100,7 +92,12 @@ echo urlencode($_SERVER["REQUEST_URI"]); ?>" method="post">
 			echo "<a href=\"pcmanage.php?act=edit&nid=".$nid."\">修改</a>\n";
 		if($trackback)
 			echo 	"<a href=\"javascript:openScript('pctb.php?nid=".$nid."&uid=".$pc["UID"]."&subject=".base64_encode($subject)."',460 , 480)\">引用</a>\n";
-		echo 	"<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\">写信问候</a>\n".
+		echo 	"<a href=\"";
+		if($pc["EMAIL"])
+			echo "mailto:".$pc["EMAIL"];
+		else
+			echo  "/bbspstmail.php?userid=".$pc["USER"]."&title=问候";
+		echo "\">写信问候</a>\n".
 			//"<a href=\"pccon.php?id=".$id."&nid=".$nid."\">转寄</a>\n".
 			//"<a href=\"pccon.php?id=".$id."&nid=".$nid."\">转载</a>\n".
 			"<a href=\"pcdoc.php?userid=".$pc["USER"]."&pid=".$pid."&tag=".$tag."&order=".$order."&tid=".$tid."\">返回目录</a>\n".
@@ -185,12 +182,10 @@ echo urlencode($_SERVER["REQUEST_URI"]); ?>" method="post">
 	
 	pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
 	
-	if(pc_is_admin($currentuser,$pc) && $loginok == 1)
-		$pur = 3;
-	elseif(pc_is_friend($currentuser["userid"],$pc["USER"]) || pc_is_manager($currentuser))
-		$pur = 1;
-	else
-		$pur = 0;
+	$userPermission = pc_get_user_permission($currentuser,$pc);
+	$pur = $userPermission["pur"];
+	$tags = $userPermission["tags"];
+		
 		
 	$query = "SELECT * FROM nodes WHERE `nid` = '".$nid."' AND `uid` = '".$id."' LIMIT 0 , 1 ;";
 	$result = mysql_query($query,$link);
@@ -199,17 +194,18 @@ echo urlencode($_SERVER["REQUEST_URI"]); ?>" method="post">
 	
 	if(!$rows)
 	{
-		html_error_quit("对不起，您要查看的个人文章不存在");
+		html_error_quit("对不起，您要查看的文章不存在");
 		exit();
 	}
-	if( $rows[access] == 1 && $pur < 1)
+	if($rows[type]!= 0)
 	{
-		html_error_quit("对不起，只有好友列表中的用户才能查看好友区文章!");
+		html_error_quit("对不起，您要查看的文章不存在");
 		exit();
 	}
-	if( $rows[access] > 1 && $pur < 2 )
+	
+	if(!$tags[$rows[access]])
 	{
-		html_error_quit("对不起，Blog所有者才能查看该文章!");
+		html_error_quit("对不起，您无权查看该文章!");
 		exit();
 	}
 	$nid = $rows[nid];
@@ -336,8 +332,14 @@ echo urlencode($_SERVER["REQUEST_URI"]); ?>" method="post">
 	<td align="center" class="tt3" valign="middle" height="25">
 	[<a href="#top" class=f1>返回顶部</a>]
 	[<a href='javascript:location=location' class=f1>刷新</a>]
-	[<?php echo "<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\" class=f1>给".$pc["USER"]."写信</a>"; ?>]
-	[<a href="index.php?id=<?php echo $pc["USER"]; ?>" class=f1><?php echo $pc["NAME"]; ?>首页</a>]
+	[<?php 
+		echo "<a href=\"";
+		if($pc["EMAIL"])
+			echo "mailto:".$pc["EMAIL"];
+		else
+			echo "/bbspstmail.php?userid=".$pc["USER"]."&title=问候";
+		echo "\" class=f1>给".$pc["USER"]."写信</a>"; 
+	?>][<a href="index.php?id=<?php echo $pc["USER"]; ?>" class=f1><?php echo $pc["NAME"]; ?>首页</a>]
 	[<a href="pc.php" class=f1>Blog首页</a>]
 	[<a href="
 <?php
