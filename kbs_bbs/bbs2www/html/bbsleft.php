@@ -6,7 +6,7 @@
 	
 	$img_subdir = "/images/newstyle/";
 	$blog_index = defined("SITE_SMTH") ? "index.html" : "pcmain.php";
-        
+
 	function display_board_list($section_names,$section_nums)
 	{
 ?>
@@ -74,7 +74,7 @@
 		}
 ?>
 </div>
-<?php     
+<?php 
 	}
 	
 	function display_mail_menu($userid)
@@ -149,15 +149,15 @@
 <script src="bbsleft.js"></script>
 <script language="javascript">
 function bbs_auto_reload() {
-    top.f4.location.reload();
+	top.f4.location.reload();
 <?php
-    if($currentuser["userid"]!="guest"){
+	if($currentuser["userid"]!="guest"){
 ?>
-    top.fmsg.location.reload();
+	top.fmsg.location.reload();
 <?php
-    }
+	}
 ?>
-    setTimeout('bbs_auto_reload()',540000);
+	setTimeout('bbs_auto_reload()',540000);
 }
 setTimeout('bbs_auto_reload()',540000);
 </script>
@@ -285,7 +285,7 @@ setTimeout('bbs_auto_reload()',540000);
 	><img src="<?php echo $img_subdir; ?>m10.gif" class="sfolder">谈天说地</a><br/>
 	<div class="pp" id="divchat">
 <?php
-    if (!defined("SITE_SMTH")) { // Smth不提供在线用户列表 add by windinsn, May 5,2004
+	if (!defined("SITE_SMTH")) { // Smth不提供在线用户列表 add by windinsn, May 5,2004
 ?>
 		<div class="mi"><a href="bbsuser.php">在线用户</a></div>
 <?php
@@ -341,7 +341,7 @@ setTimeout('bbs_auto_reload()',540000);
 ?>
 
 <?php
-    if (defined("SITE_SMTH")) {
+	if (defined("SITE_SMTH")) {
 ?>
 	<a href='javascript:changemn("exp");' target="_self"><img id="imgexp" src="/images/close.gif" class="pm" alt="+"
 	><img src="<?php echo $img_subdir; ?>m8.gif" class="sfolder">水木特刊Web版</a><br/>
@@ -362,11 +362,11 @@ setTimeout('bbs_auto_reload()',540000);
 	<div class="pp" id="divser">
 		<div class="mi"><a href="/games/index.html">休闲娱乐</a></div>
 <?php
-    if (defined("SERVICE_QUIZ")) {
+	if (defined("SERVICE_QUIZ")) {
 ?>
 		<div class="mi"><a href="/games/quiztop.php">开心辞典</a></div>
 <?php
-    }
+	}
 ?>
 		<div class="lmi"><a href="/data/fterm-2004memory.rar" target="_blank">Fterm下载</a></div>
 	</div>
@@ -374,11 +374,11 @@ setTimeout('bbs_auto_reload()',540000);
 	<img src="/images/open.gif" class="pm" alt="-"
 	><a href="telnet:smth.org"><img src="<?php echo $img_subdir; ?>m6.gif" class="sfolder">Telnet登录</a><br/>
 <?php
-    if (defined("SITE_SMTH")) {
-        if ($currentuser["userlevel"]&BBS_PERM_SYSOP) {
+	if (defined("SITE_SMTH")) {
+		if ($currentuser["userlevel"]&BBS_PERM_SYSOP) {
 			include_once ('bbsleftmenu.php');
 		}
-    }
+	}
 	if($currentuser["userid"]!="guest"){
 ?>
 	<img src="/images/open.gif" class="pm" alt="-"
