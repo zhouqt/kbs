@@ -190,7 +190,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 			<td class=t11>
 			<a href="pcsearch2.php" class="f1">BlogËÑË÷</a>
 			</td><td class=t11>
-			<a href="pc.php" class="f1">BlogÊ×Ò³</a>
+			<a href="pcmain.php" class="f1">BlogÊ×Ò³</a>
 			</td><td class=t11>
 			<a href="/<?php echo ($loginok==1 && strcmp($currentuser["userid"],"guest"))?"frames.html":"guest-frames.html"; ?>" class="f1"><?php echo $pcconfig["BBSNAME"]; ?></a>
 			</td>

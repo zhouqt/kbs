@@ -315,6 +315,33 @@ function  pcmain_blog_most_view()
 <?php		
 }
 
+function pcmain_cache_header()
+{
+	global $cachemode;
+	$scope = "public";
+	$modifytime=time();
+	$expiretime=300;
+	session_cache_limiter($scope);
+	$cachemode=$scope;
+	@$oldmodified=$_SERVER["HTTP_IF_MODIFIED_SINCE"];
+	if ($oldmodified!="") {
+                $oldtime=strtotime($oldmodified);
+	} else $oldtime=0;
+	if ($modifytime - $oldtime < 3600) {
+		header("HTTP/1.1 304 Not Modified");
+	        header("Cache-Control: max-age=" . "$expiretime");
+		return TRUE;
+	}
+	header("Last-Modified: " . gmdate("D, d M Y H:i:s", $modifytime) . "GMT");
+	header("Expires: " . gmdate("D, d M Y H:i:s", $modifytime+$expiretime) . "GMT");
+	header("Cache-Control: max-age=" . "$expiretime");
+	return FALSE;
+}
+
+//一个小时更新一次
+//if(pcmain_cache_header())
+//	return;
+
 pc_html_init("gb2312" , $pcconfig["BBSNAME"]."Blog");
 ?>
 <table cellspacing=0 cellpadding=5 width=100% border=0 class=f1>
