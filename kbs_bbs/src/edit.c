@@ -38,8 +38,8 @@ static struct textline *mark_begin, *mark_end;
 static int mark_on;
 
 inline static void CLEAR_MARK() {
-	mark_on = 0;
-	mark_begin = mark_end = NULL;
+    mark_on = 0;
+    mark_begin = mark_end = NULL;
 }
 
 void top_show(char *prompt)
@@ -95,10 +95,10 @@ void msgline()
         display_buffer();
         showansi = 1;
     }
-	if (DEFINE(currentuser,DEF_HIGHCOLOR))
-    	strcpy(buf, "[1;33m[44m");
+    if (DEFINE(currentuser,DEF_HIGHCOLOR))
+        strcpy(buf, "[1;33m[44m");
     else
-    	strcpy(buf, "[33m[44m");
+        strcpy(buf, "[33m[44m");
     if (chkmail())
         strcat(buf, "¡¾[32mÐÅ[33m¡¿");
     else
@@ -415,7 +415,7 @@ void split(line, pos)
     if (moveln>MAX_EDIT_LINE) {
         return;
     }
-		
+        
     if (pos > line->len) {
         free(p);
         return;
@@ -695,7 +695,7 @@ int valid_article(pmt, abort)
             y += 3;
         }
         if (total!=lines) 
-        	lines--; /*Èç¹ûÊÇreÎÄºÍÇ©Ãûµµ£¬Ó¦¸Ã¼õµôÒ»ÐÐ*/
+            lines--; /*Èç¹ûÊÇreÎÄºÍÇ©Ãûµµ£¬Ó¦¸Ã¼õµôÒ»ÐÐ*/
         temp = 0;
         if (len < 8 || lines==0 || (lines<=2 && (len/lines) < 16)) {
             move(y, 0);
@@ -705,12 +705,12 @@ int valid_article(pmt, abort)
             temp = 1;
         }
 
-		// local_article Ã»ÓÐ³õÊ¼»¯ by zixia
-		local_article = LOCAL_ARTICLE_DEFAULT; // È±Ê¡µÄ×ªÐÅÉèÖÃ
+        // local_article Ã»ÓÐ³õÊ¼»¯ by zixia
+        local_article = LOCAL_ARTICLE_DEFAULT; // È±Ê¡µÄ×ªÐÅÉèÖÃ
 
         if (temp){
-        	local_article = 1; /* ¹àË®µÄÎÄÕÂ¾Í²»Òª×ª³öÈ¥ÁË°É :P by flyriver */
-		}
+            local_article = 1; /* ¹àË®µÄÎÄÕÂ¾Í²»Òª×ª³öÈ¥ÁË°É :P by flyriver */
+        }
 
         if (local_article == 1)
             strcpy(pmt, "(L)Õ¾ÄÚ, (S)×ªÐÅ, (F)×Ô¶¯»»ÐÐ·¢±í, (A)È¡Ïû, (T)¸ü¸Ä±êÌâ or (E)ÔÙ±à¼­? [L]: ");
@@ -765,7 +765,7 @@ static int write_file(char* filename,int saveheader,long* effsize)
          */
         if (uinfo.mode == POSTING) {
             /*strcpy(p_buf,"(S)·¢±í, (F)×Ô¶¯»»ÐÐ·¢±í, (A)È¡Ïû, (T)¸ü¸Ä±êÌâ or (E)ÔÙ±à¼­? [S]: "); */
-#ifndef NINE_BUILD	    
+#ifndef NINE_BUILD        
             move(4, 0);         /* Haohmaru 99.07.17 */
             prints
                 ("Çë×¢Òâ£º±¾Õ¾Õ¾¹æ¹æ¶¨£ºÍ¬ÑùÄÚÈÝµÄÎÄÕÂÑÏ½ûÔÚ 5 (º¬)¸öÒÔÉÏÌÖÂÛÇøÄÚÖØ¸´ÕÅÌù¡£\n\nÎ¥·´Õß³ýËùÌùÎÄÕÂ»á±»É¾³ýÖ®Íâ£¬»¹½«±»°þ¶á¼ÌÐø·¢±íÎÄÕÂµÄÈ¨Á¦¡£ÏêÏ¸¹æ¶¨Çë²ÎÕÕ£º\n\n    Announce °æµÄÕ¾¹æ£º¡°¹ØÓÚ×ªÌùºÍÕÅÌùÎÄÕÂµÄ¹æ¶¨¡±¡£\n\nÇë´ó¼Ò¹²Í¬Î¬»¤ BBS µÄ»·¾³£¬½ÚÊ¡ÏµÍ³×ÊÔ´¡£Ð»Ð»ºÏ×÷¡£\n\n");
@@ -798,16 +798,16 @@ static int write_file(char* filename,int saveheader,long* effsize)
 
 #ifdef FILTER
     if (((abort[0] != 'a')&&(abort[0] != 'e'))&&
-    	(uinfo.mode==EDIT)) {
-	while (p != NULL) {
-	    if(check_badword_str(p->data, strlen(p->data))) {
-		    abort[0] = 'e';
-		    filter = 1;
-		    break;
-	    }
-	    p = p->next;
-	}
-	p = firstline;
+        (uinfo.mode==EDIT)) {
+    while (p != NULL) {
+        if(check_badword_str(p->data, strlen(p->data))) {
+            abort[0] = 'e';
+            filter = 1;
+            break;
+        }
+        p = p->next;
+    }
+    p = firstline;
     }
 #endif
     if (abort[0] == 'a' || abort[0] == 'A') {
@@ -828,12 +828,12 @@ static int write_file(char* filename,int saveheader,long* effsize)
         aborted = -1;
     } else if (abort[0] == 'e' || abort[0] == 'E') {
 #ifdef FILTER
-	    if (filter) {
-		    clear();
-		    move (3, 0);
-		    prints ("\n\n            ºÜ±§Ç¸£¬±¾ÎÄ¿ÉÄÜº¬ÓÐ²»ÊÊÒËÄÚÈÝ£¬ÇëÖØÐÂ±à¼­...\n");
-		    pressreturn();
-	    }
+        if (filter) {
+            clear();
+            move (3, 0);
+            prints ("\n\n            ºÜ±§Ç¸£¬±¾ÎÄ¿ÉÄÜº¬ÓÐ²»ÊÊÒËÄÚÈÝ£¬ÇëÖØÐÂ±à¼­...\n");
+            pressreturn();
+        }
 #endif
         domsg();
         return KEEP_EDITING;
@@ -844,12 +844,12 @@ static int write_file(char* filename,int saveheader,long* effsize)
         move(1, 0);
         prints("¾É±êÌâ: %s", save_title);
         getdata(2, 0, "ÐÂ±êÌâ: ", buf, STRLEN, DOECHO, NULL, 0);
-	if (buf[0]!=0) {
+    if (buf[0]!=0) {
             if (strcmp(save_title, buf))
                 local_article = 0;
             strncpy(save_title, buf, STRLEN);
             strncpy(quote_title, buf, STRLEN);
-	}
+    }
     } else if (abort[0] == 's' || abort[0] == 'S' || abort[0] == 'f' || abort[0] == 'F') {
         local_article = 0;
 #ifdef VEDITOR
@@ -871,13 +871,13 @@ static int write_file(char* filename,int saveheader,long* effsize)
             abort_bbs(0);
         }
 #ifndef VEDITOR
-	/* Ôö¼Ó×ªÐÅ±ê¼Ç czz 020819 */
+    /* Ôö¼Ó×ªÐÅ±ê¼Ç czz 020819 */
         if (saveheader) {
-		if (local_article == 1)
-			write_header(fp, currentuser, in_mail, quote_board, quote_title, Anony, 0);
-		else
-			write_header(fp, currentuser, in_mail, quote_board, quote_title, Anony, 2);
-	}
+        if (local_article == 1)
+            write_header(fp, currentuser, in_mail, quote_board, quote_title, Anony, 0);
+        else
+            write_header(fp, currentuser, in_mail, quote_board, quote_title, Anony, 2);
+    }
 #endif
     }
     if (effsize)
@@ -889,21 +889,21 @@ static int write_file(char* filename,int saveheader,long* effsize)
         if (!aborted)
             if (p->next != NULL || p->data[0] != '\0') {
                 if (effsize) {
-                	if (!strcmp(p->data,"--")) {
+                    if (!strcmp(p->data,"--")) {
 /*×¢Òâ´¦Àí
 --
 fsdfa
 --
 µÄÇé¿ö*/
-                	    *effsize+=sign_size;
-                	    sign_size=2;
-                	} else {
-                	/*Èç¹û²»ÊÇÇ©Ãûµµ·Ö¸ô·û*/
-                	    if (sign_size!=0) /*ÔÚ¿ÉÄÜµÄÇ©ÃûµµÖÐ*/
-                	    	sign_size+=strlen(p->data);
-                	    else
-            	              *effsize+=strlen(p->data);
-                	}
+                        *effsize+=sign_size;
+                        sign_size=2;
+                    } else {
+                    /*Èç¹û²»ÊÇÇ©Ãûµµ·Ö¸ô·û*/
+                        if (sign_size!=0) /*ÔÚ¿ÉÄÜµÄÇ©ÃûµµÖÐ*/
+                            sign_size+=strlen(p->data);
+                        else
+                              *effsize+=strlen(p->data);
+                    }
                 }
                 if (abort[0] == 'f' || abort[0] == 'F') {       /* Leeward 98.07.27 Ö§³Ö×Ô¶¯»»ÐÐ */
                     unsigned char *ppt = (unsigned char *) p->data;     /* ÕÛÐÐ´¦ */
@@ -1312,13 +1312,13 @@ void process_MARK_action(arg, msg)
         for (p = firstline; p != NULL; p = p->next) {
             if (p->attr & M_MARK) {
                 currline = p;
-		p=p->prev;
+                p=p->prev;
                 vedit_key(Ctrl('Y'));
-		if (p==NULL) {
-			p=firstline;
-			if (p==NULL);
-			break;
-		}
+                if (p==NULL) {
+                    p=firstline;
+                    if (p==NULL);
+                        break;
+                }
             }
         }
         process_ESC_action('M', '0');
@@ -1478,8 +1478,8 @@ void vedit_key(ch)
             split(currline, currpnt);
             break;
         case Ctrl('G'):        /* redraw screen */
-	        go();
-	        redraw_everything = true;
+            go();
+            redraw_everything = true;
             break;
             /* Leeward 98.07.30 Change hot key for msgX */
             /*case Ctrl('Z'):  call help screen */
@@ -1493,9 +1493,9 @@ void vedit_key(ch)
             break;
         case Ctrl('R'):
 #ifdef CHINESE_CHARACTER
-			currentuser->userdefine = currentuser->userdefine ^ DEF_CHCHAR;
-        	break;
-#endif        	
+            currentuser->userdefine = currentuser->userdefine ^ DEF_CHCHAR;
+            break;
+#endif            
         case KEY_LEFT:         /* backward character */
             if (currpnt > 0) {
                 currpnt--;
@@ -1506,15 +1506,15 @@ void vedit_key(ch)
                 currpnt = currline->len;
             }
 #ifdef CHINESE_CHARACTER
-			if (DEFINE(currentuser, DEF_CHCHAR)) {
-				int i,j=0;
-				for(i=0;i<currpnt;i++)
-					if(j) j=0;
-					else if(currline->data[i]<0) j=1;
-				if(j)
-		            if (currpnt > 0)
-		                currpnt--;
-			}
+            if (DEFINE(currentuser, DEF_CHCHAR)) {
+                int i,j=0;
+                for(i=0;i<currpnt;i++)
+                    if(j) j=0;
+                    else if(currline->data[i]<0) j=1;
+                if(j)
+                    if (currpnt > 0)
+                        currpnt--;
+            }
 #endif
             break;
             /*case Ctrl('Q'):  Leeward 98.07.30 Change hot key for msgX
@@ -1548,15 +1548,15 @@ void vedit_key(ch)
                 }
             }
 #ifdef CHINESE_CHARACTER
-			if (DEFINE(currentuser, DEF_CHCHAR)) {
-				int i,j=0;
-				for(i=0;i<currpnt;i++)
-					if(j) j=0;
-					else if(currline->data[i]<0) j=1;
-				if(j)
-		            if (currline->len != currpnt)
-		                currpnt++;
-			}
+            if (DEFINE(currentuser, DEF_CHCHAR)) {
+                int i,j=0;
+                for(i=0;i<currpnt;i++)
+                    if(j) j=0;
+                    else if(currline->data[i]<0) j=1;
+                if(j)
+                    if (currline->len != currpnt)
+                        currpnt++;
+            }
 #endif
             break;
         case Ctrl('P'):
@@ -1568,15 +1568,15 @@ void vedit_key(ch)
                 currpnt = (currline->len > lastindent) ? lastindent : currline->len;
             }
 #ifdef CHINESE_CHARACTER
-			if (DEFINE(currentuser, DEF_CHCHAR)) {
-				int i,j=0;
-				for(i=0;i<currpnt;i++)
-					if(j) j=0;
-					else if(currline->data[i]<0) j=1;
-				if(j)
-		            if (currpnt > 0)
-		                currpnt--;
-			}
+            if (DEFINE(currentuser, DEF_CHCHAR)) {
+                int i,j=0;
+                for(i=0;i<currpnt;i++)
+                    if(j) j=0;
+                    else if(currline->data[i]<0) j=1;
+                if(j)
+                    if (currpnt > 0)
+                        currpnt--;
+            }
 #endif
             break;
         case Ctrl('N'):
@@ -1593,15 +1593,15 @@ void vedit_key(ch)
                 currpnt = (currline->len > lastindent) ? lastindent : currline->len;
             }
 #ifdef CHINESE_CHARACTER
-			if (DEFINE(currentuser, DEF_CHCHAR)) {
-				int i,j=0;
-				for(i=0;i<currpnt;i++)
-					if(j) j=0;
-					else if(currline->data[i]<0) j=1;
-				if(j)
-		            if (currpnt > 0)
-		                currpnt--;
-			}
+            if (DEFINE(currentuser, DEF_CHCHAR)) {
+                int i,j=0;
+                for(i=0;i<currpnt;i++)
+                    if(j) j=0;
+                    else if(currline->data[i]<0) j=1;
+                if(j)
+                    if (currpnt > 0)
+                        currpnt--;
+            }
 #endif
             break;
         case Ctrl('B'):
@@ -1713,16 +1713,16 @@ void vedit_key(ch)
             currpnt--;
             delete_char();
 #ifdef CHINESE_CHARACTER
-			if (DEFINE(currentuser, DEF_CHCHAR)) {
-				int i,j=0;
-				for(i=0;i<currpnt;i++)
-					if(j) j=0;
-					else if(currline->data[i]<0) j=1;
-				if(j) {
-					currpnt--;
-		            delete_char();
-		        }
-			}
+            if (DEFINE(currentuser, DEF_CHCHAR)) {
+                int i,j=0;
+                for(i=0;i<currpnt;i++)
+                    if(j) j=0;
+                    else if(currline->data[i]<0) j=1;
+                if(j) {
+                    currpnt--;
+                    delete_char();
+                }
+            }
 #endif
             break;
         case Ctrl('D'):
@@ -1745,14 +1745,14 @@ void vedit_key(ch)
                 break;
             }
 #ifdef CHINESE_CHARACTER
-			if (DEFINE(currentuser, DEF_CHCHAR)) {
-				int i,j=0;
-				for(i=0;i<currpnt+1;i++)
-					if(j) j=0;
-					else if(currline->data[i]<0) j=1;
-				if(j)
-		            delete_char();
-			}
+            if (DEFINE(currentuser, DEF_CHCHAR)) {
+                int i,j=0;
+                for(i=0;i<currpnt+1;i++)
+                    if(j) j=0;
+                    else if(currline->data[i]<0) j=1;
+                if(j)
+                    delete_char();
+            }
 #endif
             delete_char();
             break;
@@ -1936,8 +1936,8 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size)
             redraw_everything = true;
             break;
         case KEY_REFRESH:
-        	redraw_everything = true;
-        	break;
+            redraw_everything = true;
+            break;
         default:
             vedit_key(ch);
         }

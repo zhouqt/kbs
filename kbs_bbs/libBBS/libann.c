@@ -38,6 +38,7 @@ void ann_add_item(MENU * pm, ITEM * it)
         } else
             newitem->host = it->host;
         newitem->port = it->port;
+        newitem->attachpos= it->attachpos;
         strncpy(newitem->fname, it->fname, sizeof(newitem->fname) - 1);
         (pm->num)++;
     }
@@ -68,6 +69,7 @@ int ann_load_directory(MENU * pm)
         if (strncmp(buf, "Name=", 5) == 0) {
             strncpy(litem.title, buf + 5, sizeof(litem.title) - 1);
             litem.title[sizeof(litem.title) - 1] = '\0';
+            litem.attachpos = 0;
         } else if (strncmp(buf, "Path=", 5) == 0) {
             if (strncmp(buf, "Path=~/", 7) == 0)
                 strncpy(litem.fname, buf + 7, sizeof(litem.fname) - 1);
@@ -102,6 +104,8 @@ int ann_load_directory(MENU * pm)
             hostname[sizeof(hostname) - 1] = '\0';
         } else if (strncmp(buf, "Port=", 5) == 0) {
             litem.port = atoi(buf + 5);
+        } else if (strncmp(buf, "Attach=", 7) == 0) {
+            litem.attachpos= atol(buf + 7);
         }
     }
     fclose(fn);

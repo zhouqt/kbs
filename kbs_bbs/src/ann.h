@@ -10,6 +10,7 @@ typedef struct {
     char fname[80];
     char *host;
     int port;
+    long    attachpos;
 } ITEM;
 
 typedef struct {

@@ -201,6 +201,7 @@ O MaxMessageSize=32000
 #define BOARD_CLUB_READ  0x40  /*限制读的俱乐部*/
 #define BOARD_CLUB_WRITE  0x80  /*限制写的俱乐部*/
 #define BOARD_CLUB_HIDE  0x100  /*隐藏俱乐部*/
+#define BOARD_ATTACH        0x200 /*可以使用附件的版面*/
 
 #define ZAPPED  0x1             /* For boards...tells if board is Zapped */
 
@@ -367,15 +368,15 @@ typedef size_t socklen_t;
  */
 enum BBS_DIR_MODE
 {
-	DIR_MODE_NORMAL  = 0, /** .DIR */
-	DIR_MODE_DIGEST  = 1, /** .DIGEST */
-	DIR_MODE_THREAD  = 2, /** .THREAD */
-	DIR_MODE_MARK    = 3, /** .MARK */
-	DIR_MODE_DELETED = 4, /** .DELETED */
-	DIR_MODE_JUNK    = 5, /** .JUNK */
-	DIR_MODE_ORIGIN  = 6, /** .ORIGIN */
-	DIR_MODE_AUTHOR  = 7, /** .AUTHOR.userid */
-	DIR_MODE_TITLE   = 8  /** .TITLE.userid */
+    DIR_MODE_NORMAL  = 0, /** .DIR */
+    DIR_MODE_DIGEST  = 1, /** .DIGEST */
+    DIR_MODE_THREAD  = 2, /** .THREAD */
+    DIR_MODE_MARK    = 3, /** .MARK */
+    DIR_MODE_DELETED = 4, /** .DELETED */
+    DIR_MODE_JUNK    = 5, /** .JUNK */
+    DIR_MODE_ORIGIN  = 6, /** .ORIGIN */
+    DIR_MODE_AUTHOR  = 7, /** .AUTHOR.userid */
+    DIR_MODE_TITLE   = 8  /** .TITLE.userid */
 };
 
 enum BBSLOG_TYPE
@@ -392,6 +393,7 @@ enum BBSPOST_MODE
     BBSPOST_LINK=2
 };
 
+#define ATTACHMMENT_PAD "\0\0\0\0\0\0\0\0"
 #include "system.h"
 #include "vars.h"
 #include "func.h"

@@ -106,7 +106,7 @@ int NNread_init()
     movieshm->movielines = xxxline;
     movieshm->update = time(0);
     sprintf(buf, "%d ĞĞ »î¶¯¿´°å ¸üĞÂ", xxxline);
-    bbslog("user","%s",buf);
+    bbslog("user", "%s", buf);
     fclose(fffd);
     return 1;
 }
@@ -309,9 +309,11 @@ char *fname;
     return count;
 }
 
-/* below added by netty  *//*
- * Rewrite by SmallPig 
- */
+                           /*
+                            * below added by netty  
+                                                       *//*
+                                                       * Rewrite by SmallPig 
+                                                       */
 void netty_more()
 {
     char buf[256];
@@ -355,15 +357,15 @@ void printacbar()
     getyx(&y, &x);
 
     move(2, 0);
-	if (DEFINE(currentuser,DEF_HIGHCOLOR))
-    	prints("[1;35m©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[37m»î  ¶¯  ¿´  °æ[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´ [m\n");
-	else
-    	prints("[35m©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[37m»î  ¶¯  ¿´  °æ[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´ [m\n");
+    if (DEFINE(currentuser, DEF_HIGHCOLOR))
+        prints("[1;35m©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[37m»î  ¶¯  ¿´  °æ[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´ [m\n");
+    else
+        prints("[35m©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[37m»î  ¶¯  ¿´  °æ[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´ [m\n");
     move(3 + MAXnettyLN, 0);
-	if (DEFINE(currentuser,DEF_HIGHCOLOR))
-    	prints("[1;35m©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[36m" FOOTER_MOVIE "[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©¼ [m\n");
-	else
-    	prints("[35m©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[36m" FOOTER_MOVIE "[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©¼ [m\n");
+    if (DEFINE(currentuser, DEF_HIGHCOLOR))
+        prints("[1;35m©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[36m" FOOTER_MOVIE "[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©¼ [m\n");
+    else
+        prints("[35m©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[36m" FOOTER_MOVIE "[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©¼ [m\n");
     move(y, x);
     refresh();
 }
@@ -412,6 +414,11 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
             *s = i + 1;
             break;
         }
+        if (*p == '\0') {
+            *l = i;
+            *s = i;
+            break;
+        }
         if (asciiart) {
             continue;
         } else if (*p == '\t') {
@@ -446,7 +453,7 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
         *l = size;
         *s = size;
     }
-    if (*s > 0 && p0[*s - 1] == '\n') {
+    if (*s > 0 && ((p0[*s - 1] == '\n') || (p0[*s - 1] == '\0'))) {
         switch (oldty) {
         case 1:
             *ty = 0;
@@ -477,22 +484,28 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
     }
     if (*s == size)
         return 0;
-    if (size > 10 && !strncmp(p0, "begin 644 ", 10)) {
-        for (p = p0; p - p0 < size;) {
-            if ((p = memchr(p, '\n', size - (p - p0))) == NULL)
-                break;
-            p++;
-            if (size - (p - p0) > 3 && !strncmp(p, "end", 3)) {
-                p = memchr(p, '\n', size - (p - p0));
-                if (p != NULL)
-                    p++;
-                break;
-            }
+    if ( size > sizeof(ATTACHMMENT_PAD)-1
+        && !memcmp(p0, ATTACHMMENT_PAD, sizeof(ATTACHMMENT_PAD)-1)) {
+        long attach_len;
+
+        *ty = 100;
+        p = p0;
+        p += sizeof(ATTACHMMENT_PAD)-1;
+        if ((p = (char *) memchr(p, '\0', size - (sizeof(ATTACHMMENT_PAD)-1))) == NULL) {
+            return 0;
         }
-        if (p == NULL)
-            *s = size;
-        else
-            *s = p - p0;
+        p++;
+        *s = ntohl(*(unsigned long *) p) + p - p0 + sizeof(unsigned long);
+        if (*s>size)
+            *s=size;
+    } else {
+        if (p0[*s-1]=='\0')
+		*s++;
+    }
+    if ((oldty == 100) && (*ty != 100)) {
+        *l = 0;
+        *s = 0;
+        *ty = 104;
     }
     return 0;
 }
@@ -611,6 +624,7 @@ int mmap_show(char *fn, int row, int numlines)
     BBS_CATCH {
     }
     BBS_END end_mmapfile((void *) ptr, size, -1);
+
     return retv;
 }
 
@@ -627,6 +641,7 @@ int mmap_more(char *fn, int quit, char *keystr, char *title)
     BBS_CATCH {
     }
     BBS_END end_mmapfile((void *) ptr, size, -1);
+
     return retv;
 }
 
@@ -646,6 +661,66 @@ void mem_printline(char *ptr, int len, char *fn, char ty)
         outns("\033[1;33m", 7);
         outns(ptr, len);
         outns("\033[m\n", 4);
+        return;
+    } else if (ty == 100) {
+        char attachname[41], *p;
+
+        strncpy(attachname, ptr + sizeof(ATTACHMMENT_PAD)-1, 40);
+        p = strrchr(attachname, '.');
+        if (p != NULL && (!strcasecmp(p, ".bmp") || !strcasecmp(p, ".jpg")
+                          || !strcasecmp(p, ".gif") || !strcasecmp(p, ".jpeg")))
+            prints("\033[m¸½Í¼: %s \033[5m(ÓÃwww·½Ê½ÔÄ¶Á±¾ÎÄ¿ÉÒÔä¯ÀÀ´ËÍ¼Æ¬)\033[0m\n", attachname);
+        else
+            prints("\033[m¸½¼ş: %s \033[5m(ÓÃwww·½Ê½ÔÄ¶Á±¾ÎÄ¿ÉÒÔÏÂÔØ´Ë¸½¼ş)\033[0m\n", attachname);
+        return;
+    } else if (ty == 104) {
+        char *q;
+        char temp_sessionid[10];
+        int type;
+
+        type = 0;
+        /*
+        if (!strncmp(fn, "boar", 4)) {
+            if (!strncmp(fn + 7, ".1984", 5))
+                type = 4;
+            else if (!strncmp(fn + 7, ".back", 5))
+                type = 5;
+            else
+                type = 1;
+        } else if (!strncmp(fn, "0Ann", 4))
+            type = 2;
+        else if (!strncmp(fn, "mail", 4))
+            type = 3;
+        get_temp_sessionid(temp_sessionid);
+        q = strrchr(fn, '/') + 1;
+        switch (type) {
+        case 1:
+            if (digestmode == YEA)
+                prints("http://%s/" "Ytht.Net" "%s/gcon?B=%s&F=%s", MY_BBS_DOMAIN, temp_sessionid, currboard, q);
+            else
+                prints("http://%s/" "Ytht.Net" "%s/con?B=%s&F=%s", MY_BBS_DOMAIN, temp_sessionid, currboard, q);
+            break;
+        case 2:
+            if (0)
+                prints("http://%s/" "Ytht.Net" "%s/anc?path=%s", MY_BBS_DOMAIN, temp_sessionid, q);
+            break;
+        case 3:
+            prints("http://%s/" "Ytht.Net" "%s/bbsmailcon?file=%s", MY_BBS_DOMAIN, temp_sessionid, q);
+            break;
+        case 4:
+            prints("http://%s/" "Ytht.Net" "%s/c1?T=%d&F=%s", MY_BBS_DOMAIN, temp_sessionid, type, fn + 13);
+            break;
+        case 5:
+            prints("http://%s/" "Ytht.Net" "%s/c1?T=%d&F=%s", MY_BBS_DOMAIN, temp_sessionid, type, fn + 20);
+            break;
+        default:
+            break;
+        }
+        */
+        sprintf(temp_sessionid,"fds");
+        prints("http://%s/" "bbs" "%s/c1?T=%d&F=%s", "SMTH", temp_sessionid, type, fn + 20);
+        // TODO: show the link
+        prints("\n");
         return;
     } else if (ty >= 2) {
         outns("\033[36m", 5);
@@ -697,10 +772,10 @@ void mem_printbotline(int l1, int l2, int total, int read, int size)
 	    ("\033[1;44;32m%s (%d%%) µÚ(%d-%d)ĞĞ \033[33m| %s | h ¸¨ÖúËµÃ÷\033[m",
 	     (read >= size) ? "¿´µ½Ä©Î²À²" : "ÏÂÃæ»¹ÓĞà¸",
 	     total ? (100 * l2 / total) : (100 * read / size), l1, l2, s[n]);*/
-	if (currentuser != NULL && DEFINE(currentuser,DEF_HIGHCOLOR))
-    	prints("[1;44m[32mÏÂÃæ»¹ÓĞà¸ (%d%%)[33m   ©¦ ½áÊø ¡û <q> ©¦ ¡ü/¡ı/PgUp/PgDn ÒÆ¶¯ ©¦ ? ¸¨ÖúËµÃ÷ ©¦     [m", total ? (100 * l2 / total) : (100 * read / size));
-	else
-    	prints("[44m[32mÏÂÃæ»¹ÓĞà¸ (%d%%)[33m   ©¦ ½áÊø ¡û <q> ©¦ ¡ü/¡ı/PgUp/PgDn ÒÆ¶¯ ©¦ ? ¸¨ÖúËµÃ÷ ©¦     [m", total ? (100 * l2 / total) : (100 * read / size));
+    if (currentuser != NULL && DEFINE(currentuser, DEF_HIGHCOLOR))
+        prints("[1;44m[32mÏÂÃæ»¹ÓĞà¸ (%d%%)[33m   ©¦ ½áÊø ¡û <q> ©¦ ¡ü/¡ı/PgUp/PgDn ÒÆ¶¯ ©¦ ? ¸¨ÖúËµÃ÷ ©¦     [m", total ? (100 * l2 / total) : (100 * read / size));
+    else
+        prints("[44m[32mÏÂÃæ»¹ÓĞà¸ (%d%%)[33m   ©¦ ½áÊø ¡û <q> ©¦ ¡ü/¡ı/PgUp/PgDn ÒÆ¶¯ ©¦ ? ¸¨ÖúËµÃ÷ ©¦     [m", total ? (100 * l2 / total) : (100 * read / size));
 }
 
 int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
@@ -930,25 +1005,22 @@ int ansimore_withzmodem(char *filename, int promptend, char *title)
     return ch;
 }
 
-int draw_content_more(char *ptr, int size, char *fn,struct fileheader* fh)
+int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
 {
     extern int t_lines;
     struct MemMoreLines l;
     int i, j, ch = 0, curr_line, last_line, change;
-    bool header=true;
+    bool header = true;
     char buf[256];
 
     displayflag = 0;
     shownflag = 1;
     init_MemMoreLines(&l, ptr, size);
 
-    move(t_lines/2, 0);
+    move(t_lines / 2, 0);
 /*    prints("\033[34m¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ªÔ¤ÀÀ´°¿Ú¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª");*/
 /*    move(t_lines/2+1, 0);*/
-    sprintf(buf,"\033[1;32m\x1b[44m·¢ĞÅÈË: \033[1;33m%-13.13s\033[1;32m±ê  Ìâ: \033[1;33m%-50.50s\033[1;32m %4.4s\033[m",
-    	fh->owner,
-    	fh->title,
-    	fh->innflag[1]=='S'?"[×ª]":"");
+    sprintf(buf, "\033[1;32m\x1b[44m·¢ĞÅÈË: \033[1;33m%-13.13s\033[1;32m±ê  Ìâ: \033[1;33m%-50.50s\033[1;32m %4.4s\033[m", fh->owner, fh->title, fh->innflag[1] == 'S' ? "[×ª]" : "");
     outs(buf);
     prints("\n\033[m");
     curr_line = l.curr_line;
@@ -956,26 +1028,24 @@ int draw_content_more(char *ptr, int size, char *fn,struct fileheader* fh)
         if (shownflag) {
             displayflag = 0;
         }
-	if (!header||(!((i==0)&&((!strncmp(l.curr,"·¢ĞÅÈË: ",8)||(!strncmp(l.curr,"¼ÄĞÅÈË: ",8)))))&&
-	    !((i==1)&&!strncmp(l.curr,"±ê  Ìâ: ",8))&&
-	    !((i==2)&&!strncmp(l.curr,"·¢ĞÅÕ¾: ",8))&&
-	    !((i==3)&&(l.currlen==0)))) {
+        if (!header || (!((i == 0) && ((!strncmp(l.curr, "·¢ĞÅÈË: ", 8) || (!strncmp(l.curr, "¼ÄĞÅÈË: ", 8))))) &&
+                        !((i == 1) && !strncmp(l.curr, "±ê  Ìâ: ", 8)) && !((i == 2) && !strncmp(l.curr, "·¢ĞÅÕ¾: ", 8)) && !((i == 3) && (l.currlen == 0)))) {
             mem_printline(l.curr, l.currlen, fn, l.currty);
             j++;
-	    header=false;
-	}
+            header = false;
+        }
         i++;
-        if (j >= t_lines - t_lines/2 - 2)
+        if (j >= t_lines - t_lines / 2 - 2)
             break;
         if (next_MemMoreLines(&l) < 0)
             break;
     }
     last_line = l.curr_line;
-    if (l.total && l.total <= t_lines - t_lines/2 - 2)
+    if (l.total && l.total <= t_lines - t_lines / 2 - 2)
         return 0;
 }
 
-int draw_content(char* fn,struct fileheader* fh)
+int draw_content(char *fn, struct fileheader *fh)
 {
     char *ptr;
     int size, retv;
@@ -983,12 +1053,11 @@ int draw_content(char* fn,struct fileheader* fh)
     BBS_TRY {
         if (safe_mmapfile(fn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)
             BBS_RETURN(-1);
-        retv = draw_content_more(ptr, size, fn,fh);
+        retv = draw_content_more(ptr, size, fn, fh);
     }
     BBS_CATCH {
     }
     BBS_END end_mmapfile((void *) ptr, size, -1);
+
     return retv;
 }
-
-

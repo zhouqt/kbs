@@ -11,7 +11,7 @@ int main()
     struct fileheader x, *oldx;
     bcache_t *brd;
     int local, anony;
-	/*int filtered = 0;*/
+    /*int filtered = 0;*/
 
     init_all();
     if (!loginok)
@@ -46,29 +46,35 @@ int main()
     sprintf(filename, "tmp/%s.%d.tmp", getcurruserid(), getpid());
     f_append(filename, unix_string(content));
     if(oldfilename[0]){
-    	int pos;
-    	oldx = (struct fileheader*)malloc(sizeof(struct fileheader));
-    	pos = get_file_ent(board, oldfilename, oldx);
-    	if (pos <= 0) {
+        int pos;
+        oldx = (struct fileheader*)malloc(sizeof(struct fileheader));
+        pos = get_file_ent(board, oldfilename, oldx);
+        if (pos <= 0) {
     		free(oldx);
     		oldx = NULL;
-    	}
-    	else
-       if (oldx->accessed[1] & FILE_READ)
+        }
+        else
+        if (oldx->accessed[1] & FILE_READ)
            http_fatal("本文不能回复");
     }
     else {
-    	oldx = NULL;
+        oldx = NULL;
     }
     brc_initial(currentuser->userid, board);
-	if (is_outgo_board(board) && local == 0)
-		local = 0;
-	else
-		local = 1;
-	/*if (filtered == 1)
+    if (is_outgo_board(board) && local == 0)
+        local = 0;
+    else
+        local = 1;
+    /*if (filtered == 1)
 		r = post_article(FILTER_BOARD, title, filename, currentuser, fromhost, sig, local, anony, oldx);
-	else*/
-		r = post_article(board, title, filename, currentuser, fromhost, sig, local, anony, oldx);
+    else*/
+    if (brd->flag&BOARD_ATTACH) {
+        snprintf(buf,MAXPATH,"%s/%s_%d",ATTACHTMPPATH,currentuser->userid,utmpent);
+        r = post_article(board, title, filename, currentuser, fromhost, sig, local, anony, oldx,buf);
+        f_rm(buf);
+    }
+    else
+        r = post_article(board, title, filename, currentuser, fromhost, sig, local, anony, oldx,NULL);
     if (r < 0)
         http_fatal("内部错误，无法发文");
     brc_update(currentuser->userid);

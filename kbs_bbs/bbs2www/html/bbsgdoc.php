@@ -118,7 +118,12 @@
 ?>
 </table>
 <hr class="default"/>
-<a href="bbspst.html?board=<?php echo $brd_encode; ?>&sig=<?php echo $currentuser["signature"];?>">发表文章</a>
+<a href="bbspst.html?board=<?php echo $brd_encode; ?>&sig=<?php echo $currentuser["signature"];?>&attach=<?php
+    if ($brdarr["FLAG"]&BBS_BOARD_ATTACH)
+    	echo 1;
+    else
+        echo 0;
+?>">发表文章</a>
 <a href="javascript:location=location">刷新</a>
 <?php
 		if ($start > 0)

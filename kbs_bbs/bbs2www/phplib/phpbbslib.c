@@ -50,41 +50,40 @@ static ZEND_RSHUTDOWN_FUNCTION(bbs_request_shutdown);
  * define what functions can be used in the PHP embedded script
  */
 static function_entry bbs_php_functions[] = {
-	ZEND_FE(bbs_getuser, NULL)
-	ZEND_FE(bbs_getonlineuser, NULL)
-	ZEND_FE(bbs_getonlinenumber, NULL)
-	ZEND_FE(bbs_countuser, NULL)
-	ZEND_FE(bbs_setfromhost, NULL)
-	ZEND_FE(bbs_checkpasswd, NULL)
-	ZEND_FE(bbs_getcurrentuser, NULL)
-	ZEND_FE(bbs_setonlineuser, NULL)
-	ZEND_FE(bbs_getcurrentuinfo, NULL)
-	ZEND_FE(bbs_wwwlogin, NULL)
-	ZEND_FE(bbs_wwwlogoff, NULL)
-	ZEND_FE(bbs_printansifile, NULL)
-	ZEND_FE(bbs_checkreadperm, NULL)
-	ZEND_FE(bbs_brcaddread, NULL)
-	ZEND_FE(bbs_getboard, NULL)
-	ZEND_FE(bbs_ann_traverse_check, NULL)
-	ZEND_FE(bbs_ann_get_board, NULL)
-	ZEND_FE(bbs_getboards, NULL)
-	ZEND_FE(bbs_getarticles, NULL)
-	ZEND_FE(bbs_get_records_from_id, NULL)
-	ZEND_FE(bbs_countarticles, NULL)
-	ZEND_FE(bbs_is_bm, NULL)
-	ZEND_FE(bbs_getannpath, NULL)
-	ZEND_FE(bbs_getmailnum, third_arg_force_ref_011)
-    	ZEND_FE(bbs_getmailnum2,NULL)
-    	ZEND_FE(bbs_getmails,NULL)
-	ZEND_FE(bbs_loadmaillist,NULL)
-	ZEND_FE(bbs_changemaillist,NULL)
-	ZEND_FE(bbs_getwebmsg, third_arg_force_ref_111)
-    	ZEND_FE(bbs_sendwebmsg, fourth_arg_force_ref_0001)
-	ZEND_FE(bbs_sethomefile, NULL)
-    	ZEND_FE(bbs_setmailfile,NULL)
-    	ZEND_FE(bbs_mail_file, NULL)
-    	ZEND_FE(bbs_update_uinfo, NULL)
-	{NULL, NULL, NULL}
+        ZEND_FE(bbs_getuser, NULL)
+        ZEND_FE(bbs_getonlineuser, NULL)
+        ZEND_FE(bbs_getonlinenumber, NULL)
+        ZEND_FE(bbs_countuser, NULL)
+        ZEND_FE(bbs_setfromhost, NULL)
+        ZEND_FE(bbs_checkpasswd, NULL)
+        ZEND_FE(bbs_getcurrentuser, NULL)
+        ZEND_FE(bbs_setonlineuser, NULL)
+        ZEND_FE(bbs_getcurrentuinfo, NULL)
+        ZEND_FE(bbs_wwwlogin, NULL)
+        ZEND_FE(bbs_wwwlogoff, NULL)
+        ZEND_FE(bbs_printansifile, NULL)
+        ZEND_FE(bbs_checkreadperm, NULL)
+        ZEND_FE(bbs_brcaddread, NULL)
+        ZEND_FE(bbs_getboard, NULL)
+        ZEND_FE(bbs_ann_traverse_check, NULL)
+        ZEND_FE(bbs_ann_get_board, NULL)
+        ZEND_FE(bbs_getboards, NULL)
+        ZEND_FE(bbs_getarticles, NULL)
+        ZEND_FE(bbs_countarticles, NULL)
+        ZEND_FE(bbs_is_bm, NULL)
+        ZEND_FE(bbs_getannpath, NULL)
+        ZEND_FE(bbs_getmailnum, third_arg_force_ref_011)
+        ZEND_FE(bbs_getmailnum2, NULL)
+        ZEND_FE(bbs_getmails, NULL)
+        ZEND_FE(bbs_loadmaillist, NULL)
+        ZEND_FE(bbs_changemaillist, NULL)
+        ZEND_FE(bbs_getwebmsg, third_arg_force_ref_111)
+        ZEND_FE(bbs_sendwebmsg, fourth_arg_force_ref_0001)
+        ZEND_FE(bbs_sethomefile, NULL)
+        ZEND_FE(bbs_setmailfile, NULL)
+        ZEND_FE(bbs_mail_file, NULL)
+        ZEND_FE(bbs_update_uinfo, NULL)
+        {NULL, NULL, NULL}
 };
 
 /*
@@ -120,9 +119,9 @@ static void setstrlen(pval * arg)
 
 static void assign_user(zval * array, struct userec *user, int num)
 {
-	struct userdata ud;
+    struct userdata ud;
 
-	read_userdata(user->userid, &ud);
+    read_userdata(user->userid, &ud);
     add_assoc_long(array, "index", num);
     add_assoc_string(array, "userid", user->userid, 1);
     add_assoc_long(array, "firstlogin", user->firstlogin);
@@ -171,28 +170,30 @@ static void assign_userinfo(zval * array, struct user_info *uinfo, int num)
 }
 
 //char* maillist, 40 bytes long, 30 bytes for the mailbox name,10 bytes for the mailbox path file name.
-static void asssign_maillist(zval* array, char* boxname,char* pathname)
+static void asssign_maillist(zval * array, char *boxname, char *pathname)
 {
-	add_assoc_string(array,"boxname",boxname,1);
-	add_assoc_string(array,"pathname",pathname,1);
+    add_assoc_string(array, "boxname", boxname, 1);
+    add_assoc_string(array, "pathname", pathname, 1);
 }
 
 static void assign_board(zval * array, struct boardheader *board, int num)
 {
     add_assoc_long(array, "NUM", num);
     add_assoc_string(array, "NAME", board->filename, 1);
-    /*add_assoc_string(array, "OWNER", board->owner, 1);*/
+    /*
+     * add_assoc_string(array, "OWNER", board->owner, 1);
+     */
     add_assoc_string(array, "BM", board->BM, 1);
     add_assoc_long(array, "FLAG", board->flag);
-    add_assoc_string(array, "DESC", board->title+13, 1);
-    add_assoc_stringl(array, "CLASS", board->title+1, 6, 1);
+    add_assoc_string(array, "DESC", board->title + 13, 1);
+    add_assoc_stringl(array, "CLASS", board->title + 1, 6, 1);
     add_assoc_stringl(array, "SECNUM", board->title, 1, 1);
     add_assoc_long(array, "LEVEL", board->level);
 }
 
 static int currentusernum;
 static char fullfrom[255];
-static char php_fromhost[IPLEN+1];
+static char php_fromhost[IPLEN + 1];
 static struct user_info *currentuinfo;
 static int currentuinfonum;
 
@@ -314,7 +315,7 @@ static ZEND_FUNCTION(bbs_getonlineuser)
 
 static ZEND_FUNCTION(bbs_getonlinenumber)
 {
-    RETURN_LONG(get_utmp_number()+getwwwguestcount());
+    RETURN_LONG(get_utmp_number() + getwwwguestcount());
 }
 
 
@@ -351,14 +352,15 @@ static ZEND_FUNCTION(bbs_checkpasswd)
         s[IDLEN] = 0;
     if (pw_len > PASSLEN)
         pw[PASSLEN] = 0;
-    if ((s[0]!=0)&&!(unum = getuser(s, &user)))
+    if ((s[0] != 0) && !(unum = getuser(s, &user)))
         ret = 2;
     else {
-    	if (s[0]==0) user=currentuser;
+        if (s[0] == 0)
+            user = currentuser;
         if (checkpasswd2(pw, user)) {
             ret = 0;
-            if (s[0]!=0)
-            	setcurrentuser(user, unum);
+            if (s[0] != 0)
+                setcurrentuser(user, unum);
         } else {
             ret = 1;
             logattempt(user->userid, php_fromhost);
@@ -549,8 +551,8 @@ static ZEND_FUNCTION(bbs_printansifile)
             int ansicolor, cal;
 
             outbuf[sizeof(outbuf) - 1] = 0;
-#define FLUSHBUF { *outp=0;zend_printf("%s",outbuf); outp=outbuf; }
-#define OUTPUT(buf,len) { if ((outbuf-outp)<len) FLUSHBUF; strncpy(outp,buf,len); outp+=len; }
+#define FLUSHBUF do { *outp=0;zend_printf("%s",outbuf); outp=outbuf; } while (0)
+#define OUTPUT(buf,len) do { if ((outbuf-outp)<len) FLUSHBUF; strncpy(outp,buf,len); outp+=len; } while (0)
             for (p = ptr; (*p) && (p - ptr < st.st_size); p++) {
                 // TODO: need detect link
                 switch (mode) {
@@ -560,6 +562,7 @@ static ZEND_FUNCTION(bbs_printansifile)
                         continue;
                     }
                     if (*p == '&')
+<<<<<<< phpbbslib.c
                         OUTPUT("&amp;", 5)
                             else
                     if (*p == '<')
@@ -571,6 +574,14 @@ static ZEND_FUNCTION(bbs_printansifile)
 					if (*p == '\n')
 						OUTPUT("<br />\n", 7)
 							else
+=======
+                        OUTPUT("&amp;", 5);
+                    else if (*p == '<')
+                        OUTPUT("&lt;", 4);
+                    else if (*p == '>')
+                        OUTPUT("&gt;", 4);
+                    else
+>>>>>>> 1.68.2.3
                         break;
                     continue;
                 case 1:
@@ -608,7 +619,9 @@ static ZEND_FUNCTION(bbs_printansifile)
                         cal = cal * 10 + (*p) - '0';
                         continue;
                     }
-                    /* strange ansi escape,ignore it */
+                    /*
+                     * strange ansi escape,ignore it 
+                     */
                     if (!isalpha(*p)) {
                         mode = 4;
                         continue;
@@ -675,117 +688,92 @@ static ZEND_FUNCTION(bbs_getboard)
     RETURN_LONG(b_num);
 }
 
-static int
-bbs_cmpboard(const struct newpostdata *brd, const struct newpostdata *tmp)
+static int bbs_cmpboard(const struct newpostdata *brd, const struct newpostdata *tmp)
 {
-	register int type = 0;
+    register int type = 0;
 
-	if ( !(currentuser->flags[0] & BRDSORT_FLAG) )
-	{
-		type = brd->title[0] - tmp->title[0];
-		if (type == 0)
-			type = strncasecmp(brd->title+1, tmp->title+1,6);
-	}
-	if ( type == 0 )
-		type = strcasecmp( brd->name, tmp->name );
-	return type;
+    if (!(currentuser->flags[0] & BRDSORT_FLAG)) {
+        type = brd->title[0] - tmp->title[0];
+        if (type == 0)
+            type = strncasecmp(brd->title + 1, tmp->title + 1, 6);
+    }
+    if (type == 0)
+        type = strcasecmp(brd->name, tmp->name);
+    return type;
 }
 
 /* TODO: move this function into bbslib. */
-static int 
-check_newpost( struct newpostdata *ptr)
+static int check_newpost(struct newpostdata *ptr)
 {
-	struct BoardStatus* bptr;
-	ptr->total = ptr->unread = 0;
+    struct BoardStatus *bptr;
 
-	bptr = getbstatus(ptr->pos);
-	if (bptr == NULL)
-		return 0;
-	ptr->total = bptr->total;
+    ptr->total = ptr->unread = 0;
 
-	if (!strcmp(currentuser->userid,"guest")) {
-		ptr->unread = 1;
-		return 1;
-	}
-	if (!brc_initial(currentuser->userid,ptr->name))
-	{
-		ptr->unread = 1;
-	}
-	else
-	{
-		if (brc_unread(bptr->lastpost))
-		{
-			ptr->unread = 1;
-		}
-	}
-	return 1;
+    bptr = getbstatus(ptr->pos);
+    if (bptr == NULL)
+        return 0;
+    ptr->total = bptr->total;
+
+    if (!strcmp(currentuser->userid, "guest")) {
+        ptr->unread = 1;
+        return 1;
+    }
+    if (!brc_initial(currentuser->userid, ptr->name)) {
+        ptr->unread = 1;
+    } else {
+        if (brc_unread(bptr->lastpost)) {
+            ptr->unread = 1;
+        }
+    }
+    return 1;
 }
 
 #define BOARD_COLUMNS 7
 
-char *brd_col_names[BOARD_COLUMNS] =
-{
-	"NAME",
-	"DESC",
-	"CLASS",
-	"BM",
-	"ARTCNT", /* article count */
-	"UNREAD",
-	"ZAPPED"
+char *brd_col_names[BOARD_COLUMNS] = {
+    "NAME",
+    "DESC",
+    "CLASS",
+    "BM",
+    "ARTCNT",                   /* article count */
+    "UNREAD",
+    "ZAPPED"
 };
 
-static void
-bbs_make_board_columns(zval **columns)
+static void bbs_make_board_columns(zval ** columns)
 {
-	int i;
+    int i;
 
-	for (i = 0; i < BOARD_COLUMNS; i++)
-	{
-		MAKE_STD_ZVAL(columns[i]);
-		ZVAL_STRING(columns[i], brd_col_names[i], 1);
-	}
+    for (i = 0; i < BOARD_COLUMNS; i++) {
+        MAKE_STD_ZVAL(columns[i]);
+        ZVAL_STRING(columns[i], brd_col_names[i], 1);
+    }
 }
 
-static void
-bbs_make_board_zval(zval *value, char *col_name, struct newpostdata *brd)
+static void bbs_make_board_zval(zval * value, char *col_name, struct newpostdata *brd)
 {
-	int len = strlen(col_name);
+    int len = strlen(col_name);
 
-	if (strncmp(col_name, "ARTCNT", len) == 0)
-	{
-		ZVAL_LONG(value, brd->total);
-	}
-	else if (strncmp(col_name, "UNREAD", len) == 0)
-	{
-		ZVAL_LONG(value, brd->unread);
-	}
-	else if (strncmp(col_name, "ZAPPED", len) == 0)
-	{
-		ZVAL_LONG(value, brd->zap);
-	}
-	else if (strncmp(col_name, "CLASS", len) == 0)
-	{
-		ZVAL_STRINGL(value, brd->title+1, 6, 1);
-	}
-	else if (strncmp(col_name, "DESC", len) == 0)
-	{
-		ZVAL_STRING(value, brd->title+13, 1);
-	}
-	else if (strncmp(col_name, "NAME", len) == 0)
-	{
-		ZVAL_STRING(value, brd->name, 1);
-	}
-	else if (strncmp(col_name, "BM", len) == 0)
-	{
-		ZVAL_STRING(value, brd->BM, 1);
-	}
-	else
-	{
-		ZVAL_EMPTY_STRING(value);
-	}
+    if (strncmp(col_name, "ARTCNT", len) == 0) {
+        ZVAL_LONG(value, brd->total);
+    } else if (strncmp(col_name, "UNREAD", len) == 0) {
+        ZVAL_LONG(value, brd->unread);
+    } else if (strncmp(col_name, "ZAPPED", len) == 0) {
+        ZVAL_LONG(value, brd->zap);
+    } else if (strncmp(col_name, "CLASS", len) == 0) {
+        ZVAL_STRINGL(value, brd->title + 1, 6, 1);
+    } else if (strncmp(col_name, "DESC", len) == 0) {
+        ZVAL_STRING(value, brd->title + 13, 1);
+    } else if (strncmp(col_name, "NAME", len) == 0) {
+        ZVAL_STRING(value, brd->name, 1);
+    } else if (strncmp(col_name, "BM", len) == 0) {
+        ZVAL_STRING(value, brd->BM, 1);
+    } else {
+        ZVAL_EMPTY_STRING(value);
+    }
 }
 
-extern int     brdnum;
+extern int brdnum;
 
 /**
  * Fetch all boards which have given prefix into an array.
@@ -798,93 +786,95 @@ extern int     brdnum;
  */
 static ZEND_FUNCTION(bbs_getboards)
 {
-	/*
-	 * TODO: The name of "yank" must be changed, this name is totally
-	 * shit, but I don't know which name is better this time.
-	 */
-	char *prefix;
-	int plen;
-	int yank;
-	int rows = 0;
-	struct newpostdata newpost_buffer[MAXBOARD];
-	struct newpostdata *ptr;
-	zval **columns;
-	zval *element;
-	int i;
-	int j;
-	int ac = ZEND_NUM_ARGS();
-	int brdnum,yank_flag;
+    /*
+     * TODO: The name of "yank" must be changed, this name is totally
+     * shit, but I don't know which name is better this time.
+     */
+    char *prefix;
+    int plen;
+    int yank;
+    int rows = 0;
+    struct newpostdata newpost_buffer[MAXBOARD];
+    struct newpostdata *ptr;
+    zval **columns;
+    zval *element;
+    int i;
+    int j;
+    int ac = ZEND_NUM_ARGS();
+    int brdnum, yank_flag;
 
-	/* getting arguments */
-	if (ac != 2 
-		|| zend_parse_parameters(2 TSRMLS_CC, "sl", &prefix, &plen, &yank) == FAILURE)
-	{
-		WRONG_PARAM_COUNT;
-	}
+    /*
+     * getting arguments 
+     */
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &prefix, &plen, &yank) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
 
-	/* loading boards */
-	/* handle some global variables: currentuser, yank, brdnum, 
-	 * nbrd.
-	 */
-	/* NOTE: currentuser SHOULD had been set in funcs.php, 
-	 * but we still check it. */
-	if (currentuser == NULL)
-	{
-		RETURN_FALSE;
-	}
-	yank_flag = yank;
-	if (strcmp(currentuser->userid, "guest") == 0)
-		yank_flag = 1; /* see all boards including zapped boards. */
-	if (yank_flag != 0)
-		yank_flag = 1;
-	brdnum = 0;
-	/* TODO: replace load_board() with a new one, without accessing
-	 * global variables. */
-	if ((brdnum=load_boards(newpost_buffer,prefix,1,MAXBOARD,1,yank_flag,NULL)) <= 0)
-	{
-		RETURN_FALSE;
-	}
-	/*
-	qsort( nbrd, brdnum, sizeof( nbrd[0] ), 
-		   (int (*)(const void *, const void *))bbs_cmpboard );
-		   */
-	rows = brdnum; /* number of loaded boards */
+    /*
+     * loading boards 
+     */
+    /*
+     * handle some global variables: currentuser, yank, brdnum, 
+     * * nbrd.
+     */
+    /*
+     * NOTE: currentuser SHOULD had been set in funcs.php, 
+     * * but we still check it. 
+     */
+    if (currentuser == NULL) {
+        RETURN_FALSE;
+    }
+    yank_flag = yank;
+    if (strcmp(currentuser->userid, "guest") == 0)
+        yank_flag = 1;          /* see all boards including zapped boards. */
+    if (yank_flag != 0)
+        yank_flag = 1;
+    brdnum = 0;
+    /*
+     * TODO: replace load_board() with a new one, without accessing
+     * * global variables. 
+     */
+    if ((brdnum = load_boards(newpost_buffer, prefix, 1, MAXBOARD, 1, yank_flag, NULL)) <= 0) {
+        RETURN_FALSE;
+    }
+    /*
+     * qsort( nbrd, brdnum, sizeof( nbrd[0] ), 
+     * (int (*)(const void *, const void *))bbs_cmpboard );
+     */
+    rows = brdnum;              /* number of loaded boards */
 
-	/* fill data in output array. */
-	/* setup column names */
-	if (array_init(return_value) == FAILURE)
-	{
-		RETURN_FALSE;
-	}
-	columns = emalloc(BOARD_COLUMNS * sizeof(zval*));
-	for (i = 0; i < BOARD_COLUMNS; i++)
-	{
-		MAKE_STD_ZVAL(element);
-		array_init(element);
-		columns[i] = element;
-		zend_hash_update(Z_ARRVAL_P(return_value), 
-				brd_col_names[i], strlen(brd_col_names[i])+1,
-				(void *) &element, sizeof(zval *), NULL);
-	}
-	/* fill data for each column */
-	for (i = 0; i < rows; i++)
-	{
-		ptr = &newpost_buffer[i];
-		check_newpost(ptr);
-		for (j = 0; j < BOARD_COLUMNS; j++)
-		{
-			MAKE_STD_ZVAL(element);
-			bbs_make_board_zval(element, brd_col_names[j], ptr);
-			zend_hash_index_update(Z_ARRVAL_P(columns[j]), i,
-				   	(void*) &element, sizeof(zval*), NULL);
-		}
-	}
-	efree(columns);
+    /*
+     * fill data in output array. 
+     */
+    /*
+     * setup column names 
+     */
+    if (array_init(return_value) == FAILURE) {
+        RETURN_FALSE;
+    }
+    columns = emalloc(BOARD_COLUMNS * sizeof(zval *));
+    for (i = 0; i < BOARD_COLUMNS; i++) {
+        MAKE_STD_ZVAL(element);
+        array_init(element);
+        columns[i] = element;
+        zend_hash_update(Z_ARRVAL_P(return_value), brd_col_names[i], strlen(brd_col_names[i]) + 1, (void *) &element, sizeof(zval *), NULL);
+    }
+    /*
+     * fill data for each column 
+     */
+    for (i = 0; i < rows; i++) {
+        ptr = &newpost_buffer[i];
+        check_newpost(ptr);
+        for (j = 0; j < BOARD_COLUMNS; j++) {
+            MAKE_STD_ZVAL(element);
+            bbs_make_board_zval(element, brd_col_names[j], ptr);
+            zend_hash_index_update(Z_ARRVAL_P(columns[j]), i, (void *) &element, sizeof(zval *), NULL);
+        }
+    }
+    efree(columns);
 }
 
-static void
-bbs_make_article_array(zval *array, struct fileheader *fh, char *flags,
-						size_t flags_len)
+static void bbs_make_article_array(zval * array, struct fileheader *fh, char *flags, size_t flags_len)
 {
     add_assoc_string(array, "FILENAME", fh->filename, 1);
     add_assoc_long(array, "ID", fh->id);
@@ -896,6 +886,7 @@ bbs_make_article_array(zval *array, struct fileheader *fh, char *flags,
     add_assoc_string(array, "TITLE", fh->title, 1);
     add_assoc_long(array, "LEVEL", fh->level);
     add_assoc_stringl(array, "FLAGS", flags, flags_len, 1);
+    add_assoc_long(array, "ATTACHPOS", fh->attachment);
 }
 
 /**
@@ -909,76 +900,74 @@ bbs_make_article_array(zval *array, struct fileheader *fh, char *flags,
  */
 static ZEND_FUNCTION(bbs_getarticles)
 {
-	char *board;
-	int blen;
-	int start;
-	int num;
-	int mode;
-	char dirpath[STRLEN];
-	int total;
-	struct fileheader *articles;
-	struct boardheader *bp;
-	int rows;
-	int i;
-	zval *element;
-	int is_bm;
-	char flags[3]; /* flags[0]: flag character
-					* flags[1]: imported flag
-					* flags[2]: no reply flag
-					*/
-	int ac = ZEND_NUM_ARGS();
+    char *board;
+    int blen;
+    int start;
+    int num;
+    int mode;
+    char dirpath[STRLEN];
+    int total;
+    struct fileheader *articles;
+    struct boardheader *bp;
+    int rows;
+    int i;
+    zval *element;
+    int is_bm;
+    char flags[3];              /* flags[0]: flag character
+                                 * flags[1]: imported flag
+                                 * flags[2]: no reply flag
+                                 */
+    int ac = ZEND_NUM_ARGS();
 
-	/* getting arguments */
-	if (ac != 4
-		|| zend_parse_parameters(4 TSRMLS_CC, "slll", &board, &blen, &start, &num, &mode) == FAILURE)
-	{
-		WRONG_PARAM_COUNT;
-	}
+    /*
+     * getting arguments 
+     */
+    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "slll", &board, &blen, &start, &num, &mode) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
 
-	/* checking arguments */
-	if (currentuser == NULL)
-	{
-		RETURN_FALSE;
-	}
-	if ((bp = getbcache(board)) == NULL)
-	{
-		RETURN_FALSE;
-	}
-	is_bm = is_BM(bp, currentuser);
-	setbdir(mode, dirpath, board);
-	total = get_num_records(dirpath, sizeof(struct fileheader));
-	if (start > (total - num + 1))
-		start = (total - num + 1);
-	if (start <= 0)
-		start = 1;
+    /*
+     * checking arguments 
+     */
+    if (currentuser == NULL) {
+        RETURN_FALSE;
+    }
+    if ((bp = getbcache(board)) == NULL) {
+        RETURN_FALSE;
+    }
+    is_bm = is_BM(bp, currentuser);
+    setbdir(mode, dirpath, board);
+    total = get_num_records(dirpath, sizeof(struct fileheader));
+    if (start > (total - num + 1))
+        start = (total - num + 1);
+    if (start <= 0)
+        start = 1;
 
-	/* fetching articles */
-	if (array_init(return_value) == FAILURE)
-	{
-		RETURN_FALSE;
-	}
-	brc_initial(currentuser->userid, board);
-	articles = emalloc(num * sizeof(struct fileheader));
-	rows = get_records(dirpath, articles, sizeof(struct fileheader), start,
-			num);
-	for (i = 0; i < rows; i++)
-	{
-		MAKE_STD_ZVAL(element);
-		array_init(element);
-		flags[0] = get_article_flag(articles + i, currentuser, board,is_bm);
-		if (is_bm && (articles[i].accessed[0] & FILE_IMPORTED))
-			flags[1] = 'y';
-		else
-			flags[1] = 'n';
-		if (articles[i].accessed[1] & FILE_READ)
-			flags[2] = 'y';
-		else
-			flags[2] = 'n';
-		bbs_make_article_array(element, articles + i, flags, sizeof(flags));
-		zend_hash_index_update(Z_ARRVAL_P(return_value), i,
-				(void*) &element, sizeof(zval*), NULL);
-	}
-	efree(articles);
+    /*
+     * fetching articles 
+     */
+    if (array_init(return_value) == FAILURE) {
+        RETURN_FALSE;
+    }
+    brc_initial(currentuser->userid, board);
+    articles = emalloc(num * sizeof(struct fileheader));
+    rows = get_records(dirpath, articles, sizeof(struct fileheader), start, num);
+    for (i = 0; i < rows; i++) {
+        MAKE_STD_ZVAL(element);
+        array_init(element);
+        flags[0] = get_article_flag(articles + i, currentuser, board, is_bm);
+        if (is_bm && (articles[i].accessed[0] & FILE_IMPORTED))
+            flags[1] = 'y';
+        else
+            flags[1] = 'n';
+        if (articles[i].accessed[1] & FILE_READ)
+            flags[2] = 'y';
+        else
+            flags[2] = 'n';
+        bbs_make_article_array(element, articles + i, flags, sizeof(flags));
+        zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
+    }
+    efree(articles);
 }
 
 /**
@@ -992,26 +981,25 @@ static ZEND_FUNCTION(bbs_getarticles)
  */
 static ZEND_FUNCTION(bbs_countarticles)
 {
-	int brdnum;
-	int mode;
-	const struct boardheader *bp = NULL;
-	char dirpath[STRLEN];
-	int total;
-	int ac = ZEND_NUM_ARGS();
+    int brdnum;
+    int mode;
+    const struct boardheader *bp = NULL;
+    char dirpath[STRLEN];
+    int total;
+    int ac = ZEND_NUM_ARGS();
 
-	/* getting arguments */
-	if (ac != 2 
-		|| zend_parse_parameters(2 TSRMLS_CC, "ll", &brdnum, &mode) == FAILURE)
-	{
-		WRONG_PARAM_COUNT;
-	}
-	if ((bp = getboard(brdnum)) == NULL)
-	{
-		RETURN_LONG(-1);
-	}
-	setbdir(mode, dirpath, bp->filename);
-	total = get_num_records(dirpath, sizeof(struct fileheader));
-	RETURN_LONG(total);
+    /*
+     * getting arguments 
+     */
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll", &brdnum, &mode) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    if ((bp = getboard(brdnum)) == NULL) {
+        RETURN_LONG(-1);
+    }
+    setbdir(mode, dirpath, bp->filename);
+    total = get_num_records(dirpath, sizeof(struct fileheader));
+    RETURN_LONG(total);
 }
 
 /**
@@ -1104,27 +1092,25 @@ static ZEND_FUNCTION(bbs_get_records_from_id)
  */
 static ZEND_FUNCTION(bbs_is_bm)
 {
-	int brdnum;
-	int usernum;
-	const struct boardheader *bp = NULL;
-	const struct userec *up = NULL;
-	int ac = ZEND_NUM_ARGS();
+    int brdnum;
+    int usernum;
+    const struct boardheader *bp = NULL;
+    const struct userec *up = NULL;
+    int ac = ZEND_NUM_ARGS();
 
-	/* getting arguments */
-	if (ac != 2 
-		|| zend_parse_parameters(2 TSRMLS_CC, "ll", &brdnum, &usernum) == FAILURE)
-	{
-		WRONG_PARAM_COUNT;
-	}
-	if ((bp = getboard(brdnum)) == NULL)
-	{
-		RETURN_LONG(0);
-	}
-	if ((up = getuserbynum(usernum)) == NULL)
-	{
-		RETURN_LONG(0);
-	}
-	RETURN_LONG(is_BM(bp, up));
+    /*
+     * getting arguments 
+     */
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll", &brdnum, &usernum) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    if ((bp = getboard(brdnum)) == NULL) {
+        RETURN_LONG(0);
+    }
+    if ((up = getuserbynum(usernum)) == NULL) {
+        RETURN_LONG(0);
+    }
+    RETURN_LONG(is_BM(bp, up));
 }
 
 static ZEND_FUNCTION(bbs_checkreadperm)
@@ -1202,22 +1188,21 @@ static ZEND_FUNCTION(bbs_ann_get_board)
  */
 static ZEND_FUNCTION(bbs_getannpath)
 {
-	char *board;
-	int board_len;
-	char buf[256];
-	int ac = ZEND_NUM_ARGS();
+    char *board;
+    int board_len;
+    char buf[256];
+    int ac = ZEND_NUM_ARGS();
 
-	/* getting arguments */
-	if (ac != 1 
-		|| zend_parse_parameters(1 TSRMLS_CC, "s", &board, &board_len) == FAILURE)
-	{
-		WRONG_PARAM_COUNT;
-	}
-	if (ann_get_path(board, buf, sizeof(buf)) < 0)
-	{
-		RETURN_FALSE;
-	}
-	RETURN_STRING(buf, 1);
+    /*
+     * getting arguments 
+     */
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &board, &board_len) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    if (ann_get_path(board, buf, sizeof(buf)) < 0) {
+        RETURN_FALSE;
+    }
+    RETURN_STRING(buf, 1);
 }
 
 /**
@@ -1232,8 +1217,8 @@ static ZEND_FUNCTION(bbs_getannpath)
  */
 static ZEND_FUNCTION(bbs_getmailnum)
 {
-    zval *total,*unread;
-    char* userid;
+    zval *total, *unread;
+    char *userid;
     int userid_len;
     struct fileheader x;
     char path[80];
@@ -1241,17 +1226,16 @@ static ZEND_FUNCTION(bbs_getmailnum)
     int ac = ZEND_NUM_ARGS();
     int fd;
 
-    if (ac != 3
-        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "szz", &userid,&userid_len,&total,&unread) == FAILURE)
-    {
+    if (ac != 3 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "szz", &userid, &userid_len, &total, &unread) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
-    if (userid_len>IDLEN)
+    if (userid_len > IDLEN)
         WRONG_PARAM_COUNT;
 
-    /* check for parameter being passed by reference */
-    if (!PZVAL_IS_REF(total)||!PZVAL_IS_REF(unread))
-    {
+    /*
+     * check for parameter being passed by reference 
+     */
+    if (!PZVAL_IS_REF(total) || !PZVAL_IS_REF(unread)) {
         zend_error(E_WARNING, "Parameter wasn't passed by reference");
         RETURN_FALSE;
     }
@@ -1260,13 +1244,15 @@ static ZEND_FUNCTION(bbs_getmailnum)
     fd = open(path, O_RDONLY);
     if (fd == -1)
         RETURN_FALSE;
-    while (read(fd,&x, sizeof(x)) > 0) {
+    while (read(fd, &x, sizeof(x)) > 0) {
         totalcount++;
         if (!(x.accessed[0] & FILE_READ))
             unreadcount++;
     }
     close(fd);
-    /* make changes to the parameter */
+    /*
+     * make changes to the parameter 
+     */
     ZVAL_LONG(total, totalcount);
     ZVAL_LONG(unread, unreadcount);
     RETURN_TRUE;
@@ -1282,13 +1268,12 @@ static ZEND_FUNCTION(bbs_getmailnum)
  */
 static ZEND_FUNCTION(bbs_getmailnum2)
 {
-    char* path;
+    char *path;
     int path_len;
 
     int ac = ZEND_NUM_ARGS();
-    if (ac != 1
-        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &path,&path_len) == FAILURE)
-    {
+
+    if (ac != 1 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "s", &path, &path_len) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
 
@@ -1307,68 +1292,70 @@ static ZEND_FUNCTION(bbs_getmailnum2)
  */
 static ZEND_FUNCTION(bbs_getmails)
 {
-    	char* mailpath;
-    	int mailpath_len;
-    	int total,rows,i;
+    char *mailpath;
+    int mailpath_len;
+    int total, rows, i;
 
-	struct fileheader *mails;
-	zval *element;
-	char flags[2]; /* flags[0]: status
-			* flags[1]: reply status
-			*/
-	int ac = ZEND_NUM_ARGS();
+    struct fileheader *mails;
+    zval *element;
+    char flags[2];              /* flags[0]: status
+                                 * flags[1]: reply status
+                                 */
+    int ac = ZEND_NUM_ARGS();
 
-	/* getting arguments */
-	if (ac != 1
-		|| zend_parse_parameters(1 TSRMLS_CC, "s", &mailpath,&mailpath_len) == FAILURE)
-	{
-		WRONG_PARAM_COUNT;
-	}
+    /*
+     * getting arguments 
+     */
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &mailpath, &mailpath_len) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
 
-	total = getmailnum(mailpath);
-	if(!total)RETURN_LONG(-1);
+    total = getmailnum(mailpath);
+    if (!total)
+        RETURN_LONG(-1);
 
-	/* fetching mails */
-	if (array_init(return_value) == FAILURE)
-	{
-		RETURN_FALSE;
-	}
+    /*
+     * fetching mails 
+     */
+    if (array_init(return_value) == FAILURE) {
+        RETURN_FALSE;
+    }
 
-	mails = emalloc(total * sizeof(struct fileheader));
-	if(!mails)RETURN_FALSE;
-	rows = get_records(mailpath, mails, sizeof(struct fileheader), 1,total);
-	if(rows == -1)RETURN_FALSE;
-	for (i = 0; i < rows; i++)
-	{
-		MAKE_STD_ZVAL(element);
-		array_init(element);
-		if (mails[i].accessed[0] & FILE_READ) {
-			if (mails[i].accessed[0] & FILE_MARKED)
-				flags[0] = 'm';
-			else
-				flags[0] = ' ';
-		} else {
-			if (mails[i].accessed[0] & FILE_MARKED)
-				flags[0] = 'M';
-			else
-				flags[0] = 'N';
-			}
-		if (mails[i].accessed[0] & FILE_REPLIED) {
-			if (mails[i].accessed[0] & FILE_FORWARDED)
-				flags[1] = 'A';
-			else
-				flags[1] = 'R';
-		} else {
-			if (mails[i].accessed[0] & FILE_FORWARDED)
-				flags[1] = 'F';
-			else
-				flags[1] = ' ';
-			}
-		bbs_make_article_array(element, mails + i, flags, sizeof(flags));
-		zend_hash_index_update(Z_ARRVAL_P(return_value), i,
-			(void*) &element, sizeof(zval*), NULL);
-	}
-	efree(mails);
+    mails = emalloc(total * sizeof(struct fileheader));
+    if (!mails)
+        RETURN_FALSE;
+    rows = get_records(mailpath, mails, sizeof(struct fileheader), 1, total);
+    if (rows == -1)
+        RETURN_FALSE;
+    for (i = 0; i < rows; i++) {
+        MAKE_STD_ZVAL(element);
+        array_init(element);
+        if (mails[i].accessed[0] & FILE_READ) {
+            if (mails[i].accessed[0] & FILE_MARKED)
+                flags[0] = 'm';
+            else
+                flags[0] = ' ';
+        } else {
+            if (mails[i].accessed[0] & FILE_MARKED)
+                flags[0] = 'M';
+            else
+                flags[0] = 'N';
+        }
+        if (mails[i].accessed[0] & FILE_REPLIED) {
+            if (mails[i].accessed[0] & FILE_FORWARDED)
+                flags[1] = 'A';
+            else
+                flags[1] = 'R';
+        } else {
+            if (mails[i].accessed[0] & FILE_FORWARDED)
+                flags[1] = 'F';
+            else
+                flags[1] = ' ';
+        }
+        bbs_make_article_array(element, mails + i, flags, sizeof(flags));
+        zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
+    }
+    efree(mails);
 }
 
 /**
@@ -1383,52 +1370,52 @@ static ZEND_FUNCTION(bbs_getmails)
  */
 static ZEND_FUNCTION(bbs_loadmaillist)
 {
-    	char* userid;
-    	int userid_len;
-	char buf[10];
-	struct _mail_list maillist;
+    char *userid;
+    int userid_len;
+    char buf[10];
+    struct _mail_list maillist;
 
-	struct userec* user;
-    	int i;
-	zval *element;
+    struct userec *user;
+    int i;
+    zval *element;
 
-	int ac = ZEND_NUM_ARGS();
+    int ac = ZEND_NUM_ARGS();
 
-	/* getting arguments */
-	if (ac != 1
-		|| zend_parse_parameters(1 TSRMLS_CC, "s", &userid,&userid_len) == FAILURE)
-	{
-		WRONG_PARAM_COUNT;
-	}
-	if (userid_len > IDLEN)RETURN_FALSE;
+    /*
+     * getting arguments 
+     */
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    if (userid_len > IDLEN)
+        RETURN_FALSE;
 
-	if (!getuser(userid,&user))RETURN_FALSE;
-	load_mail_list(user,&maillist);
+    if (!getuser(userid, &user))
+        RETURN_FALSE;
+    load_mail_list(user, &maillist);
 
-	if(maillist.mail_list_t < 0 || maillist.mail_list_t > MAILBOARDNUM)//no custom mail box
-	{
-		RETURN_FALSE;
-	}
+    if (maillist.mail_list_t < 0 || maillist.mail_list_t > MAILBOARDNUM)        //no custom mail box
+    {
+        RETURN_FALSE;
+    }
 
-	if(!maillist.mail_list_t)RETURN_LONG(-1);
+    if (!maillist.mail_list_t)
+        RETURN_LONG(-1);
 
-	if (array_init(return_value) == FAILURE)
-	{
-		RETURN_FALSE;
-	}
+    if (array_init(return_value) == FAILURE) {
+        RETURN_FALSE;
+    }
 
-	for (i = 0; i < maillist.mail_list_t; i++)
-	{
-		MAKE_STD_ZVAL(element);
-		array_init(element);
-		sprintf(buf,".%s",maillist.mail_list[i]+30);
-		//assign_maillist(element,maillist.mail_list[i],buf);
-		add_assoc_string(element,"boxname",maillist.mail_list[i],1);
-		add_assoc_string(element,"pathname",buf,1);
-		zend_hash_index_update(Z_ARRVAL_P(return_value), i,
-			(void*) &element, sizeof(zval*), NULL);
+    for (i = 0; i < maillist.mail_list_t; i++) {
+        MAKE_STD_ZVAL(element);
+        array_init(element);
+        sprintf(buf, ".%s", maillist.mail_list[i] + 30);
+        //assign_maillist(element,maillist.mail_list[i],buf);
+        add_assoc_string(element, "boxname", maillist.mail_list[i], 1);
+        add_assoc_string(element, "pathname", buf, 1);
+        zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
 
-	}
+    }
 }
 
 /**
@@ -1444,69 +1431,74 @@ static ZEND_FUNCTION(bbs_loadmaillist)
  */
 static ZEND_FUNCTION(bbs_changemaillist)
 {
-    	char* boxname;
-    	int boxname_len;
-	char* userid;
-	int userid_len;
-	zend_bool bAdd;
-	int index;
+    char *boxname;
+    int boxname_len;
+    char *userid;
+    int userid_len;
+    zend_bool bAdd;
+    int index;
 
-	struct _mail_list maillist;
-	char buf[10],path[PATHLEN];
+    struct _mail_list maillist;
+    char buf[10], path[PATHLEN];
 
-	struct userec* user;
-    	int i;
-	struct stat st;
-	zval *element;
+    struct userec *user;
+    int i;
+    struct stat st;
+    zval *element;
 
-	int ac = ZEND_NUM_ARGS();
+    int ac = ZEND_NUM_ARGS();
 
-	/* getting arguments */
-	if (ac != 4
-		|| zend_parse_parameters(4 TSRMLS_CC, "bssl", &bAdd,&userid,&userid_len,&boxname,&boxname_len,&index) == FAILURE)
-	{
-		WRONG_PARAM_COUNT;
-	}
-	if (userid_len > IDLEN)RETURN_LONG(0);
-	if (boxname_len > 29)boxname[29]='\0';
+    /*
+     * getting arguments 
+     */
+    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "bssl", &bAdd, &userid, &userid_len, &boxname, &boxname_len, &index) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    if (userid_len > IDLEN)
+        RETURN_LONG(0);
+    if (boxname_len > 29)
+        boxname[29] = '\0';
 
-	if (!getuser(userid,&user))RETURN_LONG(0);
-	load_mail_list(user,&maillist);
+    if (!getuser(userid, &user))
+        RETURN_LONG(0);
+    load_mail_list(user, &maillist);
 
-	if(maillist.mail_list_t < 0 || maillist.mail_list_t > MAILBOARDNUM)//no custom mail box
-	{
-		RETURN_LONG(0);
-	}
+    if (maillist.mail_list_t < 0 || maillist.mail_list_t > MAILBOARDNUM)        //no custom mail box
+    {
+        RETURN_LONG(0);
+    }
 
-	if(bAdd) //add
-	{
-		if(maillist.mail_list_t == MAILBOARDNUM)RETURN_LONG(MAILBOARDNUM);  //最大值了
-		i = 0;
-		while(1)           //search for new mailbox path name
-		{
-			i++;
-			sprintf(buf,".MAILBOX%d",i);
-			setmailfile(path,currentuser->userid,buf);
-			if(stat(path,&st) == -1)break;
-		}
-		sprintf(buf,"MAILBOX%d",i);
-		strcpy(maillist.mail_list[maillist.mail_list_t],boxname);
-		strcpy(maillist.mail_list[maillist.mail_list_t]+30,buf);
-		maillist.mail_list_t +=1;
-		save_mail_list(&maillist);
-	}
-	else //delete
-	{
-		if(index < 0 || index > maillist.mail_list_t - 1)RETURN_LONG(-1);
-		maillist.mail_list_t -=1;
-		if(index != maillist.mail_list_t - 1)//it is not the last one
-		{
-			strncpy(maillist.mail_list[index],maillist.mail_list[index+1],30);
-			strncpy(maillist.mail_list[index]+30,maillist.mail_list[index+1]+30,10);
-		}
-		save_mail_list(&maillist);
-	}
-	RETURN_LONG(-1);
+    if (bAdd)                   //add
+    {
+        if (maillist.mail_list_t == MAILBOARDNUM)
+            RETURN_LONG(MAILBOARDNUM);  //最大值了
+        i = 0;
+        while (1)               //search for new mailbox path name
+        {
+            i++;
+            sprintf(buf, ".MAILBOX%d", i);
+            setmailfile(path, currentuser->userid, buf);
+            if (stat(path, &st) == -1)
+                break;
+        }
+        sprintf(buf, "MAILBOX%d", i);
+        strcpy(maillist.mail_list[maillist.mail_list_t], boxname);
+        strcpy(maillist.mail_list[maillist.mail_list_t] + 30, buf);
+        maillist.mail_list_t += 1;
+        save_mail_list(&maillist);
+    } else                      //delete
+    {
+        if (index < 0 || index > maillist.mail_list_t - 1)
+            RETURN_LONG(-1);
+        maillist.mail_list_t -= 1;
+        if (index != maillist.mail_list_t - 1)  //it is not the last one
+        {
+            strncpy(maillist.mail_list[index], maillist.mail_list[index + 1], 30);
+            strncpy(maillist.mail_list[index] + 30, maillist.mail_list[index + 1] + 30, 10);
+        }
+        save_mail_list(&maillist);
+    }
+    RETURN_LONG(-1);
 }
 
 /**
@@ -1521,32 +1513,33 @@ static ZEND_FUNCTION(bbs_changemaillist)
  */
 static ZEND_FUNCTION(bbs_getwebmsg)
 {
-    zval *retsrcid,*msgbuf,*srcutmpent;
+    zval *retsrcid, *msgbuf, *srcutmpent;
     int ac = ZEND_NUM_ARGS();
     int srcutmp;
     char buf[MSG_LEN + 1];
     char srcid[IDLEN + 1];
 
-    if (ac != 3
-        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zzz", &retsrcid,&msgbuf,&srcutmpent) == FAILURE)
-    {
+    if (ac != 3 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "zzz", &retsrcid, &msgbuf, &srcutmpent) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
 
-    /* check for parameter being passed by reference */
-    if (!PZVAL_IS_REF(retsrcid)||!PZVAL_IS_REF(msgbuf)||!PZVAL_IS_REF(srcutmpent))
-    {
+    /*
+     * check for parameter being passed by reference 
+     */
+    if (!PZVAL_IS_REF(retsrcid) || !PZVAL_IS_REF(msgbuf) || !PZVAL_IS_REF(srcutmpent)) {
         zend_error(E_WARNING, "Parameter wasn't passed by reference");
         RETURN_FALSE;
     }
 
     if (receive_webmsg(currentuinfonum, currentuser->userid, &srcutmp, srcid, buf) == 0) {
-        ZVAL_STRING(retsrcid, srcid,1);
-        ZVAL_STRING(msgbuf, buf,1);
+        ZVAL_STRING(retsrcid, srcid, 1);
+        ZVAL_STRING(msgbuf, buf, 1);
         ZVAL_LONG(srcutmpent, srcutmp);
         RETURN_TRUE;
     }
-    /* make changes to the parameter */
+    /*
+     * make changes to the parameter 
+     */
     RETURN_FALSE;
 }
 
@@ -1565,57 +1558,47 @@ extern char msgerr[255];
 static ZEND_FUNCTION(bbs_sendwebmsg)
 {
     char *destid;
-	int destid_len;
+    int destid_len;
     char *msg;
-	int msg_len;
+    int msg_len;
     int destutmp;
-	zval *z_errmsg;
-	int result;
-	int i;
+    zval *z_errmsg;
+    int result;
+    int i;
     int ac = ZEND_NUM_ARGS();
 
-    if (ac != 4
-        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sslz", &destid, &destid_len, &msg, &msg_len, &destutmp, &z_errmsg) == FAILURE)
-    {
+    if (ac != 4 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "sslz", &destid, &destid_len, &msg, &msg_len, &destutmp, &z_errmsg) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
 
-    /* check for parameter being passed by reference */
-    if (!PZVAL_IS_REF(z_errmsg))
-    {
+    /*
+     * check for parameter being passed by reference 
+     */
+    if (!PZVAL_IS_REF(z_errmsg)) {
         zend_error(E_WARNING, "Parameter wasn't passed by reference");
         RETURN_FALSE;
     }
-	if (!msg_can_sendmsg(destid, destutmp))
-	{
-		ZVAL_STRING(z_errmsg, "无法发送讯息", 1);
-		RETURN_FALSE;
-	}
-	if (!strcasecmp(destid, currentuser->userid))
-	{
-		ZVAL_STRING(z_errmsg, "你不能给自己发讯息", 1);
-		RETURN_FALSE;
-	}
-	if ((result = send_msg(currentuser->userid, get_utmpent_num(u_info), 
-					destid, destutmp, msg)) == 1)
-	{
-		ZVAL_STRING(z_errmsg, "已经帮你送出讯息", 1);
-		RETURN_TRUE;
-	}
-	else if (result == -1)
-	{
-		char buf[STRLEN];
+    if (!msg_can_sendmsg(destid, destutmp)) {
+        ZVAL_STRING(z_errmsg, "无法发送讯息", 1);
+        RETURN_FALSE;
+    }
+    if (!strcasecmp(destid, currentuser->userid)) {
+        ZVAL_STRING(z_errmsg, "你不能给自己发讯息", 1);
+        RETURN_FALSE;
+    }
+    if ((result = send_msg(currentuser->userid, get_utmpent_num(u_info), destid, destutmp, msg)) == 1) {
+        ZVAL_STRING(z_errmsg, "已经帮你送出讯息", 1);
+        RETURN_TRUE;
+    } else if (result == -1) {
+        char buf[STRLEN];
 
-		snprintf(buf, sizeof(buf), "发送讯息失败，%s", msgerr);
-		ZVAL_STRING(z_errmsg, buf, 1);
-		RETURN_FALSE;
-	}
-	else
-	{
-		ZVAL_STRING(z_errmsg, 
-				"发送讯息失败，此人目前不在线或者无法接收讯息", 1);
-		RETURN_FALSE;
-	}
+        snprintf(buf, sizeof(buf), "发送讯息失败，%s", msgerr);
+        ZVAL_STRING(z_errmsg, buf, 1);
+        RETURN_FALSE;
+    } else {
+        ZVAL_STRING(z_errmsg, "发送讯息失败，此人目前不在线或者无法接收讯息", 1);
+        RETURN_FALSE;
+    }
 }
 
 /**
@@ -1631,23 +1614,23 @@ static ZEND_FUNCTION(bbs_sendwebmsg)
 static ZEND_FUNCTION(bbs_sethomefile)
 {
     char *userid, *file;
-    int userid_len, file_len=0;
+    int userid_len, file_len = 0;
     char buf[60];
     int ac = ZEND_NUM_ARGS();
-    if (ac==2)  {
-    	if (zend_parse_parameters(2 TSRMLS_CC, "ss", &userid, &userid_len, &file, &file_len) != SUCCESS)
+
+    if (ac == 2) {
+        if (zend_parse_parameters(2 TSRMLS_CC, "ss", &userid, &userid_len, &file, &file_len) != SUCCESS)
             WRONG_PARAM_COUNT;
-    } else
-    if (ac==1) {
-    	if (zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) != SUCCESS)
+    } else if (ac == 1) {
+        if (zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) != SUCCESS)
             WRONG_PARAM_COUNT;
     } else
         WRONG_PARAM_COUNT;
-    if (file_len!=0)
-        sethomefile(buf,userid, file);
+    if (file_len != 0)
+        sethomefile(buf, userid, file);
     else
-        sethomepath(buf,userid);
-    RETURN_STRING(buf,1);
+        sethomepath(buf, userid);
+    RETURN_STRING(buf, 1);
 }
 
 /**
@@ -1661,23 +1644,23 @@ static ZEND_FUNCTION(bbs_sethomefile)
 static ZEND_FUNCTION(bbs_setmailfile)
 {
     char *userid, *file;
-    int userid_len, file_len=0;
+    int userid_len, file_len = 0;
     char buf[60];
     int ac = ZEND_NUM_ARGS();
-    if (ac==2)  {
-    	if (zend_parse_parameters(2 TSRMLS_CC, "ss", &userid, &userid_len, &file, &file_len) != SUCCESS)
+
+    if (ac == 2) {
+        if (zend_parse_parameters(2 TSRMLS_CC, "ss", &userid, &userid_len, &file, &file_len) != SUCCESS)
             WRONG_PARAM_COUNT;
-    } else
-    if (ac==1) {
-    	if (zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) != SUCCESS)
+    } else if (ac == 1) {
+        if (zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) != SUCCESS)
             WRONG_PARAM_COUNT;
     } else
         WRONG_PARAM_COUNT;
-    if (file_len!=0)
-        setmailfile(buf,userid, file);
+    if (file_len != 0)
+        setmailfile(buf, userid, file);
     else
-        setmailpath(buf,userid);
-    RETURN_STRING(buf,1);
+        setmailpath(buf, userid);
+    RETURN_STRING(buf, 1);
 }
 
 
@@ -1693,25 +1676,23 @@ static ZEND_FUNCTION(bbs_setmailfile)
  */
 static ZEND_FUNCTION(bbs_mail_file)
 {
-	char *srcid;
-	int srcid_len;
-	char *filename;
-	int filename_len;
-	char *destid;
-	int destid_len;
-	char *title;
-	int title_len;
-	int is_move;
-	int ac = ZEND_NUM_ARGS();
+    char *srcid;
+    int srcid_len;
+    char *filename;
+    int filename_len;
+    char *destid;
+    int destid_len;
+    char *title;
+    int title_len;
+    int is_move;
+    int ac = ZEND_NUM_ARGS();
 
-    if (ac != 5
-        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ssssl", &srcid, &srcid_len, &filename, &filename_len, &destid, &destid_len, &title, &title_len, &is_move) == FAILURE)
-    {
+    if (ac != 5 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "ssssl", &srcid, &srcid_len, &filename, &filename_len, &destid, &destid_len, &title, &title_len, &is_move) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
-	if (mail_file(srcid, filename, destid, title, is_move) < 0)
-		RETURN_FALSE;
-	RETURN_TRUE;
+    if (mail_file(srcid, filename, destid, title, is_move) < 0)
+        RETURN_FALSE;
+    RETURN_TRUE;
 }
 
 /**
@@ -1729,16 +1710,14 @@ static ZEND_FUNCTION(bbs_update_uinfo)
     int field_len;
     int ac = ZEND_NUM_ARGS();
 
-    if (ac != 2
-        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sz", &field, &field_len, &value) == FAILURE)
-    {
+    if (ac != 2 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "sz", &field, &field_len, &value) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
-	
-    if (!strcmp(field,"invisible")) {
+
+    if (!strcmp(field, "invisible")) {
 /*	    conver_to_boolean_ex(&value);
  *	    */
-	    currentuinfo->invisible=Z_LVAL_P(value);
+        currentuinfo->invisible = Z_LVAL_P(value);
     }
     RETURN_LONG(0);
 }
@@ -1752,31 +1731,28 @@ static ZEND_FUNCTION(bbs_update_uinfo)
  *       FALSE on failure.
  * @author kcn
  */
- static ZEND_FUNCTION(bbs_setpassword)
+static ZEND_FUNCTION(bbs_setpassword)
 {
-	char *userid;
-	int userid_len;
-	char *password;
-	int password_len;
-	int ac = ZEND_NUM_ARGS();
-	struct userec* user;
+    char *userid;
+    int userid_len;
+    char *password;
+    int password_len;
+    int ac = ZEND_NUM_ARGS();
+    struct userec *user;
 
-    if (ac != 2
-        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &userid, &userid_len, &password, &password_len) == FAILURE)
-    {
+    if (ac != 2 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "ss", &userid, &userid_len, &password, &password_len) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
-    if (userid!=0)
-    {
-        if (getuser(userid,&user)==0)
+    if (userid != 0) {
+        if (getuser(userid, &user) == 0)
             RETURN_FALSE;
     } else
-        user=currentuser;
-    if (setpasswd(password, user)!= 1)
+        user = currentuser;
+    if (setpasswd(password, user) != 1)
         RETURN_FALSE;
     RETURN_TRUE;
 }
-	
+
 static ZEND_MINIT_FUNCTION(bbs_module_init)
 {
     zval *bbs_home;
@@ -1804,6 +1780,7 @@ static ZEND_MINIT_FUNCTION(bbs_module_init)
     REGISTER_LONG_CONSTANT("BBS_PERM_POSTMASK", PERM_POSTMASK, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_PERM_NOZAP", PERM_NOZAP, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_PERM_CLOAK", PERM_CLOAK, CONST_CS | CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("BBS_BOARD_ATTACH", BOARD_ATTACH, CONST_CS | CONST_PERSISTENT);
     chdir(old_pwd);
 #ifdef DEBUG
     zend_error(E_WARNING, "module init");
@@ -1830,7 +1807,7 @@ static ZEND_RINIT_FUNCTION(bbs_request_init)
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
     old_pwd[1023] = 0;
-	currentuser = NULL;
+    currentuser = NULL;
 #ifdef DEBUG
     zend_error(E_WARNING, "request init:%d %x", getpid(), getcurrentuinfo);
 #endif

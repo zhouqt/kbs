@@ -9,8 +9,8 @@ int main()
     int i;
     char userid[80], buf[512], buf2[512], path[512], file[512], board[512], title[80] = "",
     		oldfilename[80];
-    struct boardheader brdhdr;
     struct fileheader DirInfo;
+    bool attach=false;
 
     init_all();
     if (!loginok)
@@ -19,6 +19,9 @@ int main()
     strsncpy(file, getparm("file"), 20);
     strsncpy(title, getparm("title"), 50);
     strsncpy(oldfilename, getparm("refilename"), 80);
+    strsncpy(buf, getparm("attach"), 3);
+    if (atoi(buf)!=0)
+        attach=true;
     if (title[0] && strncmp(title, "Re: ", 4))
         sprintf(title, "Re: %s", getparm("title"));
     strsncpy(userid, getparm("userid"), 40);
@@ -30,7 +33,7 @@ int main()
         http_fatal("您不能回复本文");
     printf("<center>\n");
     printf("%s -- 发表文章 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser->userid);
-    printf("<form method=\"post\" action=\"bbssnd?board=%s&refilename=%s\">\n<table border=\"1\">\n", encode_url(buf, board, sizeof(buf)), oldfilename);
+    printf("<form name=\"postform\" method=\"post\" action=\"bbssnd?board=%s&refilename=%s\">\n<table border=\"1\">\n", encode_url(buf, board, sizeof(buf)), oldfilename);
     printf("<tr><td>");
     printf("<font color=\"green\">发文注意事项: <br>\n");
     printf("发文时应慎重考虑文章内容是否适合公开场合发表，请勿肆意灌水。谢谢您的合作。<br></font></td></tr>\n");
@@ -38,6 +41,8 @@ int main()
     printf("作者: %s<br>\n", currentuser->userid);
     printf("使用标题: <input type=\"text\" name=\"title\" size=\"40\" maxlength=\"100\" value=\"%s\">\n", encode_html(buf, void1(title), sizeof(buf)));
     printf("讨论区: [%s]<br>\n", board);
+    if (attach)
+        printf("<br />\n附件：<input type=\"text\" name=\"attachname\" size=\"50\" value=\"\" disabled > <br />");
     printf("使用签名档 <select name=\"signature\">\n");
     if (currentuser->signature == 0)
         printf("<option value=\"0\" selected>不使用签名档</option>\n");
@@ -93,7 +98,21 @@ int main()
     printf("</textarea></td></tr>\n");
     printf("<tr><td class=\"post\" align=\"center\">\n");
     printf("<input type=\"submit\" value=\"发表\"> \n");
-    printf("<input type=\"reset\" value=\"清除\"></td></tr>\n");
-    printf("</table></form>\n");
+    printf("<input type=\"reset\" value=\"清除\">\n");
+    if (attach) {
+        printf("<script language=\"JavaScript\">\n");
+        printf("<!--\n");
+        printf("   function GoAttachWindow(){     \n");
+        printf("    var hWnd = window.open(\"/bbsupload.php\",\"_blank\",\"width=600,height=300,scrollbars=yes\");  \n");
+        printf("    if ((document.window != null) && (!hWnd.opener))  \n");
+        printf("    hWnd.opener = document.window;  \n");
+        printf("    hWnd.focus();  \n");
+        printf("    return false;  \n");
+        printf("  }  \n");
+        printf("-->\n");
+        printf("</script>\n");
+        printf("<input type=\"button\" value=\"附件\" name=\"attach22\" onClick=\"GoAttachWindow()\">");
+    }
+    printf("</td></tr></table></form>\n");
     http_quit();
 }

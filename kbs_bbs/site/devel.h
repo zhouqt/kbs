@@ -359,7 +359,8 @@ typedef struct fileheader {     /* This structure is used to hold data in */
     char unused1[46];
     char innflag[2];
     char owner[OWNER_LEN];
-    char unused2[50];
+    char unused2[46];
+    off_t attachment;
     char title[STRLEN];
     unsigned level;
     unsigned char accessed[12]; /* struct size = 256 bytes */
@@ -396,4 +397,8 @@ extern const char *mailbox_prop_str[];
 #define MAX_MAILGROUP_NUM 30
 #define MAX_MAILGROUP_USERS 300
 
+/**
+attach define
+*/
+#define ATTACHTMPPATH "boards/_attach"
 #endif

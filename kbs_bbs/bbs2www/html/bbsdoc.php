@@ -89,7 +89,12 @@
 ?>
 <body>
 <center><p><?php echo $BBS_FULL_NAME; ?> -- [讨论区: <?php echo $brdarr["NAME"]; ?>] 版主[<?php echo $bm_url; ?>] 文章数[<?php echo $total; ?>] <a href="/cgi-bin/bbs/bbsbrdadd?board=<?php echo $brdarr["NAME"]; ?>">预定本版</a></p>
-<a href="bbspst.html?board=<?php echo $brd_encode; ?>&sig=<?php echo $currentuser["signature"]; ?>">发表文章</a>
+<a href="bbspst.html?board=<?php echo $brd_encode; ?>&sig=<?php echo $currentuser["signature"]; ?>&attach=<?php
+    if ($brdarr["FLAG"]&BBS_BOARD_ATTACH)
+    	echo 1;
+    else
+        echo 0;
+?>">发表文章</a>
 <a href="javascript:location=location">刷新</a>
 <?php
 		if ($page > 1)
@@ -191,7 +196,12 @@
 ?>
 </table>
 <hr class="default"/>
-<a href="bbspst.html?board=<?php echo $brd_encode; ?>&sig=<?php echo $currentuser["signature"]; ?>">发表文章</a>
+<a href="bbspst.html?board=<?php echo $brd_encode; ?>&sig=<?php echo $currentuser["signature"]; ?>&attach=<?php
+    if ($brdarr["FLAG"]&BBS_BOARD_ATTACH)
+    	echo 1;
+    else
+        echo 0;
+?>">发表文章</a>
 <a href="javascript:location=location">刷新</a>
 <?php
 		if ($page > 1)

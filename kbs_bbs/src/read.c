@@ -1286,9 +1286,9 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
             break;
         case SR_BMTMP:         /* Leeward 98.04.16 */
             if (-1 == B)
-                a_SeSave("0Announce", currboard, &SR_fptr, true);
+                a_SeSave("0Announce", currboard, &SR_fptr, true,currdirect,locmem->crs_line);
             else
-                a_Save("0Announce", currboard, &SR_fptr, true, currdirect, locmem->crs_line);
+                a_Save(NULL, currboard, &SR_fptr, true, currdirect, locmem->crs_line);
             break;
         }
         if (!isstart) {

@@ -17,6 +17,8 @@ global $loginok;
 global $currentuinfo_num;
 //global $currentuser;
 global $currentuuser_num;
+global $cachemode;
+$cachemode="";
 $currentuinfo=array ();
 $currentuser=array ();
 $dir_modes = array(
@@ -30,12 +32,19 @@ $dir_modes = array(
 	"AUTHOR" => 7,
 	"TITLE" => 8
 );
+$filename_trans = array(" " => "_", 
+	";" => "_", 
+	"|" => "_",
+	"&" => "_",
+	">" => "_",
+	"<" => "_",
+	"*" => "_"
+	);
 require("site.php");
 
 $loginok=0;
-header("Cache-Control: no-cache");
 
-  @$fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
+@$fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
   if ($fullfromhost=="") {
       @$fullfromhost=$_SERVER["REMOTE_ADDR"];
       $fromhost=$fullfromhost;
@@ -63,7 +72,11 @@ if ($utmpkey!="") {
 
 function valid_filename($fn)
 {
-	if ((strstr($fn,"..")!=FALSE)||(strstr($fn,"/")))
+	if ((strstr($fn,"..")!=FALSE)||(strstr($fn,"/")!=FALSE))
+		return 0;
+	if ( (strstr($fn,"&")!=FALSE)||(strstr($fn,";")!=FALSE)
+	   ||(strstr($fn,"|")!=FALSE)||(strstr($fn,"*")!=FALSE)
+	   ||(strstr($fn,"<")!=FALSE)||(strstr($fn,">")!=FALSE))
 		return 0;
 	return 1;
 }
@@ -92,15 +105,49 @@ window.location="/nologin.html";
 <?php
 }
 
-function html_init($charset)
+function cache_header($scope,$modifytime=0,$expiretime=300)
 {
+	global $cachemode;
+	session_cache_limiter($scope);
+	$cachemode=$scope;
+	if ($scope=="nocache")
+		return FALSE;
+	@$oldmodified=$_SERVER["HTTP_IF_MODIFIED_SINCE"];
+	if ($oldmodified!="") {
+                $oldtime=strtotime($oldmodified);
+	} else $oldtime=0;
+	if ($oldtime>=$modifytime) {
+		header("HTTP/1.1 304 Not Modified");
+	        header("Cache-Control: max-age=" . "$expiretime");
+		return TRUE;
+	}
+	header("Last-Modified: " . gmdate("D, d M Y H:i:s", $modifytime) . "GMT");
+	header("Expires: " . gmdate("D, d M Y H:i:s", $modifytime+$expiretime) . "GMT");
+	header("Cache-Control: max-age=" . "$expiretime");
+	return FALSE;
+}
+
+function html_init($charset,$title="")
+{
+	global $cachemode;
+	if ($cachemode=="")
+		cache_header("nocache");
 	@$css_style = $_COOKIE["STYLE"];
 ?>
-<html>
+<?xml version="1.0" encoding="<?php echo $charset; ?>"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <link rel="stylesheet" type="text/css" href="/ansi.css"/>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>"/>
 <?php
+        if ( func_num_args() > 1) {
+?>
+<title><?php echo $title; ?></title>
+<?php
+        }
 	switch ($css_style)
 	{
 	case 1:
@@ -152,6 +199,28 @@ function html_error_quit($err_msg)
 </html>
 <?php
 	exit;
+}
+
+function sizestring($size)
+{
+	if ($size<1024)
+	  return "$size";
+	$fsize=((double)$size)/1024;
+	if ($fsize<1024) {
+	  return sprintf("%01.2fk","$fsize");
+	}
+	$fsize=((double)$fsize)/1024;
+	if ($fsize<1024) {
+	  return sprintf("%01.2fM","$fsize");
+	}
+	$fsize=((double)$fsize)/1024;
+	if ($fsize<1024) {
+	  return sprintf("%01.2fG","$fsize");
+	}
+	$fsize=((double)$fsize)/1024;
+	if ($fsize<1024) {
+	  return sprintf("%01.2fT","$fsize");
+	}
 }
 
 function get_bbsfile($relative_name)

@@ -7,16 +7,22 @@
 水木清华 -- 发表文章 [使用者: <script language="JavaScript">document.write(getCookie("UTMPUSERID"));</script>]<hr color="green">
 <script language="JavaScript">
 <!--
-    document.write("<form method=post action='/cgi-bin/bbs/bbssnd?board="+queryString("board")+"&refilename='>");
+    document.write("<form name=\"postform\" method=post action='/cgi-bin/bbs/bbssnd?board="+queryString("board")+"&refilename='>");
 -->
 </script>
 <table border="1">
 <tr><td><font color="green">发文注意事项: <br>
 发文时应慎重考虑文章内容是否适合公开场合发表，请勿肆意灌水。谢谢您的合作。<br></font></td></tr>
 <tr><td>
-作者: <script language="JavaScript">document.write(getCookie("UTMPUSERID"));</script><br>
+作者: <script language="JavaScript">document.write(getCookie("UTMPUSERID"));</script><br />
 使用标题: <input type="text" name="title" size="40" maxlength="100" value="">
-讨论区: [<script language="JavaScript">document.write(queryString("board"));</script>]<br>
+讨论区: [<script language="JavaScript">document.write(queryString("board"));</script>]<br />
+<script language="JavaScript">
+<!--
+    if (queryString("attach",0)==1)
+    	document.write("附件：<input type=\"text\" name=\"attachname\" size=\"50\" value=\"\" disabled > ");
+-->
+</script>
 使用签名档 <select name="signature">
 <script language="JavaScript">
 <!--
@@ -45,7 +51,28 @@ for (i=1;i<=num;i++) {
 </textarea></td></tr>
 <tr><td class="post" align="center">
 <input type="submit" value="发表"> 
-<input type="reset" value="清除"></td></tr>
+<input type="reset" value="清除">
+<script language="JavaScript">
+<!--
+   function GoAttachWindow(){     
+	
+   	var hWnd = window.open("bbsupload.php","_blank","width=600,height=300,scrollbars=yes");  
+
+	if ((document.window != null) && (!hWnd.opener))  
+
+		   hWnd.opener = document.window;  
+
+	hWnd.focus();  
+
+   	return false;  
+
+   }  
+
+    if (queryString("attach",0)!=0)
+    	document.write("<input type=\"button\" name=\"attach22\" value=\"附件\" onclick=\"return GoAttachWindow()\">");
+-->
+</script>
+</td></tr>
 </table></form>
 
 </html>

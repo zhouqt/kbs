@@ -188,10 +188,14 @@ int UndeleteArticle(int ent, struct fileheader *fileinfo, char *direct)
     strcpy(UFile.owner, fileinfo->owner);
     strcpy(UFile.title, UTitle);
     strcpy(UFile.filename, fileinfo->filename);
-	if (UFile.filename[1] == '/')
-    	UFile.filename[2] = 'M';
-	else
-		UFile.filename[0] = 'M';
+    UFile.attachment=fileinfo->attachment;
+    UFile.accessed[0]=fileinfo->accessed[0];
+    UFile.accessed[1]=fileinfo->accessed[1]&(~FILE_DEL);
+
+    if (UFile.filename[1] == '/')
+        UFile.filename[2] = 'M';
+    else
+        UFile.filename[0] = 'M';
     UFile.id = fileinfo->id;
     UFile.groupid = fileinfo->groupid;
     UFile.reid = fileinfo->reid;
@@ -556,6 +560,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
     int manager;
     char *typeprefix;
     char *typesufix;
+    char attachch;
 
     typesufix = typeprefix = "";
 
@@ -599,45 +604,48 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
     /*
      * Re-Write By Excellent 
      */
-
+    if (ent->attachment!=0)
+        attachch='@';
+    else
+        attachch=' ';
     TITLE = ent->title;         /*ÎÄÕÂ±êÌâTITLE */
 
     if (uinfo.mode != RMAIL && digestmode != 1 && digestmode != 4 && digestmode != 5) { /* ĞÂ·½·¨±È½Ï*/
             if ((ent->groupid != ent->id)&&(digestmode==DIR_MODE_THREAD||!strncasecmp(TITLE,"Re:",3)||!strncmp(TITLE,"»Ø¸´:",5))) {      /*ReµÄÎÄÕÂ */
                 if (ReadPostHeader.groupid == ent->groupid)     /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
                     if (DEFINE(currentuser, DEF_HIGHCOLOR))
-                        sprintf(buf, " [1;36m%4d[m %s%c%s %-12.12s %s[1;36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                        sprintf(buf, " [1;36m%4d[m %s%c%s %-12.12s %s[1;36m.%c%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
                     else
-                        sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %s[36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                        sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %s[36m.%c%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
                 else
-                    sprintf(buf, " %4d %s%c%s %-12.12s %s  %-47.47s", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                    sprintf(buf, " %4d %s%c%s %-12.12s %s %c%-47.47s", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
             } else {
                 if (ReadPostHeader.groupid == ent->groupid)     /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
                     if (DEFINE(currentuser, DEF_HIGHCOLOR))
-                        sprintf(buf, " [1;33m%4d[m %s%c%s %-12.12s %s[1;33m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                        sprintf(buf, " [1;33m%4d[m %s%c%s %-12.12s %s[1;33m.%c¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
                     else
-                        sprintf(buf, " [33m%4d[m %s%c%s %-12.12s %s[33m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                        sprintf(buf, " [33m%4d[m %s%c%s %-12.12s %s[33m.%c¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
                 else
-                    sprintf(buf, " %4d %s%c%s %-12.12s %s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                    sprintf(buf, " %4d %s%c%s %-12.12s %s %c¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
             }
 
     } else                     /* ÔÊĞí ÏàÍ¬Ö÷Ìâ±êÊ¶ */
         if (!strncmp("Re:", ent->title, 3)) {   /*ReµÄÎÄÕÂ */
             if (!strncmp(ReplyPost + 3, ent->title + 3,STRLEN-3)) /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
                 if (DEFINE(currentuser, DEF_HIGHCOLOR))
-                    sprintf(buf, " [1;36m%4d[m %s%c%s %-12.12s %s[1;36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                    sprintf(buf, " [1;36m%4d[m %s%c%s %-12.12s %s[1;36m.%c%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
                 else
-                    sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %s[36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                    sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %s[36m.%c%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
             else
-                sprintf(buf, " %4d %s%c%s %-12.12s %s  %-47.47s", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                sprintf(buf, " %4d %s%c%s %-12.12s %s %c%-47.47s", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
         } else {
             if (strcmp(ReadPost, ent->title) == 0)      /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
                 if (DEFINE(currentuser, DEF_HIGHCOLOR))
-                    sprintf(buf, " [1;33m%4d[m %s%c%s %-12.12s %s[1;33m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                    sprintf(buf, " [1;33m%4d[m %s%c%s %-12.12s %s[1;33m.%c¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
                 else
-                    sprintf(buf, " [33m%4d[m %s%c%s %-12.12s %s[33m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                    sprintf(buf, " [33m%4d[m %s%c%s %-12.12s %s[33m.%c¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
             else
-                sprintf(buf, " %4d %s%c%s %-12.12s %s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                sprintf(buf, " %4d %s%c%s %-12.12s %s %c¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
         }
     return buf;
 }
@@ -2632,7 +2640,7 @@ int Save_post(int ent, struct fileheader *fileinfo, char *direct)
     if (!HAS_PERM(currentuser, PERM_SYSOP))
         if (!chk_currBM(currBM, currentuser))
             return DONOTHING;
-    return (a_Save("0Announce", currboard, fileinfo, false, direct, ent));
+    return (a_Save(NULL, currboard, fileinfo, false, direct, ent));
 }
 
 /* Semi_save ÓÃÀ´°ÑÎÄÕÂ´æµ½Ôİ´æµµ£¬Í¬Ê±É¾³ıÎÄÕÂµÄÍ·Î² Life 1997.4.6 */
@@ -2641,7 +2649,7 @@ int Semi_save(int ent, struct fileheader *fileinfo, char *direct)
     if (!HAS_PERM(currentuser, PERM_SYSOP))
         if (!chk_currBM(currBM, currentuser))
             return DONOTHING;
-    return (a_SeSave("0Announce", currboard, fileinfo, false));
+    return (a_SeSave("0Announce", currboard, fileinfo, false,direct,ent));
 }
 
 /* Added by netty to handle post saving into (0)Announce */

@@ -6,7 +6,7 @@
 /*int no_re=0;*/
 /*	bbscon?board=xx&file=xx&start=xx 	*/
 
-int show_file(char *board,struct fileheader *x, int n, char* brdencode);
+int show_file(char *board,struct boardheader* bh,struct fileheader *x, int n, char* brdencode);
 int main()
 {
     FILE *fp;
@@ -44,13 +44,13 @@ int main()
             strsncpy(title, ptr, 40);
             found = 1;
             strcpy(userid, oldx.owner);
-            show_file(board, &oldx, num - 1,brdencode);
+            show_file(board, &bh, &oldx, num - 1,brdencode);
             while (1) {
                 if (fread(&x, sizeof(x), 1, fp) <= 0)
                     break;
                 num++;
                 if (!strncmp(x.title + 4, title, 39) && !strncmp(x.title, "Re: ", 4))
-                    show_file(board, &x, num - 1,brdencode);
+                    show_file(board, &bh, &x, num - 1,brdencode);
             }
         }
     }
@@ -71,7 +71,7 @@ int main()
     http_quit();
 }
 
-int show_file(char *board,struct fileheader *x, int n, char* brdencode)
+int show_file(char *board,struct boardheader* bh,struct fileheader *x, int n, char* brdencode)
 {
     FILE *fp;
     char path[80], buf[512], board_url[80];
@@ -91,8 +91,8 @@ int show_file(char *board,struct fileheader *x, int n, char* brdencode)
     else
 	    title=x->title+4;
     if ((x->accessed[1] & FILE_READ) == 0)
-    	printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=Re: %s&refilename=%s\">回文章</a>]", brdencode, x->filename, x->owner, encode_url(buf, title, sizeof(buf)), x->filename);
-//    printf("[<a href=\"bbspst?board=%s&file=%s&title=%s&userid=%s\">回复本文</a>] ", board_url, x->filename, encode_url(buf, x->title, sizeof(buf)), x->owner);
+        printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=Re: %s&refilename=%s&attach=%d\">回文章</a>]", 
+            brdencode, x->filename, x->owner, encode_url(buf, title, sizeof(buf)), x->filename,bh->flag&BOARD_ATTACH?1:0);
     printf("[本篇作者: %s]\n", userid_str(x->owner));
     /*printf("[本篇人气: %d]\n", *(int*)(x->title+73)); */
     while (1) {

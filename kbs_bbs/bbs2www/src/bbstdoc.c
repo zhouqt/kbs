@@ -69,7 +69,7 @@ int main()
     ann_get_path(board, buf, sizeof(buf));
     printf("<a href=\"bbs0an?path=%s\">精华区</a> ", http_encode_string(buf, sizeof(buf)));
     /*printf("<a href=/an/%s.tgz>下载精华区</a> ", board); */
-    printf("<a href=\"bbspst.html?board=%s&sig=%d\">发表文章</a> <br>\n", brdencode,currentuser->signature);
+    printf("<a href=\"bbspst.html?board=%s&sig=%d&attach=%d\">发表文章</a> <br>\n", brdencode,currentuser->signature,x1->flag&BOARD_ATTACH);
     free(data);
     printf("<form action=\"bbstdoc?board=%s\" method=\"post\">\n", brdencode);
     printf("<input type=\"submit\" value=\"跳转到\"> 第 <input type=\"text\" name=\"start\" size=\"4\"> 篇");
