@@ -24,7 +24,6 @@
 #include "bbs.h"
 
 #define BUFSIZE (MAXUSERS + 244)
-#define NUMBUFFER 20
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/stat.h>

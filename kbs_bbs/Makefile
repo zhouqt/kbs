@@ -72,11 +72,20 @@ DEFINES	=  $(CSIE_DEF) $(OS_DEF)
 
 .SUFFIXES: .o .c .ln
 
-.c.o:   ;   $(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL -g -c $*.c
+.c.o:   ;   $(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL -c $*.c
 .c.ln:  ;   lint -abhi $*.c
 
 #--------------------- Dependency starts here -------------------
 all: $(PROGNAME) chatd
+
+ifeq (.depend,$(wildcard .depend))
+include .depend
+endif
+
+dep:
+	rm -f .depend
+	ls *.c | xargs gcc $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL  -M  >>.depend
+
 
 listonline: $(COBJS)
 	$(CC) -c listonline.c 

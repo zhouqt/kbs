@@ -292,3 +292,7 @@ extern int Net_Sleep(int);
 #ifdef SAFE_KILL
 #define kill(x,y) safe_kill(x,y)
 #endif
+
+#ifdef PROFILE
+#define memcpy(x,y,z) pr_memcpy(x,y,z)
+#endif

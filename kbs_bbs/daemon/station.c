@@ -108,7 +108,7 @@ char *msg_not_here = "*** [1m%s[m ²¢Ã»ÓÐÇ°À´ÁÄÌì¹ã³¡ ***";
 */
 
 #ifdef NO_STRCASECMP
-strcasecmp(s1,s2)
+ci_strcmp(s1,s2)
 const char *s1, *s2;
 {
     for(;;s1++,s2++) {
@@ -121,7 +121,7 @@ const char *s1, *s2;
     return 1;
 }
 
-strncasecmp(s1,s2,n)
+ci_strncmp(s1,s2,n)
 const char * s1, *s2;
 size_t n;
 {

@@ -141,7 +141,7 @@ char *permstrings[] = {
 #define DEF_SHOWHOT      010000000
 #define DEF_NOTEPAD      020000000
 #define DEF_IGNOREMSG    040000000   /* Added by Marco */
-#define DEF_IGNOREANSIX  0100000000  /* Leeward 98.01.12 */
+/*#define DEF_IGNOREANSIX  0100000000   Leeward 98.01.12 */
 #define DEF_SHOWSTATISTIC 0200000000 /* Haohmaru */
 #define DEF_UNREADMARK 0400000000 /* Luzi 99.01.12 */
 #define DEF_USEGB     01000000000 /* KCN,99.09.05 */
@@ -184,7 +184,8 @@ char *user_definestr[] = {
         "进站时显示十大新闻",   /* DEF_SHOWHOT */
         "进站时观看留言版",     /* DEF_NOTEPAD*/
         "忽略讯息功能键: Enter/Esc", /* DEF_IGNOREMSG */
-        "禁止运行ANSI扩展指令", /* DEF_IGNOREANSIX */ /* Leeward 98.01.12 */
+        "未使用", /* DEF_IGNOREANSIX */ /* Leeward 98.01.12 */
+/*        "禁止运行ANSI扩展指令",  DEF_IGNOREANSIX */ /* Leeward 98.01.12 */
         "进站时观看上站人数统计图",  /* DEF_SHOWSTATISTIC Haohmaru 98.09.24*/
         "未读标记使用 *", /* DEF_UNREADMARK Luzi 99.01.12 */
         "使用GB码阅读", /* DEF_USEGB KCN 99.09.03 */
