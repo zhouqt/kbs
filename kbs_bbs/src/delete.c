@@ -67,7 +67,7 @@ d_board()
     {
         char        secu[STRLEN];
         sprintf(secu,"É¾³ýÌÖÂÛÇø£º%s",binfo.filename);
-        securityreport(secu);
+        securityreport(secu,NULL);
     }
     if(seek_in_file("0Announce/.Search",bname))
     {
@@ -92,7 +92,7 @@ d_board()
     system(genbuf) ;
 
     sprintf( genbuf, " << '%s'±» %s É¾³ý >>",
-             binfo.filename, currentuser.userid );
+             binfo.filename, currentuser->userid );
     memset( &binfo, 0, sizeof( binfo ) );
     strcpy( binfo.title, genbuf );
     binfo.level = PERM_SYSOP;
@@ -153,25 +153,25 @@ suicide()
             return;
         }
 
-        oldXPERM=currentuser.userlevel;
+        oldXPERM=currentuser->userlevel;
         strcpy(XPERM, XPERMSTR);
         for ( num = 0; num < strlen(XPERM); num++ )
             if ( !(oldXPERM & (1 << num)) )
                 XPERM[num] = ' ';
         XPERM[num] = '\0';
-        currentuser.userlevel&=0x3F;/*Haohmaru,99.3.20.×ÔÉ±ÕßÖ»±£Áô»ù±¾È¨ÏÞ*/
-        currentuser.userlevel^=PERM_SUICIDE;
+        currentuser->userlevel&=0x3F;/*Haohmaru,99.3.20.×ÔÉ±ÕßÖ»±£Áô»ù±¾È¨ÏÞ*/
+        currentuser->userlevel^=PERM_SUICIDE;
         substitute_record(PASSFILE,&currentuser,sizeof(currentuser),usernum);
         /*Haohmaru.99.3.20.×ÔÉ±Í¨Öª*/
         now=time(0);
-        sprintf(filename,"etc/%s.tmp",currentuser.userid);
+        sprintf(filename,"etc/%s.tmp",currentuser->userid);
         fn=fopen(filename,"w");
-        fprintf(fn,"[1m%s[m ÒÑ¾­ÔÚ [1m%24.24s[m ×ÔÉ±ÁË£¬ÒÔÏÂÊÇËûµÄ×ÊÁÏ£¬Çë±£Áô...",currentuser.userid,ctime(&now));
+        fprintf(fn,"[1m%s[m ÒÑ¾­ÔÚ [1m%24.24s[m ×ÔÉ±ÁË£¬ÒÔÏÂÊÇËûµÄ×ÊÁÏ£¬Çë±£Áô...",currentuser->userid,ctime(&now));
         fprintf(fn,"\n\nÒÔÏÂÊÇ×ÔÉ±ÕßÔ­À´µÄÈ¨ÏÞ\n\033[1m\033[33m%s\n[0m", XPERM);
         getuinfo(fn, &currentuser);
         fprintf(fn,"\n                      [1m ÏµÍ³×Ô¶¯·¢ÐÅÏµÍ³Áô[m\n");
         fclose(fn);
-        sprintf(buf,"%s µÄ×ÔÉ±Í¨Öª",currentuser.userid);
+        sprintf(buf,"%s µÄ×ÔÉ±Í¨Öª",currentuser->userid);
         postfile(filename,"Goodbye",buf,1);
         unlink(filename);
 
@@ -197,12 +197,10 @@ offline()
     if(askyn("ÄãÈ·¶¨ÒªÀë¿ªÕâ¸ö´ó¼ÒÍ¥",0)==1)
     {
         clear();
-        if(d_user(currentuser.userid)==1)
+        if(d_user(currentuser->userid)==1)
         {
             mail_info();
             kick_user(&uinfo);
-            /*        lookupuser.lastlogin =time(NULL) - 110*24*60*60;
-            	substitute_record(PASSFILE,&lookupuser,sizeof(lookupuser),getuser(lookupuser)) ;*/
             exit(0);
         }
     }
@@ -234,9 +232,9 @@ mail_info()
     char filename[STRLEN];
 
     now=time(0);
-    sprintf(filename,"etc/%s.tmp",currentuser.userid);
+    sprintf(filename,"etc/%s.tmp",currentuser->userid);
     fn=fopen(filename,"w");
-    fprintf(fn,"[1m%s[m ÒÑ¾­ÔÚ [1m%24.24s[m ×ÔÉ±ÁË£¬ÒÔÏÂÊÇËû(Ëý)µÄ×ÊÁÏ£¬Çë±£Áô...",currentuser.userid
+    fprintf(fn,"[1m%s[m ÒÑ¾­ÔÚ [1m%24.24s[m ×ÔÉ±ÁË£¬ÒÔÏÂÊÇËû(Ëý)µÄ×ÊÁÏ£¬Çë±£Áô...",currentuser->userid
             ,ctime(&now));
     getuinfo(fn, &currentuser);
     fprintf(fn,"\n                      [1m ÏµÍ³×Ô¶¯·¢ÐÅÏµÍ³Áô[m\n");
@@ -252,6 +250,7 @@ char cid[IDLEN];
 {
     int id,fd ;
     char tmpbuf [30];
+    struct userec* lookupuser;
 
     if(uinfo.mode!=OFFLINE)
     {
@@ -270,7 +269,7 @@ char cid[IDLEN];
         }
     }else
         strcpy(genbuf,cid);
-    if(!(id = getuser(genbuf))) {
+    if(!(id = getuser(genbuf,&lookupuser))) {
         move(3,0) ;
         prints("´íÎóµÄÊ¹ÓÃÕß´úºÅ...") ;
         clrtoeol() ;
@@ -278,7 +277,7 @@ char cid[IDLEN];
         clear() ;
         return 0 ;
     }
-    /*    if (!isalpha(lookupuser.userid[0])) return 0;*/
+    /*    if (!isalpha(lookupuser->userid[0])) return 0;*/
     /* rrr - don't know how...*/
     move(1,0) ;
     if(uinfo.mode!=OFFLINE)
@@ -300,10 +299,10 @@ char cid[IDLEN];
     if(uinfo.mode!=OFFLINE)
     {
         char        secu[STRLEN];
-        sprintf(secu,"É¾³ýÊ¹ÓÃÕß£º%s",lookupuser.userid);
-        securityreport(secu);
+        sprintf(secu,"É¾³ýÊ¹ÓÃÕß£º%s",lookupuser->userid);
+        securityreport(secu,lookupuser);
     }
-    sprintf(genbuf, "%s deleted user %s", currentuser.userid,lookupuser.userid);
+    sprintf(genbuf, "%s deleted user %s", currentuser->userid,lookupuser->userid);
     report(genbuf);
     /*Haohmaru.99.12.23.±»É¾IDÒ»¸öÔÂÄÚ²»µÃ×¢²á*/
     if((fd = open(".badname",O_WRONLY|O_CREAT,0644)) != -1 ) {
@@ -314,7 +313,7 @@ char cid[IDLEN];
         sprintf(thtime,"%d",dtime);
         flock(fd,LOCK_EX) ;
         lseek(fd,0,SEEK_END) ;
-        sprintf(buf,"%-12.12s %-66.66s\n",lookupuser.userid, thtime) ;
+        sprintf(buf,"%-12.12s %-66.66s\n",lookupuser->userid, thtime) ;
         write(fd,buf,strlen(buf)) ;
         flock(fd,LOCK_UN) ;
         close(fd) ;
@@ -322,23 +321,23 @@ char cid[IDLEN];
     else{
         printf("´íÎó£¬Çë±¨¸æºÄ×Ó");
         pressanykey();}
-    setmailpath(tmpbuf, lookupuser.userid);
+    setmailpath(tmpbuf, lookupuser->userid);
     sprintf(genbuf,"/bin/rm -fr %s", tmpbuf) ;
     system(genbuf) ;
-    sethomepath(tmpbuf, lookupuser.userid);
+    sethomepath(tmpbuf, lookupuser->userid);
     sprintf(genbuf,"/bin/rm -fr %s", tmpbuf) ;
     system(genbuf) ;
-    sprintf(genbuf,"/bin/rm -fr tmp/email_%s", lookupuser.userid) ;
+    sprintf(genbuf,"/bin/rm -fr tmp/email_%s", lookupuser->userid) ;
     system(genbuf) ;
-    lookupuser.userlevel = 0;
-    strcpy(lookupuser.address, "");
-    strcpy(lookupuser.username, "");
-    strcpy(lookupuser.realname, "");
-    lookupuser.userid[0] = '\0' ;
+    lookupuser->userlevel = 0;
+    strcpy(lookupuser->address, "");
+    strcpy(lookupuser->username, "");
+    strcpy(lookupuser->realname, "");
+    lookupuser->userid[0] = '\0' ;
     substitute_record(PASSFILE,&lookupuser,sizeof(lookupuser),id) ;
-    setuserid( id, lookupuser.userid );
+    setuserid( id, lookupuser->userid );
     move(2,0) ;
-    prints("%s ÒÑ¾­ÒÑ¾­ºÍ±¾¼ÒÍ¥Ê§È¥ÁªÂç....\n",lookupuser.userid) ;
+    prints("%s ÒÑ¾­ÒÑ¾­ºÍ±¾¼ÒÍ¥Ê§È¥ÁªÂç....\n",lookupuser->userid) ;
     pressreturn() ;
 
     clear() ;

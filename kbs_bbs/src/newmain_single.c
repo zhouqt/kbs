@@ -92,7 +92,7 @@ struct user_info *uin;
     if (uinfo.pager&ALLMSG_PAGER) return YEA;
     if (uinfo.pager&FRIENDMSG_PAGER)
     {
-        if(can_override(currentuser.userid,uin->userid))
+        if(can_override(currentuser->userid,uin->userid))
                 return YEA;
     }
     return NA;
@@ -153,23 +153,23 @@ void
 u_enter()
 {
 
-    enter_uflags = currentuser.flags[0];
+    enter_uflags = currentuser->flags[0];
     memset( &uinfo, 0, sizeof( uinfo ) );
     uinfo.active = YEA ;
     uinfo.pid    = getpid();
-/*    if( HAS_PERM(PERM_LOGINCLOAK) && (currentuser.flags[0] & CLOAK_FLAG) && HAS_PERM(PERM_SEECLOAK)) */
+/*    if( HAS_PERM(PERM_LOGINCLOAK) && (currentuser->flags[0] & CLOAK_FLAG) && HAS_PERM(PERM_SEECLOAK)) */
 
     /* Bigman 2000.8.29 ÖÇÄÒÍÅÄÜ¹»ÒþÉí */
-    if( (HAS_PERM(PERM_CHATCLOAK) || HAS_PERM(PERM_CLOAK)) && (currentuser.flags[0] & CLOAK_FLAG))
+    if( (HAS_PERM(PERM_CHATCLOAK) || HAS_PERM(PERM_CLOAK)) && (currentuser->flags[0] & CLOAK_FLAG))
         uinfo.invisible = YEA;
     uinfo.mode = LOGIN ;
     uinfo.pager = 0;
-/*    uinfo.pager = !(currentuser.flags[0] & PAGER_FLAG);*/
+/*    uinfo.pager = !(currentuser->flags[0] & PAGER_FLAG);*/
     if(DEFINE(DEF_FRIENDCALL))
     {
         uinfo.pager|=FRIEND_PAGER;
     }
-    if(currentuser.flags[0] & PAGER_FLAG)
+    if(currentuser->flags[0] & PAGER_FLAG)
     {
         uinfo.pager|=ALL_PAGER;
         uinfo.pager|=FRIEND_PAGER;
@@ -189,9 +189,9 @@ u_enter()
     uinfo.freshtime=time(0);
 #endif
     iscolor=(DEFINE(DEF_COLOR))? 1:0;
-    strncpy( uinfo.userid,   currentuser.userid,   20 );
-    strncpy( uinfo.realname, currentuser.realname, 20 );
-    strncpy( uinfo.username, currentuser.username, 40 );
+    strncpy( uinfo.userid,   currentuser->userid,   20 );
+    strncpy( uinfo.realname, currentuser->realname, 20 );
+    strncpy( uinfo.username, currentuser->username, 40 );
     memset( uinfo.stuff, '-', sizeof( uinfo.stuff ) );
     nf=0;
     topfriend=NULL;
@@ -213,9 +213,9 @@ void
 setflags(mask, value)
 int mask, value;
 {
-    if (((currentuser.flags[0] & mask) && 1) != value) {
-        if (value) currentuser.flags[0] |= mask;
-        else currentuser.flags[0] &= ~mask;
+    if (((currentuser->flags[0] & mask) && 1) != value) {
+        if (value) currentuser->flags[0] |= mask;
+        else currentuser->flags[0] &= ~mask;
     }
 }
 /*---	moved to here from below	period	2000-11-19	---*/
@@ -243,7 +243,7 @@ u_exit()
 	if((HAS_PERM(PERM_CHATCLOAK) || HAS_PERM(PERM_CLOAK)))
         setflags(CLOAK_FLAG, uinfo.invisible);
 
-    if( currentuser.flags[0] != enter_uflags ) {
+    if( currentuser->flags[0] != enter_uflags ) {
         set_safe_record();
         substitute_record(PASSFILE,&currentuser,sizeof(currentuser),usernum);
     }
@@ -265,13 +265,8 @@ char *userid ;
 {
     int         id;
 
-    if( (id = getuser( userid )) != 0 ) {
-        if( cmpuids( userid, &lookupuser ) ) {
-            memcpy( &currentuser, &lookupuser, sizeof(currentuser) );
-            return usernum = id;
-        }
-    }
-    memset( &currentuser, 0, sizeof( currentuser ) );
+    if( (id = getuser( userid,&currentuser )) != 0 ) 
+        return usernum = id;
     return usernum = 0;
 }
 
@@ -313,7 +308,7 @@ abort_bbs()
         record_exit_time();
         stay = time( 0 ) - login_start_time;
 /*---	period	2000-10-20	4 debug	---*/
-	    log("1system", "AXXED Stay: %3ld (%s)[%d %d]", stay/60, currentuser.username, utmpent, usernum);
+	    log("1system", "AXXED Stay: %3ld (%s)[%d %d]", stay/60, currentuser->username, utmpent, usernum);
         u_exit();
     }
     shutdown(0,2);
@@ -369,7 +364,7 @@ multi_user_check()
     if ((HAS_PERM(PERM_BOARDS) || HAS_PERM(PERM_CHATOP) || HAS_PERM(PERM_CHATCLOAK)) && count_user() < 2)
         return;
     /* allow multiple guest user */
-    if (!strcmp("guest", currentuser.userid)) {
+    if (!strcmp("guest", currentuser->userid)) {
         if ( count_user() > 24 ) {
             prints( "[33m±§Ç¸, Ä¿Ç°ÒÑÓÐÌ«¶à [36mguest, ÇëÉÔºòÔÙÊÔ¡£[m\n");
             pressreturn();
@@ -498,7 +493,7 @@ void
 system_abort()
 {
     if( started ) {
-        log( "1ABORT", currentuser.username );
+        log( "1ABORT", currentuser->username );
         u_exit() ;
     }
     clear();
@@ -697,11 +692,11 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
 	    {
 	        memset( &currentuser, 0, sizeof( currentuser ) );
 		new_register();
-		sethomepath(tmpstr, currentuser.userid);
-		sprintf( buf, "/bin/mv -f %s /home0/bbs/homeback/%s", tmpstr,currentuser.userid);
+		sethomepath(tmpstr, currentuser->userid);
+		sprintf( buf, "/bin/mv -f %s /home0/bbs/homeback/%s", tmpstr,currentuser->userid);
 		system( buf );
-		setmailpath(tmpstr, currentuser.userid);/*Haohmaru.00.04.23,ÃâµÃÄÜ¿´Ç°ÈËµÄÐÅ*/
-		sprintf( buf, "/bin/mv -f %s /home0/bbs/mailback/%s", tmpstr,currentuser.userid);
+		setmailpath(tmpstr, currentuser->userid);/*Haohmaru.00.04.23,ÃâµÃÄÜ¿´Ç°ÈËµÄÐÅ*/
+		sprintf( buf, "/bin/mv -f %s /home0/bbs/mailback/%s", tmpstr,currentuser->userid);
 		system( buf );
 		break;
 	    }
@@ -719,18 +714,18 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
 	        sleep( 1 );
 	        exit( 1 ) ;
         } else if( /*strcmp*/strcasecmp( uid, "guest" ) == 0 ) {
-            currentuser.userlevel = 0;
-            currentuser.flags[0] = CURSOR_FLAG | PAGER_FLAG;
+            currentuser->userlevel = 0;
+            currentuser->flags[0] = CURSOR_FLAG | PAGER_FLAG;
             break;
         } else {
 	        if (!convcode)
-            	convcode=!(currentuser.userdefine&DEF_USEGB);  /* KCN,99.09.05 */
+            	convcode=!(currentuser->userdefine&DEF_USEGB);  /* KCN,99.09.05 */
             	
             getdata( 0, 0, "\033[1m[37mÇëÊäÈëÃÜÂë: [m", passbuf, 39, NOECHO, NULL ,YEA);
 
 	        if( !checkpasswd2(passbuf, &currentuser ))
     	    {
-                logattempt( currentuser.userid, fromhost );
+                logattempt( currentuser->userid, fromhost );
                 prints( "[32mÃÜÂëÊäÈë´íÎó...[m\n" );
             } else {
                 if( !HAS_PERM( PERM_BASIC ) ) {
@@ -754,7 +749,7 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
                     getdata( 0, 0, "°´ [RETURN] ¼ÌÐø",genbuf,10,NOECHO,NULL,YEA);
                 }
                 /* passwd ok, covert to md5 --wwj 2001/5/7 */
-                if(currentuser.passwd[0]){
+                if(currentuser->passwd[0]){
                     log("covert","for md5passwd");
                     setpasswd(passbuf,&currentuser);
                 }
@@ -775,15 +770,15 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
     alarm(IDLE_TIMEOUT);
     term_init("vt100");
     scrint = 1 ;
-    sethomepath(tmpstr, currentuser.userid);
-    sprintf(fname,"%s/%s.deadve", tmpstr, currentuser.userid);
+    sethomepath(tmpstr, currentuser->userid);
+    sprintf(fname,"%s/%s.deadve", tmpstr, currentuser->userid);
     if((fn=fopen(fname,"r"))!=NULL)
     {
-        mail_file(fname,currentuser.userid,"²»Õý³£¶ÏÏßËù±£ÁôµÄ²¿·Ý...");
+        mail_file(fname,currentuser->userid,"²»Õý³£¶ÏÏßËù±£ÁôµÄ²¿·Ý...");
         unlink(fname);
             fclose(fn);
     }
-    sethomepath( genbuf, currentuser.userid );
+    sethomepath( genbuf, currentuser->userid );
     mkdir( genbuf, 0755 );
     temp_numposts=0;/*Haohmaru.99.4.02.ÈÃ°®¹àË®µÄÈË¿ÞÈ¥°É//grin*/
 }
@@ -805,7 +800,7 @@ char *ident;
 void
 write_defnotepad()
 {
-  currentuser.notedate=time(NULL);
+  currentuser->notedate=time(NULL);
   set_safe_record();
   substitute_record(PASSFILE, &currentuser, sizeof(currentuser), usernum);
   return;
@@ -823,19 +818,19 @@ defnotepad()
   if((def2=fopen(fname,"r"))!=NULL)
   {
     fgets(spbuf,sizeof(spbuf),def2);
-    currentuser.notemode=spbuf[0]-'0';
-    if(currentuser.notemode==2)
+    currentuser->notemode=spbuf[0]-'0';
+    if(currentuser->notemode==2)
     {
         fgets(spbuf,sizeof(spbuf),def2);
-        currentuser.notedate=atol(spbuf);
+        currentuser->notedate=atol(spbuf);
         fgets(spbuf,sizeof(spbuf),def2);
-        currentuser.noteline=atol(spbuf);
+        currentuser->noteline=atol(spbuf);
     }
     fclose(def2);
     unlink(fname);
   }
 
-  if(currentuser.notemode==-1)
+  if(currentuser->notemode==-1)
   {
      fclose(def2);
      while(1){
@@ -845,11 +840,11 @@ defnotepad()
         else
                 continue;
      }
-     currentuser.notemode=spbuf[0]-'0';
-     if(currentuser.notemode==2)
+     currentuser->notemode=spbuf[0]-'0';
+     if(currentuser->notemode==2)
      {
-        currentuser.notedate=time(NULL);
-        currentuser.noteline=0;     
+        currentuser->notedate=time(NULL);
+        currentuser->noteline=0;     
      }
      set_safe_record();
      substitute_record(PASSFILE, &currentuser, sizeof(currentuser), usernum);
@@ -885,7 +880,7 @@ notepad_init()
                 fprintf(check,"%d",lastnote);
                 fclose(check);
                 sprintf(tmp,"ÁôÑÔ°åÔÚ %s Login ¿ªÆô£¬ÄÚ¶¨¿ªÆôÊ±¼äÊ±¼äÎª %s"
-                ,currentuser.userid,Ctime(&lastnote));
+                ,currentuser->userid,Ctime(&lastnote));
                 report(tmp);
         }
         if((time(NULL)-lastnote)>=maxsec)
@@ -939,8 +934,8 @@ user_login()
     char        ans[5], *ruser;
     unsigned unLevel=PERM_SUICIDE;
 
-    if( strcmp( currentuser.userid, "SYSOP" ) == 0 ){
-        currentuser.userlevel &= (~0);   /* SYSOP gets all permission bits */
+    if( strcmp( currentuser->userid, "SYSOP" ) == 0 ){
+        currentuser->userlevel &= (~0);   /* SYSOP gets all permission bits */
 	} /* ?????ºóÃæ»¹ÓÐcheck_register_info */
  
     ruser = getenv( "REMOTEUSERNAME" );
@@ -948,10 +943,10 @@ user_login()
     if( ruser ) {
         sprintf( genbuf, "%s@%s", ruser, fromhost );
         if( valid_ident( genbuf ) ) {
-            strncpy( currentuser.ident, genbuf, NAMELEN );
+            strncpy( currentuser->ident, genbuf, NAMELEN );
         }
-        if( !valid_ident( currentuser.ident ) ) {
-            currentuser.ident[0] = '\0';
+        if( !valid_ident( currentuser->ident ) ) {
+            currentuser->ident[0] = '\0';
         }
     }
     u_enter() ;
@@ -964,25 +959,25 @@ user_login()
     started = 1 ;
     if( USE_NOTEPAD == 1)
             notepad_init();
-    if(strcmp(currentuser.userid,"guest")!=0 && USE_NOTEPAD == 1){
+    if(strcmp(currentuser->userid,"guest")!=0 && USE_NOTEPAD == 1){
       if(DEFINE(DEF_NOTEPAD))
       { 
         int noteln;
-        if(lastnote>currentuser.notedate)
-                currentuser.noteline=0;
+        if(lastnote>currentuser->notedate)
+                currentuser->noteline=0;
         noteln=countln("etc/notepad");
-        if(lastnote>currentuser.notedate||currentuser.noteline==0)
+        if(lastnote>currentuser->notedate||currentuser->noteline==0)
         {
                 shownotepad();
-                currentuser.noteline=noteln;
+                currentuser->noteline=noteln;
                 write_defnotepad();
         }
-        else if((noteln-currentuser.noteline)>0){
+        else if((noteln-currentuser->noteline)>0){
                 clear();
-                ansimore2("etc/notepad",NA,0,noteln-currentuser.noteline+1);
+                ansimore2("etc/notepad",NA,0,noteln-currentuser->noteline+1);
                 prints("[31m¡Ñ©Ø¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©Ø¡Ñ[m\n");
                 igetkey();
-                currentuser.noteline=noteln;
+                currentuser->noteline=noteln;
                 write_defnotepad();     
                 clear();
         }
@@ -1017,8 +1012,8 @@ user_login()
     }
     move( t_lines - 2/*1*/, 0 ); /* Leeward: 98.09.24 Alter below message */
     clrtoeol();
-    prints( "[1;36m¡î ÕâÊÇÄúµÚ [33m%d[36m ´ÎÉÏÕ¾£¬ÉÏ´ÎÄúÊÇ´Ó [33m%s[36m Á¬Íù±¾Õ¾¡£\n", currentuser.numlogins + 1, currentuser.lasthost );
-    prints( "¡î ÉÏ´ÎÁ¬ÏßÊ±¼äÎª [33m%s[m ", Ctime(&currentuser.lastlogin) );
+    prints( "[1;36m¡î ÕâÊÇÄúµÚ [33m%d[36m ´ÎÉÏÕ¾£¬ÉÏ´ÎÄúÊÇ´Ó [33m%s[36m Á¬Íù±¾Õ¾¡£\n", currentuser->numlogins + 1, currentuser->lasthost );
+    prints( "¡î ÉÏ´ÎÁ¬ÏßÊ±¼äÎª [33m%s[m ", Ctime(&currentuser->lastlogin) );
     igetkey();
     ansimore("0Announce/hotinfo",NA);
     move( t_lines - 1/*1*/, 0 ); /* Leeward: 98.09.24 Alter below message */
@@ -1034,21 +1029,21 @@ user_login()
             unlink( fname );
     }
 
-    strncpy(currentuser.lasthost, fromhost, 16);
-    currentuser.lasthost[15] = '\0';   /* dumb mistake on my part */
-        currentuser.lastlogin = time(NULL) ;
+    strncpy(currentuser->lasthost, fromhost, 16);
+    currentuser->lasthost[15] = '\0';   /* dumb mistake on my part */
+        currentuser->lastlogin = time(NULL) ;
     set_safe_record();
-    currentuser.numlogins++;
+    currentuser->numlogins++;
 
     /* Leeward 98.06.20 adds below 3 lines */
-    if ((int)currentuser.numlogins < 1) currentuser.numlogins = 1;
-    if ((int)currentuser.numposts < 0) currentuser.numposts = 0;
-    if ((int)currentuser.stay < 0) currentuser.stay = 1;
-    currentuser.userlevel&=(~unLevel); /* »Ö¸´×ÔÉ±±êÖ¾ Luzi 98.10.10 */
+    if ((int)currentuser->numlogins < 1) currentuser->numlogins = 1;
+    if ((int)currentuser->numposts < 0) currentuser->numposts = 0;
+    if ((int)currentuser->stay < 0) currentuser->stay = 1;
+    currentuser->userlevel&=(~unLevel); /* »Ö¸´×ÔÉ±±êÖ¾ Luzi 98.10.10 */
 
     substitute_record(PASSFILE, &currentuser, sizeof(currentuser), usernum);
-    if (currentuser.firstlogin == 0) {
-        currentuser.firstlogin = login_start_time - 7 * 86400;
+    if (currentuser->firstlogin == 0) {
+        currentuser->firstlogin = login_start_time - 7 * 86400;
     }
     check_register_info();
 }
@@ -1095,7 +1090,7 @@ chk_friend_book()
                 if(idnum!=usernum||idnum<=0)
                    continue;    
                 uin=t_search(uid,NA);
-                sprintf(msg,"%s ÒÑ¾­ÉÏÕ¾¡£",currentuser.userid);
+                sprintf(msg,"%s ÒÑ¾­ÉÏÕ¾¡£",currentuser->userid);
                 /* ±£´æËù·¢msgµÄÄ¿µÄuid 1998.7.5 by dong*/
                 strcpy(MsgDesUid, uin?uin->userid:"");
                 if (strcmp(uid,"Luzi")==0) {
@@ -1173,7 +1168,7 @@ main_bbs(char *originhost, int convit,char* argv)
     clear(); 
 
 #ifndef DEBUG
-    sprintf(argv,"bbsd:%s",currentuser.userid);
+    sprintf(argv,"bbsd:%s",currentuser->userid);
 #endif
 
 #ifdef TALK_LOG
@@ -1284,7 +1279,7 @@ update_endline()
         colour=4;
     }else
     {
-            colour=currentuser.numlogins%4+3;
+            colour=currentuser->numlogins%4+3;
             if(colour==3)
                 colour=1;
     }
@@ -1296,7 +1291,7 @@ update_endline()
     }
     now=time(0);
     allstay=(now - login_start_time)/60;
-    sprintf(buf,"[[36m%.12s[33m]",currentuser.userid);
+    sprintf(buf,"[[36m%.12s[33m]",currentuser->userid);
     if(DEFINE(DEF_NOTMSGFRIEND))
     {
             sprintf(stitle,"[4%dm[33mÊ±¼ä[[36m%12.12s[33m] ºô½ÐÆ÷[ºÃÓÑ:%3s£ºÒ»°ã:%3s] Ê¹ÓÃÕß%-24s Í£Áô[%3d:%2d][m",colour,ctime(&now)+4,
@@ -1340,7 +1335,7 @@ char    *title, *mid;
         colour=4;
     }else
     {
-            colour=currentuser.numlogins%4+3;
+            colour=currentuser->numlogins%4+3;
             if(colour==3)
                 colour=1;
     }
@@ -1432,9 +1427,9 @@ int
 tlog_recover()
 {
     char    buf[256];
-    sprintf(buf, "home/%c/%s/talklog", toupper(currentuser.userid[0]), currentuser.userid);
+    sprintf(buf, "home/%c/%s/talklog", toupper(currentuser->userid[0]), currentuser->userid);
 
-    if (strcasecmp(currentuser.userid, "guest") == 0 || !dashf(buf))
+    if (strcasecmp(currentuser->userid, "guest") == 0 || !dashf(buf))
         return;
 
     clear();
@@ -1443,7 +1438,7 @@ tlog_recover()
     getdata(0, 0, "\033[1;32mÄúÓÐÒ»¸ö²»Õý³£¶ÏÏßËùÁôÏÂÀ´µÄÁÄÌì¼ÇÂ¼, ÄúÒª .. (M) ¼Ä»ØÐÅÏä (Q) ËãÁË£¿[Q]£º\033[m", genbuf,4,DOECHO,NULL,YEA);
  
     if (genbuf[0] == 'M' || genbuf[0] == 'm')
-        mail_file(buf, currentuser.userid, "ÁÄÌì¼ÇÂ¼");
+        mail_file(buf, currentuser->userid, "ÁÄÌì¼ÇÂ¼");
 
     unlink(buf);
     return;

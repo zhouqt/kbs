@@ -674,7 +674,7 @@ write_posts()
     if(junkboard()||normal_board(currboard)!=1||!strcmp(currboard,"blame"))
         return ;
     now = time(0) ;
-    strcpy(postlog.author, currentuser.userid);
+    strcpy(postlog.author, currentuser->userid);
     strcpy(postlog.board, currboard);
     ptr = save_title;
     if (!strncmp(ptr, "Re: ", 4))
@@ -732,19 +732,19 @@ int mode;
     time_t now;
 
     now = time(0) ;
-    strncpy(uid,currentuser.userid,20) ;
+    strncpy(uid,currentuser->userid,20) ;
     uid[19] = '\0' ;
     if (in_mail)
 #if defined(MAIL_REALNAMES)
-        strncpy(uname,currentuser.realname,NAMELEN) ;
+        strncpy(uname,currentuser->realname,NAMELEN) ;
 #else
-strncpy(uname,currentuser.username,NAMELEN) ;
+strncpy(uname,currentuser->username,NAMELEN) ;
 #endif
     else
 #if defined(POSTS_REALNAMES)
-        strncpy(uname,currentuser.realname,NAMELEN) ;
+        strncpy(uname,currentuser->realname,NAMELEN) ;
 #else
-        strncpy(uname,currentuser.username,NAMELEN) ;
+        strncpy(uname,currentuser->username,NAMELEN) ;
 #endif
     /* uid[39] = '\0' ; SO FUNNY:-) 定义的 20 这里却用 39 !
                         Leeward: 1997.12.11 */
@@ -772,7 +772,7 @@ strncpy(uname,currentuser.username,NAMELEN) ;
     fprintf(fp,"标  题: %s\n",save_title) ;
     fprintf(fp,"发信站: %s (%24.24s)\n",BoardName,ctime(&now)) ;
     if(in_mail)
-        fprintf(fp,"来  源: %s \n",currentuser.lasthost) ;
+        fprintf(fp,"来  源: %s \n",currentuser->lasthost) ;
     fprintf(fp,"\n");
 
 }
@@ -796,7 +796,7 @@ int blank;
     {return;}
     if ( blank ) fputs("\n", fp);
     fputs("--\n", fp);
-    for (i=1; i<=(currentuser.signature-1)*MAXSIGLINES&&currentuser.signature!=1; i++)
+    for (i=1; i<=(currentuser->signature-1)*MAXSIGLINES&&currentuser->signature!=1; i++)
     {
         if (!fgets(inbuf, sizeof(inbuf), sigfile)){
             fclose(sigfile);
@@ -912,8 +912,9 @@ int saveheader ;
             prints("请注意：本站站规规定：同样内容的文章严禁在 5 (含)个以上讨论区内重复张贴。\n\n违反者除所贴文章会被删除之外，还将被剥夺继续发表文章的权力。详细规定请参照：\n\n    Announce 版的站规：“关于转贴和张贴文章的规定”。\n\n请大家共同维护 BBS 的环境，节省系统资源。谢谢合作。\n\n");
         }
         else if ( uinfo.mode == SMAIL )
-            /*strcpy(p_buf,"(S)寄出, (A)取消, or (E)再编辑? [S]: " );*/
-            sprintf(p_buf,"给 %s 的信：(S)寄出, (F)自动换行寄出, (A)取消, or (E)再编辑? [S]: ", lookupuser.userid ); /* Leeward 98.01.17 Prompt whom you are writing to */
+            strcpy(p_buf,"(S)寄出, (A)取消, or (E)再编辑? [S]: " );
+        /*    sprintf(p_buf,"给 %s 的信：(S)寄出, (F)自动换行寄出, (A)取消, or (E)再编辑? [S]: ", lookupuser->userid ); 
+         Leeward 98.01.17 Prompt whom you are writing to */
         else
             strcpy(p_buf,"(S)储存档案, (F)自动换行存储, (A)放弃编辑, (E)继续编辑? [S]: " );
         temp = valid_article( p_buf, abort );
@@ -1057,8 +1058,8 @@ keep_fail_post()
     FILE        *fp ;
 
 #ifndef VEDITOR
-    sethomepath(tmpbuf, currentuser.userid);
-    sprintf(filename,"%s/%s.deadve", tmpbuf, currentuser.userid);
+    sethomepath(tmpbuf, currentuser->userid);
+    sprintf(filename,"%s/%s.deadve", tmpbuf, currentuser->userid);
 #else
     sprintf(filename,"DEADVE");
 #endif
@@ -1394,7 +1395,7 @@ int     action, arg;
     case 'M':
         process_MARK_action(arg, msg); break;
     case 'I':
-        sprintf( filename, "/tmp/%s_clip_%c", currentuser.userid, arg);
+        sprintf( filename, "/tmp/%s_clip_%c", currentuser->userid, arg);
         if( (fp = fopen( filename, "r" )) != NULL ) {
             insert_from_fp( fp ); fclose( fp );
             sprintf( msg, "已取出剪贴簿第 %c 页", arg );
@@ -1405,7 +1406,7 @@ int     action, arg;
         redraw_everything = YEA;
         break;
     case 'E':
-        sprintf( filename, "/tmp/%s_clip_%c", currentuser.userid, arg);
+        sprintf( filename, "/tmp/%s_clip_%c", currentuser->userid, arg);
         if( (fp = fopen( filename, "w" )) != NULL ) {
             if ( mark_on ) {
                 struct textline *p;

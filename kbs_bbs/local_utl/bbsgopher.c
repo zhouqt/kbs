@@ -280,7 +280,7 @@ case 'U':case 'F':case 'u':case 'f':case 'z':case 'Z':
         {
             strncpy( fhdr.title,tmpitem->title+1,70 );
             strncpy( fhdr.filename, "gopher.tmp", STRLEN );
-            sethomepath(fpath, currentuser.userid);
+            sethomepath(fpath, currentuser->userid);
             if(ch=='Z'||ch=='z')
                 a_download(fname);
             else{

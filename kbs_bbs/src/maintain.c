@@ -60,7 +60,7 @@ int check_systempasswd()
         if (!passbuf[0]) {
             move(2, 0);
             prints("´íÎóµÄÏµÍ³ÃÜÂë...");
-            securityreport("ÏµÍ³ÃÜÂëÊäÈë´íÎó...");
+            securityreport("ÏµÍ³ÃÜÂëÊäÈë´íÎó...",NULL);
             pressanykey();
             return NA;
         }
@@ -74,7 +74,7 @@ int setsystempasswd()
     char            passbuf[40], prepass[40];
 
     modify_user_mode(ADMIN);
-    if (strcmp(currentuser.userid, "SYSOP"))
+    if (strcmp(currentuser->userid, "SYSOP"))
         return;
     if (!check_systempasswd())
         return;
@@ -103,7 +103,7 @@ int setsystempasswd()
 
 
 
-int securityreport(char *str)		/* Leeward: 1997.12.02 */
+int securityreport(char *str,struct userec* lookupuser)		/* Leeward: 1997.12.02 */
 {
     FILE           *se;
     char            fname[STRLEN];
@@ -114,82 +114,84 @@ int securityreport(char *str)		/* Leeward: 1997.12.02 */
     sprintf(fname, "tmp/security.%d", getpid());
     if ((se = fopen(fname, "w")) != NULL)
     {
-        if (strstr(str, "ÈÃ") && strstr(str, "Í¨¹ıÉí·İÈ·ÈÏ"))
-        {
-            fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n[32mÔ­Òò£º%s[m\n", str);
-            fprintf(se, "ÒÔÏÂÊÇÍ¨¹ıÕß¸öÈË×ÊÁÏ");
-            /*    getuinfo(se, &lookupuser);*/
-            /*Haohmaru.99.4.15.°Ñ±»×¢²áµÄ×ÊÁÏÁĞµÃ¸üÏêÏ¸,Í¬Ê±È¥µô×¢²áÕßµÄ×ÊÁÏ*/
-            fprintf(se,"\n\nÄúµÄ´úºÅ     : %s\n",fdata[1]);
-            fprintf(se,"ÄúµÄêÇ³Æ     : %s\n",lookupuser.username);
-            fprintf(se,"ÕæÊµĞÕÃû     : %s\n",fdata[2]);
-            fprintf(se,"µç×ÓÓÊ¼şĞÅÏä : %s\n",lookupuser.email);
-            fprintf(se,"ÕæÊµ E-mail  : %s$%s@%s\n",fdata[3],fdata[5],currentuser.userid);
-            fprintf(se,"·şÎñµ¥Î»     : %s\n",fdata[3]);
-            fprintf(se,"Ä¿Ç°×¡Ö·     : %s\n",fdata[4]);
-            fprintf(se,"Á¬Âçµç»°     : %s\n",fdata[5]);
-            fprintf(se,"×¢²áÈÕÆÚ     : %s", ctime( &lookupuser.firstlogin));
-            fprintf(se,"×î½ü¹âÁÙÈÕÆÚ : %s", ctime( &lookupuser.lastlogin));
-            fprintf(se,"×î½ü¹âÁÙ»úÆ÷ : %s\n", lookupuser.lasthost );
-            fprintf(se,"ÉÏÕ¾´ÎÊı     : %d ´Î\n", lookupuser.numlogins);
-            fprintf(se,"ÎÄÕÂÊıÄ¿     : %d / %d (Board/1Discuss)\n",lookupuser.numposts, post_in_tin( lookupuser.userid ));
-            fprintf(se,"Éú    ÈÕ     : %s\n",fdata[6]);
-            /*    fprintf(se, "\n[33mÒÔÏÂÊÇÈÏÖ¤Õß¸öÈË×ÊÁÏ[35m");
-                getuinfo(se, &currentuser);rem by Haohmaru.99.4.16*/
-            fclose(se);
-            postfile(fname, "Registry", str, 2);
-        }
-        else if (strstr(str, "É¾³ıÊ¹ÓÃÕß£º"))
-        {
-            fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n[32mÔ­Òò£º%s[m\n", str);
-            fprintf(se, "ÒÔÏÂÊÇ±»É¾Õß¸öÈË×ÊÁÏ");
-            getuinfo(se, &lookupuser);
-            fprintf(se, "\nÒÔÏÂÊÇÉ¾³ıÕß¸öÈË×ÊÁÏ");
-            getuinfo(se, &currentuser);
-            fclose(se);
-            postfile(fname, "syssecurity", str, 2);
-        }
-        else if (ptr = strstr(str, "µÄÈ¨ÏŞXPERM"))
-        {
-            int             oldXPERM, newXPERM;
-            int             num;
+    	if (lookupuser) {
+	        if (strstr(str, "ÈÃ") && strstr(str, "Í¨¹ıÉí·İÈ·ÈÏ"))
+	        {
+	            fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n[32mÔ­Òò£º%s[m\n", str);
+	            fprintf(se, "ÒÔÏÂÊÇÍ¨¹ıÕß¸öÈË×ÊÁÏ");
+	            /*    getuinfo(se, &lookupuser);*/
+	            /*Haohmaru.99.4.15.°Ñ±»×¢²áµÄ×ÊÁÏÁĞµÃ¸üÏêÏ¸,Í¬Ê±È¥µô×¢²áÕßµÄ×ÊÁÏ*/
+	            fprintf(se,"\n\nÄúµÄ´úºÅ     : %s\n",fdata[1]);
+	            fprintf(se,"ÄúµÄêÇ³Æ     : %s\n",lookupuser->username);
+	            fprintf(se,"ÕæÊµĞÕÃû     : %s\n",fdata[2]);
+	            fprintf(se,"µç×ÓÓÊ¼şĞÅÏä : %s\n",lookupuser->email);
+	            fprintf(se,"ÕæÊµ E-mail  : %s$%s@%s\n",fdata[3],fdata[5],currentuser->userid);
+	            fprintf(se,"·şÎñµ¥Î»     : %s\n",fdata[3]);
+	            fprintf(se,"Ä¿Ç°×¡Ö·     : %s\n",fdata[4]);
+	            fprintf(se,"Á¬Âçµç»°     : %s\n",fdata[5]);
+	            fprintf(se,"×¢²áÈÕÆÚ     : %s", ctime( &lookupuser->firstlogin));
+	            fprintf(se,"×î½ü¹âÁÙÈÕÆÚ : %s", ctime( &lookupuser->lastlogin));
+	            fprintf(se,"×î½ü¹âÁÙ»úÆ÷ : %s\n", lookupuser->lasthost );
+	            fprintf(se,"ÉÏÕ¾´ÎÊı     : %d ´Î\n", lookupuser->numlogins);
+	            fprintf(se,"ÎÄÕÂÊıÄ¿     : %d / %d (Board/1Discuss)\n",lookupuser->numposts, post_in_tin( lookupuser->userid ));
+	            fprintf(se,"Éú    ÈÕ     : %s\n",fdata[6]);
+	            /*    fprintf(se, "\n[33mÒÔÏÂÊÇÈÏÖ¤Õß¸öÈË×ÊÁÏ[35m");
+	                getuinfo(se, &currentuser);rem by Haohmaru.99.4.16*/
+	            fclose(se);
+	            postfile(fname, "Registry", str, 2);
+	        }
+	        else if (strstr(str, "É¾³ıÊ¹ÓÃÕß£º"))
+	        {
+	            fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n[32mÔ­Òò£º%s[m\n", str);
+	            fprintf(se, "ÒÔÏÂÊÇ±»É¾Õß¸öÈË×ÊÁÏ");
+	            getuinfo(se, &lookupuser);
+	            fprintf(se, "\nÒÔÏÂÊÇÉ¾³ıÕß¸öÈË×ÊÁÏ");
+	            getuinfo(se, &currentuser);
+	            fclose(se);
+	            postfile(fname, "syssecurity", str, 2);
+	        }
+	        else if (ptr = strstr(str, "µÄÈ¨ÏŞXPERM"))
+	        {
+	            int             oldXPERM, newXPERM;
+	            int             num;
 #define XPERMSTR "bTCPRp#@XWBA$VS!DEM1234567890%"
-            char            XPERM[48];
+	            char            XPERM[48];
 
-            sscanf(ptr + strlen("µÄÈ¨ÏŞXPERM"), "%d %d",
-                   &oldXPERM, &newXPERM);
-            *(ptr + strlen("µÄÈ¨ÏŞ")) = 0;
+	            sscanf(ptr + strlen("µÄÈ¨ÏŞXPERM"), "%d %d",
+	                   &oldXPERM, &newXPERM);
+	            *(ptr + strlen("µÄÈ¨ÏŞ")) = 0;
 
-            fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n[32mÔ­Òò£º%s[m\n", str);
+	            fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n[32mÔ­Òò£º%s[m\n", str);
 
-            strcpy(XPERM, XPERMSTR);
-            for (num = 0; num < strlen(XPERM); num++)
-                if (!(oldXPERM & (1 << num)))
-                    XPERM[num] = ' ';
-            XPERM[num] = '\0';
-            fprintf(se, "ÒÔÏÂÊÇ±»¸ÄÕßÔ­À´µÄÈ¨ÏŞ\n\033[1m\033[33m%s", XPERM);
+	            strcpy(XPERM, XPERMSTR);
+	            for (num = 0; num < strlen(XPERM); num++)
+	                if (!(oldXPERM & (1 << num)))
+	                    XPERM[num] = ' ';
+	            XPERM[num] = '\0';
+	            fprintf(se, "ÒÔÏÂÊÇ±»¸ÄÕßÔ­À´µÄÈ¨ÏŞ\n\033[1m\033[33m%s", XPERM);
 
-            strcpy(XPERM, XPERMSTR);
-            for (num = 0; num < strlen(XPERM); num++)
-                if (!(newXPERM & (1 << num)))
-                    XPERM[num] = ' ';
-            XPERM[num] = '\0';
-            fprintf(se, "\n%s\033[0m\nÒÔÉÏÊÇ±»¸ÄÕßÏÖÔÚµÄÈ¨ÏŞ\n", XPERM);
+	            strcpy(XPERM, XPERMSTR);
+	            for (num = 0; num < strlen(XPERM); num++)
+	                if (!(newXPERM & (1 << num)))
+	                    XPERM[num] = ' ';
+	            XPERM[num] = '\0';
+	            fprintf(se, "\n%s\033[0m\nÒÔÉÏÊÇ±»¸ÄÕßÏÖÔÚµÄÈ¨ÏŞ\n", XPERM);
 
-            fprintf(se, "\n"
-                    "\033[1m\033[33mb\033[0m»ù±¾È¨Á¦ \033[1m\033[33mT\033[0m½øÁÄÌìÊÒ \033[1m\033[33mC\033[0mºô½ĞÁÄÌì \033[1m\033[33mP\033[0m·¢ÎÄÕÂ \033[1m\033[33mR\033[0m×ÊÁÏÕıÈ· \033[1m\033[33mp\033[0m±»½û·¢ÎÄ \033[1m\033[33m#\033[0m¿ÉÒşÉí \033[1m\033[33m@\033[0m¿É¼ûÒşÉí\n"
-                    "\033[1m\033[33mX\033[0m³¤ÆÚÕÊºÅ \033[1m\033[33mW\033[0m±à¼­ÏµÍ³µµ°¸ \033[1m\033[33mB\033[0m°åÖ÷ \033[1m\033[33mA\033[0mÕÊºÅ¹ÜÀí \033[1m\033[33m$\033[0mÖÇÄÒÍÅ \033[1m\033[33mV\033[0mÍ¶Æ±¹ÜÀí \033[1m\033[33mS\033[0mÏµÍ³Î¬»¤\n"
-                    "\033[1m\033[33m!\033[0mRead/PostÏŞÖÆ \033[1m\033[33mD\033[0m¾«»ªÇø×Ü¹Ü \033[1m\033[33mE\033[0mÌÖÂÛÇø×Ü¹Ü \033[1m\033[33mM\033[0m»î¶¯¿´°æ×Ü¹Ü \033[1m\033[33m1\033[0m²»ÄÜZAP \033[1m\033[33m2\033[0mÁÄÌìÊÒOP\n"
-                    "\033[1m\033[33m3\033[0mÏµÍ³×Ü¹ÜÀíÔ± \033[1m\033[33m4->9\033[0m ÌØÊâÈ¨ÏŞ4->9 \033[1m\033[33m0\033[0m¿´ÏµÍ³ÌÖÂÛ°æ \033[1m\033[33m%%\033[0m·â½ûMail"
-                    "\n");
+	            fprintf(se, "\n"
+	                    "\033[1m\033[33mb\033[0m»ù±¾È¨Á¦ \033[1m\033[33mT\033[0m½øÁÄÌìÊÒ \033[1m\033[33mC\033[0mºô½ĞÁÄÌì \033[1m\033[33mP\033[0m·¢ÎÄÕÂ \033[1m\033[33mR\033[0m×ÊÁÏÕıÈ· \033[1m\033[33mp\033[0m±»½û·¢ÎÄ \033[1m\033[33m#\033[0m¿ÉÒşÉí \033[1m\033[33m@\033[0m¿É¼ûÒşÉí\n"
+	                    "\033[1m\033[33mX\033[0m³¤ÆÚÕÊºÅ \033[1m\033[33mW\033[0m±à¼­ÏµÍ³µµ°¸ \033[1m\033[33mB\033[0m°åÖ÷ \033[1m\033[33mA\033[0mÕÊºÅ¹ÜÀí \033[1m\033[33m$\033[0mÖÇÄÒÍÅ \033[1m\033[33mV\033[0mÍ¶Æ±¹ÜÀí \033[1m\033[33mS\033[0mÏµÍ³Î¬»¤\n"
+	                    "\033[1m\033[33m!\033[0mRead/PostÏŞÖÆ \033[1m\033[33mD\033[0m¾«»ªÇø×Ü¹Ü \033[1m\033[33mE\033[0mÌÖÂÛÇø×Ü¹Ü \033[1m\033[33mM\033[0m»î¶¯¿´°æ×Ü¹Ü \033[1m\033[33m1\033[0m²»ÄÜZAP \033[1m\033[33m2\033[0mÁÄÌìÊÒOP\n"
+	                    "\033[1m\033[33m3\033[0mÏµÍ³×Ü¹ÜÀíÔ± \033[1m\033[33m4->9\033[0m ÌØÊâÈ¨ÏŞ4->9 \033[1m\033[33m0\033[0m¿´ÏµÍ³ÌÖÂÛ°æ \033[1m\033[33m%%\033[0m·â½ûMail"
+	                    "\n");
 
-            fprintf(se, "\nÒÔÏÂÊÇ±»¸ÄÕß¸öÈË×ÊÁÏ");
-            getuinfo(se, &lookupuser);
-            fprintf(se, "\nÒÔÏÂÊÇĞŞ¸ÄÕß¸öÈË×ÊÁÏ");
-            getuinfo(se, &currentuser);
-            fclose(se);
-            postfile(fname, "syssecurity", str, 2);
-        }
+	            fprintf(se, "\nÒÔÏÂÊÇ±»¸ÄÕß¸öÈË×ÊÁÏ");
+	            getuinfo(se, &lookupuser);
+	            fprintf(se, "\nÒÔÏÂÊÇĞŞ¸ÄÕß¸öÈË×ÊÁÏ");
+	            getuinfo(se, &currentuser);
+	            fclose(se);
+	            postfile(fname, "syssecurity", str, 2);
+	        }
+    	}
         else
         {
             fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n[32mÔ­Òò£º%s[m\n", str);
@@ -248,6 +250,8 @@ int m_info()
 {
     struct userec   uinfo;
     int             id;
+    struct userec* lookupuser;
+
 
     modify_user_mode(ADMIN);
     if (!check_systempasswd())	/* Haohmaru.98.12.19 */
@@ -263,7 +267,7 @@ int m_info()
         clear();
         return -1;
     }
-    if (!(id = getuser(genbuf)))
+    if (!(id = getuser(genbuf,&lookupuser)))
     {
         move(3, 0);
         prints("´íÎóµÄÊ¹ÓÃÕß´úºÅ");
@@ -272,7 +276,7 @@ int m_info()
         clear();
         return -1;
     }
-    memcpy(&uinfo, &lookupuser, sizeof(uinfo));
+    uinfo=*lookupuser;
 
     move(1, 0);
     clrtobot();
@@ -463,7 +467,7 @@ int m_newbrd()
     {
         char            secu[STRLEN];
         sprintf(secu, "³ÉÁ¢ĞÂ°å£º%s", newboard.filename);
-        securityreport(secu);
+        securityreport(secu,NULL);
     }
     pressreturn();
     clear();
@@ -587,7 +591,7 @@ enterbname:
             {
                 char            secu[STRLEN];
                 sprintf(secu, "ĞŞ¸ÄÌÖÂÛÇø£º%s(%s)", fh.filename, newfh.filename);
-                securityreport(secu);
+                securityreport(secu,NULL);
             }
             if (strcmp(fh.filename, newfh.filename))
             {
@@ -671,7 +675,7 @@ int searchtrace()
         return -1;
     }
 
-    if(!(id = getuser(genbuf))) {
+    if(!(id = getuser(genbuf,NULL))) {
         move(3,0) ;
         prints("²»ÕıÈ·µÄÊ¹ÓÃÕß´úºÅ\n") ;
         clrtoeol();
@@ -682,11 +686,11 @@ int searchtrace()
 
     sprintf(tmp_command, "grep -w %s trace | grep posted > etc/searchresult", tmp_id);
     system(tmp_command);
-    mail_file("etc/searchresult", currentuser.userid, "ÏµÍ³²éÑ¯½á¹û");
+    mail_file("etc/searchresult", currentuser->userid, "ÏµÍ³²éÑ¯½á¹û");
     unlink("etc/searchresult");
 
     sprintf(buf, "²éÑ¯ÓÃ»§ %s µÄ·¢ÎÄÇé¿ö", tmp_id);
-    securityreport(buf);  /*Ğ´Èësyssecurity°å, stephen 2000.12.21*/
+    securityreport(buf,NULL);  /*Ğ´Èësyssecurity°å, stephen 2000.12.21*/
     sprintf(buf, "Search the posts by %s in the trace", tmp_id);
     report(buf);   /*Ğ´Èëtrace, stephen 2000.12.21*/
 
@@ -805,7 +809,7 @@ int m_mclean()
     {
         char            secu[STRLEN];
         sprintf(secu, "Çå³ıËùÓĞÊ¹ÓÃÕßÒÑ¶ÁĞÅ¼ş¡£");
-        securityreport(secu);
+        securityreport(secu,NULL);
     }
 
     move(3, 0);
@@ -951,7 +955,7 @@ char           *logfile, *regfile;
     int             n, unum;
     int		    count,sum;/*Haohmaru.2000.3.9.¼ÆËã»¹ÓĞ¶àÉÙµ¥×ÓÃ»´¦Àí*/
 
-    uid = currentuser.userid;
+    uid = currentuser->userid;
     stand_title("ÒÀĞòÉè¶¨ËùÓĞĞÂ×¢²á×ÊÁÏ");
     sprintf(fname, "%s.tmp", regfile);
     move(2, 0);
@@ -986,6 +990,7 @@ char           *logfile, *regfile;
     count=1;
     while (fgets(genbuf, STRLEN, fn) != NULL)
     {
+    	struct userec* lookupuser;
         if ((ptr = (char *) strstr(genbuf, ": ")) != NULL)
         {
             *ptr = '\0';
@@ -999,7 +1004,7 @@ char           *logfile, *regfile;
                 }
             }
         }
-        else if ((unum = getuser(fdata[1])) == 0)
+        else if ((unum = getuser(fdata[1],&lookupuser)) == 0)
         {
             move(2, 0);
             clrtobot();
@@ -1011,7 +1016,7 @@ char           *logfile, *regfile;
         }
         else
         {
-            memcpy(&uinfo, &lookupuser, sizeof(uinfo));
+            uinfo=*lookupuser;
             move(1, 0);
             prints("ÕÊºÅÎ»ÖÃ     : %d   ¹²ÓĞ %d ÕÅ×¢²áµ¥£¬µ±Ç°ÎªµÚ %d ÕÅ£¬»¹Ê£ %d ÕÅ\n", unum,sum,count++,sum-count+1);/*Haohmaru.2000.3.9.¼ÆËã»¹ÓĞ¶àÉÙµ¥×ÓÃ»´¦Àí*/
             disply_userinfo(&uinfo, 1);
@@ -1061,7 +1066,7 @@ char           *logfile, *regfile;
                 substitute_record(PASSFILE, &uinfo, sizeof(uinfo), unum);
                 mail_file("etc/s_fill", uinfo.userid, "¹§ìûÄã£¬ÄãÒÑ¾­Íê³É×¢²á¡£");
                 sprintf(genbuf, "%s ÈÃ %s Í¨¹ıÉí·İÈ·ÈÏ.", uid, uinfo.userid);
-                securityreport(genbuf);
+                securityreport(genbuf,lookupuser);
                 if ((fout = fopen(logfile, "a")) != NULL)
                 {
                 	time_t now;
@@ -1213,7 +1218,7 @@ int m_register()
             {
                 char            secu[STRLEN];
                 sprintf(secu, "Éè¶¨Ê¹ÓÃÕß×¢²á×ÊÁÏ");
-                securityreport(secu);
+                securityreport(secu,NULL);
             }
             scan_register_form("register.list", fname);
         }

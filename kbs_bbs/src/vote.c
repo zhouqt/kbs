@@ -476,7 +476,7 @@ int num;
     sug = NULL;
 
     sprintf(title,"[检查] %s 板的投票结果",currboard);
-    mail_file(nname,currentuser.userid,title);
+    mail_file(nname,currentuser->userid,title);
 
     unlink(nname);
 
@@ -661,7 +661,7 @@ char    *bname;
         pressreturn();
         return FULLUPDATE;
     }
-    strcpy(ball->userid,currentuser.userid);
+    strcpy(ball->userid,currentuser->userid);
     if(append_record(controlfile, ball, sizeof(*ball))==-1)
     {
         prints("发生严重的错误，无法开启投票，请通告站长");
@@ -899,7 +899,7 @@ int num;
     get_record(controlfile,&currvote,sizeof(struct votebal),num);
     sprintf(fname,"vote/%s/flag.%d",currboard,currvote.opendate);
     if ((pos = search_record(fname, &uservote, sizeof(uservote), cmpvuid,
-                             currentuser.userid)) <= 0)
+                             currentuser->userid)) <= 0)
     {
         (void)memset(&uservote, 0, sizeof(uservote));
         voted_flag=NA;
@@ -907,7 +907,7 @@ int num;
     {
         voted_flag=YEA;
     }
-    strcpy(uservote.uid,currentuser.userid);
+    strcpy(uservote.uid,currentuser->userid);
     sprintf(bname,"desc.%d",currvote.opendate);
     setvfile( buf, currboard, bname );
     ansimore( buf, YEA );
@@ -921,8 +921,8 @@ int num;
     userlimit.day = 0;
     sprintf(limitfile,"vote/%s/limit.%d",currboard,currvote.opendate);
     get_record(limitfile,&userlimit,sizeof(struct votelimit),1);
-    if( (currentuser.numposts < userlimit.numposts || currentuser.numlogins < userlimit.numlogins
-            || currentuser.stay < userlimit.stay*60*60 || (time(NULL) - currentuser.firstlogin) < userlimit.day*24*60*60) )
+    if( (currentuser->numposts < userlimit.numposts || currentuser->numlogins < userlimit.numlogins
+            || currentuser->stay < userlimit.stay*60*60 || (time(NULL) - currentuser->firstlogin) < userlimit.day*24*60*60) )
     {
         prints("对不起,你不满足板主规定的此次投票所需条件,无法参加投票,谢谢参与,下次再见! :)");
         pressanykey();
@@ -956,7 +956,7 @@ case VOTE_SINGLE: case VOTE_MULTI: case VOTE_YN:
         if(currvote.type!=VOTE_ASKING)
             getsug(&uservote);
         pos = search_record(fname, &tmpbal, sizeof(tmpbal), cmpvuid,
-                            currentuser.userid);
+                            currentuser->userid);
         if (pos)
         {
             substitute_record(fname, &uservote, sizeof(uservote),pos);
@@ -1004,7 +1004,7 @@ printvote(struct  votebal *ent,char* arg)
     sprintf(buf,"flag.%d",ent->opendate);
     setvfile(flagname,currboard,buf);
     if (search_record(flagname, &uservote, sizeof(uservote), cmpvuid,
-                      currentuser.userid)<= 0)
+                      currentuser->userid)<= 0)
     {
         voted_flag=NA;
     }
@@ -1123,7 +1123,7 @@ case 'O': case 'o':
         }
         mk_result(allnum+1);
         sprintf(buf,"提早结束投票 %s",currvote.title);
-        securityreport(buf);
+        securityreport(buf,NULL);
         report(buf);
         break;
     case '@':
@@ -1160,7 +1160,7 @@ case 'D': case 'd':
             break;
         }
         sprintf(buf,"强制关闭投票 %s",currvote.title);
-        securityreport(buf);
+        securityreport(buf,NULL);
         report(buf);
         dele_vote(allnum+1);
         break;

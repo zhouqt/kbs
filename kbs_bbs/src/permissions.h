@@ -70,8 +70,8 @@
 #define PERM_FORWARD    PERM_BASIC     /* to do the forwarding */
 
 /* Don't mess with this. */
-#define HAS_PERM(x)     ((x)?currentuser.userlevel&(x):1)
-#define DEFINE(x)     ((x)?currentuser.userdefine&(x):1)
+#define HAS_PERM(x)     ((x)?currentuser->userlevel&(x):1)
+#define DEFINE(x)     ((x)?currentuser->userdefine&(x):1)
 
 
 #ifndef EXTERN

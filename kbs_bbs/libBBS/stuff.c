@@ -328,10 +328,10 @@ if((pid = vfork()) == 0) {
             }
         bbssetenv("PATH", "/bin:.");
         bbssetenv("TERM", "vt100");
-        bbssetenv("USER", currentuser.userid);
-        bbssetenv("USERNAME", currentuser.username);
+        bbssetenv("USER", currentuser->userid);
+        bbssetenv("USERNAME", currentuser->username);
         /* added for tin's reply to */
-        bbssetenv("REPLYTO", currentuser.email);
+        bbssetenv("REPLYTO", currentuser->email);
         bbssetenv("FROMHOST", fromhost);
         /* end of insertion */
         if ((tz = getenv("TZ")) != NULL)

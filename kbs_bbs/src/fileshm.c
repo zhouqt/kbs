@@ -196,7 +196,7 @@ show_goodbyeshm()
 
     logouts=goodbyeshm[0].max;
     clear();
-    show_shmfile(&goodbyeshm[(currentuser.numlogins%((logouts<=1)?1:logouts))]);
+    show_shmfile(&goodbyeshm[(currentuser->numlogins%((logouts<=1)?1:logouts))]);
     shmdt(goodbyeshm);
 }
 
@@ -207,7 +207,7 @@ show_welcomeshm()
 
     welcomes=welcomeshm[0].max;
     clear();
-    show_shmfile(&welcomeshm[(currentuser.numlogins%((welcomes<=1)?1:welcomes))]);
+    show_shmfile(&welcomeshm[(currentuser->numlogins%((welcomes<=1)?1:welcomes))]);
     pressanykey();
     shmdt(welcomeshm);
 }

@@ -85,7 +85,7 @@ char *s ;
         timestr[20] = '\0';
         flock(fd,LOCK_EX) ;
         lseek(fd,0,SEEK_END) ;
-        sprintf(buf,"%s %s %s\n",currentuser.userid, timestr, s) ;
+        sprintf(buf,"%s %s %s\n",currentuser->userid, timestr, s) ;
         write(fd,buf,strlen(buf)) ;
         flock(fd,LOCK_UN) ;
         close(fd) ;
@@ -342,7 +342,7 @@ int    nomsg;
     char        buf[256], *ptr;
 
     sprintf( qfile, "boards/%s/%s", key, fileinfo->filename);
-    sprintf( filepath, "tmp/se.%s", currentuser.userid );
+    sprintf( filepath, "tmp/se.%s", currentuser->userid );
     outf = fopen( filepath, "w" );
     if( *qfile != '\0' && (inf = fopen( qfile, "r" )) != NULL ) {
         fgets( buf, 256, inf );
@@ -365,7 +365,7 @@ int    nomsg;
     }
     fclose( outf );
 
-    sprintf( board, "tmp/bm.%s", currentuser.userid );
+    sprintf( board, "tmp/bm.%s", currentuser->userid );
     if( dashf( board ) ) {
         sprintf ( genbuf, "要附加在旧暂存档之後吗?(Y/N/C) [Y]: " );
         if(!nomsg)
@@ -373,17 +373,17 @@ int    nomsg;
         /*if( ans[0] == 'N' || ans[0] == 'n' ||nomsg) {*/
         /* Leeward 98.04.16: fix bugs */
         if( (ans[0] == 'N' || ans[0] == 'n') && (!nomsg) ) {
-            sprintf( genbuf, "/bin/cp -r %s  tmp/bm.%s", filepath, currentuser.userid );
+            sprintf( genbuf, "/bin/cp -r %s  tmp/bm.%s", filepath, currentuser->userid );
         }
         else if(ans[0] == 'C' || ans[0] == 'c')
             return 1;
         else
         {
-            sprintf( genbuf, "/bin/cat %s >> tmp/bm.%s", filepath, currentuser.userid );
+            sprintf( genbuf, "/bin/cat %s >> tmp/bm.%s", filepath, currentuser->userid );
         }
     }
     else {
-        sprintf( genbuf, "/bin/cp -r %s  tmp/bm.%s", filepath , currentuser.userid );
+        sprintf( genbuf, "/bin/cp -r %s  tmp/bm.%s", filepath , currentuser->userid );
     }
     system( genbuf );
     sprintf( genbuf, " 已将该文章存入暂存档, 请按任何键以继续 << " );
@@ -407,7 +407,7 @@ int    nomsg;
     char        board[ STRLEN ];
     char        ans[ STRLEN ];
 
-    sprintf( board, "tmp/bm.%s", currentuser.userid );
+    sprintf( board, "tmp/bm.%s", currentuser->userid );
     if( dashf( board ) ) {
         sprintf ( genbuf, "要附加在旧暂存档之后吗?(Y/N/C) [Y]: " );
         if(!nomsg)
@@ -415,22 +415,22 @@ int    nomsg;
         /*if( ans[0] == 'N' || ans[0] == 'n' ||nomsg) {*/
         /* Leeward 97.11.18: fix bugs */
         if( (ans[0] == 'N' || ans[0] == 'n') && (!nomsg) ) {
-            sprintf( genbuf, "/bin/cp -r boards/%s/%s  tmp/bm.%s", key , fileinfo->filename , currentuser.userid );
+            sprintf( genbuf, "/bin/cp -r boards/%s/%s  tmp/bm.%s", key , fileinfo->filename , currentuser->userid );
             /*
-                               sprintf( genbuf, "/bin/cat boards/%s/%s >> tmp/bm.%s", key , fileinfo->filename , currentuser.userid );
+                               sprintf( genbuf, "/bin/cat boards/%s/%s >> tmp/bm.%s", key , fileinfo->filename , currentuser->userid );
             */
         }
         else if(ans[0] == 'C' || ans[0] == 'c')
             return 1;
         else
         {
-            sprintf( genbuf, "/bin/cat boards/%s/%s >> tmp/bm.%s", key , fileinfo->filename , currentuser.userid );
-            /*                   sprintf( genbuf, "/bin/cp -r boards/%s/%s  tmp/bm.%s", key , fileinfo->filename , currentuser.userid );
+            sprintf( genbuf, "/bin/cat boards/%s/%s >> tmp/bm.%s", key , fileinfo->filename , currentuser->userid );
+            /*                   sprintf( genbuf, "/bin/cp -r boards/%s/%s  tmp/bm.%s", key , fileinfo->filename , currentuser->userid );
             */
         }
     }
     else {
-        sprintf( genbuf, "/bin/cp -r boards/%s/%s  tmp/bm.%s", key , fileinfo->filename , currentuser.userid );
+        sprintf( genbuf, "/bin/cp -r boards/%s/%s  tmp/bm.%s", key , fileinfo->filename , currentuser->userid );
     }
     system( genbuf );
     sprintf( genbuf, " 已将该文章存入暂存档, 请按任何键以继续 << " );
@@ -529,7 +529,7 @@ int ent;
                         (*ip)++ ;
                     sprintf(bname,"%s/%s",pm.path , fname);
                 }
-                sprintf( genbuf, "%-38.38s %s ", fileinfo->title , currentuser.userid );
+                sprintf( genbuf, "%-38.38s %s ", fileinfo->title , currentuser->userid );
                 a_additem( &pm, genbuf , fname ,NULL,0);
                 a_savenames( &pm );
                 sprintf( genbuf, "/bin/cp -r boards/%s/%s %s", key , fileinfo->filename , bname );
@@ -663,7 +663,7 @@ int     mode;
     case ADDGROUP:
         mesg = "请输入新目录之英名名称(可含数字)：";     break;
     case ADDMAIL:
-        sprintf( board, "tmp/bm.%s", currentuser.userid );
+        sprintf( board, "tmp/bm.%s", currentuser->userid );
         if( !dashf( board ) ) {
             sprintf( genbuf, "哎呀!! 请先至该板(讨论区)将文章存入暂存档! << "  );
             a_prompt( -1, genbuf, ans );
@@ -725,7 +725,7 @@ int     mode;
             break;
         }
         if( mode != ADDGROUP )
-            sprintf( genbuf, "%-38.38s %s ", title, currentuser.userid );
+            sprintf( genbuf, "%-38.38s %s ", title, currentuser->userid );
         else
         {
             /*Add by SmallPig*/
@@ -808,7 +808,7 @@ int     paste;
         egetch();
 
         /* Leeward: 98.02.19: 对版主的多个窗口同步 C/P 操作 */
-        sprintf(genbuf, "home/%c/%s/.CP", toupper(currentuser.userid[0]), currentuser.userid);
+        sprintf(genbuf, "home/%c/%s/.CP", toupper(currentuser->userid[0]), currentuser->userid);
         fn = fopen(genbuf, "wt");
         if (fn)
         {
@@ -827,7 +827,7 @@ int     paste;
         }
     } else {
         /* Leeward: 98.02.19: 对版主的多个窗口同步 C/P 操作 */
-        sprintf(genbuf, "home/%c/%s/.CP", toupper(currentuser.userid[0]), currentuser.userid);
+        sprintf(genbuf, "home/%c/%s/.CP", toupper(currentuser->userid[0]), currentuser->userid);
         fn = fopen(genbuf, "rt");
         if (fn)
         {
@@ -1058,7 +1058,7 @@ int     ch;
             /* modified by netty to properly handle title change,add bm by SmallPig */
             if( *changed_T )  {
                 if( dashf( fpath ) ) {
-                    sprintf( genbuf, "%-38.38s %s ", changed_T , currentuser.userid );
+                    sprintf( genbuf, "%-38.38s %s ", changed_T , currentuser->userid );
                     strcpy( item->title, genbuf );
                     sprintf(r_genbuf,"改变文件 %s 的标题",fpath+17);
                     a_report(r_genbuf);

@@ -55,7 +55,7 @@ msgchar(uin)
 struct user_info *uin;
 {
     if ((uin->pager&ALLMSG_PAGER)) return ' ';
-    if ((can_override(uin->userid,currentuser.userid)))
+    if ((can_override(uin->userid,currentuser->userid)))
     {
         if((uin->pager&FRIENDMSG_PAGER))
             return 'O';
@@ -72,7 +72,7 @@ struct user_info *uin;
     if ((uin->pager&ALLMSG_PAGER) || HAS_PERM(PERM_SYSOP)) return YEA;
     if ((uin->pager&FRIENDMSG_PAGER))
     {
-        if(can_override(uin->userid,currentuser.userid))
+        if(can_override(uin->userid,currentuser->userid))
             return YEA;
     }
     return NA;
@@ -178,7 +178,7 @@ int mode;
 
     }else
     {
-        /*  if(!strcasecmp(uentp->userid,currentuser.userid))	rem by Haohmaru,ÕâÑù²Å¿ÉÒÔ×Ô¼º¸ø×Ô¼º·¢msg
+        /*  if(!strcasecmp(uentp->userid,currentuser->userid))	rem by Haohmaru,ÕâÑù²Å¿ÉÒÔ×Ô¼º¸ø×Ô¼º·¢msg
             return 0;    
          */   uin=uentp;
         strcpy(uident,uin->userid);
@@ -194,15 +194,7 @@ int mode;
         clrtoeol() ;
         return -1 ;
     }
-    if((uin->mode==POSTING || uin->mode==SMAIL) && !lookupuser.userdefine&DEF_LOGININFORM)/*Haohmaru.2000.01.16*/
-    {/*
-            move(2,0) ;
-            prints("¶Ô·½ÕıÔÚ·¢ÎÄÕÂ»òĞ´ĞÅ£¬ÇëÉÔºòÔÙ·¢»ò¸øËû(Ëı)Ğ´ĞÅ...\n");
-            pressreturn() ;
-            move(2,0) ;
-            clrtoeol() ;
-            return -1 ;*/
-    }
+
     if (NA==canIsend2(uin->userid))/*Haohmaru.06.06.99.¼ì²é×Ô¼ºÊÇ·ñ±»ignore*/
     {
         move(2,0) ;
@@ -247,7 +239,7 @@ int mode;
     strcpy(ret_str,"R »ØÑ¶Ï¢");
     if(msgstr==NULL||mode==2)
     {
-        sprintf(msgbuf,"[44m[36m%-12.12s[33m(%-5.5s):[37m%-59.59s[m[%dm\033[%dm\n", currentuser.userid,
+        sprintf(msgbuf,"[44m[36m%-12.12s[33m(%-5.5s):[37m%-59.59s[m[%dm\033[%dm\n", currentuser->userid,
                 timestr, (msgstr==NULL)?buf:msgstr,uinfo.pid+100,uin->pid+100);
         sprintf(msgbak,"[44m[0;1;32m=>[37m%-10.10s[33m(%-5.5s):[36m%-59.59s[m[%dm\033[%dm\n", uident,timestr, (msgstr==NULL)?buf:msgstr,uinfo.pid+100,uin->pid+100);
     }else
@@ -261,7 +253,7 @@ int mode;
         else if(mode==1)
         {
             sprintf(msgbuf,"[44m[36m%-12.12s(%-5.5s) ÑûÇëÄã[37m%-43.43s(%s)[m[%dm\033[%dm\n",
-                    currentuser.userid, timestr, msgstr,ret_str,uinfo.pid+100,uin->pid+100);
+                    currentuser->userid, timestr, msgstr,ret_str,uinfo.pid+100,uin->pid+100);
             sprintf(msgbak,"[44m[37mÄã(%-5.5s) ÑûÇë%-12.12s[36m%-43.43s(%s)[m[%dm\033[%dm\n", timestr,uident,msgstr,ret_str,uinfo.pid+100,uin->pid+100);
         }else if(mode==3)
         {
@@ -297,8 +289,8 @@ int mode;
     fclose(fp);
 
     /*Haohmaru.99.6.03.»ØµÄmsgÒ²¼ÇÂ¼*/
-    if(strcmp(currentuser.userid,uident)){
-        sethomefile(buf,currentuser.userid,"msgfile");
+    if(strcmp(currentuser->userid,uident)){
+        sethomefile(buf,currentuser->userid,"msgfile");
         if((fp=fopen(buf,"a"))==NULL)
             return -1;
         fputs(msgbak,fp);
@@ -504,7 +496,7 @@ MSGX: /* Leeward 98.07.30 supporting msgX */
             if(send_pid>100)
                 send_pid-=100;
             ptr=strtok(msg+10," ["); /* ºÍmsgÖĞ useridµÄÎ»ÖÃ¹ØÏµÃÜÇĞ*/
-            if(ptr==NULL)/*|| !strcasecmp(ptr,currentuser.userid))*/
+            if(ptr==NULL)/*|| !strcasecmp(ptr,currentuser->userid))*/
                 good_id=NA;
             else
             {
@@ -656,17 +648,18 @@ friend_login_wall(pageinfo)
 struct user_info *pageinfo;
 {
     char msg[STRLEN];
+    struct userec* lookupuser;
 
     if( !pageinfo->active || !pageinfo->pid )
         return 0;
-    if (can_override(pageinfo->userid,currentuser.userid)) {
-        if(getuser(pageinfo->userid)<=0)
+    if (can_override(pageinfo->userid,currentuser->userid)) {
+        if(getuser(pageinfo->userid,&lookupuser)<=0)
             return 0;
-        if(!(lookupuser.userdefine&DEF_LOGININFORM))
+        if(!(lookupuser->userdefine&DEF_LOGININFORM))
             return 0;
-        if(!strcasecmp(pageinfo->userid,currentuser.userid))
+        if(!strcasecmp(pageinfo->userid,currentuser->userid))
             return 0;
-        sprintf(msg,"ÄãµÄºÃÅóÓÑ %s ÒÑ¾­ÉÏÕ¾ÂŞ£¡",currentuser.userid);
+        sprintf(msg,"ÄãµÄºÃÅóÓÑ %s ÒÑ¾­ÉÏÕ¾ÂŞ£¡",currentuser->userid);
 
         /* ±£´æËù·¢msgµÄÄ¿µÄuid 1998.7.5 by dong*/
         strcpy(MsgDesUid, pageinfo->userid);

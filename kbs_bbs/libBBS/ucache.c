@@ -29,7 +29,10 @@
 #include "bbs.h"
 
 struct userec lookupuser;
-struct UCACHE   *uidshm;
+struct userec* currentuser;
+static int passwdfd=-1;
+static struct userec* passwd;
+static struct UCACHE   *uidshm;
 
 static int ucache_lock()
 {
@@ -208,7 +211,7 @@ fillucache(struct userec *uentp ,int* number)
 {
     if(*number < MAXUSERS) {
     	int hashkey;
-        strncpy((char*)uidshm->users[*number],uentp->userid,IDLEN+1) ;
+        strncpy((char*)passwd[*number].userid,uentp->userid,IDLEN+1) ;
         uidshm->users[*number][IDLEN] = '\0' ;
         hashkey = ucache_hash(uentp->userid);
 	if (hashkey<0||hashkey>UCACHE_HASHSIZE) {
@@ -244,6 +247,19 @@ resolve_ucache()
 		    }
 	    }
 	}*/
+	if (passwdfd==-1) {
+		if (passwdfd=open(PASSFILE,O_RDWR|O_CREAT,0644)) == -1) {
+			log("4system","Can't open " PASSFILE "file %s",strerror(errno));
+        	exit(-1);
+		}
+    	passwd = (struct userec*) mmap(NULL,
+    			MAXUSERS*sizeof(struct userec),
+    			PROT_READ|PORT_WRITE,MAP_SHARED,passwdfd,0);
+    	if (passwd==(struct userec*)-1) {
+			log("4system","Can't map " PASSFILE "file %s",strerror(errno));
+        	exit(-1);
+    	}
+	}
 	if (iscreate) {
     	int lockfd = ucache_lock();
 		int     usernumber;
@@ -268,7 +284,8 @@ resolve_ucache()
 int getuserid(char * userid, int uid)
 {
     if( uid > uidshm->number || uid <= 0 ) return 0;
-    strncpy(userid,(char*)uidshm->users[uid-1], IDLEN+1);
+    strncpy(userid,(char*)passwd[uid-1].userid, IDLEN+1);
+    userid[IDLEN]=0;
     return uid;
 }
 
@@ -328,19 +345,19 @@ searchuser(const char *userid )
     return 0 ;
 }
 
-int
-getuser(const char *userid) /* 取用户信息 */
+int getuser(const char *userid,struct userec** user) /* 取用户信息 */
 {
     int uid = searchuser(userid) ;
 
     if(uid == 0) return 0 ;
-    get_record(PASSFILE,&lookupuser,sizeof(lookupuser),uid) ;
+    if (user)
+	    *user=&passwd[uid-1];
     return uid ;
 }
 
 char* getuserid2(int uid)
 {
-	return uidshm->users[uid-1];
+	return passwd[uid-1].userid;
 }
 
 char *u_namearray( char    buf[][ IDLEN+1 ],int     *pnum, char * tag)
@@ -411,4 +428,28 @@ char *u_namearray( char    buf[][ IDLEN+1 ],int     *pnum, char * tag)
     }
     return buf[0];
 }
+
+/* disable by KCN 
+int
+set_safe_record()
+{
+    struct userec tmp;
+    extern int ERROR_READ_SYSTEM_FILE;
+
+    if(get_record(PASSFILE,&tmp,sizeof(currentuser),usernum)==-1)
+    {
+        char buf[STRLEN];
+
+        sprintf(buf,"Error:Read Passfile %4d %12.12s",usernum,currentuser->userid);
+        report(buf);
+        ERROR_READ_SYSTEM_FILE=YEA;
+        abort_bbs();
+        return -1;
+    }
+    currentuser->numposts=tmp.numposts;
+    currentuser->numlogins=tmp.numlogins;
+    currentuser->stay=tmp.stay;
+    currentuser->userlevel=tmp.userlevel;
+}
+*/
 

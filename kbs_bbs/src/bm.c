@@ -161,7 +161,7 @@ char *uident;
         tmtime=gmtime(&undenytime);
 
         sprintf( strtosave, "%-12.12s %-30.30s%-12.12s %2d月%2d日解\x1b[%um",
-                uident, denymsg ,currentuser.userid,
+                uident, denymsg ,currentuser->userid,
                 tmtime->tm_mon+1,tmtime->tm_mday, undenytime);/*Haohmaru 98,09,25,显示是谁什么时候封的 */
     } else {
         struct tm* tmtime;
@@ -169,13 +169,13 @@ char *uident;
         time_t undenytime = now+denyday*24*60*60;
         tmtime=gmtime(&undenytime);
         sprintf( strtosave, "%-12.12s %-30.30s%-12.12s %2d月%2d日后手动解封\x1b[%um",
-                uident, denymsg, currentuser.userid,
+                uident, denymsg, currentuser->userid,
                 tmtime->tm_mon+1,tmtime->tm_mday, undenytime);
 #else
         now=time(0);
         tmtime=gmtime(&now);
         sprintf( strtosave, "%-12.12s %-30.30s%-12.12s at %2d月%2d日 手动解封",
-                uident, denymsg, currentuser.userid,
+                uident, denymsg, currentuser->userid,
                 tmtime->tm_mon+1,tmtime->tm_mday);
 #endif
     }
@@ -199,36 +199,41 @@ char *uident;
     char filename[STRLEN];
     char buffer[STRLEN];
     time_t now;
+    struct userec* lookupuser;
 
     now=time(0);
     setbfile( fn,currboard, "deny_users" );
     /*Haohmaru.4.1.自动发信通知*/
-    sprintf(filename,"etc/%s.dny",currentuser.userid);
+    sprintf(filename,"etc/%s.dny",currentuser->userid);
     fn1=fopen(filename,"w");
     if (HAS_PERM(PERM_SYSOP)||HAS_PERM(PERM_OBOARDS))
     {sprintf(buffer,"[通知]");
-        fprintf(fn1,"寄信人: %s \n",currentuser.userid) ;
+        fprintf(fn1,"寄信人: %s \n",currentuser->userid) ;
         fprintf(fn1,"标  题: %s\n",buffer) ;
         fprintf(fn1,"发信站: %s (%24.24s)\n","BBS 水木清华站",ctime(&now)) ;
-        fprintf(fn1,"来  源: %s \n",currentuser.lasthost) ;
+        fprintf(fn1,"来  源: %s \n",currentuser->lasthost) ;
         fprintf(fn1,"\n");
-        fprintf(fn1,"您被站务人员 %s 解除在 %s 板的封禁\n",currentuser.userid,currboard);
+        fprintf(fn1,"您被站务人员 %s 解除在 %s 板的封禁\n",currentuser->userid,currboard);
     }
     else
     {
-        sprintf(buffer,"[通知]",currboard,currentuser.userid);
-        fprintf(fn1,"寄信人: %s \n",currentuser.userid) ;
+        sprintf(buffer,"[通知]",currboard,currentuser->userid);
+        fprintf(fn1,"寄信人: %s \n",currentuser->userid) ;
         fprintf(fn1,"标  题: %s\n",buffer) ;
         fprintf(fn1,"发信站: %s (%24.24s)\n","BBS 水木清华站",ctime(&now)) ;
-        fprintf(fn1,"来  源: %s \n",currentuser.lasthost) ;
+        fprintf(fn1,"来  源: %s \n",currentuser->lasthost) ;
         fprintf(fn1,"\n");
-        fprintf(fn1,"您被 %s 板板主 %s 解除封禁\n",currboard,currentuser.userid);
+        fprintf(fn1,"您被 %s 板板主 %s 解除封禁\n",currboard,currentuser->userid);
     }
     fclose(fn1);
     mail_file(filename,uident,buffer);
 
-    /*解封同样发文到undenypost版  Bigman:2000.6.30*/ getuser(uident); if(PERM_BOARDS & lookupuser.userlevel) sprintf(buffer,"%s 解封某板板主 %s 在 %s ",currentuser.userid,uident,currboard); else
-        sprintf(buffer,"%s 解封 %s 在 %s",currentuser.userid,uident,currboard);
+    /*解封同样发文到undenypost版  Bigman:2000.6.30*/ 
+    getuser(uident,&lookupuser); 
+    if (PERM_BOARDS & lookupuser->userlevel)
+    	sprintf(buffer,"%s 解封某板板主 %s 在 %s ",currentuser->userid,uident,currboard); 
+    else
+        sprintf(buffer,"%s 解封 %s 在 %s",currentuser->userid,uident,currboard);
     postfile(filename,"undenypost",buffer,1);
     unlink(filename);
 
@@ -288,12 +293,13 @@ Here:
             {   sprintf(filebuf,"%-12s","违反某条站规");
                 if(addtodeny(uident)==1)
                 {
+                	struct userec* lookupuser;
                     sprintf(repbuf,"%s 取消 %s 在 %s 的 POST 权力",
-                            currentuser.userid,uident,currboard);
+                            currentuser->userid,uident,currboard);
                     report(repbuf);
 
                     /*Haohmaru.4.1.自动发信通知并发文章于板上*/
-                    sprintf(filename,"etc/%s.deny",currentuser.userid);
+                    sprintf(filename,"etc/%s.deny",currentuser->userid);
                     fn=fopen(filename,"w+");
                     memcpy(&saveuser,&currentuser,sizeof(struct userec));
                     sprintf(buffer,"%s被取消在%s版的发文权限",uident,currboard);
@@ -312,18 +318,18 @@ Here:
                             fprintf(fn,"您被暂时取消在该版的发文权力，到期后请回复\n");
                         fprintf(fn,"此信申请恢复权限。\n");
                         fprintf(fn,"\n");
-                        fprintf(fn,"                            水木清华站务组值班站务：\x1b[4m%s\x1b[0m\n",currentuser.userid);
+                        fprintf(fn,"                            水木清华站务组值班站务：\x1b[4m%s\x1b[0m\n",currentuser->userid);
                         fprintf(fn,"                              %s\n",ctime(&now));
-                        strcpy(currentuser.userid,"SYSOP");
-                        strcpy(currentuser.username,"System Operator");
-                        strcpy(currentuser.realname,"System Operator");
+                        strcpy(currentuser->userid,"SYSOP");
+                        strcpy(currentuser->username,"System Operator");
+                        strcpy(currentuser->realname,"System Operator");
                     }
                     else
                     {		my_flag=1;
-                        fprintf(fn,"寄信人: %s \n",currentuser.userid) ;
+                        fprintf(fn,"寄信人: %s \n",currentuser->userid) ;
                         fprintf(fn,"标  题: %s\n",buffer) ;
                         fprintf(fn,"发信站: %s (%24.24s)\n","BBS 水木清华站",ctime(&now)) ;
-                        fprintf(fn,"来  源: %s \n",currentuser.lasthost) ;
+                        fprintf(fn,"来  源: %s \n",currentuser->lasthost) ;
                         fprintf(fn,"\n");
                         fprintf(fn,"由于您在 \x1b[4m%s\x1b[0m 版 \x1b[4m%s\x1b[0m，我很遗憾地通知您， \n",currboard,denymsg);
                         if (denyday)
@@ -332,7 +338,7 @@ Here:
                             fprintf(fn,"您被暂时取消在该版的发文权力，到期后请回复\n");
                         fprintf(fn,"此信申请恢复权限。\n");
                         fprintf(fn,"\n");
-                        fprintf(fn,"                              版主:\x1b[4m%s\x1b[0m\n",currentuser.userid);
+                        fprintf(fn,"                              版主:\x1b[4m%s\x1b[0m\n",currentuser->userid);
                         fprintf(fn,"                              %s\n",ctime(&now));
                     }
                     fclose(fn);
@@ -350,7 +356,7 @@ Here:
                     }
                     else
                     {
-                        fprintf(fn,"                              版主:\x1b[4m%s\x1b[0m\n",currentuser.userid);
+                        fprintf(fn,"                              版主:\x1b[4m%s\x1b[0m\n",currentuser->userid);
                     }
                     fprintf(fn,"                              %s\n",ctime(&now));
                     fclose(fn);
@@ -360,13 +366,13 @@ Here:
                     memcpy(&currentuser,&saveuser,sizeof(struct userec));
 
 
-                    sprintf(buffer,"%s 被 %s 封禁本板POST权",uident,currentuser.userid);
-                    getuser(uident);
+                    sprintf(buffer,"%s 被 %s 封禁本板POST权",uident,currentuser->userid);
+                    getuser(uident,&lookupuser);
 
-                    if(PERM_BOARDS & lookupuser.userlevel)
-                        sprintf(buffer,"%s 封某板板主 %s 在 %s",currentuser.userid,uident,currboard);
+                    if(PERM_BOARDS & lookupuser->userlevel)
+                        sprintf(buffer,"%s 封某板板主 %s 在 %s",currentuser->userid,uident,currboard);
                     else
-                        sprintf(buffer,"%s 封 %s 在 %s",currentuser.userid,uident,currboard);
+                        sprintf(buffer,"%s 封 %s 在 %s",currentuser->userid,uident,currboard);
                     postfile(filename,"denypost",buffer,8);
                     unlink(filename);
                 }
@@ -427,7 +433,7 @@ Here:
                 if(deldeny(uident))
                 {
                     sprintf(repbuf,"%s 恢复 %s 在 %s 的 POST 权力",
-                            currentuser.userid,uident,currboard);
+                            currentuser->userid,uident,currboard);
                     report(repbuf);
                 }
             }
@@ -507,7 +513,7 @@ BoardFilter()
         {
             char        secu[STRLEN];
             sprintf(secu,"删除系统档案：%s",explain_file[ch]);
-            securityreport(secu);
+            securityreport(secu,NULL);
         }
         unlink(genbuf);
         move(5,0);
@@ -527,7 +533,7 @@ BoardFilter()
         {
             char        secu[STRLEN];
             sprintf(secu,"修改系统档案：%s",explain_file[ch]);
-            securityreport(secu);
+            securityreport(secu,NULL);
         }
     }
     pressreturn();

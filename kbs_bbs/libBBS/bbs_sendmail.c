@@ -69,9 +69,9 @@ bbs_readmailfile (char **buf, int *len, void *arg)
     p=retbuf;
     pout=*buf;
     if (pmo->bfirst) {
-/*	sprintf(pout,"Reply-To: %s.bbs@%s\r\n\r\n", currentuser.userid, email_domain());
+/*	sprintf(pout,"Reply-To: %s.bbs@%s\r\n\r\n", currentuser->userid, email_domain());
 */
-	sprintf(pout,"\r\n\r\n", currentuser.userid, email_domain());
+	sprintf(pout,"\r\n\r\n", currentuser->userid, email_domain());
 	pout=*buf+strlen(*buf);
 	pmo->bfirst=0;
     }
@@ -183,7 +183,7 @@ int isuu, isbig5, noansi;
 
     smtp_set_server (session, server);
 
-    sprintf( newbuf, "%s.bbs@%s", currentuser.userid, email_domain() );
+    sprintf( newbuf, "%s.bbs@%s", currentuser->userid, email_domain() );
     smtp_set_reverse_path (message, newbuf);
     smtp_set_header (message, "Message-Id", NULL);
     

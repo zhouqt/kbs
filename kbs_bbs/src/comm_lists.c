@@ -559,7 +559,7 @@ int     cmdprompt;
 
     if(!DEFINE(DEF_NORMALSCR))
         clear();
-    help = (currentuser.flags[0] & CURSOR_FLAG);
+    help = (currentuser->flags[0] & CURSOR_FLAG);
     line = 3;
     col  = 0;
     num  = 0;
@@ -643,7 +643,7 @@ if (nettyNN ==1) { R_monitor();}
             now++;
             if( now >= size )  now = 0;
         }
-        if( currentuser.flags[0] & CURSOR_FLAG ) {
+        if( currentuser->flags[0] & CURSOR_FLAG ) {
             move( pm[now].line, pm[now].col );
             prints( "¡ô" );
         }
@@ -656,7 +656,7 @@ if (nettyNN ==1) { R_monitor();}
         prints("]");
         clrtoeol();
         cmd = egetch();
-        if( currentuser.flags[0] & CURSOR_FLAG ) {
+        if( currentuser->flags[0] & CURSOR_FLAG ) {
             move( pm[now].line, pm[now].col );
             prints( "  " );
         }

@@ -815,9 +815,9 @@ lock_monitor() /* Leeward 98.03.01 */
     c=tm%7+1;
     move(yy, xx);
     /*if(tm%2==0)
-      prints("[3%dmÎÒÊÇ %12s[m",c,currentuser.userid);
+      prints("[3%dmÎÒÊÇ %12s[m",c,currentuser->userid);
     else
-      prints("[3%dmÎÒÊÇ %12s[m",c,currentuser.username);*/
+      prints("[3%dmÎÒÊÇ %12s[m",c,currentuser->username);*/
     prints("[1m[3%dmBBS Ë®Ä¾Çå»ªÕ¾[0m[0m", c);
     signal(SIGALRM,lock_monitor);
     alarm(1);
@@ -832,7 +832,7 @@ lock_scr() /* Leeward 98.02.22 */
     char passbuf[STRLEN];
 
 
-    if (!strcmp(currentuser.userid, "guest"))
+    if (!strcmp(currentuser->userid, "guest"))
         return;
 
     modify_user_mode(LOCKSCREEN);

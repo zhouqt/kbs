@@ -45,7 +45,6 @@
 #define BADLOGINFILE "logins.bad"
 
 struct fileheader currentmail;
-struct userec currentuser;
 
 char LowUserid[20];
 char genbuf[BUFSIZE];
@@ -618,11 +617,9 @@ get_userdata(user)
 char *user;
 {
 	int uid;
-	uid = getuser(user);
-	if (uid) {
-		currentuser=lookupuser;
+	uid = getuser(user,&currentuser);
+	if (uid) 
 		return 1;
-	}
 	return -1;
 /*    FILE *rec;
     int found=0;
@@ -634,14 +631,14 @@ char *user;
     while(1)
     {
         if(fread(&currentuser,sizeof(currentuser),1,rec)<=0) break;
-        if(currentuser.numlogins<=0)
+        if(currentuser->numlogins<=0)
             continue;
-        if(strcasecmp(user,currentuser.userid))
+        if(strcasecmp(user,currentuser->userid))
             continue;
         else
         {
             found=1;
-            strcpy(user,currentuser.userid);
+            strcpy(user,currentuser->userid);
             break;
         }
     }
@@ -678,7 +675,7 @@ User()
     *ptr = '\0';
     if(get_userdata(cmd)==1)
     {
-        strcpy(LowUserid, currentuser.userid);
+        strcpy(LowUserid, currentuser->userid);
         sprintf(genbuf, "+OK Password required for %s.bbs.", cmd);
         outs(genbuf);
     }else
@@ -704,7 +701,7 @@ char *buf;
         p = localtime(&now);
         fprintf(fp, "%02d/%02d/%02d %02d:%02d:%02d [%s](%s) %s\n",
                 p->tm_year, p->tm_mon+1, p->tm_mday, p->tm_hour, p->tm_min,
-                p->tm_sec, currentuser.userid ? currentuser.userid : "",
+                p->tm_sec, currentuser->userid ? currentuser->userid : "",
                 remote_userid ? remote_userid : "", buf);
         fflush(fp);
         fclose(fp);
@@ -756,7 +753,7 @@ Retr()
     outs(genbuf);
     sprintf(genbuf, "From: %s", fcache[num].owner);
     outs(genbuf);
-    sprintf(genbuf, "To: %s%s", currentuser.userid, BBSNAME);
+    sprintf(genbuf, "To: %s%s", currentuser->userid, BBSNAME);
     outs(genbuf);
     sprintf(genbuf, "Subject: %s", fcache[num].title);
     outs(genbuf);
@@ -899,7 +896,7 @@ Top() /* Leeward adds, 98.01.21 */
     outs(genbuf);
     sprintf(genbuf, "From: %s", fcache[num].owner);
     outs(genbuf);
-    sprintf(genbuf, "To: %s%s", currentuser.userid, BBSNAME);
+    sprintf(genbuf, "To: %s%s", currentuser->userid, BBSNAME);
     outs(genbuf);
     sprintf(genbuf, "Subject: %s", fcache[num].title);
     outs(genbuf);
@@ -977,7 +974,7 @@ Pass()
         LowUserid[0] = '\0';
         log_usies("ERROR PASSWD");
         if (remote_userid)
-            logattempt(currentuser.userid, remote_userid); /* Leeward 98.07.25 */
+            logattempt(currentuser->userid, remote_userid); /* Leeward 98.07.25 */
         return;
     }
 

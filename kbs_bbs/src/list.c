@@ -145,7 +145,7 @@ int full_utmp(struct user_info* uentp,int* count)
     {
         return 0;
     }
-    if(!HAS_PERM(PERM_SEECLOAK) && uentp->invisible && strcmp(uentp->userid,currentuser.userid))/*Haohmaru.99.4.24.ÈÃÒþÉíÕßÄÜ¿´¼û×Ô¼º*/
+    if(!HAS_PERM(PERM_SEECLOAK) && uentp->invisible && strcmp(uentp->userid,currentuser->userid))/*Haohmaru.99.4.24.ÈÃÒþÉíÕßÄÜ¿´¼û×Ô¼º*/
     {
         return 0;
     }
@@ -207,7 +207,7 @@ do_userlist()
     /* to print on line user to a file */
     /* char online_users[STRLEN+10];
 
-     if(!strcmp(currentuser.userid,"guest")){
+     if(!strcmp(currentuser->userid,"guest")){
      fd=open("/home0/bbs/onlineulist",O_RDWR|O_TRUNC, 0600);
      if(fd!=-1)
      {
@@ -250,7 +250,7 @@ do_userlist()
         {
             return 0;
         }
-        pagec=pagerchar( can_override(uentp->userid,currentuser.userid), uentp->pager);
+        pagec=pagerchar( can_override(uentp->userid,currentuser->userid), uentp->pager);
         sprintf( user_info_str,
                  /*---	modified by period	2000-10-21	ÔÚÏßÓÃ»§Êý¿ÉÒÔ´óÓÚ1000µÄ
                          " %3d%2s%s%-12.12s%s%s %-16.16s%s %-16.16s %c %c %s%-17.17s[m%5.5s\n",
@@ -342,10 +342,10 @@ int allnum,pagenum;
     switch(ch)
     {
 case 'k': case'K':
-        if(!HAS_PERM(PERM_SYSOP)&&strcmp(currentuser.userid,
+        if(!HAS_PERM(PERM_SYSOP)&&strcmp(currentuser->userid,
                                          user_record[allnum]->userid))
             return 1;
-        if (!strcmp(currentuser.userid, "guest"))
+        if (!strcmp(currentuser->userid, "guest"))
             return 1; /* Leeward 98.04.13 */
         sprintf(buf,"ÄãÒª°Ñ %s Ìß³öÕ¾ÍâÂð (Yes/No) [N]: ",
                 user_record[allnum]->userid);
@@ -380,7 +380,7 @@ case 'W':case 'w':
 case 't': case'T':
         if(!HAS_PERM(PERM_PAGE))
             return 1;
-        if(strcmp(currentuser.userid,
+        if(strcmp(currentuser->userid,
                   user_record[allnum]->userid))
             ttt_talk(user_record[allnum]);
         else
@@ -413,7 +413,7 @@ case 's': case 'S':
         do_sendmsg(user_record[allnum],NULL,0);
         break;
 case 'o': case 'O':
-        if(!strcmp("guest",currentuser.userid))
+        if(!strcmp("guest",currentuser->userid))
             return 0;
         if(addtooverride(user_record[allnum]->userid)
                 ==-1)
@@ -429,7 +429,7 @@ case 'o': case 'O':
         msgflag=YEA;
         break;
 case 'd': case'D':
-        if(!strcmp("guest",currentuser.userid))
+        if(!strcmp("guest",currentuser->userid))
             return 0;
         /* Leeward: 97.12.19: confirm removing operation */
         sprintf(buf,"ÄãÒª°Ñ %s ´ÓÅóÓÑÃûµ¥ÒÆ³ýÂð (Y/N) [N]: ",
@@ -499,7 +499,7 @@ case 'm': case'M':
         m_send(user_data[allnum-pagenum].userid);
         break;
 case 'o': case 'O':
-        if(!strcmp("guest",currentuser.userid))
+        if(!strcmp("guest",currentuser->userid))
             return 0;
         if(addtooverride(user_data[allnum-pagenum].userid)
                 ==-1)
@@ -525,7 +525,7 @@ case 'W':case 'w':
             showexplain=1;
         break;
 case 'd': case'D':
-        if(!strcmp("guest",currentuser.userid))
+        if(!strcmp("guest",currentuser->userid))
             return 0;
         /* Leeward: 97.12.19: confirm removing operation */
         sprintf(buf,"ÄãÒª°Ñ %s ´ÓÅóÓÑÃûµ¥ÒÆ³ýÂð (Y/N) [N]: ",
@@ -659,7 +659,7 @@ mailto(struct userec *uentp ,char* arg)
 {
     char filename[STRLEN];
 
-    sprintf(filename,"etc/%s.mailtoall",currentuser.userid);
+    sprintf(filename,"etc/%s.mailtoall",currentuser->userid);
     if((uentp->userlevel==PERM_BASIC&&mailmode==1)||
             (uentp->userlevel&PERM_POST&&mailmode==2)||
             (uentp->userlevel&PERM_BOARDS&&mailmode==3)||

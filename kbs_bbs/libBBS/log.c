@@ -79,7 +79,7 @@ static void getheader(char * header,const char *from,int prio)
     sprintf(header,"[%02u/%02u %02u:%02u:%02u %5d %d.%s] %s ",
         pt->tm_mon,pt->tm_mday,pt->tm_hour,pt->tm_min,pt->tm_sec,getpid(),
         prio,from,
-        currentuser.userid
+        currentuser->userid
         );
 }
 

@@ -124,7 +124,6 @@ struct UCACHE {
         ucache_hashtable hashtable;
         ucache_hashtable hashusage;
 	int	hashhead[UCACHE_HASHSIZE+1];
-	char    users[MAXUSERS][IDLEN+1];
 	int     next[MAXUSERS];
 	time_t  uptime;
 	int	number;

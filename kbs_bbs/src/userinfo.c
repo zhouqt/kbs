@@ -185,7 +185,7 @@ int     real, unum;
         /* Bigman 2000.10.2 修改使用者ID位数不够 */
         getdata(i++,0,"新的使用者代号: ",genbuf,IDLEN+1,DOECHO,NULL,YEA);
         if(*genbuf != '\0') {
-            if(getuser(genbuf)) {
+            if(searchuser(genbuf)) {
                 prints("\n错误! 已经有同样 ID 的使用者\n") ;
                 fail++;
                 break;
@@ -247,12 +247,13 @@ int     real, unum;
             if(real)
             {
                 char        secu[STRLEN];
-                sprintf(secu,"修改 %s 的基本资料或密码。",u->userid);
                 if(strcmp(u->userid, newinfo.userid ))
-                    sprintf(secu,"%s 的 ID 被 %s 改为 %s",u->userid,currentuser.userid,newinfo.userid);/*Haohmaru.99.5.6*/
-                securityreport(secu);
+                    sprintf(secu,"%s 的 ID 被 %s 改为 %s",u->userid,currentuser->userid,newinfo.userid);/*Haohmaru.99.5.6*/
+                else
+	                sprintf(secu,"修改 %s 的基本资料或密码。",u->userid);
+                securityreport(secu,&newinfo);
             } else {
-                currentuser=newinfo; 
+                *currentuser=newinfo; 
                 if ( strcmp(newinfo.username,uinfo.username)) {
                     strcpy(uinfo.username,newinfo.username);
                     UPDATE_UTMP_STR(username,uinfo);
@@ -350,7 +351,7 @@ x_info()
 {
     modify_user_mode( GMENU );
     disply_userinfo( &currentuser, 1 );
-    if (!strcmp("guest", currentuser.userid)) {
+    if (!strcmp("guest", currentuser->userid)) {
         pressreturn();
         return;
     }
@@ -392,17 +393,17 @@ x_fillform()
     move( 3, 0 );
     clrtobot();
 
-    if (!strcmp("guest", currentuser.userid)) {
+    if (!strcmp("guest", currentuser->userid)) {
         prints( "抱歉, 请用 new 申请一个新帐号後再填申请表." );
         pressreturn();
         return;
     }
-    if( currentuser.userlevel & PERM_LOGINOK ) {
+    if( currentuser->userlevel & PERM_LOGINOK ) {
         prints( "您的身份确认已经成功, 欢迎加入本站的行列." );
         pressreturn();
         return;
     }
-    if ((time(0)-currentuser.firstlogin) < 3*86400)
+    if ((time(0)-currentuser->firstlogin) < 3*86400)
     {
         prints( "您首次登入本站未满3天(72个小时)..." );
         prints( "请先四处熟悉一下，在满3天以后再填写注册单。");
@@ -420,7 +421,7 @@ x_fillform()
             if( (ptr = strchr( genbuf, '\n' )) != NULL )
                 *ptr = '\0';
             if( strncmp( genbuf, "userid: ", 8 ) == 0 &&
-                    strcmp( genbuf + 8, currentuser.userid ) == 0 ) {
+                    strcmp( genbuf + 8, currentuser->userid ) == 0 ) {
                 fclose( fn );
                 prints( "站长尚未处理您的注册申请单, 请耐心等候." );
                 pressreturn();
@@ -434,14 +435,14 @@ x_fillform()
     getdata(t_lines-1,8,"您确定要填写注册单吗 (Y/N)? [N]: ",ans,3,DOECHO,NULL,YEA);
     if( ans[0] != 'Y' && ans[0] != 'y' )
         return;
-    strncpy( rname, currentuser.realname, NAMELEN );
-    strncpy( addr,  currentuser.address,  STRLEN  );
+    strncpy( rname, currentuser->realname, NAMELEN );
+    strncpy( addr,  currentuser->address,  STRLEN  );
     career[0] = phone[0] = birth[0]='\0';
     clear();
     while( 1 ) {
         move( 3, 0 );
         clrtoeol();
-        prints( "%s 您好, 请据实填写以下的资料(请使用中文):\n", currentuser.userid );
+        prints( "%s 您好, 请据实填写以下的资料(请使用中文):\n", currentuser->userid );
         genbuf[0] = '\0';/*Haohmaru.99.09.17.以下内容不得过短*/
         while ( strlen( genbuf ) < 3 ) {
             getfield(  6, "请用中文,不能输入的汉字请用拼音", "真实姓名", rname, NAMELEN ); }
@@ -462,12 +463,12 @@ x_fillform()
         if( ans[0] == 'Y' || ans[0] == 'y' )
             break;
     }
-    strncpy( currentuser.realname, rname,  NAMELEN );
-    strncpy( currentuser.address,  addr,   STRLEN  );
+    strncpy( currentuser->realname, rname,  NAMELEN );
+    strncpy( currentuser->address,  addr,   STRLEN  );
     if( (fn = fopen( "new_register", "a" )) != NULL ) {
         now = time( NULL );
         fprintf( fn, "usernum: %d, %s", usernum, ctime( &now ) );
-        fprintf( fn, "userid: %s\n",    currentuser.userid );
+        fprintf( fn, "userid: %s\n",    currentuser->userid );
         fprintf( fn, "realname: %s\n",  rname );
         fprintf( fn, "career: %s\n",    career );
         fprintf( fn, "addr: %s\n",      addr );

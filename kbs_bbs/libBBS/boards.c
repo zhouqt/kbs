@@ -441,7 +441,8 @@ char *direct ;
         return DONOTHING;
     else
     {
-        if( !( tuid=getuser(fileinfo->owner) ) ) {
+    	struct userec* lookupuser;
+        if( !( tuid=getuser(fileinfo->owner,&lookupuser) ) ) {
             clrtobot();
             prints("▓╗╒¤╚╖╡─╩╣╙├╒▀┤·║┼\n") ;
             pressanykey() ;
@@ -451,23 +452,23 @@ char *direct ;
         }
 
         move( 3, 0 );
-        if( !(lookupuser.userlevel & PERM_BOARDS)){
+        if( !(lookupuser->userlevel & PERM_BOARDS)){
             clrtobot();
-            prints("╙├╗з%s▓╗╩╟░ц╓ў!\n",lookupuser.userid);
+            prints("╙├╗з%s▓╗╩╟░ц╓ў!\n",lookupuser->userid);
             pressanykey() ;
             move(2,0) ;
             clrtobot() ;
             return FULLUPDATE ;
         }
         clrtobot();
-        prints("╙├╗з%s╬к╥╘╧┬░ц╡─░ц╓ў\n\n",lookupuser.userid);
+        prints("╙├╗з%s╬к╥╘╧┬░ц╡─░ц╓ў\n\n",lookupuser->userid);
 
         prints("й│йейейейейейейейейейейейейейейейей╫йейейейейейейейейейейейейейейейей╖\n");
         prints("йз            ░ц╙в╬─├√            йз            ░ц╓╨╬─├√            йз\n");
 
         for( n = 0; n < numboards; n++ ) {
             bptr = &bcache[ n ];
-            if( chk_BM_instr(bptr->BM,lookupuser.userid) == YEA){
+            if( chk_BM_instr(bptr->BM,lookupuser->userid) == YEA){
                 prints("й╟йейейейейейейейейейейейейейейейейяйейейейейейейейейейейейейейейейей╧\n");
                 prints("йз%-32sйз%-32sйз\n",bptr->filename,bptr->title+12);
             }
@@ -489,6 +490,7 @@ query_bm( )
     char        tmpBM[BM_LEN-1];
     char        uident[STRLEN];
     int         tuid=0;
+    struct userec* lookupuser;
 
     modify_user_mode(QUERY);
     move(2,0);
@@ -502,7 +504,7 @@ query_bm( )
         clear() ;
         return FULLUPDATE ;
     }
-    if(!(tuid = getuser(uident))) {
+    if(!(tuid = getuser(uident,&lookupuser))) {
         move(2,0) ;
         clrtoeol();
         prints("[1m▓╗╒¤╚╖╡─╩╣╙├╒▀┤·║┼[m\n") ;
@@ -513,22 +515,22 @@ query_bm( )
     }
 
     move( 3, 0 );
-    if( !(lookupuser.userlevel & PERM_BOARDS))
+    if( !(lookupuser->userlevel & PERM_BOARDS))
     {
-        prints("╙├╗з%s▓╗╩╟░ц╓ў!\n",lookupuser.userid);
+        prints("╙├╗з%s▓╗╩╟░ц╓ў!\n",lookupuser->userid);
         pressanykey() ;
         move(2,0) ;
         clrtoeol() ;
         return FULLUPDATE ;
     }
-    prints("╙├╗з%s╬к╥╘╧┬░ц╡─░ц╓ў\n\n",lookupuser.userid);
+    prints("╙├╗з%s╬к╥╘╧┬░ц╡─░ц╓ў\n\n",lookupuser->userid);
 
     prints("й│йейейейейейейейейейейейейейейейей╫йейейейейейейейейейейейейейейейей╖\n");
     prints("йз            ░ц╙в╬─├√            йз            ░ц╓╨╬─├√            йз\n");
 
     for( n = 0; n < numboards; n++ ) {
         bptr = &bcache[ n ];
-        if( chk_BM_instr(bptr->BM,lookupuser.userid) == YEA)
+        if( chk_BM_instr(bptr->BM,lookupuser->userid) == YEA)
         {
             prints("й╟йейейейейейейейейейейейейейейейейяйейейейейейейейейейейейейейейейей╧\n");
             prints("йз%-32sйз%-32sйз\n",bptr->filename,bptr->title+12);
@@ -599,7 +601,7 @@ struct newpostdata      *brd, *tmp;
 {
     register int        type = 0;
 
-    if( !(currentuser.flags[0] & BRDSORT_FLAG) )
+    if( !(currentuser->flags[0] & BRDSORT_FLAG) )
     {
         type = brd->title[0] - tmp->title[0];
         if(type==0)
@@ -621,7 +623,7 @@ int     newflag;
     int         page, ch, tmp, number,tmpnum;
     int         loop_mode=0;
 
-    if( !strcmp( currentuser.userid, "guest" ) )
+    if( !strcmp( currentuser->userid, "guest" ) )
         yank_flag = 1;
     nbrd = newpost_buffer;
     modify_user_mode( newflag ? READNEW : READBRD );
@@ -672,7 +674,7 @@ int     newflag;
             {
                 char fname[STRLEN], restore[256];
 
-                if(!strcmp(currentuser.userid,"guest")) /* guest ▓╗▒╪ */
+                if(!strcmp(currentuser->userid,"guest")) /* guest ▓╗▒╪ */
                     break;
 
                 saveline(t_lines-2, 0, NULL);
@@ -712,7 +714,7 @@ int     newflag;
 
                 /* Bigman 2000.12.11:╧╡═│╝╟┬╝ */
                 sprintf(genbuf,"╓╗╢┴╠╓┬█╟° %s ",nbrd[num].name);
-                securityreport(genbuf);
+                securityreport(genbuf,NULL);
                 sprintf(genbuf, " readonly board %s",nbrd[num].name);
                 report(genbuf);
 
@@ -730,7 +732,7 @@ int     newflag;
 
                 /* Bigman 2000.12.11:╧╡═│╝╟┬╝ */
                 sprintf(genbuf,"╜т┐к╓╗╢┴╠╓┬█╟° %s ",nbrd[num].name);
-                securityreport(genbuf);
+                securityreport(genbuf,NULL);
                 sprintf(genbuf, " readable board %s",nbrd[num].name);
                 report(genbuf);
 
@@ -818,7 +820,7 @@ case 'n': case 'j': case KEY_DOWN:
             }
             break;
         case 's':   /* sort/unsort -mfchen */
-            currentuser.flags[0] ^= BRDSORT_FLAG; /*┼┼╨Є╖╜╩╜*/
+            currentuser->flags[0] ^= BRDSORT_FLAG; /*┼┼╨Є╖╜╩╜*/
             qsort( nbrd, brdnum, sizeof( nbrd[0] ), cmpboard );/*┼┼╨Є*/
             page = 999;
             break;
@@ -1069,7 +1071,7 @@ char    *filename;
 {
     int         ftime, n, i;
 
-    if(!strcmp(currentuser.userid,"guest"))
+    if(!strcmp(currentuser->userid,"guest"))
         return;
     ftime = atoi( &filename[2] );
     if( (filename[0] != 'M'&&filename[0] != 'G') || filename[1] != '.' /*|| ftime <= UNREAD_TIME*/ ) {

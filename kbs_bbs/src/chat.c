@@ -420,11 +420,11 @@ int ent_chat_conn(chatcontext * pthis, int chatnum)
         if( inbuf[0]!='\0'&&inbuf[0]!='\n'&&inbuf[0]!='/' ){
             strncpy(pthis->chatid,inbuf,8);
         } else {
-            strncpy(pthis->chatid,currentuser.userid,8);
+            strncpy(pthis->chatid,currentuser->userid,8);
         }
         pthis->chatid[8] = '\0';
 
-        sprintf(inbuf, "/! %d %d %s %s", uinfo.uid, currentuser.userlevel, currentuser.userid, pthis->chatid);
+        sprintf(inbuf, "/! %d %d %s %s", uinfo.uid, currentuser->userlevel, currentuser->userid, pthis->chatid);
         chat_send(pthis, inbuf); /* send user info to chatd , and chatd will check it*/
         
         if (chat_recv(pthis, inbuf, 3) != 3) {
@@ -459,7 +459,7 @@ int ent_chat(int chatnum)  /* ½øÈëÁÄÌìÊÒ*/
     int  page_pending = NA;
     int  chatting = YEA;
 
-    if (!strcmp(currentuser.userid,"guest")) return -1;
+    if (!strcmp(currentuser->userid,"guest")) return -1;
     
     pthis=(chatcontext*)malloc(sizeof(chatcontext));
     bzero(pthis,sizeof(chatcontext));
@@ -815,7 +815,7 @@ void call_user(chatcontext *pthis,const char *arg) /* invite user online to chat
         printchatline(pthis,"[37m*** [32mÇëÊäÈëÄãÒªÑûÇëµÄ ID[37m ***[m");
         return;
     }
-    if(!strcasecmp(arg,currentuser.userid))
+    if(!strcasecmp(arg,currentuser->userid))
         sprintf(msg,"[32mÄã²»ÓÃÑûÇë×Ô¼º°¡[m");
     else if (!HAS_PERM(PERM_PAGE))  /* Leeward 98.07.30 */
         sprintf(msg,"[32mÄãÃ»ÓĞ·¢ĞÅÏ¢µÄÈ¨ÏŞ[m");
@@ -969,33 +969,34 @@ static void query_user(chatcontext *pthis,const char* userid)
     char qry_mail_dir[STRLEN],inbuf[STRLEN*2];
     char* newline;
     time_t exit_time,temp;
+    struct userec* lookupuser;
 
-    if(!(tuid = getuser(userid))) {
+    if(!(tuid = getuser(userid,&lookupuser))) {
         printchatline(pthis,"[32mÕâ¸öID²»´æÔÚ£¡[m");
         return;
     }
 
-    setmailfile(qry_mail_dir, lookupuser.userid, DOT_DIR);
+    setmailfile(qry_mail_dir, lookupuser->userid, DOT_DIR);
 
     /*---	modified by period	2000-11-02	hide posts/logins	---*/
 #ifdef _DETAIL_UINFO_
-    sprintf(genbuf, "%s (%s):      %s", lookupuser.userid, lookupuser.username,
+    sprintf(genbuf, "%s (%s):      %s", lookupuser->userid, lookupuser->username,
             (check_query_mail(qry_mail_dir)==1)? "ÓĞĞÂĞÅ":"    ");
     printchatline(pthis,genbuf);
     sprintf(genbuf,"¹²ÉÏÕ¾ %d ´Î£¬·¢±í¹ı %d ÆªÎÄÕÂ£¬ÉúÃüÁ¦[%d]%s",
-            lookupuser.numlogins, lookupuser.numposts,
+            lookupuser->numlogins, lookupuser->numposts,
             compute_user_value(&lookupuser),
-            (lookupuser.userlevel & PERM_SUICIDE)?" (×ÔÉ±ÖĞ)":" ");
+            (lookupuser->userlevel & PERM_SUICIDE)?" (×ÔÉ±ÖĞ)":" ");
     printchatline(pthis,genbuf);
 #else
     sprintf(genbuf, "%s (%s):   ÉúÃüÁ¦[%d]%s   %s",
-            lookupuser.userid, lookupuser.username,
+            lookupuser->userid, lookupuser->username,
             compute_user_value(&lookupuser),
-            (lookupuser.userlevel & PERM_SUICIDE)?" (×ÔÉ±ÖĞ)":" ",
+            (lookupuser->userlevel & PERM_SUICIDE)?" (×ÔÉ±ÖĞ)":" ",
             (check_query_mail(qry_mail_dir)==1)? "ÓĞĞÂĞÅ":"    ");
     printchatline(pthis,genbuf);
 #endif /*_DETAIL_UINFO_*/
-    strcpy(inbuf, ctime(&(lookupuser.lastlogin)));
+    strcpy(inbuf, ctime(&(lookupuser->lastlogin)));
     if( (newline = strchr(genbuf, '\n')) != NULL )
         *newline = '\0';
 
@@ -1003,30 +1004,30 @@ static void query_user(chatcontext *pthis,const char* userid)
     if (apply_utmpuid((APPLY_UTMP_FUNC) chat_status,tuid,(char*)pthis)) {
     	char buf[1024];
         sprintf(buf, "Ä¿Ç°ÕıÔÚÏßÉÏ: À´×Ô %s ÉÏÏßÊ±¼ä %s"/*\n"*/,
-                (lookupuser.lasthost[0] == '\0'/* || DEFINE(DEF_HIDEIP)*/ ? "(²»Ïê)" : lookupuser.lasthost), inbuf);/*Haohmaru.99.12.18*/
+                (lookupuser->lasthost[0] == '\0'/* || DEFINE(DEF_HIDEIP)*/ ? "(²»Ïê)" : lookupuser->lasthost), inbuf);/*Haohmaru.99.12.18*/
         printchatline(pthis,buf);
         
 	    printchatline(pthis,genbuf);
     } else {
         sprintf(genbuf, "ÉÏ´ÎÉÏÏßÀ´×Ô  %s Ê±¼äÎª %s "/*\n"*/ ,
-                (lookupuser.lasthost[0] == '\0'/* || DEFINE(DEF_HIDEIP)*/ ? "(²»Ïê)" : lookupuser.lasthost), inbuf);/* Haohmaru.99.12.18*/
+                (lookupuser->lasthost[0] == '\0'/* || DEFINE(DEF_HIDEIP)*/ ? "(²»Ïê)" : lookupuser->lasthost), inbuf);/* Haohmaru.99.12.18*/
         printchatline(pthis,genbuf);
 
         /* »ñµÃÀëÏßÊ±¼ä Luzi 1998/10/23 */
-        exit_time = get_exit_time(lookupuser.userid,genbuf);
+        exit_time = get_exit_time(lookupuser->userid,genbuf);
         if( (newline = strchr(genbuf, '\n')) != NULL )
             *newline = '\0';
-        if (exit_time > lookupuser.lastlogin) strcpy(inbuf,genbuf);
+        if (exit_time > lookupuser->lastlogin) strcpy(inbuf,genbuf);
         /*Haohmaru.98.12.04.ºÍ²Ëµ¥²éÑ¯½á¹ûÒ»ÖÂ*/
-        if (exit_time <= lookupuser.lastlogin )
+        if (exit_time <= lookupuser->lastlogin )
         	/*
                 || (uin.active && uin.pid
                     && (!uin.invisible || (uin.invisible && HAS_PERM(PERM_SEECLOAK)))))
             */
             strcpy(inbuf,"ÒòÔÚÏßÉÏ»ò·Ç³£¶ÏÏß²»Ïê");
-        if (exit_time <= lookupuser.lastlogin) /* && (uin.invisible&& !HAS_PERM(PERM_SEECLOAK)))*/
+        if (exit_time <= lookupuser->lastlogin) /* && (uin.invisible&& !HAS_PERM(PERM_SEECLOAK)))*/
         {
-            temp=lookupuser.lastlogin+(lookupuser.numlogins%7)+5;
+            temp=lookupuser->lastlogin+(lookupuser->numlogins%7)+5;
             strcpy(inbuf,ctime(&temp));/*Haohmaru.98.12.04.ÈÃÒşÉíÓÃ»§¿´ÉÏÈ¥ÀëÏßÊ±¼ä±ÈÉÏÏßÊ±¼äÍí5ÃëÖÓ*/
             if( (newline = strchr(inbuf, '\n')) != NULL )
                 *newline = '\0';
@@ -1124,7 +1125,7 @@ void set_rec(chatcontext *pthis, const char *arg) /* set recorder */
     /*        if(!HAS_PERM(PERM_SYSOP))
                     return;*/
 
-    sprintf(fname,"etc/%s.chat",currentuser.userid);
+    sprintf(fname,"etc/%s.chat",currentuser->userid);
     if(!pthis->rec)
     {
         if((pthis->rec=fopen(fname,"w"))==NULL)return;
@@ -1136,8 +1137,8 @@ void set_rec(chatcontext *pthis, const char *arg) /* set recorder */
         prints("[44m[33m %-21s  [33m»°Ìâ£º[36m%-51s[31m%2s[m", genbuf, pthis->topic ,(pthis->rec)?"Â¼":"  ");
 
         fprintf(pthis->rec,"·¢ĞÅÈË: %s (%s) ·¿¼ä: %s\n»°  Ìâ: %s\x1b[m\n\n",
-            currentuser.userid, currentuser.username, pthis->chatroom, pthis->topic);
-	    fprintf(pthis->rec, "±¾¶ÎÓÉ %s",currentuser.userid);
+            currentuser->userid, currentuser->username, pthis->chatroom, pthis->topic);
+	    fprintf(pthis->rec, "±¾¶ÎÓÉ %s",currentuser->userid);
         fprintf(pthis->rec,"ËùÂ¼ÏÂ£¬Ê±¼ä£º %s",ctime(&now));
         
         log("user","start record room %s", pthis->chatroom);
@@ -1152,7 +1153,7 @@ void set_rec(chatcontext *pthis, const char *arg) /* set recorder */
         fclose(pthis->rec);
         pthis->rec=NULL;
         
-        mail_file(fname,currentuser.userid,"Â¼Òô½á¹û");
+        mail_file(fname,currentuser->userid,"Â¼Òô½á¹û");
         unlink(fname);
 
         log("user","stop record room %s", pthis->chatroom);
@@ -1186,7 +1187,7 @@ void call_kickoff(chatcontext *pthis, const char *arg) /* kick ID off BBS, by Lu
         printchatline(pthis,"*** ÇëÊäÈëÄãÒªÌßÏÂÕ¾µÄ ID ***");
         return;
     } else
-        if(!strcasecmp(arg,currentuser.userid))
+        if(!strcasecmp(arg,currentuser->userid))
             sprintf(msg,"*** Faint!ÄãÒª°Ñ×Ô¼ºÌßÏÂÕ¾°¡£¿***");
         else
         {
@@ -1218,7 +1219,7 @@ void call_listen(chatcontext *pthis,const char *arg) /* added by Luzi 1997.11.28
     if(!*arg) {
         printchatline(pthis,"*** ÇëÊäÈëÓÃ»§µÄID ***");
     } else
-        if(!strcasecmp(arg,currentuser.userid))
+        if(!strcasecmp(arg,currentuser->userid))
             printchatline(pthis,"*** ÕâÊÇÄã×Ô¼ºµÄID ***");
         else
         {
@@ -1227,7 +1228,7 @@ void call_listen(chatcontext *pthis,const char *arg) /* added by Luzi 1997.11.28
             if(!searchuser(uident)) /* change getuser -> searchuser, by dong, 1999.10.26 */
                 printchatline(pthis,"*** Ã»ÓĞÕâ¸öID ***");
             else {
-                sethomefile( path, currentuser.userid , "/ignores");
+                sethomefile( path, currentuser->userid , "/ignores");
                 nIdx=search_record( path,ignoreuser, IDLEN+1, cmpinames, uident );
                 if (nIdx <= 0)
                     printchatline(pthis,"*** ¸ÃÓÃ»§µÄÁÄÌìÑ¶Ï¢Ã»ÓĞ±»ºöÂÔ°¡ ***");
@@ -1254,7 +1255,7 @@ void call_ignore(chatcontext *pthis,const char *arg)             /* added by Luz
     char ignoreuser[IDLEN+1];
     int  nIdx;
 
-    sethomefile( path, currentuser.userid , "/ignores");
+    sethomefile( path, currentuser->userid , "/ignores");
     if(!*arg)
     {
         nIdx=0;
@@ -1278,7 +1279,7 @@ void call_ignore(chatcontext *pthis,const char *arg)             /* added by Luz
         else 
             printchatline(pthis,"*** ÉĞÎ´Éè¶¨ºöÂÔÓÃ»§µÄÃûµ¥ ***");
     } else
-        if(!strcasecmp(arg,currentuser.userid))
+        if(!strcasecmp(arg,currentuser->userid))
             printchatline(pthis,"*** ÎŞ·¨ºöÂÔ×Ô¼ºµÄĞÅÏ¢ ***");
         else
         {
@@ -1334,7 +1335,7 @@ void call_alias(chatcontext *pthis,const char *arg)             /* added by Luzi
     
     nextword(&arg,emoteid,sizeof(emoteid));
     
-    sethomefile( path, currentuser.userid , "/emotes");
+    sethomefile( path, currentuser->userid , "/emotes");
     if(!emoteid[0])
     {
         if((fp=fopen(path,"r"))==NULL)
@@ -1427,7 +1428,7 @@ void call_mail(chatcontext *pthis,const char *arg) /* added by Luzi, 1997/12/22 
         printchatline(pthis,"\033[32m*** Ã»ÓĞĞÂµÄĞÅ¼ş ***\033[m");
         return;
     }
-    setmailfile(currmaildir, currentuser.userid, DOT_DIR);
+    setmailfile(currmaildir, currentuser->userid, DOT_DIR);
     fpin = fopen(currmaildir, "rb");
     if (fpin == NULL) return;
     printchatline(pthis,"\033[32m¡¾µ±Ç°ĞÂµÄĞÅ¼şÈçÏÂ¡¿\033[m");

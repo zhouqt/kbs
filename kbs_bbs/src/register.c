@@ -478,17 +478,17 @@ check_register_info()
         prints( "    ÔÚ¡®¸öÈË¹¤¾ßÏä¡¯ÄÚÏêÏ¸×¢²áÕæÊµÉí·Ý£¬\n" );
         prints( "    SYSOPs »á¾¡¿ì¼ì²é²¢È·ÈÏÄãµÄ×¢²áµ¥¡£\n\n" );
         /* Leeward adds below 98.04.26 */
-        prints( "[1m[33mÈç¹ûÄãÒÑ¾­Í¨¹ýÁË×¢²á£¬³ÉÎªÁËºÏ·¨¹«Ãñ£¬È´ÒÀÈ»»¹ÊÇ¿´µ½ÁË±¾ÐÅÏ¢£¬\nÄÇÊÇÒòÎªÄãÃ»ÓÐÔÚ¡®¸öÈË¹¤¾ßÏä¡¯ÄÚÉè¶¨¡®µç×ÓÓÊ¼þÐÅÏä¡¯¡£[m\nÇë´Ó¡®Ö÷Ñ¡µ¥¡¯½øÈë¡®¸öÈË¹¤¾ßÏä¡¯ÄÚ£¬ÔÙ½øÈë¡®Éè¶¨¸öÈË×ÊÁÏ¡¯Ò»Ïî½øÐÐÉè¶¨¡£\nÈç¹ûÄãÊµÔÚÃ»ÓÐÈÎºÎ¿ÉÓÃµÄ¡®µç×ÓÓÊ¼þÐÅÏä¡¯¿ÉÒÔÉè¶¨£¬ÓÖ²»Ô¸Òâ¿´µ½±¾ÐÅÏ¢£¬\n¿ÉÒÔÊ¹ÓÃ [1m[33m%s.bbs@smth.org[m ½øÐÐÉè¶¨¡£\n×¢Òâ¡ÃÉÏÃæ¸ø³öµÄµç×ÓÓÊ¼þÐÅÏä²»ÄÜ½ÓÊÕµç×ÓÓÊ¼þ£¬½ö½öÊÇÓÃÀ´Ê¹ÏµÍ³²»ÔÙÏÔÊ¾±¾ÐÅÏ¢¡£", currentuser.userid);
+        prints( "[1m[33mÈç¹ûÄãÒÑ¾­Í¨¹ýÁË×¢²á£¬³ÉÎªÁËºÏ·¨¹«Ãñ£¬È´ÒÀÈ»»¹ÊÇ¿´µ½ÁË±¾ÐÅÏ¢£¬\nÄÇÊÇÒòÎªÄãÃ»ÓÐÔÚ¡®¸öÈË¹¤¾ßÏä¡¯ÄÚÉè¶¨¡®µç×ÓÓÊ¼þÐÅÏä¡¯¡£[m\nÇë´Ó¡®Ö÷Ñ¡µ¥¡¯½øÈë¡®¸öÈË¹¤¾ßÏä¡¯ÄÚ£¬ÔÙ½øÈë¡®Éè¶¨¸öÈË×ÊÁÏ¡¯Ò»Ïî½øÐÐÉè¶¨¡£\nÈç¹ûÄãÊµÔÚÃ»ÓÐÈÎºÎ¿ÉÓÃµÄ¡®µç×ÓÓÊ¼þÐÅÏä¡¯¿ÉÒÔÉè¶¨£¬ÓÖ²»Ô¸Òâ¿´µ½±¾ÐÅÏ¢£¬\n¿ÉÒÔÊ¹ÓÃ [1m[33m%s.bbs@smth.org[m ½øÐÐÉè¶¨¡£\n×¢Òâ¡ÃÉÏÃæ¸ø³öµÄµç×ÓÓÊ¼þÐÅÏä²»ÄÜ½ÓÊÕµç×ÓÓÊ¼þ£¬½ö½öÊÇÓÃÀ´Ê¹ÏµÍ³²»ÔÙÏÔÊ¾±¾ÐÅÏ¢¡£", currentuser->userid);
         pressreturn();
     }
-    if(!strcmp(currentuser.userid,"SYSOP"))
+    if(!strcmp(currentuser->userid,"SYSOP"))
     {
-        currentuser.userlevel=~0;
-        currentuser.userlevel&=~PERM_SUICIDE; /* Leeward 98.10.13 */
-        currentuser.userlevel&=~PERM_DENYMAIL; /* Bigman 2000.9.22 */
+        currentuser->userlevel=~0;
+        currentuser->userlevel&=~PERM_SUICIDE; /* Leeward 98.10.13 */
+        currentuser->userlevel&=~PERM_DENYMAIL; /* Bigman 2000.9.22 */
         substitute_record(PASSFILE,&currentuser,sizeof(struct userec),usernum);
     }
-    if(!(currentuser.userlevel&PERM_LOGINOK))
+    if(!(currentuser->userlevel&PERM_LOGINOK))
     {
         if( HAS_PERM( PERM_SYSOP ))
             return;
@@ -587,7 +587,7 @@ check_register_info()
     set_safe_record();
     if( HAS_PERM( PERM_DENYPOST ) && !HAS_PERM( PERM_SYSOP ) )
     {
-        currentuser.userlevel &= ~PERM_POST;
+        currentuser->userlevel &= ~PERM_POST;
         substitute_record(PASSFILE,urec,sizeof(struct userec),usernum) ;
     }
 }

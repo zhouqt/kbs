@@ -576,7 +576,7 @@ int     numlines;
                     char userid[IDLEN + 1];
                     int  count;
 
-                    sprintf(buffer, "tmp/XCL.%s%d", currentuser.userid, getpid());
+                    sprintf(buffer, "tmp/XCL.%s%d", currentuser->userid, getpid());
                     if (HAS_PERM(PERM_ADMIN) && HAS_PERM(PERM_SYSOP)
                             &&  !strcmp(buffer, filename))
                     {
@@ -599,7 +599,7 @@ int     numlines;
                             memset(&newmessage, 0,sizeof(newmessage)) ;
                             strcpy(newmessage.owner,"Õ¾Îñ¹ÜÀíÏµÍ³");
                             strcpy(newmessage.title,"ÄúµÄ¸öÈË×ÊÁÏ²»¹»ÏêÊµ£¬Çëµ½¸öÈË¹¤¾ßÏäÄÚ²¹³äÉè¶¨") ;
-                            sprintf(buffer, "M.%d.XCL.%s%d", now, currentuser.userid, getpid());
+                            sprintf(buffer, "M.%d.XCL.%s%d", now, currentuser->userid, getpid());
                             setmailfile(filepath, userid, buffer);
                             strcpy(newmessage.filename,buffer) ;
                             fp = fopen(filepath, "w");
@@ -608,7 +608,7 @@ int     numlines;
                                 fprintf(fp, "¼ÄĞÅÈË: BBSË®Ä¾Çå»ªÕ¾Õ¾Îñ¹ÜÀíÏµÍ³\n");
                                 fprintf(fp, "±ê  Ìâ: ÄúµÄ¸öÈË×ÊÁÏ²»¹»ÏêÊµ£¬Çëµ½¸öÈË¹¤¾ßÏäÄÚ²¹³äÉè¶¨\n");
                                 fprintf(fp, "·¢ĞÅÕ¾: BBSË®Ä¾Çå»ªÕ¾ (%24.24s)\n",ctime(&now)) ;
-                                fprintf(fp,"À´  Ô´: %s \n\n",currentuser.lasthost) ;
+                                fprintf(fp,"À´  Ô´: %s \n\n",currentuser->lasthost) ;
                                 fprintf(fp, "[1m[33mÄúµÄ¸öÈË×ÊÁÏ²»¹»ÏêÊµ£¬ÇëÂíÉÏµ½¸öÈË¹¤¾ßÏäÄÚ²¹³äÉè¶¨¡£[0m[0m\n\n");
                                 fprintf(fp, "Éè¶¨Ê±Çë×¢Òâ£º\n\n"
                                         "        1) ÇëÌîĞ´ÕæÊµĞÕÃû.           (¿ÉÓÃÆ´Òô)\n"
@@ -627,22 +627,23 @@ int     numlines;
                             setmailfile(buffer, userid, DOT_DIR);
                             if(append_record(buffer,&newmessage,sizeof(newmessage)) == -1) a_prompt(-1, "´íÎó£ºÎŞ·¨Í¶µİĞÅ¼ş£¬Çë°´ÈÎºÎ¼üÒÔ¼ÌĞø <<", buffer);
                             else {
+                                struct userec* lookupuser;
                                 sprintf(buffer, "mailed %s ", userid);
                                 report(buffer);
-                                id = getuser(userid) ;
-                                newlevel = lookupuser.userlevel;
+                                id = getuser(userid,&lookupuser) ;
+                                newlevel = lookupuser->userlevel;
                                 newlevel &= ~PERM_BOARDS;
                                 newlevel &= ~PERM_SYSOP;
                                 newlevel &= ~PERM_OBOARDS;
                                 newlevel &= ~PERM_ADMIN;
-                                if (newlevel != lookupuser.userlevel)
+                                if (newlevel != lookupuser->userlevel)
                                 {
                                     sprintf(buffer,"ĞŞ¸Ä %s µÄÈ¨ÏŞXPERM%d %d",
-                                            lookupuser.userid, lookupuser.userlevel, newlevel);
-                                    securityreport(buffer);
-                                    lookupuser.userlevel = newlevel;
+                                            lookupuser->userid, lookupuser->userlevel, newlevel);
+                                    securityreport(buffer,lookupuser);
+                                    lookupuser->userlevel = newlevel;
                                     substitute_record(PASSFILE,&lookupuser,sizeof(struct userec),id) ;
-                                    sprintf(buffer, "changed permissions for %s", lookupuser.userid);
+                                    sprintf(buffer, "changed permissions for %s", lookupuser->userid);
                                     report(buffer);
                                     a_prompt(-1, "ÒÑ·¢ËÍĞÅ¼şËµÃ÷ÒªÇó£¬²¢È¡ÏûÏà¹ØÈ¨ÏŞ£¬Çë°´ÈÎºÎ¼üÒÔ¼ÌĞø <<", buffer);
                                 }

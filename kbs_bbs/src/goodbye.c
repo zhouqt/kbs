@@ -186,18 +186,18 @@ char    buf[256];
 
     static logout loglst[] =
         {
-            "userid",       currentuser.userid,
-            "username",     currentuser.username,
-            "realname",     currentuser.realname,
-            "address",      currentuser.address,
-            "email",        currentuser.email,
-            "realemail",    currentuser.realemail,
-            "ident",        currentuser.ident,
+            "userid",       currentuser->userid,
+            "username",     currentuser->username,
+            "realname",     currentuser->realname,
+            "address",      currentuser->address,
+            "email",        currentuser->email,
+            "realemail",    currentuser->realemail,
+            "ident",        currentuser->ident,
             "rgtday",       rgtday,
             "log",          numlogins,
             "pst",          numposts,
             "lastlogin",    lasttime,
-            "lasthost",     currentuser.lasthost,
+            "lasthost",     currentuser->lasthost,
             "now",          thistime,
             "bbsname",      BoardName,
             "stay",         stay,
@@ -220,11 +220,11 @@ char    buf[256];
     tmpnum=countperf(&currentuser);
     sprintf(perf,"%d",tmpnum);
     strcpy(ccperf,cperf(tmpnum));
-    sprintf(tin, "%d", post_in_tin(currentuser.userid));
+    sprintf(tin, "%d", post_in_tin(currentuser->userid));
 #endif
-    sprintf(alltime,"%d小时%d分钟",currentuser.stay/3600,(currentuser.stay/60)%60);
-    sprintf(rgtday, "%24.24s",ctime(&currentuser.firstlogin));
-    sprintf(lasttime, "%24.24s",ctime(&currentuser.lastlogin));
+    sprintf(alltime,"%d小时%d分钟",currentuser->stay/3600,(currentuser->stay/60)%60);
+    sprintf(rgtday, "%24.24s",ctime(&currentuser->firstlogin));
+    sprintf(lasttime, "%24.24s",ctime(&currentuser->lastlogin));
     sprintf(thistime,"%24.24s",ctime(&now));
     sprintf(stay,"%d",(time(0) - login_start_time) / 60);
     /*---	modified by period	hide posts/logins	2000-11-02	---*/
@@ -235,8 +235,8 @@ char    buf[256];
     } else
 #endif
     {
-        sprintf(numlogins, "%d", currentuser.numlogins);
-        sprintf(numposts, "%d", currentuser.numposts);
+        sprintf(numlogins, "%d", currentuser->numlogins);
+        sprintf(numposts, "%d", currentuser->numposts);
     }
 
 

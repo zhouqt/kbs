@@ -786,8 +786,8 @@ int id1,id2,del_mode ;
                 delcount++;
                 if (delcount>=DEL_RANGE_BUF) {
                     for (j=0;j<DEL_RANGE_BUF;j++)
-                        cancelpost(currboard, currentuser.userid,
-                               &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser.userid),0);
+                        cancelpost(currboard, currentuser->userid,
+                               &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser->userid),0);
                     delcount=0;
                     setbdir( genbuf, currboard );
                     append_record( genbuf, delfhdr, DEL_RANGE_BUF*sizeof(struct fileheader) );
@@ -817,8 +817,8 @@ int id1,id2,del_mode ;
 #ifdef BBSMAIN
     if ((uinfo.mode!=RMAIL)&&delcount) {
         for (j=0;j<delcount;j++)
-            cancelpost(currboard, currentuser.userid,
-                   &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser.userid),0);
+            cancelpost(currboard, currentuser->userid,
+                   &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser->userid),0);
         setbdir( genbuf, currboard );
         append_record( genbuf, delfhdr, delcount*sizeof(struct fileheader) );
     }

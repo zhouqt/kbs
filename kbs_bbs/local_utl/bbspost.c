@@ -441,7 +441,7 @@ post_article( usermail )
             return;
         }
 
-        fprintf(fpMail, "寄信人: %s (%s) [WWW MAIL]\n标  题: %s\n发信站: BBS 水木清华站 (%24.24s)\n来  源: %s\n\n", userid, currentuser.username, subject, ctime(&now), szRemoteHost);
+        fprintf(fpMail, "寄信人: %s (%s) [WWW MAIL]\n标  题: %s\n发信站: BBS 水木清华站 (%24.24s)\n来  源: %s\n\n", userid, currentuser->username, subject, ctime(&now), szRemoteHost);
         while(fgets(buf, MAXLEN, stdin) != NULL )
             fputs(buf, fpMail);
         AddSignature(fpMail, userid, 0); /* Leeward: 98.05.17 */
@@ -581,7 +581,7 @@ post_article( usermail )
         }
         else
         { /*now+=28800;Haohmaru.99.4.21.不知道为什么WWW的时钟比系统时钟慢8小时*/
-            sprintf( buf, "发信人: %s (%s), 信区: %s\n标  题: %s\n发信站: BBS 水木清华站 (%24.24s) \033[1m\033[32mWWW-POST\033[0m\033[0m\n\n", userid, currentuser.username, ptr, subject, ctime( &now ) );
+            sprintf( buf, "发信人: %s (%s), 信区: %s\n标  题: %s\n发信站: BBS 水木清华站 (%24.24s) \033[1m\033[32mWWW-POST\033[0m\033[0m\n\n", userid, currentuser->username, ptr, subject, ctime( &now ) );
         }
         write( fh, buf, strlen( buf ) );
     }
@@ -705,7 +705,7 @@ post_article( usermail )
                 || !strcmp(strrchr(homepath, '/'), "/deleted"))
             return; /* But ...hmm */
         /*now = time(0) ; This is already executed before */
-        strcpy(postlog.author, header.owner/*currentuser.userid*/);
+        strcpy(postlog.author, header.owner/*currentuser->userid*/);
         strcpy(postlog.board, 1 + strrchr(homepath, '/')/*currboard*/);
         ptr = header.title/*save_title*/;
         if (!strncmp(ptr, "Re: ", 4))

@@ -721,7 +721,7 @@ keep_fail_post()
     struct textline *p = firstline ;
     FILE        *fp ;
 
-    sprintf(filename,"home/%s/%s.deadve",currentuser.userid,currentuser.userid);
+    sprintf(filename,"home/%s/%s.deadve",currentuser->userid,currentuser->userid);
     if((fp = fopen(filename,"w")) == NULL) {
         indigestion(5) ;
         return;
@@ -1024,7 +1024,7 @@ int     action, arg;
     case 'M':
         process_MARK_action(arg, msg); break;
     case 'I':
-        sprintf( filename, "/tmp/%s_clip_%c", currentuser.userid, arg);
+        sprintf( filename, "/tmp/%s_clip_%c", currentuser->userid, arg);
         if( (fp = fopen( filename, "r" )) != NULL ) {
             insert_from_fp( fp ); fclose( fp );
             sprintf( msg, "w取X剪K簿第 %c 頁", arg );
@@ -1035,7 +1035,7 @@ int     action, arg;
         redraw_everything = YEA;
         break;
     case 'E':
-        sprintf( filename, "/tmp/%s_clip_%c", currentuser.userid, arg);
+        sprintf( filename, "/tmp/%s_clip_%c", currentuser->userid, arg);
         if( (fp = fopen( filename, "w" )) != NULL ) {
             if ( mark_on ) {
                 struct textline *p;
@@ -1057,7 +1057,7 @@ int     action, arg;
         /*
         #if 0
                     sprintf( filename, "home/%s/signatures_%c", 
-                        currentuser.userid, arg);
+                        currentuser->userid, arg);
                     if (fp = fopen( filename, "r" )) {
                         insert_from_fp( fp ); fclose( fp );
                         sprintf( msg, "w取X第 %c i簽W", arg );

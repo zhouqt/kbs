@@ -62,7 +62,7 @@ search_file(char *filename) /* Leeward 98.10.02 */
 	struct stat st;
 
     if (uinfo.mode!=RMAIL) setbdir( p_name, currboard);
-    else setmailfile(p_name, currentuser.userid, DOT_DIR);
+    else setmailfile(p_name, currentuser->userid, DOT_DIR);
 
     if ((fd = open(p_name,O_RDONLY,0)) == -1) return 0;
 	if (fstat(fd,&st)<0) {close(fd); return -1;}
@@ -294,7 +294,7 @@ int     ssize;
                         "  呼叫器[好友:%3s∶一般:%3s] 使用者[\033[36m%.12s\033[33m]%*s停留[%3d:%2d]\033[m",
                         lbuf, (!(uinfo.pager&FRIEND_PAGER)) ? "NO " : "YES",
                         (uinfo.pager&ALL_PAGER) ? "YES" : "NO ",
-                        currentuser.userid, /*IDLEN+1*/13-strlen(currentuser.userid), nullbuf,
+                        currentuser->userid, /*IDLEN+1*/13-strlen(currentuser->userid), nullbuf,
                         (allstay/60)%1000, allstay%60, nullbuf);
                 move(t_lines-1, 0);
                 clrtoeol();
@@ -634,18 +634,19 @@ struct fileheader *fileinfo ;
 char *direct ;
 {
     struct userec uinfo ;
+    struct userec* lookupuser;
     int id;
     if(!HAS_PERM( PERM_ACCOUNTS )||!strcmp(fileinfo->owner,"Anonymous")||!strcmp(fileinfo->owner,"deliver"))
         return DONOTHING;
     else
     {
-        if(0 == (id=getuser(fileinfo->owner))) {
+        if(0 == (id=getuser(fileinfo->owner,&lookupuser))) {
             move(2, 0);
             prints("不正确的使用者代号");
             clrtoeol();
             return PARTUPDATE;
         }
-        memcpy( &uinfo, &lookupuser, sizeof(uinfo)) ;
+        uinfo=*lookupuser;
         move(1,0);
         clrtobot();
         disply_userinfo( &uinfo, 1 );
@@ -1218,7 +1219,7 @@ case 0: case 1: case 2:
         if(uinfo.mode!=RMAIL)
             setbfile( genbuf, currboard, SR_fptr.filename );
         else
-            setmailfile(genbuf, currentuser.userid, SR_fptr.filename);
+            setmailfile(genbuf, currentuser->userid, SR_fptr.filename);
         previous=locmem->crs_line;
         setquotefile(genbuf);
         if(passonly==0)
@@ -1408,7 +1409,7 @@ int             offset, aflag;
             if(uinfo.mode!=RMAIL)
                 setbfile( p_name, currboard, SR_fptr.filename );
             else
-                setmailfile(p_name, currentuser.userid, SR_fptr.filename);
+                setmailfile(p_name, currentuser->userid, SR_fptr.filename);
             if(searchpattern(p_name,query))
             {
                 match = cursor_pos( locmem, now, 10 );
@@ -1511,7 +1512,7 @@ int             offset, aflag;
             if(uinfo.mode!=RMAIL)
                 setbfile( p_name, currboard, pFh1->filename );
             else
-                setmailfile(p_name, currentuser.userid, pFh1->filename);
+                setmailfile(p_name, currentuser->userid, pFh1->filename);
             if(searchpattern(p_name,query))
             {
                 match = cursor_pos( locmem, now, 10 );

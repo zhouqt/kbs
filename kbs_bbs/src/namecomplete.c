@@ -373,6 +373,7 @@ char *prompt, *data ;
         int     cwnum, x, y, origx, origy;
         int     clearbot = NA, count = 0, morenum = 0;
         char    ch;
+        struct userec* lookupuser;
 
         cwbuf = malloc( MAXUSERS* (IDLEN+1) );
         if( prompt != NULL ) {
@@ -401,8 +402,8 @@ char *prompt, *data ;
 		    }
                     ptr += IDLEN + 1;
                 } else {
-                    i=getuser(data);
-                    if (i!=0) memcpy(data,lookupuser.userid,IDLEN);
+                    i=getuser(data,&lookupuser);
+                    if (i!=0) memcpy(data,lookupuser->userid,IDLEN);
 		    data[IDLEN]=0;
                 }
                 break;
