@@ -131,6 +131,7 @@ char *sethomepath(buf, userid)  /* 取 某用户 的home */
     return buf;
 }
 #endif
+#ifndef SAVELIVE
 int killauser(struct userec *theuser, char *data)
 {
     int a;
@@ -159,12 +160,14 @@ int killauser(struct userec *theuser, char *data)
 
     return 0;
 }
-
+#endif
 int dokilluser()
 {
+#ifndef SAVELIVE
     newbbslog(BBSLOG_USIES, "Started kill users\n");
     apply_users(killauser, NULL);
     newbbslog(BBSLOG_USIES, "kill users done\n");
+#endif
     return 0;
 }
 int updateauser(struct userec *theuser, char *data)
