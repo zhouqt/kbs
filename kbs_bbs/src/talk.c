@@ -382,6 +382,11 @@ char q_id[IDLEN];
                     break;
                 }
                 strcpy(MsgDesUid, uident);
+#ifdef SMS_SUPPORT
+		if(ch=='S')
+		    do_send_sms_func(uident, NULL);
+		else
+#endif
                 do_sendmsg(uin, NULL, 0);
                 break;
             case 'M':
