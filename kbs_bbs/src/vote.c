@@ -353,6 +353,7 @@ get_result_title()
         fprintf( sug, "3. 上站总时数需大于 %d 小时.\n",currlimit.stay);
         fprintf( sug, "4. 上站物理时间需大于 %d 天.\n",currlimit.day);
     }
+    if (currvote.type <1 | currvote.type >5) currvote.type = 1;
     fprintf( sug, "⊙ 投票开启於：%.24s  类别：%s\n", ctime( &currvote.opendate )
              ,vote_type[currvote.type-1]);
     fprintf( sug, "⊙ 主题：%s\n",currvote.title);
@@ -367,9 +368,9 @@ int
 mk_result(num)
 int num;
 {
-    char fname[STRLEN],nname[STRLEN];
-    char sugname[STRLEN];
-    char title[STRLEN];
+    char fname[255],nname[255];
+    char sugname[255];
+    char title[255];
     int i;
     unsigned int total=0;
 
