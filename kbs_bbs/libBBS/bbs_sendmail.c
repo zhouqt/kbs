@@ -187,12 +187,17 @@ int isuu, isbig5, noansi;
     smtp_set_reverse_path (message, newbuf);
     smtp_set_header (message, "Message-Id", NULL);
     
+    
     if (isbig5)  {
       strcpy(newbuf,title);
       len=strlen(title);
+      smtp_set_header (message, "Content-type", "text/plain; charset=big5");
       smtp_set_header(message,"Subject",gb2big(title,&len,1));
-    } else
-    smtp_set_header (message, "Subject", title);
+    } else {
+      smtp_set_header (message, "Content-type", "text/plain; charset=gb2312");	
+      smtp_set_header (message, "Subject", title);
+    }
+    smtp_set_header(message,"Content-transfer-encoding","8bit");
     smtp_set_header_option (message, "Subject", Hdr_OVERRIDE, 1);
 
     mo.isbig5=isbig5;
