@@ -57,9 +57,7 @@
 			html_error_quit("未知的错误!");
 			break;
 	}
-?>
-
-	$ret=bbs_createregform($realname,$dept,$address,$year,$month,$day,$email,$phone,TRUE);//自动生成注册单
+	$ret=bbs_createregform($userid,$realname,$dept,$address,$year,$month,$day,$email,$phone,TRUE);//自动生成注册单
 	switch($ret)
 	{
 	case 0:
@@ -68,6 +66,7 @@
 		html_error_quit("未知的错误!");
 		break;
 	}
+?>
 <body>
 申请BBS水木清华ID成功,你现在还没有通过身份认证,只有最基本的权限,不能发文,发信,聊天等,两天后系统会自动生成注册单.<br>
 注册单通过审核后,你将获得合法用户权限！<br/><a href="http://www.smth.edu.cn">现在登录进站</a>
