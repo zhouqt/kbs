@@ -111,7 +111,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 				else
 					$cellclass=array("t16","t13","t5");
 			}
-			echo "<tbody><center><table cellspacing=0 cellpadding=10 width=\"".$tablewidth."\" class=".$tableclass.">\n".
+			echo "<center><table cellspacing=0 cellpadding=10 width=\"".$tablewidth."\" class=".$tableclass.">\n".
 			"<tr><td class=\"".$cellclass[0]."\">".time_format_date($nodes[$i][created])."</td>".
 			"<td class=\"".$cellclass[1]."\" align=right>[<a href=\"pccom.php?act=pst&nid=".$nodes[$i][nid]."\">评论</a>]\n".
 			"[<a href=\"";
@@ -147,7 +147,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 		echo "<center><table cellspacing=0 cellpadding=10 width=\"".$tablewidth."\" class=".$tableclass.">\n".
 		     "<tr><td class=\"".$cellclass[2]."\" align=\"center\">";
 		display_blog_page_tool($pc,$totalnodes,$pno);
-		echo "</td></tr></table></center></tbody>";
+		echo "</td></tr></table></center>";
 	}
 	
 	function display_newnodes_list($link,$pc,$nodes)
@@ -170,7 +170,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 	{
 		global $loginok,$currentuser,$pcconfig;
 ?>
-	<tbody><table cellpadding=5 cellspacing=0 border=0 class=t1>
+	<table cellpadding=5 cellspacing=0 border=0 class=t1>
 		<tr>
 <?php
 		$i = 0;
@@ -193,7 +193,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 			<a href="/<?php echo ($loginok==1 && strcmp($currentuser["userid"],"guest"))?"frames.html":"guest-frames.html"; ?>" class="f1"><?php echo $pcconfig["BBSNAME"]; ?></a>
 			</td>
 		</tr>
-	</table></tbody>
+	</table>
 <?php
 	}
 
@@ -201,7 +201,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 	{
 		global $pc;
 ?>	
-<tbody><table cellpadding=5 cellspacing=0 width="100%" border=0 class=t1>
+<table cellpadding=5 cellspacing=0 width="100%" border=0 class=t1>
 			<tr><td align="left" class="t2">
 			.: 欢迎访问<?php echo $pc["NAME"]; ?> :.
 			</td></tr>
@@ -212,7 +212,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 				echo $pc["DESC"]; 
 			?>
 	</td></tr>
-</table></tbody>	
+</table>	
 <?php		
 	}
 	
@@ -234,7 +234,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 	function display_blog_tools($pc,$pur)
 	{
 		global $loginok,$currentuser,$pcconfig;
-?><tbody>
+?>
 <table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
 			<form action="pcnsearch.php" method="get" onsubmit="if(this.keyword.value==''){alert('请输入关键字');return false;}">
 			<input type="hidden" name="area" value="<?php echo $pc["USER"]; ?>">
@@ -292,7 +292,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 <?php
 			}
 ?>
-		</table></tbody>
+		</table>
 <?php
 	}
 	
@@ -383,7 +383,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 ?>
 <center>
 <table cellspacing=0 cellpadding=0 border=0 width=780>
-<tbody>
+
 	<tr><td colspan=2 height=167><img src="style/earthsong/es_r1_c1.jpg" border=0></td></tr>
 	<tr>
 	<td width=414 height=232><img src="style/earthsong/es_r2_c1.jpg" border=0></td>
@@ -397,19 +397,19 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	</td><td class="blogarea">
 	<?php display_blog_area_links($sec,$pc,$tags); ?></td>
 	</tr>
-	</table></td></tr></tbody>
+	</table></td></tr>
 </table>
 </center>
 <center>
 <table cellspacing=0 cellpadding=5 border=0 width=780>
-<tbody>
+
 	<tr>
 		<td class="bloglists"><?php pc_user_infor($pc); ?></td>
-	</tr></tbody>
+	</tr>
 </table>
 </center>
 <center>
-<table cellspacing=0 cellpadding=5 border=0 width=780><tbody>
+<table cellspacing=0 cellpadding=5 border=0 width=780>
 	<tr>
 		<td width="40%" class="bloglists">
 			<table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
@@ -438,7 +438,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 			<?php display_blog_calendar(); ?>
 			</td></tr></table>
 		</td>
-	</tr></tbody>
+	</tr>
 </table>
 </center>
 <?php		
@@ -446,7 +446,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 ?>
 <center>
 <center>
-<table cellspacing=0 cellpadding=5 border=0 width=780><tbody>
+<table cellspacing=0 cellpadding=5 border=0 width=780>
 	<tr>
 		<td width="40%" class="bloglists">
 			<table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
@@ -475,28 +475,28 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 			<?php display_blog_tools($pc,$pur); ?>
 			</td></tr></table>
 		</td>
-	</tr></tbody>
+	</tr>
 </table>
 </center>
 <center>
-<table cellspacing=0 cellpadding=5 border=0 width=780><tbody>
+<table cellspacing=0 cellpadding=5 border=0 width=780>
 	<tr>
 		<td class="bloglists2" id="bloglists2">
 		<strong>每月档案 &gt;&gt; </strong><?php pc_get_archfile($pc); ?>
 		</td>
-	</tr></tbody>
+	</tr>
 </table>
 </center><center>
 <table cellspacing=0 cellpadding=5 border=0 width=780>
-<tbody>	<tr>
+	<tr>
 		<td class="bloglists2">
 		<strong>友情链接 &gt;&gt; <?php display_blog_friend_links($pc); ?>&nbsp;
 		</td>
-	</tr></tbody>
+	</tr>
 </table>
 </center>
 <center>
-<table cellpadding=3 cellspacing=0 width=780 border=0 class=f1><tbody>
+<table cellpadding=3 cellspacing=0 width=780 border=0 class=f1>
 		<tr><td class="t14" align=center>
 	<?php display_blog_out_rss($pc); ?>
 	<?php display_klip_out($pc); ?>
@@ -515,7 +515,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 &copy;All Rights Reserved
 &nbsp;&nbsp;
 <?php echo pc_personal_domainname($pc["USER"]); ?>
-</td></tr></tbody>
+</td></tr>
 </table></center>
 <table cellspacing=0 cellpadding=0 border=0 width=780>
 	<tr><td height=186><img src="style/earthsong/es_r3_c1.jpg" border=0></td></tr>
@@ -529,33 +529,33 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	{
 		global $pcconfig;
 ?>	
-<table cellspacing=0 cellpadding=0 width=100% border=0 class=f1><tbody>
+<table cellspacing=0 cellpadding=0 width=100% border=0 class=f1>
 	<tr><td colspan=2 bgcolor="#718BD6" height="5" align=right>
 	<?php display_blog_area_links($sec,$pc,$tags); ?>
-	</td></tr></tbody>
-	<tbody>
+	</td></tr>
+	
 	<tr>
 		<td colspan=2 bgcolor="#BCCAF2" style="border-width: 2px;border-top-style: solid;border-color: #999999;"><img src="<?php echo $pc["LOGO"]?$pc["LOGO"]:"style/smth/topimg.gif"; ?>" border=0 alt="Welcome to <?php echo $pc["USER"]; ?>'s Blog" align=absmiddle></td>
 	</tr>
-	</tbody>
-	<tbody>
+	
+	
 	<tr>
 		<td colspan=2 valign=middle bgcolor="#F6F6F6" style="border-bottom-width: 1px;border-top-width: 2px;border-top-style: solid;border-bottom-style: dashed;border-color: #718BD6;" height="30">
 		&nbsp;&nbsp;
 		<?php echo $pc["DESC"]?$pc["DESC"]:"惠风荡繁囿,白云屯曾阿,景昃鸣禽集,水木湛清华"; ?>
 		</td>
 	</tr>
-	</tbody>
+	
 	<tr>
-		<tbody>
+		
 		<td width="25%" align="middle" valign="top" style="border-width: 1px;border-right-style: dashed;border-color: #336699;">
 			<table width="98%" cellpadding=5 cellspacing=0 border=0>
-				<tbody>
+				
 				<tr><td class=t17>
 				&gt;&gt; 日历
 				</td></tr>
-				</tbody>
-				<tbody>
+				
+				
 				<tr>
 					<td align=middle class=t14><?php display_blog_calendar(); ?></td>
 				</tr>
@@ -569,8 +569,8 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 					</td></tr></table>
 					</td>
 				</tr>
-				</tbody>
-				<tbody>
+				
+				
 				<tr><td class=t17>
 				&gt;&gt; 栏目分类
 				</td></tr>
@@ -581,8 +581,8 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 					</td></tr></table>
 					</td>
 				</tr>
-				</tbody>
-				<tbody>
+				
+				
 				<tr><td class=t17>
 				&gt;&gt; 每月档案
 				</td></tr>
@@ -593,8 +593,8 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 					</td></tr></table>
 					</td>
 				</tr>
-				</tbody>
-				<tbody>
+				
+				
 				<tr><td class=t17>
 				&gt;&gt; 最近收到的评论
 				</td></tr>
@@ -605,8 +605,8 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 					</td></tr></table>
 					</td>
 				</tr>
-				</tbody>
-				<tbody>
+				
+				
 				<tr><td>
 				<?php display_blog_tools($pc,$pur); ?>
 				</tr></tr>
@@ -618,8 +618,8 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 					<?php display_blog_friend_links($pc,TRUE); ?>
 					</font></td>
 				</tr>
-				</tbody>
-				<tbody>
+				
+				
 				<tr><td class=t17>
 				&gt;&gt; 最近收到的引用通告
 				</td></tr>
@@ -634,15 +634,15 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 				<tr><td style="text-align:center;color:#FF6600;font-weight:bolder;background-color:#F6F6F6;font-family: Verdana, Arial, Helvetica, sans-serif;font-size: 14px;font-style: italic;line-height: 22px;">
 				<?php echo $pc["VISIT"]; ?>
 				</td></tr>
-				</tbody>
+				
 				<tr><td class=t17><?php pc_user_infor($pc); ?></td></tr>
 				<tr><td class=t17><center>
 				<?php display_blog_out_rss($pc); ?>
 				<?php display_klip_out($pc); ?></center>
 				</td></tr>
 			</table>
-		</td></tbody>
-		<tbody>
+		</td>
+		
 		<td width="80%" align="right" valign="top">
 		<?php display_nodes($link,$pc,$nodes,"99%",1,$totalnodes,$pno); ?>
 		<p align=center class=f1>
@@ -655,7 +655,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		&nbsp;&nbsp;
 		<?php echo pc_personal_domainname($pc["USER"]); ?>
 		</p>
-		</td></tbody>
+		</td>
 	</tr>
 </table>	
 <?php		
@@ -667,7 +667,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		
 ?>
 <center>
-<table cellpadding=0 cellspacing=0 width=700 border=0 class=f1><tbody>
+<table cellpadding=0 cellspacing=0 width=700 border=0 class=f1>
 <tr><td valign=middle align=center>
 <!--
 <img src="<?php echo $pc["STYLE"]["TOPIMG"]; ?>" alt="<?php echo $pc["NAME"]; ?>" border=0>
@@ -677,26 +677,26 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
               <param name="quality" value="high">
               <embed src="images/SMTH2.swf" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash" width="805" height="90"></embed>
 </object>
-</td></tr></tbody></table></center>
+</td></tr></table></center>
 <center><table cellpadding=0 cellspacing=0 width=700 border=0 class=f1>
-<tbody><tr>
+<tr>
 	<td align="center">
 	<?php display_blog_area_links($sec,$pc,$tags); ?>
 	</td>
-</tr></tbody>
+</tr>
 </table></center>
 <center><table cellpadding=10 cellspacing=0 width=700 border=0 class=t1>
-<tbody>
+
 	<tr>
 		<td align="center" class="t11" colspan="2">
 		<?php display_blog_intro(); ?>
 		</td>
 	</tr>
-	</tbody><tbody>
+	
 	<tr>
 		<td class=t11 colspan=2><?php pc_user_infor($pc); ?></td>
 	</tr>
-	</tbody><tbody>
+	
 	<tr>
 		<td align="center" class="t14" width="400" valign="TOP">
 		<table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
@@ -724,7 +724,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		<td align="center" class="t3" valign="top">
 		<?php display_blog_calendar(); ?>
 		</td>
-	</tr></tbody>
+	</tr>
 </table></center>
 <?php		
 		display_nodes($link,$pc,$nodes,700,0,$totalnodes,$pno);
