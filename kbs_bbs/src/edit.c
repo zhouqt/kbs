@@ -12,6 +12,7 @@
 extern int temp_numposts;       /*Haohmaru.99.4.02.让爱灌水的人哭去吧//grin */
 extern int local_article;
 static const int scrollen = 2;
+char save_title[STRLEN];
 int in_mail;
 
 void vedit_key();
@@ -21,7 +22,6 @@ static struct textline *currline = NULL;
 static int first_mark_line;
 static int currpnt = 0;
 static char searchtext[80];
-static char save_title[STRLEN];
 static int editansi = 0;
 static int marknum;
 static int moveln = 0;
@@ -407,9 +407,10 @@ void split(line, pos)
 {
     register struct textline *p;
 
-	if (countline()>MAX_EDIT_LINE) {
-		return;
-	}
+    countline();
+    if (moveln>MAX_EDIT_LINE) {
+        return;
+    }
 		
     if (pos > line->len) {
         free(p);
