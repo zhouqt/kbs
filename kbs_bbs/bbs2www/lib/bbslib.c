@@ -2955,19 +2955,45 @@ unsigned int binarySearchInFileHeader(struct fileheader *start,int total, unsign
 			high = mid - 1;
 		else
 			low = mid + 1;
+		if (high<low)
+			break;
 	}
 	return found;
 }
 
 //以后改成更有效率的算法吧……
-static int foundInWWWThreadList(unsigned int groupid, struct wwwthreadheader* list, unsigned int len){
-	int i;
-	for (i=0;i<len;i++){
-		if (list[i].groupid==groupid)	{
-			return i;
+typedef struct _wwwthreadheader_list{
+	struct wwwthreadheader content;
+	struct _wwwthreadheader_list *previous;
+} wwwthreadheader_list, *pwwwthreadheader_list;
+
+
+static pwwwthreadheader_list foundInWWWThreadList(unsigned int groupid, pwwwthreadheader_list p){
+	while (p!=NULL) {
+		if (p->content.origin.groupid==groupid)	{
+			return p;
 		}
+		p=p->previous;
 	}
-	return -1;
+	return NULL;
+}
+
+static pwwwthreadheader_list CreateNewWWWThreadListNode(pwwwthreadheader_list p){
+	pwwwthreadheader_list q;
+	q=(pwwwthreadheader_list)malloc(sizeof(wwwthreadheader_list));
+	if (q!=NULL){
+		q->previous=p;
+	}
+	return q;
+}
+
+static void clearWWWThreadList(pwwwthreadheader_list p){
+	pwwwthreadheader_list q;
+	while (p!=NULL) {
+		q=p->previous;
+		free(p);
+		p=q;
+	}
 }
 
 int www_generateOriginIndex(char* board)
@@ -2981,7 +3007,7 @@ int www_generateOriginIndex(char* board)
 	char dingdir[PATHLEN];
     char *ptr,*ptr3;
     struct stat buf,buf3;
-	struct wwwthreadheader * threadList=NULL;
+	pwwwthreadheader_list tail,temp;
     size_t bm_search[256];
 	int found;
 
@@ -3039,9 +3065,8 @@ int www_generateOriginIndex(char* board)
 
 	size=sizeof(struct wwwthreadheader);
 
-	threadList	= malloc((50000)*size);
-	if (threadList==NULL)
-		return -5;
+	tail=temp=NULL;
+
 
     if ((fd3 = open(dingdir, O_RDONLY, 0664)) != -1) {
 		fstat(fd3, &buf3);
@@ -3060,12 +3085,18 @@ int www_generateOriginIndex(char* board)
 
 				for (i=total3-1;i>=0;i--) {
 					if (ptr1[i].groupid!=ptr1[i].id) continue;
-					if (foundInWWWThreadList(ptr1[i].groupid,threadList,count)!=-1) continue;
-					threadList[count].groupid=ptr1[i].groupid;
-					threadList[count].lastid=0;
-					threadList[count].articlecount=1;
-					threadList[count].flags=FILE_ON_TOP;
-					threadList[count].unused=0;
+					if (foundInWWWThreadList(ptr1[i].groupid,tail)!=NULL) continue;
+					temp=CreateNewWWWThreadListNode(tail);
+					if (temp==NULL) {
+						clearWWWThreadList(tail);
+						return -5;
+					}
+					temp->content.origin=ptr1[i];
+					temp->content.lastreply=ptr1[i];
+					temp->content.articlecount=1;
+					temp->content.flags=FILE_ON_TOP;
+					temp->content.unused=0;
+					tail=temp;
 					count++;
 				}
 			    end_mmapfile((void *) ptr3, buf3.st_size, -1);
@@ -3081,37 +3112,43 @@ int www_generateOriginIndex(char* board)
     ptr1 = (struct fileheader *) ptr;
 
 	for (i=total-1;i>=0;i--) {
-		if ((found=foundInWWWThreadList(ptr1[i].groupid,threadList,count))==-1)	{
-			if ((binarySearchInFileHeader(ptr1,total,ptr1[i].groupid))==-1) continue;
-			threadList[count].groupid=ptr1[i].groupid;
-			threadList[count].lastid=ptr1[i].id;
-			threadList[count].articlecount=1;
-			threadList[count].flags=0;
-			threadList[count].unused=0;
+		temp=foundInWWWThreadList(ptr1[i].groupid,tail);
+		if (temp==NULL)	{
+			if ((found=binarySearchInFileHeader(ptr1,total,ptr1[i].groupid))==-1) continue;
+			temp=CreateNewWWWThreadListNode(tail);
+			if (temp==NULL) {
+				clearWWWThreadList(tail);
+				return -5;
+			}
+			temp->content.origin=ptr1[found];
+			temp->content.lastreply=ptr1[i];
+			temp->content.articlecount=1;
+			temp->content.flags=0;
+			temp->content.unused=0;
 			count++;
+			tail=temp;
 			if(count>=50000) 
 				break;
 		} else {
-			if (threadList[found].lastid==0) {
-				threadList[found].lastid=ptr1[i].id;
+			if (temp->content.lastreply.groupid==temp->content.lastreply.id) {
+				temp->content.lastreply=ptr1[i];
 			} else {
-				if ((binarySearchInFileHeader(ptr1,total,ptr1[i].groupid))==-1) 
-					continue;
-				threadList[found].articlecount++;
+				temp->content.articlecount++;
 			}
 		}
 	}
-	for (i=count-1;i>=0;i--) {
-		write(fd,threadList+i,size);
+
+	while (tail!=NULL) {
+		temp=tail->previous;
+		write(fd,&(tail->content),size);
+		free(tail);
+		tail=temp;
 	}
-	free(threadList);
     end_mmapfile((void *) ptr, buf.st_size, -1);
     ldata2.l_type = F_UNLCK;
     fcntl(fd2, F_SETLKW, &ldata2);
     close(fd2);
     ftruncate(fd, count * size);
-
-    setboardorigin(board, 0);   /* 标记flag*/
 
     ldata.l_type = F_UNLCK;
     fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
