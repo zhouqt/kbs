@@ -152,8 +152,9 @@ install: all
 	./Install.sh
 
 installbbs: $(PROGNAME) $(BBSHOME)/bin/bbsd_single
+
 $(BBSHOME)/bin/bbsd_single: bbsd_single
-	$(INSTALL) -s bbsd_single $@.new
+	$(INSTALL) bbsd_single $@.new
 	-rm -f $@.old
 	-mv $@ $@.old
 	mv $@.new $@

@@ -47,7 +47,7 @@ main(argc, argv)
 
   now=time(0);
   date_tm = localtime(&now);
-  sprintf(date,"%02u/%02u",date_tm->tm_mon,date_tm->tm_mday);
+  sprintf(date,"%02u/%02u",date_tm->tm_mon+1,date_tm->tm_mday);
 
   while (fgets(buf, 256, fp))
   {

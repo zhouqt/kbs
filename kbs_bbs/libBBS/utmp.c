@@ -93,6 +93,11 @@ int getnewutmpent(struct user_info *up)
     int utmpfd,hashkey;
 
 	utmpfd = utmp_lock();
+	pos = utmpshm->hashhead[0]-1;
+    if( pos==-1 ) {
+    	utmp_unlock(utmpfd);
+        return -1;
+    }
     /* add to sorted list */
 
 	if (!utmpshm->listhead) { /* init the list head */
@@ -136,11 +141,6 @@ int getnewutmpent(struct user_info *up)
 		}
 	}
 
-	pos = utmpshm->hashhead[0]-1;
-    if( pos==-1 ) {
-    	utmp_unlock(utmpfd);
-        return -1;
-    }
     utmpshm->hashhead[0]=utmpshm->next[pos];
     utmpshm->uinfo[pos] = *up;
     hashkey=utmp_hash(up->userid);
@@ -154,7 +154,7 @@ int getnewutmpent(struct user_info *up)
     now = time( NULL );
     if(( now > utmpshm->uptime + 120 )||(now < utmpshm->uptime-120)) {
         utmpshm->uptime = now;
-        log( "3system", "UTMP:Clean user utmp cache");
+        log( "1system", "UTMP:Clean user utmp cache");
         for( n = 0; n < USHM_SIZE; n++ ) {
             utmpshm->uptime = now;
             uentp = &(utmpshm->uinfo[ n ]);

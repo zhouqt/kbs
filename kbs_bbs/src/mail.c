@@ -1313,6 +1313,7 @@ struct one_key  mail_comms[] = {
 int
 m_read()
 {
+    m_init();
     in_mail = YEA;
     i_read( RMAIL, currmaildir,mailtitle,maildoent,&mail_comms[0],sizeof(struct fileheader)) ;
     in_mail = NA;
