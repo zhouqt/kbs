@@ -982,13 +982,13 @@ int send_msg(char *srcid, int srcutmp, char *destid, int destutmp, char *msg)
 
 		head.time = time(0);
 		head.sent = 0; /* save to receiver's msg index */
-		head.mode = mode;
+		head.mode = 2; /* normal */
 		strncpy(head.id, srcid, IDLEN);
 		head.frompid = getuinfopid();
 		head.topid = uin->pid;
 		memcpy(&head2, &head, sizeof(struct msghead));
 		head2.sent = 1; /* save to sender's msg index */
-		strncpy(head2.id, uident, IDLEN);
+		strncpy(head2.id, uin->userid, IDLEN);
         if (destutmp == 0)
             destutmp = get_utmpent_num(uin);
         if (send_webmsg(destutmp, uin->userid, srcutmp, srcid, head.time, msg) < 0)
