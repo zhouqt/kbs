@@ -30,7 +30,7 @@ int main()
         http_fatal("您不能回复本文");
     printf("<center>\n");
     printf("%s -- 发表文章 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser->userid);
-    printf("<form method=\"post\" action=\"bbssnd?board=%s&refilename=%s>\n<table border=\"1\">\n", encode_url(buf, board, sizeof(buf)), oldfilename);
+    printf("<form method=\"post\" action=\"bbssnd?board=%s&refilename=%s\">\n<table border=\"1\">\n", encode_url(buf, board, sizeof(buf)), oldfilename);
     printf("<tr><td>");
     printf("<font color=\"green\">发文注意事项: <br>\n");
     printf("发文时应慎重考虑文章内容是否适合公开场合发表，请勿肆意灌水。谢谢您的合作。<br></font></td></tr>\n");

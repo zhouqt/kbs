@@ -48,7 +48,7 @@ int main()
     	int pos;
     	oldx = (struct fileheader*)malloc(sizeof(struct fileheader));
     	pos = get_file_ent(board, oldfilename, oldx);
-    	if (strncmp(oldx->filename, oldfilename, FILENAME_LEN)) {
+    	if (pos <= 0) {
     		free(oldx);
     		oldx = NULL;
     	}
