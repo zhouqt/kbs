@@ -120,7 +120,7 @@ int show_article(char *filename,char *www_url)
 				close(fd);
 				BBS_RETURN(0);
 			}
-			output_ansi_html(ptr, filesize, out, www_url);
+			output_ansi_text(ptr, filesize, out, www_url);
 		}
 		BBS_CATCH
 		{
