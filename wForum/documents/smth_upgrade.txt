@@ -1,0 +1,30 @@
+smth系统安装wforum说明
+roy@zixia.net
+
+1. 原smth系统要使用wforum,首先需要在site.h中定义HAVE_WFORUM
+#define HAVE_WFORUM 1
+并增加用户自定义功能:
+#define DEF_SHOWDETAILUSERDATA 04000000000
+#define DEF_SHOWREALUSERDATA   010000000000
+
+修改用户自定义功能数量NUMDEFINES
+#define NUMDEFINES 31
+
+2.在site.c文件中的用户自定义功能说明里增加两项:
+
+const char *user_definestr[] = {
+    ....
+    "显示详细用户数据",  /*DEF_SHOWDETAILUSERDATA 2003.7.31 */
+    "显示真实用户数据" /*DEF_REALDETAILUSERDATA 2003.7.31 */
+};
+
+然后configure;make;make install
+
+3. 备份~bbs/.PASSWDS文件,拷贝一份为~bbs/.PASSWDS.OLD
+到src/smth_bbs/contrib/smth2wforum下编译convpasswd文件
+gcc -o convpasswd convpasswd.c -lBBS -lsystem
+运行之:
+./convpasswd
+然后用~bbs/.PASSWDS.NEW覆盖.PASSWDS
+
+全部转换工作就此完成
