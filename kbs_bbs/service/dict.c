@@ -1,6 +1,7 @@
 #define BBSMAIN
 #include "bbs.h"
 #ifdef BBS_SERVICE_DICT
+#if HAVE_MYSQL == 1
 #include <mysql.h>
 
 int dict_main()
@@ -106,4 +107,5 @@ int dict_main()
     scrint=true;
     redoscr();
 }
+#endif /* HAVE_MSYQL == 1*/
 #endif
