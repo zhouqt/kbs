@@ -203,6 +203,7 @@ int show_allmsgs()
 
     page = 0;
     count = get_msgcount(0, currentuser->userid);
+    clear();
     while(1) {
         if(reload) {
             reload = 0;
@@ -216,6 +217,10 @@ int show_allmsgs()
             i = 0;
         }
         else {
+            for(j=0;j<23;j++) {
+                good_move(j, 0);
+                clrtoeol();
+            }
             y = 0;
             i = page;
             load_msghead(all?2:0, currentuser->userid, i, &head);
@@ -228,10 +233,6 @@ int show_allmsgs()
                 load_msghead(all?2:0, currentuser->userid, i, &head);
                 load_msgtext(currentuser->userid, &head, buf);
                 j = translate_msg(buf, &head, showmsg);
-            }
-            for(j=y+1;j<23;j++) {
-                good_move(j, 0);
-                clrtoeol();
             }
         }
         good_move(23,0);
