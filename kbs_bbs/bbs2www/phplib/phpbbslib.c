@@ -104,6 +104,7 @@ static PHP_FUNCTION(bbs_getbname);
 static PHP_FUNCTION(bbs_getbdes);
 static PHP_FUNCTION(bbs_checkpostperm);
 static PHP_FUNCTION(bbs_postarticle);
+static PHP_FUNCTION(bbs_getattachtmppath);
 static PHP_FUNCTION(bbs_edittitle);
 static PHP_FUNCTION(bbs_checkbadword);
 #ifdef HAVE_BRC_CONTROL
@@ -307,7 +308,8 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_brcclear, NULL)
 #endif
         PHP_FE(bbs_getboard, NULL)
-	PHP_FE(bbs_postarticle,NULL)
+    	PHP_FE(bbs_postarticle,NULL)
+    	PHP_FE(bbs_getattachtmppath, NULL)
         PHP_FE(bbs_edittitle, NULL)
         PHP_FE(bbs_checkbadword, NULL)
         PHP_FE(bbs_ann_traverse_check, NULL)
@@ -3893,6 +3895,30 @@ static PHP_FUNCTION(bbs_checkpostperm)
     RETURN_LONG(haspostperm(user, bh->filename));
 }
 
+static int getattachtmppath(char *buf, size_t buf_len)
+{
+#if USE_TMPFS==1
+    /* setcachehomefile() 不接受 buf_len 参数，先直接这么写吧 */
+    snprintf(buf,buf_len,"%s/home/%c/%s/%d/upload",TMPFSROOT,toupper(getCurrentUser()->userid[0]),
+			getCurrentUser()->userid,getcurrentuinfo_num());
+#else
+    snprintf(buf,buf_len,"%s/%s_%d",ATTACHTMPPATH,getCurrentUser()->userid,getcurrentuinfo_num());
+#endif
+    buf[buf_len-1] = '\0';
+    return 0;
+}
+
+static PHP_FUNCTION(bbs_getattachtmppath)
+{
+    char buf[MAXPATH];
+    if (getCurrentUser() == NULL) {
+        RETURN_FALSE;
+        //用户未初始化
+    }
+    getattachtmppath(buf, MAXPATH);
+    RETURN_STRING(buf, 1);
+}
+
 
 /*  function bbs_postarticle(string boardName, string title,string text, long signature, long reid, long outgo,long anony)  
  *
@@ -3902,7 +3928,7 @@ static PHP_FUNCTION(bbs_postarticle)
 {
 	FILE *fp;
 	char *boardName, *title, *content;
-    char filename[80], dir[80], buf[80], buf2[80],path[80],board[80];
+    char filename[80], dir[80], buf[MAXPATH], buf2[80],path[80],board[80];
 	int blen, tlen, clen;
     int r, i, sig;
 	int reid;
@@ -3997,12 +4023,7 @@ static PHP_FUNCTION(bbs_postarticle)
     else
         local = 1;
     if (brd->flag&BOARD_ATTACH) {
-#if USE_TMPFS==1
-        snprintf(buf,MAXPATH,"%s/home/%c/%s/%d/upload",TMPFSROOT,toupper(getCurrentUser()->userid[0]),
-			getCurrentUser()->userid,getcurrentuinfo_num());
-#else
-        snprintf(buf,MAXPATH,"%s/%s_%d",ATTACHTMPPATH,getCurrentUser()->userid,getcurrentuinfo_num());
-#endif
+        getattachtmppath(buf, MAXPATH);
         if (!sigsetjmp(bus_jump, 1)) {
             signal(SIGBUS, sigbus);
             signal(SIGSEGV, sigbus);
