@@ -15,7 +15,7 @@
 	else
 	{
 		$link = pc_db_connect();
-		$query = "SELECT `uid`,`nodelimit`,`dirlimit`,`corpusname` FROM users WHERE username = '".$currentuser["userid"]."' LIMIT 0 , 1 ;";
+		$query = "SELECT `uid`,`nodelimit`,`dirlimit`,`corpusname`,`username`  FROM users WHERE username = '".$currentuser["userid"]."' LIMIT 0 , 1 ;";
 		$result = mysql_query($query,$link);
 		$rows = mysql_fetch_array($result);
 		if(!$rows)
@@ -29,6 +29,7 @@
 				"UID" => $rows[uid],
 				"NLIM" => $rows[nodelimit],
 				"DLIM" => $rows[dirlimit],
+				"USER" => $rows[username],
 				"NAME" => $rows[corpusname]
 				);
 		mysql_free_result($result);
@@ -157,9 +158,9 @@
 					"VALUES ( '".$pid."', '".$_POST["tid"]."' , '0', '', '".$emote."' ,  '".$_SERVER["REMOTE_ADDR"]."','".date("YmdHis")."' , '".date("YmdHis")."', '".$pc["UID"]."', '".$c."', '0', '".addslashes($_POST["subject"])."', '".addslashes($_POST["body"])."', '".$tag."', '0');";
 				mysql_query($query,$link);
 ?>
-<p align="center">
-<a href="javascript:history.go(-2);">操作成功,点击返回</a>
-</p>
+<script language="javascript">
+window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo $tag; ?>&tid=<?php echo $_POST["tid"]; ?>";
+</script>
 <?php
 			}
 			else

@@ -100,10 +100,10 @@
 		switch($order)
 		{
 			case "c":
-				$query.=" ORDER BY `created` DESC , ";
+				$query.=" ORDER BY `created` ASC , ";
 				break;
 			case "u":
-				$query.=" ORDER BY `changed` DESC , ";
+				$query.=" ORDER BY `changed` ASC , ";
 				break;
 			case "v":
 				$query.=" ORDER BY `visitcount`  DESC , ";
@@ -112,13 +112,13 @@
 				$query.=" ORDER BY `commentcount`  DESC , ";
 				break;
 			case "co":
-				$query.=" ORDER BY `comment`  DESC , ";
+				$query.=" ORDER BY `comment`  ASC , ";
 				break;
 			default:
 				$query.=" ORDER BY ";
 				
 		}	
-		$query .= "  `created` DESC ; ";
+		$query .= "  `created` ASC ; ";
 		
 		$result = mysql_query($query,$link);
 		$i = 0;
@@ -236,10 +236,10 @@
 		switch($order)
 		{
 			case "c":
-				$query.=" ORDER BY `created` DESC , ";
+				$query.=" ORDER BY `created` ASC , ";
 				break;
 			case "u":
-				$query.=" ORDER BY `changed` DESC  ,";
+				$query.=" ORDER BY `changed` ASC  ,";
 				break;
 			case "v":
 				$query.=" ORDER BY `visitcount`  DESC  ,";
@@ -248,13 +248,13 @@
 				$query.=" ORDER BY `commentcount`  DESC  ,";
 				break;
 			case "co":
-				$query.=" ORDER BY `comment`  DESC ,";
+				$query.=" ORDER BY `comment`  ASC ,";
 				break;
 			default:
 				$query.=" ORDER BY ";
 				
 		}	
-		$query .= " `type` DESC ; ";
+		$query .= " `type` ASC ; ";
 		
 		$result = mysql_query($query,$link);
 		$i = 0;
@@ -678,7 +678,14 @@
 	[<a href='javascript:location=location' class=f1>刷新</a>]
 	[<?php echo "<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\" class=f1>给".$pc["USER"]."写信</a>"; ?>]
 	[<a href="pc.php" class=f1>文集首页</a>]
-	[<a href="/" class=f1><?php echo BBS_FULL_NAME; ?>首页</a>]
+	[<a href="
+<?php
+	if(!strcmp($currentuser["userid"],"guest"))
+		echo "/guest-frames.html";
+	else
+		echo "/frames.html";
+?>	
+	" class=f1 target="_top"><?php echo BBS_FULL_NAME; ?>首页</a>]
 	</td>
 </tr>
 </table>

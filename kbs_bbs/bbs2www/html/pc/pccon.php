@@ -6,10 +6,25 @@
 	$needlogin=0;
 	require("pcfuncs.php");
 	
-	function display_navigation_bar($pc,$nid,$pid,$tag,$spr,$order,$comment,$tid)
+	function display_navigation_bar($link,$pc,$nid,$pid,$tag,$spr,$order,$comment,$tid=0)
 	{
-		echo "<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nid."&pid=".$pid."&tag=".$tag."&p=p\">上一篇</a>\n".
-			"<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nid."&pid=".$pid."&tag=".$tag."&p=n\">下一篇</a>\n";
+		$query = "SELECT `nid` FROM nodes WHERE `nid` < ".$nid." AND `uid` = '".$pc["UID"]."' AND `pid` = '".$pid."' AND `access` = '".$tag."' AND `tid` = '".$tid."' AND `type` != '1' ORDER BY `nid` DESC LIMIT 0 , 1 ;  ";
+		$result = mysql_query($query,$link);
+		$rows = mysql_fetch_array($result);
+		if($rows)
+			echo " <a href=\"pccon.php?id=".$pc["UID"]."&nid=".$rows[nid]."&pid=".$pid."&tag=".$tag."&tid=".$tid."\">上一篇</a>\n";
+		else
+			echo " 上一篇\n";
+		mysql_free_result($result);
+		$query = "SELECT `nid` FROM nodes WHERE `nid` > ".$nid." AND `uid` = '".$pc["UID"]."' AND `pid` = '".$pid."' AND `access` = '".$tag."' AND `tid` = '".$tid."' AND `type` != '1' ORDER BY `nid` ASC LIMIT 0 , 1 ;  ";
+		$result = mysql_query($query,$link);
+		$rows = mysql_fetch_array($result);
+		if($rows)
+			echo " <a href=\"pccon.php?id=".$pc["UID"]."&nid=".$rows[nid]."&pid=".$pid."&tag=".$tag."&tid=".$tid."\">下一篇</a>\n";
+		else
+			echo " 下一篇\n";
+		mysql_free_result($result);
+		
 		if($comment != 0)
 		{
 			if($spr)
@@ -82,6 +97,7 @@
 	}
 	
 	$id = $_GET["id"];
+	$tid = (int)($_GET["tid"]);
 	$nid = $_GET["nid"];
 	$pid = $_GET["pid"];
 	$tag = $_GET["tag"];
@@ -121,32 +137,11 @@
 	else
 		$pur = 0;
 		
-	switch($_GET["p"])
-	{
-		case "p":
-			$query = "SELECT * FROM nodes WHERE `nid` < '".$nid."' AND `uid` = '".$id."' AND `pid` = '".$pid."' AND `access` = '".$tag."' AND `type` != '1' ORDER BY `nid` DESC LIMIT 0 , 1 ;  ";
-			$result = mysql_query($query);
-			$rows = mysql_fetch_array($result);
-			mysql_free_result($result);
-			break;
-		case "n":
-			$query = "SELECT * FROM nodes WHERE `nid` > '".$nid."' AND `uid` = '".$id."' AND `pid` = '".$pid."' AND `access` = '".$tag."' AND `type` != '1'  ORDER BY `nid` ASC LIMIT 0 , 1 ;  ";
-			$result = mysql_query($query);
-			$rows = mysql_fetch_array($result);
-			mysql_free_result($result);
-			break;
-		default:
-			unset($rows);
-	}
+	$query = "SELECT * FROM nodes WHERE `nid` = '".$nid."' AND `uid` = '".$id."' LIMIT 0 , 1 ;  ";
+	$result = mysql_query($query,$link);
+	$rows = mysql_fetch_array($result);
+	mysql_free_result($result);
 	
-	if(!$rows)
-	{
-		$query = "SELECT * FROM nodes WHERE `nid` = '".$nid."' AND `uid` = '".$id."' LIMIT 0 , 1 ;  ";
-		$result = mysql_query($query,$link);
-		$rows = mysql_fetch_array($result);
-		mysql_free_result($result);
-	}
-		
 	if(!$rows)
 	{
 		html_error_quit("对不起，您要查看的个人文章不存在");
@@ -226,7 +221,7 @@
 	</tr>
 	<tr>
 		<td colspan="2" align="right" class="t8">
-		<?php display_navigation_bar($pc,$nid,$rows[pid],$rows[access],$spr,$_GET["order"],$rows[comment],$_GET["tid"]); ?>
+		<?php display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,$_GET["order"],$rows[comment],$tid); ?>
 		</td>
 	</tr>
 	</table>
@@ -246,7 +241,7 @@
 	<td align="middle" class="f1" height="40" valign="middle">
 	<?php
 		if($re_num != 0)
-			display_navigation_bar($pc,$nid,$rows[pid],$rows[access],$spr,$_GET["order"],$rows[comment],$_GET["tid"]); 
+			display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,$_GET["order"],$rows[comment],$tid); 
 	?>
 	&nbsp;</td>
 </tr>
@@ -257,7 +252,14 @@
 	[<?php echo "<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\" class=f1>给".$pc["USER"]."写信</a>"; ?>]
 	[<a href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>" class=f1><?php echo $pc["NAME"]; ?>首页</a>]
 	[<a href="pc.php" class=f1>文集首页</a>]
-	[<a href="/" class=f1><?php echo BBS_FULL_NAME; ?>首页</a>]
+	[<a href="
+<?php
+	if(!strcmp($currentuser["userid"],"guest"))
+		echo "/guest-frames.html";
+	else
+		echo "/frames.html";
+?>	
+	" class=f1 target="_top"><?php echo BBS_FULL_NAME; ?>首页</a>]
 	</td>
 </tr>
 </table>

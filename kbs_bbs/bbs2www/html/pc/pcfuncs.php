@@ -133,24 +133,20 @@ function pc_is_friend($userid,$uid)
 
 function pc_friend_list($uid)
 {
-	if(!$file = pc_friend_file_open($uid,"a+"))
-		return FALSE;
-	else
+	$file = pc_friend_file_open($uid,"r");
+	$fp = $file["FP"];
+	$i = 0;
+	while(!feof($fp))
 	{
-		$fp = $file["FP"];
-		$i = 0;
-		while(!feof($fp))
-		{
-			$line = trim(fgets($fp,12));
-			if(!$line)
-				continue;
-			$friendlist[$i] = $line;
-			$i ++ ;
-		}
-		pc_friend_file_close($fp);
-		@sort($friendlist);
-		return $friendlist;
+		$line = trim(fgets($fp,12));
+		if(!$line)
+			continue;
+		$friendlist[$i] = $line;
+		$i ++ ;
 	}
+	pc_friend_file_close($fp);
+	@sort($friendlist);
+	return $friendlist;
 }
 
 function pc_add_friend($id,$uid)

@@ -123,9 +123,9 @@
 			$query = "UPDATE nodes SET commentcount = commentcount + 1 WHERE `nid` = '".$nid."' ; ";
 			mysql_query($query,$link);
 ?>
-<p align="center">
-<a href="javascript:history.go(-2);">操作成功,点击返回</a>
-</p>
+<script language="javascript">
+window.location.href="pccon.php?id=<?php echo $uid; ?>&nid=<?php echo $nid; ?>";
+</script>
 <?php
 		}
 		
