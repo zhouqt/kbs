@@ -328,8 +328,8 @@ int page, clsflag, newflag;
                 docmdtitle("[´¦ÀíĞÅ¼ãÑ¡µ¥]", "  [mÖ÷Ñ¡µ¥[¡û,e] ½øÈë[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] Ìí¼Ó[a] ¸ÄÃû[T] É¾³ı[d] \n");
             else
                 docmdtitle("[ÌÖÂÛÇøÁĞ±í]", "  [mÖ÷Ñ¡µ¥[¡û,e] ÔÄ¶Á[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] ÁĞ³ö[y] ÅÅĞò[S] ËÑÑ°[/] ÇĞ»»[c] ÇóÖú[h]\n");
-            if (yank_flag==3)
-                prints("[44m[37m ĞÅ¼ş       Àà±ğ   Ãû³Æ[m\n");
+            if (yank_flag==3);
+//                prints("[44m[37m ĞÅ¼ş       Àà±ğ   Ãû³Æ[m\n");
             else
                 prints("[44m[37m %s ÌÖÂÛÇøÃû³Æ       V  Àà±ğ ×ªĞÅ  %-24s °æ  Ö÷   %s   [m\n", newflag ? "È«²¿ Î´¶Á" : "±àºÅ  ", "ÖĞ  ÎÄ  Ğğ  Êö", newflag ? "" : "   ");
         }
@@ -351,16 +351,15 @@ int page, clsflag, newflag;
                 prints(" %4d  £«  <Ä¿Â¼>  ", ptr->total);
         } 
         else if (ptr->dir == 2){
-            if (!newflag)
-                prints(" %4d  £«  <ĞÅÏä>  ", n + 1);
-            else
-                prints(" %4d  £«  <ĞÅÏä>  ", ptr->total);
+//                prints(" %4d  £«  <ĞÅÏä>  ", ptr->total);
+            prints("  ");
         }
         else if (ptr->dir == 3){
-            if (!newflag)
-                prints(" %4d      <¹¦ÄÜ>  ", n+1);
-            else
-                prints("           <¹¦ÄÜ>  ");
+//            if (!newflag)
+//                prints(" %4d      <¹¦ÄÜ>  ", n+1);
+//            else
+//                prints("           <¹¦ÄÜ>  ");
+            prints("  ");
         }
         else if (!newflag)
             prints(" %4d %c", n + 1, ptr->zap && !(ptr->flag & BOARD_NOZAPFLAG) ? '-' : ' ');   /*zap±êÖ¾ */
@@ -384,7 +383,9 @@ int page, clsflag, newflag;
         /*
          * Leeward 98.03.28 Displaying whether a board is READONLY or not 
          */
-        if (ptr->dir >= 1)
+        if (ptr->dir == 2)
+            sprintf(buf, "%s(%d)", ptr->title);
+        else if (ptr->dir >= 1)
             sprintf(buf, "%s", ptr->title);     // added by bad 2002.8.3
         else if (true == checkreadonly(ptr->name))
             sprintf(buf, "¡ôÖ»¶Á¡ô%s", ptr->title + 8);
