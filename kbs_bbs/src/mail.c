@@ -690,7 +690,7 @@ int del_mail(int ent, struct fileheader* fh, char* direct)
     char* t;
     struct stat st;
 
-    if(strstr(direct, ".DELETED")) {
+    if(!strcmp(direct, ".DELETED")) {
         strcpy(buf, direct);    
         t = strrchr(buf, '/') + 1;
         strcpy(t, fh->filename);
@@ -1207,8 +1207,11 @@ int ent;
 struct fileheader *fileinfo;
 char *direct;
 {
-    return (del_range(ent, fileinfo, direct, 0));       /*Haohmaru.99.5.14.修改一个bug,
+	int ret;
+    ret= (del_range(ent, fileinfo, direct, 0));       /*Haohmaru.99.5.14.修改一个bug,
                                                          * 否则可能会因为删信件的.tmpfile而错删版面的.tmpfile */
+    if(!strcmp(direct, ".DELETED"))
+        get_mailusedspace(currentuser,1);
 }
 
 int mail_mark(ent, fileinfo, direct)
