@@ -286,8 +286,8 @@ char *ModeType(mode)
         return "看谁在线上";
     case FRIEND:
         return "找线上好友";
-//    case MONITOR:
-//        return "监看中";
+    case MONITOR:
+        return "监看中";
     case QUERY:
         return "查询网友";
     case TALK:
@@ -311,7 +311,7 @@ char *ModeType(mode)
     case VOTING:
         return "投票";
     case BBSNET:
-        return "系统维护"; //ft
+        return "时空穿梭"; //ft
 	/*
         return "穿梭银河";
 	*/

@@ -11,6 +11,8 @@
 #define HAVE_FRIENDS_NUM
 #define HAVE_REVERSE_DNS
 #define CHINESE_CHARACTER
+#define	ANTISPAM_MAILADDR	"feeling-NOsmthSPAM-org"	/* 转信后的文章隐藏真实 MAIL */
+#define	CNBBS_TOPIC		/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
 
 
 #define SMTH

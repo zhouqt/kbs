@@ -696,8 +696,8 @@ void user_login()
     prints("¡î ÉÏ´ÎÁ¬ÏßÊ±¼äÎª [33m%s[m ", Ctime(currentuser->lastlogin));
     igetkey();
     /* È«¹úÊ®´óÈÈÃÅ»°Ìâ added by Czz 020128 */
-#ifndef SMTH
-    show_help("0Announce/bbslists/newsday");
+#ifdef CNBBS_TOPIC
+    show_help("0Announce/bbslist/newsday");
 #endif
     /* added end */
     ansimore("0Announce/hotinfo", false);
