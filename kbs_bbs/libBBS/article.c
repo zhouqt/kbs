@@ -1537,8 +1537,11 @@ int skip_attach_fgets(char* s,int size,FILE* stream)
         return 1;
      }
   }
+  /*
   if(ptr!=s) return 1;
   else return 0;
+  */
+  return (ptr != s);
 }
 
 int attach_fgets(char* s,int size,FILE* stream)
@@ -1572,8 +1575,11 @@ int attach_fgets(char* s,int size,FILE* stream)
         return 1;
      }
   }
+  /*
   if(ptr!=s) return 1;
   else return 0;
+  */
+  return (ptr != s);
 }
 
 int put_attach(FILE* in, FILE* out, int size)
