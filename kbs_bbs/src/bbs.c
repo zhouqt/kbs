@@ -369,6 +369,51 @@ int get_a_boardname(char *bname, char *prompt)
     return 1;
 }
 
+#ifdef COMMEND_ARTICLE
+/* stiger, 推荐文章 */
+int do_commend(int ent, struct fileheader *fileinfo, char *direct)
+{
+
+	char ispost[3];
+
+    if (!chk_currBM(currBM, currentuser) || uinfo.mode == RMAIL || digestmode!=0) {
+        return DONOTHING;
+    }
+    if ((fileinfo->accessed[1] & FILE_COMMEND) && !HAS_PERM(currentuser, PERM_SYSOP)) {
+        clear();
+        move(1, 0);
+        prints("本文章已经推荐过，无需再推荐");
+        move(2, 0);
+        pressreturn();
+        return FULLUPDATE;
+    }
+
+    clear();
+    move(0, 0);
+    prints("推荐 ' %s '", fileinfo->title);
+    clrtoeol();
+    move(1, 0);
+    getdata(1, 0, "确定? [y/N]: ", ispost, 2, DOECHO, NULL, true);
+    if (ispost[0] == 'y' || ispost[0] == 'Y') {
+        if (post_commend(currentuser, currboard->filename, fileinfo ) == -1) {
+        	prints("推荐失败，系统错误 \n");
+            pressreturn();
+            move(2, 0);
+            return FULLUPDATE;
+        }
+        move(2, 0);
+        prints("推荐成功 \n");
+        fileinfo->accessed[1] |= FILE_COMMEND;
+        substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
+    } else {
+        prints("取消");
+    }
+    move(2, 0);
+    pressreturn();
+    return FULLUPDATE;
+}
+#endif	/* COMMEND_ARTICLE */
+
 /* Add by SmallPig */
 int do_cross(int ent, struct fileheader *fileinfo, char *direct)
 {                               /* 转贴 一篇 文章 */
@@ -2486,13 +2531,20 @@ int noreply_post(int ent, struct fileheader *fileinfo, char *direct)
 
     move(t_lines - 1, 0);
     clrtoeol();
+#ifdef COMMEND_ARTICLE
+    getdata(t_lines - 1, 0, "切换: 0)取消 1)不可re标记 2)置顶标记 3)推荐 [1]: ", ans, 3, DOECHO, NULL, true);
+#else
     getdata(t_lines - 1, 0, "切换: 0)取消 1)不可re标记 2)置顶标记 [1]: ", ans, 3, DOECHO, NULL, true);
+#endif
     if (ans[0]=='0') return FULLUPDATE;
     if (ans[0] == ' ') {
         ans[0] = ans[1];
         ans[1] = 0;
     }
 	if(ans[0]=='2') return zhiding_post(ent,fileinfo,direct);
+#ifdef COMMEND_ARTICLE
+	else if(ans[0]=='3') return do_commend(ent,fileinfo,direct);
+#endif
 	else change_post_flag(currBM, currentuser, digestmode, currboard->filename, ent, fileinfo, direct, FILE_NOREPLY_FLAG, 1);
 
 	return FULLUPDATE;

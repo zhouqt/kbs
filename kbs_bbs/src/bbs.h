@@ -221,7 +221,9 @@ extern long ti;
 #define FILE_READ  0x1          /* Ownership flags used in fileheader structure in accessed[1] */
 #define FILE_DEL  0x2           /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[1] */
 #define FILE_MAILBACK	0x4		/* reply articles mail to owner's mailbox, accessed[1] */
-
+#ifdef COMMEND_ARTICLE
+#define FILE_COMMEND 0x8		/* ÍÆ¼öÎÄÕÂ,stiger , in accessed[1], */
+#endif
 
 /* Leeward 98.05.11:
 In /etc/sendmail.cf:

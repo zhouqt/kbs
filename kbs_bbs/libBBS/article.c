@@ -499,6 +499,88 @@ void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail
      */
 }
 
+#ifdef COMMEND_ARTICLE
+int post_commend(struct userec *user, char *fromboard, struct fileheader *fileinfo)
+{                               /* 推荐 */
+    struct fileheader postfile;
+    char filepath[STRLEN];
+    char oldfilepath[STRLEN];
+    char buf4[STRLEN+10];
+	char buf[256];
+    int aborted;
+	int oldmode;
+    int fd, err = 0, nowid = 0;
+
+    memset(&postfile, 0, sizeof(postfile));
+
+    setbfile(filepath, COMMEND_ARTICLE, "");
+
+    if ((aborted = GET_POSTFILENAME(postfile.filename, filepath)) != 0) {
+#ifdef BBSMAIN
+        move(3, 0);
+        clrtobot();
+        prints("\n\n无法创建文件:%d...\n", aborted);
+        pressreturn();
+        clear();
+#endif
+        return -1;
+    }
+
+    setbfile(filepath, COMMEND_ARTICLE, postfile.filename);
+    setbfile(oldfilepath, fromboard, fileinfo->filename);
+
+    if( f_cp( oldfilepath, filepath , 0) < 0 )
+		return -1;
+
+    snprintf(postfile.title, STRLEN, "[推荐]%s", fileinfo->title);
+    strncpy(postfile.owner, user->userid, OWNER_LEN);
+    postfile.owner[OWNER_LEN - 1] = 1;
+    postfile.eff_size=get_effsize(oldfilepath);
+	postfile.o_id = fileinfo->id;
+	postfile.o_groupid = fileinfo->groupid;
+	postfile.o_reid = fileinfo->reid;
+	strncpy(postfile.o_board, fromboard, STRLEN- BM_LEN);
+	postfile.o_board[STRLEN-BM_LEN-1]=0;
+
+    setbfile(buf, COMMEND_ARTICLE, DOT_DIR);
+
+    if ((fd = open(buf, O_WRONLY | O_CREAT, 0664)) == -1) {
+        err = 1;
+    }
+
+    if (!err) {
+        flock(fd, LOCK_EX);
+        nowid = get_nextid(COMMEND_ARTICLE);
+        postfile.id = nowid;
+        postfile.groupid = postfile.id;
+        postfile.reid = postfile.id;
+        set_posttime(&postfile);
+        lseek(fd, 0, SEEK_END);
+        if (safewrite(fd, &postfile, sizeof(fileheader)) == -1) {
+            bbslog("user", "%s", "apprec write err!");
+            err = 1;
+        }
+        flock(fd, LOCK_UN);
+        close(fd);
+    }
+    if (err) {
+        bbslog("3error", "Posting '%s' on '%s': append_record failed!", postfile.title, COMMEND_ARTICLE);
+        my_unlink(filepath);
+#ifdef BBSMAIN
+        pressreturn();
+        clear();
+#endif
+        return -1;
+    }
+    updatelastpost(COMMEND_ARTICLE);
+
+    setboardorigin(COMMEND_ARTICLE, 1);
+    setboardtitle(COMMEND_ARTICLE, 1);
+
+    return 0;
+}
+#endif
+
 /* Add by SmallPig */
 int post_cross(struct userec *user, char *toboard, char *fromboard, char *title, char *filename, int Anony, int in_mail, char islocal, int mode)
 {                               /* (自动生成文件名) 转贴或自动发信 */
