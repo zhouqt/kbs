@@ -1,0 +1,16 @@
+    本FAQ由水木清华BBS系统维护组负责维护，
+如有问题，请到水木清华BBS的BBSMan_Dev版讨论。
+一。安装
+
+1.第一次注册SYSOP的时候，说
+"抱歉, 由于某些系统原因, 无法注册新的帐号."
+
+  这个问题有个人问过我，处理如下
+    killall miscd
+    killall bbslogd
+  然后把共享内存区内存区清了，
+  重新
+    miscd daemon
+    bbslogd就好了
+  不知道为啥。
+

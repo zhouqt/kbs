@@ -556,6 +556,10 @@ void build_board_structure(const char *board)
 void get_mail_limit(struct userec* user,int *sumlimit,int * numlimit)
 {
     if ((!(user->userlevel & PERM_SYSOP)) && strcmp(user->userid, "Arbitrator")) {
+	if (user->userlevel & PERM_COLLECTIVE) {
+	    *sumlimit = -1;
+	    *numlimit = -1;
+	} else
         if (user->userlevel & PERM_BMAMANGER) {
             *sumlimit = 2000;
             *numlimit = 2000;
