@@ -1,6 +1,28 @@
-	安装说明
+wforum安装说明
 
-inc 目录下的 site.php 要 ln 到 inc/sites/ 的适当文件上
-copy conn.php.origin 为conn.php,修改里面的mysql 用户、密码和数据库名
+1. 首先下载最新的smth和wForum代码
+
+wForum部分安装
+2. 解压wForum。ln -s inc/sites/ 下的适当文件到inc/site.php
+
+3. copy inc/conn.php.origin 为inc/conn.php,修改里面的mysql 用户、密码和数据库名
 按照documents/smallpaper_tb.sql里的定义在mysql中建立一个数据表
 
+smth安装请参考其安装文档；必须打开WWW支持
+
+
+原先安装了smth系统的站点需要升级.PASSWDS文件。请参考document/smth_update.txt文件
+
+附：php编译说明
+wForum需要php支持gd及mysql。
+首先，确认你的linux系统已安装了mysql、gd、libjpeg、libpng、freetype
+及各自相应的devel包
+
+然后用下面的参数编译php：
+
+./configure  --prefix=/bbs/www --with-freetype-dir=/usr/lib --with-gd --with
+-jpeg-dir --with-png-dir --with-config-file-path=/bbs/www/conf --with-zlib
+-dir --with-mysql --with-apxs=/bbs/www/bin/apxs
+
+make
+make install
