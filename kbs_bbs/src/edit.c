@@ -694,7 +694,7 @@ int valid_article(pmt, abort)
             y += 3;
         }
         temp = 0;
-        if (len < 8 || lines < 2) {
+        if (len < 8 || lines <= 2) {
             move(y, 0);
             prints("本篇文章非常简短, 系统认为灌水文章.\n");
             /*Haohmaru.99.4.02.让爱灌水的人哭去吧//grin */
