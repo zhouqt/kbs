@@ -380,7 +380,7 @@ int igetch()
                 inremsg = false;
             }
         }
-        if(kicked) return 32;
+        if(kicked) return KEY_TIMEOUT;
         sr = select(hifd, &readfds, NULL, NULL, &to);
         if (sr < 0 && errno == EINTR) {
             if (talkrequest)
@@ -433,6 +433,7 @@ int igetch()
                             	(*i_timeout_func) (timeout_data);
                             else
                             	return KEY_TIMEOUT;
+                            if(kicked) return KEY_TIMEOUT;
                             continue;
                         };
                         alarm_timeout = 1;
@@ -446,7 +447,7 @@ int igetch()
                     if (talkrequest)
                         return KEY_TALK;
                 }
-                if(kicked) return 32;
+                if(kicked) return KEY_TIMEOUT;
                 if (!inremsg) {
 		      int saveerrno=errno;
                     while (msg_count) {
@@ -613,7 +614,7 @@ int igetkey()
 //        refresh();
     while (1) {
         ch = igetch();
-        if(kicked) return 32;
+        if(kicked) return KEY_TIMEOUT;
 
         if(check_calltime()){
 			mode = 0;
