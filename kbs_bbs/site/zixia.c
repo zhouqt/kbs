@@ -558,8 +558,10 @@ char *showuserip(struct userec *user, char *ip)
     static char sip[25];
     char *c;
 
+/*
     if ((getCurrentUser() != NULL) && (getCurrentUser()->title == 10))
         return ip;
+*/
     if (user != NULL && (!DEFINE(user, DEF_HIDEIP)))
         return ip;
     strncpy(sip, ip, 24);
@@ -576,6 +578,13 @@ int check_read_perm(struct userec *user, const struct boardheader *board)
 {
     if (board == NULL)
         return 0;
+
+    if (user == NULL) {
+        if (board->title_level != 0)
+            return 0;
+    } else if (!HAS_PERM(user, PERM_OBOARDS) && board->title_level && (board->title_level != user->title))
+        return 0;
+
     if (board->level & PERM_POSTMASK || HAS_PERM(user, board->level) || (board->level & PERM_NOZAP)) {
         if (board->flag & BOARD_CLUB_READ) {    /*¾ãÀÖ²¿*/
             if (HAS_PERM(user,PERM_OBOARDS)&&HAS_PERM(user, PERM_SYSOP))
@@ -596,6 +605,13 @@ int check_see_perm(struct userec* user,const struct boardheader* board)
 {
     if (board == NULL)
         return 0;
+
+    if (user == NULL) {
+        if (board->title_level != 0)
+            return 0;
+    } else if (!HAS_PERM(user, PERM_OBOARDS) && board->title_level && (board->title_level != user->title))
+        return 0;
+
     if (board->level & PERM_POSTMASK
     	|| ((user==NULL)&&(board->level==0))
     	|| ((user!=NULL)&& HAS_PERM(user, board->level) )
