@@ -386,7 +386,6 @@ int bbsnet(int n)
 		{
 			if (errno == EINTR)
 			{
-	                   refresh();
 				while (msg_count)
 				{
 					msg_count--;
@@ -417,6 +416,8 @@ int bbsnet(int n)
 			else
 				outns(buf, rc);
 		}
+		else
+		    refresh();
 		if (FD_ISSET(0, &readset))
 		{
 			if ((rc = bbsnet_read(0, buf, BUFSIZ)) < 0)
