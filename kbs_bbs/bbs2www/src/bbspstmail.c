@@ -8,6 +8,7 @@ int main()
     FILE *fp;
     int i;
     char userid[80], buf[512], path[512], file[512], board[512], title[80] = "";
+	struct boardheader *bp;
 
     init_all();
     if (!loginok)
@@ -17,8 +18,20 @@ int main()
     strsncpy(file, getparm("file"), 20);
     strsncpy(title, nohtml(getparm("title")), 50);
     strsncpy(userid, getparm("userid"), 40);
-    if (file[0] != 'M' && file[0])
-        http_fatal("错误的文件名");
+    strsncpy(board, getparm("board"), 40);
+	if (board[0] != '\0')
+	{
+		if ((bp = getbcache(board)) == NULL)
+			http_fatal("错误的讨论区名称");
+		strcpy(board, bp->filename);
+		if (VALID_FILENAME(file) < 0)
+			http_fatal("错误的文件名");
+	}
+	else
+	{
+		if (file[0] != 'M' && file[0])
+			http_fatal("错误的文件名");
+	}
     printf("<center>\n");
     printf("%s -- 寄语信鸽 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser->userid);
     printf("<table border=\"1\"><tr><td>\n");
@@ -28,12 +41,12 @@ int main()
     printf("收信人: &nbsp;&nbsp<input type=\"text\" name=\"userid\" value=\"%s\"><br>\n", nohtml(userid));
     printf("使用签名档 <select name=\"signature\">\n");
     if (currentuser->signature == 0)
-        printf("<option value=\"0\" selected>不使用签名档</option>\n");
+        printf("<option value=\"0\" selected=\"selected\">不使用签名档</option>\n");
     else
         printf("<option value=\"0\">不使用签名档</option>\n");
     for (i = 1; i < 6; i++) {
         if (currentuser->signature == i)
-            printf("<option value=\"%d\" selected>第 %d 个</option>\n", i, i);
+            printf("<option value=\"%d\" selected=\"selected\">第 %d 个</option>\n", i, i);
         else
             printf("<option value=\"%d\">第 %d 个</option>\n", i, i);
     }
@@ -42,11 +55,20 @@ int main()
     printf(" <input type=\"checkbox\" name=\"backup\">备份\n");
     printf("<br>\n");
     printf("<textarea name=\"text\" rows=\"20\" cols=\"80\" wrap=\"physical\">\n\n");
-    if (file[0]) {
+    if (file[0])
+	{
         int lines = 0;
 
-        printf("【 在 %s 的来信中提到: 】\n", userid);
-        sprintf(path, "mail/%c/%s/%s", toupper(currentuser->userid[0]), currentuser->userid, file);
+		if (board[0] != '\0')
+		{
+			setbfile(path, board, file);
+			printf("【 在 %s 的大作中提到: 】\n", userid);
+		}
+		else
+		{
+			setmailfile(path, currentuser->userid, file);
+			printf("【 在 %s 的来信中提到: 】\n", userid);
+		}
         fp = fopen(path, "r");
         if (fp) {
             for (i = 0; i < 4; i++)
