@@ -494,6 +494,15 @@ void join_room(struct room_struct * r)
                 if(selected>=myroom->people) selected=0;
                 refreshit();
             }
+            else if(ch==KEY_PGUP) {
+                ipage+=t_lines/2;
+                refreshit();
+            }
+            else if(ch==KEY_PGDN) {
+                ipage-=t_lines/2;
+                if(ipage>=0) ipage=0;
+                refreshit();
+            }
             else if(ch==Ctrl('S')) {
                 int pid;
                 for(me=0;me<myroom->people;me++)
