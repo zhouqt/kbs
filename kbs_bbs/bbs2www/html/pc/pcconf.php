@@ -17,6 +17,7 @@ $pcconfig["ADMIN"] :管理员ID，设置后所有管理员都可以维护此Blog
 $pcconfig["TMPSAVETIME"] :开启发文暂存功能时，保存的时间间隔， 单位为秒
 $pcconfig["USERFILES"] :支持用户个人空间,若支持需要定义 _USER_FILE_ROOT_
 $pcconfig["USERFILESLIMIT"]:用户个人空间的默认大小,单位是b
+$pcconfig["USERFILESNUMLIMIT"]:用户个人空间的默认容量
 $pcconfig["USERFILEPERM"]:用户个人空间是否支持权限控制
 $pcconfig["USERFILEREF"] :用户个人空间是否检查HTTP_REFERER以防止盗链,开启此功能时请编辑 $accept_hosts 的预定值
 pc_personal_domainname($userid)函数 :用户Blog的域名;
@@ -37,7 +38,8 @@ $pcconfig["MINREGTIME"] = 6;
 $pcconfig["TMPSAVETIME"] = 300;
 $pcconfig["ALLCHARS"] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 $pcconfig["USERFILES"] = true;
-$pcconfig["USERFILESLIMIT"] = 2*1024*1024;
+$pcconfig["USERFILESLIMIT"] = 5*1024*1024;
+$pcconfig["USERFILESNUMLIMIT"] = 1000;
 $pcconfig["USERFILEPERM"]= false;
 $pcconfig["USERFILEREF"] = true;
 $pcconfig["SECTION"] = array(
@@ -69,7 +71,10 @@ define("_PCMAIN_REC_NODES_" , 40 );     //推荐日志数目
 define("_PCMAIN_NEW_NODES_" , 40 );     //新日志数目
 define("_PCMAIN_ANNS_NUM_"  , 6  );     //公告数目
 define("_PCMAIN_RECOMMEND_" , 1   );  //博客推荐
-define("_PCMAIN_RECOMMEND_BLOGGER_" , "SYSOP"); //固定推荐
+//define("_PCMAIN_RECOMMEND_BLOGGER_" , "SYSOP"); //固定推荐
+/*
+** 注: smth.org的blog是使用推荐队列，其他站点若无推荐队列，可以设定固定推荐
+*/
 define("_PCMAIN_RECOMMEND_QUEUE_" , "smthblogger.php");        //使用推荐队列
 
 function pc_personal_domainname($userid)

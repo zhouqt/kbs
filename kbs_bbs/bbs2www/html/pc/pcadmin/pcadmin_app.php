@@ -52,9 +52,18 @@ function pc_add_users($link,$userid,$corpusname,$manual)
 			return FALSE;
 	}
 	
+	//分配个人空间
+	if ($pcconfig["USERFILES"])
+	{
+	    $userfile_limit = $pcconfig["USERFILESLIMIT"];
+	    $userfile_num_limit = $pcconfig["USERFILESNUMLIMIT"];
+	}
+	else
+	    $userfile_limit = $userfile_num_limit = 0;
+	
 	//添加用户
-	$query = "INSERT INTO `users` ( `uid` , `username` , `corpusname` , `description` , `theme` , `nodelimit` , `dirlimit` , `createtime` , `style` , `backimage` , `visitcount` , `nodescount` , `logoimage` , `modifytime` , `links` , `htmleditor` , `indexnodechars` , `indexnodes` , `useremail` , `favmode` , `updatetime` , `userinfor` , `pctype` ,`defaulttopic`) ".
-		 "VALUES ('', '".addslashes($lookupuser["userid"])."', '".addslashes($corpusname)."', '".addslashes($corpusname)."' , 'others', '300', '300', NOW( ) , '0', '' , '0', '0', '' , NOW( ) , '', '1', '600', '5', '', '0', NOW( ) , '' , '0' , '其他类别');";
+	$query = "INSERT INTO `users` ( `uid` , `username` , `corpusname` , `description` , `theme` , `nodelimit` , `dirlimit` , `createtime` , `style` , `backimage` , `visitcount` , `nodescount` , `logoimage` , `modifytime` , `links` , `htmleditor` , `indexnodechars` , `indexnodes` , `useremail` , `favmode` , `updatetime` , `userinfor` , `pctype` ,`defaulttopic`,`userfile`,`filelimit`) ".
+		 "VALUES ('', '".addslashes($lookupuser["userid"])."', '".addslashes($corpusname)."', '".addslashes($corpusname)."' , 'others', '300', '300', NOW( ) , '0', '' , '0', '0', '' , NOW( ) , '', '1', '600', '5', '', '0', NOW( ) , '' , '0' , '其他类别' , '".$userfile_limit."','".$userfile_num_limit."');";
 	if(!mysql_query($query,$link))
 	{
 		pc_db_close($link);
