@@ -30,12 +30,12 @@ function main() {
 </tr>
 <?php
 	$online_user_list = bbs_getonlinefriends();
-    
-	$count = count ( $online_user_list );
 
-	$i = 0;
-	foreach($online_user_list as $friend) {
-		$i++;
+	if ($online_user_list) {
+		$count = count ( $online_user_list );
+		$i = 0;
+		foreach($online_user_list as $friend) {
+			$i++;
 ?>
 <tr>
 <td class=TableBody1 align=center valign=middle>
@@ -56,7 +56,8 @@ function main() {
 </nobr></td>
 </tr>
 <?php
-	}
+		}
+	} else $count = 0;
 ?>
 <tr>
 <td align=right valign=middle colspan=6 class=TableBody2>
