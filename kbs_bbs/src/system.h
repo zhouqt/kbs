@@ -61,4 +61,8 @@ pid_t lock_test(int fd,int cmd,int type,off_t offset,int whence,off_t len);
 #define is_write_lockable(fd,offset,whence,len)\
 	!lock_test(fd,F_GETLK,F_WRLCK,offset,whence,len)
 
+/* base64.c */
+int from64tobits(char *out, const char *in); /* base 64 to raw bytes in quasi-big-endian order, returning count of bytes */
+void to64frombits(unsigned char *out, const unsigned char *in, int inlen);
+
 #endif

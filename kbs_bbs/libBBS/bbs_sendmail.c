@@ -448,6 +448,18 @@ void print_recipient_status(smtp_recipient_t recipient, const char *mailbox, voi
 #endif
 }
 
+static char* encodestring(const char* string,char* encode)
+{
+    char* encodestr;
+	int len;
+    len = strlen(string);
+	encodestr=malloc((len+1)*2+8+strlen(encode)); //for gb2big5 +1,for base64 *2,for padding "=?GBK?B?" "=?BIG5?B?" "?=" +12
+	sprintf(encodestr,"=?%s?B?",encode);
+	to64frombits(encodestr+5+strlen(encode),string,len);
+	strcat(encodestr,"?=");
+	return encodestr;
+}
+
 int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5, int noansi,session_t *session)
 {                               /* Modified by ming, 96.10.9  KCN,99.12.16 */
     struct mail_option mo;
@@ -462,6 +474,7 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5,
     enum notify_flags notify = Notify_NOTSET;
     char *server;
     char newbuf[257];
+	char* encodestr;
 
     if (isuu) {
         char buf[256];
@@ -499,15 +512,27 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5,
     sprintf(newbuf, "%s@%s", session->currentuser->userid, email_domain());
     snprintf(from, STRLEN, "%s(%s) <%s@%s>",session->currentuser->userid, session->currentuser->username, session->currentuser->userid, email_domain());
     from[STRLEN-1]=0;
+    if (isbig5) {
+       len=strlen(from);
+       encodestr=gb2big(from,&len,1);
+       encodestr=encodestring(encodestr,"BIG5");
+    } else {
+       encodestr=encodestring(from,"GBK");
+    }
+	strncpy(from,encodestr,STRLEN-1);
+    from[STRLEN-1]=0;
+	free(encodestr);
     smtp_set_reverse_path(message, newbuf);
     smtp_set_header(message, "Message-Id", NULL);
     if (isbig5) {
-        strcpy(newbuf, title);
-        len = strlen(title);
-        smtp_set_header(message, "Subject", gb2big(title, &len, 1));
+        len=strlen(title);
+		encodestr=gb2big(title,&len,1);
+		encodestr=encodestring(encodestr,"BIG5");
     } else {
-        smtp_set_header(message, "Subject", title);
+		encodestr=encodestring(title,"GBK");
     }
+    smtp_set_header(message, "Subject", encodestr);
+	free(encodestr);
     smtp_set_header_option(message, "Subject", Hdr_OVERRIDE, 3);
     /*
      * smtp_8bitmime_set_body(message, E8bitmime_8BITMIME); 
