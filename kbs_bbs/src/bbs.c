@@ -3646,7 +3646,10 @@ void RemoveAppendedSpace(char *ptr)
 
 int i_read_mail()
 {
-    char savedir[STRLEN];
+    /*char savedir[STRLEN];*/
+    /*如果currdirect > 80 ,下面的strcpy就会溢出,但是会超过80吗? 
+    	changed by binxun . 2003.6.3 */
+    char savedir[255];
 
     /*
      * should set digestmode to false while read mail. or i_read may cause error 
