@@ -110,7 +110,7 @@ BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到一致。
              --with-png-dir --with-iconv --with-jpeg-dir --with-zlib \
              --enable-track-vars --enable-smth_bbs
 
-2.8 如果使用 apache2，步骤 2.4 - 2.7 中需要修改的地方是：
+2.8[补充] 如果使用 apache2，步骤 2.4 - 2.7 中需要修改的地方是：
         apache 的 configure 命令改成：
                 ./configure --prefix=/usr/local/www --enable-so
         php 的 configure 命令里面的 --with-apxs=/usr/local/www/bin/apxs 改成：
@@ -131,12 +131,14 @@ BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到一致。
 
     修改 Port 参数为 80，把 User 和 Group 参数都修改为 bbs。
     请把 KeepAlive 参数设为 Off.
+    如果使用 apache2，建议加入 AddDefaultCharset gb2312.
 
-    将 smthbbs 源代码目录 bbs2www/xml 下的文件复制到 /usr/local/www/htdocs。
+    将 smthbbs 源代码目录 bbs2www/xml 和 bbs2www/html 下的文件复制到
+    /usr/local/www/htdocs。
 
     php 的配置文件可以从 php 源代码目录得到，将 php.ini-dist 复制为
 /usr/local/lib/php.ini，然后编辑 php.ini 文件，将 short_open_tag 的值修改为
-Off。
+Off，magic_quotes_gpc 也建议设置成 off。
 
     如果没有执行上面的 2.6 和 2.7 两个步骤，那么再执行下面两个操作：
     (1) 执行命令
