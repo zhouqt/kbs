@@ -324,13 +324,9 @@ char    *pmt, *buf;
 }
 
 /* a_SeSave 用来删除存到暂存档时的文件头和尾 Life 1997.4.6 */
-int a_SeSave( path, key, fileinfo ,nomsg)
-char    *path, *key;
-struct fileheader *fileinfo;
-int    nomsg;
+int a_SeSave( char    *path,char *key,struct fileheader *fileinfo,int    nomsg)
 {
 
-    char        board[ STRLEN ];
     char        ans[ STRLEN ];
     FILE        *inf, *outf;
     char        qfile[ STRLEN ], filepath[ STRLEN ];
@@ -360,40 +356,41 @@ int    nomsg;
     }
     fclose( outf );
 
-    sprintf( board, "tmp/bm.%s", currentuser->userid );
-    if( dashf( board ) ) {
-        sprintf ( genbuf, "要附加在旧暂存档之後吗?(Y/N/C) [Y]: " );
-        if(!nomsg)
-            a_prompt( -1, genbuf, ans );
+    if( dashf( filepath ) ) {
+        if(!nomsg) {
+        	sprintf ( buf, "要附加在旧暂存档之後吗?(Y/N/C) [Y]: " );
+            a_prompt( -1, buf, ans );
+        }
         /*if( ans[0] == 'N' || ans[0] == 'n' ||nomsg) {*/
         /* Leeward 98.04.16: fix bugs */
         if( (ans[0] == 'N' || ans[0] == 'n') && (!nomsg) ) {
 		/*
             sprintf( genbuf, "/bin/cp -r %s  tmp/bm.%s", filepath, currentuser->userid );
 	    */
-            sprintf( genbuf, "tmp/bm.%s", currentuser->userid );
-	    f_cp(filepath,genbuf,0);
+            sprintf( buf, "tmp/bm.%s", currentuser->userid );
+	    	f_cp(filepath,buf,0);
         }
-        else if(ans[0] == 'C' || ans[0] == 'c')
+        else if (((ans[0] == 'C' || ans[0] == 'c'))&&(!nomsg))
             return 1;
         else
         {
-            sprintf( genbuf, "/bin/cat %s >> tmp/bm.%s", filepath, currentuser->userid );
-            system( genbuf );
+            sprintf( buf, "/bin/cat %s >> tmp/bm.%s", filepath, currentuser->userid );
+            system( buf );
         }
     }
     else {
 	    /*
         sprintf( genbuf, "/bin/cp -r %s  tmp/bm.%s", filepath , currentuser->userid );
 	*/
-	    f_cp(filepath,genbuf,0);
+	    f_cp(filepath,buf,0);
     }
-    sprintf( genbuf, " 已将该文章存入暂存档, 请按任何键以继续 << " );
     unlink( filepath );
-    sprintf(r_genbuf,"将 %s 存入暂存档",filepath);
-    a_report(r_genbuf);
-    if(!nomsg)
-        a_prompt( -1, genbuf, ans );
+    sprintf(buf,"将 %s 存入暂存档",filepath);
+    a_report(buf);
+    if(!nomsg) {
+    	sprintf( buf, " 已将该文章存入暂存档, 请按任何键以继续 << " );
+        a_prompt( -1, buf, ans );
+    }
     return 1;
 }
 
@@ -407,12 +404,14 @@ a_Save(char    *path,char *key,struct fileheader *fileinfo,int nomsg,
 
     char        board[ STRLEN ];
     char        ans[ STRLEN ];
+    char		buf[256];
 
     sprintf( board, "tmp/bm.%s", currentuser->userid );
     if( dashf( board ) ) {
-        sprintf ( genbuf, "要附加在旧暂存档之后吗?(Y/N/C) [Y]: " );
-        if(!nomsg)
-            a_prompt( -1, genbuf, ans );
+        if(!nomsg) {
+        	sprintf ( buf, "要附加在旧暂存档之后吗?(Y/N/C) [Y]: " );
+            a_prompt( -1, buf, ans );
+        }
         /*if( ans[0] == 'N' || ans[0] == 'n' ||nomsg) {*/
         /* Leeward 97.11.18: fix bugs */
         if( (ans[0] == 'N' || ans[0] == 'n') && (!nomsg) ) {
@@ -421,14 +420,14 @@ a_Save(char    *path,char *key,struct fileheader *fileinfo,int nomsg,
 	    */
             sprintf( genbuf, "boards/%s/%s", key, fileinfo->filename);
             sprintf( board, "tmp/bm.%s", currentuser->userid );
-	    f_cp(genbuf,board,0);
+	    	f_cp(genbuf,board,0);
         }
-        else if(ans[0] == 'C' || ans[0] == 'c')
+        else if(((ans[0] == 'C' || ans[0] == 'c'))&&(!nomsg))
             return 1;
         else
         {
             sprintf( genbuf, "/bin/cat boards/%s/%s >> tmp/bm.%s", key , fileinfo->filename , currentuser->userid );
-    	system( genbuf );
+    		system( genbuf );
             /*                   sprintf( genbuf, "/bin/cp -r boards/%s/%s  tmp/bm.%s", key , fileinfo->filename , currentuser->userid );
             */
         }
@@ -437,17 +436,18 @@ a_Save(char    *path,char *key,struct fileheader *fileinfo,int nomsg,
 	    /*
         sprintf( genbuf, "/bin/cp -r boards/%s/%s  tmp/bm.%s", key , fileinfo->filename , currentuser->userid );
 	*/
-        sprintf( genbuf, "boards/%s/%s", key, fileinfo->filename);
+        sprintf( buf, "boards/%s/%s", key, fileinfo->filename);
         sprintf( board, "tmp/bm.%s", currentuser->userid );
-	f_cp(genbuf,board,0);
+		f_cp(buf,board,0);
     }
-    sprintf( genbuf, " 已将该文章存入暂存档, 请按任何键以继续 << " );
-    sprintf(r_genbuf,"将 boards/%s/%s 存入暂存档",key,fileinfo->filename);
+    sprintf(buf,"将 boards/%s/%s 存入暂存档",key,fileinfo->filename);
     fileinfo->accessed[0] |= FILE_IMPORTED;
     substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
-    a_report(r_genbuf);
-    if(!nomsg)
-        a_prompt( -1, genbuf, ans );
+    a_report(buf);
+    if(!nomsg) {
+    	sprintf( buf, " 已将该文章存入暂存档, 请按任何键以继续 << " );
+        a_prompt( -1, buf, ans );
+    }
     return 1;
 }
 
