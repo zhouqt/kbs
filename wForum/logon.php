@@ -8,6 +8,9 @@ setStat("用户登录");
 if ($_POST['action']=="doLogon") {
 	doLogon();
 } else {
+	show_nav();
+	echo "<br>";
+	head_var("用户登录");
 	showLogon();
 }
 
