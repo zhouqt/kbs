@@ -365,7 +365,7 @@ char *ModeType(mode)
         return "休闲娱乐..";
 	case FRIENDTEST:  return "心有灵犀";
     case CHICKEN:
-	return "心有灵犀";
+	return "星空战斗鸡";
     default:
         return "去了那里!?";
     }
