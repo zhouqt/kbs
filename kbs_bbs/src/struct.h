@@ -186,7 +186,7 @@ struct key_struct { // ×Ô¶¨Òå¼ü by bad
     int status[10];
     int key;
     int mapped[10];
-}
+};
 
 #endif
 

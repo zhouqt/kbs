@@ -443,7 +443,7 @@ clrtoeol()
 	register int ln;
 
         if (!scrint) {
-            o_cleol();'
+            o_cleol();
             return;
         }
 	standing = false;
