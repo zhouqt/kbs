@@ -150,17 +150,20 @@ int requiretouser(struct RequireBindPacket * h, unsigned int sn)
     if (read_user_memo(uident, &pum)>0) {
         memcpy(&ud,&pum->ud,sizeof(ud));
         if (strncmp(ud.mobilenumber, h->MobileNo, MOBILE_NUMBER_LEN-1)) {
+            bbslog("1user","Bind error:mobilephone %s for %s",ud.mobilenumber,uident);
             return 2;
         }
         if(h->Bind==0) {
             pum->ud.mobileregistered=true;
             ud.mobileregistered=true;
             sprintf(buf, "你的帐号已经和%s绑定！",ud.mobilenumber);
+            bbslog("1user","Bind mobilephone %s for %s",ud.mobilenumber,uident);
         }
         else {
             pum->ud.mobileregistered=false;
             ud.mobileregistered=false;
             sprintf(buf, "你的帐号已经取消和%s的绑定！",ud.mobilenumber);
+            bbslog("1user","UnBind mobilephone %s for %s",ud.mobilenumber,uident);
         }
 	end_mmapfile(currentmemo, sizeof(struct usermemo), -1);
        write_userdata(uident, &ud);
