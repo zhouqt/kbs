@@ -73,7 +73,7 @@ void getcross2(char *filepath, char *board, struct userec *user)
 
 
 /* Add by SmallPig */ 
-int post_cross2(char islocal, char *board) 
+int post_cross2(int local_save, char *board) 
 {
 	struct fileheader postfile;
 	char filepath[STRLEN], fname[STRLEN];
@@ -81,7 +81,6 @@ int post_cross2(char islocal, char *board)
 	int fp, i;
 
 	time_t now;
-	int local_article;
 
 	if(!haspostperm(currentuser, board))
 	{
@@ -103,11 +102,10 @@ int post_cross2(char islocal, char *board)
 	strncpy(postfile.owner, whopost, OWNER_LEN);
 	postfile.owner[OWNER_LEN-1]=0;
 	setbfile(filepath, board, postfile.filename);
-	local_article = islocal;
 	getcross2(filepath, board, getcurrusr()); /*根据fname完成 文件复制 */
 	strncpy(postfile.title, save_title, ARTICLE_TITLE_LEN - 1);
 	postfile.title[ARTICLE_TITLE_LEN - 1] = '\0';
-	if(local_article == 1)	  /* local save */
+	if(local_save == 1)	  /* local save */
 	{
 		postfile.innflag[1] = 'L';
 		postfile.innflag[0] = 'L';
@@ -134,7 +132,6 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct, char *board, ch
 {
 	char bname[STRLEN];
 	char dbname[STRLEN];
-	char local;
 
 	if(!HAS_PERM(currentuser, PERM_POST))	 /* 判断是否有POST权 */
 	{
@@ -162,9 +159,8 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct, char *board, ch
 	{
 		http_fatal("\n\n                只读看版不能转入文章\n");
 	}
-	local = local_save ? 'l' : 's';
 	strcpy(quote_board, board);
-	if(post_cross2(local, board2) == -1)	  /* 转贴 */
+	if(post_cross2(local_save, board2) == -1)	  /* 转贴 */
 	{
 		http_fatal("转贴文章失败.\n");
 	}
