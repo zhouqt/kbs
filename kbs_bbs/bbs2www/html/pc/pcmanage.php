@@ -185,11 +185,11 @@
 							"title" => $_POST["subject"],
 							"excerpt" => substr($_POST["blogbody"],0,254)." ",
 							"url" => "http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$pc["UID"]."&tid=".(int)($_POST["tid"])."&nid=".$thisNid."&s=all",
-							"blogname" => $pc["NAME"]
+							"blogname" => undo_html_format($pc["NAME"])
 							);	
 					$r = pc_tbp_trackback_ping($url,$tbarr);
 					if($r != 0)
-						echo "<script language=\"javascript\">引用通告发送失败！</script>";
+						echo "<script language=\"javascript\">alert('引用通告发送失败！');</script>";
 				}
 				
 ?>
