@@ -502,7 +502,7 @@ static int bbs_standalone_main(char* argv)
         dup2(csock, 0);
         close(csock);
     };
-    for (csock=0;csock<4;csock++)
+    for (csock=1;csock<4;csock++)
     	close(csock);
     break;
   }

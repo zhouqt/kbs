@@ -1168,13 +1168,12 @@ int dodaemon(char* daemonname,bool single,bool closefd)
     char path[MAXPATH];
     char line[20];
 
-	if (fork())
-		return 0;
-	setsid();
-	if (fork())
-		return 0;
-
-	sprintf(path,"var/%s.pid",daemonname);
+    if (fork())
+	exit(0);
+    setsid();
+    if (fork())
+        exit(0);
+    sprintf(path,"var/%s.pid",daemonname);
     pidfd=open(path,O_RDWR|O_CREAT,0660);
     if (write_lock(pidfd,0,SEEK_SET,0)<0) {
     	if (errno==EACCES||errno==EAGAIN)
@@ -1188,7 +1187,7 @@ int dodaemon(char* daemonname,bool single,bool closefd)
     	for (i=0;i<64;i++)
     		close(i);
     }
-    snprintf(line,sizeof(line,"%ld\n",(long)getpid());
+    snprintf(line,sizeof(line),"%ld\n",(long)getpid());
     ftruncate(pidfd,0);
     write(pidfd,line,strlen(line));
     return 0;

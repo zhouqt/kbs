@@ -505,7 +505,7 @@ void timed()
     }
 }
 
-int dodaemon(char *argv1, char *daemon)
+static int miscd_dodaemon(char *argv1, char *daemon)
 {
     struct sigaction act;
     char *commandline;
@@ -633,10 +633,10 @@ int main(int argc, char *argv[])
         if (strcasecmp(argv[1], "allboards") == 0)
             return dokillalldir();
         if (strcasecmp(argv[1], "daemon") == 0)
-            return dodaemon(argv[1], argv[2]);
+            return miscd_dodaemon(argv[1], argv[2]);
         if (strcasecmp(argv[1], "killdir") == 0)
             return dokilldir(argv[2]);
-        return dodaemon(NULL, argv[1]);
+        return miscd_dodaemon(NULL, argv[1]);
     }
     printf("Usage : %s killuser to kill old users\n", argv[0]);
     printf("        %s allboards to delete all old files\n", argv[0]);
