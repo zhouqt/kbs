@@ -13,8 +13,10 @@ show_nav();
 showUserMailbox();
 head_var($userid."的控制面板","usermanagemenu.php",0);
 showUserManageMenu();
-preprocess();
-main();
+if (!preprocess()) {
+	showmailBoxes();
+	main();
+}
 
 show_footer();
 
@@ -34,8 +36,9 @@ function preprocess() {
 			foundErr("$friend 用户不存在");
 		} else{
 			setSucMsg("$friend 已增加到您的好友名单中");
-			return html_success_quit("查看所有好友列表", "friendlist.php");
+			html_success_quit("查看所有好友列表", "friendlist.php");
 		}
+		return true;
 	} else if (isset($_GET["delfriend"])) {
 		$friend = $_GET["delfriend"];
 		$ret = bbs_delete_friend( $friend );
@@ -48,9 +51,11 @@ function preprocess() {
 			foundErr("删除失败");
 		} else {
 			setSucMsg("$friend 已从您的好友名单中删除");
-			return html_success_quit("查看所有好友列表", "friendlist.php");		
+			html_success_quit("查看所有好友列表", "friendlist.php");		
 		}
+		return true;
 	}
+	return false;
 }
 
 function main() {
