@@ -233,6 +233,13 @@ int main()
         printf("<a href=\"/bbsmboard.php\" target=\"f3\">开设版面</a><br></p>");
     printf("</tr></td></table>\n");
     printf("</td></tr>");
+    printf("<tr><td>");
+    printf("<TABLE cellSpacing=0 cellPadding=0 width=\"90%\" border=0>");
+    printf("<tr><td>\n");
+        printf("本网站服务器由<A HREF=\"http://www.dawning.com.cn/\" TARGET=\"_blank\">曙光公司</A>提供动力支持<A HREF=\"http://www.dawning.com.cn/\" TARGET=\"_blank\">http://www.dawning.com.cn</A></FONT><br /></P>\n");
+	printf("<A HREF=\"http://www.dawning.com.cn/\" TARGET=\"_blank\"><IMG SRC=\"/images/dawning.gif\"/></A>\n");
+    printf("</tr></td></table>\n");
+    printf("</td></tr>");
 #endif
     printf("</table>");
     printf("</body>");
