@@ -204,7 +204,7 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
      * Bigman.2000.8.28: 修改统计方式 
      */
     int m, n;
-    char BoardName[10][13];
+    char BoardName[100][13];
     char buf[40];
 
 /* ---------------------------------------------- */
@@ -428,7 +428,7 @@ void gen_sec_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE], in
      * Bigman.2000.8.28: 修改统计方式 
      */
     int m, n;
-    char BoardName[10][13];
+    char BoardName[100][13];
 	char xml_buf[256];
 	struct boardheader *bp;
 
@@ -547,7 +547,7 @@ void gen_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE])
      * Bigman.2000.8.28: 修改统计方式 
      */
     int m, n;
-    char BoardName[10][13];
+    char BoardName[100][13];
 	char xml_buf[256];
 
 	/* ---------------------------------------------- */
@@ -643,7 +643,7 @@ void gen_blessing_list_xml(struct postrec *dobucket[HASHSIZE])
      * Bigman.2000.8.28: 修改统计方式 
      */
     int m, n;
-    char BoardName[10][13];
+    char BoardName[100][13];
 	char xml_buf[256];
 	int mytype = 4;
 

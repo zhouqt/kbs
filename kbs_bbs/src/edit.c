@@ -981,6 +981,7 @@ fsdfa
                         do {
                             if ((ppx = (unsigned char *) strstr((char *) ppx, "\033[")) != NULL) {
                                 int ich=0;
+				if (ppx-pp-lll>LLL) break; //已经到了足够换行的位置，不用继续找\033
                                 while (!isalpha(*(ppx+ich))&&(*(ppx+ich)!=0))
                                     ich++;
                                 if (ich > 0)
@@ -994,6 +995,7 @@ fsdfa
                         } while (ppx); //计算颜色字符，字节数放入lll
                         ppt += LLL + lll; //应该折行的地方
 
+		        if (ppt - pp > strlen(pp)) break; //断行位置超过了字符串长度
                         if ((*ppt) > 127) {     /* 避免在汉字中间折行 ,KCN:看不懂faint*/
                             for (ppx = ppt - 1, ich = 0; ppx >= pp; ppx--)
                                 if ((*ppx) < 128)
