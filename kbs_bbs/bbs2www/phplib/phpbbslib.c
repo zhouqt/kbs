@@ -6661,7 +6661,7 @@ static PHP_FUNCTION(bbs_denyusers)
         add_assoc_string(element,"ID",buf2,1);
         strncpy(buf2, buf + 12, 30);
         buf2[30] = '\0';
-        add_assoc_string(element,"EXP",nohtml(buf2),1);
+        add_assoc_string(element,"EXP",buf2,1);
         
         nick = strrchr(buf + 13, '[');
         if (nick != NULL) {
