@@ -240,7 +240,14 @@ void refresh()
             if((!(s&SCREEN_BRIGHT)&&tc_mode&SCREEN_BRIGHT&&bp[j].data[k]!=' '&&bp[j].data[k]!=0||
                 !(s&SCREEN_LINE)&&tc_mode&SCREEN_LINE||
                 !(s&SCREEN_BLINK)&&tc_mode&SCREEN_BLINK&&bp[j].data[k]!=' '&&bp[j].data[k]!=0||
-                !(s&SCREEN_BACK)&&tc_mode&SCREEN_BACK)||(cur_color/16!=0&&bp[j].color[k]/16==0)) {
+                !(s&SCREEN_BACK)&&tc_mode&SCREEN_BACK)) {
+                char buf[10];
+                tc_mode = 0;
+                tc_color = 7;
+                sprintf(buf, "\x1b[m");
+                output(buf, strlen(buf));
+            }
+            if((cur_color/16!=0&&bp[j].color[k]/16==0)) {
                 char buf[10];
                 tc_mode = 0;
                 tc_color = 7;
