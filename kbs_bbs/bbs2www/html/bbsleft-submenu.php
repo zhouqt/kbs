@@ -1,5 +1,5 @@
 <?php
-require("funcs.php");
+require_once("funcs.php");
 if(isset($_GET["fav"]))
 {
 	$boardList = FALSE;
@@ -16,7 +16,9 @@ else
 	$group2 = intval($_GET["group2"]);
 	$yank = intval($_GET["yank"]);
 	$subMenu = "submenu_brd_".$group."_".$group2;
-	$boards = bbs_getboards($group, $group2, $yank);
+	if($group < 0 || $group > sizeof($section_nums) )
+		exit();
+	$boards = bbs_getboards($section_nums[$group], $group2, $yank);
 }
 
 $brd_name = $boards["NAME"]; // с╒ндцШ
