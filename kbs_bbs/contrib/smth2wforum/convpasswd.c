@@ -35,6 +35,11 @@ struct olduserec {                 /* Structure used to hold information in */
     time_t exittime;
 	/* 生日数据转移到 userdata 结构中 */
     unsigned int usedspace;     /* used space of user's mailbox, in bytes */
+#ifdef HAVE_USERMONEY
+    int money;
+    int score;
+    char unused[20];
+#endif
 };
 
 static void convert_userec(struct olduserec *olduser, struct userec *user)
