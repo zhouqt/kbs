@@ -2299,6 +2299,9 @@ int post_article(char *q_file, struct fileheader *re_file)
     if (!strcmp(currboard, "Board") && !HAS_PERM(currentuser, PERM_OBOARDS) && HAS_PERM(currentuser, PERM_BOARDS)) {
         post_file.accessed[0] |= FILE_SIGN;
     }
+    if(upload) {
+        post_file.attachment = 1;
+    }
 #ifdef FILTER
     returnvalue =
 #endif
@@ -2308,7 +2311,7 @@ int post_article(char *q_file, struct fileheader *re_file)
         char sbuf[PATHLEN];
         strcpy(sbuf,"tmp/");
         strcpy(sbuf+strlen(sbuf), upload);
-        post_file.attachment = add_attach(filepath, sbuf, upload);
+        add_attach(filepath, sbuf, upload);
     }
     
     if (!junkboard(currboard)) {
