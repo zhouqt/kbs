@@ -57,7 +57,6 @@ char *Ctime();
 void r_msg_sig(int signo);
 int friend_login_wall();
 int listmode;
-int numofsig = 0;
 jmp_buf byebye;
 
 int convcode = 0;               /* KCN,99.09.05 */
@@ -930,18 +929,6 @@ void user_login()
     load_mail_list(currentuser,&user_mail_list);
 }
 
-void set_numofsig()
-{
-    int sigln;
-    char signame[STRLEN];
-
-    sethomefile(signame, currentuser->userid, "signatures");
-    sigln = countln(signame);
-    numofsig = sigln / 6;
-    if ((sigln % 6) != 0)
-        numofsig += 1;
-}
-
 int chk_friend_book()
 {
     FILE *fp;
@@ -1114,7 +1101,6 @@ void main_bbs(int convit, char *argv)
     }
     clear();
     nettyNN = NNread_init();
-    set_numofsig();
     if (DEFINE(currentuser, DEF_INNOTE)) {
         sethomefile(notename, currentuser->userid, "notes");
         if (dashf(notename))

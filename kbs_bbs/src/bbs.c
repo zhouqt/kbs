@@ -29,7 +29,6 @@
 
 /*#include "../SMTH2000/cache/cache.h"*/
 
-extern int numofsig;
 int scrint = 0;
 int local_article;
 int readpost;
@@ -1956,9 +1955,9 @@ void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
      * *q_user = '\0';
      */
 
-    if ((numofsig > 0) && !(currentuser->signature == 0 || Anony == 1)) {       /* 签名档为0则不添加 */
+    if ((currentmemo->ud.signum > 0) && !(currentuser->signature == 0 || Anony == 1)) {       /* 签名档为0则不添加 */
         if (currentuser->signature < 0)
-            addsignature(outf, currentuser, (rand() % numofsig) + 1);
+            addsignature(outf, currentuser, (rand() % currentmemo->ud.signum) + 1);
         else
             addsignature(outf, currentuser, currentuser->signature);
     }
@@ -2221,7 +2220,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         buf4[0] = '\0';
         replymode = 0;
     }
-    if (currentuser->signature > numofsig)      /*签名档No.检查 */
+    if (currentuser->signature > currentmemo->ud.signum)      /*签名档No.检查 */
         currentuser->signature = 1;
     anonyboard = anonymousboard(currboard->filename);     /* 是否为匿名版 */
     if (!strcmp(currboard->filename, "Announce"))
@@ -2264,13 +2263,13 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         /*
          * Leeward 98.09.24 add: viewing signature(s) while setting post head 
          */
-        sprintf(buf2, "按\033[1;32m0\033[m~\033[1;32m%d/V/L\033[m选/看/随机签名档%s，\033[1;32mT\033[m改标题，%s\033[1;32mEnter\033[m接受所有设定: ", numofsig,
+        sprintf(buf2, "按\033[1;32m0\033[m~\033[1;32m%d/V/L\033[m选/看/随机签名档%s，\033[1;32mT\033[m改标题，%s\033[1;32mEnter\033[m接受所有设定: ", currentmemo->ud.signum,
                 (replymode) ? "，\033[1;32mS/Y\033[m/\033[1;32mN\033[m/\033[1;32mR\033[m/\033[1;32mA\033[m 改引言模式" : "，\033[1;32mP\033[m使用模板", (anonyboard) ? "\033[1;32mM\033[m匿名，" : "");
         if(replymode&&anonyboard) buf2[strlen(buf2)-10]=0;
         getdata(t_lines - 1, 0, buf2, ans, 3, DOECHO, NULL, true);
         ans[0] = toupper(ans[0]);       /* Leeward 98.09.24 add; delete below toupper */
         if ((ans[0] - '0') >= 0 && ans[0] - '0' <= 9) {
-            if (atoi(ans) <= numofsig)
+            if (atoi(ans) <= currentmemo->ud.signum)
                 currentuser->signature = atoi(ans);
         } else if ((ans[0] == 'S' || ans[0] == 'Y' || ans[0] == 'N' || ans[0] == 'A' || ans[0] == 'R') && replymode) {
             include_mode = ans[0];

@@ -55,7 +55,6 @@ static PHP_FUNCTION(bbs_getuserlevel);
 static PHP_FUNCTION(bbs_get_today_article_num);
 static PHP_FUNCTION(bbs_searchtitle);
 static PHP_FUNCTION(bbs_search_articles);
-static PHP_FUNCTION(bbs_getnumofsig);
 static PHP_FUNCTION(bbs_postmail);
 static PHP_FUNCTION(bbs_mailwebmsgs);
 static PHP_FUNCTION(bbs_getwebmsgs);
@@ -203,7 +202,6 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_get_today_article_num, NULL)
 		PHP_FE(bbs_searchtitle, NULL)
 		PHP_FE(bbs_search_articles, NULL)
-	    PHP_FE(bbs_getnumofsig, NULL)
 		PHP_FE(bbs_postmail, NULL)
 		PHP_FE(bbs_mailwebmsgs, NULL)
 		PHP_FE(bbs_getwebmsgs, NULL)
@@ -382,6 +380,7 @@ static void assign_user(zval * array, struct userec *user, int num)
     add_assoc_string(array, "address", ud.address, 1);
     add_assoc_string(array, "email", ud.email, 1);
     add_assoc_long(array, "signature", user->signature);
+    add_assoc_long(array, "signum", ud.signum);
     add_assoc_long(array, "userdefine0", user->userdefine[0]);
     add_assoc_long(array, "userdefine1", user->userdefine[1]);
     add_assoc_long(array, "notedate", user->notedate);
@@ -709,36 +708,6 @@ static PHP_FUNCTION(bbs_countuser)
         WRONG_PARAM_COUNT;
     }
     RETURN_LONG(apply_utmpuid(NULL, idx, 0));
-}
-
-static PHP_FUNCTION(bbs_getnumofsig){
-    FILE *fp;
-    char tmp[256];
-    int count = 0;
-	int sigln;
-    char signame[STRLEN];
-	int numofsig;
-
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
-	if (ZEND_NUM_ARGS()!=0) {
-		WRONG_PARAM_COUNT;
-	}
-	if (currentuser==NULL) 
-		RETURN_LONG(-1);
-    sethomefile(signame, currentuser->userid, "signatures");
-
-    if ((fp = fopen(signame, "r")) == NULL)
-        RETURN_LONG(0);
-    while (fgets(tmp, sizeof(tmp), fp) != NULL)
-        count++;
-    fclose(fp);
-    sigln = count;
-    numofsig = sigln / 6;
-    if ((sigln % 6) != 0)
-        numofsig += 1;
-	RETURN_LONG(numofsig);
 }
 
 static PHP_FUNCTION(bbs_setuserpasswd){
@@ -5130,7 +5099,7 @@ static PHP_FUNCTION(bbs_recalc_sig)
 	struct userec newinfo;
 	int unum;
     char signame[STRLEN];
-	int sigln;
+	int sign;
 
 	int ac = ZEND_NUM_ARGS();
 
@@ -5138,16 +5107,22 @@ static PHP_FUNCTION(bbs_recalc_sig)
 		RETURN_LONG(-1);
 	memcpy(&newinfo, currentuser, sizeof(struct userec));
     
-    sethomefile(signame, currentuser->userid, "signatures");
-    sigln = countln(signame);
+	if( read_user_memo(currentuser->userid, &currentmemo) <= 0) RETURN_LONG(-2);
 
-	if(sigln>0 && newinfo.signature>0)
+    currentmemo->ud.signum = calc_numofsig(currentuser->userid);
+	sign = currentmemo->ud.signum;
+
+    write_userdata(currentuser->userid,&(currentmemo->ud) );
+	end_mmapfile(currentmemo, sizeof(struct usermemo), -1);
+
+
+	if(sign>0 && newinfo.signature>0)
 		RETURN_LONG(1);
 
-	if(sigln<=0 && newinfo.signature==0)
+	if(sign<=0 && newinfo.signature==0)
 		RETURN_LONG(2);
 
-	if(sigln > 0)
+	if(sign > 0)
     	newinfo.signature = 1;
 	else
 		newinfo.signature = 0;

@@ -84,6 +84,7 @@ struct userdata
 	char smsprefix[41];
 	char smsend[41];
 	unsigned int smsdef;
+	int signum;
 };
 
 struct user_info {              /* Structure used in UTMP file */

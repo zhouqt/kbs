@@ -112,6 +112,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     void output(const char *s, int len);
 
 /* defined in stuff.c */
+	int calc_numofsig();
     int getuinfopid(ARG_VOID);
     int add_mailgroup_user(mailgroup_list_t * mgl, int entry, mailgroup_t * users, mailgroup_t * user);
     int delete_mailgroup_user(mailgroup_list_t * mgl, int entry, mailgroup_t * users, int pos);

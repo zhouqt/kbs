@@ -1182,6 +1182,27 @@ int write_userdata(const char *userid, struct userdata *ud)
     return 0;
 }
 
+int calc_numofsig(char *userid)
+{
+    int sigln=0;
+	int sign;
+    char signame[STRLEN];
+	FILE *fp;
+	char buf[512];
+
+    sethomefile(signame, userid, "signatures");
+	if((fp=fopen(signame, "r"))==NULL)
+		return 0;
+	while(fgets(buf,512,fp))
+		sigln++;
+	fclose(fp);
+    sign = sigln / 6;
+    if ((sigln % 6) != 0)
+        sign += 1;
+
+	return sign;
+}
+
 off_t read_user_memo( char *userid, struct usermemo ** ppum )
 {
 	struct usermemo um;

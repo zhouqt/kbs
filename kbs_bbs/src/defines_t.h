@@ -89,13 +89,11 @@ int usercomplete(char *prompt, char *data);
 /* newmain_single.c */
 void showsysinfo(char * fn);
 extern int talkrequest;
-extern int numofsig;
 int count_user();
 int dosearchuser(char *userid);
 void showtitle(char *title, char *mid);
 void abort_bbs(int);
 void update_endline();
-void set_numofsig();
 void docmdtitle(char *title, char *prompt);
 
 /* bbs.c*/

@@ -50,7 +50,7 @@
 收信人: <input type="text" name="userid" value="<?php echo $destuserid; ?>"><br />
 使用签名档 <select name="signature">
 <?php
-		if ($currentuser["signature"] == 0)
+		if ($currentuser["signum"] == 0)
 		{
 ?>
 <option value="0" selected="selected">不使用签名档</option>

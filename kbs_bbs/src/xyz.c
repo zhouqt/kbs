@@ -727,8 +727,11 @@ void x_edits()
         prints("%s 更新过\n", explain_file[ch]);
         sprintf(buf, "edit %s", explain_file[ch]);
         if (!strcmp(e_file[ch], "signatures")) {
-            set_numofsig();
-            if (numofsig&&(currentuser->signature==0))
+
+			currentmemo->ud.signum = calc_numofsig(currentuser->userid);
+			write_userdata( currentuser->userid, &(currentmemo->ud) );
+
+            if (currentmemo->ud.signum&&(currentuser->signature==0))
             	currentuser->signature=1;
             prints("系统重新设定以及读入你的签名档...");
         }
