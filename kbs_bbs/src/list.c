@@ -705,7 +705,7 @@ int do_query(int star, int curr)
         move(t_lines - 1, 0);
         if (DEFINE(currentuser, DEF_HIGHCOLOR))
             prints
-                ("[44mÁÄÌì[\x1b[1;32mt\x1b[m] ¼ÄĞÅ[\x1b[1;32mm\x1b[m] ËÍÑ¶Ï¢[\x1b[1;32ms\x1b[m] ¼Ó,¼õÅóÓÑ[\x1b[1;32mo\x1b[m,\x1b[1;32md\x1b[m] Ñ¡ÔñÊ¹ÓÃÕß[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ı\x1b[m] ÇĞ»»Ä£Ê½ [\x1b[1;32mf\x1b[m] Çó¾È[\x1b[1;32mh\x1b[m][m");
+                ("[44mÁÄÌì[\x1b[1;32mt\x1b[0;37m] ¼ÄĞÅ[\x1b[1;32mm\x1b[0;37m] ËÍÑ¶Ï¢[\x1b[1;32ms\x1b[0;37m] ¼Ó,¼õÅóÓÑ[\x1b[1;32mo\x1b[0;37m,\x1b[1;32md\x1b[0;37m] Ñ¡ÔñÊ¹ÓÃÕß[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ı\x1b[0;37m] ÇĞ»»Ä£Ê½ [\x1b[1;32mf\x1b[0;37m] Çó¾È[\x1b[1;32mh\x1b[0;37m][m");
         else
             prints("\x1b[44mÁÄÌì[t] ¼ÄĞÅ[m] ËÍÑ¶Ï¢[s] ¼Ó,¼õÅóÓÑ[o,d] Ñ¡ÔñÊ¹ÓÃÕß[¡ü,¡ı] ÇĞ»»Ä£Ê½ [f] Çó¾È[h]\x1b[m");
     }
