@@ -126,6 +126,7 @@ static void flushBBSlog_exit()
     flushlog(-1);
 }
 bool trunc;
+bool truncboard;
 static void trunclog(int signo)
 {
     int i;
@@ -153,10 +154,40 @@ static void trunclog(int signo)
     trunc=true;
 }
 
+static void truncboardlog(int signo)
+{
+    int i;
+    flushlog(-1);
+    
+    for (i = 0; i < sizeof(logconfig) / sizeof(struct taglogconfig); i++) {
+		if (strcmp(logconfig[i].filename,"boardusage.log"))
+			continue;
+        if (logconfig[i].fd>=0) {
+        	close(logconfig[i].fd);
+        	f_mv(logconfig[i].filename,"boardusage.log.0");
+        }
+        if (logconfig[i].filename) {
+            logconfig[i].fd = open(logconfig[i].filename, O_WRONLY);
+            if (logconfig[i].fd < 0)
+                logconfig[i].fd = creat(logconfig[i].filename, 0644);
+            if (logconfig[i].fd < 0)
+                bbslog("3error","can't open log file:%s.%s",logconfig[i].filename,strerror(errno));
+        }
+        if (logconfig[i].buf==NULL)
+            logconfig[i].buf = malloc(logconfig[i].bufsize);
+    }
+    truncboard=true;
+}
+
 static void flushBBSlog_time(int signo)
 {
     flushlog(-1);
     alarm(60*10); /*十分钟flush一次*/
+}
+
+static void do_truncboardlog()
+{
+    truncboard=false;
 }
 
 static void do_trunclog()
@@ -190,6 +221,8 @@ int main()
     sigaction(SIGALRM, &act, NULL);
     act.sa_handler = trunclog;
     sigaction(SIGUSR1, &act, NULL);
+    act.sa_handler = truncboardlog;
+    sigaction(SIGUSR2, &act, NULL);
     alarm(60*10); /*十分钟flush一次*/
 
     msqid = init_bbslog();
@@ -197,12 +230,15 @@ int main()
         return -1;
 
     trunc=false;
+    truncboard=false;
     openbbslog();
     while (1) {
         if ((msg = rcvlog(msqid)) != NULL)
             writelog(msg);
         if (trunc)
         	do_trunclog();
+		else if(truncboard)
+			do_truncboardlog();
     }
     flushlog(-1);
     for (i = 0; i < sizeof(logconfig) / sizeof(struct taglogconfig); i++) {
