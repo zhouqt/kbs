@@ -1703,6 +1703,10 @@ void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
     quser = q_user;
     bflag = strncmp(qfile, "mail", 4);  /* 判断引用的是文章还是信 */
     outf = fopen(filepath, "w");
+    if (outf==NULL) {
+    	bbslog("3user","do_quote() fopen(%s):%s",filepath,strerror(errno));
+    	return;
+    }
     if (*qfile != '\0' && (inf = fopen(qfile, "r")) != NULL) {  /* 打开被引用文件 */
         op = quote_mode;
         if (op != 'N') {        /* 引用模式为 N 表示 不引用 */
