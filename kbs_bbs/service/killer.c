@@ -1045,6 +1045,8 @@ void join_room(int w, int spec)
                 pid = inrooms[myroom].peoples[me].pid;
                 if(!(inrooms[myroom].peoples[me].flag&PEOPLE_POLICE))
                     continue;
+                if(!(inrooms[myroom].peoples[me].flag&PEOPLE_ALIVE))
+                    continue;
                 if(inrooms[myroom].peoples[me].flag&PEOPLE_TESTED) {
                     send_msg(me, "\x1b[31;1m本轮你已经侦查过了\x1b[m");
                     refreshit();
