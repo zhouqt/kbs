@@ -1164,6 +1164,7 @@ void a_copypaste(pm, paste)
         /* Leeward: 98.02.19: 对版主的多个窗口同步 C/P 操作 */
         int iscut;
         sprintf(genbuf, "home/%c/%s/.CP", toupper(currentuser->userid[0]), currentuser->userid);
+        title[0]=0;
         fn = fopen(genbuf, "rt");
         if (fn) {
             fgets(title, STRLEN, fn);
@@ -1214,6 +1215,9 @@ void a_copypaste(pm, paste)
 				    char uppath[PATHLEN],oldpath[PATHLEN],*pnt;
 				    int n,k;
 				    
+			        sprintf(genbuf, "home/%c/%s/.CP", toupper(currentuser->userid[0]), currentuser->userid);
+			        unlink(genbuf);
+			        
 				    strncpy(oldpath,pm->path,PATHLEN);
 				    
 				    strncpy(uppath,fpath,PATHLEN);
@@ -1236,7 +1240,7 @@ void a_copypaste(pm, paste)
 				    item = pm->item[k];
 				    free(item);
 				    (pm->num)--;
-				    for (n = pm->now; n < pm->num; n++)
+				    for (n = k; n < pm->num; n++)
 				        pm->item[n] = pm->item[n + 1];
 				    if (a_savenames(pm)==0) {
 					    sprintf(genbuf, "删除文件或目录: %s", fpath + 17);
