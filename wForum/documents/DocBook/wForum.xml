@@ -79,6 +79,7 @@ create table smallpaper_tb(
 			<title>升级 wForum 的操作</title>
 			<para>如果是升级 wForum，推荐升级之后删除 ~bbs/boards/ 目录下所有的 .WEBTHREAD 强制让系统重新生成索引。可以在 ~bbs/boards/ 下执行这样一个命令：
 				<programlisting>ls -d1 * | awk '{system(sprintf("rm %s/.WEBTHREAD", $1));}'</programlisting>
+			另外现在的 wForum 系统会自动显示每封新的信件的大小，但是以前旧的信件的大小需要用 local_utl/sync_mailsize 程序同步一下。这个程序加 -a 参数就会同步所有的信件大小。
 			</para>
 		</section>
 		<section id="install_append">
@@ -125,16 +126,6 @@ short_open_tag = off</programlisting>
 					然后用 ~bbs/.PASSWDS.NEW 覆盖 .PASSWDS。这个转换程序实质上只是设置两个用户自定义选项的默认值，默认是允许显示详细用户数据，不允许显示真实用户数据。</para>
 					<para>全部转换工作就此完成。</para>
 				</listitem>
-			</orderedlist>
-		</section>
-		<section id="install_syncmailsize">
-			<title>wForum 支持每封信件大小的附加说明</title>
-			<para>现在的 wForum 系统会自动显示每封新的信件的大小，但是以前旧的信件的大小需要用一个程序（local_utl/sync_mailsize.c）同步一下。这里提供一个简单的编译运行这个程序的方法。</para>
-			<orderedlist>
-				<listitem><para>首先确信现在的系统已经可以正常编译通过并且使用。</para></listitem>
-				<listitem><para>到源代码 local_utl/ 目录下面修改 Makefile.am 文件，在 bin_PROGRAMS 那一堆程序列表中加入：sync_mailsize，然后保存。</para></listitem>
-				<listitem><para>在源代码 local_utl/ 目录下面执行 make，这时会自动更新 Makefile 并且编译 sync_mailsize 程序。</para></listitem>
-				<listitem><para>在源代码 local_utl/ 目录下面执行 ./sync_mailsize -a。</para></listitem>
 			</orderedlist>
 		</section>
 	</section>
