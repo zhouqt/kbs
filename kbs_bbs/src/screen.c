@@ -563,8 +563,14 @@ void outns(const char*str, int n)
                     continue;
                 }
                 else if((*str+j)!=';') {
-                    if(offsetln==0)
-                        clear();
+                    if(!disable_move) {
+                        if(minln) {
+                            move(minln, 0);
+                            clrtobot();
+                        }
+                        else
+                            clear();
+                    }
                     str+=i+1;
                     continue;
                 }
