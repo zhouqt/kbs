@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 		exit(-1);
 	}
 	memcpy(&newfh, &fh, sizeof(newfh));
-	newfh.flag |= BOARD_SUPER_CLUB;
+	/*newfh.flag |= BOARD_SUPER_CLUB;*/
 	set_board(pos, &newfh, &fh);
 
 	return 0;
