@@ -209,10 +209,12 @@ int show_allmsgs()
             page = 0;
             count = get_msgcount(all?2:0, currentuser->userid);
         }
-        clear();
+        unrefresh_clear();
         if(count==0) {
+            clrtoeol();
             good_move(5,30);
             prints("Ã»ÓĞÈÎºÎµÄÑ¶Ï¢´æÔÚ£¡£¡");
+            i = 0;
         }
         else {
             y = 0;
@@ -231,11 +233,10 @@ int show_allmsgs()
         }
         good_move(23,0);
         if(!all)
-            prints("[1;44;32mÑ¶Ï¢ä¯ÀÀÆ÷   ±£Áô<[37mr[32m> Çå³ı<[37mc[32m> ¼Ä»ØĞÅÏä<[37mm[32m> ·¢Ñ¶ÈË<[37mi[32m> Ñ¶Ï¢ÄÚÈİ<[37ms[32m>                 ");
+            prints("[1;44;32mÑ¶Ï¢ä¯ÀÀÆ÷   ±£Áô<[37mr[32m> Çå³ı<[37mc[32m> ¼Ä»ØĞÅÏä<[37mm[32m> ·¢Ñ¶ÈË<[37mi[32m> Ñ¶Ï¢ÄÚÈİ<[37ms[32m>        Ê£Óà:%3d ", count-i);
         else
-            prints("[1;44;32mÑ¶Ï¢ä¯ÀÀÆ÷   ±£Áô<[37mr[32m> Çå³ı<[37mc[32m> ¼Ä»ØĞÅÏä<[37mm[32m> ·¢Ñ¶ÈË<[37mi[32m> Ñ¶Ï¢ÄÚÈİ<[37ms[32m> È«²¿<[37ma[32m>         ");
+            prints("[1;44;32mÑ¶Ï¢ä¯ÀÀÆ÷   ±£Áô<[37mr[32m> Çå³ı<[37mc[32m> ¼Ä»ØĞÅÏä<[37mm[32m> ·¢Ñ¶ÈË<[37mi[32m> Ñ¶Ï¢ÄÚÈİ<[37ms[32m> È«²¿<[37ma[32m>     %3d ", count-i);
         refresh();
-        oflush();
 reenter:
         ch = igetkey();
         switch(ch) {
