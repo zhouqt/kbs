@@ -137,13 +137,16 @@ function bbs_get_hot_threads($board,$num,&$threads,&$err)
     }
     $threads = array();
     for ($i = 0 ; $i < $db->nums ; $i ++ ) {
+        $title = $db->arrays[$i]['title'];
+        if (substr($title,0,4)=='Re: ')
+            $title = substr($title,4);
         $threads[] = array(
                 'gid' => $db->arrays[$i]['threadid'],
                 'userid' => $db->arrays[$i]['userid'],
                 'created' => $db->arrays[$i]['created'],
                 'changed' => $db->arrays[$i]['changed'],
                 'count'  => $db->arrays[$i]['count'],
-                'title' => $db->arrays[$i]['title']
+                'title' => $title
             );    
     }
     return true;
