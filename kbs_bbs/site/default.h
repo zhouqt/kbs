@@ -264,6 +264,10 @@
 #define POP3SPORT		995
 #endif
 
+#ifndef DELIVER
+#define DELIVER "deliver"
+#endif
+
 /* ASCIIArt, by czz, 2002.7.5 */
 #ifndef       LENGTH_SCREEN_LINE
 #define       LENGTH_SCREEN_LINE      255

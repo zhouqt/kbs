@@ -964,7 +964,7 @@ int haspostperm(const struct userec *user,const char *bname)
     if (!HAS_PERM(user, PERM_POST)) {
         if(!strcasecmp(user->userid, "guest"))
             return 0;
-        if (!strcmp(bname, "BBShelp"))
+        if (!strcmp(bname, "sysop"))
             return 1;
         if (!HAS_PERM(user, PERM_LOGINOK))
             return 0;
@@ -1045,7 +1045,7 @@ int deldeny(struct userec *user, char *board, char *uident, int notice_only,sess
         fprintf(fn1, "发信站: %s (%24.24s)\n", "BBS " NAME_BBS_CHINESE "站", ctime(&now));
         fprintf(fn1, "来  源: %s \n", SHOW_USERIP(NULL, session->fromhost));
         fprintf(fn1, "\n");
-        if (!strcmp(user->userid, "deliver"))
+        if (!strcmp(user->userid, DELIVER))
             fprintf(fn1, "您被自动解封系统解除在 %s 版的封禁\n", board);
         else
             fprintf(fn1, "您被站务人员 %s 解除在 %s 版的封禁\n", user->userid, board);
