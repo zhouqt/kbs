@@ -686,7 +686,7 @@ int n;
                      if (slp->data[reg_col]=='') {
                         register int i,j;
                         i=1;
-                        while(!isalpha(slp->data[reg_col+i])&&i<scr_cols-1) i++;
+                        while(!isalpha(slp->data[reg_col+i])&&reg+i<scr_cols-1) i++;
                         if(isalpha(slp->data[reg_col+i])) {
                             for(j=reg_col;j<scr_cols-i-1;j++)
                                 slp->data[j]=slp->data[j+i+1];
