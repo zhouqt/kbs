@@ -5,6 +5,6 @@ CLEANFILES=@EXTRA_CLEAN@
 AM_MAKEFLAGS=@MAKEFLAG@
 
 install-data-local:
-	cp -r html/* @HTMPATH@
-	@cp -r sites/@BBSSITE@/* @HTMPATH@ 2>/dev/null || echo You can copy your site-special files in sites/@BBSSITE@
-	find @HTMPATH@ -name CVS -print | xargs rm -rf
+#	cp -r html/* @HTMPATH@
+#	@cp -r sites/@BBSSITE@/* @HTMPATH@ 2>/dev/null || echo You can copy your site-special files in sites/@BBSSITE@
+#	find @HTMPATH@ -name CVS -print | xargs rm -rf
