@@ -1277,6 +1277,7 @@ int g_send()
             if (!getuser(uident, &lookupuser)) {
                 move(2, 0);
                 prints("这个使用者代号是错误的.\n");
+		continue;
             } else
                 strcpy(uident, lookupuser->userid);
         }
