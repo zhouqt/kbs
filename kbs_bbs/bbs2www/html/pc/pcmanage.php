@@ -222,9 +222,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 	</td>
 </tr>
 <tr>
-	<td class="t8"><textarea name="blogbody" class="f1" cols="120" rows="30" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
-	<?php echo $pcconfig["EDITORALERT"].$_POST["blogbody"]; ?>
-	</textarea></td>
+	<td class="t8"><textarea name="blogbody" class="f1" cols="120" rows="30" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical"><?php echo $pcconfig["EDITORALERT"].$_POST["blogbody"]; ?></textarea></td>
 </tr>
 <!--
 <tr>
@@ -355,10 +353,8 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 </tr>
 <tr>
 	<td class="t8">
-	<textarea name="blogbody" class="f1" cols="120" rows="30" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
-	<?php echo $pcconfig["EDITORALERT"]; ?>
-	<?php echo htmlspecialchars(stripslashes($rows[body]." ")); ?>
-	</textarea></td>
+	<textarea name="blogbody" class="f1" cols="120" rows="30" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical"><?php echo $pcconfig["EDITORALERT"]; ?><?php echo htmlspecialchars(stripslashes($rows[body]." ")); ?></textarea>
+	</td>
 </tr>
 <tr>
 	<td class="t2">

@@ -6,7 +6,7 @@
 	$needlogin=0;
 	require("pcfuncs.php");
 	
-	function display_navigation_bar($link,$pc,$nid,$pid,$tag,$spr,$order,$comment,$tid=0,$pur)
+	function display_navigation_bar($link,$pc,$nid,$pid,$tag,$spr,$order,$comment,$tid=0,$pur,$trackback , $subject)
 	{
 		$query = "SELECT `nid` FROM nodes WHERE `nid` < ".$nid." AND `uid` = '".$pc["UID"]."' AND `pid` = '".$pid."' AND `access` = '".$tag."' AND `tid` = '".$tid."' AND `type` != '1' ORDER BY `nid` DESC LIMIT 0 , 1 ;  ";
 		$result = mysql_query($query,$link);
@@ -35,6 +35,8 @@
 		}
 		if($pur == 3)
 			echo "<a href=\"pcmanage.php?act=edit&nid=".$nid."\">修改</a>\n";
+		if($trackback)
+			echo 	"<a href=\"javascript:openScript('pctb.php?nid=".$nid."&subject=".urlencode($subject)."',460 , 480)\">引用</a>\n";
 		echo 	"<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\">写信问候</a>\n".
 			//"<a href=\"pccon.php?id=".$id."&nid=".$nid."\">转寄</a>\n".
 			//"<a href=\"pccon.php?id=".$id."&nid=".$nid."\">转载</a>\n".
@@ -219,7 +221,7 @@
 	</tr>
 	<tr>
 		<td colspan="2" align="right" class="t8">
-		<?php display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur); ?>
+		<?php display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur,$rows[trackback],html_format($rows[subject])); ?>
 		</td>
 	</tr>
 	</table>
@@ -239,7 +241,7 @@
 	<td align="middle" class="f1" height="40" valign="middle">
 	<?php
 		if($re_num != 0)
-			display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur); 
+			display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur,$rows[trackback],html_format($rows[subject])); 
 	?>
 	&nbsp;</td>
 </tr>

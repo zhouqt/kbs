@@ -71,9 +71,10 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
                         echo "</font></td></tr>\n". 
 			"<tr><td colspan=2 class=\"".$cellclass[2]."\"><font class=\"f7\">\nBy <a href=\"/bbsqry.php?userid=".$pc["USER"]."\">".$pc["USER"]."</a> at ".time_format($nodes[$i][created]).
 			"\n|\nViews[".$nodes[$i][visitcount]."]".
-			"\n|\n<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\">Comments[".$nodes[$i][commentcount]."]</a>".
-			"\n|\nTrackBack[0]".
-			"</font></td></tr>\n</table>\n";
+			"\n|\n<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\">Comments[".$nodes[$i][commentcount]."]</a>";
+			if($nodes[$i][trackback])
+				echo "\n|\n<a href=\"javascript:openScript('pctb.php?nid=".$nodes[$i][nid]."&subject=".urlencode(html_format($nodes[$i][subject]))."' , 460, 480)\">TrackBack[".$nodes[$i][trackbackcount]."]</a>";
+			echo "</font></td></tr>\n</table>\n";
 		}
 	}
 	

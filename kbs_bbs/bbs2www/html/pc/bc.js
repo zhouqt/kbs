@@ -45,8 +45,13 @@ function blogCalendar(thisYear,thisMonth,thisDay)
 	if( thisDay < 1 )
 		thisDay = 1;
 		
-	tmpDay = new Date(thisYear,thisMonth,1);
+	tmpDay = new Date( thisYear ,thisMonth,1);
 	firstDay = tmpDay.getDay();
+	
+	today = new Date( );
+	todayYear = today.getYear();
+	todayMonth = today.getMonth();
+	todayDay = today.getDate();
 	
 	tmpMonthDay = firstDay + monthDay[thisMonth] ;
 	leftMonthDay = 6 - (tmpMonthDay - 1)% 7 ;
@@ -78,7 +83,7 @@ function blogCalendar(thisYear,thisMonth,thisDay)
 		else
 		{
 			linkStr = blogCalendarLink(thisYear,thisMonth,( i - firstDay + 1 ));
-			if( ( i - firstDay + 1 ) == thisDay )
+			if( ( i - firstDay + 1 ) == todayDay && thisYear == todayYear && thisMonth == todayMonth )
 				linkStr = "<font class=f2>" + linkStr + "</font>";
 			cStr += "<td class=" + cellClass + ">" + linkStr + "</td>";
 		}
