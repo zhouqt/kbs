@@ -50,7 +50,7 @@ extern int scr_lns, scr_cols;
 #define DEFAULT_DIR_PREFIX "."
 #define DEFAULT_USER_ID ""
 #else
-#define DEFAULT_DIR_PREFIX BBSHOME "/ansieditor"
+#define DEFAULT_DIR_PREFIX BBSHOME "/service"
 #define DEFAULT_USER_ID "public"
 #endif
 #define CMDFILE "ansihelp.txt"
