@@ -1,12 +1,5 @@
 <?php
 
-function getattachtmppath($userid,$utmpnum)
-{
-  $attachdir="cache/home/" . strtoupper(substr($userid,0,1)) . "/" . $userid . "/" . $utmpnum . "/upload";
-  return $attachdir;
-
-}
-
 define("ANNOUNCENUMBER",5);
 
 define("ARTICLESPERPAGE",30); //目录列表下每页显示的主题数

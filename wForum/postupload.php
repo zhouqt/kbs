@@ -57,7 +57,7 @@ function getAttachmentCount(){
 	global $totalsize;
 	$totalsize=0;
 	$filecount=0;
-	$attachdir=getattachtmppath($currentuser["userid"] ,$utmpnum);
+	$attachdir=bbs_getattachtmppath($currentuser["userid"] ,$utmpnum);
 	@mkdir($attachdir);
 
 	if (($fp=@fopen($attachdir . "/.index","r"))!=FALSE) {

@@ -21,12 +21,6 @@ $BannerURL="http://http://www.smth.org/";
 
 define ("MAINTITLE","<OBJECT classid=clsid:D27CDB6E-AE6D-11cf-96B8-444553540000 codebase=http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0 height=84 width=600> <PARAM NAME='MOVIE' VALUE='bar/smth2.swf' /><EMBED SRC=\"bar/smth2.swf\" height=84 width=600></EMBED></OBJECT>");
 
-function getattachtmppath($userid,$utmpnum)
-{
-  $attachdir="cache/home/" . strtoupper(substr($userid,0,1)) . "/" . $userid . "/" . $utmpnum . "/upload"; 
-  return $attachdir;
-}
-
 define("ATTACHMAXSIZE","2097152");
 define("ATTACHMAXCOUNT","3");
 $section_nums = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9","A","B","C");

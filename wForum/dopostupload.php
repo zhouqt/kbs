@@ -38,7 +38,7 @@ if (bbs_checkpostperm($usernum, $boardID) == 0) {
 	errorQuit("您无权在本版发表文章！");
 }
 
-$attachdir=getattachtmppath($currentuser["userid"] ,$utmpnum);
+$attachdir=bbs_getattachtmppath($currentuser["userid"] ,$utmpnum);
 @mkdir($attachdir);
 
 @$errno=$_FILES['upfile']['error'];

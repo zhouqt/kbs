@@ -1,13 +1,5 @@
 <?php
 
-function getattachtmppath($userid,$utmpnum)
-{
-  $attachdir="cache/home/" . strtoupper(substr($userid,0,1)) . "/" . $userid . "/" . $utmpnum . "/upload";
-  return $attachdir;
-//  return "/tmp/wForum-upload";
-
-}
-
 define("ANNOUNCENUMBER",5);
 
 define("ARTICLESPERPAGE",30); //目录列表下每页显示的主题数
@@ -16,7 +8,7 @@ define("THREADSPERPAGE",10); //文章阅读时每页显示的文章数
 
 define('SERVERTIMEZONE','美西时间');
 
-define('USEBROWSCAP', 1);
+define('USEBROWSCAP', 0);
 
 $SiteURL="http://bbs.stanford.edu/wForum/";
 
@@ -32,7 +24,7 @@ $Banner="/mcwy/bm3_08.jpg";
 
 $BannerURL="http://bbs.stanford.edu";
 
-define ("MAINTITLE","wForum 是基于水木清华 BBS 系统 WWW 内核的高性能论坛，目前希望<br>更多有热情有兴趣的人参与进来。请有意者到本站 wForum 版报道。<br>要求：熟悉 PHP，看得懂 c 语言程序，没了。");
+define ("MAINTITLE","wForum 是基于水木清华 BBS 系统 WWW 内核的高性能论坛，目前希望<br>更多有热情有兴趣的人参与进来。请有意者到本站 <a href=\"board.php?name=wForum\">wForum 版</a>报道。<br>要求：熟悉 PHP，看得懂 c 语言程序，没了。");
 define("ATTACHMAXSIZE","8388608");
 define ("ATTACHMAXTOTALSIZE","8388608");
 define("ATTACHMAXCOUNT","20");
