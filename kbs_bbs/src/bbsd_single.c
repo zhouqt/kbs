@@ -588,6 +588,7 @@ char *argv[];
 #else
 void ssh_exit()
 {
+    system_abort();
     packet_disconnect("sshbbsd exit");
 }
 extern char **saved_argv;
