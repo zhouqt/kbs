@@ -93,6 +93,9 @@ int fillbcache(struct boardheader *fptr,int idx,void* arg)
 	if(fptr->filename[0]==0 || !normal_board(fptr->filename))
 		return;
 
+    if (fptr->flag & BOARD_GROUP)
+		return;
+
 	strcpy(x[n].filename, fptr->filename);
 	strcpy(x[n].title, fptr->title+13);
 	x[n].yesid=0;
