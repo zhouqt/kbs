@@ -2483,6 +2483,7 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct)
 {
     char usrid[STRLEN];
     int owned, keep, olddigestmode=0;
+    struct fileheader mkpost;
     extern int SR_BMDELFLAG;
 
     if (!strcmp(currboard, "syssecurity")
