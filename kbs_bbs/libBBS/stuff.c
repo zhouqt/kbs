@@ -942,7 +942,9 @@ int safe_mmapfile(char *filename, int openflag, int prot, int flag, void **ret_p
         return 0;
     if (!sigsetjmp(bus_jump, 1)) {
         signal(SIGBUS, sigbus);
+	/*
         signal(SIGSEGV, sigbus);
+	*/
         *size = st.st_size;
         return 1;
     }
