@@ -17,8 +17,10 @@
 	if($_GET["svid"])
 	{
 		$vote = sysvote_load_vote_infor($link,$_GET["svid"]);
-		if(!$vote || $vote[active]!=1)
+		if(!$vote)
 			html_error_quit("对不起，所选择的投票不存在！");
+		if($vote[active]!=1)
+			echo "<script language=javascript>window.location.href=\"/bbsssysvote.php?svid=".$vote[svid]."\";</script>";
 		$per = sysvote_user_can_vote($link,$vote,$currentuser);
 		if($per == -1)
 			html_error_quit("对不起，本次投票需要登录！");
