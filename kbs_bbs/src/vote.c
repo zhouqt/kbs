@@ -532,7 +532,6 @@ char *bname;
 
     setcontrolfile();
     if (!HAS_PERM(currentuser, PERM_SYSOP))
-        if (!HAS_PERM(currentuser, PERM_OVOTE))
             if (!chk_currBM(currBM, currentuser)) {
                 return 0;
             }
@@ -625,8 +624,7 @@ char *bname;
     setvoteflag(currboard, 1);
     clear();
     /*Haohmaru.99.11.17.根据投票管理员设的限制条件判断是否让该使用者投票 */
-    if (HAS_PERM(currentuser, PERM_OVOTE)
-        || HAS_PERM(currentuser, PERM_SYSOP)
+    if (HAS_PERM(currentuser, PERM_SYSOP)
         || HAS_PERM(currentuser, PERM_JURY)) {
         getdata(1, 0, "是否对投票资格进行限制(Y/N) [Y]:", buf, 3, DOECHO,
                 NULL, true);
