@@ -469,7 +469,7 @@ void check_register_info()
 			}
 			fclose(fout);
 			sprintf(buf2, "新手上路: %s", getCurrentUser()->username);
-			post_file(getCurrentUser(), "", buf, "newcomers", buf2, 0, 2);
+			post_file(getCurrentUser(), "", buf, "newcomers", buf2, 0, 2, getSession());
 			unlink(buf);
 		}
 		pressanykey();
