@@ -38,7 +38,7 @@ F.A.Q.）。本文档是专门针对 smthbbs 系统写的一个安装过程参考。
 
 
 2 开版 <cn.bbs.* HOWTO Q5>
-    进入你的 bbs 开设以下版面。
+    进入你的 bbs 开设以下版面（特别注意讨论区设定设置这些版面“可向外转信”）：
 cnAdmin         [转信]  ●  cn.bbs.*管理及发展事务
 cnAnnounce      [转信]  ●  cn.bbs.*重要公告(只读)
 cnBM            [转信]  ●  cn.bbs.*版(组)务交流
