@@ -1584,17 +1584,21 @@ int do_reply(struct fileheader *fileinfo)
 int garbage_line(char *str)
 {                               /* 判断本行是否是 无用的 */
     int qlevel = 0;
-
+#ifdef NINE_BUILD
+    #define QUOTELEV 1 
+#else
+    #define QUOTELEV 0
+#endif    
     while (*str == ':' || *str == '>') {
         str++;
         if (*str == ' ')
             str++;
-        if (qlevel++ >= 0)
+        if (qlevel++ >= QUOTELEV)
             return 1;
     }
     while (*str == ' ' || *str == '\t')
         str++;
-    if (qlevel >= 0)
+    if (qlevel >= QUOTELEV)
         if (strstr(str, "提到:\n") || strstr(str, ": 】\n") || strncmp(str, "==>", 3) == 0 || strstr(str, "的文章 说"))
             return 1;
     return (*str == '\n');
