@@ -128,7 +128,6 @@ $(BBSLIB) : $(patsubst %.o,lib%.o,$(BBSLIBOBJS))
 	
 chatd: station.c libBBS.a
 	$(CC) -g $(CFLAGS) $(SITE_DEF) $(DEFINES) -o chatd $(OS_DEF) station.c $(LIBS) libBBS.a
-	$(INSTALL) chatd $(BBSHOME)/bin
 
 
 ve: edit.o term.o screen.o io.o editor.c
@@ -139,6 +138,7 @@ ve: edit.o term.o screen.o io.o editor.c
 
 installbbs: $(PROGNAME) $(BBSHOME)/bin/bbsd_single
 	$(INSTALL) newpop3d $(BBSHOME)/bin
+	$(INSTALL) chatd $(BBSHOME)/bin
 
 $(BBSHOME)/bin/bbsd_single: bbsd_single
 	$(INSTALL) $@ $@.old
