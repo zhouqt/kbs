@@ -17,7 +17,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#define MAX_KEEP 1000
+#define MAX_KEEP 100
 
 char res_title[MAX_KEEP][80],res_filename[MAX_KEEP][200];
 int res_total=0,toomany=0;
@@ -28,7 +28,7 @@ int get_word()
 {
     clear();
     prints("令狐冲搜索");
-    getdata(2, 0, "查询关键字: ", qn, 60, 1, 0, 1);
+    getdata(2, 0, "查询关键字: ", qn, 60, 1, 0, 0);
     return qn[0];
 }
 
@@ -137,7 +137,8 @@ int show_res()
     int i;
     if(res_total<=0) {
         move(4,0);
-        prints("什么都没搜到！");
+        if(res_total==-2) prints("负荷太重，请稍后再使用");
+        else prints("什么都没搜到！");
         igetkey();
     }
     else {
@@ -153,7 +154,7 @@ void do_query_all(char * s)
     char buf[256];
     char ip[20]="166.111.8.235";
     
-    res_total = -1;
+    res_total = -2;
     
     if((sockfd=socket(AF_INET, SOCK_STREAM, 0))==-1) return;
     memset(&addr, 0, sizeof(addr));
@@ -162,8 +163,9 @@ void do_query_all(char * s)
     addr.sin_port=htons(4875);
     if(connect(sockfd, (struct sockaddr*)&addr, sizeof(addr))<0) return;
     sockfp=fdopen(sockfd, "r+");
-    fprintf(sockfp, "%s\n", s);
-    fscanf(sockfp, "%d %d\n", &toomany, &res_total);
+    fprintf(sockfp, "0\n%s\n", s);
+    fflush(sockfp);
+    fscanf(sockfp, "%d %d %d\n", &toomany, &i, &res_total);
     if(toomany==res_total) toomany=0;
     for(i=0;i<res_total;i++) {
         fgets(buf, 256, sockfp);
