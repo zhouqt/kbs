@@ -852,6 +852,7 @@ void main_bbs(int convit, char *argv)
     m_init();
     clear();
     load_key();
+	calc_calltime();
 
 #ifndef DEBUG
 #ifdef SSHBBS
