@@ -3,7 +3,7 @@
 
 #define CONV_PASS
 #undef NINE_BUILD
-#undef NEW_COMERS		/* 注册后在 newcomers 版自动发文 */
+#define NEW_COMERS		/* 注册后在 newcomers 版自动发文 */
 #define HAVE_BIRTHDAY
 #define HAPPY_BBS
 #define HAVE_COLOR_DATE
@@ -13,7 +13,7 @@
 #define FILTER
 #define CHINESE_CHARACTER
 #undef ANTISPAM_MAILADDR	/* 转信后的文章隐藏真实 MAIL */
-#undef CNBBS_TOPIC		/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
+#define CNBBS_TOPIC		/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
 
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
