@@ -20,7 +20,6 @@
 #include "bbs.h"
 #include "vote.h"
 extern int page, range;
-char *vote_type[] = { "是非", "单选", "复选", "数字", "问答" };
 struct votebal currvote;
 struct votelimit currlimit;     /*Haohmaru.99.11.17.根据版主设的限制条件判断是否让该使用者投票 */
 char controlfile[STRLEN], limitfile[STRLEN];
