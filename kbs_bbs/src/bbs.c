@@ -497,7 +497,7 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     if (!HAS_PERM(getCurrentUser(), PERM_POST)) {    /* 判断是否有POST权 */
         return DONOTHING;
     }
-#ifndef NINE_BUILD
+#if !defined(NINE_BUILD) && !defined(FREE)
     if ((fileinfo->accessed[0] & FILE_FORWARDED) && !HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
         clear();
         move(1, 0);
@@ -2118,8 +2118,10 @@ void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
                     fprintf(outf, ": %s", buf);
                     if(buf[strlen(buf)-1]!='\n') {
                         char ch;
-                        while((ch=fgetc(inf))!=EOF)
+                        while((ch=fgetc(inf))!=EOF){
+							fputc(ch,outf);
                             if(ch=='\n') break;
+						}
                     }
                 }
             } else if (op == 'R') {
@@ -3390,7 +3392,11 @@ int Import_post(struct _select_def* conf,struct fileheader *fileinfo,void* extra
     int ret=FULLUPDATE;
 
     if (!HAS_PERM(getCurrentUser(), PERM_SYSOP))
-        if (!chk_currBM(currBM, getCurrentUser()))
+        if (!chk_currBM(currBM, getCurrentUser())
+#ifdef FB2KPC
+			&& !haspc(getCurrentUser()->userid)
+#endif
+						)
             return DONOTHING;
 
     if (fileinfo->accessed[0] & FILE_IMPORTED) {        /* Leeward 98.04.15 */
@@ -3476,6 +3482,16 @@ int into_announce(struct _select_def* conf,struct fileheader *fileinfo,void* ext
 #ifdef FB2KPC
 void a_menu();
 
+int haspc(char *userid)
+{
+	char buf[256];
+	sprintf(buf,"%s/%c/%s", FB2KPC, toupper(userid[0]),userid);
+
+	if(dashd(buf))
+		return 1;
+	return 0;
+}
+
 int Personal(char *userid)
 {
    char    found[256], lookid[IDLEN];
@@ -3484,7 +3500,7 @@ int Personal(char *userid)
    
    if(!userid || userid[0]=='\0') {
       clear();
-      move(2, 0);
+      move(1, 0);
       usercomplete( "您想看谁的个人文集: " , lookid);
       if (lookid[0] == '\0') {
          clear();
@@ -4084,8 +4100,11 @@ int Goodbye()
 #ifdef NINE_BUILD
             }
 #endif*/
-        } else
+        }
+#ifndef FREE
+		else
             clear_msg(getCurrentUser()->userid);
+#endif
         fp = fopen("friendbook", "r");  /*搜索系统 寻人名单 */
         while (fp != NULL && fgets(buf, sizeof(buf), fp) != NULL) {
             char uid[14];
@@ -5634,6 +5653,15 @@ static int SR_BMFunc(struct _select_def* conf, struct fileheader* fh, void* extr
     return DIRCHANGED;
 }
 
+#ifdef FB2KPC
+int read_my_pc(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
+{	
+	Personal("*");
+	return FULLUPDATE;
+}
+
+#endif
+
 static struct key_command read_comms[] = { /*阅读状态，键定义 */
     {'r', (READ_KEY_FUNC)read_post,NULL},
     {'K', (READ_KEY_FUNC)skip_post,NULL},
@@ -5721,7 +5749,11 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
     {'M',  (READ_KEY_FUNC)b_vote_maintain,NULL},
     {'W',  (READ_KEY_FUNC)b_note_edit_new,NULL},
     {'h',  (READ_KEY_FUNC)mainreadhelp,NULL},
+#ifdef FB2KPC
+    {'X',  (READ_KEY_FUNC)read_my_pc,NULL},     //编辑版面的仲裁委员名单,stephen on 2001.11.1 
+#else
     {'X',  (READ_KEY_FUNC)b_jury_edit,NULL},     //编辑版面的仲裁委员名单,stephen on 2001.11.1 
+#endif
     {KEY_TAB,  (READ_KEY_FUNC)show_b_note,NULL},
     {Ctrl('D'), (READ_KEY_FUNC)deny_user,NULL},
     {Ctrl('E'), (READ_KEY_FUNC)clubmember,NULL},
