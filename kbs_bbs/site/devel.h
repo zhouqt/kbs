@@ -4,7 +4,7 @@
 #define BBSUID 			501
 #define BBSGID 			501
 
-/*#define USE_TMPFS 1*/
+#define USE_TMPFS 1
 #define TMPFSROOT "cache"
 #define SMTH    1 /*×÷ÎªSMTHµÄ²âÊÔÕ¾Âï*/
 #define HAVE_TSINGHUA_INFO_REGISTER 1
