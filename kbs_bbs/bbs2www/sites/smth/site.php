@@ -13,6 +13,7 @@ define("HAVE_BRDENV", 1); //支持版面导读
 define("QUOTED_LINES","3");
 define("ACTIVATIONLEN",15); //激活码长度
 define("ENABLE_ABOARDS" , 1);//web首页使用活动看板
+define("SERVICE_QUIZ" , 1); //www开心辞典
 
 $domain_name = explode(":",trim($_SERVER["HTTP_HOST"]));
 define("BBS_DOMAIN_NAME" , $domain_name[0]); //域名

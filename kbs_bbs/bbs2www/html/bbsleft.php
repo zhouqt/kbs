@@ -635,6 +635,15 @@ bbs_auto_reload();
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/games/index.html" target="f3">ĞİÏĞÓéÀÖ</a><br>
+<?php
+    if (defined("SERVICE_QUIZ")) {
+?>
+                    &nbsp;
+					<img src="/images/line.gif" border="0" align="absmiddle">
+					<a href="/games/quiztop.php" target="f3">¿ªĞÄ´Çµä</a><br>
+<?php
+    }
+?>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/data/fterm-smth.zip" target="_blank">FtermÏÂÔØ</a><br>
