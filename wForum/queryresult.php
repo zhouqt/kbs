@@ -73,6 +73,7 @@ function doSearch($boardNames){
 <script language="JavaScript">
 <!--
 	THREADSPERPAGE = <?php echo THREADSPERPAGE; ?>;
+	SHOW_POST_UNREAD = <?php echo SHOW_POST_UNREAD ? "true" : "false"; ?>;
 //-->
 </script>
 <TABLE cellPadding=3 cellSpacing=1 class=TableBorder1 align=center>

@@ -302,7 +302,7 @@ if ( chr($user['gender'])=='M' ){
 ?>
 <a href="friendlist.php?addfriend=<?php echo $thread['OWNER']; ?>" target=_blank><img src="pic/friend.gif" border=0 alt="把<?php echo $thread['OWNER']; ?>加入好友"></a>&nbsp;
 <a href="dispuser.php?id=<?php echo $thread['OWNER']; ?>" target=_blank><img src="pic/profile.gif" border=0 alt="查看<?php echo $thread['OWNER']; ?>的个人资料"></a>&nbsp;
-<a href=# onclick="alert('本功能尚未实现');" target=_blank><img src="pic/find.gif" border=0 alt="搜索<?php echo $thread['OWNER']; ?>在测试的所有贴子"></a>&nbsp;
+<a href="queryresult.php?userid=<?php echo $thread['OWNER']; ?>&boardNames=<?php echo $boardName; ?>"><img src="pic/find.gif" border=0 alt="搜索<?php echo $thread['OWNER']; ?>在本版的所有贴子"></a>&nbsp;
 <a href="sendmail.php?board=<?php echo $boardName; ?>&reID=<?php echo $thread['ID']; ?>"><IMG alt="点击这里发送电邮给<?php echo $thread['OWNER']; ?>" border=0 src=pic/email.gif></A>&nbsp;
 <a href="editarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $thread['ID']; ?>"><img src="pic/edit.gif" border=0 alt=编辑></a>&nbsp;
 <a href="deletearticle.php?board=<?php echo $boardName; ?>&ID=<?php echo $thread['ID']; ?>" onclick="return confirm('你真的要删除本文吗?')"><img src="pic/delete.gif" border=0 alt=删除></a>&nbsp;
