@@ -24,6 +24,7 @@ static ZEND_FUNCTION(bbs_getarticles);
 static ZEND_FUNCTION(bbs_countarticles);
 static ZEND_FUNCTION(bbs_is_bm);
 static ZEND_FUNCTION(bbs_getannpath);
+static ZEND_FUNCTION(bbs_getmailnum);
 
 static ZEND_MINIT_FUNCTION(bbs_module_init);
 static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown);
@@ -56,6 +57,7 @@ static function_entry bbs_php_functions[] = {
 	ZEND_FE(bbs_countarticles, NULL)
 	ZEND_FE(bbs_is_bm, NULL)
 	ZEND_FE(bbs_getannpath, NULL)
+	ZEND_FE(bbs_getmailnum, NULL)
 	{NULL, NULL, NULL}
 };
 
@@ -1095,6 +1097,59 @@ static ZEND_FUNCTION(bbs_getannpath)
 	}
 	RETURN_STRING(buf, 1);
 }
+
+/**
+ * get the number of one user's mail.
+ * prototype:
+ * bool bbs_getmailnum(string userid,long &total,long &unread);
+ *
+ * @return TRUE on success,
+ *       FALSE on failure.
+ *       and return total and unread in argument
+ * @author KCN
+ */
+
+static ZEND_FUNCTION(bbs_getmailnum)
+{
+    zval *total,*unread;
+    char* userid;
+    int userid_len;
+    struct fileheader x;
+    char path[80];
+    int totalcount = 0, unreadcount = 0;
+	int ac = ZEND_NUM_ARGS();
+    int fd;
+
+	if (ac != 3
+		||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "szz", &userid,&userid_len,&total,&unread) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+
+    /* check for parameter being passed by reference */
+    if (!PZVAL_IS_REF(*total)||!PZVAL_IS_REF(*unread))
+    {
+        zend_error(E_WARNING, "Parameter wasn't passed by reference");
+        RETURN_FALSE;
+    }
+
+    setmailfile(path, userid, DOTDIR);
+    fd = open(path, O_RDONLY);
+    if (fd == -1)
+        RETURN_FALSE;
+    while (read(fd,&x, sizeof(x)) > 0) {
+        totalcount++;
+        if (!(x.accessed[0] & FILE_READ))
+            unreadcount++;
+    }
+    close(fd);
+    /* make changes to the parameter */
+    ZVAL_LONG(*total, totalcount);
+    ZVAL_LONG(*unread, unreadcount);
+    RETURN_TRUE;
+}
+
+
 
 static ZEND_MINIT_FUNCTION(bbs_module_init)
 {
