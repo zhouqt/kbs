@@ -528,7 +528,7 @@ int del_mail(int ent, struct fileheader *fh, char *direct)
     char genbuf[PATHLEN];
     struct stat st;
 
-    if (strstr(direct, ".DELETED")) {
+    if (strstr(direct, ".DELETED") || HAS_MAILBOX_PROP(u_info, MBP_FORCEDELETEMAIL)) {
         strcpy(buf, direct);
         t = strrchr(buf, '/') + 1;
         strcpy(t, fh->filename);
@@ -541,7 +541,7 @@ int del_mail(int ent, struct fileheader *fh, char *direct)
         *t = '\0';
     if (!delete_record(direct, sizeof(*fh), ent, (RECORD_FUNC_ARG) cmpname, fh->filename)) {
         sprintf(genbuf, "%s/%s", buf, fh->filename);
-        if (strstr(direct, ".DELETED"))
+        if (strstr(direct, ".DELETED") || HAS_MAILBOX_PROP(u_info, MBP_FORCEDELETEMAIL))
             unlink(genbuf);
         else {
             strcpy(buf, direct);
