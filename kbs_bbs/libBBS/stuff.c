@@ -2107,7 +2107,8 @@ int my_unlink(char *fname)
 {
 
 #ifndef MYUNLINK_BACKUPDIR
-    return f_rm(fname);
+/*    return f_rm(fname);*/
+    return unlink(fname);
 #else
 
 	char *buf;
