@@ -497,7 +497,10 @@ int m_editbrd()
         if (bh) groupname=bh->filename;
     }
     prints("所属目录：%s\n",bh?groupname:"无");
-    prints("可向外转信:   %s    可粘贴附件: %s\n", (fh.flag & BOARD_OUTFLAG) ? "Yes" : "No",(fh.flag & BOARD_ATTACH) ? "Yes" : "No");
+    prints("可向外转信:   %s    可粘贴附件: %s    允许 Email 发文: %s\n", 
+			(fh.flag & BOARD_OUTFLAG) ? "Yes" : "No",
+			(fh.flag & BOARD_ATTACH) ? "Yes" : "No",
+			(fh.flag & BOARD_EMAILPOST) ? "Yes" : "No");
     if (fh.flag & BOARD_CLUB_READ || fh.flag & BOARD_CLUB_WRITE)
         prints("俱乐部:   %s %s %s  序号: %d\n", fh.flag & BOARD_CLUB_READ ? "阅读限制" : "", fh.flag & BOARD_CLUB_WRITE ? "发表限制" : "", fh.flag & BOARD_CLUB_HIDE ? "隐藏" : "", fh.clubnum);
     else
@@ -564,6 +567,14 @@ int m_editbrd()
                 newfh.flag |= BOARD_ATTACH;
             else
                 newfh.flag &= ~BOARD_ATTACH;
+        };
+        sprintf(buf, "允许 Email 发文 (Y/N)? [%c]: ", (newfh.flag & BOARD_EMAILPOST) ? 'Y' : 'N');
+        getdata(line++, 0, buf, genbuf, 4, DOECHO, NULL, true);
+        if (*genbuf == 'y' || *genbuf == 'Y' || *genbuf == 'N' || *genbuf == 'n') {
+            if (*genbuf == 'y' || *genbuf == 'Y')
+                newfh.flag |= BOARD_EMAILPOST;
+            else
+                newfh.flag &= ~BOARD_EMAILPOST;
         };
         getdata(line++, 0, "是否移动精华区的位置 (Y/N)? [N]: ", genbuf, 4, DOECHO, NULL, true);
         if (*genbuf == 'Y' || *genbuf == 'y')
