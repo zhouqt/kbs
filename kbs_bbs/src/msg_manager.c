@@ -27,6 +27,7 @@ int sm_start=0;
 char sm_dest[13];
 int sm_type=-1;
 char sm_msgtxt[30];
+int sm_desc=0;
 
 static int set_smsg_select(struct _select_def *conf)
 {
@@ -131,7 +132,7 @@ static int set_smsg_prekey(struct _select_def *conf, int *key)
 static int set_smsg_refresh(struct _select_def *conf)
 {
 	clear();
-	docmdtitle("[¶ÌÐÅ¹ÜÀí]","ÍË³ö[[1;32mq[m] É¾³ý[[1;32md[m] ³¬¼¶Ñ¡Ôñ[[1;32ms[m] ÏÔÊ¾ËùÓÐ¶ÌÐÅ[[1;32ma[m]");
+	docmdtitle("[¶ÌÐÅ¹ÜÀí]","ÍË³ö[[1;32mq[m] É¾³ý[[1;32md[m] ³¬¼¶Ñ¡Ôñ[[1;32ms[m] ÏÔÊ¾ËùÓÐ¶ÌÐÅ[[1;32ma[m] »Ø¸´¶ÌÐÅ[[1;32mS[m] µ¹ÐòÅÅÁÐ[[1;32mr[m]");
 	move(2,0);
 	prints("[0;1;37;44m  %-4s %-13s %-14s %-2s %-40s[m","ÐòºÅ","¶ÔÏó","Ê±¼ä", "Àà", "ÄÚÈÝ");
 	update_endline();
@@ -146,7 +147,7 @@ static int set_smsg_getdata(struct _select_def *conf,int pos,int len)
 		if( s_m[i].context ) free(s_m[i].context);
 	}
 	bzero( s_m, sizeof(struct smsmsg) * BBS_PAGESIZE );
-	sm_num = get_sql_smsmsg(s_m, currentuser->userid, sm_dest, 0, 0, sm_type, 0, sm_start, BBS_PAGESIZE,sm_msgtxt);
+	sm_num = get_sql_smsmsg(s_m, currentuser->userid, sm_dest, 0, 0, sm_type, 0, sm_start, BBS_PAGESIZE,sm_msgtxt,sm_desc);
 
 	conf->item_count = sm_num;
 
@@ -157,7 +158,7 @@ static int set_smsg_getdata(struct _select_def *conf,int pos,int len)
 		sm_type = -1;
 		sm_msgtxt[0]=0;
 		
-		sm_num = get_sql_smsmsg(s_m, currentuser->userid, sm_dest, 0, 0, sm_type, 0, sm_start, BBS_PAGESIZE,sm_msgtxt);
+		sm_num = get_sql_smsmsg(s_m, currentuser->userid, sm_dest, 0, 0, sm_type, 0, sm_start, BBS_PAGESIZE,sm_msgtxt,sm_desc);
 
 		conf->item_count = sm_num;
 
@@ -268,6 +269,11 @@ static int set_smsg_key(struct _select_def *conf, int key)
 		pressanykey();
 		return SHOW_REFRESH;
 	}
+	case 'r':
+	{
+		sm_desc = ! sm_desc;
+		return SHOW_DIRCHANGE;
+	}
 	default:
 		break;
 	}
@@ -312,7 +318,7 @@ int smsmsg_read()
 
 
 	bzero( s_m, sizeof(struct smsmsg) * BBS_PAGESIZE );
-	sm_num = get_sql_smsmsg(s_m, currentuser->userid, NULL, 0, 0, -1, 0, sm_start, BBS_PAGESIZE, NULL);
+	sm_num = get_sql_smsmsg(s_m, currentuser->userid, NULL, 0, 0, -1, 0, sm_start, BBS_PAGESIZE, NULL,sm_desc);
 	
 	if(sm_num <= 0) return -1;
 

@@ -981,7 +981,7 @@ int DoReplyCheck(char * n, unsigned int sn, char isSucceed)
     return wait_for_result();
 }
 
-int get_sql_smsmsg( struct smsmsg * smdata, char *userid, char *dest, time_t start_time, time_t end_time, int type, 					int level, int start, int num, char *msgtxt)
+int get_sql_smsmsg( struct smsmsg * smdata, char *userid, char *dest, time_t start_time, time_t end_time, int type, 					int level, int start, int num, char *msgtxt, int desc)
 {
 
 	MYSQL s;
@@ -1040,7 +1040,7 @@ int get_sql_smsmsg( struct smsmsg * smdata, char *userid, char *dest, time_t sta
 		strcat(sql, qtmp);
 	}
 
-	snprintf(qtmp, 99, " ORDER BY readed, timestamp LIMIT %d,%d", start, num);
+	snprintf(qtmp, 99, " ORDER BY readed, timestamp %s LIMIT %d,%d", desc?"DESC":"ASC", start, num);
 	strcat(sql, qtmp);
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
