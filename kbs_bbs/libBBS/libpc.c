@@ -782,7 +782,7 @@ int add_pc_nodes(struct pc_nodes *pn)
 			sprintf(ql,"UPDATE users SET `createtime` = `createtime` , modifytime = '%s' , nodescount = nodescount + 1 WHERE uid=%d ;",tt2timestamp(pn->changed,newts),pn->uid );	
 			mysql_real_query( &s, ql, strlen(ql) );
 		}
-		sprintf(ql,"INSERT INTO nodes VALUES (NULL, %lu,  %d, '%s', '%s', '%s', '%s', %d, %d, %lu, '%s', '%s', %d,  %d , 0 , 0 , 0 );",pn->pid, pn->type, newsource, newhostname, tt2timestamp(pn->changed,newts), tt2timestamp(pn->created, newts1), pn->uid, pn->comment, pn->commentcount, newsubject, pn->body?newbody:"", pn->access, pn->visitcount );
+		sprintf(ql,"INSERT INTO nodes VALUES (NULL, %lu,  %d, '%s', '%s', '%s', '%s', %d, %d, %lu, '%s', '%s', %d,  %d , 0 , 0 , 0 , 1 , 0);",pn->pid, pn->type, newsource, newhostname, tt2timestamp(pn->changed,newts), tt2timestamp(pn->created, newts1), pn->uid, pn->comment, pn->commentcount, newsubject, pn->body?newbody:"", pn->access, pn->visitcount );
 	}
 	else
 	{
