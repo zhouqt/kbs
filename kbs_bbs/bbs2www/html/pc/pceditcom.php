@@ -95,7 +95,7 @@
 	</td>
 </tr>
 <tr>
-	<td class="t8"><textarea name="blogbody" class="f1" cols="100%" rows="20" id="blogbody" wrap="physical"><?php
+	<td class="t8"><textarea name="blogbody" class="f1" style="width:100%" rows="20" id="blogbody" wrap="physical"><?php
 		if($rows[htmltag])
 			echo $pcconfig["EDITORALERT"];
 		echo htmlspecialchars(stripslashes($rows[body]." ")); 
