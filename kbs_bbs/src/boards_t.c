@@ -531,6 +531,10 @@ static int choose_board(int newflag, char *boardprefix)
             break;
         case 'O':
         case 'o':              /* Luzi 1997.10.31 */
+#ifdef NINE_BUILD
+		case 'C':
+		case 'c':
+#endif
             {                   /* Leeward 98.10.26 fix a bug by saving old mode */
                 int savemode = uinfo.mode;
 
@@ -551,8 +555,13 @@ static int choose_board(int newflag, char *boardprefix)
             else
                 num -= BBS_PAGESIZE;
             break;
+#ifdef NINE_BUILD
+        case 'F':
+        case 'f':
+#else
         case 'C':
         case 'c':              /*ÔÄ¶ÁÄ£Ê½ */
+#endif
             if (newflag == 1)
                 newflag = 0;
             else

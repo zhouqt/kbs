@@ -838,6 +838,10 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
         break;
     case 'O':
     case 'o':                  /* Luzi 1997.11.1 */
+#ifdef NINE_BUILD
+	case 'C':
+	case 'c':
+#endif
         if (!HAS_PERM(currentuser, PERM_BASIC))
             break;
         t_friends();
@@ -2684,7 +2688,9 @@ struct one_key read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
     {Ctrl('C'), do_cross},
     {'Y', UndeleteArticle},     /* Leeward 98.05.18 */
     {Ctrl('P'), do_post},
+#ifndef NINE_BUILD
     {'c', clear_new_flag},
+#endif
     {'f', clear_all_new_flag},  /* added by dong, 1999.1.25 */
     {'S', sequential_read},
 #ifdef INTERNET_EMAIL
