@@ -81,6 +81,7 @@ int num_noans_chr(char* str)
 void init_screen(int slns, int scols)
 {
 	register struct screenline *slp;
+    register int j;
 
 	scr_lns = slns;
 	scr_cols = Min(scols, LINELEN);
@@ -90,7 +91,7 @@ void init_screen(int slns, int scols)
 						 sizeof (struct screenline));
 	for (slns = 0; slns < scr_lns; slns++) {
 		slp = &big_picture[slns];
-              for(int j=0;j<LINELEN;j++)
+              for(j=0;j<LINELEN;j++)
                 { slp->data[j]=0; slp->mode[j]=0; slp->color[j]=7; }
 	}
 	roll = 0;
@@ -145,7 +146,7 @@ void clear()
     for (i = 0; i < scr_lns; i++) {
         slp = &big_picture[i];
         for(j=0; j<scr_cols;j++) {
-            if((bp[i].data[j]==' '||bp[i].data[j]==' ')&&bp[i].mode[j]&SCREEN_LINE==0&&bp[i].mode[j]&SCREEN_BACK==0&&bp[i].color[j]/16==0)
+            if((slp[i].data[j]==' '||slp[i].data[j]==' ')&&slp[i].mode[j]&SCREEN_LINE==0&&slp[i].mode[j]&SCREEN_BACK==0&&slp[i].color[j]/16==0)
                 slp[i].mode[j]=0;
             else
                 slp[i].mode[j]=SCREEN_MODIFIED;
@@ -211,7 +212,7 @@ void refresh()
     for (i = 0; i < scr_lns; i++) {
         j = (i + roll)%scr_lns;
         for (k = 0; k < t_columns; k++)
-        if(bp[j].mode[k]&SCREEN_MODIFIED&&(isprint2(bp[j].data[k])||bp[j].data[k]==0) {
+        if(bp[j].mode[k]&SCREEN_MODIFIED&&(isprint2(bp[j].data[k]))||bp[j].data[k]==0) {
             rel_move(tc_col, tc_line, k, i);
             bp[j].mode[k]&=~SCREEN_MODIFIED;
             if(~(bp[j].mode[k])&cur_mode!=0) {
@@ -301,7 +302,7 @@ void clear_whole_line(int i)
     register struct screenline *slp = &big_picture[(i+roll)%scr_lns];
     register int k;
     for(k=0;k<scr_cols;k++) {
-        if((slp->data[k]==32||slp->data[k]==0)&&slp->mode[k]==cur_mode&&slp->color[k]/16==curr_color/16)
+        if((slp->data[k]==32||slp->data[k]==0)&&slp->mode[k]==cur_mode&&slp->color[k]/16==cur_color/16)
             slp->mode[k]=SCREEN_MODIFIED;
         else
             slp->mode[k]=0;
