@@ -1046,21 +1046,21 @@ void join_room(int w, int spec)
                 if(!(inrooms[myroom].peoples[me].flag&PEOPLE_POLICE))
                     continue;
                 if(inrooms[myroom].peoples[me].flag&PEOPLE_TESTED) {
-                    send_msg(pid, "\x1b[31;1m本轮你已经侦查过了\x1b[m");
+                    send_msg(me, "\x1b[31;1m本轮你已经侦查过了\x1b[m");
                     refreshit();
                     continue;
                 }
                 if(inrooms[myroom].peoples[sel].flag&PEOPLE_SPECTATOR)
-                    send_msg(pid, "\x1b[31;1m此人是旁观者\x1b[m");
+                    send_msg(me, "\x1b[31;1m此人是旁观者\x1b[m");
                 else if(!(inrooms[myroom].peoples[sel].flag&PEOPLE_ALIVE))
-                    send_msg(pid, "\x1b[31;1m此人已死\x1b[m");
+                    send_msg(me, "\x1b[31;1m此人已死\x1b[m");
                 else if(!(inrooms[myroom].peoples[sel].flag&PEOPLE_KILLER)) {
                     inrooms[myroom].peoples[me].flag|=PEOPLE_TESTED;
-                    send_msg(pid, "\x1b[31;1m经过你的侦测, 发现此人是坏人!!!\x1b[m");
+                    send_msg(me, "\x1b[31;1m经过你的侦测, 发现此人是坏人!!!\x1b[m");
                 }
                 else {
                     inrooms[myroom].peoples[me].flag|=PEOPLE_TESTED;
-                    send_msg(pid, "\x1b[31;1m经过你的侦测, 发现此人是好人\x1b[m");
+                    send_msg(me, "\x1b[31;1m经过你的侦测, 发现此人是好人\x1b[m");
                 }
                 refreshit();
             }
