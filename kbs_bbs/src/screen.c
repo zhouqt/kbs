@@ -109,7 +109,6 @@ void clear()
         o_clear();
         return;
     }
-    roll = 0;
     for (i = 0; i < scr_lns; i++) {
         slp = big_picture;
         for(j=0; j<scr_cols;j++) {
