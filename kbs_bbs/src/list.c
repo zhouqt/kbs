@@ -232,6 +232,11 @@ do_userlist()
     for(i=0;i<BBS_PAGESIZE&&i+page<range;i++)
     {
         uentp=user_record[i+page];
+        if (!uentp->active||!uentp->pid)
+		{
+			prints(" %4d °¡,ÎÒ¸Õ×ß",i+1+page);
+			continue;
+        }	
         if(!showexplain)
             override=(i+page<numf)||friendmode;
         else

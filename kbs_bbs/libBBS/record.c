@@ -202,7 +202,7 @@ toobigmesg()
         fprintf( stderr, "record size too big!!\n" );
     */
 }
-#ifdef DEBUG
+#if 1
 /* apply_record进行了预读优化,以减少系统调用次数,提高速度. ylsdd 2001.4.24 */
 /* COMMAN : use mmap to speed up searching */
 int
@@ -306,7 +306,7 @@ int sorted ; /* if records in file are sorted */
 
 /*---   End of Addition     ---*/
 
-#ifdef DEBUG
+#if 1
 /* search_record进行了预读优化,以减少系统调用次数,提高速度. ylsdd, 2001.4.24 */
 /* COMMAN : use mmap to improve search speed */
 int
