@@ -80,7 +80,7 @@ COBJS    = bbs.o record.o delete.o stuff.o mail.o register.o \
 
 BBSLIBOBJS = record.o log.o ucache.o stuff.o md5.o crypt.o pass.o bcache.o utmp.o \
 	lvars.o $(BBSSITE).o boards.o lvars.o bbs_sendmail.o libmsg.o article.o convcode.o \
-	sysconf.o
+	sysconf.o libann.o
 
 OTHERS   = bbs.h edit.h
 
