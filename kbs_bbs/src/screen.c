@@ -35,7 +35,7 @@ extern int automargins ;
 
 #define o_clear() output("\x1b[H\x1b[J",6)
 #define o_cleol() output("\x1b[K",3)
-#define o_standup() output("\x1b[7m",3)
+#define o_standup() output("\x1b[7m",4)
 #define o_standdown() output("\x1b[m",3)
 
 unsigned char   scr_lns, scr_cols ;
