@@ -7,7 +7,7 @@
 		html_init("gb2312");
 		$filename=bbs_sethomefile($currentuser["userid"],"signatures");
 		if ($_GET["type"]=="1") {
-		    $fp=fopen($filename,"w+");
+		    $fp=@fopen($filename,"w+");
                     if ($fp!=false) {
 		    fwrite($fp,$_POST["text"]);
 		    fclose($fp);
@@ -20,7 +20,7 @@
 签名档每6行为一个单位, 可设置多个签名档.<table width="610" border="1"><tr><td><textarea name="text" rows="20" cols="100" wrap="physical">
 <?php
 if ($_GET["type"]!="1") {
-    $fp = fopen ($filename, "r");
+    $fp = @fopen ($filename, "r");
     if ($fp!=false) {
     while (!feof ($fp)) {
         $buffer = fgets($fp, 300);
