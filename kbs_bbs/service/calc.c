@@ -776,7 +776,7 @@ int calc_main()
         cmd[0]=0;
         do{
             UPDOWN = true;
-            ch = multi_getdata(y, x, scr_cols, "> ", cmd, 995, 13, 0);
+            ch = multi_getdata(y, x, scr_cols-1, "> ", cmd, 995, 13, 0);
             UPDOWN = false;
             if(ch==-KEY_UP) {
                 if(hi==HIST) cmd[0]=0;
