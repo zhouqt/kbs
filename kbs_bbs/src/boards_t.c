@@ -1255,10 +1255,11 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
             favlevel--;
             if (favlevel == -1)
                 break;
-            if (favlevel==changelevel) //从版面目录返回收藏夹
+            if (favlevel==changelevel){ //从版面目录返回收藏夹
                 favmode=oldfavmode;
-			if (favmode){
-				selectlevel=-1;
+				if (favmode){
+					selectlevel=-1;
+				}
 			}
         } else {
             /*选择了一个目录,SHOW_SELECT，注意有个假设，目录的深度
