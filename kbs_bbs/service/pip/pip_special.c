@@ -11,7 +11,7 @@ extern time_t lasttime;
 
 //#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
 
-struct royalset royallist[] = {
+const struct royalset royallist[] = {
 	{"T", "拜访对象", 0, 0, 0, 0, "", "" /*NULL,NULL */ },
 	{"A", "星空骑兵连", 1, 10, 15, 100, "你真好，来陪我聊天..",
 	 "守卫星空的安全是很辛苦的.."},
@@ -535,7 +535,7 @@ char *genbuf;
 	 * char yo[14][5]={"诞生","婴儿","幼儿","儿童","青年","少年","成年",
 	 * "壮年","壮年","壮年","更年","老年","老年","古稀"};
 	 */
-	char yo[12][5] = { "诞生", "婴儿", "幼儿", "儿童", "少年", "青年",
+	const static char yo[12][5] = { "诞生", "婴儿", "幼儿", "儿童", "少年", "青年",
 		"成年", "壮年", "更年", "老年", "古稀", "神仙"
 	};
 	int pc1, age1, age = 0;

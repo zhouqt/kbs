@@ -16,7 +16,7 @@ extern time_t lasttime;
 //extern char BBS_FULL_NAME[];
 #endif				// END MAPLE
 
-struct playrule badmanlist[] = {
+const struct playrule badmanlist[] = {
 	"榕树怪", 60, 0, 20, 0, 20, 20, 20, 150, "11101", 0, 0,
 	"网路魔", 60, 0, 20, 0, 30, 30, 30, 200, "01111", 0, 0,
 	"蘑菇小怪", 80, 0, 40, 0, 50, 35, 60, 250, "11110", 0, 0,
@@ -66,7 +66,7 @@ struct playrule badmanlist[] = {
 	"NULL", 0, 0, 0, 0, 0, 0, 0, 0, "NULL", 0, 0
 };
 
-struct magicset treatmagiclist[] = {
+const struct magicset treatmagiclist[] = {
 	"治疗法术", 0, 0, 0, 0, 0, 0,
 	"气疗术", 5, 1, 20, 0, 10, 0,
 	"凝神归元", 20, 1, 100, 0, 40, 0,
@@ -75,7 +75,7 @@ struct magicset treatmagiclist[] = {
 	"NULL", 0, 0, 0, 0, 0, 0
 };
 
-struct magicset thundermagiclist[] = {
+const struct magicset thundermagiclist[] = {
 	"雷系法术", 0, 0, 0, 0, 0, 0,
 	"雷咒", 10, 0, 20, 1, 5, 0,
 	"五雷咒", 20, 0, 50, 1, 5, 0,
@@ -86,7 +86,7 @@ struct magicset thundermagiclist[] = {
 	"NULL", 0, 0, 0, 0, 0, 0
 };
 
-struct magicset icemagiclist[] = {
+const struct magicset icemagiclist[] = {
 	"冰系法术", 0, 0, 0, 0, 0, 0,
 	"冰咒", 10, 0, 20, 1, 5, 0,
 	"寒冰咒", 20, 0, 50, 1, 5, 0,
@@ -97,7 +97,7 @@ struct magicset icemagiclist[] = {
 	"NULL", 0, 0, 0, 0, 0, 0
 };
 
-struct magicset firemagiclist[] = {
+const struct magicset firemagiclist[] = {
 	"炎系法术", 0, 0, 0, 0, 0, 0,
 	"火术", 5, 0, 10, 1, 5, 0,
 	"炎咒", 10, 0, 20, 1, 5, 0,
@@ -109,7 +109,7 @@ struct magicset firemagiclist[] = {
 	"NULL", 0, 0, 0, 0, 0, 0
 };
 
-struct magicset earthmagiclist[] = {
+const struct magicset earthmagiclist[] = {
 	"土系法术", 0, 0, 0, 0, 0, 0,
 	"土咒", 10, 0, 20, 1, 5, 0,
 	"飞岩术", 20, 0, 50, 1, 5, 0,
@@ -120,7 +120,7 @@ struct magicset earthmagiclist[] = {
 	"NULL", 0, 0, 0, 0, 0, 0
 };
 
-struct magicset windmagiclist[] = {
+const struct magicset windmagiclist[] = {
 	"风系法术", 0, 0, 0, 0, 0, 0,
 	"风咒", 10, 0, 20, 1, 5, 0,
 	"旋风咒", 20, 0, 50, 1, 5, 0,

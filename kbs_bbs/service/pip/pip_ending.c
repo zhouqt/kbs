@@ -22,7 +22,7 @@ struct newendingset {
 typedef struct newendingset newendingset;
 
 /*万能*/
-struct newendingset endmodeall_purpose[] = {
+const struct newendingset endmodeall_purpose[] = {
 	"女性职业", "男生职业", 0,
 	"成为这个国家新女王", "成为这个国家新国王", 500,
 	"成为国家的宰相", "成为国家的宰相", 400,
@@ -68,7 +68,7 @@ struct newendingset endmodeall_purpose[] = {
 };
 
 /*战斗*/
-struct newendingset endmodecombat[] = {
+const struct newendingset endmodecombat[] = {
 	"女性职业", "男生职业", 0,
 	"被封为勇者 战士型", "被封为勇者 战士型", 420,
 	"被拔擢成为一国的将军", "被拔擢成为一国的将军", 300,
@@ -82,7 +82,7 @@ struct newendingset endmodecombat[] = {
 };
 
 /*魔法*/
-struct newendingset endmodemagic[] = {
+const struct newendingset endmodemagic[] = {
 	"女性职业", "男生职业", 0,
 	"被封为勇者 魔法型", "被封为勇者 魔法型", 420,
 	"被聘为王宫魔法师", "被聘为王官魔法师", 280,
@@ -96,7 +96,7 @@ struct newendingset endmodemagic[] = {
 };
 
 /*社交*/
-struct newendingset endmodesocial[] = {
+const struct newendingset endmodesocial[] = {
 	"女性职业", "男生职业", 0,
 	"成为国王的宠妃", "成为女王的驸马爷", 170,
 	"被挑选成为王妃", "被选中当女王的夫婿", 260,
@@ -109,7 +109,7 @@ struct newendingset endmodesocial[] = {
 };
 
 /*艺术*/
-struct newendingset endmodeart[] = {
+const struct newendingset endmodeart[] = {
 	"女性职业", "男生职业", 0,
 	"成为了小丑", "成为了小丑", 100,
 	"成为了作家", "成为了作家", 100,
@@ -119,7 +119,7 @@ struct newendingset endmodeart[] = {
 };
 
 /*暗黑*/
-struct newendingset endmodeblack[] = {
+const struct newendingset endmodeblack[] = {
 	"女性职业", "男生职业", 0,
 	"变成了魔王", "变成了魔王", -1000,
 	"混成了太妹", "混成了流氓", -350,
@@ -132,7 +132,7 @@ struct newendingset endmodeblack[] = {
 };
 
 /*家事*/
-struct newendingset endmodefamily[] = {
+const struct newendingset endmodefamily[] = {
 	"女性职业", "男生职业", 0,
 	"正在新娘修行", "正在新郎修行", 50,
 	NULL, NULL, 0
@@ -250,7 +250,7 @@ pip_ending_decide(endbuf1, endbuf2, endbuf3, endmode, endgrade)
 char *endbuf1, *endbuf2, *endbuf3;
 int *endmode, *endgrade;
 {
-	char *name[8][2] = { {"男的", "女的"},
+	const static char *name[8][2] = { {"男的", "女的"},
 	{"嫁给王子", "娶了公主"},
 	{"嫁给你", "娶了你"},
 	{"嫁给商人Ａ", "娶了女商人Ａ"},

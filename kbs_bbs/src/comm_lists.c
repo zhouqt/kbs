@@ -270,6 +270,7 @@ int exec_mbem(char *s)
     char buf[1024];   
     
     if (HAS_PERM(currentuser,PERM_DENYRELAX)) {
+	clear();
         move(4,0);
 	prints("你被封禁了休闲娱乐权限或者自己戒了休闲娱乐功能！");
 	pressanykey();

@@ -11,7 +11,7 @@ extern time_t lasttime;
 
 //#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
 
-char weaponhead[7][10] = {
+const char weaponhead[7][10] = {
 	"没有装备",
 	"塑胶帽子",
 	"牛皮小帽",
@@ -21,7 +21,7 @@ char weaponhead[7][10] = {
 	"黄金圣盔"
 };
 
-char weaponrhand[10][10] = {
+const char weaponrhand[10][10] = {
 	"没有装备",
 	"大木棒",
 	"金属扳手",
@@ -34,7 +34,7 @@ char weaponrhand[10][10] = {
 	"黄金圣杖"
 };
 
-char weaponlhand[8][10] = {
+const char weaponlhand[8][10] = {
 	"没有装备",
 	"大木棒",
 	"金属扳手",
@@ -45,7 +45,7 @@ char weaponlhand[8][10] = {
 	"黄金圣盾"
 };
 
-char weaponbody[7][10] = {
+const char weaponbody[7][10] = {
 	"没有装备",
 	"塑胶胄甲",
 	"特级皮甲",
@@ -55,7 +55,7 @@ char weaponbody[7][10] = {
 	"黄金圣衣"
 };
 
-char weaponfoot[8][12] = {
+const char weaponfoot[8][12] = {
 	"没有装备",
 	"塑胶拖鞋",
 	"东洋木屐",

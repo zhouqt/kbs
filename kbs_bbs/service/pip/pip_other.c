@@ -12,7 +12,7 @@ extern time_t lasttime;
 //#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
 
 /*名字        体力MAX法力MAX  攻击   防护     速度    财宝   特别   图档*/
-struct playrule resultmanlist[] = {
+const struct playrule resultmanlist[] = {
 	"茱丽叶塔", 60, 0, 20, 0, 20, 20, 20, 150, "11101", 0, 0,
 	"菲欧利娜", 60, 0, 20, 0, 30, 30, 30, 200, "01111", 0, 0,
 	"阿妮斯", 80, 0, 40, 0, 50, 35, 60, 250, "11110", 0, 0,
@@ -31,7 +31,7 @@ pip_marriage_offer()
 	char ans[4];
 	int money;
 	int who;
-	char *name[5][2] = { {"女商人Ａ", "商人Ａ"},
+	const static char *name[5][2] = { {"女商人Ａ", "商人Ａ"},
 	{"女商人Ｂ", "商人Ｂ"},
 	{"女商人Ｃ", "商人Ｃ"},
 	{"女商人Ｄ", "商人Ｄ"},
@@ -99,7 +99,7 @@ pip_marriage_offer()
 int
 pip_results_show()
 {				/*收获季 */
-	char *showname[5] =
+	const static char *showname[5] =
 	    { "  ", "武斗大会", "艺术大展", "皇家舞会", "烹饪大赛" };
 	char buf[256];
 	int pipkey, i = 0;
@@ -264,8 +264,8 @@ int
 pip_results_show_ending(winorlost, mode, a, b, c)
 int winorlost, mode, a, b, c;
 {
-	char *resultname[4] = { "最後一名", "季军", "亚军", "冠军" };
-	char *gamename[5] =
+	const static char *resultname[4] = { "最後一名", "季军", "亚军", "冠军" };
+	const static char *gamename[5] =
 	    { "  ", "武斗大会", "艺术大展", "皇家舞会", "烹饪大赛" };
 	int resultmoney[4] = { 0, 3000, 5000, 8000 };
 	char name1[25], name2[25], name3[25], name4[25];

@@ -34,7 +34,7 @@ struct goodsofpip {
 };
 typedef struct goodsofpip goodsofpip;
 
-struct goodsofpip pipfoodlist[] = {
+const struct goodsofpip pipfoodlist[] = {
 	0, "物品名", "说明buy", "说明feed", 0, 0, 0, 0,
 	1, "好吃的食物", "体力恢复50", "每吃一次食物会恢复体力50喔!", 50, 50, 1,
 	1,
@@ -44,7 +44,7 @@ struct goodsofpip pipfoodlist[] = {
 	0, NULL, NULL, NULL, 0, 0, 0, 0
 };
 
-struct goodsofpip pipmedicinelist[] = {
+const struct goodsofpip pipmedicinelist[] = {
 	0, "物品名", "说明buy", "说明feed", 0, 0, 0, 0,
 	1, "好用大补丸", "体力恢复600", "恢复大量流失体力的良方", 500, 600, 4,
 	    4,
@@ -57,7 +57,7 @@ struct goodsofpip pipmedicinelist[] = {
 	0, NULL, NULL, NULL, 0, 0, 0, 0
 };
 
-struct goodsofpip pipotherlist[] = {
+const struct goodsofpip pipotherlist[] = {
 	0, "物品名", "说明buy", "说明feed", 0, 0, 0, 0,
 	1, "乐高玩具组", "快乐满意度", "玩具让小鸡更快乐啦...", 50, 0, 5, 5,
 	2, "百科全书", "知识的来源", "书本让小鸡更聪明更有气质啦...", 100, 0, 6,
@@ -85,7 +85,7 @@ struct weapon {
 typedef struct weapon weapon;
 
 /*名字,需hp,需mp,需speed,攻击,防护,速度,买价,卖价,特别,图档*/
-struct weapon headlist[] = {
+const struct weapon headlist[] = {
 	"不买装备", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	"塑胶帽子", 0, 0, 0, 0, 5, 0, 500, 300, 0, 0,
 	"牛皮小帽", 0, 0, 0, 0, 10, 0, 3500, 1000, 0, 0,
@@ -97,7 +97,7 @@ struct weapon headlist[] = {
 };
 
 /*名字,需hp,需mp,需speed,攻击,防护,速度,买价,卖价,特别,图档*/
-struct weapon rhandlist[] = {
+const struct weapon rhandlist[] = {
 	"不买装备", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	"大木棒", 0, 0, 0, 5, 0, 0, 1000, 700, 0, 0,
 	"金属扳手", 0, 0, 0, 10, 0, 0, 2500, 1000, 0, 0,
@@ -112,7 +112,7 @@ struct weapon rhandlist[] = {
 };
 
 /*名字,需hp,需mp,需speed,攻击,防护,速度,买价,卖价,特别,图档*/
-struct weapon lhandlist[] = {
+const struct weapon lhandlist[] = {
 	"不买装备", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	"大木棒", 0, 0, 0, 5, 0, 0, 1000, 700, 0, 0,
 	"金属扳手", 0, 0, 0, 10, 0, 0, 1500, 1000, 0, 0,
@@ -125,7 +125,7 @@ struct weapon lhandlist[] = {
 };
 
 /*名字,需hp,需mp,需speed,攻击,防护,速度,买价,卖价,特别,图档*/
-struct weapon bodylist[] = {
+const struct weapon bodylist[] = {
 	"不买装备", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	"塑胶胄甲", 40, 0, 0, 0, 5, 0, 1000, 700, 0, 0,
 	"特级皮甲", 50, 0, 0, 0, 10, 0, 2500, 1000, 0, 0,
@@ -137,7 +137,7 @@ struct weapon bodylist[] = {
 };
 
 /*名字,需hp,需mp,需speed,攻击,防护,速度,买价,卖价,特别,图档*/
-struct weapon footlist[] = {
+const struct weapon footlist[] = {
 	"不买装备", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	"塑胶拖鞋", 0, 0, 0, 0, 0, 10, 800, 500, 0, 0,
 	"东洋木屐", 0, 0, 0, 15, 0, 10, 1000, 700, 0, 0,
@@ -241,7 +241,7 @@ int mode;
 int oldnum[];
 struct goodsofpip *p;
 {
-	char *shopname[4] = { "店名", "便利商店", "星空药铺", "夜里书局" };
+	const static char *shopname[4] = { "店名", "便利商店", "星空药铺", "夜里书局" };
 	char inbuf[256];
 	char genbuf[20];
 	long smoney;
@@ -482,7 +482,7 @@ struct weapon *p;
 	char buf[256];
 	char ans[5];
 	char shortbuf[100];
-	char menutitle[5][11] =
+	const static char menutitle[5][11] =
 	    { "头部装备区", "右手装备区", "左手装备区", "身体装备区",
 		"足部装备区"
 	};

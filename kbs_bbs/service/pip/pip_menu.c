@@ -15,7 +15,7 @@ extern time_t lasttime;
 //extern char BBS_FULL_NAME[];
 #endif				// END MAPLE
 
-char *menuname[8][2] = {
+const char *menuname[8][2] = {
 	{"             ",
 	 "[1;44;37m Ñ¡µ¥ [46m[1]»ù±¾ [2]¹ä½Ö [3]ÐÞÐÐ [4]ÍæÀÖ [5]´ò¹¤ [6]ÌØÊâ [7]ÏµÍ³ [Q]Àë¿ª          [0m"},
 
@@ -44,7 +44,7 @@ char *menuname[8][2] = {
 /*Ö÷Ñ¡µ¥*/
 int pip_basic_menu(), pip_store_menu(), pip_practice_menu();
 int pip_play_menu(), pip_job_menu(), pip_special_menu(), pip_system_menu();
-static struct pipcommands pipmainlist[] = {
+const static struct pipcommands pipmainlist[] = {
 	pip_basic_menu, '1', '1',
 	pip_store_menu, '2', '2',
 	pip_practice_menu, '3', '3',
@@ -58,7 +58,7 @@ static struct pipcommands pipmainlist[] = {
 /*»ù±¾Ñ¡µ¥*/
 int pip_basic_feed(), pip_basic_takeshower(), pip_basic_takerest(),
 pip_basic_kiss();
-static struct pipcommands pipbasiclist[] = {
+const static struct pipcommands pipbasiclist[] = {
 	pip_basic_feed, '1', '1',
 	pip_basic_takeshower, '2', '2',
 	pip_basic_takerest, '3', '3',
@@ -70,7 +70,7 @@ static struct pipcommands pipbasiclist[] = {
 int pip_store_food(), pip_store_medicine(), pip_store_other();
 int pip_store_weapon_head(), pip_store_weapon_rhand(), pip_store_weapon_lhand();
 int pip_store_weapon_body(), pip_store_weapon_foot();
-static struct pipcommands pipstorelist[] = {
+const static struct pipcommands pipstorelist[] = {
 	pip_store_food, '1', '1',
 	pip_store_medicine, '2', '2',
 	pip_store_other, '3', '3',
@@ -87,7 +87,7 @@ int pip_practice_classA(), pip_practice_classB(), pip_practice_classC();
 int pip_practice_classD(), pip_practice_classE(), pip_practice_classF();
 int pip_practice_classG(), pip_practice_classH(), pip_practice_classI();
 int pip_practice_classJ();
-static struct pipcommands pippracticelist[] = {
+const static struct pipcommands pippracticelist[] = {
 	pip_practice_classA, 'a', 'A',
 	pip_practice_classB, 'b', 'B',
 	pip_practice_classC, 'c', 'C',
@@ -104,7 +104,7 @@ static struct pipcommands pippracticelist[] = {
 /*ÍæÀÖÑ¡µ¥*/
 int pip_play_stroll(), pip_play_sport(), pip_play_date(), pip_play_guess();
 int pip_play_outing(), pip_play_kite(), pip_play_KTV();
-static struct pipcommands pipplaylist[] = {
+const static struct pipcommands pipplaylist[] = {
 	pip_play_stroll, '1', '1',
 	pip_play_sport, '2', '2',
 	pip_play_date, '3', '3',
@@ -120,7 +120,7 @@ int pip_job_workA(), pip_job_workB(), pip_job_workC(), pip_job_workD();
 int pip_job_workE(), pip_job_workF(), pip_job_workG(), pip_job_workH();
 int pip_job_workI(), pip_job_workJ(), pip_job_workK(), pip_job_workL();
 int pip_job_workM(), pip_job_workN(), pip_job_workO(), pip_job_workP();
-static struct pipcommands pipjoblist[] = {
+const static struct pipcommands pipjoblist[] = {
 	pip_job_workA, 'a', 'A',
 	pip_job_workB, 'b', 'B',
 	pip_job_workC, 'c', 'C',
@@ -143,7 +143,7 @@ static struct pipcommands pipjoblist[] = {
 /*ÌØÊâÑ¡µ¥*/
 int pip_see_doctor(), pip_change_weight(), pip_meet_vs_man(), pip_query(),
 pip_go_palace();
-static struct pipcommands pipspeciallist[] = {
+const static struct pipcommands pipspeciallist[] = {
 	pip_see_doctor, '1', '1',
 	pip_change_weight, '2', '2',
 	pip_meet_vs_man, '3', '3',
@@ -156,7 +156,7 @@ static struct pipcommands pipspeciallist[] = {
 int pip_data_list(), pip_system_freepip(), pip_system_service();
 int pip_write_backup(), pip_read_backup();
 int pip_divine(), pip_results_show();
-static struct pipcommands pipsystemlist[] = {
+const static struct pipcommands pipsystemlist[] = {
 	pip_data_list, '1', '1',
 	pip_system_freepip, '2', '2',
 	pip_system_service, '3', '3',
@@ -171,7 +171,7 @@ static struct pipcommands pipsystemlist[] = {
 int
 pip_do_menu(menunum, menumode, cmdtable)
 int menunum, menumode;
-struct pipcommands cmdtable[];
+const struct pipcommands cmdtable[];
 {
 	time_t now;
 	int key1, key2;
