@@ -864,7 +864,7 @@ talkreply()
 */
     memset(&sin, 0, sizeof sin) ;
 
-    sin.sin_family = h->h_addrtype ;
+    sin.sin_family = AF_INET;
     sin.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
     sin.sin_port = ui.sockaddr ;
     a = socket(sin.sin_family,SOCK_STREAM,0) ;
