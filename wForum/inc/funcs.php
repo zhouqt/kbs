@@ -23,6 +23,7 @@ $StartTime=getmicrotime();
 if (BUILD_PHP_EXTENSION==0)
 	@dl("libphpbbslib.so");
 
+chdir(BBS_HOME);
 if (!bbs_ext_initialized())
 	bbs_init_ext();
 
