@@ -364,6 +364,11 @@ attach define
 #define QUOTELEV 0
 #define BOARD_SHOW_ONLINE 1
 
+#define BIRTHFILENUM 12
+#define BIRTHFILEPATH "0Announce/groups/GROUP_0/sysop/birthfile"
+ 
+#define MYUNLINK_BACKUPDIR "0Announce/backup"
+ 
 #define BMSLOG
 
 #endif
