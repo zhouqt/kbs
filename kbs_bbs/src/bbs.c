@@ -2489,6 +2489,10 @@ int edit_title(int ent, struct fileheader *fileinfo, char *direct)
 	/* modified by stiger */
         //setbdir(digestmode, buf, currboard);
         //if ((fd = open(buf, O_RDONLY, 0)) != -1) {
+		/* add by stiger */
+		if (POSTFILE_BASENAME(fileinfo->filename)[0]=='Z')
+			ent = get_num_records(direct,sizeof(struct fileheader));
+		/* add end */
         if ((fd = open(direct, O_RDONLY, 0)) != -1) {
             for (i = ent; i > 0; i--) {
                 if (0 == get_record_handle(fd, &xfh, sizeof(xfh), i)) {
