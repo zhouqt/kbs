@@ -239,6 +239,7 @@ void unlock_sem_check(int lockid);
     int normal_board(const char *bname);
     int getboardnum(const char *bname, struct boardheader *bh);       /* board name --> board No. & not check level */
 
+	int fill_super_board(char *searchname, int result[], int max);
     int add_board(struct boardheader *newboard);
     void build_board_structure(const char *board);
     int apply_boards(int (*func) (struct boardheader*,void*),void* arg);   /* 对所有版 应用 func函数 */

@@ -1262,6 +1262,168 @@ int skip_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     return GOTO_NEXT;
 }
 
+/************
+  超级版面选择，add by stiger
+  *****/
+#define MAXBOARDSEARCH 100
+int super_board_count;
+int super_board_now=0;
+
+static int sb_show(struct _select_def *conf, int i)
+{
+	const struct boardheader *bp;
+	int *result = (int *) (conf->arg);
+	struct BoardStatus *bptr;
+
+	bp=getboard(result[i-1]);
+	if(bp==NULL){
+		prints(" ERROR ");
+		return SHOW_CONTINUE;
+	}
+    bptr = getbstatus(result[i-1]);
+
+//	prints(" %2d %-20s %-40s", i, bp->filename, bp->title);
+	prints(" %4d%s ", bptr->total, bptr->total > 9999 ? " " : "  " ); 
+    prints("%-16s %s%-36s", bp->filename, (bp->flag & BOARD_VOTEFLAG) ? "\033[31;1mV\033[m" : " ",  bp->title+1); 
+
+	return SHOW_CONTINUE;
+}
+
+static int sb_prekey(struct _select_def *conf, int *key)
+{
+    switch (*key) {
+    case 'q':
+	case 'e':
+        *key = KEY_LEFT;
+        break;
+    case 'p':
+    case 'k':
+        *key = KEY_UP;
+        break;
+    case 'N':
+        *key = KEY_PGDN;
+        break;
+    case 'n':
+    case 'j':
+        *key = KEY_DOWN;
+        break;
+    }
+    return SHOW_CONTINUE;
+}
+
+static int sb_key(struct _select_def *conf, int key)
+{
+	switch(key){
+	default:
+		break;
+	}
+
+	return SHOW_CONTINUE;
+}
+
+static int sb_refresh(struct _select_def *conf)
+{
+    clear();
+    docmdtitle("[超级版面选择]",
+               "退出[\x1b[1;32m←\x1b[0;37m] 选择[\x1b[1;32m↑\x1b[0;37m,\x1b[1;32m↓\x1b[0;37m] 进入版面[\x1b[1;32mENTER\x1b[0;37m]");
+    move(2, 0);
+    setfcolor(WHITE, DEFINE(currentuser, DEF_HIGHCOLOR));
+    setbcolor(BLUE);
+    clrtoeol();
+    prints("  %s 讨论区名称        V 类别 转信  %-24s            ", "全部 " , "中  文  叙  述");
+    resetcolor();
+    update_endline();
+    return SHOW_CONTINUE;
+}
+
+static int sb_getdata(struct _select_def *conf, int pos, int len)
+{
+    conf->item_count = super_board_count;
+    return SHOW_CONTINUE;
+}
+
+static int sb_select(struct _select_def *conf)
+{
+	super_board_now = conf->pos;
+	return SHOW_QUIT;
+}
+
+static int do_super_board_select(int result[])
+{
+	POINT *pts;
+    struct _select_def grouplist_conf;
+    int i;
+
+    pts = (POINT *) malloc(sizeof(POINT) * BBS_PAGESIZE);
+    for (i = 0; i < BBS_PAGESIZE; i++) {
+        pts[i].x = 2;
+        pts[i].y = i + 3;
+    }
+    bzero(&grouplist_conf, sizeof(struct _select_def));
+
+	grouplist_conf.arg = result;
+    grouplist_conf.item_count = super_board_count;
+    grouplist_conf.item_per_page = BBS_PAGESIZE;
+    grouplist_conf.flag = LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;
+    grouplist_conf.prompt = "◆";
+    grouplist_conf.item_pos = pts;
+    grouplist_conf.title_pos.x = 0;
+    grouplist_conf.title_pos.y = 0;
+    grouplist_conf.pos = 1;
+    grouplist_conf.page_pos = 1;
+
+    grouplist_conf.show_data = sb_show;
+    grouplist_conf.pre_key_command = sb_prekey;
+    grouplist_conf.key_command = sb_key;
+    grouplist_conf.show_title = sb_refresh;
+    grouplist_conf.get_data = sb_getdata;
+	grouplist_conf.on_select = sb_select;
+
+    list_select_loop(&grouplist_conf);
+
+	free(pts);
+
+	return 0;
+}
+
+int super_select_board(char *bname)
+{
+	int result[MAXBOARDSEARCH];
+	char searchname[STRLEN];
+
+	clear();
+
+	bname[0]='\0';
+	searchname[0]='\0';
+
+//	while(bname[0]=='\0'){
+    	getdata(1, 0, "搜索版面关键字: ", searchname, STRLEN-1, DOECHO, NULL, false);
+		if (searchname[0] == '\0' || searchname[0]=='\n')
+			return 0;
+		if( ( super_board_count = fill_super_board (searchname, result, MAXBOARDSEARCH) ) <= 0 ){
+			move(5,0);
+			prints("没有找到任何相关版面\n");
+			pressanykey();
+			return 0;
+		}
+		super_board_now=0;
+		do_super_board_select(result);
+		if (super_board_now != 0){
+			const struct boardheader *bp;
+			bp=getboard(result[super_board_now-1]);
+			if (bp==NULL){
+				bname[0]='\0';
+				return 0;
+			}else
+				strcpy(bname, bp->filename);
+		}
+//	}
+
+	return 0;
+}
+
+extern int in_do_sendmsg;
+
 int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
         /*
          * 输入讨论区名 选择讨论区 
@@ -1275,13 +1437,17 @@ int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     if (conf!=NULL) arg=conf->arg;
 
     move(0, 0);
-    prints("选择一个讨论区 (英文字母大小写皆可)");
+    prints("选择一个讨论区 (英文字母大小写皆可,按#进入版面搜索)");
     clrtoeol();
-    prints("\n输入讨论区名 (按空白键自动搜寻): ");
+    prints("\n输入讨论区名 (按空白键自动补齐): ");
     clrtoeol();
 
     make_blist();               /* 生成所有Board名 列表 */
-    namecomplete((char *) NULL, bname); /* 提示输入 board 名 */
+	in_do_sendmsg=true;
+    if ( namecomplete((char *) NULL, bname) == '#' ) { /* 提示输入 board 名 */
+		super_select_board(bname);
+	}
+	in_do_sendmsg=0;
     setbpath(bpath, bname);
     if (*bname == '\0')
     	return FULLUPDATE;

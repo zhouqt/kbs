@@ -214,6 +214,24 @@ int apply_boards(int (*func) (struct boardheader *, void* ),void* arg)
     return 0;
 }
 
+int fill_super_board(char *searchname, int result[], int max)
+{
+	register int i;
+	int total=0;
+
+    for (i = 0; i < brdshm->numboards && total < max ; i++){
+        if (bcache[i].filename[0] == '\0')
+			continue;
+    	if (check_read_perm(currentuser, &bcache[i])) {
+			if (strstr(bcache[i].filename, searchname) || strstr(bcache[i].des, searchname) || strstr(bcache[i].title, searchname) ){
+				result[total] = i + 1;
+				total ++;
+			}
+		}
+	}
+	return total;
+}
+
 int getbnum(const char *bname)
 {
     register int i;
