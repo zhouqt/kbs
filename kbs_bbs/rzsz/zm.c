@@ -294,7 +294,7 @@ zsendline_s(const char *s, size_t count)
 			t++;
 		}
 		if (t!=s) {
-			raw_write(0,s,(size_t)(t-s));
+			raw_write(0,s,(t-s));
 			lastsent=t[-1];
 			s=t;
 		}
