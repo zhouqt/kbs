@@ -746,6 +746,7 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
         strncpy(ReadPost, fileinfo->title, STRLEN - 1);
         ReadPost[STRLEN - 1] = 0;
     }
+    memcpy(&ReadPostHeader, fileinfo, sizeof(struct fileheader));
 
     refresh();
 /* sleep(1); *//*
