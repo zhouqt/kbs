@@ -702,7 +702,7 @@ int find_thread(struct fileheader *fh,char* board,char* title)
        return 0;
     if (!strncmp(title,"Re:",3)) p=title+4;
     else p=title;
-    ret=search_record_back(fd, sizeof(struct fileheader), 0X7FFFF, (RECORD_FUNC_ARG) cmp_title, title, fh, 1);
+    ret=search_record_back(fd, sizeof(struct fileheader), 0X7FFFF, (RECORD_FUNC_ARG) cmp_title, p, fh, 1);
     close(fd);
     return ret;
 }
