@@ -34,7 +34,7 @@ int fill_newboards (struct boardheader *bptr, void* arg)
 int compare_createtime(const void *a, const void *b) {
     struct boardheader *bptr1 = *(struct boardheader **)a;
     struct boardheader *bptr2 = *(struct boardheader **)b;
-    return (bptr1->createtime - bptr2->createtime);
+    return (bptr2->createtime - bptr1->createtime);
 }
 
 int gen_newboards_xml(struct newboarddata *boarddata)
