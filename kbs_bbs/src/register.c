@@ -165,7 +165,7 @@ void new_register()
 
 #ifdef NINE_BUILD
     sprintf(title, "新手上路 : %s", newuser.userid);
-    fname = "tmp/newuser";
+    strcpy(fname, "tmp/newuser");
     fn = fopen(fname, "w");
     fprintf(fn, "大家好,\n\n");
     fprintf(fn, "我是 %s (%s), 来自 %s\n");
