@@ -174,11 +174,11 @@ setTimeout('bbs_auto_reload()',540000);
 <img src="/images/t1.gif" class="pm">
 
 <div class="t2">
-<form action="/bbslogin.php" method="post" name="form1" target="_top" onsubmit="return fillf3(this);" class="m0">
 <?php
 		if($currentuser["userid"]=="guest")
 		{
 ?>
+<form action="/bbslogin.php" method="post" name="form1" target="_top" onsubmit="return fillf3(this);" class="m0">
 <nobr><img src="/images/u1.gif" alt="µÇÂ¼ÓÃ»§Ãû" class="pm" width="54" height="21">
 <input type="text" class="upinput" LENGTH="10" onMouseOver="this.focus()" onFocus="this.select()" name="id" /></nobr><br/>
 
