@@ -284,9 +284,9 @@ window.location="/nologin.html";
 /* used by cache_header() and update_cache_header()，不应该直接被调用 */
 function cache_process($scope, $forcecachetime, $modifytime, $expiretime) {
 	global $cachemode;
-	//session_cache_limiter($scope);
+	//session_cache_limiter($scope); //这个函数只能接受 "nocache" 参数，不能接受 "no-cache" 参数
 	$cachemode=$scope;
-	if ($scope=="nocache") {
+	if ($scope=="nocache" || $scope=="no-cache") { //兼容 "no-cache" 的写法，不推荐
 		header("Expires: Thu, 19 Nov 1981 08:52:00 GMT");
 		header("Cache-Control: no-store, no-cache, must-revalidate");
 		header("Pragma: no-cache");
