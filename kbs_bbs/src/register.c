@@ -538,7 +538,7 @@ void ConveyID()
 {
     FILE* fn = NULL;
 	long now;
-	char buf[STRLEN],filename[STRLEN];
+	char buf[STRLEN],filename[STRLEN],systembuf[STRLEN];
 
     //检查权限
         if (HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_BOARDS) || HAS_PERM(currentuser, PERM_OBOARDS) || HAS_PERM(currentuser, PERM_ACCOUNTS)
@@ -588,6 +588,17 @@ void ConveyID()
 			return;
 		}
 
+		//清空所有存在的配置文件,信箱
+		setmailpath(buf,currentuser->userid);
+		sprintf(systembuf,"/bin/rm -fr %s",buf);
+		system(systembuf);
+		sethomepath(buf,currentuser->userid);
+		sprintf(systembuf,"/bin/rm %s/*",buf);
+		system(systembuf);
+		sprintf(systembuf,"/bin/rm %s/.*",buf);
+        system(systembuf);
+
+		//生成转让ID文件
         sethomefile(filename,currentuser->userid,"conveyID");
 		if((fn=fopen(filename,"w")) != NULL){
 		    fprintf(fn,"Convey ID at %s",ctime(&now));
@@ -602,7 +613,7 @@ void ConveyID()
 		currentuser->userlevel |= PERM_BASIC;
 
 		currentuser->numposts = 0;
-		currentuser->numlogins = 0;
+		if(currentuser->numlogins > 10)currentuser->numlogins = 10;
 		currentuser->stay = 0;
 		//clear 用户信息
 		bzero(&curruserdata,sizeof(struct userdata));
