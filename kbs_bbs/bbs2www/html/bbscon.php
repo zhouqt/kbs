@@ -268,7 +268,7 @@ var strDesc = '<?php echo htmlspecialchars($brdarr["DESC"]); ?>';
 ?>
 </td></tr>
 <tr><td class="t5">
-<font class="content"><script language="Javascript" src="jscon.php?bid=<?php echo $brdarr["BID"]; ?>&id=<?php echo $articles[1]["ID"]; ?>">
+<font class="content"><script language="Javascript" src="jscon.php?ftype=<?php echo $ftype; ?>&bid=<?php echo $brdarr["BID"]; ?>&id=<?php echo $articles[1]["ID"]; ?>">
 </script>
 </font>
 </td></tr>
