@@ -289,7 +289,7 @@
 		else
 			$page = ($start + $artcnt - 1) / $artcnt;
 		settype($page, "integer");
-		$articles = bbs_getarticles($brdarr["NAME"], $start, $artcnt, $dir_modes["NORMAL"]);
+		$articles = bbs_getarticles($brdarr["NAME"], $start, $artcnt, $default_dir_mode);
 		if ($articles == FALSE)
 			html_error_quit("读取文章列表失败");
 		$bms = explode(" ", trim($brdarr["BM"]));
