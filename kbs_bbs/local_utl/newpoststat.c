@@ -112,6 +112,63 @@ static int get_seccode_index(char prefix)
     return -1;
 }
 
+/*********记录十大信息到toplog表*********/
+/*
+create table `toplog` (
+ `id` int unsigned NOT NULL auto_increment,
+ `userid` char(15) NOT NULL default '',
+ `bname` char(31) NOT NULL default '',
+ `title` char(81) NOT NULL default '',
+ `time` timestamp NOT NULL,
+ `date` date NOT NULL,
+ `topth` int NOT NULL default '1',
+ `count` int NOT NULL default '0',
+ `threadid` int unsigned NOT NULL default '0',
+ PRIMARY KEY (`id`),
+ KEY userid (`userid`),
+ KEY bname(`bname`, `threadid`),
+ KEY date(`date`),
+ UNIQUE top (`date`,`topth`)
+) TYPE=MyISAM COMMENT='toplog';
+*/
+int log_top()
+{
+	MYSQL s;
+	char sqlbuf[500];
+	char newtitle[161];
+	int i;
+	char newts[20];
+
+	mysql_init (&s);
+
+	if (! my_connect_mysql(&s) ){
+		return 0;;
+	}
+
+	for(i=0;i<topnum;i++){
+		
+		mysql_escape_string(newtitle, top[i].title, strlen(top[i].title));
+
+		sprintf(sqlbuf,"UPDATE toplog SET userid='%s',bname='%s',title='%s',count='%d',time='%s',threadid='%d' WHERE date=CURDATE() AND topth='%d';", top[i].userid, top[i].board, newtitle, top[i].number, tt2timestamp(top[i].date,newts), top[i].groupid, i+1);
+
+		if( mysql_real_query( &s, sqlbuf, strlen(sqlbuf) )){
+			printf("%s\n", mysql_error(&s));
+			continue;
+		}
+		if( (int)mysql_affected_rows(&s) <= 0 ){
+			sprintf(sqlbuf, "INSERT INTO toplog VALUES (NULL,'%s','%s','%s','%s',CURDATE(),'%d','%d','%d');",top[i].userid, top[i].board, newtitle, tt2timestamp(top[i].date,newts), i+1, top[i].number, top[i].groupid);
+			if( mysql_real_query( &s, sqlbuf, strlen(sqlbuf) )){
+				printf("%s\n", mysql_error(&s));
+				continue;
+			}
+		}
+	}
+
+	mysql_close(&s);
+
+	return 1;
+}
+
 /***********
   根据type得到十大列表,已经经过排序等一系列检查,可以直接输出
   type!=4的时候还得到分区十大
@@ -575,6 +632,9 @@ void poststat(int mytype)
 	gen_hot_subjects_xml(mytype);
 	if(mytype!=4)
 		gen_secs_hot_subjects_xml(mytype);
+
+	if(mytype==0)
+		log_top();
 }
 
 
