@@ -39,7 +39,10 @@ int delete_all_mail(int dfd, char *touser, char *filename, int size, RECORD_FUNC
 		}
 		end_mmapfile((void *) buf, filesize, -1);
 		if (getuser(touser, &to_userec) != 0) {
-			to_userec->usedspace -= subspace;
+			if (to_userec->usedspace > subspace)
+				to_userec->usedspace -= subspace;
+			else
+				to_userec->usedspace = 0;
 		}
 		BBS_RETURN(0);
 	}
