@@ -355,7 +355,12 @@ void r_msg()
                     send_pid = 0;
                 if (send_pid > 100)
                     send_pid -= 100;
+#ifdef NINE_BUILD
+		if (strncmp(buf,"\x1b[44m\x1b[0;1;32m=>",15))
+                if ((uinfo.pid == send_pid)||kill(send_pid,0)) {
+#else
                 if (uinfo.pid == send_pid) {
+#endif
                     i = 1;
                     strcpy(msg, buf);
                 }
@@ -367,7 +372,12 @@ void r_msg()
                 send_pid = atoi(ptr + 1);
                 if (send_pid > 100)
                     send_pid -= 100;
+#ifdef NINE_BUILD
+		if (strncmp(msg,"\x1b[44m\x1b[0;1;32m=>",15))
+                if ((uinfo.pid == send_pid)||kill(send_pid,0)) {
+#else
                 if (uinfo.pid == send_pid) {
+#endif
                     i = 1;
                     break;
                 }
@@ -469,7 +479,12 @@ void r_msg()
                                     send_pidX = 0;
                                 if (send_pidX > 100)
                                     send_pidX -= 100;
+#ifdef NINE_BUILD
+		                if (strncmp(bufX,"\x1b[44m\x1b[0;1;32m=>",15))
+                                if ((uinfo.pid == send_pidX)||kill(send_pidX,0)) {
+#else
                                 if (uinfo.pid == send_pidX) {
+#endif
                                     if (XOK) {  /* KEY_DOWN */
                                         Line_1 = Line;
                                         break;
