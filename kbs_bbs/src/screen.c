@@ -148,8 +148,6 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
 			ochar('\r');
 		return;
 	}
-	if (was_col == new_col && was_ln == new_ln)
-		return;
 	if (new_col == was_col - 1 && new_ln == was_ln) {
 		ochar(Ctrl('H'));
 		return;
@@ -208,7 +206,7 @@ void refresh()
         j = (i + roll)%scr_lns;
 
         ii=scr_cols-1;
-        while(ii>0&&(bp[j].data[ii]==0||bp[j].data[scr_cols-1]==32)&&(bp[j].color[ii]/16)==(bp[j].color[scr_cols-1]/16)&&((bp[j].mode[ii]&~SCREEN_MODIFIED)==(bp[j].mode[scr_cols-1]&~SCREEN_MODIFIED))) ii--;
+        while(ii>0&&(bp[j].data[ii]==0||bp[j].data[ii]==32)&&(bp[j].color[ii]/16)==(bp[j].color[scr_cols-1]/16)&&((bp[j].mode[ii]&~SCREEN_MODIFIED)==(bp[j].mode[scr_cols-1]&~SCREEN_MODIFIED))) ii--;
         p=ii+1;
 
         for (k = 0; k < scr_cols; k++)
@@ -374,8 +372,8 @@ void clrtobot()
     for (i = cur_ln; i < scr_lns; i++) {
         ln = (i + roll)%scr_lns;
         slp = &big_picture[ln];
-        for(k=0;k<t_columns;k++) 
-        if(i!=cur_ln||k>=cur_col)
+        for(k=0;k<scr_cols;k++) 
+        if(i>cur_ln||k>=cur_col)
         {
             slp->data[k]=0;
             slp->mode[k]=SCREEN_MODIFIED|cur_mode;
