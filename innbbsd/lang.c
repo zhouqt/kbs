@@ -37,17 +37,17 @@ char EbbslinkUsage2[] = "bbsname.bbs   Your BBS ID (in short)\n";
 char EbbslinkUsage3[] = "nodelist.bbs  BBS ID, Address and fullname\n";
 char EbbslinkUsage4[] = "newsfeeds.bbs newsgroup board nodelist ...\n";
 
-char *FromTxt = Big5FromTxt;
-char *BoardTxt = Big5BoardTxt;
-char *SubjectTxt = Big5SubjectTxt;
-char *OrganizationTxt = Big5OrganizationTxt;
-char *PathTxt = Big5PathTxt;
-char *NCTUCSIETxt = Big5NCTUCSIETxt;
-char *ModerationTxt = Big5ModerationTxt;
-char *bbslinkUsage1 = Big5bbslinkUsage1;
-char *bbslinkUsage2 = Big5bbslinkUsage2;
-char *bbslinkUsage3 = Big5bbslinkUsage3;
-char *bbslinkUsage4 = Big5bbslinkUsage4;
+char *FromTxt = GBFromTxt;
+char *BoardTxt = GBBoardTxt;
+char *SubjectTxt = GBSubjectTxt;
+char *OrganizationTxt = GBOrganizationTxt;
+char *PathTxt = GBPathTxt;
+char *NCTUCSIETxt = GBNCTUCSIETxt;
+char *ModerationTxt = GBModerationTxt;
+char *bbslinkUsage1 = GBbbslinkUsage1;
+char *bbslinkUsage2 = GBbbslinkUsage2;
+char *bbslinkUsage3 = GBbbslinkUsage3;
+char *bbslinkUsage4 = GBbbslinkUsage4;
 
 /*
 typedef struct TxtClass {
