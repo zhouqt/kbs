@@ -105,7 +105,8 @@ function pc_file_showfiles($pc,$c_dir,$root_pid)
 </table>
 <?php
     if ($_COOKIE['PCFILEFID'])
-        echo '<br />[<a href="'.$_SERVER['PHP_SELF'].'?userid='.$pc['USER'].'&act=pt&fid='.intval($_COOKIE['PCFILEFID']).'&pid='.$root_pid.'&tid='.$root_pid.'">粘贴到根目录</a>]<br />';
+        echo '<br />[<a href="'.$_SERVER['PHP_SELF'].'?userid='.$pc['USER'].'&act=pt&fid='.intval($_COOKIE['PCFILEFID']).'&pid='.$root_pid.'&tid='.$root_pid.'">粘贴到根目录</a>]\n'.
+             '[<a href="'.$_SERVER['PHP_SELF'].'?userid='.$pc['USER'].'&act=cl&pid='.$c_dir->fid.'">清空剪贴板</a>]<br/>';
 ?>
 </center>
 <hr width="100%">
@@ -323,6 +324,10 @@ else
 	        if ($_COOKIE['PCFILEACT']=='mv')
 	            if (!($f->uf_mv($_GET['tid'])))
 	                html_error_quit($f->err);
+	        setcookie('PCFILEACT');
+	        setcookie('PCFILEFID');
+	        break;
+	    case 'cl':
 	        setcookie('PCFILEACT');
 	        setcookie('PCFILEFID');
 	        break;
