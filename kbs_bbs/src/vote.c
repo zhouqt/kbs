@@ -1074,9 +1074,6 @@ int allnum, pagenum;
     case 'o':
         if (!chk_currBM(currBM, currentuser))
             return true;
-        if (!strcmp(currboard, "Birthday"))
-            /*Haohmaru.99.3.29.应生日板前板主的要求而设,结束于Dec 28 20:52:29 2000 */
-            break;
         clear();
         deal = 1;
         get_record(controlfile, &currvote, sizeof(struct votebal),
@@ -1111,9 +1108,6 @@ int allnum, pagenum;
         if (!chk_currBM(currBM, currentuser)) {
             return 1;
         }
-        if (!strcmp(currboard, "Birthday"))
-            /*Haohmaru.99.3.29.结束于Dec 28 20:52:29 2000 */
-            break;
         deal = 1;
         get_record(controlfile, &currvote, sizeof(struct votebal),
                    allnum + 1);
