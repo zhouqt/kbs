@@ -58,7 +58,7 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
 static int search_author(struct keeploc *locmem, int offset, char *powner);
 static int search_post(struct keeploc *locmem, int offset);
 static int search_title(struct keeploc *locmem, int offset);
-static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, int ssize, char* pnt,char *ding_direct);
+static int i_read_key(int cmdmode, struct one_key *rcmdlist, struct keeploc *locmem, int ch, int ssize, char* pnt,char *ding_direct);
 static int cursor_pos(struct keeploc *locmem, int val, int from_top);
 static int search_thread(struct keeploc *locmem, int offset, char *title);
 static int search_threadid(struct keeploc *locmem, int offset, int groupid, int mode);
@@ -410,7 +410,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
             /*---	Modified by period	2000-11-12	---*
                    mode = i_read_key( rcmdlist, locmem, ch ,ssize);
              *---		---*/
-            mode = i_read_key(rcmdlist, locmem, ch, ssize, pnt,ding_direct);
+            mode = i_read_key(cmdmode, rcmdlist, locmem, ch, ssize, pnt,ding_direct);
             while (mode == READ_NEXT || mode == READ_PREV) {
                 int reload;
 
@@ -437,7 +437,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
                 /*---	Modified by period	2000-11-12	---*
                               mode = i_read_key( rcmdlist, locmem, ch ,ssize);
                  *---		---*/
-                mode = i_read_key(rcmdlist, locmem, ch, ssize, pnt,ding_direct);
+                mode = i_read_key(cmdmode, rcmdlist, locmem, ch, ssize, pnt,ding_direct);
             }
             modify_user_mode(cmdmode);
         }
@@ -568,7 +568,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
 }
 
 
-static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, int ssize, char* pnt, char* ding_direct)
+static int i_read_key(int cmdmode, struct one_key *rcmdlist, struct keeploc *locmem, int ch, int ssize, char* pnt, char* ding_direct)
 {
     int i, mode = DONOTHING;
 
@@ -651,11 +651,22 @@ static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, 
             locmem->top_line = last_line - screen_len + 1;
             if (locmem->top_line <= 0)
                 locmem->top_line = 1;
+	/*modified by stiger */
+/*            locmem->crs_line = last_line; */
+    if (cmdmode != RMAIL && cmdmode != GMENU)
+            locmem->crs_line = last_line - get_num_records(ding_direct,ssize);
+	else
             locmem->crs_line = last_line;
+	/*modified by stiger end */
             return PARTUPDATE;
         }
         RMVCURS(locmem);
+	/*modified by stiger */
+    if (cmdmode != RMAIL && cmdmode != GMENU)
+        locmem->crs_line = last_line - get_num_records(ding_direct,ssize);
+	else
         locmem->crs_line = last_line;
+	/*modified by stiger end */
         PUTCURS(locmem);
         break;
     case 'L':
