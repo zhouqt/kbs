@@ -11,7 +11,8 @@
 #
 
 AC_INIT(sshd.c)
-AC_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE(sshbbsd,1.0)
+AM_CONFIG_HEADER(config.h)
 AC_PREREQ(2.10)
 
 # So many systems seem to need this that it is better do it here automatically.
@@ -1324,6 +1325,18 @@ AC_CONFIG_SUBDIRS(gmp-2.0.2-ssh-2)
 
 AC_ARG_PROGRAM
 
+if test '!' -d ../src && '!' -d ../libBBS; then
+	AC_MSG_ERROR([can't find bbs source directory])
+fi
+
+OLDPWD=`pwd`
+cd ../src
+for i in *.c do
+	AC_CONFIG_LINKS($i:../src/$i)
+	BBSSOURCES="$BBSSOURCES $i"
+done
+cd $OLDPWD
+
 AC_SUBST(ETCDIR)
 AC_SUBST(PIDDIR)
 AC_SUBST(RSAREFDEP)
@@ -1331,5 +1344,6 @@ AC_SUBST(CONFOBJS)
 AC_SUBST(SSHCONFOBJS)
 AC_SUBST(SSHDCONFOBJS)
 AC_SUBST(SSHINSTALLMODE)
+AC_SUBST(BBSSOURCES)
 
 AC_OUTPUT(Makefile)

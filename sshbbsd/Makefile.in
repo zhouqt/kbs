@@ -1,417 +1,613 @@
-#
-# Makefile.in
-#
-# Author: Tatu Ylonen <ylo@cs.hut.fi>
-#
-# Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
-#                    All rights reserved
-#
-# Created: Wed Mar 22 17:37:49 1995 ylo
-#
-# $Id$
-# $Log$
-# Revision 1.5  2002/05/17 14:20:05  kxn
-#
-# faint
-#
-# Revision 1.4  2002/05/12 01:44:13  kcn
-# add libzmodem in Makefile.in
-#
-# Revision 1.3  2002/05/09 09:31:27  kxn
-# removed md5 since it is merged into libBBS.a
-#
-# Revision 1.2  2002/04/27 06:44:19  kxn
-# minor script fix
-#
-# Revision 1.1.1.1  2002/04/27 05:47:26  kxn
-# no message
-#
-# Revision 1.3  2002/04/25 05:37:25  kxn
-# bugs fixed: disconnect, chinese ime
-# features added : run as normal user
-#
-# Revision 1.2  2002/04/24 23:27:08  kxn
-# minor fixes
-#
-# Revision 1.1  2001/07/04 06:07:07  bbsdev
-# bbs sshd
-#
-# Revision 1.51  1999/04/29 07:51:59  tri
-# 	Replaced OSF1/C2 security support with more complete SIA
-#         (Security Integration Architecture) support by Tom Woodburn.
-#
-# Revision 1.50  1999/02/22 12:04:09  tri
-# 	Added snprintf.
-#
-# Revision 1.49  1998/07/08 01:20:28  kivinen
-# 	Changed SSH_PROGRAM to be ssh1.
-#
-# Revision 1.48  1998/06/12 08:04:37  kivinen
-# 	Moved removing of suid bit in the beginnin of the installation
-# 	process.
-#
-# Revision 1.47  1998/06/11 14:00:37  kivinen
-# 	Added README.DEATTACK to DISTFILES.
-#
-# Revision 1.46  1998/06/11 00:02:59  kivinen
-# 	Added deattack.{o,h}
-#
-# Revision 1.45  1998/05/23  20:17:11  kivinen
-# 	Rerun autoheader/automake/autoconf.
-#
-# Revision 1.44  1998/05/11  17:21:27  kivinen
-# 	Fixed removing of suid bit from ssh.old.
-#
-# Revision 1.43  1998/04/30 03:59:42  kivinen
-# 	Changed installation process so that everything is installed
-# 	as <program>1 and if <program>2 is not found the <program> is
-# 	made symbolic link to <program>1.
-#
-# Revision 1.42  1998/03/27 17:28:57  kivinen
-# 	Removed TSS.
-#
-# Revision 1.41  1998/03/27 16:52:30  kivinen
-# 	Fixed order of kerberos libraries.
-#
-# Revision 1.40  1997/09/02 13:21:56  kivinen
-# 	Fixed free & commercial dist making.
-#
-# Revision 1.39  1997/06/25 08:35:29  kivinen
-# 	Removed clenaup.free, and cleanup.commercial from
-# 	COMMERCIALDISTFILES.
-#
-# Revision 1.38  1997/06/18 20:58:53  kivinen
-# 	Fixed edd man page installing.
-#
-# Revision 1.37  1997/05/13 22:32:53  kivinen
-# 	Fixed EDD installation and uninstallation. Removed idea from
-# 	EDD_OBJS and added CONFOBJS there.
-#
-# Revision 1.36  1997/05/08 02:54:16  kivinen
-# 	Removed edd-block.c from COMMERCIALDISTFILES.
-# 	Added OTHER_PROGRAMS.
-#
-# Revision 1.35  1997/05/07 16:55:12  mkojo
-# 	Edited edd.
-#
-# Revision 1.34  1997/04/27 21:47:42  kivinen
-# 	F-Secure commercial distribution stuff.
-#
-# Revision 1.33  1997/04/22 23:56:10  kivinen
-# 	Added WARPLIBS.
-#
-# Revision 1.32  1997/04/17 03:53:52  kivinen
-# 	Fixed typo in SBIN_PROGRAMS backup copy mv.
-#
-# Revision 1.31  1997/04/05 21:43:50  kivinen
-# 	Changed make install so it will rename old ssh to ssh.old and
-# 	then install new version.
-#
-# Revision 1.30  1997/03/27 05:59:25  kivinen
-# 	Added LIBS to XLIBS.
-#
-# Revision 1.29  1997/03/27 03:17:29  kivinen
-# 	Added kerberos patches from Glenn Machin.
-# 	Added README.CIPHER to DISTFILES.
-#
-# Revision 1.28  1997/03/25 06:18:38  kivinen
-# *** empty log message ***
-#
-# Revision 1.27  1997/03/19 22:05:42  kivinen
-# 	Fixed RFC target to compile on object directory.
-#
-# Revision 1.26  1997/03/19 21:09:11  kivinen
-# 	Added AR variable. Added SSH_INSTALL_MODE support (can be
-# 	installed non-suid).
-#
-# Revision 1.25  1997/03/19 18:01:54  kivinen
-# 	Added TIS authentication code from Andre April
-# 	<Andre.April@cediti.be>.
-# 	Update zlib to 1.0.4.
-# 	Rewrote the make dist support so it works if you are using
-# 	separate object directory too.
-#
-# Revision 1.24  1996/11/19 22:43:03  kivinen
-# 	Added rm -f TAGS before making them (etags -a only appends new
-# 	tags to TAGS file).
-#
-# Revision 1.23  1996/10/30 04:21:58  kivinen
-# 	Changed to tar to use p flag.
-#
-# Revision 1.22  1996/10/29 22:39:38  kivinen
-# 	Changed gmp-2.0.2 to gmp-2.0.2-ssh-2.
-#
-# Revision 1.21  1996/10/24 14:04:40  ttsalo
-#       Removed check-fds.c from DISTFILES
-#
-# Revision 1.20  1996/10/23 16:00:19  ttsalo
-#       BINDIR (in .c.o) is back, this time named SSH_BINDIR
-#
-# Revision 1.19  1996/10/22 13:15:16  ttsalo
-#       Removed permanent-fd stuff
-#
-# Revision 1.18  1996/10/20 02:59:29  ylo
-# 	Removed BINDIR.  It is not used anywhere, and causes problems
-# 	on DGUX.
-#
-# Revision 1.17  1996/10/14 17:32:59  ttsalo
-#       Don't pack minfd.h in distribution
-#
-# Revision 1.16  1996/10/14 14:17:14  ttsalo
-#         Install X_PROGRAMS too
-#
-# Revision 1.15  1996/10/08 14:05:16  ttsalo
-# 	Make distclean in gmp-dir instead of just make clean
-# 	when making dist.
-#
-# Revision 1.14  1996/09/29 22:46:09  kivinen
-# 	Updated gmp-2.0 to gmp-2.0.2. Added tags target.
-#
-# Revision 1.13  1996/09/27 13:55:33  ttsalo
-# 	Added blowfish
-#
-# Revision 1.12  1996/09/08 17:45:51  ttsalo
-# 	Distclean makes distclean in zlib too
-#
-# Revision 1.11  1996/08/29 15:18:18  ttsalo
-# 	make distclean makes disclean in gmp too
-#
-# Revision 1.10  1996/08/27 12:59:30  ttsalo
-# 	Changed gmp 1.3.2 to gmp 2.0
-#
-# Revision 1.9  1996/07/12 07:07:40  ttsalo
-# 	Changed zlib version to zlib-1.0.3, detached ssh-askpass from
-# 	NORMAL_PROGRAMS to X_PROGRAMS, which is conditionally defined.
-#
-# Revision 1.8  1996/06/24 14:40:27  ttsalo
-# 	Changed zlib to version 1.0.2, zlibdir = zlib-1.0.2
-#
-# Revision 1.7  1996/06/03 20:06:14  ylo
-# 	Removed ssh-askpass.wish from DISTFILES.
-# 	Removed explicit rule for ssh-askpass.o.  It breaks
-# 	compilations in separate object directory.
-# 	Added X_CFLAGS in .c.o rule; it is needed for ssh-askpass.
-#
-# Revision 1.6  1996/05/28 12:46:10  ylo
-# 	Cosmetic changes.
-#
-# Revision 1.5  1996/04/26 00:42:37  ylo
-# 	Don't include make-ssh-known-hosts.1 in DISTFILES (it is generated).
-# 	Avoid double -m options to install; some machines don't like it.
-# 	Removed some obsolete rm commands that were there for compatibility.
-#
-# Revision 1.4  1996/04/22 23:31:32  huima
-# Added ssh-askpass in C. Added general support for X programs.
-#
-# Revision 1.3  1996/03/05  18:38:31  huima
-# Edd target. Edd not included in 'all'.
-#
-# Revision 1.1  1996/02/18  21:38:13  ylo
-# Initial revision
-#
-# Revision 1.18  1995/10/02  01:17:20  ylo
-# 	Added PIDDIR.
-# 	Added missing socketpair.c to EXTRA_SRCS.
-# 	Some manual pages now generated by configure.
-# 	Remove old /etc/sshd_pid.
-# 	Fixed install_prefix.
-#
-# Revision 1.17  1995/09/27  02:09:12  ylo
-# 	Made etcdir configurable with --with-etcdir=PATH.
-#
-# Revision 1.16  1995/09/24  23:56:51  ylo
-# 	New file clientloop.c.
-#
-# Revision 1.15  1995/09/10  23:25:10  ylo
-# 	Added osfc2.c to EXTRA_SRCS.
-#
-# Revision 1.14  1995/09/10  22:44:02  ylo
-# 	Reorganized OBJS lists.
-# 	Added serverloop.o.
-#
-# Revision 1.13  1995/09/09  21:26:18  ylo
-# 	Added uidswap.o, ChangeLog.
-#
-# Revision 1.12  1995/09/06  15:56:25  ylo
-# 	Replace ETCDIR in server_config.sample.
-#
-# Revision 1.11  1995/08/31  09:42:47  ylo
-# 	Added $(exec_prefix) and $(etcdir) to the list of directories
-# 	to create.
-#
-# Revision 1.10  1995/08/31  09:18:05  ylo
-# 	Added $(etcdir).
-#
-# Revision 1.9  1995/08/29  22:17:26  ylo
-# 	Moved sshd to $prefix/sbin.
-# 	Added improved file descriptor code from David Mazieres.
-# 	Changed ssh-keygen to use file name option.
-# 	Added missing files to clean.
-#
-# Revision 1.8  1995/08/22  14:04:56  ylo
-# 	Removed references to obsolete DESDEP.
-#
-# Revision 1.7  1995/08/21  23:19:06  ylo
-# 	Added server config stuff.
-#
-# Revision 1.6  1995/08/18  22:40:28  ylo
-# 	Added install_prefix.
-# 	Added CONFOBJS, and moved idea.o to CONFOBJS.
-# 	Added config.guess and config.sub to DISTFILES.
-#
-# Revision 1.5  1995/07/26  17:09:21  ylo
-# 	Added mpaux.o.
-#
-# Revision 1.4  1995/07/15  13:26:55  ylo
-# 	Added putenv.c to EXTRA_SRCS.
-#
-# Revision 1.3  1995/07/13  01:06:27  ylo
-# 	Added cvs log.
-#
-# $Endlog$
+# Makefile.in generated by automake 1.6.1 from Makefile.am.
+# @configure_input@
 
-all: sshbbsd
+# Copyright 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002
+# Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
 
-include ../Makefile
-include ../Makefile.spec
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
 
-srcdir 		= @srcdir@
+@SET_MAKE@
+SHELL = @SHELL@
 
-VPATH 		= $(srcdir)
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
 
-install_prefix	=
-prefix		= @prefix@
-exec_prefix	= @exec_prefix@
-bindir		= @bindir@
-sbindir		= @sbindir@
-mandir		= @mandir@
-man1dir		= $(mandir)/man1
-man8dir		= $(mandir)/man8
-etcdir		= @ETCDIR@
-piddir		= @PIDDIR@
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
+top_builddir = .
 
-COMMERCIAL	=
-LDFLAGS		+= @LDFLAGS@
-DEFS 		= @DEFS@ $(COMMERCIAL)
-LIBOBJS		= @LIBOBJS@
-CONFOBJS	= @CONFOBJS@
-SSHDCONFOBJS	= @SSHDCONFOBJS@
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
 
-MAKEDEP		= @MAKEDEP@
-LN_S		= @LN_S@
-RANLIB		= @RANLIB@
-AR		= @AR@
-INSTALL		= @INSTALL@
+am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
+INSTALL = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
-INSTALL_DATA	= @INSTALL_DATA@
-WISH		= @WISH@
-PERL		= @PERL@
+INSTALL_DATA = @INSTALL_DATA@
+install_sh_DATA = $(install_sh) -c -m 644
+install_sh_PROGRAM = $(install_sh) -c
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+INSTALL_HEADER = $(INSTALL_DATA)
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+host_alias = @host_alias@
+host_triplet = @host@
 
+EXEEXT = @EXEEXT@
+OBJEXT = @OBJEXT@
+PATH_SEPARATOR = @PATH_SEPARATOR@
+transform = @program_transform_name@
+AMTAR = @AMTAR@
+AR = @AR@
+AWK = @AWK@
+BBSSOURCES = @BBSSOURCES@
+CC = @CC@
+CONFOBJS = @CONFOBJS@
+DEPDIR = @DEPDIR@
+ETCDIR = @ETCDIR@
+INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+KERBEROS_INCS = @KERBEROS_INCS@
+KERBEROS_LIBS = @KERBEROS_LIBS@
+KERBEROS_OBJS = @KERBEROS_OBJS@
+KERBEROS_ROOT = @KERBEROS_ROOT@
+LN_S = @LN_S@
+PACKAGE = @PACKAGE@
+PASSWD_PATH = @PASSWD_PATH@
+PATH_LOGIN = @PATH_LOGIN@
+PERL = @PERL@
+PIDDIR = @PIDDIR@
+RANLIB = @RANLIB@
 
-RSAREFDEP	= @RSAREFDEP@
+RSAREFDEP = @RSAREFDEP@
+RSH_PATH = @RSH_PATH@
+SSHCONFOBJS = @SSHCONFOBJS@
+SSHDCONFOBJS = @SSHDCONFOBJS@
+SSHINSTALLMODE = @SSHINSTALLMODE@
+STRIP = @STRIP@
+VERSION = @VERSION@
 
-WRAPLIBS	= @WRAPLIBS@
+WRAPLIBS = @WRAPLIBS@
+XAUTH_PATH = @XAUTH_PATH@
+X_CFLAGS = @X_CFLAGS@
+X_EXTRA_LIBS = @X_EXTRA_LIBS@
+X_LIBS = @X_LIBS@
+X_PRE_LIBS = @X_PRE_LIBS@
+X_PROGRAMS = @X_PROGRAMS@
+am__include = @am__include@
+am__quote = @am__quote@
+install_sh = @install_sh@
+COMMERCIAL = 
 
-SSH_INSTALL_MODE= @SSHINSTALLMODE@
+SSH_INSTALL_MODE = @SSHINSTALLMODE@
 
-transform	= @program_transform_name@
+GMPDIR = gmp-2.0.2-ssh-2
+SUBDIRS = $(GMPDIR)
 
-HOST_KEY_FILE 	= etc/ssh_host_key
+HOST_KEY_FILE = etc/ssh_host_key
 HOST_CONFIG_FILE = etc/ssh_config
 SERVER_CONFIG_FILE = etc/sshd_config
 
-SHELL = /bin/sh
+GMPLIBS = -L$(GMPDIR) -lgmp
+GMPDEP = $(GMPDIR)/gmp.h $(GMPDIR)/libgmp.a
 
-GMPDIR          = gmp-2.0.2-ssh-2
-GMPLIBS         = -L$(GMPDIR) -lgmp
-GMPDEP          = $(GMPDIR)/gmp.h $(GMPDIR)/libgmp.a
+ZLIBLIBS = -L/usr/lib -lz
+SSHLIBS = -lnsl -lbsd -L/usr/local/lib
 
-ZLIBLIBS	= -L/usr/lib -lz
-SSHLIBS         = -lnsl -lbsd -L/usr/local/lib
-
-RSAREFDIR	= rsaref2
-RSAREFSRCDIR 	= $(RSAREFDIR)/source
-
-
-COMMON_OBJS = $(LIBOBJS) $(CONFOBJS) \
-	rsa.o randoms.o buffer.o emulate.o packet.o compress.o \
+COMMON_OBJS = rsa.o randoms.o buffer.o emulate.o packet.o compress.o \
 	xmalloc.o bufaux.o authfile.o \
 	crc32.o rsaglue.o cipher.o des.o match.o mpaux.o \
 	userfile.o signals.o blowfish.o deattack.o
+
 SSHD_OBJS = sshd.o auth-passwd.o \
 	log-server.o canohost.o servconf.o tildexpand.o \
-	serverloop.o $(COMMON_OBJS) $(SSHDCONFOBJS)
-SRCS = $(SSHD_OBJS:.o=.c) $(KEYGEN_OBJS:.o=.c) 
+	serverloop.o $(COMMON_OBJS) 
+
 EXTRA_SRCS = memmove.c snprintf.c strerror.c remove.c random.c \
 	putenv.c crypt.c socketpair.c
 
-HEADERS = cipher.h getput.h compress.h idea.h \
-	randoms.h crc32.h includes.h \
-	userfile.h blowfish.h des.h md5.h rsa.h version.h bufaux.h \
-	mpaux.h servconf.h xmalloc.h buffer.h emulate.h packet.h ssh.h \
-	deattack.h snprintf.h
 
-DISTFILES = $(srcdir)/COPYING $(srcdir)/README $(srcdir)/README.SECURID \
-	$(srcdir)/README.TIS $(srcdir)/README.SECURERPC \
-	$(srcdir)/README.CIPHERS $(srcdir)/README.DEATTACK \
-	$(srcdir)/INSTALL $(srcdir)/TODO $(srcdir)/libdes-README \
-	$(srcdir)/libdes-COPYING $(srcdir)/libdes-ARTISTIC \
-	$(srcdir)/gnu-COPYING-GPL $(srcdir)/OVERVIEW \
-	$(srcdir)/configure $(srcdir)/configure.in $(srcdir)/config.guess \
-	$(srcdir)/config.sub $(srcdir)/Makefile.in \
-	$(srcdir)/host_config.sample $(srcdir)/config.sample \
-	$(srcdir)/acconfig.h $(srcdir)/config.h.in \
-	$(srcdir)/server_config.sample \
-	$(srcdir)/install-sh \
-	$(srcdir)/make-ssh-known-hosts.pl $(srcdir)/RFC.nroff \
-	$(srcdir)/RFC $(srcdir)/rfc-pg.c \
-	$(srcdir)/ChangeLog
-DISTSRCS = $(MAN1SOURCES) $(MAN8SOURCES) $(SRCS) $(EXTRA_SRCS) $(HEADERS)
+EXTRA_DIST = COPYING README README.SECURID README.TIS README.SECURERPC \
+	README.CIPHERS README.DEATTACK INSTALL TODO libdes-README \
+	libdes-COPYING libdes-ARTISTIC gnu-COPYING-GPL OVERVIEW \
+	configure configure.in config.guess config.sub Makefile.in \
+	host_config.sample config.sample acconfig.h config.h.in \
+	server_config.sample install-sh make-ssh-known-hosts.pl RFC.nroff \
+	RFC rfc-pg.c ChangeLog
 
-DISTNAME = ssh-`sed 's/.*"\(.*\)".*/\1/' $(srcdir)/version.h`
-CDISTNAME = f-secure-ssh-`sed 's/.*"\(.*\)".*/\1/' $(srcdir)/version.h`
-BBSLIBS = ../libBBS.a ../libsystem.a ../libzmodem.a
-SBIN_PROGRAMS = bbssshd
-PROGRAMS = $(SBIN_PROGRAMS) 
 
-all: $(PROGRAMS)
+LDALL = ../libsystem.a ../libzmodem.a $(GMPLIBS) $(ZLIBLIBS) $(WRAPLIBS) $(KERBEROS_LIBS) $(SSHLIBS)
+bin_PROGRAMS = sshbbsd
+sshbbsd_SOURCES = $(SSHD_OBJS:.o=.c) $(KEYGEN_OBJS:.o=.c)
+EXTRA_sshbbsd_SOURCE = @BBSSOURCES@ @LIBOBJS@ @CONFOBJS@ @SSHDCONFOBJS@
+AM_CFLAGS = -I. -I$(srcdir)/$(GMPDIR) -I$(srcdir)/$(ZLIBDIR) -DSAFE_KILL -DBBSMAIN -DSSHBBS -DHOST_KEY_FILE=\"$(HOST_KEY_FILE)\" -DHOST_CONFIG_FILE=\"$(HOST_CONFIG_FILE)\" -I.. -DSERVER_CONFIG_FILE=\"$(SERVER_CONFIG_FILE)\" -DSSH_PROGRAM=\"$(SSH_PROGRAM)\" -DETCDIR=\"$(etcdir)\" -DPIDDIR=\"$(piddir)\" -DSSH_BINDIR=\"$(bindir)\"
+subdir = .
+ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = config.h
+CONFIG_CLEAN_FILES =
+bin_PROGRAMS = sshbbsd$(EXEEXT)
+PROGRAMS = $(bin_PROGRAMS)
+
+am__objects_2 = rsa.$(OBJEXT) randoms.$(OBJEXT) buffer.$(OBJEXT) \
+	emulate.$(OBJEXT) packet.$(OBJEXT) compress.$(OBJEXT) \
+	xmalloc.$(OBJEXT) bufaux.$(OBJEXT) authfile.$(OBJEXT) \
+	crc32.$(OBJEXT) rsaglue.$(OBJEXT) cipher.$(OBJEXT) \
+	des.$(OBJEXT) match.$(OBJEXT) mpaux.$(OBJEXT) \
+	userfile.$(OBJEXT) signals.$(OBJEXT) blowfish.$(OBJEXT) \
+	deattack.$(OBJEXT)
+am__objects_1 = sshd.$(OBJEXT) auth-passwd.$(OBJEXT) \
+	log-server.$(OBJEXT) canohost.$(OBJEXT) servconf.$(OBJEXT) \
+	tildexpand.$(OBJEXT) serverloop.$(OBJEXT) $(am__objects_2)
+am_sshbbsd_OBJECTS = $(am__objects_1) $(am__objects_3)
+sshbbsd_OBJECTS = $(am_sshbbsd_OBJECTS)
+sshbbsd_LDADD = $(LDADD)
+sshbbsd_DEPENDENCIES =
+sshbbsd_LDFLAGS =
+
+DEFS = @DEFS@
+DEFAULT_INCLUDES =  -I. -I$(srcdir) -I.
+CPPFLAGS = @CPPFLAGS@
+LDFLAGS = @LDFLAGS@
+LIBS = @LIBS@
+depcomp = $(SHELL) $(top_srcdir)/depcomp
+am__depfiles_maybe = depfiles
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/auth-passwd.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/authfile.Po ./$(DEPDIR)/blowfish.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/bufaux.Po ./$(DEPDIR)/buffer.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/canohost.Po ./$(DEPDIR)/cipher.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/compress.Po ./$(DEPDIR)/crc32.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/deattack.Po ./$(DEPDIR)/des.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/emulate.Po ./$(DEPDIR)/log-server.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/match.Po ./$(DEPDIR)/mpaux.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/packet.Po ./$(DEPDIR)/randoms.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/rsa.Po ./$(DEPDIR)/rsaglue.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/servconf.Po ./$(DEPDIR)/serverloop.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/signals.Po ./$(DEPDIR)/sshd.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/tildexpand.Po ./$(DEPDIR)/userfile.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/xmalloc.Po
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+CFLAGS = @CFLAGS@
+DIST_SOURCES = $(sshbbsd_SOURCES)
+
+RECURSIVE_TARGETS = info-recursive dvi-recursive install-info-recursive \
+	uninstall-info-recursive all-recursive install-data-recursive \
+	install-exec-recursive installdirs-recursive install-recursive \
+	uninstall-recursive check-recursive installcheck-recursive
+DIST_COMMON = README COPYING ChangeLog INSTALL Makefile.am Makefile.in \
+	TODO acconfig.h aclocal.m4 config.guess config.h.in config.sub \
+	configure configure.in install-sh
+DIST_SUBDIRS = $(SUBDIRS)
+SOURCES = $(sshbbsd_SOURCES)
+
+all: config.h
+	$(MAKE) $(AM_MAKEFLAGS) all-recursive
+
+.SUFFIXES:
+.SUFFIXES: .c .o .obj
+$(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
+	cd $(top_srcdir) && \
+	  $(AUTOMAKE) --gnu  Makefile
+Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
+	cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe)
+
+$(top_builddir)/config.status: $(srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
+	$(SHELL) ./config.status --recheck
+$(srcdir)/configure:  $(srcdir)/configure.in $(ACLOCAL_M4) $(CONFIGURE_DEPENDENCIES)
+	cd $(srcdir) && $(AUTOCONF)
+
+$(ACLOCAL_M4):  configure.in 
+	cd $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
+
+config.h: stamp-h1
+	@if test ! -f $@; then \
+	  rm -f stamp-h1; \
+	  $(MAKE) stamp-h1; \
+	else :; fi
+
+stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
+	@rm -f stamp-h1
+	cd $(top_builddir) && $(SHELL) ./config.status config.h
+
+$(srcdir)/config.h.in:  $(top_srcdir)/configure.in $(ACLOCAL_M4) $(top_srcdir)/acconfig.h
+	cd $(top_srcdir) && $(AUTOHEADER)
+	touch $(srcdir)/config.h.in
+
+distclean-hdr:
+	-rm -f config.h
+binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
+install-binPROGRAMS: $(bin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  p1=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
+	  if test -f $$p \
+	  ; then \
+	    p1=`echo "$$p1" | sed -e 's,^.*/,,'`; \
+	    f=`echo $$p1|sed '$(transform);s/$$/$(EXEEXT)/'`; \
+	   echo " $(INSTALL_PROGRAM_ENV) $(binPROGRAMS_INSTALL) $$p $(DESTDIR)$(bindir)/$$f"; \
+	   $(INSTALL_PROGRAM_ENV) $(binPROGRAMS_INSTALL) $$p $(DESTDIR)$(bindir)/$$f; \
+	  else :; fi; \
+	done
+
+uninstall-binPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  f=`echo $$p|sed 's/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/'`; \
+	  f=`echo "$$f" | sed -e 's,^.*/,,'`; \
+	  echo " rm -f $(DESTDIR)$(bindir)/$$f"; \
+	  rm -f $(DESTDIR)$(bindir)/$$f; \
+	done
+
+clean-binPROGRAMS:
+	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+sshbbsd$(EXEEXT): $(sshbbsd_OBJECTS) $(sshbbsd_DEPENDENCIES) 
+	@rm -f sshbbsd$(EXEEXT)
+	$(LINK) $(sshbbsd_LDFLAGS) $(sshbbsd_OBJECTS) $(sshbbsd_LDADD) $(LIBS)
+
+mostlyclean-compile:
+	-rm -f *.$(OBJEXT) core *.core
+
+distclean-compile:
+	-rm -f *.tab.c
+
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/auth-passwd.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/authfile.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/blowfish.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bufaux.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/buffer.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/canohost.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cipher.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/compress.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crc32.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/deattack.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/des.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/emulate.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log-server.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/match.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mpaux.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/packet.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/randoms.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rsa.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rsaglue.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/servconf.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/serverloop.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/signals.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sshd.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tildexpand.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/userfile.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xmalloc.Po@am__quote@
+
+distclean-depend:
+	-rm -rf ./$(DEPDIR)
 
 .c.o:
-	$(CC) -c -I. -I$(srcdir)/$(GMPDIR) -I$(srcdir)/$(ZLIBDIR) $(DEFS) $(SITE_DEF) $(DEFINES) -DBBSUID=$(BBSUID) -DBBSGID=$(BBSGID) -DSAFE_KILL -DBBSMAIN -DBBSHOME=\"$(BBSHOME)\" -DSSHBBS -DBBS_HOME=\"$(BBSHOME)\" -DHOST_KEY_FILE=\"$(HOST_KEY_FILE)\" -DHOST_CONFIG_FILE=\"$(HOST_CONFIG_FILE)\" -I.. -DSERVER_CONFIG_FILE=\"$(SERVER_CONFIG_FILE)\" -DSSH_PROGRAM=\"$(SSH_PROGRAM)\" -DETCDIR=\"$(etcdir)\" -DPIDDIR=\"$(piddir)\" -DSSH_BINDIR=\"$(bindir)\" $(CFLAGS) $< 
+@AMDEP_TRUE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(COMPILE) -c `test -f '$<' || echo '$(srcdir)/'`$<
 
-sshbbsd: $(SSHD_OBJS) $(GMPDEP) $(RSAREFDEP) $(COBJS)
-	-rm -f sshbbsd
-	$(CC) $(LDFLAGS) -o sshbbsd $(SSHD_OBJS) $(COBJS) $(GMPLIBS) $(ZLIBLIBS) $(WRAPLIBS) $(LIBS) $(KERBEROS_LIBS) $(BBSLIBS) $(SSHLIBS)
+.c.obj:
+@AMDEP_TRUE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(COMPILE) -c `cygpath -w $<`
+CCDEPMODE = @CCDEPMODE@
+uninstall-info-am:
 
+# This directory's subdirectories are mostly independent; you can cd
+# into them and run `make' without going through this Makefile.
+# To change the values of `make' variables: instead of editing Makefiles,
+# (1) if the variable is set in `config.status', edit `config.status'
+#     (which will cause the Makefiles to be regenerated when you run `make');
+# (2) otherwise, pass the desired values on the `make' command line.
+$(RECURSIVE_TARGETS):
+	@set fnord $$MAKEFLAGS; amf=$$2; \
+	dot_seen=no; \
+	target=`echo $@ | sed s/-recursive//`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    dot_seen=yes; \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	done; \
+	if test "$$dot_seen" = "no"; then \
+	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
+	fi; test -z "$$fail"
 
+mostlyclean-recursive clean-recursive distclean-recursive \
+maintainer-clean-recursive:
+	@set fnord $$MAKEFLAGS; amf=$$2; \
+	dot_seen=no; \
+	case "$@" in \
+	  distclean-* | maintainer-clean-*) list='$(DIST_SUBDIRS)' ;; \
+	  *) list='$(SUBDIRS)' ;; \
+	esac; \
+	rev=''; for subdir in $$list; do \
+	  if test "$$subdir" = "."; then :; else \
+	    rev="$$subdir $$rev"; \
+	  fi; \
+	done; \
+	rev="$$rev ."; \
+	target=`echo $@ | sed s/-recursive//`; \
+	for subdir in $$rev; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	done && test -z "$$fail"
+tags-recursive:
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) tags); \
+	done
 
-GMP_COPY_SOURCES = mpz_gcd.c mpz_powm.c mpz_pow_ui.c mpz_add.c mpz_sub.c \
-		mpz_mul.c mpz_cmp.c mpz_sqrtrem.c
-$(GMPDIR)/libgmp.a:
-	cd $(GMPDIR); $(MAKE)
+ETAGS = etags
+ETAGSFLAGS =
 
-$(ZLIBDEP):
-	-if test '!' -d $(ZLIBDIR); then \
-	  mkdir $(ZLIBDIR); \
-	  cp $(srcdir)/$(ZLIBDIR)/Makefile $(ZLIBDIR); \
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
+	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
+	unique=`for i in $$list; do \
+	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+	  done | \
+	  $(AWK) '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	mkid -fID $$unique
+
+TAGS: tags-recursive $(HEADERS) $(SOURCES) config.h.in $(TAGS_DEPENDENCIES) \
+		$(TAGS_FILES) $(LISP)
+	tags=; \
+	here=`pwd`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  if test "$$subdir" = .; then :; else \
+	    test -f $$subdir/TAGS && tags="$$tags -i $$here/$$subdir/TAGS"; \
+	  fi; \
+	done; \
+	list='$(SOURCES) $(HEADERS) config.h.in $(LISP) $(TAGS_FILES)'; \
+	unique=`for i in $$list; do \
+	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+	  done | \
+	  $(AWK) '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	test -z "$(ETAGS_ARGS)$$tags$$unique" \
+	  || $(ETAGS) $(ETAGSFLAGS) $(AM_ETAGSFLAGS) $(ETAGS_ARGS) \
+	     $$tags $$unique
+
+GTAGS:
+	here=`$(am__cd) $(top_builddir) && pwd` \
+	  && cd $(top_srcdir) \
+	  && gtags -i $(GTAGS_ARGS) $$here
+
+distclean-tags:
+	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH
+DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+
+top_distdir = .
+distdir = $(PACKAGE)-$(VERSION)
+
+am__remove_distdir = \
+  { test ! -d $(distdir) \
+    || { find $(distdir) -type d ! -perm -200 -exec chmod u+w {} ';' \
+         && rm -fr $(distdir); }; }
+
+GZIP_ENV = --best
+distcleancheck_listfiles = find . -type f -print
+
+distdir: $(DISTFILES)
+	$(am__remove_distdir)
+	mkdir $(distdir)
+	@for file in $(DISTFILES); do \
+	  if test -f $$file || test -d $$file; then d=.; else d=$(srcdir); fi; \
+	  dir=`echo "$$file" | sed -e 's,/[^/]*$$,,'`; \
+	  if test "$$dir" != "$$file" && test "$$dir" != "."; then \
+	    dir="/$$dir"; \
+	    $(mkinstalldirs) "$(distdir)$$dir"; \
+	  else \
+	    dir=''; \
+	  fi; \
+	  if test -d $$d/$$file; then \
+	    if test -d $(srcdir)/$$file && test $$d != $(srcdir); then \
+	      cp -pR $(srcdir)/$$file $(distdir)$$dir || exit 1; \
+	    fi; \
+	    cp -pR $$d/$$file $(distdir)$$dir || exit 1; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || cp -p $$d/$$file $(distdir)/$$file \
+	    || exit 1; \
+	  fi; \
+	done
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  if test "$$subdir" = .; then :; else \
+	    test -d $(distdir)/$$subdir \
+	    || mkdir $(distdir)/$$subdir \
+	    || exit 1; \
+	    (cd $$subdir && \
+	      $(MAKE) $(AM_MAKEFLAGS) \
+	        top_distdir="$(top_distdir)" \
+	        distdir=../$(distdir)/$$subdir \
+	        distdir) \
+	      || exit 1; \
+	  fi; \
+	done
+	-find $(distdir) -type d ! -perm -777 -exec chmod a+rwx {} \; -o \
+	  ! -type d ! -perm -444 -links 1 -exec chmod a+r {} \; -o \
+	  ! -type d ! -perm -400 -exec chmod a+r {} \; -o \
+	  ! -type d ! -perm -444 -exec $(SHELL) $(install_sh) -c -m a+r {} {} \; \
+	|| chmod -R a+r $(distdir)
+dist-gzip: distdir
+	$(AMTAR) chof - $(distdir) | GZIP=$(GZIP_ENV) gzip -c >$(distdir).tar.gz
+	$(am__remove_distdir)
+
+dist dist-all: distdir
+	$(AMTAR) chof - $(distdir) | GZIP=$(GZIP_ENV) gzip -c >$(distdir).tar.gz
+	$(am__remove_distdir)
+
+# This target untars the dist file and tries a VPATH configuration.  Then
+# it guarantees that the distribution is self-contained by making another
+# tarfile.
+distcheck: dist
+	$(am__remove_distdir)
+	GZIP=$(GZIP_ENV) gunzip -c $(distdir).tar.gz | $(AMTAR) xf -
+	chmod -R a-w $(distdir); chmod a+w $(distdir)
+	mkdir $(distdir)/=build
+	mkdir $(distdir)/=inst
+	chmod a-w $(distdir)
+	dc_install_base=`$(am__cd) $(distdir)/=inst && pwd` \
+	  && cd $(distdir)/=build \
+	  && ../configure --srcdir=.. --prefix=$$dc_install_base \
+	    $(DISTCHECK_CONFIGURE_FLAGS) \
+	  && $(MAKE) $(AM_MAKEFLAGS) \
+	  && $(MAKE) $(AM_MAKEFLAGS) dvi \
+	  && $(MAKE) $(AM_MAKEFLAGS) check \
+	  && $(MAKE) $(AM_MAKEFLAGS) install \
+	  && $(MAKE) $(AM_MAKEFLAGS) installcheck \
+	  && $(MAKE) $(AM_MAKEFLAGS) uninstall \
+	  && (test `find $$dc_install_base -type f -print | wc -l` -le 1 \
+	      || { echo "ERROR: files left after uninstall:" ; \
+	           find $$dc_install_base -type f -print ; \
+	           exit 1; } >&2 ) \
+	  && $(MAKE) $(AM_MAKEFLAGS) dist-gzip \
+	  && rm -f $(distdir).tar.gz \
+	  && $(MAKE) $(AM_MAKEFLAGS) distcleancheck
+	$(am__remove_distdir)
+	@echo "$(distdir).tar.gz is ready for distribution" | \
+	  sed 'h;s/./=/g;p;x;p;x'
+distcleancheck: distclean
+	if test '$(srcdir)' = . ; then \
+	  echo "ERROR: distcleancheck can only run from a VPATH build" ; \
+	  exit 1 ; \
 	fi
-	cd $(ZLIBDIR); $(MAKE) VPATH=$(srcdir)/$(ZLIBDIR):../$(srcdir)/$(ZLIBDIR) \
-	  CC="$(CC)" CFLAGS="$(CFLAGS) -I. -I$(srcdir)/$(ZLIBDIR) \
-	    -I../$(srcdir)/$(GMPDIR)" RANLIB="$(RANLIB)" libz.a
+	test `$(distcleancheck_listfiles) | wc -l` -eq 0 \
+	  || { echo "ERROR: files left after distclean:" ; \
+	       $(distcleancheck_listfiles) ; \
+	       exit 1; } >&2
+check-am: all-am
+check: check-recursive
+all-am: Makefile $(PROGRAMS) config.h
+installdirs: installdirs-recursive
+installdirs-am:
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
 
-$(RSAREFSRCDIR)/librsaref.a:
-	-if test '!' -d $(RSAREFDIR); then \
-	  (cd $(srcdir); tar pcf - $(RSAREFSRCDIR)) | tar pxf -; fi
-	cd $(RSAREFSRCDIR); $(MAKE) -f ../../Makefile librsaref.a
+install: install-recursive
+install-exec: install-exec-recursive
+install-data: install-data-recursive
+uninstall: uninstall-recursive
 
-RSAREFSRCS = desc.c digit.c md2c.c md5c.c nn.c prime.c r_dh.c r_encode.c \
-	r_enhanc.c r_keygen.c r_random.c r_stdlib.c rsa.c
+install-am: all-am
+	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 
-# Note: this target is used in a recursive make, with VPATH pointing to source
-librsaref.a:
-	for i in $(RSAREFSRCS); do $(CC) $(CFLAGS) -c $$i; done
-	$(AR) rc librsaref.a $(RSAREFSRCS:.c=.o)
-	$(RANLIB) librsaref.a
+installcheck: installcheck-recursive
+install-strip:
+	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
+	  INSTALL_STRIP_FLAG=-s \
+	  `test -z '$(STRIP)' || \
+	    echo "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'"` install
+mostlyclean-generic:
+
+clean-generic:
+
+distclean-generic:
+	-rm -f Makefile $(CONFIG_CLEAN_FILES) stamp-h stamp-h[0-9]*
+
+maintainer-clean-generic:
+	@echo "This command is intended for maintainers to use"
+	@echo "it deletes files that may require special tools to rebuild."
+clean: clean-recursive
+
+clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
+
+distclean: distclean-recursive
+	-rm -f config.status config.cache config.log
+distclean-am: clean-am distclean-compile distclean-depend \
+	distclean-generic distclean-hdr distclean-tags
+
+dvi: dvi-recursive
+
+dvi-am:
+
+info: info-recursive
+
+info-am:
+
+install-data-am:
+
+install-exec-am: install-binPROGRAMS
+
+install-info: install-info-recursive
+
+install-man:
+
+installcheck-am:
+
+maintainer-clean: maintainer-clean-recursive
+
+maintainer-clean-am: distclean-am maintainer-clean-generic
+
+mostlyclean: mostlyclean-recursive
+
+mostlyclean-am: mostlyclean-compile mostlyclean-generic
+
+uninstall-am: uninstall-binPROGRAMS uninstall-info-am
+
+uninstall-info: uninstall-info-recursive
+
+.PHONY: $(RECURSIVE_TARGETS) GTAGS all all-am check check-am clean \
+	clean-binPROGRAMS clean-generic clean-recursive dist dist-all \
+	dist-gzip distcheck distclean distclean-compile \
+	distclean-depend distclean-generic distclean-hdr \
+	distclean-recursive distclean-tags distcleancheck distdir dvi \
+	dvi-am dvi-recursive info info-am info-recursive install \
+	install-am install-binPROGRAMS install-data install-data-am \
+	install-data-recursive install-exec install-exec-am \
+	install-exec-recursive install-info install-info-am \
+	install-info-recursive install-man install-recursive \
+	install-strip installcheck installcheck-am installdirs \
+	installdirs-am installdirs-recursive maintainer-clean \
+	maintainer-clean-generic maintainer-clean-recursive mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-recursive \
+	tags tags-recursive uninstall uninstall-am \
+	uninstall-binPROGRAMS uninstall-info-am \
+	uninstall-info-recursive uninstall-recursive
+
 
 # Creates /etc/ssh_host_key
 generate-host-key:
@@ -419,7 +615,7 @@ generate-host-key:
           then echo "You already have a host key in $(install_prefix)$(HOST_KEY_FILE)."; \
 	  else \
 	    umask 022; echo "Generating 1024 bit host key."; \
-	    ./ssh-keygen -b 1024 -f $(install_prefix)$(HOST_KEY_FILE) -N ''; \
+	    ssh-keygen -b 1024 -f $(install_prefix)$(HOST_KEY_FILE) -N ''; \
 	  fi
 
 # Creates install directories
@@ -446,18 +642,6 @@ make-dirs:
 # been installed on one machine into a common binary directory.
 hostinstall: $(PROGRAMS) make-dirs generate-host-key install-configs
 
-# Ssh is preferably installed suid root.  It can also be used non-root,
-# but then it cannot connect from a privileged socket, and rhosts
-# authentication will be disabled.
-#
-# Sshd is not suid root, but should preferably be run as root
-# (otherwise it can only log in as the user it runs as, and must be
-# bound to a non-privileged port).  Also, password authentication may
-# not be available if non-root and using shadow passwords.
-installssh: sshbbsd
-	bbsinstall $(BBSHOME)/bin/sshbbsd $(BBSHOME)/bin/sshbbsd.old
-	bbsinstall sshbbsd $(BBSHOME)/bin/sshbbsd
-
 install-configs:
 	-if test '!' -f $(install_prefix)$(HOST_CONFIG_FILE); then \
 	  $(INSTALL_DATA) -m 0644 $(srcdir)/host_config.sample \
@@ -468,76 +652,6 @@ install-configs:
 	  $(INSTALL_DATA) -m 0644 /tmp/ssh_inst.$$$$ \
 	    $(install_prefix)$(SERVER_CONFIG_FILE); \
 	  rm -f /tmp/ssh_inst.$$$$; fi
-
-uninstall:
-	for p in ssh $(NORMAL_PROGRAMS) $(X_PROGRAMS) $(OTHER_PROGRAMS) $(SCRIPT_PROGRAMS); do \
-	  rm -f $(install_prefix)$(bindir)/$$p; \
-	  rm -f $(install_prefix)$(bindir)/$$p.old; \
-	  rm -f $(install_prefix)$(bindir)/$${p}1; \
-	  rm -f $(install_prefix)$(bindir)/$${p}1.old; \
-	  rm -f $(install_prefix)$(bindir)/`echo $$p | sed '$(transform)'`; \
-	done
-	for p in $(SBIN_PROGRAMS); do \
-	  rm -f $(install_prefix)$(sbindir)/$$p; \
-	  rm -f $(install_prefix)$(sbindir)/$$p.old; \
-	  rm -f $(install_prefix)$(sbindir)/$${p}1; \
-	  rm -f $(install_prefix)$(sbindir)/$${p}1.old; \
-	  rm -f $(install_prefix)$(sbindir)/`echo $$p | sed '$(transform)'`; \
-	done
-	rm -f $(install_prefix)$(bindir)/slogin
-	rm -f $(install_prefix)$(bindir)/slogin1
-	rm -f $(install_prefix)$(bindir)/`echo slogin | sed '$(transform)'`
-
-clean:
-	-rm -f *.o gmon.out *core $(PROGRAMS) rfc-pg
-	cd $(GMPDIR); $(MAKE) clean
-#	cd $(RSAREFSRCDIR); rm -f *.o *.a
-
-distclean: clean
-	-rm -f Makefile config.status config.cache config.log config.h
-	-rm -f ssh.1 sshd.8 make-ssh-known-hosts.1
-	cd $(GMPDIR); $(MAKE) distclean
-
-dist: dist-free
-
-dist-free: dist-make-dir dist-free-cleanup \
-	dist-free-make-tar dist-increment-version
-
-dist-make-dir:
-	-rm -rf $(DISTNAME)
-	-mkdir $(DISTNAME)
-	cp $(DISTFILES) $(DISTNAME)
-	for i in $(DISTSRCS); do cp $(srcdir)/$$i $(DISTNAME); done
-	(cd $(GMPDIR); make dist)
-	gzip -cd $(GMPDIR)/$(GMPDIR).tar.gz | (cd $(DISTNAME); tar pxf - )
-#	tar cf - $(RSAREFDIR) | (cd $(DISTNAME); tar xf -)
-#	cd $(DISTNAME)/$(RSAREFSRCDIR); rm -f *.o *.a
-	(cd  $(srcdir); tar pcf - $(ZLIBDIR) )| (cd $(DISTNAME); tar pxf -)
-	cd $(DISTNAME)/$(ZLIBDIR); rm -f *.o *.a; rm -rf CVS
-
-dist-free-make-tar:
-	tar pcf $(DISTNAME).tar $(DISTNAME)
-	-rm -f $(DISTNAME).tar.gz
-	gzip $(DISTNAME).tar
-	rm -rf $(DISTNAME)
-	@echo Distribution left in $(DISTNAME).tar.gz
-
-dist-commercial-make-tar:
-	tar pcf $(CDISTNAME).tar $(CDISTNAME)
-	-rm -f $(CDISTNAME).tar.gz
-	gzip $(CDISTNAME).tar
-	rm -rf $(CDISTNAME)
-	@echo Distribution left in $(CDISTNAME).tar.gz
-
-dist-increment-version:
-	@echo Incrementing version number...
-	@old_version=`sed 's/.*\.\([0-9][0-9]*\)"$$/\1/' $(srcdir)/version.h`; \
-	 new_version=`expr $$old_version + 1`; \
-	 (echo "s/\.$$old_version\"/.$$new_version\"/g"; echo w; echo q) | ed $(srcdir)/version.h >/dev/null
-
-depend:
-	$(MAKEDEP) -I$(srcdir) -I. -I$(GMPDIR) -I$(ZLIBDIR) $(DEFS) $(SRCS)
-
-tags:
-	-rm -f TAGS
-	find config.h $(srcdir) -name '*.[chly]' -print | xargs etags -a
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:
