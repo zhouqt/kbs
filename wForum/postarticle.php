@@ -318,9 +318,13 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 </select>
  [<a target="_balnk" href="bbssig.php">查看签名档</a>]<br>
  <?php
-	if (bbs_is_outgo_board($boardArr) ) {
-		echo "<input type=\"checkbox\" name=\"outgo\" value=\"1\" />转信<br />";
-	}
+    if (bbs_is_outgo_board($boardArr)) {
+        $local_save = 0;
+        if ($reID > 0) $local_save = !strncmp($reArticles[1]["INNFLAG"], "LL", 2);
+?>
+<input type="checkbox" name="outgo" value="1"<?php if (!$local_save) echo " checked=\"checked\""; ?> />转信<br />
+<?php
+    }
 		if (bbs_is_anony_board($boardArr) ) {
 		echo "<input type=\"checkbox\" name=\"annonymous\" value=\"1\" />匿名<br />";
 	}
