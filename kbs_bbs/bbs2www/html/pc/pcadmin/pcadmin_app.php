@@ -54,7 +54,7 @@ function pc_add_users($link,$userid,$corpusname,$manual)
 	
 	//ÃÌº””√ªß
 	$query = "INSERT INTO `users` ( `uid` , `username` , `corpusname` , `description` , `theme` , `nodelimit` , `dirlimit` , `createtime` , `style` , `backimage` , `visitcount` , `nodescount` , `logoimage` , `modifytime` , `links` , `htmleditor` , `indexnodechars` , `indexnodes` , `useremail` , `favmode` , `updatetime` , `userinfor` , `pctype`) ".
-		 "VALUES ('', '".addslashes($lookupuser["userid"])."', '".addslashes($corpusname)."', '".addslashes($corpusname)."' , 'others', '300', '300', NOW( ) , '0', '' , '0', '0', '' , NOW( ) , '', '0', '600', '5', '', '0', NOW( ) , '' , '0');";
+		 "VALUES ('', '".addslashes($lookupuser["userid"])."', '".addslashes($corpusname)."', '".addslashes($corpusname)."' , 'others', '300', '300', NOW( ) , '0', '' , '0', '0', '' , NOW( ) , '', '1', '600', '5', '', '0', NOW( ) , '' , '0');";
 	if(!mysql_query($query,$link))
 	{
 		pc_db_close($link);

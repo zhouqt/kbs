@@ -72,7 +72,7 @@
 		
 			//判定评论文章是否用了编辑器，根据情况调入 windinsn feb 22 , 2004
 			if($rows[htmltag])
-				pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog","","","",TRUE);		
+				pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog","","","",1);		
 			else
 				pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
 ?>

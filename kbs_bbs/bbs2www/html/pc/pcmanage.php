@@ -37,13 +37,15 @@
 			exit();
 		}
 		
-		if($pc["EDITOR"] != 0)
+		if($pc["EDITOR"] != 1)
 			$pcconfig["EDITORALERT"] = NULL;
 			
 		$act = $_GET["act"]?$_GET["act"]:$_POST["act"];
 		
-		if(($act == "post" || $act == "edit") && !$_POST["subject"] && $pc["EDITOR"] == 0)
-			pc_html_init("gb2312",stripslashes($pc["NAME"]),"","","",TRUE);
+		if($act == "post" && !$_POST["subject"] && $pc["EDITOR"] != 0)
+			pc_html_init("gb2312",stripslashes($pc["NAME"]),"","","",$pc["EDITOR"]);
+		elseif($act == "edit" && !$_POST["subject"] && $pc["EDITOR"] != 0)
+			pc_html_init("gb2312",stripslashes($pc["NAME"]),"","","",1);
 		else
 			pc_html_init("gb2312",stripslashes($pc["NAME"]));
 		
@@ -188,7 +190,12 @@
 		{
 			if($_POST["subject"])
 			{
-				$ret = pc_add_node($link,$pc,$_GET["pid"],$_POST["tid"],$_POST["emote"],$_POST["comment"],$_GET["tag"],$_POST["htmltag"],$_POST["trackback"],$_POST["subject"],$_POST["blogbody"],0,$_POST["trackbackurl"],$_POST["trackbackname"]);
+				if($pc["EDITOR"]==2)//use ubb
+					$blogbody = pc_ubb_parse($_POST["blogbody"]);
+				else
+					$blogbody = $_POST["blogbody"];
+				
+				$ret = pc_add_node($link,$pc,$_GET["pid"],$_POST["tid"],$_POST["emote"],$_POST["comment"],$_GET["tag"],$_POST["htmltag"],$_POST["trackback"],$_POST["subject"],$blogbody,0,$_POST["trackbackurl"],$_POST["trackbackname"]);
 				$error_alert = "";
 				switch($ret)
 				{
@@ -226,7 +233,6 @@
 				
 				if($error_alert)
 					echo "<script language=\"javascript\">alert('".$error_alert."');</script>";
-				//管理员管理时的log
 				$log_action = "ADD NODE: ".$_POST["subject"];
 ?>
 <script language="javascript">
@@ -260,7 +266,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				}
 ?>
 <br><center>
-<form name="postform" action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=post&<?php echo "tag=".$tag."&pid=".$pid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
+<form name="postform" id="postform" action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=post&<?php echo "tag=".$tag."&pid=".$pid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
 <table cellspacing="0" cellpadding="5" border="0" width="90%" class="t1">
 <tr>
 	<td class="t2">发表文章</td>
@@ -302,11 +308,22 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 </tr>
 <tr>
 	<td class="t11">内容
-	<input type="checkbox" name="htmltag" value=1 <?php if($pc["EDITOR"] == 0) echo "checked"; ?>>使用HTML标记
+	<input type="checkbox" name="htmltag" value=1 <?php if($pc["EDITOR"] != 0) echo "checked"; ?>>使用HTML标记
 	</td>
 </tr>
 <tr>
-	<td class="t8"><textarea name="blogbody" class="f1" cols="120" rows="30" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical"><?php echo $pcconfig["EDITORALERT"].$_POST["blogbody"]; ?></textarea></td>
+	<td class="t8">
+<?php
+	if($pc["EDITOR"]!=2)// not use ubb
+	{
+?>	
+	<textarea name="blogbody" class="f1" cols="120" rows="30" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical"><?php echo $pcconfig["EDITORALERT"].$_POST["blogbody"]; ?></textarea>
+<?php
+	}
+	else
+		pc_ubb_content();
+?>
+	</td>
 </tr>
 <tr>
 	<td class="t13">
@@ -386,7 +403,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			{
 ?>
 <br><center>			
-<form name="postform" action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=edit&nid=<?php echo $nid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
+<form name="postform" id="postform" action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=edit&nid=<?php echo $nid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
 <table cellspacing="0" cellpadding="5" border="0" width="90%" class="t1">
 <?php
 		if($rows[type]==1)
@@ -694,7 +711,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			$favmode = (int)($_POST["pcfavmode"]);
 			if($favmode != 1 && $favmode != 2)
 				$favmode = 0;
-			$query = "UPDATE `users` SET `createtime` = `createtime` , `corpusname` = '".addslashes(undo_html_format($_POST["pcname"]))."',`description` = '".addslashes(undo_html_format($_POST["pcdesc"]))."',`theme` = '".addslashes(undo_html_format($_POST["pcthem"]))."' , `backimage` = '".addslashes(undo_html_format($_POST["pcbkimg"]))."' , `logoimage` = '".addslashes(undo_html_format($_POST["pclogo"]))."' , `modifytime` = '".date("YmdHis")."' , `htmleditor` = '".(int)($_POST["htmleditor"])."', `style` = '".(int)($_POST["template"])."' , `indexnodechars` = '".(int)($_POST["indexnodechars"])."' , `indexnodes` = '".(int)($_POST["indexnodes"])."' , `favmode` = '".$favmode."' , `useremail` = '".addslashes($_POST["pcuseremail"])."' , `userinfor` = '".addslashes($_POST["userinfor"])."'  WHERE `uid` = '".$pc["UID"]."';";	
+			$query = "UPDATE `users` SET `createtime` = `createtime` , `corpusname` = '".addslashes(undo_html_format($_POST["pcname"]))."',`description` = '".addslashes(undo_html_format($_POST["pcdesc"]))."',`theme` = '".addslashes(undo_html_format($_POST["pcthem"]))."' , `backimage` = '".addslashes(undo_html_format($_POST["pcbkimg"]))."' , `logoimage` = '".addslashes(undo_html_format($_POST["pclogo"]))."' , `modifytime` = NOW( ) , `htmleditor` = '".(int)($_POST["htmleditor"])."', `style` = '".(int)($_POST["template"])."' , `indexnodechars` = '".(int)($_POST["indexnodechars"])."' , `indexnodes` = '".(int)($_POST["indexnodes"])."' , `favmode` = '".$favmode."' , `useremail` = '".addslashes($_POST["pcuseremail"])."' , `userinfor` = '".addslashes($_POST["userinfor"])."'  WHERE `uid` = '".$pc["UID"]."';";	
 			mysql_query($query,$link);
 			
 			$log_action = "UPDATE SETTINGS";

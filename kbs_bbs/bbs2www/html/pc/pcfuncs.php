@@ -21,7 +21,7 @@ if(!$currentuser["userid"])
 $pcconfig["NOWRAPSTR"] = "<!--NoWrap-->";
 $pcconfig["EDITORALERT"] = "<!--Loading HTMLArea Editor , Please Wait/正在加载 HTML编辑器 ， 请稍候 ……-->";
 
-function pc_html_init($charset,$title="",$otherheader="",$cssfile="",$bkimg="",$loadhtmlarea=FALSE)
+function pc_html_init($charset,$title="",$otherheader="",$cssfile="",$bkimg="",$htmlEditor=0)
 {
 	global $_COOKIE;
 	global $cachemode;
@@ -57,7 +57,7 @@ function pc_html_init($charset,$title="",$otherheader="",$cssfile="",$bkimg="",$
 <link rel="stylesheet" type="text/css" href="default.css"/>
 <?php
 	}
-	if($loadhtmlarea)
+	if($htmlEditor==1)//use htmlarea editor
 	{
 ?>
 <script type="text/javascript">
@@ -95,7 +95,7 @@ function initEditor() {
 </head>
 <body TOPMARGIN="0" leftmargin="0"
 <?php
-	if($loadhtmlarea)
+	if($htmlEditor==1)
 	{
 ?>
  onload="initEditor()"
@@ -1122,4 +1122,121 @@ function pc_convertto_group($link,$pc)
 	return 0;
 }
 
+function pc_ubb_parse($txt)
+{
+	$bbcode_lib = "bbcode.php";
+	if(file_exists($bbcode_lib))
+		include("bbcode.php");
+	else
+		return $txt;
+	
+	$html_entities_match = array('#&(?!(\#[0-9]+;))#', '#<#', '#>#');
+	$html_entities_replace = array('&amp;', '&lt;', '&gt;');
+	$unhtml_specialchars_match = array('#&gt;#', '#&lt;#', '#&quot;#', '#&amp;#');
+	$unhtml_specialchars_replace = array('>', '<', '"', '&');
+	
+	$bbcode_uid = make_bbcode_uid();
+	
+	$txt = htmlspecialchars(trim(stripslashes($txt)));
+	$txt = trim(addslashes(preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, $txt)));
+	$txt = preg_replace($html_entities_match, $html_entities_replace, $txt);
+	$txt = bbencode_first_pass($txt, $bbcode_uid);
+	$txt = stripslashes($txt);
+	$txt = bbencode_second_pass($txt, $bbcode_uid);
+	$txt = make_clickable($txt);
+	$txt = str_replace("\n", '<br />', $txt);
+	
+	return $txt;
+}
+
+function pc_ubb_content($txt="")
+{
+?>
+<SPAN class=gen><SPAN class=genmed></SPAN>
+            <TABLE cellSpacing=0 cellPadding=2 border=0>
+              <TBODY>
+              <TR vAlign=center align=left>
+                <TD width="35"><SPAN class=genmed><INPUT class=ubbbutton onmouseover="helpline('b')" style="FONT-WEIGHT: bold; WIDTH: 30px" accessKey=b onclick=bbstyle(0) type=button value=" B " name=addbbcode0> 
+                  </SPAN></TD>
+                <TD width="35"><SPAN class=genmed><INPUT class=ubbbutton onmouseover="helpline('i')" style="WIDTH: 30px; FONT-STYLE: italic" accessKey=i onclick=bbstyle(2) type=button value=" i " name=addbbcode2> 
+                  </SPAN></TD>
+                <TD width="35"><SPAN class=genmed><INPUT class=ubbbutton onmouseover="helpline('u')" style="WIDTH: 30px; TEXT-DECORATION: underline" accessKey=u onclick=bbstyle(4) type=button value=" u " name=addbbcode4> 
+                  </SPAN></TD>
+                <TD width="55"><SPAN class=genmed><INPUT class=ubbbutton onmouseover="helpline('q')" style="WIDTH: 50px" accessKey=q onclick=bbstyle(6) type=button value=Quote name=addbbcode6> 
+                  </SPAN></TD>
+                <TD width="45"><SPAN class=genmed><INPUT class=ubbbutton onmouseover="helpline('c')" style="WIDTH: 40px" accessKey=c onclick=bbstyle(8) type=button value=Code name=addbbcode8> 
+                  </SPAN></TD>
+                <TD width="45"><SPAN class=genmed><INPUT class=ubbbutton onmouseover="helpline('l')" style="WIDTH: 40px" accessKey=l onclick=bbstyle(10) type=button value=List name=addbbcode10> 
+                  </SPAN></TD>
+                <TD width="45"><SPAN class=genmed><INPUT class=ubbbutton onmouseover="helpline('o')" style="WIDTH: 40px" accessKey=o onclick=bbstyle(12) type=button value=List= name=addbbcode12> 
+                  </SPAN></TD>
+                <TD width="45"><SPAN class=genmed><INPUT class=ubbbutton onmouseover="helpline('p')" style="WIDTH: 40px" accessKey=p onclick=bbstyle(14) type=button value=Img name=addbbcode14> 
+                  </SPAN></TD>
+                <TD width="45"><SPAN class=genmed><INPUT class=ubbbutton onmouseover="helpline('w')" style="WIDTH: 40px; TEXT-DECORATION: underline" accessKey=w onclick=bbstyle(16) type=button value=URL name=addbbcode16> 
+                  </SPAN></TD>
+                <TD width="500"><SPAN class=genmed> </TD>
+                   </TR>
+              <TR>
+                <TD colSpan=10>
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><SPAN class=genmed>&nbsp;字体颜色: <SELECT 
+                        onmouseover="helpline('s')" 
+                        onchange="bbfontstyle('[color=' + this.form.addbbcode18.options[this.form.addbbcode18.selectedIndex].value + ']', '[/color]');this.selectedIndex=0;" 
+                        name=addbbcode18> <OPTION class=genmed 
+                          style="COLOR: black; BACKGROUND-COLOR: #fafafa" 
+                          value=#444444 selected>标准</OPTION> <OPTION 
+                          class=genmed 
+                          style="COLOR: darkred; BACKGROUND-COLOR: #fafafa" 
+                          value=darkred>深红</OPTION> <OPTION class=genmed 
+                          style="COLOR: red; BACKGROUND-COLOR: #fafafa" 
+                          value=red>红色</OPTION> <OPTION class=genmed 
+                          style="COLOR: orange; BACKGROUND-COLOR: #fafafa" 
+                          value=orange>橙色</OPTION> <OPTION class=genmed 
+                          style="COLOR: brown; BACKGROUND-COLOR: #fafafa" 
+                          value=brown>棕色</OPTION> <OPTION class=genmed 
+                          style="COLOR: yellow; BACKGROUND-COLOR: #fafafa" 
+                          value=yellow>黄色</OPTION> <OPTION class=genmed 
+                          style="COLOR: green; BACKGROUND-COLOR: #fafafa" 
+                          value=green>绿色</OPTION> <OPTION class=genmed 
+                          style="COLOR: olive; BACKGROUND-COLOR: #fafafa" 
+                          value=olive>橄榄</OPTION> <OPTION class=genmed 
+                          style="COLOR: cyan; BACKGROUND-COLOR: #fafafa" 
+                          value=cyan>青色</OPTION> <OPTION class=genmed 
+                          style="COLOR: blue; BACKGROUND-COLOR: #fafafa" 
+                          value=blue>蓝色</OPTION> <OPTION class=genmed 
+                          style="COLOR: darkblue; BACKGROUND-COLOR: #fafafa" 
+                          value=darkblue>深蓝</OPTION> <OPTION class=genmed 
+                          style="COLOR: indigo; BACKGROUND-COLOR: #fafafa" 
+                          value=indigo>靛蓝</OPTION> <OPTION class=genmed 
+                          style="COLOR: violet; BACKGROUND-COLOR: #fafafa" 
+                          value=violet>紫色</OPTION> <OPTION class=genmed 
+                          style="COLOR: white; BACKGROUND-COLOR: #fafafa" 
+                          value=white>白色</OPTION> <OPTION class=genmed 
+                          style="COLOR: black; BACKGROUND-COLOR: #fafafa" 
+                          value=black>黑色</OPTION></SELECT> &nbsp;字体大小:<SELECT 
+                        onmouseover="helpline('f')" 
+                        onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]')" 
+                        name=addbbcode20> <OPTION class=genmed 
+                          value=7>最小</OPTION> <OPTION class=genmed 
+                          value=9>小</OPTION> <OPTION class=genmed value=12 
+                          selected>正常</OPTION> <OPTION class=genmed 
+                          value=18>大</OPTION> <OPTION class=genmed 
+                          value=24>最大</OPTION></SELECT> </SPAN>
+                          <SPAN class=gensmall><A 
+                        class=genmed onmouseover="helpline('a')" 
+                        href="javascript:bbstyle(-1)">完成标签</A></SPAN>
+                          </TD>
+                      <TD noWrap align=left> </TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD colSpan=10><SPAN class=gensmall><INPUT class=helpline 
+                  style="FONT-SIZE: 12px; WIDTH: 450px" maxLength=100 size=45 
+                  value="提示: 文字风格可以快速使用在选择的文字上" name=helpbox> </SPAN></TD></TR>
+              <TR>
+                <TD colSpan=10><SPAN class=gen>
+                <TEXTAREA onkeyup=storeCaret(this); onclick=storeCaret(this); tabIndex=3 onselect=storeCaret(this); name="blogbody" style="font-size: 14px ; line-height:20px;" cols="100" rows="20" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical"><?php echo $txt; ?></TEXTAREA> 
+                </SPAN></TD></TR></TBODY></TABLE></SPAN>
+<?php
+}
 ?>
