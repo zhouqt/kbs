@@ -561,6 +561,8 @@ void x_edits()
         sprintf(buf, "edit %s", explain_file[ch]);
         if (!strcmp(e_file[ch], "signatures")) {
             set_numofsig();
+            if (numofsig&&(currentuser->signature==0))
+            	currentuser->signature=1;
             prints("系统重新设定以及读入你的签名档...");
         }
         bbslog("user","%s",buf);
