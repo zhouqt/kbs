@@ -24,7 +24,7 @@
 ?>
 <tr><td><?php echo $i;?></td>
 <td><?php echo date("D M j H:i:s Y", $msg["TIME"]);?></td>
-<td><?php if($msg["SENT"]) echo "发"; else echo "收";?></td>
+<td><?php if($msg["SENT"]) echo "收"; else echo "发";?></td>
 <td><?php echo $msg["ID"];?></td>
 <td><?php echo htmlspecialchars($msg["content"]);?></td>
 </tr>
