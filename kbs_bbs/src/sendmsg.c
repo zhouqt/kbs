@@ -21,16 +21,17 @@ char *msg, *uid;
 int line;
 {
     char genbuf[3];
+    int i;
 
     move(line, 0);
     clrtoeol();
-    prints("ËÍÒôÐÅ¸ø£º%s", uid);
+    prints("ËÍÒôÐÅ¸ø:%-12.12s  ÒôÐÅ: ", uid);
     memset(msg, 0, sizeof(msg));
     while (1) {
-        multi_getdata(line + 1, 0, 78, "ÒôÐÅ : ", msg, MAX_MSG_SIZE, false);
+        i = multi_getdata(line, 29, 78, NULL, msg, MAX_MSG_SIZE, false);
         if (msg[0] == '\0')
             return false;
-        getdata(line + 2, 0, "È·¶¨ÒªËÍ³öÂð(Y)ÊÇµÄ (N)²»Òª (E)ÔÙ±à¼­? [Y]: ", genbuf, 2, DOECHO, NULL, 1);
+        getdata(line + i, 0, "È·¶¨ÒªËÍ³öÂð(Y)ÊÇµÄ (N)²»Òª (E)ÔÙ±à¼­? [Y]: ", genbuf, 2, DOECHO, NULL, 1);
         if (genbuf[0] == 'e' || genbuf[0] == 'E')
             continue;
         if (genbuf[0] == 'n' || genbuf[0] == 'N')
@@ -200,6 +201,7 @@ int show_allmsgs()
 
     oldmode = uinfo.mode;
     modify_user_mode(LOOKMSGS);
+    set_alarm(0, 0, NULL, NULL);
 
     page = 0;
     count = get_msgcount(0, currentuser->userid);
@@ -345,6 +347,7 @@ outofhere:
     }
     clear();
     uinfo.mode = oldmode;
+    R_monitor(NULL);
     return 0;
 }
 
@@ -421,6 +424,7 @@ void r_msg()
     good_getyx(&y, &x);
     tmpansi = showansi;
     showansi = 1;
+    set_alarm(0, 0, NULL, NULL);
     RMSG = true;
     RMSGCount++;
     for(i=0;i<=23;i++)
@@ -475,6 +479,7 @@ void r_msg()
         if (DEFINE(currentuser, DEF_SOUNDMSG))
             bell();
         good_move(0,0);
+        clrtoeol();
         if (DEFINE(currentuser, DEF_HIGHCOLOR))
             prints("\x1b[1m%s", outmsg);
         else
@@ -489,7 +494,7 @@ void r_msg()
 
         clrtoeol();
         if(canreply)
-            prints("[m %3d/%-3d, »Ø¸´%s:", now+1, count, uid);
+            prints("[m %3d/%-3d, »Ø¸´ %-12.12s: ", now+1, count, uid);
         else
             if(uin)
                 prints("[m %3d/%-3d,¡ü¡ýÇÐ»»,Enter½áÊø, ¸ÃÏûÏ¢ÎÞ·¨»Ø¸´", now+1, count);
@@ -549,6 +554,7 @@ outhere:
     showansi = tmpansi;
     good_move(y,x);
     refresh();
+    R_monitor(NULL);
     RMSGCount--;
     if (0 == RMSGCount)
         RMSG = false;

@@ -996,7 +996,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
 
     prints("\n");
     refresh();
-    return strlen(buf);
+    return y-starty+1;
 }
 
 int lock_scr()
