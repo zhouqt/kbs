@@ -1348,6 +1348,7 @@ post_article()                         /*用户 POST 文章 */
     int         aborted,anonyboard;
     int         replymode=1; /* Post New UI*/
     char        ans[4],include_mode='S';
+	struct boardheader* bp;
 
     if (YEA == check_readonly(currboard)) /* Leeward 98.03.28 */
         return FULLUPDATE;
@@ -1526,7 +1527,16 @@ post_article()                         /*用户 POST 文章 */
 
     setbfile( filepath, currboard, post_file.filename );
 
-    local_article = 0;
+	if ((bp = getbcache(currboard)) == NULL)
+	{
+        unlink( filepath );
+        clear() ;
+        return FULLUPDATE ;
+    }
+	if (bp->flag & BOARD_OUTFLAG)
+    	local_article = 0;
+	else
+		local_article = 1;
     if ( !strcmp( post_file.title, buf ) && quote_file[0] != '\0' )
         if ( quote_file[119] == 'L' )
             local_article = 1;
@@ -1542,7 +1552,7 @@ post_article()                         /*用户 POST 文章 */
     add_loginfo(filepath,currentuser,currboard,Anony); /*添加最后一行*/
 
     strncpy( post_file.title, save_title, STRLEN );
-    if ( aborted == 1 ) /* local save */
+    if ( aborted == 1  || !(bp->flag & BOARD_OUTFLAG)) /* local save */
     {
         post_file.filename[ STRLEN - 1 ] = 'L';
         post_file.filename[ STRLEN - 2 ] = 'L';

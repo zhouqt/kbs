@@ -736,11 +736,11 @@ int saveheader ;
         */
         if(uinfo.mode == POSTING)
         {
-            /*if ( local_article == 1 )
-                    strcpy(p_buf,"(L)不转信, (S)转信, (A)取消, (T)更改标题 or (E)再编辑? [L]: ");
+            if ( local_article == 1 )
+                    strcpy(p_buf,"(L)站内, (S)转信, (F)自动换行发表, (A)取消, (T)更改标题 or (E)再编辑? [L]: ");
             else
-                    strcpy(p_buf,"(S)转信, (L)不转信, (A)取消, (T)更改标题 or (E)再编辑? [S]: ");*/
-            strcpy(p_buf,"(S)发表, (F)自动换行发表, (A)取消, (T)更改标题 or (E)再编辑? [S]: ");
+                    strcpy(p_buf,"(S)转信, (L)站内, (F)自动换行发表, (A)取消, (T)更改标题 or (E)再编辑? [S]: ");
+            /*strcpy(p_buf,"(S)发表, (F)自动换行发表, (A)取消, (T)更改标题 or (E)再编辑? [S]: ");*/
             move(4, 0); /* Haohmaru 99.07.17 */
             prints("请注意：本站站规规定：同样内容的文章严禁在 5 (含)个以上讨论区内重复张贴。\n\n违反者除所贴文章会被删除之外，还将被剥夺继续发表文章的权力。详细规定请参照：\n\n    Announce 版的站规：“关于转贴和张贴文章的规定”。\n\n请大家共同维护 BBS 的环境，节省系统资源。谢谢合作。\n\n");
         }
@@ -753,11 +753,19 @@ int saveheader ;
         else
             strcpy(p_buf,"(S)储存档案, (F)自动换行存储, (A)放弃编辑, (E)继续编辑? [S]: " );
         temp = valid_article( p_buf, abort );
-        if(abort[0]!='T' && abort[0]!='t' && abort[0]!='F' && abort[0]!='f' && abort[0]!='A' && abort[0]!='a' &&abort[0]!='E' &&abort[0]!='e')
-            abort[0]='s';
+		if (abort[0] == '\0')
+		{
+			if (local_article == 1)
+				abort[0] = 'l';
+			else
+				abort[0] = 's';
+		}
+		/* Removed by flyriver, 2002.7.1, no need to modify abort[0] here. */
+        /*if(abort[0]!='T' && abort[0]!='t' && abort[0]!='F' && abort[0]!='f' && abort[0]!='A' && abort[0]!='a' &&abort[0]!='E' &&abort[0]!='e' && abort[0] != 'L' && abort[0] != 'l')
+            abort[0]='s';*/
     }else
         abort[0] = 'a';
-#else
+#else /* use VEDITOR */
     valid_article( "(S)储存, (A)取消, or (E)再编辑? [S]: ", abort );
     if(abort[0]!='A' && abort[0]!='a' &&abort[0]!='E' &&abort[0]!='e')
         abort[0]='s';
@@ -805,6 +813,11 @@ int saveheader ;
         }
 #endif
     }
+	else /* Added by flyriver, 2002.7.1, local save */
+	{
+		abort[0] = 'l';
+		local_article = 1;
+	}
     firstline = NULL ;
     if (!aborted) {
         if((fp = fopen(filename,"w")) == NULL) {
@@ -875,7 +888,7 @@ int saveheader ;
         sprintf( genbuf, "local_article = %u", local_article );
         report( genbuf );
         local_article = 0;
-        if( aborted != -1 )  aborted = 1;
+        if( aborted != -1 )  aborted = 1; /* aborted = 1 means local save */
     }
 #endif
     if((uinfo.mode == POSTING)&&strcmp(currboard,"test"))/*Haohmaru.99.4.02.让爱灌水的人哭去吧//grin*/ {

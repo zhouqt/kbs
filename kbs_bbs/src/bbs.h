@@ -168,6 +168,7 @@ O MaxMessageSize=32000
 #define BOARD_READONLY 0x4
 #define BOARD_JUNK	0x8
 #define BOARD_ANNONY 0x10
+#define BOARD_OUTFLAG 0x20 /* for outgo boards */
 
 #define ZAPPED  0x1           /* For boards...tells if board is Zapped */
 
