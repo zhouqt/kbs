@@ -1224,6 +1224,8 @@ struct dir_gthread_set {
     fileheader_t *records;
     int num;
 	int groupid;
+	int start;
+	int haveprev;
 };
 
 static int 
@@ -1235,6 +1237,7 @@ get_dir_gthreads(int fd, fileheader_t * base, int ent, int total, bool match,
 	int count = 0;
 	int start = ent;
 	int end = total;
+	int passprev=0;
 
 	for (i = start; i <= end; i++)
 	{
@@ -1242,16 +1245,32 @@ get_dir_gthreads(int fd, fileheader_t * base, int ent, int total, bool match,
 			break;
 		if (base[i-1].groupid == ts->groupid)
 		{
+			if( base[i-1].id < ts->start ){
+				passprev = i;
+				continue;
+			}
 			memcpy(ts->records + count, base + i - 1,
 					sizeof(fileheader_t));
 			count++;
+		}
+	}
+	
+	if( passprev ){
+		int i=1;
+		for( ; passprev>=start; passprev--){
+			if( i >= ts->num )
+				break;
+			if( base[passprev-1].groupid == ts->groupid ){
+				ts->haveprev = base[passprev-1].id;
+				i++;
+			}
 		}
 	}
 	return count;
 }
 
 int 
-get_threads_from_gid(const char *filename, int gid, fileheader_t *buf, int num)
+get_threads_from_gid(const char *filename, int gid, fileheader_t *buf, int num,int startid, int *haveprev)
 {
     struct dir_gthread_set ts;
     fileheader_t key;
@@ -1263,6 +1282,8 @@ get_threads_from_gid(const char *filename, int gid, fileheader_t *buf, int num)
     ts.records = buf;
     ts.num = num;
 	ts.groupid = gid;
+	ts.start = startid;
+	ts.haveprev = 0;
     bzero(&key, sizeof(key));
     key.id = gid;
 	if ((fd = open(filename, O_RDWR, 0644)) < 0)
@@ -1270,6 +1291,7 @@ get_threads_from_gid(const char *filename, int gid, fileheader_t *buf, int num)
 	ret = mmap_dir_search(fd, &key, get_dir_gthreads, &ts);
 	close(fd);
 	
+	*haveprev = ts.haveprev;
 	return ret;
 }
 

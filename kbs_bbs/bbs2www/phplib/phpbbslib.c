@@ -7828,6 +7828,7 @@ static PHP_FUNCTION(bbs_get_threads_from_gid)
 	char dirpath[STRLEN];
 	struct fileheader *articles;
 	int retnum;
+	int haveprev;
 	zval *element;
     char flags[4];              /* flags[0]: flag character
                                  * flags[1]: imported flag
@@ -7859,7 +7860,7 @@ static PHP_FUNCTION(bbs_get_threads_from_gid)
 	{
         RETURN_LONG(0);
 	}
-	if ((retnum=get_threads_from_gid(dirpath, gid, articles, MAX_THREADS_NUM)) == 0)
+	if ((retnum=get_threads_from_gid(dirpath, gid, articles, MAX_THREADS_NUM,0, &haveprev)) == 0)
 	{
 		efree(articles);
         RETURN_LONG(0);
@@ -7893,4 +7894,3 @@ static PHP_FUNCTION(bbs_get_threads_from_gid)
 	efree(articles);
 	RETURN_LONG(retnum);
 }
-

@@ -360,7 +360,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     int get_records_from_id(int fd, int id, fileheader_t * buf, int num, int *index);
 
 	int get_threads_from_id(const char *filename, int id, fileheader_t *buf, int num);
-	int get_threads_from_gid(const char *filename, int gid, fileheader_t *buf, int num);
+	int get_threads_from_gid(const char *filename, int gid, fileheader_t *buf, int num, int start, int * haveprev);
 
     int Origin2(char text[256]);
 /*¼ÓÈëedit mark*/

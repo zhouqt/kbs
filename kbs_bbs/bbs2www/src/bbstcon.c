@@ -15,7 +15,7 @@ int main()
     char brdencode[STRLEN];
     struct fileheader *fh;
     int i, num;
-	int start,shownum,haveshow;
+	int start,shownum;
 	int haveprev=0, havenext=0;
     struct boardheader bh;
 	int gid; /* group id */
@@ -23,8 +23,9 @@ int main()
     init_all();
     strsncpy(board, getparm("board"), 32);
 	gid = atoi(getparm("gid"));
+	if( gid < 0 ) gid=0;
 	start = atoi(getparm("start"));
-	if( start <= 0 ) start = 0;
+	if( start <= 0 ) start = gid;
 	shownum = atoi(getparm("num"));
 	if( shownum <= 0 ) shownum = 20;
 	/*
@@ -35,11 +36,11 @@ int main()
     strcpy(board, getbcache(board)->filename);
     encode_url(brdencode, board, sizeof(brdencode));
 
-	fh = (struct fileheader *)malloc(MAX_THREADS_NUM * sizeof(struct fileheader));
+	fh = (struct fileheader *)malloc(shownum * sizeof(struct fileheader));
 	if (fh == NULL)
         http_fatal("错误的参数");
 	setbdir(DIR_MODE_NORMAL, dir, board);
-	if ((num = get_threads_from_gid(dir, gid, fh, MAX_THREADS_NUM)) == 0)
+	if ((num = get_threads_from_gid(dir, gid, fh, shownum, start, &haveprev)) == 0)
 	{
 		free(fh);
         http_fatal("错误的参数");
@@ -52,19 +53,8 @@ int main()
 #endif
     printf("%s -- 主题文章阅读 [讨论区: %s]<hr class=\"default\" />", BBSNAME, board);
 
-	for (i = 0, haveshow = 0; i < num && haveshow < shownum ; i++){
-			if( fh[i].id < start ){
-					if( i>= shownum )
-						haveprev = fh[i-shownum].id;
-					else
-						haveprev = fh[0].id;
-					continue;
-			}
-			haveshow ++;
-	}
-	if( i<num )
-			havenext = fh[i].id;
-
+	if( num == shownum )
+		havenext = fh[shownum-1].id;
 	if( haveprev || havenext )
 		printf("<center>\n");
 	if( haveprev ){
@@ -76,11 +66,7 @@ int main()
 	if( haveprev || havenext )
 		printf("</center>\n");
 
-	for (i = 0, haveshow = 0; i < num && haveshow < shownum ; i++){
-			if( fh[i].id < start ){
-					continue;
-			}
-			haveshow ++;
+	for (i = 0; i < num ; i++){
             show_file(board, &bh, fh + i, brdencode);
 	}
 
