@@ -41,24 +41,36 @@ int main(int argc, char **argv)
 	char mdir_new[256];
 	struct stat st;
 	int fd;
+	char touser[20];
+	int len;
 
-	if (argc != 3)
+	if (argc != 2)
 	{
-		fprintf(stderr, "Usage: %s fromuser touser\n");
+		fprintf(stderr, "Usage: %s fromuser\n");
 		return -1;
 	}
 	chdir(BBSHOME);
-	setmailfile(mdir, argv[2], ".DIR");
-	if (stat(mdir, &st) < 0)
-		return -1;
-	sprintf(mdir_bak, "%s.BAK", mdir);
-	f_cp(mdir, mdir_bak, 0);
-	sprintf(mdir_new, "%s.NEW", mdir);
-	if ((fd = open(mdir_new, O_RDWR | O_CREAT, 0644)) > 0)
+	while(!feof(stdin))
 	{
-		delete_all_mail(fd, mdir, sizeof(struct fileheader), cmpauthor, argv[1]);
-		close(fd);
-		f_mv(mdir_new, mdir);
+		if (fgets(touser, sizeof(touser) - 1, stdin) == NULL)
+			return -1;
+		touser[sizeof(touser) - 1] = '\0';
+		len = strlen(touser);
+		if (touser[len - 1] == '\n')
+			touser[len - 1] = '\0';
+		setmailfile(mdir, touser, ".DIR");
+		if (stat(mdir, &st) < 0)
+			return -1;
+		sprintf(mdir_bak, "%s.BAK", mdir);
+		f_cp(mdir, mdir_bak, 0);
+		sprintf(mdir_new, "%s.NEW", mdir);
+		if ((fd = open(mdir_new, O_RDWR | O_CREAT, 0644)) > 0)
+		{
+			delete_all_mail(fd, mdir, sizeof(struct fileheader), 
+								cmpauthor, argv[1]);
+			close(fd);
+			f_mv(mdir_new, mdir);
+		}
 	}
 	return 0;
 }
