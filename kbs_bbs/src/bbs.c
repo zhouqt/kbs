@@ -4071,7 +4071,7 @@ int set_ip_acl()
  * add by stiger, ÐÂÎÄÕÂÄ£°å
  ***************************************************************************/
 
-#define TEMPLATE_DIR ".templt"
+#define TEMPLATE_DIR ".templ"
 #define MAX_TEMPLATE 10
 #define MAX_CONTENT 10
 
@@ -4084,6 +4084,8 @@ struct s_template{
 	char title[50];
 	char title_prefix[20];
 	int content_num;
+	char filename[STRLEN];
+	int flag;
 	char unused[20];
 };
 
@@ -4278,7 +4280,7 @@ static int tmpl_refresh(struct _select_def *conf)
 {
     clear();
     docmdtitle("[°æÃæÄ£°åÉèÖÃ]",
-               "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ý\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] É¾³ý[\x1b[1;32md\x1b[0;37m]\x1b[m ÐÞ¸Ä±êÌâ[[1;32mt[0;37m] ÐÞ¸ÄÎÄÕÂ±êÌâÇ°×º[[1;32mz[0;37m]");
+               "Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] É¾³ý[\x1b[1;32md\x1b[0;37m]\x1b[m ÐÞ¸Ä±êÌâ[[1;32mt[0;37m] ÐÞ¸ÄÇ°×º[[1;32mz[0;37m] ÐÞ¸Ä¸ñÊ½[[1;32mf[0;37m] ²é¿´¸ñÊ½[[1;32ms[0;37m]");
     move(2, 0);
     prints("[0;1;37;44m %4s %-40s %-20s %8s", "ÐòºÅ", "Ãû³Æ","ÎÄÕÂ±êÌâÇ°×º","Ñ¡Ïî¸öÊý");
     clrtoeol();
@@ -4409,6 +4411,13 @@ static int tmpl_key(struct _select_def *conf, int key)
             getdata(t_lines - 1, 0, "È·ÊµÒªÉ¾³ýÂð(Y/N)? [N]: ", ans, sizeof(ans), DOECHO, NULL, true);
             if (ans[0] == 'Y' || ans[0] == 'y') {
                 int i;
+				char filepath[STRLEN];
+
+				if( ptemplate[conf->pos-1].tmpl->filename[0] ){
+					setbfile(filepath,currboard->filename, ptemplate[conf->pos-1].tmpl->filename);
+					if(dashf(filepath))
+						unlink(filepath);
+				}
 
 				if( ptemplate[conf->pos-1].tmpl != NULL)
 					free(ptemplate[conf->pos-1].tmpl);
@@ -4462,6 +4471,33 @@ static int tmpl_key(struct _select_def *conf, int key)
 
 			tmpl_save();
 
+			return SHOW_REFRESH;
+		}
+	case 'f' :
+		{
+			char filepath[STRLEN];
+
+    		setbfile(filepath, currboard->filename, "");
+    		if ( GET_POSTFILENAME(ptemplate[conf->pos-1].tmpl->filename, filepath) != 0) {
+				clear();
+				move(3,0);
+				prints("´´½¨Ä£°åÎÄ¼þÊ§°Ü!");
+				pressanykey();
+				return SHOW_REFRESH;
+			}
+			tmpl_save();
+			setbfile(filepath, currboard->filename, ptemplate[conf->pos-1].tmpl->filename);
+
+			vedit(filepath,0,NULL,NULL);
+
+			return SHOW_REFRESH;
+		}
+	case 's' :
+		{
+			char filepath[STRLEN];
+			setbfile(filepath, currboard->filename, ptemplate[conf->pos-1].tmpl->filename);
+			clear();
+			ansimore(filepath,1);
 			return SHOW_REFRESH;
 		}
 	default :
@@ -4615,7 +4651,10 @@ static int choose_tmpl_getdata(struct _select_def *conf, int pos, int len)
 static int choose_tmpl_select(struct _select_def *conf)
 {
 	FILE *fp;
+	FILE *fpsrc;
+	char filepath[STRLEN];
 	int i;
+	char * tmp[ MAX_CONTENT ];
 
 	if( ptemplate[conf->pos-1].tmpl->content_num <= 0 )
 		return SHOW_QUIT;
@@ -4640,10 +4679,56 @@ static int choose_tmpl_select(struct _select_def *conf)
 		move(4,0);
 		prints("Ä£°å»Ø´ð(×î³¤%d×Ö·û):",ptemplate[conf->pos-1].cont[i].length);
         multi_getdata(6, 0, 79, NULL, ans, ptemplate[conf->pos-1].cont[i].length+1, 11, true, 0);
-		fprintf(fp,"[1;32m%s:[m\n%s\n\n",ptemplate[conf->pos-1].cont[i].text, ans);
-		free(ans);
+		tmp[i] = ans;
 	}
+	if( ptemplate[conf->pos-1].tmpl->filename[0] ){
+		setbfile( filepath,currboard->filename, ptemplate[conf->pos-1].tmpl->filename);
+		if( dashf( filepath )){
+			if((fpsrc = fopen(filepath,"r"))!=NULL){
+				char buf[256];
+
+				while(fgets(buf,255,fpsrc)){
+					int l;
+					char *pn,*pe;
+
+					for(pn = buf; *pn!='\0'; pn++){
+						if( *pn != '[' || *(pn+1)!='$' ){
+							fputc(*pn, fp);
+						}else{
+							pe = strchr(pn,']');
+							if(pe == NULL){
+								fputc(*pn, fp);
+								continue;
+							}
+							l = atoi(pn+2);
+							if( l<=0 || l > ptemplate[conf->pos-1].tmpl->content_num ){
+								fputc('[', fp);
+								continue;
+							}
+							fprintf(fp,"[1;32m%s[m",tmp[l-1]);
+							pn = pe;
+							continue;
+						}
+					}
+				}
+				fclose(fpsrc);
+				fclose(fp);
+
+				t_now = conf->pos;
+				for(i=0; i< ptemplate[conf->pos-1].tmpl->content_num; i++)
+					free( tmp[i] );
+
+				return SHOW_QUIT;
+			}
+		}
+	}
+
+	for(i=0; i< ptemplate[conf->pos-1].tmpl->content_num; i++)
+		fprintf(fp,"[1;32m%s:[m\n%s\n\n",ptemplate[conf->pos-1].cont[i].text, tmp[i]);
 	fclose(fp);
+
+	for(i=0; i< ptemplate[conf->pos-1].tmpl->content_num; i++)
+		free( tmp[i] );
 
 	t_now = conf->pos;
 
