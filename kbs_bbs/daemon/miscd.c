@@ -527,6 +527,7 @@ static int miscd_dodaemon(char *argv1, char *daemon)
         exit(-1);
     }
 
+    resolve_boards();
     if (argv1 != NULL) {
         switch (fork()) {
         case -1:
