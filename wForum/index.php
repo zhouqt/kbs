@@ -31,7 +31,7 @@ if ($loginok!=1) {
 
 showAllSecs();
 
-showUserInfo();
+//showUserInfo();
 showOnlineUsers();
 showSample();
 
