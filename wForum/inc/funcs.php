@@ -644,9 +644,7 @@ function show_footer($showmsg = true, $showerr = true)
 } 
 
 function getMsg(){
-
 ?>
-
 <div id="floater" style="position:absolute; width:502px; height:152px; z-index:2; left: 200px; top: 250px; visibility: hidden; background-color: transparent; layer-background-color: #FFFFFF; "> 
 </div>
 <iframe width="100%" height="0" frameborder="0" scrolling="no" src="getmsg.php" name="webmsg">
@@ -656,7 +654,7 @@ function getMsg(){
 }
 
 function htmlformat($str,$multi=false) {
-    $str = str_replace(' ','&nbsp;',htmlspecialchars($str));
+    $str = str_replace(' ','&nbsp;',htmlspecialchars($str, ENT_QUOTES));
     if ($multi)
         $str = nl2br($str);
     return $str;    
@@ -752,7 +750,7 @@ if ($nologin==0) {
 				$currentuser_num=bbs_getcurrentuser($currentuser);
 				$setonlined=1;
 			} else {
-				if (($userid!='guest') && (bbs_checkpasswd($userid,$userpassword)==0)){
+				if (($userid!='guest') && (bbs_checkpasswd($userid,base64_decode($userpassword),1)==0)){
 					$ret=bbs_wwwlogin(1);
 					if ( ($ret==2) || ($ret==0) ){
 						if ($userid!="guest") {

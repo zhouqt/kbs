@@ -536,9 +536,11 @@ document.frmAnnounce.Content.value+=ToAdd;
 document.frmAnnounce.Content.focus();
 }
 
-ie = (document.all)? true:false
-if (ie){
-function ctlent(eventobject){if(event.ctrlKey && window.event.keyCode==13){this.document.frmAnnounce.submit();}}
+ie = (document.all)? true:false;
+
+function ctlent(eventobject){
+	if (!ie) return;
+	if(event.ctrlKey && window.event.keyCode==13){this.document.frmAnnounce.submit();}
 }
 function DoTitle(addTitle) { 
 var revisedTitle; 
@@ -566,6 +568,6 @@ document.frmPreview.body.value=document.frmAnnounce.Content.value;
 if (document.frmAnnounce.texflag != null) {
     document.frmPreview.texflag.value=document.frmAnnounce.texflag.checked?1:0;
 }
-var popupWin = window.open('preview.php', 'preview_page', 'resizable=yes,scrollbars=yes,width=750,height=450');
+//var popupWin = window.open('about:blank', 'preview_page', 'resizable=yes,scrollbars=yes,width=750,height=450');
 document.frmPreview.submit()
 }
