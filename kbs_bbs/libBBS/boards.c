@@ -375,7 +375,7 @@ void brc_update(char *userid)
 #if USE_TMPFS==0
     sethomefile(dirfile, userid, BRCFILE);
 #else
-    setcachehomefile(dirfile, userid, BRCFILE);
+    setcachehomefile(dirfile, userid, -1, BRCFILE);
 #endif
     for (i = 0; i < BRC_CACHE_NUM; i++) {
         if (brc_cache_entry[i].changed) {
@@ -455,7 +455,7 @@ void brc_addreaddirectly(char *userid, int bnum, unsigned int postid)
 #if USE_TMPFS==0
     sethomefile(dirfile, userid, BRCFILE);
 #else
-    setcachehomefile(dirfile, userid, BRCFILE);
+    setcachehomefile(dirfile, userid, -1 ,BRCFILE);
 #endif
 
     if ((fd = gzopen(dirfile, "w+b6")) == NULL) {
@@ -524,7 +524,7 @@ int brc_initial(char *userid, char *boardname)
 #if USE_TMPFS==0
     sethomefile(dirfile, userid, BRCFILE);
 #else
-    setcachehomefile(dirfile, userid, BRCFILE);
+    setcachehomefile(dirfile, userid, -1, BRCFILE);
 #endif
 
     if ((brcfile = gzopen(dirfile, "rb6")) == NULL)

@@ -843,12 +843,19 @@ void save_giveupinfo(struct userec* lookupuser,int lcount,int s[10][2])
 }
 
 #if USE_TMPFS==1
-void setcachehomefile(char* path,char* user,char* file)
+void setcachehomefile(char* path,char* user,int unum,char* file)
 {
+    if (unum==-1) {
     if (file==NULL)
       sprintf(path, "%s/home/%c/%s",TMPFSROOT,toupper(user[0]),user);
     else
       sprintf(path, "%s/home/%c/%s/%s",TMPFSROOT, toupper(user[0]), user,file);
+    } else {
+    if (file==NULL)
+      sprintf(path, "%s/home/%c/%s/%d",TMPFSROOT,toupper(user[0]),user,unum);
+    else
+      sprintf(path, "%s/home/%c/%s/%d/%s",TMPFSROOT, toupper(user[0]), user,unum,file);
+    }
 }
 
 void init_cachedata(char* userid,int unum)
@@ -857,15 +864,14 @@ void init_cachedata(char* userid,int unum)
     int fd,logincount;
     int count;
     struct flock ldata;
-    setcachehomefile(path1, userid, NULL);
+    setcachehomefile(path1, userid, -1, NULL);
     mkdir(path1,0700);
-    sprintf(path2,"%d",unum);
-    setcachehomefile(path1, userid, path2);
+    setcachehomefile(path1, userid, unum, NULL);
     mkdir(path1,0700);
     sethomefile(path1, userid, ".boardrc.gz");
-    setcachehomefile(path2, userid,".boardrc.gz");
+    setcachehomefile(path2, userid, -1, ".boardrc.gz");
     f_cp(path1,path2,O_TRUNC);
-    setcachehomefile(path1, userid, "logincount");
+    setcachehomefile(path1, userid, -1, "logincount");
     if ((fd = open(path1, O_RDWR, 0664)) != -1) {
     ldata.l_type = F_RDLCK;
     ldata.l_whence = 0;
@@ -897,7 +903,7 @@ void flush_cachedata(char* userid)
 {
     char path1[MAXPATH],path2[MAXPATH];
     sethomefile(path1, userid, ".boardrc.gz");
-    setcachehomefile(path2, userid,".boardrc.gz");
+    setcachehomefile(path2, userid,-1, ".boardrc.gz");
     f_cp(path2,path1,O_TRUNC);
 }
 
@@ -908,14 +914,13 @@ int clean_cachedata(char* userid,int unum)
     int count;
     struct flock ldata;
     sethomefile(path1, userid, ".boardrc.gz");
-    setcachehomefile(path2, userid,".boardrc.gz");
+    setcachehomefile(path2, userid,-1, ".boardrc.gz");
     f_cp(path2,path1,O_TRUNC);
 
-    sprintf(path2, "%d",unum);
-    setcachehomefile(path1, userid, path2);
+    setcachehomefile(path1, userid, unum, NULL);
     f_rm(path1);
     //todo: check the dir
-    setcachehomefile(path1, userid, "logincount");
+    setcachehomefile(path1, userid, -1, "logincount");
     if ((fd = open(path1, O_RDWR, 0664)) != -1) {
     ldata.l_type = F_RDLCK;
     ldata.l_whence = 0;
@@ -936,7 +941,7 @@ int clean_cachedata(char* userid,int unum)
     close(fd);
     } else logincount=0;
     if (logincount==0) {
-        setcachehomefile(path1, userid, NULL);
+        setcachehomefile(path1, userid, -1, NULL);
         f_rm(path1);
     }
 }

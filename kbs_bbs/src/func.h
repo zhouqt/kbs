@@ -44,7 +44,7 @@ extern "C" {
     int do_after_logout(struct userec* user,struct user_info* uinfo,int unum, int mode);
 
 #if USE_TMPFS==1
-void setcachehomefile(char* path,char* user,char* file);
+void setcachehomefile(char* path,char* user,int unum, char* file);
 void init_cachedata(char* userid,int unum);
 void flush_cachedata(char* userid);
 int clean_cachedata(char* userid,int unum);

@@ -789,7 +789,11 @@ int zsend_attach(int ent, struct fileheader *fileinfo, char *direct)
             if (NULL !=(file = checkattach(p, left, &attach_len, &attach))) {
                 left-=(attach-p)+attach_len-1;
                 p=attach+attach_len-1;
-                sprintf(name, "attach%06d", rand()%100000);
+#ifdef USE_TMPFS==1
+                setcachehomefile(name, currentuser->userid,utmpent, "attach.tmp");
+#else
+                sprintf(name, "tmp/attach%06d", rand()%100000);
+#endif
                 fp=fopen(name, "wb");
                 fwrite(attach, 1, attach_len, fp);
                 fclose(fp);
@@ -2538,14 +2542,7 @@ int noreply_post(int ent, struct fileheader *fileinfo, char *direct)
 
     move(t_lines - 1, 0);
     clrtoeol();
-#ifdef SMTH
-    if (HAS_PERM(currentuser,PERM_SYSOP))
-#else
-    if (1)
-#endif
     getdata(t_lines - 1, 0, "切换: 0)取消 1)不可re标记 2)置顶标记 [1]: ", ans, 3, DOECHO, NULL, true);
-    else
-	    ans[0]='1';
     if (ans[0]=='0') return FULLUPDATE;
     if (ans[0] == ' ') {
         ans[0] = ans[1];
