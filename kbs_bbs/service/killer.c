@@ -400,7 +400,7 @@ int do_com_menu()
 {
     char menus[menust][15]=
         {"0-返回","1-退出游戏","2-改名字", "3-玩家列表", "4-改话题", "5-设置房间", "6-踢玩家", "7-开始游戏"};
-    int menupos[menust],i,j,sel=0,ch,max=0,me;
+    int menupos[menust],i,j,k,sel=0,ch,max=0,me;
     char buf[80];
     if(inrooms.status != INROOM_STOP)
         strcpy(menus[7], "7-继续");
@@ -458,6 +458,20 @@ int do_com_menu()
                     getdata(t_lines-1, 0, "请输入名字:", buf, 13, 1, 0, 1);
                     if(kicked) return 0;
                     if(buf[0]) {
+                        k=1;
+                        for(j=0;j<strlen(buf);j++)
+                            k=k&&(isprint2(buf[j]));
+                        k=k&&(buf[0]!=' ');
+                        k=k&&(buf[strlen(buf)-1]!=' ');
+                        if(!k) {
+                            move(t_lines-1,0);
+                            resetcolor();
+                            clrtoeol();
+                            prints(" 名字不符合规范");
+                            refresh();
+                            sleep(1);
+                            return 0;
+                        }
                         for(me=0;me<myroom->people;me++)
                             if(inrooms.peoples[me].pid==uinfo.pid) break;
                         j=0;
