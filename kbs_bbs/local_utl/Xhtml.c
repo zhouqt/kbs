@@ -219,7 +219,7 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
 		fputs("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n", pdstFile);
 		fputs("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n", 
 				pdstFile);
-		fputs("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=gb2312\">\n", pdstFile);
+		fputs("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=gb2312\"/>\n", pdstFile);
 		fputs("<title>", pdstFile);
 		fputs(title, pdstFile);
 		fputs("</title>\n</head>\n<body>\n<center><h1>", pdstFile);
