@@ -61,7 +61,7 @@
 <tr><td><?php echo $start+$i+1;?><td><?php echo $maildata[$i]["FLAGS"];?><td>
 <a href=/cgi-bin/bbs/bbsqry?userid=<?php echo $maildata[$i]["OWNER"];?>><?php echo $maildata[$i]["OWNER"];?></a>
 <td><?php echo strftime("%b&nbsp;%e&nbsp;%H&nbsp;:%M",$maildata[$i]["POSTTIME"]);?>
-<td><a href=/bbsmailcon.php?dir=<?php echo $mail_path;?>&num=<?php echo $i;?>&title=<?php echo $mail_title;?>><?php
+<td><a href=/bbsmailcon.php?dir=<?php echo $mail_path;?>&num=<?php echo $i+$start;?>&title=<?php echo $mail_title;?>><?php
 if(strncmp($maildata[$i]["TITLE"],"Re: ",4))
 	echo "бя" .  htmlspecialchars($maildata[$i]["TITLE"]);
 else
