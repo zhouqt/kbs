@@ -270,7 +270,7 @@ MYSQL * my_connect_mysql(MYSQL *s){
 int save_smsmsg(char *uident, struct msghead *head, char *msgbuf, int readed)
 {
 	MYSQL s;
-	char newmsgbuf[2048];
+	char * newmsgbuf;
 	char sql[2600];
 
 	mysql_init(&s);
@@ -283,6 +283,9 @@ int save_smsmsg(char *uident, struct msghead *head, char *msgbuf, int readed)
 		return -1;
 	}
 
+	newmsgbuf=(char *)malloc(strlen(msgbuf)*2+1);
+	if(newmsgbuf==NULL) return -1;
+
 	mysql_escape_string(newmsgbuf, msgbuf, strlen(msgbuf));
 
 	sprintf(sql,"INSERT INTO smsmsg VALUES (NULL, '%s', '%s', NULL, %d, '%s', 0 , %d);",uident, head->id, head->sent, newmsgbuf, readed );
@@ -294,9 +297,11 @@ int save_smsmsg(char *uident, struct msghead *head, char *msgbuf, int readed)
 		pressanykey();
 #endif
 		mysql_close(&s);
+		free(newmsgbuf);
 		return -1;
 	}
 
+	free(newmsgbuf);
 	mysql_close(&s);
 
 	return 0;
@@ -304,8 +309,11 @@ int save_smsmsg(char *uident, struct msghead *head, char *msgbuf, int readed)
 
 int save_smsmsg_nomysqlconnect(MYSQL *s, char *uident, struct msghead *head, char *msgbuf, int readed)
 {
-	char newmsgbuf[2048];
+	char * newmsgbuf;
 	char sql[2600];
+
+	newmsgbuf=(char *)malloc(strlen(msgbuf)*2+1);
+	if(newmsgbuf==NULL) return -1;
 
 	mysql_escape_string(newmsgbuf, msgbuf, strlen(msgbuf));
 
@@ -317,9 +325,11 @@ int save_smsmsg_nomysqlconnect(MYSQL *s, char *uident, struct msghead *head, cha
 		prints("%s\n",mysql_error(&s));
 		pressanykey();
 #endif
+		free(newmsgbuf);
 		return -1;
 	}
 
+	free(newmsgbuf);
 	return 0;
 }
 #endif
