@@ -24,6 +24,7 @@
 char            cexplain[STRLEN];
 char           *Ctime();
 char            lookgrp[30];
+static	int sysoppassed=0;
 
 int showperminfo(int, int);
 
@@ -35,6 +36,7 @@ int check_systempasswd()
     FILE           *pass;
     char            passbuf[40], prepass[STRLEN];
 
+    if (sysoppassed) return YEA;
     clear();
     if ((pass = fopen("etc/systempassword", "rb")) != NULL)
     {
@@ -64,6 +66,7 @@ int check_systempasswd()
             return NA;
         }
     }
+    sysoppassed=1;
     return YEA;
 }
 
