@@ -641,7 +641,6 @@ static long insert_from_fp(FILE *fp)
     char* ptr;
     long size;
 
-    memcpy(attachpad, ATTACHMENT_PAD, ATTACHMENT_SIZE);
     matched=0;
     BBS_TRY {
         if (safe_mmapfile_handle(fileno(fp), O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & size) == 1) {
@@ -649,7 +648,7 @@ static long insert_from_fp(FILE *fp)
             long not;
             data=ptr;
             for (not=0;not<size;not++,data++) {
-                if (*data==attachpad[matched]) {
+                if (*data==0) {
                     matched++;
                     if (matched==ATTACHMENT_SIZE) {
                         int d, size;
@@ -660,7 +659,6 @@ static long insert_from_fp(FILE *fp)
                         size = htonl(d);
                         data+=4+size-1;
                         matched = 0;
-                        strcpy(attachpad, ATTACHMENT_PAD);
                     }
                     continue;
                 }
