@@ -848,7 +848,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
     TITLE = ent->title;         /*文章标题TITLE */
 //	sprintf(TITLE,"%s(%d)",ent->title,ent->eff_size);
     if ((type=='d')||(type=='D')) { //置顶文章
-        sprintf(buf, " \x1b[1;33m[提示]\x1b[m %-12.12s %s %s● %-44.44s ", ent->owner, date, attachch, TITLE);
+        sprintf(buf, " \x1b[1;33m[提示]\x1b[m %-12.12s %s %s" FIRSTARTICLE_SIGN " %-44.44s ", ent->owner, date, attachch, TITLE);
         return buf;
     }
 
@@ -890,32 +890,32 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
                 if (readfh&&(readfh->groupid == ent->groupid))     /* 当前阅读主题 标识 */
                     if (DEFINE(getCurrentUser(), DEF_HIGHCOLOR))
 #ifdef COLOR_ONLINE
-                        sprintf(buf, " \033[1;33m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[1;33m.%s● %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+                        sprintf(buf, " \033[1;33m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[1;33m.%s"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
 #ifdef LOWCOLOR_ONLINE
-                        sprintf(buf, " \033[1;33m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s.%s\033[1;33m● %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+                        sprintf(buf, " \033[1;33m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s.%s\033[1;33m"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
-                        sprintf(buf, " \033[1;33m%4d\033[m %s%c%s %-12.12s %s\033[1;33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
+                        sprintf(buf, " \033[1;33m%4d\033[m %s%c%s %-12.12s %s\033[1;33m.%c"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
 #endif
 #endif
                     else
 #ifdef COLOR_ONLINE
-                        sprintf(buf, " \033[33m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[33m.%s● %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+                        sprintf(buf, " \033[33m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[33m.%s"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
 #ifdef LOWCOLOR_ONLINE
-                        sprintf(buf, " \033[33m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s.%s\033[33m● %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+                        sprintf(buf, " \033[33m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s.%s\033[33m"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
-                        sprintf(buf, " \033[33m%4d\033[m %s%c%s %-12.12s %s\033[33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
+                        sprintf(buf, " \033[33m%4d\033[m %s%c%s %-12.12s %s\033[33m.%c"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
 #endif
 #endif
                 else
 #ifdef COLOR_ONLINE
-                    sprintf(buf, " %4d %s%c%s \033[1;3%dm%-12.12s\033[m %s %s● %-44.44s ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+                    sprintf(buf, " %4d %s%c%s \033[1;3%dm%-12.12s\033[m %s %s"FIRSTARTICLE_SIGN" %-44.44s ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
 #ifdef LOWCOLOR_ONLINE
-                    sprintf(buf, " %4d %s%c%s \033[3%dm%-12.12s\033[m %s %s● %-44.44s ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+                    sprintf(buf, " %4d %s%c%s \033[3%dm%-12.12s\033[m %s %s"FIRSTARTICLE_SIGN" %-44.44s ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
-                    sprintf(buf, " %4d %s%c%s %-12.12s %s %c● %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
+                    sprintf(buf, " %4d %s%c%s %-12.12s %s %c"FIRSTARTICLE_SIGN" %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
 #endif
 #endif
             }
@@ -957,32 +957,32 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
             if ((readfh!=NULL)&&!strcmp(readfh->title, ent->title))      /* 当前阅读主题 标识 */
                 if (DEFINE(getCurrentUser(), DEF_HIGHCOLOR))
 #ifdef COLOR_ONLINE
-                    sprintf(buf, " \033[1;33m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[1;33m.%s● %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+                    sprintf(buf, " \033[1;33m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[1;33m.%s"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
 #ifdef LOWCOLOR_ONLINE
-                    sprintf(buf, " \033[1;33m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s.%s\033[1;33m● %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+                    sprintf(buf, " \033[1;33m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s.%s\033[1;33m"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
-                    sprintf(buf, " \033[1;33m%4d\033[m %s%c%s %-12.12s %s\033[1;33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
+                    sprintf(buf, " \033[1;33m%4d\033[m %s%c%s %-12.12s %s\033[1;33m.%c"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
 #endif
 #endif
                 else
 #ifdef COLOR_ONLINE
-                    sprintf(buf, " \033[33m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[33m.%s● %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+                    sprintf(buf, " \033[33m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[33m.%s"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
 #ifdef LOWCOLOR_ONLINE
-                    sprintf(buf, " \033[33m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s.%s\033[33m● %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+                    sprintf(buf, " \033[33m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s.%s\033[33m"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
-                    sprintf(buf, " \033[33m%4d\033[m %s%c%s %-12.12s %s\033[33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
+                    sprintf(buf, " \033[33m%4d\033[m %s%c%s %-12.12s %s\033[33m.%c"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
 #endif
 #endif
             else
 #ifdef COLOR_ONLINE
-                sprintf(buf, " %4d %s%c%s \033[1;3%dm%-12.12s\033[m %s %s● %-44.44s ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+                sprintf(buf, " %4d %s%c%s \033[1;3%dm%-12.12s\033[m %s %s"FIRSTARTICLE_SIGN" %-44.44s ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
 #ifdef LOWCOLOR_ONLINE
-                sprintf(buf, " %4d %s%c%s \033[3%dm%-12.12s\033[m %s %s● %-44.44s ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+                sprintf(buf, " %4d %s%c%s \033[3%dm%-12.12s\033[m %s %s"FIRSTARTICLE_SIGN" %-44.44s ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
-                sprintf(buf, " %4d %s%c%s %-12.12s %s %c● %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
+                sprintf(buf, " %4d %s%c%s %-12.12s %s %c"FIRSTARTICLE_SIGN" %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
 #endif
 #endif
         }

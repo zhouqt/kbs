@@ -31,6 +31,12 @@
 #endif
 #endif
 
+#ifdef FREE
+#if FREE == 0 /* FREE BBS专有代码 */
+#undef FREE
+#endif
+#endif
+
 #ifdef DQPI
 #if DQPI == 0		/* 北极星(DQPI)专有代码 */
 #undef DQPI
@@ -554,12 +560,13 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_SHOWREALUSERDATA	010000000000
 #define DEF_HIDEIP			040000000001
 #define DEF_SHOWBANNER	040000000002
+#define DEF_AUTOREMAIL			040000000004
 
 /*#define DEF_HIDEIP    02000000000  Haohmaru,99.12.18*/
 
 /*#define PERM_POSTMASK  0100000  *//* means the rest is a post mask */
 
-#define NUMDEFINES 34
+#define NUMDEFINES 35
 
 #define SET_DEFINE(user,x) ((user)->userdefine[def_list(x)] |= x)
 #define SET_UNDEFINE(user,x) ((user)->userdefine[def_list(x)] &= ~x)
@@ -788,6 +795,10 @@ attach define
 
 #ifndef QUOTELEV
 #define QUOTELEV 0
+#endif
+
+#ifndef FIRSTARTICLE_SIGN
+#define FIRSTARTICLE_SIGN "●"
 #endif
 
 #endif
