@@ -467,6 +467,7 @@ void save_msgs(char * s)
 void refreshit()
 {
     int i,j,me,msgst;
+    char buf[80];
     for(i=0;i<t_lines-1;i++) {
         move(i, 0);
         clrtoeol();
@@ -520,7 +521,8 @@ void refreshit()
         if(ipage+i-2==selected) {
             setfcolor(RED, 1);
         }
-        prints("%s", inrooms[myroom].peoples[j].nick);
+        sprintf(buf, "%d %s", j, inrooms[myroom].peoples[j].nick);
+        prints("%s", buf);
     }
     resetcolor();
     msgst=get_msgt();
@@ -866,9 +868,7 @@ void join_room(int w, int spec)
     inrooms[myroom].peoples[i].style = 0;
     inrooms[myroom].peoples[i].flag = 0;
     strcpy(inrooms[myroom].peoples[i].id, currentuser->userid);
-    sprintf(buf, "%d %s", i+1, currentuser->userid);
-    buf[12]=0;
-    strcpy(inrooms[myroom].peoples[i].nick, buf);
+    strcpy(inrooms[myroom].peoples[i].nick, currentuser->userid);
     inrooms[myroom].peoples[i].pid = uinfo.pid;
     if(rooms[myroom].people==0 && !strcmp(rooms[myroom].creator, currentuser->userid))
         inrooms[myroom].peoples[i].flag = PEOPLE_ROOMOP;
