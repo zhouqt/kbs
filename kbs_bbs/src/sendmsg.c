@@ -276,9 +276,9 @@ void r_msg()
     char savebuffer[25][256];
     char buf[MAX_MSG_SIZE+100], outmsg[MAX_MSG_SIZE*2], buf2[STRLEN], uid[14];
     struct user_info * uin;
-    int now, count, canreply;
+    int now, count, canreply, first=1;
 
-    getyx(&y, &x);
+    good_getyx(&y, &x);
     tmpansi = showansi;
     showansi = 1;
     RMSG = true;
@@ -344,11 +344,20 @@ void r_msg()
             else
                 prints("%s", outmsg);
 
+            if(first) {
+                refresh();
+                oflush();
+                ch = igetkey();
+                first = 0;
+            }
+            
+
             prints("[m  µÚ%3d/%-3dÌõÏûÏ¢, °´¡ü»ò¡ýÇÐ»»Ñ¶Ï¢, »ò°´ Enter ½áÊø, %s", now+1, count, canreply?"»Ø¸´:":(uin?"¸ÃÏûÏ¢ÎÞ·¨»Ø¸´":"ÓÃ»§ÒÑÏÂÕ¾,ÎÞ·¨»Ø¸´"));
-            getyx(&oy, &ox);
+            good_getyx(&oy, &ox);
             
             refresh();
             oflush();
+            clrtoeol();
             if(canreply)
                 ch = -getdata(oy, ox, NULL, buf, 1024, DOECHO, NULL, true);
             else
@@ -390,7 +399,7 @@ void r_msg()
     } while(now!=-1);
 
     showansi = tmpansi;
-    move(y,x);
+    good_move(y,x);
     refresh();
     RMSGCount--;
     if (0 == RMSGCount)
