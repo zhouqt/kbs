@@ -659,7 +659,7 @@ static int set_clock_prekey(struct _select_def *conf, int *key)
 static int set_clock_refresh(struct _select_def *conf)
 {
 	clear();
-	docmdtitle("[ÏµÍ³ÄÖÖÓÉèÖÃ]","[a Ôö¼Ó] [d É¾³ı]");
+	docmdtitle("[ÏµÍ³ÄÖÖÓÉèÖÃ]","[a Ôö¼Ó] [d É¾³ı] [s ²éÑ¯×î½üÒ»¸öÄÖÁåÊ±¼ä]");
 	move(2,0);
 	prints("[0;1;37;44m   %-4s %-25s %-40s[m","ÀàĞÍ¡","ÄÖÁåÊ±¼ä","ÄÖÁåËµÃ÷");
 	update_endline();
