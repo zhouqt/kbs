@@ -174,7 +174,7 @@ function cache_header($scope,$modifytime=0,$expiretime=300)
 	return FALSE;
 }
 
-function html_init($charset,$title="")
+function html_init($charset,$title="",$otherheader="")
 {
 	global $_COOKIE;
 	global $cachemode;
@@ -213,6 +213,7 @@ function html_init($charset,$title="")
 	}
 ?>
 <link rel="stylesheet" type="text/css" href="/ansi.css"/>
+<?php echo($otherheader); ?>
 </head>
 <?php
 }

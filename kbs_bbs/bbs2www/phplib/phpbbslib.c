@@ -45,6 +45,7 @@ static ZEND_FUNCTION(bbs_createnewid);
 static ZEND_FUNCTION(bbs_fillidinfo);
 static ZEND_FUNCTION(bbs_delfile);
 static ZEND_FUNCTION(bbs_delmail);
+static ZEND_FUNCTION(bbs_normalboard);
 
 static ZEND_MINIT_FUNCTION(bbs_module_init);
 static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown);
@@ -94,6 +95,7 @@ static function_entry bbs_php_functions[] = {
         ZEND_FE(bbs_fillidinfo,NULL)
         ZEND_FE(bbs_delfile,NULL)
         ZEND_FE(bbs_delmail,NULL)
+        ZEND_FE(bbs_normalboard,NULL)
         {NULL, NULL, NULL}
 };
 
@@ -2107,3 +2109,26 @@ static ZEND_FUNCTION(bbs_delmail)
 
 	RETURN_LONG(result);
 }
+
+/**
+ * check a board is normal board
+ * prototype:
+ * int bbs_normal(char* boardname);
+ *
+ *  @return the result
+ *  	1 -- normal board
+ *  	0 -- no
+ *  @author kcn
+ */
+static ZEND_FUNCTION(bbs_normalboard)
+{
+    int ac = ZEND_NUM_ARGS();
+    char* boardname;
+    int name_len;
+
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &boardname, &name_len) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+	RETURN_LONG(normal_board(bname));
+}
+

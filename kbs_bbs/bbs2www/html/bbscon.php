@@ -154,10 +154,10 @@ function display_navigation_bar($brdarr, $articles, $num)
 		else
 		{
 			$filename=bbs_get_board_filename($brdarr["NAME"], $articles[1]["FILENAME"]);
-/*TODO: check 公开版面和私下版面
-            if (cache_header("public",filemtime($filename),300))
-                return;
-*/
+			if (bbs_normalboard($board)) {
+            			if (cache_header("public",filemtime($filename),300))
+                			return;
+                	}
 			Header("Cache-control: nocache");
 			@$attachpos=$_GET["ap"];//pointer to the size after ATTACHMENT PAD
 			if ($attachpos!=0) {

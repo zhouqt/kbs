@@ -29,8 +29,11 @@ if ($id!="") {
         setcookie("UTMPNUM",$num,time()+360000,"");
         setcookie("UTMPUSERID",$data["userid"],time()+360000,"");
         setcookie("LOGINTIME",$data["logintime"],time()+360000,"");
+        if ($data["userid"]=="guest")
+	    header("Location: /guest-frames.html");
+        else
 	    header("Location: /frames.html");
-	    return;
+	return;
       }
     }
 } else {
