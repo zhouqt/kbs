@@ -643,7 +643,7 @@ int translate_msg(char* src, struct msghead *head, char* dest)
     for(i=0;i<strlen(src);i++){
         if(j) j=0;
         else if(src[i]<0) j=1;
-        if(j==0&&pos>=80||j==1&&pos>=79) {
+        if(j==0&&pos>=80||j==1&&pos>=79||src[i]=='n'||src[i]=='r') {
             for(;pos<80;pos++)
                 dest[len++]=' ';
             dest[len++]='';
@@ -654,6 +654,7 @@ int translate_msg(char* src, struct msghead *head, char* dest)
             for(pos=0;pos<strlen(attstr);pos++)
                 dest[len++]=attstr[pos];
             pos=0;
+            if(src[i]=='n'||src[i]=='r') continue;
         }
         dest[len++]=src[i];
         pos++;
