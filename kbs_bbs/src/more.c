@@ -936,7 +936,7 @@ int draw_content_more(char *ptr, int size, char *fn,struct fileheader* fh)
 {
     extern int t_lines;
     struct MemMoreLines l;
-    int i, ch = 0, curr_line, last_line, change;
+    int i, j, ch = 0, curr_line, last_line, change;
     bool header=true;
     char buf[256];
 
@@ -954,7 +954,7 @@ int draw_content_more(char *ptr, int size, char *fn,struct fileheader* fh)
     outs(buf);
     prints("\n\033[m");
     curr_line = l.curr_line;
-    for (i = 0;;) {
+    for (i = 0, j = 0;;) {
         if (shownflag) {
             displayflag = 0;
         }
@@ -963,10 +963,11 @@ int draw_content_more(char *ptr, int size, char *fn,struct fileheader* fh)
 	    !((i==2)&&!strncmp(l.curr,"·¢ÐÅÕ¾: ",8))&&
 	    !((i==3)&&(l.currlen==0)))) {
             mem_printline(l.curr, l.currlen, fn, l.currty);
+            j++;
 	    header=false;
 	}
         i++;
-        if (i >= t_lines - t_lines/2 - 2)
+        if (j >= t_lines - t_lines/2 - 2)
             break;
         if (next_MemMoreLines(&l) < 0)
             break;

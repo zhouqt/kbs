@@ -537,7 +537,7 @@ void readtitle()
     	prints("[1;37m[44m ±àºÅ   %-12s %6s %-40s[%4sÄ£Ê½] [m\n", "¿¯ µÇ Õß", "ÈÕ  ÆÚ", " ÎÄÕÂ±êÌâ", readmode);
 	else
     	prints("[37m[44m ±àºÅ   %-12s %6s %-40s[%4sÄ£Ê½] [m\n", "¿¯ µÇ Õß", "ÈÕ  ÆÚ", " ÎÄÕÂ±êÌâ", readmode);
-    clrtobot();
+//    clrtobot();
 }
 
 char *readdoent(char *buf, int num, struct fileheader *ent)

@@ -232,6 +232,7 @@ O MaxMessageSize=32000
 #define READ_PREV       6       /* Direct read prev file */
 #define GOTO_NEXT       7       /* Move cursor to next */
 #define DIRCHANGED      8       /* Index file was changed */
+#define NEWSCREEN	9	/* split the screen */
 
 #define I_TIMEOUT   (-2)        /* Used for the getchar routine select call */
 #define I_OTHERDATA (-333)      /* interface, (-3) will conflict with chinese */

@@ -58,7 +58,7 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
 static int search_author(struct keeploc *locmem, int offset, char *powner);
 static int search_post(struct keeploc *locmem, int offset);
 static int search_title(struct keeploc *locmem, int offset);
-static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, int ssize, char *pnt);
+static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, int ssize, char* pnt);
 static int cursor_pos(struct keeploc *locmem, int val, int from_top);
 static int search_thread(struct keeploc *locmem, int offset, char *title);
 static int search_threadid(struct keeploc *locmem, int offset, int groupid);
@@ -202,7 +202,6 @@ void draw_entry(READ_FUNC doentry, struct keeploc *locmem, int num, int ssize, c
 
     base = locmem->top_line;
     move(3, 0);
-    clrtobot();
     for (i = 0; i < num; i++) {
         str = (*doentry) (foroutbuf, base + i, &pnt[i * ssize]);
         if (!check_stuffmode())
@@ -238,24 +237,25 @@ static int search_author(struct keeploc *locmem, int offset, char *powner)
 
 void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, struct one_key *rcmdlist, int ssize)
 {
-    struct keeploc *locmem;
     char lbuf[11], lastfile[256];
-    int lbc, recbase, mode, ch;
-    int num, entries;
+    int num, entries, recbase;
+    struct keeploc *locmem;
 
+    int lbc, mode, ch;
+    char *pnt;
 
     /*---	Moved from top of file	period	2000-11-12	---*/
-    char *pnt;
 
     strncpy(currdirect, direct, 255);   /* COMMAN: strncpy */
 
     /*---	HERE:	---*/
     screen_len = t_lines - 4;
-    if (TDEFINE(TDEF_SPLITSCREEN))
+    if (TDEFINE(TDEF_SPLITSCREEN)&&cmdmode!=GMENU)
         screen_len = screen_len/2-1;
     modify_user_mode(cmdmode);
-    pnt = calloc(screen_len, ssize);
+    pnt = calloc(t_lines, ssize);
     draw_title(dotitle);
+    clrtobot();
     last_line = get_num_records(currdirect, ssize);
     if (last_line == 0) {
         if (cmdmode == RMAIL) {
@@ -292,7 +292,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
     /*---	Modofied by period	2000-11-12	---*
     draw_entry( doentry, locmem, entries ,ssize);
      *---			---*/
-    if (TDEFINE(TDEF_SPLITSCREEN)){
+    if (TDEFINE(TDEF_SPLITSCREEN)&&cmdmode!=GMENU){
         char buf[256], *t;
         struct fileheader* h;
         strcpy(buf, currdirect);
@@ -304,7 +304,6 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
         draw_content(genbuf,h);
         move(0, 0);
         (*dotitle) ();
-        clrtobot();
     }
     draw_entry(doentry, locmem, entries, ssize, pnt);
     PUTCURS(locmem);
@@ -401,6 +400,19 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
             cursor_pos(locmem, locmem->crs_line + 1, 1);
             mode = PARTUPDATE;
         }
+        if (mode == NEWSCREEN) {
+            last_line = get_num_records(currdirect, ssize);
+            num = last_line - screen_len + 2;
+            locmem = getkeep(currdirect, num < 1 ? 1 : num, last_line);
+            modify_locmem(locmem, last_line);
+            if(locmem->crs_line-locmem->top_line>=screen_len-1) //added by bad 2002.9.2
+                locmem->crs_line = locmem->top_line;
+    
+            recbase = locmem->top_line;
+            entries = get_records(currdirect, pnt, ssize, recbase, screen_len);
+
+            mode = FULLUPDATE;
+        }
         switch (mode) {
         case NEWDIRECT:
         case DIRCHANGED:
@@ -431,6 +443,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
             }
         case FULLUPDATE:
             draw_title(dotitle);
+            clrtobot();
         case PARTUPDATE:
             if (last_line < locmem->top_line + screen_len) {
                 num = get_num_records(currdirect, ssize);
@@ -455,7 +468,9 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
             if (locmem->crs_line > last_line)
                 locmem->crs_line = last_line;
 
-            if (TDEFINE(TDEF_SPLITSCREEN)){
+            move(3, 0);
+            clrtobot();
+            if (TDEFINE(TDEF_SPLITSCREEN)&&cmdmode!=GMENU){
                 char buf[256], *t;
                 struct fileheader* h;
                 strcpy(buf, currdirect);
@@ -467,14 +482,13 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
                 strcpy(lastfile, genbuf);
                 move(0, 0);
                 (*dotitle) ();
-                clrtobot();
             }
             draw_entry(doentry, locmem, entries, ssize, pnt);
             PUTCURS(locmem);
             break;
 
         default:
-            if (TDEFINE(TDEF_SPLITSCREEN)){ //added by bad 2002.9.2
+            if (TDEFINE(TDEF_SPLITSCREEN)&&cmdmode!=GMENU){ //added by bad 2002.9.2
                 char buf[256], *t;
                 struct fileheader* h;
                 strcpy(buf, currdirect);
@@ -482,15 +496,16 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
                     *t = '\0';
                 h = (struct fileheader*)&pnt[(locmem->crs_line - locmem->top_line) * ssize];
                 sprintf(genbuf, "%s/%s", buf, h->filename);
-                if (strcmp(genbuf, lastfile))
+                if (strcmp(genbuf, lastfile)){
+                    move(3, 0);
+                    clrtobot();
                     draw_content(genbuf,h);
+                    move(0, 0);
+                    (*dotitle) ();
+                    draw_entry(doentry, locmem, entries, ssize, pnt);
+                    PUTCURS(locmem);
+                }
                 strcpy(lastfile, genbuf);
-                PUTCURS(locmem);
-                move(0, 0);
-                (*dotitle) ();
-                clrtobot();
-                draw_entry(doentry, locmem, entries, ssize, pnt);
-                PUTCURS(locmem);
             }
             break;
         }
@@ -504,7 +519,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
 }
 
 
-static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, int ssize, char *pnt)
+static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, int ssize, char* pnt)
 {
     int i, mode = DONOTHING;
 
@@ -632,6 +647,7 @@ static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, 
             break;
         }
     case Ctrl('V'):
+        if(uinfo.mode==GMENU) break;
         if (TDEFINE(TDEF_SPLITSCREEN))
         	tmpuser&=~TDEF_SPLITSCREEN;
         else
@@ -639,7 +655,12 @@ static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, 
         screen_len = t_lines - 4;
         if (TDEFINE(TDEF_SPLITSCREEN))
             screen_len = screen_len/2-1;
-        return FULLUPDATE;
+
+//        num = last_line - screen_len + 2;
+//        locmem = getkeep(currdirect, num < 1 ? 1 : num, last_line);
+//        modify_locmem(locmem, last_line);
+
+        return NEWSCREEN;
         break;
     case '!':                  /*Haohmaru 1998.09.24 */
         Goodbye();
