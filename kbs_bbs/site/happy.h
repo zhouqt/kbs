@@ -220,7 +220,6 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_SHOWHOROSCOPE 02000000000
 #define DEF_RANDSIGN      04000000000
 #define DEF_SPLITSCREEN 010000000000
-/*#define PERM_POSTMASK  0100000  *//* means the rest is a post mask */
 
 #define NUMDEFINES 30
 
@@ -241,7 +240,7 @@ const char *permstrings[] = {
         "禁止发表文章",         /* PERM_DENYPOST */
         "可隐身",               /* PERM_CLOAK */
         "可见隐身",             /* PERM_SEECLOAK */
-        "长期帐号",         /* PERM_XEMPT */
+        "永久帐号",         /* PERM_XEMPT */
         "编辑系统档案",         /* PERM_WELCOME */
         "板主",                 /* PERM_BOARDS */
         "帐号管理员",           /* PERM_ACCOUNTS */
