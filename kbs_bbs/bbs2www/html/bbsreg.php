@@ -10,21 +10,7 @@
 	@$num_auth=$_POST["num_auth"];
 	@$userid=$_POST["userid"];
 	@$nickname=$_POST["username"];
-	/*
-	@$realname=$_POST["realname"];
-	@$dept=$_POST["dept"];
-	@$address=$_POST["address"];
-	@$year=$_POST["year"];
-	@$month=$_POST["month"];
-	@$day=$_POST["day"];
-	*/
 	@$reg_email=$_POST["reg_email"];
-	/*
-	@$phone=$_POST["phone"];
-	@$gender=$_POST["gender"];
-	@$m_register=$_POST["m_register"];
-	@$mobile_phone=$_POST["mobile_phone"];
-	*/
 	@$password = $_POST["pass1"];
 	@$re_password = $_POST["pass2"];
 	
@@ -101,30 +87,27 @@ style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-f
 style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">密码：" . $password . "</SPAN></FONT></P>
 <P class=MsoNormal><FONT size=2><SPAN lang=EN-US>email</SPAN><SPAN 
 style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">：" . $reg_email . "</SPAN></FONT></P>
-<P class=MsoNormal><FONT size=2><A href=\"http://www.smth.org/bbsact.php?userid=".$userid."&acode=".$activation."\"><SPAN 
+<P class=MsoNormal><FONT size=2><A href=\"http://".$_SERVER["HTTP_HOST"]."/bbsact.php?userid=".$userid."&acode=".$activation."\"><SPAN 
 style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">点击这里激活您在" . BBS_FULL_NAME . "的新帐号</SPAN></A>
 <br /></p>
-<P class=MsoNormal><FONT size=2>或者 <A href=\"http://proxy.smth.org/bbsact.php?userid=".$userid."&acode=".$activation."\"><SPAN 
-style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">国外用户点击此处(使用http://proxy.smth.org)</SPAN></A>
-<br /><br /></p>
 <P class=MsoNormal><FONT size=2><SPAN 
 style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\"></SPAN></FONT></P>
 </body>
 </html>
 ";
 /* To send HTML mail, you can set the Content-type header. */
-$headers  = "MIME-Version: 1.0\r\n";
-$headers .= "Content-type: text/html; charset=gb2312\r\n";
+$headers  = "MIME-Version: 1.0\n";
+$headers .= "Content-type: text/html; charset=gb2312\n";
 
 /* additional headers */
-$headers .= "From: BBS水木清华站 <https://www.smth.edu.cn>\r\n";
+$headers .= "From: ".BBS_FULL_NAME." <http://".$_SERVER["HTTP_HOST"].">\n";
 
 html_init("gb2312");
 if(!mail($reg_email, "welcome to " . BBS_FULL_NAME, $mailbody,$headers))
 {
 ?>
 <body>
-申请BBS水木清华ID成功,<font color=red>注册码发送到您的注册Email失败!登录后请确认您的Email地址并重新发送注册码</font><br>
+申请<?php echo BBS_FULL_NAME; ?>ID成功,<font color=red>注册码发送到您的注册Email失败!登录后请确认您的Email地址并重新发送注册码</font><br>
 激活并通过审核后,你才将获得合法用户权限！<br/><a href="/">现在登录进站</a>
 </body>
 <?php
@@ -133,7 +116,7 @@ else
 {	
 ?>
 <body>
-申请BBS水木清华ID成功,你现在还没有通过身份认证,只有最基本的权限,不能发文,发信,聊天等,请查收您收到的注册确认Email，点击里面的激活链接激活您在本站的帐号.<br>
+申请<?php echo BBS_FULL_NAME; ?>ID成功,你现在还没有通过身份认证,只有最基本的权限,不能发文,发信,聊天等,请查收您收到的注册确认Email，点击里面的激活链接激活您在本站的帐号.<br>
 激活并通过审核后,你将获得合法用户权限！<br/><a href="/">现在登录进站</a>
 </body>
 <?php
