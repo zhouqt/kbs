@@ -49,7 +49,6 @@ $section_names = array(
 );
 $sectionCount=count($section_names);
 
-define('USEBROWSCAP',0);
 $user_define=array(array(0,"显示活动看版", "在telnet方式下是否显示活动看板","显示","不显示"), /* DEF_ACBOARD */
     array(0,"使用彩色", "在telnet方式下是否使用彩色显示", "使用", "不使用"),                /* DEF_COLOR */
     array(0, "编辑时显示状态栏","在telnet方式下编辑文章时是否显示状态栏", "显示","不显示"),         /* DEF_EDITMSG */
