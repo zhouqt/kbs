@@ -25,7 +25,7 @@ login_init();
 ?>
 <tr><td><?php echo $i;?></td>
 <td><?php echo date("D M j H:i:s Y", $msg["TIME"]);?></td>
-<td><?php if($msg["SENT"]) echo "收"; else echo "发";?></td>
+<td><?php if($msg["SENT"]) echo "<a href=\"bbssendmsg.php?destid=".$msg["ID"]."\">收</a>"; else echo "发";?></td>
 <td><?php echo $msg["ID"];?></td>
 <td><?php echo htmlspecialchars($msg["content"]);?></td>
 </tr>
