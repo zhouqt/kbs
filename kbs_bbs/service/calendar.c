@@ -30,12 +30,38 @@ unsigned long lunarInfo[]={
 0x14b63};
 char nums[11][3]={"〇", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"};
 char week[7][3]={"日", "一", "二", "三", "四", "五", "六"};
-int holiday_m[]={1, 2, 3, 3, 4, 5, 5, 6, 7, 8, 10, -1};
-int holiday_d[]={1, 14, 8, 9, 1, 1, 4, 1, 1, 1, 1};
-char holiday_s[][30]={"新年元旦", "情人节", "国际妇女节", "清华女生节", "愚人节", "国际劳动节", 
-    "中国五四青年节", "国际儿童节", "中国共产党建党日", "中国建军节", "国庆节"};
+char sFtv[][100] = {
+"0101*元旦",
+"0214 情人节",
+"0307 女生节",
+"0308 妇女节",
+"0501 劳动节",
+"0504 青年节",
+"0601 儿童节",
+"0701 建党节 香港回归纪念",
+"0801 建军节",
+"1001*国庆节",
+""};
+
+char lFtv[][100] = {
+"0101*春节",
+"0115 元宵节",
+"0505 端午节",
+"0815 中秋节",
+"0909 重阳节",
+"1224 小年",
+"0100*除夕",
+""};
+
+char wFtv[][100] = {
+"0520 母亲节 Mother's Day",
+"0630 父亲节 Father's Day",
+"1144 感恩节 Thanksgiving Day",
+""};
 
 int day,month,year;
+
+#define getnum(a) (((a)[0]-'0')*10+(a)[1]-'0')
 
 int leapMonth(int y) {
     return(lunarInfo[y-1900] & 0xf);
@@ -121,13 +147,13 @@ int get_week(int year, int month, int day)
 
 void draw_main()
 {
-    int i,j,k,x,y,lmonth,lday;
+    int i,j,k,x,y,lmonth,lday,i0;
     char buf[80];
     struct stat st;
     for(i=0;i<t_lines;i++)
         saveline(i, 1, save_scr[i]);
     resetcolor();
-    for(i=0;i<13;i++) {
+    for(i=0;i<14;i++) {
         move(i, 48);
         clrtoeol();
     }
@@ -165,11 +191,24 @@ void draw_main()
     k=0;
     for(i=1;i<=get_day(year,month);i++) {
         j=get_week(year,month,i);
+        Lunar(i, &lmonth, &lday);
         y=k*2+2;
         x=j*4+52;
         resetcolor();
-        if(j==0||j==6||month==1&&i==1) setfcolor(RED, 1);
+        if(j==0||j==6) setfcolor(RED, 1);
         else setfcolor(YELLOW, 1);
+        i0=0;
+        while(sFtv[i0][0]) {
+            if(sFtv[i0][4]=='*'&&getnum(sFtv[i0])==month&&getnum(sFtv[i0]+2)==i)
+                setfcolor(RED, 1);
+            i0++;
+        }
+        i0=0;
+        while(lFtv[i0][0]) {
+            if(lFtv[i0][4]=='*'&&getnum(lFtv[i0])==lmonth&&getnum(lFtv[i0]+2)==lday)
+                setfcolor(RED, 1);
+            i0++;
+        }
         if(i==day) setbcolor(PINK);
         sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, i);
         if(stat(buf, &st)!=-1) prints("\x1b[4m");
@@ -178,20 +217,39 @@ void draw_main()
 
         if(j==6) k++;
     }
-/*    i=0;
-    while(holiday_m[i]!=-1) {
-        if(month==holiday_m[i]&&day==holiday_d[i]) {
-            strcpy(buf, holiday_s[i]);
-            move(12, 80-strlen(buf));
-            resetcolor();
-            prints("%s", buf);
-        }
-        i++;
-    }*/
+
     move(12, 56);
     resetcolor();
     Lunar(day, &lmonth, &lday);
-    prints("农历:%d月%d日", lmonth, lday);
+    sprintf(buf, "农历:%d月%d日", lmonth, lday);
+    move(12, 80-strlen(buf));
+    resetcolor();
+    prints(buf);
+
+    k = 80;
+    resetcolor();
+    i0=0;
+    while(sFtv[i0][0]) {
+        if(getnum(sFtv[i0])==month&&getnum(sFtv[i0]+2)==i) {
+            strcpy(buf, sFtv[i0]+5);
+            k-=strlen(buf);
+            move(13, k);
+            k--;
+            prints(buf);
+        }
+        i0++;
+    }
+    i0=0;
+    while(lFtv[i0][0]) {
+        if(getnum(lFtv[i0])==lmonth&&getnum(lFtv[i0]+2)==lday) {
+            strcpy(buf, lFtv[i0]+5);
+            k-=strlen(buf);
+            move(13, k);
+            k--;
+            prints(buf);
+        }
+        i0++;
+    }
     move(t_lines-1, 80);
 }
 
