@@ -26,8 +26,6 @@ char           *Ctime();
 char            lookgrp[30];
 static	int sysoppassed=0;
 
-int showperminfo(int, int);
-
 /* modified by wwj, 2001/5/7, for new md5 passwd */
 void igenpass(const char *passwd,const char *userid,unsigned char md5passwd[]);
 
