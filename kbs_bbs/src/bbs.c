@@ -45,7 +45,7 @@ char genbuf[1024];
 char quote_title[120], quote_board[120];
 char quote_user[120];
 struct friends_info *topfriend;
-extern char *currdirect;
+extern char currdirect[255];
 
 #ifndef NOREPLY
 char replytitle[STRLEN];
