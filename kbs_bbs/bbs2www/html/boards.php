@@ -41,6 +41,7 @@ function bbs_check_board_flag($board,$flag)
  */
 function bbs_is_anony_board($board)
 {
+	global $BOARD_FLAGS;
 	return bbs_check_board_flag($board, $BOARD_FLAGS["ANONY"]);
 }
 
@@ -54,6 +55,7 @@ function bbs_is_anony_board($board)
  */
 function bbs_is_outgo_board($board)
 {
+	global $BOARD_FLAGS;
 	return bbs_check_board_flag($board, $BOARD_FLAGS["OUTGO"]);
 }
 
@@ -67,6 +69,7 @@ function bbs_is_outgo_board($board)
  */
 function bbs_is_junk_board($board)
 {
+	global $BOARD_FLAGS;
 	return bbs_check_board_flag($board, $BOARD_FLAGS["JUNK"]);
 }
 
@@ -80,6 +83,7 @@ function bbs_is_junk_board($board)
  */
 function bbs_is_attach_board($board)
 {
+	global $BOARD_FLAGS;
 	return bbs_check_board_flag($board, $BOARD_FLAGS["ATTACH"]);
 }
 
@@ -93,6 +97,7 @@ function bbs_is_attach_board($board)
  */
 function bbs_is_readonly_board($board)
 {
+	global $BOARD_FLAGS;
 	return bbs_check_board_flag($board, $BOARD_FLAGS["READONLY"]);
 }
 
