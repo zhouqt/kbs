@@ -23,7 +23,8 @@ INSTALL只写了bbsd等主要程序的安装方法
 
   ii)使用MYSQL的十大热门话题统计 
    代码: local_utl/newpoststat.c
-   define: #define NEWPOSTSTAT
+   define:   #define NEWPOSTLOG
+             #define NEWPOSTSTAT
    需要: #define HAVE_MYSQL_SMTH 1
    crontab:
         40 * * * * $BBSHOME/bin/newpoststat
@@ -64,10 +65,26 @@ INSTALL只写了bbsd等主要程序的安装方法
 
  1.) 推箱子
    代码: service/worker
-   define: 不需要，都有
    系统:  $mkdir $BBSHOME/game/worker
           $cd $BBSHOME/game/worker
 		  $cp $BBSSRC/service/worker/worker.tar.gz .
 		  $tar zxvf worker.tar.gz
    menu.ini:
           @RunMBEM     0, 0, PERM_LOGINOK, "O@mod:game/so/libworker.so#worker_main",  "(O) 推箱子"
+
+ 2.) 穿梭
+   代码: service/bbsnet
+   menu.ini:
+		  @RunMBEM     10, 15, PERM_LOGINOK, "B@mod:service/libbbsnet.so#bbsnet_main", "(F) 网络穿梭"
+   $BBSHOME/etc/bbsnet.ini:
+          $BBSSRC/bbshome/etc/bbsnet.ini是范例
+
+ 3.) 星空战斗鸡
+   代码: service/pip
+   menu.ini:
+		  @RunMBEM     0, 0, PERM_LOGINOK, "A@mod:game/so/libpip.so#mod_default",  "(A) 星空战斗鸡"
+
+ 4.) 友情测试
+   代码: service/friendtest
+   menu.ini:
+		  @RunMBEM     0, 0, PERM_LOGINOK, "T@mod:service/libfriendtest.so#friend_main", "(T) 友谊测试"
