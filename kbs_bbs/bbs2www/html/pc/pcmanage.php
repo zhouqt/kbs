@@ -302,8 +302,8 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 </tr>
 <tr>
 	<td class="t5">
-	文章链接: <input type="text" size="80" maxlength="255" name="trackbackname" class="f1"><br />
-	Trackback Ping URL: <input type="text" size="80" maxlength="255" name="trackbackurl" class="f1">
+	文章链接: <input type="text" size="80" maxlength="255" name="trackbackname" class="f1" value="<?php echo htmlspecialchars($_GET[tbArtAddr]); ?>"><br />
+	Trackback Ping URL: <input type="text" size="80" maxlength="255" name="trackbackurl" value="<?php echo htmlspecialchars($_GET[tbTBP]); ?>" class="f1">
 	(必须以"http://"开头)
 	</td>
 </tr>

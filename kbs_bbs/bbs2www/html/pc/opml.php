@@ -8,7 +8,7 @@ function pc_opml_init($opmlTitle)
 <?xml version="1.0" encoding="gb2312" ?> 
 <opml>
 <head>
-<title><?php echo htmlspecialchars($title); ?></title>
+<title><?php echo htmlspecialchars($opmlTitle); ?></title>
 </head>
 <body>
 <?php	
@@ -38,17 +38,17 @@ $type = intval( $_GET["t"]);
 $link = pc_db_connect();
 if($type == 2) //新用户
 {
-	$blogs = getNewUsers($link,50);
+	$blogs = getNewUsers($link,100);
 	$opmlTitle = $pcconfig["BBSNAME"] . "BLOG新用户组";
 }
 elseif($type == 1) //最高访问
 {
-	$blogs = getMostVstUsers($link,50);
+	$blogs = getMostVstUsers($link,100);
 	$opmlTitle = $pcconfig["BBSNAME"] . "BLOG热门用户组";
 }
 else //最近更新
 {
-	$blogs = getLastUpdates($link,50);
+	$blogs = getLastUpdates($link,100);
 	$opmlTitle = $pcconfig["BBSNAME"] . "BLOG更新用户组";
 }
 pc_db_close($link);

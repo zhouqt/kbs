@@ -55,7 +55,7 @@
 	
 	function display_navigation_bar($link,$pc,$nid,$pid,$tag,$spr,$order,$comment,$tid=0,$pur,$trackback , $subject , $recommend)
 	{
-		global $currentuser,$loginok;
+		global $currentuser,$loginok,$pcconfig;
 		echo " <a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nid."&pid=".$pid."&tag=".$tag."&tid=".$tid."&p=p\">上一篇</a>\n";
 		echo " <a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nid."&pid=".$pid."&tag=".$tag."&tid=".$tid."&p=n\">下一篇</a>\n";
 		
@@ -67,11 +67,13 @@
 				echo "<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nid."&s=all\">展开所有评论</a>\n";
 			echo "<a href=\"pccom.php?act=pst&nid=".$nid."\">发表评论</a>\n";
 		}
+		if($trackback && $tag == 0)
+			echo "<a href=\"/pc/pcmanage.php?act=post&tag=0&tbArtAddr=".urlencode("http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$PC["UID"]."&nid=".$nid."&s=all")."&tbTBP=".urlencode("http://".$pcconfig["SITE"]."/pc/tb.php?id=".$nid)."\"><font color=red>拿该日志来写BLOG</font></a>\n";
 		if($pur == 3)
 			echo "<a href=\"pcmanage.php?act=edit&nid=".$nid."\">修改</a>\n";
 		if((pc_is_manager($currentuser) || pc_is_admin($currentuser,$pc)) && $recommend == 0)
 			echo "<a href=\"pcrec.php?nid=".$nid."\">推荐</a>\n";
-		if($trackback)
+		if($trackback && $tag == 0)
 			echo 	"<a href=\"javascript:openScript('pctb.php?nid=".$nid."&uid=".$pc["UID"]."&subject=".base64_encode($subject)."',460 , 480)\">引用</a>\n";
 		echo 	"<a href=\"";
 		if($pc["EMAIL"])
