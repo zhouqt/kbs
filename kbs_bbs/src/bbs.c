@@ -910,7 +910,9 @@ int do_select(int ent, struct fileheader *fileinfo, char *direct)
     make_blist();               /* 生成所有Board名 列表 */
     namecomplete((char *) NULL, bname); /* 提示输入 board 名 */
     setbpath(bpath, bname);
-    if ((*bname == '\0') || (stat(bpath, &st) == -1)) { /* 判断board是否存在 */
+    if (*bname == '\0')
+    	return FULLUPDATE;
+    if (stat(bpath, &st) == -1) { /* 判断board是否存在 */
         move(2, 0);
         prints("不正确的讨论区.\n");
         pressreturn();
