@@ -79,7 +79,7 @@ function bbs_confirm(url,infor){
   </tr>
   <tr>
   	<td class="ts2">
-  	<?php echo $currentuser["userid"].".bbs@smth.org&nbsp;&nbsp".date("Y-m-d  l"); ?>
+  	<?php echo $currentuser["userid"].".bbs@smth.org&nbsp;&nbsp;".date("Y-m-d  l"); ?>
   	</td>
   </tr>
   <tr>
