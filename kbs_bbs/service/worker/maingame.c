@@ -88,7 +88,7 @@ static int load_highrecord(int level,struct high_record* hr,int myrecord)
 
 #endif
 
-static void update_endline(struct high_record* hr,int steps)
+static void update_endline1(struct high_record* hr, int steps)
 {
    char buf[256];
     move(scr_lns-1,0);
@@ -166,7 +166,7 @@ int main(int argc, char **argv)
             if (TRUE == InitPad()) {
                 b_play = TRUE;
                 DrawPad();
-                update_endline(&high,num_step);
+                update_endline1(&high,num_step);
                 inch = 0;
                 while (b_play) {
 /*				DrawPad();*/
@@ -254,14 +254,14 @@ int main(int argc, char **argv)
                         b_play = InitPad();
                         DrawPad();
                         num_step=0;
-                        update_endline(&high,num_step);
+                        update_endline1(&high,num_step);
                         break;
 	            case Ctrl('H'):
                     case '\177':
                     	  if (num_step!=0) {
                     	  	num_step--;
                     	       regretmove(steplog[num_step]);
-                            update_endline(&high,num_step);
+                            update_endline1(&high,num_step);
                     	  }
                     	  break;
                     default:
@@ -275,7 +275,7 @@ int main(int argc, char **argv)
                          	else
                                  steplog[num_step]=dir;
                              num_step++;
-                             update_endline(&high,num_step);
+                             update_endline1(&high,num_step);
                 	    }
                     }
                 }

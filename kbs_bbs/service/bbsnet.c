@@ -516,7 +516,7 @@ static int bbsnet_key(struct _select_def *conf, int command)
     return SHOW_CONTINUE;
 }
 
-static void bbsnet_refresh(struct _select_def *conf)
+static int bbsnet_refresh(struct _select_def *conf)
 {
     int i;
     clear();

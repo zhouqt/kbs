@@ -70,4 +70,4 @@ void DrawData(void)
 		gcharline(pptr->pos, pptr->start, pptr->end, pptr->orientation);
 	}
 }
-#endif 0
+#endif
