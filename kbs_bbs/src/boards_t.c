@@ -346,12 +346,12 @@ static int fav_show(struct _select_def *conf, int pos)
 			if(arg->favmode == 1)
             	prints(" %4d  £«  <Ä¿Â¼>  ", pos);
 			else
-            	prints(" %4d  £«  %s  ", pos ,ptr->BM);
+            	prints(" %4d  £«  %-16s  ", pos ,ptr->BM);
 		}else{
 			if(arg->favmode == 1)
             	prints(" %4d  £«  <Ä¿Â¼>  ", ptr->total);
 			else
-            	prints(" %4d  £«  %s  ", ptr->total, ptr->BM);
+            	prints(" %4d  £«  %-16s  ", ptr->total, ptr->BM);
 		}
     } else {
 	if ((ptr->dir==1)||(ptr->flag&BOARD_GROUP)) {
