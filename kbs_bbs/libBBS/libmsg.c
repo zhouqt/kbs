@@ -678,6 +678,8 @@ void mail_msg(struct userec* user)
     struct msghead head;
     time_t now;
     char title[STRLEN];
+    FILE* fn;
+    int count;
 
     sprintf(fname, "tmp/%s.msg", user->userid);
     fn = fopen(fname, "w");
