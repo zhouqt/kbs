@@ -227,19 +227,21 @@ char *uident;
         fprintf(fn1,"Äú±» %s °å°åÖ÷ %s ½â³ı·â½û\n",currboard,currentuser->userid);
     }
     fclose(fn1);
-    mail_file(filename,uident,buffer);
 
     /*½â·âÍ¬Ñù·¢ÎÄµ½undenypost°æ  Bigman:2000.6.30*/ 
     getuser(uident,&lookupuser); 
-    if (PERM_BOARDS & lookupuser->userlevel)
-    	sprintf(buffer,"%s ½â·âÄ³°å°åÖ÷ %s ÔÚ %s ",currentuser->userid,uident,currboard); 
-    else
-        sprintf(buffer,"%s ½â·â %s ÔÚ %s",currentuser->userid,uident,currboard);
+    if (lookupuser==NULL) 
+    	sprintf(buffer,"%s ½â·âËÀµôµÄÕÊºÅ %s ÔÚ %s ",currentuser->userid,uident,currboard); 
+    else {
+      if (PERM_BOARDS & lookupuser->userlevel)
+    	sprintf(buffer,"%s ½â·âÄ³°å°åÖ÷ %s ÔÚ %s ",currentuser->userid,lookupuser->userid,currboard); 
+      else
+        sprintf(buffer,"%s ½â·â %s ÔÚ %s",currentuser->userid,lookupuser->userid,currboard);
+      mail_file(currentuser->userid,filename,uident,buffer,0);
+    }
     postfile(filename,"undenypost",buffer,1);
     unlink(filename);
-
-
-    return del_from_file(fn,uident);
+    return del_from_file(fn,lookupuser?lookupuser->userid:uident);
 }
 
 int
@@ -355,7 +357,7 @@ Here:
                         fprintf(fn,"                              %s\n",ctime(&now));
                     }
                     fclose(fn);
-                    mail_file(filename,uident,buffer);
+                    mail_file(currentuser->userid,filename,uident,buffer,0);
                     fn=fopen(filename,"w+");
                     fprintf(fn,"ÓÉÓÚ \x1b[4m%s\x1b[0m ÔÚ \x1b[4m%s\x1b[0m °æµÄ \x1b[4m%s\x1b[0m ĞĞÎª£¬\n",uident,currboard,denymsg);
                     if (denyday)
@@ -389,6 +391,7 @@ Here:
                 }
             }
         } else if ((*ans == 'D' ) && count) {
+		int len;
             move(1,0);
             /*           namecomplete("É¾³ıÎŞ·¨ POST µÄÊ¹ÓÃÕß: ", uident);by Haohmaru.99.4.1.ÕâÖÖÉ¾³ı·¨»áÎóÉ¾Í¬×ÖÄ¸¿ªÍ·µÄID
             	     usercomplete("É¾³ıÎŞ·¨ POST µÄÊ¹ÓÃÕß: ", uident);Haohmaru.faint...Õâ¸öº¯ÊıÒ²»á³ö´í£,±ÈÈç·âµÄÊ±ºòID½ĞUSAleader,ºóÀ´ID±»É¾£¬ÓĞÈËÓÖ×¢²áÁË¸öusaleader,ÓÚÊÇ¾Í½â²»ÁË,´óĞ¡Ğ´ÒıÆğµÄ£¬Boy°å¾Í³öÏÖ¹ıÕâÖÖÇé¿ö£¬ËùÒÔ¸Ä³ÉÏÂÃæµÄ¡£
@@ -403,20 +406,23 @@ Here:
                 prints("(none)\n");
                 return 0;
             }
+	    len = strlen(uident);
             while(fgets(genbuf, 256/*STRLEN*/, fp) != NULL)
             {
-                idindex = strstr(genbuf,uident);
-                find = idindex - genbuf + 1;
-                if ( find == 1 && genbuf[strlen(uident)] == 32)
-                    break;
-                else
-                    find = 0;
+		if (!strncasecmp(genbuf,uident,len)) {
+                  if (genbuf[len] == 32) {
+	            strncpy(uident,genbuf,len);
+		    uident[len]=0;
+		    find=1;
+		    break;
+		  }
+		}
             }
             fclose(fp);
             if(!find)
             {
                 move(3,0) ;
-                prints("¸ÃID²»ÔÚ·â½ûÃûµ¥ÄÚ(Çë×¢Òâ£º´óĞ¡Ğ´Ò»¶¨ÒªºÍ·â½ûÃûµ¥ÀïµÄÒ»ÖÂ!)") ;
+                prints("¸ÃID²»ÔÚ·â½ûÃûµ¥ÄÚ!");
                 clrtoeol() ;
                 pressreturn() ;
                 goto Here;

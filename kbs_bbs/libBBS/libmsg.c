@@ -1,9 +1,225 @@
 #include "bbs.h"
 #include "screen.h"
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <assert.h>
+
 #define MAXMESSAGE 5
 char MsgDesUid[20];
 char msgerr[255];
+
 int getuinfopid(void);
+
+int write_peer(msg_t *msgbuf)
+{
+	char buf[2*STRLEN];
+
+	assert(msgbuf != NULL);
+	snprintf(buf, sizeof(buf), "%d %s", msgbuf->type, msgbuf->rawdata);
+	return write(msgbuf->sockfd, buf, strlen(buf));
+}
+
+int read_peer(int sockfd, msg_t *msgbuf)
+{
+	char buf[2*STRLEN];
+	char *ptr;
+	int rv;
+	int rc;
+
+	/*if (msgbuf == NULL)
+		return -1;*/
+	/* assert() macro can be removed by -DNDEBUG */
+	assert(msgbuf != NULL);
+	msgbuf->sockfd = sockfd;
+	if ((rc = read(sockfd, buf, sizeof(buf)-1)) < 0)
+		return -1;
+	buf[rc] = '\0';
+	msgbuf->type = atoi(buf);
+	ptr = strchr(buf, ' ');
+	if (ptr == NULL)
+	{
+		msgbuf->rawdata[0] = '\0';
+		rv = -1;
+	}
+	else
+	{
+		strcpy(msgbuf->rawdata, ptr+1);
+		rv = 0;
+	}
+
+	return rv;
+}
+
+int get_request_type(msg_t *msgbuf)
+{
+	assert(msgbuf != NULL);
+	return msgbuf->type;
+}
+
+int get_response_type(msg_t *msgbuf)
+{
+	assert(msgbuf != NULL);
+	return msgbuf->type;
+}
+
+int get_sockfd()
+{
+	struct sockaddr_un sun;
+	int sockfd;
+	char path[80];
+
+	bzero(&sun, sizeof(sun));
+	snprintf(path, sizeof(path), BBSHOME"/.msgd");
+	sockfd = socket(AF_LOCAL, SOCK_STREAM, 0);
+	if (sockfd == -1)
+		return -1;
+	sun.sun_family = AF_LOCAL;
+	strncpy(sun.sun_path, path, sizeof(sun.sun_path)-1);
+	if (connect(sockfd, (struct sockaddr *)&sun, sizeof(sun)) < 0)
+	{
+		close(sockfd);
+		return -1;
+	}
+	return sockfd;
+}
+
+int addto_msglist(int utmpnum, char *userid)
+{
+	msg_t msgbuf;
+
+	if ((msgbuf.sockfd = get_sockfd()) < 0)
+		return -1;
+	msgbuf.type = MSGD_NEW;
+	snprintf(msgbuf.rawdata, sizeof(msgbuf.rawdata), "NEW %s %d\n",
+		userid, utmpnum);
+	write_peer(&msgbuf);
+	if (read_peer(msgbuf.sockfd, &msgbuf) < 0)
+		goto add_failed;
+	if (msgbuf.type != MSGD_HLO)
+		goto add_failed;
+	close(msgbuf.sockfd);
+	return 0;
+
+add_failed:
+	close(msgbuf.sockfd);
+	return -1;
+}
+
+int delfrom_msglist(int utmpnum, char *userid)
+{
+	msg_t msgbuf;
+
+	if ((msgbuf.sockfd = get_sockfd()) < 0)
+		return -1;
+	msgbuf.type = MSGD_DEL;
+	snprintf(msgbuf.rawdata, sizeof(msgbuf.rawdata), "DEL %s %d\n",
+		userid, utmpnum);
+	write_peer(&msgbuf);
+	if (read_peer(msgbuf.sockfd, &msgbuf) < 0)
+		goto del_failed;
+	if (msgbuf.type != MSGD_BYE)
+		goto del_failed;
+	close(msgbuf.sockfd);
+	return 0;
+
+del_failed:
+	close(msgbuf.sockfd);
+	return -1;
+}
+
+int send_webmsg(int destutmp, char *destid, int srcutmp, char *srcid, char *msg)
+{
+	msg_t msgbuf;
+
+	if ((msgbuf.sockfd = get_sockfd()) < 0)
+		return -1;
+	msgbuf.type = MSGD_SND;
+	snprintf(msgbuf.rawdata, sizeof(msgbuf.rawdata), "SND %s %d %s %d\n",
+		destid, destutmp, srcid, srcutmp);
+	write_peer(&msgbuf);
+	if (read_peer(msgbuf.sockfd, &msgbuf) < 0)
+		goto send_failed;
+	if (msgbuf.type != MSGD_OK)
+		goto send_failed;
+	msgbuf.type = MSGD_MSG;
+	snprintf(msgbuf.rawdata, sizeof(msgbuf.rawdata), "MSG %s\n", msg);
+	write_peer(&msgbuf);
+	if (read_peer(msgbuf.sockfd, &msgbuf) < 0)
+		goto send_failed;
+	if (msgbuf.type != MSGD_OK)
+		goto send_failed;
+	close(msgbuf.sockfd);
+	return 0;
+
+send_failed:
+	close(msgbuf.sockfd);
+	return -1;
+}
+
+int receive_webmsg(int destutmp, char *destid, int *srcutmp, char *srcid, char *msg)
+{
+	msg_t msgbuf;
+	char *ptr;
+	char *ptr2;
+
+	if ((msgbuf.sockfd = get_sockfd()) < 0)
+		return -1;
+	msgbuf.type = MSGD_RCV;
+	snprintf(msgbuf.rawdata, sizeof(msgbuf.rawdata), "RCV %s %d\n",
+		destid, destutmp);
+	write_peer(&msgbuf);
+	if (read_peer(msgbuf.sockfd, &msgbuf) < 0)
+		goto receive_failed;
+	if (msgbuf.type != MSGD_FRM)
+		goto receive_failed;
+	if ((ptr = strchr(msgbuf.rawdata, ' ')) == NULL)
+		goto receive_failed;
+	*ptr++ = '\0';
+	if ((ptr2 = strchr(ptr, ' ')) == NULL)
+		goto receive_failed;
+	*ptr2++ = '\0';
+	strncpy(srcid, ptr, IDLEN);
+	srcid[IDLEN] = '\0';
+	*srcutmp = atoi(ptr2);
+	msgbuf.type = MSGD_OK;
+	snprintf(msgbuf.rawdata, sizeof(msgbuf.rawdata), 
+		"OK Ready to receive my message\n");
+	write_peer(&msgbuf);
+	if (read_peer(msgbuf.sockfd, &msgbuf) < 0)
+		goto receive_failed;
+	if (msgbuf.type != MSGD_MSG)
+		goto receive_failed;
+	/* rawdata should be "MSG msgstr\n" */
+	if ((ptr = strchr(msgbuf.rawdata, ' ')) == NULL)
+		goto receive_failed;
+	*ptr++ = '\0';
+	if ((ptr2 = strrchr(ptr, '\n')) != NULL)
+		*ptr2 = '\0';
+	strncpy(msg, ptr, MSG_LEN);
+	msg[MSG_LEN] = '\0';
+	close(msgbuf.sockfd);
+	return 0;
+
+receive_failed:
+	close(msgbuf.sockfd);
+	return -1;
+}
+
+int store_msgfile(char *uident, char *msgbuf)
+{
+	char buf[STRLEN];
+	FILE *fp;
+
+    sethomefile(buf,uident,"msgfile");
+    if((fp=fopen(buf,"a"))==NULL)
+        return -1;
+    fputs(msgbuf,fp);
+    fclose(fp);
+
+	return 0;
+}
+
 int
 sendmsgfunc(uentp,msgstr,mode)
 struct user_info *uentp;
@@ -31,7 +247,6 @@ int mode;
     if(!HAS_PERM(currentuser,PERM_SEECLOAK) && uin->invisible && strcmp(uin->userid,currentuser->userid) && mode!=4)
         return -2;
 
-
     if((mode!=3)&&(LOCKSCREEN == uin->mode)) /* Leeward 98.02.28 */
     {
     	strcpy(msgerr,"¶Ô·½ÒÑ¾­Ëø¶¨ÆÁÄ»£¬ÇëÉÔºòÔÙ·¢»ò¸øËû(Ëý)Ð´ÐÅ...\n");
@@ -43,7 +258,7 @@ int mode;
     	strcpy(msgerr,"¶Ô·½¾Ü¾ø½ÓÊÜÄãµÄÑ¶Ï¢...\n");
         return -1;
     }
-    if (mode!=3) {
+    if (mode!=3 && uin->mode != WEBEXPLORE) {
     sethomefile(buf,uident,"msgcount");
     fp=fopen(buf, "rb");
     if (fp!=NULL)
@@ -92,6 +307,27 @@ int mode;
     }
     if (Gmode == 2)
         sprintf(msgbuf,"[44m[33mÕ¾³¤ì¶ %8.8s Ê±¹ã²¥£º[37m%-59.59s[m\033[%dm\n",timestr,buf,uin->pid+100);
+#ifdef BBSMAIN
+	if (uin->mode == WEBEXPLORE)
+	{
+		if (send_webmsg(get_utmpent_num(uin), uident, utmpent, currentuser->userid, msgbuf) < 0)
+		{
+    		strcpy(msgerr,"send web message failed...\n");
+			return -1;
+		}
+		if (store_msgfile(uident, msgbuf) < 0)
+			return -2;
+
+		/*Haohmaru.99.6.03.»ØµÄmsgÒ²¼ÇÂ¼*/
+		if(strcmp(currentuser->userid,uident))
+		{
+			if (store_msgfile(currentuser->userid, msgbak) < 0)
+				return -2;
+		}
+		return 1;
+	}
+#endif
+
     /* ¼ì²éËù·¢msgµÄÄ¿µÄuidÊÇ·ñÒÑ¾­¸Ä±ä  1998.7.5 by dong*/
     uin=t_search(MsgDesUid,uentp->pid);
 
@@ -106,19 +342,23 @@ int mode;
         /*} */
     }
 
-    sethomefile(buf,uident,"msgfile");
+    /*sethomefile(buf,uident,"msgfile");
     if((fp=fopen(buf,"a"))==NULL)
         return -2;
     fputs(msgbuf,fp);
-    fclose(fp);
+    fclose(fp);*/
+	if (store_msgfile(uident, msgbuf) < 0)
+		return -2;
 
     /*Haohmaru.99.6.03.»ØµÄmsgÒ²¼ÇÂ¼*/
     if(strcmp(currentuser->userid,uident)){
-        sethomefile(buf,currentuser->userid,"msgfile");
+        /*sethomefile(buf,currentuser->userid,"msgfile");
         if((fp=fopen(buf,"a"))==NULL)
             return -2;
         fputs(msgbak,fp);
-        fclose(fp);
+        fclose(fp);*/
+		if (store_msgfile(currentuser->userid, msgbak) < 0)
+			return -2;
     }
     if(uentp->pid !=1 && kill(uin->pid,SIGUSR2)==-1&&msgstr==NULL)
     {

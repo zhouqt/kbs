@@ -1,0 +1,29 @@
+请做以下修改:
+1. 在 bbslib.c 加入一 function
+char *
+parselocaltime(date_buf)
+char *date_buf;
+{
+   static char buffer[40];
+   char week[30], mon[30], day[30], time[30], year[30];
+   /* add null to prevent from long string */
+   if (strlen(date_buf) > 30) date_buf[30]= '\0';
+   sscanf(date_buf,"%s %s %s %s %s", week, mon, day, time, year);
+   sprintf(buffer,"%.4s %.4s %.4s %.10s",day, mon, year, time);
+   return buffer;
+}
+
+
+2. 在 bbslink.c 611 行左右插入: 
+( 前一行为 if (bufferp) { BODY = bufferp+1;})
+
+ if ( NEWSFEED == REMOTE) {
+   char* datevalue;
+   datevalue = (char*)parselocaltime(DATE_BUF);
+   strncpy(DATE_BUF, datevalue, sizeof DATE_BUF);
+ }
+
+
+请依照上法修改测试, 若有任何问题欢迎来信. 
+若有效, 请通知我一声.
+

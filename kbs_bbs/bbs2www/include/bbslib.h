@@ -50,7 +50,7 @@ extern struct userec* currentuser;
 extern struct user_info *u_info;
 extern struct UTMPFILE *shm_utmp;
 extern struct UCACHE *shm_ucache;
-extern char fromhost[IPLEN];
+extern char fromhost[IPLEN+1];
 extern friends_t fff[200];
 extern int friendnum;
 extern char parm_name[256][80], *parm_val[256];
@@ -323,8 +323,6 @@ void write_header2(FILE *fp, char *board, char *title,
 
 int outgo_post2(struct fileheader *fh, char *board, 
 				char *userid, char *username, char *title);
-
-int mail_file(char *tmpfile, char *userid, char *title);
 
 int post_file(char *filename, postinfo_t *pi);
 

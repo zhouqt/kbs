@@ -4,6 +4,57 @@ extern char *gb2big (char*,int*,int);
 extern char    *sysconf_str();
 
 #include <libesmtp.h>
+
+int mail_file(char* fromid,char *tmpfile,char *userid,char *title,int unlink)
+{
+    struct fileheader newmessage ;
+    struct stat st ;
+    char fname[STRLEN],filepath[STRLEN],*ip;
+    char buf[255];
+    int fp;
+
+    int now; /* added for mail to SYSOP: Bigman 2000.8.11 */
+
+    memset(&newmessage, 0,sizeof(newmessage)) ;
+
+    strcpy(buf, fromid); /* Leeward 98.04.14 */
+    strncpy(newmessage.owner,buf,STRLEN) ;
+    strncpy(newmessage.title,title,STRLEN) ;
+
+    setmailpath(filepath, userid);
+    if(stat(filepath,&st) == -1) {
+        if(mkdir(filepath,0755) == -1)
+            return -1 ;
+    } else {
+        if(!(st.st_mode & S_IFDIR))
+            return -1 ;
+    }
+
+    now=time(NULL);
+
+    /*setmailpath(filepath, userid, fname);*/
+	setmailpath(filepath, userid);
+	get_postfilename(fname,filepath);
+    
+    strcpy(newmessage.filename,fname) ;
+    setmailfile(filepath, userid, fname) ;
+
+    /*
+    sprintf(genbuf, "cp %s %s",tmpfile, filepath) ;
+    */
+    if (unlink) 
+    	f_mv(tmpfile,filepath);
+   else
+    	f_cp(tmpfile,filepath,0);
+
+    setmailfile(buf, userid, DOT_DIR);
+    if(append_record(buf,&newmessage,sizeof(newmessage)) == -1)
+        return -1 ;
+
+    bbslog("1user","mailed %s ", userid);
+    return 0 ;
+}
+
 char *email_domain()
 {
     char        *domain;

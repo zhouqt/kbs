@@ -1,0 +1,45 @@
+From news.csie.nctu.edu.tw!skhuang Mon Jun 26 04:12:32 1995
+Path: news.csie.nctu.edu.tw!skhuang
+From: skhuang.bbs@csie.nctu.edu.tw (Shih-Kun Huang)
+Newsgroups: tw.bbs.admin.installbbs
+Subject: [Warn about history] innbbsd 重复收取文章的可能 fix
+Date: 20 Jun 1995 21:32:57 GMT
+Organization: 交大资工天龙新闻社(by nbbstin)
+Lines: 30
+Message-ID: <3s7eq9$52v@news.csie.nctu.edu.tw>
+References: <3s59or$o4e@news.csie.nctu.edu.tw>
+Reply-To: skhuang@csie.nctu.edu.tw
+NNTP-Posting-Host: ccsun22.csie.nctu.edu.tw
+X-Newsreader: TIN [version 1.2 PL2]
+
+history 毁损的确会造成文章重复收取. 请 innbbsd 使用者依照
+下列方法修改 receive_article.c, 避免 history 损坏时文章重
+复收取.
+
+Shih-Kun Huang (skhuang.bbs@csie.nctu.edu.tw) 提到:
+: 我遇不到这种状况, 也找不出原因, 但怀疑一个地方, 请有此困恼者,
+: 改 receive_article.c, 在 function receive_article, 第 286 行左右,
+: if (storeDB(HEADER[MID_H], hispaths) < 0) {
+:      bbslog("store DB fail\n");
+:      return -1;
+: }
+: 改为
+: if (storeDB(HEADER[MID_H], hispaths) < 0) {
+:      bbslog("store DB fail\n");
+: }
+: 也就是不 return -1 了. 可能是使用者 history.* mode 和 owner 不对,
+: 无法 storeDB. 我想这种情况就不用算是错误, 不必 return -1.
+
+请尽可能不要手动更改或删除 history, history.dir, 和 history.pag.
+若不得以必须手动删 history (或改 history), 请连带将 history.dir 和
+history.pag 删除, 再重跑 innbbsd.
+若 history size 太大, 请以下法调 history expiredays,
+ 1. 调小 ~bbs/innd/innbbs.conf 中的 expiredays
+ 2. run "ctlinnbbsd reload"
+ 3. run "ctlinnbbsd hismaint" 
+
+history, history.dir, history.pag 的 owner 必须和跑 innbbsd 的 user 相同. 
+--
+Shih-Kun Huang
+EC638, CSIE, NCTU, Taiwan, R.O.C. Phone: 886-35-712121 (x54709)
+

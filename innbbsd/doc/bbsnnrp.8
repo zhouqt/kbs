@@ -1,0 +1,138 @@
+.TH BBSNNRP 8 "16 Jul 1995" "NCTU CSIE" "Kuhn\'s Utility Reference Manual"
+.UC E 86-1
+.SH NAME
+bbsnnrp \- BBS Network News Reading Program 
+.SH SYNOPSIS
+.B bbsnnrp 
+[\-\fBh|?\fP]
+[\-\fBv\fP]
+[\-\fBc\fP]
+[\-\fBr\fP \fI[prot:]remotehost\fP]
+[\-\fBp\fP \fIport|path\fP]
+[\-\fBw\fP \fIseconds\fP]
+[\-\fBn\fP]
+[\-\fBa\fP \fImax_arts\fP]
+[\-\fBs\fP \fImax_stats\fP]
+[\-\fBt\fP \fIstdin|nntp\fP]
+[\-\fBg\fP \fInewsgroups\fP]
+[\-\fBm\fP \fImoderator\fP]
+[\-\fBo\fP \fIorganization\fP]
+[\-\fBf\fP \fItrust_user\fP]
+[\-\fBF\fP \fItrust_user\fP]
+nntpserver activefile
+.SH DESCRIPTION
+.PP
+.B Bbsnnrp
+is a program to extract news articles from remote NNTP server and
+send(feed) articles extracted to another server (remotely or locally) by 
+talking IHAVE or POST nntp protocol.
+.PP
+When startup, 
+.I BBSnnrp 
+tries to connect two servers, one is the news article supplier
+and the other is the article consumer.  
+
+.SH OPTIONS
+.TP
+.BI \-h|? 
+Show help messages. 
+.TP
+.B \-v
+Verbose mode. All protocol transactions are logged. Default=wont.
+.TP
+.B \-c 
+Reset active files only. Don't receive artiles. Default=will.
+.TP
+.BI \-r  " [prot:]remotehostname"
+Send articles to remotehost. Default=IHAVE:localhost
+.I remotehostname 
+is the host where you want to send articles.
+.I prot 
+is the NNTP protocol to send articles to. Current supports are
+.I IHAVE 
+and
+.I POST
+.
+.TP
+.BI \-p  " port_no|path_name"
+Send articles to remotehost in port_no. Default=7777. Or
+Send articles to localhost  in path_name. Default=~bbs/innd/.innbbsd.
+.I port_no 
+is the port number you want to connect.
+.I path_name 
+is the path of a socket file.
+.TP
+.BI \-w  " seconds"
+Wait for seconds and run infinitely. Default=only one shot.
+.I seconds 
+is the time to wait and greator than 60.
+.TP
+.B  \-n
+Don't ask innbbsd server and stat articles.
+.TP
+.BI \-a  " max_arts"
+Maximum number of articles received for a group each time. Default=100.
+.I max_arts
+is the maximum number of articles you want to receive.
+.TP
+.BI \-s  " max_stats"
+Maximum number of articles stated for a group each time. Default=1000.
+.I max_stats
+is the maximum number of articles you want to stat.
+.TP
+.BI \-t  " stdin|nntp"
+Type of article sending (feeding). Default=nntp.
+You can feed extracted articles to 
+.I nntp
+socket strem or to 
+.I stdin
+directly.
+.TP
+.BI \-g  " newsgroups"
+When get feed from stdin,
+.I newsgroups
+is the pseudo newsgroup name.
+When get feed from nntp, only handle
+.I newsgroups
+in the active file.
+.TP
+.BI \-m  " moderator"
+You can add "Approved: 
+.I moderator
+"
+to article headers when get stdin feed..  
+.TP
+.BI \-o  " organization"
+Add "Organization: 
+.I organization
+"
+to article headers when get stdin feed.
+.TP
+.BI \-f  " trust_user (From: trust_user)"
+Accept stdin feed only when "From: from-user" is the same as
+.I trust_user
+.
+.TP 
+.BI \-F  " trust_user (From trust_user)"
+Accept stdin feed only when "From from-user" is the same as
+.I trust_user
+.
+.SH FILES
+.PD 0
+.TP 
+.BR ~bbs/innd/activefile, ~bbs/innd/bbsnnrp.log
+
+.PD
+.SH AUTHOR
+Shih-Kun Huang (skhuang@csie.nctu.edu.tw)
+.SH BUGS
+Only servers supporting 
+.I STAT 
+protocol can process 
+.I cancel 
+efficiently.
+.SH "SEE ALSO"
+.BR innbbsd (8)
+.BR newsfeeds.bbs (5)
+.BR nodelist.bbs (5)
+.BR bntplink (8)

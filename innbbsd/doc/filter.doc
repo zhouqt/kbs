@@ -1,0 +1,41 @@
+   Cool features of innbbsd: adding filters
+
+1. Install
+  a. cd convert/hztty; make; make sys-type
+  b. modify Makeifle, 
+     choose one of the LAN options:
+#LANG=BIG5
+#LANG=GB
+#LANG=ENGLISH
+
+     uncomment out
+#FILTER=
+#FILTEROBJ=
+
+  c. modify innd/filter.ctl
+     to clarify as examples:
+tw.bbs.*,alt.chinese.text.big5:big2gb:gb2big
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ^^^^^^ ^^^^^^
+newsgroups in wildcard pattern  ^       ^
+and separated with ",".         |       |
+			      receive  send
+                              filter   filter
+
+Three types of filters:
+1. builtin
+2. pipe stream of builtin filter
+3. external commands
+
+Available builtin filters
+gb2big, big52gb, hz2gb, hz2big 
+
+Useful external command filters
+j2b (jis2big), b2j(big2jis) 
+
+Successful testing:
+builtin: 
+  receive: big2gb, hz2gb, hz2big
+  send:    gb2big, /usr/local/bin/b2g|/usr/local/bin/gb2hz
+external:
+  receive: /usr/local/bin/j2b
+  send:    /usr/local/bin/b2j

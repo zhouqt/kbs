@@ -765,12 +765,12 @@ strncpy(uname,currentuser->username,NAMELEN) ;
         else
             fprintf(fp,"发信人: %s (%s), 信区: %s       \n",(noname&&Anony)?currboard:uid,
                     (noname&&Anony)?NAME_ANONYMOUS:uname,currboard) ;
-    } /***** 该语句增加阅读次数计数项 Add by Luzi 1998/1/8 ****/
+    } 
 
     fprintf(fp,"标  题: %s\n",save_title) ;
     fprintf(fp,"发信站: %s (%24.24s)\n",BoardName,ctime(&now)) ;
     if(in_mail)
-        fprintf(fp,"来  源: %s \n",currentuser->lasthost) ;
+        fprintf(fp,"来  源: %s \n",fromhost) ;
     fprintf(fp,"\n");
 
 }

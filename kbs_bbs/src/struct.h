@@ -106,8 +106,26 @@ struct BCACHE {
 	struct BoardStatus bstatus[MAXBOARD];
 };
 
+struct posttop
+{
+    char author[13];              /* author name */
+    char board[IDLEN+6];               /* board name */
+    char title[66];               /* title name */
+    time_t date;                  /* last post's date */
+    int number;                   /* post number */
+};
+
 struct public_data {
 	time_t nowtime;
-	char unused[1020];
+	int	sysconfimg_version;
+	char unused[1016];
+};
+
+struct smenuitem {
+	int         line, col, level;
+	char        *name, *desc, *arg;
+	char*    	func_name; 
+		/*内存中应该是func名字,因为还要考虑到修改func列表
+		导致执行的程序不一样的情况*/
 };
 #endif

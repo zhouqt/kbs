@@ -74,8 +74,6 @@ struct user_info uinfo ;
 
 /* char netty_path[ 60 ]; FAINT!!! 怎么会不出错呢!!! Leeward: 1997.12.10 */
 char netty_path[ 256 ];
-char fromhost[ IPLEN ] ;
-
 char BoardName[STRLEN] ;
 int utmpent = -1 ;
 time_t  login_start_time;
@@ -416,7 +414,7 @@ char *str;
 }
 
 void
-system_init(char *sourceip)
+system_init()
 {
     char        *rhost;
 
@@ -429,8 +427,6 @@ system_init(char *sourceip)
         exit(-1) ;
     }
 #endif
-
-    strncpy( fromhost, sourceip, IPLEN );
 
     signal(SIGHUP,abort_bbs) ;
     signal(SIGPIPE,abort_bbs) ;
@@ -736,8 +732,7 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
     sprintf(fname,"%s/%s.deadve", tmpstr, currentuser->userid);
     if((fn=fopen(fname,"r"))!=NULL)
     {
-        mail_file(fname,currentuser->userid,"不正常断线所保留的部份...");
-        unlink(fname);
+        mail_file(currentuser->userid,fname,currentuser->userid,"不正常断线所保留的部份...",1);
             fclose(fn);
     }
     sethomepath( genbuf, currentuser->userid );
@@ -1018,7 +1013,7 @@ chk_friend_book()
 }
 
 void
-main_bbs(char *originhost, int convit,char* argv)
+main_bbs(int convit,char* argv)
 {
     extern char currmaildir[ STRLEN ];
     char   notename[STRLEN];
@@ -1057,7 +1052,7 @@ main_bbs(char *originhost, int convit,char* argv)
 	convcode = convit;
     conv_init();  /* KCN,99.09.05 */
 
-    system_init( originhost );
+    system_init();
     if( setjmp(byebye) ) {
         system_abort();
     }
@@ -1338,9 +1333,9 @@ tlog_recover()
     getdata(0, 0, "\033[1;32m您有一个不正常断线所留下来的聊天记录, 您要 .. (M) 寄回信箱 (Q) 算了？[Q]：\033[m", genbuf,4,DOECHO,NULL,YEA);
  
     if (genbuf[0] == 'M' || genbuf[0] == 'm')
-        mail_file(buf, currentuser->userid, "聊天记录");
-
-    unlink(buf);
+        mail_file(currentuser->userid,buf, currentuser->userid, "聊天记录",1);
+	else
+    	unlink(buf);
     return;
 
 }

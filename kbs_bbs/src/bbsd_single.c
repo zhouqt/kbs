@@ -418,8 +418,7 @@ main_signals()
 }
 
 int
-bbs_main(hid,argv)
-char* hid;
+bbs_main(argv)
 char* argv;
 {
     int         uid;
@@ -430,7 +429,7 @@ char* argv;
     /*    modified by period      2000-11-13      allow localhost anyway  */
     /*    if((fp = fopen("NOLOGIN","r")) != NULL) */
 #ifndef DEBUG
-    if(strcmp(hid,"0.0.0.0") && strcmp(hid, "127.0.0.1") && (fp = fopen("NOLOGIN","r")) != NULL)
+    if(strcmp(fromhost,"0.0.0.0") && strcmp(fromhost, "127.0.0.1") && (fp = fopen("NOLOGIN","r")) != NULL)
     {
         while(fgets(buf,256,fp) != NULL)
             local_prints(buf);
@@ -507,9 +506,9 @@ char* argv;
     sprintf( bbs_prog_path, "%s/bin/bbs", BBSHOME );
 #endif
 
-    if (local_check_ban_IP(hid, buf) > 0) /* Leeward 98.07.31 */
+    if (local_check_ban_IP(fromhost, buf) > 0) /* Leeward 98.07.31 */
     {
-        local_prints("本站目前不欢迎来自 %s 访问!\r\n原因：%s。\r\n\r\n", hid, buf);
+        local_prints("本站目前不欢迎来自 %s 访问!\r\n原因：%s。\r\n\r\n", fromhost, buf);
         local_Net_Sleep( 60 );
         shutdown(csock,2);
         close(csock);
@@ -518,14 +517,14 @@ char* argv;
     }
 
 
-    hid[16] = '\0' ;
+    fromhost[16] = '\0' ;
 #if 0
 #ifdef D_TEST
     strcat(bbs_prog_path, "test");
-    execl( bbs_prog_path,"bbstest",code, hid,  NULL) ; /*调用BBS*/
+    execl( bbs_prog_path,"bbstest",code, fromhost,  NULL) ; /*调用BBS*/
 #else
     strcat(bbs_prog_path, "new");
-    execl( bbs_prog_path,"bbsnew",code, hid,  NULL) ; /*调用BBS*/
+    execl( bbs_prog_path,"bbsnew",code, fromhost,  NULL) ; /*调用BBS*/
 #endif
 #endif
     {
@@ -539,7 +538,7 @@ char* argv;
 	}
     }
 
-    main_bbs(hid,0,argv);
+    main_bbs(0,argv);
     exit(-1);
     write(0,"execl failed\r\n",12);
     exit( -1 );
@@ -555,7 +554,6 @@ char *argv[];
     int value;
     struct sockaddr_in sin;
     struct hostent * whee;
-    char hid[17];
 
     /* --------------------------------------------------- */
     /* setup standalone daemon				 */
@@ -643,10 +641,11 @@ char *argv[];
      KCN temp change it for trace IP!! don't remove. 2000.8.19*/
     {
         char*host = (char*)inet_ntoa(sin.sin_addr);
-        strncpy(hid,host,17);
+        strncpy(fromhost,host,IPLEN);
+        fromhost[IPLEN]=0;
     }
     telnet_init();
-    bbs_main(hid,argv[0]);
+    bbs_main(argv[0]);
 
 }
 #else
@@ -660,7 +659,6 @@ int bbs_entry(void)
    /* 本函数供 SSH 使用 */
    int sinlen;
    struct sockaddr_in sin;
-   char hid[17];
    char faint[99];
    setuid(BBSUID);
    setgid(BBSGID);
@@ -670,8 +668,9 @@ int bbs_entry(void)
    getpeername (0,(struct sockaddr *) &sin,(void *) &sinlen);
    {
         char*host = (char*)inet_ntoa(sin.sin_addr);
-        strncpy(hid,host,17);
+        strncpy(fromhost,host,IPLEN);
+        fromhost[IPLEN]=0;
    } 
-   bbs_main(hid,faint);
+   bbs_main(faint);
 }
 #endif

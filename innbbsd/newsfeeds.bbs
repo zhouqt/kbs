@@ -1,0 +1,160 @@
+# 
+# Last updated date: Apr.03,1995
+#
+#  newsgroups                   board           news server
+#-----------------------------  --------------  -----------
+csie.bbs.adm.manager               bbsbm           ccu2 
+csie.bbs.adm.sysop                 bbssysop        ccu2 
+ccu.bbs.talk.cl                 ccucl           ccu
+ccu.bbs.talk.cs                 ccucsie         ccu
+ccu.bbs.dormlife                dormlife        ccu
+ccu.bbs.talk.econ               ccuie           ccu
+ccu.bbs.talk.ee                 ccuee           ccu
+ccu.bbs.talk.em                 ccubm           ccu
+ccu.bbs.talk.fina               ccufina         ccu
+ccu.bbs.talk.fl                 ccufl           ccu
+ccu.bbs.talk.law                cculaw          ccu
+ccu.bbs.talk.math               ccumath         ccu
+ccu.bbs.me.talk                 ccume           ccu
+ccu.bbs.talk.phy                ccuphy          ccu
+ccu.bbs.talk.psy                ccupsy          ccu
+ccu.bbs.talk.sty                ccuhty          ccu
+ccu.bbs.talk.sw                 ccusw           ccu
+ccu.bbs.talk                    ccu             ccu
+#magic.test                      test            ccu2
+tw.bbs.admin.installbbs         bbsinstall      ccu
+tw.bbs.alumni                   schoolmates     ccu
+tw.bbs.alumni.hchs              null   
+tw.bbs.alumni.chien-kuo-hs      null    
+tw.bbs.campus                   null        
+tw.bbs.campus.activity          activity.       ccu
+tw.bbs.campus.education         null
+tw.bbs.campus.job               job.            ccu        
+tw.bbs.campus.advancededu       advancededu.    ccu
+tw.bbs.campus.graduate          null            
+tw.bbs.campus.nchu              null            
+tw.bbs.campus.nctu              null           
+tw.bbs.campus.ncu               null          
+tw.bbs.campus.nthu              null         
+tw.bbs.campus.ntu               null        
+tw.bbs.comp.dos                 dos           ccu
+tw.bbs.comp.386bsd              dos           ccu
+tw.bbs.comp.hacker              hacker        ccu
+tw.bbs.comp.hardware            hardware      ccu
+tw.bbs.comp.language            programming   ccu
+tw.bbs.comp.linux               linux         ccu
+tw.bbs.comp.mac                 mac           ccu
+tw.bbs.comp.midi                midi          ccu
+tw.bbs.comp.mswindows           mswindows     ccu
+tw.bbs.comp.network             network       ccu
+tw.bbs.comp.novell              novell        ccu
+tw.bbs.comp.software            software      ccu
+tw.bbs.comp.sources             sources       ccu       
+tw.bbs.comp.unix                unix          ccu
+tw.bbs.comp.winsock             winsock       ccu
+tw.bbs.comp.www                 www           ccu
+tw.bbs.forsale                  null
+tw.bbs.forsale.computer         null
+tw.bbs.forsale.house            null
+tw.bbs.general                  null      
+tw.bbs.help                     null
+tw.bbs.lang.chinese             null
+tw.bbs.lang.english             null
+tw.bbs.lists                    bbslists      ccu
+tw.bbs.literal.asciiart         asciiart      ccu
+tw.bbs.literal.book             books         ccu
+tw.bbs.literal.emprisenovel     emprisenovel         ccu 
+tw.bbs.literal.lyrics           null
+tw.bbs.literal.poem             null
+tw.bbs.literal.story            story        ccu
+tw.bbs.music.classical          null
+tw.bbs.music.pop                popmusic.      ccu
+tw.bbs.newgroups                null
+tw.bbs.rec.art                  null     
+tw.bbs.rec.audiophile           null
+tw.bbs.rec.bridge               null
+tw.bbs.rec.car                  null
+tw.bbs.rec.chess                null 
+tw.bbs.rec.comic                comic        ccu 
+tw.bbs.rec.dance                null  
+tw.bbs.rec.entertainment        null
+tw.bbs.rec.flower               null
+tw.bbs.rec.foodstuff            foodstuff     
+tw.bbs.rec.guitar               null
+tw.bbs.rec.instrument           null
+tw.bbs.rec.japan-idol           null
+tw.bbs.rec.marvel               marvel           ccu 
+tw.bbs.rec.movie                movies.          ccu           
+tw.bbs.rec.mud                  mud              ccu  
+tw.bbs.rec.pcgame               pcgame.          ccu
+tw.bbs.rec.pet                  null
+tw.bbs.rec.photo                null        
+tw.bbs.rec.rail                 null       
+tw.bbs.rec.radio                null
+tw.bbs.rec.stamp                null         
+tw.bbs.rec.tea                  null         
+tw.bbs.rec.travel               null
+tw.bbs.rec.tv                   tv.              ccu
+tw.bbs.rec.weapon               weapon             ccu
+tw.bbs.sci.sex                  sex           ccu
+tw.bbs.sci.astronomy            null
+tw.bbs.sci.biology              null
+tw.bbs.sci.chemistry            null
+tw.bbs.sci.destiny-prediction   destiny            
+tw.bbs.sci.economics            null
+tw.bbs.sci.electronics          null
+tw.bbs.sci.history              null
+tw.bbs.sci.law                  null
+tw.bbs.sci.math                 null
+tw.bbs.sci.medicine             null
+tw.bbs.sci.philosophy           null
+tw.bbs.sci.physics              null
+tw.bbs.sci.psychology           null
+tw.bbs.soc.charity              null      
+tw.bbs.soc.green-earth          null       
+tw.bbs.soc.hakka                null        
+tw.bbs.soc.hsinchu              null         
+tw.bbs.soc.i-lan                ilan           ccu    
+tw.bbs.soc.motss                null          
+tw.bbs.soc.politics             null
+tw.bbs.soc.religion             religion       ccu
+tw.bbs.soc.taichung             null       
+tw.bbs.soc.taipei               null      
+tw.bbs.soc.taiwanese            null     
+tw.bbs.soc.tayal                null           
+tw.bbs.soc.overseas             overseas       ccu
+tw.bbs.sports.baseball          baseball.     ccu
+tw.bbs.sports.baseball.bears    bears.        ccu
+tw.bbs.sports.baseball.dragons  dragons.      ccu
+tw.bbs.sports.baseball.lions    lions.        ccu
+tw.bbs.sports.baseball.eagles   eagles.       ccu
+tw.bbs.sports.baseball.elephants  elephants.  ccu
+tw.bbs.sports.baseball.tigers   tigers.       ccu
+tw.bbs.sports.basketball        basketball.   ccu
+tw.bbs.talk                     talk.         ccu     
+tw.bbs.talk.friends             friends.      ccu     
+tw.bbs.talk.feeling             feeling.      ccu
+tw.bbs.talk.joke                joke          ccu
+tw.bbs.talk.ladytalk            ladytalk      ccu
+tw.bbs.talk.love                love.         ccu
+tw.bbs.talk.mentalk             mentalk       ccu
+tw.bbs.talk.notepad             notepad.      ccu
+tw.bbs.talk.boy-girl            boygirl.      ccu
+tw.bbs.test                     null
+tw.bbs.netnews                  netnews       ccu
+nccu.jour.univnews              univnews      ccu
+ccu.bbs.sysop                   hotline       ccu2
+tw.bbs.comp.security            security      ccu 
+tw.bbs.rec.palmardrama          palmardrama   ccu 
+ccu.bbs.talk.sa                 ccusa         ccu  
+tw.bbs.sports                   sports.       ccu
+tw.bbs.sports.volleyball        volleyball.   ccu
+tw.bbs.sports.tennis            tennis.       ccu
+tw.bbs.sports.swimming          swimming.     ccu
+tw.bbs.sports.soccer            soccer.       ccu
+tw.bbs.sports.mountain          mountain.     ccu
+tw.bbs.sports.kongfu            kongfu.       ccu
+tw.bbs.sports.fishing           fishing.      ccu
+tw.bbs.sports.basketball        basketball.   ccu
+tw.bbs.udnie                    udnie         ccu
+ccu.cs.test                     test          ccu

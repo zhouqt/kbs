@@ -147,16 +147,12 @@ int wwwlogin(struct userec *user) {
     if (utmpent == -1)
 		http_fatal("抱歉，目前在线用户数已达上限，无法登录。请稍后再来。");
 	u = get_user_info(utmpent);
-/*./	if(pid==0)
-	{
-		setcurruinfo(u);
-		wwwagent();
-		exit(0);
-	} i*/
 	u->pid = 1;
 	tmp=rand()%100000000;
 	u->utmpkey=tmp;
 	setcurruinfo(u);
+	if (addto_msglist(get_utmpent_num(getcurruinfo()), getcurruserid()) < 0)
+		http_fatal("无法添加当前用户到消息列表中");
 	sprintf(buf, "%d", utmpent);
 	setcookie("utmpnum", buf);
 	sprintf(buf, "%d", tmp);

@@ -448,7 +448,7 @@ int num;
     sug = NULL;
 
     sprintf(title,"[公告] %s 板的投票结果",currboard);
-    mail_file(nname,currvote.userid,title);
+    mail_file(currentuser->userid,nname,currvote.userid,title,0);
     if (strcmp(currboard,"sys_discuss") &&  strcmp(currboard, "Jury"))/*如果是sys_discuss版,投票结果不进vote版,Haohmaru,98.9.4 add Jury by stephen 2001.10.31*/
     {
         postfile(nname,"vote",title,1);
@@ -530,9 +530,7 @@ int num;
     sug = NULL;
 
     sprintf(title,"[检查] %s 板的投票结果",currboard);
-    mail_file(nname,currentuser->userid,title);
-
-    unlink(nname);
+    mail_file(currentuser->userid,nname,currentuser->userid,title,1);
 
     return ;
 }

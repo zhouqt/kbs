@@ -1,0 +1,22 @@
+Tue Dec  1 17:47:10 1992  Per Hammarlund  (perham@perham.nada.kth.se)
+
+	* Stepped up version number to 0.11.
+
+	* Changed "out:" two "out:;" and cleaned up the Makefile, this
+	works for all cases.  Email from andrew@research.att.com.
+
+Mon Nov 30 09:20:43 1992  Per Hammarlund  (perham at perham.nada.kth.se)
+
+	* Partially corrected the handling of the swicthes, the result of
+	strcmp() can be positive and negative as we know. :-)
+
+	* Added the correct codes in the initialization of
+	codes_for_named_characters for jis, big, and gb.  IBM remains.
+
+	* Added a stupid exit(0) after the label out, since having a label
+	just at the end of the block causes and error in gcc 1.*.  The
+	real fix should be to change the way the switches are parsed!
+
+	* Stepped up the version number from 0.0 to 0.1.  Added tentative
+	manual and GPL statements.
+

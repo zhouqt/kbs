@@ -29,11 +29,13 @@ int main()
 	printf("<center>%s -- 转寄/推荐给好友 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser->userid);
 	if(target[0])
 	{
-		if(!strstr(target, "@"))
+		if(!strchr(target, '@'))
 		{
 			if(getuser(target, &u) == 0)
 				http_fatal("错误的使用者帐号");
 			strcpy(target, u->userid);
+			big5 = 0;
+			noansi = 0;
 		}
 		return do_fwd(x, board, target, big5, noansi);
 	}
@@ -61,10 +63,11 @@ int do_fwd(struct fileheader *x, char *board, char *target, int big5, int noansi
 	if(!file_exist(path))
 		http_fatal("文件内容已丢失, 无法转寄");
 	sprintf(title, "%.50s(转寄)", x->title);
-	if (!strstr(target, "@"))
+	if (!strchr(target, '@'))
 	{
-		post_mail(target, title, path, currentuser->userid,
-				currentuser->username, fromhost, -1);
+		/*post_mail(target, title, path, currentuser->userid,
+				currentuser->username, fromhost, -1);*/
+		mail_file(getcurruserid(), path, target, title, 0);
 		printf("文章已转寄给'%s'<br>\n", nohtml(target));
 		rv = 0;
 	}

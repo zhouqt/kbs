@@ -740,7 +740,7 @@ int id1,id2,del_mode ;
                         cancelpost(currboard, currentuser->userid,
                                &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser->userid),0);
                     delcount=0;
-                    setbdir( genbuf, currboard );
+                    setbdir( digestmode,genbuf, currboard );
                     append_record( genbuf, (char*)delfhdr, DEL_RANGE_BUF*sizeof(struct fileheader) );
                 }  /*need clear delcount*/
             } /*if !Reading mail*/
@@ -770,7 +770,7 @@ int id1,id2,del_mode ;
         for (j=0;j<delcount;j++)
             cancelpost(currboard, currentuser->userid,
                    &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser->userid),0);
-        setbdir( genbuf, currboard );
+        setbdir( digestmode,genbuf, currboard );
         append_record( genbuf, (char*)delfhdr, delcount*sizeof(struct fileheader) );
     }
     digestmode=savedigestmode;
@@ -836,10 +836,7 @@ void (*fileupdate)() ;
 }
 
 int
-delete_file(dirname,size,ent,filecheck)
-char *dirname ;
-int size,ent ;
-int (*filecheck)() ;
+delete_file(char *dirname ,int size,int ent ,int (*filecheck)(void* ,char* ) ,char* arg)
 {
     char abuf[BUFSIZE] ;
     int fd ;
@@ -868,7 +865,7 @@ int (*filecheck)() ;
         */
         if(lseek(fd,size*(ent-1),SEEK_SET) != -1) {
             if(read(fd,abuf,size) == size)
-                if((*filecheck)(abuf)) {
+                if((*filecheck)(abuf,arg)) {
                     int i ;
                     for(i = ent; i < numents; i++) {
                         if(lseek(fd,(i)*size,SEEK_SET) == -1)       break ;
@@ -888,7 +885,7 @@ int (*filecheck)() ;
     /* ent = 1 ; */
     ent = 0 ;
     while(read(fd,abuf,size) == size) {
-        if((*filecheck)(abuf)) {
+        if((*filecheck)(abuf,arg)) {
             int i ;
             for(i = ent; i < numents; i++) {
                 if(lseek(fd,(i+1)*size,SEEK_SET) == -1) break ;

@@ -110,25 +110,6 @@ int chkreceiver(char* userid,struct userec* lookupuser)
 }
 
 int
-canIsend2(userid) /* Leeward 98.04.10 */
-char *userid;
-{
-    char buf[IDLEN+1];
-    char path[256];
-
-    if (HAS_PERM(currentuser,PERM_SYSOP)) return YEA;
-
-    sethomefile( path, userid , "/ignores");
-    if (search_record(path, buf, IDLEN+1, cmpinames, currentuser->userid))
-        return NA;
-    sethomefile( path, userid , "/bads");
-    if (search_record(path, buf, IDLEN+1, cmpinames, currentuser->userid))
-        return NA;
-    else
-        return YEA;
-}
-
-int
 chkmail()
 {
     static time_t lasttime = 0;
@@ -680,7 +661,7 @@ edit_mail_file:
 
                 prints("%c\n", 'Y');
                 if(askyn("ÊÇ·ñ±¸·İ¸ø×Ô¼º",NA)==YEA)
-                    mail_file(tmp_fname,currentuser->userid,save_title);
+                    mail_file(currentuser->userid,tmp_fname,currentuser->userid,save_title,0);
 
                 prints("ÈôÄúÒª×ª¼ÄµÄµØÖ·ÎŞ·¨´¦ÀíÖĞÎÄÇëÊäÈë Y »ò y\n");
                 getdata(5, 0, "Uuencode? [N]: ", data, 2, DOECHO, 0);
@@ -715,7 +696,7 @@ edit_mail_file:
         }
         clear() ;
         if(askyn("ÊÇ·ñ±¸·İ¸ø×Ô¼º",NA)==YEA)
-            mail_file(filepath,currentuser->userid,save_title);
+            mail_file(currentuser->userid,filepath,currentuser->userid,save_title,0);
         /*
         if(!chkreceiver(userid))
     {
@@ -728,8 +709,7 @@ edit_mail_file:
         {
             prints("[1m[33mºÜ±§Ç¸¡ÃÏµÍ³ÎŞ·¨·¢³ö´ËĞÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄĞÅ¼ş£®[m[m\n\n", userid);
             sprintf(save_title, "ÍËĞÅ¡Ã %s ¾Ü¾ø½ÓÊÕÄúµÄĞÅ¼ş£®", userid);
-            mail_file(filepath, currentuser->userid, save_title);
-            unlink(filepath);
+            mail_file(currentuser->userid,filepath, currentuser->userid, save_title,1);
             return -2;
         }
         if(askyn("È·¶¨¼Ä³ö£¿",YEA)==NA)
@@ -1093,8 +1073,6 @@ char *direct ;
 {
     char buf[512] ;
     char *t ;
-    extern int cmpfilename() ;
-    extern char currfile[] ;
 
     clear() ;
     prints("É¾³ı´ËĞÅ¼ş '%s' ",fileinfo->title) ;
@@ -1109,8 +1087,7 @@ char *direct ;
     strcpy(buf,direct) ;
     if( (t = strrchr(buf,'/')) != NULL )
         *t = '\0' ;
-    strncpy(currfile,fileinfo->filename,STRLEN) ;
-    if(!delete_file(direct,sizeof(*fileinfo),ent,cmpfilename)) {
+    if(!delete_file(direct,sizeof(*fileinfo),ent,cmpname,fileinfo->filename)) {
         sprintf(genbuf,"%s/%s",buf,fileinfo->filename) ;
         unlink(genbuf) ;
         return DIRCHANGED ;
@@ -1777,80 +1754,17 @@ int num ;
                     clear();
                     strcpy(save_title_bak, save_title);
                     sprintf(tmp_title, "ÍËĞÅ¡Ã %s ¾Ü¾ø½ÓÊÕÄúµÄĞÅ¼ş£®", uid);
-                    mail_file(tmpfile, currentuser->userid, tmp_title);
+                    mail_file(currentuser->userid,tmpfile, currentuser->userid, tmp_title,0);
                     strcpy(save_title, save_title_bak);
                 }
                 else
                 {
-                    mail_file(tmpfile,uid,save_title);
+                    mail_file(currentuser->userid,tmpfile,uid,save_title,0);
                 }
     }
     unlink( tmpfile ) ;
     if(G_SENDMODE==2)
         fclose(mp);
-    return 0 ;
-}
-
-int
-mail_file(tmpfile,userid,title)
-char tmpfile[STRLEN],userid[STRLEN],title[STRLEN];
-{
-    struct fileheader newmessage ;
-    struct stat st ;
-    char fname[STRLEN],filepath[STRLEN],*ip;
-    int fp;
-
-    int now; /* added for mail to SYSOP: Bigman 2000.8.11 */
-
-    memset(&newmessage, 0,sizeof(newmessage)) ;
-#if defined(MAIL_REALNAMES)
-    sprintf(genbuf,"%s (%s)",currentuser->userid,currentuser->realname) ;
-#else
-/*sprintf(genbuf,"%s (%s)",currentuser->userid,currentuser->username) ;*/
-    strcpy(genbuf, currentuser->userid); /* Leeward 98.04.14 */
-#endif
-    strncpy(newmessage.owner,genbuf,STRLEN) ;
-    strncpy(newmessage.title,title,STRLEN) ;
-    strncpy(save_title,newmessage.title,STRLEN) ;
-
-    setmailpath(filepath, userid);
-    if(stat(filepath,&st) == -1) {
-        if(mkdir(filepath,0755) == -1)
-            return -1 ;
-    } else {
-        if(!(st.st_mode & S_IFDIR))
-            return -1 ;
-    }
-
-    now=time(NULL);
-
-    sprintf(fname,"M.%d.A", now) ;
-
-    setmailfile(filepath, userid, fname);
-    ip = strrchr(fname,'A') ;
-    while((fp = open(filepath,O_CREAT|O_EXCL|O_WRONLY,0644)) == -1) {
-        if(*ip == 'Z')
-            ip++,*ip = 'A', *(ip + 1) = '\0' ;
-        else
-            (*ip)++ ;
-        setmailfile(filepath, userid, fname);
-    }
-
-    close(fp) ;
-    strcpy(newmessage.filename,fname) ;
-    strncpy(save_filename,fname,4096) ;
-    setmailfile(filepath, userid, fname) ;
-
-    /*
-    sprintf(genbuf, "cp %s %s",tmpfile, filepath) ;
-    */
-    f_cp(tmpfile,filepath,0);
-
-    setmailfile(genbuf, userid, DOT_DIR);
-    if(append_record(genbuf,&newmessage,sizeof(newmessage)) == -1)
-        return -1 ;
-
-    bbslog("1user","mailed %s ", userid);
     return 0 ;
 }
 
@@ -2070,10 +1984,10 @@ doforward(char *direct,struct boardheader*fh,int isuu)
             {
                 prints("[1m[33mºÜ±§Ç¸¡ÃÏµÍ³ÎŞ·¨×ª¼Ä´ËĞÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄĞÅ¼ş£®[m[m\n\n", receiver);
                 sprintf(title, "ÍËĞÅ¡Ã %s ¾Ü¾ø½ÓÊÕÄúµÄĞÅ¼ş£®", receiver);
-                mail_file(fname, currentuser->userid, title);
+                mail_file(currentuser->userid,fname, currentuser->userid, title,0);
                 return -4;
             }
-            return_no = mail_file(fname, lookupuser->userid,title);
+            return_no = mail_file(currentuser->userid,fname, lookupuser->userid,title,0);
         }
     }
     else

@@ -1,0 +1,52 @@
+################## 
+1. hosts.nntp 
+host:password:newsgroups:from
+2. nodelist.bbs
+   only hostname consulted
+3. newsfeeds.bbs
+   ignore news server check
+4. kill -1 reread newsfeeds and nodelist
+
+complete
+1. dbz 的使用
+2. newsfeeds.bbs, nodelist.bbs 读取
+3. single process, concurrent server 控制 
+4. bbslib.pl
+
+todo:
+inntobbs
+
+all memeory allocation, file open, network get/put should be tested
+
+innbbs.conf: history path, expire date, 
+port to soloaris, netbsd, hp-ux, 
+control authentication
+C's bntplink
+should handle exception such  as write fail, no space.
+bbsnnrp won't continue and innbbsd return correct code.
+should use symlink or link for crosspost articles
+
+remove .innbbsd if can't connect
+contact remote innbbsd if bbsnnrp can't find .innbbsd
+disk full will infinitely run innbbsd. 
+won't log for local connections
+add stdin feed type
+
+add moderator feed
+add PGP cancel authentication
+add POP for mail reading
+change bntplink in C
+B: board
+N: newsgroups
+  B -> N only    
+  N -> B only
+  multi N -> B
+  multi B -> N
+  B -> multi N
+  N -> multi B
+nodelist authentication per-user based
+add log mode feed for nntplink
+should remove post when send to moderator
+node -user@host DATA(25) comments (will remove posts when send out)
+node user@host  DATA(25) comments (won't remove posts when sned out)
+node +@host     IHAVE(7777) comments (will send out any received)

@@ -31,8 +31,8 @@ CC       = gcc
 CFLAGS   = -W -g -Ilibesmtp -static 
 #CFLAGS   = -g -O3 -qstrict -qcompact -qarch=ppc
 #LIBS     = -L. -L/usr/local/lib -lesmtp
-	#-lcrypt -lpthread -lltdl -ldl -lbsd
-LIBS     = -lbsd -lesmtp -Llibesmtp/.libs
+	#-lcrypt -lltdl -ldl -lbsd
+LIBS     = -lbsd -lesmtp -Llibesmtp/.libs -lltdl -ldl
 
 #CFLAGS   = -O3
 #LIBS     = -ltermcap -lbsd -lcrypt
@@ -64,7 +64,7 @@ CFILE    = bbs.c record.c delete.c stuff.c mail.c register.c \
            screen.c userinfo.c vote.c announce.c sendmsg.c boards_t.c\
 	   bm.c list.c goodbye.c fileshm.c cache.c bbsd_single.c lvars.c\
 	   newmain_single.c newio.c newterm.c convcode.c bbs_sendmail.c crypt.c \
-	   ucache.c utmp.c log.c md5.c libmsg.c article.c ${BBSSITE}.c
+	   ucache.c utmp.c log.c md5.c libmsg.c article.c sysconf.c ${BBSSITE}.c
 
 COBJS    = bbs.o record.o delete.o stuff.o mail.o register.o \
            xyz.o talk.o read.o comm_lists.o namecomplete.o chat.o \
@@ -72,9 +72,11 @@ COBJS    = bbs.o record.o delete.o stuff.o mail.o register.o \
            screen.o userinfo.o vote.o announce.o sendmsg.o boards_t.o\
            bm.o list.o goodbye.o fileshm.o cache.o bbsd_single.o lvars.o\
 	   newmain_single.o newio.o newterm.o convcode.o bbs_sendmail.o crypt.o \
-	   ucache.o utmp.o log.o md5.o libmsg.o article.o $(BBSSITE).o
+	   ucache.o utmp.o log.o md5.o libmsg.o article.o sysconf.o $(BBSSITE).o
 
-BBSLIBOBJS = record.o log.o ucache.o stuff.o md5.o crypt.o pass.o bcache.o utmp.o lvars.o $(BBSSITE).o boards.o lvars.o bbs_sendmail.o libmsg.o article.o convcode.o
+BBSLIBOBJS = cache.o record.o log.o ucache.o stuff.o md5.o crypt.o pass.o bcache.o utmp.o \
+	lvars.o $(BBSSITE).o boards.o lvars.o bbs_sendmail.o libmsg.o article.o convcode.o \
+	sysconf.o
 
 OTHERS   = bbs.h edit.h
 
@@ -114,8 +116,8 @@ lint: $(LNFILES)
 newpop3.o: newpop3.c
 	$(CC) -g $(SITE_DEF) $(DEFINES)  -c newpop3.c
 	
-newpop3d: newpop3.o $(BBSLIB) 
-	$(CC) $(CFLAGS) -o newpop3d $(SITE_DEF) $(DEFINES) newpop3.o $(BBSLIB) $(LIBS)
+newpop3d: newpop3.o $(BBSLIB) libsystem.a
+	$(CC) $(CFLAGS) -o newpop3d $(SITE_DEF) $(DEFINES) newpop3.o $(BBSLIB) $(LIBS) libsystem.a
 
 thread: thread.c record.c
 	$(CC) $(CFLAGS) -o thread $(OS_DEF) record.c thread.c $(LIBS)
@@ -130,8 +132,8 @@ $(BBSLIB) : $(patsubst %.o,lib%.o,$(BBSLIBOBJS))
 	ar cru $@ $^
 	ranlib $@
 	
-chatd: station.c libBBS.a
-	$(CC) -g $(CFLAGS) $(SITE_DEF) $(DEFINES) -o chatd $(OS_DEF) station.c $(LIBS) libBBS.a
+chatd: station.c libBBS.a libsystem.a
+	$(CC) -g $(CFLAGS) $(SITE_DEF) $(DEFINES) -o chatd $(OS_DEF) station.c $(LIBS) libBBS.a libsystem.a
 
 
 ve: edit.o term.o screen.o io.o editor.c
@@ -153,7 +155,7 @@ $(BBSHOME)/bin/thread: thread
 installchatd: chatd $(BBSHOME)/bin/chatd
 $(BBSHOME)/bin/chatd: chatd
 	$(INSTALL) $@ $@.old
-	$(INSTALL) chard $@
+	$(INSTALL) chatd $@
                                 
 clean: /tmp
 	-rm -fr $(GARBAGE) $(COBJS) $(PROGNAME) $(LNFILES) chatd

@@ -3,79 +3,6 @@
 char genbuf[ 1024 ];
 char currfile[STRLEN] ;
 
-int
-ca_expire_file(const char *URL)
-{
-    int  r;
-    char dir[MAX_CA_PATH_LEN + 64];
-
-/* KCN,speed up expire 
-    if (r = ca_badpath(URL))
-        return r;
-    else
-    {
-*/
-        strcpy(dir, CACHE_ROOT);
-        strncat(dir, URL, MAX_CA_PATH_LEN);
-        dir[4 + MAX_CA_PATH_LEN] = 0;
-	return unlink(dir);
-/*
-        return ca_rmdir(dir);
-    }
-*/
-}
-
-void
-cancelpost( board, userid, fh, owned ,autoappend)
-char    *board, *userid;
-struct fileheader *fh;
-int     owned;
-int     autoappend;
-{
-    struct fileheader   postfile;
-    char oldpath[sizeof(genbuf)];
-    int         tmpdigestmode;
-    struct fileheader* ph;
-    time_t now;
-
-    if (autoappend)
-		ph=&postfile;
-    else
-		ph=fh;
-
-    sprintf(genbuf, "/board/%s/%s.html", board, fh->filename);
-    ca_expire_file(genbuf);
-
-    if (autoappend)
-	{
-      bzero(&postfile,sizeof(postfile));
-      strcpy( postfile.filename, fh->filename );
-      strncpy( postfile.owner, fh->owner, IDLEN+2 );
-      postfile.owner[IDLEN+1]=0;
-    };
-    now=time(NULL);
-    sprintf( genbuf, "%-32.32s - %s", fh->title, userid );
-    strncpy( ph->title, genbuf, STRLEN );
-    ph->title[STRLEN-1] = 0;
-    ph->accessed[11] = now/(3600*24)%100; /*localtime(&now)->tm_mday;*/
-    if (autoappend)
-	{
-		if (owned)
-        	setbfile( genbuf, board, ".JUNK");
-		else
-        	setbfile( genbuf, board, ".DELETED");
-        append_record( genbuf, &postfile, sizeof(postfile) );
-    }
-}
-
-int cmpfilename(fhdr)  /* 比较 某文件名是否和 当前文件 相同 */
-struct fileheader *fhdr ;
-{
-    if(!strncmp(fhdr->filename,currfile,STRLEN))
-        return 1 ;
-    return 0 ;
-}
-
 /* ent 是 1-based 的*/
 int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
 {
@@ -108,48 +35,10 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
         {
             return DONOTHING ;
         }
-    strcpy(buf,direct) ;
-    if( (t = strrchr(buf,'/')) != NULL )
-        *t = '\0' ;
-    sprintf(genbuf,"Del '%s' on '%s'",fileinfo->title,board) ;
-    report(genbuf) ;
-    postreport(fileinfo->title, -1/* del 1 post*/, board);
-    strncpy(currfile,fileinfo->filename,STRLEN) ;
-	fail = delete_file(direct,sizeof(struct fileheader),ent,cmpfilename);
-    if( !fail )
-	{
-        cancelpost( board, user->userid, fileinfo, owned ,1);
-        sprintf(genbuf,"%s/%s",buf,fileinfo->filename) ;
-        if ((fileinfo->filename[0] != 'G')
-                &&!((fileinfo->accessed[0]&FILE_MARKED)
-                    &&(fileinfo->accessed[1]& FILE_READ)
-                    &&(fileinfo->accessed[0]& FILE_FORWARDED)))
-        { /* Leeward 98.06.17 在文摘区删文不减文章数目 */
-            if (owned)
-            {
-                if ((int)user->numposts > 0 && !junkboard(board))
-                {
-                    user->numposts--;/*自己删除的文章，减少post数*/
-					save_user_data(user);
-                }
-            }
-			/*版主删除,减少POST数*/
-			else if ( !strstr(usrid,".") && BMDEL_DECREASE)
-			{
-				struct userec* lookupuser;
-                int id = getuser(usrid, &lookupuser);
+    if (do_del_post(currentuser,ent,fileinfo,direct,board,0,1)!=0)
+    	    return FULLUPDATE ;
+    return DIRCHANGED;
 
-                /* SYSOP MAIL版删文不减文章 Bigman: 2000.8.12*/
-				if(id && (int)lookupuser->numposts > 0 && !junkboard(board)
-						&& strcmp(board, "sysmail") )
-                { /* Leeward 98.06.21 adds above later 2 conditions */
-                    lookupuser->numposts--;
-                }
-            }
-        }
-        return DIRCHANGED;
-    }
-    return FULLUPDATE ;
 }
 
 int main()

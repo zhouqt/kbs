@@ -1334,7 +1334,7 @@ int fd ;
          *---	also '||' used above is wrong...	---*/
         sethomefile(buf, currentuser->userid, "talklog");
         sprintf(mywords, "¸ú %s µÄÁÄÌì¼ÇÂ¼ [%12.12s]", partner, Ctime(now) + 6);
-        mail_file(buf, currentuser->userid, mywords);
+        mail_file(currentuser->userid,buf, currentuser->userid, mywords,0);
     }
     sethomefile(buf, currentuser->userid, "talklog");
     unlink(buf);
@@ -1946,40 +1946,6 @@ t_override()
     i_read( GMENU, genbuf , friend_title , friend_doentry, friend_list ,sizeof(struct friends));
     clear();
     return;
-}
-
-struct _tag_t_search {
-	struct user_info* result;
-	int pid;
-};
-
-int _t_search(struct user_info* uentp,struct _tag_t_search* data,int pos)
-{
-	if (data->pid==0) {
-		data->result=uentp;
-		return QUIT;
-	}
-	data->result=uentp;
-	if (uentp->pid==data->pid)
-		return QUIT;
-	UNUSED_ARG(pos);
-	return 0;
-}
-
-struct user_info *
-            t_search(sid,pid)
-            char *sid;
-int  pid;
-{
-    int         i;
-    struct _tag_t_search data;
-
-    data.pid=pid;
-    data.result=NULL;
-
-    apply_utmp(_t_search,20,sid,&data);
-    
-    return data.result;
 }
 
 int

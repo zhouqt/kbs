@@ -1175,8 +1175,7 @@ void set_rec(chatcontext *pthis, const char *arg) /* set recorder */
         fclose(pthis->rec);
         pthis->rec=NULL;
         
-        mail_file(fname,currentuser->userid,"录音结果");
-        unlink(fname);
+        mail_file(currentuser->userid,fname,currentuser->userid,"录音结果",1);
 
         bbslog("user","stop record room %s", pthis->chatroom);
     }
@@ -1224,11 +1223,6 @@ void call_kickoff(chatcontext *pthis, const char *arg) /* kick ID off BBS, by Lu
             }
         }
     printchatline(pthis,msg);
-}
-
-int cmpinames(const char *userid,const  char *uv)       /* added by Luzi 1997.11.28 */
-{
-    return !strcasecmp(userid, uv);
 }
 
 void call_listen(chatcontext *pthis,const char *arg) /* added by Luzi 1997.11.28 */

@@ -68,7 +68,7 @@ search_file(char *filename) /* Leeward 98.10.02 */
     struct fileheader *rptr,*rptr1;
 	struct stat st;
 
-    if (uinfo.mode!=RMAIL) setbdir( p_name, currboard);
+    if (uinfo.mode!=RMAIL) setbdir(digestmode, p_name, currboard);
     else setmailfile(p_name, currentuser->userid, DOT_DIR);
 
     if ((fd = open(p_name,O_RDONLY,0)) == -1) return 0;

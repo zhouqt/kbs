@@ -56,7 +56,9 @@
 #include "config.h"             /* User-configurable stuff */
 #include "permissions.h"
 
-
+#define PUBLIC_SHMKEY	3700 
+/*这个是唯一一个定义死的SHMKEY,因为sysconf_eval需要
+public shm,而attach shm又需要sysconf_eval,ft*/
 /* add by KCN ,disable perror */
 #ifdef BBSMAIN
 #define perror(x) prints(x)
@@ -115,7 +117,7 @@ extern long ti ;
 #define MAXGOPHERITEMS 9999 /*max of gopher items*/
 #define PASSFILE   ".PASSWDS"      /* Name of file User records stored in */
 #define ULIST "UTMP"         /* Names of users currently on line */
-
+#define POSTLOGFILE ".post.X" /* Name of file which log posting report */
 #ifndef BBSIRC 
 
 #define FLUSH    ".PASSFLUSH"    /* Stores date for user cache flushing */
@@ -183,6 +185,7 @@ O MaxMessageSize=32000
 #endif /* BBSIRC */
 
 #include "struct.h"
+#include "webmsg.h"
 
 /* add by period , header for function prototypes */
 #include "prototype.h"

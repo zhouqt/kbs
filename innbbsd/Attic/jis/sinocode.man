@@ -1,0 +1,117 @@
+  Copyright (C) 1992 Per Hammarlund <perham@nada.kth.se>
+
+
+INTRO
+
+  Written by Per Hammarlund <perham@nada.kth.se>
+  Helpful remarks from Ken-Ichi Handa <handa@etl.go.jp>.
+  The sinoco??.cod (translation) files are provided by Urs Widmer
+  <a06g@alf.zfn.uni-bremen.de>.
+
+
+
+COPYING
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 1, or (at your option)
+  any later version.
+	 
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+	 
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+
+SINOCODE VERSION 0.1
+
+This program translates files between different character codings.
+GB, BIG5, IBM555, and JIS-EUC codings.  The program is still in a beta
+version, and will be until the version number hits 1.0.  This program
+uses Urs Widmer's conversion tables.  If you find any bugs in these,
+or better, if you would like to suggest additions and changes, please
+contact Urs at the above address.
+
+ 1  GB-2312   -->  BIG-5		sinocogb.cod
+ 2  GB-2312   -->  IBM-555		sinocogb.cod
+ 3  GB-2312   -->  JIS (EUC)		sinocogj.cod
+ 4  BIG-5     -->  GB-2312		sinocobg.cod
+ 5  BIG-5     -->  IBM-555		Calc
+ 6  BIG-5     -->  JIS (EUC)		sinocobj.cod
+ 7  JIS (EUC) -->  GB-2312		sinocojg.cod
+ 8  JIS (EUC) -->  BIG-5  		sinocojb.cod
+ 9  IBM-555   -->  BIG-5  		calc
+10  IBM-555   -->  GB-2312		sinocobg.cod
+
+SINOCODE
+
+USE
+	sinocode -version	Gives you the current version.
+
+	sinocode -help		Prints a short help.
+
+	sinocode <coding1> infile <coding2> outfile
+				Converts from one coding to another.
+				Infile and outfile can be either a
+				filename or "-", meaning stdin or
+				stdout.  The codings are "-jis",
+				"-ibm", "-gb", and "-big".
+
+TRANSLATIONS
+
+The sinocode program can perform the following conversions.
+
+ 1  GB-2312   -->  BIG-5		sinocogb.cod
+ 2  GB-2312   -->  IBM-555		sinocogb.cod
+ 3  GB-2312   -->  JIS (EUC)		sinocogj.cod
+ 4  BIG-5     -->  GB-2312		sinocobg.cod
+ 5  BIG-5     -->  IBM-555		Calculation
+ 6  BIG-5     -->  JIS (EUC)		sinocobj.cod
+ 7  JIS (EUC) -->  GB-2312		sinocojg.cod
+ 8  JIS (EUC) -->  BIG-5  		sinocojb.cod
+ 9  IBM-555   -->  BIG-5  		Calculation
+10  IBM-555   -->  GB-2312		sinocobg.cod
+
+
+MISSING CHARACTERS
+
+Sometimes there are missing characters in the translation tables, and
+for some chars there is nothing to translate to, ie the character is
+missing in the code you are translating to, in these cases the program
+will insert a "missing-character", either a default or one of you own
+choise.
+
+By the default the program will insert a "fat equal sign".  If you
+want to change this, you can set some environment varibles.  The
+envvar "SINOMISSDEF" will change the default missing character for
+*all* translations.  The envvars: "SINOJISEUC", "SINOBIG5",
+"SINOGB2312", and "SINOIBM555", will change only for their target
+coding.  So if you want to have a "black box" for all translation
+except JIS, where you want a "square box" you should set the env vars
+as:
+
+export SINOMISSDEF=black_box
+export SINOJISEUC=square_box
+
+
+The value of a envvar can either be one of the defined "character
+names": "fat_equal", "black_box", or "square_box". Or it can be a two
+byte character code.
+
+PLEASE NOTICE!!!
+
+The table for these names has not been completed right now!!!
+
+
+	
+
+RELATED PROGRAMS
+
+If you need to convert between different forms of JIS, you will find
+Ken Lunde's program JIS.c very helpful.
+
+

@@ -669,7 +669,7 @@ case 'n': case 'j': case KEY_DOWN:
                 brc_initial( currentuser->userid,ptr->name );
                 memcpy( currBM, ptr->BM, BM_LEN -1);
                 if( DEFINE(currentuser,DEF_FIRSTNEW) ) {
-                    setbdir( buf, currboard );
+                    setbdir(digestmode, buf, currboard );
                     tmp = unread_position( buf, ptr );
                     page = tmp - t_lines / 2;
                     getkeep( buf, page > 1 ? page : 1, tmp + 1 );

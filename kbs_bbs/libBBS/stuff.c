@@ -694,6 +694,35 @@ int compute_user_value( struct userec *urec)
 }
 
 
+char *setbdir(int digestmode,char *buf, char *boardname)
+  /* 根据阅读模式 取某版 目录路径 */
+{
+    char dir[STRLEN];
+
+    switch(digestmode)
+    {
+    case NA:
+        strcpy(dir,DOT_DIR);
+        break;
+    case YEA:
+        strcpy(dir,DIGEST_DIR);
+        break;
+    case 2:
+        strcpy(dir,THREAD_DIR);
+        break;
+    case 4:
+	strcpy(dir,".DELETED");
+	break;
+    case 5:
+	strcpy(dir,".JUNK");
+	break;
+    }
+    sprintf( buf, "boards/%s/%s", boardname, dir);
+    return buf;
+}
+
+
+
 char *
 sethomefile( char    *buf,char  *userid,char *filename)  /*取某用户文件 路径*/
 {
@@ -813,14 +842,24 @@ int seek_in_file(char filename[STRLEN],char seekstr[STRLEN])
     return 0;
 }
 
-
-static time_t* nowtime;
 static struct public_data *publicshm;
+struct public_data* get_publicshm()
+{
+	return publicshm;
+}
+
 void bbssettime(time_t now)
 {
     int iscreate;
     if (publicshm==NULL) {
-        publicshm = (struct public_data*)attach_shm1( "PUBLIC_SHMKEY", 3700, sizeof( *publicshm) ,&iscreate,0,NULL); /* attach public share memory readonly*/
+        publicshm = (struct public_data*)attach_shm1( NULL, PUBLIC_SHMKEY, sizeof( *publicshm) ,&iscreate,0,NULL); /* attach public share memory*/
+        if (iscreate) {
+        	/* 初始化public共享内存区*/
+        	/* 开始的sysconf.img版本号为0*/
+        	unlink("sysconf.img.0");
+        	publicshm->sysconfimg_version=0;
+        	
+        }
     }
     publicshm->nowtime=now;
     return;
@@ -831,20 +870,20 @@ int setpublicshmreadonly(int readonly)
     int iscreate;
     shmdt(publicshm);
     if (readonly)
-        publicshm = (struct public_data*)attach_shm1( "PUBLIC_SHMKEY", 3700, sizeof( *publicshm ) ,&iscreate , 1, publicshm); 
+        publicshm = (struct public_data*)attach_shm1( NULL, PUBLIC_SHMKEY, sizeof( *publicshm ) ,&iscreate , 1, publicshm); 
     else
-        publicshm = (struct public_data*)attach_shm1( "PUBLIC_SHMKEY", 3700, sizeof( *publicshm ) ,&iscreate , 0, publicshm); 
+        publicshm = (struct public_data*)attach_shm1( NULL, PUBLIC_SHMKEY, sizeof( *publicshm ) ,&iscreate , 0, publicshm); 
 }
 
 time_t bbstime(time_t* t)
 {
     int iscreate;
     if (publicshm==NULL) {
-        publicshm = attach_shm1( "PUBLIC_SHMKEY", 3700, sizeof( *publicshm) ,&iscreate,1,NULL); /* attach public share memory readonly*/
-	if (iscreate) {
-		bbslog("4bbstime","time daemon not start");
-		exit(1);
-	}
+        publicshm = attach_shm1( NULL, PUBLIC_SHMKEY, sizeof( *publicshm) ,&iscreate,1,NULL); /* attach public share memory readonly*/
+		if (iscreate) {
+			bbslog("4bbstime","time daemon not start");
+			exit(1);
+		}
     }
     if (t) *t=publicshm->nowtime;
     return publicshm->nowtime;
@@ -906,5 +945,72 @@ int valid_ident( char *ident)
         if( strstr( ident, invalid[i] ) != NULL )
             return 0;
     return 1;
+}
+
+struct _tag_t_search {
+	struct user_info* result;
+	int pid;
+};
+
+int _t_search(struct user_info* uentp,struct _tag_t_search* data,int pos)
+{
+	if (data->pid==0) {
+		data->result=uentp;
+		return QUIT;
+	}
+	data->result=uentp;
+	if (uentp->pid==data->pid)
+		return QUIT;
+	UNUSED_ARG(pos);
+	return 0;
+}
+
+struct user_info *
+            t_search(sid,pid)
+            char *sid;
+int  pid;
+{
+    int         i;
+    struct _tag_t_search data;
+
+    data.pid=pid;
+    data.result=NULL;
+
+    apply_utmp(_t_search,20,sid,&data);
+    
+    return data.result;
+}
+
+int getuinfopid()
+{
+#ifdef BBSMAIN
+   return uinfo.pid;
+#else
+   return 1;
+#endif
+}
+
+int cmpinames(const char *userid,const  char *uv)       /* added by Luzi 1997.11.28 */
+{
+    return !strcasecmp(userid, uv);
+}
+
+int
+canIsend2(userid) /* Leeward 98.04.10 */
+char *userid;
+{
+    char buf[IDLEN+1];
+    char path[256];
+
+    if (HAS_PERM(currentuser,PERM_SYSOP)) return YEA;
+
+    sethomefile( path, userid , "/ignores");
+    if (search_record(path, buf, IDLEN+1, cmpinames, currentuser->userid))
+        return NA;
+    sethomefile( path, userid , "/bads");
+    if (search_record(path, buf, IDLEN+1, cmpinames, currentuser->userid))
+        return NA;
+    else
+        return YEA;
 }
 

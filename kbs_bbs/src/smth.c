@@ -32,6 +32,7 @@ static const struct _shmkey shmkeys[]= {
 { "PASSWDCACHE_SHMKEY", 3697 },
 { "STAT_SHMKEY",    5100 },
 { "CONVTABLE_SHMKEY",    5101 },
+{ "MSG_SHMKEY",    5200 },
 {    "",   0 }
 };
 

@@ -18,7 +18,7 @@ int badnum=0;
 struct user_info *u_info;
 /*struct UTMPFILE *shm_utmp;*/
 /*struct UCACHE *shm_ucache;*/
-char fromhost[IPLEN];
+char fromhost[IPLEN+1];
 char parm_name[256][80], *parm_val[256];
 int parm_num=0;
 int     favbrd_list[FAVBOARDNUM+1];
@@ -49,12 +49,17 @@ int file_has_word(char *file, char *word) {
 	return 0;
 }
 
-int f_append(char *file, char *buf) {
+int f_append(char *file, char *buf)
+{
 	FILE *fp;
-	fp=fopen(file, "a");
-	if(fp==0) return;
+
+	fp = fopen(file, "a");
+	if(fp == 0)
+		return -1;
 	fprintf(fp, "%s", buf);
 	fclose(fp);
+
+	return 0;
 }
 
 struct stat *f_stat(char *file) {
@@ -209,19 +214,19 @@ int hsprintf(char *s, char *fmt, ...) {
 			if(buf[i]!='m') continue;
 			if(strlen(ansibuf)==0) {
 				bold=0;
-				strnncpy(s, &len, "<font class=c37>");
+				strnncpy(s, &len, "<font class=\"c37\">");
 			}
 			tmp=strtok(ansibuf, ";");
 			while(tmp) {
 				c=atoi(tmp);
 				tmp=strtok(0, ";");
 				if(c==0) {
-					strnncpy(s, &len, "<font class=c37>");
+					strnncpy(s, &len, "<font class=\"c37\">");
 					bold=0;
 				}
 				if(c>=30 && c<=37) {
-					if(bold==1) sprintf(buf2, "<font class=d%d>", c);
-					if(bold==0) sprintf(buf2, "<font class=c%d>", c);
+					if(bold==1) sprintf(buf2, "<font class=\"d%d\">", c);
+					if(bold==0) sprintf(buf2, "<font class=\"c%d\">", c);
 					strnncpy(s, &len, buf2);
 				}
 			}
@@ -269,13 +274,13 @@ int hhprintf(char *fmt, ...) {
 			if(tmp==0) break;
 			if(1) {
 				if(strstr(tmp, ".gif") || strstr(tmp, ".jpg") || strstr(tmp, ".bmp")) {
-					printf("<IMG SRC='%s'>", nohtml(tmp));
+					printf("<img src=\"%s\">", nohtml(tmp));
 					tmp=strtok(0, "");
 					if(tmp==0) return -1;
 					return hhprintf(tmp);
 				}
 			}
-			printf("<a target=_blank href='%s'>%s</a>", nohtml(tmp), nohtml(tmp));
+			printf("<a target=\"_blank\" href=\"%s\">%s</a>", nohtml(tmp), nohtml(tmp));
 			tmp=strtok(0, "");
 			if(tmp==0) return printf("\n");
 			return hhprintf(tmp);
@@ -457,72 +462,56 @@ forguest:
 	return 0;
 }
 
-int post_mail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig) {
+int post_mail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig)
+{
 	FILE *fp, *fp2;
 	char buf3[256], dir[256];
 	struct fileheader header;
 	int t, i;
+
 	bzero(&header, sizeof(header));
 	strcpy(header.owner, id);
-	for(i=0; i<100; i++) {
+	for(i=0; i<100; i++)
+	{
 		t=time(0)+i;
-		sprintf(buf3, "mail/%c/%s/M.%d.A", toupper(userid[0]), userid, i+time(0));
-		if(!file_exist(buf3)) break;
+		sprintf(buf3, "mail/%c/%s/M.%d.A",
+				toupper(userid[0]), userid, i+time(0));
+		if(!file_exist(buf3))
+			break;
 	}
-	if(i>=99) return -1;
+	if(i>=99)
+		return -1;
 	sprintf(header.filename, "M.%d.A", t);
 	strsncpy(header.title, title, 60);
-	fp=fopen(buf3, "w");
-	if(fp==0) return -2;
+	fp = fopen(buf3, "w");
+	if(fp == NULL)
+		return -2;
 	fp2=fopen(file, "r");
 	fprintf(fp, "¼ÄÐÅÈË: %s (%s)\n", id, nickname);
 	fprintf(fp, "±ê  Ìâ: %s\n", title);
 	fprintf(fp, "·¢ÐÅÕ¾: %s (%s)\n", BBSNAME, wwwCTime(time(0)));
 	fprintf(fp, "À´  Ô´: %s\n\n", ip);
-	if(fp2) {
-		while(1) {
-			if((int)fgets(buf3, 256, fp2)<=0) break;
+	if(fp2)
+	{
+		while(fgets(buf3, 256, fp2) != NULL)
+		{
 			fprintf2(fp, buf3);
 		}
 		fclose(fp2);
 	}
 	fprintf(fp, "\n--\n");
 	sig_append(fp, id, sig);
-	fprintf(fp, "\n\n[1;%dm¡ù À´Ô´:£®%s %s£®[FROM: %.20s][m\n", 31+rand()%7, BBSNAME, NAME_BBS_ENGLISH, ip);
+	fprintf(fp, "\n[1;%dm¡ù À´Ô´:£®%s %s£®[FROM: %.20s][m\n",
+			31+rand()%7, BBSNAME, NAME_BBS_ENGLISH, ip);
 	fclose(fp);
-        sprintf(dir, "mail/%c/%s/.DIR", toupper(userid[0]), userid);
-        fp=fopen(dir, "a");
-	if(fp==0) return -1;
-        fwrite(&header, sizeof(header), 1, fp);
-        fclose(fp);
+	sprintf(dir, "mail/%c/%s/.DIR", toupper(userid[0]), userid);
+	fp=fopen(dir, "a");
+	if(fp == NULL)
+		return -1;
+	fwrite(&header, sizeof(header), 1, fp);
+	fclose(fp);
 	return 0;
 }
-
-/*
-int post_imail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig) {
-        FILE *fp1, *fp2;
-        char buf[256];
-	if(strstr(userid, ";") || strstr(userid, "`")) http_fatal("´íÎóµÄÊÕÐÅÈËµØÖ·");
-	sprintf(buf, "sendmail -f %s.bbs@%s '%s'", id, BBSHOST, userid);
-        fp2=popen(buf, "w");
-        fp1=fopen(file, "r");
-        if(fp1==0 || fp2==0) return -1;
-        fprintf(fp2, "From: %s.bbs@%s\n", id, BBSHOST);
-        fprintf(fp2, "To: %s\n", userid);
-        fprintf(fp2, "Subject: %s\n\n", title);
-        while(1) {
-		if(fgets(buf, 255, fp1)==0) break;
-		if(buf[0]=='.' && buf[1]=='\n') continue;
-                fprintf(fp2, "%s", buf);
-        }
-	fprintf(fp2, "\n--\n");
- 	sig_append(fp2, id, sig);
- 	fprintf(fp2, "\n\n[1;%dm¡ù À´Ô´:£®%s %s£®[FROM: %.20s][m\n", 31+rand()%7, BBSNAME, NAME_BBS_ENGLISH, ip);
-        fprintf(fp2, ".\n");
-        fclose(fp1);
-        pclose(fp2);
-	return 0;
-}*/
 
 int outgo_post2(struct fileheader *fh, char *board, 
 				char *userid, char *username, char *title)
@@ -731,29 +720,37 @@ post_article(char *board, char *title, char *file, struct userec *user,
     return now;
 }
 
-int sig_append(FILE *fp, char *id, int sig) {
+int sig_append(FILE *fp, char *id, int sig)
+{
 	FILE *fp2;
 	char path[256];
 	char buf[100][256];
 	int i, total;
 	struct userec *x = NULL;
-	if(sig<0 || sig>10) return;
-#ifndef SMTH
-	x=getuser(id);
-#else /* SMTH */
+
+	if(sig<0 || sig>10)
+		return -1;
 	getuser(id, &x);
-#endif /* SMTH */
-	if(x==0) return;
+	if(x == 0)
+		return -1;
 	sprintf(path, "home/%c/%s/signatures", toupper(id[0]), id);
-	fp2=fopen(path, "r");
-	if(fp2==0) return;
-	for(total=0; total<255; total++)
+	fp2 = fopen(path, "r");
+	if(fp2 == 0)
+		return -1;
+	for(total=0; total<100; total++)
 		if(fgets(buf[total], 255, fp2)==0) break;
 	fclose(fp2);
-	for(i=sig*6; i<sig*6+6; i++) {
-		if(i>=total) break;
+	if (sig * 6 >= total)
+		return 0;
+	for(i=sig*6; i<sig*6+6; i++)
+	{
+		if(i>=total)
+			break;
 		fprintf(fp, "%s", buf[i]);
 	}
+	x->signature = sig;
+
+	return sig;
 }
 
 char* anno_path_of(char *board) {
@@ -827,15 +824,6 @@ int count_mails(char *id, int *total, int *unread) {
 	return 0;
 }
 
-/*int findnextutmp(char *id, int from) {
-	int i;
-	if(from<0) from=0;
-	for(i=from; i<MAXACTIVE; i++) 
-		if(shm_utmp->uinfo[i].active)
-			if(!strcasecmp(shm_utmp->uinfo[i].userid, id)) return i;
-	return -1;
-}*/
-
 int setmsgfile(char *buf, char *id)
 {
 	if (buf == NULL || id == NULL)
@@ -850,40 +838,6 @@ int setmsgfilelog(char *buf, char *id)
 		return -1;
 	sethomefile(buf, id, SYS_MSGFILELOG);
 	return 0;
-}
-
-struct _tag_t_search {
-	struct user_info* result;
-	int pid;
-};
-
-int _t_search(struct user_info* uentp,struct _tag_t_search* data,int pos)
-{
-	if (data->pid==0) {
-		data->result=uentp;
-		return QUIT;
-	}
-	data->result=uentp;
-	if (uentp->pid==data->pid)
-		return QUIT;
-	UNUSED_ARG(pos);
-	return 0;
-}
-
-struct user_info *
-            t_search(sid,pid)
-            char *sid;
-int  pid;
-{
-    int         i;
-    struct _tag_t_search data;
-
-    data.pid=pid;
-    data.result=NULL;
-
-    apply_utmp(_t_search,20,sid,&data);
-    
-    return data.result;
 }
 
 int
@@ -920,121 +874,8 @@ struct user_info *uin;
     return NA;
 }
 
-int cmpinames(const char *userid,const  char *uv)       /* added by Luzi 1997.11.28 */
-{
-    return !strcasecmp(userid, uv);
-}
-
-int canIsend2(userid) /* Leeward 98.04.10 */
-char *userid;
-{
-    char buf[IDLEN+1];
-    char path[256];
-
-    if (HAS_PERM(currentuser,PERM_SYSOP)) return YEA;
-
-    sethomefile( path, userid , "ignores");
-    if (search_record(path, buf, IDLEN+1, cmpinames, getcurruserid()))
-        return NA;
-    sethomefile( path, userid , "bads");
-    if (search_record(path, buf, IDLEN+1, cmpinames, getcurruserid()))
-        return NA;
-    else
-        return YEA;
-}
-#if 0
-int do_sendmsg2(uentp,msgstr)
-struct user_info *uentp;
-char msgstr[256];
-{
-    char uident[STRLEN];
-    FILE *fp;
-    time_t now;
-    struct user_info *uin ;
-    char buf[80],msgbuf[256] ,*timestr,msgbak[256];
-    int msg_count=0;
-    int Gmode = 0;
-	struct userec *u;
-	uinfo_t *ui;
-
-	ui = getcurruinfo();
-    *msgbak = 0;	/* period 2000-11-20 may be used without init */
-	if (uentp == NULL)
-		return -1;
-	uin = uentp;
-    if(LOCKSCREEN == uin->mode) /* Leeward 98.02.28 */
-        return -1 ;	/* dest user is in lock screen mode */
-
-    if (NA==canIsend2(uin->userid))/*Haohmaru.06.06.99.¼ì²é×Ô¼ºÊÇ·ñ±»ignore*/
-        return -1;	/* ¶Ô·½¾Ü¾øÄãµÄÑ¶Ï¢ */
-
-	sethomefile(buf,uident,"msgcount");
-	fp=fopen(buf, "rb");
-	if (fp!=NULL)
-	{
-		fread(&msg_count,sizeof(int),1,fp);
-		fclose(fp);
-
-		if(msg_count>MAXMESSAGE)
-			return -1 ;	/* ¶Ô·½ÉÐÓÐÒ»Ð©Ñ¶Ï¢Î´´¦Àí */
-	}
-    if(msgstr==NULL)
-		return -1;
-
-	strcpy(uident, uin->userid);
-	u = getcurrusr();
-    now=time(0);
-    timestr=ctime(&now)+11;
-    *(timestr+8)='\0';
-	sprintf(msgbuf,
-			"[44m[36m%-12.12s[33m(%-5.5s):[37m%-59.59s[m[%dm\033[%dm\n", 
-			u->userid, timestr, 
-			msgstr,ui->pid+100,uin->pid+100);
-	sprintf(msgbak,
-			"[44m[0;1;32m=>[37m%-10.10s[33m(%-5.5s):[36m%-59.59s[m[%dm\033[%dm\n",
-			uident, timestr, 
-			msgstr,ui->pid+100,uin->pid+100);
-	uin = t_search(uin->userid, uin->pid);
-
-    if ((uin == NULL) || (uin->active == 0)
-		|| (uin->pid == 0) || (kill(uin->pid, 0) !=0))
-        return -2; /* ¶Ô·½ÒÑ¾­ÀëÏß */
-
-    sethomefile(buf,uident,"msgfile");
-    if((fp=fopen(buf,"a"))==NULL)
-        return -1;
-    fputs(msgbuf,fp);
-    fclose(fp);
-
-    /*Haohmaru.99.6.03.»ØµÄmsgÒ²¼ÇÂ¼*/
-    if(strcmp(u->userid,uident))
-	{
-        sethomefile(buf,u->userid,"msgfile");
-        if((fp=fopen(buf,"a"))==NULL)
-            return -1;
-        fputs(msgbak,fp);
-        fclose(fp);
-    }
-    if(kill(uin->pid,SIGUSR2)==-1)
-        return -1;
-    sethomefile(buf,uident,"msgcount");
-    fp=fopen(buf, "wb");
-    if (fp!=NULL)
-    {
-        msg_count++;
-        fwrite(&msg_count,sizeof(int),1,fp);
-        fclose(fp);
-    }
-    return 0 ;
-}
-#endif
-
-int getuinfopid(void)
-{
-   return 1;
-}
 extern char MsgDesUid[14];
-int send_msg(char *myuserid, int mypid, char *touserid, int topid, char msg[256])
+int send_msg(char *srcid, int srcutmp, char *destid, int destutmp, char *msg)
 {
 	int i;
 	uinfo_t *uin;
@@ -1042,8 +883,44 @@ int send_msg(char *myuserid, int mypid, char *touserid, int topid, char msg[256]
 	/* ÂËµôÌØÊâ×Ö·û£¬Ó¦¸ÃÐ´³ÉÒ»¸öº¯Êý */
 	for(i=0; i<(int)strlen(msg); i++)
 		if((0<msg[i] && msg[i]<=27 )|| msg[i]==-1) msg[i]=32;
-	strcpy(MsgDesUid,touserid);
-	uin = t_search(touserid, topid);
+	strcpy(MsgDesUid, destid);
+	if (destutmp == 0)
+		uin = t_search(destid, destutmp);
+	else
+		uin = get_utmpent(destutmp);
+	if (uin == NULL)
+		return -1;
+	if (strcmp(uin->userid, destid))
+		return -1;
+	if (uin != NULL && uin->mode == WEBEXPLORE)
+	{
+		char msgbuf[256];
+		char msgbak[256];
+		char *timestr;
+		time_t now;
+
+		now=time(0);
+		timestr=ctime(&now)+11;
+		*(timestr+8)='\0';
+        snprintf(msgbuf, sizeof(msgbuf),
+			"[44m[36m%-12.12s[33m(%-5.5s):[37m%-59.59s[m[%dm\033[%dm\n",
+			srcid, timestr, msg, getuinfopid()+100, uin->pid+100);
+        snprintf(msgbak, sizeof(msgbak), 
+			"[44m[0;1;32m=>[37m%-10.10s[33m(%-5.5s):[36m%-59.59s[m[%dm\033[%dm\n",
+			destid, timestr, msg, getuinfopid()+100, uin->pid+100);
+		if (destutmp == 0)
+			destutmp = get_utmpent_num(uin);
+		if (send_webmsg(destutmp, uin->userid, srcutmp, srcid, msgbuf) < 0)
+			return -1;
+		if (store_msgfile(uin->userid, msgbuf) < 0)
+			return -2;
+		if(strcmp(srcid, uin->userid))
+		{
+			if (store_msgfile(srcid, msgbak) < 0)
+				return -2;
+		}
+		return 1;
+	}
 	return sendmsgfunc(uin, msg,2);
 }
 
@@ -1550,18 +1427,6 @@ int eat_file_content(int fd, off_t start, off_t len)
 	return 0;
 }
 
-int isowner(struct userec *user, struct fileheader *fileinfo)
-{
-    char buf[25];
-    time_t posttime;
-    if (strcmp(fileinfo->owner,user->userid))
-        return 0;
-    posttime = atoi(fileinfo->filename+2);
-    if (posttime<user->firstlogin)
-        return 0;
-    return 1;
-}
-
 int count_online() /* ugly */
 {
 	/*struct UTMPFILE *u;
@@ -1583,13 +1448,6 @@ int count_www()
 	return total;
 }
 
-
-int get_utmpent_num(uinfo_t *uent)
-{
-	if (uent == NULL)
-		return -1;
-	return uent - utmpshm->uinfo + 1;
-}
 
 int get_ulist_length()
 {
@@ -1883,47 +1741,6 @@ char qry_mail_dir[STRLEN];
         return -3;
     return n;
 }*/
-
-int mail_file(char *tmpfile, char *userid, char *title)
-{
-    struct fileheader newmessage ;
-    struct stat st ;
-    char fname[STRLEN], filepath[STRLEN];
-	char buf[256];
-
-    memset(&newmessage, 0, sizeof(newmessage)) ;
-    strncpy(newmessage.owner, getcurruserid(), STRLEN) ;
-    strncpy(newmessage.title, title, STRLEN) ;
-
-    setmailpath(filepath, userid);
-    if(stat(filepath, &st) == -1)
-   	{
-        if(mkdir(filepath, 0755) == -1)
-            return -1 ;
-    }
-   	else
-   	{
-        if(!(st.st_mode & S_IFDIR))
-            return -1 ;
-    }
-
-	get_unifile(fname, userid, 1);
-    strcpy(newmessage.filename, fname) ;
-    setmailfile(filepath, userid, fname) ;
-
-    sprintf(buf, "cp %s %s", tmpfile, filepath) ;
-    system(buf);
-	/* ²»ÓÃ´¦Àí tmpfile, ÀýÈçÉ¾³ý tmpfile...
-	 * ´¦Àítmpfile²»ÊÇ mail_file() µÄÈÎÎñ */
-
-    setmailfile(buf, userid, DOT_DIR);
-    if(append_record(buf, &newmessage, sizeof(newmessage)) == -1)
-        return -1 ;
-
-    sprintf(buf, "mailed %s ", userid);
-    report(buf);
-    return 0 ;
-}
 
 int post_file(char *filename, postinfo_t *pi)
 {

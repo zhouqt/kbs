@@ -28,6 +28,10 @@ u_exit()
 	if((HAS_PERM(currentuser,PERM_CHATCLOAK) || HAS_PERM(currentuser,PERM_CLOAK)))
         setflags(CLOAK_FLAG, ui->invisible);
 
+	//printf("%s %d<br>\n", getcurruserid(), get_utmpent_num(getcurruinfo()));
+	if (delfrom_msglist(get_utmpent_num(getcurruinfo()), getcurruserid()) < 0)
+		http_fatal("无法从消息列表中删除当前用户");
+
     clear_utmp(get_utmpent_num(ui));
 }
 

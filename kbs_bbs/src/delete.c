@@ -214,8 +214,7 @@ mail_info()
     getuinfo(fn, currentuser);
     fprintf(fn,"\n                      [1m ÏµÍ³×Ô¶¯·¢ĞÅÏµÍ³Áô[m\n");
     fclose(fn);
-    mail_file(filename,"acmanager","×ÔÉ±Í¨Öª....");
-    unlink(filename);
+    mail_file(currentuser->userid,filename,"acmanager","×ÔÉ±Í¨Öª....",1);
 }
 
 

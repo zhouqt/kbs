@@ -149,7 +149,7 @@ int inform(bcache_t *bp, char *user, char *exp, int dt)
 	}
 	fclose(fn);
 
-	mail_file(buf, user, title);
+	mail_file(getcurruserid(),buf, user, title,1);
 
 	fn=fopen(buf,"w+");
 	fprintf(fn,"由于 \x1b[4m%s\x1b[0m 在 \x1b[4m%s\x1b[0m 版的 \x1b[4m%s\x1b[0m 行为，\n",

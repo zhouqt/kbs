@@ -50,7 +50,6 @@ char replytitle[STRLEN];
 #endif
 
 char    *filemargin() ;
-void    cancelpost();
 /*For read.c*/
 int     auth_search_down();
 int     auth_search_up();
@@ -92,20 +91,6 @@ extern int 	B_to_b;
 
 extern struct screenline *big_picture;
 extern struct userec *user_data;
-
-int isowner(user,fileinfo)
-struct userec* user;
-struct fileheader* fileinfo;
-{
-    char buf[25];
-    time_t posttime;
-    if (strcmp(fileinfo->owner,user->userid))
-        return 0;
-    posttime = atoi(fileinfo->filename+2);
-    if (posttime<user->firstlogin)
-        return 0;
-    return 1;
-}
 
 int totalusers, usercounter;
 
@@ -463,36 +448,6 @@ char filepath[];
 {
     strcpy(quote_file,filepath);
 }
-
-char *
-setbdir( buf, boardname )  /* 根据阅读模式 取某版 目录路径 */
-char *buf, *boardname;
-{
-    char dir[STRLEN];
-
-    switch(digestmode)
-    {
-    case NA:
-        strcpy(dir,DOT_DIR);
-        break;
-    case YEA:
-        strcpy(dir,DIGEST_DIR);
-        break;
-    case 2:
-        strcpy(dir,THREAD_DIR);
-        break;
-    case 4:
-	strcpy(dir,".DELETED");
-	break;
-    case 5:
-	strcpy(dir,".JUNK");
-	break;
-    }
-    sprintf( buf, "boards/%s/%s", boardname, dir);
-    return buf;
-}
-
-
 
 /*Add by SmallPig*/
 void
@@ -994,27 +949,6 @@ readdoent(char* buf,int num,struct fileheader* ent)  /* 在文章列表中 显示 一篇文
     return buf ;
 }
 
-char currfile[STRLEN] ;
-
-int
-cmpfilename(fhdr)  /* 比较 某文件名是否和 当前文件 相同 */
-struct fileheader *fhdr ;
-{
-    if(!strncmp(fhdr->filename,currfile,STRLEN))
-        return 1 ;
-    return 0 ;
-}
-
-int
-cmpname(fhdr,name)  /* Haohmaru.99.3.30.比较 某文件名是否和 当前文件 相同 */
-struct fileheader *fhdr ;
-char  name[STRLEN];
-{
-    if(!strncmp(fhdr->filename,name,STRLEN))
-        return 1 ;
-    return 0 ;
-}
-
 int
 cpyfilename(fhdr)  /* 改变删除后的文件名 */
 struct fileheader *fhdr ;
@@ -1302,7 +1236,7 @@ char *direct ;
     clrtoeol();
     if(digestmode!=NA&&digestmode!=YEA)
 	digestmode=NA;
-    setbdir( direct, currboard ); /* direct 设定 为 当前board目录 */
+    setbdir(digestmode, direct, currboard ); /* direct 设定 为 当前board目录 */
     return NEWDIRECT ;
 }
 
@@ -1314,16 +1248,16 @@ digest_mode()  /* 文摘模式 切换 */
     if(digestmode==YEA)
     {
         digestmode=NA;
-        setbdir(currdirect,currboard);
+        setbdir(digestmode,currdirect,currboard);
     }
     else
     {
         digestmode=YEA;
-        setbdir(currdirect,currboard);
+        setbdir(digestmode,currdirect,currboard);
         if(!dashf(currdirect))
         {
             digestmode=NA;
-            setbdir(currdirect,currboard);
+            setbdir(digestmode,currdirect,currboard);
             return DONOTHING;
         }
     }
@@ -1352,16 +1286,16 @@ deleted_mode()
   if(digestmode==4)
   {
     digestmode=NA;
-    setbdir(currdirect,currboard);
+    setbdir(digestmode,currdirect,currboard);
   }   
   else
   {
     digestmode=4;
-    setbdir(currdirect,currboard);
+    setbdir(digestmode,currdirect,currboard);
     if(!dashf(currdirect))
     {
             digestmode=NA;
-            setbdir(currdirect,currboard);
+            setbdir(digestmode,currdirect,currboard);
             return DONOTHING;
     }
   }
@@ -1380,16 +1314,16 @@ junk_mode()
   if(digestmode==5)
   {
     digestmode=NA;
-    setbdir(currdirect,currboard);
+    setbdir(digestmode,currdirect,currboard);
   }   
   else
   {
     digestmode=5;
-    setbdir(currdirect,currboard);
+    setbdir(digestmode,currdirect,currboard);
     if(!dashf(currdirect))
     {
             digestmode=NA;
-            setbdir(currdirect,currboard);
+            setbdir(digestmode,currdirect,currboard);
             return DONOTHING;
     }
   }
@@ -1433,7 +1367,7 @@ thread_mode()
     if(digestmode==2)
     {
         digestmode=NA;
-        setbdir(currdirect,currboard);
+        setbdir(digestmode,currdirect,currboard);
     }
     else
     {
@@ -1447,7 +1381,7 @@ thread_mode()
         if(ch[0]=='y' || ch[0]=='Y')
         {
             digestmode=2;
-            setbdir(currdirect,currboard);
+            setbdir(digestmode,currdirect,currboard);
             do_thread();
             /*  while(!dashf(currdirect))
                 {
@@ -1458,7 +1392,7 @@ thread_mode()
             if(!dashf(currdirect))
             {
                 digestmode=NA;
-                setbdir(currdirect,currboard);
+                setbdir(digestmode,currdirect,currboard);
                 return PARTUPDATE;
             }
         }
@@ -1489,15 +1423,12 @@ char *direc;
     digest_name[0]='G';
     ptr = strrchr(new_dir, '/') + 1;
     strcpy(ptr, DIGEST_DIR);
-    strcpy(buf,currfile);
-    strcpy(currfile,digest_name);
     pos=search_record(new_dir, &fh, sizeof(fh), cmpname, digest_name); /* 文摘目录下 .DIR中 搜索 该POST */
     if(pos<=0)
     {
         return;
     }
-    delete_file(new_dir,sizeof(struct fileheader),pos,cmpfilename);
-    strcpy(currfile,buf);
+    delete_file(new_dir,sizeof(struct fileheader),pos,cmpname,digest_name);
     *ptr='\0';
     sprintf(buf,"%s%s",new_dir,digest_name);
     unlink(buf);
@@ -1921,7 +1852,7 @@ int mode;
         postfile.filename[ STRLEN - 2 ] = 'S';
         outgo_post(&postfile,currboard);
     }
-    /*   setbdir( buf, currboard );Haohmaru.99.11.26.改成下面一行，因为不管是转贴还是自动发文都不会用到文摘模式*/
+    /*   setbdir(digestmode, buf, currboard );Haohmaru.99.11.26.改成下面一行，因为不管是转贴还是自动发文都不会用到文摘模式*/
     sprintf( buf, "boards/%s/%s", currboard, DOT_DIR);
     if (!strcmp(currboard, "syssecurity")
             && strstr(quote_title, "修改 ")
@@ -2236,7 +2167,7 @@ post_article()                         /*用户 POST 文章 */
         clear() ;
         return FULLUPDATE ;
     }
-    setbdir( buf, currboard );
+    setbdir( digestmode,buf, currboard );
 
     /* 在boards版版主发文自动添加文章标记 Bigman:2000.8.12*/
     if (!strcmp(currboard, "Board")  && !HAS_PERM(currentuser,PERM_OBOARDS)   && HAS_PERM(currentuser,PERM_BOARDS) )
@@ -2483,7 +2414,7 @@ char *direct;
 #endif
 
             /* Leeward 99.07.12 added below to fix a big bug */
-            setbdir(buf, currboard);
+            setbdir(digestmode,buf, currboard);
             if ((fd = open(buf,O_RDONLY,0)) != -1) {
                 for (i = ent; i > 0; i --)
                 {
@@ -2855,57 +2786,16 @@ char *direct ;
             return FULLUPDATE ;
         }
     }
-    strcpy(buf,direct) ;
-    if( (t = strrchr(buf,'/')) != NULL )
-        *t = '\0' ;
-    sprintf(genbuf,"Del '%s' on '%s'",fileinfo->title,currboard) ;
-    report(genbuf) ; /* bbslog*/
-    postreport(fileinfo->title, -1, currboard/* del 1 post*/); /*added by alex, 96.9.12 */
-    strncpy(currfile,fileinfo->filename,STRLEN) ;
-    if( keep <= 0 ) {
-        fail = delete_file(direct,sizeof(struct fileheader),ent,cmpfilename);
-    } else {
-        fail = update_file(direct,sizeof(struct fileheader),ent,cmpfilename,
-                           cpyfilename);
-    }
-    if( !fail ) {
-        cancelpost( currboard, currentuser->userid, fileinfo, owned ,1);
-		updatelastpost(currboard);
-        sprintf(genbuf,"%s/%s",buf,fileinfo->filename) ;
-        if(keep >0)  if/*保留title*/( (fn = fopen( genbuf, "w" )) != NULL ) {
-            fprintf( fn, "\n\n\t\t本文章已被 %s 删除.\n",
-                     currentuser->userid );
-            fclose( fn );
-        }
 
-        if ((YEA != digestmode) /* 不可以用 “NA ==” 判断：digestmode 三值 */
-                &&!((fileinfo->accessed[0]&FILE_MARKED)
-                    &&(fileinfo->accessed[1]& FILE_READ)
-                    &&(fileinfo->accessed[0]& FILE_FORWARDED)))
-        { /* Leeward 98.06.17 在文摘区删文不减文章数目 */
-            if (owned)
-            {
-                if ((int)currentuser->numposts > 0 && !junkboard(currboard))
-                {
-                    currentuser->numposts--;/*自己删除的文章，减少post数*/
-                }
-            } else if ( !strstr(usrid,".")&&BMDEL_DECREASE&&!B_to_b/*版主删除,减少POST数*/){
-                struct userec* lookupuser;
-                int id = getuser(usrid,&lookupuser);
-                if(id && (int)lookupuser->numposts > 0 && !junkboard(currboard) && strcmp(currboard, "sysmail") ) /* SYSOP MAIL版删文不减文章 Bigman: 2000.8.12*/
-                { /* Leeward 98.06.21 adds above later 2 conditions */
-                    lookupuser->numposts--;
-                }
-            }
-        }
-
-        return DIRCHANGED;
+    if (do_del_post(currentuser,ent,fileinfo,direct,currboard,digestmode,!B_to_b)!=0)
+    {
+	    move(2,0) ;
+	    prints("删除失败\n") ;
+	    pressreturn() ;
+	    clear() ;
+    	    return FULLUPDATE ;
     }
-    move(2,0) ;
-    prints("删除失败\n") ;
-    pressreturn() ;
-    clear() ;
-    return FULLUPDATE ;
+    return DIRCHANGED;
 }
 
 /* Added by netty to handle post saving into (0)Announce */
@@ -3096,7 +2986,7 @@ sequent_messages(struct fileheader *fptr,int* continue_flag)
         }
 #endif
         clear() ;}
-    setbdir( genbuf, currboard );
+    setbdir( digestmode,genbuf, currboard );
     brc_addlist( fptr->filename ) ;
     /* return 0;  modified by dong , for clear_new_flag(), 1999.1.20
     if (strcmp(CurArticleFileName, fptr->filename) == 0)
@@ -3129,7 +3019,7 @@ char *direct ;*/
     sequent_messages((struct fileheader *)NULL,0) ;
     sequent_ent = ent ;
     continue_flag = 0;
-    setbdir( buf, currboard );
+    setbdir( digestmode,buf, currboard );
     apply_record( buf,sequent_messages,sizeof(struct fileheader),&continue_flag) ;
     return FULLUPDATE ;
 }
@@ -3242,7 +3132,7 @@ Read()
     }
     in_mail = NA;
     brc_initial( currentuser->userid,currboard );
-    setbdir( buf, currboard );
+    setbdir(digestmode, buf, currboard );
 
     setvfile(notename,currboard,"notes");
     if(stat(notename,&st)!=-1)
@@ -3587,9 +3477,8 @@ Goodbye()    /*离站 选单*/
         if (fp) {
             fputs(lbuf,fp);
             fclose(fp);
-            mail_file(tmpfile,"surr","自首");
+            mail_file(currentuser->userid,tmpfile,"surr","自首",1);
         }
-        unlink(tmpfile);
     }
     /* stephen on 2001.11.1: 上站不足5分钟不计算上站次数 */
     if (stay<=300 && currentuser->numlogins > 5){
@@ -3620,31 +3509,29 @@ Goodbye()    /*离站 选单*/
 
             now=time(0);
             sprintf(title,"[%12.12s] 所有讯息备份",ctime(&now)+4);
-            mail_file(fname,currentuser->userid,title);
-        }
-        unlink(fname);
-        if (strcmp(currentuser->userid,"Luzi")) {
-            fp=fopen("friendbook","r");  /*搜索系统 寻人名单 */
-            while(fp!=NULL&&fgets(buf,sizeof(buf),fp)!=NULL)
-            {
-                char uid[14];
+            mail_file(currentuser->userid,fname,currentuser->userid,title,1);
+        } else
+	    unlink(fname);
+        fp=fopen("friendbook","r");  /*搜索系统 寻人名单 */
+        while(fp!=NULL&&fgets(buf,sizeof(buf),fp)!=NULL)
+        {
+            char uid[14];
 
-                ptr=strstr(buf,"@");
-                if(ptr==NULL)
-                {
+            ptr=strstr(buf,"@");
+            if(ptr==NULL)
+            {
                     del_from_file("friendbook",buf);
                     continue;
-                }
-                ptr++;
-                strcpy(uid,ptr);
-                ptr=strstr(uid,"\n");
-                *ptr='\0';
-                if(!strcmp(uid,currentuser->userid)) /*删除本用户的 寻人名单 */
-                    del_from_file("friendbook",buf);/*寻人名单只在本次上线有效*/
             }
-            if(fp) /*---	add by period 2000-11-11 fix null hd bug	---*/
-                fclose(fp);
+            ptr++;
+            strcpy(uid,ptr);
+            ptr=strstr(uid,"\n");
+            *ptr='\0';
+            if(!strcmp(uid,currentuser->userid)) /*删除本用户的 寻人名单 */
+                del_from_file("friendbook",buf);/*寻人名单只在本次上线有效*/
         }
+        if(fp) /*---	add by period 2000-11-11 fix null hd bug	---*/
+            fclose(fp);
     }
     sleep(1);
     reset_tty() ;
@@ -3735,140 +3622,6 @@ struct fileheader *brec;
     else
         return 0;
 }
-
-void
-cancelpost_old( board, userid, fh, owned ) /* 删除文章 转移到junk或deleted版 */
-char    *board, *userid;
-struct fileheader *fh;
-int     owned;
-{
-    struct fileheader   postfile;
-    FILE        *fin, *fout;
-    int 	fp;
-    char        from[ STRLEN ], path[ STRLEN ];
-    char        fname[ STRLEN ], *ptr, *brd;
-    int         len;
-    time_t      now;
-
-    now=time(0); /* Leeward 98.05.18: Fix bug of "no date" article */
-
-    /* Leeward 2000.01.23: Cache */
-    sprintf(genbuf, "/board/%s/%s.html", board, fh->filename);
-    ca_expire(genbuf);
-
-    setbfile( genbuf, board, fh->filename );
-    if( (fin = fopen( genbuf, "r" )) != NULL ) {
-        brd = owned ? "junk" : "deleted"; /*判断删除后 到junk或deleted版 */
-        sprintf( fname, "M.%d.A", time(NULL) );
-        setbfile( genbuf, brd, fname );
-        /*        ip = strrchr(fname,'A') ;*/
-        /*        while(dashf(genbuf)) {  modified by dong, for create file test */
-        while((fp = open(genbuf,O_CREAT|O_EXCL|O_WRONLY,0644)) == -1) {
-            /*                if(*ip == 'Z')
-                                ip++,*ip = 'A', *(ip + 1) = '\0' ;
-                            else
-                                (*ip)++ ;*/
-            now++;
-            sprintf(fname,"M.%d.A",now) ;
-            setbfile( genbuf, brd, fname );
-        }
-        close(fp);
-        fout = fopen(genbuf, "w");
-        /*        if( (fout = fopen( genbuf, "w" )) != NULL ) { */
-        memset(&postfile,0,sizeof(postfile)) ;
-        sprintf( genbuf, "%-32.32s - %s", fh->title, userid );
-        strcpy( postfile.filename, fname );
-        strncpy( postfile.owner, fh->owner, IDLEN );
-        strncpy( postfile.title, genbuf, STRLEN );
-        postfile.filename[ STRLEN - 1 ] = 'D'; /*标识上删除*/
-        postfile.filename[ STRLEN - 2 ] = 'D';
-        /*        } */
-        while( fgets( genbuf, sizeof( genbuf ), fin ) != NULL ) {
-            if( fout != NULL ) {
-                fputs( genbuf, fout );
-            }
-            len = strlen( genbuf ) - 1;
-            genbuf[ len ] = '\0';
-            if( len <= 8 ) {
-                break;
-            } else if( strncmp( genbuf, "发信人: ", 8 ) == 0 ) {
-                if( (ptr = strrchr( genbuf, ',' )) != NULL )
-                    *ptr = '\0';
-                strcpy( from, genbuf + 8 );
-            } else if( strncmp( genbuf, "转信站: ", 8 ) == 0 ) {
-                strcpy( path, genbuf + 8 );
-            }
-        }
-        if( fout != NULL ) {
-            while( fgets( genbuf, sizeof( genbuf ), fin ) != NULL )
-                fputs( genbuf, fout );
-        }
-        fclose( fin );
-        if( fout != NULL ) {
-            fclose( fout );
-            setbdir( genbuf, brd );
-            append_record( genbuf, &postfile, sizeof(postfile) );
-        }
-        sprintf( genbuf, "%s\t%s\t%s\t%s\t%s\n",
-                 board, fh->filename, fh->owner, from, path );
-        if( (fin = fopen( "innd/cancel.bntp", "a" )) != NULL ) {
-            fputs( genbuf, fin );
-            fclose( fin );
-        }
-    }
-}
-
-/* by ylsdd 
-   unlink action is taked within cancelpost if in mail mode,
-   otherwise this item is added to the file '.DELETED' under
-   the board's directory, the filename is not changed. 
-   Unlike the fb code which moves the file to the deleted
-   board.
-*/
-void
-cancelpost( board, userid, fh, owned ,autoappend)
-char    *board, *userid;
-struct fileheader *fh;
-int     owned;
-int     autoappend;
-{
-    struct fileheader   postfile;
-    char oldpath[sizeof(genbuf)];
-    int         tmpdigestmode;
-    struct fileheader* ph;
-    time_t now;
-    if(uinfo.mode==RMAIL)  {
-       sprintf(oldpath,"mail/%c/%s/%s",toupper(currentuser->userid[0]),
-                currentuser->userid,fh->filename);
-       unlink(oldpath);
-       return;
-    }
-    if (autoappend) ph=&postfile;
-    else ph=fh;
-
-    sprintf(genbuf, "/board/%s/%s.html", board, fh->filename);
-    ca_expire_file(genbuf);
-
-    if (autoappend) {
-      bzero(&postfile,sizeof(postfile));
-      strcpy( postfile.filename, fh->filename );
-      strncpy( postfile.owner, fh->owner, IDLEN+2 );
-      postfile.owner[IDLEN+1]=0;
-    };
-    now=time(NULL);
-    sprintf( genbuf, "%-32.32s - %s", fh->title, userid );
-    strncpy( ph->title, genbuf, STRLEN );
-    ph->title[STRLEN-1]=0;
-    ph->accessed[11]=now/(3600*24)%100; /*localtime(&now)->tm_mday;*/
-    if (autoappend) {
-        tmpdigestmode=digestmode;
-        digestmode=(owned)?5:4;
-        setbdir( genbuf, board );
-        append_record( genbuf, &postfile, sizeof(postfile) );
-        digestmode=tmpdigestmode;
-    }
-}
-
 
 void
 RemoveAppendedSpace(ptr) /* Leeward 98.02.13 */

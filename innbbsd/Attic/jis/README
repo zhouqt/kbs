@@ -1,0 +1,49 @@
+  Copyright (C) 1992 Per Hammarlund <perham@nada.kth.se>
+
+
+  Written by Per Hammarlund <perham@nada.kth.se>
+  Helpful remarks from Ken-Ichi Handa <handa@etl.go.jp>.
+  The sinoco??.cod (translation) files are provided by Urs Widmer
+  <a06g@alf.zfn.uni-bremen.de>.
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 1, or (at your option)
+  any later version.
+	 
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+	 
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+
+SINOCODE VERSION 0.1
+
+This program uses Urs Widmer's conversion tables.  If you find any
+bugs in these, or better, if you would like to suggest additions and
+changes, please contact Urs at the above address.
+
+ 1  GB-2312   -->  BIG-5		sinocogb.cod
+ 2  GB-2312   -->  IBM-555		sinocogb.cod
+ 3  GB-2312   -->  JIS (EUC)		sinocogj.cod
+ 4  BIG-5     -->  GB-2312		sinocobg.cod
+ 5  BIG-5     -->  IBM-555		Calc
+ 6  BIG-5     -->  JIS (EUC)		sinocobj.cod
+ 7  JIS (EUC) -->  GB-2312		sinocojg.cod
+ 8  JIS (EUC) -->  BIG-5  		sinocojb.cod
+ 9  IBM-555   -->  BIG-5  		calc
+10  IBM-555   -->  GB-2312		sinocobg.cod
+
+INSTALLING
+
+Edit the Makefile and the do "make install".
+
+
+MANUAL
+
+There is a tentative manual, sinocode.man.
+

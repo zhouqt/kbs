@@ -9,13 +9,8 @@
 #include "screen.h"
 #define MAXMESSAGE 5
 
-struct user_info *getuinfopid()
-{
-   return uinfo.pid;
-}
 int  RMSG=NA;
 extern int RUNSH;
-struct user_info *t_search();
 extern struct screenline *big_picture;
 extern char MsgDesUid[14]; /* 保存所发msg的目的uid 1998.7.5 by dong */
 long f_offset=0;

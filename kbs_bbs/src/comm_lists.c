@@ -23,37 +23,41 @@
 
 #include "bbs.h"
 
-#define SC_BUFSIZE              10240
-#define SC_KEYSIZE              256
-#define SC_CMDSIZE              256
-#define sysconf_ptr( offset )   (&sysconf_buf[ offset ]);
-
-struct smenuitem {
-    int         line, col, level;
-    char        *name, *desc, *arg;
-    int         (*fptr)();
-} *menuitem;
-
-struct sdefine {
-    char        *key, *str;
-    int         val;
-} *sysvar;
-
 extern  int  nettyNN;
-char    *sysconf_buf;
-int     sysconf_menu, sysconf_key, sysconf_len;
+
 int     domenu();
 /* Add By Excellent */
 /* int     t_announce(), t_tin(), t_gopher(), x_excemj(),x_excebig2(),x_excechess();*/
-int     Announce(), Boards(), EGroup(), Info(), Goodbye();
-int     Help(), New(), Post(), Read(), Select(), Users(), Welcome();
-int     t_www(),setcalltime();
-int     show_allmsgs();
-int     Conditions(), x_cloak(), t_users(), x_info(), x_fillform(), x_vote();
-int	ShowWeather();	/* 2001.6.12 */
-int     x_results(), ent_bnet(), a_edits(), x_edits();
-int     x_date(),shownotepad(),x_userdefine();
-int	confirm_delete_id();	/* Added by Bigman 2001.7.14 */
+int     Announce();
+int Boards();
+int EGroup();
+int Info();
+int Goodbye();
+int Help();
+int New();
+int Post();
+int Read();
+int Select();
+int Users();
+int Welcome();
+int t_www();
+int setcalltime();
+int show_allmsgs();
+int Conditions();
+int x_cloak();
+int t_users();
+int x_info();
+int x_fillform();
+int x_vote();
+int ShowWeather();	/* 2001.6.12 */
+int x_results();
+int ent_bnet();
+int a_edits();
+int x_edits();
+int x_date();
+int shownotepad();
+int x_userdefine();
+int confirm_delete_id();	/* Added by Bigman 2001.7.14 */
 /*Add by SmallPig*/
 int     m_new(), m_read(), m_send(), g_send();
 int     ov_send(), m_internet(),s_msg(),mailall(),suicide();
@@ -91,7 +95,8 @@ int	inn_stop();	/* czz 2002.01.15 */
 struct scommandlist {
     char        *name;
     int         (*fptr)();
-} sysconf_cmdlist[] = {
+} ;
+static const struct scommandlist sysconf_cmdlist[] = {
     "domenu",       domenu,
     "EGroups",      EGroup,
     "BoardsAll",    Boards,
@@ -225,353 +230,34 @@ register char *str;
         }
 }
 
-void *
-sysconf_funcptr( func_name )
-char    *func_name;
+typedef int (*CMD_FUNC)();
+CMD_FUNC cmdlist_funcptr(char *func_name)
 {
     int         n = 0;
     char        *str;
 
     while( (str = sysconf_cmdlist[n].name) != NULL ) {
         if( strcmp( func_name, str ) == 0 )
-            return( sysconf_cmdlist[n].fptr );
+            return sysconf_cmdlist[n].fptr;
         n++;
     }
     return NULL;
 }
 
-void *
-sysconf_addstr( str )
-char    *str;
-{
-    int         len = sysconf_len;
-    char        *buf;
+extern int sysconf_menu;
+struct _menupos {
+	int line,col;
+};
+extern struct smenuitem* menuitem;
+static struct _menupos *menupos=NULL;
 
-    buf = sysconf_buf + len;
-    strcpy( buf, str );
-    sysconf_len = len + strlen( str ) + 1;
-    return buf;
-}
-
-char *
-sysconf_str( key )
-char    *key;
-{
-    int         n;
-
-    for( n = 0; n < sysconf_key; n++ )
-        if( strcmp( key, sysvar[n].key ) == 0 )
-            return( sysvar[n].str );
-    return NULL;
-}
-
-int
-sysconf_eval( key )
-char    *key;
-{
-    int         n;
-
-    for( n = 0; n < sysconf_key; n++ )
-        if( strcmp( key, sysvar[n].key ) == 0 )
-            return( sysvar[n].val );
-    if( *key < '0' || *key > '9' ) {
-        /*        sprintf( genbuf, "sysconf: unknown key: %s.", key );
-                report( genbuf );
-         */   }
-    return( strtol( key, NULL, 0 ) );
-}
-
-void
-sysconf_addkey( key, str, val )
-char    *key, *str;
-int     val;
-{
-    int         num;
-
-    if( sysconf_key < SC_KEYSIZE ) {
-        if( str == NULL )  str = sysconf_buf;
-        else  str = sysconf_addstr( str );
-        num = sysconf_key++;
-        sysvar[ num ].key = sysconf_addstr( key );
-        sysvar[ num ].str = str;
-        sysvar[ num ].val = val;
-        /*
-                sprintf( genbuf, "%s = %s (%x).", key, str, val );
-                report( genbuf );
-        */
-    }
-}
-
-void
-sysconf_addmenu( fp, key )
-FILE    *fp;
-char    *key;
-{
-    struct smenuitem    *pm;
-    char        buf[ 256 ];
-    char        *cmd, *arg[5], *ptr;
-    int         n;
-
-    /*
-        report( key );
-    */
-    sysconf_addkey( key, "menu", sysconf_menu );
-    while( fgets( buf, sizeof( buf ), fp ) != NULL && buf[0] != '%' ) {
-        cmd = strtok( buf, " \t\n" );
-        if( cmd == NULL || *cmd == '#' ) {
-            continue;
-        }
-        arg[0] = arg[1] = arg[2] = arg[3] = arg[4] = "";
-        n = 0;
-        for( n = 0; n < 5; n++ ) {
-            if( (ptr = strtok( NULL, ",\n" )) == NULL )
-                break;
-            while( *ptr == ' ' || *ptr == '\t' )  ptr++;
-            if( *ptr == '"' ) {
-                arg[n] = ++ptr;
-                while( *ptr != '"' && *ptr != '\0' )  ptr++;
-                *ptr = '\0';
-            } else {
-                arg[n] = ptr;
-                while( *ptr != ' ' && *ptr != '\t' && *ptr != '\0' )
-                    ptr++;
-                *ptr = '\0';
-            }
-        }
-        pm = &menuitem[ sysconf_menu++ ];
-        pm->line  = sysconf_eval( arg[0] ); /*菜单项位置*/
-        pm->col   = sysconf_eval( arg[1] );
-        if( *cmd == '@' ) { /*对应 某功能*/
-            pm->level = sysconf_eval( arg[2] );
-            pm->name  = sysconf_addstr( arg[3] );
-            pm->desc  = sysconf_addstr( arg[4] );
-            pm->fptr  = sysconf_addstr( cmd+1 );
-            pm->arg   = pm->name;
-        } else if( *cmd == '!' ) { /* 对应 下一级菜单 */
-            pm->level = sysconf_eval( arg[2] );
-            pm->name  = sysconf_addstr( arg[3] );
-            pm->desc  = sysconf_addstr( arg[4] );
-            pm->fptr  = sysconf_addstr( "domenu" );
-            pm->arg   = sysconf_addstr( cmd+1 );
-        } else { /* load title or screen */
-            pm->level = -2;
-            pm->name  = sysconf_addstr( cmd );
-            pm->desc  = sysconf_addstr( arg[2] );
-            pm->fptr  = (void *)sysconf_buf;
-            pm->arg   = sysconf_buf;
-        }
-        /*
-                sprintf( genbuf, "%s( %s, %s, %s, %s, %s )",
-                        cmd, arg[0], arg[1], arg[2], arg[3], arg[4] );
-                report( genbuf );
-        */
-    }
-    pm = &menuitem[ sysconf_menu++ ];
-    pm->name = pm->desc = pm->arg = sysconf_buf;
-    pm->fptr = (void *)sysconf_buf;
-    pm->level = -1;
-}
-
-void
-sysconf_addblock( fp, key ) /* 读入 %和%直接 包含的block */
-FILE    *fp;
-char    *key;
-{
-    char        buf[ 256 ];
-    int         num;
-
-    if( sysconf_key < SC_KEYSIZE ) {
-        num = sysconf_key++;
-        sysvar[ num ].key = sysconf_addstr( key );
-        sysvar[ num ].str = sysconf_buf + sysconf_len;
-        sysvar[ num ].val = -1;
-        while( fgets( buf, sizeof( buf ), fp ) != NULL && buf[0] != '%' ) {
-            encodestr( buf );
-            strcpy( sysconf_buf + sysconf_len, buf );
-            sysconf_len += strlen( buf );
-        }
-        sysconf_len++;
-    } else {
-        while( fgets( buf, sizeof( buf ), fp ) != NULL && buf[0] != '%' ) {
-        }
-    }
-}
-
-void
-parse_sysconf( fname )
-char *fname;
-{
-    FILE        *fp;
-    char        buf[ 256 ];
-    char        tmp[ 256 ], *ptr;
-    char        *key, *str;
-    int         val;
-
-    if( (fp = fopen( fname, "r" )) == NULL ) {
-        return;
-    }
-    sysconf_addstr( "(null ptr)" );
-    while( fgets( buf, sizeof( buf ), fp ) != NULL ) {
-        ptr = buf;
-        while( *ptr == ' ' || *ptr == '\t' )  ptr++;
-
-        if( *ptr == '%' ) {
-            strtok( ptr, " \t\n" );
-            if( strcmp( ptr, "%menu"/*菜单*/ ) == 0 ) {
-                str = strtok( NULL, " \t\n" );
-                if( str != NULL )
-                    sysconf_addmenu( fp, str );
-            } else { /*其它，如screen设计*/
-                sysconf_addblock( fp, ptr+1 );
-            }
-        } else if( *ptr == '#' ) {
-            key = strtok( ptr, " \t\"\n" );
-            str = strtok( NULL, " \t\"\n" );
-            if( key != NULL && str != NULL &&
-                    strcmp( key, "#include" ) == 0 ) { /* 用#include filename 来包含其它ini */
-                parse_sysconf( str );
-            }
-        } else if( *ptr != '\n' ) { /*系统参量 定义 */
-            key = strtok( ptr, "=#\n" );
-            str = strtok( NULL, "#\n" );
-            if( key != NULL & str != NULL ) {
-                strtok( key, " \t" );
-                while( *str == ' ' || *str == '\t' )  str++;
-                if( *str == '"' ) {
-                    str++;
-                    strtok( str, "\"" );
-                    val = atoi( str );
-                    sysconf_addkey( key, str, val );
-                } else {
-                    val = 0;
-                    strcpy( tmp, str );
-                    ptr = strtok( tmp, ", \t" );
-                    while( ptr != NULL ) {
-                        val |= sysconf_eval( ptr );
-                        ptr = strtok( NULL, ", \t" );
-                    }
-                    sysconf_addkey( key, NULL, val );
-                }
-            } else {
-                report( ptr );
-            }
-        }
-    }
-    fclose( fp );
-}
-
-void
-build_sysconf( configfile, imgfile )
-char    *configfile, *imgfile;
-{
-    struct smenuitem    *old_menuitem;
-    struct sdefine      *old_sysvar;
-    char                *old_buf;
-    int                 old_menu, old_key, old_len;
-    struct sysheader {
-        char    *buf;
-        int     menu, key, len;
-    } shead;
-    int         fh;
-
-    old_menuitem = menuitem;    old_menu = sysconf_menu;
-    old_sysvar   = sysvar;      old_key  = sysconf_key;
-    old_buf      = sysconf_buf; old_len  = sysconf_len;
-    menuitem    = (void *) malloc( SC_CMDSIZE * sizeof(struct smenuitem) );
-    sysvar      = (void *) malloc( SC_KEYSIZE * sizeof( struct sdefine ) );
-    sysconf_buf = (void *) malloc( SC_BUFSIZE );
-    sysconf_menu = 0;
-    sysconf_key  = 0;
-    sysconf_len  = 0;
-    parse_sysconf( configfile );
-    if( (fh = open( imgfile, O_WRONLY|O_CREAT, 0644 )) > 0 ) {
-        ftruncate( fh, 0 );
-        shead.buf  = sysconf_buf;
-        shead.menu = sysconf_menu;
-        shead.key  = sysconf_key;
-        shead.len  = sysconf_len;
-        write( fh, &shead, sizeof( shead ) );
-        write( fh, menuitem, sysconf_menu * sizeof(struct smenuitem) );
-        write( fh, sysvar,   sysconf_key  * sizeof(struct sdefine) );
-        write( fh, sysconf_buf, sysconf_len );
-        close( fh );
-    }
-    free( menuitem );
-    free( sysvar );
-    free( sysconf_buf );
-    menuitem    = old_menuitem; sysconf_menu = old_menu;
-    sysvar      = old_sysvar;   sysconf_key  = old_key;
-    sysconf_buf = old_buf;      sysconf_len  = old_len;
-}
-
-void
-load_sysconf_image( imgfile )
-char *imgfile;
-{
-    struct sysheader {
-        char    *buf;
-        int     menu, key, len;
-    } shead;
-    struct stat st;
-    char        *ptr, *func;
-    int         fh, n, diff;
-
-    if( (fh = open( imgfile, O_RDONLY )) > 0 ) {
-        fstat( fh, &st );
-        ptr = malloc( st.st_size );
-        read( fh, &shead, sizeof( shead ) );
-        read( fh, ptr, st.st_size );
-        close( fh );
-
-        menuitem = (void *) ptr;
-        ptr += shead.menu * sizeof( struct smenuitem );
-        sysvar = (void *) ptr;
-        ptr += shead.key  * sizeof( struct sdefine );
-        sysconf_buf = (void *) ptr;
-        ptr += shead.len;
-        sysconf_menu = shead.menu;
-        sysconf_key  = shead.key;
-        sysconf_len  = shead.len;
-        /*
-                sprintf( genbuf, "buf = %d, %d, %d", menuitem, sysvar, sysconf_buf );
-                report( genbuf );
-                sprintf( genbuf, "%d, %d, %d, %d, %s", shead.buf, shead.len,
-                        shead.menu, shead.key, sysconf_buf );
-                report( genbuf );
-        */
-        diff = sysconf_buf - shead.buf;
-        for( n = 0; n < sysconf_menu; n++ ) {
-            menuitem[n].name += diff;
-            menuitem[n].desc += diff;
-            menuitem[n].arg  += diff;
-            func = (char *) menuitem[n].fptr;
-            menuitem[n].fptr = sysconf_funcptr( func + diff );
-        }
-        for( n = 0; n < sysconf_key; n++ ) {
-            sysvar[n].key += diff;
-            sysvar[n].str += diff;
-        }
-    }
-}
-
-void
-load_sysconf()
-{
-    if( dashf( "etc/rebuild.sysconf" ) || ! dashf( "sysconf.img" ) ) {
-        report( "build sysconf.img" );
-        build_sysconf( "etc/sysconf.ini", "sysconf.img" );
-    }
-    /*    report( "load sysconf.img" );*/
-    load_sysconf_image( "sysconf.img" );
-}
-
-int
-domenu_screen( pm, cmdprompt )
-struct smenuitem *pm;
-int     cmdprompt;
+static int domenu_screen(struct smenuitem *dopm,char*     cmdprompt)
 {
     char        *str;
     int         help, line, col, num;
+    struct smenuitem pm;
+
+    int n;
 
     if(!DEFINE(currentuser,DEF_NORMALSCR))
         clear();
@@ -580,73 +266,102 @@ int     cmdprompt;
     col  = 0;
     num  = 0;
     while( 1 ) {
-        switch( pm->level ) {
+    	pm=*dopm;
+    	n=((char*)dopm-(char*)menuitem)/sizeof(struct smenuitem);
+    	/* 这个获得n的写法太丑陋了，但是.....
+    	  先不管了KCN*/
+    	  
+        switch( pm.level ) {
         case -1:
             return( num );
         case -2:
-            if( strcmp( pm->name, "title" ) == 0 ) {
-                docmdtitle( pm->desc, cmdprompt );
-            } else if( strcmp( pm->name, "screen" ) == 0 ) {
+            if( strcmp( sysconf_relocate(pm.name), "title" ) == 0 ) {
+                docmdtitle( sysconf_relocate(pm.desc), cmdprompt );
+            } else if( strcmp( sysconf_relocate(pm.name), "screen" ) == 0 ) {
                 if (DEFINE(currentuser,DEF_SHOWSCREEN))
                 {
-                    if( help && (str = sysconf_str( pm->desc )) != NULL ) {
-                        move( pm->line, pm->col );
+                    if( help && (str = sysconf_str( sysconf_relocate(pm.desc) )) != NULL ) {
+                        move( menupos[n].line, menupos[n].col );
                         decodestr( str );
                     }
                 }
                 else
                 {
                     if( help && (str = sysconf_str( "S_BLANK" )) != NULL ) {
-                        move( pm->line, pm->col );
+                        move( menupos[n].line, menupos[n].col );
                         decodestr( str );
                     }
                 }
             }
             break;
         default:
-            if( pm->line >= 0 && HAS_PERM(currentuser, pm->level ) ) {
-                if( pm->line == 0 ) {
-                    pm->line = line;  pm->col = col;
+            if( menupos[n].line >= 0 && HAS_PERM(currentuser, pm.level ) ) {
+                if( menupos[n].line == 0 ) {
+                    menupos[n].line = line;  menupos[n].col = col;
                 } else {
-                    line = pm->line;  col = pm->col;
+                    line = menupos[n].line;  col = menupos[n].col;
                 }
                 if( help ) {
                     move( line, col );
-                    prints( "  %s", pm->desc );
+                    prints( "  %s", sysconf_relocate(pm.desc) );
                 }
                 line++;
             } else {
-                if( pm->line > 0 ) {
-                    line = pm->line;  col = pm->col;
+                if( menupos[n].line > 0 ) {
+                    line = menupos[n].line;  col = menupos[n].col;
                 }
-                pm->line = -1;
+                menupos[n].line = -1;
             }
         }
         num++;
-        pm++;
+        dopm++;
     }
 }
 
-int
-domenu( menu_name )
+static void copymenupos()
+{
+	int n;
+    for( n = 0; n < sysconf_menu; n++ ) {
+        menupos[n].line=menuitem[n].line;
+        menupos[n].col=menuitem[n].col;
+    }
+}
+
+int domenu( menu_name )
 char    *menu_name;
 {
     extern int          refscreen;
     struct smenuitem    *pm;
     char        *cmdprompt = "目前选择：";
     int         size, now;
-    int         cmdplen, cmd, i;
+    int         cmdplen, cmd, i,base;
 
+    /*
     if( sysconf_menu <= 0 ) {
         return -1;
     }
-    pm = &menuitem[ sysconf_eval( menu_name ) ];
+    */
+
+	/* disable it,因为不知道为何会core dump
+	if (check_sysconf()) {
+		free(menupos);
+		menupos=NULL;
+	}
+	*/
+    if (menupos==NULL) {
+    	menupos=(struct _menupos*)malloc(sizeof(struct _menupos)*sysconf_menu);
+    	copymenupos();
+    }
+    pm = sysconf_getmenu(menu_name);
     size = domenu_screen( pm, cmdprompt );
+    base=((char*)pm-(char*)menuitem)/sizeof(struct smenuitem);
+    	/* 这个获得base的写法太丑陋了，但是.....
+    	  先不管了KCN*/
     cmdplen = strlen( cmdprompt );
     now = 0;
     if( strcmp( menu_name, "TOPMENU" ) == 0 && chkmail() ) {
         for( i = 0; i < size; i++ )
-            if( pm[i].line > 0 && pm[i].name[0] == 'M' )
+            if( menupos[base+i].line > 0 && (*sysconf_relocate(pm[i].name)) == 'M' )
                 now = i;
 
     }
@@ -654,26 +369,27 @@ char    *menu_name;
     /* added by netty  */
 if (nettyNN ==1) { R_monitor(NULL);}
     while( 1 ) {
+    	int (*fptr)();
         printacbar();
         while( pm[now].level < 0 || !HAS_PERM(currentuser, pm[now].level ) ) {
             now++;
             if( now >= size )  now = 0;
         }
         if( currentuser->flags[0] & CURSOR_FLAG ) {
-            move( pm[now].line, pm[now].col );
+            move( menupos[base+now].line, menupos[base+now].col );
             prints( "◆" );
         }
         move(1,cmdplen);
         clrtoeol();
         prints("[");
         standout();
-        prints( "%-12s", pm[now].name );
+        prints( "%-12s", sysconf_relocate(pm[now].name) );
         standend();
         prints("]");
         clrtoeol();
         cmd = egetch();
         if( currentuser->flags[0] & CURSOR_FLAG ) {
-            move( pm[now].line, pm[now].col );
+            move( menupos[base+now].line, menupos[base+now].col );
             prints( "  " );
         }
         switch( cmd ) {
@@ -690,8 +406,8 @@ if (nettyNN ==1) { R_monitor(NULL);}
             break;
         case KEY_RIGHT:
             for( i = 0; i < size; i++ ) {
-                if( pm[i].line == pm[now].line && pm[i].level >= 0 &&
-                        pm[i].col > pm[now].col && HAS_PERM(currentuser, pm[i].level ) )
+                if( menupos[base+i].line == menupos[base+now].line && pm[i].level >= 0 &&
+                        menupos[base+i].col > menupos[base+now].col && HAS_PERM(currentuser, pm[i].level ) )
                     break;
             }
             if( i < size ) {
@@ -699,14 +415,15 @@ if (nettyNN ==1) { R_monitor(NULL);}
                 break;
             }
     case '\n': case '\r':
-            if( strcmp( pm[now].arg, ".." ) == 0 ) {
+            if( strcmp( sysconf_relocate(pm[now].arg), ".." ) == 0 ) {
                 return 0;
             }
-            if( pm[now].fptr != NULL ) {
+            fptr=cmdlist_funcptr(sysconf_relocate(pm[now].func_name));
+            if( fptr != NULL ) {
                 move( 1, cmdplen );
                 clrtoeol();
-                (*pm[now].fptr)( pm[now].arg );
-                if( pm[now].fptr == Select ) {
+                (*fptr)( sysconf_relocate(pm[now].arg) );
+                if( fptr == Select ) {
                     now++;
                 }
                 domenu_screen( pm, cmdprompt );
@@ -714,12 +431,12 @@ if (nettyNN ==1) { R_monitor(NULL);}
                 if (nettyNN ) { R_monitor();}
             }
             break;
-        case KEY_LEFT:
+      case KEY_LEFT:
             for( i = 0; i < size; i++ ) {
-                if( pm[i].line == pm[now].line && pm[i].level >= 0 &&
-                        pm[i].col < pm[now].col && HAS_PERM(currentuser, pm[i].level ) )
+                if( menupos[base+i].line == menupos[base+now].line && pm[i].level >= 0 &&
+                        menupos[base+i].col < menupos[base+now].col && HAS_PERM(currentuser, pm[i].level ) )
                     break;
-                if( pm[i].fptr == Goodbye )
+                if( cmdlist_funcptr(sysconf_relocate(pm[i].func_name)) == Goodbye )
                     break;
             }
             if( i < size ) {
@@ -727,7 +444,7 @@ if (nettyNN ==1) { R_monitor(NULL);}
                 break;
             }
             return 0;
-        case KEY_DOWN:
+       case KEY_DOWN:
             now++;
             break;
         case KEY_UP:
@@ -741,12 +458,15 @@ if (nettyNN ==1) { R_monitor(NULL);}
             if(!HAS_PERM(currentuser,PERM_SYSOP)) {
                 break;
             }
-            free( menuitem );
-            report( "rebuild sysconf.img" );
-            build_sysconf( "etc/sysconf.ini", "sysconf.img" );
+            bbslog("1bbs", "rebuild sysconf.img" );
+            build_sysconf( "etc/sysconf.ini", NULL);
             report( "reload sysconf.img" );
-            load_sysconf_image( "sysconf.img" );
-            pm = &menuitem[ sysconf_eval( menu_name ) ];
+            load_sysconf();
+
+            free(menupos);
+    		menupos=(struct _menupos*)malloc(sizeof(struct _menupos)*sysconf_menu);
+    		copymenupos();
+            pm = sysconf_getmenu(menu_name);
             size = domenu_screen( pm, cmdprompt );
             now = 0;
             break;
@@ -754,7 +474,7 @@ if (nettyNN ==1) { R_monitor(NULL);}
             if( cmd >= 'a' && cmd <= 'z' )
                 cmd = cmd - 'a' + 'A';
             for( i = 0; i < size; i++ ) {
-                if( pm[i].line > 0 && cmd == pm[i].name[0] &&
+                if( menupos[base+i].line > 0 && cmd == *sysconf_relocate(pm[i].name) &&
                         HAS_PERM(currentuser, pm[i].level ) ) {
                     now = i;
                     break;

@@ -493,7 +493,11 @@ int getuser(const char *userid,struct userec** user) /* 取用户信息 */
 {
     int uid = searchuser(userid) ;
 
-    if(uid == 0) return 0 ;
+    if(uid == 0) {
+	    if (user)
+	        *user=NULL;
+	    return 0 ;
+    }
     if (user)
 	    *user=&passwd[uid-1];
     return uid ;

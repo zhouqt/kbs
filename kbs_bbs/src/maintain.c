@@ -691,8 +691,7 @@ int searchtrace()
     sprintf(tmp_command, "grep -a -w %s user.log | grep posted > tmp/searchresult.%d", tmp_id,getpid());
     system(tmp_command);
     sprintf(tmp_command,"tmp/searchresult.%d",getpid());
-    mail_file(tmp_command, currentuser->userid, "系统查询结果");
-    unlink(tmp_command);
+    mail_file(currentuser->userid,tmp_command, currentuser->userid, "系统查询结果",1);
 
     sprintf(buf, "查询用户 %s 的发文情况", tmp_id);
     securityreport(buf,NULL);  /*写入syssecurity板, stephen 2000.12.21*/
@@ -1109,7 +1108,7 @@ char           *logfile, *regfile;
                 }
 
                 update_user(&uinfo,unum,0);
-                mail_file("etc/s_fill", uinfo.userid, "恭禧你，你已经完成注册。");
+                mail_file(currentuser->userid,"etc/s_fill", uinfo.userid, "恭禧你，你已经完成注册。",0);
                 sprintf(genbuf, "%s 让 %s 通过身份确认.", uid, uinfo.userid);
                 securityreport(genbuf,lookupuser);
                 if ((fout = fopen(logfile, "a")) != NULL)
@@ -1179,31 +1178,31 @@ char           *logfile, *regfile;
                     switch (buff)
                     {
                     case '0':
-                        mail_file("etc/f_fill.realname", uinfo.userid, uinfo.address);
+                        mail_file(currentuser->userid,"etc/f_fill.realname", uinfo.userid, uinfo.address,0);
                         break;
                     case '1':
-                        mail_file("etc/f_fill.unit", uinfo.userid, uinfo.address);
+                        mail_file(currentuser->userid,"etc/f_fill.unit", uinfo.userid, uinfo.address,0);
                         break;
                     case '2':
-                        mail_file("etc/f_fill.address", uinfo.userid, uinfo.address);
+                        mail_file(currentuser->userid,"etc/f_fill.address", uinfo.userid, uinfo.address,0);
                         break;
                     case '3':
-                        mail_file("etc/f_fill.telephone", uinfo.userid, uinfo.address);
+                        mail_file(currentuser->userid,"etc/f_fill.telephone", uinfo.userid, uinfo.address,0);
                         break;
                     case '4':
-                        mail_file("etc/f_fill.real", uinfo.userid, uinfo.address);
+                        mail_file(currentuser->userid,"etc/f_fill.real", uinfo.userid, uinfo.address,0);
                         break;
                     case '5':
-                        mail_file("etc/f_fill.chinese", uinfo.userid, uinfo.address);
+                        mail_file(currentuser->userid,"etc/f_fill.chinese", uinfo.userid, uinfo.address,0);
                         break;
                     case '6':
-                        mail_file("etc/f_fill.proxy", uinfo.userid, uinfo.address);
+                        mail_file(currentuser->userid,"etc/f_fill.proxy", uinfo.userid, uinfo.address,0);
                         break;
                     case '7':
-                        mail_file("etc/f_fill.toomany", uinfo.userid, uinfo.address);
+                        mail_file(currentuser->userid,"etc/f_fill.toomany", uinfo.userid, uinfo.address,0);
                         break;
                     default:
-                        mail_file("etc/f_fill.real", uinfo.userid,uinfo.address);
+                        mail_file(currentuser->userid,"etc/f_fill.real", uinfo.userid,uinfo.address,0);
                         break;
                     }
                     /*

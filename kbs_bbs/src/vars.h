@@ -50,7 +50,7 @@ extern int in_mail ;
 extern int dumb_term ;
 extern int showansi;
 
-extern char fromhost[IPLEN];
+extern char fromhost[IPLEN+1];
 extern time_t   login_start_time;
 
 extern struct boardheader *bcache;

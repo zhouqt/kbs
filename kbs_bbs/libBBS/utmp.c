@@ -634,3 +634,18 @@ int get_utmp_number()
 {
 	return utmphead->number;
 }
+
+struct user_info *get_utmpent(int utmpnum)
+{
+	if (utmpnum <= 0)
+		return NULL;
+	return utmpshm->uinfo + (utmpnum-1);
+}
+
+int get_utmpent_num(struct user_info *uent)
+{
+	if (uent == NULL)
+		return -1;
+	return uent - utmpshm->uinfo + 1;
+}
+

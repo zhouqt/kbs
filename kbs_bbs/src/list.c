@@ -670,7 +670,7 @@ mailto(struct userec *uentp ,char* arg)
             (uentp->userlevel&PERM_BOARDS&&mailmode==3)||
             (uentp->userlevel&PERM_CHATCLOAK&&mailmode==4))
     {
-        mail_file(filename,uentp->userid,save_title);
+        mail_file(currentuser->userid,filename,uentp->userid,save_title,0);
     }
     return 1;
 }

@@ -133,10 +133,11 @@ void display_user(char *userid)
 	}
     show_user_plan(planid);
 	printf("</pre>");
-	printf("<br><br><a href=bbspstmail?userid=%s&title=没主题>[写信问候]</a> ", lookupuser->userid);
-	printf("<a href=bbssendmsg?destid=%s>[发送讯息]</a> ", lookupuser->userid);
-	printf("<a href=bbsfadd?userid=%s>[加入好友]</a> ", lookupuser->userid);
-	printf("<a href=bbsfdel?userid=%s>[删除好友]</a>", lookupuser->userid);
+	printf("<br><br><a href=\"bbspstmail?userid=%s&title=没主题\">[写信问候]</a> ", lookupuser->userid);
+	printf("<a href=\"bbssendmsg?destid=%s\">[发送讯息]</a> ",
+			lookupuser->userid);
+	printf("<a href=\"bbsfadd?userid=%s\">[加入好友]</a> ", lookupuser->userid);
+	printf("<a href=\"bbsfdel?userid=%s\">[删除好友]</a>", lookupuser->userid);
 	printf("<hr>");
 	printf("</center>\n");
 
