@@ -524,7 +524,9 @@ int main(int argc, char **argv)
 {
 	char maindir[MAXPATH];
 	char Buf[MAXPATH];
+	char basedir[MAXPATH];
 
+	strcpy(basedir, getcwd(NULL, 0));
 	task_head = NULL;
 	WorkDir[0] = 0;
 	if (DealParameters(argc, argv) != 0)
@@ -548,11 +550,11 @@ int main(int argc, char **argv)
 
 	if (OutDir[0] == 0)
 	{
-		strcpy(OutDir, getcwd(NULL, 0));
+		strcpy(OutDir, basedir);
 	}
 	else if (OutDir[0] != '/')
 	{
-		strcpy(Buf, getcwd(NULL, 0));
+		strcpy(Buf, basedir);
 		if (Buf[strlen(Buf) - 1] != '/')
 			strcat(Buf, "/");
 		strcat(Buf, OutDir);
