@@ -13,18 +13,14 @@
 #define HAVE_FRIENDS_NUM	1
 #define HAVE_REVERSE_DNS	0
 #define CHINESE_CHARACTER	1
-#define ANTISPAM_MAILADDR	1       /* 转信后的文章隐藏真实 MAIL */
-#if ANTISPAM_MAILADDR == 1
-#define	ANTISPAM_MAILDN		"feeling-NOsmthSPAM-org"
-#endif
 #define CNBBS_TOPIC		1       /* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
 #define MAIL2BOARD		1       /* 是否允许直接 mail to any board */
 #define MAILOUT			1       /* 是否允许向站外主动发信 */
-#define MANUAL_DENY		0       /*是否允许手动解封 */
+#define MANUAL_DENY		0	/*是否允许手动解封 */
 #define BBS_SERVICE_DICT	1
 #define HAVE_TSINGHUA_INFO_REGISTER 0   /* 允许从清华信息系统注册 */
-#define HAVE_PERSONAL_DNS	1       /*个人域名服务 */
-#define HAVE_CUSTOM_USER_TITLE	1       /*定义用户特定的title */
+#define HAVE_PERSONAL_DNS	1	/*个人域名服务 */
+#define HAVE_CUSTOM_USER_TITLE	1	/*定义用户特定的title */
 
 #define BUILD_PHP_EXTENSION	0       /*将php lib编成php extension */
 

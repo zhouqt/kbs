@@ -13,7 +13,6 @@
 #define HAVE_REVERSE_DNS	0	
 #define FILTER			0
 #define CHINESE_CHARACTER	1
-#define ANTISPAM_MAILADDR	0	/* 转信后的文章隐藏真实 MAIL */
 #define CNBBS_TOPIC		0	/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
 #define BBS_SERVICE_DICT	1
 #define MAIL2BOARD		0	/* 是否允许直接 mail to any board */

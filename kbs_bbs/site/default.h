@@ -96,10 +96,6 @@
 #endif
 #endif
 
-#if ANTISPAM_MAILADDR == 0	/* 转信后的文章隐藏真实 MAIL */
-#undef ANTISPAM_MAILADDR	/* 转信后的文章隐藏真实 MAIL */
-#endif
-
 #if CNBBS_TOPIC	== 0		/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
 #undef CNBBS_TOPIC		/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
 #endif

@@ -3,29 +3,28 @@
 
 #define USE_TMPFS           1   /*使用内存文件系统加速 */
 #define TMPFSROOT   "cache"     /*tmpfs的根在bbshome/cache */
-#define NINE_BUILD 		0
+#define NINE_BUILD		0
 #define NEW_COMERS 		0       /* 注册后在 newcomers 版自动发文 */
-#define HAVE_BIRTHDAY 		1
+#define HAVE_BIRTHDAY		1
 #define HAPPY_BBS		0
 #define HAVE_COLOR_DATE		0
 #define HAVE_TEMPORARY_NICK	1
 #define HAVE_FRIENDS_NUM	0
 #define HAVE_REVERSE_DNS	0
 #define CHINESE_CHARACTER	1
-#define ANTISPAM_MAILADDR	0       /* 转信后的文章隐藏真实 MAIL */
 #define CNBBS_TOPIC		0       /* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
 #define MAIL2BOARD		0       /* 是否允许直接 mail to any board */
 #define MAILOUT			0       /* 是否允许向站外主动发信 */
-#define MANUAL_DENY         0   /*是否允许手动解封 */
-#define BBS_SERVICE_DICT    1
+#define MANUAL_DENY		0	/*是否允许手动解封 */
+#define BBS_SERVICE_DICT	1
 #define HAVE_TSINGHUA_INFO_REGISTER 1   /* 允许从清华信息系统注册 */
-#define HAVE_PERSONAL_DNS   1   /*个人域名服务 */
-#define HAVE_CUSTOM_USER_TITLE 1        /*定义用户特定的title */
+#define HAVE_PERSONAL_DNS	1	/*个人域名服务 */
+#define HAVE_CUSTOM_USER_TITLE	1	/*定义用户特定的title */
 
 #define BUILD_PHP_EXTENSION 1   /*将php lib编成php extension */
 
-#define HAVE_WFORUM	1
-#define RAW_ARTICLE 0
+#define HAVE_WFORUM		1
+#define RAW_ARTICLE		0
 #define SMTH			1
 #define FILTER			1
 /* 
