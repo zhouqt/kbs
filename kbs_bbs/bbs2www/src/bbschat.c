@@ -164,15 +164,17 @@ int main()
 	int pid;
 
 	init_all();
-	strsncpy(t, getparm("t"), 80);
-	pid = atoi(getparm("pid"));
-	if(pid==0)
-		reg();
 	if(!loginok)
 	{
 		http_fatal("错误，请先登录");
 		exit(0);
 	}
+	if (!can_enter_chatroom())
+		http_fatal("您不能进入"CHAT_SERVER);
+	strsncpy(t, getparm("t"), 80);
+	pid = atoi(getparm("pid"));
+	if(pid==0)
+		reg();
 	if(pid>0)
 	{
 		if(kill(pid, 0)!=0)

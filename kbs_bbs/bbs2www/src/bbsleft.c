@@ -49,7 +49,7 @@ NAME_BBS_CHINESE "用户登录<br>\n"
   	printf("<img src=\"/images/home.gif\"><a href=\"bbsall\" target=\"f3\">讨论区首页</a><br>\n");
         printf("<img src=\"/images/link0.gif\"><a target=\"f3\" href=\"bbs0an\">精华公布栏</a><br>\n");
    	printf("<img src=\"/images/link0.gif\"><a target=\"f3\" href=\"bbstop10\">今日十大</a><br>\n");
-	printf("<img src=\"/images/link0.gif\"><a target=\"f3\" href=\"bbstopb10\">热门讨论区</a><br>\n");
+	/*printf("<img src=\"/images/link0.gif\"><a target=\"f3\" href=\"bbstopb10\">热门讨论区</a><br>\n");*/
 	if(loginok)
 	{
 		int i, mybrdnum=0;
@@ -108,17 +108,18 @@ NAME_BBS_CHINESE "用户登录<br>\n"
 "			%s</div>",ptr);
 		printdiv(5,"处理信件区","/images/folder.gif");
 		printf("			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsnewmail\">阅览新邮件</a><br>\n"
-"			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsmail\">所有邮件</a><br>\n"
-"			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbspstmail\">发送邮件</a><br>\n"
-"			</div>");
+"			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsmail\">所有邮件</a><br>\n");
+		if (can_send_mail())
+			printf("			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbspstmail\">发送邮件</a><br>\n");
+		printf("			</div>\n");
 	}
 
-	printdiv(6,"特别服务区","/images/folder.gif");
-	printf("<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsalluser\">所有使用者</a><br>\n");
+	/*printdiv(6,"特别服务区","/images/folder.gif");
+	printf("<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsalluser\">所有使用者</a><br>\n");*/
 	/*printf("<img src=\"/images/link.gif\"><a target=\"f3\" href=\"bbsadl\">下载精华区</a><br>\n");*/
-	printf("</div>\n");
+	/*printf("</div>\n");*/
 	printf("<div class=\"r\">");
-  	printf("<img src=\"/images/link0.gif\"><a href=\"bbsfind\" target=\"f3\">文章查询</a><br>\n");
+  	/*printf("<img src=\"/images/link0.gif\"><a href=\"bbsfind\" target=\"f3\">文章查询</a><br>\n");*/
 	printf("<img src=\"/images/find.gif\"><a href=\"bbssel\" target=\"f3\">查找讨论区</a><br>\n");
 	printf("<img src=\"/images/telnet.gif\"><a href=\"telnet:%s\">Telnet登录</a><br>\n", NAME_BBS_ENGLISH);
 	/*if(!loginok) 
@@ -131,7 +132,7 @@ NAME_BBS_CHINESE "用户登录<br>\n"
 	}
 	/*if(loginok && !(currentuser->userlevel & PERM_LOGINOK) && !has_fill_form()) 
 		printf("<a target=\"f3\" href=\"bbsform\">填写注册单</a><br>\n");*/
-	if(loginok)
+	if(loginok && can_enter_chatroom())
 		printf("<br><a href=\"javascript:openchat()\">["CHAT_SERVER"<font color=\"red\">测试中</font>]</a>");
 	printf("</div><script>if(isNS4) arrange();if(isOP)alarrangeO();</script>");
   	printf("</body>");

@@ -81,6 +81,7 @@ int main() {
      	ptr=x.title;
      	if(!strncmp(ptr, "Re: ", 4)) ptr+=4;
 	ptr[60]=0;
+	if ((x.accessed[1] & FILE_READ) == 0)
         printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=Re: %s \">回文章</a>]",
                	board, file, x.owner, void1(ptr));
      	printf("[<a href=\"bbstfind?board=%s&title=%s \">同主题阅读</a>]\n", board, void1(ptr));

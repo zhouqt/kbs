@@ -19,7 +19,7 @@ int msg_can_sendmsg(char *userid, int utmpnum)
 		uin = get_utmpent(utmpnum);
 	if (uin == NULL)
 		return 0;
-	if (strcmp(uin->userid, userid))
+	if (strcasecmp(uin->userid, userid))
 		return 0;
 	if (!canmsg(currentuser, uin))
 		return 0;
@@ -55,16 +55,20 @@ int main()
 		"	</form> ", destutmp, destid, msg);
 		http_quit();
 	}
-	/*if (destpid > 100)
-		destpid -= 100;*/
 	if (!msg_can_sendmsg(destid, destutmp))
 		http_fatal("无法发送消息");
+	/*if (destpid > 100)
+		destpid -= 100;*/
 	printf("<body onload=\"document.form1.b1.focus()\">\n");
 	if(!strcasecmp(destid, currentuser->userid))
 		printf("你不能给自己发讯息！");
 	else 
 	{
 		int result;
+		/*struct userec *x;
+
+		if(getuser(destid, &x) > 0)
+			strsncpy(destid, x->userid, sizeof(destid));*/
 		if((result = send_msg(getcurruserid(), get_utmpent_num(u_info), destid, destutmp, msg))==1) 
 			printf("已经帮你送出消息");
 		else if (result == -1 )

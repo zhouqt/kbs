@@ -10,7 +10,10 @@ int main()
 	char userid[80], buf[512], path[512], file[512], board[512], title[80]="";
 
    	init_all();
-	if(!loginok) http_fatal("匆匆过客不能写信，请先登录");
+	if(!loginok)
+		http_fatal("匆匆过客不能写信，请先登录");
+	if (!can_send_mail())
+		http_fatal("您不能发送信件");
 	strsncpy(file, getparm("file"), 20);
 	strsncpy(title, nohtml(getparm("title")), 50);
 	strsncpy(userid, getparm("userid"), 40);

@@ -77,7 +77,7 @@ int main() {
 	printf("<a href=\"bbsnot?board=%s\">进版画面</a> ", board);
 	printf("<a href=\"bbsgdoc?board=%s\">文摘区</a> ", board);
 	printf("<a href=\"bbs0an?path=%s\">精华区</a> ", anno_path_of(board));
-	printf("<a href=\"/an/%s.tgz\">下载精华区</a> ", board);
+	/*printf("<a href=\"/an/%s.tgz\">下载精华区</a> ", board);*/
 	printf("<a href=\"bbsbfind?board=%s\">版内查询 </a>\n", board);
 	if(loginok) 
 		printf("<a href=\"bbsclear?board=%s&start=%d\">清除未读</a>\n", board, start);

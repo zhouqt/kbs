@@ -18,7 +18,7 @@ void ann_show_item(MENU *pm, ITEM *it)
 	}
 	else
 	{
-		if ((ptr = strchr(title, '(')) != NULL)
+		if ((ptr = strchr(title + 38, '(')) != NULL)
 		{
 			*ptr = '\0';
 			id = ptr+1;

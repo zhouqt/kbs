@@ -15,15 +15,15 @@ DEFINES = $(OS_DEF) $(SITE_DEF) -I../include
 #BBSLIBOBJS = crypt.o boardrc.o bbslib.o
 
 CGI	= bbsusr bbstop10 bbssec bbsdoc bbscon bbsbrdadd bbsboa bbsall bbsanc bbs0an \
-	  bbslogout bbsleft bbsqry bbsnot bbsfind \
-	  bbsfadd bbsfdel bbsfall bbsfriend bbsfoot bbsform bbspwd bbsplan bbsinfo \
+	  bbslogout bbsleft bbsqry bbsnot  \
+	  bbsfadd bbsfdel bbsfall bbsfriend bbsfoot bbspwd bbsplan bbsinfo \
 	  bbsmybrd bbssig bbspst bbsgcon bbsgdoc bbsdel bbsdelmail bbsmailcon bbsmail \
-	  bbsdelmsg bbssnd bbsalluser bbsnotepad bbsmsg bbssendmsg bbsreg \
+	  bbsdelmsg bbssnd bbsnotepad bbsmsg bbssendmsg \
 	  bbsmailmsg bbssndmail bbsnewmail bbspstmail bbsgetmsg bbschat bbssel bbscloak \
-	  bbsmdoc bbsnick bbsjs bbstfind bbstcon bbstdoc \
-	  bbsdoreg bbsmywww bbsccc bbsufind bbsclear bbsedit bbsman bbsparm \
+	  bbsmdoc bbsnick bbstfind bbstcon bbstdoc \
+	  bbsccc bbsufind bbsclear bbsedit bbsman bbsparm \
 	  bbsfwd bbsmnote bbsdenyall bbsdenydel bbsdenyadd \
-	  bbstopb10 bbsbfind
+	  bbsbfind
 #bbslogin 
 #smth happy: bbslib $(CGI)
 #smth := BBSLIBOBJS = crypt.o boardrc.o bbslib.o $(BBSSITE).o smthlib.o md5.o

@@ -62,7 +62,7 @@ int main()
 			printf("\n<tr>");
 		printf("<td><input type=\"checkbox\" name=\"%s\" %s><a href=\"bbsdoc?board=%s\">%s(%s)</a>", 
 			data[i].filename, buf3,data[i].filename,
-			data[i].filename, data[i].title+11);
+			data[i].filename, data[i].title+13);
 	}
 	printf("</table><hr>\n");
 	printf("<input type=\"submit\" value=\"确认预定\"> <input type=\"reset\" value=\"复原\">\n");

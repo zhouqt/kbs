@@ -24,6 +24,8 @@ int main()
 		http_fatal("错误的文件名");
 	if(!haspostperm(currentuser, board))
 		http_fatal("错误的讨论区或者您无权在此讨论区发表文章");
+	if (file[0] != '\0' && !can_reply_post(board,file))
+		http_fatal("您不能回复本文");
    	printf("<center>\n");
 	printf("%s -- 发表文章 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser->userid);
    	printf("<form method=\"post\" action=\"bbssnd?board=%s\">\n<table border=\"1\">\n",board);

@@ -76,8 +76,8 @@ int main()
 	printf("</table>\n");
 	printf("本项在线: %d人", total2);
 	printf("<hr>");
-	if(search!='*')
-		printf("[<a href=\"bbsufind?search=*\">全部</a>] ");
+	/*if(search!='*')
+		printf("[<a href=\"bbsufind?search=*\">全部</a>] ");*/
 	for(i='A'; i<='Z'; i++)
 	{
 		if(i==search)
