@@ -4484,6 +4484,10 @@ static int tmpl_key(struct _select_def *conf, int key)
 	case 'f' :
 		{
 			char filepath[STRLEN];
+			int oldmode;
+
+        oldmode = uinfo.mode;
+        modify_user_mode(EDITUFILE);
 
 			if( ptemplate[conf->pos-1].tmpl->filename[0] == '\0' ){
 
@@ -4501,6 +4505,7 @@ static int tmpl_key(struct _select_def *conf, int key)
 			setbfile(filepath, currboard->filename, ptemplate[conf->pos-1].tmpl->filename);
 
 			vedit(filepath,0,NULL,NULL);
+        modify_user_mode(oldmode);
 
 			return SHOW_REFRESH;
 		}
