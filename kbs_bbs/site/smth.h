@@ -31,6 +31,8 @@
 #define SQUID_ACCL
 
 #define DEFAULTBOARD    	"test"
+#define FILTER_BOARD        "Filter"
+#define SYSMAIL_BOARD       "sysmail"
 #define MAXUSERS  		200000
 #define MAXBOARD  		400
 #define MAXACTIVE 		8000

@@ -32,6 +32,8 @@
 #define SECNUM 9
 
 #define DEFAULTBOARD    	"sysop"
+#define FILTER_BOARD        "Filter"
+#define SYSMAIL_BOARD       "sysmail"
 #define MAXUSERS  		20000
 #define MAXBOARD  		400
 #define MAXACTIVE 		8000
