@@ -265,8 +265,8 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
 		for( ; real < 5; ){
 			real++;
             fprintf(fp,
-                        "                                                                     %s\x1b[m\n"
-                        "                                                                     %s\x1b[m\n",
+                        "                                                                         %s\x1b[m\n"
+                        "                                                                         %s\x1b[m\n",
                         surfix_bless[real * 2 -1], surfix_bless[real  * 2 ] );
 		}
         fprintf(fp, "                                                                         %s\x1b[m\n", surfix_bless[11]);
@@ -311,8 +311,8 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
 		}
 		for( ; real < 5; real ++){
             fprintf(fp,
-                        "                                                                     %s\x1b[m\n"
-                        "                                                                     %s\x1b[m\n",
+                        "                                                                         %s\x1b[m\n"
+                        "                                                                         %s\x1b[m\n",
                         surfix_bless[(real + 5) * 2 + 1], surfix_bless[(real + 6) * 2 ] );
 		}
 
