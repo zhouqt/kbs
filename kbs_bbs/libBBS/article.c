@@ -1391,6 +1391,19 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
                 digest.accessed[1] |= FILE_READ;
                 sprintf(&genbuf[512], "%s%s", buf, fileinfo->filename);
                 strcpy(ptr, DING_DIR);
+                if (get_num_records(buf, sizeof(digest)) > MAX_DING) {
+                    ldata.l_type = F_UNLCK;
+                    fcntl(fd, F_SETLK, &ldata);
+                    close(fd);
+#ifdef BBSMAIN
+                    move(3, 0);
+                    clrtobot();
+                    move(4, 10);
+                    prints("抱歉，你的置顶文章已经超过 %d 篇，无法再加入...\n", MAX_DING);
+                    pressanykey();
+#endif
+                    return PARTUPDATE;
+                }
 		link(&genbuf[512], genbuf);
                 append_record(buf, &digest, sizeof(digest));    /* 文摘目录下添加 .DIR */
             }
