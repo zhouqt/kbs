@@ -607,6 +607,10 @@ void clear_utmp2(int uent)
   	bbslog("1system","UTMP:clean %s(%d)",utmpshm->uinfo[ uent - 1 ].userid,uent);
 	utmphead->next[uent-1]=utmphead->hashhead[0];
 	utmphead->hashhead[0]=uent;
+	/* Delete the user's msglist entry from webmsgd,
+	 * if the user is login from web. */
+	if (utmpshm->uinfo[uent-1].mode == WEBEXPLORE)
+		delfrom_msglist(uent, utmpshm->uinfo[uent-1].userid);
     zeroinfo.active = NA ;
     zeroinfo.pid = 0 ;
     zeroinfo.invisible = YEA ;
