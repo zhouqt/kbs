@@ -15,6 +15,7 @@ if (!isset($topdir))
 if (BUILD_PHP_EXTENSION==0)
 	@dl("$topdir/../libexec/bbs/libphpbbslib.so");
 
+chdir(BBS_HOME);
 if (!bbs_ext_initialized())
 	bbs_init_ext();
 global $SQUID_ACCL;
@@ -87,8 +88,6 @@ $loginok=0;
 @$fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
   if ($fullfromhost=="") {
       @$fullfromhost=$_SERVER["REMOTE_ADDR"];
-      if ($fullfromhost=="")
-          $fullfromhost="166.111.8.238";
       $fromhost=$fullfromhost;
   }
   else {
@@ -98,7 +97,10 @@ $loginok=0;
         else
 		$fromhost=$fullfromhost;
   }
-
+if ($fromhost=="")  {
+  $fromhost="127.0.0.1"; 
+  $fullfromhost="127.0.0.1"; 
+}
 //sometimes,fromhost has strang space
 bbs_setfromhost(trim($fromhost),trim($fullfromhost));
 
