@@ -2685,12 +2685,13 @@ static PHP_FUNCTION(bbs_new_board)
 	int banony;
 	int bjunk;
 	int bout;
-	int bgroup;
+	char* bgroup;
+	int bgroup_len;
 
 	struct boardheader newboard;
 	char vbuf[100];
 
-    if (ac != 8 || zend_parse_parameters(8 TSRMLS_CC, "ssslllll", &bname, &bname_len, &btitle, &btitle_len, &bbm, &bbm_len, &blevel, &banony, &bjunk, &bout, &bgroup) == FAILURE) {
+    if (ac != 8 || zend_parse_parameters(8 TSRMLS_CC, "ssslllls", &bname, &bname_len, &btitle, &btitle_len, &bbm, &bbm_len, &blevel, &banony, &bjunk, &bout, &bgroup, &bgroup_len) == FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
 
@@ -2735,12 +2736,13 @@ static PHP_FUNCTION(bbs_new_board)
 	if( mkdir(vbuf,0755) == -1 )
 		RETURN_LONG( -5);
 
+	if(bgroup){
+               strncpy(newboard.ann_path,bgroup,127);
+	       newboard.ann_path[127]=0;
+	}
+
 	if( add_board( &newboard ) == -1 )
 		RETURN_LONG( -6);
-
-	if(bgroup){
-
-	}
 
 	RETURN_LONG(1);
 }

@@ -56,7 +56,6 @@
 
 			if(isset($_GET["bgroup"])){
 				$bgroup = $_GET["bgroup"];
-				settype($bgroup, "integer");
 			}else
 				$bgroup = 0;
 
