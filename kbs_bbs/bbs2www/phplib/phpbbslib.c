@@ -34,6 +34,8 @@ static unsigned char fifth_arg_force_ref_00011[] = { 5, BYREF_NONE, BYREF_NONE, 
 static PHP_FUNCTION(bbs_get_article);
 static PHP_FUNCTION(bbs_is_yank);
 static PHP_FUNCTION(bbs_alter_yank); 
+static PHP_FUNCTION(bbs_getuserparam);
+static PHP_FUNCTION(bbs_setuserparam);
 #endif
 
 #ifdef HAVE_USERMONEY
@@ -64,8 +66,6 @@ static PHP_FUNCTION(bbs_getcurrentuinfo);
 static PHP_FUNCTION(bbs_saveuserdata);
 static PHP_FUNCTION(bbs_checkuserpasswd);
 static PHP_FUNCTION(bbs_setuserpasswd);
-static PHP_FUNCTION(bbs_getuserparam);
-static PHP_FUNCTION(bbs_setuserparam);
 static PHP_FUNCTION(bbs_getuserlevel);
 static PHP_FUNCTION(bbs_getuser);
 static PHP_FUNCTION(bbs_getusermode);
@@ -242,6 +242,8 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_get_article, NULL)
 		PHP_FE(bbs_is_yank, NULL)
 		PHP_FE(bbs_alter_yank, NULL)
+		PHP_FE(bbs_getuserparam, NULL)
+		PHP_FE(bbs_setuserparam, NULL)
 #endif
 		PHP_FE(bbs_getonline_user_list, NULL)
 		PHP_FE(bbs_get_elite_num, NULL)
@@ -255,9 +257,6 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_adduserscore, NULL)
 		PHP_FE(bbs_saveuserdata, NULL)
 #endif
-		PHP_FE(bbs_getuserparam, NULL)
-		PHP_FE(bbs_setuserparam, NULL)
-
 		PHP_FE(bbs_checkuserpasswd, NULL)
 		PHP_FE(bbs_setuserpasswd, NULL)
 		PHP_FE(bbs_getuserlevel, NULL)
@@ -885,7 +884,9 @@ static PHP_FUNCTION(bbs_checkpasswd)
     RETURN_LONG(ret);
 }
 
-static PHP_FUNCTION(bbs_getuserparam){
+#ifdef HAVE_WFORUM
+
+static PHP_FUNCTION(bbs_getuserparam){//这个函数总有一天要被我杀掉！！ - atppp
 	if (ZEND_NUM_ARGS() != 0) {
 		WRONG_PARAM_COUNT;
 	}
@@ -896,16 +897,23 @@ static PHP_FUNCTION(bbs_getuserparam){
 }
 
 static PHP_FUNCTION(bbs_setuserparam){
-	int userparam;
-	if (ZEND_NUM_ARGS() != 1 || zend_parse_parameters(1 TSRMLS_CC, "l", &userparam) != SUCCESS) {
+	int userparam0, userparam1, mailboxprop;
+	if (ZEND_NUM_ARGS() != 3 || zend_parse_parameters(3 TSRMLS_CC, "lll", &userparam0, &userparam1, &mailboxprop) != SUCCESS) {
 		WRONG_PARAM_COUNT;
 	}
 	if (getCurrentUser()==NULL) {
 		RETURN_LONG(-1);
 	}
-	getCurrentUser()->userdefine[0]=userparam;
+	getCurrentUser()->userdefine[0] = userparam0;
+#if 0
+    getCurrentUser()->userdefine[1] = userparam1;
+    currentuinfo->mailbox_prop = update_mailbox_prop(getCurrentUser()->userid, mailboxprop); //ToDo: global variable!!! - atppp
+    store_mailbox_prop(getCurrentUser()->userid);
+#endif
 	RETURN_LONG(0);
 }
+
+#endif
 
 static PHP_FUNCTION(bbs_wwwlogin)
 {
