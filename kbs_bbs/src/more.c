@@ -28,7 +28,7 @@ time_t calltime=0;
 static int stuffmode = 0;
 
 static int mem_show(char *ptr, int size, int row, int numlines, char *fn);
-extern int isblank(int c);
+/*extern int isblank(int c);*/
 
 
 /*struct FILESHM
