@@ -112,9 +112,10 @@
 		
 		$pno = intval($pno);
 		if ($pno < 1) $pno = 1; 
-		$cnt = 20;
+		$cnt = 40;
+		$start = ($pno-1)*$cnt;
 		
-		$query .= " LIMIT ".(($pno-1)*$cnt).",".$cnt." ;";
+		$query .= " LIMIT ".$start.",".$cnt." ;";
 				
 		$result = mysql_query($query,$link);
 		$i = 0;
@@ -200,7 +201,7 @@
 		    
 		    if ($pc['USER'] == '_filter' )
 		    {
-		        echo "<tr>\n<td class='t3'>".$i."</td>\n".
+		        echo "<tr>\n<td class='t3'>".($start + $i)."</td>\n".
 		            "<td class='t4'>".($rows[nid]?'фюбш':'ндуб')."</td>".
 					"<td align=\"center\" class='t4'><a href=\"/bbsqry.php?userid=".$rows[username]."\">".html_format($rows[username])."</a></td>\n".
 					"<td class='t3'>".$c."</td>\n".
@@ -216,7 +217,7 @@
 			}
 			elseif($pur > 2)
 			{
-				echo "<tr>\n<td class='t3'>".$i."</td>\n".
+				echo "<tr>\n<td class='t3'>".($start + $i)."</td>\n".
 					"<td align=\"center\" class='t4'><input type=\"checkbox\" name=\"art".$i."\" value=\"".$rows[nid]."\" class=\"b2\"></td>\n".
 					"<td class='t3'>".$c."</td>\n".
 					"<td class='t5'>";
@@ -238,7 +239,7 @@
 			}
 			else
 			{
-				echo "<tr>\n<td class='t3'>".$i."</td>\n".
+				echo "<tr>\n<td class='t3'>".($start + $i)."</td>\n".
 					"<td class='t4'>".$c."</td>\n".
 					"<td class='t8'>&nbsp;<img src=\"icon/".$rows[emote].".gif\" border=\"0\ align=\"absmiddle\">\n<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$rows[nid]."&order=".$order."&tid=".$tid."\">".html_format($rows[subject])."</a></td>\n".
 					"<td class='t4'>\n".time_format($rows[created])."<br/>".time_format($rows[changed])."\n</td>\n".
