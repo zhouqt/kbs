@@ -416,7 +416,7 @@ char q_id[IDLEN];
         prints("Real Name: %s \n",lookupuser.realname);
 #endif
 
-	if ((genbuf[0])&&logincount) {
+	if ((genbuf[0])&&seecount) {
 		prints(genbuf);
 		prints("\n");
 	}

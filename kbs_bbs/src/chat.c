@@ -1421,11 +1421,6 @@ void call_mail(chatcontext *pthis,const char *arg) /* added by Luzi, 1997/12/22 
     fclose(fpin);
 }
 
-void build_ver(chatcontext *pthis,const char *arg)
-{
-    printchatline(pthis," µ±«∞∞Ê±æ±‡“Î ±º‰: [32m" __DATE__ " " __TIME__ "[m");
-}
-
 /* 
  2001/5/6  modified by wwj
  ¡ƒÃÏ “ø¥msgµƒ∫Ø ˝ 
@@ -1509,7 +1504,6 @@ struct chat_command chat_cmdtbl[] = {
     {"listen",call_listen,6}, /* added by Luzi 1997.11.28 */
     {"mail",call_mail,4},     /* added by Luzi 1997.12.22 */
     {"alias",call_alias,5},   /* added by Luzi 1998.01.25 */
-    {"version",build_ver,1},  /* added by period 2000.10.29 */
     {NULL, NULL,1}
 };
 
