@@ -19,6 +19,7 @@ BODY
 	border-left-style: solid;
 	border-color: #999999;
 	font-size: 12px;
+	line-height: 20px;
 }
 .t2 {
 	font-weight: bold;
@@ -171,6 +172,9 @@ BODY
 	border-width: 1px;
 	border-right-style: solid;
 	border-color: #999999;
+	background-color: #F6F6F6;
+}
+}.t14 {
 	background-color: #F6F6F6;
 }
 .t9 {

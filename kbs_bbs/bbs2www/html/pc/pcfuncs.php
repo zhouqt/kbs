@@ -302,4 +302,19 @@ function pc_blog_menu($link,$uid,$tag=9)
 	
 	return $blog;
 }
+
+function pc_style_array($i)
+{
+	switch($i)
+	{
+		case 1:
+			break;
+		default:		
+			$style = array(
+				"TOPIMG" => "style/default/p1.jpg",
+				"CSSFILE" => "style/default/default.css"
+				);	
+	}
+	return $style;
+}
 ?>
