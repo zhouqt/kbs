@@ -81,6 +81,7 @@ static PHP_FUNCTION(bbs_getboards);
 static PHP_FUNCTION(bbs_getarticles);
 static PHP_FUNCTION(bbs_getfriends);
 static PHP_FUNCTION(bbs_countfriends);
+static PHP_FUNCTION(bbs_delete_friend);
 static PHP_FUNCTION(bbs_get_records_from_id);
 static PHP_FUNCTION(bbs_get_records_from_num);
 static PHP_FUNCTION(bbs_get_filename_from_num);
@@ -221,6 +222,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_getarticles, NULL)
         PHP_FE(bbs_getfriends, NULL)
         PHP_FE(bbs_countfriends, NULL)
+        PHP_FE(bbs_delete_friend, NULL)
         PHP_FE(bbs_get_records_from_id, NULL)
         PHP_FE(bbs_get_records_from_num, NULL)
         PHP_FE(bbs_get_filename_from_num, NULL)
@@ -1956,6 +1958,39 @@ static PHP_FUNCTION(bbs_countfriends)
         RETURN_FALSE;
 
 	RETURN_LONG(st.st_size / sizeof(struct friends));
+}
+
+static int cmpfnames2(char *userid, struct friends *uv)
+{
+    return !strcasecmp(userid, uv->id);
+}
+
+static PHP_FUNCTION(bbs_delete_friend)
+{
+    char *userid;
+    int userid_len;
+    int ac = ZEND_NUM_ARGS();
+    char buf[STRLEN];
+    struct friends fh;
+	int deleted;
+
+    if (ac != 1 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "s", &userid, &userid_len) == FAILURE) {
+        WRONG_PARAM_COUNT;
+	}
+
+    sethomefile(buf, currentuser->userid, "friends");
+
+    deleted = search_record(buf, &fh, sizeof(fh), cmpfnames2, userid);
+
+    if (deleted > 0) {
+        if (delete_record(buf, sizeof(fh), deleted, NULL, NULL) != -1){
+			RETURN_LONG(0);
+		} else {
+			RETURN_LONG(3);
+        }
+    } else{
+		RETURN_LONG(2);
+	}
 }
 
 /*
