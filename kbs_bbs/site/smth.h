@@ -15,14 +15,14 @@
 
 #define POP3PORT		110
 /* ASCIIArt, by czz, 2002.7.5 */
-//#define	LENGTH_SCREEN_LINE	220
-#define	LENGTH_SCREEN_LINE	256
-//#define	LENGTH_FILE_BUFFER 	160
-#define	LENGTH_FILE_BUFFER 	260
-//#define	LENGTH_ACBOARD_BUFFER	150
-#define	LENGTH_ACBOARD_BUFFER	200
-//#define	LENGTH_ACBOARD_LINE 	80
-#define	LENGTH_ACBOARD_LINE 	300
+#define LENGTH_SCREEN_LINE      220     
+//#define       LENGTH_SCREEN_LINE      256
+#define LENGTH_FILE_BUFFER      160     
+//#define       LENGTH_FILE_BUFFER      260
+#define LENGTH_ACBOARD_BUFFER   150
+//#define       LENGTH_ACBOARD_BUFFER   200
+#define LENGTH_ACBOARD_LINE     80
+//#define       LENGTH_ACBOARD_LINE     300
 
 #define LIFE_DAY_USER		120
 #define LIFE_DAY_YEAR          365
