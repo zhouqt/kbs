@@ -2655,7 +2655,10 @@ static void generate_font_style(unsigned int *style, unsigned int *ansi_val, siz
     }
 }
 
-void output_ansi_javascript(char *buf, size_t buflen, 
+/*
+#define output_ansi_javascript output_ansi_text
+*/
+void output_ansi_text(char *buf, size_t buflen, 
 							buffered_output_t * output, char* attachlink)
 {
     unsigned int font_style = 0;
@@ -2761,20 +2764,16 @@ void output_ansi_javascript(char *buf, size_t buflen,
             } else
                 STATE_CLR(ansi_state, STATE_QUOTE_LINE);
         }
-        if (i < (buflen - 1) && (buf[i] == 0x1b && buf[i + 1] == '[')) {
-            if (STATE_ISSET(ansi_state, STATE_ESC_SET)) {
-                /*
-                 *[*[ or *[13;24*[ */
-                size_t len;
-
-                ansi_end = &buf[i - 1];
-                len = ansi_end - ansi_begin + 1;
-                print_raw_ansi(ansi_begin, len, output);
-            }
+        if (buf[i] == 0x1b) {
             STATE_SET(ansi_state, STATE_ESC_SET);
-            ansi_begin = &buf[i];
-            i++;                /* skip the next '[' character */
-        } else if (buf[i] == '\n') {
+        }
+		else if (STATE_ISSET(ansi_state, STATE_ESC_SET))
+		{
+            if (isalpha(buf[i]))
+				STATE_CLR(ansi_state, STATE_ESC_SET);
+        }
+		else if (buf[i] == '\n')
+		{
             if (STATE_ISSET(ansi_state, STATE_ESC_SET)) {
                 /*
                  *[\n or *[13;24\n */
@@ -2782,7 +2781,7 @@ void output_ansi_javascript(char *buf, size_t buflen,
 
                 ansi_end = &buf[i - 1];
                 len = ansi_end - ansi_begin + 1;
-                print_raw_ansi(ansi_begin, len, output);
+                /*print_raw_ansi(ansi_begin, len, output);*/
                 STATE_CLR(ansi_state, STATE_ESC_SET);
             }
             if (STATE_ISSET(ansi_state, STATE_QUOTE_LINE)) {
@@ -2796,75 +2795,9 @@ void output_ansi_javascript(char *buf, size_t buflen,
             BUFFERED_OUTPUT(output, "<br />\n", 7);
             STATE_CLR(ansi_state, STATE_QUOTE_LINE);
             STATE_SET(ansi_state, STATE_NEW_LINE);
-        } else {
-            if (STATE_ISSET(ansi_state, STATE_ESC_SET)) {
-                if (buf[i] == 'm') {
-                    /*
-                     *[0;1;4;31m */
-                    if (STATE_ISSET(ansi_state, STATE_FONT_SET)) {
-                        BUFFERED_OUTPUT(output, "</font>", 7);
-                        STATE_CLR(ansi_state, STATE_FONT_SET);
-                    }
-                    if (i < buflen - 1) {
-                        generate_font_style(&font_style, ansi_val, ival + 1);
-                        if (STATE_ISSET(ansi_state, STATE_QUOTE_LINE))
-                            STYLE_SET(font_style, FONT_STYLE_QUOTE);
-                        print_font_style(font_style, output);
-                        STATE_SET(ansi_state, STATE_FONT_SET);
-                        STATE_CLR(ansi_state, STATE_ESC_SET);
-                        /*
-                         * STYLE_ZERO(font_style);
-                         */
-                        /*
-                         * clear ansi_val[] array 
-                         */
-                        bzero(ansi_val, sizeof(ansi_val));
-                        ival = 0;
-                    }
-                } else if (isalpha(buf[i])) {
-                    /*
-                     *[23;32H */
-                    /*
-                     * ignore it 
-                     */
-                    STATE_CLR(ansi_state, STATE_ESC_SET);
-                    STYLE_ZERO(font_style);
-                    /*
-                     * clear ansi_val[] array 
-                     */
-                    bzero(ansi_val, sizeof(ansi_val));
-                    ival = 0;
-                    continue;
-                } else if (buf[i] == ';') {
-                    if (ival < sizeof(ansi_val) - 1) {
-                        ival++; /* go to next ansi_val[] element */
-                        ansi_val[ival] = 0;
-                    }
-                } else if (buf[i] >= '0' && buf[i] <= '9') {
-                    ansi_val[ival] *= 10;
-                    ansi_val[ival] += (buf[i] - '0');
-                } else {
-                    /*
-                     *[1;32/XXXX or *[* or *[[ */
-                    /*
-                     * not a valid ANSI string, just output it 
-                     */
-                    size_t len;
-
-                    ansi_end = &buf[i];
-                    len = ansi_end - ansi_begin + 1;
-                    print_raw_ansi(ansi_begin, len, output);
-                    STATE_CLR(ansi_state, STATE_ESC_SET);
-                    /*
-                     * clear ansi_val[] array 
-                     */
-                    bzero(ansi_val, sizeof(ansi_val));
-                    ival = 0;
-                }
-
-            } else
-                print_raw_ansi(&buf[i], 1, output);
         }
+		else
+			print_raw_ansi(&buf[i], 1, output);
     }
     if (STATE_ISSET(ansi_state, STATE_FONT_SET)) {
         BUFFERED_OUTPUT(output, "</font>", 7);
