@@ -5,7 +5,7 @@
 	 */
 	require_once("funcs.php");
 	require_once("board.inc.php");
-	if (defined ("SITE_SMTH")) {
+	if (defined ("USE_ROAM")) {
 	    include_once ("roam_server.php");
 	    roam_login_init();
 	}
@@ -33,7 +33,7 @@
 		else
 			$filename="0Announce/".$path;
 
-        if (defined ("SITE_SMTH")) {
+        if (defined ("USE_ROAM")) {
             $ret =  bbs_roam_ann_traverse_check($filename,$currentuser["userid"]);
             if( $ret < 0 )
                 html_error_quit("系统错误"); 
@@ -60,7 +60,7 @@
 		
 if ($board) {
     $brdarr = array();
-    if (defined ("SITE_SMTH")) {
+    if (defined ("USE_ROAM")) {
         $bid = bbs_roam_getboard($board,$brdarr);
         if ($bid < 0)
             html_error_quit('系统错误');

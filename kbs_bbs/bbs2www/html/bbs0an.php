@@ -54,7 +54,7 @@ function bbs_ann_display_articles($articles) {
 
 require_once('funcs.php');
 require_once('board.inc.php');
-if (defined ("SITE_SMTH")) {
+if (defined ("USE_ROAM")) {
     include_once ('roam_server.php');
     roam_login_init();
 }
@@ -94,7 +94,7 @@ $path = $path_tmp;
 $up_cnt = bbs_ann_updirs($path,$board,$up_dirs);
 if ($board) {
     $brdarr = array();
-    if (defined ('SITE_SMTH')) {
+    if (defined ('USE_ROAM')) {
         $bid = bbs_roam_getboard ($board, $brdarr);
         if ($bid < 0)
             html_error_quit('系统错误');
@@ -104,7 +104,7 @@ if ($board) {
     if ($bid) {
         $board = $brdarr['NAME'];
         $usernum = $currentuser['index'];
-        if (defined ('SITE_SMTH')) {
+        if (defined ('USE_ROAM')) {
             $ret = bbs_roam_checkreadperm($usernum, $bid);
             if ( $ret <= 0)
         		html_error_quit('不存在该目录');
