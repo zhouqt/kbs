@@ -1,5 +1,6 @@
 # include "innbbsconf.h"
 # include "bbslib.h"
+# include "site.h"
 # include <stdarg.h>
 
 #include <sys/mman.h>
@@ -425,7 +426,7 @@ char *board, *filename, *userid, *nickname, *subject;
 #endif
 #endif
             //修改mail格式 modified by Czz 020419
-            strncpy(FROM_BUF, fileglue("%s@%s-SPAM.no (%s)", userid, MYADDR, nickname), sizeof FROM_BUF);
+            strncpy(FROM_BUF, fileglue("%s@%s-SPAM.no (%s)", userid, MAIL_BBSDOMAIN, nickname), sizeof FROM_BUF);
             //modified end
             FROM = FROM_BUF;
             sover.from = FROM;
@@ -924,7 +925,7 @@ char *board, *filename, *userid, *nickname, *subject;
     }
     mtime = -1;
     //修改mail格式 modified by Czz 020419
-    strncpy(FROM_BUF, fileglue("%s@%s-SPAM.no (%s)", userid, MYADDR, nickname), sizeof FROM_BUF);
+    strncpy(FROM_BUF, fileglue("%s@%s-SPAM.no (%s)", userid, MAIL_BBSDOMAIN, nickname), sizeof FROM_BUF);
     //modified end
     FROM = FROM_BUF;
     sover.from = FROM;
