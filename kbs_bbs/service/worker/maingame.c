@@ -14,7 +14,7 @@
 #include"screens.h"
 
 #ifdef ENABLE_DL
-#define MAXDATA 500
+#define MAXDATA 1458
 #define RECORD_FILE "game/worker/high_record"
 #define HOME_FILE "box_record"
 
@@ -141,7 +141,7 @@ int main(int argc, char **argv)
 //        sprintf(genbuf, "搬运工游戏目前共有 %d 局, 请选择 : ", MAXDATA);
         while (num <= 0 || num > MAXDATA) {
 	    buf[0]=0;
-            getdata(5, 61, "", buf, 4, 1, NULL, true);
+            getdata(5, 61, "", buf, 5, 1, NULL, true);
             if (buf[0] == 0)
                 return 0;
             num = atoi(buf);
