@@ -268,9 +268,8 @@ void abort_bbs(int signo)
     if(in_abort_bbs) return;
     in_abort_bbs=true;
 
-    move(t_lines-1, 0);
-    icurrchar = 0; ibufsize = 0;
-    refresh();
+    output("\x1b[m",3);
+    oflush();
     if (uinfo.mode == POSTING || uinfo.mode == SMAIL || uinfo.mode == EDIT || uinfo.mode == EDITUFILE || uinfo.mode == EDITSFILE || uinfo.mode == EDITANN)
         keep_fail_post();
     if (started) {

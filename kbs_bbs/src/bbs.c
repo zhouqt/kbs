@@ -3598,10 +3598,9 @@ int Goodbye()
     }
     sleep(1);
     pressreturn();              /*Haohmaru.98.10.18 */
-    prints("\x1b[m");
-    clear();
-    icurrchar = 0; ibufsize = 0;
-    refresh();
+    output("\x1b[m",3);
+    output("\x1b[H\x1b[J",6);
+    oflush();
     shutdown(0, 2);
     close(0);
     exit(0);
