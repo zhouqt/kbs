@@ -39,8 +39,10 @@
 #include <ctype.h>
 #include <errno.h>
 #include <time.h>
+#ifndef	DEBUG_MEMORY
 #ifndef FREEBSD
 #include <malloc.h>
+#endif
 #endif
 #include <sys/time.h>
 #include <sys/types.h>

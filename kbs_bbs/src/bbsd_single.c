@@ -246,8 +246,10 @@ int port; /* Thor.981206: 取 0 代表 *没有参数* */
     /* detach daemon process				 */
     /* --------------------------------------------------- */
 
+#ifndef DEBUG_MEMORY
     close(1);
     close(2);
+#endif
 		/*
 		close file descriptor 1 and 2
 		*/
