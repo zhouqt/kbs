@@ -47,7 +47,7 @@ int main() {
 		num++;
 		if(!strcmp(f.filename, file)) {
 				fclose(fp);
-				delete_record(path, sizeof(struct fileheader), num-1,NULL,NULL);
+				delete_record(path, sizeof(struct fileheader), num,NULL,NULL);
 				sprintf(path, "mail/%c/%s/%s", toupper(id[0]), id, f.filename);
 				unlink(path);
 				printf("信件已删除.<br><a href=\"bbsmail\">返回所有信件列表</a>\n");
