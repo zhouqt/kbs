@@ -628,14 +628,14 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     if ((fp = fopen(oldpath, "r")) == NULL)
 	    return;
     while (fgets(f, sizeof(f), fp) != NULL) {
-	    for (i=1; i<=num_badword;i++) {
+        for (i=1; i<=num_badword;i++) {
 	    if(strstr(f,badword[i-1])) {
 		    sprintf(newpath, "%s/boards/Filter/%s", BBSHOME, fh->filename);
 	            symlink(oldpath, newpath);
 		    boardname = "Filter";
 		    break;
 	    }
-	    }
+        }
     }
     fclose(fp);
 #endif
