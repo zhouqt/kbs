@@ -1107,7 +1107,17 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
     	if($tbpUrl || $detectnum) //发送引用通告前提取NID
     	{
     		//提取日志的nid
-            $thisNid = mysql_insert_id($link);
+            $query = "SELECT `nid` FROM nodes WHERE `subject` = '".$subject."' AND `body` = '".$body."' AND `uid` = '".$pc["UID"]."' AND `access` = '".$access."' AND `pid` = '".$pid."' AND `tid` = '".$tid."' ORDER BY nid DESC LIMIT 0,1;";
+            $result = mysql_query($query,$link);   
+            $rows = mysql_fetch_array($result);   
+    
+            if(!$rows)   
+                 return -6;   
+    
+            $thisNid = $rows[nid];   
+            mysql_free_result($result);   
+  
+
     		if($htmlTag)
     			$tbbody = undo_html_format(strip_tags(stripslashes($body)));
     		else
