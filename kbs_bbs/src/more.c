@@ -522,9 +522,10 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
           *s--;
 	}
 	else {
-          if (*s>size)
+          if ((*s>size)||(*s<0))
               *s=size;
-	  *s=1;
+	  else
+	      *s=1;
 	}
     } else {
         if (p0[*s-1]=='\0')
