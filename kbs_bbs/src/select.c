@@ -360,13 +360,14 @@ int list_select(struct _select_def *conf, int key)
 checkret:
 	    switch (ret) {
 	    case SHOW_DIRCHANGE:
-	        if (conf->get_data)
+	        if (conf->get_data) {
 	            ret=(*conf->get_data) (conf, conf->page_pos, conf->item_per_page);
-	        if (ret==SHOW_QUIT)
+	            if (ret==SHOW_DIRCHANGE) goto checkret; //possible loop.....
+	            if (ret==SHOW_QUIT)
 	        	return ret;
-	        if (ret==SHOW_DIRCHANGE) goto checkret; //possible loop.....
-	        if ((ret=check_valid(conf)) == SHOW_QUIT)
-	            return SHOW_QUIT;
+	            if ((ret=check_valid(conf)) == SHOW_QUIT)
+	                return SHOW_QUIT;
+		}
 	    case SHOW_REFRESH:
 	        ret=refresh_select(conf);
 	        break;
