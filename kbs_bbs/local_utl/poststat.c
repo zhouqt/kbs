@@ -287,6 +287,7 @@ void poststat(int mytype, time_t now, struct tm *ptime)
 
     char buf[40], curfile[40] = "etc/posts/day.0";
     struct postrec *pp;
+    struct postrec *qq;
     FILE *fp;
     int i;
 
@@ -364,14 +365,22 @@ void poststat(int mytype, time_t now, struct tm *ptime)
         writestat(4, blessbucket);
 #endif
     for (i = 0; i < HASHSIZE; i++) {
-        for (pp = bucket[i]; pp; pp = pp->next)
+		while( bucket[i] ){
+       		for (pp = bucket[i], qq=NULL; pp->next ; qq=pp, pp = pp->next );
             free(pp);
+			if( qq ) qq->next=NULL;
+			else bucket[i]=NULL;
+		}
         bucket[i] = NULL;
     }
 #ifdef BLESS_BOARD
     for (i = 0; i < HASHSIZE; i++) {
-        for (pp = blessbucket[i]; pp; pp = pp->next)
+		while(blessbucket[i]){
+        	for (pp = blessbucket[i], qq=NULL; pp->next ; qq=pp, pp = pp->next);
             free(pp);
+			if( qq) qq->next=NULL;
+			else blessbucket[i]=NULL;
+		}
         blessbucket[i] = NULL;
     }
 #endif
