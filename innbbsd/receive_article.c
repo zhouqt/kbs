@@ -789,7 +789,8 @@ char   *pathname, *firstpath;
 	}
 	bzero((void *) &header, sizeof(header));
 	strcpy(header.filename, name);
-	strncpy(header.owner, userid, IDLEN);
+	strncpy(header.owner, userid, OWNER_LEN);
+	header.owner[OWNER_LEN-1]=0;
 	str_decode(conv_buf, SUBJECT);
 	strncpy(header.title, conv_buf, STRLEN);
 	header.title[STRLEN - 1] = '\0';
@@ -846,7 +847,8 @@ char   *board, *file;
 		if (strcmp(file, header.filename) == 0) {
 			if (header.owner[0] != '-') {
 				sprintf(buf, "-%s", header.owner);
-				strcpy(header.owner, buf);
+				strncpy(header.owner, buf,OWNER_LEN);
+				header.owner[OWNER_LEN-1]=0;
 				sprintf(header.title, "<< cancelled from %-.50s >>", POSTHOST ? POSTHOST : "site of origin");
 				lseek(fd, (off_t) (-size), SEEK_CUR);
 				safewrite(fd, &header, size);

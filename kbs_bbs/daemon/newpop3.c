@@ -138,7 +138,6 @@ NULL, NULL},};
 char *crypt();
 
 #ifdef USE_SSL
-
 static void init_ssl(void)
 {
     SSL_load_error_strings();
@@ -883,7 +882,7 @@ void Retr()
     if (index(fcache[num].owner, '@') == NULL) {
         if ((ptr = strchr(fcache[num].owner, ' ')) != NULL)
             *ptr = '\0';
-        sprintf(genbuf,"From: %s@%s",fcache[num].owner, BBSNAME);
+        sprintf(genbuf,"From: %s%s",fcache[num].owner, BBSNAME);
     }
     else
     	sprintf(genbuf, "From: %s", fcache[num].owner);
@@ -1027,7 +1026,7 @@ void Top()
     if (index(fcache[num].owner, '@') == NULL) {
         if ((ptr = strchr(fcache[num].owner, ' ')) != NULL)
             *ptr = '\0';
-        sprintf(genbuf,"From: %s@%s",fcache[num].owner, BBSNAME);
+        sprintf(genbuf,"From: %s%s",fcache[num].owner, BBSNAME);
     }
     else
         sprintf(genbuf, "From: %s", fcache[num].owner);
