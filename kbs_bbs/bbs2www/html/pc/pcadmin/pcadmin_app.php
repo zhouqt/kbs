@@ -59,6 +59,19 @@ function pc_add_users($link,$userid,$corpusname,$manual,$blogtype="",$groupmanag
 	    $groupmanager = $lookupuser["userid"];
 	}
 	
+	//更新申请表
+	if($manual)
+		$query = "INSERT INTO `newapply` ( `naid` , `username` , `appname` , `appself` , `appdirect` , `hostname` , `apptime` , `manager` , `management` ) ".
+	 		 "VALUES ('', '".addslashes($userid)."', '".addslashes($corpusname)."', '', '', '".addslashes($_SERVER["REMOTE_ADDR"])."', NOW( ) , '".addslashes($currentuser["userid"])."' , '0');";
+	else
+		$query = "UPDATE newapply SET apptime = apptime ,manager = '".addslashes($currentuser["userid"])."',management = '0' WHERE username = '".addslashes($userid)."' ORDER BY naid DESC LIMIT 1 ;";
+	if(!mysql_query($query,$link))
+	{
+		$errstr = "MySQL Error: ".mysql_error($link);
+		pc_db_close($link);
+		exit($errstr);
+	}
+	
 	if(pc_load_infor($link,$userid))
 		return -5;
 	
@@ -97,19 +110,6 @@ function pc_add_users($link,$userid,$corpusname,$manual,$blogtype="",$groupmanag
 	$action = $currentuser["userid"]. " 通过 " . $userid . " 的BLOG申请(www)";
 	pc_logs($link , $action , "" , $userid );
 		
-	//更新申请表
-	if($manual)
-		$query = "INSERT INTO `newapply` ( `naid` , `username` , `appname` , `appself` , `appdirect` , `hostname` , `apptime` , `manager` , `management` ) ".
-	 		 "VALUES ('', '".addslashes($userid)."', '".addslashes($corpusname)."', '', '', '".addslashes($_SERVER["REMOTE_ADDR"])."', NOW( ) , '".addslashes($currentuser["userid"])."' , '0');";
-	else
-		$query = "UPDATE newapply SET apptime = apptime ,manager = '".addslashes($currentuser["userid"])."',management = '0' WHERE username = '".addslashes($userid)."' ORDER BY naid DESC LIMIT 1 ;";
-	if(!mysql_query($query,$link))
-	{
-		$errstr = "MySQL Error: ".mysql_error($link);
-		pc_db_close($link);
-		exit($errstr);
-	}
-	
 	//发布公告
 	if ($blogtype=="normal") {
     	$annTitle = "[公告] 批准 ".$userid." 的 Blog 申请";
