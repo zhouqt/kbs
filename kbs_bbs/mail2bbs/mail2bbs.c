@@ -388,7 +388,9 @@ char *argv[];
     int mail2board = 0;
 #endif
 
-    strcpy(receiver, argv[2]);
+    strncpy(receiver, argv[2], 256);
+	receiver[255]='\0';
+
 #ifdef MAIL2BOARD
     ptr = strchr(receiver, '.');
     if (ptr == NULL) {
@@ -434,15 +436,16 @@ char *argv[];
         resolve_ucache();
     resolve_utmp();
 
-    if (argv[1] == NULL || strlen(argv[1]) == 0) {
+    if (argv[1] == NULL || strlen(argv[1]) == 0 || strlen(argv[1]) >= sizeof(sender) ) {
         fprintf(stderr, "Error: Unknown sender\n");
         return -2;
     }
     if (strchr(argv[1], '@')) {
         strncpy(sender, argv[1], sizeof(sender) - 1);
+		sender[sizeof(sender)-1]='\0';
 /* added by netty */
         xxxx = 0;
-        while (sender[xxxx] != '@') {
+        while (sender[xxxx] != '@' && sender[xxxx] ) {
             nettyp[xxxx] = sender[xxxx];
             xxxx = xxxx + 1;
         }
@@ -455,9 +458,12 @@ char *argv[];
         p = strtok(buf, " \t\n\r");
         l = strchr(argv[1], '(');
         r = strchr(argv[1], ')');
-        if (l < r && l && r)
+        if (l < r && l && r){
             strncpy(username, l, r - l + 1);
-        sprintf(sender, "%s@%s %s", p, MAIL_BBSDOMAIN, username);
+			username[r-l+1]='\0';
+		}else
+			username[0]='\0';
+        snprintf(sender, sizeof(sender), "%s@%s %s", p, MAIL_BBSDOMAIN, username);
         strcpy(nettyp, p);
     }
 
