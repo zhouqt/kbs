@@ -1,7 +1,8 @@
 <?
-global $SQUID_ACCL;
-//$fromhost=$_SERVER["REMOTE_ADDR"];
 dl("../libexec/bbs/phpbbslib.so");
+global $SQUID_ACCL;
+global $BBS_HOME;
+//$fromhost=$_SERVER["REMOTE_ADDR"];
 global $fromhost;
 global $fullfromhost;
 global $loginok;
@@ -44,7 +45,6 @@ if ($utmpkey!="") {
   }
 }
 
-/*
 function valid_filename($fn)
 {
 	if ((strstr($fn,"..")!=FALSE)||(strstr($fn,"/")))
@@ -54,7 +54,7 @@ function valid_filename($fn)
 
 function getboardfilename($boardname,$filename)
 {
-	return "board/" . $boardname . "/" $filename;
+	return "boards/" . $boardname . "/" . $filename;
 }
 
 function error_alert($msg)
@@ -66,5 +66,4 @@ history.go(-1);
 </SCRIPT>
 <?
 }
-*/
 ?>
