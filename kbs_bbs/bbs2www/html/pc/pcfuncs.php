@@ -338,6 +338,8 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 			"VISIT" => $rows[visitcount],
 			"MODIFY" => $rows[modifytime],
 			"NODES" => $rows[nodescount],
+			"NLIM" => $rows[nodelimit],
+			"DLIM" => $rows[dirlimit],
 			"STYLE" => pc_style_array($rows[stype]),
 			"LOGO" => str_replace("<","&lt;",stripslashes($rows[logoimage])),
 			"BKIMG" => str_replace("<","&lt;",stripslashes($rows[backimage])),
