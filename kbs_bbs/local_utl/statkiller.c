@@ -114,7 +114,7 @@ void main()
     fprintf(fp, "===============江湖杀手榜===============\n");
     fprintf(fp, "%4s %-12s  %8s  %8s %6s\n", "名次", "杀手名", "命中次数", "出手次数", "绝杀率");
     j=0;
-    for(i=0;i<MAXK;i++) {
+    for(i=0;i<statt;i++) {
         if(statlib[i].btime<MINB) continue;
         fprintf(fp, "%3d  %-12s  %6d    %6d   %4.2lf%%  \n", j+1, statlib[i].id, statlib[i].bwtime, statlib[i].btime, (statlib[i].btime==0)?0.0:(double)statlib[i].bwtime/statlib[i].btime*100);
         j++;
@@ -134,8 +134,8 @@ void main()
     fprintf(fp, "===============江湖捕快榜===============\n");
     fprintf(fp, "%4s %-12s  %8s  %8s %6s\n", "名次", "捕快名", "命中次数", "出手次数", "神捕率");
     j=0;
-    for(i=0;i<MAXK;i++) {
-        if(statlib[i].gtime<MINB) continue;
+    for(i=0;i<statt;i++) {
+        if(statlib[i].gtime<MINB*6) continue;
         fprintf(fp, "%3d  %-12s  %6d    %6d   %4.2lf%%  \n", j+1, statlib[i].id, statlib[i].gwtime, statlib[i].gtime, (statlib[i].gtime==0)?0.0:(double)statlib[i].gwtime/statlib[i].gtime*100);
         j++;
         if(j>=MAXK) break;
@@ -153,7 +153,7 @@ void main()
     fprintf(fp, "=============江湖名人榜=============\n");
     fprintf(fp, "%4s %-12s  %8s  %8s\n", "名次", "尊姓大名", "累计积分", "名人等级");
     j=0;
-    for(i=0;i<MAXK;i++) {
+    for(i=0;i<statt;i++) {
         strcpy(buf, "");
         if(statlib[i].score<100) strcpy(buf, "无名小卒");
         else if(statlib[i].score<1000) strcpy(buf, "碌碌无闻");
@@ -229,8 +229,8 @@ void main()
     fprintf(fp, "=============今日江湖杀手榜=============\n");
     fprintf(fp, "%4s %-12s  %8s  %8s %6s\n", "名次", "杀手名", "命中次数", "出手次数", "绝杀率");
     j=0;
-    for(i=0;i<MAXK;i++) {
-        if(statlib[i].btime<MINB) continue;
+    for(i=0;i<statt;i++) {
+        if(statlib[i].btime<MINB/6) continue;
         fprintf(fp, "%3d  %-12s  %6d    %6d   %4.2lf%%  \n", j+1, statlib[i].id, statlib[i].bwtime, statlib[i].btime, (statlib[i].btime==0)?0.0:(double)statlib[i].bwtime/statlib[i].btime*100);
         j++;
         if(j>=MAXK) break;
@@ -249,7 +249,7 @@ void main()
     fprintf(fp, "=============今日江湖捕快榜=============\n");
     fprintf(fp, "%4s %-12s  %8s  %8s %6s\n", "名次", "捕快名", "命中次数", "出手次数", "神捕率");
     j=0;
-    for(i=0;i<MAXK;i++) {
+    for(i=0;i<statt;i++) {
         if(statlib[i].gtime<MINB) continue;
         fprintf(fp, "%3d  %-12s  %6d    %6d   %4.2lf%%  \n", j+1, statlib[i].id, statlib[i].gwtime, statlib[i].gtime, (statlib[i].gtime==0)?0.0:(double)statlib[i].gwtime/statlib[i].gtime*100);
         j++;
@@ -268,7 +268,7 @@ void main()
     fprintf(fp, "===========今日江湖名人榜===========\n");
     fprintf(fp, "%4s %-12s  %8s  %8s\n", "名次", "尊姓大名", "累计积分", "名人等级");
     j=0;
-    for(i=0;i<MAXK;i++) {
+    for(i=0;i<statt;i++) {
         strcpy(buf, "");
         if(statlib[i].score<100) strcpy(buf, "无名小卒");
         else if(statlib[i].score<1000) strcpy(buf, "碌碌无闻");
