@@ -1002,6 +1002,8 @@ static PHP_FUNCTION(bbs_countarticles)
     int total;
     int ac = ZEND_NUM_ARGS();
 
+    getcwd(old_pwd, 1023);
+    chdir(BBSHOME);
     /*
      * getting arguments 
      */
