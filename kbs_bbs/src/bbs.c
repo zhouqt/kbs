@@ -4627,6 +4627,8 @@ static int tmpl_select(struct _select_def *conf)
 
     free(pts);
 
+	t_now = 0;
+
 	return SHOW_REFRESH;
 }
 
@@ -4718,6 +4720,12 @@ static int choose_tmpl_getdata(struct _select_def *conf, int pos, int len)
 
 static int choose_tmpl_select(struct _select_def *conf)
 {
+	t_now = conf->pos;
+	return SHOW_QUIT;
+}
+
+static int choose_tmpl_post(char *fname){
+
 	FILE *fp;
 	FILE *fpsrc;
 	char filepath[STRLEN];
@@ -4725,34 +4733,37 @@ static int choose_tmpl_select(struct _select_def *conf)
 	int write_ok = 0;
 	char * tmp[ MAX_CONTENT ];
 
-	if( ptemplate[conf->pos-1].tmpl->content_num <= 0 )
-		return SHOW_QUIT;
+	if(t_now <= 0 || t_now > MAX_TEMPLATE )
+		return -1;
 
-	if((fp = fopen(conf->arg, "w"))==NULL){
-		return SHOW_QUIT;
+	if( ptemplate[t_now-1].tmpl->content_num <= 0 )
+		return -1;
+
+	if((fp = fopen(fname, "w"))==NULL){
+		return -1;
 	}
 
-	for(i=0; i< ptemplate[conf->pos-1].tmpl->content_num; i++){
+	for(i=0; i< ptemplate[t_now-1].tmpl->content_num; i++){
 		char *ans;
 
-		ans = (char *)malloc(ptemplate[conf->pos-1].cont[i].length + 2);
+		ans = (char *)malloc(ptemplate[t_now-1].cont[i].length + 2);
 		if( ans == NULL ){
 			fclose(fp);
-			return SHOW_QUIT;
+			return -1;
 		}
 		clear();
 		move(1,0);
 		prints("Ctrl+Q »»ÐÐ, ENTER ·¢ËÍ");
 		move(3,0);
-		prints("Ä£°åÎÊÌâ:%s",ptemplate[conf->pos-1].cont[i].text);
+		prints("Ä£°åÎÊÌâ:%s",ptemplate[t_now-1].cont[i].text);
 		move(4,0);
-		prints("Ä£°å»Ø´ð(×î³¤%d×Ö·û):",ptemplate[conf->pos-1].cont[i].length);
-        multi_getdata(6, 0, 79, NULL, ans, ptemplate[conf->pos-1].cont[i].length+1, 11, true, 0);
+		prints("Ä£°å»Ø´ð(×î³¤%d×Ö·û):",ptemplate[t_now-1].cont[i].length);
+        multi_getdata(6, 0, 79, NULL, ans, ptemplate[t_now-1].cont[i].length+1, 11, true, 0);
 		tmp[i] = ans;
 	}
 
-	if( ptemplate[conf->pos-1].tmpl->filename[0] ){
-		setbfile( filepath,currboard->filename, ptemplate[conf->pos-1].tmpl->filename);
+	if( ptemplate[t_now-1].tmpl->filename[0] ){
+		setbfile( filepath,currboard->filename, ptemplate[t_now-1].tmpl->filename);
 		if( dashf( filepath )){
 			if((fpsrc = fopen(filepath,"r"))!=NULL){
 				char buf[256];
@@ -4774,7 +4785,7 @@ static int choose_tmpl_select(struct _select_def *conf)
 								continue;
 							}
 							l = atoi(pn+2);
-							if( l<=0 || l > ptemplate[conf->pos-1].tmpl->content_num ){
+							if( l<=0 || l > ptemplate[t_now-1].tmpl->content_num ){
 								fputc('[', fp);
 								continue;
 							}
@@ -4791,25 +4802,25 @@ static int choose_tmpl_select(struct _select_def *conf)
 		}
 	}
 	if(write_ok == 0){
-		for(i=0; i< ptemplate[conf->pos-1].tmpl->content_num; i++)
-			fprintf(fp,"[1;32m%s:[m\n%s\n\n",ptemplate[conf->pos-1].cont[i].text, tmp[i]);
+		for(i=0; i< ptemplate[t_now-1].tmpl->content_num; i++)
+			fprintf(fp,"[1;32m%s:[m\n%s\n\n",ptemplate[t_now-1].cont[i].text, tmp[i]);
 	}
 	fclose(fp);
+
+	for(i=0; i< ptemplate[t_now-1].tmpl->content_num; i++)
+		free( tmp[i] );
 
 	{
 		char ans[3];
 		clear();
-        ansimore2(conf->arg, false, 0, 19 /*19 */ );
+        ansimore2(fname, false, 0, 19 /*19 */ );
         getdata(t_lines - 1, 0, "È·ÊµÒª·¢±íÂð(Y/N)? [Y]: ", ans, sizeof(ans), DOECHO, NULL, true);
-        if (ans[0] != 'N' && ans[0] != 'n') {
-			t_now = conf->pos;
+        if (ans[0] == 'N' || ans[0] == 'n') {
+			return -1;
 		}
 	}
 
-	for(i=0; i< ptemplate[conf->pos-1].tmpl->content_num; i++)
-		free( tmp[i] );
-
-	return SHOW_QUIT;
+	return 1;
 }
 
 static int choose_tmpl_key(struct _select_def *conf, int key)
@@ -4906,8 +4917,12 @@ int choose_tmpl(char *title, char *fname)
     list_select_loop(&grouplist_conf);
 
 	if(t_now > 0){
-		strncpy(title, ptemplate[t_now-1].tmpl->title_prefix, 20);
-		title[19]='\0';
+		if( choose_tmpl_post(fname) < 0 ){
+			t_now = 0;
+		}else{
+			strncpy(title, ptemplate[t_now-1].tmpl->title_prefix, 20);
+			title[19]='\0';
+		}
 	}
 
 	free(pts);
