@@ -166,7 +166,7 @@ void setcalltime()
 
     good_move(1, 0);
     clrtoeol();
-    getdata(1, 0, "几分钟後要系统提醒你: ", ans, 3, DOECHO, NULL, true);
+    getdata(1, 0, "几分钟后要系统提醒你: ", ans, 3, DOECHO, NULL, true);
     if (!isdigit(ans[0]))
         return;
     ttt = atoi(ans);

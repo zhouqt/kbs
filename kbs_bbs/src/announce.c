@@ -1086,7 +1086,7 @@ int paste;
         strncpy(filename, item->fname, FILENAME_LEN);
         sprintf(genbuf, "%s/%s", pm->path, filename);
         strncpy(fpath, genbuf, PATHLEN);
-        prints("拷贝标识完成。注意：粘贴文章後才能用 d 命令将文章删除! -- 请按任意键继续 << ");
+        prints("拷贝标识完成。注意：粘贴文章后才能用 d 命令将文章删除! -- 请按任意键继续 << ");
         pressanykey();
 
         /*

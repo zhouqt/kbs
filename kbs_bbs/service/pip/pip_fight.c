@@ -533,7 +533,7 @@ int mode;
 						oldtired = oldtired - d.tired;
 						oldhp = d.hp - oldhp;
 						sprintf(buf,
-							"ÖÎÁÆáá,ÉúÃüÁ¦Ìá¸ß%d Æ£ÀÍ½µµÍ%d",
+							"ÖÎÁÆºó,ÉúÃüÁ¦Ìá¸ß%d Æ£ÀÍ½µµÍ%d",
 							oldhp, oldtired);
 						pressanykey(buf);
 					} else {
@@ -700,7 +700,7 @@ int mode;
 				     d.name);
 				move(12, 0);
 				prints
-				    ("            [1;31m©¦  [37mÔÚÓë¶ÔÊÖ [32m%-10s [37mÕ½¶·ááÂäÅÜÀ²          [31m©¦[m",
+				    ("            [1;31m©¦  [37mÔÚÓë¶ÔÊÖ [32m%-10s [37mÕ½¶·ºóÂäÅÜÀ²          [31m©¦[m",
 				     p[n].name);
 				move(13, 0);
 				sprintf(inbuf1, "%d/%d", d.hexp - oldhexp,

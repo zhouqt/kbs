@@ -119,7 +119,7 @@ const char *user_definestr[] = {
     "接受所有人的讯息",         /* DEF_ALLMSG */
     "接受好友的讯息",           /* DEF_FRIENDMSG */
     "收到讯息发出声音",         /* DEF_SOUNDMSG */
-    "离站後寄回所有讯息",       /* DEF_MAILMSG */
+    "离站后寄回所有讯息",       /* DEF_MAILMSG */
     "发文章时实时显示讯息",     /*"所有好友上站均通知",    DEF_LOGININFORM */
     "菜单上显示帮助信息",       /* DEF_SHOWSCREEN */
     "进站时显示十大新闻",       /* DEF_SHOWHOT */

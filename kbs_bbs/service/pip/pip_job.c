@@ -370,7 +370,7 @@ pip_job_workH()
 	long workmoney;
 
 	if ((d.bbtime / 60 / 30) < 1) {	/*一岁才行 */
-		pressanykey("小鸡太小了,一岁以後再来吧...");
+		pressanykey("小鸡太小了,一岁以后再来吧...");
 		return 0;
 	}
 	workmoney = 0;
@@ -416,7 +416,7 @@ pip_job_workI()
 	long workmoney;
 
 	if ((d.bbtime / 60 / 30) < 1) {	/*一岁才行 */
-		pressanykey("小鸡太小了,一岁以後再来吧...");
+		pressanykey("小鸡太小了,一岁以后再来吧...");
 		return 0;
 	}
 	workmoney = 0;
@@ -445,7 +445,7 @@ pip_job_workI()
 		pressanykey("马马虎虎啦..再加油一点..");
 	} else if (class < 40) {
 		workmoney = 250 + d.art / 10 + d.affect / 20;
-		pressanykey("待加强喔..以後再来吧....");
+		pressanykey("待加强喔..以后再来吧....");
 	}
 	d.money += workmoney;
 	d.workI += 1;
@@ -470,7 +470,7 @@ pip_job_workJ()
 	 * 两岁以上才行
 	 */
 	if ((d.bbtime / 60 / 30) < 2) {
-		pressanykey("小鸡太小了,两岁以後再来吧...");
+		pressanykey("小鸡太小了,两岁以后再来吧...");
 		return 0;
 	}
 	workmoney = 0;
@@ -531,7 +531,7 @@ pip_job_workK()
 	 * 两岁以上才行
 	 */
 	if ((d.bbtime / 60 / 30) < 2) {
-		pressanykey("小鸡太小了,两岁以後再来吧...");
+		pressanykey("小鸡太小了,两岁以后再来吧...");
 		return 0;
 	}
 	workmoney = 0;
@@ -586,7 +586,7 @@ pip_job_workL()
 	 * 三岁才行
 	 */
 	if ((d.bbtime / 60 / 30) < 3) {
-		pressanykey("小鸡现在还太小了,三岁以後再来吧...");
+		pressanykey("小鸡现在还太小了,三岁以后再来吧...");
 		return 0;
 	}
 	workmoney = 0;
@@ -640,7 +640,7 @@ pip_job_workM()
 	long workmoney;
 
 	if ((d.bbtime / 60 / 30) < 4) {
-		pressanykey("小鸡太小了,四岁以後再来吧...");
+		pressanykey("小鸡太小了,四岁以后再来吧...");
 		return 0;
 	}
 	workmoney = 0;
@@ -676,7 +676,7 @@ pip_job_workN()
 	long workmoney;
 
 	if ((d.bbtime / 60 / 30) < 5) {
-		pressanykey("小鸡太小了,五岁以後再来吧...");
+		pressanykey("小鸡太小了,五岁以后再来吧...");
 		return 0;
 	}
 	workmoney = 0;
@@ -733,7 +733,7 @@ pip_job_workO()
 	long workmoney;
 
 	if ((d.bbtime / 60 / 30) < 4) {
-		pressanykey("小鸡太小了,四岁以後再来吧...");
+		pressanykey("小鸡太小了,四岁以后再来吧...");
 		return 0;
 	}
 	workmoney = 0;
@@ -801,7 +801,7 @@ pip_job_workP()
 	long workmoney;
 
 	if ((d.bbtime / 60 / 30) < 6) {
-		pressanykey("小鸡太小了,六岁以後再来吧...");
+		pressanykey("小鸡太小了,六岁以后再来吧...");
 		return;
 	}
 	workmoney = 0;

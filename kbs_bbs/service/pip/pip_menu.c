@@ -194,7 +194,7 @@ const struct pipcommands cmdtable[];
 		if (d.death == 1 || d.death == 2 || d.death == 3)
 			return 0;
 		/*
-		 * 经pip_mainmenu判定後是否死亡
+		 * 经pip_mainmenu判定后是否死亡
 		 */
 		if (pip_mainmenu(menumode))
 			return 0;

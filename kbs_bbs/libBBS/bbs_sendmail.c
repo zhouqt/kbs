@@ -125,7 +125,7 @@ int check_query_mail(char qry_mail_dir[STRLEN])
      * } 
      */
     /*
-     * 离线查询新信只要查询最後一封是否为新信，其他并不重要 
+     * 离线查询新信只要查询最后一封是否为新信，其他并不重要 
      */
     /*
      * Modify by SmallPig 

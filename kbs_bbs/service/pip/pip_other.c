@@ -264,7 +264,7 @@ int
 pip_results_show_ending(winorlost, mode, a, b, c)
 int winorlost, mode, a, b, c;
 {
-	const static char *resultname[4] = { "×îááÒ»Ãû", "¼¾¾ü", "ÑÇ¾ü", "¹Ú¾ü" };
+	const static char *resultname[4] = { "×îºóÒ»Ãû", "¼¾¾ü", "ÑÇ¾ü", "¹Ú¾ü" };
 	const static char *gamename[5] =
 	    { "  ", "Îä¶·´ó»á", "ÒÕÊõ´óÕ¹", "»Ê¼ÒÎè»á", "Åëâ¿´óÈü" };
 	int resultmoney[4] = { 0, 3000, 5000, 8000 };
@@ -306,8 +306,8 @@ int winorlost, mode, a, b, c;
 	prints("[1;41m ¼¾¾ü [0;1m¡« [1;33m%-10s[36m  ½±½ğ %d[0m", name3,
 	       resultmoney[1]);
 	move(14, 15);
-	prints("[1;41m ×îáá [0;1m¡« [1;33m%-10s[36m [0m", name4);
-	sprintf(buf, "½ñÄêµÄ%s½áÊøÂŞ ááÄêÔÙÀ´°É..", gamename[mode]);
+	prints("[1;41m ×îºó [0;1m¡« [1;33m%-10s[36m [0m", name4);
+	sprintf(buf, "½ñÄêµÄ%s½áÊøÂŞ ºóÄêÔÙÀ´°É..", gamename[mode]);
 	d.money += resultmoney[winorlost];
 	pressanykey(buf);
 	return 0;

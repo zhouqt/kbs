@@ -1169,7 +1169,7 @@ char *direct;
     if (ans[0] == 'Y' || ans[0] == 'y') {
         sprintf(board, "tmp/bm.%s", currentuser->userid);
         if (dashf(board)) {
-            sprintf(genbuf, "Òª¸½¼ÓÔÚ¾ÉÔİ´æµµÖ®ááÂğ?(Y/N) [N]: ");
+            sprintf(genbuf, "Òª¸½¼ÓÔÚ¾ÉÔİ´æµµÖ®ºóÂğ?(Y/N) [N]: ");
             a_prompt(-1, genbuf, ans);
             if (ans[0] == 'Y' || ans[0] == 'y') {
                 sprintf(genbuf, "/bin/cat %s >> tmp/bm.%s", fname, currentuser->userid);

@@ -390,7 +390,7 @@ void x_fillform()
     move(3, 0);
     clrtobot();
     if (!strcmp("guest", currentuser->userid)) {
-        prints("抱歉, 请用 new 申请一个新帐号後再填申请表.");
+        prints("抱歉, 请用 new 申请一个新帐号后再填申请表.");
         pressreturn();
         return;
     }
