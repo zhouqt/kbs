@@ -253,6 +253,7 @@ struct favboard_proc_arg {
     int tmpnum;
     enum board_mode yank_flag;
     int fav_father;
+    bool reloaddata;
 
     char* boardprefix;
     //用于search_board得时候缓存
@@ -721,6 +722,7 @@ static int fav_key(struct _select_def *conf, int command)
             if (i > 0 && !IsFavBoard(i - 1)) {
                 addFavBoard(i - 1);
                 save_favboard();
+                arg->reloaddata=true;
                 return SHOW_DIRCHANGE;
             } else if (IsFavBoard(i - 1)) {
                 move(2, 0);
@@ -753,6 +755,7 @@ static int fav_key(struct _select_def *conf, int command)
             if (bname[0]) {
                 addFavBoardDir(i, bname);
                 save_favboard();
+                arg->reloaddata=true;
                 return SHOW_DIRCHANGE;
             }
         }
@@ -798,6 +801,7 @@ static int fav_key(struct _select_def *conf, int command)
                     } else {
                         arg->fav_father=MoveFavBoard(p, q, arg->fav_father);
                         save_favboard();
+                        arg->reloaddata=true;
                         return SHOW_DIRCHANGE;
                     }
                 }
@@ -823,6 +827,7 @@ static int fav_key(struct _select_def *conf, int command)
                 DelFavBoard(ptr->tag);
                 save_favboard();
                 arg->fav_father=favnow;
+                arg->reloaddata=true;
                 return SHOW_DIRCHANGE;
             }
             return SHOW_REFRESH;
@@ -831,6 +836,7 @@ static int fav_key(struct _select_def *conf, int command)
         if (arg->yank_flag < BOARD_FAV) {
                                 /*--- Modified 4 FavBoard 2000-09-11	---*/
             arg->yank_flag = 1 - arg->yank_flag;
+            arg->reloaddata=true;
             return SHOW_DIRCHANGE;
         }
         break;
@@ -890,6 +896,13 @@ static int fav_getdata(struct _select_def *conf, int pos, int len)
 {
     struct favboard_proc_arg *arg = (struct favboard_proc_arg *) conf->arg;
 
+    if (arg->reloaddata) {
+    	arg->reloaddata=false;
+    	if (arg->namelist) 	{
+    		free(arg->namelist);
+    		arg->namelist=NULL;
+    	}
+    }
     if (pos==-1) 
         fav_loaddata(NULL, arg->fav_father,1, conf->item_count,currentuser->flags[0] & BRDSORT_FLAG,arg->namelist);
     else
@@ -901,6 +914,13 @@ static int boards_getdata(struct _select_def *conf, int pos, int len)
 {
     struct favboard_proc_arg *arg = (struct favboard_proc_arg *) conf->arg;
 
+    if (arg->reloaddata) {
+    	arg->reloaddata=false;
+    	if (arg->namelist) 	{
+    		free(arg->namelist);
+    		arg->namelist=NULL;
+    	}
+    }
     if (pos==-1) 
          load_boards(NULL, arg->boardprefix,1, conf->item_count,currentuser->flags[0] & BRDSORT_FLAG,arg->yank_flag,arg->namelist);
     else
@@ -965,6 +985,7 @@ int choose_board(int newflag, char *boardprefix,int favmode)
         	free(arg.namelist);
         	arg.namelist=NULL;
         }
+        arg.reloaddata=false;
 
         if (favmode)        
             favboard_conf.get_data = fav_getdata;
