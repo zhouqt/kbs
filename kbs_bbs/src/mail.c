@@ -883,7 +883,9 @@ void mailtitle()
         UsedSpace = 1;
     else if (UsedSpace < 0)
         UsedSpace = 0;
-    prints("[44m±àºÅ    %-12s %6s  %-13sÄúµÄÐÅÏäÉÏÏÞÈÝÁ¿%4dK£¬µ±Ç°ÒÑÓÃ%4dK [m\n", (strstr(currmaildir, ".SENT")) ? "ÊÕÐÅÕß" : "·¢ÐÅÕß", "ÈÕ  ÆÚ", "±ê  Ìâ", MailSpace, UsedSpace);    /* modified by dong , 1998.9.19 */
+    prints("[44m±àºÅ    %-12s %6s  %-13sÄúµÄÐÅÏäÉÏÏÞÈÝÁ¿%4dK£¬µ±Ç°ÒÑÓÃ%4dK ", (strstr(currmaildir, ".SENT")) ? "ÊÕÐÅÕß" : "·¢ÐÅÕß", "ÈÕ  ÆÚ", "±ê  Ìâ", MailSpace, UsedSpace);    /* modified by dong , 1998.9.19 */
+    clrtoeol();
+    prints("\n");
 }
 
 char *maildoent(char *buf, int num, struct fileheader *ent)
