@@ -340,7 +340,7 @@ function getPcAnnounce($link,$num=5)
 	$result = mysql_query($query,$link);
 	$anns = array();
 	while($rows = mysql_fetch_array($result))
-		$ann[] = $rows;
+		$anns[] = $rows;
 	mysql_free_result($result);
 	return $anns;
 }

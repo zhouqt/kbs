@@ -64,7 +64,7 @@ function pcmain_blog_last_update()
 function pcmain_annouce()
 {
 	global $pcconfig,$link;
-	$anns = getPcAnnounce($link,_PCMAIN_ANNS_NUM_);
+	$anns = getPcAnnounce($link, _PCMAIN_ANNS_NUM_ );
 ?>
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="table">
 	<tr><td class="channelback"><font class="channel">Ë®Ä¾¶¯Ì¬</font></td></tr>
@@ -300,7 +300,7 @@ function pcmain_section_top_view()
 	{
 		$query = "SELECT nodes.uid , nid , subject , theme , username , corpusname  ".
 			 "FROM nodes , users ".
-			 "WHERE nodes.uid = users.uid AND access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()- _PCMAIN_TIME_ )." AND theme = '".$section."' ".
+			 "WHERE nodes.uid = users.uid AND access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()- _PCMAIN_TIME_LONG_ )." AND theme = '".$section."' ".
 			 "GROUP BY nodes.uid ".
 			 "ORDER BY nodes.visitcount DESC , nid DESC ".
 			 "LIMIT 0 , 12 ;";
