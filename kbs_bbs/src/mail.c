@@ -1450,6 +1450,7 @@ struct one_key mail_comms[] = {
     {'?', t_search_up},
     {']', thread_down},
     {'[', thread_up},
+	{'z', sendmsgtoauthor},
     {Ctrl('A'), show_author},
     {Ctrl('Q'), show_authorinfo},       /*Haohmaru.98.12.19 */
     {Ctrl('W'), show_authorBM}, /*cityhunter 00.10.18 */
