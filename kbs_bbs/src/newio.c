@@ -1050,6 +1050,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 break;
             case KEY_HOME:
             case Ctrl('A'):
+                now--;
                 while(now>=0&&buf[now]!='\n'&&buf[now]!='\r') now--;
                 now++;
                 break;
