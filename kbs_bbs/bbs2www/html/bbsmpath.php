@@ -11,36 +11,56 @@
 	{
 		html_init("gb2312");
 
+		$showform = 0;
+		$actionret = 0;
+
 		if(isset($_GET["action"])){
 			$action = $_GET["action"];
 			if(!strcmp($action,"add")){
 
-				if(isset($_GET["num"])){
+				if(isset($_GET["num"]))
 					$num = $_GET["num"];
-				}else{
-					html_error_quit("参数错误");
+				else
+					$showform = 1;
+
+				if(isset($_GET["path"]))
+					$path = $_GET["path"];
+				else
+					$showform = 1;
+
+				if(isset($_GET["title"]))
+					$title = $_GET["title"];
+
+				if($showform == 0){
+
+					settype($num,"integer");
+					if($num < 0 || $num > 39)
+						html_error_quit("参数错误1");
+
+					if(isset($_GET["title"]))
+						$actionret = bbs_add_import_path($path,$title,$num);
+					else
+						$actionret = bbs_add_import_path($path,$num);
+
+					if($actionret > 0) $actionret = 1;
+					else $actionret = -1;
 				}
+			}
+			else if(!strcmp($action,"edit")){
+				if(isset($_GET["num"]))
+					$num = $_GET["num"];
+				else
+					html_error_quit("参数错误2");
+
 				settype($num,"integer");
 				if($num < 0 || $num > 39)
-					html_error_quit("参数错误1");
+					html_error_quit("参数错误3");
 
-				if(isset($_GET["path"])){
-					$path = $_GET["path"];
-				}else{
-					html_error_quit("参数错误2");
-				}
-
-				if(isset($_GET["title"])){
-					$title = $_GET["title"];
-					$actionret = bbs_add_import_path($path,$title,$num);
-				}else
-					$actionret = bbs_add_import_path($path,$num);
-
-				if($actionret > 0) $actionret = 1;
-				else $actionret = -1;
-
+				$showform = 1;
 			}
 		}
+		else
+			$action = "show";
 
 		$pathret = bbs_get_import_path();
 		if( $pathret == FALSE )
@@ -49,12 +69,45 @@
 <body>
 <center><p><?php echo BBS_FULL_NAME; ?> -- [丝路控制] [用户: <?php echo $currentuser["userid"];?>]</p>
 <hr class="default"/>
+<?php
+		if($showform == 1){
+			if(!strcmp($action,"edit")){
+				$path = $pathret[$num]["PATH"];
+				$title = $pathret[$num]["TITLE"];
+			}
+?>
+<form action="/bbsmpath.php" method="get">
+路径:<input type="text" size="35" name="path" value="<?php echo $path;?>">
+丝路名:<input type="text" size="35" name="title" value="<?php echo $title?>">
+序号:<input type="text" size="2" maxlength="2" name="num" value="<?php echo $num;?>">
+<input type="hidden" name="action" value="add">
+<input type="submit" value="添加">
+</form>
+<hr class="default"/>
+<?php
+		}else if($actionret != 0){
+			if($actionret == 1 ){
+?>
+序号:<?php echo $num;?> 丝路增加成功
+<?php
+			}else if($actionret == -1){
+?>
+序号:<?php echo $num;?> 丝路增加失败
+<?php
+			}
+?>
+<hr class="default"/>
+<?php
+		}
+?>
 <table width="613">
-<tr><td>序号</td><td>丝路名</td><td>路径</td></tr>
+<tr><td>&nbsp;</td><td>序号</td><td>丝路名</td><td>路径</td></tr>
 <?php
 		for($i = 0; $i < 40; $i ++){
 ?>
 <tr><td>
+<a href="/bbsmpath.php?action=edit&num=<?php echo $i;?>">修改</a>
+</td><td>
 <?php echo $i;?>
 </td><td>
 <?php echo $pathret[$i]["TITLE"];?>
@@ -66,10 +119,6 @@
 ?>
 </table>
 <?php
-				if($actionret == 1 )
-					echo $path."丝路增加设置成功<p>";
-				else if($actionret == -1)
-					echo $path."丝路增加设置失败<p>";
 		html_normal_quit();
 	}
 ?>
