@@ -2,7 +2,7 @@
 #include "daemon.h"
 #include "bbslib.h"
 #include "version.h"
-#include "../smth.h"
+#include "site.h"
 
 #ifndef MAXCLIENT
 #define MAXCLIENT 10

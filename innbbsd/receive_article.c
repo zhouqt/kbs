@@ -680,7 +680,7 @@ char   *msgid;
 /* for PhoenixBBS's post article and cancel article */
 
 #define NO_OSDEP_H	/* skip the os_dep.h, we have it already! */
-#include "../bbs.h"
+#include "bbs.h"
 #undef  OS_OSDEP_H
 
 char   *
