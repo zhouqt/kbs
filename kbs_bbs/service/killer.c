@@ -74,7 +74,7 @@ struct inroom_struct * inrooms;
 
 struct killer_record {
     int w; //0 - 平民胜利 1 - 杀手胜利
-    time_t t;
+    int t;
     int peoplet;
     char id[MAX_PEOPLE][IDLEN+2];
     int st[MAX_PEOPLE]; // 0 - 活着平民 1 - 死了平民 2 - 活着杀手 3 - 死了杀手 4 - 其他情况
