@@ -67,7 +67,7 @@
 <nobr/>
 <center><?php echo $BBS_FULL_NAME; ?> -- [讨论区: <?php echo $brdarr["NAME"]; ?>] 版主[<?php echo $bm_url; ?>] 文章数[<?php echo $total; ?>] <a href="/cgi-bin/bbs/bbsbrdadd?board=<?php echo $brdarr["NAME"]; ?>">预定本版</a>
 <hr class="default"/>
-<form name="form1" method="post" action="bbsman">
+<form name="form1" method="post" action="/cgi-bin/bbs/bbsman">
 <table width="613">
 <tr><td>序号</td><td>管理</td><td>标记</td><td>作者</td><td>日期</td><td>标题</td></tr>
 <?php
@@ -139,6 +139,9 @@
 		{
 ?>
 <a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&start=<?php echo $start + $artcnt; ?>">下一页</a>
+<?
+		}
+?>
 <a href=bbsdoc.php?board=<?php echo $brd_encode; ?>>一般模式</a> <a href=/cgi-bin/bbs/bbsdenyall?board=<?php echo $brd_encode; ?>>封人名单</a> <a href=bbsmnote.php?board=<?php echo $brd_encode; ?>>编辑进版画面</a>
 <form action=bbsmdoc.php?board=<?php echo $brd_encode; ?> method=post>
 <input type=submit value=跳转到> 第 <input type=text name=start size=4> 篇</form>
