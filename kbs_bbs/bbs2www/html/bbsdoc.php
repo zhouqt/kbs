@@ -443,6 +443,22 @@
 	?>
     </td>
   </tr>
+<?php
+$relatefile = $_SERVER["DOCUMENT_ROOT"]."/brelated/".$brdarr["NAME"].".html";
+if( file_exists( $relatefile ) ){
+?>
+<tr>
+<td colspan="2" align="center" class="b1">
+ÆäËû°æÃæ:
+<?php
+include($relatefile);
+?>
+</td>
+</tr>
+<?php
+}
+?>
+
 </table>
 <?php
 	}
