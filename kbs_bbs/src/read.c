@@ -225,7 +225,6 @@ static int search_author(struct keeploc *locmem, int offset, char *powner)
     static char author[IDLEN + 1];
     char ans[IDLEN + 1], pmt[STRLEN];
     char currauth[STRLEN];
-
     strncpy(currauth, powner, STRLEN);
     snprintf(pmt, STRLEN, "%s的文章搜寻作者 [%s]: ", offset > 0 ? "往后来" : "往先前", currauth);
     move(t_lines - 1, 0);
@@ -1208,6 +1207,9 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
 /*    int Xflag = (-1003 != passonly )? 0 : !(passonly = 0);奇怪啊KCN */
     int Xflag = (-1003 != passonly) ? 0 : (passonly = 0, 1);
 
+	/* add by stiger*/
+	if(POSTFILE_BASENAME(ptitle->filename)[0]=='Z') return -1;
+
     ret=0;
     path[0]=0;
     strncpy(ori_file, ptitle->filename, FILENAME_LEN);
@@ -1562,6 +1564,9 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
         return 0;
     }
 
+	/* add by stiger */
+	if(strstr(locmem->key,".DINGDIR")) return 0;
+
     /*
      * move(t_lines-1,0);
      * clrtoeol();
@@ -1569,6 +1574,7 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
      */
     init=false;
     now = locmem->crs_line;
+
 /*    refresh();*/
     memset(&SR_fptr, 0, sizeof(struct fileheader));
     match = 0;
@@ -1661,6 +1667,9 @@ static int search_threadid(struct keeploc *locmem, int offset, int groupid, int 
     int size;
 
     now = locmem->crs_line;
+	/* add by stiger */
+	if(strstr(locmem->key,".DINGDIR")) return 0;
+
 /*    refresh();*/
     memset(&SR_fptr, 0, sizeof(struct fileheader));
 	if (digestmode == 0 || digestmode == 3)  //这几种 .DIR 是排序的
