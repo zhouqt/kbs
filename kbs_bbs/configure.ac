@@ -88,19 +88,18 @@ AC_ARG_ENABLE(site,
 [  --enable-site=sitename
                           select site special files (see site dir) ],
 [
-    if test -f $srcdir/site/$enableval.c; then
-        BBSSITE=$enableval
-	SITEDIR=site
-    else
-    if test -f $srcdir/sites/$enableval.c; then
-        BBSSITE=$enableval
-	SITEDIR=sites
-    else
-        AC_MSG_ERROR([ERROR! Unknown site $enableval, see site/])
-    fi
-    fi
+    BBSSITE=$enableval
 ],[BBSSITE="smth"
 SITEDIR=site])
+if test -f $srcdir/site/$BBSSITE.c; then
+	SITEDIR=site
+else
+  if test -f $srcdir/sites/$BBSSITE.c; then
+	SITEDIR=sites
+  else
+        AC_MSG_ERROR([ERROR! Unknown site $BBSSITE, see site/])
+  fi
+fi
 AC_SUBST(BBSSITE)
 
 AH_TEMPLATE([USE_SSL],
