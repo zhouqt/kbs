@@ -302,7 +302,7 @@
 		<table width="90%" border="0" cellspacing="0" cellpadding="1" class="b1">
 		<tr>
 			<td width="16"><img src="/images/open.gif" border="0"></td>
-			<td><a href="/mainpage.php" target="f3"><img src="/images/home.gif" border="0" alt="首页" align="absmiddle"> 首页导读</a></td>
+			<td><a href="/mainpage.html" target="f3"><img src="/images/home.gif" border="0" alt="首页" align="absmiddle"> 首页导读</a></td>
 		</tr>
 		<tr>
 			<td width="16"><img src="/images/open.gif" border="0"></td>
