@@ -31,7 +31,7 @@ void getcross2(char *filepath, char *board, struct userec *user)
     }
 	normal_file=1;           
 
-	write_header2(of, board, save_title, user, 0);
+	write_header2(of, board, save_title, user->userid, user->username, 0);
 	if(fgets( buf, 256, inf ) != NULL)
 	{
 		for(count=8;buf[count]!=' ';count++)
@@ -135,9 +135,11 @@ int post_cross2(char islocal, char *board)
     }
 	else
     {
+		struct userec *user = getcurrusr();
         postfile.filename[ STRLEN - 1 ] = 'S';
         postfile.filename[ STRLEN - 2 ] = 'S';
-        outgo_post(&postfile, board, getcurrusr(), save_title);
+        outgo_post2(&postfile, board, user->userid,
+				user->username, save_title);
     }
     sprintf( buf, "boards/%s/%s", board, DOT_DIR);
     if (!strcmp(board, "syssecurity")
@@ -211,8 +213,9 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct,
 int do_ccc(int ent, struct fileheader *x, char *dir,
 		char *board, char *board2, int local)
 {
-	FILE *fp, *fp2;
-	char title[512], buf[512], path[200], path2[200], i;
+	FILE *fp;//, *fp2;
+	//char title[512], buf[512], path[200], path2[200], i;
+	char path[200];
 
 	sprintf(path, "boards/%s/%s", board, x->filename);
 	fp=fopen(path, "r");
@@ -220,7 +223,7 @@ int do_ccc(int ent, struct fileheader *x, char *dir,
 		http_fatal("文件内容已丢失, 无法转载");
 	fclose(fp);
 	do_cross(ent, x, dir, board, board2, local);
-	printf("'%s' 已转贴到 %s 板.<br>\n", nohtml(title), board2);
+	printf("'%s' 已转贴到 %s 板.<br>\n", nohtml(x->title), board2);
 	printf("[<a href=\"javascript:history.go(-2)\">返回</a>]");
 }
 
@@ -266,8 +269,7 @@ int main()
 	{
 		if(!has_post_perm(currentuser, target))
 			http_fatal("错误的讨论区名称或你没有在该版发文的权限");
-		do_ccc(num+1, &f, dir, board, target, local);
-		return 0;
+		return do_ccc(num+1, &f, dir, board, target, local);
 	}
 	printf("<table><tr><td>\n");
 	printf("<font color=\"red\">转贴发文注意事项:<br>\n");

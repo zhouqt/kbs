@@ -574,15 +574,15 @@ int deny_me(char *board)   /* 判断当前用户 是否被禁止发表文章 */
     return seek_in_file(buf, getcurruserid());
 }
 
-int outgo_post(struct fileheader *fh, char *board, 
-				struct userec *user, char *title)
+int outgo_post2(struct fileheader *fh, char *board, 
+				char *userid, char *username, char *title)
 {
     FILE *foo;
 
     if (foo = fopen("innd/out.bntp", "a"))
     {
         fprintf(foo, "%s\t%s\t%s\t%s\t%s\n", board,
-                fh->filename, user->userid, user->username, title);
+                fh->filename, userid, username, title);
         fclose(foo);
     }
 }
@@ -665,19 +665,19 @@ void addsignature2(FILE *fp, struct userec *user, int sig)
 }
 
 void write_header2(FILE *fp, char *board, char *title, 
-					struct userec *user, int anony)
+					char *userid, char *username, int anony)
 {
 	if (!strcmp(board,"Announce"))
 		fprintf(fp,"发信人: %s (%s), 信区: %s       \n",
 				"SYSOP", NAME_SYSOP, board) ;
 	else
 		fprintf(fp,"发信人: %s (%s), 信区: %s       \n",
-				anony ? board : user->userid,
-				anony ? NAME_ANONYMOUS : user->username,
+				anony ? board : userid,
+				anony ? NAME_ANONYMOUS : username,
 				board) ;
 	fprintf(fp, 
 			"标  题: %s\n发信站: %s (%24.24s)\n\n",
-			title, "BBS "NAME_BBS_CHINESE"站", wwwCTime(time(0)));
+			title, "BBS "NAME_BBS_CHINESE"站", Ctime(time(0)));
 }
 
 // fp 		for destfile
@@ -732,7 +732,7 @@ post_article(char *board, char *title, char *file, struct userec *user,
 
 	fp = fopen(filepath, "w");
 	fp2 = fopen(file, "r");
-	write_header2(fp, board, title, user, anony);
+	write_header2(fp, board, title, user->userid, user->username, anony);
 	write_file2(fp, fp2);
 	fclose(fp2);
 	if (!anony)
@@ -750,7 +750,7 @@ post_article(char *board, char *title, char *file, struct userec *user,
     {
         post_file.filename[ STRLEN - 1 ] = 'S';
         post_file.filename[ STRLEN - 2 ] = 'S';
-        outgo_post(&post_file, board, user, title);
+        outgo_post2(&post_file, board, user->userid, user->username, title);
     }
 
     setbfile( buf, board, DOT_DIR);
@@ -1946,3 +1946,168 @@ int addtooverride2(char *uident, char *exp)
         return -3;
     return n;
 }
+
+int mail_file(char *tmpfile, char *userid, char *title)
+{
+    struct fileheader newmessage ;
+    struct stat st ;
+    char fname[STRLEN], filepath[STRLEN];
+	char buf[256];
+
+    memset(&newmessage, 0, sizeof(newmessage)) ;
+    strncpy(newmessage.owner, getcurruserid(), STRLEN) ;
+    strncpy(newmessage.title, title, STRLEN) ;
+    //strncpy(save_title,newmessage.title,STRLEN) ;
+
+    setmailpath(filepath, userid);
+    if(stat(filepath, &st) == -1)
+   	{
+        if(mkdir(filepath, 0755) == -1)
+            return -1 ;
+    }
+   	else
+   	{
+        if(!(st.st_mode & S_IFDIR))
+            return -1 ;
+    }
+
+	get_unifile(fname, userid, 1);
+    strcpy(newmessage.filename, fname) ;
+    setmailfile(filepath, userid, fname) ;
+
+    sprintf(buf, "cp %s %s", tmpfile, filepath) ;
+    system(buf);
+	/* 不用处理 tmpfile, 例如删除 tmpfile...
+	 * 处理tmpfile不是 mail_file() 的任务 */
+
+    setmailfile(buf, userid, DOT_DIR);
+    if(append_record(buf, &newmessage, sizeof(newmessage)) == -1)
+        return -1 ;
+
+    sprintf(buf, "mailed %s ", userid);
+    report(buf);
+    return 0 ;
+}
+
+int post_file(char *filename, postinfo_t *pi)
+{
+	FILE *fp;
+	FILE *fp2;
+    struct fileheader pf;
+	char filepath[STRLEN];
+	char buf[STRLEN];
+
+	memset(&pf, 0, sizeof(pf));
+	if (get_unifile(buf, pi->board, 0) == -1)
+		return -1;
+	setbfile(filepath, pi->board, buf);
+	strcpy(pf.filename, buf);
+	strncpy(pf.owner, pi->userid, STRLEN);
+	strncpy(pf.title, pi->title, STRLEN);
+	pf.accessed[0] = pi->access & 0xFF;
+	pf.accessed[1] = (pi->access >> 8) & 0xFF;
+	fp = fopen(filepath, "w");
+	fp2 = fopen(filename, "r");	
+	write_header2(fp, pi->board, pi->title, pi->userid, pi->username,
+		   	pi->anony);
+	write_file2(fp, fp2);
+	fclose(fp2);
+	fclose(fp);
+    if ( pi->local == 1 ) /* local save */
+	{
+		pf.filename[ STRLEN - 1 ] = 'L';
+		pf.filename[ STRLEN - 2 ] = 'L';
+	}
+    else
+	{
+		pf.filename[ STRLEN - 1 ] = 'S';
+		pf.filename[ STRLEN - 2 ] = 'S';
+		outgo_post2(&pf, pi->board, pi->userid, pi->username, pi->title);
+	}
+	setbfile(filepath, pi->board, DOT_DIR);
+	if (append_record(filepath, &pf, sizeof(pf)) == -1)
+   	{
+		sprintf(buf, "post file '%s' on '%s': append_record failed!",
+				pf.title, pi->board);
+		report(buf);
+		return -1;
+	}
+	sprintf(buf,"posted file '%s' on '%s'", pf.title, pi->board);
+	report(buf);
+
+	return 0;
+}
+
+int chk_currBM1(char *BMstr)   /* Bigman:2001.2.19 根据输入的版主名单 判断当前user是否是版主 */
+{
+    char *ptr;
+    char BMstrbuf[STRLEN-1];
+
+    strcpy(BMstrbuf,BMstr);
+    ptr=strtok(BMstrbuf,",: ;|&()\0\n");
+    while(1)
+    {
+        if(ptr == NULL)
+            return NA;
+        if(!strcmp(ptr,getcurruserid()/*,strlen(currentuser->userid)*/))
+            return YEA;
+        ptr=strtok(NULL,",: ;|&()\0\n");
+    }
+}
+
+char * setmailpath( char *buf, char *userid )  /* 取 某用户 的mail */
+{
+    if (isalpha(userid[0]))  /* 加入错误判断,提高容错性, alex 1997.1.6*/
+        sprintf( buf, "mail/%c/%s", toupper(userid[0]), userid );
+    else
+        sprintf( buf, "mail/wrong/%s", userid);
+    return buf;
+}
+
+/*
+ * get_unifile() 用于获得一个独一无二的文件.
+ *     filename  文件名缓冲区
+ *     key       关键字, 可以是版名或者是用户名
+ *     mode      == 0, 表示 filename 是发表文章用的文件名
+ *                     此时 key 是版名
+ *               == 1, 表示 filename 是投递邮件用的文件名
+ *                     此时 key 是用户名
+ */
+int get_unifile(char *filename, char *key, int mode)
+{
+    int fd;
+	char *ip;
+    char filepath[STRLEN];
+    int now; /* added for mail to SYSOP: Bigman 2000.8.11 */
+
+    now=time(NULL);
+    sprintf(filename, "M.%d.A", now) ;
+	if (mode == 0)
+	{
+		if (getbcache(key) == NULL)
+			return -1;
+		setbfile(filepath, key, filename);
+	}
+	else
+	{
+		if (searchuser(key) == 0)
+			return -1;
+    	setmailfile(filepath, key, filename);
+	}
+    ip = strrchr(filename, 'A') ;
+    while((fd = open(filepath, O_CREAT|O_EXCL|O_WRONLY, 0644)) == -1)
+   	{
+        if(*ip == 'Z')
+            ip++,*ip = 'A', *(ip + 1) = '\0' ;
+        else
+            (*ip)++ ;
+		if (mode == 0)
+			setbfile(filepath, key, filename);
+		else
+			setmailfile(filepath, key, filename);
+    }
+    close(fd) ;
+
+	return 0;
+}
+

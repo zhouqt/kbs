@@ -1,7 +1,7 @@
 #if !defined BOARDRC_H
 #define BOARDRC_H
 
-#define BRC_MAXSIZE     50000
+/*#define BRC_MAXSIZE     50000*/
 #define BRC_MAXNUM      60
 #define BRC_STRLEN      15
 #define BRC_ITEMSIZE    (BRC_STRLEN + 1 + BRC_MAXNUM * sizeof( int ))
