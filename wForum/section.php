@@ -46,7 +46,7 @@ if (isErrFounded()) {
 	</td></tr>
 	</TABLE>
 <?php
-	showSecs($secNum,$_COOKIE['ShowSecBoards'.$secNum]=='Y');
+	showSecs($secNum,0,true);
 	if (isErrFounded()) {
 		html_error_quit();
 	} else {
