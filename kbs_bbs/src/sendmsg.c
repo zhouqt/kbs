@@ -492,7 +492,7 @@ void r_msg()
             first = 0;
         }
         
-        strncpy(uid, head.id, IDLEN);
+        strncpy(uid, head.id, IDLEN+2);
         pid = head.frompid;
         uin = t_search(uid, pid);
         if(head.mode==3||uin==NULL) canreply = 0;

@@ -184,7 +184,7 @@ int receive_webmsg(int destutmp, char *destid, int *srcutmp, char *srcid,
     if ((ptr2 = strchr(ptr, ' ')) == NULL)
         goto receive_failed;
     *ptr2++ = '\0';
-    strncpy(srcid, ptr, IDLEN);
+    strncpy(srcid, ptr, IDLEN+2);
     srcid[IDLEN] = '\0';
     *srcutmp = atoi(ptr2);
 	if ((ptr = strchr(ptr2, ' ')) == NULL)
@@ -549,12 +549,12 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
     head.time = time(0);
     head.sent = 0;
     head.mode = mode;
-    strncpy(head.id, currentuser->userid, IDLEN);
+    strncpy(head.id, currentuser->userid, IDLEN+2);
     head.frompid = getuinfopid();
     head.topid = uin->pid;
     memcpy(&head2, &head, sizeof(struct msghead));
     head2.sent = 1;
-    strncpy(head2.id, uident, IDLEN);
+    strncpy(head2.id, uident, IDLEN+2);
     
 //    now = time(0);
 //    timestr = ctime(&now) + 11;
