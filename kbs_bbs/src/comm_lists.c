@@ -228,17 +228,20 @@ static const struct scommandlist sysconf_cmdlist[] = {
 void decodestr(register char *str)
 {
     register char ch;
-    int n;
+    int n, i=0;
+    char buf[512];
 
     while ((ch = *str++) != '\0')
         if (ch != '\01')
-            outc(ch);
+            buf[i++]=ch;
         else if (*str != '\0' && str[1] != '\0') {
             ch = *str++;
             n = *str++;
             while (--n >= 0)
-                outc(ch);
+                buf[i++]=ch;
         }
+    buf[i]=0;
+    outs(buf);
 }
 
 typedef int (*CMD_FUNC) ();
