@@ -671,6 +671,7 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
     char* ptr=l->curr;
     int len=l->currlen;
     int ty=l->currty;
+    clrtoeol();
     if (stuffmode) {
         char buf[256];
 
@@ -1018,6 +1019,7 @@ int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
         }
         if (!header || (!((i == 0) && ((!strncmp(l.curr, "发信人: ", 8) || (!strncmp(l.curr, "寄信人: ", 8))))) &&
                         !((i == 1) && !strncmp(l.curr, "标  题: ", 8)) && !((i == 2) && !strncmp(l.curr, "发信站: ", 8)) && !((i == 3) && (l.currlen == 0)))) {
+            move(t_lines/2+1+i, 0);
             offsetln = t_lines/2+1;
             mem_printline(&l, fn, ptr);
             offsetln = 0;
