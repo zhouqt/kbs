@@ -159,64 +159,10 @@ int prepf(int fp,struct pattern_image** ppatt_img,size_t* patt_image_len)
 
 int mgrep_str(char *text, int num,struct pattern_image* patt_img)
 {
-    register char r_newline = '\n';
-    unsigned char buf_text[MAXLINE];
-    register int buf_end, num_read, i = 0, j, start, end, residue = 0;
-
-
-    if (INVERSE && ONLYCOUNT)
-        countline(text, num);
-
-    start = 0;
-
-    while (text[start] != r_newline && start < num)
-        start++;
-    if (start > MAXLINE - 2)
-        return -1;
-
-    buf_text[0] = '\n';         /* initial case */
-    strncpy(buf_text + 1, text, start);
-    buf_text[start + 1] = '\n'; /* initial case */
-
     if (patt_img->SHORT)
-        m_short(buf_text, 0, start + 1,patt_img);
+        m_short(text, 0, num-1, patt_img);
     else
-        monkey1(buf_text, 0, start + 1,patt_img);
-
-    if (FILENAMEONLY && num_of_matched) {
-        return num_of_matched;
-    }
-
-    if (start == num)           /*如果都等于总长度了，显然就一行 */
-        return 0;
-
-    buf_end = end = num - 1;
-    while (text[end] != r_newline && end >= 0)
-        end--;                  /*最后一行无\n的 */
-
-    residue = buf_end - end + 1;
-    /*text[start - 1] = r_newline;*/
-    if (patt_img->SHORT)
-        m_short(text, start, end, patt_img);
-    else
-        monkey1(text, start, end, patt_img);
-    if (FILENAMEONLY && num_of_matched) {
-        return num_of_matched;
-    }
-
-    if (residue > MAXLINE - 2)
-        return -1;
-    /*
-     * end of while(num_read = ... 
-     */
-    if (residue > 1) {
-        strncpy(buf_text + 1, text + end, residue);
-        text[residue] = '\n';
-        if (patt_img->SHORT)
-            m_short(buf_text, 0, residue,patt_img);
-        else
-            monkey1(buf_text, 0, residue,patt_img);
-    }
+        monkey1(text, 0, num-1, patt_img);
     return num_of_matched;
 }                               /* end mgrep */
 
