@@ -241,6 +241,10 @@ static int do_select_internal(struct _select_def *conf, int key)
     	}
     }
     switch (key) {
+    case KEY_SELCHANGE:
+        return SHOW_SELCHANGE;
+    case KEY_DIRCHANGE:
+        return SHOW_DIRCHANGE;
     case KEY_ONSIZE: /*处理窗口大小变化事件*/
         if (conf->on_size)
             return (*conf->on_size)(conf);

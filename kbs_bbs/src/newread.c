@@ -389,8 +389,11 @@ static int read_getdata(struct _select_def *conf, int pos, int len)
             dingcount=currboard->toptitle;
         }
 
-        if (pos>count+dingcount)
-            return SHOW_DIRCHANGE;
+        if (pos>count+dingcount) {
+            conf->new_pos=count+dingcount;
+            list_select_add_key(conf,KEY_DIRCHANGE);
+            return SHOW_SELCHANGE;
+	}
 	if (pos<=count) {
           if (lseek(arg->fd, arg->ssize * (pos - 1), SEEK_SET) != -1) {
             if ((n = read(arg->fd, arg->data, arg->ssize * len)) != -1) {

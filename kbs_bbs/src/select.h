@@ -32,6 +32,8 @@
 #define KEY_TALK		0x1005  /*TALK  REQUEST*/
 #define KEY_TIMEOUT		0x1006  /*超时*/
 #define KEY_ONSIZE          0x1007  /*窗口大小改变*/
+#define KEY_DIRCHANGE	    0x1008  /*目录数据改变*/
+#define KEY_SELCHANGE       0x1009  /*选择改变*/
 #define KEY_INVALID         0xFFFF
 
 #define KEY_BUF_LEN         4 /*一个内部的key序列长度*/
