@@ -43,7 +43,7 @@
             echo "<tr><td>" . ($i+$start) . "</td>";
             echo "<td>" . ($users[$i]["isfriend"]?"¡Ì" : "  ") . "</td>";
             echo "<td><a href=\"bbsqry.php?userid=" . $users[$i]["userid"] . "\">" . $users[$i]["userid"] . "</a></td>";
-            echo "<td><a href=\"bbsqry.php?userid=" . $users[$i]["userid"] . "\">" . $users[$i]["username"] . "</a></td>";
+            echo "<td><a href=\"bbsqry.php?userid=" . $users[$i]["userid"] . "\">" . htmlspecialchars($users[$i]["username"]) . "</a></td>";
             echo "<td>" . $users[$i]["userfrom"] . "</td>";
             echo "<td>" . $users[$i]["mode"] . "</td>";
             echo "<td>" . $users[$i]["idletime"]!=0?$users[$i]["idletime"]:" " . "</td></tr>\n";
