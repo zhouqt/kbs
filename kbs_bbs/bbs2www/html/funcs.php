@@ -3,6 +3,10 @@
 	 * File included by all other php scripts.
 	 * $Id$
 	 */
+if (!define('_BBS_FUNCS_PHP_'))
+{
+define('_BBS_FUNCS_PHP_', 1);
+
 if (!isset($topdir))
     $topdir=".";
 @dl("$topdir/../libexec/bbs/libphpbbslib.so");
@@ -34,6 +38,21 @@ $dir_modes = array(
 	"AUTHOR" => 7,
 	"TITLE" => 8
 );
+/**
+ * Constants of board flags, packed in an array.
+ */
+$BOARD_FLAGS = array(
+	"VOTE" => 0x01,
+	"NOZAP" => 0x02,
+	"READONLY" => 0x04,
+	"JUNK" => 0x08,
+	"ANONY" => 0x10,
+	"OUTGO" => 0x20,
+	"CLUBREAD" => 0x40,
+	"CLUBWRITE" => 0x80,
+	"CLUBHIDE" => 0x100,
+	"ATTACH" => 0x200
+	);
 $filename_trans = array(" " => "_", 
 	";" => "_", 
 	"|" => "_",
@@ -410,4 +429,5 @@ if (!isset($needlogin)&&($loginok!=1)&&($_SERVER["PHP_SELF"]!="/bbslogin.php")) 
 	return;
 }
 
+} // !define ('_BBS_FUNCS_PHP_')
 ?>
