@@ -28,7 +28,7 @@ struct questype {
 } * quests;
 int questst=0;
 
-typedef char statinfo[20];
+typedef char statinfo[35];
 statinfo* stats;
 int statst=0;
 
@@ -120,7 +120,7 @@ void load_quests(char* filename)
         ldata.l_start=0;
         if(fcntl(fd, F_SETLKW, &ldata)!=-1){
             read(fd, &questst, sizeof(questst));
-            quests=(struct questype*)malloc(sizeof(struct questype)*20);
+            quests=(struct questype*)malloc(sizeof(struct questype)*TOTALNUM);
             read(fd, quests, sizeof(struct questype)*questst);
             	
             ldata.l_type = F_UNLCK;
@@ -150,18 +150,71 @@ void save_quests(char* filename)
     }
 }
 
-void save_stats(char* filename, statinfo a)
+void check_stats(char* filename)
 {
-    int fd;
+    int fd, i, saveagain=0;
     struct flock ldata;
+    struct stat st;
+    if((fd = open(filename, O_RDONLY, 0644))!=-1) {
+        ldata.l_type=F_RDLCK;
+        ldata.l_whence=0;
+        ldata.l_len=0;
+        ldata.l_start=0;
+        if(fcntl(fd, F_SETLKW, &ldata)!=-1){
+            read(fd, &i, sizeof(i));
+            if(i!=0x8080) {
+                if(statst) free(stats);
+                saveagain = 1;
+                lseek(fd, 0, SEEK_SET);
+                fstat(fd, &st);
+                statst = st.st_size/20;
+                stats = malloc(statst*sizeof(statinfo));
+                for(i=0;i<statst;i++) {
+                    read(fd, stats+i*sizeof(statinfo), 20);
+                    strcpy(stats[i]+21,"unknown");
+                }
+            	
+                ldata.l_type = F_UNLCK;
+                fcntl(fd, F_SETLKW, &ldata);
+            }
+        }
+        close(fd);
+    }
+    if(saveagain) {
     if((fd = open(filename, O_WRONLY|O_CREAT, 0644))!=-1) {
         ldata.l_type=F_WRLCK;
         ldata.l_whence=0;
         ldata.l_len=0;
         ldata.l_start=0;
         if(fcntl(fd, F_SETLKW, &ldata)!=-1){
+            i=0x8080;
+            write(fd, &i, sizeof(i));
+            write(fd, stats, statst*sizeof(statinfo));
+            	
+            ldata.l_type = F_UNLCK;
+            fcntl(fd, F_SETLKW, &ldata);
+        }
+        close(fd);
+    }
+    }
+}
+
+void save_stats(char* filename, statinfo a)
+{
+    int fd, i;
+    struct flock ldata;
+    check_stats(filename);
+    if((fd = open(filename, O_WRONLY|O_CREAT, 0644))!=-1) {
+        ldata.l_type=F_WRLCK;
+        ldata.l_whence=0;
+        ldata.l_len=0;
+        ldata.l_start=0;
+        if(fcntl(fd, F_SETLKW, &ldata)!=-1){
+            lseek(fd, 0, SEEK_SET);
+            i=0x8080;
+            write(fd, &i, sizeof(i));
             lseek(fd, 0, SEEK_END);
-            write(fd, a, 20);
+            write(fd, a, sizeof(statinfo));
             	
             ldata.l_type = F_UNLCK;
             fcntl(fd, F_SETLKW, &ldata);
@@ -175,6 +228,10 @@ void load_stats(char* filename)
     int fd;
     struct flock ldata;
     struct stat st;
+    int i;
+    check_stats(filename);
+    if(statst) free(stats);
+    statst=0;
     if((fd = open(filename, O_RDONLY, 0644))!=-1) {
         ldata.l_type=F_RDLCK;
         ldata.l_whence=0;
@@ -182,9 +239,10 @@ void load_stats(char* filename)
         ldata.l_start=0;
         if(fcntl(fd, F_SETLKW, &ldata)!=-1){
             fstat(fd, &st);
-            statst = st.st_size/20;
-            stats = malloc(statst*20);
-            read(fd, stats, statst*20);
+            statst = (st.st_size-4)/sizeof(statinfo);
+            stats = malloc(statst*sizeof(statinfo));
+            read(fd, &i, sizeof(i));
+            read(fd, stats, statst*sizeof(statinfo));
             	
             ldata.l_type = F_UNLCK;
             fcntl(fd, F_SETLKW, &ldata);
@@ -214,6 +272,7 @@ void done()
 {
     if(userst) free(users);
     if(questst) free(quests);
+    if(statst) free(stats);
 }
 
 int usermenu()
@@ -294,9 +353,10 @@ int usermenu()
     setfcolor(WHITE,0);
 
     move(19,22);
-    prints("创建或更改题["); setfcolor(GREEN,1); prints("a"); setfcolor(WHITE,0); prints("] ");
+    prints("创建["); setfcolor(GREEN,1); prints("a"); setfcolor(WHITE,0); prints("] ");
     prints("统计结果["); setfcolor(GREEN,1); prints("s"); setfcolor(WHITE,0); prints("] ");
     prints("管理题["); setfcolor(GREEN,1); prints("m"); setfcolor(WHITE,0); prints("] ");
+    prints("注册列表["); setfcolor(GREEN,1); prints("l"); setfcolor(WHITE,0); prints("] ");
     move(20,22);
     prints("要做别人的题,请输入他的id");
 //    setfcolor(WHITE,1);
@@ -309,6 +369,8 @@ int usermenu()
               return 3;
         if(toupper(buf[0])=='M'&&!buf[1])
               return 4;
+        if(toupper(buf[0])=='L'&&!buf[1])
+              return 5;
         else if(buf[0]){
             tuid = getuser(buf, &lookuser);
             if(tuid) {
@@ -375,7 +437,7 @@ void new_friendtest()
     }
     getdata(1,0,"请输入题数[1--20]", buf, 3, true, NULL, true);
     questst=atoi(buf);
-    if(questst<1||questst>20) {
+    if(questst<1||questst>TOTALNUM) {
         questst=0;
         return;
     }
@@ -506,6 +568,8 @@ void do_test()
                 move(j,0);
                 prints(" %-12s %-3d        %-3d", users[i].userid, users[i].tried, users[i].got);
                 if(j>=20&&i<userst-1) {
+                    getdata(22,0,"按\033[32;1mq\033[m退出:",ans,2,true,NULL,true);
+                    if(toupper(ans[0])=='Q') break;
                     pressreturn();
                     do_test_reset();
                     move(1,0);
@@ -595,6 +659,7 @@ doitagain:
         save_users(FRIENDTOP);
     }
     sethomestat(direct, lookuser->userid);
+    strcpy(answer+21, currentuser->userid);
     save_stats(direct, answer);
     
     do_test_reset();
@@ -622,7 +687,7 @@ void show_stat()
     char direct[PATHLEN];
     struct stat st;
     int i, j, k, l, m;
-    char ans[3], buf[122], buf2[10], answer[20];
+    char ans[3], buf[122], buf2[10], answer[TOTALNUM];
     time_t span;
 
     do_test_reset();
@@ -685,7 +750,7 @@ void admin_stat()
     char direct[PATHLEN];
     struct stat st;
     int i, j, k, l, m;
-    char ans[3], buf[122], buf2[10], answer[20];
+    char ans[3], buf[122], buf2[10], answer[TOTALNUM];
     time_t span;
 
     sethome(direct, currentuser->userid);
@@ -699,8 +764,6 @@ void admin_stat()
     sethometop(direct, currentuser->userid);
     load_users(direct);
     sort_users();
-    sethomestat(direct, currentuser->userid);
-    load_stats(direct);
 
     while(1) {
         admin_reset();
@@ -713,9 +776,53 @@ void admin_stat()
         prints("统计信息:\n共 %d 人做过你的测试\n平均分: %d",
         userst, j);
 
-        getdata(7,0,"选择[q-退出,d-删除,e-修改,a-添加,r-重置,s-察看] ",ans,2,true,NULL,true);
+        getdata(7,0,"选择[q-退出,d-删除,e-修改,a-添加,r-排行重置,s-察看,l-列表] ",ans,2,true,NULL,true);
         switch(toupper(ans[0])) {
             case 'Q': return;
+            case 'L':
+                sethomestat(direct, currentuser->userid);
+                load_stats(direct);
+                admin_reset();
+                move(1,0);
+                prints("用户            答案列表\n");
+                prints("答案            ");
+                for(j=0;j<questst;j++){
+                    l=0;
+                    for(k=0;k<5;k++){
+                        if(!quests[j].quest[k][0]) break;
+                        if(quests[j].value[k]>quests[j].value[l])
+                            l=k;
+                    }
+                    prints("%d ", l+1);
+                }
+                k=3;
+                for(i=0;i<statst;i++) {
+                    move(k,0);
+                    prints("%-16s", stats[i]+21);
+                    for(j=0;j<questst;j++)
+                        prints("%d ", stats[i][j]);
+                    k++;
+                    if(k>20&&i<statst-1) {
+                        getdata(22,0,"按\033[32;1mq\033[m退出:",ans,2,true,NULL,true);
+                        if(toupper(ans[0])=='Q') break;
+                        admin_reset();
+                        move(1,0);
+                        prints("用户            答案列表\n");
+                        prints("答案            ");
+                        for(j=0;j<questst;j++){
+                            l=0;
+                            for(k=0;k<5;k++){
+                                if(!quests[j].quest[k][0]) break;
+                                if(quests[j].value[k]>quests[j].value[l])
+                                    l=k;
+                            }
+                            prints("%d ", l);
+                        }
+                        k=3;
+                    }
+                }
+                pressreturn();
+                break;
             case 'D':
                 sprintf(buf,"输入删除项(1--%d, all全删):",questst);
                 do{
@@ -743,7 +850,7 @@ void admin_stat()
                 break;
             case 'A':
                 i=questst;
-                if(i>=20){
+                if(i>=TOTALNUM){
                     move(8,0);
                     prints("题目不能超过20个!\n");
                     pressreturn();
@@ -877,6 +984,44 @@ againb:
     }
 }
 
+void sys_reset()
+{
+    resetcolor();
+    clear();
+    move(0,0);
+    setfcolor(YELLOW,1);
+    setbcolor(BLUE);
+    prints("   FRIENDTEST      用户列表 %s                                                 ", currentuser->userid);
+    resetcolor();
+    prints("\n");
+}
+
+void sys_list()
+{
+    char ans[3];
+    int i,j,k;
+    char direct[PATHLEN];
+    sys_reset();
+    load_users(FRIENDTOP);
+    move(1,0);
+    prints("用户            做题人数\n");
+    k=2;
+    for(i=0;i<userst;i++) {
+        move(k,0);
+        prints("%-16s %d", users[i].userid, users[i].tried);
+        k++;
+        if(k>20&&i<userst-1) {
+            getdata(22,0,"按\033[32;1mq\033[m退出:",ans,2,true,NULL,true);
+            if(toupper(ans[0])=='Q') break;
+            sys_reset();
+            move(1,0);
+            prints("用户            做题人数\n");
+            k=2;
+        }
+    }
+    pressreturn();
+}
+
 int friend_main()
 {
     int i;
@@ -895,6 +1040,9 @@ int friend_main()
                 break;
             case 4:
                 admin_stat();
+                break;
+            case 5:
+                sys_list();
                 break;
         }
     }
