@@ -10,7 +10,7 @@ int calcboard(struct boardheader * bh, void * arg)
     char * ptr;
     int size=sizeof(struct fileheader);
     setbdir(0, fn, bh->filename);
-    printf("%s:\n", bh->filename);
+    printf("\r%s:\n", bh->filename);
     if ((fd = open(fn, O_RDWR, 0664)) == -1) {
         bbslog("user", "%s", "recopen err");
         return 0;      /* 创建文件发生错误*/
