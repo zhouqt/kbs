@@ -54,7 +54,7 @@ char *getenv();
 char *sysconf_str();
 char *Ctime();
 struct user_info *t_search();
-void r_msg();
+void r_msg_sig(int signo);
 int friend_login_wall();
 int listmode;
 int numofsig = 0;
@@ -355,7 +355,8 @@ void system_init()
     signal(SIGTSTP, SIG_IGN);
     signal(SIGTTIN, SIG_IGN);
     signal(SIGUSR1, talk_request);
-    signal(SIGUSR2, r_msg);
+    msg_count=0;
+    signal(SIGUSR2, r_msg_sig);
 }
 
 void system_abort()

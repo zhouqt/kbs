@@ -165,6 +165,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
 void u_exit();
 
 /* sendmsg.c */
+extern int msg_count;
 int s_msg();
 void r_lastmsg();
 int show_allmsgs();

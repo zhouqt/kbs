@@ -250,7 +250,13 @@ int wall()
     return 0;
 }
 
-void r_msg(int signo)
+int msg_count;
+void r_msg_sig(int signo)
+{
+    msg_count++;
+}
+
+void r_msg()
 {
     FILE *fp;
     char buf[256];
@@ -272,7 +278,7 @@ void r_msg(int signo)
     int good_id;
     char usid[STRLEN];
 
-
+	msg_count--;
     getyx(&y, &x);
     tmpansi = showansi;
     showansi = 1;
@@ -559,12 +565,11 @@ void r_msg(int signo)
     RMSGCount--;
     if (0 == RMSGCount)
         RMSG = false;
-    signal(SIGUSR2, r_msg);
     return;
 }
 
 void r_lastmsg()
 {
     f_offset = 0;
-    r_msg(0);
+    r_msg();
 }

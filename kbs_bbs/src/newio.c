@@ -73,7 +73,9 @@ void ochar(char c)
         oflush();
     }
     outbuf[obufsize++] = c;
-    /* need to change IAC to IAC IAC */
+    /*
+     * need to change IAC to IAC IAC 
+     */
     if (((unsigned char) c) == IAC) {
         if (obufsize > OBUFSIZE - 1) {  /* doin a oflush */
             oflush();
@@ -101,7 +103,9 @@ int raw_write(int fd, char *buf, int len)
             } else
                 bufcounter += len;
         } else {
-            /* time clocked, clear bufcounter */
+            /*
+             * time clocked, clear bufcounter 
+             */
             bufcounter = len;
         }
         lastcounter = nowcounter;
@@ -141,20 +145,22 @@ int raw_read(int fd, char *buf, int len)
 }
 
 void output(s, len)
-    char *s;
-    int len;
+char *s;
+int len;
 {
-    /* need to change IAC to IAC IAC
-       if(obufsize+len > OBUFSIZE) {
-       #ifdef SSHBBS
-       ssh_write(0,outbuf,obufsize) ;
-       #else
-       write(0,outbuf,obufsize) ;
-       #endif
-       obufsize = 0 ;
-       }
-       memcpy(outbuf+obufsize, s, len) ;
-       obufsize+=len ; */
+    /*
+     * need to change IAC to IAC IAC
+     * if(obufsize+len > OBUFSIZE) {
+     * #ifdef SSHBBS
+     * ssh_write(0,outbuf,obufsize) ;
+     * #else
+     * write(0,outbuf,obufsize) ;
+     * #endif
+     * obufsize = 0 ;
+     * }
+     * memcpy(outbuf+obufsize, s, len) ;
+     * obufsize+=len ; 
+     */
     int i;
 
     for (i = 0; i < len; i++)
@@ -198,7 +204,9 @@ void set_alarm(int set_timeout, void (*timeout_func) (void *), void *data)
 int num_in_buf()
 {
     /*---   Modified according to zhch@dii	period	2000-11-21	---*/
-    /*    return icurrchar - ibufsize ; */
+    /*
+     * return icurrchar - ibufsize ; 
+     */
     int n;
 
     if ((n = icurrchar - ibufsize) < 0)
@@ -255,10 +263,10 @@ static int telnet_machine(unsigned char ch)
         break;
     case 6:
         /*
-           if (ch<120&&ch>=80)
-           t_columns=ch;
-           else
-           t_columns=80;
+         * if (ch<120&&ch>=80)
+         * t_columns=ch;
+         * else
+         * t_columns=80;
          */
         if (ch == IAC)
             telnet_state = 4;
@@ -273,10 +281,10 @@ static int telnet_machine(unsigned char ch)
         break;
     case 8:
         /*
-           if (ch<35&&ch>=24)
-           t_lines=ch;
-           else
-           t_lines=24;
+         * if (ch<35&&ch>=24)
+         * t_lines=ch;
+         * else
+         * t_lines=24;
          */
         if (ch == IAC)
             telnet_state = 4;
@@ -344,8 +352,12 @@ int igetch()
                 hifd = i_newfd + 1;
         }
         sr = select(hifd, &readfds, NULL, NULL, &to);
-	if (sr < 0 && errno == EINTR && talkrequest )
-	    return KEY_TALK;
+        if (sr < 0 && errno == EINTR) {
+            if (talkrequest)
+                return KEY_TALK;
+            while (msg_count)
+                r_msg();
+        }
         if (sr < 0 && errno != EINTR)
             abort_bbs(0);
         if (sr == 0) {
@@ -384,8 +396,12 @@ int igetch()
                         to.tv_sec = IDLE_TIMEOUT;
                 }
                 sr = select(hifd, &readfds, NULL, &xds, &to);
-		if (sr < 0 && errno == EINTR && talkrequest )
-	    		return KEY_TALK;
+                if (sr < 0 && errno == EINTR) {
+                    if (talkrequest)
+                        return KEY_TALK;
+                    while (msg_count)
+                        r_msg();
+                }
                 if (sr == 0 && alarm_timeout) {
                     i_timeout = 0;
                     (*i_timeout_func) (timeout_data);
@@ -424,7 +440,9 @@ int igetch()
             goto igetagain;
         }
 
-        /* add by KCN for GB/BIG5 encode */
+        /*
+         * add by KCN for GB/BIG5 encode 
+         */
         if (convcode) {
             inbuf = big2gb(inbuffer + 1, &ibufsize, 0);
             if (ibufsize == 0) {
@@ -433,7 +451,9 @@ int igetch()
             }
         } else
             inbuf = inbuffer + 1;
-        /* end */
+        /*
+         * end 
+         */
         icurrchar = 0;
         if (ibufsize > IBUFSIZE) {
             ibufsize = 0;
@@ -477,7 +497,9 @@ int igetch()
     /*---	Ctrl-T disabled as anti-idle key	period	2000-12-05	---*/
     if (Ctrl('T') != c)
         uinfo.freshtime = now;
-    /* add by KCN , decrease temp_numposts */
+    /*
+     * add by KCN , decrease temp_numposts 
+     */
     if (lasttime + 60 * 60 * 8 < now) {
         lasttime = now;
         if (temp_numposts > 0)
@@ -501,14 +523,13 @@ int igetkey()
 
         check_calltime();
 
-        if ((ch==KEY_TALK)&&talkrequest) {
-        	if(uinfo.mode!=CHAT1&&uinfo.mode!=CHAT2&&uinfo.mode!=CHAT3&&uinfo.mode!=CHAT4
-        		&&uinfo.mode!=TALK&&uinfo.mode!=PAGE) {
-		        talkreply();
-		        return KEY_REFRESH;
-		    } else
-		    	return KEY_TALK;
-    	}
+        if ((ch == KEY_TALK) && talkrequest) {
+            if (uinfo.mode != CHAT1 && uinfo.mode != CHAT2 && uinfo.mode != CHAT3 && uinfo.mode != CHAT4 && uinfo.mode != TALK && uinfo.mode != PAGE) {
+                talkreply();
+                return KEY_REFRESH;
+            } else
+                return KEY_TALK;
+        }
         if (mode == 0) {
             if (ch == KEY_ESC)
                 mode = 1;
@@ -554,7 +575,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
     if (prompt)
         prints("%s", prompt);
 //    y = line;
-    good_getyx(&y,&x);
+    good_getyx(&y, &x);
 //    col += (prompt == NULL) ? 0 : num_noans_chr(prompt);
 //    x = col;
     clen = strlen(buf);
@@ -564,7 +585,9 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 
     if (!scrint || (echo == false)) {
         while ((ch = igetkey()) != '\r') {
-        	/* TODO: add KEY_REFRESH support */
+            /*
+             * TODO: add KEY_REFRESH support 
+             */
             if (ch == '\n')
                 break;
             if (ch == '\177' || ch == Ctrl('H')) {
@@ -585,7 +608,9 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
                 continue;
             }
             buf[clen++] = ch;
-            /* move(line, col + clen);  Leeward 98.02.23  -- removed by wwj 2001/5/8 */
+            /*
+             * move(line, col + clen);  Leeward 98.02.23  -- removed by wwj 2001/5/8 
+             */
             if (echo)
                 ochar(ch);
             else
@@ -602,7 +627,9 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             refresh();
         }
         ch = igetkey();
-        /* TODO: add KEY_REFRESH support ???*/
+        /*
+         * TODO: add KEY_REFRESH support ???
+         */
 
         if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch))
             return -ch;         /* Leeward 98.07.30 supporting msgX */
@@ -679,10 +706,10 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             outc(ch);
         } else {
             /*
-               strncpy(tmp, &buf[curr], len);
-               buf[curr] = ch;
-               buf[curr + 1] = '\0';
-               strncat(buf, tmp, len - curr);
+             * strncpy(tmp, &buf[curr], len);
+             * buf[curr] = ch;
+             * buf[curr + 1] = '\0';
+             * strncat(buf, tmp, len - curr);
              */
             int i;
 
@@ -696,9 +723,9 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
         curr++;
         clen++;
         /*
-           move(y, x);
-           prints("%s", buf);
-           move(y, x + curr);
+         * move(y, x);
+         * prints("%s", buf);
+         * move(y, x + curr);
          */
     }
     buf[clen] = '\0';
@@ -720,7 +747,9 @@ int lock_scr()
 
     modify_user_mode(LOCKSCREEN);
     clear();
-    /*lock_monitor(); */
+    /*
+     * lock_monitor(); 
+     */
     while (1) {
         move(19, 32);
         clrtobot();
@@ -734,7 +763,9 @@ int lock_scr()
             pressanykey();
         } else {
             prints("[1m[31mÆÁÄ»ÏÖÔÚÒÑ¾­½â³ýËø¶¨[m\n");
-            /*pressanykey(); */
+            /*
+             * pressanykey(); 
+             */
             break;
         }
     }
@@ -762,7 +793,9 @@ void printdash(char *mesg)
 
 void bell()
 {
-    /* change by KCN 1999.09.08    fprintf(stderr,"%c",Ctrl('G')) ; */
+    /*
+     * change by KCN 1999.09.08    fprintf(stderr,"%c",Ctrl('G')) ; 
+     */
     char sound;
 
     sound = Ctrl('G');
@@ -786,8 +819,8 @@ int pressreturn()
 }
 
 int askyn(str, defa)
-    char str[STRLEN];
-    int defa;
+char str[STRLEN];
+int defa;
 {
     int x, y;
     char realstr[STRLEN * 2];
