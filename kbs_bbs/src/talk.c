@@ -338,7 +338,7 @@ char q_id[IDLEN];
             pressanykey();
         else {
             int ch, tuid, ucount, unum;
-            char genbuf[STRLEN], buf[STRLEN];
+            char buf[STRLEN];
             struct user_info *uin;
             move(t_lines - 1, 0);
             if ((genbuf[0]) && seecount) {
