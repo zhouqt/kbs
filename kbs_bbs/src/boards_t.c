@@ -629,6 +629,8 @@ static int choose_board(int newflag, char *boardprefix)
             	modify_user_mode(SELECT);
 		if(do_select(0, NULL, genbuf)==NEWDIRECT)
             	Read();
+		if (nbrd!=newpost_buffer)
+			nbrd=newpost_buffer;
               show_brdlist(page, 1, newflag);     /*  refresh screen */
               modify_user_mode(newflag ? READNEW : READBRD);
 	      /*
