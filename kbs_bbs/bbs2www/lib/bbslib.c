@@ -2656,8 +2656,36 @@ static void generate_font_style(unsigned int *style, unsigned int *ansi_val, siz
 }
 
 /*
-#define output_ansi_javascript output_ansi_text
+static void print_raw_ansi(char *buf, size_t buflen, buffered_output_t * output)
 */
+#define js_output(buf, buflen, output) \
+do { \
+    size_t _js_i; \
+	const char *_js_ptr = buf; \
+\
+    for (_js_i = 0; _js_i < buflen; _js_i++) { \
+        switch (_js_ptr[_js_i]) { \
+        case '&': \
+            BUFFERED_OUTPUT(output, "&amp;", 5); \
+            break; \
+        case '<': \
+            BUFFERED_OUTPUT(output, "&lt;", 4); \
+            break; \
+        case '>': \
+            BUFFERED_OUTPUT(output, "&gt;", 4); \
+            break; \
+        case ' ': \
+            BUFFERED_OUTPUT(output, "&nbsp;", 6); \
+            break; \
+        case '\'': \
+            BUFFERED_OUTPUT(output, "''", 2); \
+            break; \
+        default: \
+            BUFFERED_OUTPUT(output, &(_js_ptr[_js_i]), 1); \
+        } \
+    } \
+} while (0)
+
 void output_ansi_text(char *buf, size_t buflen, 
 							buffered_output_t * output, char* attachlink)
 {
@@ -2818,6 +2846,198 @@ void output_ansi_text(char *buf, size_t buflen,
 			}	
 			outbuf_len = strlen(outbuf);
 			BUFFERED_OUTPUT(output, outbuf, outbuf_len);
+			attachShowed[i]=1;
+		}
+		free(attachFileName[i]);
+	}
+
+    BUFFERED_FLUSH(output);
+
+}
+
+#define JS_BUFFERED_OUTPUT(buf, buflen, output) \
+do { \
+    size_t _jbo_i; \
+	const char *_jbo_ptr = buf; \
+\
+    for (_jbo_i = 0; _jbo_i < buflen; _jbo_i++) { \
+        switch (_jbo_ptr[_jbo_i]) { \
+        case '\'': \
+            BUFFERED_OUTPUT(output, "''", 2); \
+            break; \
+        default: \
+            BUFFERED_OUTPUT(output, &(_jbo_ptr[_jbo_i]), 1); \
+        } \
+    } \
+} while (0)
+
+void output_ansi_javascript(char *buf, size_t buflen, 
+							buffered_output_t * output, char* attachlink)
+{
+    unsigned int font_style = 0;
+    unsigned int ansi_state;
+    unsigned int ansi_val[STRLEN];
+    int ival = 0;
+    size_t i;
+    char *ansi_begin;
+    char *ansi_end;
+    int attachmatched;
+	long attachPos[MAXATTACHMENTCOUNT];
+	long attachLen[MAXATTACHMENTCOUNT];
+	char* attachFileName[MAXATTACHMENTCOUNT];
+	enum ATTACHMENTTYPE attachType[MAXATTACHMENTCOUNT];
+	int attachShowed[MAXATTACHMENTCOUNT];
+	char outbuf[512];
+	int outbuf_len;
+	size_t article_len = buflen;
+
+    if (buf == NULL)
+        return;
+
+    STATE_ZERO(ansi_state);
+    bzero(ansi_val, sizeof(ansi_val));
+    bzero(attachShowed, sizeof(attachShowed));
+    attachmatched = 0;
+	if (attachlink != NULL)
+	{
+		long attach_len;
+		char *attachptr, *attachfilename;
+		char *extension;
+		for (i = 0; i < buflen ; i++ )
+		{
+			if (attachmatched >= MAXATTACHMENTCOUNT)
+				break;
+
+			if (((attachfilename = checkattach(buf + i, buflen - i, 
+									&attach_len, &attachptr)) != NULL))
+			{
+				extension = attachfilename + strlen(attachfilename);
+				i += (attachptr-buf-i) + attach_len - 1;
+				if (i > buflen)
+					continue;
+				attachPos[attachmatched] = attachfilename - buf;
+				attachLen[attachmatched] = attach_len;
+				attachFileName[attachmatched] = (char*)malloc(256);
+				strncpy(attachFileName[attachmatched], attachfilename, 255);
+				attachFileName[attachmatched][255] = '\0';
+				attachType[attachmatched] = ATTACH_OTHERS;
+				extension--;
+				while ((*extension != '.') && (*extension != '\0'))
+					extension--;
+				if (*extension == '.')
+				{
+					extension++;
+					if (!strcasecmp(extension, "jpg")
+						|| !strcasecmp(extension, "gif"))
+					{
+						attachType[attachmatched] = ATTACH_IMG;
+					}
+					else if (!strcasecmp(extension, "swf"))
+						attachType[attachmatched] = ATTACH_FLASH;
+					else if (!strcasecmp(extension, "jpeg")
+						|| !strcasecmp(extension, "png")
+						|| !strcasecmp(extension, "pcx")
+						|| !strcasecmp(extension, "bmp"))
+					{
+						attachType[attachmatched] = ATTACH_IMG;
+					}
+				}
+				attachmatched++;
+			}
+		}
+	}
+
+	if (attachmatched > 0)
+		article_len = attachPos[0] - ATTACHMENT_SIZE;
+
+	BUFFERED_OUTPUT(output, "document.write('", 16);
+    for (i = 0; i < article_len; i++)
+	{
+        if (STATE_ISSET(ansi_state, STATE_NEW_LINE)) {
+			BUFFERED_OUTPUT(output, "document.write('", 16);
+            STATE_CLR(ansi_state, STATE_NEW_LINE);
+            if (i < (buflen - 1) && (buf[i] == ':' && buf[i + 1] == ' ')) {
+                STATE_SET(ansi_state, STATE_QUOTE_LINE);
+                if (STATE_ISSET(ansi_state, STATE_FONT_SET))
+                    BUFFERED_OUTPUT(output, "</font>", 7);
+                /*
+                 * set quoted line styles 
+                 */
+                STYLE_SET(font_style, FONT_STYLE_QUOTE);
+                STYLE_SET_FG(font_style, FONT_COLOR_QUOTE);
+                STYLE_CLR_BG(font_style);
+                print_font_style(font_style, output);
+                BUFFERED_OUTPUT(output, &buf[i], 1);
+                STATE_SET(ansi_state, STATE_FONT_SET);
+                STATE_CLR(ansi_state, STATE_ESC_SET);
+                /*
+                 * clear ansi_val[] array 
+                 */
+                bzero(ansi_val, sizeof(ansi_val));
+                ival = 0;
+                continue;
+            } else
+                STATE_CLR(ansi_state, STATE_QUOTE_LINE);
+        }
+        if (buf[i] == 0x1b) {
+            STATE_SET(ansi_state, STATE_ESC_SET);
+        }
+		else if (STATE_ISSET(ansi_state, STATE_ESC_SET))
+		{
+            if (isalpha(buf[i]))
+				STATE_CLR(ansi_state, STATE_ESC_SET);
+        }
+		else if (buf[i] == '\n')
+		{
+            if (STATE_ISSET(ansi_state, STATE_ESC_SET)) {
+                /*
+                 *[\n or *[13;24\n */
+                size_t len;
+
+                ansi_end = &buf[i - 1];
+                len = ansi_end - ansi_begin + 1;
+                /*print_raw_ansi(ansi_begin, len, output);*/
+                STATE_CLR(ansi_state, STATE_ESC_SET);
+            }
+            if (STATE_ISSET(ansi_state, STATE_QUOTE_LINE)) {
+                /*
+                 * end of a quoted line 
+                 */
+                BUFFERED_OUTPUT(output, "</font>", 7);
+                STYLE_CLR(font_style, FONT_STYLE_QUOTE);
+                STATE_CLR(ansi_state, STATE_FONT_SET);
+            }
+            BUFFERED_OUTPUT(output, "<br />');\n", 10);
+            STATE_CLR(ansi_state, STATE_QUOTE_LINE);
+            STATE_SET(ansi_state, STATE_NEW_LINE);
+        }
+		else
+			js_output(&buf[i], 1, output);
+    }
+    if (STATE_ISSET(ansi_state, STATE_FONT_SET)) {
+        BUFFERED_OUTPUT(output, "</font>", 7);
+        STATE_CLR(ansi_state, STATE_FONT_SET);
+    }
+	if (!STATE_ISSET(ansi_state, STATE_NEW_LINE)) {
+		BUFFERED_OUTPUT(output, "<br />');\n", 10);
+	}
+	for ( i = 0; i<attachmatched ; i++ ){
+		if (!attachShowed[i]) { 
+			switch(attachType[i]) {
+			case ATTACH_IMG:
+		 		snprintf(outbuf, 511, "<br><IMG SRC=\"/images/files/img.gif\" border=\"0\">此主题相关图片如下：%s (%ld 字节)<br><A HREF=\"%s&ap=%ld\" TARGET=\"_blank\"><IMG SRC=\"%s&ap=%ld\" border=\"0\" alt=\"按此在新窗口浏览图片\" onload=\"javascript:if(this.width>screen.width-333)this.width=screen.width-333\"></A> ",attachFileName[i], attachLen[i], attachlink, attachPos[i],attachlink, attachPos[i]);
+				break;
+			case ATTACH_FLASH:
+		        snprintf(outbuf, 511, "<br>Flash动画: " "<a href=\"%s&ap=%ld\">%s</a> (%ld 字节)<br>" "<OBJECT classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" > <PARAM NAME=\"MOVIE\" VALUE=\"%s&ap=%ld\">" "<EMBED SRC=\"%s&ap=%ld\"></EMBED></OBJECT><br />", attachlink, attachPos[i], attachFileName[i], attachLen[i], attachlink, attachPos[i], attachlink, attachPos[i]);
+				break;
+			case ATTACH_OTHERS:
+				 snprintf(outbuf, 511, "<br>附件: <a href=\"%s&ap=%ld\">%s</a> (%ld 字节)<br />", attachlink, attachPos[i], attachFileName[i], attachLen[i]);
+				 break;
+			}	
+			BUFFERED_OUTPUT(output, "document.write('", 16);
+			outbuf_len = strlen(outbuf);
+			JS_BUFFERED_OUTPUT(outbuf, outbuf_len, output);
+			BUFFERED_OUTPUT(output, "');\n", 4);
 			attachShowed[i]=1;
 		}
 		free(attachFileName[i]);
