@@ -671,7 +671,6 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
     char* ptr=l->curr;
     int len=l->currlen;
     int ty=l->currty;
-    clrtoeol();
     if (stuffmode) {
         char buf[256];
 
@@ -1012,6 +1011,10 @@ int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
     sprintf(buf, "\033[1;32m\x1b[44m发信人: \033[1;33m%-13.13s\033[1;32m标  题: \033[1;33m%-50.50s\033[1;32m %4.4s\033[m", fh->owner, fh->title, fh->innflag[1] == 'S' ? "[转]" : "");
     outs(buf);
     prints("\n\033[m");
+    for(i=t_lines/2+1;i<=t_lines-1;i++) {
+        move(i,0);
+        clrtoeol();
+    }
     curr_line = l.curr_line;
     for (i = 0, j = 0;;) {
         if (shownflag) {
@@ -1019,7 +1022,7 @@ int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
         }
         if (!header || (!((i == 0) && ((!strncmp(l.curr, "发信人: ", 8) || (!strncmp(l.curr, "寄信人: ", 8))))) &&
                         !((i == 1) && !strncmp(l.curr, "标  题: ", 8)) && !((i == 2) && !strncmp(l.curr, "发信站: ", 8)) && !((i == 3) && (l.currlen == 0)))) {
-            move(t_lines/2+1+i, 0);
+            move(t_lines/2+1+j, 0);
             offsetln = t_lines/2+1;
             mem_printline(&l, fn, ptr);
             offsetln = 0;
