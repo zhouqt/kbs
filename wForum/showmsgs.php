@@ -63,11 +63,7 @@ function main() {
 <?php
 		}
 ?>
-           <tr> 
-            <td  class=tablebody2 align="middle">
-			<input type="button" value="将记录保存到信箱中" >
-            </td>
-          </tr>
+           <tr><td  class=tablebody2 align="middle"><form method="post" action="mailmsgs.php"><input type="submit" value="将记录保存到信箱中"></form></td></tr>
 <?php
 	}
 ?>
