@@ -14,6 +14,12 @@ void * buf;
 int sockfd;
 int sn=0;
 struct header h;
+int running;
+
+void do_exit_sig(int sig)
+{
+    running=0;
+}
 
 void save_daemon_pid()
 {
@@ -262,13 +268,23 @@ int main()
     fd_set readset;
     struct timeval to;
     int rc,remain=0,retr;
+    struct sigaction act;
 
     start_daemon();
     load_sysconf();
     resolve_ucache();
     resolve_utmp();
     init_memory();
+    running=0;
     errno=0;
+
+    bzero(&act, sizeof(act));
+    act.sa_handler = do_exit_sig;
+    sigaction(SIGTERM, &act, NULL);
+    sigaction(SIGHUP, &act, NULL);
+    sigaction(SIGABRT, &act, NULL);
+    
+    while (running) {
     if((sockfd=socket(AF_INET, SOCK_STREAM, 0))==-1) {
         printf("Unable to create socket.\n");
         shmdt(head);
@@ -313,6 +329,7 @@ int main()
     }
     
     close(sockfd);
+        }
     shmdt(head);
     buf=NULL;
     return 0;
