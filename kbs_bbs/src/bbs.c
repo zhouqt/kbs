@@ -195,7 +195,7 @@ int UndeleteArticle(int ent, struct fileheader *fileinfo, char *direct)
     UFile.reid = fileinfo->reid;
 	set_posttime2(&UFile, fileinfo);
 
-    setbfile(genbuf,currboard,fileinfo.filename);
+    setbfile(genbuf,currboard,fileinfo->filename);
     setbfile(buf,currboard,UFile.filename);
     f_mv(genbuf,buf);
 
