@@ -160,7 +160,7 @@
 <?php
 	}//ÖÃ¶¥
 ?>
-<td class="t3"><a class="ts1" href="/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
+<td class="t3"><a class="ts1" href="/bbsqry.php?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
 <td class="t4"><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
 <td class="t5"><strong>
 <?php
