@@ -9,7 +9,7 @@ main()
 
     rec = fopen("/home/bbs/.PASSWDS", "rb");
 
-    printf("[1;31;5mUserLevel Records Transfering...\n[m");
+    printf("\033[1;31;5mUserLevel Records Transfering...\n\033[m");
     while (1) {
         if (fread(&user, sizeof(user), 1, rec) <= 0)
             break;
@@ -23,6 +23,6 @@ main()
         user.userdefine &= ~DEF_MAILMSG;
         substitute_record("/home/bbs/.PASSWDS", &user, sizeof(user), i);
     }
-    printf("\n[1m%d [32mFriends Records Tranfered...[m\n", i);
+    printf("\n\033[1m%d \033[32mFriends Records Tranfered...\033[m\n", i);
     fclose(rec);
 }

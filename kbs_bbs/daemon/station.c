@@ -101,8 +101,8 @@ char maintopic[] = CHAT_TOPIC;
 #define ENABLEMAIN 1
 
 char *msg_not_op = CHAT_MSG_NOT_OP;
-char *msg_no_such_id = "*** [1m%s[m ²»ÔÚ±¾" CHAT_ROOM_NAME "Àï ***";
-char *msg_not_here = "*** [1m%s[m ²¢Ã»ÓĞÇ°À´" CHAT_SERVER " ***";
+char *msg_no_such_id = "*** \033[1m%s\033[m ²»ÔÚ±¾" CHAT_ROOM_NAME "Àï ***";
+char *msg_not_here = "*** \033[1m%s\033[m ²¢Ã»ÓĞÇ°À´" CHAT_SERVER " ***";
 
 #ifdef FILTER
 void filter_report(char* title,char *str)
@@ -442,7 +442,7 @@ void exit_room(unum, disp, msg)
         if (--rooms[oldrnum].occupants) {
             switch (disp) {
             case EXIT_LOGOUT:
-                sprintf(chatbuf, "*** [1m%s[m (%s) ÂıÂıÀë¿ªÁË ***", users[unum].chatid, users[unum].userid);  /* dong 1998.9.13 */
+                sprintf(chatbuf, "*** \033[1m%s\033[m (%s) ÂıÂıÀë¿ªÁË ***", users[unum].chatid, users[unum].userid);  /* dong 1998.9.13 */
                 if (msg && *msg) {
                     strcat(chatbuf, ": ");
                     strncat(chatbuf, msg, 80);
@@ -450,12 +450,12 @@ void exit_room(unum, disp, msg)
                 break;
 
             case EXIT_LOSTCONN:
-                sprintf(chatbuf, "*** [1m%s[m (%s) ÒÑ" CHAT_MSG_QUIT " ***", users[unum].chatid, users[unum].userid); /* dong 1998.9.13 */
+                sprintf(chatbuf, "*** \033[1m%s\033[m (%s) ÒÑ" CHAT_MSG_QUIT " ***", users[unum].chatid, users[unum].userid); /* dong 1998.9.13 */
                 break;
 
             case EXIT_KICK:
-                /*sprintf(chatbuf, "*** [1m%s[m ±»ÁÄÌìÊÒopÌß³öÈ¥ÁË ***", users[unum].chatid); */
-                sprintf(chatbuf, "*** [1m%s[m (%s) ±»" CHAT_OP "(%s)Ìß³öÈ¥ÁË ***", users[unum].chatid, users[unum].userid, msg);      /* Leeward 98.03.02 *//* dong 1998.9.13 */
+                /*sprintf(chatbuf, "*** \033[1m%s\033[m ±»ÁÄÌìÊÒopÌß³öÈ¥ÁË ***", users[unum].chatid); */
+                sprintf(chatbuf, "*** \033[1m%s\033[m (%s) ±»" CHAT_OP "(%s)Ìß³öÈ¥ÁË ***", users[unum].chatid, users[unum].userid, msg);      /* Leeward 98.03.02 *//* dong 1998.9.13 */
                 break;
             }
             send_to_room(oldrnum, chatbuf, unum);
@@ -491,7 +491,7 @@ void chat_topic(unum, msg)
     rooms[rnum].topic[51] = '\0';
     sprintf(chatbuf, "/t%.51s", msg);
     send_to_room(rnum, chatbuf, unum);
-    sprintf(chatbuf, "*** [1m%s[m ½«»°Ìâ¸ÄÎª [1m%s[m ***", users[unum].chatid, msg);
+    sprintf(chatbuf, "*** \033[1m%s\033[m ½«»°Ìâ¸ÄÎª \033[1m%s\033[m ***", users[unum].chatid, msg);
     send_to_room(rnum, chatbuf, unum);
 }
 
@@ -572,7 +572,7 @@ int enter_room(int unum, char *room, char *msg)
         users[unum].flags |= PERM_CHATROOM;
     rooms[rnum].occupants++;
     rooms[rnum].invites[unum] = 0;
-    sprintf(chatbuf, "*** [1m%s[m (%s) ½øÈë [1m%s[m " CHAT_ROOM_NAME " ***", users[unum].chatid, users[unum].userid, rooms[rnum].name);
+    sprintf(chatbuf, "*** \033[1m%s\033[m (%s) ½øÈë \033[1m%s\033[m " CHAT_ROOM_NAME " ***", users[unum].chatid, users[unum].userid, rooms[rnum].name);
     send_to_room(rnum, chatbuf, unum);
     sprintf(chatbuf, "/r%s", room);
     send_to_unum(unum, chatbuf);
@@ -623,10 +623,10 @@ int print_user_counts(unsigned int unum)
     sprintf(chatbuf + strlen(chatbuf), "¡ï");
     send_to_unum(unum, chatbuf);
     if (!ENABLEMAIN)
-        send_to_unum(unum, "[1mÔÚ [33mmain[m[1m ´óÌüÀï½ûÖ¹ÁÄÌì¡¢×÷Ğ¡¶¯×÷£¬¿ÉÓÃ [33m/j[m[1m Ö¸Áîµ½ÆäËü" CHAT_ROOM_NAME "½øĞĞÁÄÌì[m");
-    send_to_unum(unum, "[1mÊäÈë [33m/e[m[1m Àë¿ª" CHAT_SERVER "£¬[33m/w[m[1m ²é¿´±¾" CHAT_ROOM_NAME "ÖĞµÄ" NAME_USER_SHORT "[m");
-    send_to_unum(unum, "[1mÊäÈë [33m/r[m[1m ²é¿´µ±Ç°µÄ" CHAT_ROOM_NAME "£¬[33m/j roomname[m[1m ½øÈëÏàÓ¦" CHAT_ROOM_NAME "[m");
-    send_to_unum(unum, "[1mÊäÈë [33m/h[m[1m »ñµÃ°ïÖúĞÅÏ¢[m");
+        send_to_unum(unum, "\033[1mÔÚ \033[33mmain\033[m\033[1m ´óÌüÀï½ûÖ¹ÁÄÌì¡¢×÷Ğ¡¶¯×÷£¬¿ÉÓÃ \033[33m/j\033[m\033[1m Ö¸Áîµ½ÆäËü" CHAT_ROOM_NAME "½øĞĞÁÄÌì\033[m");
+    send_to_unum(unum, "\033[1mÊäÈë \033[33m/e\033[m\033[1m Àë¿ª" CHAT_SERVER "£¬\033[33m/w\033[m\033[1m ²é¿´±¾" CHAT_ROOM_NAME "ÖĞµÄ" NAME_USER_SHORT "\033[m");
+    send_to_unum(unum, "\033[1mÊäÈë \033[33m/r\033[m\033[1m ²é¿´µ±Ç°µÄ" CHAT_ROOM_NAME "£¬\033[33m/j roomname\033[m\033[1m ½øÈëÏàÓ¦" CHAT_ROOM_NAME "\033[m");
+    send_to_unum(unum, "\033[1mÊäÈë \033[33m/h\033[m\033[1m »ñµÃ°ïÖúĞÅÏ¢\033[m");
     return 0;
 }
 
@@ -893,7 +893,7 @@ void chat_list_rooms(unum, msg)
         send_to_unum(unum, "¡ò ±§Ç¸£¡" CHAT_SYSTEM "²»ÈÃÄã¿´ÓĞÄÄĞ©·¿¼äÓĞ¿ÍÈË ¡ò");
         return;
     }
-    send_to_unum(unum, "[33m[44m " CHAT_ROOM_NAME "Ãû³Æ  ©¦ÈËÊı©¦»°Ìâ        [m");
+    send_to_unum(unum, "\033[33m\033[44m " CHAT_ROOM_NAME "Ãû³Æ  ©¦ÈËÊı©¦»°Ìâ        \033[m");
     for (i = 0; i < MAXROOM; i++) {
         occupants = rooms[i].occupants;
         if (occupants > 0) {
@@ -938,16 +938,16 @@ int chat_do_user_list(int unum, char *msg, int whichroom)
     /*Haohmaru.99.09.18 */
     if (1 /*users[unum].room != 0 */ ) {
         if ((rooms[whichroom].flags & ROOM_SECRET) && (rooms[whichroom].flags & ROOM_LOCKED))
-            sprintf(chatbuf, "[33m[44m ÁÄÌì´úºÅ©¦%6s´úºÅ  ©¦ÁÄÌìÊÒ%-14s[m", NAME_USER_SHORT, buf1);
+            sprintf(chatbuf, "\033[33m\033[44m ÁÄÌì´úºÅ©¦%6s´úºÅ  ©¦ÁÄÌìÊÒ%-14s\033[m", NAME_USER_SHORT, buf1);
         else if (rooms[whichroom].flags & ROOM_SECRET)
-            sprintf(chatbuf, "[33m[44m ÁÄÌì´úºÅ©¦%6s´úºÅ  ©¦ÁÄÌìÊÒ%-14s[m", NAME_USER_SHORT, buf2);
+            sprintf(chatbuf, "\033[33m\033[44m ÁÄÌì´úºÅ©¦%6s´úºÅ  ©¦ÁÄÌìÊÒ%-14s\033[m", NAME_USER_SHORT, buf2);
         else if (rooms[whichroom].flags & ROOM_LOCKED)
-            sprintf(chatbuf, "[33m[44m ÁÄÌì´úºÅ©¦%6s´úºÅ  ©¦ÁÄÌìÊÒ%-14s[m", NAME_USER_SHORT, buf3);
+            sprintf(chatbuf, "\033[33m\033[44m ÁÄÌì´úºÅ©¦%6s´úºÅ  ©¦ÁÄÌìÊÒ%-14s\033[m", NAME_USER_SHORT, buf3);
         else
-            sprintf(chatbuf, "[33m[44m ÁÄÌì´úºÅ©¦%6s´úºÅ  ©¦ÁÄÌìÊÒ%-14s[m", NAME_USER_SHORT, buf);
+            sprintf(chatbuf, "\033[33m\033[44m ÁÄÌì´úºÅ©¦%6s´úºÅ  ©¦ÁÄÌìÊÒ%-14s\033[m", NAME_USER_SHORT, buf);
         send_to_unum(unum, chatbuf);
     } else
-        send_to_unum(unum, "[33m[44m ÁÄÌì´úºÅ©¦" NAME_USER_SHORT "´úºÅ  ©¦ÁÄÌìÊÒ [m");
+        send_to_unum(unum, "\033[33m\033[44m ÁÄÌì´úºÅ©¦" NAME_USER_SHORT "´úºÅ  ©¦ÁÄÌìÊÒ \033[m");
     for (i = 0; i < CHATMAXACTIVE; i++) {
         rnum = users[i].room;
         if (users[i].sockfd != -1 && rnum != -1) {
@@ -1013,7 +1013,7 @@ void chat_map_chatids(unum, whichroom)
     int i, c, myroom, rnum;
 
     myroom = users[unum].room;
-    send_to_unum(unum, "[33m[44m ÁÄÌì´úºÅ Ê¹ÓÃÕß´úºÅ  ©¦ ÁÄÌì´úºÅ Ê¹ÓÃÕß´úºÅ  ©¦ ÁÄÌì´úºÅ Ê¹ÓÃÕß´úºÅ [m");
+    send_to_unum(unum, "\033[33m\033[44m ÁÄÌì´úºÅ Ê¹ÓÃÕß´úºÅ  ©¦ ÁÄÌì´úºÅ Ê¹ÓÃÕß´úºÅ  ©¦ ÁÄÌì´úºÅ Ê¹ÓÃÕß´úºÅ \033[m");
     for (i = 0, c = 0; i < CHATMAXACTIVE; i++) {
         rnum = users[i].room;
         if (users[i].sockfd != -1 && rnum != -1) {
@@ -1067,7 +1067,7 @@ void chat_setroom(unum, msg)
         sign = 0;
     }
     if (*modestr == '\0') {
-        send_to_unum(unum, "¡ò Çë¸æËß" CHAT_SYSTEM "ÄúÒªµÄ" CHAT_ROOM_NAME "ÊÇ: {[[1m+[m(Éè¶¨)][[1m-[m(È¡Ïû)]}{[[1ml[m(Ëø×¡)][[1ms[m(ÃØÃÜ)]}");
+        send_to_unum(unum, "¡ò Çë¸æËß" CHAT_SYSTEM "ÄúÒªµÄ" CHAT_ROOM_NAME "ÊÇ: {[\033[1m+\033[m(Éè¶¨)][\033[1m-\033[m(È¡Ïû)]}{[\033[1ml\033[m(Ëø×¡)][\033[1ms\033[m(ÃØÃÜ)]}");
         return;
     }
     while (*modestr) {
@@ -1122,12 +1122,12 @@ void chat_setroom(unum, msg)
 	}
 #endif
         default:
-            sprintf(chatbuf, "¡ò " CHAT_SYSTEM "¿´²»¶®ÄãµÄÒâË¼£º[[1m%c[m] ¡ò", *modestr);
+            sprintf(chatbuf, "¡ò " CHAT_SYSTEM "¿´²»¶®ÄãµÄÒâË¼£º[\033[1m%c\033[m] ¡ò", *modestr);
             send_to_unum(unum, chatbuf);
         }
         if (flag && ((rooms[rnum].flags & flag) != sign * flag)) {
             rooms[rnum].flags ^= flag;
-            sprintf(chatbuf, "*** Õâ" CHAT_ROOM_NAME "±» [1m%s[m %s%sµÄĞÎÊ½ ***", users[unum].chatid, sign ? "Éè¶¨Îª" : "È¡Ïû", fstr);
+            sprintf(chatbuf, "*** Õâ" CHAT_ROOM_NAME "±» \033[1m%s\033[m %s%sµÄĞÎÊ½ ***", users[unum].chatid, sign ? "Éè¶¨Îª" : "È¡Ïû", fstr);
             send_to_room(rnum, chatbuf, unum);
         }
         modestr++;
@@ -1154,7 +1154,7 @@ void chat_nick(unum, msg)
         send_to_unum(unum, "¡ò ±§Ç¸£¡ÓĞÈËÒÑ¾­Ê¹ÓÃ¸Ãchatid,ËùÒÔÄú²»ÄÜÔÙÊ¹ÓÃ ¡ò");
         return;
     }
-    sprintf(chatbuf, "¡ò [1m%s[m ½«ÁÄÌì´úºÅ¸ÄÎª [1m%s[m ¡ò", users[unum].chatid, chatid);
+    sprintf(chatbuf, "¡ò \033[1m%s\033[m ½«ÁÄÌì´úºÅ¸ÄÎª \033[1m%s\033[m ¡ò", users[unum].chatid, chatid);
     send_to_room(users[unum].room, chatbuf, unum);
 
 
@@ -1182,10 +1182,10 @@ void chat_private(int unum, char *msg)
     }
     if (*msg) {
         if (can_send(unum, recunum)) {
-            sprintf(chatbuf, "[1m*%s*[m ", users[unum].chatid);
+            sprintf(chatbuf, "\033[1m*%s*\033[m ", users[unum].chatid);
             strncat(chatbuf, msg, 80);
             send_to_unum(recunum, chatbuf);
-            sprintf(chatbuf, "[1m%s>[m ", users[recunum].chatid);
+            sprintf(chatbuf, "\033[1m%s>\033[m ", users[recunum].chatid);
             strncat(chatbuf, msg, 80);
             send_to_unum(unum, chatbuf);
         }
@@ -1222,7 +1222,7 @@ void chat_act(unum, msg)
     char *msg;
 {
     if (*msg) {
-        sprintf(chatbuf, "[1m%s[m %s", users[unum].chatid, msg);
+        sprintf(chatbuf, "\033[1m%s\033[m %s", users[unum].chatid, msg);
         send_to_room2(users[unum].room, chatbuf, unum);
     }
 }
@@ -1276,7 +1276,7 @@ void chat_kick(unum, msg)
     }
 
     /* Leeward 98.04.30 */
-    sprintf(chatbuf, "*** Äã±»" CHAT_OP "([1m[33m%s[m)Ìß³öÀ´ÁË ***", users[unum].userid);
+    sprintf(chatbuf, "*** Äã±»" CHAT_OP "(\033[1m\033[33m%s\033[m)Ìß³öÀ´ÁË ***", users[unum].userid);
     send_to_unum(recunum, chatbuf);
 
     rnum2 = users[recunum].room;
@@ -1319,7 +1319,7 @@ void chat_kickid(unum, msg)     /*Haohmaru.99.6.9.¸ù¾İIDÌßÈË */
     }
 
     /* Leeward 98.04.30 */
-    sprintf(chatbuf, "*** Äã±»" CHAT_OP "([1m[33m%s[m)Ìß³öÀ´ÁË ***", users[unum].userid);
+    sprintf(chatbuf, "*** Äã±»" CHAT_OP "(\033[1m\033[33m%s\033[m)Ìß³öÀ´ÁË ***", users[unum].userid);
     send_to_unum(recunum, chatbuf);
 
     rnum2 = users[recunum].room;
@@ -1363,7 +1363,7 @@ void chat_makeop(unum, msg)
     }
     users[unum].flags &= ~PERM_CHATROOM;
     users[recunum].flags |= PERM_CHATROOM;
-    sprintf(chatbuf, "*** [1m%s[m ¾ö¶¨ÈÃ [1m%s[m µ±±¾" CHAT_ROOM_NAME "µÄ" CHAT_OP " ***", users[unum].chatid, users[recunum].chatid);
+    sprintf(chatbuf, "*** \033[1m%s\033[m ¾ö¶¨ÈÃ \033[1m%s\033[m µ±±¾" CHAT_ROOM_NAME "µÄ" CHAT_OP " ***", users[unum].chatid, users[recunum].chatid);
     send_to_room(rnum, chatbuf, unum);
 }
 
@@ -1392,10 +1392,10 @@ void chat_toggle(unum, msg)
     }
     if (ROOMOP(recunum)) {
         users[recunum].flags &= ~PERM_CHATROOM;
-        sprintf(chatbuf, "*** [1m%s[m È¡ÏûÁË [1m%s[m µÄ" CHAT_OP " ***", users[unum].chatid, users[recunum].chatid);
+        sprintf(chatbuf, "*** \033[1m%s\033[m È¡ÏûÁË \033[1m%s\033[m µÄ" CHAT_OP " ***", users[unum].chatid, users[recunum].chatid);
     } else {
         users[recunum].flags |= PERM_CHATROOM;
-        sprintf(chatbuf, "*** [1m%s[m ÉèÖÃ [1m%s[m Îª±¾ÁÄÌìÊÒµÄ" CHAT_OP " ***", users[unum].chatid, users[recunum].chatid);
+        sprintf(chatbuf, "*** \033[1m%s\033[m ÉèÖÃ \033[1m%s\033[m Îª±¾ÁÄÌìÊÒµÄ" CHAT_OP " ***", users[unum].chatid, users[recunum].chatid);
     }
     send_to_room(rnum, chatbuf, unum);
 }
@@ -1418,14 +1418,14 @@ void chat_invite(unum, msg)
         return;
     }
     if (rooms[rnum].invites[recunum] == 1) {
-        sprintf(chatbuf, "*** [1m%s[m µÈÒ»ÏÂ¾ÍÀ´ ***", users[recunum].chatid);
+        sprintf(chatbuf, "*** \033[1m%s\033[m µÈÒ»ÏÂ¾ÍÀ´ ***", users[recunum].chatid);
         send_to_unum(unum, chatbuf);
         return;
     }
     rooms[rnum].invites[recunum] = 1;
-    sprintf(chatbuf, "*** [1m%s[m ÑûÇëÄúµ½ [1m%s[m " CHAT_ROOM_NAME "ÁÄÌì ***", users[unum].chatid, rooms[rnum].name);
+    sprintf(chatbuf, "*** \033[1m%s\033[m ÑûÇëÄúµ½ \033[1m%s\033[m " CHAT_ROOM_NAME "ÁÄÌì ***", users[unum].chatid, rooms[rnum].name);
     send_to_unum(recunum, chatbuf);
-    sprintf(chatbuf, "*** [1m%s[m µÈÒ»ÏÂ¾ÍÀ´ ***", users[recunum].chatid);
+    sprintf(chatbuf, "*** \033[1m%s\033[m µÈÒ»ÏÂ¾ÍÀ´ ***", users[recunum].chatid);
     send_to_unum(unum, chatbuf);
 }
 
@@ -1477,7 +1477,7 @@ void chat_broadcast(unum, msg)
         send_to_unum(unum, "¡ò ¹ã²¥ÄÚÈİÊÇÊ²÷á ¡ò");
         return;
     }
-    sprintf(chatbuf, "¡ò " CHAT_SERVER CHAT_OP " [1m%s[m ÓĞ»°¶Ô´ó¼ÒĞû²¼£º", users[unum].chatid);
+    sprintf(chatbuf, "¡ò " CHAT_SERVER CHAT_OP " \033[1m%s\033[m ÓĞ»°¶Ô´ó¼ÒĞû²¼£º", users[unum].chatid);
     send_to_room(ROOM_ALL, chatbuf, unum);
     sprintf(chatbuf, "¡¾%s¡¿", msg);
     send_to_room(ROOM_ALL, chatbuf, unum);
@@ -1511,7 +1511,7 @@ struct action party_data[] = {
     {"bearhug", "ÈÈÇéµÄÓµ±§", ""},
     {"bless", "×£¸£", "ĞÄÏëÊÂ³É"},
     {"bow", "±Ï¹ª±Ï¾´µÄÏò", "¾Ï¹ª"},
-    {"bye", "¿´×Å", "µÄ±³Ó°£¬ÆàÈ»ÀáÏÂ¡£ÉíºóµÄÊÕÒô»ú´«À´µËÀö¾ıµÄ¸èÉù:\\n\"[31mºÎÈÕ¾ıÔÙÀ´.....[m\""},
+    {"bye", "¿´×Å", "µÄ±³Ó°£¬ÆàÈ»ÀáÏÂ¡£ÉíºóµÄÊÕÒô»ú´«À´µËÀö¾ıµÄ¸èÉù:\\n\"\033[31mºÎÈÕ¾ıÔÙÀ´.....\033[m\""},
     {"caress", "ÇáÇáµÄ¸§Ãş", ""},
     {"cat", "ÏñÖ»Ğ¡Ã¨°ãµØÒÀÙËÔÚ", "µÄ»³ÀïÈö½¿¡£"},
     {"cringe", "Ïò", "±°¹ªÇüÏ¥£¬Ò¡Î²ÆòÁ¯"},
@@ -1676,7 +1676,7 @@ int party_action(unum, cmd, party)
             else {
                 if (strcasecmp(party, users[unum].chatid) == 0)
                     party = "×Ô¼º";
-                sprintf(chatbuf, "[1m%s[m %s [1m%s[m %s[m", users[unum].chatid, party_data[i].part1_msg, party, party_data[i].part2_msg);
+                sprintf(chatbuf, "\033[1m%s\033[m %s \033[1m%s\033[m %s\033[m", users[unum].chatid, party_data[i].part1_msg, party, party_data[i].part2_msg);
             }
             send_to_room2(users[unum].room, chatbuf, unum);
             return 0;
@@ -1731,7 +1731,7 @@ int speak_action(unum, cmd, msg)
 
     for (i = 0; speak_data[i].verb; i++) {
         if (!strcasecmp(cmd, speak_data[i].verb)) {
-            sprintf(chatbuf, "[1m%s[m %s£º%s[m", users[unum].chatid, speak_data[i].part1_msg, msg);
+            sprintf(chatbuf, "\033[1m%s\033[m %s£º%s\033[m", users[unum].chatid, speak_data[i].part1_msg, msg);
             send_to_room(users[unum].room, chatbuf, unum);
             return 0;
         }
@@ -1777,7 +1777,7 @@ int condition_action(unum, cmd)
 
     for (i = 0; condition_data[i].verb; i++) {
         if (!strcasecmp(cmd, condition_data[i].verb)) {
-            sprintf(chatbuf, "[1m%s[m %s[m", users[unum].chatid, condition_data[i].part1_msg);
+            sprintf(chatbuf, "\033[1m%s\033[m %s\033[m", users[unum].chatid, condition_data[i].part1_msg);
             send_to_room(users[unum].room, chatbuf, unum);
             return 1;
         }
@@ -1831,11 +1831,11 @@ void view_action_verb(unum, verb)
                 /* add by KCN */
             if (all) {
                 if (i == 0)
-                    sprintf(chatbuf, "[1m%-8s: [m %s [1m" CHAT_PARTY "[m %s[m", verbs[i][j - 1].verb, party_data[j - 1].part1_msg, party_data[j - 1].part2_msg);
+                    sprintf(chatbuf, "\033[1m%-8s: \033[m %s \033[1m" CHAT_PARTY "\033[m %s\033[m", verbs[i][j - 1].verb, party_data[j - 1].part1_msg, party_data[j - 1].part2_msg);
                 else if (i == 1)
-                    sprintf(chatbuf, "[1m%-8s: [m %s£º%s[m", verbs[i][j - 1].verb, speak_data[j - 1].part1_msg, "ÎÒ°®ÄãÀ´Äã°®ÎÒ!");
+                    sprintf(chatbuf, "\033[1m%-8s: \033[m %s£º%s\033[m", verbs[i][j - 1].verb, speak_data[j - 1].part1_msg, "ÎÒ°®ÄãÀ´Äã°®ÎÒ!");
                 else
-                    sprintf(chatbuf, "[1m%-8s: [m %s[m", verbs[i][j - 1].verb, condition_data[j - 1].part1_msg);
+                    sprintf(chatbuf, "\033[1m%-8s: \033[m %s\033[m", verbs[i][j - 1].verb, condition_data[j - 1].part1_msg);
 
                 tmp = chatbuf;
                 while ((tmp = strstr(tmp, "\\n")) != NULL) {
@@ -1876,11 +1876,11 @@ void view_action_verb(unum, verb)
             send_to_unum(unum, chatbuf);
             j--;
             if (i == 0)
-                sprintf(chatbuf, "[1m%s[m %s [1m" CHAT_PARTY "[m %s[m", users[unum].chatid, party_data[j].part1_msg, party_data[j].part2_msg);
+                sprintf(chatbuf, "\033[1m%s\033[m %s \033[1m" CHAT_PARTY "\033[m %s\033[m", users[unum].chatid, party_data[j].part1_msg, party_data[j].part2_msg);
             else if (i == 1)
-                sprintf(chatbuf, "[1m%s[m %s£º%s[m", users[unum].chatid, speak_data[j].part1_msg, "ÎÒ°®ÄãÀ´Äã°®ÎÒ!");
+                sprintf(chatbuf, "\033[1m%s\033[m %s£º%s\033[m", users[unum].chatid, speak_data[j].part1_msg, "ÎÒ°®ÄãÀ´Äã°®ÎÒ!");
             else
-                sprintf(chatbuf, "[1m%s[m %s[m", users[unum].chatid, condition_data[j].part1_msg);
+                sprintf(chatbuf, "\033[1m%s\033[m %s\033[m", users[unum].chatid, condition_data[j].part1_msg);
             send_to_unum2(unum, chatbuf);
         }
     }
@@ -1999,7 +1999,7 @@ int command_execute(unum)
     }
 
     if (match == 0) {
-        sprintf(chatbuf, "¡ò " CHAT_SYSTEM "¿´²»¶®ÄãµÄÒâË¼£º[1m%s[m ¡ò", cmd);
+        sprintf(chatbuf, "¡ò " CHAT_SYSTEM "¿´²»¶®ÄãµÄÒâË¼£º\033[1m%s\033[m ¡ò", cmd);
         send_to_unum(unum, chatbuf);
     }
     memset(users[unum].ibuf, 0, sizeof users[unum].ibuf);
@@ -2082,13 +2082,13 @@ int main(argc, argv)
     /*strcpy(rooms[0].topic, maintopic); */
 
     /* Leeward: 98.01.04: Éè¶¨ main µÄÈ±Ê¡±êÌâÈçÏÂËùÊ¾(No chatting...);
-       Í¬Ê±×¢Òâ: ÎªÅäºÏ chat.c, ²»¿É¼Ó [m ÔÚ±êÌâÄ©Î² */
+       Í¬Ê±×¢Òâ: ÎªÅäºÏ chat.c, ²»¿É¼Ó \033[m ÔÚ±êÌâÄ©Î² */
     setuid(BBSUID);
     setuid(BBSGID);
     if (ENABLEMAIN)
         strcpy(rooms[0].topic, "\033[1m´ó¼ÒÏÈËæ±ãÁÄÁÄ°É");
     else
-        strcpy(rooms[0].topic, "[1mNo chatting in main room, type /h for help");
+        strcpy(rooms[0].topic, "\033[1mNo chatting in main room, type /h for help");
 
     for (i = 0; i < CHATMAXACTIVE; i++) {
         users[i].chatid[0] = '\0';

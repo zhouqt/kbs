@@ -38,16 +38,16 @@ top_login(num)
 
     printf("\n");
     printf("%s", "\
-[1;37m              ===========  [1;36m  иоу╬╢нйЩеепп╟Я [37m   ============ \n\n\
+\033[1;37m              ===========  \033[1;36m  иоу╬╢нйЩеепп╟Я \033[37m   ============ \n\n\
 цШ╢н ╢З╨е       ЙгЁф           ╢нйЩ    цШ╢н ╢З╨е       ЙгЁф            ╢нйЩ \n\
 ==== ===============================  ===== ================================\n\
 ");
     for (i = 0; i < rows; i++) {
-        sprintf(buf1, "[1;3%1dm[%2d] %-10.10s %-14.14s %3d", i % 7 + 1, i + 1, allman[i].userid, allman[i].username, allman[i].numlogins);
+        sprintf(buf1, "\033[1;3%1dm[%2d] %-10.10s %-14.14s %3d", i % 7 + 1, i + 1, allman[i].userid, allman[i].username, allman[i].numlogins);
         j = i + rows;
         sprintf(buf2, "[%2d] %-10.10s %-14.14s   %3d", j + 1, allman[j].userid, allman[j].username, allman[j].numlogins);
 
-        printf("%-46.46s%-39.39s[m\n", buf1, buf2);
+        printf("%-46.46s%-39.39s\033[m\n", buf1, buf2);
     }
 }
 
@@ -58,16 +58,16 @@ top_stay(num)
 
     printf("\n");
     printf("%s", "\
-[1;37m              ===========   [36m иоу╬вэй╠йЩеепп╟Я [37m   ============ \n\n\
+\033[1;37m              ===========   \033[36m иоу╬вэй╠йЩеепп╟Я \033[37m   ============ \n\n\
 цШ╢н ╢З╨е       ЙгЁф           вэй╠йЩ  цШ╢н ╢З╨е       ЙгЁф           вэй╠йЩ \n\
 ==== ================================  ==== ================================\n\
 ");
     for (i = 0; i < rows; i++) {
-        sprintf(buf1, "[1;3%1dm[%2d] %-10.10s %-14.14s%4d:%2d", i % 7 + 1, i + 1, allman[i].userid, allman[i].username, allman[i].stay / 3600, (allman[i].stay % 3600) / 60);
+        sprintf(buf1, "\033[1;3%1dm[%2d] %-10.10s %-14.14s%4d:%2d", i % 7 + 1, i + 1, allman[i].userid, allman[i].username, allman[i].stay / 3600, (allman[i].stay % 3600) / 60);
         j = i + rows;
         sprintf(buf2, "[%2d] %-10.10s %-14.14s%4d:%2d", j + 1, allman[j].userid, allman[j].username, allman[j].stay / 3600, (allman[j].stay % 3600) / 60);
 
-        printf("%-46.46s%-39.39s[m\n", buf1, buf2);
+        printf("%-46.46s%-39.39s\033[m\n", buf1, buf2);
     }
 }
 
@@ -78,16 +78,16 @@ top_post(num)
 
     printf("\n");
     printf("%s", "\
-              [1;37m===========  [36m  лжбш╢нйЩеепп╟Я [37m   ============ \n\n\
+              \033[1;37m===========  \033[36m  лжбш╢нйЩеепп╟Я \033[37m   ============ \n\n\
 цШ╢н ╢З╨е       ЙгЁф           ╢нйЩ    цШ╢н ╢З╨е       ЙгЁф            ╢нйЩ \n\
 ==== ===============================  ===== ================================\n\
 ");
     for (i = 0; i < rows; i++) {
-        sprintf(buf1, "[1;3%1dm[%2d] %-10.10s %-14.14s %3d", i % 7 + 1, i + 1, allman[i].userid, allman[i].username, allman[i].numposts);
+        sprintf(buf1, "\033[1;3%1dm[%2d] %-10.10s %-14.14s %3d", i % 7 + 1, i + 1, allman[i].userid, allman[i].username, allman[i].numposts);
         j = i + rows;
         sprintf(buf2, "[%2d] %-10.10s %-14.14s   %3d", j + 1, allman[j].userid, allman[j].username, allman[j].numposts);
 
-        printf("%-46.46s%-39.39s[m\n", buf1, buf2);
+        printf("%-46.46s%-39.39s\033[m\n", buf1, buf2);
     }
 }
 
@@ -98,17 +98,17 @@ top_perm(num)
 
     printf("\n");
     printf("%s", "\
-              [1;37m===========    [36mвэ╠Мож╩Щ╥жеепп╟Я[37m    ============ \n\
-                   [32m ╧╚й╫ё╨иоу╬╢нйЩ/3+ндубйЩ+иоу╬╪╦п║й╠[37m\n\
+              \033[1;37m===========    \033[36mвэ╠Мож╩Щ╥жеепп╟Я\033[37m    ============ \n\
+                   \033[32m ╧╚й╫ё╨иоу╬╢нйЩ/3+ндубйЩ+иоу╬╪╦п║й╠\033[37m\n\
 цШ╢н ╢З╨е       ║УЁф            ╩Щ╥ж   цШ╢н ╢З╨е       ║УЁф              ╩Щ╥ж \n\
 ==== ===============================   ==== =================================\n\
 ");
     for (i = 0; i < rows; i++) {
-        sprintf(buf1, "[1;3%1dm[%2d] %-10.10s %-14.14s %5d", i % 7 + 1, i + 1, allman[i].userid, allman[i].username, (allman[i].numlogins / 3) + allman[i].numposts + (allman[i].stay / 3600));
+        sprintf(buf1, "\033[1;3%1dm[%2d] %-10.10s %-14.14s %5d", i % 7 + 1, i + 1, allman[i].userid, allman[i].username, (allman[i].numlogins / 3) + allman[i].numposts + (allman[i].stay / 3600));
         j = i + rows;
         sprintf(buf2, "[%2d] %-10.10s %-14.14s   %5d", j + 1, allman[j].userid, allman[j].username, (allman[j].numlogins / 3) + allman[j].numposts + (allman[j].stay / 3600));
 
-        printf("%-46.46s%-39.39s[m\n", buf1, buf2);
+        printf("%-46.46s%-39.39s\033[m\n", buf1, buf2);
     }
 }
 

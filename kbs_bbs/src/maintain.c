@@ -141,7 +141,7 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
                 struct userdata ud;
 
                 read_userdata(lookupuser->userid, &ud);
-                fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n[32mÔ­Òò£º%s[m\n", str);
+                fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n\033[32mÔ­Òò£º%s\033[m\n", str);
                 fprintf(se, "ÒÔÏÂÊÇÍ¨¹ıÕß¸öÈË×ÊÁÏ");
                 /*
                  * getuinfo(se, lookupuser); 
@@ -164,13 +164,13 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
                 fprintf(se, "ÎÄÕÂÊıÄ¿     : %d(Board)\n", lookupuser->numposts);
                 fprintf(se, "Éú    ÈÕ     : %s\n", fdata[6]);
                 /*
-                 * fprintf(se, "\n[33mÒÔÏÂÊÇÈÏÖ¤Õß¸öÈË×ÊÁÏ[35m");
+                 * fprintf(se, "\n\033[33mÒÔÏÂÊÇÈÏÖ¤Õß¸öÈË×ÊÁÏ\033[35m");
                  * getuinfo(se, currentuser);rem by Haohmaru.99.4.16 
                  */
                 fclose(se);
                 post_file(currentuser, "", fname, "Registry", str, 0, 2);
             } else if (strstr(str, "É¾³ıÊ¹ÓÃÕß£º")) {
-                fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n[32mÔ­Òò£º%s[m\n", str);
+                fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n\033[32mÔ­Òò£º%s\033[m\n", str);
                 fprintf(se, "ÒÔÏÂÊÇ±»É¾Õß¸öÈË×ÊÁÏ");
                 getuinfo(se, lookupuser);
                 fprintf(se, "\nÒÔÏÂÊÇÉ¾³ıÕß¸öÈË×ÊÁÏ");
@@ -185,7 +185,7 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
                 sscanf(ptr + strlen("µÄÈ¨ÏŞXPERM"), "%d %d", &oldXPERM, &newXPERM);
                 *(ptr + strlen("µÄÈ¨ÏŞ")) = 0;
 
-                fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n[32mÔ­Òò£º%s[m\n", str);
+                fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n\033[32mÔ­Òò£º%s\033[m\n", str);
 
                 strcpy(XPERM, XPERMSTR);
                 for (num = 0; num < (int) strlen(XPERM); num++)
@@ -224,7 +224,7 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
                 post_file(currentuser, "", fname, "syssecurity", str, 0, 2);
             }
         } else {
-            fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n[32mÔ­Òò£º%s[m\n", str);
+            fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n\033[32mÔ­Òò£º%s\033[m\n", str);
             fprintf(se, "ÒÔÏÂÊÇ¸öÈË×ÊÁÏ");
             getuinfo(se, currentuser);
             fclose(se);
@@ -296,7 +296,7 @@ char *chgrp()
     for (i = 0;; i++) {
         if (secname[i][0] == NULL || groups[i] == NULL)
             break;
-        prints("[32m%2d[m. %-20s%-20s\n", i, secname[i][0], groups[i]);
+        prints("\033[32m%2d\033[m. %-20s%-20s\n", i, secname[i][0], groups[i]);
     }
     sprintf(buf, "ÇëÊäÈëÄãµÄÑ¡Ôñ(0~%d): ", i - 1);
     while (1) {
@@ -1279,12 +1279,12 @@ char *logfile, *regfile;
 
     move(2, 0);
     if (dashf(fname)) {
-/*        prints("[1mÆäËû SYSOP ÕıÔÚÊ¹ÓÃ telnet »ò WWW ²é¿´×¢²áÉêÇëµ¥£¬Çë¼ì²éÊ¹ÓÃÕß×´Ì¬¡£\n\n");
-        prints("[33mÈç¹ûÃ»ÓĞÆäËû SYSOP ÕıÔÚ²é¿´×¢²áÉêÇëµ¥£¬ÔòÊÇÓÉÓÚ¶ÏÏßÔì³ÉµÄÎŞ·¨×¢²á¡£\n");
+/*        prints("\033[1mÆäËû SYSOP ÕıÔÚÊ¹ÓÃ telnet »ò WWW ²é¿´×¢²áÉêÇëµ¥£¬Çë¼ì²éÊ¹ÓÃÕß×´Ì¬¡£\n\n");
+        prints("\033[33mÈç¹ûÃ»ÓĞÆäËû SYSOP ÕıÔÚ²é¿´×¢²áÉêÇëµ¥£¬ÔòÊÇÓÉÓÚ¶ÏÏßÔì³ÉµÄÎŞ·¨×¢²á¡£\n");
         prints("Çë½ø bbsroot ÕÊ»§ÔËĞĞÒ»´ÎÒÔÏÂÃüÁî£º\n");
-        prints("                                   [32mcat new_register.tmp >> new_register[33m\n");
+        prints("                                   \033[32mcat new_register.tmp >> new_register\033[33m\n");
         prints("È·ÈÏÉÏÊöÃüÁîÔËĞĞ³É¹¦ºó£¬ÔÙÔËĞĞÒ»´ÎÒÔÏÂÃüÁî£º\n");
-        prints("                                            [32mrm new_register.tmp\n[m");
+        prints("                                            \033[32mrm new_register.tmp\n\033[m");
         pressreturn();
         return -1;*/
 

@@ -188,17 +188,17 @@ int mailall()
             if (currentuser->signature > numofsig)
                 currentuser->signature = 1;
             while (1) {
-                sprintf(buf3, "ÒýÑÔÄ£Ê½ [[1m%c[m]", include_mode);
+                sprintf(buf3, "ÒýÑÔÄ£Ê½ [\033[1m%c\033[m]", include_mode);
                 move(t_lines - 4, 0);
                 clrtoeol();
-                prints("ÊÕÐÅÈË: [1m%s[m\n", doc[ans4[0] - '0' - 1]);
+                prints("ÊÕÐÅÈË: \033[1m%s\033[m\n", doc[ans4[0] - '0' - 1]);
                 clrtoeol();
-                prints("Ê¹ÓÃ±êÌâ: [1m%-50s[m\n", (title[0] == '\0') ? "[ÕýÔÚÉè¶¨±êÌâ]" : title);
+                prints("Ê¹ÓÃ±êÌâ: \033[1m%-50s\033[m\n", (title[0] == '\0') ? "[ÕýÔÚÉè¶¨±êÌâ]" : title);
                 clrtoeol();
                 if (currentuser->signature < 0)
                     prints("Ê¹ÓÃËæ»úÇ©Ãûµµ     %s", (replymode) ? buf3 : "");
                 else
-                    prints("Ê¹ÓÃµÚ [1m%d[m ¸öÇ©Ãûµµ     %s", currentuser->signature, (replymode) ? buf3 : "");
+                    prints("Ê¹ÓÃµÚ \033[1m%d\033[m ¸öÇ©Ãûµµ     %s", currentuser->signature, (replymode) ? buf3 : "");
 
                 if (buf4[0] == '\0' || buf4[0] == '\n') {
                     move(t_lines - 1, 0);
@@ -216,8 +216,8 @@ int mailall()
                 /*
                  * Leeward 98.09.24 add: viewing signature(s) while setting post head 
                  */
-                sprintf(buf2, "°´[1;32m0[m~[1;32m%d/V/L[mÑ¡/¿´/Ëæ»úÇ©Ãûµµ%s£¬[1;32mT[m¸Ä±êÌâ£¬[1;32mEnter[m½ÓÊÜËùÓÐÉè¶¨: ", numofsig,
-                        (replymode) ? "£¬[1;32mY[m/[1;32mN[m/[1;32mR[m/[1;32mA[m¸ÄÒýÑÔÄ£Ê½" : "");
+                sprintf(buf2, "°´\033[1;32m0\033[m~\033[1;32m%d/V/L\033[mÑ¡/¿´/Ëæ»úÇ©Ãûµµ%s£¬\033[1;32mT\033[m¸Ä±êÌâ£¬\033[1;32mEnter\033[m½ÓÊÜËùÓÐÉè¶¨: ", numofsig,
+                        (replymode) ? "£¬\033[1;32mY\033[m/\033[1;32mN\033[m/\033[1;32mR\033[m/\033[1;32mA\033[m¸ÄÒýÑÔÄ£Ê½" : "");
                 getdata(t_lines - 1, 0, buf2, ans, 3, DOECHO, NULL, true);
                 ans[0] = toupper(ans[0]);       /* Leeward 98.09.24 add; delete below toupper */
                 if ((ans[0] - '0') >= 0 && ans[0] - '0' <= 9) {
@@ -255,7 +255,7 @@ int mailall()
             }
             move(t_lines - 1, 0);
             clrtoeol();
-            prints("[32m[44mÕýÔÚ¼ÄÐÅ¼þÖÐ£¬ÇëÉÔºò.....                                                        [m");
+            prints("\033[32m\033[44mÕýÔÚ¼ÄÐÅ¼þÖÐ£¬ÇëÉÔºò.....                                                        \033[m");
             mailtoall(ans4[0] - '0');
             move(t_lines - 1, 0);
             clrtoeol();
@@ -299,7 +299,7 @@ void m_internet()
             prints("%s ×ÔÉ±ÖÐ£¬²»ÄÜÊÕÐÅ\n", receiver);
             break;              /*Haohmaru.99.10.26.×ÔÉ±Õß²»ÄÜÊÕÐÅ */
         case -552:
-            prints("\n[1m[33mÐÅ¼þ³¬³¤£¨±¾Õ¾ÏÞ¶¨ÐÅ¼þ³¤¶ÈÉÏÏÞÎª %d ×Ö½Ú£©£¬È¡Ïû·¢ÐÅ²Ù×÷[m[m\n", MAXMAILSIZE);
+            prints("\n\033[1m\033[33mÐÅ¼þ³¬³¤£¨±¾Õ¾ÏÞ¶¨ÐÅ¼þ³¤¶ÈÉÏÏÞÎª %d ×Ö½Ú£©£¬È¡Ïû·¢ÐÅ²Ù×÷\033[m\033[m\n", MAXMAILSIZE);
             break;
         default:
             prints("ÐÅ¼þÒÑ¼Ä³ö\n");
@@ -340,7 +340,7 @@ int do_send(char *userid, char *title, char *q_file)
     char* upload = NULL;
 
     if (HAS_PERM(currentuser, PERM_DENYMAIL)) {
-        prints("[1m[33mºÜ±§Ç¸¡ÃÄúÎÞ·¨¸ø %s ·¢ÐÅ£®ÒòÎª Äú±»·â½ûÁËMailÈ¨ÏÞ¡£\n[m");
+        prints("\033[1m\033[33mºÜ±§Ç¸¡ÃÄúÎÞ·¨¸ø %s ·¢ÐÅ£®ÒòÎª Äú±»·â½ûÁËMailÈ¨ÏÞ¡£\n\033[m");
         return -2;
     }
     if (!strchr(userid, '@')) {
@@ -349,7 +349,7 @@ int do_send(char *userid, char *title, char *q_file)
         ret = chkreceiver(currentuser, user);
 
 	if (false == canIsend2(currentuser, userid)) {  /* Leeward 98.04.10 */
-            prints("[1m[33mºÜ±§Ç¸¡ÃÄúÎÞ·¨¸ø %s ·¢ÐÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®[m[m\n\n", userid,userid);
+            prints("\033[1m\033[33mºÜ±§Ç¸¡ÃÄúÎÞ·¨¸ø %s ·¢ÐÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®\033[m\033[m\n\n", userid,userid);
             return -2;
         }
 
@@ -442,17 +442,17 @@ int do_send(char *userid, char *title, char *q_file)
     if (currentuser->signature > numofsig)
         currentuser->signature = 1;
     while (1) {
-        sprintf(buf3, "ÒýÑÔÄ£Ê½ [[1m%c[m]", include_mode);
+        sprintf(buf3, "ÒýÑÔÄ£Ê½ [\033[1m%c\033[m]", include_mode);
         move(t_lines - 4, 0);
         clrtoeol();
-        prints("ÊÕÐÅÈË: [1m%s[m\n", userid);
+        prints("ÊÕÐÅÈË: \033[1m%s\033[m\n", userid);
         clrtoeol();
-        prints("Ê¹ÓÃ±êÌâ: [1m%-50s[m\n", (title[0] == '\0') ? "[ÕýÔÚÉè¶¨±êÌâ]" : title);
+        prints("Ê¹ÓÃ±êÌâ: \033[1m%-50s\033[m\n", (title[0] == '\0') ? "[ÕýÔÚÉè¶¨±êÌâ]" : title);
         clrtoeol();
         if (currentuser->signature < 0)
             prints("Ê¹ÓÃËæ»úÇ©Ãûµµ     %s", (replymode) ? buf3 : "");
         else
-            prints("Ê¹ÓÃµÚ [1m%d[m ¸öÇ©Ãûµµ     %s", currentuser->signature, (replymode) ? buf3 : "");
+            prints("Ê¹ÓÃµÚ \033[1m%d\033[m ¸öÇ©Ãûµµ     %s", currentuser->signature, (replymode) ? buf3 : "");
 
         if (buf4[0] == '\0' || buf4[0] == '\n') {
             move(t_lines - 1, 0);
@@ -470,8 +470,8 @@ int do_send(char *userid, char *title, char *q_file)
         /*
          * Leeward 98.09.24 add: viewing signature(s) while setting post head 
          */
-        sprintf(buf2, "°´ [1;32m0[m~[1;32m%d/V/L[mÑ¡/¿´/Ëæ»úÇ©Ãûµµ%s£¬[1;32mT[m¸Ä±êÌâ£¬[1;32mEnter[m½ÓÊÜËùÓÐÉè¶¨: ", numofsig,
-                (replymode) ? "£¬[1;32mY[m/[1;32mN[m/[1;32mR[m/[1;32mA[m¸ÄÒýÑÔÄ£Ê½" : "");
+        sprintf(buf2, "°´ \033[1;32m0\033[m~\033[1;32m%d/V/L\033[mÑ¡/¿´/Ëæ»úÇ©Ãûµµ%s£¬\033[1;32mT\033[m¸Ä±êÌâ£¬\033[1;32mEnter\033[m½ÓÊÜËùÓÐÉè¶¨: ", numofsig,
+                (replymode) ? "£¬\033[1;32mY\033[m/\033[1;32mN\033[m/\033[1;32mR\033[m/\033[1;32mA\033[m¸ÄÒýÑÔÄ£Ê½" : "");
         getdata(t_lines - 1, 0, buf2, ans, 3, DOECHO, NULL, true);
         ans[0] = toupper(ans[0]);       /* Leeward 98.09.24 add; delete below toupper */
         if ((ans[0] - '0') >= 0 && ans[0] - '0' <= 9) {
@@ -607,7 +607,7 @@ int do_send(char *userid, char *title, char *q_file)
          */
 
         if (false == canIsend2(currentuser, userid)) {  /* Leeward 98.04.10 */
-            prints("[1m[33mºÜ±§Ç¸¡ÃÏµÍ³ÎÞ·¨·¢³ö´ËÐÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®[m[m\n\n", userid);
+            prints("\033[1m\033[33mºÜ±§Ç¸¡ÃÏµÍ³ÎÞ·¨·¢³ö´ËÐÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®\033[m\033[m\n\n", userid);
             sprintf(save_title, "ÍËÐÅ¡Ã %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®", userid);
             mail_file(currentuser->userid, filepath, currentuser->userid, save_title, BBSPOST_MOVE, NULL);
             return -2;
@@ -701,7 +701,7 @@ int m_send(char *userid)
         prints("%s ×ÔÉ±ÖÐ£¬²»ÄÜÊÕÐÅ\n", uident);
         break;                  /*Haohmaru.99.10.26.×ÔÉ±Õß²»ÄÜÊÕÐÅ */
     case -552:
-        prints("\n[1m[33mÐÅ¼þ³¬³¤£¨±¾Õ¾ÏÞ¶¨ÐÅ¼þ³¤¶ÈÉÏÏÞÎª %d ×Ö½Ú£©£¬È¡Ïû·¢ÐÅ²Ù×÷[m[m\n", MAXMAILSIZE);
+        prints("\n\033[1m\033[33mÐÅ¼þ³¬³¤£¨±¾Õ¾ÏÞ¶¨ÐÅ¼þ³¤¶ÈÉÏÏÞÎª %d ×Ö½Ú£©£¬È¡Ïû·¢ÐÅ²Ù×÷\033[m\033[m\n", MAXMAILSIZE);
         break;
     default:
         prints("ÐÅ¼þÒÑ¼Ä³ö\n");
@@ -882,15 +882,15 @@ void mailtitle(struct _select_def* conf)
     showtitle("ÓÊ¼þÑ¡µ¥    ", BBS_FULL_NAME);
     update_endline();
     move(1, 0);
-    prints("Àë¿ª[¡û,e]  Ñ¡Ôñ[¡ü,¡ý]  ÔÄ¶ÁÐÅ¼þ[¡ú,r]  »ØÐÅ[R]  ¿³ÐÅ£¯Çå³ý¾ÉÐÅ[d,D]  ÇóÖú[h][m\n");
+    prints("Àë¿ª[¡û,e]  Ñ¡Ôñ[¡ü,¡ý]  ÔÄ¶ÁÐÅ¼þ[¡ú,r]  »ØÐÅ[R]  ¿³ÐÅ£¯Çå³ý¾ÉÐÅ[d,D]  ÇóÖú[h]\033[m\n");
     /*
-     * prints("[44m±àºÅ    %-20s %-49s[m\n","·¢ÐÅÕß","±ê  Ìâ") ; 
+     * prints("\033[44m±àºÅ    %-20s %-49s\033[m\n","·¢ÐÅÕß","±ê  Ìâ") ; 
      */
     if (0 != get_mailnum(arg->direct) && 0 == UsedSpace)
         UsedSpace = 1;
     else if (UsedSpace < 0)
         UsedSpace = 0;
-    prints("[44m±àºÅ    %-12s %6s  %-13sÄúµÄÐÅÏäÉÏÏÞÈÝÁ¿%4dK£¬µ±Ç°ÒÑÓÃ%4dK ", (strstr(arg->direct, ".SENT")) ? "ÊÕÐÅÕß" : "·¢ÐÅÕß", "ÈÕ  ÆÚ", "±ê  Ìâ", MailSpace, UsedSpace);    /* modified by dong , 1998.9.19 */
+    prints("\033[44m±àºÅ    %-12s %6s  %-13sÄúµÄÐÅÏäÉÏÏÞÈÝÁ¿%4dK£¬µ±Ç°ÒÑÓÃ%4dK ", (strstr(arg->direct, ".SENT")) ? "ÊÕÐÅÕß" : "·¢ÐÅÕß", "ÈÕ  ÆÚ", "±ê  Ìâ", MailSpace, UsedSpace);    /* modified by dong , 1998.9.19 */
     clrtoeol();
     prints("\n");
     resetcolor();
@@ -920,11 +920,11 @@ char *maildoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
     }
 
     if (DEFINE(currentuser, DEF_HIGHCOLOR)) {
-        strcpy(c1, "[1;33m");
-        strcpy(c2, "[1;36m");
+        strcpy(c1, "\033[1;33m");
+        strcpy(c2, "\033[1;36m");
     } else {
-        strcpy(c1, "[33m");
-        strcpy(c2, "[36m");
+        strcpy(c1, "\033[33m");
+        strcpy(c2, "\033[36m");
     }
     if (readfh&&isThreadTitle(readfh->title, ent->title))
         same = true;
@@ -963,10 +963,10 @@ char *maildoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
      * * * * * added by alex, 96.9.7 
      */
     if (!strncmp("Re:", ent->title, 3)) {
-        sprintf(buf, " %s%3d[m %c%c %-12.12s %6.6s  %s%.50s[m", same ? c1 : "", num, reply_status, status, b2, date, same ? c1 : "", ent->title);
+        sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s  %s%.50s\033[m", same ? c1 : "", num, reply_status, status, b2, date, same ? c1 : "", ent->title);
     } /* modified by dong, 1998.9.19 */
     else {
-        sprintf(buf, " %s%3d[m %c%c %-12.12s %6.6s  ¡ï %s%.49s[m", same ? c2 : "", num, reply_status, status, b2, date, same ? c2 : "", ent->title);
+        sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s  ¡ï %s%.49s\033[m", same ? c2 : "", num, reply_status, status, b2, date, same ? c2 : "", ent->title);
     }                           /* modified by dong, 1998.9.19 */
     return buf;
 }
@@ -1337,7 +1337,7 @@ int mail_forward_internal(int ent, struct fileheader *fileinfo, char* direct,int
         break;
     case -552:
         prints
-            ("\n[1m[33mÐÅ¼þ³¬³¤£¨±¾Õ¾ÏÞ¶¨ÐÅ¼þ³¤¶ÈÉÏÏÞÎª %d ×Ö½Ú£©£¬È¡Ïû×ª¼Ä²Ù×÷[m[m\n\nÇë¸æÖªÊÕÐÅÈË£¨Ò²Ðí¾ÍÊÇÄú×Ô¼º°É:PP£©£º\n\n*1* Ê¹ÓÃ [1m[33mWWW[m[m ·½Ê½·ÃÎÊ±¾Õ¾£¬ËæÊ±¿ÉÒÔ±£´æÈÎÒâ³¤¶ÈµÄÎÄÕÂµ½×Ô¼ºµÄ¼ÆËã»ú£»\n*2* Ê¹ÓÃ [1m[33mpop3[m[m ·½Ê½´Ó±¾Õ¾ÓÃ»§µÄÐÅÏäÈ¡ÐÅ£¬Ã»ÓÐÈÎºÎ³¤¶ÈÏÞÖÆ¡£\n*3* Èç¹û²»ÊìÏ¤±¾Õ¾µÄ WWW »ò pop3 ·þÎñ£¬ÇëÔÄ¶Á [1m[33mAnnounce[m[m °æÓÐ¹Ø¹«¸æ¡£\n",
+            ("\n\033[1m\033[33mÐÅ¼þ³¬³¤£¨±¾Õ¾ÏÞ¶¨ÐÅ¼þ³¤¶ÈÉÏÏÞÎª %d ×Ö½Ú£©£¬È¡Ïû×ª¼Ä²Ù×÷\033[m\033[m\n\nÇë¸æÖªÊÕÐÅÈË£¨Ò²Ðí¾ÍÊÇÄú×Ô¼º°É:PP£©£º\n\n*1* Ê¹ÓÃ \033[1m\033[33mWWW\033[m\033[m ·½Ê½·ÃÎÊ±¾Õ¾£¬ËæÊ±¿ÉÒÔ±£´æÈÎÒâ³¤¶ÈµÄÎÄÕÂµ½×Ô¼ºµÄ¼ÆËã»ú£»\n*2* Ê¹ÓÃ \033[1m\033[33mpop3\033[m\033[m ·½Ê½´Ó±¾Õ¾ÓÃ»§µÄÐÅÏäÈ¡ÐÅ£¬Ã»ÓÐÈÎºÎ³¤¶ÈÏÞÖÆ¡£\n*3* Èç¹û²»ÊìÏ¤±¾Õ¾µÄ WWW »ò pop3 ·þÎñ£¬ÇëÔÄ¶Á \033[1m\033[33mAnnounce\033[m\033[m °æÓÐ¹Ø¹«¸æ¡£\n",
              MAXMAILSIZE);
         break;
     default:
@@ -1618,7 +1618,7 @@ int g_send()
     while (1) {
         if (cnt > maxrecp - 10) {
             move(2, 0);
-            prints("Ä¿Ç°ÏÞÖÆ¼ÄÐÅ¸ø [1m%d[m ÈË", maxrecp);
+            prints("Ä¿Ç°ÏÞÖÆ¼ÄÐÅ¸ø \033[1m%d\033[m ÈË", maxrecp);
         }
         getdata(0, 0, "(A)Ôö¼Ó (D)É¾³ý (I)ÒýÈëºÃÓÑ (C)Çå³ýÄ¿Ç°Ãûµ¥ (E)·ÅÆú (S)¼Ä³ö? [S]£º ", tmp, 2, DOECHO, NULL, true);
         if (tmp[0] == '\n' || tmp[0] == '\0' || tmp[0] == 's' || tmp[0] == 'S') {
@@ -1646,7 +1646,7 @@ int g_send()
         case 'a':
             if (!(lookupuser->userlevel & PERM_READMAIL)) {
                 move(2, 0);
-                prints("ÐÅ¼þÎÞ·¨±»¼Ä¸ø: [1m%s[m\n", lookupuser->userid);
+                prints("ÐÅ¼þÎÞ·¨±»¼Ä¸ø: \033[1m%s\033[m\n", lookupuser->userid);
                 break;
             } else if (seek_in_file(maillists, uident)) {
                 move(2, 0);
@@ -1828,15 +1828,15 @@ static int do_gsend(char *userid[], char *title, int num)
     if (currentuser->signature > numofsig)
         currentuser->signature = 1;
     while (1) {
-        sprintf(buf3, "ÒýÑÔÄ£Ê½ [[1m%c[m]", include_mode);
+        sprintf(buf3, "ÒýÑÔÄ£Ê½ [\033[1m%c\033[m]", include_mode);
         move(t_lines - 3, 0);
         clrtoeol();
-        prints("Ê¹ÓÃ±êÌâ: [1m%-50s[m\n", (title[0] == '\0') ? "[ÕýÔÚÉè¶¨±êÌâ]" : title);
+        prints("Ê¹ÓÃ±êÌâ: \033[1m%-50s\033[m\n", (title[0] == '\0') ? "[ÕýÔÚÉè¶¨±êÌâ]" : title);
         clrtoeol();
         if (currentuser->signature < 0)
             prints("Ê¹ÓÃËæ»úÇ©Ãûµµ     %s", (replymode) ? buf3 : "");
         else
-            prints("Ê¹ÓÃµÚ [1m%d[m ¸öÇ©Ãûµµ     %s", currentuser->signature, (replymode) ? buf3 : "");
+            prints("Ê¹ÓÃµÚ \033[1m%d\033[m ¸öÇ©Ãûµµ     %s", currentuser->signature, (replymode) ? buf3 : "");
 
         if (buf4[0] == '\0' || buf4[0] == '\n') {
             move(t_lines - 1, 0);
@@ -1854,8 +1854,8 @@ static int do_gsend(char *userid[], char *title, int num)
         /*
          * Leeward 98.09.24 add: viewing signature(s) while setting post head 
          */
-        sprintf(buf2, "°´[1;32m0[m~[1;32m%d/V/L[mÑ¡/¿´/Ëæ»úÇ©Ãûµµ%s£¬[1;32mT[m¸Ä±êÌâ£¬[1;32mEnter[m½ÓÊÜËùÓÐÉè¶¨: ", numofsig,
-                (replymode) ? "£¬[1;32mY[m/[1;32mN[m/[1;32mR[m/[1;32mA[m¸ÄÒýÑÔÄ£Ê½" : "");
+        sprintf(buf2, "°´\033[1;32m0\033[m~\033[1;32m%d/V/L\033[mÑ¡/¿´/Ëæ»úÇ©Ãûµµ%s£¬\033[1;32mT\033[m¸Ä±êÌâ£¬\033[1;32mEnter\033[m½ÓÊÜËùÓÐÉè¶¨: ", numofsig,
+                (replymode) ? "£¬\033[1;32mY\033[m/\033[1;32mN\033[m/\033[1;32mR\033[m/\033[1;32mA\033[m¸ÄÒýÑÔÄ£Ê½" : "");
         getdata(t_lines - 1, 0, buf2, ans, 3, DOECHO, NULL, true);
         ans[0] = toupper(ans[0]);       /* Leeward 98.09.24 add; delete below toupper */
         if ((ans[0] - '0') >= 0 && ans[0] - '0' <= 9) {
@@ -1962,7 +1962,7 @@ static int do_gsend(char *userid[], char *title, int num)
         } else /* ÐÞÕýºÃÓÑ·¢ÐÅµÄ´íÎó Bigman 2000.9.8 */ if (false == canIsend2(currentuser, uid)) {     /* Leeward 98.04.10 */
             char tmp_title[STRLEN], save_title_bak[STRLEN];
 
-            prints("[1m[33mºÜ±§Ç¸¡ÃÏµÍ³ÎÞ·¨Ïò %s ·¢³ö´ËÐÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®\n\nÇë°´ Enter ¼ü¼ÌÐøÏòÆäËûÈË·¢ÐÅ...[m[m\n\n", uid, uid);
+            prints("\033[1m\033[33mºÜ±§Ç¸¡ÃÏµÍ³ÎÞ·¨Ïò %s ·¢³ö´ËÐÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®\n\nÇë°´ Enter ¼ü¼ÌÐøÏòÆäËûÈË·¢ÐÅ...\033[m\033[m\n\n", uid, uid);
             pressreturn();
             clear();
             strcpy(save_title_bak, save_title);
@@ -1998,7 +1998,7 @@ int ov_send()
     clrtobot();
     move(2, 0);
     u = get_utmpent(utmpent);
-    prints("¼ÄÐÅ¸øºÃÓÑÃûµ¥ÖÐµÄÈË£¬Ä¿Ç°±¾Õ¾ÏÞÖÆ½ö¿ÉÒÔ¼Ä¸ø [1m%d[m Î»¡£\n", maxrecp);
+    prints("¼ÄÐÅ¸øºÃÓÑÃûµ¥ÖÐµÄÈË£¬Ä¿Ç°±¾Õ¾ÏÞÖÆ½ö¿ÉÒÔ¼Ä¸ø \033[1m%d\033[m Î»¡£\n", maxrecp);
     if (u->friendsnum <= 0) {
         prints("Äã²¢Ã»ÓÐÉè¶¨ºÃÓÑ¡£\n");
         pressanykey();
@@ -2183,7 +2183,7 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
             }
 
             if (false == canIsend2(currentuser, receiver)) {    /* Leeward 98.04.10 */
-                prints("[1m[33mºÜ±§Ç¸¡ÃÏµÍ³ÎÞ·¨×ª¼Ä´ËÐÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®[m[m\n\n", receiver);
+                prints("\033[1m\033[33mºÜ±§Ç¸¡ÃÏµÍ³ÎÞ·¨×ª¼Ä´ËÐÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®\033[m\033[m\n\n", receiver);
                 sprintf(title, "ÍËÐÅ¡Ã %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®", receiver);
                 mail_file(currentuser->userid, fname, currentuser->userid, title, 0, NULL);
                 return -4;
@@ -2744,9 +2744,9 @@ static int set_mailbox_prop_show(struct _select_def *conf, int i)
         prints("%c. ÍË³ö ", 'A' + i);
     } else {
         if ((arg->prop & (1 << i)) != (arg->oldprop & (1 << i)))
-            prints("%c. %-50s [31;1m%3s[m", 'A' + i, mailbox_prop_str[i], ((arg->prop >> i) & 1 ? "ON" : "OFF"));
+            prints("%c. %-50s \033[31;1m%3s\033[m", 'A' + i, mailbox_prop_str[i], ((arg->prop >> i) & 1 ? "ON" : "OFF"));
         else
-            prints("%c. %-50s [37;0m%3s[m", 'A' + i, mailbox_prop_str[i], ((arg->prop >> i) & 1 ? "ON" : "OFF"));
+            prints("%c. %-50s \033[37;0m%3s\033[m", 'A' + i, mailbox_prop_str[i], ((arg->prop >> i) & 1 ? "ON" : "OFF"));
     }
     return SHOW_CONTINUE;
 }
@@ -2788,7 +2788,7 @@ int set_mailbox_prop()
 
     clear();
     move(0, 0);
-    prints("Éè¶¨ÓÊÏäÊôÐÔ£¬[1;32mCtrl+Q[mÍË³ö£¬[1;32mCtrl+A[m·ÅÆúÐÞ¸ÄÍË³ö.\n");
+    prints("Éè¶¨ÓÊÏäÊôÐÔ£¬\033[1;32mCtrl+Q\033[mÍË³ö£¬\033[1;32mCtrl+A\033[m·ÅÆúÐÞ¸ÄÍË³ö.\n");
     arg.prop = load_mailbox_prop(currentuser->userid);
     arg.oldprop = arg.prop;
     pts = (POINT *) malloc(sizeof(POINT) * (MBP_NUMS + 1));
@@ -2977,7 +2977,7 @@ static int set_mailgroup_refresh(struct _select_def *conf)
     docmdtitle("[ÉèÖÃÈºÌåÐÅ¼þ×é]",
                "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ½øÈë[\x1b[1;32mEnter\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ý\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ÐÞ¸ÄËµÃ÷[\x1b[1;32mT\x1b[0;37m] É¾³ý[\x1b[1;32md\x1b[0;37m]\x1b[m ·¢ÐÅ[\x1b[1;32mm\x1b[0;37m]\x1b[m");
     move(2, 0);
-    prints("[0;1;37;44m  %4s  %-12s  %-58s", "±àºÅ", "ÓÃ»§´úºÅ", "ÓÃ»§ËµÃ÷");
+    prints("\033[0;1;37;44m  %4s  %-12s  %-58s", "±àºÅ", "ÓÃ»§´úºÅ", "ÓÃ»§ËµÃ÷");
     clrtoeol();
     update_endline();
     return SHOW_CONTINUE;
@@ -3126,7 +3126,7 @@ static int set_mailgroup_list_key(struct _select_def *conf, int key)
                     prints("µ¼ÈëºÃÓÑÃûµ¥... ");
                     import_friends_mailgroup(currentuser->userid, &(arg->mail_group));
                     initialized++;
-                    prints("[[0;1;32m³É¹¦[m]\n");
+                    prints("[\033[0;1;32m³É¹¦\033[m]\n");
                     y++;
                 }
             }
@@ -3235,7 +3235,7 @@ static int set_mailgroup_list_refresh(struct _select_def *conf)
     docmdtitle("[ÈºÌåÐÅ¼þÑ¡µ¥]",
                "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ½øÈë[\x1b[1;32mEnter\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ý\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ¸ÄÃû[\x1b[1;32mT\x1b[0;37m] É¾³ý[\x1b[1;32md\x1b[0;37m]\x1b[m ·¢ÈºÌåÐÅ[\x1b[1;32mm\x1b[0;37m]\x1b[m");
     move(2, 0);
-    prints("[0;1;37;44m  %4s  %-40s %-31s", "±àºÅ", "ÈºÌåÐÅ¼þ×éÃû³Æ", "ÈËÊý");
+    prints("\033[0;1;37;44m  %4s  %-40s %-31s", "±àºÅ", "ÈºÌåÐÅ¼þ×éÃû³Æ", "ÈËÊý");
     clrtoeol();
     update_endline();
     return SHOW_CONTINUE;
@@ -3269,7 +3269,7 @@ static int init_mailgroup_list(mailgroup_list_t * mgl)
             import_old_mailgroup(currentuser->userid, mgl);
             unlink(filename);
             initialized++;
-            prints("[[0;1;32m³É¹¦[m]\n");
+            prints("[\033[0;1;32m³É¹¦\033[m]\n");
             y++;
         }
     }
@@ -3282,7 +3282,7 @@ static int init_mailgroup_list(mailgroup_list_t * mgl)
             prints("µ¼ÈëºÃÓÑÃûµ¥... ");
             import_friends_mailgroup(currentuser->userid, mgl);
             initialized++;
-            prints("[[0;1;32m³É¹¦[m]\n");
+            prints("[\033[0;1;32m³É¹¦\033[m]\n");
             y++;
         }
     }

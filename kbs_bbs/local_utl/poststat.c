@@ -325,7 +325,7 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
             fprintf(fp, "              \x1b[1;33m©¤©¤ \x1b[31m¡î\x1b[33m¡î\x1b[32m¡î \x1b[41;32m  \x1b[33m±¾ÈÕÊ®´óÖÔÐÄ×£¸£  \x1b[m\x1b[1;32m ¡î\x1b[31m¡î\x1b[33m¡î ©¤©¤\x1b[m\n\n");
         else
 #endif
-            fprintf(fp, "                [34m-----[37m=====[41m ±¾%s [m=====[34m-----[m\n\n", mytitle[mytype]);
+            fprintf(fp, "                \033[34m-----\033[37m=====\033[41m ±¾%s \033[m=====\033[34m-----\033[m\n\n", mytitle[mytype]);
 
         i = mytop[mytype];
 //        if (j > i)
@@ -384,8 +384,8 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
             else
 #endif
                 fprintf(fp,
-                        "[37mµÚ[31m%3d[37m Ãû [37mÐÅÇø : [33m%-16s[37m¡¾[32m%s[37m¡¿[36m%4d [37mÈË[35m%16s\n"
-                        "     [37m±êÌâ : [44m[37m%-60.60s[m\n", !mytype ? real : (i + 1), top[i].board, p, top[i].number, fh.owner, fh.title);
+                        "\033[37mµÚ\033[31m%3d\033[37m Ãû \033[37mÐÅÇø : \033[33m%-16s\033[37m¡¾\033[32m%s\033[37m¡¿\033[36m%4d \033[37mÈË\033[35m%16s\n"
+                        "     \033[37m±êÌâ : \033[44m\033[37m%-60.60s\033[m\n", !mytype ? real : (i + 1), top[i].board, p, top[i].number, fh.owner, fh.title);
         }
 
 

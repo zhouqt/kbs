@@ -524,7 +524,7 @@ void login_query()
 
     ansimore("etc/issue", false);
 #ifndef NINE_BUILD
-    prints("\033[1m»¶Ó­¹âÁÙ ¡ô\033[31m%s[37m¡ô [36mÉÏÏßÈËÊı \033[1m%d[×î¸ß: %d](%d WWW GUEST)[m", BBS_FULL_NAME, curr_login_num + getwwwguestcount(), get_publicshm()->max_user,getwwwguestcount());
+    prints("\033[1m»¶Ó­¹âÁÙ ¡ô\033[31m%s\033[37m¡ô \033[36mÉÏÏßÈËÊı \033[1m%d[×î¸ß: %d](%d WWW GUEST)\033[m", BBS_FULL_NAME, curr_login_num + getwwwguestcount(), get_publicshm()->max_user,getwwwguestcount());
 #else
     prints("\033[1m»¶Ó­¹âÁÙ ¡ô\033[31m%s\033[37m¡ô \033[36mÉÏÏßÈËÊı \033[1m%d[×î¸ß: %d]\033[m", BBS_FULL_NAME, curr_login_num + getwwwguestcount(),get_publicshm()->max_user);
 #endif
@@ -532,10 +532,10 @@ void login_query()
 #ifndef SSHBBS
     attempts = 0;
 #ifdef LOGINASNEW
-    prints("\n\033[1m[37mÊÔÓÃÇëÊäÈë `\033[36mguest\033[37m', ×¢²áÇëÊäÈë`\033[36mnew\033[37m',add '\033[36m.\33[37m' after your ID for BIG5[m");
+    prints("\n\033[1m\033[37mÊÔÓÃÇëÊäÈë `\033[36mguest\033[37m', ×¢²áÇëÊäÈë`\033[36mnew\033[37m',add '\033[36m.\33[37m' after your ID for BIG5\033[m");
 #else
 #ifdef NINE_BUILD
-    prints("\n\033[1m[37mÇëÊäÈë´úºÅ(ÊÔÓÃÇëÊäÈë `\033[36mguest^[[37m)[m");
+    prints("\n\033[1m\033[37mÇëÊäÈë´úºÅ(ÊÔÓÃÇëÊäÈë `\033[36mguest^[[37m)\033[m");
 #else
     prints("\n\033[1m\033[37mÇëÊäÈë´úºÅ(ÊÔÓÃÇëÊäÈë `\033[36mguest\033[37m', ÔİÍ£×¢²áĞÂÕÊºÅ,add '\033[36m.\33[37m' after your ID for BIG5\033[m");
 #endif //NINE_BUILD
@@ -578,10 +578,10 @@ void login_query()
             }
             prints("±¾ÏµÍ³ÒòÎª %s µÄÔ­Òò½ûÖ¹ÄúËùÔÚÍø¶Î×¢²áĞÂÓÃ»§\n", buf);
 #else
-            prints("[37m±¾ÏµÍ³Ä¿Ç°ÎŞ·¨ÒÔ new ×¢²á, ÇëÓÃ guest ½øÈë.[m\n");
+            prints("\033[37m±¾ÏµÍ³Ä¿Ç°ÎŞ·¨ÒÔ new ×¢²á, ÇëÓÃ guest ½øÈë.\033[m\n");
 #endif
         } else if (*uid == '\0' || !dosearchuser(uid)) {
-            prints("[32m" MSG_ERR_USERID "[m\n");
+            prints("\033[32m" MSG_ERR_USERID "\033[m\n");
         } else
 /* Add by KCN for let sysop can use extra 10 UTMP */
         if (!HAS_PERM(currentuser, PERM_ADMINMENU) && (curr_login_num >= MAXACTIVE + 10)) {
@@ -603,7 +603,7 @@ void login_query()
                 sleep(1);
                 exit(1);
             }
-            getdata(0, 0, "\033[1m[37m"PASSWD_PROMPT": [m", passbuf, 39, NOECHO, NULL, true);
+            getdata(0, 0, "\033[1m\033[37m"PASSWD_PROMPT": \033[m", passbuf, 39, NOECHO, NULL, true);
 #ifdef NINE_BUILD
             if(!strcmp(fromhost, "10.9.0.1")||!strcmp(fromhost, "10.9.30.133")) {
 		getdata(0, 0, "", buf, 20, NOECHO, NULL, true);
@@ -613,19 +613,19 @@ void login_query()
 
             if (!checkpasswd2(passbuf, currentuser)) {
                 logattempt(currentuser->userid, fromhost);
-                prints("[32mÃÜÂëÊäÈë´íÎó...[m\n");
+                prints("\033[32mÃÜÂëÊäÈë´íÎó...\033[m\n");
             } else {
                 if (id_invalid(uid)) {
-                    prints("[31m±§Ç¸!![m\n");
-                    prints("[32m±¾ÕÊºÅÊ¹ÓÃÖĞÎÄÎª´úºÅ£¬´ËÕÊºÅÒÑ¾­Ê§Ğ§...[m\n");
-                    prints("[32mÏë±£ÁôÈÎºÎÇ©ÃûµµÇë¸úÕ¾³¤ÁªÂç £¬Ëû(Ëı)»áÎªÄã·şÎñ¡£[m\n");
+                    prints("\033[31m±§Ç¸!!\033[m\n");
+                    prints("\033[32m±¾ÕÊºÅÊ¹ÓÃÖĞÎÄÎª´úºÅ£¬´ËÕÊºÅÒÑ¾­Ê§Ğ§...\033[m\n");
+                    prints("\033[32mÏë±£ÁôÈÎºÎÇ©ÃûµµÇë¸úÕ¾³¤ÁªÂç £¬Ëû(Ëı)»áÎªÄã·şÎñ¡£\033[m\n");
                     getdata(0, 0, "°´ [RETURN] ¼ÌĞø", genbuf, 10, NOECHO, NULL, true);
                     oflush();
                     sleep(1);
                     exit(1);
                 }
                 if (simplepasswd(passbuf)) {
-                    prints("[33m* ÃÜÂë¹ıÓÚ¼òµ¥, ÇëÑ¡ÔñÒ»¸öÒÔÉÏµÄÌØÊâ×ÖÔª.[m\n");
+                    prints("\033[33m* ÃÜÂë¹ıÓÚ¼òµ¥, ÇëÑ¡ÔñÒ»¸öÒÔÉÏµÄÌØÊâ×ÖÔª.\033[m\n");
                     getdata(0, 0, "°´ [RETURN] ¼ÌĞø", genbuf, 10, NOECHO, NULL, true);
                 }
                 /* passwd ok, covert to md5 --wwj 2001/5/7 */
@@ -669,7 +669,7 @@ void login_query()
                     break;
                 if (i == 1) {
                     fclose(fn);
-                    sprintf(genbuf, "[32mÄãÒÑ¾­½äÍø£¬Àë½äÍø½áÊø»¹ÓĞ%dÌì[m\n", j - time(0) / 3600 / 24);
+                    sprintf(genbuf, "\033[32mÄãÒÑ¾­½äÍø£¬Àë½äÍø½áÊø»¹ÓĞ%dÌì\033[m\n", j - time(0) / 3600 / 24);
                     prints(genbuf);
                     oflush();
                     sleep(1);
@@ -678,7 +678,7 @@ void login_query()
             }
             fclose(fn);
         }
-        prints("[32m±¾ÕÊºÅÒÑÍ£»ú¡£ÇëÏò [36mSYSOP[32m ²éÑ¯Ô­Òò[m\n");
+        prints("\033[32m±¾ÕÊºÅÒÑÍ£»ú¡£ÇëÏò \033[36mSYSOP\033[32m ²éÑ¯Ô­Òò\033[m\n");
         oflush();
         sleep(1);
         exit(1);
@@ -844,7 +844,7 @@ void user_login()
             } else if ((noteln - currentuser->noteline) > 0) {
                 clear();
                 ansimore2("etc/notepad", false, 0, noteln - currentuser->noteline + 1);
-                prints("[31m¡Ñ©Ø¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©Ø¡Ñ[m\n");
+                prints("\033[31m¡Ñ©Ø¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©Ø¡Ñ\033[m\n");
                 igetkey();
                 currentuser->noteline = noteln;
                 write_defnotepad();
@@ -878,8 +878,8 @@ void user_login()
 
     move(t_lines - 2 /*1 */ , 0);       /* Leeward: 98.09.24 Alter below message */
     clrtoeol();
-    prints("[1;36m¡î ÕâÊÇÄúµÚ [33m%d[36m ´ÎÉÏÕ¾£¬ÉÏ´ÎÄúÊÇ´Ó [33m%s[36m Á¬Íù±¾Õ¾¡£\n", currentuser->numlogins + 1, currentuser->lasthost);
-    prints("¡î ÉÏ´ÎÁ¬ÏßÊ±¼äÎª [33m%s[m ", Ctime(currentuser->lastlogin));
+    prints("\033[1;36m¡î ÕâÊÇÄúµÚ \033[33m%d\033[36m ´ÎÉÏÕ¾£¬ÉÏ´ÎÄúÊÇ´Ó \033[33m%s\033[36m Á¬Íù±¾Õ¾¡£\n", currentuser->numlogins + 1, currentuser->lasthost);
+    prints("¡î ÉÏ´ÎÁ¬ÏßÊ±¼äÎª \033[33m%s\033[m ", Ctime(currentuser->lastlogin));
     igetkey();
     /* È«¹úÊ®´óÈÈÃÅ»°Ìâ added by Czz 020128 */
 #ifdef CNBBS_TOPIC
@@ -890,14 +890,14 @@ void user_login()
         showsysinfo("0Announce/systeminfo");
         move(t_lines - 1 /*1 */ , 0);       /* Leeward: 98.09.24 Alter below message */
         clrtoeol();
-        prints("[1;36m¡î °´ÈÎÒâ¼ü¼ÌĞø...[33m[m ");
+        prints("\033[1;36m¡î °´ÈÎÒâ¼ü¼ÌĞø...\033[33m\033[m ");
         igetkey();
     }
     if (dashf("0Announce/hotinfo")) {
         ansimore("0Announce/hotinfo", false);
         move(t_lines - 1 /*1 */ , 0);       /* Leeward: 98.09.24 Alter below message */
         clrtoeol();
-        prints("[1;36m¡î °´ÈÎÒâ¼ü¼ÌĞø...[33m[m ");
+        prints("\033[1;36m¡î °´ÈÎÒâ¼ü¼ÌĞø...\033[33m\033[m ");
         igetkey();
     }
 	/* Load currentuser's mailbox properties, added by flyriver, 2003.1.5 */
@@ -952,7 +952,7 @@ int chk_friend_book()
     move(3, 0);
     if ((fp = fopen("friendbook", "r")) == NULL)
         return n;
-    prints("[1mÏµÍ³Ñ°ÈËÃû²áÁĞ±í:[m\n\n");
+    prints("\033[1mÏµÍ³Ñ°ÈËÃû²áÁĞ±í:\033[m\n\n");
     /*if((fp=fopen("friendbook","r"))==NULL)
        return n; Moved before "prints", Leeward 98.12.03 */
     while (fgets(buf, sizeof(buf), fp) != NULL) {
@@ -1092,7 +1092,7 @@ void main_bbs(int convit, char *argv)
 		prints("ÌáÊ¾ĞÅÏ¢Îª:");
 		move(4,10);
 		calltimememo[39]='\0';
-		prints("[1;31m %s [m",calltimememo);
+		prints("\033[1;31m %s \033[m",calltimememo);
 		prints("\n%s",ctime(&(currentuser->lastlogin)));
 		move(t_lines-1,0);
 		prints("                          press any key to continue...");
@@ -1155,18 +1155,18 @@ void update_endline()
     }
     now = time(0);
     allstay = (now - login_start_time) / 60;
-    sprintf(buf, "[[36m%.12s[33m]", currentuser->userid);
+    sprintf(buf, "[\033[36m%.12s\033[33m]", currentuser->userid);
     if (DEFINE(currentuser, DEF_NOTMSGFRIEND)) {
 		if (DEFINE(currentuser,DEF_HIGHCOLOR))
-        	sprintf(stitle, "[1;4%dm[33mÊ±¼ä[[36m%12.12s[33m] ºô½ĞÆ÷[ºÃÓÑ:%3s£ºÒ»°ã:%3s] Ê¹ÓÃÕß%s", colour, ctime(&now) + 4,
+        	sprintf(stitle, "\033[1;4%dm\033[33mÊ±¼ä[\033[36m%12.12s\033[33m] ºô½ĞÆ÷[ºÃÓÑ:%3s£ºÒ»°ã:%3s] Ê¹ÓÃÕß%s", colour, ctime(&now) + 4,
                 (!(uinfo.pager & FRIEND_PAGER)) ? "NO " : "YES", (uinfo.pager & ALL_PAGER) ? "YES" : "NO ", buf);
 		else
-        	sprintf(stitle, "[4%dm[33mÊ±¼ä[[36m%12.12s[33m] ºô½ĞÆ÷[ºÃÓÑ:%3s£ºÒ»°ã:%3s] Ê¹ÓÃÕß%s", colour, ctime(&now) + 4,
+        	sprintf(stitle, "\033[4%dm\033[33mÊ±¼ä[\033[36m%12.12s\033[33m] ºô½ĞÆ÷[ºÃÓÑ:%3s£ºÒ»°ã:%3s] Ê¹ÓÃÕß%s", colour, ctime(&now) + 4,
                 (!(uinfo.pager & FRIEND_PAGER)) ? "NO " : "YES", (uinfo.pager & ALL_PAGER) ? "YES" : "NO ", buf);
     } else {
 #ifdef HAVE_FRIENDS_NUM
             num_alcounter();
-            sprintf(stitle,"[1;4%dm[33mÊ±¼ä[[36m%12.12s[33m] ×ÜÈËÊı/ºÃÓÑ[%3d/%3d][%c£º%c] Ê¹ÓÃÕß%s",colour,
+            sprintf(stitle,"\033[1;4%dm\033[33mÊ±¼ä[\033[36m%12.12s\033[33m] ×ÜÈËÊı/ºÃÓÑ[%3d/%3d][%c£º%c] Ê¹ÓÃÕß%s",colour,
                     ctime(&now)+4,count_users,count_friends,(uinfo.pager&ALL_PAGER)?'Y':'N',(!(uinfo.pager&FRIEND_PAGER))?'N':'Y',buf);
 #else
 	if (DEFINE(currentuser,DEF_HIGHCOLOR))
@@ -1192,7 +1192,7 @@ void update_endline()
         && !HAS_PERM(currentuser, PERM_WELCOME) && !HAS_PERM(currentuser, PERM_ANNOUNCE)) {
         move(t_lines - 2, 0);
         clrtoeol();
-        prints("[1m[32mÕâÊÇ¾«¼òÄ£Ê½Ö÷Ñ¡µ¥¡£ÒªÊ¹ÓÃÒ»°ãÄ£Ê½£¬ÇëÉè¶¨¸öÈË²ÎÊıµÚ£ÌÏîÎª£Ï£Î²¢Õı³£ÀëÕ¾ÔÙ½øÕ¾¡£[m");
+        prints("\033[1m\033[32mÕâÊÇ¾«¼òÄ£Ê½Ö÷Ñ¡µ¥¡£ÒªÊ¹ÓÃÒ»°ãÄ£Ê½£¬ÇëÉè¶¨¸öÈË²ÎÊıµÚ£ÌÏîÎª£Ï£Î²¢Õı³£ÀëÕ¾ÔÙ½øÕ¾¡£\033[m");
     }
 }
 
@@ -1268,7 +1268,7 @@ void showtitle( char *title, char*mid)
     else
         setfcolor(WHITE, DEFINE(currentuser,DEF_HIGHCOLOR));
     setbcolor(colour);
-    if(mid[0]=='[') prints("[5m");
+    if(mid[0]=='[') prints("\033[5m");
     prints("%s", mid);
 
     move(0, -strlen(note));

@@ -78,7 +78,7 @@ int pc_add_user()
 		getdata(4,0,"¸ÃÓÃ»§ÒÑ¾­ÓµÓĞ¸öÈËÎÄ¼¯, [1]ĞŞ¸Ä [2]É¾³ı [0] ·µ»Ø, [0]:",ans,3, DOECHO,NULL,true);
 		if(ans[0]=='2'){
 			move(6,0);
-			prints("[1;31mÉ¾³ı¸öÈËÎÄ¼¯²Ù×÷½«¶ªÊ§¸ÃÓÃ»§ËùÓĞ¸öÈËÎÄ¼¯£¬²»¿É»Ö¸´[m");
+			prints("\033[1;31mÉ¾³ı¸öÈËÎÄ¼¯²Ù×÷½«¶ªÊ§¸ÃÓÃ»§ËùÓĞ¸öÈËÎÄ¼¯£¬²»¿É»Ö¸´\033[m");
 			getdata(7,0,"ÄãÈ·¶¨ÒªÉ¾³ıÂğ? (Y/N) [N]:",ans,3, DOECHO,NULL,true);
 			if( ans[0]!='y' && ans[0]!='Y' )
 				return 0;
@@ -452,9 +452,9 @@ static int pc_seldir_prekey(struct _select_def *conf,int *key)
 static int pc_selusr_title(struct _select_def *conf)
 {
 	clear();
-	docmdtitle("[¸öÈËÎÄ¼¯Ñ¡Ôñ]","ÍË³ö[[1;32mq[m]");
+	docmdtitle("[¸öÈËÎÄ¼¯Ñ¡Ôñ]","ÍË³ö[\033[1;32mq\033[m]");
 	move(2,0);
-	prints("[0;1;44m  %-4s %-13s %-40s %-15s[m","ĞòºÅ","ÓÃ»§","¸öÈËÎÄ¼¯Ãû×Ö","¿ªÆôÊ±¼ä");
+	prints("\033[0;1;44m  %-4s %-13s %-40s %-15s\033[m","ĞòºÅ","ÓÃ»§","¸öÈËÎÄ¼¯Ãû×Ö","¿ªÆôÊ±¼ä");
 	update_endline();
 	return SHOW_CONTINUE;
 }
@@ -615,7 +615,7 @@ static int pc_seldir_title(struct _select_def *conf)
 {
 	clear();
 	move(2,0);
-	prints("           [1;31m%sµÄ¸öÈËÎÄ¼¯ -- %s[m",pc_u->username,pc_u->description);
+	prints("           \033[1;31m%sµÄ¸öÈËÎÄ¼¯ -- %s\033[m",pc_u->username,pc_u->description);
 	return SHOW_CONTINUE;
 }
 
@@ -1051,37 +1051,37 @@ static int pc_dir_title(struct _select_def *conf)
 	move(0,0);
 
     if (chkmailflag == 2) {
-        prints("[0;1;5;44m                         [ÄúµÄĞÅÏä³¬¹ıÈİÁ¿,²»ÄÜÔÙÊÕĞÅ!]                       [m");
+        prints("\033[0;1;5;44m                         [ÄúµÄĞÅÏä³¬¹ıÈİÁ¿,²»ÄÜÔÙÊÕĞÅ!]                       \033[m");
     } else if (chkmailflag) {
-        prints("[0;1;5;44m                                   [ÄúÓĞĞÅ¼ş]                                 [m");
+        prints("\033[0;1;5;44m                                   [ÄúÓĞĞÅ¼ş]                                 \033[m");
     } else{
-		prints("[0;1;44m  %sµÄ¸öÈËÎÄ¼¯ -- %-44s ",pc_u->username, pc_u->corpusname);
+		prints("\033[0;1;44m  %sµÄ¸öÈËÎÄ¼¯ -- %-44s ",pc_u->username, pc_u->corpusname);
 		switch( pc_dirmode ){
 		case 2:
-			prints("[ºÃÓÑÇø][m");
+			prints("[ºÃÓÑÇø]\033[m");
 			break;
 		case 3:
-			prints("[Ë½ÈËÇø][m");
+			prints("[Ë½ÈËÇø]\033[m");
 			break;
 		case 4:
-			prints("[ÊÕ²ØÇø][m");
+			prints("[ÊÕ²ØÇø]\033[m");
 			break;
 		case 5:
-			prints("[É¾³ıÇø][m");
+			prints("[É¾³ıÇø]\033[m");
 			break;
 		default:
-			prints("[¹«¿ªÇø][m");
+			prints("[¹«¿ªÇø]\033[m");
 			break;
 		}
 	}
 
 	move(1,0);
 	if( pc_dirmode != 2 )
-		prints("               ÍË³ö[[1;32mq[m] Ôö¼Ó[[1;32ma[m] É¾³ı[[1;32md[m] ĞŞ¸Ä[[1;32me[m] ¿½±´[[1;32mc[m] Õ³Ìù[[1;32mp[m]");
+		prints("               ÍË³ö[\033[1;32mq\033[m] Ôö¼Ó[\033[1;32ma\033[m] É¾³ı[\033[1;32md\033[m] ĞŞ¸Ä[\033[1;32me\033[m] ¿½±´[\033[1;32mc\033[m] Õ³Ìù[\033[1;32mp\033[m]");
 	else
-		prints("ÍË³ö[[1;32mq[m] Ôö¼Ó[[1;32ma[m] É¾³ı[[1;32md[m] ĞŞ¸Ä[[1;32me[m] ¿½±´[[1;32mc[m] Õ³Ìù[[1;32mp[m] ĞŞ¸ÄºÃÓÑ[[1;32mo[m] µ¼ÈëºÃÓÑ[[1;32mi[m]");
+		prints("ÍË³ö[\033[1;32mq\033[m] Ôö¼Ó[\033[1;32ma\033[m] É¾³ı[\033[1;32md\033[m] ĞŞ¸Ä[\033[1;32me\033[m] ¿½±´[\033[1;32mc\033[m] Õ³Ìù[\033[1;32mp\033[m] ĞŞ¸ÄºÃÓÑ[\033[1;32mo\033[m] µ¼ÈëºÃÓÑ[\033[1;32mi\033[m]");
 	move(2,0);
-	prints("[0;1;44m  %-4s %-6s %-38s %-4s %-4s %-12s[m","ĞòºÅ","Àà±ğ","±êÌâ","ÆÀÂÛ","·ÃÎÊ","ÎÄÕÂ·¢±íÊ±¼ä");
+	prints("\033[0;1;44m  %-4s %-6s %-38s %-4s %-4s %-12s\033[m","ĞòºÅ","Àà±ğ","±êÌâ","ÆÀÂÛ","·ÃÎÊ","ÎÄÕÂ·¢±íÊ±¼ä");
 	update_endline();
 	return SHOW_CONTINUE;
 }
@@ -1126,9 +1126,9 @@ static int pc_dir_select(struct _select_def *conf)
 	if( ch == 0 ){
 		move(t_lines-1,0);
 		if( pc_n[conf->pos-conf->page_pos].comment )
-			prints("[0;1;44m r ²é¿´ËùÓĞÆÀÂÛ(¹²%dÌõ)                                                         [m",pc_n[conf->pos-conf->page_pos].commentcount);
+			prints("\033[0;1;44m r ²é¿´ËùÓĞÆÀÂÛ(¹²%dÌõ)                                                         \033[m",pc_n[conf->pos-conf->page_pos].commentcount);
 		else
-			prints("[0;1;44m ±¾ÎÄ²»ĞíÆÀÂÛ [m");
+			prints("\033[0;1;44m ±¾ÎÄ²»ĞíÆÀÂÛ \033[m");
 		ch = igetkey();
 	}
 
@@ -1151,7 +1151,7 @@ static int pc_dir_show(struct _select_def *conf, int i)
 {
 
 	char newts[20];
-	prints(" %-3d %s %-38s %-3d %-3d %-12s", i, pc_n[i-conf->page_pos].type==0?"[ÎÄÕÂ]":"[1;33m[Ä¿Â¼][m",pc_n[i-conf->page_pos].subject,pc_n[i-conf->page_pos].commentcount, pc_n[i-conf->page_pos].visitcount,tt2timestamp(pc_n[i-conf->page_pos].created,newts));
+	prints(" %-3d %s %-38s %-3d %-3d %-12s", i, pc_n[i-conf->page_pos].type==0?"[ÎÄÕÂ]":"\033[1;33m[Ä¿Â¼]\033[m",pc_n[i-conf->page_pos].subject,pc_n[i-conf->page_pos].commentcount, pc_n[i-conf->page_pos].visitcount,tt2timestamp(pc_n[i-conf->page_pos].created,newts));
 
 	return SHOW_CONTINUE;
 }
@@ -1654,33 +1654,33 @@ static int pc_com_title(struct _select_def *conf)
 	move(0,0);
 
     if (chkmailflag == 2) {
-        prints("[0;1;5;44m                         [ÄúµÄĞÅÏä³¬¹ıÈİÁ¿,²»ÄÜÔÙÊÕĞÅ!]                       [m");
+        prints("\033[0;1;5;44m                         [ÄúµÄĞÅÏä³¬¹ıÈİÁ¿,²»ÄÜÔÙÊÕĞÅ!]                       \033[m");
     } else if (chkmailflag) {
-        prints("[0;1;5;44m                                   [ÄúÓĞĞÅ¼ş]                                 [m");
+        prints("\033[0;1;5;44m                                   [ÄúÓĞĞÅ¼ş]                                 \033[m");
     } else{
-		prints("[0;1;44m  %sµÄ¸öÈËÎÄ¼¯ÆÀÂÛ -- %-42s ",pc_u->username, pc_u->corpusname);
+		prints("\033[0;1;44m  %sµÄ¸öÈËÎÄ¼¯ÆÀÂÛ -- %-42s ",pc_u->username, pc_u->corpusname);
 		switch( pc_dirmode ){
 		case 2:
-			prints("[ºÃÓÑÇø][m");
+			prints("[ºÃÓÑÇø]\033[m");
 			break;
 		case 3:
-			prints("[Ë½ÈËÇø][m");
+			prints("[Ë½ÈËÇø]\033[m");
 			break;
 		case 4:
-			prints("[ÊÕ²ØÇø][m");
+			prints("[ÊÕ²ØÇø]\033[m");
 			break;
 		case 5:
-			prints("[É¾³ıÇø][m");
+			prints("[É¾³ıÇø]\033[m");
 			break;
 		default:
-			prints("[¹«¿ªÇø][m");
+			prints("[¹«¿ªÇø]\033[m");
 			break;
 		}
 	}
 	move(1,0);
-	prints("                       ÍË³ö[[1;32mq[m] Ôö¼Ó[[1;32ma[m] É¾³ı[[1;32md[m] ĞŞ¸Ä[[1;32me[m]");
+	prints("                       ÍË³ö[\033[1;32mq\033[m] Ôö¼Ó[\033[1;32ma\033[m] É¾³ı[\033[1;32md\033[m] ĞŞ¸Ä[\033[1;32me\033[m]");
 	move(2,0);
-	prints("[0;1;44m  %-4s %-13s %-40s %-15s[m","ĞòºÅ","×÷Õß","±êÌâ","Ê±¼ä");
+	prints("\033[0;1;44m  %-4s %-13s %-40s %-15s\033[m","ĞòºÅ","×÷Õß","±êÌâ","Ê±¼ä");
 	update_endline();
 	return SHOW_CONTINUE;
 }

@@ -851,7 +851,7 @@ int auto_register(char *userid, char *email, int msize)
 
     sprintf(fname, "tmp/security.%d", getpid());
     if ((fout = fopen(fname, "w")) != NULL) {
-        fprintf(fout, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n[32mÔ­Òò£º%s×Ô¶¯Í¨¹ı×¢²á[m\n", userid);
+        fprintf(fout, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n\033[32mÔ­Òò£º%s×Ô¶¯Í¨¹ı×¢²á\033[m\n", userid);
         fprintf(fout, "ÒÔÏÂÊÇÍ¨¹ıÕß¸öÈË×ÊÁÏ");
         fprintf(fout, "\n\nÄúµÄ´úºÅ     : %s\n", ud.userid);
         fprintf(fout, "ÄúµÄêÇ³Æ     : %s\n", uc->username);

@@ -3778,7 +3778,7 @@ static PHP_FUNCTION(bbs_updatearticle)
     }
     fprintf(fout, "%s", unix_string(content));
 #ifndef RAW_ARTICLE
-    fprintf(fout, "[36m¡ù ÐÞ¸Ä:¡¤%s ì¶ %s ÐÞ¸Ä±¾ÎÄ¡¤[FROM: %s][m\n", currentuser->userid, wwwCTime(time(0)) + 4, fromhost);
+    fprintf(fout, "\033[36m¡ù ÐÞ¸Ä:¡¤%s ì¶ %s ÐÞ¸Ä±¾ÎÄ¡¤[FROM: %s]\033[m\n", currentuser->userid, wwwCTime(time(0)) + 4, fromhost);
     while (fgets(buf2, sizeof(buf2), fin) != NULL) {
         if (Origin2(buf2)) {
             fprintf(fout, "%s", buf2);
@@ -7288,7 +7288,7 @@ static PHP_FUNCTION(bbs_make_tmpl_file)
 	}
 	if(write_ok == 0){
 		for(i=0; i< ptemp[ent-1].tmpl->content_num && i<20; i++)
-			fprintf(fp,"[1;32m%s:[m\n%s\n\n",ptemp[ent-1].cont[i].text, text[i+1]);
+			fprintf(fp,"\033[1;32m%s:\033[m\n%s\n\n",ptemp[ent-1].cont[i].text, text[i+1]);
 	}
 	fclose(fp);
 

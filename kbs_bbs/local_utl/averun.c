@@ -76,13 +76,13 @@ int draw_pic()
 
     item = (max / MAX_LINE) + 1;
 
-    fprintf(fp, "\n [1;36m   ©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´[m\n");
+    fprintf(fp, "\n \033[1;36m   ©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´\033[m\n");
 
     for (i = max / item + 1; i >= 0; i--) {
-        fprintf(fp, "[1;34m%3d[36m ©¦[32m", i * item);
+        fprintf(fp, "\033[1;34m%3d\033[36m ©¦\033[32m", i * item);
         for (j = 0; j < 24; j++) {
             if ((item * i > pic[j]) && (item * (i - 1) <= pic[j]) && pic[j]) {
-                fprintf(fp, "[35m%-3d[32m", (pic[j]));
+                fprintf(fp, "\033[35m%-3d\033[32m", (pic[j]));
                 continue;
             }
             if (pic[j] - item * i < item && item * i < pic[j])
@@ -92,15 +92,15 @@ int draw_pic()
             else
                 fprintf(fp, "   ");
         }
-        fprintf(fp, "[1;36m©¦[m");
+        fprintf(fp, "\033[1;36m©¦\033[m");
         fprintf(fp, "\n");
     }
     time(&now);
-    fprintf(fp, "[1;36m    ©¸¡ª¡ª[37mÖÐÕý×Ê¹¤ËÄ°ÙÄêÀ´µÚÒ»Õ¾¸ºÔØÈËÊýÍ³¼Æ[36m¡ª");
-    fprintf(fp, "¡ª¡ª[37m%s[36m¡ª¡ª©¼[m\n", Ctime(&now));
-    fprintf(fp, "[1;34m      00 01 02 03 04 05 06 07 08 09 10 11 [31m12 13 14");
-    fprintf(fp, " 15 16 17 18 19 20 21 22 23[m\n");
-    fprintf(fp, "                         [1;36m    1 [32m¡õ[36m = [37m%3d     [36m Æ½¾ùÉÏÕ¾ÈËÊý£º[37m%3d[m\n", item, aver);
+    fprintf(fp, "\033[1;36m    ©¸¡ª¡ª\033[37mÖÐÕý×Ê¹¤ËÄ°ÙÄêÀ´µÚÒ»Õ¾¸ºÔØÈËÊýÍ³¼Æ\033[36m¡ª");
+    fprintf(fp, "¡ª¡ª\033[37m%s\033[36m¡ª¡ª©¼\033[m\n", Ctime(&now));
+    fprintf(fp, "\033[1;34m      00 01 02 03 04 05 06 07 08 09 10 11 \033[31m12 13 14");
+    fprintf(fp, " 15 16 17 18 19 20 21 22 23\033[m\n");
+    fprintf(fp, "                         \033[1;36m    1 \033[32m¡õ\033[36m = \033[37m%3d     \033[36m Æ½¾ùÉÏÕ¾ÈËÊý£º\033[37m%3d\033[m\n", item, aver);
     fclose(fp);
 }
 

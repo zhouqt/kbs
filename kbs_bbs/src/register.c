@@ -285,8 +285,8 @@ void check_register_info()
 //    if (strlen(curruserdata.address) < 6) {
     if (strlen(currentmemo->ud.address) < 6) {
         move(5, 0);
-//        prints("ÄúÄ¿Ç°ÌîĞ´µÄµØÖ·ÊÇ¡®%s¡¯£¬³¤¶ÈĞ¡ÓÚ [1m[37m6[m£¬ÏµÍ³ÈÏÎªÆä¹ıÓÚ¼ò¶Ì¡£\n", curruserdata.address[0] ? curruserdata.address : "¿ÕµØÖ·");  /* Leeward 98.04.26 */
-        prints("ÄúÄ¿Ç°ÌîĞ´µÄµØÖ·ÊÇ¡®%s¡¯£¬³¤¶ÈĞ¡ÓÚ [1m[37m6[m£¬ÏµÍ³ÈÏÎªÆä¹ıÓÚ¼ò¶Ì¡£\n", currentmemo->ud.address[0] ? currentmemo->ud.address : "¿ÕµØÖ·");  /* Leeward 98.04.26 */
+//        prints("ÄúÄ¿Ç°ÌîĞ´µÄµØÖ·ÊÇ¡®%s¡¯£¬³¤¶ÈĞ¡ÓÚ \033[1m\033[37m6\033[m£¬ÏµÍ³ÈÏÎªÆä¹ıÓÚ¼ò¶Ì¡£\n", curruserdata.address[0] ? curruserdata.address : "¿ÕµØÖ·");  /* Leeward 98.04.26 */
+        prints("ÄúÄ¿Ç°ÌîĞ´µÄµØÖ·ÊÇ¡®%s¡¯£¬³¤¶ÈĞ¡ÓÚ \033[1m\033[37m6\033[m£¬ÏµÍ³ÈÏÎªÆä¹ıÓÚ¼ò¶Ì¡£\n", currentmemo->ud.address[0] ? currentmemo->ud.address : "¿ÕµØÖ·");  /* Leeward 98.04.26 */
         getdata(6, 0, "ÇëÏêÏ¸ÌîĞ´ÄúµÄ×¡Ö·£º", buf, NAMELEN, DOECHO, NULL, true);
 //        strcpy(curruserdata.address, buf);
         strcpy(currentmemo->ud.address, buf);
@@ -341,13 +341,13 @@ void check_register_info()
            }
            alex, ÒòÎªÈ¡ÏûÁËemail¹¦ÄÜ , 97.7 */
         prints("³ÉÎª" NAME_BBS_NICK"ºÏ·¨" NAME_USER_SHORT "µÄ·½·¨ÈçÏÂ£º\n\n");
-        prints("ÄúµÄÕÊºÅÔÚµÚÒ»´ÎµÇÂ¼ºóµÄ " REGISTER_WAIT_TIME_NAME "ÄÚ£¨[1m[33m²»ÊÇÖ¸ÉÏ BBS " REGISTER_WAIT_TIME_NAME "[m£©£¬\n");
+        prints("ÄúµÄÕÊºÅÔÚµÚÒ»´ÎµÇÂ¼ºóµÄ " REGISTER_WAIT_TIME_NAME "ÄÚ£¨\033[1m\033[33m²»ÊÇÖ¸ÉÏ BBS " REGISTER_WAIT_TIME_NAME "\033[m£©£¬\n");
         prints("´¦ÓÚĞÂÊÖÉÏÂ·ÆÚ¼ä, ²»ÄÜ×¢²á³ÉÎªºÏ·¨" NAME_USER_SHORT "£¬ÇëËÄ´¦²Î¹ÛÑ§Ï°£¬ÍÆ¼öÔÄ¶Á BBSHELP°æ£¬\nÑ§Ï°±¾Õ¾Ê¹ÓÃ·½·¨ºÍ¸÷ÖÖÀñÒÇ¡£\n");
         prints("\n" REGISTER_WAIT_TIME_NAME "ºó, Äú¾Í¿ÉÒÔ\033[33;1mÌîĞ´×¢²áµ¥\033[mÁË£¬×¢²áµ¥Í¨¹ıÕ¾ÎñÈÏÖ¤ÒÔºó£¬Äú¾ÍÓµÓĞ±¾Õ¾ºÏ·¨ÓÃ»§\nµÄ»ù±¾È¨ÏŞ¡£×¢²áµ¥ÌîĞ´Â·¾¶ÈçÏÂ: \n\n");
         prints("I) ¸öÈË¹¤¾ßÏä --> F) ÌîĞ´×¢²áµ¥\n\n");
         //prints("    " NAME_SYSOP_GROUP "»á¾¡¿ì¼ì²é²¢È·ÈÏÄãµÄ×¢²áµ¥¡£\n\n");
         /* Leeward adds below 98.04.26 */
-        prints("[1m[33mÈç¹ûÄúÒÑ¾­Í¨¹ı×¢²á£¬³ÉÎªºÏ·¨" NAME_USER_SHORT "£¬È´ÒÀÈ»¿´µ½±¾ĞÅÏ¢£¬ÄÇ¿ÉÄÜÊÇÓÉÓÚÄúÃ»ÓĞÔÚ\n¡®¸öÈË¹¤¾ßÏä¡¯ÄÚÉè¶¨¡®µç×ÓÓÊ¼şĞÅÏä¡¯¡£[m\n");
+        prints("\033[1m\033[33mÈç¹ûÄúÒÑ¾­Í¨¹ı×¢²á£¬³ÉÎªºÏ·¨" NAME_USER_SHORT "£¬È´ÒÀÈ»¿´µ½±¾ĞÅÏ¢£¬ÄÇ¿ÉÄÜÊÇÓÉÓÚÄúÃ»ÓĞÔÚ\n¡®¸öÈË¹¤¾ßÏä¡¯ÄÚÉè¶¨¡®µç×ÓÓÊ¼şĞÅÏä¡¯¡£\033[m\n");
 	prints("\nI) ¸öÈË¹¤¾ßÏä --> I) Éè¶¨¸öÈË×ÊÁÏ\n");
 
 	prints("\nÈç¹ûÄúÊµÔÚÃ»ÓĞÈÎºÎ¿ÉÓÃµÄ'µç×ÓÓÊ¼şĞÅÏä'¿ÉÒÔÉè¶¨£¬ÓÖ²»Ô¸Òâ¿´µ½±¾ĞÅÏ¢£¬¿ÉÒÔÊ¹ÓÃ\n%s.bbs@%s½øĞĞÉè¶¨¡£\n\033[33;1m×¢Òâ: ÉÏÃæµÄµç×ÓÓÊ¼şĞÅÏä²»ÄÜ½ÓÊÕµç×ÓÓÊ¼ş£¬½öÓÃÀ´Ê¹ÏµÍ³²»ÔÙÏÔÊ¾±¾ĞÅÏ¢¡£\033[m", currentuser->userid, NAME_BBS_ENGLISH);
@@ -547,8 +547,8 @@ void check_register_info()
                showansi=1;
                if(sysconf_str( "EMAILFILE" )!=NULL)
                {
-               prints("\nÄãµÄµç×ÓÓÊ¼şµØÖ· ¡¾[33m%s[m¡¿\n",urec->email);
-               prints("²¢·Ç Unix ÕÊºÅ£¬ÏµÍ³²»»áÍ¶µİÉí·İÈ·ÈÏĞÅ£¬Çëµ½[32m¹¤¾ßÏä[mÖĞĞŞ¸Ä..\n");
+               prints("\nÄãµÄµç×ÓÓÊ¼şµØÖ· ¡¾\033[33m%s\033[m¡¿\n",urec->email);
+               prints("²¢·Ç Unix ÕÊºÅ£¬ÏµÍ³²»»áÍ¶µİÉí·İÈ·ÈÏĞÅ£¬Çëµ½\033[32m¹¤¾ßÏä\033[mÖĞĞŞ¸Ä..\n");
                pressanykey();
                }
                }
@@ -558,7 +558,7 @@ void check_register_info()
             move(12, 0);
             prints("ÄúÏÖÔÚ»¹Ã»ÓĞÍ¨¹ıÉí·İÈÏÖ¤£¬Ã»ÓĞtalk,mail,message,postµÈÈ¨ÏŞ¡£\n");
             prints("Èç¹ûÄãÒª³ÉÎª" NAME_BBS_NICK "µÄ×¢²á" NAME_USER_SHORT "£¬");
-            prints("Çëµ½[33;1m¸öÈË¹¤¾ßÏä[mÖĞÏêÏ¸ÕæÊµµØÌîĞ´[32m ×¢²áµ¥,[m\n");
+            prints("Çëµ½\033[33;1m¸öÈË¹¤¾ßÏä\033[mÖĞÏêÏ¸ÕæÊµµØÌîĞ´\033[32m ×¢²áµ¥,\033[m\n");
             prints("¾­" NAME_SYSOP_GROUP "ÉóºËÍ¨¹ıÒÔºó£¬¾Í¿ÉÒÔ³ÉÎª±¾Õ¾µÄ×¢²á" NAME_USER_SHORT ".\n");
             prints("\nÖ÷²Ëµ¥  -->  I) ¸öÈË¹¤¾ßÏä  -->  F) ÌîĞ´×¢²áµ¥\n");
             pressreturn();

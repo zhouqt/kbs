@@ -713,7 +713,7 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
     /*
      * move(t_lines-1,0);
      * clrtoeol();
-     * prints("[44m[33mËÑÑ°ÖÐ£¬ÇëÉÔºò....                                                             [m");
+     * prints("\033[44m\033[33mËÑÑ°ÖÐ£¬ÇëÉÔºò....                                                             \033[m");
      */
     init=false;
     now = conf->pos;

@@ -67,7 +67,7 @@ int chat_waitkey(chatcontext * pthis)
 {
     char ch;
 
-    outs("           [5;31m¡ô °´¿Õ¸ñ¼ü¼ÌÐø£¬Q¼üÈ¡Ïû ¡ô[m");
+    outs("           \033[5;31m¡ô °´¿Õ¸ñ¼ü¼ÌÐø£¬Q¼üÈ¡Ïû ¡ô\033[m");
     add_io(0, 0);
     ch = igetkey();
     add_io(pthis->cfd, 0);
@@ -276,7 +276,7 @@ int chat_parse(chatcontext * pthis)
                 if (bptr[1] == 't')
                     strcpy(pthis->topic, bptr + 2);
                 prints
-                    ("[44m[33m ·¿¼ä£º [36m%-10s  [33m»°Ìâ£º[36m%-51s[31m%2s[m",
+                    ("\033[44m\033[33m ·¿¼ä£º \033[36m%-10s  \033[33m»°Ìâ£º\033[36m%-51s\033[31m%2s\033[m",
                      pthis->chatroom, pthis->topic,
                      (pthis->rec) ? "Â¼" : "  ");
                 break;
@@ -374,7 +374,7 @@ int ent_chat_conn(chatcontext * pthis, int chatnum)
     clrtoeol();
     move(4, 0);                 /* Leave line 3 for error message while entering chat room */
     prints
-        ("ÊäÈë×Ö·û [1m[37m*[m ÔÙ°´ [1m[37mEnter[m ¿ÉÒÔÈ¡Ïû½øÈëÁÄÌìÊÒ¡£                                    ");
+        ("ÊäÈë×Ö·û \033[1m\033[37m*\033[m ÔÙ°´ \033[1m\033[37mEnter\033[m ¿ÉÒÔÈ¡Ïû½øÈëÁÄÌìÊÒ¡£                                    ");
     clrtoeol();
     move(5, 0);
     clrtoeol();                 /* Clear line 5 for good looking */
@@ -563,7 +563,7 @@ static int ent_chat(int chatnum)
         }
         if (!newmail && chkmail(0)) {   /* check mail */
             newmail = 1;
-            printchatline(pthis, "[32m*** [31mµ±£¡ÄãÓÐÐÂÐÅÀ´À²...[m");
+            printchatline(pthis, "\033[32m*** \033[31mµ±£¡ÄãÓÐÐÂÐÅÀ´À²...\033[m");
         }
 #ifdef BIT8
         if (isprint2(ch))
@@ -721,8 +721,8 @@ int printuserent(chatcontext * pthis, struct user_info *uentp)
     if (kill(uentp->pid, 0) == -1)
         return 0;
 #endif
-    sprintf(pline, " %s%-13s[m%c%-10s",
-            myfriend(uentp->uid, NULL) ? "[32m" : "", uentp->userid,
+    sprintf(pline, " %s%-13s\033[m%c%-10s",
+            myfriend(uentp->uid, NULL) ? "\033[32m" : "", uentp->userid,
             uentp->invisible ? '#' : ' ', modestring(uentp->mode,
                                                      uentp->destuid, 0,
                                                      NULL));
@@ -801,22 +801,22 @@ void call_user(chatcontext * pthis, const char *arg)
 
     if (!*arg) {
         printchatline(pthis,
-                      "[37m*** [32mÇëÊäÈëÄãÒªÑûÇëµÄ ID[37m ***[m");
+                      "\033[37m*** \033[32mÇëÊäÈëÄãÒªÑûÇëµÄ ID\033[37m ***\033[m");
         return;
     }
     if (!strcasecmp(arg, currentuser->userid))
-        sprintf(msg, "[32mÄã²»ÓÃÑûÇë×Ô¼º°¡[m");
+        sprintf(msg, "\033[32mÄã²»ÓÃÑûÇë×Ô¼º°¡\033[m");
     else if (!HAS_PERM(currentuser, PERM_PAGE))
         /* Leeward 98.07.30 */
-        sprintf(msg, "[32mÄãÃ»ÓÐ·¢ÐÅÏ¢µÄÈ¨ÏÞ[m");
+        sprintf(msg, "\033[32mÄãÃ»ÓÐ·¢ÐÅÏ¢µÄÈ¨ÏÞ\033[m");
     else {
         uin = t_search(arg, false);
         if (uin == NULL)
-            sprintf(msg, "[32m%s[37m ²¢Ã»ÓÐÉÏÕ¾[m", arg);
+            sprintf(msg, "\033[32m%s\033[37m ²¢Ã»ÓÐÉÏÕ¾\033[m", arg);
         else if (LOCKSCREEN == uin->mode)
             /* Leeward 98.02.28 */
             sprintf(msg,
-                    "[32m%s[37mÒÑ¾­Ëø¶¨ÆÁÄ»£¬ÇëÉÔºòÔÙÑûÇë»ò¸øËû(Ëý)Ð´ÐÅ.\n",
+                    "\033[32m%s\033[37mÒÑ¾­Ëø¶¨ÆÁÄ»£¬ÇëÉÔºòÔÙÑûÇë»ò¸øËû(Ëý)Ð´ÐÅ.\n",
                     uin->userid);
         else if (!canmsg(currentuser, uin))
             sprintf(msg, "%s ÒÑ¾­¹Ø±Õ½ÓÊÜÑ¶Ï¢µÄºô½ÐÆ÷.\n", uin->userid);
@@ -841,12 +841,12 @@ void call_user(chatcontext * pthis, const char *arg)
                 strcpy(MsgDesUid, uin->userid);
                 state = do_sendmsg(uin, msg, 1);
                 if (state == 1)
-                    sprintf(msg, "[37mÒÑ¾­°ïÄãÑûÇë %s ÁË[m",
+                    sprintf(msg, "\033[37mÒÑ¾­°ïÄãÑûÇë %s ÁË\033[m",
                             uin->userid);
                 else if (state == -2)
-                    sprintf(msg, "[37m¶Ô·½ÒÑ¾­ÀëÏßÁË...[m");
+                    sprintf(msg, "\033[37m¶Ô·½ÒÑ¾­ÀëÏßÁË...\033[m");
                 else
-                    sprintf(msg, "[37¶Ô·½²»½ÓÊÜÄãµÄÏûÏ¢...[m");
+                    sprintf(msg, "\033[37¶Ô·½²»½ÓÊÜÄãµÄÏûÏ¢...\033[m");
             }
         }
     }
@@ -911,7 +911,7 @@ void chat_sendmsg(chatcontext * pthis, const char *arg)
                     else if (state == -2)
                         sprintf(msg, "\x1b[37m¶Ô·½ÒÑ¾­ÀëÏßÁË...\x1b[m");
                     else
-                        sprintf(msg, "[37¶Ô·½²»½ÓÊÜÄãµÄÏûÏ¢...[m");
+                        sprintf(msg, "\033[37¶Ô·½²»½ÓÊÜÄãµÄÏûÏ¢...\033[m");
                 }
             }
         }
@@ -973,7 +973,7 @@ static void query_user(chatcontext * pthis, const char *userid)
     struct userec *lookupuser;
 
     if (!(tuid = getuser(userid, &lookupuser))) {
-        printchatline(pthis, "[32mÕâ¸öID²»´æÔÚ£¡[m");
+        printchatline(pthis, "\033[32mÕâ¸öID²»´æÔÚ£¡\033[m");
         return;
     }
     setmailfile(qry_mail_dir, lookupuser->userid, DOT_DIR);
@@ -1077,7 +1077,7 @@ void call_query_ByChatid(chatcontext * pthis, const char *arg)
     if (tmpstr[0] == '1') {
         sprintf(uident, "%s", tmpstr + 1);
     } else {
-        sprintf(genbuf, "[32mÕâ¸öchat ID²»´æÔÚ£¡[m");
+        sprintf(genbuf, "\033[32mÕâ¸öchat ID²»´æÔÚ£¡\033[m");
         printchatline(pthis, genbuf);
         return;
     }
@@ -1088,7 +1088,7 @@ void chat_date(chatcontext * pthis, const char *arg)
     time_t thetime;
 
     time(&thetime);
-    sprintf(genbuf, " %s±ê×¼Ê±¼ä: [32m%s[m", BBS_FULL_NAME,
+    sprintf(genbuf, " %s±ê×¼Ê±¼ä: \033[32m%s\033[m", BBS_FULL_NAME,
             Cdate(thetime));
     printchatline(pthis, genbuf);
 }
@@ -1099,7 +1099,7 @@ void chat_friends(chatcontext * pthis, const char *arg)
     struct user_info* u;
 
     pthis->apply_count = 0;
-    sprintf(genbuf, "[1m¡¾ µ±Ç°ÏßÉÏµÄºÃÓÑÁÐ±í ¡¿[m");
+    sprintf(genbuf, "\033[1m¡¾ µ±Ç°ÏßÉÏµÄºÃÓÑÁÐ±í ¡¿\033[m");
     printchatline(pthis, genbuf);
     printchatline(pthis, msg_shortulist);
     pthis->apply_buf = genbuf;
@@ -1114,7 +1114,7 @@ void chat_friends(chatcontext * pthis, const char *arg)
     if (pthis->apply_count)
         printchatline(pthis, pthis->apply_buf);
     if (num == 0) {
-        printchatline(pthis, "[1mÃ»ÓÐÅóÓÑÔÚÏßÉÏ[m");
+        printchatline(pthis, "\033[1mÃ»ÓÐÅóÓÑÔÚÏßÉÏ\033[m");
     }
 }
 void set_rec(chatcontext * pthis, const char *arg)
@@ -1132,11 +1132,11 @@ void set_rec(chatcontext * pthis, const char *arg)
     if (!pthis->rec) {
         if ((pthis->rec = fopen(fname, "a")) == NULL)
             return;
-        printchatline(pthis, "[5m[32mRecord Start ...[m");
+        printchatline(pthis, "\033[5m\033[32mRecord Start ...\033[m");
         move(0, 0);
         clrtoeol();
         prints
-            ("[44m[33m ·¿¼ä£º [36m%-10s  [33m»°Ìâ£º[36m%-51s[31m%2s[m",
+            ("\033[44m\033[33m ·¿¼ä£º \033[36m%-10s  \033[33m»°Ìâ£º\033[36m%-51s\033[31m%2s\033[m",
              pthis->chatroom, pthis->topic, (pthis->rec) ? "Â¼" : "  ");
         fprintf(pthis->rec,
                 "·¢ÐÅÈË: %s (%s) ·¿¼ä: %s\n»°  Ìâ: %s\x1b[m\n\n",
@@ -1149,13 +1149,13 @@ void set_rec(chatcontext * pthis, const char *arg)
         move(0, 0);
         clrtoeol();
         prints
-            ("[44m[33m ·¿¼ä£º [36m%-10s  [33m»°Ìâ£º[36m%-51s[31m%2s[m",
+            ("\033[44m\033[33m ·¿¼ä£º \033[36m%-10s  \033[33m»°Ìâ£º\033[36m%-51s\033[31m%2s\033[m",
              pthis->chatroom, pthis->topic, (pthis->rec) ? "Â¼" : "  ");
         fprintf(pthis->rec,
                 "·¢ÐÅÈË: %s (%s) ·¿¼ä: %s\n»°  Ìâ: %s\x1b[m\n\n",
                 currentuser->userid, currentuser->username,
                 pthis->chatroom, pthis->topic);
-        printchatline(pthis, "[5m[32mRecord Stop ...[m");
+        printchatline(pthis, "\033[5m\033[32mRecord Stop ...\033[m");
         fprintf(pthis->rec, "½áÊøÊ±¼ä£º%s\n", ctime(&now));
         fclose(pthis->rec);
         pthis->rec = NULL;
@@ -1170,7 +1170,7 @@ void setpager(chatcontext * pthis, const char *arg)
     char buf[STRLEN];
 
     t_pager();                  /*toggle pager */
-    sprintf(buf, "[32m*** [31mÄã %s ÁËºô½ÐÆ÷[m",
+    sprintf(buf, "\033[32m*** \033[31mÄã %s ÁËºô½ÐÆ÷\033[m",
             (uinfo.pager & ALL_PAGER) ? "´ò¿ª" : "¹Ø±Õ");
     printchatline(pthis, buf);
 }

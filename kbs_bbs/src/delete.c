@@ -34,9 +34,9 @@ static void mail_info()
     now = time(0);
     sprintf(filename, "etc/%s.tmp", currentuser->userid);
     fn = fopen(filename, "w");
-    fprintf(fn, "[1m%s[m ÒÑ¾­ÔÚ [1m%24.24s[m ×ÔÉ±ÁË£¬ÒÔÏÂÊÇËû(Ëı)µÄ×ÊÁÏ£¬Çë±£Áô...", currentuser->userid, ctime(&now));
+    fprintf(fn, "\033[1m%s\033[m ÒÑ¾­ÔÚ \033[1m%24.24s\033[m ×ÔÉ±ÁË£¬ÒÔÏÂÊÇËû(Ëı)µÄ×ÊÁÏ£¬Çë±£Áô...", currentuser->userid, ctime(&now));
     getuinfo(fn, currentuser);
-    fprintf(fn, "\n                      [1m ÏµÍ³×Ô¶¯·¢ĞÅÏµÍ³Áô[m\n");
+    fprintf(fn, "\n                      \033[1m ÏµÍ³×Ô¶¯·¢ĞÅÏµÍ³Áô\033[m\n");
     fclose(fn);
     mail_file(currentuser->userid, filename, "acmanager", "×ÔÉ±Í¨Öª....", BBSPOST_MOVE, NULL);
 }
@@ -113,7 +113,7 @@ void suicide()
         || HAS_PERM(currentuser, PERM_DENYRELAX)) {
         clear();
         move(11, 28);
-        prints("[1m[33mÄãÓĞÖØÈÎÔÚÉí£¬²»ÄÜ×ÔÉ±£¡[m");
+        prints("\033[1m\033[33mÄãÓĞÖØÈÎÔÚÉí£¬²»ÄÜ×ÔÉ±£¡\033[m");
         pressanykey();
         return;
     }
@@ -124,7 +124,7 @@ void suicide()
     move(3, 0);
     prints("ÔÚÕâ14ÌìÄÚÈô¸Ä±äÖ÷ÒâµÄ»°£¬Ôò¿ÉÒÔÍ¨¹ıµÇÂ¼±¾Õ¾Ò»´Î»Ö¸´Ô­ÉúÃüÁ¦");
     move(5, 0);
-    prints("×ÔÉ±ÓÃ»§½«¶ªÊ§ËùÓĞ[33mÌØÊâÈ¨ÏŞ[m£¡£¡£¡");
+    prints("×ÔÉ±ÓÃ»§½«¶ªÊ§ËùÓĞ\033[33mÌØÊâÈ¨ÏŞ\033[m£¡£¡£¡");
     move(7, 0);
     /*
        clear();
@@ -156,10 +156,10 @@ void suicide()
         now = time(0);
         sprintf(filename, "etc/%s.tmp", currentuser->userid);
         fn = fopen(filename, "w");
-        fprintf(fn, "[1m%s[m ÒÑ¾­ÔÚ [1m%24.24s[m ×ÔÉ±ÁË£¬ÒÔÏÂÊÇËûµÄ×ÊÁÏ£¬Çë±£Áô...", currentuser->userid, ctime(&now));
-        fprintf(fn, "\n\nÒÔÏÂÊÇ×ÔÉ±ÕßÔ­À´µÄÈ¨ÏŞ\n\033[1m\033[33m%s\n[m", XPERM);
+        fprintf(fn, "\033[1m%s\033[m ÒÑ¾­ÔÚ \033[1m%24.24s\033[m ×ÔÉ±ÁË£¬ÒÔÏÂÊÇËûµÄ×ÊÁÏ£¬Çë±£Áô...", currentuser->userid, ctime(&now));
+        fprintf(fn, "\n\nÒÔÏÂÊÇ×ÔÉ±ÕßÔ­À´µÄÈ¨ÏŞ\n\033[1m\033[33m%s\n\033[m", XPERM);
         getuinfo(fn, currentuser);
-        fprintf(fn, "\n                      [1m ÏµÍ³×Ô¶¯·¢ĞÅÏµÍ³Áô[m\n");
+        fprintf(fn, "\n                      \033[1m ÏµÍ³×Ô¶¯·¢ĞÅÏµÍ³Áô\033[m\n");
         fclose(fn);
         sprintf(buf, "%s µÄ×ÔÉ±Í¨Öª", currentuser->userid);
         post_file(currentuser, "", filename, "Goodbye", buf, 0, 1);
@@ -173,7 +173,7 @@ void suicide()
     if (HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_BOARDS)) {
         clear();
         move(11, 28);
-        prints("[1m[33mÄãÓĞÖØÈÎÔÚÉí£¬²»ÄÜ×ÔÉ±£¡[m");
+        prints("\033[1m\033[33mÄãÓĞÖØÈÎÔÚÉí£¬²»ÄÜ×ÔÉ±£¡\033[m");
         pressanykey();
         return;
     }
@@ -253,7 +253,7 @@ PERM_DENYRELAXÓéÀÖ
     if (!HAS_PERM(currentuser, PERM_LOGINOK)) {
         clear();
         move(11, 28);
-        prints("[1m[33mÄãÓĞ»¹Ã»ÓĞ×¢²áÍ¨¹ı£¬²»ÄÜ½äÍø£¡[m");
+        prints("\033[1m\033[33mÄãÓĞ»¹Ã»ÓĞ×¢²áÍ¨¹ı£¬²»ÄÜ½äÍø£¡\033[m");
         pressanykey();
         return;
     }
@@ -263,7 +263,7 @@ PERM_DENYRELAXÓéÀÖ
         || HAS_PERM(currentuser, PERM_JURY) || HAS_PERM(currentuser, PERM_SUICIDE) || HAS_PERM(currentuser, PERM_CHATOP)) {
         clear();
         move(11, 28);
-        prints("[1m[33mÄãÓĞÖØÈÎÔÚÉí£¬²»ÄÜ½äÍø£¡[m");
+        prints("\033[1m\033[33mÄãÓĞÖØÈÎÔÚÉí£¬²»ÄÜ½äÍø£¡\033[m");
         pressanykey();
         return;
     }
@@ -452,7 +452,7 @@ void offline()
         return;
     clear();
     move(1, 0);
-    prints("[32mºÃÄÑ¹ıà¸.....[m");
+    prints("\033[32mºÃÄÑ¹ıà¸.....\033[m");
     move(3, 0);
     if (askyn("ÄãÈ·¶¨ÒªÀë¿ªÕâ¸ö´ó¼ÒÍ¥", 0) == 1) {
         clear();

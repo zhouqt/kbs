@@ -275,7 +275,7 @@ static int a_select_path_refresh(struct _select_def *conf)
     docmdtitle("[Ë¿Â·Ñ¡Ôñ²Ëµ¥]",
                "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ½øÈë[\x1b[1;32mEnter\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ı\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ¸ÄÃû[\x1b[1;32mT\x1b[0;37m] É¾³ı[\x1b[1;32md\x1b[0;37m]\x1b[m ÒÆ¶¯[\x1b[1;32mm\x1b[0;37m]°ïÖú[\x1b[1;32mh\x1b[0;37m]\x1b[m");
     move(2, 0);
-    prints("[0;1;37;44m %4s   %-64s", "±àºÅ", "Ë¿Â·Ãû");
+    prints("\033[0;1;37;44m %4s   %-64s", "±àºÅ", "Ë¿Â·Ãû");
     clrtoeol();
     update_endline();
     return SHOW_CONTINUE;
@@ -349,10 +349,10 @@ MENU *pm;
     chkmailflag = chkmail();
 
     if (chkmailflag == 2) {     /*Haohmaru.99.4.4.¶ÔÊÕĞÅÒ²¼ÓÏŞÖÆ */
-        prints("[5m");
+        prints("\033[5m");
         sprintf(genbuf, "[ÄúµÄĞÅÏä³¬¹ıÈİÁ¿,²»ÄÜÔÙÊÕĞÅ!]");
     } else if (chkmailflag) {
-        prints("[5m");
+        prints("\033[5m");
         sprintf(genbuf, "[ÄúÓĞĞÅ¼ş]");
     } else
         strncpy(genbuf, pm->mtitle, MAXPATH);
@@ -360,9 +360,9 @@ MENU *pm;
         sprintf(buf, "%*s", (80 - strlen(genbuf)) / 2, "");
     else
         strcpy(buf, "");
-    prints("[44m%s%s%s[m\n", buf, genbuf, buf);
-    prints("            F ¼Ä»Ø×Ô¼ºµÄĞÅÏä©§¡ü¡ı ÒÆ¶¯©§¡ú <Enter> ¶ÁÈ¡©§¡û,q Àë¿ª[m\n");
-    prints("[44m[37m ±àºÅ  %-45s Õû  Àí           %8s [m", "[Àà±ğ] ±ê    Ìâ", a_fmode == 2 ? "µµ°¸Ãû³Æ" : "±à¼­ÈÕÆÚ");
+    prints("\033[44m%s%s%s\033[m\n", buf, genbuf, buf);
+    prints("            F ¼Ä»Ø×Ô¼ºµÄĞÅÏä©§¡ü¡ı ÒÆ¶¯©§¡ú <Enter> ¶ÁÈ¡©§¡û,q Àë¿ª\033[m\n");
+    prints("\033[44m\033[37m ±àºÅ  %-45s Õû  Àí           %8s \033[m", "[Àà±ğ] ±ê    Ìâ", a_fmode == 2 ? "µµ°¸Ãû³Æ" : "±à¼­ÈÕÆÚ");
     prints("\n");
     if (pm->num == 0)
         prints("      << Ä¿Ç°Ã»ÓĞÎÄÕÂ >>\n");
@@ -381,17 +381,17 @@ MENU *pm;
                 mtime = time(0);
 
             pt = localtime(&mtime);
-            sprintf(fname, "[1m%04d[m.[1m%02d[m.[1m%02d[m", pt->tm_year + 1900, pt->tm_mon + 1, pt->tm_mday);
+            sprintf(fname, "\033[1m%04d\033[m.\033[1m%02d\033[m.\033[1m%02d\033[m", pt->tm_year + 1900, pt->tm_mon + 1, pt->tm_mday);
             ch = ' ';
         }
         if (pm->item[n]->host != NULL) {
-            strcpy(kind, "[[33mÁ¬Ïß[m]");
+            strcpy(kind, "[\033[33mÁ¬Ïß\033[m]");
         } else if (dashf(genbuf)) {
-            strcpy(kind, "[[36mÎÄ¼ş[m]");
+            strcpy(kind, "[\033[36mÎÄ¼ş\033[m]");
         } else if (dashd(genbuf)) {
             strcpy(kind, "[Ä¿Â¼]");
         } else {
-            strcpy(kind, "[[32m´íÎó[m]");
+            strcpy(kind, "[\033[32m´íÎó\033[m]");
         }
         if (!strncmp(title, "[Ä¿Â¼] ", 7) || !strncmp(title, "[ÎÄ¼ş] ", 7)
             || !strncmp(title, "[Á¬Ïß] ", 7))
@@ -407,8 +407,8 @@ MENU *pm;
     clrtobot();
     move(t_lines - 1, 0);
     prints("%s", (pm->level & PERM_BOARDS) ?
-           "[31m[44m[°æ  Ö÷]  [33mËµÃ÷ h ©¦ Àë¿ª q,¡û ©¦ ĞÂÔöÎÄÕÂ a ©¦ ĞÂÔöÄ¿Â¼ g ©¦ ĞŞ¸Äµµ°¸ e        [m" :
-           "[31m[44m[¹¦ÄÜ¼ü] [33m ËµÃ÷ h ©¦ Àë¿ª q,¡û ©¦ ÒÆ¶¯ÓÎ±ê k,¡ü,j,¡ı ©¦ ¶ÁÈ¡×ÊÁÏ Rtn,¡ú         [m");
+           "\033[31m\033[44m[°æ  Ö÷]  \033[33mËµÃ÷ h ©¦ Àë¿ª q,¡û ©¦ ĞÂÔöÎÄÕÂ a ©¦ ĞÂÔöÄ¿Â¼ g ©¦ ĞŞ¸Äµµ°¸ e        \033[m" :
+           "\033[31m\033[44m[¹¦ÄÜ¼ü] \033[33m ËµÃ÷ h ©¦ Àë¿ª q,¡û ©¦ ÒÆ¶¯ÓÎ±ê k,¡ü,j,¡ı ©¦ ¶ÁÈ¡×ÊÁÏ Rtn,¡ú         \033[m");
 }
 
 /* a_SeSave ÓÃÀ´É¾³ı´æµ½Ôİ´æµµÊ±µÄÎÄ¼şÍ·ºÍÎ² Life 1997.4.6 */
@@ -733,7 +733,7 @@ int mode;
             break;
         case -552:
             prints
-                ("\n[1m[33mĞÅ¼ş³¬³¤£¨±¾Õ¾ÏŞ¶¨ĞÅ¼ş³¤¶ÈÉÏÏŞÎª %d ×Ö½Ú£©£¬È¡Ïû×ª¼Ä²Ù×÷[m[m\n\nÇë¸æÖªÊÕĞÅÈË£¨Ò²Ğí¾ÍÊÇÄú×Ô¼º°É:PP£©£º\n\n*1* Ê¹ÓÃ [1m[33mWWW[m[m ·½Ê½·ÃÎÊ±¾Õ¾£¬ËæÊ±¿ÉÒÔ±£´æÈÎÒâ³¤¶ÈµÄÎÄÕÂµ½×Ô¼ºµÄ¼ÆËã»ú£»\n*2* Ê¹ÓÃ [1m[33mpop3[m[m ·½Ê½´Ó±¾Õ¾ÓÃ»§µÄĞÅÏäÈ¡ĞÅ£¬Ã»ÓĞÈÎºÎ³¤¶ÈÏŞÖÆ¡£\n*3* Èç¹û²»ÊìÏ¤±¾Õ¾µÄ WWW »ò pop3 ·şÎñ£¬ÇëÔÄ¶Á [1m[33mAnnounce[m °æÓĞ¹Ø¹«¸æ¡£\n",
+                ("\n\033[1m\033[33mĞÅ¼ş³¬³¤£¨±¾Õ¾ÏŞ¶¨ĞÅ¼ş³¤¶ÈÉÏÏŞÎª %d ×Ö½Ú£©£¬È¡Ïû×ª¼Ä²Ù×÷\033[m\033[m\n\nÇë¸æÖªÊÕĞÅÈË£¨Ò²Ğí¾ÍÊÇÄú×Ô¼º°É:PP£©£º\n\n*1* Ê¹ÓÃ \033[1m\033[33mWWW\033[m\033[m ·½Ê½·ÃÎÊ±¾Õ¾£¬ËæÊ±¿ÉÒÔ±£´æÈÎÒâ³¤¶ÈµÄÎÄÕÂµ½×Ô¼ºµÄ¼ÆËã»ú£»\n*2* Ê¹ÓÃ \033[1m\033[33mpop3\033[m\033[m ·½Ê½´Ó±¾Õ¾ÓÃ»§µÄĞÅÏäÈ¡ĞÅ£¬Ã»ÓĞÈÎºÎ³¤¶ÈÏŞÖÆ¡£\n*3* Èç¹û²»ÊìÏ¤±¾Õ¾µÄ WWW »ò pop3 ·şÎñ£¬ÇëÔÄ¶Á \033[1m\033[33mAnnounce\033[m °æÓĞ¹Ø¹«¸æ¡£\n",
                  MAXMAILSIZE);
             break;
         default:
@@ -1645,7 +1645,7 @@ int lastlevel, lastbmonly;
                     if (askyn(tmp, 0) == 1) {
                         post_file(currentuser, "", fname, bname, me.item[me.now]->title, 0, 2);
                         move(2, 0);
-                        sprintf(tmp, "[1mÒÑ¾­°ïÄã×ªÌùÖÁ %s °æÁË[m", bname);
+                        sprintf(tmp, "\033[1mÒÑ¾­°ïÄã×ªÌùÖÁ %s °æÁË\033[m", bname);
                         prints(tmp);
                         refresh();
                         sleep(1);
@@ -1691,7 +1691,7 @@ int lastlevel, lastbmonly;
                     ansimore_withzmodem(fname, false, me.item[me.now]->title);
 					register_attach_link(NULL,NULL);
                     move(t_lines - 1, 0);
-                    prints("[1m[44m[31m[ÔÄ¶Á¾«»ªÇø×ÊÁÏ]  [33m½áÊø Q,¡û ©¦ ÉÏÒ»Ïî×ÊÁÏ U,¡ü©¦ ÏÂÒ»Ïî×ÊÁÏ <Enter>,<Space>,¡ı [m");
+                    prints("\033[1m\033[44m\033[31m[ÔÄ¶Á¾«»ªÇø×ÊÁÏ]  \033[33m½áÊø Q,¡û ©¦ ÉÏÒ»Ïî×ÊÁÏ U,¡ü©¦ ÏÂÒ»Ïî×ÊÁÏ <Enter>,<Space>,¡ı \033[m");
                     switch (ch = igetkey()) {
                     case KEY_DOWN:
                     case ' ':

@@ -324,34 +324,34 @@ main(argc, argv)
     if (mode == 1) {
         fprintf(op, "Ãû´Î %-15.15s%-25.25s %5s %8s %10s\n", "ÌÖÂÛÇøÃû³Æ", "ÖĞÎÄĞğÊö", "ÈË´Î", "ÀÛ»ıÊ±¼ä", "Æ½¾ùÊ±¼ä");
     } else {
-        fprintf(op, "      [37m1 [m[34m%2s[37m= %d (×ÜÈË´Î) [37m1 [m[32m%2s[37m= %s (ÀÛ»ı×ÜÊ±Êı) [37m1 [m[31m%2s[37m= %d Ãë(Æ½¾ùÊ±Êı)\n\n",
+        fprintf(op, "      \033[37m1 \033[m\033[34m%2s\033[37m= %d (×ÜÈË´Î) \033[37m1 \033[m\033[32m%2s\033[37m= %s (ÀÛ»ı×ÜÊ±Êı) \033[37m1 \033[m\033[31m%2s\033[37m= %d Ãë(Æ½¾ùÊ±Êı)\n\n",
                 blk[9], c[0], blk[9], timetostr(c[1]), blk[9], c[2]);
     }
 
     for (i = 0; i < numboards; i++) {
         if (mode == 1) {
             /* generate 0Announce/bbslists/board2 file */
-            fprintf(op, "%4d[m %-15.15s%-25.25s %5d %-.8s %10d\n", i + 1, st[i].boardname, st[i].expname, st[i].times, timetostr(st[i].sum), st[i].times == 0 ? 0 : st[i].sum / st[i].times);
+            fprintf(op, "%4d\033[m %-15.15s%-25.25s %5d %-.8s %10d\n", i + 1, st[i].boardname, st[i].expname, st[i].times, timetostr(st[i].sum), st[i].times == 0 ? 0 : st[i].sum / st[i].times);
         } else {
-            fprintf(op, "      [37mµÚ[31m%3d [37mÃû ÌÖÂÛÇøÃû³Æ£º[31m%s [35m%s[m\n", i + 1, st[i].boardname, st[i].expname);
-            fprintf(op, "[37m    ©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª\n");
-            fprintf(op, "[37mÈË´Î©¦[m[34m");
+            fprintf(op, "      \033[37mµÚ\033[31m%3d \033[37mÃû ÌÖÂÛÇøÃû³Æ£º\033[31m%s \033[35m%s\033[m\n", i + 1, st[i].boardname, st[i].expname);
+            fprintf(op, "\033[37m    ©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª\n");
+            fprintf(op, "\033[37mÈË´Î©¦\033[m\033[34m");
             for (j = 0; j < st[i].times / c[0]; j++) {
                 fprintf(op, "%2s", blk[9]);
             }
-            fprintf(op, "%2s [37m%d[m\n", blk[(st[i].times % c[0]) * 10 / c[0]], st[i].times);
-            fprintf(op, "[1;37mÊ±¼ä©¦[m[32m");
+            fprintf(op, "%2s \033[37m%d\033[m\n", blk[(st[i].times % c[0]) * 10 / c[0]], st[i].times);
+            fprintf(op, "\033[1;37mÊ±¼ä©¦\033[m\033[32m");
             for (j = 0; j < st[i].sum / c[1]; j++) {
                 fprintf(op, "%2s", blk[9]);
             }
-            fprintf(op, "%2s [37m%s[m\n", blk[(st[i].sum % c[1]) * 10 / c[1]], timetostr(st[i].sum));
+            fprintf(op, "%2s \033[37m%s\033[m\n", blk[(st[i].sum % c[1]) * 10 / c[1]], timetostr(st[i].sum));
             j = st[i].times == 0 ? 0 : st[i].sum / st[i].times;
-            fprintf(op, "[37mÆ½¾ù©¦[m[31m");
+            fprintf(op, "\033[37mÆ½¾ù©¦\033[m\033[31m");
             for (k = 0; k < j / c[2]; k++) {
                 fprintf(op, "%2s", blk[9]);
             }
-            fprintf(op, "%2s [37m%s[m\n", blk[(j % c[2]) * 10 / c[2]], timetostr(j));
-            fprintf(op, "[37m    ©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª[m\n\n");
+            fprintf(op, "%2s \033[37m%s\033[m\n", blk[(j % c[2]) * 10 / c[2]], timetostr(j));
+            fprintf(op, "\033[37m    ©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª\033[m\n\n");
         }
     }
 
@@ -360,7 +360,7 @@ main(argc, argv)
 		fprintf(op,"\n");
 		fprintf(op, "Ãû´Î %-15.15s%-25.25s %5s %8s %10s\n", "ÌÖÂÛÇøÃû³Æ", "ÖĞÎÄĞğÊö", "ÈË´Î", "ÀÛ»ıÊ±¼ä", "Æ½¾ùÊ±¼ä");
 		for(j = 0;j < sec_board_num[i]; j++)
-                fprintf(op, "%4d[m %-15.15s%-25.25s %5d %-.8s %10d\n", j + 1, sec_board[i][j].boardname, sec_board[i][j].expname,
+                fprintf(op, "%4d\033[m %-15.15s%-25.25s %5d %-.8s %10d\n", j + 1, sec_board[i][j].boardname, sec_board[i][j].expname,
 				    sec_board[i][j].times, timetostr(sec_board[i][j].sum), sec_board[i][j].times == 0 ? 0 : sec_board[i][j].sum / sec_board[i][j].times);
 		}else{
 		
@@ -369,25 +369,25 @@ main(argc, argv)
             for(j = 0;j < sec_board_num[i]; j++)
 			{
 
-                fprintf(op, "      [37mµÚ[31m%3d [37mÃû ÌÖÂÛÇøÃû³Æ£º[31m%s [35m%s[m\n", j + 1, sec_board[i][j].boardname, sec_board[i][j].expname);
-				fprintf(op, "[37m    ©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª\n");
-				fprintf(op, "[37mÈË´Î©¦[m[34m");
+                fprintf(op, "      \033[37mµÚ\033[31m%3d \033[37mÃû ÌÖÂÛÇøÃû³Æ£º\033[31m%s \033[35m%s\033[m\n", j + 1, sec_board[i][j].boardname, sec_board[i][j].expname);
+				fprintf(op, "\033[37m    ©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª\n");
+				fprintf(op, "\033[37mÈË´Î©¦\033[m\033[34m");
 				for (jj = 0; jj < sec_board[i][j].times / c[0]; jj++) {
 					fprintf(op, "%2s", blk[9]);
 				}
-				fprintf(op, "%2s [37m%d[m\n", blk[(sec_board[i][j].times % c[0]) * 10 / c[0]], sec_board[i][j].times);
-				fprintf(op, "[1;37mÊ±¼ä©¦[m[32m");
+				fprintf(op, "%2s \033[37m%d\033[m\n", blk[(sec_board[i][j].times % c[0]) * 10 / c[0]], sec_board[i][j].times);
+				fprintf(op, "\033[1;37mÊ±¼ä©¦\033[m\033[32m");
 				for (jj = 0; jj < sec_board[i][j].sum / c[1]; jj++) {
 					fprintf(op, "%2s", blk[9]);
 				}
-				fprintf(op, "%2s [37m%s[m\n", blk[(sec_board[i][j].sum % c[1]) * 10 / c[1]], timetostr(sec_board[i][j].sum));
+				fprintf(op, "%2s \033[37m%s\033[m\n", blk[(sec_board[i][j].sum % c[1]) * 10 / c[1]], timetostr(sec_board[i][j].sum));
 				jj = sec_board[i][j].times == 0 ? 0 : sec_board[i][j].sum / sec_board[i][j].times;
-				fprintf(op, "[37mÆ½¾ù©¦[m[31m");
+				fprintf(op, "\033[37mÆ½¾ù©¦\033[m\033[31m");
 				for (k = 0; k < jj / c[2]; k++) {
 					fprintf(op, "%2s", blk[9]);
 				}
-				fprintf(op, "%2s [37m%s[m\n", blk[(j % c[2]) * 10 / c[2]], timetostr(j));
-				fprintf(op, "[37m    ©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª[m\n\n");
+				fprintf(op, "%2s \033[37m%s\033[m\n", blk[(j % c[2]) * 10 / c[2]], timetostr(j));
+				fprintf(op, "\033[37m    ©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª\033[m\n\n");
 
 			}
         }

@@ -55,7 +55,7 @@ int showperminfo(struct _select_def *conf, int i)
     if (i == conf->item_count - 1) {
         prints("%c. ÍË³ö ", 'A' + i);
     } else if ((arg->pbits & (1 << i)) != (arg->oldbits & (1 << i))) {
-        prints("%c. %-27s [31;1m%3s[m", 'A' + i, permstrings[i], ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
+        prints("%c. %-27s \033[31;1m%3s\033[m", 'A' + i, permstrings[i], ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
     } else {
         prints("%c. %-27s \x1b[37;0m%3s\x1b[m", 'A' + i, permstrings[i], ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
     }
@@ -71,7 +71,7 @@ int showsmsdef(struct _select_def *conf, int i)
     if (i == conf->item_count - 1) {
         prints("%c. ÍË³ö ", 'A' + i);
     } else if ((arg->pbits & (1 << i)) != (arg->oldbits & (1 << i))) {
-        prints("%c. %-40s [31;1m%3s[m", 'A' + i, user_smsdefstr[i], ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
+        prints("%c. %-40s \033[31;1m%3s\033[m", 'A' + i, user_smsdefstr[i], ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
     } else {
         prints("%c. %-40s \x1b[37;0m%3s\x1b[m", 'A' + i, user_smsdefstr[i], ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
     }
@@ -87,7 +87,7 @@ int showuserdefine(struct _select_def *conf, int i)
     if (i == conf->item_count - 1) {
         prints("%c. ÍË³ö ", 'A' + i);
     } else if ((arg->pbits & (1 << i)) != (arg->oldbits & (1 << i))) {
-        prints("%c. %-27s [31;1m%3s[m", 'A' + i, user_definestr[i], ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
+        prints("%c. %-27s \033[31;1m%3s\033[m", 'A' + i, user_definestr[i], ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
     } else {
         prints("%c. %-27s \x1b[37;0m%3s\x1b[m", 'A' + i, user_definestr[i], ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
     }
@@ -113,11 +113,11 @@ int setperm_show(struct _select_def *conf, int i)
         prints("%c. ÍË³ö ", 'A' + i);
     } else {
         if ((arg->pbits & (1 << i)) != (arg->oldbits & (1 << i))) {
-            prints("%c. %-27s [31;1m%3s[m", 'A' + i, permstrings[i], ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
+            prints("%c. %-27s \033[31;1m%3s\033[m", 'A' + i, permstrings[i], ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
         } else if ((1 << i == PERM_BASIC || 1 << i == PERM_POST || 1 << i == PERM_CHAT || 1 << i == PERM_PAGE || 1 << i == PERM_DENYMAIL|| 1 << i == PERM_DENYRELAX) && (arg->basic & (1 << i)))
-            prints("%c. %-27s [32;1m%3s[m", 'A' + i, permstrings[i], ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
+            prints("%c. %-27s \033[32;1m%3s\033[m", 'A' + i, permstrings[i], ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
         else
-            prints("%c. %-27s [37;0m%3s[m", 'A' + i, permstrings[i], ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
+            prints("%c. %-27s \033[37;0m%3s\033[m", 'A' + i, permstrings[i], ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
     }
     return SHOW_CONTINUE;
 }
@@ -389,7 +389,7 @@ int XCheckLevel()
 
 						read_userdata(scanuser.userid, &ud);
                         count++;
-                        fprintf(fpx, "[1m[33mÇë±£³ÖÕâÒ»ĞĞÎ»ÓÚÆÁÄ»µÚÒ»ĞĞ£¬´ËÊ±°´ X ¼ü¿É¸øÏÂÁĞÓÃ»§·¢ĞÅÒªÇóÆä²¹Æë¸öÈË×¢²á×ÊÁÏ[m\n\n");
+                        fprintf(fpx, "\033[1m\033[33mÇë±£³ÖÕâÒ»ĞĞÎ»ÓÚÆÁÄ»µÚÒ»ĞĞ£¬´ËÊ±°´ X ¼ü¿É¸øÏÂÁĞÓÃ»§·¢ĞÅÒªÇóÆä²¹Æë¸öÈË×¢²á×ÊÁÏ\033[m\n\n");
                         fprintf(fpx, "ÓÃ»§´úºÅ(êÇ³Æ) : %s(%s)\n\n", scanuser.userid, scanuser.username);
                         fprintf(fpx, "Õæ  Êµ  ĞÕ  Ãû : %s\n\n", ud.realname);
                         fprintf(fpx, "¾Ó  ×¡  ×¡  Ö· : %s\n\n", ud.address);
@@ -402,7 +402,7 @@ int XCheckLevel()
                         fprintf(fpx, "ÎÄ  ÕÂ  Êı  Ä¿ : %d Æª\n\n", scanuser.numposts);
                     }
                 }
-                fprintf(fpx, "[1m[33mÒ»¹²ÁĞ³öÁË %ld Ïî¾ßÓĞ´ËÈ¨ÏŞµÄÓÃ»§×ÊÁÏ[m\n\n*** ÕâÊÇÁĞÊ¾½á¹ûµÄ×îºóÒ»ĞĞ£®Èç¹û¼ì²éÍê±Ï£¬Çë°´ q ¼ü½áÊø *** (ÒÔÏÂ¾ùÎª¿ÕĞĞ)", count);
+                fprintf(fpx, "\033[1m\033[33mÒ»¹²ÁĞ³öÁË %ld Ïî¾ßÓĞ´ËÈ¨ÏŞµÄÓÃ»§×ÊÁÏ\033[m\n\n*** ÕâÊÇÁĞÊ¾½á¹ûµÄ×îºóÒ»ĞĞ£®Èç¹û¼ì²éÍê±Ï£¬Çë°´ q ¼ü½áÊø *** (ÒÔÏÂ¾ùÎª¿ÕĞĞ)", count);
                 {
                     int dummy;  /* process the situation of a too high screen :PP */
 
@@ -412,7 +412,7 @@ int XCheckLevel()
                 close(fhp);
                 fclose(fpx);
 
-                sprintf(secu, "[1m[33mÒ»¹²ÁĞ³öÁË %ld Ïî¾ßÓĞ´ËÈ¨ÏŞµÄÓÃ»§×ÊÁÏ[m", count);
+                sprintf(secu, "\033[1m\033[33mÒ»¹²ÁĞ³öÁË %ld Ïî¾ßÓĞ´ËÈ¨ÏŞµÄÓÃ»§×ÊÁÏ\033[m", count);
                 move(2, 0);
                 prints(secu);
                 clrtoeol();
@@ -649,9 +649,9 @@ void x_edits()
     move(1, 0);
     prints("±àĞŞ¸öÈËµµ°¸\n\n");
     for (num = 0; e_file[num] != NULL && explain_file[num] != NULL; num++) {
-        prints("[[32m%d[m] %s\n", num + 1, explain_file[num]);
+        prints("[\033[32m%d\033[m] %s\n", num + 1, explain_file[num]);
     }
-    prints("[[32m%d[m] ¶¼²»Ïë¸Ä\n", num + 1);
+    prints("[\033[32m%d\033[m] ¶¼²»Ïë¸Ä\n", num + 1);
 
     getdata(num + 5, 0, "ÄãÒª±àĞŞÄÄÒ»Ïî¸öÈËµµ°¸: ", ans, 2, DOECHO, NULL, true);
     if (ans[0] - '0' <= 0 || ans[0] - '0' > num || ans[0] == '\n' || ans[0] == '\0')
@@ -751,7 +751,7 @@ void a_edits()
     move(0, 0);
     prints("±àĞŞÏµÍ³µµ°¸\n\n");
     for (num = 0; e_file[num] != NULL && explain_file[num] != NULL; num++) {
-        prints("[[32m%2d[m] %s%s", num + 1, explain_file[num], ((num + 1) % 2) ? "      " : "\n");
+        prints("[\033[32m%2d\033[m] %s%s", num + 1, explain_file[num], ((num + 1) % 2) ? "      " : "\n");
         /*
          * Leeward 98.03.29 µ÷ÕûÏÔÊ¾²¼¾Ö£¬ÒÔ±ã¼ÓÈë¡°ÏµÍ³×Ô¶¯¹ıÂËµÄ´ÊÓï¡±Ò»Ïî
          */
@@ -763,7 +763,7 @@ void a_edits()
          */
     }
 
-    prints("[[32m%2d[m] ¶¼²»Ïë¸Ä\n", num + 1);
+    prints("[\033[32m%2d\033[m] ¶¼²»Ïë¸Ä\n", num + 1);
 
     /*
      * ÏÂÃæµÄ21ÊÇĞĞºÅ£¬ÒÔºóÌí¼Ó£¬¿ÉÒÔÏàÓ¦µ÷Õû

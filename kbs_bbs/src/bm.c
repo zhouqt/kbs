@@ -198,7 +198,7 @@ int addtodeny(char *uident)
     if (denymsg[0] == '*')
         return 0;
 #ifdef MANUAL_DENY
-    autofree = askyn("¸Ã·â½ûÊÇ·ñ×Ô¶¯½â·â£¿(Ñ¡ [1;31mY[m ±íÊ¾½øÐÐ×Ô¶¯½â·â)", true);
+    autofree = askyn("¸Ã·â½ûÊÇ·ñ×Ô¶¯½â·â£¿(Ñ¡ \033[1;31mY\033[m ±íÊ¾½øÐÐ×Ô¶¯½â·â)", true);
 #else
     autofree = true;
 #endif

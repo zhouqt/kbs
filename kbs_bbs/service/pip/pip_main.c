@@ -127,7 +127,7 @@ pip_new_game()
 		clear();
 		showtitle("ÍâÐÇÕ½¶·¼¦", BBS_FULL_NAME);
 		move(4, 6);
-		prints("»¶Ó­À´µ½ [1;5;33mÐÇ¿ÕÉúÎï¿Æ¼¼ÑÐ¾¿Ôº[0m");
+		prints("»¶Ó­À´µ½ \033[1;5;33mÐÇ¿ÕÉúÎï¿Æ¼¼ÑÐ¾¿Ôº\033[0m");
 		move(6, 6);
 		prints("¾­ÎÒÃÇµ÷²éÏÔÊ¾  ÏÈÇ°ÄãÓÐÑø¹ýÐ¡¼¦à¸  ¿ÉÊÇ±»ÄãÑøËÀÁË...");
 		move(8, 6);
@@ -319,7 +319,7 @@ pip_new_game()
 		 * Ñø¼¦¼ÇÂ¼
 		 */
 		now = time(0);
-		sprintf(buf, "[1;36m%s %-11sÑøÁËÒ»Ö»½Ð [%s] µÄ %s Ð¡¼¦ [0m\n",
+		sprintf(buf, "\033[1;36m%s %-11sÑøÁËÒ»Ö»½Ð [%s] µÄ %s Ð¡¼¦ \033[0m\n",
 			Cdate(now), cuser->userid, d.name, pipsex[d.sex]);
 		pip_log_record(buf);
 	}
@@ -345,7 +345,7 @@ int mode;
 		showtitle("µç×ÓÑøÐ¡¼¦", BBS_FULL_NAME);
 		show_die_pic(2);
 		move(14, 20);
-		prints("¿ÉÁ¯µÄÐ¡¼¦[1;31m%s[m", msg);
+		prints("¿ÉÁ¯µÄÐ¡¼¦\033[1;31m%s\033[m", msg);
 		pressanykey("ÐÇ¿Õ°§µ¿ÖÐ....");
 	} else if (mode == 2) {
 		show_die_pic(3);
@@ -356,7 +356,7 @@ int mode;
 	}
 
 	now = time(0);
-	sprintf(genbuf, "[1;31m%s %-11sµÄÐ¡¼¦ [%s] %s[m\n", Cdate(now),
+	sprintf(genbuf, "\033[1;31m%s %-11sµÄÐ¡¼¦ [%s] %s\033[m\n", Cdate(now),
 		cuser->userid, d.name, msg);
 	pip_log_record(genbuf);
 	pip_write_file();

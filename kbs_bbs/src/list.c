@@ -74,9 +74,9 @@ int print_user_info_title()
         field_2 = "ÕæÊµĞÕÃû  ";
     sprintf(title_str,
              /*---	modified by period	2000-10-21	ÔÚÏßÓÃ»§Êı¿ÉÒÔ´óÓÚ1000µÄ
-                     "[44m%s%-12.12s %-16.16s %-16.16s %c %c %-16.16s %5s[m\n",
+                     "\033[44m%s%-12.12s %-16.16s %-16.16s %c %c %-16.16s %5s\033[m\n",
              ---*/
-            "[44m %s%-12.12s %-16.16s %-16.16s %c %c %-15.15s %5s", "±àºÅ  ", "Ê¹ÓÃÕß´úºÅ", (showexplain == 1) ? "ºÃÓÑËµÃ÷»ò´úºÅ" : field_2, "À´×Ô", 'P',
+            "\033[44m %s%-12.12s %-16.16s %-16.16s %c %c %-15.15s %5s", "±àºÅ  ", "Ê¹ÓÃÕß´úºÅ", (showexplain == 1) ? "ºÃÓÑËµÃ÷»ò´úºÅ" : field_2, "À´×Ô", 'P',
             /*
              * (HAS_PERM(currentuser,PERM_SYSOP) ? 'C' : ' ') 
              */ 'M', "¶¯Ì¬",
@@ -97,7 +97,7 @@ void show_message(char *msg)
     move(BBS_PAGESIZE + 3, 0);
     clrtoeol();
     if (msg != NULL) {
-        prints("[1m%s[m", msg);
+        prints("\033[1m%s\033[m", msg);
         refresh();
         sleep(1);
     }
@@ -285,7 +285,7 @@ int do_userlist()
         isfriend = -1;
         if (user_record[i + page] == NULL) {
             clear();
-            prints("[1;31mÏµÍ³³öÏÖBug,Çëµ½Sysop°æ±¨¸æ£¬Ğ»Ğ»![m");
+            prints("\033[1;31mÏµÍ³³öÏÖBug,Çëµ½Sysop°æ±¨¸æ£¬Ğ»Ğ»!\033[m");
             oflush();
             sleep(10);
             exit(0);
@@ -334,15 +334,15 @@ int do_userlist()
         sprintf(user_info_str,
                 " %4d%2s%s%-12.12s%s%s ", 
                 i + 1 + page, (override) ? (uentp.invisible ? "££" : FRIENDSIG) : (uentp.invisible ? "£ª" : ""),
-                (override) ? "[1;32m" : "", uentp.userid, (override) ? "[m" : "", 
-                (override && showexplain) ? "[1;31m" : "");
+                (override) ? "\033[1;32m" : "", uentp.userid, (override) ? "\033[m" : "", 
+                (override && showexplain) ? "\033[1;31m" : "");
         prints("%s", user_info_str);
         resetcolor();
         move(y, 36);
-        sprintf(user_info_str, " %-16.16s %c %c %s%-16.16s[m%5.5s\n",  
+        sprintf(user_info_str, " %-16.16s %c %c %s%-16.16s\033[m%5.5s\n",  
                 (((pagec == ' ' || pagec == 'O')) || HAS_PERM(currentuser, PERM_SYSOP)) ? uentp.from : FROMSTR,
                 pagec, msgchar(&uentp, &isfriend), 
-                (uentp.invisible == true)? "[34m" : "", modestring(uentp.mode, uentp.destuid, 0,        /* 1->0 ²»ÏÔÊ¾ÁÄÌì¶ÔÏóµÈ modified by dong 1996.10.26 */
+                (uentp.invisible == true)? "\033[34m" : "", modestring(uentp.mode, uentp.destuid, 0,        /* 1->0 ²»ÏÔÊ¾ÁÄÌì¶ÔÏóµÈ modified by dong 1996.10.26 */
                                            (uentp.in_chat ? uentp.chatid : NULL)),            
 #ifdef SHOW_IDLE_TIME
                 idle_str(&uentp));
@@ -718,13 +718,13 @@ int printuent(struct userec *uentp, char *arg)
         sprintf(buf, "%5d %5d", uentp->numlogins, uentp->numposts);
     prints(" %5d%2s%s%-14s%s %s%-19s%s  %11s %4s   %-16s\n", i + 1,
 #endif                          /*  */
-           (override) ? "£®" : "", (override) ? "[32m" : "", uentp->userid, (override) ? "[m" : "", (override && showexplain) ? "[31m" : "",
+           (override) ? "£®" : "", (override) ? "\033[32m" : "", uentp->userid, (override) ? "\033[m" : "", (override && showexplain) ? "\033[31m" : "",
 #if defined(ACTS_REALNAMES)
            uentp->realname,
 #else                           /*  */
            (override && showexplain) ? fexp : uentp->username,
 #endif                          /*  */
-           (override && showexplain) ? "[m" : "",
+           (override && showexplain) ? "\033[m" : "",
 #ifdef _DETAIL_UINFO_
            uentp->numlogins, uentp->numposts,
 #else                           /*  */
@@ -770,7 +770,7 @@ int do_query(int star, int curr)
     clear();
     if (!user_record[curr]->active) {
         move(t_lines - 1, 0);
-        prints("[44m¸ÃÓÃ»§ÒÑÀëÏß[m");
+        prints("\033[44m¸ÃÓÃ»§ÒÑÀëÏß\033[m");
     } else {
         t_query(user_record[curr]->userid);
         move(t_lines - 1, 0);
@@ -788,7 +788,7 @@ int do_query2(int star, int curr)
 {
     t_query(user_data[curr - star].userid);
     move(t_lines - 1, 0);
-    prints("[44m           ¼ÄĞÅ[m] ¼Ó,¼õÅóÓÑ[o,d] ¿´ËµÃ÷µµ[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] Çó¾È[h]           [m");
+    prints("\033[44m           ¼ÄĞÅ[m] ¼Ó,¼õÅóÓÑ[o,d] ¿´ËµÃ÷µµ[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] Çó¾È[h]           \033[m");
     return 0;
 }
 

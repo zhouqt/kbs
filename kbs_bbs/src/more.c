@@ -174,7 +174,7 @@ int check_calltime()
         move(line, 0);
         clrtoeol();
 		calltimememo[39]='\0';
-        prints("[44m[32mBBS ÏµÍ³ÄÖÁå: [37m%-40s[m»Ø³µ¼ÌĞø",calltimememo);
+        prints("\033[44m\033[32mBBS ÏµÍ³ÄÖÁå: \033[37m%-40s\033[m»Ø³µ¼ÌĞø",calltimememo);
 		refresh();
 		for( ch=igetch(); ch!='\r' && ch!='\n'; ch=igetch() ) ;
         move(line, 0);
@@ -225,7 +225,7 @@ int readln(int fd, char *buf, char *more_buf)
             do {
                 len++, *buf++ = ' ';
             } while ((len % 8) != 0);
-        } else if (ch == '') {
+        } else if (ch == '\033') {
             if (showansi)
                 *buf++ = ch;
             in_esc = 1;
@@ -396,14 +396,14 @@ void printacbar()
 
     move(2, 0);
     if (DEFINE(currentuser, DEF_HIGHCOLOR))
-        prints("[1;35m©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[37m»î  ¶¯  ¿´  °æ[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´ [m\n");
+        prints("\033[1;35m©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È\033[37m»î  ¶¯  ¿´  °æ\033[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´ \033[m\n");
     else
-        prints("[35m©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[37m»î  ¶¯  ¿´  °æ[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´ [m\n");
+        prints("\033[35m©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È\033[37m»î  ¶¯  ¿´  °æ\033[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´ \033[m\n");
     move(3 + MAXnettyLN, 0);
     if (DEFINE(currentuser, DEF_HIGHCOLOR))
-        prints("[1;35m©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[36m" FOOTER_MOVIE "[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©¼ [m\n");
+        prints("\033[1;35m©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È\033[36m" FOOTER_MOVIE "\033[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©¼ \033[m\n");
     else
-        prints("[35m©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[36m" FOOTER_MOVIE "[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©¼ [m\n");
+        prints("\033[35m©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È\033[36m" FOOTER_MOVIE "\033[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©¼ \033[m\n");
     move(y, x);
 }
 
@@ -824,9 +824,9 @@ void mem_printbotline(int l1, int l2, int total, int read, int size)
 	     (read >= size) ? "¿´µ½Ä©Î²À²" : "ÏÂÃæ»¹ÓĞà¸",
 	     total ? (100 * l2 / total) : (100 * read / size), l1, l2, s[n]);*/
     if (currentuser != NULL && DEFINE(currentuser, DEF_HIGHCOLOR))
-        prints("[1;44m[32mÏÂÃæ»¹ÓĞà¸ (%d%%) µÚ(%d-%d)ĞĞ[33m | g Ìø×ª |%s / ? ËÑË÷ | s e ¿ªÍ·Ä©Î²|", total ? (100 * l2 / total) : (100 * read / size), l1, l2, uinfo.mode==READING?" l n ÉÏÏÂÆª |":"");
+        prints("\033[1;44m\033[32mÏÂÃæ»¹ÓĞà¸ (%d%%) µÚ(%d-%d)ĞĞ\033[33m | g Ìø×ª |%s / ? ËÑË÷ | s e ¿ªÍ·Ä©Î²|", total ? (100 * l2 / total) : (100 * read / size), l1, l2, uinfo.mode==READING?" l n ÉÏÏÂÆª |":"");
     else
-        prints("[44m[32mÏÂÃæ»¹ÓĞà¸ (%d%%) µÚ(%d-%d)ĞĞ[33m | g Ìø×ª |%s / ? ËÑË÷ | s e ¿ªÍ·Ä©Î²|", total ? (100 * l2 / total) : (100 * read / size), l1, l2 ,uinfo.mode==READING?" l n ÉÏÏÂÆª |":"");
+        prints("\033[44m\033[32mÏÂÃæ»¹ÓĞà¸ (%d%%) µÚ(%d-%d)ĞĞ\033[33m | g Ìø×ª |%s / ? ËÑË÷ | s e ¿ªÍ·Ä©Î²|", total ? (100 * l2 / total) : (100 * read / size), l1, l2 ,uinfo.mode==READING?" l n ÉÏÏÂÆª |":"");
     clrtoeol();
     resetcolor();
 }
@@ -1073,7 +1073,7 @@ int ansimore(char *filename, int promptend)
         pressanykey();
     if (scrint)
     move(t_lines - 1, 0);
-    prints("[m[m");
+    prints("\033[m\033[m");
     return ch;
 }
 

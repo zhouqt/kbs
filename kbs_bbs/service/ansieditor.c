@@ -678,7 +678,7 @@ CMDAGAIN1:
 			continue;
 		}
 BADCMD:
-		strcpy(message, "[31mÎ´ÖªÃüÁî,ÓÃ<ESC>h²ÎÔÄ°ïÖú.[0m");
+		strcpy(message, "\033[31mÎ´ÖªÃüÁî,ÓÃ<ESC>h²ÎÔÄ°ïÖú.\033[0m");
 		draw_sbar();
 	}
 
@@ -692,13 +692,13 @@ BADCMD:
 
 void clr_scr()
 {
-	//prints("[2J");
+	//prints("\033[2J");
 	clear();
 }
 
 void clr2tail()
 {
-//	prints("[K");
+//	prints("\033[K");
 	clrtoeol();
 }
 
@@ -732,7 +732,7 @@ void gotoxy(char x, char y)
 		assert(cur_x);
 		cur_x--;
 	}
-//	prints("[%d;%dH", cur_y+1, cur_x+1);
+//	prints("\033[%d;%dH", cur_y+1, cur_x+1);
 	move(cur_y, cur_x);
 }
 void gotoxy2(char x, char y)
@@ -743,7 +743,7 @@ void gotoxy2(char x, char y)
 	y = (y>scr_lns-1? scr_lns-1: y);
 	cur_x = x;
 	cur_y = y;
-//	prints("[%d;%dH", cur_y+1, cur_x+1);
+//	prints("\033[%d;%dH", cur_y+1, cur_x+1);
 	move(cur_y, cur_x);
 }
 /***************************************************************************
@@ -906,9 +906,9 @@ char* get_ansi_str(struct ansiattr *attr)
 
 	assert(attr);
 	if (isdefault(attr))
-		strcpy(s, "[0m");
+		strcpy(s, "\033[0m");
 	else {
-		strcpy(s, "[0m[");
+		strcpy(s, "\033[0m\033[");
 		if (attr->fcolor) {
 			sprintf(ch, "%d;", attr->fcolor);
 			strcat(s, ch); 
@@ -1036,8 +1036,8 @@ char* get_char_str(struct charinfo *ci, int withansi)
 		sprintf(ch,"%c",ci->code);
 		strcat(s,ch);
 	}
-	if (withansi && strcmp(str, "[0m"))
-		strcat(s, "[0m");
+	if (withansi && strcmp(str, "\033[0m"))
+		strcat(s, "\033[0m");
 	return s;
 }
 char* get_row_str(char x, char y, int dup)
@@ -1051,9 +1051,9 @@ char* get_row_str(char x, char y, int dup)
 	int i;
 
 	if (!dup)
-		strcpy(s, "[0;");
+		strcpy(s, "\033[0;");
 	else 
-		strcpy(s, "[0;");
+		strcpy(s, "\033\033[0;");
 	fc = bc = bl = br = ul = re = 0;
 	open = 1;
 	for (i=x; i<scr_cols; i++) {
@@ -1061,18 +1061,18 @@ char* get_row_str(char x, char y, int dup)
 		assert(!ci->chinese || ci->chinese && !ci->half);
 		if (fc != ci->attr.fcolor && !ci->attr.fcolor || bc != ci->attr.bcolor && !ci->attr.bcolor || bl != ci->attr.blink && !ci->attr.blink || br != ci->attr.bright && !ci->attr.bright || ul != ci->attr.underline && !ci->attr.underline || re != ci->attr.reverse && !ci->attr.reverse) {
 			if (!dup)
-				strcat(s, "[0;");
+				strcat(s, "\033[0;");
 			else 
-				strcat(s, "[0;");
+				strcat(s, "\033\033[0;");
 			fc = bc = bl = br = ul = re = 0;
 			open = 1;
 		}
 		if (fc != ci->attr.fcolor || bc != ci->attr.bcolor ||  bl != ci->attr.blink  ||  br != ci->attr.bright || ul != ci->attr.underline || re != ci->attr.reverse) {
 			if (!open) {
 				if (!dup)
-					strcat(s, "[");
+					strcat(s, "\033[");
 				else
-					strcat(s, "[");
+					strcat(s, "\033\033[");
 			}
 			if (fc != ci->attr.fcolor) {
 				sprintf(ch, "%d;", ci->attr.fcolor);
@@ -1106,9 +1106,9 @@ char* get_row_str(char x, char y, int dup)
 	}
 	if (fc || bc || bl || br || ul || re)
 		if (dup)
-			strcat(s, "[0m");
+			strcat(s, "\033\033[0m");
 		else
-			strcat(s, "[0m");
+			strcat(s, "\033[0m");
 	return s;
 }
 char* get_mail_str()
@@ -1271,28 +1271,28 @@ void draw_sbar()
 
 	switch (state) {
 	case S_EDIT:
-		sprintf(tmp1, "%s%s[0m", get_ansi_str(&cur_attr), char_diamond);
+		sprintf(tmp1, "%s%s\033[0m", get_ansi_str(&cur_attr), char_diamond);
 	
-		sprintf(s, "[0m%s%s%02d,%02d%s%s%s%s%s%s%s%s%s%s%s", dirt_str[(anchor_dirt != undo_ptr->dirt)], char_sep, cur_x+1, cur_y+1, char_sep, tmp1, char_sep, get_char_str(&pens[cur_pen][0], 0), drawing_str[drawing], char_sep, linemode_str[linemode], char_sep, state_str[state], char_sep2, message);
+		sprintf(s, "\033[0m%s%s%02d,%02d%s%s%s%s%s%s%s%s%s%s%s", dirt_str[(anchor_dirt != undo_ptr->dirt)], char_sep, cur_x+1, cur_y+1, char_sep, tmp1, char_sep, get_char_str(&pens[cur_pen][0], 0), drawing_str[drawing], char_sep, linemode_str[linemode], char_sep, state_str[state], char_sep2, message);
 		break;
 	case S_SELBLK:
-		sprintf(s, "[0m%02d,%02d-%02d,%02d%s%s%s%s", blk_x1+1, blk_y1+1, blk_x2+1, blk_y2+1, char_sep, state_str[state], char_sep2, message);
+		sprintf(s, "\033[0m%02d,%02d-%02d,%02d%s%s%s%s", blk_x1+1, blk_y1+1, blk_x2+1, blk_y2+1, char_sep, state_str[state], char_sep2, message);
 		break;
 	case S_EDITBLK:
-		sprintf(tmp1, "%s%s[0m", get_ansi_str(&cur_attr), char_diamond);
-		sprintf(s, "[0m%s%s%02d,%02d-%02d,%02d%s%s%s%s%s%s", dirt_str[(anchor_dirt != undo_ptr->dirt)], char_sep, blk_x1+1, blk_y1+1, blk_x2+1, blk_y2+1, char_sep, tmp1, char_sep, state_str[state], char_sep2, message);
+		sprintf(tmp1, "%s%s\033[0m", get_ansi_str(&cur_attr), char_diamond);
+		sprintf(s, "\033[0m%s%s%02d,%02d-%02d,%02d%s%s%s%s%s%s", dirt_str[(anchor_dirt != undo_ptr->dirt)], char_sep, blk_x1+1, blk_y1+1, blk_x2+1, blk_y2+1, char_sep, tmp1, char_sep, state_str[state], char_sep2, message);
 		break;
 	case S_APST:
-		sprintf(s, "[0mÃüÁî¸ñÊ½:%s%s%s%s%s", apst_mode_str[apst_mode], char_sep, state_str[state], char_sep2, message);
+		sprintf(s, "\033[0mÃüÁî¸ñÊ½:%s%s%s%s%s", apst_mode_str[apst_mode], char_sep, state_str[state], char_sep2, message);
 		break;
 	case S_HLPCMD:
-		sprintf(s, "[0m%s%s%s", state_str[state], char_sep2, message);
+		sprintf(s, "\033[0m%s%s%s", state_str[state], char_sep2, message);
 		break;
 	case S_HLPCODE:
-		sprintf(s, "[0m%s%s%s", state_str[state], char_sep2, message);
+		sprintf(s, "\033[0m%s%s%s", state_str[state], char_sep2, message);
 		break;
 	case S_MAIL:
-		sprintf(s, "[0m%s%s%s", state_str[state], char_sep2, message);
+		sprintf(s, "\033[0m%s%s%s", state_str[state], char_sep2, message);
 		break;
 	default: assert(0);
 	}
@@ -1323,7 +1323,7 @@ int confirm_quit()
 	draw_sbar();
 	save_cur();
 	gotoxy(20, 10);
-	prints("[0mÄãËù×÷µÄ¸Ä¶¯Î´±£´æ,È·¶¨ÒªÍË³öÂğ(Y/N)?");	
+	prints("\033[0mÄãËù×÷µÄ¸Ä¶¯Î´±£´æ,È·¶¨ÒªÍË³öÂğ(Y/N)?");	
 	while (1) {
 		ch = getch();
 		if (toupper(ch) == 'Y')
@@ -1454,7 +1454,7 @@ void help_code(int page)
 	assert(page>=0 && page<gbk_total_pages);
 	clr_scr();
 	gotoxy2(34,0);
-	prints("[0m²¿·ÖGBKÂë");
+	prints("\033[0m²¿·ÖGBKÂë");
 	gotoxy2(17,1);
 	prints("0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F");
 	for (i=0; i<GBK_PAGE_RECS; i++) {
@@ -1475,7 +1475,7 @@ void help_code(int page)
 	prints("0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F");
 	gotoxy2((scr_cols-strlen(url))/2, cur_y+1);
 	prints(url);
-	sprintf(message, "[0m×óÓÒ¼ü·­Ò³,CTRL_QÍË³ö,µÚ%d/%dÒ³", page+1, gbk_total_pages);
+	sprintf(message, "\033[0m×óÓÒ¼ü·­Ò³,CTRL_QÍË³ö,µÚ%d/%dÒ³", page+1, gbk_total_pages);
 	gotoxy2(scr_cols-1, scr_lns-1);
 	draw_sbar();
 }
@@ -1489,7 +1489,7 @@ void help_cmd(int page)
 		gotoxy2(0, i);
 		prints(cmd_help_str[page][i++]);
 	}
-	sprintf(message, "[0m×óÓÒ¼ü·­Ò³,CTRL_QÍË³ö,µÚ%d/%dÒ³", page+1, hcmd_total_pages);
+	sprintf(message, "\033[0m×óÓÒ¼ü·­Ò³,CTRL_QÍË³ö,µÚ%d/%dÒ³", page+1, hcmd_total_pages);
 	gotoxy2(scr_cols-1, scr_lns-1);
 	draw_sbar();
 }
@@ -2042,7 +2042,7 @@ void _absob()
 	chkpt_begin(-1, -1, 1, &cur_attr, sizeof(struct ansiattr));
 	cur_attr = graph[cur_y][cur_x].attr;
 	chkpt_commit();
-	strcpy(message, "[0mµ±Ç°ÎÄ±¾µÄÊôĞÔ±»²ÉÓÃ.");
+	strcpy(message, "\033[0mµ±Ç°ÎÄ±¾µÄÊôĞÔ±»²ÉÓÃ.");
 	draw_sbar();
 }
 void _reset()
@@ -2188,7 +2188,7 @@ void _apen()
 	struct charinfo *ci;
 	
 	if (num_pens == MAX_PENS)
-		sprintf(message, "[31m10Ö§±ÊÒÑÂú,ÎŞ·¨ÔÙÌí¼Ó.[0m");
+		sprintf(message, "\033[31m10Ö§±ÊÒÑÂú,ÎŞ·¨ÔÙÌí¼Ó.\033[0m");
 	else {
 		ci = &graph[cur_y][cur_x];
 		assert(!ci->chinese || ci->chinese && !ci->half);
@@ -2198,7 +2198,7 @@ void _apen()
 			pens[num_pens][1] = *(ci+1);		
 		cur_pen = num_pens;
 		num_pens++;
-		sprintf(message, "[0m»­±Ê%s±»ÉèÎªµ±Ç°»­±Ê.", get_char_str(&pens[cur_pen][0],0));
+		sprintf(message, "\033[0m»­±Ê%s±»ÉèÎªµ±Ç°»­±Ê.", get_char_str(&pens[cur_pen][0],0));
 		chkpt_commit();
 	}
 	draw_sbar();
@@ -2209,7 +2209,7 @@ void _dpen()
 	char s[200];
 
 	if (!cur_pen) 
-		strcpy(message, "[31m´Ë0ºÅ±ÊÊÇÏğÆ¤²Á,²»ÄÜ±»É¾³ı.[0m");
+		strcpy(message, "\033[31m´Ë0ºÅ±ÊÊÇÏğÆ¤²Á,²»ÄÜ±»É¾³ı.\033[0m");
 	else {
 		chkpt_begin(-1, -1, 3, &cur_pen, sizeof(char), &num_pens, sizeof(char), pens, sizeof(pens));
 		strcpy(s, get_char_str(&pens[cur_pen][0],0));
@@ -2220,7 +2220,7 @@ void _dpen()
 		num_pens--;
 		if (cur_pen >= num_pens)
 			cur_pen = num_pens-1;
-		sprintf(message, "[0m»­±Ê%sÒÑ±»É¾³ı.",s);
+		sprintf(message, "\033[0m»­±Ê%sÒÑ±»É¾³ı.",s);
 		chkpt_commit();
 	}
 	draw_sbar();
@@ -2230,7 +2230,7 @@ void _lpen()
 	int i;
 	char s[200];
 
-	strcpy(s, "[0m±Ê:ÏğÆ¤²Á");
+	strcpy(s, "\033[0m±Ê:ÏğÆ¤²Á");
 	for (i=1; i<num_pens; i++) {
 		strcat(s, " ");
 		strcat(s, get_char_str(&pens[i][0],0));
@@ -2347,7 +2347,7 @@ void _ecol()
 void _hcmd()
 {
 	if (!hcmd_total_pages) {
-		strcpy(message, "[31mÎŞ·¨×°ÔØÃüÁî°ïÖúÎÄ¼ş.[0m");
+		strcpy(message, "\033[31mÎŞ·¨×°ÔØÃüÁî°ïÖúÎÄ¼ş.\033[0m");
 		state = prev_state;
 		draw_sbar();
 		return;
@@ -2368,7 +2368,7 @@ void _load()
 	int n;
 
 	while (1) {
-		sprintf(message, "[0m¶ÁÈ¡½ø¶È(CTRL_QÈ¡Ïû):%s", save_file);
+		sprintf(message, "\033[0m¶ÁÈ¡½ø¶È(CTRL_QÈ¡Ïû):%s", save_file);
 		draw_sbar();
 		n = strlen(save_file);
 		ch = getch();
@@ -2383,15 +2383,15 @@ void _load()
 		else if ((ch == DEL || ch == CTRL_H) && n) 
 			save_file[n-1] = '\0';
 		else if (ch == CTRL_Q) {
-			strcpy(message, "[0m·ÅÆú¶ÁÈ¡.");
+			strcpy(message, "\033[0m·ÅÆú¶ÁÈ¡.");
 			break;
 		}
 		else if (ch == RETURN) {
 			if (!n) 
-				strcpy(message, "[0m·ÅÆú¶ÁÈ¡.");
+				strcpy(message, "\033[0m·ÅÆú¶ÁÈ¡.");
 			else if (read_progress()) {
 				anchor_dirt = dirt = 0;
-				sprintf(message, "[0m½ø¶ÈÎÄ¼ş%s¶ÁÈ¡³É¹¦.", save_file);
+				sprintf(message, "\033[0m½ø¶ÈÎÄ¼ş%s¶ÁÈ¡³É¹¦.", save_file);
 				free_undoinfo(undo_list.next);
 				undo_list.dirt = 0;
 				undo_num = 0;
@@ -2399,7 +2399,7 @@ void _load()
 				undo_ptr = &undo_list;
 			}
 			else
-				strcpy(message, "[31m¶ÁÈ¡Ê§°Ü.[0m");
+				strcpy(message, "\033[31m¶ÁÈ¡Ê§°Ü.\033[0m");
 			break;
 		}
 	}
@@ -2411,7 +2411,7 @@ void _save()
 	int n;
 
 	while (1) {
-		sprintf(message, "[0m±£´æ½ø¶È(CTRL_QÈ¡Ïû):%s", save_file);
+		sprintf(message, "\033[0m±£´æ½ø¶È(CTRL_QÈ¡Ïû):%s", save_file);
 		draw_sbar();
 		n = strlen(save_file);
 		ch = getch();
@@ -2426,18 +2426,18 @@ void _save()
 		else if ((ch == DEL || ch == CTRL_H) && n) 
 			save_file[n-1] = '\0';
 		else if (ch == CTRL_Q) {
-			strcpy(message, "[0mÈ¡Ïû±£´æ.");
+			strcpy(message, "\033[0mÈ¡Ïû±£´æ.");
 			break;
 		}
 		else if (ch == RETURN) {
 			if (!n) 
-				strcpy(message, "[0mÈ¡Ïû±£´æ.");
+				strcpy(message, "\033[0mÈ¡Ïû±£´æ.");
 			else if (write_progress()) {
 				anchor_dirt = dirt;
-				sprintf(message, "[0m½ø¶ÈÎÄ¼ş%s±£´æ³É¹¦.", save_file);
+				sprintf(message, "\033[0m½ø¶ÈÎÄ¼ş%s±£´æ³É¹¦.", save_file);
 			}
 			else
-				strcpy(message, "[31m±£´æÊ§°Ü.[0m");
+				strcpy(message, "\033[31m±£´æÊ§°Ü.\033[0m");
 			break;
 		}
 	}
@@ -2449,7 +2449,7 @@ void _export()
 	int n;
 
 	while (1) {
-		sprintf(message, "[0mÊä³öµ½ÎÄ¼ş(CTRL_QÈ¡Ïû):%s", export_file);
+		sprintf(message, "\033[0mÊä³öµ½ÎÄ¼ş(CTRL_QÈ¡Ïû):%s", export_file);
 		draw_sbar();
 		n = strlen(export_file);
 		ch = getch();
@@ -2464,16 +2464,16 @@ void _export()
 		else if ((ch == DEL || ch == CTRL_H) && n) 
 			export_file[n-1] = '\0';
 		else if (ch == CTRL_Q) {
-			strcpy(message, "[0mÈ¡ÏûÊä³ö.");
+			strcpy(message, "\033[0mÈ¡ÏûÊä³ö.");
 			break;
 		}
 		else if (ch == RETURN) {
 			if (!n) 
-				strcpy(message, "[0mÈ¡ÏûÊä³ö.");
+				strcpy(message, "\033[0mÈ¡ÏûÊä³ö.");
 			else if (write_file())
-				sprintf(message, "[0mÎÄ¼ş%sÊä³ö³É¹¦.", export_file);
+				sprintf(message, "\033[0mÎÄ¼ş%sÊä³ö³É¹¦.", export_file);
 			else
-				strcpy(message, "[31mÊä³öÊ§°Ü.[0m");
+				strcpy(message, "\033[31mÊä³öÊ§°Ü.\033[0m");
 			break;
 		}
 	}
@@ -2484,7 +2484,7 @@ void _redo()
 	int i;
 	char r1, r2;
 	if (!redo(&r1, &r2))
-		strcpy(message, "[31mÎŞ·¨½øĞĞREDO.[0m");
+		strcpy(message, "\033[31mÎŞ·¨½øĞĞREDO.\033[0m");
 	else {
 		if (r1!=-1 && r2!=-1) {
 			save_cur();
@@ -2495,7 +2495,7 @@ void _redo()
 			}
 			load_cur();
 		}
-		strcpy(message, "[0mREDO³É¹¦.");
+		strcpy(message, "\033[0mREDO³É¹¦.");
 	}
 	draw_sbar();
 }
@@ -2504,7 +2504,7 @@ void _undo()
 	int i;
 	char r1, r2;
 	if (!undo(&r1, &r2))
-		strcpy(message, "[31mÎŞ·¨½øĞĞUNDO.[0m");
+		strcpy(message, "\033[31mÎŞ·¨½øĞĞUNDO.\033[0m");
 	else {
 		if (r1!=-1 && r2!=-1) {
 			save_cur();
@@ -2515,7 +2515,7 @@ void _undo()
 			}
 			load_cur();
 		}
-		strcpy(message, "[0mUNDO³É¹¦.");
+		strcpy(message, "\033[0mUNDO³É¹¦.");
 	}
 	draw_sbar();
 }
@@ -2543,7 +2543,7 @@ void _sskey()
 		ci1++; ci++;
 		*ci1 = *ci;
 	}
-	sprintf(message, "[0m%s±»ÉèÎªµÚ%dºÅ¿ì½İ¼ü.", get_char_str(&sc_keys[n][0],0), n);
+	sprintf(message, "\033[0m%s±»ÉèÎªµÚ%dºÅ¿ì½İ¼ü.", get_char_str(&sc_keys[n][0],0), n);
 	chkpt_commit();
 	draw_sbar();
 }
@@ -2553,7 +2553,7 @@ void _lskey()
 	char s[200];
 	char ch[10];
 
-	strcpy(s, "[0m¿ì½İ:");
+	strcpy(s, "\033[0m¿ì½İ:");
 	for (i=0; i<NUM_SKEYS; i++) {
 		sprintf(ch, "%d", i);
 		strcat(s, ch);
@@ -2945,7 +2945,7 @@ void _copy()
 	char_copy[0] = *ci;
 	if (ci->chinese)
 		char_copy[1] = *(ci+1);
-	sprintf(message, "[0m×Ö·û%s±»¸´ÖÆ.", get_char_str(ci,1));
+	sprintf(message, "\033[0m×Ö·û%s±»¸´ÖÆ.", get_char_str(ci,1));
 	draw_sbar();
 }
 void _pst()
@@ -2966,7 +2966,7 @@ void _pst()
 			clr2tail();
 			prints(get_row_str(cur_x, cur_y, 0));
 			load_cur();
-			sprintf(message, "[0m×Ö·û%s±»Õ³Ìù.", get_char_str(ci,1));
+			sprintf(message, "\033[0m×Ö·û%s±»Õ³Ìù.", get_char_str(ci,1));
 			dirt++;
 			chkpt_commit();
 			break;
@@ -2994,7 +2994,7 @@ void _pst()
 				prints(get_row_str(0, i, 0));
 			}
 			load_cur();
-			sprintf(message, "[0m¿é±»Õ³Ìù.");
+			sprintf(message, "\033[0m¿é±»Õ³Ìù.");
 			dirt++;
 			chkpt_commit();
 			break;
@@ -3105,7 +3105,7 @@ void _del()
 void _rcopy()
 {
 	memcpy(row_copy, &graph[cur_y][0], sizeof(struct charinfo)*scr_cols);
-	sprintf(message, "[0m±¾ĞĞÎÄ±¾±»¸´ÖÆ.");
+	sprintf(message, "\033[0m±¾ĞĞÎÄ±¾±»¸´ÖÆ.");
 	draw_sbar();
 }
 void _rpst()
@@ -3119,7 +3119,7 @@ void _rpst()
 	clr2tail();
 	prints(get_row_str(0, cur_y, 0));
 	load_cur();
-	sprintf(message, "[0m¸´ÖÆÎÄ±¾ÒÑÕ³ÌùÖÁ±¾ĞĞ.");
+	sprintf(message, "\033[0m¸´ÖÆÎÄ±¾ÒÑÕ³ÌùÖÁ±¾ĞĞ.");
 	dirt++;
 	chkpt_commit();
 	draw_sbar();
@@ -3143,7 +3143,7 @@ void _ccopy()
 			}
 		}
 	}
-	sprintf(message, "[0m±¾ÁĞÎÄ±¾±»¸´ÖÆ.");
+	sprintf(message, "\033[0m±¾ÁĞÎÄ±¾±»¸´ÖÆ.");
 	draw_sbar();
 }
 void _cpst()
@@ -3189,7 +3189,7 @@ void _mail()
 	
 	clr_scr();
 	gotoxy2(0,0);
-	prints("[0m");
+	prints("\033[0m");
 	prints(str1); 
 	gotoxy2(cur_x+strlen(str1), cur_y);
 	if (strlen(mail_addr)) {
@@ -3198,7 +3198,7 @@ void _mail()
 	}
 	mail_step = ML_ADDR;
 	mail_sent = 0;
-	strcpy(message, "[0mÈ¡Ïû¼ÄĞÅÓÃCTRL_Q.");
+	strcpy(message, "\033[0mÈ¡Ïû¼ÄĞÅÓÃCTRL_Q.");
 	draw_sbar();
 }
 void _ret()
@@ -3213,7 +3213,7 @@ void _ret()
 void _igbk()
 {
 	unsigned char ch;
-	char *str1 = "[0mGBKÂëÊäÈë(»Ø³µÈ¡Ïû):";
+	char *str1 = "\033[0mGBKÂëÊäÈë(»Ø³µÈ¡Ïû):";
 	char gbk[5]={0};
 	int n=0;
 
@@ -3227,7 +3227,7 @@ void _igbk()
 				sprintf(message, "%s%s", str1, gbk);
 				draw_sbar();
 				if (n==4) {
-					sprintf(message, "[0mGBKÂë%sÊäÈëÍê³É.", gbk);
+					sprintf(message, "\033[0mGBKÂë%sÊäÈëÍê³É.", gbk);
 					str2hex(gbk, &code_first, &code_second);
 					chinese = 1;
 					_data();
@@ -3237,7 +3237,7 @@ void _igbk()
 			}
 		}
 		if (ch == RETURN || ch == CTRL_Q) {
-			strcpy(message, "[0mÈ¡ÏûGBKÂëÊäÈë");
+			strcpy(message, "\033[0mÈ¡ÏûGBKÂëÊäÈë");
 			draw_sbar();
 			return;
 		}
@@ -3249,7 +3249,7 @@ void _blk1()
 	memcpy(save_graph, graph, sizeof(graph));
 	blk_x1 = blk_x2 = cur_x;
 	blk_y1 = blk_y2 = cur_y;
-	strcpy(message, "[0m¹â±ê¼üÉè¶¨¿é,CTRL_KÈ·¶¨,CTRL_QÍË³ö.");
+	strcpy(message, "\033[0m¹â±ê¼üÉè¶¨¿é,CTRL_KÈ·¶¨,CTRL_QÍË³ö.");
 	set_blk_attr(A_REVERSE, 1);
 	draw_sbar();
 }
@@ -3266,7 +3266,7 @@ void _blk2()
 	save_attr = cur_attr;
 	undo_limit = undo_ptr;
 	blk_undo_ptr = undo_ptr;
-	strcpy(message, "[0mÇëÉèÖÃ¿éµÄÊôĞÔ,CTRL_Q½áÊø,<ESC>h°ïÖú.");
+	strcpy(message, "\033[0mÇëÉèÖÃ¿éµÄÊôĞÔ,CTRL_Q½áÊø,<ESC>h°ïÖú.");
 	clr_reverse();
 	draw_graph();
 	draw_sbar();
@@ -3372,7 +3372,7 @@ void _apst()
 	memset(&cur_attr, 0, sizeof(cur_attr));
 	chkpt_begin(0, scr_lns-2, 3, &cur_x, sizeof(char), &cur_y, sizeof(char), graph, sizeof(graph));
 	apst_step = AP_DATA;
-	strcpy(message, "[0mÕ³Ìù´øÉ«ÎÄ±¾,CTRL_O¸Ä±äÃüÁî¸ñÊ½,CTRL_Q½áÊø.");
+	strcpy(message, "\033[0mÕ³Ìù´øÉ«ÎÄ±¾,CTRL_O¸Ä±äÃüÁî¸ñÊ½,CTRL_Q½áÊø.");
 	draw_sbar();
 }
 void _amode()
@@ -3398,7 +3398,7 @@ void _aret()
 void _aquit()
 {
 	cur_attr = save_attr;
-	strcpy(message, "[0m´øÉ«Õ³Ìù½áÊø.");
+	strcpy(message, "\033[0m´øÉ«Õ³Ìù½áÊø.");
 	if (cur_x != save_cur_x || cur_y != save_cur_y) {
 		dirt++;
 		chkpt_commit();
@@ -3463,11 +3463,11 @@ void _mdel()
 void _mquit()
 {
 	if (!mail_sent)
-		strcpy(message, "[0mÈ¡Ïû¼ÄĞÅ.");
+		strcpy(message, "\033[0mÈ¡Ïû¼ÄĞÅ.");
 	else if (mail_sent<0)
-		strcpy(message, "[31m·¢ĞÅÊ§°Ü.[0m");
+		strcpy(message, "\033[31m·¢ĞÅÊ§°Ü.\033[0m");
 	else
-		strcpy(message, "[0mĞÅÒÑ¼Ä³ö.");
+		strcpy(message, "\033[0mĞÅÒÑ¼Ä³ö.");
 	draw_graph();
 	draw_sbar();
 	gotoxy(save_cur_x, save_cur_y);
@@ -3480,18 +3480,18 @@ void _mconf()
 		case ML_ADDR: 
 			 if (!strchr(mail_addr, '@')) {
 			    if (HAS_PERM(currentuser,PERM_DENYMAIL)) {
-					strcpy(message, "[31mÄãÎŞÈ¨¸ø±¾Õ¾ÓÃ»§¼ÄĞÅ.[0m");
+					strcpy(message, "\033[31mÄãÎŞÈ¨¸ø±¾Õ¾ÓÃ»§¼ÄĞÅ.\033[0m");
 					draw_sbar();
 					break;
 				}
 		         if (getuser(mail_addr, &u) == 0) {
-					strcpy(message, "[31m´íÎóµÄÊ¹ÓÃÕßÕÊºÅ.[0m");
+					strcpy(message, "\033[31m´íÎóµÄÊ¹ÓÃÕßÕÊºÅ.\033[0m");
 					draw_sbar();
 					break;
 				 }
 			}
 			gotoxy2(0,1);
-			prints("[0m");
+			prints("\033[0m");
 			prints(str1); 
 			gotoxy2(cur_x+strlen(str1), cur_y);
 			if (strlen(mail_title)) {
@@ -3520,7 +3520,7 @@ void _h2pp()
 }
 void _h2quit()
 {
-	strcpy(message, "[0mGBKÂë¼ìË÷½áÊø.");
+	strcpy(message, "\033[0mGBKÂë¼ìË÷½áÊø.");
 	gotoxy(save_cur_x, save_cur_y);
 	draw_graph();
 	draw_sbar();
@@ -3537,7 +3537,7 @@ void _h1pp()
 }
 void _h1quit()
 {
-	strcpy(message, "[0mÃüÁî°ïÖú½áÊø.");
+	strcpy(message, "\033[0mÃüÁî°ïÖú½áÊø.");
 	gotoxy(save_cur_x, save_cur_y);
 	state = prev_hcmd_state;
 	draw_graph();
@@ -3663,7 +3663,7 @@ void _bcopy()
 	memcpy(blk_copy, graph, sizeof(graph));
 	clr_brokenchars(blk_copy, blk_cp_y1, blk_cp_y2, blk_cp_x1, 1);
 	clr_brokenchars(blk_copy, blk_cp_y1, blk_cp_y2, blk_cp_x2, 0);
-	sprintf(message, "[0m¿é±»¸´ÖÆ.");
+	sprintf(message, "\033[0m¿é±»¸´ÖÆ.");
 	draw_sbar();
 }
 void _baplfc()
@@ -3722,7 +3722,7 @@ void _b1quit()
 {
 	blk_x1 = 0; blk_y1 = 0;
 	blk_x2 = scr_cols-1; blk_y2 = scr_lns-2;
-	strcpy(message, "[0m¿é²Ù×÷ÒÑÈ¡Ïû.");
+	strcpy(message, "\033[0m¿é²Ù×÷ÒÑÈ¡Ïû.");
 	memcpy(graph, save_graph, sizeof(graph));
 	gotoxy(save_cur_x, save_cur_y);
 	draw_graph();
@@ -3746,7 +3746,7 @@ void _b2quit()
 		dirt++;
 		chkpt_commit();
 	}
-	strcpy(message, "[0m¿é²Ù×÷½áÊø.");
+	strcpy(message, "\033[0m¿é²Ù×÷½áÊø.");
 	gotoxy(save_cur_x, save_cur_y);
 	draw_graph();
 	draw_sbar();

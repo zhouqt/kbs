@@ -539,9 +539,9 @@ void outns(const char*str, int n)
     while ((str - begin_str < n) && *str) {
         slp = &big_picture[(cur_ln + roll)%scr_lns];
 
-        if (*str == ''&&*(str+1)=='[') {
+        if (*str == '\033'&&*(str+1)=='[') {
              i=1;
-             while(!isalpha(*(str+i))&&(*(str+i)!='')&&*(str+i)) i++;
+             while(!isalpha(*(str+i))&&(*(str+i)!='\033')&&*(str+i)) i++;
              if(*(str+i)=='H') {
                 j=0;
                 while(j<i&&*(str+j)!=';') j++;

@@ -576,7 +576,7 @@ static post_article(usermail)
             ppx = pp;
             ich = 0;
             do {
-                if (ppx = strstr(ppx, "[")) {
+                if (ppx = strstr(ppx, "\033[")) {
                     ich = strchr(ppx, 'm') - ppx;
                     if (ich > 0)
                         ich++;
@@ -626,11 +626,11 @@ static post_article(usermail)
             AddSignature(NULL, userid, fh);     /* Leeward: 98.05.17 */
 
         if ('M' == EMode) {     /* Leeward 97.12.23 */
-            sprintf(buf, "\n[1m¡ù ÐÞ¸Ä:¡¤%s ì¶ %15.15s ÐÞ¸Ä±¾ÎÄ¡¤[FROM: %.22s] [m", userid, ctime(&now) + 4, emailad);
+            sprintf(buf, "\n\033[1m¡ù ÐÞ¸Ä:¡¤%s ì¶ %15.15s ÐÞ¸Ä±¾ÎÄ¡¤[FROM: %.22s] \033[m", userid, ctime(&now) + 4, emailad);
             write(fh, buf, strlen(buf));
         }
 
-        sprintf(buf, "\n[1m¡ù À´Ô´:¡¤BBS Ë®Ä¾Çå»ªÕ¾ " NAME_BBS_ENGLISH "¡¤[FROM: %.22s] [m\n", emailad);
+        sprintf(buf, "\n\033[1m¡ù À´Ô´:¡¤BBS Ë®Ä¾Çå»ªÕ¾ " NAME_BBS_ENGLISH "¡¤[FROM: %.22s] \033[m\n", emailad);
         if (!Xpost)
             write(fh, buf, strlen(buf));
     }

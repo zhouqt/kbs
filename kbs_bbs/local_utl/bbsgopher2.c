@@ -256,14 +256,14 @@ int showout()
     unlink("/home/bbs/etc/movie2");
     sprintf(foo, "%s\n", TOPSTR);
     fputs(foo, fp);
-    sprintf(foo, "[1;30;4%dm¡õ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡õ[m", COLOR);
+    sprintf(foo, "\033[1;30;4%dm¡õ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡õ\033[m", COLOR);
     fprintf(fp, "%s\n", foo);
 
     i = 1;
     while (newitem != NULL) {
         i++;
         if (i % 3 == 1) {
-            sprintf(foo, "[1;30;4%dm¡õ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡õ[m", COLOR);
+            sprintf(foo, "\033[1;30;4%dm¡õ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡õ\033[m", COLOR);
             fprintf(fp, "%s\n", foo);
         }
         len = strlen(newitem->title + 1);
@@ -273,15 +273,15 @@ int showout()
         }
         len = (80 - len) / 2 - 1 - 2;
         sprintf(tmpbar, "%*.*s", len, len, "");
-        sprintf(foo, "[1;4%d;30m©¦[1;3%d;4%dm%s%s%s[m[1;3%d;4%dm©¦[m\n", COLOR, (i % 2) + 6, COLOR, tmpbar, newitem->title + 1, tmpbar, COLOR, COLOR);
+        sprintf(foo, "\033[1;4%d;30m©¦\033[1;3%d;4%dm%s%s%s\033[m\033[1;3%d;4%dm©¦\033[m\n", COLOR, (i % 2) + 6, COLOR, tmpbar, newitem->title + 1, tmpbar, COLOR, COLOR);
         fprintf(fp, "%s", foo);
 /*             if(i%3!=0)
              {
-                sprintf(foo,"[41m%78.78s[m","");
+                sprintf(foo,"\033[41m%78.78s\033[m","");
                 fprintf(fp,"%s\n",foo);
              }*/
         if (i % 3 == 0) {
-            sprintf(foo, "[1;3%d;4%dm¡õ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡õ[m", COLOR, COLOR);
+            sprintf(foo, "\033[1;3%d;4%dm¡õ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡õ\033[m", COLOR, COLOR);
             fprintf(fp, "%s\n", foo);
         }
         newitem = next(newitem);
@@ -304,7 +304,7 @@ gopher(serv, dire, port, title)
 
 
     gopher_position = 0;
-    sprintf(TOPSTR, "[4%dm                            [1;3%dm¡¾[37mÖÐÑëÉç¼´Ê±ÐÂÎÅ±¨µ¼[3%dm¡¿[m[4%dm                            [m", COLOR, COLOR, COLOR, COLOR);
+    sprintf(TOPSTR, "\033[4%dm                            \033[1;3%dm¡¾\033[37mÖÐÑëÉç¼´Ê±ÐÂÎÅ±¨µ¼\033[3%dm¡¿\033[m\033[4%dm                            \033[m", COLOR, COLOR, COLOR, COLOR);
     newitem = (GOPHER *) malloc(sizeof(GOPHER));
     strncpy(newitem->server, serv, 40);
     strncpy(newitem->file, dire, 80);

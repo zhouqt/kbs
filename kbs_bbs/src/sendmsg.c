@@ -258,7 +258,7 @@ int show_allmsgs()
         clear();
         if(count==0) {
             move(5,30);
-            prints("[mÃ»ÓĞÈÎºÎµÄÑ¶Ï¢´æÔÚ£¡£¡");
+            prints("\033[mÃ»ÓĞÈÎºÎµÄÑ¶Ï¢´æÔÚ£¡£¡");
             i = 0;
         }
         else {
@@ -278,9 +278,9 @@ int show_allmsgs()
         }
         move(t_lines-1,0);
         if(!all)
-            prints("[1;44;32mÑ¶Ï¢ä¯ÀÀÆ÷   ±£Áô<[37mr[32m> Çå³ı<[37mc[32m> ¼Ä»ØĞÅÏä<[37mm[32m> ·¢Ñ¶ÈË<[37mi[32m> Ñ¶Ï¢ÄÚÈİ<[37ms[32m>        Ê£Óà:%4d ", count-i);
+            prints("\033[1;44;32mÑ¶Ï¢ä¯ÀÀÆ÷   ±£Áô<\033[37mr\033[32m> Çå³ı<\033[37mc\033[32m> ¼Ä»ØĞÅÏä<\033[37mm\033[32m> ·¢Ñ¶ÈË<\033[37mi\033[32m> Ñ¶Ï¢ÄÚÈİ<\033[37ms\033[32m>        Ê£Óà:%4d ", count-i);
         else
-            prints("[1;44;32mÑ¶Ï¢ä¯ÀÀÆ÷   ±£Áô<[37mr[32m> Çå³ı<[37mc[32m> ¼Ä»ØĞÅÏä<[37mm[32m> ·¢Ñ¶ÈË<[37mi[32m> Ñ¶Ï¢ÄÚÈİ<[37ms[32m> È«²¿<[37ma[32m>     %4d ", count-i);
+            prints("\033[1;44;32mÑ¶Ï¢ä¯ÀÀÆ÷   ±£Áô<\033[37mr\033[32m> Çå³ı<\033[37mc\033[32m> ¼Ä»ØĞÅÏä<\033[37mm\033[32m> ·¢Ñ¶ÈË<\033[37mi\033[32m> Ñ¶Ï¢ÄÚÈİ<\033[37ms\033[32m> È«²¿<\033[37ma\033[32m>     %4d ", count-i);
         clrtoeol();
         resetcolor();
 reenter:
@@ -397,7 +397,7 @@ int dowall(struct user_info *uin, char *buf2)
 
     move(1, 0);
     clrtoeol();
-    prints("[32mÕı¶Ô %s ¹ã²¥.... Ctrl-D Í£Ö¹¶Ô´ËÎ» User ¹ã²¥¡£[m", uin->userid);
+    prints("\033[32mÕı¶Ô %s ¹ã²¥.... Ctrl-D Í£Ö¹¶Ô´ËÎ» User ¹ã²¥¡£\033[m", uin->userid);
     refresh();
     if (strcmp(uin->userid, "guest")) { /* Leeward 98.06.19 */
         /*
@@ -481,12 +481,12 @@ void r_msg()
     if ((savemode == POSTING || savemode == SMAIL) && !DEFINE(currentuser, DEF_LOGININFORM)) {      /*Haohmaru.99.12.16.·¢ÎÄÕÂÊ±²»»Ømsg */
         move(0, 0);
         if (hasnewmsg) {
-            prints("[1m[33mÄãÓĞĞÂµÄÑ¶Ï¢£¬Çë·¢±íÍêÎÄÕÂºó°´ Ctrl+Z »ØÑ¶Ï¢[m");
+            prints("\033[1m\033[33mÄãÓĞĞÂµÄÑ¶Ï¢£¬Çë·¢±íÍêÎÄÕÂºó°´ Ctrl+Z »ØÑ¶Ï¢\033[m");
             move(y, x);
             refresh();
             sleep(1);
         } else {
-            prints("[1mÃ»ÓĞÈÎºÎĞÂµÄÑ¶Ï¢´æÔÚ![m");
+            prints("\033[1mÃ»ÓĞÈÎºÎĞÂµÄÑ¶Ï¢´æÔÚ!\033[m");
             move(y, x);
             refresh();
             sleep(1);
@@ -497,7 +497,7 @@ void r_msg()
     count = get_msgcount(1, currentuser->userid);
     if (!count) {
         move(0, 0);
-        prints("[1mÃ»ÓĞÈÎºÎµÄÑ¶Ï¢´æÔÚ£¡£¡[m");
+        prints("\033[1mÃ»ÓĞÈÎºÎµÄÑ¶Ï¢´æÔÚ£¡£¡\033[m");
         clrtoeol();
         move(y, x);
         refresh();
@@ -539,7 +539,7 @@ void r_msg()
             int x,y;
             getyx(&y,&x);
             if(!reg)
-                prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢", now+1, count);
+                prints("\033[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢", now+1, count);
             clrtoeol();
             do{
                 ch = igetkey();
@@ -561,12 +561,12 @@ void r_msg()
         clrtoeol();
         if(!reg)
         if(canreply)
-            prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢, »Ø¸´ %-12s\n", now+1, count, uid);
+            prints("\033[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢, »Ø¸´ %-12s\n", now+1, count, uid);
         else
             if(uin)
-                prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢,¡ü¡ıÇĞ»»,Enter½áÊø, ¸ÃÏûÏ¢ÎŞ·¨»Ø¸´", now+1, count);
+                prints("\033[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢,¡ü¡ıÇĞ»»,Enter½áÊø, ¸ÃÏûÏ¢ÎŞ·¨»Ø¸´", now+1, count);
             else
-                prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢,¡ü¡ıÇĞ»»,Enter½áÊø, ÓÃ»§%sÒÑÏÂÕ¾,ÎŞ·¨»Ø¸´", now+1, count, uid);
+                prints("\033[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢,¡ü¡ıÇĞ»»,Enter½áÊø, ÓÃ»§%sÒÑÏÂÕ¾,ÎŞ·¨»Ø¸´", now+1, count, uid);
         getyx(&oy, &ox);
         
         if(canreply) {
@@ -637,7 +637,7 @@ void r_msg()
                                 i = sendmsgfunc(uin, buf, 4);
                         }
                         buf[0]=0;
-                        if(i==1) strcpy(buf, "[1m°ïÄãËÍ³öÑ¶Ï¢ÁË[m");
+                        if(i==1) strcpy(buf, "\033[1m°ïÄãËÍ³öÑ¶Ï¢ÁË\033[m");
                         else if(i!=0) strcpy(buf, msgerr);
                         if(buf[0]) {
                             int j=i;

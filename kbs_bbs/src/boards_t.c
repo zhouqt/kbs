@@ -140,7 +140,7 @@ int query_bm()
     if (!(tuid = getuser(uident, &lookupuser))) {
         move(2, 0);
         clrtoeol();
-        prints("[1mฒปีýศทตฤสนำรี฿ด๚บล[m\n");
+        prints("\033[1mฒปีýศทตฤสนำรี฿ด๚บล\033[m\n");
         pressanykey();
         move(2, 0);
         clrtoeol();
@@ -379,7 +379,7 @@ static int fav_show(struct _select_def *conf, int pos)
 	       } else if (f!=' ') {
 	           sprintf(flag,"\x1b[1;33m%c\x1b[m",f);
           } else sprintf(flag,"%c",f);
-          prints("%c%-16s %s%s%-36s %-12s", ((ptr->zap && !(ptr->flag & BOARD_NOZAPFLAG)) ? '*' : ' '), ptr->name, (ptr->flag & BOARD_VOTEFLAG) ? "[31;1mV[m" : " ", flag, buf, ptr->BM[0] <= ' ' ? "ณฯี๗ฐๆึ๗ึะ" : strtok(tmpBM, " ")); /*ตฺาปธ๖ฐๆึ๗ */
+          prints("%c%-16s %s%s%-36s %-12s", ((ptr->zap && !(ptr->flag & BOARD_NOZAPFLAG)) ? '*' : ' '), ptr->name, (ptr->flag & BOARD_VOTEFLAG) ? "\033[31;1mV\033[m" : " ", flag, buf, ptr->BM[0] <= ' ' ? "ณฯี๗ฐๆึ๗ึะ" : strtok(tmpBM, " ")); /*ตฺาปธ๖ฐๆึ๗ */
 #ifdef BOARD_SHOW_ONLINE
         if(scr_cols>=80+5) {
             int x,y;
@@ -965,15 +965,15 @@ static int fav_refresh(struct _select_def *conf)
     if (DEFINE(currentuser, DEF_HIGHCOLOR)) {
         if (arg->yank_flag == BOARD_FAV)
             docmdtitle("[ธ๖ศหถจึฦว๘]",
-                       "  [mึ๗ักตฅ[\x1b[1;32mก๛\x1b[m,\x1b[1;32me\x1b[m] ิฤถม[\x1b[1;32mก๚\x1b[m,\x1b[1;32mr\x1b[m] ักิ๑[\x1b[1;32mกü\x1b[m,\x1b[1;32mกý\x1b[m] ฬํผำ[\x1b[1;32ma\x1b[m,\x1b[1;32mA\x1b[m] าฦถฏ[\x1b[1;32mm\x1b[m] ษพณý[\x1b[1;32md\x1b[m] ลละ๒[\x1b[1;32mS\x1b[m] ว๓ึ๚[\x1b[1;32mh\x1b[m]");
+                       "  \033[mึ๗ักตฅ[\x1b[1;32mก๛\x1b[m,\x1b[1;32me\x1b[m] ิฤถม[\x1b[1;32mก๚\x1b[m,\x1b[1;32mr\x1b[m] ักิ๑[\x1b[1;32mกü\x1b[m,\x1b[1;32mกý\x1b[m] ฬํผำ[\x1b[1;32ma\x1b[m,\x1b[1;32mA\x1b[m] าฦถฏ[\x1b[1;32mm\x1b[m] ษพณý[\x1b[1;32md\x1b[m] ลละ๒[\x1b[1;32mS\x1b[m] ว๓ึ๚[\x1b[1;32mh\x1b[m]");
         else
             docmdtitle("[ฬึยÛว๘มะฑํ]",
-                       "  [mึ๗ักตฅ[\x1b[1;32mก๛\x1b[m,\x1b[1;32me\x1b[m] ิฤถม[\x1b[1;32mก๚\x1b[m,\x1b[1;32mr\x1b[m] ักิ๑[\x1b[1;32mกü\x1b[m,\x1b[1;32mกý\x1b[m] มะณ๖[\x1b[1;32my\x1b[m] ลละ๒[\x1b[1;32mS\x1b[m] หััฐ[\x1b[1;32m/\x1b[m] วะปป[\x1b[1;32mc\x1b[m] ว๓ึ๚[\x1b[1;32mh\x1b[m]");
+                       "  \033[mึ๗ักตฅ[\x1b[1;32mก๛\x1b[m,\x1b[1;32me\x1b[m] ิฤถม[\x1b[1;32mก๚\x1b[m,\x1b[1;32mr\x1b[m] ักิ๑[\x1b[1;32mกü\x1b[m,\x1b[1;32mกý\x1b[m] มะณ๖[\x1b[1;32my\x1b[m] ลละ๒[\x1b[1;32mS\x1b[m] หััฐ[\x1b[1;32m/\x1b[m] วะปป[\x1b[1;32mc\x1b[m] ว๓ึ๚[\x1b[1;32mh\x1b[m]");
     } else {
         if (arg->yank_flag == BOARD_FAV)
-            docmdtitle("[ธ๖ศหถจึฦว๘]", "  [mึ๗ักตฅ[ก๛,e] ิฤถม[ก๚,r] ักิ๑[กü,กý] ฬํผำ[a,A] าฦถฏ[m] ษพณý[d] ลละ๒[S] ว๓ึ๚[h]");
+            docmdtitle("[ธ๖ศหถจึฦว๘]", "  \033[mึ๗ักตฅ[ก๛,e] ิฤถม[ก๚,r] ักิ๑[กü,กý] ฬํผำ[a,A] าฦถฏ[m] ษพณý[d] ลละ๒[S] ว๓ึ๚[h]");
         else
-            docmdtitle("[ฬึยÛว๘มะฑํ]", "  [mึ๗ักตฅ[ก๛,e] ิฤถม[ก๚,r] ักิ๑[กü,กý] มะณ๖[y] ลละ๒[S] หััฐ[/] วะปป[c] ว๓ึ๚[h]");
+            docmdtitle("[ฬึยÛว๘มะฑํ]", "  \033[mึ๗ักตฅ[ก๛,e] ิฤถม[ก๚,r] ักิ๑[กü,กý] มะณ๖[y] ลละ๒[S] หััฐ[/] วะปป[c] ว๓ึ๚[h]");
     }
     move(2, 0);
     setfcolor(WHITE, DEFINE(currentuser, DEF_HIGHCOLOR));

@@ -277,7 +277,7 @@ char *prompt, *data;
                 }
                 if (morelist) {
                     move(t_lines - 1, 0);
-                    prints("[44m-- »¹ÓÐ --                                                                     [m");
+                    prints("\033[44m-- »¹ÓÐ --                                                                     \033[m");
                 }
                 move(y, x);
                 continue;
@@ -507,7 +507,7 @@ char *prompt, *data;
                 }
                 if (morenum < cwnum) {
                     move(t_lines - 1, 0);
-                    prints("[44m-- »¹ÓÐÊ¹ÓÃÕß --                                                               [m");
+                    prints("\033[44m-- »¹ÓÐÊ¹ÓÃÕß --                                                               \033[m");
                 } else {
                     morenum = 0;
                 }

@@ -68,7 +68,7 @@ static int set_smsg_show(struct _select_def *conf, int i)
 	if((c = strchr(title, '\n') )!= NULL) *c=0;
 	if((c = strchr(title, '\r') )!= NULL) *c=0;
 
-	prints(" %s%-3d %-13s %-14s %s %-40s%s",s_m[i-conf->page_pos].readed?"":"[1;5m", i , s_m[i-conf->page_pos].dest, s_m[i-conf->page_pos].time, s_m[i-conf->page_pos].type?"[1;32m·¢[m":"[1;33mÊÕ[m", title, s_m[i-conf->page_pos].readed?"":"[m");
+	prints(" %s%-3d %-13s %-14s %s %-40s%s",s_m[i-conf->page_pos].readed?"":"\033[1;5m", i , s_m[i-conf->page_pos].dest, s_m[i-conf->page_pos].time, s_m[i-conf->page_pos].type?"\033[1;32m·¢\033[m":"\033[1;33mÊÕ\033[m", title, s_m[i-conf->page_pos].readed?"":"\033[m");
 	return SHOW_CONTINUE;
 }
 
@@ -137,9 +137,9 @@ static int set_smsg_prekey(struct _select_def *conf, int *key)
 static int set_smsg_refresh(struct _select_def *conf)
 {
 	clear();
-	docmdtitle("[¶ÌĞÅ¹ÜÀí]","°ïÖú[[1;32mh[m] É¾³ı[[1;32md[m] Ñ¡Ôñ[[1;32ms[m] »Ø¸´¶ÌĞÅ[[1;32mS[m] ¸ü¸Ä¶ÌÏûÏ¢Ç°/ºó×º[[1;32mz[m]");
+	docmdtitle("[¶ÌĞÅ¹ÜÀí]","°ïÖú[\033[1;32mh\033[m] É¾³ı[\033[1;32md\033[m] Ñ¡Ôñ[\033[1;32ms\033[m] »Ø¸´¶ÌĞÅ[\033[1;32mS\033[m] ¸ü¸Ä¶ÌÏûÏ¢Ç°/ºó×º[\033[1;32mz\033[m]");
 	move(2,0);
-	prints("[0;1;37;44m  %-4s %-13s %-14s %-2s %-40s[m","ĞòºÅ","¶ÔÏó","Ê±¼ä", "Àà", "ÄÚÈİ");
+	prints("\033[0;1;37;44m  %-4s %-13s %-14s %-2s %-40s\033[m","ĞòºÅ","¶ÔÏó","Ê±¼ä", "Àà", "ÄÚÈİ");
 	update_endline();
 	return SHOW_CONTINUE;
 }
@@ -223,8 +223,8 @@ static int set_smsg_key(struct _select_def *conf, int key)
 		move(0,0);
 		ans[0]=0;
 		prints("                                 ³¬¼¶¶ÌĞÅÑ¡Ôñ\n");
-		prints("[1;31m------------------------------------------------------------------------[m\n");
-        getdata(2, 0, "Ñ¡ÔñÈ«²¿¶ÌĞÅÇë°´[1;32m1[m,ÊäÈëÌõ¼şÑ¡ÔñÇë°´[1;32m2[m,È¡ÏûÖ±½Ó»Ø³µ(1/2/0) [0]: ", ans, 3, DOECHO, NULL, true);
+		prints("\033[1;31m------------------------------------------------------------------------\033[m\n");
+        getdata(2, 0, "Ñ¡ÔñÈ«²¿¶ÌĞÅÇë°´\033[1;32m1\033[m,ÊäÈëÌõ¼şÑ¡ÔñÇë°´\033[1;32m2\033[m,È¡ÏûÖ±½Ó»Ø³µ(1/2/0) [0]: ", ans, 3, DOECHO, NULL, true);
 		if( ans[0] == '1' ){
 			conf->page_pos = 0;
 			sm_dest[0]=0;

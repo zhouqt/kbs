@@ -236,7 +236,7 @@ static int choose_file_refresh(struct _select_def *conf)
     docmdtitle("[Áîºü³åËÑË÷]",
               "  ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ²ì¿´[\x1b[1;32mEnter\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ý\x1b[0;37m] ·­Ò³²éÕÒ[\x1b[1;32m[\x1b[0;37m,\x1b[1;32m]\x1b[0;37m]         ×÷Õß: \x1b[31;1mbad@smth.org\x1b[m");
     move(2, 0);
-    prints("[0;1;37;44m    %4s %-35s %s    %d-%d ¹²%d  ¹Ø¼ü×Ö:%s", "±àºÅ", "±êÌâ", "Â·¾¶", wh*MAX_KEEP+1, wh*MAX_KEEP+res_total, toomany, qn);
+    prints("\033[0;1;37;44m    %4s %-35s %s    %d-%d ¹²%d  ¹Ø¼ü×Ö:%s", "±àºÅ", "±êÌâ", "Â·¾¶", wh*MAX_KEEP+1, wh*MAX_KEEP+res_total, toomany, qn);
     clrtoeol();
     resetcolor();
     update_endline();
@@ -383,7 +383,7 @@ again:
     ss = res_filename[conf->pos-1];
     ch = ansimore_withzmodem(ss, 0, res_title[conf->pos-1]);
     move(t_lines-1, 0);
-    prints("[0;1;31;44m[µÚ%d/%dÆª]  [33mÂ·¾¶:%s©¦ËÑË÷¹Ø¼ü×Ö:%s", conf->pos+wh*MAX_KEEP, toomany, res_path[conf->pos-1], qn);
+    prints("\033[0;1;31;44m[µÚ%d/%dÆª]  \033[33mÂ·¾¶:%s©¦ËÑË÷¹Ø¼ü×Ö:%s", conf->pos+wh*MAX_KEEP, toomany, res_path[conf->pos-1], qn);
     clrtoeol();
     if(ch==0) ch=igetkey();
     switch(ch){

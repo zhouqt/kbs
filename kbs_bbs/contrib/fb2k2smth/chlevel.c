@@ -17,7 +17,7 @@ main()
 	    return 0;
     }
 
-    printf("[1;31;5mUserLevel Records Transfering...\n[m");
+    printf("\033[1;31;5mUserLevel Records Transfering...\n\033[m");
 
     while (1) {
         if (fread(&user, sizeof(user), 1, rec) <= 0)
@@ -78,6 +78,6 @@ main()
 */
         substitute_record(BBSHOME "/.PASSWDS", &user, sizeof(user), i);
     }
-    printf("\n[1m%d [32mUsers Attribute Tranfered...[m\n", i);
+    printf("\n\033[1m%d \033[32mUsers Attribute Tranfered...\033[m\n", i);
     fclose(rec);
 }

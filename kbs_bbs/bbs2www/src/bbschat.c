@@ -32,7 +32,7 @@ struct action party_data[] = {
     {"bearhug", "ÈÈÇéµÄÓµ±§", ""},
     {"bless", "×£¸£", "ĞÄÏëÊÂ³É"},
     {"bow", "±Ï¹ª±Ï¾´µÄÏò", "¾Ï¹ª"},
-    {"bye", "¿´×Å", "µÄ±³Ó°£¬ÆàÈ»ÀáÏÂ¡£ÉíºóµÄÊÕÒô»ú´«À´µËÀö¾ıµÄ¸èÉù:\\n\"[31mºÎÈÕ¾ıÔÙÀ´.....[m\""},
+    {"bye", "¿´×Å", "µÄ±³Ó°£¬ÆàÈ»ÀáÏÂ¡£ÉíºóµÄÊÕÒô»ú´«À´µËÀö¾ıµÄ¸èÉù:\\n\"\033[31mºÎÈÕ¾ıÔÙÀ´.....\033[m\""},
     {"caress", "ÇáÇáµÄ¸§Ãş", ""},
     {"cat", "ÏñÖ»Ğ¡Ã¨°ãµØÒÀÙËÔÚ", "µÄ»³ÀïÈö½¿¡£"},
     {"cringe", "Ïò", "±°¹ªÇüÏ¥£¬Ò¡Î²ÆòÁ¯"},
@@ -429,23 +429,23 @@ char *cco(char *s)
         }
         bzero(co, 20);
         if (!strncmp(s, "%R", 2))
-            strcpy(co, "[31m");
+            strcpy(co, "\033[31m");
         if (!strncmp(s, "%G", 2))
-            strcpy(co, "[32m");
+            strcpy(co, "\033[32m");
         if (!strncmp(s, "%B", 2))
-            strcpy(co, "[34m");
+            strcpy(co, "\033[34m");
         if (!strncmp(s, "%C", 2))
-            strcpy(co, "[36m");
+            strcpy(co, "\033[36m");
         if (!strncmp(s, "%Y", 2))
-            strcpy(co, "[33m");
+            strcpy(co, "\033[33m");
         if (!strncmp(s, "%M", 2))
-            strcpy(co, "[35m");
+            strcpy(co, "\033[35m");
         if (!strncmp(s, "%N", 2))
-            strcpy(co, "[m");
+            strcpy(co, "\033[m");
         if (!strncmp(s, "%W", 2))
-            strcpy(co, "[37m");
+            strcpy(co, "\033[37m");
         if (!strncmp(s, "%I", 2))
-            strcpy(co, "[99m");
+            strcpy(co, "\033[99m");
         if (co[0]) {
             strncpy(p, co, strlen(co));
             p += strlen(co);
@@ -504,11 +504,11 @@ int chatrefresh(int pid)
                 printf("<script>top.document.title='%s%s--»°Ìâ: ", BBS_FULL_NAME, CHAT_SERVER);
                 hprintf("%s", genbuf + 2);
                 printf("'</script>");
-                sprintf(buf2, "±¾%sµÄ»°ÌâÊÇ: [[1;33m%s[37m]", CHAT_ROOM_NAME, genbuf + 2);
+                sprintf(buf2, "±¾%sµÄ»°ÌâÊÇ: [\033[1;33m%s\033[37m]", CHAT_ROOM_NAME, genbuf + 2);
                 strcpy(genbuf, buf2);
             }
             if (!strncmp(genbuf, "/r", 2)) {
-                sprintf(buf2, "±¾%sµÄÃû³ÆÊÇ: [[1;33m%s[37m]", CHAT_ROOM_NAME, genbuf + 2);
+                sprintf(buf2, "±¾%sµÄÃû³ÆÊÇ: [\033[1;33m%s\033[37m]", CHAT_ROOM_NAME, genbuf + 2);
                 strcpy(genbuf, buf2);
             }
             if (!strncmp(genbuf, "/", 1)) {

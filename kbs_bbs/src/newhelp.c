@@ -251,7 +251,7 @@ static int help_select(struct _select_def *conf)
 {
 	clear();
 	move(0,0);
-	prints("Ä£Ê½: [1;33m%s[m\n\n", (*((int *)conf->arg) > 0)?helpmodestr[ *((int *)conf->arg) - 1]:"²Ëµ¥");
+	prints("Ä£Ê½: \033[1;33m%s\033[m\n\n", (*((int *)conf->arg) > 0)?helpmodestr[ *((int *)conf->arg) - 1]:"²Ëµ¥");
 	prints("Ë÷Òý: %s\n", s_help[conf->pos-conf->page_pos].index);
 	prints("¼ò½é: %s\n", s_help[conf->pos-conf->page_pos].desc);
 	if(s_help[conf->pos-conf->page_pos].content)
@@ -308,14 +308,14 @@ static int help_refresh(struct _select_def *conf)
 		strcpy(helptitle, "[È«²¿Ä£Ê½°ïÖú]");
 	else snprintf(helptitle, 100, "[°ïÖú - %s]", helpmodestr[mode-1]);
 
-	docmdtitle(helptitle, " [mÍË³ö[[1;32m¡û[m,[1;32mq[m] ÏêÏ¸[[1;32m¡ú[m,[1;32mRtn[m] ËÑË÷[[1;32ms[m] ÏÔÊ¾ËùÓÐ[[1;32mf[m]\n");
+	docmdtitle(helptitle, " \033[mÍË³ö[\033[1;32m¡û\033[m,\033[1;32mq\033[m] ÏêÏ¸[\033[1;32m¡ú\033[m,\033[1;32mRtn\033[m] ËÑË÷[\033[1;32ms\033[m] ÏÔÊ¾ËùÓÐ[\033[1;32mf\033[m]\n");
 
 	if(help_search[0])
 		sprintf(searchstr, "ËÑË÷:%s",help_search);
 	else
 		searchstr[0]=0;
 	move(2,0);
-	prints("[0;1;44m  %-4s %-10s %-15s%s%-45s[m","ÐòºÅ","Ë÷Òý","½éÉÜ", help_search[0]?"[33m":"",searchstr);
+	prints("\033[0;1;44m  %-4s %-10s %-15s%s%-45s\033[m","ÐòºÅ","Ë÷Òý","½éÉÜ", help_search[0]?"\033[33m":"",searchstr);
 	return SHOW_CONTINUE;
 }
 
@@ -358,7 +358,7 @@ static int help_key(struct _select_def *conf, int key)
 	{
 		clear();
 		move(5,0);
-		prints("[1;32mÌáÊ¾:[m ÔÚ°ïÖúÖ÷½çÃæÖÐ°´f¿ÉÒÔÈ¡ÏûËÑË÷ÏÔÊ¾µ±Ç°ËùÓÐµÄ°ïÖú");
+		prints("\033[1;32mÌáÊ¾:\033[m ÔÚ°ïÖúÖ÷½çÃæÖÐ°´f¿ÉÒÔÈ¡ÏûËÑË÷ÏÔÊ¾µ±Ç°ËùÓÐµÄ°ïÖú");
 		getdata(6,0, "ÇëÊäÈëËÑË÷ÄÚÈÝ:", help_search, 21, DOECHO, NULL, false);
 		if( help_search[0] ){
 			conf->pos = 1;

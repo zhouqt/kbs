@@ -395,9 +395,9 @@ void add_loginfo(char *filepath, struct userec *user, char *currboard, int Anony
      * ÓÉBigmanÔö¼Ó:2000.8.10 Announce°æÄäÃû·¢ÎÄÎÊÌâ 
      */
     if (!strcmp(currboard, "Announce"))
-        fprintf(fp, "[m[1;%2dm¡ù À´Ô´:¡¤%s %s¡¤[FROM: %s][m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, NAME_BBS_CHINESE " BBSÕ¾");
+        fprintf(fp, "\033[m\033[1;%2dm¡ù À´Ô´:¡¤%s %s¡¤[FROM: %s]\033[m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, NAME_BBS_CHINESE " BBSÕ¾");
     else
-        fprintf(fp, "\n[m[1;%2dm¡ù À´Ô´:¡¤%s %s¡¤[FROM: %s][m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, (noidboard) ? NAME_ANONYMOUS_FROM : fromhost);
+        fprintf(fp, "\n\033[m\033[1;%2dm¡ù À´Ô´:¡¤%s %s¡¤[FROM: %s]\033[m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, (noidboard) ? NAME_ANONYMOUS_FROM : fromhost);
     fclose(fp);
     return;
 }
@@ -596,7 +596,7 @@ void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail
         }
         owner[count - 8] = '\0';
         if (in_mail == true)
-            fprintf(of, "[1;37m¡¾ ÒÔÏÂÎÄ×Ö×ªÔØ×Ô [32m%s [37mµÄÐÅÏä ¡¿[m\n", user->userid);
+            fprintf(of, "\033[1;37m¡¾ ÒÔÏÂÎÄ×Ö×ªÔØ×Ô \033[32m%s \033[37mµÄÐÅÏä ¡¿\033[m\n", user->userid);
         else
             fprintf(of, "¡¾ ÒÔÏÂÎÄ×Ö×ªÔØ×Ô %s ÌÖÂÛÇø ¡¿\n", board);
         if (id_invalid(owner))
@@ -1431,14 +1431,14 @@ int add_edit_mark(char *fname, int mode, char *title)
             }
         }
         
-        if (!strncmp(buf, "[36m¡ù ÐÞ¸Ä:¡¤", 17))
+        if (!strncmp(buf, "\033[36m¡ù ÐÞ¸Ä:¡¤", 17))
             continue;
         if (Origin2(buf)) {
             now = time(0);
             if(mode & 1)
-                fprintf(out, "[36m¡ù ÐÞ¸Ä:¡¤%s ÓÚ %15.15s ÐÞ¸Ä±¾ÐÅ¡¤[FROM: %15.15s][m\n", currentuser->userid, ctime(&now) + 4, fromhost);
+                fprintf(out, "\033[36m¡ù ÐÞ¸Ä:¡¤%s ÓÚ %15.15s ÐÞ¸Ä±¾ÐÅ¡¤[FROM: %15.15s]\033[m\n", currentuser->userid, ctime(&now) + 4, fromhost);
             else
-                fprintf(out, "[36m¡ù ÐÞ¸Ä:¡¤%s ÓÚ %15.15s ÐÞ¸Ä±¾ÎÄ¡¤[FROM: %15.15s][m\n", currentuser->userid, ctime(&now) + 4, fromhost);
+                fprintf(out, "\033[36m¡ù ÐÞ¸Ä:¡¤%s ÓÚ %15.15s ÐÞ¸Ä±¾ÎÄ¡¤[FROM: %15.15s]\033[m\n", currentuser->userid, ctime(&now) + 4, fromhost);
             step = 3;
             added = 1;
         }
@@ -1449,9 +1449,9 @@ int add_edit_mark(char *fname, int mode, char *title)
     {
         now = time(0);
         if(mode & 1)
-            fprintf(out, "[36m¡ù ÐÞ¸Ä:¡¤%s ÓÚ %15.15s ÐÞ¸Ä±¾ÐÅ¡¤[FROM: %15.15s][m\n", currentuser->userid, ctime(&now) + 4, fromhost);
+            fprintf(out, "\033[36m¡ù ÐÞ¸Ä:¡¤%s ÓÚ %15.15s ÐÞ¸Ä±¾ÐÅ¡¤[FROM: %15.15s]\033[m\n", currentuser->userid, ctime(&now) + 4, fromhost);
         else
-            fprintf(out, "[36m¡ù ÐÞ¸Ä:¡¤%s ÓÚ %15.15s ÐÞ¸Ä±¾ÎÄ¡¤[FROM: %15.15s][m\n", currentuser->userid, ctime(&now) + 4, fromhost);
+            fprintf(out, "\033[36m¡ù ÐÞ¸Ä:¡¤%s ÓÚ %15.15s ÐÞ¸Ä±¾ÎÄ¡¤[FROM: %15.15s]\033[m\n", currentuser->userid, ctime(&now) + 4, fromhost);
     }
     fclose(fp);
     fclose(out);

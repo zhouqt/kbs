@@ -409,8 +409,8 @@ int uinfo_query(struct userec *u, int real, int unum)
                     if (sysconf_str("EMAILFILE") != NULL)
                          {
                         move(t_lines - 5, 0);
-                        prints("\nÄãµÄµç×ÓÓÊ¼şµØÖ· ¡¾[33m%s[m¡¿\n", ud.email);
-                        prints("²¢·Ç Unix ÕÊºÅ£¬ÏµÍ³²»»áÍ¶µİÉí·İÈ·ÈÏĞÅ£¬Çëµ½[32m¹¤¾ßÏä[mÖĞĞŞ¸Ä..\n");
+                        prints("\nÄãµÄµç×ÓÓÊ¼şµØÖ· ¡¾\033[33m%s\033[m¡¿\n", ud.email);
+                        prints("²¢·Ç Unix ÕÊºÅ£¬ÏµÍ³²»»áÍ¶µİÉí·İÈ·ÈÏĞÅ£¬Çëµ½\033[32m¹¤¾ßÏä\033[mÖĞĞŞ¸Ä..\n");
                         pressanykey();
                         }
                     }

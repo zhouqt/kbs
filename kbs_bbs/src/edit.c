@@ -164,21 +164,21 @@ void msgline()
         showansi = 1;
     }
     if (DEFINE(currentuser,DEF_HIGHCOLOR))
-        strcpy(buf, "[1;33m[44m");
+        strcpy(buf, "\033[1;33m\033[44m");
     else
-        strcpy(buf, "[33m[44m");
+        strcpy(buf, "\033[33m\033[44m");
     if (chkmail())
-        strcat(buf, "¡¾[32mÐÅ[33m¡¿");
+        strcat(buf, "¡¾\033[32mÐÅ\033[33m¡¿");
     else
         strcat(buf, "¡¾  ¡¿");
 
     /* Leeward 98.07.30 Change hot key for msgX */
-    /*strcat(buf," [31mCtrl-Z[33m Çó¾È         "); */
-    strcat(buf, " [31mCtrl-Q[33m Çó¾È    ");
-    sprintf(buf2, " ×´Ì¬ [[32m%s[33m][[32m%d[33m,[32m%d[33m][[32m%c[33m][[32m%c[33m]     Ê±¼ä", insert_character ? "²åÈë" : "Ìæ»»", currln + 1, currpnt + 1,
+    /*strcat(buf," \033[31mCtrl-Z\033[33m Çó¾È         "); */
+    strcat(buf, " \033[31mCtrl-Q\033[33m Çó¾È    ");
+    sprintf(buf2, " ×´Ì¬ [\033[32m%s\033[33m][\033[32m%d\033[33m,\033[32m%d\033[33m][\033[32m%c\033[33m][\033[32m%c\033[33m]     Ê±¼ä", insert_character ? "²åÈë" : "Ìæ»»", currln + 1, currpnt + 1,
         show_eof?'~':' ', auto_newline?' ':'X');
     strcat(buf, buf2);
-    sprintf(buf2, "[33m[44m¡¾[32m%.16s[33m¡¿", ctime(&now));
+    sprintf(buf2, "\033[33m\033[44m¡¾\033[32m%.16s\033[33m¡¿", ctime(&now));
     strcat(buf, buf2);
     move(t_lines - 1, 0);
     prints("%s", buf);
@@ -988,7 +988,7 @@ fsdfa
                         ppx = pp;
                         ich = 0;
                         do {
-                            if ((ppx = (unsigned char *) strstr((char *) ppx, "[")) != NULL) {
+                            if ((ppx = (unsigned char *) strstr((char *) ppx, "\033[")) != NULL) {
                                 int ich=0;
                                 while (!isalpha(*(ppx+ich))&&(*(ppx+ich)!=0))
                                     ich++;
@@ -1426,7 +1426,7 @@ static int process_ESC_action(int action, int arg)
         if (action == 'C') {    /* need redraw */
             move(t_lines - 2, 0);
             clrtoeol();
-            prints("[1m%s%s%s[m", msg, ", Çë°´ÈÎÒâ¼ü·µ»Ø±à¼­»­Ãæ...", ANSI_RESET);
+            prints("\033[1m%s%s%s\033[m", msg, ", Çë°´ÈÎÒâ¼ü·µ»Ø±à¼­»­Ãæ...", ANSI_RESET);
             pressanykey();
             newch = '\0';
             editansi = showansi = 0;

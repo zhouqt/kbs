@@ -80,7 +80,7 @@ pip_marriage_offer()
 		pressanykey("ÎÒÏë¶Ô·½ÊÇÒ»¸öºÜºÃµÄ°éÂÂ..");
 		now = time(0);
 		sprintf(buf,
-			"[1;37m%s %-11sµÄĞ¡¼¦ [%s] ½ÓÊÜÁË %s µÄÇó»é[0m\n",
+			"\033[1;37m%s %-11sµÄĞ¡¼¦ [%s] ½ÓÊÜÁË %s µÄÇó»é\033[0m\n",
 			Cdate(now), cuser->userid, d.name,
 			name[who][d.sex - 1]);
 		pip_log_record(buf);
@@ -109,7 +109,7 @@ pip_results_show()
 
 	clear();
 	move(10, 14);
-	prints("[1;33m¶£ßË¶£ßË¡« ĞÁ¿àµÄÓÊ²î°ïÎÒÃÇËÍĞÅÀ´ÁËà¸...[0m");
+	prints("\033[1;33m¶£ßË¶£ßË¡« ĞÁ¿àµÄÓÊ²î°ïÎÒÃÇËÍĞÅÀ´ÁËà¸...\033[0m");
 	pressanykey("àÅ  °ÑĞÅ´ò¿ª¿´¿´°É...");
 	clear();
 	show_resultshow_pic(0);
@@ -295,19 +295,19 @@ int winorlost, mode, a, b, c;
 	}
 	clear();
 	move(6, 13);
-	prints("[1;37m¡«¡«¡« [32m±¾½ì %s ½á¹û½ÒÏş [37m¡«¡«¡«[0m",
+	prints("\033[1;37m¡«¡«¡« \033[32m±¾½ì %s ½á¹û½ÒÏş \033[37m¡«¡«¡«\033[0m",
 	       gamename[mode]);
 	move(8, 15);
-	prints("[1;41m ¹Ú¾ü [0;1m¡« [1;33m%-10s[36m  ½±½ğ %d[0m", name1,
+	prints("\033[1;41m ¹Ú¾ü \033[0;1m¡« \033[1;33m%-10s\033[36m  ½±½ğ %d\033[0m", name1,
 	       resultmoney[3]);
 	move(10, 15);
-	prints("[1;41m ÑÇ¾ü [0;1m¡« [1;33m%-10s[36m  ½±½ğ %d[0m", name2,
+	prints("\033[1;41m ÑÇ¾ü \033[0;1m¡« \033[1;33m%-10s\033[36m  ½±½ğ %d\033[0m", name2,
 	       resultmoney[2]);
 	move(12, 15);
-	prints("[1;41m ¼¾¾ü [0;1m¡« [1;33m%-10s[36m  ½±½ğ %d[0m", name3,
+	prints("\033[1;41m ¼¾¾ü \033[0;1m¡« \033[1;33m%-10s\033[36m  ½±½ğ %d\033[0m", name3,
 	       resultmoney[1]);
 	move(14, 15);
-	prints("[1;41m ×îºó [0;1m¡« [1;33m%-10s[36m [0m", name4);
+	prints("\033[1;41m ×îºó \033[0;1m¡« \033[1;33m%-10s\033[36m \033[0m", name4);
 	sprintf(buf, "½ñÄêµÄ%s½áÊøÂŞ ºóÄêÔÙÀ´°É..", gamename[mode]);
 	d.money += resultmoney[winorlost];
 	pressanykey(buf);

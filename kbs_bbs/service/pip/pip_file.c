@@ -298,7 +298,7 @@ pip_live_again()
 	showtitle("Ð¡¼¦¸´»îÊÖÊõÖÐ", BBS_FULL_NAME);
 
 	now = time(0);
-	sprintf(genbuf, "[1;33m%s %-11sµÄÐ¡¼¦ [%s¶þ´ú] ¸´»îÁË£¡[m\n",
+	sprintf(genbuf, "\033[1;33m%s %-11sµÄÐ¡¼¦ [%s¶þ´ú] ¸´»îÁË£¡\033[m\n",
 		Cdate(now), cuser->userid, d.name);
 	pip_log_record(genbuf);
 

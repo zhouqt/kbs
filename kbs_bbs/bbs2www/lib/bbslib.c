@@ -658,7 +658,7 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
     }
     fprintf(fp, "\n--\n");
     sig_append(fp, id, sig);
-    fprintf(fp, "\n[1;%dm¡ù À´Ô´:£®%s %s£®[FROM: %.20s][m\n", 31 + rand() % 7, BBSNAME, NAME_BBS_ENGLISH, ip);
+    fprintf(fp, "\n\033[1;%dm¡ù À´Ô´:£®%s %s£®[FROM: %.20s]\033[m\n", 31 + rand() % 7, BBSNAME, NAME_BBS_ENGLISH, ip);
     fclose(fp);
     sprintf(buf3, "mail/%c/%s/%s", toupper(userid[0]), userid, header.filename); /*ft.buf3 have changed.added by binxun.*/
     if (stat(buf3, &st) != -1)
@@ -705,9 +705,9 @@ void add_loginfo2(FILE * fp, char *board, struct userec *user, int anony)
      * ÓÉBigmanÔö¼Ó:2000.8.10 Announce°æÄäÃû·¢ÎÄÎÊÌâ 
      */
     if (!strcmp(board, "Announce"))
-        fprintf(fp, "[m[%2dm¡ù À´Ô´:¡¤%s http://%s¡¤[FROM: %s][m\n", color, BBS_FULL_NAME, BBS_FULL_NAME);
+        fprintf(fp, "\033[m\033[%2dm¡ù À´Ô´:¡¤%s http://%s¡¤[FROM: %s]\033[m\n", color, BBS_FULL_NAME, BBS_FULL_NAME);
     else
-        fprintf(fp, "\n[m[%2dm¡ù À´Ô´:¡¤%s http://%s¡¤[FROM: %s][m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, (anony) ? NAME_ANONYMOUS_FROM : user->lasthost);
+        fprintf(fp, "\n\033[m\033[%2dm¡ù À´Ô´:¡¤%s http://%s¡¤[FROM: %s]\033[m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, (anony) ? NAME_ANONYMOUS_FROM : user->lasthost);
 
     if (fp2)
         fclose(fp2);
@@ -1762,11 +1762,11 @@ static int printstatusstr(struct user_info *uentp, char *arg, int pos)
     if (arg[1]==0)
         strcat(arg, "Ä¿Ç°ÔÚÕ¾ÉÏ£¬×´Ì¬ÈçÏÂ£º\n");
     if (uentp->invisible)
-        strcat(arg, "[32mÒþÉíÖÐ   [m");
+        strcat(arg, "\033[32mÒþÉíÖÐ   \033[m");
     else {
         char buf[80];
 
-        sprintf(buf, "[1m%s[m ", modestring(uentp->mode, uentp->destuid, 0, 
+        sprintf(buf, "\033[1m%s\033[m ", modestring(uentp->mode, uentp->destuid, 0, 
                                               (uentp->in_chat ? uentp->chatid : NULL)));
         strcat(arg, buf);
     }

@@ -43,9 +43,9 @@ void show_help(fname)
 standhelp( mesg )
 char    *mesg;
 {
-    prints("[1;32;44m");
+    prints("\033[1;32;44m");
     prints( mesg ) ;
-    prints("[m");
+    prints("\033[m");
 }*/
 
 int mainreadhelp(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)

@@ -80,31 +80,31 @@ int bbsnet_report(char *station, char *addr, long id, int mode)
 	fprintf(fp, "·¢ĞÅÈË: deliver (×Ô¶¯·¢ĞÅÏµÍ³), ĞÅÇø: %s\n", BBSNET_LOG_BOARD);
 	fprintf(fp, "±ê  Ìâ: %s\n", fh.title);
 	fprintf(fp, "·¢ĞÅÕ¾: %s (%24.24s)\n\n", BBS_FULL_NAME, ctime(&now));
-	fprintf(fp, "    [1;33m%s[m ÓÚ [1;37m%24.24s[m ÀûÓÃ±¾Õ¾bbsnet³ÌĞò,\n",
+	fprintf(fp, "    \033[1;33m%s\033[m ÓÚ \033[1;37m%24.24s\033[m ÀûÓÃ±¾Õ¾bbsnet³ÌĞò,\n",
 			user, ctime(&now));
 	if (mode == 0)
 	{
-		fprintf(fp, "    ´©Ëóµ½ [1;32m%s[m Õ¾, µØÖ·Îª[1;31m%s[m.\n",
+		fprintf(fp, "    ´©Ëóµ½ \033[1;32m%s\033[m Õ¾, µØÖ·Îª\033[1;31m%s\033[m.\n",
 				station, addr);
 	}
 	else
 	{
 		int t;
 		int h;
-		fprintf(fp, "    ½áÊøµ½ [1;32m%s[m Õ¾µÄ´©Ëó, µØÖ·Îª[1;31m%s[m.\n",
+		fprintf(fp, "    ½áÊøµ½ \033[1;32m%s\033[m Õ¾µÄ´©Ëó, µØÖ·Îª\033[1;31m%s\033[m.\n",
 				station, addr);
 		t = now - id;
 		if (t < 2400)
-			sprintf(buf, "[1;32m%d[m·ÖÖÓ", t/60);
+			sprintf(buf, "\033[1;32m%d\033[m·ÖÖÓ", t/60);
 		else
 		{
 			h = t / 2400;
 			t -= h * 2400;
-			sprintf(buf, "[1;32m%d[mĞ¡Ê±[1;32m%d[m·ÖÖÓ", h, t/60);
+			sprintf(buf, "\033[1;32m%d\033[mĞ¡Ê±\033[1;32m%d\033[m·ÖÖÓ", h, t/60);
 		}
 		fprintf(fp, "    ±¾´Î´©ËóÒ»¹²ÓÃÁË %s.\n", buf);
 	}
-	fprintf(fp, "    ¸ÃÓÃ»§´Ó [1;31m%s[m µÇÂ¼±¾Õ¾.\n", fromhost);
+	fprintf(fp, "    ¸ÃÓÃ»§´Ó \033[1;31m%s\033[m µÇÂ¼±¾Õ¾.\n", fromhost);
 	fclose(fp);
 	
 	return after_post(NULL, &fh, BBSNET_LOG_BOARD, NULL, 0);
@@ -216,7 +216,7 @@ static void process_bar(int n, int len)
 	while (*ptr2 != '\0')
 		*ptr++ = *ptr2++;
 	*ptr++ = '\0';
-	prints("©¦[46m%s[m©¦\n", buf);
+	prints("©¦\033[46m%s\033[m©¦\n", buf);
 	prints("©¸©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¼\n");
 	redoscr();
 }
@@ -271,7 +271,7 @@ int bbsnet(int n)
             buf2[i] = '\0';
         }
 		move(22,2);
-        prints("[1;32mÁ¬Íù: [m");
+        prints("\033[1;32mÁ¬Íù: \033[m");
         refresh();
         j = 0;
         l = 0;
@@ -282,9 +282,9 @@ int bbsnet(int n)
             if (c == ':') {
                 l = 1;
                 sprintf(buf3, "%c", c);
-                prints("[0;1m");
+                prints("\033[0;1m");
                 prints(buf3);
-                prints("[1;33m");
+                prints("\033[1;33m");
                 refresh();
                 strncpy(ip_zdh, buf1, 40);
                 strncpy(ip[n], ip_zdh, 40);
@@ -327,9 +327,9 @@ int bbsnet(int n)
 
 	now = time(NULL);
 	clear();
-	prints("[1;32mÕıÔÚ²âÊÔÍù %s (%s) µÄÁ¬½Ó£¬ÇëÉÔºò... [m\n", 
+	prints("\033[1;32mÕıÔÚ²âÊÔÍù %s (%s) µÄÁ¬½Ó£¬ÇëÉÔºò... \033[m\n", 
 			host1[n], ip[n]);
-	prints("[1;32mÈç¹ûÔÚ %d ÃëÄÚÎŞ·¨Á¬ÉÏ£¬´©Ëó³ÌĞò½«·ÅÆúÁ¬½Ó¡£[m\n",
+	prints("\033[1;32mÈç¹ûÔÚ %d ÃëÄÚÎŞ·¨Á¬ÉÏ£¬´©Ëó³ÌĞò½«·ÅÆúÁ¬½Ó¡£\033[m\n",
 			TIME_OUT);
 	if (setjmp(jb) == 0)
 	{
@@ -341,13 +341,13 @@ int bbsnet(int n)
 	signal(SIGALRM, oldsig);
 	if (pHost == NULL)
 	{
-		prints("[1;31m²éÕÒÖ÷»úÃûÊ§°Ü£¡[m\n");
+		prints("\033[1;31m²éÕÒÖ÷»úÃûÊ§°Ü£¡\033[m\n");
 		pressreturn();
 		return -1;
 	}
 	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 	{
-		prints("[1;31mÎŞ·¨´´½¨socket£¡[m\n");
+		prints("\033[1;31mÎŞ·¨´´½¨socket£¡\033[m\n");
 		pressreturn();
 		return -1;
 	}
@@ -356,7 +356,7 @@ int bbsnet(int n)
 	remote.sin_port = htons(port[n]);
 	remote.sin_addr = *(struct in_addr *)pHost->h_addr_list[0];
 
-	prints("[1;32m´©Ëó½ø¶ÈÌõÌáÊ¾Äúµ±Ç°ÒÑÊ¹ÓÃµÄÊ±¼ä¡£[m\n");
+	prints("\033[1;32m´©Ëó½ø¶ÈÌõÌáÊ¾Äúµ±Ç°ÒÑÊ¹ÓÃµÄÊ±¼ä¡£\033[m\n");
 	process_bar(0, MAX_PROCESS_BAR_LEN);
 	for (i = 0; i < MAX_PROCESS_BAR_LEN; i++)
 	{
@@ -375,7 +375,7 @@ int bbsnet(int n)
 			break;
 		else
 		{
-			prints("[1;31mÁ¬½ÓÊ§°Ü£¡[m\n");
+			prints("\033[1;31mÁ¬½ÓÊ§°Ü£¡\033[m\n");
 			pressreturn();
 			ret = -1;
 			goto on_error;
@@ -383,13 +383,13 @@ int bbsnet(int n)
 	}
 	if (i == MAX_PROCESS_BAR_LEN)
 	{
-		prints("[1;31mÁ¬½Ó³¬Ê±£¡[m\n");
+		prints("\033[1;31mÁ¬½Ó³¬Ê±£¡\033[m\n");
 		pressreturn();
 		ret =  -1;
 		goto on_error;
 	}
 	setsockopt(sockfd, IPPROTO_IP, IP_TOS, &tos, sizeof(int));	
-	prints("[1;31mÁ¬½Ó³É¹¦£¡[m\n");
+	prints("\033[1;31mÁ¬½Ó³É¹¦£¡\033[m\n");
 	bbsnet_report(host1[n], ip[n], now, 0);
 	clear();
 	refresh();
@@ -503,20 +503,20 @@ static void bbsnet_refresh(struct _select_def *conf)
 
 	int n;
 	clear();
-    prints("©³©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥[1;35m ÔÂ  ¹â  ±¦  ºĞ [m©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©·");
+    prints("©³©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥\033[1;35m ÔÂ  ¹â  ±¦  ºĞ \033[m©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©·");
 	for (n = 1; n < 22; n++) {
 		move(n,0);
 		prints("©§                                                                            ©§");
 	}
 	move(22,0);
-	prints("©§                                                               [1;36m°´[1;33mCtrl+C[1;36mÍË³ö[m ©§");
+	prints("©§                                                               \033[1;36m°´\033[1;33mCtrl+C\033[1;36mÍË³ö\033[m ©§");
 	move(23,0);
 	prints("©»©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¿");
 	move(20,2);
-	prints("©¤©¤©¤[1;36m°ãÈô²¨Á_ÃÜ[m©¤©¤©¤©¤©¤©¤©¤[1;36m°ã-Èô-²¨-Á_-ÃÛ~~[m©¤©¤©¤©¤©¤©¤©¤[1;36m°ãÈô²¨Á_ÃÜ[m©¤©¤©¤");
+	prints("©¤©¤©¤\033[1;36m°ãÈô²¨Á_ÃÜ\033[m©¤©¤©¤©¤©¤©¤©¤\033[1;36m°ã-Èô-²¨-Á_-ÃÛ~~\033[m©¤©¤©¤©¤©¤©¤©¤\033[1;36m°ãÈô²¨Á_ÃÜ\033[m©¤©¤©¤");
 	for (n = 0; n < conf->item_count; n++) {
 		locate(n);
-		prints("[1;32m %c.[m%s", str[n], host2[n]);
+		prints("\033[1;32m %c.\033[m%s", str[n], host2[n]);
 	}
     bbsnet_selchange(conf,conf->pos);
 
@@ -528,22 +528,22 @@ int bbsnet_selchange(struct _select_def* conf,int new_pos)
 
     if (oldn >= 0) {
         locate(oldn);
-        prints("[1;32m %c.[m%s", str[oldn], host2[oldn]);
+        prints("\033[1;32m %c.\033[m%s", str[oldn], host2[oldn]);
     }
     oldn = new_pos-1;
     if (strcmp(host2[new_pos-1], "°ãÈô²¨Á_ÃÜ") == 0) {  //ÅĞ¶Ï×Ô¶¨ÒåÕ¾µã
 		move(21,2);
-        prints("[1;37mÊ¹ÓÃ·½·¨: »Ø³µºóÊäÈëip[:port]¡£[1;33m[22;32H[1;37m Õ¾Ãû: [1;33m×Ô¶¨ÒåÕ¾µã              ");
+        prints("\033[1;37mÊ¹ÓÃ·½·¨: »Ø³µºóÊäÈëip[:port]¡£\033[1;33m\033[22;32H\033[1;37m Õ¾Ãû: \033[1;33m×Ô¶¨ÒåÕ¾µã              ");
 		move(22,2);
-        prints("[1;37m[23;3HÁ¬Íù: [1;33m__________________           [21;1H");
+        prints("\033[1;37m\033[23;3HÁ¬Íù: \033[1;33m__________________           \033[21;1H");
     } else {
 		move(21,2);
-        prints("[1;37mµ¥Î»: [1;33m%s                   [22;32H[1;37m Õ¾Ãû: [1;33m%s              ", host1[new_pos-1], host2[new_pos-1]);
+        prints("\033[1;37mµ¥Î»: \033[1;33m%s                   \033[22;32H\033[1;37m Õ¾Ãû: \033[1;33m%s              ", host1[new_pos-1], host2[new_pos-1]);
 		move(22,2);
-		prints("[1;37m[23;3HÁ¬Íù: [1;33m%s                   [21;1H", ip[new_pos-1]);
+		prints("\033[1;37m\033[23;3HÁ¬Íù: \033[1;33m%s                   \033[21;1H", ip[new_pos-1]);
     }
     locate(new_pos-1);
-    prints("[%c][1;42m%s[m", str[new_pos-1], host2[new_pos-1]);
+    prints("[%c]\033[1;42m%s\033[m", str[new_pos-1], host2[new_pos-1]);
     return SHOW_CONTINUE;
 }
 int load_data(struct _select_def* conf,int pos,int len)

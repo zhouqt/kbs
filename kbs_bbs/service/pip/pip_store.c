@@ -254,12 +254,12 @@ struct goodsofpip *p;
 		clrchyiuan(6, 18);
 		move(6, 0);
 		sprintf(inbuf,
-			"[1;31m  ¡ª[41;37m ±àºÅ [0;1;31m¡ª[41;37m ÉÌ      Æ· [0;1;31m¡ª¡ª[41;37m Ð§            ÄÜ [0;1;31m¡ª¡ª[41;37m ¼Û     ¸ñ [0;1;31m¡ª[37;41m ÓµÓÐÊýÁ¿ [0;1;31m¡ª[0m  ");
+			"\033[1;31m  ¡ª\033[41;37m ±àºÅ \033[0;1;31m¡ª\033[41;37m ÉÌ      Æ· \033[0;1;31m¡ª¡ª\033[41;37m Ð§            ÄÜ \033[0;1;31m¡ª¡ª\033[41;37m ¼Û     ¸ñ \033[0;1;31m¡ª\033[37;41m ÓµÓÐÊýÁ¿ \033[0;1;31m¡ª\033[0m  ");
 		prints(inbuf);
 		for (i = 1; i <= oldnum[0]; i++) {
 			move(7 + i, 0);
 			sprintf(inbuf,
-				"     [1;35m[[37m%2d[35m]     [36m%-10s      [37m%-14s        [1;33m%-10d   [1;32m%-9d    [0m",
+				"     \033[1;35m[\033[37m%2d\033[35m]     \033[36m%-10s      \033[37m%-14s        \033[1;33m%-10d   \033[1;32m%-9d    \033[0m",
 				p[i].num, p[i].name, p[i].msgbuy, p[i].money,
 				oldnum[i]);
 			prints(inbuf);
@@ -267,7 +267,7 @@ struct goodsofpip *p;
 		clrchyiuan(19, 24);
 		move(b_lines, 0);
 		sprintf(inbuf,
-			"[1;44;37m  %8sÑ¡µ¥  [46m  [B]ÂòÈëÎïÆ·  [S]Âô³öÎïÆ·  [Q]Ìø³ö£º                         [m",
+			"\033[1;44;37m  %8sÑ¡µ¥  \033[46m  [B]ÂòÈëÎïÆ·  [S]Âô³öÎïÆ·  [Q]Ìø³ö£º                         \033[m",
 			shopname[mode]);
 		prints(inbuf);
 		pipkey = igetkey();
@@ -496,16 +496,16 @@ struct weapon *p;
 		showtitle(menutitle[type], BBS_FULL_NAME);
 		show_weapon_pic(0);
 /*   move(10,2); 
-   sprintf(buf,"[1;37mÏÖ½ñÄÜÁ¦:ÌåÁ¦Max:[36m%-5d[37m  ·¨Á¦Max:[36m%-5d[37m  ¹¥»÷:[36m%-5d[37m  ·ÀÓù:[36m%-5d[37m  ËÙ¶È:[36m%-5d [m",
+   sprintf(buf,"\033[1;37mÏÖ½ñÄÜÁ¦:ÌåÁ¦Max:\033[36m%-5d\033[37m  ·¨Á¦Max:\033[36m%-5d\033[37m  ¹¥»÷:\033[36m%-5d\033[37m  ·ÀÓù:\033[36m%-5d\033[37m  ËÙ¶È:\033[36m%-5d \033[m",
            d.maxhp,d.maxmp,d.attack,d.resist,d.speed);
    prints(buf);*/
 		move(11, 2);
 		sprintf(buf,
-			"[1;37;41m [NO]  [Æ÷¾ßÃû]  [ÌåÁ¦]  [·¨Á¦]  [ËÙ¶È]  [¹¥»÷]  [·ÀÓù]  [ËÙ¶È]  [ÊÛ  ¼Û] [m");
+			"\033[1;37;41m [NO]  [Æ÷¾ßÃû]  [ÌåÁ¦]  [·¨Á¦]  [ËÙ¶È]  [¹¥»÷]  [·ÀÓù]  [ËÙ¶È]  [ÊÛ  ¼Û] \033[m");
 		prints(buf);
 		move(12, 2);
 		sprintf(buf,
-			" [1;31m¡ª¡ª[37m°×É« ¿ÉÒÔ¹ºÂò[31m¡ª¡ª[32mÂÌÉ« ÓµÓÐ×°±¸[31m¡ª¡ª[33m»ÆÉ« Ç®Ç®²»¹»[31m¡ª¡ª[35m×ÏÉ« ÄÜÁ¦²»×ã[31m¡ª¡ª[m");
+			" \033[1;31m¡ª¡ª\033[37m°×É« ¿ÉÒÔ¹ºÂò\033[31m¡ª¡ª\033[32mÂÌÉ« ÓµÓÐ×°±¸\033[31m¡ª¡ª\033[33m»ÆÉ« Ç®Ç®²»¹»\033[31m¡ª¡ª\033[35m×ÏÉ« ÄÜÁ¦²»×ã\033[31m¡ª¡ª\033[m");
 		prints(buf);
 
 		n = 0;
@@ -513,14 +513,14 @@ struct weapon *p;
 			move(13 + n, 2);
 			if (variance != 0 && variance == (n)) {	/*±¾ÉíÓÐµÄ */
 				sprintf(buf,
-					"[1;32m (%2d)  %-10s %4d    %4d    %4d    %4d    %4d    %4d    %6d[m",
+					"\033[1;32m (%2d)  %-10s %4d    %4d    %4d    %4d    %4d    %4d    %6d\033[m",
 					n, p[n].name, p[n].needmaxhp,
 					p[n].needmaxmp, p[n].needspeed,
 					p[n].attack, p[n].resist, p[n].speed,
 					p[n].cost);
 			} else if (d.maxhp < p[n].needmaxhp || d.maxmp < p[n].needmaxmp || d.speed < p[n].needspeed) {	/*ÄÜÁ¦²»×ã */
 				sprintf(buf,
-					"[1;35m (%2d)  %-10s %4d    %4d    %4d    %4d    %4d    %4d    %6d[m",
+					"\033[1;35m (%2d)  %-10s %4d    %4d    %4d    %4d    %4d    %4d    %6d\033[m",
 					n, p[n].name, p[n].needmaxhp,
 					p[n].needmaxmp, p[n].needspeed,
 					p[n].attack, p[n].resist, p[n].speed,
@@ -529,14 +529,14 @@ struct weapon *p;
 
 			else if (d.money < p[n].cost) {	/*Ç®²»¹»µÄ */
 				sprintf(buf,
-					"[1;33m (%2d)  %-10s %4d    %4d    %4d    %4d    %4d    %4d    %6d[m",
+					"\033[1;33m (%2d)  %-10s %4d    %4d    %4d    %4d    %4d    %4d    %6d\033[m",
 					n, p[n].name, p[n].needmaxhp,
 					p[n].needmaxmp, p[n].needspeed,
 					p[n].attack, p[n].resist, p[n].speed,
 					p[n].cost);
 			} else {
 				sprintf(buf,
-					"[1;37m (%2d)  %-10s %4d    %4d    %4d    %4d    %4d    %4d    %6d[m",
+					"\033[1;37m (%2d)  %-10s %4d    %4d    %4d    %4d    %4d    %4d    %6d\033[m",
 					n, p[n].name, p[n].needmaxhp,
 					p[n].needmaxmp, p[n].needspeed,
 					p[n].attack, p[n].resist, p[n].speed,
@@ -547,7 +547,7 @@ struct weapon *p;
 		}
 		move(b_lines, 0);
 		sprintf(buf,
-			"[1;44;37m  ÎäÆ÷¹ºÂòÑ¡µ¥  [46m  [B]¹ºÂòÎäÆ÷  [S]Âôµô×°±¸  [W]¸öÈË×ÊÁÏ  [Q]Ìø³ö£º            [m");
+			"\033[1;44;37m  ÎäÆ÷¹ºÂòÑ¡µ¥  \033[46m  [B]¹ºÂòÎäÆ÷  [S]Âôµô×°±¸  [W]¸öÈË×ÊÁÏ  [Q]Ìø³ö£º            \033[m");
 		prints(buf);
 		now = time(0);
 		pip_time_change(now);

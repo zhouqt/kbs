@@ -1400,16 +1400,16 @@ int lock_scr()
     while (1) {
         move(19, 32);
         clrtobot();
-        prints("[1m[32mBBS " NAME_BBS_CHINESE "Õ¾[m");
+        prints("\033[1m\033[32mBBS " NAME_BBS_CHINESE "Õ¾\033[m");
         move(21, 0);
         clrtobot();
         getdata(21, 0, "ÆÁÄ»ÏÖÔÚÒÑ¾­Ëø¶¨£¬Òª½â³ıËø¶¨£¬ÇëÊäÈëÃÜÂë£º", passbuf, 39, NOECHO, NULL, true);
         move(22, 32);
         if (!checkpasswd2(passbuf, currentuser)) {
-            prints("[1m[31mÃÜÂëÊäÈë´íÎó...[m\n");
+            prints("\033[1m\033[31mÃÜÂëÊäÈë´íÎó...\033[m\n");
             pressanykey();
         } else {
-            prints("[1m[31mÆÁÄ»ÏÖÔÚÒÑ¾­½â³ıËø¶¨[m\n");
+            prints("\033[1m\033[31mÆÁÄ»ÏÖÔÚÒÑ¾­½â³ıËø¶¨\033[m\n");
             /*
              * pressanykey(); 
              */

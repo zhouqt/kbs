@@ -119,7 +119,7 @@ int t_pager()
     }
     if (!uinfo.in_chat && uinfo.mode != TALK) {
         move(1, 0);
-        prints("ÄúµÄºô½ĞÆ÷ (pager) ÒÑ¾­[1m%s[mÁË!", (uinfo.pager & ALL_PAGER) ? "´ò¿ª" : "¹Ø±Õ");
+        prints("ÄúµÄºô½ĞÆ÷ (pager) ÒÑ¾­\033[1m%s\033[mÁË!", (uinfo.pager & ALL_PAGER) ? "´ò¿ª" : "¹Ø±Õ");
         pressreturn();
     }
     UPDATE_UTMP(pager, uinfo);
@@ -139,13 +139,13 @@ char userid[IDLEN];
 
     sethomefile(pfile, userid, "plans");
     if ((pf = fopen(pfile, "r")) == NULL) {
-        prints("[36mÃ»ÓĞ¸öÈËËµÃ÷µµ[m\n");
+        prints("\033[36mÃ»ÓĞ¸öÈËËµÃ÷µµ\033[m\n");
 /*fclose(pf); *//*
  * * * Leeward 98.04.20 
  */
         return false;
     } else {
-        prints("[36m¸öÈËËµÃ÷µµÈçÏÂ£º[m\n");//added by bad
+        prints("\033[36m¸öÈËËµÃ÷µµÈçÏÂ£º\033[m\n");//added by bad
         getyx(&minln, &i);
         for (i = 1; i <= scr_lns-8/*MAXQUERYLINES*/; i++) {
             if (fgets(pbuf, sizeof(pbuf), pf))
@@ -173,7 +173,7 @@ int t_printstatus(struct user_info *uentp, int *arg, int pos)
     p = idle_str(uentp);
     if(p[0]==' '&&p[1]==' ') buf2[0]=0;
     else sprintf(buf2, "[%s]", p);
-    sprintf(buf, "%s[1m%s[m%s ", uentp->invisible?"[32m":"", modestring(uentp->mode, uentp->destuid, 0,   /* 1->0 ²»ÏÔÊ¾ÁÄÌì¶ÔÏóµÈ modified by dong 1996.10.26 */
+    sprintf(buf, "%s\033[1m%s\033[m%s ", uentp->invisible?"\033[32m":"", modestring(uentp->mode, uentp->destuid, 0,   /* 1->0 ²»ÏÔÊ¾ÁÄÌì¶ÔÏóµÈ modified by dong 1996.10.26 */
                                           (uentp->in_chat ? uentp->chatid : NULL)), buf2);
     strcat(genbuf, buf);
 
@@ -255,7 +255,7 @@ int t_query(char* q_id)
     if (!(tuid = getuser(uident, &lookupuser))) {
         move(2, 0);
         clrtoeol();
-        prints("[1m²»ÕıÈ·µÄÊ¹ÓÃÕß´úºÅ[m\n");
+        prints("\033[1m²»ÕıÈ·µÄÊ¹ÓÃÕß´úºÅ\033[m\n");
         pressanykey();
         move(2, 0);
         clrtoeol();
@@ -305,13 +305,13 @@ int t_query(char* q_id)
            exittime);
 #endif
 #ifdef NINE_BUILD
-     prints("\nĞÅÏä£º[[5m%2s[m]£¬¾­ÑéÖµ£º[%d](%s) ±íÏÖÖµ£º[%d](%s) ÉúÃüÁ¦£º[%d]%s\n"
+     prints("\nĞÅÏä£º[\033[5m%2s\033[m]£¬¾­ÑéÖµ£º[%d](%s) ±íÏÖÖµ£º[%d](%s) ÉúÃüÁ¦£º[%d]%s\n"
        ,(check_query_mail(qry_mail_dir)==1)? "ĞÅ":"  ",exp,cexp(exp),perf,
        cperf(perf),compute_user_value(lookupuser),
        (lookupuser->userlevel & PERM_SUICIDE)?" (×ÔÉ±ÖĞ)":" ");
 #else
     uleveltochar(permstr, lookupuser);
-    prints("ĞÅÏä£º[[5m%2s[m] ÉúÃüÁ¦£º[%d] Éí·İ: [%s]%s\n",
+    prints("ĞÅÏä£º[\033[5m%2s\033[m] ÉúÃüÁ¦£º[%d] Éí·İ: [%s]%s\n",
            (check_query_mail(qry_mail_dir) == 1) ? "ĞÅ" : "  ", compute_user_value(lookupuser), permstr, (lookupuser->userlevel & PERM_SUICIDE) ? " (×ÔÉ±ÖĞ)" : "¡£");
 #endif
 #if defined(QUERY_REALNAMES)
@@ -1326,7 +1326,7 @@ struct user_info *uentp;
             ovv = true;
         else
             ovv = false;
-        sprintf(ubuf, "%s%-12.12s %s%-10.10s[m", (ovv) ? "[32m£®" : "  ", user_record[i]->userid, (user_record[i]->invisible == true) ? "[34m" : "",
+        sprintf(ubuf, "%s%-12.12s %s%-10.10s\033[m", (ovv) ? "\033[32m£®" : "  ", user_record[i]->userid, (user_record[i]->invisible == true) ? "\033[34m" : "",
                 modestring(user_record[i]->mode, user_record[i]->destuid, 0, NULL));
         prints("%s", ubuf);
         if ((i + 1) % 3 == 0)
@@ -1363,7 +1363,7 @@ char *modestr;
     move(2, 0);
     clrtoeol();
     sprintf(buf, "  %-12s %-10s", "Ê¹ÓÃÕß´úºÅ", "Ä¿Ç°¶¯Ì¬");
-    prints("[33m[44m%s |%s |%s[m", buf, buf, buf);
+    prints("\033[33m\033[44m%s |%s |%s\033[m", buf, buf, buf);
     /*
      * if(apply_ulist( shortulist ) == -1) {
      * prints("No Users Exist\n") ;
@@ -1376,7 +1376,7 @@ char *modestr;
         time_t thetime = time(0);
 
         move(t_lines - 1, 0);
-        prints("[44m[33mÄ¿Ç°ÓĞ %3d %6sÉÏÏß, Ê±¼ä: %s , Ä¿Ç°×´Ì¬£º%10s   [m", count, friendmode ? "ºÃÅóÓÑ" : "Ê¹ÓÃÕß", Ctime(thetime), friendmode ? "ÄãµÄºÃÅóÓÑ" : "ËùÓĞÊ¹ÓÃÕß");
+        prints("\033[44m\033[33mÄ¿Ç°ÓĞ %3d %6sÉÏÏß, Ê±¼ä: %s , Ä¿Ç°×´Ì¬£º%10s   \033[m", count, friendmode ? "ºÃÅóÓÑ" : "Ê¹ÓÃÕß", Ctime(thetime), friendmode ? "ÄãµÄºÃÅóÓÑ" : "ËùÓĞÊ¹ÓÃÕß");
     }
     return 0;
 }
@@ -1684,7 +1684,7 @@ int friend_title(struct _select_def* conf)
         strcpy(genbuf, BBS_FULL_NAME);
     showtitle("[±à¼­ºÃÓÑÃûµ¥]", genbuf);
     prints(" [¡û,e] Àë¿ª [h] ÇóÖú [¡ú,r] ºÃÓÑËµÃ÷µµ [¡ü,¡ı] Ñ¡Ôñ [a] Ôö¼ÓºÃÓÑ [d] É¾³ıºÃÓÑ\n");
-    prints("[44m ±àºÅ  ºÃÓÑÁĞ±í      ´úºÅËµÃ÷                                                   [m\n");
+    prints("\033[44m ±àºÅ  ºÃÓÑÁĞ±í      ´úºÅËµÃ÷                                                   \033[m\n");
 }
 
 char *friend_doentry(char *buf, int ent, struct friends *fh,void* readdata,struct _select_def * conf)
@@ -1784,7 +1784,7 @@ int friend_query(struct _select_def* conf,struct friends *fh,void* extraarg)
         return FULLUPDATE;
     move(t_lines - 1, 0);
     clrtoeol();
-    prints("[44m[31m[¶ÁÈ¡ºÃÓÑËµÃ÷µµ][33m ¼ÄĞÅ¸øºÃÓÑ m ©¦ ½áÊø Q,¡û ©¦ÉÏÒ»Î» ¡ü©¦ÏÂÒ»Î» <Space>,¡ı      [m");
+    prints("\033[44m\033[31m[¶ÁÈ¡ºÃÓÑËµÃ÷µµ]\033[33m ¼ÄĞÅ¸øºÃÓÑ m ©¦ ½áÊø Q,¡û ©¦ÉÏÒ»Î» ¡ü©¦ÏÂÒ»Î» <Space>,¡ı      \033[m");
     ch = igetkey();
     switch (ch) {
     case Ctrl('Z'):
@@ -1862,7 +1862,7 @@ int wait_friend()
     }
     if (!(tuid = getuser(uid, NULL))) {
         move(2, 0);
-        prints("[1m²»ÕıÈ·µÄÊ¹ÓÃÕß´úºÅ[m\n");
+        prints("\033[1m²»ÕıÈ·µÄÊ¹ÓÃÕß´úºÅ\033[m\n");
         pressanykey();
         clear();
         return -1;

@@ -55,7 +55,7 @@ int add_addresslist( struct addresslist * oldal ){
 	move(0,0);
 	ans[0]=0;
 	prints("                                 Ôö¼ÓÍ¨Ñ¶Â¼ÌõÄ¿\n");
-	prints("[1;31m------------------------------------------------------------------------[m\n");
+	prints("\033[1;31m------------------------------------------------------------------------\033[m\n");
 
 	if(oldal)
 		strcpy(ans, oldal->name);
@@ -285,9 +285,9 @@ static int set_al_prekey(struct _select_def *conf, int *key)
 static int set_al_refresh(struct _select_def *conf)
 {
 	clear();
-	docmdtitle("[Í¨Ñ¶Â¼¹ÜÀí]","ÍË³ö[[1;32mq[m] Ôö¼Ó[[1;32ma[m] ÐÞ¸Ä[[1;32me[m] É¾³ý[[1;32md[m] Ñ¡Ôñ[[1;32ms[m] ÅÅÐò[[1;32mTAB[m] µ¼Èë[[1;32mi[m] ·¢ËÍ¶ÌÐÅ[[1;32mS[m]");
+	docmdtitle("[Í¨Ñ¶Â¼¹ÜÀí]","ÍË³ö[\033[1;32mq\033[m] Ôö¼Ó[\033[1;32ma\033[m] ÐÞ¸Ä[\033[1;32me\033[m] É¾³ý[\033[1;32md\033[m] Ñ¡Ôñ[\033[1;32ms\033[m] ÅÅÐò[\033[1;32mTAB\033[m] µ¼Èë[\033[1;32mi\033[m] ·¢ËÍ¶ÌÐÅ[\033[1;32mS\033[m]");
 	move(2,0);
-	prints("[0;1;44m  %-4s %s%-8s %s%-10s%s %-10s%s %-12s %-28s              [m","ÐòºÅ",al_order==AL_ORDER_NAME?"[1;32m":"",al_order==AL_ORDER_NAME?"{Ãû×Ö}":"Ãû×Ö",al_order==AL_ORDER_NAME?"[0;1;44m":(al_order==AL_ORDER_BBSID?"[1;32m":""),al_order==AL_ORDER_BBSID?"{id}":"id",al_order==AL_ORDER_BBSID?"[0;1;44m":(al_order==AL_ORDER_GROUPNAME?"[1;32m":""),al_order==AL_ORDER_GROUPNAME?"{·Ö×é}":"·Ö×é",al_order==AL_ORDER_GROUPNAME?"[0;1;44m":"", "ÊÖ»ú","±¸×¢");
+	prints("\033[0;1;44m  %-4s %s%-8s %s%-10s%s %-10s%s %-12s %-28s              \033[m","ÐòºÅ",al_order==AL_ORDER_NAME?"\033[1;32m":"",al_order==AL_ORDER_NAME?"{Ãû×Ö}":"Ãû×Ö",al_order==AL_ORDER_NAME?"\033[0;1;44m":(al_order==AL_ORDER_BBSID?"\033[1;32m":""),al_order==AL_ORDER_BBSID?"{id}":"id",al_order==AL_ORDER_BBSID?"\033[0;1;44m":(al_order==AL_ORDER_GROUPNAME?"\033[1;32m":""),al_order==AL_ORDER_GROUPNAME?"{·Ö×é}":"·Ö×é",al_order==AL_ORDER_GROUPNAME?"\033[0;1;44m":"", "ÊÖ»ú","±¸×¢");
 	update_endline();
 	return SHOW_CONTINUE;
 }
@@ -371,8 +371,8 @@ static int set_al_key(struct _select_def *conf, int key)
 		move(0,0);
 		ans[0]=0;
 		prints("                                 ³¬¼¶Í¨Ñ¶Â¼Ñ¡Ôñ\n");
-		prints("[1;31m------------------------------------------------------------------------[m\n");
-        getdata(2, 0, "Ñ¡ÔñÈ«²¿Í¨Ñ¶Â¼Çë°´[1;32m1[m,ÊäÈëÌõ¼þÑ¡ÔñÇë°´[1;32m2[m,È¡ÏûÖ±½Ó»Ø³µ(1/2/0) [0]: ", ans, 3, DOECHO, NULL, true);
+		prints("\033[1;31m------------------------------------------------------------------------\033[m\n");
+        getdata(2, 0, "Ñ¡ÔñÈ«²¿Í¨Ñ¶Â¼Çë°´\033[1;32m1\033[m,ÊäÈëÌõ¼þÑ¡ÔñÇë°´\033[1;32m2\033[m,È¡ÏûÖ±½Ó»Ø³µ(1/2/0) [0]: ", ans, 3, DOECHO, NULL, true);
 		if( ans[0] == '1' ){
 			conf->pos = 0;
 			al_dest[0]=0;
