@@ -18,7 +18,7 @@ void refresh();
 
 /* newio.c */
 void oflush();
-int getdata(int line,int col,int len,int echo,int clearlabel,int nouse,char *prompt,char *buf);
+int getdata(int line, int col,char* prompt,char* buf,int  len,int  echo,int nouse,int clearlabel);
 
 /* xyz.c*/
 int modify_user_mode(int mode);

@@ -264,7 +264,7 @@ go()
     char tmp[8];
     int line;
     set_alarm(0,NULL,NULL);
-    getdata( 23,0,"请问要跳到第几行: ",tmp, 7, DOECHO, NULL );
+    getdata( 23,0,"请问要跳到第几行: ",tmp, 7, DOECHO, NULL ,0);
     domsg();
     if(tmp[0]=='\0')
         return;
@@ -336,7 +336,7 @@ search()
     char tmp[STRLEN];
 
     set_alarm(0,NULL,NULL);
-    getdata( 23,0,"搜寻字串: ",tmp, 65, DOECHO, NULL );
+    getdata( 23,0,"搜寻字串: ",tmp, 65, DOECHO, NULL ,0);
     domsg();
     if(tmp[0]=='\0')
         return;
@@ -789,7 +789,7 @@ int saveheader ;
         buf[0] = 0; /* Leeward 98.08.14 */
         move(1,0);
         prints("旧标题: %s", save_title );
-        getdata(2,0,"新标题: ",buf,STRLEN,DOECHO,NULL);
+        getdata(2,0,"新标题: ",buf,STRLEN,DOECHO,NULL,0);
         if ( strcmp( save_title, buf ) )  local_article = 0;
         strncpy(save_title,buf,STRLEN) ;
     } else if (abort[0] == 's' || abort[0] == 'S'

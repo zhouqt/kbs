@@ -352,7 +352,7 @@ mailall()
                     sethomefile(buf2,currentuser->userid,"signatures");
                     move(t_lines-1,0);
                     if (askyn("Ô¤ÉèÏÔÊ¾Ç°Èı¸öÇ©Ãûµµ, ÒªÏÔÊ¾È«²¿Âğ",NA,YEA)==YEA)
-                        ansimore(buf2);
+                        ansimore(buf2,0);
                     else
                     {
                         clear();
@@ -376,7 +376,7 @@ mailall()
             prints("[32m[44mÕıÔÚ¼ÄĞÅ¼şÖĞ£¬ÇëÉÔºò.....                                                        [m");
             refresh();
             mailtoall(ans4[0]-'0');
-            move(t_lines-1);
+            move(t_lines-1,0);
             clrtoeol();
             unlink( fname );
             in_mail = NA;
@@ -618,7 +618,7 @@ edit_mail_file:
             sethomefile(buf2,currentuser->userid,"signatures");
             move(t_lines-1,0);
             if (askyn("Ô¤ÉèÏÔÊ¾Ç°Èı¸öÇ©Ãûµµ, ÒªÏÔÊ¾È«²¿Âğ",NA,YEA)==YEA)
-                ansimore(buf2);
+                ansimore(buf2,0);
             else
             {
                 clear();
@@ -666,16 +666,16 @@ edit_mail_file:
                     mail_file(currentuser->userid,tmp_fname,currentuser->userid,save_title,0);
 
                 prints("ÈôÄúÒª×ª¼ÄµÄµØÖ·ÎŞ·¨´¦ÀíÖĞÎÄÇëÊäÈë Y »ò y\n");
-                getdata(5, 0, "Uuencode? [N]: ", data, 2, DOECHO, 0);
+                getdata(5, 0, "Uuencode? [N]: ", data, 2, DOECHO, 0,0);
                 if(data[0]=='y' || data[0]=='Y') isuu = 1;
                 else isuu = 0;
 
                 prints("ÈôÄúÒª½«ĞÅ¼ş×ª¼Äµ½Ì¨ÍåÇëÊäÈë Y »ò y\n");
-                getdata(7, 0, "×ª³ÉBIG5Âë? [N]: ", data, 2, DOECHO, 0);
+                getdata(7, 0, "×ª³ÉBIG5Âë? [N]: ", data, 2, DOECHO, 0,0);
                 if(data[0]=='y' || data[0]=='Y') isbig5 = 1;
                 else isbig5 = 0;
 
-                getdata(8, 0, "¹ıÂËANSI¿ØÖÆ·û¿? [Y]: ", data, 2, DOECHO, 0);
+                getdata(8, 0, "¹ıÂËANSI¿ØÖÆ·û¿? [Y]: ", data, 2, DOECHO, 0,0);
                 if(data[0]=='n' || data[0]=='N') noansi = 0;
                 else noansi = 1;
 
@@ -1649,7 +1649,7 @@ int num ;
             sethomefile(buf2,currentuser->userid,"signatures");
             move(t_lines-1,0);
             if (askyn("Ô¤ÉèÏÔÊ¾Ç°Èı¸öÇ©Ãûµµ, ÒªÏÔÊ¾È«²¿Âğ",NA,YEA)==YEA)
-                ansimore(buf2);
+                ansimore(buf2,0);
             else
             {
                 clear();
@@ -1988,11 +1988,11 @@ doforward(char *direct,struct boardheader*fh,int isuu)
         int isbig5;
 
         prints("ÈôÄúÒª½«ĞÅ¼ş×ª¼Äµ½Ì¨ÍåÇëÊäÈë Y »ò y\n");
-        getdata(7, 0, "×ª³ÉBIG5Âë? [N]: ", data, 2, DOECHO, 0);
+        getdata(7, 0, "×ª³ÉBIG5Âë? [N]: ", data, 2, DOECHO, 0, 0);
         if(data[0]=='y' || data[0]=='Y') isbig5 = 1;
         else isbig5 = 0;
 
-        getdata(8, 0, "¹ıÂËANSI¿ØÖÆ·û¿? [Y]: ", data, 2, DOECHO, 0);
+        getdata(8, 0, "¹ıÂËANSI¿ØÖÆ·û¿? [Y]: ", data, 2, DOECHO, 0,0);
         if(data[0]=='n' || data[0]=='N') noansi = 0;
         else noansi = 1;
 

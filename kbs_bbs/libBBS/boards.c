@@ -284,10 +284,10 @@ static int brc_convert_struct(char* dirfile,char* data,int size) /* °Ñ¾ÉµÄbroard
     	        }
     	        memcpy( brc.list[bid-1], tmp, num * sizeof( int ) );
 	}
-   	if( (fd = open( dirfile, O_WRONLY|O_CREAT,0600 )) != -1 ) {
+   	if( (fd = open( dirfile, O_WRONLY|O_CREAT, 0600 )) != -1 ) {
             write( fd, &brc, sizeof(brc));
             close( fd );
-    	}
+    	} else unlink(dirfile);
 
 	return 0;
 }
