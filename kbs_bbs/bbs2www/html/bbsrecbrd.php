@@ -5,22 +5,6 @@
 	 */
 	require("funcs.php");
 	require("board.inc.php");
-	function get_content($parent)
-	{
-	    $nodes = $parent->child_nodes();
-	    while($node = array_shift($nodes))
-	        if ($node->node_type() == XML_TEXT_NODE)
-	            return $node->node_value();
-	    return "";
-	}
-	function find_content($parent,$name)
-	{
-	    $nodes = $parent->child_nodes();
-	    while($node = array_shift($nodes))
-	        if ($node->node_name() == $name)
-	            return urldecode(get_content($node));
-	    return "";
-	}
 
 	if ($loginok !=1 )
 		html_nologin();

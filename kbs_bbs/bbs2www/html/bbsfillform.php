@@ -34,7 +34,7 @@
 			html_error_quit("对不起，请先激活您的帐号。激活链接在您的注册Email里。<a href=\"/bbssendacode.php\">[我还没收到激活码]</a>");
 	
 		if(strtolower($email) != strtolower(bbs_reg_getactivationemail($activation)))
-			html_error_quit("对不起，您的注册Email有变动，请<a href=\"/bbssendacode.php\">重新激活</a>");
+			html_error_quit("对不起，您的注册Email有变动，请<a href=\"/bbssendacode.php?react=1\">重新激活</a>");
 	}
 	
 	//用户已经通过注册

@@ -1,29 +1,9 @@
 <?php
 require("site.php");
+require("board.inc.php");
+
 if (!bbs_ext_initialized())
 	bbs_init_ext();
-
-# iterate through an array of nodes
-# looking for a text node
-# return its content
-function get_content($parent)
-{
-    $nodes = $parent->child_nodes();
-    while($node = array_shift($nodes))
-        if ($node->node_type() == XML_TEXT_NODE)
-            return $node->node_value();
-    return "";
-}
-
-# get the content of a particular node
-function find_content($parent,$name)
-{
-    $nodes = $parent->child_nodes();
-    while($node = array_shift($nodes))
-        if ($node->node_name() == $name)
-            return urldecode(get_content($node));
-    return "";
-}
 
 # get an attribute from a particular node
 function find_attr($parent,$name,$attr)
