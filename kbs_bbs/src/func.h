@@ -245,6 +245,27 @@ extern "C" {
      */
     typedef int (*DIR_APPLY_FUNC)(int fd,struct fileheader* start,int ent,int total,struct fileheader* data,bool match);
 	typedef int (*search_handler_t)(int fd, fileheader_t *base, int ent, int total, bool match, void *arg);
+	int mmap_dir_search(int fd, const fileheader_t *key, search_handler_t func,
+			void *arg);
+	/**
+	 * Get some records from article id. If this function is successfully
+	 * returned, the article record with the id is put at the center of 
+	 * buf logically. For example, if the user provided an buffer of three
+	 * records, then the article record with the id is copied to buf[1],
+	 * its previous record will be copied to buf[0] (but if the previous
+	 * record is not existed, buf[0] will be filled with zero), and its
+	 * next record will be copied to buf[2] (if the next record is not
+	 * existed, buf[2] will be filled will zero).
+	 *
+	 * @param fd The file descriptor of the .DIR file
+	 * @param id The article id to be searched in the .DIR file
+	 * @param buf The user provided buffer to hold the matched records
+	 * @param num The number of records that the buffer can hold
+	 * @return >0 The number of matched records
+	 *          0 No record matched or execution failed
+	 * @author flyriver
+	 */
+	int get_records_from_id(int fd, int id, fileheader_t *buf, int num);
 
     int get_postfilename(char *filename, char *direct, int use_subdir);
     int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink);
