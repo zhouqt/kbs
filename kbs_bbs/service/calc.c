@@ -10,7 +10,7 @@
 #include "bbs.h"
 #include <math.h>
 
-#define MINIMUM	0.0000000001
+#define MINIMUM	0.00001
 #define Pi		3.1415926535897932384626433832795
 
 #define MAX_VAR 100
@@ -737,20 +737,34 @@ int calc_main()
 "表达式出错",
 ""};
     int y,x,res,i,j;
-    extern int scr_cols;
+    extern int scr_cols, scr_lns;
     res = get_var("res");
     set_var(vars+get_var("%pi"), Pi);
     set_var(vars+get_var("%e"), exp(1));
     clear();
+    outline("欢迎使用超级计算器1.0\n");
+    outline("输入exit退出，输入help帮助\n\n");
     while(1) {
         getyx(&y, &x);
 //        getdata(y, x, 0, cmd, 300, 1, 0, 1);
-        move(y-1+multi_getdata(y, x, scr_cols, "> ", cmd, 1000, 13, 1), 0);
+        y = y-1+multi_getdata(y, x, scr_cols, "> ", cmd, 1000, 13, 1);
+        if(y>=scr_lns) y = scr_lns-1;
+        move(y, 0);
         outline("\n");
         if(!cmd[0]) continue;
 //        scanf("%s", cmd);
         if(!strncasecmp(cmd, "exit", 5)) break;
         if(!strncasecmp(cmd, "quit", 5)) break;
+        if(!strncasecmp(cmd, "help", 5)||!strncasecmp(cmd, "?", 2)) {
+            outline("变量: 1到6个字母,例如x=3\n");
+            outline("常量: %pi, %e\n");
+            outline("矩阵: [3,4;5,6] a(3:4,1:5:2)\n");
+            outline("函数: sin,cos,tan,asin,acos,atan,log,exp,ln,fact,\n");
+            outline("      sinh,cosh,tanh,asinh,acosh,atanh\n");
+            outline("      abs,sign,sqr,sqrt,round,floor,ceil\n");
+            outline("      det,inv\n");
+            outline("操作: + - * / ^ '(转置) \n");
+        }
         if(strchr(cmd, '=')) {
             i=strchr(cmd, '=')-cmd;
             if(i<=0||!check_var_name(cmd, i)) {
