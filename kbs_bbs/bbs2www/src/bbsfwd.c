@@ -19,7 +19,7 @@ int main()
     init_all();
     strsncpy(board, getparm("board"), 30);
     strsncpy(file, getparm("file"), 30);
-    strsncpy(target, getparm("target"), 30);
+    strsncpy(target, getparm("target"), 70);
     big5 = atoi(getparm("big5"));
     noansi = atoi(getparm("noansi"));
     if (!loginok)
@@ -46,7 +46,7 @@ int main()
     printf("<form action=\"bbsfwd\" method=\"post\">\n");
     printf("<input type=\"hidden\" name=\"board\" value=\"%s\">", board);
     printf("<input type=\"hidden\" name=\"file\" value=\"%s\">", file);
-    printf("把文章转寄给 <input type=\"text\" name=\"target\" size=\"30\" maxlength=\"30\" value=\"%s\"> (请输入对方的id或email地址). <br>\n", currentuser->email);
+    printf("把文章转寄给 <input type=\"text\" name=\"target\" size=\"40\" maxlength=\"69\" value=\"%s\"> (请输入对方的id或email地址). <br>\n", currentuser->email);
     printf("<input type=\"checkbox\" name=\"big5\" value=\"1\"> 使用BIG5码<br>\n");
     printf("<input type=\"checkbox\" name=\"noansi\" value=\"1\" checked> 过滤ANSI控制符<br>\n");
     printf("<input type=\"submit\" value=\"确定转寄\"></form>");
