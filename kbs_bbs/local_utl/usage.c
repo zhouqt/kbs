@@ -81,7 +81,6 @@ int fillbcache(struct boardheader *fptr,int idx,void* arg)
 
 int fillboard()
 {
-    resolve_boards();
     apply_record(BOARDS, (APPLY_FUNC_ARG)fillbcache, sizeof(struct boardheader), NULL, 0,false);
 }
 
@@ -99,23 +98,46 @@ char *timetostr(i)
     return str;
 }
 
-void save_useboard_xml(int brdcount, struct binfo *bi)
+extern const char seccode[SECNUM][5];
+
+static int get_seccode_index(char prefix)
+{
+    int i;
+
+    for (i = 0; i < SECNUM; i++) {
+        if (strchr(seccode[i], prefix) != NULL)
+            return i;
+    }
+    return -1;
+}
+
+void gen_board_rank_xml(int brdcount, struct binfo *bi)
 {
     int i;
     FILE *fp;
     char xmlfile[STRLEN];
+	char xml_buf[256];
+	struct boardheader *bp;
+	int sec_id;
 
-    snprintf(xmlfile, sizeof(xmlfile), BBSHOME "/0Announce/bbslists/board.xml");
+    snprintf(xmlfile, sizeof(xmlfile), BBSHOME "/xml/board.xml");
     if ((fp = fopen(xmlfile, "w")) == NULL)
         return;
-    fprintf(fp, "<?xml version=\"1.0\" encoding=\"GB2312\"?>\n");
+    fprintf(fp, "<?xml version=\"1.0\" encoding=\"GBK\"?>\n");
     fprintf(fp, "<BoardList Desc=\"讨论区使用状况统计\">\n");
     for (i = 0; i < brdcount; i++) {
+		bp = getbcache(bi[i].boardname);
+		if (bp == NULL || (bp->flag & BOARD_GROUP))
+			continue;
+		if ((sec_id = get_seccode_index(bp->title[0])) < 0)
+			continue;
         fprintf(fp, "<Board>\n");
-        fprintf(fp, "<EnglishName>%s</EnglishName>\n", bi[i].boardname);
+        fprintf(fp, "<EnglishName>%s</EnglishName>\n", 
+				encode_xml(xml_buf, bi[i].boardname, sizeof(xml_buf)));
         fprintf(fp, "<ChineseName>%s</ChineseName>\n", bi[i].expname);
         fprintf(fp, "<VisitTimes>%ld</VisitTimes>\n", bi[i].times);
         fprintf(fp, "<StayTime>%ld</StayTime>\n", bi[i].sum);
+        fprintf(fp, "<SecId>%ld</SecId>\n", sec_id);
         fprintf(fp, "</Board>\n");
     }
     fprintf(fp, "</BoardList>\n");
@@ -171,7 +193,7 @@ main(argc, argv)
         return 1;
     }
 
-
+    resolve_boards();
     fillboard();
     now = time(0);
     sprintf(date, "%6.6s", Ctime(&now) + 4);
@@ -254,7 +276,7 @@ main(argc, argv)
     fclose(op);
     /* generate boards usage result in xml format */
     if (mode == 1)
-        save_useboard_xml(numboards, st);
+        gen_board_rank_xml(numboards, st);
     if (mode == 1) {
         qsort(st, numboards - 1, sizeof(st[0]), total_cmp);
         fprintf(op1, "名次 %-15.15s%-25.25s %8s %5s %10s\n", "讨论区名称", "中文叙述", "累积时间", "人次", "平均时间");
