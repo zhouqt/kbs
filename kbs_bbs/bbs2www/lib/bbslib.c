@@ -2598,11 +2598,11 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
                 extension--;
             if (*extension == '.') {
                 extension++;
-                if (!strcmp(extension, "bmp") || !strcmp(extension, "jpg")
-                    || !strcmp(extension, "png") || !strcmp(extension, "jpeg")
-                    || !strcmp(extension, "pcx") || !strcmp(extension, "gif"))
+                if (!strcasecmp(extension, "bmp") || !strcasecmp(extension, "jpg")
+                    || !strcasecmp(extension, "png") || !strcasecmp(extension, "jpeg")
+                    || !strcasecmp(extension, "pcx") || !strcasecmp(extension, "gif"))
                     type = 1;
-                else if (!strcmp(extension, "swf"))
+                else if (!strcasecmp(extension, "swf"))
                     type = 2;
             }
             switch (type) {

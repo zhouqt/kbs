@@ -57,7 +57,8 @@
 				$file = fopen($filename, "rb");
 				fseek($file,$attachpos);
 				$attachname='';
-				while (($char=fgetc($file))!=FALSE) {
+				while (1) {
+					$char=fgetc($file);
 					if (ord($char)==0) break;
 					$attachname=$attachname . $char;
 				}
