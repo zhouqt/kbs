@@ -27,7 +27,6 @@
 time_t calltime=0;
 static int stuffmode = 0;
 
-static int rawmore(char    *filename, int     promptend, int     row, int     numlines);
 static int mem_show(char *ptr, int size, int row, int numlines, char *fn);
 extern int isblank(int c);
 
@@ -804,11 +803,10 @@ measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
 }
 
 int effectiveline;		//有效行数, 只计算前面的部分, 头部不含, 空行不含, 签名档不含, 引言不含 
-
-init_MemMoreLines(struct MemMoreLines *l, char *ptr, int size)
+void init_MemMoreLines(struct MemMoreLines *l, char *ptr, int size)
 {
 	int i, s, u;
-	char *p0, *p, oldty = 0;
+	char *p0, oldty = 0;
 	l->ptr = ptr;
 	l->size = size;
 	l->start = 0;
@@ -847,7 +845,7 @@ int
 next_MemMoreLines(struct MemMoreLines *l)
 {
 	int i, n;
-	char *p0, *p;
+	char *p0;
 
 	if (l->curr_line + 1 >= l->start + l->num) {
 		char oldty;
@@ -900,6 +898,7 @@ seek_MemMoreLines(struct MemMoreLines *l, int n)
 	while (l->curr_line != n)
 		if (next_MemMoreLines(l) < 0)
 			return -1;
+	return 0;
 }
 
 #include <sys/mman.h>
@@ -981,8 +980,7 @@ mmap_more(char *fn, int quit, char *keystr)
 	return retv;
 }
 
-int
-mem_printline(char *ptr, int len, char *fn, char ty)
+void mem_printline(char *ptr, int len, char *fn, char ty)
 {
 	if (stuffmode) {
 		char buf[256];
@@ -1014,7 +1012,7 @@ static int mem_show(char *ptr, int size, int row, int numlines, char *fn)
 {
 	extern int t_lines;
 	struct MemMoreLines l;
-	int i, ch, curr_line, change;
+	int i, curr_line;
 	init_MemMoreLines(&l, ptr, size);
 	move(row, 0);
 	clrtobot();
@@ -1025,6 +1023,7 @@ static int mem_show(char *ptr, int size, int row, int numlines, char *fn)
 		if (next_MemMoreLines(&l) < 0)
 			break;
 	}
+	return 0;
 }
 
 mem_printbotline(int l1, int l2, int total, int read, int size)
@@ -1055,10 +1054,7 @@ mem_more(char *ptr, int size, int quit, char *keystr, char *fn)
 {
 	extern int t_lines;
 	struct MemMoreLines l;
-	static char searchstr[30] = "";
-	char buf[256];
-
-	int i, ch = 0, curr_line, last_line, change, retv;
+	int i, ch = 0, curr_line, last_line, change;
 
 	displayflag = 0;
 	shownflag = 1;

@@ -57,8 +57,6 @@ int tc_col, tc_line ;
 struct screenline *big_picture = NULL ;
 static const char nullstr[] = "(null)" ;
 
-extern int ochar() ;
-
 int
 num_noans_chr(str)
 char *str;
@@ -486,7 +484,6 @@ int n ;
 {
     register int reg_col=0;
     register struct screenline *slp=NULL ;
-    register int len=0;
     const char* begin_str=str;
     int begincol=0;
 
@@ -775,14 +772,13 @@ char *buffer;
 } ;
 
 
-int
-lock_scr() /* Leeward 98.02.22 */
+int lock_scr() /* Leeward 98.02.22 */
 {
     char passbuf[STRLEN];
 
 
     if (!strcmp(currentuser->userid, "guest"))
-        return;
+        return 1;
 
     modify_user_mode(LOCKSCREEN);
     clear();
@@ -807,6 +803,7 @@ lock_scr() /* Leeward 98.02.22 */
             break;
         }
     }
+    return 0;
 }
 
 void printdash( char    *mesg)

@@ -33,7 +33,6 @@ int     real;
 {
     struct stat st;
     int         num, diff;
-    int         exp;
 
     move(real==1?2:3,0);
     clrtobot();
@@ -292,7 +291,7 @@ int uinfo_query(struct userec *u,int real,int unum)
                             fclose(dp);
                             return -1;
                         }
-                        fprintf(dp,"%9.9d\n",code);
+                        fprintf(dp,"%9.9lu\n",code);
                         fclose(dp);
                         sprintf( genbuf, "/usr/lib/sendmail -f SYSOP@%s %s ",
                                  email_domain(), newinfo.email );
@@ -302,11 +301,11 @@ int uinfo_query(struct userec *u,int real,int unum)
                         fprintf( fout, "Reply-To: SYSOP@%s\n", email_domain());
                         fprintf( fout, "From: SYSOP@%s\n",  email_domain() );
                         fprintf( fout, "To: %s\n", newinfo.email);
-                        fprintf( fout, "Subject: @%s@[-%9.9d-]firebird mail check.\n", u->userid,code );
+                        fprintf( fout, "Subject: @%s@[-%9.9lu-]firebird mail check.\n", u->userid,code );
                         fprintf( fout, "X-Forwarded-By: SYSOP \n" );
                         fprintf( fout, "X-Disclaimer: None\n");
                         fprintf( fout, "\n");
-                        fprintf(fout,"您的基本资料如下：\n",u->userid);
+                        fprintf(fout,"您的基本资料如下：\n");
                         fprintf(fout,"使用者代号：%s (%s)\n",u->userid,u->username);
                         fprintf(fout,"姓      名：%s\n",u->realname);
                         fprintf(fout,"上站位置  ：%s\n",u->lasthost);
