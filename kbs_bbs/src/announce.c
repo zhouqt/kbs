@@ -478,7 +478,7 @@ void a_showmenu(pm)             /* ¾«»ªÇø ²Ëµ¥ ×´Ì¬ */
     char title[STRLEN * 2], kind[20];
     char fname[STRLEN];
     char ch;
-    char buf[STRLEN], genbuf[STRLEN * 2];
+    char buf[MAXPATH], genbuf[MAXPATH];
     time_t mtime;
     int n;
     int chkmailflag = 0;
@@ -493,8 +493,11 @@ void a_showmenu(pm)             /* ¾«»ªÇø ²Ëµ¥ ×´Ì¬ */
         prints("[5m");
         sprintf(genbuf, "[ÄúÓĞĞÅ¼ş]");
     } else
-        strncpy(genbuf, pm->mtitle, STRLEN * 2 - 1);
-    sprintf(buf, "%*s", (80 - strlen(genbuf)) / 2, "");
+        strncpy(genbuf, pm->mtitle, MAXPATH);
+    if (strlen(genbuf)<=80)
+        sprintf(buf, "%*s", (80 - strlen(genbuf)) / 2, "");
+    else
+        strcpy(buf, "");
     prints("[44m%s%s%s[m\n", buf, genbuf, buf);
     prints("            F ¼Ä»Ø×Ô¼ºµÄĞÅÏä©§¡ü¡ı ÒÆ¶¯©§¡ú <Enter> ¶ÁÈ¡©§¡û,q Àë¿ª[m\n");
     prints("[44m[37m ±àºÅ  %-45s Õû  Àí           %8s [m", "[Àà±ğ] ±ê    Ìâ", a_fmode == 2 ? "µµ°¸Ãû³Æ" : "±à¼­ÈÕÆÚ");
