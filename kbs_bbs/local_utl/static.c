@@ -32,6 +32,7 @@ main(argc, argv)
   int hour, max = 0, item, total = 0;
   int totaltime = 0;
   int i, j;
+  struct tm * date_tm;
   char    *blk[10] =
   {
       "  ", "  ", "  ", "  ", "  ",
@@ -45,7 +46,9 @@ main(argc, argv)
   }
 
   now=time(0);
-  sprintf(date,"%6.6s",Ctime(&now)+4);
+  date_tm = localtime(&now);
+  sprintf(date,"%02u/%02u",date_tm->tm_mon,date_tm->tm_mday);
+
   while (fgets(buf, 256, fp))
   {
     hour = atoi(buf+7);
@@ -54,9 +57,9 @@ main(argc, argv)
        printf("%s", buf);
        continue;
     }
-    if(strncmp(buf,date,6))
+    if(strncmp(buf+1,date,5))
         continue;
-    if ( !strncmp(buf+21, "ENTER", 5))
+    if ( strstr(buf, "ENTER", 5))
     {
       st.no[hour]++;
       continue;

@@ -390,7 +390,7 @@ char q_id[IDLEN];
     if (exit_time <= lookupuser.lastlogin)
     	if (logincount!=seecount)
 	    {
-    	    temp=lookupuser.lastlogin+((lookupuser.numlogins+currentuser.numposts)%100)+5;
+    	    temp=lookupuser.lastlogin+((lookupuser.numlogins+lookupuser.numposts)%100)+5;
         	strcpy(exittime,ctime(&temp));/*Haohmaru.98.12.04.让隐身用户看上去离线时间比上线时间晚5到105秒钟*/
 	        if( (newline = strchr(exittime, '\n')) != NULL )
     	        *newline = '\0';

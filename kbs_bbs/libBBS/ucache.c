@@ -97,6 +97,53 @@ static void ucache_hashinit()
 }
 
 /*
+   CaseInsensitive ucache_hash, assume
+   isalpha(userid[0])
+   isahpha(userid[n]) || isnumber(userid[n]) n>0
+   01/5/5 wwj
+ */
+unsigned int ucache_hash_deep(const char* userid)
+{
+    int n1,n2,n,len;
+    ucache_hashtable * hash;
+    ucache_hashtable * usage;
+
+    if(!*userid)return 0;
+    hash=&uidshm->hashtable;
+    usage=&uidshm->hashusage;
+
+    n1=*userid++;
+    if(n1>='a' && n1<='z')n1&=0xdf;
+    n1-='A';
+    if(n1<0 || n1>=26)return 0;
+
+    n1=hash->hash0[n1];
+
+    n=1;
+    while(n1<0){
+        n1=-n1-1;
+        if(!*userid){
+            usage->hash[n1][0]++;
+            n1=hash->hash[n1][0];
+        } else {
+            n2=*userid++;
+            if(n2>='a' && n2<='z'){
+               n2-='a'-10;
+            } else if(n2>='A' && n2<='Z'){
+               n2-='A'-10;
+            } else {
+               n2-='0';
+            }
+            if(n2<0 || n2>=36)return 0;
+            n1=hash->hash[n1][n2];
+        }
+        n++;
+    }
+    return n;
+}
+
+
+/*
    CaseInsensitive ucache_hash, assume 
    isalpha(userid[0]) 
    isahpha(userid[n]) || isnumber(userid[n]) n>0
@@ -301,7 +348,7 @@ char *u_namearray( char    buf[][ IDLEN+1 ],int     *pnum, char * tag)
 {
     register struct UCACHE *reg_ushm = uidshm;
     register int n, num, i;
-    int hash, len;
+    int hash, len, ksz;
     char tagv[IDLEN+1];
 
     *pnum=0;
@@ -311,39 +358,41 @@ char *u_namearray( char    buf[][ IDLEN+1 ],int     *pnum, char * tag)
         *pnum=MAXUSERS;
         return (char*)reg_ushm->users;
     }
+    ksz=ucache_hash_deep(tag);
 
     strcpy(tagv,tag);
-   
-    if(len>=UCACHE_HASHKCHAR){
-        tagv[UCACHE_HASHKCHAR]=0;
-        hash = ucache_hash(tagv);
-        for( n = hash; n < hash+UCACHE_HASHBSIZE; n++ ) {
-            num=reg_ushm->hashhead[n];
+
+
+    if(len>=ksz){
+        tagv[ksz]=0;
+        hash = ucache_hash(tagv)-1;
+        for( n = 0; n < UCACHE_HASHBSIZE; n++ ) {
+            num=reg_ushm->hashhead[(hash+n%UCACHE_HASHBSIZE)%UCACHE_HASHSIZE+1];
             while(num){
                 if(! strncasecmp(reg_ushm->users[num-1],tag,len)){
                     strcpy( buf[ (*pnum)++ ], reg_ushm->users[num-1] ); /*如果匹配, add into buf */
-                } 
+                }
                 num=reg_ushm->next[num-1];
             }
         }
     } else {
-        for(i=len;i<UCACHE_HASHKCHAR;i++)tagv[i]='0';
-        tagv[UCACHE_HASHKCHAR]=0;
+        for(i=len;i<ksz;i++)tagv[i]='0';
+        tagv[ksz]=0;
 
         while(1){
-            hash = ucache_hash(tagv);
-            hash-=hash%UCACHE_HASHBSIZE;
-            for( n = hash; n < hash+UCACHE_HASHBSIZE; n++ ) {
-                num=reg_ushm->hashhead[n];
+            hash = ucache_hash(tagv)-1;
+
+            for( n = 0; n < UCACHE_HASHBSIZE; n++ ) {
+                num=reg_ushm->hashhead[(hash+n%UCACHE_HASHBSIZE)%UCACHE_HASHSIZE+1]; /* see hash() */
                 while(num){
-                    if(! strncasecmp(reg_ushm->users[num-1],tag,len)){
+                    if(! strncasecmp(reg_ushm->users[num-1],tagv,ksz)){
                         strcpy( buf[ (*pnum)++ ], reg_ushm->users[num-1] ); /*如果匹配, add into buf */
-                    } 
+                    }
                     num=reg_ushm->next[num-1];
                 }
             }
 
-            i=UCACHE_HASHKCHAR-1;
+            i=ksz-1;
             while(i>=len){
                 if(tagv[i]=='Z'){
                     tagv[i]='0';
@@ -362,5 +411,4 @@ char *u_namearray( char    buf[][ IDLEN+1 ],int     *pnum, char * tag)
     }
     return buf[0];
 }
-
 

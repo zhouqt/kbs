@@ -50,7 +50,7 @@ int ibufsize = 0 ;
 int icurrchar = 0 ;
 int KEY_ESC_arg;
 
-static int i_domode = INPUT_ACTIVE;
+static int i_mode = INPUT_ACTIVE;
 
 extern int convcode;
 extern char* big2gb(char*,int*,int);
@@ -78,7 +78,7 @@ hit_alarm_clock()
 {
     if (HAS_PERM(PERM_NOTIMEOUT))
         return;
-    if(i_domode == INPUT_IDLE) {
+    if(i_mode == INPUT_IDLE) {
         clear();
         /*  change by KCN 1999.09.08
                 fprintf(stderr,"Idle timeout exceeded! Booting...\n") ;
@@ -87,7 +87,7 @@ hit_alarm_clock()
         oflush();
         kill(getpid(),SIGHUP) ;
     }
-    i_domode = INPUT_IDLE ;
+    i_mode = INPUT_IDLE ;
     alarm(IDLE_TIMEOUT) ;
 }
 
@@ -96,92 +96,6 @@ init_alarm()
 {
     signal(SIGALRM,hit_alarm_clock) ;
     alarm(IDLE_TIMEOUT) ;
-}
-
-int
-pressanykey()
-{
-    extern int showansi;
-
-    showansi=1;
-    move( t_lines-1,0);
-    clrtoeol();
-    prints( "[m                                [5;1;33m°´ÈÎºÎ¼ü¼ÌÐø ..[m" );
-    egetch();
-    move( t_lines-1, 0 );
-    clrtoeol();
-    return 0;
-}
-
-int
-pressreturn()
-           {
-               extern int showansi;
-               char buf[3] ;
-
-               showansi=1;
-               move(t_lines-1,0);
-               clrtoeol();
-               getdata(t_lines-1,0,"                              [33mÇë°´ ¡ô[36mEnter[33m¡ô ¼ÌÐø[m",buf,2,NOECHO,NULL,YEA);
-               move(t_lines-1,0) ;
-               clrtoeol() ;
-               refresh() ;
-               return 0 ;
-           }
-
-           askyn(str,defa)
-           char str[STRLEN];
-int defa;
-{
-    int x,y;
-    char realstr[STRLEN*2];
-    char ans[6];
-
-    sprintf(realstr,"%s (Y/N)? [%c]: ",str,(defa)?'Y':'N');
-    getyx(&x,&y);
-    getdata( x, y, realstr, ans,3,DOECHO,NULL,YEA);
-    if(ans[0]!='Y' && ans[0]!='y' &&
-            ans[0]!='N' && ans[0]!='n')
-    {
-        return defa;
-    }else if(ans[0]=='Y' || ans[0]=='y')
-        return 1;
-    else if(ans[0]=='N' || ans[0]=='n')
-        return 0;
-}
-
-
-
-
-void
-printdash( mesg )
-char    *mesg;
-{
-    char        buf[ 80 ], *ptr;
-    int         len;
-
-    memset( buf, '=', 79 );
-    buf[ 79 ] = '\0';
-    if( mesg != NULL ) {
-        len = strlen( mesg );
-        if( len > 76 )  len = 76;
-        ptr = &buf[ 40 - len / 2 ];
-        ptr[ -1  ] = ' ';
-        ptr[ len ] = ' ';
-        strncpy( ptr, mesg, len );
-    }
-    prints( "%s\n", buf );
-}
-
-void
-bell()
-{
-    /* change by KCN 1999.09.08    fprintf(stderr,"%c",Ctrl('G')) ;*/
-    char sound;
-
-    sound= Ctrl('G');
-    output( &sound, 1);
-
 }
 
 void
@@ -433,11 +347,11 @@ igetagain:
     }
     else     lastch=inbuf[icurrchar];
 
-    i_domode = INPUT_ACTIVE;
+    i_mode = INPUT_ACTIVE;
     c=inbuf[icurrchar];
     switch(c) {
     case Ctrl('L'):
-        redoscr() ;
+                    redoscr() ;
         icurrchar++ ;
         goto igetagain ;
     default:
@@ -448,9 +362,9 @@ igetagain:
     now=time(0);
     /*---	Ctrl-T disabled as anti-idle key	period	2000-12-05	---*/
     if(Ctrl('T') != c)
-    	uinfo.freshtime=now;
+        uinfo.freshtime=now;
     /* add by KCN , decrease temp_numposts*/
-    if (lasttime + 60*60*8 < now) {
+if (lasttime + 60*60*8 < now) {
         lasttime = now;
         if (temp_numposts>0)
             temp_numposts--;
@@ -468,12 +382,18 @@ igetkey()
 
     mode = last = 0;
     while( 1 ) {
+        /*        if((uinfo.mode==CHAT1||uinfo.mode==TALK||uinfo.mode==PAGE) && RMSG==YEA)
+                {
+                        char a;
+
+                        read(0,&a,1);
+                        ch=(int) a;
+                }
+        	else 
+        */
         ch = igetch();
         if( mode == 0 ) {
-            if( ch == KEY_ESC ) {
-                /* if(! num_in_buf() ) return ch;   add by wwj 2001/5/7, support ESC key */
-                mode = 1;
-            }
+            if( ch == KEY_ESC ) mode = 1;
             else  return ch;    /* Normal Key */
         } else if( mode == 1 ) {  /* Escape sequence */
             if( ch == '[' || ch == 'O' )  mode = 2;

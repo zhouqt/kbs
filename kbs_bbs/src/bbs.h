@@ -44,8 +44,6 @@
 #include <sys/stat.h>
 #include <sys/file.h>
 #include <dirent.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
 
 
 #include "config.h"             /* User-configurable stuff */
