@@ -2,6 +2,8 @@ $Id$
 smthbbs 代码系统常见站务问题 (doc/README.SYSOP)
 
 0 ChangeLog 主要修改记录
+2004.11.4
+    atppp - 系统版面推荐的权限设置。感谢 zxtg @ 五色土 BBS，cnbird @ smth.org
 2004.10.7
     atppp - miscd 和 bbslogd 使用说明，暂时放这里先（5.8 节）
 2004.9.22
@@ -95,26 +97,36 @@ LinuxKernel 版面。
     另外，smthbbs 系统有一些特殊的系统版面用于系统记录。这类似于 FB2000 系统
 但又有不少改进。这些系统版面在默认情况下包括（千万注意版名大小写）：
 
-    bbsnet          用户使用穿梭的记录。
-    BBSLists        各类统计列表。
-    Blessing        祝福版面。祝福榜排名将从这个版面产生。
-    denypost        各版面封禁记录。
-    Filter          出现了系统自动过滤词语的文章将出现在这个版面。站务按 @ 审核。
-    Goodbye         ID 自杀记录。
-    newcomers       新手上路，这个最古老了。
-    notepad         留言版记录。
-    Recommend       推荐文章。
-    Registry        帐号管理员审核 ID 的记录。
-    syssecurity     系统安全记录，包括任免版主、用户权限更改、版面设置更改等。
-    undenypost      各版面解封记录。
-    vote            各项投票与结果。
-    sysmail         该版面建立以后，应该到 ~bbs/boards/ 下面删除这个目录，然后
+第一列表示推荐的版面权限设置，下面有具体说明
+VX     bbsnet       用户使用穿梭的记录。
+oX     BBSLists     各类统计列表。
+o      Blessing     祝福版面。祝福榜排名将从这个版面产生。
+VX     denypost     各版面封禁记录。
+V      Filter       出现了系统自动过滤词语的文章将出现在这个版面。站务按 @ 审核
+VX     Goodbye      ID 自杀记录。
+oX     newcomers    新手上路，这个最古老了。新 ID 注册会自动在这个版面发文。
+oX     notepad      留言版记录。
+VX     Recommend    推荐文章。
+LX     Registry     帐号管理员审核 ID 的记录。
+VX     syssecurity  系统安全记录，包括任免版主、用户权限更改、版面设置更改等。
+VX     undenypost   各版面解封记录。
+VX     vote         各项投票与结果。
+V      sysmail      该版面建立以后，应该到 ~bbs/boards/ 下面删除这个目录，然后
                     建立同名符号连接到 ~bbs/mail/S/SYSOP。这个版面应该设置只有
                     站务可读，那么所有站务就都可以看到网友给 SYSOP 发送的信件了。
 
-    在开站的时候可以开启这些版面，部分版面应该限制读取权限或者设置只读。
-另外，如果编译的时候定义 #define SMTH 1，Announce 版面发文自动使用 SYSOP 作为
-发信人，主要用于系统公告。
+    在开站的时候可以开启这些版面，部分版面应该限制读取权限或者设置只读。上面第一
+列的符号表示推荐的最保守的权限设置，具体说明如下：
+        V   仅最高站务（一般是 V 权限和 O 权限的 ID）可以阅读
+        L   最高站务和 L 权限的账号管理员都可以阅读
+        X   应该设置只读，参考下面的 2.3 节
+        o   可以对所有用户开放
+    关于设置权限请参考下面的第 2 部分。这里的权限只是最保守的推荐，一般来说放宽
+这些权限设置不会影响站点的正常使用，但是可能会公开一些站点内部的机密。所以推荐
+开站一段时间看有必要的话再放宽一部分版面的权限，比如 denypost 和 undenypost 这
+两个版，有一些站点就是对普通用户开放阅读权限的。
+    另外，如果编译的时候定义 #define SMTH 1，Announce 版面发文自动使用 SYSOP 作
+为发信人，主要用于系统公告。
 
 
 
