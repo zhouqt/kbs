@@ -1959,21 +1959,22 @@ static ZEND_FUNCTION(bbs_delfile)
 
 	u = getcurrentuser();
 	brd = getbcache(board);
-    if (strncmp(file, "M.", 2) && strncmp(file, "G.", 2))
-        RETURN_LONG(-2);
-    if (strstr(file, ".."))
+
+	if (VALID_FILENAME(file) < 0)
         RETURN_LONG(-2);
     if (brd == 0)
         RETURN_LONG(-2);
     if (!haspostperm(u, board))
         RETURN_LONG(-2);
 
-    sprintf(dir, "boards/%s/.DIR", board);
-    sprintf(path, "boards/%s/%s", board, file);
+	setbdir(DIR_MODE_NORMAL, dir, board);
+	setbfile(path, board, file);
+	/*
+	 * TODO: Improve the following block of codes.
+	 */
     fp = fopen(dir, "r");
     if (fp == 0)
         RETURN_LONG(-2);
-
 	while (1) {
 		if (fread(&f, sizeof(struct fileheader), 1, fp) <= 0)
 			break;
