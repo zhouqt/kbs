@@ -754,7 +754,7 @@ Blog名
 <tr>
 	<td class="t3">首页其他信息(支持HTML语法和JavaScript)</td>
 	<td class="t5">
-	<textarea name="userinfor" id="userinfor" class="f1" rows=10 cols=50><?php echo $pc[INFOR]; ?></textarea>
+	<textarea name="userinfor" id="userinfor" class="f1" rows=10 cols=50><?php echo htmlspecialchars($pc[INFOR]); ?></textarea>
 	</td>
 </tr>
 <tr>
