@@ -83,7 +83,7 @@ function showmailBox($boxName, $path, $desc, $startNum){
 <tr>
 <th valign=middle width=30 height=25>已读</th>
 <th valign=middle width=100>
-<?php   if ($Desc=="发件箱")
+<?php   if ($desc=="发件箱")
     echo "收件人";  
   else
     echo "发件人";?>
