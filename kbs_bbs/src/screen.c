@@ -37,6 +37,7 @@ int roll, scrollcnt;
 int tc_col=0, tc_line=0;
 int tc_mode=0, tc_color = 7;
 int cur_mode=0, cur_color=7;
+int offsetln = 0;
 struct screenline *big_picture = NULL;
 static const char nullstr[] = "(null)";
 static /*struct screenline old_line; */ char tmpbuffer[256*3];
@@ -453,7 +454,7 @@ void outns(const char*str, int n)
                     s1[j-2]=0;
                     memcpy(s2,str+j+1,i-j-1);
                     s2[i-j-1]=0;
-                    y=atoi(s1)-1;
+                    y=atoi(s1)-1+offsetln;
                     x=atoi(s2)-1;
                     if(y>=0&&y<scr_lns&&x>=0&&x<scr_cols) {
                         cur_col=x; cur_ln=y;
@@ -462,7 +463,8 @@ void outns(const char*str, int n)
                     continue;
                 }
                 else if((*str+j)!=';') {
-                    clear();
+                    if(offsetln==0)
+                        clear();
                     str+=i+1;
                     continue;
                 }
@@ -481,7 +483,7 @@ void outns(const char*str, int n)
 
                 if(cur_col<0) cur_col=0;
                 if(cur_col>=scr_cols) cur_col=scr_cols;
-                if(cur_ln<0) cur_ln=0;
+                if(cur_ln<offsetln) cur_ln=offsetln;
                 if(cur_ln>=scr_lns) cur_ln=scr_lns-1;
 
                 str+=i+1;
