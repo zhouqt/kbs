@@ -3,7 +3,9 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <assert.h>
+#if HAVE_MYSQL == 1
 #include <mysql.h>
+#endif
 #define MAXMESSAGE 5
 char MsgDesUid[20];
 char msgerr[255];
