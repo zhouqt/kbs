@@ -131,6 +131,7 @@ static void trunclog(int signo)
         	char buf[MAXPATH];
         	int j;
         	close(pconf->fd);
+		j=0;
         	while (1) {
         	    sprintf(buf,"%s.%d",pconf->filename,j);
         	    if (!dashf(buf))
