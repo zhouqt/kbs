@@ -192,18 +192,15 @@ function bbs_can_edit_article($board, $article, $user)
 		return 0;
 }
 
-function cache_header($scope,$modifytime=0,$expiretime=300)
-{
+function cache_process($scope, $forcecachetime, $modifytime, $expiretime) {
 	global $cachemode;
 	session_cache_limiter($scope);
 	$cachemode=$scope;
-	if ($scope=="no-cache")
-		return FALSE;
 	@$oldmodified=$_SERVER["HTTP_IF_MODIFIED_SINCE"];
 	if ($oldmodified!="") {
-				$oldtime=strtotime($oldmodified);
+		$oldtime = strtotime($oldmodified) + $forcecachetime;
 	} else $oldtime=0;
-	if ($oldtime>=$modifytime) {
+	if ($oldtime >= $modifytime) {
 		header("HTTP/1.1 304 Not Modified");
 			header("Cache-Control: max-age=" . "$expiretime");
 		return TRUE;
@@ -212,6 +209,17 @@ function cache_header($scope,$modifytime=0,$expiretime=300)
 	header("Expires: " . gmdate("D, d M Y H:i:s", $modifytime+$expiretime) . " GMT");
 	header("Cache-Control: max-age=" . "$expiretime");
 	return FALSE;
+}
+
+function cache_header($scope,$modifytime=0,$expiretime=300)
+{
+	if ($scope=="no-cache") return FALSE;
+	return cache_process($scope, 0, $modifytime, $expiretime);
+}
+
+function update_cache_header($updatetime = 10,$expiretime = 300)
+{
+	return cache_process("public, must-revalidate", 60 * $updatetime, time(), $expiretime);
 }
 
 function html_init($charset="",$title="",$otherheader="",$is_mathml=false)

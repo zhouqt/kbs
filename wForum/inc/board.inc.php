@@ -109,6 +109,11 @@ function showBoardStaticsTop($boardArr, $is_bm, $is_ann=false){
 &nbsp;[<a href="doclear.php?boardName=<?php echo $boardArr["NAME"]; ?>" title="将本版所有文章标记成已读">清除未读</a>]
 <?php
 	}
+	if (ONBOARD_USERS) {
+?>
+<script language="JavaScript" src="board_online.php?board=<?php echo $boardArr["NAME"]; ?>&amp;js=1"></script> 
+<?php
+	}
 ?>
 </Th></TR></TABLE>
 <BR>
@@ -200,7 +205,7 @@ function board_head_var($boardDesc,$boardName,$secCode)
 <tr><td><nobr>
 <img src="pic/forum_nav.gif"/> <a href="index.php"><?php   echo $SiteName; ?></a> → 
 <a href="section.php?sec=<?php echo $secIndex; ?>"><?php echo $section_names[$secIndex][0] ; ?></a> → 
-<a href="board.php?name=<?php echo $boardName; ?>"><?php echo $boardDesc; ?></a> → 
+<a href="board.php?name=<?php echo $boardName; ?>"><?php echo htmlspecialchars($boardDesc); ?></a> → 
 <?php echo $stats; ?> 
 </nobr></td>
 <td align="right" id="serverTime"> </td>
