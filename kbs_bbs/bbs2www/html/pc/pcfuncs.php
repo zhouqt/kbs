@@ -900,7 +900,7 @@ function pc_load_topic($link,$uid,$tid,&$topicname,$access=9)
 	
 	mysql_free_result($result);
 	$topicname = $rows[topicname];
-	return TRUE;
+	return $tid;
 }
 
 function pc_load_directory($link,$uid,$pid)
@@ -1099,10 +1099,10 @@ function pc_convertto_group($link,$pc)
 	if($pc["TYPE"] == 1)
 		return -2;
 	
-	if(!pc_add_topic($link,$pc,2,"GROUPWORD LOGs"))
+	if(!pc_add_topic($link,$pc,2,"GROUPWORK LOGs"))
 		return -3;
 	
-	$query = "SELECT tid FROM topics WHERE uid = '".$pc["UID"]."' AND access = 2 AND topicname = 'GROUPWORD LOGs' ORDER BY tid DESC LIMIT 0,1;";
+	$query = "SELECT tid FROM topics WHERE uid = '".$pc["UID"]."' AND access = 2 AND topicname = 'GROUPWORK LOGs' ORDER BY tid DESC LIMIT 0,1;";
 	$result = mysql_query($query,$link);
 	$rows = mysql_fetch_array($result);
 	mysql_free_result($result);
@@ -1117,7 +1117,7 @@ function pc_convertto_group($link,$pc)
 	$pc["TYPE"] = 1;
 	$pc["LOGTID"] = $logtid;
 	
-	if(!pc_group_logs($link,$pc,"CONVERT TO GROUPWORD"))
+	if(!pc_group_logs($link,$pc,"CONVERT TO GROUPWORK"))
 		return -5;
 	return 0;
 }

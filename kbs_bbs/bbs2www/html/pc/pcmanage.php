@@ -664,7 +664,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			}
 			else
 			{
-				$query = "DELETE FROM topics WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".(int)($_GET["tid"])."' ;";
+				$query = "DELETE FROM topics WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".$tid."' ;";
 				mysql_query($query,$link);
 				pc_update_record($link,$pc["UID"]);
 				$log_action = "DEL TOPIC: ".$topicname;
