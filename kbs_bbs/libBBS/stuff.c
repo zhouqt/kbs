@@ -2380,6 +2380,10 @@ int mail_birth()
 		return 0;
 
 	now = time(0);
+
+	if ((int)(getCurrentUser()->lastlogin/86400) >= (int)(now/86400))
+		return 0;
+
 	localtime_r(&now,&t);
 
 	if (t.tm_mon+1!=getSession()->currentmemo->ud.birthmonth || t.tm_mday!=getSession()->currentmemo->ud.birthday)
