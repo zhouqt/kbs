@@ -5,7 +5,10 @@
 	
 	@session_start();
 	$visitcount = $_SESSION["visitcount"];
-	$needlogin=0;
+	//$needlogin=0;
+	/*
+	** ../funcs.php中将未登录用户自动初始化为guest，这里不需要传递$needlogin=0，否则不能进行管理 windinsn dec 24,2003
+	*/
 	require("pcfuncs.php");
 
 	function pc_get_archfile($pc,$wrap=FALSE)
@@ -22,7 +25,7 @@
 			for($mm = $thisMonth ; $mm >= $firstMonth  ; $mm --)
 			{
 				if($wrap && $i==0) echo "<li>";
-				echo "<a href=\"pcarch.php?userid=".$pc["USER"]."&y=".$yy."&m=".$mm."\">".$yy."年".$mm."月</a>\n";
+				echo "<a href=\"pcarch.php?userid=".$pc["USER"]."&y=".$yy."&m=".$mm."\" target=\"_blank\">".$yy."年".$mm."月</a>\n";
 				if($wrap && $i==0) echo "</li>";
 				$i = 1 - $i ;
 			}

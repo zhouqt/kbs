@@ -3,7 +3,10 @@
 	** this file display single comment
 	** @id:windinsn nov 27,2003
 	*/
-	$needlogin=0;
+	//$needlogin=0;
+	/*
+	** ../funcs.php中将未登录用户自动初始化为guest，这里不需要传递$needlogin=0，否则不能进行管理 windinsn dec 24,2003
+	*/
 	require("pcfuncs.php");
 	function pc_add_new_comment($nid,$alert)
 	{

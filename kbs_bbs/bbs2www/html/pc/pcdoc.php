@@ -7,7 +7,10 @@
 	/*
 	**	对收藏夹的剪切、复制操作,计数器需要 session 支持 windinsn nov 25,2003
 	*/
-	$needlogin=0;
+	//$needlogin=0;
+	/*
+	** ../funcs.php中将未登录用户自动初始化为guest，这里不需要传递$needlogin=0，否则不能进行管理 windinsn dec 24,2003
+	*/
 	require("pcfuncs.php");
 	
 	function display_blog_menu($link,$pc,$tag,$tid=0)

@@ -259,7 +259,7 @@ function pc_is_friend($userid,$uid)
 
 function pc_is_admin($currentuser,$pc)
 {
-	if(strtolower($pc["USER"]) == strtolower($currentuser["userid"]) && $pc["TIME"] > date("YmdHis",$currentuser["firstlogin"]) && $currentuser["firstlogin"])
+	if(strtolower($pc["USER"]) == strtolower($currentuser["userid"]) && $pc["CREATED"] > date("YmdHis",$currentuser["firstlogin"]) && $currentuser["firstlogin"])
 		return TRUE;
 	else
 		return FALSE;
