@@ -122,6 +122,8 @@ extern long ti;
 
 #define MAX_MSG_SIZE 1024       /* 最大消息长度 by bad, 2003-2-14 */
 
+#define ANNPATH_NUM	40
+
 /*#define FILE_BUFSIZE      160    max. length of a file in SHM*/
 #define FILE_BUFSIZE      LENGTH_FILE_BUFFER    /* max. length of a file in SHM */
 #define FILE_MAXLINE      24    /* max. line of a file in SHM */
