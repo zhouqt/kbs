@@ -52,25 +52,25 @@ $recstate = array("error" , "<font color=#FF0000>待处理</font>" , "<font color=#
 switch($type)
 {
 	case 1:
-		$query = "SELECT nid , uid , emote , subject , created , visitcount , commentcount , trackbackcount , recommend , recuser ".
+		$query = "SELECT nid , uid , emote , subject , created , visitcount , commentcount , trackbackcount , recommend , recuser , rectopic ".
 		"FROM nodes WHERE access = 0 AND recommend = 1  ".
 		"ORDER BY recommend ASC , nid DESC ".
 		"LIMIT ".$start ." , ".$pcconfig["LIST"]." ;";
 		break;
 	case 2:
-		$query = "SELECT nid , uid , emote , subject , created , visitcount , commentcount , trackbackcount , recommend , recuser ".
+		$query = "SELECT nid , uid , emote , subject , created , visitcount , commentcount , trackbackcount , recommend , recuser , rectopic ".
 		"FROM nodes WHERE access = 0 AND recommend = 2  ".
 		"ORDER BY recommend ASC , nid DESC ".
 		"LIMIT ".$start ." , ".$pcconfig["LIST"]." ;";
 		break;
 	case 3:
-		$query = "SELECT nid , uid , emote , subject , created , visitcount , commentcount , trackbackcount , recommend , recuser ".
+		$query = "SELECT nid , uid , emote , subject , created , visitcount , commentcount , trackbackcount , recommend , recuser , rectopic ".
 		"FROM nodes WHERE access = 0 AND recommend = 3  ".
 		"ORDER BY recommend ASC , nid DESC ".
 		"LIMIT ".$start ." , ".$pcconfig["LIST"]." ;";
 		break;
 	default:
-	$query = "SELECT nid , uid , emote , subject , created , visitcount , commentcount , trackbackcount , recommend , recuser ".
+	$query = "SELECT nid , uid , emote , subject , created , visitcount , commentcount , trackbackcount , recommend , recuser , rectopic ".
 		"FROM nodes WHERE access = 0 AND recommend != 0 AND recommend != 4 ".
 		"ORDER BY recommend ASC , nid DESC ".
 		"LIMIT ".$start ." , ".$pcconfig["LIST"]." ;";
@@ -96,6 +96,7 @@ pc_admin_navigation_bar();
 	<td width="40" class="t2">状态</td>
 	<td class="t2">主题</td>
 	<td width="120" class="t2">创建时间</td>
+	<td width="60" class="t2">类型</td>
 	<td width="20" class="t2">访</td>
 	<td width="20" class="t2">回</td>
 	<td width="20" class="t2">引</td>
@@ -111,6 +112,7 @@ pc_admin_navigation_bar();
 			"<td class=\"t4\">".$recstate[$recnode[recommend]]."</td>\n".
 			"<td class=\"t8\"><a href=\"pccon.php?id=".$recnode[uid]."&nid=".$recnode[nid]."&s=all\">".html_format($recnode[subject])."</a></td>\n".
 			"<td class=\"t4\">".time_format($recnode[created])."</td>\n".
+			"<td class=\"t3\"><a href=\"pcreco.php?topic=".$recnode[rectopic]."\">".$pcconfig["SECTION"][$recnode[rectopic]]."</a></td>\n".
 			"<td class=\"t3\">".$recnode[visitcount]."</td>\n".
 			"<td class=\"t4\">".$recnode[commentcount]."</td>\n".
 			"<td class=\"t3\">".$recnode[trackbackcount]."</td>\n".

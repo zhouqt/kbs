@@ -125,10 +125,10 @@ function undo_html_format($str)
 {
 	$str = str_replace("&nbsp;"," ",$str);
 	$str = str_replace("<br />","\n",$str);
-	$str = preg_replace("/&gt;/i", ">", $str);
-	$str = preg_replace("/&lt;/i", "<", $str);
-	$str = preg_replace("/&quot;/i", "\"", $str);
-	$str = preg_replace("/&amp;/i", "&", $str);
+	$str = str_replace("&gt;", ">", $str);
+	$str = str_replace("&lt;", "<", $str);
+	$str = str_replace("&quot;", "\"", $str);
+	$str = str_replace("&amp;", "&", $str);
 	return $str;
 }
 
@@ -773,7 +773,7 @@ function pc_main_navigation_bar()
 [<a href="pc.php">用户</a>]
 [<a href="pclist.php">热门排行</a>]
 [<a href="pcsec.php">分类</a>]
-[<a href="pcreclist.php">推荐文章</a>]
+[<a href="pcreco.php">推荐文章</a>]
 [<a href="pcnew.php">最新日志</a>]
 [<a href="pcnew.php?t=c">最新评论</a>]
 [<a href="pcsearch2.php">博客搜索</a>]

@@ -389,4 +389,22 @@ function getHotNodes($link,$type,$timeLong=259200,$num=20)
 	return $nodes;
 }
 
+function getRecommendNodesByTopic($link,$topic,&$nodes)
+{
+    global $pcconfig;
+    if (!$topic || !$pcconfig["SECTION"][$topic])
+        return false;
+    $nodes = array();
+    
+    $query = 'SELECT * FROM recommend WHERE topic = \''.addslashes($topic).'\' ORDER BY state DESC , rid DESC LIMIT 0 , 10;  ';
+    $result = mysql_query($query,$link);
+    if (!mysql_num_rows($result))
+        return false;
+    while($rows=mysql_fetch_array($result))
+        $nodes[] = $rows;
+    mysql_free_result($result);
+    return true;
+}
+
+
 ?>

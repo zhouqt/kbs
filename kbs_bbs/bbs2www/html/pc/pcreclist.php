@@ -4,8 +4,8 @@
 */
 require("pcfuncs.php");
 //20min更新一次
-if(pc_update_cache_header())
-	return;
+//if(pc_update_cache_header())
+//	return;
 
 $pno = $_GET["pno"];
 $pno = intval( $pno );
@@ -15,7 +15,10 @@ $start = ($pno - 1)*$pcconfig["LIST"];
 pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
 $pcuser = array();
 $link = pc_db_connect();
-$query = "SELECT * FROM recommend ORDER BY state DESC , rid DESC LIMIT ".$start." , ".$pcconfig["LIST"].";";
+$query = "SELECT * FROM recommend ";
+if ($_GET['topic'] && $pcconfig["SECTION"][$_GET['topic']])
+    $query .= " WHERE topic = '".addslashes($_GET['topic'])."' ";
+$query .= " ORDER BY state DESC , rid DESC LIMIT ".$start." , ".$pcconfig["LIST"].";";
 $result = mysql_query($query,$link);
 $num = mysql_num_rows($result);
 ?>
@@ -46,7 +49,7 @@ $num = mysql_num_rows($result);
 			"<td class=t5><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">".html_format($rows[subject])."</a></td>".
 			"<td class=t3><span title=\"".$pcuser[$rows[uid]]["DESC"]."\"><a href=\"index.php?id=".$pcuser[$rows[uid]]["USER"]."\">".$pcuser[$rows[uid]]["NAME"]."</a></span></td>".
 			"<td class=t4><a href=\"/bbsqry.php?userid=".$pcuser[$rows[uid]]["USER"]."\">".$pcuser[$rows[uid]]["USER"]."</a></td>".
-			"<td class=t3><span title=\"点击查看该分类的其它Blog信息\"><a href=\"pcsec.php?sec=".html_format($pcuser[$rows[uid]]["THEM"][0])."\">".html_format($pcconfig["SECTION"][$pcuser[$rows[uid]]["THEM"][0]])."</a></span></td>".
+			"<td class=t3><span title=\"点击查看该分类的其它Blog信息\"><a href=\"pcreclist.php?topic=".$rows[topic]."\">".html_format($pcconfig["SECTION"][$rows[topic]])."</a></span></td>".
 			"<td class=t4><a href=\"/bbsqry.php?userid=".$rows[recuser]."\">".$rows[recuser]."</a></td>".
 			"</tr></tbody>\n";
 	}

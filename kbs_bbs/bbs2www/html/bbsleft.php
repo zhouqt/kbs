@@ -406,7 +406,7 @@ bbs_auto_reload();
 					<a href="/pc/pc.php" target="f3">用户列表</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/pc/pcreclist.php" target="f3">推荐文章</a><br>
+					<a href="/pc/pcreco.php" target="f3">推荐文章</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/pc/pclist.php" target="f3">热门排行</a><br>
