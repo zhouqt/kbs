@@ -6,6 +6,7 @@ int query_BM(struct userec *user, char *arg)
 {
     curuserid = user->userid;
     user->usedspace = 0xffff;
+    return 1;
 }
 
 main(int argc, char ** argv)
