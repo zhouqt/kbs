@@ -226,8 +226,9 @@ char *prompt, *data;
                 if (NumInList(cwlist)) {
                     int j;
                     struct word *list;
+                    int len = strlen(cwlist->word);
                     j = temp-data;
-                    while(1) {
+                    while(j <= len) {
                         int ok=1;
                         j++;
                         for (list = cwlist; list != NULL; list = list->next)
