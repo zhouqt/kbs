@@ -16,6 +16,7 @@
 static unsigned char third_arg_force_ref_1111[] = { 4, BYREF_FORCE, BYREF_FORCE, BYREF_FORCE, BYREF_FORCE };
 static unsigned char third_arg_force_ref_011[] = { 3, BYREF_NONE, BYREF_FORCE, BYREF_FORCE };
 static unsigned char fourth_arg_force_ref_0001[] = { 4, BYREF_NONE, BYREF_NONE, BYREF_NONE, BYREF_FORCE };
+static unsigned char third_arg_force_ref_001[] = { 3, BYREF_NONE, BYREF_NONE, BYREF_FORCE };
 
 #ifdef HAVE_WFORUM
 static PHP_FUNCTION(bbs_get_article);
@@ -92,6 +93,7 @@ static PHP_FUNCTION(bbs_get_records_from_id);
 static PHP_FUNCTION(bbs_get_records_from_num);
 static PHP_FUNCTION(bbs_get_filename_from_num);
 static PHP_FUNCTION(bbs_get_threads_from_id);
+static PHP_FUNCTION(bbs_get_threads_from_gid);
 static PHP_FUNCTION(bbs_countarticles);
 static PHP_FUNCTION(bbs_is_bm);
 static PHP_FUNCTION(bbs_getannpath);
@@ -238,6 +240,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_get_records_from_num, NULL)
         PHP_FE(bbs_get_filename_from_num, NULL)
         PHP_FE(bbs_get_threads_from_id, NULL)
+        PHP_FE(bbs_get_threads_from_gid, third_arg_force_ref_001)
         PHP_FE(bbs_countarticles, NULL)
         PHP_FE(bbs_is_bm, NULL)
         PHP_FE(bbs_getannpath, NULL)
@@ -7775,5 +7778,92 @@ static PHP_FUNCTION(bbs_x_search)
 
         zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
     }
+}
+
+/**
+ * get a full threads of articles from a groupid.
+ * prototype:
+ * int bbs_get_threads_from_gid(int bid, int gid, array &errmsg);
+ *
+ * @return Record index on success,
+ *       0 on failure.
+ * @author flyriver
+ */
+static PHP_FUNCTION(bbs_get_threads_from_gid)
+{
+#define MAX_THREADS_NUM 512
+	int bid;
+	int gid;
+    zval *z_threads;
+    int i;
+	const struct boardheader *bp;
+	int is_bm;
+	char dirpath[STRLEN];
+	struct fileheader *articles;
+	int retnum;
+	zval *element;
+    char flags[4];              /* flags[0]: flag character
+                                 * flags[1]: imported flag
+                                 * flags[2]: no reply flag
+                                 * flags[3]: attach flag
+                                 */
+    int ac = ZEND_NUM_ARGS();
+
+    if (ac != 3 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "llz", &bid, &gid, &z_threads) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+
+    /*
+     * check for parameter being passed by reference 
+     */
+    if (!PZVAL_IS_REF(z_threads)) {
+        zend_error(E_WARNING, "Parameter wasn't passed by reference");
+        RETURN_LONG(0);
+    }
+	if ((bp = getboard(bid)) == NULL)
+	{
+        RETURN_LONG(0);
+	}
+    is_bm = is_BM(bp, currentuser);
+	setbdir(DIR_MODE_NORMAL, dirpath, bp->filename);
+
+	articles = (struct fileheader *)emalloc(MAX_THREADS_NUM * sizeof(struct fileheader));
+	if (articles == NULL)
+	{
+        RETURN_LONG(0);
+	}
+	if ((retnum=get_threads_from_gid(dirpath, gid, articles, MAX_THREADS_NUM)) == 0)
+	{
+		efree(articles);
+        RETURN_LONG(0);
+	}
+
+	zval_dtor(z_threads);
+	array_init(z_threads);
+	for (i = 0; i < retnum; i++)
+	{
+		MAKE_STD_ZVAL(element);
+		array_init(element);
+	  if(articles[i].id && currentuser ){
+		flags[0] = get_article_flag(articles + i, currentuser, bp->filename, is_bm);
+		if (is_bm && (articles[i].accessed[0] & FILE_IMPORTED))
+			flags[1] = 'y';
+		else
+			flags[1] = 'n';
+		if (articles[i].accessed[1] & FILE_READ)
+			flags[2] = 'y';
+		else
+			flags[2] = 'n';
+	  }else{
+		flags[0]=0;
+		flags[1]=0;
+		flags[2]=0;
+	  }
+		bbs_make_article_array(element, articles + i, flags, sizeof(flags));
+		zend_hash_index_update(Z_ARRVAL_P(z_threads), i,
+				(void*) &element, sizeof(zval*), NULL);
+	}
+	efree(articles);
+	RETURN_LONG(retnum);
 }
 
