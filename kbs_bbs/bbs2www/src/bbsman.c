@@ -91,42 +91,23 @@ int do_del(char *board, int id)
 int do_set(char *board, int id, int flag)
 {
     FILE *fp;
+    int fd;
     char dir[256];
     struct fileheader f;
-    int ent=1;
-    int start,end;
-    int ffind=0;
+    int ent;
 
     sprintf(dir, "boards/%s/.DIR", board);
-    start=0;
-    end=get_num_records(dir,sizeof(struct fileheader))-1;
-    fp = fopen(dir, "r+");
-    if (fp == 0)
-        http_fatal("错误的参数");
-    /* 二分法查找 */
-    while(start<=end){
-        ent=(start+end)/2;
-        fseek(fp,ent*sizeof(struct fileheader),SEEK_SET);
-        if (fread(&f, sizeof(struct fileheader), 1, fp) <= 0)
-            break;
-        if(f.id == id){
-            ffind=1;
-            ent++;
-            break;
-        }else if(f.id < id){
-            start=ent+1;
-        }else{
-            end=ent-1;
-        }
-    }
-    fclose(fp);
 
-    if(ffind){
+    fd = open(dir, O_RDWR, 0644);
+    if( get_records_from_id( fd, id, &f, 1, &ent) ){
+        close(fd);
 	if(change_post_flag(NULL, currentuser, 0, board, ent, &f, dir, flag, 0)!=DONOTHING)
             printf("<tr><td>%s</td><td>标题:%s</td><td>标记成功.</td></tr>\n", f.owner, nohtml(f.title));
 	else
             printf("<tr><td>%s</td><td>标题:%s</td><td>标记不成功.</td></tr>\n", f.owner, nohtml(f.title));
     }else
         printf("<tr><td></td><td></td><td></td><td>文件不存在.</td></tr>\n");
+
+    
 }
 
