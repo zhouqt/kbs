@@ -135,6 +135,7 @@ extern long ti ;
 #define THREAD_DIR ".THREAD"
 #define DIGEST_DIR  ".DIGEST"          /* Name of Directory file info */
 #define NAMEFILE "BoardName"     /* File containing site name of bbs */
+#define BADLOGINFILE    "logins.bad"
 
 #define QUIT 0x666               /* Return value to abort recursive functions */
 #define COUNT 0x2				/* count record */
