@@ -921,6 +921,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 }
                 break;
             case Ctrl('W'):
+            case KEY_PGUP:
                 if(cursory>starty) {
                     y = starty; x = startx;
                     chk = 0;
@@ -947,6 +948,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 }
                 break;
             case Ctrl('S'):
+            case KEY_PGDN:
                 if(cursory<y) {
                     y = starty; x = startx;
                     chk = 0;
@@ -1043,9 +1045,11 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 }
                 break;
             case KEY_HOME:
+            case Ctrl('A'):
                 now=0;
                 break;
             case KEY_END:
+            case Ctrl('E'):
                 now = strlen(buf);
                 break;
             default:

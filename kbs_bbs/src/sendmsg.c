@@ -265,9 +265,11 @@ reenter:
                 else page=0;
                 break;
             case KEY_HOME:
+            case Ctrl('A'):
                 page=0;
                 break;
             case KEY_END:
+            case Ctrl('E'):
                 page=count-1;
                 break;
             case 'i':
