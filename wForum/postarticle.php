@@ -123,6 +123,9 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 		  <input name=subject size=70 maxlength=80 value="<?php echo htmlspecialchars($nowtitle,ENT_QUOTES); ?>">&nbsp;&nbsp;<font color=#ff0000><strong>*</strong></font>不得超过 25 个汉字或50个英文字符
 	 </td>
         </tr>
+<?php
+		/* disabled by atppp
+?>
         <tr>
           <td width=20% valign=top class=TableBody1><b>当前心情</b><br><li>将放在帖子的前面</td>
           <td width=80% class=TableBody1>
@@ -143,58 +146,27 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 ?>
  </td>
         </tr>
-<?php   
+<?php
+    (心情符号，disabled) */
 	if (bbs_is_attach_board($boardArr)) {
 ?>
 <tr>
 <td width=20% valign=middle class=TableBody2>
 <b>文件上传</b>
-<!--
-<select size=1>
-<option value="">允许类型</option>
-<?php 
-/*
-    $iupload=explode('|', $Board_Setting[19]);
-	$len=count($iupload);
-    for ($i=0; $i<$len; $i=$i+1)
-    {
-
-      print "<option value=".$iupload[$i].">".$iupload[$i]."</option>";
-
-    } 
-*/
-?>
-</select>
--->
 </td><td width=80% class=TableBody2>
 <iframe name="ad" frameborder=0 width=100% height=24 scrolling=no src="postupload.php?board=<?php echo $boardName; ?>"></iframe>
 </td></tr>
 <?php   } ?>
         <tr>
-          <td width=20% valign=top class=TableBody1>
-<b>内容</b><br>
-<li>HTML标签： <?php   echo $Board_Setting[5]?"可用":"不可用"; ?>
-<li>UBB标签： <?php   echo $Board_Setting[6]?"可用":"不可用"; ?>
-<li>贴图标签： <?php   echo $Board_Setting[7]?"可用":"不可用"; ?>
-<li>多媒体标签：<?php   echo $Board_Setting[9]?"可用":"不可用"; ?>
-<li>表情字符转换：<?php   echo $Board_Setting[8]?"可用":"不可用"; ?>
-<li>上传图片：<?php   echo $Forum_Setting[3]?"可用":"不可用"; ?>
-<li>最多<?php   echo intval($Board_Setting[16]/1024); ?>KB<BR><BR>
-<B>特殊内容</B><BR>
-<li><?php   echo $Board_Setting[10]?"<a href=\"javascript:money()\" title=\"使用语法：[money=可浏览该部分内容需要金钱数]内容[/money]\">金钱帖</a>":"金钱帖：不可用"; ?>
-<li><?php   echo $Board_Setting[11]?"<a href=\"javascript:point()\" title=\"使用语法：[point=可浏览该部分内容需要积分数]内容[/point]\">积分帖</a>":"积分帖：不可用"; ?>
-<li><?php   echo $Board_Setting[12]?"<a href=\"javascript:usercp()\" title=\"使用语法：[usercp=可浏览该部分内容需要魅力数]内容[/usercp]\">魅力帖</a>":"魅力帖：不可用"; ?>
-<li><?php   echo $Board_Setting[13]?"<a href=\"javascript:power()\" title=\"使用语法：[power=可浏览该部分内容需要威望数]内容[/power]\">威望帖</a>":"威望帖：不可用"; ?>
-<li><?php   echo $Board_Setting[14]?"<a href=\"javascript:article()\" title=\"使用语法：[post=可浏览该部分内容需要文章数]内容[/post]\">文章帖</a>":"文章帖：不可用"; ?>
-<li><?php   echo $Board_Setting[15]?"<a href=\"javascript:replyview()\" title=\"使用语法：[replyview]该部分内容回复后可见[/replyview]\">回复帖</a>":"回复帖：不可用"; ?>
-<li><?php   echo $Board_Setting[23]?"<a href=\"javascript:usemoney()\" title=\"使用语法：[usemoney=浏览该部分内容需要消耗的金钱数]内容[/usemoney]\">出售帖</a>":"出售帖：不可用"; ?>
-	  </td>
+          <td width=20% valign=top class=TableBody1><b>内容</b></td>
           <td width=80% class=TableBody1>
-<?php require_once("inc/ubbmenu.php"); ?>
+<?php 
+    if (ENABLE_UBB) require_once("inc/ubbmenu.php");
+?>
 <textarea class=smallarea cols=95 name=Content id="oArticleContent" rows=12 wrap=VIRTUAL title="可以使用Ctrl+Enter直接提交贴子" class=FormClass onkeydown=ctlent()>
 <?php
     if (($reID > 0) && ($_GET['quote']==1 || OLD_REPLY_STYLE)){
-    	$isquote = ($_GET['quote']==1);
+    	$isquote = ($_GET['quote']==1) && ENABLE_UBB;
 		$filename = $reArticles[1]["FILENAME"];
 		$filename = "boards/" . $boardName. "/" . $filename;
 		if(file_exists($filename))	{
@@ -249,9 +221,11 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 ?></textarea>
           </td>
         </tr>
-
-		<tr>
-                <td class=TableBody1 valign=top colspan=2 style="table-layout:fixed; word-break:break-all"><b>点击表情图即可在帖子中加入相应的表情</B><br>
+<?php
+        if (ENABLE_UBB) {
+?>
+        <tr>
+            <td class=TableBody1 valign=top colspan=2 style="table-layout:fixed; word-break:break-all"><b>点击表情图即可在帖子中加入相应的表情</B><br>
 <?php 
 	for ($i=1; $i<=69; $i++) {
 		if (strlen($i)==1)   {
@@ -265,8 +239,11 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 		echo "<img src=\"emot/em".$ii.".gif\" border=0 onclick=\"insertsmilie('[em".$ii."]')\" style=\"CURSOR: hand\">&nbsp;";
 	} 
 ?>
-    		</td>
-                </tr>
+            </td>
+        </tr>
+<?php
+        }
+?>
                 <tr>
                 <td valign=top class=TableBody1><b>选项</b></td>
                 <td valign=middle class=TableBody1>&nbsp;<select name="signature">
@@ -315,15 +292,14 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 	}
 	if (SUPPORT_TEX) {
 ?>
-    <input type=checkbox name=texflag value="1">使用 tex 发表（ubb 效果将被禁用）
+    <input type=checkbox name=texflag value="1">使用 tex 发表<?php if (ENABLE_UBB) echo "（ubb 效果将被禁用）"; ?>
 <?php
 	}
 ?>
 <BR><BR></td>
 	</tr><tr>
 	<td valign=middle colspan=2 align=center class=TableBody2>
-	<input type=Submit value='发 表' name=Submit id="oSubmit"> &nbsp; <input type=button value='预 览' name=Button onclick=gopreview()>&nbsp;
-<input type=reset name=Submit2 value='清 除' id="oSubmit2">
+	<input type=Submit value='发 表' name=Submit id="oSubmit"> &nbsp;&nbsp;&nbsp; <input type=button value='预 览' name=preview onclick=gopreview()>
                 </td></form></tr>
       </table>
 </form>

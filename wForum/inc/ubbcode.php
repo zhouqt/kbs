@@ -30,6 +30,12 @@ function DvbTexCode($strContent,$filterHTML, $abgcolor='', $is_tex=false)
 
 
 function DvBCode($strContent,$filterHTML, $abgcolor='') {
+    if (!ENABLE_UBB) {
+        $search=array("'(?:http|https|ftp|rtsp|mms):(?://|\\\\)(&(?=amp;)|[A-Za-z0-9\./=\?%\-#_~`@\[\]\':;+!])+'i");
+        $replace=array("<img align=\"absmiddle\" src=\"pic/url.gif\" border=\"0\"/><a target=\"_blank\" href=\"\\0\">\\0</a>");
+        $strContent=preg_replace($search,$replace,$strContent);
+        return $strContent;
+    }
 //IMG Code
 
 	$search = array("'\[IMG\]((?:http|https|ftp)://[^\[]*)\[\/IMG\]'i");
@@ -378,6 +384,7 @@ function DvSignCode($strContent,$PostUserGroup)
 function reUBBCode($strContent)
 {
 	//$strContent=dvHTMLEncode($strContent);
+    if (!ENABLE_UBB) return $strContent;
 
     $search=array("'&nbsp;'",
                 "'\[quote\].*\[/quote\]'iU",

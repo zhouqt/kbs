@@ -1,4 +1,3 @@
-<br>
 ×ÖÌו£÷
 <SELECT onchange="if(this.options[this.selectedIndex].value!=''){showfont(this.options[this.selectedIndex].value);this.options[0].selected=true;}else {this.selectedIndex=0;}" >
 <option value="ËÎÌו" selected>ËÎÌו</option>

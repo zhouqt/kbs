@@ -373,7 +373,7 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 <a href="editarticle.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $thread['ID']; ?>"><img src="pic/edit.gif" border="0" alt="编辑"/></a>&nbsp;
 <a href="deletearticle.php?board=<?php echo $boardName; ?>&amp;ID=<?php echo $thread['ID']; ?>" onclick="return confirm('你真的要删除本文吗?')"><img src="pic/delete.gif" border="0" alt="删除"/></a>&nbsp;
 <?php
-	if (!OLD_REPLY_STYLE) {
+	if (!OLD_REPLY_STYLE && ENABLE_UBB) {
 ?>
 <a href="postarticle.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $thread['ID']; ?>&amp;quote=1"><img src="pic/reply.gif" border="0" alt="引用回复这个贴子"/></a>&nbsp;
 <?php
