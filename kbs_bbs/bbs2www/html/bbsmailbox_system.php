@@ -13,7 +13,7 @@
 		$mail_sysboxtitle = array("收件箱","发件箱","垃圾箱");
 ?>
 <body>
-<center><?php echo $BBS_FULL_NAME;?> -- 信件列表 - 系统预定义邮箱 [使用者: <? echo $currentuser["userid"] ?>]<hr color=green>
+<center><?php echo $BBS_FULL_NAME;?> -- 信件列表 - 系统预定义邮箱 [使用者: <? echo $currentuser["userid"]; ?>]<hr color=green>
 <table width="200">
 <tr><td>序号</td><td>邮箱名称</td><td>邮件封数</td></tr>
 <?php

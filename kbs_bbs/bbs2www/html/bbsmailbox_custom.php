@@ -41,7 +41,7 @@
 
 ?>
 <body>
-<center><?php echo $BBS_FULL_NAME;?> -- 信件列表 - 自定义邮箱 [使用者: <? echo $currentuser["userid"] ?>]<hr color=green>
+<center><?php echo $BBS_FULL_NAME;?> -- 信件列表 - 自定义邮箱 [使用者: <? echo $currentuser["userid"]; ?>]<hr color=green>
 
 <?php
 		if($mailboxs == -1)
