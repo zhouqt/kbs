@@ -1056,7 +1056,7 @@ int safe_mmapfile(char *filename, int openflag, int prot, int flag, void **ret_p
 
     else {
         *ret_fd = fd;
-        flock(fd, LOCK_EX);
+        /* flock(fd, LOCK_EX); disabled by flyriver, 2004.4.5 */
     }
     if (*ret_ptr == MAP_FAILED)
         return 0;
