@@ -160,14 +160,14 @@ int main()
 		printf("[<a href=\"bbscon?board=%s&file=%s&num=%d\">下一篇</a>]",
 				board, x.filename, num+1);
 	}
-	if(num>0 && num<=total) {
-		fseek(fp, sizeof(x)*num, SEEK_SET);
-		fread(&x, sizeof(x), 1, fp);
-        /* 去掉人气值功能 */
-		brc_initial(currentuser->userid, board);
-		brc_add_read(x.filename);
-		brc_update(currentuser->userid);
-	}
+	//if(num>0 && num<=total) {
+	//	fseek(fp, sizeof(x)*num, SEEK_SET);
+	//	fread(&x, sizeof(x), 1, fp);
+    //    /* 去掉人气值功能 */
+	//	brc_initial(currentuser->userid, board);
+	//	brc_add_read(x.filename);
+	//	brc_update(currentuser->userid);
+	//}
 	fclose(fp);
      	ptr=oldx.title;
      	if(!strncmp(ptr, "Re: ", 4)) ptr+=4;
