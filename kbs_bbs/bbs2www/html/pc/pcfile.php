@@ -71,15 +71,15 @@ function pc_file_showfiles($pc,$c_dir,$root_pid)
 	            continue;
 	        if ($file->type==1) {
 	            echo '<tr><td class="t3">Ŀ¼</td>';
-	            $link_url = $_SERVER["PHP_SELF"].'?userid='.$pc["USER"].'&pid='.$file->fid;
+	            $link_url = '<a href="'.$_SERVER["PHP_SELF"].'?userid='.$pc["USER"].'&pid='.$file->fid.'" title="'.htmlspecialchars($file->remark).'">';
 	        }
 	        else {
 	            echo '<tr><td class="t3">'.$start.'</td>';
 	            $start ++;
-	            $link_url = 'pcdownload.php?fid='.$file->fid;
+	            $link_url = '<a href="'.'pcdownload.php?fid='.$file->fid.'" title="'.htmlspecialchars($file->remark).'" target="_blank">';
 	        }
 	        
-    		echo '<td class="t5"><a href="'.$link_url.'" title="'.htmlspecialchars($file->remark).'" target="_blank">'.html_format($file->filename).'</a></td>'.
+    		echo '<td class="t5">'.$link_url.html_format($file->filename).'</a></td>'.
     		     '<td class="t3">'.$file_access[$file->access].'</td>'.
     		     '<td class="t4">'.sizestring($file->filesize).'</td>'.
     		     '<td class="t3">'.html_format($file->filetype).'</td>'.

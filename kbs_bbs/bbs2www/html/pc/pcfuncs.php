@@ -1470,4 +1470,23 @@ function pc_get_userfiles($link,$pc,&$used,&$total)
     return true;
 }
 
+function pc_check_referer() 
+{
+    global $pcconfig,$accept_hosts;
+    if (!$pcconfig["USERFILEREF"])
+        return true;
+    $referer_url = $_SERVER['HTTP_REFERER'];    
+    if (!$referer_url)
+        return true;
+    $referer_url = parse_url($referer_url);
+    $referer_host = $referer_url['host'];
+    $referer_host = gethostbyname($referer_host);
+    foreach ($accept_hosts as $accept_host) {
+        if ($accept_host == $referer_host)
+            return true;
+    }
+    html_error_quit("对不起，该地址无法访问资源");
+    exit() ;
+}
+
 ?>

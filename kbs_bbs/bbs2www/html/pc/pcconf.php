@@ -18,6 +18,7 @@ $pcconfig["TMPSAVETIME"] :开启发文暂存功能时，保存的时间间隔， 单位为秒
 $pcconfig["USERFILES"] :支持用户个人空间,若支持需要定义 _USER_FILE_ROOT_
 $pcconfig["USERFILESLIMIT"]:用户个人空间的默认大小,单位是b
 $pcconfig["USERFILEPERM"]:用户个人空间是否支持权限控制
+$pcconfig["USERFILEREF"] :用户个人空间是否检查HTTP_REFERER以防止盗链,开启此功能时请编辑 $accept_hosts 的预定值
 pc_personal_domainname($userid)函数 :用户Blog的域名;
 */
 $pcconfig["LIST"] = 100;
@@ -38,6 +39,7 @@ $pcconfig["ALLCHARS"] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 $pcconfig["USERFILES"] = true;
 $pcconfig["USERFILESLIMIT"] = 2*1024*1024;
 $pcconfig["USERFILEPERM"]= false;
+$pcconfig["USERFILEREF"] = true;
 $pcconfig["SECTION"] = array(
 			"personal" => "个人空间" ,
 			"literature" => "原创文学" ,
@@ -76,5 +78,16 @@ function pc_personal_domainname($userid)
 }
 
 define('_USER_FILE_ROOT_' , BBS_HOME.'/blogs'); //个人空间根目录位置 需要手工建立
+
+/*
+* $accept_hosts: 当用户个人空间支持反盗链时，检查是否从信任主机上连接过来
+*/
+$accept_hosts = array(
+                '127.0.0.1',
+                '166.111.8.238',
+                '202.112.58.200',
+                '166.111.8.237',
+                '166.111.8.235'
+                );
 /* personal corp. configure end */
 ?>

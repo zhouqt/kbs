@@ -1,6 +1,7 @@
 <?php
     require("userfile.php");
     
+    pc_check_referer();
     if(isset($_GET['fid']))
         $fid = intval($_GET['fid']);
     else
