@@ -3,16 +3,19 @@
 
 # The uid for the user 'bbs'
 
-ifeq (../Makefile.spec ,$(wildcard ../Makefile.spec))
-include	../Makefile.spec
-endif
 
 # The macro "LEEWARD_X_RECORD" need defining for *.c under local_utl */
 #CC       = cc -DAIX -DSYSV -DLEEWARD_X_RECORD
-CC       = cc -g -DLINUX -DSYSV -DLEEWARD_X_RECORD -I../include -I..
+#CC       = cc -g -DLINUX -DSYSV -DLEEWARD_X_RECORD -I../include -I..
 #CPP       = gcc -g -DLINUX -DSYSV -DLEEWARD_X_RECORD -I../include -I..
 PTHREAD = -lpthread
 LIBBSD = -lbsd
+
+all:allthing
+
+ifeq (../Makefile.spec ,$(wildcard ../Makefile.spec))
+include	../Makefile.spec
+endif
 
 CPP=$(CC)
 
@@ -20,55 +23,26 @@ SITE_DEF = -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' -DINVISIBLE
 DEFINES	=  $(CSIE_DEF) $(OS_DEF)
 CFLAGS += -I.. -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' 
 
-BINFILE= poststat static usage Xclean Xhtml Bhtml refriend chlevel listonline syncann printboards MakeTar  showBM
+BINFILE= poststat static usage Xclean Xhtml Bhtml refriend chlevel listonline showBM idx0Ann lazybm
 
 .SUFFIXES: .o .c .ln
 
 .c.o:   ;   $(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL -DBBSMAIN -c $*.c
+.cpp.o:   ;   $(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL -DBBSMAIN -c $*.c
 .c.ln:  ;   lint -abhi $*.c
 
 
-all:  $(BINFILE)
-
-Xclean: clean.o
-	$(CC) -o $@ $^
-
-Xhtml: Xhtml.o
-	$(CC) -o $@ $^
-
-Bhtml: Bhtml.o
-	$(CC) -o $@ $^
-
-poststat: poststat.o
-	$(CC) -o $@ $^
-
-static: static.o
-	$(CC) -o $@ $^
-
-usage:  usage.o ../libBBS.a 
-	$(CC) -o $@ $^
+allthing:  $(BINFILE) printboards MakeTar
 
 clean:
 	rm -rf *.o *~ core $(BINFILE)
 # Modification ends here by Leeward 1997.11
 
-refriend: refriend.o ../libBBS.a
-	$(CC) -o $@ $^
-
-chlevel: chlevel.o ../libBBS.a
-	$(CC) -o $@ $^
+$(BINFILE): % : %.o
+	$(CC) -o $* $^ ../libBBS.a
 
 install: all
-	cp -f $(BINFILE) ../../bin
-
-listonline:listonline.o ../libBBS.a
-	$(CC) -o $@ $^
-
-showBM:showBM.o ../libBBS.a
-	$(CC) -o $@ $^
-
-#bcache.o:bcache.c
-#	gcc -c bcache.c
+	$(INSTALL) $(BINFILE) printboards MakeTar $(BBSHOME)/bin
 
 syncann:syncann.cpp
 	gcc -o syncann syncann.cpp

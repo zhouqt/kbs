@@ -11,16 +11,6 @@ struct
 }      st;
 
 
-char    *Ctime(date)
-time_t  *date;
-{
-        static char buf[80];
-
-        strcpy(buf, (char *)ctime(date));
-        buf[strlen(buf)-1] = '\0';
-        return buf;
-}
-
 main(argc, argv)
   char *argv[];
 {
