@@ -48,7 +48,13 @@ echo $srcutmpnum; ?>">[╩ья╤о╒]</a> <a href="bbsgetmsg.php?refresh">[╨Жбт]</a></t
 ?>
 <meta http-equiv="Refresh" content="60; url=/bbsgetmsg.php">
 <?php
-	}	
+    }
+	else {
+?>
+<meta http-equiv="Refresh" content="600; url=/bbsgetmsg.php">
+<?php	    
+	}
+	
 		}
 		html_normal_quit();
     }
