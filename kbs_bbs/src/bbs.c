@@ -3222,9 +3222,9 @@ int Goodbye()
     move(top + 7, left);
     outs("\x1b[1;47;37m║                                ║\x1b[m");
     move(top + 8, left);
-    outs("\x1b[1;47;37m║        \x1b[42;33m  取消(两下ESC) \x1b[0;47;30m▃\x1b[1;37m      ║\x1b[m");
+    outs("\x1b[1;47;37m║          \x1b[42;33m  取消(ESC) \x1b[0;47;30m▃  \x1b[1;37m      ║\x1b[m");
     move(top + 9, left);
-    outs("\x1b[1;47;37m║          \x1b[0;40;37m▃▃▃▃▃▃▃▃\x1b[1;47;37m      ║\x1b[m");
+    outs("\x1b[1;47;37m║            \x1b[0;40;37m▃▃▃▃▃▃\x1b[1;47;37m        ║\x1b[m");
     move(top + 10, left);
     outs("\x1b[1;47;37m╚════════════════╝\x1b[m");
     outs("\x1b[1;44;37m");
