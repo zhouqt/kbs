@@ -38,8 +38,8 @@ extern "C" {
 
     int flush_ucache();
     int load_ucache();
-    int get_giveupinfo(char* userid,int* basicperm,int s[10][2]);
-	void save_giveupinfo(struct userec* lookupuser,int lcount,int s[10][2]);
+    int get_giveupinfo(char *userid, int *basicperm, int s[10][2]);
+    void save_giveupinfo(struct userec *lookupuser, int lcount, int s[10][2]);
 /* 根据tag ,生成 匹配的user id 列表 (针对所有注册用户)*/
 
 
@@ -50,7 +50,7 @@ extern "C" {
 
 */
     int bbslog(const char *from, const char *fmt, ...);
-    int bmlog(char* id, char* boardname, int type, int value);
+    int bmlog(char *id, char *boardname, int type, int value);
     int init_bbslog();
     void newbbslog(int type, const char *fmt, ...);
 
@@ -81,9 +81,9 @@ extern "C" {
 
     int t_cmpuids(int uid, struct user_info *up);
     int apply_utmp(APPLY_UTMP_FUNC fptr, int maxcount, char *userid, void *arg);
-    int getfriendstr(struct userec* user,struct user_info* puinfo);
+    int getfriendstr(struct userec *user, struct user_info *puinfo);
     int myfriend(int uid, char *fexp);
-    bool hisfriend(int uid,struct user_info* him);
+    bool hisfriend(int uid, struct user_info *him);
 
 /* defined in newio.c */
     void output(char *s, int len);
@@ -112,10 +112,10 @@ extern "C" {
     int del_from_file(char filename[STRLEN], char str[STRLEN]);
     int setpublicshmreadonly(int readonly);
     struct public_data *get_publicshm();        /*获得public shm指针 */
-    char *sethomefile(char *buf, const char *userid, const char *filename); /*取某用户文件 路径 */
+    char *sethomefile(char *buf, const char *userid, const char *filename);     /*取某用户文件 路径 */
     char *sethomepath(char *buf, char *userid); /* 取 某用户 的home */
 
-    char *setmailfile(char *buf, const char *userid, const char *filename); /* 取某用户mail文件 路径 */
+    char *setmailfile(char *buf, const char *userid, const char *filename);     /* 取某用户mail文件 路径 */
     char *setmailpath(char *buf, char *userid); /* 取 某用户 的mail */
     char *setbpath(char *buf, char *boardname); /* 取某版 路径 */
     char *setbfile(char *buf, char *boardname, char *filename); /* 取某版下文件 */
@@ -127,39 +127,39 @@ extern "C" {
     int cmpinames(const char *userid, const char *uv);
     int cmpfnames(char *userid, struct friends *uv);
     int cmpfileinfoname(char *filename, struct fileheader *fi);
-    int dodaemon(char* daemonname,bool single,bool closefd);
+    int dodaemon(char *daemonname, bool single, bool closefd);
 
-    int canIsend2(struct userec* user,char *userid);
+    int canIsend2(struct userec *user, char *userid);
     void sigbus(int signo);
     void encodestr(register char *str);
     int Isspace(char ch);
     char *idle_str(struct user_info *uent);
-	int read_userdata(const char *userid, struct userdata *ud);
-	int write_userdata(const char *userid, const struct userdata *ud);
+    int read_userdata(const char *userid, struct userdata *ud);
+    int write_userdata(const char *userid, const struct userdata *ud);
     void getuinfo(FILE * fn, struct userec *ptr_urec);
     int simplepasswd(char *str);
     void logattempt(char *uid, char *frm);
     int check_ban_IP(char *IP, char *buf);
-	int is_valid_date(int year, int month, int day);
-	int valid_filename(char *file, int use_subdir);
-	int cmpuids2(int unum, struct user_info *urec);
-	unsigned int load_mailbox_prop(char *userid);
-	unsigned int store_mailbox_prop(char *userid);
-	unsigned int get_mailbox_prop(char *userid);
-	unsigned int update_mailbox_prop(char *userid, unsigned int prop);
+    int is_valid_date(int year, int month, int day);
+    int valid_filename(char *file, int use_subdir);
+    int cmpuids2(int unum, struct user_info *urec);
+    unsigned int load_mailbox_prop(char *userid);
+    unsigned int store_mailbox_prop(char *userid);
+    unsigned int get_mailbox_prop(char *userid);
+    unsigned int update_mailbox_prop(char *userid, unsigned int prop);
 
 #define time(x) bbstime(x)
 
 #define BBS_TRY \
-    	if (!sigsetjmp(bus_jump, 1)) { \
-        	signal(SIGBUS, sigbus);
+    if (!sigsetjmp(bus_jump, 1)) { \
+        signal(SIGBUS, sigbus);
 
 #define BBS_CATCH \
-	} \
-	else { \
+    } \
+    else { \
 
 #define BBS_END } \
-	signal(SIGBUS, SIG_IGN);
+    signal(SIGBUS, SIG_IGN);
 
 #define BBS_RETURN(x) {signal(SIGBUS, SIG_IGN);return (x);}
 #define BBS_RETURN_VOID {signal(SIGBUS, SIG_IGN);return;}
@@ -178,11 +178,11 @@ extern "C" {
     int getboardnum(char *bname, struct boardheader *bh);       /* board name --> board No. & not check level */
 
     int add_board(struct boardheader *newboard);
-	void build_board_structure(const char *board);
+    void build_board_structure(const char *board);
     int apply_boards(int (*func) ());   /* 对所有版 应用 func函数 */
     int delete_board(char *boardname, char *title);     /* delete board entry */
     struct boardheader const *getboard(int num);
-    int set_board(int bid, struct boardheader *board,struct boardheader* oldbh);
+    int set_board(int bid, struct boardheader *board, struct boardheader *oldbh);
     struct BoardStatus *getbstatus(int index);  /* 获得版面的发文状态结构 */
     int updatelastpost(char *board);
     int setboardmark(char *board, int i);
@@ -194,8 +194,8 @@ extern "C" {
 /* define in boards.c */
     void detach_boards();
     int anonymousboard(char *board);
-    int load_boards(struct newpostdata *nbrd,char *boardprefix,int pos,int len,bool sort,bool yank_flag,char** input_namelist);
-    void brc_clear_new_flag(unsigned fid);    /* 清除版面的到这篇文章未读标记 */
+    int load_boards(struct newpostdata *nbrd, char *boardprefix, int pos, int len, bool sort, bool yank_flag, char **input_namelist);
+    void brc_clear_new_flag(unsigned fid);      /* 清除版面的到这篇文章未读标记 */
 
     int getfavnum();
     void save_zapbuf();
@@ -214,7 +214,7 @@ extern "C" {
 
     int brc_initial(char *userid, char *boardname);
     char *brc_putrecord(char *ptr, char *name, int num, int *list);
-    int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,char** input_namelist);
+    int fav_loaddata(struct newpostdata *nbrd, int favnow, int pos, int len, bool sort, char **input_namelist);
     /*
      * 保存一个版的brclist 
      */
@@ -235,43 +235,45 @@ extern "C" {
     int is_outgo_board(char *board);
 
 /* define in article.c */
-    /* mmap_search_dir_apply
-     功能:mmap struct fileheader结构的文件，找到需要的记录,
-     找到后调用func,传入start整个文件mmap的开始，ent为记录号
-     根据文章ID做二分查找
-     调用的时候
-     match=true,完全匹配
-     match=false,找到该插入的前一条记录。
+    /*
+     * mmap_search_dir_apply
+     * 功能:mmap struct fileheader结构的文件，找到需要的记录,
+     * 找到后调用func,传入start整个文件mmap的开始，ent为记录号
+     * 根据文章ID做二分查找
+     * 调用的时候
+     * match=true,完全匹配
+     * match=false,找到该插入的前一条记录。
      */
-    typedef int (*DIR_APPLY_FUNC)(int fd,struct fileheader* start,int ent,int total,struct fileheader* data,bool match);
-	typedef int (*search_handler_t)(int fd, fileheader_t *base, int ent, int total, bool match, void *arg);
-	int mmap_dir_search(int fd, const fileheader_t *key, search_handler_t func,
-			void *arg);
-	/**
-	 * Get some records from article id. If this function is successfully
-	 * returned, the article record with the id is put at the center of 
-	 * buf logically. For example, if the user provided an buffer of three
-	 * records, then the article record with the id is copied to buf[1],
-	 * its previous record will be copied to buf[0] (but if the previous
-	 * record is not existed, buf[0] will be filled with zero), and its
-	 * next record will be copied to buf[2] (if the next record is not
-	 * existed, buf[2] will be filled will zero).
-	 *
-	 * @param fd The file descriptor of the .DIR file
-	 * @param id The article id to be searched in the .DIR file
-	 * @param buf The user provided buffer to hold the matched records
-	 * @param num The number of records that the buffer can hold
-	 * @return >0 The number of matched records
-	 *          0 No record matched or execution failed
-	 * @author flyriver
-	 */
-	int get_records_from_id(int fd, int id, fileheader_t *buf, int num);
+    typedef int (*DIR_APPLY_FUNC) (int fd, struct fileheader * start, int ent, int total, struct fileheader * data, bool match);
+    typedef int (*search_handler_t) (int fd, fileheader_t * base, int ent, int total, bool match, void *arg);
+    int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, void *arg);
+/**
+ * Get some records from article id. If this function is successfully
+ * returned, the article record with the id is put at the center of 
+ * buf logically. For example, if the user provided an buffer of three
+ * records, then the article record with the id is copied to buf[1],
+ * its previous record will be copied to buf[0] (but if the previous
+ * record is not existed, buf[0] will be filled with zero), and its
+ * next record will be copied to buf[2] (if the next record is not
+ * existed, buf[2] will be filled will zero).
+ *
+ * @param fd The file descriptor of the .DIR file
+ * @param id The article id to be searched in the .DIR file
+ * @param buf The user provided buffer to hold the matched records
+ * @param num The number of records that the buffer can hold
+ * @return >0 The number of matched records
+ *          0 No record matched or execution failed
+ * @author flyriver
+ */
+    int get_records_from_id(int fd, int id, fileheader_t * buf, int num);
 
+/*加入edit mark*/
+    int add_edit_mark(char *fname, int mode, char *title);
     int get_postfilename(char *filename, char *direct, int use_subdir);
-    int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink, struct fileheader* fh);
-    int mail_file_sent(char *fromid, char *tmpfile, char *userid, char *title, int unlink);/*peregrine*/
-    int update_user_usedspace(int delta,struct userec *user);
-    int getmailnum(char* recmaildir);
+    int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink, struct fileheader *fh);
+    int mail_file_sent(char *fromid, char *tmpfile, char *userid, char *title, int unlink);     /*peregrine */
+    int update_user_usedspace(int delta, struct userec *user);
+    int getmailnum(char *recmaildir);
     int isowner(struct userec *user, struct fileheader *fileinfo);
     int do_del_post(struct userec *user, int ent, struct fileheader *fileinfo, char *direct, char *board, int digestmode, int decpost);
     /*
@@ -301,7 +303,7 @@ extern "C" {
 
 /* bad 2002.8.16 */
     int dele_digest(char *dname, char *direc);
-    int change_post_flag(char* currBM, struct userec* currentuser, int digestmode, char* currboard, int ent, struct fileheader *fileinfo, char *direct, int flag, int prompt);
+    int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, char *currboard, int ent, struct fileheader *fileinfo, char *direct, int flag, int prompt);
 
 /**
  * A function return flag character of an article.
@@ -312,9 +314,9 @@ extern "C" {
  * @return flag character of the article
  * @author flyriver
  */
-    char get_article_flag(struct fileheader *ent, struct userec *user, char* boardname,int is_bm);
-	time_t get_posttime(const struct fileheader *fileinfo);
-	void set_posttime(struct fileheader *fileinfo);
+    char get_article_flag(struct fileheader *ent, struct userec *user, char *boardname, int is_bm);
+    time_t get_posttime(const struct fileheader *fileinfo);
+    void set_posttime(struct fileheader *fileinfo);
 
 /* define in record.c */
     int safewrite(int fd, void *buf, int size);
@@ -327,7 +329,7 @@ extern "C" {
     int search_record(char *filename, void *rptr, int size, RECORD_FUNC_ARG fptr, void *farg);
     long get_num_records(char *filename, int size);
     long get_sum_records(char *fpath, int size);        /*获得.DIR里面文件大小总数 */
-    long get_mailusedspace(struct userec *user,int force); /*peregrine*/
+    long get_mailusedspace(struct userec *user, int force);     /*peregrine */
     int get_record_handle(int fd, void *rptr, int size, int id);
     int get_record(char *filename, void *rptr, int size, int id);
     int delete_range(char *filename, int id1, int id2, int del_mode);
@@ -340,13 +342,13 @@ extern "C" {
                            void *rptr,  /* record data buffer to be used for reading idx file */
                            int sorted); /* if records in file are sorted */
     int del_range(int ent, struct fileheader *fileinfo, char *direct, int mailmode);
-    void load_mail_list(struct userec *user,struct _mail_list* mail_list);
-    void save_mail_list(struct _mail_list* mail_list);
+    void load_mail_list(struct userec *user, struct _mail_list *mail_list);
+    void save_mail_list(struct _mail_list *mail_list);
 
 
 /* define in sysconf.c */
     char *sysconf_str(char *key);
-    int sysconf_eval(char *key,int defaultval);
+    int sysconf_eval(char *key, int defaultval);
     struct smenuitem *sysconf_getmenu(char *menu_name);
     void build_sysconf(char *configfile, char *imgfile);
     void load_sysconf();
@@ -359,7 +361,7 @@ extern "C" {
     int canmsg(struct userec *fromuser, struct user_info *uin);
     int can_override(char *userid, char *whoasks);
     int delfrom_msglist(int utmpnum, char *userid);
-	int msg_can_sendmsg(char *userid, int utmpnum);
+    int msg_can_sendmsg(char *userid, int utmpnum);
 
 /* site.c */
     char *ModeType(int mode);
@@ -370,8 +372,8 @@ extern "C" {
     int safe_kill(int x, int y);
 
     void main_bbs(int convit, char *argv);
-    void get_mail_limit(struct userec* user,int *sumlimit,int * numlimit);
-    
+    void get_mail_limit(struct userec *user, int *sumlimit, int *numlimit);
+
 /* bbs_sendmail.c */
     int chkusermail(struct userec *user);
     int chkreceiver(struct userec *fromuser, struct userec *touser);
@@ -395,11 +397,12 @@ extern "C" {
   return >0 need some extra permission to access it
 */
     int ann_traverse_check(char *path, struct userec *user);
-	/* in site.c */
-	int ann_get_postfilename(char *filename, struct fileheader *fileinfo,
-						MENU *pm);
-	int ann_addto_search(char *group, char *board);
-	int ann_delfrom_search(char *board);
+    /*
+     * in site.c 
+     */
+    int ann_get_postfilename(char *filename, struct fileheader *fileinfo, MENU * pm);
+    int ann_addto_search(char *group, char *board);
+    int ann_delfrom_search(char *board);
 
 
 /* zmodem */
@@ -407,9 +410,9 @@ extern "C" {
 #define FILENAME2POSTTIME(x) (atoi(((char*)x)+2))
 
 /* filter */
-int check_badword(char *checkfile);
-int check_filter(char *patternfile, char *checkfile,int defaultval);
-int check_badword_str(char *string,int str_len);
+    int check_badword(char *checkfile);
+    int check_filter(char *patternfile, char *checkfile, int defaultval);
+    int check_badword_str(char *string, int str_len);
 
 
 #ifdef __cplusplus

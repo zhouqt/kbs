@@ -2202,84 +2202,6 @@ int post_article(char *q_file, struct fileheader *re_file)
     return FULLUPDATE;
 }
 
-int add_edit_mark(char *fname, int mode, char *title)
-{
-    FILE *fp, *out;
-    char buf[256];
-    time_t now;
-    char outname[STRLEN];
-    int step = 0;
-    int added = 0;
-    bool findattach=false;
-
-    if ((fp = fopen(fname, "r")) == NULL)
-        return 0;
-    sprintf(outname, "tmp/%d.editpost", getpid());
-    if ((out = fopen(outname, "w")) == NULL) {
-        fclose(fp);
-        return 0;
-    }
-
-    while ((fgets(buf, 256, fp)) != NULL) {
-        if (!memcmp(buf,ATTACHMENT_PAD,ATTACHMENT_SIZE)) {
-            findattach=true;
-            break;
-        }
-        if (mode == 2) {
-            if (step != 3 && !strncmp(buf, "±ê  Ìâ: ", 8)) {
-                step = 3;
-                fprintf(out, "±ê  Ìâ: %s\n", title);
-                continue;
-            }
-            fputs(buf, out);
-        }
-        
-        if (!strncmp(buf, "[36m¡ù ÐÞ¸Ä:¡¤", 17))
-            continue;
-        if (Origin2(buf)) {
-            now = time(0);
-            if(uinfo.mode == RMAIL)
-                fprintf(out, "[36m¡ù ÐÞ¸Ä:¡¤%s ÓÚ %15.15s ÐÞ¸Ä±¾ÐÅ¡¤[FROM: %15.15s][m\n", currentuser->userid, ctime(&now) + 4, fromhost);
-            else
-                fprintf(out, "[36m¡ù ÐÞ¸Ä:¡¤%s ÓÚ %15.15s ÐÞ¸Ä±¾ÎÄ¡¤[FROM: %15.15s][m\n", currentuser->userid, ctime(&now) + 4, fromhost);
-            step = 3;
-            added = 1;
-        }
-        fputs(buf, out);
-    }
-    if (!added)
-    {
-        now = time(0);
-        fprintf(out, "[36m¡ù ÐÞ¸Ä:¡¤%s ÓÚ %15.15s ÐÞ¸Ä±¾ÐÅ¡¤[FROM: %15.15s][m\n", currentuser->userid, ctime(&now) + 4, fromhost);
-    }
-    if (findattach) {
-        /*»ØÍËÒ»¶¨µÄ×Ö·ûÊý£¬ÕÒµ½Î»ÖÃ*/
-        long pos,ret;
-        char* p;
-        
-        pos=ftell(fp);
-        if (pos>256)
-            fseek(fp,pos-256,SEEK_SET);
-        else
-            fseek(fp,0,SEEK_SET);
-        ret=fread(buf,1,256,fp);
-        p=memmem(buf,256,ATTACHMENT_PAD,ATTACHMENT_SIZE);
-        if (p) {
-            fwrite(p,1,ret-(p-buf),out);
-            while (!feof(fp)) {
-                ret=fread(buf,1,256,fp);
-                fwrite(buf,1,ret,out);
-            }
-        }
-    }
-    fclose(fp);
-    fclose(out);
-
-    f_mv(outname, fname);
-
-    return 1;
-}
-
  /*ARGSUSED*/ int edit_post(int ent, struct fileheader *fileinfo, char *direct)
         /*
          * POST ±à¼­
@@ -2342,7 +2264,7 @@ int add_edit_mark(char *fname, int mode, char *title)
     sprintf(genbuf, "%s/%s", buf, fileinfo->filename);
     if (vedit_post(genbuf, false, &eff_size,&attachpos) != -1) {
         if (ADD_EDITMARK)
-            add_edit_mark(genbuf, 1, /*NULL*/ fileinfo->title);
+            add_edit_mark(genbuf, 0, /*NULL*/ fileinfo->title);
         if (attachpos!=fileinfo->attachment) {
             fileinfo->attachment=attachpos;
             change_post_flag(currBM, currentuser, digestmode, currboard, ent, 
