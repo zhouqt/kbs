@@ -1940,17 +1940,17 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
              * if(!chkreceiver(receiver,NULL))Haohamru.99.4.05
              * FIXME NULL -> lookupuser，在 zixia.net 上是这么改的... 有没有问题？ 
              */
-            if (!HASPERM(currentuser,PERM_SYSOP) && lookupuser->userlevel & PERM_SUICIDE) {
+            if (!HAS_PERM(currentuser,PERM_SYSOP) && lookupuser->userlevel & PERM_SUICIDE) {
                 prints("%s 自杀中，不能收信\n", receiver);
                 return -5;
             }
-            if (!HASPERM(currentuser,PERM_SYSOP) && !(lookupuser->userlevel & PERM_READMAIL)) {
+            if (!HAS_PERM(currentuser,PERM_SYSOP) && !(lookupuser->userlevel & PERM_READMAIL)) {
                 prints("%s 没有收信的权力，不能收信\n", receiver);
                 return -5;
             }
 
 
-            if (!HASPERM(currentuser,PERM_SYSOP) && chkusermail(lookupuser)) {      /*Haohamru.99.4.05 */
+            if (!HAS_PERM(currentuser,PERM_SYSOP) && chkusermail(lookupuser)) {      /*Haohamru.99.4.05 */
                 prints("%s 信箱已满,无法收信\n", receiver);
                 return -4;
             }

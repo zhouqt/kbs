@@ -417,6 +417,7 @@ int choose_board(int newflag, char *boardprefix)
     nbrd = newpost_buffer;
     modify_user_mode(newflag ? READNEW : READBRD);
     brdnum = number = 0;
+    if (chkmail()==1 && yank_flag==3)) num = 0;
 /* show_brdlist( 0, 1, newflag ); *//*
  * * board list显示 的 2次显示问题解决! 96.9.5 alex 
  */
