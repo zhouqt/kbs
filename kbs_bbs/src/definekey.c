@@ -39,8 +39,13 @@ void ask_define()
 {
     struct _select_item *sel;
     int j;
+#ifdef FREE
+    char sname[4][14]={"水木清华", "一塌糊涂", "北大未名", "本站默认"};
+    char fname[4][30]={"service/definekey.smth", "service/definekey.ytht", "service/definekey.pku", "service/definekey.free" };
+#else
     char sname[4][14]={"一塌糊涂", "北大未名", "南大小百合", "本站默认"};
     char fname[4][30]={"service/definekey.ytht", "service/definekey.pku", "service/definekey.nju", "service/definekey.smth"};
+#endif
     clear();
     move(3, 3);
     prints("请选择你习惯的按键模式:");
