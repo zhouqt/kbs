@@ -543,6 +543,13 @@ void outns(const char*str, int n)
                 str+=i+1;
                 continue;
              }
+             else if(*(str+i)=='M') {
+                refresh();
+                output(str, i+1);
+                oflush();
+                str+=i+1;
+                continue;
+             }
              else if(isalpha(*(str+i))) {
                 str+=i+1;
                 continue;
