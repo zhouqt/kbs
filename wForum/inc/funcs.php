@@ -339,9 +339,17 @@ function html_init($charset="",$title="",$otherheader="",$is_mathml=false)
 		$css_style=$DEFAULTStyle;
 	}
 	if ($is_mathml) {
+		if (strpos($_SERVER["HTTP_USER_AGENT"], "MSIE") === false) {
+			$eee = " encoding=\"$charset\"";
+		} else {
+			$eee = ""; //fuck, IE doesn't understand that.
+			if (stristr($_SERVER["HTTP_USER_AGENT"], "MathPlayer") === false) {
+				$is_mathml = false;
+			}
+		}
+	}
+	if ($is_mathml) {
 		header("Content-Type: application/xhtml+xml");
-		if (strpos($_SERVER["HTTP_USER_AGENT"], "MSIE") === false) $eee = " encoding=\"$charset\"";
-		else $eee = ""; //fuck, IE doesn't understand that.
 ?>
 <?xml version="1.0"<?php echo $eee; ?>?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
