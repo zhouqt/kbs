@@ -56,7 +56,7 @@ void disply_userinfo(u, real)
 #endif
 
     if (real) {
-        prints("真实 E-mail  : %s\n", ud.realemail);
+        prints("原始注册资料 : %s\n", ud.realemail);
     }
     prints("注册日期     : %s", ctime(&u->firstlogin));
     prints("最近光临日期 : %s", ctime(&u->lastlogin));
