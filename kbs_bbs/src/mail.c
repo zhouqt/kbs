@@ -2241,6 +2241,7 @@ static int maillist_show(struct _select_def *conf, int pos)
         setmailfile(buf, currentuser->userid, dirbstr);
         prints("(%d)", getmailnum(buf));
     }
+    return SHOW_CONTINUE;
 }
 
 static int maillist_onselect(struct _select_def *conf)

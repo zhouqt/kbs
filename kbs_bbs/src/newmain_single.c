@@ -1008,7 +1008,6 @@ void showtitle( char *title, char*mid)
     }
 /* Modified by Leeward 97/11/23 -- modification stops */
     move(0, 0);
-    clrtoeol();
     sprintf(buf, "%*s", spc1, "");
     if (!strcmp(mid, BBS_FULL_NAME)) {
 		if (DEFINE(currentuser,DEF_HIGHCOLOR))
@@ -1030,7 +1029,8 @@ void showtitle( char *title, char*mid)
         prints("%s", stitle);
     }
     sprintf(buf, "%*s", spc2, "");
-    prints("%s[33m%s[m\n", buf, note);
+    prints("%s[33m%s[m", buf, note);
+    clrtoeol();
     move(1, 0);
 }
 
