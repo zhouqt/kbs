@@ -238,6 +238,7 @@ static int check_newpost(struct newpostdata *ptr)
     if (bptr == NULL)
         return 0;
     ptr->total = bptr->total;
+    ptr->currentusers = bptr->currentusers;
 
 #ifdef HAVE_BRC_CONTROL
     if (!brc_initial(currentuser->userid, ptr->name)) {
@@ -405,7 +406,7 @@ static int fav_show(struct _select_def *conf, int pos)
         sprintf(buf, "%s", ptr->title + 1);
 
     if ((ptr->dir >= 1)&&arg->favmode)          /* added by bad 2002.8.3*/
-        prints("%-50s\n", buf);
+        prints("%-50s", buf);
     else {
           char flag[20];
           char f;
@@ -427,8 +428,15 @@ static int fav_show(struct _select_def *conf, int pos)
 	       } else if (f!=' ') {
 	           sprintf(flag,"\x1b[1;33m%c\x1b[m",f);
           } else sprintf(flag,"%c",f);
-          prints("%c%-16s %s%s%-36s %-12s\n", ((ptr->zap && !(ptr->flag & BOARD_NOZAPFLAG)) ? '*' : ' '), ptr->name, (ptr->flag & BOARD_VOTEFLAG) ? "[31;1mV[m" : " ", flag, buf, ptr->BM[0] <= ' ' ? "³ÏÕ÷°æÖ÷ÖÐ" : strtok(tmpBM, " ")); /*µÚÒ»¸ö°æÖ÷ */
+          prints("%c%-16s %s%s%-36s %-12s", ((ptr->zap && !(ptr->flag & BOARD_NOZAPFLAG)) ? '*' : ' '), ptr->name, (ptr->flag & BOARD_VOTEFLAG) ? "[31;1mV[m" : " ", flag, buf, ptr->BM[0] <= ' ' ? "³ÏÕ÷°æÖ÷ÖÐ" : strtok(tmpBM, " ")); /*µÚÒ»¸ö°æÖ÷ */
+        if(scr_cols>=80+5) {
+            int x,y;
+            getyx(&y, &x);
+            move(y, 81);
+            prints("%4d", ptr->currentusers);
+        }
     }
+    prints("\n");
     return SHOW_CONTINUE;
 }
 
@@ -1017,8 +1025,12 @@ static void fav_refresh(struct _select_def *conf)
     move(2, 0);
     setfcolor(WHITE, DEFINE(currentuser, DEF_HIGHCOLOR));
     setbcolor(BLUE);
-    prints("  %s ÌÖÂÛÇøÃû³Æ        V Àà±ð ×ªÐÅ  %-24s °æ  Ö÷     ", arg->newflag ? "È«²¿ Î´¶Á" : "±àºÅ Î´¶Á", "ÖÐ  ÎÄ  Ðð  Êö");
     clrtoeol();
+    prints("  %s ÌÖÂÛÇøÃû³Æ        V Àà±ð ×ªÐÅ  %-24s °æ  Ö÷     ", arg->newflag ? "È«²¿ Î´¶Á" : "±àºÅ Î´¶Á", "ÖÐ  ÎÄ  Ðð  Êö");
+    if(scr_cols>=80+5) {
+        move(2, 81);
+        prints("ÔÚÏß");
+    }
     if (!arg->loop_mode)
         update_endline();
     else {

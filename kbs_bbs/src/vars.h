@@ -64,6 +64,7 @@ struct newpostdata {
     unsigned int flag;
     int pos; /*如果是版面，这个是版面的bcache位置,如果是收藏夹，是收藏家的flag*/
     int total, tag;
+    int currentusers;
     char unread, zap;
     int (*fptr) ();
 };
