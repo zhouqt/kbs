@@ -224,7 +224,7 @@ static int a_select_path_onselect(struct _select_def *conf)
     		char ans[STRLEN];
     		a_prompt(-2, "要覆盖已有的丝路么？(Y/N) [N]", ans);
     		if (toupper(ans[0])!='Y')
-    		    return SHOW_CONTINUE;
+    		    return SHOW_REFRESH;
     	}
     }
     return SHOW_SELECT;

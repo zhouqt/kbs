@@ -1146,10 +1146,12 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
     int B;                      /* Leeward: 表示按的是 B(-1) 还是 b(+1) */
     int ori_top, ori_crs;       /* Leeward 98.10.03 add these 3 ori_...  and Xflag */
     char ori_file[STRLEN];
+    int ret;
 
 /*    int Xflag = (-1003 != passonly )? 0 : !(passonly = 0);奇怪啊KCN */
     int Xflag = (-1003 != passonly) ? 0 : (passonly = 0, 1);
 
+    ret=0;
     path[0]=0;
     strncpy(ori_file, ptitle->filename, FILENAME_LEN);
     B = (passonly < 0 ? -1 : 1);        /* Leeward 98.04.16 */
@@ -1279,7 +1281,8 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
             digest_post(locmem->crs_line, &SR_fptr, currdirect);
             break;
         case SR_BMIMPORT:
-            a_Import(path, currboard, &SR_fptr, true, currdirect, locmem->crs_line);     /* Leeward 98.04.15 */
+            if (a_Import(path, currboard, &SR_fptr, true, currdirect, locmem->crs_line)!=0);     /* Leeward 98.04.15 */
+	        ret++;
             break;
         case SR_BMTMP:         /* Leeward 98.04.16 */
             if (-1 == B)
@@ -1414,6 +1417,11 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
     /*
      * Leeward 98.10.02 add all below except last "return 1" 
      */
+    if (ret!=0) {
+	    move(t_lines-2,0);
+	    prints("收入过程中共有%d篇文章出现错误");
+	    pressanykey();
+    };
     if (Xflag) {
         if (search_file(ori_file) != ori_crs)
 #ifndef NINE_BUILD		
