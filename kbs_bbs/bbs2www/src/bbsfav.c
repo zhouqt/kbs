@@ -25,7 +25,7 @@ int cmpboard(brd, tmp)          /*ÅÅÐòÓÃ */
 {
     register int type = 0;
 
-    if (!(currentuser->flags[0] & BRDSORT_FLAG)) {
+    if (!(currentuser->flags & BRDSORT_FLAG)) {
         type = brd->title[0] - tmp->title[0];
         if (type == 0)
             type = strncasecmp(brd->title + 1, tmp->title + 1, 6);

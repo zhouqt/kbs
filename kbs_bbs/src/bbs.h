@@ -225,11 +225,9 @@ O MaxMessageSize=32000
 /* these are flags in userec.flags[0] */
 #define PAGER_FLAG   0x1        /* true if pager was OFF last session */
 #define CLOAK_FLAG   0x2        /* true if cloak was ON last session */
-#define SIG_FLAG     0x8        /* true if sig was turned OFF last session */
 #define BRDSORT_FLAG 0x20       /* true if the boards sorted alphabetical */
 #define CURSOR_FLAG  0x80       /* true if the cursor mode open */
 #define GIVEUP_FLAG  0x4        /* true if the user is giving up  by bad 2002.7.6 */
-#define ACTIVE_BOARD 0x200
 /* For All Kinds of Pagers */
 #define ALL_PAGER       0x1
 #define FRIEND_PAGER    0x2

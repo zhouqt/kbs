@@ -218,8 +218,8 @@ int updateauser(struct userec *theuser, char *data)
                 s[i][1] = 0;
             }
         }
-        if (theuser->flags[0] & GIVEUP_FLAG && tcount == 0)
-            theuser->flags[0] &= ~GIVEUP_FLAG;
+        if (theuser->flags & GIVEUP_FLAG && tcount == 0)
+            theuser->flags &= ~GIVEUP_FLAG;
         if (tcount == 0)
             unlink(genbuf);
         else {

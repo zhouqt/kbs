@@ -347,7 +347,7 @@ static int domenu_screen(struct smenuitem *dopm, char *cmdprompt)
 /*    if(!DEFINE(currentuser,DEF_NORMALSCR))
  */
     clear();
-    help = (currentuser->flags[0] & CURSOR_FLAG);
+    help = (currentuser->flags & CURSOR_FLAG);
     line = 3;
     col = 0;
     num = 0;
@@ -474,7 +474,7 @@ char *menu_name;
             if (now >= size)
                 now = 0;
         }
-        if (currentuser->flags[0] & CURSOR_FLAG) {
+        if (currentuser->flags & CURSOR_FLAG) {
             move(menupos[base + now].line, menupos[base + now].col);
             prints("¡ô");
         }
@@ -485,7 +485,7 @@ char *menu_name;
         prints("]");
         clrtoeol();
         cmd = igetkey();
-        if (currentuser->flags[0] & CURSOR_FLAG) {
+        if (currentuser->flags & CURSOR_FLAG) {
             move(menupos[base + now].line, menupos[base + now].col);
             prints("  ");
         }

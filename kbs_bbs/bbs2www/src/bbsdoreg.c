@@ -92,8 +92,8 @@ int main()
     x.notemode = -1;
     x.unuse1 = -1;
     x.unuse2 = -1;
-    x.flags[0] = CURSOR_FLAG | PAGER_FLAG;
-    x.flags[1] = 0;
+    x.flags = CURSOR_FLAG | PAGER_FLAG;
+    x.title = 0;
     allocid = getnewuserid2(x.userid);
     if (allocid > MAXUSERS || allocid <= 0)
         http_fatal("抱歉, 由于某些系统原因, 无法注册新的帐号.");

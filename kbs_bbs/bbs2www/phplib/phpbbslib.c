@@ -2278,9 +2278,9 @@ static PHP_FUNCTION(bbs_createnewid)
 	newuser.userdefine &= ~DEF_NOTMSGFRIEND;
 	newuser.notemode = -1;
 	newuser.exittime = time(NULL) - 100;
-	newuser.flags[0] = CURSOR_FLAG;
-	newuser.flags[0] |= PAGER_FLAG;
-	newuser.flags[1] = 0;
+	newuser.flags = CURSOR_FLAG;
+	newuser.flags |= PAGER_FLAG;
+	newuser.title = 0;
 
 	//∑÷≈‰ID∫≈
 	allocid = getnewuserid2(newuser.userid);

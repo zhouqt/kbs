@@ -753,7 +753,7 @@ static int fav_key(struct _select_def *conf, int command)
             return SHOW_REFRESH;
         }
     case 'S':
-        currentuser->flags[0] ^= BRDSORT_FLAG;  /*排序方式 */
+        currentuser->flags ^= BRDSORT_FLAG;  /*排序方式 */
         return SHOW_DIRCHANGE;
     case 's':                  /* sort/unsort -mfchen */
         if (do_select(0, NULL, genbuf) == CHANGEMODE) {
@@ -938,7 +938,7 @@ static int fav_key(struct _select_def *conf, int command)
         break;
     case 'm':
         if (arg->yank_flag == BOARD_FAV) {
-            if (currentuser->flags[0] & BRDSORT_FLAG) {
+            if (currentuser->flags & BRDSORT_FLAG) {
                 move(0, 0);
                 prints("排序模式下不能移动，请用'S'键切换!");
                 pressreturn();
@@ -1076,9 +1076,9 @@ static int fav_getdata(struct _select_def *conf, int pos, int len)
     	}
     }
     if (pos==-1) 
-        fav_loaddata(NULL, arg->father,1, conf->item_count,currentuser->flags[0] & BRDSORT_FLAG,arg->namelist);
+        fav_loaddata(NULL, arg->father,1, conf->item_count,currentuser->flags & BRDSORT_FLAG,arg->namelist);
     else
-        conf->item_count = fav_loaddata(arg->nbrd, arg->father,pos, len,currentuser->flags[0] & BRDSORT_FLAG,NULL);
+        conf->item_count = fav_loaddata(arg->nbrd, arg->father,pos, len,currentuser->flags & BRDSORT_FLAG,NULL);
     return SHOW_CONTINUE;
 }
 
@@ -1094,9 +1094,9 @@ static int boards_getdata(struct _select_def *conf, int pos, int len)
     	}
     }
     if (pos==-1) 
-         load_boards(NULL, arg->boardprefix,arg->father,1, conf->item_count,currentuser->flags[0] & BRDSORT_FLAG,arg->yank_flag,arg->namelist);
+         load_boards(NULL, arg->boardprefix,arg->father,1, conf->item_count,currentuser->flags & BRDSORT_FLAG,arg->yank_flag,arg->namelist);
     else
-         conf->item_count = load_boards(arg->nbrd, arg->boardprefix,arg->father,pos, len,currentuser->flags[0] & BRDSORT_FLAG,arg->yank_flag,NULL);
+         conf->item_count = load_boards(arg->nbrd, arg->boardprefix,arg->father,pos, len,currentuser->flags & BRDSORT_FLAG,arg->yank_flag,NULL);
     return SHOW_CONTINUE;
 }
 int choose_board(int newflag, char *boardprefix,int group,int favmode)

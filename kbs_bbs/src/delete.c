@@ -432,9 +432,9 @@ PERM_DENYRELAX娱乐
             tcount++;
 
         if (lcount + tcount == 6)
-            currentuser->flags[0] |= GIVEUP_FLAG;
+            currentuser->flags |= GIVEUP_FLAG;
         else
-            currentuser->flags[0] &= ~GIVEUP_FLAG;
+            currentuser->flags &= ~GIVEUP_FLAG;
 
         prints("\n\n你已经开始戒网了");
         pressanykey();

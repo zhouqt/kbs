@@ -155,7 +155,7 @@ int uleveltochar(char *buf, struct userec *lookupuser)
     lvl = lookupuser->userlevel;
     strncpy(userid, lookupuser->userid, IDLEN + 2);
 
-    if (!(lvl & PERM_BASIC) && !(lookupuser->flags[0] & GIVEUP_FLAG)) {
+    if (!(lvl & PERM_BASIC) && !(lookupuser->flags & GIVEUP_FLAG)) {
         strcpy(buf, "新人");
         return 0;
     }
@@ -188,14 +188,14 @@ int uleveltochar(char *buf, struct userec *lookupuser)
         strcpy(buf, "荣誉");
     /* Bigman: 修改显示 2001.6.24 */
     else if (lvl & (PERM_LOGINOK)) {
-        if (lookupuser->flags[0] & GIVEUP_FLAG)
+        if (lookupuser->flags & GIVEUP_FLAG)
             strcpy(buf, "戒网");
         else if (!(lvl & (PERM_CHAT)) || !(lvl & (PERM_PAGE)) || !(lvl & (PERM_POST)) 
         		|| (lvl & (PERM_DENYMAIL)) || (lvl & (PERM_DENYRELAX)))
             strcpy(buf, "受限");
         else
             strcpy(buf, "用户");
-    } else if (lookupuser->flags[0] & GIVEUP_FLAG)
+    } else if (lookupuser->flags & GIVEUP_FLAG)
         strcpy(buf, "戒网");
     else if (!(lvl & (PERM_CHAT)) && !(lvl & (PERM_PAGE)) && !(lvl & (PERM_POST)))
         strcpy(buf, "新人");

@@ -146,7 +146,7 @@ void u_enter()
 /*    if( HAS_PERM(currentuser,PERM_LOGINCLOAK) && (currentuser->flags[0] & CLOAK_FLAG) && HAS_PERM(currentuser,PERM_SEECLOAK)) */
 
     /* Bigman 2000.8.29 ÖÇÄÒÍÅÄÜ¹»ÒþÉí */
-    if ((HAS_PERM(currentuser, PERM_CHATCLOAK) || HAS_PERM(currentuser, PERM_CLOAK)) && (currentuser->flags[0] & CLOAK_FLAG))
+    if ((HAS_PERM(currentuser, PERM_CHATCLOAK) || HAS_PERM(currentuser, PERM_CLOAK)) && (currentuser->flags & CLOAK_FLAG))
         uinfo.invisible = true;
     uinfo.mode = LOGIN;
     uinfo.pager = 0;
@@ -154,7 +154,7 @@ void u_enter()
     if (DEFINE(currentuser, DEF_FRIENDCALL)) {
         uinfo.pager |= FRIEND_PAGER;
     }
-    if (currentuser->flags[0] & PAGER_FLAG) {
+    if (currentuser->flags & PAGER_FLAG) {
         uinfo.pager |= ALL_PAGER;
         uinfo.pager |= FRIEND_PAGER;
     }
@@ -190,11 +190,11 @@ void u_enter()
 void setflags(mask, value)
     int mask, value;
 {
-    if (((currentuser->flags[0] & mask) && 1) != value) {
+    if (((currentuser->flags & mask) && 1) != value) {
         if (value)
-            currentuser->flags[0] |= mask;
+            currentuser->flags |= mask;
         else
-            currentuser->flags[0] &= ~mask;
+            currentuser->flags &= ~mask;
     }
 }
 
@@ -584,7 +584,7 @@ void login_query()
             exit(1);
         } else if ( /*strcmp */ strcasecmp(uid, "guest") == 0) {
             currentuser->userlevel = PERM_DENYMAIL|PERM_DENYRELAX;
-            currentuser->flags[0] = CURSOR_FLAG | PAGER_FLAG;
+            currentuser->flags = CURSOR_FLAG | PAGER_FLAG;
             break;
         } else {
             if (!convcode)

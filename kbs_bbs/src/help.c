@@ -61,6 +61,6 @@ int mailreadhelp()
 
 void Help()
 {
-    currentuser->flags[0] ^= CURSOR_FLAG;
+    currentuser->flags ^= CURSOR_FLAG;
     clear();
 }

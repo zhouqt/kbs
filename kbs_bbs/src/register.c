@@ -138,9 +138,9 @@ void new_register()
     newuser.notemode = -1;
     newuser.exittime = time(NULL) - 100;
     /*newuser.unuse2 = -1;*/
-    newuser.flags[0] = CURSOR_FLAG;
-    newuser.flags[0] |= PAGER_FLAG;
-    newuser.flags[1] = 0;
+    newuser.flags = CURSOR_FLAG;
+    newuser.flags |= PAGER_FLAG;
+    newuser.title = 0;
     newuser.firstlogin = newuser.lastlogin = time(NULL);
 
     allocid = getnewuserid2(newuser.userid);
@@ -628,9 +628,9 @@ void ConveyID()
 
         currentuser->notemode = -1;
 
-        currentuser->flags[0] = CURSOR_FLAG;
-        currentuser->flags[0] |= PAGER_FLAG;
-        currentuser->flags[1] = 0;
+        currentuser->flags = CURSOR_FLAG;
+        currentuser->flags |= PAGER_FLAG;
+        currentuser->title = 0;
 		for(i = 0; i < MAXCLUB>>5 ; i++){
 		    currentuser->club_read_rights[i] = 0;
 			currentuser->club_write_rights[i] = 0;

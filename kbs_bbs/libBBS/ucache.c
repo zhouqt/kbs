@@ -837,9 +837,9 @@ void save_giveupinfo(struct userec* lookupuser,int lcount,int s[10][2])
         tcount++;
 
     if (kcount + tcount == 6 && kcount > 0)
-        lookupuser->flags[0] |= GIVEUP_FLAG;
+        lookupuser->flags |= GIVEUP_FLAG;
     else
-        lookupuser->flags[0] &= ~GIVEUP_FLAG;
+        lookupuser->flags &= ~GIVEUP_FLAG;
 }
 
 #if USE_TMPFS==1
