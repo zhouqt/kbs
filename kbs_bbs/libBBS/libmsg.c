@@ -219,164 +219,6 @@ int store_msgfile(char *uident, char *msgbuf)
     return 0;
 }
 
-int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
-{
-    char uident[STRLEN], ret_str[20];
-    FILE *fp;
-    time_t now;
-    struct user_info *uin;
-    char buf[80], msgbuf[256], *timestr, msgbak[256];
-    int msg_count = 0;
-    int Gmode = 0;
-
-    *msgbak = 0;                /* period 2000-11-20 may be used without init */
-    *msgbuf = 0;
-    *msgerr = 0;                /* clear msg error */
-    {
-        /*
-         * if(!strcasecmp(uentp->userid,currentuser->userid))  rem by Haohmaru,’‚—˘≤≈ø…“‘◊‘º∫∏¯◊‘º∫∑¢msg
-         * return 0;    
-         */ uin = uentp;
-        strcpy(uident, uin->userid);
-        /*
-         * strcpy(MsgDesUid, uin->userid); change by KCN,is wrong 
-         */
-    }
-    if (!HAS_PERM(currentuser, PERM_SEECLOAK) && uin->invisible && strcmp(uin->userid, currentuser->userid) && mode != 4)
-        return -2;
-    if ((mode != 3) && (LOCKSCREEN == uin->mode)) {     /* Leeward 98.02.28 */
-        strcpy(msgerr, "∂‘∑Ω“—æ≠À¯∂®∆¡ƒª£¨«Î…‘∫Ú‘Ÿ∑¢ªÚ∏¯À˚(À˝)–¥–≈...\n");
-        return -1;
-    }
-	if ((mode != 3) && (uin->mode == BBSNET)) /* flyriver, 2002.9.12 */
-	{
-        /*sprintf(msgerr, "∂‘∑Ω’˝‘⁄%s£¨«Î…‘∫Ú‘Ÿ∑¢ªÚ∏¯À˚(À˝)–¥–≈...\n",ModeType(BBSNET));*/
-		strcpy(msgerr, "∂‘∑Ω…–”–“ª–©—∂œ¢Œ¥¥¶¿Ì£¨«Î…‘∫Ú‘Ÿ∑¢ªÚ∏¯À˚(À˝)–¥–≈...\n");
-        return -1;
-	}
-    if ((mode != 3) && (false == canIsend2(currentuser,uin->userid))) {     /*Haohmaru.06.06.99.ºÏ≤È◊‘º∫ «∑Ò±ªignore */
-        strcpy(msgerr, "∂‘∑Ωæ‹æ¯Ω” ‹ƒ„µƒ—∂œ¢...\n");
-        return -1;
-    }
-    if (mode != 3 && uin->mode != WEBEXPLORE) {
-        sethomefile(buf, uident, "msgcount");
-        fp = fopen(buf, "rb");
-        if (fp != NULL) {
-            fread(&msg_count, sizeof(int), 1, fp);
-            fclose(fp);
-            if (msg_count > MAXMESSAGE) {
-                strcpy(msgerr, "∂‘∑Ω…–”–“ª–©—∂œ¢Œ¥¥¶¿Ì£¨«Î…‘∫Ú‘Ÿ∑¢ªÚ∏¯À˚(À˝)–¥–≈...\n");
-                return -1;
-            }
-        }
-    }
-    if (msgstr == NULL) {
-        /*
-         * per-sending check only 
-         */
-        return 0;
-    }
-    now = time(0);
-    timestr = ctime(&now) + 11;
-    *(timestr + 8) = '\0';
-    strcpy(ret_str, "R ªÿ—∂œ¢");
-    if (mode == 0 || mode == 2 || mode == 4) {
-        sprintf(msgbuf, "[44m\x1b[36m%-12.12s[33m(%-5.5s):[37m%-59.59s[m[%dm\033[%dm\n", currentuser->userid, timestr, msgstr, getuinfopid() + 100, uin->pid + 100);
-        sprintf(msgbak, "[44m\x1b[0;1;32m=>[37m%-10.10s[33m(%-5.5s):[36m%-59.59s[m[%dm\033[%dm\n", uident, timestr, msgstr, getuinfopid() + 100, uin->pid + 100);
-    } else {
-        if (mode == 3) {
-            sprintf(msgbuf, "[44m\x1b[33m’æ≥§”⁄ %8.8s  ±π„≤•£∫" "[37m%-55.55s[m\033[%dm\n",
-                    /*
-                     * "[37m%-59.59s[m\033[%dm\n", 
-                     */
-                    timestr, msgstr, uin->pid + 100);
-        } else if (mode == 1) {
-            sprintf(msgbuf, "[44m\x1b[36m%-12.12s(%-5.5s) —˚«Îƒ„[37m%-43.43s(%s)[m[%dm\033[%dm\n", currentuser->userid, timestr, msgstr, ret_str, getuinfopid() + 100, uin->pid + 100);
-            sprintf(msgbak, "[44m\x1b[37mƒ„(%-5.5s) —˚«Î%-12.12s[36m%-43.43s(%s)[m[%dm\033[%dm\n", timestr, uident, msgstr, ret_str, getuinfopid() + 100, uin->pid + 100);
-        } else if (mode == 3) {
-            sprintf(msgbuf, "[44m\x1b[32mBBS œµÕ≥Õ®∏Ê(%-5.5s):[37m%-59.59s[31m(%s)[m\033[%dm\n", timestr, msgstr, ret_str, uin->pid + 100);
-        } else if (mode == 5) {
-	    sprintf(msgbuf,
-		"\x1b[45m\x1b[36m%-12.12s\x1b[33m(\x1b[36m%-5.5s\x1b[33m):\x1b[37m%-54.54s\x1b[31m(%s)\x1b[m\x1b[%05dm\n",
-		currentuser->userid, timestr,
-		(msgstr == NULL) ? buf : msgstr, ret_str,
-		uin->pid+100);
-
-	}
-    }
-    if (Gmode == 2)
-        sprintf(msgbuf, "[44m\x1b[33m’æ≥§”⁄ %8.8s  ±π„≤•£∫[37m%-59.59s[m\033[%dm\n", timestr, buf, uin->pid + 100);
-#ifdef BBSMAIN
-    if (uin->mode == WEBEXPLORE) {
-        if (send_webmsg(get_utmpent_num(uin), uident, utmpent, currentuser->userid, msgbuf) < 0) {
-            strcpy(msgerr, "send web message failed...\n");
-            return -1;
-        }
-        if (store_msgfile(uident, msgbuf) < 0)
-            return -2;
-        /*
-         * Haohmaru.99.6.03.ªÿµƒmsg“≤º«¬º 
-         */
-        if (strcmp(currentuser->userid, uident)) {
-            if (store_msgfile(currentuser->userid, msgbak) < 0)
-                return -2;
-        }
-        return 1;
-    }
-#endif                          /* 
-                                 */
-    /*
-     * ºÏ≤ÈÀ˘∑¢msgµƒƒøµƒuid «∑Ò“—æ≠∏ƒ±‰  1998.7.5 by dong 
-     */
-    uin = t_search(MsgDesUid, uentp->pid);
-    if ((uin == NULL) || (uin->active == 0) || (uin->pid == 0) || ((kill(uin->pid, 0) != 0) && (uentp->pid != 1))) {    /*
-                                                                                                                         * uin=t_search(MsgDesUid, false);
-                                                                                                                         * if ((uin == NULL) || (uin->active == 0) || (uin->pid == 0) || (kill(uin->pid, 0) !=0)){ */
-        if (mode == 0)
-            return -2;
-        strcpy(msgerr, "∂‘∑Ω“—æ≠¿Îœﬂ....\n");
-        return -1;              /* ∂‘∑Ω“—æ≠¿Îœﬂ */
-        /*
-         * } 
-         */
-    }
-    /*
-     * sethomefile(buf,uident,"msgfile");
-     * if((fp=fopen(buf,"a"))==NULL)
-     * return -2;
-     * fputs(msgbuf,fp);
-     * fclose(fp); 
-     */
-    if (store_msgfile(uident, msgbuf) < 0)
-        return -2;
-    /*
-     * Haohmaru.99.6.03.ªÿµƒmsg“≤º«¬º 
-     */
-    if (strcmp(currentuser->userid, uident)) {
-        /*
-         * sethomefile(buf,currentuser->userid,"msgfile");
-         * if((fp=fopen(buf,"a"))==NULL)
-         * return -2;
-         * fputs(msgbak,fp);
-         * fclose(fp); 
-         */
-        if (store_msgfile(currentuser->userid, msgbak) < 0)
-            return -2;
-    }
-    if (uentp->pid != 1 && kill(uin->pid, SIGUSR2) == -1 && msgstr == NULL) {
-        strcpy(msgerr, "\n∂‘∑Ω“—æ≠¿Îœﬂ.....\n");
-        return -1;
-    }
-    sethomefile(buf, uident, "msgcount");
-    fp = fopen(buf, "wb");
-    if (fp != NULL) {
-        msg_count++;
-        fwrite(&msg_count, sizeof(int), 1, fp);
-        fclose(fp);
-    }
-    return 1;
-}
-
 int msg_can_sendmsg(char *userid, int utmpnum)
 {
     struct userec *x;
@@ -538,6 +380,44 @@ int get_unreadmsg(char *uident)
     return ret;
 }
 
+int get_unreadcount(char *uident)
+{
+    char fname[STRLEN];
+    int fd, i, j, count, ret;
+    struct flock ldata;
+    struct stat buf;
+
+    sethomefile(fname, uident, "msgindex");
+
+    if ((fd = open(fname, O_RDWR | O_CREAT, 0664)) == -1) {
+        bbslog("user", "%s", "msgopen err");
+        return 0;              /* ¥¥Ω®Œƒº˛∑¢…˙¥ÌŒÛ*/
+    }
+    ldata.l_type = F_RDLCK;
+    ldata.l_whence = 0;
+    ldata.l_len = 0;
+    ldata.l_start = 0;
+    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+        bbslog("user", "%s", "msglock err");
+        close(fd);
+        return 0;              /* lock error*/
+    }
+    fstat(fd, &buf);
+    count = buf.st_size/4-1;
+    if (count<0) ret = 0;
+    else {
+        read(fd, &ret, 4);
+        if(ret >= count) ret = 0;
+        else
+            ret = count-ret;
+    }
+
+    ldata.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &ldata);
+    close(fd);
+    return ret;
+}
+
 int load_msgtext(char *uident, int index, char *msgbuf)
 {
     char fname[STRLEN], fname2[STRLEN];
@@ -596,4 +476,84 @@ int load_msgtext(char *uident, int index, char *msgbuf)
     return 0;
 }
 
+int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
+{
+    char uident[STRLEN];
+    FILE *fp;
+    time_t now;
+    struct user_info *uin;
+    char buf[80], msgbuf[1024], *timestr, msgbak[1024];
+    int msg_count = 0;
+
+    *msgbak = 0;
+    *msgbuf = 0;
+    *msgerr = 0;
+    uin = uentp;
+    strcpy(uident, uin->userid);
+    if (!HAS_PERM(currentuser, PERM_SEECLOAK) && uin->invisible && strcmp(uin->userid, currentuser->userid) && mode != 4)
+        return -2;
+    if ((mode != 3) && (LOCKSCREEN == uin->mode)) {     /* Leeward 98.02.28 */
+        strcpy(msgerr, "∂‘∑Ω“—æ≠À¯∂®∆¡ƒª£¨«Î…‘∫Ú‘Ÿ∑¢ªÚ∏¯À˚(À˝)–¥–≈...\n");
+        return -1;
+    }
+    if ((mode != 3) && (uin->mode == BBSNET)) /* flyriver, 2002.9.12 */
+    {
+	strcpy(msgerr, "∂‘∑Ω…–”–“ª–©—∂œ¢Œ¥¥¶¿Ì£¨«Î…‘∫Ú‘Ÿ∑¢ªÚ∏¯À˚(À˝)–¥–≈...\n");
+       return -1;
+    }
+    if ((mode != 3) && (false == canIsend2(currentuser,uin->userid))) {     /*Haohmaru.06.06.99.ºÏ≤È◊‘º∫ «∑Ò±ªignore */
+        strcpy(msgerr, "∂‘∑Ωæ‹æ¯Ω” ‹ƒ„µƒ—∂œ¢...\n");
+        return -1;
+    }
+    if (mode != 3 && uin->mode != WEBEXPLORE) {
+        if (get_unreadcount(uident) > MAXMESSAGE) {
+            strcpy(msgerr, "∂‘∑Ω…–”–“ª–©—∂œ¢Œ¥¥¶¿Ì£¨«Î…‘∫Ú‘Ÿ∑¢ªÚ∏¯À˚(À˝)–¥–≈...\n");
+            return -1;
+        }
+    }
+    if (msgstr == NULL) {
+        return 0;
+    }
+    now = time(0);
+    timestr = ctime(&now) + 11;
+    *(timestr + 8) = '\0';
+    sprintf(msgbuf, "0%d%-12.12s%-5.5s%-10.10d%-10.10d%s", mode, currentuser->userid, timestr, msgstr, getuinfopid() + 100, uin->pid + 100);
+    if(mode!=3&&mode!=5)
+        sprintf(msgbak, "1%d%-12.12s%-5.5s%-10.10d%-10.10d%s", mode, uident, timestr, msgstr, getuinfopid() + 100, uin->pid + 100);
+#ifdef BBSMAIN
+    if (uin->mode == WEBEXPLORE) {
+        if (send_webmsg(get_utmpent_num(uin), uident, utmpent, currentuser->userid, msgbuf) < 0) {
+            strcpy(msgerr, "Œﬁ∑®∑¢ÀÕWebœ˚œ¢...\n");
+            return -1;
+        }
+        if (save_msgtext(uident, msgbuf) < 0)
+            return -2;
+        if (strcmp(currentuser->userid, uident)) {
+            if (save_msgtext(currentuser->userid, msgbak) < 0)
+                return -2;
+        }
+        return 1;
+    }
+#endif                      
+
+    uin = t_search(MsgDesUid, uentp->pid);
+    if ((uin == NULL) || (uin->active == 0) || (uin->pid == 0) || ((kill(uin->pid, 0) != 0) && (uentp->pid != 1))) {
+        if (mode == 0)
+            return -2;
+        strcpy(msgerr, "∂‘∑Ω“—æ≠¿Îœﬂ....\n");
+        return -1;
+    }
+
+    if (save_msgtext(uident, msgbuf) < 0)
+        return -2;
+    if (strcmp(currentuser->userid, uident)) {
+        if (save_msgtext(currentuser->userid, msgbak) < 0)
+            return -2;
+    }
+    if (uentp->pid != 1 && kill(uin->pid, SIGUSR2) == -1) {
+        strcpy(msgerr, "∂‘∑Ω“—æ≠¿Îœﬂ.....\n");
+        return -1;
+    }
+    return 1;
+}
 
