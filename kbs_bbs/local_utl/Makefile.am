@@ -7,7 +7,7 @@ bin_PROGRAMS = poststat static usage Xclean Xhtml Bhtml refriend listonline \
 	convpass356 scanIP scanMODE listMODE cnv_register calc_effsize smth_usage change_tmpl \
 	mailall settoptitle genhot bonlinelog uonlinelog dayuserlog alluserlog \
 	cnv_passwd strip_fh gennewboard recalc_signum find_lost_user outdaybm \
-	cnv_brddir
+	cnv_brddir post_brdlog
 	
 EXTRA_DIST = urlencode.c
 EXTRA_PROGRAMS = 
