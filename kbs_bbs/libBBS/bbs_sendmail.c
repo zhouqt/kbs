@@ -325,6 +325,8 @@ struct mail_option {
     int isbig5;
     int noansi;
     int bfirst;
+    char* from;
+    char* to;
 };
 void monitor_cb(const char *buf, int buflen, int writing, void *arg)
 {
@@ -372,6 +374,7 @@ char *bbs_readmailfile(char **buf, int *len, void *arg)
             sprintf(pout, "%s", "MIME-Version: 1.0\r\nContent-Type: text/plain; charset=big5\r\nContent-Transfer-Encoding: 8bit\r\n\r\n");
         else
             sprintf(pout, "%s", "MIME-Version: 1.0\r\nContent-Type: text/plain; charset=gb2312\r\nContent-Transfer-Encoding: 8bit\r\n\r\n");
+        sprintf(pout, "from: %s\r\nto: %s\r\n",pmo->from,pmo->to);
         pout = *buf + strlen(*buf);
         pmo->bfirst = 0;
     }
@@ -490,6 +493,8 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5,
     mo.noansi = noansi;
     mo.fin = fin;
     mo.bfirst = 1;
+    mo.from = currentuser->userid;
+    mo.to = receiver;
     smtp_set_messagecb(message, (smtp_messagecb_t) bbs_readmailfile, (void *) &mo);
     recipient = smtp_add_recipient(message, receiver);
     if (notify != Notify_NOTSET)
