@@ -42,29 +42,6 @@ friends_t fff[200];
 
 int friendnum = 0;
 
-
-int file_has_word(char *file, char *word)
-{
-    FILE *fp;
-    char buf[256], buf2[256];
-
-    fp = fopen(file, "r");
-    if (fp == 0)
-        return 0;
-    while (1) {
-        bzero(buf, 256);
-        if (fgets(buf, 255, fp) == 0)
-            break;
-        sscanf(buf, "%s", buf2);
-        if (!strcasecmp(buf2, word)) {
-            fclose(fp);
-            return 1;
-        }
-    }
-    fclose(fp);
-    return 0;
-}
-
 int f_append(char *file, char *buf)
 {
     FILE *fp;
@@ -113,29 +90,6 @@ char *wwwCTime(time_t t)
     return s;
 }
 
-char *noansi(char *s)
-{
-    static char buf[1024];
-    int i = 0, mode = 0;
-
-    while (s[0] && i < 1023) {
-        if (mode == 0) {
-            if (s[0] == 27) {
-                mode = 1;
-            } else {
-                buf[i] = s[0];
-                i++;
-            }
-        } else {
-            if (!strchr(";[0123456789", s[0]))
-                mode = 0;
-        }
-        s++;
-    }
-    buf[i] = 0;
-    return buf;
-}
-
 char *nohtml(char *s)
 {
     char *buf = calloc(strlen(s) + 1, 1);
@@ -157,17 +111,6 @@ char *nohtml(char *s)
     }
     buf[i] = 0;
     return buf;
-}
-
-char *strright(char *s, int len)
-{
-    int l = strlen(s);
-
-    if (len <= 0)
-        return "";
-    if (len >= l)
-        return s;
-    return s + (l - len);
 }
 
 int strsncpy(char *s1, char *s2, int n)
@@ -963,49 +906,6 @@ int has_BM_perm(struct userec *user, char *board)
     return 0;
 }
 
-int count_mails(char *id, int *total, int *unread)
-{
-    struct fileheader x1;
-    char buf[256];
-    FILE *fp;
-
-    *total = 0;
-    *unread = 0;
-    {
-        struct userec *x;
-
-        if (getuser(id, &x) == 0)
-            return 0;
-    }
-    sprintf(buf, "%s/mail/%c/%s/.DIR", BBSHOME, toupper(id[0]), id);
-    fp = fopen(buf, "r");
-    if (fp == 0)
-        return -1;
-    while (fread(&x1, sizeof(x1), 1, fp) > 0) {
-        (*total)++;
-        if (!(x1.accessed[0] & FILE_READ))
-            (*unread)++;
-    }
-    fclose(fp);
-    return 0;
-}
-
-int setmsgfile(char *buf, char *id)
-{
-    if (buf == NULL || id == NULL)
-        return -1;
-    sethomefile(buf, id, SYS_MSGFILE);
-    return 0;
-}
-
-int setmsgfilelog(char *buf, char *id)
-{
-    if (buf == NULL || id == NULL)
-        return -1;
-    sethomefile(buf, id, SYS_MSGFILELOG);
-    return 0;
-}
-
 extern char MsgDesUid[14];
 int send_msg(char *srcid, int srcutmp, char *destid, int destpid, char *msg)
 {
@@ -1027,53 +927,6 @@ int send_msg(char *srcid, int srcutmp, char *destid, int destpid, char *msg)
     return sendmsgfunc(uin, msg, 2);
 }
 
-int count_life_value(struct userec *urec)
-{
-    int i;
-
-    i = (time(0) - urec->lastlogin) / 60;
-    if (urec->userlevel & PERM_SPECIAL8)
-        return (360 * 24 * 60 - i) / 1440;
-    if ((urec->userlevel & PERM_XEMPT) || !strcasecmp(urec->userid, "guest"))
-        return 999;
-    if (urec->numlogins <= 3)
-        return (45 * 1440 - i) / 1440;
-    if (!(urec->userlevel & PERM_LOGINOK))
-        return (90 * 1440 - i) / 1440;
-    return (180 * 1440 - i) / 1440;
-}
-
-int modify_mode(struct user_info *x, int newmode)
-{
-    if (x == 0)
-        return;
-    x->mode = newmode;
-}
-
-int save_user_data(struct userec *x)
-{
-    int n;
-
-    n = getusernum(x->userid);
-    update_user(x, n, 1);
-    return 1;
-}
-
-int is_bansite(char *ip)
-{
-    FILE *fp;
-    char buf3[256];
-
-    fp = fopen(".bansite", "r");
-    if (fp == 0)
-        return 0;
-    while (fscanf(fp, "%s", buf3) > 0)
-        if (!strcasecmp(buf3, ip))
-            return 1;
-    fclose(fp);
-    return 0;
-}
-
 int user_perm(struct userec *x, int level)
 {
     return (x->userlevel & level);
@@ -1084,54 +937,9 @@ int getusernum(char *id)
     return searchuser(id);
 }
 
-int loadfriend(char *id)
-{
-    FILE *fp;
-    char file[256];
-
-    if (!loginok)
-        return;
-    sprintf(file, "home/%c/%s/friends", toupper(id[0]), id);
-    fp = fopen(file, "r");
-    if (fp) {
-        friendnum = fread(fff, sizeof(fff[0]), 200, fp);
-        fclose(fp);
-    }
-}
-
 int isfriend(char *id)
 {
     return myfriend(searchuser(id), NULL);
-}
-
-int loadbad(char *id)
-{
-    FILE *fp;
-    char file[256];
-
-    if (!loginok)
-        return;
-    sprintf(file, "home/%c/%s/rejects", toupper(id[0]), id);
-    fp = fopen(file, "r");
-    if (fp) {
-        badnum = fread(fff, sizeof(fff[0]), MAXREJECTS, fp);
-        fclose(fp);
-    }
-}
-
-int isbad(char *id)
-{
-    static inited = 0;
-    int n;
-
-    if (!inited) {
-        loadbad(currentuser->userid);
-        inited = 1;
-    }
-    for (n = 0; n < badnum; n++)
-        if (!strcasecmp(id, bbb[n].id))
-            return 1;
-    return 0;
 }
 
 void http_redirect(char *url)
@@ -1168,13 +976,6 @@ int init_all()
     init_bbslog();
 }
 
-int init_no_http()
-{
-    srand(time(0) + getpid());
-    chdir(BBSHOME);
-    shm_init();
-}
-
 char *void1(unsigned char *s)
 {
     int i;
@@ -1193,42 +994,6 @@ char *void1(unsigned char *s)
     if (flag)
         s[strlen(s) - 1] = 0;
     return s;
-}
-
-char *flag_str(int access)
-{
-    static char buf[80];
-    char *flag2 = "";
-
-    strcpy(buf, "  ");
-    if (access & FILE_DIGEST)
-        flag2 = "G";
-    if (access & FILE_MARKED)
-        flag2 = "M";
-    if ((access & FILE_MARKED) && (access & FILE_DIGEST))
-        flag2 = "B";
-    sprintf(buf, "%s", flag2);
-    return buf;
-}
-
-char *flag_str2(int access, int has_read)
-{
-    static char buf[80];
-
-    strcpy(buf, "   ");
-    if (loginok)
-        strcpy(buf, "N  ");
-    if (access & FILE_DIGEST)
-        buf[0] = 'G';
-    if (access & FILE_MARKED)
-        buf[0] = 'M';
-    if ((access & FILE_MARKED) && (access & FILE_DIGEST))
-        buf[0] = 'B';
-    if (has_read)
-        buf[0] = tolower(buf[0]);
-    if (buf[0] == 'n')
-        buf[0] = ' ';
-    return buf;
 }
 
 char *userid_str(char *s)
@@ -1286,62 +1051,6 @@ int get_file_ent(char *board, char *file, struct fileheader *x)
     return search_record(dir, x, sizeof(struct fileheader), (RECORD_FUNC_ARG)cmpname, file);
 }
 
-int set_my_cookie()
-{
-    FILE *fp;
-    char path[256], buf[256], buf1[256], buf2[256];
-    int my_t_lines = 20, my_link_mode = 0, my_def_mode = 0;
-
-    sprintf(path, "home/%c/%s/.mywww", toupper(currentuser->userid[0]), currentuser->userid);
-    fp = fopen(path, "r");
-    if (fp) {
-        while (1) {
-            if (fgets(buf, 80, fp) == 0)
-                break;
-            if (sscanf(buf, "%80s %80s", buf1, buf2) != 2)
-                continue;
-            if (!strcmp(buf1, "t_lines"))
-                my_t_lines = atoi(buf2);
-            if (!strcmp(buf1, "link_mode"))
-                my_link_mode = atoi(buf2);
-            if (!strcmp(buf1, "def_mode"))
-                my_def_mode = atoi(buf2);
-        }
-        fclose(fp);
-    }
-    sprintf(buf, "%d", my_t_lines);
-    setcookie("my_t_lines", buf);
-    sprintf(buf, "%d", my_link_mode);
-    setcookie("my_link_mode", buf);
-    sprintf(buf, "%d", my_def_mode);
-    setcookie("my_def_mode", buf);
-}
-
-int has_fill_form()
-{
-    FILE *fp;
-    int r;
-    char userid[256], tmp[256], buf[256];
-
-    fp = fopen("new_register", "r");
-    if (fp == 0)
-        return 0;
-    while (1) {
-        if (fgets(buf, 100, fp) == 0)
-            break;
-        r = sscanf(buf, "%s %s", tmp, userid);
-        if (r == 2) {
-            if (!strcasecmp(tmp, "userid:") && !strcasecmp(userid, currentuser->userid)) {
-                fclose(fp);
-                return 1;
-            }
-        }
-    }
-    fclose(fp);
-    return 0;
-}
-
-
 /* added by flyriver, 2001.12.17
  * using getcurrusr() instead of using currentuser directly
  */
@@ -1350,27 +1059,9 @@ struct userec *getcurrusr()
     return currentuser;
 }
 
-struct userec *setcurrusr(struct userec *user)
-{
-    if (user == NULL)
-        return NULL;
-    currentuser = user;
-    return currentuser;
-}
-
 char *getcurruserid()
 {
     return currentuser->userid;
-}
-
-unsigned int getcurrulevel()
-{
-    return currentuser->userlevel;
-}
-
-int define(unsigned int x)
-{
-    return x ? currentuser->userdefine[0] & x : 1;
 }
 
 time_t get_idle_time(struct user_info * uentp)
@@ -1384,11 +1075,6 @@ bcache_t *getbcacheaddr()
     return bcache;
 }
 
-uinfo_t *getcurruinfo()
-{
-    return u_info;
-}
-
 uinfo_t *setcurruinfo(uinfo_t * ui)
 {
     u_info = ui;
@@ -1396,53 +1082,9 @@ uinfo_t *setcurruinfo(uinfo_t * ui)
     return u_info;
 }
 
-/* should do some locking before calling this function */
-int eat_file_content(int fd, off_t start, off_t len)
-{
-    struct stat fs;
-    char *addr;
-    int i, r;
-
-    if (start < 0 || len <= 0)
-        return 1;
-    if (fstat(fd, &fs) < 0)
-        return -1;
-    if (start >= fs.st_size)
-        return 1;
-    addr = mmap(0, fs.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    if (addr == MAP_FAILED)
-        return -1;
-    if (start + len > fs.st_size)
-        len = fs.st_size - start;
-    r = fs.st_size - start - len;
-    for (i = start; i < r; i++)
-        addr[start + i] = addr[start + len + i];
-    munmap(addr, fs.st_size);
-    ftruncate(fd, fs.st_size - len);
-
-    return 0;
-}
-
 int count_online()
 {
     return get_utmp_number();
-}
-
-int count_www()
-{
-    int i, total = 0;
-
-    for (i = 0; i < MAXACTIVE; i++) {
-        if (utmpshm->uinfo[i].mode == WEBEXPLORE)
-            total++;
-    }
-    return total;
-}
-
-
-int get_ulist_length()
-{
-    return sizeof(user_record) / sizeof(user_record[0]);
 }
 
 struct user_info **get_ulist_addr()
@@ -1450,34 +1092,8 @@ struct user_info **get_ulist_addr()
     return user_record;
 }
 
-uinfo_t *get_user_info(int utmpnum)
-{
-
-    if (utmpnum < 1 || utmpnum > USHM_SIZE)
-        return NULL;
-    return &(utmpshm->uinfo[utmpnum - 1]);
-}
-
-int get_friends_num()
-{
-    return get_utmpent(utmpent)->friendsnum;
-    ;
-}
-
-struct boardheader *getbcache_addr()
-{
-    return bcache;
-}
-
-/* from talk.c */
-int cmpfuid(a, b)
-struct friends *a, *b;
-{
-    return strcasecmp(a->id, b->id);
-}
-
 /* from bbs.c */
-static void record_exit_time(char *userid)
+static void record_exit_time(char *userid) /* XXX: 这个函数需要砍掉 */
 {                               /* 记录离线时间  Luzi 1998/10/23 */
     char path[80];
     FILE *fp;
@@ -1498,11 +1114,6 @@ int set_friendmode(int mode)
 {
     friendmode = mode;
 
-    return friendmode;
-}
-
-int get_friendmode()
-{
     return friendmode;
 }
 
@@ -1541,77 +1152,6 @@ int fill_userlist()
     return i2 == 0 ? -1 : 1;
 }
 
-int countusers(struct userec *uentp, char *arg)
-{
-    char permstr[USER_TITLE_LEN];
-
-    if (uentp->numlogins != 0 && uleveltochar(permstr, uentp) != 0)
-        return COUNT;
-    return 0;
-}
-
-int allusers()
-{
-    int count;
-
-    if ((count = apply_users(countusers, 0)) <= 0) {
-        return 0;
-    }
-    return count;
-}
-
-char *get_favboard(int k)
-{
-    int i, j = 0;
-
-    for (i = 0; i < favbrd_list_t; i++)
-        if (favbrd_list[i].father == favnow) {
-            if (j == k) {
-                if (favbrd_list[i].flag == -1)
-                    return favbrd_list[i].title;
-                else {
-                    struct boardheader const*bptr;
-
-                    bptr = getboard(favbrd_list[i].flag+1);
-                    return (char*)bptr->filename;
-                }
-            }
-            j++;
-        }
-    return NULL;
-}
-
-int get_favboard_id(int k)
-{
-    int i, j = 0;
-
-    for (i = 0; i < favbrd_list_t; i++)
-        if (favbrd_list[i].father == favnow) {
-            if (j == k)
-                return i;
-            j++;
-        }
-    return NULL;
-}
-
-int get_favboard_type(int k)
-{
-    int i, j = 0;
-
-    for (i = 0; i < favbrd_list_t; i++)
-        if (favbrd_list[i].father == favnow) {
-            if (j == k) {
-                if (favbrd_list[i].flag == -1)
-                    return 0;
-                else {
-                    return 1;
-                }
-            }
-            j++;
-        }
-    return 0;
-}
-
 int add_favboard(char *brdname)
 {
     int i;
@@ -1622,86 +1162,6 @@ int add_favboard(char *brdname)
         return -3;              /* err brdname */
     i--;
     addFavBoard(i);
-}
-
-/* from bbsfadd.c */
-/*int addtooverride2(char *uident, char *exp)
-{
-    friends_t tmp;
-    int  n;
-    char buf[STRLEN];
-
-    memset(&tmp,0,sizeof(tmp));
-    setuserfile( buf,currentuser->userid, "friends" );
-    if((!HAS_PERM(currentuser,PERM_ACCOUNTS) && !HAS_PERM(currentuser,PERM_SYSOP)) &&
-            (get_num_records(buf,sizeof(struct friends))>=MAXFRIENDS) )
-    {
-        return -1;
-    }
-    if( myfriend( searchuser(uident) , NULL) )
-        return -2;
-	if (exp == NULL || exp[0] == '\0')
-		tmp.exp[0] = '\0';
-	else
-	{
-		strncpy(tmp.exp, exp, sizeof(tmp.exp)-1);
-		tmp.exp[sizeof(tmp.exp)-1] = '\0';
-	}
-    n=append_record(buf,&tmp,sizeof(struct friends));
-    if(n!=-1)
-        getfriendstr();
-    else
-        return -3;
-    return n;
-}*/
-
-/*
- * get_unifile() 用于获得一个独一无二的文件.
- *     filename  文件名缓冲区
- *     key       关键字, 可以是版名或者是用户名
- *     mode      == 0, 表示 filename 是发表文章用的文件名
- *                     此时 key 是版名
- *               == 1, 表示 filename 是投递邮件用的文件名
- *                     此时 key 是用户名
- */
-int get_unifile(char *filename, char *key, int mode)
-{
-    int fd;
-    char *ip;
-    char filepath[STRLEN];
-    int now;                    /* added for mail to SYSOP: Bigman 2000.8.11 */
-
-    now = time(NULL);
-    sprintf(filename, "M.%d.A", now);
-    if (mode == 0) {
-        if (getbcache(key) == NULL)
-            return -1;
-        setbfile(filepath, key, filename);
-    } else {
-        if (searchuser(key) == 0)
-            return -1;
-        setmailfile(filepath, key, filename);
-    }
-    ip = strrchr(filename, 'A');
-    while ((fd = open(filepath, O_CREAT | O_EXCL | O_WRONLY, 0644)) == -1) {
-        if (*ip == 'Z')
-            ip++, *ip = 'A', *(ip + 1) = '\0';
-        else
-            (*ip)++;
-        if (mode == 0)
-            setbfile(filepath, key, filename);
-        else
-            setmailfile(filepath, key, filename);
-    }
-    close(fd);
-
-    return 0;
-}
-
-/* 获得一个用户的在线用户数目 */
-int count_user_online(char *uid)
-{
-    return apply_utmp(NULL, 0, uid, 0);
 }
 
 static int printstatusstr(struct user_info *uentp, char *arg, int pos)
@@ -2319,24 +1779,6 @@ int can_send_mail()
         return 0;
 }
 
-int can_reply_post(char *board, char *filename)
-{
-    char dirpath[STRLEN];
-    struct fileheader fh;
-    int pos;
-
-    if ((!strcmp(board, "News")) || (!strcmp(board, "Original")))
-        return 0;
-    setbdir(0, dirpath, board);
-    pos = search_record(dirpath, &fh, sizeof(fh), (RECORD_FUNC_ARG) cmpname, filename);
-    if (pos <= 0)
-        return 0;
-    if (fh.accessed[1] & FILE_READ)
-        return 0;
-    else
-        return 1;
-}
-
 char bin2hex(int val)
 {
     int i;
@@ -2428,41 +1870,6 @@ int is_BM(const struct boardheader *board,const struct userec *user)
     strncpy(BM, board->BM, sizeof(BM) - 1);
     BM[sizeof(BM) - 1] = '\0';
     return chk_currBM(BM, (struct userec *)user);
-}
-
-int is_owner(struct fileheader *fh, struct userec *user)
-{
-    if (!strcmp(fh->owner, user->userid))
-        return 1;
-    else
-        return 0;
-}
-
-int can_delete_post(struct boardheader *board, struct fileheader *fh, struct userec *user)
-{
-    if (is_BM(board, user) || is_owner(fh, user))
-        return 1;
-    else
-        return 0;
-}
-
-int can_edit_post(struct boardheader *board, struct fileheader *fh, struct userec *user)
-{
-    if (is_BM(board, user) || is_owner(fh, user))
-        return 1;
-    else
-        return 0;
-}
-
-int get_seccode_index(char prefix)
-{
-    int i;
-
-    for (i = 0; i < SECNUM; i++) {
-        if (strchr(seccode[i], prefix) != NULL)
-            return i;
-    }
-    return -1;
 }
 
 char *http_encode_string(char *str, size_t len)

@@ -79,8 +79,6 @@ struct post_log {
 
 char *ModeType();
 
-int file_has_word(char *file, char *word);
-
 int f_append(char *file, char *buf);
 
 struct stat *f_stat(char *file);
@@ -102,11 +100,7 @@ int del_record(char *file, int size, int num);
 
 char *wwwCTime(time_t t);
 
-char *noansi(char *s);
-
 char *nohtml(char *s);
-
-char *strright(char *s, int len);
 
 int strsncpy(char *s1, char *s2, int n);
 
@@ -167,8 +161,6 @@ int has_BM_perm(struct userec *user, char *board);
 
 int has_read_perm(struct userec *user, char *board);
 
-int count_mails(char *id, int *total, int *unread);
-
 int findnextutmp(char *id, int from);
 
 int send_msg(char *myuserid, int mypid, char *touserid, int topid, char msg[256]);
@@ -181,17 +173,9 @@ char *cexp(int exp);
 
 char *cperf(int perf);
 
-int count_life_value(struct userec *urec);
-
 int countexp(struct userec *x);
 
 int countperf(struct userec *x);
-
-int modify_mode(struct user_info *x, int newmode);
-
-int save_user_data(struct userec *x);
-
-int is_bansite(char *ip);
 
 int user_perm(struct userec *x, int level);
 
@@ -201,33 +185,17 @@ int checkuser(char *id, char *pw);
 
 int count_online();
 
-int loadfriend(char *id);
-
 int isfriend(char *id);
-
-int loadbad(char *id);
-
-int isbad(char *id);
 
 int init_all();
 
-int init_no_http();
-
 char *void1(unsigned char *s);
-
-char *flag_str(int access);
-
-char *flag_str2(int access, int has_read);
 
 char *userid_str(char *s);
 
 int fprintf2(FILE * fp, char *s);
 
 int get_file_ent(char *board, char *file, struct fileheader *x);
-
-int set_my_cookie();
-
-int has_fill_form();
 
 bcache_t *getbcacheaddr();
 
@@ -251,15 +219,11 @@ struct dir {
 
 int full_utmp(struct user_info *uentp, int *count);
 struct user_info **get_ulist_addr();
-uinfo_t *get_user_info(int utmpnum);
 
 char *getcurruserid();
 
 struct userec *getcurrusr();
 
-struct userec *setcurrusr(struct userec *user);
-
-uinfo_t *getcurruinfo();
 //favboard operation
 void save_favboard();
 void release_favboard();
@@ -268,9 +232,6 @@ int SetFav(int i);
 int getfavnum();
 void load_favboard(int dohelp);
 int IsFavBoard(int idx);
-char *get_favboard(int k);
-int get_favboard_id(int k);
-int get_favboard_type(int k);
 int add_favboard(char *brdname);
 
 struct boardheader const *getboard(int num);
@@ -285,11 +246,7 @@ int outgo_post2(struct fileheader *fh, char *board, char *userid, char *username
 
 char *setmailpath(char *buf, char *userid);
 
-int get_unifile(char *filename, char *key, int mode);
-
 time_t file_time(char *file);
-
-int count_user_online(char *uid);
 
 int get_curr_utmpent();
 
@@ -300,16 +257,10 @@ int www_data_init();
 void www_data_detach();
 int can_enter_chatroom();
 int can_send_mail();
-int can_reply_post(char *board, char *filename);
 char bin2hex(int val);
 char *encode_url(char *buf, const char *str, size_t buflen);
 char *encode_html(char *buf, const char *str, size_t buflen);
 int is_BM(const struct boardheader *board,const struct userec *user);
-int is_owner(struct fileheader *fh, struct userec *user);
-int can_delete_post(struct boardheader *board, struct fileheader *fh, struct userec *user);
-int can_edit_post(struct boardheader *board, struct fileheader *fh, struct userec *user);
-int can_reply_post(char *board, char *filename);
-int get_seccode_index(char prefix);
 char *http_encode_string(char *str, size_t len);
 char *unix_string(char *str);
 void output_ansi_html(char *buf, size_t buflen, buffered_output_t *output,char* attachlink);
