@@ -68,6 +68,6 @@ int remove_key(int i)
 
 int define_key()
 {
-
+    return 0;
 }
 
