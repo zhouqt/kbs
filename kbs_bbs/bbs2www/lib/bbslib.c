@@ -1645,10 +1645,11 @@ int chk_currBM(char *BMstr)   /* 根据输入的版主名单 判断当前user是否是版主 */
 
 int count_online() /* ugly */
 {
-	struct UTMPFILE *u;
+	/*struct UTMPFILE *u;
 
 	u = (struct UTMPFILE*)get_utmpshm_addr();
-	return u == NULL ? 0 : u->number;
+	return u == NULL ? 0 : u->number;*/
+	return (utmpshm == NULL) ? 0 : utmpshm->number;
 }
 
 int get_ulist_length()
@@ -1663,12 +1664,12 @@ struct user_info **get_ulist_addr()
 
 uinfo_t *get_user_info(int utmpnum)
 {
-	struct UTMPFILE *utmpshm_ptr;
+	//struct UTMPFILE *utmpshm_ptr;
 
 	if (utmpnum < 1 || utmpnum > USHM_SIZE)
 		return NULL;
-	utmpshm_ptr = (struct UTMPFILE*)get_utmpshm_addr();
-	return &(utmpshm_ptr->uinfo[utmpnum-1]);
+	//utmpshm_ptr = (struct UTMPFILE*)get_utmpshm_addr();
+	return &(utmpshm->uinfo[utmpnum-1]);
 }
 
 int set_friends_num(int num)
