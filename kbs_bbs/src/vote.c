@@ -1020,7 +1020,7 @@ int printvote(struct votebal *ent, int idx, int *i)
     date = ctime(&ent->opendate) + 4;
     if ((ent->type <= 0) || (ent->type > 5))
         ent->type = 1;
-    sprintf(buf, " %s%3d %-12.12s %-6.6s %-40.40s%-4.4s %3d %4d[m\n",
+    sprintf(buf, " %s%3d %-12.12s %-6.6s %-40.40s%-4.4s %3d %5d[m\n",
             (voted_flag == false) ? "[1m" : "", *i, ent->userid, date,
             ent->title, vote_type[ent->type - 1], ent->maxdays, num_voted);
 /*
@@ -1077,6 +1077,9 @@ int vote_title()
 {
     docmdtitle("[Í¶Æ±ÏäÁĞ±í]",
                "[¡û,e] Àë¿ª [h] ÇóÖú [¡ú,r <cr>] ½øĞĞÍ¶Æ± [¡ü,¡ı] ÉÏ,ÏÂÑ¡Ôñ [1m¸ßÁÁ¶È[m±íÊ¾ÉĞÎ´Í¶Æ±");
+    move(2, 0);
+    prints("[0;1;37;44m±àºÅ ¿ªÆôÍ¶Æ±ÏäÕß ¿ªÆôÈÕ Í¶Æ±Ö÷Ìâ                                Àà±ğ ÌìÊı ÈËÊı");
+    update_endline();
     return 0;
 }
 
