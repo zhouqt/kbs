@@ -237,7 +237,7 @@ function boardJump(){
 			$brd_name = $boards["NAME"];
 			$rows = sizeof($brd_desc);
 			for ($t = 0; $t < $rows; $t++)	{
-				echo "<option value=\"board.php?name=".$brd_name[$t]."\">&nbsp;&nbsp;©À".$brd_desc[$t]."</option>";
+				echo "<option value=\"board.php?name=".$brd_name[$t]."\">&nbsp;&nbsp;©À".htmlspecialchars($brd_desc[$t])."</option>";
 			}
 		}
 	}
