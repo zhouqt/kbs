@@ -87,76 +87,13 @@ function bbs_is_readonly_board($board)
 	return bbs_check_board_flag($board, $BOARD_FLAGS["READONLY"]);
 }
 
-function showBoardStaticsTop($boardArr){
-?>
-<TABLE cellpadding=3 cellspacing=1 class=TableBorder1 align=center>
-<TR><Th height=25 width=100% align=left id=TableTitleLink style="font-weight:normal">
-本版当前共有<b><?php echo $boardArr['CURRENTUSERS'];?></b>人在线。今日帖子<?php echo bbs_get_today_article_num($boardArr['NAME'] ); ?>。
-[<a href="favboard.php?bname=<?php echo $boardArr["NAME"]; ?>" title="收藏本版面到收藏夹顶层目录">收藏本版</a>]</Th></TR></td></tr></TABLE>
-<BR>
-<table cellpadding=0 cellspacing=0 border=0 width=97% align=center valign=middle><tr><td align=center width=2> </td>
-<td align=left style="height:27" valign="center"><table cellpadding=0 cellspacing=0 border=0 ><tr>
-<td width="110"><a href=postarticle.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass1" border=0 alt=发新帖></div></a></td>
-<td width="110"><a href=# onclick="alert('本功能尚在开发中！')"><div class="buttonClass2" border=0 alt=发起新投票></div></a></td>
-<td width="110"><a href=smallpaper.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass3" border=0 alt=发布小字报></div></a></td>
-</tr></table></td>
-<td align=right><img src=pic/team2.gif align=absmiddle>
-<?php 
-	$bms=split(' ',$boardArr['BM']);
-	foreach($bms as $bm) {
-?>
-<a href="dispuser.php?id=<?php echo $bm; ?>" target=_blank title=点击查看该版主资料><?php echo $bm; ?></a>
-<?php
-	}
-?>
-</td></tr></table>
-<?php
-}
 
-function showBoardContents($boardID,$boardName,$page){
-	global $dir_modes;
+/*
+ * print out javascript for displaying articles.
+ * See also board.php showBoardContents() how to use this javascript.
+ */
+function print_file_display_javascript($boardName) {
 ?>
-<?php
-	$total = bbs_getThreadNum($boardID);
-	if ($total<=0) {
-?>
-<tr><td>
-	本版还没有文章
-<td></tr>
-</table>
-<?php
-	} else {
-?>
-<form action=admin_batch.asp method=post name=batch><TR align=middle>
-<Th height=25 width=32 id=TableTitleLink><a href=list.asp?name=<?php echo $boardName; ?>&page=&action=batch>状态</a></th>
-<Th width=* id=TableTitleLink>主 题  (点<img src=pic/plus.gif align=absmiddle>即可展开贴子列表)</Th>
-<Th width=80 id=TableTitleLink>作 者</Th>
-<Th width=64 id=TableTitleLink>回复</Th>
-<Th width=200 id=TableTitleLink>最后更新 | 回复人</Th></TR>
-<?php
-		
-		$totalPages=ceil($total/ARTICLESPERPAGE);
-		if (($page>$totalPages)) {
-			$page=$totalPages;
-		} else if ($page<1) {
-			$page=1;
-		}
-	/*
-		$start=$total-$page* ARTICLESPERPAGE+1;
-		$num=ARTICLESPERPAGE;
-		if ($start<=0) {
-			$num+=$start-1;
-			$start=1;
-		}
-    */
-		$start=($page-1)* ARTICLESPERPAGE;
-		$num=ARTICLESPERPAGE;
-
-		$articles = bbs_getthreads($boardName, $start, $num, 1);
-		$articleNum=count($articles);
-?>
-<script language="JavaScript">
-<!--
 	boardName = '<?php echo $boardName; ?>';
 	THREADSPERPAGE = <?php echo THREADSPERPAGE; ?>;
 	
@@ -230,61 +167,35 @@ function showBoardContents($boardID,$boardName,$page){
 		}
 	}
 <?php
-		for($i=0;$i<$articleNum;$i++){
-			$origin=$articles[$i]['origin'];
-			$lastreply=$articles[$i]['lastreply'];
-			$threadNum=$articles[$i]['articlenum']-1;
-?>
-	origin = new Post(<?php echo $origin['ID']; ?>, '<?php echo $origin['OWNER']; ?>', '<?php echo strftime("%Y-%m-%d %H:%M:%S", $origin['POSTTIME']); ?>', '<?php echo $origin['FLAGS'][0]; ?>');
-	lastreply = new Post(<?php echo $lastreply['ID']; ?>, '<?php echo $lastreply['OWNER']; ?>', '<?php echo strftime("%Y-%m-%d %H:%M:%S", $lastreply['POSTTIME']); ?>', '<?php echo $lastreply['FLAGS'][0]; ?>');
-	writepost(<?php echo $i+$start; ?>, '<?php echo addslashes(htmlspecialchars($origin['TITLE'],ENT_QUOTES)); ?> ', <?php echo $threadNum; ?>, origin, lastreply, <?php echo ($origin['GROUPID'] == $lastreply['GROUPID'])?"true":"false"; ?>);
-<?php
-		}
-?>
-//-->
-</script>
-</form></table><table border=0 cellpadding=0 cellspacing=3 width=97% align=center >
-<form method=get action="board.php">
-<input type="hidden" name="name" value="<?php echo $boardName ; ?>">
-<tr><td valign=middle>页次：<b><?php echo $page; ?></b>/<b><?php echo $totalPages; ?></b>页 每页<b><?php echo ARTICLESPERPAGE; ?></b> 主题数<b><?php echo $total ?></b></td><td valign=middle ><div align=right >分页：
-<?php
-    $lastTenPages=(floor(($page-1)/ 10))*10;
-	if ($page==1) {
-		echo "<font face=webdings color=\"#FF0000\">9</font>   "; //ToDo: XHTML 不建议使用 webdings 字体。
-	}   else {
-		echo "<a href=\"board.php?name=".$boardName."&page=1\" title=首页><font face=webdings>9</font></a>   ";
-	} 
+}
 
-	if ($lastTenPages>0)  {
-		echo "<a href='?name=". $boardName ."&page=" . $lastTenPages . "' title=上十页><font face=webdings>7</font></a>   ";  
-	} 
 
-	echo "<b>";
-	for ($i=$lastTenPages+1; $i<=$lastTenPages+10; $i++) {
-		if ($i==$page)	{
-			echo "<font color=#ff0000>".$i."</font> ";
-		} else {
-			echo "<a href='board.php?name=".$boardName."&page=".$i."'>".$i."</a> ";
-		} 
-		if ($i==$totalPages) {
-		  break;
-		} 
-	} 
-	echo "</b>";
-	if ($i<$totalPages) {
-		echo "<a href='board.php?name=".$boardName."&page=".$i."' title=下十页><font face=webdings>8</font></a>   ";  
-	} 
-	if ($page==$totalPages) {
-		echo "<font face=webdings color=#ff0000>:</font>   ";
-	}  else  {
-		echo "<a href='board.php?name=".$boardName."&page=".$totalPages."' title=尾页><font face=webdings>:</font></a>   ";
-	} 
+function showBoardStaticsTop($boardArr){
 ?>
-转到:<input type=text name="page" size=3 maxlength=10  value=1><input type=submit value=Go ></div></td></tr>
-</form></table>
+<TABLE cellpadding=3 cellspacing=1 class=TableBorder1 align=center>
+<TR><Th height=25 width=100% align=left id=TableTitleLink style="font-weight:normal">
+本版当前共有<b><?php echo $boardArr['CURRENTUSERS'];?></b>人在线。今日帖子<?php echo bbs_get_today_article_num($boardArr['NAME'] ); ?>。
+[<a href="favboard.php?bname=<?php echo $boardArr["NAME"]; ?>" title="收藏本版面到收藏夹顶层目录">收藏本版</a>]</Th></TR></td></tr></TABLE>
+<BR>
+<table cellpadding=0 cellspacing=0 border=0 width=97% align=center valign=middle><tr><td align=center width=2> </td>
+<td align=left style="height:27" valign="center"><table cellpadding=0 cellspacing=0 border=0 ><tr>
+<td width="110"><a href=postarticle.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass1" border=0 alt=发新帖></div></a></td>
+<td width="110"><a href=# onclick="alert('本功能尚在开发中！')"><div class="buttonClass2" border=0 alt=发起新投票></div></a></td>
+<td width="110"><a href=smallpaper.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass3" border=0 alt=发布小字报></div></a></td>
+</tr></table></td>
+<td align=right><img src=pic/team2.gif align=absmiddle>
+<?php 
+	$bms=split(' ',$boardArr['BM']);
+	foreach($bms as $bm) {
+?>
+<a href="dispuser.php?id=<?php echo $bm; ?>" target=_blank title=点击查看该版主资料><?php echo $bm; ?></a>
 <?php
 	}
+?>
+</td></tr></table>
+<?php
 }
+
 
 function showBroadcast($boardID,$boardName){
 	global $conn;

@@ -1,5 +1,6 @@
 <?php
-//ToDo: 这个文件好像没用的。考虑 cvs remove - atppp
+//ToDo: 这个文件好像是用作显示精华区的 - atppp
+die("...");
 
 $needlogin=1;
 
