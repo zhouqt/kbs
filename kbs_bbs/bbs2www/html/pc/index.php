@@ -227,7 +227,7 @@ PassWord:
 			<tr><td class=t2>
 			.:Blog List:.
 			</td></tr>
-			<tr><td class=t4>
+			<tr><td class=t5 align=left>
 			<ul>
 <?php
 		for($i=0;$i<( count($blogs) - 1);$i++)
