@@ -2590,6 +2590,8 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
 	int isUBBMiddleOutput; 
 	int UBBArg1, UBBArg2, UBBArg3;
 	char UBBStrArg[256];
+	char outbuf[512];
+	int outbuf_len;
 
 
     if (ptr == NULL)
@@ -2732,7 +2734,6 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
 				case UBB_TYPE_ATTACH:
 					if (!strcasecmp(UBBCode,"upload")){
 						if ( (UBBArg1>0) && (UBBArg1<=attachmatched)) {
-							char outbuf[512];
 							switch(attachType[UBBArg1-1]) {
 							case ATTACH_IMG:
 								snprintf(outbuf, 511, "<br><IMG SRC=\"images/files/img.gif\" border=0>此主题相关图片如下：<br><A HREF=\"%s&ap=%d\" TARGET=_blank><IMG SRC=\"%s&ap=%d\" border=0 alt=按此在新窗口浏览图片 onload=\"javascript:if(this.width>screen.width-333)this.width=screen.width-333\"></A> ", attachlink, attachPos[UBBArg1-1], attachlink, attachPos[UBBArg1-1]);
@@ -2744,8 +2745,8 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
 								 snprintf(outbuf, 511, "<br>附件: <a href='%s&ap=%d'>%s</a> (%d 字节)<br />", attachlink, attachPos[UBBArg1-1], attachFileName[UBBArg1-1], attachLen[UBBArg1-1]);
 								 break;
 							}	
-							outbuf[511]=0;
-							BUFFERED_OUTPUT(output, outbuf, 511);
+							outbuf_len = strlen(outbuf);
+							BUFFERED_OUTPUT(output, outbuf, outbuf_len);
 							attachShowed[UBBArg1-1]=1;
 							continue;							
 						}	
@@ -2889,7 +2890,6 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
     }
 	for ( i = 0; i<attachmatched ; i++ ){
 		if (!attachShowed[i]) { 
-			char outbuf[512];
 			switch(attachType[i]) {
 			case ATTACH_IMG:
 		 		snprintf(outbuf, 511, "<br><IMG SRC=\"images/files/img.gif\" border=0>此主题相关图片如下：<br><A HREF=\"%s&ap=%d\" TARGET=_blank><IMG SRC=\"%s&ap=%d\" border=0 alt=按此在新窗口浏览图片 onload=\"javascript:if(this.width>screen.width-333)this.width=screen.width-333\"></A> ",attachlink, attachPos[i],attachlink, attachPos[i]);
@@ -2901,8 +2901,8 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
 				 snprintf(outbuf, 511, "<br>附件: <a href='%s&ap=%d'>%s</a> (%d 字节)<br />", attachlink, attachPos[i], attachFileName[i], attachLen[i]);
 				 break;
 			}	
-			outbuf[511]=0;
-			BUFFERED_OUTPUT(output, outbuf, 511);
+			outbuf_len = strlen(outbuf);
+			BUFFERED_OUTPUT(output, outbuf, outbuf_len);
 			attachShowed[i]=1;
 		}
 		free(attachFileName[i]);
