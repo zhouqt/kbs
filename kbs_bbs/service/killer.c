@@ -286,6 +286,17 @@ char * get_msgs(int s)
     return NULL;
 }
 
+void save_msgs(char * s)
+{
+    FILE* fp;
+    int i;
+    fp=fopen(s, "w");
+    if(fp==NULL) return;
+    for(i=0;i<get_msgt();i++)
+        fprintf(fp, get_msgs(i));
+    fclose(fp);
+}
+
 void refreshit()
 {
     int i,j,me,msgst;
@@ -473,7 +484,7 @@ int do_com_menu()
                     return 0;
                 case 1:
                     me=mypos;
-                    if(inrooms[myroom].peoples[me].flag&PEOPLE_ALIVE&&!(inrooms[myroom].peoples[me].flag&PEOPLE_ROOMOP)||inrooms[myroom].status==INROOM_STOP) {
+                    if(inrooms[myroom].peoples[me].flag&PEOPLE_ALIVE&&!(inrooms[myroom].peoples[me].flag&PEOPLE_ROOMOP)&&inrooms[myroom].status!=INROOM_STOP) {
                         send_msg(me, "你还在游戏,不能退出");
                         refreshit();
                         return 0;
@@ -959,8 +970,10 @@ quitgame2:
     kicked=0;
     getdata(t_lines-1, 0, "寄回本次全部信息吗?[y/N]", buf3, 3, 1, 0, 1);
     if(toupper(buf3[0])=='Y') {
+        sprintf(buf, "tmp/%d.msg", rand());
+        save_msgs(buf);
         sprintf(buf2, "\"%s\"的杀人记录", roomname);
-        mail_file(currentuser->userid, buf, currentuser->userid, buf2, BBSPOST_COPY, NULL);
+        mail_file(currentuser->userid, buf, currentuser->userid, buf2, BBSPOST_MOVE, NULL);
     }
     signal(SIGUSR1, talk_request);
 }
