@@ -1045,14 +1045,20 @@ void  board_attach_link(char* buf,int buf_len,long attachpos,void* arg)
 {
     struct fileheader* fh=(struct fileheader*)arg;
     char* server=sysconf_str("BBS_WEBDOMAIN");
+    char ftype[12];
+    if (POSTFILE_BASENAME(fh->filename)[0] == 'Z') {
+        sprintf(ftype, "&ftype=%d", DIR_MODE_ZHIDING);
+    } else {
+        ftype[0] = '\0';
+    }
     if (server==NULL)
         server=sysconf_str("BBSDOMAIN");
     if (attachpos!=-1)
-        snprintf(buf,buf_len,"http://%s/bbscon.php?bid=%d&id=%d&ap=%ld",
-            server,getbnum(currboard->filename),fh->id,attachpos);
+        snprintf(buf,buf_len,"http://%s/bbscon.php?bid=%d&id=%d&ap=%ld%s",
+            server,getbnum(currboard->filename),fh->id,attachpos, ftype);
     else
-        snprintf(buf,buf_len,"http://%s/bbscon.php?bid=%d&id=%d",
-            server,getbnum(currboard->filename),fh->id );
+        snprintf(buf,buf_len,"http://%s/bbscon.php?bid=%d&id=%d%s",
+            server,getbnum(currboard->filename),fh->id, ftype);
 }
 
 int zsend_attach(int ent, struct fileheader *fileinfo, char *direct)
