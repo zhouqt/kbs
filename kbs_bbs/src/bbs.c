@@ -4084,6 +4084,7 @@ int set_ip_acl()
 #define MAX_CONTENT 20
 #define TMPL_BM_FLAG 0x1
 #define MAX_CONTENT_LENGTH 555
+#define TMPL_NOW_VERSION 0
 
 struct s_content{
 	char text[50];
@@ -4096,7 +4097,8 @@ struct s_template{
 	int content_num;
 	char filename[STRLEN];
 	int flag;
-	char unused[20];
+	int version;
+	char unused[16];
 };
 
 struct a_template{
@@ -4132,6 +4134,14 @@ int tmpl_init(int mode){
 		return 0;
 	}
 	while( read(fd, &tmpl, sizeof( struct s_template )) == sizeof(struct s_template) ){
+		if( tmpl.version > TMPL_NOW_VERSION ){
+			clear();
+			move(3,0);
+			prints("模板程序已经更新过，请您重新登陆，谢谢");
+			pressreturn();
+			close(fd);
+			return -1;
+		}
 		if( mode == 0 && ( tmpl.flag & TMPL_BM_FLAG ) && !chk_currBM(currBM, currentuser)) {
 			lseek( fd, sizeof(struct s_content) * tmpl.content_num , SEEK_CUR );
 			continue;
@@ -4633,7 +4643,7 @@ int m_template()
 	}
 
 	if( tmpl_init(1) < 0 )
-		return DONOTHING;
+		return FULLUPDATE;
 
 	if( template_num == 0 ){
 		char ans[3];
