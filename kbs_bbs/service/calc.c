@@ -9,6 +9,7 @@
 #define BBSMAIN
 //#include "bbs.h"
 #include <math.h>
+#include <stdio.h>
 
 #define MINIMUM	0.0000000001
 #define sqr(x)	(x)*(x)
@@ -33,12 +34,12 @@ void makesize(struct var_struct * a, int h, int w)
     int i;
     if(a->p) {
         for(i=0;i<a->height;i++)
-            delete a->p[i];
-        delete p;
+            free(a->p[i]);
+        free(a->p);
     }
-    a->p = new double*[h];
+    a->p = (double**)malloc(sizeof(double*)*h);
     for(i=0;i<h;i++)
-        a->p[i] = new double[w];
+        a->p[i] = (double*)malloc(sizeof(double)*w);
     a->height = h;
     a->width = w;
 }
@@ -132,7 +133,7 @@ void plusrow(struct var_struct * s, int a, int b, double r)
     }
 }
 
-void swapcol(struct var_struct * s, int a, int b)
+void pluscol(struct var_struct * s, int a, int b, double r)
 {
     int i;
     makesure(a<s->width&&a>=0);
@@ -168,7 +169,7 @@ int get_var(char * name)
             return i;
         }
     strcpy(vars[vart].name, name);
-    vars[vart].p = NULL;
+    vars[vart].p = 0;
     return (vart++);
 }
 
@@ -291,7 +292,7 @@ void eval(struct var_struct * p, char * s, int l, int r)
         strcpy(buf, s+l);
         buf[i-l]=0;
         struct var_struct u;
-        u.p = NULL;
+        u.p = 0;
         eval(&u, s, i+1, r-1);
         set_var(p, 0);
         return ;
@@ -349,7 +350,7 @@ void print_var(struct var_struct * p)
     }
 }
 
-int calc_main()
+int main()
 {
     char cmd[300];
     int y,x,res,i,j;
