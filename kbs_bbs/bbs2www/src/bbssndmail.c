@@ -6,7 +6,7 @@
 int main()
 {
     FILE *fp;
-    char userid[80], filename[80], dir[80], title[80], title2[80], buf[80], *content;
+    char userid[80], filename[80], dir[80], title[ARTICLE_TITLE_LEN], title2[80], buf[80], *content;
     int t, i, sig, backup;
     struct fileheader x;
     struct userec *u = NULL;
@@ -17,7 +17,8 @@ int main()
     if (!can_send_mail())
         http_fatal("您不能发送信件");
     strsncpy(userid, getparm("userid"), 40);
-    strsncpy(title, getparm("title"), 50);
+    strncpy(title, getparm("title"), ARTICLE_TITLE_LEN - 1);
+	title[ARTICLE_TITLE_LEN - 1] = '\0';
     backup = strlen(getparm("backup"));
     if (strchr(userid, '@') || strchr(userid, '|')
         || strchr(userid, '&') || strchr(userid, ';')) {
