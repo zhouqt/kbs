@@ -137,7 +137,7 @@ login_init();
     </td>
   </tr>
   <tr>
-    <td class="b4">同主题阅读：&nbsp;&nbsp;&nbsp<?php echo htmlspecialchars($articles[0]["TITLE"]); ?></td>
+    <td class="b4">同主题阅读：&nbsp;&nbsp;&nbsp;<?php echo htmlspecialchars($articles[0]["TITLE"]); ?></td>
   </tr>
   <tr>
     <td class="b2"><?php page_navigation( $brd_encode , $gid , $start , $totlepage , $pno ); ?></td>
