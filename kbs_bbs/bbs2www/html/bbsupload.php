@@ -13,6 +13,8 @@
 login_init();
 	if ($loginok !=1 )
 		html_nologin();
+	else if (!strcmp($currentuser["userid"],"guest")) 
+		html_error_quit("ÇëÏÈ×¢²áÕÊºÅ");
 	else
 	{
 		html_init("gb2312","Õ³Ìù¸½¼ş");
