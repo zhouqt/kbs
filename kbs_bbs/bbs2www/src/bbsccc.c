@@ -97,8 +97,8 @@ int post_cross2(char islocal, char *board)
 
 	/* 还有一个破 save_title 的问题 */ 
 	strncpy(save_title, buf4, STRLEN);
-	get_postfilename(fname, board);
-	strcpy(postfile.filename, fname);
+	setbfile(fname, board, "");
+	get_postfilename(postfile.filename, fname);
 	strcpy(whopost, getcurruserid());
 	strncpy(postfile.owner, whopost, OWNER_LEN);
 	postfile.owner[OWNER_LEN-1]=0;
@@ -119,19 +119,8 @@ int post_cross2(char islocal, char *board)
 		postfile.innflag[0] = 'S';
 		outgo_post2(&postfile, board, user->userid, user->username, save_title);
 	}
-	setbdir(DIR_MODE_NORMAL, buf, board);
-	if(!strcmp(board, "syssecurity")  &&strstr(quote_title, "修改 ")  &&strstr(quote_title, " 的权限"))
-		postfile.accessed[0] |= FILE_MARKED;   /* Leeward 98.03.29 */
-	if(append_record(buf, &postfile, sizeof(postfile)) == -1)
-	{					  /* 添加POST信息到当前版.DIR */
-		sprintf(buf, "cross_posting '%s' on '%s': append_record failed!", postfile.title, quote_board);
-		report(buf);
-		return 1;
-	}
+	after_post(currentuser, &postfile, board, NULL);
 
-	/* brc_add_read( postfile.filename ) ; */
-	sprintf(buf, "cross_posted '%s' on '%s'", postfile.title, board);
-	report(buf);
 	return 1;
 }
 
@@ -198,11 +187,12 @@ int main()
 {
 	struct fileheader f;
 	char board[80], dir[80], file[80], target[80];
-
 	FILE * fp;
 	int found = 0;
 	int num = 0;
 	int local;
+	struct boardheader *src_bp;
+	struct boardheader *dst_bp;
 
 	init_all();
 	strsncpy(board, getparm("board"), 30);
@@ -211,6 +201,10 @@ int main()
 	local = atoi(getparm("outgo")) ? 0 : 1;
 	if(!loginok)
 		http_fatal("匆匆过客不能进行本项操作");
+	src_bp = getbcache(board);
+	if (src_bp == NULL)
+		http_fatal("错误的讨论区");
+	strcpy(board, src_bp->filename);
 	if(!has_read_perm(currentuser, board))
 		http_fatal("错误的讨论区");
 	sprintf(dir, "boards/%s/.DIR", board);
@@ -234,6 +228,10 @@ int main()
 	printf("<center>%s -- 转载文章 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser->userid);
 	if(target[0])
 	{
+		dst_bp = getbcache(target);
+		if (dst_bp == NULL)
+			http_fatal("错误的讨论区");
+		strcpy(target, dst_bp->filename);
 		if(!haspostperm(currentuser, target))
 			http_fatal("错误的讨论区名称或你没有在该版发文的权限");
 		return do_ccc(num + 1, &f, dir, board, target, local);
