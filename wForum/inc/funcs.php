@@ -33,6 +33,12 @@ global $currentuinfo_num;
 //global $currentuser;
 global $currentuuser_num;
 global $cachemode;
+global $errMsg="";
+global $foundErr=false;
+
+if (!isset($needlogin)){
+	$needlogin=1;
+}
 
 $cachemode="";
 $currentuinfo=array ();
@@ -115,7 +121,7 @@ if (($sessionid!='')&&($_SERVER['PHP_SELF']=='/bbscon.php')) {
 	@$userid = $_COOKIE["UTMPUSERID"];
 }
 // add by stiger, login as "guest" default.....
-if (($utmpkey == "")&&(!isset($needlogin) || ($needlogin!=0))){
+if (($utmpkey == "")&&($needlogin!=0)){
 	$error = bbs_wwwlogin(0);
 	if($error == 2 || $error == 0){
 		$data = array();
@@ -159,25 +165,6 @@ function bbs_get_board_filename($boardname,$filename)
 function bbs_get_vote_filename($boardname, $filename)
 {
 	return "vote/" . $boardname . "/" . $filename;
-}
-
-function error_alert($msg)
-{
-?>
-<SCRIPT language="javascript">
-window.alert(<?php echo "\"$msg\""; ?>);
-history.go(-1);
-</SCRIPT>
-<?php
-}
-
-function error_nologin()
-{
-?>
-<SCRIPT language="javascript">
-window.location="/nologin.html";
-</SCRIPT>
-<?php
 }
 
 function cache_header($scope,$modifytime=0,$expiretime=300)
@@ -239,7 +226,7 @@ function html_init($charset="",$title="",$otherheader="")
 <title><?php echo $title; ?></title>
 <link rel="stylesheet" type="text/css" href="css/<?php echo $css_style; ?>"/>
 <link rel="stylesheet" type="text/css" href="css/ansi.css"/>
-<script src="/inc/funcs.js"  language="javascript"></script>
+<script src="inc/funcs.js"  language="javascript"></script>
 <?php echo($otherheader); ?>
 </head>
 <?php
@@ -268,17 +255,72 @@ top.window.location='/nologin.html';
 <?php
 }
 
-function html_error_quit($err_msg)
-{
-?>
-<body>
-错误! <?php echo $err_msg; ?>! <br><br>
-<a href="javascript:history.go(-1)">快速返回</a>
-</body>
-</html>
-<?php
-	exit;
+function foundErr($errMsg){
+	GLOBAL $Errmsg;
+	GLOBAL $foundErr;
+	$Errmsg+=$errMsg;
+	$Errmsg+='\n';
+	$foundErr=true;
 }
+
+function isErrFounded(){
+	GLOBAL $foundErr;
+	return $foundErr;
+}
+
+function html_error_quit()
+{
+  GLOBAL $Errmsg;
+?>
+<br>
+<table cellpadding=3 cellspacing=1 align=center class=tableborder1 style="width:75%">
+<tr align=center>
+<th width="100%" height=25 colspan=2>论坛错误信息
+</td>
+</tr>
+<tr>
+<td width="100%" class=tablebody1 colspan=2>
+<b>产生错误的可能原因：</b><br><br>
+<li>您是否仔细阅读了<a href="boardhelp.php">帮助文件</a>，可能您还没有登陆或者不具有使用当前功能的权限。
+<?php   echo $Errmsg; ?>
+</td></tr>
+<?php   if (($needlogin!=0)&&($loginok!=1))
+  {
+?>
+<form action="login.php?action=chk" method=post>
+    <tr>
+    <th valign=middle colspan=2 align=center height=25>请输入您的用户名、密码登陆</td></tr>
+    <tr>
+    <td valign=middle class=tablebody1>请输入您的用户名</td>
+    <td valign=middle class=tablebody1><INPUT name=username type=text> &nbsp; <a href=reg.php>没有注册？</a></td></tr>
+    <tr>
+    <td valign=middle class=tablebody1>请输入您的密码</font></td>
+    <td valign=middle class=tablebody1><INPUT name=password type=password> &nbsp; <a href=lostpass.php>忘记密码？</a></td></tr>
+    <tr>
+    <td class=tablebody1 valign=top width=30% ><b>Cookie 选项</b><BR> 请选择你的 Cookie 保存时间，下次访问可以方便输入。</td>
+    <td valign=middle class=tablebody1>                <input type=radio name=CookieDate value=0 checked>不保存，关闭浏览器就失效<br>
+                <input type=radio name=CookieDate value=1>保存一天<br>
+                <input type=radio name=CookieDate value=2>保存一月<br>
+                <input type=radio name=CookieDate value=3>保存一年<br>                </td></tr>
+    <tr>
+    <td valign=top width=30% class=tablebody1><b>隐身登陆</b><BR> 您可以选择隐身登陆，论坛会员将在用户列表看不到您的信息。</td>
+    <td valign=middle class=tablebody1>                <input type=radio name=userhidden value=2 checked>正常登陆<br>
+                <input type=radio name=userhidden value=1>隐身登陆<br>
+                </td></tr>
+	<input type=hidden name=comeurl value="<?php     echo $_SERVER['HTTP_REFERER']; ?>">
+    <tr>
+    <td class=tablebody2 valign=middle colspan=2 align=center><input type=submit name=submit value="登 陆">&nbsp;&nbsp;<input type=button name="back" value="返 回" onclick="location.href='<?php  echo $_SERVER['HTTP_REFERER']; ?>'"></td></tr>
+</form>
+<?php   }
+    else
+  {
+?>
+    <tr>
+    <td class=tablebody2 valign=middle colspan=2 align=center><a href="<?php echo $_SERVER['HTTP_REFERER']; ?>"><<返回上一页</a></td></tr>
+<?php   } ?>
+</table>
+<?php 
+} 
 
 function sizestring($size)
 {
@@ -464,9 +506,9 @@ function show_nav()
   html_init();
 ?>
 <script>
-var stylelist = '<a style=font-size:9pt;line-height:12pt; href=\"cookies.asp?action=stylemod&skinid=0&boardid=0\">恢复默认设置</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.asp?action=stylemod&skinid=1&boardid=0\">默认模板</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.asp?action=stylemod&skinid=25&boardid=0\">水晶紫色</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.asp?action=stylemod&skinid=26&boardid=0\">ｅ点小镇</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.asp?action=stylemod&skinid=27&boardid=0\">心情灰色</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.asp?action=stylemod&skinid=28&boardid=0\">秋意盎然</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.asp?action=stylemod&skinid=29&boardid=0\">蓝色庄重</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.asp?action=stylemod&skinid=32&boardid=0\">绿色淡雅</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.asp?action=stylemod&skinid=34&boardid=0\">蓝雅绿</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.asp?action=stylemod&skinid=35&boardid=0\">紫色淡雅</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.asp?action=stylemod&skinid=36&boardid=0\">淡紫色</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.asp?action=stylemod&skinid=37&boardid=0\">橘子红了</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.asp?action=stylemod&skinid=38&boardid=0\">红红夜思</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.asp?action=stylemod&skinid=40&boardid=0\">粉色回忆</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.asp?action=stylemod&skinid=41&boardid=0\">青青河草</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.asp?action=stylemod&skinid=42&boardid=0\">浓浓绿意</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.asp?action=stylemod&skinid=44&boardid=0\">棕红预览</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.asp?action=stylemod&skinid=45&boardid=0\">淡咖啡</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.asp?action=stylemod&skinid=46&boardid=0\">碧海晴天</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.asp?action=stylemod&skinid=47&boardid=0\">蓝色水晶</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.asp?action=stylemod&skinid=48&boardid=0\">雪花飘飘</a><br>';
+var stylelist = '<a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=0&boardid=0\">恢复默认设置</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=1&boardid=0\">默认模板</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=25&boardid=0\">水晶紫色</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=26&boardid=0\">ｅ点小镇</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=27&boardid=0\">心情灰色</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=28&boardid=0\">秋意盎然</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=29&boardid=0\">蓝色庄重</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=32&boardid=0\">绿色淡雅</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=34&boardid=0\">蓝雅绿</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=35&boardid=0\">紫色淡雅</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=36&boardid=0\">淡紫色</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=37&boardid=0\">橘子红了</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=38&boardid=0\">红红夜思</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=40&boardid=0\">粉色回忆</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=41&boardid=0\">青青河草</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=42&boardid=0\">浓浓绿意</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=44&boardid=0\">棕红预览</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=45&boardid=0\">淡咖啡</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=46&boardid=0\">碧海晴天</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=47&boardid=0\">蓝色水晶</a><br><a style=font-size:9pt;line-height:12pt; href=\"cookies.php?action=stylemod&skinid=48&boardid=0\">雪花飘飘</a><br>';
 </script>
-<body topmargin=0 leftmargin=0 onmouseover="HideMenu();>
+<body topmargin=0 leftmargin=0 onmouseover="HideMenu();">
 <div id=menuDiv class="navclass1"></div>
 <table cellspacing=0 cellpadding=0 align=center class="navclass2">
 <tr><td width=100% >
@@ -646,7 +688,7 @@ function show_footer()
 
 } 
 
-if ((!isset($needlogin)||($needlogin!=0))&&($loginok!=1)&&($_SERVER["PHP_SELF"]!="/bbslogin.php")) {
+if (($needlogin!=0)&&($loginok!=1)&&($_SERVER["PHP_SELF"]!="/bbslogin.php")) {
 	error_nologin();
 	return;
 }
