@@ -122,7 +122,7 @@ postbbslog("user","%s",fileinfo->title, -1, currboard); added by alex, 96.9.12 *
                 struct userec *lookupuser;
                 int id = getuser(fileinfo->owner, &lookupuser);
 
-                if (id && (int) lookupuser->numposts > 0 && !junkboard(board) && strcmp(board, "sysmail")) {    /* SYSOP MAIL版删文不减文章 Bigman: 2000.8.12 *//* Leeward 98.06.21 adds above later 2 conditions */
+                if (id && (int) lookupuser->numposts > 0 && !junkboard(board) && strcmp(board, SYSMAIL_BOARD)) {    /* SYSOP MAIL版删文不减文章 Bigman: 2000.8.12 *//* Leeward 98.06.21 adds above later 2 conditions */
                     lookupuser->numposts--;
                 }
             }
@@ -1025,7 +1025,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
             /*
              * Bigman:2000.8.29 sysmail版处理添加版务姓名 
              */
-            if (!strcmp(currboard, "sysmail")) {
+            if (!strcmp(currboard, SYSMAIL_BOARD)) {
                 sprintf(ans, "〖%s〗 处理: %s", currentuser->userid, fileinfo->title);
                 strncpy(fileinfo->title, ans, STRLEN);
                 fileinfo->title[STRLEN - 1] = 0;

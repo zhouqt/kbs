@@ -188,7 +188,7 @@ int mail_file_sent(char *fromid, char *tmpfile, char *userid, char *title, int u
         return -1;
     newbbslog("1user", "mailed %s ", userid);
     if (!strcasecmp(userid, "SYSOP"))
-        updatelastpost("sysmail");
+        updatelastpost(SYSMAIL_BOARD);
     return 0;
 
 }
@@ -240,7 +240,7 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
         return -1;
     newbbslog(BBSLOG_USER, "mailed %s ", userid);
     if (!strcasecmp(userid, "SYSOP"))
-        updatelastpost("sysmail");
+        updatelastpost(SYSMAIL_BOARD);
     return 0;
 }
 

@@ -609,7 +609,7 @@ int do_send(char *userid, char *title, char *q_file)
 
         newbbslog(BBSLOG_USER, "mailed %s %s", userid,save_title);
         if (!strcasecmp(userid, "SYSOP"))
-            updatelastpost("sysmail");
+            updatelastpost(SYSMAIL_BOARD);
         return 0;
     }
 }
