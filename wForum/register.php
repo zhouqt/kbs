@@ -66,6 +66,12 @@ function do_apply(){
 <input type=password name=pass2 size=12 maxlength=12></TD>
 </TR>
 <TR> 
+<TD width=40% class=tablebody1><B>验证码</B>：请输入下面图片中字符串<br>
+<IMG src="img_rand/img_rand.php"></TD>
+<TD width=60%  class=tablebody1> 
+<input type=text name=validCode size=12 maxlength=12></TD>
+</TR>
+<TR> 
 <TD width=40% class=tablebody1><B>昵称</B>：<BR>您在BBS上的昵称，2-39字符，中英文不限</TD>
 <TD width=60%  class=tablebody1> 
 <input name=username size=20 maxlength=32></TD>
@@ -107,6 +113,11 @@ function do_apply(){
 <TD width=60%  class=tablebody1> 
 <input name=phone size=40> </TD>
 </TR>
+<TR> 
+<TD width=40% class=tablebody1><B>手机</B>：<BR>您的手机号码（如果没有可以不填）</TD>
+<TD width=60%  class=tablebody1> 
+<input name=phone size=40> </TD>
+</TR>
 <tr>
 <td colspan=2 align=center>
 <input type=submit value=提交表格>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type=reset value=重新填写>
@@ -132,9 +143,14 @@ function do_save(){
 	@$day=$_POST["day"];
 	@$email=$_POST["email"];
 	@$phone=$_POST["phone"];
+	@$mobile_phone=$_POST["mobilde_phone"];
 	@$gender=$_POST["gender"];
 
 
+    if(!isset($_SESSION['num_auth']))
+		foundErr("请等待验证码图片显示完毕！");
+    if(strcasecmp($_SESSION['num_auth'],$_POST['validCode']))
+        foundErr("您输入的验证码错误！");
 	if(strcmp($pass1,$pass2))
 		foundErr("两次密码输入不一样");
 	else if(strlen($pass1) < 5 || !strcmp($pass1,$userid))
@@ -179,7 +195,7 @@ function do_save(){
     settype($year,"integer");
 	settype($month,"integer");
 	settype($day,"integer");
-	$ret=bbs_createregform($userid,$realname,$dept,$address,$gender,$year,$month,$day,$email,$phone,FALSE);//自动生成注册单
+$ret=bbs_createregform($userid,$realname,$dept,$address,$gender,$year,$month,$day,$email,$phone,$mobile_phone, FALSE);//自动生成注册单
 
 	switch($ret)
 	{
@@ -207,7 +223,7 @@ function do_save(){
 <ul>
 <li>你现在还没有通过身份认证，,只有最基本的权限，不能发文、发信、聊天等。</li>
 <li>系统会自动生成注册单，待站长审核通过后,你将获得合法用户权限！</li>
-<li><a href="index.asp">进入讨论区</a></li></ul>
+<li><a href="index.php">进入讨论区</a></li></ul>
 </td></tr>
 </table>
 <?php

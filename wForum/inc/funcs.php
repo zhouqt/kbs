@@ -293,6 +293,7 @@ function html_init($charset="",$title="",$otherheader="")
 	global $DEFAULTStyle;
 	global $stats;
 
+	session_start();
 	if ($charset==""){
 		$charset=$HTMLCharset;
 	}
