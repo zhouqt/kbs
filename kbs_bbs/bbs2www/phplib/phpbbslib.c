@@ -43,6 +43,7 @@ static PHP_FUNCTION(bbs_setuserparam);
 static PHP_FUNCTION(bbs_getuserlevel);
 static PHP_FUNCTION(bbs_get_today_article_num);
 static PHP_FUNCTION(bbs_searchtitle);
+static PHP_FUNCTION(bbs_search_articles);
 static PHP_FUNCTION(bbs_getnumofsig);
 static PHP_FUNCTION(bbs_postmail);
 static PHP_FUNCTION(bbs_mailwebmsgs);
@@ -181,6 +182,7 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_getuserlevel, NULL)
 		PHP_FE(bbs_get_today_article_num, NULL)
 		PHP_FE(bbs_searchtitle, NULL)
+		PHP_FE(bbs_search_articles, NULL)
 	    PHP_FE(bbs_getnumofsig, NULL)
 		PHP_FE(bbs_postmail, NULL)
 		PHP_FE(bbs_mailwebmsgs, NULL)
@@ -1215,6 +1217,128 @@ static void bbs_make_article_array(zval * array, struct fileheader *fh, char *fl
     add_assoc_long(array, "LEVEL", fh->level);
     add_assoc_stringl(array, "FLAGS", flags, flags_len, 1);
     add_assoc_long(array, "ATTACHPOS", fh->attachment);
+}
+
+static PHP_FUNCTION(bbs_search_articles)
+{
+    char *board,*title, *title2, *title3,*author;
+    long bLen,tLen,tLen2,tLen3,aLen;
+    long date,mmode,origin,attach;
+    bcache_t bh;
+	char dirpath[STRLEN];
+	int fd;
+	struct stat buf;
+	struct flock ldata;
+	struct fileheader *ptr1;
+	char* ptr;
+	int total,i;
+	zval * element;
+	int is_bm;
+    char flags[4];              /* flags[0]: flag character
+                                 * flags[1]: imported flag
+                                 * flags[2]: no reply flag
+                                 * flags[3]: attach flag
+                                 */
+    struct boardheader *bp;
+	int found;
+
+
+    if (ZEND_NUM_ARGS() != 9 || zend_parse_parameters(9 TSRMLS_CC, "sssssllll", &board, &bLen,&title,&tLen, &title2, &tLen2, &title3, &tLen3,&author, &aLen, &date,&mmode,&attach,&origin) != SUCCESS) {
+            WRONG_PARAM_COUNT;
+    }
+    if (date <= 0)
+        date = 9999;
+    if (date > 9999)
+        date = 9999;
+    if ((bp = getbcache(board)) == NULL) {
+        RETURN_FALSE;
+    }
+    is_bm = is_BM(bp, currentuser);
+    if (getboardnum(board, &bh) == 0)
+        RETURN_LONG(-1); //"错误的讨论区";
+    if (!check_read_perm(currentuser, &bh))
+        RETURN_LONG(-2); //您无权阅读本版;
+    setbdir(DIR_MODE_NORMAL, dirpath, bh.filename);
+    if ((fd = open(dirpath, O_RDONLY, 0)) == -1)
+        RETURN_LONG(-3);   
+    ldata.l_type = F_RDLCK;
+    ldata.l_whence = 0;
+    ldata.l_len = 0;
+    ldata.l_start = 0;
+    if (fcntl(fd, F_SETLKW, &ldata)== -1) {
+		close(fd);
+		RETURN_LONG(-200);
+	}
+	if (fstat(fd, &buf) == -1) {
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+		RETURN_LONG(-201);
+	}
+    total = buf.st_size / sizeof(struct fileheader);
+
+    if ((i = safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size)) != 1) {
+        if (i == 2)
+            end_mmapfile((void *) ptr, buf.st_size, -1);
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+        RETURN_LONG(-4);
+    }
+    /*
+     * fetching articles 
+     */
+    if (array_init(return_value) == FAILURE) {
+        RETURN_LONG(-210);
+    }
+    ptr1 = (struct fileheader *) ptr;
+
+	for (i=0,found=0;i<total;i++) {
+		if (title[0] && !strcasestr(ptr1[i].title, title))
+	        continue;
+	    if (title2[0] && !strcasestr(ptr1[i].title, title2))
+	        continue;
+	    if (author[0] && strcasecmp(ptr1[i].owner, author))
+	        continue;
+		if (title3[0] && strcasestr(ptr1[i].title, title3))
+			continue;
+		if (abs(time(0) - get_posttime(ptr1+i)) > date * 86400)
+			continue;
+		if (mmode && !(ptr1[i].accessed[0] & FILE_MARKED) && !(ptr1[i].accessed[0] & FILE_DIGEST))
+			continue;
+		if (origin && (ptr1[i].groupid!=ptr1[i].id) )
+			continue;
+		if (origin && ptr1[i].attachment==0)
+			continue;
+
+			MAKE_STD_ZVAL(element);
+			array_init(element);
+			flags[0] = get_article_flag(ptr1+i, currentuser, board,is_bm);
+			if (is_bm && (ptr1[i].accessed[0] & FILE_IMPORTED))
+				flags[1] = 'y';
+			else
+				flags[1] = 'n';
+			if (ptr1[i].accessed[1] & FILE_READ)
+				flags[2] = 'y';
+			else
+				flags[2] = 'n';
+			if (ptr1[i].attachment)
+				flags[3] = '@';
+			else
+				flags[3] = ' ';
+			bbs_make_article_array(element, ptr1+i, flags, sizeof(flags));
+			add_assoc_long(element, "NUM",i);
+			zend_hash_index_update(Z_ARRVAL_P(return_value),found, (void *) &element, sizeof(zval *), NULL);
+			found++;
+			if (found>=999){
+				break;
+			}
+
+	}
+    end_mmapfile((void *) ptr, buf.st_size, -1);
+    ldata.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
+    close(fd);
 }
 
 static PHP_FUNCTION(bbs_searchtitle)

@@ -378,7 +378,7 @@
 		}
 	    ?>
 	    | 
-  	    <img src="images/search.gif" align="absmiddle" alt="版内查询"><a class="b1" href="/cgi-bin/bbs/bbsbfind?board=<?php echo $brd_encode; ?>">版内查询</a>
+  	    <img src="images/search.gif" align="absmiddle" alt="版内查询"><a class="b1" href="/bbsbfind.php?board=<?php echo $brd_encode; ?>">版内查询</a>
 	    <?php
     		if (strcmp($currentuser["userid"], "guest") != 0)
 		{

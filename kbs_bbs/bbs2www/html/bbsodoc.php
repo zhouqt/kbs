@@ -153,7 +153,7 @@
 <?php
 		}
 ?>
-<a href="/cgi-bin/bbs/bbsbfind?board=<?php echo $brd_encode; ?>">版内查询</a>
+<a href="/bbsbfind.php?board=<?php echo $brd_encode; ?>">版内查询</a>
 <?php
 		if (strcmp($currentuser["userid"], "guest") != 0)
 		{
