@@ -83,6 +83,7 @@ void set_numofsig();
 void docmdtitle(char *title, char *prompt);
 
 /* bbs.c*/
+extern int helpmode;
 int zsend_post(int ent, struct fileheader *fileinfo, char *direct);
 void  board_attach_link(char* buf,int buf_len,long attachpos,void* arg);
 int get_a_boardname(char *bname, char *prompt); /* 输入一个版名 */
@@ -247,4 +248,5 @@ int clubmember(int ent,struct fileheader* fh,char* direct);
 /* zmodem */
 int bbs_zsendfile(char* filename,char* sendname);
 char* bbs_zrecvfile();
+
 #endif

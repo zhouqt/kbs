@@ -572,8 +572,10 @@ static int pc_perm(char *userid){
 
 	struct user_info *uin;
 
-	if( pc_is_admin(userid) )
+	if( pc_is_owner(userid) )
 		return 5;
+	if( pc_is_admin(userid) )
+		return 2;
 
 	if( pc_is_friend(userid) )
 		return 2;

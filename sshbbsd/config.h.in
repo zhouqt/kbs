@@ -344,7 +344,7 @@ Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>
 #undef HAVE_MEMORY_H
 
 /* Enable MySQL support */
-#undef HAVE_MYSQL
+#undef HAVE_MYSQL_SMTH
 
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 #undef HAVE_NDIR_H
