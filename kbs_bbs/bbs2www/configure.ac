@@ -152,6 +152,5 @@ AC_SUBST(MAKEFLAG)
 AC_CONFIG_FILES([Makefile
                  lib/Makefile
                  phplib/Makefile
-                 phplib/config.m4
-                 src/Makefile])
+                 phplib/config.m4])
 AC_OUTPUT
