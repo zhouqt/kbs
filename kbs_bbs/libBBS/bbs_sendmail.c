@@ -371,9 +371,9 @@ char *bbs_readmailfile(char **buf, int *len, void *arg)
 /*	sprintf(pout,"Reply-To: %s.bbs@%s\r\n\r\n", currentuser->userid, email_domain());
 */
         if (pmo->isbig5)
-            sprintf(pout, "MIME-Version: 1.0\r\nContent-Type: text/plain; charset=big5\r\nContent-Transfer-Encoding: 8bit\r\nfrom: %s\r\nto: %s\r\n\r\n",pmo->from,pmo->to);
+            sprintf(pout, "MIME-Version: 1.0\r\nContent-Type: text/plain; charset=big5\r\nContent-Transfer-Encoding: 8bit\r\nFrom: %s\r\nTo: %s\r\n\r\n",pmo->from,pmo->to);
         else
-            sprintf(pout, "MIME-Version: 1.0\r\nContent-Type: text/plain; charset=gb2312\r\nContent-Transfer-Encoding: 8bit\r\nfrom: %s\r\nto: %s\r\n\r\n",pmo->from,pmo->to);
+            sprintf(pout, "MIME-Version: 1.0\r\nContent-Type: text/plain; charset=gb2312\r\nContent-Transfer-Encoding: 8bit\r\nFrom: %s\r\nTo: %s\r\n\r\n",pmo->from,pmo->to);
         pout = *buf + strlen(*buf);
         pmo->bfirst = 0;
     }
