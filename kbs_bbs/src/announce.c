@@ -286,6 +286,8 @@ int a_savenames(pm)            /*保存当前MENU到 .Names */
         fprintf(fn, "#\n");
     }
     fclose(fn);
+    if (stat(fpath,&st)!=-1)
+    	pm->modified_time=st.st_mtime;
     chmod(fpath, 0644);
     return 0;
 }
