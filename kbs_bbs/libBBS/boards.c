@@ -334,8 +334,9 @@ brc_initial(char *userid, char *boardname ) /* ¶ÁÈ¡ÓÃ»§.boardrcÎÄ¼þ£¬È¡³ö±£´æµÄµ
     return 0;
 }
 
+/*
 void
-brc_addlist( filename )  /*BRClist °´Ë³Ðò²åÈë filetime (filetime=filename) */
+bbs_addlist( filename )  BRClist °´Ë³Ðò²åÈë filetime (filetime=filename) 
 char    *filename;
 {
     int         ftime, n, i;
@@ -343,7 +344,7 @@ char    *filename;
     if(!strcmp(currentuser->userid,"guest"))
         return;
     ftime = atoi( &filename[2] );
-    if( (filename[0] != 'M'&&filename[0] != 'G') || filename[1] != '.' /*|| ftime <= UNREAD_TIME*/ ) {
+    if( (filename[0] != 'M'&&filename[0] != 'G') || filename[1] != '.' ) {
         return;
     }
     if( brc_num <= 0 ) {
@@ -368,7 +369,7 @@ char    *filename;
         brc_list[ brc_num++ ] = ftime;
         brc_changed = 1;
     }
-}
+}*/
 
 int brc_unread_t( int ftime) 
 {

@@ -27,8 +27,6 @@
 
 /*#include "../SMTH2000/cache/cache.h"*/
 
-int mot ;
-static int quiting ;
 extern int numofsig;
 int continue_flag;
 int scrint = 0 ;
@@ -79,8 +77,6 @@ int     SR_BMfuncX(); /* Leeward 98.04.16 */
 int	Goodbye();
 int i_read_mail(); /* period 2000.11.12 */
 
-int uleveltochar();
-
 void    RemoveAppendedSpace(); /* Leeward 98.02.13 */
 int set_delete_mark(int ent,struct fileheader *fileinfo,char *direct ); /* KCN */
 
@@ -91,7 +87,6 @@ extern int 	B_to_b;
 
 extern struct screenline *big_picture;
 extern struct userec *user_data;
-extern char* pnt;
 char genbuf[ 1024 ];
 char quote_title[120],quote_board[120];
 char quote_file[120], quote_user[120];
@@ -115,27 +110,6 @@ struct fileheader* fileinfo;
 }
 
 int totalusers, usercounter;
-
-#ifdef AIX_CANCELLED_BY_LEEWARD
-int check_RAM_lack()
-{ /* Leeward 98.06.16 For AIX only. Please man psdanger */
-    int free = psdanger(-1);
-    int safe = psdanger(SIGDANGER);
-
-    if ( safe < free - safe ) {
-        move(0, 0);
-        clrtobot();
-        move(8, 0);
-        prints("[1m[33mºÜ±§Ç¸£º[31mÄ¿Ç° RAM ±»¹ý¶ÈÊ¹ÓÃ, ÇëÉÔºòÔÙ·¢±í»òÕßÐÞ¸ÄÎÄÕÂ[33m\n\nRAM µ±Ç°¿ÕÏÐÒ³Êý¸ß³ö¾¯½äãÐÖµ %d (¾¯½äãÐÖµ = %d)[0m\n", safe, free - safe);
-        pressreturn();
-        clear();
-
-        return YEA;
-    }
-    else
-        return NA;
-}
-#endif
 
 #ifndef LEEWARD_X_FILTER
 int
@@ -285,33 +259,6 @@ char *title;
 
     return NA; /* Not return YEA (no invalid word at all) */
 }
-#endif
-
-int
-check_readonly(checked) /* Leeward 98.03.28 */
-char *checked;          /* ¸Ä¶¯±¾º¯Êý±ØÐëÍ¬²½ bbs.c ºÍ bbssnd.c (4 WWW) */
-{
-    struct stat st;
-    char        buf[STRLEN];
-
-    if (checkreadonly(checked)) /* Checking if DIR access mode is "555" */
-    {
-        if (currboard == checked)
-        {
-            move(0, 0 );
-            clrtobot();
-            move(8, 0);
-            prints("                                        "); /* 40 spaces */
-            move(8, (80 - (24 + strlen(checked))) / 2); /* Set text in center */
-            prints("[1m[33mºÜ±§Ç¸£º[31m%s °æÄ¿Ç°ÊÇÖ»¶ÁÄ£Ê½[33m\n\n                          Äú²»ÄÜÔÚ¸Ã°æ·¢±í»òÕßÐÞ¸ÄÎÄÕÂ[0m\n", checked);
-            pressreturn();
-            clear();
-        }
-        return YEA;
-    }
-    else
-        return NA;
-}
 
 PassFilter(ent,fileinfo,direct)  /* ·ÅÐÐÒ»ÆªÎÄÕÂ Leeward 98.04.06 */
 int ent;
@@ -361,94 +308,31 @@ char *direct;
     return del_post(ent,fileinfo,direct);
 }
 
-UndeleteArticle_old(ent,fileinfo,direct)  /* undelete Ò»ÆªÎÄÕÂ Leeward 98.05.18 */
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+#endif
+
+int
+check_readonly(char *checked) /* Leeward 98.03.28 */
 {
-    char *p, buf[1024];
-    char UBoard[48] = "deleted";
-    char UTitle[128];
-    struct fileheader UFile;
-    int i;
-    FILE *fp;
+    struct stat st;
+    char        buf[STRLEN];
 
-    sprintf(buf, "boards/%s/%s", currboard, fileinfo->filename);
-    fp = fopen(buf, "r");
-    if (!fp)
-        return DONOTHING;
-
-    strcpy(UTitle, fileinfo->title);
-    if (p = strrchr(UTitle, '-'))
-    { /* create default article title */
-        *p = 0;
-        for (i = strlen(UTitle) - 1; i >= 0; i --)
-        {
-            if (UTitle[i] != ' ')
-                break;
-            else
-                UTitle[i] = 0;
-        }
-    }
-
-    i = 0;
-    while (!feof(fp) && i < 2)
+    if (checkreadonly(checked)) /* Checking if DIR access mode is "555" */
     {
-        fgets(buf, 1024, fp);
-        if (feof(fp))
-            break;
-        if (strstr(buf, "·¢ÐÅÈË: ") && (p = strstr(buf, "), ÐÅÇø: ")))
+        if (currboard == checked)
         {
-            i ++;
-            strcpy(UBoard, p + 9);
-            if (p = strchr(UBoard, ' '))
-                *p = 0;
-            else if (p = strchr(UBoard, '\n'))
-                *p = 0;
+            move(0, 0 );
+            clrtobot();
+            move(8, 0);
+            prints("                                        "); /* 40 spaces */
+            move(8, (80 - (24 + strlen(checked))) / 2); /* Set text in center */
+            prints("[1m[33mºÜ±§Ç¸£º[31m%s °æÄ¿Ç°ÊÇÖ»¶ÁÄ£Ê½[33m\n\n                          Äú²»ÄÜÔÚ¸Ã°æ·¢±í»òÕßÐÞ¸ÄÎÄÕÂ[0m\n", checked);
+            pressreturn();
+            clear();
         }
-        else if (strstr(buf, "±ê  Ìâ: "))
-        {
-            i ++;
-            strcpy(UTitle, buf + 8);
-            if (p = strchr(UTitle, '\n'))
-                *p = 0;
-        }
+        return YEA;
     }
-    fclose(fp);
-
-    if ((fileinfo->accessed[0] & FILE_FORWARDED))
-    {
-        clear();
-        move(2,0);
-        prints("±¾ÎÄÒÑ»Ö¸´¹ýÁË\n");
-        pressreturn();
-
-        return FULLUPDATE;
-    }
-
-    UFile.accessed[0] = 0;
-    strcpy(UFile.owner, fileinfo->owner);
-    strcpy(UFile.title, UTitle);
-    strcpy(UFile.filename, fileinfo->filename);
-
-    sprintf(buf, "/bin/cp -f boards/%s/%s boards/%s/%s",
-            currboard, fileinfo->filename, UBoard, UFile.filename);
-    system(buf);
-
-    sprintf(buf, "boards/%s/.DIR", UBoard);
-    append_record(buf, &UFile, sizeof(UFile));
-
-    fileinfo->accessed[0] |= FILE_FORWARDED;
-    substitute_record(direct, fileinfo, sizeof(*fileinfo),ent) ;
-    sprintf(buf,"undeleted %s's ¡°%s¡± on %s", UFile.owner, UFile.title, UBoard);
-    report(buf);
-
-    clear();
-    move(2,0);
-    prints("'%s' ÒÑ»Ö¸´µ½ %s °å \n", UFile.title, UBoard);
-    pressreturn();
-
-    return FULLUPDATE;
+    else
+        return NA;
 }
 
 /* undelete Ò»ÆªÎÄÕÂ Leeward 98.05.18 */
@@ -552,17 +436,6 @@ check_stuffmode()
         return YEA;
     else
         return NA;
-}
-
-char *
-sethomepath( buf, userid )  /* È¡ Ä³ÓÃ»§ µÄhome */
-char    *buf, *userid;
-{
-    if (isalpha(userid[0]))  /* ¼ÓÈë´íÎóÅÐ¶Ï,Ìá¸ßÈÝ´íÐÔ, alex 1997.1.6*/
-        sprintf( buf, "home/%c/%s", toupper(userid[0]), userid );
-    else
-        sprintf( buf, "home/wrong/%s", userid);
-    return buf;
 }
 
 /*Add by SmallPig*/
@@ -3161,48 +3034,6 @@ show_b_note()
     return FULLUPDATE;
 }
 
-/*added by alex, 96.9.12*/
-void postreport(const char * posttitle, int post_num, char *board) 
-{
-    struct posttop
-    {
-        char author[13];              /* author name */
-        char board[IDLEN+6];               /* board name */
-        char title[66];               /* title name */
-        time_t date;                  /* last post's date */
-        int number;                   /* post number */
-    }    postlog;
-
-    int fd ;
-    static int disable = NA ;
-    char* buf;
-
-    if(disable)
-        return ;
-    if(!strcmp(board, "test") || !strcmp(board,"junk") || !strcmp(board,"WaterWorld"))
-        return;
-    /*if((fd = open(".post",O_WRONLY|O_CREAT,0644)) != -1 ) {*/
-    if((fd = open(".post.X",O_WRONLY|O_CREAT,0644)) != -1 ){
-        memset(&postlog, 0, sizeof(postlog));
-        time(&(postlog.date));
-        strcpy(postlog.author, currentuser->userid);
-        strcpy(postlog.board, board);
-        if( strncasecmp( posttitle, "Re:", 3 ) == 0 )
-            strcpy(postlog.title, posttitle+4);
-        else
-            strcpy(postlog.title, posttitle);
-        postlog.number = post_num;
-        flock(fd,LOCK_EX) ;
-        lseek(fd,0,SEEK_END) ;
-        write(fd, (char *)&postlog, sizeof(postlog));
-        flock(fd,LOCK_UN) ;
-        close(fd) ;
-        return ;
-    }
-    disable = YEA ;
-    return ;
-}
-
 int
 into_announce()
 {
@@ -3287,7 +3118,6 @@ sequent_messages(struct fileheader *fptr,char* arg)
         if(idc < sequent_ent)
             return 0;
         if( !brc_unread( fptr->filename ) )  return 0; /*ÒÑ¶Á Ôò ·µ»Ø*/
-        mot = 1 ;
         if (continue_flag != 0) {
             genbuf[ 0 ] = 'y';
         } else {
@@ -3365,7 +3195,6 @@ char *direct ;*/
 
     sequent_messages((struct fileheader *)NULL,0) ;
     sequent_ent = ent ;
-    quiting = NA ;
     continue_flag = 0;
     setbdir( buf, currboard );
     apply_record( buf,sequent_messages,sizeof(struct fileheader),0) ;
@@ -3618,46 +3447,6 @@ void record_exit_time()   /* ¼ÇÂ¼ÀëÏßÊ±¼ä  Luzi 1998/10/23 */
         fclose(fp);
     }
 }
-/*
-int
-b_jury_edit()*/ /*stephen 2001.11.1: ±à¼­°æÃæÖÙ²ÃÃûµ¥ */
-/*{
-    char        buf[ STRLEN ];
-    char ans[4];
-    int         aborted;
-
-    if(!(HAS_PERM(currentuser,PERM_JURY) && HAS_PERM(currentuser,PERM_BOARDS) || HAS_PERM(currentuser,PERM_SYSOP)))
-    {
-        return 0 ;
-    }
-    clear();
-    makevdir( currboard );
-    setvfile( buf, currboard, "jury" );
-    getdata(1,0,"(E)±à¼­ (D)É¾³ý ±¾ÌÖÂÛÇøÖÙ²ÃÎ¯Ô±Ãûµ¥? [E]: ",ans,2,DOECHO,NULL,YEA);
-    if (ans[0] == 'D' || ans[0] == 'd')
-    {
-        move(2,0);
-        if(askyn("ÕæµÄÒªÉ¾³ý±¾ÌÖÂÛÇøÖÙ²ÃÎ¯Ô±Ãûµ¥",0))
-        {
-            move(3,0);
-            prints("ÖÙ²ÃÎ¯Ô±Ãûµ¥ÒÑ¾­É¾³ý...\n");
-            pressanykey();
-            unlink(buf);
-            aborted=1;
-        }else
-            aborted=-1;
-    }else
-        aborted = vedit( buf, NA );
-    if( aborted ==-1) {
-        pressreturn();
-    } else
-    {
-        setvfile( buf, currboard, "juryrec" );
-        unlink(buf);
-    }
-
-    return FULLUPDATE;
-} */
 
 int
 Goodbye()    /*ÀëÕ¾ Ñ¡µ¥*/

@@ -698,6 +698,16 @@ sethomefile( char    *buf,char  *userid,char *filename)  /*取某用户文件 路径*/
 }
 
 char *
+sethomepath( char    *buf, char *userid)  /* 取 某用户 的home */
+{
+    if (isalpha(userid[0]))  /* 加入错误判断,提高容错性, alex 1997.1.6*/
+        sprintf( buf, "home/%c/%s", toupper(userid[0]), userid );
+    else
+        sprintf( buf, "home/wrong/%s", userid);
+    return buf;
+}
+
+char *
 setmailfile( char    *buf, char *userid, char *filename)    /* 取某用户mail文件 路径*/
 {
     if (isalpha(userid[0]))  /* 加入错误判断,提高容错性, alex 1997.1.6*/
