@@ -13,6 +13,7 @@ $needlogin=1;
 require("inc/funcs.php");
 require("inc/user.inc.php");
 require("inc/board.inc.php");
+require("inc/conn.php");
 
 global $boardArr;
 global $boardID;
@@ -71,6 +72,8 @@ if (isErrFounded()) {
 
 //showBoardSampleIcons();
 show_footer();
+
+CloseDatabase();
 
 function preprocess(){
 	global $boardID;

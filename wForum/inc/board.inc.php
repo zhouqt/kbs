@@ -91,7 +91,7 @@ function showBoardStaticsTop($boardArr){
 ?>
 <TABLE cellpadding=3 cellspacing=1 class=tableborder1 align=center><TR><Th height=25 width=100% align=left id=tabletitlelink style="font-weight:normal">本版当前共有<b><?php echo $boardArr['CURRENTUSERS'];?></b>人在线 </Th></TR></td></tr></TABLE>
 <BR>
-<table cellpadding=0 cellspacing=0 border=0 width=97% align=center valign=middle><tr><td align=center width=2> </td><td align=left style="height:27" valign="center"><a href=postarticle.php?board=<?php echo $boardArr['NAME']; ?>><span class="buttonclass1" border=0 alt=发新帖></span></a>&nbsp;&nbsp;<a href=vote.php?boardid=2><span class="buttonclass2" border=0 alt=发起新投票></span>&nbsp;&nbsp;<a href=smallpaper.php?boardid=2><span class="buttonclass3" border=0 alt=发布小字报></span></a></td><td align=right><img src=pic/team2.gif align=absmiddle>
+<table cellpadding=0 cellspacing=0 border=0 width=97% align=center valign=middle><tr><td align=center width=2> </td><td align=left style="height:27" valign="center"><a href=postarticle.php?board=<?php echo $boardArr['NAME']; ?>><span class="buttonclass1" border=0 alt=发新帖></span></a>&nbsp;&nbsp;<a href=vote.php?board=2><span class="buttonclass2" border=0 alt=发起新投票></span>&nbsp;&nbsp;<a href=smallpaper.php?board=<?php echo $boardArr['NAME']; ?>><span class="buttonclass3" border=0 alt=发布小字报></span></a></td><td align=right><img src=pic/team2.gif align=absmiddle>
 <?php 
 	$bms=split(' ',$boardArr['BM']);
 	foreach($bms as $bm) {
@@ -236,9 +236,19 @@ function showBoardContents($boardID,$boardName,$page){
 }
 
 function showBroadcast($boardID,$boardName){
+	global $conn;
 ?>
 <tr><td class=tablebody1 colspan=5 height=20>
-	<table width=100% ><tr><td valign=middle height=20 width=50> <a href=AllPaper.asp?boardid=1 title=点击查看本论坛所有小字报><b>广播：</b></a> </td><td width=*> <marquee scrolldelay=150 scrollamount=4 onmouseout="if (document.all!=null){this.start()}" onmouseover="if (document.all!=null){this.stop()}"></marquee><td align=right width=240><a href=# onclick="alert('本功能尚在开发中！')"  title=查看本版精华><font color=#FF0000><B>精华</B></font></a>
+	<table width=100% ><tr><td valign=middle height=20 width=50> <a href=AllPaper.asp?boardid=1 title=点击查看本论坛所有小字报><b>广播：</b></a> </td><td width=*> <marquee scrolldelay=150 scrollamount=4 onmouseout="if (document.all!=null){this.start()}" onmouseover="if (document.all!=null){this.stop()}">
+<?php
+	$sth = $conn->query("SELECT ID,Owner,Title FROM smallpaper_tb where Addtime>=subdate(Now(),interval 1 day) and boardID=" . $boardID . " ORDER BY Addtime desc limit 5");
+	while($rs = $sth->fetchRow(DB_FETCHMODE_ASSOC)) {
+		print "<font color=#ff0000>".$rs['Owner']."</font>说：<a href=javascript:openScript('viewpaper.php?id=".$rs['ID']."&boardname=".$boardName."',500,400)>".htmlentities($rs['Title'])."</a>";
+  } 
+  unset($rs);
+  $sth->free();
+?>
+	</marquee><td align=right width=240><a href=# onclick="alert('本功能尚在开发中！')"  title=查看本版精华><font color=#FF0000><B>精华</B></font></a>
 	| <a href=# onclick="alert('本功能尚在开发中！')" title=查看本版在线详细情况>在线</a> | <a href=bbseven.asp?boardid=1 title=查看本版事件>事件</a> | <a href=# onclick="alert('本功能尚在开发中！')" title=查看本版用户组权限>权限</a>
 | <a href=# onclick="alert('本功能尚在开发中！')">管理</a></td></tr></table>
 </td></tr>

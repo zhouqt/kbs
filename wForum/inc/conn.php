@@ -2,8 +2,8 @@
 require 'DB.php';
 $host='localhost';
 $user='root';
-$passwd='phpsql';
-$dbname='phpsql';
+//$passwd='phpsql';
+$dbname='wbbs';
 //$dsn = "mysql://$user:$passwd@$host/$dbname";
 $dsn = "mysql://$user@$host/$dbname";
 
