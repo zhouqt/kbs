@@ -128,7 +128,7 @@ function display_navigation_bar($brdarr, $short_filename, $num, $article)
 				$attachsize=$array["size"];
 				Header("Content-type: " . get_mimetype($attachname));
 				Header("Accept-Ranges: bytes");
-				Header("Accept-Length: " . $attachsize);
+				Header("Content-Length: " . $attachsize);
 				Header("Content-Disposition: filename=" . $attachname);
 				echo fread($file,$attachsize);
 				fclose($file);

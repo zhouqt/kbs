@@ -113,7 +113,7 @@ function get_mimetype($name)
 				$attachsize=$array["size"];
 				Header("Content-type: " . get_mimetype($attachname));
 				Header("Accept-Ranges: bytes");
-				Header("Accept-Length: " . $attachsize);
+				Header("Content-Length: " . $attachsize);
 				Header("Content-Disposition: filename=" . $attachname);
 				echo fread($filep,$attachsize);
 				fclose($filep);

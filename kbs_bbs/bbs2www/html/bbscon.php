@@ -225,7 +225,7 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 			$attachsize=$array["size"];
 			Header("Content-type: " . get_mimetype($attachname));
 			Header("Accept-Ranges: bytes");
-			Header("Accept-Length: " . $attachsize);
+			Header("Content-Length: " . $attachsize);
 			Header("Content-Disposition: inline;filename=" . $attachname);
 			echo fread($file,$attachsize);
 			fclose($file);
