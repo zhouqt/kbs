@@ -785,6 +785,8 @@ int haspostperm(struct userec *user, char *bname)
     if ((i = getbnum(bname)) == 0)
         return 0;
     if (!HAS_PERM(user, PERM_POST)) {
+        if (!strcmp(bname, "BBSHelp"))
+            return 1;
         if (!HAS_PERM(user, PERM_LOGINOK))
             return 0;
         if (!strcmp(bname, "Complain"))
@@ -792,8 +794,6 @@ int haspostperm(struct userec *user, char *bname)
         else if (!strcmp(bname, "sysop"))
             return 1;
         else if (!strcmp(bname, "Arbitration"))
-            return 1;
-        else if (!strcmp(bname, "BBSHelp"))
             return 1;
         return 0;
     }                           /* stephen 2000.10.27 */
