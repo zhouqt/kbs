@@ -547,7 +547,12 @@ void r_msg()
                 }
                 break;
         }
-        if (ch=='\r'||ch=='\n') break;
+        if (ch=='\r'||ch=='\n') {
+        	// make a tag for msg end
+        	prints("\x1b[m已发出消息");
+        	refresh();
+        	break;
+        }
     }
 
 
