@@ -70,7 +70,7 @@ int brd_show_boards(int sec, char *cgi)
 	char *ptr2;
 	int i;
 
-	sprintf( buf, "EGROUP%c", seccode[sec][0]);
+	sprintf( buf, "EGROUP%d", sec);
 	boardprefix = sysconf_str( buf );
 	yank_flag = 0;
 	if ( !strcmp( currentuser->userid, "guest" ) )
@@ -96,16 +96,19 @@ int brd_show_boards(int sec, char *cgi)
 		printf("<td><a href=\"%s?board=%s\">%s</a></td>", cgi, ptr->name, ptr->title+7);
 		strncpy(buf, ptr->BM, sizeof(buf)-1);
 		buf[sizeof(buf)-1] = '\0';
-		ptr2 = strchr(buf, ' ');
-		if (ptr2 == NULL)
+		if (buf[0] <= ' ')
 		{
-			ptr2 = "诚征板主中";
-			printf("<td>%s</td>", ptr2);
+			printf("<td>诚征板主中</td>");
 		}
 		else
 		{
-			*ptr2 = '\0';
-			printf("<td><a href=\"bbsqry?userid=%s\">%s</a></td>", ptr2, ptr2);
+			if ((ptr2 = strchr(buf, ' ')) != NULL)
+				*ptr2 = '\0';
+			if (!isalpha(buf[0]))
+				printf("<td>%s</td>", buf);
+			else
+				printf("<td><a href=\"bbsqry?userid=%s\">%s</a></td>",
+					buf, buf);
 		}
 		printf("<td>%d</td></tr>\n", ptr->total);
 	}
