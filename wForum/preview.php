@@ -6,7 +6,8 @@ require("inc/ubbcode.php");
 
 setStat("Ìû×ÓÔ¤ÀÀ");
 
-html_init();
+$is_tex = SUPPORT_TEX ? $_POST["texflag"] : 0;
+html_init("","","",$is_tex);
 ?>
 <script src="inc/funcs.js"  language="javascript"></script>
 <body>
@@ -17,7 +18,8 @@ height="24"><b><?php echo htmlspecialchars($_POST["title"]); ?></b></td></tr>
 </table><br/>
 <table cellpadding="3" cellspacing="1" align="center" class="TableBorder1">
 <tr><td 
-class="TableBody1"><?php echo dvbcode(bbs_printansifile($_POST["body"],1,'bbsuploadcon.php?s',0,1), 0, "TableBody2"); ?></td></tr>
+class="TableBody1"><?php
+    echo DvbTexCode(bbs_printansifile($_POST["body"],1,'bbsuploadcon.php?s',$is_tex,1), 0, "TableBody2", $is_tex); ?></td></tr>
 </table>
 <?php
 	show_footer(false);

@@ -238,7 +238,10 @@ function makeRectangularDropShadow(el, color, size)
 	}
 }
 
-var stylelist = ' \
+var stylelist, manage, talk, query;
+
+function defineMenus() {
+    stylelist = ' \
 <a class=\"SMItem\" href=\"changestyle.php?style=defaultstyle\">默认模板</a><br> \
 <a class=\"SMItem\" href=\"changestyle.php?style=crystalpurplestyle\">水晶紫色</a><br> \
 <a class=\"SMItem\" href=\"changestyle.php?style=dotgreenstyle\">ｅ点小镇</a><br> \
@@ -261,7 +264,7 @@ var stylelist = ' \
 <a class=\"SMItem\" href=\"changestyle.php?style=snowstyle\">雪花飘飘</a><br> \
 ';
 
-var manage= ' \
+    manage= ' \
 <a class=\"MItem\" href="usermailbox.php?boxname=inbox">我的信箱</a><br> \
 <a class=\"MItem\" href="favboard.php">用户收藏版面</a><br> \
 <a class=\"MItem\" href="usermanagemenu.php">用户控制面板</a><br> \
@@ -272,7 +275,7 @@ var manage= ' \
 <a class=\"MItem\" href="alteryank.php">切换版面列表方式</a> \
 ';
 
-var talk = ' \
+    talk = ' \
 <a class=\"MItem\" href="showmsgs.php">察看在线短信</a><br> \
 <a class=\"MItem\" href="javascript:sendMsg()">发短信</a><br>';
 if (siteconf_SMS_SUPPORT) {
@@ -285,12 +288,13 @@ talk += ' \
 <a class=\"MItem\" href="dispuser.php">查询用户</a> \
 ';
 
-var query = ' \
+    query = ' \
 <a href="searchboard.php">搜索版面</a><br> \
 <form action="searchboard.php" method="get" style="margin: 0px;"> \
 <input class="TableBorder2" name="board" value="输入关键字" size="12" onmouseover="this.focus()" onfocus="this.select()" /></form> \
 <hr class="TableBorder2"><a class="MItem" href="query.php" title="直接点上面的“搜索”菜单将会搜索当前版面">搜索文章</a> \
 ';
+}
 
 var timerID=0;
 function dosendmsg(){

@@ -1,10 +1,6 @@
 <?php
-//入口参数:strContent内容，PostUserGroup用户组ID，PostType使用类型（1表示帖子，2表示公告，3表示短信）
-
-function DvBCode($strContent,$filterHTML, $abgcolor='')
+function DvbTexCode($strContent,$filterHTML, $abgcolor='', $is_tex=false)
 {
-	extract($GLOBALS);
-
 	if ($filterHTML) {
 		$strContent=dvHTMLEncode($strContent);
 	}
@@ -12,7 +8,30 @@ function DvBCode($strContent,$filterHTML, $abgcolor='')
 
 	$strContent=FilterJS($strContent);
 
+	if ($is_tex) { //先用一个最最猥琐的办法
+		$tmpfile = BBS_HOME . "/tmp/" . mt_rand();
+		$handle = popen(BBS_HOME . "/bin/itex2MML > $tmpfile", "w");
+		if ($handle) {
+			fwrite($handle, $strContent);
+			pclose($handle);
+			$handle = fopen($tmpfile, "r");
+			if ($handle) {
+				$strContent = fread($handle, filesize($tmpfile));
+				fclose($handle);
+			}
+			@unlink($tmpfile);
+		}
+	} else {
+	    $strContent = DvBCode($strContent, $filterHTML, $abgcolor);
+	}
+	
+	return $strContent;
+}
+
+
+function DvBCode($strContent,$filterHTML, $abgcolor='') {
 //IMG Code
+
 	$search = array("'\[IMG\]((?:http|https|ftp)://[^\[]*)\[\/IMG\]'i");
 
 	$replace= array("<a onfocus=\"this.blur()\" href=\"\\1\" target=\"_blank\"><img src=\"\\1\" border=\"0\" alt=\"按此在新窗口浏览图片\" onload=\"javascript:if(this.width>screen.width-333)this.width=screen.width-333\" /></a>");
@@ -240,7 +259,7 @@ e=1>\\4";
 
 	$search="'\[em(\d+)\]'ie";
 
-	$replace="'<img src=\"emot/em\\1.gif\" border=0 align=middle>'";
+	$replace="'<img src=\"emot/em\\1.gif\" border=\"0\" align=\"middle\"/>'";
 
 	$strContent=preg_replace($search,$replace,$strContent);
 
@@ -285,7 +304,6 @@ e=1>\\4";
                 );
 
     $strContent=preg_replace($search,$replace,$strContent);
-
 
 	return $strContent;
 } 

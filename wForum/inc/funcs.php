@@ -448,6 +448,11 @@ function show_nav($boardName='',$is_mathml=false)
 //-->
 </script>
 <script src="inc/funcs.js"  language="javascript"></script>
+<script language="javascript">
+<!--
+    defineMenus();
+//-->
+</script>
 <body topmargin="0" leftmargin="0" onmouseover="HideMenu(event);">
 <script src="inc/browser.js"  language="javascript"></script>
 <div id="menuDiv" class="navClass1"></div>

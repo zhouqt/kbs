@@ -401,23 +401,7 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 	};
 	$is_tex = SUPPORT_TEX && $thread["IS_TEX"];
 	$str = bbs_printansifile($filename,1,'bbscon.php?bid='.$boardID.'&amp;id='.$thread['ID'],$is_tex,0);
-	if ($is_tex) { //先用一个最最猥琐的办法
-		$tmpfile = BBS_HOME . "/tmp/" . mt_rand();
-		$handle = popen(BBS_HOME . "/bin/itex2MML > $tmpfile", "w");
-		if ($handle) {
-			fwrite($handle, $str);
-			pclose($handle);
-			$handle = fopen($tmpfile, "r");
-			if ($handle) {
-				$str = fread($handle, filesize($tmpfile));
-				fclose($handle);
-			}
-			@unlink($tmpfile);
-		}
-		echo $str;
-	} else {
-		echo dvbcode($str,0,$fgstyle);
-	}
+	echo DvbTexCode($str,0,$fgstyle,$is_tex);
 ?>
 </blockquote></td></tr></table>
 </td>

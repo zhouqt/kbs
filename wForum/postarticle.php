@@ -315,7 +315,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 	}
 	if (SUPPORT_TEX) {
 ?>
-    <input type=checkbox name=texflag value="1">使用 tex 发表</font>
+    <input type=checkbox name=texflag value="1">使用 tex 发表（ubb 效果将被禁用）
 <?php
 	}
 ?>
@@ -328,7 +328,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
       </table>
 </form>
 <form name=frmPreview action=preview.php?boardid=<?php echo $Boardid; ?> method=post target=preview_page>
-<input type=hidden name=title value=><input type=hidden name=body value=>
+<input type=hidden name=title value=><input type=hidden name=body value=><input type=hidden name=texflag value=>
 </form>
 <?php
 }

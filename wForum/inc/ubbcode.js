@@ -563,6 +563,9 @@ function gopreview()
 {
 document.frmPreview.title.value=document.frmAnnounce.subject.value;
 document.frmPreview.body.value=document.frmAnnounce.Content.value;
+if (document.frmAnnounce.texflag != null) {
+    document.frmPreview.texflag.value=document.frmAnnounce.texflag.checked?1:0;
+}
 var popupWin = window.open('preview.php', 'preview_page', 'resizable=yes,scrollbars=yes,width=750,height=450');
 document.frmPreview.submit()
 }
