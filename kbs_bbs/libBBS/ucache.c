@@ -437,7 +437,14 @@ void setuserid(int num, const char *userid)
         return;
     sin.sin_family = AF_INET;
     sin.sin_port = htons(60001);
+#ifdef HAVE_INET_ATON
     inet_aton("127.0.0.1", &sin.sin_addr);
+#elif defined HAVE_INET_PTON
+	inet_pton(AF_INET, "127.0.0.1", &sin.sin_addr);
+#else
+	/* Is it OK? */
+    my_inet_aton("127.0.0.1", &sin.sin_addr);
+#endif
     if (connect(m_socket, (struct sockaddr *) &sin, sizeof(sin)) != 0) {
         close(m_socket);
         return;
@@ -617,7 +624,14 @@ int getnewuserid3(char *userid)
         return -1;
     sin.sin_family = AF_INET;
     sin.sin_port = htons(60001);
+#ifdef HAVE_INET_ATON
     inet_aton("127.0.0.1", &sin.sin_addr);
+#elif defined HAVE_INET_PTON
+	inet_pton(AF_INET, "127.0.0.1", &sin.sin_addr);
+#else
+	/* Is it OK? */
+    my_inet_aton("127.0.0.1", &sin.sin_addr);
+#endif
     if (connect(m_socket, (struct sockaddr *) &sin, sizeof(sin)) != 0) {
         close(m_socket);
         return -1;

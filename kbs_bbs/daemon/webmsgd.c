@@ -9,6 +9,14 @@
 #undef perror
 #undef printf
 
+#ifdef SOLARIS
+# include <string.h>            /* For prototype of `strlen'.  */
+
+/* Evaluate to actual length of the `sockaddr_un' structure.  */
+# define SUN_LEN(ptr) ((size_t) (((struct sockaddr_un *) 0)->sun_path)        \
+						  + strlen ((ptr)->sun_path))
+#endif
+
 static msglist_t *msgshm;
 void save_daemon_pid()
 {
@@ -58,11 +66,11 @@ void start_daemon()
 
 int init_socket()
 {
-    struct sockaddr_un sun;
+    struct sockaddr_un s_un;
     int sockfd;
     char path[80];
 
-    bzero(&sun, sizeof(sun));
+    bzero(&s_un, sizeof(s_un));
     snprintf(path, sizeof(path), BBSHOME "/.msgd");
     unlink(path);
     sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
@@ -70,9 +78,10 @@ int init_socket()
         perror("socket");
         exit(-1);
     }
-    sun.sun_family = AF_UNIX;
-    strncpy(sun.sun_path, path, sizeof(sun.sun_path) - 1);
-    if (bind(sockfd, (struct sockaddr *) &sun, SUN_LEN(&sun)) == -1) {
+    s_un.sun_family = AF_UNIX;
+    strncpy(s_un.sun_path, path, sizeof(s_un.sun_path) - 1);
+	s_un.sun_path[sizeof(s_un.sun_path) - 1] = '\0';
+    if (bind(sockfd, (struct sockaddr *) &s_un, SUN_LEN(&s_un)) == -1) {
         perror("bind");
         exit(-1);
     }

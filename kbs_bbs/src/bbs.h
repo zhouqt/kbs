@@ -64,6 +64,18 @@
 #include <termios.h>
 #endif
 
+#ifndef HAVE_FLOCK
+#include "flock.h"
+#endif
+
+#ifndef HAVE_STRCASESTR
+#define strcasestr(x,y) bm_strcasestr(x,y)
+#endif
+
+#ifndef HAVE_SIG_T
+typedef void (* sig_t)(int);
+#endif
+
 #ifndef _cplusplus
 
 #ifndef byte
@@ -85,10 +97,6 @@ typedef enum { false = 0, true = 1 } bool;
 #endif
 #endif
 
-#ifdef SOLARIS
-#define LOCK_SH LOCK_EX
-#endif
-
 #include "site.h"
 #include "default.h"
 
@@ -104,11 +112,6 @@ public shm,而attach shm又需要sysconf_eval,ft*/
 
 #define VERSION_ID "Firebird BBS 2.5GB"
 #define ADD_EDITMARK 1
-
-#ifndef LOCK_EX
-#define LOCK_EX         2       /* exclusive lock */
-#define LOCK_UN         8       /* unlock */
-#endif
 
 #ifdef XINU
 extern int errno;

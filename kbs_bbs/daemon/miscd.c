@@ -376,7 +376,14 @@ void userd()
     memset(&sin, 0, sinlen);
     sin.sin_family = AF_INET;
     sin.sin_port = htons(60001);
+#ifdef HAVE_INET_ATON
     inet_aton("127.0.0.1", &sin.sin_addr);
+#elif defined HAVE_INET_PTON
+	inet_pton(AF_INET, "127.0.0.1", &sin.sin_addr);
+#else
+	/* Is it OK? */
+    my_inet_aton("127.0.0.1", &sin.sin_addr);
+#endif
     if (0 != bind(m_socket, (struct sockaddr *) &sin, sizeof(sin))) {
         bbslog("3system", "userd:bind %s", strerror(errno));
         exit(-1);
@@ -421,7 +428,14 @@ void utmpd()
     memset(&sin, 0, sinlen);
     sin.sin_family = AF_INET;
     sin.sin_port = htons(60002);
+#ifdef HAVE_INET_ATON
     inet_aton("127.0.0.1", &sin.sin_addr);
+#elif defined HAVE_INET_PTON
+	inet_pton(AF_INET, "127.0.0.1", &sin.sin_addr);
+#else
+	/* Is it OK? */
+    my_inet_aton("127.0.0.1", &sin.sin_addr);
+#endif
     if (0 != bind(m_socket, (struct sockaddr *) &sin, sizeof(sin))) {
         bbslog("3system", "utmpd:bind %s", strerror(errno));
         exit(-1);

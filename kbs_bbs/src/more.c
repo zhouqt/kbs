@@ -41,6 +41,15 @@ void register_attach_link(generate_attach_link_t fn,void* arg)
 }
 
 /*extern int isblank(int c);*/
+#ifndef HAVE_ISBLANK
+int isblank(int c)
+{
+	if (c == (int)' ' || c == (int)'\t' || c == (int)'\v')
+		return 1;
+	else
+		return 0;
+}
+#endif
 
 
 /*struct FILESHM
