@@ -14,6 +14,7 @@
 #include <string>
 #include <string.h>
 #include <iostream>
+#include <stdio.h>
 using namespace std;
 
 typedef int (*splitcallback)(unsigned ip, unsigned mask, void *param);
@@ -81,6 +82,7 @@ typedef struct _ipparam {
 } ipparam;
 
 static FILE *outf;
+static int count;
 static int writecb(unsigned ip, unsigned mask, void *param)
 {
 	struct in_addr inr;
@@ -89,6 +91,7 @@ static int writecb(unsigned ip, unsigned mask, void *param)
 	string ips = string(inet_ntoa(inr));
 	inr.s_addr = mask;
 	string masks = string(inet_ntoa(inr));
+	count ++;
 	fprintf(stdout,"%s\t%s\t%s\t%s\n",ips.c_str(),masks.c_str(),p->area.c_str(),p->location.c_str());
 	return 0;
 }
@@ -130,6 +133,9 @@ int main(int argc, char* argv[])
 	char buf[255];
 	for (fgets(buf,255,stdin);!feof(stdin);fgets(buf,255,stdin))
 		AddLine(buf);
+	FILE *fp = fopen("ipinfo_count","wb");
+	fwrite(&count,sizeof(int),1,fp);
+	fclose(fp);
 	return 0; 
 }
 

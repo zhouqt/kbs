@@ -1,5 +1,5 @@
 //
-//  accepts convert's output, make an ipinfo image
+//  accepts convert's output, outputs ipinfo_tree string_index string_pool
 //
 //  Note: I know it is not C++ style code, please do not blame me.
 //  
@@ -41,6 +41,19 @@ class strpool
 		indexes.push_back(offset);
 		offset += s.size() + 1; // null terminator
 		return id;
+	}
+	void dumpidx(const string &fn)
+	{
+		FILE *fp = fopen(fn.c_str(),"wb");
+		fwrite(&indexes[0], sizeof(int), indexes.size(),fp);
+		fclose(fp);
+	}
+	void dumpstr(const string &fn)
+	{
+		FILE *fp = fopen(fn.c_str(),"wb");
+		for (int i=0;i< indexes.size(); i++)
+			fwrite(revpool[i].c_str(), revpool[i].size()+1 , 1, fp);
+		fclose(fp);
 	}
 	void dump(const string &fn)
 	{
@@ -149,10 +162,12 @@ int main(int argc, char* argv[])
 	InitInfo();
 	for (fgets(buf,255,stdin);!feof(stdin);fgets(buf,255,stdin))
 		AddLine(buf);
-	pool.dump(string("ipinfo.dat"));
-	FILE *fp = fopen("ipinfo.dat","ab");
-	int c = ipbuf.size();
-	fwrite(&c,sizeof(int),1,fp);
+	//pool.dump(string("ipinfo.dat"));
+	pool.dumpidx(string("string_index"));
+	pool.dumpstr(string("string_pool"));
+	FILE *fp = fopen("ipinfo_tree","wb");
+//	int c = ipbuf.size();
+//	fwrite(&c,sizeof(int),1,fp);
 	fwrite(&ipbuf[0],sizeof(ipnode),ipbuf.size(),fp);
 	fclose(fp);
 	return 0; 
