@@ -274,7 +274,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		</td>
 	</tr>
 	<tr>
-		<td width="30%" align="middle" valign="top" style="border-width: 1px;border-right-style: dashed;border-color: #336699;">
+		<td width="25%" align="middle" valign="top" style="border-width: 1px;border-right-style: dashed;border-color: #336699;">
 			<table width="98%" cellpadding=5 cellspacing=0 border=0>
 				<tr><td height=10> </td></tr>
 				<tr><td class=t17>
@@ -325,7 +325,8 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 				<tr><td style="text-align:center;color:#FF6600;font-weight:bolder;background-color:#F6F6F6;font-family: Verdana, Arial, Helvetica, sans-serif;font-size: 14px;font-style: italic;line-height: 22px;">
 				<?php echo $pc["VISIT"]; ?>
 				</td></tr>
-				<tr><td height=40 align=middle>
+				<tr><td height=10> </td></tr>
+				<tr><td class=t17>
 				<?php display_blog_out_rss($pc); ?>
 				</td></tr>
 			</table>
