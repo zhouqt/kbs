@@ -92,11 +92,14 @@ int
 testPOWERJUNK(char *path, char *fn)
 {
 	char buf[1024];
+	struct stat st;
 	sprintf(buf, "%s/%s", path, fn);
-	if (strncmp(fn, ".AUTHOR", 7) && strncmp(buf, ".TITLE", 6)
+	if (strncmp(fn, ".AUTHOR", 7) && strncmp(buf, ".TITLE", 6) && strncmp(buf, ".Search", 7)
 	    &&strncmp(fn,".ORIGIN",6))
 		return 0;
-	if (time(NULL) - atoi(fn+2) < 3600 * 5)
+	if (stat(buf,&st)!=0)
+		return 0;
+	if (time(NULL) - st.st_mtime < 3600 * 5)
 		return 0;
 	unlink(buf);
 	printf("%s\n", buf);
