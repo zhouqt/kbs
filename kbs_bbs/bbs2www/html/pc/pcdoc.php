@@ -62,7 +62,7 @@
 		for( $i = 0 ; $i < count($blogMenus) ; $i ++ )
 		{
 			if($blogMenus[$i]["TID"]!=$tid)
-				echo "<option value=\"T".$blogMenus[$i]["TID"]."\">[".$sec[$tag]."·ÖÀà]".html_format($blogMenus[$i]["NAME"])."</option>\n";
+				echo "<option value=\"T".$blogMenus[$i]["TID"]."\">[".$sec[$tag]."]".html_format($blogMenus[$i]["NAME"])."</option>\n";
 		}
 ?>
 </select>

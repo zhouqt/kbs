@@ -50,6 +50,14 @@ $pcconfig["SECTION"] = array(
 			"others" => "其他类别"
 			);
 
+//首页显示的一些参数
+define("_PCMAIN_TIME_LONG_" , 259200 ); //日志统计时长
+define("_PCMAIN_NODES_NUM_" , 20 );     //显示的日志数目
+define("_PCMAIN_USERS_NUM_" , 20 );     //显示的用户数目
+define("_PCMAIN_REC_NODES_" , 40 );     //推荐日志数目
+define("_PCMAIN_NEW_NODES_" , 40 );     //新日志数目
+define("_PCMAIN_ANNS_NUM_"  , 5  );     //公告数目
+
 function pc_personal_domainname($userid)
 {
 	return "http://".$userid.".mysmth.net";	

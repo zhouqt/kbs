@@ -101,6 +101,21 @@ function getNewComments($link,$pno=1,$etemnum=0)
 	return $newComments;
 }
 
+//nodes without body and user information
+function getRecommendNodes($link,$num)
+{
+	$num = intval($num);
+	$query = "SELECT nid , subject , uid FROM recommend ORDER BY state DESC, rid DESC LIMIT 0 , ".$num.";";
+	$result = mysql_query($query,$link);	
+	$nodes = array();
+	while($rows = mysql_fetch_array($result))
+		$nodes[] = $rows;
+	mysql_free_result($result);
+	return $nodes;
+}
+
+
+//nodes with body and user information
 function getRecommendBlogs($link,$pno=1,$etemnum=0)
 {
 	global $pcconfig;
@@ -169,6 +184,7 @@ function getRecommendBlogs($link,$pno=1,$etemnum=0)
 
 function getNewUsers($link,$userNum=0)
 {
+	$userNum = intval( $userNum );
 	if(!$userNum) $userNum = 10;
 	$query = "SELECT username,corpusname,description FROM users ORDER BY createtime DESC LIMIT 0,".intval($userNum).";";
 	$result = mysql_query($query,$link);
@@ -181,6 +197,7 @@ function getNewUsers($link,$userNum=0)
 
 function getMostVstUsers($link,$userNum=0)
 {
+	$userNum = intval( $userNum );
 	if(!$userNum) $userNum = 10;
 	$query = "SELECT username , corpusname , description FROM users ORDER BY visitcount DESC LIMIT 0,".intval($userNum).";";
 	$result = mysql_query($query,$link);
@@ -193,6 +210,7 @@ function getMostVstUsers($link,$userNum=0)
 	
 function getLastUpdates($link,$userNum=0)
 {
+	$userNum = intval( $userNum );
 	if(!$userNum) $userNum = 10;
 	$query = "SELECT username , corpusname , description FROM users WHERE createtime != modifytime ORDER BY modifytime DESC LIMIT 0,".intval($userNum).";";
 	$result = mysql_query($query,$link);
@@ -232,6 +250,7 @@ function getCommentsCnt($link)
 
 function getHotUsersByPeriod($link,$period,$num=10)
 {
+	$num = intval( $num );
 	if($period=="day")
 		$queryTime = date("Ymd");
 	elseif($period=="month")
@@ -261,6 +280,7 @@ function getHotUsersByPeriod($link,$period,$num=10)
 
 function getHotNodesByPeriod($link,$period,$num=10)
 {
+	$num = intval( $num );
 	if($period=="day")
 		$queryTime = date("Ymd");
 	elseif($period=="month")
@@ -286,6 +306,7 @@ function getHotNodesByPeriod($link,$period,$num=10)
 
 function getHotTopicsByPeriod($link,$period,$num=10)
 {
+	$num = intval( $num );
 	if($period=="day")
 		$queryTime = date("Ymd");
 	elseif($period=="month")
@@ -310,4 +331,38 @@ function getHotTopicsByPeriod($link,$period,$num=10)
         mysql_free_result($result);
         return $topics;
 }
+
+function getPcAnnounce($link,$num=5)
+{
+	global $pcconfig;
+	$num = intval($num);
+	$query = "SELECT users.uid , subject , nid FROM nodes,users WHERE access = 0 AND nodes.uid = users.uid AND username = '".$pcconfig["ADMIN"]."' ORDER BY nid DESC LIMIT 0 , " . $num . ";";
+	$result = mysql_query($query,$link);
+	$anns = array();
+	while($rows = mysql_fetch_array($result))
+		$ann[] = $rows;
+	mysql_free_result($result);
+	return $anns;
+}
+
+function getHotNodes($link,$type,$timeLong=259200,$num=20)
+{
+	$timeLong = intval($timeLong);
+	$num = intval($num);
+	
+	if("comments" == $type)
+		$query = "SELECT nid , subject , uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-  $timeLong )." ORDER BY commentcount DESC , nid DESC LIMIT 0 , ".$num.";";
+	elseif("trackbacks" == $type)
+		$query = "SELECT nid , subject , uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-  $timeLong )." AND trackbackcount != 0 ORDER BY trackbackcount DESC , nid DESC LIMIT 0 , ".$num.";";
+	else
+		$query = "SELECT nid , subject , uid  FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()- $timeLong )." AND visitcount != 0 ORDER BY visitcount DESC , nid DESC LIMIT 0 , ".$num.";";
+	
+	$result = mysql_query($query,$link);	
+	$nodes = array();
+	while($rows = mysql_fetch_array($result))
+		$nodes[] = $rows;
+	mysql_free_result($result);
+	return $nodes;
+}
+
 ?>

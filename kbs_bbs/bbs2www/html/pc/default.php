@@ -16,7 +16,7 @@ function pcmain_blog_statistics_list()
 function pcmain_blog_new_user()
 {
 	global $pcconfig,$link;
-	$newUsers = getNewUsers($link,30);
+	$newUsers = getNewUsers($link,_PCMAIN_USERS_NUM_);
 ?>
 
 <?php
@@ -32,7 +32,7 @@ function pcmain_blog_new_user()
 function pcmain_blog_top_ten()
 {
 	global $pcconfig,$link;
-	$mostVstUsers = getMostVstUsers($link,30);
+	$mostVstUsers = getMostVstUsers($link,_PCMAIN_USERS_NUM_);
 ?>
 		
 <?php
@@ -48,7 +48,7 @@ function pcmain_blog_top_ten()
 function pcmain_blog_last_update()
 {
 	global $pcconfig,$link;
-	$lastUpdates = getLastUpdates($link,30);
+	$lastUpdates = getLastUpdates($link,_PCMAIN_USERS_NUM_);
 ?>
 				
 <?php
@@ -64,27 +64,27 @@ function pcmain_blog_last_update()
 function pcmain_annouce()
 {
 	global $pcconfig,$link;
-	$query = "SELECT users.uid , subject , nid FROM nodes,users WHERE access = 0 AND nodes.uid = users.uid AND username = '".$pcconfig["ADMIN"]."' ORDER BY nid DESC LIMIT 0 , 5;";
-	$result = mysql_query($query,$link);
+	$anns = getPcAnnounce($link,_PCMAIN_ANNS_NUM_);
 ?>
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="table">
 	<tr><td class="channelback"><font class="channel">水木动态</font></td></tr>
 	<tr><td align="left" valign="top" class="td">
 <?php
-	while($rows = mysql_fetch_array($result))
-		echo "<li><a href=\"/pc/pccon.php?id=".$rows[0]."&nid=".$rows[nid]."&s=all\">".html_format($rows[subject])."</a></li>";
+	foreach($anns as $ann)
+		echo "<li><a href=\"/pc/pccon.php?id=".$ann[0]."&nid=".$ann[nid]."&s=all\">".html_format($ann[subject])."</a></li>";
 ?>	
 	<li><a href="/pc/index.php?id=<?php echo $pcconfig["ADMIN"]; ?>">&gt;&gt; 更多</a></li>
 	</td></tr>
 </table>
 <?php	
-	mysql_free_result($result);
 }
 
+/*
 function pcmain_recommend_blogger()
 {
 	global $link;
-	$pos = rand(0,50);//排名前50的博客随机抽取一个
+	mt_srand();
+	$pos = mt_rand(0,50);//排名前50的博客随机抽取一个
 	$query = "SELECT username , corpusname , description FROM users ORDER BY visitcount DESC LIMIT ".$pos.",1;";
 	$result = mysql_query($query,$link);
 	$pc = mysql_fetch_array($result);
@@ -100,18 +100,19 @@ function pcmain_recommend_blogger()
 <?php
 	mysql_free_result($result);	
 }
+*/
 
 function  pcmain_blog_most_hot()
 {
 	global $pcconfig,$link;
-	$query = "SELECT nid , subject , uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-604800)." ORDER BY commentcount DESC , nid DESC LIMIT 0 , 30;";
-	$result = mysql_query($query,$link);
-	$num = mysql_num_rows($result);
+	$nodes = getHotNodes($link, "comments" , _PCMAIN_TIME_LONG_ ,_PCMAIN_NODES_NUM_ );
+	$num = count($nodes);
 ?>
 <table cellspacing=0 cellpadding=3 width=100%>
 <?php
 	for($i = 0;$i < $num ;$i ++)
 	{
+		$rows = $nodes[$i];
 		if($i % 4 == 0 ) 
 		{
 			echo "<tr>";
@@ -124,7 +125,6 @@ function  pcmain_blog_most_hot()
 		}
 		
 		echo "<td class=\"".$tdclass."\" width=\"33%\">";
-		$rows = mysql_fetch_array($result);
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
 		echo "|&nbsp;<a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">";
 		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,20));
@@ -145,9 +145,8 @@ function  pcmain_blog_most_hot()
 function  pcmain_blog_most_trackback()
 {
 	global $pcconfig,$link;
-	$query = "SELECT nid , subject , uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-1209600)." AND trackbackcount != 0 ORDER BY trackbackcount DESC , nid DESC LIMIT 0 , 30;";
-	$result = mysql_query($query,$link);
-	$num = mysql_num_rows($result);
+	$nodes = getHotNodes($link, "trackbacks" , _PCMAIN_TIME_LONG_ * 2 ,_PCMAIN_NODES_NUM_ );
+	$num = count($nodes);
 ?>
 <table cellspacing=0 cellpadding=3 width=98%>
 <tr><td style="line-height:16px " align="left" width="50%">
@@ -155,7 +154,7 @@ function  pcmain_blog_most_trackback()
 	for($i = 0;$i < $num ;$i ++)
 	{
 		if( $i == intval($num / 2) ) echo "</td><td align=\"left\" style=\"line-height:16px\" width=\"50%\">";
-		$rows = mysql_fetch_array($result);
+		$rows = $nodes[$i];
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
 		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">";
 		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,20));
@@ -177,9 +176,8 @@ function  pcmain_blog_most_trackback()
 function  pcmain_blog_most_view()
 {
 	global $pcconfig,$link;
-	$query = "SELECT nid , subject , uid  FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-604800)." AND visitcount != 0 ORDER BY visitcount DESC , nid DESC LIMIT 0 , 40;";
-	$result = mysql_query($query,$link);
-	$num = mysql_num_rows($result);
+	$nodes = getHotNodes($link, "visits" , _PCMAIN_TIME_LONG_ ,_PCMAIN_NODES_NUM_ );
+	$num = count($nodes);
 ?>
 <table cellspacing=0 cellpadding=3 width=98%>
 <tr><td style="line-height:16px " align="left" width="50%">
@@ -187,7 +185,7 @@ function  pcmain_blog_most_view()
 	for($i = 0;$i < $num ;$i ++)
 	{
 		if( $i == intval( $num / 2 ) ) echo "</tr><td style=\"line-height:16px \" align=left width=\"50%\">";
-		$rows = mysql_fetch_array($result);
+		$rows = $nodes[$i];
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
 		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">";
 		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,20));
@@ -208,7 +206,7 @@ function  pcmain_blog_most_view()
 function pcmain_blog_new_nodes()
 {
 	global $link;
-	$newBlogs = getNewBlogs($link,1,40);
+	$newBlogs = getNewBlogs($link,1, _PCMAIN_NEW_NODES_ );
 	$newNum = count($newBlogs[useretems]);
 ?>
 <table cellspacing=0 cellpadding=3 width=98%>
@@ -243,9 +241,8 @@ function pcmain_blog_new_nodes()
 function  pcmain_blog_recommend_nodes()
 {
 	global $pcconfig,$link;
-	$query = "SELECT nid , subject , uid FROM recommend ORDER BY state DESC, rid DESC LIMIT 0 , 30;";
-	$result = mysql_query($query,$link);
-	$num = mysql_num_rows($result);
+	$nodes = getRecommendNodes($link, _PCMAIN_REC_NODES_ );
+	$num = count($nodes);
 ?>
 <table cellspacing=0 cellpadding=3 width=98%>
 <tr><td style="line-height:16px " align="left" width="50%">
@@ -253,7 +250,7 @@ function  pcmain_blog_recommend_nodes()
 	for($i = 0;$i < $num ;$i ++)
 	{
 		if( $i == intval( $num / 2) ) echo "</td><td align=\"left\" style=\"line-height:16px\" width=\"50%\">";
-		$rows = mysql_fetch_array($result);
+		$rows = $nodes[$i];
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
 		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">";
 		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,20));
@@ -303,7 +300,7 @@ function pcmain_section_top_view()
 	{
 		$query = "SELECT nodes.uid , nid , subject , theme , username , corpusname  ".
 			 "FROM nodes , users ".
-			 "WHERE nodes.uid = users.uid AND access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-604800)." AND theme = '".$section."' ".
+			 "WHERE nodes.uid = users.uid AND access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()- _PCMAIN_TIME_ )." AND theme = '".$section."' ".
 			 "GROUP BY nodes.uid ".
 			 "ORDER BY nodes.visitcount DESC , nid DESC ".
 			 "LIMIT 0 , 12 ;";
