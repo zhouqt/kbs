@@ -192,6 +192,7 @@ int show_allmsgs()
     char buf[MAX_MSG_SIZE+100], showmsg[MAX_MSG_SIZE*2];
     int oldmode, count, i, j, page, ch, y;
     char title[STRLEN];
+    struct msghead head;
     time_t now;
     char fname[STRLEN];
     FILE* fn;
@@ -211,14 +212,16 @@ int show_allmsgs()
         else {
             y = 0;
             i = page;
-            load_msgtext(0, currentuser->userid, i, buf);
-            j = translate_msg(buf, showmsg);
+            load_msghead(0, currentuser->userid, &head);
+            load_msgtext(currentuser->userid, &head, buf);
+            j = translate_msg(buf, &head, showmsg);
             while(y+j<=23) {
                 y+=j; i++;
                 prints("%s", showmsg);
                 if(i>=count) break;
-                load_msgtext(0, currentuser->userid, i, buf);
-                j = translate_msg(buf, showmsg);
+                load_msghead(0, currentuser->userid, &head);
+                load_msgtext(currentuser->userid, &head, buf);
+                j = translate_msg(buf, &head, showmsg);
             }
         }
         good_move(23,0);
@@ -263,7 +266,6 @@ reenter:
                     translate_msg(buf, showmsg);
                     fprintf(fn, "%s", showmsg);
                 }
-                fprintf(fn, "[m");
                 fclose(fn);
 
                 now = time(0);
@@ -350,6 +352,7 @@ void r_msg()
     char savebuffer[25][256];
     char buf[MAX_MSG_SIZE+100], outmsg[MAX_MSG_SIZE*2], buf2[STRLEN], uid[14];
     struct user_info * uin;
+    struct msghead head;
     int now, count, canreply, first=1;
 
     good_getyx(&y, &x);
@@ -391,22 +394,18 @@ void r_msg()
         goto outhere;
     }
 
+againmsg:
     now = get_unreadmsg(currentuser->userid);
     if(now==-1) now = get_msgcount(currentuser->userid)-1;
     while(1){
-        load_msgtext(1, currentuser->userid, now, buf);
-        translate_msg(buf, outmsg);
-        uid[12] = 0;
-        memcpy(uid, buf+2, 12);
-        i=strlen(uid);
-        while(i>0&&uid[i-1]==' ') i--;
-        uid[i] = 0;
-        buf[29]=0;
-        i=19;
-        while(buf[i]=='0'&&i<28) i++;
-        pid = atoi(buf+i);
+        load_msghead(1, currentuser->userid, now, &head);
+        if (head->topid!=getuinfopid()) goto againmsg;
+        load_msgtext(currentuser->userid, &head, buf);
+        translate_msg(buf, &head, outmsg);
+        strncpy(uid, head.id, IDLEN);
+        pid = head.frompid;
         uin = t_search(uid, pid);
-        if(buf[1]=='3'||uin==NULL) canreply = 0;
+        if(head.mode==3||uin==NULL) canreply = 0;
         else canreply = 1;
         
         if (DEFINE(currentuser, DEF_SOUNDMSG))

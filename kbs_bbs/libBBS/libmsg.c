@@ -453,8 +453,6 @@ int load_msghead(int id, char *uident, int index, struct msghead *head)
     if(id) sethomefile(fname, uident, "msgindex2");
     else sethomefile(fname, uident, "msgindex");
 
-    msgbuf[0] = 0;
-
     if ((fd = open(fname, O_RDONLY, 0664)) == -1) {
         bbslog("user", "%s", "msgopen err");
         return -1;              /* 创建文件发生错误*/
