@@ -947,10 +947,10 @@ int draw_content_more(char *ptr, int size, char *fn,struct fileheader* fh)
     move(t_lines/2, 0);
 //    prints("\033[34m——————————————————预览窗口—————————————————");
 //    move(t_lines/2+1, 0);
-    sprintf(buf,"\033[1;33m预览 \033[1;32m作者:\033[1;33m%-13.13s \033[1;32m标题:\033[1;33m%-50.50s       \033[1;32m%4.4s\033[m",
+    sprintf(buf,"\033[1;32m\x1b[44m发信人: \033[1;33m%-13.13s \033[1;32m标 题: \033[1;33m%-50.50s\033[1;32m %4.4s\033[m",
     	fh->owner,
     	fh->title,
-    	fh->innflag[1]=='S'?"转信":"");
+    	fh->innflag[1]=='S'?"[转]":"");
     outs(buf);
     prints("\n\033[m");
     curr_line = l.curr_line;
@@ -958,7 +958,7 @@ int draw_content_more(char *ptr, int size, char *fn,struct fileheader* fh)
         if (shownflag) {
             displayflag = 0;
         }
-	if (!header||(!((i==0)&&!strncmp(l.curr,"发信人: ",8))&&
+	if (!header||(!((i==0)&&((!strncmp(l.curr,"发信人: ",8)||(!strncmp(l.curr,"寄信人: ",8)))))&&
 	    !((i==1)&&!strncmp(l.curr,"标  题: ",8))&&
 	    !((i==2)&&!strncmp(l.curr,"发信站: ",8))&&
 	    !((i==3)&&(l.currlen==0)))) {
