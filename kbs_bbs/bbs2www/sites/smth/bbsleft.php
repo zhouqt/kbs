@@ -2,6 +2,7 @@
 	/*This file shows user tools. windinsn Oct 27,2003*/
 	
 	require("funcs.php");
+login_init();
 	
         $img_subdir = "/images/menuspring/";
 
