@@ -1185,11 +1185,17 @@ static int mail_edit(struct _select_def* conf, struct fileheader *fileinfo,void*
         *t = '\0';
 
     sprintf(genbuf, "%s/%s", buf, fileinfo->filename);
+    if(lstat(genbuf,&st) != -1)
+	{
+		if (S_ISLNK(st.st_mode))
+			return DONOTHING;
+	}
+	else
+		return DONOTHING;
+
     if(stat(genbuf,&st) != -1)
 	{
 		mode_t rwmode = S_IRUSR | S_IWUSR ;
-		if (S_ISLNK(st.st_mode))
-			return DONOTHING;
 		if ((st.st_mode & rwmode) != rwmode)
 			return DONOTHING;
 		before = st.st_size;
