@@ -54,6 +54,7 @@
 <form action="/bbsonline.php" method="get">
 
 <select name="year" class="input" style="WIDTH: 55px">
+<option value="2002"<?php if( $year=="2002" ) { ?> selected="selected"<?php } ?>>2002</option>
 <option value="2003"<?php if( $year=="2003" ) { ?> selected="selected"<?php } ?>>2003</option>
 <option value="2004"<?php if( $year=="2004" ) { ?> selected="selected"<?php } ?>>2004</option>
 </select>年
@@ -86,6 +87,7 @@
 ?>
 </select>日
 <input type=submit name="submit" value="Go">
+数据开始于 2002年10月9日
 </form>
 <?php
 	if( $yesterd == 0 ){
