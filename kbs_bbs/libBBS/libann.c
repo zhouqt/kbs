@@ -18,7 +18,7 @@ static int ann_can_access(char *title, char *board,struct userec* user)
 			return 0;
 		return 2;
 	}
-	if (strstr(title,"(BM: SYSOPS)")))
+	if (strstr(title,"(BM: SYSOPS)"))
 	{
 		if (!HAS_PERM(user, PERM_SYSOP))
 			return 0;
@@ -85,7 +85,7 @@ int ann_load_directory(MENU *pm)
 			litem.fname[sizeof(litem.fname)-1] = '\0';
 			/*if ((!strstr(litem.title,"(BM: BMS)")||HAS_PERM(currentuser,PERM_BOARDS))&&
 				(!strstr(litem.title,"(BM: SYSOPS)")||HAS_PERM(currentuser,PERM_SYSOP)))*/
-			if (ann_can_access(litem.title, board))
+			if (ann_can_access(litem.title, board,currentuser))
 			{
 				if (strstr(litem.fname,"!@#$%")) /*ȡ host & port */
 				{
