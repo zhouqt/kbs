@@ -3754,7 +3754,15 @@ int set_ip_acl()
     int i,rip[4];
     int oldmode;
     FILE* fp;
-    char fn[80];
+    char fn[80],buf[80];
+
+    clear();
+    getdata(3, 0, "请输入你的密码: ", buf, 39, NOECHO, NULL, true);
+    if (*buf == '\0' || !checkpasswd2(buf, currentuser)) {
+        prints("\n\n很抱歉, 您输入的密码不正确。\n");
+        pressanykey();
+        return 0;
+    }
 
     acl = (struct acl_struct *) malloc(sizeof(struct acl_struct)*ACL_MAX);
     aclt=0;
