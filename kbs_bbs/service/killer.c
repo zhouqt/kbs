@@ -1317,11 +1317,11 @@ checkvote:
 
             if(k) continue;
             strcpy(buf2, buf);
-            sprintf(buf, "\x1b[1m%d %s\x1b[m %s", me, inrooms[myroom].peoples[me].nick, buf2);
+            sprintf(buf, "\x1b[1m%d %s\x1b[m %s", me+1, inrooms[myroom].peoples[me].nick, buf2);
         }
         else {
             strcpy(buf2, buf);
-            sprintf(buf, "%d %s: %s", me, inrooms[myroom].peoples[me].nick, buf2);
+            sprintf(buf, "%d %s: %s", me+1, inrooms[myroom].peoples[me].nick, buf2);
         }
         if(inrooms[myroom].status==INROOM_NIGHT) {
             if(inrooms[myroom].peoples[me].flag&PEOPLE_KILLER)
