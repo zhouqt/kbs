@@ -524,7 +524,6 @@ void r_msg()
                 break;
             default:
                 if(canreply) {
-                    maxy=oy-ch;
                     if(buf[0]) {
                         strcpy(MsgDesUid, uid);
                         i = do_sendmsg(uin, buf, 4);
