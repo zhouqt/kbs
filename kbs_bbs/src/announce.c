@@ -594,8 +594,8 @@ int a_SeSave(char *path, char *key, struct fileheader *fileinfo, int nomsg, char
 	t = strchr(buf,'(');
 	memcpy(posttime,t,STRLEN);
 										
-        fprintf(outf, "\033[0;1;32;40m☆─────────────────────────────────────☆\033[0;37;40m\n");
-        fprintf(outf, "  \033[0;1;32;40m %s \033[0;1;37;40m于 \033[0;1;36;40m %s \033[0;1;37;40m 提到:\n", userinfo,posttime);
+        fprintf(outf, "\033[0;1;32m☆─────────────────────────────────────☆\033[0;37m\n");
+        fprintf(outf, "  \033[0;1;32m %s \033[0;1;37m于 \033[0;1;36m %s \033[0;1;37m 提到:\n", userinfo,posttime);
 
 	fprintf(outf,"\n");	
         while (fgets(buf, 256, inf) != NULL)
