@@ -155,7 +155,7 @@ a:hover {  color: #FF0000; text-decoration: none}
 						break;
                 	case UPLOAD_ERR_INI_SIZE:
                 	case UPLOAD_ERR_FORM_SIZE:
-                		echo "文件超过预定的大小" . sizestr(ATTACHMAXSIZE) . "字节";
+                		echo "文件超过预定的大小" . sizestring(ATTACHMAXSIZE) . "字节";
                 		break;
                 	case UPLOAD_ERR_PARTIAL:
                 		echo "文件传输出错！";
