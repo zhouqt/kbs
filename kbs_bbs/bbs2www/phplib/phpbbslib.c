@@ -134,6 +134,7 @@ static PHP_FUNCTION(bbs_denyusers);
 static PHP_FUNCTION(bbs_denyadd);
 static PHP_FUNCTION(bbs_denydel);
 static PHP_FUNCTION(bbs_searchboard);
+static PHP_FUNCTION(bbs_useronboard);
 
 /* favboard operation. by caltary  */
 static PHP_FUNCTION(bbs_load_favboard);
@@ -360,6 +361,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_denyadd,NULL)
         PHP_FE(bbs_denydel,NULL)
         PHP_FE(bbs_searchboard,third_arg_force_ref_001)
+        PHP_FE(bbs_useronboard,two_arg_force_ref_01)
         PHP_FE(bbs_setmailreaded,NULL)
 	PHP_FE(bbs_add_import_path,NULL)
 	PHP_FE(bbs_get_import_path,NULL)
@@ -6910,6 +6912,72 @@ static PHP_FUNCTION(bbs_searchboard)
         
         RETURN_LONG(total);
    }
+}
+
+/**
+ * int bbs_useronboard(string baord,array users)
+ * show users on board
+ * $users = array(
+ *              string 'USERID'  
+ *              string 'HOST'
+ *              );
+ * return user numbers , less than 0 when failed
+ * @author: windinsn
+ *
+ */
+static PHP_FUNCTION(bbs_useronboard)
+{
+    char *board;
+    int   board_len;
+    zval *element,*users;
+    int bid,i,j;
+    
+    int ac = ZEND_NUM_ARGS();
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sz", &board, &board_len, &users) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+    
+    bid = getbnum(board);
+    if (bid == 0)
+        RETURN_LONG(-1);
+    if(! HAS_PERM(getCurrentUser(), PERM_SYSOP))
+		RETURN_LONG(-1);
+    if (array_init(users) != SUCCESS)
+        RETURN_LONG(-1);
+    
+    j = 0;  
+	for (i=0;i<USHM_SIZE;i++) {
+        struct user_info* ui;
+        ui=get_utmpent(i+1);
+        if (ui->active&&ui->currentboard) {
+            if (ui->currentboard == bid) {
+                MAKE_STD_ZVAL(element);
+                array_init(element);
+                add_assoc_string(element,"USERID",ui->userid,1);
+                add_assoc_string(element,"HOST",ui->from,1);
+                zend_hash_index_update(Z_ARRVAL_P(users),j,(void*) &element, sizeof(zval*), NULL);
+                j ++;
+            }
+        }
+    }
+    
+    resolve_guest_table();
+    for (i=0;i<MAX_WWW_GUEST;i++) {
+        if (wwwguest_shm->use_map[i / 32] & (1 << (i % 32)))
+            if (wwwguest_shm->guest_entry[i].currentboard) {
+                if (wwwguest_shm->guest_entry[i].currentboard == bid) {
+                    MAKE_STD_ZVAL(element);
+                    array_init(element);
+                    add_assoc_string(element,"USERID","_wwwguest",1);
+                    add_assoc_string(element,"HOST",inet_ntoa(wwwguest_shm->guest_entry[i].fromip),1);
+                    zend_hash_index_update(Z_ARRVAL_P(users),j,(void*) &element, sizeof(zval*), NULL);
+                    j ++;
+                }
+            }
+    }
+    
+    RETURN_LONG(j);  
 }
 
 /*
