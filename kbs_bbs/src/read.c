@@ -896,7 +896,7 @@ int SR_BMfunc(int ent, struct fileheader *fileinfo, char *direct)
 	const int item_num = 8;
 	char filepath[80],title[STRLEN];
 
-    char linebuffer[256*3];
+    char linebuffer[LINELEN*3];
 
     if (!chk_currBM(currBM, currentuser)) {
         return DONOTHING;
@@ -1028,7 +1028,7 @@ int SR_BMfuncX(int ent, struct fileheader *fileinfo, char *direct)
 	const int item_num = 8;
 	char filepath[80],title[STRLEN];
 
-    char linebuffer[256*3];
+    char linebuffer[LINELEN*3];
 
     if (!chk_currBM(currBM, currentuser)) {
         return DONOTHING;

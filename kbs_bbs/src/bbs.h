@@ -237,6 +237,7 @@ O MaxMessageSize=32000
 #endif                          /* BBSIRC */
 
 #include "struct.h"
+#include "screen.h"
 #include "webmsg.h"
 #include "ann.h"
 #include "ansi.h"

@@ -9,7 +9,7 @@
 #include "bbs.h"
 #include <time.h>
 
-char save_scr[100][240];
+char save_scr[LINEHEIGHT][LINELEN*3];
 int save_y, save_x;
 unsigned long lunarInfo[]={
 0x4bd8,0x4ae0,0xa570,0x54d5,0xd260,0xd950,0x5554,0x56af,0x9ad0,0x55d2,
@@ -271,11 +271,11 @@ void draw_main()
     else if(lday<=39) sprintf(buf2, "Ø¦%s", nums[lday-30]);
     else sprintf(buf2, "¡õ");
     sprintf(buf, "Å©Àú %sÔÂ%s", lmonths[lmonth], buf2);
-    move(12, 80-strlen(buf));
+    move(12, scr_cols-strlen(buf));
     resetcolor();
     prints(buf);
 
-    k = 80;
+    k = scr_cols;
     resetcolor();
     i0=0;
     while(sFtv[i0][0]) {
@@ -311,7 +311,7 @@ void draw_main()
         }
         i0++;
     }
-    move(t_lines-1, 80);
+    move(t_lines-1, scr_cols);
 }
 
 int newfile(char * s)

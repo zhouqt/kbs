@@ -41,7 +41,7 @@ int cur_mode=0, cur_color=7;
 int offsetln = 0;
 struct screenline *big_picture = NULL;
 static const char nullstr[] = "(null)";
-static /*struct screenline old_line; */ char tmpbuffer[256*3];
+static /*struct screenline old_line; */ char tmpbuffer[LINELEN*3];
 
 void setfcolor(int i,int j)
 {
@@ -863,7 +863,7 @@ void rscroll()
 void noscroll()
 {
     int i;
-    struct screenline bp[100];
+    struct screenline bp[LINEHEIGHT];
     for(i=0;i<scr_lns;i++)
         memcpy(bp+i,big_picture+(i+roll)%scr_lns,sizeof(struct screenline));
     for(i=0;i<scr_lns;i++)
@@ -897,10 +897,9 @@ void do_naws(int ln, int col)
 {
     t_lines = ln;
     t_columns = col;
-    if(t_lines<24||t_lines>100)
+    if(t_lines<24||t_lines>LINEHEIGHT)
         t_lines=24;
-//    if(t_columns<80||t_columns>240)
-    t_columns = 80;
+    if(t_columns<80||t_columns>LINELEN)
+        t_columns = 80;
     initscr();
-    refresh();
 }

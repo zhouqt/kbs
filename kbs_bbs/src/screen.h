@@ -24,7 +24,8 @@
 
 /* Maximum Screen width in chars */
 /*#define LINELEN (220) */
-#define LINELEN 80
+#define LINELEN 132
+#define LINEHEIGHT 50
 
 #define SCREEN_MODIFIED 1
 #define SCREEN_BRIGHT 2
