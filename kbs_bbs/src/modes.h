@@ -69,7 +69,7 @@
 #define EXCE_BIG2       43
 #define EXCE_CHESS      44
 #define NOTEPAD         45
-#define MSG             46
+#define MSGING          46
 #define USERDEF         47
 #define EDIT            48
 #define OFFLINE         49

@@ -374,7 +374,7 @@ char *ModeType(mode)
 //        return "4m Chat";
 //    case ULDL:
 //        return "UL/DL";
-    case MSG:
+    case MSGING:
         return "讯息中";
     case USERDEF:
         return "自订参数";

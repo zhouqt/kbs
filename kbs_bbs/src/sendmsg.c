@@ -79,7 +79,7 @@ int mode;
     inremsg = true;
 
     if ((mode == 0) || (mode == 3)) {
-        modify_user_mode(MSG);
+        modify_user_mode(MSGING);
     }
     if (uentp == NULL) {
         move(1, 0);
@@ -416,7 +416,7 @@ int wall()
 
     if (check_systempasswd() == false)
         return 0;
-    modify_user_mode(MSG);
+    modify_user_mode(MSGING);
     move(2, 0);
     clrtobot();
     if (!get_msg("所有使用者", buf2, 1, 0)) {
@@ -465,7 +465,7 @@ void r_msg()
 
     noscroll();
     savemode=uinfo.mode;
-    modify_user_mode(MSG);
+    modify_user_mode(MSGING);
     getyx(&y, &x);
     tmpansi = showansi;
     showansi = 1;
@@ -721,7 +721,7 @@ int friend_wall()
         pressreturn();
         return 0;
     }
-    modify_user_mode(MSG);
+    modify_user_mode(MSGING);
     move(2, 0);
     clrtobot();
     if (!get_msg("我的好朋友", buf, 1, 0))
@@ -903,7 +903,7 @@ int do_send_sms_func(char * dest, char * msgstr)
     inremsg = true;
 
     oldmode = uinfo.mode;
-    modify_user_mode(MSG);
+    modify_user_mode(MSGING);
     if (dest == NULL) {
         move(1, 0);
         clrtobot();
