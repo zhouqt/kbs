@@ -1550,7 +1550,7 @@ int add_edit_mark(char *fname, int mode, char *title)
     fclose(fp);
     fclose(out);
 
-    f_cp(outname, fname, 0);
+    f_cp(outname, fname, O_TRUNC);
 	unlink(outname);
 
     return 1;
