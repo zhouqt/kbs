@@ -18,12 +18,12 @@
 #define HAVE_REVERSE_DNS	0
 #define BUILD_PHP_EXTENSION	1 /*将php lib编成php extension*/
 #define HAVE_WFORUM		1
-#define RAW_ARTICLE		1
+#undef RAW_ARTICLE		
 
 #define HAVE_USERMONEY 		1
 #define CHINESE_CHARACTER	0
 #define ANTISPAM_MAILADDR       /* 转信后的文章隐藏真实 MAIL */
-#define CNBBS_TOPIC		1       /* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
+#undef	CNBBS_TOPIC		       /* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
 #define MAIL2BOARD		0       /* 是否允许直接 mail to any board */
 
 #define MAILOUT			0       /* 是否允许向站外主动发信 */
@@ -121,9 +121,9 @@
 
 #define	NAME_BBS_CHINESE	"北极星"
 
-#define NAME_BBS_NICK		"BBS 站"
+#define NAME_BBS_NICK		"BBS站"
 
-#define BBS_FULL_NAME "北极星 BBS 站"
+#define BBS_FULL_NAME "BBS北极星站"
 
 #define FOOTER_MOVIE		"欢  迎  投  稿"
 
@@ -395,6 +395,7 @@ typedef struct fileheader fileheader_t;
 attach define
 */
 #define ATTACHTMPPATH "boards/_attach"
+#define	USE_TMPFS		0
 
 /*
  * max amount of attachments in one article
