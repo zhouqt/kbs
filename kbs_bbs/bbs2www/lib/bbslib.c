@@ -675,6 +675,7 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
     sig_append(fp, id, sig);
     fprintf(fp, "\n[1;%dm¡ù À´Ô´:£®%s %s£®[FROM: %.20s][m\n", 31 + rand() % 7, BBSNAME, NAME_BBS_ENGLISH, ip);
     fclose(fp);
+    sprintf(buf3, "mail/%c/%s/%s", toupper(userid[0]), userid, header.filename); /*ft.buf3 have changed.added by binxun.*/
     if (stat(buf3, &st) != -1)
         touser->usedspace += st.st_size;
     sprintf(dir, "mail/%c/%s/.DIR", toupper(userid[0]), userid);
