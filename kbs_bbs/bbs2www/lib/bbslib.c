@@ -2563,7 +2563,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
     for (i = 0; i < article_len; i++) {
         if (STATE_ISSET(ansi_state, STATE_NEW_LINE)) {
             STATE_CLR(ansi_state, STATE_NEW_LINE);
-            if (i < (buflen - 1) && !is_tex && (buf[i] == ':' && buf[i + 1] == ' ')) {
+            if (i < (buflen - 1) && !STATE_ISSET(ansi_state,STATE_TEX_SET) && (buf[i] == ':' && buf[i + 1] == ' ')) {
                 STATE_SET(ansi_state, STATE_QUOTE_LINE);
                 if (STATE_ISSET(ansi_state, STATE_FONT_SET))
                     BUFFERED_OUTPUT(output, "</font>", 7);
@@ -2591,6 +2591,15 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
                 if (STATE_ISSET(ansi_state, STATE_TEX_SET)) {
                     STATE_CLR(ansi_state, STATE_TEX_SET);
                 } else {
+                    if (STATE_ISSET(ansi_state, STATE_QUOTE_LINE)) {
+                        BUFFERED_OUTPUT(output, "</font>", 7);
+                        STYLE_CLR(font_style, FONT_STYLE_QUOTE);
+                        STATE_CLR(ansi_state, STATE_QUOTE_LINE);
+                        STATE_CLR(ansi_state, STATE_FONT_SET);
+                    } else if (STATE_ISSET(ansi_state, STATE_FONT_SET)) {
+                        BUFFERED_OUTPUT(output, "</font>", 7);
+                        STATE_CLR(ansi_state, STATE_FONT_SET);
+                    }
                     STATE_SET(ansi_state, STATE_TEX_SET);
                 }
             }
@@ -2599,9 +2608,20 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
         * is_tex 情况下，\[upload 优先匹配 \[ 而不是 [upload
         * is_tex 情况下应该还有一个问题是 *[\[ 等，不过暂时不管了 - atppp
         */
+        if (i < (buflen - 1) && is_tex && !STATE_ISSET(ansi_state,STATE_ESC_SET) && (buf[i] == '\\' && buf[i + 1] == '[')) {
+            if (STATE_ISSET(ansi_state, STATE_QUOTE_LINE)) {
+                BUFFERED_OUTPUT(output, "</font>", 7);
+                STYLE_CLR(font_style, FONT_STYLE_QUOTE);
+                STATE_CLR(ansi_state, STATE_QUOTE_LINE);
+                STATE_CLR(ansi_state, STATE_FONT_SET);
+            } else if (STATE_ISSET(ansi_state, STATE_FONT_SET)) {
+                BUFFERED_OUTPUT(output, "</font>", 7);
+                STATE_CLR(ansi_state, STATE_FONT_SET);
+            }
+            STATE_SET(ansi_state, STATE_TEX_SET);
+        }
         if (buf[i] == '[' && !STATE_ISSET(ansi_state, STATE_ESC_SET)) {
             if (is_tex && (i > 0) && (buf[i-1] == '\\')) {
-                STATE_SET(ansi_state, STATE_TEX_SET);
             } else if (attachmatched > 0) {
                 /*
                  * determine if this is correct attachment [upload], if correct, output html, and skip i to the end of [/upload]
@@ -2662,7 +2682,7 @@ atppp_never_use_goto:
         } else if (is_tex && (buf[i] == ']') && (i > 0) && (buf[i-1] == '\\')) {
             STATE_CLR(ansi_state, STATE_TEX_SET);
         }
-        if (i < (buflen - 1) && !is_tex && (buf[i] == 0x1b && buf[i + 1] == '[')) {
+        if (i < (buflen - 1) && !STATE_ISSET(ansi_state,STATE_TEX_SET) && (buf[i] == 0x1b && buf[i + 1] == '[')) {
             if (STATE_ISSET(ansi_state, STATE_ESC_SET)) {
                 /*
                  *[*[ or *[13;24*[ */
