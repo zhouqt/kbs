@@ -36,7 +36,7 @@ int generate_board_title(struct boardheader *bh,void* arg)
 #ifdef GEN_ORIGIN
 	setbdir(DIR_MODE_ORIGIN, opath, bh->filename);
 #endif
-    setbdir(DIR_MODE_ORIGIN, olddirect, bh->filename);
+    setbdir(DIR_MODE_NORMAL, olddirect, bh->filename);
     
     gen_threadid=1;
     if ((fd2 = open(olddirect, O_RDWR, 0664)) == -1) {
