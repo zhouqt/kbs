@@ -1,0 +1,14 @@
+.SMItem { /* style menu item */
+	font-size:9pt;
+	line-height:12pt;
+}
+.MItem { /* menu item */
+	font-size:9pt;
+	line-height:14pt;
+}
+.HCursor { /* hand cursor */
+	cursor: hand;
+}
+.NWeight { /* normal weight */
+	font-weight: normal;
+}
