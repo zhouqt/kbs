@@ -225,8 +225,7 @@ int show_allmsgs()
             }
         }
         good_move(23,0);
-        clrtoeol();
-        prints("[1;44;32mÑ¶Ï¢ä¯ÀÀÆ÷   ±£Áô <[37mr[32m>    Çå³ı <[37mc[32m>   ¼Ä»ØĞÅÏä<[37mm[32m>");
+        prints("[1;44;32mÑ¶Ï¢ä¯ÀÀÆ÷   ±£Áô <[37mr[32m>    Çå³ı <[37mc[32m>   ¼Ä»ØĞÅÏä<[37mm[32m>                                ");
         refresh();
         oflush();
 reenter:
