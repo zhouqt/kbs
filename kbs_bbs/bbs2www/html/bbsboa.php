@@ -68,14 +68,14 @@
 		$brd_artcnt = $boards["ARTCNT"]; // 文章数
 		$brd_unread = $boards["UNREAD"]; // 未读标记
 		$brd_zapped = $boards["ZAPPED"]; // 是否被 z 掉
-		$brd_isgroup = $boards["flag"]&BBS_BOARD_GROUP; //是否是目录
-		if ($brd_isgroup)
-		  $brd_link="/bbsboa.php?group=" . $group . "&group2=" . $group2;
-		else
-		  $brd_link="/bbsdoc.php?board=" . urlencode($brd_name[$i]);
+		$brd_flag = $boards["flag"]; //flag
 		$rows = sizeof($brd_name);
 		for ($i = 0; $i < $rows; $i++)	
 		{
+		if ($brd_isgroup[i]&BBS_BOARD_GROUP)
+		  $brd_link="/bbsboa.php?group=" . $group . "&group2=" . $group2;
+		else
+		  $brd_link="/bbsdoc.php?board=" . urlencode($brd_name[$i]);
 ?>
 <tr>
 <td><?php echo $i+1; ?></td>
@@ -95,11 +95,11 @@
 				echo "*";
 			else
 				echo "&nbsp;";
-?><a href="><?php echo $brd_name[$i]; ?></a>
+?><a href="<?php echo $brd_link; ?>"><?php echo $brd_name[$i]; ?></a>
 </td>
 <td><?php echo $brd_class[$i]; ?></td>
 <td>
-<a href="/bbsdoc.php?board=<?php echo urlencode($brd_name[$i]); ?>"><?php echo $brd_desc[$i]; ?></a>
+<a href="<?php echo $brd_link; ?>"><?php echo $brd_desc[$i]; ?></a>
 </td>
 <td>
 <?php
