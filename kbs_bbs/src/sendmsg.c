@@ -539,6 +539,7 @@ void r_msg()
                         if(i==1) strcpy(buf, "[1m°ïÄãËÍ³öÑ¶Ï¢ÁË[m");
                         else if(i!=0) strcpy(buf, msgerr);
                         if(buf[0]) {
+                            int j=i;
                             if(i!=1&&i!=0) {
                                 move(oy+1, 0);
                                 prints("%s °´ÈÎÒâ¼ü¼ÌÐø", buf);
@@ -553,7 +554,7 @@ void r_msg()
                                 prints("%s", buf);
                             }
 #ifndef NINE_BUILD
-                            if(i==1) {
+                            if(j==1) {
                                 refresh();
                                 sleep(1);
                             }
