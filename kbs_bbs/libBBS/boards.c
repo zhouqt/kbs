@@ -396,7 +396,7 @@ void brc_update(char *userid)
     int i;
     gzFile fd = NULL;
     char dirfile[MAXPATH];
-    unsigned int* data;
+    unsigned int data[MAXBOARD][BRC_MAXNUM];
     size_t count;
 
     if (brc_cache_entry==NULL) return;
@@ -410,7 +410,6 @@ void brc_update(char *userid)
     }
     if (i == BRC_CACHE_NUM)
         return;
-    data=(unsigned int*)malloc(BRC_FILESIZE);
     bzero(data, BRC_FILESIZE);
     if ((fd = gzopen(dirfile, "rb6")) == NULL) {
         const char *errstr;
@@ -450,7 +449,7 @@ void brc_update(char *userid)
 
     for (i = 0; i < BRC_CACHE_NUM; i++) {
         if (brc_cache_entry[i].changed)
-            memcpy(&data[brc_cache_entry[i].bid - 1], &brc_cache_entry[i].list, BRC_ITEMSIZE);
+            memcpy(data[brc_cache_entry[i].bid - 1], &brc_cache_entry[i].list, BRC_ITEMSIZE);
     }
     count = 0;
     while (count < BRC_FILESIZE) {
@@ -462,7 +461,6 @@ void brc_update(char *userid)
         count += ret;
     }
     gzclose(fd);
-    free(data);
     return;
 }
 
