@@ -841,14 +841,6 @@ int a_Import(path, key, fileinfo, nomsg, direct, ent)
 			sprintf(buf, "boards/%s/%s", key, fileinfo->filename);
 			f_cp(buf, bname, 0);
 
-			/* Leeward 98.04.15 */
-			sprintf(buf, "将 boards/%s/%s 收入目录 %s", key, fileinfo->filename, pm.path + 17);
-			a_report(buf);
-			if (!nomsg) {
-			    sprintf(buf, " 收入精华区目录 %s, 请按 Enter 继续 << ", /*fileinfo->title, */ pm.path);
-			    a_prompt(-1, buf, ans);
-			}
-
 			/* Leeward 98.04.15 add below FILE_IMPORTED */
 			change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_IMPORT_FLAG, 0);
 			bmlog(currentuser->userid, currboard, 12, 1);
