@@ -57,7 +57,7 @@ require("inc/userdatadefine.inc.php");
 	} else {
 		echo 'userface/image'.$user['userface_img'].'.gif';
 	}
-?>" width=20 height=21 align=absmiddle> 
+?>" width=<?php echo $currentuser['userface_width'];  ?> height=<?php echo $currentuser['userface_height'];  ?> align=absmiddle> 
 <b><?php echo $user['userid']; ?></b> 
 </td>
     <td align=right>
@@ -78,7 +78,7 @@ require("inc/userdatadefine.inc.php");
   </tr>   
   <tr> 
     <td class=tablebody1 width=20% align=right>性 别：</td>
-    <td class=tablebody1><?php echo $user['gender']?'男':'女'; ?> </td>
+    <td class=tablebody1><?php echo $user['gender']==1?'男':'女'; ?> </td>
   </tr>
   <tr> 
     <td class=tablebody2 width=20% align=right>出 生：</td>

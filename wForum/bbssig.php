@@ -47,11 +47,11 @@ function main(){
 	$filename=bbs_sethomefile($currentuser["userid"],"signatures");
     $fp = @fopen ($filename, "r");
     if ($fp!=false) {
-    while (!feof ($fp)) {
-        $buffer = fgets($fp, 300);
-        echo $buffer;
-    }
-    fclose ($fp);
+		while (!feof ($fp)) {
+			$buffer = fgets($fp, 300);
+			echo $buffer;
+		}
+		fclose ($fp);
     }
 
 ?>

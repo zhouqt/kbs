@@ -87,7 +87,7 @@ function do_apply(){
 <TD width=40% class=tablebody1><B>性别</B>：<BR>请选择您的性别</TD>
 <TD width=60%  class=tablebody1> <INPUT type=radio CHECKED value=1 name=gender>
 <IMG  src=pic/Male.gif align=absMiddle>男孩 &nbsp;&nbsp;&nbsp;&nbsp; 
-<INPUT type=radio value=0 name=gender>
+<INPUT type=radio value=2 name=gender>
 <IMG  src=pic/Female.gif align=absMiddle>女孩</font></TD>
 </TR>
 <TR> 
@@ -132,7 +132,7 @@ function do_apply(){
 ?>
 <option value="userface/"></option>
 </select>
-<img id=face src=userface/image1.gif>&nbsp;<a href=allface.asp target=_blank>查看所有头像</a>
+<img id=face src=userface/image1.gif>&nbsp;<a href=# onclick="alert('本功能尚未实现');">查看所有头像</a>
 </TR>
 
 <TR> 
@@ -153,13 +153,12 @@ function do_apply(){
 0---120的整数<br>
 </TD>
 </TR>
-
-      <tr bgcolor="&Forum_body(4)&">    
-        <td width=40%  class=tablebody1><B>生日</B><BR>如不想填写，请全部留空</td>   
-        <td width=60%  class=tablebody1 valign=center>
+<tr>    
+<td width=40%  class=tablebody1><B>生日</B><BR>如不想填写，请全部留空</td>   
+<td width=60%  class=tablebody1 valign=center>
 <input maxlength="4" size="4" name="year" /> 年 <input maxlength="2" size="2" name="month" /> 月 <input size="2" maxlength="2" name="day" /> 日
-        </td>   
-      </tr>
+</td>   
+</tr>
 <tr> 
 <td width=40%  class=tablebody1><B>回复提示</B>：<BR>当您发表的帖子有人回复时，使用论坛信息通知您。</td>
 <td width=60%  class=tablebody1>
@@ -261,8 +260,8 @@ function do_apply(){
 </b>
 <select size=1 name=shengxiao>
 <?php
-	for ($i=0;$i<count($shenxiao);$i++) {
-		echo "<option value=\"".$i."\">".$shenxiao[$i]."</option>";
+	for ($i=0;$i<count($shengxiao);$i++) {
+		echo "<option value=\"".$i."\">".$shengxiao[$i]."</option>";
 	}
 ?>
 </select>
@@ -425,7 +424,7 @@ function do_save(){
 	settype($month,"integer");
 	settype($day,"integer");
 
-$ret=bbs_createregform_wbbs($userid,$realname,$dept,$address,$gender,$year,$month,$day,$email,$phone,$mobile_phone, $_POST['OICQ'], $_POST['ICQ'], $_POST['MSN'],  $_POST['homepage'], intval($_POST['face']), $_POST['myface'], intval($_POST['width']), intval($_POST['height']), intval($_POST['groupname']), $_POST['country'],  $_POST['province'], $_POST['city'], intval($_POST['shengxiao']), intval($_POST['blood']), intval($_POST['belief']), intval($_POST['occupation']), intval($_POST['marital']), intval($_POST['education']), $_POST['college'], intval($_POST['character']), FALSE);//自动生成注册单
+$ret=bbs_createregform($userid,$realname,$dept,$address,$gender,$year,$month,$day,$email,$phone,$mobile_phone, $_POST['OICQ'], $_POST['ICQ'], $_POST['MSN'],  $_POST['homepage'], intval($_POST['face']), $_POST['myface'], intval($_POST['width']), intval($_POST['height']), intval($_POST['groupname']), $_POST['country'],  $_POST['province'], $_POST['city'], intval($_POST['shengxiao']), intval($_POST['blood']), intval($_POST['belief']), intval($_POST['occupation']), intval($_POST['marital']), intval($_POST['education']), $_POST['college'], intval($_POST['character']), FALSE);//自动生成注册单
 
 	switch($ret)
 	{
@@ -484,5 +483,3 @@ $ret=bbs_createregform_wbbs($userid,$realname,$dept,$address,$gender,$year,$mont
 }
 
 ?>
-</body>
-</html>
