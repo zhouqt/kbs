@@ -1351,3 +1351,142 @@ update_mailbox_prop(char *userid, unsigned int prop)
 		return 0;
 }
 
+unsigned int 
+load_mailgroup_list(const char *userid, mailgroup_list_t *mgl)
+{
+    char fname[STRLEN];
+    int fd;
+
+	bzero(mgl, sizeof(mailgroup_list_t));
+    sethomefile(fname, userid, "mailgroup");
+    if ((fd = open(fname, O_RDONLY, 0600)) != -1)
+	{
+        read(fd, mgl, sizeof(mailgroup_list_t));
+        close(fd);
+    }
+	return mgl->groups_num; /* return zero for failure or no group lists */
+}
+
+int 
+store_mailgroup_list(const char *userid, const mailgroup_list_t *mgl)
+{
+    char fname[STRLEN];
+    int fd;
+
+    sethomefile(fname, userid, "mailgroup");
+    if ((fd = open(fname, O_WRONLY | O_CREAT, 0600)) != -1)
+	{
+        write(fd, mgl, sizeof(mailgroup_list_t));
+        close(fd);
+		return 0;
+    }
+	else
+		return -1;
+}
+
+/*
+ * FIXME: If unpredictable system power lost often occurs, there may
+ *        be a possibility that this function always return failure.
+ */
+static int 
+get_mailgroup_name(const char *userid, mailgroup_list_item *item)
+{
+	int i;
+	char groupname[sizeof(item->group_name)];
+	char filename[STRLEN];
+	int fd;
+
+	for (i = 0; i < MAX_MAILGROUP_NUM; i++)
+	{
+		snprintf(groupname, sizeof(groupname), "group%02d", i);
+    	sethomefile(filename, userid, groupname);
+		if ((fd = open(filename, O_CREAT | O_EXCL | O_WRONLY, 0600)) != -1)
+			break;
+	}
+	if (fd == -1)
+		return -1;
+	close(fd);
+	strcpy(item->group_name, groupname);
+	return 0;
+}
+
+int 
+add_mailgroup_item(const char *userid, mailgroup_list_t *mgl, 
+		mailgroup_list_item *item)
+{
+	int i;
+
+	if (get_mailgroup_name(userid, item) < 0)
+		return -1;
+	for (i = 0; i < MAX_MAILGROUP_NUM; i++)
+	{
+		if (mgl->groups[i].group_name[0] == '\0')
+		{
+			memcpy(&(mgl->groups[i]), item, sizeof(mailgroup_list_item));
+			mgl->groups_num ++;
+			return 0;
+		}
+	}
+	return -1;
+}
+
+int 
+delete_mailgroup_item(const char *userid, mailgroup_list_t *mgl, int entry)
+{
+	int i;
+	char filename[STRLEN];
+
+	sethomefile(filename, userid, mgl->groups[entry].group_name);
+	for (i = entry; i < mgl->groups_num - 1; i++)
+	{
+		memcpy(&(mgl->groups[i]), &(mgl->groups[i+1]), 
+				sizeof(mailgroup_list_item));
+	}
+	bzero(&(mgl->groups[i]), sizeof(mailgroup_list_item));
+	mgl->groups_num --;
+	unlink(filename);
+	return 0;
+}
+
+int 
+modify_mailgroup_item(const char *userid, mailgroup_list_t *mgl, int entry,
+							mailgroup_list_item *item)
+{
+	memcpy(&(mgl->groups[entry]), item, sizeof(mailgroup_list_item));
+
+	return 0;
+}
+
+int 
+load_mailgroup(const char *userid, const char *group, mailgroup_t *mg, int num)
+{
+    char fname[STRLEN];
+    int fd;
+
+    sethomefile(fname, userid, group);
+    if ((fd = open(fname, O_RDONLY, 0600)) < 0)
+		return -1;
+	read(fd, mg, sizeof(mailgroup_t) * num);
+	close(fd);
+
+	return 0;
+}
+
+int 
+store_mailgroup(const char *userid, const char *group, 
+		const mailgroup_t *mg, int num)
+{
+    char fname[STRLEN];
+    int fd;
+
+    sethomefile(fname, userid, group);
+    if ((fd = open(fname, O_WRONLY | O_CREAT, 0600)) != -1)
+	{
+        write(fd, mg, sizeof(mailgroup_t) * num);
+        close(fd);
+		return 0;
+    }
+	else
+		return -1;
+}
+

@@ -2554,3 +2554,200 @@ int set_mailbox_prop()
 
 	return 0;
 }
+
+/**
+ * Setting currentuser's mailgroup.
+ *
+ * @authur flyriver
+ */
+int set_mailgroup(mailgroup_list_t *mgl, int entry)
+{
+}
+
+typedef struct
+{
+	int tmpnum;
+	mailgroup_list_t mail_group;
+	mailgroup_t users[MAX_MAILGROUP_USERS];
+}mailgroup_list_arg;
+
+static int 
+set_mailgroup_list_select(struct _select_def *conf)
+{
+    mailgroup_list_arg *arg = (mailgroup_list_arg *) conf->arg;
+
+    return SHOW_REFRESHSELECT;
+}
+
+static int 
+set_mailgroup_list_show(struct _select_def *conf, int i)
+{
+    mailgroup_list_arg *arg = (mailgroup_list_arg *) conf->arg;
+
+    return SHOW_CONTINUE;
+}
+
+static int 
+set_mailgroup_list_prekey(struct _select_def *conf, int *key)
+{
+    mailgroup_list_arg *arg = (mailgroup_list_arg *) conf->arg;
+
+	if ((*key == '\r' || *key == '\n') && (arg->tmpnum != 0))
+	{
+		conf->new_pos = arg->tmpnum;
+		arg->tmpnum = 0;
+		return SHOW_SELCHANGE;
+	}
+}
+
+static int 
+set_mailgroup_list_key(struct _select_def *conf, int key)
+{
+    mailgroup_list_arg *arg = (mailgroup_list_arg *) conf->arg;
+	int oldmode;
+	
+	if (key >= '0' && key <= '9')
+	{
+		arg->tmpnum = arg->tmpnum * 10 + (key - '0');
+		return SHOW_CONTINUE;
+	}
+	switch (key)
+	{
+	case 'a': /* add new mailgroup */
+	case 'A':
+		if (arg->mail_group.groups_num < MAX_MAILGROUP_NUM)
+		{
+			mailgroup_list_item item;
+
+			bzero(&item, sizeof(item));
+			getdata(0, 0, "请输入新群体信件组的名称: ", item.group_desc, 
+					sizeof(item.group_desc), DOECHO, NULL, true);
+			add_mailgroup_item(currentuser->userid, arg->mail_group, &item);
+			return SHOW_DIRCHANGE;
+		}
+		break;
+	case 'd': /* delete existed mailgroup */
+	case 'D':
+		if (arg->mail_group.groups_num > 0)
+		{
+			char ans[3];
+
+			getdata(t_lines, 0, "确实要删除该群体信件组吗(Y/N)? [N]: ",
+					ans, sizeof(ans), DOECHO, NULL, true);
+			if (ans[0] == 'Y' || ans[0] == 'y')
+			{
+				delete_mailgroup_item(currentuser->userid, arg->mail_group,
+						conf->pos - 1);
+			}
+			return SHOW_DIRCHANGE;
+		}
+		break;
+	case 'm': /* modify existed mailgroup */
+	case 'M':
+		if (arg->mail_group.groups_num > 0)
+		{
+			mailgroup_list_item item;
+
+			memcpy(&item, &(arg->mail_group.groups[conf->pos - 1]), 
+					sizeof(item));
+			getdata(0, 0, "请输入新群体信件组的名称: ", item.group_desc, 
+					sizeof(item.group_desc), DOECHO, NULL, true);
+			modify_mailgroup_item(currentuser->userid, arg->mail_group, 
+					conf->pos - 1, &item);
+			return SHOW_DIRCHANGE;
+		}
+		break;
+	case Ctrl('Z'):
+		oldmode = uinfo.mode;
+		r_lastmsg();
+		modify_user_mode(oldmode);
+		return SHOW_REFRESH;
+	case 'L':
+	case 'l':
+		oldmode = uinfo.mode;
+		show_allmsgs();
+		modify_user_mode(oldmode);
+		return SHOW_REFRESH;
+	case 'W':
+	case 'w':
+		oldmode = uinfo.mode;
+		if (!HAS_PERM(currentuser, PERM_PAGE))
+			break;
+		s_msg();
+		modify_user_mode(oldmode);
+		return SHOW_REFRESH;
+	case 'u':
+		oldmode = uinfo.mode;
+		clear();
+		modify_user_mode(QUERY);
+		t_query(NULL);
+		modify_user_mode(oldmode);
+		return SHOW_REFRESH;
+	}
+
+    return SHOW_CONTINUE;
+}
+
+static int 
+set_mailgroup_list_refresh(struct _select_def *conf)
+{
+}
+
+static int 
+set_mailgroup_list_getdata(struct _select_def *conf, int pos, int len)
+{
+    mailgroup_list_arg *arg = (mailgroup_list_arg *) conf->arg;
+	conf->item_count = arg->mail_group.groups_num;
+
+	return SHOW_CONTINUE;
+}
+
+/**
+ * Setting currentuser's mailgroup lists.
+ *
+ * @authur flyriver
+ */
+int set_mailgroup_list()
+{
+    struct _select_def grouplist_conf;
+    mailgroup_list_arg *arg;
+    POINT *pts;
+    int i;
+
+    clear();
+	arg = (mailgroup_list_arg *)malloc(sizeof(mailgroup_list_arg));
+	if (arg == NULL)
+		return -1;
+	pts = (POINT *)malloc(sizeof(POINT) * BBS_PAGESIZE);
+	for (i = 0; i < BBS_PAGESIZE + 1; i++)
+	{
+		pts[i].x = 2;
+		pts[i].y = i + 2;
+	}
+	bzero(&grouplist_conf, sizeof(struct _select_def));
+	grouplist_conf.item_count = load_mailgroup_list(currentuser->userid, 
+										&(arg->mail_group));
+	grouplist_conf.item_per_page = BBS_PAGESIZE;
+	grouplist_conf.flag = LF_BELL | LF_LOOP | LF_MULTIPAGE;
+	grouplist_conf.prompt = "◆";
+	grouplist_conf.item_pos = pts;
+	grouplist_conf.arg = arg;
+	grouplist_conf.title_pos.x = 0;
+	grouplist_conf.title_pos.y = 0;
+	grouplist_conf.pos = 1; /* initialize cursor on the first mailgroup */
+	grouplist_conf.page_pos = 1; /* initialize page to the first one */
+	
+	grouplist_conf.on_select = set_mailgroup_list_select;
+	grouplist_conf.show_data = set_mailgroup_list_show;
+	grouplist_conf.pre_key_command = set_mailgroup_list_prekey;
+	grouplist_conf.key_command = set_mailgroup_list_key;
+	grouplist_conf.show_title = set_mailgroup_list_refresh;
+
+	list_select_loop(&grouplist_conf);
+	store_mailgroup_list(currentuser->userid, &(arg->mail_group));
+	free(arg);
+	free(pts);
+
+	return 0;
+}
+

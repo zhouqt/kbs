@@ -210,7 +210,10 @@ int autoappend;
     }
     
     strcpy(postfile.filename, fh->filename);
-    fh->filename[0]=(owned) ? 'J':'D';
+	if (fh->filename[1] == '/')
+    	fh->filename[2] = (owned) ? 'J':'D';
+	else
+    	fh->filename[0] = (owned) ? 'J':'D';
     setbfile(oldpath,board,postfile.filename);
     setbfile(newpath,board,fh->filename);
     f_mv(oldpath,newpath);
