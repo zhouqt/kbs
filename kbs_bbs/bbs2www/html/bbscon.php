@@ -47,6 +47,61 @@ function get_mimetype($name)
 		return "text/xml";
 	return "application/octet-stream";
 }
+
+function display_navigation_bar($brdarr, $articles, $num)
+{
+	global $currentuser;
+
+	$brd_encode = urlencode($brdarr["NAME"]);
+	$PAGE_SIZE = 20;
+	if ($articles[0]["ID"] != 0)
+	{
+?>
+[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[0]["ID"]; ?>&num=<?php echo $num - 1; ?>">上一篇</a>]
+<?php
+	}
+	else
+	{
+?>
+[上一篇]
+<?php
+	}
+	if ($articles[2]["ID"] != 0)
+	{
+?>
+[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[2]["ID"]; ?>&num=<?php echo $num + 1; ?>">下一篇</a>]
+<?php
+	}
+	else
+	{
+?>
+[下一篇]
+<?php
+	}
+?>
+[<a href="/cgi-bin/bbs/bbsfwd?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">转寄</a>]
+[<a href="/cgi-bin/bbs/bbsccc?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">转贴</a>]
+<?php
+	if (bbs_can_delete_article($brdarr, $articles[1], $currentuser))
+	{
+?>
+[<a onclick="return confirm('你真的要删除本文吗?')" href="bbsdel.php?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">删除文章</a>]
+<?php
+	}
+	if (bbs_can_edit_article($brdarr, $articles[1], $currentuser))
+	{
+?>
+[<a href="/cgi-bin/bbs/bbsedit?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">修改文章</a>]
+<?php
+	}
+?>
+[<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>&page=<?php echo intval(($num + $PAGE_SIZE - 1) / $PAGE_SIZE); ?>">本讨论区</a>]
+[<a href="/cgi-bin/bbs/bbspst?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>&userid=<?php echo $articles[1]["OWNER"]; ?>&title=Re: <?php echo urlencode($articles[1]["TITLE"]); ?>&refilename=<?php echo $articles[1]["FILENAME"]; ?>&attach=<?php echo $brdarr["FLAG"]&BBS_BOARD_ATTACH ? 1 : 0; ?>">回文章</a>]
+[<a href="/cgi-bin/bbs/bbstfind?board=<?php echo $brd_encode; ?>&title=<?php echo urlencode($articles[1]["TITLE"]); ?>">同主题阅读</a>]
+[<a href="javascript:history.go(-1)">快速返回</a>]
+<?php
+}
+
 	if ($loginok != 1)
 		html_nologin();
 	else
@@ -126,45 +181,12 @@ function get_mimetype($name)
 			} else
 			{
 				html_init("gb2312");
-				$brd_encode = urlencode($brdarr["NAME"]);
-				$PAGE_SIZE = 20;
 ?>
 <body>
 <center><p><?php echo $BBS_FULL_NAME; ?> -- 文章阅读 [讨论区: <?php echo $brdarr["NAME"]; ?>]</a></p></center>
-[<a href="/cgi-bin/bbs/bbsfwd?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">转寄/推荐</a>]
-[<a href="/cgi-bin/bbs/bbsccc?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">转贴</a>]
 <?php
-				if (bbs_can_delete_article($brdarr, $articles[1], $currentuser))
-				{
+				display_navigation_bar($brdarr, $articles, $num);
 ?>
-[<a onclick="return confirm('你真的要删除本文吗?')" href="bbsdel.php?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">删除文章</a>]
-<?php
-				}
-				if (bbs_can_edit_article($brdarr, $articles[1], $currentuser))
-				{
-?>
-[<a href="/cgi-bin/bbs/bbsedit?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">修改文章</a>]
-<?php
-				}
-				if ($articles[0]["ID"] != 0)
-				{
-?>
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[0]["ID"]; ?>&num=<?php echo $num - 1; ?>">上一篇</a>]
-<?php
-				}
-?>
-[<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>&page=<?php echo intval(($num + $PAGE_SIZE - 1) / $PAGE_SIZE); ?>">本讨论区</a>]
-<?php
-				if ($articles[2]["ID"] != 0)
-				{
-?>
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[2]["ID"]; ?>&num=<?php echo $num + 1; ?>">下一篇</a>]
-<?php
-				}
-?>
-[<a href="/cgi-bin/bbs/bbspst?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>&userid=<?php echo $articles[1]["OWNER"]; ?>&title=Re: <?php echo urlencode($articles[1]["TITLE"]); ?>&refilename=<?php echo $articles[1]["FILENAME"]; ?>&attach=<?php echo $brdarr["FLAG"]&BBS_BOARD_ATTACH ? 1 : 0; ?>">回文章</a>]
-[<a href="/cgi-bin/bbs/bbstfind?board=<?php echo $brd_encode; ?>&title=<?php echo urlencode($articles[1]["TITLE"]); ?>">同主题阅读</a>]
-[<a href="javascript:history.go(-1)">快速返回</a>]
 <hr class="default" />
 <table width="610" border="0">
 <tr><td>
@@ -173,41 +195,8 @@ function get_mimetype($name)
 ?>
 </td></tr></table>
 <hr class="default" />
-[<a href="/cgi-bin/bbs/bbsfwd?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">转寄/推荐</a>]
-[<a href="/cgi-bin/bbs/bbsccc?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">转贴</a>]
 <?php
-				if (bbs_can_delete_article($brdarr, $articles[1], $currentuser))
-				{
-?>
-[<a onclick="return confirm('你真的要删除本文吗?')" href="bbsdel.php?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">删除文章</a>]
-<?php
-				}
-				if (bbs_can_edit_article($brdarr, $articles[1], $currentuser))
-				{
-?>
-[<a href="/cgi-bin/bbs/bbsedit?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">修改文章</a>]
-<?php
-				}
-				if ($articles[0]["ID"] != 0)
-				{
-?>
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[0]["ID"]; ?>&num=<?php echo $num - 1; ?>">上一篇</a>]
-<?php
-				}
-?>
-[<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>&page=<?php echo intval(($num + $PAGE_SIZE - 1) / $PAGE_SIZE); ?>">本讨论区</a>]
-<?php
-				if ($articles[2]["ID"] != 0)
-				{
-?>
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[2]["ID"]; ?>&num=<?php echo $num + 1; ?>">下一篇</a>]
-<?php
-				}
-?>
-[<a href="/cgi-bin/bbs/bbspst?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>&userid=<?php echo $articles[1]["OWNER"]; ?>&title=Re: <?php echo urlencode($articles[1]["TITLE"]); ?>&refilename=<?php echo $articles[1]["FILENAME"]; ?>&attach=<?php echo $brdarr["FLAG"]&BBS_BOARD_ATTACH ? 1 : 0; ?>">回文章</a>]
-[<a href="/cgi-bin/bbs/bbstfind?board=<?php echo $brd_encode; ?>&title=<?php echo urlencode($articles[1]["TITLE"]); ?>">同主题阅读</a>]
-[<a href="javascript:history.go(-1)">快速返回</a>]
-<?php
+				display_navigation_bar($brdarr, $articles, $num);
 			}
 		}
 		html_normal_quit();
