@@ -55,15 +55,21 @@
 	$result = mysql_query($query,$link);
 	$num_rows = mysql_num_rows($result);
 	
-	pc_html_init("gb2312","Blog搜索");
 	if($num_rows == 0)
 	{
 		mysql_free_result($result);
 		pc_db_close($link);
+		pc_html_init("gb2312","Blog搜索");
 		html_error_quit("对不起，没有符合条件的Blog，请尝试缩减关键字重新查询");
+	}
+	elseif($num_rows==1)
+	{
+		$rows = mysql_fetch_array($result);
+		header("Location: index.php?id=".$rows[username]);
 	}
 	else
 	{
+		pc_html_init("gb2312","Blog搜索");
 		echo "<br>按照 <font class=f2>".$keyname."</font> 查询，关键字为 <font class=f2>".$keyword1."</font> 。<br>".
 			"系统共为您查到 <font class=f2>".$num_rows."</font> 笔记录：";
 ?>
