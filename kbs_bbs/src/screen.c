@@ -80,7 +80,7 @@ int num_noans_chr(char* str)
 
 void init_screen(int slns, int scols)
 {
-	register struct screenline *slp;
+    register struct screenline *slp;
     register int j;
 
 	scr_lns = slns;
@@ -97,12 +97,38 @@ void init_screen(int slns, int scols)
 	roll = 0;
 }
 
+void clear()
+{
+    register int i, j;
+    register struct screenline *slp;
+
+    if (!scrint) {
+        o_clear();
+        return;
+    }
+    roll = 0;
+    for (i = 0; i < scr_lns; i++) {
+        slp = big_picture;
+        for(j=0; j<scr_cols;j++) {
+            if((slp[i].data[j]==' '||slp[i].data[j]==' ')&&slp[i].mode[j]&SCREEN_LINE==0&&slp[i].mode[j]&SCREEN_BACK==0&&slp[i].color[j]/16==0)
+                slp[i].mode[j]=0;
+            else
+                slp[i].mode[j]=SCREEN_MODIFIED;
+            slp[i].data[j]=0;
+            slp[i].color[j]=7;
+        }
+    }
+    move(0, 0);
+}
+
 void initscr()
 {
 //	if (!big_picture)
 //		t_columns = WRAPMARGIN;
 //	init_screen(t_lines, WRAPMARGIN);
     init_screen(t_lines, t_columns);
+    o_clear();
+    clear();
 }
 
 void rel_move(int was_col, int was_ln, int new_col, int new_ln)
@@ -133,40 +159,17 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
 	do_move(new_col, new_ln, ochar);
 }
 
-void clear()
-{
-    register int i, j;
-    register struct screenline *slp;
-
-    if (!scrint) {
-        o_clear();
-        return;
-    }
-    roll = 0;
-    for (i = 0; i < scr_lns; i++) {
-        slp = big_picture;
-        for(j=0; j<scr_cols;j++) {
-            if((slp[i].data[j]==' '||slp[i].data[j]==' ')&&slp[i].mode[j]&SCREEN_LINE==0&&slp[i].mode[j]&SCREEN_BACK==0&&slp[i].color[j]/16==0)
-                slp[i].mode[j]=0;
-            else
-                slp[i].mode[j]=SCREEN_MODIFIED;
-            slp[i].data[j]=0;
-            slp[i].color[j]=7;
-        }
-    }
-    move(0, 0);
-}
-
 #define push(x) stack[stackt++]=x
 #define outstack() if(stackt>0) {\
     char buf[200],*p;\
     sprintf(buf, "\x1b[");\
     p=buf+2;\
     for(ii=0;ii<stackt;ii++) {\
-        if(ii==0) sprintf(p, "%d", stack[i]); \
-        else sprintf(p, ";%d", stack[i]); \
-        p=p+strlen(p);\
+        if(ii==0) sprintf(p, "%d", stack[ii]); \
+        else sprintf(p, ";%d", stack[ii]); \
+        p+=strlen(p);\
     }\
+    sprintf(p, "m");\
     output(buf, strlen(buf)); \
     stackt=0; }
     
