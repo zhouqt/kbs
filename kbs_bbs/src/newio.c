@@ -699,7 +699,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
     buf[curr] = '\0';
     prints("%s", buf);
 
-    if (!scrint || (echo == false)) {
+    if (!scrint) {
         while ((ch = igetkey()) != '\r') {
             /*
              * TODO: add KEY_REFRESH support 
@@ -735,6 +735,29 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
         buf[clen] = '\0';
         prints("\n");
         oflush();
+        return clen;
+    }
+    if (!echo) {
+        clrtoeol();
+        while ((ch = igetkey()) != '\r') {
+	    if (ch == '\n')
+                break;
+            if (ch == '\177' || ch == Ctrl('H')) {
+                if (clen == 0)
+                    continue;
+                clen--;
+                outc(Ctrl('H'));
+                outc(' ');
+                outc(Ctrl('H'));
+                continue;
+            }
+            if (!isprint2(ch)||clen>=len-1)
+                continue;
+            buf[clen++] = ch;
+            outc('*');
+        }
+        buf[clen] = '\0';
+        prints("\n");
         return clen;
     }
     clrtoeol();
