@@ -246,7 +246,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 				else
 				{
 ?>
-<form action="/bbslogin.php" method="post" name="form1" target="_top" >
+<form action="/bbslogin.php?mainurl=<?php echo urlencode($_SERVER["REQUEST_URI"]); ?>" method="post" name="form1" target="_top" >
 <tr><td class="t4">
 UserName:
 <INPUT TYPE=text class="f1" size="12" onMouseOver="this.focus()" onFocus="this.select()" name="id" >
