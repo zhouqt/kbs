@@ -1243,6 +1243,9 @@ static const char *reason[] = {
     NULL
 };
 
+#ifdef AUTO_CHECK_REGISTER_FORM
+#include "checkreg.c"
+#endif
 int scan_register_form(logfile, regfile)
 char *logfile, *regfile;
 {
@@ -1274,15 +1277,6 @@ char *logfile, *regfile;
 
     move(2, 0);
     if (dashf(fname)) {
-/*        prints("\033[1m其他 SYSOP 正在使用 telnet 或 WWW 查看注册申请单，请检查使用者状态。\n\n");
-        prints("\033[33m如果没有其他 SYSOP 正在查看注册申请单，则是由于断线造成的无法注册。\n");
-        prints("请进 bbsroot 帐户运行一次以下命令：\n");
-        prints("                                   \033[32mcat new_register.tmp >> new_register\033[33m\n");
-        prints("确认上述命令运行成功后，再运行一次以下命令：\n");
-        prints("                                            \033[32mrm new_register.tmp\n\033[m");
-        pressreturn();
-        return -1;*/
-
         restore_reg(pid);       /* Bigman,2002.5.31:恢复该文件 */
     }
 /*    f_mv(regfile, fname);*/
@@ -1356,6 +1350,25 @@ char *logfile, *regfile;
             disply_userinfo(&uinfo, 2);
 			
 			read_userdata(lookupuser->userid, &ud);
+#ifdef AUTO_CHECK_REGISTER_FORM
+{
+struct REGINFO regform;
+int ret;
+int saveret;
+char errorstr[100];
+bzero(&regform,sizeof(regform));
+errorstr[0]=0;
+strncpy(regform.userid,lookupuser->userid,99);
+strncpy(regform.realname,fdata[2],99);
+strncpy(regform.career,fdata[3],99);
+strncpy(regform.addr,fdata[4],99);
+strncpy(regform.phone,fdata[5],99);
+strncpy(regform.birth,fdata[6],99);
+ret=checkreg(&regform, errorstr);
+saveret=ret;
+ret=2;
+if (ret==2) {
+#endif
 
 /* 添加查询IP, Bigman: 2002.8.20 */
             /*move(8, 20);*/
@@ -1392,10 +1405,21 @@ char *logfile, *regfile;
                 pressanykey();
                 ans[0] = 'D';
             } else {
+#ifdef AUTO_CHECK_REGISTER_FORM
+                move(t_lines - 2, 0);
+		prints("\x1b[1;32m自动检查注册单:%s %s\x1b[m",saveret==0?"我认为可以通过!":(saveret==2?"还是你来看看吧":(saveret==-1?"这个id不太好吧":"应该退回 理由:")),errorstr);
+                move(t_lines - 1, 0);
+#endif
                 getdata(t_lines - 1, 0, "是否接受此资料 (Y/N/Q/Del/Skip)? [S]: ", ans, 3, DOECHO, NULL, true);
             }
             move(2, 0);
             clrtobot();
+#ifdef AUTO_CHECK_REGISTER_FORM
+} else { //自动处理
+if (ret==0) ans[0]='y';
+else ans[0]='n';
+}
+#endif
             switch (ans[0]) {
             case 'D':
             case 'd':
@@ -1433,7 +1457,14 @@ char *logfile, *regfile;
 				end_mmapfile(um, sizeof(struct usermemo), -1);
 
                 mail_file(currentuser->userid, "etc/s_fill", uinfo.userid, "恭禧你，你已经完成注册。", 0, NULL);
+#ifdef AUTO_CHECK_REGISTER_FORM
+         if (ret==2)
+#endif
                 sprintf(genbuf, "%s 让 %s 通过身份确认.", uid, uinfo.userid);
+#ifdef AUTO_CHECK_REGISTER_FORM
+         else
+                sprintf(genbuf, "自动处理程序 让 %s 通过身份确认.", uinfo.userid);
+#endif
                 securityreport(genbuf, lookupuser, fdata);
                 if ((fout = fopen(logfile, "a")) != NULL) {
                     time_t now;
@@ -1493,16 +1524,32 @@ char *logfile, *regfile;
                 for (n = 0; field[n] != NULL; n++)
                     prints("%s: %s\n", finfo[n], fdata[n]);
                 move(9, 0);
+#ifdef AUTO_CHECK_REGISTER_FORM
+              if (ret==2) {
+#endif
                 prints("请选择/输入退回申请表原因, 按 <enter> 取消.\n");
                 for (n = 0; reason[n] != NULL; n++)
                     prints("%d) %s\n", n, reason[n]);
                 getdata(10 + n, 0, "退回原因: ", buf, STRLEN, DOECHO, NULL, true);
+#ifdef AUTO_CHECK_REGISTER_FORM
+              } else {
+                buf[0]='!';
+              }
+#endif
+
                 buff = buf[0];  /* Added by Marco */
                 if (buf[0] != '\0') {
                     if (buf[0] >= '0' && buf[0] < '0' + n) {
                         strcpy(buf, reason[buf[0] - '0']);
                     }
+#ifdef AUTO_CHECK_REGISTER_FORM
+                   if (ret==2)
+#endif
                     sprintf(genbuf, "<注册失败> - %s", buf);
+#ifdef AUTO_CHECK_REGISTER_FORM
+                   else
+                    sprintf(genbuf, "<注册失败> - %s", errorstr);
+#endif
                     strncpy(ud.address, genbuf, NAMELEN);
                     write_userdata(uinfo.userid, &ud);
                     update_user(&uinfo, unum, 0);
@@ -1570,6 +1617,9 @@ char *logfile, *regfile;
                 }
             }
             memset(fdata, 0, sizeof(fdata));
+#ifdef AUTO_CHECK_REGISTER_FORM
+}
+#endif
         }
     }                           /* while */
 

@@ -376,4 +376,5 @@ attach define
 #define HAVE_OWN_USERIP
 #define SHOW_USERIP(user,x) showuserip(user,x)
 
+#define AUTO_CHECK_REGISTER_FORM //自动通过注册单
 #endif
