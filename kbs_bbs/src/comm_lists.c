@@ -221,6 +221,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"ModifyLevel", x_level},
     {"QueryBUser", query_bm},
     {"ConveyID", ConveyID},    /* added by binxun 2003.5.3 */
+    {"ProtectID",ProtectID},
     /*
      * end of addin 
      */
