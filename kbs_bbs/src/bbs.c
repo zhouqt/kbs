@@ -2727,7 +2727,7 @@ struct one_key read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
     {Ctrl('H'), SR_authorX},    /* Leeward 98.10.03 */
     {'b', SR_BMfunc},
     {'B', SR_BMfuncX},          /* Leeward 98.04.16 */
-    {Ctrl('T'), generate_all_title},
+    {Ctrl('T'), title_mode},
     {'t', set_delete_mark},     /*KCN 2001 */
     {'v', i_read_mail},         /* period 2000-11-12 read mail in article list */
     /*

@@ -129,7 +129,7 @@ int get_nextid(char* boardname)
     bstr=getbcache(boardname);
     bstr->nowid++;
     ret=bstr->nowid;
-    bcache_unlock(1);
+    bcache_unlock(fd);
     return ret;
 }
 
