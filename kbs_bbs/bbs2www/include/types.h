@@ -1,3 +1,6 @@
+/*
+ * $Id$
+ */
 #ifndef FB_TYPES_H
 #define FB_TYPES_H
 

@@ -1,3 +1,6 @@
+/*
+ * $Id$
+ */
 #if !defined BBSLIB_H
 #define BBSLIB_H
 
