@@ -487,8 +487,8 @@ function show_nav($boardName='',$is_mathml=false)
 </td>
 <td align="right" style="line-height: 15pt" width="10%">
 <nobr><a href="#" onClick="window.external.AddFavorite('<?php   echo $SiteURL; ?>', '<?php   echo $SiteName; ?>');">加入收藏</a></nobr><br/>
-<nobr><a href="">联系我们</a></nobr><br/>
-<nobr><a href="">论坛帮助</a></nobr>
+<nobr><a href="http://www.aka.cn/">联系我们</a></nobr><br/>
+<nobr><a href="index.php">论坛帮助</a></nobr>
 </td></tr>
 </table>
 
@@ -618,13 +618,6 @@ function show_footer($showmsg = true, $showerr = true)
 	</td>
 	<td>
 		<table cellSpacing="0" cellPadding="0" border="0" align="center">
-		<tr>
-			<td align="center">
-				<?php   echo $Forum_ads[1]; ?>
-			</td>
-		</tr>
-		<tr>
-		</tr>
 		<tr>
 			<td align="center" nowrap="nowrap">
 				<?php   echo $Copyright; ?>
