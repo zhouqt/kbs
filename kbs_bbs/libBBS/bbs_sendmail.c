@@ -571,79 +571,6 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5,
 }
 
 #else
-char encodingTable [64] = {
-
-    'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P',
-    'Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f',
-    'g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v',
-    'w','x','y','z','0','1','2','3','4','5','6','7','8','9','+','/'
-};
-
-
-static int encodebase64 (unsigned char htext[], unsigned char h64[], size_t htextlen ) {
-
-    unsigned long ixtext;
-    unsigned long lentext;
-    unsigned long ix;
-    long ctremaining;
-    unsigned char inbuf [3], outbuf [4];
-    unsigned char *ph64;
-    short i;
-    short ctcopy;
-
-    ixtext = ix=0;
-    ph64=h64;
-
-    lentext=htextlen;
-
-    while (1) {
-
-        ctremaining = lentext - ixtext;
-
-        if (ctremaining <= 0)
-            break;
-
-        for (i = 0; i < 3; i++) {
-
-            ix = ixtext + i;
-
-            if (ix < lentext)
-                inbuf[i]=htext[ix];
-                else
-                inbuf [i] = 0;
-        } /*for*/
-
-        outbuf [0] = (inbuf [0] & 0xFC) >> 2;
-        outbuf [1] = ((inbuf [0] & 0x03) << 4) | ((inbuf [1] & 0xF0) >> 4);
-        outbuf [2] = ((inbuf [1] & 0x0F) << 2) | ((inbuf [2] & 0xC0) >> 6);
-        outbuf [3] = inbuf [2] & 0x3F;
-
-        ctcopy = 4;
-
-        switch (ctremaining) {
-
-        case 1:
-            ctcopy = 2;
-            break;
-
-        case 2:
-            ctcopy = 3;
-            break;
-        } /*switch*/
-
-        for (i = 0; i < ctcopy; i++)
-            *ph64++=encodingTable[outbuf[i]];
-
-        for (i = ctcopy; i < 4; i++)
-            *ph64++='=';
-
-        ixtext += 3;
-
-    } /*while*/
-	*ph64=0;
-
-    return (1);
-}
 
 int encode_imail_file(char *fromid, char *fromhost, char *fromip, char *to, char *oldfile, char *newfile, char *title){
 
@@ -724,7 +651,7 @@ int encode_imail_file(char *fromid, char *fromhost, char *fromip, char *to, char
 
 						base64old = start;
 						for(i=0; i<attsize; i+=54, base64old += 54){
-							encodebase64 (base64old, base64new, attsize-i>54?54:(attsize-i) );
+							to64frombits (base64new, base64old, attsize-i>54?54:(attsize-i) );
 							base64new[72]=0;
 							fprintf(fp2,"%s\n",base64new);
 						}
