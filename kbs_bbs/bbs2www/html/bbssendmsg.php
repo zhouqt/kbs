@@ -47,10 +47,10 @@ login_init();
 ?>
 <body onload="document.form1.b1.focus()">
 <?php echo $errmsg; ?>
-<script>top.fmsg.location="bbsgetmsg.php"</script>
+<script>top.fmsg.location="bbsgetmsg.php?refresh"</script>
 <br/>
 <form name="form1">
-<input name="b1" type="button" onclick="window.location.href='/bbsgetmsg.php?refresh';" value="[·µ»Ø]"/>
+<input name="b1" type="button" onclick="history.go(-2)" value="[·µ»Ø]"/>
 </form>
 <?php
 		html_normal_quit();
