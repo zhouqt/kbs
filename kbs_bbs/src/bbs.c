@@ -3283,6 +3283,10 @@ int del_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         if (!chk_currBM(currboard->BM, getCurrentUser())) {
             return DONOTHING;
         }
+#ifdef COMMEND_ARTICLE
+	if (owned && !strcmp(currboard->filename, COMMEND_ARTICLE))
+		return DONOTHING;
+#endif
     if (!(flag&&ARG_NOPROMPT_FLAG)) {
         clear();
         prints("É¾³ýÎÄÕÂ '%s'.", fileinfo->title);
