@@ -91,7 +91,7 @@
 </tr>
 <tr>
 	<td class="t8"><textarea name="blogbody" class="f1" cols="100" rows="20" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
-	<?php echo $pcconfig["EDITORALERT"]."\n&nbsp;".$pcconfig["NOWRAPSTR"].$_POST["blogbody"]; ?>
+	<?php echo $pcconfig["EDITORALERT"].$_POST["blogbody"]; ?>
 	</textarea></td>
 </tr>
 <tr>
