@@ -192,7 +192,6 @@ u_enter()
     strncpy( uinfo.userid,   currentuser->userid,   20 );
     strncpy( uinfo.realname, currentuser->realname, 20 );
     strncpy( uinfo.username, currentuser->username, 40 );
-    memset( uinfo.stuff, '-', sizeof( uinfo.stuff ) );
     nf=0;
     topfriend=NULL;
     getfriendstr();

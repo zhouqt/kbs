@@ -48,7 +48,6 @@ struct user_info {              /* Structure used in UTMP file */
         char    userid[ 20 ];
         char    realname[ 20 ];
         char    username[ 40 ];
-        char    stuff[ 40 ];
 };
 
 struct friends {
