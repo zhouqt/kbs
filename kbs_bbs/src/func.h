@@ -254,9 +254,9 @@ extern "C" {
  * buf logically. For example, if the user provided an buffer of three
  * records, then the article record with the id is copied to buf[1],
  * its previous record will be copied to buf[0] (but if the previous
- * record is not existed, buf[0] will be filled with zero), and its
- * next record will be copied to buf[2] (if the next record is not
- * existed, buf[2] will be filled will zero).
+ * record does not exist, buf[0] will be filled with zero), and its
+ * next record will be copied to buf[2] (if the next record does not
+ * exist, buf[2] will be filled will zero).
  *
  * @param fd The file descriptor of the .DIR file
  * @param id The article id to be searched in the .DIR file
