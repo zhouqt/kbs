@@ -563,10 +563,10 @@ int a_SeSave(char *path, char *key, struct fileheader *fileinfo, int nomsg, char
     sprintf(filepath, "tmp/bm.%s", currentuser->userid);
     ans[0]='N';
     if (dashf(filepath)) {
-    	if (!nomsg) {
+        if (!nomsg) {
             sprintf(buf, "要附加在旧暂存档之后吗?(Y/N/C) [Y]: ");
             a_prompt(-1, buf, ans);
-    	}
+        }
         if ((ans[0] == 'N' || ans[0] == 'n') && (!nomsg)) {
             ans[0]='N';
         } else if (((ans[0] == 'C' || ans[0] == 'c')) && (!nomsg))
@@ -624,8 +624,16 @@ int a_SeSave(char *path, char *key, struct fileheader *fileinfo, int nomsg, char
         }
         free(src);
     }
-    if (ans[0]!='N') /*如果需要附加暂存档，调用a_Save去保存正文。*/
-    	a_Save(filepath, key, &savefileheader, true,NULL,ent);
+    if (ans[0]!='N')/* 如果需要附加暂存档，调用a_Save去保存正文。*/
+        a_Save(filepath, key, &savefileheader, true,NULL,ent);
+    else {
+        sprintf(qfile, "tmp/bm.%s", currentuser->userid);
+        f_mv(filepath,qfile);
+        if (!nomsg) {
+            sprintf(buf, " 已将该文章存入暂存档, 请按任何键以继续 << ");
+            a_prompt(-1, buf, ans);
+        }
+    }
     change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_IMPORT_FLAG, 0);
     return 1;
 }
