@@ -66,6 +66,7 @@ void copy_var(struct var_struct * a, struct var_struct * b)
 {
     int i,j;
     makesure(1,0);
+    if(a==b) return;
     makesize(b, a->height, a->width);
     for(i=0;i<a->height;i++)
         for(j=0;j<a->width;j++)
@@ -280,7 +281,6 @@ double envalue(struct var_struct * s)
         }
         if (fabs(temp.p[i][i])<MINIMUM) {
             del(&temp);
-            calcerr = 13;
             return 0;
         }
         //保证对角线元素不为零
@@ -526,7 +526,7 @@ void take_func(struct var_struct * p, struct var_struct * q, int kind)
 void eval(struct var_struct * p, char * s, int l, int r)
 {
     int i,j,n;
-    char op[7]=";,+-*/^";
+    char op[9]=";, +-*/^E";
     struct var_struct * t,q;
     char buf[1000];
     while(s[l]==' '&&l<=r) l++;
@@ -628,10 +628,10 @@ void eval(struct var_struct * p, char * s, int l, int r)
         }
         return ;
     }
-    for(j=0;j<7;j++) {
+    for(j=0;j<9;j++) {
         n=r;
         do{
-            if(s[n]==op[j]) {
+            if(toupper(s[n])==op[j]) {
                 struct var_struct m1,m2,m3;
                 m1.p=0; m2.p=0; m3.p=0;
                 if(n>l&&s[n-1]=='.'&&(j==4||j==5||j==6)) eval(&m1,s,l,n-2);
@@ -644,19 +644,20 @@ void eval(struct var_struct * p, char * s, int l, int r)
                         link_h(&m1, &m2, p);
                         break;
                     case 1:
+                    case 2:
                         link_w(&m1, &m2, p);
                         break;
-                    case 2:
+                    case 3:
                         add_var(&m1, &m2, p);
                         break;
-                    case 3:
+                    case 4:
                         sub_var(&m1, &m2, p);
                         break;
-                    case 4:
+                    case 5:
                         if(n>l&&s[n-1]=='.') domatrix(&m1,&m2,p,4);
                         else mul_var(&m1, &m2, p);
                         break;
-                    case 5:
+                    case 6:
                         if(n>l&&s[n-1]=='.') domatrix(&m1,&m2,p,5);
                         else {
                             inverse(&m3, &m2);
@@ -664,13 +665,17 @@ void eval(struct var_struct * p, char * s, int l, int r)
                             del(&m3);
                         }
                         break;
-                    case 6:
+                    case 7:
                         if(n>l&&s[n-1]=='.') domatrix(&m1,&m2,p,6);
                         else {
                             makesure(is_single_var(&m1)&&is_single_var(&m2),12);
                             makesure((**(m1.p))>0,7);
                             set_var(p, exp(log(**(m1.p))*(**(m2.p))));
                         }
+                        break;
+                   case 8:
+                        makesure(is_single_var(&m1)&&is_single_var(&m2),12);
+                        set_var(p, exp(log(10)*(**(m2.p)))*(**m1.p));
                         break;
                 }
                 del(&m1);
@@ -705,7 +710,10 @@ void print_var(struct var_struct * p)
         return;
     }
     else if(is_single_var(p)) {
-        snprintf(buf, 1000, "%lf\n", **(p->p));
+        if(fabs(**(p->p))>1e7||fabs(**(p->p))<1e-3)
+            snprintf(buf, 1000, "%le\n", **(p->p));
+        else
+            snprintf(buf, 1000, "%lf\n", **(p->p));
         outline(buf);
         return;
     }
@@ -713,7 +721,10 @@ void print_var(struct var_struct * p)
         if(i==0) outline("[");
         else outline(" ");
         for(j=0;j<p->width;j++) {
-            snprintf(buf, 1000, "%lf", p->p[i][j]);
+            if(fabs(p->p[i][j])>1e7||fabs(**(p->p))<1e-3)
+                snprintf(buf, 1000, "%le", p->p[i][j]);
+            else
+                snprintf(buf, 1000, "%lf", p->p[i][j]);
             outline(buf);
             if(j<p->width-1) outline(" ");
         }
