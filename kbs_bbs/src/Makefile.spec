@@ -1,5 +1,6 @@
 # The home directory for the user 'bbs'
 BBSHOME=/home0/bbs
+BBSSITE=smth
 
 # The uid for the user 'bbs'
 BBSUID=9999
@@ -10,7 +11,7 @@ OS_DEF   = -DAIX -DSYSV
 
 CC       = gcc
 #CC       = cc
-CFLAGS   = -W -g -O6 -Ilibesmtp
+CFLAGS   = -W -g -Ilibesmtp
 #CFLAGS   = -g -O3 -qstrict -qcompact -qarch=ppc -Ilibesmtp
 #LIBS     = -lbsd -lcrypt
 #CFLAGS   = -O3

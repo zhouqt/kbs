@@ -26,8 +26,6 @@
 #include <math.h>
 #include <sys/file.h>
 
-#define BBSHOME "/home/system/bbs"
-
 char host1[100][40], host2[100][40], ip[100][40];
 int port[100], counts= 0;
 char str[]= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";

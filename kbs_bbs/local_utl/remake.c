@@ -4,7 +4,6 @@
 #include        <dirent.h>
 #include        <limits.h>
 #include        "bbs.h"
-#define BBSHOME "/home/bbs"
 #define TRUE  1
 #define FALSE 0
 

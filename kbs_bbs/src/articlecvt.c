@@ -23,7 +23,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <sys/stat.h>
-
+#include "struct.h"
 
 #define MAXSTRLEN 8192
 #define STRLEN 80
@@ -36,20 +36,10 @@
 #define HEADER "BBS"NAME_BBS_CHINESE"站∶讨论区"
 #define FOOTER "BBS"NAME_BBS_CHINESE"站∶讨论区"  
 
-
-typedef struct fileheader { /* This structure is used to hold data in */
-    char filename[STRLEN];          /* the DIR files */
-    char owner[STRLEN];
-    char title[STRLEN];
-    unsigned level;
-    unsigned char accessed[12];   /* struct size = 256 bytes */
-} fileheader;
-
 /* Leeward 98.08.28: Do not process those boards not public */
 #define XBOARDNUM 6
 char Xboard[XBOARDNUM][24] = { "deleted", "junk", "syssecurity", "Registry",
                                "sys_discuss", "Filter"};
-
 int
 main(int argc, char **argv)
 {

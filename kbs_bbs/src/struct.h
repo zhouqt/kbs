@@ -74,15 +74,14 @@ struct boardheader {             /* This structure is used to hold data in */
         unsigned char accessed[ 12 ];
 };
 
-struct fileheader {             /* This structure is used to hold data in */
+typedef struct fileheader {             /* This structure is used to hold data in */
         char filename[STRLEN];     /* the DIR files */
         char owner[STRLEN-4];
         long ldReadCount;     /* 阅读计数 Luzi 99/01/13 减少了owner 4个字节 */
         char title[STRLEN];
         unsigned level;
         unsigned char accessed[ 12 ];   /* struct size = 256 bytes */
-} ;
-typedef struct fileheader fileheader;
+} fileheader;
 
 struct shortfile {               /* used for caching files and boards */
         char filename[STRLEN];      /* also will do for mail directories */

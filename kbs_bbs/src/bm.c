@@ -23,7 +23,8 @@
 */
 
 #include "bbs.h"
-#include "time.h"
+#include <time.h>
+#include <ctype.h>
 
 extern cmpbnames();
 
@@ -270,19 +271,26 @@ char *direct ;
         }
 
     while (1) {
+    	char querybuf[0xff];
 Here:
-        clear();
+	clear();
         count = listdeny(0);
         if (count>0 && count<20)/*Haohmaru.12.18,¿´ÏÂÒ»ÆÁ*/
-            getdata(1,0,"(A)Ôö¼Ó (D)É¾³ı or (E)Àë¿ª [E]: ",ans,7,DOECHO,NULL,YEA);
-        else if(count>20)
-            getdata(1,0,"(A)Ôö¼Ó (D)É¾³ı (N)ºóÃæµÚNÆÁ or (E)Àë¿ª [E]: ", ans, 7, DOECHO, NULL,YEA);
-        else
-            getdata(1,0,"(A)Ôö¼Ó or (E)Àë¿ª [E]: ",ans,7,DOECHO,NULL,YEA);
-        if (*ans == 'A' || *ans == 'a') {
+	    snprintf(querybuf,0xff,"(O)Ôö¼Ó%s (A)Ôö¼Ó (D)É¾³ı or (E)Àë¿ª [E]: ",fileinfo->owner);
+	else if (count>20)
+	    snprintf(querybuf, 0xff, "(O)Ôö¼Ó%s (A)Ôö¼Ó (D)É¾³ı (N)ºóÃæµÚNÆÁ or (E)Àë¿ª [E]: ",fileinfo->owner);
+	else 
+	    snprintf(querybuf, 0xff, "(O)Ôö¼Ó%s (A)Ôö¼Ó or (E)Àë¿ª [E]: ",fileinfo->owner);
+
+        getdata(1,0, querybuf, ans,7,DOECHO,NULL,YEA);
+    *ans=(char)toupper((int)*ans);
+    
+	if (*ans == 'A' || *ans == 'O' ) {
             struct userec saveuser;
             move(1,0);
-            usercomplete("Ôö¼ÓÎŞ·¨ POST µÄÊ¹ÓÃÕß: ", uident);
+            if (*ans=='A')
+		    	usercomplete("Ôö¼ÓÎŞ·¨ POST µÄÊ¹ÓÃÕß: ", uident);
+		    else strncpy(uident, fileinfo->owner, STRLEN-4);
             /*Haohmaru.99.4.1,Ôö¼Ó±»·âIDÕıÈ·ĞÔ¼ì²é*/
             if(!(id = searchuser(uident)))  /* change getuser -> searchuser , by dong, 1999.10.26 */
             {
@@ -380,7 +388,7 @@ Here:
                     unlink(filename);
                 }
             }
-        } else if ((*ans == 'D' || *ans == 'd') && count) {
+        } else if ((*ans == 'D' ) && count) {
             move(1,0);
             /*           namecomplete("É¾³ıÎŞ·¨ POST µÄÊ¹ÓÃÕß: ", uident);by Haohmaru.99.4.1.ÕâÖÖÉ¾³ı·¨»áÎóÉ¾Í¬×ÖÄ¸¿ªÍ·µÄID
             	     usercomplete("É¾³ıÎŞ·¨ POST µÄÊ¹ÓÃÕß: ", uident);Haohmaru.faint...Õâ¸öº¯ÊıÒ²»á³ö´í£,±ÈÈç·âµÄÊ±ºòID½ĞUSAleader,ºóÀ´ID±»É¾£¬ÓĞÈËÓÖ×¢²áÁË¸öusaleader,ÓÚÊÇ¾Í½â²»ÁË,´óĞ¡Ğ´ÒıÆğµÄ£¬Boy°å¾Í³öÏÖ¹ıÕâÖÖÇé¿ö£¬ËùÒÔ¸Ä³ÉÏÂÃæµÄ¡£

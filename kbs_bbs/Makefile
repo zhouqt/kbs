@@ -105,8 +105,8 @@ bbstest: $(BBSLIB) $(OTHERS) newmain_single.o newio.o newterm.o convcode.o
 
 bbspost: bbspost.o $(BBSLIB) smth.o 
 	gcc -DDONT_HAVE_TM_GMTOFF $(OS_DEF) -DLEEWARD_X_RECORD -o bbspost bbspost.o smth.o $(BBSLIB) $(LIBS)
-	#cp -f bbspost $(BBSHOME)/bin
-	#chmod 6755 $(BBSHOME)/bin/bbspost
+	cp -f bbspost $(BBSHOME)/bin
+	chmod 6755 $(BBSHOME)/bin/bbspost
 
 lint: $(LNFILES)
 	lint -abh $(LNFILES)
@@ -116,7 +116,7 @@ newpop3.o: newpop3.c
 	
 newpop3d: newpop3.o $(BBSLIB) smth.o
 	$(CC) $(CFLAGS) -o newpop3d $(SITE_DEF) $(DEFINES) newpop3.o smth.o $(BBSLIB) $(LIBS)
-	#cp -f newpop3d $(BBSHOME)/bin
+	cp -f newpop3d $(BBSHOME)/bin
 #	$(CC) $(CFLAGS) -o pop3d $(SITE_DEF) -D_BSD pop3d.c
 
 thread: thread.c record.c
@@ -134,7 +134,7 @@ $(BBSLIB) : $(BBSLIBOBJS)
 	
 chatd: station.c 
 	$(CC) -g $(CFLAGS) $(SITE_DEF) $(DEFINES) -o chatd $(OS_DEF) station.c $(LIBS)
-#	cp -f chatd $(BBSHOME)/bin
+	cp -f chatd $(BBSHOME)/bin
 
 
 ve: edit.o term.o screen.o io.o editor.c

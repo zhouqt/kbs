@@ -276,7 +276,7 @@ extern int Net_Sleep(int);
 #endif
 
 #define NULL 0
-#define UNUSED_ARG(a) {if (&a); /* null */ }
+#define UNUSED_ARG(a) {(a)=(a); /* null */ }
 
 #ifdef OS_LACK_SOCKLEN
 typedef size_t socklen_t;
