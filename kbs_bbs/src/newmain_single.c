@@ -586,6 +586,12 @@ void login_query()
             if (!convcode)
                 convcode = !(currentuser->userdefine & DEF_USEGB);      /* KCN,99.09.05 */
 
+            if(check_ip_acl(currentuser->userid, fromhost)) {
+                prints("¸Ã ID ²»»¶Ó­À´×Ô %s µÄÓÃ»§£¬byebye!", fromhost);
+                oflush();
+                sleep(1);
+                exit(1);
+            }
             getdata(0, 0, "\033[1m[37m"PASSWD_PROMPT": [m", passbuf, 39, NOECHO, NULL, true);
 #ifdef NINE_BUILD
             if(!strcmp(fromhost, "10.9.0.1")||!strcmp(fromhost, "10.9.30.133")) {
@@ -673,12 +679,6 @@ void login_query()
     }
 #endif
     multi_user_check();
-    if(check_ip_acl(currentuser->userid, fromhost)) {
-        prints("¸Ã ID ²»»¶Ó­À´×Ô %s µÄÓÃ»§£¬byebye!", fromhost);
-        oflush();
-        sleep(1);
-        exit(1);
-    }
     alarm(0);
     signal(SIGALRM, SIG_IGN);   /*Haohmaru.98.11.12 */
     term_init();
