@@ -580,10 +580,10 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
         return -1;
     }
 
-    if (save_msgtext(uident, &head, msgbuf) < 0)
+    if (save_msgtext(uident, &head, msgstr) < 0)
         return -2;
     if (strcmp(currentuser->userid, uident)) {
-        if (save_msgtext(currentuser->userid, &head2, msgbak) < 0)
+        if (save_msgtext(currentuser->userid, &head2, msgstr) < 0)
             return -2;
     }
     if (uentp->pid != 1 && kill(uin->pid, SIGUSR2) == -1) {
