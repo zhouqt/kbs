@@ -204,10 +204,10 @@
 	else
 	{
 		$board_list_error=FALSE;
-		html_init("gb2312","","",1);
 		if (isset($_GET["board"]))
 			$board = $_GET["board"];
 		else{
+		        html_init("gb2312","","",1);
 			html_error_quit("错误的讨论区");
 			$board_list_error=TRUE;
 			}
@@ -215,11 +215,13 @@
 		$brdarr = array();
 		$brdnum = bbs_getboard($board, $brdarr);
 		if ($brdnum == 0){
+		        html_init("gb2312","","",1);
 			html_error_quit("错误的讨论区");
 			$board_list_error=TRUE;
 			}
 		$usernum = $currentuser["index"];
 		if (bbs_checkreadperm($usernum, $brdnum) == 0){
+		        html_init("gb2312","","",1);
 			html_error_quit("错误的讨论区");
 			$board_list_error=TRUE;
 			}
@@ -229,11 +231,21 @@
 			         Header("Location: bbsboa.php?group=" . $i . "&group2=" . $brdnum);
 			         return;
                                 }
+		        html_init("gb2312","","",1);
 			html_error_quit("错误的讨论区");
 			$board_list_error=TRUE;
 		}
+
 		if (!isset($default_dir_mode))
 			$default_dir_mode = $dir_modes["NORMAL"];
+                $isnormalboard=bbs_normalboard($board);
+
+		if ($isnormalboard&&($default_dir_mode == $dir_modes["NORMAL"])) {
+                        $dotdirname=BBS_HOME . "/boards/" . $brdarr["NAME"] . "/.DIR";
+       			if (cache_header("public, must-revalidate",filemtime($dotdirname),10))
+               			return;
+               	}
+		html_init("gb2312","","",1);
 		$total = bbs_countarticles($brdnum, $default_dir_mode);
 		if ($total <= 0)
 		    if (strcmp($currentuser["userid"], "guest") != 0){
@@ -245,6 +257,7 @@
 			$board_list_error=TRUE;
 			}
         	bbs_set_onboard($brdnum,1);
+
 		$artcnt = 20;
 		if (isset($_GET["page"]))
 			$page = $_GET["page"];
