@@ -100,7 +100,7 @@ text-indent:100pt;
 .f2{
 font-size:14px;
 font-weight:bold;
-TEXT-DECORATION: none
+TEXT-DECORATION: none;
 color:#FF6600;
 }
 hr{
@@ -273,21 +273,29 @@ font-family:"Georgia","TimesNewRoman","Times","serif"
 {
 font-size:14px;
 line-height:24px;
+word-wrap:normal;
+word-break:normal;
 }
 .contentwithhtml
 {
 font-size:14px;
+word-wrap:normal;
+word-break:normal;
 }
 .indexcontent
 {
 font-size:12px;
 line-height:20px;
 color:#333333;
+word-wrap:normal;
+word-break:normal;
 }
 .indexcontentwithhtml
 {
 color:#333333;
 font-size:12px;
+word-wrap:normal;
+word-break:normal;
 }
 .bc1
 {
@@ -378,7 +386,4 @@ A.gensmall:hover {
 INPUT.ubbbutton {
 	FONT-SIZE: 12px; COLOR: #000000; FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif; BACKGROUND-COLOR: #efefef
 }
-A:link {COLOR: #006699; TEXT-DECORATION: none}
-A:active {COLOR: #006699; TEXT-DECORATION: underline}
-A:visited {COLOR: #5493b4; TEXT-DECORATION: none}
-A:hover {COLOR: #dd6900; TEXT-DECORATION: underline}
+
