@@ -129,13 +129,13 @@ struct usermemo {
 
 struct friends {
     char id[13];
-    char exp[15];
+    char exp[LEN_FRIEND_EXP];
 #ifdef FRIEND_MULTI_GROUP
     int groupid;
 #endif
 };
 struct friends_info {
-    char exp[15];
+    char exp[LEN_FRIEND_EXP];
 };
 struct friends_group {
     char name[15];

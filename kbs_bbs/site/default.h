@@ -273,6 +273,10 @@
 #define DAY_DELETED_CLEAN	97
 #endif
 
+#ifndef LEN_FRIEND_EXP		/*如果从FB2k升级到smth,这里请设置为40 */
+#define LEN_FRIEND_EXP		13
+#endif
+
 #ifndef SEC_DELETED_OLDHOME
 #define SEC_DELETED_OLDHOME	2592000 /* 3600*24*30，注册新用户如果存在这个用户的目录，保留时间 */
 #endif
