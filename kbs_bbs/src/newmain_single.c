@@ -364,6 +364,91 @@ void system_abort()
     return;
 }
 
+#define MAXLIST 1000
+#define CON_THRESHOLD 100.0/60/60
+#define CON_THRESHOLD2 30.0
+
+int check_ID_lists(char * id)
+{
+    int i,j,k;
+    FILE* fp;
+    struct stat st;
+    int fd;
+    char fn[80];
+    int found=0,min=0,ret=0;
+    time_t now;
+    struct id_struct{
+        char id[IDLEN+2];
+        time_t first,last;
+        int t;
+    } ids[MAXLIST];
+
+    sprintf(fn, ".IDlists");
+    if(stat(fn,&st)==-1) {
+        memset(ids, 0, sizeof(struct id_struct)*MAXLIST);
+        fd=open(fn, O_WRONLY|O_CREAT, 0600);
+        write(fd, ids, sizeof(struct id_struct)*MAXLIST);
+        close(fd);
+    }
+    now = time(0);
+    if(id[0]==0) return 0;
+
+    fd = open(fn, O_RDWR, 0600);
+    ldata.l_type = F_WRLCK;
+    ldata.l_whence = 0;
+    ldata.l_len = 0;
+    ldata.l_start = 0;
+    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+        bbslog("user", "%s", "reclock err");
+        close(fd);
+        return 0;              /* lock error*/
+    }
+    read(fd, ids, sizeof(struct id_struct)*MAXLIST);
+
+    for(i=0;i<MAXLIST;i++) {
+        if((double)(now-ids[i].last)>60*60) {
+            ids[i].id[0]=0;
+        }
+        if(!strncmp(ids[i].id, id, IDLEN)){
+            if((double)(now-ids[i].last)<=CON_THRESHOLD2) {
+                fp=fopen(".IDdenys", "a");
+                if(fp){
+                    fprintf(fp, "0 %ld %s %d\n", (unsigned int)now, id, ids[i].t);
+                    fclose(fp);
+                }
+                ret = 1;
+            }
+            found=1;
+            ids[i].last = now;
+            ids[i].t++;
+            if(ret==0)
+            if(ids[i].t>=10&&(ids[i].t/(double)(ids[i].last-ids[i].first)>=CON_THRESHOLD)) {
+                fp=fopen(".IDdenys", "a");
+                if(fp){
+                    fprintf(fp, "1 %ld %s %d\n", (unsigned int)now, id, ids[i].t);
+                    fclose(fp);
+                }
+                ret = 1;
+            }
+            break;
+        }
+        if(ids[i].last<ids[min].last) min = i;
+    }
+    if(!found) {
+        strcpy(ids[min].ip, id);
+        ids[min].first = now;
+        ids[min].last = now;
+        ids[min].t = 1;
+    }
+
+    lseek(fd, 0, SEEK_SET);
+    write(fd, ids, sizeof(struct id_struct)*MAXLIST);
+    ldata.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
+    close(fd);
+    return ret;
+}
+
 void login_query()
 {
     char uid[STRLEN], passbuf[40], *ptr;
@@ -506,6 +591,13 @@ void login_query()
 #else
     getdata(0, 0, "\n按 [RETURN] 继续", genbuf, 10, NOECHO, NULL, true);
 #endif
+
+    if(check_ID_lists(currentuser->userid)) {
+        prints("你的连接频率过高，byebye!");
+        oflush();
+        sleep(1);
+        exit(1);
+    }
 
 /* init user data */
     read_userdata(currentuser->userid, &curruserdata);
