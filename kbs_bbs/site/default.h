@@ -408,7 +408,7 @@ bigger mailbox. --stephen 2001.10.31*/
 #endif //permission define NUMPERMS
 
 
-#ifndef TDFINE
+#ifndef TDEFINE
 #define TDEFINE(x) ((x)?(tmpuser)&(x):1)
 
 /* 用户自订参数定义 */
