@@ -211,7 +211,7 @@ class sysVoteAdmin
 					if($j != 0) $res .= ",";
 					$res .= $voteres[$i][$j+1];
 					$ann .= "\n选项 ".($j + 1)."：".$vote[probs][$i][etems][$j].
-						"    票数：".$voteres[$i][$j+1]."  约占".((int)(($voteres[$i][$j+1] / $voteUserNum) + 0.5 )*100)."%";
+						"    票数：".$voteres[$i][$j+1]."  约占".(((int)($voteres[$i][$j+1]*1000 / $voteUserNum) ) / 10)."%";
 				}// j 循环  选项
 				if($vote[probs][$i][type]==2 || $vote[probs][$i][type]==3)
 				{

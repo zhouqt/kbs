@@ -154,8 +154,10 @@
 </center>
 <?php
 			echo "<p align=right>";
-			if($_GET["pno"] > 1) echo "<a href=\"".$_SERVER["PHP_SELF"]."?pno=".($_GET["pno"]-1)."\">上一页</a>\n";
-			if(count($votes) == $sysVoteConfig["PAGESIZE"]) echo "<a href=\"".$_SERVER["PHP_SELF"]."?pno=".($_GET["pno"]+1)."\">下一页</a>\n";
+			$pno = $_GET["pno"];
+			if($pno < 1) $pno = 1;
+			if( $pno > 1) echo "<a href=\"".$_SERVER["PHP_SELF"]."?pno=".($pno-1)."\">上一页</a>\n";
+			if(count($votes) == $sysVoteConfig["PAGESIZE"]) echo "<a href=\"".$_SERVER["PHP_SELF"]."?pno=".($pno+1)."\">下一页</a>\n";
 			echo "</p>";	
 			
 	}
