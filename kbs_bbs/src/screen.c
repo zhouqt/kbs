@@ -724,7 +724,7 @@ void rscroll()
 void noscroll()
 {
     int i;
-    struct screenline bp[30];
+    struct screenline bp[100];
     for(i=0;i<scr_lns;i++)
         memcpy(bp+i,big_picture+(i+roll)%scr_lns,sizeof(struct screenline));
     for(i=0;i<scr_lns;i++)
