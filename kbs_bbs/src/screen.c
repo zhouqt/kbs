@@ -640,7 +640,6 @@ int n;
                                     x=atoi(s2)-1;
                                     if(y>=0&&y<scr_lns&&x>=0&&x<scr_cols) {
                                         DO_MODIFY;
-                                        DO_CRLF;
                                         good_move(y,x);
                                     }
                                     str+=i+1;
