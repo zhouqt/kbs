@@ -18,7 +18,7 @@ SITE_DEF = -DINVISIBLE -DSMTH -DNJU_WWWBBS -DBBS2WWW
 #DEFINES = $(OS_DEF) $(SITE_DEF)
 
 
-DIRS = lib src
+DIRS = lib phplib src
 
 #.c.o:   ;   $(CC) $(CFLAGS) $(DEFINES) -c $*.c
 
