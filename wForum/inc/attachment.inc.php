@@ -42,6 +42,8 @@ function get_mimetype($name)
 		return "text/xml";
 	if (strcasecmp($dot, ".swf") == 0)
 		return "application/x-shockwave-flash";
+	if (strcasecmp($dot, ".pdf") == 0)
+	    return "application/pdf";
 	return "application/octet-stream";
 }
 
