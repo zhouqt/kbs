@@ -1,0 +1,68 @@
+FB2K -> SMTH 1.2 转化
+
+NOTE: 在进行正式的转化之前，最好找一个环境相似的机器做实验，也就是把正式站点的
+数据全部拷贝到测试机器上多做几遍转化的实验。尤其对于数据较多的站点，转化过程中
+很难说出现问题，建议在测试机器上至少能够流畅的转换两遍全站数据以后再进行正式的
+数据转换。
+
+FB2K 转换到 SMTH 1.2 主要有如下文件需要转化，本文将依次描述转化的步骤和要点。
+整个转化过程主要牵涉到如下文件:
+.PASSWDS
+.BOARDS
+版面文件的 .DIR
+用户目录的 .DIR
+可能包含 (收藏夹文件转化)
+
+.PASSWDS文件的转化：
+    由于在FB2k漫长的生命周期里面出了 N 个版本，每个版本之间的数据结构都有或多
+或少的一点差异，所以在第一步就是要严格的校验转化程序中老版本的数据结构是否和原
+来的(FB2K)的数据结构相符合，尤其是一些用宏来定义的变量，一定要仔细校验，或者干
+脆改成数值。下面转化.DIR文件的时候同样要注意这点。
+    转化.PASSWDS的程序是contrib/fb2k2smth/convpasswd.c
+    转化.PASSWDS不可缺少的一步是用户权限和用户自定义参数的转化，smth 中提供了
+转化这些参数的的程序chlevel，但是实际上转化这些参数也就是若干个 ~ | & 操作，可
+以直接放到convpasswd里面一并进行的。如果放到convpasswd里面的话需要注意的是在转
+化用户参数的时候一定要加上
+    user->flags |= CURSOR_FLAG;
+    user->flags &= ~GIVEUP_FLAG;
+前者不加上会导致用户无法显示telnet主菜单，后者是戒网标志，就不用多说了。
+
+.BOARDS的转化：
+    转化 .BOARDS的程序是 contrib./fb2k2smth/convboards.c 
+    通话的第一步同样是详细检查结构体的对应。在smth发布的版面转化程序里面包含了
+版面文章索引的转化程序，但是由于版面文章较多，和版面所以同步处理的话处理时间较
+长，不利于调试，因此建议采用local_util/strip_fh.c来统一处理，并且采用
+strip_fh.c可以把用户邮件的索引一并处理。
+
+    在处理用户邮件的时候需要注意的是，有的FB版本把邮件大小写到了邮件title的后4
+个字节里面了。这个可以顺手改过来一并处理了，同样需要注意的是在使用 strip_fh 转
+化mail之前，需要用最新的.PASSWD。
+
+版面转化文章以后需要进行两步处理才能正常显示，一个是计算版面文章的大小，一个是
+生成同主题索引。计算文章大小的程序是 local_util/ calc_effsize，这里需要提醒的
+是smth发布的calc_effsize在计算附件大小的时候可能存在BUG导致死循环，代码段如下：
+
+                    if (NULL != (checkattach(p, k, &attach_len, &attach))) {
+                        k -= (attach - p) + attach_len;
+                        p = attach + attach_len;
+                        continue;
+
+考虑到原来fb2k的文章都不会包含附件，可以直接注释之。
+
+生成同主题索引的程序是 local_util/gen_title。
+一定要先计算文章大小后gen_title，否则WEB同主题模式无法显示大小。
+
+好友名单的转化，可以直接修改default.h中#define LEN_FRIEND_EXP，代码中有注释，
+不要忘记这一点就行。
+
+重新计算用户签名档用 local_util/ recalc_signum
+
+用户收藏加的转换：
+    直接调用 contrib/fb2k2smth/chfavbrd就可，应该不需要修改任何代码。
+
+个人文集的转化：
+    如果想把个人文集转化成SMTH样式的blog，可以通过 contrib/ conv_pc4fb2k转化，
+使用conv_pc4fb2k注意设置程序里面的两个参数，一个是个人文集的起始路径，一个是把
+目录转化成blog的topic的层次，也就是把前多少层的目录全部转化成topic，并把相应目
+录下面的文章链接上去。
+

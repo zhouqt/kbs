@@ -94,16 +94,31 @@ int checkpasswd2(const char *passwd, const struct userec *user)
     }
 }
 
+#ifdef FREE
+
+char *crypt();
+#define OLDPWLEN 35
+
+#else
+
+#define OLDPWLEN 14
+
+#endif
+
 int checkpasswd(const char *passwd, const char *test)
 {
     char *crypt1(char *buf, char* outputbuff, char *salt);
 
-    char pwbuf[14];
+    char pwbuf[OLDPWLEN];
     char buff[20];
     char *pw;
 
 /*    return 1; */
-    strncpy(pwbuf, test, 14);
+    strncpy(pwbuf, test, OLDPWLEN);
+#ifdef FREE
+    pw = crypt(pwbuf, passwd);
+#else
     pw = crypt1(pwbuf, buff, (char *) passwd);
+#endif
     return (!strcmp(pw, passwd));
 }

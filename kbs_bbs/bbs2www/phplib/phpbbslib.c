@@ -264,8 +264,8 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_getuserscore, NULL)
 		PHP_FE(bbs_setuserscore, NULL)
 		PHP_FE(bbs_adduserscore, NULL)
-		PHP_FE(bbs_saveuserdata, NULL)
 #endif
+		PHP_FE(bbs_saveuserdata, NULL)
 		PHP_FE(bbs_checkuserpasswd, NULL)
 		PHP_FE(bbs_setuserpasswd, NULL)
 		PHP_FE(bbs_getuserlevel, NULL)
@@ -3895,7 +3895,7 @@ static PHP_FUNCTION(bbs_checkpostperm)
 
 static int getattachtmppath(char *buf, size_t buf_len)
 {
-#if USE_TMPFS==1
+#if USE_TMPFS==1 && ! defined(FREE)
     /* setcachehomefile() 不接受 buf_len 参数，先直接这么写吧 */
     snprintf(buf,buf_len,"%s/home/%c/%s/%d/upload",TMPFSROOT,toupper(getCurrentUser()->userid[0]),
 			getCurrentUser()->userid,getcurrentuinfo_num());
@@ -5808,8 +5808,6 @@ static PHP_FUNCTION(bbs_fillidinfo)
     RETURN_LONG(0);
 }
 
-#ifdef HAVE_WFORUM
-
 static PHP_FUNCTION(bbs_saveuserdata)
 {
     char*   userid,
@@ -5953,8 +5951,6 @@ static PHP_FUNCTION(bbs_saveuserdata)
     RETURN_LONG(0);
 
 }
-
-#endif
 
 #ifdef HAVE_WFORUM
 /**

@@ -1,0 +1,913 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.5	//
+ACLOCAL	Makefile	/^ACLOCAL = ${SHELL} \/home\/bbs\/src\/smth_bbs\/missing --run aclocal-1.6$/;"	m
+AMTAR	Makefile	/^AMTAR = ${SHELL} \/home\/bbs\/src\/smth_bbs\/missing --run tar$/;"	m
+AM_CFLAGS	Makefile	/^AM_CFLAGS = -DINVISIBLE -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME -I$(top_builddir)\/src$/;"	m
+ANONYMOUS_DEFAULT	lilac.h	120;"	d
+ARTICLE_TITLE_LEN	lilac.h	297;"	d
+AS	Makefile	/^AS = @AS@$/;"	m
+ATTACHTMPPATH	lilac.h	354;"	d
+AUTOCONF	Makefile	/^AUTOCONF = ${SHELL} \/home\/bbs\/src\/smth_bbs\/missing --run autoconf$/;"	m
+AUTOHEADER	Makefile	/^AUTOHEADER = ${SHELL} \/home\/bbs\/src\/smth_bbs\/missing --run autoheader$/;"	m
+AUTOMAKE	Makefile	/^AUTOMAKE = ${SHELL} \/home\/bbs\/src\/smth_bbs\/missing --run automake-1.6$/;"	m
+AWK	Makefile	/^AWK = gawk$/;"	m
+BBSGID	lilac.h	51;"	d
+BBSSITE	Makefile	/^BBSSITE = free$/;"	m
+BBSUID	lilac.h	50;"	d
+BBS_FULL_NAME	lilac.h	105;"	d
+BBS_OLDSTRUCT_H	fb2kstruct.h	6;"	d
+BBS_PAGE_SIZE	lilac.h	55;"	d
+BBS_SERVICE_DICT	lilac.h	24;"	d
+BCACHE	oldstruct.h	/^struct BCACHE {$/;"	s
+BLESS_BOARD	lilac.h	62;"	d
+BM	convboards.c	/^        char BM[ 60 - 1];$/;"	m	struct:oldboardheader	file:
+BM	fb2kstruct.h	/^    char BM[BM_LEN - 1];$/;"	m	struct:oldboardheader
+BM	oldstruct.h	/^        char BM[ BM_LEN - 1];$/;"	m	struct:boardheader
+BM	oldstruct.h	/^        char BM[ BM_LEN - 1];$/;"	m	struct:shortfile
+BM_LEN	lilac.h	294;"	d
+BM_LEN	oldstruct.h	116;"	d
+BOARD_SHOW_ONLINE	lilac.h	358;"	d
+BUILD_PHP_EXTENSION	lilac.h	27;"	d
+CC	Makefile	/^CC = gcc$/;"	m
+CCDEPMODE	Makefile	/^CCDEPMODE = depmode=gcc3$/;"	m
+CCLD	Makefile	/^CCLD = $(CC)$/;"	m
+CDPATH	Makefile	/^am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd$/;"	m
+CFLAGS	Makefile	/^CFLAGS =  -DLINUX  -I\/usr\/local\/include -g$/;"	m
+CHAT_MAIN_ROOM	lilac.h	127;"	d
+CHAT_MSG_NOT_OP	lilac.h	129;"	d
+CHAT_MSG_QUIT	lilac.h	132;"	d
+CHAT_OP	lilac.h	133;"	d
+CHAT_PARTY	lilac.h	135;"	d
+CHAT_ROOM_NAME	lilac.h	130;"	d
+CHAT_SERVER	lilac.h	131;"	d
+CHAT_SYSTEM	lilac.h	134;"	d
+CHAT_TOPIC	lilac.h	128;"	d
+CHECK_IP_LINK	lilac.h	356;"	d
+CHINESE_CHARACTER	lilac.h	19;"	d
+CLEANFILES	Makefile	/^CLEANFILES = $/;"	m
+CNBBS_TOPIC	lilac.h	20;"	d
+COMMEND_ARTICLE	lilac.h	361;"	d
+COMPILE	Makefile	/^COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \\$/;"	m
+CONFIG_AR	Makefile	/^CONFIG_AR = ar$/;"	m
+CONFIG_CLEAN_FILES	Makefile	/^CONFIG_CLEAN_FILES =$/;"	m
+CONFIG_HAVE_WWW	Makefile	/^CONFIG_HAVE_WWW = 1$/;"	m
+CONFIG_HEADER	Makefile	/^CONFIG_HEADER = $(top_builddir)\/config.h$/;"	m
+CONV_PASS	convpasswd.c	13;"	d	file:
+CONV_PASS	lilac.h	10;"	d
+CPPFLAGS	Makefile	/^CPPFLAGS = $/;"	m
+CXX	Makefile	/^CXX = g++$/;"	m
+DAY_DELETED_CLEAN	lilac.h	89;"	d
+DEFAULTBOARD	lilac.h	59;"	d
+DEFAULT_INCLUDES	Makefile	/^DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)$/;"	m
+DEFAULT_NICK	lilac.h	137;"	d
+DEFINE	lilac.h	221;"	d
+DEFS	Makefile	/^DEFS = -DHAVE_CONFIG_H$/;"	m
+DEF_ACBOARD	lilac.h	233;"	d
+DEF_ALLMSG	lilac.h	229;"	d
+DEF_CHCHAR	lilac.h	256;"	d
+DEF_CIRCLE	lilac.h	239;"	d
+DEF_COLOR	lilac.h	232;"	d
+DEF_EDITMSG	lilac.h	235;"	d
+DEF_ENDLINE	lilac.h	234;"	d
+DEF_FIRSTNEW	lilac.h	240;"	d
+DEF_FRIENDCALL	lilac.h	228;"	d
+DEF_FRIENDMSG	lilac.h	230;"	d
+DEF_HIDEIP	lilac.h	260;"	d
+DEF_HIGHCOLOR	lilac.h	253;"	d
+DEF_IGNOREMSG	lilac.h	246;"	d
+DEF_INNOTE	lilac.h	244;"	d
+DEF_LOGFRIEND	lilac.h	241;"	d
+DEF_LOGININFORM	lilac.h	251;"	d
+DEF_LOGOUT	lilac.h	242;"	d
+DEF_MAILMSG	lilac.h	250;"	d
+DEF_NATIONTOP10	lilac.h	259;"	d
+DEF_NEWPOST	lilac.h	238;"	d
+DEF_NORMALSCR	lilac.h	237;"	d
+DEF_NOTEPAD	lilac.h	243;"	d
+DEF_NOTMSGFRIEND	lilac.h	236;"	d
+DEF_OUTNOTE	lilac.h	245;"	d
+DEF_SHOWDETAILUSERDATA	lilac.h	257;"	d
+DEF_SHOWHOT	lilac.h	248;"	d
+DEF_SHOWREALUSERDATA	lilac.h	258;"	d
+DEF_SHOWSCREEN	lilac.h	252;"	d
+DEF_SHOWSTATISTIC	lilac.h	247;"	d
+DEF_SOUNDMSG	lilac.h	231;"	d
+DEF_TITLECOLOR	lilac.h	249;"	d
+DEF_UNREADMARK	lilac.h	254;"	d
+DEF_USEGB	lilac.h	255;"	d
+DEPDIR	Makefile	/^DEPDIR = .deps$/;"	m
+DEP_FILES	Makefile	/^DEP_FILES = .\/$(DEPDIR)\/calc_effsize.Po \\$/;"	m
+DISTFILES	Makefile	/^DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)$/;"	m
+DIST_COMMON	Makefile	/^DIST_COMMON = README Makefile.am Makefile.in$/;"	m
+DIST_SOURCES	Makefile	/^DIST_SOURCES = calc_effsize.c chfavbrd.c chlevel.c convboards.c \\$/;"	m
+DLLTOOL	Makefile	/^DLLTOOL = @DLLTOOL@$/;"	m
+DOTIMEOUT	lilac.h	42;"	d
+ECHO	Makefile	/^ECHO = echo$/;"	m
+ETAGS	Makefile	/^ETAGS = etags$/;"	m
+ETAGSFLAGS	Makefile	/^ETAGSFLAGS =$/;"	m
+EXEEXT	Makefile	/^EXEEXT = $/;"	m
+EXTRA_CLEAN	Makefile	/^EXTRA_CLEAN = $/;"	m
+EXTRA_DIST	Makefile	/^EXTRA_DIST = fb2kstruct.h README$/;"	m
+EXTRA_PROGRAMS	Makefile	/^EXTRA_PROGRAMS = $/;"	m
+EXTRA_PROGRAMS	Makefile	/^EXTRA_PROGRAMS =$/;"	m
+FAVORITES_NUM	fb2kstruct.h	72;"	d
+FB2000	lilac.h	33;"	d
+FILENAME_LEN	lilac.h	295;"	d
+FILTER	lilac.h	35;"	d
+FILTER_BOARD	lilac.h	60;"	d
+FOOTER_MOVIE	lilac.h	107;"	d
+Favorites	fb2kstruct.h	/^} Favorites;$/;"	t
+GET_MAILFILENAME	lilac.h	321;"	d
+GET_POSTFILENAME	lilac.h	320;"	d
+HAPPY_BBS	lilac.h	14;"	d
+HAS_MAILBOX_PROP	lilac.h	341;"	d
+HAS_PERM	lilac.h	220;"	d
+HAVE_BIRTHDAY	convpasswd.c	12;"	d	file:
+HAVE_BIRTHDAY	lilac.h	13;"	d
+HAVE_COLOR_DATE	lilac.h	15;"	d
+HAVE_FRIENDS_NUM	lilac.h	17;"	d
+HAVE_OWN_USERIP	lilac.h	365;"	d
+HAVE_REVERSE_DNS	lilac.h	18;"	d
+HAVE_TEMPORARY_NICK	lilac.h	16;"	d
+HAVE_TSINGHUA_INFO_REGISTER	lilac.h	25;"	d
+HAVE_WFORUM	lilac.h	31;"	d
+IDLE_TIMEOUT	lilac.h	47;"	d
+INSTALL	Makefile	/^INSTALL = \/usr\/bin\/install -c$/;"	m
+INSTALL_DATA	Makefile	/^INSTALL_DATA = ${INSTALL} -m 644$/;"	m
+INSTALL_HEADER	Makefile	/^INSTALL_HEADER = $(INSTALL_DATA)$/;"	m
+INSTALL_PROGRAM	Makefile	/^	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \\$/;"	m
+INSTALL_PROGRAM	Makefile	/^INSTALL_PROGRAM = ${INSTALL}$/;"	m
+INSTALL_PROGRAM_ENV	Makefile	/^	    echo "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'"` install$/;"	m
+INSTALL_SCRIPT	Makefile	/^INSTALL_SCRIPT = ${INSTALL}$/;"	m
+INSTALL_STRIP_FLAG	Makefile	/^	  INSTALL_STRIP_FLAG=-s \\$/;"	m
+INSTALL_STRIP_PROGRAM	Makefile	/^INSTALL_STRIP_PROGRAM = ${SHELL} $(install_sh) -c -s$/;"	m
+ISSUE_LOGIN	lilac.h	109;"	d
+ISSUE_LOGOUT	lilac.h	110;"	d
+LDADD	Makefile	/^LDADD = -lBBS -lsystem -L$(top_builddir)\/libBBS -L$(top_builddir)\/libsystem$/;"	m
+LDFLAGS	Makefile	/^LDFLAGS = $/;"	m
+LENGTH_ACBOARD_BUFFER	lilac.h	78;"	d
+LENGTH_ACBOARD_LINE	lilac.h	79;"	d
+LENGTH_FILE_BUFFER	lilac.h	77;"	d
+LENGTH_SCREEN_LINE	lilac.h	76;"	d
+LIBS	Makefile	/^LIBS =  -L\/usr\/lib -lz -L\/usr\/lib -L\/usr\/lib\/mysql -lmysqlclient -L\/usr\/lib -L\/lib -lpthread -L\/usr\/local\/lib -lesmtp -lbsd -ldl -lltdl$/;"	m
+LIBTOOL	Makefile	/^LIBTOOL = \/home\/bbs\/src\/smth_bbs\/wrapper.sh$/;"	m
+LIFE_DAY_LONG	lilac.h	83;"	d
+LIFE_DAY_NEW	lilac.h	86;"	d
+LIFE_DAY_NODIE	lilac.h	85;"	d
+LIFE_DAY_SUICIDE	lilac.h	87;"	d
+LIFE_DAY_SYSOP	lilac.h	84;"	d
+LIFE_DAY_USER	lilac.h	81;"	d
+LIFE_DAY_YEAR	lilac.h	82;"	d
+LILAC	lilac.h	6;"	d
+LINK	Makefile	/^LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \\$/;"	m
+LN_S	Makefile	/^LN_S = ln -s$/;"	m
+LOGIN_PROMPT	lilac.h	140;"	d
+LTCOMPILE	Makefile	/^LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \\$/;"	m
+MAIL2BOARD	lilac.h	21;"	d
+MAILOUT	lilac.h	22;"	d
+MAIL_BBSDOMAIN	lilac.h	98;"	d
+MAIL_MAILSERVER	lilac.h	99;"	d
+MANUAL_DENY	lilac.h	23;"	d
+MAXACTIVE	lilac.h	67;"	d
+MAXBOARD	lilac.h	66;"	d
+MAXCLUB	lilac.h	65;"	d
+MAXMAILLIST	oldstruct.h	231;"	d
+MAXUSERS	lilac.h	64;"	d
+MAX_CONTENT	oldstruct.h	244;"	d
+MAX_CONTENT_LENGTH	oldstruct.h	246;"	d
+MAX_GUEST_NUM	lilac.h	71;"	d
+MAX_GUEST_PER_IP	lilac.c	477;"	d	file:
+MAX_MAILGROUP_NUM	lilac.h	348;"	d
+MAX_MAILGROUP_USERS	lilac.h	349;"	d
+MAX_TEMPLATE	oldstruct.h	243;"	d
+MBP_FORCEDELETEMAIL	lilac.h	336;"	d
+MBP_MAILBOXSHORTCUT	lilac.h	337;"	d
+MBP_NUMS	lilac.h	339;"	d
+MBP_SAVESENTMAIL	lilac.h	335;"	d
+MONITOR_TIMEOUT	lilac.h	48;"	d
+MSG_ERR_USERID	lilac.h	139;"	d
+MYPASSLEN	fb2kstruct.h	8;"	d
+MY_ANONY_FLAG	convboards.c	29;"	d	file:
+MY_ANONY_FLAG	fb2kstruct.h	145;"	d
+MY_BBSHOME	convboards.c	8;"	d	file:
+MY_BOARDJUNK_FLAG	convboards.c	31;"	d	file:
+MY_DEF_ACBOARD	fb2kstruct.h	117;"	d
+MY_DEF_ALLMSG	fb2kstruct.h	113;"	d
+MY_DEF_CIRCLE	fb2kstruct.h	123;"	d
+MY_DEF_COLOR	fb2kstruct.h	116;"	d
+MY_DEF_DELDBLCHAR	fb2kstruct.h	136;"	d
+MY_DEF_EDITMSG	fb2kstruct.h	119;"	d
+MY_DEF_ENDLINE	fb2kstruct.h	118;"	d
+MY_DEF_FIRSTNEW	fb2kstruct.h	124;"	d
+MY_DEF_FRIENDCALL	fb2kstruct.h	112;"	d
+MY_DEF_FRIENDMSG	fb2kstruct.h	114;"	d
+MY_DEF_INNOTE	fb2kstruct.h	126;"	d
+MY_DEF_LOGFRIEND	fb2kstruct.h	125;"	d
+MY_DEF_LOGINFROM	fb2kstruct.h	131;"	d
+MY_DEF_LOGOUT	fb2kstruct.h	129;"	d
+MY_DEF_MAILMSG	fb2kstruct.h	128;"	d
+MY_DEF_MSGGETKEY	fb2kstruct.h	135;"	d
+MY_DEF_NEWPOST	fb2kstruct.h	122;"	d
+MY_DEF_NEWSTOP10	fb2kstruct.h	138;"	d
+MY_DEF_NOLOGINSEND	fb2kstruct.h	133;"	d
+MY_DEF_NORMALSCR	fb2kstruct.h	121;"	d
+MY_DEF_NOTEPAD	fb2kstruct.h	132;"	d
+MY_DEF_NOTMSGFRIEND	fb2kstruct.h	120;"	d
+MY_DEF_OUTNOTE	fb2kstruct.h	127;"	d
+MY_DEF_SEEWELC1	fb2kstruct.h	130;"	d
+MY_DEF_SOUNDMSG	fb2kstruct.h	115;"	d
+MY_DEF_THESIS	fb2kstruct.h	134;"	d
+MY_DEF_USEGB	fb2kstruct.h	137;"	d
+MY_FILE_DIGEST	fb2kstruct.h	151;"	d
+MY_FILE_FORWARDED	fb2kstruct.h	152;"	d
+MY_FILE_MARKED	fb2kstruct.h	150;"	d
+MY_FILE_OWND	fb2kstruct.h	148;"	d
+MY_FILE_READ	fb2kstruct.h	147;"	d
+MY_FILE_VISIT	fb2kstruct.h	149;"	d
+MY_NOREPLY_FLAG	convboards.c	30;"	d	file:
+MY_NOZAP_FLAG	convboards.c	27;"	d	file:
+MY_NOZAP_FLAG	fb2kstruct.h	143;"	d
+MY_NUMDEFINES	fb2kstruct.h	140;"	d
+MY_OUT_FLAG	convboards.c	28;"	d	file:
+MY_OUT_FLAG	fb2kstruct.h	144;"	d
+MY_PERM_ACBOARD	convboards.c	51;"	d	file:
+MY_PERM_ACBOARD	fb2kstruct.h	99;"	d
+MY_PERM_ACCOUNTS	convboards.c	44;"	d	file:
+MY_PERM_ACCOUNTS	fb2kstruct.h	92;"	d
+MY_PERM_ANNOUNCE	convboards.c	49;"	d	file:
+MY_PERM_ANNOUNCE	fb2kstruct.h	97;"	d
+MY_PERM_BASIC	convboards.c	33;"	d	file:
+MY_PERM_BASIC	fb2kstruct.h	81;"	d
+MY_PERM_BOARDS	convboards.c	43;"	d	file:
+MY_PERM_BOARDS	fb2kstruct.h	91;"	d
+MY_PERM_CHAT	convboards.c	34;"	d	file:
+MY_PERM_CHAT	fb2kstruct.h	82;"	d
+MY_PERM_CHATCLOAK	convboards.c	45;"	d	file:
+MY_PERM_CHATCLOAK	fb2kstruct.h	93;"	d
+MY_PERM_CLOAK	convboards.c	39;"	d	file:
+MY_PERM_CLOAK	fb2kstruct.h	87;"	d
+MY_PERM_DENYPOST	convboards.c	38;"	d	file:
+MY_PERM_DENYPOST	fb2kstruct.h	86;"	d
+MY_PERM_EXT_IDLE	convboards.c	54;"	d	file:
+MY_PERM_EXT_IDLE	fb2kstruct.h	102;"	d
+MY_PERM_FORCEPAGE	convboards.c	53;"	d	file:
+MY_PERM_FORCEPAGE	fb2kstruct.h	101;"	d
+MY_PERM_LOGINOK	convboards.c	37;"	d	file:
+MY_PERM_LOGINOK	fb2kstruct.h	85;"	d
+MY_PERM_NOZAP	convboards.c	52;"	d	file:
+MY_PERM_NOZAP	fb2kstruct.h	100;"	d
+MY_PERM_OBOARDS	convboards.c	50;"	d	file:
+MY_PERM_OBOARDS	fb2kstruct.h	98;"	d
+MY_PERM_OVOTE	convboards.c	46;"	d	file:
+MY_PERM_OVOTE	fb2kstruct.h	94;"	d
+MY_PERM_PAGE	convboards.c	35;"	d	file:
+MY_PERM_PAGE	fb2kstruct.h	83;"	d
+MY_PERM_POST	convboards.c	36;"	d	file:
+MY_PERM_POST	fb2kstruct.h	84;"	d
+MY_PERM_POSTMASK	convboards.c	48;"	d	file:
+MY_PERM_POSTMASK	fb2kstruct.h	96;"	d
+MY_PERM_SEECLOAK	convboards.c	40;"	d	file:
+MY_PERM_SEECLOAK	fb2kstruct.h	88;"	d
+MY_PERM_SPECIAL1	convboards.c	55;"	d	file:
+MY_PERM_SPECIAL1	fb2kstruct.h	103;"	d
+MY_PERM_SPECIAL2	convboards.c	56;"	d	file:
+MY_PERM_SPECIAL2	fb2kstruct.h	104;"	d
+MY_PERM_SPECIAL3	convboards.c	57;"	d	file:
+MY_PERM_SPECIAL3	fb2kstruct.h	105;"	d
+MY_PERM_SPECIAL4	convboards.c	58;"	d	file:
+MY_PERM_SPECIAL4	fb2kstruct.h	106;"	d
+MY_PERM_SPECIAL5	convboards.c	59;"	d	file:
+MY_PERM_SPECIAL5	fb2kstruct.h	107;"	d
+MY_PERM_SPECIAL6	convboards.c	60;"	d	file:
+MY_PERM_SPECIAL6	fb2kstruct.h	108;"	d
+MY_PERM_SPECIAL7	convboards.c	61;"	d	file:
+MY_PERM_SPECIAL7	fb2kstruct.h	109;"	d
+MY_PERM_SPECIAL8	convboards.c	62;"	d	file:
+MY_PERM_SPECIAL8	fb2kstruct.h	110;"	d
+MY_PERM_SYSOP	convboards.c	47;"	d	file:
+MY_PERM_SYSOP	fb2kstruct.h	95;"	d
+MY_PERM_WELCOME	convboards.c	42;"	d	file:
+MY_PERM_WELCOME	fb2kstruct.h	90;"	d
+MY_PERM_XEMPT	convboards.c	41;"	d	file:
+MY_PERM_XEMPT	fb2kstruct.h	89;"	d
+MY_VOTE_FLAG	convboards.c	26;"	d	file:
+MY_VOTE_FLAG	fb2kstruct.h	142;"	d
+ModeType	lilac.c	/^char *ModeType(mode)$/;"	f
+NAME_ANONYMOUS	lilac.h	118;"	d
+NAME_ANONYMOUS_FROM	lilac.h	119;"	d
+NAME_BBS_CHINESE	lilac.h	102;"	d
+NAME_BBS_ENGLISH	lilac.h	101;"	d
+NAME_BBS_NICK	lilac.h	103;"	d
+NAME_BM	lilac.h	115;"	d
+NAME_MATTER	lilac.h	122;"	d
+NAME_POLICE	lilac.h	116;"	d
+NAME_SEND_MSG	lilac.h	124;"	d
+NAME_SYSOP	lilac.h	114;"	d
+NAME_SYSOP_GROUP	lilac.h	117;"	d
+NAME_SYS_MANAGE	lilac.h	123;"	d
+NAME_USER_LONG	lilac.h	113;"	d
+NAME_USER_SHORT	lilac.h	112;"	d
+NAME_VIEW_MSG	lilac.h	125;"	d
+NEW_BOARD_FILE	convboards.c	10;"	d	file:
+NEW_COMERS	lilac.h	12;"	d
+NEW_PASSWDS_FILE	convpasswd.c	8;"	d	file:
+NINE_BUILD	lilac.h	11;"	d
+NORMAL_INSTALL	Makefile	/^NORMAL_INSTALL = :$/;"	m
+NORMAL_UNINSTALL	Makefile	/^NORMAL_UNINSTALL = :$/;"	m
+NOT_USE_DEFAULT_SMS_FUNCTIONS	lilac.h	363;"	d
+NUMDEFINES	lilac.h	267;"	d
+NUMPERMS	lilac.h	153;"	d
+OBJDUMP	Makefile	/^OBJDUMP = @OBJDUMP@$/;"	m
+OBJEXT	Makefile	/^OBJEXT = o$/;"	m
+OLD_BOARD_FILE	convboards.c	9;"	d	file:
+OLD_PASSWDS_FILE	convpasswd.c	7;"	d	file:
+OPENSSL_INC	Makefile	/^OPENSSL_INC = $/;"	m
+OPENSSL_LIBS	Makefile	/^OPENSSL_LIBS = $/;"	m
+ORIGIN_LIBTOOL	Makefile	/^ORIGIN_LIBTOOL = $(SHELL) $(top_builddir)\/libtool$/;"	m
+OWNER_LEN	lilac.h	296;"	d
+PACKAGE	Makefile	/^PACKAGE = smthbbs$/;"	m
+PASSWD_PROMPT	lilac.h	141;"	d
+PATH_SEPARATOR	Makefile	/^PATH_SEPARATOR = :$/;"	m
+PERM_ACBOARD	lilac.h	173;"	d
+PERM_ACCOUNTS	lilac.h	166;"	d
+PERM_ADMIN	lilac.h	176;"	d
+PERM_ADMINMENU	lilac.h	197;"	d
+PERM_ANNOUNCE	lilac.h	171;"	d
+PERM_BASIC	lilac.h	155;"	d
+PERM_BMAMANGER	lilac.h	160;"	d
+PERM_BOARDS	lilac.h	165;"	d
+PERM_CHAT	lilac.h	156;"	d
+PERM_CHATCLOAK	lilac.h	167;"	d
+PERM_CHATOP	lilac.h	175;"	d
+PERM_CHECKCD	lilac.h	180;"	d
+PERM_CLOAK	lilac.h	161;"	d
+PERM_COLLECTIVE	lilac.h	182;"	d
+PERM_DEFAULT	lilac.h	191;"	d
+PERM_DENYMAIL	lilac.h	183;"	d
+PERM_DENYRELAX	lilac.h	168;"	d
+PERM_DISS	lilac.h	184;"	d
+PERM_FORWARD	lilac.h	217;"	d
+PERM_HORNOR	lilac.h	177;"	d
+PERM_JURY	lilac.h	178;"	d
+PERM_LARGEMAIL	lilac.h	179;"	d
+PERM_LOGINCLOAK	lilac.h	199;"	d
+PERM_LOGINOK	lilac.h	159;"	d
+PERM_MANAGER	lilac.h	207;"	d
+PERM_MARKPOST	lilac.h	202;"	d
+PERM_MULTILOG	lilac.h	198;"	d
+PERM_NOTIMEOUT	lilac.h	204;"	d
+PERM_NOZAP	lilac.h	174;"	d
+PERM_OBOARDS	lilac.h	172;"	d
+PERM_PAGE	lilac.h	157;"	d
+PERM_POST	lilac.h	158;"	d
+PERM_POSTMASK	lilac.h	170;"	d
+PERM_READMAIL	lilac.h	209;"	d
+PERM_SEEBLEVELS	lilac.h	201;"	d
+PERM_SEECLOAK	lilac.h	162;"	d
+PERM_SEEULEVELS	lilac.h	200;"	d
+PERM_SENDMAIL	lilac.h	208;"	d
+PERM_SETADDR	lilac.h	216;"	d
+PERM_SUICIDE	lilac.h	181;"	d
+PERM_SYSOP	lilac.h	169;"	d
+PERM_UCLEAN	lilac.h	203;"	d
+PERM_VOTE	lilac.h	210;"	d
+PERM_WELCOME	lilac.h	164;"	d
+PERM_XEMPT	lilac.h	163;"	d
+PERSONAL_CORP	lilac.h	30;"	d
+POP3PORT	lilac.h	73;"	d
+POP3SPORT	lilac.h	74;"	d
+POST_INSTALL	Makefile	/^POST_INSTALL = :$/;"	m
+POST_UNINSTALL	Makefile	/^POST_UNINSTALL = :$/;"	m
+PRE_INSTALL	Makefile	/^PRE_INSTALL = :$/;"	m
+PRE_UNINSTALL	Makefile	/^PRE_UNINSTALL = :$/;"	m
+PROGRAMS	Makefile	/^PROGRAMS = $(bin_PROGRAMS)$/;"	m
+ParseDotNames	conv_pc4fb2k.c	/^int ParseDotNames(char *buff, char *ret)$/;"	f
+QUOTED_LINES	lilac.h	368;"	d
+QUOTELEV	lilac.h	369;"	d
+RANLIB	Makefile	/^RANLIB = ranlib$/;"	m
+RAW_ARTICLE	lilac.h	32;"	d
+REGISTER_TSINGHUA_WAIT_TIME	lilac.c	4;"	d	file:
+REGISTER_TSINGHUA_WAIT_TIME	lilac.h	96;"	d
+REGISTER_WAIT_TIME	lilac.h	92;"	d
+REGISTER_WAIT_TIME_NAME	lilac.h	93;"	d
+SECNUM	lilac.h	54;"	d
+SECURE_HTTPS	lilac.h	327;"	d
+SEC_DELETED_OLDHOME	lilac.h	90;"	d
+SED	Makefile	/^SED = \/bin\/sed$/;"	m
+SET_CHANGEDEFINE	lilac.h	271;"	d
+SET_DEFINE	lilac.h	269;"	d
+SET_UNDEFINE	lilac.h	270;"	d
+SHELL	Makefile	/^SHELL = \/bin\/sh$/;"	m
+SHOW_USERIP	lilac.h	366;"	d
+SMTH	lilac.h	34;"	d
+SOURCES	Makefile	/^SOURCES = calc_effsize.c chfavbrd.c chlevel.c convboards.c convpasswd.c gen_title.c strip_fh.c$/;"	m
+SQUID_ACCL	lilac.h	57;"	d
+STRIP	Makefile	/^STRIP = strip$/;"	m
+STRIPPROG	Makefile	/^	    echo "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'"` install$/;"	m
+STRLEN	lilac.h	293;"	d
+SYSMAIL_BOARD	lilac.h	61;"	d
+TDEFINE	lilac.h	223;"	d
+TDEF_SPLITSCREEN	lilac.h	274;"	d
+TEMPLATE_DIR	oldstruct.h	242;"	d
+TMPFSROOT	lilac.h	9;"	d
+TMPL_BM_FLAG	oldstruct.h	245;"	d
+TMPL_NOW_VERSION	oldstruct.h	247;"	d
+TOPIC_LEVEL	conv_pc4fb2k.c	23;"	d	file:
+TRIM	conv_pc4fb2k.c	25;"	d	file:
+TotalAccount	conv_pc4fb2k.c	/^unsigned int TotalAccount = 0;$/;"	v
+TotalArtical	conv_pc4fb2k.c	/^unsigned int TotalArtical = 0;$/;"	v
+UCACHE	oldstruct.h	/^struct UCACHE {$/;"	s
+UL_CHANGE_NICK_LOWER	lilac.h	286;"	d
+UL_CHANGE_NICK_UPPER	lilac.h	285;"	d
+UL_SWITCH_FRIEND_LOWER	lilac.h	288;"	d
+UL_SWITCH_FRIEND_UPPER	lilac.h	287;"	d
+USE_TMPFS	lilac.h	8;"	d
+USHM_SIZE	oldstruct.h	162;"	d
+UTMPFILE	oldstruct.h	/^struct UTMPFILE {$/;"	s
+VALID_FILENAME	lilac.h	322;"	d
+VERSION	Makefile	/^VERSION = 1.2$/;"	m
+XPERMSTR	lilac.h	187;"	d
+_TEMPLATE_H	oldstruct.h	240;"	d
+__Favorites	fb2kstruct.h	/^typedef struct __Favorites {$/;"	s
+__SYSNAME_H_	lilac.h	2;"	d
+_shmkey	lilac.c	/^struct _shmkey {$/;"	s	file:
+a_template	oldstruct.h	/^struct a_template {$/;"	s
+abssrcdir	Makefile	/^abssrcdir = \/home\/bbs\/src\/smth_bbs$/;"	m
+accessed	convboards.c	/^        unsigned char accessed[ 12 ];$/;"	m	struct:oldboardheader	file:
+accessed	fb2kstruct.h	/^    unsigned char accessed[12]; \/* struct size = 256 bytes *\/$/;"	m	struct:oldfileheader
+accessed	fb2kstruct.h	/^    unsigned char accessed[12];$/;"	m	struct:oldboardheader
+accessed	lilac.h	/^    unsigned char accessed[4];$/;"	m	struct:fileheader
+accessed	oldstruct.h	/^        unsigned char accessed;$/;"	m	struct:shortfile
+accessed	oldstruct.h	/^        unsigned char accessed[ 12 ];   \/* struct size = 256 bytes *\/$/;"	m	struct:fileheader
+accessed	oldstruct.h	/^        unsigned char accessed[ 12 ];$/;"	m	struct:boardheader
+accessed	strip_fh.c	/^        unsigned char accessed[ 12 ];   \/* struct size = 256 bytes *\/$/;"	m	struct:fileheader_v1_2	file:
+active	oldstruct.h	/^        int     active;          \/* When allocated this field is true *\/$/;"	m	struct:user_info
+add_node_to_pc	conv_pc4fb2k.c	/^int add_node_to_pc(char *filename, char *subject, int uid, int tid)$/;"	f
+add_pc_nodes_to_mysql	conv_pc4fb2k.c	/^int add_pc_nodes_to_mysql(struct pc_nodes *pn, int tid)$/;"	f
+add_pc_topic	conv_pc4fb2k.c	/^int add_pc_topic(char *topic, int uid)$/;"	f
+add_pc_users	conv_pc4fb2k.c	/^int add_pc_users(struct pc_users *pn)$/;"	f
+address	convpasswd.c	/^    char address[STRLEN];$/;"	m	struct:olduserec	file:
+address	fb2kstruct.h	/^    char address[STRLEN];$/;"	m	struct:olduserec
+address	oldstruct.h	/^        char            address[STRLEN];$/;"	m	struct:userec
+alphabet	lilac.c	/^const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";$/;"	v
+am__cd	Makefile	/^am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd$/;"	m
+am__depfiles_maybe	Makefile	/^am__depfiles_maybe = depfiles$/;"	m
+am__include	Makefile	/^am__include = include$/;"	m
+am__quote	Makefile	/^am__quote = $/;"	m
+ann_get_postfilename	lilac.c	/^int ann_get_postfilename(char *filename, struct fileheader *fileinfo,$/;"	f
+attach	oldstruct.h	/^		int attach;$/;"	m	struct:fileheader
+attach	strip_fh.c	/^		int attach;$/;"	m	struct:fileheader_v1_2	file:
+attachment	lilac.h	/^    long attachment;$/;"	m	struct:fileheader
+auto_register	lilac.c	/^int auto_register(char* userid,char* email,int msize)$/;"	f
+bcache	oldstruct.h	/^    struct shortfile    bcache[ MAXBOARD ];$/;"	m	struct:BCACHE
+bet	convpasswd.c	/^    unsigned int bet;        \/* 存款 *\/$/;"	m	struct:olduserec	file:
+bet	oldstruct.h	/^        unsigned int    bet;     \/* 贷款 *\/$/;"	m	struct:userec
+binPROGRAMS_INSTALL	Makefile	/^binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)$/;"	m
+bin_PROGRAMS	Makefile	/^bin_PROGRAMS = convpasswd chlevel  convboards calc_effsize \\$/;"	m
+bin_PROGRAMS	Makefile	/^bin_PROGRAMS = convpasswd$(EXEEXT) chlevel$(EXEEXT) convboards$(EXEEXT) \\$/;"	m
+bindir	Makefile	/^bindir = ${exec_prefix}\/bin$/;"	m
+birthday	convpasswd.c	/^    unsigned char birthday;$/;"	m	struct:olduserec	file:
+birthday	fb2kstruct.h	/^    unsigned char birthday;$/;"	m	struct:olduserec
+birthday	oldstruct.h	/^        unsigned char   birthday;$/;"	m	struct:userec
+birthmonth	convpasswd.c	/^    unsigned char birthmonth;$/;"	m	struct:olduserec	file:
+birthmonth	fb2kstruct.h	/^    unsigned char birthmonth;$/;"	m	struct:olduserec
+birthmonth	oldstruct.h	/^        unsigned char   birthmonth;$/;"	m	struct:userec
+birthyear	convpasswd.c	/^    unsigned char birthyear;$/;"	m	struct:olduserec	file:
+birthyear	fb2kstruct.h	/^    unsigned char birthyear;$/;"	m	struct:olduserec
+birthyear	oldstruct.h	/^        unsigned char   birthyear;$/;"	m	struct:userec
+bname	oldstruct.h	/^        char bname[20];$/;"	m	struct:special_user
+boardheader	oldstruct.h	/^struct boardheader {             \/* This structure is used to hold data in *\/$/;"	s
+boards	fb2kstruct.h	/^    char boards[FAVORITES_NUM][STRLEN];$/;"	m	struct:__Favorites
+build_board_structure	lilac.c	/^void build_board_structure(const char *board)$/;"	f
+calc_effsize_DEPENDENCIES	Makefile	/^calc_effsize_DEPENDENCIES =$/;"	m
+calc_effsize_LDADD	Makefile	/^calc_effsize_LDADD = $(LDADD)$/;"	m
+calc_effsize_LDFLAGS	Makefile	/^calc_effsize_LDFLAGS =$/;"	m
+calc_effsize_OBJECTS	Makefile	/^calc_effsize_OBJECTS = calc_effsize.$(OBJEXT)$/;"	m
+calc_effsize_SOURCES	Makefile	/^calc_effsize_SOURCES = calc_effsize.c$/;"	m
+calcboard	calc_effsize.c	/^int calcboard(struct boardheader *bh, void *arg)$/;"	f
+chatid	oldstruct.h	/^        char    chatid[ 10 ];    \/* chat id, if in chat mode *\/$/;"	m	struct:user_info
+check_read_perm	lilac.c	/^int check_read_perm(struct userec *user, const struct boardheader *board)$/;"	f
+check_see_perm	lilac.c	/^int check_see_perm(struct userec* user,const struct boardheader* board)$/;"	f
+checkguestip	lilac.c	/^int checkguestip(struct user_info *uentp, char *arg, int count)$/;"	f
+chfavbrd_DEPENDENCIES	Makefile	/^chfavbrd_DEPENDENCIES =$/;"	m
+chfavbrd_LDADD	Makefile	/^chfavbrd_LDADD = $(LDADD)$/;"	m
+chfavbrd_LDFLAGS	Makefile	/^chfavbrd_LDFLAGS =$/;"	m
+chfavbrd_OBJECTS	Makefile	/^chfavbrd_OBJECTS = chfavbrd.$(OBJEXT)$/;"	m
+chfavbrd_SOURCES	Makefile	/^chfavbrd_SOURCES = chfavbrd.c$/;"	m
+chk_anony	oldstruct.h	/^        int chk_anony;$/;"	m	struct:postheader
+chlevel_DEPENDENCIES	Makefile	/^chlevel_DEPENDENCIES =$/;"	m
+chlevel_LDADD	Makefile	/^chlevel_LDADD = $(LDADD)$/;"	m
+chlevel_LDFLAGS	Makefile	/^chlevel_LDFLAGS =$/;"	m
+chlevel_OBJECTS	Makefile	/^chlevel_OBJECTS = chlevel.$(OBJEXT)$/;"	m
+chlevel_SOURCES	Makefile	/^chlevel_SOURCES = chlevel.c$/;"	m
+cnv_personal_dir	conv_pc4fb2k.c	/^int cnv_personal_dir(char *r_path, int level, int uid, int tid)$/;"	f
+cnv_user	conv_pc4fb2k.c	/^int cnv_user(char *id, char *desc, char *r_path)$/;"	f
+compute_user_value	lilac.c	/^compute_user_value(urec)$/;"	f
+compute_user_value	lilac.c	/^int compute_user_value(struct userec *urec)$/;"	f
+cont	oldstruct.h	/^    struct s_content *cont;$/;"	m	struct:a_template
+content	oldstruct.h	/^	char *content;$/;"	m	struct:helps
+content_num	oldstruct.h	/^    int content_num;$/;"	m	struct:s_template
+conv_friend	convpasswd.c	/^static void conv_friend(char *userid)$/;"	f	file:
+convboards_DEPENDENCIES	Makefile	/^convboards_DEPENDENCIES =$/;"	m
+convboards_LDADD	Makefile	/^convboards_LDADD = $(LDADD)$/;"	m
+convboards_LDFLAGS	Makefile	/^convboards_LDFLAGS =$/;"	m
+convboards_OBJECTS	Makefile	/^convboards_OBJECTS = convboards.$(OBJEXT)$/;"	m
+convboards_SOURCES	Makefile	/^convboards_SOURCES = convboards.c$/;"	m
+convert_board	convboards.c	/^static void convert_board(struct oldboardheader *oldbrd, struct boardheader *brd)$/;"	f	file:
+convert_flag	convboards.c	/^static void convert_flag(struct oldboardheader *oldbrd, struct boardheader *brd)$/;"	f	file:
+convert_permission	convboards.c	/^static void convert_permission(struct oldboardheader *oldbrd, struct boardheader *brd)$/;"	f	file:
+convert_title	convboards.c	/^static void convert_title(struct oldboardheader *oldbrd, struct boardheader *brd)$/;"	f	file:
+convert_userec	convpasswd.c	/^static void convert_userec(struct olduserec *olduser, struct userec *user)$/;"	f	file:
+convpasswd_DEPENDENCIES	Makefile	/^convpasswd_DEPENDENCIES =$/;"	m
+convpasswd_LDADD	Makefile	/^convpasswd_LDADD = $(LDADD)$/;"	m
+convpasswd_LDFLAGS	Makefile	/^convpasswd_LDFLAGS =$/;"	m
+convpasswd_OBJECTS	Makefile	/^convpasswd_OBJECTS = convpasswd.$(OBJEXT)$/;"	m
+convpasswd_SOURCES	Makefile	/^convpasswd_SOURCES = convpasswd.c$/;"	m
+count_arg	lilac.c	/^struct count_arg {$/;"	s	file:
+countuser	lilac.c	/^int countuser(struct user_info *uinfo, struct count_arg *arg, int pos)$/;"	f
+create_favboard	chfavbrd.c	/^void create_favboard(char *userid)$/;"	f
+create_userdata	convpasswd.c	/^static void create_userdata(olduserec * olduser)$/;"	f	file:
+curboard	oldstruct.h	/^	short	curboard;     \/\/add by stiger$/;"	m	struct:user_info
+curruser	conv_pc4fb2k.c	/^char curruser[32];$/;"	v
+datadir	Makefile	/^datadir = ${prefix}\/share$/;"	m
+date	oldstruct.h	/^    char		date[60];$/;"	m	struct:BCACHE
+dateforbet	convpasswd.c	/^    time_t dateforbet;            \/* 存入时间 *\/$/;"	m	struct:olduserec	file:
+dateforbet	oldstruct.h	/^	time_t		dateforbet;$/;"	m	struct:userec
+depcomp	Makefile	/^depcomp = $(SHELL) $(top_srcdir)\/depcomp$/;"	m
+depfile	Makefile	/^	depfile='$(DEPDIR)\/$*.Plo' tmpdepfile='$(DEPDIR)\/$*.TPlo' \\$/;"	m
+depfile	Makefile	/^	depfile='$(DEPDIR)\/$*.Po' tmpdepfile='$(DEPDIR)\/$*.TPo' \\$/;"	m
+depmode	Makefile	/^CCDEPMODE = depmode=gcc3$/;"	m
+desc	oldstruct.h	/^	char desc[40];$/;"	m	struct:mail_group_index
+desc	oldstruct.h	/^	char desc[41];$/;"	m	struct:helps
+destuid	oldstruct.h	/^        int     destuid;         \/* talk uses this to identify who called *\/$/;"	m	struct:user_info
+dir	Makefile	/^	    dir="\/$$dir"; \\$/;"	m
+dir	Makefile	/^	    dir=''; \\$/;"	m
+dir	Makefile	/^	  dir=`echo "$$file" | sed -e 's,\/[^\/]*$$,,'`; \\$/;"	m
+distdir	Makefile	/^distdir = $(top_distdir)\/$(PACKAGE)-$(VERSION)$/;"	m
+ds	oldstruct.h	/^        char ds[40];$/;"	m	struct:postheader
+eff_size	lilac.h	/^    unsigned int eff_size;$/;"	m	struct:fileheader
+email	convpasswd.c	/^    char email[STRLEN - 12];$/;"	m	struct:olduserec	file:
+email	fb2kstruct.h	/^    char email[STRLEN - 12];$/;"	m	struct:olduserec
+email	oldstruct.h	/^        char            email[STRLEN-12];$/;"	m	struct:userec
+exec_prefix	Makefile	/^exec_prefix = ${prefix}$/;"	m
+exp	convpasswd.c	/^		char exp[40];$/;"	m	struct:override_old	file:
+exp	fb2kstruct.h	/^    char exp[40];$/;"	m	struct:override
+exp	oldstruct.h	/^        char exp[40];$/;"	m	struct:override
+explain	lilac.c	/^const char    *explain[] = {$/;"	v
+ext_idle	oldstruct.h	/^        int     ext_idle;        \/* has extended idle time, YEA or NA *\/$/;"	m	struct:user_info
+f	Makefile	/^	    f=`echo "$$p1" | sed 's,^.*\/,,;$(transform);s\/$$\/$(EXEEXT)\/'`; \\$/;"	m
+f	Makefile	/^	  f=`echo "$$p" | sed 's,^.*\/,,;s\/$(EXEEXT)$$\/\/;$(transform);s\/$$\/$(EXEEXT)\/'`; \\$/;"	m
+f	Makefile	/^	  f=`echo $$p|sed 's\/$(EXEEXT)$$\/\/'`; \\$/;"	m
+favbrd_list	chfavbrd.c	/^struct favbrd_struct favbrd_list[FAVBOARDNUM];$/;"	v
+favbrd_list_t	chfavbrd.c	/^int favbrd_list_t;$/;"	v
+fileheader	lilac.h	/^typedef struct fileheader {     \/* This structure is used to hold data in *\/$/;"	s
+fileheader	lilac.h	/^} fileheader;$/;"	t
+fileheader	oldstruct.h	/^struct fileheader {             \/* This structure is used to hold data in *\/$/;"	s
+fileheader_t	lilac.h	/^typedef struct fileheader fileheader_t;$/;"	t
+fileheader_v1_2	strip_fh.c	/^typedef struct fileheader_v1_2 {$/;"	s	file:
+fileheader_v1_2	strip_fh.c	/^} fileheader_v1_2;$/;"	t	file:
+filename	convboards.c	/^        char filename[STRLEN];   \/* the BOARDS files *\/$/;"	m	struct:oldboardheader	file:
+filename	fb2kstruct.h	/^    char filename[STRLEN];      \/* the BOARDS files *\/$/;"	m	struct:oldboardheader
+filename	fb2kstruct.h	/^    char filename[STRLEN];      \/* the DIR files *\/$/;"	m	struct:oldfileheader
+filename	lilac.h	/^    char filename[FILENAME_LEN];      \/* the DIR files *\/$/;"	m	struct:fileheader
+filename	oldstruct.h	/^        char filename[STRLEN];      \/* also will do for mail directories *\/$/;"	m	struct:shortfile
+filename	oldstruct.h	/^        char filename[STRLEN];     \/* the DIR files *\/$/;"	m	struct:fileheader
+filename	oldstruct.h	/^        char filename[STRLEN];   \/* the BOARDS files *\/$/;"	m	struct:boardheader
+filename	oldstruct.h	/^    char filename[STRLEN];$/;"	m	struct:s_template
+filename	strip_fh.c	/^        char filename[80];     \/* the DIR files *\/$/;"	m	struct:fileheader_v1_2	file:
+firstlogin	convpasswd.c	/^    time_t firstlogin;$/;"	m	struct:olduserec	file:
+firstlogin	fb2kstruct.h	/^    time_t firstlogin;$/;"	m	struct:olduserec
+firstlogin	oldstruct.h	/^        time_t          firstlogin;$/;"	m	struct:userec
+flag	convboards.c	/^        char flag;$/;"	m	struct:oldboardheader	file:
+flag	fb2kstruct.h	/^    char flag;$/;"	m	struct:oldboardheader
+flag	oldstruct.h	/^        char flag;$/;"	m	struct:boardheader
+flag	oldstruct.h	/^        char flag;$/;"	m	struct:shortfile
+flag	oldstruct.h	/^    int flag;$/;"	m	struct:s_template
+flags	convpasswd.c	/^    char flags[2];$/;"	m	struct:olduserec	file:
+flags	fb2kstruct.h	/^    char flags[2];$/;"	m	struct:olduserec
+flags	oldstruct.h	/^        char            flags[2];$/;"	m	struct:userec
+fname	oldstruct.h	/^	char fname[8];$/;"	m	struct:mail_group_index
+fnum	oldstruct.h	/^        int     fnum;            \/* number of friends *\/$/;"	m	struct:user_info
+fptr	oldstruct.h	/^        int (*fptr)() ;$/;"	m	struct:one_key
+fresh_date	oldstruct.h	/^    time_t		fresh_date;$/;"	m	struct:BCACHE
+friendbook	oldstruct.h	/^    time_t		friendbook;		\/* friendbook mtime *\/$/;"	m	struct:BCACHE
+from	oldstruct.h	/^        char    from[ 60 ];      \/* machine name the user called in from *\/$/;"	m	struct:user_info
+frompid	oldstruct.h	/^    int frompid, topid;$/;"	m	struct:msghead
+gen_title_DEPENDENCIES	Makefile	/^gen_title_DEPENDENCIES =$/;"	m
+gen_title_LDADD	Makefile	/^gen_title_LDADD = $(LDADD)$/;"	m
+gen_title_LDFLAGS	Makefile	/^gen_title_LDFLAGS =$/;"	m
+gen_title_OBJECTS	Makefile	/^gen_title_OBJECTS = gen_title.$(OBJEXT)$/;"	m
+gen_title_SOURCES	Makefile	/^gen_title_SOURCES = gen_title.c$/;"	m
+gender	convpasswd.c	/^    char gender;$/;"	m	struct:olduserec	file:
+gender	fb2kstruct.h	/^    char gender;$/;"	m	struct:olduserec
+gender	oldstruct.h	/^        char            gender;$/;"	m	struct:userec
+generate_all_title	gen_title.c	/^int generate_all_title()$/;"	f
+generate_board_title	gen_title.c	/^int generate_board_title(struct boardheader *bh, void *arg)$/;"	f
+get_mail_limit	lilac.c	/^void get_mail_limit(struct userec* user,int *sumlimit,int * numlimit)$/;"	f
+get_posttime	lilac.c	/^time_t get_posttime(const struct fileheader *fileinfo)$/;"	f
+get_shmkey	lilac.c	/^int get_shmkey(char *s)$/;"	f
+groupid	lilac.h	/^    unsigned int id, groupid, reid;$/;"	m	struct:fileheader
+groupid	oldstruct.h	/^		unsigned int groupid;$/;"	m	struct:fileheader
+groupid	strip_fh.c	/^		unsigned int groupid;$/;"	m	struct:fileheader_v1_2	file:
+groups	lilac.c	/^const char    *groups[] = {$/;"	v
+hash	oldstruct.h	/^	int hash[26][26][256];$/;"	m	struct:UCACHE
+helps	oldstruct.h	/^struct helps{$/;"	s
+here	Makefile	/^	here=`$(am__cd) $(top_builddir) && pwd` \\$/;"	m
+here	Makefile	/^	here=`pwd`; \\$/;"	m
+host_alias	Makefile	/^host_alias = $/;"	m
+host_triplet	Makefile	/^host_triplet = i686-pc-linux-gnu$/;"	m
+id	convpasswd.c	/^		char id[13];$/;"	m	struct:override_old	file:
+id	fb2kstruct.h	/^    char id[13];$/;"	m	struct:override
+id	lilac.h	/^    unsigned int id, groupid, reid;$/;"	m	struct:fileheader
+id	oldstruct.h	/^		unsigned int id;$/;"	m	struct:fileheader
+id	oldstruct.h	/^        char id[13];$/;"	m	struct:override
+id	oldstruct.h	/^    char id[IDLEN + 2];$/;"	m	struct:msghead
+id	strip_fh.c	/^		unsigned int id;$/;"	m	struct:fileheader_v1_2	file:
+ident	convpasswd.c	/^    char ident[40];$/;"	m	struct:olduserec	file:
+ident	fb2kstruct.h	/^    char ident[NAMELEN];$/;"	m	struct:olduserec
+ident	oldstruct.h	/^        char            ident[NAMELEN];$/;"	m	struct:userec
+idle_time	oldstruct.h	/^	time_t	idle_time;			 \/* to keep idle time *\/$/;"	m	struct:user_info
+in_chat	oldstruct.h	/^        int     in_chat;         \/* for in_chat commands   *\/$/;"	m	struct:user_info
+inboard	oldstruct.h	/^		int inboard;      \/\/各板在线人数, add by stiger$/;"	m	struct:shortfile
+include_mode	oldstruct.h	/^        char include_mode;$/;"	m	struct:postheader
+includedir	Makefile	/^includedir = ${prefix}\/include$/;"	m
+index	oldstruct.h	/^	char index[11];$/;"	m	struct:helps
+infodir	Makefile	/^infodir = ${prefix}\/info$/;"	m
+initialized	fb2kstruct.h	/^    int initialized;$/;"	m	struct:__Favorites
+innflag	lilac.h	/^    char innflag[2];$/;"	m	struct:fileheader
+install_sh	Makefile	/^install_sh = \/home\/bbs\/src\/smth_bbs\/install-sh$/;"	m
+install_sh_DATA	Makefile	/^install_sh_DATA = $(install_sh) -c -m 644$/;"	m
+install_sh_PROGRAM	Makefile	/^install_sh_PROGRAM = $(install_sh) -c$/;"	m
+install_sh_SCRIPT	Makefile	/^install_sh_SCRIPT = $(install_sh) -c$/;"	m
+invisible	oldstruct.h	/^        int     invisible;       \/* Used by cloaking function in Xyz menu *\/$/;"	m	struct:user_info
+key	lilac.c	/^    char key[20];$/;"	m	struct:_shmkey	file:
+key	oldstruct.h	/^        int key ;$/;"	m	struct:one_key
+key	oldstruct.h	/^    int key;$/;"	m	struct:key_struct
+key_struct	oldstruct.h	/^struct key_struct { \/\/ 自定义键 by bad$/;"	s
+lasthost	convpasswd.c	/^    char lasthost[16];$/;"	m	struct:olduserec	file:
+lasthost	fb2kstruct.h	/^    char lasthost[16];$/;"	m	struct:olduserec
+lasthost	oldstruct.h	/^        char            lasthost[16];$/;"	m	struct:userec
+lastjustify	convpasswd.c	/^    time_t lastjustify;$/;"	m	struct:olduserec	file:
+lastjustify	fb2kstruct.h	/^    time_t lastjustify;$/;"	m	struct:olduserec
+lastjustify	oldstruct.h	/^        time_t          lastjustify;$/;"	m	struct:userec
+lastlogin	convpasswd.c	/^    time_t lastlogin;$/;"	m	struct:olduserec	file:
+lastlogin	fb2kstruct.h	/^    time_t lastlogin;$/;"	m	struct:olduserec
+lastlogin	oldstruct.h	/^        time_t          lastlogin;$/;"	m	struct:userec
+lastlogout	convpasswd.c	/^    time_t lastlogout;          \/* 最近离线时间 *\/$/;"	m	struct:olduserec	file:
+lastlogout	fb2kstruct.h	/^    time_t lastlogout;          \/* 最近离线时间 *\/$/;"	m	struct:olduserec
+lastlogout	oldstruct.h	/^        time_t          lastlogout;\/* 最近离线时间 *\/$/;"	m	struct:userec
+lastpost	oldstruct.h	/^		int lastpost;$/;"	m	struct:shortfile
+len	oldstruct.h	/^    int pos, len;$/;"	m	struct:msghead
+length	oldstruct.h	/^    int length;$/;"	m	struct:s_content
+level	convboards.c	/^        unsigned level;$/;"	m	struct:oldboardheader	file:
+level	fb2kstruct.h	/^    unsigned level;$/;"	m	struct:oldboardheader
+level	fb2kstruct.h	/^    unsigned level;$/;"	m	struct:oldfileheader
+level	oldstruct.h	/^        unsigned level;$/;"	m	struct:boardheader
+level	oldstruct.h	/^        unsigned level;$/;"	m	struct:fileheader
+level	oldstruct.h	/^        unsigned level;$/;"	m	struct:shortfile
+level	strip_fh.c	/^        unsigned level;$/;"	m	struct:fileheader_v1_2	file:
+libdir	Makefile	/^libdir = ${exec_prefix}\/lib$/;"	m
+libexecdir	Makefile	/^libexecdir = ${exec_prefix}\/libexec$/;"	m
+libtool	Makefile	/^	source='$<' object='$@' libtool=no \\$/;"	m
+libtool	Makefile	/^	source='$<' object='$@' libtool=yes \\$/;"	m
+list	Makefile	/^	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \\$/;"	m
+list	Makefile	/^	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \\$/;"	m
+localstatedir	Makefile	/^localstatedir = ${prefix}\/var$/;"	m
+mail_group_index	oldstruct.h	/^struct mail_group_index$/;"	s
+mail_list	oldstruct.h	/^struct mail_list {$/;"	s
+mailbox_prop_str	lilac.c	/^const char *mailbox_prop_str[] =$/;"	v
+mailnum	oldstruct.h	/^	int mailnum[MAXMAILLIST];$/;"	m	struct:mail_list
+main	calc_effsize.c	/^int main(int argc, char **argv)$/;"	f
+main	chfavbrd.c	/^int main()$/;"	f
+main	chlevel.c	/^main()$/;"	f
+main	conv_pc4fb2k.c	/^int main(int argc, char **argv)$/;"	f
+main	convboards.c	/^int main()$/;"	f
+main	convpasswd.c	/^int main()$/;"	f
+main	gen_title.c	/^int main(int argc, char **argv)$/;"	f
+main	strip_fh.c	/^int main(int argc, char **argv)$/;"	f
+mandir	Makefile	/^mandir = ${prefix}\/man$/;"	m
+mapped	oldstruct.h	/^    int mapped[10];$/;"	m	struct:key_struct
+max_login_num	oldstruct.h	/^    int                 max_login_num;$/;"	m	struct:UTMPFILE
+mkinstalldirs	Makefile	/^mkinstalldirs = $(SHELL) $(top_srcdir)\/mkinstalldirs$/;"	m
+mode	oldstruct.h	/^        int     mode;            \/* UL\/DL, Talk Mode, Chat Mode, ... *\/$/;"	m	struct:user_info
+mode	oldstruct.h	/^    char mode;$/;"	m	struct:msghead
+modeid	oldstruct.h	/^	int modeid;$/;"	m	struct:helps
+money	convpasswd.c	/^    unsigned int money;         \/* 金钱 *\/$/;"	m	struct:olduserec	file:
+money	oldstruct.h	/^        unsigned int    money;   \/* 存款 *\/$/;"	m	struct:userec
+msghead	oldstruct.h	/^struct msghead {$/;"	s
+multilogin_user	lilac.c	/^int multilogin_user(struct userec *user, int usernum,int mode)$/;"	f
+my_connect_mysql	conv_pc4fb2k.c	/^MYSQL *my_connect_mysql(MYSQL * s)$/;"	f
+my_save_favboard	chfavbrd.c	/^void my_save_favboard(char *userid)$/;"	f
+name	oldstruct.h	/^	char name[MAXMAILLIST][40];$/;"	m	struct:mail_list
+next	oldstruct.h	/^	int next[MAXUSERS];$/;"	m	struct:UCACHE
+notedate	convpasswd.c	/^    time_t notedate;$/;"	m	struct:olduserec	file:
+notedate	fb2kstruct.h	/^    time_t notedate;$/;"	m	struct:olduserec
+notedate	oldstruct.h	/^        time_t          notedate;$/;"	m	struct:userec
+noteline	convpasswd.c	/^    int noteline;$/;"	m	struct:olduserec	file:
+noteline	fb2kstruct.h	/^    int noteline;$/;"	m	struct:olduserec
+noteline	oldstruct.h	/^        int             noteline;$/;"	m	struct:userec
+now	convboards.c	/^time_t now;$/;"	v
+nowid	convboards.c	/^        unsigned int nowid;$/;"	m	struct:oldboardheader	file:
+nowid	oldstruct.h	/^		unsigned int nowid;$/;"	m	struct:shortfile
+nowid	oldstruct.h	/^        unsigned int nowid;$/;"	m	struct:boardheader
+num	fb2kstruct.h	/^    int num;$/;"	m	struct:__Favorites
+num	oldstruct.h	/^	int num;$/;"	m	struct:mail_group_index
+num	oldstruct.h	/^	int num;$/;"	m	struct:mail_list
+number	oldstruct.h	/^    int         number;$/;"	m	struct:BCACHE
+number	oldstruct.h	/^    int         number;$/;"	m	struct:UCACHE
+numlogins	convpasswd.c	/^    unsigned int numlogins;$/;"	m	struct:olduserec	file:
+numlogins	fb2kstruct.h	/^    unsigned int numlogins;$/;"	m	struct:olduserec
+numlogins	oldstruct.h	/^        unsigned int    numlogins;$/;"	m	struct:userec
+nummails	convpasswd.c	/^    unsigned int nummails;$/;"	m	struct:olduserec	file:
+nummails	fb2kstruct.h	/^    unsigned int nummails;$/;"	m	struct:olduserec
+nummails	oldstruct.h	/^        unsigned int    nummails;$/;"	m	struct:userec
+nummedals	convpasswd.c	/^    unsigned int nummedals;        \/* 奖章数 *\/$/;"	m	struct:olduserec	file:
+nummedals	oldstruct.h	/^	unsigned int    nummedals; \/* 奖章数 *\/$/;"	m	struct:userec
+numposts	convpasswd.c	/^    unsigned int numposts;$/;"	m	struct:olduserec	file:
+numposts	fb2kstruct.h	/^    unsigned int numposts;$/;"	m	struct:olduserec
+numposts	oldstruct.h	/^        unsigned int    numposts;$/;"	m	struct:userec
+o_bid	lilac.h	/^	int o_bid;$/;"	m	struct:fileheader
+o_groupid	lilac.h	/^    unsigned int o_groupid;$/;"	m	struct:fileheader
+o_id	lilac.h	/^    unsigned int o_id;$/;"	m	struct:fileheader
+o_reid	lilac.h	/^    unsigned int o_reid;$/;"	m	struct:fileheader
+object	Makefile	/^	source='$<' object='$@' libtool=no \\$/;"	m
+object	Makefile	/^	source='$<' object='$@' libtool=yes \\$/;"	m
+old_compute_user_value	lilac.c	/^int old_compute_user_value(struct userec *urec)$/;"	f
+oldboardheader	convboards.c	/^struct oldboardheader {             \/* This structure is used to hold data in *\/$/;"	s	file:
+oldboardheader	fb2kstruct.h	/^struct oldboardheader {         \/* This structure is used to hold data in *\/$/;"	s
+oldfileheader	fb2kstruct.h	/^struct oldfileheader {          \/* This structure is used to hold data in *\/$/;"	s
+oldincludedir	Makefile	/^oldincludedir = \/usr\/include$/;"	m
+oldseccode	convboards.c	/^const char oldseccode[SECNUM][5] = {$/;"	v
+olduserec	convpasswd.c	/^typedef struct olduserec {      \/* Structure used to hold information in *\/$/;"	s	file:
+olduserec	convpasswd.c	/^} olduserec;$/;"	t	file:
+olduserec	fb2kstruct.h	/^struct olduserec {              \/* Structure used to hold information in *\/$/;"	s
+one_key	oldstruct.h	/^struct one_key {                  \/* Used to pass commands to the readmenu *\/$/;"	s
+override	fb2kstruct.h	/^struct override {$/;"	s
+override	oldstruct.h	/^struct override {$/;"	s
+override_old	convpasswd.c	/^struct override_old{$/;"	s	file:
+owner	fb2kstruct.h	/^    char owner[STRLEN - BM_LEN];$/;"	m	struct:oldboardheader
+owner	fb2kstruct.h	/^    char owner[STRLEN];$/;"	m	struct:oldfileheader
+owner	lilac.h	/^    char owner[OWNER_LEN];$/;"	m	struct:fileheader
+owner	oldstruct.h	/^        char owner[OWNERLEN];$/;"	m	struct:fileheader
+owner	strip_fh.c	/^        char owner[20];$/;"	m	struct:fileheader_v1_2	file:
+p1	Makefile	/^	  p1=`echo $$p|sed 's\/$(EXEEXT)$$\/\/'`; \\$/;"	m
+pager	oldstruct.h	/^        int     pager;           \/* pager toggle, YEA, or NA *\/$/;"	m	struct:user_info
+passwd	convpasswd.c	/^    char passwd[35];$/;"	m	struct:olduserec	file:
+passwd	fb2kstruct.h	/^    char passwd[ENCPASSLEN];$/;"	m	struct:olduserec
+passwd	fb2kstruct.h	/^    char passwd[PASSLEN];$/;"	m	struct:olduserec
+passwd	oldstruct.h	/^	struct userec passwd[MAXUSERS];$/;"	m	struct:UCACHE
+passwd	oldstruct.h	/^        char            passwd[ENCPASSLEN];$/;"	m	struct:userec
+passwd	oldstruct.h	/^        char            passwd[PASSLEN];$/;"	m	struct:userec
+permstrings	lilac.c	/^const char *permstrings[] = {$/;"	v
+perror	convboards.c	13;"	d	file:
+perror	convpasswd.c	10;"	d	file:
+perror	strip_fh.c	4;"	d	file:
+pid	oldstruct.h	/^        int     pid;             \/* kill() to notify user of talk request *\/$/;"	m	struct:user_info
+pkgdatadir	Makefile	/^pkgdatadir = $(datadir)\/smthbbs$/;"	m
+pkgincludedir	Makefile	/^pkgincludedir = $(includedir)\/smthbbs$/;"	m
+pkglibdir	Makefile	/^pkglibdir = $(libdir)\/smthbbs$/;"	m
+pollvote	oldstruct.h	/^    time_t      pollvote;$/;"	m	struct:BCACHE
+pos	oldstruct.h	/^    int pos, len;$/;"	m	struct:msghead
+postboard	oldstruct.h	/^        int postboard;$/;"	m	struct:postheader
+postheader	oldstruct.h	/^struct postheader$/;"	s
+posttime	lilac.h	/^    time_t posttime;$/;"	m	struct:fileheader
+prefix	Makefile	/^prefix = \/home\/bbs\/bbshome$/;"	m
+prev	oldstruct.h	/^	int prev[MAXUSERS];$/;"	m	struct:UCACHE
+printf	convboards.c	12;"	d	file:
+printf	convpasswd.c	9;"	d	file:
+printf	strip_fh.c	3;"	d	file:
+realname	convpasswd.c	/^    char realname[40];$/;"	m	struct:olduserec	file:
+realname	fb2kstruct.h	/^    char realname[NAMELEN];$/;"	m	struct:olduserec
+realname	oldstruct.h	/^        char            realname[NAMELEN];$/;"	m	struct:userec
+realname	oldstruct.h	/^        char    realname[ 20 ];$/;"	m	struct:user_info
+reginfo	convpasswd.c	/^    char reginfo[STRLEN - 16];$/;"	m	struct:olduserec	file:
+reginfo	fb2kstruct.h	/^    char reginfo[STRLEN - 16];$/;"	m	struct:olduserec
+reginfo	oldstruct.h	/^        char            reginfo[STRLEN-16];$/;"	m	struct:userec
+reid	lilac.h	/^    unsigned int id, groupid, reid;$/;"	m	struct:fileheader
+reid	oldstruct.h	/^		unsigned int reid;$/;"	m	struct:fileheader
+reid	strip_fh.c	/^		unsigned int reid;$/;"	m	struct:fileheader_v1_2	file:
+reject	oldstruct.h	/^        unsigned short  reject[MAXREJECTS];$/;"	m	struct:user_info
+reply_mode	oldstruct.h	/^        int reply_mode;$/;"	m	struct:postheader
+rollback_board	strip_fh.c	/^static int rollback_board(struct boardheader *bh, void *arg)$/;"	f	file:
+rollback_board_file	strip_fh.c	/^static void rollback_board_file(const char *bname, const char *dir)$/;"	f	file:
+rollback_mail	strip_fh.c	/^static int rollback_mail(struct userec *user, char *arg)$/;"	f	file:
+rollback_mail_file	strip_fh.c	/^static void rollback_mail_file(const char *username, const char *dir)$/;"	f	file:
+s	conv_pc4fb2k.c	/^MYSQL s;$/;"	v
+s_content	oldstruct.h	/^struct s_content {$/;"	s
+s_template	oldstruct.h	/^struct s_template {$/;"	s
+sbindir	Makefile	/^sbindir = ${exec_prefix}\/sbin$/;"	m
+seccode	lilac.c	/^const char seccode[SECNUM][5] = {$/;"	v
+secname	lilac.c	/^const char secname[SECNUM][2][20] = {$/;"	v
+sent	oldstruct.h	/^    char sent;$/;"	m	struct:msghead
+set_posttime	lilac.c	/^void set_posttime(struct fileheader *fileinfo)$/;"	f
+set_posttime2	lilac.c	/^void set_posttime2(struct fileheader *dest, struct fileheader *src)$/;"	f
+sharedstatedir	Makefile	/^sharedstatedir = ${prefix}\/com$/;"	m
+shmkeys	lilac.c	/^static const struct _shmkey shmkeys[] = {$/;"	v	file:
+shortfile	oldstruct.h	/^struct shortfile {               \/* used for caching files and boards *\/$/;"	s
+showuserip	lilac.c	/^char * showuserip(struct userec *user, char *ip)$/;"	f
+signature	convpasswd.c	/^    int signature;$/;"	m	struct:olduserec	file:
+signature	fb2kstruct.h	/^    int signature;$/;"	m	struct:olduserec
+signature	oldstruct.h	/^        int             signature;$/;"	m	struct:userec
+simple_digest	gen_title.c	/^static int simple_digest(char *str, int maxlen)$/;"	f	file:
+sockactive	oldstruct.h	/^        int     sockactive;      \/* Used to coordinate talk requests *\/$/;"	m	struct:user_info
+sockaddr	oldstruct.h	/^        int     sockaddr;        \/* ... *\/$/;"	m	struct:user_info
+source	Makefile	/^	source='$<' object='$@' libtool=no \\$/;"	m
+source	Makefile	/^	source='$<' object='$@' libtool=yes \\$/;"	m
+special_user	oldstruct.h	/^struct special_user {        $/;"	s
+specialdate	oldstruct.h	/^		time_t specialdate;$/;"	m	struct:special_user
+srcdir	Makefile	/^srcdir = .$/;"	m
+state	oldstruct.h	/^        int state;            \/\/0~5为斑竹任期描述，6以后为其他特殊权限保留$/;"	m	struct:special_user
+status	oldstruct.h	/^    int status[10];$/;"	m	struct:key_struct
+stay	convpasswd.c	/^    time_t stay;$/;"	m	struct:olduserec	file:
+stay	fb2kstruct.h	/^    time_t stay;$/;"	m	struct:olduserec
+stay	oldstruct.h	/^        time_t          stay;$/;"	m	struct:userec
+strip_board	strip_fh.c	/^static int strip_board(struct boardheader *bh, void *arg)$/;"	f	file:
+strip_fh_DEPENDENCIES	Makefile	/^strip_fh_DEPENDENCIES =$/;"	m
+strip_fh_LDADD	Makefile	/^strip_fh_LDADD = $(LDADD)$/;"	m
+strip_fh_LDFLAGS	Makefile	/^strip_fh_LDFLAGS =$/;"	m
+strip_fh_OBJECTS	Makefile	/^strip_fh_OBJECTS = strip_fh.$(OBJEXT)$/;"	m
+strip_fh_SOURCES	Makefile	/^strip_fh_SOURCES = strip_fh.c$/;"	m
+strip_fileheader	strip_fh.c	/^static void strip_fileheader(const fileheader_v1_2 * oldfh, fileheader * fh, const char *bname, const char *dir)$/;"	f	file:
+strip_index_file	strip_fh.c	/^static void strip_index_file(const char *bname, const char *dir)$/;"	f	file:
+strip_mail	strip_fh.c	/^static int strip_mail(struct userec *user, char *arg)$/;"	f	file:
+strip_mail_fileheader	strip_fh.c	/^static void strip_mail_fileheader(const fileheader_v1_2 * oldfh, fileheader * fh, const char *username, const char *dir)$/;"	f	file:
+strip_mail_index_file	strip_fh.c	/^static void strip_mail_index_file(const char *username, const char *dir)$/;"	f	file:
+subdir	Makefile	/^subdir = contrib\/fb2k2smth$/;"	m
+sysconfdir	Makefile	/^sysconfdir = ${prefix}\/etc$/;"	m
+tags	Makefile	/^	tags=; \\$/;"	m
+telnet_count	lilac.c	/^    int telnet_count;$/;"	m	struct:count_arg	file:
+termtype	convpasswd.c	/^    char termtype[16];$/;"	m	struct:olduserec	file:
+termtype	fb2kstruct.h	/^    char termtype[16];$/;"	m	struct:olduserec
+termtype	oldstruct.h	/^        char            termtype[16];$/;"	m	struct:userec
+text	oldstruct.h	/^    char text[50];$/;"	m	struct:s_content
+time	oldstruct.h	/^    time_t time;$/;"	m	struct:msghead
+time	strip_fh.c	280;"	d	file:
+title	convboards.c	/^        char title[STRLEN ];$/;"	m	struct:oldboardheader	file:
+title	fb2kstruct.h	/^    char title[STRLEN];$/;"	m	struct:oldboardheader
+title	fb2kstruct.h	/^    char title[STRLEN];$/;"	m	struct:oldfileheader
+title	lilac.h	/^    char title[ARTICLE_TITLE_LEN];$/;"	m	struct:fileheader
+title	oldstruct.h	/^        char title[STRLEN ];$/;"	m	struct:boardheader
+title	oldstruct.h	/^        char title[STRLEN];$/;"	m	struct:fileheader
+title	oldstruct.h	/^        char title[STRLEN];$/;"	m	struct:postheader
+title	oldstruct.h	/^        char title[STRLEN];$/;"	m	struct:shortfile
+title	oldstruct.h	/^    char title[50];$/;"	m	struct:s_template
+title	strip_fh.c	/^        char title[80];$/;"	m	struct:fileheader_v1_2	file:
+title_prefix	oldstruct.h	/^    char title_prefix[20];$/;"	m	struct:s_template
+title_tmpl	oldstruct.h	/^    char title_tmpl[STRLEN];$/;"	m	struct:s_template
+tmpdepfile	Makefile	/^	depfile='$(DEPDIR)\/$*.Plo' tmpdepfile='$(DEPDIR)\/$*.TPlo' \\$/;"	m
+tmpdepfile	Makefile	/^	depfile='$(DEPDIR)\/$*.Po' tmpdepfile='$(DEPDIR)\/$*.TPo' \\$/;"	m
+tmpl	oldstruct.h	/^    struct s_template *tmpl;$/;"	m	struct:a_template
+top_builddir	Makefile	/^top_builddir = ..\/..$/;"	m
+top_distdir	Makefile	/^top_distdir = ..\/..$/;"	m
+top_srcdir	Makefile	/^top_srcdir = ..\/..$/;"	m
+topid	oldstruct.h	/^    int frompid, topid;$/;"	m	struct:msghead
+total	oldstruct.h	/^		int total;$/;"	m	struct:shortfile
+transform	Makefile	/^transform = s,x,x,$/;"	m
+trimleft	conv_pc4fb2k.c	/^void trimleft(char *buff)$/;"	f
+trimright	conv_pc4fb2k.c	/^void trimright(char *buff)$/;"	f
+tty	oldstruct.h	/^        char    tty[ 20 ];       \/* tty port *\/$/;"	m	struct:user_info
+uid	oldstruct.h	/^        int     uid;             \/* Used to find user name in passwd file *\/$/;"	m	struct:user_info
+uinfo	oldstruct.h	/^    struct user_info    uinfo[ USHM_SIZE ];$/;"	m	struct:UTMPFILE
+uleveltochar	lilac.c	/^int uleveltochar(char *buf, struct userec *lookupuser)$/;"	f
+unique	Makefile	/^	unique=`for i in $$list; do \\$/;"	m
+unused	convboards.c	/^		char unused[16];$/;"	m	struct:oldboardheader	file:
+unused	oldstruct.h	/^		char unused[16];$/;"	m	struct:boardheader
+unused	oldstruct.h	/^		char unused[16];$/;"	m	struct:shortfile
+unused	oldstruct.h	/^		char unused[44];$/;"	m	struct:fileheader
+unused	oldstruct.h	/^    char unused[16];$/;"	m	struct:s_template
+unused	strip_fh.c	/^		char unused[44];$/;"	m	struct:fileheader_v1_2	file:
+unused1	lilac.h	/^    char unused1[16];$/;"	m	struct:fileheader
+uptime	oldstruct.h	/^    time_t              uptime;$/;"	m	struct:UTMPFILE
+uptime	oldstruct.h	/^    time_t      uptime;$/;"	m	struct:BCACHE
+uptime	oldstruct.h	/^    time_t      uptime;$/;"	m	struct:UCACHE
+uschar	oldstruct.h	/^typedef unsigned char uschar;$/;"	t
+user_definestr	lilac.c	/^const char *user_definestr[] = {$/;"	v
+user_info	oldstruct.h	/^struct user_info {               \/* Structure used in UTMP file *\/$/;"	s
+userdefine	convpasswd.c	/^    unsigned int userdefine;$/;"	m	struct:olduserec	file:
+userdefine	fb2kstruct.h	/^    unsigned int userdefine;$/;"	m	struct:olduserec
+userdefine	oldstruct.h	/^        unsigned int    userdefine;$/;"	m	struct:userec
+userdefine1	convpasswd.c	/^    unsigned int userdefine1;$/;"	m	struct:olduserec	file:
+userdefine1	oldstruct.h	/^		unsigned int	userdefine1;$/;"	m	struct:userec
+userec	oldstruct.h	/^struct userec {                  \/* Structure used to hold information in *\/$/;"	s
+userid	convpasswd.c	/^    char userid[14];     \/* PASSFILE *\/$/;"	m	struct:olduserec	file:
+userid	fb2kstruct.h	/^    char userid[IDLEN + 2];     \/* PASSFILE *\/$/;"	m	struct:olduserec
+userid	oldstruct.h	/^        char            userid[IDLEN+2];   \/* PASSFILE *\/$/;"	m	struct:userec
+userid	oldstruct.h	/^        char    userid[ 20 ];$/;"	m	struct:user_info
+userid	oldstruct.h	/^        char userid[20];      \/\/ 实现斑竹任期制$/;"	m	struct:special_user
+userid	oldstruct.h	/^    char        userid[ MAXUSERS ][ IDLEN + 1 ];$/;"	m	struct:UCACHE
+userlevel	convpasswd.c	/^    unsigned userlevel;$/;"	m	struct:olduserec	file:
+userlevel	fb2kstruct.h	/^    unsigned int userlevel;$/;"	m	struct:olduserec
+userlevel	oldstruct.h	/^        unsigned int    userlevel;$/;"	m	struct:userec
+username	convpasswd.c	/^    char username[40];$/;"	m	struct:olduserec	file:
+username	fb2kstruct.h	/^    char username[NAMELEN];$/;"	m	struct:olduserec
+username	oldstruct.h	/^        char            username[NAMELEN];$/;"	m	struct:userec
+username	oldstruct.h	/^        char    username[NAMELEN];$/;"	m	struct:user_info
+usersum	oldstruct.h	/^    unsigned short      usersum;$/;"	m	struct:UTMPFILE
+utmpkey	oldstruct.h	/^	int	utmpkey;$/;"	m	struct:user_info
+value	lilac.c	/^    int value;$/;"	m	struct:_shmkey	file:
+version	oldstruct.h	/^    int version;$/;"	m	struct:s_template
+www_count	lilac.c	/^    int www_count;$/;"	m	struct:count_arg	file:
