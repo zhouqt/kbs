@@ -24,6 +24,13 @@ struct _shmkey
 	int value;
 };
 
+const char *mailbox_prop_str[] =
+{
+	"发信时保存信件到发件箱",
+	"删除信件时不保存到垃圾箱",
+	"版面按 'v' 时进入: 收件箱(OFF) / 信箱主界面(ON)",
+};
+
 static const struct _shmkey shmkeys[]= {
 { "BCACHE_SHMKEY",  3693 },
 { "UCACHE_SHMKEY",  3696 },

@@ -371,6 +371,23 @@ typedef struct fileheader fileheader_t;
 #define GET_MAILFILENAME(x,y) get_postfilename(x,y,0)
 #define VALID_FILENAME(x) valid_filename(x,0)
 
+
+/**
+ *  * Mailbox properties.
+ *   * 
+ *    * @author flyriver
+ *     */
+
+#define MBP_SAVESENTMAIL      0x00000001
+#define MBP_FORCEDELETEMAIL   0x00000002
+#define MBP_MAILBOXSHORTCUT   0x00000004
+
+extern const char *mailbox_prop_str[];
+#define MBP_NUMS 3
+
+#define HAS_MAILBOX_PROP(u, x) ((u)->mailbox_prop & x)
+
+
 /**
  * Mailgroup macros.
  *
