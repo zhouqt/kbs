@@ -5,6 +5,7 @@ libfriendtest_la_SOURCES = friendtest.c
 libbbsnet_la_SOURCES = bbsnet.c tcplib.c
 libpandora_la_SOURCES = pandora.c tcplib.c
 libdict_la_SOURCES = dict.c
+libdict_la_LIBADD = -lmysqlclient
 libdir=${prefix}/service
 AM_CFLAGS = -DINVISIBLE -DSAFE_KILL -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME -I$(top_builddir)/src
 CLEANFILES=@EXTRA_CLEAN@
