@@ -1025,3 +1025,76 @@ int del_from_file(char filename[STRLEN],char str[STRLEN])
     return(f_mv(fnnew, filename));
 }
 
+int
+simplepasswd( str )
+char *str;
+{
+    char        ch;
+
+    while( (ch = *str++) != '\0' ) {
+        if( ! (ch >= 'a' && ch <= 'z') )
+            return 0;
+    }
+    return 1;
+}
+
+void
+logattempt( uid, frm )
+char *uid, *frm;
+{
+    char        fname[ STRLEN ];
+    int         fd, len;
+	char buf[256];
+
+    snprintf( buf, sizeof(buf), "%-12.12s  %-30s %s\n",
+                uid, Ctime( bbstime(0)), frm );
+    len = strlen( buf );
+    if( (fd = open( BADLOGINFILE, O_WRONLY|O_CREAT|O_APPEND, 0644 )) >= 0 ) {
+        write( fd, buf, len );
+        close( fd );
+    }
+    sethomefile( fname, uid, BADLOGINFILE );
+    if( (fd = open( fname, O_WRONLY|O_CREAT|O_APPEND, 0644 )) >= 0 ) {
+        write( fd, buf, len );
+        close( fd );
+    }
+}
+
+int
+check_ban_IP(char *IP, char *buf)
+{ /* Leeward 98.07.31
+  RETURN:
+ - 1: No any banned IP is defined now
+ 0: The checked IP is not banned
+  other value over 0: The checked IP is banned, the reason is put in buf
+  */
+  FILE *Ban = fopen(".badIP", "r");
+  char IPBan[64];
+  int  IPX = - 1;
+  char *ptr;
+
+  if (!Ban)
+    return IPX;
+  else
+    IPX ++;
+
+  while (fgets(IPBan, 64, Ban))
+  {
+    if ((ptr = strchr(IPBan, '\n'))!=NULL)
+      *ptr = 0;
+    if ((ptr = strchr(IPBan, ' '))!=NULL)
+    {
+      *ptr ++ = 0;
+      strcpy(buf, ptr);
+    }
+    IPX = strlen(IPBan);
+    if (*IPBan=='+')
+        if (!strncmp(IP, IPBan+1, IPX-1))
+          break;
+    IPX = 0;
+  }
+
+  fclose(Ban);
+  return IPX;
+}
+
