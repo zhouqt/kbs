@@ -81,6 +81,7 @@ function showSecs($secNum=0,$group,$isFold) {
 			$rows = sizeof($brd_name);
 			$isFirst=false;
 			for ($i = 0; $i < $rows; $i++)	{
+				flush();
 				$isFirst=!$isFirst;
 				if ($isFold){
 					if ($brd_name[$i]=='Registry')
