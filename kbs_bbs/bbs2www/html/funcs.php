@@ -253,6 +253,10 @@ function bbs_get_vote_filename($boardname, $filename)
 	return "vote/" . $boardname . "/" . $filename;
 }
 
+function gmt_date_format($t) {
+	return gmdate("D, d M Y H:i:s", $t) . " GMT";
+}
+
 function error_alert($msg)
 {
 ?>
@@ -277,58 +281,50 @@ window.location="/nologin.html";
 <?php
 }
 
-function cache_header($scope,$modifytime=0,$expiretime=300)
-{
+/* used by cache_header() and update_cache_header()，不应该直接被调用 */
+function cache_process($scope, $forcecachetime, $modifytime, $expiretime) {
 	global $cachemode;
-	session_cache_limiter($scope);
+	//session_cache_limiter($scope);
 	$cachemode=$scope;
-	if ($scope=="no-cache")
+	if ($scope=="nocache") {
+		header("Expires: Thu, 19 Nov 1981 08:52:00 GMT");
+		header("Cache-Control: no-store, no-cache, must-revalidate");
+		header("Pragma: no-cache");
 		return FALSE;
+	}
 	@$oldmodified=$_SERVER["HTTP_IF_MODIFIED_SINCE"];
 	if ($oldmodified!="") {
-                $oldtime=strtotime($oldmodified);
+		$oldtime = strtotime($oldmodified) + $forcecachetime;
 	} else $oldtime=0;
-	if ($oldtime>=$modifytime) {
+	if ($oldtime >= $modifytime) {
 		header("HTTP/1.1 304 Not Modified");
-	        header("Cache-Control: max-age=" . "$expiretime");
+		header("Cache-Control: max-age=" . "$expiretime");
 		return TRUE;
 	}
-	header("Last-Modified: " . gmdate("D, d M Y H:i:s", $modifytime) . " GMT");
-	header("Expires: " . gmdate("D, d M Y H:i:s", $modifytime+$expiretime) . " GMT");
+	header("Last-Modified: " . gmt_date_format($modifytime));
+	header("Expires: " . gmt_date_format(time()+$expiretime));
 	header("Cache-Control: max-age=" . "$expiretime");
 	return FALSE;
 }
 
+function cache_header($scope,$modifytime=0,$expiretime=300)
+{
+	return cache_process($scope, 0, $modifytime, $expiretime);
+}
+
 function update_cache_header($updatetime = 10,$expiretime = 300)
 {
-	global $cachemode;
-	$scope = "public, must-revalidate";
-	$modifytime=time();
-	session_cache_limiter($scope);
-	$cachemode=$scope;
-	@$oldmodified=$_SERVER["HTTP_IF_MODIFIED_SINCE"];
-	if ($oldmodified!="") {
-                $oldtime=strtotime($oldmodified);
-	} else $oldtime=0;
-	if ($modifytime - $oldtime < 60 * $updatetime ) {
-		header("HTTP/1.1 304 Not Modified");
-	        header("Cache-Control: max-age=" . "$expiretime");
-		return TRUE;
-	}
-	header("Last-Modified: " . gmdate("D, d M Y H:i:s", $modifytime) . " GMT");
-	header("Expires: " . gmdate("D, d M Y H:i:s", $modifytime+$expiretime) . " GMT");
-	header("Cache-Control: max-age=" . "$expiretime");
-	return FALSE;
+	return cache_process("public", 60 * $updatetime, time(), $expiretime);
 }
+
 
 function html_init($charset,$title="",$otherheader="",$new_style=0)
 {
 	global $cachemode;
 	global $currentuser;
 	if ($cachemode=="") {
-		cache_header("no-cache");
-		Header("Cache-Control: no-cache");
-    	}
+		cache_header("nocache");
+    }
 ?>
 <?xml version="1.0" encoding="<?php echo $charset; ?>"?>
 <!DOCTYPE html
