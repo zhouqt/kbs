@@ -935,7 +935,7 @@ int apply_thread(struct _select_def* conf, struct fileheader* fh,APPLY_THREAD_FU
                 /* 移动指针*/
                 if (needmove) {
                     if (down) {
-                        if (++now > read_arg->filecount)
+                        if (++now > recordcount)
                             break;
                         nowFh++;
                     } else {
@@ -965,6 +965,7 @@ int apply_thread(struct _select_def* conf, struct fileheader* fh,APPLY_THREAD_FU
 
                     /*在返回APPLY_REAPPLY的时候不需要移动指针*/
                     if (ret==APPLY_REAPPLY) {
+                        recordcount--;
                         read_arg->filecount--;
                         needmove=false;
                     } else 
