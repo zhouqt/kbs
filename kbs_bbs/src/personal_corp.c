@@ -1140,7 +1140,7 @@ int pc_add_a_node(unsigned long nid)
     } else
         unlink(fpath);
 
-    if (vedit(fpath, 0, NULL, NULL) == -1)
+    if (vedit(fpath, 0, NULL, NULL, 0) == -1)
         return 0;
 
     pn.body = NULL;
@@ -1747,7 +1747,7 @@ static int pc_add_a_com(unsigned long nid)
     } else
         unlink(fpath);
 
-    if (vedit(fpath, 0, NULL, NULL) == -1)
+    if (vedit(fpath, 0, NULL, NULL, 0) == -1)
         return 0;
 
     pn.body = NULL;

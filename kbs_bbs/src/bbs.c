@@ -2553,6 +2553,9 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 					write_header(fp, currentuser, 0, currboard->filename, post_file.title, Anony, 0);
 					while(fgets(buff,255,fp1))
 						fprintf(fp,"%s",buff);
+
+					bbsmain_add_loginfo(fp, currentuser, currboard->filename, Anony);
+
 					fclose(fp);
 					fclose(fp1);
 
@@ -2573,7 +2576,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     strcpy(quote_board, currboard->filename);
 
 	if( use_tmpl <= 0 )
-	    aborted = vedit(filepath, true, &eff_size, NULL);    /* 进入编辑状态 */
+	    aborted = vedit(filepath, true, &eff_size, NULL, 1);    /* 进入编辑状态 */
 	else{
     	struct stat st;
 		if(stat(filepath, &st)!=-1)
@@ -2582,10 +2585,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 			eff_size = 0;
 	}
 
-
     post_file.eff_size = eff_size;
-
-    add_loginfo(filepath, currentuser, currboard->filename, Anony);       /*添加最后一行 */
 
     strncpy(post_file.title, save_title, ARTICLE_TITLE_LEN - 1);
 	post_file.title[ARTICLE_TITLE_LEN - 1] = '\0';
@@ -4638,7 +4638,7 @@ static int tmpl_key(struct _select_def *conf, int key)
 
 			setbfile(filepath, currboard->filename, ptemplate[conf->pos-1].tmpl->filename);
 
-			vedit(filepath,0,NULL,NULL);
+			vedit(filepath,0,NULL,NULL,0);
         modify_user_mode(oldmode);
 
 			return SHOW_REFRESH;

@@ -112,7 +112,7 @@ int b_notes_edit()
     } else {
         oldmode = uinfo.mode;
         modify_user_mode(EDITUFILE);
-        aborted = vedit(buf, false,NULL, NULL);
+        aborted = vedit(buf, false,NULL, NULL, 0);
         modify_user_mode(oldmode);
     }
     if (aborted == -1) {
@@ -176,7 +176,7 @@ int b_banner_edit()
     } else {
         oldmode = uinfo.mode;
         modify_user_mode(EDITUFILE);
-        aborted = vedit(buf, false,NULL, NULL);
+        aborted = vedit(buf, false,NULL, NULL, 0);
         modify_user_mode(oldmode);
     }
     if (aborted == -1) {
@@ -215,7 +215,7 @@ int b_sec_notes_edit(struct _select_def* conf,struct fileheader *fileinfo,void* 
         } else
             aborted = -1;
     } else
-        aborted = vedit(buf, false,NULL, NULL);
+        aborted = vedit(buf, false,NULL, NULL, 0);
     if (aborted == -1) {
         pressreturn();
     } else {
@@ -252,7 +252,7 @@ int b_jury_edit(struct _select_def* conf,struct fileheader *fileinfo,void* extra
         } else
             aborted = -1;
     } else if (ans[0] == 'E' || ans[0] == 'e')
-        aborted = vedit(buf, false,NULL, NULL);
+        aborted = vedit(buf, false,NULL, NULL, 0);
     else {
         prints("取消");
         aborted = -1;
@@ -633,7 +633,7 @@ char *bname;
     pressanykey();
     setvfile(genbuf, bname, "desc");
     sprintf(buf, "%s.%lu", genbuf, ball->opendate);
-    aborted = vedit(buf, false, NULL, NULL);
+    aborted = vedit(buf, false, NULL, NULL, 0);
     if (aborted) {
         clear();
         prints("取消此次投票\n");

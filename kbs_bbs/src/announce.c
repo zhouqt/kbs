@@ -834,7 +834,7 @@ int mode;
         a_report(buf);
         switch (mode) {
         case ADDITEM:
-            if (-1 == vedit(fpath, 0, NULL,NULL))
+            if (-1 == vedit(fpath, 0, NULL,NULL, 0))
                 return;         /* Leeward 98.06.12 fixes bug */
             chmod(fpath, 0644);
             break;
@@ -1422,7 +1422,7 @@ void a_manager(MENU *pm,int ch)
 
                 if (dashf(fpath)) {
                     modify_user_mode(EDITANN);
-                    vedit(fpath, 0, NULL,NULL);
+                    vedit(fpath, 0, NULL,NULL, 0);
                     modify_user_mode(CSIE_ANNOUNCE);
                 }
                 pm->page = 9999;
@@ -1490,7 +1490,7 @@ void a_manager(MENU *pm,int ch)
             if (dashf(fpath)) {
                 long attachpos;
                 modify_user_mode(EDITANN);
-                vedit(fpath, 0, NULL,&attachpos);
+                vedit(fpath, 0, NULL,&attachpos, 0);
                 if (item->attachpos!=attachpos) {
                     item->attachpos=attachpos;
                     if (a_savenames(pm) != 0) {

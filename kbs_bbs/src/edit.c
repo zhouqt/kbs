@@ -775,7 +775,31 @@ int valid_article(pmt, abort)
 
 }
 
-int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, long attach_length)
+void bbsmain_add_loginfo(FILE *fp, struct userec *user, char *currboard, int Anony)
+{                               /* POST 最后一行 添加 */
+    int color, noidboard;
+    char fname[STRLEN];
+
+    noidboard = (anonymousboard(currboard) && Anony);   /* etc/anonymous文件中 是匿名版版名 */
+    color = (user->numlogins % 7) + 31; /* 颜色随机变化 */
+    sethomefile(fname, user->userid, "signatures");
+    if (!dashf(fname) ||        /* 判断是否已经 存在 签名档 */
+        user->signature == 0 || noidboard) {
+        fputs("\n--\n", fp);
+    } else {                    /*Bigman 2000.8.10修改,减少代码 */
+        fprintf(fp, "\n");
+    }
+    /*
+     * 由Bigman增加:2000.8.10 Announce版匿名发文问题 
+     */
+    if (!strcmp(currboard, "Announce"))
+        fprintf(fp, "\033[m\033[1;%2dm※ 来源:·%s %s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, NAME_BBS_CHINESE " BBS站");
+    else
+        fprintf(fp, "\n\033[m\033[1;%2dm※ 来源:·%s %s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, (noidboard) ? NAME_ANONYMOUS_FROM : SHOW_USERIP(currentuser, fromhost));
+    return;
+}
+
+int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, long attach_length, int add_loginfo)
 {
     struct textline *p = firstline;
     FILE *fp=NULL;
@@ -1044,6 +1068,8 @@ fsdfa
         p = v;
     }
     if (!aborted) {
+		if(add_loginfo)
+			bbsmain_add_loginfo(fp, currentuser, quote_board, Anony);
         fclose(fp);
         if (pattachpos && *pattachpos) {
             char buf[MAXPATH];
@@ -1946,7 +1972,7 @@ void vedit_key(int ch)
 
 extern int icurrchar, ibufsize;
 
-static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,long* pattachpos)
+static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,long* pattachpos,int add_loginfo)
 {
     int newch, ch = 0, foo;
     struct textline *st_tmp, *st_tmp2;
@@ -1986,7 +2012,7 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,
                 firstline->prev = st_tmp;
                 firstline = st_tmp2;
             }
-            foo = write_file(filename, saveheader, eff_size,pattachpos,attach_length);
+            foo = write_file(filename, saveheader, eff_size,pattachpos,attach_length, add_loginfo);
             if (foo != KEEP_EDITING)
                 return foo;
             if (headlines) {
@@ -2017,7 +2043,7 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,
     return 1;
 }
 
-int vedit(char *filename,int saveheader,long* eff_size,long *pattachpos)
+int vedit(char *filename,int saveheader,long* eff_size,long *pattachpos,int add_loginfo)
 {
     int ans, t;
     long attachpos=0;
@@ -2032,7 +2058,7 @@ int vedit(char *filename,int saveheader,long* eff_size,long *pattachpos)
 #ifdef NEW_HELP
 	helpmode = HELP_EDIT;
 #endif
-    ans = raw_vedit(filename, saveheader, 0,eff_size,pattachpos?pattachpos:&attachpos);
+    ans = raw_vedit(filename, saveheader, 0,eff_size,pattachpos?pattachpos:&attachpos, add_loginfo);
 #ifdef NEW_HELP
 	helpmode = oldhelpmode;
 #endif
@@ -2048,7 +2074,7 @@ int vedit_post(char *filename,int saveheader,long* eff_size,long* pattachpos)
     showansi = 0;
     ismsgline = (DEFINE(currentuser, DEF_EDITMSG)) ? 1 : 0;
     domsg();
-    ans = raw_vedit(filename, saveheader, 4, eff_size,pattachpos);   /*Haohmaru.99.5.5.应该保留一个空行 */
+    ans = raw_vedit(filename, saveheader, 4, eff_size,pattachpos, 0);   /*Haohmaru.99.5.5.应该保留一个空行 */
     showansi = t;
     return ans;
 }

@@ -244,7 +244,7 @@ int mailall()
                 }
             }
             do_quote(fname, include_mode, "", quote_user);
-            if (vedit(fname, true, NULL, NULL) == -1) {
+            if (vedit(fname, true, NULL, NULL,0) == -1) {
                 in_mail = false;
                 unlink(fname);
                 clear();
@@ -512,7 +512,7 @@ int do_send(char *userid, char *title, char *q_file)
     if (internet_mail) {
         int res, ch;
 
-        if (vedit(filepath, false, NULL, NULL) == -1) {
+        if (vedit(filepath, false, NULL, NULL,0) == -1) {
             unlink(filepath);
             clear();
             return -2;
@@ -580,7 +580,7 @@ int do_send(char *userid, char *title, char *q_file)
     } else
 #endif
     {
-        if (vedit(filepath, true, NULL, NULL) == -1) {
+        if (vedit(filepath, true, NULL, NULL, 0) == -1) {
             unlink(filepath);
             clear();
             return -2;
@@ -1887,7 +1887,7 @@ static int do_gsend(char *userid[], char *title, int num)
      */
 
     strcpy(quote_title, save_title);
-    if (vedit(tmpfile, true, NULL, NULL) == -1) {
+    if (vedit(tmpfile, true, NULL, NULL,0) == -1) {
         unlink(tmpfile);
         clear();
         modify_user_mode(oldmode);
@@ -2120,7 +2120,7 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
     if (askyn("是否修改文章内容", 0) == 1) {
 		int oldmode = uinfo.mode;
 		modify_user_mode(SMAIL);
-        if (vedit(fname, false, NULL, &fh->attachment) != -1) {
+        if (vedit(fname, false, NULL, &fh->attachment,0) != -1) {
             if (ADD_EDITMARK)
                 add_edit_mark(fname, 1, fh->title);
         }

@@ -658,7 +658,7 @@ int calendar_main()
                     decode_file(buf, buf2);
                 else
                     cc = newfile(buf2);
-                if(!vedit(buf2, 0, &eff_size, 0)) 
+                if(!vedit(buf2, 0, &eff_size, 0, 0)) 
                     encode_file(buf2, buf);
                 unlink(buf2);
                 modify_user_mode(CALENDAR);
