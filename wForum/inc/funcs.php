@@ -553,7 +553,7 @@ function head_var($Title)
 <tr>
 <td height=25>
 <BR>
->>ª∂”≠π‚¡Ÿ <B><?php       echo $SiteName; ?></B>
+>> ª∂”≠π‚¡Ÿ <B><?php       echo $SiteName; ?></B>
 </td></tr>
 </table>
 <table cellspacing=1 cellpadding=3 align=center class=tableBorder2>

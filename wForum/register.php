@@ -26,7 +26,7 @@ show_footer();
 function do_show() {
 ?>
 <table cellpadding=3 cellspacing=1 align=center class=tableborder1>
-    <tr><th align=center><form action="reg.php" method=post>服务条款和声明</td></tr>
+    <tr><th align=center><form action="<?php echo $_SERVER['PHP_SELF'] ?>" method=post>服务条款和声明</td></tr>
 	<input type="hidden" name="action" value="apply">
     <tr><td class=tablebody1 align=left>
 <?php	require("inc/reg_txt.php") ; ?>
@@ -42,7 +42,7 @@ function do_apply(){
 	global $SiteName;
 ?>
 
-<form method=post action="reg.php">
+<form method=post action="<?php echo $_SERVER['PHP_SELF'] ?>">
 <input type="hidden" name="action" value="save">
 <table cellpadding=3 cellspacing=1 align=center class=tableborder1>
 <thead>
@@ -136,10 +136,12 @@ function do_save(){
 
 
 	if(strcmp($pass1,$pass2))
-		html_error_quit("两次密码输入不一样");
+		foundErr("两次密码输入不一样");
 	else if(strlen($pass1) < 5 || !strcmp($pass1,$userid))
-       	html_error_quit("密码长度太短或者和用户名相同!");
-
+       	foundErr("密码长度太短或者和用户名相同!");
+	if (isErrFounded() ){
+		return false;
+	}
 	$ret=bbs_createnewid($userid,$pass1,$nickname);
 	switch($ret)
 	{
