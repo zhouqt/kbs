@@ -106,7 +106,7 @@ int updatelastpost(char *board)
 void resolve_boards()
 {
 	int boardfd;
-	int iscreate;
+	int iscreate=0;
 	
     if( brdshm == NULL ) {
         brdshm = attach_shm( "BCACHE_SHMKEY", 3693, sizeof( *brdshm ) ,&iscreate); /* attach board share memory*/
