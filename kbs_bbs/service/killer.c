@@ -235,7 +235,7 @@ struct action condition_data[] = {
 void send_msg(int u, char* msg)
 {
     int i, j, k;
-    char buf[200], buf2[200], buf3[200];
+    char buf[200], buf2[200];
     j=MAX_MSG;
     if(inrooms[myroom].msgs[(MAX_MSG-1+inrooms[myroom].msgi)%MAX_MSG][0]==0)
     for(i=0;i<MAX_MSG;i++)
@@ -264,7 +264,6 @@ void send_msg(int u, char* msg)
         send_msg(u, buf);
         strcpy(buf, buf2+i);
     }
-    buf[54]=0;
     if(j==MAX_MSG) {
         strcpy(inrooms[myroom].msgs[inrooms[myroom].msgi], buf);
         if(u==-1)
@@ -849,7 +848,7 @@ int do_com_menu()
 
 void join_room(int w, int spec)
 {
-    char buf[200],buf2[200],buf3[200],msg[80],roomname[80];
+    char buf[200],buf2[200],buf3[200],msg[200],roomname[80];
     int i,j,k,killer,me;
     clear();
     myroom = w;
