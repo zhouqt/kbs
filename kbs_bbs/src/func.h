@@ -418,8 +418,10 @@ extern "C" {
     int check_badword(char *checkfile);
     int check_filter(char *patternfile, char *checkfile, int defaultval);
     int check_badword_str(char *string, int str_len);
-
-
+    
+/* register */
+int auto_register(char* userid,char* email,int msize);
+    
 #ifdef __cplusplus
 }
 #endif
