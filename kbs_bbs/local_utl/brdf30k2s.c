@@ -1,3 +1,6 @@
+/*
+ * This program converts .BOARDS and boards data from Firebird 3.0K beta6 to smth_bbs
+ */
 #include "bbs.h"
 #include "oldstruct30k.h"
 
