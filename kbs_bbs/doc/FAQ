@@ -25,7 +25,7 @@
   解决办法如下：
     a) 下载并安装最新的 smthbbs snapshot，我们建议您这么做；
     b) 如果您确实想用老的 smthbbs 版本，那么可以参照以下步骤：
-         cd ~bbs
+         cd $(BBSHOME)
          mkdir var
        然后再重新启动 bbsd 即可。
 
