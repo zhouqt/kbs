@@ -61,7 +61,7 @@ if (isset($_GET['act'])) {
                 break;
             if (!strcasecmp($userid,'guest') || !strcasecmp($userid,'SYSOP'))
                 html_error_quit("不能封禁 ".$userid);
-            switch (bbs_denyadd($board,$userid,$exp,$denyday,1)) {
+            switch (bbs_denyadd($board,$userid,$exp,$denyday,0)) {
                 case -1:
                 case -2:
                     html_error_quit("讨论区错误");
