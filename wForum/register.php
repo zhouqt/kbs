@@ -97,7 +97,7 @@ function do_apply(){
 <input type=password name=pass2 size=12 maxlength=12></TD>
 </TR>
 <TR> 
-<TD width=40% class=TableBody1><B>验证码</B>：请输入下面图片中字符串<br>
+<TD width=40% class=TableBody1><B>验证码</B>：请输入下面图片中的四个数字<br>
 <IMG src="img_rand/img_rand.php"></TD>
 <TD width=60%  class=TableBody1> 
 <input type=text name=validCode size=12 maxlength=12></TD>
