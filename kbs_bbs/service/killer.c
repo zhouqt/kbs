@@ -759,6 +759,7 @@ int do_com_menu()
         resetcolor();
         move(t_lines-1,0);
         clrtoeol();
+        offset = 0;
         while(menupos[sel]-menupos[offset]+strlen(menus[sel])>=scr_cols) offset++;
         j=mypos;
         for(i=0;i<menust;i++) 
@@ -962,7 +963,7 @@ int do_com_menu()
                     getdata(t_lines-1, 0, "请输入要踢的序号(数字):", buf, 4, 1, 0, 1);
                     if(kicked) return 0;
                     if(buf[0]) {
-                        i = atoi(buf);
+                        i = atoi(buf)-1;
                         if(i>=0&&i<MAX_PEOPLE&&inrooms[myroom].peoples[i].style!=-1&&inrooms[myroom].peoples[i].pid!=uinfo.pid) {
                             inrooms[myroom].peoples[i].flag&=~PEOPLE_ALIVE;
                             send_msg(i, "你被踢了");
@@ -978,13 +979,13 @@ int do_com_menu()
                     getdata(t_lines-1, 0, "请输入要禁止/恢复发言权的序号(数字):", buf, 4, 1, 0, 1);
                     if(kicked) return 0;
                     if(buf[0]) {
-                        i = atoi(buf);
+                        i = atoi(buf)-1;
                         if(i>=0&&i<MAX_PEOPLE&&inrooms[myroom].peoples[i].style!=-1&&inrooms[myroom].peoples[i].pid!=uinfo.pid) {
                             if(inrooms[myroom].peoples[i].flag&PEOPLE_DENYSPEAK)
                                 inrooms[myroom].peoples[i].flag&=~PEOPLE_DENYSPEAK;
                             else
                                 inrooms[myroom].peoples[i].flag|=PEOPLE_DENYSPEAK;
-                            sprintf(buf, "%d %s被%s了发言权", i, inrooms[myroom].peoples[i].nick, (inrooms[myroom].peoples[i].flag&PEOPLE_DENYSPEAK)?"禁止":"恢复");
+                            sprintf(buf, "%d %s被%s了发言权", i+1, inrooms[myroom].peoples[i].nick, (inrooms[myroom].peoples[i].flag&PEOPLE_DENYSPEAK)?"禁止":"恢复");
                             send_msg(-1, buf);
                             kill_msg(-1);
                             return 0;
