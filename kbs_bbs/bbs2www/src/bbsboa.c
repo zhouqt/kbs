@@ -88,11 +88,12 @@ int brd_show_boards(int sec, char *cgi, int yank)
 	printf("%s -- 分类讨论区 [%s]", BBSNAME, secname[sec]);
 	if (yank_flag == 0)
 	{
-		printf("[<a href=\"bbsboa?group=%d&yank=1\">所有讨论区</a>]\n",
+		printf("[<a href=\"bbsboa?group=%d&yank=1\">本区所有看版</a>]",
 			   sec, yank_flag);
 	}
 	else
-		printf("[<a href=\"bbsboa?group=%d\">已订阅讨论区</a>]\n", sec);
+		printf("[<a href=\"bbsboa?group=%d\">本区已订阅看版</a>]", sec);
+	printf("[<a href=\"bbssec\">分类讨论区</a>]\n");
 	printf("<hr color=\"green\">\n");
 	printf("<table width=\"610\">\n");
 	printf("<tr><td>序号</td><td>未</td><td>讨论区名称</td><td>类别</td><td>中文描述</td><td>版主</td><td>文章数</td></tr>\n");

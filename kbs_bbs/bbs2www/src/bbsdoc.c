@@ -6,7 +6,20 @@
 char *eff_size();
 int my_t_lines;
 
-int main() {
+int get_seccode_index(char prefix)
+{
+	int i;
+
+	for (i = 0; i < SECNUM; i++)
+	{
+		if (strchr(seccode[i], prefix) != NULL)
+			return i;
+	}
+	return -1;
+}
+
+int main()
+{
 	FILE *fp;
 	char board[80], dir[80], *ptr;
 	bcache_t *x1;
@@ -16,14 +29,16 @@ int main() {
  	init_all();
 	strsncpy(board, getparm("board"), 32);
 	x1=getbcache(board);
-	if(x1==0) http_fatal("错误的讨论区");
+	if(x1==0)
+		http_fatal("错误的讨论区");
 	strcpy(board, x1->filename);
-	if(!has_read_perm(currentuser, board)) http_fatal("错误的讨论区");
+	if(!has_read_perm(currentuser, board))
+		http_fatal("错误的讨论区");
 	getcwd(dir, sizeof(dir)-1);
 	sprintf(dir, "boards/%s/.DIR", board);
-        if ((fp=fopen(dir, "r")) == NULL)
-			http_fatal("Open .DIR failed.");
-        total=file_size(dir)/sizeof(struct fileheader);
+	if ((fp=fopen(dir, "r")) == NULL)
+		http_fatal("Open .DIR failed.");
+	total=file_size(dir)/sizeof(struct fileheader);
 	start=atoi(getparm("start"));
 	my_t_lines=atoi(getparm("my_t_lines"));
 	if(my_t_lines<10 || my_t_lines>40) my_t_lines=20;
@@ -36,29 +51,32 @@ int main() {
 	if(total<=0) http_fatal("本讨论区目前没有文章");
       	printf("<table width=\"613\">\n");
       	printf("<tr><td>序号</td><td>状态</td><td>作者</td><td>日期</td><td>标题</td></tr>\n");
-	if(fp) {
-	fseek(fp, start*sizeof(struct fileheader), SEEK_SET);
-      	for(i=0; i<my_t_lines; i++) {
-		char filename[80];
-		char *ptr, *font1="", *font2="";
-		if(fread(&x, sizeof(x), 1, fp)<=0) break;
-		ptr=flag_str2(x.accessed[0], !brc_unread(FILENAME2POSTTIME(x.filename)));
-		if(ptr[0]=='N') {
-			font1="<font color=\"#909090\">";
-			font2="</font>";
-		}
-		sprintf(filename, "boards/%s/%s", board, x.filename);
-		printf("<tr><td>%d</td><td>%s%s%s</td><td>%s</td>",
-			start+i+1, font1, ptr, font2, userid_str(x.owner));
+	if(fp)
+	{
+		fseek(fp, start*sizeof(struct fileheader), SEEK_SET);
+      	for(i=0; i<my_t_lines; i++)
+		{
+			char filename[80];
+			char *ptr, *font1="", *font2="";
+			if(fread(&x, sizeof(x), 1, fp)<=0)
+				break;
+			ptr=flag_str2(x.accessed[0], !brc_unread(FILENAME2POSTTIME(x.filename)));
+			if(ptr[0]=='N') {
+				font1="<font color=\"#909090\">";
+				font2="</font>";
+			}
+			sprintf(filename, "boards/%s/%s", board, x.filename);
+			printf("<tr><td>%d</td><td>%s%s%s</td><td>%s</td>",
+				start+i+1, font1, ptr, font2, userid_str(x.owner));
 			/* 只显示日期 */
-         	printf("<td>%6.6s</td>", wwwCTime(atoi(x.filename+2))+4);
+			printf("<td>%6.6s</td>", wwwCTime(atoi(x.filename+2))+4);
 			/* 去掉统计字节数的功能, 浪费系统资源 */
-         	printf("<td><a href=\"bbscon?board=%s&file=%s&num=%d\">%s%36.36s </a></td>",
-			board, x.filename, start+i,
-			strncmp(x.title, "Re: ", 4) ? "○ " : "",
-			void1(nohtml(x.title)));
-		/* 去掉人气值功能 */
-		printf("</tr>\n");
+			printf("<td><a href=\"bbscon?board=%s&file=%s&num=%d\">%s%36.36s </a></td>",
+				board, x.filename, start+i,
+				strncmp(x.title, "Re: ", 4) ? "○ " : "",
+				void1(nohtml(x.title)));
+			/* 去掉人气值功能 */
+			printf("</tr>\n");
       	}
       	printf("</table><hr>\n");
 	}
@@ -78,10 +96,12 @@ int main() {
 	printf("<a href=\"bbsgdoc?board=%s\">文摘区</a> ", board);
 	printf("<a href=\"bbs0an?path=%s\">精华区</a> ", anno_path_of(board));
 	/*printf("<a href=\"/an/%s.tgz\">下载精华区</a> ", board);*/
-	printf("<a href=\"bbsbfind?board=%s\">版内查询 </a>\n", board);
+	printf("<a href=\"bbsbfind?board=%s\">版内查询</a> \n", board);
 	if(loginok) 
-		printf("<a href=\"bbsclear?board=%s&start=%d\">清除未读</a>\n", board, start);
+		printf("<a href=\"bbsclear?board=%s&start=%d\">清除未读</a> \n", board, start);
 	fclose(fp);
+	i = get_seccode_index(x1->title[0]);
+	printf("<a href=\"bbsboa?group=%d\">返回[%s]</a> \n", i, secname[i][0]);
 	printf("<form name=\"form1\" action=\"bbsdoc?board=%s\" method=\"post\" onsubmit='this.start.value-=1'>\n", board);
 	printf("<input type=\"submit\" value=\"跳转到\"> 第 <input type=\"text\" name=\"start\" size=\"4\"> 篇");
 	printf("</form>\n");

@@ -12,9 +12,29 @@ char *encode_url(char *buf, const char* str, size_t buflen)
 	len = strlen(str);
 	for (i = 0, j = 0; i < len && j < buflen; i++)
 	{
-		if (str[i] == '"')
+		/*if (str[i] == '\"')
 		{
-			snprintf(&buf[j], buflen-j, "&quot;");
+			snprintf(&buf[j], buflen-j, "%%22");
+			j = strlen(buf);
+		}
+		else if (str[i] == '&')
+		{
+			snprintf(&buf[j], buflen-j, "%%26");
+			j = strlen(buf);
+		}
+		else if (str[i] == '%')
+		{
+			snprintf(&buf[j], buflen-j, "%%25");
+			j = strlen(buf);
+		}
+		else if (str[i] == ' ')
+		{
+			snprintf(&buf[j], buflen-j, "%%20");
+			j = strlen(buf);
+		}*/
+        if (!isalnum(str[i]))
+		{
+			snprintf(&buf[j], buflen-j, "%%%02x", (unsigned char)str[i]);
 			j = strlen(buf);
 		}
 		else
@@ -26,6 +46,47 @@ char *encode_url(char *buf, const char* str, size_t buflen)
 	buf[buflen - 1] = '\0';
 
 	return buf;
+}
+
+char *encode_html(char *buf, const char* str, size_t buflen)
+{
+    int i, j;
+    int len;
+
+    bzero(buf, buflen);
+    len = strlen(str);
+    for (i = 0, j = 0; i < len && j < buflen; i++)
+    {
+        switch (str[i])
+        {
+        case '\"':
+            snprintf(&buf[j], buflen-j, "&quot;");
+            j = strlen(buf);
+            break;
+        case '&':
+            snprintf(&buf[j], buflen-j, "&amp;");
+            j = strlen(buf);
+            break;
+        /*case ' ':
+            snprintf(&buf[j], buflen-j, "&nbsp;");
+            j = strlen(buf);
+            break;*/
+        case '>':
+            snprintf(&buf[j], buflen-j, "&gt;");
+            j = strlen(buf);
+            break;
+        case '<':
+            snprintf(&buf[j], buflen-j, "&lt;");
+            j = strlen(buf);
+            break;
+        default:
+            buf[j] = str[i];
+            j++;
+        }
+    }
+    buf[buflen - 1] = '\0';
+
+    return buf;
 }
 
 int is_BM(struct boardheader *board, struct userec *user)
@@ -119,10 +180,10 @@ int main()
 			free(ptr);
 		}
 		if(!strncmp(buf, ": ", 2))
-			printf("<font color=\"808080\">");
+			printf("<font color=\"#008080\"><i>");
 		hhprintf("%s", void1(buf));
 		if(!strncmp(buf, ": ", 2))
-			printf("</font>");
+			printf("</i></font>");
 	}
 	fclose(fp);
 
@@ -175,8 +236,9 @@ int main()
 	if ((oldx.accessed[1] & FILE_READ) == 0)
         printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=Re: %s\">回文章</a>]",
 			board, file, oldx.owner, encode_url(buf, void1(ptr), sizeof(buf)));
-     	printf("[<a href=\"bbstfind?board=%s&title=%s\">同主题阅读</a>]\n",
+    printf("[<a href=\"bbstfind?board=%s&title=%s\">同主题阅读</a>]",
 			board, encode_url(buf, void1(ptr), sizeof(buf)));
+	printf("[<a href=\"javascript:history.go(-1)\">快速返回</a>]\n");
    	printf("</center>\n"); 
 	http_quit();
 }

@@ -3,6 +3,47 @@
  */
 #include "bbslib.h"
 
+char *encode_html(char *buf, const char* str, size_t buflen)
+{
+    int i, j;
+    int len;
+
+    bzero(buf, buflen);
+    len = strlen(str);
+    for (i = 0, j = 0; i < len && j < buflen; i++)
+    {
+        switch (str[i])
+        {
+        case '\"':
+            snprintf(&buf[j], buflen-j, "&quot;");
+            j = strlen(buf);
+            break;
+        case '&':
+            snprintf(&buf[j], buflen-j, "&amp;");
+            j = strlen(buf);
+            break;
+        /*case ' ':
+            snprintf(&buf[j], buflen-j, "&nbsp;");
+            j = strlen(buf);
+            break;*/
+        case '>':
+            snprintf(&buf[j], buflen-j, "&gt;");
+            j = strlen(buf);
+            break;
+        case '<':
+            snprintf(&buf[j], buflen-j, "&lt;");
+            j = strlen(buf);
+            break;
+        default:
+            buf[j] = str[i];
+            j++;
+        }
+    }
+    buf[buflen - 1] = '\0';
+
+    return buf;
+}
+
 int main()
 {
    	FILE *fp;
@@ -35,7 +76,7 @@ int main()
 	printf("<tr><td>\n");
    	printf("作者: %s<br>\n", currentuser->userid);
    	printf("使用标题: <input type=\"text\" name=\"title\" size=\"40\" maxlength=\"100\" value=\"%s\">\n", 
-		void1(title));
+		encode_html(buf, void1(title), sizeof(buf)));
 	printf("讨论区: [%s]<br>\n",board);
    	printf("使用签名档 <select name=\"signature\">\n");
 	if (currentuser->signature == 0)
