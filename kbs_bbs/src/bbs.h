@@ -340,6 +340,24 @@ typedef size_t socklen_t;
 #define FILE_TITLE_FLAG 5
 #define FILE_IMPORT_FLAG 6
 
+/**
+ * Enumeration values for the so-called board .DIR file.
+ *
+ * @author flyriver
+ */
+enum BBS_DIR_MODE
+{
+	DIR_MODE_NORMAL  = 0, /** .DIR */
+	DIR_MODE_DIGEST  = 1, /** .DIGEST */
+	DIR_MODE_THREAD  = 2, /** .THREAD */
+	DIR_MODE_MARK    = 3, /** .MARK */
+	DIR_MODE_DELETED = 4, /** .DELETED */
+	DIR_MODE_JUNK    = 5, /** .JUNK */
+	DIR_MODE_ORIGIN  = 6, /** .ORIGIN */
+	DIR_MODE_AUTHOR  = 7, /** .AUTHOR.userid */
+	DIR_MODE_TITLE   = 8  /** .TITLE.userid */
+};
+
 #include "system.h"
 #include "vars.h"
 #include "func.h"
