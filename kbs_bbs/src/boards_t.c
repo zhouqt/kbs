@@ -411,7 +411,7 @@ static int choose_board(int newflag, char *boardprefix)
         if (loop_mode == 0) {
             ch = igetkey();
             if (ch==KEY_REFRESH) {
-            	show_brdlist(page, 0, newflag);
+            	show_brdlist(page, 1, newflag);
             	update_endline();
             }
         }
