@@ -830,8 +830,13 @@ int write_file(filename, saveheader)
             abort_bbs(0);
         }
 #ifndef VEDITOR
-        if (saveheader)
-            write_header(fp, currentuser, in_mail, quote_board, quote_title, Anony, 0);
+	/* 增加转信标记 czz 020819 */
+        if (saveheader) {
+		if (local_article == 1)
+			write_header(fp, currentuser, in_mail, quote_board, quote_title, Anony, 0);
+		else
+			write_header(fp, currentuser, in_mail, quote_board, quote_title, Anony, 2);
+	}
 #endif
     }
     while (p != NULL) {
