@@ -72,7 +72,7 @@ static PHP_FUNCTION(bbs_set_onboard);
 static PHP_FUNCTION(bbs_get_votes);
 static PHP_FUNCTION(bbs_get_vote_from_num);
 static PHP_FUNCTION(bbs_vote_num);
-
+static PHP_FUNCTION(bbs_get_explain);
 
 /*
  * define what functions can be used in the PHP embedded script
@@ -135,6 +135,7 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_get_votes,NULL)
 		PHP_FE(bbs_get_vote_from_num,NULL)
 		PHP_FE(bbs_vote_num,NULL)
+		PHP_FE(bbs_get_explain,NULL)
         {NULL, NULL, NULL}
 };
 
@@ -2691,6 +2692,7 @@ static PHP_FUNCTION(bbs_new_board)
 	int bout;
 	char* bgroup;
 	int bgroup_len;
+	char explainn[100];
 	
 	int i;
 	struct boardheader newboard;
@@ -2758,9 +2760,21 @@ static PHP_FUNCTION(bbs_new_board)
 	if( mkdir(vbuf,0755) == -1 )
 		RETURN_LONG( -5);
 
-	if(bgroup){
-               strncpy(newboard.ann_path,bgroup,127);
-	       newboard.ann_path[127]=0;
+	if(bgroup && bgroup_len > 0){
+		for(i=0; groups[i] && explain[i]; i++){
+			if( ! strncmp(groups[i], bgroup, strlen(groups[i])) )
+				break;
+		}
+
+		if( groups[i]==NULL || explain[i]==NULL )
+			RETURN_LONG( -13);
+
+		sprintf(vbuf,"%-38.38s", newboard.title+13);
+		if(add_grp(bgroup, newboard.filename, vbuf, explain[i]) == -1)
+			RETURN_LONG( -12);
+
+		snprintf(newboard.ann_path,127,"%s/%s",bgroup, newboard.filename);
+		newboard.ann_path[127]=0;
 	}
 
 	if( add_board( &newboard ) == -1 )
@@ -3117,3 +3131,27 @@ static PHP_FUNCTION(bbs_vote_num)
 	RETURN_LONG(ent);
 }
 
+static PHP_FUNCTION(bbs_get_explain)
+{
+	int ac = ZEND_NUM_ARGS();
+	zval *element,*retarray;
+	int i;
+
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "a", &retarray) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	for(i=0; explain[i] && groups[i]; i++){
+
+		MAKE_STD_ZVAL(element);
+		array_init(element);
+
+	    add_assoc_string(element, "EXPLAIN", explain[i], 1);
+	    add_assoc_string(element, "GROUPS", groups[i], 1);
+		zend_hash_index_update(Z_ARRVAL_P(retarray), i,
+				(void*) &element, sizeof(zval*), NULL);
+
+	}
+
+	RETURN_LONG(i);
+}

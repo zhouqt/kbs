@@ -77,6 +77,8 @@
 
 		}	//submit
 		else{
+			$explains = array();
+			$explain_num = bbs_get_explain( $explains );
 ?>
 
 <form name="form0" action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="get">
@@ -94,7 +96,15 @@
 版面分区具体描述(建议4个字符，即2个汉字):<input type="text" name="desp" value=""><br>
 版面管理者:<input type="text" name="bbm" value=""><br>
 版面权限:<input type="text" name="blevel" value=""><br>
-版面精华区位置:<input type="text" name="bgroup" value=""><br>
+版面精华区位置:<select name="bgroup" class="input" style="WIDTH: 100px">
+<?php
+			for($i = 0; $i < $explain_num; $i ++){
+?>
+<option value=<?php echo $explains[$i]["GROUPS"];?>><?php echo $explains[$i]["EXPLAIN"];?></option>
+<?php
+			}
+?>
+</select><br>
 <input type="checkbox" name="banony">匿名版面<br>
 <input type="checkbox" name="bjunk">版面不计文章数<br>
 <input type="checkbox" name="bout">转信版面<br>
