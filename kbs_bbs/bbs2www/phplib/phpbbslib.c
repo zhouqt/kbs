@@ -4,6 +4,7 @@
 
 static unsigned char third_arg_force_ref_111[] = { 3, BYREF_FORCE, BYREF_FORCE, BYREF_FORCE };
 static unsigned char third_arg_force_ref_011[] = { 3, BYREF_NONE, BYREF_FORCE, BYREF_FORCE };
+static unsigned char fourth_arg_force_ref_0001[] = { 4, BYREF_NONE, BYREF_NONE, BYREF_NONE, BYREF_FORCE };
 
 static ZEND_FUNCTION(bbs_getuser);
 static ZEND_FUNCTION(bbs_getonlineuser);
@@ -29,6 +30,7 @@ static ZEND_FUNCTION(bbs_is_bm);
 static ZEND_FUNCTION(bbs_getannpath);
 static ZEND_FUNCTION(bbs_getmailnum);
 static ZEND_FUNCTION(bbs_getwebmsg);
+static ZEND_FUNCTION(bbs_sendwebmsg);
 static ZEND_FUNCTION(bbs_sethomefile);
 
 static ZEND_MINIT_FUNCTION(bbs_module_init);
@@ -64,6 +66,7 @@ static function_entry bbs_php_functions[] = {
 	ZEND_FE(bbs_getannpath, NULL)
 	ZEND_FE(bbs_getmailnum, third_arg_force_ref_011)
 	ZEND_FE(bbs_getwebmsg, third_arg_force_ref_111)
+    ZEND_FE(bbs_sendwebmsg, fourth_arg_force_ref_0001)
 	ZEND_FE(bbs_sethomefile, NULL)
 	{NULL, NULL, NULL}
 };
@@ -1116,7 +1119,6 @@ static ZEND_FUNCTION(bbs_getannpath)
  *       and return total and unread in argument
  * @author KCN
  */
-
 static ZEND_FUNCTION(bbs_getmailnum)
 {
     zval *total,*unread;
@@ -1169,7 +1171,6 @@ static ZEND_FUNCTION(bbs_getmailnum)
  *       and return total and unread in argument
  * @author KCN
  */
-
 static ZEND_FUNCTION(bbs_getwebmsg)
 {
     zval *retsrcid,*msgbuf,*srcutmpent;
@@ -1199,6 +1200,74 @@ static ZEND_FUNCTION(bbs_getwebmsg)
     }
     /* make changes to the parameter */
     RETURN_FALSE;
+}
+
+extern char msgerr[255];
+
+/**
+ * send web message.
+ * prototype:
+ * bool bbs_sendwegmsg(string destid,string buf,long destutmp,
+ *                     string &errmsg);
+ *
+ * @return TRUE on success,
+ *       FALSE on failure.
+ * @author flyriver
+ */
+static ZEND_FUNCTION(bbs_sendwebmsg)
+{
+    char *destid;
+	int destid_len;
+    char *msg;
+	int msg_len;
+    int destutmp;
+	zval *z_errmsg;
+	int result;
+	int i;
+    int ac = ZEND_NUM_ARGS();
+
+    if (ac != 4
+        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sslz", &destid, &destid_len, &msg, &msg_len, &destutmp, &z_errmsg) == FAILURE)
+    {
+        WRONG_PARAM_COUNT;
+    }
+
+    /* check for parameter being passed by reference */
+    if (!PZVAL_IS_REF(z_errmsg))
+    {
+        zend_error(E_WARNING, "Parameter wasn't passed by reference");
+        RETURN_FALSE;
+    }
+	if (!msg_can_sendmsg(destid, destutmp))
+	{
+		ZVAL_STRING(z_errmsg, "无法发送讯息", 1);
+		RETURN_FALSE;
+	}
+	if (!strcasecmp(destid, currentuser->userid))
+	{
+		ZVAL_STRING(z_errmsg, "你不能给自己发讯息", 1);
+		RETURN_FALSE;
+	}
+	if ((result = send_msg(currentuser->userid, get_utmpent_num(u_info), 
+					destid, destutmp, msg)) == 1)
+	{
+		ZVAL_STRING(z_errmsg, "已经帮你送出讯息", 1);
+		RETURN_TRUE;
+	}
+	else if (result == -1)
+	{
+		char buf[STRLEN];
+
+		snprintf(buf, sizeof(buf), "发送讯息失败，%s", msgerr);
+		ZVAL_STRING(z_errmsg, buf, 1);
+		RETURN_FALSE;
+	}
+	else
+	{
+		ZVAL_STRING(z_errmsg, 
+				"发送讯息失败，此人目前不在线或者无法接收讯息", 1);
+		RETURN_FALSE;
+	}
 }
 
 /**
