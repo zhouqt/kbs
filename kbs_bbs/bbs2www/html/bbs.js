@@ -64,6 +64,19 @@ function getBbsStyleFile()
 }
 
 
+var bbsconImg = new Array();
 function resizeImg(obj) {
-	if (obj.width>screen.width-333) obj.width=screen.width-333;
+	bbsconImg[bbsconImg.length] = obj;
+	obj.o_width = obj.width;
+	maxWidth = document.body.clientWidth - 40;
+	if (obj.width > maxWidth) obj.width = maxWidth;
 }
+function adjustImg() {
+	var maxWidth = document.body.clientWidth - 40;
+	for (var i in bbsconImg) {
+		obj = bbsconImg[i];
+		o_width = obj.o_width;
+		obj.width = (o_width > maxWidth) ? maxWidth : o_width
+	}
+}
+window.onresize = adjustImg;
