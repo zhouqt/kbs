@@ -97,6 +97,29 @@ void ochar( char c)
     }
 }
 
+int raw_write(int fd,char *buf,int len)
+{
+#ifdef SSHBBS
+    return ssh_write(fd,buf,len);
+#else
+    return write(fd,buf,len);	
+#endif
+}
+
+void raw_ochar(char c)
+{
+	raw_write(0,&c,1);
+}
+
+int raw_read(int fd,char *buf,int len)
+{
+#ifdef SSHBBS
+    return ssh_read(fd,buf,len);
+#else
+    return read(fd,buf,len);
+#endif	
+}
+
 void
 output(s,len)
 char    *s;
