@@ -189,8 +189,8 @@ int mode;
 
 int show_allmsgs()
 {
-    char buf[MAX_MSG_SIZE+100], showmsg[MAX_MSG_SIZE*2];
-    int oldmode, count, i, j, page, ch, y;
+    char buf[MAX_MSG_SIZE], showmsg[MAX_MSG_SIZE*2], chk[STRLEN];
+    int oldmode, count, i, j, page, ch, y, all=0, reload=0;
     char title[STRLEN];
     struct msghead head;
     time_t now;
@@ -204,6 +204,11 @@ int show_allmsgs()
     page = 0;
     count = get_msgcount(0, currentuser->userid);
     while(1) {
+        if(reload) {
+            reload = 0;
+            page = 0;
+            count = get_msgcount(all?2:0, currentuser->userid);
+        }
         clear();
         if(count==0) {
             good_move(5,30);
@@ -212,20 +217,23 @@ int show_allmsgs()
         else {
             y = 0;
             i = page;
-            load_msghead(0, currentuser->userid, i, &head);
+            load_msghead(all?2:0, currentuser->userid, i, &head);
             load_msgtext(currentuser->userid, &head, buf);
             j = translate_msg(buf, &head, showmsg);
             while(y+j<=23) {
                 y+=j; i++;
                 prints("%s", showmsg);
                 if(i>=count) break;
-                load_msghead(0, currentuser->userid, i, &head);
+                load_msghead(all?2:0, currentuser->userid, i, &head);
                 load_msgtext(currentuser->userid, &head, buf);
                 j = translate_msg(buf, &head, showmsg);
             }
         }
         good_move(23,0);
-        prints("[1;44;32mÑ¶Ï¢ä¯ÀÀÆ÷   ±£Áô <[37mr[32m>    Çå³ı <[37mc[32m>   ¼Ä»ØĞÅÏä<[37mm[32m>                                ");
+        if(!all)
+            prints("[1;44;32mÑ¶Ï¢ä¯ÀÀÆ÷   ±£Áô<[37mr[32m> Çå³ı<[37mc[32m> ¼Ä»ØĞÅÏä<[37mm[32m> ·¢Ñ¶ÈË<[37mi[32m> Ñ¶Ï¢ÄÚÈİ<[37ms[32m>                 ");
+        else
+            prints("[1;44;32mÑ¶Ï¢ä¯ÀÀÆ÷   ±£Áô<[37mr[32m> Çå³ı<[37mc[32m> ¼Ä»ØĞÅÏä<[37mm[32m> ·¢Ñ¶ÈË<[37mi[32m> Ñ¶Ï¢ÄÚÈİ<[37ms[32m> È«²¿<[37ma[32m>         ");
         refresh();
         oflush();
 reenter:
@@ -252,14 +260,64 @@ reenter:
                 if(page>10) page-=10;
                 else page=0;
                 break;
+            case KEY_HOME:
+                page=0;
+                break;
+            case KEY_END:
+                page=count-1;
+                break;
+            case 'i':
+            case 'I':
+            case 's':
+            case 'S':
+                reload = 1;
+                count = get_msgcount(0, currentuser->userid);
+                if(count==0) break;
+                good_move(23, 0);
+                clrtoeol();
+                getdata(23, 0, "ÇëÊäÈë¹Ø¼ü×Ö:", chk, 50, true, NULL, false);
+                if(chk[0]) {
+                    int fd, fd2;
+                    char fname, fname2;
+                    size_t bm_search[256];
+                    struct msghead head;
+                    int i, j;
+                    bool init=false;
+                    sethomefile(fname, currentuser->userid, "msgindex");
+                    sethomefile(fname2, currentuser->userid, "msgindex3");
+                    fd = open(fname, O_RDONLY, 0644);
+                    fd2 = open(fname, O_WRONLY, 0644);
+                    lseek(fd, 4);
+                    for(i=0;i<count;i++) {
+                        read(fd, &head, sizeof(struct msghead));
+                        if(toupper(ch)=='S') load_msgtext(currentuser->userid, &head, buf);
+                        if(toupper(ch)=='I'&&!strncasecmp(chk, head.id, IDLEN) ||
+                            toupper(ch)=='S'&&bm_strcasestr_rp(buf, chk, bm_search, &init) != NULL)
+                            write(fd2, &head, sizeof(struct msghead));
+                    }
+                    close(fd2);
+                    close(fd);
+                    all = 1;
+                }
+                break;
             case 'c':
             case 'C':
                 clear_msg(currentuser->userid);
                 goto outofhere;
+            case 'a':
+            case 'A':
+                if(all) {
+                    sethomefile(buf, currentuser->userid, "msgindex3");
+                    unlink(buf);
+                    all = 0;
+                    reload = 1;
+                }
+                break;
             case 'm':
             case 'M':
                 sprintf(fname, "tmp/%s.msg", currentuser->userid);
                 fn = fopen(fname, "w");
+                count = get_msgcount(0, currentuser->userid);
                 for(i=0;i<count;i++) {
                     load_msgtext(0, currentuser->userid, i, buf);
                     translate_msg(buf, showmsg);
@@ -279,6 +337,10 @@ reenter:
     }
 outofhere:
     
+    if(all) {
+        sethomefile(buf, currentuser->userid, "msgindex3");
+        unlink(buf);
+    }
     clear();
     uinfo.mode = oldmode;
     return 0;
