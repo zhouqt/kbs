@@ -338,6 +338,11 @@ struct key_struct *keymem=NULL;
 int keymem_total;
 int kicked=0;
 
+void ktimeout(void *data)
+{
+    kicked = 1;
+}
+
 int igetch()
 {
     time_t now;
