@@ -696,11 +696,15 @@ int main(int argc, char *argv[])
     setreuid(BBSUID, BBSUID);
     setregid(BBSGID, BBSGID);
 
+#ifndef CYGWIN
 #undef time
     bbssettime(time(0));
     sleep(1);
 #define time(x) bbstime(x)
+#endif
+
     setpublicshmreadonly(0);
+
 #ifndef CYGWIN
     setpublicshmreadonly(1);
 #endif
