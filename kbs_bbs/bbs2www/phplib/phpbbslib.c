@@ -88,6 +88,7 @@ static PHP_FUNCTION(bbs_sysconf_str);
 static PHP_FUNCTION(bbs_get_tmpls);
 static PHP_FUNCTION(bbs_get_tmpl_from_num);
 static PHP_FUNCTION(bbs_make_tmpl_file);
+static PHP_FUNCTION(bbs_send_sms);
 
 /*
  * define what functions can be used in the PHP embedded script
@@ -166,6 +167,7 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_get_tmpls,NULL)
 		PHP_FE(bbs_get_tmpl_from_num,NULL)
 		PHP_FE(bbs_make_tmpl_file,NULL)
+		PHP_FE(bbs_send_sms,NULL)
         {NULL, NULL, NULL}
 };
 
@@ -4198,4 +4200,20 @@ static PHP_FUNCTION(bbs_make_tmpl_file)
 
 	//RETURN_LONG(1);
 	RETURN_STRING(newtitle,1);
+}
+
+static PHP_FUNCTION(bbs_send_sms)
+{
+	int ac = ZEND_NUM_ARGS();
+	char *dest,*msgstr;
+	int dest_len,msgstr_len;
+	int ret;
+
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ss", &dest, &dest_len, &msgstr, &msgstr_len) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	ret = web_send_sms( dest, msgstr );
+
+	RETURN_LONG(ret);
 }
