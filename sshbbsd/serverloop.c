@@ -16,8 +16,11 @@ Server main loop for handling the interactive session.
 /*
  * $Id$
  * $Log$
- * Revision 1.1  2002/04/27 05:47:26  kxn
- * Initial revision
+ * Revision 1.2  2002/05/09 09:53:25  kxn
+ * max output packet is now limited to 512 bytes as many ssh implementions do
+ *
+ * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
+ * no message
  *
  * Revision 1.2  2002/04/25 05:37:26  kxn
  * bugs fixed: disconnect, chinese ime
@@ -97,14 +100,19 @@ Server main loop for handling the interactive session.
 
 int ssh_write (int fd,const void *buf,size_t count)
 {
-
-   if (count >0) {
+   int len;
+   char *data = buf;
+   int result = count;
+   while (count >0) {
+       len = count > 512? 512 : count;
        packet_start(SSH_SMSG_STDOUT_DATA);
-       packet_put_string(buf,count);
+       packet_put_string(data,len);
        packet_send();
        packet_write_wait();
+       count -= len;
+       data += len;
    }
-   return count;
+   return result;
 }
 static Buffer NetworkBuf;
 void ProcessOnePacket(int wait);
