@@ -198,10 +198,13 @@ void encode_file(char * s)
 {
     char buf[1024*16];
     char fn[80];
-    unsigned long k;
+    unsigned long k[4];
     int o, i;
     FILE *fp1, *fp2;
-    k = sysconf_eval("CALENDAR_KEY", 234251);
+    k[0] = sysconf_eval("CALENDAR_KEY0", 0x234251);
+    k[1] = sysconf_eval("CALENDAR_KEY1", 0x1234251);
+    k[2] = sysconf_eval("CALENDAR_KEY2", 0x2234251);
+    k[3] = sysconf_eval("CALENDAR_KEY3", 0x3234251);
     sprintf(fn, "tmp/%s.%d.cal", currentuser->userid, rand());
     fp1 = fopen(s, "rb");
     fp2 = fopen(fn, "wb");
@@ -211,7 +214,7 @@ void encode_file(char * s)
                 buf[i]=32;
             o=(o/8+1)*8;
         }
-        encipher(buf, o, &k);
+        encipher(buf, o, k);
         fwrite(buf, 1, o, fp2);
     }
     fclose(fp1);
@@ -230,10 +233,13 @@ void decode_file(char * s)
 {
     char buf[1024*16];
     char fn[80];
-    unsigned long k;
+    unsigned long k[4];
     int o, i;
     FILE *fp1, *fp2;
-    k = sysconf_eval("CALENDAR_KEY", 234251);
+    k[0] = sysconf_eval("CALENDAR_KEY0", 0x234251);
+    k[1] = sysconf_eval("CALENDAR_KEY1", 0x1234251);
+    k[2] = sysconf_eval("CALENDAR_KEY2", 0x2234251);
+    k[3] = sysconf_eval("CALENDAR_KEY3", 0x3234251);
     sprintf(fn, "tmp/%s.%d.cal", currentuser->userid, rand());
     fp1 = fopen(s, "rb");
     fp2 = fopen(fn, "wb");
@@ -243,7 +249,7 @@ void decode_file(char * s)
                 buf[i]=32;
             o=(o/8+1)*8;
         }
-        decipher(buf, o, &k);
+        decipher(buf, o, k);
         fwrite(buf, 1, o, fp2);
     }
     fclose(fp1);
