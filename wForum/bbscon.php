@@ -2,7 +2,7 @@
 	@$attachpos = $_GET["ap"]; //pointer to the size after ATTACHMENT PAD
 	if ($attachpos!=0) {
 		$needlogin=0;
-s	}
+	}
 	require("inc/funcs.php");
 
 	if (!$loginok && !$guestloginok && $attachpos!=0) bbs_setguest_nologin();
