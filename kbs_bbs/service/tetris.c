@@ -116,9 +116,11 @@ int getch()
     return ret;
 }
 
+extern select_func x_select;
+extern read_func x_read;
+
 int getch0()
 {
-    int c,d,e,n;
     char ch; 
     fd_set rfds;
     struct timeval tv;
@@ -126,8 +128,8 @@ int getch0()
     FD_SET(0, &rfds);
     tv.tv_sec = 0;
     tv.tv_usec = 50000;
-    if(select(1, &rfds, NULL, NULL, &tv)) {
-    	if(read(0, &ch, 1)<=0) exit(-1);
+    if((*x_select)(1, &rfds, NULL, NULL, &tv)) {
+    	if((*x_read)(0, &ch, 1)<=0) exit(-1);
         return ch;
     }
     else
@@ -148,7 +150,6 @@ int color(int c)
 
 int clear2()
 {
-   int y;
    clear();
    move(3,0);
    prints("                            \033[1;33m©°©¤©´     \n");
@@ -198,14 +199,14 @@ int sh(int y, int x, int k, int n, int c)
 
 int show0()
 {
-  int y,x;
-  for(y=0;y<=20;y++)
+  int ytmp,xtmp;
+  for(ytmp=0;ytmp<=20;ytmp++)
   {
-    move(y,0);
-    for(x=0;x<=11;x++)
+    move(ytmp,0);
+    for(xtmp=0;xtmp<=11;xtmp++)
     {
-      color(a[y][x]);
-      if(a[y][x])
+      color(a[ytmp][xtmp]);
+      if(a[ytmp][xtmp])
         prints("¡ö");
       else
         prints("  ");
@@ -216,7 +217,6 @@ int show0()
 
 int tetris_main()
 {
-  int n;
   int oldmode;
 
   strcpy(userid,getCurrentUser()->userid);

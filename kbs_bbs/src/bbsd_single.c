@@ -496,12 +496,26 @@ int check_IP_lists(unsigned int IP2)
     return ret;
 }
 
+select_func x_select;
+read_func x_read;
+
 int bbs_main(argv)
     char *argv;
 {
     char buf[256];              /* Leeward 98.07.31 */
     char bbs_prog_path[256];
     FILE *fp;
+
+#ifdef SSHBBS
+	extern int ssh_select();
+	extern int ssh_read();
+
+	x_select = ssh_select;
+	x_read = ssh_read;
+#else
+	x_select = select;
+	x_read = read;
+#endif
 
     /*    modified by period      2000-11-13      allow localhost anyway  */
     /*    if((fp = fopen("NOLOGIN","r")) != NULL) */
