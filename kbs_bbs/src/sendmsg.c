@@ -226,6 +226,7 @@ int show_allmsgs()
             load_msghead(all?2:0, currentuser->userid, i, &head);
             load_msgtext(currentuser->userid, &head, buf);
             j = translate_msg(buf, &head, showmsg);
+            good_move(0,0);
             while(y+j<=23) {
                 y+=j; i++;
                 prints("%s", showmsg);
