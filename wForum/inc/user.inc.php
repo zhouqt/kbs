@@ -107,14 +107,16 @@ function showSecs($secNum=0,$isFold) {
 				<B>本版尚无文章</B>
 		<?php
 					} else {
-						$articles = bbs_getarticles($brd_name[$i], $brd_artcnt[$i], 1, $default_dir_mode);
+						$articles = bbs_getthreads($brd_name[$i], 0, 1 ); //$brd_artcnt[$i], 1, $default_dir_mode);
 						if ($articles == FALSE) {
 		?>
 				<B>本版尚无文章</B>
 		<?php
 						} else {
+							//$threads = bbs_getthreads($brd_name[$i],0,1); 
+							$start = bbs_get_thread_article_num( $brd_name[$i], $articles[0]['GROUPID']); 
 		?>
-				主题：<a href="disparticle.php?boardid=<?php echo $brd_bid[$i]; ?>&id=<?php echo $articles[0]['ID']; ?>&gid=<?php echo $articles[0]['GROUPID']; ?>"><?php echo htmlspecialchars($articles[0]['TITLE'],ENT_QUOTES); ?></a><BR>作者：<a href="userinfo.php?id=<?php echo $articles[0]['OWNER']; ?>" target=_blank><?php echo $articles[0]['OWNER']; ?></a><BR>日期：<?php echo strftime('%Y-%m-%d %H:%M:%S', intval($articles[0]['POSTTIME'])) ; ?>&nbsp;<a href="disparticle.php?boardid=<?php echo $brd_bid[$i]; ?>&id=<?php echo $articles[0]['GROUPID']; ?>&gid=<?php $articles[0]['ID']; ?>"><IMG border=0 src="pic/lastpost.gif" title="转到：<?php echo $articles[0]['TITLE']; ?>"></a>
+				主题：<a href="disparticle.php?boardName=<?php echo $brd_name[$i]; ?>&ID=0"><?php echo htmlspecialchars($articles[0]['TITLE'],ENT_QUOTES); ?></a><BR>作者：<a href="userinfo.php?id=<?php echo $articles[0]['OWNER']; ?>" target=_blank><?php echo $articles[0]['OWNER']; ?></a><BR>日期：<?php echo strftime('%Y-%m-%d %H:%M:%S', intval($articles[0]['POSTTIME'])) ; ?>&nbsp;<a href="disparticle.php?boardName=<?php echo $brd_name[$i]; ?>&ID=0&start=<?php echo $start?>"><IMG border=0 src="pic/lastpost.gif" title="转到：<?php echo $articles[0]['TITLE']; ?>"></a>
 	<?php
 						}
 					}
@@ -122,7 +124,7 @@ function showSecs($secNum=0,$isFold) {
 	?>
 </TD></TR><TR><TD width=*><FONT face=Arial><img src=pic/forum_readme.gif align=middle> <?php echo $brd_desc[$i] ?></FONT>
 </TD></TR><TR><TD class=tablebody2 height=20 width=*>版主：<?php echo $brd_bm[$i]==''?'暂无':$brd_bm[$i] ; ?> </TD><td width=40 align=center class=tablebody2>&nbsp;</td><TD vAlign=middle class=tablebody2 width=200>
-		<table width=100% border=0><tr><td width=25% vAlign=middle><img src=pic/forum_today.gif alt=今日帖 align=absmiddle>&nbsp;<font color=#FF0000>N/A</font></td><td width=30% vAlign=middle><img src=pic/forum_topic.gif alt=主题 border=0  align=absmiddle>&nbsp;N/A</td><td width=45% vAlign=middle><img src=pic/forum_post.gif alt=文章 border=0 align=absmiddle>&nbsp;<?php echo $brd_artcnt[$i]; ?></td></tr>
+		<table width=100% border=0><tr><td width=25% vAlign=middle><img src=pic/forum_today.gif alt=今日帖 align=absmiddle>&nbsp;<font color=#FF0000><?php echo bbs_get_today_article_num($brd_name[$i]) ?></font></td><td width=30% vAlign=middle><img src=pic/forum_topic.gif alt=主题 border=0  align=absmiddle>&nbsp;<?php echo bbs_getthreadnum($brd_bid[$i]) ?></td><td width=45% vAlign=middle><img src=pic/forum_post.gif alt=文章 border=0 align=absmiddle>&nbsp;<?php echo $brd_artcnt[$i]; ?></td></tr>
 		</table></TD></TR></TBODY></TABLE></td></tr></table></td></tr>
 <?php
 			} else {

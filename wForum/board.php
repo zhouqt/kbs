@@ -106,6 +106,4 @@ function preprocess(){
 	bbs_set_onboard($boardID,1);
 	return true;
 }
-
-
 ?>

@@ -64,8 +64,16 @@ function main(){
 	settype($destutmp, "integer");
 
 	if (strlen($destid) == 0 || strlen($msg) == 0)	{
+?>
+<script>
+	parent.closeWindow();
+</script>
+<?php
+		exit(0);
+/*
 		foundErr("¶ÌÐÅ²ÎÊý´íÎó");
 		return false;
+*/
 	}
 	if (bbs_sendwebmsg($destid, $msg, $destutmp, $errmsg)==FALSE){
 		foundErr($errmsg);

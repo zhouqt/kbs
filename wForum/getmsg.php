@@ -35,7 +35,7 @@ html_init();
 	}else {
 ?>
 	<script>
-	window.setTimeout("parent.document.frames('webmsg').document.location.reload();", 30000);
+	parent.refreshWindow();
 	</script>
 <?php
 	}

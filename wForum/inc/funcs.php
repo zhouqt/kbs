@@ -651,6 +651,7 @@ function show_nav($boardName='')
 <?php
  }
 ?>
+<img src=pic/navspacer.gif align=absmiddle>  <a href="http://voicechat.zixia.net:10015/voicechat.htm?r=1" target=_blank>语音聊天室</a>
  <img src=pic/navspacer.gif align=absmiddle>  <a href="query.php<?php echo $boardName==''?'':'?boardName='.$boardName; ?>">搜索</a> 
  <img src=pic/navspacer.gif align=absmiddle>  <a href="#" onMouseOver='ShowMenu(stylelist,100)'>自选风格</a> 
  <?php    if ($loginok)
@@ -668,7 +669,7 @@ function show_nav($boardName='')
 	}
 } 
 
-function head_var($Title, $URL='',$showWelcome=1)
+function head_var($Title='', $URL='',$showWelcome=0)
 {
   GLOBAL $SiteName;
   GLOBAL $SiteURL;
@@ -694,7 +695,10 @@ function head_var($Title, $URL='',$showWelcome=1)
 <tr><td height=25 valign=middle>
 <img src="pic/forum_nav.gif" align=absmiddle> <a href="<?php echo $SiteURL; ?>"><?php   echo $SiteName; ?></a> → 
 <?php 
-    print "<a href=".$URL.">".$Title."</a> → ".$stats;
+	if ($Title!='') {
+		echo  "<a href=".$URL.">".$Title."</a> → ";
+	}
+	echo $stats;
 ?>
 <a name=top></a>
 </td></td>

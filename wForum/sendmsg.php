@@ -26,6 +26,9 @@ function main() {
 		$destutmp = 0;
 	settype($destutmp, "integer");
 ?>
+<script>
+parent.pauseMsg();
+</script>
 <div id="msgcontent" >
 <div onkeydown="if(event.keyCode==13 && event.ctrlKey) { document.all.oSend.focus();document.all.oSend.click();} ">
 <form action="dosendmsg.php" method=post name=messager id=messager >
