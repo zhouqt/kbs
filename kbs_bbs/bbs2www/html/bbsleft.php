@@ -4,7 +4,7 @@
 	require("funcs.php");
 login_init();
 	
-        $img_subdir = "/images/menuspring/";
+        $img_subdir = "/images/newstyle/";
         
 	function display_board_list($section_names,$section_nums)
 	{
@@ -319,11 +319,11 @@ setTimeout('bbs_auto_reload()',540000);
 		<col width="16px"/><col align="left"/>
 		<tr>
 			<td><img src="/images/open.gif" border="0"></td>
-			<td><a href="<?php echo MAINPAGE_FILE; ?>" target="f3"><img src="<?php echo $img_subdir; ?>m1.gif" border="0" alt="首页" align="absmiddle"> 首页导读</a></td>
+			<td><a href="<?php echo MAINPAGE_FILE; ?>" target="f3"><img src="<?php echo $img_subdir; ?>m0.gif" border="0" alt="首页" align="absmiddle"> 首页导读</a></td>
 		</tr>
 		<tr>
 			<td><img src="/images/open.gif" border="0"></td>
-			<td><a href="/bbs0an.php" target="f3"><img src="<?php echo $img_subdir; ?>m2.gif" border="0" alt="精华区" align="absmiddle"> 精华区</a></td>
+			<td><a href="/bbs0an.php" target="f3"><img src="<?php echo $img_subdir; ?>m1.gif" border="0" alt="精华区" align="absmiddle"> 精华区</a></td>
 		</tr>
 		<tr>
 			<td>
@@ -477,7 +477,7 @@ setTimeout('bbs_auto_reload()',540000);
 			</td>
 			<td>
 			<a href='javascript:changemn("chat");'>
-			<img src="<?php echo $img_subdir; ?>m8.gif" border="0" alt="谈天说地" align="absmiddle"> 谈天说地
+			<img src="<?php echo $img_subdir; ?>m10.gif" border="0" alt="谈天说地" align="absmiddle"> 谈天说地
 			</a>
 			</td>
 		</tr>
@@ -525,7 +525,7 @@ setTimeout('bbs_auto_reload()',540000);
 		</tr>
 		<tr>
 			<td><img src="/images/open.gif" border="0"></td>
-			<td><a href="/bbsstyle0.php" target="f3"><img src="<?php echo $img_subdir; ?>m6.gif" border="0" alt="界面方案" align="absmiddle"> 界面方案</a>
+			<td><a href="/bbsstyle0.php" target="f3"><img src="<?php echo $img_subdir; ?>m2.gif" border="0" alt="界面方案" align="absmiddle"> 界面方案</a>
 		</tr>
 <?php
 	if($currentuser["userid"]!="guest")
@@ -539,7 +539,7 @@ setTimeout('bbs_auto_reload()',540000);
 			</td>
 			<td>
 			<a href='javascript:changemn("tool");'>
-			<img src="<?php echo $img_subdir; ?>m7.gif" border="0" alt="个人参数设置" align="absmiddle"> 个人参数设置
+			<img src="<?php echo $img_subdir; ?>m11.gif" border="0" alt="个人参数设置" align="absmiddle"> 个人参数设置
 			</a>
 			</td>
 		</tr>
@@ -604,7 +604,7 @@ setTimeout('bbs_auto_reload()',540000);
 			</td>
 			<td>
 			<a href='javascript:changemn("exp");'>
-			<img src="<?php echo $img_subdir; ?>m6.gif" border="0" alt="水木特刊Web版" align="absmiddle"> 水木特刊Web版
+			<img src="<?php echo $img_subdir; ?>m8.gif" border="0" alt="水木特刊Web版" align="absmiddle"> 水木特刊Web版
 			</a>
 			</td>
 		</tr>
@@ -635,7 +635,7 @@ setTimeout('bbs_auto_reload()',540000);
 			</td>
 			<td>
 			<a href='javascript:changemn("ser");'>
-			<img src="<?php echo $img_subdir; ?>m7.gif" border="0" alt="文件下载及其他" align="absmiddle"> 文件下载及其他
+			<img src="<?php echo $img_subdir; ?>m9.gif" border="0" alt="文件下载及其他" align="absmiddle"> 文件下载及其他
 			</a>
 			</td>
 		</tr>
@@ -656,8 +656,8 @@ setTimeout('bbs_auto_reload()',540000);
     }
 ?>
 					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/data/fterm-smth.zip" target="_blank">Fterm下载</a><br>
+					<img src="/images/line1.gif" border="0" align="absmiddle">
+					<a href="/data/fterm-2004memory.rar" target="_blank">Fterm下载</a><br>
 				<?php /*
 					&nbsp;
 					<img src="/images/line1.gif" border="0" align="absmiddle">
@@ -673,10 +673,8 @@ setTimeout('bbs_auto_reload()',540000);
 <?php
     if (defined("SITE_SMTH")) {
         if ($currentuser["userlevel"]&BBS_PERM_SYSOP) {
-?>
-<script src="/bbsleftmenu.js"></script>
-<?php
-        }
+			include_once ('bbsleftmenu.php');
+		}
     }
 ?>
 <!--
@@ -685,10 +683,16 @@ setTimeout('bbs_auto_reload()',540000);
 			<td><img src="/images/t10.gif" border="0" alt="查看帮助信息" align="absmiddle"> 查看帮助
 		</tr>
 -->
+<?php
+	if($currentuser["userid"]!="guest"){
+?>
 		<tr>
 			<td><img src="/images/open.gif" border="0"></td>
 			<td><a href="/bbslogout.php" target="_top"><img src="<?php echo $img_subdir; ?>m7.gif" border="0" alt="离开本站" align="absmiddle"> 离开本站</a>
 		</tr>
+<?php
+	}
+?>
 		
 		</table>
 	</td>
