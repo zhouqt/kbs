@@ -17,6 +17,9 @@ the password is valid for the user.
 /*
  * $Id$
  * $Log$
+ * Revision 1.4  2003/06/17 10:40:00  kcn
+ * ÏŞÖÆipµÇÂ½£¬ÊäÈëÃÜÂë¾ÍÊ§°Ü
+ *
  * Revision 1.3  2002/08/04 11:39:40  kcn
  * format c
  *
@@ -163,6 +166,9 @@ int auth_password(const char *server_user, const char *password)
     resolve_ucache();
     resolve_utmp();
     strcpy(useridbuf, server_user);
+    if(check_ip_acl(currentuser->userid, fromhost)) {
+    	return 0;
+    }
     if (password[0] == '\0')
         return 0;
     if (*server_user == '\0' || !dosearchuser(useridbuf))
