@@ -1194,6 +1194,7 @@ main_bbs(char *originhost, int convit,char* argv)
      topfriend = NULL;
      big_picture=NULL;
      user_data = NULL;
+     resolve_ucache();
      /* commented by period for it changed to local variable 2000.11.12
      pnt = NULL; */
     

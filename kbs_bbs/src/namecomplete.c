@@ -376,7 +376,7 @@ char *prompt, *data ;
         int     clearbot = NA, count = 0, morenum = 0;
         char    ch;
 
-        cwbuf = malloc( MAXUSERS * (IDLEN+1) );
+        cwbuf = malloc( MAXUSERS* (IDLEN+1) );
         if( prompt != NULL ) {
             prints( "%s", prompt );
             clrtoeol();

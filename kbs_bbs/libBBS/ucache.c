@@ -26,15 +26,20 @@
 */
    
 
+#include "bbs.h"
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#define chartoupper(c)  ((c >= 'a' && c <= 'z') ? c+'A'-'a' : c)
+
 int     usernumber;
 struct UCACHE   *uidshm;
 
 int ucache_lock()
 {
-	int lockfd;
-    lockfd = open( BBSHOME "ucache.lock", O_RDWR|O_CREAT, 0600 );
+    int lockfd;
+    lockfd = creat( BBSHOME "/ucache.lock", 0600 );
     if( lockfd < 0 ) {
-        log_usies( "CACHE", "reload ucache lock error!!!!" );
+        log_usies( "CACHE", strerror(errno) );
         return -1;
     }
     flock(lockfd,LOCK_EX);
@@ -43,21 +48,31 @@ int ucache_lock()
 
 int ucache_unlock(int fd)
 {
-    flock(lockfd,LOCK_UN);
-    close(lockfd);
+    flock(fd,LOCK_UN);
+    close(fd);
 }
 
 
-int ucache_hash(char* userid)
+unsigned int ucache_hash(char* userid)
 {
 	int * i=(int*) userid;
-	int key=0;
+	char* ptr;
+	char key[4];
+	unsigned int retkey;
+	
 	if (*userid==0) return 0;
-	key+=*i++;
-	key+=*i++;
-	key+=*i++;
-	key%=UCACHE_HASHSIZE-1;
-	return key+1;
+	key[0]=0;
+	key[1]=0;
+	key[2]=0;
+	key[3]=0;
+        for (ptr=userid;*ptr&&(ptr-userid)<IDLEN;ptr++) {
+		if (*ptr<='z'&&*ptr>='a')
+			key[(ptr-userid)%4]+=*ptr&0xdf;
+		else
+			key[(ptr-userid)%4]+=*ptr;
+	}
+	retkey=(*(unsigned int*)key)%(UCACHE_HASHSIZE-1);
+	return retkey+1;
 }
 
 int
@@ -66,10 +81,10 @@ struct userec *uentp ;
 {
     if(usernumber < MAXUSERS) {
     	int hashkey;
-        strncpy(uidshm->users[usernumber].userid,uentp->userid,IDLEN+1) ;
-        uidshm->users[usernumber].userid[IDLEN] = '\0' ;
+        strncpy((char*)uidshm->users[usernumber],uentp->userid,IDLEN+1) ;
+        uidshm->users[usernumber][IDLEN] = '\0' ;
         hashkey = ucache_hash(uentp->userid);
-        uidshm->users[usernumber].next = uidshm->hashhead[hashkey];
+        uidshm->next[usernumber] = uidshm->hashhead[hashkey];
         uidshm->hashhead[hashkey] = ++usernumber;
     }
     return 0 ;
@@ -85,7 +100,7 @@ resolve_ucache()
     char   log_buf[256]; /* Leeward 99.10.24 */
 	
     if( uidshm == NULL ) {
-        uidshm = attach_shm( "UCACHE_SHMKEY_HASH", 3697, sizeof( *uidshm ) ); /*attach to user shm */
+        uidshm = (struct UCACHE*)attach_shm( "UCACHE_SHMKEY_HASH", 3697, sizeof( *uidshm ) ); /*attach to user shm */
     }
 
     if( stat( PASSFILE,&st ) < 0 ) {
@@ -113,7 +128,7 @@ resolve_ucache()
 int getuserid(char * userid, int uid)
 {
     if( uid > uidshm->number || uid <= 0 ) return 0;
-    strncpy(userid,uidshm->users[uid-1].userid, IDLEN+1);
+    strncpy(userid,(char*)uidshm->users[uid-1], IDLEN+1);
     return uid;
 }
 
@@ -126,32 +141,34 @@ char    *userid;
     	int oldkey,newkey,find;
         if( num > uidshm->number )
             uidshm->number = num;
-        oldkey=ucache_hash(uidshm->uses[ num - 1 ].userid);
+        oldkey=ucache_hash((char*)uidshm->users[ num - 1 ]);
         newkey=ucache_hash(userid);
         if (oldkey!=newkey) {
-			int lockfd = ucache_lock();
+		int lockfd = ucache_lock();
 	        find=uidshm->hashhead[oldkey];
 
-	        if (find==num) uidshm->hashhead[oldkey]=uidshm->users[find-1].next;
+	        if (find==num) uidshm->hashhead[oldkey]=uidshm->next[find-1];
 	        else { /* find and remove the hash node */
-	          while (uidshm->users[find-1].next&&
-	          	strcasecmp(uidshm->users[uidshm->users[find-1].next-1].userid,
-	          		uidshm->uses[ num - 1 ].userid)) 
-	      			find=uidshm->users[find-1].next;
-	          if (!uidshm->users[find-1].next) {
-	          	char log_buf[256];
-	          	sprintf(log_buf,"can't find %s in hash table",uidshm->uses[ num - 1 ].userid);
-	          	log_usies("CACHE",log_buf);
-	          	exit(0);
+	          while (uidshm->next[find-1]&&
+	          	strcasecmp(uidshm->users[uidshm->next[find-1]-1],
+	          		uidshm->users[ num - 1 ])) 
+	      			find=uidshm->next[find-1];
+	          if (!uidshm->next[find-1]) {
+			if (oldkey!=0) {
+		          	char log_buf[256];
+		          	sprintf(log_buf,"can't find %s in hash table",uidshm->users[ num - 1 ]);
+		          	log_usies("CACHE",log_buf);
+		          	exit(0);
+			}
 	          }
-	          uidshm->users[find-1].next = uidshm->users[num-1].next;
+	          else uidshm->next[find-1] = uidshm->next[num-1];
 	        }
 
-	        uidshm->users[num-1].next=uidshm->hashhead[newkey];
+	        uidshm->next[num-1]=uidshm->hashhead[newkey];
 	        uidshm->hashhead[newkey]=num;
 		    ucache_unlock(lockfd);
         }	        
-        strncpy( uidshm->uses[ num - 1 ].userid, userid, IDLEN+1 );
+        strncpy( (char*)uidshm->users[ num - 1 ], userid, IDLEN+1 );
     }
 }
 
@@ -159,7 +176,9 @@ int
 searchnewuser() /* 找cache中 空闲的 user num */
 {
     register int num, i;
-    return uidshm->hashhead[0];
+    if (uidshm->hashhead[0]) return uidshm->hashhead[0];
+    if (uidshm->number<MAXUSERS) return uidshm->number+1;
+    return 0;
 }
 int
 searchuser(userid)
@@ -169,10 +188,10 @@ char *userid ;
 
 	i = uidshm->hashhead[ucache_hash(userid)];
 	while (i)
-		if (!strcasecmp(userid,uidshm->users[i-1].userid))
+		if (!strcasecmp(userid,uidshm->users[i-1]))
 			return i;
 		else
-			i=uidshm->users[i-1].next;
+			i=uidshm->next[i-1];
     return 0 ;
 }
 
@@ -198,9 +217,9 @@ int     *pnum;
     char        tagbuf[ STRLEN ];
     int         ch, num = 0;
 
-    if( *tag == '\0' ) { /* return all user */
-        *pnum = reg_ushm->number;
-        return reg_ushm->userid[0];
+    if( *tag == '\0' ) { /* return all user disabled */
+        *pnum = uidshm->number;
+        return uidshm->users[0];
     }
     for( n = 0; tag[n] != '\0'; n++ ) {
         tagbuf[ n ] = chartoupper( tag[n] );
@@ -209,7 +228,7 @@ int     *pnum;
     ch = tagbuf[0];
     total = reg_ushm->number; /* reg. user total num */
     for( n = 0; n < total; n++ ) {
-        ptr = reg_ushm->users[n].userid;
+        ptr = (char*)reg_ushm->users[n];
         tmp = *ptr;
         if( tmp == ch || tmp == ch - 'A' + 'a' ) /* 判断第一个字符是否相同*/
             if( chkstr( tag, tagbuf, ptr ) )

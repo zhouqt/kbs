@@ -28,7 +28,7 @@ OS_DEF   = -DLINUX -DSYSV
 
 CC       = gcc
 #CC       = cc
-CFLAGS   = -g -Ilibesmtp -static
+CFLAGS   = -g -Ilibesmtp -static 
 #CFLAGS   = -g -O3 -qstrict -qcompact -qarch=ppc
 LIBS     = -lbsd -lcrypt -L. -lesmtp
 #CFLAGS   = -O3
@@ -39,7 +39,9 @@ INSTALL  = /usr/bin/install -c
 CSIE_DEF = -DSHOW_IDLE_TIME -DBBSGID=502 -D_DETAIL_UINFO_
 #CSIE_DEF = -DSHOW_IDLE_TIME -DBBSGID=99 -D_DETAIL_UINFO_
 #-DTALK_LOG
+ifeq (Makefile.spec ,$(wildcard Makefile.spec))
 include	Makefile.spec
+endif
 
 #############################################################
 ###        You needn't modify the following stuff      ######
@@ -50,14 +52,16 @@ CFILE    = bbs.c record.c delete.c stuff.c mail.c register.c \
            maintain.c edit.c more.c pass.c help.c bcache.c boards.c \
            screen.c userinfo.c vote.c announce.c sendmsg.c\
 	   bm.c list.c goodbye.c fileshm.c cache.c bbsd_single.c \
-	   newmain_single.c newio.c newterm.c convcode.c bbs_sendmail.c crypt.c
+	   newmain_single.c newio.c newterm.c convcode.c bbs_sendmail.c crypt.c \
+	   ucache.c
 
 COBJS    = bbs.o record.o delete.o stuff.o mail.o register.o \
            xyz.o talk.o read.o comm_lists.o namecomplete.o chat.o \
            maintain.o edit.o more.o pass.o help.o bcache.o boards.o \
            screen.o userinfo.o vote.o announce.o sendmsg.o\
            bm.o list.o goodbye.o fileshm.o cache.o bbsd_single.o \
-	   newmain_single.o newio.o newterm.o convcode.o bbs_sendmail.o crypt.o
+	   newmain_single.o newio.o newterm.o convcode.o bbs_sendmail.o crypt.o \
+	   ucache.o
 
 OTHERS   = Makefile bbs.h edit.h
 

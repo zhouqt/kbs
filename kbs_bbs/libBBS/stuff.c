@@ -169,11 +169,11 @@ register int n ;
         c1 = *s1++;
         c2 = *s2++;
         if( c1 >= 'a' && c1 <= 'z' )
-            c1 += 'A' - 'a';
+            c1 &= 0xdf;
         if( c2 >= 'a' && c2 <= 'z' )
-            c2 += 'A' - 'a';
+            c2 &= 0xdf;
         if( c1 != c2 )
-            return (c2 - c1);
+            return (c1 - c2);
         if( c1 == 0 )
             return 0;
     }
@@ -190,11 +190,11 @@ register char   *s1, *s2;
         c1 = *s1++;
         c2 = *s2++;
         if( c1 >= 'a' && c1 <= 'z' )
-            c1 += 'A' - 'a';
+            c1 &= 0xdf;
         if( c2 >= 'a' && c2 <= 'z' )
-            c2 += 'A' - 'a';
+            c2 &= 0xdf;
         if( c1 != c2 )
-            return (c2 - c1);
+            return (c1 - c2);
         if( c1 == 0 )
             return 0;
     }
