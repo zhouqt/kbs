@@ -103,5 +103,5 @@ function blogCalendar(thisYear,thisMonth,thisDay)
 	
 	cStr += "</table>";
 	
-	bc.innerHTML = cStr;
+	document.getElementById("bc").innerHTML = cStr;
 }
