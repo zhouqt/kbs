@@ -128,6 +128,26 @@ int newfile(char * s)
     return 0;
 }
 
+void encode_file(char * s)
+{
+    char buf[1024*16];
+    char fn;
+    int o, i;
+    FILE *fp1, *fp2;
+    sprintf(fn, "tmp/%d.cal", rand());
+    fp1 = fopen(s, "rb");
+    fp2 = fopen(fn, "wb");
+    while((o=fread(buf, 1, 1024*16, fp1))>0) {
+        for(i=0;i<o;i++)
+            buf[i]=buf[i]^0x1f;
+        fwrite(buf, 1, o, fp2);
+    }
+    fclose(fp1);
+    fclose(fp2);
+    unlink(s);
+    f_mv(fn, s);
+}
+
 extern int incalendar;
 
 int calendar_main()
@@ -187,16 +207,30 @@ int calendar_main()
                 break;
             case 13:
             case 10:
+                cc = 0;
                 modify_user_mode(CALENEDIT);
                 sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, day);
-                cc = newfile(buf);
+                if(stat(buf, &st)!=-1)
+                    encode_file(buf);
+                else
+                    cc = newfile(buf);
                 if(vedit(buf, 0, &eff_size, 0)&&cc) unlink(buf);
+                else encode_file(buf);
                 modify_user_mode(CALENDAR);
                 break;
             case 32:
                 sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, day);
                 sprintf(title, "%d/%02d/%02d", year, month, day);
-                ansimore_withzmodem(buf, true, title);
+                if(stat(buf, &st)!=-1) {
+                    encode_file(buf);
+                    ansimore_withzmodem(buf, true, title);
+                    encode_file(buf);
+                }
+                break;
+            case KEY_HOME:
+                day = nowr.tm_mday;
+                month = nowr.tm_mon+1;
+                year = nowr.tm_year+1900;
                 break;
             case KEY_DEL:
                 sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, day);
@@ -214,4 +248,5 @@ int calendar_main()
     move(save_y, save_x);
     modify_user_mode(oldmode);
     incalendar = 0;
+    resetcolor();
 }
