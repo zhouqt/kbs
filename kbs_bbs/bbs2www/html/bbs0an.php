@@ -5,19 +5,23 @@
  *
  */
  
-function bbs_ann_updirs($path,&$up_dirs) {
+function bbs_ann_updirs($path,&$board,&$up_dirs) {
+    $board = '';
     $path = ltrim(trim($path));
     if ($path[0]!='/') $path='/'.$path;
     if ($path[strlen($path)-1]=='/') $path = substr($path,0,strlen($path)-1);
     $up_dirs = array();
     $buf = '';
     $dirs = explode('/',$path);
+    $j = 0;
     foreach($dirs as $dir) {
         if ($dir) {
             if (!strcmp('0Announce',$dir))
                 continue;
             $buf .= '/'.$dir;
-            $up_dirs[] = $buf;    
+            $up_dirs[] = $buf;
+            if ($j == 2) $board = $dir;    
+            $j ++;
         }
     }
     return sizeof($up_dirs);
@@ -173,6 +177,7 @@ switch ($ret) {
 }
 
 $path = $path_tmp;
+$up_cnt = bbs_ann_updirs($path,$board,$up_dirs);
 if ($board) {
     $brdarr = array();
     $bid = bbs_getboard($board,$brdarr);
@@ -205,7 +210,6 @@ else {
 }
 
 bbs_ann_xsearch($board);
-$up_cnt = bbs_ann_updirs($path,$up_dirs);
 bbs_ann_display_articles($articles);
 if ($bid)
     bbs_board_foot($brdarr,'');
