@@ -327,20 +327,20 @@ void start_game()
         if(!(inrooms.peoples[i].flag&PEOPLE_SPECTATOR)) 
             total++;
     if(total<6) {
-        send_msg(inrooms.peoples+me, "\x1b[31m至少6人参加才能开始游戏\x1b[m");
+        send_msg(inrooms.peoples+me, "\x1b[31;1m至少6人参加才能开始游戏\x1b[m");
         kill(inrooms.peoples[me].pid, SIGUSR1);
         end_change_inroom();
         return;
     }
     if(totalk==0) totalk=total*3/10+0.5;
     if(totalk>total) {
-        send_msg(inrooms.peoples+me, "\x1b[31m总人数少于要求的坏人人数,无法开始游戏\x1b[m");
+        send_msg(inrooms.peoples+me, "\x1b[31;1m总人数少于要求的坏人人数,无法开始游戏\x1b[m");
         kill(inrooms.peoples[me].pid, SIGUSR1);
         end_change_inroom();
         return;
     }
     inrooms.status = INROOM_NIGHT;
-    sprintf(buf, "\x1b[31m游戏开始啦!\x1b[m\n");
+    sprintf(buf, "\x1b[31;1m游戏开始啦!\x1b[m\n");
     for(i=0;i<myroom->people;i++)
         send_msg(inrooms.peoples+i, buf);
     for(i=0;i<totalk;i++) {
