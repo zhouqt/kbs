@@ -150,17 +150,18 @@ int wwwlogin(struct userec *user) {
     if (utmpent == -1)
 		http_fatal("抱歉，目前在线用户数已达上限，无法登录。请稍后再来。");
 	u = get_user_info(utmpent);
-	pid=fork();
-	if(pid<0) http_fatal("can't fork");
-	if(pid==0)
+//	pid=fork();
+//	if(pid<0) http_fatal("can't fork");
+/*./	if(pid==0)
 	{
 		setcurruinfo(u);
 		wwwagent();
 		exit(0);
-	}
-	u->pid = pid;
+	} i*/
+	u->pid = 1;
 	tmp=rand()%100000000;
 	u->utmpkey=tmp;
+	setcurruinfo(u);
 	sprintf(buf, "%d", utmpent);
 	setcookie("utmpnum", buf);
 	sprintf(buf, "%d", tmp);
@@ -171,7 +172,7 @@ int wwwlogin(struct userec *user) {
 }
 
 long f_offset=0;
-
+#if 0
 int get_msgcount()
 {
     char buf2[256] ;
@@ -297,7 +298,7 @@ failed:
     signal(SIGUSR2, add_msg);
     return ;
 }
-
+#endif 
 void
 setflags(mask, value)
 int mask, value;
@@ -310,7 +311,7 @@ int mask, value;
         else u->flags[0] &= ~mask;
     }
 }
-
+#if 0
 void
 u_exit()
 {
@@ -345,7 +346,8 @@ void abort_program() {
 	}
 	exit(0);
 }
-
+#endif
+#if 0
 int wwwagent() {
 	int i;
 	for(i=0; i<1024; i++) close(i);
@@ -361,4 +363,6 @@ int wwwagent() {
 	}
 	exit(0);
 }
+
+#endif
 

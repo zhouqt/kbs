@@ -1,5 +1,5 @@
 #include "bbslib.h"
-
+extern char msgerr[255];
 int main()
 {
 	int i;
@@ -42,9 +42,10 @@ int main()
 			if(!strcasecmp(destid, currentuser->userid))
 				printf("你不能给自己发讯息！");
 			else {
-				if(send_msg(currentuser->userid, u_info->pid, destid, destpid, msg)==0) 
+  				int result;
+				if((result = send_msg(currentuser->userid, u_info->pid, destid, destpid, msg))==1) 
 					printf("已经帮你送出消息");
-				else
+				else if (result == -1 ) printf ("发送消息失败，%s",msgerr); else
 					printf("发送消息失败, 此人目前不在线或者无法接受消息");
 			}
 			printf("<script>top.fmsg.location=\"bbsgetmsg\"</script>\n");
