@@ -166,14 +166,41 @@ int     autoappend;
 		&& (fh->filename[STRLEN - 2] == 'S')
 		&& (atoi(fh->filename + 2) > now - 14 * 86400))
 	{
-		FILE* fin;
-		char buf[120];
-		sprintf(buf, "%s\t%s\t%s\t%s\t%s\n",
-				board, fh->filename, fh->owner, email_domain(), fh->title);
-		if ((fin = fopen("innd/cancel.bntp", "a")) != NULL)
+		FILE* fp;
+		char buf[256];
+		char from[STRLEN];
+		int len;
+		char *ptr;
+	
+		setbfile(buf, board, fh->filename);
+		if ((fp = fopen(buf, "r")) == NULL)
+				return;
+		while (fgets(buf, sizeof(buf), fp) != NULL)
 		{
-			fputs(buf, fin);
-			fclose(fin);
+			/* 首先滤掉换行符 */
+			len = strlen(buf) - 1;
+			buf[len] = '\0';
+			if (len < 8)
+					break;
+			if (strncmp("发信人: ", buf, 8) == 0)
+			{
+				if ((ptr = strrchr(buf, ')')) == NULL)
+						break;
+				*ptr = '\0';
+				if ((ptr = strrchr(buf, '(')) == NULL)
+						break;
+				strncpy(from, ptr+1, sizeof(from)-1);
+				from[sizeof(from)-1] = '\0';
+				break;
+			}
+		}
+		fclose(fp);
+		sprintf(buf, "%s\t%s\t%s\t%s\t%s\n",
+				board, fh->filename, fh->owner, from, fh->title);
+		if ((fp = fopen("innd/cancel.bntp", "a")) != NULL)
+		{
+			fputs(buf, fp);
+			fclose(fp);
 		}
 	}
 }
