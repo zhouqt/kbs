@@ -274,12 +274,16 @@ int get_top(int type)
 				}
 			}
 #endif
+
+			secid= get_seccode_index(bh->title[0]);
+
+			if(topnum >= mytop[type] && ( secid==-1 || sectopnum[i] >= SECTOPCOUNT))
+				continue;
+
 			threadid = atoi(row[1]);
 			if(get_file_title(row[0], threadid, title, userid) == NULL){
 				continue;
 			}
-
-			secid= get_seccode_index(bh->title[0]);
 /**一个版面最多3个十大**/
 #ifndef NINE_BUILD
 			if(type!=4){
