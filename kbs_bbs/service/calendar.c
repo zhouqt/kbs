@@ -188,7 +188,7 @@ char solarTerm[24][8] =
 int sTerm(int y, int n, int day)
 {
     double k=
-       (31556925974.7*(y-1900) + sTermInfo[n]*60000 + 1.0/24*2 + 1.0/24/60*5)/86400000-6;
+       (31556925974.7*(double)(y-1900) + (double)sTermInfo[n]*60000)/86400000 + 6 + 1.0/24*2 + 1.0/24/60*5;
     int pass, i, j;
     pass = (int) k;
     for(i=1900;i<year;i++) pass-=get_day2(i);
@@ -330,7 +330,7 @@ void draw_main()
         }
         i0++;
     }
-    for(i=0;i<24;i++)
+    for(i=month*2-2;i<month*2;i++)
         if(sTerm(year, i, day)) {
             strcpy(buf, solarTerm[i]);
             k-=strlen(buf);
