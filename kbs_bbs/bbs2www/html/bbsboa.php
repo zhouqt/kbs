@@ -68,11 +68,12 @@
 		$brd_artcnt = $boards["ARTCNT"]; // 文章数
 		$brd_unread = $boards["UNREAD"]; // 未读标记
 		$brd_zapped = $boards["ZAPPED"]; // 是否被 z 掉
-		$brd_flag = $boards["flag"]; //flag
+		$brd_flag = $boards["FLAG"]; //flag
+		$brd_bid = $boards["BID"]; //flag
 		$rows = sizeof($brd_name);
 		for ($i = 0; $i < $rows; $i++)	
 		{
-		if ($brd_flag[i]&BBS_BOARD_GROUP)
+		if ($brd_flag[$i]&BBS_BOARD_GROUP)
 		  $brd_link="/bbsboa.php?group=" . $group . "&group2=" . $group2;
 		else
 		  $brd_link="/bbsdoc.php?board=" . urlencode($brd_name[$i]);
@@ -81,7 +82,7 @@
 <td><?php echo $i+1; ?></td>
 <td>
 <?php
-			if (!($brd_flag[i]&BBS_BOARD_GROUP)) {
+			if (!($brd_flag[$i]&BBS_BOARD_GROUP)) {
 			if ($brd_unread[$i] == 1)
 				echo "◆";
 			else
@@ -120,7 +121,7 @@
 ?>
 </td>
 <td><?php 
-if (!($brd_flag[i]&BBS_BOARD_GROUP))
+if (!($brd_flag[$i]&BBS_BOARD_GROUP))
 	echo $brd_artcnt[$i]; 
 else echo "目录";	
 ?></td>
