@@ -334,8 +334,10 @@ function pcmain_section_top_view()
 		{
 		    $nodesNum = sizeof($nodes);
 ?>
-<tr><td align="left">
-[<strong><a href="/pc/pcsec.php?sec=<?php echo $section; ?>"><font class=low2><?php echo $pcconfig["SECTION"][$section]; ?></font></a></strong>]&nbsp;
+<tr><td align="left"><table cellspacing="0" cellpadding="2" border="0" class="f1"><tr>
+<td align="left" valign="top" width="75">
+[<strong><a href="/pc/pcsec.php?sec=<?php echo $section; ?>"><font class=low2><?php echo $pcconfig["SECTION"][$section]; ?></font></a></strong>]
+</td><td>
 <?php
 			for( $i = 0 ; $i < $nodesNum ; $i ++ )
 			{
@@ -345,6 +347,7 @@ function pcmain_section_top_view()
 				if( $i < $nodesNum - 1 ) echo " | ";
 			}
 ?>
+</td></tr></table>
 </td></tr>
 <?php			
 		}
