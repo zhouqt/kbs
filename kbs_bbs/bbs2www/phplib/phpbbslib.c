@@ -710,10 +710,13 @@ static ZEND_FUNCTION(bbs_checkreadperm)
 static ZEND_FUNCTION(bbs_brcaddread)
 {
 	long posttime,boardnum;
+	
 	if (zend_parse_parameters(2 TSRMLS_CC, "ll" , 
 		&boardnum,&posttime)!= SUCCESS) 
                 WRONG_PARAM_COUNT;
-	//TODO
+	brc_addreaddirectly(getcurrentuser()->userid,boardnum,posttime);
+
+	RETURN_NULL();
 }
 
 static char old_pwd[1024];

@@ -306,6 +306,43 @@ static int brc_getcache(char* userid)
 	return 0;
 }
 
+void brc_addreaddirectly(char* userid,int bnum,int posttime)
+{
+	char dirfile[MAXPATH];
+	int *ptr,*list;
+	int filesize,fdr;
+	int i,n;
+
+    sethomefile( dirfile, userid , ".boardrc" );
+    switch (safe_mmapfile(dirfile,O_RDWR|O_CREAT,PROT_READ|PROT_WRITE,MAP_SHARED,(void**)&ptr,&filesize,&fdr)) {   
+        case 0:
+            return;
+        case 1:
+    		ftruncate(fdr,BRC_FILESIZE);
+			list=ptr+BRC_ITEMSIZE*(bnum-1);
+			for (n=0;(n<BRC_MAXNUM)&&list[n];n++) {
+				if (posttime==list[n]) {
+    				end_mmapfile((void*)ptr,filesize,fdr);
+					return;
+				}
+				else if (posttime>list[n]) {
+					for (i=BRC_MAXNUM-1;i>n;i--)
+						list[i]=list[i-1];
+					list[n]=posttime;
+    				end_mmapfile((void*)ptr,filesize,fdr);
+					return;
+				}
+			}
+			if (n==0) {
+				for (n=0;n<BRC_MAXNUM;n++)
+					list[n]=posttime;
+				list[n]=0;
+			}
+    }
+    end_mmapfile((void*)ptr,filesize,fdr);
+	return;
+}
+
 int brc_initial(char *userid, char *boardname ) /* 读取用户.boardrc文件，取出保存的当前版的brc_list */
 {
     int entry;
