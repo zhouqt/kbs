@@ -269,7 +269,7 @@ login_init();
         	bbs_set_onboard($brdnum,1);
 		if ($isnormalboard&&($default_dir_mode == $dir_modes["NORMAL"])) {
                         $dotdirname=BBS_HOME . "/boards/" . $brdarr["NAME"] . "/.DIR";
-       			if (cache_header("public, must-revalidate",filemtime($dotdirname),10))
+       			if (cache_header("public, must-revalidate",@filemtime($dotdirname),10))
                			return;
                	}
 		html_init("gb2312","","",1);
