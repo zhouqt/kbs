@@ -61,8 +61,9 @@
 		mysql_query($query,$link);
 	}
 	
-	function display_navigation_bar($link,$pc,$nid,$pid,$tag,$spr,$order,$comment,$tid=0,$pur,$trackback , $subject)
+	function display_navigation_bar($link,$pc,$nid,$pid,$tag,$spr,$order,$comment,$tid=0,$pur,$trackback , $subject , $recommend)
 	{
+		global $currentuser,$loginok;
 		$query = "SELECT `nid` FROM nodes WHERE `nid` < ".$nid." AND `uid` = '".$pc["UID"]."' AND `pid` = '".$pid."' AND `access` = '".$tag."' AND `tid` = '".$tid."' AND `type` != '1' ORDER BY `nid` DESC LIMIT 0 , 1 ;";
 		$result = mysql_query($query,$link);
 		$rows = mysql_fetch_array($result);
@@ -90,6 +91,8 @@
 		}
 		if($pur == 3)
 			echo "<a href=\"pcmanage.php?act=edit&nid=".$nid."\">修改</a>\n";
+		if((pc_is_manager($currentuser) || pc_is_admin($currentuser,$pc)) && $recommend == 0)
+			echo "<a href=\"pcrec.php?nid=".$nid."\">推荐</a>\n";
 		if($trackback)
 			echo 	"<a href=\"javascript:openScript('pctb.php?nid=".$nid."&uid=".$pc["UID"]."&subject=".base64_encode($subject)."',460 , 480)\">引用</a>\n";
 		echo 	"<a href=\"";
@@ -293,7 +296,7 @@
 	</tr>
 	<tr>
 		<td colspan="2" align="right" class="t8">
-		<?php display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur,$rows[trackback],$rows[subject]); ?>
+		<?php display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur,$rows[trackback],$rows[subject] , $rows[recommend]); ?>
 		</td>
 	</tr>
 	</table>
@@ -313,7 +316,7 @@
 	<td align="middle" class="f1" height="40" valign="middle">
 	<?php
 		if($re_num != 0)
-			display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur,$rows[trackback],$rows[subject]); 
+			display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur,$rows[trackback],$rows[subject] , $rows[recommend]); 
 	?>
 	&nbsp;</td>
 </tr>
