@@ -615,6 +615,7 @@ int calendar_main()
     char buf[80], title[80];
     long eff_size;
     time_t now;
+    noscroll();
     incalendar = 1;
     oldmode = uinfo.mode;
     modify_user_mode(CALENDAR);

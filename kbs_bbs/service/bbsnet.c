@@ -245,7 +245,7 @@ static void process_bar(int n, int len)
 	char *ptr2;
 	char *ptr3;
 
-	good_move(4, 0);
+	move(4, 0);
 	prints("©°©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©´\n");
 	sprintf(buf2, "            %3d%%              ", n * 100 / len);
 	ptr = buf;
@@ -453,28 +453,28 @@ static int bbsnet_show(struct _select_def *conf, int pos)
     	prints("\x1b[1;32m %c\x1b[00m%-18s",str[pos-1],host1[pos-1]);
     if (pos==conf->item_count&&bbsnet_redraw) {
     int i;
-    good_move(4,64);
+    move(4,64);
     outs("\x1b[m¨q¡ª¡ª¡ª¡ª¡ª¨r");
     for (i=0;i<sectioncount;i++)
     {
-        good_move(i+5,64);
+        move(i+5,64);
         if (i+1==sectionindex) 
             prints("\x1b[m©¦\x1b[1;44;32m%c %-8s\x1b[m©¦",section[i],sectiontitle[i]);
         else
             prints("\x1b[m©¦\x1b[1;32m%c %-8s\x1b[m©¦",section[i],sectiontitle[i]);
     }
-    good_move(i+5,64);
+    move(i+5,64);
     outs("\x1b[m¨t¡ª¡ª¡ª¡ª¡ª¨s");
     for (i=2;i<19;i++) {
-        good_move(i,0);
+        move(i,0);
         outs("¨U");
-        good_move(i,78);
+        move(i,78);
         outs("\x1b[m¨U");
     }
     bbsnet_redraw=false;
     } else
     if (pos==conf->item_count) {
-        good_move(2,78);
+        move(2,78);
         outs("\x1b[m¨U");
     }
     return SHOW_CONTINUE;
@@ -520,43 +520,43 @@ static void bbsnet_refresh(struct _select_def *conf)
 {
     int i;
     clear();
-    good_move(0,0);
+    move(0,0);
     prints("  ¡ò %s ¡ò",sectiontitle[sectionindex-1]);
-    good_move(1,0);
+    move(1,0);
     outs("¨q¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨r");
     /*
     for (i=2;i<19;i++) {
-    	good_move(i,0);
+    	move(i,0);
     	outs("¨U");
-    	good_move(i,78);
+    	move(i,78);
     	outs("¨U");
     }
     */
-    good_move(19,0);
+    move(19,0);
     outs("¨U¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¨U");
     bbsnet_selchange(conf,conf->pos);
-    good_move(22,0);
+    move(22,0);
     outs("¨t¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨s");
-    good_move(23,0);
+    move(23,0);
     outs("[1;36m[\x1b[1;32m?\x1b[m]ÇóÖú [\x1b[1;32mCtrl+C\x1b[m]ÍË³ö [\x1b[1;32mCtrl+L\x1b[m]ÖØ»æÓ©Ä» [\x1b[1;32m¿Õ¸ñ\x1b[m]ÇÐ»»Ä¿Â¼ [\x1b[1;32m^\x1b[m]µÚÒ»¸ö [\x1b[1;32m$\x1b[m]×îºóÒ»¸ö[0;37m[m");
 }
 
 int bbsnet_selchange(struct _select_def* conf,int new_pos)
 {
-    good_move(20,0);
+    move(20,0);
     clrtoeol();
     prints("¨U\x1b[1mµ¥Î»:\x1b[1;33m%-18s\x1b[m  Õ¾Ãû:\x1b[1;33m%s\x1b[m",
     	host2[new_pos-1],
     	host1[new_pos-1]);
-    good_move(20,78);
+    move(20,78);
     outs("¨U");
-    good_move(21,0);
+    move(21,0);
     clrtoeol();
     prints("¨U\x1b[1mÁ¬Íù:\x1b[1;33m%-20s",ip[new_pos-1]);
     if (port[new_pos-1]!=23)
     	prints("  %d",port[new_pos-1]);
     outs("\x1b[m");
-    good_move(21,78);
+    move(21,78);
     outs("¨U");
     return SHOW_CONTINUE;
 }

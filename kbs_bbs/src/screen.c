@@ -58,7 +58,8 @@ void setbcolor(int i)
 
 void resetcolor()
 {
-    prints("\033[37;40;0m");
+    cur_mode = 0;
+    cur_color = 7;
 }
 
 /* ÐÇ¿ÕÕ½¶·¼¦ added by Czz 020926 */
@@ -71,6 +72,7 @@ void clrnlines(int n)
 		memset(slp->data, 32, LINELEN);
 		memset(slp->mode, 0, LINELEN);
 		memset(slp->color, 7, LINELEN);
+		slp->changed = true;
 	}
 }
 /* added end */
@@ -101,7 +103,7 @@ void init_screen(int slns, int scols)
 {
     struct screenline *slp, *oslp;
     struct screenline *oldp = big_picture;
-    int j;
+    int j, oldln = scr_lns;
 
     scr_lns = slns;
     scr_cols = Min(scols, LINELEN);
@@ -117,12 +119,13 @@ void init_screen(int slns, int scols)
     roll = 0;
     if (!oldp)
         return;
-    for (slns = 0; slns < 24; slns++) {
+    for (slns = 0; slns < Min(oldln, scr_lns); slns++) {
     	slp = &big_picture[slns];
     	oslp = &oldp[slns];
     	memcpy(slp->data, oslp->data, LINELEN);
     	memcpy(slp->mode, oslp->mode, LINELEN);
     	memcpy(slp->color, oslp->color, LINELEN);
+       slp->changed = true;
     }
     free(oldp);
 }
@@ -141,6 +144,7 @@ void clear()
         memset(slp->data, 32, scr_cols);
         memset(slp->mode, 0, scr_cols);
         memset(slp->color, 7, scr_cols);
+        slp->changed = true;
     }
     cur_color = 7;
     cur_mode = 0;
@@ -157,8 +161,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
 {
     int i;
     struct screenline *bp = big_picture;
-    if(new_col==t_columns) new_col--;
-    if (new_ln >= t_lines || new_col >= t_columns)
+    if (new_ln >= t_lines || new_col > t_columns)
         return;
     if(was_col==new_col&&was_ln==new_ln) return;
     tc_col = new_col;
@@ -185,9 +188,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
         for(i=was_col;i<new_col;i++)
             p=p&&(bp[q].color[i]==tc_color)&&(bp[q].mode[i]==tc_mode);
         if(p) {
-            for(i=was_col;i<new_col;i++)
-                if(bp[q].data[i]==0) ochar(32);
-                else ochar(bp[q].data[i]);
+            output(bp[q].data+was_col, new_col-was_col);
             return;
         }
     }
@@ -245,9 +246,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
                 tc_color = tc_color/16*16+8;
             if (was_col != 0)
                 ochar('\r');
-            for(i=0;i<new_col;i++)
-                if(bp[q].data[i]==0) ochar(32);
-                else ochar(bp[q].data[i]);
+            ochar(bp[q].data, new_col);
             return;
         }
     }
@@ -299,6 +298,7 @@ void refresh()
     
     for (i = 0; i < scr_lns; i++) {
         j = (i + roll)%scr_lns;
+        if(!bp[j].changed) continue;
 
         ii=scr_cols-1;
         while(ii>=0&&(bp[j].data[ii]==0||bp[j].data[ii]==32)&&(bp[j].color[ii]/16)==(bp[j].color[scr_cols-1]/16)&&((bp[j].mode[ii]&~SCREEN_BRIGHT)==(bp[j].mode[scr_cols-1]&~SCREEN_BRIGHT))) ii--;
@@ -376,8 +376,7 @@ void refresh()
                 o_cleol();
                 break;
             }
-            if(bp[j].data[k]==0) ochar(' ');
-            else ochar(bp[j].data[k]);
+            ochar(bp[j].data[k]);
             bp[j].ldata[k]=bp[j].data[k];
             bp[j].lmode[k]=bp[j].mode[k];
             bp[j].lcolor[k]=bp[j].color[k];
@@ -400,6 +399,7 @@ void redoscr()
     for (i = 0; i < scr_lns; i++) {
         j = (i + roll)%scr_lns;
         memset(bp[j].ldata, 255, scr_cols);
+        bp[j].changed = true;
     }
     do_move(tc_col, tc_line, ochar);
     refresh();
@@ -415,20 +415,10 @@ void move(int y, int x)
 	cur_ln = y;
 }
 
-void good_move(int y, int x)
-{
-    move(y, x);
-}
-
 void getyx(int *y, int *x)
 {
-	*y = cur_ln;
-	*x = cur_col /*-c_shift(y,x)*/ ;
-}
-
-void good_getyx(int *y, int *x)
-{
-    getyx(y,x);
+    *y = cur_ln;
+    *x = cur_col;
 }
 
 void clear_whole_line(int i)
@@ -438,6 +428,7 @@ void clear_whole_line(int i)
     memset(slp->data, 32, scr_cols);
     memset(slp->mode, cur_mode, scr_cols);
     memset(slp->color, cur_color, scr_cols);
+    slp->changed = true;
 }
 
 void clrtoeol()
@@ -455,6 +446,7 @@ void clrtoeol()
     memset(slp->data+cur_col, 32, scr_cols-cur_col);
     memset(slp->mode+cur_col, cur_mode, scr_cols-cur_col);
     memset(slp->color+cur_col, cur_color, scr_cols-cur_col);
+    slp->changed = true;
 }
 
 void clrtobot()
@@ -470,6 +462,7 @@ void clrtobot()
         memset(slp->data+k, 32, scr_cols-k);
         memset(slp->mode+k, cur_mode, scr_cols-k);
         memset(slp->color+k, cur_color, scr_cols-k);
+        slp->changed = true;
     }
 }
 
@@ -498,6 +491,7 @@ void outc(unsigned char c)
         slp->mode[cur_col]=cur_mode;
         slp->color[cur_col]=cur_color;
         slp->data[cur_col]=c;
+        slp->changed = true;
         cur_col++;
     }
 }
@@ -676,6 +670,7 @@ void outns(const char*str, int n)
                     slp->data[cur_col]=ch;
                     slp->mode[cur_col]=cur_mode;
                     slp->color[cur_col]=cur_color;
+                    slp->changed = true;
                     cur_col++;
                 }
             }
@@ -689,6 +684,7 @@ void outns(const char*str, int n)
             slp->data[cur_col]=ch;
             slp->mode[cur_col]=cur_mode;
             slp->color[cur_col]=cur_color;
+            slp->changed = true;
             cur_col++;
         }
         str++;
@@ -841,8 +837,7 @@ void scroll()
     move(scr_lns - 1, 0);
     ln = (cur_ln + roll)%scr_lns;
     slp = &big_picture[ln];
-    for(k=cur_col;k<t_columns;k++)
-        slp->ldata[k]=255;
+    memset(slp->ldata, 255, scr_cols);
 }
 
 void rscroll()
@@ -855,8 +850,7 @@ void rscroll()
     move(0, 0);
     ln = (cur_ln + roll)%scr_lns;
     slp = &big_picture[ln];
-    for(k=cur_col;k<t_columns;k++)
-        slp->ldata[k]=255;
+    memset(slp->ldata, 255, scr_cols);
 }
 
 void noscroll()
@@ -888,6 +882,7 @@ void saveline(int line, int mode, char* buffer)	/* 0 : save, 1 : restore */
             memcpy(bp[line].data, tmp, LINELEN);
             memcpy(bp[line].mode, tmp+LINELEN, LINELEN);
             memcpy(bp[line].color, tmp+LINELEN*2, LINELEN);
+            bp[line].changed = true;
             break;
     }
 };

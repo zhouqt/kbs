@@ -47,7 +47,7 @@ static void process_bar(int n, int len)
 	char *ptr2;
 	char *ptr3;
 
-	good_move(4, 0);
+	move(4, 0);
 	prints("©∞©§©§©§©§©§©§©§©§©§©§©§©§©§©§©§©¥\n");
 	sprintf(buf2, "            %3d%%              ", n * 100 / len);
 	ptr = buf;
@@ -208,23 +208,23 @@ sh(int n)
         printf("[22;3H[1;37m π”√∑Ω∑®: ªÿ≥µ∫Û ‰»Îip[:port]°£[1;33m[22;32H[1;37m ’æ√˚: [1;33m◊‘∂®“Â’æµ„              \r\n");
         printf("[1;37m[23;3H¡¨Õ˘: [1;33m__________________           [21;1H");
 		/*
-		good_move( 22,3 );
+		move( 22,3 );
         prints("[1;37m π”√∑Ω∑®: ∞¥ªÿ≥µ∫Û ‰»Îip°£[1;33m");
-		good_move (22,32);
+		move (22,32);
 		prints ("[1;37m ’æ√˚: [1;33m◊‘∂®“Â’æµ„              ");
-		good_move(23,3);
+		move(23,3);
         prints("[1;37m¡¨Õ˘: [1;33m__________                   ");
-		good_move(21,1);
+		move(21,1);
 		*/
     } else {
 		/*
-		good_move( 22,3 );
+		move( 22,3 );
         prints("[1;37mµ•Œª: [1;33m%s                   ");
-		good_move(22,32);
+		move(22,32);
 		prints ("[1;37m ’æ√˚: [1;33m%s              ", host1[n], host2[n]);
-		good_move ( 23,3 );
+		move ( 23,3 );
         prints("[1;37m¡¨Õ˘: [1;33m%s                   ", ip[n]);
-		good_move ( 21,1 );
+		move ( 21,1 );
 		*/
         printf("[22;3H[1;37mµ•Œª: [1;33m%s                   [22;32H[1;37m ’æ√˚: [1;33m%s              \r\n", host1[n], host2[n]);
         printf("[1;37m[23;3H¡¨Õ˘: [1;33m%s                   [21;1H", ip[n]);
@@ -413,12 +413,12 @@ bbsnet(int n)
 
 	clear();
    // printf("[1H[2J[1;32mo ¡¨Õ˘: %s (%s)\r\n", host2[n], ip[n]);
-	good_move( 0, 0 );
+	move( 0, 0 );
     prints("[1;32mo ¡¨Õ˘: %s (%s)", host2[n], ip[n]);
-	good_move( 1, 0 );
+	move( 1, 0 );
     //printf("%s\r\n\r\n[m", "o ¡¨≤ª…œ ±«Î…‘∫Ú£¨15 √Î∫ÛΩ´◊‘∂ØÕÀ≥ˆ");
     prints("%s[m", "o ¡¨≤ª…œ ±«Î…‘∫Ú£¨15 √Î∫ÛΩ´◊‘∂ØÕÀ≥ˆ");
-	good_move( 3, 0 );
+	move( 3, 0 );
     //fflush(stdout);
     proc(host2[n], ip[n], port[n]);
 }

@@ -493,7 +493,7 @@ static int set_keydefine_select(struct _select_def *conf)
     get_key_name(keymem[conf->pos-1].key,buf);
     get_keys_name(keymem+conf->pos-1,buf2);
     get_modes_name(keymem+conf->pos-1,buf3);
-    good_move(1,0);
+    move(1,0);
     prints("自定义键: %s\n\n", buf);
     prints("替换序列: %s\n\n", buf2);
     prints("允许模式: %s\n\n", buf3);

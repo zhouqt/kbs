@@ -35,16 +35,16 @@ static int show_item(struct _select_def *conf, int item, bool clear)
         if (conf->prompt) {
             pre_len = strlen(conf->prompt);
             if (conf->item_pos[idx].x > pre_len)
-                good_move(conf->item_pos[idx].y, conf->item_pos[idx].x - pre_len);
+                move(conf->item_pos[idx].y, conf->item_pos[idx].x - pre_len);
             else
-                good_move(conf->item_pos[idx].y, 0);
+                move(conf->item_pos[idx].y, 0);
             outns(conf->prompt, pre_len);
         } else
-            good_move(conf->item_pos[idx].y, conf->item_pos[idx].x);
+            move(conf->item_pos[idx].y, conf->item_pos[idx].x);
         if (conf->flag & LF_HILIGHTSEL)
             outns("\x1b[1;45m", 7);
     } else {
-        good_move(conf->item_pos[idx].y, conf->item_pos[idx].x);
+        move(conf->item_pos[idx].y, conf->item_pos[idx].x);
     }
     if (clear) {
         if (conf->flag & LF_VSCROLL)
@@ -65,20 +65,20 @@ static int refresh_select(struct _select_def *conf)
 
     /*TODO:
     //目前应该清除的区域尚未定义，所以先清全部*/
-    good_move(conf->title_pos.y, conf->title_pos.x);
+    move(conf->title_pos.y, conf->title_pos.x);
     /*clrtobot();*/
     if (conf->show_title) {
         (*conf->show_title) (conf);
     }
     if (conf->show_endline) {
-        good_move(conf->endline_pos.y, conf->endline_pos.x);
+        move(conf->endline_pos.y, conf->endline_pos.x);
         (*conf->show_endline) (conf);
     }
     for (i = conf->page_pos; (i < conf->page_pos + conf->item_per_page)
          && (i <= conf->item_count); i++)
         if (show_item(conf, i, false) == SHOW_QUIT)
             return SHOW_QUIT;
-    good_move(conf->item_pos[conf->pos-conf->page_pos].y, conf->item_pos[conf->pos-conf->page_pos].x);
+    move(conf->item_pos[conf->pos-conf->page_pos].y, conf->item_pos[conf->pos-conf->page_pos].x);
     return SHOW_CONTINUE;
 }
 static int select_change(struct _select_def *conf, int new_pos)
@@ -116,12 +116,12 @@ static int select_change(struct _select_def *conf, int new_pos)
         int newidx = new_pos - conf->page_pos;
 
         if (pre_len) {
-            good_move(conf->item_pos[idx].y, conf->item_pos[idx].x - pre_len);
+            move(conf->item_pos[idx].y, conf->item_pos[idx].x - pre_len);
             outns("                                                               ", pre_len);
             if (conf->item_pos[newidx].x > pre_len)
-                good_move(conf->item_pos[newidx].y, conf->item_pos[newidx].x - pre_len);
+                move(conf->item_pos[newidx].y, conf->item_pos[newidx].x - pre_len);
             else
-                good_move(conf->item_pos[newidx].y, 0);
+                move(conf->item_pos[newidx].y, 0);
             outns(conf->prompt, pre_len);
         }
     }
@@ -139,7 +139,7 @@ static int select_change(struct _select_def *conf, int new_pos)
         show_item(conf, old_pos, false);
         show_item(conf, conf->pos, false);
     }
-    good_move(conf->item_pos[new_pos-conf->page_pos].y,
+    move(conf->item_pos[new_pos-conf->page_pos].y,
     	    conf->item_pos[new_pos-conf->page_pos].x);
     /*conf->pos = new_pos;*/
     return ret;
@@ -326,7 +326,7 @@ checkret:
 	        }
 	    case SHOW_REFRESHSELECT:
 	        show_item(conf, conf->pos, true);
-                good_move(conf->item_pos[conf->pos-conf->page_pos].y,
+                move(conf->item_pos[conf->pos-conf->page_pos].y,
     	            conf->item_pos[conf->pos-conf->page_pos].x);
 	        ret=SHOW_CONTINUE;
 	        break;

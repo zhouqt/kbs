@@ -2232,14 +2232,14 @@ static void maillist_refresh(struct _select_def *conf)
     move(2, 0);
     prints("%s", "\x1b[1;44;37m──功能选单─────────────┬────自定义邮箱───────\x1b[m");
     for (i = 3; i < scr_lns - 1; i++) {
-        good_move(i, 38);
+        move(i, 38);
         prints("%s", "\x1b[1;44;37m∣\x1b[m");
     }
     move(17, 0);
     prints("%s", "\x1b[1;44;37m──系统预定义邮箱──────────┤\x1b[m");
 
     if (user_mail_list.mail_list_t == 0) {
-        good_move(14, 46);
+        move(14, 46);
         prints("%s", "无自定义邮箱");
     }
 }

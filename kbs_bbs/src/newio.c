@@ -743,12 +743,12 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
         buf[0] = 0;
     }
     if (scrint)
-    good_move(line, col);
+    move(line, col);
     if (prompt)
         prints("%s", prompt);
 /*    y = line;*/
     if (scrint)
-    good_getyx(&y, &x);
+    getyx(&y, &x);
 /*    col += (prompt == NULL) ? 0 : num_noans_chr(prompt);
 //    x = col;*/
     clen = strlen(buf);
@@ -862,10 +862,10 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 #endif
             (void) strcat(buf, tmp);
             clen--;
-            good_move(y, x);
+            move(y, x);
             prints("%s", buf);
             clrtoeol();
-            good_move(y, x + curr);
+            move(y, x + curr);
             continue;
         }
 
@@ -873,7 +873,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             curr = 0;
             clen = 0;
             buf[0] = 0;
-            good_move(y, x);
+            move(y, x);
             clrtoeol();
             continue;
         }
@@ -899,10 +899,10 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             buf[curr] = '\0';
             (void) strcat(buf, tmp);
             clen--;
-            good_move(y, x);
+            move(y, x);
             prints("%s", buf);
             clrtoeol();
-            good_move(y, x + curr);
+            move(y, x + curr);
             continue;
         }
         if (ch == KEY_LEFT) {
@@ -921,17 +921,17 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 				}
 			}
 #endif
-            good_move(y, x + curr);
+            move(y, x + curr);
             continue;
         }
         if (ch == Ctrl('E') || ch == KEY_END) {
             curr = clen;
-            good_move(y, x + curr);
+            move(y, x + curr);
             continue;
         }
         if (ch == Ctrl('A') || ch == KEY_HOME) {
             curr = 0;
-            good_move(y, x + curr);
+            move(y, x + curr);
             continue;
         }
         if (ch == KEY_RIGHT) {
@@ -951,7 +951,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 				}
 			}
 #endif
-            good_move(y, x + curr);
+            move(y, x + curr);
             continue;
         }
         if (!isprint2(ch)) {
@@ -978,9 +978,9 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             for (i = len - 2; i >= curr; i--)
                 buf[i + 1] = buf[i];
             buf[curr] = ch;
-            good_move(y, x + curr);
+            move(y, x + curr);
             outs(buf + curr);
-            good_move(y, x + curr + 1);
+            move(y, x + curr + 1);
         }
         curr++;
         clen++;
@@ -992,7 +992,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
     }
     buf[clen] = '\0';
     if (echo) {
-        good_move(y, x);
+        move(y, x);
         prints("%s", buf);
     }
     prints("\n");
@@ -1009,17 +1009,17 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
     if (clearlabel == true) {
         buf[0] = 0;
     }
-    good_move(line, col);
+    move(line, col);
     if (prompt)
         prints("%s", prompt);
-    good_getyx(&starty, &startx);
+    getyx(&starty, &startx);
     now = strlen(buf);
     for(i=0;i<=24;i++)
         saveline(i, 0, savebuffer[i]);
 
     while (1) {
         y = starty; x = startx;
-        good_move(y, x);
+        move(y, x);
         chk = 0;
         if(now==0) {
             cursory = y;
@@ -1034,7 +1034,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                     clrtoeol();
                     x = col;
                     y++;
-                    good_move(y, x);
+                    move(y, x);
                 }
                 prints("%c", buf[i]);
                 x++;
@@ -1043,7 +1043,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 clrtoeol();
                 x = col;
                 y++;
-                good_move(y, x);
+                move(y, x);
             }
             if(i==now-1) {
                 cursory = y;
@@ -1051,7 +1051,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
             }
         }
         clrtoeol();
-        good_move(cursory, cursorx);
+        move(cursory, cursorx);
         ch = igetkey();
         if (ch == '\n' || ch == '\r')
             break;

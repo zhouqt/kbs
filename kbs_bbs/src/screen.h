@@ -44,5 +44,6 @@ struct screenline {
     unsigned char ldata[LINELEN];
     unsigned char lmode[LINELEN];
     unsigned char lcolor[LINELEN];
+    bool changed;
 };
 #endif

@@ -229,7 +229,7 @@ int show_allmsgs()
         }
         clear();
         if(count==0) {
-            good_move(5,30);
+            move(5,30);
             prints("[mÃ»ÓĞÈÎºÎµÄÑ¶Ï¢´æÔÚ£¡£¡");
             i = 0;
         }
@@ -248,7 +248,7 @@ int show_allmsgs()
                 j = translate_msg(buf, &head, showmsg);
             }
         }
-        good_move(t_lines-1,0);
+        move(t_lines-1,0);
         if(!all)
             prints("[1;44;32mÑ¶Ï¢ä¯ÀÀÆ÷   ±£Áô<[37mr[32m> Çå³ı<[37mc[32m> ¼Ä»ØĞÅÏä<[37mm[32m> ·¢Ñ¶ÈË<[37mi[32m> Ñ¶Ï¢ÄÚÈİ<[37ms[32m>        Ê£Óà:%4d ", count-i);
         else
@@ -295,7 +295,7 @@ reenter:
                 reload = 1;
                 count = get_msgcount(0, currentuser->userid);
                 if(count==0) break;
-                good_move(t_lines-1, 0);
+                move(t_lines-1, 0);
                 clrtoeol();
                 getdata(t_lines-1, 0, "ÇëÊäÈë¹Ø¼ü×Ö:", chk, 50, true, NULL, true);
                 if(chk[0]) {
@@ -431,7 +431,7 @@ void r_msg()
     noscroll();
     savemode=uinfo.mode;
     modify_user_mode(MSG);
-    good_getyx(&y, &x);
+    getyx(&y, &x);
     tmpansi = showansi;
     showansi = 1;
     oldi = i_timeout;
@@ -443,15 +443,15 @@ void r_msg()
 
     hasnewmsg=get_unreadcount(currentuser->userid);
     if ((savemode == POSTING || savemode == SMAIL) && !DEFINE(currentuser, DEF_LOGININFORM)) {      /*Haohmaru.99.12.16.·¢ÎÄÕÂÊ±²»»Ømsg */
-        good_move(0, 0);
+        move(0, 0);
         if (hasnewmsg) {
             prints("[1m[33mÄãÓĞĞÂµÄÑ¶Ï¢£¬Çë·¢±íÍêÎÄÕÂºó°´ Ctrl+Z »ØÑ¶Ï¢[m");
-            good_move(y, x);
+            move(y, x);
             refresh();
             sleep(1);
         } else {
             prints("[1mÃ»ÓĞÈÎºÎĞÂµÄÑ¶Ï¢´æÔÚ![m");
-            good_move(y, x);
+            move(y, x);
             refresh();
             sleep(1);
         }
@@ -460,10 +460,10 @@ void r_msg()
     }
     count = get_msgcount(1, currentuser->userid);
     if (!count) {
-        good_move(0, 0);
+        move(0, 0);
         prints("[1mÃ»ÓĞÈÎºÎµÄÑ¶Ï¢´æÔÚ£¡£¡[m");
         clrtoeol();
-        good_move(y, x);
+        move(y, x);
         refresh();
         sleep(1);
         goto outhere;
@@ -485,7 +485,7 @@ void r_msg()
         
         if (first&&hasnewmsg&&DEFINE(currentuser, DEF_SOUNDMSG))
             bell();
-        good_move(0,0);
+        move(0,0);
         prints("%s", outmsg);
 
         if(first) {
@@ -514,7 +514,7 @@ void r_msg()
                 prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢,¡ü¡ıÇĞ»»,Enter½áÊø, ¸ÃÏûÏ¢ÎŞ·¨»Ø¸´", now+1, count);
             else
                 prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢,¡ü¡ıÇĞ»»,Enter½áÊø, ÓÃ»§%sÒÑÏÂÕ¾,ÎŞ·¨»Ø¸´", now+1, count, uid);
-        good_getyx(&oy, &ox);
+        getyx(&oy, &ox);
         
         if(canreply) {
             ch = -multi_getdata(oy, ox, 79, NULL, buf, 1024, 11, true);
@@ -563,7 +563,7 @@ void r_msg()
                             else {
                                 for(i=0;i<=oy;i++)
                                     saveline(i, 1, savebuffer[i]);
-                                good_move(0,0);
+                                move(0,0);
                                 clrtoeol();
                                 prints("%s", buf);
                             }
@@ -593,7 +593,7 @@ outhere:
     for(i=0;i<=23;i++)
         saveline(i, 1, savebuffer[i]);
     showansi = tmpansi;
-    good_move(y,x);
+    move(y,x);
     if(oldi)
         R_monitor(NULL);
     RMSGCount--;
