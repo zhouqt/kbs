@@ -4,6 +4,8 @@
 如有问题，欢迎来 BBS 水木清华站的 BBSMan_Dev 版参与讨论。
 
 1. ChangeLog
+2003.7.17
+    flyriver 增加 FAQ 2.5
 2003.6.5
     flyriver v1.1
     调整 FAQ 文章结构，新增四个 FAQ (2.2, 2.3, 2.4, 3.3)
@@ -50,6 +52,13 @@
   smthbbs-1.0.1 及更早版本的 configure 脚本有 bug，检查 libesmtp 时没有给出
   足够的出错信息，这个问题在最新的 smthbbs snapshot 版本已经解决。建议您下载
   并安装最新的 smthbbs snapshot，或者参考问题 2.3 的答复。
+
+2.5. 我执行了 ./bbsd -p 23，但 telnet 127.0.0.1 时却告诉我：
+   “telnet: connect to address 127.0.0.1: Connection refused”。
+[答复]
+  用 bbs 用户无法启动 23 端口的服务，所以必须用 root 用户执行 ./bbsd -p 23，
+  才可能使 bbsd 成功运行于 23 端口。另外还要保证执行 ./bbsd -p 23 命令之前，
+  23 端口没有被占用。
 
 3. 管理维护
 
