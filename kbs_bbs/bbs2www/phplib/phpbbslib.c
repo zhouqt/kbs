@@ -2507,6 +2507,8 @@ static PHP_FUNCTION(bbs_add_friend)
         WRONG_PARAM_COUNT;
 	}
 
+    if (userid_len == 0) RETURN_LONG(-4);
+
     memset(&fh, 0, sizeof(fh));
     sethomefile(buf, getCurrentUser()->userid, "friends");
 
