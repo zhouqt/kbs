@@ -26,26 +26,28 @@ char *mytitle[] = { "日十大热门话题",
 #define HASHSIZE 10240
 #define TOPCOUNT 10000
 #ifdef BLESS_BOARD
-const char *surfix_bless[21] = {
+const char *surfix_bless[23] = {
+	" ",
     "  \x1b[1;34m◆  ",
     "\x1b[1;32m┏\x1b[0;32m┴\x1b[1m┓",
     "\x1b[32m┤\x1b[1m深\x1b[0;32m├",
-    "\x1b[1;32m┗\x1b[0;32m┬\x1b[1m┛",
-    "  \x1b[32m│  ",
-    "\x1b[1;32m┏\x1b[0;32m┴\x1b[1m┓",
     "\x1b[32m┤\x1b[1m情\x1b[0;32m├",
     "\x1b[1;32m┗\x1b[0;32m┬\x1b[1m┛",
     "  \x1b[32m│  ",
     "\x1b[1;32m┏\x1b[0;32m┴\x1b[1m┓",
-    "\x1b[32m┤\x1b[1m的\x1b[0;32m├",
-    "\x1b[1;32m┗\x1b[0;32m┬\x1b[1m┛",
-    "  \x1b[32m│  ",
-    "\x1b[1;32m┏\x1b[0;32m┴\x1b[1m┓",
     "\x1b[32m┤\x1b[1m祝\x1b[0;32m├",
+    "\x1b[32m┤\x1b[1m福\x1b[0;32m├",
+    "\x1b[1;32m┗\x1b[0;32m┬\x1b[1m┛",
+    "  \x1b[1;34m◆  ",
+    "  \x1b[1;34m◆  ",
+    "\x1b[1;32m┏\x1b[0;32m┴\x1b[1m┓",
+    "\x1b[32m┤\x1b[1m校\x1b[0;32m├",
+    "\x1b[32m┤\x1b[1m内\x1b[0;32m├",
     "\x1b[1;32m┗\x1b[0;32m┬\x1b[1m┛",
     "  \x1b[32m│  ",
     "\x1b[1;32m┏\x1b[0;32m┴\x1b[1m┓",
-    "\x1b[32m┤\x1b[1m福\x1b[0;32m├",
+    "\x1b[32m┤\x1b[1m热\x1b[0;32m├",
+    "\x1b[32m┤\x1b[1m门\x1b[0;32m├",
     "\x1b[1;32m┗\x1b[0;32m┬\x1b[1m┛",
     "  \x1b[1;34m◆  "
 };
@@ -85,11 +87,25 @@ void search(struct posttop *t)
 {
     struct postrec *p, *q, *s;
     int i, found = 0;
+#ifdef SMTH
+	struct boardheader *bh;
+	int isdepart=0;
+#endif
 
     i = hash(t->groupid);
     q = NULL;
+#ifdef SMTH
+	bh = getbcache(t->board);
+	if( bh && (bh->group==503 || bh->group==552) ) 
+		isdepart = 1;
+#endif
+
 #ifdef BLESS_BOARD
+#ifdef SMTH
+	if (!strcasecmp(t->board, BLESS_BOARD) || isdepart )
+#else
     if (!strcasecmp(t->board, BLESS_BOARD))
+#endif
         p = blessbucket[i];
     else
 #endif
@@ -113,7 +129,11 @@ void search(struct posttop *t)
         s->next = NULL;
         if (q == NULL)
 #ifdef BLESS_BOARD
+#ifdef SMTH
+            if (!strcasecmp(t->board, BLESS_BOARD) || isdepart)
+#else
             if (!strcasecmp(t->board, BLESS_BOARD))
+#endif
                 blessbucket[i] = s;
             else
 #endif
@@ -210,6 +230,87 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
 
     sprintf(curfile, "etc/posts/%s", p);
     if ((fp = fopen(curfile, "w")) != NULL) {
+#ifdef SMTH
+	if( mytype == 4) {
+        fprintf(fp, "              \x1b[1;33m── \x1b[31m☆\x1b[33m☆\x1b[32m☆ \x1b[41;32m  \x1b[33m本日五大衷心祝福  \x1b[m\x1b[1;32m ☆\x1b[31m☆\x1b[33m☆ ──\x1b[m               %s\x1b[m\n", surfix_bless[0]);
+
+        for (i = 0,real=0; i < j && real < 5; i++) {
+
+			if ( strcasecmp(top[i].board, BLESS_BOARD) )
+				continue;
+
+            strcpy(buf, ctime(&top[i].date));
+            buf[20] = NULL;
+            p = buf + 4;
+
+            sprintf(dirfile, "boards/%s/.DIR", top[i].board);
+			if ((fd = open(dirfile, O_RDWR, 0644)) < 0)
+				continue;
+
+    		if( get_records_from_id(fd, top[i].groupid, &fh, 1, NULL) == 0 ){
+				close(fd);
+				continue;
+			}
+			close(fd);
+
+            real++;
+
+            fprintf(fp,
+                        "                                            %s \x1b[1;31m%4d\x1b[0;37m人      %s\x1b[m\n"
+                        "\x1b[1m第\x1b[31m%2d \x1b[37m名 \x1b[4%dm %-51.51s\x1b[m \x1b[1;33m%-12s%s\x1b[m\n",
+                        p, top[i].number, surfix_bless[(real) * 2 - 1], real, (real - 1) / 2 + 1, fh.title, fh.owner, surfix_bless[real * 2]);
+
+		}
+		for( ; real < 5; ){
+			real++;
+            fprintf(fp,
+                        "                                                                     %s\x1b[m\n"
+                        "                                                                     %s\x1b[m\n",
+                        surfix_bless[real * 2 -1], surfix_bless[real  * 2 ] );
+		}
+        fprintf(fp, "                                                                         %s\x1b[m", surfix_bless[11]);
+
+        fprintf(fp, "              \x1b[1;33m── \x1b[31m☆\x1b[33m☆\x1b[32m☆ \x1b[41;32m  \x1b[33m本日五大校内话题  \x1b[m\x1b[1;32m ☆\x1b[31m☆\x1b[33m☆ ──\x1b[m               %s\x1b[m\n", surfix_bless[12]);
+
+        for (i = 0, real=0; i < j && real < 5; i++) {
+
+			if ( ! strcasecmp(top[i].board, BLESS_BOARD) )
+				continue;
+
+            strcpy(buf, ctime(&top[i].date));
+            buf[20] = NULL;
+            p = buf + 4;
+
+            sprintf(dirfile, "boards/%s/.DIR", top[i].board);
+			if ((fd = open(dirfile, O_RDWR, 0644)) < 0)
+				continue;
+
+    		if( get_records_from_id(fd, top[i].groupid, &fh, 1, NULL) == 0 ){
+				close(fd);
+				continue;
+			}
+			close(fd);
+
+            real++;
+
+            fprintf(fp,
+                        "                                            %s \x1b[1;31m%4d\x1b[0;37m人      %s\x1b[m\n"
+                        "\x1b[1m第\x1b[31m%2d \x1b[37m名 \x1b[4%dm %-51.51s\x1b[m \x1b[1;33m%-12s%s\x1b[m\n",
+                        p, top[i].number, surfix_bless[(real + 5) * 2 + 1], real, (real - 1) / 2 + 1, fh.title, fh.owner, surfix_bless[(real + 6) * 2 ]);
+
+		}
+		for( ; real < 5; real ++){
+            fprintf(fp,
+                        "                                                                     %s\x1b[m\n"
+                        "                                                                     %s\x1b[m\n",
+                        surfix_bless[(real + 5) * 2 + 1], surfix_bless[(real + 6) * 2 ] );
+		}
+
+		fclose(fp);
+		return;
+	}
+#endif
+
 #ifdef BLESS_BOARD
         if (mytype == 4)
             fprintf(fp, "              \x1b[1;33m── \x1b[31m☆\x1b[33m☆\x1b[32m☆ \x1b[41;32m  \x1b[33m本日十大衷心祝福  \x1b[m\x1b[1;32m ☆\x1b[31m☆\x1b[33m☆ ──\x1b[m\n\n");
