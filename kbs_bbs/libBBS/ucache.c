@@ -994,6 +994,10 @@ int clean_cachedata(const char* userid,int unum)
     int count;
     struct flock ldata;
 
+    if ((userid[0]==0)||(userid==NULL)) {
+        bbslog("3error","error in clean cache");
+        return 0;
+    }
     setcachehomefile(path1, userid, unum, NULL);
     f_rm(path1);
     //todo: check the dir
@@ -1018,14 +1022,10 @@ int clean_cachedata(const char* userid,int unum)
     close(fd);
     } else logincount=0;
     if (logincount==0) {
-	if ((userid[0]==0)||(userid==NULL)) {
-	  bbslog("3error","error in clean cache");
-	} else {
         setcachehomefile(path1, userid, -1, "entry");
         unlink(path1);
         setcachehomefile(path1, userid, -1, NULL);
         f_rm(path1);
-	}
     }
     return 0;
 }
