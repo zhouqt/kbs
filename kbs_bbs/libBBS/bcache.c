@@ -514,13 +514,13 @@ void board_update_toptitle(int bid,bool needlock)
     struct BoardStatus* bs=getbstatus(bid);
     struct boardheader* bh;
     char dirpath[MAXPATH];
+    int fd;
     if (bs==NULL)
         return;
     bh=&bcache[bid-1];
     if (bh->filename[0]==0)
         return;
     setbdir(DIR_MODE_ZHIDING,dirpath,bh->filename);
-    int fd;
     if (needlock)
         fd=bcache_lock();
     bs->toptitle=get_num_records(dirpath, sizeof(struct fileheader));
