@@ -35,7 +35,7 @@ $total=$threadNum+1;
 $threads=bbs_get_thread_articles($boardName, intval($article['ID']),0,$total);
 $total=count($threads);
 
-showTree($boardName,$boardID,$articleID,$article,$threads,$total);
+//showTree($boardName,$boardID,$articleID,$article,$threads,$total);
 ?>
 <body>
 <script language="javascript" type="text/javascript" src="inc/browser.js"></script>
