@@ -424,7 +424,7 @@ void r_msg()
     good_getyx(&y, &x);
     tmpansi = showansi;
     showansi = 1;
-    set_alarm(0, 0, NULL, NULL);
+//    set_alarm(0, 0, NULL, NULL);
     RMSG = true;
     RMSGCount++;
     for(i=0;i<=23;i++)
@@ -554,8 +554,8 @@ outhere:
     showansi = tmpansi;
     good_move(y,x);
     refresh();
-    if(nettyNN)
-        R_monitor(NULL);
+//    if(nettyNN)
+//        R_monitor(NULL);
     RMSGCount--;
     if (0 == RMSGCount)
         RMSG = false;
