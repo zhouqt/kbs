@@ -350,7 +350,7 @@ mailall()
                 { /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
                     sethomefile(buf2,currentuser->userid,"signatures");
                     move(t_lines-1,0);
-                    if (askyn("预设显示前三个签名档, 要显示全部吗",NA,YEA)==YEA)
+                    if (askyn("预设显示前三个签名档, 要显示全部吗",NA)==YEA)
                         ansimore(buf2,0);
                     else
                     {
@@ -616,7 +616,7 @@ edit_mail_file:
         { /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
             sethomefile(buf2,currentuser->userid,"signatures");
             move(t_lines-1,0);
-            if (askyn("预设显示前三个签名档, 要显示全部吗",NA,YEA)==YEA)
+            if (askyn("预设显示前三个签名档, 要显示全部吗",NA)==YEA)
                 ansimore(buf2,0);
             else
             {
@@ -1647,7 +1647,7 @@ int num ;
         { /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
             sethomefile(buf2,currentuser->userid,"signatures");
             move(t_lines-1,0);
-            if (askyn("预设显示前三个签名档, 要显示全部吗",NA,YEA)==YEA)
+            if (askyn("预设显示前三个签名档, 要显示全部吗",NA)==YEA)
                 ansimore(buf2,0);
             else
             {
