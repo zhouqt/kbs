@@ -33,6 +33,8 @@ function doLogon(){
 	
 	@$id = $_POST["id"];
 	@$passwd = $_POST["password"];
+	$cookieDate = 0;
+	$cookieDate = intval($_POST['CookieDate']);
 	if ($id=='') {
 		errorQuit("请输入您的用户名。");
 	}
@@ -42,10 +44,20 @@ function doLogon(){
 	if (($id!='guest') && (bbs_checkpasswd($id,$passwd)!=0)){
 		errorQuit("您的用户名并不存在，或者您的密码错误。");
 	}
-	$ret=bbs_wwwlogin(1);
+	if (AUTO_KICK) {
+		$kick = 1;
+	} else {
+		if (isset($_POST["kick"])) $kick = 1;
+		else $kick = 0;
+	}
+	$ret=bbs_wwwlogin($kick);
 	switch ($ret) {
 	case -1:
-		errorQuit("您已登录的账号过多，无法重复登录!");
+		if (AUTO_KICK) {
+			errorQuit("您已登录的账号过多，无法重复登录!");
+		} else {
+			promptKick($id, $passwd, $comeurl, $cookieDate);
+		}
 	case 3:
 		errorQuit("您的账号已被管理员禁用！");
 	case 4:
@@ -60,7 +72,7 @@ function doLogon(){
 	$data=array();
 	$num=bbs_getcurrentuinfo($data);
 	$time=0;
-	switch (intval($_POST['CookieDate'])) {
+	switch ($cookieDate) {
 	case 1;
 		$time=time()+86400; //24*60*60 sec
 		break;
@@ -117,5 +129,44 @@ function errorQuit($errMsg) {
 	showLogon(1, $comeurl);
 	show_footer(false, false);
 	exit;
+}
+
+function promptKick($id, $passwd, $comeurl, $cookieDate) {
+	global $comeurl;
+
+	show_nav(false);
+	echo "<br>";
+	head_var();
+?>
+<form name="infoform" action="logon.php" method="post">
+<input type="hidden" name="action" value="doLogon">
+<input type="hidden" name="id" value="<?php echo htmlspecialchars($id); ?>">
+<input type="hidden" name="password" value="<?php echo htmlspecialchars($passwd); ?>">
+<input type="hidden" name="comeurl" value="<?php echo htmlspecialchars($comeurl); ?>">
+<input type="hidden" name="CookieDate" value="<?php echo $cookieDate; ?>">
+<input type="hidden" name="kick" value="1">
+<table cellpadding=3 cellspacing=1 align=center class=TableBorder1 style="width: 75%;">
+<tr align=center>
+<th height=25>论坛提示信息</th>
+</td>
+</tr>
+<tr>
+	<td class=TableBody1>
+		<b>产生错误的可能原因：</b>
+		<ul><li>你登录的窗口过多，点击 确定登录 踢出多余的登录。</li></ul>
+	</td>
+</tr>
+<tr>
+	<td class=TableBody2 valign=middle colspan=2 align=center>
+		<input type=submit name=submit value="确定登录">&nbsp;&nbsp;
+		<input type=button name="back" value="返 回" onclick="location.href='<?php echo htmlspecialchars($comeurl, ENT_QUOTES); ?>'">
+	</td>
+</tr>
+</table>
+</form>
+<?php
+	show_footer(false, false);
+	exit;
+
 }
 ?>

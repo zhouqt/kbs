@@ -15,7 +15,8 @@ wForum部分安装
 inc/site.php 就是你的站点定义文件。修改 inc/site.php 里面的各类参数，特别是分类讨论区，
 mysql 用户、密码和数据库名。然后按照 documents/smallpaper_tb.sql 里的定义在 mysql 中
 建立一个数据表。
-	以后如果需要修改站点配置，可以直接用浏览器请求 admin.site_defines.php 来设置。
+	以后如果需要修改站点配置，可以用管理员帐号登录直接用浏览器请求
+	admin.site_defines.php 来设置 site.php。
 
 
 5.确认一下wForum主目录下面有uploadFace/目录，如果没有的话就建立一下，否则自定义头像

@@ -48,7 +48,7 @@ function main(){
 </td>
 
 <td valign=top><table cellpadding=3 cellspacing=1 style="width:100%" height=29 align=center  class=TableBorder1><tr><th height=25 align=left>-=&gt; 用户个人邮箱</td></tr><tr><td class=TableBody1><?php
-	bbs_getmailnum($currentuser["userid"],$total,$unread);
+	bbs_getmailnum($currentuser["userid"],$total,$unread,0,0);
 	if ($unread<=0)  {
 		echo "目前您没有新的信件";
 	} else {
