@@ -778,6 +778,34 @@ int dele_digest(char *dname, char *direc)
     return 0;
 }
 
+/* add by stiger */
+int dele_ding(char *dname, char *direc)
+{                               /* 删除文摘内一篇POST, dname=post文件名,direc=文摘目录名 */
+    char digest_name[STRLEN];
+    char new_dir[STRLEN];
+    char buf[STRLEN];
+    char *ptr;
+    struct fileheader fh;
+    int pos;
+
+    strcpy(digest_name, dname);
+    strcpy(new_dir, direc);
+
+    digest_name[0] = 'Z';
+    ptr = strrchr(new_dir, '/') + 1;
+    strcpy(ptr, DING_DIR);
+    pos = search_record(new_dir, &fh, sizeof(fh), (RECORD_FUNC_ARG) cmpname, digest_name);      /* 文摘目录下 .DIR中 搜索 该POST */
+    if (pos <= 0) {
+        return -1;
+    }
+    delete_record(new_dir, sizeof(struct fileheader), pos, (RECORD_FUNC_ARG) cmpname, digest_name);
+    *ptr = '\0';
+    sprintf(buf, "%s%s", new_dir, digest_name);
+    unlink(buf);
+    return 0;
+}
+/* add end */
+
 int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)
 {
     struct fileheader *data;
@@ -1093,18 +1121,24 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
 #endif
 
     /*---	---*/
-
+    /* add ifdef by stiger,add BBSMAIN define,don't check perm in web */
+#ifdef BBSMAIN
     isbm=chk_currBM(currBM, currentuser);
+
 #ifdef FILTER
 #ifdef SMTH
     if (!strcmp(currboard,"NewsClub")&&haspostperm(currentuser, currboard)) 
         isbm=true;
 #endif
 #endif
+
     if (!isbm)
         return DONOTHING;
-
-    if (flag == FILE_DIGEST_FLAG && (digestmode == 1 || digestmode == 4 || digestmode == 5))
+#endif
+    /* add by stiger */
+    if ( fileinfo->filename[0]=='Z' && (flag==FILE_MARK_FLAG || flag==FILE_DIGEST_FLAG || flag==FILE_DING_FLAG || flag==FILE_DELETE_FLAG || flag==FILE_NOREPLY_FLAG) ) return DONOTHING;
+/* modified by stiger */
+    if ((flag == FILE_DIGEST_FLAG || flag==FILE_DING_FLAG) && (digestmode == 1 || digestmode == 4 || digestmode == 5))
         return DONOTHING;
     if (flag == FILE_MARK_FLAG && (digestmode == 1 || digestmode == 4 || digestmode == 5))
         return DONOTHING;
@@ -1360,6 +1394,40 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
         break;
     case FILE_ATTACHPOS_FLAG:
         break;
+	/* add by stiger */
+    case FILE_DING_FLAG:
+        if (fileinfo->accessed[1] & FILE_DING) {      /* 如果已经是文摘的话，则从文摘中删除该post */
+            fileinfo->accessed[1] = (fileinfo->accessed[1] & ~FILE_DING);
+            bmlog(currentuser->userid, currboard, 4, 1);
+            dele_ding(fileinfo->filename, direct);
+        } else {
+            struct fileheader digest;
+            char *ptr, buf[64];
+
+            memcpy(&digest, fileinfo, sizeof(digest));
+            if (digestmode)
+                strncpy(digest.title, mkpost2.title, STRLEN);
+            digest.filename[0] = 'Z';
+            strcpy(buf, direct);
+            ptr = strrchr(buf, '/') + 1;
+            ptr[0] = '\0';
+            sprintf(genbuf, "%s%s", buf, digest.filename);
+            bmlog(currentuser->userid, currboard, 3, 1);
+            if (dashf(genbuf)) {
+                fileinfo->accessed[1] = fileinfo->accessed[1] | FILE_DING;
+            } else {
+                digest.accessed[0] = 0;
+                digest.accessed[1] = 0;
+                digest.accessed[1] |= FILE_READ;
+                sprintf(&genbuf[512], "%s%s", buf, fileinfo->filename);
+                strcpy(ptr, DING_DIR);
+		link(&genbuf[512], genbuf);
+                append_record(buf, &digest, sizeof(digest));    /* 文摘目录下添加 .DIR */
+                fileinfo->accessed[1] |= FILE_DING;
+            }
+        }
+	break;
+	/* add end */
     }
 
     if (lseek(fd, size * (ent - 1), SEEK_SET) == -1) {
@@ -1395,6 +1463,16 @@ char get_article_flag(struct fileheader *ent, struct userec *user, char *boardna
         type = brc_unread(ent->id) ? unread_mark : ' ';
     else
         type = ' ';
+    /* add by stiger */
+    //if (ent->accessed[1] & FILE_DING){
+    if( ent->filename[0]=='Z'){
+	if(type==' ')
+	    type='D';
+        else
+	    type='d';
+        return type;
+    }
+    /* add end */
     if ((ent->accessed[0] & FILE_DIGEST)) {
         if (type == ' ')
             type = 'g';
