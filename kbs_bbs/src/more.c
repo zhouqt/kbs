@@ -908,6 +908,7 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
                 curr_line += t_lines - 1;
                 change = 1 - t_lines;
                 break;
+            case 'l':
             case 'L':
                 if (uinfo.mode != LOOKMSGS) {
                     show_allmsgs();
