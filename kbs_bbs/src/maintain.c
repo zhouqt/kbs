@@ -660,7 +660,10 @@ int m_editbrd()
                 if (strcmp(oldpath, newpath) || a_mv != 2) {
                     if (group != NULL) {
                         if (newfh.BM[0] != '\0')
-                            sprintf(vbuf, "%-38.38s(BM: %s)", newfh.title + 13, newfh.BM);
+                            if (strlen(newfh.BM) <= 30)
+                                sprintf(vbuf, "%-38.38s(BM: %s)", newfh.title + 13, newfh.BM);
+                            else
+                                sprintf(vbuf, "%-28.28s(BM: %s)", newfh.title + 13, newfh.BM);
                         else
                             sprintf(vbuf, "%-38.38s", newfh.title + 13);
 
@@ -1896,8 +1899,12 @@ int set_BM()
 
                     }
 
-                    if (newfh.BM[0] != '\0')
-                        sprintf(vbuf, "%-38.38s(BM: %s)", newfh.title + 13, newfh.BM);
+                    if (newfh.BM[0] != '\0') {
+                        if (strlen(newfh.BM)<=30)
+                            sprintf(vbuf, "%-38.38s(BM: %s)", newfh.title + 13, newfh.BM);
+                        else
+                            sprintf(vbuf, "%-28.28s(BM: %s)", newfh.title + 13, newfh.BM);
+                    }
                     else
                         sprintf(vbuf, "%-38.38s", newfh.title + 13);
 
