@@ -53,7 +53,7 @@ void load_msgs()
     fp = fopen(filename, "r");
     if(fp) {
         while(!feof(fp)) {
-            fgets(buf, 79, fp);
+            if(fgets(buf, 79, fp)==NULL) break;
             if(buf[0]) {
                 if(msgst==200) {
                     msgst--;
@@ -259,7 +259,7 @@ void room_refresh(int signo)
 void join_room(struct room_struct * r)
 {
     char buf[80];
-    int i;
+    int i,j;
     myroom = r;
     signal(SIGUSR1, room_refresh);
     i=r->people;
@@ -273,8 +273,14 @@ void join_room(struct room_struct * r)
         strcpy(inrooms.title, "我杀我杀我杀杀杀");
         inrooms.peoples[i].flag = PEOPLE_ROOMOP;
     }
-    end_change_inroom();
     r->people++;
+    end_change_inroom();
+
+    sprintf(buf, "%s进入房间", currentuser->userid);
+    for(i=0;i<myroom->people;i++) {
+        send_msg(inrooms.peoples[i].id, buf);
+        kill(inrooms.peoples[i].pid, SIGUSR1);
+    }
 
     room_refresh(0);
     while(1){
@@ -285,7 +291,22 @@ void join_room(struct room_struct * r)
             kill(inrooms.peoples[i].pid, SIGUSR1);
         }
     }
+    start_change_inroom(r);
+    for(i=0;i<myroom->people;i++)
+        if(inrooms.peoples[i].pid==uinfo.pid) {
+            for(j=i;j<myroom->people-1;j++)
+                memcpy(inrooms.people+j, inrooms.people+j+1, sizeof(struct inroom_struct));
+            break;
+        }
     r->people--;
+    end_change_inroom();
+
+    sprintf(buf, "%s离开房间", currentuser->userid);
+    for(i=0;i<myroom->people;i++) {
+        send_msg(inrooms.peoples[i].id, buf);
+        kill(inrooms.peoples[i].pid, SIGUSR1);
+    }
+
     signal(SIGUSR1, talk_request);
 }
 
