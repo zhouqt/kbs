@@ -1225,7 +1225,7 @@ checkvote:
             k=1;
             for(i=0;;i++) {
                 if(!party_data[i].verb) break;
-                if(!strcmp(party_data[i].verb, buf)) {
+                if(!strcasecmp(party_data[i].verb, buf)) {
                     k=0;
                     sprintf(buf, "%s \x1b[1m%s\x1b[m %s", party_data[i].part1_msg, buf2[0]?buf2:"´ó¼Ò", party_data[i].part2_msg);
                     break;
@@ -1234,7 +1234,7 @@ checkvote:
             if(k)
             for(i=0;;i++) {
                 if(!speak_data[i].verb) break;
-                if(!strcmp(speak_data[i].verb, buf)) {
+                if(!strcasecmp(speak_data[i].verb, buf)) {
                     k=0;
                     sprintf(buf, "%s: %s", speak_data[i].part1_msg, buf2);
                     break;
@@ -1243,7 +1243,7 @@ checkvote:
             if(k)
             for(i=0;;i++) {
                 if(!condition_data[i].verb) break;
-                if(!strcmp(condition_data[i].verb, buf)) {
+                if(!strcasecmp(condition_data[i].verb, buf)) {
                     k=0;
                     sprintf(buf, "%s", condition_data[i].part1_msg);
                     break;
@@ -1323,7 +1323,7 @@ static int room_list_refresh(struct _select_def *conf)
 {
     clear();
     docmdtitle("[ÓÎÏ·ÊÒÑ¡µ¥]",
-              "  ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ½øÈë[\x1b[1;32mEnter\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ı\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ¼ÓÈë[\x1b[1;32mJ\x1b[0;37m] \x1b[m              ×÷Õß: \x1b[31mbad@smth.org\x1b[m");
+              "  ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ½øÈë[\x1b[1;32mEnter\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ı\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ¼ÓÈë[\x1b[1;32mJ\x1b[0;37m] \x1b[m      ×÷Õß: \x1b[31mbad@smth.org\x1b[m");
     move(2, 0);
     prints("[0;1;37;44m    %4s %-14s %-12s %4s %4s %6s %-20s", "±àºÅ", "ÓÎÏ·ÊÒÃû³Æ", "´´½¨Õß", "ÈËÊı", "×î¶à", "ËøÒşÅÔ", "»°Ìâ");
     clrtoeol();
