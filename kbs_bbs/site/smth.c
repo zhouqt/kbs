@@ -907,6 +907,8 @@ char * showuserip(struct userec *user, char *ip)
 	static char sip[25];
 	char *c;
 
+	if ((currentuser!=NULL)&&(currentuser->title==10))
+            return ip;
 	if( user!=NULL && (!DEFINE(user, DEF_HIDEIP)) )
 		return ip;
 	strncpy(sip, ip, 24);
