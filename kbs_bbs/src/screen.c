@@ -129,7 +129,6 @@ initscr()
 	if (!big_picture)
 		t_columns = WRAPMARGIN;
 	init_screen(t_lines, WRAPMARGIN);
-	iscolor = true;
 }
 
 void
@@ -511,10 +510,6 @@ outc(unsigned char c)
 		}
 		return;
 	}
-	if (c == KEY_ESC && iscolor == false) {
-		inansi = 1;
-		return;
-	}
 	{
 		register int reg_line = cur_ln + roll;
 
@@ -621,21 +616,34 @@ int n;
 	while ((str - begin_str < n) && *str) {
 		reg_col = cur_col;
 		begincol = cur_col;
-		{
-			register int reg_line = cur_ln + roll;
+		slp = &big_picture[(cur_ln + roll)%scr_lns];
 
-			while (reg_line >= scr_lns)
-				reg_line -= scr_lns;
-			slp = &big_picture[reg_line];
-		}
-
+              if (*str == ''&&*(str+1)=='[') {
+                     register int i=0;
+                     while(!isalpha(*(str+i))&&(*(str+i)!='')&&*(str+i)) i++;
+                     if(*(str+i)=='H') {
+                        register int j=0;
+                        while(j<i&&*(str+j)!=';') j++;
+                        if(*(str+j)==';'&&j<=4&&j>=3&&i-j>=2&&i-j<=3) {
+                            char s1[5],s2[5],x,y;
+                            memcpy(s1,str+2,j-2);
+                            s1[j-2]=0;
+                            memcpy(s2,str+j+1,i-j-1);
+                            s2[i-j-1]=0;
+                            y=atoi(s1)-1;
+                            x=atoi(s2)-1;
+                            if(y>=0&&y<scr_lns&&x>=0&&x<scr_cols) {
+                                good_move(y,x);
+                            }
+                            str+=i+1;
+                            continue;
+                        }
+                     }
+              }
+              
 		if (cur_col >= slp->len) {
-			register int i;
-
-			for (i = slp->len; i <= cur_col; i++)
-				slp->data[i] = ' ';
-			if (slp->smod > slp->len)
-				slp->smod = slp->len;
+                     memset(slp->data+slp->len, ' ', cur_col-slp->len+1);
+			slp->smod = Min(slp->smod, slp->len);
 			slp->mode |= MODIFIED;
 		}
 		while ((str - begin_str < n) && *str) {
@@ -646,15 +654,7 @@ int n;
 				break;
 			}
 			if (*str == '') {
-				if (!iscolor) {
-					while (*str && (*str != 'm'))
-						str++;
-					if (*str)
-						str++;
-					continue;
-				} else
-					slp->data[reg_col++] =
-					    (unsigned char) '';
+				slp->data[reg_col++] = (unsigned char) '';
 			} else if (!isprint2(*str))
 				slp->data[reg_col++] = (unsigned char) '*';
 			else
@@ -699,12 +699,6 @@ prints(char *format, ...)
 	va_start(ap, format);
 	begin = fmt = format;
 	while (*fmt != '\0') {
-		if (*fmt == '' && !iscolor) {
-			while (*fmt != 'm')
-				fmt++;
-			fmt++;
-			continue;
-		}
 		if (*fmt == '%') {
 			int sgn = 1;
 			int val = 0;
