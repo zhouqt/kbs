@@ -626,7 +626,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
 
     TITLE = ent->title;         /*文章标题TITLE */
 
-    if (uinfo.mode != RMAIL&&digestmode!=1&&digestmode!=4||digestmode!=5) { // 新方法比较
+    if (uinfo.mode != RMAIL&&digestmode!=1&&digestmode!=4&&digestmode!=5) { // 新方法比较
 	if (FFLL == 0) {
         if (ent->groupid!=ent->id)       /*Re的文章 */
             sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  %-47.47s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
