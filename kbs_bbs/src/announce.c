@@ -611,7 +611,7 @@ char *path;
 {
 	int objectbid , pathnum;
 	char *pathslice , *pathdelim;
-    	struct boardheader* objectboard;
+    const struct boardheader* objectboard;
 	char *savept;
 	
 #ifdef FB2KPC
