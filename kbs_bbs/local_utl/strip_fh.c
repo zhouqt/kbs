@@ -218,61 +218,81 @@ static int strip_mail(struct userec *user, char *arg)
 	return 0;
 }
 
+static int rollback_board(struct boardheader * bh, void * arg)
+{
+	char dir_path[256];
+	char old_dir_path[256];
+
+	setbfile(dir_path, bh->filename, ".DIR");
+	sprintf(old_dir_path, "%s.v1.2", dir_path);
+	rename(old_dir_path, dir_path);
+	setbfile(dir_path, bh->filename, ".DIGEST");
+	sprintf(old_dir_path, "%s.v1.2", dir_path);
+	rename(old_dir_path, dir_path);
+	setbfile(dir_path, bh->filename, ".DELETED");
+	sprintf(old_dir_path, "%s.v1.2", dir_path);
+	rename(old_dir_path, dir_path);
+	setbfile(dir_path, bh->filename, ".JUNK");
+	sprintf(old_dir_path, "%s.v1.2", dir_path);
+	rename(old_dir_path, dir_path);
+	setbfile(dir_path, bh->filename, ".DINGDIR");
+	sprintf(old_dir_path, "%s.v1.2", dir_path);
+	rename(old_dir_path, dir_path);
+
+	return 0;
+}
+
+static int rollback_mail(struct userec *user, char *arg)
+{
+	struct _mail_list ml;
+	int i;
+	char buf[STRLEN];
+	char dir_path[256];
+	char old_dir_path[256];
+
+	if (user == NULL || user->userid[0] == '\0')
+		return;
+	bzero(&ml, sizeof(ml));
+	load_mail_list(user, &ml);
+	/* 系统信箱 */
+	setmailfile(dir_path, user->userid, ".DIR");
+	sprintf(old_dir_path, "%s.v1.2", dir_path);
+	rename(old_dir_path, dir_path);
+	setmailfile(dir_path, user->userid, ".SENT");
+	sprintf(old_dir_path, "%s.v1.2", dir_path);
+	rename(old_dir_path, dir_path);
+	setmailfile(dir_path, user->userid, ".DELETED");
+	sprintf(old_dir_path, "%s.v1.2", dir_path);
+	rename(old_dir_path, dir_path);
+	/* 自定义信箱 */
+	for (i = 0; i < ml.mail_list_t; i++)
+	{
+		sprintf(buf, ".%s", ml.mail_list[i] + 30);
+		setmailfile(dir_path, user->userid, buf);
+		sprintf(old_dir_path, "%s.v1.2", dir_path);
+		rename(old_dir_path, dir_path);
+	}
+
+	return 0;
+}
+
 int main(int argc, char ** argv)
 {
-	/*
-	int fd;
-	struct stat fs;
-	struct boardheader *brd, *ptr;
-	int i;
-	int records;
-	struct userec *usr, *uptr;
-
-    chdir(BBSHOME);
-	if ((fd = open(BOARDS, O_RDONLY, 0644)) < 0) {
-		perror("open");
-		return -1;
-	}
-	fstat(fd, &fs);
-	brd = mmap(NULL, fs.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
-	close(fd);
-	if (brd == MAP_FAILED) {
-		perror("mmap");
-		return -1;
-	}
-	records = fs.st_size / sizeof (struct boardheader);
-	for (i = 0; i < records; i++) {
-		ptr = brd + i;
-		if (ptr->filename[0] != '\0')
-			strip_board(ptr, NULL);
-	}
-	munmap(brd, fs.st_size);
-
-	//apply_users(strip_mail, NULL);
-	if ((fd = open(PASSFILE, O_RDONLY, 0644)) < 0) {
-		perror("open");
-		return -1;
-	}
-	fstat(fd, &fs);
-	usr = mmap(NULL, fs.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
-	close(fd);
-	if (usr == MAP_FAILED) {
-		perror("mmap");
-		return -1;
-	}
-	records = fs.st_size / sizeof (struct userec);
-	for (i = 0; i < records; i++) {
-		uptr = usr + i;
-		if (uptr->userid[0] != '\0')
-			strip_mail(uptr, NULL);
-	}
-	munmap(usr, fs.st_size);
-	*/
     chdir(BBSHOME);
 	resolve_boards();
 	resolve_ucache();
-	apply_boards(strip_board, NULL);
-	apply_users(strip_mail, NULL);
+	if (argc == 1)
+	{
+		apply_boards(strip_board, NULL);
+		apply_users(strip_mail, NULL);
+	}
+	else if (argc == 2 && strcmp(argv[1], "--rollback") == 0)
+	{
+		apply_boards(rollback_board, NULL);
+		apply_users(rollback_mail, NULL);
+	}
+	else
+		fprintf(stderr, "Usage: %s [--rollback]\n", argv[0]);
 
     return 0;
 }
