@@ -659,6 +659,24 @@ static inline int getcurrentuser_num()
     return currentusernum;
 }
 
+static inline int getcurrentuinfo_num()
+{
+    return currentuinfonum;
+}
+
+static int getattachtmppath(char *buf, size_t buf_len)
+{
+#if USE_TMPFS==1 && ! defined(FREE)
+    /* setcachehomefile() 不接受 buf_len 参数，先直接这么写吧 */
+    snprintf(buf,buf_len,"%s/home/%c/%s/%d/upload",TMPFSROOT,toupper(getCurrentUser()->userid[0]),
+			getCurrentUser()->userid,getcurrentuinfo_num());
+#else
+    snprintf(buf,buf_len,"%s/%s_%d",ATTACHTMPPATH,getCurrentUser()->userid,getcurrentuinfo_num());
+#endif
+    buf[buf_len-1] = '\0';
+    return 0;
+}
+
 #ifdef HAVE_WFORUM
 static PHP_FUNCTION(bbs_is_yank){
 	RETURN_LONG(currentuinfo->yank);
@@ -668,10 +686,6 @@ static PHP_FUNCTION(bbs_alter_yank){
 	RETURN_LONG(currentuinfo->yank);
 };
 #endif
-static inline int getcurrentuinfo_num()
-{
-    return currentuinfonum;
-}
 
 /*
  * Here goes the real functions
@@ -1325,6 +1339,7 @@ static PHP_FUNCTION(bbs_printansifile)
     char* attachlink;
     long attachlink_len;
     sigjmp_buf bus_jump;
+    char attachdir[MAXPATH];
 
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
@@ -1377,6 +1392,7 @@ static PHP_FUNCTION(bbs_printansifile)
     } else {
         ptr = filename;
         ptrlen = filename_len;
+        getattachtmppath(attachdir, MAXPATH);
     }
 	if ((out = alloc_output(outbuf_len)) == NULL)
 	{
@@ -1395,7 +1411,7 @@ static PHP_FUNCTION(bbs_printansifile)
 	{
         signal(SIGBUS, sigbus);
         signal(SIGSEGV, sigbus);
-		output_ansi_html(ptr, ptrlen, out, attachlink, is_tex, is_preview);
+		output_ansi_html(ptr, ptrlen, out, attachlink, is_tex, is_preview ? attachdir : NULL);
 		free_output(out);
     }
     signal(SIGBUS, SIG_IGN);
@@ -3899,18 +3915,6 @@ static PHP_FUNCTION(bbs_checkpostperm)
     RETURN_LONG(haspostperm(user, bh->filename));
 }
 
-static int getattachtmppath(char *buf, size_t buf_len)
-{
-#if USE_TMPFS==1 && ! defined(FREE)
-    /* setcachehomefile() 不接受 buf_len 参数，先直接这么写吧 */
-    snprintf(buf,buf_len,"%s/home/%c/%s/%d/upload",TMPFSROOT,toupper(getCurrentUser()->userid[0]),
-			getCurrentUser()->userid,getcurrentuinfo_num());
-#else
-    snprintf(buf,buf_len,"%s/%s_%d",ATTACHTMPPATH,getCurrentUser()->userid,getcurrentuinfo_num());
-#endif
-    buf[buf_len-1] = '\0';
-    return 0;
-}
 
 static PHP_FUNCTION(bbs_getattachtmppath)
 {

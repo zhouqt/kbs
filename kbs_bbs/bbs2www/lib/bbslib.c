@@ -2451,6 +2451,7 @@ void output_ansi_javascript(char *buf, size_t buflen,
 
 }
 
+
 /**
  * Warning: Use of this function is deprecated. It's kept only for compatible
  * purpose. Use output_ansi_text() instead.
@@ -2460,7 +2461,7 @@ void output_ansi_javascript(char *buf, size_t buflen,
  * 原来的 UBB 处理代码过于 buggy，现在全盘去掉换成只支持解析 [upload=%d][/upload] 一种，如果以后 ubb 替换要放到这里，
  * 可以参考这个时间点之前的 CVS 代码。- atppp 200408
  */
-void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char* attachlink, int is_tex, int is_preview)
+void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char* attachlink, int is_tex, char* preview_attach_dir)
 {
     unsigned int font_style = 0;
     unsigned int ansi_state;
@@ -2492,58 +2493,72 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
     bzero(ansi_val, sizeof(ansi_val));
     bzero(attachShowed, sizeof(attachShowed));
     attachmatched = 0;
-    if (attachlink != NULL && !is_preview)
+    if (attachlink != NULL)
     {
         long attach_len;
         char *attachptr, *attachfilename;
-        char *extension;
-        for (i = 0; i < buflen ; i++ )
-        {
-            if (attachmatched >= MAXATTACHMENTCOUNT)
-                break;
+        if (preview_attach_dir) {
+            char filepath[MAXPATH];
+            char inputbuf[256];
+            FILE *fp2;
+            snprintf(filepath, MAXPATH, "%s/.index", preview_attach_dir);
+            if ((fp2 = fopen(filepath, "r")) != NULL) {
+                while (!feof(fp2)) {
+                    char *name;
+                    char *ptr;
+                    struct stat st;
 
-            if (((attachfilename = checkattach(buf + i, buflen - i, 
-                                    &attach_len, &attachptr)) != NULL))
-            {
-                extension = attachfilename + strlen(attachfilename);
-                i += (attachptr-buf-i) + attach_len - 1;
-                if (i > buflen)
-                    continue;
-                attachPos[attachmatched] = attachfilename - buf;
-                attachLen[attachmatched] = attach_len;
-                attachFileName[attachmatched] = (char*)malloc(256);
-                strncpy(attachFileName[attachmatched], attachfilename, 255);
-                attachFileName[attachmatched][255] = '\0';
-                attachType[attachmatched] = ATTACH_OTHERS;
-                extension--;
-                while ((*extension != '.') && (*extension != '\0'))
-                    extension--;
-                if (*extension == '.')
-                {
-                    extension++;
-                    if (!strcasecmp(extension, "jpg")
-                        || !strcasecmp(extension, "ico")
-                        || !strcasecmp(extension, "gif"))
-                    {
-                        attachType[attachmatched] = ATTACH_IMG;
-                    }
-                    else if (!strcasecmp(extension, "swf"))
-                        attachType[attachmatched] = ATTACH_FLASH;
-                    else if (!strcasecmp(extension, "jpeg")
-                        || !strcasecmp(extension, "png")
-                        || !strcasecmp(extension, "pcx")
-                        || !strcasecmp(extension, "bmp"))
-                    {
-                        attachType[attachmatched] = ATTACH_IMG;
-                    }
+                    if (attachmatched >= MAXATTACHMENTCOUNT)
+                        break;                    
+
+                    fgets(inputbuf, 256, fp2);
+                    name = strchr(inputbuf, ' ');
+                    if (name == NULL)
+                        continue;
+                    *name = 0;
+                    name++;
+                    ptr = strchr(name, '\n');
+                    if (ptr)
+                        *ptr = 0;
+
+                    attachPos[attachmatched] = attachmatched+1;
+                    if (stat(inputbuf, &st) < 0) attachLen[attachmatched] = 0;
+                    else attachLen[attachmatched] = st.st_size;
+                    attachFileName[attachmatched] = (char*)malloc(256);
+                    strncpy(attachFileName[attachmatched], name, 255);
+                    attachFileName[attachmatched][255] = '\0';
+                    attachType[attachmatched] = get_attachment_type(name);
+
+                    attachmatched++;
                 }
-                attachmatched++;
+    			fclose(fp2);
             }
+        } else {
+            for (i = 0; i < buflen ; i++ )
+            {
+                if (attachmatched >= MAXATTACHMENTCOUNT)
+                    break;
+
+                if (((attachfilename = checkattach(buf + i, buflen - i, 
+                                        &attach_len, &attachptr)) != NULL))
+                {
+                    i += (attachptr-buf-i) + attach_len - 1;
+                    if (i > buflen)
+                        continue;
+                    attachPos[attachmatched] = attachfilename - buf;
+                    attachLen[attachmatched] = attach_len;
+                    attachFileName[attachmatched] = (char*)malloc(256);
+                    strncpy(attachFileName[attachmatched], attachfilename, 255);
+                    attachFileName[attachmatched][255] = '\0';
+                    attachType[attachmatched] = get_attachment_type(attachfilename);
+                    attachmatched++;
+                }
+            }
+            if (attachmatched > 0)
+                article_len = attachPos[0] - ATTACHMENT_SIZE;
         }
     }
 
-    if (attachmatched > 0)
-        article_len = attachPos[0] - ATTACHMENT_SIZE;
 
     for (i = 0; i < article_len; i++) {
         if (STATE_ISSET(ansi_state, STATE_NEW_LINE)) {
