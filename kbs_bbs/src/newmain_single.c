@@ -365,14 +365,15 @@ void system_abort()
 }
 
 #define MAXLIST 1000
-#define CON_THRESHOLD 100.0/60/60
-#define CON_THRESHOLD2 30.0
+#define CON_THRESHOLD 20.0/60/60
+#define CON_THRESHOLD2 10.0
 
 int check_ID_lists(char * id)
 {
     int i,j,k;
     FILE* fp;
     struct stat st;
+    struct flock ldata;
     int fd;
     char fn[80];
     int found=0,min=0,ret=0;
@@ -392,6 +393,7 @@ int check_ID_lists(char * id)
     }
     now = time(0);
     if(id[0]==0) return 0;
+    if(!strcmp(id, "guest")) return 0;
 
     fd = open(fn, O_RDWR, 0600);
     ldata.l_type = F_WRLCK;
@@ -435,7 +437,7 @@ int check_ID_lists(char * id)
         if(ids[i].last<ids[min].last) min = i;
     }
     if(!found) {
-        strcpy(ids[min].ip, id);
+        strcpy(ids[min].id, id);
         ids[min].first = now;
         ids[min].last = now;
         ids[min].t = 1;
