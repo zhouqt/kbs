@@ -600,11 +600,20 @@ void write_header2(FILE *fp, char *board, char *title,
 int write_file2(FILE *fp, FILE *fp2)
 {
 	char buf3[1024];
+	char *ptr;
 
 	while(1)
 	{
-		if(fgets(buf3, 1000, fp2) == NULL)
+		if(fgets(buf3, sizeof(buf3), fp2) == NULL)
 			break;
+		if ((ptr = strrchr(buf3, '\r')) != NULL)
+		{
+			if (*(ptr+1) == '\n')
+			{
+				*ptr = '\n';
+				*(ptr+1) = '\0';
+			}
+		}
 		fprintf2(fp, buf3);
 	}
 }
