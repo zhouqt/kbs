@@ -10,7 +10,7 @@ define("THREADSPERPAGE",10); //文章阅读时每页显示的文章数
 
 define("BOARDS_PER_ROW", 3); //折叠版面列表每行版面数目
 
-//define("BOARD_DEF_CLOSE", false); //首页分区版面列表在默认情况下是否关闭
+//define("SECTION_DEF_CLOSE", false); //首页分区版面列表在默认情况下是否关闭
 
 define ('MAINTITLE','<IMG SRC="bar/title.jpg">'); //页面正上方显示的站点标题
 

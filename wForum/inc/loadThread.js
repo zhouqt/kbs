@@ -30,56 +30,57 @@ function setSecCookie(sec, flag, isShow) {
 	document.cookie = szCookieName + escape(ssb) + '; Expires=' + expTime.toGMTString();
 }
 
-/* isParent is true when called from loadsec.php */
-function loadBoardFollow_Internal(sec, isFav, isLoading, isHide, isFold, isParent){
-	if (isParent) {
-		targetImg = getParentRawObject("followImg" + sec);
-		targetDiv = getParentRawObject("followSpan" + sec);
+/* isHiddenFrame is true when called from loadsec.php */
+function loadBoardFollow_Internal(sec, isFav, isLoading, isHide, isFold, isHiddenFrame){
+	if (isHiddenFrame) {
 		targetTip = getParentRawObject("followTip" + sec);
 		targetTip.style.display = 'none';
+		targetImg = getParentRawObject("followImg" + sec);
+		targetDiv = getParentRawObject("followSpan" + sec);
 		eval("parent.foldflag" + sec + " = " + (isFold ? 2 : 1) + ";");
 	} else {
+		targetTip = getRawObject("followTip" + sec);
+		if (isLoading){
+			targetTip.style.display = '';
+			str = "loadsec.php?sec=" + sec;
+			if (isFav) str += "&fav=1";
+			if (isFold) str += "&fold=1";
+			window.frames["hiddenframe"].document.location.href = str;
+			/* HTML 和 JS 元素的变化等待 loadsec.php 回调本函数，因为那个时候数据和状态才真正到位 - atppp */
+			return;
+		}
 		targetImg = getRawObject("followImg" + sec);
 		targetDiv = getRawObject("followSpan" + sec);
-		targetTip = getRawObject("followTip" + sec);
 	}
 
-	if (isLoading){
-		targetTip.style.display = '';
-		str = "loadsec.php?sec=" + sec;
-		if (isFav) str += "&fav=1";
-		if (isFold) str += "&fold=1";
-		window.frames["hiddenframe"].document.location.href = str;
-		/* HTML 和 JS 元素的变化等待 loadsec.php 回调本函数，因为那个时候数据和状态才真正到位 - atppp */
+	eval("boards = boards" + sec + ";");
+	
+	 //when we are called from loadsec.php, we are always getting more data in boards, so it's safe to replace.
+	if (isHiddenFrame) eval("parent.boards" + sec + " = boards;");
+	
+	targetDiv.innerHTML = showSec(isFold, isFav, boards, sec, isHide);
+	setSecCookie(isFav ? -1 : sec, isFold, true);
+	setSecCookie(isFav ? -1 : sec, isHide, false);
+	if (isHide || !isFold) {
+		targetImg.src="pic/plus.gif";
+		targetImg.title = "展开版面列表";
 	} else {
-		eval("boards = boards" + sec + ";");
-		
-		 //when we are called from loadsec.php, we are always getting more data in boards, so it's safe to replace.
-		if (isParent) eval("parent.boards" + sec + " = boards;");
-		
-		targetDiv.innerHTML = showSec(isFold, isFav, boards, sec, isHide);
-		setSecCookie(isFav ? -1 : sec, isFold, true);
-		setSecCookie(isFav ? -1 : sec, isHide, false);
-		if (isHide || !isFold) {
-			targetImg.src="pic/plus.gif";
-			targetImg.title = "展开版面列表";
+		targetImg.src="pic/nofollow.gif";
+		targetImg.title = "折叠版面列表";
+	}
+	str = "curfold" + sec + " = " + (isHide ? 0 : (isFold ? 2 : 1)) + ";";
+	if (isHiddenFrame) str = "parent." + str;
+	eval(str);
+	if (!isFav) {
+		if (isHiddenFrame) {
+			targetHide = getParentRawObject("toogleHide" + sec);
 		} else {
-			targetImg.src="pic/nofollow.gif";
-			targetImg.title = "折叠版面列表";
+			targetHide = getRawObject("toogleHide" + sec);
 		}
-		str = "curfold" + sec + " = " + (isHide ? 0 : (isFold ? 2 : 1)) + ";";
-		if (isParent) str = "parent." + str;
-		eval(str);
-		if (!isFav) {
-			if (isParent) {
-				targetHide = getParentRawObject("toogleHide" + sec);
-			} else {
-				targetHide = getRawObject("toogleHide" + sec);
-			}
-			targetHide.innerHTML = (isHide ? "展开" : "关闭") + "版面列表";
-		}
+		targetHide.innerHTML = (isHide ? "展开" : "关闭") + "版面列表";
 	}
 }
+
 function loadBoardFollow(sec, isFav, isLoading, isHide, isFold){
 	loadBoardFollow_Internal(sec, isFav, isLoading, isHide, isFold, false);
 }

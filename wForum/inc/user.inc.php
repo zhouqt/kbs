@@ -60,7 +60,7 @@ function getSecFoldCookie($secNum, $isShow = true) {
 		$ssb = $_COOKIE[$cn];
 		settype($ssb, "integer");
 	} else {
-		if (BOARD_DEF_CLOSE && !$isShow) $ssb = ~0;
+		if (SECTION_DEF_CLOSE && !$isShow) $ssb = ~0;
 		else $ssb = 0;
 	}
 	return (($ssb & (1 << ($secNum+1))) != 0);
