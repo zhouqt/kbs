@@ -45,7 +45,7 @@ static /*struct screenline old_line; */ char tmpbuffer[LINELEN*3];
 
 void setfcolor(int i,int j)
 {
-    cur_color = i+cur_color&0xf0;
+    cur_color = i+(cur_color&0xf0);
     if(j) cur_mode|=SCREEN_BRIGHT;
     else cur_mode&=~SCREEN_BRIGHT;
 }
@@ -53,7 +53,7 @@ void setfcolor(int i,int j)
 void setbcolor(int i)
 {
     if(i==0) i=8;
-    cur_color = cur_color&0x0f+(i<<4);
+    cur_color = (cur_color&0x0f)+(i<<4);
 }
 
 void resetcolor()
@@ -168,8 +168,8 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
     tc_line = new_ln;
     if ((new_col == 0) && (new_ln == was_ln + 1)) {
         ochar('\n');
-        if(tc_color&0x0f!=7)
-            tc_color = tc_color&0xf0+8;
+        if((tc_color&0x0f)!=7)
+            tc_color = (tc_color&0xf0)+8;
         if (was_col != 0)
             ochar('\r');
         return;
@@ -212,8 +212,8 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
     }
     if ((new_col == was_col || new_col==0) && new_ln>=was_ln+1) {
         char ss[20];
-        if(tc_color&0x0f!=7)
-            tc_color = tc_color&0xf0+8;
+        if((tc_color&0x0f)!=7)
+            tc_color = (tc_color&0xf0)+8;
         if(new_ln==was_ln+1)
             sprintf(ss, "\x1b[B");
         else
@@ -225,8 +225,8 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
     }
     if ((new_col == was_col || new_col==0) && new_ln<=was_ln-1) {
         char ss[20];
-        if(tc_color&0x0f!=7)
-            tc_color = tc_color&0xf0+8;
+        if((tc_color&0x0f)!=7)
+            tc_color = (tc_color&0xf0)+8;
         if(new_ln==was_ln-1)
             sprintf(ss, "\x1b[A");
         else
@@ -242,8 +242,8 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
             p=p&&(bp[q].color[i]==tc_color)&&(bp[q].mode[i]==tc_mode);
         if(p) {
             ochar('\n');
-            if(tc_color&0x0f!=7)
-                tc_color = tc_color&0xf0+8;
+            if((tc_color&0x0f)!=7)
+                tc_color = (tc_color&0xf0)+8;
             if (was_col != 0)
                 ochar('\r');
             output(bp[q].data, new_col);
@@ -340,13 +340,13 @@ void refresh()
                 tc_mode|=SCREEN_BACK;
                 stack[stackt++]=7;
             }
-            if(tc_color&0x0f!=bp[j].color[k]&0x0f&&(bp[j].data[k]!=' '||bp[j].mode[k]&SCREEN_LINE||bp[j].mode[k]&SCREEN_BACK)) {
-                tc_color=tc_color&0xf0+bp[j].color[k]&0x0f;
+            if((tc_color&0x0f)!=(bp[j].color[k]&0x0f)&&(bp[j].data[k]!=' '||bp[j].mode[k]&SCREEN_LINE||bp[j].mode[k]&SCREEN_BACK)) {
+                tc_color=(tc_color&0xf0)+(bp[j].color[k]&0x0f);
                 if(DEFINE(currentuser, DEF_COLOR))
-                    stack[stackt++]=30+bp[j].color[k]&0x0f;
+                    stack[stackt++]=30+(bp[j].color[k]&0x0f);
             }
             if((tc_color>>4)!=(bp[j].color[k]>>4)) {
-                tc_color=bp[j].color[k]&0xf0+tc_color&0x0f;
+                tc_color=(bp[j].color[k]&0xf0)+(tc_color&0x0f);
                 if(DEFINE(currentuser, DEF_COLOR)) {
                     if((bp[j].color[k]>>4)==8)
                         stack[stackt++]=40;
@@ -621,10 +621,10 @@ void outns(const char*str, int n)
                         else if(m==7)
                             cur_mode|=SCREEN_BACK;
                         else if(m>=30&&m<=37)
-                            cur_color = m-30+cur_color&0xf0;
+                            cur_color = m-30+(cur_color&0xf0);
                         else if(m>=40&&m<=47) {
                             if(m==40) m=48;
-                            cur_color = ((m-40)<<4)+cur_color&0x0f;
+                            cur_color = ((m-40)<<4)+(cur_color&0x0f);
                         }
                     }
                     j++;
