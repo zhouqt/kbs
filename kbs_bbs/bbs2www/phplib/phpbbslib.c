@@ -149,7 +149,9 @@ static PHP_FUNCTION(bbs_setpassword);
 static PHP_FUNCTION(bbs_is_bm);
 
 //////////////////////// Board/Article operation functions  ////////////////////
+#ifdef HAVE_WFORUM
 static PHP_FUNCTION(bbs_searchtitle);
+#endif
 static PHP_FUNCTION(bbs_search_articles);
 #ifdef I_LOVE_ROY
 static PHP_FUNCTION(bbs_get_thread_article_num);
@@ -318,7 +320,9 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_checkuserpasswd, NULL)
 		PHP_FE(bbs_setuserpasswd, NULL)
 		PHP_FE(bbs_getuserlevel, NULL)
+#ifdef HAVE_WFORUM
 		PHP_FE(bbs_searchtitle, NULL)
+#endif
 		PHP_FE(bbs_search_articles, NULL)
 		PHP_FE(bbs_postmail, NULL)
 		PHP_FE(bbs_mailwebmsgs, NULL)
@@ -1719,22 +1723,31 @@ static PHP_FUNCTION(bbs_checkorigin)
    	RETURN_LONG(total);
 }
 
+#ifdef HAVE_WFORUM
+static int cmp_original_date(const void *a, const void *b) {
+    struct wwwthreadheader * pa;
+    struct wwwthreadheader * pb;
+    pa = *((struct wwwthreadheader **)a);
+    pb = *((struct wwwthreadheader **)b);
+    return get_posttime(&(pb->origin)) - get_posttime(&(pa->origin));
+}
+
 static PHP_FUNCTION(bbs_searchtitle)
 {
     char *board,*title, *title2, *title3,*author;
     long bLen,tLen,tLen2,tLen3,aLen;
-    long date,mmode,attach,maxreturn;
+    long date,mmode,attach,maxreturn; /* date < 0 search for threads whose original post time is within (-date) days. - atppp 20040727 */
     bcache_t bh;
-	char dirpath[STRLEN];
-	int fd;
-	struct stat buf;
-	struct flock ldata;
+    char dirpath[STRLEN];
+    int fd;
+    struct stat buf;
+    struct flock ldata;
     struct wwwthreadheader *ptr1=NULL;
-    int threads = 0;
+    int threads;
     char* ptr;
-	int total,i,j;
-	zval * element;
-	int is_bm;
+    int total,i,j;
+    zval * element;
+    int is_bm;
     char flags[4];              /* flags[0]: flag character
                                  * flags[1]: imported flag
                                  * flags[2]: no reply flag
@@ -1742,19 +1755,30 @@ static PHP_FUNCTION(bbs_searchtitle)
                                  */
     struct boardheader *bp;
     zval* columns[3];
+    bool is_original_date=false;
+    struct wwwthreadheader** resultList;
     char* thread_col_names[]={"origin","lastreply","articlenum"};
 
 
     if (ZEND_NUM_ARGS() != 9 || zend_parse_parameters(9 TSRMLS_CC, "sssssllll", &board, &bLen,&title,&tLen, &title2, &tLen2, &title3, &tLen3,&author, &aLen, &date,&mmode,&attach,&maxreturn) != SUCCESS) {
             WRONG_PARAM_COUNT;
     }
-    if (date <= 0)
+    if (date < 0) {
+        is_original_date = true;
+        date = -date;
+    } else if (date == 0) {
         date = 9999;
+    }
     if (date > 9999)
         date = 9999;
     if ((bp = getbcache(board)) == NULL) {
         RETURN_FALSE;
     }
+    resultList  = emalloc(maxreturn * sizeof(struct wwwthreadheader *));
+    if (resultList == NULL) {   
+        RETURN_LONG(-211);   
+    } 
+
     is_bm = is_BM(bp, getCurrentUser());
     if (getboardnum(board, &bh) == 0)
         RETURN_LONG(-1); //"错误的讨论区";
@@ -1768,15 +1792,15 @@ static PHP_FUNCTION(bbs_searchtitle)
     ldata.l_len = 0;
     ldata.l_start = 0;
     if (fcntl(fd, F_SETLKW, &ldata)== -1) {
-		close(fd);
-		RETURN_LONG(-200);
-	}
-	if (fstat(fd, &buf) == -1) {
+        close(fd);
+        RETURN_LONG(-200);
+    }
+    if (fstat(fd, &buf) == -1) {
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
-		RETURN_LONG(-201);
-	}
+        RETURN_LONG(-201);
+    }
     total = buf.st_size / sizeof(struct wwwthreadheader);
 
     if ((i = safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
@@ -1798,74 +1822,85 @@ static PHP_FUNCTION(bbs_searchtitle)
 #endif
     ptr1 = (struct wwwthreadheader *) ptr;
 
-	for (i=total-1;i>=0;i--) {
-		if (title[0] && !strcasestr(ptr1[i].origin.title, title))
-	        continue;
-	    if (title2[0] && !strcasestr(ptr1[i].origin.title, title2))
-	        continue;
-	    if (author[0] && strcasecmp(ptr1[i].origin.owner, author))
-	        continue;
-		if (title3[0] && strcasestr(ptr1[i].origin.title, title3))
-			continue;
-		if (abs(time(0) - get_posttime(&(ptr1[i].lastreply))) > date * 86400) {
+    threads = 0;
+    for (i=total-1;i>=0;i--) {
+        if (title[0] && !strcasestr(ptr1[i].origin.title, title))
+            continue;
+        if (title2[0] && !strcasestr(ptr1[i].origin.title, title2))
+            continue;
+        if (author[0] && strcasecmp(ptr1[i].origin.owner, author))
+            continue;
+        if (title3[0] && strcasestr(ptr1[i].origin.title, title3))
+            continue;
+        if (abs(time(0) - get_posttime(&(ptr1[i].lastreply))) > date * 86400) {
             if (ptr1[i].flags & FILE_ON_TOP) continue;
-			else break; //normal article, lastreply out of range, so we can break
-		}
-		if (mmode && !(ptr1[i].origin.accessed[0] & FILE_MARKED) && !(ptr1[i].origin.accessed[0] & FILE_DIGEST))
-			continue;
-		if (attach && ptr1[i].origin.attachment==0)
-			continue;
+            else break; //normal article, lastreply out of range, so we can break
+        }
+        if (mmode && !(ptr1[i].origin.accessed[0] & FILE_MARKED) && !(ptr1[i].origin.accessed[0] & FILE_DIGEST))
+            continue;
+        if (attach && ptr1[i].origin.attachment==0)
+            continue;
 
+        resultList[threads] = &(ptr1[i]);
         threads++;
-		MAKE_STD_ZVAL(element);
+        if (threads>=maxreturn) 
+            break;
+    }
+
+    if (is_original_date) {
+        qsort(resultList, threads, sizeof(struct wwwthreadheader *), cmp_original_date);
+    }
+
+    for (i = 0; i < threads; i++) {
+
+                MAKE_STD_ZVAL(element);
 		array_init(element);
 		for (j = 0; j < 3; j++) {
 			MAKE_STD_ZVAL(columns[j] );
 			zend_hash_update(Z_ARRVAL_P(element), thread_col_names[j], strlen(thread_col_names[j]) + 1, (void *) &columns[j] , sizeof(zval *), NULL);
 		}
-		flags[0] = get_article_flag(&(ptr1[i].origin), getCurrentUser(), bp->filename, is_bm, getSession());
-		if (is_bm && (ptr1[i].origin.accessed[0] & FILE_IMPORTED))
+		flags[0] = get_article_flag(&(resultList[i]->origin), getCurrentUser(), bp->filename, is_bm, getSession());
+		if (is_bm && (resultList[i]->origin.accessed[0] & FILE_IMPORTED))
 			flags[1] = 'y';
 		else
 			flags[1] = 'n';
-		if (ptr1[i].origin.accessed[1] & FILE_READ)
+		if (resultList[i]->origin.accessed[1] & FILE_READ)
 			flags[2] = 'y';
 		else
 			flags[2] = 'n';
-		if (ptr1[i].origin.attachment)
+		if (resultList[i]->origin.attachment)
 			flags[3] = '@';
 		else
 			flags[3] = ' ';
 		array_init(columns[0] );
-		bbs_make_article_array(columns[0], &(ptr1[i].origin), flags, sizeof(flags));
-		flags[0] = get_article_flag(&(ptr1[i].lastreply), getCurrentUser(), bp->filename, is_bm, getSession());
-		if (is_bm && (ptr1[i].lastreply.accessed[0] & FILE_IMPORTED))
+		bbs_make_article_array(columns[0], &(resultList[i]->origin), flags, sizeof(flags));
+		flags[0] = get_article_flag(&(resultList[i]->lastreply), getCurrentUser(), bp->filename, is_bm, getSession());
+		if (is_bm && (resultList[i]->lastreply.accessed[0] & FILE_IMPORTED))
 			flags[1] = 'y';
 		else
 			flags[1] = 'n';
-		if (ptr1[i].lastreply.accessed[1] & FILE_READ)
+		if (resultList[i]->lastreply.accessed[1] & FILE_READ)
 			flags[2] = 'y';
 		else
 			flags[2] = 'n';
-		if (ptr1[i].lastreply.attachment)
+		if (resultList[i]->lastreply.attachment)
 			flags[3] = '@';
 		else
 			flags[3] = ' ';
 		array_init(columns[1] );
-		bbs_make_article_array(columns[1], &(ptr1[i].lastreply), flags, sizeof(flags));
-		ZVAL_LONG(columns[2],ptr1[i].articlecount);
+		bbs_make_article_array(columns[1], &(resultList[i]->lastreply), flags, sizeof(flags));
+		ZVAL_LONG(columns[2],resultList[i]->articlecount);
 
-		zend_hash_index_update(Z_ARRVAL_P(return_value), threads, (void *) &element, sizeof(zval *), NULL);
-		if (threads>=maxreturn) 
-			break;
+		zend_hash_index_update(Z_ARRVAL_P(return_value), i + 1, (void *) &element, sizeof(zval *), NULL);
 
-	}
+    }
     end_mmapfile((void *) ptr, buf.st_size, -1);
     ldata.l_type = F_UNLCK;
     fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
     close(fd);
+    efree(resultList);
 }
-
+#endif
 
 /* function bbs_caneditfile(string board, string filename);
  * 判断当前用户是否有权编辑某文件
