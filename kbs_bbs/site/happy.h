@@ -10,6 +10,7 @@
 #define HAVE_FRIENDS_NUM /* 显示好友数目 */
 #define HAVE_REVERSE_DNS /* 反查域名 */
 #define FILTER
+#define CHINESE_CHARACTER
 
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
@@ -223,9 +224,10 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_USEGB     01000000000       /* KCN,99.09.05 */
 #define DEF_SHOWHOROSCOPE 02000000000
 #define DEF_RANDSIGN      04000000000
-#define DEF_SPLITSCREEN 010000000000
+/*#define DEF_SPLITSCREEN 010000000000*/
+#define DEF_CHCHAR 010000000000
 
-#define NUMDEFINES 30
+#define NUMDEFINES 31
 
 #define TDEF_SPLITSCREEN 000001
 
@@ -303,7 +305,7 @@ char *user_definestr[] = {
     "使用GB码阅读",             /* DEF_USEGB KCN 99.09.03 */
 	"显示自己的星座",           /* DEF_SHOWHOROSCOPE */
     "使用随机签名档",           /* DEF_RANDSIGN */
-    "阅读方式: 全屏/分屏"  /* DEF_SPLITSCREEN 2002.9.1 */
+    "对汉字进行整字处理"  /* DEF_SPLITSCREEN 2002.9.1 */
 };
 
 const char    *explain[] = {
@@ -369,7 +371,8 @@ typedef struct fileheader {     /* This structure is used to hold data in */
 #endif
     char innflag[2];
 	char owner[OWNER_LEN];
-    char unused2[50-sizeof(time_t)];
+    char unused2[46-sizeof(time_t)];
+    long attachment;
 	time_t posttime;
     char title[STRLEN];
     unsigned level;
@@ -403,4 +406,8 @@ typedef struct fileheader fileheader_t;
 #define MAX_MAILGROUP_NUM 30
 #define MAX_MAILGROUP_USERS 300
 
+/**
+attach define
+*/
+#define ATTACHTMPPATH "boards/_attach"
 #endif
