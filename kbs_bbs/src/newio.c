@@ -597,6 +597,13 @@ int igetkey()
 
         check_calltime();
 
+#ifdef SMTH
+	if (ch==Ctrl('V')) {
+            if (currentuser&&!HAS_PERM(currentuser,PERM_DENYRELAX))
+            exec_mbem("@mod:service/libdict.so#dict_main");
+            continue;
+        }
+#endif
         if ((ch == KEY_TALK) && talkrequest) {
             if (uinfo.mode != CHAT1 && uinfo.mode != CHAT2 && uinfo.mode != CHAT3 && uinfo.mode != CHAT4 && uinfo.mode != TALK && uinfo.mode != PAGE) {
                 talkreply();
