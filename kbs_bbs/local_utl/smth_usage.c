@@ -207,7 +207,7 @@ main(argc, argv)
     int max[3];
     unsigned int ave[3];
     int now, sec;
-    int i, j, k;
+    int i, j, jj,k;
     char *blk[10] = {
         /* ·½¿òÌ«ÄÑ¿´ÁË modified by Czz */
 //      "  ","  ", "  ", "  ", "  ",
@@ -372,18 +372,18 @@ main(argc, argv)
                 fprintf(op, "      [37mµÚ[31m%3d [37mÃû ÌÖÂÛÇøÃû³Æ£º[31m%s [35m%s[m\n", i + 1, sec_board[i][j].boardname, sec_board[i][j].expname);
 				fprintf(op, "[37m    ©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª\n");
 				fprintf(op, "[37mÈË´Î©¦[m[34m");
-				for (j = 0; j < sec_board[i][j].times / c[0]; j++) {
+				for (jj = 0; jj < sec_board[i][j].times / c[0]; jj++) {
 					fprintf(op, "%2s", blk[9]);
 				}
 				fprintf(op, "%2s [37m%d[m\n", blk[(sec_board[i][j].times % c[0]) * 10 / c[0]], sec_board[i][j].times);
 				fprintf(op, "[1;37mÊ±¼ä©¦[m[32m");
-				for (j = 0; j < sec_board[i][j].sum / c[1]; j++) {
+				for (jj = 0; jj < sec_board[i][j].sum / c[1]; jj++) {
 					fprintf(op, "%2s", blk[9]);
 				}
 				fprintf(op, "%2s [37m%s[m\n", blk[(sec_board[i][j].sum % c[1]) * 10 / c[1]], timetostr(sec_board[i][j].sum));
-				j = sec_board[i][j].times == 0 ? 0 : sec_board[i][j].sum / sec_board[i][j].times;
+				jj = sec_board[i][j].times == 0 ? 0 : sec_board[i][j].sum / sec_board[i][j].times;
 				fprintf(op, "[37mÆ½¾ù©¦[m[31m");
-				for (k = 0; k < j / c[2]; k++) {
+				for (k = 0; k < jj / c[2]; k++) {
 					fprintf(op, "%2s", blk[9]);
 				}
 				fprintf(op, "%2s [37m%s[m\n", blk[(j % c[2]) * 10 / c[2]], timetostr(j));
