@@ -2,7 +2,6 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <signal.h>
-
 struct bbs_msgbuf *rcvlog(int msqid)
 {
     static char buf[1024];
@@ -41,7 +40,23 @@ static struct taglogconfig logconfig[] = {
     {"error.log", 100 * 1024, 0, NULL, 0}
 };
 
-void writelog(struct bbs_msgbuf *msg)
+static void openbbslog()
+{
+    int i;
+    for (i = 0; i < sizeof(logconfig) / sizeof(struct taglogconfig); i++) {
+        if (logconfig[i].filename) {
+            logconfig[i].fd = open(logconfig[i].filename, O_WRONLY);
+            if (logconfig[i].fd < 0)
+                logconfig[i].fd = creat(logconfig[i].filename, 0644);
+            if (logconfig[i].fd < 0)
+                bbslog("3error","can't open log file:%s.%s",logconfig[i].filename,strerror(errno));
+        }
+        if (logconfig[i].buf==NULL)
+            logconfig[i].buf = malloc(logconfig[i].bufsize);
+    }
+
+}
+static void writelog(struct bbs_msgbuf *msg)
 {
     char header[256];
     struct tm *n;
@@ -77,7 +92,7 @@ void writelog(struct bbs_msgbuf *msg)
     flock(pconf->fd, LOCK_UN);
 }
 
-void flushlog(int signo)
+static void flushlog(int signo)
 {
     int i;
     for (i = 0; i < sizeof(logconfig) / sizeof(struct taglogconfig); i++) {
@@ -91,6 +106,8 @@ void flushlog(int signo)
             pconf->bufptr = 0;
             flock(pconf->fd, LOCK_UN);
         }
+        if (signo!=-1)
+            close(pconf->fd);
     }
     if (signo==-1) return;
     exit(0);
@@ -100,10 +117,40 @@ static void flushlog_exit()
 {
     flushlog(-1);
 }
+bool trunc;
+static void trunclog(int signo)
+{
+    int i;
+    flushlog(-1);
+    
+    for (i = 0; i < sizeof(logconfig) / sizeof(struct taglogconfig); i++) {
+        struct taglogconfig *pconf;
+
+        pconf = &logconfig[i];
+        if (pconf->fd>=0) {
+        	char buf[MAXPATH];
+        	int j;
+        	close(pconf->fd);
+        	while (1) {
+        	    sprintf(buf,"%s.%d",pconf->filename,j);
+        	    if (!dashf(buf))
+        	    	break;
+        	}
+        	f_mv(pconf->filename,buf);
+        }
+    }
+    openbbslog();
+    trunc=true;
+}
 
 static void flushlog_time(int signo)
 {
     flushlog(-1);
+}
+
+static void do_trunclog()
+{
+    trunc=false;
 }
 
 int main()
@@ -126,30 +173,25 @@ int main()
     bzero(&act, sizeof(act));
     act.sa_handler = flushlog;
     sigaction(SIGTERM, &act, NULL);
-    sigaction(SIGHUP, &act, NULL);
     sigaction(SIGABRT, &act, NULL);
+    sigaction(SIGHUP, &act, NULL);
     act.sa_handler = flushlog_time;
     sigaction(SIGALRM, &act, NULL);
+    act.sa_handler = trunclog;
+    sigaction(SIGUSR1, &act, NULL);
     alarm(60*10); /*十分钟flush一次*/
 
     msqid = init_bbslog();
     if (msqid < 0)
         return -1;
 
-    for (i = 0; i < sizeof(logconfig) / sizeof(struct taglogconfig); i++) {
-        if (logconfig[i].filename) {
-            logconfig[i].fd = open(logconfig[i].filename, O_WRONLY);
-            if (logconfig[i].fd < 0)
-                logconfig[i].fd = creat(logconfig[i].filename, 0644);
-            if (logconfig[i].fd < 0)
-                bbslog("3error","can't open log file:%s.%s",logconfig[i].filename,strerror(errno));
-        }
-        logconfig[i].buf = malloc(logconfig[i].bufsize);
-    }
-
+    trunc=false;
+    openbbslog();
     while (1) {
         if ((msg = rcvlog(msqid)) != NULL)
             writelog(msg);
+        if (trunc)
+        	do_trunclog();
     }
     flushlog(-1);
     for (i = 0; i < sizeof(logconfig) / sizeof(struct taglogconfig); i++) {
