@@ -23,7 +23,7 @@
 #define BUILD_PHP_EXTENSION 1   /*½«php lib±à³Éphp extension */
 /*#define USE_SEM_LOCK 1*/
 
-#ifdef HAVE_MYSQL
+#ifdef HAVE_MYSQL_SMTH
 #define PERSONAL_CORP
 #else
 #undef PERSONAL_CORP
