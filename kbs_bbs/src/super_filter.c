@@ -433,18 +433,20 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
             int k,abssize=0;
             set_vars(fvars+fget_var("content"), ptr1->filename);
             j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize, NULL);
-            if(strstr(index, "abssize")!=NULL) {
-                k=fsize;
-                while(k) {
-                    if(k>=2&&*p=='¡'&&*(p+1)=='¾'&&*(p+2)==' ') break;
-                    if(k>=2&&*p=='-'&&*(p+1)=='-'&&*(p+2)=='\n') break;
-                    k--;
-                    p++;
-                    abssize++;
+            if(j) {
+                set_vars(fvars+fget_var("content"), p);
+                if(strstr(index, "abssize")!=NULL) {
+                    k=fsize;
+                    while(k) {
+                        if(k>=2&&*p=='\xa1'&&*(p+1)=='\xbe'&&*(p+2)==' ') break;
+                        if(k>=2&&*p=='-'&&*(p+1)=='-'&&*(p+2)=='\n') break;
+                        k--;
+                        p++;
+                        abssize++;
+                    }
+                    set_vard(fvars+fget_var("abssize"), abssize);
                 }
-                set_vard(fvars+fget_var("abssize"), abssize);
             }
-            if(j) set_vars(fvars+fget_var("content"), p);
         }
         ferr=0;
         feval(fvars+fget_var("res"), index, 0, strlen(index)-1);
