@@ -86,7 +86,7 @@ int post_cross2(char islocal, char *board)
     }
 
     memset(&postfile,0,sizeof(postfile));
-	// 这里比较奇怪, fname[] 的内容并不确定
+	/* 这里比较奇怪, fname[] 的内容并不确定*/
     strncpy(save_filename,fname,4096);
 
     now=time(0);
@@ -95,7 +95,7 @@ int post_cross2(char islocal, char *board)
 		sprintf(buf4,"%s (转载)",quote_title);
 	else
 		strcpy(buf4,quote_title);
-	// 还有一个破 save_title 的问题
+	/* 还有一个破 save_title 的问题*/
     strncpy(save_title,buf4,STRLEN) ;
 
     setbfile( filepath, board, fname ); /* 得到 目标POST文件名 */
@@ -124,7 +124,6 @@ int post_cross2(char islocal, char *board)
         if(islocal=='l'||islocal=='L')
             local_article=YEA;
 
-    //modify_user_mode( POSTING );
     getcross2(filepath, board, getcurrusr()); /*根据fname完成 文件复制 */
 
     strncpy( postfile.title, save_title, STRLEN );
@@ -154,15 +153,15 @@ int post_cross2(char islocal, char *board)
         return 1 ;
     }
     /* brc_addlist( postfile.filename ) ;*/
-    //if(!mode)       /* 用户post还是自动发信*/
 	sprintf(buf,"cross_posted '%s' on '%s'", postfile.title, board) ;
     report(buf) ;
     return 1;
 }
 
-// ent		1-based
-// board    source board
-// board2   dest board
+/* ent		1-based
+ * board    source board
+ * board2   dest board
+*/
 int do_cross(int ent, struct fileheader *fileinfo, char *direct,
 			char *board, char *board2, int local_save)
 {
@@ -213,8 +212,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct,
 int do_ccc(int ent, struct fileheader *x, char *dir,
 		char *board, char *board2, int local)
 {
-	FILE *fp;//, *fp2;
-	//char title[512], buf[512], path[200], path2[200], i;
+	FILE *fp;
 	char path[200];
 
 	sprintf(path, "boards/%s/%s", board, x->filename);

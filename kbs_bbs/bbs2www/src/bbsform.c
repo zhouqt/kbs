@@ -54,10 +54,9 @@ int check_submit_form()
   	fprintf(fp, "usernum: %d, %s\n",
 			getusernum(currentuser->userid), wwwCTime(time(0)));
   	fprintf(fp, "userid: %s\n", currentuser->userid);
-	// 下面的各个信息应过滤掉非法字符之后再写入文件.
+	/* 下面的各个信息应过滤掉非法字符之后再写入文件.*/
   	fprintf(fp, "realname: %s\n", getparm("realname"));
 	fprintf( fp, "career: %s\n", getparm("career") );
-  	//fprintf(fp, "dept: %s\n", getparm("dept"));
   	fprintf(fp, "addr: %s\n", getparm("address"));
   	fprintf(fp, "phone: %s\n", getparm("phone"));
 	fprintf(fp, "birth: %s\n", getparm("birth"));

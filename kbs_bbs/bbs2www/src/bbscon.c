@@ -70,10 +70,6 @@ int main() {
 		fseek(fp, sizeof(x)*num, SEEK_SET);
 		fread(&x, sizeof(x), 1, fp);
 		/* 去掉人气值功能 */
-		//(*(int*)(x.title+73))++;
-		//if(*(int*)(x.title+73)>1000000) (*(int*)(x.title+73))=0;
-		//fseek(fp, sizeof(x)*num, SEEK_SET);
-		//fwrite(&x, sizeof(x), 1, fp);
 		brc_initial(currentuser->userid, board);
 		brc_add_read(x.filename);
 		brc_update(currentuser->userid, board);

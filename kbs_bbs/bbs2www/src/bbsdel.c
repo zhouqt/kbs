@@ -76,7 +76,7 @@ struct fileheader *fhdr ;
     return 0 ;
 }
 
-// ent 是 1-based 的
+/* ent 是 1-based 的*/
 int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
 {
     FILE        *fn;

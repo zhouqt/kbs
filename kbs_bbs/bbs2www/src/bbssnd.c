@@ -7,7 +7,6 @@ int write_posts(char *id, char *board, char *title)
     struct
     {
         char author[IDLEN + 1];
-        //char board[IDLEN + 1];
         char board[IDLEN + 6];
         char title[66];
         time_t date;
@@ -101,7 +100,6 @@ int main()
 	*(int*)(u_info->from+36)=time(0);
 	sprintf(filename, "tmp/%d.tmp", getpid());
 	f_append(filename, content);
-	//r=post_article(board, title, filename, currentuser->userid, currentuser->username, fromhost, sig-1);
 	r = post_article(board, title, filename, currentuser, fromhost, sig, local, anony);
 	if(r<=0)
 		http_fatal("内部错误，无法发文");
@@ -114,7 +112,6 @@ int main()
 	if(!junkboard(board))
 	{
 		currentuser->numposts++;
-		//save_user_data(&currentuser);
 		write_posts(currentuser->userid, board, title);
 	}
 	redirect(buf);

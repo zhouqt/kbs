@@ -29,9 +29,6 @@ int main()
 	{
 		printf("<bgsound src=\"sound/msg.wav\">\n");
 		printf("<body onkeypress='checkrmsg(event.keyCode)' style='BACKGROUND-COLOR: #f0ffd0'>");
-		//total=file_size(buf)/129;
-		//get_record(buf, buf2, 129, 0);
-		//delete_record(buf, 129, 0);
 		if ((fp = fopen(buf, "r+")) == NULL)
 			goto failed1;
 		/* 改成读入一行, 删掉一行 */
@@ -41,7 +38,6 @@ int main()
 		fclose(fp);
 		printf("<table width=\"100%%\">\n");
 		printf("<tr><td>");
-		//buf2[111]=0;
 		hprintf(buf2);
 		printf("</td>\n");
 		/* toid and topid need to be modified */
@@ -49,10 +45,7 @@ int main()
 		*ptr = '\0';
 		ptr = strrchr(buf2,'[');
 		topid = atoi(ptr+1);
-		//if(topid > 100)
-		//	topid -= 100;
 		sscanf(buf2+10, "%s", toid);
-		//sscanf(buf2+122, "%d", &topid);
 		printf("<td align=right><a target=f3 href=bbssendmsg?destid=%s&destpid=%d>[回讯息]</a> <a href=bbsgetmsg>[忽略]</a></td></tr></table>\n", toid, topid);
 		http_quit();
 	}

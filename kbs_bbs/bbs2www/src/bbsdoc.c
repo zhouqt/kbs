@@ -17,14 +17,10 @@ int main() {
 	strcpy(board, x1->filename);
 	if(!has_read_perm(currentuser, board)) http_fatal("错误的讨论区");
 	getcwd(dir, sizeof(dir)-1);
-	//printf("%s\n", dir);
-	//printf("BBSHOME=%s\n", BBSHOME);
 	sprintf(dir, "boards/%s/.DIR", board);
         if ((fp=fopen(dir, "r")) == NULL)
 			http_fatal("Open .DIR failed.");
         total=file_size(dir)/sizeof(struct fileheader);
-		//total = fseek(fp, 0, SEEK_END)/sizeof(struct fileheader);
-		//fseek(fp, 0, SEEK_SET);
 	start=atoi(getparm("start"));
 	my_t_lines=atoi(getparm("my_t_lines"));
 	if(my_t_lines<10 || my_t_lines>40) my_t_lines=20;
@@ -37,7 +33,6 @@ int main() {
 	if(total<=0) http_fatal("本讨论区目前没有文章");
       	printf("<table width=\"613\">\n");
       	printf("<tr><td>序号</td><td>状态</td><td>作者</td><td>日期</td><td>标题</td></tr>\n");
-      	//printf("<tr><td>序号</td><td>状态</td><td>作者</td><td>日期</td><td>标题</td><td>人气</td></tr>\n");
 	if(fp) {
 	fseek(fp, start*sizeof(struct fileheader), SEEK_SET);
       	for(i=0; i<my_t_lines; i++) {
@@ -54,18 +49,13 @@ int main() {
 			start+i+1, font1, ptr, font2, userid_str(x.owner));
 			/* 只显示日期 */
          	printf("<td>%6.6s</td>", wwwCTime(atoi(x.filename+2))+4);
-         	//printf("<td>%12.12s</td>", wwwCTime(atoi(x.filename+2))+4);
 			/* 去掉统计字节数的功能, 浪费系统资源 */
          	printf("<td><a href=\"bbscon?board=%s&file=%s&num=%d\">%s%36.36s </a></td>",
-         	//printf("<td><a href=\"bbscon?board=%s&file=%s&num=%d\">%s%36.36s </a>%s</td>",
 			board, x.filename, start+i,
 			strncmp(x.title, "Re: ", 4) ? "○ " : "",
 			void1(nohtml(x.title)));
-			//void1(nohtml(x.title)), eff_size(filename));
 		/* 去掉人气值功能 */
 		printf("</tr>\n");
-		//printf("<td><font color=\"%s\">%d</font></td></tr>\n",
-        //        	*(int*)(x.title+73)>99 ? "red" : "black", *(int*)(x.title+73));
       	}
       	printf("</table><hr>\n");
 	}

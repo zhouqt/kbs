@@ -14,12 +14,6 @@ int main()
 	printf("<tr><td align=\"right\">*请输入您的真实姓名:</td><td align=\"left\"><input name=\"realname\" size=\"20\"> (请用中文, 至少2个汉字)</td></tr>\n");
 	printf("<tr><td align=\"right\">*学校系级或工作单位:</td><td align=\"left\"><input name=\"dept\" size=\"40\">  (至少6个字符)</td></tr>\n");
 	printf("<tr><td align=\"right\">*详细通讯地址:</td><td align=\"left\"><input name=\"address\" size=\"40\"> (至少6个字符)</td></tr>\n");
-	//printf("<tr><td align=\"right\">*您的出生年月:</td>\n");
-	//printf("<td align=\"left\"><input name=\"year\" size=\"4\" maxlength=\"4\">年");
-	//printf("<input name=\"month\" size=\"2\" maxlength=\"2\">月");
-	//printf("<input name=\"day\" size=\"2\" maxlength=\"2\">日</td></tr>");
-	//printf("<tr><td align=\"right\">请输入您的性别:</td> <td align=\"left\"><input type=\"radio\" name=\"gender\" value=\"0\" checked>男 ");
-	//printf("<input type=\"radio\" name=\"gender\" value=\"1\">女</td></tr>\n");
 	/*printf("<tr><td align=\"right\">星座显示方式:</td> ");
 	printf("<td align=\"left\"><input type=\"radio\" name=\"xz\" value=\"0\" checked>颜色区分性别 ");
 	printf("<input type=\"radio\" name=\"xz\" value=\"1\">不区分颜色 ");

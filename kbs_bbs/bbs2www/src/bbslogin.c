@@ -78,8 +78,6 @@ int main(int argc,char** argv)
 		if(abs(t-time(0))<5) http_fatal("两次登录间隔过密!");
 		x->numlogins++;
 		strsncpy(x->lasthost, fromhost, IPLEN);
-		//save_user_data(x);
-		//currentuser=x;	/* struct assignment */
 		if (!HAS_PERM(currentuser,PERM_LOGINOK) && !HAS_PERM(currentuser,PERM_SYSOP))
 		{
 			if (strchr(currentuser->realemail, '@')
@@ -89,7 +87,6 @@ int main(int argc,char** argv)
 				if (HAS_PERM(currentuser,PERM_DENYPOST)/* && !HAS_PERM(currentuser,PERM_SYSOP)*/)
 					currentuser->userlevel &= ~PERM_POST;
 			}
-			//save_user_data(&currentuser);
 		}
 	}
 	sprintf(buf, "%s %s %s\n", wwwCTime(time(0)), x->userid, fromhost);
@@ -99,7 +96,6 @@ int main(int argc,char** argv)
 	n=0;
 	if(!loginok && strcasecmp(id, "guest"))	wwwlogin(x);
 	redirect(FIRST_PAGE);
-	//refreshto("/cgi-bin/bbs/bbssec",10);
 }
 
 int wwwlogin(struct userec *user) {
@@ -112,7 +108,6 @@ int wwwlogin(struct userec *user) {
 
     memset( &ui, 0, sizeof( uinfo_t ) );
     ui.active = YEA ;
-    //ui.pid    = getpid();
 
     /* Bigman 2000.8.29 智囊团能够隐身 */
     if( (HAS_PERM(currentuser,PERM_CHATCLOAK) || HAS_PERM(currentuser,PERM_CLOAK)) && (user->flags[0] & CLOAK_FLAG))
@@ -145,17 +140,13 @@ int wwwlogin(struct userec *user) {
     strncpy( ui.userid,   user->userid,   20 );
     strncpy( ui.realname, user->realname, 20 );
     strncpy( ui.username, user->username, 40 );
-    //nf=0;
 	set_friends_num(0);
-    //topfriend=NULL;
 	init_finfo_addr();
     getfriendstr();
     utmpent = getnewutmpent2(&ui) ;
     if (utmpent == -1)
 		http_fatal("抱歉，目前在线用户数已达上限，无法登录。请稍后再来。");
 	u = get_user_info(utmpent);
-//	pid=fork();
-//	if(pid<0) http_fatal("can't fork");
 /*./	if(pid==0)
 	{
 		setcurruinfo(u);

@@ -10,10 +10,6 @@ int main()
 	init_all();
    	if(!loginok)
 	   	http_fatal("ÄúÉÐÎ´µÇÂ¼, ÇëÏÈµÇÂ¼");
-	//getfriendstr();
-	//fnum = get_friends_num();
-	//fi = get_finfo_addr();
-	//loadfriend(currentuser.userid);
 	sethomefile(filename,currentuser->userid, "friends");
 	fnum = get_num_records(filename, sizeof(friends_t));
 	if (fnum <= 0)
@@ -29,7 +25,6 @@ int main()
    	printf("<table border=\"1\"><tr><td>ÐòºÅ</td><td>ºÃÓÑ´úºÅ</td><td>ºÃÓÑËµÃ÷</td><td>É¾³ýºÃÓÑ</td></tr>");
    	for(i = 0; i < fnum; i++)
    	{
-		//getuserid(userid, fi[i].uid);
 		printf("<tr><td>%d</td>", i+1);
 		printf("<td><a href=\"bbsqry?userid=%s\">%s</a></td>",
 			   	frnds[i].id, frnds[i].id);

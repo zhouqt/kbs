@@ -8,7 +8,7 @@ int main() {
 	init_all();
 	printf("<center>\n");
 	strsncpy(path, getparm("path"), 511);
-	if(strstr(path, "..") || strstr(path, "SYSHome")) // SYSHome?
+	if(strstr(path, "..") || strstr(path, "SYSHome")) /* SYSHome?*/
 		http_fatal("此目录不存在");
 	sprintf(names, "0Announce%s/.Names", path);
 	fp=fopen(names, "r");
@@ -34,8 +34,6 @@ int main() {
 	if(board[0])
 		sprintf(buf, "%s版", board);
 	printf("%s --%s精华区<hr color=\"green\">\n", BBSNAME, buf);
-	//printf("%s --%s精华区 [本目录浏览次数: %d]<hr color=green>\n", 
-	//	BBSNAME, buf, get_count(path));
 	if(total<=0) {
 		printf("<br><< 目前没有文章 >>\n");
 		http_quit();

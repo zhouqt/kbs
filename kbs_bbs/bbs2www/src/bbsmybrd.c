@@ -1,9 +1,6 @@
 #include "bbslib.h"
 
-//by zixia: shortfile->boardheader
-//struct shortfile data[MAXBOARD];
 struct boardheader data[MAXBOARD];
-//char mybrd[32][80];
 int mybrdnum=0;
 
 int cmp_board(b1, b2)
@@ -29,7 +26,6 @@ int main()
 		read_submit();
 		http_quit();
 	}
-   	//sprintf(path, "home/%c/%s/mybrds", toupper(currentuser->userid[0]), currentuser->userid);
    	/*setuserfile(path, currentuser->userid,"favboard");
 	fp=fopen(path, "r");
    	if(fp) {
@@ -49,14 +45,10 @@ int main()
 	{
 		if(has_read_perm(currentuser, bc[i].filename))
 		{
-			//by zixia 
-			//memcpy(&data[total], &(bc[i]), sizeof(struct shortfile));
 			memcpy(&data[total], &(bc[i]), sizeof(struct boardheader));
 			total++;
 		}
 	}
-	//by zixia
-	//qsort(data, total, sizeof(struct shortfile), cmp_board);
 	qsort(data, total, sizeof(struct boardheader), cmp_board);
 	for(i=0; i<total; i++)
 	{
@@ -103,16 +95,10 @@ int read_submit()
 				printf("警告: 无法预定'%s'讨论区<br>\n", nohtml(parm_name[i]));
 				continue;
 			}
-			//strsncpy(mybrd[mybrdnum], parm_name[i], 80);
 			add_favboard(parm_name[i]);
 			mybrdnum++;
 		}
 	}
-	//sprintf(buf1, "home/%c/%s/mybrds",
-	//		toupper(currentuser->userid[0]), currentuser->userid);
-	//fp=fopen(buf1, "w");
-	//fwrite(mybrd, 80, mybrdnum, fp);
-	//fclose(fp);
 	save_favboard();
 	printf("<script>top.f2.location='bbsleft'</script>修改预定讨论区成功，您现在一共预定了%d个讨论区:<hr>\n", mybrdnum);
 	printf("[<a href=\"javascript:history.go(-2)\">返回</a>]");

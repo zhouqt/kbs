@@ -45,16 +45,10 @@ int main()
    			printf("<option value=\"%d\">第 %d 个</option>\n", i, i);
 	}
 	printf("</select>\n");
-   	//printf("<input type=\"radio\" name=\"signature\" value=\"1\" checked>1\n");
-   	//printf("<input type=\"radio\" name=\"signature\" value=\"2\">2\n");
-   	//printf("<input type=\"radio\" name=\"signature\" value=\"3\">3\n");
-	//printf("<input type=\"radio\" name=\"signature\" value=\"4\">4\n");
-	//printf("<input type=\"radio\" name=\"signature\" value=\"5\">5\n");
-   	//printf("<input type=\"radio\" name=\"signature\" value=\"0\">0\n"); 
    	printf(" [<a target=\"_balnk\" href=\"bbssig\">查看签名档</a>] \n");
-	// 加上转信支持
+	/* 加上转信支持*/
 	printf("<input type=\"checkbox\" name=\"outgo\" value=\"1\">转信\n");
-	// 加上匿名讨论区支持
+	/* 加上匿名讨论区支持*/
 	if (seek_in_file("etc/anonymous",board))
 		printf("<input type=\"checkbox\" name=\"anony\" value=\"1\">使用匿名\n");
    	printf("<br>\n<textarea name=\"text\" rows=\"20\" cols=\"80\" wrap=\"physicle\">\n\n");

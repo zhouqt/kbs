@@ -42,7 +42,6 @@ int main()
 	for(i=0; i<total; i++)
 	{
 		int dt=(time(0)-get_idle_time(&user[i]))/60;
-		//if(!isfriend(user[i].userid)) continue;
 		printf("<tr><td>%d", i+1);
 		printf("<td>%s", "¡Ì");
 		printf("%s", user[i].invisible ? "<font color=\"green\">C</font>" : " ");

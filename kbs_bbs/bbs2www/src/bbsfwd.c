@@ -14,7 +14,6 @@ int main()
 	int noansi;
 
 	init_all();
-	//signal(SIGSEGV, debug_abort);
 	strsncpy(board, getparm("board"), 30);
 	strsncpy(file, getparm("file"), 30);
 	strsncpy(target, getparm("target"), 30);

@@ -54,7 +54,6 @@ int main()
 	{
 		char *ptr="";
 
-		//if(i%2==0)
 		printf("<tr>\n");
 		if(currentuser->userdefine & perm)
 			ptr=" checked";
@@ -88,6 +87,5 @@ int read_form()
 		perm=perm*2;
 	}
 	currentuser->userdefine=def;
-	//save_user_data(&currentuser);
 	printf("个人参数设置成功.<br><a href=\"bbsparm\">返回个人参数设置选单</a>");
 }

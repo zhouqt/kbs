@@ -16,8 +16,8 @@ friends_t bbb[MAXREJECTS];
 int badnum=0;
 
 struct user_info *u_info;
-//struct UTMPFILE *shm_utmp;
-//struct UCACHE *shm_ucache;
+/*struct UTMPFILE *shm_utmp;*/
+/*struct UCACHE *shm_ucache;*/
 char fromhost[IPLEN];
 char parm_name[256][80], *parm_val[256];
 int parm_num=0;
@@ -233,13 +233,6 @@ int hsprintf(char *s, char *fmt, ...) {
 	s[len]=0;
 }
 
-// for bbs_sendmail(), faint
-/*void prints(va_alist)
-va_dcl
-{
-	hprintf(va_alist);
-}*/
-
 int hprintf(char *fmt, ...) {
 	char buf[8096], buf2[1024];
 	va_list ap;
@@ -348,7 +341,7 @@ int http_init() {
 		t2=strtok(0, "&");
 	}
 	strsncpy(buf2, getsenv("HTTP_COOKIE"), 1024);
-	//printf("HTTP_COOKIE = %s\n", buf2);
+	/*printf("HTTP_COOKIE = %s\n", buf2);*/
 	t2=strtok(buf2, ";");
 	while(t2) {
 		t3=strchr(t2, '=');
@@ -409,61 +402,50 @@ int user_init(struct userec **x, struct user_info **y)
 
 	strsncpy(id, getparm("utmpuserid"), 13);
 	strsncpy(num, getparm("utmpnum"), 12);
-	//printf("utmpuserid = %s\n", id);
-	//printf("utmpnum = %s\n", num);
+	/*printf("utmpuserid = %s\n", id);*/
+	/*printf("utmpnum = %s\n", num);*/
 	key=atoi(getparm("utmpkey"));
-	//printf("utmpkey = %d\n", key);
 	i=atoi(num);
 	if(i<1 || i>=MAXACTIVE)
-		//return 0;
+		/*return 0;*/
 		goto forguest;
-	//utmpshm_ptr = get_utmpshm_addr();
+	/*utmpshm_ptr = get_utmpshm_addr();*/
 	/* 这里有问题, (*y)在后面将一直指向&(utmpshm_ptr->uinfo[i]),
 	 * 不管后面的那些判断是否成功 */
 	(*y) = get_user_info(i);
 	if(strncmp((*y)->from, fromhost, IPLEN))
 	{
-		//printf("from is ->%s<-, len = %d\n", (*y)->from, strlen((*y)->from));
-		//printf("fromhost is ->%s<-, len = %d\n", fromhost, strlen(fromhost));
-		//printf("fromhost error!\n");
+		/*printf("from is ->%s<-, len = %d\n", (*y)->from, strlen((*y)->from));*/
+		/*printf("fromhost is ->%s<-, len = %d\n", fromhost, strlen(fromhost));*/
+		/*printf("fromhost error!\n");*/
 		goto forguest;
 	}
 	if((*y)->utmpkey != key)
 	{
-		//printf("utmpkey error!\n");
 		goto forguest;
 	}
 	
 	if((*y)->active == 0)
 	{
-		//printf("user not active!\n");
 		goto forguest;
 	}
 	if((*y)->userid[0] == 0)
 	{
-		//printf("userid error!\n");
 		goto forguest;
 	}
 	if((*y)->mode!=WEBEXPLORE)
 	{
-		//printf("mode error!\n");
-		//return 0; /* faint, what does 10001 mean? */
 		goto forguest;
 	}
 	if(!strcasecmp((*y)->userid, "new") || !strcasecmp((*y)->userid, "guest"))
-		//return 0;
 		goto forguest;
 	getuser((*y)->userid, x);
 	if(*x==0)
 	{
-		//printf("getuser error!\n");
-		//return 0;
 		goto forguest;
 	}
 	if(strcmp((*x)->userid, id))
 	{
-		//printf("userid not equal!\n");
-		//return 0;
 		goto forguest;
 	}
 	return 1;
@@ -480,8 +462,6 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
 	char buf3[256], dir[256];
 	struct fileheader header;
 	int t, i;
-	//if(strstr(userid, "@")) 
-		//return post_imail(userid, title, file, id, nickname, ip, sig);
 	bzero(&header, sizeof(header));
 	strcpy(header.owner, id);
 	for(i=0; i<100; i++) {
@@ -564,7 +544,6 @@ void add_loginfo2(char *filepath, char *board, struct userec *user, int anony)
     int color;
     char fname[STRLEN];
 
-    //noidboard=(seek_in_file("etc/anonymous",board)&&anony);
     color=(user->numlogins%7)+31; /* 颜色随机变化 */
     sethomefile( fname, currentuser->userid,"signatures" );
     fp=fopen(filepath,"a");
@@ -650,8 +629,8 @@ void write_header2(FILE *fp, char *board, char *title,
 			title, "BBS "NAME_BBS_CHINESE"站", Ctime(time(0)));
 }
 
-// fp 		for destfile
-// fp2		for srcfile
+/* fp 		for destfile*/
+/* fp2		for srcfile*/
 int write_file2(FILE *fp, FILE *fp2)
 {
 	char buf3[1024];
@@ -664,9 +643,9 @@ int write_file2(FILE *fp, FILE *fp2)
 	}
 }
 
-// return value:
+/* return value:
 // >0		success
-// -1		write .DIR failed
+// -1		write .DIR failed*/
 int
 post_article(char *board, char *title, char *file, struct userec *user,
 		char *ip, int sig, int local_save, int anony)
@@ -737,7 +716,7 @@ post_article(char *board, char *title, char *file, struct userec *user,
         sprintf(buf, "posting '%s' on '%s': append_record failed!",
                 post_file.title, board);
         report(buf);
-		// 必须把刚刚创建的文件删除才行
+		/* 必须把刚刚创建的文件删除才行 */
 		unlink(filepath);
         return -1 ;
     }
@@ -745,10 +724,10 @@ post_article(char *board, char *title, char *file, struct userec *user,
     sprintf(buf,"posted '%s' on '%s'", post_file.title, board) ;
     report(buf) ; /* bbslog */
     /*      postreport(post_file.title, 1);*/ /*added by alex, 96.9.12*/
-    //if ( !junkboard(board) )
+    /*if ( !junkboard(board) )
     //{
     //    currentuser->numposts++;
-    //}
+    //}*/
     return now;
 }
 
@@ -1589,7 +1568,8 @@ int count_online() /* ugly */
 
 	u = (struct UTMPFILE*)get_utmpshm_addr();
 	return u == NULL ? 0 : u->number;*/
-	return (utmpshm == NULL) ? 0 : utmpshm->number;
+	/*return (utmpshm == NULL) ? 0 : utmpshm->number;*/
+	return get_utmp_number();
 }
 
 int count_www()
@@ -1623,11 +1603,9 @@ struct user_info **get_ulist_addr()
 
 uinfo_t *get_user_info(int utmpnum)
 {
-	//struct UTMPFILE *utmpshm_ptr;
 
 	if (utmpnum < 1 || utmpnum > USHM_SIZE)
 		return NULL;
-	//utmpshm_ptr = (struct UTMPFILE*)get_utmpshm_addr();
 	return &(utmpshm->uinfo[utmpnum-1]);
 }
 
@@ -1826,20 +1804,19 @@ int add_favboard(char *brdname)
 	if(brdname != NULL && *brdname)
 		i = getbnum(brdname);
 	else
-		return -3; // err brdname
+		return -3; /* err brdname*/
 	if (*favbrd_list > FAVBOARDNUM)
-		return -2; // favboard had reach max limit
+		return -2; /* favboard had reach max limit*/
 	if( i > 0 && !IsFavBoard(i-1) )
 	{
 		int llen;
 		llen = ++(*favbrd_list);
 		favbrd_list[llen] = i-1;
-		//save_favboard();
 
-		return llen; //return current favorite boards count
+		return llen; /*return current favorite boards count*/
 	}
 
-	return -1; // brdname not found or brdname already in favbrd_list
+	return -1; /* brdname not found or brdname already in favbrd_list*/
 }
 
 /* from mail.c */
@@ -1917,7 +1894,6 @@ int mail_file(char *tmpfile, char *userid, char *title)
     memset(&newmessage, 0, sizeof(newmessage)) ;
     strncpy(newmessage.owner, getcurruserid(), STRLEN) ;
     strncpy(newmessage.title, title, STRLEN) ;
-    //strncpy(save_title,newmessage.title,STRLEN) ;
 
     setmailpath(filepath, userid);
     if(stat(filepath, &st) == -1)

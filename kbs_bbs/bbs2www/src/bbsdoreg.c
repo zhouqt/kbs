@@ -48,16 +48,8 @@ int main()
    	strsncpy(x.email, getparm("email"), 32);
    	strsncpy(phone, getparm("phone"), 32);
 	strsncpy(words, getparm("words"), 1000);
-	//x.gender='M';
-	//if(atoi(getparm("gender"))) x.gender='F';
-	//x.birthyear=atoi(getparm("year"))-1900;
-	//x.birthmonth=atoi(getparm("month"));
-	//x.birthday=atoi(getparm("day"));
 	if (id_invalid(x.userid))
 		http_fatal("帐号必须由英文字母或数字组成，并且第一个字符必须是英文字母!");
-   	//for(i=0; x.userid[i]; i++)
-    //  		if(!strchr("ABCDEFGHIJKLMNOPQRSTUVWXYZ", toupper(x.userid[i])))
-	//  		http_fatal("帐号只能由英文字母组成");
    	if(strlen(x.userid)<2)
 	   	http_fatal("帐号长度太短(2-12字符)");
    	if(strlen(pass1) < 4 || !strcmp( pass1, x.userid ) )
@@ -77,18 +69,13 @@ int main()
 	   	http_fatal("您的注册单中含有非法字符");
 	if(badstr(dept)||badstr(x.address)||badstr(x.email)||badstr(phone))
 	   	http_fatal("您的注册单中含有非法字符");
-   	//if(badymd(x.birthyear, x.birthmonth, x.birthday)) http_fatal("请输入您的出生年月");
  	if(bad_user_id(x.userid))
 	   	http_fatal("不雅帐号或禁止注册的id, 请重新选择");
    	if(searchuser(x.userid))
 	   	http_fatal("此帐号已经有人使用,请重新选择。");
-   	//sprintf(salt, "%c%c", 65+rand()%26, 65+rand()%26);
-   	//strsncpy(x.passwd, crypt1(pass1, salt), 14);
-   	//strcpy(x.termtype, "vt100");
    	strcpy(x.lasthost, fromhost);
    	x.userlevel = PERM_BASIC;
    	x.firstlogin = x.lastlogin = time(0);
-	//x.lastlogin=time(0);
    	x.userdefine = -1;
 	x.userdefine &= ~DEF_NOTMSGFRIEND;
 	x.notemode = -1;
@@ -158,8 +145,6 @@ int newcomer(struct userec *x, char *words) {
 	fprintf(fp, "自我介绍:\n\n");
 	fprintf(fp, "%s", words);
 	fclose(fp);
-	// commented by flyriver, temporary
-	//post_article("newcomers", "WWW新手上路", filename, x->userid, x->username, fromhost, -1);
 	unlink(filename);
 }
 

@@ -53,14 +53,9 @@ void abort_program() {
 
 int main() {
 	int stay, pid;
-//	uinfo_t *ui;
 
 	init_all();
 	if(!loginok) http_fatal("ÄãÃ»ÓÐµÇÂ¼");
-	//signal(SIGBUS, debug_abort);
-//	ui = getcurruinfo();
-//	pid = ui->pid;
-//	if(pid>1) kill(pid, SIGHUP);
 	abort_program();
 	setcookie("utmpkey", "");
 	setcookie("utmpnum", "");

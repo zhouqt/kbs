@@ -117,7 +117,6 @@ int inform(char *board, char *user)
     now = time(0);
 	usr = getcurrusr();
 	bzero(&pi, sizeof(pi));
-    //setbfile( fn,currboard, "deny_users" );
     /*Haohmaru.4.1.自动发信通知*/
     sprintf(filename,"etc/%s.dny", usr->userid);
     fn1 = fopen(filename,"w");

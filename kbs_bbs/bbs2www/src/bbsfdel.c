@@ -47,7 +47,6 @@ int main()
 		printf("</form>");
 		http_quit();
 	}
-   	//loadfriend(currentuser.userid);
 	if(get_friends_num() <= 0)
 	   	http_fatal("您没有设定任何好友");
    	if(!isfriend(userid))

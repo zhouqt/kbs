@@ -76,6 +76,5 @@ int check_info()
 		strcpy(currentuser->email, buf);
 	else
 		printf("警告: email地址不合法!<br>\n");
-	//save_user_data(&currentuser);
 	printf("[%s] 个人资料修改成功.", currentuser->userid);
 }

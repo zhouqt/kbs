@@ -4,7 +4,11 @@
 #include <netinet/in.h>
 #include <sys/types.h>
 #ifdef FREEBSD
-#include <sys/socket.h> // need for FreeBSD
+#include <sys/socket.h> /* need for FreeBSD*/
+#endif
+#ifdef AIX
+#include <sys/socket.h>
+#include <sys/socketvar.h>
 #endif
 
 int chat_fd;

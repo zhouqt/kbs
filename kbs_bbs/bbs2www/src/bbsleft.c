@@ -61,21 +61,14 @@ int main() {
 	}
   	printf("<hr style=\"color:2020f0; height=1px\" width=\"84px\" align=\"left\"><br><img src=\"/link0.gif\"><a href=\"bbsall\" target=\"f3\">讨论区首页</a><br>\n");
         printf("<img src=\"/link0.gif\"><a target=\"f3\" href=\"bbs0an\">精华公布栏</a><br>\n");
-	//printf("<img src=\"/link0.gif\"><a target=\"f3\" href=\"bbs0an?path=/groups/GROUP_0/Ourselves/D94E1D0A5\">个人文集区</a><br>\n");
    	printf("<img src=\"/link0.gif\"><a target=\"f3\" href=\"bbstop10\">今日十大</a><br>\n");
 	printf("<img src=\"/link0.gif\"><a target=\"f3\" href=\"bbstopb10\">热门讨论区</a><br>\n");
 	if(loginok)
 	{
- 		//FILE *fp;
 		int i, mybrdnum=0;
 		const struct boardheader  *bptr;
-		//char mybrd[32][80];
 		printf("<img src=\"/folder.gif\" name=\"img0\"><a href=\"javascript: t(document.all.div0, document.img0)\">个人定制区</a><br>\n");
 		printf("<div id=\"div0\" style=\"display:none\">\n");
-   		//sprintf(buf, "home/%c/%s/mybrds", toupper(currentuser->userid[0]), currentuser->userid);
-   		//fp=fopen(buf, "r");
-   		//if(fp) mybrdnum=fread(mybrd, sizeof(mybrd[0]), 30, fp);
-   		//if(fp) fclose(fp);
 		load_favboard(0);
 		mybrdnum = get_favboard_count();
   		for(i=0; i<mybrdnum; i++)
