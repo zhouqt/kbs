@@ -8,7 +8,7 @@
  * 
  * $Id$
  */
-if (!define('_BBS_BOARDS_PHP_'))
+if (!defined('_BBS_BOARDS_PHP_'))
 {
 define('_BBS_BOARDS_PHP_', 1);
 
