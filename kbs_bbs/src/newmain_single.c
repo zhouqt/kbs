@@ -54,7 +54,6 @@ int count_friends, count_users; /*Add by SmallPig for count users and Friends */
 char *getenv();
 char *sysconf_str();
 char *Ctime();
-struct user_info *t_search();
 void r_msg_sig(int signo);
 int friend_login_wall();
 int listmode;

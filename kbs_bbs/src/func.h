@@ -162,8 +162,8 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     void RemoveMsgCountFile(char *userID);
     int bad_user_id(char *userid);      /* 检查.badname是否允许注册的 */
     int valid_ident(char *ident);       /* 检查合法的ident */
-    struct user_info *t_search(ARG_VOID);
     int getunifopid(ARG_VOID);
+    struct user_info *t_search(char *sid, int pid);
     int cmpinames(const char *userid, const char *uv);
     int cmpfnames(char *userid, struct friends *uv);
     int cmpfileinfoname(char *filename, struct fileheader *fi);

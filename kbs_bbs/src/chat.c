@@ -52,7 +52,6 @@ extern void t_pager();
 #define screen_lines    (t_lines-4)
 int chat_cmd(chatcontext * pthis, char *buf);
 void set_rec();
-struct user_info *t_search();
 
 #define CHAT_LOGIN_OK       "OK"
 #define CHAT_LOGIN_EXISTS   "EX"
