@@ -788,14 +788,19 @@ int write_file(filename, saveheader)
 #endif
 
 #ifdef FILTER
-    while (p != NULL) {
-	    if(check_badword(p->data)) {
-		    abort[0] = 'a';
+    int filter = 0;
+    
+    if ((abort[0] != 'a')||(abort[0] != 'e')) {
+	while (p != NULL) {
+	    if(check_badword_str(p->data, sizeof(p->data))) {
+		    abort[0] = 'e';
+		    filter = 1;
 		    break;
 	    }
 	    p = p->next;
+	}
+	p = firstline;
     }
-    p = firstline;
 #endif
     if (abort[0] == 'a' || abort[0] == 'A') {
         struct stat stbuf;
@@ -814,6 +819,14 @@ int write_file(filename, saveheader)
             unlink(filename);
         aborted = -1;
     } else if (abort[0] == 'e' || abort[0] == 'E') {
+#ifdef FILTER
+	    if (filter) {
+		    clear();
+		    move (3, 0);
+		    prints ("\n\n            很抱歉，本文含有不适宜内容，请重新编辑...\n");
+		    pressreturn();
+	    }
+#endif
         domsg();
         return KEEP_EDITING;
     } else if (abort[0] == 't' || abort[0] == 'T') {
