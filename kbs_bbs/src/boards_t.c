@@ -336,7 +336,15 @@ int     page, clsflag, newflag;
             continue;
         }
         ptr = &nbrd[n];
-        if( !newflag )
+        if(ptr->flag == -1) { // added by bad 2002.8.3
+        	if(ptr->pos == -1)
+	        	prints("       ");
+       	 else if (!newflag)
+	        	prints(" %4d  £«  <Ä¿Â¼>  ", n+1);
+       	 else
+	        	prints(" %4d  £«  <Ä¿Â¼>  ", ptr->total);
+        }
+        else if( !newflag )
             prints( " %4d %c", n+1, ptr->zap&&!(ptr->flag&BOARD_NOZAPFLAG) ? '-' : ' ' );/*zap±êÖ¾*/
         else if( ptr->zap&&!(ptr->flag&BOARD_NOZAPFLAG) ) {
             /*ptr->total = ptr->unread = 0;
@@ -354,11 +362,17 @@ int     page, clsflag, newflag;
         strcpy(tmpBM,ptr->BM);
 
         /* Leeward 98.03.28 Displaying whether a board is READONLY or not */
-        if (true == checkreadonly(ptr->name))
+        if (ptr->flag == -1)
+            sprintf(buf, "%s", ptr->title); // added by bad 2002.8.3
+        else if (true == checkreadonly(ptr->name))
             sprintf(buf, "¡ôÖ»¶Á¡ô%s", ptr->title + 8);
         else
             sprintf(buf, " %s", ptr->title + 1);
-        prints("%c%-16s %s%-36s %-12s\n", ((newflag && ptr->zap && !(ptr->flag&BOARD_NOZAPFLAG)) ? '*' : ' '), ptr->name,(ptr->flag&BOARD_VOTEFLAG) ? "[31mV[m" : " ", buf, ptr->BM[0] <= ' ' ? "³ÏÕ÷°åÖ÷ÖÐ" : strtok(tmpBM," ")); /*µÚÒ»¸ö°æÖ÷*/
+        
+        if (ptr->flag==-1) // added by bad 2002.8.3
+	        prints("%-20s\n", buf);
+        else
+       	 prints("%c%-16s %s%-36s %-12s\n", ((newflag && ptr->zap && !(ptr->flag&BOARD_NOZAPFLAG)) ? '*' : ' '), ptr->name,(ptr->flag&BOARD_VOTEFLAG) ? "[31mV[m" : " ", buf, ptr->BM[0] <= ' ' ? "³ÏÕ÷°åÖ÷ÖÐ" : strtok(tmpBM," ")); /*µÚÒ»¸ö°æÖ÷*/
     }
     refresh();
 }
@@ -386,7 +400,7 @@ static int choose_board(int  newflag ,char* boardprefix) /* Ñ¡Ôñ °æ£¬ readnew»òr
                 continue;
             qsort( nbrd, brdnum, sizeof( nbrd[0] ), (int (*)(const void *, const void *))cmpboard );
             page = -1;
-            if( brdnum <= 0 )  break;
+            if( brdnum <= 0)  break;
         }
         if( num < 0 )  num = 0;
         if( num >= brdnum )  num = brdnum - 1;
@@ -613,11 +627,65 @@ case 'n': case 'j': case KEY_DOWN:
                 }
             }
             break;
+        case 'A': // added by bad 2002.8.3
+            if(2 == yank_flag) {
+                char bname[STRLEN];
+                int i = 0;
+                if(getfavnum()>= FAVBOARDNUM) {
+                    move(2, 0);
+                    clrtoeol();
+                    prints("¸öÈËÈÈÃÅ°æÊýÒÑ¾­´ïÉÏÏÞ(%d)£¡", FAVBOARDNUM);
+                    pressreturn();
+                    show_brdlist( page, 1, newflag );  /*  refresh screen */
+                    break;
+                }
+                move(0,0) ;
+                clrtoeol();
+		  getdata( 0, 0, "ÊäÈëÌÖÂÛÇøÄ¿Â¼Ãû: ", bname, 22, DOECHO, NULL,true);
+		  if(bname[0]){
+			addFavBoardDir(i, bname);
+                    save_favboard();
+                    brdnum = -1;    /*  force refresh board list */
+		  }
+            }
+            break;
+        case 'T': // added by bad 2002.8.3
+            if(2 == yank_flag) {
+                char bname[STRLEN];
+                int i = 0;
+                if(nbrd[num].flag==-1&&nbrd[num].pos>=0){
+	                move(0,0) ;
+	                clrtoeol();
+			  getdata( 0, 0, "ÊäÈëÌÖÂÛÇøÄ¿Â¼Ãû: ", bname, 22, DOECHO, NULL,true);
+			  if(bname[0]){
+			  	changeFavBoardDir(nbrd[num].pos, bname);
+	                    save_favboard();
+	                    brdnum = -1;    /*  force refresh board list */
+			  }
+                }
+            }
+            break;
         case 'd':
             if(2 == yank_flag) {
-                DelFavBoard( IsFavBoard(nbrd[num].pos) );
+            	int p=1;
+            	if(nbrd[num].flag==-1&&nbrd[num].pos==-1) p=0;
+            	if(nbrd[num].flag==-1&&nbrd[num].total>0){
+            	  char ans[2];
+                move(0,0) ;
+                clrtoeol();
+		  getdata( 0, 0, "È·ÈÏÉ¾³ýÕû¸öÄ¿Â¼£¿(y/N)", ans, 2, DOECHO, NULL,true);
+		  p=ans[0]=='Y'||ans[0]=='y';
+            	}
+            	if(p){
+                if(nbrd[num].flag==-1)
+	                DelFavBoard( nbrd[num].pos );
+                else
+	                DelFavBoard( IsFavBoard(nbrd[num].pos)-1 );
                 save_favboard();
                 brdnum = -1;    /*  force refresh board list. */
+            	}
+            	else
+                show_brdlist( page, 1, newflag );  /*  refresh screen */
             }
             break;
             /*---	End of Addition	---*/
@@ -656,26 +724,43 @@ case 'n': case 'j': case KEY_DOWN:
                 char    buf[ STRLEN ];
 
                 ptr = &nbrd[num];
-                brc_initial( currentuser->userid,ptr->name );
-                memcpy( currBM, ptr->BM, BM_LEN -1);
-                if( DEFINE(currentuser,DEF_FIRSTNEW) ) {
-                    setbdir(digestmode, buf, currboard );
-                    tmp = unread_position( buf, ptr );
-                    page = tmp - t_lines / 2;
-                    getkeep( buf, page > 1 ? page : 1, tmp + 1 );
+
+                if (ptr->flag == -1){ // added by bad 2002.8.3
+            		int oldnum, oldfavnow;
+            		oldnum = num;
+            		num = 0;
+            		if(ptr->pos!=-1){
+	            		oldfavnow = SetFav(ptr->pos);
+	            		choose_board(newflag, boardprefix);
+	            		SetFav(oldfavnow);
+	            		num=oldnum;
+		              page = -1;
+		              brdnum = -1;
+		              modify_user_mode( newflag ? READNEW : READBRD );
+            		}
                 }
-                Read();
+                else {
+	                brc_initial( currentuser->userid,ptr->name );
+	                memcpy( currBM, ptr->BM, BM_LEN -1);
+	                if( DEFINE(currentuser,DEF_FIRSTNEW) ) {
+	                    setbdir(digestmode, buf, currboard );
+	                    tmp = unread_position( buf, ptr );
+	                    page = tmp - t_lines / 2;
+	                    getkeep( buf, page > 1 ? page : 1, tmp + 1 );
+	                }
+	                Read();
 
-                /* Leeward 98.05.17: updating unread flag on exiting Read() */
-                /* if (-1 != load_boards())
-                   qsort( nbrd, brdnum, sizeof( nbrd[0] ), cmpboard ); */
+	                /* Leeward 98.05.17: updating unread flag on exiting Read() */
+	                /* if (-1 != load_boards())
+	                   qsort( nbrd, brdnum, sizeof( nbrd[0] ), cmpboard ); */
 
-		/* ËûÏë°Ñzap°æÃæµÄÊ±¼ä¶¨ÒåÎªÉÏ´ÎÔÄ¶ÁµÄÊ±¼ä£¬µ«ÊÇÃ»ÓÐÊ¹ÓÃ
-                if( zapbuf[ ptr->pos ] > 0 ) 
-                    zapbuf[ ptr->pos ] = brc_list[0];
-		    	*/
-                ptr->total = page = -1;
-                modify_user_mode( newflag ? READNEW : READBRD );
+			/* ËûÏë°Ñzap°æÃæµÄÊ±¼ä¶¨ÒåÎªÉÏ´ÎÔÄ¶ÁµÄÊ±¼ä£¬µ«ÊÇÃ»ÓÐÊ¹ÓÃ
+	                if( zapbuf[ ptr->pos ] > 0 ) 
+	                    zapbuf[ ptr->pos ] = brc_list[0];
+			    	*/
+	                ptr->total = page = -1;
+	                modify_user_mode( newflag ? READNEW : READBRD );
+                }
                 break;
             }
         case 'v':		/*Haohmaru.2000.4.26*/

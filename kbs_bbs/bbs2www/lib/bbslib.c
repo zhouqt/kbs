@@ -25,7 +25,16 @@ struct user_info *u_info;
 char fromhost[IPLEN+1];
 char parm_name[256][80], *parm_val[256];
 int parm_num=0;
-int     favbrd_list[FAVBOARDNUM+1];
+
+struct favbrd_struct {
+	int flag;
+	char *title;
+	int father;
+};
+
+extern struct favbrd_struct favbrd_list[FAVBOARDNUM];
+extern int favbrd_list_t;
+extern int favnow;
 
 friends_t fff[200];
 
@@ -1493,17 +1502,52 @@ allusers()
     return count;
 }
 
-int get_favboard(int num)
+char* get_favboard(int k)
 {
-    if(num > 0 && num <= FAVBOARDNUM)
-		return favbrd_list[num];
-	else
-		return -1;
+	int i,j=0;
+	for(i=0;i<favbrd_list_t;i++)
+		if(favbrd_list[i].father==favnow){
+			if(j==k) {
+				if(favbrd_list[i].flag==-1)
+					return favbrd_list[i].title;
+				else{
+					struct boardheader  *bptr;
+					bptr = getboard(favbrd_list[i].flag);
+					return bptr->filename;
+				}
+			}
+			j++;
+		}
+	return NULL;
 }
 
-int get_favboard_count()
+int get_favboard_id(int k)
 {
-	return favbrd_list[0];
+	int i,j=0;
+	for(i=0;i<favbrd_list_t;i++)
+		if(favbrd_list[i].father==favnow){
+			if(j==k) 
+				return i;
+			j++;
+		}
+	return NULL;
+}
+
+int get_favboard_type(int k)
+{
+	int i,j=0;
+	for(i=0;i<favbrd_list_t;i++)
+		if(favbrd_list[i].father==favnow){
+			if(j==k) {
+				if(favbrd_list[i].flag==-1)
+					return 0;
+				else{
+					return 1;
+				}
+			}
+			j++;
+		}
+	return 0;
 }
 
 int add_favboard(char *brdname)
@@ -1514,18 +1558,8 @@ int add_favboard(char *brdname)
 		i = getbnum(brdname);
 	else
 		return -3; /* err brdname*/
-	if (*favbrd_list > FAVBOARDNUM)
-		return -2; /* favboard had reach max limit*/
-	if( i > 0 && !IsFavBoard(i-1) )
-	{
-		int llen;
-		llen = ++(*favbrd_list);
-		favbrd_list[llen] = i-1;
-
-		return llen; /*return current favorite boards count*/
-	}
-
-	return -1; /* brdname not found or brdname already in favbrd_list*/
+	i--;
+	addFavBoard(i);
 }
 
 /* from bbsfadd.c */

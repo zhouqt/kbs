@@ -291,15 +291,24 @@ uinfo_t *getcurruinfo();
 
 void save_favboard();
 
+void release_favboard();
+
 int DelFavBoard(int i);
+
+int SetFav(int i);
+
+int getfavnum();
 
 void load_favboard(int dohelp);
 
 int IsFavBoard(int idx);
 
-int get_favboard(int num);
+char* get_favboard(int k);
 
-int get_favboard_count();
+int get_favboard_id(int k);
+
+int get_favboard_type(int k);
+
 
 int add_favboard(char *brdname);
 

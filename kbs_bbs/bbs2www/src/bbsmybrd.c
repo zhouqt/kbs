@@ -5,6 +5,7 @@
 
 struct boardheader data[MAXBOARD];
 int mybrdnum=0;
+extern int favbrd_list_t;
 
 int cmp_board(b1, b2)
 struct boardheader *b1, *b2;
@@ -33,7 +34,7 @@ int main()
    	printf("<center>\n");
 	printf("<style type=\"text/css\">A {color: 000080} </style>\n");
 	printf("个人预定讨论区管理(您目前预定了%d个讨论区，最多可预定%d个)<hr>\n",
-			get_favboard_count(),FAVBOARDNUM);
+			favbrd_list_t,FAVBOARDNUM);
 	printf("<form action=\"bbsmybrd?type=1&confirm1=1\" method=\"post\">\n");
 	printf("<input type=\"hidden\" name=\"confirm1\" value=\"1\">\n");
 	printf("<table>\n");
@@ -63,6 +64,7 @@ int main()
 	printf("</table><hr>\n");
 	printf("<input type=\"submit\" value=\"确认预定\"> <input type=\"reset\" value=\"复原\">\n");
 	printf("</form>\n");
+	release_favboard();
 	http_quit();
 }
 

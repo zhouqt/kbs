@@ -41,21 +41,30 @@ int main()
 	{
 		int i, mybrdnum=0;
 		const struct boardheader  *bptr;
-		printdiv(1,"个人定制区","/images/folder.gif");
+		char* name;
+     		printf("<img src=\"/images/folder.gif\">"
+				"<a target=\"f3\" href=\"bbsfav?select=-1\">个人定制区</a><br>\n");
+/*		printdiv(1,"个人定制区","/images/folder.gif");
 		load_favboard(0);
-		mybrdnum = get_favboard_count();
+		mybrdnum = getfavnum();
  		for(i=0; i<mybrdnum; i++)
 		{
-			bptr = getboard(get_favboard(i+1)+1);
-			if (bptr == NULL)
+			name = get_favboard(i);
+			if (name == NULL)
 				continue;
+			if (get_favboard_type(i))
      		printf("<img src=\"/images/link.gif\">"
 				" <a target=\"f3\" href=\"bbsdoc?board=%s\">%s</a><br>\n",
-				encode_url(buf, bptr->filename, sizeof(buf)), bptr->filename);
+				encode_url(buf, name, sizeof(buf)), name);
+			else
+     		printf("<img src=\"/images/folder.gif\">"
+				" <a target=\"f3\" href=\"bbsfav?select=%d\">%s</a><br>\n",
+				get_favboard_id(i), name);
 		}
 		printf("<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsmybrd\">"
 				"预定管理</a><br>\n");
 		printf("</div>\n");
+		release_favboard();*/
 	}
 	printdiv(2,"分类讨论区","/images/folder.gif");
 	for (i = 0; i < SECNUM; i++)

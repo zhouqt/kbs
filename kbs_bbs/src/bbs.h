@@ -327,8 +327,8 @@ typedef size_t socklen_t;
 #define BBS_PAGESIZE    (t_lines - 4)
 #endif
 
-/* added period 2000-09-11	4 FavBoard */
-#define FAVBOARDNUM     20
+/* added by bad 2002-08-2	FavBoardDir */
+#define FAVBOARDNUM     100
 
 /* added by bad 2002.8.1 */
 #define FILE_MARK_FLAG 0
