@@ -248,6 +248,7 @@ unsigned int setperms2(unsigned int pbits,unsigned int basic,char *prompt,int nu
 	perm_conf.arg=&arg;
 	perm_conf.title_pos.x=1;
 	perm_conf.title_pos.y=6;
+	perm_conf.pos=numbers+1;
 
 	perm_conf.on_select=setperm_select;
 	perm_conf.show_data=setperm_show;
