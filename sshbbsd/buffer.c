@@ -16,6 +16,9 @@ Functions for manipulating fifo buffers (that can grow if needed).
 /*
  * $Id$
  * $Log$
+ * Revision 1.4  2003/12/09 02:08:40  kxn
+ * add a little check on max buffer size,faint
+ *
  * Revision 1.3  2002/08/04 11:39:40  kcn
  * format c
  *
@@ -112,6 +115,7 @@ void buffer_append_space(Buffer * buffer, char **datap, unsigned int len)
     /* Increase the size of the buffer and retry. */
     buffer->alloc += len + 4096;
     buffer->buf = xrealloc(buffer->buf, buffer->alloc);
+    if (buffer->alloc > 512 * 1024 ) log_msg("buffer size exceed twice of packet size");
     goto restart;
 }
 
