@@ -1208,6 +1208,8 @@ void Quit()
         if (markdel)
             do_delete();
     }
+    getuser(LowUserid, &currentuser);
+    get_mailusedspace(currentuser,1);
     log_usies("EXIT");
     sprintf(genbuf, "+OK SMTH BBS POP3/POP3S server at %s signing off.", strchr(BBSNAME, '@') + 1);
     outs(genbuf);
