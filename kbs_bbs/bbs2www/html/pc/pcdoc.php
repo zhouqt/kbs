@@ -607,12 +607,14 @@
 		if($_GET["act"] == "delfriend")
 			del_friend($pc);
 	}
+	/*
 	elseif( bbs_is_bm($pcconfig["BRDNUM"], $currentuser["index"]))
 	{
 		$sec = array("公开区","好友区","私人区","收藏区","删除区");
 		$pur = 2;
 	}
-	elseif($isfriend)
+	*/
+	elseif($isfriend || bbs_is_bm($pcconfig["BRDNUM"], $currentuser["index"]))
 	{
 		$sec = array("公开区","好友区");
 		$pur = 1;

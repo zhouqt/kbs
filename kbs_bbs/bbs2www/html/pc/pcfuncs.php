@@ -23,7 +23,7 @@ $pcconfig["HOME"] = BBS_HOME;
 $pcconfig["ETEMS"] = 20;
 $pcconfig["NEWS"] = 20;
 $pcconfig["SITE"] = "smth.org";
-$pcconfig["BOARD"] = "SYSOP";
+$pcconfig["BOARD"] = "PersonalCorpus";
 /* personal corp. configure end */
 
 $brdarr = array();

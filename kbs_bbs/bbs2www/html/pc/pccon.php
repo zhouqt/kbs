@@ -131,9 +131,11 @@
 	
 	if(strtolower($currentuser["userid"]) == strtolower($pc["USER"]))
 		$pur = 3;
+	/*
 	elseif(bbs_is_bm($pcconfig["BRDNUM"], $currentuser["index"]))
 		$pur = 2;
-	elseif(pc_is_friend($currentuser["userid"],$pc["USER"]))
+	*/
+	elseif(pc_is_friend($currentuser["userid"],$pc["USER"]) || bbs_is_bm($pcconfig["BRDNUM"], $currentuser["index"]))
 		$pur = 1;
 	else
 		$pur = 0;
