@@ -19,8 +19,8 @@
 
 #define MAX_KEEP 100
 
-char res_title[MAX_KEEP][80],res_filename[MAX_KEEP][200];
-int res_total=0,toomany=0,wh=0;
+char res_title[MAX_KEEP][80],res_filename[MAX_KEEP][200],res_path[MAX_KEEP][200];
+int res_total=0,toomany=0,wh=0,res_flag[MAX_KEEP];
 
 char qn[60];
 
@@ -60,24 +60,62 @@ int get_word()
     prints("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
     getdata(2, 0, "²éÑ¯¹Ø¼ü×Ö: ", qn, 60, 1, 0, 0);
     move(3, 0);
-    prints("¿ªÊ¼²éÑ¯....");
-    refresh();
+    if(qn[0]) {
+        prints("¿ªÊ¼²éÑ¯....");
+        refresh();
+    }
     return qn[0];
+}
+
+int get_pos(char * s)
+{
+    struct stat st;
+    FILE* fp;
+    char buf[240],buf2[100];
+    int i,j,k;
+    if(stat(s, &st)==-1) return -1;
+    strcpy(buf, s);
+    i=strlen(buf)-1;
+    while(buf[i]!='/') i--;
+    i++;
+    strcpy(buf2, buf+i);
+    strcpy(buf+i, ".Names");
+    fp=fopen(buf, "r");
+    if(fp==NULL) return -1;
+    j=0;
+    while(!feof(fp))
+    {
+	if(!fgets(buf, 240, fp)) {
+	    fclose(fp);
+	    return -1;
+	}
+	if(buf[0]) buf[strlen(buf)-1]=0;
+	if(!strncmp(buf, "Path=~/", 7)) {
+	    j++;
+	    if(!strcmp(buf+7, buf2)) {
+		fclose(fp);
+		return j;
+	    }
+	}
+    }
+    fclose(fp);
+    return -1;
 }
 
 void do_query_all(int w, char * s)
 {
     struct sockaddr_in addr;
     FILE* sockfp;
-    int sockfd, i, j;
+    int sockfd, i, j, k;
     char buf[256];
-    char ip[20];
+    char ip[20], s1[30], s2[30], *pp;
     
     if(rand()%2==0)strcpy(ip,"166.111.3.125");
-    else strcpy(ip,"166.111.8.235");
+    else 
+        strcpy(ip,"166.111.8.235");
     
     res_total = -2;
-    if(strstr(s, "·¨ÂÖ¹¦")||strstr(s, "kcn")||strstr(s, "¶¾ÖÐÖ®¶¾")||
+    if(strstr(s, "·¨ÂÖ¹¦")||strstr(s, "kcn")||strstr(s, "KCN")||strstr(s, "¶¾ÖÐÖ®¶¾")||
         strstr(s, "½­ÔóÃñ")) {
         res_total = -1;
         return;
@@ -117,15 +155,87 @@ void do_query_all(int w, char * s)
     }
     fclose(sockfp);
     close(sockfd);
+    for(i=0;i<res_total;i++)
+	if(get_pos(res_filename[i])==-1) {
+	    strcpy(res_path[i], "ÎÞÐ§ÎÄÕÂ");
+	    res_flag[i]=1;
+	}
+        else {
+	    char buf[200],buf2[200];
+	    res_flag[i]=0;
+	    if(!strncmp(res_filename[i], "0Announce/groups/", 17)) {
+		j=17;
+		while(res_filename[i][j]!='/') j++;
+		j++;
+		k=j;
+		while(res_filename[i][j]!='/') j++;
+		strcpy(buf,res_filename[i]+k);
+		buf[j-k]=0;
+		strcpy(res_path[i],buf);
+		k=strlen(res_path[i]);
+		while(1) {
+		    j++;
+		    while(res_filename[i][j]!='/'&&res_filename[i][j]) j++;
+		    strcpy(buf2, res_filename[i]);
+		    buf2[j] = 0;
+		    sprintf(res_path[i]+k, "-%d", get_pos(buf2));
+		    k = strlen(res_path[i]);
+		    if(!res_filename[i][j]) break;
+		}
+	    }
+	    else {
+		j=10;
+		strcpy(res_path[i], "¾«»ªÇø");
+		k=strlen(res_path[i]);
+		while(1) {
+		    j++;
+		    while(res_filename[i][j]!='/'&&res_filename[i][j]) j++;
+		    strcpy(buf2, res_filename[i]);
+		    buf2[j] = 0;
+		    sprintf(res_path[i]+k, "-%d", get_pos(buf2));
+		    k = strlen(res_path[i]);
+		    if(!res_filename[i][j]) break;
+		}
+	    }
+	}
+    for(i=0;i<res_total;i++) 
+    if(res_title[i][0]){
+        if(strlen(res_title[i])>30){
+	    j=30;
+	    while(res_title[i][j]!=' '&&res_title[i][j])j++;
+	    res_title[i][j]=0;
+        }
+	j=strlen(res_title[i])-1;
+	if((j>=0)&&res_title[i][j]==' ')j--;
+	j++;
+	res_title[i][j]=0;
+//	if(j>=8&&!strcmp(res_title[i]+j-7," (×ªÔØ)"))
+//	    res_title[i][j-7]=0;
+    }
+    for(i=0;i<res_total;i++) {
+	pp=res_filename[i]+strlen(res_filename[i])-1;
+	while(*pp!='/') pp--;
+	strcpy(s1, pp+1);
+	if(strlen(s1)>7)
+	for(j=i+1;j<res_total;j++) {
+	    pp=res_filename[j]+strlen(res_filename[j])-1;
+	    while(*pp!='/') pp--;
+	    strcpy(s2, pp+1);
+	    if(!strcmp(s1,s2)) {
+		res_flag[j]=1;
+		strcpy(res_path[j], "ÖØ¸´ÎÄÕÂ");
+	    }
+	}
+    }
 }
 
 static int choose_file_refresh(struct _select_def *conf)
 {
     clear();
     docmdtitle("[Áîºü³åËÑË÷]",
-              "  ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ²ì¿´[\x1b[1;32mEnter\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ý\x1b[0;37m] ·­Ò³²éÕÒ[\x1b[1;32m[\x1b[0;37m,\x1b[1;32m]\x1b[0;37m]              ×÷Õß: \x1b[31;1mbad@smth.org\x1b[m");
+              "  ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ²ì¿´[\x1b[1;32mEnter\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ý\x1b[0;37m] ·­Ò³²éÕÒ[\x1b[1;32m[\x1b[0;37m,\x1b[1;32m]\x1b[0;37m]         ×÷Õß: \x1b[31;1mbad@smth.org\x1b[m");
     move(2, 0);
-    prints("[0;1;37;44m    %4s %-30s %s        %d-%d ¹²%d  ¹Ø¼ü×Ö:%s", "±àºÅ", "±êÌâ", "Â·¾¶", wh*MAX_KEEP+1, wh*MAX_KEEP+res_total, toomany, qn);
+    prints("[0;1;37;44m    %4s %-35s %s    %d-%d ¹²%d  ¹Ø¼ü×Ö:%s", "±àºÅ", "±êÌâ", "Â·¾¶", wh*MAX_KEEP+1, wh*MAX_KEEP+res_total, toomany, qn);
     clrtoeol();
     resetcolor();
     update_endline();
@@ -135,10 +245,7 @@ static int choose_file_refresh(struct _select_def *conf)
 static int choose_file_show(struct _select_def *conf, int i)
 {
     struct room_struct * r;
-    char f1[160],f2[160];
-    strcpy(f1, res_title[i-1]);
-    strcpy(f2, res_filename[i-1]);
-    prints("  %3d  %-30s %s", i+wh*MAX_KEEP, f1, f2);
+    prints("  %3d  %-35s %s", i+wh*MAX_KEEP, res_title[i-1], res_path[i-1]);
     return SHOW_CONTINUE;
 }
 
@@ -150,7 +257,7 @@ again:
     ss = res_filename[conf->pos-1];
     ch = ansimore_withzmodem(ss, 0, res_title[conf->pos-1]);
     move(t_lines-1, 0);
-    prints("[0;1;31;44m[µÚ%d/%dÆª]  [33m½áÊø Q,¡û ©¦ÉÏÒ»·â ¡ü©¦ÏÂÒ»·â <Space>,¡ý©¦ËÑË÷¹Ø¼ü×Ö:%s", conf->pos+wh*MAX_KEEP, toomany, qn);
+    prints("[0;1;31;44m[µÚ%d/%dÆª]  [33mÂ·¾¶:%s©¦ËÑË÷¹Ø¼ü×Ö:%s", conf->pos+wh*MAX_KEEP, toomany, res_path[conf->pos-1], qn);
     clrtoeol();
     if(ch==0) ch=igetkey();
     switch(ch){
@@ -171,7 +278,7 @@ again:
             zsend_file(ss, res_title[conf->pos-1]);
             break;
     }
-    return SHOW_REFRESH;
+    return SHOW_DIRCHANGE;
 }
 
 static int choose_file_getdata(struct _select_def *conf, int pos, int len)
@@ -205,6 +312,9 @@ static int choose_file_prekey(struct _select_def *conf, int *key)
 
 static int choose_file_key(struct _select_def *conf, int key)
 {
+    struct fileheader fh;
+    char buf[240],buf2[80];
+    int i;
     switch (key) {
     case ']':
         if((wh+1)*MAX_KEEP+1<=toomany) {
@@ -226,6 +336,26 @@ static int choose_file_key(struct _select_def *conf, int key)
             do_query_all(wh, qn);
             return SHOW_DIRCHANGE;
         }
+    case 'o':
+    case 'O':
+	t_friends();
+	return SHOW_REFRESH;
+    case 'v':
+	i_read_mail();
+	return SHOW_REFRESH;
+    case 'F':
+	bzero(&fh, sizeof(struct fileheader));
+	strcpy(buf, res_filename[conf->pos-1]);
+	i=strlen(buf)-1;
+	while(buf[i]!='/') i--;
+	strcpy(buf2, buf+i+1);
+	buf[i]=0;
+	strncpy(fh.title, res_title[conf->pos-1], STRLEN);
+	strncpy(fh.filename, buf2, FILENAME_LEN);
+	if(!doforward(buf, &fh, 0)) prints("ÎÄÕÂ×ª¼Ä³É¹¦");
+	else prints("ÎÄÕÂ×ª¼ÄÊ§°Ü");
+	pressanykey();
+	return SHOW_REFRESH;
     }
     return SHOW_CONTINUE;
 }
