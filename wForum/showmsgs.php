@@ -36,7 +36,7 @@ function main() {
 			if (!$msgs[$i]['SENT']) 
 				echo '您于'.strftime('%Y-%m-%d %H:%M:%S', $msgs[$i]['TIME']).'发送给<b>'.$msgs[$i]['ID'].'</b>的短消息：';
 			else 
-				echo '<b>'.$msgs[$i]['ID'].'</b>于'.strftime('%Y-%m-%d %H-%M-%S', $msgs[$i]['TIME']).'发送给您的短消息：';
+				echo '<b>'.$msgs[$i]['ID'].'</b>于'.strftime('%Y-%m-%d %H-%M-%S', $msgs[$i]['TIME']).'发送给您的短消息：[<a href="javascript:replyMsg(\''.$msgs[$i]['ID'].'\')">回消息</a>]';
 ?>
           </td>
           </tr>
