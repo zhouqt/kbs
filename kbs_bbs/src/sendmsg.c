@@ -552,7 +552,7 @@ void r_msg()
 
 
 outhere:
-    saveline(0, 1, savebuffer[i]);
+    saveline(0, 1, savebuffer[0]);
     showansi = tmpansi;
     good_move(y,x);
     if(oldi)
