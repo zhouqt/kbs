@@ -223,8 +223,9 @@ time_t calc_calltime()
 		realcalltime = get_realcalltime(clock_data + i);
 
 		if(realcalltime < time(0)){
-			//del_clock_data(i);
-				i++;
+			//if((clock_data+i)->type == CLOCK_TYPE_NORMAL && (clock_data+i)->clock_time != 0) del_clock_data(i);
+			//else i++;
+			i++;
 			continue;
 		}
 		if(ret == 0 || realcalltime < ret ){
@@ -336,7 +337,7 @@ static int add_new_clock()
 			newtm.tm_hour = ltime->tm_hour;
 		else{
 			tt = atoi(tmp);
-			if(tt <= 0 || tt > 23)
+			if(tt < 0 || tt > 23)
 				break;
 			newtm.tm_hour = tt;
 		}
@@ -347,7 +348,7 @@ static int add_new_clock()
 			newtm.tm_min = ltime->tm_min;
 		else{
 			tt = atoi(tmp);
-			if(tt <= 0 || tt > 59)
+			if(tt < 0 || tt > 59)
 				break;
 			newtm.tm_min = tt;
 		}
@@ -389,7 +390,7 @@ static int add_new_clock()
 			newtm.tm_hour = ltime->tm_hour;
 		else{
 			tt = atoi(tmp);
-			if(tt <= 0 || tt > 23)
+			if(tt < 0 || tt > 23)
 				break;
 			newtm.tm_hour = tt;
 		}
@@ -400,7 +401,7 @@ static int add_new_clock()
 			newtm.tm_min = ltime->tm_min;
 		else{
 			tt = atoi(tmp);
-			if(tt <= 0 || tt > 59)
+			if(tt < 0 || tt > 59)
 				break;
 			newtm.tm_min = tt;
 		}
@@ -456,7 +457,7 @@ static int add_new_clock()
 			newtm.tm_hour = ltime->tm_hour;
 		else{
 			tt = atoi(tmp);
-			if(tt <= 0 || tt > 23)
+			if(tt < 0 || tt > 23)
 				break;
 			newtm.tm_hour = tt;
 		}
@@ -467,7 +468,7 @@ static int add_new_clock()
 			newtm.tm_min = ltime->tm_min;
 		else{
 			tt = atoi(tmp);
-			if(tt <= 0 || tt > 59)
+			if(tt < 0 || tt > 59)
 				break;
 			newtm.tm_min = tt;
 		}
@@ -521,7 +522,7 @@ static int add_new_clock()
 			newtm.tm_hour = ltime->tm_hour;
 		else{
 			tt = atoi(tmp);
-			if(tt <= 0 || tt > 23)
+			if(tt < 0 || tt > 23)
 				break;
 			newtm.tm_hour = tt;
 		}
@@ -532,7 +533,7 @@ static int add_new_clock()
 			newtm.tm_min = ltime->tm_min;
 		else{
 			tt = atoi(tmp);
-			if(tt <= 0 || tt > 59)
+			if(tt < 0 || tt > 59)
 				break;
 			newtm.tm_min = tt;
 		}
