@@ -823,7 +823,11 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
     }
 
 	if (attach_dir != NULL) {
-		post_file.attachment = 1;
+		char tmp[STRLEN];
+    	struct stat st;
+        snprintf(tmp, MAXPATH, "%s/.index", attach_dir);
+    	if (stat(tmp, &st) >= 0 && st.st_size > 0)
+			post_file.attachment = 1;
 	}
     fclose(fp);
     post_file.eff_size = get_effsize(filepath);
