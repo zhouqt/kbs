@@ -687,9 +687,9 @@ int id1,id2,del_mode ;
         pos_read=pos_end;
         id2=totalcount;
     }
-    savefhdr =(struct fileheader*) malloc([DEL_RANGE_BUF*sizeof(struct fileheader));
-    readfhdr =(struct fileheader*) malloc([DEL_RANGE_BUF*sizeof(struct fileheader));
-    delfhdr =(struct fileheader*) malloc([DEL_RANGE_BUF*sizeof(struct fileheader));
+    savefhdr =(struct fileheader*) malloc(DEL_RANGE_BUF*sizeof(struct fileheader));
+    readfhdr =(struct fileheader*) malloc(DEL_RANGE_BUF*sizeof(struct fileheader));
+    delfhdr =(struct fileheader*) malloc(DEL_RANGE_BUF*sizeof(struct fileheader));
     if ((id1!=0)&&(del_mode==0)) { /*rangle mark del*/
         while (count<=id2) {
             int i,j;
