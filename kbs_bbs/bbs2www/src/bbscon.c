@@ -68,6 +68,7 @@ int main()
 	FILE *fp;
 	char buf[512], board[80], dir[80], file[80], filename[80], *ptr;
 	struct fileheader x;
+	struct fileheader oldx;
 	int num, tmp, total;
 	struct userec *user = NULL;
 	struct boardheader *bp;
@@ -85,6 +86,7 @@ int main()
 		http_fatal("错误的参数");
 	if (get_file_ent(board, file, &x) <= 0)
 		http_fatal("错误的文件名");
+	memcpy(&oldx, &x, sizeof(x));
 	printf("%s -- 文章阅读 [讨论区: %s]<hr color=\"green\">", BBSNAME, board);
 	sprintf(dir, "boards/%s/.DIR", board);
 	total=file_size(dir)/sizeof(x);
@@ -167,12 +169,12 @@ int main()
 		brc_update(currentuser->userid);
 	}
 	fclose(fp);
-     	ptr=x.title;
+     	ptr=oldx.title;
      	if(!strncmp(ptr, "Re: ", 4)) ptr+=4;
 	ptr[60]=0;
-	if ((x.accessed[1] & FILE_READ) == 0)
+	if ((oldx.accessed[1] & FILE_READ) == 0)
         printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=Re: %s\">回文章</a>]",
-			board, file, x.owner, encode_url(buf, void1(ptr), sizeof(buf)));
+			board, file, oldx.owner, encode_url(buf, void1(ptr), sizeof(buf)));
      	printf("[<a href=\"bbstfind?board=%s&title=%s\">同主题阅读</a>]\n",
 			board, encode_url(buf, void1(ptr), sizeof(buf)));
    	printf("</center>\n"); 
