@@ -168,7 +168,7 @@
         $local_save = 0;
         if ($reid > 0) $local_save = !strncmp($articles[1]["INNFLAG"], "LL", 2);
 ?>
-<input type="checkbox" name="outgo" value="1"<?php if (!$local_save) echo " checked=\"checked\"" ?> />转信
+<input type="checkbox" name="outgo" value="1"<?php if (!$local_save) echo " checked=\"checked\""; ?> />转信
 <?php
     }
 ?>
