@@ -397,7 +397,7 @@ void delete_line(line)
         line->prev->next = line->next;
     else
         firstline = line->next; /* if on first line */
-    free(line->data)
+    free(line->data);
     free(line);
 }
 
@@ -460,11 +460,15 @@ int join(line)
 //    ovfl = line->len + line->next->len - WRAPMARGIN;
 //    if (ovfl < 0) {
     while(line->maxlen<=line->len+line->next->len+1) {
-        char *q = (char *) malloc(((line->len+line->next->len)/WRAPMARGIN+1)*WRAPMARGIN+1);
-        memcpy(q, line->data, line->len);
+        int ml;
+        char *q;
+        ml = ((line->len+line->next->len)/WRAPMARGIN+1)*WRAPMARGIN;
+        if (ml<WRAPMARGIN) ml = WRAPMARGIN;
+        q = (char *) malloc(ml+1);
+        memcpy(q, line->data, line->len+1);
         free(line->data);
         line->data = q;
-        line->maxlen = ((line->len+line->next->len)/WRAPMARGIN+1)*WRAPMARGIN;
+        line->maxlen = ml;
     }
         strcat(line->data, line->next->data);
         line->len += line->next->len;
@@ -521,7 +525,7 @@ void insert_char(ch)
     }
     if (p->len >= p->maxlen-1) {
         char *q = (char *)malloc(p->maxlen+WRAPMARGIN+1);
-        memcpy(q, p->data, p->len);
+        memcpy(q, p->data, p->len+1);
         free(p->data);
         p->data = q;
         p->maxlen += WRAPMARGIN;
