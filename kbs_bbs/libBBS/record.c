@@ -688,6 +688,7 @@ int id1,id2,del_mode ;
     
     if (id2>totalcount) {
 #ifdef BBSMAIN
+	char buf[3];
         getdata(6,0,"文章编号大于文章总数，确认删除 (Y/N)? [N]: ",buf,2,DOECHO,NULL,YEA) ;
         if(*buf != 'Y' && *buf != 'y') {
             close(fdr);
@@ -753,6 +754,7 @@ int id1,id2,del_mode ;
             } 
 #ifdef BBSMAIN
             else if (uinfo.mode!=RMAIL) {
+		int j;
                 memcpy(&delfhdr[delcount],&savefhdr[i],sizeof(struct fileheader));
                 delcount++;
                 if (delcount>=DEL_RANGE_BUF) {
@@ -787,6 +789,7 @@ int id1,id2,del_mode ;
     close(fdr);
 #ifdef BBSMAIN
     if ((uinfo.mode!=RMAIL)&&delcount) {
+	int j;
         for (j=0;j<delcount;j++)
             cancelpost(currboard, currentuser->userid,
                    &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser->userid),0);
