@@ -161,12 +161,12 @@ int main()
     printf("</table></td></tr>");
 #ifdef SMTH
     printf("<tr><td>");
-    printf("<TABLE cellSpacing=0 cellPadding=0 width=\"100%\" border=0>");
+    printf("<TABLE cellSpacing=0 cellPadding=0 width=\"90%\" border=0>");
     printf("<tr><td>\n");
     printf("<p>全国网络计算大赛拉开帷幕,大赛奖项高达20万元，其中一等奖奖金高达10万元。详情请见</p>");
     printf("</tr></td>\n");
     printf("<tr><td>\n");
-    printmenu("<a href=\"http://www.hpc-contest.edu.cn\"  target=\"_blank\">http://www.hpc-contest.edu.cn</a><br></p>");
+    printf("<a href=\"http://www.hpc-contest.edu.cn\"  target=\"_blank\">http://www.hpc-contest.edu.cn</a><br></p>");
     printf("</tr></td></table>\n");
     printf("</td></tr>");
 #endif
