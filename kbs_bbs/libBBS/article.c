@@ -1429,7 +1429,6 @@ int add_edit_mark(char *fname, int mode, char *title)
                 fprintf(out, "±ê  Ìâ: %s\n", title);
                 continue;
             }
-            fputs(buf, out);
         }
         
         if (!strncmp(buf, "[36m¡ù ÐÞ¸Ä:¡¤", 17))
