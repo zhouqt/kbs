@@ -191,6 +191,7 @@ AC_CONFIG_FILES([Makefile
                  libsystem/Makefile
                  rzsz/Makefile
                  daemon/Makefile
+                 contrib/Makefile
                  mail2bbs/Makefile
                  local_utl/Makefile
                  service/Makefile
