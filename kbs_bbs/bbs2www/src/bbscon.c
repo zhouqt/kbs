@@ -23,7 +23,7 @@ int main()
         http_fatal("错误的讨论区");
     bp = getbcache(board);
     strcpy(board, bp->filename);
-    if (valid_filename(file) < 0)
+    if (VALID_FILENAME(file) < 0)
         http_fatal("错误的参数");
     if (get_file_ent(board, file, &x) <= 0)
         http_fatal("错误的文件名");

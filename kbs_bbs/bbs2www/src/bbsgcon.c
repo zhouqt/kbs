@@ -20,7 +20,7 @@ int main()
         http_fatal("错误的讨论区");
     strcpy(board, getbcache(board)->filename);
     printf("%s -- 文章阅读 [讨论区: %s]<hr class=\"default\">", BBSNAME, board);
-    if (valid_filename(file) < 0)
+    if (VALID_FILENAME(file) < 0)
         http_fatal("错误的参数");
     sprintf(dir, "boards/%s/.DIGEST", board);
     total = file_size(dir) / sizeof(x);

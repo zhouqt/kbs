@@ -121,7 +121,7 @@ int main()
     strsncpy(board, getparm("board"), 20);
     type = atoi(getparm("type"));
     strsncpy(file, getparm("file"), 20);
-    if (valid_filename(file) < 0)
+    if (VALID_FILENAME(file) < 0)
         http_fatal("错误的参数");
     if (get_edit_post(getcurruserid(), board, file, &x) < 0)
         http_fatal("您不能编辑这篇文章");

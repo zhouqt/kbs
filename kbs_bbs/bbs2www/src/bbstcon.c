@@ -26,7 +26,7 @@ int main()
     if ((loginok)&&strcmp(currentuser->userid,"guest"))
         brc_initial(currentuser->userid, board);
     printf("%s -- 主题文章阅读 [讨论区: %s]<hr class=\"class\">", BBSNAME, board);
-    if (valid_filename(file) < 0)
+    if (VALID_FILENAME(file) < 0)
         http_fatal("错误的参数");
     sprintf(dir, "boards/%s/.DIR", board);
     fp = fopen(dir, "r+");
