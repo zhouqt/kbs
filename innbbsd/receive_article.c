@@ -767,8 +767,10 @@ char   *pathname, *firstpath;
 	header.title[STRLEN - 1] = '\0';
 	header.innflag[1] = 'M';
 	/* if append record record, should return fail message */
-	if (append_record(index, &header, sizeof(header)) < 0) {
-		return NULL;
+	resolve_boards();
+        if (after_post(NULL, &header, board, NULL)!=0) {
+            innbbslog(":Err:after_post Unable to post in %s.\n", homepath);
+	    return NULL;
 	}
 	return name;
 }
