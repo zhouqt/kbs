@@ -94,6 +94,14 @@ function display_navigation_bar($brdarr, $articles, $num, $brdnum)
 			html_error_quit("错误的讨论区");
 		}
 	}
+	elseif (isset($_SERVER['argv'])){
+		$board = $_SERVER['argv'][1];
+		$brdnum = bbs_getboard($board, $brdarr);
+		if ($brdnum == 0) {
+			html_init("gb2312");
+			html_error_quit("错误的讨论区");
+		}
+	}
 	elseif (isset($_GET["board"])){
 		$board = $_GET["board"];
 		$brdnum = bbs_getboard($board, $brdarr);
@@ -134,6 +142,8 @@ function display_navigation_bar($brdarr, $articles, $num, $brdnum)
 	}
 	if (isset($_GET["id"]))
 		$id = $_GET["id"];
+	elseif (isset($_SERVER['argv'][2]))
+		$id = $_SERVER['argv'][2];
 	else {
 		html_init("gb2312");
 		html_error_quit("错误的文章号");
