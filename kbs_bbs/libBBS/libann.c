@@ -332,8 +332,8 @@ int a_loadnames(MENU* pm)             /* ×°Èë .Names */
                 strncpy(litem.fname, buf + 7, sizeof(litem.fname));
             else
                 strncpy(litem.fname, buf + 5, sizeof(litem.fname));
-            if ((!strstr(litem.title, "(BM: BMS)") || HAS_PERM(currentuser, PERM_BOARDS)) &&
-                (!strstr(litem.title, "(BM: SYSOPS)") || HAS_PERM(currentuser, PERM_SYSOP)) && (!strstr(litem.title, "(BM: ZIXIAs)") || HAS_PERM(currentuser, PERM_SECANC))) {
+            if ((HAS_PERM(currentuser, PERM_SYSOP)||(!strstr(litem.title, "(BM: BMS)") || HAS_PERM(currentuser, PERM_BOARDS)) &&
+                (!strstr(litem.title, "(BM: SYSOPS)") || HAS_PERM(currentuser, PERM_SYSOP)) && (!strstr(litem.title, "(BM: ZIXIAs)") || HAS_PERM(currentuser, PERM_SECANC))) ){
                 if (strstr(litem.fname, "!@#$%")) {     /*È¡ host & port */
                     char *ptr1, *ptr2, gtmp[STRLEN];
 
