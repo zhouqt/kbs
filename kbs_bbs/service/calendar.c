@@ -4,8 +4,12 @@
 
 char save_scr[100][240];
 int save_y, save_x;
-char num[11][3]={"零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"};
+char nums[11][3]={"零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"};
 char week[7][3]={"日", "一", "二", "三", "四", "五", "六"};
+int holiday_m[]={1, 2, 3, 3, 4, 5, 5, 6, 7, 8, 10, -1};
+int holiday_d[]={1, 14, 8, 9, 1, 1, 4, 1, 1, 1, 1};
+char holiday_s[][30]={"新年元旦", "情人节", "国际妇女节", "清华女生节", "愚人节", "国际劳动节", 
+    "中国五四青年节", "国际儿童节", "中国共产党建党日", "中国建军节", "国庆节"};
 
 int day,month,year;
 
@@ -51,26 +55,26 @@ void draw_main()
     }
     prints("\x1b[32;1m");
     move(1, 50);
-    prints("%s", num[year/1000]);
+    prints("%s", nums[year/1000]);
     move(2, 50);
-    prints("%s", num[year/100%10]);
+    prints("%s", nums[year/100%10]);
     move(3, 50);
-    prints("%s", num[year/10%10]);
+    prints("%s", nums[year/10%10]);
     move(4, 50);
-    prints("%s", num[year%10]);
+    prints("%s", nums[year%10]);
     move(5, 50);
     prints("年");
     if(month>10) {
         move(6, 50);
-        prints("%s", num[10]);
+        prints("%s", nums[10]);
         move(7, 50);
-        prints("%s", num[month%10]);
+        prints("%s", nums[month%10]);
         move(8, 50);
         prints("月");
     }
     else {
         move(6, 50);
-        prints("%s", num[month]);
+        prints("%s", nums[month]);
         move(7, 50);
         prints("月");
     }
@@ -80,7 +84,7 @@ void draw_main()
         y=k*2+2;
         x=j*4+52;
         resetcolor();
-        if(j==0||j==6) setfcolor(RED, 1);
+        if(j==0||j==6||month==1&&i==1) setfcolor(RED, 1);
         else setfcolor(YELLOW, 1);
         if(i==day) setbcolor(PINK);
         sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, i);
@@ -90,9 +94,19 @@ void draw_main()
 
         if(j==6) k++;
     }
+    i=0;
+    while(holiday_m[i]!=-1) {
+        if(month==holiday_m[i]&&day==holiday_d[i]) {
+            strcpy(buf, holiday_s[i]);
+            move(12, 80-strlen(buf));
+            resetcolor();
+            prints("%s", buf);
+        }
+        i++;
+    }
 }
 
-void newfile(char * s)
+int newfile(char * s)
 {
     struct stat st;
     FILE* fp;
@@ -101,12 +115,14 @@ void newfile(char * s)
         fprintf(fp, "<标题>\n");
         fprintf(fp, "%d/%02d/%02d                星期%s                天气<晴>\n", year, month, day, week[get_week(year,month,day)]);
         fclose(fp);
+        return 1;
     }
+    return 0;
 }
 
 int calendar_main()
 {
-    int i,j,ch,oldmode;
+    int i,j,ch,oldmode,cc;
     struct tm nowr;
     char buf[80];
     long eff_size;
@@ -161,8 +177,8 @@ int calendar_main()
             case 10:
                 modify_user_mode(CALENEDIT);
                 sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, day);
-                newfile(buf);
-                if(vedit(buf, 0, &eff_size, 0)) unlink(buf);
+                cc = newfile(buf);
+                if(vedit(buf, 0, &eff_size, 0)&&cc) unlink(buf);
                 modify_user_mode(CALENDAR);
                 break;
         }
