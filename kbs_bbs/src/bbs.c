@@ -2611,7 +2611,7 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct)
 		return del_ding(ent,fileinfo,direct);
 
     if (!strcmp(currboard->filename, "syssecurity")
-        || !strcmp(currboard->filename "junk")
+        || !strcmp(currboard->filename, "junk")
         || !strcmp(currboard->filename, "deleted"))       /* Leeward : 98.01.22 */
         return DONOTHING;
 
