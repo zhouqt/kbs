@@ -1300,8 +1300,6 @@ int m_stoplogin()
 int inn_start()
 {
 	char ans[4], tmp_command[80];
-	if (!HAS_PERM(PERM_ADMIN))
-		return;
 	getdata(t_lines - 1, 0, "启动转信吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, YEA);
 	if (ans[0] == 'Y' || ans[0] == 'y')
 	{
@@ -1313,8 +1311,6 @@ int inn_start()
 int inn_reload()
 {
 	char ans[4], tmp_command[80];
-	if (!HAS_PERM(PERM_ADMIN))
-		return;
 	getdata(t_lines - 1, 0, "重读配置吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, YEA);
 	if (ans[0] == 'Y' || ans[0] == 'y')
 	{
@@ -1326,8 +1322,6 @@ int inn_reload()
 int inn_stop()
 {
 	char ans[4], tmp_command[80];
-	if (!HAS_PERM(PERM_ADMIN))
-		return;
 	getdata(t_lines - 1, 0, "停止转信吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, YEA);
 	if (ans[0] == 'Y' || ans[0] == 'y')
 	{

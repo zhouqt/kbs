@@ -43,7 +43,8 @@ int killdir(char *basedir,char *filename)
     }
     lseek(fd,0,0);
     for (i=0,afile = files;i<st.st_size/sizeof(struct fileheader);i++,afile++) {
-        if (now - afile->accessed[11] > DAY_DELETED_CLEAN ||(now<afile->accessed[11] && now+100 - afile->accessed[11] > DAY_DELETED_CLEAN ) ) {
+        if (((now - afile->accessed[11]) > DAY_DELETED_CLEAN) 
+        	||((now<afile->accessed[11]) && ((now+100 - afile->accessed[11]) > DAY_DELETED_CLEAN) ) ) {
                 strcpy(genbuf1,basedir);
                 strcat(genbuf1,"/");
                 strcat(genbuf1,afile->filename);
@@ -70,7 +71,7 @@ int dokilldir(char *board)
      strcat(hehe,"/");
      strcat(hehe,board);
      killed = killdir(hehe,".DELETED") + killdir(hehe,".JUNK");
-     log("0miscdaemon","deleted %d files in %s board",killed,board);
+     log("1miscdaemon","deleted %d files in %s board",killed,board);
      return killed;
 }
 
@@ -308,7 +309,7 @@ int dodaemon(char* argv1,char* daemon)
      	sleep(getnextday4am() - time( 0 ));
     	 switch(fork()) {
        	     case -1: 
-       	        log("0miscdaemon","fork failed\n");
+       	        log("1miscdaemon","fork failed\n");
        	        break;
        	     case 0 : 
        	        dokilluser();
@@ -320,7 +321,7 @@ int dodaemon(char* argv1,char* daemon)
     	 if (ismonday()) {
 	    switch(fork()) {
        		case -1: 
-       	      	   log("0miscdaemon","fork failed\n");
+       	      	   log("1miscdaemon","fork failed\n");
        	           break;
        	    	case 0 : 
        	       	   dokillalldir();
