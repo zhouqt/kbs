@@ -1372,7 +1372,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
     ldata.l_type = F_UNLCK;
     fcntl(fd, F_SETLK, &ldata);
     close(fd);
-    if ((digestmode != DIR_MODE_NORMAL) && (DIR_MODE_DIGEST))
+    if ((digestmode != DIR_MODE_NORMAL) && (digestmode != DIR_MODE_DIGEST))
         change_dir_post_flag(currentuser, currboard, orgent, &mkpost2, flag);
 
     return newent ? DIRCHANGED : PARTUPDATE;
