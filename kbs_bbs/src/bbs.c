@@ -2392,7 +2392,7 @@ struct one_key read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
 
 int Read()
 {
-    char buf[STRLEN];
+    char buf[2*STRLEN];
     char notename[STRLEN];
     time_t usetime;
     struct stat st;
