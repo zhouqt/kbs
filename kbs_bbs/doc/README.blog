@@ -1,0 +1,62 @@
+
+			SMTH.Blog README
+	
+    本文由 BBS 水木清华站(http://www.smth.org)系统维护组负责维护，介绍了
+SMTH.Blog 的安装、功能、使用等。欢迎到 BBS水木清华站的BBSMan_Dev 版参与
+SMTH.Blog 的讨论。
+
+0. ChangeLog
+2004.1.6
+  windinsn v1.0  初始版本
+
+1. 安装SMTH.Blog
+    关于SMTH.Blog的升级、安装事宜，请参考 INSTALL.blog 文档。
+
+2. 主要功能
+    SMTH.Blog是基于smthbbs的Blog系统，同时兼顾telnet下个人文集的部分功能。
+    2.1 系统结构
+    SMTH.Blog分为WWW,telnet,定时任务,cache系统和后端支持的数据库几部分。
+www按照blog网站设计，不仅支持按时间顺序的讨论区模式，还加入了目录模式和权限
+控制的模式，并在收藏区支持目录方式。
+    2.2 WWW部分
+    1) WWW下，使用http://userid.mysmth.net(域名格式可更改)可以访问该用户的blog。
+    2) 采用分区管理模式，每个用户的Blog均含公开、好友、私人、收藏、删除5个分区：
+    公开区：所有用户均可见，提供分类功能和标准的RSS输出(RSS 1.0)； 
+    好友区：只有授权用户才可见、可写，提供分类功能； 
+    私人区：仅文集所有者才可见、可写，提供分类功能； 
+    收藏夹：自定义读写权限，提供多层目录功能； 
+    删除区：各区被删文章可暂存于此，可供恢复。 
+    3) 每个分区均有文章数/目录数限制。
+    4) blog模板。
+    5) 自定义blog名称、描述、主题、logo图片、背景图片和首页显示模式。
+    6) 友情链接管理。
+    7) 支持Trackback Ping。
+    8) 按月归档，并提供下载。
+    9) 对全站Blog进行按主题分类。
+    10) 统计全站最新文章(提供标准的RSS输出)和最新评论；
+    11) 全站Blog搜索，Blog用户搜索。
+    2.3 Telnet部分
+    1) Blog管理员功能：开启、修改、关闭某个Blog；
+    2) Blog管理员功能：设定某用户Blog文章数/目录数限制；
+    3) 发表/修改/删除文章或评论。
+    4) 支持从版面直接收录到个人Blog。
+    5) 支持将BBS好友直接导入到Blog好友中。
+    6) Blog用户搜索。
+    
+3. 使用时的配置。
+    SMTH.Blog的WWW部分要求进行配置，请按照需要更改 pcconf.php 文件：
+	$pcconfig["LIST"] :Blog首页上每页显示的用户数;
+	$pcconfig["HOME"] :BBS主目录,默认为BBS_HOME;
+	$pcconfig["BBSNAME"] :站点名称,默认为BBS_FULL_NAME;
+	$pcconfig["ETEMS"] :RSS输出的条目数;
+	$pcconfig["NEWS"] :统计全站最新文章/评论时显示的条目数;
+	$pcconfig["THEMLIST"] :按主题分类时每个主题显示的Blog数;
+	$pcconfig["SITE"] :站点的域名,在blog显示,RSS输出中均要用到;
+	$pcconfig["BOARD"] :Blog对应的版面名称,该版版主将默认为Blog管理员;
+	$pcconfig["SEARCHFILTER"] :进行文章搜索时过滤掉的文字;
+	$pcconfig["SEARCHNUMBER"] :返回文章搜索结果时每页显示的条目数;
+	$pcconfig["SECTION"] :Blog分类方式;
+	pc_personal_domainname($userid)函数 :用户Blog的域名;
+	
+4. 功能建议和BugReport
+    欢迎到BBS水木清华站 BBSMan_Dev 版或 SMTH_Blog 版提交、讨论。
