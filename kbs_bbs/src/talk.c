@@ -75,8 +75,6 @@ int     bind(/*int,struct sockaddr *, int*/) ;
 char    *sysconf_str();
 
 
-#include "modetype.c"
-
 extern int t_columns;
 char    *talk_uent_buf;
 
@@ -98,47 +96,6 @@ char *user;
     return( uin.invisible );
 }
 ---*/
-/*---	get by uid(not userid)	---*/
-int isidhidden(nuid)
-int nuid;
-{
-    struct user_info uin;
-
-    if(search_ulist( &uin, t_cmpuids, nuid ) <= 0) return 0;
-    return( uin.invisible );
-}
-/*---	---*/
-char *
-modestring(mode, towho, complete, chatid)
-int mode, towho, complete;
-char *chatid;
-{
-    static char modestr[STRLEN];
-    struct userec urec;
-
-    /* Leeward: 97.12.18: Below removing ' characters for more display width */
-    if (chatid) {
-        if (complete) sprintf(modestr, "%s %s", ModeType(mode), chatid);
-        else return (ModeType(mode));
-        return (modestr);
-    }
-    if (mode != TALK && mode != PAGE && mode != QUERY)
-        return (ModeType(mode));
-    /*---	modified by period	2000-10-20	---*
-        if (get_record(PASSFILE, &urec, sizeof(urec), towho) == -1)
-            return (ModeType(mode));
-    ---*/
-    if(getuserid(urec.userid, towho) != towho) return ModeType(mode);
-    /*---	---*/
-
-    if (mode != QUERY && !HAS_PERM(PERM_SYSOP) && isidhidden(towho)
-            /*---ishidden(urec.userid)---*/) return (ModeType(TMENU));
-    if (complete)
-        sprintf(modestr, "%s %s", ModeType(mode), urec.userid);
-    else
-        return (ModeType(mode));
-    return (modestr);
-}
 
 char
 pagerchar(friend, pager)
