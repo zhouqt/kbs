@@ -1672,7 +1672,7 @@ static PHP_FUNCTION(bbs_search_articles)
 	i1=0;
 	i2=total-1;
 	timeLimit = time(0) - date*86400;
-	if (total > 0) {
+	if (total > 1) {
 		while( i1 < i2 ){
 			i=(i1+i2)/2;
 			if( timeLimit > get_posttime(ptr1+i) ){
