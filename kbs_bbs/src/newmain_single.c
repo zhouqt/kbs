@@ -703,7 +703,10 @@ void user_login()
     show_help("0Announce/bbslist/newsday");
 #endif
     /* added end */
-    ansimore("0Announce/hotinfo", false);
+    if (dashf("0announce/systeminfo"))
+        ansimore("0Announce/systeminfo", false);
+    if (dashf("0announce/hotinfo"))    
+        ansimore("0Announce/hotinfo", false);
     move(t_lines - 1 /*1 */ , 0);       /* Leeward: 98.09.24 Alter below message */
     clrtoeol();
     prints("[1;36m¡î °´ÈÎÒâ¼ü¼ÌÐø...[33m[m ");

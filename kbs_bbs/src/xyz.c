@@ -592,6 +592,7 @@ void a_edits()
     static const char *e_file[] =
         { "../Welcome", "../vote/notes", "issue", "movie", "logout", "menu.ini", "proxyIP", "mailcheck", "s_fill", "f_fill.realname", "f_fill.unit", "f_fill.address", "f_fill.telephone",
         "f_fill.real", "f_fill.chinese", "f_fill.toomany", "f_fill.proxy", "smail", "f_fill", "../.badname", "../.badIP", "badword", "sysconf.ini", "www_menu.js", "../0Announce/hotinfo",
+        "../0Announce/systeminfo",
         "forbm",
         "forcloak",
         "forlongid", "../innd/newsfeeds.bbs", "deny_reason", NULL
@@ -605,7 +606,9 @@ void a_edits()
         "注册单失败档(居住地址)", "注册单失败档(联络电话)", "注册单失败档(真实资料)", "注册单失败档(中文填写)", "注册单失败档(过多的ID)", "注册单失败档(不能穿梭注册)",
         "身份确认完成档        ",
         "身份确认失败档",
-        "不可注册的 ID         ", "不可登录的 IP", "系统自动过滤的词语    ", "sysconf.ini", "WWW主菜单             ", "近期热点", "给新任版主的信        ", "给隐身用户的信",
+        "不可注册的 ID         ", "不可登录的 IP", "系统自动过滤的词语    ", 
+        "sysconf.ini", "WWW主菜单             ", "近期热点", "系统热点",
+        "给新任版主的信        ", "给隐身用户的信",
         "给长期用户的信        ",
         "转信版和新闻组对应",
         "封禁理由列表", NULL
