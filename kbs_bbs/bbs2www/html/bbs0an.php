@@ -8,13 +8,12 @@ function bbs_ann_display_articles($articles) {
 ?>
 <center>
 <table width="98%" border="0" cellspacing="0" cellpadding="3" class="t1">
-<col width="50px"/><col width="30px"/><col width="*"/><col width="80px"/><col width="80px"/>
-<tbody><tr><td class="t2">序号</td><td class="t2">类型</td><td class="t2">标题</td><td class="t2">整理</td><td class="t2">编辑日期</td></tr>
+<tbody><tr><td class="t2" width="50px">序号</td><td class="t2" width="30px">类型</td><td class="t2">标题</td><td class="t2" width="80px">整理</td><td class="t2" width="80px">编辑日期</td></tr>
 </tbody>
 <?php
     $i = 1;
     foreach ($articles as $article) {
-        echo '<tbody><td class="t3">'.$i.'</td><td class="t4">';
+        echo '<tbody><tr><td class="t3">'.$i.'</td><td class="t4">';
         switch($article['FLAG']) {
             case 0:
                 $img = '/images/oldgroup.gif';

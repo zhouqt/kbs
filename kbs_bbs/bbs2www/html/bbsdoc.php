@@ -98,7 +98,7 @@ login_init();
 ?>
 <center>
 <table width="98%" border="0" cellspacing="0" cellpadding="3" class="t1">
-<col width="50px"/><col width="30px"/><col width="85px"/><col width="50px"/><col width="*"/>
+<col width="50px"/><col width="30px"/><col width="85px"/><col width="50px"/><col width="*" align="left"/>
 <tbody><tr><td class="t2">序号</td><td class="t2">标记</td><td class="t2">作者</td><td class="t2">日期</td><td class="t2">标题</td></tr>
 </tbody>
 <?php    
@@ -163,7 +163,7 @@ login_init();
 ?>
 <td class="t3"><a class="ts1" href="/bbsqry.php?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
 <td class="t4"><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
-<td class="t5" align="left"><strong>
+<td class="t5"><strong>
 <?php
 	switch ($default_dir_mode)
 	{
