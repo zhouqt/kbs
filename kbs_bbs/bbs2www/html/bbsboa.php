@@ -117,7 +117,7 @@
 				else
 				{
 ?>
-<a href="/cgi-bin/bbs/bbsqry?userid=<?php echo $bms[0]; ?>"><?php echo $bms[0]; ?></a>
+<a href="/bbsqry.php?userid=<?php echo $bms[0]; ?>"><?php echo $bms[0]; ?></a>
 <?php
 				}
 			}

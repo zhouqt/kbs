@@ -43,7 +43,7 @@ A {color: #0000FF}
 <body onload="Init()">
 <form name="clock">时间[<input class="readonly" TYPE="text" NAME="myclock" size="18">] 在线[<a href="/cgi-bin/bbs/bbsusr" target="f3"><?php 
 echo bbs_getonlinenumber(); ?></a>] 帐号[<a href=<?php
-echo "\"/cgi-bin/bbs/bbsqry?userid=" . $currentuser["userid"] . "\""; ?> target="f3"><?php
+echo "\"/bbsqry.php?userid=" . $currentuser["userid"] . "\""; ?> target="f3"><?php
 echo $currentuser["userid"]; ?></a>] 停留[<input class="readonly" TYPE="text" NAME="stay" size="10">]
 </form>
 <?php

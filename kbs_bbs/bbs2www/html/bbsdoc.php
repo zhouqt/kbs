@@ -164,7 +164,7 @@
 <?php
 	}//ÖÃ¶¥
 ?>
-<td align="center" class="t2"><a href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
+<td align="center" class="t2"><a href="/bbsqry.php?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
 <td align="center" class="t2"><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
 <td class="t2">&nbsp;
 <?php
@@ -314,7 +314,7 @@
 			{
 				foreach ($bms as $bm)
 				{
-					$bm_url .= sprintf("<a href=\"/cgi-bin/bbs/bbsqry?userid=%s\">%s</a> ", $bm, $bm);
+					$bm_url .= sprintf("<a href=\"/bbsqry.php?userid=%s\">%s</a> ", $bm, $bm);
 				}
 				$bm_url = trim($bm_url);
 			}

@@ -50,6 +50,10 @@ static PHP_FUNCTION(bbs_getwebmsgs);
 static PHP_FUNCTION(bbs_get_thread_article_num);
 static PHP_FUNCTION(bbs_get_thread_articles);
 static PHP_FUNCTION(bbs_getuser);
+static PHP_FUNCTION(bbs_getusermode);
+static PHP_FUNCTION(bbs_compute_user_value);
+static PHP_FUNCTION(bbs_checknewmail);
+static PHP_FUNCTION(bbs_user_level_char);
 static PHP_FUNCTION(bbs_getonlineuser);
 static PHP_FUNCTION(bbs_getonlinenumber);
 static PHP_FUNCTION(bbs_getonlineusernumber);
@@ -181,6 +185,10 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_getthreads, NULL)
 		PHP_FE(bbs_getthreadnum, NULL)
         PHP_FE(bbs_getuser, NULL)
+        PHP_FE(bbs_getusermode, NULL)
+		PHP_FE(bbs_compute_user_value, NULL)
+		PHP_FE(bbs_checknewmail, NULL)
+		PHP_FE(bbs_user_level_char, NULL)
         PHP_FE(bbs_getonlineuser, NULL)
         PHP_FE(bbs_getonlinenumber, NULL)
 	PHP_FE(bbs_getonlineusernumber,NULL)
@@ -317,6 +325,7 @@ static void assign_user(zval * array, struct userec *user, int num)
     add_assoc_long(array, "index", num);
     add_assoc_string(array, "userid", user->userid, 1);
     add_assoc_long(array, "firstlogin", user->firstlogin);
+    add_assoc_long(array, "exittime", user->exittime);
     add_assoc_stringl(array, "lasthost", user->lasthost, IPLEN, 1);
     add_assoc_long(array, "numlogins", user->numlogins);
     add_assoc_long(array, "numposts", user->numposts);
@@ -507,6 +516,70 @@ static PHP_FUNCTION(bbs_setfromhost)
     RETURN_NULL();
 }
 
+static PHP_FUNCTION(bbs_getusermode)
+{
+	char *userid;
+	int userid_len;
+	char buf[1024];
+	char buf2[2048];
+
+    if (zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) != SUCCESS) {
+        WRONG_PARAM_COUNT;
+    }
+	
+	if( userid_len > IDLEN )
+		userid[IDLEN]=0;
+
+	if( get_userstatusstr(userid, buf) == 0 )
+		RETURN_LONG(0);
+
+	hsprintf(buf2, "%s", buf);
+
+	RETURN_STRING(buf2,1);
+}
+
+static PHP_FUNCTION(bbs_user_level_char)
+{
+	char *userid;
+	int userid_len;
+    struct userec *lookupuser;
+	char permstr[USER_TITLE_LEN];
+
+    if (zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) != SUCCESS) {
+        WRONG_PARAM_COUNT;
+    }
+	
+	if( userid_len > IDLEN )
+		userid[IDLEN]=0;
+
+	if( getuser(userid, &lookupuser) == 0 )
+		RETURN_LONG(0);
+
+	permstr[0]=0;
+	uleveltochar(permstr, lookupuser);
+	RETURN_STRING(permstr, 1);
+
+}
+
+static PHP_FUNCTION(bbs_compute_user_value)
+{
+	char *userid;
+	int userid_len;
+    struct userec *lookupuser;
+
+    if (zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) != SUCCESS) {
+        WRONG_PARAM_COUNT;
+    }
+	
+	if( userid_len > IDLEN )
+		userid[IDLEN]=0;
+
+	if( getuser(userid, &lookupuser) == 0 )
+		RETURN_LONG(0);
+
+	RETURN_LONG( compute_user_value(lookupuser) );
+
+}
 
 static PHP_FUNCTION(bbs_getuser)
 {
@@ -3454,6 +3527,26 @@ static PHP_FUNCTION(bbs_getannpath)
     RETURN_STRING(buf, 1);
 }
 
+static PHP_FUNCTION(bbs_checknewmail)
+{
+	char *userid;
+	int userid_len;
+    struct userec *lookupuser;
+	char qry_mail_dir[STRLEN];
+
+    if (zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) != SUCCESS) {
+        WRONG_PARAM_COUNT;
+    }
+	
+	if( userid_len > IDLEN )
+		userid[IDLEN]=0;
+
+	setmailfile(qry_mail_dir, userid, DOT_DIR);
+
+	RETURN_LONG( check_query_mail(qry_mail_dir) );
+
+}
+
 /**
  * get the number of one user's mail.
  * prototype:
@@ -3490,7 +3583,7 @@ static PHP_FUNCTION(bbs_getmailnum)
         RETURN_FALSE;
     }
 
-	if( oldtotal && currentuinfo && !(currentuinfo->mailcheck & CHECK_MAIL) ){
+	if( !strcmp(userid, currentuser->userid) && oldtotal && currentuinfo && !(currentuinfo->mailcheck & CHECK_MAIL) ){
 		totalcount = oldtotal;
 		unreadcount = oldunread;
     	ZVAL_LONG(total, totalcount);

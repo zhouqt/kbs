@@ -57,7 +57,7 @@
 			{
 				foreach ($bms as $bm)
 				{
-					$bm_url .= sprintf("<a href=\"/cgi-bin/bbs/bbsqry?userid=%s\">%s</a> ", $bm, $bm);
+					$bm_url .= sprintf("<a href=\"/bbsqry.php?userid=%s\">%s</a> ", $bm, $bm);
 				}
 				$bm_url = trim($bm_url);
 			}
@@ -108,7 +108,7 @@
 				echo $flags[0];
 ?>
 </td>
-<td><a href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
+<td><a href="/bbsqry.php?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
 <td><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
 <td>
 <a href="/cgi-bin/bbs/bbstcon?board=<?php echo $brd_encode; ?>&file=<?php echo $article["FILENAME"]; ?>"><?php echo htmlspecialchars($title); ?></a>

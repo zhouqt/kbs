@@ -31,7 +31,7 @@
 	        $newtotal++;
 ?>
 <tr><td><?php echo $start+$i+1;?><td><?php echo $maildata[$i]["FLAGS"];?><td>
-<a href=/cgi-bin/bbs/bbsqry?userid=<?php echo $maildata[$i]["OWNER"];?>><?php echo $maildata[$i]["OWNER"];?></a>
+<a href=/bbsqry.php?userid=<?php echo $maildata[$i]["OWNER"];?>><?php echo $maildata[$i]["OWNER"];?></a>
 <td><?php echo strftime("%b&nbsp;%e&nbsp;%H&nbsp;:%M",$maildata[$i]["POSTTIME"]);?>
 <td><a href=/bbsmailcon.php?dir=.DIR&num=<?php echo $i;?>&title=ÊÕ¼þÏä><?php
 if(strncmp($maildata[$i]["TITLE"],"Re: ",4))

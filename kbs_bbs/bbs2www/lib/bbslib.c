@@ -1778,6 +1778,43 @@ int count_user_online(char *uid)
     return apply_utmp(NULL, 0, uid, 0);
 }
 
+static int printstatusstr(struct user_info *uentp, char *arg, int pos)
+{
+    if (uentp->invisible == 1) {
+		arg[0] = '1';
+        if (!HAS_PERM(currentuser, PERM_SEECLOAK))
+            return COUNT;
+    }
+    if (arg[1]==0)
+        strcat(arg, "Ä¿Ç°ÔÚÕ¾ÉÏ£¬×´Ì¬ÈçÏÂ£º\n");
+    if (uentp->invisible)
+        strcat(arg, "[32mÒşÉíÖĞ   [m");
+    else {
+        char buf[80];
+
+        sprintf(buf, "[1m%s[m ", modestring(uentp->mode, uentp->destuid, 0, 
+                                              (uentp->in_chat ? uentp->chatid : NULL)));
+        strcat(arg, buf);
+    }
+    UNUSED_ARG(pos);
+    return COUNT;
+}
+
+/* stiger: »ñµÃÒ»¸öÓÃ»§µÄÔÚÏß×´Ì¬string */
+int get_userstatusstr(char *userid, char *buf)
+{
+	int tuid=0;
+	struct userec *lookupuser;
+
+	if(!(tuid = getuser(userid, &lookupuser)))
+		return 0;
+
+	buf[0]='0';
+	buf[1]=0;
+
+	return apply_utmp((APPLY_UTMP_FUNC) printstatusstr, 10, lookupuser->userid, buf);
+}
+
 /* »ñµÃµ±Ç°ÓÃ»§µÄ utmp ºÅ */
 int get_curr_utmpent()
 {
