@@ -132,7 +132,7 @@ function get_mimetype($name)
 		$str=fread($file,4);
 		$array=unpack('Nsize',$str);
 		$attachsize=$array["size"];
-		Header("Content-type: " . get_mimetype($attachname));
+		Header("Content-Type: " . get_mimetype($attachname));
 		
 		Header("Accept-Ranges: bytes");
 		Header("Accept-Length: " . $attachsize);
