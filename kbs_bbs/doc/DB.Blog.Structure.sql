@@ -24,8 +24,7 @@ CREATE TABLE `comments` (
   KEY `created` (`created`),
   KEY `changed` (`changed`),
   FULLTEXT KEY `body` (`body`)
-) TYPE=MyISAM COMMENT='评论表' AUTO_INCREMENT=21 ;
-
+) TYPE=MyISAM COMMENT='评论表' ;
 
 CREATE TABLE `logs` (
   `lid` int(10) unsigned NOT NULL auto_increment,
@@ -38,8 +37,30 @@ CREATE TABLE `logs` (
   `logtime` timestamp(14) NOT NULL,
   PRIMARY KEY  (`lid`),
   KEY `username` (`username`,`hostname`,`ACTION`,`pri_id`,`sec_id`,`logtime`)
-) TYPE=MyISAM COMMENT='日志表' AUTO_INCREMENT=10 ;
+) TYPE=MyISAM COMMENT='日志表' ;
 
+CREATE TABLE `members` (
+  `uid` int(10) unsigned NOT NULL default '0',
+  `username` varchar(12) NOT NULL default '',
+  KEY `username` (`username`),
+  KEY `uid` (`uid`)
+) TYPE=MyISAM COMMENT='公有blog成员表';
+
+CREATE TABLE `newapply` (
+  `naid` int(10) NOT NULL auto_increment,
+  `username` varchar(12) NOT NULL default '',
+  `appname` varchar(50) NOT NULL default '',
+  `appself` text NOT NULL,
+  `appdirect` text NOT NULL,
+  `hostname` varchar(15) NOT NULL default '',
+  `apptime` timestamp(14) NOT NULL,
+  `manager` varchar(12) default NULL,
+  `management` int(1) unsigned NOT NULL default '1',
+  UNIQUE KEY `naid_2` (`naid`),
+  KEY `naid` (`naid`),
+  KEY `username` (`username`),
+  KEY `management` (`management`)
+) TYPE=MyISAM COMMENT='新申请用户' ;
 
 CREATE TABLE `nodes` (
   `nid` int(10) unsigned NOT NULL auto_increment,
@@ -63,13 +84,13 @@ CREATE TABLE `nodes` (
   `trackbackcount` int(10) NOT NULL default '0',
   `recommend` int(1) NOT NULL default '0',
   `updatetime` timestamp(14) NOT NULL,
+  `nodetype` int(1) NOT NULL default '0',
   PRIMARY KEY  (`nid`),
   KEY `pid` (`pid`),
   KEY `created` (`changed`),
   KEY `changed` (`created`),
   FULLTEXT KEY `body` (`body`)
-) TYPE=MyISAM COMMENT='文章表' AUTO_INCREMENT=100 ;
-
+) TYPE=MyISAM COMMENT='文章表' ;
 
 CREATE TABLE `recommend` (
   `rid` int(10) unsigned NOT NULL auto_increment,
@@ -83,21 +104,20 @@ CREATE TABLE `recommend` (
   `htmltag` int(1) NOT NULL default '0',
   `recuser` varchar(12) NOT NULL default '',
   `state` int(1) NOT NULL default '1',
+  `dd` int(1) unsigned NOT NULL default '1',
   PRIMARY KEY  (`rid`),
   KEY `rid` (`rid`),
   FULLTEXT KEY `body` (`body`)
-) TYPE=MyISAM COMMENT='推荐文章' AUTO_INCREMENT=102 ;
-
+) TYPE=MyISAM COMMENT='推荐文章' ;
 
 CREATE TABLE `topics` (
   `tid` int(10) NOT NULL auto_increment,
   `uid` int(10) NOT NULL default '0',
   `access` int(1) NOT NULL default '0',
-  `topicname` varchar(200) NOT NULL default '',
+  `topicname` varchar(100) NOT NULL default '',
   `sequen` int(2) NOT NULL default '0',
   KEY `tid` (`tid`)
-) TYPE=MyISAM COMMENT='用户文集分类' AUTO_INCREMENT=12 ;
-
+) TYPE=MyISAM COMMENT='用户文集分类' ;
 
 CREATE TABLE `trackback` (
   `tbid` int(10) unsigned NOT NULL auto_increment,
@@ -110,7 +130,7 @@ CREATE TABLE `trackback` (
   `time` timestamp(14) NOT NULL,
   `address` varchar(15) NOT NULL default '',
   PRIMARY KEY  (`tbid`)
-) TYPE=MyISAM COMMENT='引用通告' AUTO_INCREMENT=14 ;
+) TYPE=MyISAM COMMENT='引用通告' ;
 
 CREATE TABLE `users` (
   `uid` int(10) unsigned NOT NULL auto_increment,
@@ -135,23 +155,25 @@ CREATE TABLE `users` (
   `favmode` int(1) NOT NULL default '0',
   `updatetime` timestamp(14) NOT NULL,
   `userinfor` text NOT NULL,
+  `pctype` int(1) NOT NULL default '0',
+  `logtid` int(10) NOT NULL default '0',
+  `defaulttopic` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`uid`),
   UNIQUE KEY `username` (`username`),
   KEY `corpusname` (`corpusname`,`createtime`)
-) TYPE=MyISAM COMMENT='用户表' AUTO_INCREMENT=2 ;
+) TYPE=MyISAM COMMENT='用户表' ;
 
-CREATE TABLE `newapply` (
-  `naid` int(10) NOT NULL auto_increment,
+CREATE TABLE `userstyle` (
+  `uid` int(10) unsigned NOT NULL default '0',
   `username` varchar(12) NOT NULL default '',
-  `appname` varchar(50) NOT NULL default '',
-  `appself` text NOT NULL,
-  `appdirect` text NOT NULL,
   `hostname` varchar(15) NOT NULL default '',
-  `apptime` timestamp(14) NOT NULL,
-  `manager` varchar(12) default NULL,
-  `management` int(1) unsigned NOT NULL default '1',
-  UNIQUE KEY `naid_2` (`naid`),
-  KEY `naid` (`naid`),
-  KEY `username` (`username`),
-  KEY `management` (`management`)
-) TYPE=MyISAM COMMENT='新申请用户' AUTO_INCREMENT=2 ;
+  `changed` timestamp(14) NOT NULL,
+  `indexxsl` text NOT NULL,
+  `nodexsl` text NOT NULL,
+  `css` text NOT NULL,
+  `stylesheet` int(1) NOT NULL default '0',
+  PRIMARY KEY  (`uid`),
+  KEY `uid` (`uid`),
+  KEY `username` (`username`)
+) TYPE=MyISAM COMMENT='自定义界面';
+    
