@@ -61,8 +61,9 @@ function preprocess(){
 
 function main($boardID, $boardName, $boardArr, $modifytime) {
 	$includeDesc = isset($_GET["includeContents"]);
+	$lw = isset($_GET["lw"]);
 	$channel = generate_rss_header($boardName, htmlspecialchars($boardArr["DESC"], ENT_QUOTES), $modifytime);
-	$items = generate_rss_contents($boardID, $boardName, $includeDesc);
+	$items = generate_rss_contents($boardID, $boardName, $includeDesc, $lw);
 	echo generate_rss($channel, $items);
 }
 
@@ -80,7 +81,7 @@ function generate_rss_header($boardName, $htmlboardDesc, $modifytime) {
 	return $re;
 }
 
-function generate_rss_contents($boardID, $boardName, $includeDesc) {
+function generate_rss_contents($boardID, $boardName, $includeDesc, $lw) {
 	global $SiteURL;
 	global $dir_modes;
 	$contents = "";
@@ -96,7 +97,11 @@ function generate_rss_contents($boardID, $boardName, $includeDesc) {
 			$origin = $articles[$i];
 			$item = array();
 			$item["title"] = htmlspecialchars($origin['TITLE'], ENT_QUOTES);
-			$item["link"] = $SiteURL."disparticle.php?boardName=".$boardName."&amp;ID=".$origin['ID'];
+			if ($lw) {
+				$item["link"] = $SiteURL."bbscon.php?bid=".$boardID."&amp;id=".$origin['ID']."&amp;lw=1";
+			} else {
+				$item["link"] = $SiteURL."disparticle.php?boardName=".$boardName."&amp;ID=".$origin['ID'];
+			}
 			$item["author"] = $origin['OWNER'];
 			$item["pubDate"] = gmdate("D, d M Y H:i:s", $origin['POSTTIME']) . " GMT";
 			$item["guid"] = $SiteURL."bbscon.php?bid=".$boardID."&amp;id=".$origin['ID'];
