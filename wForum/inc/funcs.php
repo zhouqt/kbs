@@ -192,17 +192,24 @@ function bbs_can_edit_article($board, $article, $user)
 		return 0;
 }
 
+/* used by cache_header() and update_cache_header()，不应该直接被调用 */
 function cache_process($scope, $forcecachetime, $modifytime, $expiretime) {
 	global $cachemode;
-	session_cache_limiter($scope);
+	//session_cache_limiter($scope);
 	$cachemode=$scope;
+	if ($scope=="nocache") {
+		header("Expires: Thu, 19 Nov 1981 08:52:00 GMT");
+		header("Cache-Control: no-store, no-cache, must-revalidate");
+		header("Pragma: no-cache");
+		return FALSE;
+	}
 	@$oldmodified=$_SERVER["HTTP_IF_MODIFIED_SINCE"];
 	if ($oldmodified!="") {
 		$oldtime = strtotime($oldmodified) + $forcecachetime;
 	} else $oldtime=0;
 	if ($oldtime >= $modifytime) {
 		header("HTTP/1.1 304 Not Modified");
-			header("Cache-Control: max-age=" . "$expiretime");
+		header("Cache-Control: max-age=" . "$expiretime");
 		return TRUE;
 	}
 	header("Last-Modified: " . gmdate("D, d M Y H:i:s", $modifytime) . " GMT");
@@ -213,13 +220,12 @@ function cache_process($scope, $forcecachetime, $modifytime, $expiretime) {
 
 function cache_header($scope,$modifytime=0,$expiretime=300)
 {
-	if ($scope=="no-cache") return FALSE;
 	return cache_process($scope, 0, $modifytime, $expiretime);
 }
 
 function update_cache_header($updatetime = 10,$expiretime = 300)
 {
-	return cache_process("public, must-revalidate", 60 * $updatetime, time(), $expiretime);
+	return cache_process("public", 60 * $updatetime, time(), $expiretime);
 }
 
 function html_init($charset="",$otherheader="",$is_mathml=false)
@@ -239,8 +245,7 @@ function html_init($charset="",$otherheader="",$is_mathml=false)
 		$title = $title . ' -- ' . $stats;
 	}
 	if ($cachemode=="") {
-		cache_header("no-cache");
-		Header("Cache-Control: no-cache");
+		cache_header("nocache");
 	}
 	@$css_style = $_COOKIE["style"];
 	if ($css_style==''){
