@@ -467,7 +467,7 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
     move(t_lines - 1, 0);
     clrtoeol();
     if(match) {
-        conf->pos=now;
+        conf->new_pos=now;
         return 1;
     }
     return 0;
@@ -493,7 +493,7 @@ int auth_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
         strcpy(author, currauth);
     switch (read_search_articles(conf, author, up, 1)) {
         case 1:
-            return PARTUPDATE;
+            return SELCHANGE;
         default:
             conf->show_endline(conf);
     }
@@ -515,7 +515,7 @@ int title_search(struct _select_def* conf, struct fileheader* fh, void* extraarg
         strcpy(title, ans);
     switch (read_search_articles(conf, title, up, 0)) {
         case 1:
-            return PARTUPDATE;
+            return SELCHANGE;
         default:
             conf->show_endline(conf);
     }
@@ -608,7 +608,7 @@ int thread_search(struct _select_def* conf, struct fileheader* fh, void* extraar
     setqtitle(title);
     switch (read_search_articles(conf, title, up, 2)) {
         case 1:
-            return PARTUPDATE;
+            return SELCHANGE;
         default:
             conf->show_endline(conf);
     }
