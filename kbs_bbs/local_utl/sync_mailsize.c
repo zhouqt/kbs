@@ -23,16 +23,20 @@ int calc_mailsize(char *userid, char *dirname)
     setmailfile(fn, userid, dirname);
 
     if ((fd = open(fn, O_RDWR, 0664)) == -1) {
-        bbslog("user", "%s", "recopen err");
+        /* bbslog("user", "%s", "recopen err"); */
         return 0;      /* 创建文件发生错误*/
     }
     fstat(fd, &buf);
+    total = buf.st_size / size;
+    if (total == 0) {
+        close(fd);
+        return 0;
+    }
     ldata.l_type = F_RDLCK;
     ldata.l_whence = 0;
     ldata.l_len = 0;
     ldata.l_start = 0;
     fcntl(fd, F_SETLKW, &ldata);
-    total = buf.st_size / size;
 
     if ((i = safe_mmapfile_handle(fd, PROT_READ|PROT_WRITE, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
         if (i == 2)
@@ -87,7 +91,7 @@ int sync_mailsize(struct userec *user, char *arg)
     }
     printf("%s ok.\n", user->userid);
     if (totalsize != user->usedspace) {
-        fprintf(stderr, "%s %d %d\n", user->userid, totalsize, user->usedspace);
+        fprintf(stderr, "%s new:%d old:%d\n", user->userid, totalsize, user->usedspace);
 #ifdef FORCE_SYNC
         user->usedspace = totalsize;
 #endif
