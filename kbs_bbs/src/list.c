@@ -163,13 +163,15 @@ int fill_userlist()
     if (!friendmode) {
         apply_ulist_addr((APPLY_UTMP_FUNC) full_utmp, (char *) &i2);
 #ifdef NINE_BUILD
+//changed by shiyao, 2003.6.1
         numf = 0;
         for (i = 0; i < i2; i++) {
             if (myfriend(user_record[i]->uid, NULL)) {
                 swap_user_record(numf++, i);
             }
         }
-        sort_user_record(numf, i2 - 1);
+	sort_user_record(0, numf-1);
+	sort_user_record(numf, i2-1);
 #endif
     } else {
         struct user_info* u;
@@ -177,7 +179,11 @@ int fill_userlist()
         for (i = 0; i < u->friendsnum; i++) {
             if (u->friends_uid[i])
                 apply_utmpuid((APPLY_UTMP_FUNC) full_utmp, u->friends_uid[i], (char *) &i2);
-    }} range = i2;
+    }
+ #ifdef NINE_BUILD
+ 	if (i2>0) sort_user_record(0, i2-1);
+ #endif
+   } range = i2;
     return i2 == 0 ? -1 : 1;
 }
 char pagerchar(int usernum, struct user_info *user, int pager, int *isfriend)
