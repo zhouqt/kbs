@@ -247,34 +247,16 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 			html_init("gb2312");
 ?>
 <body>
-<table width="100%" border="0" cellspacing="0" cellpadding="3">
-  <tr> 
-    <td colspan="2" class="b1">
+<script language="javascript">
 <?php
 			$query_str = urlencode($_SERVER["PHP_SELF"] . "?" . $_SERVER["QUERY_STRING"]);
-			if ($currentuser["userid"] == "guest")
-				$home_url = "/guest-frames.html?mainurl=" . $query_str;
-			else
-				$home_url = "/frames.html?mainurl=" . $query_str;
+			$home_url = "/guest-frames.html?mainurl=" . $query_str;
 ?>
-	    <a href="<?php echo $home_url; ?>" target="_top"><?php echo BBS_FULL_NAME; ?></a>
-	    -
-	    <?php
-	    	$sec_index = get_secname_index($brdarr["SECNUM"]);
-		if ($sec_index >= 0)
-		{
-	    ?>
-		<a href="/bbsboa.php?group=<?php echo $sec_index; ?>"><?php echo $section_names[$sec_index][0]; ?></a>
-	    <?php
-		}
-	    ?>
-	    -
-	    <?php echo htmlspecialchars($brdarr["DESC"]); ?> - тд╤андуб
-    </td>
-  </tr>
-  <tr> 
-</table>
-<br/>
+var strHomeURL = '<?php echo $home_url; ?>';
+var strBBSName = '<?php echo BBS_FULL_NAME; ?>';
+var strDesc = '<?php echo htmlspecialchars($brdarr["DESC"]); ?>';
+</script>
+<script language="javascript" src="bbscon.js"></script>
 <?php
 			display_navigation_bar_in($brdarr, $articles, $num, $brdnum);
 ?>
