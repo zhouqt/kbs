@@ -991,6 +991,8 @@ int ansimore_withzmodem(char *filename, int promptend, char *title)
     return ch;
 }
 
+extern int offsetln;
+
 int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
 {
     extern int t_lines;
