@@ -142,11 +142,11 @@ function main(){
           <textarea name="Signature" rows=5 cols=60 wrap=PHYSICAL>
 <?php
 	$filename=bbs_sethomefile($currentuser["userid"],"signatures");
-    $fp = @fopen ($filename, "r");
+    $fp = @fopen ($filename, "r"); //ToDo: 这个完全可以用一个 PHP 函数来做，下面还有一个
     if ($fp!=false) {
 		while (!feof ($fp)) {
 			$buffer = fgets($fp, 300);
-			echo $buffer;
+			echo htmlspecialchars($buffer);
 		}
 		fclose ($fp);
     }
@@ -189,7 +189,7 @@ function main(){
     if ($fp!=false) {
 		while (!feof ($fp)) {
 			$buffer = fgets($fp, 300);
-			echo $buffer;
+			echo htmlspecialchars($buffer);
 		}
 		fclose ($fp);
     }

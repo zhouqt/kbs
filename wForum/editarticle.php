@@ -183,7 +183,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 <?php require_once("inc/ubbmenu.php"); ?>
 <textarea class=smallarea cols=95 name=Content rows=12 wrap=VIRTUAL title="可以使用Ctrl+Enter直接提交贴子" class=FormClass onkeydown=ctlent()>
 <?php
-	bbs_printoriginfile($boardName,$reArticles[1]['FILENAME']);
+	bbs_printoriginfile($boardName,$reArticles[1]['FILENAME']); //ToDo: 这个地方过滤 </textarea> 且没有 html 化，待改
 ?>
 </textarea>
           </td>

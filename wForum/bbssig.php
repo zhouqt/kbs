@@ -35,10 +35,10 @@ function main(){
 <?php
 	$filename=bbs_sethomefile($currentuser["userid"],"signatures");
     $fp = @fopen ($filename, "r");
-    if ($fp!=false) {
+    if ($fp!=false) { //ToDo: 用单一函数来做
 		while (!feof ($fp)) {
 			$buffer = fgets($fp, 300);
-			echo $buffer;
+			echo htmlspecialchars($buffer);
 		}
 		fclose ($fp);
     }

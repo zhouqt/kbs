@@ -211,8 +211,8 @@ function main() {
 							break;
 						}
 					}
-					if (stristr($buf, "</textarea>") == FALSE)  //filter </textarea> tag in the text
-						echo $prefix . $buf;
+					//if (stristr($buf, "</textarea>") == FALSE)  //filter </textarea> tag in the text
+						echo $prefix . htmlspecialchars($buf);
 					if (($buf = fgets($fp,500)) == FALSE)
 						break;
 				}

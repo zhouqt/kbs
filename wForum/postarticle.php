@@ -246,8 +246,8 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 						break;
 					}
 					/* */
-					if (stristr($buf, "</textarea>") == FALSE)  //filter </textarea> tag in the text
-						$buf2.=$buf;
+					//if (stristr($buf, "</textarea>") == FALSE)  //filter </textarea> tag in the text
+						$buf2 .= htmlspecialchars($buf);
 					if (($buf = fgets($fp,5000)) == FALSE)
 						break;
 				}
