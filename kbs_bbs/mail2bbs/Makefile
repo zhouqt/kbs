@@ -2,29 +2,30 @@
 ifeq (../Makefile.spec ,$(wildcard ../Makefile.spec))
 include	../Makefile.spec
 endif
-CC=gcc
+INSTALL=install
 MAIL2BBS=mail2bbs
-BBS_SRC=/home/system/bbs/src/zixia_bbs
+BBS_SRC=..
 #RECORD_OBJ=$(BBS_SRC)/record.o
 RECORD_SRC=$(BBS_SRC)/record.c
-CFLAGS=-I$(BBS_SRC) -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' -DINVISIBLE
+#CFLAGS=-I$(BBS_SRC) -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' -DINVISIBLE
+CFLAGS+=-I$(BBS_SRC)
+SITE_DEF = -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' -DINVISIBLE
 
-INSTALLDIR=/home/system/bbs/bin
-SITE_DEF = 
+INSTALLDIR=bin
 
 all:
 	@echo use 'make mail2bbs' to make mail2bbs
 	@echo use 'make install_mail2bbs' to install the prog
 
-$(MAIL2BBS):        mail2bbs.c $(RECORD_OBJ)
-	$(CC) $(CFLAGS) -Xlinker -Bstatic -o $(MAIL2BBS) mail2bbs.c $(RECORD_SRC) -DAIX -DSYSV -DLEEWARD_X_RECORD
+$(MAIL2BBS):        mail2bbs.c 
+	$(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -Xlinker -Bstatic -o $(MAIL2BBS) mail2bbs.c -DLEEWARD_X_RECORD ../libBBS.a ../libsystem.a
 
 install_mail2bbs: $(MAIL2BBS)
 	@echo Please run this option as root.
 	test -d $(INSTALLDIR) || mkdir -p $(INSTALLDIR)
-	install -g bbs -m 4750 -o bbs $(MAIL2BBS) $(INSTALLDIR)
+	$(INSTALL) -g bbs -m 4750 -o bbs $(MAIL2BBS) $(INSTALLDIR)
 	test -d $(BBSHOME)/$(INSTALLDIR) || mkdir -p $(BBSHOME)/$(INSTALLDIR)
-	install -g bbs -m 4750 -o bbs $(MAIL2BBS) $(BBSHOME)/$(INSTALLDIR)
+	$(INSTALL) -g bbs -m 4750 -o bbs $(MAIL2BBS) $(BBSHOME)/$(INSTALLDIR)
 
 
 showuser: showuser.c

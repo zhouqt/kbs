@@ -459,8 +459,10 @@ int post_cross(struct userec* user,char* toboard,char* fromboard,char* title,cha
     setbfile( filepath, toboard, postfile.filename );
 
     local_article = 0;
+    /*
     if ( !strcmp( postfile.title, buf ) && file[0] != '\0' )
-        if(islocal=='l'||islocal=='L')
+    */
+    if(islocal=='l'||islocal=='L')
             local_article=YEA;
 
 #ifdef BBSMAIN
@@ -529,15 +531,11 @@ int post_cross(struct userec* user,char* toboard,char* fromboard,char* title,cha
 }
 
 
-int post_file(struct userec* user,char* fromboard,char* filename,char* nboard,char* posttitle,int Anony,int mode)  
+int post_file(struct userec* user,char* fromboard,char* filename,char* nboard,char* posttitle,int Anony,int mode)
 /* 将某文件 POST 在某版 */
 {
     if(getboardnum(nboard,NULL) <= 0)
     {  /* 搜索要POST的版 ,判断是否存在该版 */
-#ifdef BBSMAIN
-        sprintf(dbname,"%s 讨论区找不到",nboard);
-        report(dbname);
-#endif
         return -1;
     }
     post_cross(user,nboard,fromboard,posttitle,filename,Anony,NA,'l',mode);  /* post 文件 */

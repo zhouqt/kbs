@@ -1,7 +1,7 @@
 #include <bbs.h>
 #define MAILDIR  BBSHOME"/mail"
 #define MYPASSFILE BBSHOME"/.PASSWDS"
-#define DOMAIN_NAME "bbs.zixia.net"
+#define DOMAIN_NAME "smth.org"
 /*
 report()
 {
@@ -19,14 +19,6 @@ struct userec *up ;
     } else {
         return 0;
     } 
-}
-int
-dashd( fname )
-char    *fname;
-{
-    struct stat st;
-
-    return ( stat( fname, &st ) == 0 && S_ISDIR( st.st_mode ) );
 }
 
 int
@@ -148,13 +140,12 @@ if(!strcmp(userid,"SYSOP")&&strstr(title,"mail check"))
             time_t tmp_time;
             time( &tmp_time );
 /*          fprintf( fout, "To:        @%s@firebird \n", userid ); */
-            fprintf( fout, "盚獺: %s \n", sender );
-            fprintf( fout, "夹  肈: %s\n", title );
-            fprintf( fout, "祇獺: いタ厩κㄓ材 BBS 獺畉\n");
-            fprintf( fout, "ら  戳: %s\n", ctime( &tmp_time ) );
+            fprintf( fout, "来  源: %s \n", sender );
+            fprintf( fout, "标  题: %s\n", title );
+            fprintf( fout, "发信站: %s (%s)\n\n", BBS_FULL_NAME, Ctime( tmp_time ) );
             if(passcheck>=1)
             {
-                fprintf(fout,"克稲%s:\n",sender1);
+                /*fprintf(fout,"克稲%s:\n",sender1);*/
                 sprintf(maildir,"%s/etc/%s",BBSHOME,(passcheck==5)?"smail":"fmail");
                 if((rmail=fopen(maildir,"r"))!=NULL)
                 {

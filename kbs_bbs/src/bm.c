@@ -390,7 +390,7 @@ Here:
                         sprintf(buffer,"%s ·âÄ³°å"NAME_BM" %s ÔÚ %s",currentuser->userid,uident,currboard);
                     else
                         sprintf(buffer,"%s ·â %s ÔÚ %s",currentuser->userid,uident,currboard);
-                    post_file(curruser,"",filename,"denypost",buffer,0,8);
+                    post_file(currentuser,"",filename,"denypost",buffer,0,8);
                     unlink(filename);
                 }
             }
