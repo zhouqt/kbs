@@ -1309,7 +1309,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
             int lch;            /* period 2000-09-11    方案1:                          *
                                  * * 解决:同主题向上查找,文章大于一屏时按一次UP键屏幕无内容 *
                                  * * 方案2: rawmore()函数中, 判断KEY_UP==ch处不应该清屏 */
-            register_attach_link(board_attach_link, &SR_fptr)
+            register_attach_link(board_attach_link, &SR_fptr);
             lch = ansimore_withzmodem(genbuf, false, SR_fptr.title);
             register_attach_link(NULL,NULL);
 

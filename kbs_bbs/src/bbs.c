@@ -722,7 +722,7 @@ void  board_attach_link(char* buf,int buf_len,long attachpos,void* arg)
     char* server=sysconf_str("BBS_WEBDOMAIN");
     if (server==NULL)
         server=sysconf_str("BBSDOMAIN");
-    snprintf(buf,buf_len-SESSIONLEN,"%s/bbscon.php?board=%s&id=%d&ap=%d&sid=',
+    snprintf(buf,buf_len-SESSIONLEN,"%s/bbscon.php?board=%s&id=%d&ap=%d&sid=",
         server,currboard,fh->id,attachpos);
     get_telnet_sessionid(buf+strlen(buf), utmpent);
 }
@@ -753,7 +753,7 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     strncpy(quote_user, fileinfo->owner, OWNER_LEN);
     quote_user[OWNER_LEN - 1] = 0;
 
-    register_attach_link(board_attach_link, fileinfo)
+    register_attach_link(board_attach_link, fileinfo);
 #ifndef NOREPLY
     ch = ansimore_withzmodem(genbuf, false, fileinfo->title);   /* ÏÔÊ¾ÎÄÕÂÄÚÈÝ */
 #else
@@ -2755,7 +2755,7 @@ int sequent_messages(struct fileheader *fptr, int idc, int *continue_flag)
         strncpy(quote_user, fptr->owner, OWNER_LEN);
         quote_user[OWNER_LEN - 1] = 0;
         setbfile(genbuf, currboard, fptr->filename);
-        register_attach_link(board_attach_link, fptr)
+        register_attach_link(board_attach_link, fptr);
         ansimore_withzmodem(genbuf, false, fptr->title);
         register_attach_link(NULL,NULL);
       redo:

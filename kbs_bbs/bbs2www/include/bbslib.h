@@ -314,7 +314,7 @@ int get_curr_utmpent();
 
 int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromhost, char *fullfrom, struct user_info **ppuinfo, int *putmpent);
 int www_user_logoff(struct userec *user, int useridx, struct user_info *puinfo, int userinfoidx);
-int www_user_init(int useridx, char *userid, int key, struct userec **x, struct user_info **y);
+int www_user_init(int useridx, char *userid, int key, struct userec **x, struct user_info **y, long compat_telnet);
 int www_data_init();
 void www_data_detach();
 int can_enter_chatroom();

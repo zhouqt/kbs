@@ -685,7 +685,7 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
         strncpy(attachname, ptr + ATTACHMENT_SIZE, 40);
         attachsize=ntohl(*(unsigned long *)( ptr+ATTACHMENT_SIZE+strlen(attachname)+1));
         if (current_attach_link)
-            (*current_attach_link)(link,255,fn,l->curr-begin+ATTACHMENT_SIZE,current_attach_link_arg);
+            (*current_attach_link)(link,255,l->curr-begin+ATTACHMENT_SIZE,current_attach_link_arg);
         else
             strcpy(link,"(用www方式阅读本文可以下载此附件)");
         p = strrchr(attachname, '.');
@@ -717,7 +717,7 @@ static int mem_show(char *ptr, int size, int row, int numlines, char *fn)
     prints("\033[m");
     curr_line = l.curr_line;
     for (i = 0; i < t_lines - 1 - row && i < numlines; i++) {
-        mem_printline(l, fn, ptr);
+        mem_printline(&l, fn, ptr);
         if (next_MemMoreLines(&l) < 0)
             break;
     }
@@ -770,7 +770,7 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
             if (shownflag) {
                 displayflag = 0;
             }
-            mem_printline(l, fn, ptr);
+            mem_printline(&l, fn, ptr);
             i++;
             if (i >= t_lines - 1)
                 break;
@@ -904,7 +904,7 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
                     last_line++;
                     scroll();
                     good_move(t_lines - 2, 0);
-                    mem_printline(l.curr, l.currlen, fn, l.currty);
+                    mem_printline(&l, fn, ptr);
                     if ((ch == KEY_PGDN || ch == ' ' || ch == Ctrl('f')
                          || ch == KEY_RIGHT || ch == KEY_DOWN || ch == 'j' || ch == '\n')
                         && l.line[last_line % 100] - ptr + l.s[last_line % 100] == size) {
@@ -922,7 +922,7 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
                     last_line--;
                     rscroll();
                     good_move(0, 0);
-                    mem_printline(l.curr, l.currlen, fn, l.currty);
+                    mem_printline(&l, fn, ptr);
                 }
                 change = 0;
             }
@@ -1005,7 +1005,7 @@ int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
         }
         if (!header || (!((i == 0) && ((!strncmp(l.curr, "发信人: ", 8) || (!strncmp(l.curr, "寄信人: ", 8))))) &&
                         !((i == 1) && !strncmp(l.curr, "标  题: ", 8)) && !((i == 2) && !strncmp(l.curr, "发信站: ", 8)) && !((i == 3) && (l.currlen == 0)))) {
-            mem_printline(l.curr, l.currlen, fn, l.currty);
+            mem_printline(&l, fn, ptr);
             j++;
             header = false;
         }

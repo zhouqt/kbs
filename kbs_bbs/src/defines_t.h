@@ -64,7 +64,7 @@ void m_init();
 int countln(char *fname);
 void R_monitor(void *data);
 void printacbar();
-typedef (void  *generate_attach_link_t)(char* ,int,,long ,void* );
+typedef void  (*generate_attach_link_t)(char* ,int,long ,void* );
 void register_attach_link(generate_attach_link_t fn,void* arg);
 
 
@@ -86,6 +86,7 @@ void set_numofsig();
 void docmdtitle(char *title, char *prompt);
 
 /* bbs.c*/
+void  board_attach_link(char* buf,int buf_len,long attachpos,void* arg);
 int get_a_boardname(char *bname, char *prompt); /* 输入一个版名 */
 int Read();
 void printutitle();             /* 屏幕显示 用户列表 title */

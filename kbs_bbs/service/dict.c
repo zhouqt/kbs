@@ -1,4 +1,5 @@
 #define BBSMAIN
+#ifdef BBS_SERVICE_DICT
 #include "bbs.h"
 #include <mysql.h>
 
@@ -104,3 +105,4 @@ int dict_main()
     scrint=true;
     redoscr();
 }
+#endif

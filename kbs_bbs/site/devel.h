@@ -363,7 +363,8 @@ typedef struct fileheader {     /* This structure is used to hold data in */
     char unused1[46];
     char innflag[2];
     char owner[OWNER_LEN];
-    char unused2[46];
+    char unused2[46-sizeof(time_t)];
+    time_t posttime;
     off_t attachment;
     char title[STRLEN];
     unsigned level;
