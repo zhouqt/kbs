@@ -114,7 +114,9 @@ int main()
     printf("<img src=\"/images/find.gif\"><a href=\"bbssel\" target=\"f3\">查找讨论区</a><br>\n");
     printf("<img src=\"/images/find.gif\"><a href=\"/games/index.html\" target=\"f3\">休闲娱乐区</a><br>\n");
     printf("<img src=\"/images/telnet.gif\"><a href=\"telnet:%s\">Telnet登录</a><br>\n", NAME_BBS_ENGLISH);
+#ifdef SMTH
     printf("<img src=\"/images/telnet.gif\"><a href=\"/data/fterm-smth.zip\">fterm下载</a><br>\n");
+#endif
     /*if(!loginok) 
        printf("<img src=\"/images/link0.gif\"><a href=\"javascript:void open('bbsreg', '', 'width=620,height=550')\">新用户注册</a><br>\n"); */
     if (loginok) {
@@ -128,8 +130,10 @@ int main()
     if (loginok && can_enter_chatroom())
         printf("<br><a href=\"javascript:openchat()\">[" CHAT_SERVER "<font color=\"red\">测试中</font>]</a>");
     printf("</div><script>if(isNS4) arrange();if(isOP)alarrangeO();</script>");
+#ifdef SMTH
     printf("<p>全国网络计算大赛拉开帷幕,大赛奖项高达20万元，其中一等奖奖金高达10万元。详情请见</p>"
 			    "<p><a href=\"http://www.hpc-contest.edu.cn\"  target=\"_blank\">http://www.hpc-contest.edu.cn</a><br></p>");
+#endif
     printf("</body>");
 }
 
