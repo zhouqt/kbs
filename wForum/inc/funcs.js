@@ -179,7 +179,7 @@ function HideMenu(evt)
 	}
 }
 
-function ShowMenu(vMnuCode,tWidth,evt) {
+function ShowMenu_Internal(vMnuCode,tWidth,evt,isTd) {
     evt = (evt) ? evt : ((window.event) ? event : null);
     if (evt) {
 		evt.cancelBubble = true;
@@ -188,7 +188,7 @@ function ShowMenu(vMnuCode,tWidth,evt) {
        if (vSrc.nodeType == 3) {
            vSrc = vSrc.parentNode;
        }
-		vMnuCode = "<table id='submenu' cellspacing=1 cellpadding=3 style='width:"+tWidth+"' class=TableBorder1 onmouseout='HideMenu()'><tr height=23><td nowrap class=TableBody1 align=center>" + vMnuCode + "</td></tr></table>";
+		if (isTd) vMnuCode = "<table id='submenu' cellspacing=1 cellpadding=3 style='width:"+tWidth+"' class=TableBorder1 onmouseout='HideMenu()'><tr height=23><td nowrap class=TableBody1 align=center>" + vMnuCode + "</td></tr></table>";
 		oDiv=getRawObject("menuDiv");
 
 		h = vSrc.offsetHeight;
@@ -212,6 +212,9 @@ function ShowMenu(vMnuCode,tWidth,evt) {
 		}
 	}
 	return false;
+}
+function ShowMenu(a,b,c) {
+	ShowMenu_Internal(a,b,c,true);
 }
 
 function makeRectangularDropShadow(el, color, size)
