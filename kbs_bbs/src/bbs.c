@@ -124,7 +124,7 @@ int insert_func(int fd, struct fileheader *start, int ent, int total, struct fil
         start[i] = start[i - 1];
     lseek(fd, 0, SEEK_END);
     if (safewrite(fd, &UFile, sizeof(UFile)) == -1)
-        report("apprec write err!");
+        bbslog("user","%s","apprec write err!");
     start[ent - 1] = *data;
     return ent;
 }
@@ -204,7 +204,7 @@ int UndeleteArticle(int ent, struct fileheader *fileinfo, char *direct)
             }
             lseek(fd, 0, SEEK_END);
             if (safewrite(fd, &UFile, sizeof(UFile)) == -1)
-                report("apprec write err!");
+                bbslog("user","%s","apprec write err!");
             flock(fd, LOCK_UN);
         }
         close(fd);
@@ -214,7 +214,7 @@ int UndeleteArticle(int ent, struct fileheader *fileinfo, char *direct)
     fileinfo->filename[0] = '\0';
     substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
     sprintf(buf, "undeleted %s's °∞%s°± on %s", UFile.owner, UFile.title, currboard);
-    report(buf);
+    bbslog("user","%s",buf);
 
     clear();
     move(2, 0);
@@ -966,7 +966,7 @@ int generate_mark()
     digestmode = 3;
     setbdir(digestmode, currdirect, currboard);
     if ((fd = open(currdirect, O_WRONLY | O_CREAT, 0664)) == -1) {
-        report("recopen err");
+        bbslog("user","%s","recopen err");
         return -1;              // ¥¥Ω®Œƒº˛∑¢…˙¥ÌŒÛ
     }
     ldata.l_type = F_WRLCK;
@@ -974,7 +974,7 @@ int generate_mark()
     ldata.l_len = 0;
     ldata.l_start = 0;
     if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-        report("reclock err");
+        bbslog("user","%s","reclock err");
         close(fd);
         return -1;              // lock error
     }
@@ -987,7 +987,7 @@ int generate_mark()
     }
 
     if ((fd2 = open(olddirect, O_RDONLY, 0664)) == -1) {
-        report("recopen err");
+        bbslog("user","%s","recopen err");
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
@@ -1064,7 +1064,7 @@ int generate_title()
     digestmode = 2;
     setbdir(digestmode, currdirect, currboard);
     if ((fd = open(currdirect, O_WRONLY | O_CREAT, 0664)) == -1) {
-        report("recopen err");
+        bbslog("user","%s","recopen err");
         return -1;              // ¥¥Ω®Œƒº˛∑¢…˙¥ÌŒÛ
     }
     ldata.l_type = F_WRLCK;
@@ -1072,7 +1072,7 @@ int generate_title()
     ldata.l_len = 0;
     ldata.l_start = 0;
     if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-        report("reclock err");
+        bbslog("user","%s","reclock err");
         close(fd);
         return -1;              // lock error
     }
@@ -1085,7 +1085,7 @@ int generate_title()
     }
 
     if ((fd2 = open(olddirect, O_RDONLY, 0664)) == -1) {
-        report("recopen err");
+        bbslog("user","%s","recopen err");
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
@@ -1286,7 +1286,7 @@ int search_mode(int mode, char *index)
         return NEWDIRECT;
     }
     if ((fd = open(currdirect, O_WRONLY | O_CREAT, 0664)) == -1) {
-        report("recopen err");
+        bbslog("user","%s","recopen err");
         return FULLUPDATE;      // ¥¥Ω®Œƒº˛∑¢…˙¥ÌŒÛ
     }
     ldata.l_type = F_WRLCK;
@@ -1294,7 +1294,7 @@ int search_mode(int mode, char *index)
     ldata.l_len = 0;
     ldata.l_start = 0;
     if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-        report("reclock err");
+        bbslog("user","%s","reclock err");
         close(fd);
         return FULLUPDATE;      // lock error
     }
@@ -1307,7 +1307,7 @@ int search_mode(int mode, char *index)
     }
 
     if ((fd2 = open(olddirect, O_RDONLY, 0664)) == -1) {
-        report("recopen err");
+        bbslog("user","%s","recopen err");
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
@@ -1450,7 +1450,7 @@ int do_thread()
     char buf[STRLEN];
 
     sprintf(buf, "Threading %s", currboard);
-    report(buf);
+    bbslog("user","%s",buf);
     move(t_lines - 1, 0);
     clrtoeol();
     prints("[5m«Î…‘∫Ú£¨œµÕ≥¥¶¿Ì±ÍÃ‚÷–...[m\n");
@@ -2784,7 +2784,7 @@ int Read()
     }
     usetime = time(0);
     i_read(READING, buf, readtitle, (READ_FUNC) readdoent, &read_comms[0], sizeof(struct fileheader));  /*Ω¯»Î±æ∞Ê */
-    board_usage(currboard, time(0) - usetime);  /*board π”√ ±º‰º«¬º */
+	bbslog("boardusage", "%-20s Stay: %5ld",currboard,time(0) - usetime);
     bmlog(currentuser->userid, currboard, 0, time(0) - usetime);
     bmlog(currentuser->userid, currboard, 1, 1);
 
@@ -3086,7 +3086,7 @@ int Goodbye()
      * }
      * } 
      */
-    report("exit");
+    bbslog("user","%s","exit");
 
     /*
      * stay = time(NULL) - login_start_time;    ±æ¥Œœﬂ…œ ±º‰ 

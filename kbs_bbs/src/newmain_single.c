@@ -682,7 +682,7 @@ void notepad_init()
             post_file(currentuser, "", "etc/notepad", "notepad", notetitle, 0, 1);
             unlink("etc/notepad");
         }
-        report("自动发信时间更改");
+        bbslog("user","%s","自动发信时间更改");
     }
     return;
 }

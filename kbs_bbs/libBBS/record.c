@@ -39,7 +39,7 @@ int size;
         setbpath(tmp, fbuf->filename);
         if (!isalpha(fbuf->filename[0]) || stat(tmp, &stbuf) == -1)
             if (fbuf->filename[0] != 'M' || fbuf->filename[1] != '.') {
-                report("safewrite: foiled attempt to write bugged record\n");
+                bbslog("user","%s","safewrite: foiled attempt to write bugged record\n");
                 return origsz;
             }
     }
@@ -48,7 +48,7 @@ int size;
     do {
         cc = write(fd, bp, sz);
         if ((cc < 0) && (errno != EINTR)) {
-            report("safewrite err!");
+            bbslog("user","%s","safewrite err!");
             return -1;
         }
         if (cc > 0) {
@@ -96,7 +96,7 @@ int size, pos;
     flock(fd, LOCK_EX);
     lseek(fd, (pos - numtowrite - 1) * size, SEEK_SET);
     safewrite(fd, bigbuf, numtowrite * size);
-    report("post bug poison set out!");
+    bbslog("user","%s","post bug poison set out!");
     flock(fd, LOCK_UN);
     bigbuf[0] = '\0';
     close(fd);
@@ -159,7 +159,7 @@ int size;
     flock(fd, LOCK_EX);
     lseek(fd, 0, SEEK_END);
     if (safewrite(fd, record, size) == -1)
-        report("apprec write err!");
+        bbslog("user","%s","apprec write err!");
     flock(fd, LOCK_UN);
     close(fd);
 #ifdef POSTBUG
@@ -380,13 +380,13 @@ int size, id;
     ldata.l_len = size;
     ldata.l_start = size * (id - 1);
     if ((retval = fcntl(fd, F_SETLKW, &ldata)) == -1) {
-        report("reclock error");
+        bbslog("user","%s","reclock error");
         close(fd);
                         /*---	period	2000-10-20	file should be closed	---*/
         return -1;
     }
     if (lseek(fd, size * (id - 1), SEEK_SET) == -1) {
-        report("subrec seek err");
+        bbslog("user","%s","subrec seek err");
         /*---	period	2000-10-24	---*/
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLK, &ldata);
@@ -394,7 +394,7 @@ int size, id;
         return -1;
     }
     if (safewrite(fd, rptr, size) != size)
-        report("subrec write err");
+        bbslog("user","%s","subrec write err");
     /*
      * change by KCN
      * flock(fd,LOCK_UN) ;

@@ -582,7 +582,7 @@ set_safe_record()
         char buf[STRLEN];
 
         sprintf(buf,"Error:Read Passfile %4d %12.12s",usernum,currentuser->userid);
-        report(buf);
+        bbslog("user","%s",buf);
         ERROR_READ_SYSTEM_FILE=true;
         abort_bbs(0);
         return -1;

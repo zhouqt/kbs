@@ -423,7 +423,7 @@ int deny_user(ent, fileinfo, direct)    /* 禁止POST用户名单 维护主函数 */
             if (uident[0] != '\0') {
                 if (deldeny(currentuser, currboard, uident, 0)) {
                     sprintf(repbuf, "%s 恢复 %s 在 %s 的 POST 权力", currentuser->userid, uident, currboard);
-                    report(repbuf);
+                    bbslog("user","%s",repbuf);
                 }
             }
         } else if (count > 20) {

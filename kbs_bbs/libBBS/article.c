@@ -408,7 +408,7 @@ void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail
             fclose(of);
         /*---	---*/
 #ifdef BBSMAIN
-        report("Cross Post error");
+        bbslog("user","%s","Cross Post error");
 #endif
         return;
     }
@@ -608,7 +608,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
         }
         lseek(fd, 0, SEEK_END);
         if (safewrite(fd, fh, sizeof(fileheader)) == -1) {
-            report("apprec write err!");
+            bbslog("user","%s","apprec write err!");
             err = 1;
         }
         flock(fd, LOCK_UN);
@@ -735,7 +735,7 @@ int change_dir_post_flag(struct userec *currentuser, char *currboard, int ent, s
         ldata.l_len = size;
         ldata.l_start = size * (ent - 1);
         if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-            report("reclock error");
+            bbslog("user","%s","reclock error");
             close(fd);
                                 /*---	period	2000-10-20	file should be closed	---*/
             ret = 0;
@@ -743,7 +743,7 @@ int change_dir_post_flag(struct userec *currentuser, char *currboard, int ent, s
     }
     if (ret) {
         if (lseek(fd, size * (ent - 1), SEEK_SET) == -1) {
-            report("subrec seek err");
+            bbslog("user","%s","subrec seek err");
             /*---	period	2000-10-24	---*/
             ldata.l_type = F_UNLCK;
             fcntl(fd, F_SETLK, &ldata);
@@ -753,7 +753,7 @@ int change_dir_post_flag(struct userec *currentuser, char *currboard, int ent, s
     }
     if (ret) {
         if (get_record_handle(fd, &mkpost, sizeof(mkpost), ent) == -1) {
-            report("subrec read err");
+            bbslog("user","%s","subrec read err");
             ret = 0;
         }
         if (ret)
@@ -811,14 +811,14 @@ int change_dir_post_flag(struct userec *currentuser, char *currboard, int ent, s
     }
 
     if (lseek(fd, size * (ent - 1), SEEK_SET) == -1) {
-        report("subrec seek err");
+        bbslog("user","%s","subrec seek err");
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLK, &ldata);
         close(fd);
         return DONOTHING;
     }
     if (safewrite(fd, fileinfo, size) != size) {
-        report("subrec write err");
+        bbslog("user","%s","subrec write err");
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLK, &ldata);
         close(fd);
@@ -896,7 +896,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
         ldata.l_len = size;
         ldata.l_start = size * (ent - 1);
         if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-            report("reclock error");
+            bbslog("user","%s","reclock error");
             close(fd);
                                 /*---	period	2000-10-20	file should be closed	---*/
             ret = 0;
@@ -904,7 +904,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
     }
     if (ret) {
         if (lseek(fd, size * (ent - 1), SEEK_SET) == -1) {
-            report("subrec seek err");
+            bbslog("user","%s","subrec seek err");
             /*---	period	2000-10-24	---*/
             ldata.l_type = F_UNLCK;
             fcntl(fd, F_SETLK, &ldata);
@@ -914,7 +914,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
     }
     if (ret) {
         if (get_record_handle(fd, &mkpost, sizeof(mkpost), ent) == -1) {
-            report("subrec read err");
+            bbslog("user","%s","subrec read err");
             ret = 0;
         }
         if (ret)
@@ -1054,14 +1054,14 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
     }
 
     if (lseek(fd, size * (ent - 1), SEEK_SET) == -1) {
-        report("subrec seek err");
+        bbslog("user","%s","subrec seek err");
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLK, &ldata);
         close(fd);
         return DONOTHING;
     }
     if (safewrite(fd, fileinfo, size) != size) {
-        report("subrec write err");
+        bbslog("user","%s","subrec write err");
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLK, &ldata);
         close(fd);

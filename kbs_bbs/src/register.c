@@ -160,7 +160,7 @@ void new_register()
         oflush();
         exit(1);
     }
-    report("new account");
+    bbslog("user","%s","new account");
 }
 
 int invalid_realmail(userid, email, msize)

@@ -756,7 +756,7 @@ int m_mclean()
     apply_users(cleanmail, 0);
     move(4, 0);
     prints("清除完成! 请查看日志文件.\n");
-    report("Mail Clean");
+    bbslog("user","%s","Mail Clean");
     pressreturn();
     clear();
     return 0;

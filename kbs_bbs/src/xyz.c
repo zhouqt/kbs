@@ -28,7 +28,7 @@ x_csh()
     save_pager = uinfo.pager;
     uinfo.pager = 0 ;
     UPDATE_UTMP(pager,uinfo);
-    report("shell out");
+    bbslog("user","%s","shell out");
 #ifdef SYSV
     do_exec("sh", NULL) ;
 #else
@@ -217,7 +217,7 @@ int confirm_delete_id()
      * sprintf(commd,"rm -rf %s",buff);
      */
 
-    report("delete confirmly dead id's directory");
+    bbslog("user","%s","delete confirmly dead id's directory");
 
     clrtoeol();
     pressreturn();
@@ -291,7 +291,7 @@ int x_level()
         char secu[STRLEN];
 
         sprintf(secu, "修改 %s 的权限XPERM%d %d", lookupuser->userid, lookupuser->userlevel, newlevel);
-        securityreport(secu, lookupuser, NULL);
+        securitybbslog("user","%s",secu, lookupuser, NULL);
         lookupuser->userlevel = newlevel;
         /*
          * Leeward: 1997.12.02 : Modification stops 
@@ -299,7 +299,7 @@ int x_level()
 
         prints(NAME_USER_SHORT " '%s' 的权限已更改\n", lookupuser->userid);
         sprintf(genbuf, "changed permissions for %s", lookupuser->userid);
-        report(genbuf);
+        bbslog("user","%s",genbuf);
         /*
          * Haohmaru.98.10.03.给新任版主自动发信 
          */
@@ -398,7 +398,7 @@ int XCheckLevel()
                 prints(secu);
                 clrtoeol();
                 sprintf(genbuf, "listed %ld userlevel of %d", count, newlevel);
-                report(genbuf);
+                bbslog("user","%s",genbuf);
                 pressanykey();
 
                 /*
@@ -483,7 +483,7 @@ int x_userdefine()
 int x_cloak()
 {
     modify_user_mode(GMENU);
-    report("toggle cloak");
+    bbslog("user","%s","toggle cloak");
     uinfo.invisible = (uinfo.invisible) ? false : true;
     UPDATE_UTMP(invisible, uinfo);
     if (!uinfo.in_chat) {
@@ -548,7 +548,7 @@ void x_edits()
         move(5, 0);
         prints("%s 已删除\n", explain_file[ch]);
         sprintf(buf, "delete %s", explain_file[ch]);
-        report(buf);
+        bbslog("user","%s",buf);
         pressreturn();
         clear();
         return;
@@ -563,7 +563,7 @@ void x_edits()
             set_numofsig();
             prints("系统重新设定以及读入你的签名档...");
         }
-        report(buf);
+        bbslog("user","%s",buf);
     } else
         prints("%s 取消修改\n", explain_file[ch]);
     pressreturn();
@@ -649,13 +649,13 @@ void a_edits()
             char secu[STRLEN];
 
             sprintf(secu, "删除系统档案：%s", explain_file[ch]);
-            securityreport(secu, NULL, NULL);
+            securitybbslog("user","%s",secu, NULL, NULL);
         }
         unlink(genbuf);
         move(5, 0);
         prints("%s 已删除\n", explain_file[ch]);
         sprintf(buf, "delete %s", explain_file[ch]);
-        report(buf);
+        bbslog("user","%s",buf);
         pressreturn();
         clear();
         return;
@@ -666,12 +666,12 @@ void a_edits()
     if (aborted != -1) {
         prints("%s 更新过", explain_file[ch]);
         sprintf(buf, "edit %s", explain_file[ch]);
-        report(buf);
+        bbslog("user","%s",buf);
         {
             char secu[STRLEN];
 
             sprintf(secu, "修改系统档案：%s", explain_file[ch]);
-            securityreport(secu, NULL, NULL);
+            securitybbslog("user","%s",secu, NULL, NULL);
         }
 
         if (!strcmp(e_file[ch], "../Welcome")) {
@@ -691,7 +691,7 @@ void ent_bnet()
     int save_pager = uinfo.pager;
 
     uinfo.pager = -1;
-    report("BBSNet Enter");
+    bbslog("user","%s","BBSNet Enter");
     modify_user_mode(BBSNET);
     /*
      * bbsnet.sh is a shell script that can be customized without 
@@ -708,7 +708,7 @@ void ent_bnet()
 
     do_exec("bbsnet.sh", NULL);
     uinfo.pager = save_pager;
-    report("BBSNet Exit");
+    bbslog("user","%s","BBSNet Exit");
     clear();
 }
 

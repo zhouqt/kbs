@@ -59,7 +59,7 @@ int sysconf_eval(char *key)
             return (sysvar[n].val);
     if (*key < '0' || *key > '9') {
         /*        sprintf( genbuf, "sysconf: unknown key: %s.", key );
-           report( genbuf );
+           bbslog("user","%s", genbuf );
          */ }
     return (strtol(key, NULL, 0));
 }
@@ -91,7 +91,7 @@ static void sysconf_addkey(char *key, char *str, int val)
         sysvar[num].val = val;
         /*
            sprintf( genbuf, "%s = %s (%x).", key, str, val );
-           report( genbuf );
+           bbslog("user","%s", genbuf );
          */
     }
 }
@@ -104,7 +104,7 @@ static void sysconf_addmenu(FILE * fp, char *key)
     int n;
 
     /*
-       report( key );
+       bbslog("user","%s", key );
      */
     sysconf_addkey(key, "menu", sysconf_menu);
     while (fgets(buf, sizeof(buf), fp) != NULL && buf[0] != '%') {
@@ -156,7 +156,7 @@ static void sysconf_addmenu(FILE * fp, char *key)
         /*
            sprintf( genbuf, "%s( %s, %s, %s, %s, %s )",
            cmd, arg[0], arg[1], arg[2], arg[3], arg[4] );
-           report( genbuf );
+           bbslog("user","%s", genbuf );
          */
     }
     pm = &menuitem[sysconf_menu++];
@@ -389,7 +389,7 @@ void load_sysconf()
         bbslog("1bbs", "build sysconf.img");
         build_sysconf("etc/sysconf.ini", buf);
     }
-    /*    report( "load sysconf.img" ); */
+    /*    bbslog("user","%s", "load sysconf.img" ); */
     if (load_sysconf_image(buf) != 0) {
         bbslog("3bbs", "can't load sysconf image!");
         exit(-1);

@@ -813,12 +813,12 @@ int talkreply()
         write(a, reason, sizeof reason);
     if (buf[0] != 'y') {
         close(a);
-        report("page refused");
+        bbslog("user","%s","page refused");
         clear();
         refresh();
         return 0;
     }
-    report("page accepted");
+    bbslog("user","%s","page accepted");
     clear();
     do_talk(a);
     close(a);
@@ -1298,7 +1298,7 @@ char *modestr;
 int t_list()
 {
     modify_user_mode(LUSERS);
-    report("t_list");
+    bbslog("user","%s","t_list");
     do_list("使用者状态");
     pressreturn();
     refresh();
@@ -1326,7 +1326,7 @@ int t_monitor()
     /*
      * idle_monitor_time = 0; 
      */
-    report("monitor");
+    bbslog("user","%s","monitor");
     modify_user_mode(MONITOR);
     ulistpage = 0;
     do_list("探视民情");
@@ -1562,7 +1562,7 @@ char *uident;
     if (n != -1)
         getfriendstr();
     else
-        report("append friendfile error");
+        bbslog("user","%s","append friendfile error");
     return n;
 }
 int deleteoverride(char *uident)
@@ -1577,7 +1577,7 @@ int deleteoverride(char *uident)
             getfriendstr();
         else {
             deleted = -1;
-            report("delete friend error");
+            bbslog("user","%s","delete friend error");
         }
     }
     return (deleted > 0) ? 1 : -1;
@@ -1624,7 +1624,7 @@ char *direc;
         getdata(t_lines - 2, 0, buf, nh.exp, 15, DOECHO, NULL, false);
     }
     if (substitute_record(direc, &nh, sizeof(nh), pos) < 0)
-        report("Friend files subs err");
+        bbslog("user","%s","Friend files subs err");
     move(t_lines - 2, 0);
     clrtoeol();
     return NEWDIRECT;

@@ -48,10 +48,6 @@ extern "C" {
    如果from[0]是一个数字，那么表明这个log的优先级。缺省优先级是 0
 
 */
-#define report(x)        bbslog("user","%s",x)
-#define msgreport(x)     bbslog("usermsg","%s",x)
-#define board_usage(x,y) bbslog("boardusage", "%-20s Stay: %5ld",x,y)
-
     int bbslog(const char *from, const char *fmt, ...);
     int bmlog(char* id, char* boardname, int type, int value);
 

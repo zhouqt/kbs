@@ -483,7 +483,7 @@ char *menu_name;
             }
             bbslog("1bbs", "rebuild sysconf.img");
             build_sysconf("etc/sysconf.ini", NULL);
-            report("reload sysconf.img");
+            bbslog("user","%s","reload sysconf.img");
             load_sysconf();
 
             free(menupos);

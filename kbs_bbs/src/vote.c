@@ -229,7 +229,7 @@ int b_closepolls()
     prints("¶Ô²»Æð£¬ÏµÍ³¹Ø±ÕÍ¶Æ±ÖÐ£¬ÇëÉÔºò...");
     refresh();
     if ((cfp = fopen(buf, "w")) == NULL) {
-        report("lastpoll write error");
+        bbslog("user","%s","lastpoll write error");
         return 0;
     }
     fprintf(cfp, "%s", ctime(&now));
@@ -312,7 +312,7 @@ static int mk_result(int num)
     count_result(NULL, NULL, 0);
     sprintf(sugname, "vote/%s/tmp.%d", currboard, getpid());
     if ((sug = fopen(sugname, "w")) == NULL) {
-        report("open vote tmp file error");
+        bbslog("user","%s","open vote tmp file error");
         prints("Error: ½áÊøÍ¶Æ±´íÎó...\n");
         pressanykey();
     }
@@ -320,7 +320,7 @@ static int mk_result(int num)
     if (apply_record
         (fname, (APPLY_FUNC_ARG) count_result, sizeof(struct ballot), 0, 0,
          false) == -1) {
-        report("Vote apply flag error");
+        bbslog("user","%s","Vote apply flag error");
     }
     fprintf(sug,
             "[44m[36m¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©ÈÊ¹ÓÃÕß%s©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª[m\n\n\n",
@@ -329,7 +329,7 @@ static int mk_result(int num)
     sug = NULL;
     sprintf(nname, "vote/%s/results", currboard);
     if ((sug = fopen(nname, "w")) == NULL) {
-        report("open vote newresult file error");
+        bbslog("user","%s","open vote newresult file error");
         prints("Error: ½áÊøÍ¶Æ±´íÎó...\n");
     }
     /*    fprintf( sug, "** Í¶Æ±¿ªÆôì¶£º[1m%.24s[m  Àà±ð£º[1m%s[m\n", ctime( &currvote.opendate )
@@ -400,7 +400,7 @@ int check_result(int num)
     count_result(NULL, 0, 0);
     sprintf(sugname, "vote/%s/tmp.%d", currboard, getpid());
     if ((sug = fopen(sugname, "w")) == NULL) {
-        report("open vote tmp file error");
+        bbslog("user","%s","open vote tmp file error");
         prints("Error: ¼ì²éÍ¶Æ±´íÎó...\n");
         pressanykey();
     }
@@ -408,7 +408,7 @@ int check_result(int num)
     if (apply_record
         (fname, (APPLY_FUNC_ARG) count_result, sizeof(struct ballot), 0, 0,
          false) == -1) {
-        report("Vote apply flag error");
+        bbslog("user","%s","Vote apply flag error");
     }
     fprintf(sug,
             "[44m[36m¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©ÈÊ¹ÓÃÕß%s©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª[m\n\n\n",
@@ -417,7 +417,7 @@ int check_result(int num)
     sug = NULL;
     sprintf(nname, "vote/%s/results", currboard);
     if ((sug = fopen(nname, "w")) == NULL) {
-        report("open vote newresult file error");
+        bbslog("user","%s","open vote newresult file error");
         prints("Error: ½áÊøÍ¶Æ±´íÎó...\n");
     }
     get_result_title();
@@ -687,7 +687,7 @@ int vote_flag(char *bname, char val, int mode)
         return -1;
     }
     if (num >= MAXUSERS) {
-        report("Vote Flag, Out of User Numbers");
+        bbslog("user","%s","Vote Flag, Out of User Numbers");
         return -1;
     }
     if ((fd = open(buf, O_RDWR | O_CREAT, 0600)) == -1) {
