@@ -638,10 +638,12 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
     if (clearlabel == true) {
         buf[0] = 0;
     }
+    if (scrint)
     good_move(line, col);
     if (prompt)
         prints("%s", prompt);
 /*    y = line;*/
+    if (scrint)
     good_getyx(&y, &x);
 /*    col += (prompt == NULL) ? 0 : num_noans_chr(prompt);
 //    x = col;*/

@@ -9,6 +9,7 @@ int dict_main()
     int i;
     char sql[600], word[300];
 
+    scrint=false;
     clear();
     mysql_init(&s);
     if (!mysql_real_connect(&s, 
@@ -19,10 +20,13 @@ int dict_main()
 			    sysconf_eval("MYSQLPORT",1521), sysconf_str("MYSQLSOCKET"), 0)) {
         prints("%s\n", mysql_error(&s));
         pressanykey();
+        scrint=true;
+	redoscr();
         return;
     }
     while (1) {
     char* table;
+    move(2,0);
     getdata(2, 0, "«Î ‰»Îµ•¥ :  ", word, 70, true, NULL, true);
     clear();
     move(3,0);
@@ -94,4 +98,6 @@ int dict_main()
     //i = igetkey();
     }
     mysql_close(&s);
+    scrint=true;
+    redoscr();
 }

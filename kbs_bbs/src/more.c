@@ -969,6 +969,7 @@ int ansimore(char *filename, int promptend)
     ch = mmap_more(filename, 1, "RrEexp", NULL);
     if (promptend)
         pressanykey();
+    if (scrint)
     move(t_lines - 1, 0);
     prints("[m[m");
     return ch;
@@ -1000,6 +1001,7 @@ int ansimore_withzmodem(char *filename, int promptend, char *title)
     ch = mmap_more(filename, 1, "RrEexp", title);
     if (promptend)
         pressanykey();
+    if (scrint)
     move(t_lines - 1, 0);
     prints("\x1b[m\x1b[m");
     return ch;

@@ -326,7 +326,7 @@ move(y, x)
 int y, x;
 {
 	if (!scrint) {
-	    rel_move(-1, -1, y, x);
+	    do_move(x, y, ochar);
 	    return;
 	
 	}
@@ -343,7 +343,7 @@ good_move(int y, int x)
 	int inansi = 0;
 
 	if (!scrint) {
-	    rel_move(-1, -1, y, x);
+	    do_move(x, y, ochar);
 	    return;
 	
 	}
