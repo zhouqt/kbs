@@ -432,6 +432,7 @@ int do_com_menu()
                     if(inrooms.peoples[me].flag&PEOPLE_ALIVE) {
                         send_msg(inrooms.peoples+me, "你还在游戏,不能退出");
                         kill(inrooms.peoples[me].pid, SIGUSR1);
+                        return 0;
                     }
                     return 1;
                 case 2:
@@ -614,15 +615,7 @@ void join_room(struct room_struct * r)
                             for(i=0;i<myroom->people;i++)
                                 send_msg(inrooms.peoples+i, buf);
                         }
-                        j=1; t1=0; t2=0; t3=0;
-                        for(i=0;i<myroom->people;i++)
-                        if(!(inrooms.peoples[i].flag&PEOPLE_SPECTATOR) &&
-                            inrooms.peoples[i].flag&PEOPLE_ALIVE &&
-                            (inrooms.peoples[i].flag&PEOPLE_KILLER||inrooms.status==INROOM_DAY))
-                            if(inrooms.peoples[i].vote == 0) {
-                                j=0;
-                                t3++;
-                            }
+                        t1=0; t2=0; t3=0;
                         for(i=0;i<myroom->people;i++)
                             inrooms.peoples[i].vnum = 0;
                         for(i=0;i<myroom->people;i++)
@@ -643,7 +636,16 @@ void join_room(struct room_struct * r)
                                 t2=inrooms.peoples[i].vnum;
                             }
                         }
-                        if(j/* || t1-t2>t3*/) {
+                        j=1;
+                        for(i=0;i<myroom->people;i++)
+                        if(!(inrooms.peoples[i].flag&PEOPLE_SPECTATOR) &&
+                            inrooms.peoples[i].flag&PEOPLE_ALIVE &&
+                            (inrooms.peoples[i].flag&PEOPLE_KILLER||inrooms.status==INROOM_DAY))
+                            if(inrooms.peoples[i].vote == 0) {
+                                j=0;
+                                t3++;
+                            }
+                        if(j || t1-t2>t3) {
                             int max=0, ok=0, maxi, maxpid;
                             for(i=0;i<myroom->people;i++)
                                 inrooms.peoples[i].vnum = 0;
