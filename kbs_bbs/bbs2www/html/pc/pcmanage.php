@@ -44,7 +44,7 @@
 		
 		if($act == "cut" || $act == "copy")
 		{
-			$target = $_POST["target"];
+			$target = (int)($_POST["target"]);
 			if($target < 0 || $target > 4 )
 				$target = 2;//如果参数错误先移入私人区
 			if($target == 3)
@@ -75,7 +75,7 @@
 			{
 				if($_POST["art".$i])
 				{
-					$query .= " OR `nid` = '".$_POST["art".$i]."' ";
+					$query .= " OR `nid` = '".(int)($_POST["art".$i])."' ";
 					$j ++;
 				}
 			}
@@ -117,13 +117,13 @@
 		}
 		elseif($act == "post")
 		{
-			$tag =$_GET["tag"];
+			$tag =(int)($_GET["tag"]);
 			if($tag < 0 || $tag > 4 )
 				$tag = 2;//如果参数错误先在私人区发表
 			if($tag == 3)
 			{
 				
-				$pid = $_GET["pid"];
+				$pid = (int)($_GET["pid"]);
 				$query = "SELECT `nid` FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `access` = 3 AND `nid` = '".$pid."'; ";
 				$result = mysql_query($query,$link);
 				if($rows = mysql_fetch_array($result))
@@ -160,7 +160,7 @@
 					$c = 1;
 				$emote = (int)($_POST["emote"]);
 				$query = "INSERT INTO `nodes` (  `pid` , `tid` , `type` , `source` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` ) ".
-					"VALUES ( '".$pid."', '".$_POST["tid"]."' , '0', '', '".$emote."' ,  '".$_SERVER["REMOTE_ADDR"]."','".date("YmdHis")."' , '".date("YmdHis")."', '".$pc["UID"]."', '".$c."', '0', '".addslashes($_POST["subject"])."', '".addslashes($_POST["body"])."', '".$tag."', '0');";
+					"VALUES ( '".$pid."', '".(int)($_POST["tid"])."' , '0', '', '".$emote."' ,  '".$_SERVER["REMOTE_ADDR"]."','".date("YmdHis")."' , '".date("YmdHis")."', '".$pc["UID"]."', '".$c."', '0', '".addslashes($_POST["subject"])."', '".addslashes($_POST["body"])."', '".$tag."', '0');";
 				mysql_query($query,$link);
 ?>
 <script language="javascript">
@@ -171,61 +171,62 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			else
 			{
 ?>
+<br><center>
 <form action="pcmanage.php?act=post&<?php echo "tag=".$tag."&pid=".$pid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
-<table cellspacing="0" cellpadding="5" border="1" width="100%">
+<table cellspacing="0" cellpadding="5" border="0" width="90%" class="t1">
 <tr>
-	<td>发表文章</td>
+	<td class="t2">发表文章</td>
 </tr>
 <tr>
-	<td>主题
-	<input type="text" size="100" name="subject">
+	<td class="t8">主题
+	<input type="text" size="100" name="subject" class="f1">
 	</td>
 </tr>
 <tr>
-	<td>
+	<td class="t5">
 	评论
-	<input type="radio" name="comment" value="0" checked>允许
-	<input type="radio" name="comment" value="1">不允许
+	<input type="radio" name="comment" value="0" checked class="f1">允许
+	<input type="radio" name="comment" value="1" class="f1">不允许
 	</td>
 </tr>
 <tr>
-	<td>
+	<td class="t8">
 	文集
-	<select name="tid">
+	<select name="tid" class="f1">
 <?php
 		$blogs = pc_blog_menu($link,$pc["UID"],$tag);
 		for($i = 0 ; $i < count($blogs) ; $i ++)
-			echo "<option value=\"".$blogs[$i]["TID"]."\">".stripslashes($blogs[$i]["NAME"])."</option>";
+			echo "<option value=\"".$blogs[$i]["TID"]."\">".html_format($blogs[$i]["NAME"])."</option>";
 ?>
 	</select>
 	</td>
 </tr>
 <tr>
-	<td>心情符号</td>
+	<td class="t13">心情符号</td>
 </tr>
 <tr>
-	<td><?php @require("emote.html"); ?></td>
+	<td class="t5"><?php @require("emote.html"); ?></td>
 </tr>
 <tr>
-	<td>内容</td>
+	<td class="t11">内容</td>
 </tr>
 <tr>
-	<td><textarea name="body" cols="100" rows="20" id="body"></textarea></td>
+	<td class="t8"><textarea name="body" cols="100" rows="20" id="body" class="f1"></textarea></td>
 </tr>
 <tr>
-	<td>
-		<input type="submit" value="发表本文">
-		<input type="button" value="返回上页" onclick="history.go(-1)">
+	<td class="t2">
+		<input type="submit" value="发表本文" class="b1">
+		<input type="button" value="返回上页" onclick="history.go(-1)" class="b1">
 	</td>
 </tr>
 </table>
-</form>
+</form></center>
 <?php				
 			}
 		}
 		elseif($act == "edit")
 		{
-			$nid = $_GET["nid"];
+			$nid = (int)($_GET["nid"]);
 			$query = "SELECT `subject` , `body` ,`comment`,`type`,`tid`,`access` FROM nodes WHERE `nid` = '".$nid."' AND `uid` = '".$pc["UID"]."' LIMIT 0 , 1 ; ";
 			$result = mysql_query($query,$link);
 			$rows = mysql_fetch_array($result);
@@ -242,7 +243,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				else
 					$c = 1;
 				$emote = (int)($_POST["emote"]);
-				$query = "UPDATE nodes SET `subject` = '".addslashes($_POST["subject"])."' , `body` = '".addslashes($_POST["body"])."' , `changed` = '".date("YmdHis")."' , `comment` = '".$c."' , `tid` = '".$_POST["tid"]."' , `emote` = '".$emote."' WHERE `nid` = '".$nid."' ; ";
+				$query = "UPDATE nodes SET `subject` = '".addslashes($_POST["subject"])."' , `body` = '".addslashes($_POST["body"])."' , `changed` = '".date("YmdHis")."' , `comment` = '".$c."' , `tid` = '".(int)($_POST["tid"])."' , `emote` = '".$emote."' WHERE `nid` = '".$nid."' ; ";
 				mysql_query($query,$link);
 ?>
 <p align="center">
@@ -252,26 +253,27 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			}
 			else
 			{
-?>			
+?>
+<br><center>			
 <form action="pcmanage.php?act=edit&nid=<?php echo $nid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
-<table cellspacing="0" cellpadding="5" border="1" width="100%">
+<table cellspacing="0" cellpadding="5" border="0" width="90%" class="t1">
 <?php
 		if($rows[type]==1)
 		{
 ?>
 <tr>
-	<td>修改目录</td>
+	<td class="t2">修改目录</td>
 </tr>
 <tr>
-	<td>
+	<td class="t8">
 	主题
-	<input type="text" size="100" name="subject" value="<?php echo stripslashes($rows[subject]); ?>">
+	<input type="text" size="100" class="f1" name="subject" value="<?php echo htmlspecialchars(stripslashes($rows[subject])); ?>">
 	</td>
 </tr>
 <tr>
-	<td>
-		<input type="submit" value="修改目录">
-		<input type="button" value="返回上页" onclick="history.go(-1)">
+	<td class="t2">
+		<input type="submit" value="修改目录" class="b1">
+		<input type="button" value="返回上页" class="b1" onclick="history.go(-1)">
 	</td>
 </tr>
 <?php
@@ -280,66 +282,66 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 		{
 ?>
 <tr>
-	<td>修改文章</td>
+	<td class="t2">修改文章</td>
 </tr>
 <tr>
-	<td>主题
-	<input type="text" size="100" name="subject" value="<?php echo stripslashes($rows[subject]); ?>">
+	<td class="t8">主题
+	<input type="text" size="100" class="f1" name="subject" value="<?php echo htmlspecialchars(stripslashes($rows[subject])); ?>">
 	</td>
 </tr>
 <tr>
-	<td>
+	<td class="t5">
 	评论
-	<input type="radio" name="comment" value="0" <?php if($rows[comment]!=0) echo "checked"; ?>>允许
-	<input type="radio" name="comment" value="1" <?php if($rows[comment]==0) echo "checked"; ?>>不允许
+	<input type="radio" name="comment" class="f1" value="0" <?php if($rows[comment]!=0) echo "checked"; ?>>允许
+	<input type="radio" name="comment" class="f1" value="1" <?php if($rows[comment]==0) echo "checked"; ?>>不允许
 	</td>
 </tr>
 <tr>
-	<td>
+	<td class="t8">
 	文集
-	<select name="tid">
+	<select name="tid" class="f1">
 <?php
 		$blogs = pc_blog_menu($link,$pc["UID"],$rows[access]);
 		for($i = 0 ; $i < count($blogs) ; $i ++)
 		{
 			if($blogs[$i]["TID"] == $rows[tid])
-				echo "<option value=\"".$blogs[$i]["TID"]."\" selected>".stripslashes($blogs[$i]["NAME"])."</option>";
+				echo "<option value=\"".$blogs[$i]["TID"]."\" selected>".html_format($blogs[$i]["NAME"])."</option>";
 			else
-				echo "<option value=\"".$blogs[$i]["TID"]."\" >".stripslashes($blogs[$i]["NAME"])."</option>";
+				echo "<option value=\"".$blogs[$i]["TID"]."\" >".html_format($blogs[$i]["NAME"])."</option>";
 		}
 ?>
 	</select>
 	</td>
 </tr>
 <tr>
-	<td>心情符号</td>
+	<td class="t13">心情符号</td>
 </tr>
 <tr>
-	<td><?php @require("emote.html"); ?></td>
+	<td class="t5"><?php @require("emote.html"); ?></td>
 </tr>
 <tr>
-	<td>内容</td>
+	<td class="t11">内容</td>
 </tr>
 <tr>
-	<td><textarea name="body" cols="100" rows="20" id="body"><?php echo stripslashes($rows[body]." "); ?></textarea></td>
+	<td class="t8"><textarea name="body" class="f1" cols="100" rows="20" id="body"><?php echo htmlspecialchars(stripslashes($rows[body]." ")); ?></textarea></td>
 </tr>
 <tr>
-	<td>
-		<input type="submit" value="修改本文">
-		<input type="button" value="返回上页" onclick="history.go(-1)">
+	<td class="t2">
+		<input type="submit" value="修改本文" class="b1">
+		<input type="button" value="返回上页" onclick="history.go(-1)" class="b1">
 	</td>
 </tr>
 <?php
 		}
 ?>
 </table>
-</form>
+</form></center>
 <?php				
 			}
 		}
 		elseif($act == "del")
 		{
-			$nid = $_GET["nid"];	
+			$nid = (int)($_GET["nid"]);	
 			$query = "SELECT `access`,`type` FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `nid` = '".$nid."' ; ";
 			$result = mysql_query($query,$link);
 			$rows = mysql_fetch_array($result);
@@ -405,7 +407,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 		}
 		elseif($act == "tedit")
 		{
-			$query = "SELECT * FROM topics WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".$_GET["tid"]."' ; ";	
+			$query = "SELECT * FROM topics WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".(int)($_GET["tid"])."' ; ";	
 			$result = mysql_query($query,$link);
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);
@@ -424,7 +426,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				}
 				*/
 				//$query = "UPDATE topics SET `topicname` = '".$_POST["topicname"]."' , `access` = '".$_POST["access"]."' WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".$rows[tid]."' ; ";
-				$query = "UPDATE topics SET `topicname` = '".$_POST["topicname"]."' WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".$rows[tid]."' ; ";
+				$query = "UPDATE topics SET `topicname` = '".addslashes($_POST["topicname"])."' WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".$rows[tid]."' ; ";
 				mysql_query($query,$link);
 				
 ?>
@@ -437,10 +439,12 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			{
 				$sec = array("公开区","好友区","私人区");
 ?>
+<br>
+<center>
 <form action="pcmanage.php?act=tedit&tid=<?php echo $rows[tid]; ?>" method="post" onsubmit="if(this.topicname.value==''){alert('请输入文集名称!');return false;}">
-<table cellspacing="0" cellpadding="5" border="1" width="100%">
+<table cellspacing="0" cellpadding="5" border="0" width="90%" class="t1">
 <tr>
-	<td>修改文集</td>
+	<td class="t2">修改文集</td>
 </tr>
 <?php /*
 <tr>
@@ -463,25 +467,25 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 */
 ?>
 <tr>
-	<td>
+	<td class="t8">
 	文集名
-	<input type="text" name="topicname" value="<?php echo $rows[topicname]; ?>">
+	<input type="text" class="f1" name="topicname" value="<?php echo htmlspecialchars(stripslashes($rows[topicname])); ?>">
 	</td>
 </tr>
 <tr>
-	<td>
-	<input type="submit" value="修改文集">
-	<input type="button" value="返回上页" onclick="history.go(-1)">
+	<td class="t2">
+	<input type="submit" value="修改文集" class="b1">
+	<input type="button" value="返回上页" class="b1" onclick="history.go(-1)">
 	</td>
 </tr>
 </table>
-</form>
+</form></center>
 <?php
 			}
 		}
 		elseif($act == "tdel")
 		{
-			$query = "SELECT `nid` FROM nodes WHERE `tid` = '".$_GET["tid"]."' ; ";
+			$query = "SELECT `nid` FROM nodes WHERE `tid` = '".(int)($_GET["tid"])."' ; ";
 			$result = mysql_query($query,$link);
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);
@@ -492,7 +496,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			}
 			else
 			{
-				$query = "DELETE FROM topics WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".$_GET["tid"]."' ; ";
+				$query = "DELETE FROM topics WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".(int)($_GET["tid"])."' ; ";
 				mysql_query($query,$link);
 ?>
 <p align="center">
@@ -503,11 +507,11 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 		}
 		elseif($act == "tadd" && $_POST["topicname"])
 		{
-			$access = $_POST["access"];
+			$access = (int)($_POST["access"]);
 			if($access < 0 || $access > 2)
 				$access = 0;
 			$query = "INSERT INTO `topics` (`uid` , `access` , `topicname` , `sequen` ) ".
-					"VALUES ( '".$pc["UID"]."', '".$access."', '".$_POST["topicname"]."', '0');";
+					"VALUES ( '".$pc["UID"]."', '".$access."', '".addslashes($_POST["topicname"])."', '0');";
 			mysql_query($query,$link);
 ?>
 <p align="center">
@@ -527,7 +531,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 		}
 		elseif($act == "adddir" && $_POST["dir"])
 		{
-			$pid = $_POST["pid"];
+			$pid = (int)($_POST["pid"]);
 			if(pc_dir_num($link,$pc["UID"],$pid)+1 > $pc["DLIM"])
 			{
 				html_error_quit("目标文件夹中的目录数已达上限 ".$pc["DLIM"]. " 个!");
@@ -545,7 +549,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?ph
 		elseif($act == "favcut" || $act == "favcopy")
 		{
 			//目前不支持目录的剪切和复制
-			$query = "SELECT `nid`,`type`,`pid`,`subject` FROM nodes WHERE `nid` = '".$_GET["nid"]."' AND `uid` = '".$pc["UID"]."' AND `access` = 3  AND `type` = 0 LIMIT 0 , 1;";
+			$query = "SELECT `nid`,`type`,`pid`,`subject` FROM nodes WHERE `nid` = '".(int)($_GET["nid"])."' AND `uid` = '".$pc["UID"]."' AND `access` = 3  AND `type` = 0 LIMIT 0 , 1;";
 			$result = mysql_query($query,$link);
 			$rows = mysql_fetch_array($result);
 			if(!$rows)
@@ -575,7 +579,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?ph
 				html_error_quit("您的剪贴板是空的，请先剪切或者复制一个文件!");
 				exit();
 			}
-			$pid = $_GET["pid"];
+			$pid = (int)($_GET["pid"]);
 			$query = "SELECT `nid` FROM nodes WHERE `nid` = '".$pid."' AND `uid` = '".$pc["UID"]."' AND `type` = 1 AND `access` = 3 LIMIT 0 , 1 ;";
 			$result = mysql_query($query,$link);
 			if(!$rows=mysql_fetch_array($result))

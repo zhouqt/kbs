@@ -97,9 +97,9 @@
 	
 	$listorder = $_GET["order"];
 	$listorder1 = $_GET["order1"];
-	$pageno = $_GET["pno"];
+	$pageno = (int)($_GET["pno"]);
 	if(isset($_GET["char"]))
-		$char = $_GET["char"];
+		$char = addslashes($_GET["char"]);
 	else
 		$char = FALSE;
 		

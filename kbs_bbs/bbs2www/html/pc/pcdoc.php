@@ -548,8 +548,8 @@
 <?php		
 	}
 	
-	$userid = $_GET["userid"];
-	$pid = $_GET["pid"];
+	$userid = addslashes($_GET["userid"]);
+	$pid = (int)($_GET["pid"]);
 	$tag = (int)($_GET["tag"]);
 	
 	$link = pc_db_connect();
@@ -648,7 +648,7 @@
 	{
 ?>
 	<td rowspan="2" align="middle" valign="top" width="150">
-	<?php display_blog_menu($link,$pc,$tag,$_GET["tid"]); ?>
+	<?php display_blog_menu($link,$pc,$tag,(int)($_GET["tid"])); ?>
 	</td>
 <?php
 	}
@@ -681,9 +681,9 @@
 	<td align="left" valign="top">
 <?php
 	if($tag == 3)
-		display_fav_folder($link,$pc,$pid,$pur,$_GET["order"]);
+		display_fav_folder($link,$pc,$pid,$pur,addslashes($_GET["order"]));
 	elseif($tag < 5 )
-		display_art_list($link,$pc,$tag,$pur,$_GET["tid"],$_GET["order"]);
+		display_art_list($link,$pc,$tag,$pur,(int)($_GET["tid"]),addslashes($_GET["order"]));
 	elseif($tag == 5)
 		display_friend_manage($pc,$f_err);
 	elseif($tag == 6)

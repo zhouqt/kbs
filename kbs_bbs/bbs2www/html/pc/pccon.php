@@ -70,17 +70,17 @@
 			else
 				$tdclass= array("t5","t12","t13");
 			$rows = mysql_fetch_array($result);
-			echo "<tr>\n<td class=\"".$tdclass[1]."\">".
-				//"<a href=\"pccom.php?uid=".$uid."&nid=".$nid."&cid=".$rows[cid]."\">".
+			echo "<tr>\n<td class=\"".$tdclass[1]."\">&nbsp;".
 				"<img src=\"icon/".$rows[emote].".gif\" border=\"0\" align=\"absmiddle\">\n".
+				"<a href=\"pcshowcom.php?cid=".$rows[cid]."\">".
 				html_format($rows[subject]).
-				//"</a>".
+				"</a>".
 				"[<a href=\"/bbsqry.php?userid=".$rows[username]."\">".$rows[username]."</a> 于 ".time_format($rows[created])." 提到]\n";
 			if($perm || strtolower($rows[username]) == strtolower($currentuser["userid"]))
 				echo "[<a href=\"#\" onclick=\"bbsconfirm('pceditcom.php?act=del&cid=".$rows[cid]."','确认删除?')\">删</a>]\n";
 			if(strtolower($rows[username]) == strtolower($currentuser["userid"]))
 				echo "[<a href=\"pceditcom.php?act=edit&cid=".$rows[cid]."\">改</a>]\n";
-			echo "</td><td width=\"100\" align=\"right\" class=\"".$tdclass[0]."\">第 <font class=\"f4\">".($i+1)."</font> 楼&nbsp;&nbsp;</td>\n</tr>\n";
+			echo "</td><td width=\"100\" align=\"right\" class=\"".$tdclass[0]."\"><font class=\"f4\">".($i+1)."</font>&nbsp;&nbsp;</td>\n</tr>\n";
 			if($spr)
 			{
 				echo "<tr>\n<td colspan='2' class=\"".$tdclass[2]."\">".
@@ -96,10 +96,10 @@
 		return $re_num;
 	}
 	
-	$id = $_GET["id"];
-	$nid = $_GET["nid"];
-	$pid = $_GET["pid"];
-	$tag = $_GET["tag"];
+	$id = (int)($_GET["id"]);
+	$nid = (int)($_GET["nid"]);
+	$pid = (int)($_GET["pid"]);
+	$tag = (int)($_GET["tag"]);
 	if($_GET["s"]=="all")
 		$spr = TRUE;
 	else
@@ -221,7 +221,7 @@
 	</tr>
 	<tr>
 		<td colspan="2" align="right" class="t8">
-		<?php display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,$_GET["order"],$rows[comment],$tid); ?>
+		<?php display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid); ?>
 		</td>
 	</tr>
 	</table>
@@ -241,7 +241,7 @@
 	<td align="middle" class="f1" height="40" valign="middle">
 	<?php
 		if($re_num != 0)
-			display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,$_GET["order"],$rows[comment],$tid); 
+			display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid); 
 	?>
 	&nbsp;</td>
 </tr>

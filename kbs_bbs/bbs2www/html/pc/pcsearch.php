@@ -6,7 +6,7 @@
 	$needlogin=0;
 	require("pcfuncs.php");
 	
-	$keyword = trim($_GET["keyword"]);
+	$keyword = addslashes(trim($_GET["keyword"]));
 	switch($_GET["key"])
 	{
 		case "c":

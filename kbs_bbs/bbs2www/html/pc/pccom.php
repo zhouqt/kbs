@@ -15,10 +15,10 @@
 	}
 	else
 	{
-		html_init("gb2312","个人文集");		
-		$nid = $_GET["nid"];
+		pc_html_init("gb2312","个人文集");		
+		$nid = (int)($_GET["nid"]);
 		$act = $_GET["act"];
-		$cid = $_GET["cid"];
+		$cid = (int)($_GET["cid"]);
 		
 		$link =	pc_db_connect();
 		$query = "SELECT `access`,`uid` FROM nodes WHERE `nid` = '".$nid."' AND `type` != '1' ;";
@@ -73,40 +73,38 @@
 		
 		if($act == "pst")
 		{
-?>		
+?>
+<br><center>		
 <form action="pccom.php?act=add&nid=<?php echo $nid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入评论主题!');return false;}">
-<table cellspacing="0" cellpadding="5" width="100%" border="1">
+<table cellspacing="0" cellpadding="5" width="90%" border="0" class="t1">
 <tr>
-	<td>发表评论</td>
+	<td class="t2">发表评论</td>
 </tr>
 <tr>
-	<td align="left"><hr width="90%" align="left"></td>
-</tr>
-<tr>
-	<td>
+	<td class="t8">
 	主题
-	<input type="text" name="subject" size="100">
+	<input type="text" name="subject" size="100" class="f1">
 	</td>
 </tr>
 <tr>
-	<td>心情符号</td>
+	<td class="t13">心情符号</td>
 </tr>
 <tr>
-	<td><?php @require("emote.html"); ?></td>
+	<td class="t5"><?php @require("emote.html"); ?></td>
 </tr>
 <tr>
-	<td>内容</td>
+	<td class="t11">内容</td>
 </tr>
 <tr>
-	<td><textarea name="body" cols="100" rows="20" id="body"></textarea></td>
+	<td class="t8"><textarea class="f1" name="body" cols="100" rows="20" id="body"></textarea></td>
 </tr>
 <tr>
-	<td>
-	<input type="submit" value="发表评论">
-	<input type="button" value="返回上页" onclick="history.go(-1)">
+	<td class="t2">
+	<input type="submit" value="发表评论" class="b1">
+	<input type="button" value="返回上页" class="b1" onclick="history.go(-1)">
 </tr>
 </table>
-</form>			
+</form></center>	
 <?php			
 		}
 		elseif($act == "add")
