@@ -141,7 +141,7 @@ static int set_keydefine_show(struct _select_def *conf, int i)
 
 static int set_keydefine_prekey(struct _select_def *conf, int *key)
 {
-    if ((*key == '\r' || *key == '\n') && (arg->tmpnum != 0)) {
+    if ((*key == '\r' || *key == '\n') && (tmpnum != 0)) {
         conf->new_pos = tmpnum;
         tmpnum = 0;
         return SHOW_SELCHANGE;
