@@ -570,7 +570,7 @@ int do_send(char *userid, char *title, char *q_file)
                  */
                 res = bbs_sendmail(tmp_fname, title, userid, isuu, isbig5, noansi);
 
-                newbbslog(BBSLOG_USER, "mailed %s", userid);
+                newbbslog(BBSLOG_USER, "mailed %s %s", userid,title);
                 break;
             }
         }
@@ -614,7 +614,7 @@ int do_send(char *userid, char *title, char *q_file)
             currentuser->usedspace += st.st_size;
         }
 
-        newbbslog(BBSLOG_USER, "mailed %s", userid);
+        newbbslog(BBSLOG_USER, "mailed %s %s", userid,save_title);
         if (!strcasecmp(userid, "SYSOP"))
             updatelastpost("sysmail");
         return 0;

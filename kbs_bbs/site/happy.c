@@ -464,3 +464,8 @@ void build_board_structure(const char *board)
 	return;
 }
 
+void get_mail_limit(struct userec* user,int *sumlimit,int * numlimit)
+{
+    *sumlimit=10000;
+    *numlimit=10000;
+}

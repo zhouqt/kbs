@@ -379,3 +379,32 @@ void build_board_structure(const char *board)
 	return;
 }
 
+void get_mail_limit(struct userec* user,int *sumlimit,int * numlimit)
+{
+    if ((!(user->userlevel & PERM_SYSOP)) && strcmp(user->userid, "Arbitrator")) {
+        if (user->userlevel & PERM_CHATCLOAK) {
+            *sumlimit = 4000;
+            *numlimit = 4000;
+        } else
+            /*
+             *              * if (lookupuser->userlevel & PERM_BOARDS)
+             *                           * set BM, chatop, and jury have bigger mailbox, stephen 2001.10.31 
+             *                                        */
+        if (user->userlevel & PERM_MANAGER) {
+            *sumlimit = 600;
+            *numlimit = 600;
+        } else if (user->userlevel & PERM_LOGINOK) {
+            *sumlimit = 240;
+            *numlimit = 300;
+        } else {
+            *sumlimit = 15;
+            *numlimit = 15;
+        }
+    }
+    else {
+        *sumlimit = 9999;
+        *numlimit = 9999;
+        return 0;
+    }
+}
+
