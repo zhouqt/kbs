@@ -55,6 +55,11 @@ static void reconfig(int signo)
     reread=1;
 }
 
+static void reaper()
+{
+    while (waitpid(-1, NULL, WNOHANG | WUNTRACED) > 0);
+}
+
 #endif
 
 int main()
@@ -73,6 +78,16 @@ int main()
     if (readconfig()!=0) return -1;
     sigaction(SIGHUP, &act, NULL);
     act.sa_handler = reconfig;
+#ifdef AIX
+    act.sa_handler = NULL;
+    act.sa_flags = SA_RESTART | SA_NOCLDWAIT;
+    sigaction(SIGCHLD, &act, NULL);
+#else
+    act.sa_handler = reaper;
+    act.sa_flags = SA_RESTART;
+    sigaction(SIGCHLD, &act, NULL);
+#endif
+
     setuid(BBSUID);
     setreuid(BBSUID, BBSUID);
     setgid(BBSGID);
@@ -97,10 +112,13 @@ int main()
             }
         }
 
+	if (fork()==0) {
 	update_dns(dns_server, dns_zone,
 		update_keyname, update_key,
 		msg.userid, msg.ip, dns_ttl); 	
 	bbslog("3error","update dns %s %s",msg.userid,msg.ip);
+	exit(0);
+	}
         if (reread) 
             if (readconfig()!=0) {
             	bbslog("3error","bbsupdated config error");
