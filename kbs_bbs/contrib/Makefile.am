@@ -1,1 +1,1 @@
-EXTRA_DIST=crontab.SMTH rc.bbs
+EXTRA_DIST=crontab.SMTH indent.smth rc.bbs
