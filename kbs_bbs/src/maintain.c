@@ -1709,7 +1709,10 @@ int x_deny()
         if (sel == i + 2)
             break;
         if (sel > 0 && sel <= i) {
-            char buf[40];
+            /*char buf[40];  commented by binxun*/
+            /*---------*/
+            char buf[STRLEN]; /*buf is too small...changed by binxun .2003/05/11 */
+            /*---------*/
             char reportbuf[120];
 
             move(40, 0);
