@@ -52,16 +52,28 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 		return $nodes;
 	}
 	
-	function display_nodes($link,$pc,$nodes,$tablewidth="100%")
+	function display_nodes($link,$pc,$nodes,$tablewidth="100%",$tablestyle=0)
 	{
 		for($i=0;$i<min(5,count($nodes));$i++)
 		{
 			$contentcss = ($nodes[$i][htmltag])?"contentwithhtml":"content";
-			if($i%2==0)
-				$cellclass=array("t14","t11","t8");
+			if($tablestyle==1)
+			{
+				$tableclass = "f1";
+				if($i%2==0)
+					$cellclass=array("t14","t14","t14");
+				else
+					$cellclass=array("t16","t16","t16");
+			}
 			else
-				$cellclass=array("t16","t13","t5");
-			echo "<table cellspacing=0 cellpadding=5 width=\"".$tablewidth."\" class=t15>\n".
+			{
+				$tableclass = "t15";
+				if($i%2==0)
+					$cellclass=array("t14","t11","t8");
+				else
+					$cellclass=array("t16","t13","t5");
+			}
+			echo "<table cellspacing=0 cellpadding=10 width=\"".$tablewidth."\" class=".$tableclass.">\n".
 			"<tr><td class=\"".$cellclass[0]."\"><img src=\"icon/".$nodes[$i][emote].".gif\" border=0 align=absmiddle>\n".
 			"<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\" class=f2>".html_format($nodes[$i][subject])."</a></td>".
 			"<td class=\"".$cellclass[1]."\" align=right>[<a href=\"pccom.php?act=pst&nid=".$nodes[$i][nid]."\">评论</a>]\n[<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\">写信问候</a>]</td></tr>\n".
@@ -331,9 +343,9 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 				</td></tr>
 			</table>
 		</td>
-		<td width="80%" align="middle" valign="top">
-		<?php display_nodes($link,$pc,$nodes,"95%"); ?>
-		<p align=middle class=f1>
+		<td width="80%" align="right" valign="top">
+		<?php display_nodes($link,$pc,$nodes,"99%",1); ?>
+		<p align=center class=f1>
 		Update: <?php echo time_format($pc["MODIFY"]); ?>
 		<br />
 		&copy;All Rights Reserved
