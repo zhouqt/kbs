@@ -179,9 +179,9 @@ int autoappend;
         char *ptr;
 
         setbfile(buf, board, fh->filename);
-        if ((fp = fopen(buf, "r")) == NULL)
+        if ((fp = fopen(buf, "rb")) == NULL)
             return;
-        while (fgets(buf, sizeof(buf), fp) != NULL) {
+        while (attach_fgets(buf, sizeof(buf), fp) != NULL) {
             /*
              * 首先滤掉换行符 
              */
@@ -430,7 +430,7 @@ void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail
     time_t now;
 
     now = time(0);
-    inf = fopen(quote_file, "r");
+    inf = fopen(quote_file, "rb");
     of = fopen(filepath, "w");
     if (inf == NULL || of == NULL) {
         /*---	---*/
@@ -451,7 +451,7 @@ void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail
         normal_file = 1;
 
         write_header(of, user, in_mail, sourceboard, title, Anony, 1 /*不写入 .posts */ );
-        if (fgets(buf, 256, inf) != NULL) {
+        if (attach_fgets(buf, 256, inf) != NULL) {
             for (count = 8; buf[count] != ' ' && count < 256; count++)
                 owner[count - 8] = buf[count];
         }
@@ -464,7 +464,7 @@ void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail
             normal_file = 0;
         if (normal_file) {
             for (header_count = 0; header_count < 3; header_count++) {
-                if (fgets(buf, 256, inf) == NULL)
+                if (attach_fgets(buf, 256, inf) == NULL)
                     break;      /*Clear Post header */
             }
             if ((header_count != 2) || (buf[0] != '\n'))
@@ -483,7 +483,7 @@ void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail
     } else if (mode == 2) {
         write_header(of, user, in_mail, sourceboard, title, Anony, 0 /*写入 .posts */ );
     }
-    while (fgets(buf, 256, inf) != NULL) {
+    while (attach_fgets(buf, 256, inf) != NULL) {
         if ((strstr(buf, "【 以下文字转载自 ") && strstr(buf, "讨论区 】")) || (strstr(buf, "【 原文由") && strstr(buf, "所发表 】")))
             continue;           /* 避免引用重复 */
         else
@@ -1543,7 +1543,7 @@ int add_edit_mark(char *fname, int mode, char *title)
     int added = 0;
     bool findattach=false;
 
-    if ((fp = fopen(fname, "r")) == NULL)
+    if ((fp = fopen(fname, "rb")) == NULL)
         return 0;
     sprintf(outname, "tmp/%d.editpost", getpid());
     if ((out = fopen(outname, "w")) == NULL) {
@@ -1551,7 +1551,7 @@ int add_edit_mark(char *fname, int mode, char *title)
         return 0;
     }
 
-    while ((fgets(buf, 256, fp)) != NULL) {
+    while ((attach_fgets(buf, 256, fp)) != NULL) {
         if (!memcmp(buf,ATTACHMENT_PAD,ATTACHMENT_SIZE)) {
             findattach=true;
             break;
@@ -1652,22 +1652,28 @@ int attach_fgets(char* s,int size,FILE* stream)
      if (ch==ATTACHMENT_PAD[matchpos]) {
         matchpos++;
         if (matchpos==ATTACHMENT_SIZE) {
-            fseek(stream,-ATTACHMENT_SIZE,SEEK_CUR);
-            *(ptr-ATTACHMENT_SIZE)=0;
-            return 1;
+            int size, d;
+            while(ch=fgetc(stream));
+            fread(&d, 1, 4, stream);
+            size = htonl(d);
+            fseek(stream,size,SEEK_CUR);
+            ptr-=ATTACHMENT_SIZE;
+            matchpos=0;
+            continue;
         }
      }
      *ptr=ch;
      ptr++;
      if ((ptr-s)==size-1) {
 	     *(ptr-1)=0;
-	     return 0;
+	     return 1;
      }
      if (ch=='\n') {
         *ptr=0;
-        return 0;
+        return 1;
      }
   }
-  return -1;
+  if(ptr!=s) return 1;
+  else return 0;
 }
 

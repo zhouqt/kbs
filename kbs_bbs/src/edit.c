@@ -652,19 +652,20 @@ static long insert_from_fp(FILE *fp)
                 if (*data==*attachpad) {
                     matched++;
                     if (matched==ATTACHMENT_SIZE) {
-                        end_mmapfile((void *) ptr, size, -1);
-                        BBS_RETURN((not+1)-(ATTACHMENT_SIZE)+1);
+                        int d, size;
+                        data++;
+                        while(*data) data++;
+                        data++;
+                        memcpy(&d, data, 4);
+                        size = htonl(d);
+                        data+=4+size-1;
+                        matched = 0;
+                        attachpad = ATTACHMENT_PAD;
+                        continue;
                     } else {
                         attachpad++;
                         continue;
                     }
-                }
-                if (matched) {
-                    int i;
-                    attachpad=ATTACHMENT_PAD;
-                    matched=0;
-                    for (i=0;i<matched;i++)
-                        insertch_from_fp(*(attachpad+i));
                 }
                 insertch_from_fp(*data);
             }
@@ -683,7 +684,7 @@ long read_file(char *filename)
 
     if (currline == NULL)
         vedit_init();
-    if ((fp = fopen(filename, "r+")) == NULL) {
+    if ((fp = fopen(filename, "r+b")) == NULL) {
         if ((fp = fopen(filename, "w+")) != NULL) {
             fclose(fp);
             return;

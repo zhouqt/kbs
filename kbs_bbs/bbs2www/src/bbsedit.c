@@ -133,9 +133,9 @@ int main()
         http_fatal("文件丢失");
     /* 这里还需要添加代码，以防止用户修改文件头和来源 */
     for (i = 0; i < 4; i++)
-        if (attach_fgets(buf, sizeof(buf), fp)!=0) break;
+        if (attach_fgets(buf, sizeof(buf), fp)==0) break;
     
-    while (attach_fgets(buf, sizeof(buf), fp) == 0) {
+    while (attach_fgets(buf, sizeof(buf), fp) != 0) {
         char tmp[256];
         if (Origin2(buf))
             break;

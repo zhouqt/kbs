@@ -170,7 +170,7 @@ int UndeleteArticle(int ent, struct fileheader *fileinfo, char *direct)
 
     i = 0;
     while (!feof(fp) && i < 2) {
-        fgets(buf, 1024, fp);
+        attach_fgets(buf, 1024, fp);
         if (feof(fp))
             break;
         if (strstr(buf, "发信人: ") && strstr(buf, "), 信区: ")) {
@@ -1770,78 +1770,6 @@ int garbage_line(char *str)
 }
 
 /* When there is an old article that can be included -jjyang */
-#ifdef NINE_BUILD
-void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
-{
-    FILE *inf, *outf;
-    char *qfile, *quser;
-    char buf[256], *ptr;
-    char op;
-    int bflag;
-
-    qfile = q_file;
-    quser = q_user;
-    bflag = strncmp(qfile, "mail", 4);
-    outf = fopen(filepath, "w");
-    if (*qfile != '\0' && (inf = fopen(qfile, "r")) != NULL) {
-        op = quote_mode;
-        if (op != 'N') {
-            fgets(buf, 256, inf);
-            if ((ptr = strrchr(buf, ')')) != NULL) {
-                ptr[1] = '\0';
-                if ((ptr = strchr(buf, ':')) != NULL) {
-                    quser = ptr + 1;
-                    while (*quser == ' ')
-                        quser++;
-                }
-            }
-
-            if (bflag)
-                fprintf(outf, "【 在 %-.55s 的大作中提到: 】\n", quser);
-            else
-                fprintf(outf, "【 在 %-.55s 的来信中提到: 】\n", quser);
-
-            if (op == 'A') {
-                while (fgets(buf, 256, inf) != NULL) {
-                    fprintf(outf, ": %s", buf);
-                }
-            } else if (op == 'R') {
-                while (fgets(buf, 256, inf) != NULL)
-                    if (buf[0] == '\n')
-                        break;
-                while (fgets(buf, 256, inf) != NULL) {
-                    if (Origin2(buf))
-                        continue;
-                    fprintf(outf, "%s", buf);
-                }
-            } else {
-                while (fgets(buf, 256, inf) != NULL)
-                    if (buf[0] == '\n')
-                        break;
-                while (fgets(buf, 256, inf) != NULL) {
-                    if (strcmp(buf, "--\n") == 0)
-                        break;
-                    if (buf[250] != '\0')
-                        strcpy(buf + 250, "\n");
-                    if (!garbage_line(buf))
-                        fprintf(outf, ": %s", buf);
-                }
-            }
-        }
-        fprintf(outf, "\n");
-        fclose(inf);
-    }
-
-    if ((numofsig > 0) && !(currentuser->signature == 0 || Anony == 1)) {       /* 签名档为0则不添加 */
-        if (currentuser->signature < 0)
-            addsignature(outf, currentuser, (rand() % numofsig) + 1);
-        else
-            addsignature(outf, currentuser, currentuser->signature);
-    }
-    fclose(outf);
-}
-
-#else
 void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
 {                               /* 引用文章， 全局变量quote_file,quote_user, */
     FILE *inf, *outf;
@@ -1859,10 +1787,11 @@ void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
     	bbslog("3user","do_quote() fopen(%s):%s",filepath,strerror(errno));
     	return;
     }
-    if (*qfile != '\0' && (inf = fopen(qfile, "r")) != NULL) {  /* 打开被引用文件 */
+    if (*qfile != '\0' && (inf = fopen(qfile, "rb")) != NULL) {  /* 打开被引用文件 */
         op = quote_mode;
         if (op != 'N') {        /* 引用模式为 N 表示 不引用 */
-            fgets(buf, 256, inf);       /* 取出第一行中 被引用文章的 作者信息 */
+            attach_fgets(buf, 256, inf);
+            /* 取出第一行中 被引用文章的 作者信息 */
             if ((ptr = strrchr(buf, ')')) != NULL) {    /* 第一个':'到最后一个 ')' 中的字符串 */
                 ptr[1] = '\0';
                 if ((ptr = strchr(buf, ':')) != NULL) {
@@ -1878,30 +1807,31 @@ void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
                 fprintf(outf, "\n【 在 %s 的来信中提到: 】\n", quser);
 
             if (op == 'A') {    /* 除第一行外，全部引用 */
-                while (fgets(buf, 256, inf) != NULL) {
+                while (attach_fgets(buf, 256, inf) != NULL) {
                     fprintf(outf, ": %s", buf);
                 }
             } else if (op == 'R') {
-                while (fgets(buf, 256, inf) != NULL)
+                while (attach_fgets(buf, 256, inf) != NULL)
                     if (buf[0] == '\n')
                         break;
-                while (fgets(buf, 256, inf) != NULL) {
+                while (attach_fgets(buf, 256, inf) != NULL) {
                     if (Origin2(buf))   /* 判断是否 多次引用 */
                         continue;
                     fprintf(outf, "%s", buf);
 
                 }
             } else {
-                while (fgets(buf, 256, inf) != NULL)
+                while (attach_fgets(buf, 256, inf) != NULL)
                     if (buf[0] == '\n')
                         break;
-                while (fgets(buf, 256, inf) != NULL) {
+                while (attach_fgets(buf, 256, inf) != NULL) {
                     if (strcmp(buf, "--\n") == 0)       /* 引用 到签名档为止 */
                         break;
                     if (buf[250] != '\0')
                         strcpy(buf + 250, "\n");
                     if (!garbage_line(buf)) {   /* 判断是否是无用行 */
                         fprintf(outf, ": %s", buf);
+#ifndef NINE_BUILD
                         if (op == 'S') {        /* 简略模式,只引用前几行 Bigman:2000.7.2 */
                             line_count++;
                             if (line_count > 10) {
@@ -1909,6 +1839,7 @@ void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
                                 break;
                             }
                         }
+#endif
                     }
                 }
             }
@@ -1930,7 +1861,7 @@ void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
     }
     fclose(outf);
 }
-#endif
+
 int do_post()
 {                               /* 用户post */
     *quote_user = '\0';
@@ -1981,9 +1912,9 @@ int do_post()
      */
     if (strchr(quote_user, '.')) {
         genbuf[0] = '\0';
-        fp = fopen(q_file, "r");
+        fp = fopen(q_file, "rb");
         if (fp != NULL) {
-            fgets(genbuf, 255, fp);
+            attach_fgets(genbuf, 255, fp);
             fclose(fp);
         }
 
@@ -2315,7 +2246,6 @@ int post_article(char *q_file, struct fileheader *re_file)
 
     strcpy(quote_title, save_title);
     strcpy(quote_board, currboard);
-    aborted = vedit(filepath, true, &eff_size, NULL);    /* 进入编辑状态 */
 
     if(upload) {
         char sbuf[PATHLEN];
@@ -2324,6 +2254,8 @@ int post_article(char *q_file, struct fileheader *re_file)
         post_file.attachment = add_attach(filepath, sbuf, upload);
     }
     
+    aborted = vedit(filepath, true, &eff_size, NULL);    /* 进入编辑状态 */
+
     add_loginfo(filepath, currentuser, currboard, Anony);       /*添加最后一行 */
 
     strncpy(post_file.title, save_title, STRLEN);
@@ -2490,7 +2422,7 @@ int edit_title(int ent, struct fileheader *fileinfo, char *direct)
             }
     strcpy(buf, fileinfo->title);
     getdata(t_lines - 1, 0, "新文章标题: ", buf, 50, DOECHO, NULL, false);      /*输入标题 */
-    if (buf[0] != '\0') {
+    if (buf[0] != '\0'&&strcmp(buf,fileinfo->title)) {
         char tmp[STRLEN * 2], *t;
         char tmp2[STRLEN];      /* Leeward 98.03.29 */
 
