@@ -284,7 +284,7 @@ talk += ' \
 
 var query = ' \
 <a href="searchboard.php">搜索版面</a><br> \
-<form action="searchboard.php" method="get" style="margin: 0px;"><input name="exact" type="hidden" value="1" /> \
+<form action="searchboard.php" method="get" style="margin: 0px;"> \
 <input class="TableBorder2" name="board" value="输入关键字" size="12" onmouseover="this.focus()" onfocus="this.select()" /></form> \
 <hr class="TableBorder2"><a class="MItem" href="query.php" title="直接点上面的“搜索”菜单将会搜索当前版面">搜索文章</a> \
 ';
