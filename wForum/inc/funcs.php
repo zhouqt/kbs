@@ -3,10 +3,26 @@ if (!defined('_BBS_FUNCS_PHP_'))
 {
 define('_BBS_FUNCS_PHP_', 1);
 
+$Version="Powered by wForum Version 0.9";
+$Copyright="<a href=\"http://www.aka.cn/\" target=\"_blank\">阿卡信息技术(北京)有限公司</a> &amp; <a href=\"http://www.smth.cn\" target=\"_blank\">水木清华BBS</a> 版权所有 1994 - 2008 <br/><a href=\"http://wforum.zixia.net/\" target=\"_blank\"><font face=\"Verdana, Arial, Helvetica, sans-serif\" size=\"1\" color=\"#6000CC\"><b>@zixia.net</b></font></a>";
+
 if ( (!isset($_COOKIE['iscookies'])) || ($_COOKIE['iscookies']==''))
 {
 	setcookie('iscookies','0',time()+3650*24*3600);
-	print '<META http-equiv=Content-Type content=text/html; charset=gb2312><meta HTTP-EQUIV=REFRESH CONTENT=3>正在登录论坛……<br><br>本系统要求使用COOKIES，假如您的浏览器禁用COOKIES，您将不能登录本系统……';
+?>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta HTTP-EQUIV="REFRESH" CONTENT="3">
+<META NAME="DESCRIPTION" CONTENT="wForum，基于高性能的水木清华BBS源码（一万五千人同时在线）的高性能论坛系统">
+<META NAME="KEYWORDS" CONTENT="wForum,aka,阿卡信息技术(北京)有限公司,zixia,论坛">
+</head>
+<body>
+正在登录论坛……<br><br>本系统要求使用COOKIES，假如您的浏览器禁用COOKIES，您将不能登录本系统……
+<span style="display:none"><?php   echo $Copyright; ?></span>
+</body>
+</html>
+<?php
 	exit();
 } 
 
