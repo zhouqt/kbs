@@ -58,7 +58,7 @@ void main()
         bt=0; gt=0;
         bwt=0; gwt=0;
         for(i=0;i<r.peoplet;i++) {
-            j = getid(r.id);
+            j = getid(r.id[i]);
             switch(r.st[i]) {
                 case 0:
                     statlib[j].gwtime++;
@@ -77,7 +77,7 @@ void main()
             }
         }
         for(i=0;i<r.peoplet;i++) {
-            j = getid(r.id);
+            j = getid(r.id[i]);
             switch(r.st[i]) {
                 case 0:
                     rr=(double)bt/gwt;
@@ -176,7 +176,7 @@ void main()
         bt=0; gt=0;
         bwt=0; gwt=0;
         for(i=0;i<r.peoplet;i++) {
-            j = getid(r.id);
+            j = getid(r.id[i]);
             switch(r.st[i]) {
                 case 0:
                     statlib[j].gwtime++;
@@ -195,7 +195,7 @@ void main()
             }
         }
         for(i=0;i<r.peoplet;i++) {
-            j = getid(r.id);
+            j = getid(r.id[i]);
             switch(r.st[i]) {
                 case 0:
                     rr=(double)bt/gwt;
