@@ -2055,7 +2055,7 @@ int mode;
     char        filepath[STRLEN], fname[STRLEN];
     char        buf[256],buf4[STRLEN],whopost[IDLEN];
     int         fp,i;
-    time_t          now;
+    int aborted;
 
     if (!haspostperm(currboard)&&!mode)
     {
@@ -2070,8 +2070,6 @@ int mode;
     memset(&postfile,0,sizeof(postfile)) ;
     strncpy(save_filename,fname,4096) ;
 
-    now=time(0);
-    sprintf(fname,"M.%d.A",now) ;
     if(!mode){
         if(!strstr(quote_title,"(转载)"))
             sprintf(buf4,"%s (转载)",quote_title);
@@ -2089,28 +2087,16 @@ int mode;
     }
 #endif
 
-    setbfile( filepath, currboard, fname ); /* 得到 目标POST文件名 */
+    setbfile( filepath, currboard, "");
 
-    /*  ip = strrchr(fname,'A') ;
-        while((fp = open(filepath,O_CREAT|O_EXCL|O_WRONLY,0644)) == -1) {
-            if(*ip == 'Z')                            POST文件名结尾由 A->Z变化，来避免重复 
-                ip++,*ip = 'A', *(ip + 1) = '\0' ;
-            else
-                (*ip)++ ;
-            setbfile( filepath, currboard, fname );
-        } */
-    i = 0;
-    while((fp = open(filepath,O_CREAT|O_EXCL|O_WRONLY,0644)) == -1) {
-        now++;
-        sprintf(fname,"M.%d.A",now) ; /*great idea! */
-        setbfile( filepath, currboard, fname );
-        if(i > 10)
-            break;/*Haohmaru.99.12.03.faint...象News板这种情况，now不管怎么加，显然open永远都返回-1,不死循环才怪*/
-        i++;
+    if ((aborted=get_postfilename(postfile.filename,filepath))!=0) {
+        move( 3, 0 );
+        clrtobot();
+        prints("\n\n无法创建文件:%d...\n",aborted);
+        pressreturn();
+        clear();
+        return FULLUPDATE;
     }
-    close(fp) ;
-
-    strcpy(postfile.filename,fname) ;
 
     if(mode==1)
         strcpy(whopost,"deliver"); /* mode==1为自动发信 */
@@ -2257,7 +2243,6 @@ post_article()                         /*用户 POST 文章 */
     int         fp, aborted,anonyboard;
     int         replymode=1; /* Post New UI*/
     char        ans[4],include_mode='S';
-    time_t      now;
 
     if (YEA == check_readonly(currboard)) /* Leeward 98.03.28 */
         return FULLUPDATE;
@@ -2401,17 +2386,15 @@ post_article()                         /*用户 POST 文章 */
         }
     }/* 输入结束 */
 
-    /* 自动生成 POST 文件名 */
-    now = time(NULL);
-    sprintf(fname,"M.%d.A", now) ;
-    setbfile( filepath, currboard, fname );
-    while((fp = open(filepath,O_CREAT|O_EXCL|O_WRONLY,0644)) == -1) {
-        now++;
-        sprintf(fname,"M.%d.A",now) ;
-        setbfile( filepath, currboard, fname );
+    setbfile( filepath, currboard, "");
+    if ((aborted=get_postfilename(post_file.filename,filepath))!=0) {
+        move( 3, 0 );
+        clrtobot();
+        prints("\n\n无法创建文件:%d...\n",aborted);
+        pressreturn();
+        clear();
+        return FULLUPDATE;
     }
-    close(fp) ;
-    strcpy(post_file.filename,fname) ;
 
     in_mail = NA ;
 
