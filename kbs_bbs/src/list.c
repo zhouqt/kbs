@@ -234,6 +234,12 @@ do_userlist()
     {
         int isfriend;
 	isfriend=-1;
+	if (user_record[i+page]==NULL) {
+		clear();
+		prints("[1;31mœµÕ≥≥ˆœ÷Bug,«ÎµΩSysop∞Â±®∏Ê£¨–ª–ª![m");
+		sleep(10);
+		exit(0);
+	}
         uentp=*(user_record[i+page]);
         if (!uentp.active||!uentp.pid)
 		{
