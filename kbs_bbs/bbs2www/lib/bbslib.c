@@ -2832,56 +2832,26 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
 
 }
 
-#ifdef HAVE_WFORUM
-//#define GENERATE_WEBTHREAD_USE_AVLTREE
 
-#ifndef GENERATE_WEBTHREAD_USE_AVLTREE
-//以后改成更有效率的算法吧……
-typedef struct _wwwthreadheader_list{
-	struct wwwthreadheader content;
-	struct _wwwthreadheader_list *previous;
-} wwwthreadheader_list, *pwwwthreadheader_list;
 
-static pwwwthreadheader_list foundInWWWThreadList(unsigned int groupid, pwwwthreadheader_list p){
-	while (p!=NULL) {
-		if (p->content.origin.groupid==groupid)	{
-			return p;
-		}
-		p=p->previous;
-	}
-	return NULL;
-}
-
-static pwwwthreadheader_list CreateNewWWWThreadListNode(pwwwthreadheader_list p){
-	pwwwthreadheader_list q;
-	q=(pwwwthreadheader_list)malloc(sizeof(wwwthreadheader_list));
-	if (q!=NULL){
-		q->previous=p;
-	}
-	return q;
-}
-
-static void clearWWWThreadList(pwwwthreadheader_list p){
-	pwwwthreadheader_list q;
-	while (p!=NULL) {
-		q=p->previous;
-		free(p);
-		p=q;
-	}
-}
-
-#else
+#ifdef HAVE_WFORUM /* 这个 #ifdef 里面用于产生 .WEBTHREAD 索引 - atppp */
 
 // balance is LH (left heavy), EH (even), RH (right heavy)
 enum balance { LH, EH, RH };
 typedef struct _wwwthread_treenode {
-    struct wwwthreadheader content;
-    enum balance bf;            // bf is the balance factor
+    struct wwwthreadheader content; // what's written into .WEBTHREAD finally
+
+    /* AVL Tree supportive variables. This is used for quickly searching groupid. */
+    enum balance bf;                // bf is the balance factor
     struct _wwwthread_treenode *Lchild;
     struct _wwwthread_treenode *Rchild;
+
+    /* linked list supportive variables. This linked list is sorted by lastreply.posttime, so can be written into .WEBTHREAD linearly */
     struct _wwwthread_treenode *previous;
 } wwwthread_treenode;
 
+
+/* following four routines are standard AVL operation support. */
 static wwwthread_treenode *AVL_RotateLeft(wwwthread_treenode * p)
 {
     wwwthread_treenode *temp;
@@ -2973,7 +2943,18 @@ static wwwthread_treenode *AVL_LeftBalance(wwwthread_treenode * r)
     return r;
 }
 
-/* previous returns the newly created node if newly created */
+/*
+ * insert a node into the AVL Tree.
+ *
+ * @param proot     *proot is the place to store the current root node, can be changed if the tree is rotated after insertion
+ * @param fh        *fh is the fileheader information to be stored in content field.
+ * @param flags     newly created node->content.flags
+ * @param previous  *previous is the place to store the previous node in the linked list. If the groupid is already in the AVL
+ *                  tree, then no node is created and *previous leaves unchanged; if a node is newly created, *previous stores
+ *                  the newly created node address
+ *
+ * @author  atppp
+ */
 static bool AVL_Insert(wwwthread_treenode ** proot, struct fileheader *fh, int flags, wwwthread_treenode** previous)
 {
     bool tallersubtree;
@@ -2989,15 +2970,24 @@ static bool AVL_Insert(wwwthread_treenode ** proot, struct fileheader *fh, int f
             return false;
         }
         root->content.lastreply = *fh;
+
+        /*
+         * here is the trick: if this post is not the original post, set origin.groupid to something else.
+         * So later when written into the .WEBTHREAD file, we know whether the original post does exist or not.
+         */
         if (fh->id == fh->groupid)
             root->content.origin = *fh;
         else
             root->content.origin.groupid = fh->groupid + 1;
+        
         root->content.flags = flags;
         root->content.articlecount = 1;
         root->content.unused = 0;
-        root->previous = *previous;
-        *previous = root;
+        
+        root->previous = *previous; //linked list support
+        *previous = root;           //return the newly created node address in *previous, so the caller can set tail variable.
+
+        /* AVL Tree support */
         root->Lchild = NULL;
         root->Rchild = NULL;
         root->bf = EH;
@@ -3043,21 +3033,23 @@ static bool AVL_Insert(wwwthread_treenode ** proot, struct fileheader *fh, int f
 
             else
                 taller = false;
-        } else {  // cmp == 0
-			if (root->content.lastreply.groupid == root->content.lastreply.id) { //ZhiDing
+        } else {  // the groupid (node) already exists
+            /* We have a bug here: sysmail board won't generate correct .WEBTHREAD file. But who cares!!! */
+			if (root->content.lastreply.groupid == root->content.lastreply.id) { // this node was created by Zhiding fileheader
 				root->content.lastreply = *fh;
 			} else {
 				root->content.articlecount++;
-			}
-            if ((fh->groupid == fh->id) && (root->content.flags != FILE_ON_TOP)) {
-                root->content.origin =*fh;
+                if ((fh->groupid == fh->id) && (root->content.flags != FILE_ON_TOP)) { //found the original post, put into origin field
+                                               /* 后面这个判断只是为了保证新旧代码产生 .WEBTHREAD 完全一致。这个细节以后还要调整 */
+                    root->content.origin =*fh;
+                }
             }
             taller = false;
         }
     }
     *proot = root;
     return taller;
-}                               // end insert
+}
 
 static void clearWWWThreadList(wwwthread_treenode *p){
 	wwwthread_treenode *q;
@@ -3068,10 +3060,8 @@ static void clearWWWThreadList(wwwthread_treenode *p){
 	}
 }
 
-#endif //ifndef GENERATE_WEBTHREAD_USE_AVLTREE
-
 int www_generateOriginIndex(const char* board)
-/* added by roy 2003.7.17 generate .WEBTHREAD index file*/
+/* added by roy 2003.7.17 generate .WEBTHREAD index file. Modified by atppp 2004.06.03 */
 {
     struct fileheader *ptr1;
     struct flock ldata, ldata2;
@@ -3080,14 +3070,14 @@ int www_generateOriginIndex(const char* board)
 	char currdirect[PATHLEN];
     char *ptr;
     struct stat buf;
-#ifndef GENERATE_WEBTHREAD_USE_AVLTREE
-    pwwwthreadheader_list tail,temp;
-	int found;
-#else
+
+    /* AVL Tree support */
     wwwthread_treenode *root = NULL;
+
+    /* linked list support */
     wwwthread_treenode *tail = NULL;
     wwwthread_treenode *temp = NULL;
-#endif
+    
     int bid;
     struct BoardStatus* bs;
 
@@ -3153,77 +3143,32 @@ int www_generateOriginIndex(const char* board)
 
 	size=sizeof(struct wwwthreadheader);
 
-#ifndef GENERATE_WEBTHREAD_USE_AVLTREE
-	tail=temp=NULL;
-#endif
-
     bid = getbnum(board);
     bs = getbstatus(bid);
     for (i=bs->toptitle-1;i>=0;i--) {
         if (bs->topfh[i].groupid!=bs->topfh[i].id) continue;
-#ifdef GENERATE_WEBTHREAD_USE_AVLTREE
         AVL_Insert(&root, &(bs->topfh[i]), FILE_ON_TOP, &temp);
-        if (temp == NULL) {
+        if (temp == NULL) { //malloc failure, impossible?
             clearWWWThreadList(tail);
             return -5;
         }
         tail = temp;
-#else
-        if (foundInWWWThreadList(bs->topfh[i].groupid,tail)!=NULL) continue;
-        temp=CreateNewWWWThreadListNode(tail);
-        if (temp==NULL) {
-            clearWWWThreadList(tail);
-            return -5;
-        }
-        temp->content.origin=bs->topfh[i];
-        temp->content.lastreply=bs->topfh[i];
-        temp->content.articlecount=1;
-        temp->content.flags=FILE_ON_TOP;
-        temp->content.unused=0;
-        tail=temp;
-#endif
     }
 
 
     ptr1 = (struct fileheader *) ptr;
 	for (i=total-1;i>=0;i--) {
-#ifdef GENERATE_WEBTHREAD_USE_AVLTREE
         AVL_Insert(&root, &(ptr1[i]), 0, &temp);
-        if (temp == NULL) {
+        if (temp == NULL) { //malloc failure, impossible?
 				clearWWWThreadList(tail);
 				return -5;
         }
         tail = temp;
-#else
-		temp=foundInWWWThreadList(ptr1[i].groupid,tail);
-		if (temp==NULL)	{
-			if ((found=Search_Bin((struct fileheader *)ptr,ptr1[i].groupid,0,total-1))<0) continue;
-			temp=CreateNewWWWThreadListNode(tail);
-			if (temp==NULL) {
-				clearWWWThreadList(tail);
-				return -5;
-			}
-			temp->content.origin=ptr1[found];
-			temp->content.lastreply=ptr1[i];
-			temp->content.articlecount=1;
-			temp->content.flags=0;
-			temp->content.unused=0;
-			tail=temp;
-		} else {
-			if (temp->content.lastreply.groupid==temp->content.lastreply.id) { //ZhiDing
-				temp->content.lastreply=ptr1[i];
-			} else {
-				temp->content.articlecount++;
-			}
-		}
-#endif
 	}
 	while (tail!=NULL) {
 		temp=tail->previous;
-#ifdef GENERATE_WEBTHREAD_USE_AVLTREE
-        if (tail->content.origin.groupid == tail->content.lastreply.groupid)
-#endif
-   		write(fd,&(tail->content),size);
+        if (tail->content.origin.groupid == tail->content.lastreply.groupid) //original post does not exist, skip
+       		write(fd,&(tail->content),size);
 		free(tail);
 		tail=temp;
 	}
