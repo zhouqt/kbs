@@ -227,12 +227,22 @@ int ann_traverse_check(char *path, struct userec *user)
     /* path parameter can not have leading '/' character */
     if (path[0] == '/')
         return -1;
+    board[0] = '\0';
     if ((ptr = strstr(path, "groups/")) != NULL)
         ann_get_board(ptr, board, sizeof(board));
-    else
-        board[0] = '\0';
-    bzero(pathbuf, sizeof(pathbuf));
-    ptr = path;
+#ifdef ZIXIA
+    if (board[0] == '\0') {
+#endif
+        bzero(pathbuf, sizeof(pathbuf));
+        ptr = path;
+#ifdef ZIXIA
+    } else {
+        if (check_read_perm(user, getbcache(board)) == 0) return -1;
+        ann_get_path(board, filename, sizeof(filename));
+        sprintf(pathbuf, "0Announce%s/", filename);
+        ptr = path + strlen(pathbuf);
+    }
+#endif
     while (*ptr != '\0') {
         if (*ptr == '/')
             snprintf(filename, sizeof(filename), "%s/.Names", pathbuf);
