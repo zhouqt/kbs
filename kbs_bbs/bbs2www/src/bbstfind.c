@@ -48,7 +48,7 @@ int main()
                 if (strlen(buf) < 500)
                     strcat(buf, buf2);
             }
-            printf("<td>%6.6s</td>", wwwCTime(atoi(x.filename + 2)) + 4);
+            printf("<td>%6.6s</td>", wwwCTime(get_posttime(&x) + 4));
             printf("<td><a href=\"bbscon?board=%s&file=%s&num=%d\">%s</a></td></tr>\n", brdencode, x.filename, sum - 1, void1(x.title));
             total++;
         }

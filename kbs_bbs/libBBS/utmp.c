@@ -716,7 +716,7 @@ int myfriend(int uid, char *fexp)
     /*
      * char buf[IDLEN+3]; 
      */
-    if (u->friendsnum<= 0) {
+    if (u == NULL || u->friendsnum<= 0) {
         return false;
     }
     for (i = 0; i < u->friendsnum; i++) {
