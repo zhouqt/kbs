@@ -125,6 +125,8 @@ int full_utmp(struct user_info *uentp, int *count)
 
 #ifdef NINE_BUILD
 
+//增加按ip排序，shiyao 2003.5.31
+
 int SortBy = 0;
 
 void sort_user_record(left, right)
@@ -213,7 +215,7 @@ static bool showcolor=true;
 
 int do_userlist()
 {
-    int i,y,x;
+    int i,j,y,x;
     char user_info_str[256 /*STRLEN*2 */ ], pagec;
     char tbuf[80];
     int override;
@@ -299,6 +301,12 @@ int do_userlist()
         }
         pagec = pagerchar(usernum,&uentp, uentp.pager, &isfriend);
         strncpy(tbuf, (real_user_names) ? uentp.realname : (showexplain && override) ? fexp : uentp.username, 80);
+#ifdef NINE_BUILD
+//昵称在列表中最后一字消除乱码，shiyao  2003.6.1
+	j = 15;
+	while (j>=0 && tbuf[j]<0) j--;
+	if ((15-j)%2)  tbuf[15] = 0;
+#endif
         tbuf[80]=0;
         resetcolor();
         clrtoeol();
