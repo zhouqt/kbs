@@ -1397,8 +1397,9 @@ static PHP_FUNCTION(bbs_getmailusedspace)
 /**
  * Fetch a list of mails in one user's mail path file into an array.
  * prototype:
- * array bbs_getmails(char *filename);
+ * array bbs_getmails(char *filename,int start,int num);
  *
+ * start - 0 based
  * @return array of loaded mails on success,
  *         -1  no mail
  *         FALSE on failure.
@@ -1408,7 +1409,8 @@ static PHP_FUNCTION(bbs_getmails)
 {
     char *mailpath;
     int mailpath_len;
-    int total, rows, i;
+    int total, rows, i,j ;
+	long start,num;
 
     struct fileheader *mails;
     zval *element;
@@ -1418,9 +1420,9 @@ static PHP_FUNCTION(bbs_getmails)
     int ac = ZEND_NUM_ARGS();
 
     /*
-     * getting arguments 
+     * getting arguments
      */
-    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &mailpath, &mailpath_len) == FAILURE) {
+    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sll", &mailpath, &mailpath_len,&start,&num) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
 
@@ -1428,47 +1430,47 @@ static PHP_FUNCTION(bbs_getmails)
     if (!total)
         RETURN_LONG(-1);
 
-    /*
-     * fetching mails 
-     */
-    if (array_init(return_value) == FAILURE) {
+	if (array_init(return_value) == FAILURE) {
         RETURN_FALSE;
     }
 
-    mails = emalloc(total * sizeof(struct fileheader));
-    if (!mails)
-        RETURN_FALSE;
-    rows = get_records(mailpath, mails, sizeof(struct fileheader), 1, total);
-    if (rows == -1)
-        RETURN_FALSE;
-    for (i = 0; i < rows; i++) {
-        MAKE_STD_ZVAL(element);
-        array_init(element);
-        if (mails[i].accessed[0] & FILE_READ) {
-            if (mails[i].accessed[0] & FILE_MARKED)
-                flags[0] = 'm';
-            else
-                flags[0] = ' ';
-        } else {
-            if (mails[i].accessed[0] & FILE_MARKED)
-                flags[0] = 'M';
-            else
-                flags[0] = 'N';
-        }
-        if (mails[i].accessed[0] & FILE_REPLIED) {
-            if (mails[i].accessed[0] & FILE_FORWARDED)
-                flags[1] = 'A';
-            else
-                flags[1] = 'R';
-        } else {
-            if (mails[i].accessed[0] & FILE_FORWARDED)
-                flags[1] = 'F';
-            else
-                flags[1] = ' ';
-        }
-        bbs_make_article_array(element, mails + i, flags, sizeof(flags));
-        zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
-    }
+    if(start >= total)RETURN_FALSE;
+	if(start + num > total)num = total - start;
+
+	mails = emalloc(num * sizeof(struct fileheader));
+	if (!mails)
+		RETURN_FALSE;
+	rows = get_records(mailpath, mails, sizeof(struct fileheader), start+1, num);//it is 1 -based
+	if (rows == -1)
+		RETURN_FALSE;
+	for (i = 0; i < rows; i++) {
+		MAKE_STD_ZVAL(element);
+		array_init(element);
+		if (mails[i].accessed[0] & FILE_READ) {
+			if (mails[i].accessed[0] & FILE_MARKED)
+				flags[0] = 'm';
+			else
+				flags[0] = ' ';
+		} else {
+			if (mails[i].accessed[0] & FILE_MARKED)
+				flags[0] = 'M';
+			else
+				flags[0] = 'N';
+		}
+		if (mails[i].accessed[0] & FILE_REPLIED) {
+			if (mails[i].accessed[0] & FILE_FORWARDED)
+				flags[1] = 'A';
+			else
+				flags[1] = 'R';
+		} else {
+			if (mails[i].accessed[0] & FILE_FORWARDED)
+				flags[1] = 'F';
+			else
+				flags[1] = ' ';
+		}
+		bbs_make_article_array(element, mails + i, flags, sizeof(flags));
+		zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
+	}
     efree(mails);
 }
 
@@ -1563,7 +1565,7 @@ static PHP_FUNCTION(bbs_changemaillist)
     int ac = ZEND_NUM_ARGS();
 
     /*
-     * getting arguments 
+     * getting arguments
      */
     if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "bssl", &bAdd, &userid, &userid_len, &boxname, &boxname_len, &index) == FAILURE) {
         WRONG_PARAM_COUNT;
