@@ -74,7 +74,7 @@ int readline_internal(unsigned int timeout)
     readline_ptr = readline_buffer;
     readline_left = raw_read(readline_fd, readline_ptr, readline_readnum);
     //Ææ¹ÖµÄ
-    if ((readline_left==0)&&(errno!=ENTR) exit(0);
+    if ((readline_left==0)&&(errno!=EINTR)) exit(0);
     if (!no_timeout)
         alarm(0);
     if (readline_left > 0 && bytes_per_error) {
