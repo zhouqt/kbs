@@ -584,6 +584,8 @@ int n;
 	          }
 
 #define DO_CRLF   {	slp->len=reg_col; \
+                        if(cur_col < slp->sso) \
+                             slp->mode&=~STANDOUT; \
                         cur_col = 0 ; \
                         if(cur_ln < scr_lns) \
                             cur_ln++ ; \
