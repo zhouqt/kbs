@@ -62,7 +62,7 @@
 		{
 ?>
 <br><center>		
-<form name="postform" action="pccom.php?act=add&nid=<?php echo $nid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入评论主题!');return false;}">
+<form name="postform" action="pccom.php?act=add&nid=<?php echo $nid; ?>" method="post" onsubmit="return submitwithcopy();">
 <table cellspacing="0" cellpadding="5" width="90%" border="0" class="t1">
 <tr>
 	<td class="t2">发表评论</td>
@@ -85,7 +85,7 @@
 	</td>
 </tr>
 <tr>
-	<td class="t8"><textarea name="blogbody" class="f1" cols="100" rows="20" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
+	<td class="t8"><textarea name="blogbody" class="f1" cols="100" rows="20" id="blogbody" wrap="physical">
 	<?php echo $pcconfig["EDITORALERT"].$_POST["blogbody"]; ?>
 	</textarea></td>
 </tr>
@@ -93,7 +93,7 @@
 	<td class="t2">
 	<input type="button" name="ins" value="插入HTML" class="b1" onclick="return insertHTML();" />
 	<input type="button" name="hil" value="高亮" class="b1" onclick="return highlight();" />
-	<input type="submit" name="postbutton" id="postbutton" onclick="submitwithcopy()" value="发表评论" class="b1">
+	<input type="submit" name="postbutton" id="postbutton" value="发表评论" class="b1">
 	<input type="button" value="返回上页" class="b1" onclick="history.go(-1)">
 </tr>
 </table>

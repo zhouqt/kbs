@@ -40,6 +40,7 @@ function pc_html_init($charset,$title="",$otherheader="",$cssfile="",$bkimg="",$
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>"/>
+<script src="pc.js"></script>
 <?php
         if ( func_num_args() > 1) {
 ?>
@@ -65,11 +66,7 @@ _editor_url = "htmlarea/";
 </script>
 <!-- load the main HTMLArea files -->
 <script type="text/javascript" src="htmlarea/htmlarea.js"></script>
-<script type="text/javascript" src="htmlarea/lang/en.js"></script>
-<script type="text/javascript" src="htmlarea/dialog.js"></script>
-<script type="text/javascript" src="htmlarea/popupwin.js"></script>
 <style type="text/css">
-@import url(htmlarea/htmlarea.css);
 textarea { background-color: #fff; border: 1px solid 00f; }
 </style>
 <?php /*
@@ -88,7 +85,7 @@ textarea { background-color: #fff; border: 1px solid 00f; }
 <script type="text/javascript" defer="1">
 var editor = null;
 function initEditor() {
-  editor = new HTMLArea("blogbody");
+  editor = new HTMLArea("blogbody", getBlogConfig());
 <?php
 /*
   editor.registerPlugin("TableOperations");
@@ -103,7 +100,6 @@ function initEditor() {
 <?php
 	}
 ?>
-<script src="pc.js"></script>
 </head>
 <body TOPMARGIN="0" leftmargin="0"
 <?php

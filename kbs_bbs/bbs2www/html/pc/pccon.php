@@ -20,7 +20,7 @@
 	<?php } ?>
 	</td>
 </tr>
-<form name="postform" action="pccom.php?act=add&nid=<?php echo $nid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入评论主题!');return false;}">
+<form name="postform" action="pccom.php?act=add&nid=<?php echo $nid; ?>" method="post" onsubmit="return submitwithcopy();">
 <tr>
 	<td class="t8">
 	主题
@@ -39,11 +39,11 @@
 	</td>
 </tr>
 <tr>
-	<td class="t8"><textarea name="blogbody" class="f1" cols="60" rows="10" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical"></textarea></td>
+	<td class="t8"><textarea name="blogbody" class="f1" cols="60" rows="10" id="blogbody" wrap="physical"></textarea></td>
 </tr>
 <tr>
 	<td class="t5">
-	<input type="submit" name="postbutton" id="postbutton" onclick="submitwithcopy()" value="发表评论" class="f1">
+	<input type="submit" name="postbutton" id="postbutton" value="发表评论" class="f1">
 	<input type="button" value="返回上页" class="f1" onclick="history.go(-1)">
 	<input type="button" value="使用HTML编辑器" class="f1" onclick="window.location.href='pccom.php?act=pst&nid=<?php echo $nid; ?>';">
 </tr>
@@ -413,7 +413,7 @@
 		}
 ?>
 <tr>
-	<td align="middle" class="f1" height="40" valign="middle">
+	<td align="center" class="f1" height="40" valign="middle">
 	<?php
 		if($re_num != 0 || $tb_num != 0)
 			display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur,$rows[trackback],$rows[subject] , $rows[recommend] , $rows[nodetype] , $rows[username] , $rows[state]); 

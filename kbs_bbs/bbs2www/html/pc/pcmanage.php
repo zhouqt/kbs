@@ -284,7 +284,7 @@
 				
 ?>
 <br><center>
-<form name="postform" id="postform" target="_self" action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=post&<?php echo "tag=".$tag."&pid=".$pid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
+<form name="postform" id="postform" target="_self" action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=post&<?php echo "tag=".$tag."&pid=".$pid; ?>" method="post" onsubmit="return submitwithcopy();">
 <input type="hidden" name="tmpsave" id="tmpsave" value="0">
 <table cellspacing="0" cellpadding="5" border="0" width="90%" class="t1">
 <tr>
@@ -399,7 +399,7 @@
 	<td class="t2">
 		<input type="button" name="ins" value="插入HTML" class="b1" onclick="return insertHTML();" />
 		<input type="button" name="hil" value="高亮" class="b1" onclick="return highlight();" />
-		<input type="submit" name="postbutton" id="postbutton"  onclick="submitwithcopy()" value="发表本文" class="b1">
+		<input type="submit" name="postbutton" id="postbutton" value="发表本文" class="b1">
 		<input type="button" value="返回上页" onclick="history.go(-1)" class="b1">
 	</td>
 </tr>
@@ -455,7 +455,7 @@
 			{
 ?>
 <br><center>			
-<form name="postform" id="postform" action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=edit&nid=<?php echo $nid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
+<form name="postform" id="postform" action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=edit&nid=<?php echo $nid; ?>" method="post" onsubmit="return submitwithcopy();">
 <table cellspacing="0" cellpadding="5" border="0" width="90%" class="t1">
 <?php
 		if($rows[type]==1)
@@ -549,7 +549,7 @@
 	<td class="t2">
 		<input type="button" name="ins" value="插入HTML" class="b1" onclick="return insertHTML();" />
 		<input type="button" name="hil" value="高亮" class="b1" onclick="return highlight();" />
-		<input type="submit" name="postbutton" id="postbutton" onclick="submitwithcopy()" value="修改本文" class="b1">
+		<input type="submit" name="postbutton" id="postbutton" value="修改本文" class="b1">
 		<input type="button" value="返回上页" onclick="history.go(-1)" class="b1">
 	</td>
 </tr>

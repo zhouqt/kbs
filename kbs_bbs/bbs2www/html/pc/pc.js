@@ -24,18 +24,63 @@ function openScript(url, width, height)
 }
 
 function submitwithcopy() {
-    holdtext.innerText = document.postform.blogbody.value; 
-    Copied = holdtext.createTextRange(); 
-    Copied.execCommand('Copy'); 
-    //alert('文章内容已复制到剪贴板，如果发表失败，请重新发表'); 
-    document.postform.postbutton.value="发表中，请稍候……";
-	document.postform.postbutton.disabled=true;
-	document.postform.submit();
-	return true;    
+	f = document.postform;
+	if (f.subject.value==''){
+		alert('请输入标题!');
+		f.subject.focus();
+		return false;
+	}
+/*
+	if ((h = document.getElementById("holdtext")) != null) {
+		h.innerText = document.postform.blogbody.value; 
+		Copied = h.createTextRange(); 
+		Copied.execCommand('Copy');
+		alert('文章内容已复制到剪贴板，如果发表失败，请重新发表'); 
+	}
+*/
+	f.postbutton.value="发表中，请稍候……";
+	f.postbutton.disabled=true;
+	/*f.submit();*/
+	return true;
 }
 
 
+/* html area additional functions */
+function insertHTML() {
+	var html = prompt("Enter some HTML code here");
+	if (html) {
+		editor.insertHTML(html);
+	}
+}
+function highlight() {
+	editor.surroundHTML('<span style="background-color: yellow">', '</span>');
+}
 
+function getBlogConfig() {
+	var config = new HTMLArea.Config();
+	config.fontname = {
+		"Arial":	   'arial,helvetica,sans-serif',
+		"Courier New":	   'courier new,courier,monospace',
+		"Georgia":	   'georgia,times new roman,times,serif',
+		"Tahoma":	   'tahoma,arial,helvetica,sans-serif',
+		"Times New Roman": 'times new roman,times,serif',
+		"Verdana":	   'verdana,arial,helvetica,sans-serif',
+		"impact":	   'impact',
+		"WingDings":	   'wingdings',
+		"宋体":  '宋体',
+		"楷体":  '楷体_GB2312',
+		"隶书":  '隶书',
+		"黑体":  '黑体',
+		"幼圆":  '幼圆'
+	};
+	config.registerButton("code", "Code Fromat", "images/ed_format_code.gif", false,
+		function(editor, id) {
+			editor.surroundHTML('<p><table style="BORDER-RIGHT: #999999 1px dashed; BORDER-TOP: #999999 1px dashed;BORDER-LEFT: #999999 1px dashed; WIDTH: 468px; BORDER-BOTTOM: #999999 1px dashed;background-color: #f0f0f0;font-family:courier new,courier,monospace;font-size: 12px; line-height: 12px;" cellspacing="0" cellpadding="10" border="0"><tr><td>', '</td></tr></table><p>');
+		}
+	);
+	config.toolbar[0].splice(10,0,"code");
+	return config;
+}
 <!--
 // bbCode control by
 // subBlue design
