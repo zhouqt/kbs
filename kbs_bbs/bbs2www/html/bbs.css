@@ -2,7 +2,7 @@
 A:HOVER {COLOR: #ff0000;}
 TABLE.BODY {BORDER: 2px solid; BORDER-COLOR: #d0f0c0;}
 BODY {BACKGROUND-COLOR: #E5EDE5; FONT-SIZE: 12px; }
-body.dark {BACKGROUND-COLOR: #CCCCFF}
+body.dark {BACKGROUND-COLOR: #BBD0BB}
 TABLE,TH,TD,P,INPUT,TEXTAREA,SELECT {FONT-SIZE: 12px;}
 input.default { background-color: #F0F0FF; border: #000000 solid 1px }
 input.readonly { background-color: #F0F0FF; border: 0px }

@@ -1,8 +1,8 @@
 {TEXT-DECORATION: none;}
 A:HOVER {COLOR: #ff0000;}
 TABLE.BODY {BORDER: 2px solid; BORDER-COLOR: #d0f0c0;}
-BODY {BACKGROUND-COLOR: #F0F0FF; FONT-SIZE: 14px; }
-body.dark {BACKGROUND-COLOR: #CCCCFF}
+BODY {BACKGROUND-COLOR: #E5EDE5; FONT-SIZE: 14px; }
+body.dark {BACKGROUND-COLOR: #BBD0BB}
 TABLE,TH,TD,P,INPUT,TEXTAREA,SELECT {FONT-SIZE: 14px;}
 input.default { background-color: #F0F0FF; border: #000000 solid 1px }
 input.readonly { background-color: #F0F0FF; border: 0px }
