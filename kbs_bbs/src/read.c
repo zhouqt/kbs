@@ -1295,8 +1295,8 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
         }
         if (!isstart) {
             if (uinfo.mode != RMAIL && auser == 0) {
-                    search_threadid(locmem, isnext, ptitle->groupid, (passonly == 1));
-	    			if (passonly == 1) {//直接搜到尾了
+                    search_threadid(locmem, isnext, ptitle->groupid, (passonly == 1)||(passonly == 2));
+	    			if (passonly == 1 || passonly == 2) {//直接搜到尾了
 		    			previous = locmem->crs_line;
 			    		break;
 				    }
