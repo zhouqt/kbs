@@ -366,7 +366,7 @@ static int simple_key(struct _select_def *conf, int key)
 }
 
 
-int simple_select_loop(struct _select_item* item_conf,int flag,POINT title,union _select_return_value* ret)
+int simple_select_loop(struct _select_item* item_conf,int flag,int titlex,int titley,union _select_return_value* ret)
 {
     struct _select_def simple_conf;
     struct _simple_select_arg arg;
@@ -374,12 +374,12 @@ int simple_select_loop(struct _select_item* item_conf,int flag,POINT title,union
     int i;
     int numbers;
 
-    pts = (POINT *) malloc(sizeof(POINT) * numbers);
-
-    for (i = 0; i < numbers; i++) {
-        pts[i].x = item_conf[i].x;
-        pts[i].y = item_conf[i].y;
+    for (numbers = 0; item_conf[numbers].x!=-1; numbers++) {
+        pts[numbers].x = item_conf[numbers].x;
+        pts[numbers].y = item_conf[numbers].y;
     }
+
+    pts = (POINT *) malloc(sizeof(POINT) * numbers);
 
     arg.items=item_conf;
     arg.flag=flag;
@@ -391,7 +391,8 @@ int simple_select_loop(struct _select_item* item_conf,int flag,POINT title,union
     simple_conf.prompt = "¡ô";
     simple_conf.item_pos = pts;
     simple_conf.arg = &arg;
-    simple_conf.title_pos = title;
+    simple_conf.title_pos.x = titlex;
+    simple_conf.title_pos.y = titley;
     simple_conf.pos = numbers;
     simple_conf.on_select = simple_onselect;
     simple_conf.show_data = simple_show;
