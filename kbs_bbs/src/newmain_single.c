@@ -1041,7 +1041,7 @@ void showtitle(title, mid)
             colour = 1;
     }
     note = boardmargin();
-    spc1 = 39 - strlen(title) - strlen(mid) / 2;
+    spc1 = 39 - num_noans_chr(title) - strlen(mid) / 2;
     spc2 = 40 - strlen(note) - strlen(mid) / 2;
 /* Modified by Leeward 97/11/23 -- modification starts */
 /* If title is too long (BM names too long), spc1 < 2 (even < 0)
