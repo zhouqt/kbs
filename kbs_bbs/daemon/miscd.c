@@ -730,6 +730,11 @@ int main(int argc, char *argv[])
             return miscd_dodaemon(argv[1], argv[2]);
         if (strcasecmp(argv[1], "killdir") == 0)
             return dokilldir(argv[2]);
+        if (strcasecmp(argv[1], "flush") == 0) {
+            flush_ucache();
+            flush_bcache();
+            return 0;
+        }
         return miscd_dodaemon(NULL, argv[1]);
     }
     printf("Usage : %s killuser to kill old users\n", argv[0]);
