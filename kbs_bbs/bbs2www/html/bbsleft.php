@@ -448,14 +448,14 @@
 ?>					
 					&nbsp;
 					<img src="/images/line1.gif" border="0" align="absmiddle">
-					<a href="/cgi-bin/bbs/bbsqry" target="f3">查询网友</a>
+					<a href="/bbsqry.php" target="f3">查询网友</a>
 <?php
 		}					
 	else{
 ?>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/cgi-bin/bbs/bbsqry" target="f3">查询网友</a><br>
+					<a href="/bbsqry.php" target="f3">查询网友</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/cgi-bin/bbs/bbsfriend" target="f3">在线好友</a><br>
