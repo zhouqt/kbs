@@ -430,4 +430,4 @@ struct protect_id_passwd {
 	char email[STRLEN];     
 	char question[STRLEN];   //密码提示问题
 	char answer[STRLEN];    //问题答案
-}
+};
