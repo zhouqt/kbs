@@ -85,7 +85,7 @@ function showSec(isFold, isFav, boards, secNum) {
 		if (isFold) {
 			for (i = 0; i < boards.length; i++)	{
 				str += '<TR><TD align=middle width="100%" class=TableBody1>';
-				str += '<table width="100%" cellspacing=0 cellpadding=0><TR><TD align=middle width=46 class=TableBody1>';
+				str += '<table width="100%" cellspacing=0 cellpadding=0><TR><TD align=center width=46 class=TableBody1>';
 				if (boards[i].isUnread) {
 					str += "<img src=pic/forum_isnews.gif alt=ÓÐÐÂÌû×Ó>";
 				} else {

@@ -103,7 +103,7 @@ e. 目前使用php session的只有注册页的图片识别。register.php 和 img_rand/img_rand.
    session_start() 不能被调用两次。
 f. 分区版面列表采用JS写页面。展开列表需要隐藏iframe读数据，折叠列表直接使用已有的js变量
    重写页面。列表是否展开由一个 ShowSecBoards cookie 控制。这个 cookie 变量的最低一个 bit 
-   表示收藏夹版面列表是否展开，第(i+1) bit 表示第 i 个分区是否展开。二级版面永远展开。
+   表示收藏夹版面列表是否展开，第(i+1) bit 表示第 i 个分区是否展开。二级目录永远展开。
    展开版面列表以后服务器端设置 cookie；折叠列表由客户端自己设置 cookie。
 
 

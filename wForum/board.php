@@ -11,10 +11,11 @@ global $boardArr;
 global $boardID;
 global $boardName;
 global $page;
-
-setStat("文章列表");
+global $isGroup;
 
 preprocess();
+
+setStat($isGroup ? "版面列表" : "文章列表");
 
 show_nav($boardName);
 
@@ -28,7 +29,7 @@ board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
 </table>
 <script src="inc/loadThread.js"></script>
 <?php
-	if ($boardArr['FLAG'] & BBS_BOARD_GROUP ) {
+	if ($isGroup) {
 		showSecs($boardArr['SECNUM'],$boardID,true);
 	} else {
 		showBoardStaticsTop($boardArr);
@@ -52,6 +53,7 @@ function preprocess(){
 	global $currentuser;
 	global $boardArr;
 	global $page;
+	global $isGroup;
 	if (!isset($_GET['name'])) {
 		foundErr("未指定版面。");
 	}
@@ -72,7 +74,8 @@ function preprocess(){
 	} else {
 		$page=intval($_GET['page']);
 	}
-
+	$isGroup = ($boardArr['FLAG'] & BBS_BOARD_GROUP );
+	
 	bbs_set_onboard($boardID,1);
 	return true;
 }
