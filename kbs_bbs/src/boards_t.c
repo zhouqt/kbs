@@ -739,6 +739,7 @@ int choose_board(int newflag, char *boardprefix)
             else if (3 == yank_flag) {
                 char bname[STRLEN], buf[PATHLEN];
                 int i = 0;
+                struct stat st;
 
                 if (mail_list_t >= MAILBOARDNUM) {
                     move(2, 0);
@@ -750,29 +751,25 @@ int choose_board(int newflag, char *boardprefix)
                 }
                 move(0, 0);
                 clrtoeol();
-                getdata(0, 0, "输入邮箱英文名: ", bname, 10, DOECHO, NULL, true);
-                sprintf(buf, ".%s", bname);
-		  if (bname[0]==0) break;
-                if (!valid_fname(bname)) {
-                    move(2, 0);
-                    clrtoeol();
-                    prints("哎呀!! 名称只能包含英文及数字! ");
-                    pressreturn();
+                while(1){
+                	i++;
+                	sprintf(bname, ".MAILBOX%d", i);
+                	setmailfile(buf, currentuser->userid, bname);
+                	if (stat(buf, &st) != -1) break;
+                }
+                sprintf(bname, "MAILBOX%d", i);
+                move(0, 0);
+                clrtoeol();
+                getdata(0, 0, "输入邮箱显示中文名: ", buf, 30, DOECHO, NULL, true);
+		  if (buf[0]==0) {
                     show_brdlist(page, 1, newflag);     /*  refresh screen */
-                    break;
-                }
-                else{
-                	move(0, 0);
-                	clrtoeol();
-                	getdata(0, 0, "输入邮箱显示中文名: ", buf, 30, DOECHO, NULL, true);
-		        if (buf[0]==0) break;
-                	strncpy(mail_list[mail_list_t], buf, 29);
-                	strncpy(mail_list[mail_list_t]+30, bname, 9);
-                	mail_list_t++;
-                     save_mail_list();
-                     brdnum = -1;
-                }
-            	
+		      break;
+		  }
+                strncpy(mail_list[mail_list_t], buf, 29);
+                strncpy(mail_list[mail_list_t]+30, bname, 9);
+                mail_list_t++;
+                save_mail_list();
+                brdnum = -1;
             }
             break;
         case 'A':              // added by bad 2002.8.3
