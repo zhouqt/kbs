@@ -96,18 +96,10 @@ function decodesessionchar($ch)
 
 $loginok=0;
 
-function login_init()
+function set_fromhost()
 {
-
-global $currentuinfo;
 global $fullfromhost;
 global $fromhost;
-global $loginok;
-global $currentuser_num;
-global $currentuinfo_num;
-global $currentuser;
-global $utmpnum;
-$currentuinfo_tmp = array();
 
 @$fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
   if ($fullfromhost=="") {
@@ -127,6 +119,19 @@ if ($fromhost=="")  {
 }
 //sometimes,fromhost has strang space
 bbs_setfromhost(trim($fromhost),trim($fullfromhost));
+}
+
+function login_init()
+{
+global $currentuinfo;
+global $loginok;
+global $currentuser_num;
+global $currentuinfo_num;
+global $currentuser;
+global $utmpnum;
+$currentuinfo_tmp = array();
+
+set_fromhost();
 
 $compat_telnet=0;
 @$sessionid = $_GET["sid"];

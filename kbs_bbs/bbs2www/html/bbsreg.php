@@ -5,6 +5,7 @@
 	 */
 	$needlogin=false;
 	require("funcs.php");
+	set_fromhost();
 	require("reg.inc.php");
 
 	@$num_auth=$_POST["num_auth"];
