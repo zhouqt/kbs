@@ -1057,6 +1057,7 @@ static int simple_digest(char* str,int maxlen)
 {
 	char x[sizeof(int)];
 	char *p;
+	bzero(x,sizeof(int));
 	for (p=str;*p&&((p-str)<maxlen);p++)
 		x[(p-str)%sizeof(int)]+=*p;
 	return (int)x;
