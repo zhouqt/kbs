@@ -1446,6 +1446,7 @@ strncpy(regform.career,fdata[3],99);
 strncpy(regform.addr,fdata[4],99);
 strncpy(regform.phone,fdata[5],99);
 strncpy(regform.birth,fdata[6],99);
+strncpy(regform.ip, uinfo.lasthost, 20);
 ret=checkreg(regform, errorstr, useproxy);
 if (ret==-2) {
 #endif
