@@ -19,12 +19,12 @@ int main(int argc, char **argv)
 	resolve_utmp();
 
     now = time(NULL);
-	if((fin = fopen("pre_register","r")) == NULL)
+	if((fin = fopen("pre_register","rw")) == NULL)
 	{
 	    printf("open pre_register file failed.\n");
 	    return 0;
 	}
-	if((fout1 = fopen("pre_register1","w")) == NULL)
+	if((fout1 = fopen("pre_register1","rw")) == NULL)
 	{
 	    fclose(fin);
 	    printf("open pre_register1 file failed.\n");
@@ -38,10 +38,11 @@ int main(int argc, char **argv)
 	    return 0;
 	}
 
+	flock(fileno(fin),LOCK_EX);
 	while(!exit){
 	    for(i = 0; i < 8;i++)
 		{
-            if(fgets(genbuf[i], STRLEN, fin) == NULL){
+            if(fgets(genbuf[i], 256, fin) == NULL){
 			    exit = 1;
 			    break;
 			}
@@ -63,9 +64,14 @@ int main(int argc, char **argv)
 		else
             for(i = 0; i < 8;i++)fputs(genbuf[i],fout1);
     }
+    rewind(fout1);
+    ftruncate(fileno(fin),0);
+    while(!fgets(genbuf[0],256,fout1))
+    	fputs(genbuf[0],fin);
+    flock(fileno(fin),LOCK_UN);
     fclose(fin);
-	fclose(fout1);
-	fclose(fout2);
+    fclose(fout1);
+    fclose(fout2);
 	
-	f_mv("pre_register1","pre_register");
+/*	f_mv("pre_register1","pre_register");*/
 }
