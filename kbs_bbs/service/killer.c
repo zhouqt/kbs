@@ -13,24 +13,24 @@ struct room_struct {
     int people;
 }
 
-struct room_struct * rooms;
-int roomst=0;
+struct room_struct * grooms;
+int groomst=0;
 
-void load_rooms()
+void load_grooms()
 {
     int fd;
     struct flock ldata;
-    if(roomst) free(rooms);
-    roomst=0;
+    if(groomst) free(grooms);
+    groomst=0;
     if((fd = open(".ROOMS", O_RDONLY, 0644))!=-1) {
         ldata.l_type=F_RDLCK;
         ldata.l_whence=0;
         ldata.l_len=0;
         ldata.l_start=0;
         if(fcntl(fd, F_SETLKW, &ldata)!=-1){
-            read(fd, &roomst, sizeof(roomst));
-            rooms=(struct room_struct*)malloc(sizeof(struct room_struct)*(roomst+1));
-            read(fd, rooms, sizeof(struct room_struct)*roomst);
+            read(fd, &groomst, sizeof(groomst));
+            grooms=(struct room_struct*)malloc(sizeof(struct room_struct)*(groomst+1));
+            read(fd, grooms, sizeof(struct room_struct)*groomst);
             	
             ldata.l_type = F_UNLCK;
             fcntl(fd, F_SETLKW, &ldata);
@@ -39,7 +39,7 @@ void load_rooms()
     }
 }
 
-void save_rooms()
+void save_grooms()
 {
     int fd;
     struct flock ldata;
@@ -49,8 +49,8 @@ void save_rooms()
         ldata.l_len=0;
         ldata.l_start=0;
         if(fcntl(fd, F_SETLKW, &ldata)!=-1){
-            write(fd, &roomst, sizeof(roomst));
-            write(fd, rooms, sizeof(struct room_struct)*roomst);
+            write(fd, &groomst, sizeof(groomst));
+            write(fd, grooms, sizeof(struct room_struct)*groomst);
             	
             ldata.l_type = F_UNLCK;
             fcntl(fd, F_SETLKW, &ldata);
@@ -63,8 +63,8 @@ int add_room(struct room_struct * r)
 {
     int fd, i;
     struct flock ldata;
-    if(roomst) free(rooms);
-    roomst=0;
+    if(groomst) free(grooms);
+    groomst=0;
     if((fd = open(".ROOMS", O_RDWR|O_CREAT, 0644))!=-1) {
         ldata.l_type=F_WRLCK;
         ldata.l_whence=0;
@@ -73,20 +73,20 @@ int add_room(struct room_struct * r)
         if(fcntl(fd, F_SETLKW, &ldata)!=-1){
             ldata.l_type = F_UNLCK;
             lseek(fd, 0, SEEK_SET);
-            read(fd, &roomst, sizeof(roomst));
-            rooms=(struct room_struct*)malloc(sizeof(struct room_struct)*(roomst+1));
-            read(fd, rooms, sizeof(struct room_struct)*roomst);
-            for(i=0;i<roomst;i++)
-            if(!strcmp(rooms[i].name, r->name)) {
+            read(fd, &groomst, sizeof(groomst));
+            grooms=(struct room_struct*)malloc(sizeof(struct room_struct)*(groomst+1));
+            read(fd, grooms, sizeof(struct room_struct)*groomst);
+            for(i=0;i<groomst;i++)
+            if(!strcmp(grooms[i].name, r->name)) {
                 fcntl(fd, F_SETLKW, &ldata);
                 close(fd);
                 return -1;
             }
-            memcpy(&(rooms[roomst]), r, sizeof(struct room_struct));
-            roomst++;
+            memcpy(&(grooms[groomst]), r, sizeof(struct room_struct));
+            groomst++;
             lseek(fd, 0, SEEK_SET);
-            write(fd, &roomst, sizeof(roomst));
-            write(fd, rooms, sizeof(struct room_struct)*roomst);
+            write(fd, &groomst, sizeof(groomst));
+            write(fd, grooms, sizeof(struct room_struct)*groomst);
             
             fcntl(fd, F_SETLKW, &ldata);
         }
@@ -99,8 +99,8 @@ int del_room(struct room_struct * r)
 {
     int fd, i, j;
     struct flock ldata;
-    if(roomst) free(rooms);
-    roomst=0;
+    if(groomst) free(grooms);
+    groomst=0;
     if((fd = open(".ROOMS", O_RDWR|O_CREAT, 0644))!=-1) {
         ldata.l_type=F_WRLCK;
         ldata.l_whence=0;
@@ -109,19 +109,19 @@ int del_room(struct room_struct * r)
         if(fcntl(fd, F_SETLKW, &ldata)!=-1){
             ldata.l_type = F_UNLCK;
             lseek(fd, 0, SEEK_SET);
-            read(fd, &roomst, sizeof(roomst));
-            rooms=(struct room_struct*)malloc(sizeof(struct room_struct)*(roomst+1));
-            read(fd, rooms, sizeof(struct room_struct)*roomst);
-            for(i=0;i<roomst;i++)
-            if(!strcmp(rooms[i].name, r->name)) {
-                roomst--;
-                for(j=i;j<roomst;j++)
-                    memcpy(&(rooms[i]), &(rooms[i+1]), sizeof(struct room_struct));
+            read(fd, &groomst, sizeof(groomst));
+            grooms=(struct room_struct*)malloc(sizeof(struct room_struct)*(groomst+1));
+            read(fd, grooms, sizeof(struct room_struct)*groomst);
+            for(i=0;i<groomst;i++)
+            if(!strcmp(grooms[i].name, r->name)) {
+                groomst--;
+                for(j=i;j<groomst;j++)
+                    memcpy(&(grooms[i]), &(grooms[i+1]), sizeof(struct room_struct));
                 break;
             }
             lseek(fd, 0, SEEK_SET);
-            write(fd, &roomst, sizeof(roomst));
-            write(fd, rooms, sizeof(struct room_struct)*roomst);
+            write(fd, &groomst, sizeof(groomst));
+            write(fd, grooms, sizeof(struct room_struct)*groomst);
             
             fcntl(fd, F_SETLKW, &ldata);
         }
@@ -141,17 +141,17 @@ int can_see(struct room_struct * r)
 int room_count()
 {
     int i,j=0;
-    for(i=0;i<roomst;i++)
-        if(can_see(rooms+i)) j++;
+    for(i=0;i<groomst;i++)
+        if(can_see(grooms+i)) j++;
     return j;
 }
 
 struct room_struct * room_get(int w)
 {
     int i,j=0;
-    for(i=0;i<roomst;i++) {
-        if(can_see(rooms+i)) {
-            if(w==j) return rooms+i;
+    for(i=0;i<groomst;i++) {
+        if(can_see(grooms+i)) {
+            if(w==j) return grooms+i;
             j++;
         }
     }
@@ -185,7 +185,7 @@ static int room_list_select(struct _select_def *conf)
 
 static int room_list_getdata(struct _select_def *conf, int pos, int len)
 {
-    load_rooms();
+    load_grooms();
     conf->item_count = room_count();
     return SHOW_CONTINUE;
 }
@@ -244,7 +244,7 @@ int choose_room()
     int i;
     POINT *pts;
 
-    load_rooms();
+    load_grooms();
     bzero(&grouplist_conf, sizeof(struct _select_def));
     grouplist_conf.item_count = room_count();
     if (grouplist_conf.item_count == 0) {
