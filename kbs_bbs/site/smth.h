@@ -372,5 +372,7 @@ attach define
 #define NEWPOSTLOG
 #define NEWBMLOG
 
+#define NEWPOSTSTAT
+
 //#define USE_SEM_LOCK
 #endif
