@@ -81,6 +81,7 @@ int chkmail()
 		return ismail;
 	}
 
+	utmpshm->uinfo[ utmpent - 1 ].mailcheck=1;
 	uinfo.mailcheck = 1;
 
     setmailfile(curmaildir, currentuser->userid, DOT_DIR);
