@@ -419,7 +419,7 @@ int mode;
         return "编辑器";
 	case HELP:
 		return "帮助";
-	case POSTHELP：
+	case POSTTMPL:
 		return "模板发文";
     default:
         return "去了那里!?";
