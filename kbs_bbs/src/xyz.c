@@ -511,9 +511,9 @@ int Xdeljunk()
         clear();
         return 0;
     }
-    sprintf(buf, "board/%s/.DELETED", genbuf);
+    sprintf(buf, "boards/%s/.DELETED", genbuf);
     unlink(buf);
-    sprintf(buf, "board/%s/.JUNK", genbuf);
+    sprintf(buf, "boards/%s/.JUNK", genbuf);
     unlink(buf);
     clear();
     return 0;
