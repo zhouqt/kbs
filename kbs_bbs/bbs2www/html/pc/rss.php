@@ -55,7 +55,13 @@
 	mysql_free_result($result);
 	pc_db_close($link);
 	
-	header("Content-Type: text/xml");
-	header("Content-Disposition: inline;filename=rss.xml");
-	@pc_rss_output($rss);
+	if (isset($_GET["v"]) && ($_GET["v"] == "2")) {
+		header("Content-Type: text/xml; charset=gb2312");
+		header("Content-Disposition: inline;filename=rss2.xml");
+		@pc_rss2_output($rss);
+	} else {
+		header("Content-Type: text/xml");
+		header("Content-Disposition: inline;filename=rss.xml");
+		@pc_rss_output($rss);
+	}
 ?>

@@ -135,6 +135,49 @@
 <?php		
 	}
 	
+	function pc_rss2_init($rss)
+	{
+?>
+<?xml version="1.0" encoding="gb2312" ?>
+<rss version="2.0">
+	<channel>
+		<title><?php echo $rss[channel][title]; ?></title>
+		<link><?php echo $rss[channel][pcaddr]; ?></link>
+		<description><?php echo $rss[channel][desc]; ?></description>
+		<language>zh-cn</language>
+		<managingEditor><?php echo $rss[channel][email]; ?></managingEditor>
+<?php
+	}
+	
+	function pc_rss2_etem($etem)
+	{
+		$etembody = $etem[etemdesc]."\n<br><hr size=1>\n".
+				"(<a href=\"".$etem[addr]."\">阅读全文</a>)\n".
+				"(<a href=\"".$etem[etemcomaddr]."\">发表评论</a>)";
+?>
+		<item>
+			<title><?php echo $etem[etemtitle]; ?></title> 
+			<link><?php echo $etem[addr]; ?></link>
+			<author><?php echo $etem[etemauth]; ?></author>
+			<guid><?php echo $etem[addr]; ?></guid>
+			<pubDate><?php echo $etem[etemtime]; ?></pubDate>
+			<description>
+				<![CDATA[
+					<?php echo $etembody; ?>
+				]]> 
+			</description>			
+		</item>
+<?php
+	}
+	
+	function pc_rss2_end()
+	{
+?>
+	</channel>
+</rss>
+<?php
+	}
+	
 	function pc_rss_user($rss)
 	{
 		pc_rss_init();
@@ -153,4 +196,11 @@
 		pc_rss_end();
 	}
 	
+	function pc_rss2_output($rss)
+	{
+		pc_rss2_init($rss);
+		foreach($rss[etems] as $etem)
+			pc_rss2_etem($etem);
+		pc_rss2_end();
+	}
 ?>
