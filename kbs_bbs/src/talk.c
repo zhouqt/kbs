@@ -253,7 +253,9 @@ char q_id[IDLEN];
         }
     }else
     {
-        strcpy(uident,strtok(q_id," "));
+	char* p;
+	for (p=q_id;*p;p++) if (*p==' ') { *p=0; break;};
+        strcpy(uident,q_id);
     }
     if(!(tuid = getuser(uident,&lookupuser))) {
         move(2,0) ;
