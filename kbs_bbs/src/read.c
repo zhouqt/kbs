@@ -1419,7 +1419,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
      */
     if (ret!=0) {
 	    move(t_lines-2,0);
-	    prints("收入过程中共有%d篇文章出现错误");
+	    prints("收入过程中共有%d篇文章出现错误",ret);
 	    pressanykey();
     };
     if (Xflag) {
