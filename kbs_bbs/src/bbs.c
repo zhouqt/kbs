@@ -2217,6 +2217,7 @@ int post_article(char *q_file, struct fileheader *re_file)
     strcpy(quote_board, currboard->filename);
 
     aborted = vedit(filepath, true, &eff_size, NULL);    /* 进入编辑状态 */
+    post_file.eff_size = eff_size;
 
     add_loginfo(filepath, currentuser, currboard->filename, Anony);       /*添加最后一行 */
 
@@ -2344,6 +2345,7 @@ int post_article(char *q_file, struct fileheader *re_file)
 
     sprintf(genbuf, "%s/%s", buf, fileinfo->filename);
     if (vedit_post(genbuf, false, &eff_size,&attachpos) != -1) {
+        fileinfo->eff_size = eff_size;
         if (ADD_EDITMARK)
             add_edit_mark(genbuf, 0, /*NULL*/ fileinfo->title);
         if (attachpos!=fileinfo->attachment) {

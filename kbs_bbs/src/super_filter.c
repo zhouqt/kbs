@@ -347,8 +347,8 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
     multi_getdata(2, 0, scr_cols-1, "请输入表达式: ", index, 1020, 20, 0);
     if(!index[0]) 
         return FULLUPDATE;
-    load_content = (strstr(index, "content")!=NULL)||(strstr(index, "abssize")!=NULL);
-    load_stat = (strstr(index, "ftime")!=NULL)||(strstr(index, "fsize")!=NULL);
+    load_content = (strstr(index, "content")!=NULL);
+    load_stat = (strstr(index, "fsize")!=NULL);
     if (digestmode==7||digestmode==8 ) {
         if (digestmode == 7 || digestmode == 8)
             unlink(currdirect);
@@ -435,37 +435,20 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
         set_vard(fvars+fget_var("unread"), brc_unread(ptr1->id));
 #endif
         setbfile(ffn, currboard, ptr1->filename);
+        set_vard(fvars+fget_var("ftime"), get_posttime(ptr1));
+        set_vard(fvars+fget_var("effsize"), ptr1->eff_size);
         if(load_stat) {
             if(stat(ffn, &st)!=-1)
                 set_vard(fvars+fget_var("fsize"), st.st_size);
             else
                 set_vard(fvars+fget_var("fsize"), 0);
-            set_vard(fvars+fget_var("ftime"), st.st_mtime);
         }
         if(load_content) {
             int k,abssize=0,entercount=0,ignoreline=0;
             set_vars(fvars+fget_var("content"), ptr1->filename);
             j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize, NULL);
-            if(j) {
+            if(j)
                 set_vars(fvars+fget_var("content"), p);
-                if(strstr(index, "abssize")!=NULL) {
-                    k=fsize;
-                    while(k) {
-                        if(k>=3&&*p=='\n'&&*(p+1)=='-'&&*(p+2)=='-'&&*(p+3)=='\n') break;
-                        if(*p=='\n') {
-                            entercount++;
-                            ignoreline=0;
-                        }
-                        if(k>=5&&*p=='\n'&&*(p+1)=='\xa1'&&*(p+2)=='\xbe'&&*(p+3)==' '&&*(p+4)=='\xd4'&&*(p+5)=='\xda') ignoreline=1;
-                        if(k>=2&&*p=='\n'&&*(p+1)==':'&&*(p+2)==' ') ignoreline=2;
-                        k--;
-                        p++;
-                        if(entercount>=4&&!ignoreline)
-                            abssize++;
-                    }
-                    set_vard(fvars+fget_var("abssize"), abssize);
-                }
-            }
         }
         ferr=0;
         feval(fvars+fget_var("res"), index, 0, strlen(index)-1);
