@@ -59,7 +59,8 @@ $brdarr = array();
 	</table>
 	<table border="0" cellpadding="0" cellspacing="0" width="97%">
               <tr> 
-                <td class="MainContentText"><ul>
+                <td class="MainContentText">
+<ul style="margin-top: 15px; margin-left: 25px">
 <?php
 # shift through the array
 while($board = array_shift($boards))
@@ -102,7 +103,7 @@ function gen_sec_hot_subjects_html($secid)
 	$root = $doc->document_element();
 	$boards = $root->child_nodes();
 ?>
-<ul style="margin-top: 10px; margin-left: 20px">
+<ul style="margin-top: 15px; margin-left: 25px">
 <?php
 	$brdarr = array();
 	# shift through the array
@@ -188,10 +189,9 @@ while($board = array_shift($boards))
 	for ($i = 0; $i < $sec_count; $i++)
 	{
 ?>
-        <tr> 
-          <td width="50%" valign="top" class="MainContentText"> 
-<strong><?php echo $section_nums[$t[$i]]; ?>. [<a href="bbsboa.php?group=<?php echo $t[$i]; ?>"><?php echo htmlspecialchars($section_names[$t[$i]][0]); ?></a>]</strong><br>
-<div style="margin-left: 20px">
+<tr> 
+  <td valign="top" class="MainContentText"> 
+<strong><?php echo $section_nums[$t[$i]]; ?>. [<a href="bbsboa.php?group=<?php echo $t[$i]; ?>"><?php echo htmlspecialchars($section_names[$t[$i]][0]); ?></a>]</strong>&nbsp;&nbsp;
 <?php
 		$brd_count = $sec_boards_num[$t[$i]] > 5 ? 5 : $sec_boards_num[$t[$i]];
 		for ($k = 0; $k < $brd_count; $k++)
@@ -201,50 +201,18 @@ while($board = array_shift($boards))
 <?php
 		}
 ?>
-<a href="bbsboa.php?group=<?php echo $t[$i]; ?>">更多&gt;&gt;</a></div>
+<a href="bbsboa.php?group=<?php echo $t[$i]; ?>">更多&gt;&gt;</a>
 <?php
 		gen_sec_hot_subjects_html($t[$i]);
 ?>
 </td>
-<td width="1" bgcolor="FFFFFF"></td>
-<?php
-		$i++;
-		if ($i < $sec_count)
-		{
-?>
-  <td valign="top" class="MainContentText"> 
-<strong><?php echo $section_nums[$t[$i]]; ?>. [<a href="bbsboa.php?group=<?php echo $t[$i]; ?>"><?php echo htmlspecialchars($section_names[$t[$i]][0]); ?></a>]</strong><br>
-<div style="margin-left: 20px">
-<?php
-			$brd_count = $sec_boards_num[$t[$i]] > 5 ? 5 : $sec_boards_num[$t[$i]];
-			for ($k = 0; $k < $brd_count; $k++)
-			{
-?>
-<a href="bbsdoc.php?board=<?php echo urlencode($sec_boards[$t[$i]][$k]["EnglishName"]); ?>"><?php echo $sec_boards[$t[$i]][$k]["ChineseName"]; ?></a>, 
-<?php
-			}
-?>
-<a href="bbsboa.php?group=<?php echo $t[$i]; ?>">更多&gt;&gt;</a></div>
-<?php
-			gen_sec_hot_subjects_html($t[$i]);
-?>
-</td>
-<?php
-		}
-		else
-		{
-?>
-<td valign="top"  class="MainContentText">&nbsp;</td>
-<?php
-		}
-?>
-        </tr>
+</tr>
 <?php
 		if ($sec_count - $i > 1)
 		{
 ?>
         <tr> 
-          <td colspan="5" height="1" bgcolor="FFFFFF"></td>
+          <td height="1" bgcolor="CCCCCC"></td>
         </tr>
 <?php
 		}
