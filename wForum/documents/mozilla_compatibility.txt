@@ -14,7 +14,8 @@ author: roy@zixia.net
 
 变量：
 isIE4 浏览器是否兼容IE4
-isW3C 浏览器是否兼容W3C标准（mozilla）
+isW3C 浏览器是否兼容W3C标准（mozilla or IE5）
+如果浏览器支持 W3C 标准，以下函数将会优先使用 W3C 标准函数以避免 bug。
 
 函数：
 getRawObject(obj)  获取ID为obj的对象

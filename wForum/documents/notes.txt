@@ -8,24 +8,25 @@
 这部分处理主要由phpbbslib中的下面几个函数来完成：
 
 bbs_getthreadnum(string boardName)，该函数求某版面下的主题数量
-这个函数首先比较.DIR和.ORIGIN文件的时间戳，如果
-.ORIGIN旧于.DIR则调用bbslib中的www_generateOriginIndex
-函数重新生成.ORIGIN文件（似乎不需要这个比较？）
-然后直接由.ORIGIN的文件长度求记录数目。（由于
-原来的.ORIGIN生成算法是将首篇文章不存在的
-主题也记入列表的，所以这个函数算出来的主题数量
-和后面的几个函数可能不一致:((，这个需要以后修改）
-
-bbs_getthreads(string boardName, int start, int num)，该函数按
-同主题最后一篇文章的发文时间降序排列，取从start开始的num篇主题信息
+这个函数首先比较.DIR和.WEBTHREAD文件的时间戳，如果
+.WEBTHREAD旧于.DIR则调用bbslib中的www_generateOriginIndex
+函数重新生成.WEBTHREAD文件（似乎不需要这个比较？）
+然后直接由.WEBTHREAD的文件长度求记录数目。
 
 其主要算法是：
-首先建立一标志数组，在其中存放已找到的主题ID
-倒序遍历.DIR中的记录，如果其主题ID不在标志数组中，则找该主题ID
-所对应的主题首篇文章是否存在，如果存在，则将其加入标志数组中，同时
-主题计数器加一。如果主题计数器介于start和start+num之间，则保存找到
-的主题首篇文章的信息；当主题计数器大于等于start+num，则结束遍历。
-最后将保存的结果返回。
+首先建立一标志数组，在其中存放已找到的groupID。这个标志数组有两个
+内部数据结构：第一个是链表，按照每个主题最后发文时间排序，最后可以
+直接顺序写入 .WEBTHREAD。另一个结构是平衡二叉树，目的是方便快速搜索
+groupID。程序倒序遍历.DIR中的记录，如果其groupID不在标志数组中，则
+加入标志数组。在遍历过程中同时判断该帖子是否是原文，如果是，同时需要
+将原文信息复制进标志数组。最后写入文件的时候判断该主题是否有原文，
+如果有，写入 .WEBTHREAD。关于这里是否有原文的处理细节，参见代码。
+
+
+bbs_getthreads(string boardName, int start, int num)，该函数按
+同主题最后一篇文章的发文时间降序排列，取从start开始的num篇主题信息。
+这个函数充分利用已经产生的 .WEBTHREAD 文件来操作。
+
 
 bbs_get_thread_articles(char *board, int groupID, int start, int num)
 该函数按发文时间降序排列，取某一从start开始的num篇文章
@@ -39,3 +40,19 @@ bbs_get_thread_articles(char *board, int groupID)
 
 其算法与bbs_get_thread_articles也类似，首先找到该主题的首篇文章，然后从
 此处开始遍历.DIR找主题ID与groupID相同文章并计数；
+
+
+2.关于同主题模式的利弊
+
+同主题模式和公网论坛比较一致但是和传统telnet配合的时候可能会有不一致的地方。
+以下几个问题是特别需要注意的
+
+*) 删除了原文的置顶不能阅读
+*) 一个主题是否显示成精华，不可re，and/or 置顶仅仅是判断原文是否有这个属性。
+   特别的，如果一个re文被g，这个主题不会自动成为精华贴。类似的，一片re文被
+   设置为不可re，这个主题不会显示为不可re；但是如果原文被设置成不可re，这个
+   主题会显示为不可re(当然这个标志只有版主能看见)不过所有已有的re文还都是可
+   re的。这里还有不少细节问题。
+*) 删除原文，该主题在 wforum 里面就看不见了，但是其实所有的re文都还在。
+
+这个以后可能会改。
