@@ -761,4 +761,18 @@ function pc_ncounter($link,$nid)
 		pc_node_counter($link,$nid);
 	}
 }
+
+/*
+**	0: XSL 
+**	1: CSS
+*/
+function pc_load_stylesheet($link,$pc)
+{
+	$query = "SELECT stylesheet FROM userstyle WHERE uid = '".$pc["UID"]."' LIMIT 0 , 1;";	
+	$result = mysql_query($query,$link);
+	$rows = mysql_fetch_array($result);
+	if(!$rows)
+		return FALSE;
+	return intval($rows[stylesheet]);
+}
 ?>

@@ -38,7 +38,10 @@ if(!$tags[$node[access]])
 }
 
 if($pur != 3)
+{
 	pc_counter($link);
+	pc_ncounter($link,$nid);
+}
 
 $blogs = pc_blog_menu($link,$pc["UID"],$node[access]);
 
@@ -61,14 +64,25 @@ if($node[trackback] && $node[access] == 0)
 		$trackbacks[] = $rows;
 	mysql_free_result($result);
 }
-
+$stylesheet = pc_load_stylesheet($link,$pc);
 pc_db_close($link);
 
 header("Content-Type: text/xml");
 header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"]."_".html_format($node[subject]).".xml");
 ?>
 <?xml version="1.0" encoding="GB2312"?>
+<?php
+	if( $stylesheet === 0 )
+	{
+?>
 <?xml-stylesheet type="text/xsl" href="/pc/nodexsl.php?id=<?php echo $pc["USER"]; ?>"?>
+<?php
+	}
+	elseif( $stylesheet === 1 )
+	{
+?>
+<?xml-stylesheet type="text/css" href="/pc/nodexsl.php?id=<?php echo $pc["USER"]; ?>"?>
+<?php   }   ?>
 <!-- Edited by windinsn@smth.org -->
 <rdf:RDF xmlns:smthBlog="http://www.smth.org/blog/ns/1.0/" 
 	 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
@@ -85,7 +99,8 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"]."_".html_for
 <description><?php echo $pc["DESC"]; ?></description>
 <image rdf:resource="<?php echo html_format($pc["LOGO"]); ?>"/>
 <dc:language>gb2312</dc:language>
-<dc:creator><?php echo $pc["USER"].".bbs@".$pcconfig["SITE"]; ?></dc:creator>
+<dc:creator><?php echo $pc["USER"]; ?></dc:creator>
+<smthBlog:id><?php echo $node[nid]; ?></smthBlog:id>
 <items>
 	<rdf:Seq>
 		<rdf:li resource="pcmain.php"/>
@@ -108,6 +123,21 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"]."_".html_for
 	}
 ?>
 </smthBlog:categories>
+
+<smthBlog:friends>
+<?php
+	for($i = 0 ; $i < count($pc["LINKS"]) ; $i ++)
+	{
+?>
+	<smthBlog:friend>
+		<smthBlog:image><?php echo intval($pc["LINKS"][$i]["IMAGE"]); ?></smthBlog:image>
+		<smthBlog:title><?php echo htmlspecialchars($pc["LINKS"][$i]["LINK"]); ?></smthBlog:title>
+		<smthBlog:link><?php echo htmlspecialchars($pc["LINKS"][$i]["URL"]); ?></smthBlog:link>
+	</smthBlog:friend>
+<?php
+	}
+?>
+</smthBlog:friends>
 
 <smthBlog:formSearch>
 	<![CDATA[
@@ -193,7 +223,7 @@ if($node[trackback] && $node[access] == 0)
 
 <item rdf:about="nodexml.php?id=<?php echo $node[nid]; ?>">
 	<title><?php echo htmlspecialchars(stripslashes($node[subject])); ?></title>
-	<link>"pccon.php?nid=<?php echo $node[nid]; ?>&amp;id=<?php echo $pc["UID"]; ?>&amp;s=all"</link>
+	<link>pccon.php?nid=<?php echo $node[nid]; ?>&amp;id=<?php echo $pc["UID"]; ?>&amp;s=all</link>
 	<dc:creator><?php echo $pc["USER"]; ?></dc:creator>
 	<dc:date><?php echo time_format($node[created]); ?></dc:date>
 	<description><![CDATA[

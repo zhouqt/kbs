@@ -13,7 +13,7 @@ if(!$pc)
 	exit();
 }
 
-$query = "SELECT indexxsl FROM userstyle WHERE uid = ".$pc["UID"]." LIMIT 0 , 1;";
+$query = "SELECT indexxsl,stylesheet FROM userstyle WHERE uid = ".$pc["UID"]." LIMIT 0 , 1;";
 $result = mysql_query($query,$link);
 $rows = mysql_fetch_array($result);
 mysql_free_result($result);
@@ -26,7 +26,16 @@ if(!$rows)
 	exit();
 }
 
-header("Content-Type: text/xsl");
-header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".xsl");
+if( $rows[stylesheet] == 1 )
+{
+	header("Content-Type: text/css");
+	header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".css");
+}
+else
+{
+	header("Content-Type: text/xsl");
+	header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".xsl");
+}
+
 echo stripslashes($rows[indexxsl]);
 ?>

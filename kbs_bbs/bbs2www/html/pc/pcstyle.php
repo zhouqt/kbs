@@ -24,17 +24,17 @@ else
 		exit();
 	}
 	
-	if($_POST["key"]=="indexxsl" || $_POST["key"]=="nodexsl" || $_POST["key"]=="css" )
+	if($_POST["key"]=="indexxsl" || $_POST["key"]=="nodexsl" ||  $_POST["key"]=="css" )
 	{
 		$query = "SELECT uid FROM userstyle WHERE uid = ".$pc["UID"].";";
 		$result = mysql_query($query,$link);
 		$rows = mysql_fetch_array($result);
 		mysql_free_result($result);
 		if($rows)
-			$query = "UPDATE userstyle SET `".$_POST["key"]."` = '".addslashes(undo_html_format($_POST["userstyle"]))."' , `hostname` = '".addslashes($_SERVER["REMOTE_ADDR"])."' WHERE uid = ".$pc["UID"]." ;";
+			$query = "UPDATE userstyle SET `".$_POST["key"]."` = '".addslashes(undo_html_format($_POST["userstyle"]))."' , `hostname` = '".addslashes($_SERVER["REMOTE_ADDR"])."' , `stylesheet` = '".intval($_POST["stylesheet"])."' WHERE uid = ".$pc["UID"]." ;";
 		else
-			$query = "INSERT INTO `userstyle` ( `uid` , `username` , `hostname` , `changed` , `".$_POST["key"]."` ) ".
-				"VALUES ('".$pc["UID"]."', '".addslashes($pc["USER"])."', '".addslashes($_SERVER["REMOTE_ADDR"])."', NOW( ) , '".addslashes(undo_html_format($_POST["userstyle"]))."');";
+			$query = "INSERT INTO `userstyle` ( `uid` , `username` , `hostname` , `changed` , `".$_POST["key"]."` , `stylesheet` ) ".
+				"VALUES ('".$pc["UID"]."', '".addslashes($pc["USER"])."', '".addslashes($_SERVER["REMOTE_ADDR"])."', NOW( ) , '".addslashes(undo_html_format($_POST["userstyle"]))."' , '".intval($_POST["stylesheet"])."');";
 		mysql_query($query,$link);
 	}
 	
@@ -42,17 +42,17 @@ else
 	switch($type)
 	{
 		case 1:
-			$query = "SELECT indexxsl,changed,hostname FROM userstyle WHERE uid = ".$pc["UID"]." ;";
-			$title = "Blog首页XSL";
+			$query = "SELECT indexxsl,changed,hostname,stylesheet FROM userstyle WHERE uid = ".$pc["UID"]." ;";
+			$title = "Blog首页样式表";
 			$key = "indexxsl";
 			break;
 		case 2:
-			$query = "SELECT nodexsl,changed,hostname FROM userstyle WHERE uid = ".$pc["UID"]." ;";
-			$title = "Blog文章XSL";
+			$query = "SELECT nodexsl,changed,hostname,stylesheet FROM userstyle WHERE uid = ".$pc["UID"]." ;";
+			$title = "Blog文章样式表";
 			$key = "nodexsl";
 			break;
 		default:
-			$query = "SELECT css,changed,hostname FROM userstyle WHERE uid = ".$pc["UID"]." ;";
+			$query = "SELECT css,changed,hostname,stylesheet FROM userstyle WHERE uid = ".$pc["UID"]." ;";
 			$title = "Blog CSS样式";
 			$key = "css";
 	}	
@@ -65,8 +65,8 @@ else
 ?>
 <br /><br />
 <p align="center">
-[<a href="pcstyle.php?type=1">首页XSL</a>]&nbsp;&nbsp;
-[<a href="pcstyle.php?type=2">文章XSL</a>]&nbsp;&nbsp;
+[<a href="pcstyle.php?type=1">首页样式表</a>]&nbsp;&nbsp;
+[<a href="pcstyle.php?type=2">文章样式表</a>]&nbsp;&nbsp;
 [<a href="pcstyle.php">CSS样式</a>]
 </p>
 <p align="center">
@@ -79,7 +79,11 @@ if($rows){
 <?php } ?>
 </p>
 <form action="pcstyle.php" method="post" name="postform"><center>
-<textarea name="userstyle" class="f1" onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' rows="30" cols="80" wrap="physical">
+浏览XML文档所用的样式表：
+<input type="radio" name="stylesheet" value="0" <?php if($rows[stylesheet]==0) echo "checked"; ?>>XSL样式表
+<input type="radio" name="stylesheet" value="1" <?php if($rows[stylesheet]==1) echo "checked"; ?>>CSS样式表
+<br />
+<textarea name="userstyle" class="f1" onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' rows="20" cols="80" wrap="physical">
 <?php echo html_format($rows[$key]); ?>
 </textarea></center>
 <input type="hidden" name="key" value="<?php echo $key; ?>">

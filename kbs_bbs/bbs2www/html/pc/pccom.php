@@ -100,7 +100,7 @@
 </form></center>	
 <?php			
 		}
-		elseif($act == "add")
+		else
 		{
 			if(!$_POST["subject"])
 			{

@@ -37,7 +37,7 @@ function pc_load_trackbacks($link,$pc)
 	{
 		$trackbacks[] = array(
 					"URL" => htmlspecialchars(stripslashes($rows[url])),
-					"TITLE" => htmlspecialchars(stripslashes($rows[title],0,0,1)),
+					"TITLE" => htmlspecialchars(stripslashes($rows[title])),
 					"TIME" => time_format($rows[time])
 					);
 	}
@@ -47,7 +47,7 @@ function pc_load_trackbacks($link,$pc)
 
 function pc_load_comments($link,$pc,$pur=0)
 {
-	$query = "SELECT cid , comments.subject , comments.created , comments.username FROM comments, nodes WHERE comments.nid = nodes.nid ";
+	$query = "SELECT cid , comments.subject , comments.created , comments.username , comments.nid FROM comments, nodes WHERE comments.nid = nodes.nid ";
 	if($pur == 0)
 		$query .= " AND access = 0 ";
 	elseif($pur == 1)
@@ -63,6 +63,7 @@ function pc_load_comments($link,$pc,$pur=0)
 		$comments[] = array(
 					"USER" => $rows[username],
 					"CID" => $rows[cid],
+					"NID" => $rows[nid],
 					"SUBJECT" => htmlspecialchars(stripslashes($rows[subject])),
 					"TIME" => time_format($rows[created])
 					);
@@ -128,6 +129,7 @@ if(!$pc)
 	html_error_quit("对不起，您要查看的Blog不存在");
 	exit();
 }
+$stylesheet = pc_load_stylesheet($link,$pc);
 
 $userPermission = pc_get_user_permission($currentuser,$pc);
 $sec = $userPermission["sec"];
@@ -146,7 +148,18 @@ header("Content-Type: text/xml");
 header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".xml");
 ?>
 <?xml version="1.0" encoding="GB2312"?>
+<?php
+	if( $stylesheet === 0 )
+	{
+?>
 <?xml-stylesheet type="text/xsl" href="/pc/indexxsl.php?id=<?php echo $pc["USER"]; ?>"?>
+<?php
+	}
+	elseif( $stylesheet === 1 )
+	{
+?>
+<?xml-stylesheet type="text/css" href="/pc/indexxsl.php?id=<?php echo $pc["USER"]; ?>"?>
+<?php   }  ?>
 <!-- Edited by windinsn@smth.org -->
 <rdf:RDF xmlns:smthBlog="http://www.smth.org/blog/ns/1.0/" 
 	 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
@@ -163,7 +176,7 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".xml");
 <description><?php echo $pc["DESC"]; ?></description>
 <image rdf:resource="<?php echo html_format($pc["LOGO"]); ?>"/>
 <dc:language>gb2312</dc:language>
-<dc:creator><?php echo $pc["USER"].".bbs@".$pcconfig["SITE"]; ?></dc:creator>
+<dc:creator><?php echo $pc["USER"]; ?></dc:creator>
 <items>
 	<rdf:Seq>
 		<rdf:li resource="pcmain.php"/>
@@ -181,6 +194,7 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".xml");
 		<smthBlog:year><?php echo $bcdatestr[0].$bcdatestr[1].$bcdatestr[2].$bcdatestr[3]; ?></smthBlog:year>
 		<smthBlog:month><?php echo $bcdatestr[4].$bcdatestr[5]; ?></smthBlog:month>
 		<smthBlog:day><?php echo $bcdatestr[6].$bcdatestr[7]; ?></smthBlog:day>
+		<smthBlog:id><?php echo $bc[$bcdate]; ?></smthBlog:id>
 		<smthBlog:link><?php echo "pccon.php?nid=".$bc[$bcdate]."&amp;id=".$pc["UID"]."&amp;s=all"; ?></smthBlog:link>
 	</smthBlog:calendar>
 <?php
@@ -211,6 +225,7 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".xml");
 	<smthBlog:newNode>
 		<smthBlog:subject><?php echo htmlspecialchars(stripslashes($node[subject])); ?></smthBlog:subject>
 		<smthBlog:time><?php echo time_format($node[created]); ?></smthBlog:time>
+		<smthBlog:id><?php echo $node[nid]; ?></smthBlog:id>
 		<smthBlog:link><?php echo "pccon.php?id=".$pc["UID"]."&amp;nid=".$node[nid]."&amp;s=all"; ?></smthBlog:link>
 	</smthBlog:newNode>
 <?php
@@ -226,6 +241,8 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".xml");
 	<smthBlog:newComment>
 		<smthBlog:subject><?php echo $comment["SUBJECT"]; ?></smthBlog:subject>
 		<smthBlog:user><?php echo htmlspecialchars(stripslashes($comment["USER"])); ?></smthBlog:user>
+		<smthBlog:id><?php echo $comment["CID"]; ?></smthBlog:id>
+		<smthBlog:nid><?php echo $comment["NID"]; ?></smthBlog:nid>
 		<smthBlog:time><?php echo $comment["TIME"]; ?></smthBlog:time>
 		<smthBlog:link><?php echo "pcshowcom.php?cid=".$comment["CID"]; ?></smthBlog:link>
 	</smthBlog:newComment>
@@ -269,6 +286,7 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".xml");
 	{
 ?>
 	<smthBlog:friend>
+		<smthBlog:image><?php echo intval($pc["LINKS"][$i]["IMAGE"]); ?></smthBlog:image>
 		<smthBlog:title><?php echo htmlspecialchars($pc["LINKS"][$i]["LINK"]); ?></smthBlog:title>
 		<smthBlog:link><?php echo htmlspecialchars($pc["LINKS"][$i]["URL"]); ?></smthBlog:link>
 	</smthBlog:friend>
