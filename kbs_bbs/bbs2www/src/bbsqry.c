@@ -5,30 +5,6 @@
 
 char genbuf[1024];
 
-static void flush_buffer(buffered_output_t *output)
-{
-	*(output->outp) = '\0'; 
-	printf("%s", output->buf);
-	output->outp = output->buf;
-}
-
-static int buffered_output(char *buf, size_t buflen, void *arg)
-{
-	buffered_output_t *output = (buffered_output_t *)arg;
-	if (output->buflen <= buflen)
-	{
-		output->flush(output);
-		printf("%s", buf);
-		return 0;
-	}
-	if ((output->buflen - (output->outp - output->buf) - 1) <= buflen) 
-		output->flush(output);
-	strncpy(output->outp, buf, buflen); 
-	output->outp += buflen;
-
-	return 0;
-}
-
 int show_user_plan(userid)
     char userid[IDLEN];
 {
@@ -44,7 +20,7 @@ int show_user_plan(userid)
 		size_t filesize;
 		char *ptr;
 		const int outbuf_len = 4096;
-		buffered_output_t out;
+		buffered_output_t *out;
 
         hprintf("[36m¸öÈËËµÃ÷µµÈçÏÂ£º[m\n");
     	printf("</pre>\n");
@@ -61,19 +37,9 @@ int show_user_plan(userid)
 				close(fd);
 				BBS_RETURN(0);
 			}
-			if ((out.buf = (char *)malloc(outbuf_len)) == NULL)
-			{
-				end_mmapfile((void *)ptr, filesize, -1);
-				flock(fd, LOCK_UN);
-				close(fd);
-				BBS_RETURN(0);
-			}
-			out.outp = out.buf;
-			out.buflen = outbuf_len;
-			out.output = buffered_output;
-			out.flush = flush_buffer;
+			alloc_output(outbuf_len);
 			output_ansi_html(ptr, filesize, &out,NULL);
-			free(out.buf);
+			free_output(out);
 		}
 		BBS_CATCH
 		{

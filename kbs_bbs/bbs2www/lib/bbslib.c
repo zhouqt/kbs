@@ -2471,6 +2471,7 @@ static void print_font_style(unsigned int style, buffered_output_t * output)
     char font_style[STRLEN];
     char font_str[256];
     unsigned int bg;
+	int len;
 
     if (STYLE_ISSET(style, FONT_BG_SET)) {
         bg = 8;
@@ -2486,31 +2487,35 @@ static void print_font_style(unsigned int style, buffered_output_t * output)
         sprintf(font_str, "<font class=\"%s\" style=\"%s\">", font_class, font_style);
     else
         sprintf(font_str, "<font class=\"%s\">", font_class);
-    output->output(font_str, strlen(font_str), output);
+	len = strlen(font_str);
+    BUFFERED_OUTPUT(output, font_str, len);
 }
 
+/*
 static void html_output(char *buf, size_t buflen, buffered_output_t * output)
-{
-    size_t i;
-
-    for (i = 0; i < buflen; i++) {
-        switch (buf[i]) {
-        case '&':
-            output->output("&amp;", 5, output);
-            break;
-        case '<':
-            output->output("&lt;", 4, output);
-            break;
-        case '>':
-            output->output("&gt;", 4, output);
-            break;
-        case ' ':
-            output->output("&nbsp;", 6, output);
-            break;
-        default:
-            output->output(&buf[i], 1, output);
-        }
-    }
+*/
+#define html_output(buf, buflen, output) \
+{ \
+    size_t i; \
+\
+    for (i = 0; i < buflen; i++) { \
+        switch ((buf)[i]) { \
+        case '&': \
+            BUFFERED_OUTPUT(output, "&amp;", 5); \
+            break; \
+        case '<': \
+            BUFFERED_OUTPUT(output, "&lt;", 4); \
+            break; \
+        case '>': \
+            BUFFERED_OUTPUT(output, "&gt;", 4); \
+            break; \
+        case ' ': \
+            BUFFERED_OUTPUT(output, "&nbsp;", 6); \
+            break; \
+        default: \
+            BUFFERED_OUTPUT(output, &((buf)[i]), 1); \
+        } \
+    } \
 }
 
 static void print_raw_ansi(char *buf, size_t buflen, buffered_output_t * output)
@@ -2519,9 +2524,11 @@ static void print_raw_ansi(char *buf, size_t buflen, buffered_output_t * output)
 
     for (i = 0; i < buflen; i++) {
         if (buf[i] == 0x1b)
+		{
             html_output("*", 1, output);
+		}
         else if (buf[i]=='\n') {
-			output->output(" <br /> ", 8, output);
+			BUFFERED_OUTPUT(output, " <br /> ", 8);
         } else {
             html_output(&buf[i], 1, output);
 		}
@@ -2639,7 +2646,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
             if (i < (buflen - 1) && (buf[i] == ':' && buf[i + 1] == ' ')) {
                 STATE_SET(ansi_state, STATE_QUOTE_LINE);
                 if (STATE_ISSET(ansi_state, STATE_FONT_SET))
-                    output->output("</font>", 7, output);
+                    BUFFERED_OUTPUT(output, "</font>", 7);
                 /*
                  * set quoted line styles 
                  */
@@ -2647,7 +2654,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
                 STYLE_SET_FG(font_style, FONT_COLOR_QUOTE);
                 STYLE_CLR_BG(font_style);
                 print_font_style(font_style, output);
-                output->output(&buf[i], 1, output);
+                BUFFERED_OUTPUT(output, &buf[i], 1);
                 STATE_SET(ansi_state, STATE_FONT_SET);
                 STATE_CLR(ansi_state, STATE_ESC_SET);
                 /*
@@ -2737,7 +2744,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
 								 break;
 							}	
 							outbuf[511]=0;
-							output->output(outbuf, 511, output);
+							BUFFERED_OUTPUT(output, outbuf, 511);
 							attachShowed[UBBArg1-1]=1;
 							continue;							
 						}	
@@ -2775,12 +2782,12 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
                 /*
                  * end of a quoted line 
                  */
-                output->output("</font>", 7, output);
+                BUFFERED_OUTPUT(output, "</font>", 7);
                 STYLE_CLR(font_style, FONT_STYLE_QUOTE);
                 STATE_CLR(ansi_state, STATE_FONT_SET);
             }
 		    if (!STATE_ISSET(ansi_state,STATE_UBB_MIDDLE) || isUBBMiddleOutput) {
-				output->output(" <br /> ", 8, output);
+				BUFFERED_OUTPUT(output, " <br /> ", 8);
 			}
             STATE_CLR(ansi_state, STATE_QUOTE_LINE);
             STATE_SET(ansi_state, STATE_NEW_LINE);
@@ -2811,7 +2818,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
                     /*
                      *[0;1;4;31m */
                     if (STATE_ISSET(ansi_state, STATE_FONT_SET)) {
-                        output->output("</font>", 7, output);
+                        BUFFERED_OUTPUT(output, "</font>", 7);
                         STATE_CLR(ansi_state, STATE_FONT_SET);
                     }
                     if (i < buflen - 1) {
@@ -2876,7 +2883,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
         }
     }
     if (STATE_ISSET(ansi_state, STATE_FONT_SET)) {
-        output->output("</font>", 7, output);
+        BUFFERED_OUTPUT(output, "</font>", 7);
         STATE_CLR(ansi_state, STATE_FONT_SET);
     }
 	for ( i = 0; i<attachmatched ; i++ ){
@@ -2894,13 +2901,13 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
 				 break;
 			}	
 			outbuf[511]=0;
-			output->output(outbuf, 511, output);
+			BUFFERED_OUTPUT(output, outbuf, 511);
 			attachShowed[i]=1;
 		}
 		free(attachFileName[i]);
 	}
 
-    output->flush(output);
+    BUFFERED_FLUSH(output);
 
 }
 

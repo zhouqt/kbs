@@ -977,34 +977,12 @@ static PHP_FUNCTION(bbs_setonlineuser)
     RETURN_LONG(ret);
 }
 
-static void flush_buffer(buffered_output_t *output)
-{
-	*(output->outp) = '\0'; 
-	zend_printf("%s", output->buf);
-	output->outp = output->buf;
-}
-
-static int buffered_output(char *buf, size_t buflen, void *arg)
-{
-	buffered_output_t *output = (buffered_output_t *)arg;
-	if (output->buflen <= buflen)
-	{
-		output->flush(output);
-		zend_printf("%s", buf);
-		return 0;
-	}
-	if ((output->buflen - (output->outp - output->buf) - 1) <= buflen) 
-		output->flush(output);
-	strncpy(output->outp, buf, buflen); 
-	output->outp += buflen;
-
-	return 0;
-}
 static char* output_buffer=NULL;
 static int output_buffer_len=0;
 static int output_buffer_size=0;
 
-static void output_printf(char* buf,size_t len) {
+static void output_printf(const char* buf, size_t len)
+{
 	int bufLen;
 	int n,newsize;
 	char * newbuf;
@@ -1050,6 +1028,12 @@ static int new_buffered_output(char *buf, size_t buflen, void *arg)
 }
 
 static void new_flush_buffer(buffered_output_t *output){
+}
+
+static int new_write(const char *buf, size_t buflen)
+{
+	output_printf(buf, buflen);
+	return 0;
 }
 
 static PHP_FUNCTION(bbs_printansifile)
@@ -1112,8 +1096,9 @@ static PHP_FUNCTION(bbs_printansifile)
 	override_default_output(out, buffered_output);
 	override_default_flush(out, flush_buffer);
 */
-	override_default_output(out, new_buffered_output);
-	override_default_flush(out, new_flush_buffer);
+	/*override_default_output(out, new_buffered_output);
+	override_default_flush(out, new_flush_buffer);*/
+	override_default_write(out, new_write);
 
     if (!sigsetjmp(bus_jump, 1)) 
 	{
@@ -1390,8 +1375,9 @@ static PHP_FUNCTION(bbs_printoriginfile)
 	{
         RETURN_LONG(-2);
 	}
-	override_default_output(out, buffered_output);
-	override_default_flush(out, flush_buffer);
+	override_default_write(out, zend_write);
+	/*override_default_output(out, buffered_output);
+	override_default_flush(out, flush_buffer);*/
 	
 	i=0;    
 	skip=0;
@@ -1407,9 +1393,12 @@ static PHP_FUNCTION(bbs_printoriginfile)
 			continue;
 		}
         if (!strcasestr(buf, "</textarea>"))
-            out->output(buf,strlen(buf),out);
+		{
+			int len = strlen(buf);
+            BUFFERED_OUTPUT(out, buf, len);
+		}
     }
-	out->flush(out);
+	BUFFERED_FLUSH(out);
 	free_output(out);
     RETURN_LONG(0);
 }
@@ -4009,6 +3998,11 @@ PHP_MINIT_FUNCTION(smth_bbs)
     PHP_SET_SYMBOL(&EG(symbol_table), "BBS_HOME", bbs_home);
     PHP_SET_SYMBOL(&EG(symbol_table), "BBS_FULL_NAME", bbs_full_name);
     */
+	/*struct stat st;
+	while (stat("/tmp/start", &st) < 0)
+	{
+		sleep(1);
+	}*/
     REGISTER_STRINGL_CONSTANT("BBS_HOME",BBSHOME,strlen(BBSHOME),CONST_CS | CONST_PERSISTENT);
     REGISTER_STRINGL_CONSTANT("BBS_FULL_NAME",BBS_FULL_NAME,strlen(BBS_FULL_NAME),CONST_CS | CONST_PERSISTENT);
     getcwd(old_pwd, 1023);
