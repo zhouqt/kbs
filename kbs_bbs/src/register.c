@@ -126,92 +126,6 @@ struct userec *urec;
 }
 
 int
-getnewuserid(char* userid)
-{
-    struct userec utmp, zerorec;
-    struct stat st;
-    int         fd, size, val, i;
-    char    tmpstr[30];
-
-    system_time = time( NULL );
-    /*
-    if( stat( "tmp/killuser", &st )== -1 || st.st_mtime < system_time-3600 ) {
-        if( (fd = open( "tmp/killuser", O_RDWR|O_CREAT, 0600 )) == -1 )
-            return -1;
-        write( fd, ctime( &system_time ), 25 );
-        close( fd );
-        log_usies( "CLEAN", "dated users." );
-        prints( "寻找新帐号中, 请稍待片刻...\n\r" );
-        oflush();
-        memset( &zerorec, 0, sizeof( zerorec ) );
-        if( (fd = open( PASSFILE, O_RDWR|O_CREAT, 0600 )) == -1 )
-            return -1;
-        size = sizeof( utmp );
-        for( i = 0; i < MAXUSERS; i++ ) {
-            if( read( fd, &utmp, size ) != size )
-                break;
-            val = compute_user_value( &utmp );
-            if( utmp.userid[0] != '\0' && val <= 0 ) {
-                sprintf( genbuf, "#%d %-12s %15.15s %d %d %d",
-                         i+1, utmp.userid, ctime( &(utmp.lastlogin) )+4,
-                         utmp.numlogins, utmp.numposts, val );
-                log_usies( "KILL ", genbuf );
-                if( !bad_user_id( utmp.userid ) ) {
-                    setmailpath(tmpstr, utmp.userid);
-                    sprintf( genbuf, "/bin/rm -fr %s", tmpstr);
-                    system( genbuf );
-                    sethomepath(tmpstr, utmp.userid);
-                    sprintf( genbuf, "/bin/rm -fr %s", tmpstr);
-                    system( genbuf );
-                    sprintf( genbuf, "/bin/rm -f tmp/email_%s", utmp.userid );
-                    system( genbuf );
-                }
-                lseek( fd, -size, SEEK_CUR );
-                write( fd, &zerorec, sizeof( utmp ) );
-            }
-        }
-        close( fd );
-    }
-*/
-    if( (fd = open( PASSFILE, O_RDWR|O_CREAT, 0600 )) == -1 )
-        return -1;
-    flock( fd, LOCK_EX );
-
-    i = searchnewuser();
-    log( "1system", "APPLY: uid %d from %s", i, fromhost );
-
-    if( i <= 0 || i > MAXUSERS ) {
-        flock(fd,LOCK_UN) ;
-        close(fd) ;
-        if( dashf( "etc/user_full" ) ) {
-            ansimore( "etc/user_full", NA );
-            oflush();
-        } else {
-            prints( "抱歉, 使用者帐号已经满了, 无法注册新的帐号.\n\r" );
-            oflush();
-        }
-        val = (st.st_mtime - system_time + 3660) / 60;
-        prints( "请等待 %d 分钟後再试一次, 祝你好运.\n\r", val );
-        oflush();
-        sleep( 2 );
-        exit( 1 );
-    }
-    memset( &utmp, 0, sizeof( utmp ) );
-    strcpy( utmp.userid, userid );
-    utmp.lastlogin = time( NULL );
-    if( lseek( fd, sizeof(utmp) * (i-1), SEEK_SET ) == -1 ) {
-        flock( fd, LOCK_UN );
-        close( fd );
-        return -1;
-    }
-    write( fd, &utmp, sizeof(utmp) );
-    setuserid( i, userid ); /* added by dong, 1998.12.2 */
-    flock( fd, LOCK_UN );
-    close( fd );
-    return i;
-}
-
-int
 id_invalid(userid)
 char userid[IDLEN];
 {
@@ -281,26 +195,8 @@ new_register()
             }
 	}
     }
-    lockfd = open( "ucache.lock", O_RDWR|O_CREAT, 0600 );
-    if( lockfd < 0 ) {
-        log( "3system", "CACHE: reload ucache lock error!!!!" );
-        return;
-    }
-    flock(lockfd,LOCK_EX);
-    
-    allocid = getnewuserid(newuser.userid)  ;
-    if(allocid > MAXUSERS || allocid <= 0) {
-        printf("No space for new users on the system!\n\r") ;
-        flock(lockfd,LOCK_UN);
-    	close(lockfd);
-	    exit(1) ;
-    }
-
-    flock(lockfd,LOCK_UN);
-    close(lockfd);
 
     newuser.firstlogin = newuser.lastlogin = time(NULL) - 13 * 60 * 24 ;
-    substitute_record(PASSFILE,&newuser,sizeof(newuser),allocid);
     while( 1 ) {
         char  passbuf[ STRLEN ], passbuf2[ STRLEN ];
         getdata(0,0,"请设定您的密码: ",passbuf,39,NOECHO,NULL,YEA) ;
@@ -332,15 +228,15 @@ new_register()
     newuser.flags[1] = 0;
     newuser.firstlogin = newuser.lastlogin = time(NULL) ;
 
-    if( substitute_record(PASSFILE,&newuser,sizeof(newuser),allocid) == -1 ) {
-        /* change by KCN 1999.09.08
-                fprintf(stderr,"too much, good bye!\n") ;
-        */
-        prints("too much, good bye!\n") ;
+    allocid = getnewuserid(newuser.userid)  ;
+    if(allocid > MAXUSERS || allocid <= 0) {
+        prints("No space for new users on the system!\n\r") ;
         oflush();
-        exit(1) ;
+	    exit(1) ;
     }
-    setuserid( allocid, newuser.userid );
+
+	update_user(&newuser,allocid,1);
+
     if( !dosearchuser(newuser.userid) ) {
         /* change by KCN 1999.09.08
                 fprintf(stderr,"User failed to create\n") ;
@@ -349,7 +245,6 @@ new_register()
         oflush();
         exit(1) ;
     }
-    touchnew();
     report( "new account" );
 }
 
@@ -419,7 +314,6 @@ int     msize;
 void
 check_register_info()
 {
-    struct userec *urec = currentuser;
     char        *newregfile;
     int         perm;
     time_t      code;
@@ -486,19 +380,16 @@ check_register_info()
         currentuser->userlevel=~0;
         currentuser->userlevel&=~PERM_SUICIDE; /* Leeward 98.10.13 */
         currentuser->userlevel&=~PERM_DENYMAIL; /* Bigman 2000.9.22 */
-        substitute_record(PASSFILE,currentuser,sizeof(struct userec),usernum);
     }
     if(!(currentuser->userlevel&PERM_LOGINOK))
     {
         if( HAS_PERM( PERM_SYSOP ))
             return;
-        if(!invalid_realmail( urec->userid, urec->realemail, STRLEN-16 ))
+        if(!invalid_realmail( currentuser->userid, currentuser->realemail, STRLEN-16 ))
         {
-            set_safe_record();
-            urec->userlevel |= PERM_DEFAULT;
+            currentuser->userlevel |= PERM_DEFAULT;
             if( HAS_PERM( PERM_DENYPOST ) && !HAS_PERM( PERM_SYSOP ) )
-                urec->userlevel &= ~PERM_POST;
-            substitute_record(PASSFILE,urec,sizeof(struct userec),usernum) ;
+                currentuser->userlevel &= ~PERM_POST;
         }else {
             /* added by netty to automatically send a mail to new user. */
             /* begin of check if local email-addr  */
@@ -577,18 +468,14 @@ check_register_info()
         /*  above lines added by netty...  */
     }
     newregfile = sysconf_str( "NEWREGFILE" );
-    if( urec->lastlogin - urec->firstlogin < 3*86400 &&
+    if( currentuser->lastlogin - currentuser->firstlogin < 3*86400 &&
             !HAS_PERM( PERM_SYSOP) && newregfile != NULL ) {
-        set_safe_record();
-        urec->userlevel &= ~(perm);
-        substitute_record(PASSFILE,urec,sizeof(struct userec),usernum) ;
+        currentuser->userlevel &= ~(perm);
         ansimore( newregfile, YEA );
     }
-    set_safe_record();
     if( HAS_PERM( PERM_DENYPOST ) && !HAS_PERM( PERM_SYSOP ) )
     {
         currentuser->userlevel &= ~PERM_POST;
-        substitute_record(PASSFILE,urec,sizeof(struct userec),usernum) ;
     }
 }
 

@@ -136,7 +136,7 @@ int securityreport(char *str,struct userec* lookupuser)		/* Leeward: 1997.12.02 
 	            fprintf(se,"ÎÄÕÂÊıÄ¿     : %d / %d (Board/1Discuss)\n",lookupuser->numposts, post_in_tin( lookupuser->userid ));
 	            fprintf(se,"Éú    ÈÕ     : %s\n",fdata[6]);
 	            /*    fprintf(se, "\n[33mÒÔÏÂÊÇÈÏÖ¤Õß¸öÈË×ÊÁÏ[35m");
-	                getuinfo(se, &currentuser);rem by Haohmaru.99.4.16*/
+	                getuinfo(se, currentuser);rem by Haohmaru.99.4.16*/
 	            fclose(se);
 	            postfile(fname, "Registry", str, 2);
 	        }
@@ -146,7 +146,7 @@ int securityreport(char *str,struct userec* lookupuser)		/* Leeward: 1997.12.02 
 	            fprintf(se, "ÒÔÏÂÊÇ±»É¾Õß¸öÈË×ÊÁÏ");
 	            getuinfo(se, &lookupuser);
 	            fprintf(se, "\nÒÔÏÂÊÇÉ¾³ıÕß¸öÈË×ÊÁÏ");
-	            getuinfo(se, &currentuser);
+	            getuinfo(se, currentuser);
 	            fclose(se);
 	            postfile(fname, "syssecurity", str, 2);
 	        }
@@ -187,7 +187,7 @@ int securityreport(char *str,struct userec* lookupuser)		/* Leeward: 1997.12.02 
 	            fprintf(se, "\nÒÔÏÂÊÇ±»¸ÄÕß¸öÈË×ÊÁÏ");
 	            getuinfo(se, &lookupuser);
 	            fprintf(se, "\nÒÔÏÂÊÇĞŞ¸ÄÕß¸öÈË×ÊÁÏ");
-	            getuinfo(se, &currentuser);
+	            getuinfo(se, currentuser);
 	            fclose(se);
 	            postfile(fname, "syssecurity", str, 2);
 	        }
@@ -196,7 +196,7 @@ int securityreport(char *str,struct userec* lookupuser)		/* Leeward: 1997.12.02 
         {
             fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n[32mÔ­Òò£º%s[m\n", str);
             fprintf(se, "ÒÔÏÂÊÇ¸öÈË×ÊÁÏ");
-            getuinfo(se, &currentuser);
+            getuinfo(se, currentuser);
             fclose(se);
             if (strstr(str, "Éè¶¨Ê¹ÓÃÕß×¢²á×ÊÁÏ"))	/* Leeward 98.03.29 */
                 postfile(fname, "Registry", str, 2);
@@ -815,14 +815,7 @@ int m_mclean()
     move(3, 0);
     prints("ÇëÄÍĞÄµÈºò.\n");
     refresh();
-    if (apply_record(PASSFILE, cleanmail, sizeof(struct userec),0) == -1)
-    {
-        move(4, 0);
-        prints("apply PASSFILE err...\n");
-        pressreturn();
-        clear();
-        return -1;
-    }
+    apply_users(cleanmail,0);
     move(4, 0);
     prints("Çå³ıÍê³É! Çë²é¿´ÈÕÖ¾ÎÄ¼ş.\n");
     report("Mail Clean");
@@ -1063,7 +1056,9 @@ char           *logfile, *regfile;
                     fprintf(fout, "%s\n", genbuf);
                     fclose(fout);
                 }
-                substitute_record(PASSFILE, &uinfo, sizeof(uinfo), unum);
+
+                update_user(&uinfo,unum,0);
+                
                 mail_file("etc/s_fill", uinfo.userid, "¹§ìûÄã£¬ÄãÒÑ¾­Íê³É×¢²á¡£");
                 sprintf(genbuf, "%s ÈÃ %s Í¨¹ıÉí·İÈ·ÈÏ.", uid, uinfo.userid);
                 securityreport(genbuf,lookupuser);
@@ -1111,7 +1106,7 @@ char           *logfile, *regfile;
                     }
                     sprintf(genbuf, "<×¢²áÊ§°Ü> - %s", buf);
                     strncpy(uinfo.address, genbuf, NAMELEN);
-                    substitute_record(PASSFILE, &uinfo, sizeof(uinfo), unum);
+                    update_user(&uinfo,unum);
 
                     /* ------------------- Added by Marco */
                     switch (buff)

@@ -642,7 +642,6 @@ int     numlines;
                                             lookupuser->userid, lookupuser->userlevel, newlevel);
                                     securityreport(buffer,lookupuser);
                                     lookupuser->userlevel = newlevel;
-                                    substitute_record(PASSFILE,&lookupuser,sizeof(struct userec),id) ;
                                     sprintf(buffer, "changed permissions for %s", lookupuser->userid);
                                     report(buffer);
                                     a_prompt(-1, "已发送信件说明要求，并取消相关权限，请按任何键以继续 <<", buffer);

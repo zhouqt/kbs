@@ -243,11 +243,6 @@ u_exit()
 	if((HAS_PERM(PERM_CHATCLOAK) || HAS_PERM(PERM_CLOAK)))
         setflags(CLOAK_FLAG, uinfo.invisible);
 
-    if( currentuser->flags[0] != enter_uflags ) {
-        set_safe_record();
-        substitute_record(PASSFILE,currentuser,sizeof(currentuser),usernum);
-    }
-
     clear_utmp(0);
 }
 
@@ -801,57 +796,8 @@ void
 write_defnotepad()
 {
   currentuser->notedate=time(NULL);
-  set_safe_record();
-  substitute_record(PASSFILE, currentuser, sizeof(currentuser), usernum);
   return;
 }
-
-/*
-void
-defnotepad()
-{
-  FILE          *def2;
-  char          fname[STRLEN],spbuf[STRLEN];
-  
- 
-  setuserfile(fname,"defnotepad");
-  if((def2=fopen(fname,"r"))!=NULL)
-  {
-    fgets(spbuf,sizeof(spbuf),def2);
-    currentuser->notemode=spbuf[0]-'0';
-    if(currentuser->notemode==2)
-    {
-        fgets(spbuf,sizeof(spbuf),def2);
-        currentuser->notedate=atol(spbuf);
-        fgets(spbuf,sizeof(spbuf),def2);
-        currentuser->noteline=atol(spbuf);
-    }
-    fclose(def2);
-    unlink(fname);
-  }
-
-  if(currentuser->notemode==-1)
-  {
-     fclose(def2);
-     while(1){
-        getdata( 0, 0, "请输入你要的留言板模式 (1) 全看 (2) 只看没看过的 (3) 都不看: ", spbuf, 2, DOECHO, NULL ,YEA);
-        if(spbuf[0]=='1' || spbuf[0]=='2' || spbuf[0]=='3')
-                break;
-        else
-                continue;
-     }
-     currentuser->notemode=spbuf[0]-'0';
-     if(currentuser->notemode==2)
-     {
-        currentuser->notedate=time(NULL);
-        currentuser->noteline=0;     
-     }
-     set_safe_record();
-     substitute_record(PASSFILE, currentuser, sizeof(currentuser), usernum);
-     return;
-  }
-}  
-*/
 
 void
 notepad_init()
@@ -1041,7 +987,6 @@ user_login()
     if ((int)currentuser->stay < 0) currentuser->stay = 1;
     currentuser->userlevel&=(~unLevel); /* 恢复自杀标志 Luzi 98.10.10 */
 
-    substitute_record(PASSFILE, currentuser, sizeof(currentuser), usernum);
     if (currentuser->firstlogin == 0) {
         currentuser->firstlogin = login_start_time - 7 * 86400;
     }

@@ -569,23 +569,6 @@ case 'd': case'D':
     return 1;
 }
 
-int
-countusers(struct userec *uentp ,char* arg)
-{
-    static int totalusers;
-    char permstr[10];
-
-    if(uentp==NULL)
-    {
-        int c=totalusers;
-        totalusers=0;
-        return c;
-    }
-    if(uentp->numlogins != 0&&uleveltochar( permstr, uentp->userlevel ) != 0)
-        totalusers++;
-    return 0;
-}
-
 printuent(struct userec *uentp ,char* arg)
 {
     static int i ;
@@ -645,13 +628,23 @@ printuent(struct userec *uentp ,char* arg)
 }
 
 int
+countusers(struct userec *uentp ,char* arg)
+{
+    char permstr[10];
+
+    if(uentp->numlogins != 0&&uleveltochar( permstr, uentp->userlevel ) != 0)
+		return COUNT;
+    return 0;
+}
+
+int
 allusers()
 {
-    countusers(NULL,0);
-    if(apply_record(PASSFILE,countusers,sizeof(struct userec),0) == -1) {
+	int count;
+    if((count=apply_users(countusers,0)) <= 0) {
         return 0;
     }
-    return countusers(NULL,0);
+    return count;
 }
 
 int
@@ -670,17 +663,12 @@ mailto(struct userec *uentp ,char* arg)
     return 1;
 }
 
-mailtoall(mode)
+int mailtoall(mode)
 int mode;
 {
 
     mailmode=mode;
-    if(apply_record(PASSFILE,mailto,sizeof(struct userec),0) == -1) {
-        prints("No Users Exist") ;
-        pressreturn() ;
-        return 0;
-    }
-    return;
+    return apply_users(mailto,0);
 }
 
 Show_Users()
@@ -689,11 +677,8 @@ Show_Users()
     usercounter = 0;
     modify_user_mode(LAUSERS );
     printuent((struct userec *)NULL,0) ;
-    if(apply_record(PASSFILE,printuent,sizeof(struct userec),0) == -1) {
-        prints("No Users Exist") ;
-        pressreturn() ;
-        return 0;
-    }
+
+    apply_users(printuent,0);
     clrtobot();
     return 0;
 }

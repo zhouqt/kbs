@@ -335,11 +335,7 @@ int     real, unum;
                     }
                 }
             }
-            memcpy( u, &newinfo, sizeof(newinfo) );
-            set_safe_record();
-            substitute_record( PASSFILE, &newinfo, sizeof(newinfo), unum );
-            strcpy(uinfo.username,newinfo.username);
-            UPDATE_UTMP_STR(username,uinfo);
+            update_user(&newinfo,unum,1);
             break;/*Haohmaru.98.01.10.faint...Luzi加个for循环也不break!*/
         }
     }clear();
@@ -350,12 +346,12 @@ void
 x_info()
 {
     modify_user_mode( GMENU );
-    disply_userinfo( &currentuser, 1 );
+    disply_userinfo( currentuser, 1 );
     if (!strcmp("guest", currentuser->userid)) {
         pressreturn();
         return;
     }
-    uinfo_query( &currentuser, 0, usernum );
+    uinfo_query( currentuser, 0, usernum );
 }
 
 void

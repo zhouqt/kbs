@@ -3880,9 +3880,9 @@ Goodbye()    /*离站 选单*/
     clear();
     prints("\n\n\n\n");
     stay = time(NULL) - login_start_time;    /*本次线上时间*/
-    set_safe_record();
+    
     currentuser->stay+=stay;
-    substitute_record(PASSFILE, &currentuser, sizeof(currentuser), usernum);/*Haohmaru.99.05.19.move to here*/
+
     if(DEFINE(DEF_OUTNOTE/*退出时显示用户备忘录*/))
     {
         setuserfile(notename,"notes");
@@ -3968,10 +3968,7 @@ Goodbye()    /*离站 选单*/
         u_exit() ;
         started = 0;
     }
-    /*   set_safe_record();
-       currentuser->stay+=stay;
-       substitute_record(PASSFILE, &currentuser, sizeof(currentuser), usernum);*/
-    /*   pressreturn();rem by Haohmaru.98.10.18*/
+
     if(num_user_logins(currentuser->userid)==0||!strcmp(currentuser->userid,"guest"))/*检查还有没有人在线上*/
     {
         FILE *fp;

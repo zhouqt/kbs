@@ -161,7 +161,7 @@ suicide()
         XPERM[num] = '\0';
         currentuser->userlevel&=0x3F;/*Haohmaru,99.3.20.自杀者只保留基本权限*/
         currentuser->userlevel^=PERM_SUICIDE;
-        substitute_record(PASSFILE,currentuser,sizeof(currentuser),usernum);
+
         /*Haohmaru.99.3.20.自杀通知*/
         now=time(0);
         sprintf(filename,"etc/%s.tmp",currentuser->userid);
@@ -334,7 +334,6 @@ char cid[IDLEN];
     strcpy(lookupuser->username, "");
     strcpy(lookupuser->realname, "");
     lookupuser->userid[0] = '\0' ;
-    substitute_record(PASSFILE,&lookupuser,sizeof(lookupuser),id) ;
     setuserid( id, lookupuser->userid );
     move(2,0) ;
     prints("%s 已经已经和本家庭失去联络....\n",lookupuser->userid) ;
@@ -382,15 +381,11 @@ kick_user(struct user_info *userinfo)
             clear() ;
             return 0 ;
         }
-        /*search_record(PASSFILE, &kuinfo, sizeof(kuinfo), cmpuids, kickuser);modified by dong, 1998.11.2 无意义*/
         ind = search_ulist( &uin, t_cmpuids, id );
     }else
     {
         uin=*userinfo;
         strcpy(kickuser,uin.userid);
-        /*        id = getuser(kickuser);
-                search_record(PASSFILE, &kuinfo, sizeof(kuinfo), cmpuids, kickuser);
-                ind = search_ulist( &uin, t_cmpuids, id );*/
         ind=YEA;
     }
     if (!ind || !uin.active || (kill(uin.pid,0) == -1)) {

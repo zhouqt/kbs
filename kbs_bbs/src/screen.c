@@ -847,7 +847,7 @@ lock_scr() /* Leeward 98.02.22 */
         clrtobot();
         getdata(21, 0, "ÆÁÄ»ÏÖÔÚÒÑ¾­Ëø¶¨£¬Òª½â³ıËø¶¨£¬ÇëÊäÈëÃÜÂë£º", passbuf, 39, NOECHO, NULL ,YEA);
         move(22,32);
-        if( !checkpasswd2( passbuf,&currentuser)) {
+        if( !checkpasswd2( passbuf,currentuser)) {
             prints( "[1m[31mÃÜÂëÊäÈë´íÎó...[m\n" );
             pressanykey();
         }

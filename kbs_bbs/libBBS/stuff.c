@@ -162,15 +162,6 @@ char    *fname;
 
     return ( stat( fname, &st ) == 0 && S_ISDIR( st.st_mode ) );
 }
-void
-touchnew()
-{
-    int fd ;
-
-    if((fd = open(FLUSH,O_WRONLY|O_CREAT,0644)) == -1)
-        return ;
-    close(fd) ;
-}
 
 /* rrr - Snagged from pbbs 1.8 */
 

@@ -196,7 +196,6 @@ p_level()
         lookupuser->userlevel ^= PERM_POST;/* 改变该用户权限 */
         sprintf(secu,"修改 %s 的发文权限",lookupuser->userid);
         securityreport(secu,lookupuser);
-        substitute_record(PASSFILE,&lookupuser,sizeof(struct userec),id) ;
         move(13,0);
         if(lookupuser->userlevel & PERM_POST)
         {
@@ -279,7 +278,6 @@ x_level()
         lookupuser->userlevel = newlevel;
         /* Leeward: 1997.12.02 : Modification stops */
 
-        substitute_record(PASSFILE,&lookupuser,sizeof(struct userec),id) ;
         prints("使用者 '%s' 的权限已更改\n",lookupuser->userid) ;
         sprintf(genbuf, "changed permissions for %s", lookupuser->userid);
         report(genbuf);
@@ -440,7 +438,6 @@ x_userdefine()
         if (((convcode)&&(newlevel&DEF_USEGB))  /* KCN,99.09.05 */
                 ||((!convcode)&&!(newlevel&DEF_USEGB)))
             switch_code();
-        substitute_record(PASSFILE,&lookupuser,sizeof(struct userec),id) ;
         uinfo.pager|=FRIEND_PAGER;
         if(!(uinfo.pager&ALL_PAGER))
         {

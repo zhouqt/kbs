@@ -451,3 +451,115 @@ set_safe_record()
 }
 */
 
+int getnewuserid(char* userid)
+{
+    struct userec utmp, zerorec;
+    struct stat st;
+    int         fd, size, val, i;
+    char    tmpstr[30];
+
+    system_time = time( NULL );
+    /*
+    if( stat( "tmp/killuser", &st )== -1 || st.st_mtime < system_time-3600 ) {
+        if( (fd = open( "tmp/killuser", O_RDWR|O_CREAT, 0600 )) == -1 )
+            return -1;
+        write( fd, ctime( &system_time ), 25 );
+        close( fd );
+        log_usies( "CLEAN", "dated users." );
+        prints( "寻找新帐号中, 请稍待片刻...\n\r" );
+        oflush();
+        memset( &zerorec, 0, sizeof( zerorec ) );
+        if( (fd = open( PASSFILE, O_RDWR|O_CREAT, 0600 )) == -1 )
+            return -1;
+        size = sizeof( utmp );
+        for( i = 0; i < MAXUSERS; i++ ) {
+            if( read( fd, &utmp, size ) != size )
+                break;
+            val = compute_user_value( &utmp );
+            if( utmp.userid[0] != '\0' && val <= 0 ) {
+                sprintf( genbuf, "#%d %-12s %15.15s %d %d %d",
+                         i+1, utmp.userid, ctime( &(utmp.lastlogin) )+4,
+                         utmp.numlogins, utmp.numposts, val );
+                log_usies( "KILL ", genbuf );
+                if( !bad_user_id( utmp.userid ) ) {
+                    setmailpath(tmpstr, utmp.userid);
+                    sprintf( genbuf, "/bin/rm -fr %s", tmpstr);
+                    system( genbuf );
+                    sethomepath(tmpstr, utmp.userid);
+                    sprintf( genbuf, "/bin/rm -fr %s", tmpstr);
+                    system( genbuf );
+                    sprintf( genbuf, "/bin/rm -f tmp/email_%s", utmp.userid );
+                    system( genbuf );
+                }
+                lseek( fd, -size, SEEK_CUR );
+                write( fd, &zerorec, sizeof( utmp ) );
+            }
+        }
+        close( fd );
+    }
+*/
+    if( (fd = open( PASSFILE, O_RDWR|O_CREAT, 0600 )) == -1 )
+        return -1;
+    flock( fd, LOCK_EX );
+
+    i = searchnewuser();
+    log( "1system", "APPLY: uid %d from %s", i, fromhost );
+
+    if( i <= 0 || i > MAXUSERS ) {
+        flock(fd,LOCK_UN) ;
+        close(fd) ;
+#ifdef BBSMAIN
+        if( dashf( "etc/user_full" ) ) {
+            ansimore( "etc/user_full", NA );
+            oflush();
+        } else {
+            prints( "抱歉, 使用者帐号已经满了, 无法注册新的帐号.\n\r" );
+            oflush();
+        }
+        val = (st.st_mtime - system_time + 3660) / 60;
+        prints( "请等待 %d 分钟後再试一次, 祝你好运.\n\r", val );
+        oflush();
+        sleep( 2 );
+#endif
+        return -1;
+    }
+    memset( &utmp, 0, sizeof( utmp ) );
+    strcpy( utmp.userid, userid );
+    utmp.lastlogin = time( NULL );
+    update_user(&utmp,i,1);
+    setuserid( i, userid ); /* added by dong, 1998.12.2 */
+    flock( fd, LOCK_UN );
+    close( fd );
+    return i;
+}
+
+int update_user(struct userec* user,int num,int all)
+{
+	struct userec tmpuser;
+	if (!all) {
+		if (strncasecmp(user->userid,passwd[num-1].userid,IDLEN)) 
+			return -1;
+		tmpuser=*user;
+		memcpy(tmpuser.userid,passwd[num-1].userid,IDLEN+2);
+		memcpy(tmpuser.passwd,passwd[num-1].passwd,IDLEN+2);
+		memcpy(tmpuser.md5passwd,passwd[num-1].passwd,IDLEN+2);
+		memcpy(passwd[num-1],&tmpuser,sizeof(userec));
+	} else
+		memcpy(passwd[num-1],user,sizeof(userec));
+	return 0;
+}
+
+int apply_users(int (*fptr)(struct userec* ,char*),char* arg)
+{
+	int i;
+	int count;
+	count=0;
+	for (i=0;i<uidshm->number;i++)
+		if (fptr) {
+			int ret;
+			ret = (*fptr)(&passwd[i],arg);
+			if (ret==QUIT) break;
+			if (ret==COUNT) count++;
+		} else count++;
+	return count;
+}
