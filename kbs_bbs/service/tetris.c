@@ -44,6 +44,8 @@ int delay, level, score;
 char topID[20][20];
 int topT[20],topS[20];
  
+extern struct user_info uinfo;
+
 int getch()
 {
     int c,d,e;
@@ -51,6 +53,9 @@ int getch()
 
 	static int *retbuf;
 	static int retlen=0;
+
+	static time_t old=0;
+	time_t now;
 
 	extern int keymem_total;
 	extern struct key_struct *keymem;
@@ -100,6 +105,14 @@ int getch()
         }
 	}
 
+	if(ret){
+		now = time(0);
+		if (now - old > 60) {
+        	uinfo.freshtime = now;
+	    	UPDATE_UTMP(freshtime, uinfo);
+	    	old = now;
+		}
+	}
     return ret;
 }
 
