@@ -317,16 +317,47 @@ void a_additem(MENU* pm,const char* title,const char* fname,char* host,int port,
     }
 }
 
+#ifdef FB2KPC
+int fb2kpc_is_owner(char *path)
+{
+	char *c;
+	char owner[IDLEN+1];
+
+	if(strlen(path) < strlen(FB2KPC)+3)
+		return 0;
+	c=path+strlen(FB2KPC);
+	if(*c=='/') c++;
+	c+=2;
+	strncpy(owner, c, IDLEN);
+	owner[IDLEN]='\0';
+	if((c=strchr(owner,'/'))!=NULL) *c='\0';
+	if(strcasecmp(owner,getCurrentUser()->userid))
+		return 0;
+	return 1;
+}
+#endif
+
 #ifdef ANN_CTRLK
-static int canread(int level, char *path, char * fname)
+static int canread(int level, char *path, char * fname, char *title)
 {
 	char buf[PATHLEN+20];
 
 	if(strlen(path)+strlen(fname) > PATHLEN)
 		return 0;
-	if(level & PERM_BOARDS) return 1;
 
 	sprintf(buf,"%s/%s",path,fname);
+
+#ifdef FB2KPC
+	if(!strncmp(path,FB2KPC,strlen(FB2KPC))){
+		if(strstr(title,"<secret>") && !fb2kpc_is_owner(buf))
+			return 0;
+	}else{
+#endif
+	if(level & PERM_BOARDS) return 1;
+#ifdef FB2KPC
+	}
+#endif
+
 	if(dashd(buf)){
 		strcat(buf,"/.allow");
 		if(!dashf(buf)) return 1;
@@ -380,7 +411,7 @@ int a_loadnames(MENU* pm, session_t* session)             /* ×°Èë .Names */
                 strncpy(litem.fname, buf + 5, sizeof(litem.fname));
             if (strstr(litem.fname,"..")) continue;
 #ifdef ANN_CTRLK
-			if (!canread(pm->level, pm->path, litem.fname)) continue;
+			if (!canread(pm->level, pm->path, litem.fname, litem.title)) continue;
 #endif
             if (HAS_PERM(session->currentuser, PERM_SYSOP)
                 ||((!strstr(litem.title, "(BM: BMS)") || HAS_PERM(session->currentuser, PERM_BOARDS))

@@ -3397,6 +3397,55 @@ int into_announce(struct _select_def* conf,struct fileheader *fileinfo,void* ext
     return DONOTHING;
 }
 
+#ifdef FB2KPC
+int Personal(char *userid)
+{
+   char    found[256], lookid[IDLEN];
+   char buf[STRLEN];
+   struct userec *lookupuser;
+   
+   if(!userid || userid[0]=='\0') {
+      clear();
+      move(2, 0);
+      usercomplete( "您想看谁的个人文集: " , lookid);
+      if (lookid[0] == '\0') {
+         clear();
+         return 1;
+      }
+   }else 
+	  strcpy(lookid, userid);
+
+   if(lookid[0] == '*'){
+      sprintf(buf,"/%c/%s", toupper(getCurrentUser()->userid[0]),getCurrentUser()->userid);
+   } else {
+      if (! getuser(lookid,&lookupuser) ){
+         lookid[1] = toupper(lookid[0]);
+	     if(lookid[1] < 'A' || lookid[1] > 'Z'){
+			buf[0]='\0';
+		 }else {
+			sprintf(buf,"/%c",lookid[1]);
+	     }
+      } else {
+         sprintf(buf, "/%c/%s", toupper(lookupuser->userid[0]),lookupuser->userid);
+      }
+   }
+   if(buf[0]=='/')
+	  sprintf(found,FB2KPC "%s", buf);
+   else
+	  sprintf(found,FB2KPC "/%s", buf);
+   if(!dashd(found)) 
+      strcpy(found,FB2KPC);
+   a_menu("",found,((HAS_PERM(getCurrentUser(),PERM_ANNOUNCE) || HAS_PERM(getCurrentUser(),PERM_SYSOP) || HAS_PERM(getCurrentUser(),PERM_OBOARDS)) ? PERM_BOARDS : 0),0);
+   return 1;
+}
+
+int into_PAnnounce(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
+{
+	Personal(NULL);
+	return FULLUPDATE;
+}
+#endif
+
 int sequential_read(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     struct read_arg* arg=conf->arg;
@@ -5605,7 +5654,11 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
 
     {'p',  (READ_KEY_FUNC)thread_read,(void*)SR_READ},
     {Ctrl('S'), (READ_KEY_FUNC)thread_read,(void*)SR_READ},
+#ifdef FB2KPC
+    {Ctrl('X'), (READ_KEY_FUNC)into_PAnnounce,NULL},
+#else
     {Ctrl('X'), (READ_KEY_FUNC)thread_read,(void*)SR_READX},
+#endif
     
     {Ctrl('U'), (READ_KEY_FUNC)author_read,(void*)SR_READ},
     {Ctrl('H'), (READ_KEY_FUNC)author_read,(void*)SR_READX}, 

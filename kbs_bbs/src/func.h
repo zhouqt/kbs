@@ -609,6 +609,9 @@ int pc_logs(struct pc_logs *pn);
     void conv_init(session_t* session);
 
 /* libann.c */
+#ifdef FB2KPC
+	int fb2kpc_is_owner(char *path);
+#endif
     void ann_add_item(MENU * pm, ITEM * it);
     int ann_load_directory(MENU * pm, session_t* session);
     ITEM *ann_alloc_items(size_t num);

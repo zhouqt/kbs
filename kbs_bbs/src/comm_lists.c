@@ -43,6 +43,9 @@ int ReadBoard();
 int Select();
 int Users();
 int Welcome();
+#ifdef FB2KPC
+int AddPCorpus();
+#endif
 int t_www();
 int setcalltime();
 int show_allmsgs();
@@ -280,6 +283,10 @@ static const struct scommandlist sysconf_cmdlist[] = {
 #ifdef PERSONAL_CORP
 	{"PcorpManage", pc_add_user},
 	{"Pcorp", pc_choose_user},
+#endif
+
+#ifdef FB2KPC
+	{"AddFBPC", AddPCorpus},
 #endif
     {NULL, NULL},
 };

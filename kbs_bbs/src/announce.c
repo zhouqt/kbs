@@ -1642,6 +1642,63 @@ void ann_attach_link(char* buf,int buf_len,long attachpos,void* arg)
         server,fname+10,attachpos);
 }
 
+#ifdef FB2KPC
+int AddPCorpus()
+{
+	FILE *fn;
+	char    personalpath[PATHLEN], title[200];
+	struct userec *lookupuser;
+
+        if (!check_systempasswd()) {
+                return 1;
+        }
+        clear();
+        prints("´´½¨¸öÈËÎÄ¼¯");
+
+		move(1,0);
+		usercomplete( "ÇëÊäÈëÊ¹ÓÃÕß´úºÅ: ",title);
+		if(title[0]=='\0')
+                return 1;
+		if(!getuser(title, &lookupuser))
+				return 1;
+
+	sprintf(personalpath,FB2KPC "/%c/%s", toupper(lookupuser->userid[0]),lookupuser->userid);
+        if (dashd(personalpath)) {
+			move(10,0);
+			prints("¸ÃÓÃ»§µÄ¸öÈËÎÄ¼¯Ä¿Â¼ÒÑ´æÔÚ\n");
+			pressanykey();
+		return 1;
+	}
+	
+	move(4,0);
+	if(askyn("È·¶¨ÒªÎª¸ÃÓÃ»§´´½¨Ò»¸ö¸öÈËÎÄ¼¯Âð?",1)==0){
+		return 1;
+	}
+
+    mkdir(personalpath, 0755);
+    chmod(personalpath, 0755);
+
+	move(7,0);
+	prints("[Ö±½Ó°´ ENTER ¼ü, Ôò±êÌâÈ±Ê¡Îª: [32m%s µÄ¸öÈËÎÄ¼¯[m]",lookupuser->userid);
+	getdata(6, 0, "ÇëÊäÈë¸öÈËÎÄ¼¯Ö®±êÌâ: ", title, 39, DOECHO, NULL, true);
+	if(title[0] == '\0')
+		sprintf(title,"%s µÄ¸öÈËÎÄ¼¯",lookupuser->userid);
+	sprintf(personalpath, "%s/.Names", personalpath);
+        if ((fn = fopen(personalpath, "w")) == NULL) {
+              return -1;
+        }
+        fprintf(fn, "#\n");
+        fprintf(fn, "# Title=%s\n", title);
+        fprintf(fn, "#\n");
+        fclose(fn);
+
+	move(15,0);
+	prints("ÒÑ¾­´´½¨¸öÈËÎÄ¼¯, Çë°´ÈÎÒâ¼ü¼ÌÐø...");
+	pressanykey();
+	return 0;
+}
+#endif
+
 void a_menu(maintitle, path, lastlevel, lastbmonly)
 char *maintitle, *path;
 int lastlevel, lastbmonly;
@@ -1678,6 +1735,14 @@ int lastlevel, lastbmonly;
     a_loadnames(&me, getSession());           /* Load .Names */
 
     strcpy(buf, me.mtitle);
+#ifdef FB2KPC
+	if(!strncmp(FB2KPC,me.path,strlen(FB2KPC))){
+		if(fb2kpc_is_owner(me.path))
+			me.level |= PERM_BOARDS;
+		else if(bmonly==1 && !(me.level & PERM_BOARDS))
+			return;
+	}else{
+#endif
     bmstr = strstr(buf, "(BM:");
     if (bmstr != NULL) {
         if (chk_currBM(bmstr + 4, getCurrentUser()) || HAS_PERM(getCurrentUser(), PERM_SYSOP))
@@ -1685,6 +1750,9 @@ int lastlevel, lastbmonly;
         else if (bmonly == 1 && !(me.level & PERM_BOARDS))
             return;
     }
+#ifdef FB2KPC
+	}
+#endif
 
     if (strstr(me.mtitle, "(BM: BMS)") || strstr(me.mtitle, "(BM: SECRET)") || strstr(me.mtitle, "(BM: SYSOPS)"))
         bmonly = 1;
