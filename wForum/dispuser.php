@@ -88,6 +88,11 @@ if ($user['userdefine0'] & BBS_DEF_SHOWDETAILUSERDATA) {
     </td>
   </tr>   
   <tr> 
+    <td class=TableBody1 width=20% align=right>êÇ ³Æ£º</td>
+    <td class=TableBody1><?php echo htmlspecialchars($user['username'],ENT_QUOTES); ?> </td>
+  </tr>
+
+  <tr> 
     <td class=TableBody1 width=20% align=right>ÐÔ ±ð£º</td>
     <td class=TableBody1><?php echo chr($user['gender'])=='M'?'ÄÐ':'Å®'; ?> </td>
   </tr>

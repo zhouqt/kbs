@@ -4,7 +4,7 @@ require("inc/funcs.php");
 require("inc/usermanage.inc.php");
 require("inc/user.inc.php");
 
-setStat("修改密码");
+setStat("修改昵称或密码");
 
 requireLoginok();
 
@@ -20,6 +20,14 @@ show_footer();
 
 function main() {
 	global $currentuser;
+	if (isset($_POST["nick"])) {
+		if (bbs_modify_nick($_POST["nick"], intval($_POST["chkTmp"])) == 0) {
+			setSucMsg("更新昵称成功！");
+		} else {
+			foundErr("昵称修改失败！");
+		}
+		return;
+	}
 	$pw1=trim($_POST['oldpsw']);
 	$pw2=trim($_POST['psw']);
 	$pw3=trim($_POST['psw2']);

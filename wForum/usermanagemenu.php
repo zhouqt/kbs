@@ -34,6 +34,7 @@ if (!($currentuser["userlevel"] & BBS_PERM_LOGINOK )) {
 </td></tr>
 <tr><th height=25>基本信息</th></tr>
 <tr><td align=left class=TableBody1 valign=top>
+用户昵称： <?php echo htmlspecialchars($currentuser['username'],ENT_QUOTES); ?><br>
 用户等级： <?php echo bbs_getuserlevel($currentuser['userid']); ?><br>
 用户门派： <?php echo showIt($groups[$currentuser['group']]); ?><br>
 用户财富： <?php echo $currentuser['money']; ?><br>

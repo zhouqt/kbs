@@ -200,7 +200,7 @@
                         <tr><td>·</td><td><a href="modifyuserdata.php" target="main">基本资料修改</a></td></tr>
     					<tr><td>·</td><td><a href="userparam.php" target="main">用户自定义参数</a></td></tr>
 	    				<tr><td>·</td><td><a href="bbssig.php" target="main">用户签名档</a></td></tr>
-	    				<tr><td>·</td><td><a href="changepasswd.php" target="main">修改密码</a></td></tr>
+	    				<tr><td>·</td><td><a href="changepasswd.php" target="main">修改昵称密码</a></td></tr>
                     </table>
 				</div>
 			</td>
