@@ -190,6 +190,7 @@ int getnewutmpent(struct user_info *up)
 				    count++;
 				    if (count>USHM_SIZE) {
                         bbslog( "3system", "UTMP:maybe loop???");
+						f_cat("NOLOGIN","系统故障，请稍后再来");
                         utmp_unlock(utmpfd);
                         return -1;
                 }
@@ -372,6 +373,7 @@ int apply_ulist_addr( APPLY_UTMP_FUNC fptr,char* arg) /* apply func on user list
 		i=utmpshm->list_next[i-1];
 		if (num>=USHM_SIZE) {
 			bbslog("5system","utmp loop!!!!");
+			f_cat("NOLOGIN","系统故障，请稍后再来");
 			exit(0);
 		};
 	}
