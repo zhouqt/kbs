@@ -368,6 +368,7 @@ resolve_ucache()
 
 static void ucache_setreadonly(int readonly)
 {
+    int iscreate;
     shmdt(uidshm);
     if (readonly)
         uidshm = (struct UCACHE*)attach_shm1( "UCACHE_SHMKEY", 3696, sizeof( *uidshm ) ,&iscreate , 1, uidshm); 

@@ -1145,8 +1145,13 @@ struct fileheader *ent ;
 
     if (manager&&(ent->accessed[0]&FILE_IMPORTED)) /* ÎÄ¼þÒÑ¾­±»ÊÕÈë¾«»ªÇø */
    	{
-   		typeprefix="\x1b[37m";
+           if (type==' ') {
+   		typeprefix="\x1b[42m";
    		typesufix="\x1b[m";
+           } else {
+   		typeprefix="\x1b[32m";
+   		typesufix="\x1b[m";
+           }
    	}
     filetime = atoi( ent->filename + 2 ); /* ÓÉÎÄ¼þÃûÈ¡µÃÊ±¼ä */
     if( filetime > 740000000 ) {
@@ -1185,7 +1190,7 @@ struct fileheader *ent ;
         if (!strncmp("Re:",ent->title,3) || !strncmp("RE:",ent->title,3))       /*ReµÄÎÄÕÂ*/
         {
             if(!strcmp( ReplyPost+3, ent->title+3)) /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
-                sprintf(buf," [36m%4d[m %s%c%s %-12.12s %6.6s[36m£®%-47.47s[m ", num, type, ent->owner, date, TITLE);
+                sprintf(buf," [36m%4d[m %s%c%s %-12.12s %6.6s[36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
             else
                 sprintf(buf," %4d %s%c%s %-12.12s %6.6s  %-47.47s", num, typeprefix, type, typesufix, ent->owner, date, TITLE) ;
         }
