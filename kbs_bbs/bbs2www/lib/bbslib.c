@@ -1320,9 +1320,10 @@ if( oldidx != 0 && fromhostn->s_addr == wwwguest_shm->guest_entry[oldidx].fromip
 						if( wwwguest_shm->guest_entry[i*32+j].fromip.s_addr == fromhostn->s_addr ){
 							num = -1;
 							*idx = i*32+j;
-                    		break;
+							break;
 						}
-                	}
+					} else
+						map = map >> 1;
 				}
         	}
 			if( num == -1 )
@@ -2046,7 +2047,7 @@ static void generate_font_style(unsigned int *style, unsigned int *ansi_val, siz
 }
 
 /*
-static void print_raw_ansi(char *buf, size_t buflen, buffered_output_t * output)
+static void js_output(char *buf, size_t buflen, buffered_output_t * output)
 */
 #define js_output(buf, buflen, output) \
 do { \
@@ -2232,7 +2233,7 @@ void output_ansi_text(char *buf, size_t buflen,
 		if (!attachShowed[i]) { 
 			switch(attachType[i]) {
 			case ATTACH_IMG:
-		 		snprintf(outbuf, 511, "<br /><img src=\"/images/files/img.gif\" border=\"0\" />此主题相关图片如下：%s (%ld 字节)<br /><a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" alt=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ",attachFileName[i], attachLen[i], attachlink, attachPos[i],attachlink, attachPos[i]);
+		 		snprintf(outbuf, 511, "<br /><img src=\"/images/files/img.gif\" border=\"0\" />此主题相关图片如下：%s (%ld 字节)<br /><a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" title=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ",attachFileName[i], attachLen[i], attachlink, attachPos[i],attachlink, attachPos[i]);
 				break;
 			case ATTACH_FLASH:
 		        snprintf(outbuf, 511, "<br />Flash动画: " "<a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />" "<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" > <param name=\"MOVIE\" value=\"%s&amp;ap=%ld\" />" "<embed src=\"%s&amp;ap=%ld\"></embed></object><br />", attachlink, attachPos[i], attachFileName[i], attachLen[i], attachlink, attachPos[i], attachlink, attachPos[i]);
@@ -2429,7 +2430,7 @@ void output_ansi_javascript(char *buf, size_t buflen,
 		if (!attachShowed[i]) { 
 			switch(attachType[i]) {
 			case ATTACH_IMG:
-		 		snprintf(outbuf, 511, "<br /><img src=\"/images/files/img.gif\" border=\"0\" />此主题相关图片如下：%s (%ld 字节)<br /><a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" alt=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ",attachFileName[i], attachLen[i], attachlink, attachPos[i],attachlink, attachPos[i]);
+		 		snprintf(outbuf, 511, "<br /><img src=\"/images/files/img.gif\" border=\"0\" />此主题相关图片如下：%s (%ld 字节)<br /><a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" title=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ",attachFileName[i], attachLen[i], attachlink, attachPos[i],attachlink, attachPos[i]);
 				break;
 			case ATTACH_FLASH:
 		        snprintf(outbuf, 511, "<br />Flash动画: " "<a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />" "<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" > <param name=\"MOVIE\" value=\"%s&amp;ap=%ld\" />" "<embed src=\"%s&amp;ap=%ld\"></embed></object><br />", attachlink, attachPos[i], attachFileName[i], attachLen[i], attachlink, attachPos[i], attachlink, attachPos[i]);
@@ -2662,7 +2663,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
                 if ((num > 0) && (num <= attachmatched)) {
                     switch(attachType[num-1]) {
                     case ATTACH_IMG:
-                        snprintf(outbuf, 511, "<a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" alt=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ", attachlink, attachPos[num-1],attachlink, attachPos[num-1]);
+                        snprintf(outbuf, 511, "<a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" title=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ", attachlink, attachPos[num-1],attachlink, attachPos[num-1]);
                         break;
                     case ATTACH_FLASH:
                         snprintf(outbuf, 511, "<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" > <param name=\"MOVIE\" value=\"%s&amp;ap=%ld\" />" "<embed src=\"%s&amp;ap=%ld\"></embed></object>", attachlink, attachPos[num-1], attachlink, attachPos[num-1]);
@@ -2798,7 +2799,7 @@ atppp_never_use_goto:
         if (!attachShowed[i]) { 
             switch(attachType[i]) {
             case ATTACH_IMG:
-                snprintf(outbuf, 511, "<br /><img src=\"/images/files/img.gif\" border=\"0\" />此主题相关图片如下：%s (%ld 字节)<br /><a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" alt=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ",attachFileName[i], attachLen[i], attachlink, attachPos[i],attachlink, attachPos[i]);
+                snprintf(outbuf, 511, "<br /><img src=\"/images/files/img.gif\" border=\"0\" />此主题相关图片如下：%s (%ld 字节)<br /><a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" title=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ",attachFileName[i], attachLen[i], attachlink, attachPos[i],attachlink, attachPos[i]);
                 break;
             case ATTACH_FLASH:
                 snprintf(outbuf, 511, "<br />Flash动画: " "<a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />" "<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" > <param name=\"MOVIE\" value=\"%s&amp;ap=%ld\" />" "<embed src=\"%s&amp;ap=%ld\"></embed></object><br />", attachlink, attachPos[i], attachFileName[i], attachLen[i], attachlink, attachPos[i], attachlink, attachPos[i]);
