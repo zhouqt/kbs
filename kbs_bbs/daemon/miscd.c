@@ -400,11 +400,11 @@ void userd()
         sock = getrequest(m_socket);
         if (!strcmp(cmd, "NEW"))
             id = getnewuserid(username);
-        if (!strcmp(cmd, "SET")) {
+		else if (!strcmp(cmd, "SET")) {
             setuserid2(num, username);
             id = 0;
         }
-        if (!strcmp(cmd, "DEL")) {
+		else if (!strcmp(cmd, "DEL")) {
             setuserid2(num, "");
             id = 0;
         } else
