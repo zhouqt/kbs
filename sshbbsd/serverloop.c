@@ -16,6 +16,9 @@ Server main loop for handling the interactive session.
 /*
  * $Id$
  * $Log$
+ * Revision 1.6  2003/04/18 13:59:15  bad
+ * ssh∂‡––
+ *
  * Revision 1.5  2002/08/04 11:39:43  kcn
  * format c
  *
@@ -184,6 +187,7 @@ void ProcessOnePacket(int wait)
             col = packet_get_int();
             xpixel = packet_get_int();
             ypixel = packet_get_int();
+            do_naws(row, col);
 //            pty_change_window_size(fdin, row, col, xpixel, ypixel);
             break;
 
