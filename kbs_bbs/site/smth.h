@@ -259,6 +259,10 @@ bigger mailbox. --stephen 2001.10.31*/
 
 #define NUMDEFINES 33
 
+#define SET_DEFINE(user,x) ((user)->userdefine[def_list(x)] |= x)
+#define SET_UNDEFINE(user,x) ((user)->userdefine[def_list(x)] &= ~x)
+#define SET_CHANGEDEFINE(user,x) ((user)->userdefine[def_list(x)] ^= x)
+
 
 #define TDEF_SPLITSCREEN 000001
 
