@@ -523,9 +523,10 @@ int getdata(int line,int col,char* prompt,char* buf,int len,int echo,void* nouse
     move(line, col);
     if (prompt)
         prints("%s", prompt);
-    y = line;
-    col+= (prompt == NULL) ? 0 : strlen(prompt);
-    x = col;
+//    y = line;
+    getyx(&y,&x);
+//    col+= (prompt == NULL) ? 0 : strlen(prompt);
+//    x = col;
     clen = strlen(buf);
     curr = (clen >= len) ? len-1: clen;
     buf[curr]='\0';
