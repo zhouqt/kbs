@@ -20,13 +20,12 @@ int main()
     strsncpy(board, getparm("board"), 32);
     strsncpy(file, getparm("file"), 32);
     encode_url(brdencode, board, sizeof(brdencode));
-    printf("<center>\n");
     if (getboardnum(board,&bh)==0||!check_read_perm(currentuser, &bh))
         http_fatal("错误的讨论区");
     strcpy(board, getbcache(board)->filename);
     if ((loginok)&&strcmp(currentuser->userid,"guest"))
         brc_initial(currentuser->userid, board);
-    printf("%s -- 主题文章阅读 [讨论区: %s]<hr class=\"class\">", BBSNAME, board);
+    printf("%s -- 主题文章阅读 [讨论区: %s]<hr class=\"default\">", BBSNAME, board);
     if (VALID_FILENAME(file) < 0)
         http_fatal("错误的参数");
     sprintf(dir, "boards/%s/.DIR", board);
@@ -65,7 +64,6 @@ int main()
     ptr = x.title;
     if (!strncmp(ptr, "Re: ", 4))
         ptr += 4;
-    printf("</center>\n");
     if ((loginok)&&strcmp(currentuser->userid,"guest"))
         brc_update(currentuser->userid);
     http_quit();
@@ -99,10 +97,12 @@ int show_file(char *board,struct boardheader* bh,struct fileheader *x, int n, ch
         if (fgets(buf, 500, fp) == 0)
             break;
         if (!strncmp(buf, ": ", 2))
-            continue;
-        if (!strncmp(buf, "【 在 ", 4))
-            continue;
+            printf("<font color=\"#008080\"><i>");
+        /*if (!strncmp(buf, "【 在 ", 4))
+            continue;*/
         hhprintf("%s", buf);
+        if (!strncmp(buf, ": ", 2))
+            printf("</i></font>");
     }
     fclose(fp);
     printf("</pre></table><hr class=\"default\">");
