@@ -965,7 +965,7 @@ int safe_mmapfile_handle(int fd, int prot, int flag, void **ret_ptr, off_t * siz
         close(fd);
         return 0;
     }
-    if (st.st_size <= 0) {
+    if (st.st_size < 0) {
         close(fd);
         return 0;
     }
