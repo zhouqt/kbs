@@ -197,6 +197,10 @@ int t_printstatus(struct user_info *uentp, int *arg, int pos)
 }
 
 /* Modified By Excellent*/
+struct _tag_talk_showstatus {
+    int count;
+    int pos[20];
+};
 int talk_showstatus(struct user_info *uentp, struct _tag_talk_showstatus *arg, int pos)
 {
     char buf[80];
@@ -214,6 +218,8 @@ int t_cmpuids(int uid, struct user_info *up)
 {
     return (up->active && uid == up->uid);
 }
+
+extern char MsgDesUid[20];
 
 int t_query(q_id)
 char q_id[IDLEN];
@@ -334,7 +340,6 @@ char q_id[IDLEN];
             int ch, tuid, ucount, unum;
             char genbuf[STRLEN], buf[STRLEN];
             struct user_info *uin;
-            struct _tag_talk_showstatus ts;
             move(t_lines - 1, 0);
             if ((genbuf[0]) && seecount) {
                 if (DEFINE(currentuser, DEF_HIGHCOLOR))
@@ -354,7 +359,7 @@ char q_id[IDLEN];
                     if (!((genbuf[0]) && seecount)) break;
                     uin = t_search(uident, false);
                     if(uin==NULL) break;
-                    ttt_talk(&uin);
+                    ttt_talk(uin);
                     break;
                 case 'S':
                     if (!((genbuf[0]) && seecount)) break;
@@ -458,10 +463,6 @@ int num_visible_users()
     apply_ulist_addr((APPLY_UTMP_FUNC) count_visible_active, (char *) &count);
     return count;
 }
-struct _tag_talk_showstatus {
-    int count;
-    int pos[20];
-};
 int ttt_talk(struct user_info *userinfo)
 {
     char uident[STRLEN];
