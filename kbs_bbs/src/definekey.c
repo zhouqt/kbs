@@ -154,7 +154,7 @@ int modes[200][2], modest;
 
 static int set_modes_show(struct _select_def *conf, int i)
 {
-    prints("%s%s\x1b[m", modes[i][1]?"*":' ', modes[i][0]?ModeType(modes[i][0]):"全部");
+    prints("%s%s\x1b[m", modes[i][1]?"*":" ", modes[i][0]?ModeType(modes[i][0]):"全部");
     return SHOW_CONTINUE;
 }
 
@@ -352,7 +352,7 @@ static int set_keydefine_key(struct _select_def *conf, int key)
         }
         break;
     case 'e':
-        set_modes(keymem[conf->pos-1]);
+        set_modes(keymem[conf->pos-1].status);
         break;
     case 's':
         {
@@ -455,7 +455,7 @@ static int set_keydefine_getdata(struct _select_def *conf, int pos, int len)
     return SHOW_CONTINUE;
 }
 
-static int set_mailgroup_select(struct _select_def *conf)
+static int set_keydefine_select(struct _select_def *conf)
 {
     char buf[20],buf2[120],buf3[240];
     clear();
