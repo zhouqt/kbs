@@ -46,7 +46,7 @@ int main()
     f_append(filename, unix_string(content));
     oldx = (struct fileheader*)malloc(sizeof(struct fileheader));
     if(oldfilename[0]){
-    	int pos = search_record(dir, oldx, sizeof(fileheader), (RECORD_FUNC_ARG) cmpname, oldfilename);
+    	int pos = get_file_ent(board, oldfilename, oldx);
     	if (pos <= 0) {
     		free(oldx);
     		oldx = NULL;
