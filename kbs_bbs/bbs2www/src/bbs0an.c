@@ -58,6 +58,26 @@ void ann_show_item(MENU * pm, ITEM * it)
     printf("<td>%6.6s %s</td></tr>\n", wwwCTime(file_time(buf)) + 4, wwwCTime(file_time(buf)) + 20);
 }
 
+void ann_show_toolbar(char * path, char * board)
+{
+    struct boardheader *bp;
+    char buf[STRLEN];
+
+		printf("<br>[<a href=\"javascript:history.go(-1)\">返回上一页</a>] ");
+        if (board[0]){
+            printf("[<a href=\"/bbsdoc.php?board=%s\">本讨论区</a>]\n", encode_url(buf, board, sizeof(buf)));
+			if((bp=getbcache(board))!=NULL){
+    			char BM[STRLEN];
+
+			    strncpy(BM, bp->BM, sizeof(BM) - 1);
+			    BM[sizeof(BM) - 1] = '\0';
+    			if(chk_currBM(BM,currentuser)){
+					printf("[<a href=\"/bbsmpath.php?action=add&path=%s\">加为丝路</a>]",encode_url(buf,path,sizeof(buf)));
+				}
+			}
+		}
+}
+
 void ann_show_directory(char *path)
 {
     MENU me;
@@ -96,6 +116,7 @@ void ann_show_directory(char *path)
         printf("%s -- %s精华区<hr class=\"default\">\n", BBSNAME, buf);
         if (me.num <= 0) {
             printf("<br>&lt;&lt; 目前没有文章 &gt;&gt;\n");
+			ann_show_toolbar(path,board);
             http_quit();
         }
         printf("<table class=\"default\" border=\"1\" width=\"610\">\n");
@@ -106,9 +127,8 @@ void ann_show_directory(char *path)
             ann_show_item(&me, me.item[i]);
             me.now++;
         }
-        printf("</table><br>[<a href=\"javascript:history.go(-1)\">返回上一页</a>] ");
-        if (board[0])
-            printf("[<a href=\"/bbsdoc.php?board=%s\">本讨论区</a>]\n", encode_url(buf, board, sizeof(buf)));
+        printf("</table>");
+		ann_show_toolbar(path,board);
         printf("</center>\n");
     }
     ann_free_items(its, MAXITEMS);
