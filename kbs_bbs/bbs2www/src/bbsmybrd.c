@@ -61,7 +61,7 @@ int main()
 	for(i=0; i<total; i++)
 	{
 		char *buf3="";
-		if(IsFavBoard(i))
+		if(IsFavBoard(getbnum(data[i].filename)-1))
 			buf3=" checked";
 		if(i%3==0)
 			printf("\n<tr>");

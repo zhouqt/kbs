@@ -1127,7 +1127,7 @@ int save_user_data(struct userec *x)
 	int n;
 
 	n = getusernum(x->userid);
-	update_user(x, n, 0);
+	update_user(x, n, 1);
 	return 1;
 }
 
@@ -1917,7 +1917,7 @@ char qry_mail_dir[STRLEN];
 }
 
 /* from bbsfadd.c */
-int addtooverride2(char *uident, char *exp)
+/*int addtooverride2(char *uident, char *exp)
 {
     friends_t tmp;
     int  n;
@@ -1945,7 +1945,7 @@ int addtooverride2(char *uident, char *exp)
     else
         return -3;
     return n;
-}
+}*/
 
 int mail_file(char *tmpfile, char *userid, char *title)
 {

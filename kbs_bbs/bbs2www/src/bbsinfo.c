@@ -1,103 +1,81 @@
 #include "bbslib.h"
 
-int main() {
+int main()
+{
 	int n, type;
+	struct stat st;
+	int num;
+	char buf[STRLEN];
 
   	init_all();
-#ifndef SMTH
-	if(!loginok) http_fatal("您尚未登录");
-	type=atoi(getparm("type"));
-	printf("%s -- 用户个人资料<hr color=green>\n", BBSNAME);
-	if(type!=0) {
+	if(!loginok)
+		http_fatal("您尚未登录");
+	type = atoi(getparm("type"));
+	printf("%s -- 用户个人资料<hr color=\"green\">\n", BBSNAME);
+	if(type!=0)
+	{
 		check_info();
 		http_quit();
 	}
- 	printf("<form action=bbsinfo?type=1 method=post>");
+    setmailfile(buf, currentuser->userid, DOT_DIR);
+	if( stat( buf, &st ) >= 0 )
+		num = st.st_size / (sizeof( struct fileheader ));
+	else
+		num = 0;
+ 	printf("<form action=\"bbsinfo?type=1\" method=\"post\">");
   	printf("您的帐号: %s<br>\n", currentuser->userid);
-  	printf("您的昵称: <input type=text name=nick value='%s' size=24 maxlength=30><br>\n",
-		currentuser->username);
+  	printf("您的昵称: <input type=\"text\" name=\"nick\" value=\"%s\" size=\"24\" maxlength=\"%d\"><br>\n",
+		currentuser->username, NAMELEN-1);
   	printf("发表大作: %d 篇<br>\n", currentuser->numposts);
-  	printf("信件数量: %d 封<br>\n", currentuser->nummails);
+  	printf("信件数量: %d 封<br>\n", num);
   	printf("上站次数: %d 次<br>\n", currentuser->numlogins);
   	printf("上站时间: %d 分钟<br>\n", currentuser->stay/60);
-  	printf("真实姓名: <input type=text name=realname value='%s' size=16 maxlength=16><br>\n",
-	 	currentuser->realname);
-  	printf("居住地址: <input type=text name=address value='%s' size=40 maxlength=40><br>\n",
- 		currentuser->address);
+  	printf("真实姓名: <input type=\"text\" name=\"realname\" value=\"%s\" size=\"16\" maxlength=\"%d\"><br>\n",
+	 	currentuser->realname, NAMELEN-1);
+  	printf("居住地址: <input type=\"text\" name=\"address\" value=\"%s\" size=\"40\" maxlength=\"%d\"><br>\n",
+ 		currentuser->address, STRLEN-1);
   	printf("帐号建立: %s<br>", wwwCTime(currentuser->firstlogin));
   	printf("最近光临: %s<br>", wwwCTime(currentuser->lastlogin));
   	printf("来源地址: %s<br>", currentuser->lasthost);
-  	printf("电子邮件: <input type=text name=email value='%s' size=32 maxlength=32><br>\n", 
-		currentuser->email);
-  	printf("出生日期: <input type=text name=year value=%d size=4 maxlength=4>年", 
-		currentuser->birthyear+1900);
-  	printf("<input type=text name=month value=%d size=2 maxlength=2>月", 
-		currentuser->birthmonth);
-  	printf("<input type=text name=day value=%d size=2 maxlength=2>日<br>\n", 
-		currentuser->birthday);
-  	printf("用户性别: ");
-    	printf("男<input type=radio value=M name=gender %s>", 
-		currentuser->gender=='M' ? "checked" : "");
-    	printf("女<input type=radio value=F name=gender %s><br>",
-		currentuser->gender=='F' ? "checked" : "");
-  	printf("<input type=submit value=确定> <input type=reset value=复原>\n");
+  	printf("电子邮件: <input type=\"text\" name=\"email\" value=\"%s\" size=\"32\" maxlength=\"%d\"><br>\n", 
+		currentuser->email, STRLEN-1);
+  	printf("<input type=\"submit\" value=\"确定\"> <input type=\"reset\" value=\"复原\">\n");
   	printf("</form>");
   	printf("<hr>");
-#endif /* not SMTH */
 	http_quit();
 }
 
-#ifndef SMTH
-int check_info() {
+int check_info()
+{
   	int m, n;
   	char buf[256];
-    	strsncpy(buf, getparm("nick"), 30);
-    	for(m=0; m<strlen(buf); m++) if(buf[m]<32 && buf[m]>0 || buf[m]==-1) buf[m]=' ';
-    	if(strlen(buf)>1) {
+
+	/* 必须对所有的变量滤掉ANSI控制符 */
+	strsncpy(buf, getparm("nick"), NAMELEN);
+	for(m=0; m<strlen(buf); m++)
+	{
+		if(buf[m]<32 && buf[m]>0 || buf[m]==-1)
+			buf[m]=' ';
+	}
+	if(strlen(buf)>1)
 		strcpy(currentuser->username, buf);
-	} else {
+	else
 		printf("警告: 昵称太短!<br>\n");
-	}
-    	strsncpy(buf, getparm("realname"), 9);
-    	if(strlen(buf)>1) {
+	strsncpy(buf, getparm("realname"), NAMELEN);
+	if(strlen(buf)>1)
 		strcpy(currentuser->realname, buf); 
-	} else {
+	else
 		printf("警告: 真实姓名太短!<br>\n");
-	}
-    	strsncpy(buf, getparm("address"), 40);
-    	if(strlen(buf)>8) {
+	strsncpy(buf, getparm("address"), STRLEN);
+	if(strlen(buf)>8)
 		strcpy(currentuser->address, buf);
-	} else {
+	else
 		printf("警告: 居住地址太短!<br>\n");
-	}
-    	strsncpy(buf, getparm("email"), 32);
-   	if(strlen(buf)>8 && strchr(buf, '@')) {
+	strsncpy(buf, getparm("email"), STRLEN);
+   	if(strlen(buf)>8 && strchr(buf, '@'))
 		strcpy(currentuser->email, buf);
-	} else {
+	else
 		printf("警告: email地址不合法!<br>\n");
-	}
-    	strsncpy(buf, getparm("year"), 5);
-    	if(atoi(buf)>1910 && atoi(buf)<1998) {
-		currentuser->birthyear=atoi(buf)-1900;
-	} else {
-		printf("警告: 错误的出生年份!<br>\n");
-	}
-    	strsncpy(buf, getparm("month"), 3);
-    	if(atoi(buf)>0 && atoi(buf)<=12) {
-		currentuser->birthmonth=atoi(buf);
-	} else {
-		printf("警告: 错误的出生月份!<br>\n");
-	}
-    	strsncpy(buf, getparm("day"), 3);
-    	if(atoi(buf)>0 && atoi(buf)<=31) {
-		currentuser->birthday=atoi(buf);
-	} else {
-		printf("警告: 错误的出生日期!<br>\n");
-	}
-    	strsncpy(buf, getparm("gender"), 2);
-    	if(!strcasecmp(buf, "F")) currentuser->gender='F';
-    	if(!strcasecmp(buf, "M")) currentuser->gender='M';
-    	save_user_data(&currentuser);
-    	printf("[%s] 个人资料修改成功.", currentuser->userid);
+	//save_user_data(&currentuser);
+	printf("[%s] 个人资料修改成功.", currentuser->userid);
 }
-#endif /* not SMTH */

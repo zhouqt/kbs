@@ -1,6 +1,7 @@
 #include "bbslib.h"
 
-int is_bad_id(char *s) {
+int is_bad_id(char *s)
+{
 	FILE *fp;
 	char buf[256], buf2[256];
 	fp=fopen(".badname", "r");
@@ -17,7 +18,8 @@ int is_bad_id(char *s) {
 	return 0;
 }
 
-int badymd(int y, int m, int d) {
+int badymd(int y, int m, int d)
+{
 	int max[]={0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 	if((y%4==0 && y%100!=0) || y%400==0) max[2]=29;
 	if(y<10 || y>100 || m<1 || m>12) return 1;
@@ -30,12 +32,12 @@ int main()
    	FILE *fp;
 	struct userec x;
 	int i, gender, xz;
-	char buf[80], filename[80], pass1[80], pass2[80], dept[80], phone[80], salt[80], words[1024];
+	char buf[256], filename[80], pass1[80], pass2[80], dept[80], phone[80], salt[80], words[1024];
+	int allocid;
 
-#ifndef SMTH
    	init_all();
  	bzero(&x, sizeof(x));
-	xz=atoi(getparm("xz"));
+	xz = atoi(getparm("xz"));
   	strsncpy(x.userid, getparm("userid"), 13);
    	strsncpy(pass1, getparm("pass1"), 13);
    	strsncpy(pass2, getparm("pass2"), 13);
@@ -46,52 +48,71 @@ int main()
    	strsncpy(x.email, getparm("email"), 32);
    	strsncpy(phone, getparm("phone"), 32);
 	strsncpy(words, getparm("words"), 1000);
-	x.gender='M';
-	if(atoi(getparm("gender"))) x.gender='F';
-	x.birthyear=atoi(getparm("year"))-1900;
-	x.birthmonth=atoi(getparm("month"));
-	x.birthday=atoi(getparm("day"));
-   	for(i=0; x.userid[i]; i++)
-      		if(!strchr("ABCDEFGHIJKLMNOPQRSTUVWXYZ", toupper(x.userid[i]))) http_fatal("帐号只能由英文字母组成");
-   	if(strlen(x.userid)<2) http_fatal("帐号长度太短(2-12字符)");
-   	if(strlen(pass1)<4) http_fatal("密码太短(至少4字符)");
-   	if(strcmp(pass1, pass2)) http_fatal("两次输入的密码不一致, 请确认密码");
-   	if(strlen(x.username)<2) http_fatal("请输入昵称(昵称长度至少2个字符)");
-   	if(strlen(x.realname)<4) http_fatal("请输入真实姓名(请用中文, 至少2个字)");
-   	if(strlen(dept)<6) http_fatal("工作单位的名称长度至少要6个字符(或3个汉字)");
-   	if(strlen(x.address)<6) http_fatal("通讯地址长度至少要6个字符(或3个汉字)");
-   	if(badstr(x.passwd)||badstr(x.username)||badstr(x.realname)) http_fatal("您的注册单中含有非法字符");
-	if(badstr(dept)||badstr(x.address)||badstr(x.email)||badstr(phone)) http_fatal("您的注册单中含有非法字符");
-   	if(badymd(x.birthyear, x.birthmonth, x.birthday)) http_fatal("请输入您的出生年月");
- 	if(is_bad_id(x.userid)) http_fatal("不雅帐号或禁止注册的id, 请重新选择");
-   	if(getuser(x.userid)) http_fatal("此帐号已经有人使用,请重新选择。");
-   	sprintf(salt, "%c%c", 65+rand()%26, 65+rand()%26);
-   	strsncpy(x.passwd, crypt1(pass1, salt), 14);
-   	strcpy(x.termtype, "vt100");
+	//x.gender='M';
+	//if(atoi(getparm("gender"))) x.gender='F';
+	//x.birthyear=atoi(getparm("year"))-1900;
+	//x.birthmonth=atoi(getparm("month"));
+	//x.birthday=atoi(getparm("day"));
+	if (id_invalid(x.userid))
+		http_fatal("帐号必须由英文字母或数字组成，并且第一个字符必须是英文字母!");
+   	//for(i=0; x.userid[i]; i++)
+    //  		if(!strchr("ABCDEFGHIJKLMNOPQRSTUVWXYZ", toupper(x.userid[i])))
+	//  		http_fatal("帐号只能由英文字母组成");
+   	if(strlen(x.userid)<2)
+	   	http_fatal("帐号长度太短(2-12字符)");
+   	if(strlen(pass1) < 4 || !strcmp( pass1, x.userid ) )
+	   	http_fatal("密码太短或与使用者代号相同, 请重新输入");
+   	if(strcmp(pass1, pass2))
+	   	http_fatal("两次输入的密码不一致, 请确认密码");
+	setpasswd(pass1, &x);
+   	if(strlen(x.username)<2)
+	   	http_fatal("请输入昵称(昵称长度至少2个字符)");
+   	if(strlen(x.realname)<4)
+	   	http_fatal("请输入真实姓名(请用中文, 至少2个字)");
+   	if(strlen(dept)<6)
+	   	http_fatal("工作单位的名称长度至少要6个字符(或3个汉字)");
+   	if(strlen(x.address)<6)
+	   	http_fatal("通讯地址长度至少要6个字符(或3个汉字)");
+   	if(badstr(x.passwd)||badstr(x.username)||badstr(x.realname))
+	   	http_fatal("您的注册单中含有非法字符");
+	if(badstr(dept)||badstr(x.address)||badstr(x.email)||badstr(phone))
+	   	http_fatal("您的注册单中含有非法字符");
+   	//if(badymd(x.birthyear, x.birthmonth, x.birthday)) http_fatal("请输入您的出生年月");
+ 	if(bad_user_id(x.userid))
+	   	http_fatal("不雅帐号或禁止注册的id, 请重新选择");
+   	if(searchuser(x.userid))
+	   	http_fatal("此帐号已经有人使用,请重新选择。");
+   	//sprintf(salt, "%c%c", 65+rand()%26, 65+rand()%26);
+   	//strsncpy(x.passwd, crypt1(pass1, salt), 14);
+   	//strcpy(x.termtype, "vt100");
    	strcpy(x.lasthost, fromhost);
-   	x.userlevel=PERM_BASIC;
-   	x.firstlogin=time(0);
-	x.lastlogin=time(0);
-   	x.userdefine=-1;
-   	x.flags[0]=CURSOR_FLAG | PAGER_FLAG;
-	if(xz==1) currentuser->userdefine ^= DEF_COLOREDSEX;
-	if(xz==2) currentuser->userdefine ^= DEF_SHOWHOROSCOPE;
-	adduser(&x);
-   	fp=fopen("new_register", "a");
-	if(fp) {
-      		fprintf(fp, "usernum: %d, %s\n", 	getusernum(x.userid)+1, wwwCTime(time(0)));
-      		fprintf(fp, "userid: %s\n",    	x.userid);
-      		fprintf(fp, "realname: %s\n",  	x.realname);
-      		fprintf(fp, "dept: %s\n",    	dept);
-      		fprintf(fp, "addr: %s\n",      	x.address);
-      		fprintf(fp, "phone: %s\n",     	phone );
-//      		fprintf(fp, "assoc:\n");
-      		fprintf(fp, "----\n" );
-      		fclose(fp);
-   	}
-   	f_append("trace.post", "G");
+   	x.userlevel = PERM_BASIC;
+   	x.firstlogin = x.lastlogin = time(0);
+	//x.lastlogin=time(0);
+   	x.userdefine = -1;
+	x.userdefine &= ~DEF_NOTMSGFRIEND;
+	x.notemode = -1;
+	x.unuse1 = -1;
+	x.unuse2 = -1;
+   	x.flags[0] = CURSOR_FLAG | PAGER_FLAG;
+	x.flags[1] = 0;
+	allocid = getnewuserid2(x.userid);
+    if(allocid > MAXUSERS || allocid <= 0)
+		http_fatal("No space for new users on the system!") ;
+	update_user(&x, allocid, 1);
+	if( !searchuser(x.userid) )
+		http_fatal("创建用户失败");
+	report( "new account" );
+   	sprintf(filename, "home/%c/%s", toupper(x.userid[0]), x.userid);
+	sprintf(buf, "/bin/mv -f %s "BBSHOME"/homeback/%s", filename, x.userid);
+	system(buf);
+	sprintf(filename, "mail/%c/%s", toupper(x.userid[0]), x.userid);
+	sprintf(buf, "/bin/mv -f %s "BBSHOME"/mailback/%s", filename, x.userid);
+	system(buf);
+
    	sprintf(filename, "home/%c/%s", toupper(x.userid[0]), x.userid);
    	mkdir(filename, 0755);
+#ifndef SMTH
    	printf("<center><table><td><td><pre>\n");
 	printf("亲爱的新使用者，您好！\n\n");
         printf("欢迎光临 本站, 您的新帐号已经成功被登记了。\n");
@@ -109,11 +130,12 @@ int main()
 	printf("<tr><td>昵  称: <td>%s<br>\n", x.username);
    	printf("<tr><td>上站位置: <td>%s<br>\n", x.lasthost);
    	printf("<tr><td>电子邮件: <td>%s<br></table><br>\n", x.email);
-   	printf("<center><input type=button onclick='window.close()' value=关闭本窗口></center>\n");
    	newcomer(&x, words);
+#endif /* not SMTH */
+	printf("<center>申请 ID 成功！</center><br>");
+   	printf("<center><input type=\"button\" onclick=\"window.close()\" value=\"关闭本窗口\"></center>\n");
    	sprintf(buf, "%s %-12s %d\n", wwwCTime(time(0))+4, x.userid, getusernum(x.userid));
    	f_append("wwwreg.log", buf);
-#endif /* not SMTH */
 	http_quit();
 }
 
@@ -124,6 +146,7 @@ int badstr(unsigned char *s) {
   	return 0;
 }
 
+#ifndef SMTH
 int newcomer(struct userec *x, char *words) {
   	FILE *fp;
   	char filename[80];
@@ -140,7 +163,6 @@ int newcomer(struct userec *x, char *words) {
 	unlink(filename);
 }
 
-#ifndef SMTH
 int adduser(struct userec *x)
 {
 	int i;

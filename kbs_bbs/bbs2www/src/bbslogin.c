@@ -85,8 +85,19 @@ int main(int argc,char** argv)
 		if(abs(t-time(0))<5) http_fatal("两次登录间隔过密!");
 		x->numlogins++;
 		strsncpy(x->lasthost, fromhost, IPLEN);
-		save_user_data(x);
-		currentuser=x;	/* struct assignment */
+		//save_user_data(x);
+		//currentuser=x;	/* struct assignment */
+		if (!has_perm(PERM_LOGINOK) && !has_perm(PERM_SYSOP))
+		{
+			if (strchr(currentuser->realemail, '@')
+				&& valid_ident(currentuser->realemail))
+			{
+				currentuser->userlevel |= PERM_DEFAULT;
+				if (has_perm(PERM_DENYPOST)/* && !has_perm(PERM_SYSOP)*/)
+					currentuser->userlevel &= ~PERM_POST;
+			}
+			//save_user_data(&currentuser);
+		}
 	}
 	sprintf(buf, "%s %s %s\n", wwwCTime(time(0)), x->userid, fromhost);
 	f_append(WWW_LOG, buf);
