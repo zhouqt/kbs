@@ -3027,3 +3027,82 @@ int www_generateOriginIndex(char* board)
     return 0;
 }
 
+extern struct user_info * smsuin;
+
+int web_send_sms(char *dest,char *msgstr){
+	struct userdata ud;
+	char uident[STRLEN];
+	char destid[STRLEN];
+	bool cansend = true;
+	struct userec *ur;
+	int ret;
+
+	read_userdata(currentuser->userid, &ud);
+	if(!ud.mobileregistered)
+		return -1;
+
+	if(!msgstr || !msgstr[0])
+		return -3;
+
+	sms_init_memory();
+	smsuin = u_info;
+
+	if(isdigit(dest[0])){
+		int i;
+		cansend = cansend && (strlen(dest) == 11);
+		for(i=0;i<strlen(dest);i++)
+			cansend = cansend && (isdigit(dest[i]));
+		if(cansend)
+			strcpy(uident,dest);
+	}else{
+		struct userdata destud;
+		getuser(dest, &ur);
+		if(ur)
+			strcpy(destid, ur->userid);
+		if(read_userdata(destid, &destud))
+			cansend = false;
+		else
+			cansend = destud.mobileregistered && (strlen(destud.mobilenumber)==11);
+		if(cansend)
+			strcpy(uident, destud.mobilenumber);
+	}
+
+	if(!cansend)
+		return -2;
+
+	ret = DoSendSMS(ud.mobilenumber, uident, msgstr);
+
+	if( ret == CMD_ERR_SMS_VALIDATE_FAILED){
+		ud.mobilenumber[0]=0;
+		ud.mobileregistered=0;
+		write_userdata(currentuser->userid, &ud);
+	}
+
+	if( ret ){
+		return 1;
+	}else{
+		struct msghead h;
+		struct user_info *uin;
+		h.frompid = u_info->pid;
+		h.topid = -1;
+		if( !isdigit(dest[0]) ){
+			uin = t_search(destid, false);
+			if(uin) h.topid = uin->pid;
+			strcpy(h.id, destid);
+		}else
+			strcpy(h.id, uident);
+		h.mode = 6;
+		h.sent = 1;
+		h.time = time(0);
+		save_msgtext(currentuser->userid, &h, msgstr);
+		if( !isdigit(dest[0]) ){
+			h.sent = 0;
+			strcpy(h.id, currentuser->userid);
+			save_msgtext(destid, &h, msgstr);
+			if(uin) kill(uin->pid, SIGUSR2);
+		}
+	}
+
+	return 0;
+
+}
