@@ -106,6 +106,30 @@ int i;
         return str;
 }
 
+void save_useboard_xml(int brdcount, struct binfo *bi)
+{
+	int i;
+	FILE *fp;
+	char xmlfile[STRLEN];
+
+	snprintf(xmlfile, sizeof(xmlfile), BBSHOME"/0Announce/bbslists/board.xml");
+	if ((fp = fopen(xmlfile, "w")) == NULL)
+		return;
+	fprintf(fp, "<?xml version=\"1.0\" encoding=\"GB2312\"?>\n");
+	fprintf(fp, "<BoardList Desc=\"ÌÖÂÛÇøÊ¹ÓÃ×´¿öÍ³¼Æ\">\n");
+	for (i = 0; i < brdcount; i++)
+	{
+		fprintf(fp, "<Board>\n");
+		fprintf(fp, "<EnglishName>%s</EnglishName>\n", bi[i].boardname);
+		fprintf(fp, "<ChineseName>%s</ChineseName>\n", bi[i].expname);
+		fprintf(fp, "<VisitTimes>%ld</VisitTimes>\n", bi[i].times);
+		fprintf(fp, "<StayTime>%ld</StayTime>\n", bi[i].sum);
+		fprintf(fp, "</Board>\n");
+	}
+	fprintf(fp, "</BoardList>\n");
+	fclose(fp);
+}
+
 main(argc, argv)
 char *argv[];
 {
@@ -148,12 +172,15 @@ char *argv[];
     printf("cann't open boardusage.log\n");
     return 1;
   }
-  if(mode==1){
-  if ((op = fopen(buf, "w")) == NULL || (op1 = fopen(buf1, "w")) == NULL || (op2 = fopen(buf2, "w")) == NULL)
+  if(mode==1)
   {
-    printf("Can't Write file\n");
-    return 1;
-  }}
+	if ((op = fopen(buf, "w")) == NULL || (op1 = fopen(buf1, "w")) == NULL 
+			|| (op2 = fopen(buf2, "w")) == NULL)
+	  {
+		printf("Can't Write file\n");
+		return 1;
+	  }
+  }
   else if((op = fopen(buf, "w")) == NULL)
   {
     printf("Can't Write file\n");
@@ -167,36 +194,17 @@ char *argv[];
   printf("%6.6s",date);/**/
   while (fgets(buf, 256, fp))
   {
-    if(strlen(buf)<57)
-        continue;
-/*
-    if ( !strncmp(buf+21, "USE", 3))
-    {
-      p=strstr(buf,"USE");
-      p+=4;
-      p=strtok(p," ");
-      strcpy(bname,p);
-    if ( p = (char *)strstr(buf+46, "Stay: "))
-    {
-      sec=atoi( p + 6);
-    }
-    else
-        sec=0;
-*/
-/* modified by Czz 010614 */
-    if ( p = (char *)strstr(buf, "Stay: "))
-    {
-	q = p-21;
-	q=strtok(q," ");
-	strcpy(bname,q);
-	sec=atoi( p + 6);
-    } 
-    record_data(bname,sec);
-    }
-/* modified end */
-/*
+		if(strlen(buf)<57)
+			continue;
+		if ( p = (char *)strstr(buf, "Stay: "))
+		{
+			q = p-21;
+			q=strtok(q," ");
+			strcpy(bname,q);
+			sec=atoi( p + 6);
+		} 
+		record_data(bname,sec);
    }
-*/
    fclose(fp);
    qsort(st, numboards, sizeof( st[0] ), brd_cmp);
    printf("%d",numboards);/**/
@@ -235,7 +243,8 @@ char *argv[];
    if(mode==1)
    {
         fprintf(op,"Ãû´Î %-15.15s%-25.25s %5s %8s %10s\n","ÌÖÂÛÇøÃû³Æ","ÖÐÎÄÐðÊö","ÈË´Î","ÀÛ»ýÊ±¼ä","Æ½¾ùÊ±¼ä");
-   }else
+   }
+   else
    {
         fprintf(op,"      [37m1 [m[34m%2s[37m= %d (×ÜÈË´Î) [37m1 [m[32m%2s[37m= %s (ÀÛ»ý×ÜÊ±Êý) [37m1 [m[31m%2s[37m= %d Ãë(Æ½¾ùÊ±Êý)\n\n",
                 blk[9],c[0],blk[9],timetostr(c[1]),blk[9],c[2]);
@@ -245,6 +254,7 @@ char *argv[];
    {
       if(mode==1)
       {
+		  /* generate 0Announce/bbslists/board2 file */
         fprintf(op,"%4d[m %-15.15s%-25.25s %5d %-.8s %10d\n",i+1,st[i].boardname,st[i].expname,st[i].times,timetostr(st[i].sum),st[i].times==0?0:st[i].sum/st[i].times);
       }
       else
@@ -274,6 +284,9 @@ char *argv[];
       }
    }
    fclose(op);
+   /* generate boards usage result in xml format */
+   if (mode == 1)
+   	save_useboard_xml(numboards, st);
    if(mode==1){
    qsort(st, numboards-1, sizeof( st[0] ), total_cmp);
    fprintf(op1,"Ãû´Î %-15.15s%-25.25s %8s %5s %10s\n","ÌÖÂÛÇøÃû³Æ","ÖÐÎÄÐðÊö","ÀÛ»ýÊ±¼ä","ÈË´Î","Æ½¾ùÊ±¼ä");
