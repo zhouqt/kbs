@@ -1,28 +1,9 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	This file has been checked global varible.
+	Ò»Ğ©ÔÓÏîµÄ¹¦ÄÜ
 */
 
 #include "bbs.h"
-int use_define=0;
 extern int iscolor;
 extern int switch_code(); /* KCN,99.09.05 */
 extern int convcode; /* KCN,99.09.05 */
@@ -59,38 +40,6 @@ x_csh()
     return 0 ;
 }
 
-
-int showperminfoX(unsigned int pbits,int i,int flag )
-{
-    char        buf[ STRLEN ];
-
-    if ( 16 == i || 11 == i || 20==i || 10 == i || 14 == i || 17 == i || 21 == i || 29==i || 28==i || 26==i || 24==i)
-    {
-        sprintf( buf, "%c. %-27s %3s", 'A' + i, (use_define)?user_definestr[i]:permstrings[i], ((pbits >> i) & 1 ? "ON" : "OFF"));
-        move(6 + (i >= 16) + (i >= 10) + (i >=11) + (i >= 14) + (i >= 17) + (i >=20) + (i >= 21) + (i>=29) + (i>=28) + (i>=26), 0);
-        prints( buf );
-        refresh();
-        return true;
-    }
-    else
-    {
-        if (pbits) bell();
-        return false;
-    }
-}
-
-int
-showperminfo( unsigned int pbits,int i,int flag)
-{
-    char        buf[ STRLEN ];
-
-    sprintf( buf, "%c. %-27s %3s", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
-             ((pbits >> i) & 1 ? "ON" : "OFF"));
-    move( i+6-(( i>15)? 16:0) , 0+(( i>15)? 40:0) );
-    prints( buf );
-    refresh();
-    return true;
-}
 */
 
 struct _setperm_select {
@@ -107,43 +56,27 @@ int showperminfo(struct _select_def* conf,int i)
 	}
 	else
 	{
-    	prints("%c. %-27s \x1b[37;0m%3s\x1b[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
+    	prints("%c. %-27s \x1b[37;0m%3s\x1b[m", 'A' + i, permstrings[i],
              ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
 	}
 	return SHOW_CONTINUE;
 }
 
-/*
-unsigned int setperms(unsigned int pbits,char *prompt,int numbers,int (*showfunc)(unsigned int ,int ,int))
+int showuserdefine(struct _select_def* conf,int i)
 {
-    int lastperm = numbers - 1;
-    int i, done = false;
-    char choice[3];
-
-    move(4,0);
-    prints("Çë°´ÏÂÄãÒªµÄ´úÂëÀ´Éè¶¨%s£¬°´ Enter ½áÊø.\n",prompt);
-    move(6,0);
-    clrtobot();
-    for (i=0; i<=lastperm; i++) {
-        (*showfunc)( pbits, i,false);
-    }
-    while (!done) {
-        getdata(t_lines-1, 0, "Ñ¡Ôñ(ENTER ½áÊø): ",choice,2,DOECHO,NULL,true);
-        *choice = toupper(*choice);
-        if (*choice == '\n' || *choice == '\0') done = true;
-        else if (*choice < 'A' || *choice > 'A' + lastperm) bell();
-        else {
-            i = *choice - 'A';
-            pbits ^= (1 << i);
-            if((*showfunc)( pbits, i ,true)==false)
-            {
-                pbits ^= (1 << i);
-            }
-        }
-    }
-    return( pbits );
+	struct _setperm_select* arg=(struct _setperm_select*)conf->arg;
+	i=i-1;
+	if (i==conf->item_count-1) {
+		prints( "%c. ÍË³ö ",'A'+i);
+	}
+	else
+	{
+    	prints("%c. %-27s \x1b[37;0m%3s\x1b[m", 'A' + i, user_definestr[i],
+             ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
+	}
+	return SHOW_CONTINUE;
 }
-*/
+
 int setperm_select(struct _select_def* conf)
 {
 	struct _setperm_select* arg=(struct _setperm_select*)conf->arg;
@@ -163,16 +96,16 @@ int setperm_show(struct _select_def* conf,int i)
 	else
 	{
 		if ((arg->pbits&(1<<i))!=(arg->oldbits&(1<<i))) {
-	        prints( "%c. %-27s [31;1m%3s[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
+	        prints( "%c. %-27s [31;1m%3s[m", 'A' + i, permstrings[i],
 	                 ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
 		} else
 	    if((1<<i==PERM_BASIC||1<<i==PERM_POST||1<<i==PERM_CHAT
 	    	||1<<i==PERM_PAGE||1<<i==PERM_DENYMAIL)&&
 	    	(arg->basic&(1<<i)))
-	        prints( "%c. %-27s [32;1m%3s[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
+	        prints( "%c. %-27s [32;1m%3s[m", 'A' + i, permstrings[i],
 	                 ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
 	    else
-	        prints( "%c. %-27s [37;0m%3s[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
+	        prints( "%c. %-27s [37;0m%3s[m", 'A' + i, permstrings[i],
 	                 ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
 	}
 	return SHOW_CONTINUE;
@@ -181,6 +114,8 @@ int setperm_show(struct _select_def* conf,int i)
 int setperm_key(struct _select_def *conf,int key)
 {
     int sel;
+    if (key==Ctrl('Q'))
+    	return SHOW_QUIT;
     if (key<='z'&&key>='a')
 	sel=key-'a';
     else
@@ -202,7 +137,7 @@ unsigned int setperms(unsigned int pbits,unsigned int basic,char *prompt,int num
 	pts=(POINT*)malloc(sizeof(POINT)*(numbers+1));
 
     move(4,0);
-    prints("Çë°´ÏÂÄãÒªµÄ´úÂëÀ´Éè¶¨%s.\n",prompt);
+    prints("Çë°´ÏÂÄãÒªµÄ´úÂëÀ´Éè¶¨%s, Ctrl+QÍË³ö.\n",prompt);
     move(6,0);
     clrtobot();
     
@@ -285,82 +220,7 @@ int confirm_delete_id()
     clear() ;
     return 0 ;
 }
-/* inserted by cityhunter to let OBOARDS to change a users basic level */
-int
-p_level()
-{
-    int id ;
-    char secu[STRLEN];
-    struct userec* lookupuser;
 
-    if (!HAS_PERM(currentuser,PERM_OBOARDS) )
-    {
-        move( 3, 0 );
-        clrtobot();
-        prints( "±§Ç¸, Ö»ÓĞ°æÎñ¹ÜÀíÈ¨ÏŞµÄ¹ÜÀíÔ±²ÅÄÜĞŞ¸Ä");
-        pressreturn();
-        return 0;
-    }
-
-    modify_user_mode( ADMIN );
-    clear();
-    move(8,0) ;
-    prints("·â½û»ò½â³ıÓÃ»§·¢ÎÄÈ¨ÏŞ\n") ;
-    clrtoeol() ;
-    move(9,0) ;
-    usercomplete("ÇëÊäÈëÒª¸ü¸ÄÈ¨ÏŞµÄÓÃ»§ID: ",genbuf) ;
-    if(genbuf[0] == '\0') {
-        clear() ;
-        return 0 ;
-    }
-    if(!(id = getuser(genbuf,&lookupuser))) {
-        move(11,24) ;
-        prints("ÎŞĞ§µÄÓÃ»§ID!!!") ;
-        clrtoeol() ;
-        pressreturn() ;
-        clear() ;
-        return 0 ;
-    }
-    if(strcmp(genbuf,"SYSOP")==0 && strcmp(currentuser->userid, "SYSOP")){
-        move(11,0) ;
-        prints("²»¿ÉÒÔĞŞ¸ÄSYSOPµÄÈ¨ÏŞ!!!") ;
-        clrtoeol() ;
-        pressreturn() ;
-        clear() ;
-        return 0 ;
-    }
-
-    move(11,0);
-    if(lookupuser->userlevel & PERM_POST)
-    {
-        prints("ÓÃ»§ '%s' ÏÖÔÚ¾ßÓĞ·¢ÎÄÈ¨ÏŞ\n",lookupuser->userid) ;
-    }
-    else
-    {
-        prints("ÓÃ»§ '%s' ÏÖÔÚÃ»ÓĞ·¢ÎÄÈ¨ÏŞ\n",lookupuser->userid) ;
-    }
-    getdata(12,0,"È·¶¨ÒªĞŞ¸Ä¸ÃÓÃ»§µÄ·¢ÎÄÈ¨ÏŞ (Y/N)? [N]: ",genbuf,4,DOECHO,NULL,true);
-
-    if(*genbuf=='y'||*genbuf=='Y'){
-        lookupuser->userlevel ^= PERM_POST;/* ¸Ä±ä¸ÃÓÃ»§È¨ÏŞ */
-        sprintf(secu,"ĞŞ¸Ä %s µÄ·¢ÎÄÈ¨ÏŞ",lookupuser->userid);
-        securityreport(secu,lookupuser,NULL);
-        move(13,0);
-        if(lookupuser->userlevel & PERM_POST)
-        {
-            prints("ÓÃ»§ '%s' ÒÑ±»»Ö¸´·¢ÎÄÈ¨ÏŞ\n",lookupuser->userid) ;
-        }
-        else
-        {
-            prints("ÒÑÈ¡ÏûÓÃ»§ '%s' µÄ·¢ÎÄÈ¨ÏŞ\n",lookupuser->userid) ;
-        }
-    }
-    clrtoeol() ;
-    pressreturn() ;
-    clear() ;
-    return 0 ;
-}
-/* end of this insertion */
 int
 x_level()
 {
@@ -637,8 +497,7 @@ x_userdefine()
     move(1,0);
     clrtobot();
     move(2,0);
-    use_define=1;
-    newlevel = setperms(lookupuser->userdefine,0 , "²ÎÊı",NUMDEFINES,showperminfo);
+    newlevel = setperms(lookupuser->userdefine,0 , "²ÎÊı",NUMDEFINES,showuserdefine);
     move(2,0);
     if (newlevel == lookupuser->userdefine)
         prints("²ÎÊıÃ»ÓĞĞŞ¸Ä...\n");
@@ -673,12 +532,8 @@ x_userdefine()
     iscolor=(DEFINE(currentuser,DEF_COLOR))?1:0;
     pressreturn() ;
     clear() ;
-    use_define=0;
     return 0 ;
 }
-
-
-
 
 int
 x_cloak()

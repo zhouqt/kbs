@@ -165,8 +165,6 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"CheckForm",    m_register},
     {"ModifyInfo",   m_info},
     {"ModifyLevel",  x_level},
-    /*added by cityhunter */
-    {"ModifypLevel", p_level},
     {"QueryBUser",   query_bm},
     /* end of addin */
     {"XCheckLevel",  XCheckLevel},
