@@ -813,4 +813,8 @@ attach define
 #define FIRSTARTICLE_SIGN "●"
 #endif
 
+#ifndef BONLINE_LOGDIR /* 各类 log 在 BBSHOME 下的存放目录 */
+#define BONLINE_LOGDIR "bonlinelog"
+#endif
+
 #endif
