@@ -85,6 +85,43 @@
 			"<a href=\"javascript:history.go(-1);\">快速返回</a>\n";
 	}
 	
+	function display_pc_trackbacks($link,$nid)
+	{
+		$query = "SELECT * FROM trackback WHERE nid = ".$nid;
+		$result = mysql_query($query,$link);
+		$tb_num = mysql_num_rows($result);
+?>
+<table cellspacing="0" cellpadding="3" border="0" width="90%" class="t1">
+<tr>
+	<td class="t9" colspan="2">共有 <?php echo $tb_num; ?> 条引用</td>
+</tr>
+<?php
+		for($i = 0;$i < $tb_num ;$i++)
+		{
+			if($i%2==0)
+				$tdclass= array("t8","t10","t11");
+			else
+				$tdclass= array("t5","t12","t13");
+			$rows = mysql_fetch_array($result);
+			echo "<tr>\n<td class=\"".$tdclass[1]."\">&nbsp;".
+				"<a href=\"".htmlspecialchars($rows[url])."\">".
+				html_format($rows[title]).
+				"</a>&nbsp;&nbsp;".
+				"[".time_format($rows[time])."]".
+				"</td><td width=\"100\" align=\"right\" class=\"".$tdclass[0]."\"><font class=\"f4\">".($i+1)."</font>&nbsp;&nbsp;</td>\n</tr>\n".
+			        "<tr>\n<td colspan='2' class=\"".$tdclass[2]."\"><font class='".$contentcss."'>".
+				html_format($rows[excerpt],TRUE)."</font></td>\n</tr>\n".
+				"<tr>\n<td colspan='2' align='right' class=\"".$tdclass[0]."\">[FROM: <a href=\"".htmlspecialchars($rows[url])."\">".$rows[blogname]."</a> ]".
+				"</td>\n</tr>\n";
+	
+		}
+?>
+</table>
+<?php		
+		mysql_free_result($result);
+		return $tb_num;
+	}
+	
 	function display_pc_comments($link,$uid,$nid,$spr)
 	{
 		global $pc;
@@ -313,11 +350,19 @@
 	</td>
 </tr>
 <?php
-		if($rows[comment]!=0)
+		if($rows[comment] && $rows[commentcount])
 		{
 ?>
 <tr>
-	<td align="center"><?php $re_num = display_pc_comments($link,$rows[uid],$rows[nid],$spr); ?></td>
+	<td align="center"><br/><?php $re_num = display_pc_comments($link,$rows[uid],$rows[nid],$spr); ?></td>
+</tr>
+<?php
+	}
+		if($rows[trackback] && $rows[trackbackcount] && $rows[access] == 0)
+		{
+?>
+<tr>
+	<td align="center"><br/><?php $tb_num = display_pc_trackbacks($link,$rows[nid]); ?></td>
 </tr>
 <?php
 		}
@@ -325,7 +370,7 @@
 <tr>
 	<td align="middle" class="f1" height="40" valign="middle">
 	<?php
-		if($re_num != 0)
+		if($re_num != 0 || $tb_num != 0)
 			display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur,$rows[trackback],$rows[subject] , $rows[recommend]); 
 	?>
 	&nbsp;</td>
