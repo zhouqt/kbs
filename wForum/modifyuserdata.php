@@ -1,9 +1,8 @@
 <?php
 require("inc/funcs.php");
-
 require("inc/usermanage.inc.php");
-
 require("inc/user.inc.php");
+require_once("inc/myface.inc.php");
 
 setStat("基本资料修改");
 
@@ -30,6 +29,15 @@ function main(){
 
 ?>
 <br>
+<script language="JavaScript">
+	function setimg(i) {
+		o = document.images['imgmyface'];
+		o.src = 'userface/image' + (i + 1) + '.gif';
+		o.width = 32;
+		o.height = 32;
+		getRawObject('myface').value = '';
+	}
+</script>
 <form action="saveuserdata.php" method=POST name="theForm">
 <table cellpadding=3 cellspacing=1 border=0 align=center class=TableBorder1>
 <tr> 
@@ -53,7 +61,7 @@ function main(){
  <TR> 
 <TD width=40%  class=TableBody1><B>头像</B>：<BR>选择的头像将出现在您的资料和发表的帖子中，您也可以选择下面的自定义头像</TD>
 <TD width=60%  class=TableBody1> 
-<select name=face size=1 onChange="document.images['face'].src='userface/image'+options[selectedIndex].value+'.gif';" style="BACKGROUND-COLOR: #99CCFF; BORDER-BOTTOM: 1px double; BORDER-LEFT: 1px double; BORDER-RIGHT: 1px double; BORDER-TOP: 1px double; COLOR: #000000">
+<select name=face id=face size=1 onChange="setimg(selectedIndex)" style="BACKGROUND-COLOR: #99CCFF; BORDER-BOTTOM: 1px double; BORDER-LEFT: 1px double; BORDER-RIGHT: 1px double; BORDER-TOP: 1px double; COLOR: #000000">
 <?php 
 	for ($i=1;$i<=USERFACE_IMG_NUMS;$i++) {
 		echo "<option value=\"".$i."\"";
@@ -61,27 +69,27 @@ function main(){
 			echo " selected ";
 		}
 		echo ">image".$i.".gif</option>";
-}
+	}
 ?>
-<option value="userface/"></option>
 </select>
-<img id=face src=userface/image<?php echo $currentuser['userface_img']>0?$currentuser['userface_img']:1; ?>.gif>&nbsp;<a href=# onclick="alert('本功能尚未实现');" >查看所有头像</a>
+&nbsp;<a href="javascript:openScript('showallfaces.php',500,400)">查看所有头像</a>
 </TR>
 
 <TR> 
 <TD width=40% valign=top class=TableBody1><B>自定义头像</B>：<br>如果图像位置中有连接图片将以自定义的为主</TD>
 <TD width=60%  class=TableBody1>
-<!-- 这个地方似乎用来上传自定义头像，先禁止了吧 - atppp
-<iframe name=ad frameborder=0 width=300 height=40 scrolling=no src=reg_upload.php></iframe> -->
+<iframe name=ad frameborder=0 width=100% height=24 scrolling=no src="postface.php"></iframe>
+<table width="100%"><tr><td>
 图像位置： 
-<input type=TEXT name=myface size=60 maxlength=100 value="<?php echo htmlEncode($currentuser['userface_url']); ?>">
+<input type=TEXT name=myface id=myface size=60 maxlength=100 value="<?php echo htmlEncode($currentuser['userface_url']); ?>">
 &nbsp;完整Url地址<br>
 宽&nbsp;&nbsp;&nbsp;&nbsp;度： 
-<input type=TEXT name=width size=3 maxlength=3 value="<?php echo $currentuser['userface_width'];  ?>" >
+<input type=TEXT name=width id=width size=3 value="<?php echo $currentuser['userface_width'];  ?>" >
 0---120的整数<br>
 高&nbsp;&nbsp;&nbsp;&nbsp;度： 
-<input type=TEXT name=height size=3 maxlength=3 value="<?php echo $currentuser['userface_height'];  ?>">
+<input type=TEXT name=height id=height size=3 value="<?php echo $currentuser['userface_height'];  ?>">
 0---120的整数<br>
+</td><td align="right"><?php echo get_myface($currentuser, "id=imgmyface"); ?></td></tr></table>
 </TD></TR>
 <tr>    
 <td width="40%" class=TableBody1><B>个人照片</B>：<BR>如果您有照片在网上，请输入网页地址。此项可选</td>   
@@ -322,7 +330,7 @@ function main(){
 </tr>
 <tr align="center"> 
 <td colspan="2" width="100%" class=TableBody2>
-<input type=Submit value="更 新" name="Submit"> &nbsp; <input type="reset" name="Submit2" value="清 除">
+<input type=Submit value="更 新" name="Submit" id="oSubmit"> &nbsp; <input type="reset" name="Submit2" value="清 除" id="oSubmit2">
 </td></tr>  
 </table></form>
 <?php

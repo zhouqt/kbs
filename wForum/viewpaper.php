@@ -14,6 +14,7 @@ preprocess();
 setStat("发布小字报");
 
 html_init();
+echo "<body>";
 
 if (isErrFounded()) {
 	html_error_quit() ;
@@ -21,7 +22,7 @@ if (isErrFounded()) {
 	showpaper($boardID,$boardName);
 }
 
-show_footer();
+show_footer(false);
 
 CloseDatabase();
 

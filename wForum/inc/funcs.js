@@ -227,11 +227,11 @@ var stylelist = ' \
 ';
 
 var manage= ' \
-<a class=\"MItem\" href="usermailbox.php?boxname=inbox">我的邮箱</a><br> \
+<a class=\"MItem\" href="usermailbox.php?boxname=inbox">我的信箱</a><br> \
 <a class=\"MItem\" href="favboard.php">用户收藏版面</a><br> \
 <a class=\"MItem\" href="usermanagemenu.php">用户控制面板</a><br> \
-<a class=\"MItem\" href="modifyuserdata.php">修改用户数据</a><br> \
-<a class=\"MItem\" href="userparam.php">设定用户参数</a><br> \
+<a class=\"MItem\" href="modifyuserdata.php">基本资料修改</a><br> \
+<a class=\"MItem\" href="userparam.php">用户自定义参数</a><br> \
 <a class=\"MItem\" href="bbssig.php">用户签名档</a><br> \
 <a class=\"MItem\" href="changepasswd.php">修改密码</a><br> \
 <a class=\"MItem\" href="alteryank.php">切换版面列表方式</a> \

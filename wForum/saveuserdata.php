@@ -5,6 +5,8 @@ require("inc/usermanage.inc.php");
 
 require("inc/user.inc.php");
 
+require_once("inc/myface.inc.php");
+	
 setStat("基本资料修改");
 
 show_nav();
@@ -68,6 +70,19 @@ $ret=bbs_saveuserdata($currentuser['userid'],$realname,$address,$gender,$year,$m
 	if (isErrFounded() ){
 		return false;
 	}
+
+/* 清除一下没用的上传头像 - atppp*/
+	$myface = $_POST['myface']; $bClearAll = ($myface == "");
+	$myface_dir = get_myface_dir($currentuser['userid']);
+	if ($hDir = @opendir(get_myface_fs_filename($myface_dir))) {
+		$prefix = $currentuser['userid']."."; $prefix_len = strlen($prefix);
+		while($filename = readdir($hDir)) {
+			if (strncmp($filename, $prefix, $prefix_len) != 0) continue;
+			if ($bClearAll || (strpos($myface, $filename) === false)) unlink(get_myface_fs_filename($myface_dir."/".$filename));
+		}
+		closedir($hDir);
+	}
+	
 //	$signature=trim($_POST["Signature"]);  /* preserve format - atppp */
 	$signature = $_POST["Signature"];
 //	if ($signature!='') { /* allow erase signature - atppp */

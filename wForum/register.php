@@ -122,34 +122,16 @@ function do_apply(){
 <Th colSpan=2 height=24 align=left>填写详细资料</TD>
 </TR>
 <TR> 
-<TD width=40%  class=TableBody1><B>头像</B>：<BR>选择的头像将出现在您的资料和发表的帖子中，您也可以选择下面的自定义头像</TD>
+<TD width=40%  class=TableBody1><B>头像</B>：<BR>选择的头像将出现在您的资料和发表的帖子中，<br>在注册之后您可以在基本资料修改中上传自定义头像</TD>
 <TD width=60%  class=TableBody1> 
-<select name=face size=1 onChange="document.images['face'].src='userface/image'+options[selectedIndex].value+'.gif';" style="BACKGROUND-COLOR: #99CCFF; BORDER-BOTTOM: 1px double; BORDER-LEFT: 1px double; BORDER-RIGHT: 1px double; BORDER-TOP: 1px double; COLOR: #000000">
+<select name=face id=face size=1 onChange="document.images['imgmyface'].src='userface/image'+options[selectedIndex].value+'.gif';" style="BACKGROUND-COLOR: #99CCFF; BORDER-BOTTOM: 1px double; BORDER-LEFT: 1px double; BORDER-RIGHT: 1px double; BORDER-TOP: 1px double; COLOR: #000000">
 <?php 
 	for ($i=1;$i<=USERFACE_IMG_NUMS;$i++) {
 		echo "<option value=\"".$i."\">image".$i.".gif</option>";
 }
 ?>
-<option value="userface/"></option>
 </select>
-<img id=face src=userface/image1.gif>&nbsp;<a href=# onclick="alert('本功能尚未实现');">查看所有头像</a>
-</TR>
-
-<TR> 
-<TD width=40% valign=top class=TableBody1><B>自定义头像</B>：<br>如果图像位置中有连接图片将以自定义的为主</TD>
-<TD width=60%  class=TableBody1>
-<!-- 这个地方似乎用来上传自定义头像，先禁止了吧 - atppp
-<iframe name=ad frameborder=0 width=300 height=40 scrolling=no src=reg_upload.php></iframe> -->
-图像位置： 
-<input type=TEXT name=myface size=60 maxlength=100>
-&nbsp;完整Url地址<br>
-宽&nbsp;&nbsp;&nbsp;&nbsp;度： 
-<input type=TEXT name=width size=3 maxlength=3 value="32">
-0---120的整数<br>
-高&nbsp;&nbsp;&nbsp;&nbsp;度： 
-<input type=TEXT name=height size=3 maxlength=3 value="32">
-0---120的整数<br>
-</TD>
+<img id=imgmyface src=userface/image1.gif>&nbsp;<a href="javascript:openScript('showallfaces.php',500,400)">查看所有头像</a>
 </TR>
 <tr>    
 <td width=40%  class=TableBody1><B>生日</B><BR>如不想填写，请全部留空</td>   
@@ -424,7 +406,7 @@ function do_save(){
 	settype($month,"integer");
 	settype($day,"integer");
 
-$ret=bbs_createregform($userid,$realname,$dept,$address,$gender,$year,$month,$day,$email,$phone,$mobile_phone, $_POST['OICQ'], $_POST['ICQ'], $_POST['MSN'],  $_POST['homepage'], intval($_POST['face']), $_POST['myface'], intval($_POST['width']), intval($_POST['height']), intval($_POST['groupname']), $_POST['country'],  $_POST['province'], $_POST['city'], intval($_POST['shengxiao']), intval($_POST['blood']), intval($_POST['belief']), intval($_POST['occupation']), intval($_POST['marital']), intval($_POST['education']), $_POST['college'], intval($_POST['character']), FALSE);//自动生成注册单
+$ret=bbs_createregform($userid,$realname,$dept,$address,$gender,$year,$month,$day,$email,$phone,$mobile_phone, $_POST['OICQ'], $_POST['ICQ'], $_POST['MSN'],  $_POST['homepage'], intval($_POST['face']), '', 0, 0, intval($_POST['groupname']), $_POST['country'],  $_POST['province'], $_POST['city'], intval($_POST['shengxiao']), intval($_POST['blood']), intval($_POST['belief']), intval($_POST['occupation']), intval($_POST['marital']), intval($_POST['education']), $_POST['college'], intval($_POST['character']), FALSE);//自动生成注册单
 
 	switch($ret)
 	{

@@ -8,6 +8,7 @@ require("inc/user.inc.php");
 require("inc/board.inc.php");
 require("inc/ubbcode.php");
 require("inc/userdatadefine.inc.php");
+require_once("inc/myface.inc.php");
 
 global $boardArr;
 global $boardID;
@@ -241,7 +242,7 @@ function showArticle($boardName,$boardID,$num, $threadID,$thread,$type){
 ?>
 <tr><td class=<?php echo $bgstyle ;?> valign=top width=175 >
 <table width=100% cellpadding=4 cellspacing=0 >
-<tr><td width=* valign=middle style="filter:glow(color=#9898BA,strength=2)" >&nbsp;<a name=1><font color=#990000><B><?php echo $thread['OWNER']; ?></B></font></a>	</td>
+<tr><td width=* valign=middle style="filter:glow(color=#9898BA,strength=2)" >&nbsp;<a name=1><font color=#990000><B><?php echo $thread['OWNER']; ?></B></font></a></td>
 <td width=25 valign=middle>
 <?php 
 if ( chr($user['gender'])=='M' ){
@@ -257,7 +258,7 @@ if ( chr($user['gender'])=='M' ){
 }
 ?>
 </td>
-<td width=16 valign=middle></td></tr></table>&nbsp;&nbsp;<img src=userface/image<?php echo $user['userface_img']; ?>.gif width=32 height=32><br>&nbsp;&nbsp;<img src=pic/level10.gif><br>&nbsp;&nbsp;等级：<?php echo bbs_getuserlevel($thread['OWNER']); ?><BR>&nbsp;&nbsp;文章：<?php echo $user['numposts']; ?><br>&nbsp;&nbsp;积分：<?php echo $user['score']; ?><br>&nbsp;&nbsp;注册：<?php echo strftime('%Y-%m-%d',$user['firstlogin']); ?><BR>
+<td width=16 valign=middle></td></tr></table>&nbsp;&nbsp;<?php echo get_myface($user, "align=absmiddle"); ?><br>&nbsp;&nbsp;<img src=pic/level10.gif><br>&nbsp;&nbsp;等级：<?php echo bbs_getuserlevel($thread['OWNER']); ?><BR>&nbsp;&nbsp;文章：<?php echo $user['numposts']; ?><br>&nbsp;&nbsp;积分：<?php echo $user['score']; ?><br>&nbsp;&nbsp;注册：<?php echo strftime('%Y-%m-%d',$user['firstlogin']); ?><BR>
 &nbsp;&nbsp;星座：<?php echo get_astro($user['birthmonth'],$user['birthday']); ?>
 </td>
 

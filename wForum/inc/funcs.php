@@ -710,7 +710,7 @@ function head_var($Title='', $URL='',$showWelcome=0)
 <?php 
 } 
 
-function show_footer()
+function show_footer($showmsg = true)
 {
   global $Version;
   global $Copyright;
@@ -750,7 +750,7 @@ function show_footer()
 </tr>
 </TABLE>
 <?php
-	if ($loginok==1) {
+	if ($loginok==1 && $showmsg) {
 		getMsg();
 	}
 ?>

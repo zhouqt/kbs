@@ -16,6 +16,9 @@ wForum部分安装
 
 5.原先安装了smth系统的站点需要升级.PASSWDS文件。请参考documents/smth_update.txt文件
 
+6.确认一下wForum主目录下面有uploadFace/目录，如果没有的话就建立一下，否则自定义头像
+的功能将不能正常工作
+
 附：php编译说明
 wForum需要php支持gd及mysql。
 首先，确认你的linux系统已安装了mysql、gd、libjpeg、libpng、freetype

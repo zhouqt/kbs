@@ -6,6 +6,7 @@ $needlogin=1;
 require("inc/funcs.php");
 require("inc/user.inc.php");
 require("inc/ubbcode.php");
+require_once("inc/myface.inc.php");
 
 preprocess();
 
@@ -59,16 +60,10 @@ function showUserData($user, $user_num) {
 	 */
 require("inc/userdatadefine.inc.php");
 if ($user['userdefine0'] & BBS_DEF_SHOWDETAILUSERDATA) {
-	if ($user['userface_img'] == -1) {
-		$user_pic = $user['userface_url'];
-	} else {
-		$user_pic = 'userface/image'.$user['userface_img'].'.gif';
-	}
 ?>
 <table width=97% border=0 cellspacing=0 cellpadding=3 align=center>
   <tr> 
-    <td><img src="<?php echo $user_pic; ?>" align=absmiddle>
-<!-- img 里头原来有这个 width=<?php echo $user['userface_width'];  ?> height=<?php echo $user['userface_height'];  ?> 有问题 - atppp -->
+    <td><?php echo get_myface($user, "align=absmiddle"); ?>
 <b><?php echo $user['userid']; ?></b>
 </td>
     <td align=right>
