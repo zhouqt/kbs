@@ -75,6 +75,10 @@ struct userec alluser;
 char LowUserid[20];
 char LowUserPostfix[20];
 char MailBoxName[20];
+#define FROMTAG "From"
+#define TOTAG "To"
+char *ownerTag;
+char *selfTag;
 char genbuf[BUFSIZE];
 
 //static void pop3_logattempt(char* uid,char* frm);       /* Leeward 98.07.25 */
@@ -562,6 +566,13 @@ void Login_init()
             fcache[i].accessed[1] = 'M';
         fcache[i].accessed[0] = ' ';
     }
+    if (strcmp(MailBoxName, ".SENT") == 0) {
+        ownerTag = TOTAG;
+        selfTag = FROMTAG;
+    } else {
+        ownerTag = FROMTAG;
+        selfTag = TOTAG;
+    }    
 }
 
 void pop3_timeout(int signo)
@@ -908,12 +919,12 @@ void Retr()
     if (index(fcache[num].owner, '@') == NULL) {
         if ((ptr = strchr(fcache[num].owner, ' ')) != NULL)
             *ptr = '\0';
-        sprintf(genbuf,"From: %s%s",fcache[num].owner, BBSNAME);
+        sprintf(genbuf,"%s: %s%s", ownerTag, fcache[num].owner, BBSNAME);
     }
     else
-    	sprintf(genbuf, "From: %s", fcache[num].owner);
+    	sprintf(genbuf, "%s: %s", ownerTag, fcache[num].owner);
     outs(genbuf);
-    sprintf(genbuf, "To: %s%s", getCurrentUser()->userid, BBSNAME);
+    sprintf(genbuf, "%s: %s%s", selfTag, getCurrentUser()->userid, BBSNAME);
     outs(genbuf);
     sprintf(genbuf, "Subject: %s", fcache[num].title);
     outs(genbuf);
@@ -1054,12 +1065,12 @@ void Top()
     if (index(fcache[num].owner, '@') == NULL) {
         if ((ptr = strchr(fcache[num].owner, ' ')) != NULL)
             *ptr = '\0';
-        sprintf(genbuf,"From: %s%s",fcache[num].owner, BBSNAME);
+        sprintf(genbuf,"%s: %s%s", ownerTag, fcache[num].owner, BBSNAME);
     }
     else
-        sprintf(genbuf, "From: %s", fcache[num].owner);
+    	sprintf(genbuf, "%s: %s", ownerTag, fcache[num].owner);
     outs(genbuf);
-    sprintf(genbuf, "To: %s%s", getCurrentUser()->userid, BBSNAME);
+    sprintf(genbuf, "%s: %s%s", selfTag, getCurrentUser()->userid, BBSNAME);
     outs(genbuf);
     sprintf(genbuf, "Subject: %s", fcache[num].title);
     outs(genbuf);
