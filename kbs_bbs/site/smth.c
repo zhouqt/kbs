@@ -633,12 +633,12 @@ void get_mail_limit(struct userec* user,int *sumlimit,int * numlimit)
 	    *numlimit = -1;
 	} else
         if (user->userlevel & PERM_JURY) {
-            *sumlimit = 8000;
-            *numlimit = 8000;
+            *sumlimit = 10000;
+            *numlimit = 10000;
         } else
         if (user->userlevel & PERM_BMAMANGER) {
-            *sumlimit = 4000;
-            *numlimit = 4000;
+            *sumlimit = 8000;
+            *numlimit = 8000;
         } else
         if (user->userlevel & PERM_CHATCLOAK) {
             *sumlimit = 8000;
@@ -649,11 +649,11 @@ void get_mail_limit(struct userec* user,int *sumlimit,int * numlimit)
              * set BM, chatop, and jury have bigger mailbox, stephen 2001.10.31 
              */
         if (user->userlevel & PERM_MANAGER) {
-            *sumlimit = 1200;
-            *numlimit = 1200;
+            *sumlimit = 4000;
+            *numlimit = 4000;
         } else if (user->userlevel & PERM_LOGINOK) {
-            *sumlimit = 480;
-            *numlimit = 600;
+            *sumlimit = 1000;
+            *numlimit = 1000;
         } else {
             *sumlimit = 15;
             *numlimit = 15;
