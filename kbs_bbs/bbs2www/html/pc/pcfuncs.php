@@ -1371,13 +1371,11 @@ function pc_fwd_getbody($node)
 	
 	if($node[htmltag])
 	{
-		$content = str_replace("<p>","",$node[body]);
-		$content = str_replace("</p>","####br########br####",$node[body]);
-		$content = str_replace("&nbsp;","####sp####",$node[body]);
-		$content = str_replace("<br />","####br####",$node[body]);
+		$content = eregi_replace("<p>","",$node[body]);
+		$content = eregi_replace("</p>","\n\n",$node[body]);
+		$content = eregi_replace("&nbsp;"," ",$node[body]);
+		$content = eregi_replace("<br />","\n",$node[body]);
 		$content = undo_html_format(strip_tags($content));
-		$content = str_replace("####sp####"," ",$content);
-		$content = str_replace("####br####","\n",$content);
 		$body .= $content;
 	}
 	else
