@@ -13,7 +13,7 @@ int check(struct userec *uentp, char *arg)
 int main(int argc, char **argv)
 {
     if(argc<=1) return 0;
-    strcpy(IP, argc[1]);
+    strcpy(IP, argv[1]);
     chdir(BBSHOME);
     resolve_boards();
     resolve_ucache();
