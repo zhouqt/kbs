@@ -163,10 +163,7 @@ struct FILESHM *fh;
     }
 }
 
-int
-show_statshm(fh,mode)
-FILE *fh;
-int mode;
+int show_statshm(char *fh,int mode)
 {
     int i;
     char buf[FILE_BUFSIZE];

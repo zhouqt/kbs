@@ -37,7 +37,7 @@ int can_override(char *userid,char *whoasks)
     char buf[255];
 
     sethomefile( buf, userid, "friends" );
-    return  (search_record( buf, &fh, sizeof(fh), cmpfnames, whoasks )>0)?YEA:NA;
+    return  (search_record( buf, &fh, sizeof(fh), (RECORD_FUNC_ARG)cmpfnames, whoasks )>0)?YEA:NA;
 }
 
 int read_peer(int sockfd, msg_t *msgbuf)

@@ -450,7 +450,7 @@ static int rebuild_list(struct user_info* up,char* arg,int p)
 }
 
 int
-apply_ulist( APPLY_UTMP_FUNC fptr,char* arg) /* apply func on user list */
+apply_ulist( APPLY_UTMP_FUNC fptr,void* arg) /* apply func on user list */
 {
     struct user_info    *uentp, utmp;
     int         i, max;
@@ -467,7 +467,7 @@ apply_ulist( APPLY_UTMP_FUNC fptr,char* arg) /* apply func on user list */
     return 0;
 }
 
-int apply_ulist_addr( APPLY_UTMP_FUNC fptr,char* arg) /* apply func on user list */
+int apply_ulist_addr( APPLY_UTMP_FUNC fptr,void* arg) /* apply func on user list */
 {
     struct user_info    *uentp;
     int         i;
@@ -506,7 +506,7 @@ int apply_ulist_addr( APPLY_UTMP_FUNC fptr,char* arg) /* apply func on user list
 	return 0;
 }
 
-int apply_utmpuid(APPLY_UTMP_FUNC fptr,int uid,char* arg)
+int apply_utmpuid(APPLY_UTMP_FUNC fptr,int uid,void* arg)
 {
 	int i,num;
 	char userid[IDLEN+1];
@@ -517,7 +517,7 @@ int apply_utmpuid(APPLY_UTMP_FUNC fptr,int uid,char* arg)
     return apply_utmp(fptr,0,userid,arg);
 }
 
-int apply_utmp(APPLY_UTMP_FUNC fptr,int maxcount,char* userid,char* arg)
+int apply_utmp(APPLY_UTMP_FUNC fptr,int maxcount,char* userid,void* arg)
 {
 	int i,num;
 	int hashkey;
@@ -547,7 +547,7 @@ int apply_utmp(APPLY_UTMP_FUNC fptr,int maxcount,char* userid,char* arg)
 int
 search_ulist( uentp, fptr, farg ) /* ulist 中 search 符合fptr函数的 user */
 struct user_info *uentp;
-int (*fptr)();
+int (*fptr)(int,struct user_info*)
 int farg;
 {
     int         i;

@@ -35,7 +35,7 @@
 #define INPUT_ACTIVE 0
 #define INPUT_IDLE 1
 
-extern temp_numposts;
+extern int temp_numposts;
 
 void abort_bbs();
 

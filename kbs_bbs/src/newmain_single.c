@@ -806,7 +806,7 @@ notepad_init()
                         fclose(check);
                 }
                 sprintf(notetitle,"[%.10s] ÁôÑÔ°å¼ÇÂ¼",ctime(&now));
-                if(dashf("etc/notepad","r"))
+                if(dashf("etc/notepad"))
                 {
                         postfile("etc/notepad","notepad",notetitle,1);
                         unlink("etc/notepad");

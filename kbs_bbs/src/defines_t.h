@@ -19,10 +19,17 @@ void clrtoeol();
 int pressanykey();
 int askyn(char str[STRLEN],int defa);
 void saveline(int line,int mode,char* buffer);
-	
+void standend();
+void standout();
+void redoscr();
+void initscr() ;
+void bell();
 /* newio.c */
 void oflush();
 int getdata(int line, int col,char* prompt,char* buf,int  len,int  echo,int nouse,int clearlabel);
+void set_alarm(int set_timeout,void (*timeout_func)(void*),void* data);
+int igetkey();
+void check_calltime();
 
 /* xyz.c*/
 int modify_user_mode(int mode);
@@ -30,6 +37,9 @@ int modify_user_mode(int mode);
 /* more.c */
 int ansimore(char* filename,int promptend);
 int ansimore2(char* filename,int promptend,int row,int numlines);
+int NNread_init();
+int m_init();
+int countln(char* fname);
 
 /* namecomplete.c */
 void AddNameList(char* name);
@@ -45,6 +55,8 @@ int egetch();
 void update_endline();
 
 /* bbs.c*/
+void record_exit_time();   /* 记录离线时间  Luzi 1998/10/23 */
+void shownotepad();
 int check_stuffmode();
 int do_reply(char* title);
 int do_select(int ent,struct fileheader* fileinfo,char* direct );  /* 输入讨论区名 选择讨论区 */
@@ -70,6 +82,8 @@ int Goodbye();
 /*vote.c*/
 void makevdir(char* bname);
 void setvfile(char* buf,char* bname,char* filename);
+int  b_closepolls();
+int vote_flag(char* bname,char val,int mode);
 
 /* mail.c */
 int chkmail();
@@ -87,7 +101,8 @@ int addtooverride(char* uident);
 int t_query(char q_id[IDLEN]);
 int talkreply();
 int friend_add(int ent,struct friends * fh,char* direct);
-
+void talk_request();
+int getfriendstr();
 /* delete.c */
 int kick_user(struct user_info *userinfo);
 int d_user(char cid[IDLEN]);
@@ -100,6 +115,7 @@ void fixkeep(char* s,int first,int last);
 void s_msg();
 void r_lastmsg();
 int show_allmsgs();
+int do_sendmsg(struct user_info *uentp,char msgstr[256],int mode);
 
 /* list.c */
 int t_friends();
@@ -117,5 +133,24 @@ void showstuff(char buf[256]);
 
 /* userinfo.c */
 void disply_userinfo(struct userec *u ,int real);
+
+/* commlist.c */
+int domenu(char* menu_name);
+
+/* register.c */
+void check_register_info();
+void new_register();
+
+/* help.c */
+void show_help(char * fname);
+
+/* fileshm.c */
+int show_statshm(char *fh,int mode);
+int fill_shmfile(int mode,char* shmkey,char* fname);
+/* newterm.c */
+int term_init();
+
+ record_exit_time();
+
 #endif
 

@@ -602,20 +602,6 @@ set_safe_record()
 }
 */
 
-int getnewuserid2(char * userid)
-{
-       int result = getnewuserid3(userid);
-#ifdef BBSMAIN
-       bbslog( "1system", "APPLY: uid %d from %s", result, fromhost );
-#endif
-       if (result>=0) return result;
-#ifdef BBSMAIN
-       prints( "抱歉, 由于某些系统原因, 无法注册新的帐号.\n\r" );
-       oflush();
-       sleep(2);
-#endif
-       return -1;
-}
 int getnewuserid3(char * userid)
 {
 
@@ -650,6 +636,13 @@ int getnewuserid3(char * userid)
         }
         close(m_socket);
         return -1;
+}
+
+int getnewuserid2(char * userid)
+{
+       int result = getnewuserid3(userid);
+       if (result>=0) return result;
+       return -1;
 }
 
 int getnewuserid(char* userid)

@@ -267,7 +267,7 @@ int isuu, isbig5, noansi;
     mo.noansi=noansi;
     mo.fin=fin;
     mo.bfirst = 1;
-    smtp_set_messagecb (message, bbs_readmailfile, (void*)&mo);
+    smtp_set_messagecb (message, (smtp_messagecb_t)bbs_readmailfile, (void*)&mo);
 
     recipient = smtp_add_recipient (message, receiver);
     if (notify != Notify_NOTSET)

@@ -141,10 +141,12 @@ new_register()
 
     allocid = getnewuserid2(newuser.userid)  ;
     if(allocid > MAXUSERS || allocid <= 0) {
-        prints("No space for new users on the system!\n\r") ;
-        oflush();
+		prints( "抱歉, 由于某些系统原因, 无法注册新的帐号.\n\r" );
+		oflush();
+		sleep(2);
 	    exit(1) ;
     }
+	bbslog( "1system", "APPLY: uid %d from %s", result, fromhost );
 
 	update_user(&newuser,allocid,1);
 

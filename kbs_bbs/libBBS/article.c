@@ -58,7 +58,7 @@ int do_del_post(struct userec* user,int ent ,struct fileheader *fileinfo ,char *
 /* .post.X not use???! KCN
 postreport(fileinfo->title, -1, currboard); added by alex, 96.9.12 */
 /*    if( keep <= 0 ) {*/
-        fail = delete_record(direct,sizeof(struct fileheader),ent,cmpname,fileinfo->filename);
+        fail = delete_record(direct,sizeof(struct fileheader),ent,(RECORD_FUNC_ARG)cmpname,fileinfo->filename);
 /*
     } else {
         fail = update_file(direct,sizeof(struct fileheader),ent,cmpfilename,
@@ -130,9 +130,9 @@ int     autoappend;
 #endif
     if (autoappend) ph=&postfile;
     else ph=fh;
-
+/*
     sprintf(oldpath, "/board/%s/%s.html", board, fh->filename);
-    ca_expire_file(oldpath);
+    ca_expire_file(oldpath);*/
 
     if (autoappend) {
       bzero(&postfile,sizeof(postfile));

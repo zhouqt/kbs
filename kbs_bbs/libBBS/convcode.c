@@ -25,6 +25,10 @@ char gb2big_savec[2];
 char big2gb_savec[2];
 extern void redoscr();
 
+#ifndef STAND_CONV
+#include "bbs.h"
+#endif
+
 #ifdef BBSMAIN
 int switch_code()
 {
