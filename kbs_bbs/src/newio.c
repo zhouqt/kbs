@@ -620,7 +620,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
     extern int RMSG;
 
     if (clearlabel == true) {
-        memset(buf, 0, sizeof(buf));
+        buf[0] = 0;
     }
     good_move(line, col);
     if (prompt)
@@ -838,6 +838,149 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
         good_move(y, x);
         prints("%s", buf);
     }
+    prints("\n");
+    refresh();
+    return clen;
+}
+
+int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len, int clearlabel)
+{
+    int ch, clen = 0, curr = 0, x, y, startx, starty, now, i, chk, cursorx, cursory;
+    char tmp[STRLEN];
+    extern int RMSG;
+
+    if (clearlabel == true) {
+        buf[0] = 0;
+    }
+    good_move(line, col);
+    if (prompt)
+        prints("%s", prompt);
+    good_getyx(&starty, &startx);
+    now = strlen(buf);
+
+    while (1) {
+        y = starty; x = startx;
+        good_move(y, x);
+        clrtoeol();
+        chk = 0;
+        if(now==0) {
+            cursory = y;
+            cursorx = x;
+        }
+        for(i=0; i<strlen(buf); i++) {
+#ifdef CHINESE_CHARACTER
+            if (DEFINE(currentuser, DEF_CHCHAR)) {
+                if(chk) chk=0;
+                else if(buf[i]<0) chk=1;
+                if(chk&&x>=maxcol) x++;
+            }
+#endif
+            if(x>maxcol) {
+                x = col;
+                y++;
+                good_move(y, x);
+                clrtoeol();
+            }
+            prints(buf[i]);
+            x++;
+            if(i==now-1) {
+                cursory = y;
+                cursorx = x;
+            }
+        }
+        good_move(cursory, cursorx);
+        refresh();
+        ch = igetkey();
+        if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch))
+            return -ch;
+        if (ch == '\n' || ch == '\r')
+            break;
+#ifdef CHINESE_CHARACTER
+        if (ch == Ctrl('R')) {
+		currentuser->userdefine = currentuser->userdefine ^ DEF_CHCHAR;
+        	continue;
+        }
+#endif        	
+        switch(ch) {
+            case '\177':
+            case Ctrl('H'):
+                if(now>0) {
+                    for(i=now-1;i<strlen(buf)-1;i++)
+                        buf[i]=buf[i+1];
+                    now--;
+#ifdef CHINESE_CHARACTER
+                    if (DEFINE(currentuser, DEF_CHCHAR)) {
+                        chk = 0;
+                        for(i=0;i<now;i++) {
+                            if(chk) chk=0;
+                            else if(buf[i]<0) chk=1;
+                        }
+                        if(chk)
+                            for(i=now-1;i<strlen(buf)-1;i++)
+                                buf[i]=buf[i+1];
+                            now--;
+                    }
+#endif
+                }
+                break;
+            case KEY_DEL:
+                if(now<strlen(buf)-1) {
+                    for(i=now;i<strlen(buf)-1;i++)
+                        buf[i]=buf[i+1];
+#ifdef CHINESE_CHARACTER
+                    if (DEFINE(currentuser, DEF_CHCHAR)) {
+                        chk = 0;
+                        for(i=0;i<now+1;i++) {
+                            if(chk) chk=0;
+                            else if(buf[i]<0) chk=1;
+                        }
+                        if(chk)
+                            for(i=now;i<strlen(buf)-1;i++)
+                                buf[i]=buf[i+1];
+                    }
+#endif
+                }
+                break;
+            case KEY_LEFT:
+                if(now>0) {
+                    now--;
+#ifdef CHINESE_CHARACTER
+                    if (DEFINE(currentuser, DEF_CHCHAR)) {
+                        chk = 0;
+                        for(i=0;i<now;i++) {
+                            if(chk) chk=0;
+                            else if(buf[i]<0) chk=1;
+                        }
+                        if(chk) now--;
+                    }
+#endif
+                }
+                break;
+            case KEY_RIGHT:
+                if(now<strlen(buf)-1) {
+                    now++;
+#ifdef CHINESE_CHARACTER
+                    if (DEFINE(currentuser, DEF_CHCHAR)) {
+                        chk = 0;
+                        for(i=0;i<now;i++) {
+                            if(chk) chk=0;
+                            else if(buf[i]<0) chk=1;
+                        }
+                        if(chk) now++;
+                    }
+#endif
+                }
+                break;
+            default:
+                if(isprint2(ch)&&strlen(buf)<len) {
+                    for(i=strlen(buf);i>=now;i--)
+                        buf[i]=buf[i-1];
+                    buf[now++]=ch;
+                }
+                break;
+        }
+    }
+
     prints("\n");
     refresh();
     return clen;

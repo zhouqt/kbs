@@ -493,7 +493,7 @@ void r_msg()
 
         clrtoeol();
         if(canreply)
-            prints("[m %3d/%-3d,¡ü¡ýÇÐ»»,Enter½áÊø, »Ø¸´%s:", now+1, count, uid);
+            prints("[m %3d/%-3d, »Ø¸´%s:", now+1, count, uid);
         else
             if(uin)
                 prints("[m %3d/%-3d,¡ü¡ýÇÐ»»,Enter½áÊø, ¸ÃÏûÏ¢ÎÞ·¨»Ø¸´", now+1, count);
@@ -504,7 +504,7 @@ void r_msg()
         refresh();
         oflush();
         if(canreply)
-            ch = -getdata(oy, ox, NULL, buf, 1024, DOECHO, NULL, true);
+            ch = -multi_getdata(oy, ox, NULL, buf, 1024, DOECHO, NULL, true);
         else {
             do {
                 ch = igetkey();
