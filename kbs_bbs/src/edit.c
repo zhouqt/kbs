@@ -93,7 +93,7 @@ void display_buffer()
         y++;
         if (y >= scr_lns-1) {
             if (outii==-1) {
-                outii = i+1;
+                outii = ii+1;
                 outjj = 0;
             }
             break;
