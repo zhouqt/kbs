@@ -496,7 +496,7 @@ int m_editbrd()
         bh=getboard(newfh.group);
         if (bh) groupname=bh->filename;
     }
-    prints("所属目录：%s\n",bh?"无":groupname);
+    prints("所属目录：%s\n",bh?groupname:"无");
     prints("可向外转信:   %s    可粘贴附件: %s\n", (fh.flag & BOARD_OUTFLAG) ? "Yes" : "No",(fh.flag & BOARD_ATTACH) ? "Yes" : "No");
     if (fh.flag & BOARD_CLUB_READ || fh.flag & BOARD_CLUB_WRITE)
         prints("俱乐部:   %s %s %s  序号: %d\n", fh.flag & BOARD_CLUB_READ ? "阅读限制" : "", fh.flag & BOARD_CLUB_WRITE ? "发表限制" : "", fh.flag & BOARD_CLUB_HIDE ? "隐藏" : "", fh.clubnum);
