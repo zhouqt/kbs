@@ -420,7 +420,9 @@ extern "C" {
     int check_badword_str(char *string, int str_len);
     
 /* register */
+#ifdef HAVE_TSINGHUA_INFO_REGISTER
 int auto_register(char* userid,char* email,int msize);
+#endif
     
 #ifdef __cplusplus
 }

@@ -211,7 +211,7 @@ int invalid_realmail(userid, email, msize)
         }
     }
 
-#ifdef SMTH
+#ifdef HAVE_TSINGHUA_INFO_REGISTER
 
     if(len >= 3)
     {
