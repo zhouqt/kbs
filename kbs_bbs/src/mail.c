@@ -133,7 +133,7 @@ static int mailto(struct userec *uentp, char *arg)
 
     sprintf(filename, "etc/%s.mailtoall", currentuser->userid);
     if ((uentp->userlevel == PERM_BASIC && mailmode == 1) ||
-        (uentp->userlevel & PERM_POST && mailmode == 2) || (uentp->userlevel & PERM_BOARDS && mailmode == 3) || (uentp->userlevel & PERM_CHATCLOAK && mailmode == 4)) {
+        (!HAS_PERM(uentp, PERM_DENYMAIL) &&mailmode == 2) || (uentp->userlevel & PERM_BOARDS && mailmode == 3) || (uentp->userlevel & PERM_CHATCLOAK && mailmode == 4)) {
         mail_file(currentuser->userid, filename, uentp->userid, save_title, 0);
     }
     return 1;
@@ -1883,12 +1883,12 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
     }
     if (invalidaddr(receiver))
         return -2;
-    if (!HAS_PERM(currentuser, PERM_POST))
-        if (!strstr(receiver, "@") && !strstr(receiver, ".")) {
-            prints("你尚无权限转寄信件给站内其它用户。");
-            pressreturn();
-            return -22;
-        }
+    if (HAS_PERM(currentuser, PERM_DENYMAIL))
+    if (!strstr(receiver, "@") && !strstr(receiver, ".")) {
+        prints("你尚无权限转寄信件给站内其它用户。");
+        pressreturn();
+        return -22;
+    }
 
     sprintf(fname, "tmp/forward/%s.%05d", currentuser->userid, getpid());
     /*

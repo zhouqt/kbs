@@ -431,7 +431,7 @@ int allnum, pagenum;
         break;
     case 'm':
     case 'M':
-        if (!HAS_PERM(currentuser, PERM_POST))
+        if (HAS_PERM(currentuser, PERM_DENYMAIL))
             return 1;
         m_send(user_record[allnum]->userid);
         break;
