@@ -51,7 +51,7 @@ function preprocess(){
 	} else {
 		$singleBoard = '';
 		$boardArr = false;
-		if (!ALLOWMULTIQUERY) {
+		if (!isMultiQueryAllowed()) {
 			foundErr("不允许多版面查询，请重新查询。");
 		}
 	}

@@ -55,6 +55,7 @@ function showSearchMenu(){
 	global $sectionCount;
 	global $section_nums;
 	global $_GET;
+	$allow_multi_query = isMultiQueryAllowed();
 	if (isset($_GET["boardName"])) $s_board = $_GET["boardName"];
 	else $s_board = "";
 ?>
@@ -70,8 +71,8 @@ function showSearchMenu(){
 		<tr>
 			<td class=TableBody1 valign=middle align=center rowspan="6">
 				<table cellpadding=5 cellspacing=0 align=center class=TableBorder1><tr>
-					<td class=TableBody1 valign=middle align="<?php echo (ALLOWMULTIQUERY?"right":"center"); ?>">
-						<select name=boardName id=boardName size=12<?php if (ALLOWMULTIQUERY) echo " multiple"; ?>>
+					<td class=TableBody1 valign=middle align="<?php echo ($allow_multi_query?"right":"center"); ?>">
+						<select name=boardName id=boardName size=12<?php if ($allow_multi_query) echo " multiple"; ?>>
 <?php
 	$selectedIndex = $j = -1;
 	for ($i=0;$i<$sectionCount;$i++){
@@ -147,7 +148,7 @@ function showSearchMenu(){
 //-->
 </script>
 <?php
-	if (ALLOWMULTIQUERY) {
+	if ($allow_multi_query) {
 ?>
 					<td class=TableBody1 valign=middle align=left>
 						<ul>

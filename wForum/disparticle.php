@@ -238,7 +238,7 @@ function showArticleThreads($boardName,$boardID,$groupID,$articles,$start,$listT
 <tr><th align=left width=90% valign=middle> &nbsp;*Ê÷ÐÎÄ¿Â¼</th>
 <th width=10% align=right valign=middle height=24 id=TableTitleLink> <a href=#top><img src=pic/gotop.gif border=0>¶¥¶Ë</a>&nbsp;</th></tr>
 <?php
-		showTree($boardName,$groupID,$articles,"showTreeItem", 51, $start);
+		showTree($boardName,$groupID,$articles,"showTreeItem", TREEVIEW_MAXITEM, $start);
 ?>
 </table>
 <?php

@@ -256,7 +256,7 @@ function show_conf() {
 	<td class=TableBody1>
 <?php
 			echo $is_constant?"常量":"<b>变量</b>";
-			echo " 名称：".htmlspecialchars($varname);
+			echo "：".htmlspecialchars($varname);
 ?>	
 	</td>
 </tr>

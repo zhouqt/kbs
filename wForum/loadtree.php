@@ -48,7 +48,7 @@ if ($num==0) {
 <script language="javascript" type="text/javascript" src="inc/browser.js"></script>
 <script language="javascript">
 	oTd=getParentRawObject("followTd<?php echo $groupID; ?>");
-	oTd.innerHTML='<TABLE border=0 cellPadding=0 cellSpacing=0 width="100%" align=center><TBODY><?php showTree($boardName,$groupID,$articles,"showTreeItem");?></TBODY></TABLE>';
+	oTd.innerHTML='<TABLE border=0 cellPadding=0 cellSpacing=0 width="100%" align=center><TBODY><?php showTree($boardName,$groupID,$articles,"showTreeItem",TREEVIEW_MAXITEM);?></TBODY></TABLE>';
 </script>
 </body>
 

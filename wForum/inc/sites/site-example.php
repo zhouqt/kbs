@@ -37,7 +37,8 @@ define('SHOWTELNETPARAM', 0); //是否允许配置 telnet 下专用的个人参数
 
 define('SHOWREPLYTREE', 1);  //是否用树图显示回复结构
 
-define('ALLOWMULTIQUERY', 1); //是否允许全站/多版面查询
+define('ALLOWMULTIQUERY', false); //是否允许一般用户进行全站/多版面查询
+define('ALLOW_SYSOP_MULTIQUERY', false); //是否允许管理员进行全站/多版面查询
 
 //define('AUTO_KICK', false); //一个用户登录过多时是自动（是）还是提示（否）踢出以前的登录
 
