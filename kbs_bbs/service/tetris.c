@@ -64,7 +64,7 @@ int getch()
 	}
 
     c=getch0();
-    if(c==3||c==4||c==-1) quit();
+    if(c==3||c==4||c==-1) return -1;
 	if(c==Ctrl('C')) return c;
 
     if(c!=KEY_ESC) ret=c;
@@ -204,11 +204,16 @@ int show0()
 int tetris_main()
 {
   int n;
+  int oldmode;
 
   strcpy(userid,getCurrentUser()->userid);
   strcpy(userip,"unknown.");
-  modify_user_mode(TETRIS);
 
+#ifdef SSHBBS
+  return 0;
+#endif
+
+  modify_user_mode(TETRIS);
   intr();
   start();
   quit();
@@ -286,6 +291,7 @@ start()
       {
     	//c = igetkey();
 		c = getch();
+		if (c==-1) return 0;
         if (c==27) pressanykey();
     	if (c == Ctrl('D') || c == Ctrl('C') ) return 0;
         if (c==KEY_LEFT||c=='a'||c=='A') if(!crash2(x-1,y,k,n)){x--;sh2();}
@@ -324,15 +330,16 @@ checklines()
       if(a[y1][x1]==0)break;
       if(x1<=10) continue;
       s=1;
-      printf("\033[37m\033[24;1HLines =\033[32m%3d", lines+1);
-      if(lines==0) printf("                         ");
+	  move(23,0);
+      prints("Lines =\033[32m%3d", lines+1);
+      if(lines==0) prints("                         ");
       for(y2=y1;y2>=1;y2--)
       for(x1=1;x1<=10;x1++)
         a[y2][x1]=a[y2-1][x1];  
       for(x1=1;x1<=10;x1++) 
         a[0][x1]=0;
       if((++lines)%30==0) 
-        {delay*=.9; level++; bell();printf("\033[37m\033[24;15HLevel =\033[32m%3d", level);} 
+        {delay*=.9; level++; bell();move(23,15);prints("Level =\033[32m%3d", level);} 
    }
    if(s) {show0();}
 }
