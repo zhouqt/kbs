@@ -313,19 +313,25 @@ int page, clsflag, newflag;
                            "  [mÖ÷Ñ¡µ¥[\x1b[1;32m¡û\x1b[m,\x1b[1;32me\x1b[m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ı\x1b[m] Ìí¼Ó[\x1b[1;32ma\x1b[m,\x1b[1;32mA\x1b[m] ÒÆ¶¯[\x1b[1;32mm\x1b[m] É¾³ı[\x1b[1;32md\x1b[m] ÅÅĞò[\x1b[1;32mS\x1b[m] ÇóÖú[\x1b[1;32mh\x1b[m]\n");
             else if (yank_flag == 3)
                 docmdtitle("[´¦ÀíĞÅ¼ãÑ¡µ¥]",
-                           "  [mÖ÷Ñ¡µ¥[\x1b[1;32m¡û\x1b[m,\x1b[1;32me\x1b[m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ı\x1b[m] Ìí¼Ó[\x1b[1;32ma\x1b[m,\x1b[1;32mA\x1b[m] ÒÆ¶¯[\x1b[1;32mm\x1b[m] É¾³ı[\x1b[1;32md\x1b[m] ÅÅĞò[\x1b[1;32mS\x1b[m] ÇóÖú[\x1b[1;32mh\x1b[m]\n");
+                           "  [mÖ÷Ñ¡µ¥[\x1b[1;32m¡û\x1b[m,\x1b[1;32me\x1b[m] ½øÈë[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ı\x1b[m] Ìí¼Ó[\x1b[1;32ma\x1b[m] ¸ÄÃû[\x1b[1;32mT\x1b[m] É¾³ı[\x1b[1;32md\x1b[m] \n");
             else
                 docmdtitle("[ÌÖÂÛÇøÁĞ±í]",
                            "  [mÖ÷Ñ¡µ¥[\x1b[1;32m¡û\x1b[m,\x1b[1;32me\x1b[m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ı\x1b[m] ÁĞ³ö[\x1b[1;32my\x1b[m] ÅÅĞò[\x1b[1;32mS\x1b[m] ËÑÑ°[\x1b[1;32m/\x1b[m] ÇĞ»»[\x1b[1;32mc\x1b[m] ÇóÖú[\x1b[1;32mh\x1b[m]\n");
-            prints("[1;44m[37m %s ÌÖÂÛÇøÃû³Æ       V  Àà±ğ ×ªĞÅ  %-24s °æ  Ö÷   %s   [m\n", newflag ? "È«²¿ Î´¶Á" : "±àºÅ  ", "ÖĞ  ÎÄ  Ğğ  Êö", newflag ? "" : "   ");
+            if (yank_flag==3)
+                prints("[1;44m[37m ĞÅ¼ş       Àà±ğ   Ãû³Æ[m\n");
+            else
+                prints("[1;44m[37m %s ÌÖÂÛÇøÃû³Æ       V  Àà±ğ ×ªĞÅ  %-24s °æ  Ö÷   %s   [m\n", newflag ? "È«²¿ Î´¶Á" : "±àºÅ  ", "ÖĞ  ÎÄ  Ğğ  Êö", newflag ? "" : "   ");
         } else {
             if (yank_flag == 2)
                 docmdtitle("[¸öÈË¶¨ÖÆÇø]", "  [mÖ÷Ñ¡µ¥[¡û,e] ÔÄ¶Á[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] Ìí¼Ó[a,A] ÒÆ¶¯[m] É¾³ı[d] ÅÅĞò[S] ÇóÖú[h]\n");
             else if (yank_flag == 3)
-                docmdtitle("[´¦ÀíĞÅ¼ãÑ¡µ¥]", "  [mÖ÷Ñ¡µ¥[¡û,e] ÔÄ¶Á[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] Ìí¼Ó[a,A] ÒÆ¶¯[m] É¾³ı[d] ÅÅĞò[S] ÇóÖú[h]\n");
+                docmdtitle("[´¦ÀíĞÅ¼ãÑ¡µ¥]", "  [mÖ÷Ñ¡µ¥[¡û,e] ½øÈë[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] Ìí¼Ó[a] ¸ÄÃû[T] É¾³ı[d] \n");
             else
                 docmdtitle("[ÌÖÂÛÇøÁĞ±í]", "  [mÖ÷Ñ¡µ¥[¡û,e] ÔÄ¶Á[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] ÁĞ³ö[y] ÅÅĞò[S] ËÑÑ°[/] ÇĞ»»[c] ÇóÖú[h]\n");
-            prints("[44m[37m %s ÌÖÂÛÇøÃû³Æ       V  Àà±ğ ×ªĞÅ  %-24s °æ  Ö÷   %s   [m\n", newflag ? "È«²¿ Î´¶Á" : "±àºÅ  ", "ÖĞ  ÎÄ  Ğğ  Êö", newflag ? "" : "   ");
+            if (yank_flag==3)
+                prints("[44m[37m ĞÅ¼ş       Àà±ğ   Ãû³Æ[m\n");
+            else
+                prints("[44m[37m %s ÌÖÂÛÇøÃû³Æ       V  Àà±ğ ×ªĞÅ  %-24s °æ  Ö÷   %s   [m\n", newflag ? "È«²¿ Î´¶Á" : "±àºÅ  ", "ÖĞ  ÎÄ  Ğğ  Êö", newflag ? "" : "   ");
         }
     }
 
@@ -944,6 +950,7 @@ int choose_board(int newflag, char *boardprefix)
              * fall through 
              */
         case 'r':
+            if (3==yank_flag) goto hotkey;
         case KEY_RIGHT:        /*½øÈë board */
             {
                 char buf[STRLEN];
@@ -999,6 +1006,7 @@ int choose_board(int newflag, char *boardprefix)
                 break;
             }
         case 'v':              /*Haohmaru.2000.4.26 */
+            if (3==yank_flag) goto hotkey;
             clear();
             m_read();
             show_brdlist(page, 1, newflag);

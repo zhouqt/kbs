@@ -1232,7 +1232,7 @@ int mail_move(int ent, struct fileheader* fileinfo, char* direct)
     int i,j;
     char buf[PATHLEN];
     char* t;
-    char menu_char[3][10]={"收件箱", "垃圾箱", "退出"};
+    char menu_char[3][10]={"I) 收件箱", "J) 垃圾箱", "Q) 退出"};
 
     load_mail_list();
     if (!mail_list_t) return DONOTHING;
@@ -1240,17 +1240,17 @@ int mail_move(int ent, struct fileheader* fileinfo, char* direct)
     move(5, 3);
     prints("请选择移动到哪个邮箱");
     sel = (struct _select_item*)malloc(sizeof(struct _select_item)*(mail_list_t+4));
-    sel[0].x = 3; sel[0].y = 6; sel[0].hotkey = -1; sel[0].type = SIT_SELECT; sel[0].data = menu_char[0];
-    sel[1].x = 3; sel[1].y = 7; sel[1].hotkey = -1; sel[1].type = SIT_SELECT; sel[1].data = menu_char[1];
+    sel[0].x = 3; sel[0].y = 6; sel[0].hotkey = 'I'; sel[0].type = SIT_SELECT; sel[0].data = menu_char[0];
+    sel[1].x = 3; sel[1].y = 7; sel[1].hotkey = 'J'; sel[1].type = SIT_SELECT; sel[1].data = menu_char[1];
     for(i=0;i<mail_list_t;i++) {
     	sel[i+2].x=3;
     	sel[i+2].y=i+8;
-    	sel[i+2].hotkey=-1;
+    	sel[i+2].hotkey=mail_list[i][0];
     	sel[i+2].type=SIT_SELECT;
     	sel[i+2].data=(void*) mail_list[i];
     }
     sel[mail_list_t+2].x = 3; sel[mail_list_t+2].y = mail_list_t+8;
-    sel[mail_list_t+2].hotkey = -1; sel[mail_list_t+2].type = SIT_SELECT;
+    sel[mail_list_t+2].hotkey = 'Q'; sel[mail_list_t+2].type = SIT_SELECT;
     sel[mail_list_t+2].data = menu_char[2];
     sel[mail_list_t+3].x = -1; sel[mail_list_t+3].y = -1;
     sel[mail_list_t+3].hotkey = -1; sel[mail_list_t+3].type = 0;
