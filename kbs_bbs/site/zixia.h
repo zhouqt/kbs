@@ -135,8 +135,8 @@
 //#define LOCAL_ARTICLE_DEFAULT 	0	//缺省转信
 
 #define MSG_ERR_USERID		"嗯？这个猪头是谁？..."
-#define LOGIN_PROMPT		"报上代号\033[s\033[4D名来\033[u"
-#define PASSWD_PROMPT		"接头密码\033[s\033[4D暗号\033[u"
+#define LOGIN_PROMPT		"\033[s代号\033[4D\033[u报上名来"
+#define PASSWD_PROMPT		"\033[s密码\033[4D\033[u接头暗号"
 
 #define RAW_ARTICLE 0
 
