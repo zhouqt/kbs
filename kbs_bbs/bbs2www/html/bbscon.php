@@ -86,7 +86,7 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 ?>
 [<a href="/cgi-bin/bbs/bbsedit?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">修改文章</a>]
 [<a onclick="return confirm('你真的要删除本文吗?')" href="bbsdel.php?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">删除文章</a>]
-[<a href="/cgi-bin/bbs/bbstfind?board=<?php echo $brd_encode; ?>&title=<?php echo urlencode($articles[1]["TITLE"]); ?>&groupid=<?php echo $articles[1]["GROUPID"];?>">同主题阅读</a>]
+[<a href="/cgi-bin/bbs/bbstcon?board=<?php echo $brd_encode; ?>&gid=<?php echo $articles[1]["GROUPID"];?>">同主题阅读</a>]
 [<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>&page=<?php echo intval(($num + $PAGE_SIZE - 1) / $PAGE_SIZE); ?>">返回版面</a>]
 [<a href="javascript:history.go(-1)">快速返回</a>]
 <?php

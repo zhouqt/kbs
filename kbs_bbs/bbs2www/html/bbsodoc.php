@@ -111,7 +111,7 @@
 <td><a href="/bbsqry.php?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
 <td><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
 <td>
-<a href="/cgi-bin/bbs/bbstcon?board=<?php echo $brd_encode; ?>&file=<?php echo $article["FILENAME"]; ?>"><?php echo htmlspecialchars($title); ?></a>
+<a href="/cgi-bin/bbs/bbstcon?board=<?php echo $brd_encode; ?>&gid=<?php echo $article["GROUPID"]; ?>"><?php echo htmlspecialchars($title); ?></a>
 </td>
 </tr>
 <?php

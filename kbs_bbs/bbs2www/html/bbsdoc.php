@@ -182,7 +182,7 @@
 		else
 		{
 ?>
-<a href="/cgi-bin/bbs/bbstcon?board=<?php echo $brd_encode; ?>&file=<?php echo $article["FILENAME"]; ?>"><?php echo htmlspecialchars($title); ?>
+<a href="/cgi-bin/bbs/bbstcon?board=<?php echo $brd_encode; ?>&gid=<?php echo $article["GROUPID"]; ?>"><?php echo htmlspecialchars($title); ?>
 
 </a>
 <?php
