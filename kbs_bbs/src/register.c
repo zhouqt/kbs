@@ -239,6 +239,8 @@ void check_register_info()
     char *newregfile;
     int perm;
     char buf[STRLEN];
+	char career[STRLEN];
+	char phone[40];
 
     clear();
     sprintf(buf, "%s", email_domain());
@@ -272,6 +274,30 @@ void check_register_info()
         getdata(6, 0, "ÇëÏêÏ¸ÌîĞ´ÄúµÄ×¡Ö·£º", buf, NAMELEN, DOECHO, NULL, true);
         strcpy(curruserdata.address, buf);
     }
+
+	/* ¼ÓÈë×ªÈÃIDºóµÄ´úÂë   by binxun 2003-5-23 */
+	sethomefile(buf,currentuser->userid,"conveyID");
+	if(dashf(buf))
+	{
+	    unlink(buf);
+
+        move(6,0);
+		prints("´ËIDÓÉÄúµÄÅóÓÑ×ªÈÃ¸øÄú,¹§Ï²Äú»ñµÃ´ËID,ÇëÌîĞ´ÒÔÏÂ×ÊÁÏ.");
+		do{
+		    getdata(7,0,"Ñ§Ğ£Ïµ¼¶»òµ¥Î»È«³Æ(¾ßÌåµ½²¿ÃÅ):",career,STRLEN,DOECHO,NULL,true);
+		}while(strlen(career) < 4);
+        do{
+		    getdata(8,0,"ÄúµÄÁªÏµµç»°»òÕßEmail:",phone,40,DOECHO,NULL,true);
+		}while(strlen(phone) < 6);
+
+        sprintf(buf,"%s$%s@SYSOP", career,phone);
+		if(strlen(buf) >= STRLEN - 16)sprintf(buf,"%s@SYSOP",phone);
+		strncpy(curruserdata.realemail,buf,STRLEN-16);
+		curruserdata.realemail[STRLEN-16-1]='\0';
+		write_userdata(currentuser->userid,&curruserdata);
+	}
+
+
     if (strchr(curruserdata.email, '@') == NULL) {
         clear();
         move(3, 0);
@@ -529,16 +555,10 @@ void ConveyID()
 
 	//¸ø³öÌáÊ¾ĞÅÏ¢
 
-    /*
     clear();
     move(1, 0);
-    prints("Ñ¡Ôñ×ªÈÃIDºó,½«Ê¹¸ÃIDÄúµÄÉúÃüÁ¦¼õÉÙµ½14Ìì£¬14ÌìºóÄúµÄÕÊºÅ×Ô¶¯ÏûÊ§¡£");
+    prints("Ñ¡Ôñ×ªÈÃIDºó,ĞÂÓÃ»§ÉÏÕ¾ÌîĞ´Íê×ÊÁÏ,¼´¿É»ñµÃÓÃ»§È¨ÏŞ!");
     move(3, 0);
-    prints("ÔÚÕâ14ÌìÄÚÈô¸Ä±äÖ÷ÒâµÄ»°£¬Ôò¿ÉÒÔÍ¨¹ıµÇÂ¼±¾Õ¾Ò»´Î»Ö¸´Ô­ÉúÃüÁ¦");
-    move(5, 0);
-    prints("×ÔÉ±ÓÃ»§½«¶ªÊ§ËùÓĞ[33mÌØÊâÈ¨ÏŞ[m£¡£¡£¡");
-    move(7, 0);
-    */
 
     if (askyn("ÄãÈ·¶¨Òª×ªÈÃÕâ¸ö ID Âğ£¿", 0) == 1) {
         clear();
@@ -549,27 +569,45 @@ void ConveyID()
             return;
         }
 
-        currentuser->userlevel &= ~PERM_BASIC;
-
-		//¼ÇÂ¼±¸·İĞÅÏ¢
+        //¼ÇÂ¼±¸·İĞÅÏ¢
         now = time(0);
-        sprintf(filename, "etc/%s.tmp", currentuser->userid);
+        sprintf(filename, "tmp/%s.tmp", currentuser->userid);
         fn = fopen(filename, "w");
 		if(fn){
 			fprintf(fn,"\033[1m %s \033[m ÔÚ \033[1m%24.24s\033[m ×ªÈÃIDÁË,ÒÔÏÂÊÇËûµÄ×ÊÁÏ£¬Çë±£Áô...",currentuser->userid,ctime(&now));
 			getuinfo(fn, currentuser);
 			fprintf(fn, "\n                     \033[1m ÏµÍ³×Ô¶¯·¢ĞÅÏµÍ³Áô\033[m\n");
 			fclose(fn);
-			sprintf(buf, "%s ×ªÈÃID", currentuser->userid);
+			sprintf(buf, "%s ×ªÈÃIDµÄ±¸·İ×ÊÁÏ", currentuser->userid);
 			post_file(currentuser, "", filename, "Registry", buf, 0, 1);
 			unlink(filename);
 		}
 		else{
-		    //error info
+		    move(12,0);
+			prints("²»ÄÜÉú³ÉÁÙÊ±ÎÄ¼ş!×ªÈÃIDÊ§°Ü,ÇëÓëSYSOPÁªÏµ.");
+			return;
 		}
 
-		//Çå¿Õ¸öÈËĞÅÏ¢
+        sethomefile(filename,currentuser->userid,"conveyID");
+		if((fn=fopen(filename,"w")) != NULL){
+		    fprintf(fn,"Convey ID at %s",ctime(&now));
+			fclose(fn);
+		}
+		else{
+		    move(12,0);
+		    prints("²»ÄÜÉú³É×ªÈÃIDÎÄ¼ş!×ªÈÃIDÊ§°Ü,ÇëÓëSYSOPÁªÏµ.");
+			return;
+		}
+		currentuser->userlevel = 0;
+		currentuser->userlevel |= PERM_BASIC;
+		//clear ÓÃ»§ĞÅÏ¢
+		bzero(&curruserdata,sizeof(struct userdata));
+		strcpy(curruserdata.userid,currentuser->userid);
+		write_userdata(currentuser->userid,&curruserdata);
 
+        move(12,0);
+		prints("×ªÈÃID³É¹¦,ÂíÉÏ¶ÏÏßÁË,¸æ±ğÕâ¸öID°É.");
+        pressanykey();
 		//¶ÏÏß
         abort_bbs(0);
     }
