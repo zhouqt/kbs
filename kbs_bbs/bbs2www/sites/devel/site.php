@@ -1,9 +1,11 @@
 <?php
+/*
 define("ATTACHTMPPATH","boards/_attach");
 function getattachtmppath($userid,$utmpnum)
 {
   return ATTACHTMPPATH . "/" . $userid . "_" . $utmpnum;
 }
+*/
 
 define("ATTACHMAXSIZE","1048576");
 define("ATTACHMAXCOUNT","20");

@@ -1,9 +1,4 @@
 <?php
-function getattachtmppath($userid,$utmpnum)
-{
-  $attachdir="cache/home/" . strtoupper(substr($userid,0,1)) . "/" . $userid . "/" . $utmpnum . "/upload"; 
-  return $attachdir;
-}
 
 define("ATTACHMAXSIZE","2097152");
 define("ATTACHMAXCOUNT","10");
