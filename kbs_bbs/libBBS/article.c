@@ -180,7 +180,7 @@ void add_loginfo(char* filepath,struct userec* user,char* currboard,int Anony)  
     return;
 }
 
-void addsignature(FILE *fp,int blank,struct userec* user)
+void addsignature(FILE *fp,struct userec* user,int sig)
 {
     FILE *sigfile;
     int  i,valid_ln=0;
@@ -189,12 +189,12 @@ void addsignature(FILE *fp,int blank,struct userec* user)
     char fname[STRLEN];
     char tmp[STRLEN];
 
+   if (sig==0) return;
     sethomefile( fname, user->userid,"signatures" );
     if ((sigfile = fopen(fname, "r"))== NULL)
     {return;}
-    if ( blank ) fputs("\n", fp);
-    fputs("--\n", fp);
-    for (i=1; i<=(user->signature-1)*MAXSIGLINES&user->signature!=1; i++)
+    fputs("\n--\n", fp);
+    for (i=1; i<=(sig-1)*MAXSIGLINES&sig!=1; i++)
     {
         if (!fgets(inbuf, sizeof(inbuf), sigfile)){
             fclose(sigfile);
@@ -212,7 +212,6 @@ void addsignature(FILE *fp,int blank,struct userec* user)
     fclose(sigfile);
     for(i=1;i<=valid_ln;i++)
         fputs(tmpsig[i-1], fp);
-    /*fclose(sigfile); Leeward 98.03.29: Extra fclose is a BUG! */
 }
 
 int write_posts(char *id, char *board, char *title)

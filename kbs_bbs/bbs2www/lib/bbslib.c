@@ -571,47 +571,6 @@ void add_loginfo2(char *filepath, char *board, struct userec *user, int anony)
     return;
 }
 
-void addsignature2(FILE *fp, struct userec *user, int sig)
-{
-    FILE *sigfile;
-    int  i,valid_ln=0;
-    char tmpsig[MAXSIGLINES][256];
-    char inbuf[256];
-    char fname[STRLEN];
-    char tmp[STRLEN];
-
-	if (sig == 0)
-		return;
-    sethomefile( fname, currentuser->userid,"signatures" );
-    if ((sigfile = fopen(fname, "r"))== NULL)
-    	return;
-    fputs("--\n", fp);
-    for (i=1; i<=(sig-1)*MAXSIGLINES && sig!=1; i++)
-    {
-        if (!fgets(inbuf, sizeof(inbuf), sigfile))
-		{
-            fclose(sigfile);
-            return;
-		}
-    }
-    for (i=1; i<=MAXSIGLINES; i++)
-	{
-        if (fgets(inbuf, sizeof(inbuf), sigfile))
-        {
-            if(inbuf[0]!='\n')
-                valid_ln = i;
-            strcpy(tmpsig[i-1],inbuf);
-        }
-        else
-			break;
-    }
-    fclose(sigfile);
-    for(i=1;i<=valid_ln;i++)
-        fputs(tmpsig[i-1], fp);
-	user->signature = sig;
-	save_user_data(user);
-}
-
 void write_header2(FILE *fp, char *board, char *title, 
 					char *userid, char *username, int anony)
 {
@@ -684,7 +643,7 @@ post_article(char *board, char *title, char *file, struct userec *user,
 	write_file2(fp, fp2);
 	fclose(fp2);
 	if (!anony)
-		addsignature2(fp, user, sig);
+		addsignature(fp, user, sig);
 	fclose(fp);
     add_loginfo2(filepath, board, user, anony); /*添加最后一行*/
 

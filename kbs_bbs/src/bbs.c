@@ -1288,7 +1288,7 @@ char quote_mode;
 
     if(!(currentuser->signature==0||Anony==1))  /* 签名档为0则不添加 */
     {
-        addsignature(outf,1,currentuser);
+        addsignature(outf,currentuser,currentuser->signature);
     }
     fclose(outf);
 }
