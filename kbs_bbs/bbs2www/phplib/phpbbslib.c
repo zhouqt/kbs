@@ -1722,8 +1722,10 @@ static PHP_FUNCTION(bbs_searchtitle)
 	        continue;
 		if (title3[0] && strcasestr(ptr1[i].origin.title, title3))
 			continue;
-		if (abs(time(0) - get_posttime(&(ptr1[i].lastreply))) > date * 86400) //last reply out of the bound, we can stop for sure.
-			break;
+		if (abs(time(0) - get_posttime(&(ptr1[i].lastreply))) > date * 86400) {
+            if (ptr1[i].flags & FILE_ON_TOP) continue;
+			else break; //normal article, lastreply out of range, so we can break
+		}
 		if (mmode && !(ptr1[i].origin.accessed[0] & FILE_MARKED) && !(ptr1[i].origin.accessed[0] & FILE_DIGEST))
 			continue;
 		if (attach && ptr1[i].origin.attachment==0)
