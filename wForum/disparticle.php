@@ -179,14 +179,16 @@ function dispArticleTitle($boardName,$boardID,$groupID,$article, $startNum){
 */ ?>
 		</th>
 		<th width="37%" align="right">
-<!--
+<?php
+/*
 		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/saveas.gif" border=0 title=保存该页为文件></a>&nbsp;
 		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/report.gif" title=报告本帖给版主 border=0></a>&nbsp;
 		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/printpage.gif" title=显示可打印的版本 border=0></a>&nbsp;
 		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/pag.gif" border=0 title=把本贴打包邮递></a>&nbsp;
 		<a href=# onclick="alert('本功能尚未实现');"><IMG SRC="pic/fav_add.gif" BORDER=0 title=把本贴加入论坛收藏夹></a>&nbsp;
 		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/emailtofriend.gif" border=0 title=发送本页面给朋友></a>&nbsp;
--->
+*/
+?>
 		<a href="#" onClick="window.external.AddFavorite(location.href, document.title);"><img src="pic/fav_add1.gif" border="0" width="15" height="15" title="把本贴加入IE收藏夹"/></a>&nbsp;
 		</th>
 		</tr>
@@ -270,6 +272,35 @@ function showArticleThreads($boardName,$boardID,$groupID,$articles,$start,$listT
 function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 	global $loginok;
 	global $isbm;
+
+	/* 文章内容处理部分 */
+	$filename=bbs_get_board_filename($boardName, $thread["FILENAME"]);
+	if ($loginok) {
+		bbs_brcaddread($boardName, $thread['ID']);
+	};
+	$is_tex = SUPPORT_TEX && $thread["IS_TEX"];
+	$articleContents = bbs_printansifile($filename,1,'bbscon.php?bid='.$boardID.'&amp;id='.$thread['ID'],$is_tex,0);
+	if (0) { /* 这部分各站点可以自行订制，下面给出一点示例 */
+		/* 去掉第一行 */
+		$chit = strpos( $articleContents, "标&nbsp;&nbsp;题:" );
+		if ($chit !== false) $articleContents = substr($articleContents, $chit);
+		
+		/* 发文头都去掉 */
+		$sf = "<br />  <br />";
+		$chit = strpos( $articleContents, $sf );
+		if ($chit !== false) $articleContents = substr($articleContents, $chit + strlen($sf));
+	
+		/* 去掉最后的来源 */
+		$search=array("'<font class=\"f[0-9]+\">※&nbsp;来源:·.+\[FROM:&nbsp;[^\]]+\]</font><font class=\"f000\"> <br />'");
+        $replace=array("");
+        $articleContents = preg_replace($search,$replace,$articleContents);
+        
+        /* 显示发文时间 */
+		$articleContents = "<b>发布于: ".strftime('%Y-%m-%d %H:%M:%S', intval($thread['POSTTIME']))."</b><br /><br />".$articleContents;
+	}
+	$articleContents = DvbTexCode($articleContents,0,$fgstyle,$is_tex);
+	/* 文章内容处理结束，此时 $articleContents 应该是能够直接输出的内容 */
+
 	$user=array();
 	$user_num=bbs_getuser($thread['OWNER'],$user);
 	if ($user_num == 0) {
@@ -338,10 +369,8 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 	if ($user !== false) {
 ?>
 &nbsp;&nbsp;<?php echo get_myface($user, "align=\"absmiddle\""); ?><br/>
-&nbsp;&nbsp;<img src="pic/level10.gif"/><br/>
 &nbsp;&nbsp;等级：<?php echo bbs_getuserlevel($thread['OWNER']); ?><br/>
 &nbsp;&nbsp;文章：<?php echo $user['numposts']; ?><br/>
-&nbsp;&nbsp;积分：<?php echo $user['score']; ?><br/>
 <?php
 		if (SHOW_REGISTER_TIME) {
 ?>
@@ -363,17 +392,7 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 
 <td class="<?php echo $bgstyle ;?>" valign="top" width="*">
 
-<table width="100%" ><tr><td width="*" valign="center">
-<?php
-/*	if ($loginok) {
-?>
-<a href="javascript:replyMsg('<?php echo $thread['OWNER']; ?>')"><img src="pic/message.gif" border=0 title="给<?php echo $thread['OWNER']; ?>发送一个短消息"></a>&nbsp;
-<?php
-	}
-<a href="friendlist.php?addfriend=<?php echo $thread['OWNER']; ?>" target="_blank"><img src="pic/friend.gif" border="0" title="把<?php echo $thread['OWNER']; ?>加入好友"/></a>&nbsp;
-<a href="dispuser.php?id=<?php echo $thread['OWNER']; ?>" target="_blank"><img src="pic/profile.gif" border="0" title="查看<?php echo $thread['OWNER']; ?>的个人资料"/></a>&nbsp;
-*/
-?>
+<table width="100%" ><tr><td width="*">
 <a href="queryresult.php?userid=<?php echo $thread['OWNER']; ?>&amp;boardNames=<?php echo $boardName; ?>"><img src="pic/find.gif" border="0" title="搜索<?php echo $thread['OWNER']; ?>在本版的所有贴子"/></a>&nbsp;
 <a href="sendmail.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $thread['ID']; ?>"><img title="点击这里发送信件给<?php echo $thread['OWNER']; ?>" border="0" src="pic/email.gif"/></a>&nbsp;
 <a href="editarticle.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $thread['ID']; ?>"><img src="pic/edit.gif" border="0" title="编辑"/></a>&nbsp;
@@ -391,32 +410,12 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 <b><?php echo $num==0?'楼主':'第<font color="#ff0000">'.$num.'</font>楼'; ?></b></td></tr><tr><td bgcolor="#D8C0B1" height="1" colspan="2"></td></tr>
 </table>
 
-<table class="TableBody2" border="0" width="90%" style=" table-layout:fixed;word-break:break-all"><tr><td width="100%" style="font-size:9pt;line-height:12pt"><blockquote>
-<?php
-/*
-<img src="face/face1.gif" border="0" title="发贴心情"/>&nbsp;<?php echo  htmlspecialchars($thread['TITLE'],ENT_QUOTES); ?> 
-<br/> */
-	$filename=bbs_get_board_filename($boardName, $thread["FILENAME"]);
-	if ($loginok) {
-		bbs_brcaddread($boardName, $thread['ID']);
-	};
-	$is_tex = SUPPORT_TEX && $thread["IS_TEX"];
-	$str = bbs_printansifile($filename,1,'bbscon.php?bid='.$boardID.'&amp;id='.$thread['ID'],$is_tex,0);
-	if (1) {
-		$chit = strpos( $str, "标&nbsp;&nbsp;题:" );
-		if ($chit !== false) $str = substr($str, $chit);
-		
-		$search=array("'<br /> <font class=\"f000\"></font><font class=\"f[0-9]+\">※&nbsp;来源:·.+\[FROM:&nbsp;[^\]]+\]</font><font class=\"f000\"> <br />'");
-        $replace=array("");
-        $str = preg_replace($search,$replace,$str);
-	}
-	echo DvbTexCode($str,0,$fgstyle,$is_tex);
-?>
-</blockquote></td></tr></table>
+<table class="TableBody2" border="0" width="98%" style=" table-layout:fixed;word-break:break-all"><tr><td width="100%" style="font-size:9pt;line-height:12pt;padding: 0px 5px;"><?php echo $articleContents; ?></td></tr></table>
 </td>
 
 </tr>
-<!--
+<?php
+/*
 <tr>
 <td class=<?php echo $bgstyle ;?> valign=middle align=center width=175><a href=# onclick="alert('本功能尚未实现');" target=_blank><img align=absmiddle border=0 width=13 height=15 src="pic/ip.gif" title="点击查看用户来源及管理<br>发贴IP：*.*.*.*"></a> <?php echo strftime("%Y-%m-%d %H:%M:%S",$thread['POSTTIME']); ?></td>
 <td class=<?php echo $bgstyle ;?> valign=middle width=*>
@@ -424,10 +423,9 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
   <td align=left valign=middle> &nbsp;&nbsp;<a href=# onclick="alert('本功能尚未实现');" title="同意该帖观点，给他一朵鲜花，将消耗您5点金钱"><img src=pic/xianhua.gif border=0>鲜花</a>(<font color=#FF0000>0</font>)&nbsp;&nbsp;<a href=# onclick="alert('本功能尚未实现');" title="不同意该帖观点，给他一个鸡蛋，将消耗您5点金钱"><img src=pic/jidan.gif border=0>鸡蛋</a>(<font color=#FF0000>0</font>)</td><td align=right nowarp valign=bottom width=200></td>
   <td align=right valign=bottom width=4><a href="bmmanage.php?board=<?php echo $boardName; ?>&ID=<?php echo $thread['ID']; ?>"><img src="pic/jing.gif" border=0 title=切换精华</a></td>
 </tr></table>
-</td></tr>-->
-
-
+</td></tr>
 <?php
+	*/
 }
 
 function showTreeItem($boardName,$groupID,$article,$startNum,$level, $lastflag){
