@@ -82,7 +82,7 @@ function showSearchForm($keywords) {
 请输入关键字:
 <input type="text" name="board" value="<?php echo htmlspecialchars($keywords); ?>" />
 <input type="checkbox" name="exact" id="exact" />精确匹配
-<input type="submit" name="submit" value="查询版面">
+<input type="submit" value="查询版面">
 </td></tr></table>
 </form>
 <?php
