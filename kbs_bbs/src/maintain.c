@@ -208,10 +208,6 @@ int securityreport(char *str,struct userec* lookupuser)		/* Leeward: 1997.12.02 
             fclose(se);
             if (strstr(str, "设定使用者注册资料"))	/* Leeward 98.03.29 */
                 postfile(fname, "Registry", str, 2);
-#ifndef LEEWARD_X_FILTER
-            else if (strstr(str, "含") && strstr(str, "的文章被过滤"))
-                postfile(fname, "Filter", str, 2);	/* Leeward 98.04.01 */
-#endif
             else
                 postfile(fname, "syssecurity", str, 2);
         }

@@ -77,7 +77,7 @@ extern char *permstrings[];
 extern char    *groups[];
 extern char    *explain[];
 #else
-char *permstrings[] = {
+const char *permstrings[] = {
         "基本权力",             /* PERM_BASIC */
         "进入聊天室",           /* PERM_CHAT */
         "呼叫他人聊天",         /* PERM_PAGE */
@@ -111,7 +111,7 @@ char *permstrings[] = {
 
 };
 
-char    *explain[] = {
+const char    *explain[] = {
     "本站系统",
     "休闲娱乐",
     "电脑技术",
@@ -128,7 +128,7 @@ char    *explain[] = {
     NULL
 };
 
-char    *groups[] = {
+const char    *groups[] = {
     "system.faq",
     "rec.faq",
     "comp.faq",

@@ -60,9 +60,6 @@ int     post_search_up();
 int     thread_up();
 int     thread_down();
 int     deny_user();
-#ifndef LEEWARD_X_FILTER
-int     BoardFilter(); /* Leeward 98.04.02 */
-#endif
 int     show_author();
 /*int     b_jury_edit();  stephen 2001.11.1*/
 int     add_author_friend();
@@ -93,205 +90,6 @@ extern struct screenline *big_picture;
 extern struct userec *user_data;
 
 int totalusers, usercounter;
-
-#ifndef LEEWARD_X_FILTER
-int
-check_invalid_post(checked, boardname, title) /* Leeward 98.03.29 - 08.05 */
-char *checked;              /* 改动本函数必须同步 bbs.c 和 bbssnd.c (4 WWW) */
-char *boardname;
-char *title;
-{
-    FILE *fp, *fpX;
-    char buf[8192], bufX[8192];
-    int  i;
-    char checkedX[1024], titleX[1024];
-
-    strcpy(checkedX, checked);
-    strcpy(titleX, title);
-
-    sprintf(buf, "tmp/security.%d", getpid());
-    if (!strcmp(buf, checkedX))
-        return NA; /* 这是系统安全记录，需要保持原样，不返回 YEA (不可过滤) */
-    if (!strcmp(boardname, "notepad"))
-        return NA; /* 系统留言版, 每篇文章都要发表, 不返回 YEA (不可过滤) */
-    if (!strcmp(boardname, "Filter"))
-        return NA; /* 系统过滤记录区，允许改动被过滤内容以便放行, 不返回 YEA */
-    if (!strcmp(boardname, "sys_discuss"))
-        return NA; /* 系统内部讨论区,不用过滤 */
-
-    for (i = 0; i < 1 + sysconf_eval("RUN_SYSTEM_FILTER"); i ++)
-    {
-
-        if (0 == i) sprintf(buf, "boards/%s/.badword", boardname);
-        else        sprintf(buf, ".badword"); /* 版面检查优先于系统检查 */
-
-        fpX = fopen(buf, "r");
-        if (NULL == fpX)
-            continue; /* If can't open, not return YEA (no invalid word) */
-
-        fp = fopen(checkedX, "r");
-        if (NULL == fp)
-        {
-            fclose(fpX);
-            continue; /* If can't open, not return YEA (no invalid post) */
-        }
-
-        while (!feof(fp))
-        {
-            char *p, *q;
-
-            fgets(buf, 8192, fp); /* Reading a line from the article checked */
-            if (feof(fp))
-                break;
-            else
-            { /* 这段代码用来去除汉字间的空格，同时忽略西文大小写，以提高过滤效果 */
-#define XRULER "/\\#$^*'\"-~+<>[] =.|%&_`{}" /* Leeward 98.07.24 这些也去除 */
-                int f, g;
-                char *x;
-
-                for (f = g = 0, q = bufX, p = buf; *p; p ++)
-                {
-                    if (strchr(XRULER, *p)) /* 除了空格，还有些字符也... */
-                    {
-                        g ++; /* 空格字符先不复制，仅记录数目和位置 */
-                        if (1 == g) x = p;
-                        continue;
-                    }
-                    else
-                    { /* 扫描到非空格字符 */
-                        if (g)
-                        { /* 前面是空格字符 */
-                            if ( 0 == f || ( (*(p + 1) < 128) && !strchr(XRULER, *(p + 1)) ) )
-                                while (g -- > 0) *q ++ = *x ++; /* 不夹在汉字间的空格，原数复制 */
-                        }
-                        g = 0;
-                        if (*p < 128) *p = toupper(*p), f = 0; else f = 1;
-                        /* 忽略大小写 */   /* 记录空格是否接在汉字后 */
-                        *q ++ = *p; /* 复制非空格字符 */
-                    }
-                }
-                *q = 0; /* Do not forget this! */
-                strcpy(buf, bufX);
-            }
-
-            while (!feof(fpX))
-            {
-                fgets(bufX, 8192, fpX); /* Reading a forbidden keyword (line) */
-                if (feof(fpX))
-                {
-                    rewind(fpX);
-                    break;
-                }
-                else
-                {
-                    for (p = bufX; ' ' == *p; p ++)
-                        ;
-                    if (bufX != p) strcpy(bufX, p); /* 忽略前导空格 */
-                    for (p = bufX; *p; p ++)
-                    {
-                        if (*p < 128) *p = toupper(*p); /* 忽略大小写 */
-                        if ('\n' == *p) *p = 0; /* 去除换行字符 */
-                        if ('\r' == *p) *p = 0; /* 去除回车字符 */
-                    }
-                    if (0 == bufX[0]) continue; /* 忽略空行 */
-                    else RemoveAppendedSpace(bufX); /* 忽略后带空格 */
-
-                    if (p = strstr(buf, bufX))
-                    {
-                        if ((bufX[0] > 127) && (bufX[1] > 127) && (0 == bufX[2]))
-                        { /* 单个汉字作为过滤词语必须校验其位置的合理性 */
-                            int ich;
-                            for (ich = 0, -- p; p >= buf; p --)
-                            { /* 统计该字前面的汉字字节数目 */
-                                if (*p < 128) break; else ich ++;
-                            }
-                            if (ich % 2) continue;
-                            /* 必须是偶数字节才合理，否则会错误过滤 */
-                        }
-
-                        fclose(fp);
-                        fclose(fpX);
-                        sprintf(buf, "%s含“%s”的文章被过滤", boardname, bufX);
-                        securityreport(buf,NULL);
-
-                        p = strrchr(checkedX, '/');
-
-                        if (p ++)
-                        {
-                            struct fileheader FilterFile;
-
-                            FilterFile.accessed[0] = FILE_MARKED;
-                            strcpy(FilterFile.owner, currentuser->userid);
-                            strcpy(FilterFile.title, titleX);
-                            sprintf(FilterFile.filename, "%s.%s", p, boardname);
-                            sprintf(buf, "/bin/cp -f %s boards/Filter/%s", checkedX, FilterFile.filename);
-                            system(buf);
-                            sprintf(buf, "boards/Filter/.DIR");
-                            append_record(buf, &FilterFile, sizeof(FilterFile));
-                        }
-
-                        return YEA; /* An invalid word was found, post is invalid */
-                    } /* End if (strstr(buf, bufX)) */
-                } /* End if (feof(fpX)) else ... */
-            } /* End while (!feof(fpX)) */
-        } /* End while (!feof(fp)) */
-
-        fclose(fp);
-        fclose(fpX);
-    } /* End for (i = 0; i < 2; i ++) */
-
-    return NA; /* Not return YEA (no invalid word at all) */
-}
-
-PassFilter(ent,fileinfo,direct)  /* 放行一篇文章 Leeward 98.04.06 */
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
-    char *p, buf[1024];
-    struct fileheader FilterFile;
-
-    p = strrchr(fileinfo->filename, '.');
-    if(NULL == p ++) return DONOTHING;
-    else if (!strcmp(p, "A")) return DONOTHING;
-
-    if ((fileinfo->accessed[0] & FILE_FORWARDED))
-    {
-        clear();
-        move(2,0);
-        prints("本文已放行过了\n");
-        pressreturn();
-
-        return del_post(ent,fileinfo,direct);
-    }
-
-    FilterFile.accessed[0] = 0;
-    strcpy(FilterFile.owner, fileinfo->owner);
-    strcpy(FilterFile.title, fileinfo->title);
-    strcpy(FilterFile.filename, fileinfo->filename);
-
-    sprintf(buf, "/bin/cp -f boards/%s/%s boards/%s/%s",
-            currboard, fileinfo->filename, p, FilterFile.filename);
-    system(buf);
-
-    sprintf(buf, "boards/%s/.DIR", p);
-    append_record(buf, &FilterFile, sizeof(FilterFile));
-
-    fileinfo->accessed[0] |= FILE_FORWARDED;
-    fileinfo->accessed[0] &= ~FILE_MARKED;
-    substitute_record(direct, fileinfo, sizeof(*fileinfo),ent) ;
-    sprintf(buf,"passed %s's “%s” on %s", FilterFile.owner, FilterFile.title, currboard);
-    report(buf);
-
-    clear();
-    move(2,0);
-    prints("'%s' 已放行到 %s 板 \n", fileinfo->title, p);
-    pressreturn();
-
-    return del_post(ent,fileinfo,direct);
-}
-
-#endif
 
 int
 check_readonly(char *checked) /* Leeward 98.03.28 */
@@ -399,22 +197,6 @@ char *direct;
     return FULLUPDATE;
 }
 
-XArticle(ent,fileinfo,direct)  /* 关于文章的特殊功能 Leeward 98.05.18 */
-int ent;
-struct fileheader *fileinfo;
-char *direct;
-{
-#ifndef LEEWARD_X_FILTER
-    if (!strcmp(currboard, "Filter"))
-        return PassFilter(ent,fileinfo,direct);
-    else
-#endif
-    if (digestmode==4||digestmode==5||!strcmp(currboard, "deleted") || !strcmp(currboard, "xdeleted") || !strcmp(currboard, "junk") )
-        return UndeleteArticle(ent,fileinfo,direct);
-    else
-        return DONOTHING;
-}
-
 int
 check_stuffmode()
 {
@@ -458,68 +240,6 @@ shownotepad()   /* 显示 notepad */
     clear();
     return;
 }
-
-/* 时间转换成 中文 */
-/*
-char *
-chtime(clock) 
-time_t *clock;
-{
-    char chinese[STRLEN],week[10],mont[10],date[4],time[10],year[5];
-    char *ptr = ctime(clock),*seg,*returndate;
-
-    seg=strtok(ptr," \n\0");
-    if(!strcmp(seg,"Sun"))
-        strcpy(week,"星期天");
-    if(!strcmp(seg,"Mon"))
-        strcpy(week,"星期一");
-    if(!strcmp(seg,"Tue"))
-        strcpy(week,"星期二");
-    if(!strcmp(seg,"Wed"))
-        strcpy(week,"星期三");
-    if(!strcmp(seg,"Thu"))
-        strcpy(week,"星期四");
-    if(!strcmp(seg,"Fri"))
-        strcpy(week,"星期五");
-    if(!strcmp(seg,"Sat"))
-        strcpy(week,"星期六");
-
-    seg=strtok(NULL," \n\0");
-    if(!strcmp(seg,"Jan"))
-        strcpy(mont," 1月");
-    if(!strcmp(seg,"Feb"))
-        strcpy(mont," 2月");
-    if(!strcmp(seg,"Mar"))
-        strcpy(mont," 3月");
-    if(!strcmp(seg,"Apr"))
-        strcpy(mont," 4月");
-    if(!strcmp(seg,"May"))
-        strcpy(mont," 5月");
-    if(!strcmp(seg,"Jun"))
-        strcpy(mont," 6月");
-    if(!strcmp(seg,"Jul"))
-        strcpy(mont," 7月");
-    if(!strcmp(seg,"Aug"))
-        strcpy(mont," 8月");
-    if(!strcmp(seg,"Sep"))
-        strcpy(mont," 9月");
-    if(!strcmp(seg,"Oct"))
-        strcpy(mont,"10月");
-    if(!strcmp(seg,"Nov"))
-        strcpy(mont,"11月");
-    if(!strcmp(seg,"Dec"))
-        strcpy(mont,"12月");
-    strcpy(date,strtok(NULL," \n\0"));
-    strcpy(time,strtok(NULL," \n\0"));
-    strcpy(year,strtok(NULL," \n\0"));
-
-    sprintf(chinese,"  %4.4d年%4.4s%2.2s日 %s %s",atoi(year),mont,date,week,time);
-    strncpy(ptr,chinese,strlen(chinese));
-    return (ptr);
-
-}
-*/
-
 
 void
 printutitle()  /* 屏幕显示 用户列表 title */
@@ -950,20 +670,6 @@ readdoent(char* buf,int num,struct fileheader* ent)  /* 在文章列表中 显示 一篇文
 }
 
 int
-cpyfilename(fhdr)  /* 改变删除后的文件名 */
-struct fileheader *fhdr ;
-{
-    char        buf[ STRLEN ];
-
-    sprintf( buf, "-%s", fhdr->owner );
-    strncpy( fhdr->owner, buf, IDLEN );
-    sprintf( buf, "<< 文章已被 %s 所删除 >>", currentuser->userid );
-    strncpy( fhdr->title, buf, STRLEN );
-    fhdr->filename[ STRLEN - 1 ] = 'L';
-    fhdr->filename[ STRLEN - 2 ] = 'L';
-    return 0;
-}
-int
 add_author_friend(ent,fileinfo,direct)
 int ent ;
 struct fileheader *fileinfo ;
@@ -1010,26 +716,6 @@ char *direct ;
     strcpy(quote_title,fileinfo->title);
     quote_file[119] = fileinfo->filename[STRLEN-2];
     strcpy( quote_user, fileinfo->owner );
-    /****** 如果未读，则计数加1，回写.DIR文件 ******/
-    /*if (HAS_PERM(currentuser,PERM_POST) && brc_unread(fileinfo->filename))
-      {
-        fileinfo->ldReadCount++;
-        substitute_record(direct, fileinfo, sizeof(*fileinfo), ent); 
-       }*/
-    /****** Luzi add in 99/01/13 ******************/
-
-    /*Haohmaru.99.11.27.以下代码用于统计文章总阅读次数
-    sprintf(counterfile,"/home0/bbs/Haohmaru/counter/%s.counter",currentuser->userid);
-    if( (fd = open(counterfile,O_WRONLY|O_CREAT,0664)) == -1 )
-    	return(-1);
-    if( lseek(fd,sizeof(char),SEEK_END) == -1 )
-{
-    	close(fd);
-    	return(-1);
-}
-    ch = 'K';
-    write(fd,ch,sizeof(char));
-    close(fd);*/
 
 #ifndef NOREPLY
     ch = ansimore(genbuf,NA) ;  /* 显示文章内容 */
@@ -1795,14 +1481,6 @@ int mode;
         strcpy(buf4,quote_title);
     strncpy(save_title,buf4,STRLEN) ;
 
-#ifndef LEEWARD_X_FILTER
-    if(mode != 1)
-    { /* Leeward 98.05.15: mode 为 1 是系统自动发信(deliver)，不可过滤 */
-        if (YEA == check_invalid_post(quote_file, currboard, save_title))
-            return -1; /* Leeward 98.03.29, 04.05 */
-    }
-#endif
-
     setbfile( filepath, currboard, "");
 
     if ((aborted=get_postfilename(postfile.filename,filepath))!=0) {
@@ -2157,11 +1835,6 @@ post_article()                         /*用户 POST 文章 */
     }
     Anony=0;/*Inital For ShowOut Signature*/
 
-#ifndef LEEWARD_X_FILTER
-    if (YEA == check_invalid_post(filepath, currboard, post_file.title)) /* Leeward 98.03.29, 04.05 */
-        aborted = - 1;
-#endif
-
     if (aborted  == -1) { /* 取消POST */
         unlink( filepath );
         clear() ;
@@ -2252,22 +1925,10 @@ char *title;
     fclose(fp);
     fclose(out);
 
-#ifndef LEEWARD_X_FILTER
-    if (YEA == check_invalid_post(outname, currboard, title)) /* Leeward 98.03.29, 04.05 */
-    {
-        unlink(outname);
-        return 0;
-    }
-    else
-    {
-#endif
         Rename(outname,fname);
         pressanykey();
    
         return 1;
-#ifndef LEEWARD_X_FILTER
-    }
-#endif
 }
 
 /*ARGSUSED*/
@@ -2331,20 +1992,7 @@ char *direct ;
     if( vedit_post(genbuf,NA)!=-1)
     {
         if (ADD_EDITMARK)
-#ifndef LEEWARD_X_FILTER
-        { /* Leeward 98.03.29, 04.06 */
-            if (!add_edit_mark(genbuf,1,/*NULL*/fileinfo->title))
-            { /* 进入这里多半是 add_edit_mark 中 check_invalid_post 为 YEA */
-                sprintf(genbuf, "/bin/cp -f tmp/%d.editpost.bak %s/%s",
-                        getpid(), buf, fileinfo->filename);
-                system(genbuf);
-            }
-            sprintf(genbuf, "tmp/%d.editpost.bak", getpid());
-            unlink(genbuf);
-        }
-#else
-add_edit_mark(genbuf,1,/*NULL*/fileinfo->title);
-#endif
+			add_edit_mark(genbuf,1,/*NULL*/fileinfo->title);
     }
     bbslog("1user","edited post '%s' on %s", fileinfo->title, currboard);
     return FULLUPDATE ;
@@ -2406,13 +2054,7 @@ char *direct;
             *t = '\0' ;
         sprintf(genbuf,"%s/%s",tmp,fileinfo->filename) ;
 
-#ifndef LEEWARD_X_FILTER
-        if (add_edit_mark(genbuf,2,buf)) /* Leeward 98.03.29 */
-        {
-#else
         add_edit_mark(genbuf,2,buf);
-#endif
-
             /* Leeward 99.07.12 added below to fix a big bug */
             setbdir(digestmode,buf, currboard);
             if ((fd = open(buf,O_RDONLY,0)) != -1) {
@@ -2435,12 +2077,6 @@ char *direct;
 
             substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
 
-#ifndef LEEWARD_X_FILTER
-
-        }
-        else /* 进入这里多半是 add_edit_mark 中 check_invalid_post 为 YEA */
-            strcpy(fileinfo->title, tmp2);
-#endif
     }
     return PARTUPDATE;
 }
@@ -3087,9 +2723,6 @@ struct one_key  read_comms[] = { /*阅读状态，键定义 */
                                    ']',        thread_down,
                                    '[',        thread_up,
                                    Ctrl('D'),  deny_user,
-#ifndef LEEWARD_X_FILTER
-                                   Ctrl('K'),  BoardFilter, /* Leeward 98.04.02 */
-#endif
                                    Ctrl('A'),  show_author,
                                    Ctrl('O'),  add_author_friend,
                                    Ctrl('Q'),  show_authorinfo,/*Haohmaru.98.12.05*/
@@ -3576,39 +3209,6 @@ Welcome()               /* 显示欢迎画面 Welcome */
     clear() ;
     return 0 ;
 }
-
-/*int
-EditWelcome()
-{
-    int aborted;
-    char ans[8];
-    move(3,0);
-    
-    modify_user_mode( EDITWELC );
-    clrtoeol();
-    clrtobot();
-    getdata(3,0,"(E)编辑 or (D)删除 Welcome? [E]: ",ans,7,DOECHO,NULL,YEA);
-    if (ans[0] == 'D' || ans[0] == 'd') {
-        unlink("Welcome");
-        move(5,0);
-        prints("已删除!\n");
-        pressreturn();
-        clear();
-        report( "del welcome" ) ;
-        return 0;
-    }
-    aborted = vedit("Welcome", NA);             
-    clear() ;
-    if (aborted)
-        prints("取消编辑.\n");
-    else {
-        report("edit Welcome") ;
-        prints("修改完成.\n") ;
-    }
-    pressreturn() ;
-    return 0 ;
-}
-*/
 
 int
 cmpbnames( bname, brec)

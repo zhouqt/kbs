@@ -1,10 +1,10 @@
 #include "bbs.h"
 
-char seccode[SECNUM][5]={
+const char seccode[SECNUM][5]={
 	"0", "1", "3", "4", "5", "6", "7", "8", "9"
 };
 
-char secname[SECNUM][2][20]={
+const char secname[SECNUM][2][20]={
 	"BBS 系统", "[站内]",
 	"清华大学", "[本校]",
 	"电脑技术", "[电脑/系统]",
