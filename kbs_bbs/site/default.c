@@ -346,32 +346,14 @@ char *ModeType(mode)
 
 #endif
 
-struct count_arg {
-    int www_count;
-    int telnet_count;
-};
-
-int countuser(struct user_info* uinfo,struct count_arg* arg,int pos)
-{
-    if (uinfo->mode==WEBEXPLORE)
-        arg->www_count++;
-    else
-        arg->telnet_count++;
-    return COUNT;
-}
-
-int count_loginnum(int usernum){
-
-	struct count_arg arg;
-
-	return apply_utmpuid((APPLY_UTMP_FUNC)countuser, usernum, &arg);
-}
+#ifdef USE_DEFAULT_MULTILOGIN_CHECK
 
 int multilogin_user(struct userec *user, int usernum,int mode)
 {
     return 0;
 }
 
+#endif
 
 #ifdef USE_DEFAULT_USER_LIFE
 #define LIFE_DAY_USER		120
