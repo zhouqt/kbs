@@ -413,7 +413,7 @@ int main(int argc, char **argv)
     if (ptime.tm_hour == 23) {
         char fname[STRLEN];
 
-        sprintf(fname, "%d年%2d月%2d日十大热门统计", ptime.tm_year + 1900, ptime.tm_mon + 1, ptime.tm_mday);
+        sprintf(fname, "%d年%2d月%2d日十大热门话题", ptime.tm_year + 1900, ptime.tm_mon + 1, ptime.tm_mday);
         post_file(NULL, "", "etc/posts/day", "BBSLists", fname, 0, 1);
         if (ptime.tm_wday == 6) {
             sprintf(fname, "%d年%2d月%2d日本周五十大热门话题", ptime.tm_year + 1900, ptime.tm_mon + 1, ptime.tm_mday);
