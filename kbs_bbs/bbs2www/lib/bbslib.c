@@ -977,37 +977,6 @@ int send_msg(char *srcid, int srcutmp, char *destid, int destutmp, char *msg)
     if (strcasecmp(uin->userid, destid))
         return -1;
     strcpy(MsgDesUid, uin->userid);
-    if (uin != NULL && uin->mode == WEBEXPLORE) {
-		struct msghead head, head2;
-
-		head.time = time(0);
-		head.sent = 0; /* save to receiver's msg index */
-		head.mode = 2; /* normal */
-		strncpy(head.id, srcid, IDLEN);
-		head.frompid = getuinfopid();
-		head.topid = uin->pid;
-		memcpy(&head2, &head, sizeof(struct msghead));
-		head2.sent = 1; /* save to sender's msg index */
-		strncpy(head2.id, uin->userid, IDLEN);
-        if (destutmp == 0)
-            destutmp = get_utmpent_num(uin);
-        if (send_webmsg(destutmp, uin->userid, srcutmp, srcid, head.time, msg) < 0)
-            return -1;
-        if (save_msgtext(uin->userid, &head, msg) < 0)
-            return -2;
-        if (strcmp(srcid, uin->userid)) {
-            if (save_msgtext(srcid, &head2, msg) < 0)
-                return -2;
-        }
-		/*
-        if (store_msgfile(uin->userid, msgbuf) < 0)
-            return -2;
-        if (strcmp(srcid, uin->userid)) {
-            if (store_msgfile(srcid, msgbak) < 0)
-                return -2;
-        }*/
-        return 1;
-    }
     return sendmsgfunc(uin, msg, 2);
 }
 
@@ -2529,12 +2498,7 @@ static void generate_font_style(unsigned int *style, unsigned int *ansi_val,
 			STYLE_SET(*style, FONT_STYLE_BLINK);
 		else if (ansi_val[i] >= 30 && ansi_val[i] <= 37)
 		{
-			if (ansi_val[i] == 30)
-				color = 7;
-			else if (ansi_val[i] == 37)
-				color = 0;
-			else
-				color = ansi_val[i] - 30;
+			color = ansi_val[i] - 30;
 			STYLE_SET_FG(*style, color);
 		}
 		else if (ansi_val[i] >= 40 && ansi_val[i] <= 47)
