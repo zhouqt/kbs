@@ -7,6 +7,52 @@
 	$needlogin=0;
 	require("pcfuncs.php");
 	
+	function pc_add_new_comment($pc,$nid,$alert)
+	{
+?>
+<center>
+<form name="postform" action="pccom.php?act=add&nid=<?php echo $nid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入评论主题!');return false;}">
+<table cellspacing="0" cellpadding="5" width="500" border="0" class="t1">
+<tr>
+	<td class="t5"><strong>发表评论 </strong>
+	<?php if($alert){ ?>
+	<font class=f4>
+	注意：仅有本站登录用户才能发表评论[<a href="/">点击登录</a>]。
+	</font>
+	<?php } ?>
+	</td>
+</tr>
+<tr>
+	<td class="t8">
+	主题
+	<input type="text" name="subject" maxlength="200" size="60" class="f1">
+	</td>
+</tr>
+<tr>
+	<td class="t13">心情符号</td>
+</tr>
+<tr>
+	<td class="t5"><?php @require("emote.html"); ?></td>
+</tr>
+<tr>
+	<td class="t11">内容
+	<input type="hidden" name="htmltag" value=0>
+	</td>
+</tr>
+<tr>
+	<td class="t8"><textarea name="blogbody" class="f1" cols="60" rows="10" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical"></textarea></td>
+</tr>
+<tr>
+	<td class="t5">
+	<input type="submit" value="发表评论" class="f1">
+	<input type="button" value="返回上页" class="f1" onclick="history.go(-1)">
+	<input type="button" value="使用HTML编辑器" class="f1" onclick="window.location.href='pccom.php?act=pst&nid=<?php echo $nid; ?>';">
+</tr>
+</table>
+</form></center>
+<?php		
+	}
+	
 	function pc_node_counter($link,$nid)
 	{
 		$query = "UPDATE nodes SET visitcount = visitcount + 1 , changed  = changed  WHERE `nid` = '".$nid."' ;";
@@ -265,6 +311,14 @@
 			display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur,$rows[trackback],$rows[subject]); 
 	?>
 	&nbsp;</td>
+</tr>
+<tr>
+	<td>
+	<?php 
+		$alert = ($loginok != 1 || !strcmp($currentuser["userid"],"guest"))?TRUE:FALSE;
+		pc_add_new_comment($pc,$nid,$alert); 
+	?>
+	</td>
 </tr>
 <tr>
 	<td align="center" class="tt3" valign="middle" height="25">

@@ -4,19 +4,22 @@ var thisYear ;
 var thisMonth ;
 var thisDay ;
 
-function blogCalendarLink(thisYear,thisMonth,thisDay)
+function blogCalendarLink(thisYear,thisMonth,thisDay,isToday)
 {
+	var styleClass = isToday?"bc3":"bc2";
+	var noLinkStyleClass = isToday?"bc3":"f1";
 	var thisYearStr = new String(thisYear);
 	var thisMonthStr = new String(thisMonth+1);
 	var thisDayStr = new String(thisDay);
 	if (thisMonthStr.length < 2) thisMonthStr = "0" + thisMonthStr ;
 	if (thisDayStr.length < 2) thisDayStr = "0" + thisDayStr ;
 	
+	
 	timeStr = thisYearStr + thisMonthStr + thisDayStr ;
 	if( blogCalendarArray[timeStr] )
-		return "<font class=f4><a href='" + blogNodeUrl + "&nid=" + blogCalendarArray[timeStr] + "'>" + thisDay + "</a></font>" ;
+		return "<font style=\"background-color:#999999\"><a href='" + blogNodeUrl + "&nid=" + blogCalendarArray[timeStr] + "' class = '" + styleClass + "'>" + thisDay + "</a></font>" ;
 	else
-		return thisDay;
+		return "<font class = '" + noLinkStyleClass + "' >" + thisDay + "</font>";
 }
 
 var theYear; 
@@ -87,9 +90,10 @@ function blogCalendar(thisYear,thisMonth,thisDay)
 			cStr += "<td class=" + cellClass + ">&nbsp;</td>";	
 		else
 		{
-			linkStr = blogCalendarLink(thisYear,thisMonth,( i - firstDay + 1 ));
 			if( ( i - firstDay + 1 ) == theDay && thisYear == theYear && thisMonth == theMonth )
-				linkStr = "<font class=f2>" + linkStr + "</font>";
+				linkStr = blogCalendarLink(thisYear,thisMonth,( i - firstDay + 1 ),true);
+			else
+				linkStr = blogCalendarLink(thisYear,thisMonth,( i - firstDay + 1 ),false);
 			cStr += "<td class=" + cellClass + ">" + linkStr + "</td>";
 		}
 		if( i % 7 == 6 )

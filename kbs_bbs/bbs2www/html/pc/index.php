@@ -119,18 +119,18 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 <?php
 		for($i=0;$i<min(4,count($sec));$i++)
 		{
-			echo "<td class=t11><a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=".$i."\" class=\"f1\">:".$sec[$i].":</a></td>\n";
+			echo "<td class=t11><a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=".$i."\" class=\"f1\">".$sec[$i]."</a></td>\n";
 		}
 ?>
 			<td class=t11>
-			<a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>" class="f1">:Blog论坛:</a>
+			<a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>" class="f1">Blog论坛</a>
 			</td>
 			<td class=t11>
-			<a href="pcsearch2.php" class="f1">:Blog搜索:</a>
+			<a href="pcsearch2.php" class="f1">Blog搜索</a>
 			</td><td class=t11>
-			<a href="pc.php" class="f1">:Blog首页:</a>
+			<a href="pc.php" class="f1">Blog首页</a>
 			</td><td class=t11>
-			<a href="/<?php echo ($loginok==1 && strcmp($currentuser["userid"],"guest"))?"frames.html":"guest-frames.html"; ?>" class="f1">:<?php echo BBS_FULL_NAME; ?>:</a>
+			<a href="/<?php echo ($loginok==1 && strcmp($currentuser["userid"],"guest"))?"frames.html":"guest-frames.html"; ?>" class="f1"><?php echo BBS_FULL_NAME; ?></a>
 			</td>
 		</tr>
 	</table>
@@ -164,7 +164,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 			<form action="pcnsearch.php" method="get" onsubmit="if(this.keyword.value==''){alert('请输入关键字');return false;}">
 			<input type="hidden" name="area" value="<?php echo $pc["USER"]; ?>">
 			<tr><td align="left" class="t3">
-			<strong>:: Blog搜索 ::</strong>
+			<strong>Blog搜索</strong>
 			</td></tr>
 			<tr><td class="t4">
 			<input type="text" name="keyword" id="keyword" class="f1">
@@ -172,7 +172,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 			</td></tr>
 			</form>
 			<tr><td align="left" class="t3">
-			<strong>:: 登录 ::</strong>
+			<strong>登录</strong>
 			</td></tr>
 			<?php
 				if($loginok==1 && strcmp($currentuser["userid"],"guest"))
@@ -263,11 +263,18 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	function display_blog_out_rss($pc)
 	{
 ?>
-<a href="rss.php?userid=<?php echo $pc["USER"]; ?>" target="_blank">
-<img src="images/xml.gif" align="absmiddle" alt="XML" border="0">
-</a>
+<a href="rss.php?userid=<?php echo $pc["USER"]; ?>"><img src="images/xml.gif" align="absmiddle" alt="XML" border="0"></a>
 <?php
 	}
+
+	function display_klip_out($pc)
+	{
+?>
+<a href="klip.php?id=<?php echo $pc["USER"]; ?>"><img src="images/KlipFolio.gif" align="absmiddle" alt="Klip Folio" border="0"></a>
+<?php
+	}
+
+
 	
 	function display_trackback_links($link,$pc)
 	{
@@ -325,16 +332,14 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	<tr>
 		<td width="25%" align="middle" valign="top" style="border-width: 1px;border-right-style: dashed;border-color: #336699;">
 			<table width="98%" cellpadding=5 cellspacing=0 border=0>
-				<tr><td height=10> </td></tr>
 				<tr><td class=t17>
-				::日历::
+				&gt;&gt; 日历
 				</td></tr>
 				<tr>
 					<td align=middle class=t14><?php display_blog_calendar(); ?></td>
 				</tr>
-				<tr><td height=10> </td></tr>
 				<tr><td class=t17>
-				::栏目分类::
+				&gt;&gt; 栏目分类
 				</td></tr>
 				<tr>
 					<td align=middle class=t14>
@@ -343,9 +348,8 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 					</td></tr></table>
 					</td>
 				</tr>
-				<tr><td height=10> </td></tr>
 				<tr><td class=t17>
-				::最近更新文章::
+				&gt;&gt; 最近更新文章
 				</td></tr>
 				<tr>
 					<td align=middle class=t14>
@@ -354,9 +358,8 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 					</td></tr></table>
 					</td>
 				</tr>
-				<tr><td height=10> </td></tr>
 				<tr><td class=t17>
-				::最近收到的评论::
+				&gt;&gt; 最近收到的评论
 				</td></tr>
 				<tr>
 					<td align=middle class=t14>
@@ -365,38 +368,34 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 					</td></tr></table>
 					</td>
 				</tr>
-				<tr><td height=10> </td></tr>
 				<tr><td>
 				<?php display_blog_tools($pc,$pur); ?>
 				</tr></tr>
-				<tr><td height=10> </td></tr>
 				<tr><td class=t17>
-				::友情链接::
+				&gt;&gt; 友情链接
 				</td></tr>
 				<tr>
 					<td class=t14><font class=f1>
 					<?php display_blog_friend_links($pc,TRUE); ?>
 					</font></td>
 				</tr>
-				<tr><td height=10> </td></tr>
 				<tr><td class=t17>
-				::最近收到的引用通告::
+				&gt;&gt; 最近收到的引用通告
 				</td></tr>
 				<tr>
 					<td class=t14><font class=f1>
 					<?php display_trackback_links($link,$pc); ?>
 					</font></td>
 				</tr>
-				<tr><td height=10> </td></tr>
 				<tr><td class=t17>
-				::访问人数::
+				&gt;&gt; 访问人数
 				</td></tr>
 				<tr><td style="text-align:center;color:#FF6600;font-weight:bolder;background-color:#F6F6F6;font-family: Verdana, Arial, Helvetica, sans-serif;font-size: 14px;font-style: italic;line-height: 22px;">
 				<?php echo $pc["VISIT"]; ?>
 				</td></tr>
-				<tr><td height=10> </td></tr>
 				<tr><td class=t17>
 				<?php display_blog_out_rss($pc); ?>
+				<?php display_klip_out($pc); ?>
 				</td></tr>
 			</table>
 		</td>
@@ -507,6 +506,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	<?php display_blog_friend_links($pc); ?>
 	<br /><br />
 	<?php display_blog_out_rss($pc); ?>
+	<?php display_klip_out($pc); ?>
 		</td></tr></table>
 </td></tr>
 <tr><td class="t3" colspan="2">
