@@ -1,5 +1,8 @@
 #include "bbs.h"
 
+extern char *gb2big (char*,int*,int);
+extern char    *sysconf_str();
+
 #include <libesmtp.h>
 
 struct mail_option{
@@ -13,11 +16,11 @@ bbs_readmailfile (char **buf, int *len, void *arg)
 {
 #define MAILBUFLEN	8192
     struct mail_option* pmo=(struct mail_option*)arg;
+    char* retbuf;
     
     if (*buf == NULL)
     *buf = malloc (MAILBUFLEN);
     
-    char* retbuf;
     
     if (len == NULL)
     {
@@ -25,7 +28,7 @@ bbs_readmailfile (char **buf, int *len, void *arg)
       return NULL;
     }
 
-    *len = fread(*buf, 1, BUFLEN, pmo->fin);
+    *len = fread(*buf, 1, MAILBUFLEN, pmo->fin);
 
     if (pmo->isbig5) {
         retbuf = gb2big(*buf,len,1);
@@ -35,6 +38,8 @@ bbs_readmailfile (char **buf, int *len, void *arg)
 
     if (pmo->noansi) {
         char *p1,*p2;
+	int esc;
+
         p1=retbuf;
         p2=retbuf;
         esc=0;
@@ -96,6 +101,10 @@ int isuu, isbig5, noansi;
     smtp_message_t message;
     smtp_recipient_t recipient;
     const smtp_status_t *status;
+    enum notify_flags notify = Notify_NOTSET;
+    char* server;
+
+    char newbuf[256];
     
     if ( isuu  )
     {
@@ -109,25 +118,27 @@ int isuu, isbig5, noansi;
     session = smtp_create_session ();
     message = smtp_add_message (session);
     
-    smtp_set_server (session, "166.111.8.18:25");
+    server = sysconf_str( "MAILSERVER" );
+    if( server == NULL )  server = "166.111.8.18:25";
+
+    smtp_set_server (session, server);
 
     sprintf( newbuf, "%s.bbs@%s", currentuser.userid, email_domain() );
-    smtp_set_reverse_path (message, from);
+    smtp_set_reverse_path (message, newbuf);
     smtp_set_header (message, "Message-Id", NULL);
     
     smtp_set_header (message, "Subject", title);
     smtp_set_header_option (message, "Subject", Hdr_OVERRIDE, 1);
 
-/*    
     smtp_set_header (message,"Content-Transfer-Encoding", "8bit");
     if (isbig5)
-        smtp_set_header (message,"Content-Type","text/plain;\n\tcharset=\"gb2312\"");
+        smtp_set_header (message,"Content-Type","text/plain;\n\tcharset=\"big5\"");
     else
         smtp_set_header (message,"Content-Type","text/plain;\n\tcharset=\"gb2312\"");
-*/
+
     if ((fin = fopen (isuu?uname:fname, "r")) == NULL)
     {
-      prints("can't open %s: %s\n", file, strerror (errno));
+      prints("can't open %s: %s\n", isuu?uname:fname, strerror (errno));
       return -1;
     }
 
@@ -136,7 +147,7 @@ int isuu, isbig5, noansi;
     mo.fin=fin;
     smtp_set_messagecb (message, bbs_readmailfile, (void*)&mo);
 
-    recipient = smtp_add_recipient (message, argv[optind++]);
+    recipient = smtp_add_recipient (message, receiver);
     if (notify != Notify_NOTSET)
         smtp_dsn_set_notify (recipient, notify);
     /* Initiate a connection to the SMTP server and transfer the
@@ -149,7 +160,7 @@ int isuu, isbig5, noansi;
     /* Free resources consumed by the program.
     */
     smtp_destroy_session (session);
-    fclose (fp);
+    fclose (fin);
 /*
     char* buf,*p;
     char newbuf[256];
