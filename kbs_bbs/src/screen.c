@@ -25,7 +25,8 @@
 #include "screen.h"
 #include "edit.h"
 #include <sys/param.h>
-#include <varargs.h>
+/*#include <varargs.h>*/
+#include <stdarg.h>
 
 extern char clearbuf[] ;
 extern char cleolbuf[] ;
@@ -573,8 +574,7 @@ register char *str ;
 int dec[] = {1000000000,100000000,10000000,1000000,100000,10000,1000,100,10,1};
 
 void
-prints(va_alist)
-va_dcl
+prints(char *format, ...)
 {
     va_list ap ;
     register char *fmt ;
@@ -582,9 +582,8 @@ va_dcl
     register int i, count, hd, indx ;
     char* begin;
 
-    va_start(ap) ;
-    fmt = va_arg(ap, char *) ;
-    begin = fmt;
+    va_start(ap, format);
+    begin = fmt = format;
     while(*fmt != '\0')
     {
         if(*fmt==''&&!iscolor){
@@ -695,7 +694,8 @@ va_dcl
         fmt++ ;
     }
     if (*begin) outs(begin);
-    endprint:
+endprint:
+	va_end(ap);
     return ;
 }
 
