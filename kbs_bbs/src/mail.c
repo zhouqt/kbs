@@ -743,7 +743,7 @@ int del_mail(int ent, struct fileheader *fh, char *direct)
         if (strstr(direct, ".DELETED")
             || HAS_MAILBOX_PROP(&uinfo, MBP_FORCEDELETEMAIL)) {
             if (fh->filename[0]!=0)
-            my_unlink(genbuf);
+            unlink(genbuf);
 	}
         else {
             strcpy(buf, direct);
