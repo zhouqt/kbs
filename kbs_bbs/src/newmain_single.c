@@ -67,7 +67,6 @@ int RUNSH = false;
 int ERROR_READ_SYSTEM_FILE = false;
 int talkrequest = false;
 int ntalkrequest = false;
-int enter_uflags;
 time_t lastnote;
 
 struct user_info uinfo;
@@ -142,8 +141,6 @@ void Net_Sleep(int times)
 
 void u_enter()
 {
-
-    enter_uflags = currentuser->flags[0];
     memset(&uinfo, 0, sizeof(uinfo));
     uinfo.active = true;
     uinfo.pid = getpid();
