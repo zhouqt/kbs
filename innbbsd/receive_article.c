@@ -685,8 +685,9 @@ char   *msgid;
 
 int cmp_title(char* title,struct fileheader* fh1)
 {
-    char* p1,*p2;
-    if (!strncmp(fh1->title,"Re:",3)) p1=fh1->title+4;
+    char* p1;
+    if (!strncasecmp(title,"Re:",3)) p1=fh1->title+4;
+    else if (!strncasecmp(title,"»Ø¸´:",5)) p1=fh1->title+6;
     else p1=fh1->title;
     return (!strncmp(p1,title,STRLEN));
 }
