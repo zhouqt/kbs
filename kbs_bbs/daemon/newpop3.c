@@ -245,7 +245,7 @@ static int readstr(int sock,char *s,int size)
      if (ret <=0) return retlen;
      retlen ++;
      *s++ = c;
-     if (c == '\n' || retlen == size) return retlen;
+     if (c == '\n' || retlen == size-1) { *s = '\0'; return retlen;}
 	}while (1);
 }
 static void
@@ -257,7 +257,7 @@ char *str;
     (void)bzero(sendbuf, sizeof(sendbuf));
     (void)sprintf(sendbuf, "%s\r\n", str);
 #ifdef USE_SSL    
-    if (use_ssl) SSL_write(ssl,sendbuf,strlen(sendbuf);
+    if (use_ssl) SSL_write(ssl,sendbuf,strlen(sendbuf));
     else 
 #endif     
     (void)write(sock, sendbuf, strlen(sendbuf));
@@ -578,7 +578,8 @@ int main( int argc, char **argv)
 #ifdef USE_SSL
     switch (fork()) {
     	case 0:
-    	    port_num = 995;
+	    init_ssl();
+    	    portnum = POP3SPORT;
     	    use_ssl = 1;
     	    break;
     	case -1: 
@@ -666,7 +667,7 @@ int main( int argc, char **argv)
             signal(SIGALRM, pop3_timeout);
             alarm(POP3_TIMEOUT);
 
-            while (fgets(inbuf, sizeof(inbuf), cfp)!=0) {
+            while (readstr(sock,inbuf, sizeof(inbuf))!=0) {
 
                 idletime = 0;
 
@@ -1192,7 +1193,7 @@ void Quit()
         if (markdel) do_delete();
     }
     log_usies("EXIT");
-    sprintf(genbuf, "+OK SMTH BBS Pop3 server at %s signing off.", strchr(BBSNAME, '@') + 1);
+    sprintf(genbuf, "+OK SMTH BBS POP3/POP3S server at %s signing off.", strchr(BBSNAME, '@') + 1);
     outs(genbuf);
     fclose(cfp);
     close(sock);
