@@ -109,122 +109,6 @@ $filename_trans = array(" " => "_",
 	);
 require("site.php");
 
-define("ENCODESTRING","0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-function decodesessionchar($ch)
-{
-	return strpos(ENCODESTRING,$ch);
-}
-
-$loginok=0;
-
-@$fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
-  if ($fullfromhost=="") {
-	  @$fullfromhost=$_SERVER["REMOTE_ADDR"];
-	  $fromhost=$fullfromhost;
-  }
-  else {
-	$str = strrchr($fullfromhost, ",");
-	if ($str!=FALSE)
-		$fromhost=substr($str,1);
-		else
-		$fromhost=$fullfromhost;
-  }
-
-//sometimes,fromhost has strang space
-bbs_setfromhost(trim($fromhost),trim($fullfromhost));
-
-$compat_telnet=0;
-@$sessionid = $_GET["sid"];
-
-//TODO: add the check of telnet compat
-if (($sessionid!='')&&($_SERVER['PHP_SELF']=='/bbscon.php')) {
-	$utmpnum=decodesessionchar($sessionid[0])+decodesessionchar($sessionid[1])*36+decodesessionchar($sessionid[2])*36*36;
-	$utmpkey=decodesessionchar($sessionid[3])+decodesessionchar($sessionid[4])*36+decodesessionchar($sessionid[5])*36*36
-		+decodesessionchar($sessionid[6])*36*36*36+decodesessionchar($sessionid[7])*36*36*36*36+decodesessionchar($sessionid[8])*36*36*36*36*36;
-	$userid='';
-	$compat_telnet=1;
-} else {
-	@$utmpkey = $_COOKIE["W_UTMPKEY"];
-	@$utmpnum = $_COOKIE["W_UTMPNUM"];
-	@$userid = $_COOKIE["W_UTMPUSERID"];
-	@$userpassword=$_COOKIE["W_PASSWORD"];
-}
-if ($userid=='') {
-	$userid='guest';
-}
-
-$setonlined=0;
-if ($nologin==0) {
-
-	// add by stiger, login as "guest" default.....
-	if ( ($userid=='guest') && ($utmpkey == "")&&($needlogin!=0)){ 
-		$error = bbs_wwwlogin(0);
-		if($error == 2 || $error == 0){
-			$guestloginok=1;
-		}
-	} else {
-		if ( ($utmpkey!="") || ($userid!='guest')) {
-			$ret=bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),$currentuinfo,$compat_telnet);
-			if (($ret)==0) {
-				if ($userid!="guest") {
-					$loginok=1;
-				} else {
-					$guestloginok=1;
-				}
-				$currentuinfo_num=bbs_getcurrentuinfo();
-				$currentuser_num=bbs_getcurrentuser($currentuser);
-				$setonlined=1;
-			} else {
-				if (($userid!='guest') && (bbs_checkpasswd($userid,$userpassword)==0)){
-					$ret=bbs_wwwlogin(1);
-					if ( ($ret==2) || ($ret==0) ){
-						if ($userid!="guest") {
-							$loginok=1;
-						} else {
-							$guestloginok=1;
-						}
-
-					}else if ($ret==5) {
-						foundErr("ÇëÎðÆµ·±µÇÂ¼£¡");
-					}
-				} else {
-					$error = bbs_wwwlogin(0);
-					if($error == 2 || $error == 0){
-						$guestloginok=1;
-					}
-				}
-			}
-		}
-	}
-}
-
-if  ( ($loginok || $guestloginok ) && ($setonlined==0) ){
-	$data=array();
-	$currentuinfo_num=bbs_getcurrentuinfo($data);
-	bbs_setonlineuser($userid,$currentuinfo_num,$data["utmpkey"],$currentuinfo,$compat_telnet);
-	$currentuser_num=bbs_getcurrentuser($currentuser);
-	$path='';
-	setcookie("W_UTMPUSERID",$data["userid"],time()+360000,"",$path);
-	setcookie("W_UTMPKEY",$data["utmpkey"],time()+360000,$path);
-	setcookie("W_UTMPNUM",$currentuinfo_num,time()+360000,$path);
-	setcookie("W_LOGINTIME",$data["logintime"],time()+360000,$path);
-}
-
-
-if (($needlogin!=0)&&($loginok!=1)&& ($guestloginok!=1) ){
-	show_nav();
-	foundErr("ÄúÉÐÎ´µÇÂ¼£¡");
-	html_error_quit();
-	show_footer();
-	exit(0);
-	return;
-}
-
-if ( ($loginok==1) || ($guestloginok==1) ) {
-	$yank=bbs_is_yank() ? 0 : 1;
-	if ($setboard==1) 
-		bbs_set_onboard(0,0);
-}
 
 function valid_filename($fn)
 {
@@ -771,6 +655,122 @@ function jumpReferer() {
 		header("Location: ".$_SERVER["HTTP_REFERER"]);
 	} 
 }
+
+
+define("ENCODESTRING","0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+function decodesessionchar($ch)
+{
+	return strpos(ENCODESTRING,$ch);
+}
+
+
+/* µÇÂ¼Ïà¹Ø´úÂë */
+$loginok=0;
+
+@$fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
+  if ($fullfromhost=="") {
+	  @$fullfromhost=$_SERVER["REMOTE_ADDR"];
+	  $fromhost=$fullfromhost;
+  }
+  else {
+	$str = strrchr($fullfromhost, ",");
+	if ($str!=FALSE)
+		$fromhost=substr($str,1);
+		else
+		$fromhost=$fullfromhost;
+  }
+
+//sometimes,fromhost has strang space
+bbs_setfromhost(trim($fromhost),trim($fullfromhost));
+
+$compat_telnet=0;
+@$sessionid = $_GET["sid"];
+
+//TODO: add the check of telnet compat
+if (($sessionid!='')&&($_SERVER['PHP_SELF']=='/bbscon.php')) {
+	$utmpnum=decodesessionchar($sessionid[0])+decodesessionchar($sessionid[1])*36+decodesessionchar($sessionid[2])*36*36;
+	$utmpkey=decodesessionchar($sessionid[3])+decodesessionchar($sessionid[4])*36+decodesessionchar($sessionid[5])*36*36
+		+decodesessionchar($sessionid[6])*36*36*36+decodesessionchar($sessionid[7])*36*36*36*36+decodesessionchar($sessionid[8])*36*36*36*36*36;
+	$userid='';
+	$compat_telnet=1;
+} else {
+	@$utmpkey = $_COOKIE["W_UTMPKEY"];
+	@$utmpnum = $_COOKIE["W_UTMPNUM"];
+	@$userid = $_COOKIE["W_UTMPUSERID"];
+	@$userpassword=$_COOKIE["W_PASSWORD"];
+}
+if ($userid=='') {
+	$userid='guest';
+}
+
+$setonlined=0;
+if ($nologin==0) {
+
+	// add by stiger, login as "guest" default.....
+	if ( ($userid=='guest') && ($utmpkey == "")&&($needlogin!=0)){ 
+		$error = bbs_wwwlogin(0);
+		if($error == 2 || $error == 0){
+			$guestloginok=1;
+		}
+	} else {
+		if ( ($utmpkey!="") || ($userid!='guest')) {
+			$ret=bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),$currentuinfo,$compat_telnet);
+			if (($ret)==0) {
+				if ($userid!="guest") {
+					$loginok=1;
+				} else {
+					$guestloginok=1;
+				}
+				$currentuinfo_num=bbs_getcurrentuinfo();
+				$currentuser_num=bbs_getcurrentuser($currentuser);
+				$setonlined=1;
+			} else {
+				if (($userid!='guest') && (bbs_checkpasswd($userid,$userpassword)==0)){
+					$ret=bbs_wwwlogin(1);
+					if ( ($ret==2) || ($ret==0) ){
+						if ($userid!="guest") {
+							$loginok=1;
+						} else {
+							$guestloginok=1;
+						}
+
+					}else if ($ret==5) {
+						foundErr("ÇëÎðÆµ·±µÇÂ¼£¡");
+					}
+				} else {
+					$error = bbs_wwwlogin(0);
+					if($error == 2 || $error == 0){
+						$guestloginok=1;
+					}
+				}
+			}
+		}
+	}
+}
+
+if  ( ($loginok || $guestloginok ) && ($setonlined==0) ){
+	$data=array();
+	$currentuinfo_num=bbs_getcurrentuinfo($data);
+	bbs_setonlineuser($userid,$currentuinfo_num,$data["utmpkey"],$currentuinfo,$compat_telnet);
+	$currentuser_num=bbs_getcurrentuser($currentuser);
+	$path='';
+	setcookie("W_UTMPUSERID",$data["userid"],time()+360000,"",$path);
+	setcookie("W_UTMPKEY",$data["utmpkey"],time()+360000,$path);
+	setcookie("W_UTMPNUM",$currentuinfo_num,time()+360000,$path);
+	setcookie("W_LOGINTIME",$data["logintime"],time()+360000,$path);
+}
+
+
+if (($needlogin!=0)&&($loginok!=1)&& ($guestloginok!=1) ){
+	foundErr("ÄúÉÐÎ´µÇÂ¼£¡");
+}
+
+if ( ($loginok==1) || ($guestloginok==1) ) {
+	$yank=bbs_is_yank() ? 0 : 1;
+	if ($setboard==1) 
+		bbs_set_onboard(0,0);
+}
+
 
 } // !define ('_BBS_FUNCS_PHP_')
 ?>
