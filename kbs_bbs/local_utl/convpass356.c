@@ -96,7 +96,7 @@ convert_userdata(userec_r356 *olduser)
 }
 
 static void
-convert_userec(userec_r341 *olduser, struct userec *user)
+convert_userec(userec_r356 *olduser, struct userec *user)
 {
 	memcpy(user->userid, olduser->userid, IDLEN + 2);
 	memcpy(user->flags, olduser->flags, 2);
@@ -129,8 +129,8 @@ convert_userec(userec_r341 *olduser, struct userec *user)
 int 
 main()
 {
-	userec_r341 *olduser = NULL;
-	userec_r341 *ptr = NULL;
+	userec_r356 *olduser = NULL;
+	userec_r356 *ptr = NULL;
 	struct userec user;
 	int fd, fd2;
 	struct stat fs;
