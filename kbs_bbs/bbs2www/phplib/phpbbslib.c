@@ -8053,7 +8053,7 @@ static PHP_FUNCTION(bbs_x_search)
 /**
  * get a full threads of articles from a groupid.
  * prototype:
- * int bbs_get_threads_from_gid(int bid, int gid, int start , array &errmsg , int haveprev);
+ * int bbs_get_threads_from_gid(int bid, int gid, int start , array &articles , int haveprev);
  *
  * @return Record index on success,
  *       0 on failure.
