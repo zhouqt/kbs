@@ -238,7 +238,7 @@ void brc_update(char *userid) {
 		if (brc_cache_entry[i].changed) {
 			int j;
 			if (fd==-1) {
-				if ((fd=open(dirfile,O_RDWR))==-1) {
+				if ((fd=open(dirfile,O_RDWR|O_CREAT))==-1) {
 					bbslog("3user","can't %s open to readwrite:%s",dirfile,strerror(errno));
 					return;
 				};
