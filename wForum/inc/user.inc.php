@@ -50,12 +50,12 @@ function showSecs($secNum=0,$group,$isFold) {
 <?php
 	if ($isFold) {
 ?>
-<a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=N" title="关闭论坛列表"><img src="pic/nofollow.gif" border=0></a><a href="section.php?sec=<?php echo $secNum ; ?>" title=进入本分类论坛><?php echo $section_names[$secNum][0]; ?></a>
+<a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=N" title="关闭论坛列表"><img src="pic/nofollow.gif" border=0></a><a href="section.php?sec=<?php echo $secNum ; ?>" title=进入本分类论坛><?php echo $section_names[$secNum][0]; ?> </a>
 </th></tr>
 <?php
 	} else {
 ?>
-<a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=Y" title="展开论坛列表"><img src="pic/plus.gif" border=0></a><a href="section.php?sec=<?php echo $secNum ; ?>" title=进入本分类论坛><?php echo $section_names[$secNum][0]; ?></a>
+<a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=Y" title="展开论坛列表"><img src="pic/plus.gif" border=0></a><a href="section.php?sec=<?php echo $secNum ; ?>" title=进入本分类论坛><?php echo $section_names[$secNum][0]; ?> </a>
 <?php
 	}
 	$boards = bbs_getboards($section_nums[$secNum], $group, $yank);
@@ -119,7 +119,7 @@ function showSecs($secNum=0,$group,$isFold) {
 						//	$threads = bbs_getthreads($brd_name[$i],0,1); 
 						//	$start = bbs_get_thread_article_num( $brd_name[$i], $articles[0]['GROUPID']); 
 		?>
-				主题：<a href="disparticle.php?boardName=<?php echo $brd_name[$i]; ?>&ID=<?php echo $articles[0]['ID']; ?>"><?php echo htmlspecialchars($articles[0]['TITLE'],ENT_QUOTES); ?></a><BR>作者：<a href="userinfo.php?id=<?php echo $articles[0]['OWNER']; ?>" target=_blank><?php echo $articles[0]['OWNER']; ?></a><BR>日期：<?php echo strftime('%Y-%m-%d %H:%M:%S', intval($articles[0]['POSTTIME'])) ; ?>&nbsp;<a href="disparticle.php?boardName=<?php echo $brd_name[$i]; ?>&ID=<?php echo $articles[0]['ID']; ?>&start=<?php echo $start?>"><IMG border=0 src="pic/lastpost.gif" title="转到：<?php echo $articles[0]['TITLE']; ?>"></a>
+				主题：<a href="disparticle.php?boardName=<?php echo $brd_name[$i]; ?>&ID=<?php echo $articles[0]['ID']; ?>"><?php echo htmlspecialchars($articles[0]['TITLE'],ENT_QUOTES); ?> &nbsp;</a><BR>作者：<a href="userinfo.php?id=<?php echo $articles[0]['OWNER']; ?>" target=_blank><?php echo $articles[0]['OWNER']; ?> </a><BR>日期：<?php echo strftime('%Y-%m-%d %H:%M:%S', intval($articles[0]['POSTTIME'])) ; ?>&nbsp;<a href="disparticle.php?boardName=<?php echo $brd_name[$i]; ?>&ID=<?php echo $articles[0]['ID']; ?>&start=<?php echo $start?>"><IMG border=0 src="pic/lastpost.gif" title="转到：<?php echo htmlspecialchars($articles[0]['TITLE'],ENT_QUOTES); ?> "> </a>
 	<?php
 						}
 					}
