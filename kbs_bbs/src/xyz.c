@@ -794,6 +794,9 @@ void a_edits()
 #ifdef FB2KENDLINE
 		"whatdate",
 #endif
+#ifdef ZIXIA
+		"flinks.wForum",
+#endif
         NULL
     };
 
@@ -819,6 +822,9 @@ void a_edits()
         #endif
 #ifdef FB2KENDLINE
 		"节日信息",
+#endif
+#ifdef ZIXIA
+		"web 友情链接",
 #endif
         NULL
     };
@@ -913,6 +919,12 @@ void a_edits()
 			setpublicshmreadonly(0);
 			publicshm->nextfreshdatetime = time(0);
 			setpublicshmreadonly(0);
+	   }
+#endif
+#ifdef ZIXIA
+	   if (!strcmp(e_file[ch],"flinks.wForum")){
+            my_unlink("etc/flinks.wForum.html");
+            prints("\n友情链接更新");
 	   }
 #endif
     }
