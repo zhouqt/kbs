@@ -2201,6 +2201,7 @@ int add_edit_mark(char *fname, int mode, char *title)
     time_t now;
     char outname[STRLEN];
     int step = 0;
+    int added = 0;
 
     if ((fp = fopen(fname, "r")) == NULL)
         return 0;
@@ -2218,18 +2219,22 @@ int add_edit_mark(char *fname, int mode, char *title)
              * if(!step && !strncmp(buf,"·¢ÐÅÕ¾: ",8))
              * {
              * step=1;
-             * } 
+             * }
              */
             if (!strncmp(buf, "[36m¡ù ÐÞ¸Ä:¡¤", 17))
                 continue;
             /*
              * if(step!=3&&(!strncmp(buf,"³ö  ´¦: ",8)||!strncmp(buf,"×ªÐÅÕ¾: ",8)))
-             * step=1; 
+             * step=1;
              */
             if (Origin2(buf)) {
                 now = time(0);
-                fprintf(out, "[36m¡ù ÐÞ¸Ä:¡¤%s ÓÚ %15.15s ÐÞ¸Ä±¾ÎÄ¡¤[FROM: %15.15s][m\n", currentuser->userid, ctime(&now) + 4, fromhost);
+                if(uinfo.mode == RMAIL)
+                    fprintf(out, "[36m¡ù ÐÞ¸Ä:¡¤%s ÓÚ %15.15s ÐÞ¸Ä±¾ÐÅ¡¤[FROM: %15.15s][m\n", currentuser->userid, ctime(&now) + 4, fromhost);
+                else
+                    fprintf(out, "[36m¡ù ÐÞ¸Ä:¡¤%s ÓÚ %15.15s ÐÞ¸Ä±¾ÎÄ¡¤[FROM: %15.15s][m\n", currentuser->userid, ctime(&now) + 4, fromhost);
                 step = 3;
+		added = 1;
             }
             fputs(buf, out);
         } else {
@@ -2241,6 +2246,11 @@ int add_edit_mark(char *fname, int mode, char *title)
             fputs(buf, out);
         }
     }
+    if (!added)
+    {
+    	now = time(0);
+	fprintf(out, "[36m¡ù ÐÞ¸Ä:¡¤%s ÓÚ %15.15s ÐÞ¸Ä±¾ÐÅ¡¤[FROM: %15.15s][m\n", currentuser->userid, ctime(&now) + 4, fromhost);
+    }
     fclose(fp);
     fclose(out);
 
@@ -2251,7 +2261,7 @@ int add_edit_mark(char *fname, int mode, char *title)
 
  /*ARGSUSED*/ int edit_post(int ent, struct fileheader *fileinfo, char *direct)
         /*
-         * POST ±à¼­ 
+         * POST ±à¼­
          */
 {
     char buf[512];

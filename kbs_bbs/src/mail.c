@@ -541,7 +541,7 @@ int do_send(char *userid, char *title, char *q_file)
                 else
                     isbig5 = 0;
 
-                getdata(8, 0, "¹ıÂËANSI¿ØÖÆ·û¿? [N]: ", data, 2, DOECHO, 0, 0);
+                getdata(8, 0, "¹ıÂËANSI¿ØÖÆ·û„1¤7? [N]: ", data, 2, DOECHO, 0, 0);
                 if (data[0] == 'y' || data[0] == 'Y')
                     noansi = 1;
                 else
@@ -1067,7 +1067,7 @@ static int mail_del(int ent, struct fileheader *fileinfo, char *direct)
 }
 
 //added by bad 03-2-10
-#ifdef NINE_BUILD
+//#ifdef NINE_BUILD
 static int mail_edit(int ent, struct fileheader *fileinfo, char *direct)
 {
     char buf[512];
@@ -1097,7 +1097,7 @@ static int mail_edit(int ent, struct fileheader *fileinfo, char *direct)
     newbbslog(BBSLOG_USER, "edited mail '%s' on %s", fileinfo->title, currboard);
     return FULLUPDATE;
 }
-#endif
+//#endif
 
 /** Added by netty to handle mail to 0Announce */
 int mail_to_tmp(ent, fileinfo, direct)
@@ -1323,9 +1323,7 @@ struct one_key mail_comms[] = {
     {'d', mail_del},
     {'D', mail_del_range},
 //added by bad 03-2-10
-#ifdef NINE_BUILD
     {'E', mail_edit},
-#endif
     {'r', mail_read},
     {'R', mail_reply},
     {'m', mail_mark},
@@ -1944,11 +1942,14 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
     f_cp(tmp_buf, fname, 0);
     sprintf(title, "%.50s(×ª¼Ä)", fh->title);   /*Haohmaru.00.05.01,moved here */
     if (askyn("ÊÇ·ñĞŞ¸ÄÎÄÕÂÄÚÈİ", 0) == 1) {
-        vedit(fname, false,NULL);
+        if(vedit(fname, false,NULL) != -1){
+		if(ADD_EDITMARK)
+			add_edit_mark(fname,1,fh->title);
+	}
         y = 2;
         newbbslog(BBSLOG_USER, "ĞŞ¸Ä±»×ªÌùµÄÎÄÕÂ»òĞÅ¼ş: %s", title);    /*Haohmaru.00.05.01 */
         /*
-         * clear(); 
+         * clear();
          */
     }
 
@@ -1959,12 +1960,12 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
 
         /*
          * ptrX = strstr(receiver, ".bbs@smth.org");
-         * @smth.org @zixia.net È¡µ½Ç°ÃæµÄÓÃ»§¼´¿É 
+         * @smth.org @zixia.net È¡µ½Ç°ÃæµÄÓÃ»§¼´¿É
          */
         ptrX = strstr(receiver, (const char *) email_domain());
 
         /*
-         * disable by KCN      if (!ptrX) ptrX = strstr(receiver, ".bbs@"); 
+         * disable by KCN      if (!ptrX) ptrX = strstr(receiver, ".bbs@");
          */
         if (ptrX && '@' == *(ptrX - 1))
             *(ptrX - 1) = 0;
@@ -2026,7 +2027,7 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
         else
             isbig5 = 0;
 
-        getdata(8, 0, "¹ıÂËANSI¿ØÖÆ·û¿? [N]: ", data, 2, DOECHO, 0, 0);
+        getdata(8, 0, "¹ıÂËANSI¿ØÖÆ·û„1¤7? [N]: ", data, 2, DOECHO, 0, 0);
         if (data[0] == 'y' || data[0] == 'Y')
             noansi = 1;
         else
