@@ -67,11 +67,20 @@ int file_has_word(char *file, char *word)
 int f_append(char *file, char *buf)
 {
     FILE *fp;
+	char *ptr;
 
     fp = fopen(file, "a");
     if (fp == 0)
         return -1;
-    fprintf(fp, "%s", buf);
+	ptr = buf;
+	while (*ptr != '\0')
+	{
+		if (*ptr == '\x09')  /* horizontal tab */
+			fprintf(fp, "    ");
+		else
+			fputc(*ptr, fp);
+		ptr++;
+	}
     fclose(fp);
 
     return 0;
