@@ -1104,9 +1104,9 @@ static PHP_FUNCTION(bbs_printansifile)
         signal(SIGBUS, sigbus);
         signal(SIGSEGV, sigbus);
 		output_ansi_html(ptr, st.st_size, out, attachlink);
-    } 
+		free_output(out);
+    }
     munmap(ptr, st.st_size);
-	free_output(out);
     signal(SIGBUS, SIG_IGN);
     signal(SIGSEGV, SIG_IGN);
 	RETURN_STRINGL(get_output_buffer(), get_output_buffer_len(),1);
@@ -3285,24 +3285,17 @@ static PHP_FUNCTION(bbs_postarticle)
             signal(SIGSEGV, sigbus);
         }
         r = post_article(board, title, filename, currentuser, fromhost, sig, local, anony, oldx,buf);
-	signal(SIGBUS, SIG_IGN);
+		signal(SIGBUS, SIG_IGN);
     	signal(SIGSEGV, SIG_IGN);
-        if (!sigsetjmp(bus_jump, 1)) {
-            signal(SIGBUS, sigbus);
-            signal(SIGSEGV, sigbus);
-        }
         f_rm(buf);
-	signal(SIGBUS, SIG_IGN);
-    	signal(SIGSEGV, SIG_IGN);
-    }
-    else {
+	} else {
         if (!sigsetjmp(bus_jump, 1)) {
             signal(SIGBUS, sigbus);
             signal(SIGSEGV, sigbus);
         }
         r = post_article(board, title, filename, currentuser, fromhost, sig, local, anony, oldx,NULL);
     
-	signal(SIGBUS, SIG_IGN);
+		signal(SIGBUS, SIG_IGN);
     	signal(SIGSEGV, SIG_IGN);
     }
     if (r < 0)
@@ -3319,13 +3312,7 @@ static PHP_FUNCTION(bbs_postarticle)
 #endif
     if(oldx)
     	efree(oldx);
-    if (!sigsetjmp(bus_jump, 1)) {
-        signal(SIGBUS, sigbus);
-        signal(SIGSEGV, sigbus);
-    }
     unlink(filename);
-    signal(SIGBUS, SIG_IGN);
-    signal(SIGSEGV, SIG_IGN);
     if (!junkboard(board)) {
         currentuser->numposts++;
         if (!sigsetjmp(bus_jump, 1)) {
@@ -4126,6 +4113,7 @@ PHP_RINIT_FUNCTION(smth_bbs)
 #ifdef HAVE_WFORUM
 	zapbuf=NULL;
 #endif
+	output_buffer=NULL;
     return SUCCESS;
 }
 
