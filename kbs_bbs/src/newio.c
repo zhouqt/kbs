@@ -747,7 +747,8 @@ bool enableESC=false;
 int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void *nouse, int clearlabel)
 {
     int ch, clen = 0, curr = 0, x, y;
-    char tmp[STRLEN];
+    bool init=true;
+    char tmp[STRLEN],save[STRLEN];
     extern int scr_cols;
     extern int RMSG;
 
@@ -760,6 +761,8 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
     clen = strlen(buf);
     curr = (clen >= len) ? len - 1 : clen;
     buf[curr] = '\0';
+    strncpy(save, buf, STRLEN);
+    save[STRLEN]=0;
 
     if (!scrint) {
         prints("%s", buf);
@@ -797,9 +800,11 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
     while (1) {
         int i;
         move(y, x);
+        if(init) prints("\x1b[4m");
         for(i=0;i<clen;i++)
             if(!echo||buf[i]==KEY_ESC||!isprint2(buf[i])) outc('*');
             else outc(buf[i]);
+        resetcolor();
         clrtoeol();
         move(y, x+curr);
 
@@ -825,10 +830,17 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 #ifdef CHINESE_CHARACTER
         if (ch == Ctrl('R')) {
             currentuser->userdefine = currentuser->userdefine ^ DEF_CHCHAR;
+            init=false;
             continue;
         }
 #endif        	
         if (ch == '\177' || ch == Ctrl('H')) {
+            if(init) {
+                init=false;
+                buf[0]=0;
+                curr=0;
+                clen=0;
+            }
             if (curr == 0) {
                 continue;
             }
@@ -852,15 +864,21 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
         }
 
         if(ch == KEY_ESC&&!enableESC) {
-            curr = 0;
-            clen = 0;
-            buf[0] = 0;
-            move(y, x);
-            clrtoeol();
+            strncpy(buf, save, STRLEN);
+            buf[STRLEN]=0;
+            curr = strlen(buf);
+            clen = curr;
+            init=true;
             continue;
         }
         
         if (ch == KEY_DEL) {
+            if(init) {
+                init=false;
+                buf[0]=0;
+                curr=0;
+                clen=0;
+            }
             if (curr >= clen) {
                 curr = clen;
                 continue;
@@ -884,6 +902,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             continue;
         }
         if (ch == KEY_LEFT) {
+            init=false;
             if (curr == 0) {
                 continue;
             }
@@ -901,16 +920,19 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             continue;
         }
         if (ch == Ctrl('E') || ch == KEY_END) {
+            init=false;
             curr = clen;
             move(y, x + curr);
             continue;
         }
         if (ch == Ctrl('A') || ch == KEY_HOME) {
+            init=false;
             curr = 0;
             move(y, x + curr);
             continue;
         }
         if (ch == KEY_RIGHT) {
+            init=false;
             if (curr >= clen) {
                 curr = clen;
                 continue;
@@ -928,9 +950,21 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             move(y, x + curr);
             continue;
         }
-        if (!isprint2(ch)&&(ch!=KEY_ESC||!enableESC)) continue;
-        if (x + clen >= scr_cols || clen >= len - 1) continue;
+        if (!isprint2(ch)&&(ch!=KEY_ESC||!enableESC)) {
+            init=false;
+            continue;
+        }
+        if (x + clen >= scr_cols || clen >= len - 1) {
+            init=false;
+            continue;
+        }
 
+        if(init) {
+            init=false;
+            buf[0]=0;
+            curr=0;
+            clen=0;
+        }
         if (!buf[curr]) {
             buf[curr + 1] = '\0';
             buf[curr] = ch;
@@ -955,7 +989,8 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
 {
     int ch, clen = 0, curr = 0, x, y, startx, starty, now, i, j, k, i0, chk, cursorx, cursory;
     char savebuffer[25][LINELEN*3];
-    char tmp[STRLEN];
+    bool init=true;
+    char tmp[1024];
     extern int RMSG;
 
     if (clearlabel == true) {
@@ -968,6 +1003,8 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
     now = strlen(buf);
     for(i=0;i<=24;i++)
         saveline(i, 0, savebuffer[i]);
+    strncpy(tmp, buf, 1024);
+    tmp[1024]=0;
 
     while (1) {
         y = starty; x = startx;
@@ -994,7 +1031,9 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                     }
                     move(y, x);
                 }
+                if(init) prints("\x1b[4m");
                 prints("%c", buf[i]);
+                resetcolor();
                 x++;
             }
             else {
@@ -1031,14 +1070,26 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
 #endif
 #ifdef CHINESE_CHARACTER
         if (ch == Ctrl('R')) {
-		currentuser->userdefine = currentuser->userdefine ^ DEF_CHCHAR;
-        	continue;
+            init=false;
+            currentuser->userdefine = currentuser->userdefine ^ DEF_CHCHAR;
+            continue;
         }
 #endif        	
         switch(ch) {
+            case KEY_ESC:
+                init=true;
+                strncpy(buf, tmp, 1024);
+                buf[1024]=0;
+                now=strlen(buf);
+                break;
             case Ctrl('Q'):
             case '\n':
             case '\r':
+                if(init) {
+                    init=false;
+                    buf[0]=0;
+                    now=0;
+                }
                 if(UPDOWN) break;
                 if(y-starty+1<maxline) {
                     for(i=strlen(buf)+1;i>now;i--)
@@ -1047,6 +1098,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 }
                 break;
             case KEY_UP:
+                init=false;
                 if(cursory>starty) {
                     y = starty; x = startx;
                     chk = 0;
@@ -1076,6 +1128,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 }
                 break;
             case KEY_DOWN:
+                init=false;
                 if(cursory<y) {
                     y = starty; x = startx;
                     chk = 0;
@@ -1106,6 +1159,11 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 break;
             case '\177':
             case Ctrl('H'):
+                if(init) {
+                    init=false;
+                    buf[0]=0;
+                    now=0;
+                }
                 if(now>0) {
                     for(i=now-1;i<strlen(buf);i++)
                         buf[i]=buf[i+1];
@@ -1127,6 +1185,11 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 }
                 break;
             case KEY_DEL:
+                if(init) {
+                    init=false;
+                    buf[0]=0;
+                    now=0;
+                }
                 if(now<strlen(buf)) {
 #ifdef CHINESE_CHARACTER
                     if (DEFINE(currentuser, DEF_CHCHAR)) {
@@ -1145,6 +1208,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 }
                 break;
             case KEY_LEFT:
+                init=false;
                 if(now>0) {
                     now--;
 #ifdef CHINESE_CHARACTER
@@ -1160,6 +1224,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 }
                 break;
             case KEY_RIGHT:
+                init=false;
                 if(now<strlen(buf)) {
                     now++;
 #ifdef CHINESE_CHARACTER
@@ -1176,21 +1241,30 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 break;
             case KEY_HOME:
             case Ctrl('A'):
+                init=false;
                 now--;
                 while(now>=0&&buf[now]!='\n'&&buf[now]!='\r') now--;
                 now++;
                 break;
             case KEY_END:
             case Ctrl('E'):
+                init=false;
                 while(now<strlen(buf)&&buf[now]!='\n'&&buf[now]!='\r') now++;
                 break;
             case KEY_PGUP:
+                init=false;
                 now=0;
                 break;
             case KEY_PGDN:
+                init=false;
                 now = strlen(buf);
                 break;
             case Ctrl('Y'):
+                if(init) {
+                    init=false;
+                    buf[0]=0;
+                    now=0;
+                }
                 i0 = strlen(buf);
                 i=now-1;
                 while(i>=0&&buf[i]!='\n'&&buf[i]!='\r') i--;
@@ -1234,6 +1308,11 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 break;
             default:
                 if(isprint2(ch)&&strlen(buf)<len-1) {
+                    if(init) {
+                        init=false;
+                        buf[0]=0;
+                        now=0;
+                    }
                     for(i=strlen(buf)+1;i>now;i--)
                         buf[i]=buf[i-1];
                     buf[now++]=ch;
@@ -1261,6 +1340,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                         now--;
                     }
                 }
+                init=false;
                 break;
         }
     }
