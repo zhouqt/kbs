@@ -5,9 +5,9 @@ BBSLIBRARY2 = ../../
 
 all:allthing
 
-#ifeq (Makefile.spec ,$(wildcard Makefile.spec))
+ifeq (../Makefile.spec ,$(wildcard ../Makefile.spec))
 include	../Makefile.spec
-#endif
+endif
 
 MAKE = make
 #CC 	= gcc
@@ -47,7 +47,7 @@ install: all
 	echo "done."
 	#rm -rf $(CGIPATH)/bbslogin
 	#cp -f $(CGI) $(CGIPATH)
-	chmod +s $(CGIPATH)/*
+	#chmod +s $(CGIPATH)/*
 	cp html/* $(HTMPATH)
 
 clean:

@@ -1,10 +1,10 @@
 #BBSHOME = /home/bbstest
-CGIPATH = /home/www/cgi-bin/bbs
+#CGIPATH = /home/www/cgi-bin/bbs
 #HTMPATH = /home/httpd/html/bbs
 
-#ifeq (Makefile.spec ,$(wildcard Makefile.spec))
-#include	../Makefile.spec
-#endif
+ifeq (../../Makefile.spec ,$(wildcard ../../Makefile.spec))
+include	../../Makefile.spec
+endif
 
 #CC 	= gcc
 #CFLAGS = -O3 -g -I..
@@ -43,8 +43,8 @@ $(CGI): % : %.o
 
 
 install:
-	rm -rf $(CGIPATH)/bbslogin
-	cp -f $(CGI) $(CGIPATH)
+	$(INSTALL) -d $(CGIPATH)
+	$(INSTALL) -m04771 $(CGI) $(CGIPATH)
 #	chmod +s $(CGIPATH)/*
 #	cp html/* $(HTMPATH)
 
