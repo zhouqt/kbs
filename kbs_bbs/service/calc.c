@@ -366,7 +366,7 @@ int get_var(char * name)
 
 void set_var(struct var_struct * a, double f)
 {
-    makesure(1);
+    makesure(1,0);
     makesize(a, 1, 1);
     (**(a->p)) = f;
 }
