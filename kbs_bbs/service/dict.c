@@ -4,6 +4,7 @@
 #if HAVE_MYSQL_SMTH == 1
 #include <mysql.h>
 
+#define WORDLEN 100
 char save_scr[LINEHEIGHT][LINELEN*3];
 int save_y, save_x;
 
@@ -95,7 +96,7 @@ int dict_main()
     MYSQL_ROW row;
     int oldmode;
     int i;
-    char sql[600], word[300];
+    char sql[600], word[WORDLEN];
     FILE* fp;
     char fn[80];
 
@@ -136,6 +137,7 @@ int dict_main()
             else if(ch==KEY_TAB&&len) {
             }
             else if(isprint2(ch)) {
+	        if (len==WORDLEN-1) continue;
                 word[len]=ch;
                 len++;
                 word[len]=0;
