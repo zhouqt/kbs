@@ -38,7 +38,7 @@
 <tr><td>
 <?php echo $i+1;?>
 </td><td>
-<?php echo $votearr[$i]["TITLE"];?>
+<a href="/bbsvote.php?board=<?php echo $board;?>&num=<?php echo $i+1;?>"><?php echo $votearr[$i]["TITLE"];?></a>
 </td><td>
 <?php echo $votearr[$i]["TYPE"];?>
 </td><td>
