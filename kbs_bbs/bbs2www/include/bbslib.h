@@ -110,9 +110,9 @@ char *nohtml(char *s);
 
 char *strright(char *s, int len);
 
-#ifndef FREEBSD
+#if HAVE_STRCASESTR != 1
 char *strcasestr(char *s1, char *s2);
-#endif                          /* not FREEBSD */
+#endif
 
 int strsncpy(char *s1, char *s2, int n);
 
