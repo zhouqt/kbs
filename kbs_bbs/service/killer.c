@@ -463,6 +463,7 @@ void join_room(struct room_struct * r)
             else if(ch==KEY_DOWN) {
                 selected++;
                 if(selected>=myroom->people) selected=0;
+                refreshit();
             }
             else if(ch==Ctrl('S')) {
                 int pid;
