@@ -23,7 +23,7 @@
 	function pc_search_special_keyword($str,$keyword)
 	{
 		foreach($keyword as $key)
-			$str = str_replace($key," <font color=\"#FF0000\">".$key."</font>",$str);	
+			$str = str_replace($key,"<font color=\"#FF0000\">".$key."</font>",$str);	
 		return $str;
 	}
 	
@@ -31,7 +31,7 @@
 	{
 		global $pcconfig;
 		$bodylen = strlen($rows[body]);
-		if($bodylen < 1000)
+		if($bodylen < 500)
 			$body = $rows[body];
 		else
 		{
@@ -40,9 +40,9 @@
 				$keypos[$key]=  strpos($rows[body],$key) - 100;
 			$start = min($keypos);
 			if($start > 0)
-				$body = "... ".substr($rows[body],$start,1000)." ...";
+				$body = "... ".substr($rows[body],$start,500)." ...";
 			else
-				$body = substr($rows[body],0,1000)." ...";
+				$body = substr($rows[body],0,500)." ...";
 		}
 		
 		@$body = pc_search_special_keyword(html_format($body),$keyword);
@@ -51,11 +51,11 @@
 <tr><td>
 <font class="f5">
 <a href="pccon.php?<?php echo "id=".$rows[uid]."&nid=".$rows[nid]."&tid=".$rows[tid]; ?>">
-<?php echo html_format($rows[subject]); ?>&nbsp;
+<?php echo pc_search_special_keyword(html_format($rows[subject]),$keyword); ?>&nbsp;
 </a>
 </font>
 </td></tr>
-<tr><td>
+<tr><td class="f6">
 <?php echo $body; ?>
 </td></tr>
 <tr><td>
@@ -112,8 +112,8 @@ http://<?php echo $pcconfig["SITE"]; ?>/pc/pccon.php?<?php echo "id=".$rows[uid]
 			$keyword1[$j] = $key;
 			$j ++;
 			$keyword .= $key." ";
-			$query .= " AND `body` LIKE '%".$key."%' ";
-			$query_i.=  " AND `body` LIKE '%".$key."%' ";
+			$query .= " AND ( `body` LIKE '%".$key."%' OR `subject` LIKE '%".$key."%' ) ";
+			$query_i.=  " AND ( `body` LIKE '%".$key."%' OR `subject` LIKE '%".$key."%' ) ";
 		}
 		if(!$keyword)
 		{
