@@ -746,6 +746,9 @@ int write_file(filename, saveheader)
            else
            strcpy(p_buf,"(S)转信, (L)不转信, (A)取消, (T)更改标题 or (E)再编辑? [S]: ");
          */
+        temp = valid_article(p_buf, abort);
+        if (temp)
+        	local_article=1;
         if (uinfo.mode == POSTING) {
             if (local_article == 1)
                 strcpy(p_buf, "(L)站内, (S)转信, (F)自动换行发表, (A)取消, (T)更改标题 or (E)再编辑? [L]: ");
@@ -765,7 +768,6 @@ int write_file(filename, saveheader)
            Leeward 98.01.17 Prompt whom you are writing to */
         else
             strcpy(p_buf, "(S)储存档案, (F)自动换行存储, (A)放弃编辑, (E)继续编辑? [S]: ");
-        temp = valid_article(p_buf, abort);
         if (abort[0] == '\0') {
             if (local_article == 1)
                 abort[0] = 'l';
