@@ -355,7 +355,7 @@ int deny_user(int ent, struct fileheader *fileinfo, char *direct)
         count = listdeny(0);
         if (count > 0 && count < 20)    /*Haohmaru.12.18,看下一屏 */
             snprintf(querybuf, 0xff, "(O)增加%s (A)增加 (D)删除 or (E)离开 [E]: ", fileinfo->owner);
-        else if (count > 20)
+        else if (count >= 20)
             snprintf(querybuf, 0xff, "(O)增加%s (A)增加 (D)删除 (N)后面第N屏 or (E)离开 [E]: ", fileinfo->owner);
         else
             snprintf(querybuf, 0xff, "(O)增加%s (A)增加 or (E)离开 [E]: ", fileinfo->owner);
