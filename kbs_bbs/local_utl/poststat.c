@@ -268,7 +268,7 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
                         "                                                                     %s\x1b[m\n",
                         surfix_bless[real * 2 -1], surfix_bless[real  * 2 ] );
 		}
-        fprintf(fp, "                                                                         %s\x1b[m", surfix_bless[11]);
+        fprintf(fp, "                                                                         %s\x1b[m\n", surfix_bless[11]);
 
         fprintf(fp, "              \x1b[1;33m── \x1b[31m☆\x1b[33m☆\x1b[32m☆ \x1b[41;32m  \x1b[33m本日五大校内话题  \x1b[m\x1b[1;32m ☆\x1b[31m☆\x1b[33m☆ ──\x1b[m               %s\x1b[m\n", surfix_bless[12]);
 
@@ -294,9 +294,9 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
             real++;
 
             fprintf(fp,
-                        "                                            %s \x1b[1;31m%4d\x1b[0;37m人      %s\x1b[m\n"
+                        "        %-20.20s                %s \x1b[1;31m%4d\x1b[0;37m人      %s\x1b[m\n"
                         "\x1b[1m第\x1b[31m%2d \x1b[37m名 \x1b[4%dm %-51.51s\x1b[m \x1b[1;33m%-12s%s\x1b[m\n",
-                        p, top[i].number, surfix_bless[(real + 5) * 2 + 1], real, (real - 1) / 2 + 1, fh.title, fh.owner, surfix_bless[(real + 6) * 2 ]);
+                        top[i].board, p, top[i].number, surfix_bless[(real + 5) * 2 + 1], real, (real - 1) / 2 + 1, fh.title, fh.owner, surfix_bless[(real + 6) * 2 ]);
 
 		}
 		for( ; real < 5; real ++){
