@@ -681,8 +681,9 @@ int choose_board(int newflag, char *boardprefix)
             if (2 == yank_flag) {
                 char bname[STRLEN];
                 int i = 0;
+		extern int favbrd_list_t;
 
-                if (getfavnum() >= FAVBOARDNUM) {
+                if ( favbrd_list_t >= FAVBOARDNUM) {
                     move(2, 0);
                     clrtoeol();
                     prints("个人热门版数已经达上限(%d)！", FAVBOARDNUM);
@@ -720,7 +721,7 @@ int choose_board(int newflag, char *boardprefix)
                 char bname[STRLEN], buf[PATHLEN];
                 int i = 0;
 
-                if (getfavnum() >= MAILBOARDNUM) {
+                if (mail_list_t >= MAILBOARDNUM) {
                     move(2, 0);
                     clrtoeol();
                     prints("邮箱数已经达上限(%d)！", MAILBOARDNUM);
