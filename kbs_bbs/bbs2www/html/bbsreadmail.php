@@ -25,12 +25,17 @@
 		$mail_num = bbs_getmailnum2($mail_fullpath);
 		if($mail_num < 0 || $mail_num > 30000)http_error_quit("Too many mails!");
 
-
-		$maildata = bbs_getmails($mail_fullpath);
+		$num = 19;
+		if ($start > $mail_num - 19)$start = $mail_num - 19;
+        if ($start < 0)
+		{
+		    $start = 0;
+			$num = $mail_num;
+		}
+		$maildata = bbs_getmails($mail_fullpath,$start,$num);
 		if ($maildata == FALSE)
 			html_error_quit("读取邮件数据失败!");
-		if ($start > $mail_num - 19)$start = $mail_num - 19;
-    		if ($start < 0)$start = 0;
+
 ?>
 <center>信件列表 - 邮箱 - <?php echo $mail_title;?>[使用者: <?php echo $currentuser["userid"] ?>]<hr color=green>
 <?php
@@ -44,17 +49,17 @@
 <table width="610">
 <tr><td>序号<td>状态<td>发信人<td>日期<td>信件标题</tr></td>
 <?php
-		for ($i = $start; $i < $start + 19 && $i < $mail_num; $i++)
+		for ($i = 0; $i < $num; $i++)
 		{
 			/*$ptr = strtok($maildata[$i]["OWNER"]," (");
 			if($ptr == 0)$ptr = " ";
 			$ptr = nohtml($*/
 
 ?>
-<tr><td><?php echo $i+1;?><td><?php echo $maildata[$i]["FLAGS"];?><td>
+<tr><td><?php echo $start+$i+1;?><td><?php echo $maildata[$i]["FLAGS"];?><td>
 <a href=/cgi-bin/bbs/bbsqry?userid=<?php echo $maildata[$i]["OWNER"];?>><?php echo $maildata[$i]["OWNER"];?></a>
 <td><?php echo strftime("%b&nbsp;%e&nbsp;%H&nbsp;:%M",$maildata[$i]["POSTTIME"]);?>
-<td><a href=/cgi-bin/bbs/bbsmailcon?file=<?php echo $maildata[$i]["FILENAME"];?>&dir=<?php echo $mail_path;?>&num=<?php echo $i;?>&title=<?php echo $mail_title;?>><?php 
+<td><a href=/cgi-bin/bbs/bbsmailcon?file=<?php echo $maildata[$i]["FILENAME"];?>&dir=<?php echo $mail_path;?>&num=<?php echo $i;?>&title=<?php echo $mail_title;?>><?php
 if(strncmp($maildata[$i]["TITLE"],"Re: ",4))
 	echo "★" .  htmlspecialchars($maildata[$i]["TITLE"]);
 else
