@@ -213,6 +213,7 @@ void refresh()
         j = (i + roll)%scr_lns;
         for (k = 0; k < t_columns; k++)
         if(bp[j].mode[k]&SCREEN_MODIFIED&&(isprint2(bp[j].data[k]))||bp[j].data[k]==0) {
+            stackt=0;
             rel_move(tc_col, tc_line, k, i);
             bp[j].mode[k]&=~SCREEN_MODIFIED;
             if(~(bp[j].mode[k])&cur_mode!=0) {
@@ -244,8 +245,8 @@ void refresh()
                 push(40+bp[j].color[k]/16);
             }
             outstack();
-            if(bp[j].data[k]==0) outc(' ');
-            else outc(bp[j].data[k]);
+            if(bp[j].data[k]==0) ochar(' ');
+            else ochar(bp[j].data[k]);
             tc_col++;
         }
     }
