@@ -87,3 +87,4 @@ extern const char secname[SECNUM][2][20];
 
 SMTH_API int msg_count;
 
+#define getCurrentUser() currentuser
