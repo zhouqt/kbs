@@ -94,7 +94,28 @@ function html_format($str,$multi=FALSE)
 {
 	$str = str_replace(" ","&nbsp;",htmlspecialchars(stripslashes($str)));	
 	if($multi)
+	{
 		$str = nl2br($str);
+		$str = str_replace("&gt;",">",$str);
+		$str = str_replace("&lt;a&nbsp;","<a ",$str);
+		$str = str_replace("&lt;img&nbsp;","<img ",$str);
+		$str = str_replace("&lt;ul","<ul",$str);
+		$str = str_replace("&lt;li","<li",$str);
+		$str = str_replace("&lt;ol","<ol",$str);
+		$str = str_replace("&lt;b","<strong",$str);
+		$str = str_replace("&lt;u","<u",$str);
+		$str = str_replace("&lt;i","<i",$str);
+		$str = str_replace("&lt;font&nbsp;","<font ",$str);
+		$str = str_replace("&lt;/","</",$str);
+		$str = str_replace("&nbsp;target"," target",$str);
+		$str = str_replace("&nbsp;alt"," alt",$str);
+		$str = str_replace("&nbsp;style"," style",$str);
+		$str = str_replace("&nbsp;size"," size",$str);
+		$str = str_replace("&nbsp;color"," color",$str);
+		$str = str_replace("&nbsp;align"," align",$str);
+		$str = str_replace("&nbsp;border"," border",$str);
+		
+	}
 	return $str;	
 }
 
