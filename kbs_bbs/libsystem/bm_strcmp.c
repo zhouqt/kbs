@@ -130,7 +130,7 @@ void *txtfind(const void *in_block,     /* 数据块 */
 
 /*开始搜索数据块，每次前进移位表中的数量*/
     limit = block_size - pattern_size + 1;
-    for (byte_nbr = 0; byte_nbr < limit; byte_nbr += shift[block[byte_nbr + pattern_size]]) {
+    for (byte_nbr = 0; byte_nbr < limit; byte_nbr += shift[tolower(block[byte_nbr + pattern_size])]) {
         if (tolower(block[byte_nbr]) == tolower(*pattern)) {
             /*
              * 如果第一个字节匹配，那么继续匹配剩下的
