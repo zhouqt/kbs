@@ -328,7 +328,7 @@ int deny_user(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 {                               /* 禁止POST用户名单 维护主函数 */
     char uident[STRLEN];
     int page = 0;
-    char ans[10], repbuf[STRLEN];
+    char ans[10];
     int count;
 
     /*
@@ -463,7 +463,6 @@ int deny_user(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 
 int addclubmember(char *uident, int readperm)
 {
-    char genbuf1[80], genbuf2[80];
     int id;
     int i;
     char ans[8];
@@ -513,7 +512,6 @@ int addclubmember(char *uident, int readperm)
 
 int delclubmember(char *uident, int readperm)
 {
-    char genbuf1[80], genbuf2[80];
     char fn[STRLEN];
     int id;
     int i;

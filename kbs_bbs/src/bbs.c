@@ -1705,7 +1705,7 @@ int change_mode(struct _select_def* conf,struct fileheader *fileinfo,int newmode
     return DIRCHANGED;
 }
 
-int read_hot_info(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
+int read_hot_info()
 {
     char ans[4];
     move(t_lines - 1, 0);
@@ -3721,7 +3721,7 @@ void RemoveAppendedSpace(char *ptr)
     }
 }
 
-int i_read_mail(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
+int i_read_mail()
 {
     if(!HAS_PERM(currentuser, PERM_BASIC)||!strcmp(currentuser->userid, "guest")) return DONOTHING;
     if (HAS_MAILBOX_PROP(&uinfo, MBP_MAILBOXSHORTCUT))
@@ -5136,7 +5136,7 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
 
     {'G', (READ_KEY_FUNC)range_flag,(void*)FILE_TITLE_FLAG},
         
-    {'H', (READ_KEY_FUNC)read_hot_info,NULL},   /* flyriver: 2002.12.21 增加热门信息显示 */
+    {'H', read_callfunc0, read_hot_info},   /* flyriver: 2002.12.21 增加热门信息显示 */
         
     {Ctrl('G'), (READ_KEY_FUNC)change_mode,(void*)0},   /* bad : 2002.8.8 add marked mode */
     {'`', (READ_KEY_FUNC)change_mode,(void*)DIR_MODE_DIGEST},
@@ -5146,7 +5146,7 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
 
     {'s', (READ_KEY_FUNC)do_select,NULL},
     {'x', (READ_KEY_FUNC)into_announce,NULL},
-    {'v', (READ_KEY_FUNC)i_read_mail,NULL},         /* period 2000-11-12 read mail in article list */
+    {'v', read_callfunc0,i_read_mail},         /* period 2000-11-12 read mail in article list */
 
     {'i', (READ_KEY_FUNC)Save_post,NULL},
     {'J', (READ_KEY_FUNC)Semi_save,NULL},

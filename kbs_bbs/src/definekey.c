@@ -41,7 +41,6 @@ void ask_define()
     int j;
     char sname[4][14]={"一塌糊涂", "北大未名", "南大小百合", "本站默认"};
     char fname[4][30]={"service/definekey.ytht", "service/definekey.pku", "service/definekey.nju", "service/definekey.smth"};
-    char root[18]="定制区主目录";
     clear();
     move(3, 3);
     prints("请选择你习惯的按键模式:");
@@ -69,7 +68,6 @@ int save_key()
 {
     FILE* fp;
     char fname[STRLEN];
-    struct stat st;
     sethomefile(fname, currentuser->userid, "definekey");
     fp=fopen(fname, "wb");
     if(fp==NULL) return -1;
@@ -99,7 +97,7 @@ int remove_key(int i)
     return 0;
 }
 
-int get_key_name(int key, char* s)
+void get_key_name(int key, char* s)
 {
     if(key>=1&&key<=26)
         sprintf(s, "Ctrl+%c", key+64);
@@ -161,7 +159,7 @@ int get_key_name(int key, char* s)
     }
 }
 
-int get_keys_name(struct key_struct* key, char* buf)
+void get_keys_name(struct key_struct* key, char* buf)
 {
     int i=0;
     buf[0]=0;
@@ -173,7 +171,7 @@ int get_keys_name(struct key_struct* key, char* buf)
     buf[strlen(buf)-1] = 0;
 }
 
-int get_modes_name(struct key_struct* key, char* buf)
+void get_modes_name(struct key_struct* key, char* buf)
 {
     int i=0;
     buf[0]=0;
@@ -191,6 +189,7 @@ int get_modes_name(struct key_struct* key, char* buf)
         i++;
     }
     buf[strlen(buf)-1] = 0;
+    return;
 }
 
 int modes[200][2], modest;
@@ -252,7 +251,6 @@ static int set_modes_getdata(struct _select_def *conf, int pos, int len)
 int set_modes(int *res)
 {
     struct _select_def group_conf;
-    struct key_struct key;
     POINT *pts;
     char *s;
     int i,j,n;

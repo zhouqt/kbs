@@ -136,8 +136,6 @@ static int a_select_path_show(struct _select_def *conf, int i)
 
 static int a_select_path_prekey(struct _select_def *conf, int *key)
 {
-    a_select_path_arg *arg = (a_select_path_arg *) conf->arg;
-
     switch (*key) {
     case 'e':
     case 'q':
@@ -678,10 +676,7 @@ int a_menusearch(path, key, level)
 char *path, *key;
 int level;
 {
-    FILE *fn;
     char bname[STRLEN], bpath[STRLEN];
-    char buf[PATHLEN], *ptr;
-    int len;
     struct stat st;
     struct boardheader fhdr;
     int num;
@@ -1047,7 +1042,7 @@ int paste;
             else
                 sprintf(genbuf, "您确定要剪切%s %s 吗? (Y/N) [N]: ", (dashd(fpath) ? "目录" : "文件"), filename);
             a_prompt(-2, genbuf, ans);
-            if ((ans[0] == 'C' || ans[0] == 'c') && (iscut == 0) || (ans[0] == 'Y' || ans[0] == 'y') && (iscut == 1)) {
+            if (((ans[0] == 'C' || ans[0] == 'c') && (iscut == 0)) || ((ans[0] == 'Y' || ans[0] == 'y') && (iscut == 1))) {
                 char buf[256];
 
                 if (dashd(fpath)) {     /* 是目录 */
@@ -1501,7 +1496,7 @@ void ann_attach_link(char* buf,int buf_len,long attachpos,void* arg)
      *if (normal_board(currboard->filename)) {
      * @todo: generate temp sid
      */
-      snprintf(buf,buf_len-9,"http://%s/bbsanc.php?path=%s&ap=%d",
+      snprintf(buf,buf_len-9,"http://%s/bbsanc.php?path=%s&ap=%ld",
         server,fname+10,attachpos);
 }
 
@@ -1737,7 +1732,7 @@ int lastlevel, lastbmonly;
             me.page = 9999;
             break;              /*Haohmaru 98.09.22 */
         case 'v':
-            i_read_mail(NULL,NULL,NULL);
+            i_read_mail();
             me.page = 9999;
             break;
         case 'u':

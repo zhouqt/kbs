@@ -45,7 +45,6 @@ static int save_clock_data()
 {
 	FILE *fp;
 	char fname[STRLEN];
-	struct stat st;
 
 	sethomefile(fname,currentuser->userid,"clock.data");
 	fp=fopen(fname,"wb");
@@ -646,11 +645,11 @@ static void get_clock_string(struct clock_struct * ck, char *typestr, char * tim
 		break;
 	case CLOCK_TYPE_LOGIN:
 		strcpy(typestr,"Í£ÁôÄÖÖÓ");
-		sprintf(timestr,"ÉÏÕ¾Í£Áô%d·ÖÖÓºó",ck->clock_time/60);
+		sprintf(timestr,"ÉÏÕ¾Í£Áô%ld·ÖÖÓºó",ck->clock_time/60);
 		break;
 	case CLOCK_TYPE_LOGIN_HAD:
 		strcpy(typestr,"Í£ÁôÄÖÁå");
-		sprintf(timestr,"ÉÏÕ¾Í£Áô%d·ÖÖÓºó",ck->clock_time/60);
+		sprintf(timestr,"ÉÏÕ¾Í£Áô%ld·ÖÖÓºó",ck->clock_time/60);
 		break;
 	default:
 		strcpy(typestr,"ÆÕÍ¨ÄÖÖÓ");
@@ -687,7 +686,7 @@ static int set_clock_show(struct _select_def *conf, int i)
 	char timestr[50];
 
 	get_clock_string(clock_data+i-1,typestr,timestr);
-	typestr[4]=='\0';
+	typestr[4]='\0';
 	prints(" %-4s %-25s %-40s",typestr,timestr,(clock_data+i-1)->memo);
 	return SHOW_CONTINUE;
 }

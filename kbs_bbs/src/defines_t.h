@@ -10,6 +10,10 @@ int mail_uforward(struct _select_def* conf,struct fileheader* data,void* extrada
 #endif
 
 /*screen.c*/
+void do_naws(int ln, int col);
+void auto_chinese();
+int num_noans_chr(char* str);
+void noscroll();
 void setfcolor(int i,int j);
 void setbcolor(int i);
 void resetcolor();
@@ -88,6 +92,8 @@ void set_numofsig();
 void docmdtitle(char *title, char *prompt);
 
 /* bbs.c*/
+int read_hot_info();
+int i_read_mail();
 int del_range(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
 int add_attach(char* file1, char* file2, char* filename);
 int zsend_attach(int ent, struct fileheader *fileinfo, char *direct);
@@ -142,6 +148,7 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
 void deliverreport(char *title,char *str);
 
 /* talk.c */
+int friend_add();
 void creat_list();
 int deleteoverride(char *uident);
 int num_visible_users();
@@ -173,6 +180,7 @@ int i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, str
 void u_exit();
 
 /* sendmsg.c */
+void r_msg();
 extern int msg_count;
 int s_msg();
 void r_lastmsg();
@@ -259,4 +267,7 @@ int exec_mbem(char *s);
 
 /* super_filter.c */
 int super_filter(struct _select_def* conf,struct fileheader* fileinfo,void* extraarg);
+
+/* definekey.c */
+int load_key(char * fn);
 #endif

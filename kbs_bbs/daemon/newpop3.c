@@ -77,6 +77,7 @@ char LowUserPostfix[20];
 char MailBoxName[20];
 char genbuf[BUFSIZE];
 
+//static void pop3_logattempt(char* uid,char* frm);       /* Leeward 98.07.25 */
 #define QLEN            5
 
 #define S_CONNECT       1
@@ -90,8 +91,6 @@ char genbuf[BUFSIZE];
 /*#define POP3_TIMEOUT         60*/
 /* Leeward 98.05.06 Increases TIMEOUT value for slow modem users */
 #define POP3_TIMEOUT         180
-
-static jmp_buf timebuf;
 
 int State;
 int msock, sock;                /* master server socket */
@@ -182,7 +181,7 @@ static void do_ssl(int fd)
 
 #endif
 
-static void logattempt(uid, frm)        /* Leeward 98.07.25 */
+static void pop3_logattempt(uid, frm)        /* Leeward 98.07.25 */
     char *uid, *frm;
 {
     char fname[STRLEN];
@@ -287,14 +286,16 @@ static void outs(str)
         (void) write(sock, sendbuf, strlen(sendbuf));
 }
 
-static void outc(char ch)
+static int outc(char ch)
 {
+    int ret;
 #ifdef USE_SSL
     if (use_ssl)
-        SSL_write(ssl, &ch, 1);
+        ret=SSL_write(ssl, &ch, 1);
     else
 #endif
-        (void) write(sock, &ch, 1);
+        ret=write(sock, &ch, 1);
+    return ret;
 }
 void outfile(filename, linenum)
     char *filename;
@@ -360,13 +361,6 @@ void outfile(filename, linenum)
     outs(".");
 }
 
-
-/* timeout - handle timeouts */
-static void timeout(sig)
-    int sig;
-{
-    longjmp(timebuf, sig);
-}
 
 #if 0
 void rfc931(rmt_sin, our_sin, dest)
@@ -543,7 +537,6 @@ void Init()
 void Login_init()
 {
     int fd, i;
-    char *ptr;
     struct stat st;
 
     totalnum = totalbyte = 0;
@@ -1168,7 +1161,7 @@ void Pass()
         outs(genbuf);
         LowUserid[0] = '\0';
         BBSlog_usies("ERROR PASSWD");
-        logattempt(currentuser->userid, fromhost); /* Leeward 98.07.25 */
+        pop3_logattempt(currentuser->userid, fromhost); /* Leeward 98.07.25 */
         return;
     }
 

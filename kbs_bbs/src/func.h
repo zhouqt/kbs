@@ -1,6 +1,9 @@
 /* define all function that need to by used in whole project */
 #ifndef __FUNC_H__
 #define __FUNC_H__
+#if HAVE_MYSQL_SMTH == 1
+#include <mysql.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -71,6 +74,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     void newbbslog(int type, const char *fmt, ...);
 
 /* defined in utmp.c */
+    int getnewutmpent2(struct user_info *up);
     typedef int (*APPLY_UTMP_FUNC) (struct user_info *, void *, int pos);
     void resolve_utmp();
     void detach_utmp();
@@ -105,6 +109,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     void output(const char *s, int len);
 
 /* defined in stuff.c */
+    int getuinfopid(void);
     int add_mailgroup_user(mailgroup_list_t * mgl, int entry, mailgroup_t * users, mailgroup_t * user);
     int delete_mailgroup_user(mailgroup_list_t * mgl, int entry, mailgroup_t * users, int pos);
     int modify_mailgroup_user(mailgroup_t * users, int pos, mailgroup_t * user);
@@ -465,6 +470,8 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     int check_sysconf();
 
 /* libmsg.c */
+    int get_unreadcount(char *uident);
+    int get_unreadmsg(char *uident);
     int load_msghead(int id, char *uident, int index, struct msghead *head);
     int load_msgtext(char *uident, struct msghead *head, char *msgbuf);
     int translate_msg(char* src, struct msghead *head, char* dest);
@@ -489,6 +496,8 @@ int chk_smsmsg(int force );
 char * get_al_mobile( char *userid, char *mobile);
 int get_sql_al( struct addresslist * smdata, char *userid, char *dest, char *group,int start, int num, int order, char *msgtxt);
 int add_sql_al(char *userid, struct addresslist *al, char *msgbuf);
+int count_sql_al( char *userid, char *dest, char *group, char *msgtxt);
+MYSQL * my_connect_mysql(MYSQL *s);
 #endif
 
 #ifdef PERSONAL_CORP
@@ -538,6 +547,7 @@ int pc_read_comment();
     void get_mail_limit(struct userec *user, int *sumlimit, int *numlimit);
 
 /* bbs_sendmail.c */
+    int mail_buf(struct userec*fromuser, char *mail_buf, char *userid, char *title);
     int chkusermail(struct userec *user);
     int chkreceiver(struct userec *fromuser, struct userec *touser);
     int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5, int noansi);

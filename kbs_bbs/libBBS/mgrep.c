@@ -25,6 +25,7 @@ extern unsigned char *CurrentFileName;
 extern int total_line;
 
 #ifdef BBSMAIN
+extern void prints(char *fmt, ...);
 #define printf prints
 #ifdef putchar
 #undef putchar

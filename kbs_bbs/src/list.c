@@ -227,7 +227,7 @@ static bool showcolor=true;
 
 int do_userlist()
 {
-    int i,j,y,x;
+    int i,y,x;
     char user_info_str[256 /*STRLEN*2 */ ], pagec;
     char tbuf[80];
     int override;
@@ -413,7 +413,6 @@ char ch;
 int allnum, pagenum;
 {
     char buf[STRLEN], genbuf[5];
-    extern bool enableESC;
     int i, buflen;
 
     switch (ch) {
@@ -815,7 +814,6 @@ void Users()
 
 int t_friends()
 {
-    FILE *fp;
     char genbuf[STRLEN];
 #ifdef NEW_HELP
 	int oldhelpmode=helpmode;

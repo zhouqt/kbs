@@ -282,12 +282,11 @@ int getutmprequest(int m_socket)
     int len;
     struct sockaddr_in sin;
     int s;
-    char *pnum;
     char *phdr = (char *) &utmpreq;
     int totalread;
 
     len = sizeof(sin);
-    for (s = accept(m_socket, &sin, &len);; s = accept(m_socket, &sin, &len)) {
+    for (s = accept(m_socket, (struct sockaddr*)&sin, &len);; s = accept(m_socket, (struct sockaddr *)&sin, &len)) {
         if ((s <= 0) && errno != EINTR) {
             bbslog("3system", "utmpd:accept %s", strerror(errno));
             exit(-1);
@@ -322,7 +321,7 @@ int getrequest(int m_socket)
 
     len = sizeof(sin);
 
-    for (s = accept(m_socket, &sin, &len);; s = accept(m_socket, &sin, &len)) {
+    for (s = accept(m_socket, (struct sockaddr*)&sin, &len);; s = accept(m_socket, (struct sockaddr *)&sin, &len)) {
         if ((s <= 0) && errno != EINTR) {
             bbslog("3system", "userd:accept %s", strerror(errno));
             exit(-1);
@@ -540,7 +539,6 @@ static int miscd_dodaemon(char *argv1, char *daemon)
     struct sigaction act;
     char *commandline;
     char commbuf[10];
-    char ch;
 
     if (load_ucache() != 0) {
         printf("ft,load ucache error!");

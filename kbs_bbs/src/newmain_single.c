@@ -383,7 +383,7 @@ void system_abort()
 
 int check_ID_lists(char * id)
 {
-    int i,j,k;
+    int i;
     FILE* fp;
     struct stat st;
     struct flock ldata;
@@ -428,7 +428,7 @@ int check_ID_lists(char * id)
             if((double)(now-ids[i].last)<=ID_CONNECT_CON_THRESHOLD2) {
                 fp=fopen(".IDdenys", "a");
                 if(fp){
-                    fprintf(fp, "0 %ld %s %d\n", (unsigned int)now, id, ids[i].t);
+                    fprintf(fp, "0 %ld %s %d\n", now, id, ids[i].t);
                     fclose(fp);
                 }
                 if((double)(now-ids[i].last)<=5.0)
@@ -441,7 +441,7 @@ int check_ID_lists(char * id)
             if(ids[i].t>=10&&(ids[i].t/(double)(ids[i].last-ids[i].first)>=ID_CONNECT_CON_THRESHOLD)) {
                 fp=fopen(".IDdenys", "a");
                 if(fp){
-                    fprintf(fp, "1 %ld %s %d\n", (unsigned int)now, id, ids[i].t);
+                    fprintf(fp, "1 %ld %s %d\n", now, id, ids[i].t);
                     fclose(fp);
                 }
                 if(ids[i].t/(double)(ids[i].last-ids[i].first)>=100.0/60/60)
@@ -669,7 +669,7 @@ void login_query()
                     break;
                 if (i == 1) {
                     fclose(fn);
-                    sprintf(genbuf, "\033[32m你已经戒网，离戒网结束还有%d天\033[m\n", j - time(0) / 3600 / 24);
+                    sprintf(genbuf, "\033[32m你已经戒网，离戒网结束还有%ld天\033[m\n", j - time(0) / 3600 / 24);
                     prints(genbuf);
                     oflush();
                     sleep(1);
@@ -789,7 +789,7 @@ void showsysinfo(char * fn)
 {
     FILE* fp;
     char buf[500];
-    int count=1,i,j;
+    int count=1,i;
     fp=fopen(fn, "r");
     if(!fp) return;
     while(!feof(fp)) {
@@ -815,7 +815,7 @@ void showsysinfo(char * fn)
 void user_login()
 {
     char fname[STRLEN];
-    char ans[5], *ruser;
+    char ans[5];
     unsigned unLevel = PERM_SUICIDE;
 
     /* ?????后面还有check_register_info */
@@ -1200,9 +1200,7 @@ void update_endline()
 /*ReWrite by SmallPig*/
 void showtitle( char *title, char*mid)
 {
-    char buf[STRLEN];
-    char stitle[256];
-    int spc1, spc2;
+    int spc1;
     int colour;
     char note[STRLEN];
 

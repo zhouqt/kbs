@@ -138,7 +138,7 @@ void raw_ochar(char c)
 
 int raw_read(int fd, char *buf, int len)
 {
-    int i,j,retlen=0,pp=0;
+    int i,j,retlen=0;
 #ifdef SSHBBS
     return ssh_read(fd, buf, len);
 #else
@@ -732,7 +732,7 @@ int igetkey()
 #endif
 
     if(scrint&&keymem_total&&!skip_key&&!ingetdata) {
-        int i,j,k,p;
+        int i,j,p;
         for(i=0;i<keymem_total;i++) {
             p=!keymem[i].status[0];
             if(keymem[i].status[0]==-1) continue;
@@ -833,7 +833,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             ingetdata = false;
             return -ch;         /* Leeward 98.07.30 supporting msgX */
         }
-        if (uinfo.mode == KILLER && (!buf[0]) && (ch==KEY_UP||ch==KEY_DOWN||ch==KEY_PGUP||ch==KEY_PGDN||ch>=Ctrl('S')&&ch<=Ctrl('W'))) {
+        if ((uinfo.mode == KILLER && (!buf[0]) && (ch==KEY_UP||ch==KEY_DOWN||ch==KEY_PGUP||ch==KEY_PGDN))||(ch>=Ctrl('S')&&ch<=Ctrl('W'))) {
             ingetdata = false;
             return -ch;
         }
@@ -1002,7 +1002,7 @@ bool UPDOWN=false;
 
 int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len, int maxline, int clearlabel, int textmode)
 {
-    int ch, clen = 0, curr = 0, x, y, startx, starty, now, i, j, k, i0, chk, cursorx, cursory;
+    int ch, x, y, startx, starty, now, i, j, k, i0, chk, cursorx, cursory;
     char savebuffer[25][LINELEN*3];
     bool init=true;
     char tmp[1024];

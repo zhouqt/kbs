@@ -1723,7 +1723,7 @@ int friend_help(struct _select_def* conf,struct friends *fh,void* extraarg)
     return FULLUPDATE;
 }
 
-int friend_add(struct _select_def* conf,struct friends *fh,void* extraarg)
+int friend_add()
 {
     char uident[13];
 
@@ -1738,7 +1738,7 @@ int friend_add(struct _select_def* conf,struct friends *fh,void* extraarg)
         } else
             addtooverride(uident);
     }
-    return FULLUPDATE;
+    return DIRCHANGED;
 }
 
 int friend_dele(struct _select_def* conf,struct friends *fh,void* extraarg)
@@ -1823,8 +1823,8 @@ struct key_command friend_list[] = {
     {'r', (READ_KEY_FUNC)friend_query,NULL},
     {'m', (READ_KEY_FUNC)friend_mail,NULL},
     {'M', (READ_KEY_FUNC)friend_mail,NULL},
-    {'a', (READ_KEY_FUNC)friend_add,NULL},
-    {'A', (READ_KEY_FUNC)friend_add,NULL},
+    {'a', read_callfunc0, friend_add},
+    {'A', read_callfunc0, friend_add},
     {'d', (READ_KEY_FUNC)friend_dele,NULL},
     {'D', (READ_KEY_FUNC)friend_dele,NULL},
     {'E', (READ_KEY_FUNC)friend_edit,NULL},

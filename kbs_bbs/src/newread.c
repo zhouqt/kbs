@@ -82,7 +82,7 @@ void savePos(int mode,char* direct,int pos,struct boardheader* bh)
     ptr->pos=pos;
 }
 
-static int read_setusermode(cmdmode)
+static void read_setusermode(cmdmode)
 {
     if (cmdmode==DIR_MODE_MAIL) {
         modify_user_mode(RMAIL);
@@ -659,7 +659,7 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct 
         else if (cmdmode == DIR_MODE_FRIEND) {
             getdata(t_lines - 1, 0, "没有任何好友 (A)新增好友 (Q)离开？[Q] ", genbuf, 4, DOECHO, NULL, true);
             if (genbuf[0] == 'a' || genbuf[0] == 'A')
-                friend_add(0, NULL, 0);
+                friend_add();
         }
 
         else {
@@ -1208,4 +1208,9 @@ int read_splitscreen(struct _select_def* conf, struct fileheader* fh, void* extr
         tmpuser|=TDEF_SPLITSCREEN;
     list_select_add_key(conf, KEY_ONSIZE);
     return DONOTHING;
+}
+
+int read_callfunc0(struct _select_def* conf, void* data, void* extraarg)
+{
+    return (*(int(*)())extraarg)();
 }

@@ -236,11 +236,7 @@ int show_allmsgs()
 {
     char buf[MAX_MSG_SIZE], showmsg[MAX_MSG_SIZE*2], chk[STRLEN];
     int oldmode, count, i, j, page, ch, y, all=0, reload=0;
-    char title[STRLEN];
     struct msghead head;
-    time_t now;
-    char fname[STRLEN];
-    FILE* fn;
 
     if(!HAS_PERM(currentuser, PERM_PAGE)) return -1;
     oldmode = uinfo.mode;
@@ -333,7 +329,7 @@ reenter:
                     char fname[STRLEN], fname2[STRLEN];
                     size_t bm_search[256];
                     struct msghead head;
-                    int i, j;
+                    int i;
                     bool init=false;
                     sethomefile(fname, currentuser->userid, "msgindex");
                     sethomefile(fname2, currentuser->userid, "msgindex3");
@@ -344,8 +340,8 @@ reenter:
                     for(i=0;i<count;i++) {
                         read(fd, &head, sizeof(struct msghead));
                         if(toupper(ch)=='S') load_msgtext(currentuser->userid, &head, buf);
-                        if(toupper(ch)=='I'&&!strncasecmp(chk, head.id, IDLEN) ||
-                            toupper(ch)=='S'&&bm_strcasestr_rp(buf, chk, bm_search, &init) != NULL)
+                        if((toupper(ch)=='I'&&!strncasecmp(chk, head.id, IDLEN))
+                          ||(toupper(ch)=='S'&&bm_strcasestr_rp(buf, chk, bm_search, &init) != NULL))
                             write(fd2, &head, sizeof(struct msghead));
                     }
                     close(fd2);
@@ -457,7 +453,7 @@ void r_msg()
 {
     int y, x, ch, i, ox, oy, tmpansi, pid, oldi;
     char savebuffer[25][LINELEN*3];
-    char buf[MAX_MSG_SIZE+100], outmsg[MAX_MSG_SIZE*2], buf2[STRLEN], uid[14];
+    char buf[MAX_MSG_SIZE+100], outmsg[MAX_MSG_SIZE*2], uid[14];
     struct user_info * uin;
     struct msghead head;
     int now, count, canreply, first=1;
@@ -559,14 +555,16 @@ void r_msg()
         else canreply = 1;
         
         clrtoeol();
-        if(!reg)
+        if(!reg) {
         if(canreply)
             prints("\033[m 第 %d 条消息 / 共 %d 条消息, 回复 %-12s\n", now+1, count, uid);
-        else
+        else {
             if(uin)
                 prints("\033[m 第 %d 条消息 / 共 %d 条消息,↑↓切换,Enter结束, 该消息无法回复", now+1, count);
             else
                 prints("\033[m 第 %d 条消息 / 共 %d 条消息,↑↓切换,Enter结束, 用户%s已下站,无法回复", now+1, count, uid);
+        }
+        }
         getyx(&oy, &ox);
         
         if(canreply) {

@@ -42,6 +42,7 @@ static int clear_all_board_read_flag_func(struct boardheader *bh,void* arg)
     if (brc_initial(currentuser->userid, bh->filename) != 0)
         brc_clear();
 #endif
+    return 0;
 }
 
 int clear_all_board_read_flag()
@@ -233,7 +234,6 @@ static int search_board(int *num, struct _select_def *conf, int key)
 {
     struct favboard_proc_arg *arg = (struct favboard_proc_arg *) conf->arg;
     int n, ch, tmpn = false;
-    struct newpostdata* buffer;
 
     *num=0;
     if (arg->find == true) {
@@ -499,7 +499,7 @@ static int fav_onselect(struct _select_def *conf)
         return SHOW_SELECT;
     } else {
         struct boardheader bh;
-        int tmp, page;
+        int tmp;
 
         if (getboardnum(ptr->name, &bh) != 0 && check_read_perm(currentuser, &bh)) {
             int bid;
@@ -550,8 +550,6 @@ static int fav_key(struct _select_def *conf, int command)
         break;
     case 'X':                  /* Leeward 98.03.28 Set a board READONLY */
         {
-            char buf[STRLEN];
-
             if (!HAS_PERM(currentuser, PERM_SYSOP) && !HAS_PERM(currentuser, PERM_OBOARDS))
                 break;
             if (!strcmp(ptr->name, "syssecurity")
@@ -579,8 +577,6 @@ static int fav_key(struct _select_def *conf, int command)
         }
     case 'Y':                  /* Leeward 98.03.28 Set a board READABLE */
         {
-            char buf[STRLEN];
-
             if (!HAS_PERM(currentuser, PERM_SYSOP) && !HAS_PERM(currentuser, PERM_OBOARDS))
                 break;
             if (ptr->dir)
@@ -625,7 +621,7 @@ static int fav_key(struct _select_def *conf, int command)
 	/*add by stiger */
     case 'H':
 	{
-		read_hot_info(0,NULL,NULL);
+		read_hot_info();
     	return SHOW_REFRESH;
 	}
 	/* add end */
@@ -855,7 +851,6 @@ static int fav_key(struct _select_def *conf, int command)
     case 'T':                  /* added by bad 2002.8.3*/
         if (BOARD_FAV == arg->yank_flag) {
             char bname[STRLEN];
-            int i = 0;
 
             if (ptr->dir == 1 && ptr->tag >= 0) {
                 move(0, 0);
@@ -908,8 +903,6 @@ static int fav_key(struct _select_def *conf, int command)
             if (ptr->tag < 0)
                 p = 0;
             if (p) {
-                char ans[2];
-
                 move(0, 0);
                 clrtoeol();
                 p = askyn("确认删除吗？", 0);
@@ -1039,7 +1032,6 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
     struct favboard_proc_arg arg;
     POINT *pts;
     int i;
-    int y;
     struct newpostdata *nbrd;
     int favlevel = 0;           /*当前层数 */
     int favlist[FAVBOARDNUM];   /* 保存当前的group 信息和收藏夹信息*/
@@ -1186,6 +1178,7 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
     }
     save_zapbuf();
     modify_user_mode(oldmode);
+    return 0;
 }
 
 void FavBoard()

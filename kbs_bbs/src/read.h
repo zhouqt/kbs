@@ -164,6 +164,8 @@ int read_showauthorBM(struct _select_def* conf, struct fileheader* fh, void* ext
 int getPos(int mode,char* direct,struct boardheader* bh);
 void savePos(int mode,char* direct,int pos,struct boardheader* bh);
 
+/*调用无参数的函数*/
+int read_callfunc0(struct _select_def* conf, void* data, void* extraarg);
 /*判断两个标题是否是同主题*/
 bool isThreadTitle(char* a,char* b);
 #ifdef PERSONAL_CORP

@@ -117,7 +117,6 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
     int i,j,n;
     char op[14][4]={"||","&&","==","!=",">=","<=",">","<","+","-","*","/","%","<<"};
     char op2[14][10]={"或","且","是","不是","大等于","小等于","大于","小于","加","减","乘","除","模", "包含"};
-    struct fvar_struct * t,q;
     char buf[1000];
     while(s[l]==' '&&l<=r) l++;
     while(s[r]==' '&&l<=r) r--;
@@ -187,7 +186,6 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
         else if(!strcmp("date",buf)){
             int j=strchr(s+i+1, ',')-s, k;
             struct tm t;
-            char * res;
             fmakesure(strchr(s+i+1, ',')!=NULL, 4);
             fmakesure(strchr(s+i+1, ',')<=s+r, 4);
             fmakesure(strchr(s+j+1, ',')!=NULL, 4);
@@ -212,7 +210,6 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
         else if(!strcmp("today",buf)){
             struct tm t;
             time_t tt;
-            char * res;
             p->num=true;
             tt=time(0);
             gmtime_r(&tt, &t);
@@ -224,8 +221,6 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
         }
         else if(!strcmp("time",buf)){
             int j=strchr(s+i+1, ',')-s, k;
-            struct tm t;
-            char * res;
             fmakesure(strchr(s+i+1, ',')!=NULL, 4);
             fmakesure(strchr(s+i+1, ',')<=s+r, 4);
             fmakesure(strchr(s+j+1, ',')!=NULL, 4);
@@ -247,19 +242,20 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
     for(j=0;j<14;j++) {
         n=r;
         do{
-            if(n+strlen(op[j])<=r&&!strncmp(s+n, op[j], strlen(op[j]))||n+strlen(op2[j])<=r&&!strncmp(s+n, op2[j], strlen(op2[j]))) {
+            if((n+strlen(op[j])<=r&&!strncmp(s+n, op[j], strlen(op[j])))
+             ||(n+strlen(op2[j])<=r&&!strncmp(s+n, op2[j], strlen(op2[j])))) {
                 struct fvar_struct m1,m2,m3;
                 char * res;
                 m1.p=0; m2.p=0; m3.p=0;
                 feval(&m1,s,l,n-1);
-                if(j==2||j==3) {fmakesure(m1.num||!m1.num&&m1.p,1);}
+                if(j==2||j==3) {fmakesure(m1.num||(!m1.num&&m1.p),1);}
                 else if(j==13) {fmakesure(!m1.num,1);}
                 else {fmakesure(m1.num,1);}
                 if(!strncmp(s+n, op[j], strlen(op[j])))
                     feval(&m2,s,n+strlen(op[j]),r);
                 else
                     feval(&m2,s,n+strlen(op2[j]),r);
-                if(j==2||j==3) {fmakesure(m1.num&&m2.num||!m1.num&&!m2.num&&m2.p,1);}
+                if(j==2||j==3) {fmakesure((m1.num&&m2.num)||(!m1.num&&!m2.num&&m2.p),1);}
                 else if(j==13) {fmakesure(!m2.num,1);}
                 else {fmakesure(m2.num,1);}
                 p->num=true;
@@ -502,7 +498,6 @@ int super_filter(struct _select_def* conf,struct fileheader* fileinfo,void* extr
             }
         }
         if(load_content) {
-            int k,abssize=0,entercount=0,ignoreline=0;
             set_vars(fvars+fget_var("content"), ptr1->filename);
             set_vars(fvars+fget_var("文章内容"), ptr1->filename);
             j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize, NULL);

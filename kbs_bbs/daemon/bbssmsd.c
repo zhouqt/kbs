@@ -478,7 +478,8 @@ int main()
     return 0;
 }
 #else
-main()
+int main()
 {
+   return 0;
 }
 #endif

@@ -196,8 +196,6 @@ static void start_daemon(inetd, port)
     struct sockaddr_in sin;
     char buf[80];
     time_t val;
-    FILE *lock_pid;
-
     /*
      * More idiot speed-hacking --- the first time conversion makes the C
      * library open the files containing the locale definition and time zone.
@@ -398,7 +396,7 @@ bool initIP=false;
 
 int check_IP_lists(unsigned int IP2)
 {
-    int i,j,k;
+    int i;
     FILE* fp;
     int ip[4];
     int found=0,min=0,ret=0;
@@ -462,7 +460,7 @@ int check_IP_lists(unsigned int IP2)
             if((double)(now-ips[i].last)<=CON_THRESHOLD2) {
                 fp=fopen(".IPdenys", "a");
                 if(fp){
-                    fprintf(fp, "0 %ld %d.%d.%d.%d %d\n", (unsigned int)now, ip[0],ip[1],ip[2],ip[3], ips[i].t);
+                    fprintf(fp, "0 %ld %d.%d.%d.%d %d\n", now, ip[0],ip[1],ip[2],ip[3], ips[i].t);
                     fclose(fp);
                 }
                 ret = 1;
@@ -474,7 +472,7 @@ int check_IP_lists(unsigned int IP2)
                 ips[i].t=100000;
                 fp=fopen(".IPdenys", "a");
                 if(fp){
-                    fprintf(fp, "1 %ld %d.%d.%d.%d %d\n", (unsigned int)now, ip[0],ip[1],ip[2],ip[3], ips[i].t);
+                    fprintf(fp, "1 %ld %d.%d.%d.%d %d\n", now, ip[0],ip[1],ip[2],ip[3], ips[i].t);
                     fclose(fp);
                 }
                 ret = 1;

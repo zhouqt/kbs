@@ -378,7 +378,6 @@ int list_select(struct _select_def *conf, int key)
     int ret;
 
 /*      int old_page_num=conf->page_num;*/
-    int old_pos = conf->pos;
     bool getkey=true;
 
 /*      int old_item_count = conf->item_count;*/
