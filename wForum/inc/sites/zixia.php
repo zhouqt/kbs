@@ -12,13 +12,15 @@ define('SMS_SUPPORT', true);
 
 define('AUDIO_CHAT', true);
 
-define ("MAINTITLE","<IMG SRC=\"bar/title.jpg\">");
+define ("MAINTITLE","<img src=\"bar/title.jpg\"/>");
 
 define("ATTACHMAXSIZE","4194304");
 define ("ATTACHMAXTOTALSIZE","20971520");
 define("ATTACHMAXCOUNT","20");
 
 define('MYFACEMAXSIZE','102400');
+
+define('SUPPORT_TEX', true);
 
 $section_nums = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
 $section_names = array(

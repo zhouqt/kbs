@@ -12,7 +12,7 @@ define("BOARDS_PER_ROW", 3); //折叠版面列表每行版面数目
 
 //define("SECTION_DEF_CLOSE", false); //首页分区版面列表在默认情况下是否关闭
 
-define ('MAINTITLE','<IMG SRC="bar/title.jpg">'); //页面正上方显示的站点标题
+define ('MAINTITLE','<img src="bar/title.jpg" />'); //页面正上方显示的站点标题
 
 define('OLD_REPLY_STYLE', true); //使用传统 telnet re 文方式
 

@@ -12,7 +12,7 @@ $SiteName="±±¼«ÐÇBBS";
 
 $Banner="pic/ws.jpg";
 
-define ("MAINTITLE","<IMG SRC=\"bar/title.jpg\">");
+define ("MAINTITLE","<img src=\"bar/title.jpg\" />");
 define("ATTACHMAXSIZE","5242880");
 define ("ATTACHMAXTOTALSIZE","20971520");
 define("ATTACHMAXCOUNT","20");

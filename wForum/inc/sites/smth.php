@@ -16,7 +16,7 @@ $Banner="bar/bar.jpg";
 
 define('SMS_SUPPORT', 1);
 
-define ("MAINTITLE","<OBJECT classid=clsid:D27CDB6E-AE6D-11cf-96B8-444553540000 codebase=http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0 height=84 width=600> <PARAM NAME='MOVIE' VALUE='bar/smth2.swf' /><EMBED SRC=\"bar/smth2.swf\" height=84 width=600></EMBED></OBJECT>");
+define ("MAINTITLE","<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" height=\"84\" width=\"600\"> <param name=\"MOVIE\" value=\"bar/smth2.swf\" /><embed SRC=\"bar/smth2.swf\" height=\"84\" width=\"600\"></embed></object>");
 
 define("ATTACHMAXSIZE","2097152");
 define("ATTACHMAXCOUNT","3");

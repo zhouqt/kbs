@@ -18,7 +18,7 @@ $site_defines = array(
 array(1, "SiteURL", 's', "http://localhost/", "站点 URL，也就是本站首页地址"),
 array(1, "SiteName", 's', "测试站", "站点名称"),
 array(1, "Banner", 's', "pic/ws.jpg", "页面左上角显示的站点标题图片"),
-array(0, "MAINTITLE", 's', "<IMG SRC=\"bar/title.jpg\">", "页面正上方显示的站点标题"),
+array(0, "MAINTITLE", 's', "<img src=\"bar/title.jpg\" />", "页面正上方显示的站点标题"),
 array(0, "OLD_REPLY_STYLE", 'b', false, "是否使用传统 telnet re 文方式"),
 array(0, "ENABLE_UBB", 'b', true, "是否支持 UBB"),
 array(0, "SHOW_REGISTER_TIME", 'b', false, "是否显示用户注册时间"),
