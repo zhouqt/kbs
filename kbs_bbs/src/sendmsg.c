@@ -486,7 +486,9 @@ void r_msg()
 
         if(first) {
             refresh();
-            ch = igetkey();
+            do{
+                ch = igetkey();
+            }while(!DEFINE(currentuser, DEF_IGNOREMSG)&&ch!=Ctrl('Z')&&ch!='r'&&ch!='R');
             first = 0;
         }
         

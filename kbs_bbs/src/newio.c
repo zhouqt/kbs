@@ -920,6 +920,58 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                     buf[now++]='\n';
                 }
                 break;
+            case Ctrl('W'):
+                if(cursory>starty) {
+                    y = starty; x = startx;
+                    chk = 0;
+                    if(y==cursory-1&&x<=cursorx)
+                        now=0;
+                    for(i=0; i<strlen(buf); i++) {
+                        if(chk) chk=0;
+                        else if(buf[i]<0) chk=1;
+                        if(chk&&x>=maxcol) x++;
+                        if(buf[i]!=13&&buf[i]!=10) {
+                            if(x>maxcol) {
+                                x = col;
+                                y++;
+                            }
+                            x++;
+                        }
+                        else {
+                            x = col;
+                            y++;
+                        }
+                        if(y==cursory-1&&x<=cursorx)
+                            now=i+1;
+                    }
+                }
+                break;
+            case Ctrl('S'):
+                if(cursory<y) {
+                    y = starty; x = startx;
+                    chk = 0;
+                    if(y==cursory+1&&x<=cursorx)
+                        now=0;
+                    for(i=0; i<strlen(buf); i++) {
+                        if(chk) chk=0;
+                        else if(buf[i]<0) chk=1;
+                        if(chk&&x>=maxcol) x++;
+                        if(buf[i]!=13&&buf[i]!=10) {
+                            if(x>maxcol) {
+                                x = col;
+                                y++;
+                            }
+                            x++;
+                        }
+                        else {
+                            x = col;
+                            y++;
+                        }
+                        if(y==cursory+1&&x<=cursorx)
+                            now=i+1;
+                    }
+                }
+                break;
             case '\177':
             case Ctrl('H'):
                 if(now>0) {
