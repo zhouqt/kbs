@@ -137,7 +137,7 @@ function cache_header($scope,$modifytime=0,$expiretime=300)
 	global $cachemode;
 	session_cache_limiter($scope);
 	$cachemode=$scope;
-	if ($scope=="nocache")
+	if ($scope=="no-cache")
 		return FALSE;
 	@$oldmodified=$_SERVER["HTTP_IF_MODIFIED_SINCE"];
 	if ($oldmodified!="") {
@@ -159,8 +159,8 @@ function html_init($charset,$title="")
 	global $_COOKIE;
 	global $cachemode;
 	if ($cachemode=="") {
-		cache_header("nocache");
-		Header("Cache-Control: nocache");
+		cache_header("no-cache");
+		Header("Cache-Control: no-cache");
     }
 	@$css_style = $_COOKIE["STYLE"];
 	settype($css_style, "integer");
