@@ -51,6 +51,11 @@
 #include <dirent.h>
 #include <unistd.h>
 #include <sys/mman.h>
+#include <sys/socket.h>
+#include <sys/shm.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/wait.h>
 
 /* System names.. by zixia.*/
 #include BBSSITE_H
