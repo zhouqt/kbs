@@ -1387,8 +1387,8 @@ function pc_fwd_getbody($node)
 		$content = str_replace("&nbsp;","####sp####",$node[body]);
 		$content = str_replace("<br />","####br####",$node[body]);
 		$content = undo_html_format(strip_tags($content));
-		$content = str_replace("####sp####"," ",$node[body]);
-		$content = str_replace("####br####","\n",$node[body]);
+		$content = str_replace("####sp####"," ",$content);
+		$content = str_replace("####br####","\n",$content);
 		$body .= $content;
 	}
 	else
