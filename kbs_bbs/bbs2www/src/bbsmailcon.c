@@ -47,7 +47,7 @@ int main()
     }
     fclose(fp);
     printf("</pre>\n</table><hr>\n");
-    printf("[<a onclick='return confirm(\"你真的要删除这封信吗?\")' href=bbsdelmail?file=%s&dir=%s&title=%s> 删除</a>]", file,dirname,title);
+    printf("[<a onclick='return confirm(\"你真的要删除这封信吗?\")' href=/bbsdelmail.php?file=%s&dir=%s&title=%s> 删除</a>]", file,dirname,title);
     }
     fp = fopen(dir, "r+");
     if (fp == 0)
