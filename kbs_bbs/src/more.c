@@ -526,7 +526,7 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
                 *ty = LINE_QUOTA;
                 break;
             default:
-                if (*l < 2 || strncmp(p0, ": ", 2))
+                if (*l > 2 && (!strncmp(p0, ": " ,2) || !strncmp(p0, "> " ,2)))
                     *ty = LINE_NORMAL;
                 else
                     *ty = LINE_QUOTA; //ÒýÎÄ
@@ -541,7 +541,7 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
                 *ty = LINE_QUOTA_NOCF;
                 break;
             default:
-                if (*l < 2 || strncmp(p0, ": ", 2))
+                if (*l > 2 && (!strncmp(p0, ": " ,2) || !strncmp(p0, "> " ,2)))
                     *ty = LINE_NORMAL_NOCF;
                 else
                     *ty = LINE_QUOTA_NOCF;
