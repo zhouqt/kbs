@@ -22,7 +22,7 @@
                 if (!strcmp($currentuser["userid"],"guest"))
                     html_error_quit("请先注册帐号");
                 
-                if ($select < -1)// || $group > sizeof($section_nums))
+                if ($select < 0)// || $group > sizeof($section_nums))
                         html_error_quit("错误的参数");
                 if(bbs_load_favboard($select)==-1)
                         html_error_quit("错误的参数");
@@ -53,7 +53,7 @@
 	    <a class="kts1" href="mainpage.php"><?php echo BBS_FULL_NAME; ?></a>  - <a class="kts1"  href="bbsfav.php">个人定制区</a></td>
   </tr>
    <tr valign=bottom align=center> 
-    <td align="left" class="kb4"><?php if( $select===-1 ) echo "[根目录]"; ?></td>
+    <td align="left" class="kb4"><?php if( $select==0 ) echo "[根目录]"; ?></td>
      <td align="right" class="kb1" >
 	   <a class="kts1" href="bbssec.php">分类讨论区</a>
     </td>
@@ -87,7 +87,7 @@
                 $brd_flag= $boards["FLAG"];//目录标识
                 $brd_bid= $boards["BID"];//目录标识
                 $rows = sizeof($brd_name);
-                if($select != -1)
+                if($select != 0)
                 {
 ?>
 	<tr>

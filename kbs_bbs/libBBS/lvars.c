@@ -2,6 +2,7 @@
 
 struct boardheader *bcache;
 struct BCACHE *brdshm;
+struct BDIRCACHE	*bdirshm;
 struct UTMPFILE *utmpshm;
 struct userec *currentuser;
 struct usermemo *currentmemo;

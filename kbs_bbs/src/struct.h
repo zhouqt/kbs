@@ -201,10 +201,27 @@ struct BoardStatus {            /* use this to speed up board list */
 	int todaynum;
 #endif
 };
+struct favbrd_struct {
+	int bnum;
+	int bid[MAXBOARDPERDIR];
+	/* bid >= 0: 版面
+	   bid < 0: 目录， 表示子目录是 favbrd_list[-bid]
+	   */
+    char title[81];
+    int father;
+	int level;
+};
+
 struct BCACHE {
     int numboards;
     struct BoardStatus bstatus[MAXBOARD];
 };
+
+struct BDIRCACHE {
+	struct favbrd_struct allbrd_list[FAVBOARDNUM];
+	int allbrd_list_t;
+};
+
 struct posttop {
 /*    char author[IDLEN + 1];      author name */
     char board[IDLEN + 6];  /*     board name */
@@ -460,3 +477,4 @@ struct protect_id_passwd {
 	char question[STRLEN];   //密码提示问题
 	char answer[STRLEN];    //问题答案
 };
+

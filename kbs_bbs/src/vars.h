@@ -56,6 +56,7 @@ extern time_t login_start_time;
 
 SMTH_API struct boardheader *bcache;
 SMTH_API struct BCACHE *brdshm;
+SMTH_API struct BDIRCACHE *bdirshm;
 
 #ifdef BBSMAIN
 extern int idle_count;

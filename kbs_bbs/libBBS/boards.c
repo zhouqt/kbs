@@ -14,30 +14,26 @@ struct _brc_cache_entry brc_cache_entry[BRC_CACHE_NUM];
 static int brc_currcache=-1;
 #endif
 
-struct favbrd_struct {
-    int flag;
-    char *title;
-    int father;
-};
-
 static const char NullChar[] = "";
 static const char EmptyChar[] = "空";
 
 /* added by bad 2002-08-3	FavBoardDir */
-struct favbrd_struct favbrd_list[FAVBOARDNUM];
-int favbrd_list_t = -1, favnow = -1;
+/* stiger:
+   操作的favbrd_list其实是一个指针
+   当自己的时候指向mybrd_list
+   当讨论区目录时指向bdirshm->allbrd_list
+
+   favbrd_list_t同理
+   */
+struct favbrd_struct *favbrd_list=NULL;
+int *favbrd_list_count;
+struct favbrd_struct mybrd_list[FAVBOARDNUM];
+int mybrd_list_t = -1, favnow = 0;
+
+#define favbrd_list_t (*favbrd_list_count)
 
 int *zapbuf;
 int zapbuf_changed = 0;
-
-void release_favboard()
-{
-    int i;
-
-    for (i = 0; i < favbrd_list_t; i++)
-        if (favbrd_list[i].flag == -1)
-            free(favbrd_list[i].title);
-}
 
 int valid_brdname(brd)
 char *brd;
@@ -54,43 +50,129 @@ char *brd;
     return 1;
 }
 
-void load_favboard(int dohelp)
+void load_allboard(struct favbrd_struct *brdlist, int * brdlist_t)
+{
+	int fd, sign=0;
+
+	(*brdlist_t) = 0;
+	bzero(brdlist, sizeof(struct favbrd_struct)*FAVBOARDNUM);
+
+    if ((fd = open("etc/board.dir", O_RDONLY, 0600)) != -1) {
+        read(fd, &sign, sizeof(int));
+		if(sign==0x8081){
+            read(fd, brdlist_t, sizeof(int));
+			read(fd, brdlist, sizeof(struct favbrd_struct) * (*brdlist_t) );
+		}
+		close(fd);
+	}
+	if(*brdlist_t <= 0){
+        brdlist[0].bnum = 1;
+        brdlist[0].bid[0] = 0;
+		brdlist[0].father = -1;
+		(*brdlist_t)=1;
+	}	
+}
+
+void load_favboard(int dohelp,int mode)
 {
     char fname[STRLEN];
-    int fd, idx, i, j;
+    int fd, sign, i, j, k;
 
-    sethomefile(fname, currentuser->userid, "favboard");
-    favnow = -1;
+	if(mode!=2)
+	    sethomefile(fname, currentuser->userid, "favboard");
+	else
+		sprintf(fname,"etc/board.dir");
+    favnow = 0;
+	
+	if(mode!=2){
+		favbrd_list=mybrd_list;
+		favbrd_list_count=&mybrd_list_t;
+		if(favbrd_list_t > 0)
+			return;
+	}else{
+		favbrd_list=bdirshm->allbrd_list;
+		favbrd_list_count = &bdirshm->allbrd_list_t;
+		{FILE *fp;if((fp=fopen("/home/bbs/stiger.test","a"))!=NULL){for(i=0;i<favbrd_list_t;i++){fprintf(fp,"%d %d %s:",i,favbrd_list[i].father,favbrd_list[i].title);for(j=0;j<favbrd_list[i].bnum;j++) fprintf(fp," %d",favbrd_list[i].bid[j]);fprintf(fp,"\n");}fprintf(fp,"--%d-\n",favbrd_list_t);fclose(fp);}}
+		return;
+	}
+	if(favbrd_list_t>0) return;
+
+	bzero(favbrd_list, sizeof(struct favbrd_struct)*FAVBOARDNUM);
     if ((fd = open(fname, O_RDONLY, 0600)) != -1) {
-        read(fd, &i, sizeof(int));
-        if (i != 0x8080) {      /* We can consider the 0x8080 magic number as a 
+        read(fd, &sign, sizeof(int));
+        if (sign != 0x8080 && sign!=0x8081 ) {      /* We can consider the 0x8080 magic number as a 
                                  * * version identifier of favboard file. */
             /*
              * We handle old version here. 
              */
-            favbrd_list_t = i;
-            for (i = 0; i < favbrd_list_t; i++) {
+            favbrd_list_t = 1;
+            favbrd_list[0].father = -1;
+            for (k=0; k<i; k++) {
                 read(fd, &j, sizeof(int));
-                favbrd_list[i].flag = j;
-                favbrd_list[i].father = -1;
+                favbrd_list[0].bid[k] = j;
             }
-        } else {
+        } else if(sign==0x8080) {
             /*
              * We handle new version here. 
              */
-            read(fd, &favbrd_list_t, sizeof(int));
-            for (i = 0; i < favbrd_list_t; i++) {
+			struct favbrd_struct_old{
+					/*flag > 0: 版面
+					  flag < 0: -flag表示这个目录实际对应的新的目录	id
+					  */
+				int flag;
+				int father;
+				char buf[256];
+			} favbrd_list_tmp[FAVBOARDNUM];
+
+            read(fd, &k, sizeof(int));
+            for (i = 0; i < k; i++) {
                 read(fd, &j, sizeof(int));
-                favbrd_list[i].flag = j;
+                favbrd_list_tmp[i].flag = j;
                 if (j == -1) {
                     char len;
+					int lll;
                     read(fd, &len, sizeof(char));
-                    favbrd_list[i].title = (char *) malloc(len);
-                    read(fd, favbrd_list[i].title, len);
+                    read(fd, favbrd_list_tmp[i].buf, len);
+					lll = len;
+					favbrd_list_tmp[i].buf[lll]='\0';
                 }
                 read(fd, &j, sizeof(int));
-                favbrd_list[i].father = j;
+                favbrd_list_tmp[i].father = j;
             }
+
+			favbrd_list_t=1;
+			favbrd_list[0].father=-1;
+			for(i=0;i<k;i++){
+				if( favbrd_list_tmp[i].flag == -1 ){
+					favbrd_list_tmp[i].flag = 0 - favbrd_list_t;
+					strncpy(favbrd_list[favbrd_list_t].title, favbrd_list_tmp[i].buf, 80);
+					favbrd_list[favbrd_list_t].title[80]=0;
+					favbrd_list_t++;
+				}
+			}
+			for(i=0;i<k;i++){
+				int newfather;
+				if( favbrd_list_tmp[i].father == -1 )
+					newfather=0;
+				else
+					newfather = 0-favbrd_list_tmp[favbrd_list_tmp[i].father].flag;
+
+				if( favbrd_list_tmp[i].flag < 0 ){
+					if(newfather >= 0 && favbrd_list[newfather].bnum < MAXBOARDPERDIR){
+						favbrd_list[newfather].bid[favbrd_list[newfather].bnum]=favbrd_list_tmp[i].flag;
+						favbrd_list[newfather].bnum++;
+						favbrd_list[0-favbrd_list_tmp[i].flag].father = newfather;
+					}
+				}else{
+					if(newfather >= 0 && favbrd_list[newfather].bnum < MAXBOARDPERDIR){
+						favbrd_list[newfather].bid[favbrd_list[newfather].bnum]=favbrd_list_tmp[i].flag;
+						favbrd_list[newfather].bnum++;
+					}
+				}
+			}
+		}else{
+            read(fd, &favbrd_list_t, sizeof(int));
+			read(fd, favbrd_list, sizeof(struct favbrd_struct) * favbrd_list_t);
         }
         close(fd);
     }
@@ -109,67 +191,70 @@ void load_favboard(int dohelp)
         FILE* fp=fopen("etc/initial_favboard", "r");
         if(!fp) {
             favbrd_list_t = 1;      /*  favorate board count    */
-            favbrd_list[0].flag = 0;
-            favbrd_list[0].father = -1;
+            favbrd_list[0].bnum = 1;
+            favbrd_list[0].bid[0] = 0;
+			favbrd_list[0].father = -1;
         } else {
             favbrd_list_t = 1;      /*  favorate board count    */
-            favbrd_list[0].flag = 0;
-            favbrd_list[0].father = -1;
+			favbrd_list[0].father = -1;
             while(!feof(fp)) {
                 int k;
                 if(fscanf(fp, "%s", bn)<1) break;
                 k=getbnum(bn);
                 if(k) {
-                    favbrd_list[favbrd_list_t].flag = k-1;
-                    favbrd_list[favbrd_list_t].father = -1;
-                    favbrd_list_t++;
+					if(favbrd_list[0].bnum < MAXBOARDPERDIR){
+						favbrd_list[0].bid[favbrd_list[0].bnum]=k;
+						favbrd_list[0].bnum++;
+					}
                 }
             }
             fclose(fp);
         }
-    } else {
-        int num = favbrd_list_t;
+    } else if(mode!=2){
+        int change=0;
+		struct boardheader *bh;
 
-        idx = -1;
-        while (++idx < favbrd_list_t) {
-            struct boardheader *bh;
-
-            if (favbrd_list[idx].flag == -1)
-                continue;
-            fd = favbrd_list[idx].flag;
-            bh = (struct boardheader *) getboard(fd + 1);
-            if (fd >= 0 && fd <= get_boardcount() && (bh && bh->filename[0]
-                                                      && (check_see_perm(currentuser,bh))
-                )
-                )
-                continue;
-            DelFavBoard(idx);   /*  error correction    */
-        }
-        if (num != favbrd_list_t)
-            save_favboard();
+		for(i=0;i<favbrd_list_t;i++){
+			for(j=0;j<favbrd_list[i].bnum;j++){
+				fd = favbrd_list[i].bid[j];
+				if (fd < 0)
+					continue;
+				bh = (struct boardheader *) getboard(fd + 1);
+				if (fd <= get_boardcount() && (bh && bh->filename[0] && (check_see_perm(currentuser,bh)) ) )
+				    continue;
+				for(k=j;k<favbrd_list[i].bnum-1;k++){
+					favbrd_list[i].bid[k]=favbrd_list[i].bid[k+1];
+				}
+				favbrd_list[i].bid[k]=0;
+				favbrd_list[i].bnum--;
+				j--;
+				change=1;
+			}
+		}
+		if(change)
+            save_favboard(mode);
     }
 }
 
-void save_favboard()
+void save_favboard(int mode)
 {
-    int fd, i, j;
+    int fd, i;
     char fname[MAXPATH];
 
-    sethomefile(fname, currentuser->userid, "favboard");
+	if(mode!=2)
+		sethomefile(fname, currentuser->userid, "favboard");
+	else
+		sprintf(fname,"etc/board.dir");
+
+	if(mode==2 && !HAS_PERM(currentuser,PERM_SYSOP))
+		return;
+
     if ((fd = open(fname, O_WRONLY | O_CREAT, 0600)) != -1) {
-        i = 0x8080;
+        i = 0x8081;
         write(fd, &i, sizeof(int));
         write(fd, &favbrd_list_t, sizeof(int));
         for (i = 0; i < favbrd_list_t; i++) {
-            j = favbrd_list[i].flag;
-            write(fd, &j, sizeof(int));
-            if (j == -1) {
-                char len = strlen(favbrd_list[i].title) + 1;
-                write(fd, &len, sizeof(char));
-                write(fd, favbrd_list[i].title, len);
-            }
-            j = favbrd_list[i].father;
-            write(fd, &j, sizeof(int));
+            write(fd, &favbrd_list[i], sizeof(struct favbrd_struct));
         }
         close(fd);
     }
@@ -179,8 +264,8 @@ int IsFavBoard(int idx)
 {
     int i;
 
-    for (i = 0; i < favbrd_list_t; i++)
-        if (idx == favbrd_list[i].flag && favnow == favbrd_list[i].father)
+    for (i = 0; i < favbrd_list[favnow].bnum ; i++)
+        if (idx == favbrd_list[favnow].bid[i])
             return i + 1;
     return 0;
 }
@@ -189,8 +274,8 @@ int ExistFavBoard(int idx)
 {
     int i;
 
-    for (i = 0; i < favbrd_list_t; i++)
-        if (idx == favbrd_list[i].flag)
+    for (i = 0; i < favbrd_list[favnow].bnum; i++)
+        if (idx == favbrd_list[favnow].bid[i])
             return i + 1;
     return 0;
 }
@@ -199,46 +284,36 @@ int changeFavBoardDir(int i, char *s)
 {
     if (i >= favbrd_list_t)
         return -1;
-    if (favbrd_list[i].flag != -1)
-        return -1;
-    free(favbrd_list[i].title);
-    favbrd_list[i].title = (char *) malloc(strlen(s) + 1);
-    strcpy(favbrd_list[i].title, s);
+    strncpy(favbrd_list[i].title, s, 80);
+	favbrd_list[i].title[80]=0;
     return 0;
 }
 
 int getfavnum()
 {
-    int i, count = 0;
-
-    for (i = 0; i < favbrd_list_t; i++)
-        if (favnow == favbrd_list[i].father)
-            count++;
-    return count;
+    return favbrd_list[favnow].bnum;
 }
 
+/* i是bid */
 void addFavBoard(int i)
 {
-    if (favbrd_list_t < FAVBOARDNUM) {
-        favbrd_list[favbrd_list_t].flag = i;
-        favbrd_list[favbrd_list_t].father = favnow;
-        favbrd_list_t++;
+    if (favbrd_list[favnow].bnum < MAXBOARDPERDIR) {
+        favbrd_list[favnow].bid[favbrd_list[favnow].bnum] = i;
+		favbrd_list[favnow].bnum++;
     };
 }
 
-void addFavBoardDir(int i, char *s)
+void addFavBoardDir(char *s)
 {
-    int j;
-
-    if (favbrd_list_t < FAVBOARDNUM && strlen(s) <= 20) {
-        for (j = 0; j < favbrd_list_t; j++)
-            if ((favbrd_list[j].father == favnow) && (favbrd_list[j].flag == -1) && !strcmp(favbrd_list[j].title, s))
-                return ;
-        favbrd_list[favbrd_list_t].flag = -1;
+    if (favbrd_list[favnow].bnum < MAXBOARDPERDIR && favbrd_list_t < FAVBOARDNUM) {
+        favbrd_list[favbrd_list_t].level = 0;
+        favbrd_list[favbrd_list_t].bnum = 0;
         favbrd_list[favbrd_list_t].father = favnow;
-        favbrd_list[favbrd_list_t].title = (char *) malloc(strlen(s) + 1);
-        strcpy(favbrd_list[favbrd_list_t].title, s);
+        strncpy(favbrd_list[favbrd_list_t].title, s, 80);
+		favbrd_list[favbrd_list_t].title[80]=0;
+		favbrd_list[favnow].bid[favbrd_list[favnow].bnum]=0-favbrd_list_t;
         favbrd_list_t++;
+		favbrd_list[favnow].bnum++;
     };
 }
 
@@ -251,88 +326,101 @@ int SetFav(int i)
     return j;
 }
 
+/* i是bid */
 int DelFavBoard(int i)
 {
-    int j;
+    int j,k;
 
-    if (i >= favbrd_list_t)
+	for(j=0;j<favbrd_list[favnow].bnum;j++){
+		if(i==favbrd_list[favnow].bid[j]){
+			for(k=j; k<favbrd_list[favnow].bnum-1; k++){
+				favbrd_list[favnow].bid[k] = favbrd_list[favnow].bid[k+1];
+			}
+			favbrd_list[favnow].bid[k] = 0;
+			favbrd_list[favnow].bnum --;
+		}
+	}
+	return 0;
+}
+
+/* 删除 favbrd_list[father].bid[i] */
+int DelFavBoardDir(int i,int fath)
+{
+    int j,k;
+	int father=fath;
+	int n;
+    if (i >= favbrd_list[father].bnum)
         return favbrd_list_t;
     if (i < 0)
         return favbrd_list_t;
-    if (favbrd_list[i].flag == -1)
-        for (j = 0; j < favbrd_list_t; j++)
-            if (favbrd_list[j].father == i) {
-                DelFavBoard(j);
-                if (j < i)
-                    i--;
+	//j是要删除的目录序号
+	j=0-favbrd_list[father].bid[i];
+    for (k = 0; k < favbrd_list[j].bnum; k++){
+		//如果有子目录
+        if (favbrd_list[j].bid[k] < 0) {
+			//得到子目录的节点号
+			n=0-favbrd_list[j].bid[k];
+			//删除子目录
+            DelFavBoardDir(k,j);
+            if (n < j)
                 j--;
-            }
+			if (n < father)
+				father--;
+            k--;
+        }
+	}
+	//总的目录数减一
     favbrd_list_t--;
-    if (favbrd_list[i].flag == -1)
-        free(favbrd_list[i].title);
-    for (j = i; j < favbrd_list_t; j++)
-        favbrd_list[j] = favbrd_list[j + 1];
-    for (j = 0; j < favbrd_list_t; j++)
-        if (favbrd_list[j].father >= i)
-            favbrd_list[j].father--;
-    if (favnow >= i)
+	//移动j之后的目录
+    for (k = j; k < favbrd_list_t; k++)
+        favbrd_list[k] = favbrd_list[k + 1];
+	bzero(&favbrd_list[k], sizeof(struct favbrd_struct));
+	//如果当前的father在j之后，那么father要前移一个
+	if (father >= j)
+		father--;
+	//吧所有的father在j之后的目录的father--
+    for (k = 0; k < favbrd_list_t; k++)
+        if (favbrd_list[k].father >= j)
+            favbrd_list[k].father--;
+	//吧所有指向j之后的bid提前一个
+	for (k=0; k<favbrd_list_t;k++){
+		for (n=0; n<favbrd_list[k].bnum; n++){
+			if( 0-favbrd_list[k].bid[n] > j )
+				favbrd_list[k].bid[n]++;
+		}
+	}
+	//处理当前father节点的索引
+	favbrd_list[father].bnum--;
+	for (k=i;k<favbrd_list[father].bnum;k++)
+		favbrd_list[father].bid[k] = favbrd_list[father].bid[k+1];
+	favbrd_list[father].bid[k]=0;
+	//处理favnow
+    if (favnow >= j)
         favnow--;
-    if (!favbrd_list_t) {
-        favbrd_list_t = 1;      /*  favorite board count    */
-        favbrd_list[0].flag = 0;        /*  default sysop board     */
-    }
     return 0;
 }
 
-/* 注意,q现在是当前移动的位置
-  返回favnow
-*/
-int MoveFavBoard(int p, int qq, int fav_father)
+/*把版面p得位置得移动到位置q, p,q start from 0 */
+int MoveFavBoard(int p, int q)
 {
-    struct favbrd_struct temp;
-    int i;
-	int q=0;
+    int k;
+	int i;
 
-    int count;
-    count=0;
-    if (qq!=0) {
-        for (i=0;i<favbrd_list_t;i++) {
-            if (favbrd_list[i].father==fav_father) {
-            count++;
-            if (count==qq+1)
-                break;
-            }
-        }
-		if (i==favbrd_list_t)
-		    return fav_father;
-		q=i;
-    }
-    if (p == q)
-	    return fav_father;
-    if (p < 0 || p >= favbrd_list_t)
-	    return fav_father;
-    if (q < 0 || q >= favbrd_list_t)
-	    return fav_father;
-    for (i = 0; i < favbrd_list_t; i++)
-        if (favbrd_list[i].father == p)
-            favbrd_list[i].father = q;
-        else if (p > q && favbrd_list[i].father >= q && favbrd_list[i].father < p)
-            favbrd_list[i].father++;
-        else if (p < q && favbrd_list[i].father <= q && favbrd_list[i].father > p)
-            favbrd_list[i].father--;
-    if (p > q && favnow >= q && favnow < p)
-        favnow++;
-    if (p < q && favnow <= q && favnow > p)
-        favnow--;
-    temp = favbrd_list[p];
-    if (p > q)
-        for (i = p; i > q; i--)
-            favbrd_list[i] = favbrd_list[i - 1];
-    else
-        for (i = p; i < q; i++)
-            favbrd_list[i] = favbrd_list[i + 1];
-    favbrd_list[q] = temp;
-    return favnow;
+	if(p<0 || q<0 || p>=favbrd_list[favnow].bnum || q>=favbrd_list[favnow].bnum)
+		return -1;
+	if(p == q)
+		return 0;
+	i=favbrd_list[favnow].bid[p];
+	if( p > q ){
+		for(k=p; k>q; k--)
+			favbrd_list[favnow].bid[k] = favbrd_list[favnow].bid[k-1];
+		favbrd_list[favnow].bid[k] = i;
+	}else{
+		for(k=p; k<q; k++)
+			favbrd_list[favnow].bid[k] = favbrd_list[favnow].bid[k+1];
+		favbrd_list[favnow].bid[k] = i;
+	}
+	return 0;
 }
 
 /*---   ---*/
@@ -965,7 +1053,7 @@ int normal_board(const char *bname)
 int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,const char** input_namelist)
 {
 //注意，如果是目录，nbrd的flag应该为-1
-    int n, k;
+    int n;
     struct boardheader *bptr=NULL;
     int brdnum;
     struct newpostdata *ptr;
@@ -985,44 +1073,42 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
     	    namelist=input_namelist;
     	indexlist=(int*)malloc(sizeof(int*)*(pos+len-1));
     }
-    for (n = 0; n < favbrd_list_t; n++) {
-        if (favbrd_list[n].father != favnow)
-        	continue;
-        if (favbrd_list[n].flag != -1) {
-            bptr = (struct boardheader *) getboard(favbrd_list[n].flag + 1);
+    for (n = 0; n < favbrd_list[favnow].bnum; n++) {
+        if (favbrd_list[favnow].bid[n] >=0) {
+            bptr = (struct boardheader *) getboard(favbrd_list[favnow].bid[n] + 1);
             if (!bptr)
                 continue;
             if (!*bptr->filename)
                 continue;
             if (!check_see_perm(currentuser,bptr))
                 continue;
-        }
+        }else{
+			if (!HAS_PERM(currentuser,favbrd_list[0-favbrd_list[favnow].bid[n]].level))
+				continue;
+		}
         /*肯定要计算的版面*/
         brdnum++;
         if (!sort) {
 	    if (input_namelist) {
-                if (favbrd_list[n].flag == -1) 
+            if (favbrd_list[favnow].bid[n] < 0) 
 	            input_namelist[brdnum-1]=NullChar;
-		else
+			else
 	            input_namelist[brdnum-1]=bptr->filename;
             }
             if (brdnum<pos||brdnum>=pos+len)
             	continue;
             if (nbrd) {
                 ptr = &nbrd[brdnum-pos];
-                if (favbrd_list[n].flag == -1) {
+                if (favbrd_list[favnow].bid[n] < 0) {
                     ptr->name = NullChar;
-                    ptr->title = favbrd_list[n].title;
+                    ptr->title = favbrd_list[0-favbrd_list[favnow].bid[n]].title;
                     ptr->dir = 1;
                     ptr->BM = NullChar;
                     ptr->flag = -1;
-                    ptr->tag = n;
-                    ptr->pos = 0;
-                    ptr->total = 0;
+                    ptr->tag = 0-favbrd_list[favnow].bid[n];
+                    ptr->pos = n;
+                    ptr->total = favbrd_list[0-favbrd_list[favnow].bid[n]].bnum;
                     ptr->unread = 1;
-                    for (k = 0; k < favbrd_list_t; k++)
-                        if (favbrd_list[k].father == n)
-                            ptr->total++;
                     ptr->zap = 0;
                 } else {
                     ptr->name = bptr->filename;
@@ -1031,19 +1117,19 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
                     ptr->BM = bptr->BM;
                     ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
                     ptr->tag = n;
-                    ptr->pos = favbrd_list[n].flag;
+                    ptr->pos = favbrd_list[favnow].bid[n];
 		    if (bptr->flag&BOARD_GROUP)
                     ptr->total = bptr->board_data.group_total;
 		    else
                     ptr->total = -1;
-                    ptr->zap = (zapbuf[favbrd_list[n].flag] == 0);
+                    ptr->zap = (zapbuf[favbrd_list[favnow].bid[n]] == 0);
                 }
             	}
         } else {  /*如果是要排序，那么应该先排序缓存一下*/
             int i;
             const char* title;
             int j;
-            if (favbrd_list[n].flag == -1)
+            if (favbrd_list[favnow].bid[n] < 0)
             	title=NullChar;
             else
             	title=bptr->filename;
@@ -1081,33 +1167,30 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
         if (nbrd) {
             for (n=pos-1;n<curcount;n++) {
     	    ptr=&nbrd[n-(pos-1)];
-                if (favbrd_list[indexlist[n]].flag != -1) {
-                    bptr = (struct boardheader *) getboard(favbrd_list[indexlist[n]].flag + 1);
+                if (favbrd_list[favnow].bid[indexlist[n]] >= 0) {
+                    bptr = (struct boardheader *) getboard(favbrd_list[favnow].bid[indexlist[n]] + 1);
                     ptr->name = bptr->filename;
                     ptr->dir = 0;
                     ptr->title = bptr->title;
                     ptr->BM = bptr->BM;
                     ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
                     ptr->tag = indexlist[n];
-                    ptr->pos = favbrd_list[indexlist[n]].flag;
+                    ptr->pos = favbrd_list[favnow].bid[indexlist[n]];
 		    if (bptr->flag&BOARD_GROUP)
                     ptr->total = bptr->board_data.group_total;
 		    else
                     ptr->total = -1;
-                    ptr->zap = (zapbuf[favbrd_list[indexlist[n]].flag] == 0);
+                    ptr->zap = (zapbuf[favbrd_list[favnow].bid[indexlist[n]]] == 0);
                 } else {
                     ptr->name = NullChar;
-                    ptr->title = favbrd_list[indexlist[n]].title;
+                    ptr->title = favbrd_list[0-favbrd_list[favnow].bid[indexlist[n]]].title;
                     ptr->dir = 1;
                     ptr->BM = NullChar;
                     ptr->flag = -1;
-                    ptr->tag = indexlist[n];
-                    ptr->pos = 0;
-                    ptr->total = 0;
+                    ptr->tag = 0-favbrd_list[favnow].bid[indexlist[n]];
+                    ptr->pos = indexlist[n];
+                    ptr->total = favbrd_list[0-favbrd_list[favnow].bid[indexlist[n]]].bnum;
                     ptr->unread = 1;
-                    for (k = 0; k < favbrd_list_t; k++)
-                        if (favbrd_list[k].father == indexlist[n])
-                            ptr->total++;
                     ptr->zap = 0;
                 }
             }

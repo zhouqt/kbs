@@ -186,6 +186,7 @@ extern long ti;
 
 /* added by bad 2002-08-2	FavBoardDir */
 #define FAVBOARDNUM     100     /*收藏夹最大条目*/
+#define MAXBOARDPERDIR	100		/*每个收藏夹目录最大版面数目*/
 #define MAILBOARDNUM	20      /*自定义邮箱最大数目*/
 
 

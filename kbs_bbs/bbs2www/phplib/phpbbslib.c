@@ -122,11 +122,11 @@ static PHP_FUNCTION(bbs_normalboard);
 /* favboard operation. by caltary  */
 static PHP_FUNCTION(bbs_load_favboard);
 static PHP_FUNCTION(bbs_fav_boards);
-static PHP_FUNCTION(bbs_release_favboard);
 static PHP_FUNCTION(bbs_is_favboard);
 static PHP_FUNCTION(bbs_add_favboarddir);
 static PHP_FUNCTION(bbs_add_favboard);
 static PHP_FUNCTION(bbs_del_favboard);
+static PHP_FUNCTION(bbs_del_favboarddir);
 
 
 static PHP_FUNCTION(bbs_printoriginfile);
@@ -185,6 +185,7 @@ static PHP_FUNCTION(bbs_wwwlogoff);
 static PHP_FUNCTION(bbs_printansifile);
 static PHP_FUNCTION(bbs_print_article);
 static PHP_FUNCTION(bbs_print_article_js);
+
 
 ////////////////////////   Other helper functions  ////////////////////////////
 
@@ -338,11 +339,11 @@ static function_entry smth_bbs_functions[] = {
 	/* favboard operation. by caltary  */
 	PHP_FE(bbs_load_favboard,NULL)
 	PHP_FE(bbs_fav_boards,NULL)
-	PHP_FE(bbs_release_favboard,NULL)
 	PHP_FE(bbs_is_favboard,NULL)
 	PHP_FE(bbs_add_favboarddir,NULL)
 	PHP_FE(bbs_add_favboard,NULL)
 	PHP_FE(bbs_del_favboard,NULL)
+	PHP_FE(bbs_del_favboarddir,NULL)
        PHP_FE(bbs_sysconf_str,NULL)
 		PHP_FE(bbs_get_tmpls,NULL)
 		PHP_FE(bbs_get_tmpl_from_num,NULL)
@@ -1937,7 +1938,7 @@ static int check_newpost(struct newpostdata *ptr)
     return 1;
 }
 
-#define BOARD_COLUMNS 10
+#define BOARD_COLUMNS 11
 
 char *brd_col_names[BOARD_COLUMNS] = {
     "NAME",
@@ -1949,16 +1950,11 @@ char *brd_col_names[BOARD_COLUMNS] = {
     "ZAPPED",
     "BID",
     "POSITION",                  /* added by caltary */
-    "FLAG"           /* is group ?*/
+    "FLAG" ,          /* is group ?*/
+	"NPOS"
 };
 
 /* added by caltary */
-struct favbrd_struct
-{
-  int flag;
-  char *title;
-  int father;
-};
 extern struct favbrd_struct favbrd_list[FAVBOARDNUM];
 extern int favbrd_list_t;
 extern int favnow;
@@ -1998,6 +1994,8 @@ static void bbs_make_board_zval(zval * value, char *col_name, struct newpostdata
         ZVAL_LONG(value, brd->flag);/*added end */
     } else if (strncmp(col_name, "BID", len) == 0){
         ZVAL_LONG(value, brd->pos+1);/*added end */
+    } else if (strncmp(col_name, "NPOS", len) == 0){
+        ZVAL_LONG(value, brd->pos);/*added end */
     } else {
         ZVAL_EMPTY_STRING(value);
     }
@@ -2019,6 +2017,9 @@ static void bbs_make_favdir_zval(zval * value, char *col_name, struct newpostdat
     } else if (strncmp(col_name, "BID", len) == 0){
 		/* 保存目录的索引值 */
         ZVAL_LONG(value, brd->tag);/*added end */
+    } else if (strncmp(col_name, "NPOS", len) == 0){
+		/* 保存目录的索引值 */
+        ZVAL_LONG(value, brd->pos);/*added end */
     } else {
         ZVAL_EMPTY_STRING(value);
     }
@@ -4971,6 +4972,7 @@ PHP_MINFO_FUNCTION(smth_bbs)
  *		<0 error
  *  @author roy
  */
+ 
 static PHP_FUNCTION(bbs_postmail){
 	char* targetID, *title, *content;
 	int  idLen, tLen,cLen, backup,sig;
@@ -7177,7 +7179,7 @@ static PHP_FUNCTION(bbs_load_favboard)
         if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l", &select) ==FAILURE) {
                 WRONG_PARAM_COUNT;
         }
-        load_favboard(0);
+        load_favboard(0,1);
         if(select<favbrd_list_t)
         {
                 SetFav(select);
@@ -7197,15 +7199,37 @@ static PHP_FUNCTION(bbs_is_favboard)
         RETURN_LONG(IsFavBoard(position));
 }
 
+static PHP_FUNCTION(bbs_del_favboarddir)
+{
+        int ac = ZEND_NUM_ARGS();
+		int select;
+        int position;
+        if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll" , &select, &position) == FAILURE){
+                WRONG_PARAM_COUNT;
+        }
+
+			if(position < 0 || position>= favbrd_list[select].bnum)
+				RETURN_LONG(-1);
+			if(favbrd_list[select].bid[position]<0)
+				DelFavBoardDir(position,select);
+			else
+				RETURN_LONG(-1);
+        	save_favboard(1);
+			RETURN_LONG(0);
+
+}
+
 static PHP_FUNCTION(bbs_del_favboard)
 {
         int ac = ZEND_NUM_ARGS();
+		int select;
         int position;
-        if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l" , &position) == FAILURE){
+        if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll" , &select, &position) == FAILURE){
                 WRONG_PARAM_COUNT;
         }
-        DelFavBoard(position);
-        save_favboard();
+        	DelFavBoard(position);
+        	save_favboard(1);
+			RETURN_LONG(0);
 }
 //add fav dir
 static PHP_FUNCTION(bbs_add_favboarddir)
@@ -7218,8 +7242,8 @@ static PHP_FUNCTION(bbs_add_favboarddir)
         }
         if(char_len <= 20)
         {
-                addFavBoardDir(0,char_dname);
-                save_favboard();
+                addFavBoardDir(char_dname);
+                save_favboard(1);
         }
         RETURN_LONG(char_len);
 }
@@ -7237,7 +7261,7 @@ static PHP_FUNCTION(bbs_add_favboard)
         if(i >0 && ! IsFavBoard(i - 1))
         {
                 addFavBoard(i - 1);
-                save_favboard();
+                save_favboard(1);
         }
 }
 
@@ -7337,16 +7361,6 @@ static PHP_FUNCTION(bbs_fav_boards)
     efree(columns);
     
 }
-
-/*
- * bbs_release_favboard()
-
-*/
-static PHP_FUNCTION(bbs_release_favboard)
-{
-        release_favboard();
-}
-
 
 /*
  * bbs_sysconf_str
@@ -8212,3 +8226,4 @@ static PHP_FUNCTION(bbs_get_threads_from_gid)
 	efree(articles);
 	RETURN_LONG(retnum);
 }
+

@@ -187,6 +187,13 @@ void resolve_boards()
             bcache_unlock(fd);
         }
     }
+    if (bdirshm == NULL) {
+        bdirshm = attach_shm("BDIRCACHE_SHMKEY", 3697, sizeof(*bdirshm), &iscreate); /* attach board share memory */
+        if (iscreate) {
+            bbslog("3system", "reload bdircache!");
+			load_allboard(bdirshm->allbrd_list, &bdirshm->allbrd_list_t);
+        }
+    }
     if (boardfd!=-1)
         close(boardfd);
 }

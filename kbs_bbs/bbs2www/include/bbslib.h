@@ -225,12 +225,11 @@ char *getcurruserid();
 struct userec *getcurrusr();
 
 //favboard operation
-void save_favboard();
-void release_favboard();
+void save_favboard(int mode);
 int DelFavBoard(int i);
 int SetFav(int i);
 int getfavnum();
-void load_favboard(int dohelp);
+void load_favboard(int dohelp,int mode);
 int IsFavBoard(int idx);
 int add_favboard(char *brdname);
 

@@ -28,12 +28,6 @@ char fromhost[IPLEN + 1];
 char parm_name[256][80], *parm_val[256];
 int parm_num = 0;
 
-struct favbrd_struct {
-    int flag;
-    char *title;
-    int father;
-};
-
 extern struct favbrd_struct favbrd_list[FAVBOARDNUM];
 extern int favbrd_list_t;
 extern int favnow;
