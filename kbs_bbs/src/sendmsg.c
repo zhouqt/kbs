@@ -274,7 +274,7 @@ void r_msg_sig(int signo)
 void r_msg()
 {
     int y, x, ch, i, ox, oy, tmpansi;
-    char savebuffer[24][256];
+    char savebuffer[25][256];
     char buf[MAX_MSG_SIZE+100], outmsg[MAX_MSG_SIZE*2], buf2[STRLEN];
     int now, count;
 
@@ -329,8 +329,8 @@ void r_msg()
             prints("%s", outmsg);
         getyx(&oy, &ox);
 
-        prints("  第%3d/%-3d条消息, R回复", now, count);
         clrtoeol();
+        prints("  第%3d/%-3d条消息, R回复", now+1, count);
         
         refresh();
         oflush();

@@ -601,7 +601,6 @@ int translate_msg(char* src, char* dest)
         if(j==0&&pos>=80||j==1&&pos>=79) {
             for(;pos<=80;pos++)
                 dest[len++]=' ';
-            dest[len++]='\n';
             for(pos=1;pos<=space;pos++)
                 dest[len++]=' ';
         }
@@ -610,7 +609,6 @@ int translate_msg(char* src, char* dest)
     }
     for(;pos<=80;pos++)
         dest[len++]=' ';
-    dest[len++]='\n';
     dest[len]=0;
 }
 
