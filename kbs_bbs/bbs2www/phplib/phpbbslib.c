@@ -131,6 +131,9 @@ static PHP_FUNCTION(bbs_register_sms_sendcheck);
 static PHP_FUNCTION(bbs_register_sms_docheck);
 static PHP_FUNCTION(bbs_unregister_sms);
 #endif
+#if HAVE_MYSQL == 1
+static PHP_FUNCTION(bbs_csv_to_al);
+#endif
 static PHP_FUNCTION(bbs_printoriginfile);
 static PHP_FUNCTION(bbs_caneditfile);
 static PHP_FUNCTION(bbs_updatearticle);
@@ -258,6 +261,9 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_register_sms_sendcheck,NULL)
 		PHP_FE(bbs_unregister_sms,NULL)
 		PHP_FE(bbs_register_sms_docheck,NULL)
+#endif
+#if HAVE_MYSQL == 1
+		PHP_FE(bbs_csv_to_al, NULL)
 #endif
         {NULL, NULL, NULL}
 };
@@ -4068,6 +4074,7 @@ PHP_RINIT_FUNCTION(smth_bbs)
     chdir(BBSHOME);
     old_pwd[1023] = 0;
     currentuser = NULL;
+    currentusernum = 0;
 #ifdef DEBUG
     zend_error(E_WARNING, "request init:%d %x", getpid(), getcurrentuinfo);
 #endif
@@ -6655,6 +6662,24 @@ static PHP_FUNCTION(bbs_unregister_sms)
 	RETURN_LONG(ret);
 }
 
+#endif
+
+#if HAVE_MYSQL == 1
+static PHP_FUNCTION(bbs_csv_to_al)
+{
+	int ac = ZEND_NUM_ARGS();
+	char *dest;
+	int dest_len;
+	int ret;
+
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &dest, &dest_len) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	ret = conv_csv_to_al( dest );
+
+	RETURN_LONG(ret);
+}
 #endif
 
 /*

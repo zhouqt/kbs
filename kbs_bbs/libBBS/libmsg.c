@@ -1325,6 +1325,57 @@ int count_sql_al( char *userid, char *dest, char *group, char *msgtxt)
 }
 
 
+char * get_al_mobile( char *userid, char *mobile)
+{
+
+	MYSQL s;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+	char sql[100];
+
+	if(userid == NULL || *userid == 0 )
+		return NULL;
+
+	if( mobile == NULL )
+		return NULL;
+
+	*mobile = 0;
+
+	mysql_init(&s);
+
+	if (! my_connect_mysql(&s) ){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		return NULL;
+	}
+
+	sprintf(sql,"SELECT mobile FROM addr WHERE userid=\"%s\"", userid );
+
+	if( mysql_real_query(&s, sql, strlen(sql)) ){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		mysql_close(&s);
+		return NULL;
+	}
+	res = mysql_store_result(&s);
+	row = mysql_fetch_row(res);
+
+	if(row != NULL){
+		strncpy(mobile, row[0], 15);
+		mobile[14]=0;
+	}
+	mysql_free_result(res);
+	mysql_close(&s);
+
+	return mobile;
+}
+
 int get_sql_al( struct addresslist * smdata, char *userid, char *dest, char *group, int start, int num, int order, char *msgtxt)
 {
 
@@ -1497,7 +1548,10 @@ int add_sql_al(char *userid, struct addresslist *al, char *msgbuf)
 	mysql_escape_string(newmobile, al->mobile, strlen(al->mobile));
 	mysql_escape_string(newemail, al->email, strlen(al->email));
 	mysql_escape_string(newqq, al->qq, strlen(al->qq));
-	mysql_escape_string(newmsgbuf, msgbuf, strlen(msgbuf));
+	if( msgbuf )
+		mysql_escape_string(newmsgbuf, msgbuf, strlen(msgbuf) > 99 ? 99 : strlen(msgbuf) );
+	else 
+		newmsgbuf[0]=0;
 	mysql_escape_string(newgroup, al->group, strlen(al->group));
 
 	if( al->id <= 0 )
@@ -1519,4 +1573,278 @@ int add_sql_al(char *userid, struct addresslist *al, char *msgbuf)
 
 	return 1;
 }
+
+#define CSV_LIST_MAX_KEYNUM 100
+struct csv_list
+{
+	struct csv_list * next;
+	char *key;
+};
+
+
+static int free_csv_list( struct csv_list * cl)
+{
+	struct csv_list * nowcl = NULL;
+	struct csv_list * cltmp = NULL;
+
+	nowcl = cl;
+	while( nowcl ){
+		cltmp = nowcl;
+		nowcl = nowcl->next;
+		if(cltmp->key)
+			free(cltmp->key);
+		free(cltmp);
+	}
+
+	return 1;
+}
+		
+
+static struct csv_list * read_csv_line(char *ptr, size_t size, size_t *dlength)
+{
+	struct csv_list * cl = NULL;
+	struct csv_list * nowcl = NULL;
+	int start=0;
+	char *p = ptr;
+	size_t sz=0;
+	int i,have_quota;
+	*dlength=0;
+	int clnum = 0;
+
+	for( ; sz < size ; sz++, p++ ){
+		if( *p == '\n' || *p == '\r' || *p == 0 ){
+			if( cl ){
+				sz++;
+				break;
+			}
+		}
+		if( ! start ){
+			start=1;
+			cl = (struct csv_list *)malloc( sizeof(struct csv_list) );
+			if( cl == NULL )
+				return cl;
+			bzero(cl, sizeof(struct csv_list));
+			nowcl = cl;
+			clnum ++;
+		}else if( clnum < CSV_LIST_MAX_KEYNUM) {
+			nowcl->next = (struct csv_list *)malloc( sizeof(struct csv_list) );
+			if( nowcl->next == NULL )
+				return cl;
+			bzero(nowcl->next, sizeof(struct csv_list));
+			nowcl = nowcl->next;
+			clnum ++;
+		}
+
+		i=0;
+		have_quota=0;
+		if( *p == '\"' ){
+			have_quota=2;
+			for( i++; sz+i < size; i++ ){
+				if ( p[i] == '\"'){
+					if( p[i+1] != '\"' )
+						break;
+					else{
+						i++;
+					}
+				}
+			}
+		}
+		for(; sz+i < size; i++){
+			if( p[i] == ',' || p[i] == '\n' || p[i] == '\r' || p[i] == 0)
+				break;
+		}
+		if( i - have_quota > 0 && clnum < CSV_LIST_MAX_KEYNUM){
+			nowcl->key = (char *)malloc( i+1 );
+			if( nowcl->key == NULL )
+				return cl;
+			memcpy(nowcl->key, p, i);
+			nowcl->key[i]=0;
+			if( have_quota ){
+				int j,k;
+				for(j=0, k=1; k<i; k++){
+					if( nowcl->key[k] == '\"'){
+						if( nowcl->key[k+1] == '\"' ){
+							k++;
+							nowcl->key[j]='\"';
+							j++;
+						}
+					}else{
+						nowcl->key[j]= nowcl->key[k];
+						j++;
+					}
+				}
+				nowcl->key[j]=0;
+			}
+		}
+		sz += i;
+		p += i;
+		if( *p == '\n' || *p == '\r' || *p == 0 ){
+			sz++;
+			break;
+		}
+	}
+
+	*dlength = sz;
+
+	return cl;
+
+}
+
+#define CSV_HASH_NAME 1
+#define CSV_HASH_SCHOOL 2
+#define CSV_HASH_ZIPCODE 3
+#define CSV_HASH_HOMEADDR 4
+#define CSV_HASH_COMPANYADDR 5
+#define CSV_HASH_TELO 6
+#define CSV_HASH_TELH 7
+#define CSV_HASH_MOBILE 8
+#define CSV_HASH_EMAIL 9
+#define CSV_HASH_QQ 10
+#define CSV_HASH_MEMO 11
+int conv_csv_to_al(char *fname)
+{
+	FILE *fp;
+	char *ptr;
+	char *p;
+	size_t size;
+	size_t sz;
+	size_t dlength;
+	struct csv_list *cl;
+	struct csv_list *nowcl;
+	struct addresslist al;
+	int i,j,first,csv_hash[CSV_LIST_MAX_KEYNUM];
+	int ret=0;
+
+    if ((fp = fopen(fname, "r+b")) == NULL) {
+		return 0;
+	}
+	first=0;
+	for( i=0; i< CSV_LIST_MAX_KEYNUM; i++)
+		csv_hash[i]=0;
+
+	if (safe_mmapfile_handle(fileno(fp), O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, (void **)(&ptr) , (size_t *) & size) == 1) {
+
+		sz = size;
+		p=ptr;
+		while( sz > 0 ){
+			cl = read_csv_line(p, sz, &dlength);
+			if( cl == NULL || dlength == -1 ){
+				free_csv_list( cl );
+				break;
+			}
+
+			if( ! first ){
+				first=1;
+				nowcl = cl;
+				for(i=0; nowcl && i<CSV_LIST_MAX_KEYNUM ; nowcl=nowcl->next, i++){
+					if( nowcl->key == NULL )
+						continue;
+					if( ! strcmp(nowcl->key,"姓名") )
+						csv_hash[i] = CSV_HASH_NAME ;
+					else if( strstr(nowcl->key, "电子邮件") )
+						csv_hash[i] = CSV_HASH_EMAIL ;
+					else if( !strcmp(nowcl->key, "学校") )
+						csv_hash[i] = CSV_HASH_SCHOOL ;
+					else if( !strcasecmp(nowcl->key, "QQ") )
+						csv_hash[i] = CSV_HASH_QQ ;
+					else if( strstr(nowcl->key, "移动电话") || strstr(nowcl->key,"手机") )
+						csv_hash[i] = CSV_HASH_MOBILE ;
+					else if( strstr(nowcl->key, "家庭电话") )
+						csv_hash[i] = CSV_HASH_TELO ;
+					else if( strstr(nowcl->key, "办公电话") || strstr(nowcl->key, "商务电话") )
+						csv_hash[i] = CSV_HASH_TELH ;
+					else if( strstr(nowcl->key, "邮政编码") )
+						csv_hash[i] = CSV_HASH_ZIPCODE ;
+					else if( strstr(nowcl->key, "家庭所在") )
+						csv_hash[i] = CSV_HASH_HOMEADDR ;
+					else if( strstr(nowcl->key, "公司") )
+						csv_hash[i] = CSV_HASH_COMPANYADDR ;
+					else if( !strcmp(nowcl->key, "附注") )
+						csv_hash[i] = CSV_HASH_MEMO ;
+				}
+			}else{
+				char * pmemo=NULL;
+
+				bzero(&al, sizeof(al));
+				nowcl = cl;
+				for(i=0; nowcl && i<CSV_LIST_MAX_KEYNUM ; nowcl=nowcl->next, i++){
+					if( nowcl->key == NULL )
+						continue;
+					switch( csv_hash[i] ){
+					case CSV_HASH_NAME:
+						strncpy( al.name, nowcl->key, 14 );
+						al.name[14]=0;
+						break;
+					case CSV_HASH_EMAIL:
+						strncpy( al.email, nowcl->key, 30 );
+						al.email[29]=0;
+						break;
+					case CSV_HASH_SCHOOL:
+						snprintf(al.school, 99, "%s %s",al.school, nowcl->key);
+						al.school[99]=0;
+						break;
+					case CSV_HASH_HOMEADDR:
+						snprintf(al.homeaddr, 99, "%s %s",al.homeaddr, nowcl->key);
+						al.homeaddr[99]=0;
+						break;
+					case CSV_HASH_COMPANYADDR:
+						snprintf(al.companyaddr, 99, "%s %s",al.companyaddr, nowcl->key);
+						al.companyaddr[99]=0;
+						break;
+					case CSV_HASH_QQ:
+						strncpy( al.qq, nowcl->key, 9 );
+						al.qq[9]=0;
+						break;
+					case CSV_HASH_MOBILE:
+						strncpy( al.mobile, nowcl->key, 15 );
+						al.mobile[14]=0;
+						break;
+					case CSV_HASH_TELO:
+						strncpy( al.tel_o, nowcl->key, 19 );
+						al.tel_o[19]=0;
+						break;
+					case CSV_HASH_TELH:
+						strncpy( al.tel_h, nowcl->key, 19 );
+						al.tel_h[19]=0;
+						break;
+					case CSV_HASH_ZIPCODE:
+						strncpy( al.zipcode, nowcl->key, 6 );
+						al.zipcode[6]=0;
+						break;
+					case CSV_HASH_MEMO:
+						pmemo = nowcl->key;
+						break;
+					}
+				}
+				strncpy(al.userid, currentuser->userid, 12);
+				al.userid[12]=0;
+
+				if( al.name[0] ){
+					if(add_sql_al(currentuser->userid, &al, pmemo))
+						ret++;
+				}
+			}
+/*
+			while(nowcl){
+				printf(":");
+				if(nowcl->key)
+					printf("%s",nowcl->key);
+				nowcl = nowcl->next;
+			}
+			printf("\n");
+*/
+			free_csv_list( cl );
+			sz -= dlength;
+			p += dlength;
+		}
+
+	}
+
+	fclose(fp);
+
+	end_mmapfile((void *) ptr, size, -1);
+
+	return ret;
+}
+	
 #endif

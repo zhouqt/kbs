@@ -423,6 +423,21 @@ function al_print_form($al){
 ?>
 <a href="/bbsal.php?start=<?php echo $startnum;?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>&action=add">增加条目</a>
 
+<input type="button" name="csv" value="从csv文件导入" onclick="return GoAttachWindow()" />
+<script language="JavaScript">
+<!--
+   function GoAttachWindow(){
+
+   	var hWnd = window.open("bbsloadcsv.php","_blank","width=300,height=100,scrollbars=yes");
+
+	hWnd.focus();
+
+   	return false;
+
+   }
+-->
+</script>
+
 <script language="javascript">
 <!--//
 function doOrder(){
