@@ -108,7 +108,7 @@
         */ 
         if ($isnormalboard)
 	{
-       		$lastfilename = bbs_get_board_filename($board , $articles[$endnum - 1]["FILENAME"]);
+       		$lastfilename = bbs_get_board_filename($board , $articles[$num - 1]["FILENAME"]);
 		if (cache_header("public",filemtime($lastfilename),300))
         	return;
         }
