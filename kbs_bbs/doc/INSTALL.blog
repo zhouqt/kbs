@@ -7,6 +7,8 @@ SMTH.Blog 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
     SMTH.Blog是基于smthbbs的Blog系统，同时兼顾telnet下个人文集的部分功能。
 
 0. ChangeLog
+2004.4.13
+  windinsn V1.1  更新
 2004.1.6
   windinsn v1.0  初始版本
   
@@ -15,19 +17,29 @@ SMTH.Blog 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
 将SMTH.Blog加入到smthbbs中，否则请阅读 3. 全新安装 部分。
 	1.1 确认您的系统为 smthbbs1.1.1 或以上版本，支持 web，并带有MySQL数据库。
 	1.2 确认您的 smthbbs 源文件中已含有 SMTH.Blog 所需的代码，这里约定
+	    $BBSHOME为 smthbbs 主目录;
+	    $WWWHOME为 apache 的安装目录; 
 	    $BBSSRC为 smthbbs 源文件所在的目录：
 	    $BBSSRC/libBBS/libpc.c
 	    $BBSSRC/src/personal_corp.c
 	    $BBSSRC/bbs2www/html/pc/ 目录
 	    如果缺少上述代码，请通过 cvs 更新您的smthbbs或下载最新的smthbbs-snapshot
 	    代码。
-	1.3 在 MySQL 数据库中添加表。表结构见 DB.Blog.Structure.sql 文档。
-	1.4 配置 telnet 部分。具体方法为在站点配置文件 site.h 中加入下面的定义：
+	1.3 确认您的系统配置文件($BBSHOME/etc/sysconf.ini)中含有下面的字段:
+		MYSQLHOST       = ""    //MySQL服务器地址
+		MYSQLUSER       = ""    //MySQL用户名
+		MYSQLPASSWORD   = ""    //MySQL用户密码
+		MYSQLSMSDATABASE = ""   //MySQL数据库名
+		MYSQLPORT       = ""    //MySQL数据库端口,默认为3306
+
+	1.4 在 MySQL 数据库中添加表。表结构见 DB.Blog.Structure.sql 文档。
+	1.5 配置 telnet 部分。具体方法为在站点配置文件 site.h 中加入下面的定义：
 		#define PERSONAL_CORP
-	1.5 配置 web 部分。具体方法为在站点的web配置文件 site.php 中加入下面的定义：
+	1.6 配置 web 部分。具体方法为在站点的web配置文件 site.php 中加入下面的定义：
 		define("HAVE_PC", 1);
-	1.6 升级： make ; make install ;
-	1.7 完成快速安装。
+	1.7 升级： make ; make install ;
+	1.8 编辑 $WWWHOME/htdocs/pc/pcconf.php ,配置WWW下的BLOG参数。
+	1.9 完成快速安装。
 
 2. 系统需求
     SMTH.Blog 要求您的系统含有以下部分：
@@ -50,6 +62,29 @@ SMTH.Blog 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
     在 $BBSSRC/bbs2www/sites/***/site.php 中加入
     	define("HAVE_PC", 1);
     这里 *** 表示 --enable-site 所指定的配置文件或目录。
+    4) 安装成功后,确认您的 $BBSHOME/etc/sysconf.ini 中含有下列字段:
+	MYSQLHOST       = ""    //MySQL服务器地址
+	MYSQLUSER       = ""    //MySQL用户名
+	MYSQLPASSWORD   = ""    //MySQL用户密码
+	MYSQLSMSDATABASE = ""   //MySQL数据库名
+	MYSQLPORT       = ""    //MySQL数据库端口,默认为3306
+    5) 编辑 $WWWHOME/htdocs/pc/pcconf.php ,配置WWW下的BLOG参数。
+         $pcconfig["LIST"] :Blog首页上每页显示的用户数;
+	$pcconfig["HOME"] :BBS主目录,默认为BBS_HOME;
+	$pcconfig["BBSNAME"] :站点名称,默认为BBS_FULL_NAME;
+	$pcconfig["ETEMS"] :RSS输出的条目数;
+	$pcconfig["NEWS"] :统计全站最新文章/评论时显示的条目数;
+	$pcconfig["THEMLIST"] :按主题分类时每个主题显示的Blog数;
+	$pcconfig["SITE"] :站点的域名,在blog显示,RSS输出中均要用到;
+	$pcconfig["BOARD"] :Blog对应的版面名称,该版版主将默认为Blog管理员;
+	$pcconfig["APPBOARD"] :Blog申请公告版面;
+	$pcconfig["SEARCHFILTER"] :进行文章搜索时过滤掉的文字;
+	$pcconfig["SEARCHNUMBER"] :返回文章搜索结果时每页显示的条目数;
+	$pcconfig["SECTION"] :Blog分类方式;
+	$pcconfig["MINREGTIME"] :申请时要求的最短注册时间;
+	$pcconfig["ADMIN"] :管理员ID，设置后所有管理员都可以维护此Blog
+	$pcconfig["MINREGTIME"] ;申请Blog的最短注册时间，单位是月
+	pc_personal_domainname($userid)函数 :用户Blog的域名;
 
 4. 其他
     最新版本的 smthbbs 已将 SMTH.Blog 作为正式的组成部分，安装时可参考相应的INSTALL文档。

@@ -7,6 +7,7 @@ CREATE TABLE `blacklist` (
   KEY `userid` (`userid`,`uid`)
 ) TYPE=MyISAM COMMENT='blog黑名单';
 
+
 CREATE TABLE `comments` (
   `cid` int(10) unsigned NOT NULL auto_increment,
   `nid` int(10) unsigned default NULL,
@@ -26,6 +27,7 @@ CREATE TABLE `comments` (
   FULLTEXT KEY `body` (`body`)
 ) TYPE=MyISAM COMMENT='评论表' ;
 
+
 CREATE TABLE `logs` (
   `lid` int(10) unsigned NOT NULL auto_increment,
   `username` varchar(20) NOT NULL default '',
@@ -38,6 +40,7 @@ CREATE TABLE `logs` (
   PRIMARY KEY  (`lid`),
   KEY `username` (`username`,`hostname`,`ACTION`,`pri_id`,`sec_id`,`logtime`)
 ) TYPE=MyISAM COMMENT='日志表' ;
+
 
 CREATE TABLE `members` (
   `uid` int(10) unsigned NOT NULL default '0',
@@ -61,6 +64,7 @@ CREATE TABLE `newapply` (
   KEY `username` (`username`),
   KEY `management` (`management`)
 ) TYPE=MyISAM COMMENT='新申请用户' ;
+
 
 CREATE TABLE `nodes` (
   `nid` int(10) unsigned NOT NULL auto_increment,
@@ -91,6 +95,7 @@ CREATE TABLE `nodes` (
   KEY `changed` (`created`),
   FULLTEXT KEY `body` (`body`)
 ) TYPE=MyISAM COMMENT='文章表' ;
+
 
 CREATE TABLE `recommend` (
   `rid` int(10) unsigned NOT NULL auto_increment,
@@ -147,7 +152,7 @@ CREATE TABLE `users` (
   `nodescount` int(10) NOT NULL default '0',
   `logoimage` varchar(255) default NULL,
   `modifytime` timestamp(14) NOT NULL,
-  `links` tinytext NOT NULL,
+  `links` text NOT NULL,
   `htmleditor` int(1) NOT NULL default '0',
   `indexnodechars` int(5) NOT NULL default '600',
   `indexnodes` int(1) NOT NULL default '5',
@@ -176,4 +181,4 @@ CREATE TABLE `userstyle` (
   KEY `uid` (`uid`),
   KEY `username` (`username`)
 ) TYPE=MyISAM COMMENT='自定义界面';
-    
+
