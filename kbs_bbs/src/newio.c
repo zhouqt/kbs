@@ -746,9 +746,9 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
                 if (clen == 0)
                     continue;
                 clen--;
-                outc(Ctrl('H'));
+                cur_col--;
                 outc(' ');
-                outc(Ctrl('H'));
+                cur_col--;
                 continue;
             }
             if (!isprint2(ch)||clen>=len-1)
