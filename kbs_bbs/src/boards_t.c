@@ -854,7 +854,7 @@ static int choose_board(int newflag, char *boardprefix)
                        if( zapbuf[ ptr->pos ] > 0 ) 
                        zapbuf[ ptr->pos ] = brc_list[0];
                      */
-                    ptr->total = page = -1;
+                    brdnum  = -1;
                     modify_user_mode(newflag ? READNEW : READBRD);
                 }
                 break;
