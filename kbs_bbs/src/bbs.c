@@ -1284,7 +1284,7 @@ char quote_mode;
 
     if(!(currentuser->signature==0||Anony==1))  /* Ç©ÃûµµÎª0Ôò²»Ìí¼Ó */
     {
-        addsignature(outf,1);
+        addsignature(outf,1,currentuser);
     }
     fclose(outf);
 }
@@ -1566,36 +1566,6 @@ int mode;
 }
 
 
-void add_loginfo(filepath)    /* POST ×îºóÒ»ĞĞ Ìí¼Ó */
-char *filepath;
-{       FILE *fp;
-    FILE *fp2;
-    int color,noidboard;
-    char fname[STRLEN];
-
-    noidboard=(seek_in_file("etc/anonymous",currboard)&&Anony); /* etc/anonymousÎÄ¼şÖĞ ÊÇÄäÃû°æ°æÃû */
-    color=(currentuser->numlogins%7)+31; /* ÑÕÉ«Ëæ»ú±ä»¯ */
-    sethomefile( fname, currentuser->userid,"signatures" );
-    fp=fopen(filepath,"a");
-    if ((fp2=fopen(fname, "r"))== NULL||          /* ÅĞ¶ÏÊÇ·ñÒÑ¾­ ´æÔÚ Ç©Ãûµµ */
-            currentuser->signature==0||noidboard)
-    {       fputs("\n--\n", fp);
-    }else{ /*Bigman 2000.8.10ĞŞ¸Ä,¼õÉÙ´úÂë */
-        fprintf(fp,"\n");}
-    /* ÓÉBigmanÔö¼Ó:2000.8.10 Announce°æÄäÃû·¢ÎÄÎÊÌâ */
-    if (!strcmp(currboard,"Announce"))
-        fprintf(fp, "[m[%2dm¡ù À´Ô´:¡¤%s %s¡¤[FROM: %s][m\n"
-                ,color,BoardName,email_domain(),
-                NAME_BBS_CHINESE" BBSÕ¾");
-    else
-        fprintf(fp, "\n[m[%2dm¡ù À´Ô´:¡¤%s %s¡¤[FROM: %s][m\n"
-                ,color,BoardName,email_domain(),(noidboard)?NAME_ANONYMOUS_FROM:fromhost);
-
-    if (fp2) fclose(fp2);
-    fclose(fp);
-    return;
-}
-
 int
 show_board_notes(bname)     /* ÏÔÊ¾°æÖ÷µÄ»° */
 char bname[30];
@@ -1820,7 +1790,7 @@ post_article()                         /*ÓÃ»§ POST ÎÄÕÂ */
 
     aborted = vedit(filepath,YEA) ;  /* ½øÈë±à¼­×´Ì¬ */
 
-    add_loginfo(filepath); /*Ìí¼Ó×îºóÒ»ĞĞ*/
+    add_loginfo(filepath,currentuser,currboard,Anony); /*Ìí¼Ó×îºóÒ»ĞĞ*/
 
     strncpy( post_file.title, save_title, STRLEN );
     if ( aborted == 1 ) /* local save */

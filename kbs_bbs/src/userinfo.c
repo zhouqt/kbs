@@ -250,7 +250,7 @@ int     real, unum;
                     sprintf(secu,"%s 的 ID 被 %s 改为 %s",u->userid,currentuser->userid,newinfo.userid);/*Haohmaru.99.5.6*/
                 else
 	                sprintf(secu,"修改 %s 的基本资料或密码。",u->userid);
-                securityreport(secu,&newinfo);
+                securityreport(secu,&newinfo,NULL);
             } else {
                 update_user(&newinfo,usernum,1); 
                 if ( strcmp(newinfo.username,uinfo.username)) {

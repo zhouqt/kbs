@@ -176,12 +176,12 @@ b_jury_edit()   /* stephen 2001.11.1: 编辑版面仲裁名单 */
 	char secu[STRLEN];
 	if (aborted==111)
 	{  sprintf(secu, "删除 %s 版的仲裁委员名单",currboard);
-	   securityreport(secu, NULL);
+	   securityreport(secu, NULL,NULL);
 	   postfile(buf, "JuryMail", secu, 2);
 	}
 	else 
 	{  sprintf(secu, "修改 %s 版的仲裁委员名单",currboard);
-	/*securityreport(secu, NULL);*/
+	   securityreport(secu, NULL,NULL);
 	   postfile(buf, "syssecurity", secu, 2);
 	   postfile(buf, "JuryMail", secu, 2);
 	}
@@ -1181,7 +1181,7 @@ case 'O': case 'o':
         }
         mk_result(allnum+1);
         sprintf(buf,"提早结束投票 %s",currvote.title);
-        securityreport(buf,NULL);
+        securityreport(buf,NULL,NULL);
         report(buf);
         break;
     case '@':
@@ -1218,7 +1218,7 @@ case 'D': case 'd':
             break;
         }
         sprintf(buf,"强制关闭投票 %s",currvote.title);
-        securityreport(buf,NULL);
+        securityreport(buf,NULL,NULL);
         report(buf);
         dele_vote(allnum+1);
         break;

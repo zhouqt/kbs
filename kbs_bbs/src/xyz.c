@@ -246,7 +246,7 @@ p_level()
     if(*genbuf=='y'||*genbuf=='Y'){
         lookupuser->userlevel ^= PERM_POST;/* 改变该用户权限 */
         sprintf(secu,"修改 %s 的发文权限",lookupuser->userid);
-        securityreport(secu,lookupuser);
+        securityreport(secu,lookupuser,NULL);
         move(13,0);
         if(lookupuser->userlevel & PERM_POST)
         {
@@ -325,7 +325,7 @@ x_level()
 
         sprintf(secu,"修改 %s 的权限XPERM%d %d",
                 lookupuser->userid, lookupuser->userlevel, newlevel);
-        securityreport(secu,lookupuser);
+        securityreport(secu,lookupuser,NULL);
         lookupuser->userlevel = newlevel;
         /* Leeward: 1997.12.02 : Modification stops */
 
@@ -668,7 +668,7 @@ a_edits()
         {
             char        secu[STRLEN];
             sprintf(secu,"删除系统档案：%s",explain_file[ch]);
-            securityreport(secu,NULL);
+            securityreport(secu,NULL,NULL);
         }
         unlink(genbuf);
         move(5,0);
@@ -689,7 +689,7 @@ a_edits()
         {
             char        secu[STRLEN];
             sprintf(secu,"修改系统档案：%s",explain_file[ch]);
-            securityreport(secu,NULL);
+            securityreport(secu,NULL,NULL);
         }
 
         if(!strcmp(e_file[ch],"../Welcome"))

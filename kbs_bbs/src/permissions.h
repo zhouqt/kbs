@@ -40,6 +40,7 @@
 #define PERM_DENYMAIL   	04000000000
 
 
+#define XPERMSTR "bTCPRp#@XWBA$VS!DEM1234567890%"
 /* means the rest is a post mask */
 
 /* This is the default permission granted to all new accounts. */

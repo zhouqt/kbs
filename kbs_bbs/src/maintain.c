@@ -24,7 +24,6 @@
 char            cexplain[STRLEN];
 char           *Ctime();
 char            lookgrp[30];
-char        fdata[ 7 ][ STRLEN ];
 
 int showperminfo(int, int);
 
@@ -60,7 +59,7 @@ int check_systempasswd()
         if (!passbuf[0]) {
             move(2, 0);
             prints( MSG_ERR_USERID );
-            securityreport("系统密码输入错误...",NULL);
+            securityreport("系统密码输入错误...",NULL,NULL);
             pressanykey();
             return NA;
         }
@@ -103,7 +102,7 @@ int setsystempasswd()
 
 
 
-int securityreport(char *str,struct userec* lookupuser)		/* Leeward: 1997.12.02 */
+int securityreport(char *str,struct userec* lookupuser,char fdata[ 7 ][ STRLEN ])		/* Leeward: 1997.12.02 */
 {
     FILE           *se;
     char            fname[STRLEN];
@@ -154,7 +153,6 @@ int securityreport(char *str,struct userec* lookupuser)		/* Leeward: 1997.12.02 
 	        {
 	            int             oldXPERM, newXPERM;
 	            int             num;
-#define XPERMSTR "bTCPRp#@XWBA$VS!DEM1234567890%"
 	            char            XPERM[48];
 
 	            sscanf(ptr + strlen("的权限XPERM"), "%d %d",
@@ -467,7 +465,7 @@ int m_newbrd()
     {
         char            secu[STRLEN];
         sprintf(secu, "成立新板：%s", newboard.filename);
-        securityreport(secu,NULL);
+        securityreport(secu,NULL,NULL);
     }
     pressreturn();
     clear();
@@ -590,7 +588,7 @@ enterbname:
             {
                 char            secu[STRLEN];
                 sprintf(secu, "修改讨论区：%s(%s)", fh.filename, newfh.filename);
-                securityreport(secu,NULL);
+                securityreport(secu,NULL,NULL);
             }
             if (strcmp(fh.filename, newfh.filename))
             {
@@ -690,7 +688,7 @@ int searchtrace()
     mail_file(currentuser->userid,tmp_command, currentuser->userid, "系统查询结果",1);
 
     sprintf(buf, "查询用户 %s 的发文情况", tmp_id);
-    securityreport(buf,NULL);  /*写入syssecurity板, stephen 2000.12.21*/
+    securityreport(buf,NULL,NULL);  /*写入syssecurity板, stephen 2000.12.21*/
     sprintf(buf, "Search the posts by %s in the trace", tmp_id);
     report(buf);   /*写入trace, stephen 2000.12.21*/
 
@@ -809,7 +807,7 @@ int m_mclean()
     {
         char            secu[STRLEN];
         sprintf(secu, "清除所有使用者已读信件。");
-        securityreport(secu,NULL);
+        securityreport(secu,NULL,NULL);
     }
 
     move(3, 0);
@@ -981,7 +979,7 @@ char           *logfile, *regfile;
                            "目前住址", "连络电话", "生    日", NULL};
     struct userec   uinfo;
     FILE           *fn, *fout, *freg;
-    /*   char            fdata[7][STRLEN];Haohmaru.99.4.15.改全局变量*/
+    char            fdata[7][STRLEN];
     char            fname[STRLEN], buf[STRLEN], buff;
     /* ^^^^^ Added by Marco */
     char            ans[5], *ptr, *uid;
@@ -1106,7 +1104,7 @@ char           *logfile, *regfile;
                 update_user(&uinfo,unum,0);
                 mail_file(currentuser->userid,"etc/s_fill", uinfo.userid, "恭禧你，你已经完成注册。",0);
                 sprintf(genbuf, "%s 让 %s 通过身份确认.", uid, uinfo.userid);
-                securityreport(genbuf,lookupuser);
+                securityreport(genbuf,lookupuser,fdata);
                 if ((fout = fopen(logfile, "a")) != NULL)
                 {
                 	time_t now;
@@ -1275,7 +1273,7 @@ int m_register()
             {
                 char            secu[STRLEN];
                 sprintf(secu, "设定使用者注册资料");
-                securityreport(secu,NULL);
+                securityreport(secu,NULL,NULL);
             }
             scan_register_form("register.list", fname);
         }

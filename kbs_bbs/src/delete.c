@@ -284,7 +284,7 @@ char cid[IDLEN];
     {
         char        secu[STRLEN];
         sprintf(secu,"É¾³ýÊ¹ÓÃÕß£º%s",lookupuser->userid);
-        securityreport(secu,lookupuser);
+        securityreport(secu,lookupuser,NULL);
     }
     sprintf(genbuf, "%s deleted user %s", currentuser->userid,lookupuser->userid);
     report(genbuf);

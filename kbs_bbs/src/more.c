@@ -636,7 +636,7 @@ int     numlines;
                                 {
                                     sprintf(buffer,"修改 %s 的权限XPERM%d %d",
                                             lookupuser->userid, lookupuser->userlevel, newlevel);
-                                    securityreport(buffer,lookupuser);
+                                    securityreport(buffer,lookupuser,NULL);
                                     lookupuser->userlevel = newlevel;
                                     sprintf(buffer, "changed permissions for %s", lookupuser->userid);
                                     report(buffer);

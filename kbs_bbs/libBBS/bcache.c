@@ -270,7 +270,7 @@ int delete_board(char* boardname,char* title)
         return -1;
     }
     sprintf(buf,"É¾³ıÌÖÂÛÇø£º%s",bcache[bid].filename);
-    securityreport(buf,NULL);
+    securityreport(buf,NULL,NULL);
 #endif
 
     sprintf( buf, " << '%s'±» %s É¾³ı >>",

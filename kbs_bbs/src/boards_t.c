@@ -451,7 +451,7 @@ int     newflag;
 
                 	/* Bigman 2000.12.11:系统记录 */
                 	sprintf(genbuf,"只读讨论区 %s ",nbrd[num].name);
-                	securityreport(genbuf,NULL);
+                	securityreport(genbuf,NULL,NULL);
                 	sprintf(genbuf, " readonly board %s",nbrd[num].name);
                 	report(genbuf);
 
@@ -471,7 +471,7 @@ int     newflag;
 
                 /* Bigman 2000.12.11:系统记录 */
                 sprintf(genbuf,"解开只读讨论区 %s ",nbrd[num].name);
-                securityreport(genbuf,NULL);
+                securityreport(genbuf,NULL,NULL);
                 sprintf(genbuf, " readable board %s",nbrd[num].name);
                 report(genbuf);
 

@@ -152,4 +152,66 @@ int     autoappend;
 }
 
 
+void add_loginfo(char* filepath,struct userec* user,char* currboard,int Anony)    /* POST ×îºóÒ»ÐÐ Ìí¼Ó */
+{
+    FILE *fp;
+    int color,noidboard;
+    char fname[STRLEN];
+
+    noidboard=(seek_in_file("etc/anonymous",currboard)&&Anony); /* etc/anonymousÎÄ¼þÖÐ ÊÇÄäÃû°æ°æÃû */
+    color=(user->numlogins%7)+31; /* ÑÕÉ«Ëæ»ú±ä»¯ */
+    sethomefile( fname, user->userid,"signatures" );
+    fp=fopen(filepath,"a");
+    if ((dashf(fname)||          /* ÅÐ¶ÏÊÇ·ñÒÑ¾­ ´æÔÚ Ç©Ãûµµ */
+            user->signature==0||noidboard)
+    {       fputs("\n--\n", fp);
+    }else{ /*Bigman 2000.8.10ÐÞ¸Ä,¼õÉÙ´úÂë */
+        fprintf(fp,"\n");}
+    /* ÓÉBigmanÔö¼Ó:2000.8.10 Announce°æÄäÃû·¢ÎÄÎÊÌâ */
+    if (!strcmp(currboard,"Announce"))
+        fprintf(fp, "[m[%2dm¡ù À´Ô´:¡¤%s %s¡¤[FROM: %s][m\n"
+                ,color,NAME_BBS_CHINESE NAME_BBS_NICK,email_domain(),
+                NAME_BBS_CHINESE" BBSÕ¾");
+    else
+        fprintf(fp, "\n[m[%2dm¡ù À´Ô´:¡¤%s %s¡¤[FROM: %s][m\n"
+                ,color,NAME_BBS_CHINESE NAME_BBS_NICK,email_domain(),(noidboard)?NAME_ANONYMOUS_FROM:fromhost);
+
+    fclose(fp);
+    return;
+}
+
+void addsignature(FILE *fp,int blank,struct userec* user)
+{
+    FILE *sigfile;
+    int  i,valid_ln=0;
+    char tmpsig[MAXSIGLINES][256];
+    char inbuf[256];
+    char fname[STRLEN];
+    char tmp[STRLEN];
+
+    sethomefile( fname, user->userid,"signatures" );
+    if ((sigfile = fopen(fname, "r"))== NULL)
+    {return;}
+    if ( blank ) fputs("\n", fp);
+    fputs("--\n", fp);
+    for (i=1; i<=(user->signature-1)*MAXSIGLINES&user->signature!=1; i++)
+    {
+        if (!fgets(inbuf, sizeof(inbuf), sigfile)){
+            fclose(sigfile);
+            return;}
+    }
+    for (i=1; i<=MAXSIGLINES; i++) {
+        if (fgets(inbuf, sizeof(inbuf), sigfile))
+        {
+            if(inbuf[0]!='\n')
+                valid_ln=i;
+            strcpy(tmpsig[i-1],inbuf);
+        }
+        else break;
+    }
+    fclose(sigfile);
+    for(i=1;i<=valid_ln;i++)
+        fputs(tmpsig[i-1], fp);
+    /*fclose(sigfile); Leeward 98.03.29: Extra fclose is a BUG! */
+}
 

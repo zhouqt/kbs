@@ -776,46 +776,6 @@ strncpy(uname,currentuser->username,NAMELEN) ;
 }
 #endif
 
-#ifndef VEDITOR
-void
-addsignature(fp,blank)
-FILE *fp;
-int blank;
-{
-    FILE *sigfile;
-    int  i,valid_ln=0;
-    char tmpsig[MAXSIGLINES][256];
-    char inbuf[256];
-    char fname[STRLEN];
-    char tmp[STRLEN];
-
-    sethomefile( fname, currentuser->userid,"signatures" );
-    if ((sigfile = fopen(fname, "r"))== NULL)
-    {return;}
-    if ( blank ) fputs("\n", fp);
-    fputs("--\n", fp);
-    for (i=1; i<=(currentuser->signature-1)*MAXSIGLINES&currentuser->signature!=1; i++)
-    {
-        if (!fgets(inbuf, sizeof(inbuf), sigfile)){
-            fclose(sigfile);
-            return;}
-    }
-    for (i=1; i<=MAXSIGLINES; i++) {
-        if (fgets(inbuf, sizeof(inbuf), sigfile))
-        {
-            if(inbuf[0]!='\n')
-                valid_ln=i;
-            strcpy(tmpsig[i-1],inbuf);
-        }
-        else break;
-    }
-    fclose(sigfile);
-    for(i=1;i<=valid_ln;i++)
-        fputs(tmpsig[i-1], fp);
-    /*fclose(sigfile); Leeward 98.03.29: Extra fclose is a BUG! */
-}
-#endif
-
 #define KEEP_EDITING -2
 
 int
