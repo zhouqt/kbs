@@ -45,6 +45,7 @@ static PHP_FUNCTION(bbs_getmailnum2);
 static PHP_FUNCTION(bbs_getmails);
 static PHP_FUNCTION(bbs_getmailusedspace);
 static PHP_FUNCTION(bbs_valid_filename);
+static PHP_FUNCTION(bbs_can_send_mail);
 static PHP_FUNCTION(bbs_loadmaillist);
 static PHP_FUNCTION(bbs_changemaillist);
 static PHP_FUNCTION(bbs_getwebmsg);
@@ -95,6 +96,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_getmails, NULL)
         PHP_FE(bbs_getmailusedspace, NULL)
         PHP_FE(bbs_valid_filename, NULL)
+        PHP_FE(bbs_can_send_mail, NULL)
         PHP_FE(bbs_loadmaillist, NULL)
         PHP_FE(bbs_changemaillist, NULL)
         PHP_FE(bbs_getwebmsg, third_arg_force_ref_1111)
@@ -2255,4 +2257,13 @@ static PHP_FUNCTION(bbs_valid_filename)
 		WRONG_PARAM_COUNT;
 	}
 	RETURN_LONG(VALID_FILENAME(filename));
+}
+
+/*
+ * bbs_can_send_mail ()
+ * @author stiger
+ */
+static PHP_FUNCTION(bbs_can_send_mail)
+{
+	RETURN_LONG(can_send_mail());
 }
