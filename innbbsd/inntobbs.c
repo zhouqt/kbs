@@ -8,6 +8,8 @@
 #include "inntobbs.h"
 #include "lang.h"
 
+#include "bbs.h"
+
 typedef struct Header {
     char *name;
     int id;
@@ -248,7 +250,7 @@ FuncPtr cmd;
     if (filterbuffer == NULL)
         return NULL;
     bcopy(indata, *filterbuffer, len);
-    (*cmd) (*filterbuffer, &len, 0);
+    (*cmd) (*filterbuffer, &len, 0, getSession());
     (*filterbuffer)[len] = '\0';
     return *filterbuffer;
 }
