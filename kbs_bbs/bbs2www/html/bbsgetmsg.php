@@ -25,8 +25,8 @@ A {color: #0000FF}
 <body style="BACKGROUND-COLOR: #f0ffd0">
 <table width="100%">
   <tr>
-    <td valign="top" nowrap="nowrap"><font color="green"><?php echo $srcid; ?></font> (<?php ; ?>):</td>
-    <td valign="top"><?php echo htmlspecialchars($msgbuf); ?></td>
+    <td valign="top" nowrap="nowrap"><font color="green"><?php echo $srcid; ?></font> (<?php echo strftime("%b %e %H:%M", $sndtime); ?>): </td>
+    <td align="left" valign="top"><?php echo htmlspecialchars($msgbuf); ?></td>
     <td align="right" valign="top" nowrap="nowrap"><a target="f3" href="/bbssendmsg.php?destid=<?php 
 echo $srcid; ?>&destutmp=<?php 
 echo $srcutmpnum; ?>">[»ØÑ¶Ï¢]</a> <a href="bbsgetmsg.php">[ºöÂÔ]</a></td>
