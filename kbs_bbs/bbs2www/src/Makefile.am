@@ -8,6 +8,6 @@ bin_PROGRAMS = bbsusr bbstop10 bbssec bbsdoc bbscon bbsbrdadd bbsboa bbsall bbsa
 	  bbsmdoc bbsnick bbstfind bbstcon bbstdoc \
 	  bbsccc bbsufind bbsclear bbsedit bbsman bbsparm \
 	  bbsfwd bbsmnote bbsdenyall bbsdenydel bbsdenyadd \
-	  bbsbfind bbsstyle
+	  bbsbfind
 AM_CFLAGS = -I../include -DINVISIBLE -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME -I../../src
 LDADD = ../lib/.libs/libbbslib.a -lBBS -lsystem -lbsd -lesmtp -lltdl -ldl
