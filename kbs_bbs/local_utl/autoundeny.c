@@ -137,6 +137,7 @@ int main(int argc, char **argv)
     chdir(BBSHOME);
     resolve_boards();
     resolve_ucache();
+    resolve_utmp();
     bzero(&deliveruser, sizeof(struct userec));
     strcpy(deliveruser.userid, "deliver");
     deliveruser.userlevel = -1;
