@@ -1597,6 +1597,13 @@ int count_online() /* ugly */
 	return (utmpshm == NULL) ? 0 : utmpshm->number;
 }
 
+int get_utmpent_num(uinfo_t *uent)
+{
+	if (uent == NULL)
+		return -1;
+	return uent - utmpshm->uinfo + 1;
+}
+
 int get_ulist_length()
 {
 	return sizeof(user_record)/sizeof(user_record[0]);

@@ -28,7 +28,7 @@ u_exit()
 	if((HAS_PERM(currentuser,PERM_CHATCLOAK) || HAS_PERM(currentuser,PERM_CLOAK)))
         setflags(CLOAK_FLAG, ui->invisible);
 
-    clear_utmp2(ui);
+    clear_utmp2(get_utmpent_num(ui));
 }
 
 void abort_program() {
@@ -46,12 +46,18 @@ void abort_program() {
 	}
 }
 
+void debug_abort(int signo)
+{
+	abort();
+}
+
 int main() {
 	int stay, pid;
 //	uinfo_t *ui;
 
 	init_all();
 	if(!loginok) http_fatal("ÄãÃ»ÓÐµÇÂ¼");
+	signal(SIGBUS, debug_abort);
 //	ui = getcurruinfo();
 //	pid = ui->pid;
 //	if(pid>1) kill(pid, SIGHUP);

@@ -30,6 +30,9 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <netinet/in.h>
+#ifdef FREEBSD
+#include <sys/socket.h>
+#endif
 
 struct UTMPFILE *get_utmpshm_addr()
 {
