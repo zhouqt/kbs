@@ -8,10 +8,10 @@ require("funcs.php");
 login_init();
 require("pcconf.php");//blog配置文件
 require("pctbp.php");//引用通告相关函数
-$db["HOST"]=bbs_sysconf_str("MYSQLHOST");
-$db["USER"]=bbs_sysconf_str("MYSQLUSER");
-$db["PASS"]=bbs_sysconf_str("MYSQLPASSWORD");
-$db["NAME"]=bbs_sysconf_str("MYSQLSMSDATABASE");
+$db["HOST"]=bbs_sysconf_str("MYSQLBLOGHOST");
+$db["USER"]=bbs_sysconf_str("MYSQLBLOGUSER");
+$db["PASS"]=bbs_sysconf_str("MYSQLBLOGPASSWORD");
+$db["NAME"]=bbs_sysconf_str("MYSQLBLOGDATABASE");
 
 $brdarr = array();
 $pcconfig["BRDNUM"] = bbs_getboard($pcconfig["BOARD"], $brdarr);
@@ -816,7 +816,7 @@ function pc_main_navigation_bar()
 [<a href="pcreco.php">推荐文章</a>]
 [<a href="pcnew.php">最新日志</a>]
 [<a href="pcnew.php?t=c">最新评论</a>]
-[<a href="pcsearch2.php">博客搜索</a>]
+[<a href="pcsearch2.php">BLOG搜索</a>]
 [<a href="pcnsearch.php">日志搜索</a>]
 [<a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">论坛</a>]
 [<a href="pcapp0.html"><font color=red>申请</font></a>]

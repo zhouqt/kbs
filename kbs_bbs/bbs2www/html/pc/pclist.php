@@ -149,7 +149,7 @@ pcmain_html_init();
 		<td width="33%" valign="top">
 			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
 				<tr>
-					<td class="td3" bgcolor="#f75151" align="center"><b><font color="white">最热博客(24小时内)</font></b></td>			
+					<td class="td3" bgcolor="#f75151" align="center"><b><font color="white">最热BLOG(24小时内)</font></b></td>			
 				</tr>
 				<tr>
 					<td align="left" class="td4">
@@ -161,7 +161,7 @@ pcmain_html_init();
 		<td width="33%" valign="top">
 			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
 				<tr>
-					<td class="td3" bgcolor="#00b6ef" align="center"><b><font color="white">最热博客(30天内)</font></b></td>			
+					<td class="td3" bgcolor="#00b6ef" align="center"><b><font color="white">最热BLOG(30天内)</font></b></td>			
 				</tr>
 				<tr>
 					<td align="left" class="td4">
@@ -173,7 +173,7 @@ pcmain_html_init();
 		<td width="33%" valign="top">
 			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
 				<tr>
-					<td align="center" class="td3" bgcolor="#4cb81c"><b><font color="white">最热博客</font></b></td>			
+					<td align="center" class="td3" bgcolor="#4cb81c"><b><font color="white">最热BLOG</font></b></td>			
 				</tr>
 				<tr>
 					<td align="left" class="td3">

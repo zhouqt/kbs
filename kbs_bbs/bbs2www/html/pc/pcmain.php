@@ -89,7 +89,7 @@ function pcmain_recommend_blogger()
 {
 	global $link;
 	mt_srand();
-	$pos = mt_rand(0,50);//排名前50的博客随机抽取一个
+	$pos = mt_rand(0,50);//排名前50的BLOG随机抽取一个
 	if(defined("_PCMAIN_RECOMMEND_BLOGGER_"))
 		$query = "SELECT uid , username , corpusname , description FROM users WHERE username = '".addslashes(_PCMAIN_RECOMMEND_BLOGGER_)."' LIMIT 1;";
 	else
@@ -107,7 +107,7 @@ function pcmain_recommend_blogger()
 	mysql_free_result($result);	
 ?>
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="table">
-	<tr><td class="channelback" align="right"><font class="channel">博客推荐</font></td></tr>
+	<tr><td class="channelback" align="right"><font class="channel">BLOG推荐</font></td></tr>
 	<tr><td align="left" valign="top" class="td" bgcolor="#E8FFEE">
 	<table width="100%" cellspacing="0" cellpadding="3" border="0">
 	<tr>
@@ -370,10 +370,10 @@ function pcmain_blogger_area()
 	global $pcconfig;
 	$all = $pcconfig["ALLCHARS"];
 	$all_num = strlen($all);
-	echo "<font class=low>[博客区]</font>&nbsp;";
+	echo "<font class=low>[BLOG小区]</font>&nbsp;";
 	for($i = 0 ; $i < $all_num ; $i ++)
 		echo "<a href=\"pc.php?char=".$all[$i]."\"><font class=\"low2\">".$all[$i]."</font></a>&nbsp;";
-	echo "<a href=\"pclist.php\"><font color=red>热门博客</font></a>";
+	echo "<a href=\"pclist.php\"><font color=red>热门BLOG</font></a>";
 }
 
 $link = pc_db_connect();
@@ -399,7 +399,7 @@ pcmain_html_init();
           <tr>
               <td class="channelback"><table width="100%"  border="0" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td class="channel">热门博客</td>
+                  <td class="channel">热门BLOG</td>
                   <td align="right" class="more"><a href="pc.php?order=visitcount&order1=DESC"><font class="more">更多</font></a></td>
               </tr>
               </table></td>
