@@ -696,18 +696,18 @@ int getfriendstr(struct userec* user,struct user_info* puinfo)
         return 0;
     if (nf>MAXFRIENDS)
     	nf=MAXFRIENDS;
-    friendsdata = (struct friends *) calloc(sizeof(struct friends), nf);
+    friendsdata = (struct friends *) calloc(nf,sizeof(struct friends));
     get_records(buf, friendsdata, sizeof(struct friends), 1, nf);
     for (i = 0; i < nf; i++) {
         friendsdata[i].id[IDLEN] = 0;
-        friendsdata[i].exp[14] = 0;
+        friendsdata[i].exp[LEN_FRIEND_EXP-1] = 0;
         if (id_invalid(friendsdata[i].id)||(searchuser(friendsdata[i].id)==0)) {
             memcpy(&friendsdata[i], &friendsdata[nf - 1], sizeof(struct friends));
             nf--;
         }
     }
     qsort(friendsdata, nf, sizeof(friendsdata[0]), (int (*)(const void *, const void *)) cmpfuid);      /*For Bi_Search */
-    topfriend = (struct friends_info *) calloc(sizeof(struct friends_info), nf);
+    topfriend = (struct friends_info *) calloc(nf,sizeof(struct friends_info));
     for (i = 0; i < nf; i++) {
         puinfo->friends_uid[i] = searchuser(friendsdata[i].id);
         strcpy(topfriend[i].exp, friendsdata[i].exp);
