@@ -163,8 +163,11 @@ bbs_readmailfile (char **buf, int *len, void *arg)
     pout=*buf;
     if (pmo->bfirst) {
 /*	sprintf(pout,"Reply-To: %s.bbs@%s\r\n\r\n", currentuser->userid, email_domain());
-*/
-	sprintf(pout,"\r\n\r\n");
+*/	
+	if (pmo->isbig5) 
+		sprintf(pout,"%s","MIME-Version: 1.0\r\nContent-Type: text/plain; charset=big5\r\nContent-Transfer-Encoding: 8bit\r\n\r\n");
+	else
+		sprintf(pout,"%s","MIME-Version: 1.0\r\nContent-Type: text/plain; charset=gb2312\r\nContent-Transfer-Encoding: 8bit\r\n\r\n");
 	pout=*buf+strlen(*buf);
 	pmo->bfirst=0;
     }
@@ -288,16 +291,11 @@ bbs_sendmail(char *fname,char* title,char* receiver,int isuu,int isbig5,int noan
     if (isbig5)  {
       strcpy(newbuf,title);
       len=strlen(title);
-      smtp_set_header (message, "Content-type", "text/plain; charset=big5");
       smtp_set_header(message,"Subject",gb2big(title,&len,1));
     } else {
-      smtp_set_header (message, "Content-type", "text/plain; charset=gb2312");	
       smtp_set_header (message, "Subject", title);
     }
-    smtp_set_header(message,"Content-transfer-encoding","8bit");
-    smtp_set_header_option (message, "Subject", Hdr_OVERRIDE, 1);
-    smtp_set_header_option (message, "Content-transfer-encoding", Hdr_OVERRIDE, 1);
-    smtp_set_header_option (message, "Content-type", Hdr_OVERRIDE, 1);
+    smtp_set_header_option (message, "Subject", Hdr_OVERRIDE, 3);
     /*smtp_8bitmime_set_body(message, E8bitmime_8BITMIME);*/
 
     mo.isbig5=isbig5;
