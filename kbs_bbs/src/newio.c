@@ -743,12 +743,13 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 	    if (ch == '\n')
                 break;
             if (ch == '\177' || ch == Ctrl('H')) {
+                int y,x;
                 if (clen == 0)
                     continue;
-                clen--;
-                cur_col--;
+                getyx(&y,&x);
+                move(y,x-1);
                 outc(' ');
-                cur_col--;
+                move(y,x-1);
                 continue;
             }
             if (!isprint2(ch)||clen>=len-1)
