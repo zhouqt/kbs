@@ -401,6 +401,15 @@ int DelFavBoard(int i)
 	return 0;
 }
 
+char * FavGetTitle(int select,char *title)
+{
+	title[0]=0;
+	if(select < 0 || select >= favbrd_list_t)
+		return NULL;
+	strcpy(title,favbrd_list[select].title);
+		return title;
+}
+
 int FavGetFather(int select)
 {
 	if(select < 0 || select >= favbrd_list_t)

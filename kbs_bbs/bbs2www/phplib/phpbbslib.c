@@ -7416,12 +7416,17 @@ static PHP_FUNCTION(bbs_get_dirname)
 {
         int ac = ZEND_NUM_ARGS();
 		int select;
+		char title[256];
+
         if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l" , &select) == FAILURE){
                 WRONG_PARAM_COUNT;
         }
 	if(select < 0 || select >= favbrd_list_t )
 		RETURN_LONG(0);
-    RETURN_STRING(favbrd_list[select].title,1);
+
+	FavGetTitle(select,title);
+
+    RETURN_STRING( title, 1);
 
 }
 

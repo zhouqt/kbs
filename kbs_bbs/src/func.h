@@ -295,6 +295,7 @@ void unlock_sem_check(int lockid);
     int DelFavBoard(int i);
 	int DelFavBoardDir(int i,int fath);
     int SetFav(int i);
+	char * FavGetTitle(int select,char *title);
 	void load_allboard(struct favbrd_struct *brdlist, int * brdlist_t);
 	void load_wwwboard(struct favbrd_struct *brdlist, int * brdlist_t);
 
