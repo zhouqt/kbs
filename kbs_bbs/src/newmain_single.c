@@ -587,7 +587,7 @@ login_query()
 #else
    getdata( 0, 0, "\n°´ [RETURN] ¼ÌĞø",genbuf,10,NOECHO,NULL,YEA);
 #endif
-    if( !HAS_PERM(currentuser, PERM_BASIC ) ) {
+    if( strcasecmp(currentuser->userid,"guest")&&!HAS_PERM(currentuser, PERM_BASIC ) ) {
        prints( "[32m±¾ÕÊºÅÒÑÍ£»ú¡£ÇëÏò [36mSYSOP[32m ²éÑ¯Ô­Òò[m\n" );
        oflush();
        sleep( 1 );
