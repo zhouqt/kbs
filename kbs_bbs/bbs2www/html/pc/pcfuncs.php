@@ -73,7 +73,9 @@ function pc_html_init($charset,$title="",$otherheader="",$style="",$bkimg="",$lo
 <link rel="stylesheet" type="text/css" href="default.css"/>
 <?php
 	}
-
+?>
+<link rel="stylesheet" type="text/css" href="/ansi.css"/>
+<?php
 	if($loadhtmlarea)
 	{
 ?>
@@ -91,33 +93,15 @@ textarea { background-color: #fff; border: 1px solid 00f; }
 </style>
 <!-- load the plugins -->
 <script type="text/javascript">
-      // WARNING: using this interface to load plugin
-      // will _NOT_ work if plugins do not have the language
-      // loaded by HTMLArea.
-
-      // In other words, this function generates SCRIPT tags
-      // that load the plugin and the language file, based on the
-      // global variable HTMLArea.I18N.lang (defined in the lang file,
-      // in our case "lang/en.js" loaded above).
-
-      // If this lang file is not found the plugin will fail to
-      // load correctly and nothing will work.
-
       HTMLArea.loadPlugin("TableOperations");
       HTMLArea.loadPlugin("SpellChecker");
 </script>
 <script type="text/javascript" defer="1">
 var editor = null;
 function initEditor() {
-  // create an editor for the "ta" textbox
   editor = new HTMLArea("blogbody");
-
-  // register the SpellChecker plugin
   editor.registerPlugin("TableOperations");
-
-  // register the SpellChecker plugin
   editor.registerPlugin("SpellChecker");
-
   editor.generate();
   return false;
 }
@@ -143,7 +127,6 @@ function initEditor() {
 <?php
 }
 
-
 function undo_html_format($str)
 {
 	$str = str_replace("&nbsp;"," ",$str);
@@ -163,7 +146,7 @@ function html_editorstr_format($str)
 	return $str;
 }
 
-function html_format($str,$multi=FALSE,$useHtmlTag = FALSE)
+function html_format($str,$multi=FALSE,$useHtmlTag = FALSE,$defaultfg = "#000000" , $defaultbg = "#FFFFFF")
 {
 	global $pcconfig;
 	if($multi)
@@ -171,7 +154,7 @@ function html_format($str,$multi=FALSE,$useHtmlTag = FALSE)
 		if(strstr($str,$pcconfig["NOWRAPSTR"]) || $useHtmlTag )
 			$str = str_replace("<?","&lt;?",stripslashes($str));
 		else
-			$str = nl2br(str_replace(" ","&nbsp;",htmlspecialchars(stripslashes($str))));	
+			$str = nl2br(ansi_convert(stripslashes($str) , $defaultfg, $defaultbg));	
 	}
 	else
 		$str = str_replace(" ","&nbsp;",htmlspecialchars(stripslashes($str)));	
