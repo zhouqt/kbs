@@ -54,21 +54,6 @@ int line;
     }
 }
 
-char
-msgchar(uin)
-struct user_info *uin;
-{
-    if ((uin->pager&ALLMSG_PAGER)) return ' ';
-    if ((can_override(uin->userid,currentuser->userid)))
-    {
-        if((uin->pager&FRIENDMSG_PAGER))
-            return 'O';
-        else
-            return '#';
-    }
-    return '*';
-}
-
 int
 canmsg(uin)
 struct user_info *uin;

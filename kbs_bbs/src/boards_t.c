@@ -26,6 +26,7 @@
 
 extern time_t   login_start_time;
 extern int     *zapbuf;
+extern int	zapbuf_changed;
 extern int     brdnum;
 extern int yank_flag;
 extern char    *boardprefix;
@@ -639,6 +640,7 @@ case 'n': case 'j': case KEY_DOWN:
                     ptr->zap = !ptr->zap;
                     ptr->total = -1;
                     zapbuf[ ptr->pos ] = (ptr->zap ? 0 : login_start_time);
+		    zapbuf_changed=1;
                     page = 999;
                 }
             }

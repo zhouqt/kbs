@@ -297,6 +297,7 @@ typedef size_t socklen_t;
 /* added period 2000-09-11	4 FavBoard */
 #define FAVBOARDNUM     20
 
+
 #include "vars.h"
 #include "func.h"
 

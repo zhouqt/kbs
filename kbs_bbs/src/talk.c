@@ -98,21 +98,6 @@ char *user;
 ---*/
 
 char
-pagerchar(friend, pager)
-int friend,pager;
-{
-    if (pager&ALL_PAGER) return ' ';
-    if ((friend))
-    {
-        if(pager&FRIEND_PAGER)
-            return 'O';
-        else
-            return '#';
-    }
-    return '*';
-}
-
-char
 canpage(friend, pager)
 int friend,pager;
 {

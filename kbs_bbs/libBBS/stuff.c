@@ -807,3 +807,38 @@ char filename[STRLEN],seekstr[STRLEN];
 }
 
 
+static time_t* nowtime;
+static struct public_data *publicshm;
+void bbssettime(time_t now)
+{
+    int iscreate;
+    if (publicshm==NULL) {
+        publicshm = (struct public_data*)attach_shm1( "PUBLIC_SHMKEY", 3700, sizeof( *publicshm) ,&iscreate,0,NULL); /* attach public share memory readonly*/
+    }
+    publicshm->nowtime=now;
+    return;
+}
+
+int setpublicshmreadonly(int readonly)
+{
+    int iscreate;
+    shmdt(publicshm);
+    if (readonly)
+        publicshm = (struct public_data*)attach_shm1( "PUBLIC_SHMKEY", 3700, sizeof( *publicshm ) ,&iscreate , 1, publicshm); 
+    else
+        publicshm = (struct public_data*)attach_shm1( "PUBLIC_SHMKEY", 3700, sizeof( *publicshm ) ,&iscreate , 0, publicshm); 
+}
+
+time_t bbstime(time_t* t)
+{
+    int iscreate;
+    if (publicshm==NULL) {
+        publicshm = attach_shm1( "PUBLIC_SHMKEY", 3700, sizeof( *publicshm) ,&iscreate,1,NULL); /* attach public share memory readonly*/
+	if (iscreate) {
+		log("4bbstime","time daemon not start");
+		exit(1);
+	}
+    }
+    if (t) *t=publicshm->nowtime;
+    return publicshm->nowtime;
+}

@@ -32,6 +32,7 @@ int     favbrd_list[FAVBOARDNUM+1];
 
 struct newpostdata *nbrd; /*每个版的信息*/
 int     *zapbuf;
+int	zapbuf_changed=0;
 int     brdnum, yank_flag = 0;
 char    *boardprefix;
 
@@ -123,6 +124,7 @@ load_zapbuf()  /* 装入zap信息*/
         read( fd, zapbuf, size );
         close( fd );
     }
+    zapbuf_changed=0;
 }
 /*---	Modified for FavBoard functions, by period	2000-09-11 */
 void save_userfile(char * fname, int numblk, char * buf)
@@ -140,7 +142,8 @@ void save_userfile(char * fname, int numblk, char * buf)
 
 void save_zapbuf()
 {
-    save_userfile(".lastread", get_boardcount(), (char *)zapbuf);
+    if (zapbuf_changed!=0)
+    	save_userfile(".lastread", get_boardcount(), (char *)zapbuf);
 }
 
 #if 0
@@ -192,7 +195,6 @@ load_boards()
         if(boardprefix == NULL && bptr->title[0]=='*')
             continue;
         /*---	period	2000-09-11	4 FavBoard	---*/
-        /*        if( yank_flag || zapbuf[ n ] != 0||(bptr->level&PERM_NOZAP) ) {*/ /*初始化版信息*/
         if( ( 1 == yank_flag || (!yank_flag && (zapbuf[ n ] != 0||(bptr->level&PERM_NOZAP) )) )
                 || (2 == yank_flag && IsFavBoard(n)) ) {
             ptr = &nbrd[ brdnum++ ];

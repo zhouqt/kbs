@@ -113,4 +113,8 @@ struct BCACHE {
 	struct BoardStatus bstatus[MAXBOARD];
 };
 
+struct public_data {
+	time_t nowtime;
+	char unused[1020];
+};
 #endif

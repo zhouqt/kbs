@@ -271,6 +271,16 @@ reaper()
     while (waitpid(-1, NULL, WNOHANG | WUNTRACED) > 0);
 }
 
+void timed()
+{
+    setpublicshmreadonly(0);
+    while (1) {
+#undef time
+	bbssettime(time(0));
+	sleep(1);
+#define time(x) bbstime(x)
+    }
+}
 
 int dodaemon(char* argv1,char* daemon)
 {
@@ -344,6 +354,10 @@ int dodaemon(char* argv1,char* daemon)
     if ((daemon==NULL)||(!strcmp(daemon,"flushd"))) {
           strcpy(argv1,"flushd");
           flushd();
+    }
+    if ((daemon==NULL)||(!strcmp(daemon,"timed"))) {
+          strcpy(argv1,"timed");
+          timed();
     }
 }
 int main (int argc,char *argv[])
