@@ -1,5 +1,7 @@
 <?php
 require("site.php");
+if (BUILD_PHP_EXTENSION==0)
+    @dl("libphpbbslib.so");
 if (!bbs_ext_initialized())
 	bbs_init_ext();
 
@@ -271,6 +273,66 @@ $boards = $root->child_nodes();
 <?php
 }
 
+function gen_commend_html()
+{
+# load xml doc
+$commend_file = BBS_HOME . "/xml/commend.xml";
+if( ! file_exists($commend_file) )
+	return;
+$doc = domxml_open_file($commend_file);
+	if (!$doc)
+		return;
+
+$root = $doc->document_element();
+$boards = $root->child_nodes();
+
+
+$brdarr = array();
+?>
+	<table width="97%" border="0" cellpadding="0" cellspacing="0" background="images/lan2.gif" class="title">
+        <tr> 
+		  <td width="23">&nbsp;</td>
+          <td>&gt;&gt;推荐文章&gt;&gt;</td>
+		  <td width="80"><a href="/bbsrecommend.php">更多>></a></td>
+        </tr>
+	</table>
+
+	<table border="0" cellpadding="0" cellspacing="0" width="626">
+
+<?php
+# shift through the array
+while($board = array_shift($boards))
+{
+    if ($board->node_type() == XML_TEXT_NODE)
+        continue;
+
+    $commend_title = find_content($board, "title");
+    $commend_author = find_content($board, "author");
+    $commend_o_board = find_content($board, "o_board");
+    $commend_o_id = find_content($board, "o_id");
+    $commend_o_groupid = find_content($board, "o_groupid");
+    $commend_brief = find_content($board, "brief");
+
+	$brdnum = bbs_getboard($commend_o_board, $brdarr);
+	if ($brdnum == 0)
+		continue;
+	$brd_encode = urlencode($brdarr["NAME"]);
+
+?>
+<tr>
+<td valign="top" class="MainContentText"><p><img src="images/xia.gif" width="9" height="7"><a href="/bbscon.php?board=<?php echo $brd_encode;?>&id=<?php echo $commend_o_id;?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $commend_title));?></a><br>
+<?php echo htmlspecialchars(iconv("UTF-8","GBK",$commend_brief));?><br>
+<br>
+</p>
+</td>
+</tr>
+<?php
+}
+?>
+</table>
+<?php
+}
+
 function gen_board_rank_html()
 {
 # load xml doc
@@ -403,64 +465,7 @@ while($board = array_shift($boards))
 ?>
 <br>
 <?php
-	//gen_recommend_boards_html();
-	if (0)
-	{
-?>
-<!-- 推荐文章 暂时去掉
-	<table width="626" border="0" cellpadding="0" cellspacing="0" background="images/lan2.gif" class="title">
-        <tr> 
-		  <td width="23">&nbsp;</td>
-          <td>&gt;&gt;推荐文章&gt;&gt;</td>
-        </tr>
-	</table>
-		<table border="0" cellpadding="0" cellspacing="0" width="626">
-              <tr>
-                <td valign="top" class="MainContentText"><p><img src="images/xia.gif" width="9" height="7"><a href="#">一个清华弃子的本科生活<br>
-              </a>大学四年匆匆而逝，有得有失，喜忧参半。入学的迷茫，大一的忙碌，大二的郁闷，大三的彷徨，还都历历在目，也将铭刻在心。直到将要告别清华，才有了一丝丝的惆怅， 
-              才发现自己深深地爱上了清华。<br>
-              <br>
-            </p>
-                  
-            </td>
-              </tr>
-              <tr>
-                <td valign="top" class="MainContentText"><p><img src="images/xia.gif" width="9" height="7"><a href="#">刚刚看完钢琴家，很感动！<br>
-              </a>它讲述了一个真实的故事，一个犹太钢琴师在华沙的逃亡历程。影片将战争的残酷、德军 的野蛮以及犹太人的悲惨遭遇反映的一览无遗。在德国人统治的华沙城里，犹太人过着猪 
-              狗不如的生活，影片中到处都能看到饿死或被枪杀的犹太人的尸体，50万犹太人被分批送<br>
-              <br>
-            </p>
-                  
-            </td>
-              </tr>
-              <tr>
-                <td valign="top" class="MainContentText"><p><img src="images/xia.gif" width="9" height="7"><a href="#">[Weekend]兄弟们，C++的美好时代就要来临了!!!</a><br>
-              这期程序员上说 borland要推出100%符合标准的编译器 另外，ms的vc.2004也是宣传为100%支持加上，gcc的良好发展势头，C++终于要彻底出头了!<br>
-              <br>
-            </p>
-                  
-            </td>
-              </tr>
-              <tr>
-                <td valign="top" class="MainContentText"><p><img src="images/xia.gif" width="9" height="7"><a href="#">省钱大法——让你少花一半生活费</a><br>
-              首先，找一个两人上班骑车距离都在半小时内的房子，最好是消费水平不高但生活便利 的小区，不远就能有菜市场。样的房子很多，平均房租1500 
-              买两辆自行车，连锁带筐各种杂碎最多300，保管得好至少一年内不会丢，平均下来每 月交通费25<br>
-              <br>
-            </p> 
-            </td>
-              </tr>
-              <tr>
-                <td valign="top" class="MainContentText"><p><img src="images/xia.gif" width="9" height="7"><a href="#">人行横道线的由来</a><br>
-              在古罗马时代，意大利庞培市的一些街道上，人、马、车混行，交通经常堵塞。为了解决这个问题，人们把人行道加高，使人与马车分离。然后，又在接近马路口的 
-              地方，横砌起一块块凸出路面的石头——跳石，作为指示行人过街的标志行人可以踩着 跳石穿过马路。<br>
-              <br>
-            </p> 
-            </td>
-              </tr>
-		</table>
-推荐文章 -->
-<?php
-	}
+	gen_commend_html();
 	gen_sections_html();
 ?>
 </td>
