@@ -192,7 +192,7 @@ int     mode;
     case LOOKMSGS:  return "察看讯息";
     case WFRIEND:   return "寻人名册";
     case LOCKSCREEN:return "屏幕锁定";
-    case SERVICE:    return "休闲娱乐..";
+    case SERVICES:    return "休闲娱乐..";
     default: return "去了那里!?" ;
     }
 }
