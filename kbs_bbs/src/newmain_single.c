@@ -1134,26 +1134,29 @@ void update_endline()
     sprintf(buf, "[[36m%.12s[33m]", currentuser->userid);
     if (DEFINE(currentuser, DEF_NOTMSGFRIEND)) {
 		if (DEFINE(currentuser,DEF_HIGHCOLOR))
-        	sprintf(stitle, "[1;4%dm[33mÊ±¼ä[[36m%12.12s[33m] ºô½ÐÆ÷[ºÃÓÑ:%3s£ºÒ»°ã:%3s] Ê¹ÓÃÕß%-24s Í£Áô[%3d:%2d]", colour, ctime(&now) + 4,
-                (!(uinfo.pager & FRIEND_PAGER)) ? "NO " : "YES", (uinfo.pager & ALL_PAGER) ? "YES" : "NO ", buf, (allstay / 60) % 1000, allstay % 60);
+        	sprintf(stitle, "[1;4%dm[33mÊ±¼ä[[36m%12.12s[33m] ºô½ÐÆ÷[ºÃÓÑ:%3s£ºÒ»°ã:%3s] Ê¹ÓÃÕß%s", colour, ctime(&now) + 4,
+                (!(uinfo.pager & FRIEND_PAGER)) ? "NO " : "YES", (uinfo.pager & ALL_PAGER) ? "YES" : "NO ", buf);
 		else
-        	sprintf(stitle, "[4%dm[33mÊ±¼ä[[36m%12.12s[33m] ºô½ÐÆ÷[ºÃÓÑ:%3s£ºÒ»°ã:%3s] Ê¹ÓÃÕß%-24s Í£Áô[%3d:%2d]", colour, ctime(&now) + 4,
-                (!(uinfo.pager & FRIEND_PAGER)) ? "NO " : "YES", (uinfo.pager & ALL_PAGER) ? "YES" : "NO ", buf, (allstay / 60) % 1000, allstay % 60);
+        	sprintf(stitle, "[4%dm[33mÊ±¼ä[[36m%12.12s[33m] ºô½ÐÆ÷[ºÃÓÑ:%3s£ºÒ»°ã:%3s] Ê¹ÓÃÕß%s", colour, ctime(&now) + 4,
+                (!(uinfo.pager & FRIEND_PAGER)) ? "NO " : "YES", (uinfo.pager & ALL_PAGER) ? "YES" : "NO ", buf);
     } else {
 #ifdef HAVE_FRIENDS_NUM
             num_alcounter();
-            sprintf(stitle,"[1;4%dm[33mÊ±¼ä[[36m%12.12s[33m] ×ÜÈËÊý/ºÃÓÑ[%3d/%3d][%c£º%c] Ê¹ÓÃÕß%-24s Í£Áô[%3d:%2d]",colour,
-                    ctime(&now)+4,count_users,count_friends,(uinfo.pager&ALL_PAGER)?'Y':'N',(!(uinfo.pager&FRIEND_PAGER))?'N':'Y',buf,(allstay/60)%1000,allstay%60);
+            sprintf(stitle,"[1;4%dm[33mÊ±¼ä[[36m%12.12s[33m] ×ÜÈËÊý/ºÃÓÑ[%3d/%3d][%c£º%c] Ê¹ÓÃÕß%s",colour,
+                    ctime(&now)+4,count_users,count_friends,(uinfo.pager&ALL_PAGER)?'Y':'N',(!(uinfo.pager&FRIEND_PAGER))?'N':'Y',buf);
 #else
 	if (DEFINE(currentuser,DEF_HIGHCOLOR))
-        sprintf(stitle, "\x1b[1;4%dm\x1b[33mÊ±¼ä[\x1b[36m%12.12s\x1b[33m] ×ÜÈËÊý [ %3d ] [%c£º%c] Ê¹ÓÃÕß%-24s Í£Áô[%3d:%2d]", colour,
-                ctime(&now) + 4, get_utmp_number() + getwwwguestcount(), (uinfo.pager & ALL_PAGER) ? 'Y' : 'N', (!(uinfo.pager & FRIEND_PAGER)) ? 'N' : 'Y', buf, (allstay / 60) % 1000, allstay % 60);
+        sprintf(stitle, "\x1b[1;4%dm\x1b[33mÊ±¼ä[\x1b[36m%12.12s\x1b[33m] ×ÜÈËÊý [ %3d ] [%c£º%c] Ê¹ÓÃÕß%s", colour,
+                ctime(&now) + 4, get_utmp_number() + getwwwguestcount(), (uinfo.pager & ALL_PAGER) ? 'Y' : 'N', (!(uinfo.pager & FRIEND_PAGER)) ? 'N' : 'Y', buf);
 	else
-        sprintf(stitle, "\x1b[4%dm\x1b[33mÊ±¼ä[\x1b[36m%12.12s\x1b[33m] ×ÜÈËÊý [ %3d ] [%c£º%c] Ê¹ÓÃÕß%-24s Í£Áô[%3d:%2d]", colour,
-                ctime(&now) + 4, get_utmp_number() + getwwwguestcount(), (uinfo.pager & ALL_PAGER) ? 'Y' : 'N', (!(uinfo.pager & FRIEND_PAGER)) ? 'N' : 'Y', buf, (allstay / 60) % 1000, allstay % 60);
+        sprintf(stitle, "\x1b[4%dm\x1b[33mÊ±¼ä[\x1b[36m%12.12s\x1b[33m] ×ÜÈËÊý [ %3d ] [%c£º%c] Ê¹ÓÃÕß%s", colour,
+                ctime(&now) + 4, get_utmp_number() + getwwwguestcount(), (uinfo.pager & ALL_PAGER) ? 'Y' : 'N', (!(uinfo.pager & FRIEND_PAGER)) ? 'N' : 'Y', buf);
 #endif
     }
     move(t_lines - 1, 0);
+    prints("%s", stitle);
+    sprintf(stitle, "Í£Áô[%d:%d]", (allstay / 60) % 1000, allstay % 60);
+    move(t_lines - 1, -strlen(stitle)-1);
     prints("%s", stitle);
     clrtoeol();
     resetcolor();
@@ -1180,11 +1183,11 @@ void showtitle( char *title, char*mid)
     char note[STRLEN];
 
     if (DEFINE(currentuser, DEF_TITLECOLOR)) {
-        colour = 4;
+        colour = BLUE;
     } else {
         colour = currentuser->numlogins % 4 + 3;
-        if (colour == 3)
-            colour = 1;
+        if (colour == YELLOW)
+            colour = RED;
     }
 
     if (selboard)
