@@ -1476,7 +1476,7 @@ int search_mode(int mode, char *index)
     ptr1 = ptr;
     for (i = 0; i < total; i++) {
         memcpy(&mkpost, ptr1, size);
-        if (mode == 6 && strstr(mkpost.title, "Re:") != mkpost.title || mode == 7 && strcasecmp(mkpost.owner, index) == 0 || mode == 8 && strstr(mkpost.title, index) != NULL) {
+        if (mode == 6 && mkpost.id==mkpost.groupid || mode == 7 && strcasecmp(mkpost.owner, index) == 0 || mode == 8 && strstr(mkpost.title, index) != NULL) {
             write(fd, &mkpost, size);
             count++;
         }
@@ -2444,6 +2444,8 @@ int del_range(int ent, struct fileheader *fileinfo, char *direct, int mailmode)
     if (digestmode == 4 || digestmode == 5) {
         return DONOTHING;
     }
+    if (digestmode >= 2)
+    	return DONOTHING; // disabled by bad 2002.8.16
     clear();
     prints("ÇøÓòÉ¾³ı\n");
     /*
