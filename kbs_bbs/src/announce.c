@@ -867,8 +867,12 @@ int mode;
         a_report(buf);
         switch (mode) {
         case ADDITEM:
-            if (-1 == vedit(fpath, 0, NULL,NULL, 0))
+            modify_user_mode(EDITANN);
+            if (-1 == vedit(fpath, 0, NULL,NULL, 0)){
+				modify_user_mode(CSIE_ANNOUNCE);
                 return;         /* Leeward 98.06.12 fixes bug */
+			}
+            modify_user_mode(CSIE_ANNOUNCE);
             chmod(fpath, 0644);
             break;
         case ADDGROUP:
