@@ -1212,6 +1212,7 @@ char *direct;
                                                          * 否则可能会因为删信件的.tmpfile而错删版面的.tmpfile */
     if(!strcmp(direct, ".DELETED"))
         get_mailusedspace(currentuser,1);
+    return ret;
 }
 
 int mail_mark(ent, fileinfo, direct)
