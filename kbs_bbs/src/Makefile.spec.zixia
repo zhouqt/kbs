@@ -1,0 +1,17 @@
+# The home directory for the user 'bbs'
+BBSHOME=/home/system/bbs
+BBSSITE=zixia
+
+#OS_DEF   = -DAIX -DSYSV 
+OS_DEF   = -DLINUX -DSYSV 
+
+CC       = gcc
+#CC       = cc
+CFLAGS   = -W -g -Ilibesmtp
+#CFLAGS   = -g -O3 -qstrict -qcompact -qarch=ppc -Ilibesmtp
+#LIBS     = -lbsd -lcrypt
+#CFLAGS   = -O3
+#LIBS     = -lbsd -lesmtp -Llibesmtp/.libs
+
+CSIE_DEF = -DSHOW_IDLE_TIME -D_DETAIL_UINFO_
+#CSIE_DEF = -DSHOW_IDLE_TIME -DBBSGID=99 -D_DETAIL_UINFO_
