@@ -1,3 +1,4 @@
+SUBDIRS=pip
 noinst_HEADERS = tcplib.h
 lib_LTLIBRARIES = libfriendtest.la libbbsnet.la
 libfriendtest_la_SOURCES = friendtest.c
