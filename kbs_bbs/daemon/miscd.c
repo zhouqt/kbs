@@ -241,6 +241,11 @@ int dodaemon()
 int main (int argc,char *argv[])
 {
      chdir(BBSHOME);
+     setuid(BBSUID);
+     setgid(BBSGID);
+     setreuid(BBSUID,BBSUID);
+     setregid(BBSGID,BBSGID);
+
      if (argc>1) {
          if (strcasecmp(argv[1],"killuser") == 0)  return dokilluser();
          if (strcasecmp(argv[1],"allboards") == 0) return dokillalldir();
