@@ -320,6 +320,9 @@ void netty_more()
         return;
     }
 
+	if( movieshm->movielines <= 0 )
+		nnline = 0;
+	else
     nnline = ((thetime / 10) % (movieshm->movielines / MAXnettyLN)) * MAXnettyLN;
 
     getyx(&y, &x);
