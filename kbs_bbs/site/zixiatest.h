@@ -22,6 +22,7 @@
 #define HAVE_TSINGHUA_INFO_REGISTER 0 /* 允许从清华信息系统注册 */
 
 #define HAVE_WFORUM 1
+#define RAW_ARTICLE		0
 
 #define SMTH			1		/* SMTH专有代码 */
 #define FILTER			1		/* 使用文章内容过滤 */
@@ -48,7 +49,6 @@
 #define SECNUM 10
 #define BBS_PAGE_SIZE 20
 
-#define RAW_ARTICLE 1
 #define HAVE_USERMONEY 1
 
 #define DEFAULTBOARD    	"zixia.net"//test
