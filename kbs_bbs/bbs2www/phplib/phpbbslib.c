@@ -993,11 +993,11 @@ static void output_printf(char* buf,size_t len) {
 	int n,newsize;
 	char * newbuf;
 	if (output_buffer==NULL) {
-		output_buffer=(char* )emalloc(10240); //first 10k
+		output_buffer=(char* )emalloc(51200); //first 50k
 		if (output_buffer==NULL) {
 			return;
 		}
-		output_buffer_size=10240;
+		output_buffer_size=51200;
 	}
 	bufLen=strlen(buf);
 	if (bufLen>len) {
@@ -1005,8 +1005,8 @@ static void output_printf(char* buf,size_t len) {
 	}
 	n=1+output_buffer_len+bufLen-output_buffer_size;
 	if (n>=0) {
-		newsize+=((n/51200)+1)*51200; //n*50k every time
-		newbuf=(char*)erealloc(output_buffer,output_buffer_size);
+		newsize=output_buffer_size+((n/102400)+1)*102400; //n*100k every time
+		newbuf=(char*)erealloc(output_buffer,newsize);
 		if (newbuf==NULL){
 			return;
 		}
@@ -4114,6 +4114,8 @@ PHP_RINIT_FUNCTION(smth_bbs)
 	zapbuf=NULL;
 #endif
 	output_buffer=NULL;
+	output_buffer_size=0;
+	output_buffer_len=0;
     return SUCCESS;
 }
 
