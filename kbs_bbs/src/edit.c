@@ -106,7 +106,7 @@ void msgline()
     strcat(buf, " [31mCtrl-Q[33m Çó¾È         ");
     sprintf(buf2, " ×´Ì¬ [%s][%4.4d,%3.3d]      Ê±¼ä", insert_character ? "²åÈë" : "Ìæ»»", currln + 1, currpnt + 1);
     strcat(buf, buf2);
-    sprintf(buf2, "[33m[44m¡¾%.16s¡¿[m", ctime(&now));
+    sprintf(buf2, "[33m[44m¡¾%.16s¡¿", ctime(&now));
 #else
     /*´ËÈíÌåËäÎª Freeware £¬µ«Çë²»ÒªÐÞ¸ÄÒÔÏÂµÄ×ÖÑù£¬Ð»Ð» */
     strcpy(buf, "[36m[44mÖÐÕý×Ê¹¤ BBS Éè¼Æ [31mCtrl-Z[33m Çó¾È");
@@ -119,6 +119,7 @@ void msgline()
     move(t_lines - 1, 0);
     prints("%s", buf);
     clrtoeol();
+    resetcolor();
     showansi = tmpshow;
 }
 
@@ -1927,7 +1928,7 @@ void vedit_key(ch)
 
     if (editansi /*|| mark_on */ )
         redraw_everything = true;
-    shift = (currpnt + 2 > STRLEN) ? (currpnt / (STRLEN - scrollen)) * (STRLEN - scrollen) : 0;
+    shift = (currpnt + 2 > scr_cols) ? (currpnt / (scr_cols - scrollen)) * (scr_cols - scrollen) : 0;
     msgline();
     if (shifttmp != shift || redraw_everything == true) {
         redraw_everything = true;
