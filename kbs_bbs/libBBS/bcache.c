@@ -90,6 +90,8 @@ struct boardheader *fptr ;
     return 0 ;
 }
 
+/* 为了在人数多的时候减少flock, 重读BOARDS, 将原来的resolve_boards改为reload_boards,
+   并重写了resolve_boards. ylsdd 2001.4.26 */
 void
 reload_boards()
 {
