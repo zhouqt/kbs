@@ -824,16 +824,10 @@ void mailtitle()
     /*
      * Leeward 98.01.19 adds below codes for statistics 
      */
-#ifdef NINE_BUILD
-    int MailSpace = 10000;
-#else
-    int MailSpace = ((HAS_PERM(currentuser, PERM_SYSOP)
-                      || !strcmp(currentuser->userid, "Arbitrator")) ? 9999 : (HAS_PERM(currentuser,
-                                                                                        PERM_CHATCLOAK) ? 4000 : (HAS_PERM(currentuser, PERM_MANAGER) ? 600
-                                                                                                                  : (HAS_PERM(currentuser, PERM_LOGINOK) ? 240 : 15))));
-#endif
+    int MailSpace,numlimit;
     int UsedSpace = get_mailusedspace(currentuser, 0) / 1024;
 
+    get_mail_limit(currentuser,&MailSpace,&numlimit);
     showtitle("ÓÊ¼þÑ¡µ¥    ", BBS_FULL_NAME);
     prints("Àë¿ª[¡û,e]  Ñ¡Ôñ[¡ü,¡ý]  ÔÄ¶ÁÐÅ¼þ[¡ú,r]  »ØÐÅ[R]  ¿³ÐÅ£¯Çå³ý¾ÉÐÅ[d,D]  ÇóÖú[h][m\n");
     /*
