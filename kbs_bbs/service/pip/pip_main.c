@@ -61,7 +61,7 @@ mod_default()
 #endif				// END MAPLE
 
 	pip_read_file();
-	if ((fs = fopen(genbuf, "r")) == NULL) {
+	if (!dashf(genbuf)) {
 //   show_system_pic(11); /* 暂时用进游戏的画面来代替 */
 		//  move(b_lines,0);
 		ansimore("game/pipgame/pip.welcome", false);
