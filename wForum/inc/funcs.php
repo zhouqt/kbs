@@ -696,6 +696,7 @@ function show_footer()
   global $Version;
   global $Copyright;
   global $StartTime;
+  global $FooterBan;
 
   $endtime=getmicrotime();
 ?>
@@ -723,6 +724,9 @@ function show_footer()
 		</tr>
 		</table>
 	</td>
+</tr>
+<tr>
+<td colspan=2><?php echo $FooterBan ; ?></td>
 </tr>
 </TABLE>
 <br>

@@ -170,6 +170,7 @@ function showAnnounce(){
 ?>
 <tr>
 <td align=center width=100% valign=middle colspan=2>
+<link rel="stylesheet" type="text/css" href="css/fader.css">
 <SCRIPT LANGUAGE='JavaScript' SRC='inc/fader.js' TYPE='text/javascript'></script>
 <SCRIPT LANGUAGE='JavaScript' TYPE='text/javascript'>
 prefix="";

@@ -77,4 +77,5 @@ $user_define=array(array(0,"ÏÔÊ¾»î¶¯¿´°æ", "ÔÚtelnet·½Ê½ÏÂÊÇ·ñÏÔÊ¾»î¶¯¿´°å","ÏÔÊ
 );
 
 $user_define_num=count($user_define);
+$FooterBan='<table cellSpacing=0 cellPadding=0 border=0 align=center><tr><td width=100 align=center><a href="http://www.turckware.ru/en/e_mmc.htm#download" target="_blank"><img border="0" src="/images/copyright/mmcache02.gif"></a></td><td width=100 align=center><a href="http://www.php.net/" target="_blank"><img border="0" src="/images/copyright/php-small-trans-light.gif"></a></td><td width=100 align=center><a href="http://www.apache.org/" target="_blank"><img border="0" src="/images/copyright/apache_pb.gif"></a></td><td width=100 align=center><a href="http://www.redhat.com/" target="_blank"><img border="0" src="/images/copyright/poweredby.png"></a></td><td width=100 align=center><a href="http://www.mysql.com/" target="_blank"><img border="0" src="/images/copyright/mysql-17.gif"></a></td></tr></table>';
 ?>
